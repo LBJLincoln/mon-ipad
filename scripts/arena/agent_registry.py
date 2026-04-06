@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-AGENT REGISTRY — 200+ Trading Floor Agents in 4 Tiers
+AGENT REGISTRY — 220+ Trading Floor Agents in 4 Tiers
 ======================================================
-Tier 1: Premium Traders (4) — paid APIs, full game analysis
-Tier 2: Free Power Traders (20) — best free models, focused analysis
+Tier 1: Premium Traders (14) — 5 named + 4 HF base + 5 Claude CLI, full game analysis
+Tier 2: Free Power Traders (25) — best free models, focused analysis
 Tier 3: Specialist Swarm (176+) — one agent per bet category side
 Tier 4: Meta-Traders (3) — Paperclip, Hermes, Oracle
 
-Total: 203+ agents, ~1,000 API calls/day for 5 games
+Total: 222+ agents, ~1,000 API calls/day for 5 games
 """
 
 import json
@@ -92,10 +92,10 @@ class TradingAgent:
 
 
 # ============================================================================
-# TIER 1: PREMIUM TRADERS (9 agents — 4 original + 5 Claude Code CLI)
+# TIER 1: PREMIUM TRADERS (14 agents — 4 HF base + 5 named + 5 Claude CLI)
 # ============================================================================
 def _build_tier1() -> List[TradingAgent]:
-    """9 premium traders: Claude CLI (primary) + HuggingFace top models."""
+    """14 premium traders: 4 HF base + 5 named visible + 5 Claude CLI."""
     base = [
         TradingAgent(
             id="t1_qwen72b", name="Qwen-72B Strategist", tier=AgentTier.PREMIUM,
@@ -132,6 +132,55 @@ def _build_tier1() -> List[TradingAgent]:
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
             kelly_fraction=0.5,
             description="Mistral Small 24B via HF. Fast analytical coverage."
+        ),
+    ]
+
+    # --- 5 Named Premium Traders (visible T1_premium, free HF Router models) ---
+    named_premium = [
+        TradingAgent(
+            id="t1_gemma", name="Gemma", tier=AgentTier.PREMIUM,
+            provider="google-gemma", model="google/gemma-3-27b-it",
+            strategy="value_hunter",
+            focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
+            personality="analytical_ensemble", min_edge=0.04, risk_tolerance=0.5,
+            kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
+            description="Gemma 27B via HF Router. Analytical ensemble, value hunting specialist."
+        ),
+        TradingAgent(
+            id="t1_qwen", name="Qwen", tier=AgentTier.PREMIUM,
+            provider="qwen", model="Qwen/Qwen2.5-72B-Instruct",
+            strategy="edge_seeker",
+            focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
+            personality="deep_thinker", min_edge=0.05, risk_tolerance=0.5,
+            kelly_fraction=0.6, bankroll=100.0, peak_bankroll=100.0,
+            description="Qwen 72B via HF Router. Deep thinker, edge seeker with high conviction."
+        ),
+        TradingAgent(
+            id="t1_deepseek", name="DeepSeek", tier=AgentTier.PREMIUM,
+            provider="deepseek", model="deepseek-ai/DeepSeek-R1-0528",
+            strategy="contrarian",
+            focus_groups=["moneyline", "spread", "totals", "exotic", "margin"],
+            personality="contrarian_value", min_edge=0.03, risk_tolerance=0.7,
+            kelly_fraction=0.4, bankroll=100.0, peak_bankroll=100.0,
+            description="DeepSeek R1 via HF Router. Contrarian value player, fades public sentiment."
+        ),
+        TradingAgent(
+            id="t1_mistral", name="Mistral", tier=AgentTier.PREMIUM,
+            provider="mistral", model="mistralai/Mistral-Small-24B-Instruct-2501",
+            strategy="kelly_quarter",
+            focus_groups=["moneyline", "spread", "totals", "player_props"],
+            personality="balanced_optimizer", min_edge=0.03, risk_tolerance=0.5,
+            kelly_fraction=0.25, bankroll=100.0, peak_bankroll=100.0,
+            description="Mistral 24B via HF Router. Balanced optimizer, conservative Kelly sizing."
+        ),
+        TradingAgent(
+            id="t1_llama", name="Llama", tier=AgentTier.PREMIUM,
+            provider="meta-llama", model="meta-llama/Llama-3.3-70B-Instruct",
+            strategy="momentum",
+            focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
+            personality="momentum_tracker", min_edge=0.02, risk_tolerance=0.6,
+            kelly_fraction=0.35, bankroll=100.0, peak_bankroll=100.0,
+            description="Llama 70B via HF Router. Momentum tracker, follows streaks and trends."
         ),
     ]
 
@@ -185,7 +234,7 @@ def _build_tier1() -> List[TradingAgent]:
         ),
     ]
 
-    return base + cli_agents
+    return base + named_premium + cli_agents
 
 
 # ============================================================================

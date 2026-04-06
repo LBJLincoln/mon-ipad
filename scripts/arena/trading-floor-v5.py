@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Trading Floor v5.1 -- 217+ AI Agent Swarm with Multi-Phase Thinking
+Trading Floor v5.2 -- 222+ AI Agent Swarm with Multi-Phase Thinking
 ===================================================================
 The most ambitious NBA betting AI system ever built.
 
 Architecture (4 Tiers):
-  Tier 1: 4 Premium Traders (GPT-4o, Grok, Gemini, Claude) — full game analysis
-  Tier 2: 20 Free Power Traders (Groq, OpenRouter, Cohere, Cerebras) — focused
-  Tier 3: 176+ Specialist Swarm (Groq llama-3.1-8b, gemma2-9b) — one per bet category
+  Tier 1: 14 Premium Traders (5 Named + 4 HF base + 5 Claude CLI) — full game analysis
+  Tier 2: 25 Free Power Traders (HF, Cohere, Cerebras) — focused
+  Tier 3: 176+ Specialist Swarm (HF free models) — one per bet category
   Tier 4: 3 Meta-Traders (Paperclip, Hermes, Oracle) — aggregate + synthesize
 
 Karpathy LLM Council Pattern (3 stages):
@@ -272,6 +272,29 @@ def _sz_underdog_specialist(edge, odds, bankroll, **kw):
     k = kelly_criterion(0.5 + edge, odds, 0.5) * min(math.sqrt(odds) / 3.0, 1.5)
     return bankroll * min(k, 0.08)
 
+def _sz_edge_seeker(edge, odds, bankroll, **kw):
+    """Edge seeker: only bet when edge is strong, then size aggressively."""
+    if edge < 0.05:
+        return 0.0
+    return bankroll * kelly_criterion(0.5 + edge, odds, 0.6)
+
+def _sz_contrarian(edge, odds, bankroll, **kw):
+    """Contrarian: favors underdogs (high odds), scales with edge."""
+    if edge < 0.03:
+        return 0.0
+    odds_boost = min(math.sqrt(odds) / 2.5, 1.5) if odds > 2.0 else 0.8
+    return bankroll * kelly_criterion(0.5 + edge, odds, 0.4) * odds_boost
+
+def _sz_momentum(edge, odds, bankroll, **kw):
+    """Momentum: follows streaks, moderate Kelly with trend bias."""
+    if edge < 0.02:
+        return 0.0
+    return bankroll * kelly_criterion(0.5 + edge, odds, 0.35)
+
+def _sz_kelly_quarter(edge, odds, bankroll, **kw):
+    """Kelly quarter: conservative quarter-Kelly sizing."""
+    return bankroll * kelly_criterion(0.5 + edge, odds, 0.25)
+
 def _sz_meta_allocation(edge, odds, bankroll, **kw):
     consensus = kw.get("consensus_strength", 0.5)
     return bankroll * min(consensus * 0.05, 0.10)
@@ -284,12 +307,16 @@ SIZING_FNS = {
     "value_hunter": _sz_value_hunter_half_kelly,
     "half_kelly": _sz_half_kelly,
     "quarter_kelly": _sz_quarter_kelly,
+    "kelly_quarter": _sz_kelly_quarter,
     "eighth_kelly": _sz_eighth_kelly,
     "proportional_edge": _sz_proportional_edge,
     "confidence_scaled": _sz_confidence_scaled,
     "flat_2pct": _sz_flat_2pct,
     "flat_1pct": _sz_flat_1pct,
     "underdog_specialist": _sz_underdog_specialist,
+    "edge_seeker": _sz_edge_seeker,
+    "contrarian": _sz_contrarian,
+    "momentum": _sz_momentum,
     "meta_allocation": _sz_meta_allocation,
     "meta_consensus": lambda *a, **kw: 0.0,
     "meta_synthesis": _sz_meta_synthesis,
@@ -649,11 +676,18 @@ def _call_claude_cli(pool, agent, prompt, system=""):
 class TradingFloorV5:
     """Orchestrator for 217+ AI agents across 4 tiers with multi-phase thinking."""
 
-    def __init__(self, dry_run: bool = False, multiphase: bool = False):
+    def __init__(self, dry_run: bool = False, multiphase: bool = False,
+                 lite: bool = False, force_invest: bool = True):
         self.pool = get_pool()
         self.registry = AgentRegistry()
         self.dry_run = dry_run
+        self.lite = lite  # Lite mode: fewer agents for fast live runs
         self.multiphase = multiphase    # Enable 3-phase thinking architecture
+        self.force_invest = force_invest  # 100% must invest daily rule
+
+        # In lite mode, only keep Claude CLI + a handful of HF agents
+        if lite and not dry_run:
+            self._activate_lite_mode()
         self.predictions: Dict[str, Dict[str, Any]] = {}
         self.consensus: Dict[str, dict] = {}
         self.bets: List[dict] = []
@@ -679,6 +713,36 @@ class TradingFloorV5:
         if AGENT_STATE_FILE.exists():
             self.registry.load_state(str(AGENT_STATE_FILE))
 
+    def _activate_lite_mode(self):
+        """Lite mode: keep only ~25 best agents for fast live runs with HF."""
+        # Keep: all Claude CLI (5) + top HF agents (diverse models)
+        lite_ids = set()
+        all_agents = list(self.registry.agents.values())
+        # All Claude CLI agents
+        for a in all_agents:
+            if a.provider == "anthropic_cli":
+                lite_ids.add(a.id)
+        # Top HF T1/T2 agents (diverse models, one per model)
+        seen_models = set()
+        for a in self.registry.tier1 + self.registry.tier2:
+            if a.provider == "huggingface" and a.model not in seen_models:
+                lite_ids.add(a.id)
+                seen_models.add(a.model)
+            if len(lite_ids) >= 15:
+                break
+        # Add a few T3 specialists for key categories
+        key_cats = ["ml_fg", "sp_fg", "tot_fg", "sp_alt_p5", "sp_alt_m5"]
+        for a in self.registry.tier3:
+            if a.focus_category in key_cats:
+                lite_ids.add(a.id)
+        # Deactivate all others
+        for a in all_agents:
+            a.active = a.id in lite_ids
+        active = [a for a in all_agents if a.active]
+        print(f"  LITE MODE: {len(active)} agents active "
+              f"({sum(1 for a in active if a.provider=='anthropic_cli')} CLI, "
+              f"{sum(1 for a in active if a.provider=='huggingface')} HF)")
+
     # ───────────────────────────────────────────────────────────────────────
     # MAIN ENTRY: run for a date
     # ───────────────────────────────────────────────────────────────────────
@@ -695,6 +759,8 @@ class TradingFloorV5:
         mode_parts = ["DRY-RUN (synthetic)" if self.dry_run else "LIVE (real API calls)"]
         if self.multiphase:
             mode_parts.append("3-PHASE THINKING ON")
+        if self.force_invest:
+            mode_parts.append("FORCE INVEST 100%")
         print(f"Mode: {' | '.join(mode_parts)}")
         print("=" * 80)
 
@@ -785,6 +851,7 @@ class TradingFloorV5:
         print(f"Active providers: {', '.join(active_providers)}")
 
         # Process each game through the 4-tier pipeline
+        all_game_contexts = []  # Collect for force-invest allocation
         for game_idx, game in enumerate(date_games):
             home = game["home"]
             away = game["away"]
@@ -801,6 +868,7 @@ class TradingFloorV5:
             odds_key = (game["date"], home, away)
             odds_entry = all_odds.get(odds_key) or game.get("_live_odds_entry")
             ctx = build_game_context(game, odds_entry, standings, all_games)
+            all_game_contexts.append(ctx)
 
             # Inject REAL ML model predictions from 6 evolution islands
             if game.get("model_prob_home"):
@@ -864,6 +932,19 @@ class TradingFloorV5:
             print(f"\n  Summary: {len(game_predictions)} predictions -> "
                   f"{len(game_bets)} bets generated{extra}")
 
+        # === FORCE INVEST: ensure 100% bankroll allocation ===
+        if self.force_invest:
+            self._force_invest_allocation(all_game_contexts, all_odds, target_date)
+            # Settle any newly forced bets that have results
+            for bet in self.bets:
+                if bet.get("_forced") and not bet.get("settled"):
+                    gk = bet.get("game_key", "")
+                    for game in date_games:
+                        if f"{game['date']}_{game['away']}@{game['home']}" == gk:
+                            if game.get("home_won") is not None:
+                                self._settle_bets([bet], game)
+                            break
+
         # Save everything
         self.run_stats["end_time"] = datetime.now(timezone.utc).isoformat()
         self._save_results(target_date)
@@ -876,16 +957,14 @@ class TradingFloorV5:
         """All tiers predict in parallel using thread pool."""
         predictions = {}
 
-        # --- Tier 1: Premium (careful with paid APIs) ---
-        for agent in self.registry.tier1:
-            if not agent.active:
-                continue
-            pred = self._call_agent(agent, ctx, game_key)
-            if pred:
-                predictions[agent.id] = pred
-                self.run_stats["tier_calls"][1] += 1
+        # --- Tier 1: Premium (now parallel — all HF/CLI based) ---
+        t1_active = [a for a in self.registry.tier1 if a.active]
+        t1_preds = self._parallel_call(t1_active, ctx, game_key)
+        predictions.update(t1_preds)
+        for _ in t1_preds:
+            self.run_stats["tier_calls"][1] += 1
 
-        t1_count = len(predictions)
+        t1_count = len(t1_preds)
         print(f"    T1 Premium: {t1_count} predictions")
 
         # --- Tier 2: Free Power (parallel) ---
@@ -934,7 +1013,12 @@ class TradingFloorV5:
                 future = executor.submit(self._call_agent, agent, ctx, game_key)
                 futures[future] = agent
 
-            for future in as_completed(futures, timeout=180):
+            try:
+                completed = list(as_completed(futures, timeout=180))
+            except TimeoutError:
+                completed = [f for f in futures if f.done()]
+                print(f"    Stage 1 timeout: {len(completed)}/{len(futures)} agents responded")
+            for future in completed:
                 agent = futures[future]
                 try:
                     pred = future.result()
@@ -1189,12 +1273,12 @@ class TradingFloorV5:
 
             if not result:
                 result = self.pool.call_llm(
-                    provider="google", prompt=prompt, model="gemini-2.5-flash-thinking",
-                    system=ThinkingPhase.PHASE_3_SYSTEM, max_tokens=512, temperature=0.2,
+                    provider="google", prompt=prompt, model="gemini-2.5-flash",
+                    system=ThinkingPhase.PHASE_3_SYSTEM, max_tokens=400, temperature=0.2,
                 )
             if not result:
                 result = self.pool.call_llm(
-                    provider="google", prompt=prompt, model="gemini-2.5-flash",
+                    provider="groq", prompt=prompt, model="llama-3.3-70b-versatile",
                     system=ThinkingPhase.PHASE_3_SYSTEM, max_tokens=400, temperature=0.2,
                 )
 
@@ -1204,7 +1288,12 @@ class TradingFloorV5:
         max_workers = min(10, len(screened_cats))
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = {executor.submit(_decide_one, cat): cat for cat in screened_cats}
-            for future in as_completed(futures, timeout=120):
+            try:
+                completed_futures = list(as_completed(futures, timeout=90))
+            except TimeoutError:
+                completed_futures = [f for f in futures if f.done()]
+                print(f"    Phase 3 timeout: {len(completed_futures)}/{len(futures)} completed")
+            for future in completed_futures:
                 try:
                     outcome = future.result()
                     if not outcome:
@@ -1228,7 +1317,7 @@ class TradingFloorV5:
                             bet_odds = odds_entry.get("ml_away_dec", 1.91)
 
                     paperclip = self.registry.get("t4_paperclip")
-                    bankroll = paperclip.bankroll if paperclip else 10_000.0
+                    bankroll = paperclip.bankroll if paperclip else 100.0
                     stake = bankroll * kelly_criterion(0.5 + edge, bet_odds, kelly_frac)
                     stake = min(stake, bankroll * 0.10)
 
@@ -1474,7 +1563,7 @@ class TradingFloorV5:
 
             # Paperclip allocation
             paperclip = self.registry.get("t4_paperclip")
-            base_bankroll = paperclip.bankroll if paperclip else 10_000
+            base_bankroll = paperclip.bankroll if paperclip else 100.0
             stake = _sz_value_hunter_half_kelly(edge, bet_odds, base_bankroll)
             stake = min(stake, base_bankroll * 0.10)
 
@@ -1497,7 +1586,7 @@ class TradingFloorV5:
         if (sp_conf > 0.35 and sp_agree > 0.40 and odds_entry and
                 odds_entry.get("spread_home") is not None):
             direction = sp_c.get("direction", "home")
-            stake = _sz_confidence_scaled(0.03, 1.909, 10_000)
+            stake = _sz_confidence_scaled(0.03, 1.909, 100.0)
             bets.append({
                 "game_key": game_key,
                 "category": "spread_fg",
@@ -1515,7 +1604,7 @@ class TradingFloorV5:
         tt_agree = tt_c.get("agreement_pct", 0)
         if (tt_conf > 0.35 and tt_agree > 0.40):
             direction = tt_c.get("direction", "over")
-            stake = _sz_confidence_scaled(0.02, 1.909, 10_000)
+            stake = _sz_confidence_scaled(0.02, 1.909, 100.0)
             bets.append({
                 "game_key": game_key,
                 "category": "total_fg",
@@ -1544,6 +1633,196 @@ class TradingFloorV5:
 
         self.run_stats["total_bets"] += len(bets)
         return bets
+
+    # ===================================================================
+    # FORCE INVEST — 100% bankroll allocation rule
+    # ===================================================================
+    def _force_invest_allocation(self, all_game_contexts: List[dict],
+                                  all_odds: Dict, target_date: str):
+        """Ensure 100% of bankroll is invested every day.
+
+        After normal bet generation, if total staked < bankroll, distribute
+        the remaining bankroll across games proportionally by consensus
+        confidence. Agents have carte blanche on strategy, but MUST invest
+        their full bankroll.
+
+        Allocation strategy for unallocated remainder:
+          1. Rank all games by consensus ML confidence (descending)
+          2. Spread remaining bankroll across games weighted by confidence
+          3. For each game, pick the consensus direction (ML > spread > total)
+          4. Minimum bet per game: remainder / (num_games * 3) to avoid dust
+        """
+        paperclip = self.registry.get("t4_paperclip")
+        bankroll = paperclip.bankroll if paperclip else 100.0
+
+        if bankroll <= 0:
+            return
+
+        total_staked = sum(b.get("stake", 0) for b in self.bets
+                          if b.get("game_key", "").startswith(target_date))
+        if total_staked >= bankroll * 0.99:
+            # Already fully invested (within 1% tolerance)
+            return
+
+        remaining = bankroll - total_staked
+        if remaining < 1.0:
+            return
+
+        # Collect game contexts with their consensus data
+        game_opportunities = []
+        for ctx in all_game_contexts:
+            game_key = f"{ctx['date']}_{ctx['away']}@{ctx['home']}"
+            synth = self.consensus.get(game_key, {})
+            if not synth:
+                continue
+
+            ml_c = synth.get("consensus_ml", {})
+            sp_c = synth.get("consensus_spread", {})
+            tt_c = synth.get("consensus_total", {})
+
+            # Already-bet categories for this game
+            existing_cats = {b["category"] for b in self.bets
+                            if b.get("game_key") == game_key}
+
+            # Collect un-bet categories with their confidence scores
+            cats = []
+            if "ml_fg" not in existing_cats:
+                cats.append({
+                    "category": "ml_fg",
+                    "direction": ml_c.get("direction", "home"),
+                    "confidence": ml_c.get("confidence", 0.3),
+                    "agreement": ml_c.get("agreement_pct", 0.3),
+                    "odds_key": "ml_home_dec" if ml_c.get("direction", "home") == "home" else "ml_away_dec",
+                })
+            if "spread_fg" not in existing_cats:
+                cats.append({
+                    "category": "spread_fg",
+                    "direction": sp_c.get("direction", "home"),
+                    "confidence": sp_c.get("confidence", 0.3),
+                    "agreement": sp_c.get("agreement_pct", 0.3),
+                    "odds_key": None,
+                })
+            if "total_fg" not in existing_cats:
+                cats.append({
+                    "category": "total_fg",
+                    "direction": tt_c.get("direction", "over"),
+                    "confidence": tt_c.get("confidence", 0.3),
+                    "agreement": tt_c.get("agreement_pct", 0.3),
+                    "odds_key": None,
+                })
+
+            if cats:
+                game_opportunities.append({
+                    "game_key": game_key,
+                    "ctx": ctx,
+                    "categories": cats,
+                    "best_confidence": max(c["confidence"] for c in cats),
+                })
+
+        if not game_opportunities:
+            # No games to invest in — force-spread across existing bets
+            # by scaling up their stakes proportionally
+            today_bets = [b for b in self.bets
+                          if b.get("game_key", "").startswith(target_date)
+                          and b.get("stake", 0) > 0]
+            if today_bets:
+                scale = bankroll / total_staked if total_staked > 0 else 1.0
+                for b in today_bets:
+                    b["stake"] = round(b["stake"] * scale, 2)
+                    b["_force_scaled"] = True
+                print(f"  [FORCE INVEST] Scaled {len(today_bets)} existing bets "
+                      f"x{scale:.2f} to fill ${remaining:.0f} remaining")
+            return
+
+        # Weight distribution: proportional to best_confidence per game
+        total_weight = sum(g["best_confidence"] for g in game_opportunities)
+        if total_weight <= 0:
+            total_weight = len(game_opportunities)  # equal weight fallback
+
+        min_bet = max(1.0, remaining / (len(game_opportunities) * 3))
+        forced_bets = []
+        allocated = 0.0
+
+        for game_opp in sorted(game_opportunities,
+                                key=lambda g: g["best_confidence"], reverse=True):
+            if allocated >= remaining:
+                break
+
+            game_key = game_opp["game_key"]
+            ctx = game_opp["ctx"]
+            game_share = remaining * (game_opp["best_confidence"] / total_weight)
+            game_share = max(game_share, min_bet)
+            game_share = min(game_share, remaining - allocated)
+
+            if game_share < 0.50:
+                continue
+
+            # Distribute this game's share across its un-bet categories
+            cats = game_opp["categories"]
+            cat_total_conf = sum(c["confidence"] for c in cats) or 1.0
+
+            for cat in sorted(cats, key=lambda c: c["confidence"], reverse=True):
+                cat_share = game_share * (cat["confidence"] / cat_total_conf)
+                cat_share = max(cat_share, min_bet * 0.5)
+                cat_share = min(cat_share, remaining - allocated)
+
+                if cat_share < 0.50:
+                    continue
+
+                # Determine odds
+                odds_entry_key = (ctx["date"], ctx["home"], ctx["away"])
+                odds_entry = all_odds.get(odds_entry_key, {})
+                if cat["odds_key"] and odds_entry:
+                    bet_odds = odds_entry.get(cat["odds_key"], 1.909)
+                else:
+                    bet_odds = 1.909
+
+                bet = {
+                    "game_key": game_key,
+                    "category": cat["category"],
+                    "direction": cat["direction"],
+                    "confidence": round(cat["confidence"], 4),
+                    "agreement": round(cat["agreement"], 4),
+                    "edge_pct": 0.0,
+                    "odds": round(bet_odds, 3),
+                    "stake": round(cat_share, 2),
+                    "source": "force_invest",
+                    "_forced": True,
+                }
+                if cat["category"] == "spread_fg" and odds_entry:
+                    bet["spread_line"] = odds_entry.get("spread_home")
+                if cat["category"] == "total_fg" and odds_entry:
+                    bet["total_line"] = odds_entry.get("total")
+
+                forced_bets.append(bet)
+                allocated += cat_share
+
+        # If we still haven't allocated everything, scale up forced bets
+        if forced_bets and allocated < remaining * 0.95:
+            leftover = remaining - allocated
+            scale_up = (allocated + leftover) / allocated if allocated > 0 else 1.0
+            for b in forced_bets:
+                b["stake"] = round(b["stake"] * scale_up, 2)
+            allocated = remaining
+
+        # Also scale up existing bets if forced bets didn't cover everything
+        if not forced_bets and total_staked > 0:
+            scale = bankroll / total_staked
+            for b in self.bets:
+                if b.get("game_key", "").startswith(target_date):
+                    b["stake"] = round(b["stake"] * scale, 2)
+                    b["_force_scaled"] = True
+
+        self.bets.extend(forced_bets)
+        self.run_stats["total_bets"] += len(forced_bets)
+
+        final_staked = sum(b.get("stake", 0) for b in self.bets
+                           if b.get("game_key", "").startswith(target_date))
+        print(f"\n  [FORCE INVEST] {len(forced_bets)} forced bets added, "
+              f"${allocated:.0f} allocated")
+        print(f"  [FORCE INVEST] Total invested: ${final_staked:,.0f} / "
+              f"${bankroll:,.0f} bankroll "
+              f"({final_staked/bankroll*100:.1f}%)")
 
     # ===================================================================
     # BET SETTLEMENT (retrolearning)
@@ -1845,13 +2124,14 @@ def _signal_handler(sig, frame):
 
 
 def run_continuous(dry_run: bool = False, max_iterations: int = 0,
-                   delay: int = 300, games: int = 20):
+                   delay: int = 300, games: int = 20, lite: bool = False,
+                   force_invest: bool = True):
     """Run trading floor continuously."""
     global _STOP_FLAG
     _signal.signal(_signal.SIGINT, _signal_handler)
     _signal.signal(_signal.SIGTERM, _signal_handler)
 
-    floor = TradingFloorV5(dry_run=dry_run)
+    floor = TradingFloorV5(dry_run=dry_run, lite=lite, force_invest=force_invest)
     count = 0
 
     while not _STOP_FLAG:
@@ -1970,6 +2250,12 @@ Examples:
                         help="Disable multi-phase thinking")
     parser.add_argument("--loop", action="store_true",
                         help="Continuous loop every 5-10 min (like a real trading desk)")
+    parser.add_argument("--lite", action="store_true",
+                        help="Lite mode: ~20 agents for fast live runs (vs 217 full)")
+    parser.add_argument("--force-invest", action="store_true", default=True,
+                        help="100%% must invest daily — full bankroll allocation (default: ON)")
+    parser.add_argument("--no-force-invest", dest="force_invest", action="store_false",
+                        help="Disable forced full bankroll investment")
 
     # Also support legacy positional command
     parser.add_argument("command", nargs="?", default=None,
@@ -2011,11 +2297,14 @@ Examples:
             dry_run=args.dry_run,
             delay=loop_delay,
             games=args.games,
+            force_invest=args.force_invest,
         )
 
     else:
         floor = TradingFloorV5(dry_run=args.dry_run,
-                               multiphase=args.multiphase)
+                               multiphase=args.multiphase,
+                               lite=args.lite,
+                               force_invest=args.force_invest)
         floor.run(target_date, games_per_iter=args.games)
 
 

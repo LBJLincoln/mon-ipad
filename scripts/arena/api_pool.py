@@ -84,26 +84,11 @@ PROVIDERS = {
         rpm=10, rpd=500, is_free=False, timeout=60.0, max_tokens=1024
     ),
 
-    # --- FREE: GROQ ---
-    "groq": ProviderConfig(
-        name="groq",
-        base_url="https://api.groq.com/openai/v1",
-        models=["llama-3.1-8b-instant", "llama-3.3-70b-versatile",
-                "gemma2-9b-it", "llama-4-scout-17b-16e-instruct"],
-        rpm=30, rpd=14400, is_free=True, timeout=15.0, max_tokens=512
-    ),
+    # --- DEAD: GROQ (restricted/banned 2026-04-05) ---
+    # "groq": disabled — Organization restricted
 
-    # --- FREE: OPENROUTER ---
-    "openrouter": ProviderConfig(
-        name="openrouter",
-        base_url="https://openrouter.ai/api/v1",
-        models=["google/gemma-3-27b-it:free",
-                "meta-llama/llama-4-maverick:free",
-                "mistralai/mistral-small-3.1-24b-instruct:free",
-                "deepseek/deepseek-r1-0528:free",
-                "qwen/qwen3-235b-a22b:free"],
-        rpm=20, rpd=200, is_free=True, timeout=45.0, max_tokens=512
-    ),
+    # --- DEAD: OPENROUTER (free models 404/429 2026-04-05) ---
+    # "openrouter": disabled — free models removed or rate limited
 
     # --- FREE: COHERE ---
     "cohere": ProviderConfig(
@@ -121,14 +106,34 @@ PROVIDERS = {
         rpm=30, rpd=1000, tpm=1_000_000, is_free=True, timeout=15.0, max_tokens=512
     ),
 
-    # --- FREE: HUGGINGFACE ---
+    # --- PRIMARY FREE: HUGGINGFACE (4 tokens, dozens of models) ---
     "huggingface": ProviderConfig(
         name="huggingface",
         base_url="https://router.huggingface.co/v1",
-        models=["Qwen/Qwen2.5-72B-Instruct", "mistralai/Mistral-Small-24B-Instruct-2501"],
-        rpm=10, rpd=500, is_free=True, timeout=60.0, max_tokens=512
+        models=[
+            "Qwen/Qwen2.5-72B-Instruct",     # Best: clean JSON, fast
+            "google/gemma-3-27b-it",           # Great JSON compliance
+            "meta-llama/Llama-3.3-70B-Instruct",
+            "mistralai/Mistral-Small-24B-Instruct-2501",
+            "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",
+            "Qwen/Qwen3-8B",                  # Note: adds <think> blocks
+            "Qwen/Qwen2.5-Coder-32B-Instruct",
+            "microsoft/Phi-3.5-mini-instruct",
+            "deepseek-ai/DeepSeek-R1-0528",   # DeepSeek R1 reasoning model
+        ],
+        rpm=15, rpd=2000, is_free=True, timeout=60.0, max_tokens=512
     ),
 }
+
+# --- HF Router aliases for named T1_premium agents ---
+# These share the same HF Router infra but get distinct provider identities
+for _alias in ("google-gemma", "qwen", "deepseek", "mistral", "meta-llama"):
+    PROVIDERS[_alias] = ProviderConfig(
+        name=_alias,
+        base_url="https://router.huggingface.co/v1",
+        models=PROVIDERS["huggingface"].models,
+        rpm=15, rpd=2000, is_free=True, timeout=60.0, max_tokens=512
+    )
 
 
 # ============================================================================
@@ -277,6 +282,11 @@ class APIPool:
                 hf_keys.append(val)
         for i, key in enumerate(hf_keys):
             self.add_key("huggingface", key, i)
+
+        # --- HF Router aliases (named T1_premium agents share HF keys) ---
+        for alias in ("google-gemma", "qwen", "deepseek", "mistral", "meta-llama"):
+            for i, key in enumerate(hf_keys):
+                self.add_key(alias, key, i)
 
         # --- PAID: OpenAI ---
         val = os.environ.get("OPENAI_API_KEY", "")
@@ -533,7 +543,14 @@ class APIPool:
                 self._last_daily_reset = today
 
     def _parse_json(self, text: str) -> Optional[dict]:
-        """Extract JSON from LLM response text."""
+        """Extract JSON from LLM response text, handling <think> blocks and markdown."""
+        if not text:
+            return None
+
+        # Strip <think>...</think> blocks (Qwen3, DeepSeek-R1 style)
+        import re
+        text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
+
         # Try direct parse
         try:
             return json.loads(text)
@@ -548,6 +565,19 @@ class APIPool:
                 return json.loads(text[start:end].strip())
             except json.JSONDecodeError:
                 pass
+
+        # Try extracting from ``` ... ``` blocks (without json tag)
+        if "```" in text:
+            parts = text.split("```")
+            for part in parts[1::2]:  # odd indices are inside backticks
+                part = part.strip()
+                if part.startswith("json"):
+                    part = part[4:].strip()
+                if part.startswith("{"):
+                    try:
+                        return json.loads(part)
+                    except json.JSONDecodeError:
+                        pass
 
         # Try finding first { to last }
         first_brace = text.find("{")
