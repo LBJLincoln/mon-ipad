@@ -1,9 +1,9 @@
 {
   "department": "business",
   "dept_id": "D10",
-  "iteration": 3,
-  "timestamp": "2026-04-02T10:36:31Z",
-  "status": "active",
+  "iteration": 4,
+  "timestamp": "2026-04-06T18:00:01Z",
+  "status": "blocked_by_product_quality",
   "metrics": {
     "active_users": 2,
     "paid_users": 0,
@@ -11,7 +11,16 @@
     "arpu": 0,
     "conversion_rate": 0,
     "churn_rate": 0,
-    "dashboard_status": "live"
+    "dashboard_status": "live",
+    "bankroll": 91.29,
+    "bankroll_change_pct": -8.71,
+    "record": "17W-27L",
+    "win_rate_pct": 37.8,
+    "latest_roi_pct": -8.71,
+    "best_brier_score": 0.2157,
+    "brier_target": 0.20,
+    "latest_ev_cents": 16.43,
+    "latest_bet_exposure_pct": 18.6
   },
   "pricing": {
     "starter": 19,
@@ -26,10 +35,18 @@
     "paid": 0,
     "churned": 0
   },
+  "critical_blocker": "Bankroll down 8.71% (17W-27L). Product is losing money. Users will not convert to paid tier for losing picks. This is the hard blocker for revenue growth.",
+  "dependency_chain": [
+    "D4 (Betting) must achieve positive ROI",
+    "D3 (Evolution) must improve Brier to 0.20+",
+    "Then D10 can convert users → paid → revenue"
+  ],
+  "highest_impact_action": "Escalate to D3/D4: Fix betting strategy. Target: 50%+ win rate and +5% ROI before attempting to monetize. Current loss means zero product-market fit.",
   "next_actions": [
-    "Set up Stripe payment links",
-    "Create onboarding flow",
-    "Enable free trial activation",
-    "Connect usage metering to API"
+    "URGENT: Review D4 betting strategy with D3 Evolution",
+    "Analyze why 17W-27L despite 0.2157 Brier (top quartile)",
+    "Hypothesis: Kelly fraction (0.35) too aggressive for draw downs",
+    "Test: Reduce Kelly to 0.20, expect smoother equity curve",
+    "Once ROI > 0%, execute Stripe payment links + trial onboarding"
   ]
 }
