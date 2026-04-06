@@ -1,7 +1,7 @@
 #!/bin/bash
 # Keepalive for HF Spaces — prevents auto-sleep on free tier
 # Called by cron: */30 * * * *
-# 17 active spaces: 6 NBA + 2 Political + 9 Department Councils (4 HF accounts)
+# 25 active spaces: 10 NBA + 4 Political + 9 Department Councils + 1 Pixel World (4 HF accounts)
 
 TS=$(date -u +"%Y-%m-%d %H:%M UTC")
 echo "=== Keepalive $TS ==="
@@ -52,10 +52,17 @@ ping_or_restart "S13 (catboost)"    https://nomos42-nba-evo-4.hf.space/    "Nomo
 ping_or_restart "S14 (lightgbm)"    https://nomos42-nba-evo-5.hf.space/    "Nomos42/nba-evo-5"
 ping_or_restart "S15 (wide)"        https://nomos42-nba-evo-6.hf.space/    "Nomos42/nba-evo-6"
 
-# Political Alpha Evolution (2 islands) — hosted under Nomos42 account
-# NOTE: P3/P4 removed 2026-04-03 — spaces never existed on HF, caused phantom 404s in monitoring
+# NBA Evolution Islands S16-S19 (new — LBJLincoln26 + TESTforge42)
+ping_or_restart "S16 (gradient)" https://lbjlincoln26-nba-evo-s16.hf.space/ "LBJLincoln26/nba-evo-s16"
+ping_or_restart "S17 (ensemble)" https://lbjlincoln26-nba-evo-s17.hf.space/ "LBJLincoln26/nba-evo-s17"
+ping_or_restart "S18 (cat_brier)" https://testforge42-nba-evo-s18.hf.space/ "TESTforge42/nba-evo-s18"
+ping_or_restart "S19 (ultra_wide)" https://testforge42-nba-evo-s19.hf.space/ "TESTforge42/nba-evo-s19"
+
+# Political Alpha Evolution (4 islands) — Nomos42 + LBJLincoln accounts
 ping_or_restart "P1 (exploit)"  https://nomos42-political-alpha.hf.space/   "Nomos42/political-alpha"
 ping_or_restart "P2 (explore)"  https://nomos42-political-alpha-2.hf.space/ "Nomos42/political-alpha-2"
+ping_or_restart "P3 (political3)" https://lbjlincoln-political-alpha-3.hf.space/ "LBJLincoln/political-alpha-3"
+ping_or_restart "P4 (political4)" https://lbjlincoln-political-alpha-4.hf.space/ "LBJLincoln/political-alpha-4"
 
 # Department Council Spaces (9) — across 4 HF accounts
 # LBJLincoln: D1, D2 | LBJLincoln26: D3, D4 | Nomos42: D5, D6 | TESTforge42: D7, D8, D9

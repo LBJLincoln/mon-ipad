@@ -33,16 +33,22 @@ TOTAL=0; HEALTHY=0; RESTARTED=0; FAILED=0
 # ══════════════════════════════════════════════════════════════
 
 declare -A SPACES=(
-  # NBA islands
+  # NBA islands (10 total — S10-S19)
   ["S10_nba"]="https://nomos42-nba-quant.hf.space"
   ["S11_nba"]="https://nomos42-nba-quant-2.hf.space"
   ["S12_nba"]="https://nomos42-nba-evo-3.hf.space"
   ["S13_nba"]="https://nomos42-nba-evo-4.hf.space"
   ["S14_nba"]="https://nomos42-nba-evo-5.hf.space"
   ["S15_nba"]="https://nomos42-nba-evo-6.hf.space"
-  # Political islands (P3/P4 removed 2026-04-03 — never existed on HF)
+  ["S16_nba"]="https://lbjlincoln26-nba-evo-s16.hf.space"
+  ["S17_nba"]="https://lbjlincoln26-nba-evo-s17.hf.space"
+  ["S18_nba"]="https://testforge42-nba-evo-s18.hf.space"
+  ["S19_nba"]="https://testforge42-nba-evo-s19.hf.space"
+  # Political islands (4 total — P1-P4)
   ["P1_pol"]="https://nomos42-political-alpha.hf.space"
   ["P2_pol"]="https://nomos42-political-alpha-2.hf.space"
+  ["P3_pol"]="https://lbjlincoln-political-alpha-3.hf.space"
+  ["P4_pol"]="https://lbjlincoln-political-alpha-4.hf.space"
 )
 
 HF_STATUS_JSON="{"

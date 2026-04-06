@@ -1,0 +1,1762 @@
+{
+  "project": "nba",
+  "timestamp": "2026-04-06T10:58:19.279541",
+  "engine_version": "1.0",
+  "data_summary": {
+    "prediction_dates": 1,
+    "trading_floor_dates": 4,
+    "backtest_files": 2,
+    "season_memory_bets": 10000,
+    "dates_with_results": 4,
+    "total_resolved_games": 30
+  },
+  "agent_evaluation": {
+    "t1_llama70b": {
+      "agent_id": "t1_llama70b",
+      "n_predictions": 11,
+      "brier_score": 0.16302,
+      "brier_ci_95": [
+        0.09495,
+        0.25291
+      ],
+      "log_loss": 0.5113,
+      "auc_roc": 0.8833,
+      "ece": 0.14,
+      "accuracy": 0.8182,
+      "calibration_buckets": [
+        {
+          "bucket": 0,
+          "range": "0.0-0.1",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 1,
+          "range": "0.1-0.2",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 2,
+          "range": "0.2-0.3",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 3,
+          "range": "0.3-0.4",
+          "avg_predicted": 0.3229,
+          "avg_actual": 0.2857,
+          "count": 7,
+          "calibration_error": 0.0371
+        },
+        {
+          "bucket": 4,
+          "range": "0.4-0.5",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 5,
+          "range": "0.5-0.6",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 6,
+          "range": "0.6-0.7",
+          "avg_predicted": 0.62,
+          "avg_actual": 1.0,
+          "count": 1,
+          "calibration_error": 0.38
+        },
+        {
+          "bucket": 7,
+          "range": "0.7-0.8",
+          "avg_predicted": 0.7,
+          "avg_actual": 1.0,
+          "count": 3,
+          "calibration_error": 0.3
+        },
+        {
+          "bucket": 8,
+          "range": "0.8-0.9",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 9,
+          "range": "0.9-1.0",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        }
+      ],
+      "progression": [
+        {
+          "date": "2026-04-05",
+          "avg_brier": 0.16302,
+          "n_games": 11
+        }
+      ]
+    },
+    "t1_gemma27b": {
+      "agent_id": "t1_gemma27b",
+      "n_predictions": 11,
+      "brier_score": 0.24432,
+      "brier_ci_95": [
+        0.14432,
+        0.35886
+      ],
+      "log_loss": 0.68088,
+      "auc_roc": 0.6667,
+      "ece": 0.1318,
+      "accuracy": 0.5455,
+      "calibration_buckets": [
+        {
+          "bucket": 0,
+          "range": "0.0-0.1",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 1,
+          "range": "0.1-0.2",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 2,
+          "range": "0.2-0.3",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 3,
+          "range": "0.3-0.4",
+          "avg_predicted": 0.35,
+          "avg_actual": 0.5,
+          "count": 2,
+          "calibration_error": 0.15
+        },
+        {
+          "bucket": 4,
+          "range": "0.4-0.5",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 5,
+          "range": "0.5-0.6",
+          "avg_predicted": 0.55,
+          "avg_actual": 0.0,
+          "count": 1,
+          "calibration_error": 0.55
+        },
+        {
+          "bucket": 6,
+          "range": "0.6-0.7",
+          "avg_predicted": 0.65,
+          "avg_actual": 0.5,
+          "count": 4,
+          "calibration_error": 0.15
+        },
+        {
+          "bucket": 7,
+          "range": "0.7-0.8",
+          "avg_predicted": 0.75,
+          "avg_actual": 0.75,
+          "count": 4,
+          "calibration_error": 0.0
+        },
+        {
+          "bucket": 8,
+          "range": "0.8-0.9",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 9,
+          "range": "0.9-1.0",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        }
+      ],
+      "progression": [
+        {
+          "date": "2026-04-05",
+          "avg_brier": 0.24432,
+          "n_games": 11
+        }
+      ]
+    },
+    "t1_qwen72b": {
+      "agent_id": "t1_qwen72b",
+      "n_predictions": 8,
+      "brier_score": 0.2525,
+      "brier_ci_95": [
+        0.13969,
+        0.36531
+      ],
+      "log_loss": 0.69582,
+      "auc_roc": 0.7333,
+      "ece": 0.3125,
+      "accuracy": 0.5,
+      "calibration_buckets": [
+        {
+          "bucket": 0,
+          "range": "0.0-0.1",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 1,
+          "range": "0.1-0.2",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 2,
+          "range": "0.2-0.3",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 3,
+          "range": "0.3-0.4",
+          "avg_predicted": 0.3375,
+          "avg_actual": 0.5,
+          "count": 4,
+          "calibration_error": 0.1625
+        },
+        {
+          "bucket": 4,
+          "range": "0.4-0.5",
+          "avg_predicted": 0.4,
+          "avg_actual": 1.0,
+          "count": 1,
+          "calibration_error": 0.6
+        },
+        {
+          "bucket": 5,
+          "range": "0.5-0.6",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 6,
+          "range": "0.6-0.7",
+          "avg_predicted": 0.65,
+          "avg_actual": 0.0,
+          "count": 1,
+          "calibration_error": 0.65
+        },
+        {
+          "bucket": 7,
+          "range": "0.7-0.8",
+          "avg_predicted": 0.7,
+          "avg_actual": 1.0,
+          "count": 2,
+          "calibration_error": 0.3
+        },
+        {
+          "bucket": 8,
+          "range": "0.8-0.9",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        },
+        {
+          "bucket": 9,
+          "range": "0.9-1.0",
+          "avg_predicted": null,
+          "avg_actual": null,
+          "count": 0,
+          "calibration_error": null
+        }
+      ],
+      "progression": [
+        {
+          "date": "2026-04-05",
+          "avg_brier": 0.2525,
+          "n_games": 8
+        }
+      ]
+    }
+  },
+  "significance_tests": [
+    {
+      "agent_1": "t1_llama70b",
+      "agent_2": "t1_gemma27b",
+      "brier_1": 0.16302,
+      "brier_2": 0.24432,
+      "mean_diff": -0.0813,
+      "ci_95": [
+        -0.19948,
+        0.03688
+      ],
+      "p_value": 0.17,
+      "significant_at_005": false,
+      "common_games": 11,
+      "better_agent": "t1_llama70b"
+    },
+    {
+      "agent_1": "t1_llama70b",
+      "agent_2": "t1_qwen72b",
+      "brier_1": 0.16302,
+      "brier_2": 0.2525,
+      "mean_diff": -0.0621,
+      "ci_95": [
+        -0.15233,
+        0.01922
+      ],
+      "p_value": 0.16,
+      "significant_at_005": false,
+      "common_games": 8,
+      "better_agent": "t1_llama70b"
+    },
+    {
+      "agent_1": "t1_gemma27b",
+      "agent_2": "t1_qwen72b",
+      "brier_1": 0.24432,
+      "brier_2": 0.2525,
+      "mean_diff": 0.0075,
+      "ci_95": [
+        -0.1275,
+        0.15281
+      ],
+      "p_value": 0.881,
+      "significant_at_005": false,
+      "common_games": 8,
+      "better_agent": "t1_qwen72b"
+    }
+  ],
+  "consensus_evaluation": {
+    "n_predictions": 14,
+    "brier_score": 0.18929,
+    "brier_ci_95": [
+      0.09739,
+      0.28602
+    ],
+    "log_loss": 0.5454,
+    "auc_roc": 0.7556,
+    "ece": 0.2152,
+    "accuracy": 0.5714,
+    "calibration_buckets": [
+      {
+        "bucket": 0,
+        "range": "0.0-0.1",
+        "avg_predicted": null,
+        "avg_actual": null,
+        "count": 0,
+        "calibration_error": null
+      },
+      {
+        "bucket": 1,
+        "range": "0.1-0.2",
+        "avg_predicted": 0.155,
+        "avg_actual": 0.0,
+        "count": 1,
+        "calibration_error": 0.155
+      },
+      {
+        "bucket": 2,
+        "range": "0.2-0.3",
+        "avg_predicted": null,
+        "avg_actual": null,
+        "count": 0,
+        "calibration_error": null
+      },
+      {
+        "bucket": 3,
+        "range": "0.3-0.4",
+        "avg_predicted": 0.3698,
+        "avg_actual": 0.5,
+        "count": 2,
+        "calibration_error": 0.1302
+      },
+      {
+        "bucket": 4,
+        "range": "0.4-0.5",
+        "avg_predicted": 0.4667,
+        "avg_actual": 1.0,
+        "count": 1,
+        "calibration_error": 0.5333
+      },
+      {
+        "bucket": 5,
+        "range": "0.5-0.6",
+        "avg_predicted": 0.5984,
+        "avg_actual": 1.0,
+        "count": 1,
+        "calibration_error": 0.4016
+      },
+      {
+        "bucket": 6,
+        "range": "0.6-0.7",
+        "avg_predicted": 0.67,
+        "avg_actual": 0.3333,
+        "count": 3,
+        "calibration_error": 0.3367
+      },
+      {
+        "bucket": 7,
+        "range": "0.7-0.8",
+        "avg_predicted": 0.7615,
+        "avg_actual": 0.6667,
+        "count": 3,
+        "calibration_error": 0.0949
+      },
+      {
+        "bucket": 8,
+        "range": "0.8-0.9",
+        "avg_predicted": 0.859,
+        "avg_actual": 1.0,
+        "count": 2,
+        "calibration_error": 0.141
+      },
+      {
+        "bucket": 9,
+        "range": "0.9-1.0",
+        "avg_predicted": 0.9139,
+        "avg_actual": 1.0,
+        "count": 1,
+        "calibration_error": 0.0861
+      }
+    ],
+    "progression": [
+      {
+        "date": "2026-03-15",
+        "avg_brier": 0.0305,
+        "n_games": 2
+      },
+      {
+        "date": "2026-04-04",
+        "avg_brier": 0.00741,
+        "n_games": 1
+      },
+      {
+        "date": "2026-04-05",
+        "avg_brier": 0.23469,
+        "n_games": 11
+      }
+    ],
+    "agreement_analysis": {
+      "high_agreement_games": 7,
+      "high_agreement_accuracy": 0.5714,
+      "low_agreement_games": 1,
+      "low_agreement_accuracy": 1.0
+    }
+  },
+  "strategy_analysis": {
+    "model_brier": 0.2152,
+    "games_total": 1081,
+    "total_strategies_tested": 42,
+    "best_by_sharpe": [
+      {
+        "id": "ev_0.2_k0.1",
+        "name": "EV>20% Kelly=10%",
+        "total_bets": 172,
+        "wins": 105,
+        "win_rate": 0.6105,
+        "total_pnl": 151.24,
+        "roi": 14.63,
+        "final_bankroll": 251.26,
+        "max_drawdown": 0.3814,
+        "sharpe": 3.586,
+        "calmar_ratio": 0.3836
+      },
+      {
+        "id": "kelly_0.1_0.02",
+        "name": "Tenth Kelly (edge>2%)",
+        "total_bets": 210,
+        "wins": 123,
+        "win_rate": 0.5857,
+        "total_pnl": 256.4,
+        "roi": 18.27,
+        "final_bankroll": 356.42,
+        "max_drawdown": 0.3519,
+        "sharpe": 3.581,
+        "calmar_ratio": 0.5192
+      },
+      {
+        "id": "value_0.15",
+        "name": "Value Hunter (edge>15%)",
+        "total_bets": 194,
+        "wins": 115,
+        "win_rate": 0.5928,
+        "total_pnl": 189.97,
+        "roi": 12.74,
+        "final_bankroll": 290.02,
+        "max_drawdown": 0.6226,
+        "sharpe": 3.58,
+        "calmar_ratio": 0.2046
+      },
+      {
+        "id": "conservative",
+        "name": "Conservative (low stakes, high threshold)",
+        "total_bets": 192,
+        "wins": 110,
+        "win_rate": 0.5729,
+        "total_pnl": 49.38,
+        "roi": 11.95,
+        "final_bankroll": 149.32,
+        "max_drawdown": 0.3196,
+        "sharpe": 3.579,
+        "calmar_ratio": 0.3739
+      },
+      {
+        "id": "value_0.1",
+        "name": "Value Hunter (edge>10%)",
+        "total_bets": 199,
+        "wins": 117,
+        "win_rate": 0.5879,
+        "total_pnl": 172.93,
+        "roi": 11.77,
+        "final_bankroll": 273.02,
+        "max_drawdown": 0.6226,
+        "sharpe": 3.573,
+        "calmar_ratio": 0.189
+      }
+    ],
+    "best_by_roi": [
+      {
+        "id": "dd_limit_10",
+        "name": "Drawdown Limit 10%",
+        "total_bets": 204,
+        "wins": 120,
+        "win_rate": 0.5882,
+        "total_pnl": 273.5,
+        "roi": 18.77,
+        "final_bankroll": 373.52,
+        "max_drawdown": 0.4537,
+        "sharpe": 3.55,
+        "calmar_ratio": 0.4137
+      },
+      {
+        "id": "ev_0.2_k0.25",
+        "name": "EV>20% Kelly=25%",
+        "total_bets": 172,
+        "wins": 105,
+        "win_rate": 0.6105,
+        "total_pnl": 236.19,
+        "roi": 18.6,
+        "final_bankroll": 336.18,
+        "max_drawdown": 0.4465,
+        "sharpe": 3.453,
+        "calmar_ratio": 0.4166
+      },
+      {
+        "id": "kelly_0.1_0.02",
+        "name": "Tenth Kelly (edge>2%)",
+        "total_bets": 210,
+        "wins": 123,
+        "win_rate": 0.5857,
+        "total_pnl": 256.4,
+        "roi": 18.27,
+        "final_bankroll": 356.42,
+        "max_drawdown": 0.3519,
+        "sharpe": 3.581,
+        "calmar_ratio": 0.5192
+      },
+      {
+        "id": "kelly_0.25_0.02",
+        "name": "Quarter Kelly (edge>2%)",
+        "total_bets": 223,
+        "wins": 125,
+        "win_rate": 0.5605,
+        "total_pnl": 339.75,
+        "roi": 18.22,
+        "final_bankroll": 439.73,
+        "max_drawdown": 0.4704,
+        "sharpe": 3.439,
+        "calmar_ratio": 0.3873
+      },
+      {
+        "id": "kelly_0.1_0.03",
+        "name": "Tenth Kelly (edge>3%)",
+        "total_bets": 200,
+        "wins": 119,
+        "win_rate": 0.595,
+        "total_pnl": 187.68,
+        "roi": 16.16,
+        "final_bankroll": 287.72,
+        "max_drawdown": 0.3814,
+        "sharpe": 3.533,
+        "calmar_ratio": 0.4237
+      }
+    ],
+    "best_by_pnl": [
+      {
+        "id": "kelly_1.0_0.02",
+        "name": "Full Kelly (edge>2%)",
+        "total_bets": 223,
+        "wins": 125,
+        "win_rate": 0.5605,
+        "total_pnl": 740.39,
+        "roi": 12.83,
+        "final_bankroll": 840.38,
+        "max_drawdown": 0.8021,
+        "sharpe": 3.124,
+        "calmar_ratio": 0.16
+      },
+      {
+        "id": "aggressive",
+        "name": "Aggressive (high stakes, low threshold)",
+        "total_bets": 246,
+        "wins": 131,
+        "win_rate": 0.5325,
+        "total_pnl": 460.9,
+        "roi": 13.18,
+        "final_bankroll": 560.9,
+        "max_drawdown": 0.6853,
+        "sharpe": 3.039,
+        "calmar_ratio": 0.1923
+      },
+      {
+        "id": "kelly_1.0_0.03",
+        "name": "Full Kelly (edge>3%)",
+        "total_bets": 213,
+        "wins": 121,
+        "win_rate": 0.5681,
+        "total_pnl": 417.42,
+        "roi": 11.07,
+        "final_bankroll": 517.42,
+        "max_drawdown": 0.8021,
+        "sharpe": 2.922,
+        "calmar_ratio": 0.138
+      },
+      {
+        "id": "kelly_0.25_0.02",
+        "name": "Quarter Kelly (edge>2%)",
+        "total_bets": 223,
+        "wins": 125,
+        "win_rate": 0.5605,
+        "total_pnl": 339.75,
+        "roi": 18.22,
+        "final_bankroll": 439.73,
+        "max_drawdown": 0.4704,
+        "sharpe": 3.439,
+        "calmar_ratio": 0.3873
+      },
+      {
+        "id": "kelly_0.5_0.02",
+        "name": "Half Kelly (edge>2%)",
+        "total_bets": 223,
+        "wins": 125,
+        "win_rate": 0.5605,
+        "total_pnl": 288.44,
+        "roi": 15.8,
+        "final_bankroll": 388.46,
+        "max_drawdown": 0.5344,
+        "sharpe": 3.431,
+        "calmar_ratio": 0.2957
+      }
+    ],
+    "best_by_calmar": [
+      {
+        "id": "kelly_0.1_0.02",
+        "name": "Tenth Kelly (edge>2%)",
+        "total_bets": 210,
+        "wins": 123,
+        "win_rate": 0.5857,
+        "total_pnl": 256.4,
+        "roi": 18.27,
+        "final_bankroll": 356.42,
+        "max_drawdown": 0.3519,
+        "sharpe": 3.581,
+        "calmar_ratio": 0.5192
+      },
+      {
+        "id": "spec_spread",
+        "name": "Specialist: Spread",
+        "total_bets": 99,
+        "wins": 62,
+        "win_rate": 0.6263,
+        "total_pnl": 136.51,
+        "roi": 15.99,
+        "final_bankroll": 236.52,
+        "max_drawdown": 0.3698,
+        "sharpe": 3.153,
+        "calmar_ratio": 0.4324
+      },
+      {
+        "id": "kelly_0.1_0.03",
+        "name": "Tenth Kelly (edge>3%)",
+        "total_bets": 200,
+        "wins": 119,
+        "win_rate": 0.595,
+        "total_pnl": 187.68,
+        "roi": 16.16,
+        "final_bankroll": 287.72,
+        "max_drawdown": 0.3814,
+        "sharpe": 3.533,
+        "calmar_ratio": 0.4237
+      },
+      {
+        "id": "ev_0.03_k0.1",
+        "name": "EV>3% Kelly=10%",
+        "total_bets": 200,
+        "wins": 119,
+        "win_rate": 0.595,
+        "total_pnl": 187.68,
+        "roi": 16.16,
+        "final_bankroll": 287.72,
+        "max_drawdown": 0.3814,
+        "sharpe": 3.533,
+        "calmar_ratio": 0.4237
+      },
+      {
+        "id": "ev_0.2_k0.25",
+        "name": "EV>20% Kelly=25%",
+        "total_bets": 172,
+        "wins": 105,
+        "win_rate": 0.6105,
+        "total_pnl": 236.19,
+        "roi": 18.6,
+        "final_bankroll": 336.18,
+        "max_drawdown": 0.4465,
+        "sharpe": 3.453,
+        "calmar_ratio": 0.4166
+      }
+    ],
+    "kelly_fraction_analysis": [
+      {
+        "fraction": 0.1,
+        "min_edge_pct": 2.0,
+        "roi": 18.27,
+        "sharpe": 3.581,
+        "max_drawdown": 0.3519,
+        "total_bets": 210,
+        "calmar": 0.5192
+      },
+      {
+        "fraction": 0.1,
+        "min_edge_pct": 5.0,
+        "roi": 12.83,
+        "sharpe": 3.565,
+        "max_drawdown": 0.4589,
+        "total_bets": 197,
+        "calmar": 0.2796
+      },
+      {
+        "fraction": 0.1,
+        "min_edge_pct": 3.0,
+        "roi": 16.16,
+        "sharpe": 3.533,
+        "max_drawdown": 0.3814,
+        "total_bets": 200,
+        "calmar": 0.4237
+      },
+      {
+        "fraction": 0.25,
+        "min_edge_pct": 5.0,
+        "roi": 12.44,
+        "sharpe": 3.505,
+        "max_drawdown": 0.5721,
+        "total_bets": 212,
+        "calmar": 0.2174
+      },
+      {
+        "fraction": 0.5,
+        "min_edge_pct": 5.0,
+        "roi": 10.31,
+        "sharpe": 3.476,
+        "max_drawdown": 0.6237,
+        "total_bets": 212,
+        "calmar": 0.1653
+      },
+      {
+        "fraction": 0.25,
+        "min_edge_pct": 2.0,
+        "roi": 18.22,
+        "sharpe": 3.439,
+        "max_drawdown": 0.4704,
+        "total_bets": 223,
+        "calmar": 0.3873
+      },
+      {
+        "fraction": 0.5,
+        "min_edge_pct": 2.0,
+        "roi": 15.8,
+        "sharpe": 3.431,
+        "max_drawdown": 0.5344,
+        "total_bets": 223,
+        "calmar": 0.2957
+      },
+      {
+        "fraction": 0.25,
+        "min_edge_pct": 3.0,
+        "roi": 15.85,
+        "sharpe": 3.279,
+        "max_drawdown": 0.4704,
+        "total_bets": 213,
+        "calmar": 0.3369
+      },
+      {
+        "fraction": 0.5,
+        "min_edge_pct": 3.0,
+        "roi": 13.45,
+        "sharpe": 3.23,
+        "max_drawdown": 0.5344,
+        "total_bets": 213,
+        "calmar": 0.2517
+      },
+      {
+        "fraction": 1.0,
+        "min_edge_pct": 5.0,
+        "roi": 7.95,
+        "sharpe": 3.212,
+        "max_drawdown": 0.8659,
+        "total_bets": 212,
+        "calmar": 0.0918
+      },
+      {
+        "fraction": 1.0,
+        "min_edge_pct": 2.0,
+        "roi": 12.83,
+        "sharpe": 3.124,
+        "max_drawdown": 0.8021,
+        "total_bets": 223,
+        "calmar": 0.16
+      },
+      {
+        "fraction": 1.0,
+        "min_edge_pct": 3.0,
+        "roi": 11.07,
+        "sharpe": 2.922,
+        "max_drawdown": 0.8021,
+        "total_bets": 213,
+        "calmar": 0.138
+      }
+    ],
+    "category_summary": {
+      "kelly_variants": 12,
+      "fixed_bet_variants": 4,
+      "value_hunter_variants": 4,
+      "specialist_variants": 5
+    },
+    "all_strategies": [
+      {
+        "id": "ev_0.2_k0.1",
+        "name": "EV>20% Kelly=10%",
+        "total_bets": 172,
+        "wins": 105,
+        "win_rate": 0.6105,
+        "total_pnl": 151.24,
+        "roi": 14.63,
+        "final_bankroll": 251.26,
+        "max_drawdown": 0.3814,
+        "sharpe": 3.586,
+        "calmar_ratio": 0.3836
+      },
+      {
+        "id": "kelly_0.1_0.02",
+        "name": "Tenth Kelly (edge>2%)",
+        "total_bets": 210,
+        "wins": 123,
+        "win_rate": 0.5857,
+        "total_pnl": 256.4,
+        "roi": 18.27,
+        "final_bankroll": 356.42,
+        "max_drawdown": 0.3519,
+        "sharpe": 3.581,
+        "calmar_ratio": 0.5192
+      },
+      {
+        "id": "value_0.15",
+        "name": "Value Hunter (edge>15%)",
+        "total_bets": 194,
+        "wins": 115,
+        "win_rate": 0.5928,
+        "total_pnl": 189.97,
+        "roi": 12.74,
+        "final_bankroll": 290.02,
+        "max_drawdown": 0.6226,
+        "sharpe": 3.58,
+        "calmar_ratio": 0.2046
+      },
+      {
+        "id": "conservative",
+        "name": "Conservative (low stakes, high threshold)",
+        "total_bets": 192,
+        "wins": 110,
+        "win_rate": 0.5729,
+        "total_pnl": 49.38,
+        "roi": 11.95,
+        "final_bankroll": 149.32,
+        "max_drawdown": 0.3196,
+        "sharpe": 3.579,
+        "calmar_ratio": 0.3739
+      },
+      {
+        "id": "value_0.1",
+        "name": "Value Hunter (edge>10%)",
+        "total_bets": 199,
+        "wins": 117,
+        "win_rate": 0.5879,
+        "total_pnl": 172.93,
+        "roi": 11.77,
+        "final_bankroll": 273.02,
+        "max_drawdown": 0.6226,
+        "sharpe": 3.573,
+        "calmar_ratio": 0.189
+      },
+      {
+        "id": "kelly_0.1_0.05",
+        "name": "Tenth Kelly (edge>5%)",
+        "total_bets": 197,
+        "wins": 117,
+        "win_rate": 0.5939,
+        "total_pnl": 140.19,
+        "roi": 12.83,
+        "final_bankroll": 240.22,
+        "max_drawdown": 0.4589,
+        "sharpe": 3.565,
+        "calmar_ratio": 0.2796
+      },
+      {
+        "id": "ev_0.07_k0.1",
+        "name": "EV>7% Kelly=10%",
+        "total_bets": 197,
+        "wins": 117,
+        "win_rate": 0.5939,
+        "total_pnl": 140.19,
+        "roi": 12.83,
+        "final_bankroll": 240.22,
+        "max_drawdown": 0.4589,
+        "sharpe": 3.565,
+        "calmar_ratio": 0.2796
+      },
+      {
+        "id": "ev_0.1_k0.1",
+        "name": "EV>10% Kelly=10%",
+        "total_bets": 196,
+        "wins": 116,
+        "win_rate": 0.5918,
+        "total_pnl": 139.12,
+        "roi": 12.75,
+        "final_bankroll": 239.15,
+        "max_drawdown": 0.4589,
+        "sharpe": 3.562,
+        "calmar_ratio": 0.2778
+      },
+      {
+        "id": "ev_0.15_k0.1",
+        "name": "EV>15% Kelly=10%",
+        "total_bets": 194,
+        "wins": 115,
+        "win_rate": 0.5928,
+        "total_pnl": 139.33,
+        "roi": 12.83,
+        "final_bankroll": 239.35,
+        "max_drawdown": 0.4589,
+        "sharpe": 3.562,
+        "calmar_ratio": 0.2796
+      },
+      {
+        "id": "ev_0.15_k0.25",
+        "name": "EV>15% Kelly=25%",
+        "total_bets": 194,
+        "wins": 115,
+        "win_rate": 0.5928,
+        "total_pnl": 195.26,
+        "roi": 13.75,
+        "final_bankroll": 295.23,
+        "max_drawdown": 0.5715,
+        "sharpe": 3.557,
+        "calmar_ratio": 0.2406
+      },
+      {
+        "id": "sharpe_max",
+        "name": "Sharpe Maximizer (risk-adjusted)",
+        "total_bets": 212,
+        "wins": 120,
+        "win_rate": 0.566,
+        "total_pnl": 76.14,
+        "roi": 10.7,
+        "final_bankroll": 176.08,
+        "max_drawdown": 0.4403,
+        "sharpe": 3.553,
+        "calmar_ratio": 0.243
+      },
+      {
+        "id": "dd_limit_10",
+        "name": "Drawdown Limit 10%",
+        "total_bets": 204,
+        "wins": 120,
+        "win_rate": 0.5882,
+        "total_pnl": 273.5,
+        "roi": 18.77,
+        "final_bankroll": 373.52,
+        "max_drawdown": 0.4537,
+        "sharpe": 3.55,
+        "calmar_ratio": 0.4137
+      },
+      {
+        "id": "ev_0.1_k0.25",
+        "name": "EV>10% Kelly=25%",
+        "total_bets": 199,
+        "wins": 117,
+        "win_rate": 0.5879,
+        "total_pnl": 186.3,
+        "roi": 13.21,
+        "final_bankroll": 286.32,
+        "max_drawdown": 0.5715,
+        "sharpe": 3.55,
+        "calmar_ratio": 0.2311
+      },
+      {
+        "id": "kelly_0.1_0.03",
+        "name": "Tenth Kelly (edge>3%)",
+        "total_bets": 200,
+        "wins": 119,
+        "win_rate": 0.595,
+        "total_pnl": 187.68,
+        "roi": 16.16,
+        "final_bankroll": 287.72,
+        "max_drawdown": 0.3814,
+        "sharpe": 3.533,
+        "calmar_ratio": 0.4237
+      },
+      {
+        "id": "ev_0.03_k0.1",
+        "name": "EV>3% Kelly=10%",
+        "total_bets": 200,
+        "wins": 119,
+        "win_rate": 0.595,
+        "total_pnl": 187.68,
+        "roi": 16.16,
+        "final_bankroll": 287.72,
+        "max_drawdown": 0.3814,
+        "sharpe": 3.533,
+        "calmar_ratio": 0.4237
+      },
+      {
+        "id": "kelly_0.25_0.05",
+        "name": "Quarter Kelly (edge>5%)",
+        "total_bets": 212,
+        "wins": 120,
+        "win_rate": 0.566,
+        "total_pnl": 165.67,
+        "roi": 12.44,
+        "final_bankroll": 265.66,
+        "max_drawdown": 0.5721,
+        "sharpe": 3.505,
+        "calmar_ratio": 0.2174
+      },
+      {
+        "id": "ev_0.07_k0.25",
+        "name": "EV>7% Kelly=25%",
+        "total_bets": 212,
+        "wins": 120,
+        "win_rate": 0.566,
+        "total_pnl": 165.67,
+        "roi": 12.44,
+        "final_bankroll": 265.66,
+        "max_drawdown": 0.5721,
+        "sharpe": 3.505,
+        "calmar_ratio": 0.2174
+      },
+      {
+        "id": "kelly_0.5_0.05",
+        "name": "Half Kelly (edge>5%)",
+        "total_bets": 212,
+        "wins": 120,
+        "win_rate": 0.566,
+        "total_pnl": 134.76,
+        "roi": 10.31,
+        "final_bankroll": 234.69,
+        "max_drawdown": 0.6237,
+        "sharpe": 3.476,
+        "calmar_ratio": 0.1653
+      },
+      {
+        "id": "value_0.05",
+        "name": "Value Hunter (edge>5%)",
+        "total_bets": 212,
+        "wins": 120,
+        "win_rate": 0.566,
+        "total_pnl": 134.76,
+        "roi": 10.31,
+        "final_bankroll": 234.69,
+        "max_drawdown": 0.6237,
+        "sharpe": 3.476,
+        "calmar_ratio": 0.1653
+      },
+      {
+        "id": "value_0.08",
+        "name": "Value Hunter (edge>8%)",
+        "total_bets": 212,
+        "wins": 120,
+        "win_rate": 0.566,
+        "total_pnl": 134.76,
+        "roi": 10.31,
+        "final_bankroll": 234.69,
+        "max_drawdown": 0.6237,
+        "sharpe": 3.476,
+        "calmar_ratio": 0.1653
+      },
+      {
+        "id": "ev_0.2_k0.25",
+        "name": "EV>20% Kelly=25%",
+        "total_bets": 172,
+        "wins": 105,
+        "win_rate": 0.6105,
+        "total_pnl": 236.19,
+        "roi": 18.6,
+        "final_bankroll": 336.18,
+        "max_drawdown": 0.4465,
+        "sharpe": 3.453,
+        "calmar_ratio": 0.4166
+      },
+      {
+        "id": "kelly_0.25_0.02",
+        "name": "Quarter Kelly (edge>2%)",
+        "total_bets": 223,
+        "wins": 125,
+        "win_rate": 0.5605,
+        "total_pnl": 339.75,
+        "roi": 18.22,
+        "final_bankroll": 439.73,
+        "max_drawdown": 0.4704,
+        "sharpe": 3.439,
+        "calmar_ratio": 0.3873
+      },
+      {
+        "id": "kelly_0.5_0.02",
+        "name": "Half Kelly (edge>2%)",
+        "total_bets": 223,
+        "wins": 125,
+        "win_rate": 0.5605,
+        "total_pnl": 288.44,
+        "roi": 15.8,
+        "final_bankroll": 388.46,
+        "max_drawdown": 0.5344,
+        "sharpe": 3.431,
+        "calmar_ratio": 0.2957
+      },
+      {
+        "id": "contrarian",
+        "name": "Contrarian (bet against market moves)",
+        "total_bets": 223,
+        "wins": 125,
+        "win_rate": 0.5605,
+        "total_pnl": 288.44,
+        "roi": 15.8,
+        "final_bankroll": 388.46,
+        "max_drawdown": 0.5344,
+        "sharpe": 3.431,
+        "calmar_ratio": 0.2957
+      },
+      {
+        "id": "kelly_0.25_0.03",
+        "name": "Quarter Kelly (edge>3%)",
+        "total_bets": 213,
+        "wins": 121,
+        "win_rate": 0.5681,
+        "total_pnl": 228.76,
+        "roi": 15.85,
+        "final_bankroll": 328.75,
+        "max_drawdown": 0.4704,
+        "sharpe": 3.279,
+        "calmar_ratio": 0.3369
+      },
+      {
+        "id": "bayesian_adapt",
+        "name": "Bayesian Adaptive (shrinkage)",
+        "total_bets": 213,
+        "wins": 121,
+        "win_rate": 0.5681,
+        "total_pnl": 228.76,
+        "roi": 15.85,
+        "final_bankroll": 328.75,
+        "max_drawdown": 0.4704,
+        "sharpe": 3.279,
+        "calmar_ratio": 0.3369
+      },
+      {
+        "id": "ev_0.03_k0.25",
+        "name": "EV>3% Kelly=25%",
+        "total_bets": 213,
+        "wins": 121,
+        "win_rate": 0.5681,
+        "total_pnl": 228.76,
+        "roi": 15.85,
+        "final_bankroll": 328.75,
+        "max_drawdown": 0.4704,
+        "sharpe": 3.279,
+        "calmar_ratio": 0.3369
+      },
+      {
+        "id": "kelly_0.5_0.03",
+        "name": "Half Kelly (edge>3%)",
+        "total_bets": 213,
+        "wins": 121,
+        "win_rate": 0.5681,
+        "total_pnl": 190.46,
+        "roi": 13.45,
+        "final_bankroll": 290.42,
+        "max_drawdown": 0.5344,
+        "sharpe": 3.23,
+        "calmar_ratio": 0.2517
+      },
+      {
+        "id": "kelly_1.0_0.05",
+        "name": "Full Kelly (edge>5%)",
+        "total_bets": 212,
+        "wins": 120,
+        "win_rate": 0.566,
+        "total_pnl": 250.78,
+        "roi": 7.95,
+        "final_bankroll": 350.8,
+        "max_drawdown": 0.8659,
+        "sharpe": 3.212,
+        "calmar_ratio": 0.0918
+      },
+      {
+        "id": "spec_spread",
+        "name": "Specialist: Spread",
+        "total_bets": 99,
+        "wins": 62,
+        "win_rate": 0.6263,
+        "total_pnl": 136.51,
+        "roi": 15.99,
+        "final_bankroll": 236.52,
+        "max_drawdown": 0.3698,
+        "sharpe": 3.153,
+        "calmar_ratio": 0.4324
+      },
+      {
+        "id": "fixed_0.02",
+        "name": "Fixed 2%",
+        "total_bets": 264,
+        "wins": 142,
+        "win_rate": 0.5379,
+        "total_pnl": 40.0,
+        "roi": 7.5,
+        "final_bankroll": 140.06,
+        "max_drawdown": 0.3153,
+        "sharpe": 3.148,
+        "calmar_ratio": 0.2379
+      },
+      {
+        "id": "kelly_1.0_0.02",
+        "name": "Full Kelly (edge>2%)",
+        "total_bets": 223,
+        "wins": 125,
+        "win_rate": 0.5605,
+        "total_pnl": 740.39,
+        "roi": 12.83,
+        "final_bankroll": 840.38,
+        "max_drawdown": 0.8021,
+        "sharpe": 3.124,
+        "calmar_ratio": 0.16
+      },
+      {
+        "id": "aggressive",
+        "name": "Aggressive (high stakes, low threshold)",
+        "total_bets": 246,
+        "wins": 131,
+        "win_rate": 0.5325,
+        "total_pnl": 460.9,
+        "roi": 13.18,
+        "final_bankroll": 560.9,
+        "max_drawdown": 0.6853,
+        "sharpe": 3.039,
+        "calmar_ratio": 0.1923
+      },
+      {
+        "id": "fixed_0.03",
+        "name": "Fixed 3%",
+        "total_bets": 264,
+        "wins": 142,
+        "win_rate": 0.5379,
+        "total_pnl": 58.62,
+        "roi": 7.34,
+        "final_bankroll": 158.6,
+        "max_drawdown": 0.4428,
+        "sharpe": 3.007,
+        "calmar_ratio": 0.1658
+      },
+      {
+        "id": "kelly_1.0_0.03",
+        "name": "Full Kelly (edge>3%)",
+        "total_bets": 213,
+        "wins": 121,
+        "win_rate": 0.5681,
+        "total_pnl": 417.42,
+        "roi": 11.07,
+        "final_bankroll": 517.42,
+        "max_drawdown": 0.8021,
+        "sharpe": 2.922,
+        "calmar_ratio": 0.138
+      },
+      {
+        "id": "fixed_0.05",
+        "name": "Fixed 5%",
+        "total_bets": 264,
+        "wins": 142,
+        "win_rate": 0.5379,
+        "total_pnl": 86.49,
+        "roi": 6.64,
+        "final_bankroll": 186.51,
+        "max_drawdown": 0.6428,
+        "sharpe": 2.705,
+        "calmar_ratio": 0.1033
+      },
+      {
+        "id": "spec_moneyline",
+        "name": "Specialist: Moneyline",
+        "total_bets": 1,
+        "wins": 1,
+        "win_rate": 1.0,
+        "total_pnl": 23.75,
+        "roi": 475.0,
+        "final_bankroll": 123.75,
+        "max_drawdown": 0.0,
+        "sharpe": 2.491,
+        "calmar_ratio": 0.0
+      },
+      {
+        "id": "dd_limit_5",
+        "name": "Drawdown Limit 5%",
+        "total_bets": 132,
+        "wins": 74,
+        "win_rate": 0.5606,
+        "total_pnl": 26.53,
+        "roi": 9.29,
+        "final_bankroll": 126.57,
+        "max_drawdown": 0.2557,
+        "sharpe": 2.029,
+        "calmar_ratio": 0.3633
+      },
+      {
+        "id": "spec_totals",
+        "name": "Specialist: Totals",
+        "total_bets": 100,
+        "wins": 52,
+        "win_rate": 0.52,
+        "total_pnl": 10.27,
+        "roi": 2.96,
+        "final_bankroll": 110.33,
+        "max_drawdown": 0.6236,
+        "sharpe": 0.797,
+        "calmar_ratio": 0.0475
+      },
+      {
+        "id": "spec_margin",
+        "name": "Specialist: Margin",
+        "total_bets": 0,
+        "wins": 0,
+        "win_rate": 0.0,
+        "total_pnl": 0,
+        "roi": 0.0,
+        "final_bankroll": 100.0,
+        "max_drawdown": 0.0,
+        "sharpe": 0.0,
+        "calmar_ratio": 0.0
+      },
+      {
+        "id": "spec_exotic",
+        "name": "Specialist: Exotic",
+        "total_bets": 0,
+        "wins": 0,
+        "win_rate": 0.0,
+        "total_pnl": 0,
+        "roi": 0.0,
+        "final_bankroll": 100.0,
+        "max_drawdown": 0.0,
+        "sharpe": 0.0,
+        "calmar_ratio": 0.0
+      },
+      {
+        "id": "fixed_0.01",
+        "name": "Fixed 1%",
+        "total_bets": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "total_pnl": -1.0,
+        "roi": -100.0,
+        "final_bankroll": 99.0,
+        "max_drawdown": 0.01,
+        "sharpe": -2.491,
+        "calmar_ratio": -100.0
+      }
+    ]
+  },
+  "regression_analysis": {
+    "total_bets_analyzed": 10000,
+    "overall_regression": {
+      "n_observations": 10000,
+      "r_squared": 0.0119,
+      "coefficients": {
+        "intercept": {
+          "beta": 4.17471,
+          "se": 1.717876,
+          "p_value": 0.0151
+        },
+        "confidence": {
+          "beta": -8.666375,
+          "se": 2.321446,
+          "p_value": 0.0002
+        },
+        "edge_pct": {
+          "beta": 0.122494,
+          "se": 0.011932,
+          "p_value": 0.0
+        },
+        "odds": {
+          "beta": -0.620816,
+          "se": 0.281947,
+          "p_value": 0.0277
+        }
+      },
+      "interpretation": {
+        "confidence": "negative effect (***)",
+        "edge_pct": "positive effect (***)",
+        "odds": "negative effect (*)"
+      }
+    },
+    "per_category": {
+      "alt_spread_home_big": {
+        "n_bets": 3282,
+        "wins": 1543,
+        "win_rate": 0.4701,
+        "total_profit": 7372.2907,
+        "avg_profit": 2.2463,
+        "avg_edge_pct": 34.25,
+        "avg_odds": 2.5,
+        "profitable": true
+      },
+      "alt_spread_away_big": {
+        "n_bets": 1680,
+        "wins": 815,
+        "win_rate": 0.4851,
+        "total_profit": 3094.5332,
+        "avg_profit": 1.842,
+        "avg_edge_pct": 25.16,
+        "avg_odds": 2.5,
+        "profitable": true
+      },
+      "h1_ml_home": {
+        "n_bets": 606,
+        "wins": 291,
+        "win_rate": 0.4802,
+        "total_profit": 1031.798,
+        "avg_profit": 1.7026,
+        "avg_edge_pct": 8.61,
+        "avg_odds": 3.55,
+        "profitable": true
+      },
+      "team_total_home_under": {
+        "n_bets": 463,
+        "wins": 287,
+        "win_rate": 0.6199,
+        "total_profit": 197.0409,
+        "avg_profit": 0.4256,
+        "avg_edge_pct": 6.12,
+        "avg_odds": 1.909,
+        "profitable": true
+      },
+      "team_total_home_over": {
+        "n_bets": 113,
+        "wins": 83,
+        "win_rate": 0.7345,
+        "total_profit": 79.861,
+        "avg_profit": 0.7067,
+        "avg_edge_pct": 3.56,
+        "avg_odds": 1.909,
+        "profitable": true
+      },
+      "h1_ml_away": {
+        "n_bets": 14,
+        "wins": 11,
+        "win_rate": 0.7857,
+        "total_profit": 32.5939,
+        "avg_profit": 2.3281,
+        "avg_edge_pct": 4.38,
+        "avg_odds": 7.329,
+        "profitable": true
+      },
+      "ml_away": {
+        "n_bets": 275,
+        "wins": 49,
+        "win_rate": 0.1782,
+        "total_profit": -15.7247,
+        "avg_profit": -0.0572,
+        "avg_edge_pct": 5.6,
+        "avg_odds": 5.465,
+        "profitable": false
+      },
+      "total_under": {
+        "n_bets": 292,
+        "wins": 134,
+        "win_rate": 0.4589,
+        "total_profit": -66.8466,
+        "avg_profit": -0.2289,
+        "avg_edge_pct": 4.44,
+        "avg_odds": 1.909,
+        "profitable": false
+      },
+      "ml_home": {
+        "n_bets": 1483,
+        "wins": 657,
+        "win_rate": 0.443,
+        "total_profit": -528.2946,
+        "avg_profit": -0.3562,
+        "avg_edge_pct": 9.83,
+        "avg_odds": 2.713,
+        "profitable": false
+      },
+      "spread_away": {
+        "n_bets": 583,
+        "wins": 277,
+        "win_rate": 0.4751,
+        "total_profit": -1052.0681,
+        "avg_profit": -1.8046,
+        "avg_edge_pct": 23.49,
+        "avg_odds": 1.909,
+        "profitable": false
+      },
+      "spread_home": {
+        "n_bets": 1209,
+        "wins": 568,
+        "win_rate": 0.4698,
+        "total_profit": -1737.5789,
+        "avg_profit": -1.4372,
+        "avg_edge_pct": 31.54,
+        "avg_odds": 1.909,
+        "profitable": false
+      }
+    },
+    "traders_analyzed": [
+      "gemini",
+      "openrouter",
+      "claude",
+      "codex",
+      "grok"
+    ]
+  },
+  "optimal_thresholds": {
+    "train_size": 7000,
+    "test_size": 3000,
+    "total_bets": 10000,
+    "optimal_config": {
+      "min_confidence": 0.55,
+      "min_edge_pct": 0.0,
+      "kelly_fraction": 0.1,
+      "train_bets": 3344,
+      "train_roi": 9900.0,
+      "train_pnl": 37949.13,
+      "train_bankroll": 10000.0,
+      "train_max_dd": 0.9132,
+      "train_sharpe": 2.636,
+      "test_bets": 1254,
+      "test_pnl": 102487.87,
+      "test_bankroll": 6570.41,
+      "test_max_dd": 0.532,
+      "test_roi": 6470.41,
+      "test_sharpe": 7.88
+    },
+    "top_10_configs": [
+      {
+        "min_confidence": 0.5,
+        "min_edge_pct": 0.0,
+        "kelly_fraction": 0.5,
+        "train_bets": 4543,
+        "train_roi": 5067.14,
+        "train_pnl": 48122.2,
+        "train_bankroll": 5167.14,
+        "train_max_dd": 0.9986,
+        "train_sharpe": 2.726
+      },
+      {
+        "min_confidence": 0.5,
+        "min_edge_pct": 2.0,
+        "kelly_fraction": 0.5,
+        "train_bets": 4543,
+        "train_roi": 5067.14,
+        "train_pnl": 48122.2,
+        "train_bankroll": 5167.14,
+        "train_max_dd": 0.9986,
+        "train_sharpe": 2.726
+      },
+      {
+        "min_confidence": 0.55,
+        "min_edge_pct": 5.0,
+        "kelly_fraction": 0.1,
+        "train_bets": 3191,
+        "train_roi": 9900.0,
+        "train_pnl": 39032.53,
+        "train_bankroll": 10000.0,
+        "train_max_dd": 0.9142,
+        "train_sharpe": 2.678
+      },
+      {
+        "min_confidence": 0.55,
+        "min_edge_pct": 8.0,
+        "kelly_fraction": 0.5,
+        "train_bets": 2591,
+        "train_roi": 9397.32,
+        "train_pnl": 46929.19,
+        "train_bankroll": 9497.32,
+        "train_max_dd": 0.9063,
+        "train_sharpe": 2.675
+      },
+      {
+        "min_confidence": 0.55,
+        "min_edge_pct": 8.0,
+        "kelly_fraction": 0.1,
+        "train_bets": 2591,
+        "train_roi": 9900.0,
+        "train_pnl": 41970.09,
+        "train_bankroll": 10000.0,
+        "train_max_dd": 0.8842,
+        "train_sharpe": 2.664
+      },
+      {
+        "min_confidence": 0.55,
+        "min_edge_pct": 8.0,
+        "kelly_fraction": 0.25,
+        "train_bets": 2591,
+        "train_roi": 9397.32,
+        "train_pnl": 44983.28,
+        "train_bankroll": 9497.32,
+        "train_max_dd": 0.9061,
+        "train_sharpe": 2.661
+      },
+      {
+        "min_confidence": 0.55,
+        "min_edge_pct": 0.0,
+        "kelly_fraction": 0.1,
+        "train_bets": 3344,
+        "train_roi": 9900.0,
+        "train_pnl": 37949.13,
+        "train_bankroll": 10000.0,
+        "train_max_dd": 0.9132,
+        "train_sharpe": 2.636,
+        "test_bets": 1254,
+        "test_pnl": 102487.87,
+        "test_bankroll": 6570.41,
+        "test_max_dd": 0.532,
+        "test_roi": 6470.41,
+        "test_sharpe": 7.88
+      },
+      {
+        "min_confidence": 0.55,
+        "min_edge_pct": 2.0,
+        "kelly_fraction": 0.1,
+        "train_bets": 3344,
+        "train_roi": 9900.0,
+        "train_pnl": 37949.13,
+        "train_bankroll": 10000.0,
+        "train_max_dd": 0.9132,
+        "train_sharpe": 2.636
+      },
+      {
+        "min_confidence": 0.55,
+        "min_edge_pct": 5.0,
+        "kelly_fraction": 0.5,
+        "train_bets": 3191,
+        "train_roi": 9438.4,
+        "train_pnl": 40629.69,
+        "train_bankroll": 9538.4,
+        "train_max_dd": 0.9879,
+        "train_sharpe": 2.617
+      },
+      {
+        "min_confidence": 0.55,
+        "min_edge_pct": 5.0,
+        "kelly_fraction": 0.25,
+        "train_bets": 3191,
+        "train_roi": 9665.14,
+        "train_pnl": 40104.24,
+        "train_bankroll": 9765.14,
+        "train_max_dd": 0.9743,
+        "train_sharpe": 2.6
+      }
+    ],
+    "grid_search_size": 168
+  },
+  "category_analysis": {
+    "ml_fg": {
+      "n_bets": 17,
+      "avg_stake": 3.96,
+      "total_staked": 67.36,
+      "avg_confidence": 0.6529,
+      "avg_agreement": 0.7579,
+      "avg_edge_pct": 6.01,
+      "avg_odds": 3.235,
+      "forced_bets": 0
+    },
+    "total_fg": {
+      "n_bets": 16,
+      "avg_stake": 1.0,
+      "total_staked": 16.0,
+      "avg_confidence": 0.6913,
+      "avg_agreement": 0.8022,
+      "avg_edge_pct": 0.0,
+      "avg_odds": 1.909,
+      "forced_bets": 0
+    },
+    "spread_fg": {
+      "n_bets": 14,
+      "avg_stake": 2.76,
+      "total_staked": 38.64,
+      "avg_confidence": 0.6546,
+      "avg_agreement": 0.7504,
+      "avg_edge_pct": 0.0,
+      "avg_odds": 1.909,
+      "forced_bets": 14
+    }
+  },
+  "recommendations": [
+    "CONSENSUS Brier 0.18929 is competitive. Target: < 0.21570 (ATR)",
+    "WARNING: Low-agreement bets outperform high-agreement. Consensus mechanism may be flawed.",
+    "BEST STRATEGY: EV>20% Kelly=10% (Sharpe 3.586, ROI 14.6%, MaxDD 0.381)",
+    "OPTIMAL THRESHOLDS: confidence >= 0.55, edge >= 0.0%, Kelly fraction = 0.10",
+    "OUT-OF-SAMPLE validation positive: ROI 6470.4%. Strategy is robust.",
+    "REGRESSION: confidence significantly decreases PnL (beta=-8.6664, p=0.0002)",
+    "REGRESSION: edge_pct significantly increases PnL (beta=0.1225, p=0.0000)",
+    "REGRESSION: odds significantly decreases PnL (beta=-0.6208, p=0.0277)",
+    "PROFITABLE categories (6): alt_spread_home_big, alt_spread_away_big, h1_ml_home, team_total_home_under, team_total_home_over",
+    "AVOID categories (5): ml_away, total_under, ml_home, spread_away, spread_home",
+    "BEST AGENT: t1_llama70b (Brier 0.16302)",
+    "WORST AGENT: t1_qwen72b (Brier 0.25250) \u2014 consider removing or retraining"
+  ]
+}

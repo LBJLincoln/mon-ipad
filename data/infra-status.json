@@ -1,85 +1,19 @@
 {
-  "timestamp": "2026-04-06T10:22:00Z",
-  "department": "infra",
-  "cycle": "health_check",
-  "spaces_health": {
-    "S10_nomos42-nba-quant": {"status": "UP", "code": 200},
-    "S11_nomos42-nba-quant-2": {"status": "UP", "code": 200},
-    "S12_nba-evo-3": {"status": "UP", "code": 200},
-    "S13_nba-evo-4": {"status": "UP", "code": 200},
-    "S14_nba-evo-5": {"status": "UP", "code": 200},
-    "S15_nba-evo-6": {"status": "UP", "code": 200}
-  },
-  "services": {
-    "data_server_8080": {"status": "RUNNING", "pid": 7888, "uptime_hours": 40, "response": "http.server"},
-    "bloomberg_api_8042": {"status": "RESPONDING", "code": "200"},
-    "forge_bot": {"status": "ALIVE", "pid": 7856, "uptime_hours": 40},
-    "nba_bot": {"status": "ALIVE", "pid": 7858, "uptime_hours": 40},
-    "political_bot": {"status": "ALIVE", "pid": 7860, "uptime_hours": 40},
-    "rgwa_bot": {"status": "ALIVE", "pid": 7876, "uptime_hours": 40},
-    "terminal_api": {"status": "ALIVE", "pid": 7899, "uptime_hours": 40}
-  },
-  "vm_health": {
-    "load_1m": 8.23,
-    "load_5m": 7.19,
-    "load_15m": 5.83,
-    "cpu_overloaded": true,
-    "memory_mb": {
-      "total": 969,
-      "used": 815,
-      "free": 76,
-      "available": 154,
-      "used_pct": 84.1
-    },
-    "swap_mb": {
-      "used": 672,
-      "active": true
-    },
-    "disk_pct": 76,
-    "disk_avail_gb": 6.8,
-    "uptime_days": 1.68
-  },
-  "crons": {
-    "status": "ACTIVE",
-    "active_jobs": 23,
-    "last_run": "2026-04-06T10:20:00Z",
-    "recent_activity": "autonomous-cycle, keepalive, nba-daily running"
-  },
-  "gpu_platforms": {
-    "kaggle": {"status": "ACTIVE", "last_check": "2026-04-06"},
-    "lightning": {"status": "AVAILABLE", "last_check": "2026-04-05"},
-    "colab": {"status": "AVAILABLE", "last_check": "2026-04-05"},
-    "zerogpu": {"status": "AVAILABLE", "last_check": "2026-04-06"}
-  },
-  "issues_detected": [
-    {
-      "severity": "HIGH",
-      "component": "cpu",
-      "description": "CPU overloaded: load 8.23 on 1 vCPU (target <2)"
-    },
-    {
-      "severity": "HIGH",
-      "component": "memory",
-      "description": "Memory 84% used (815/969 MB), only 76MB free"
-    },
-    {
-      "severity": "MEDIUM",
-      "component": "swap",
-      "description": "Swap active: 672MB used (performance impact)"
-    },
-    {
-      "severity": "MEDIUM",
-      "component": "disk",
-      "description": "Disk 76% used (6.8GB remaining)"
-    }
-  ],
+  "timestamp": "2026-04-06T10:45:15Z",
   "summary": {
-    "spaces_up": 6,
-    "spaces_total": 6,
-    "services_ok": 7,
-    "services_total": 7,
-    "issues_count": 4,
-    "uptime_pct": 99.5,
-    "status": "OPERATIONAL"
+    "total": 9,
+    "healthy": 8,
+    "restarted": 1,
+    "failed": 0
+  },
+  "hf_spaces": {"P1_pol":{"status":"running","brier":"0.24971","gen":"11996"},"P2_pol":{"status":"running","brier":"0.23134","gen":"17603"},"S10_nba":{"status":"running","brier":"0.23149","gen":"144"},"S11_nba":{"status":"running","brier":"0.22372","gen":"144"},"S12_nba":{"status":"running","brier":"0.22533","gen":"254"},"S13_nba":{"status":"running","brier":"0.22283","gen":"118"},"S14_nba":{"status":"running","brier":"0.22622","gen":"149"},"S15_nba":{"status":"running","brier":"0.2222","gen":"79"}},
+  "kaggle": {
+    "nba": "[2026-04-06T10:45:09Z]   ↻ Kaggle NBA: COMPLETE — relaunching...
+relaunched",
+    "political": "[2026-04-06T10:45:11Z]   ↻ Kaggle Political: COMPLETE — relaunching...
+relaunched"
+  },
+  "modal": {
+    "nba": "launched"
   }
 }
