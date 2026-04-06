@@ -34,16 +34,17 @@ PREFERRED_MODEL = os.environ.get("PREFERRED_MODEL", "")
 # Per-department optimal model assignments
 # Format: {dept_id: (provider_key, model_id, display_name)}
 DEPT_MODEL_MAP = {
-    # FREE models via HF Serverless Inference (no Pro needed, just HF token)
-    "d1": ("hf",         "Qwen/Qwen2.5-72B-Instruct",            "hf/qwen2.5-72b"),             # Research
-    "d2": ("hf",         "Qwen/Qwen2.5-Coder-32B-Instruct",      "hf/qwen2.5-coder-32b"),       # Engineering (code)
-    "d3": ("hf",         "meta-llama/Llama-3.3-70B-Instruct",     "hf/llama3.3-70b"),            # Evolution
-    "d4": ("hf",         "mistralai/Mistral-Small-3.1-24B-Instruct-2503", "hf/mistral-small"),   # Product
-    "d5": ("hf",         "microsoft/Phi-4",                        "hf/phi-4"),                   # Business
-    "d6": ("hf",         "Qwen/Qwen2.5-72B-Instruct",            "hf/qwen2.5-72b"),             # Evaluation
-    "d7": ("hf",         "microsoft/Phi-4",                        "hf/phi-4"),                   # Infra (fast)
-    "d8": ("hf",         "meta-llama/Llama-3.3-70B-Instruct",     "hf/llama3.3-70b"),            # Finance
-    "d9": ("hf",         "Qwen/Qwen2.5-72B-Instruct",            "hf/qwen2.5-72b"),             # Cross-repo
+    # FREE models on HF Router (tested working 2026-04-06)
+    # Only 3 models work free: Qwen2.5-72B, Qwen2.5-Coder-32B, Llama-3-8B
+    "d1": ("hf",         "Qwen/Qwen2.5-72B-Instruct",            "hf/qwen2.5-72b"),             # Research (best reasoning)
+    "d2": ("hf",         "Qwen/Qwen2.5-Coder-32B-Instruct",      "hf/qwen2.5-coder-32b"),       # Engineering (code specialist)
+    "d3": ("hf",         "Qwen/Qwen2.5-72B-Instruct",            "hf/qwen2.5-72b"),             # Evolution (analytical)
+    "d4": ("hf",         "Qwen/Qwen2.5-Coder-32B-Instruct",      "hf/qwen2.5-coder-32b"),       # Product (code+UX)
+    "d5": ("hf",         "meta-llama/Meta-Llama-3-8B-Instruct",   "hf/llama3-8b"),               # Business (fast)
+    "d6": ("hf",         "Qwen/Qwen2.5-72B-Instruct",            "hf/qwen2.5-72b"),             # Evaluation (best reasoning)
+    "d7": ("hf",         "meta-llama/Meta-Llama-3-8B-Instruct",   "hf/llama3-8b"),               # Infra (fast yes/no)
+    "d8": ("hf",         "Qwen/Qwen2.5-Coder-32B-Instruct",      "hf/qwen2.5-coder-32b"),       # Finance (analytical)
+    "d9": ("hf",         "Qwen/Qwen2.5-72B-Instruct",            "hf/qwen2.5-72b"),             # Cross-repo (big context)
 }
 
 # HF token -- try multiple env var names (HF_TOKEN may be reserved on Spaces)
@@ -178,7 +179,13 @@ def _call_llm(prompt: str, max_tokens: int = 500, temperature: float = 0.3) -> t
         preferred_key = prov_key
 
         # Build the preferred provider with its specific model
-        if prov_key == "cerebras" and CEREBRAS_API_KEY:
+        if prov_key == "hf" and HF_TOKEN:
+            providers.append(_build_provider(
+                display, "https://router.huggingface.co/v1/chat/completions",
+                f"Bearer {HF_TOKEN}", model_id,
+                prompt, max_tokens, temperature,
+            ))
+        elif prov_key == "cerebras" and CEREBRAS_API_KEY:
             providers.append(_build_provider(
                 display, "https://api.cerebras.ai/v1/chat/completions",
                 f"Bearer {CEREBRAS_API_KEY}", model_id,
@@ -602,10 +609,10 @@ with gr.Blocks(
             history_json = gr.Code(label="History (JSON)", language="json")
             history_btn = gr.Button("Load History", size="sm")
 
-    refresh_btn.click(get_status_display, outputs=[status_md])
-    trigger_btn.click(trigger_iteration, outputs=[trigger_output])
-    history_btn.click(get_history_json, outputs=[history_json])
-    status_json_btn.click(get_status_json, outputs=[status_json])
+    refresh_btn.click(get_status_display, outputs=[status_md], api_name="get_status")
+    trigger_btn.click(trigger_iteration, outputs=[trigger_output], api_name="trigger")
+    history_btn.click(get_history_json, outputs=[history_json], api_name="get_history")
+    status_json_btn.click(get_status_json, outputs=[status_json], api_name="get_status_json")
 
 # -- Startup -------------------------------------------------------------------
 
