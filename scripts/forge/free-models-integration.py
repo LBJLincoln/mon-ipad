@@ -6,14 +6,18 @@ Provides `query_free_llm(prompt, model="qwen") -> str` for department councils.
 
 Design constraints:
   - stdlib ONLY (no openai, anthropic, langchain) — compatible with 1 vCPU / 969 MB RAM VM
-  - Multi-provider fallback: Cerebras → Groq → OpenRouter → HF Inference API
+  - Multi-provider fallback: Cerebras → Scaleway → Groq → OpenRouter → HF Inference API
   - All providers are OpenAI-compatible (POST /v1/chat/completions)
 
-Provider summary (as of Apr 4 2026):
+Provider summary (as of Apr 6 2026):
   CEREBRAS (primary):
     - qwen3_235b: qwen-3-235b-a22b-instruct-2507 — 235B MoE, 1400 tps, 64K ctx, 1M tokens/day FREE
     - qwen3_32b:  qwen-3-32b                     — 32B, 2600 tps, 131K ctx, 1M tokens/day FREE
     - llama33:    llama3.3-70b                   — 70B, fast, 131K ctx, FREE
+  SCALEWAY (via HF Inference Providers — free tier):
+    - qwen3_scaleway:    Qwen/Qwen3-235B-A22B-Instruct    — 235B MoE, HF-hosted on Scaleway
+    - llama8b_scaleway:  meta-llama/Llama-3.1-8B-Instruct — 8B, fast
+    - deepseek_scaleway: deepseek-ai/DeepSeek-R1-Distill-Llama-70B — 70B reasoning
   GROQ (fast fallback):
     - llama4:     meta-llama/llama-4-scout-17b-16e-instruct — 750 tps, 131K ctx, 1K RPD FREE
     - llama8b:    llama-3.1-8b-instant           — 14400 RPD, 20K TPM, best for bulk queries
@@ -85,6 +89,7 @@ _CFG = _load_config()
 # Provider base URLs (all OpenAI-compatible /v1/chat/completions)
 PROVIDER_URLS = {
     "cerebras":       "https://api.cerebras.ai/v1/chat/completions",
+    "scaleway":       "https://api-inference.huggingface.co/models/{model_id}/v1/chat/completions",
     "groq":           "https://api.groq.com/openai/v1/chat/completions",
     "openrouter":     "https://openrouter.ai/api/v1/chat/completions",
     "hf":             "https://api-inference.huggingface.co/v1/chat/completions",
@@ -106,6 +111,10 @@ MODELS: Dict[str, tuple] = {
     "gemma3":      ("openrouter", "google/gemma-3-27b-it:free"),       # Gemma 3, 131K ctx
     "mistral":     ("openrouter", "mistralai/mistral-small-3.1-24b-instruct:free"),  # fast
     "deepseek":    ("openrouter", "deepseek/deepseek-r1:free"),        # reasoning
+    # Scaleway via HF Inference Providers (free tier, Bearer HF_TOKEN)
+    "qwen3_scaleway":    ("scaleway", "Qwen/Qwen3-235B-A22B-Instruct"),                # 235B MoE
+    "llama8b_scaleway":  ("scaleway", "meta-llama/Llama-3.1-8B-Instruct"),             # 8B fast
+    "deepseek_scaleway": ("scaleway", "deepseek-ai/DeepSeek-R1-Distill-Llama-70B"),   # 70B reasoning
     # HF fallback (limited credits — use sparingly)
     "phi":         ("hf",         "microsoft/phi-4"),                   # 16K ctx
     "mistral_hf":  ("hf",         "mistralai/Mistral-Small-3.1-24B-Instruct-2503"),
@@ -152,6 +161,7 @@ def get_token(provider: str = "hf", prefer_env: Optional[str] = None) -> str:
 
     Provider token env vars:
       cerebras  → CEREBRAS_API_KEY
+      scaleway  → HF_TOKEN / HF_TOKEN_2 / HF_TOKEN_3  (Scaleway via HF Inference Providers)
       groq      → GROQ_API_KEY
       openrouter→ OPENROUTER_API_KEY
       hf        → HF_TOKEN / HF_TOKEN_2 / HF_TOKEN_3
@@ -163,6 +173,7 @@ def get_token(provider: str = "hf", prefer_env: Optional[str] = None) -> str:
 
     provider_env_map = {
         "cerebras":       ["CEREBRAS_API_KEY"],
+        "scaleway":       TOKEN_ENV_VARS,  # Uses HF_TOKEN (Scaleway via HF Inference Providers)
         "groq":           ["GROQ_API_KEY"],
         "openrouter":     ["OPENROUTER_API_KEY"],
         "hf":             TOKEN_ENV_VARS,
@@ -289,7 +300,7 @@ def _call_chat_completions(
 ) -> str:
     """Call any OpenAI-compatible /v1/chat/completions endpoint.
 
-    Supports: cerebras, groq, openrouter, hf, ollama, anthropic_cli.
+    Supports: cerebras, scaleway, groq, openrouter, hf, ollama, anthropic_cli.
     Returns the generated text string, or "" on failure.
     """
     # Route special providers to their handlers
@@ -303,6 +314,10 @@ def _call_chat_completions(
     url = PROVIDER_URLS.get(provider)
     if not url:
         return ""
+
+    # Scaleway uses per-model URLs via HF Inference Providers
+    if "{model_id}" in url:
+        url = url.format(model_id=model_id)
 
     headers = {
         "Authorization": f"Bearer {token}",
@@ -393,7 +408,7 @@ def query_free_llm(
 ) -> str:
     """Query a free LLM for a text response using the best available provider.
 
-    Provider priority: Cerebras → Groq → OpenRouter → HF Inference API.
+    Provider priority: Cerebras → Scaleway → Groq → OpenRouter → HF Inference API.
 
     Args:
         prompt:          The prompt to send.
@@ -430,7 +445,7 @@ def query_free_llm(
 
     if not token:
         # Try fallback providers automatically
-        for alt_provider in ["cerebras", "groq", "openrouter", "hf"]:
+        for alt_provider in ["cerebras", "scaleway", "groq", "openrouter", "hf"]:
             if alt_provider != provider:
                 alt_token = get_token(provider=alt_provider)
                 if alt_token:
@@ -460,6 +475,7 @@ def query_free_llm(
     # Auto-fallback chain: try all providers in priority order with their best model
     auto_fallback = [
         ("cerebras",   "qwen-3-235b-a22b-instruct-2507"),
+        ("scaleway",   "Qwen/Qwen3-235B-A22B-Instruct"),
         ("groq",       "llama-3.1-8b-instant"),
         ("openrouter", "qwen/qwen3.6-plus:free"),
         ("hf",         "microsoft/phi-4"),
