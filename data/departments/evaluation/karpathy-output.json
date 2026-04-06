@@ -1,17 +1,21 @@
 {
   "department": "evaluation",
-  "iteration": 5,
-  "timestamp": "2026-04-06T13:00:00.000000+00:00",
-  "model_version": "tabicl_ensemble (110 features, v3.0-37cat) — ATR stable",
+  "iteration": 6,
+  "timestamp": "2026-04-06T19:00:00.000000+00:00",
+  "model_version": "tabicl_ensemble (110 features, v3.0-37cat) — ATR stable | ZeroGPU H200: 0.19687",
 
   "games_audited": 58,
   "games_audited_breakdown": {
     "historical_bets": 44,
-    "new_experiment_games": 14,
-    "note": "14 new games from nba-experiment-2026-04-06.json consensus evaluation"
+    "experiment_games": 14,
+    "new_resolved_bets": 0,
+    "note": "No new resolved bets since Apr 3. Freeze continues — 4 days without a live bet."
   },
 
   "brier_current": 0.2157,
+  "brier_atr": 0.21545,
+  "brier_zerogpu_h200": 0.19687,
+  "brier_zerogpu_note": "ZeroGPU H200 run at 2026-04-06T18:00:38Z — baseline=best=0.19687, 4 candidates, 8.6s. FIRST SUB-0.20 RESULT. Validation methodology differs from ATR (different eval set or model type). Discrepancy vs ATR: 0.0188.",
   "brier_experiment_consensus": 0.18929,
   "brier_experiment_best_agent": 0.16302,
   "brier_target": 0.20,
@@ -25,47 +29,72 @@
 
   "status": "completed",
 
-  "delta_vs_iter4": {
-    "brier_atr": {"iter4": 0.21545, "iter5": 0.2157, "delta": 0.00025, "trend": "STABLE — negligible change, no new Colab run"},
-    "roi_pct": {"iter4": -8.71, "iter5": -8.71, "delta": 0.0, "trend": "FROZEN — 0 new bets since 2026-04-03"},
-    "ece": {"iter4": 0.2758, "iter5": 0.2758, "delta": 0.0, "trend": "UNCHANGED — no new bets to measure against"},
-    "experiment_consensus_brier": {"iter4": "N/A", "iter5": 0.18929, "delta": "NEW — first multi-agent consensus eval with 14 resolved games"},
-    "strategy_backtest": {"iter4": "N/A", "iter5": "COMPLETED — 42 strategies on 1081 games, best = EV>20% Kelly=10% (Sharpe 3.586)"}
+  "delta_vs_iter5": {
+    "brier_atr": {"iter5": 0.2157, "iter6": 0.2157, "delta": 0.0, "trend": "FROZEN — no new Colab run, no new bets to evaluate"},
+    "brier_zerogpu": {"iter5": "N/A", "iter6": 0.19687, "delta": "NEW — first ZeroGPU H200 sub-0.20 result at 18:00 UTC"},
+    "roi_pct": {"iter5": -8.71, "iter6": -8.71, "delta": 0.0, "trend": "FROZEN — 4 consecutive days without a live bet (last: 2026-04-03)"},
+    "ece": {"iter5": 0.2758, "iter6": 0.2758, "delta": 0.0, "trend": "FROZEN — can't measure without new live bets"},
+    "fleet_status": {"iter5": "6 NBA islands active (S10-S15)", "iter6": "S10-S15 reset (brier=1.0, gen=0) | S16-S19 new islands active", "trend": "REGRESSION — original fleet wiped, new islands early-stage"}
   },
 
   "new_findings_this_iteration": [
     {
-      "type": "STRATEGY_BACKTEST_COMPLETE",
+      "type": "ZEROGPU_SUB20_ACHIEVED",
       "severity": "HIGH_POSITIVE",
-      "detail": "Strategy analysis run on 1081-game backtest. Best by Sharpe: EV>20% + Kelly=10% => 172 bets, 61% win rate, 14.63% ROI, Sharpe 3.586, final bankroll $251. This validates the iter4 confidence_threshold=0.65 proposal with hard backtest numbers.",
-      "action": "Deploy EV>20% Kelly=10% strategy as live filter. This is the clearest signal from the data."
+      "detail": "ZeroGPU H200 run at 18:00:38 UTC produced baseline_brier=0.19687 — first result below the 0.20 target. 4 candidates evaluated in 8.6 seconds. No improvement found on this run (baseline was already the best). This is a ZeroGPU H200 (GPU) result, distinct from the ATR which uses Colab T4.",
+      "caveat": "ZeroGPU runs 4 candidates per 15-min burst. The 0.19687 may reflect an internal eval set, not the same temporal holdout used for ATR. Discrepancy vs ATR = 0.0188. Need to verify on same validation set before declaring target hit.",
+      "action": "Validate ZeroGPU 0.19687 model on same holdout as ATR (walk-forward temporal split). If confirmed, update ATR from 0.2157 to 0.19687.",
+      "priority": "P0 — first sub-0.20, may have hit the target"
     },
     {
-      "type": "ODDS_MERGE_DEAD_NOT_PREDICTION",
+      "type": "FLEET_RESET_CRITICAL",
       "severity": "CRITICAL",
-      "detail": "latest-picks.json (2026-04-05) shows 11 games predicted with real model probabilities (BOS win_prob=0.904) but market_implied=null and bet_side='NO_ODDS' for ALL games. Prediction model RAN. Odds merge step is broken. Root cause is more precise than iter4 diagnosis.",
-      "example": "BOS home_win_prob=0.9043, market_implied=null. FanDuel had BOS@1.25 (80% implied) but odds were never matched to prediction output.",
-      "fix": "Fix odds-matching step in predict_today.py or autonomous-cycle.sh — re-merge live-odds.json into generated picks. NOT a model fix, it's a data plumbing fix.",
-      "impact": "If fixed: BOS@TOR would have yielded edge = 0.904 - 0.800 = +10.4% => valid bet at Kelly sizing."
+      "detail": "infra-status.json (18:45 UTC) shows S10-S15 NBA islands ALL at brier=1.0, gen=0. These 6 original evolution islands have been reset or are uninitialized. 435 generations of S10 evolution progress appears lost. New islands S16-S19 are running: S16=0.22268 (gen240), S17=0.22502 (gen204), S18=0.23928 (gen235), S19=0.22480 (gen181).",
+      "fleet_before": "S10 best_brier=0.22041 (gen435), S11-S15 active with mut configs",
+      "fleet_after": "S10-S15: brier=1.0 (uninitialized), S16-S19: brier=[0.222,0.250] (gen~181-240)",
+      "impact": "Effective CPU evolution islands reduced from 6 to 4. S16-S19 are early-generation. Brier diversity reduced.",
+      "action": "Investigate root cause of S10-S15 reset. Restore from checkpoints if available. If S16-S19 replaced S10-S15 intentionally, update CLAUDE.md fleet definition."
     },
     {
-      "type": "MULTI_AGENT_CONSENSUS_PROMISING",
-      "severity": "MEDIUM_POSITIVE",
-      "detail": "nba-experiment-2026-04-06 consensus (3 LLM agents: llama70b + gemma27b + qwen72b) achieved Brier 0.189 on 14 games. Below the 0.20 target. Best agent llama70b: Brier 0.163, AUC 0.883.",
-      "caveat": "n=14 games only. CI_95 = [0.097, 0.286]. Not statistically significant vs other agents (p=0.17). Need 50+ games to validate.",
-      "significance_test": "None of the agent pairwise comparisons reach p<0.05 — all n<12. Treat as directional signal only."
-    },
-    {
-      "type": "FEATURE_ENGINE_MISMATCH_CONFIRMED",
+      "type": "ZEROGPU_ATR_DISCREPANCY",
       "severity": "HIGH",
-      "detail": "latest-eval.json and quant-summary.json both show feature_engine_version=v3.0-37cat (110 features, 6135 raw). CLAUDE.md target is v3.1-46cat (46 categories, 6253 features). HF islands running stale engine.",
-      "estimated_brier_impact": "0.001-0.003 improvement if islands upgrade to v3.1-46cat features"
+      "detail": "ZeroGPU H200 reports 0.19687 but ATR (walk-forward temporal holdout) is 0.2157. Gap = 0.0188 (8.7%). This discrepancy needs explanation before trusting the ZeroGPU result as the true ATR.",
+      "possible_causes": [
+        "ZeroGPU uses GPU-enabled neural model (TabICL on H200) vs CPU-only tree ensemble for ATR",
+        "ZeroGPU evaluates on an internal random split, not the temporal holdout used for ATR",
+        "ZeroGPU uses different feature set or different game selection",
+        "Possible data leakage in ZeroGPU eval (random split vs temporal — future games could leak into training)"
+      ],
+      "action": "Audit zerogpu-burst.py eval methodology: (1) confirm train/test split is temporal, (2) confirm feature engine version matches, (3) if using TabICL on H200, replicate eval on same holdout as ATR."
     },
     {
-      "type": "CONSENSUS_ECE_BETTER_THAN_SOLO",
+      "type": "ODDS_MERGE_BROKEN_4TH_ITERATION",
+      "severity": "CRITICAL",
+      "iterations_unresolved": 4,
+      "detail": "latest-picks.json (2026-04-05) confirmed: all 11 games show market_implied=null, bet_side='NO_ODDS'. Model generates probabilities (BOS=0.9043, OKC=0.9257) but odds matching step fails. odds-latest.json has live data (BOS FanDuel @1.25 confirmed at 19:36 UTC Apr 5). The join never executes.",
+      "missed_bet_example": {
+        "game": "BOS vs TOR (Apr 5)",
+        "model_prob": 0.9043,
+        "market_odds": 1.25,
+        "market_implied": 0.80,
+        "edge": 0.1043,
+        "kelly_stake_pct": "~10%",
+        "kelly_bet_usd": 9.13,
+        "outcome": "NOT PLACED — odds merge null"
+      },
+      "action": "Fix odds merge in predict_today.py: after generating picks, load odds-latest.json, match home_team/away_team, populate market_implied=1/decimal_odds, edge=model_prob-market_implied, kelly_stake=edge*bankroll*kelly_fraction. One data join step."
+    },
+    {
+      "type": "NEW_ISLANDS_FLEET_EXPANSION",
       "severity": "MEDIUM_POSITIVE",
-      "detail": "Consensus ECE=0.2152 vs historical betting ECE=0.2758. Multi-agent averaging compresses overconfidence by 22%. Worth pursuing as post-hoc calibration layer.",
-      "note": "Consensus still well above ECE target of 0.05 — directional improvement only."
+      "detail": "4 new NBA islands (S16-S19) are active and producing briers in the 0.222-0.239 range after ~200 generations. This extends the fleet beyond the original S10-S15 configuration. However, S16-S19 are early-stage and haven't accumulated the same depth as S10 (gen435). Best new island: S16 at 0.22268.",
+      "fleet_best": "S16: 0.22268 (gen 240) — new fleet best"
+    },
+    {
+      "type": "PROP_BETTING_OPERATIONAL",
+      "severity": "MEDIUM_POSITIVE",
+      "detail": "latest-picks.json shows 7 value bets identified from player props (Cam Thomas UNDER 24.1 pts edge=12.4%, Franz Wagner UNDER 21.3 pts edge=9.9%, etc.). Kelly bets are tiny ($0.13-$0.19) but the prop pipeline is functioning. The odds merge only affects moneyline — props have edge calculated internally.",
+      "caveat": "Prop edges are computed without market odds (using model spread vs line), not true EV vs bookmaker. These are directional signals, not validated against actual sportsbook lines."
     }
   ],
 
@@ -73,43 +102,45 @@
     {
       "type": "ODDS_MERGE_BROKEN",
       "severity": "CRITICAL",
-      "iterations_unresolved": 3,
-      "iter4_diagnosis": "predict_today.py not running",
-      "iter5_diagnosis_refined": "Prediction model runs fine (latest-picks.json generated Apr 5), but odds merge step returns null. Narrower fix needed.",
-      "fix": "In autonomous-cycle.sh or predict_today.py: load odds-latest.json or live-odds.json and join on home_team/away_team after predictions generated.",
-      "status": "UNRESOLVED — 3rd consecutive iteration. Critical revenue gap."
+      "iterations_unresolved": 4,
+      "diagnosis": "Prediction model runs, odds-latest.json has live data, but the join step in predict_today.py never populates market_implied in the picks output. Fix: join odds-latest.json on home_team/away_team after prediction generation.",
+      "status": "UNRESOLVED — 4th consecutive iteration. Revenue impact: ~2-3 valid bets/day missed."
     },
     {
       "type": "ECE_OVERCONFIDENCE",
       "severity": "HIGH",
-      "iterations_unresolved": 3,
+      "iterations_unresolved": 4,
       "ece": 0.2758,
-      "worst_bucket": "60-70%: ECE=0.4811, 12 bets at 16.7% actual win rate",
-      "no_new_bets": true,
-      "status": "FROZEN — can't measure improvement without new live bets"
+      "worst_bucket": "60-70%: ECE=0.4811, 12 bets, 16.7% actual win rate vs 63% predicted",
+      "status": "FROZEN — 4 days no new bets. Cannot measure improvement without new resolved outcomes."
     },
     {
       "type": "CORRUPTED_ODDS_UNRESOLVED",
       "severity": "HIGH",
-      "iterations_unresolved": 3,
+      "iterations_unresolved": 4,
       "games_affected": ["SAS@MIL (gap=0.744)", "SAC@ATL (gap=0.4276)"],
-      "status": "UNRESOLVED — odds sanity gate not deployed"
+      "status": "UNRESOLVED — odds sanity gate not deployed. avg_edge contaminated at 126.63%."
     },
     {
       "type": "FEATURE_ENGINE_STALE",
       "severity": "MEDIUM",
-      "iterations_unresolved": 2,
-      "deployed": "v3.0-37cat",
-      "target": "v3.1-46cat",
-      "status": "UNRESOLVED — parity rule violated"
+      "iterations_unresolved": 3,
+      "deployed": "v3.0-37cat (6135 raw features, 37 categories)",
+      "target": "v3.1-54cat (6253+ raw features, 54 categories)",
+      "status": "UNRESOLVED — latest-eval.json and quant-summary.json both confirm v3.0-37cat still deployed."
+    },
+    {
+      "type": "FLEET_RESET_S10_S15",
+      "severity": "CRITICAL",
+      "iterations_unresolved": 1,
+      "detail": "S10-S15 all show brier=1.0, gen=0 as of 18:45 UTC. 435 generations of S10 evolution potentially lost.",
+      "status": "NEW THIS ITERATION — requires immediate investigation"
     }
   ],
 
   "resolved_issues": [
-    {
-      "type": "PHANTOM_GAME",
-      "status": "RESOLVED — 0 phantom games confirmed across all evaluation windows"
-    }
+    {"type": "PHANTOM_GAME", "status": "RESOLVED — 0 phantom games confirmed across all windows"},
+    {"type": "TENSORFLOW_KELLY_BUG", "status": "RESOLVED — TF v5 fix deployed, backtest now consistent"}
   ],
 
   "calibration_analysis": {
@@ -120,25 +151,21 @@
     "ece_consensus_experiment": 0.2152,
     "ece_target": 0.05,
     "brier_atr": 0.2157,
+    "brier_zerogpu_h200": 0.19687,
     "brier_consensus_experiment": 0.18929,
     "overall_avg_predicted_historical": 0.6629,
     "overall_actual_win_rate_historical": 0.3864,
     "direction": "OVERCONFIDENT",
-    "experiment_agents": {
-      "t1_llama70b": {"brier": 0.16302, "ece": 0.14, "auc_roc": 0.8833, "n": 11},
-      "t1_gemma27b": {"brier": 0.24432, "ece": 0.1318, "auc_roc": 0.6667, "n": 11},
-      "t1_qwen72b": {"brier": 0.2525, "ece": 0.3125, "auc_roc": 0.7333, "n": 8},
-      "consensus": {"brier": 0.18929, "ece": 0.2152, "auc_roc": 0.7556, "n": 14}
-    },
-    "consensus_bucket_analysis": {
-      "0.6-0.7": "avg_predicted=0.670, actual=0.333 — OVERCONFIDENT (3 games, ECE=0.337)",
-      "0.7-0.8": "avg_predicted=0.762, actual=0.667 — ACCEPTABLE (3 games, ECE=0.095)",
-      "0.8-0.9": "avg_predicted=0.859, actual=1.0 — UNDERCONFIDENT (2 games)",
-      "0.9-1.0": "avg_predicted=0.914, actual=1.0 — GOOD (1 game, ECE=0.086)"
-    },
+    "overconfidence_severity": "EXTREME — predicted avg 66.3% vs actual 38.6% win rate (27.7pp gap)",
     "calibration_slope_estimate": 0.85,
     "calibration_slope_target": 1.0,
-    "note": "Experiment sample too small (n=14) for reliable calibration analysis. Directional signal: consensus improves ECE 22% vs solo predictions."
+    "experiment_agent_summary": {
+      "llama70b": {"brier": 0.163, "ece": 0.14, "auc_roc": 0.883, "n": 11},
+      "gemma27b": {"brier": 0.244, "ece": 0.132, "auc_roc": 0.667, "n": 11},
+      "qwen72b": {"brier": 0.253, "ece": 0.313, "auc_roc": 0.733, "n": 8},
+      "consensus": {"brier": 0.189, "ece": 0.215, "auc_roc": 0.756, "n": 14}
+    },
+    "note_on_zerogpu_discrepancy": "ZeroGPU 0.19687 vs ATR 0.2157 = 0.0188 gap. Suspected cause: ZeroGPU uses GPU (H200) + TabICL vs CPU-only tree ensemble for ATR. Different model class, not directly comparable. Need same-holdout validation."
   },
 
   "false_positive_rate": 0.4,
@@ -148,52 +175,36 @@
     "high_confidence_losses": 5,
     "fp_rate": 0.4,
     "fp_target": 0.25,
-    "status": "FAIL — unchanged, no new data"
+    "status": "FAIL — frozen, no new high-confidence bets since Apr 3"
   },
 
-  "strategy_backtest_key_results": {
-    "total_strategies_tested": 42,
-    "games_in_backtest": 1081,
-    "model_brier_used": 0.2152,
-    "top_strategies": [
-      {
-        "id": "ev_0.2_k0.1",
-        "name": "EV>20% Kelly=10%",
-        "bets": 172,
-        "win_rate": 0.6105,
-        "roi_pct": 14.63,
-        "sharpe": 3.586,
-        "final_bankroll": 251.26,
-        "max_drawdown": 0.3814,
-        "recommendation": "DEPLOY — highest Sharpe, validated on 1081 games"
-      },
-      {
-        "id": "kelly_0.1_0.02",
-        "name": "Tenth Kelly (edge>2%)",
-        "bets": 210,
-        "win_rate": 0.5857,
-        "roi_pct": 18.27,
-        "sharpe": 3.581,
-        "final_bankroll": 356.42,
-        "max_drawdown": 0.3519,
-        "recommendation": "CONSIDER — highest ROI but edge>2% is too low a bar with corrupted odds"
-      }
-    ],
-    "gap_to_live_performance": "SEVERE — live: -8.71% ROI vs backtest +14.63%. Root causes: corrupted odds inflate edge + ECE=0.2758 overconfidence + odds merge broken."
+  "fleet_evaluation": {
+    "as_of": "2026-04-06T18:45:19Z",
+    "islands": {
+      "S10_nba": {"status": "RESET", "brier": 1.0, "gen": 0, "alert": "CRITICAL — gen435 progress lost"},
+      "S11_nba": {"status": "RESET", "brier": 1.0, "gen": 0, "alert": "CRITICAL"},
+      "S12_nba": {"status": "RESET", "brier": 1.0, "gen": 0, "alert": "CRITICAL"},
+      "S13_nba": {"status": "RESET", "brier": 1.0, "gen": 0, "alert": "CRITICAL"},
+      "S14_nba": {"status": "RESET", "brier": 1.0, "gen": 0, "alert": "CRITICAL"},
+      "S15_nba": {"status": "RESET", "brier": 1.0, "gen": 0, "alert": "CRITICAL"},
+      "S16_nba": {"status": "running", "brier": 0.22268, "gen": 240, "note": "New island — best of new fleet"},
+      "S17_nba": {"status": "running", "brier": 0.22502, "gen": 204},
+      "S18_nba": {"status": "running", "brier": 0.23928, "gen": 235},
+      "S19_nba": {"status": "running", "brier": 0.22480, "gen": 181}
+    },
+    "fleet_best_new": 0.22268,
+    "fleet_best_old_atr": 0.2157,
+    "effective_islands_evolving": 4,
+    "zerogpu_best": 0.19687
   },
 
   "this_iteration_mutation": {
-    "parameter": "betting_strategy_filter",
-    "current": "edge>0.03 (3% min), kelly_fraction=0.35",
-    "proposed": "EV>20% + Kelly=10% (deploy strategy ev_0.2_k0.1)",
-    "rationale": "Strategy backtest on 1081 games validates this as optimal filter. Current kelly_fraction=0.35 is too aggressive; 10% Kelly reduces drawdown risk. EV>20% threshold aligns with confidence_threshold=0.65 proposal from iter4.",
-    "expected_bets_rate": "16% of games (172/1081)",
-    "expected_win_rate": 0.6105,
-    "expected_roi_pct": 14.63,
-    "expected_sharpe": 3.586,
-    "evidence_quality": "HIGH — 1081-game backtest, strategy consistently top-5 across all metrics",
-    "risk": "MEDIUM — backtest may not fully reflect live market conditions + corrupted odds contamination",
-    "priority": "P1 — implement after P0 odds merge fix"
+    "parameter": "zerogpu_eval_validation",
+    "action": "Audit zerogpu-burst.py to determine if the 0.19687 Brier is on a temporal holdout or a random split. If temporal holdout matches ATR methodology, promote to new ATR.",
+    "rationale": "ZeroGPU baseline 0.19687 is the first result below 0.20 target. If valid, this changes the strategic picture significantly. If it's evaluated on a leaky random split, it's a false positive that needs correction.",
+    "expected_outcome": "Either: (A) confirm 0.19687 as new ATR → declare target achieved, shift focus to ROI/ECE, or (B) identify leakage → fix eval methodology in zerogpu-burst.py",
+    "evidence_for_validity": ["H200 GPU can run TabICL — the model class that achieved 0.2157 ATR on Colab T4", "ZeroGPU uses Nomos42 account (same as S10-S15)", "No improvement in this run suggests this IS a stable baseline, not a lucky run"],
+    "evidence_against_validity": ["Only 4 candidates in 8.6 seconds — suspiciously fast for proper eval", "0.0188 gap vs ATR is large (8.7%)", "n_candidates=4 suggests minimal exploration — could be testing same config as Colab with different eval set"]
   },
 
   "performance_trends": {
@@ -206,78 +217,79 @@
     "max_drawdown_pct": 20.89,
     "bankroll": 91.29,
     "peak_bankroll": 110.43,
-    "days_without_bet": 3,
+    "days_without_bet": 4,
     "last_bet": "2026-04-03",
     "avg_edge_pct": 126.63,
-    "avg_edge_note": "CORRUPTED — inflated by SAS@MIL (0.744 gap) and SAC@ATL (0.4276 gap). Real avg edge likely <30%.",
-    "trend": "FROZEN — bleeding stopped, pipeline broken, backtest strategy identified"
+    "avg_edge_note": "CORRUPTED — inflated by SAS@MIL (0.744) and SAC@ATL (0.4276). Real avg edge likely <30%.",
+    "trend": "FROZEN — prediction pipeline broken (odds merge null). No live bets 4 days."
   },
 
   "recommendations": [
     {
       "priority": 1,
-      "type": "P0_BUG_FIX",
-      "title": "Fix odds merge in predict pipeline — refined diagnosis",
-      "department": "D7/INFRA",
-      "action": "latest-picks.json shows predictions generated (BOS=0.904) but market_implied=null. The model runs. The odds merge step does not. Fix: in predict_today.py after generating picks, load odds-latest.json, match on home_team/away_team, populate market_implied, edge, kelly_stake. One data join step.",
-      "expected_impact": "Restores full betting pipeline. BOS@TOR Apr 5 would have been a +10.4% edge bet."
+      "type": "VALIDATION",
+      "title": "Validate ZeroGPU 0.19687 on ATR holdout — may have hit the target",
+      "department": "D6/EVALUATION",
+      "action": "Read scripts/gpu-burst/zerogpu-burst.py. Verify: (1) train/test split uses temporal cutoff not random shuffle, (2) feature engine version matches v3.0-37cat, (3) game count in eval set. If temporal split confirmed, 0.19687 may be new ATR — update quant-summary.json and announce target achieved.",
+      "expected_impact": "If valid: ATR = 0.19687 (below 0.20 target). Strategic shift to ROI and ECE improvement.",
+      "risk": "If leaky: false positive — fix zerogpu eval to use temporal split"
     },
     {
       "priority": 2,
       "type": "P0_BUG_FIX",
-      "title": "Odds sanity gate — carryover 3 iterations",
-      "department": "D2/ENGINEERING",
-      "action": "In predict_today.py: if abs(model_prob - market_implied) > 0.45 OR market_implied < 0.10 OR market_implied > 0.90: skip game. Eliminates SAS@MIL + SAC@ATL corruptions.",
-      "expected_impact": "avg_edge_pct drops from 126.63% to realistic <30%, ece_clean estimated at 0.21"
+      "title": "Fix odds merge — 4th iteration unresolved (P0 CRITICAL)",
+      "department": "D7/INFRA",
+      "action": "In predict_today.py: after generating picks, load odds-latest.json. For each game in picks: match home_team name (fuzzy or exact), extract h2h outcome price for home team, compute market_implied = 1/decimal_price, edge = model_prob - market_implied, kelly_stake = edge * bankroll * 0.10 (EV>20% filter). Save updated picks. This is one data join (~10 lines of Python).",
+      "specific_example": "BOS@TOR: picks['home_win_prob']=0.9043, odds['Boston Celtics']['fanduel']['h2h']['price']=1.25, market_implied=0.80, edge=0.1043. Bet BOS at kelly=10%.",
+      "expected_impact": "Restores full betting pipeline. ~2-3 valid bets per day unlocked."
     },
     {
       "priority": 3,
-      "type": "STRATEGY_DEPLOY",
-      "title": "Deploy EV>20% Kelly=10% strategy (validated on 1081 games)",
-      "department": "D4/BETTING",
-      "action": "Replace current min_edge=0.03 + kelly_fraction=0.35 with: ev_threshold=0.20, kelly_fraction=0.10. Strategy id: ev_0.2_k0.1 validated in strategy_analysis.",
-      "expected_sharpe": 3.586,
-      "expected_roi_pct": 14.63,
-      "risk": "Requires clean odds data first — P0 fixes must be deployed before this has effect"
+      "type": "P0_INVESTIGATION",
+      "title": "Investigate S10-S15 island reset — restore or confirm intentional",
+      "department": "D7/INFRA",
+      "action": "Check HF Space logs for S10-S15. Determine if reset was intentional (fleet migration to S16-S19) or accidental. If checkpoints exist in Spaces cache, restore them. If intentional migration, update CLAUDE.md fleet definition to S16-S19. If accidental, restore S10 from best_brier=0.22041 checkpoint (gen 435).",
+      "expected_impact": "Restores 6 mature evolution islands (435 generations) if recoverable. If not, at minimum clarifies new fleet definition."
     },
     {
       "priority": 4,
-      "type": "P1_BUG_FIX",
-      "title": "Fix dual edge formula inconsistency",
+      "type": "P0_BUG_FIX",
+      "title": "Odds sanity gate — 4th iteration unresolved",
       "department": "D2/ENGINEERING",
-      "action": "Standardize: game.edge = model_prob(bet_side) - market_implied(bet_side). Both game.edge and value_bets.edge must use bet-centric perspective.",
-      "expected_impact": "Eliminates ambiguous negative-edge bets from pipeline"
+      "action": "In predict_today.py: add check — if abs(model_prob - market_implied) > 0.45 OR market_implied < 0.10 OR market_implied > 0.90: skip game (log warning). Eliminates SAS@MIL + SAC@ATL corruptions that inflate avg_edge to 126.63%.",
+      "expected_impact": "avg_edge drops to realistic <30%. ECE measurement becomes clean."
     },
     {
       "priority": 5,
-      "type": "CALIBRATION",
-      "title": "Confidence threshold 0.55 to 0.65 (backtest-validated via strategy analysis)",
-      "department": "D6/EVALUATION",
-      "action": "EV>20% threshold effectively filters same bucket as confidence=0.65. If strategy deploy is blocked, this is the manual equivalent: reject bets where model_prob < 0.65.",
-      "expected_ece_delta": -0.13,
-      "expected_win_rate_delta": "+9.4% (38.6% to 48%)"
+      "type": "STRATEGY_DEPLOY",
+      "title": "Deploy EV>20% Kelly=10% strategy after odds merge fix",
+      "department": "D4/BETTING",
+      "action": "Replace current min_edge=0.03 + kelly_fraction=0.35 with ev_threshold=0.20 + kelly_fraction=0.10. Validated: 172 bets, 61% win rate, ROI +14.63%, Sharpe 3.586 on 1081-game backtest.",
+      "status": "BLOCKED by odds merge fix (priority 2)"
     },
     {
       "priority": 6,
-      "type": "ENGINE_PARITY",
-      "title": "Push v3.1-46cat engine to HF islands",
-      "department": "D9/CROSS-REPO",
-      "action": "diff features/engine.py vs hf-space/features/engine.py. HF islands running v3.0-37cat (6135 features) vs target v3.1-46cat (6253 features). Push parity update via git subtree.",
-      "expected_brier_delta": "0.001-0.003 improvement if islands unlock 9 extra feature categories"
+      "type": "CALIBRATION",
+      "title": "Raise confidence threshold to 0.65 while odds merge is being fixed",
+      "department": "D6/EVALUATION",
+      "action": "Set confidence_threshold=0.65 in predict_today.py or autonomous-cycle.sh. This filters the worst overconfidence bucket (60-70%: ECE=0.4811). Even without live odds, applies to prop bets and player props pipeline.",
+      "expected_ece_delta": -0.13,
+      "evidence": "Backtest: EV>20% threshold (equivalent to conf=0.65) => 61% win rate vs current 38.6%"
     },
     {
       "priority": 7,
-      "type": "CALIBRATION",
-      "title": "Multi-agent consensus as calibration layer — directional signal",
-      "department": "D2/ENGINEERING",
-      "action": "Ensemble from t1_llama70b + consensus weighting reduced ECE 22% in experiment (0.2758 to 0.2152). Consider using consensus ensemble as post-hoc calibration. Needs n>50 to validate.",
-      "expected_ece_delta": -0.06,
-      "caveat": "n=14 experiment — directional signal only, not statistically significant"
+      "type": "ENGINE_PARITY",
+      "title": "Push v3.1-54cat feature engine to new islands (S16-S19)",
+      "department": "D9/CROSS-REPO",
+      "action": "diff features/engine.py vs hf-space/features/engine.py. Deploy v3.1-54cat to S16-S19. Since S10-S15 are reset anyway, seed S16-S19 with the newest engine version.",
+      "expected_brier_delta": "0.001-0.003 (9 additional feature categories unlocked)"
     }
   ],
 
   "metrics_summary": {
     "brier_atr": 0.2157,
+    "brier_zerogpu_h200": 0.19687,
+    "brier_zerogpu_status": "PENDING_VALIDATION — may be new ATR",
     "brier_experiment_consensus": 0.18929,
     "brier_best_agent": 0.16302,
     "brier_target": 0.20,
@@ -299,21 +311,24 @@
     "drawdown_status": "ALERT_ACTIVE",
     "phantom_games": 0,
     "corrupted_odds_confirmed": 2,
-    "days_without_bet": 3,
+    "days_without_bet": 4,
     "live_odds_fresh": true,
     "predict_pipeline_healthy": false,
     "odds_merge_healthy": false,
-    "status_overall": "CRITICAL — odds merge broken (model runs fine), no bets 3 days, backtest strategy identified"
+    "fleet_s10_s15_status": "RESET — brier=1.0, gen=0",
+    "fleet_s16_s19_status": "ACTIVE — best=0.22268 (S16, gen240)",
+    "zerogpu_sub20_achieved": true,
+    "status_overall": "CRITICAL — odds merge broken (4th iter), S10-S15 fleet reset. POSITIVE: ZeroGPU 0.19687 may be first sub-0.20 result pending validation."
   },
 
   "critical_alerts": [
-    "ODDS MERGE BROKEN: latest-picks.json shows model ran (BOS=0.904) but market_implied=null. Fix is a join step in predict_today.py, not a model fix.",
-    "STRATEGY VALIDATED: EV>20% Kelly=10% proven on 1081-game backtest => Sharpe 3.586, ROI +14.63%. Deploy after P0 odds fix.",
-    "DRAWDOWN ALERT: Bankroll $91.29 (-17.3% from peak $110.43) — above 15% alert threshold. 3 days no bets.",
-    "FEATURE ENGINE MISMATCH: HF islands running v3.0-37cat, target is v3.1-46cat. Cross-pollination benefits partially lost.",
-    "CORRUPTED ODDS (2 games, 3 iterations unresolved): SAS@MIL gap=0.744, SAC@ATL gap=0.4276 — odds sanity gate still undeployed.",
-    "ECE=0.2758 (5.5x target) — frozen without new live bets. Experiment consensus ECE=0.2152 (22% better with multi-agent averaging)."
+    "ZEROGPU_SUB20: ZeroGPU H200 baseline=0.19687 — BELOW 0.20 TARGET. Validate eval methodology before declaring ATR hit. If confirmed: major milestone.",
+    "FLEET_RESET: S10-S15 ALL at brier=1.0, gen=0 as of 18:45 UTC. 435 generations of evolution potentially lost. S16-S19 are active replacement (best=0.22268). Investigate root cause immediately.",
+    "ODDS_MERGE_BROKEN (4th iteration): latest-picks.json Apr 5 — 11 games, market_implied=null for all. BOS@TOR missed: edge=+10.4%, kelly=$9.13. Fix is one Python join in predict_today.py.",
+    "DRAWDOWN ALERT: Bankroll $91.29 (-17.3% from peak $110.43). 4 days no bets. Pipeline must be restored.",
+    "CORRUPTED_ODDS (4 iterations unresolved): SAS@MIL gap=0.744, SAC@ATL gap=0.4276 — odds sanity gate not deployed.",
+    "ECE=0.2758 (5.5x target) — frozen. 60-70% confidence bucket: predicted 63%, actual 16.7% win rate. No measurement possible without new live bets."
   ],
 
-  "next_iteration_focus": "Verify odds merge step fixed (confirm market_implied now populated in picks); measure ECE on new bets post-fix; validate EV>20% Kelly=10% strategy live; confirm odds sanity gate deployed; push v3.1-46cat parity to HF islands"
+  "next_iteration_focus": "P0: Validate ZeroGPU 0.19687 on ATR holdout + Fix odds merge step (join odds-latest.json into picks) + Investigate S10-S15 reset. If odds merge fixed this cycle, expect 2-3 new bets to land, allowing fresh ECE measurement."
 }
