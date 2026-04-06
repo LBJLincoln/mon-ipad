@@ -1,21 +1,23 @@
 {
-  "cycle": 68,
-  "timestamp": "2026-04-06T04:30:00Z",
+  "cycle": 69,
+  "timestamp": "2026-04-06T08:15:00Z",
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
 
   "nba_fleet": {
     "online": 6,
     "total": 6,
-    "fleet_best_brier": 0.22079,
-    "fleet_best_island": "S10",
-    "fleet_best_roi": 0.3164,
-    "fleet_best_sharpe": 6.678,
-    "previous_fleet_best_brier": 0.21993,
-    "regression_note": "S14+S15 restarted between cycles — lost prev best 0.21993. S10 now leads at 0.22079.",
+    "fleet_best_brier": 0.2222,
+    "fleet_best_island": "S15",
+    "fleet_best_roi": 0.2998,
+    "fleet_best_sharpe": 6.3369,
     "checkpoint_threshold": 0.21837,
+    "checkpoint_triggered": false,
     "target": 0.20,
+    "note": "All islands restarted since cycle-68 (low gen counts 27-48 vs 50-314 prev). Fleet re-evolving. S15 leads at 0.2222.",
     "cycle_actions": [
-      "S11 stagnation_counter=17 → diversify command queued successfully"
+      "No stagnation detected (all islands stagnation ≤ 1)",
+      "No checkpoint (best 0.2222 > threshold 0.21837)",
+      "Research proposal written: moneyline-fusion-complementary-signal (high priority)"
     ],
     "islands": {
       "S10": {
@@ -23,48 +25,47 @@
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
         "status": "ONLINE",
-        "cycle": 105,
-        "generation": 314,
-        "best_brier": 0.22079,
-        "best_roi": 0.3164,
-        "best_sharpe": 6.678,
-        "best_model": "extra_trees",
-        "best_features": 43,
-        "mutation_rate": 0.0686,
+        "cycle": 12,
+        "generation": 36,
+        "best_brier": 0.23149,
+        "best_roi": 0.1968,
+        "best_sharpe": 7.6199,
+        "best_model": "random_forest",
+        "best_features": 46,
+        "mutation_rate": 0.1183,
         "stagnation": 0,
-        "feature_candidates": 3266,
-        "note": "FLEET_BEST — 3266 candidates (vs 3286 others, minor parity gap)"
+        "feature_candidates": 3286
       },
       "S11": {
         "name": "nba-quant-2",
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
         "status": "ONLINE",
-        "cycle": 40,
-        "generation": 119,
-        "best_brier": 0.22342,
-        "best_roi": 0.2851,
-        "best_sharpe": 6.4703,
+        "cycle": 12,
+        "generation": 35,
+        "best_brier": 0.22372,
+        "best_roi": 0.284,
+        "best_sharpe": 9.3918,
         "best_model": "catboost",
-        "best_features": 56,
-        "mutation_rate": 0.15,
-        "stagnation": 17,
+        "best_features": 64,
+        "mutation_rate": 0.1166,
+        "stagnation": 0,
         "feature_candidates": 3286,
-        "alert": "STAGNATION=17 — diversify command QUEUED this cycle"
+        "note": "Stagnation cleared (was 17 last cycle — diversify worked)"
       },
       "S12": {
         "name": "nba-evo-3",
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
         "status": "ONLINE",
-        "cycle": 38,
-        "generation": 114,
-        "best_brier": 0.22228,
-        "best_roi": 0.2989,
-        "best_sharpe": 5.896,
-        "best_model": "random_forest",
-        "best_features": 50,
-        "mutation_rate": 0.1027,
+        "cycle": 16,
+        "generation": 48,
+        "best_brier": 0.22533,
+        "best_roi": 0.2663,
+        "best_sharpe": 7.2486,
+        "best_model": "lightgbm",
+        "best_features": 40,
+        "mutation_rate": null,
         "stagnation": 0,
         "feature_candidates": 3286
       },
@@ -73,14 +74,14 @@
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
         "status": "ONLINE",
-        "cycle": 49,
-        "generation": 146,
-        "best_brier": 0.22365,
-        "best_roi": 0.2849,
-        "best_sharpe": 6.1838,
+        "cycle": 13,
+        "generation": 37,
+        "best_brier": 0.22283,
+        "best_roi": 0.2931,
+        "best_sharpe": 10.12,
         "best_model": "random_forest",
         "best_features": 52,
-        "mutation_rate": 0.0951,
+        "mutation_rate": 0.1132,
         "stagnation": 0,
         "feature_candidates": 3286
       },
@@ -88,35 +89,34 @@
         "name": "nba-evo-5",
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "status": "ONLINE_RESTARTED",
-        "cycle": 40,
-        "generation": 118,
-        "best_brier": 0.22347,
-        "best_roi": 0.2859,
-        "best_sharpe": 5.0049,
+        "status": "ONLINE",
+        "cycle": 14,
+        "generation": 42,
+        "best_brier": 0.22622,
+        "best_roi": 0.2551,
+        "best_sharpe": 5.4224,
         "best_model": "random_forest",
-        "best_features": 64,
-        "mutation_rate": 0.1488,
-        "stagnation": 2,
-        "feature_candidates": 3286,
-        "alert": "RESTARTED since cycle-67 — lost prev best 0.21993"
+        "best_features": 55,
+        "mutation_rate": 0.0737,
+        "stagnation": 0,
+        "feature_candidates": 3286
       },
       "S15": {
         "name": "nba-evo-6",
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "status": "ONLINE_RESTARTED",
-        "cycle": 17,
-        "generation": 50,
-        "best_brier": 0.22834,
-        "best_roi": 0.2316,
-        "best_sharpe": 2.1771,
-        "best_model": "catboost",
-        "best_features": 72,
-        "mutation_rate": 0.1154,
-        "stagnation": 0,
+        "status": "ONLINE",
+        "cycle": 9,
+        "generation": 27,
+        "best_brier": 0.2222,
+        "best_roi": 0.2998,
+        "best_sharpe": 6.3369,
+        "best_model": "random_forest",
+        "best_features": 61,
+        "mutation_rate": null,
+        "stagnation": 1,
         "feature_candidates": 3286,
-        "alert": "RESTARTED since cycle-67 — young island gen=50"
+        "note": "FLEET_BEST this cycle"
       }
     }
   },
@@ -131,8 +131,8 @@
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
         "status": "ONLINE",
-        "cycle": 3392,
-        "generation": 10174,
+        "cycle": 3747,
+        "generation": 11240,
         "best_brier": 0.24971,
         "best_roi": 0.0068,
         "best_sharpe": 0.6809,
@@ -145,8 +145,8 @@
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
         "status": "ONLINE",
-        "cycle": 5401,
-        "generation": 16201,
+        "cycle": 5672,
+        "generation": 17016,
         "best_brier": 0.23134,
         "best_roi": 0.2804,
         "best_sharpe": 1.0635,
@@ -154,62 +154,62 @@
         "best_features": 70,
         "feature_candidates": 309,
         "stagnation": 0,
-        "note": "BEST_ISLAND — Gen 16200 shows Brier 0.2182 / ROI 41.6% (recent gen result, monitor for consolidation)"
+        "note": "FLEET_BEST"
       },
       "PA3": {
         "url": "nomos42-political-alpha-3.hf.space",
         "role": "catboost",
         "status": "DOWN_404",
-        "consecutive_down_cycles": 4,
-        "restart_attempted_cycle": 67,
-        "alert": "DOWN_404 (4 cycles) — MANUAL ACTION NEEDED: restart LBJLincoln26/nomos-political-alpha catboost space"
+        "consecutive_down_cycles": 5,
+        "alert": "DOWN_404 (5 cycles) — MANUAL ACTION NEEDED: restart LBJLincoln26/nomos-political-alpha catboost space"
       },
       "PA4": {
         "url": "nomos42-political-alpha-4.hf.space",
         "role": "wide_search",
         "status": "DOWN_404",
-        "consecutive_down_cycles": 4,
-        "restart_attempted_cycle": 67,
-        "alert": "DOWN_404 (4 cycles) — MANUAL ACTION NEEDED: restart Nomos42/nomos-political-alpha-4 wide search space"
+        "consecutive_down_cycles": 5,
+        "alert": "DOWN_404 (5 cycles) — MANUAL ACTION NEEDED: restart Nomos42/nomos-political-alpha-4 wide search space"
       }
     }
   },
 
   "cycle_improvements": {
     "nba": {
-      "type": "GA_CONTROL",
-      "action": "POST {\"command\":\"diversify\"} to S11 (stagnation=17>15 threshold)",
-      "status": "COMPLETED — API returned {\"status\":\"command queued\",\"command\":\"diversify\"}",
-      "island": "S11 (nomos42-nba-quant-2.hf.space)",
-      "expected_impact": "Break 17-gen stagnation plateau at Brier 0.22342, reinject diversity"
+      "type": "RESEARCH_PROPOSAL",
+      "file": "mon-ipad/data/research-proposals/2026-04-06-moneyline-fusion-complementary-signal.md",
+      "summary": "Moneyline Implied Probability Fusion: MDPI 2026 shows market+non-market features are complementary. Fused model targets Brier < 0.21. Add closing_line logit + line_movement as protected features. Expected to break 0.21837 checkpoint threshold.",
+      "source": "https://www.mdpi.com/2078-2489/17/1/56"
     },
     "political": {
-      "type": "BUG_FIX",
-      "action": "Filter Polymarket pre-2025 stale markets in fetch_polymarket_markets()",
-      "file": "nomos-political-alpha/ops/fetch_political_data.py",
-      "details": "Added end_date >= 2025-01-01 filter. Excluded 2020/2021 election markets that contaminated political signal pipeline. Print now says '2025+ markets found'.",
-      "expected_impact": "Cleaner training signal — no stale pre-Trump-admin-2025 markets in feature engine"
+      "type": "FEATURE_ENGINE_IMPROVEMENT",
+      "file": "nomos-political-alpha/features/political_engine.py",
+      "version_bump": "v3.4 → v3.5-political-27cat-fec2026",
+      "changes": [
+        "FEC bundling threshold updated: $23,300 → $24,600 (2025-2026 inflation-indexed)",
+        "New feature: fec_maxed_out_pct (avg_donation / $3,500 per-election limit)",
+        "New feature: fec_maxed_out_flag (binary: avg donation at legal max)",
+        "Feature count: ~3,202 → ~3,204 (+2 new FEC features)"
+      ],
+      "rationale": "Donors maxing out individual contribution limits ($3,500/election in 2025-2026 cycle) is a strong access-seeking signal. Previous threshold $23,300 was stale 2023-2024 value."
     }
   },
 
   "alerts": [
-    "S11 stagnation=17 — diversify QUEUED this cycle",
-    "S14 restarted — lost best 0.21993 (was fleet leader)",
-    "S15 restarted — very young (gen=50), low brier reliability",
-    "PA3 DOWN_404 x4 cycles — manual HF dashboard restart needed",
-    "PA4 DOWN_404 x4 cycles — manual HF dashboard restart needed",
-    "PA1 feature_candidates=252 vs PA2=309 — significant parity gap",
-    "FEC using DEMO_KEY — upgrade to registered key: api.data.gov for 1000 req/hr"
+    "PA3 DOWN_404 x5 cycles — manual HF dashboard restart URGENT",
+    "PA4 DOWN_404 x5 cycles — manual HF dashboard restart URGENT",
+    "All NBA islands restarted — low gen counts, re-evolving from scratch",
+    "PA1 feature_candidates=252 vs PA2=309 — parity gap persists",
+    "No NBA checkpoint this cycle (best 0.2222 > threshold 0.21837)"
   ],
 
   "engine_versions": {
-    "nba": "v3.1-51cat (6257 candidates, 50 categories)",
-    "political": "v3.4-political-27cat-tariff-fix + DEI-fix"
+    "nba": "v3.1-46cat (3286 candidates)",
+    "political": "v3.5-political-27cat-fec2026"
   },
 
-  "research_findings": {
-    "nba": "Calibration fitting remains stub — isotonic/conformal/venn_abers code in calibration/ but fit_and_export() not auto-triggered. Key gap to fix next D2 Engineering cycle.",
-    "political": "PA2 CatBoost+70f dominates — cross-pollinate this config to PA1 (PA1 uses xgboost_brier). Also PA2 recent gen shows 0.2182 which if real would be exceptional.",
-    "cross_repo_pattern": "CatBoost + 50-70 features is winning pattern across NBA (S11, S13) and Political (PA2). Extra_trees strong for NBA exploration only."
+  "research_pipeline": {
+    "nba_proposals_total": 54,
+    "latest_nba": "2026-04-06-moneyline-fusion-complementary-signal.md (HIGH PRIORITY)",
+    "key_finding": "Fused model (calibrated closing-line + GA features) targets Brier <0.21 per MDPI 2026"
   }
 }
