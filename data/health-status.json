@@ -1,180 +1,170 @@
 {
-  "cycle_timestamp": "2026-04-05T20:15:00Z",
-  "cycle_type": "4h_brain",
-  "cycle_number": 66,
+  "cycle": 67,
+  "timestamp": "2026-04-06T00:30:00Z",
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
 
   "nba_fleet": {
-    "overall_best_brier": 0.22098,
-    "best_island": "S15",
+    "online": 6,
+    "total": 6,
+    "fleet_best_brier": 0.21993,
+    "fleet_best_island": "S14",
+    "fleet_best_roi": 0.3262,
+    "fleet_best_sharpe": 9.1412,
+    "previous_best_brier": 0.22098,
+    "improvement": 0.00105,
     "checkpoint_threshold": 0.21837,
-    "checkpoint_needed": false,
-    "diversify_needed": false,
-    "stagnation_alert": false,
+    "target": 0.20,
     "islands": {
       "S10": {
-        "url": "nomos42-nba-quant.hf.space",
+        "name": "nba-quant",
         "role": "exploitation",
-        "status": "EVOLVING",
-        "cycle": 74,
-        "generation": 220,
-        "best_brier": 0.22862,
-        "best_roi": 0.2282,
-        "best_model": "lightgbm",
-        "stagnation": 0,
-        "delta_cycles_since_last_check": 37
+        "status": "ONLINE",
+        "cycle": 44,
+        "generation": 131,
+        "best_brier": 0.22079,
+        "best_roi": 0.3164,
+        "best_sharpe": 6.678,
+        "best_model": "extra_trees",
+        "best_features": 43,
+        "mutation_rate": 0.099,
+        "stagnation": 0
       },
       "S11": {
-        "url": "nomos42-nba-quant-2.hf.space",
+        "name": "nba-quant-2",
         "role": "exploration",
-        "status": "EVOLVING",
-        "cycle": 77,
-        "generation": 231,
-        "best_brier": 0.22696,
-        "best_roi": 0.2477,
-        "best_model": "lightgbm",
-        "stagnation": 0,
-        "delta_cycles_since_last_check": 43
+        "status": "ONLINE",
+        "cycle": 33,
+        "generation": 97,
+        "best_brier": 0.22223,
+        "best_roi": 0.2979,
+        "best_sharpe": 5.2652,
+        "best_model": "random_forest",
+        "best_features": 78,
+        "mutation_rate": 0.1363,
+        "stagnation": 0
       },
       "S12": {
-        "url": "nomos42-nba-evo-3.hf.space",
+        "name": "nba-evo-3",
         "role": "extra_trees_specialist",
-        "status": "EVOLVING",
-        "cycle": 52,
-        "generation": 156,
-        "best_brier": 0.22276,
-        "best_roi": 0.2948,
-        "best_sharpe": 7.2133,
+        "status": "ONLINE",
+        "cycle": 30,
+        "generation": 90,
+        "best_brier": 0.22129,
+        "best_roi": 0.3109,
+        "best_sharpe": 7.9486,
         "best_model": "random_forest",
-        "best_features": 48,
-        "stagnation": 0,
-        "delta_cycles_since_last_check": 22
+        "best_features": 61,
+        "mutation_rate": 0.077,
+        "stagnation": 0
       },
       "S13": {
-        "url": "nomos42-nba-evo-4.hf.space",
+        "name": "nba-evo-4",
         "role": "catboost_specialist",
-        "status": "EVOLVING",
-        "cycle": 61,
-        "generation": 182,
-        "best_brier": 0.24595,
-        "best_roi": 0.0419,
-        "best_model": "catboost",
-        "stagnation": 0,
-        "delta_cycles_since_last_check": 34,
-        "alert": "PERSISTENT_UNDERPERFORMER — brier 0.24595 is 0.025 above fleet avg; catboost specialist has not improved in 3 cycles"
+        "status": "ONLINE",
+        "cycle": 37,
+        "generation": 110,
+        "best_brier": 0.22208,
+        "best_roi": 0.302,
+        "best_sharpe": 7.3545,
+        "best_model": "random_forest",
+        "best_features": 65,
+        "mutation_rate": 0.0804,
+        "stagnation": 0
       },
       "S14": {
-        "url": "nomos42-nba-evo-5.hf.space",
+        "name": "nba-evo-5",
         "role": "lightgbm_specialist",
-        "status": "EVOLVING",
-        "cycle": 142,
-        "generation": 425,
-        "best_brier": 0.22494,
-        "best_roi": 0.2693,
-        "best_sharpe": 5.8204,
-        "best_model": "xgboost_brier",
-        "best_features": 55,
+        "status": "ONLINE",
+        "cycle": 38,
+        "generation": 114,
+        "best_brier": 0.21993,
+        "best_roi": 0.3262,
+        "best_sharpe": 9.1412,
+        "best_model": "extra_trees",
+        "best_features": 48,
+        "mutation_rate": 0.1162,
         "stagnation": 0,
-        "delta_cycles_since_last_check": 77
+        "note": "FLEET_BEST — extra_trees + 48 features + 9.14 Sharpe"
       },
       "S15": {
-        "url": "nomos42-nba-evo-6.hf.space",
+        "name": "nba-evo-6",
         "role": "wide_search",
-        "status": "EVOLVING",
-        "cycle": 40,
-        "generation": 119,
-        "best_brier": 0.22098,
-        "best_roi": 0.3144,
-        "best_sharpe": 6.6106,
-        "best_model": "extra_trees",
-        "best_features": 64,
-        "stagnation": 0,
-        "mutation_rate": 0.16,
-        "delta_cycles_since_last_check": 21,
-        "note": "FLEET_BEST — extra_trees + wide search + 64 features"
+        "status": "ONLINE",
+        "cycle": 28,
+        "generation": 82,
+        "best_brier": 0.22376,
+        "best_roi": 0.2708,
+        "best_sharpe": 3.2618,
+        "best_model": "random_forest",
+        "best_features": 59,
+        "mutation_rate": 0.1129,
+        "stagnation": 0
       }
     }
   },
 
   "political_fleet": {
-    "overall_best_brier": 0.23134,
-    "best_island": "PA2",
+    "online": 2,
+    "total": 4,
+    "fleet_best_brier": 0.23134,
+    "fleet_best_island": "PA2",
     "islands": {
       "PA1": {
-        "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
-        "status": "COOLDOWN",
-        "cycle": 2699,
-        "generation": 8097,
-        "best_brier": 0.24997,
+        "status": "ONLINE",
+        "cycle": 3047,
+        "generation": 9141,
+        "best_brier": 0.24976,
+        "best_roi": 0.0038,
+        "best_sharpe": 0.3776,
         "best_model": "xgboost_brier",
-        "best_features": 79,
-        "stagnation": 0,
-        "delta_cycles_since_last_check": 384
+        "best_features": 66,
+        "stagnation": 0
       },
       "PA2": {
-        "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
-        "status": "EVOLVING",
-        "cycle": 4740,
-        "generation": 14219,
+        "status": "ONLINE",
+        "cycle": 5064,
+        "generation": 15192,
         "best_brier": 0.23134,
         "best_roi": 0.2804,
         "best_sharpe": 1.0635,
         "best_model": "catboost",
         "best_features": 70,
         "stagnation": 0,
-        "delta_cycles_since_last_check": 277,
         "note": "BEST_ISLAND — CatBoost + 70 features + 28% ROI"
       },
       "PA3": {
-        "url": "nomos42-political-alpha-3.hf.space",
         "role": "catboost",
         "status": "DOWN_404",
         "consecutive_down_cycles": 3,
-        "alert": "NEEDS_RESTART — 3 consecutive cycles down. Manual restart via HuggingFace dashboard (LBJLincoln26 account)"
+        "restart_attempted_cycle": 67,
+        "alert": "DOWN_404 (3+ cycles) — restart attempted this cycle via HuggingFace MCP"
       },
       "PA4": {
-        "url": "nomos42-political-alpha-4.hf.space",
         "role": "wide_search",
         "status": "DOWN_404",
         "consecutive_down_cycles": 3,
-        "alert": "NEEDS_RESTART — 3 consecutive cycles down. Manual restart via HuggingFace dashboard (Nomos42 account)"
+        "restart_attempted_cycle": 67,
+        "alert": "DOWN_404 (3+ cycles) — restart attempted this cycle via HuggingFace MCP"
       }
     }
   },
 
-  "actions_this_cycle": {
-    "nba": {
-      "diversify_sent": [],
-      "checkpoint_triggered": false,
-      "stagnation_check": "ALL CLEAR — max stagnation: 0 across all 6 islands",
-      "research_proposal": "2026-04-05-isotonic-regression-calibration.md — Isotonic regression post-calibration estimated to cut Brier by 0.010–0.020 (best: 0.22098 → ~0.200–0.210); sources MDPI 2025 NBA paper achieving 0.199"
-    },
-    "political": {
-      "cycle_rotation": "D — Data pipeline health check",
-      "bug_fixed": "POLICY_KEYWORDS DEI/diversity terms missing — EOs like 'Addressing DEI Discrimination by Federal Contractors' returned 0 affected tickers. Fixed: added DEI/diversity/contractor/AI keywords to defense + big_tech + finance sectors. Now correctly maps to BA, META, AMZN, AAPL, MSFT, NVDA, QCOM, UBER.",
-      "data_pipeline_health": {
-        "exec_orders": "HEALTHY — 2 EOs fetched today (2026-04-03/04)",
-        "crypto": "HEALTHY — fetched today",
-        "enforcement": "HEALTHY — fetched today",
-        "form4_insider": "HEALTHY — form4_20260405.json present",
-        "polymarket": "STALE — last file: markets_20260405_0815.json (12h ago). 15-min cron appears stopped. Check VM cron."
-      },
-      "data_sources_proposal": "2026-04-05-new-data-sources-fec-polymarket-kalshi.md — Fix Polymarket stale market IDs (filtering 2020 markets), add Kalshi to pipeline, FEC employee donation endpoint",
-      "spaces_down": ["PA3", "PA4"],
-      "restart_required": "Manual restart via HuggingFace dashboard (HF MCP unavailable this session)"
-    }
-  },
+  "cycle_actions": [
+    "PA3/PA4 restart attempted via HuggingFace MCP",
+    "Polymarket pre-2025 filter bug fix in progress",
+    "NBA fleet improvement: 0.22098 → 0.21993 (Δ -0.00105)"
+  ],
 
-  "ecosystem_health": {
-    "nba_fleet_online": "6/6",
-    "political_fleet_online": "2/4",
-    "best_nba_brier": 0.22098,
-    "target_brier": 0.20,
-    "gap_to_target": 0.02098,
-    "best_political_brier": 0.23134,
-    "next_cycle_priority": "Implement isotonic regression calibration in genetic_loop.py on S15; restart PA3/PA4 manually; fix Polymarket cron on VM",
-    "engine_version": "v3.1-51cat (NBA) | v3.4-political-27cat-tariff-fix (Political)"
+  "alerts": [
+    "PA3 DOWN_404 (3+ cycles)",
+    "PA4 DOWN_404 (3+ cycles)",
+    "Political data pipeline: high synthetic ratio"
+  ],
+
+  "engine_versions": {
+    "nba": "v3.1-51cat",
+    "political": "v3.4-political-27cat-tariff-fix"
   }
 }
