@@ -1,0 +1,1 @@
+/home/termius/mon-ipad/docs/obsidian/20-Session-Log.md

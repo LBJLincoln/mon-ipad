@@ -1,0 +1,1 @@
+/home/termius/mon-ipad/docs/obsidian/17-Political-Alpha.md

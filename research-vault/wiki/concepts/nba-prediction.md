@@ -1,0 +1,230 @@
+# NBA Prediction & ML Models
+
+> Auto-compiled from 154 raw sources on 2026-04-06
+
+## Overview
+
+This topic covers 154 research files spanning nba prediction & ml models.
+Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
+
+## Sources
+
+- **2025-26 NBA Season — Agent GROK** (9600 words) -- `raw/arena-docs/grok-season-2025-26.md`
+- **2025-26 NBA Season — Agent OPENROUTER** (9569 words) -- `raw/arena-docs/openrouter-season-2025-26.md`
+- **2025-26 NBA Season — Agent CLAUDE** (9555 words) -- `raw/arena-docs/claude-season-2025-26.md`
+- **2025-26 NBA Season — Agent CODEX** (9547 words) -- `raw/arena-docs/codex-season-2025-26.md`
+- **2025-26 NBA Season — Agent GEMINI** (9540 words) -- `raw/arena-docs/gemini-season-2025-26.md`
+- **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
+- **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
+- **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
+- **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
+- **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`
+- **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/karpathy-researcher/kaggle_automation_research_march2026.md`
+- **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/agent-memory/karpathy-researcher_research_cycle6_feature_proposals.md`
+- **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/karpathy-researcher/research_cycle6_feature_proposals.md`
+- **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/agent-memory/karpathy-researcher_karpathy_autoresearch_pattern.md`
+- **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/karpathy-researcher/karpathy_autoresearch_pattern.md`
+- **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
+- **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/karpathy-researcher/obsidian_rag_implementation_april2026.md`
+- **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/agent-memory/research-analyst_research_april2026_free_inference_capacity.md`
+- **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/research-analyst/research_april2026_free_inference_capacity.md`
+- **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
+- **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`
+- **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/karpathy-researcher/karpathy_nba_adaptation.md`
+- **22 -- Compute Mesh Topology** (1406 words) -- `raw/obsidian-docs/22-Compute-Mesh.md`
+- **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/data-research/self-improvement-harness-sources-2026-03-31.md`
+- **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/research/self-improvement-harness-sources-2026-03-31.md`
+- **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
+- **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
+- **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
+- **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
+- **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
+- **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
+- **00 — Live Dashboard** (1076 words) -- `raw/obsidian-docs/00-Dashboard.md`
+- **05 -- Infrastructure** (1069 words) -- `raw/obsidian-docs/05-Infrastructure.md`
+- **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/data-research/self-improvement-harness-quick-wins-2026-03-31.md`
+- **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/research/self-improvement-harness-quick-wins-2026-03-31.md`
+- **07 -- Betting** (997 words) -- `raw/obsidian-docs/07-Betting.md`
+- **Research Proposal: Opening-Line Odds as Protected GA Features** (980 words) -- `raw/data-proposals/2026-04-05-opening-odds-protected-features.md`
+- **03 -- Trading Floor v4** (974 words) -- `raw/obsidian-docs/03-Trading-Floor.md`
+- **15 -- Business Plan** (936 words) -- `raw/obsidian-docs/15-Business-Plan.md`
+- **research_march2026_agentic_ai** (930 words) -- `raw/agent-memory/research-analyst_research_march2026_agentic_ai.md`
+- **research_march2026_agentic_ai** (930 words) -- `raw/research-analyst/research_march2026_agentic_ai.md`
+- **Research Cycle 7 — Self-Improvement Harness (March 31 2026)** (925 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_self_improvement_harness.md`
+- **Research Cycle 7 — Self-Improvement Harness (March 31 2026)** (925 words) -- `raw/karpathy-researcher/research_cycle7_self_improvement_harness.md`
+- **project_agent_superpowers_scan** (920 words) -- `raw/agent-memory/repo-scout_project_agent_superpowers_scan.md`
+- **project_agent_superpowers_scan** (920 words) -- `raw/repo-scout/project_agent_superpowers_scan.md`
+- **06 -- Research** (901 words) -- `raw/obsidian-docs/06-Research.md`
+- **02 -- Evolution (6 HF Islands)** (894 words) -- `raw/obsidian-docs/02-Evolution.md`
+- **Nomos42 -- Knowledge Vault** (892 words) -- `raw/obsidian-docs/README.md`
+- **12 -- Agent Registry** (846 words) -- `raw/obsidian-docs/12-Agent-Registry.md`
+- **Evolution Fleet Status — April 2026** (832 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
+- **Evolution Fleet Status — April 2026** (832 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
+- **20 -- Session Log** (804 words) -- `raw/obsidian-docs/20-Session-Log.md`
+- **16 -- Karpathy Autoresearch Pattern** (800 words) -- `raw/obsidian-docs/16-Karpathy-Pattern.md`
+- **11 -- GPU Compute** (799 words) -- `raw/obsidian-docs/11-GPU-Compute.md`
+- **10 -- All Repos** (790 words) -- `raw/obsidian-docs/10-Repos.md`
+- **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
+- **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
+- **01 -- Architecture (Forge v19)** (770 words) -- `raw/obsidian-docs/01-Architecture.md`
+- **Research Proposal: ELO Injection + Probability Clipping** (765 words) -- `raw/data-proposals/elo-injection-prob-clipping-2026-03-27.md`
+- **research_march2026_cycle4** (764 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle4.md`
+- **research_march2026_cycle4** (764 words) -- `raw/research-analyst/research_march2026_cycle4.md`
+- **09 -- Legal & Finance** (759 words) -- `raw/obsidian-docs/09-Legal-Finance.md`
+- **hf_march2026_scan** (733 words) -- `raw/agent-memory/research-analyst_project_hf_march2026_scan.md`
+- **hf_march2026_scan** (733 words) -- `raw/research-analyst/project_hf_march2026_scan.md`
+- **13 -- Tools** (724 words) -- `raw/obsidian-docs/13-Tools.md`
+- **19 -- Cross-Repo (D9)** (724 words) -- `raw/obsidian-docs/19-Cross-Repo.md`
+- **Research Proposal: Stacked Ensemble Meta-Learner + Probability Clipping** (718 words) -- `raw/data-proposals/ensemble-stacking-2026-03-27.md`
+- **17 -- Political Alpha** (701 words) -- `raw/obsidian-docs/17-Political-Alpha.md`
+- **08 -- API Vision & Marketplace** (689 words) -- `raw/obsidian-docs/08-API-Vision.md`
+- **24 -- GPU Autoresearch System** (689 words) -- `raw/obsidian-docs/24-GPU-Autoresearch.md`
+- **Cycle 8 ONNX + ClearML Research (Apr 3, 2026)** (679 words) -- `raw/agent-memory/karpathy-researcher_research_cycle8_onnx_clearml.md`
+- **Cycle 8 ONNX + ClearML Research (Apr 3, 2026)** (679 words) -- `raw/karpathy-researcher/research_cycle8_onnx_clearml.md`
+- **Research Proposal: Schedule-Aware Fatigue & Rest-Day Features** (677 words) -- `raw/data-proposals/schedule-fatigue-rest-days-2026-03-28.md`
+- **14 -- Communication** (665 words) -- `raw/obsidian-docs/14-Communication.md`
+- **project_nba_research_state** (660 words) -- `raw/agent-memory/research-analyst_project_nba_research_state.md`
+- **project_nba_research_state** (660 words) -- `raw/research-analyst/project_nba_research_state.md`
+- **NBA Feature Engine current state** (649 words) -- `raw/agent-memory/feature-engineer_project_engine_v38cat.md`
+- **NBA Feature Engine current state** (649 words) -- `raw/feature-engineer/project_engine_v38cat.md`
+- **Research Proposal: Shot-Chart Zone Features + SHAP-Driven Feature Selection** (637 words) -- `raw/data-proposals/shot-chart-shap-2026-03-27.md`
+- **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/agent-memory/karpathy-researcher_research_bloomberg_opencode_pi.md`
+- **Browser Automation for HF Spaces — March 2026 Research** (601 words) -- `raw/agent-memory/research-analyst_research_browser_automation_march2026.md`
+- **Research Proposal: Stacked Ensemble Meta-Learner** (601 words) -- `raw/data-proposals/stacked-ensemble-2026-03-27.md`
+- **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/karpathy-researcher/research_bloomberg_opencode_pi.md`
+- **Browser Automation for HF Spaces — March 2026 Research** (601 words) -- `raw/research-analyst/research_browser_automation_march2026.md`
+- **Research Proposal: Logistic Regression as 7th Model Type + Probability Clipping** (570 words) -- `raw/data-proposals/lr-meta-learner-2026-03-27.md`
+- **research_april2026_cycle10_betting_markets** (562 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle10_betting_markets.md`
+- **research_april2026_cycle10_betting_markets** (562 words) -- `raw/research-analyst/research_april2026_cycle10_betting_markets.md`
+- **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle9_neural_architectures.md`
+- **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/research-analyst/research_april2026_cycle9_neural_architectures.md`
+- **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle6.md`
+- **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/research-analyst/research_march2026_cycle6.md`
+- **Research Proposal: Post-hoc Calibration Layer** (516 words) -- `raw/data-proposals/calibration-improvement-2026-03-27.md`
+- **Research Proposal: Calibrated Logistic Regression + Shot-Zone Features** (507 words) -- `raw/data-proposals/lr-calibration-shot-features-2026-03-28.md`
+- **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
+- **Backtest Audit March 2026** (460 words) -- `raw/agent-memory/research-analyst_project_backtest_audit_march2026.md`
+- **Backtest Audit March 2026** (460 words) -- `raw/research-analyst/project_backtest_audit_march2026.md`
+- **project_claude_code_ecosystem** (449 words) -- `raw/agent-memory/repo-scout_project_claude_code_ecosystem.md`
+- **project_claude_code_ecosystem** (449 words) -- `raw/repo-scout/project_claude_code_ecosystem.md`
+- **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`
+- **research_march2026_cycle8_data_sources** (424 words) -- `raw/research-analyst/research_march2026_cycle8_data_sources.md`
+- **Backtesting & Multi-Agent Portfolio Research — April 2026 Cycle 11** (414 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle11_backtesting.md`
+- **Backtesting & Multi-Agent Portfolio Research — April 2026 Cycle 11** (414 words) -- `raw/research-analyst/research_april2026_cycle11_backtesting.md`
+- **25 -- ML Prediction System** (406 words) -- `raw/obsidian-docs/25-ML-Predictions.md`
+- **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
+- **NBA Free Data Sources Inventory** (397 words) -- `raw/repo-scout/project_nba_data_sources.md`
+- **Multi-Market NBA Betting Research March 2026** (377 words) -- `raw/agent-memory/research-analyst_research_march2026_multi_market.md`
+- **Multi-Market NBA Betting Research March 2026** (377 words) -- `raw/research-analyst/research_march2026_multi_market.md`
+- **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`
+- **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/karpathy-researcher/feedback_karpathy_patterns_validated.md`
+- **Research Proposal: Probability Clipping for Brier Score Improvement** (349 words) -- `raw/data-proposals/probability-clipping-brier-2026-03-28.md`
+- **Research Proposal: Shot-Chart Spatial Embeddings + Isotonic Calibration** (335 words) -- `raw/data-proposals/2026-04-01-shot-chart-embeddings-calibration.md`
+- **Research Cycle — March 26, 2026** (331 words) -- `raw/data-research/research-cycle-2026-03-26.md`
+- **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
+- **Research Proposal: Market Fusion for NBA Probability Calibration** (329 words) -- `raw/data-proposals/market-fusion-2026-04-01.md`
+- **Historical NBA Odds Sources** (313 words) -- `raw/agent-memory/repo-scout_project_historical_odds_sources.md`
+- **Historical NBA Odds Sources** (313 words) -- `raw/repo-scout/project_historical_odds_sources.md`
+- **Market Analyst Data Sources** (306 words) -- `raw/agent-memory/market-analyst_reference_data_sources.md`
+- **Market Analyst Data Sources** (306 words) -- `raw/market-analyst/reference_data_sources.md`
+- **Nomos42 Weekly Research Digest** (305 words) -- `raw/research/weekly-digest-2026-04-06.md`
+- **Research Scan: latest-improvements-2026-03-31** (300 words) -- `raw/research/latest-improvements-2026-03-31.md`
+- **Portfolio Optimization Deep Sweep — March 2026 Cycle 5** (299 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle5_portfolio.md`
+- **Portfolio Optimization Deep Sweep — March 2026 Cycle 5** (299 words) -- `raw/research-analyst/research_march2026_cycle5_portfolio.md`
+- **project_hf_spaces_inventory** (297 words) -- `raw/agent-memory/repo-scout_project_hf_spaces_inventory.md`
+- **project_hf_spaces_inventory** (297 words) -- `raw/repo-scout/project_hf_spaces_inventory.md`
+- **Nomos42 Weekly Research Digest** (277 words) -- `raw/data-research/weekly-digest-2026-03-31.md`
+- **Nomos42 Weekly Research Digest** (277 words) -- `raw/research/weekly-digest-2026-03-31.md`
+- **multi_target_trainer** (275 words) -- `raw/agent-memory/feature-engineer_project_multi_target_trainer.md`
+- **Research Proposal: EV>1.10 Filter + 0.3-Kelly Selective Wagering** (243 words) -- `raw/data-proposals/2026-04-05-ev-filter-fractional-kelly-market-fusion.md`
+- **project_scan_history** (235 words) -- `raw/agent-memory/repo-scout_project_scan_history.md`
+- **project_scan_history** (235 words) -- `raw/repo-scout/project_scan_history.md`
+- **gpu_evolution_v2_integration** (222 words) -- `raw/agent-memory/feature-engineer_project_gpu_evolution_v2.md`
+- **gpu_evolution_v2_integration** (222 words) -- `raw/feature-engineer/project_gpu_evolution_v2.md`
+- **Historical odds dataset 2025-26** (190 words) -- `raw/agent-memory/market-analyst_project_historical_odds.md`
+- **Historical odds dataset 2025-26** (190 words) -- `raw/market-analyst/project_historical_odds.md`
+- **Research Scan: github-scan-2026-03-31** (186 words) -- `raw/research/github-scan-2026-03-31.md`
+- **Strategy Confrontation Backtest** (180 words) -- `raw/agent-memory/nba-brain_project_strategy_confrontation.md`
+- **Strategy Confrontation Backtest** (180 words) -- `raw/nba-brain/project_strategy_confrontation.md`
+- **Research Scan: github-scan-2026-04-01** (167 words) -- `raw/research/github-scan-2026-04-01.md`
+- **Research Scan: github-scan-2026-04-02** (167 words) -- `raw/research/github-scan-2026-04-02.md`
+- **Enterprise Agent Matrix — 3-product 3-layer architecture** (161 words) -- `raw/agent-memory/nba-brain_project_enterprise_architecture.md`
+- **Enterprise Agent Matrix — 3-product 3-layer architecture** (161 words) -- `raw/nba-brain/project_enterprise_architecture.md`
+- **user_role** (153 words) -- `raw/agent-memory/research-analyst_user_role.md`
+- **user_role** (152 words) -- `raw/agent-memory/repo-scout_user_role.md`
+- **Research Scan: github-scan-2026-04-03** (149 words) -- `raw/research/github-scan-2026-04-03.md`
+- **Research Scan: github-scan-2026-04-04** (149 words) -- `raw/research/github-scan-2026-04-04.md`
+- **Research Scan: github-scan-2026-04-05** (149 words) -- `raw/research/github-scan-2026-04-05.md`
+- **Research Scan: github-scan-2026-04-06** (149 words) -- `raw/research/github-scan-2026-04-06.md`
+- **Research Scan: github-betting-scan-2026-03-31** (145 words) -- `raw/research/github-betting-scan-2026-03-31.md`
+- **Research Scan: github-betting-scan-2026-04-01** (145 words) -- `raw/research/github-betting-scan-2026-04-01.md`
+- **Research Scan: github-betting-scan-2026-04-02** (145 words) -- `raw/research/github-betting-scan-2026-04-02.md`
+- **Research Scan: github-betting-scan-2026-04-03** (145 words) -- `raw/research/github-betting-scan-2026-04-03.md`
+- **Research Scan: github-betting-scan-2026-04-04** (145 words) -- `raw/research/github-betting-scan-2026-04-04.md`
+- **Research Scan: github-betting-scan-2026-04-05** (145 words) -- `raw/research/github-betting-scan-2026-04-05.md`
+- **Research Scan: github-betting-scan-2026-04-06** (145 words) -- `raw/research/github-betting-scan-2026-04-06.md`
+
+## Key Findings
+
+- Current Fleet State (iter 4, 2026-04-06 10:15 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 4 Interventions (all 200 OK, status: queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S10 — regression escape boost (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S12 — mutation nudge + feature boost (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S15 — fleet best maintenance (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Validated Emergency Protocol (from S13 recovery) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S14 Mutation Freeze Warning (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- API Discovery (iter 3, confirmed iter 4) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 3 Interventions (outcome verified in iter4) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S13 — EMERGENCY boost (iter3 sent) → CONFIRMED EFFECTIVE in iter4 (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S12 — mutation nudge (iter3 sent) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S10 — regression escape boost (iter3 sent) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Critical Pattern: Model Drift Across All Islands (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Fleet Best Config History (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- GPU Seed Configs (for Kaggle Karpathy) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Code Fixes Required (priority order, none deployed yet) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- ATR Context (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Current Category List (v3.1-54cat) (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Cat 52-54 Implementation Details (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Key architecture facts (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+
+## Related Topics
+
+- [[Betting Strategy & Bankroll]] -- `wiki/techniques/betting-strategy.md`
+- [[Calibration & Probability Scoring]] -- `wiki/techniques/calibration.md`
+- [[Data Sources & APIs]] -- `wiki/concepts/data-sources.md`
+- [[Genetic Algorithm & Evolution]] -- `wiki/architectures/evolution.md`
+- [[Feature Engineering & Selection]] -- `wiki/concepts/feature-engineering.md`
+- [[Infrastructure & Compute]] -- `wiki/architectures/infrastructure.md`
+- [[Karpathy Autoresearch & Agent Patterns]] -- `wiki/architectures/karpathy-patterns.md`
+- [[Political Alpha & Prediction Markets]] -- `wiki/concepts/political-alpha.md`
+- [[Trading Floor & AI Competition]] -- `wiki/architectures/trading-floor.md`
+
+## Concepts Index
+
+- [[Bankroll Management]]
+- [[Brier Score]]
+- [[Calibration]]
+- [[Crossover]]
+- [[Elo Rating]]
+- [[Ensemble Methods]]
+- [[Feature Engineering]]
+- [[Feature Selection]]
+- [[Genetic Algorithm]]
+- [[HF Spaces]]
+- [[Isotonic Regression]]
+- [[Karpathy Loop]]
+- [[Kelly Criterion]]
+- [[LLM Council]]
+- [[Multi-Island Evolution]]
+- [[Mutation Operators]]
+- [[Platt Scaling]]
+- [[Political Alpha]]
+- [[SHAP]]
+- [[Shot Chart]]
+- [[TabICL]]
+- [[Temperature Scaling]]
+- [[Trading Floor]]
+- [[Tree Models]]
+- [[Value Betting]]
+- [[Venn-ABERS]]
+- [[Walk-Forward]]

@@ -1,0 +1,1 @@
+/home/termius/mon-ipad/data/research-proposals/2026-04-01-shot-chart-embeddings-calibration.md

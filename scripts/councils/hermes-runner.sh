@@ -147,6 +147,28 @@ run_department() {
         state_inject="${state_inject}\n\n## Latest Metrics\n$(cat "${metrics_file}")"
     fi
 
+    # Inject relevant wiki knowledge from Obsidian vault
+    local wiki_index="${ROOT}/research-vault/wiki/index.md"
+    if [[ -f "${wiki_index}" ]]; then
+        state_inject="${state_inject}\n\n## Knowledge Vault (Karpathy KB)\n$(head -60 "${wiki_index}")"
+    fi
+    # Inject department-relevant wiki article
+    local wiki_map_d1="${ROOT}/research-vault/wiki/concepts/nba-prediction.md"
+    local wiki_map_d2="${ROOT}/research-vault/wiki/concepts/feature-engineering.md"
+    local wiki_map_d3="${ROOT}/research-vault/wiki/architectures/evolution.md"
+    local wiki_map_d4="${ROOT}/research-vault/wiki/architectures/infrastructure.md"
+    local wiki_map_d5="${ROOT}/research-vault/wiki/techniques/betting-strategy.md"
+    local wiki_map_d6="${ROOT}/research-vault/wiki/techniques/calibration.md"
+    local wiki_map_d7="${ROOT}/research-vault/wiki/architectures/infrastructure.md"
+    local wiki_map_d8="${ROOT}/research-vault/wiki/techniques/betting-strategy.md"
+    local wiki_map_d9="${ROOT}/research-vault/wiki/architectures/karpathy-patterns.md"
+    local wiki_var="wiki_map_${dept_id}"
+    local dept_wiki="${!wiki_var:-}"
+    if [[ -n "${dept_wiki}" && -f "${dept_wiki}" ]]; then
+        # First 100 lines of relevant wiki article
+        state_inject="${state_inject}\n\n## Relevant Research (from vault)\n$(head -100 "${dept_wiki}")"
+    fi
+
     local full_prompt="${prompt}${state_inject}"
 
     # Run Claude Code CLI agent

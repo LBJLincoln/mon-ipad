@@ -1,0 +1,1 @@
+/home/termius/mon-ipad/.claude/agent-memory/karpathy-researcher/obsidian_rag_implementation_april2026.md
