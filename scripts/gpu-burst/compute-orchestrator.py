@@ -321,32 +321,44 @@ def check_platform_available(platform: str, state: dict) -> dict:
 
     elif platform == "kaggle":
         # Check kaggle CLI
-        ret = subprocess.run(
-            ["kaggle", "--version"],
-            capture_output=True, text=True,
-        )
-        if ret.returncode != 0:
-            result["reason"] = "kaggle CLI not installed"
+        try:
+            ret = subprocess.run(
+                ["kaggle", "--version"],
+                capture_output=True, text=True,
+            )
+            if ret.returncode != 0:
+                result["reason"] = "kaggle CLI not installed"
+                return result
+        except FileNotFoundError:
+            result["reason"] = "kaggle CLI not found in PATH"
             return result
 
     elif platform == "lightning":
         # Check lightning CLI
-        ret = subprocess.run(
-            ["lightning", "--version"],
-            capture_output=True, text=True,
-        )
-        if ret.returncode != 0:
-            result["reason"] = "lightning CLI not available"
+        try:
+            ret = subprocess.run(
+                ["lightning", "--version"],
+                capture_output=True, text=True,
+            )
+            if ret.returncode != 0:
+                result["reason"] = "lightning CLI not available"
+                return result
+        except FileNotFoundError:
+            result["reason"] = "lightning CLI not found in PATH"
             return result
 
     elif platform == "modal":
         # Check modal is authenticated
-        ret = subprocess.run(
-            ["modal", "profile", "current"],
-            capture_output=True, text=True,
-        )
-        if ret.returncode != 0:
-            result["reason"] = "modal not authenticated"
+        try:
+            ret = subprocess.run(
+                ["modal", "profile", "current"],
+                capture_output=True, text=True,
+            )
+            if ret.returncode != 0:
+                result["reason"] = "modal not authenticated"
+                return result
+        except FileNotFoundError:
+            result["reason"] = "modal CLI not found in PATH"
             return result
 
     result["available"] = True
