@@ -34,19 +34,27 @@ PREFERRED_MODEL = os.environ.get("PREFERRED_MODEL", "")
 # Per-department optimal model assignments
 # Format: {dept_id: (provider_key, model_id, display_name)}
 DEPT_MODEL_MAP = {
-    "d1": ("hf",         "Qwen/Qwen3.5-397B-A17B",               "hf/qwen3.5-397b"),            # 397B MoE for deep research
-    "d2": ("hf",         "Qwen/Qwen3.5-27B",                     "hf/qwen3.5-27b"),             # Code analysis
-    "d3": ("hf",         "google/gemma-4-31B-it",                 "hf/gemma4-31b"),              # Evolution decisions
-    "d4": ("hf",         "google/gemma-4-26B-A4B-it",             "hf/gemma4-26b-a4b"),          # Product reasoning
-    "d5": ("hf",         "deepseek-ai/DeepSeek-R1",               "hf/deepseek-r1"),             # Strategic reasoning
-    "d6": ("hf",         "Qwen/Qwen3.5-35B-A3B",                 "hf/qwen3.5-35b"),             # Statistical validation
-    "d7": ("hf",         "meta-llama/Llama-4-Scout-17B-16E-Instruct", "hf/llama4-scout"),        # Fast infra checks
-    "d8": ("hf",         "Qwen/Qwen3-235B-A22B-Instruct-2507",   "hf/qwen3-235b"),              # Financial analysis
-    "d9": ("hf",         "Qwen/Qwen3.5-397B-A17B",               "hf/qwen3.5-397b"),            # Cross-repo (big context)
+    # FREE models via HF Serverless Inference (no Pro needed, just HF token)
+    "d1": ("hf",         "Qwen/Qwen2.5-72B-Instruct",            "hf/qwen2.5-72b"),             # Research
+    "d2": ("hf",         "Qwen/Qwen2.5-Coder-32B-Instruct",      "hf/qwen2.5-coder-32b"),       # Engineering (code)
+    "d3": ("hf",         "meta-llama/Llama-3.3-70B-Instruct",     "hf/llama3.3-70b"),            # Evolution
+    "d4": ("hf",         "mistralai/Mistral-Small-3.1-24B-Instruct-2503", "hf/mistral-small"),   # Product
+    "d5": ("hf",         "microsoft/Phi-4",                        "hf/phi-4"),                   # Business
+    "d6": ("hf",         "Qwen/Qwen2.5-72B-Instruct",            "hf/qwen2.5-72b"),             # Evaluation
+    "d7": ("hf",         "microsoft/Phi-4",                        "hf/phi-4"),                   # Infra (fast)
+    "d8": ("hf",         "meta-llama/Llama-3.3-70B-Instruct",     "hf/llama3.3-70b"),            # Finance
+    "d9": ("hf",         "Qwen/Qwen2.5-72B-Instruct",            "hf/qwen2.5-72b"),             # Cross-repo
 }
 
-# HF token -- automatically available in HF Spaces, or set as secret
-HF_TOKEN = os.environ.get("HF_TOKEN", "")
+# HF token -- try multiple env var names (HF_TOKEN may be reserved on Spaces)
+HF_TOKEN = os.environ.get("NOMOS_HF_TOKEN", "") or os.environ.get("HF_TOKEN", "") or os.environ.get("HF_TOKEN_3", "")
+
+# Debug: log which token sources are available at startup
+_token_sources = []
+if os.environ.get("NOMOS_HF_TOKEN"): _token_sources.append("NOMOS_HF_TOKEN")
+if os.environ.get("HF_TOKEN"): _token_sources.append("HF_TOKEN")
+if os.environ.get("HF_TOKEN_3"): _token_sources.append("HF_TOKEN_3")
+print(f"[COUNCIL] HF_TOKEN sources: {_token_sources}, len={len(HF_TOKEN)}")
 
 # Optional: external LLM API keys (set as HF Space secrets)
 CEREBRAS_API_KEY = os.environ.get("CEREBRAS_API_KEY", "")
@@ -117,7 +125,7 @@ def _call_llm(prompt: str, max_tokens: int = 500, temperature: float = 0.3) -> t
         if dept_pref_check and dept_pref_check[0] == "hf":
             hf_model = dept_pref_check[1]
         all_providers["hf"] = _build_provider(
-            f"hf-router/{hf_model.split('/')[-1]}",
+            f"hf/{hf_model.split('/')[-1]}",
             "https://router.huggingface.co/v1/chat/completions",
             f"Bearer {HF_TOKEN}",
             hf_model,
@@ -201,6 +209,10 @@ def _call_llm(prompt: str, max_tokens: int = 500, temperature: float = 0.3) -> t
 
     # Try each provider
     errors = []
+    if not providers:
+        key_status = f"HF={len(HF_TOKEN)>0}, CEREBRAS={len(CEREBRAS_API_KEY)>0}, GROQ={len(GROQ_API_KEY)>0}, OR={len(OPENROUTER_API_KEY)>0}"
+        return f"[NO PROVIDERS CONFIGURED: {key_status}]", "none"
+
     for p in providers:
         try:
             data = json.dumps(p["payload"]).encode("utf-8")

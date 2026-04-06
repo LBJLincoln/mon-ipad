@@ -235,6 +235,13 @@ def deploy_space(dept: dict, dry_run: bool = False) -> bool:
         "PREFERRED_MODEL": dept.get("preferred_model", ""),
     }
 
+    # HF Token for free inference via HF Router
+    # Use NOMOS_HF_TOKEN because HF_TOKEN is reserved/auto-set on Spaces
+    # Use HF_TOKEN_2 (LBJLincoln26) which has free credits available
+    hf_token_for_inference = os.environ.get("HF_TOKEN_2", "") or os.environ.get("HF_TOKEN_FORGE", "")
+    if hf_token_for_inference:
+        secrets["NOMOS_HF_TOKEN"] = hf_token_for_inference
+
     # Add LLM API keys if available
     for key_env in ["CEREBRAS_API_KEY", "GROQ_API_KEY"]:
         val = os.environ.get(key_env, "")
