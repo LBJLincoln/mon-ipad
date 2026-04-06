@@ -1,0 +1,156 @@
+{
+  "last_updated": "2026-04-06T13:00:00Z",
+  "cycle": "brain-cycle-70",
+  "generated_by": "claude-sonnet-4-6 nomos42-brain",
+  "nba_fleet": {
+    "islands_online": 6,
+    "islands_total": 6,
+    "best_brier": 0.2222,
+    "best_brier_island": "S15-nomos42-nba-evo-6",
+    "brier_threshold": 0.21837,
+    "threshold_reached": false,
+    "checkpoint_triggered": false,
+    "stagnation_alerts": [],
+    "diversify_commands_sent": [],
+    "islands": {
+      "S10-nomos42-nba-quant": {
+        "role": "exploitation",
+        "status": "ONLINE",
+        "generation": 214,
+        "best_brier": 0.23149,
+        "stagnation": 0,
+        "model": "random_forest",
+        "features": 46,
+        "roi_pct": 15.7,
+        "sharpe": 7.6199,
+        "action": "none"
+      },
+      "S11-nomos42-nba-quant-2": {
+        "role": "exploration",
+        "status": "ONLINE",
+        "generation": 265,
+        "best_brier": 0.22372,
+        "stagnation": 0,
+        "model": "catboost",
+        "features": 64,
+        "roi_pct": 28.4,
+        "sharpe": 9.3918,
+        "action": "none",
+        "note": "diversified at cycle 86 - healthy exploration"
+      },
+      "S12-nomos42-nba-evo-3": {
+        "role": "extra_trees_specialist",
+        "status": "ONLINE",
+        "generation": 403,
+        "best_brier": 0.22533,
+        "stagnation": 0,
+        "model": "xgboost",
+        "features": 34,
+        "action": "none"
+      },
+      "S13-nomos42-nba-evo-4": {
+        "role": "catboost_specialist",
+        "status": "ONLINE",
+        "generation": 182,
+        "best_brier": 0.22283,
+        "stagnation": 0,
+        "model": "random_forest",
+        "features": 52,
+        "roi_pct": 29.31,
+        "sharpe": 10.12,
+        "action": "none"
+      },
+      "S14-nomos42-nba-evo-5": {
+        "role": "lightgbm_specialist",
+        "status": "ONLINE",
+        "generation": 238,
+        "best_brier": 0.22622,
+        "stagnation": 0,
+        "model": "random_forest",
+        "features": 55,
+        "roi_pct": 25.51,
+        "sharpe": 5.4224,
+        "action": "none"
+      },
+      "S15-nomos42-nba-evo-6": {
+        "role": "wide_search",
+        "status": "ONLINE",
+        "generation": 106,
+        "best_brier": 0.2222,
+        "stagnation": 0,
+        "model": "random_forest",
+        "features": 61,
+        "roi_pct": 30.0,
+        "action": "FLEET_BEST"
+      }
+    }
+  },
+  "political_fleet": {
+    "islands_online": 2,
+    "islands_total": 4,
+    "best_brier": 0.23134,
+    "best_brier_island": "PA2-nomos42-political-alpha-2",
+    "islands": {
+      "PA1-nomos42-political-alpha": {
+        "role": "exploitation",
+        "status": "ONLINE",
+        "generation": 12516,
+        "best_brier": 0.24971,
+        "stagnation": 0,
+        "model": "xgboost_brier",
+        "features": 65
+      },
+      "PA2-nomos42-political-alpha-2": {
+        "role": "exploration",
+        "status": "ONLINE",
+        "generation": 18047,
+        "best_brier": 0.23134,
+        "stagnation": 0,
+        "model": "catboost",
+        "features": 70,
+        "top_performer_roi": 41.56,
+        "top_performer_model": "lightgbm"
+      },
+      "PA3-nomos42-political-alpha-3": {
+        "role": "catboost",
+        "status": "DOWN_404",
+        "consecutive_down_cycles": 6,
+        "alert": "DOWN x6 cycles — private space, manual HF dashboard restart needed by user"
+      },
+      "PA4-nomos42-political-alpha-4": {
+        "role": "wide_search",
+        "status": "DOWN_404",
+        "consecutive_down_cycles": 6,
+        "alert": "DOWN x6 cycles — private space, manual HF dashboard restart needed by user"
+      }
+    }
+  },
+  "cycle_improvements": {
+    "nba": {
+      "type": "RESEARCH_PROPOSAL",
+      "file": "data/research-proposals/2026-04-06-lstm-brier-calibration.md",
+      "summary": "3-phase LSTM Brier loss calibration targeting sub-0.21837. Phase 1: isotonic CalibratedClassifierCV wrapper (drop ~0.005-0.010). Phase 2: lstm_brier GA model type. Gap to threshold: 0.0038.",
+      "sources": ["arxiv 2508.02725", "arxiv 2410.21484", "nature s41598-025-13657-1"]
+    },
+    "political": {
+      "type": "BUG_FIX",
+      "file": "ops/fetch_political_data.py",
+      "summary": "Fixed polymarket validation false-positive: markets saved as YYYYMMDD_HHMM but validated as YYYYMMDD. Silent failure every cycle. Fixed filename to YYYYMMDD only.",
+      "rotation": "D - data pipeline health check"
+    }
+  },
+  "alerts": [
+    "PA3 DOWN_404 x6 cycles — manual restart required (private space)",
+    "PA4 DOWN_404 x6 cycles — manual restart required (private space)"
+  ],
+  "engine_versions": {
+    "nba": "v3.1-51cat (6257+ candidates)",
+    "political": "v3.5-political-27cat-fec2026"
+  },
+  "next_cycle": "2026-04-06T16:40:00Z",
+  "next_cycle_rotation": {
+    "nba": "implement isotonic CalibratedClassifierCV in engine.py (Phase 1 of LSTM proposal)",
+    "political": "A - WebSearch new FEC/SEC data sources"
+  },
+  "brain_version": "nomos42-brain-v1"
+}
