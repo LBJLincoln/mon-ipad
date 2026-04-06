@@ -1,39 +1,59 @@
 {
-  "timestamp": "2026-04-05T20:15:00Z",
+  "timestamp": "2026-04-06T00:00:00Z",
   "agent": "D9-cross-repo-hermes",
-  "iteration": 3,
+  "iteration": 4,
   "repos_checked": [
     {
       "repo": "mon-ipad",
       "path": "/home/termius/mon-ipad",
       "status": "DIRTY",
-      "uncommitted_modified": 39,
-      "uncommitted_untracked": 14,
-      "notes": "53 total dirty files. Arena data, trading floor, council files, odds, research. engine.py still v3.1-46cat (6695 lines) — PARITY VIOLATION persists from iteration 2. CLAUDE.md line 80 still says v3.1-46cat."
+      "uncommitted_modified": 43,
+      "uncommitted_untracked": 18,
+      "engine_version": "v3.1-54cat",
+      "engine_lines": 6972,
+      "engine_md5": "dad9031cda9129714a45b904f444b118",
+      "notes": "61 total dirty (was 53 iter3, +8). Engine version label updated to v3.1-54cat BUT file content diverged from canonical — 6972 lines vs 7160 canonical (188-line gap). Same version string, different file: NEW PARITY TYPE. CLAUDE.md line 80 still says v3.1-46cat (8 cats stale). Trading Floor + arena + council data accumulating."
     },
     {
       "repo": "nomos-dashboard",
       "path": "/home/termius/nomos-dashboard",
-      "status": "CLEAN",
-      "uncommitted_modified": 0,
+      "status": "DIRTY",
+      "uncommitted_modified": 1,
       "uncommitted_untracked": 0,
-      "notes": "Fully clean. Latest: Pixel World v5 with zones, swarm floor, leaderboard."
+      "notes": "Newly dirty (was CLEAN in iter3). 1 modified: src/app/trading-floor/page.tsx. Minor — single file, no untracked."
     },
     {
       "repo": "nomos-nba-agent",
       "path": "/home/termius/nomos-nba-agent",
       "status": "DIRTY",
-      "uncommitted_modified": 6,
-      "uncommitted_untracked": 22,
-      "notes": "Engine.py v3.1-51cat (6840 lines, canonical). 9 council JSONs + 3 research proposals (P006/P007/P008) + 3 player-props files + dept dirs untracked. CLAUDE.md line 42 still says v3.0+Cat37=37 categories (extremely stale). Last commit: engine.py auto-deploy to hf-space."
+      "uncommitted_modified": 7,
+      "uncommitted_untracked": 23,
+      "engine_version": "v3.1-54cat",
+      "engine_lines": 7160,
+      "engine_md5": "fd985636feaedf50d86903d388a1589f",
+      "hf_space_parity": "CONFIRMED (same md5)",
+      "notes": "30 total dirty (was 28 iter3, +2). Engine advanced: v3.1-51cat → v3.1-54cat (7160 lines). hf-space parity internal: CONFIRMED. CLAUDE.md still says v3.0-37cat=37 categories — now 17 categories stale (was 14 stale in iter3, worsening). Council JSONs + research proposals still pending commit."
     },
     {
       "repo": "nomos-political-alpha",
       "path": "/home/termius/nomos-political-alpha",
       "status": "DIRTY",
       "uncommitted_modified": 16,
-      "uncommitted_untracked": 329,
-      "notes": "329 untracked files (up from 258 in iter 2, +71 in ~8h). Breakdown: 135 polymarket, 134 kalshi, 31 social, 4 signals, 2 historical, 1 each congressional/donors/insider + 2 council scripts. .gitignore ONLY covers __pycache__ and *.pyc — missing entire data/ directory. Growing at ~35 files/hr, will exceed 1000 within 24h."
+      "uncommitted_untracked": 416,
+      "notes": "432 total dirty (was 345 iter3, +87). .gitignore STILL only covers *.pyc/__pycache__ — 4th consecutive iteration unfixed. New category discovered: 22 agent log files (logs/agents/) now untracked. Breakdown: 168 polymarket, 167 kalshi, 39 social, 22 agent-logs, 8 signals, 4 historical, 2 insider, 2 donors, 2 congressional, 1 forge, 1 councils. .gitignore fix must now also cover logs/agents/.",
+      "untracked_breakdown": {
+        "polymarket": 168,
+        "kalshi": 167,
+        "social": 39,
+        "agent_logs": 22,
+        "signals": 8,
+        "historical": 4,
+        "insider": 2,
+        "donors": 2,
+        "congressional": 2,
+        "forge": 1,
+        "councils": 1
+      }
     },
     {
       "repo": "rgwa",
@@ -41,7 +61,7 @@
       "status": "DIRTY",
       "uncommitted_modified": 1,
       "uncommitted_untracked": 12,
-      "notes": "CLAUDE.md modified. 10 council JSONs (9 depts + guardian) + scripts/councils/ + scripts/forge untracked. Karpathy creative loop committed last."
+      "notes": "13 total dirty — stable vs iter3. CLAUDE.md modified. 12 untracked council JSONs from D9 Hermes runs. Low-priority but council data should be committed."
     }
   ],
   "stale_docs_found": [],
@@ -49,46 +69,50 @@
   "parity_issues": [
     {
       "severity": "CRITICAL",
-      "type": "feature_engine_version_mismatch",
-      "description": "mon-ipad/features/engine.py ENGINE_VERSION='v3.1-46cat' (6695 lines, md5=80319035). nomos-nba-agent and hf-space are 'v3.1-51cat' (6840 lines, md5=e5905123). 5 categories and 145 lines behind. RULE #2 VIOLATION — 3rd consecutive iteration unfixed.",
+      "type": "feature_engine_content_divergence",
+      "description": "NEW PARITY TYPE: mon-ipad engine.py shows ENGINE_VERSION='v3.1-54cat' (SAME LABEL as canonical) but file content differs — 6972 lines vs 7160 canonical, different MD5. Version string updated without full file sync. This is MORE dangerous than prior label mismatch: automated version checks will report false parity. Diff shows mon-ipad is missing Cat50 (Temporal Win Sequence Encoding) and Cat51 (Season Era Normalization) relative to canonical, plus feature count discrepancy (6284+ vs 6296+). 4th consecutive iteration with parity violation, now escalated to silent failure mode.",
       "files": [
         {
           "path": "mon-ipad/features/engine.py",
-          "version": "v3.1-46cat",
-          "lines": 6695,
-          "md5": "80319035f827188209437df4acf9bda7"
+          "version": "v3.1-54cat",
+          "lines": 6972,
+          "md5": "dad9031cda9129714a45b904f444b118",
+          "status": "DIVERGED — same label, different content"
         },
         {
           "path": "nomos-nba-agent/features/engine.py",
-          "version": "v3.1-51cat",
-          "lines": 6840,
-          "md5": "e5905123ea78516601bbe077a28a3545"
+          "version": "v3.1-54cat",
+          "lines": 7160,
+          "md5": "fd985636feaedf50d86903d388a1589f",
+          "status": "CANONICAL"
         },
         {
           "path": "nomos-nba-agent/hf-space/features/engine.py",
-          "version": "v3.1-51cat",
-          "lines": 6840,
-          "md5": "e5905123ea78516601bbe077a28a3545"
+          "version": "v3.1-54cat",
+          "lines": 7160,
+          "md5": "fd985636feaedf50d86903d388a1589f",
+          "status": "CONFIRMED PARITY with canonical"
         }
       ],
-      "fix": "cp /home/termius/nomos-nba-agent/features/engine.py /home/termius/mon-ipad/features/engine.py"
+      "fix": "cp /home/termius/nomos-nba-agent/features/engine.py /home/termius/mon-ipad/features/engine.py",
+      "iteration_streak": 4
     },
     {
       "severity": "HIGH",
       "type": "claude_md_version_stale_multi_repo",
-      "description": "CLAUDE.md stale in 2 repos: (1) mon-ipad line 80: v3.1-46cat=46 categories [should be 51]; (2) nomos-nba-agent line 42/70: v3.0+Cat37=37 categories [should be 51, is 14 categories stale].",
+      "description": "CLAUDE.md stale and worsening in 2 repos: (1) mon-ipad line 80: v3.1-46cat=46 categories [engine is now v3.1-54cat, 8 cats stale — same as iter3]; (2) nomos-nba-agent lines 42+70: v3.0-37cat=37 categories [engine is now v3.1-54cat, now 17 cats stale — was 14 stale in iter3, worsening because engine advanced].",
       "fixes": [
         {
           "file": "mon-ipad/CLAUDE.md",
           "line": 80,
-          "current": "v3.1-46cat = 46 categories, 6253 raw features",
-          "target": "v3.1-51cat = 51 categories, 6840 lines"
+          "current": "v3.1-46cat = 46 categories, 6253 raw features (Cat47 Drive-Rim + Cat48 Passing + Cat49 Play-Type PPP)",
+          "target": "v3.1-54cat = 54 categories, 7160 lines"
         },
         {
           "file": "nomos-nba-agent/CLAUDE.md",
           "lines": [42, 70],
-          "current": "v3.0+Cat37=37 categories / ENGINE_VERSION = v3.0-37cat",
-          "target": "v3.1-51cat = 51 categories"
+          "current": "v3.0 + Cat36 EWMA + Cat37 MOVDA = 37 categories / ENGINE_VERSION = v3.0-37cat",
+          "target": "v3.1-54cat = 54 categories"
         }
       ]
     }
@@ -97,70 +121,81 @@
     {
       "severity": "CRITICAL",
       "type": "gitignore_catastrophic_failure",
-      "description": "nomos-political-alpha .gitignore covers ONLY __pycache__ and *.pyc. Entire data/ directory is untracked. 329 raw snapshot files accumulating at ~35/hr. Will hit 1000+ within 24h. Primary offenders: polymarket (135) and kalshi (134) intraday snapshots.",
+      "description": "nomos-political-alpha .gitignore STILL covers ONLY *.pyc and __pycache__/. Now 416 untracked files (+87 since iter3). New category this iteration: 22 agent log files in logs/agents/ are untracked — .gitignore fix must also cover logs/. Primary offenders: polymarket (168) and kalshi (167). 4th consecutive iteration unfixed.",
       "repo": "nomos-political-alpha",
+      "current_gitignore": "*.pyc\n__pycache__/\nfeatures/__pycache__/",
       "untracked_breakdown": {
-        "polymarket": 135,
-        "kalshi": 134,
-        "social": 31,
-        "signals": 4,
-        "historical": 2,
-        "congressional": 1,
-        "donors": 1,
-        "insider": 1,
-        "scripts": 2
+        "polymarket": 168,
+        "kalshi": 167,
+        "social": 39,
+        "agent_logs": 22,
+        "signals": 8,
+        "historical": 4,
+        "insider": 2,
+        "donors": 2,
+        "congressional": 2,
+        "forge": 1,
+        "councils": 1
       },
-      "fix": "Append to .gitignore: data/polymarket/ data/kalshi/ data/social/ data/signals/ data/historical/ data/insider/ data/donors/ data/congressional/"
+      "fix": "printf '\\ndata/polymarket/\\ndata/kalshi/\\ndata/social/\\ndata/signals/\\ndata/historical/\\ndata/insider/\\ndata/donors/\\ndata/congressional/\\nlogs/agents/\\n' >> /home/termius/nomos-political-alpha/.gitignore",
+      "iteration_streak": 4
+    },
+    {
+      "severity": "LOW",
+      "type": "nomos_dashboard_newly_dirty",
+      "description": "nomos-dashboard was CLEAN in iter3. Now has 1 modified file: src/app/trading-floor/page.tsx. Likely in-progress Trading Floor work.",
+      "repo": "nomos-dashboard"
     },
     {
       "severity": "INFO",
       "type": "untracked_council_outputs",
-      "description": "nomos-nba-agent and rgwa have 9-10 untracked council JSONs from D9 Hermes runs. Valid outputs pending commit.",
+      "description": "rgwa has 12 untracked council JSONs from D9 Hermes runs. nomos-nba-agent also has council JSONs + research proposals pending commit.",
       "repos_affected": ["nomos-nba-agent", "rgwa"]
-    },
-    {
-      "severity": "INFO",
-      "type": "research_proposals_untracked",
-      "description": "nomos-nba-agent has 3 research proposals untracked: P006 multicalibration-boosting, P007 monotone-constraint-boosting, P008 fourier-implicit-categorical.",
-      "repo": "nomos-nba-agent"
     }
   ],
   "cleanup_needed": [
     {
       "priority": "CRITICAL",
-      "action": "Sync engine.py v3.1-51cat to mon-ipad — Rule #2 violation, 3rd consecutive iteration",
-      "command": "cp /home/termius/nomos-nba-agent/features/engine.py /home/termius/mon-ipad/features/engine.py"
+      "action": "Sync engine.py v3.1-54cat (canonical) to mon-ipad — content diverged despite matching version label. Silent parity failure. 4th consecutive iteration.",
+      "command": "cp /home/termius/nomos-nba-agent/features/engine.py /home/termius/mon-ipad/features/engine.py",
+      "verify": "md5sum /home/termius/mon-ipad/features/engine.py /home/termius/nomos-nba-agent/features/engine.py"
     },
     {
       "priority": "CRITICAL",
-      "action": "Fix nomos-political-alpha .gitignore — add data/ subdirs, 329 files growing at 35/hr",
-      "command": "printf '\\ndata/polymarket/\\ndata/kalshi/\\ndata/social/\\ndata/signals/\\ndata/historical/\\ndata/insider/\\ndata/donors/\\ndata/congressional/\\n' >> /home/termius/nomos-political-alpha/.gitignore"
+      "action": "Fix nomos-political-alpha .gitignore — add data/ subdirs + logs/agents/. 416 untracked files, 4th iteration unfixed.",
+      "command": "printf '\\ndata/polymarket/\\ndata/kalshi/\\ndata/social/\\ndata/signals/\\ndata/historical/\\ndata/insider/\\ndata/donors/\\ndata/congressional/\\nlogs/agents/\\n' >> /home/termius/nomos-political-alpha/.gitignore"
     },
     {
       "priority": "HIGH",
-      "action": "Update mon-ipad/CLAUDE.md line 80: v3.1-46cat → v3.1-51cat (51 categories)",
+      "action": "Update mon-ipad/CLAUDE.md line 80: v3.1-46cat → v3.1-54cat (54 categories, 7160 lines)",
       "file": "mon-ipad/CLAUDE.md",
       "line": 80
     },
     {
       "priority": "HIGH",
-      "action": "Update nomos-nba-agent/CLAUDE.md lines 42+70: v3.0+Cat37=37 → v3.1-51cat=51 categories",
+      "action": "Update nomos-nba-agent/CLAUDE.md lines 42+70: v3.0-37cat → v3.1-54cat=54 categories. Now 17 categories stale.",
       "file": "nomos-nba-agent/CLAUDE.md"
     },
     {
       "priority": "MEDIUM",
       "action": "Commit council JSONs + research proposals in nomos-nba-agent",
-      "command": "cd /home/termius/nomos-nba-agent && git add data/departments/ data/research-proposals/ && git commit -m 'data: D9 Hermes council outputs + research proposals P006-P008'"
+      "command": "cd /home/termius/nomos-nba-agent && git add data/departments/ data/research-proposals/ && git commit -m 'data: D9 Hermes council outputs + research proposals iter 4'"
     },
     {
       "priority": "MEDIUM",
-      "action": "Commit council JSONs + scripts in rgwa",
-      "command": "cd /home/termius/rgwa && git add data/departments/ scripts/councils/ scripts/forge CLAUDE.md && git commit -m 'feat: D9 Hermes council structure iter 3'"
+      "action": "Commit council JSONs in rgwa",
+      "command": "cd /home/termius/rgwa && git add data/departments/ CLAUDE.md && git commit -m 'feat: D9 Hermes council structure iter 4'"
     },
     {
       "priority": "MEDIUM",
-      "action": "Commit Trading Floor + arena + department data in mon-ipad",
-      "command": "cd /home/termius/mon-ipad && git add data/ scripts/arena/ && git commit -m 'data: Trading Floor council iter 507 + D9 cross-repo iter 3'"
+      "action": "Commit Trading Floor + arena + department data in mon-ipad (after engine.py sync)",
+      "command": "cd /home/termius/mon-ipad && git add data/ features/engine.py && git commit -m 'data: Trading Floor council iter 4 + engine.py v3.1-54cat sync'"
+    },
+    {
+      "priority": "LOW",
+      "action": "Commit or investigate trading-floor/page.tsx in nomos-dashboard",
+      "repo": "nomos-dashboard",
+      "file": "src/app/trading-floor/page.tsx"
     },
     {
       "priority": "LOW",
@@ -168,24 +203,27 @@
       "repo": "nomos-political-alpha"
     }
   ],
-  "delta_from_iter2": {
-    "mon-ipad_dirty_files": "53 (was 29 — more accumulated)",
-    "nomos_political_alpha_untracked": "+71 in ~8h (329 vs 258)",
-    "nomos_nba_agent_untracked": "+2 (22 vs 20)",
-    "engine_parity": "NO CHANGE — v46 vs v51 persists",
-    "nomos_dashboard": "STILL CLEAN",
-    "new_issues": "nomos-political-alpha growth rate confirmed critical (~35/hr)"
+  "delta_from_iter3": {
+    "mon-ipad_dirty_files": "61 (was 53 iter3, +8)",
+    "nomos_dashboard": "NEWLY DIRTY — 1 modified (was CLEAN iter3)",
+    "nomos_nba_agent_dirty": "30 (was 28 iter3, +2)",
+    "nomos_political_alpha_untracked": "416 (was 329 iter3, +87) — new category: agent logs",
+    "rgwa_dirty": "STABLE at 13",
+    "engine_parity": "MUTATED — version label now matches (v3.1-54cat) but file content diverges (6972 vs 7160 lines). Worse: silent failure.",
+    "claude_md_staleness": "WORSENING — nomos-nba-agent now 17 cats stale (was 14 stale in iter3)",
+    "new_issues": "nomos-dashboard newly dirty; logs/agents/ untracked in political-alpha; engine content divergence despite matching version label"
   },
   "status": "ISSUES_FOUND",
-  "health_score": 48,
+  "health_score": 41,
   "health_delta": -7,
-  "summary": "CRITICAL x2: (1) engine.py parity violation PERSISTS 3rd iteration — mon-ipad at v3.1-46cat vs v3.1-51cat in nomos-nba-agent/hf-space. (2) nomos-political-alpha gitignore failure — 329 untracked raw snapshot files, growing ~35/hr, will hit 1000 within 24h (polymarket+kalshi intraday dumps). HIGH: CLAUDE.md stale in 2 repos. nomos-dashboard clean. Health: 48/100 (-7).",
+  "summary": "CRITICAL x2 (4th consecutive): (1) engine.py parity MUTATED to silent failure — mon-ipad version label matches (v3.1-54cat) but file content diverges (6972 vs 7160 canonical lines, different MD5). Version checks will report false parity. (2) nomos-political-alpha gitignore — now 416 untracked files (+87 since iter3), new log category discovered. HIGH: CLAUDE.md stale in 2 repos, nomos-nba-agent now 17 categories stale (worsening). MINOR: nomos-dashboard newly dirty (1 file). Health: 41/100 (-7).",
   "recommended_actions": [
-    "URGENT: cp nomos-nba-agent/engine.py → mon-ipad/engine.py (3-iter Rule #2 violation)",
-    "URGENT: Fix nomos-political-alpha .gitignore — add data/polymarket/ data/kalshi/ data/social/ etc.",
-    "HIGH: Update CLAUDE.md in mon-ipad (line 80) → v3.1-51cat",
-    "HIGH: Update CLAUDE.md in nomos-nba-agent (lines 42/70) → v3.1-51cat",
+    "URGENT: cp nomos-nba-agent/engine.py → mon-ipad/engine.py + verify md5 match (silent parity failure, 4-iter violation)",
+    "URGENT: Fix nomos-political-alpha .gitignore — add data/polymarket/ data/kalshi/ data/social/ data/signals/ data/historical/ data/insider/ data/donors/ data/congressional/ logs/agents/",
+    "HIGH: Update CLAUDE.md in mon-ipad (line 80) → v3.1-54cat=54 categories",
+    "HIGH: Update CLAUDE.md in nomos-nba-agent (lines 42+70) → v3.1-54cat=54 categories",
     "MEDIUM: Commit council outputs in nomos-nba-agent + rgwa",
-    "MEDIUM: Commit Trading Floor + arena data in mon-ipad"
+    "MEDIUM: Commit Trading Floor + data in mon-ipad (after engine sync)",
+    "LOW: Review/commit trading-floor/page.tsx in nomos-dashboard"
   ]
 }
