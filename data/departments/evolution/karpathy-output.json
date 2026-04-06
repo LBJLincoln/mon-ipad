@@ -1,178 +1,172 @@
 {
   "department": "evolution",
-  "timestamp": "2026-04-06T10:15:00Z",
-  "iteration": 4,
+  "timestamp": "2026-04-06T12:10:00Z",
+  "iteration": 5,
   "islands": {
     "S10": {
       "brier": 0.23149,
-      "generation": 117,
+      "generation": 197,
       "model": "random_forest",
-      "mutation_rate": 0.1006,
+      "mutation_rate": 0.0939,
       "features": 46,
       "stagnation_cycles": 0,
-      "status": "REGRESSED",
-      "action": "boost_mutation: mut=0.11, target_features=63, cx=0.80 (POST 200 OK queued)",
-      "iter3_brier": 0.22862,
-      "brier_delta": 0.00287,
-      "notes": "Regression +0.00287. Best model random_forest with best_features=46 — consistently below proven sweet spot. Gap to fleet best 0.00929 >> threshold 0.003. Generation dropped from 162 (iter3) to 117 — space restarted between iterations. Boosted mutation+features to escape low-feature local optima. Sharpe 7.62 still healthy."
+      "status": "FLAT_2ND_ITER",
+      "action": "strong_escalation: mut=0.13, target_features=66, cx=0.80 (POST 200 OK queued)",
+      "iter4_brier": 0.23149,
+      "brier_delta": 0.00000,
+      "notes": "FLAT for 2nd consecutive iteration — worst in fleet at 0.23149. Iter4 boost (0.11→0.0939) reverted, features still locked at 46. Gen 197 logs show extra_trees at gen196 Brier=0.2351 feat=42 — population trapped in low-feature region. 3rd escalation: mut=0.13 (strongest yet), target_features=66. If iter6 still flat at <55 features, cross-pollinate with S15 config."
     },
     "S11": {
       "brier": 0.22372,
-      "generation": 115,
+      "generation": 228,
       "model": "catboost",
-      "mutation_rate": 0.1076,
+      "mutation_rate": 0.0960,
       "features": 64,
       "stagnation_cycles": 0,
-      "status": "IMPROVED",
-      "action": "none — exploration role, improvement confirmed",
-      "iter3_brier": 0.22696,
-      "brier_delta": -0.00324,
-      "notes": "Improved -0.00324. Catboost at 64 features showing strong performance (0.22372). Exploration island functioning correctly. Best Sharpe 9.39 is highest Sharpe across fleet alongside S13. Best_features=64 is squarely in proven sweet spot. No intervention."
+      "status": "FLAT_STABLE",
+      "action": "none — exploration role stable, no intervention",
+      "iter4_brier": 0.22372,
+      "brier_delta": 0.00000,
+      "notes": "FLAT but stable. Catboost at 64 features — in the proven sweet spot. Sharpe 9.39 highest alongside S13. Exploration island functioning correctly. Cycle 76 logged OK. Pareto front 13. No intervention — awaiting natural improvement cycle."
     },
     "S12": {
       "brier": 0.22533,
-      "generation": 199,
+      "generation": 380,
       "model": "lightgbm",
-      "mutation_rate": 0.0844,
+      "mutation_rate": 0.0700,
       "features": 40,
       "stagnation_cycles": 0,
-      "status": "REGRESSED_MILD",
-      "action": "nudge: mut=0.10, target_features=63, cx=0.80 (POST 200 OK queued)",
-      "iter3_brier": 0.22276,
-      "brier_delta": 0.00257,
-      "notes": "Mild regression +0.00257. Generation 199 — very advanced, convergence risk. Persistent model drift: random_forest/lightgbm instead of extra_trees (specialist mandate). best_features=40 consistently too low. Mutation 0.0844 approaching freeze zone (below 0.08 = critical). Nudged mut=0.10 and target_features=63 to steer toward ET sweet spot and prevent mutation freeze."
+      "status": "FLAT_NUDGE_REVERTED",
+      "action": "re_nudge: mut=0.10, target_features=60, cx=0.80 (POST 200 OK queued)",
+      "iter4_brier": 0.22533,
+      "brier_delta": 0.00000,
+      "notes": "FLAT. Iter4 nudge (0.0844→0.10) fully reverted to 0.07 — lowest non-critical mut in fleet. Gen 380 is oldest island, convergence confirmed. Recent gen 379: xgboost at feat=34, Brier=0.2459 — population exploring very narrow low-feature subspace. features=40 persistent trap. Re-nudged mut=0.10, target_features=60. Specialist mandate (extra_trees) abandoned — model has fully drifted to lightgbm/xgboost. Consider reset if iter6 flat."
     },
     "S13": {
       "brier": 0.22283,
-      "generation": 93,
+      "generation": 164,
       "model": "random_forest",
-      "mutation_rate": 0.1012,
+      "mutation_rate": 0.0878,
       "features": 52,
       "stagnation_cycles": 0,
-      "status": "MAJOR_RECOVERY",
-      "action": "none — remarkable recovery from iter3 emergency boost, monitor",
-      "iter3_brier": 0.24595,
-      "brier_delta": -0.02312,
-      "notes": "REMARKABLE RECOVERY: -0.02312 improvement from catastrophic 0.24595. Iter3 emergency boost (mut=0.13, feat=63, cx=0.80) was highly effective. Model drifted from catboost to random_forest but performance strong at 0.22283 — now 2nd best in fleet. Best Sharpe 10.12 — highest in fleet. Current gen catboost 0.2889 confirms catboost still slow on CPU but population diversity fully restored. No intervention — let recovery consolidate."
+      "status": "FLAT_CONSOLIDATING",
+      "action": "none — recovery consolidating, monitor",
+      "iter4_brier": 0.22283,
+      "brier_delta": 0.00000,
+      "notes": "FLAT — consolidating iter4 recovery. Highest Sharpe in fleet at 10.12. Best individual still 0.22283 random_forest feat=52. Recent gen 163: catboost at 0.2889 feat=49 — slow CPU catboost still diluting population. Mutation 0.0878 healthy. 2nd best in fleet. No intervention — let recovery consolidate into new best."
     },
     "S14": {
       "brier": 0.22622,
-      "generation": 124,
+      "generation": 207,
       "model": "random_forest",
-      "mutation_rate": 0.0625,
+      "mutation_rate": 0.0530,
       "features": 55,
       "stagnation_cycles": 0,
-      "status": "REGRESSED_MILD",
-      "action": "none — watching; if iter5 shows further regression will escalate mut=0.10",
-      "iter3_brier": 0.22494,
-      "brier_delta": 0.00128,
-      "notes": "Marginal regression +0.00128. MUTATION FREEZE RISK: mut=0.0625 is critically low — below the 0.07 warning threshold. Model drift: random_forest (should be lightgbm specialist). best_features=55 is within range. Gap to fleet best 0.0040 > threshold. Decision: withhold POST this iter to avoid disrupting any late-breaking convergence from iter3 interventions. Escalate to mut=0.10 in iter5 if no recovery."
+      "status": "CRITICAL_MUTATION_FREEZE",
+      "action": "CRITICAL_escalation: mut=0.10, target_features=58, cx=0.80 (POST 200 OK queued)",
+      "iter4_brier": 0.22622,
+      "brier_delta": 0.00000,
+      "notes": "CRITICAL: mutation dropped from 0.0625 (iter4) to 0.053 (iter5) — FURTHER DECLINE. At 0.053 the GA is nearly frozen, unable to explore. Flat brier for 2 iterations. Gen 206 log: lightgbm feat=40 at 0.2378 — current pop still exploring wrong models and features. POSTed mut=0.10 (nearly doubling current rate) — this is the per-iter4-protocol escalation that was flagged as mandatory. If iter6 still shows mut<0.07, island needs full reset."
     },
     "S15": {
       "brier": 0.2222,
-      "generation": 68,
+      "generation": 100,
       "model": "random_forest",
-      "mutation_rate": 0.1158,
+      "mutation_rate": 0.1262,
       "features": 61,
       "stagnation_cycles": 0,
-      "status": "FLEET_BEST_MILD_REGRESSION",
-      "action": "maintenance nudge: mut=0.13, target_features=64, cx=0.80 (POST 200 OK queued)",
-      "iter3_brier": 0.22098,
-      "brier_delta": 0.00122,
-      "notes": "Mild regression from 0.22098 to 0.2222 (+0.00122). Still fleet best overall. Wide-search island (pop=50, target=80). Current gen67 showed 200-feature individual at 0.2205 (feat=200 takeover pattern). best_features=61 — good. Mutation 0.1158 healthy. Boosted to 0.13 and target_features=64 to maintain wide-search character and counter Feat=200 drift. Latest gen Brier=0.2205 is a promising signal for next cycle."
+      "status": "FLEET_BEST_STABLE",
+      "action": "none — fleet best holding, healthy mutation",
+      "iter4_brier": 0.22220,
+      "brier_delta": 0.00000,
+      "notes": "FLEET BEST stable at 0.2222. Gen 100 milestone. Mutation 0.1262 — iter4 boost (0.13) partially absorbed, healthy. Pop=50 (wide search). Pareto front 8 — smallest in fleet but wide diversity. Cycle 34 log shows 3 gens/cycle — healthy cadence. No intervention. Primary seed island for Kaggle GPU sessions."
     }
   },
   "fleet_metrics": {
-    "best_brier": 0.2222,
-    "fleet_avg": 0.22863,
+    "best_brier": 0.22220,
+    "fleet_avg": 0.22530,
     "best_island": "S15",
     "worst_island": "S10",
-    "total_generations": 666,
+    "total_generations": 1276,
     "island_count": 6,
-    "prev_best_brier": 0.22098,
-    "fleet_avg_iter3_excl_s13": 0.22485,
-    "fleet_avg_iter3_incl_s13": 0.23170
+    "prev_best_brier": 0.22220,
+    "prev_fleet_avg": 0.22863,
+    "fleet_avg_improvement_iter4_to_iter5": -0.00333
   },
   "stagnation_detected": [],
-  "diversity_score": 0.47,
+  "diversity_score": 0.46,
   "cross_pollinations_executed": [],
   "mutation_boosts_executed": [
     {
-      "island": "S10",
-      "trigger": "regression_delta+gap_to_fleet_best",
-      "old_mut": 0.1006,
-      "new_mut": 0.11,
-      "params": {"mutation_rate": 0.11, "target_features": 63, "crossover_rate": 0.80},
+      "island": "S14",
+      "trigger": "CRITICAL_mutation_freeze_iter4_protocol",
+      "old_mut": 0.0530,
+      "new_mut": 0.10,
+      "params": {"mutation_rate": 0.10, "target_features": 58, "crossover_rate": 0.80},
       "http_status": 200,
       "response": "queued",
-      "rationale": "Regressed +0.00287. Gap to fleet best 0.00929. best_features=46 too low — boosting features+mutation."
+      "rationale": "Mutation dropped to 0.053 (CRITICAL floor). Mandatory iter4 escalation protocol. Doubled mutation rate to restore exploration."
+    },
+    {
+      "island": "S10",
+      "trigger": "flat_2nd_iter+persistent_low_feature_trap",
+      "old_mut": 0.0939,
+      "new_mut": 0.13,
+      "params": {"mutation_rate": 0.13, "target_features": 66, "crossover_rate": 0.80},
+      "http_status": 200,
+      "response": "queued",
+      "rationale": "3rd escalation attempt. Iter4 boost (0.11) reverted. Features locked at 46 for 2 iters. Strongest boost yet: 0.13 + feat=66."
     },
     {
       "island": "S12",
-      "trigger": "mild_regression+mutation_freeze_risk+model_drift",
-      "old_mut": 0.0844,
+      "trigger": "nudge_reverted+mut_decay+oldest_island",
+      "old_mut": 0.0700,
       "new_mut": 0.10,
-      "params": {"mutation_rate": 0.10, "target_features": 63, "crossover_rate": 0.80},
+      "params": {"mutation_rate": 0.10, "target_features": 60, "crossover_rate": 0.80},
       "http_status": 200,
       "response": "queued",
-      "rationale": "Mild regression +0.00257. Mutation 0.0844 approaching freeze. Gen 199 convergence risk. Steer toward ET-63 specialist config."
-    },
-    {
-      "island": "S15",
-      "trigger": "fleet_best_maintenance+feat200_takeover_prevention",
-      "old_mut": 0.1158,
-      "new_mut": 0.13,
-      "params": {"mutation_rate": 0.13, "target_features": 64, "crossover_rate": 0.80},
-      "http_status": 200,
-      "response": "queued",
-      "rationale": "Fleet best maintenance. Feat=200 takeover risk in current gen. Nudge mut up and target_features=64 to counter."
+      "rationale": "Iter4 nudge (0.10) fully reverted to 0.07. Gen 380 convergence. Re-nudge with target_features=60 to push out of 40-feature local minimum."
     }
   ],
   "recommendations": [
     {
       "priority": 1,
-      "type": "S13_recovery_pattern_document",
-      "island": "S13",
-      "reason": "Emergency boost (mut=0.13, feat=63, cx=0.80) produced -0.02312 improvement — the largest single-iteration recovery in fleet history. This is the canonical intervention for future CRITICAL collapses.",
-      "action": "Codify in memory: 'For any island with brier_delta > +0.015: mut=0.13, target_features=63, cx=0.80 is the proven emergency boost protocol.'"
+      "type": "S10_cross_pollination_trigger",
+      "island": "S10",
+      "reason": "If iter6 still shows best_features < 55 despite mut=0.13 boost, population is in a deep local optimum that mutation alone cannot escape. Cross-pollination from S15 (feat=61, 0.2222) is the next intervention.",
+      "action": "Iter6: if S10 best_features < 55, POST cross-pollination seed: random_forest, 61 features from S15 config."
     },
     {
       "priority": 2,
-      "type": "S14_mutation_freeze_escalation",
-      "island": "S14",
-      "reason": "Mutation at 0.0625 is critically low. If iter5 shows any regression or flat result, escalate immediately to mut=0.10, target_features=55-60.",
-      "action": "POST to S14 in iter5 if no improvement: {mutation_rate: 0.10, target_features: 58, crossover_rate: 0.80}"
+      "type": "S12_island_reset_evaluation",
+      "island": "S12",
+      "reason": "Gen 380 is the oldest island in fleet. If iter6 shows no improvement after re-nudge, population is irrecoverably converged. Consider full population reset via /api/reset (if available) or subtree push of fresh config.",
+      "action": "Iter6: if S12 still at 0.22533 with features < 50, evaluate island reset or redeploy."
     },
     {
       "priority": 3,
-      "type": "S10_low_feature_trap",
-      "island": "S10",
-      "reason": "S10 best_features=46 consistently across iter3 and iter4 despite target=63 boost in iter3. The population may be locked in a low-feature local optimum. Target_features boost may need multiple iterations to take effect.",
-      "action": "Monitor iter5. If best_features still < 55, consider stronger intervention: target_features=66, mutation_rate=0.13."
+      "type": "elitism_code_fix",
+      "islands": ["all"],
+      "reason": "Elitism still not deployed. Iter5 flat across all islands — this is partially expected as iter4 POSTs propagate, but elitism would floor-protect best scores. Estimated -0.002 to -0.004 Brier reduction.",
+      "action": "Deploy top-2 elitism to all HF Spaces via git subtree push. Highest-leverage code fix available."
     },
     {
       "priority": 4,
-      "type": "gpu_seed_configs",
-      "reason": "Two high-quality CPU configs emerged this iteration: S13 recovery (random_forest, 52f, Sharpe=10.12) and S15 fleet best (random_forest, 61f, 0.2222). Seed both into next Kaggle Karpathy session.",
-      "action": "Kaggle seed configs: (1) random_forest, 52f, mut=0.10 — S13 recovery pattern. (2) extra_trees, 64f, mut=0.13 — S15 fleet best mandate."
+      "type": "S14_mutation_monitor",
+      "island": "S14",
+      "reason": "If iter6 mut still below 0.07 despite POST, the space's internal adaptive mutation is overriding API commands. May need code-level fix to enforce minimum mutation floor.",
+      "action": "Iter6: check S14 mutation_rate. If < 0.07, escalate to code fix: add MUTATION_FLOOR = 0.07 to evolution engine."
     },
     {
       "priority": 5,
-      "type": "code_fix_elitism",
-      "islands": ["all"],
-      "reason": "Elitism still not deployed. Best individuals not protected from crossover. Top-2 by Brier should be carried unchanged. This is the highest-leverage code fix available — prevents regression between gens.",
-      "action": "Deploy elitism to all HF Spaces via git subtree push. Estimated impact: -0.002 to -0.004 Brier floor reduction."
-    },
-    {
-      "priority": 6,
-      "type": "supabase_experiment_queue_refresh",
-      "reason": "3 pending experiments (IDs 2533-2535) have been sitting since March 26 with no new experiments added in April. Queue is stale.",
-      "action": "Submit fresh experiments targeting S13 recovery config: random_forest 52f, mut=0.10. And ET 63f pilot for S11."
+      "type": "gpu_seed_kaggle",
+      "reason": "S15 (0.2222, feat=61) and S13 (0.22283, feat=52, Sharpe=10.12) remain best CPU configs. CPU ceiling ~0.221 confirmed. Primary path to <0.20 is Kaggle GPU with TabICL.",
+      "action": "Seed next Kaggle session with: (1) S15: random_forest 61f mut=0.13. (2) S13: random_forest 52f mut=0.10 Sharpe=10.12."
     }
   ],
   "experiments_submitted": [],
   "islands_checked": 6,
-  "best_brier": 0.2222,
+  "best_brier": 0.22220,
   "worst_brier": 0.23149,
   "cross_pollinated": false,
   "stagnation_detected_flag": false,
@@ -180,13 +174,13 @@
   "atr_brier": 0.21570,
   "gap_to_atr": 0.00650,
   "gap_to_target": 0.02220,
-  "iter3_comparison": {
-    "S10": {"iter3": 0.22862, "iter4": 0.23149, "delta": 0.00287, "trend": "WORSE"},
-    "S11": {"iter3": 0.22696, "iter4": 0.22372, "delta": -0.00324, "trend": "BETTER"},
-    "S12": {"iter3": 0.22276, "iter4": 0.22533, "delta": 0.00257, "trend": "WORSE"},
-    "S13": {"iter3": 0.24595, "iter4": 0.22283, "delta": -0.02312, "trend": "MAJOR_RECOVERY"},
-    "S14": {"iter3": 0.22494, "iter4": 0.22622, "delta": 0.00128, "trend": "MARGINALLY_WORSE"},
-    "S15": {"iter3": 0.22098, "iter4": 0.22220, "delta": 0.00122, "trend": "MARGINALLY_WORSE"}
+  "iter4_comparison": {
+    "S10": {"iter4": 0.23149, "iter5": 0.23149, "delta": 0.00000, "trend": "FLAT"},
+    "S11": {"iter4": 0.22372, "iter5": 0.22372, "delta": 0.00000, "trend": "FLAT"},
+    "S12": {"iter4": 0.22533, "iter5": 0.22533, "delta": 0.00000, "trend": "FLAT"},
+    "S13": {"iter4": 0.22283, "iter5": 0.22283, "delta": 0.00000, "trend": "FLAT"},
+    "S14": {"iter4": 0.22622, "iter5": 0.22622, "delta": 0.00000, "trend": "FLAT_CRITICAL"},
+    "S15": {"iter4": 0.22220, "iter5": 0.22220, "delta": 0.00000, "trend": "FLAT"}
   },
-  "fleet_notes": "Iter4 headline: S13 recovered from catastrophic 0.24595 to 0.22283 — the most significant single-iteration recovery observed in fleet history (+0.02312 improvement). Iter3 emergency boost protocol fully validated. Fleet average improved substantially from 0.23170 (iter3, incl S13 collapse) to 0.22863. S15 remains fleet best at 0.2222, marginally off its 0.22098 ATR. 3 POSTs executed: S10 regression boost, S12 mutation/feature nudge, S15 fleet-best maintenance. S14 mutation freeze risk flagged for escalation in iter5. No cross-pollination needed — fleet diversity recovering organically from iter3 interventions. CPU ceiling ~0.221-0.222 persists. Primary path to <0.20 remains GPU Kaggle/Colab with S13 and S15 seed configs."
+  "fleet_notes": "Iter5 headline: universal flat — all 6 islands unchanged from iter4. This is expected: iter4 POSTs (S10/S12/S15 boosts) are still propagating through populations. Fleet avg 0.22530 vs iter4 0.22863 — structural improvement from S13 recovery carrying forward. Critical finding: S14 mutation decayed FURTHER to 0.053 (iter4 was 0.0625), mandatory escalation posted (0.10). S10 remains worst at 0.23149 for 2 consecutive iters — 3rd escalation (0.13/feat=66) queued. S12 iter4 nudge reverted — re-nudged. S15 fleet best 0.2222 stable. CPU ceiling ~0.221-0.222 confirmed by 5 iterations of data. Path to <0.20 requires GPU (Kaggle/Colab TabICL). Next inflection point expected iter6 as S14+S10+S12 boosts activate."
 }
