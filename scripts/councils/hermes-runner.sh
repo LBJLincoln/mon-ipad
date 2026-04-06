@@ -83,27 +83,27 @@ declare -A DEPT_MODELS=(
 )
 
 declare -A DEPT_BUDGET=(
-    [d1]="0.75"
-    [d2]="1.00"
-    [d3]="1.00"
-    [d4]="0.75"
-    [d5]="0.20"
-    [d6]="0.75"
-    [d7]="0.30"
-    [d8]="0.20"
-    [d9]="0.75"
+    [d1]="1.50"
+    [d2]="2.00"
+    [d3]="2.00"
+    [d4]="1.50"
+    [d5]="0.50"
+    [d6]="1.50"
+    [d7]="0.50"
+    [d8]="0.50"
+    [d9]="1.50"
 )
 
 declare -A DEPT_TURNS=(
-    [d1]="30"
-    [d2]="30"
-    [d3]="30"
-    [d4]="30"
-    [d5]="15"
-    [d6]="30"
-    [d7]="20"
-    [d8]="15"
-    [d9]="30"
+    [d1]="50"
+    [d2]="50"
+    [d3]="50"
+    [d4]="50"
+    [d5]="25"
+    [d6]="50"
+    [d7]="30"
+    [d8]="25"
+    [d9]="50"
 )
 
 # ═══════════════════════════════════════════════════════════════
@@ -276,6 +276,8 @@ log "═══ RESULTS: ${SUCCESS} success, ${FAILED} failed ═══"
 cd "${ROOT}"
 if [[ $(git log --oneline -1 --format=%s 2>/dev/null) == council:* ]]; then
     log "Pushing council commits..."
+    # Pull first to avoid conflicts from parallel writers
+    git pull --rebase origin main 2>/dev/null || true
     git push origin main 2>/dev/null && ok "Pushed to origin" || err "Push failed"
 fi
 
