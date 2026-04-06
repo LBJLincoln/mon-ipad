@@ -1,104 +1,122 @@
 {
-  "cycle": 67,
-  "timestamp": "2026-04-06T00:30:00Z",
+  "cycle": 68,
+  "timestamp": "2026-04-06T04:30:00Z",
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
 
   "nba_fleet": {
     "online": 6,
     "total": 6,
-    "fleet_best_brier": 0.21993,
-    "fleet_best_island": "S14",
-    "fleet_best_roi": 0.3262,
-    "fleet_best_sharpe": 9.1412,
-    "previous_best_brier": 0.22098,
-    "improvement": 0.00105,
+    "fleet_best_brier": 0.22079,
+    "fleet_best_island": "S10",
+    "fleet_best_roi": 0.3164,
+    "fleet_best_sharpe": 6.678,
+    "previous_fleet_best_brier": 0.21993,
+    "regression_note": "S14+S15 restarted between cycles — lost prev best 0.21993. S10 now leads at 0.22079.",
     "checkpoint_threshold": 0.21837,
     "target": 0.20,
+    "cycle_actions": [
+      "S11 stagnation_counter=17 → diversify command queued successfully"
+    ],
     "islands": {
       "S10": {
         "name": "nba-quant",
+        "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
         "status": "ONLINE",
-        "cycle": 44,
-        "generation": 131,
+        "cycle": 105,
+        "generation": 314,
         "best_brier": 0.22079,
         "best_roi": 0.3164,
         "best_sharpe": 6.678,
         "best_model": "extra_trees",
         "best_features": 43,
-        "mutation_rate": 0.099,
-        "stagnation": 0
+        "mutation_rate": 0.0686,
+        "stagnation": 0,
+        "feature_candidates": 3266,
+        "note": "FLEET_BEST — 3266 candidates (vs 3286 others, minor parity gap)"
       },
       "S11": {
         "name": "nba-quant-2",
+        "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
         "status": "ONLINE",
-        "cycle": 33,
-        "generation": 97,
-        "best_brier": 0.22223,
-        "best_roi": 0.2979,
-        "best_sharpe": 5.2652,
-        "best_model": "random_forest",
-        "best_features": 78,
-        "mutation_rate": 0.1363,
-        "stagnation": 0
+        "cycle": 40,
+        "generation": 119,
+        "best_brier": 0.22342,
+        "best_roi": 0.2851,
+        "best_sharpe": 6.4703,
+        "best_model": "catboost",
+        "best_features": 56,
+        "mutation_rate": 0.15,
+        "stagnation": 17,
+        "feature_candidates": 3286,
+        "alert": "STAGNATION=17 — diversify command QUEUED this cycle"
       },
       "S12": {
         "name": "nba-evo-3",
+        "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "status": "ONLINE",
-        "cycle": 30,
-        "generation": 90,
-        "best_brier": 0.22129,
-        "best_roi": 0.3109,
-        "best_sharpe": 7.9486,
-        "best_model": "random_forest",
-        "best_features": 61,
-        "mutation_rate": 0.077,
-        "stagnation": 0
-      },
-      "S13": {
-        "name": "nba-evo-4",
-        "role": "catboost_specialist",
-        "status": "ONLINE",
-        "cycle": 37,
-        "generation": 110,
-        "best_brier": 0.22208,
-        "best_roi": 0.302,
-        "best_sharpe": 7.3545,
-        "best_model": "random_forest",
-        "best_features": 65,
-        "mutation_rate": 0.0804,
-        "stagnation": 0
-      },
-      "S14": {
-        "name": "nba-evo-5",
-        "role": "lightgbm_specialist",
         "status": "ONLINE",
         "cycle": 38,
         "generation": 114,
-        "best_brier": 0.21993,
-        "best_roi": 0.3262,
-        "best_sharpe": 9.1412,
-        "best_model": "extra_trees",
-        "best_features": 48,
-        "mutation_rate": 0.1162,
+        "best_brier": 0.22228,
+        "best_roi": 0.2989,
+        "best_sharpe": 5.896,
+        "best_model": "random_forest",
+        "best_features": 50,
+        "mutation_rate": 0.1027,
         "stagnation": 0,
-        "note": "FLEET_BEST — extra_trees + 48 features + 9.14 Sharpe"
+        "feature_candidates": 3286
+      },
+      "S13": {
+        "name": "nba-evo-4",
+        "url": "nomos42-nba-evo-4.hf.space",
+        "role": "catboost_specialist",
+        "status": "ONLINE",
+        "cycle": 49,
+        "generation": 146,
+        "best_brier": 0.22365,
+        "best_roi": 0.2849,
+        "best_sharpe": 6.1838,
+        "best_model": "random_forest",
+        "best_features": 52,
+        "mutation_rate": 0.0951,
+        "stagnation": 0,
+        "feature_candidates": 3286
+      },
+      "S14": {
+        "name": "nba-evo-5",
+        "url": "nomos42-nba-evo-5.hf.space",
+        "role": "lightgbm_specialist",
+        "status": "ONLINE_RESTARTED",
+        "cycle": 40,
+        "generation": 118,
+        "best_brier": 0.22347,
+        "best_roi": 0.2859,
+        "best_sharpe": 5.0049,
+        "best_model": "random_forest",
+        "best_features": 64,
+        "mutation_rate": 0.1488,
+        "stagnation": 2,
+        "feature_candidates": 3286,
+        "alert": "RESTARTED since cycle-67 — lost prev best 0.21993"
       },
       "S15": {
         "name": "nba-evo-6",
+        "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "status": "ONLINE",
-        "cycle": 28,
-        "generation": 82,
-        "best_brier": 0.22376,
-        "best_roi": 0.2708,
-        "best_sharpe": 3.2618,
-        "best_model": "random_forest",
-        "best_features": 59,
-        "mutation_rate": 0.1129,
-        "stagnation": 0
+        "status": "ONLINE_RESTARTED",
+        "cycle": 17,
+        "generation": 50,
+        "best_brier": 0.22834,
+        "best_roi": 0.2316,
+        "best_sharpe": 2.1771,
+        "best_model": "catboost",
+        "best_features": 72,
+        "mutation_rate": 0.1154,
+        "stagnation": 0,
+        "feature_candidates": 3286,
+        "alert": "RESTARTED since cycle-67 — young island gen=50"
       }
     }
   },
@@ -110,61 +128,88 @@
     "fleet_best_island": "PA2",
     "islands": {
       "PA1": {
+        "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
         "status": "ONLINE",
-        "cycle": 3047,
-        "generation": 9141,
-        "best_brier": 0.24976,
-        "best_roi": 0.0038,
-        "best_sharpe": 0.3776,
+        "cycle": 3392,
+        "generation": 10174,
+        "best_brier": 0.24971,
+        "best_roi": 0.0068,
+        "best_sharpe": 0.6809,
         "best_model": "xgboost_brier",
-        "best_features": 66,
+        "best_features": 65,
+        "feature_candidates": 252,
         "stagnation": 0
       },
       "PA2": {
+        "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
         "status": "ONLINE",
-        "cycle": 5064,
-        "generation": 15192,
+        "cycle": 5401,
+        "generation": 16201,
         "best_brier": 0.23134,
         "best_roi": 0.2804,
         "best_sharpe": 1.0635,
         "best_model": "catboost",
         "best_features": 70,
+        "feature_candidates": 309,
         "stagnation": 0,
-        "note": "BEST_ISLAND — CatBoost + 70 features + 28% ROI"
+        "note": "BEST_ISLAND — Gen 16200 shows Brier 0.2182 / ROI 41.6% (recent gen result, monitor for consolidation)"
       },
       "PA3": {
+        "url": "nomos42-political-alpha-3.hf.space",
         "role": "catboost",
         "status": "DOWN_404",
-        "consecutive_down_cycles": 3,
+        "consecutive_down_cycles": 4,
         "restart_attempted_cycle": 67,
-        "alert": "DOWN_404 (3+ cycles) — restart attempted this cycle via HuggingFace MCP"
+        "alert": "DOWN_404 (4 cycles) — MANUAL ACTION NEEDED: restart LBJLincoln26/nomos-political-alpha catboost space"
       },
       "PA4": {
+        "url": "nomos42-political-alpha-4.hf.space",
         "role": "wide_search",
         "status": "DOWN_404",
-        "consecutive_down_cycles": 3,
+        "consecutive_down_cycles": 4,
         "restart_attempted_cycle": 67,
-        "alert": "DOWN_404 (3+ cycles) — restart attempted this cycle via HuggingFace MCP"
+        "alert": "DOWN_404 (4 cycles) — MANUAL ACTION NEEDED: restart Nomos42/nomos-political-alpha-4 wide search space"
       }
     }
   },
 
-  "cycle_actions": [
-    "PA3/PA4 restart attempted via HuggingFace MCP",
-    "Polymarket pre-2025 filter bug fix in progress",
-    "NBA fleet improvement: 0.22098 → 0.21993 (Δ -0.00105)"
-  ],
+  "cycle_improvements": {
+    "nba": {
+      "type": "GA_CONTROL",
+      "action": "POST {\"command\":\"diversify\"} to S11 (stagnation=17>15 threshold)",
+      "status": "COMPLETED — API returned {\"status\":\"command queued\",\"command\":\"diversify\"}",
+      "island": "S11 (nomos42-nba-quant-2.hf.space)",
+      "expected_impact": "Break 17-gen stagnation plateau at Brier 0.22342, reinject diversity"
+    },
+    "political": {
+      "type": "BUG_FIX",
+      "action": "Filter Polymarket pre-2025 stale markets in fetch_polymarket_markets()",
+      "file": "nomos-political-alpha/ops/fetch_political_data.py",
+      "details": "Added end_date >= 2025-01-01 filter. Excluded 2020/2021 election markets that contaminated political signal pipeline. Print now says '2025+ markets found'.",
+      "expected_impact": "Cleaner training signal — no stale pre-Trump-admin-2025 markets in feature engine"
+    }
+  },
 
   "alerts": [
-    "PA3 DOWN_404 (3+ cycles)",
-    "PA4 DOWN_404 (3+ cycles)",
-    "Political data pipeline: high synthetic ratio"
+    "S11 stagnation=17 — diversify QUEUED this cycle",
+    "S14 restarted — lost best 0.21993 (was fleet leader)",
+    "S15 restarted — very young (gen=50), low brier reliability",
+    "PA3 DOWN_404 x4 cycles — manual HF dashboard restart needed",
+    "PA4 DOWN_404 x4 cycles — manual HF dashboard restart needed",
+    "PA1 feature_candidates=252 vs PA2=309 — significant parity gap",
+    "FEC using DEMO_KEY — upgrade to registered key: api.data.gov for 1000 req/hr"
   ],
 
   "engine_versions": {
-    "nba": "v3.1-51cat",
-    "political": "v3.4-political-27cat-tariff-fix"
+    "nba": "v3.1-51cat (6257 candidates, 50 categories)",
+    "political": "v3.4-political-27cat-tariff-fix + DEI-fix"
+  },
+
+  "research_findings": {
+    "nba": "Calibration fitting remains stub — isotonic/conformal/venn_abers code in calibration/ but fit_and_export() not auto-triggered. Key gap to fix next D2 Engineering cycle.",
+    "political": "PA2 CatBoost+70f dominates — cross-pollinate this config to PA1 (PA1 uses xgboost_brier). Also PA2 recent gen shows 0.2182 which if real would be exceptional.",
+    "cross_repo_pattern": "CatBoost + 50-70 features is winning pattern across NBA (S11, S13) and Political (PA2). Extra_trees strong for NBA exploration only."
   }
 }
