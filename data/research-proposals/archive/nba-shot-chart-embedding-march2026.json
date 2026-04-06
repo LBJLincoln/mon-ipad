@@ -1,0 +1,52 @@
+{
+  "proposal_id": "nba-shot-chart-embedding-march2026",
+  "created_at": "2026-03-31T12:00:00Z",
+  "cycle": 10,
+  "priority": "HIGH",
+  "title": "Cat47: Shot-Chart Spatial Zone Efficiency Features + Cat48: PIE/BPM Player Impact",
+  "source": "2026 ML papers: shot-chart embeddings consistently improve Brier; PIE/BPM respond faster to roster changes",
+  "papers": [
+    "MDPI 2026: Uncertainty-Aware ML for NBA Forecasting — shot-chart embeddings reduce Brier discrimination",
+    "Nature Scientific Reports 2025: Stacked ensemble — ablation shows shot-chart removal consistently hurts calibration",
+    "ACM 2025: Deep Learning NBA — spatial features outperform team-only models"
+  ],
+  "current_state": {
+    "existing_categories": "Cat42=Shot Quality, Cat45=Player Tracking (6211 raw features, 43 categories)",
+    "best_brier": 0.22215,
+    "target": 0.21837,
+    "gap": 0.00378,
+    "s15_notable": "S15 gen 187 hit Brier 0.2201 with extra_trees + 200f in a single generation"
+  },
+  "cat47_shot_zone_efficiency": {
+    "category": "Cat47 — Shot Chart Spatial Zone Efficiency Matrix",
+    "feature_count_estimate": 120,
+    "zones": ["paint_2pt","mid_range_left","mid_range_right","mid_range_top","corner_3_left","corner_3_right","above_break_3_left","above_break_3_right","above_break_3_top"],
+    "metrics_per_zone": [
+      "team_freq_ratio (team zone freq / league avg)",
+      "team_efg_vs_def (team efg in zone vs opponent def efg allowed)",
+      "rolling_5g_zone_shift (zone mix change last 5 games)",
+      "opp_zone_weakness (opponent allowed efg - league avg per zone)",
+      "matchup_edge (team_efg_in_zone * opp_zone_weakness)"
+    ],
+    "windows": ["last_5","last_10","season"],
+    "data_source": "nba_api.stats.endpoints.ShotChartDetail — cache by (team_id, season)",
+    "engine_location": "features/engine.py — add after Cat45"
+  },
+  "cat48_player_impact": {
+    "category": "Cat48 — Player Impact Estimate + BPM",
+    "feature_count_estimate": 30,
+    "features": ["top5_pie_avg","starter_bpm_sum","delta_pie_vs_opp","top_pie_player_minutes","bpm_weighted_by_minutes"],
+    "rationale": "PIE/BPM respond faster to roster changes than team stats — especially valuable at season start and after trades",
+    "data_source": "NBA Stats API /leaguedashplayerstats — PIE column directly available"
+  },
+  "calibration_addendum": {
+    "finding": "CalibratedClassifierCV with auto-selection (isotonic vs sigmoid) achieves Brier ~0.20 on NBA 2024 test",
+    "action": "fit both methods, keep whichever gives lower validation Brier",
+    "code": "cal_iso = CalibratedClassifierCV(base, method='isotonic', cv=3); cal_sig = CalibratedClassifierCV(base, method='sigmoid', cv=3); keep = min([cal_iso, cal_sig], key=lambda c: brier_score_loss(y_val, c.predict_proba(X_val)[:,1]))"
+  },
+  "expected_impact": {
+    "brier_improvement": "-0.002 to -0.005 from Cat47 shot-chart embeddings",
+    "note": "S15 wide-search already at 200 features and hit 0.2201 — suggests wider spatial feature base helps extra_trees specifically"
+  },
+  "status": "PROPOSED — awaiting implementation in features/engine.py"
+}

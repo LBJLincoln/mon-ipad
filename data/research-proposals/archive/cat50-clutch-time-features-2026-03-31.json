@@ -1,0 +1,50 @@
+{
+  "proposal_id": "cat50-clutch-time-features",
+  "created_at": "2026-03-31T20:25:00Z",
+  "brain_cycle": 13,
+  "category": "Cat50",
+  "title": "Clutch-Time Performance Features for NBA Win Probability",
+  "priority": "HIGH",
+  "sources": [
+    {
+      "paper": "Trends and Performance Visualization of Clutch Time in Japan's Professional B.League",
+      "authors": "Shiiku & Ichikawa",
+      "published": "2025-10-06",
+      "key_finding": "Clutch time = last 5min with score margin <=5pts. Paint touches and 3PT efficiency remain efficient under pressure; mid-range drops. Useful for predicting game outcomes in close games."
+    },
+    {
+      "paper": "Machine learning for sports betting: should model selection be based on accuracy or calibration?",
+      "authors": "Walsh & Joshi",
+      "published": "2023-03-10",
+      "key_finding": "Calibration-based model selection → +34.69% ROI vs -35.17% for accuracy-based. Validates Brier score as primary metric. Models trained on NBA multi-season data."
+    }
+  ],
+  "motivation": "Current feature engine has no clutch-time breakdown. Close games (final 5min, margin<=5) are won by teams with superior clutch performance. This is predictive of future game outcomes and not captured in season-level or game-level box score averages.",
+  "proposed_features": [
+    "clutch_efg_pct_home",
+    "clutch_efg_pct_away",
+    "clutch_efg_delta",
+    "clutch_paint_freq_home",
+    "clutch_paint_freq_away",
+    "clutch_3pt_rate_home",
+    "clutch_3pt_rate_away",
+    "clutch_win_pct_home_l10",
+    "clutch_win_pct_away_l10",
+    "clutch_score_diff_avg_home"
+  ],
+  "feature_count": 10,
+  "category_number": 50,
+  "data_source": "NBA play-by-play (already in pipeline via Cat19 play-by-play)",
+  "implementation_notes": [
+    "Filter pbp events to last 5 minutes where abs(home_score - away_score) <= 5",
+    "Compute eFG% = (FGM + 0.5*3PM) / FGA in clutch window, rolling 10 games",
+    "clutch_win_pct: wins in games that entered clutch window, last 10 such games",
+    "Normalize as delta (home - away) for directional features"
+  ],
+  "expected_brier_improvement": "-0.002 to -0.005",
+  "expected_roi_impact": "+2 to +4%",
+  "rationale": "High-leverage close games drive betting edge. Teams that win clutch time win more games than their season stats suggest. Feature is low-redundancy with existing categories.",
+  "cross_project_applicability": "MEDIUM — political analog is 'final week polling surge' (last 7 days before election, margin <5pts). Similar clutch-time win pattern.",
+  "implementation_effort": "MEDIUM — requires pbp aggregation by time window, 1-2 days implementation",
+  "status": "PROPOSED — awaiting implementation on next Kaggle/Colab GPU run"
+}

@@ -77,11 +77,13 @@ PROVIDERS = {
     ),
 
     # --- Claude Code CLI (subprocess-based, not OpenAI-compat) ---
+    # NOTE: Only works when TF runs standalone (not during interactive claude session)
+    # VM has 969MB RAM — claude CLI subprocess needs ~300MB which conflicts
     "anthropic_cli": ProviderConfig(
         name="anthropic_cli",
         base_url="",   # unused — handled via subprocess
         models=["claude-opus-4-6", "claude-sonnet-4-6", "claude-haiku-4-5-20251001"],
-        rpm=10, rpd=500, is_free=False, timeout=60.0, max_tokens=1024
+        rpm=10, rpd=500, is_free=False, timeout=90.0, max_tokens=1024
     ),
 
     # --- DEAD: GROQ (restricted/banned 2026-04-05) ---

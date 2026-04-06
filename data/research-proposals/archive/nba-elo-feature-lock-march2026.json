@@ -1,0 +1,52 @@
+{
+  "proposal_id": "nba-elo-feature-lock-march2026",
+  "created_at": "2026-03-31T08:00:00Z",
+  "brain_cycle": 9,
+  "priority": "HIGH",
+  "title": "ELO Feature Anchoring + Rolling-5 Form Group in GA Evolution",
+  "problem": "GA evolution can drop high-value features during mutation/crossover. Research consistently shows team_elo, team_elo_5y, and home_next are top-3 features across all NBA prediction models (SHAP analysis, multiple 2025-2026 papers). If GA drops these, it wastes generations re-discovering them.",
+  "evidence": [
+    {
+      "source": "Integration of machine learning XGBoost and SHAP for NBA prediction (PMC, 2024)",
+      "finding": "home_next, team_elo_5_y, team_elo consistently top-3 SHAP features across all model types"
+    },
+    {
+      "source": "Key Factors Influencing NBA Game Outcomes (Preprints.org, Apr 2025)",
+      "finding": "Win streaks, home-court advantage, shooting efficiency are primary predictors. Rolling 5-game form captures short-term momentum."
+    },
+    {
+      "source": "Uncertainty-Aware ML for NBA Forecasting (MDPI Information, Jan 2026)",
+      "finding": "Rolling five-game averages for pace, possessions, point differential capture short-term form. Headline sentiment excluded (weak signal)."
+    },
+    {
+      "source": "Stacked ensemble model for NBA outcomes (Nature Scientific Reports, 2025)",
+      "finding": "SHAP interpretability confirms ELO-based features + home court provide stable signal across 8+ seasons."
+    }
+  ],
+  "proposed_changes": [
+    {
+      "change": "FEATURE_LOCK in GA init/mutate/crossover",
+      "description": "Define LOCKED_FEATURES list containing feature name patterns for elo and home_next. In mutate() and crossover(), never flip these bits to 0. In init(), always seed these bits as 1.",
+      "file": "hf-space/app.py (or evolution.py)",
+      "code_sketch": "LOCKED_FEATURE_PATTERNS = ['elo', 'home_next', 'home_court', 'win_streak', 'l5_']\n\ndef get_locked_indices(feature_names):\n    return [i for i, f in enumerate(feature_names)\n            if any(p in f.lower() for p in LOCKED_FEATURE_PATTERNS)]\n\n# In mutate():\nlocked = get_locked_indices(feature_names)\nfor i in locked:\n    chromosome[i] = 1  # always active\n\n# In crossover():\nfor i in locked:\n    child[i] = 1  # always active in offspring",
+      "expected_impact": "Prevents wasted generations from ELO dropout. Ensures proven features are always in pool."
+    },
+    {
+      "change": "Add rolling-5 pace/possessions group to feature engine (Cat46)",
+      "description": "2026 paper recommends rolling 5-game averages for: pace, projected_possessions, point_differential, total_points. Add as new Cat46 in engine.py.",
+      "file": "features/engine.py + hf-space/features/engine.py",
+      "code_sketch": "# Cat46: Rolling-5 Pace & Possessions\nfor window in [3, 5, 10]:\n    for stat in ['pace', 'possessions_est', 'point_diff', 'total_pts']:\n        features.append(f'h_roll{window}_{stat}')  # home team\n        features.append(f'a_roll{window}_{stat}')  # away team\n        features.append(f'diff_roll{window}_{stat}')  # delta",
+      "expected_impact": "~36 new features capturing form signal validated by Jan 2026 paper. Low compute cost.",
+      "parity_note": "Must update BOTH features/engine.py AND hf-space/features/engine.py to maintain engine parity."
+    }
+  ],
+  "implementation_order": [
+    "1. Add LOCKED_FEATURES to S10 (exploitation island) first — least risk",
+    "2. Monitor 5 cycles — measure if brier improves vs S11 control",
+    "3. If positive: deploy to all 6 islands",
+    "4. Add Cat46 to engine.py + deploy — separate change, separate cycle"
+  ],
+  "estimated_brier_impact": "-0.001 to -0.003 (prevents ELO dropout waste, tighter convergence)",
+  "previous_proposal": "nba-lr-calibration-march2026.json (LR model type, Brier 0.199 target)",
+  "deployment_command": "# Via POST to S10 /api/config:\n# {\"feature_lock_patterns\": [\"elo\", \"home_next\", \"l5_\", \"win_streak\"]}\n# Or push app.py change to Nomos42/nba-quant HF space"
+}

@@ -1,0 +1,98 @@
+{
+  "proposal_id": "cat50-venue-specific-streaks",
+  "created_at": "2026-03-31T20:00:00Z",
+  "brain_cycle": "Sonnet 4.6 / cycle ~12",
+  "category": "Cat50 — Venue-Specific Streak & Calibration Uncertainty",
+  "priority": "HIGH",
+  "estimated_brier_improvement": "-0.003 to -0.008",
+  "feature_count": 14,
+  "implementation_effort": "LOW (2h)",
+  "source_research": [
+    "MDPI Information (Jan 2026): Uncertainty-aware forecasting with ECE/MCE calibration metrics",
+    "Preprints.org (May 2025): XGBoost SHAP — away_win_streak top predictor",
+    "MDPI Computation (Oct 2025): Win streak before game = #1 SHAP feature",
+    "Medium/Jesse Fu: Away win streaks outperform overall streaks in prediction"
+  ],
+
+  "motivation": "Current Cat5 tracks overall W/L streak but NOT venue-specific streaks. 2025-2026 research consistently identifies AWAY win streak as the top or near-top SHAP feature in NBA prediction models. Our engine uses the same streak value regardless of venue context. Additionally, Jan 2026 paper shows ECE/MCE calibration uncertainty as a novel meta-feature improving Brier score — we have calibration tracking (Cat20) but not ECE/MCE as explicit features.",
+
+  "gap_analysis": {
+    "current_cat5_has": [
+      "h_streak (overall W/L streak)",
+      "h_streak_abs (absolute length)",
+      "h_wp5 - h_wp82 (recent vs season momentum)",
+      "h_wp3 - h_wp10 (short-term momentum)",
+      "h_home_wp (home overall win%)",
+      "h_away_wp (away overall win%)",
+      "h_home_wp - h_away_wp (venue differential)"
+    ],
+    "cat5_missing": [
+      "h_home_streak (current streak IN HOME GAMES ONLY)",
+      "a_away_streak (current streak IN AWAY GAMES ONLY)",
+      "streak_temperature (recent_streak_rate vs historical_avg_streak_rate)",
+      "home_streak_vs_season (home streak relative to season home win%)",
+      "away_streak_vs_season (away streak relative to season away win%)"
+    ],
+    "calibration_meta_missing": [
+      "ece_5 (Expected Calibration Error over last 5 predictions)",
+      "mce_20 (Maximum Calibration Error over last 20)",
+      "calibration_confidence (how far predicted prob is from 50/50 average)"
+    ]
+  },
+
+  "proposed_features": {
+    "venue_streaks_8_features": [
+      "h_home_streak: current consecutive W/L streak in home games only (+ve = winning)",
+      "h_home_streak_abs: absolute length of home streak",
+      "a_away_streak: current consecutive W/L streak in away games only (+ve = winning)",
+      "a_away_streak_abs: absolute length of away streak",
+      "h_home_streak_normalized: home_streak / sqrt(home_games_played) (magnitude control)",
+      "a_away_streak_normalized: away_streak / sqrt(away_games_played)",
+      "h_home_streak_vs_away: h_home_streak - a_away_streak (home advantage momentum gap)",
+      "streak_differential_normalized: (h_home_streak - a_away_streak) / max(1, abs(h_home_streak) + abs(a_away_streak))"
+    ],
+    "streak_temperature_3_features": [
+      "h_streak_temperature: (h_wp5 - h_wp20) / (h_wp20 + 0.01) — heating/cooling momentum",
+      "a_streak_temperature: (a_wp5 - a_wp20) / (a_wp20 + 0.01)",
+      "temp_differential: h_streak_temperature - a_streak_temperature"
+    ],
+    "calibration_uncertainty_3_features": [
+      "h_ece_last10: Expected Calibration Error for home team predictions last 10 games",
+      "a_ece_last10: Expected Calibration Error for away team predictions last 10 games",
+      "ensemble_calibration_gap: abs(h_ece_last10 - a_ece_last10)"
+    ]
+  },
+
+  "implementation_plan": {
+    "step1": "Add _home_streak() and _away_streak() helper methods to FeatureEngine class that filter team_home_results/team_away_results for consecutive runs",
+    "step2": "Add _streak_temperature() helper: wp(tr, 5) vs wp(tr, 20) relative change",
+    "step3": "In Cat5 loop, compute home/away specific streaks using the per-team venue results dicts (already loaded: team_home_results, team_away_results)",
+    "step4": "Add ECE computation helper: bin predictions by 0.1 intervals, compare to actual outcomes",
+    "step5": "Register in feature_names() as Cat50 block",
+    "step6": "Bump ENGINE_VERSION to v3.1-44cat",
+    "step7": "Deploy to S10 (exploitation) first, measure Brier after 20 generations"
+  },
+
+  "code_sketch": {
+    "helper_home_streak": "def _home_streak(self, team, team_home_results):\n    games = team_home_results.get(team, [])\n    if not games: return 0\n    result = 1 if games[-1][1] else -1\n    for g in reversed(games[:-1]):\n        if (1 if g[1] else -1) == result: result += (1 if games[-1][1] else -1)\n        else: break\n    return result",
+    "helper_streak_temperature": "def _streak_temperature(self, tr):\n    wp5 = self._wp(tr, 5)\n    wp20 = self._wp(tr, 20)\n    return (wp5 - wp20) / (wp20 + 0.01)",
+    "cat5_addition": "# In Cat5 loop after existing features:\nrow.append(self._home_streak(home, team_home_results) if prefix=='h' else self._away_streak(away, team_away_results))\nrow.append(abs(row[-1]))\nrow.append(self._streak_temperature(tr))"
+  },
+
+  "risk_assessment": {
+    "level": "LOW",
+    "notes": [
+      "team_home_results and team_away_results already loaded in main compute loop",
+      "No new data dependencies — uses existing game records",
+      "ECE requires prediction history — may need synthetic init for early games",
+      "Streak normalization prevents large values from dominating tree splits"
+    ]
+  },
+
+  "cross_project_applicability": {
+    "political_alpha": "Analogous 'venue-specific streak' in politics = candidate_home_state performance vs national polling trend. Propose Cat24 'Geographic Alpha Features' for political engine.",
+    "shared_pattern": "streak_temperature pattern (recent rate vs historical rate) is domain-agnostic — applicable to any time-series prediction task"
+  },
+
+  "decision": "IMPLEMENT — add to engine.py Cat50 in next muscle cycle. High signal, low risk, well-supported by 2025-2026 literature."
+}

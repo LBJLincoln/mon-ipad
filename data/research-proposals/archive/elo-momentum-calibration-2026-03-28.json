@@ -1,0 +1,54 @@
+{
+  "id": "elo-momentum-calibration-2026-03-28",
+  "created": "2026-03-28T00:25:01Z",
+  "title": "Elo Momentum + Calibration ECE Tracking for NBA Feature Engine",
+  "priority": "HIGH",
+  "source": "WebSearch: uncertainty-aware NBA prediction 2026 (MDPI, Scientific Reports)",
+  "motivation": "2026 paper achieved Brier 0.199 (LR) and 0.202 (XGBoost) vs our best 0.22126. Gap = 0.022. Key techniques: rolling Elo differential, calibration ECE/MCE, uncertainty-aware features.",
+  "proposed_features": [
+    {
+      "name": "elo_diff_pregame",
+      "category": "Cat38_ELO",
+      "formula": "team_elo_current - opponent_elo_current",
+      "rationale": "Elo diff is top SHAP feature in 2025 MDPI study. FiveThirtyEight K=20 NBA Elo is public.",
+      "data_source": "fivethirtyeight.com/nba-elo — CSV updated daily"
+    },
+    {
+      "name": "elo_win_prob_pregame",
+      "category": "Cat38_ELO",
+      "formula": "1 / (1 + 10^(-(elo_diff)/400))",
+      "rationale": "Direct Elo win probability as calibrated baseline feature"
+    },
+    {
+      "name": "form_l10_diff",
+      "category": "Cat39_FORM",
+      "formula": "team_wins_last10 - opponent_wins_last10",
+      "rationale": "L10 momentum consistently top-3 feature across all 2025-26 studies"
+    },
+    {
+      "name": "form_streak_pregame",
+      "category": "Cat39_FORM",
+      "formula": "signed current streak (positive=win streak, negative=loss streak)",
+      "rationale": "Win/loss streaks capture psychological momentum"
+    },
+    {
+      "name": "elo_5y_home",
+      "category": "Cat38_ELO",
+      "formula": "exponential decay of elo over last 5 years (EWMA)",
+      "rationale": "team_elo_5_y is top SHAP feature in MDPI 2025 CNN study achieving Brier 0.221"
+    }
+  ],
+  "calibration_improvements": [
+    "Track ECE (Expected Calibration Error) and MCE per cycle in live[] dict",
+    "Auto-select best calibration method via Brier: sigmoid vs isotonic vs venn_abers vs none",
+    "Add probability clipping [0.025, 0.975] to all 6 model types (already in some islands)"
+  ],
+  "implementation": {
+    "file": "features/engine.py",
+    "new_category": "Cat38_ELO (5 features) + Cat39_FORM (4 features)",
+    "data_dependency": "FTE Elo CSV (public, no API key) — add to vm scripts/fetch_elo.py",
+    "effort": "Medium — fetch script + engine category + GA eval",
+    "expected_impact": "Literature shows Elo+Form reduce Brier by 0.010-0.015 over base features"
+  },
+  "cross_repo_note": "Elo differential concept also applicable to Political Alpha — policy_elo proxy from approval ratings"
+}

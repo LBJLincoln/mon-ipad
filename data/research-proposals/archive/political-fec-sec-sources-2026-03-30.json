@@ -1,0 +1,58 @@
+{
+  "id": "political-fec-sec-sources-2026-03-30",
+  "created_at": "2026-03-30T12:00:00Z",
+  "title": "Political Alpha: FEC API + SEC Form 4 + Executive Orders as Live Data Sources",
+  "priority": "CRITICAL",
+  "rotation": "A — WebSearch FEC filings, SEC insider trades, executive orders",
+  "context": "PA1-PA3 stuck at Brier=0.3 with 0-2 feature candidates. 5-patch fix deployed to GitHub awaiting VM deployment. This proposal adds 3 new live data sources to ops/fetch_political_data.py to enrich the event feed and unlock feature diversity.",
+  "data_sources": [
+    {
+      "name": "FEC OpenFEC API",
+      "url": "https://api.open.fec.gov/v1/",
+      "endpoint_example": "https://api.open.fec.gov/v1/schedules/schedule_a/?contributor_name=trump&api_key=DEMO_KEY&per_page=100",
+      "data": "Individual contributions, PAC filings, donor amounts, filing dates",
+      "update_frequency": "48h lag for electronic filings, weeks for paper",
+      "required_fields": ["contributor_name", "contribution_receipt_amount", "contribution_receipt_date", "committee_id", "contributor_employer"],
+      "feature_impact": "Enables Cat1 DONOR PROFILE features (200 features) — currently starved of data",
+      "integration": "Add fetch_fec_donations(ticker_map) to ops/fetch_political_data.py, match employers to tickers"
+    },
+    {
+      "name": "SEC EDGAR Form 4 (Insider Trading)",
+      "url": "https://www.sec.gov/cgi-bin/browse-edgar",
+      "endpoint_example": "https://efts.sec.gov/LATEST/search-index?q=%22form+4%22&dateRange=custom&startdt=2025-01-01&enddt=2026-03-30&hits.hits._source.period_of_report=*",
+      "data": "Insider buy/sell transactions, Form 4 filings, officer/director names",
+      "update_frequency": "2 business days after transaction",
+      "required_fields": ["issuer_ticker", "transaction_date", "transaction_shares", "transaction_price", "transaction_type", "reporting_owner_name"],
+      "feature_impact": "Enables Cat6 INSIDER TRADING features (150 features) — currently broken due to FIX3 field mismatch",
+      "integration": "Replace current insider data source with EDGAR direct feed, fix 'side' vs 'type' field via 5-patch FIX3"
+    },
+    {
+      "name": "Federal Register Executive Orders",
+      "url": "https://www.federalregister.gov/api/v1/documents",
+      "endpoint_example": "https://www.federalregister.gov/api/v1/documents.json?conditions%5Btype%5D%5B%5D=PRESDOCU&conditions%5Bpresidential_document_type%5D%5B%5D=executive_order&per_page=20",
+      "data": "Executive orders, proclamations, affected agency codes, signing dates",
+      "update_frequency": "Same-day or next-day",
+      "required_fields": ["document_number", "signing_date", "title", "agencies", "cfr_references"],
+      "feature_impact": "Enables Cat2 POLICY SIGNAL features (300 features) — sector/ticker affected by EO",
+      "integration": "Map agency codes to sectors/tickers via existing SECTOR_TO_TICKERS dict in political_engine.py"
+    },
+    {
+      "name": "Polymarket API (existing, field fix needed)",
+      "url": "https://gamma-api.polymarket.com/markets",
+      "data": "Political prediction market probabilities, volumes, whale activity",
+      "feature_impact": "Enables Cat5 POLYMARKET SIGNALS (150 features) — currently broken due to price vs probability field name",
+      "integration": "Already covered by FIX4 in apply_patches.py — deploy 5-patch fix"
+    }
+  ],
+  "implementation_priority": [
+    "STEP 1: Deploy 5-patch fix from hf-space/apply_patches.py (BLOCKING — currently 0 features)",
+    "STEP 2: Add fetch_fec_donations() to ops/fetch_political_data.py using api.open.fec.gov (no API key needed for DEMO_KEY, 1000 req/day)",
+    "STEP 3: Add fetch_sec_form4() using EDGAR EFTS search API (no auth required)",
+    "STEP 4: Add fetch_executive_orders() using Federal Register API (no auth required)",
+    "STEP 5: Run ops/fetch_political_data.py on VM cron (already scheduled per CLAUDE.md)"
+  ],
+  "expected_feature_candidates_after_fix": "30-100 (from current 0-2)",
+  "expected_brier_after_fix": "0.25-0.27 (matching PA4 previous best of 0.25008)",
+  "cross_repo_port": "FEC donor data can enrich NBA prediction via sponsor analysis of arenas; low priority cross-port",
+  "status": "PROPOSED — CRITICAL PATH"
+}

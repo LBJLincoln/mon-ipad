@@ -1,0 +1,146 @@
+{
+  "created_at": "2026-03-31T20:30:00Z",
+  "brain_cycle": 13,
+  "title": "NBA Prediction Research Findings 2025-2026 — Comprehensive Scan",
+  "benchmark_context": {
+    "our_best_brier": 0.22066,
+    "published_benchmark_mdpi_2025": 0.221,
+    "note": "OUR SYSTEM IS ALREADY COMPETITIVE WITH PEER-REVIEWED LITERATURE on CPU-only tree models. MDPI 2025 CNN paper achieved 0.221 on NBA regular season — our S13 is at 0.22066.",
+    "odds_gods_college_bball": 0.183,
+    "odds_gods_method": "isotonic-calibrated gradient boosting on college basketball 2025"
+  },
+  "proposals": [
+    {
+      "id": "P1",
+      "title": "Isotonic Regression Calibration Layer",
+      "priority": "CRITICAL",
+      "category": "Calibration",
+      "expected_brier_improvement": "-0.005 to -0.020",
+      "source": "Odds Gods methodology (blog.oddsgods.net) + Walsh & Joshi 2023 (arXiv:2303.06021)",
+      "details": "Fit sklearn CalibratedClassifierCV(method='isotonic') on OOF predictions within the walk-forward loop. The Odds Gods method achieved 0.183 Brier on college basketball using this exact approach. Key: fit calibrator on out-of-fold predictions only to prevent leakage. Current Cat20/Cat23 calibration may use sigmoid — switch to isotonic for larger datasets (9551 games >> 2000 threshold).",
+      "implementation": "from sklearn.calibration import CalibratedClassifierCV; cal = CalibratedClassifierCV(base_model, method='isotonic', cv='prefit'); cal.fit(X_oof, y_oof)",
+      "applicable_to": "All 6 NBA islands + Political Alpha (both use XGBoost/RF/CatBoost)",
+      "effort": "LOW — 1-2 lines of code change in features/engine.py"
+    },
+    {
+      "id": "P2",
+      "title": "Travel Direction + Fatigue Features (Cat51)",
+      "priority": "HIGH",
+      "category": "Schedule/Fatigue",
+      "expected_brier_improvement": "-0.002 to -0.005",
+      "source": "JCSM travel direction study + CMU 2025 fatigue capstone + Sportsbook Review 2025-26 Fatigue Index",
+      "details": "Eastward-traveling teams win 44.51% vs 40.83% for westward teams — a 3.7% win rate swing. Markets partially price this but not fully. Features: travel_direction (east/west), time_zones_crossed (integer), miles_traveled_last_3d (continuous), days_rest (integer), rest_differential (home_rest - away_rest).",
+      "proposed_features": [
+        "travel_direction_home",
+        "travel_direction_away",
+        "time_zones_crossed_home",
+        "time_zones_crossed_away",
+        "miles_traveled_last_3d_home",
+        "miles_traveled_last_3d_away",
+        "days_rest_home",
+        "days_rest_away",
+        "rest_differential",
+        "back_to_back_home",
+        "back_to_back_away",
+        "b2b_differential"
+      ],
+      "feature_count": 12,
+      "data_source": "Schedule data + team city coordinates (already available)",
+      "effort": "MEDIUM — compute from schedule, no new API needed"
+    },
+    {
+      "id": "P3",
+      "title": "Shot Quality Delta Features (Cat52)",
+      "priority": "HIGH",
+      "category": "Shot Quality",
+      "expected_brier_improvement": "-0.003 to -0.006",
+      "source": "ACM MMSports 2024 (dl.acm.org/doi/10.1145/3689061.3689068) + ShotQuality.com methodology",
+      "details": "Team actual eFG% minus model-predicted eFG% from shot location/defender distance. Positive delta = hot shooting (unsustainable, mean-reverts). Negative delta on quality shots = buying signal. Also: paint_touch_rate (restricted area attempts / total FGA) and 3PAr (3-point attempt rate for defense).",
+      "proposed_features": [
+        "shot_quality_delta_home",
+        "shot_quality_delta_away",
+        "paint_attempt_rate_home",
+        "paint_attempt_rate_away",
+        "paint_attempt_rate_diff",
+        "efg_vs_expected_efg_home",
+        "efg_vs_expected_efg_away",
+        "opp_3par_allowed_home",
+        "opp_3par_allowed_away"
+      ],
+      "feature_count": 9,
+      "data_source": "nba_api play-by-play (already in pipeline via Cat19)",
+      "effort": "MEDIUM-HIGH — requires expected eFG% model from shot location data"
+    },
+    {
+      "id": "P4",
+      "title": "Switch Four Factors Rolling Window to 20 Games",
+      "priority": "HIGH",
+      "category": "Feature Engineering Tuning",
+      "expected_brier_improvement": "-0.001 to -0.003",
+      "source": "Multiple 2025 papers: PLOS One systematic review + MDPI 2025 feature selection analysis",
+      "details": "Rolling 20-game window for Four Factors outperforms 10-game and 30-game windows. Also: split home vs. away stats as SEPARATE features (not combined averages). Home eFG% and away eFG% are different features and should be treated independently.",
+      "action": "In features/engine.py: add r20 variants of all Four Factor features. Add home_efg_r20, away_efg_r20 as separate features from combined_efg_r20.",
+      "effort": "LOW — config change in rolling window parameters"
+    },
+    {
+      "id": "P5",
+      "title": "Dual ELO System (Regular Season + Player-Weighted)",
+      "priority": "MEDIUM",
+      "category": "Rating System",
+      "expected_brier_improvement": "-0.002 to -0.004",
+      "source": "Medium/Football Applied 2025-26 NBA ELO analysis + 2025 analytics community",
+      "details": "Maintain two separate ELO ratings per team: (1) fast-updating regular-season ELO (K=20), (2) player-weighted ELO using aggregate EPM/RAPTOR for available roster. Also track opponent-strength-adjusted ELO delta (how much team over/underperforms ELO-implied spread).",
+      "proposed_features": [
+        "elo_regular_home",
+        "elo_regular_away",
+        "elo_regular_diff",
+        "elo_player_weighted_home",
+        "elo_player_weighted_away",
+        "elo_player_weighted_diff",
+        "elo_performance_vs_spread_home",
+        "elo_performance_vs_spread_away"
+      ],
+      "feature_count": 8,
+      "effort": "MEDIUM — maintain rolling ELO in data pipeline"
+    },
+    {
+      "id": "P6",
+      "title": "Stacked Ensemble Meta-Learner",
+      "priority": "MEDIUM",
+      "category": "Architecture",
+      "expected_brier_improvement": "-0.003 to -0.008",
+      "source": "Scientific Reports 2025 (PMC12357926): stacked LGBM+XGB+RF+LR meta achieves 78% accuracy on 2021-2024 NBA data",
+      "details": "Use LGBM + XGBoost + Random Forest as base learners. Add logistic regression or isotonic-calibrated MLP as meta-learner. The key insight: different base models make different types of errors, so stacking is more robust. GA can select (a) feature subset for each base learner and (b) which base learners to include.",
+      "implementation_note": "CAUTION: stacking was removed from CPU islands due to compute constraints. Consider adding only on S15 (wide search) as experiment.",
+      "effort": "HIGH — architecture change, test on single island first"
+    }
+  ],
+  "benchmarks": {
+    "our_s13_brier": 0.22066,
+    "mdpi_2025_cnn_nba": 0.221,
+    "odds_gods_college_isotonic": 0.183,
+    "random_baseline": 0.25,
+    "always_home_team": 0.235,
+    "target": 0.21837,
+    "stretch_target": 0.21000,
+    "note": "S13 at 0.22066 is already better than MDPI 2025 published benchmark. Isotonic calibration could push to 0.215 range. Combination of P1+P2+P3 could reach target 0.21837."
+  },
+  "implementation_priority_order": [
+    "P1 (isotonic calibration) — lowest effort, highest leverage",
+    "P4 (20-game rolling window + home/away splits) — low effort",
+    "P2 (travel direction features) — medium effort, novel signal",
+    "P3 (shot quality delta) — medium-high effort, strong signal",
+    "P5 (dual ELO) — medium effort",
+    "P6 (stacked ensemble) — high effort, test on S15 only"
+  ],
+  "sources": [
+    "https://www.nature.com/articles/s41598-025-13657-1 (Scientific Reports 2025)",
+    "https://www.mdpi.com/2079-3197/13/10/230 (MDPI 2025 NBA/WNBA)",
+    "https://hf.co/papers/2303.06021 (Walsh & Joshi 2023 calibration)",
+    "https://blog.oddsgods.net/predicting-college-basketball-methodology (Odds Gods isotonic)",
+    "https://dl.acm.org/doi/10.1145/3689061.3689068 (ACM MMSports shot quality)",
+    "https://jcsm.aasm.org/doi/10.5664/jcsm.9446 (JCSM travel direction)",
+    "https://www.stat.cmu.edu/capstoneresearch/460files_s25/team15.pdf (CMU fatigue)",
+    "https://arxiv.org/html/2508.02725v1 (LSTM+Transformer Brier loss)"
+  ]
+}

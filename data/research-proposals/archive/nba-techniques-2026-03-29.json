@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-03-29T00:33:57.375327+00:00",
+  "source": "24/7 Brain research cycle — WebSearch NBA prediction techniques 2025-2026",
+  "title": "NBA Prediction Improvement: Market Integration + Venn-Abers Calibration",
+  "priority": "HIGH",
+  "findings": [
+    {
+      "technique": "Market-Fused Predictions",
+      "description": "A 2025 MDPI study shows that fusing closing moneyline implied probabilities with model predictions yields the strongest performance. The fused model improves upon both non-market and market-only components. Isotonic regression calibration of bookmaker implied probs as a separate 'market model' feature.",
+      "best_brier_reported": 0.221,
+      "citation": "Uncertainty-Aware Machine Learning for NBA Forecasting, MDPI Information 2025",
+      "applicability": "HIGH — add closing line implied probability as a feature to engine.py Cat43+",
+      "implementation": "Add market_implied_prob feature from nba-daily-odds.py closing lines"
+    },
+    {
+      "technique": "Venn-Abers Calibration (already in PA, port to NBA)",
+      "description": "Empirical study on 22 datasets: Venn-Abers outperforms both Platt scaling and isotonic regression. Two-regression approach (one per class) reduces overfitting. Already used in PA4 (xgboost_brier with venn_abers calibration getting Brier 0.25). Should be tested on NBA islands.",
+      "best_brier_impact": "Estimated 0.001-0.003 improvement over current isotonic",
+      "applicability": "MEDIUM — political_alpha PA4 already uses venn_abers successfully",
+      "implementation": "Add venn_abers to calibration options in NBA hf-space/app.py CALIBRATION_METHODS"
+    },
+    {
+      "technique": "SHAP-guided feature selection within GA",
+      "description": "Research shows home_next, team_elo_5y, team_elo are top-3 SHAP features. XGBoost+SHAP models achieve best Brier 0.221 in recent papers. Use SHAP importance to bias GA feature selection probability toward historically predictive features.",
+      "best_brier_reported": 0.221,
+      "citation": "XGBoost+SHAP NBA prediction, PMC 2024",
+      "applicability": "MEDIUM — requires SHAP installed on HF Spaces (CPU OK)",
+      "implementation": "In GA mutate(): weight feature selection probability by historical SHAP importance"
+    },
+    {
+      "technique": "Stacked ensemble (CNN/MLP + tree-based)",
+      "description": "CNN achieves Brier 0.221, MLP 0.225. Stacked ensemble combining neural + tree predictions as meta-features outperforms individual models. CPU spaces can't run CNN but can use MLP as light neural component.",
+      "best_brier_reported": 0.221,
+      "citation": "Stacked ensemble NBA, Nature Scientific Reports 2025",
+      "applicability": "LOW for CPU spaces — skip CNN, but MLP meta-learner feasible",
+      "implementation": "Add mlp_stacker to model zoo in island app.py (sklearn MLPClassifier, CPU-OK)"
+    },
+    {
+      "technique": "Temporal decay weighting of training samples",
+      "description": "Recent games more predictive than old games. Apply exponential decay weights to training samples: w = exp(-lambda * days_ago). Lambda around 0.002-0.005 (half-life ~140-350 days). Upweights 2025-26 season data.",
+      "best_brier_impact": "Estimated 0.002-0.005 improvement on walk-forward",
+      "applicability": "HIGH — easy to implement, no extra dependencies",
+      "implementation": "Add sample_weight to fit() calls in evaluate_individual() using date-based decay"
+    }
+  ],
+  "top_recommendation": {
+    "action": "Add closing-line implied probability as feature + temporal decay sample weights",
+    "why": "Both are easy to implement, require no new dependencies, and address known weaknesses (market calibration and recency bias)",
+    "estimated_brier_improvement": 0.002,
+    "target_new_brier": 0.218,
+    "effort": "LOW — closing line already fetched by nba-daily-odds.py; decay weight is 2 lines in evaluate_individual()"
+  },
+  "cross_project_port": {
+    "pa_to_nba": "Venn-Abers calibration from PA4 (xgboost_brier) already proven effective — add to NBA calibration options",
+    "nba_to_pa": "Temporal decay sample weighting (new, from NBA research) applicable to Political Alpha's 5-day excess return prediction"
+  }
+}

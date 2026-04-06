@@ -240,7 +240,7 @@ def kelly_criterion(prob: float, odds: float, fraction: float = 0.5) -> float:
 # SIZING STRATEGIES
 # ═══════════════════════════════════════════════════════════════════════════════
 def _sz_value_hunter_half_kelly(edge, odds, bankroll, **kw):
-    if edge < 0.04:
+    if edge < 0.02:
         return 0.0
     return bankroll * kelly_criterion(0.5 + edge, odds, 0.5)
 
@@ -274,7 +274,7 @@ def _sz_underdog_specialist(edge, odds, bankroll, **kw):
 
 def _sz_edge_seeker(edge, odds, bankroll, **kw):
     """Edge seeker: only bet when edge is strong, then size aggressively."""
-    if edge < 0.05:
+    if edge < 0.03:
         return 0.0
     return bankroll * kelly_criterion(0.5 + edge, odds, 0.6)
 
@@ -1550,6 +1550,10 @@ class TradingFloorV5:
         sp_c = synthesis.get("consensus_spread", {})
         tt_c = synthesis.get("consensus_total", {})
 
+        # Shared bankroll source: Paperclip (meta-trader) or fallback
+        paperclip = self.registry.get("t4_paperclip")
+        base_bankroll = paperclip.bankroll if paperclip else 100.0
+
         # --- ML BET --- (lower thresholds: 0.35 conf, 0.40 agree)
         ml_conf = ml_c.get("confidence", 0)
         ml_agree = ml_c.get("agreement_pct", 0)
@@ -1561,9 +1565,6 @@ class TradingFloorV5:
             if odds_entry:
                 bet_odds = odds_entry["ml_home_dec"] if direction == "home" else odds_entry["ml_away_dec"]
 
-            # Paperclip allocation
-            paperclip = self.registry.get("t4_paperclip")
-            base_bankroll = paperclip.bankroll if paperclip else 100.0
             stake = _sz_value_hunter_half_kelly(edge, bet_odds, base_bankroll)
             stake = min(stake, base_bankroll * 0.10)
 
@@ -1586,7 +1587,8 @@ class TradingFloorV5:
         if (sp_conf > 0.35 and sp_agree > 0.40 and odds_entry and
                 odds_entry.get("spread_home") is not None):
             direction = sp_c.get("direction", "home")
-            stake = _sz_confidence_scaled(0.03, 1.909, 100.0)
+            sp_edge = abs(sp_c.get("confidence", 0.5) - 0.5) + 0.01
+            stake = _sz_confidence_scaled(sp_edge, 1.909, base_bankroll)
             bets.append({
                 "game_key": game_key,
                 "category": "spread_fg",
@@ -1595,7 +1597,7 @@ class TradingFloorV5:
                 "agreement": round(sp_agree, 4),
                 "spread_line": odds_entry.get("spread_home"),
                 "odds": 1.909,
-                "stake": round(min(stake, 500), 2),
+                "stake": round(min(stake, base_bankroll * 0.10), 2),
                 "source": "consensus",
             })
 
@@ -1604,7 +1606,8 @@ class TradingFloorV5:
         tt_agree = tt_c.get("agreement_pct", 0)
         if (tt_conf > 0.35 and tt_agree > 0.40):
             direction = tt_c.get("direction", "over")
-            stake = _sz_confidence_scaled(0.02, 1.909, 100.0)
+            tt_edge = abs(tt_c.get("confidence", 0.5) - 0.5) + 0.01
+            stake = _sz_confidence_scaled(tt_edge, 1.909, base_bankroll)
             bets.append({
                 "game_key": game_key,
                 "category": "total_fg",
@@ -1613,7 +1616,7 @@ class TradingFloorV5:
                 "agreement": round(tt_agree, 4),
                 "total_line": odds_entry.get("total"),
                 "odds": 1.909,
-                "stake": round(min(stake, 500), 2),
+                "stake": round(min(stake, base_bankroll * 0.10), 2),
                 "source": "consensus",
             })
 
@@ -1857,7 +1860,19 @@ class TradingFloorV5:
                 bet["won"] = won
                 stake = bet.get("stake", 0)
                 odds = bet.get("odds", 1.909)
-                bet["pnl"] = round(stake * (odds - 1) if won else -stake, 2)
+                pnl = round(stake * (odds - 1) if won else -stake, 2)
+                bet["pnl"] = pnl
+
+                # Update Paperclip bankroll (central betting account)
+                paperclip = self.registry.get("t4_paperclip")
+                if paperclip:
+                    paperclip.bankroll = round(paperclip.bankroll + pnl, 2)
+                    paperclip.total_bets += 1
+                    paperclip.total_pnl = round(paperclip.total_pnl + pnl, 2)
+                    if won:
+                        paperclip.total_wins += 1
+                    if paperclip.bankroll > paperclip.peak_bankroll:
+                        paperclip.peak_bankroll = paperclip.bankroll
 
     # ===================================================================
     # RETROLEARNING
@@ -1984,10 +1999,12 @@ class TradingFloorV5:
         print(f"  Saved: {AGENT_STATE_FILE}")
 
     def _build_leaderboard(self) -> List[dict]:
-        """Build a leaderboard from all agents."""
+        """Build a leaderboard from all agents (T1 premium + META always shown)."""
         board = []
         for agent in self.registry.active_agents:
-            if agent.total_bets == 0 and agent.tier != AgentTier.META:
+            if (agent.total_bets == 0
+                    and agent.tier != AgentTier.META
+                    and agent.tier != AgentTier.PREMIUM):
                 continue
             board.append(agent.to_dict())
         board.sort(key=lambda x: x.get("roi", 0), reverse=True)

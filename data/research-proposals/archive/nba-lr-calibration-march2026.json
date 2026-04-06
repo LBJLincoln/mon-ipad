@@ -1,0 +1,82 @@
+{
+  "proposal_id": "nba-lr-calibration-march2026",
+  "created_at": "2026-03-31T04:00:00Z",
+  "updated_at": "2026-03-31T04:05:00Z",
+  "source": "Brain 4h cycle — NBA research rotation",
+  "priority": "HIGH",
+  "title": "Force LR Exploration in S11 + Add home_next Lookahead Feature",
+  "status_check": {
+    "lr_in_cpu_model_types": true,
+    "lr_model_builder_exists": true,
+    "scheduling_features_in_engine": true,
+    "engine_version": "v3.1-46cat",
+    "note": "LR already in engine, scheduling features already in engine. Problem: LR never selected by GA across 6 islands (all using tree models). Tree-based plateau confirmed: Brier unchanged for 2+ consecutive brain cycles."
+  },
+  "motivation": {
+    "current_best_brier": 0.22006,
+    "target_brier": 0.21837,
+    "gap": 0.00169,
+    "plateau_observation": "All 6 islands show IDENTICAL Brier scores across 2+ consecutive brain cycles. S14 gen advanced 1056→1145 (+89 gens) with ZERO Brier improvement. Extra_trees dominates all top spots.",
+    "why_lr_not_selected": "Tree models have early-generation advantage in GA because they can overfit training well. LR needs proper initialization. GA is not discovering LR through random mutation alone.",
+    "key_research_finding": "MDPI Information 17(1):56 (Jan 2026): Logistic Regression achieves Brier=0.199 on NBA tabular data — BELOW our target 0.21837. XGBoost: Brier=0.202. Both evaluated with chronological split."
+  },
+  "citations": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "journal": "MDPI Information",
+      "volume": "17(1):56",
+      "year": 2026,
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "key_result": "LR: Brier=0.199 (best tabular). XGBoost: Brier=0.202. LSTM+BrierLoss: best calibration. Monte Carlo Dropout: best uncertainty quantification."
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "journal": "Scientific Reports (Nature)",
+      "year": 2025,
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "key_result": "SHAP top-3: (1) home_next = next game is home (lookahead), (2) team_elo_5y, (3) team_elo. home_next is different from b2b — it's a strategic rest signal."
+    }
+  ],
+  "proposed_changes": [
+    {
+      "priority": 1,
+      "file": "hf-space/app.py",
+      "target_island": "S11 (exploration)",
+      "change_type": "force_lr_seed",
+      "description": "POST /api/command {\"action\": \"inject_model_type\", \"model_type\": \"logistic_regression\", \"count\": 10} to S11 to seed 10 LR individuals into population. This forces GA to explore LR before discarding it.",
+      "alternative": "Modify init_population() to always include min 20% LR individuals in starting population for S11",
+      "expected_impact": "If LR achieves Brier < 0.220 on our 59-feature set, it enters the Pareto front and gets migrated to other islands"
+    },
+    {
+      "priority": 2,
+      "file": "features/engine.py",
+      "change_type": "add_feature",
+      "description": "Add home_next lookahead feature (Cat47 or extend Cat6)",
+      "feature_name": "home_next_game",
+      "logic": "For home team: 1 if their NEXT scheduled game (game i+1) is at home, 0 if away. For away team: same. This is different from h_b2b — it captures strategic load management: teams may rest stars in current game if next game is important home game.",
+      "implementation_notes": "Requires schedule data with future game locations. NBA schedule is available via nba_api. Add to Cat6 (REST & SCHEDULE) as h_next_home, a_next_home, next_home_diff.",
+      "current_coverage": "Cat6 has h_b2b (back-to-back) and rest_days, but NOT lookahead to next game home/away. This gap matches SHAP finding #1."
+    },
+    {
+      "priority": 3,
+      "file": "hf-space/app.py",
+      "change_type": "calibration_improvement",
+      "description": "Wrap all models with CalibratedClassifierCV(method='isotonic', cv=5) after training. Use Brier score to select best calibration method (sigmoid, isotonic, none).",
+      "based_on": "MDPI paper: sklearn CalibratedClassifierCV used with Brier-based selection achieves LR Brier=0.199",
+      "current_state": "Unknown if CalibratedClassifierCV is applied in current code",
+      "expected_impact": "0.5-1.5% Brier improvement on all model types"
+    }
+  ],
+  "deploy_plan": {
+    "step1": "POST /api/command inject_model_type to S11 (exploration island) to seed 10 LR individuals",
+    "step2": "Monitor S11 Brier for next 2 cycles (8h)",
+    "step3": "If S11 finds LR Brier < 0.219, roll out LR seeding to S10 and S14 (exploitation islands)",
+    "step4": "Add home_next_game to features/engine.py + sync to all 6 HF spaces (engine parity)",
+    "constraint": "One change at a time. LR seeding first, home_next feature second."
+  },
+  "expected_outcome": {
+    "brier_improvement_estimate": "0.22006 → 0.215-0.219 (LR seeding + calibration)",
+    "path_to_target": "LR Brier=0.199 in literature with ~60 features. Our feature set (59 features, Cat1-46) is similar. If we can break 0.219, we're in striking distance of 0.21837 target."
+  },
+  "cross_project_note": "PA apply_patches.py FIX6 already adds LR to PA CPU_MODEL_TYPES. Once PA bootstrap is fixed, same LR-seeding strategy applies there."
+}
