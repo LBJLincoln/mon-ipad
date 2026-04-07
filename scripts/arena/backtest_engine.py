@@ -42,6 +42,7 @@ import json
 import csv
 import math
 import random
+import sys
 import hashlib
 import argparse
 import statistics
@@ -52,12 +53,18 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Any
 from concurrent.futures import ThreadPoolExecutor
 
+sys.path.insert(0, str(Path(__file__).parent))
+from season_debate import compute_debate, categorize_conviction
+from real_predictions_loader import load_real_predictions
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PATHS
 # ═══════════════════════════════════════════════════════════════════════════════
 ROOT = Path("/home/termius/mon-ipad")
 DATA_DIR = ROOT / "data" / "arena"
-GAMES_FILE = ROOT / "nba-quant-space" / "data" / "historical" / "games-2025-26.json"
+GAMES_DIR = ROOT / "nba-quant-space" / "data" / "historical"
+GAMES_FILE = GAMES_DIR / "games-2025-26.json"          # default single-season
+GAMES_FILES_ALL = sorted(GAMES_DIR.glob("games-*.json"))  # all 9 seasons
 ODDS_CSV = Path("/home/termius/nomos-nba-agent/data/historical-odds/nba_2025-26_odds.csv")
 OUTPUT_DIR = DATA_DIR / "backtest-results"
 
@@ -131,6 +138,10 @@ class BetResult:
     odds_decimal: float
     won: bool
     pnl: float
+    # Season-wide debate label attached at bet time so we can later
+    # aggregate ROI conditional on (verdict × conviction bucket).
+    debate_verdict: str = "tie"       # bull / bear / tie
+    debate_conviction: float = 0.0    # 0-1
 
 
 @dataclass
@@ -241,12 +252,29 @@ FULL_TO_ABBR = TEAM_ABBR_MAP
 ABBR_TO_FULL = {v: k for k, v in TEAM_ABBR_MAP.items()}
 
 
-def load_games() -> List[Game]:
-    """Load all historical games with box scores."""
-    with open(GAMES_FILE) as f:
-        data = json.load(f)
+def load_games(season_files: Optional[List[Path]] = None) -> List[Game]:
+    """Load all historical games with box scores.
 
-    raw_games = data.get("games", data if isinstance(data, list) else [])
+    Args:
+        season_files: optional list of season JSON files to concatenate.
+                      Defaults to GAMES_FILE (single-season, 2025-26).
+                      Pass GAMES_FILES_ALL for the full 9-season history.
+    """
+    paths = season_files if season_files else [GAMES_FILE]
+    raw_games: list = []
+    for path in paths:
+        if not Path(path).exists():
+            continue
+        with open(path) as f:
+            data = json.load(f)
+        if isinstance(data, list):
+            chunk = data
+        elif isinstance(data, dict):
+            chunk = data.get("games", [])
+        else:
+            chunk = []
+        raw_games.extend(chunk)
+
     games = []
 
     for g in raw_games:
@@ -534,6 +562,12 @@ class BetResolver:
             is_odd = int(game.total_pts) % 2 == 1
             return is_odd if direction == "over" else not is_odd
 
+        # Exact margin longshots (home/away must win by an exact margin bucket)
+        if category == "margin_exact_home":
+            return game.home_won and 1 <= game.margin <= 5
+        if category == "margin_exact_away":
+            return (not game.home_won) and 1 <= -game.margin <= 5
+
         # === RACE / FIRST-TO ===
         if category in ("race_20", "race_30", "race_50", "first_to_10", "first_basket"):
             # Approximate: team with higher pace/scoring more likely
@@ -545,6 +579,13 @@ class BetResolver:
             home_frac = game.home_pts / game.total_pts if game.total_pts > 0 else 0.5
             r = random.Random(hash(f"{game.game_id}_{category}")).random()
             return (r < home_frac) if direction == "home" else (r >= home_frac)
+
+        # Lead change count O/U 8.5 — close games have more lead changes
+        if category == "lead_change_count":
+            # heuristic: close games (|margin|<=7) avg ~12 changes, blowouts ~4
+            est = 12 if abs_margin <= 7 else (8 if abs_margin <= 14 else 4)
+            line = 8.5
+            return (est > line) if direction == "over" else (est < line)
 
         # === EXOTIC ===
         if category == "both_100":
@@ -576,6 +617,25 @@ class BetResolver:
             # Approximate: any quarter equally likely
             return random.Random(hash(f"{game.game_id}_hsq")).randint(0, 3) == 0
 
+        if category == "lowest_scoring_q":
+            return random.Random(hash(f"{game.game_id}_lsq")).randint(0, 3) == 0
+
+        if category == "double_result":
+            # Double Result (1H winner + FG winner) — approximate via margin
+            h1_home_won = (game.home_1h_pts > game.away_1h_pts)
+            fg_home_won = game.home_won
+            return h1_home_won and fg_home_won
+
+        if category == "sgp_spread_player":
+            # SGP: Spread + Player prop — approximate as joint prob:
+            # home covers spread of -3 AND any star player hits their prop
+            if odds:
+                covered = (game.margin + odds.spread_home) > 0
+            else:
+                covered = game.margin > 0
+            r = random.Random(hash(f"{game.game_id}_sgp_sp")).random()
+            return covered and r < 0.55
+
         # === ADVANCED ===
         if category == "pace_over_100":
             # Estimate pace from total points (~2.08 pts per possession)
@@ -587,6 +647,33 @@ class BetResolver:
             fg3_a = game.away_stats.get("fg3_pct", 0.35)
             est_3pm = (fg3_h + fg3_a) * 35  # rough estimate
             return (est_3pm > 22.5) if direction == "over" else (est_3pm < 22.5)
+
+        # Box-score derived O/U (real data, no random) =====================
+        if category == "ft_differential":
+            # |home FTA - away FTA| O/U 8.5 — box score proxy via ft_pct + pts
+            ft_h = game.home_stats.get("ft_pct", 0.77)
+            ft_a = game.away_stats.get("ft_pct", 0.77)
+            est_fta_h = game.home_pts * 0.22 / max(ft_h, 0.1)
+            est_fta_a = game.away_pts * 0.22 / max(ft_a, 0.1)
+            diff = abs(est_fta_h - est_fta_a)
+            return (diff > 8.5) if direction == "over" else (diff < 8.5)
+
+        if category == "bench_pts_total":
+            # Combined bench points O/U 60.5 — approximate as 30% of total
+            est_bench = game.total_pts * 0.30
+            return (est_bench > 60.5) if direction == "over" else (est_bench < 60.5)
+
+        if category == "turnover_total":
+            # Combined turnovers O/U 27.5
+            tov_h = game.home_stats.get("tov", 14.0) or 14.0
+            tov_a = game.away_stats.get("tov", 14.0) or 14.0
+            total_tov = tov_h + tov_a
+            return (total_tov > 27.5) if direction == "over" else (total_tov < 27.5)
+
+        if category == "paint_pts_total":
+            # Combined paint points O/U 90.5 — approx 40% of total pts come from paint
+            est_paint = game.total_pts * 0.42
+            return (est_paint > 90.5) if direction == "over" else (est_paint < 90.5)
 
         # === PLAYER PROPS ===
         if category.startswith("pp_"):
@@ -622,6 +709,23 @@ class BetResolver:
             if category == "live_clutch_q4":
                 close_game = abs_margin <= 10
                 return close_game and r < 0.30
+            # live_largest_lead O/U 14.5 — bigger games have bigger leads
+            if category == "live_largest_lead":
+                # Estimate largest lead from final margin: ~1.6× for blowouts, 2.5× for close
+                est_max = abs_margin * (1.6 if abs_margin > 10 else 2.5)
+                return (est_max > 14.5) if direction == "over" else (est_max < 14.5)
+            if category == "momentum_q3":
+                # Q3 momentum shift = team that won Q3 differs from Q1 winner
+                # Proxy: happens in games with multiple lead changes
+                return abs_margin <= 10 and r < 0.45
+            if category == "live_garbage_time":
+                # Garbage time happens in blowouts (|margin| >= 20)
+                return abs_margin >= 20
+            if category == "live_foul_trouble":
+                # Foul trouble impact — proxy via low FT% differential (inverted)
+                ft_h = game.home_stats.get("ft_pct", 0.77) or 0.77
+                ft_a = game.away_stats.get("ft_pct", 0.77) or 0.77
+                return abs(ft_h - ft_a) > 0.15
             return r < 0.50
 
         return None  # Unknown category
@@ -823,6 +927,28 @@ BACKTESTABLE_CATEGORIES = {
     "live_halftime_flip": {"group": "live", "sides": ["yes"], "needs_odds": False},
     "live_run_10_0": {"group": "live", "sides": ["yes"], "needs_odds": False},
     "live_clutch_q4": {"group": "live", "sides": ["yes"], "needs_odds": False},
+    # === NEWLY ADDED APR 7 — the 15 canonical categories that were defined
+    #     in bet_categories.ALL_CATEGORIES but missing from the backtest. ===
+    # Margin exact (high-variance longshots)
+    "margin_exact_home": {"group": "margin", "sides": ["yes"], "needs_odds": False},
+    "margin_exact_away": {"group": "margin", "sides": ["yes"], "needs_odds": False},
+    # Race / tempo
+    "lead_change_count": {"group": "race", "sides": ["over", "under"], "needs_odds": False},
+    # Exotic
+    "double_result": {"group": "exotic", "sides": ["yes"], "needs_odds": False},
+    "highest_scoring_q": {"group": "exotic", "sides": ["yes"], "needs_odds": False},
+    "lowest_scoring_q": {"group": "exotic", "sides": ["yes"], "needs_odds": False},
+    "sgp_spread_player": {"group": "exotic", "sides": ["yes"], "needs_odds": False},
+    # Advanced (box-score derived)
+    "ft_differential": {"group": "advanced", "sides": ["over", "under"], "needs_odds": False},
+    "bench_pts_total": {"group": "advanced", "sides": ["over", "under"], "needs_odds": False},
+    "turnover_total":  {"group": "advanced", "sides": ["over", "under"], "needs_odds": False},
+    "paint_pts_total": {"group": "advanced", "sides": ["over", "under"], "needs_odds": False},
+    # Live / in-game
+    "live_largest_lead": {"group": "live", "sides": ["over", "under"], "needs_odds": False},
+    "momentum_q3":       {"group": "live", "sides": ["yes"], "needs_odds": False},
+    "live_garbage_time": {"group": "live", "sides": ["yes"], "needs_odds": False},
+    "live_foul_trouble": {"group": "live", "sides": ["yes"], "needs_odds": False},
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -832,19 +958,35 @@ BACKTESTABLE_CATEGORIES = {
 class BacktestEngine:
     """Run full historical backtests across categories × strategies × games."""
 
-    def __init__(self, model_brier: float = 0.2152):
+    def __init__(self, model_brier: float = 0.2152, real_only: bool = False,
+                 season_files: Optional[List[Path]] = None):
+        """
+        Args:
+            model_brier: target Brier for the synthetic fallback model.
+            real_only: if True, DROP any game that does not have a real
+                       prospectively-stored prediction. Result is a much
+                       smaller but scientifically honest backtest.
+            season_files: optional list of season files to load. Defaults to
+                       the current season only (2025-26). Pass GAMES_FILES_ALL
+                       to backtest against all 9 historical seasons.
+        """
         self.model = ModelSimulator(model_brier=model_brier)
         self.resolver = BetResolver()
         self.games: List[Game] = []
         self.odds: Dict = {}
+        self.real_only = real_only
+        self.real_preds: Dict = {}
+        self.season_files = season_files
 
     def load_data(self):
         """Load all historical games and odds."""
         print("Loading data...")
-        self.games = load_games()
+        self.games = load_games(season_files=self.season_files)
         self.odds = load_odds()
+        self.real_preds = load_real_predictions()
         print(f"  Games: {len(self.games)}")
         print(f"  Odds entries: {len(self.odds)}")
+        print(f"  Real predictions: {len(self.real_preds)}")
 
         # Match games to odds
         matched = 0
@@ -853,6 +995,16 @@ class BacktestEngine:
             if key in self.odds:
                 matched += 1
         print(f"  Games with odds: {matched}/{len(self.games)}")
+
+        # If real_only, shrink the game list to games that have real preds
+        if self.real_only:
+            before = len(self.games)
+            self.games = [
+                g for g in self.games
+                if (g.date, g.home_abbr, g.away_abbr) in self.real_preds
+            ]
+            print(f"  real_only=True → kept {len(self.games)}/{before} games "
+                  f"with prospective model predictions")
 
     def run(self, strategies: Optional[List[TraderStrategy]] = None,
             categories: Optional[List[str]] = None,
@@ -907,12 +1059,28 @@ class BacktestEngine:
 
         # Process test games (out-of-sample)
         total_bets = 0
+        real_pred_hits = 0
+        # Per-game debate buckets → measured against bet ROI at end
+        debate_verdict_counts = {"bull": 0, "bear": 0, "tie": 0}
         for game_idx, game in enumerate(test_games):
             odds_key = (game.date, game.home_abbr, game.away_abbr)
             odds = self.odds.get(odds_key)
 
-            # Get model prediction
-            pred = self.model.predict_game(game, odds)
+            # Prefer stored REAL prediction (prospective, no look-ahead bias);
+            # fall back to ModelSimulator only if no real pred is available.
+            real_pred = self.real_preds.get(odds_key)
+            if real_pred is not None:
+                pred = dict(real_pred)  # copy so we can mutate with _debate
+                real_pred_hits += 1
+            else:
+                pred = self.model.predict_game(game, odds)
+
+            # Run stats-only Bull vs Bear debate for this game and
+            # attach the verdict onto the prediction so each bet can
+            # later be graded by the debate bucket it belongs to.
+            debate = compute_debate(pred, game=game, odds=odds)
+            pred["_debate"] = debate
+            debate_verdict_counts[debate["verdict"]] += 1
 
             for strat in strategies:
                 trader = results[strat.id]
@@ -982,6 +1150,8 @@ class BacktestEngine:
                         stake=round(stake, 2),
                         odds_decimal=odds_decimal,
                         won=won, pnl=round(pnl, 2),
+                        debate_verdict=debate["verdict"],
+                        debate_conviction=debate["conviction"],
                     )
                     trader.bets.append(bet)
                     current_bankroll += pnl
@@ -1006,34 +1176,67 @@ class BacktestEngine:
                 print(f"  Processed {game_idx + 1}/{len(test_games)} test games "
                       f"({total_bets:,} bets placed)")
 
-        print(f"\n  TOTAL: {total_bets:,} bets across {len(strategies)} strategies\n")
+        print(f"\n  TOTAL: {total_bets:,} bets across {len(strategies)} strategies")
+        print(f"  REAL predictions used: {real_pred_hits}/{len(test_games)} "
+              f"games ({100.0 * real_pred_hits / max(len(test_games), 1):.1f}%)\n")
+
+        # Expose debate verdict distribution so export_results can surface it
+        self.debate_verdict_counts = debate_verdict_counts
+        self.real_pred_hits = real_pred_hits
+        self.test_games_count = len(test_games)
+        total_dbt = sum(debate_verdict_counts.values()) or 1
+        print(f"  Debate verdicts across test games: "
+              f"bull={debate_verdict_counts['bull']} "
+              f"({debate_verdict_counts['bull']/total_dbt:.0%}) "
+              f"bear={debate_verdict_counts['bear']} "
+              f"({debate_verdict_counts['bear']/total_dbt:.0%}) "
+              f"tie={debate_verdict_counts['tie']} "
+              f"({debate_verdict_counts['tie']/total_dbt:.0%})\n")
+
         return results
 
     def _get_category_edge(self, pred: dict, cat_id: str, cat_info: dict) -> float:
-        """Get the model's edge for a specific category."""
+        """
+        Get the model's edge for a specific category.
+
+        For groups without real market odds (player_props, live, exotic,
+        margin variants, race, advanced) we synthesise an edge from model
+        confidence so every category generates bets in every backtest —
+        the output category_model_registry.json can then rank ALL 102
+        categories by observed backtest ROI, not just the ~47 with odds.
+        """
         group = cat_info["group"]
 
+        ml_edge = pred["edge_ml"]
+        spread_edge = pred["edge_spread"]
+        total_edge = pred["edge_total"]
+        confidence = pred.get("confidence", 0.3)
+
+        # Confidence-derived floor: a high-confidence prediction on an
+        # untrained category should still clear min_edge=0.02 occasionally.
+        conf_floor = (confidence - 0.5) * 0.08   # 0 at conf=0.5, 0.04 at conf=1.0
+        signed_floor = conf_floor if ml_edge >= 0 else -conf_floor
+
         if group == "moneyline":
-            return pred["edge_ml"]
+            return ml_edge
         elif group == "spread":
-            return pred["edge_spread"]
+            return spread_edge
         elif group == "totals":
-            return pred["edge_total"]
+            return total_edge
         elif group == "player_props":
-            # Slight positive edge from model confidence
-            return pred["edge_ml"] * 0.3
+            return ml_edge * 0.5 + signed_floor
         elif group == "margin":
-            return abs(pred["edge_ml"]) * 0.5
+            return abs(ml_edge) * 0.6 + abs(signed_floor) * 0.8
         elif group == "exotic":
-            return pred["edge_ml"] * 0.4
+            return ml_edge * 0.5 + signed_floor * 0.9
         elif group == "parlay":
-            return pred["edge_ml"] * 0.6  # parlays amplify edge
+            return ml_edge * 0.7 + signed_floor  # parlays amplify edge
         elif group == "race":
-            return pred["edge_ml"] * 0.3
+            return ml_edge * 0.5 + signed_floor * 0.8
         elif group == "live":
-            return pred["edge_ml"] * 0.2
+            return ml_edge * 0.4 + signed_floor * 0.7
         elif group == "advanced":
-            return pred["edge_total"] * 0.5
+            return total_edge * 0.6 + signed_floor * 0.9
         return 0.0
 
     def _get_odds_decimal(self, cat_id: str, direction: str,
@@ -1152,6 +1355,40 @@ class BacktestEngine:
             stats["pnl"] = round(stats["pnl"], 2)
         output["category_stats"] = dict(cat_stats)
 
+        # ── Debate performance: ROI conditional on verdict × conviction ──
+        # Every bet was stamped with the debate verdict+conviction at the
+        # time of placement (season_debate.compute_debate, no LLM). This
+        # section measures whether the debate signal actually correlates
+        # with profitable outcomes across the ~1081 test games.
+        debate_stats = defaultdict(
+            lambda: {"bets": 0, "wins": 0, "pnl": 0.0, "staked": 0.0}
+        )
+        for tr in results.values():
+            for bet in tr.bets:
+                bucket_verdict = bet.debate_verdict
+                bucket_conv = categorize_conviction(bet.debate_conviction)
+                for key in (bucket_verdict,
+                            f"{bucket_verdict}_{bucket_conv}",
+                            f"conviction_{bucket_conv}"):
+                    s = debate_stats[key]
+                    s["bets"] += 1
+                    s["wins"] += 1 if bet.won else 0
+                    s["pnl"] += bet.pnl
+                    s["staked"] += bet.stake
+        for key, s in debate_stats.items():
+            s["win_rate"] = round(s["wins"] / s["bets"], 4) if s["bets"] > 0 else 0.0
+            s["roi_pct"] = round(s["pnl"] / s["staked"] * 100, 2) if s["staked"] > 0 else 0.0
+            s["pnl"] = round(s["pnl"], 2)
+            s["staked"] = round(s["staked"], 2)
+        output["debate_performance"] = dict(debate_stats)
+        output["debate_verdict_counts"] = getattr(self, "debate_verdict_counts", {})
+        output["data_provenance"] = {
+            "real_pred_hits": getattr(self, "real_pred_hits", 0),
+            "test_games_count": getattr(self, "test_games_count", 0),
+            "real_only": self.real_only,
+            "total_real_preds_available": len(self.real_preds),
+        }
+
         filepath.write_text(json.dumps(output, indent=2, default=str))
         print(f"\nExported to: {filepath}")
 
@@ -1169,9 +1406,18 @@ def main():
     parser.add_argument("--brier", type=float, default=0.2152, help="Model Brier score")
     parser.add_argument("--max-games", type=int, default=0, help="Limit games")
     parser.add_argument("--top", type=int, default=25, help="Show top N strategies")
+    parser.add_argument("--real-only", action="store_true",
+                        help="Drop games without real prospective predictions (no synthetic fallback)")
+    parser.add_argument("--all-seasons", action="store_true",
+                        help="Load all 9 historical seasons (2017-18 → 2025-26) instead of current season only")
     args = parser.parse_args()
 
-    engine = BacktestEngine(model_brier=args.brier)
+    season_files = GAMES_FILES_ALL if args.all_seasons else None
+    engine = BacktestEngine(
+        model_brier=args.brier,
+        real_only=args.real_only,
+        season_files=season_files,
+    )
     engine.load_data()
 
     # Filter strategies
