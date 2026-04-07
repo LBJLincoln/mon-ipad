@@ -1,85 +1,83 @@
 {
   "department": "evaluation",
-  "iteration": 7,
-  "timestamp": "2026-04-07T00:00:00.000000+00:00",
-  "model_version": "tabicl_ensemble (145 features, v3.0-37cat) — ATR 0.21545 | ZeroGPU H200: 0.19687 (2 consecutive runs confirmed)",
+  "iteration": 8,
+  "timestamp": "2026-04-07T07:00:00.000000+00:00",
+  "model_version": "tabicl_ensemble (145 features, v3.0-37cat) — ATR 0.21545 | ZeroGPU claimed 0.19687 (VALIDITY DISPUTED — see critical findings)",
 
   "games_audited": 58,
   "games_audited_breakdown": {
     "historical_bets": 44,
-    "experiment_games": 14,
+    "experiment_games_apr6": 14,
     "new_resolved_bets": 0,
-    "note": "No new resolved bets since Apr 3. 5 consecutive days without a live bet. Odds merge broken (5th iteration)."
+    "note": "No new resolved bets. Pipeline frozen 6th consecutive day. Odds merge still broken."
   },
 
   "brier_current": 0.2157,
   "brier_atr": 0.21545,
-  "brier_zerogpu_h200": 0.19687,
-  "brier_zerogpu_note": "ZeroGPU H200 ran AGAIN at 2026-04-07T00:00:39Z — baseline=best=0.19687 (IDENTICAL to Apr 6 run). 4 candidates, 8.6s. 2 consecutive runs at same baseline = STRONGER evidence this is stable, not a lucky result. Validation methodology still uncertain (temporal vs random split).",
+  "brier_zerogpu_claimed": 0.19687,
+  "brier_zerogpu_validity": "DISPUTED — see ZEROGPU_CACHE_FRAUD finding below",
+  "brier_zerogpu_consecutive_identical_runs": 3,
   "brier_experiment_consensus": 0.18929,
   "brier_experiment_best_agent": 0.16302,
+  "brier_kaggle_karpathy_best": 0.196874,
   "brier_target": 0.20,
   "brier_gap_to_target": 0.0157,
-  "brier_gap_to_target_note": "Gap computed vs ATR 0.2157. If ZeroGPU 0.19687 confirmed on temporal holdout, gap = -0.00313 (TARGET ALREADY HIT).",
-
-  "calibration_score": 0.2758,
-  "ece_target": 0.05,
-  "ece_gap_multiplier": 5.5,
+  "calibration_score": 0.2152,
 
   "status": "completed",
 
-  "delta_vs_iter6": {
-    "brier_atr": {"iter6": 0.2157, "iter7": 0.2157, "delta": 0.0, "trend": "FROZEN — no new Colab run, no new bets"},
-    "brier_zerogpu": {"iter6": 0.19687, "iter7": 0.19687, "delta": 0.0, "trend": "STABLE — 2nd consecutive identical run. Confidence rising."},
-    "fleet_s16_s19_progress": {
-      "S16": {"iter6_gen": 240, "iter7_gen": 450, "brier": 0.22268, "delta_gen": 210},
-      "S17": {"iter6_gen": 204, "iter7_gen": 398, "brier": 0.22502, "delta_gen": 194},
-      "S18": {"iter6_gen": 235, "iter7_gen": 458, "brier": 0.23928, "delta_gen": 223},
-      "S19": {"iter6_gen": 181, "iter7_gen": 379, "brier": 0.22480, "delta_gen": 198},
-      "trend": "STRONG PROGRESS — new islands averaging +206 gens/day"
+  "delta_vs_iter7": {
+    "brier_atr": {"iter7": 0.2157, "iter8": 0.2157, "delta": 0.0, "trend": "FROZEN — no new Colab run, no new bets (6 days)"},
+    "brier_zerogpu": {"iter7": 0.19687, "iter8": 0.19687, "delta": 0.0, "trend": "3rd IDENTICAL RUN — credibility DECREASING (eval_failed pattern discovered)"},
+    "fleet_progress": {
+      "S16": {"iter7_gen": 450, "iter8_gen": 636, "brier": 0.22268, "delta_gen": 186},
+      "S17": {"iter7_gen": 398, "iter8_gen": 576, "brier": 0.22502, "delta_gen": 178},
+      "S18": {"iter7_gen": 458, "iter8_gen": 681, "brier": 0.23928, "delta_gen": 223, "note": "3RD ITERATION STUCK — no improvement despite 223 new gens"},
+      "S19": {"iter7_gen": 379, "iter8_gen": 575, "brier": 0.2248, "delta_gen": 196},
+      "trend": "S16-S19 averaging +196 gens/iteration. S18 confirmed stuck (3 iterations at 0.23928)."
     },
-    "days_without_bet": {"iter6": 4, "iter7": 5, "trend": "WORSENING — odds merge P0 still unresolved"},
-    "roi_pct": {"iter6": -8.71, "iter7": -8.71, "delta": 0.0, "trend": "FROZEN"},
-    "kaggle_loops": {"status": "ACTIVE — both NBA and Political Karpathy loops cycling (complete + relaunching)"}
+    "days_without_bet": {"iter7": 5, "iter8": 6, "trend": "WORSENING — P0 fix still unimplemented"},
+    "roi_pct": {"iter7": -8.71, "iter8": -8.71, "delta": 0.0, "trend": "FROZEN"},
+    "kaggle_karpathy": {"status": "ACTIVE — 15 iterations logged, best=0.196874 (iter12: max_depth 10→12), zero improvements since"}
   },
 
   "new_findings_this_iteration": [
     {
-      "type": "ZEROGPU_SECOND_CONSECUTIVE_CONFIRMATION",
-      "severity": "HIGH_POSITIVE",
-      "detail": "ZeroGPU H200 ran at 2026-04-07T00:00:39Z, produced IDENTICAL baseline_brier=0.19687. No improvement found (n_candidates=4, total_time=8.6s). Two consecutive runs at same baseline strongly suggests stable local minimum, not a lucky evaluation. The 0.19687 result is increasingly credible.",
-      "confidence_update": "LOW→MEDIUM — need same-holdout validation but two identical runs eliminate 'lucky run' hypothesis.",
-      "methodology_concern": "4 candidates in 8.6s is suspiciously fast for temporal walk-forward eval. Need to read scripts/gpu-burst/zerogpu-burst.py to verify train/test split type.",
-      "action": "READ scripts/gpu-burst/zerogpu-burst.py — check shuffle/stratify parameters in train_test_split. If temporal → ATR=0.19687, target hit.",
-      "priority": "P0"
-    },
-    {
-      "type": "NEW_FLEET_S16_S19_RAPID_PROGRESS",
-      "severity": "MEDIUM_POSITIVE",
-      "detail": "S16-S19 averaged +206 gens in ~24h. S16 leads at 0.22268 (gen 450). At this rate S16 could challenge S10 historical best (0.22041) within 1-2 days. S18 at 0.23928 is the laggard — diverging from the pack.",
-      "s18_alert": "S18 is 170bp behind S16 after 458 gens. Likely stuck in local minimum. Recommend diversity injection.",
-      "fleet_best": "S16: 0.22268 (gen 450)"
-    },
-    {
-      "type": "KAGGLE_KARPATHY_LOOPS_ACTIVE",
-      "severity": "MEDIUM_POSITIVE",
-      "detail": "infra-status.json (00:45:19 UTC) shows both NBA and Political Kaggle Karpathy loops COMPLETE and relaunching. GPU-based evolution cycling autonomously.",
-      "action": "Monitor data/karpathy/nba-history.json for new Brier improvements from Kaggle GPU runs."
-    },
-    {
-      "type": "ODDS_MERGE_BROKEN_5TH_ITERATION",
+      "type": "ZEROGPU_CACHE_FRAUD",
       "severity": "CRITICAL",
-      "iterations_unresolved": 5,
-      "detail": "latest-picks.json (2026-04-05): all 11 games show market_implied=null. odds-latest.json confirmed fresh (BOS FanDuel @1.25, updated 19:36:46 UTC Apr 5). The join never runs.",
-      "missed_value_estimate": "5 days × ~2 qualifying bets/day = ~10 missed bet opportunities. BOS@TOR alone: edge=10.4%, kelly=$9.13.",
-      "fix": "predict_today.py: after picks generation, join odds-latest.json on home_team name (~10 lines Python)"
+      "priority": "P0",
+      "detail": "ZeroGPU ran 3rd consecutive time at 2026-04-07T06:00:43Z — IDENTICAL result 0.19687 with n_candidates=4 in 9.3s. Investigation of zerogpu-log.jsonl reveals ALL candidate evaluations across ALL accounts (LBJLincoln, LBJLincoln26, Nomos42) show status='eval_failed' for every single candidate across every run since 2026-04-05. 68+ consecutive eval_failed entries logged. The 'baseline_brier=0.19687' exactly matches data/karpathy/nba-best-config.json#best_brier (0.1968744895643333). Conclusion: zerogpu-burst.py is returning the stored best_brier from nba-best-config.json when all GPU candidates eval_fail, NOT from an actual GPU evaluation. The 3 'consecutive confirmations' are all reading the same cached value.",
+      "evidence": {
+        "zerogpu_log_pattern": "All 68+ candidate evaluations: status=eval_failed",
+        "result_json_value": 0.1968744895643333,
+        "best_config_value": 0.1968744895643333,
+        "match": "EXACT — 13 decimal places identical",
+        "accounts_checked": ["LBJLincoln", "LBJLincoln26", "Nomos42"],
+        "conclusion": "baseline_brier is loaded from config file, not GPU-computed"
+      },
+      "atf_brier_status": "UNKNOWN — zerogpu 0.19687 is NOT an independent validation. ATR remains 0.21545. Target 0.20 is NOT confirmed hit.",
+      "action": "Read scripts/gpu-burst/zerogpu-burst.py line by line. Find where baseline_brier is assigned. Fix eval_failed root cause (likely data path or GPU env issue). Run clean evaluation with temporal holdout.",
+      "impact": "This invalidates 3 iterations of 'positive confirmations'. The fleet's actual best validated Brier is 0.22268 (S16), not 0.19687."
     },
     {
-      "type": "FEATURE_ENGINE_STALE",
+      "type": "KAGGLE_LOOP_STALLED",
+      "severity": "HIGH",
+      "detail": "15 Kaggle Karpathy iterations logged (2026-04-07T04:00-04:25). Best found: 0.196874 on iteration 12 (max_depth 10→12) — but this exactly matches the stored best_brier in nba-best-config.json (same CACHE issue suspected). Iterations 1-15 show zero improvements: brier range 0.196-0.233, best_brier stays at 0.196874 throughout. Mutation pool is limited: only swap/add/remove features, model type switches, basic hyperparams. No LightGBM, no CatBoost, no adaptive perturbation.",
+      "iter12_concern": "Iter 12 shows brier=0.196874 but improved=false — suggests this was the STARTING baseline, not discovered during this session.",
+      "action": "Expand Kaggle mutation pool: add LightGBM (30%), CatBoost (30%), adaptive perturbation when no_improve_streak>=5. Verify Kaggle eval uses temporal split (not random)."
+    },
+    {
+      "type": "S18_CONFIRMED_LOCAL_MINIMUM",
       "severity": "MEDIUM",
-      "iterations_unresolved": 4,
-      "detail": "latest-eval.json + quant-summary.json: feature_engine_version='v3.0-37cat' (37 cats, 6135 raw). Target v3.1-54cat (54 cats, 6253 raw). S16-S19 evolving without Cat38-54 (drive-rim, passing, play-type PPP).",
-      "action": "Deploy v3.1-54cat to S16-S19 via git subtree push."
+      "detail": "S18 is now in 3rd consecutive iteration at brier=0.23928, gen=681. The island has run 681 generations with no breakthrough past 0.239. S17 and S19 are both at 0.225 with similar configs, suggesting S18's initialization diverged early and is trapped. Diversity injection overdue by 2 iterations.",
+      "action": "POST /api/config to S18 with mut_rate=0.25 (above 0.15 cap for emergency diversification) or seed with top-10 genomes from S16. Monitor next 3 iterations for movement past 0.230."
+    },
+    {
+      "type": "EXPERIMENT_STRATEGY_INSIGHT",
+      "severity": "MEDIUM_POSITIVE",
+      "detail": "Apr 6 experiment strategy analysis on 1081 historical games: EV>20% + Kelly=10% strategy yields Sharpe=3.586, ROI=14.63%, win_rate=61.1%, 172 bets. This is the target strategy for live betting. BUT it requires calibrated probabilities and working odds merge. Currently blocked by odds merge failure.",
+      "calibration_note": "model_brier=0.2152 on historical data. Experiment ECE=0.2152 (consensus, 14 games). Consistent with ATR but small sample.",
+      "high_confidence_note": "t1_llama70b: ECE=0.14 on 11 games. 60-70% bucket: predicted=0.62, actual=1.0 (UNDERPREDICTION in this small sample vs persistent OVERPREDICTION in the 44-game historical set). Sample size insufficient for reliable calibration shift detection."
     }
   ],
 
@@ -87,63 +85,74 @@
     {
       "type": "ODDS_MERGE_BROKEN",
       "severity": "CRITICAL",
-      "iterations_unresolved": 5,
-      "status": "UNRESOLVED — ~10 missed bets over 5 days. Fix is ~10 lines Python."
+      "iterations_unresolved": 6,
+      "days_unresolved": 6,
+      "estimated_missed_bets": 12,
+      "status": "UNRESOLVED — 6 days, ~12 missed bet opportunities. Fix is ~10 lines Python.",
+      "fix_location": "scripts/predict_today.py — after picks generation, join odds-latest.json on home_team name"
     },
     {
       "type": "ECE_OVERCONFIDENCE",
       "severity": "HIGH",
-      "iterations_unresolved": 5,
-      "ece": 0.2758,
-      "worst_bucket": "60-70%: ECE=0.4811, predicted 63% vs actual 16.7% win rate",
-      "overall_gap": "Predicted 66.3% avg vs actual 38.6% (27.7pp EXTREME overconfidence)",
-      "status": "FROZEN — 5 days no new bets"
+      "iterations_unresolved": 6,
+      "ece_historical": 0.2758,
+      "ece_experiment_consensus": 0.2152,
+      "worst_bucket": "60-70%: ECE=0.4811, predicted 63% vs actual 16.7% win rate (historical 44 games)",
+      "threshold_mutation_proposed": {"old": 0.55, "new": 0.65, "status": "PROPOSED — blocked by odds merge"},
+      "status": "FROZEN — no new bets to measure improvement"
+    },
+    {
+      "type": "ZEROGPU_EVAL_FAILED",
+      "severity": "CRITICAL",
+      "iterations_unresolved": 3,
+      "log_entries": "68+ consecutive eval_failed across 3 accounts",
+      "status": "NEW CRITICAL — GPU evaluation broken since Apr 5. zerogpu-burst.py is silently masking failures by returning cached baseline."
     },
     {
       "type": "FLEET_RESET_S10_S15",
       "severity": "HIGH",
-      "iterations_unresolved": 2,
-      "detail": "S10-S15 all brier=1.0, gen=0 for 24h+. Fleet has migrated to S16-S19 (intentionally or accidentally). CLAUDE.md still lists S10-S15.",
-      "status": "PERSISTENT — update CLAUDE.md fleet definition"
+      "iterations_unresolved": 3,
+      "status": "PERSISTENT — S10-S15 brier=1.0, gen=0 (3rd iteration). CLAUDE.md still lists S10-S15 as active fleet."
     },
     {
       "type": "CORRUPTED_ODDS",
       "severity": "HIGH",
-      "iterations_unresolved": 5,
+      "iterations_unresolved": 6,
       "games": ["SAS@MIL (gap=0.744)", "SAC@ATL (gap=0.4276)"],
-      "status": "UNRESOLVED — odds sanity gate not deployed. avg_edge=126.63% (corrupted)"
-    },
-    {
-      "type": "ZEROGPU_VALIDATION_METHODOLOGY",
-      "severity": "HIGH",
-      "iterations_unresolved": 2,
-      "detail": "0.19687 Brier from ZeroGPU unconfirmed on temporal holdout. 8.6s eval for 4 candidates suggests fast random split.",
-      "status": "UNRESOLVED — read zerogpu-burst.py"
+      "status": "UNRESOLVED — odds sanity gate not deployed"
     }
   ],
 
   "resolved_issues": [
-    {"type": "PHANTOM_GAME", "status": "RESOLVED — 0 phantom games confirmed"},
+    {"type": "PHANTOM_GAME", "status": "RESOLVED — 0 phantom games"},
     {"type": "TENSORFLOW_KELLY_BUG", "status": "RESOLVED"}
   ],
 
   "calibration_analysis": {
-    "ece_historical": 0.2758,
+    "ece_historical_44games": 0.2758,
+    "ece_experiment_14games": 0.2152,
     "ece_target": 0.05,
-    "overall_avg_predicted": 0.6629,
-    "overall_actual_win_rate": 0.3864,
+    "ece_gap_multiplier": "4.3x-5.5x above target",
+    "historical_avg_predicted": 0.6629,
+    "historical_actual_win_rate": 0.3864,
     "overconfidence_gap_pp": 27.65,
-    "direction": "EXTREME OVERCONFIDENT",
-    "calibration_slope_estimate": 0.85,
+    "experiment_consensus_analysis": {
+      "40_50_bucket": {"predicted": 0.467, "actual": 1.0, "error": 0.533, "note": "UNDERPREDICTION — small sample"},
+      "50_60_bucket": {"predicted": 0.598, "actual": 1.0, "error": 0.402, "note": "UNDERPREDICTION"},
+      "60_70_bucket": {"predicted": 0.67, "actual": 0.333, "error": 0.337, "note": "OVERPREDICTION — consistent with historical"},
+      "70_80_bucket": {"predicted": 0.762, "actual": 0.667, "error": 0.095, "note": "NEAR CALIBRATED"},
+      "80_90_bucket": {"predicted": 0.859, "actual": 1.0, "error": 0.141, "note": "UNDERPREDICTION"},
+      "note": "14-game sample too small for reliable trend detection"
+    },
     "this_iteration_mutation": {
       "parameter": "confidence_threshold",
-      "old_value": 0.55,
-      "new_value": 0.65,
-      "rationale": "60-70% bucket ECE=0.4811 is worst performer. Raising threshold eliminates this bucket entirely.",
-      "games_filtered_from_todays_picks": ["CHI@PHX (55.69%)", "SAC@LAC (55.66%)", "NOP@ORL (58.51%)"],
-      "games_retained": 7,
-      "expected_ece_delta": -0.13,
-      "execution_status": "PROPOSED — blocked by odds merge. Apply and monitor when pipeline restored."
+      "proposed_value": 0.65,
+      "status": "PROPOSED — blocked by odds merge. Priority drops behind ZeroGPU fix.",
+      "secondary_proposal": {
+        "action": "Deploy isotonic recalibration on 44-game historical set",
+        "rationale": "ECE=0.2758 is systematic overconfidence. Isotonic can reduce ECE to ~0.08 on this sample size.",
+        "risk": "Overfitting on 44 games. Need 100+ for reliable isotonic fit."
+      }
     }
   },
 
@@ -154,32 +163,32 @@
     "high_confidence_losses": 5,
     "fp_rate": 0.40,
     "fp_target": 0.25,
-    "status": "FAIL — frozen"
+    "status": "FAIL — frozen. Cannot measure improvement without new bets."
   },
 
   "fleet_evaluation": {
-    "as_of": "2026-04-07T00:45:19Z",
-    "islands": {
-      "S10_nba": {"status": "RESET", "brier": 1.0, "gen": 0},
-      "S11_nba": {"status": "RESET", "brier": 1.0, "gen": 0},
-      "S12_nba": {"status": "RESET", "brier": 1.0, "gen": 0},
-      "S13_nba": {"status": "RESET", "brier": 1.0, "gen": 0},
-      "S14_nba": {"status": "RESET", "brier": 1.0, "gen": 0},
-      "S15_nba": {"status": "RESET", "brier": 1.0, "gen": 0},
-      "S16_nba": {"status": "running", "brier": 0.22268, "gen": 450, "note": "FLEET BEST — approaching S10 historical best 0.22041"},
-      "S17_nba": {"status": "running", "brier": 0.22502, "gen": 398},
-      "S18_nba": {"status": "running", "brier": 0.23928, "gen": 458, "note": "LAGGARD — 170bp behind S16, inject diversity"},
-      "S19_nba": {"status": "running", "brier": 0.22480, "gen": 379},
-      "P1_pol": {"status": "running", "brier": 0.24971, "gen": 15872},
-      "P2_pol": {"status": "running", "brier": 0.23134, "gen": 20575},
-      "P3_pol": {"status": "running", "brier": 0.25168, "gen": 5208},
-      "P4_pol": {"status": "running", "brier": 0.24803, "gen": 8760}
+    "as_of": "2026-04-07T06:45:19Z",
+    "active_nba": {
+      "S16": {"brier": 0.22268, "gen": 636, "trend": "BEST — +186 gens since iter7, holding 0.22268"},
+      "S17": {"brier": 0.22502, "gen": 576, "trend": "STEADY — +178 gens"},
+      "S18": {"brier": 0.23928, "gen": 681, "trend": "STUCK (3rd iteration) — inject diversity NOW"},
+      "S19": {"brier": 0.2248, "gen": 575, "trend": "STEADY — +196 gens"}
+    },
+    "reset_nba": {
+      "S10_S15": {"status": "RESET", "brier": 1.0, "gen": 0, "iterations_reset": 3}
+    },
+    "political": {
+      "P2_pol": {"brier": 0.23134, "gen": 21837, "status": "BEST POLITICAL"},
+      "P4_pol": {"brier": 0.24803, "gen": 9709},
+      "P1_pol": {"brier": 0.24971, "gen": 17436},
+      "P3_pol": {"brier": 0.25168, "gen": 5977}
     },
     "fleet_nba_best": 0.22268,
-    "fleet_nba_avg_brier": 0.22815,
-    "fleet_nba_effective_islands": 4,
-    "zerogpu_best": 0.19687,
-    "zerogpu_consecutive_identical_runs": 2
+    "fleet_nba_avg": 0.22545,
+    "fleet_nba_active_islands": 4,
+    "zerogpu_claimed_best": 0.19687,
+    "zerogpu_validity": "DISPUTED — eval_failed pattern, cache read suspected",
+    "atr_brier": 0.21545
   },
 
   "performance_trends": {
@@ -192,71 +201,72 @@
     "max_drawdown_pct": 20.89,
     "bankroll": 91.29,
     "peak_bankroll": 110.43,
-    "days_without_bet": 5,
+    "days_without_bet": 6,
     "last_bet": "2026-04-03",
-    "trend": "FROZEN — odds merge broken, pipeline halted"
+    "trend": "FROZEN — 6th consecutive day without a live bet"
   },
 
   "recommendations": [
     {
       "priority": 1,
       "type": "P0_BUG_FIX",
-      "title": "Fix odds merge — 5th iteration unresolved",
-      "department": "D7/INFRA",
-      "action": "predict_today.py: after picks generation, load odds-latest.json, join on home_team name (fuzzy), compute market_implied=1/price, edge=model_prob-market_implied, kelly_stake. ~10 lines Python.",
-      "revenue_impact": "~10 missed bets over 5 days. BOS@TOR example: edge=10.4%, kelly=$9.13."
+      "title": "Fix ZeroGPU eval_failed — read zerogpu-burst.py, identify root cause",
+      "department": "D7/INFRA + D6/EVALUATION",
+      "action": "Read scripts/gpu-burst/zerogpu-burst.py. Find where baseline_brier is assigned and where eval_failed triggers. Fix so GPU actually evaluates candidates. Add explicit logging to distinguish cache-read from GPU-evaluated results.",
+      "urgency": "3 iterations of false confidence on Brier target. All 68+ candidate evals silently failing."
     },
     {
       "priority": 2,
-      "type": "VALIDATION",
-      "title": "Audit ZeroGPU eval methodology — 2 consecutive runs at 0.19687",
-      "department": "D6/EVALUATION",
-      "action": "Read scripts/gpu-burst/zerogpu-burst.py. Check train_test_split shuffle parameter. Temporal split = ATR candidate (target hit). Random split = fix eval and re-run.",
-      "strategic_impact": "If temporal confirmed: ATR = 0.19687 (below 0.20 target). Shift focus to ROI/ECE improvement."
+      "type": "P0_BUG_FIX",
+      "title": "Fix odds merge — 6th iteration unresolved",
+      "department": "D7/INFRA",
+      "action": "predict_today.py: after picks generation, load odds-latest.json, join on home_team name (~10 lines Python). Deploy immediately.",
+      "revenue_impact": "~12 missed bets over 6 days. EV>20% strategy requires working odds. Blocked by this."
     },
     {
       "priority": 3,
-      "type": "CALIBRATION_MUTATION",
-      "title": "Raise confidence_threshold 0.55 → 0.65",
-      "department": "D6/EVALUATION",
-      "action": "Set confidence_threshold=0.65 in predict_today.py. Filters 60-70% confidence bucket (ECE=0.4811). Expected ECE delta: -0.13.",
-      "trade_off": "Coverage -36%, precision significantly improved. Consistent with EV>20% backtest strategy."
+      "type": "DIVERSITY_INJECTION",
+      "title": "S18 stuck 3 iterations — emergency diversity injection",
+      "department": "D3/EVOLUTION",
+      "action": "POST /api/config to S18 with mut_rate=0.25 (emergency mode) OR seed with S16 best genome. 681 gens at 0.23928 is confirmed local minimum.",
+      "expected_impact": "Potential 170bp improvement if S18 catches S16 level → fleet avg 0.22268→~0.22200"
     },
     {
       "priority": 4,
       "type": "DOCUMENTATION",
       "title": "Update CLAUDE.md fleet definition S10-S15 → S16-S19",
       "department": "D9/CROSS-REPO",
-      "action": "Update HF SPACES table in CLAUDE.md: replace S10-S15 with S16-S19 roles and current metrics. 2 iterations of stale fleet definition creates confusion."
+      "action": "Replace HF SPACES table in CLAUDE.md with S16-S19 roles. 3 iterations of stale definition.",
+      "urgency": "LOW — documentation only"
     },
     {
       "priority": 5,
-      "type": "DIVERSITY_INJECTION",
-      "title": "S18 stuck at 0.23928 — inject diversity",
-      "department": "D3/EVOLUTION",
-      "action": "POST /api/config to S18 with mut=0.20 (max exploration) or seed with S16 best config. 458 gens at 0.23928 = clear local minimum.",
-      "expected_impact": "If S18 catches S16 level: fleet avg drops from 0.22815 to ~0.22500"
+      "type": "CALIBRATION",
+      "title": "Raise confidence_threshold 0.55 → 0.65 when pipeline restored",
+      "department": "D6/EVALUATION",
+      "action": "Set confidence_threshold=0.65 in predict_today.py. Eliminates ECE=0.4811 worst bucket. Apply after odds merge fix.",
+      "expected_ece_delta": -0.13
     },
     {
       "priority": 6,
       "type": "ENGINE_PARITY",
       "title": "Deploy v3.1-54cat feature engine to S16-S19",
       "department": "D9/CROSS-REPO",
-      "action": "Push updated features/engine.py (v3.1-54cat) to S16-S19 HF Spaces. Unlocks Cat38-54 (17 additional feature categories).",
+      "action": "Push updated features/engine.py (v3.1-54cat) to S16-S19. Unlocks Cat38-54 (17 categories, drive-rim/passing/play-type PPP).",
       "expected_brier_delta": "0.001-0.003 reduction"
     }
   ],
 
   "metrics_summary": {
     "brier_atr": 0.2157,
-    "brier_zerogpu_h200": 0.19687,
-    "brier_zerogpu_runs_identical": 2,
-    "brier_zerogpu_status": "PENDING_VALIDATION — 2 consecutive identical runs, methodology uncertain",
+    "brier_zerogpu_claimed": 0.19687,
+    "brier_zerogpu_validity": "DISPUTED (eval_failed pattern, cache suspected)",
     "brier_experiment_consensus": 0.18929,
     "brier_best_agent": 0.16302,
     "brier_target": 0.20,
-    "brier_gap": 0.0157,
-    "ece": 0.2758,
+    "brier_gap_atf": 0.0157,
+    "ece_historical": 0.2758,
+    "ece_experiment": 0.2152,
     "ece_target": 0.05,
     "fp_rate": 0.40,
     "fp_target": 0.25,
@@ -265,24 +275,25 @@
     "sharpe": -3.11,
     "bankroll": 91.29,
     "drawdown_from_peak_pct": 17.3,
-    "drawdown_status": "ALERT_ACTIVE",
     "phantom_games": 0,
     "corrupted_odds_games": 2,
-    "days_without_bet": 5,
+    "days_without_bet": 6,
     "odds_merge_healthy": false,
-    "fleet_s10_s15_status": "RESET (2nd iteration) — brier=1.0, gen=0",
-    "fleet_s16_s19_status": "ACTIVE — best=0.22268 (S16, gen450), +206 gens/day",
-    "kaggle_karpathy": "ACTIVE — cycling",
-    "status_overall": "CRITICAL — odds merge broken (5th iter), S10-S15 reset (2nd iter). POSITIVE: ZeroGPU 0.19687 confirmed 2x consecutive, S16-S19 strong progress."
+    "fleet_s10_s15_status": "RESET (3rd iteration)",
+    "fleet_s16_s19_best": 0.22268,
+    "fleet_s16_s19_avg": 0.22545,
+    "kaggle_karpathy_best": 0.196874,
+    "zerogpu_eval_failed_count": "68+",
+    "status_overall": "CRITICAL — ZeroGPU eval_failed discovered (P0 new), odds merge broken (6th iter, P0), S10-S15 reset (3rd iter). Brier target NOT confirmed hit. Fleet S16-S19 progressing."
   },
 
   "critical_alerts": [
-    "ODDS_MERGE_BROKEN (5th iter): 5 days × ~2 missed bets = ~10 missed opportunities. Fix: one Python join in predict_today.py.",
-    "ZEROGPU_2X_CONFIRMED: 0.19687 on Apr 6 AND Apr 7 midnight. Two identical runs = stable baseline. READ zerogpu-burst.py to confirm temporal split — if yes, Brier target ALREADY HIT.",
-    "FLEET_RESET_S10_S15 (2nd iter): All at brier=1.0, gen=0 for 24h+. Update CLAUDE.md fleet to S16-S19.",
-    "S18_STUCK: 458 gens at 0.23928 — 170bp behind S16. Inject diversity.",
-    "ECE=0.2758 FROZEN (5 days): Threshold mutation proposed 0.55→0.65. Apply when pipeline restored."
+    "ZEROGPU_CACHE_FRAUD (NEW P0): All 68+ candidate evaluations eval_failed since Apr 5. baseline_brier=0.19687 is read from nba-best-config.json, NOT GPU-computed. 3 'confirmations' were all cache reads. Brier target NOT hit. Read zerogpu-burst.py immediately.",
+    "ODDS_MERGE_BROKEN (6th iter): 6 days × ~2 missed bets = ~12 missed opportunities. Fix is ~10 lines Python in predict_today.py.",
+    "S18_LOCAL_MINIMUM (3rd iter): 681 gens at 0.23928. Emergency diversity injection required.",
+    "FLEET_RESET_S10_S15 (3rd iter): All 6 original islands at brier=1.0, gen=0. Update CLAUDE.md.",
+    "ECE=0.2758 FROZEN (6 days): threshold mutation 0.55→0.65 proposed. Apply when pipeline restored."
   ],
 
-  "next_iteration_focus": "P0 (1): Fix odds merge in predict_today.py. P0 (2): Read zerogpu-burst.py to validate 0.19687 temporal split. P1 (3): Update CLAUDE.md fleet definition. P2 (4): Inject diversity into S18. If odds merge fixed, expect 2-3 new bets, enabling first fresh ECE measurement in 5 days."
+  "next_iteration_focus": "P0 (1): Read zerogpu-burst.py — find eval_failed root cause and cache read pattern. P0 (2): Fix odds merge in predict_today.py. P1 (3): Inject diversity into S18 (3rd iteration stuck). P1 (4): Update CLAUDE.md fleet definition. If ZeroGPU fixed and evaluated cleanly with temporal holdout, we will know whether 0.19687 is real or an artifact."
 }
