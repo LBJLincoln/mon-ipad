@@ -25,6 +25,7 @@ CACHE.mkdir(exist_ok=True)
 STATE_FILE = CACHE / "karpathy_state.json"
 RESULTS_FILE = CACHE / "result.json"
 LOG_FILE = CACHE / "experiment_log.jsonl"
+ISLAND_ELO_FILE = CACHE / "island_elo.json"  # Cycle 13: autoevolve Island Elo
 
 # ── Secrets ──
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
@@ -222,6 +223,72 @@ CONFIG = {
     },
 }
 
+# ─── ISLAND ELO (Cycle 13 — github.com/MrTsepa/autoevolve pattern) ──────────
+# Each individual carries an `origin_island` tag (S10..S15 or "random"). After
+# every iteration we run a Bradley-Terry round-robin over each island's best
+# individual: lower-Brier wins, Elo updates with K=24. The next session uses
+# softmax(Elo / 100) to weight how many initial population slots each island
+# contributes — high-Elo islands get over-represented in the seed population,
+# low-Elo islands fade. Expected -0.002 Brier per repo-scout cycle 13.
+ELO_K = 24.0
+ELO_DEFAULT = 1500.0
+ISLAND_NAMES = ("S10", "S11", "S12", "S13", "S14", "S15", "random")
+
+def load_island_elo():
+    if ISLAND_ELO_FILE.exists():
+        try:
+            raw = json.loads(ISLAND_ELO_FILE.read_text())
+            return {k: float(raw.get(k, ELO_DEFAULT)) for k in ISLAND_NAMES}
+        except (OSError, json.JSONDecodeError):
+            pass
+    return {k: ELO_DEFAULT for k in ISLAND_NAMES}
+
+def save_island_elo(elo, n_matches=0, last_iter=0):
+    payload = {k: round(v, 1) for k, v in elo.items()}
+    payload["_meta"] = {
+        "n_matches": int(n_matches),
+        "last_iter": int(last_iter),
+        "k_factor": ELO_K,
+        "updated_at": datetime.now().isoformat(),
+        "ref": "github.com/MrTsepa/autoevolve",
+    }
+    ISLAND_ELO_FILE.write_text(json.dumps(payload, indent=2))
+
+def update_island_elo(elo, population):
+    """Round-robin Bradley-Terry update. Each island's best individual is
+    its champion; lower Brier wins. Returns number of pairwise matches run."""
+    champions = {}
+    for ind in population:
+        if ind.get("brier", 1.0) >= 0.99:
+            continue
+        isl = ind.get("origin_island", "random")
+        if isl not in champions or ind["brier"] < champions[isl]["brier"]:
+            champions[isl] = ind
+    if len(champions) < 2:
+        return 0
+    isls = list(champions.keys())
+    n_matches = 0
+    for i in range(len(isls)):
+        for j in range(i + 1, len(isls)):
+            a, b = isls[i], isls[j]
+            ra, rb = elo[a], elo[b]
+            ea = 1.0 / (1.0 + 10 ** ((rb - ra) / 400.0))
+            sa = 1.0 if champions[a]["brier"] < champions[b]["brier"] else 0.0
+            elo[a] = ra + ELO_K * (sa - ea)
+            elo[b] = rb + ELO_K * ((1.0 - sa) - (1.0 - ea))
+            n_matches += 1
+    return n_matches
+
+def softmax_island_weights(elo):
+    """Softmax over Elo / 100 — sharper than raw rating, smoother than greedy."""
+    keys = [k for k in ISLAND_NAMES if k != "random"]
+    scaled = np.array([elo.get(k, ELO_DEFAULT) / 100.0 for k in keys])
+    scaled -= scaled.max()  # numerical stability
+    weights = np.exp(scaled)
+    weights /= weights.sum()
+    return dict(zip(keys, weights))
+
+
 def random_individual():
     """Create random individual."""
     n_features = X.shape[1]
@@ -236,12 +303,14 @@ def random_individual():
         "lr": round(random.uniform(*CONFIG["hp_ranges"]["lr"]), 3),
         "n_est": random.randint(*CONFIG["hp_ranges"]["n_est"]),
     }
-    return {"mask": mask, "model_type": model_type, "hp": hp, "brier": 1.0}
+    return {"mask": mask, "model_type": model_type, "hp": hp, "brier": 1.0,
+            "origin_island": "random"}
 
 def mutate(ind):
     """Mutate an individual."""
     new = {"mask": ind["mask"].copy(), "model_type": ind["model_type"],
-           "hp": dict(ind["hp"]), "brier": 1.0}
+           "hp": dict(ind["hp"]), "brier": 1.0,
+           "origin_island": ind.get("origin_island", "random")}
 
     # Feature mutation
     n_flip = max(1, int(CONFIG["mutation_rate"] * np.sum(new["mask"])))
@@ -274,12 +343,16 @@ def mutate(ind):
     return new
 
 def crossover(p1, p2):
-    """Uniform crossover."""
+    """Uniform crossover. Child inherits origin_island from the better parent
+    (lower Brier wins) so Elo stays attributed to the genuinely productive
+    island lineage."""
     child = {"mask": np.zeros_like(p1["mask"]), "brier": 1.0}
     for i in range(len(child["mask"])):
         child["mask"][i] = p1["mask"][i] if random.random() < CONFIG["crossover_rate"] else p2["mask"][i]
     child["model_type"] = p1["model_type"] if random.random() < 0.5 else p2["model_type"]
     child["hp"] = dict(p1["hp"] if random.random() < 0.5 else p2["hp"])
+    better = p1 if p1.get("brier", 1.0) <= p2.get("brier", 1.0) else p2
+    child["origin_island"] = better.get("origin_island", "random")
     return child
 
 def load_state():
@@ -348,6 +421,7 @@ def fetch_island_seeds(max_retries=3, retry_delay=60):
                                 "model_type": data.get("model_type", "xgboost"),
                                 "hp": data.get("hp", {"depth": 6, "lr": 0.1, "n_est": 200}),
                                 "brier": float(data.get("brier", 1.0)),
+                                "origin_island": name,  # Cycle 13: Elo attribution
                             })
                             print(f"  {name}: brier={data.get('brier', '?')}, features={np.sum(mask)}, model={data.get('model_type', '?')}")
                         else:
@@ -374,20 +448,51 @@ def fetch_island_seeds(max_retries=3, retry_delay=60):
 def run_karpathy_loop():
     """Main loop: iterate until session ends."""
 
+    # ── ISLAND ELO load (Cycle 13) ──
+    island_elo = load_island_elo()
+    elo_summary = " ".join(f"{k}={int(v)}" for k, v in island_elo.items() if k != "random")
+    print(f"Island Elo (resumed): {elo_summary}")
+
     # Load or initialize state
     state = load_state()
     if state:
         population = state["population"]
+        # Backfill origin_island for legacy checkpoints (pre-Cycle 13)
+        for ind in population:
+            ind.setdefault("origin_island", "random")
         best_ever = state["best_ever"]
         iteration = state["iteration"]
         print(f"Resumed from iteration {iteration}, best_ever={best_ever:.5f}")
     else:
-        # Initialize population with island seeds
-        print("Initializing population...")
+        # Initialize population with island seeds, weighted by Elo
+        print("Initializing population (Elo-weighted)...")
         seeds = fetch_island_seeds()
-        population = seeds[:CONFIG["population_size"]]
-        while len(population) < CONFIG["population_size"]:
+        seeds_by_island = {}
+        for s in seeds:
+            seeds_by_island.setdefault(s["origin_island"], []).append(s)
+
+        # Build weighted starter population: each island contributes
+        # ~softmax(Elo)*pop_size slots, drawn (with replacement) from its
+        # available seeds. Falls back to random for missing/empty islands.
+        weights = softmax_island_weights(island_elo)
+        pop_size = CONFIG["population_size"]
+        population = []
+        for isl, w in weights.items():
+            n_slots = max(1, int(round(w * pop_size * 0.85)))  # leave ~15% for random/random
+            pool = seeds_by_island.get(isl, [])
+            if pool:
+                for _ in range(n_slots):
+                    src = random.choice(pool)
+                    population.append({**src, "mask": src["mask"].copy(), "hp": dict(src["hp"]), "brier": 1.0,
+                                       "origin_island": isl})
+        # Pad with randoms if under target
+        while len(population) < pop_size:
             population.append(random_individual())
+        # Trim if over (rounding overshoot)
+        population = population[:pop_size]
+        weight_summary = " ".join(f"{k}={v:.2f}" for k, v in weights.items())
+        print(f"  Elo-weighted seeds: {weight_summary} → pop={len(population)}")
+
         best_ever = min(ind["brier"] for ind in population if ind["brier"] < 1.0) if any(ind["brier"] < 1.0 for ind in population) else 1.0
         iteration = 0
 
@@ -420,6 +525,13 @@ def run_karpathy_loop():
         # ── SELECTION + REPRODUCTION ──
         # Sort by brier (lower = better)
         population.sort(key=lambda x: x["brier"])
+
+        # ── ISLAND ELO update (Cycle 13 — autoevolve Bradley-Terry) ──
+        # Run round-robin among per-island champions, then persist.
+        n_matches = update_island_elo(island_elo, population)
+        if n_matches > 0 and iteration % 5 == 0:
+            elo_str = " ".join(f"{k}={int(v)}" for k, v in sorted(island_elo.items()) if k != "random")
+            print(f"  [ISLAND ELO] {n_matches} matches | {elo_str}")
 
         # Check for new best
         if population[0]["brier"] < best_ever:
@@ -510,6 +622,7 @@ def run_karpathy_loop():
                 "iteration": iteration,
                 "timestamp": datetime.now().isoformat(),
             })
+            save_island_elo(island_elo, n_matches=n_matches, last_iter=iteration)
             # Also save result.json (Karpathy pattern)
             RESULTS_FILE.write_text(json.dumps({
                 "best_brier": best_ever,
@@ -530,6 +643,7 @@ def run_karpathy_loop():
         "iteration": iteration,
         "timestamp": datetime.now().isoformat(),
     })
+    save_island_elo(island_elo, n_matches=n_matches, last_iter=iteration)
 
     print(f"\n{'='*70}")
     print(f"  SESSION COMPLETE: {iteration} iterations, best={best_ever:.5f}")
