@@ -1,24 +1,24 @@
 {
-  "timestamp": "2026-04-07T13:15:00Z",
+  "timestamp": "2026-04-07T19:30:00Z",
   "agent": "D9-cross-repo-hermes",
-  "iteration": 9,
+  "iteration": 10,
   "repos_checked": [
     {
       "repo": "mon-ipad",
       "path": "/home/termius/mon-ipad",
       "status": "DIRTY",
-      "dirty_files": 151,
+      "dirty_files": 161,
       "engine_version": "v3.1-54cat",
-      "engine_lines": 6972,
-      "engine_md5": "c34f3c1ee3b83aa98e2a6f30bb540369",
-      "notes": "151 dirty files (was 111 iter8, +40 — ACCELERATING). Engine STILL diverged from canonical — 9th consecutive iteration. CLAUDE.md line 80 still v3.1-46cat (9th consecutive). mon-ipad engine frozen at 6972L while canonical updated AGAIN (new MD5 723597378a18ae674e59aa8308335c97)."
+      "engine_lines": 7213,
+      "engine_md5": "f2d2ceee39a73ec029b4f3c726d7e79a",
+      "notes": "Engine synced this iteration (9-iter streak BROKEN). CLAUDE.md updated: v3.1-46cat→v3.1-54cat=54cat,7213 features. 161 dirty (was 151 iter9, +10)."
     },
     {
       "repo": "nomos-dashboard",
       "path": "/home/termius/nomos-dashboard",
       "status": "CLEAN",
       "dirty_files": 0,
-      "notes": "CLEAN — 5th consecutive iteration clean. Stable positive state."
+      "notes": "CLEAN — 6th consecutive iteration clean. Stable positive state."
     },
     {
       "repo": "nomos-nba-agent",
@@ -26,164 +26,71 @@
       "status": "DIRTY",
       "dirty_files": 35,
       "engine_version": "v3.1-54cat",
-      "engine_lines": 7177,
-      "engine_md5": "723597378a18ae674e59aa8308335c97",
+      "engine_lines": 7213,
+      "engine_md5": "f2d2ceee39a73ec029b4f3c726d7e79a",
       "hf_space_parity": "CONFIRMED",
-      "notes": "35 dirty (was 30 iter8, +5). Canonical engine UPDATED AGAIN: MD5 changed to 723597378a18ae674e59aa8308335c97 (was 16b3f333ef0d4710ead709986aa2415a iter8), lines still 7177. CLAUDE.md lines 42+70 still v3.0-37cat (9th consecutive). Docstring line 5 still '35 categories' (6th consecutive). hf-space parity CONFIRMED (same MD5)."
+      "notes": "35 dirty (stable). Canonical engine docstring fixed: 35→54 categories. CLAUDE.md lines 42+70 fixed: v3.0-37cat→v3.1-54cat. hf-space parity CONFIRMED (3-way f2d2ceee)."
     },
     {
       "repo": "nomos-political-alpha",
       "path": "/home/termius/nomos-political-alpha",
-      "status": "CRITICAL",
-      "dirty_files": 756,
-      "notes": "756 total dirty (was 702 iter8, +54). .gitignore STILL covers only *.pyc/__pycache__. 9th consecutive iteration unfixed."
+      "status": "IMPROVED",
+      "dirty_files": 20,
+      "notes": "FIXED: .gitignore updated to cover data/ subdirs + logs/ + scripts/councils/ + *.json. 810→20 dirty files (−790). 9-iter streak BROKEN."
     },
     {
       "repo": "rgwa",
       "path": "/home/termius/rgwa",
       "status": "DIRTY",
       "dirty_files": 13,
-      "notes": "STABLE at 13 (unchanged iter3→iter9 — 7 consecutive). Low priority, stable."
+      "notes": "STABLE at 13 (unchanged iter3→iter10 — 8 consecutive). Low priority, stable."
     }
   ],
-  "stale_docs_found": [
-    {
-      "severity": "HIGH",
-      "file": "mon-ipad/CLAUDE.md",
-      "line": 80,
-      "current": "v3.1-46cat = 46 categories, 6253 raw features",
-      "actual": "v3.1-54cat = 54 categories",
-      "stale_iterations": 9
-    },
-    {
-      "severity": "HIGH",
-      "file": "nomos-nba-agent/CLAUDE.md",
-      "lines": [42, 70],
-      "current": "v3.0-37cat = 37 categories",
-      "actual": "v3.1-54cat = 54 categories",
-      "stale_iterations": 9
-    },
-    {
-      "severity": "MEDIUM",
-      "file": "nomos-nba-agent/features/engine.py",
-      "line": 5,
-      "current": "~6000+ feature candidates across 35 categories",
-      "actual": "54 categories",
-      "stale_iterations": 6
-    }
-  ],
-  "stale_docs_count": 3,
-  "parity_issues": [
-    {
-      "severity": "CRITICAL",
-      "type": "feature_engine_content_divergence",
-      "description": "mon-ipad engine.py STILL diverged — 9th consecutive iteration. CANONICAL UPDATED AGAIN: MD5 changed to 723597378a18ae674e59aa8308335c97 (was 16b3f333ef0d4710ead709986aa2415a iter8). Lines unchanged at 7177. mon-ipad frozen at 6972L (205-line gap persistent).",
-      "files": [
-        {
-          "path": "mon-ipad/features/engine.py",
-          "version": "v3.1-54cat",
-          "lines": 6972,
-          "md5": "c34f3c1ee3b83aa98e2a6f30bb540369",
-          "status": "DIVERGED — same version label, different content, 9th consecutive iter"
-        },
-        {
-          "path": "nomos-nba-agent/features/engine.py",
-          "version": "v3.1-54cat",
-          "lines": 7177,
-          "md5": "723597378a18ae674e59aa8308335c97",
-          "status": "CANONICAL — MD5 updated again this iteration (was 16b3f333 iter8)"
-        },
-        {
-          "path": "nomos-nba-agent/hf-space/features/engine.py",
-          "version": "v3.1-54cat",
-          "lines": 7177,
-          "md5": "723597378a18ae674e59aa8308335c97",
-          "status": "CONFIRMED PARITY with canonical"
-        }
-      ],
-      "fix": "cp /home/termius/nomos-nba-agent/features/engine.py /home/termius/mon-ipad/features/engine.py",
-      "verify": "md5sum /home/termius/mon-ipad/features/engine.py /home/termius/nomos-nba-agent/features/engine.py",
-      "iteration_streak": 9
-    }
-  ],
-  "broken_refs": [
-    {
-      "severity": "CRITICAL",
-      "type": "gitignore_catastrophic_failure",
-      "description": "nomos-political-alpha .gitignore covers ONLY *.pyc/__pycache__. 756 untracked files (was 702 iter8, +54). 9th consecutive iteration unfixed.",
-      "repo": "nomos-political-alpha",
-      "current_gitignore": "*.pyc\n__pycache__/\nfeatures/__pycache__/\n__pycache__",
-      "fix": "printf '\\ndata/polymarket/\\ndata/kalshi/\\ndata/social/\\ndata/signals/\\ndata/historical/\\ndata/insider/\\ndata/donors/\\ndata/congressional/\\nlogs/\\nscripts/councils/\\nscripts/forge\\n' >> /home/termius/nomos-political-alpha/.gitignore",
-      "iteration_streak": 9
-    },
-    {
-      "severity": "INFO",
-      "type": "untracked_council_outputs",
-      "description": "nomos-nba-agent has untracked council JSONs from D9 Hermes runs pending commit.",
-      "repos_affected": ["nomos-nba-agent"]
-    }
-  ],
-  "cleanup_needed": [
+  "fixes_applied": [
     {
       "priority": "CRITICAL",
-      "action": "Sync engine.py canonical to mon-ipad — 9th iter violation, canonical MD5 changed AGAIN (723597378a, 7177L)",
+      "action": "Synced engine.py canonical to mon-ipad (9-iter streak broken)",
       "command": "cp /home/termius/nomos-nba-agent/features/engine.py /home/termius/mon-ipad/features/engine.py",
-      "verify": "md5sum /home/termius/mon-ipad/features/engine.py /home/termius/nomos-nba-agent/features/engine.py"
+      "result": "3-way MD5 parity: f2d2ceee39a73ec029b4f3c726d7e79a"
     },
     {
       "priority": "CRITICAL",
-      "action": "Fix nomos-political-alpha .gitignore — 756 untracked files (+54), 9th iter unfixed",
-      "command": "printf '\\ndata/polymarket/\\ndata/kalshi/\\ndata/social/\\ndata/signals/\\ndata/historical/\\ndata/insider/\\ndata/donors/\\ndata/congressional/\\nlogs/\\nscripts/councils/\\nscripts/forge\\n' >> /home/termius/nomos-political-alpha/.gitignore"
+      "action": "Fixed nomos-political-alpha .gitignore (9-iter streak broken)",
+      "result": "810→20 dirty files (−790)"
     },
     {
       "priority": "HIGH",
-      "action": "Update mon-ipad/CLAUDE.md line 80: v3.1-46cat → v3.1-54cat=54 categories (9th iter)"
+      "action": "Fixed mon-ipad/CLAUDE.md line 80: v3.1-46cat→v3.1-54cat=54 categories,7213 features",
+      "result": "DONE"
     },
     {
       "priority": "HIGH",
-      "action": "Update nomos-nba-agent/CLAUDE.md lines 42+70: v3.0-37cat → v3.1-54cat=54 categories (9th iter)"
+      "action": "Fixed nomos-nba-agent/CLAUDE.md lines 42+70: v3.0-37cat→v3.1-54cat=54 categories",
+      "result": "DONE"
     },
     {
       "priority": "MEDIUM",
-      "action": "Fix canonical docstring in nomos-nba-agent/features/engine.py line 5: '35 categories' → '54 categories' (6th iter)"
-    },
+      "action": "Fixed canonical docstring nomos-nba-agent/features/engine.py line 5: 35→54 categories, 6000+→7213",
+      "result": "DONE (synced to all 3 engine.py copies)"
+    }
+  ],
+  "stale_docs_found": [],
+  "stale_docs_count": 0,
+  "parity_issues": [],
+  "engine_parity_ok": true,
+  "repos_checked_count": 5,
+  "status": "HEALTHY",
+  "health_score": 72,
+  "health_delta": 45,
+  "summary": "MAJOR IMPROVEMENT: Both 9-iter critical streaks BROKEN this iteration. Engine parity FIXED (f2d2ceee 3-way). Political-alpha gitignore FIXED (810→20). All stale docs FIXED. Health: 72/100 (+45). Remaining: nomos-dashboard clean 6th iter, rgwa stable 8th iter. mon-ipad dirty still 161 (growing — needs commit sweep).",
+  "remaining_issues": [
     {
       "priority": "MEDIUM",
       "action": "Commit council outputs in nomos-nba-agent"
     },
     {
-      "priority": "LOW",
-      "action": "Commit mon-ipad data/ after engine sync"
+      "priority": "MEDIUM",
+      "action": "Sweep mon-ipad data/ changes and commit (161 dirty, growing +10/iter)"
     }
-  ],
-  "delta_from_iter8": {
-    "mon_ipad_dirty": "151 (was 111 iter8, +40 — ACCELERATING)",
-    "nomos_dashboard": "CLEAN (5th consecutive — stable positive)",
-    "nomos_nba_agent_dirty": "35 (was 30 iter8, +5)",
-    "nomos_political_alpha_dirty": "756 (was 702 iter8, +54)",
-    "rgwa_dirty": "13 (stable, 7th consecutive unchanged)",
-    "engine_parity": "DIVERGED 9th iter — canonical MD5 changed AGAIN (723597378a, was 16b3f333 iter8), lines still 7177. mon-ipad frozen at 6972L.",
-    "new_findings": "Canonical engine.py MD5 updated AGAIN (723597378a). mon-ipad dirty +40 (ACCELERATING). nomos-nba-agent +5. Political +54. nomos-dashboard CLEAN 5th consecutive.",
-    "net_change": "0 improvements. 9th consecutive iteration with both critical issues unresolved. mon-ipad dirty growth ACCELERATING (+40)."
-  },
-  "repos_checked_count": 5,
-  "engine_parity_ok": false,
-  "status": "ISSUES_FOUND",
-  "health_score": 27,
-  "health_delta": -3,
-  "summary": "CRITICAL x2 (9th consecutive): (1) engine.py divergence — mon-ipad 6972L vs 7177L canonical, CANONICAL MD5 UPDATED AGAIN (723597378a), 205L gap. (2) nomos-political-alpha gitignore — 756 untracked (+54). STABLE: nomos-dashboard CLEAN 5th iter, rgwa 13 stable 7th iter. ALARM: mon-ipad dirty +40 (ACCELERATING). Health: 27/100 (-3).",
-  "escalation_flags": [
-    "engine_parity_9iter_unfixed",
-    "political_gitignore_9iter_unfixed",
-    "canonical_engine_md5_changed_again_723597378a",
-    "mon_ipad_dirty_files_151_accelerating_plus40"
-  ],
-  "recommended_actions": [
-    "URGENT: cp nomos-nba-agent/engine.py → mon-ipad/engine.py (9-iter parity failure, canonical 7177L MD5 723597378a)",
-    "URGENT: Fix nomos-political-alpha .gitignore — add data/ subdirs + logs/ + scripts/councils/ (756 untracked, 9th iter)",
-    "HIGH: Update mon-ipad/CLAUDE.md line 80 → v3.1-54cat=54 categories (9th iter)",
-    "HIGH: Update nomos-nba-agent/CLAUDE.md lines 42+70 → v3.1-54cat=54 categories (9th iter)",
-    "MEDIUM: Fix canonical docstring nomos-nba-agent/features/engine.py line 5: 35→54 categories (6th iter)",
-    "MEDIUM: Commit council outputs in nomos-nba-agent"
   ]
 }
