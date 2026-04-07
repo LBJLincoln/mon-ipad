@@ -1,58 +1,63 @@
 {
-  "last_updated": "2026-04-07T20:30:00Z",
+  "last_updated": "2026-04-07T20:45:00Z",
   "cycle": 76,
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
-  "nba_best_brier": 0.22371,
+  "nba_best_brier": 0.22268,
   "political_best_brier": 0.23134,
   "nba_best_individual": 0.21570,
   "political_best_individual": 0.2182,
-  "nba_islands_online": 6,
-  "nba_islands_total": 6,
+  "nba_islands_online": 8,
+  "nba_islands_total": 8,
   "political_islands_online": 2,
-  "political_islands_total": 4,
-  "fleet_brier_avg_nba": 0.22685,
+  "political_islands_total": 2,
+  "fleet_brier_avg_nba": 0.22598,
   "fleet_brier_avg_political": 0.24053,
+  "key_discoveries_this_cycle": [
+    "S16 + S17 discovered on LBJLincoln26 HF account (created Apr 6). S16=0.22268 is new fleet best.",
+    "PA3/PA4 confirmed NON-EXISTENT on HuggingFace (not sleeping — never created or deleted).",
+    "FEC Q1 2026 data lands Apr 15-22 — set up automated poll.",
+    "Pharma tariff Section 232 EO + Nuclear/AI data center EO — new political signals.",
+    "GovInfo MCP Server launched (govinfo.gov) — best new free data source."
+  ],
   "engine_parity": {
     "nba_engine_version": "v3.1-54cat",
-    "political_engine_version": "v2.0-13cat",
-    "nba_features": 7213,
-    "political_features": 2400,
-    "nba_usable": 3290,
-    "political_usable": 309
+    "political_engine_version": "v2.0-13cat (CLAUDE.md) / v3.2-political-24cat (older brain-status)",
+    "nba_s10_s15_features": 3290,
+    "nba_s16_s17_features": 3266,
+    "s16_s17_parity_gap": "24 fewer feature candidates — investigate engine version",
+    "political_features_pa1": 252,
+    "political_features_pa2": 309
   },
   "cross_pollination_this_cycle": [
     {
       "from": "NBA",
       "to": "Political",
-      "technique": "Monotone constraints for LightGBM/XGBoost (proposed NBA cycle 76)",
-      "political_analog": "Enforce monotonicity on donor_amount, policy_score, enforcement_risk features",
-      "status": "PROPOSED — pending NBA validation first"
+      "technique": "Monotone constraints (proposed cycle 76)",
+      "political_analog": "Enforce monotonicity on donor_amount, policy_score, enforcement_risk",
+      "status": "PROPOSED — pending NBA validation"
     }
   ],
   "cross_pollination_candidates": [
-    "NBA: monotone_constraints (proposed cycle 76) → Political: same technique for policy signals",
-    "NBA: Cat55 lineup continuity → Political: Cat23 executive team continuity/revolving door",
-    "NBA: isotonic calibration (proposed cycle 66) → Political: already tracking (both fleets have isotonic option)",
-    "NBA: stagnation detection + auto-diversify → Political: implemented but PA3/PA4 DOWN prevents full use"
+    "NBA monotone_constraints → Political: enforce on donor/policy signals",
+    "NBA Cat55 lineup continuity → Political: executive team continuity/revolving door feature",
+    "Political pharma tariff signal → NBA: no direct analog",
+    "GovInfo MCP → NBA: Federal Register EOs affecting sports gambling regulation?"
   ],
   "alerts": [
-    "S14 (NBA) stagnation=22 — diversify sent cycle 76",
-    "S11 (NBA) stagnation=13 — approaching threshold 15",
-    "S15 (NBA) restarted — lost best 0.2219, rebuilding",
-    "PA3 DOWN_404 x2 cycles — manual restart required",
-    "PA4 DOWN_404 x11 cycles — URGENT manual restart required",
-    "Political: only 60 real events (312 synthetic) — data collection critical blocker",
-    "NBA Brier threshold 0.21837 not reached — current best 0.22371 (gap: 0.00534)"
+    "CLAUDE.md STALE: S16/S17 islands not documented. Fleet is 8 not 6. Update needed.",
+    "PA3/PA4 PHANTOM: were tracked as DOWN for 11+ cycles but never existed. Fix brain tracking.",
+    "S16 NEW FLEET BEST: Brier=0.22268, gap to threshold=0.00431",
+    "S11 stagnation=13 — diversify if still stagnant next cycle",
+    "FEC Q1 data arriving Apr 15-22 — opportunity for fresh political signal",
+    "OKLO (Tier 1 donor) + Nuclear EO = strong buy signal — check Form 4 filings"
   ],
-  "data_pipeline_health": {
-    "nba_data_freshness": "OK — 9551 games, 8 seasons cached (2018-19 to 2025-26)",
-    "political_data_freshness": "PARTIAL — polymarket/kalshi healthy, only 60 real events collected",
-    "follow_the_money_state": "PROPOSED (cycle 75) — not integrated",
-    "propublica_ie_filings": "ACTIVE (Cat29 federal)"
-  },
-  "cycle_76_actions": {
-    "nba_action": "S14 diversify sent (stagnation=22). Research proposal: monotone constraints + Cat55 lineup continuity.",
-    "political_action": "Rotation A — FEC/SEC/executive order search running. brain-status.json updated.",
-    "cross_repo_action": "Monotone constraints technique flagged for cross-repo port after NBA validation."
-  }
+  "action_items_next_cycle": [
+    "Add S16/S17 to CLAUDE.md island table",
+    "Remove PA3/PA4 from political fleet tracking (don't exist)",
+    "Implement monotone constraints in NBA hf-space/evolution/genetic_loop.py",
+    "Add GovInfo MCP to ops/fetch_political_data.py",
+    "Poll FEC for Q1 data starting Apr 16",
+    "Check S16/S17 engine version vs v3.1-54cat (24 feature candidate gap)",
+    "Add PFE/MRK/LLY to political donor Tier 5 (pharma tariff targets)"
+  ]
 }

@@ -1,18 +1,19 @@
 {
-  "last_updated": "2026-04-07T20:30:00Z",
+  "last_updated": "2026-04-07T20:45:00Z",
   "cycle": 76,
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
   "improvement_rotation": "RESEARCH",
   "improvement_task": "NBA stacked calibration proposal + Political Rotation A (FEC/SEC data sources)",
   "nba_fleet": {
-    "islands_online": 6,
-    "islands_total": 6,
-    "best_brier": 0.22371,
-    "best_brier_island": "S13-nomos42-nba-evo-4",
+    "islands_online": 8,
+    "islands_total": 8,
+    "note": "CLAUDE.md documents 6 islands (S10-S15) but S16+S17 discovered on LBJLincoln26 account (created Apr 6)",
+    "best_brier": 0.22268,
+    "best_brier_island": "S16-lbjlincoln26-nba-evo-s16",
     "brier_threshold": 0.21837,
     "threshold_reached": false,
     "checkpoint_triggered": false,
-    "gap_to_threshold": 0.00534,
+    "gap_to_threshold": 0.00431,
     "stagnation_alerts": ["S14-stagnation-22-DIVERSIFIED", "S11-stagnation-13-WATCH"],
     "diversify_commands_sent": ["S14-nomos42-nba-evo-5"],
     "islands": {
@@ -29,8 +30,7 @@
         "stagnation": 0,
         "games": 9551,
         "feature_candidates": 3290,
-        "action": "none",
-        "last_update": "2026-04-07T20:22:00Z"
+        "action": "none"
       },
       "S11-nomos42-nba-quant-2": {
         "role": "exploration",
@@ -44,8 +44,7 @@
         "model": "catboost",
         "mutation_rate": 0.15,
         "stagnation": 13,
-        "action": "WATCH_STAGNATION — 13 gens, threshold=15. Diversify next cycle if no improvement.",
-        "last_update": "2026-04-07T20:22:19Z"
+        "action": "WATCH_STAGNATION — 13 gens, threshold=15. Diversify next cycle if no improvement."
       },
       "S12-nomos42-nba-evo-3": {
         "role": "extra_trees_specialist",
@@ -58,8 +57,7 @@
         "best_features": 42,
         "model": "catboost",
         "stagnation": 2,
-        "action": "none",
-        "last_update": "2026-04-07T20:22:00Z"
+        "action": "none"
       },
       "S13-nomos42-nba-evo-4": {
         "role": "catboost_specialist",
@@ -72,8 +70,7 @@
         "best_features": 48,
         "model": "xgboost",
         "stagnation": 0,
-        "action": "FLEET_BEST",
-        "last_update": "2026-04-07T20:22:00Z"
+        "action": "none"
       },
       "S14-nomos42-nba-evo-5": {
         "role": "lightgbm_specialist",
@@ -87,8 +84,7 @@
         "model": "extra_trees",
         "stagnation": 22,
         "action": "DIVERSIFY_SENT",
-        "diversify_sent_at": "2026-04-07T20:15:00Z",
-        "last_update": "2026-04-07T20:22:00Z"
+        "diversify_sent_at": "2026-04-07T20:15:00Z"
       },
       "S15-nomos42-nba-evo-6": {
         "role": "wide_search",
@@ -101,36 +97,71 @@
         "best_features": 69,
         "model": "xgboost_brier",
         "stagnation": 0,
-        "action": "WATCH — restarted since cycle 74 (was 403). Previous fleet best 0.2219 at gen 177 is gone.",
-        "last_update": "2026-04-07T20:22:00Z"
+        "action": "WATCH — restarted since cycle 74, rebuilding"
+      },
+      "S16-lbjlincoln26-nba-evo-s16": {
+        "role": "NEW_ISLAND — deep exploitation (mut=0.03)",
+        "status": "ONLINE",
+        "hf_space": "LBJLincoln26/nba-evo-s16",
+        "url": "lbjlincoln26-nba-evo-s16.hf.space",
+        "cycle": 359,
+        "generation": 1077,
+        "best_brier": 0.22268,
+        "best_roi_pct": 29.5,
+        "best_sharpe": 8.0553,
+        "best_features": 54,
+        "model": "catboost",
+        "mutation_rate": 0.03,
+        "stagnation": 0,
+        "feature_candidates": 3266,
+        "action": "FLEET_BEST — discovered this cycle. Not in CLAUDE.md. Created Apr 6.",
+        "note": "High cycle count (359) suggests long-running. mutation_rate=0.03 = deep exploitation. feature_candidates=3266 (vs 3290 on S10-S15, possible engine version gap)."
+      },
+      "S17-lbjlincoln26-nba-evo-s17": {
+        "role": "NEW_ISLAND — mid exploration (mut=0.06)",
+        "status": "ONLINE",
+        "hf_space": "LBJLincoln26/nba-evo-s17",
+        "url": "lbjlincoln26-nba-evo-s17.hf.space",
+        "cycle": 363,
+        "generation": 1089,
+        "best_brier": 0.22502,
+        "best_roi_pct": 26.84,
+        "best_sharpe": 5.8228,
+        "best_features": 67,
+        "model": "xgboost",
+        "mutation_rate": 0.06,
+        "stagnation": 0,
+        "feature_candidates": 3266,
+        "action": "none — discovered this cycle. Not in CLAUDE.md. Created Apr 6."
       }
     },
     "engine_parity": {
-      "features_engine_version": "v3.1-54cat",
-      "hf_space_engine_version": "v3.1-54cat",
-      "parity": "OK",
-      "feature_categories": 54,
-      "raw_features": 7213,
-      "usable_features": 3290
+      "s10_to_s15_version": "v3.1-54cat",
+      "s16_s17_feature_candidates": 3266,
+      "s10_s15_feature_candidates": 3290,
+      "parity_gap": "S16/S17 have 24 fewer feature candidates — possible engine version difference. Investigate.",
+      "action": "Check S16/S17 engine version vs v3.1-54cat next cycle"
     }
   },
   "cycle_improvement": {
     "rotation": "RESEARCH",
-    "type": "RESEARCH_PROPOSAL",
-    "description": "Stacked isotonic regression + temperature scaling calibration post-training. Based on 2025-2026 sports ML literature: stacked calibration reduces ECE by 15-30%, estimated Brier improvement 0.224 → 0.210-0.215. Also: decay-weighted net rating delta features. Proposal: data/research-proposals/nba-stacked-calibration-2026-04-07.md",
-    "action_taken": "S14 diversify sent (stagnation=22). Research proposal written. Political Rotation A FEC/SEC sources evaluated.",
+    "type": "RESEARCH_PROPOSAL + FLEET_DISCOVERY",
+    "description": "1) S16/S17 new islands discovered (fleet now 8, not 6). S16 is new fleet best (0.22268). 2) NBA research proposal: monotone_constraints + Cat55 lineup continuity. 3) Political Rotation A: GovInfo MCP + pharma tariff EO + FEC Q1 timing.",
+    "action_taken": "S14 diversify sent. 3 proposals written. S16/S17 documented. PA3/PA4 confirmed non-existent on HF.",
     "priority": "HIGH",
-    "estimated_brier_gain": -0.010
+    "estimated_brier_gain": -0.003
   },
   "alerts": [
+    "S16/S17 DISCOVERED — new islands not in CLAUDE.md. Fleet is now 8 islands. Update CLAUDE.md!",
+    "S16 IS FLEET BEST — Brier=0.22268 (CatBoost, gen 1077, cycle 359). Better than previous best S13=0.22371",
+    "S16/S17 feature_candidates=3266 vs S10-S15=3290 — check engine version parity",
     "S14 stagnation=22 — diversify command SENT at 2026-04-07T20:15Z",
     "S11 stagnation=13 — approaching threshold 15, diversify NEXT cycle if no improvement",
-    "S15 restarted — previous fleet best 0.2219 lost, rebuilding from gen 46",
-    "No island below Brier threshold 0.21837 — best=0.22371, gap=0.00534",
-    "PA3 DOWN_404 consecutive cycles — manual HF restart required",
-    "PA4 DOWN_404 x11+ cycles — URGENT manual HF restart required"
+    "S15 restarted — rebuilding from gen 46",
+    "PA3/PA4 DO NOT EXIST on HuggingFace — confirmed via HF MCP scan. Brain has been tracking as DOWN but spaces were never created. CLAUDE.md update needed.",
+    "Brier threshold 0.21837 not reached — best=0.22268, gap=0.00431"
   ],
-  "next_cycle_rotation": "PORT — implement stacked calibration in calibration/calibrate.py if proposal approved",
+  "next_cycle_rotation": "PORT — implement monotone constraints in hf-space/evolution/genetic_loop.py. Add S16/S17 to CLAUDE.md monitoring.",
   "next_cycle": "2026-04-08T00:30:00Z",
   "brain_version": "nomos42-brain-v1"
 }
