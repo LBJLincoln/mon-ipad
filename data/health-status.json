@@ -1,67 +1,68 @@
 {
-  "timestamp": "2026-04-02T17:10:00Z",
-  "cycle": "brain-4h-auto",
+  "last_updated": "2026-04-07T04:30:00Z",
+  "cycle": "brain-cycle-74",
+  "generated_by": "claude-sonnet-4-6 nomos42-brain",
   "nba_fleet": {
     "total_islands": 6,
-    "online": 5,
-    "offline": ["nba-evo-2"],
-    "best_brier": 0.22182,
-    "best_island": "nba-evo-5",
-    "best_model": "catboost",
-    "fleet_average_brier": 0.22367,
+    "islands_online": 6,
+    "best_brier": 0.22172,
+    "best_brier_island": "S12-nomos42-nba-evo-3",
+    "fleet_brier_avg": 0.23022,
     "brier_target": 0.21837,
-    "gap_to_target": 0.00345,
+    "gap_to_target": 0.00335,
     "checkpoint_triggered": false,
     "stagnation_count": 0,
     "published_ceiling": 0.199,
     "islands": {
-      "nba-quant":  {"status":"ONLINE","cycle":93, "generation":277,"brier":0.22472,"model":"xgboost_brier","features":57,"stagnation":0},
-      "nba-evo-2":  {"status":"OFFLINE","error":"HTTP 404"},
-      "nba-evo-3":  {"status":"ONLINE","cycle":141,"generation":421,"brier":0.22262,"model":"xgboost_brier","features":57,"stagnation":0},
-      "nba-evo-4":  {"status":"ONLINE","cycle":121,"generation":362,"brier":0.22446,"model":"random_forest","features":45,"stagnation":0},
-      "nba-evo-5":  {"status":"ONLINE","cycle":124,"generation":370,"brier":0.22182,"model":"catboost","features":62,"stagnation":0},
-      "nba-evo-6":  {"status":"ONLINE","cycle":116,"generation":348,"brier":0.22471,"model":"xgboost_brier","features":66,"stagnation":0}
+      "S10-nomos42-nba-quant":   {"role":"exploitation",    "status":"ONLINE","cycle":52, "generation":155,"brier":0.22327,"model":"random_forest","features":46,"stagnation":0,"roi_pct":28.81},
+      "S11-nomos42-nba-quant-2": {"role":"exploration",     "status":"ONLINE","cycle":38, "generation":113,"brier":0.22487,"model":"catboost",      "features":60,"stagnation":0,"roi_pct":26.38},
+      "S12-nomos42-nba-evo-3":   {"role":"extra_trees",     "status":"ONLINE","cycle":18, "generation":51, "brier":0.22172,"model":"random_forest","features":62,"stagnation":0,"roi_pct":30.58,"note":"FLEET BEST"},
+      "S13-nomos42-nba-evo-4":   {"role":"catboost",        "status":"ONLINE","cycle":32, "generation":94, "brier":0.22416,"model":"catboost",      "features":80,"stagnation":0,"roi_pct":27.9},
+      "S14-nomos42-nba-evo-5":   {"role":"lightgbm",        "status":"ONLINE","cycle":23, "generation":67, "brier":0.23002,"model":"lightgbm",      "features":73,"stagnation":0,"roi_pct":21.21},
+      "S15-nomos42-nba-evo-6":   {"role":"wide_search",     "status":"ONLINE","cycle":52, "generation":155,"brier":0.24723,"model":"xgboost_brier", "features":83,"stagnation":0,"roi_pct":2.85}
     }
   },
   "political_fleet": {
     "total_islands": 4,
-    "online": 2,
-    "offline": ["political-alpha-3","political-alpha-4"],
-    "best_brier": 0.24186,
-    "best_island": "political-alpha",
-    "best_top5_brier": 0.2346,
+    "islands_online": 2,
+    "best_brier": 0.23134,
+    "best_brier_island": "PA2-nomos42-political-alpha-2",
     "islands": {
-      "political-alpha":   {"status":"ONLINE","role":"exploitation","cycle":1960,"generation":5878,"brier":0.24186,"model":"xgboost_brier","features":53},
-      "political-alpha-2": {"status":"ONLINE","role":"exploration","cycle":1360,"generation":4079,"brier":0.25081,"model":"extra_trees","features":61},
-      "political-alpha-3": {"status":"OFFLINE","error":"HTTP 404 — space not created"},
-      "political-alpha-4": {"status":"OFFLINE","error":"HTTP 404 — space not created"}
+      "PA1-nomos42-political-alpha":   {"role":"exploitation","status":"ONLINE", "cycle":5609, "generation":16825,"brier":0.24971,"model":"xgboost_brier","features":65,"stagnation":0},
+      "PA2-nomos42-political-alpha-2": {"role":"exploration", "status":"ONLINE", "cycle":7109, "generation":21327,"brier":0.23134,"model":"catboost",      "features":70,"stagnation":0,"note":"FLEET BEST"},
+      "PA3-nomos42-political-alpha-3": {"role":"catboost",    "status":"DOWN_404","consecutive_down_cycles":8},
+      "PA4-nomos42-political-alpha-4": {"role":"wide_search", "status":"DOWN_404","consecutive_down_cycles":8}
     }
   },
   "improvements_this_cycle": {
-    "nba_1": "Research proposal: Shot-chart spatial embeddings (MDPI 2026) — expected Brier -0.010 to -0.020. See nomos-nba-agent/data/research-proposals/shot-chart-spatial-embeddings-2026-04.md",
-    "nba_2": "Research proposal: Isotonic regression calibration (corrected from temperature scaling — isotonic preferred for N>1000). Expected Brier -0.005 to -0.015. See nomos-nba-agent/data/research-proposals/gets-temperature-scaling-2026-04.md",
-    "political": "Added 10 committee×trades cross-category features to political_engine.py CAT24 — expected Brier -0.003 to -0.008"
+    "political_1": "Added Cat29 ProPublica IE Signals (20 features) to political_engine.py v3.7. Features: F24 IE notice velocity, sector-aligned IE detection, support/oppose net ratio, filing velocity/hr, realtime-feed flag. Synced hf-space/features/. Engine: v3.6→v3.7-political-29cat-propublica-ie.",
+    "research": "MDPI Information 17:1:56 (2026): isotonic calibration achieves Brier 0.199 — adding calibration_method as NBA GA hyperparameter is top priority next rotation"
   },
   "research_findings_2025_2026": {
-    "published_ceiling": "Brier 0.199 (MDPI Jan 2026, shot-chart embeddings + XGBoost)",
-    "gap_to_ceiling": 0.02282,
+    "published_ceiling": "Brier 0.199 (MDPI Jan 2026, logistic+isotonic calibration)",
+    "gap_to_ceiling_nba": 0.02272,
     "top_techniques": [
-      {"name": "Shot-chart spatial embeddings", "brier_delta": "-0.010 to -0.020", "status": "PROPOSED"},
-      {"name": "Isotonic regression calibration", "brier_delta": "-0.005 to -0.015", "status": "PROPOSED"},
-      {"name": "Stacked ensemble (XGB+LGB+CatBoost+LogReg meta)", "brier_delta": "-0.005 to -0.010", "status": "ALREADY PARTIAL"},
-      {"name": "Dual ELO + rolling features", "brier_delta": "-0.020 to -0.030", "status": "LIKELY IMPLEMENTED"}
+      {"name": "Isotonic calibration via CalibratedClassifierCV", "brier_delta": "-0.010 to -0.020", "status": "PROPOSED — add as GA hyperparameter"},
+      {"name": "Shot-chart spatial embeddings", "brier_delta": "-0.010 to -0.020", "status": "PROPOSED (prior cycle)"},
+      {"name": "RAPTOR/tracking-based player impact", "brier_delta": "-0.005 to -0.010", "status": "PARTIALLY IMPLEMENTED"},
+      {"name": "XGBoost + rolling features (stacked ensemble)", "brier_delta": "-0.005", "status": "ACTIVE"}
     ]
   },
-  "next_cycle_directives": [
-    "IMPLEMENT: Add isotonic calibration to hf-space/app.py (30 lines, immediate Brier gain)",
-    "IMPLEMENT: Add shot-chart zone fetcher to ops/ and Category 50 to features/engine.py",
-    "Create P3 catboost + P4 wide-search HuggingFace spaces for political",
-    "Verify political FEC data populated after 2026-04-01 committee ID fix",
-    "Wake S2 (nba-evo-2) — HTTP 404 since last cycle",
-    "If best_brier < 0.21837, checkpoint to Supabase"
-  ],
   "engine_versions": {
-    "nba": "v3.1-49cat (6245+ features, 3265 deployed)",
-    "political": "v3.2-political-24cat (~3200 features, +10 cross-cat this cycle)"
-  }
+    "nba": "v3.1-51cat (6253 raw features, 3286 deployed)",
+    "political": "v3.7-political-29cat-propublica-ie (~3220 features)"
+  },
+  "alerts": [
+    "PA3 DOWN_404 x8 cycles — manual HF dashboard restart URGENT",
+    "PA4 DOWN_404 x8 cycles — manual HF dashboard restart URGENT",
+    "S15 wide-search Brier 0.24723 — wide exploration expected, convergence in ~50 more gens",
+    "NBA gen counts reset (cold-starts) — evolution continuing from gen 50-155 range",
+    "PROPUBLICA_API_KEY not set in HF space secrets — add for 15-min Cat29 feed"
+  ],
+  "next_cycle_directives": [
+    "Rotation C: Port isotonic calibration as NBA GA hyperparameter (add calibration_method to genome)",
+    "Verify Cat29 propublica_data routing in PA1 event builder",
+    "Manual restart PA3/PA4 via HF dashboard",
+    "If best_brier < 0.21837, checkpoint to Supabase"
+  ]
 }
