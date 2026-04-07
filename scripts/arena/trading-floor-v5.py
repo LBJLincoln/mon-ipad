@@ -66,6 +66,43 @@ from bet_categories import (
     ALL_CATEGORIES, CATEGORY_BY_ID, CATEGORIES_BY_GROUP,
     get_specialist_prompt, get_tier2_prompt, get_tier1_prompt, get_meta_prompt,
 )
+from debate_round import run_bull_bear_debate
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# OBSERVABILITY — OpenLIT auto-instrumentation (Cycle 14 Tier 1.2)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Monkey-patches every OpenAI-compat HTTP client (Groq, OpenRouter, Cohere,
+# Cerebras, HF Router, OpenAI, xAI, Google) so each LLM call emits an OTLP
+# span with model name, latency, token count, status code.
+#
+# Spans ship to two sinks via OTLP/HTTP:
+#   1. Local sqlite-otel on VM :4318 → ~/data/traces.db (cron-readable)
+#   2. Phoenix on brother's laptop via Tailscale (optional, set env)
+#
+# Silent-fail is intentional: observability must never crash the trading loop.
+# If openlit isn't installed, traders run uninstrumented. Install path:
+#   pip install openlit  (~8 MB, pure python, no compiled deps)
+try:
+    import openlit  # type: ignore
+
+    _OTEL_ENDPOINT = os.environ.get(
+        "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "http://localhost:4318",
+    )
+    openlit.init(
+        otlp_endpoint=_OTEL_ENDPOINT,
+        application_name=os.environ.get("OTEL_SERVICE_NAME", "nomos42-traders-v5"),
+        environment=os.environ.get("OTEL_ENVIRONMENT", "production"),
+        disable_metrics=False,
+        collect_gpu_stats=False,  # VM has no GPU
+    )
+    _OPENLIT_ENABLED = True
+except Exception as _openlit_err:  # noqa: BLE001
+    _OPENLIT_ENABLED = False
+    # Only print once at startup, not on every call
+    if os.environ.get("NOMOS42_VERBOSE") == "1":
+        print(f"[openlit] disabled: {type(_openlit_err).__name__}: {_openlit_err}", file=sys.stderr)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1455,6 +1492,27 @@ class TradingFloorV5:
               f"Spread={spread_winner}({review['spread_agreement']:.0%}) "
               f"Total={total_winner}({review['total_agreement']:.0%}) "
               f"Edge={avg_edge:+.1f}% [{len(predictions)} agents]")
+
+        # TradingAgents-style Bull vs Bear debate on T1 Premium predictions.
+        # Degrades silently if insufficient premium predictions or LLM failure.
+        try:
+            debate = run_bull_bear_debate(
+                pool=self.pool,
+                ctx=ctx,
+                predictions=predictions,
+                rounds=2,
+                dry_run=self.dry_run,
+            )
+            if debate:
+                review["debate"] = debate
+                self.run_stats.setdefault("debates_run", 0)
+                self.run_stats["debates_run"] += 1
+                if not self.dry_run:
+                    print(f"    Debate: verdict={debate['verdict']} "
+                          f"conviction={debate['conviction']} "
+                          f"action={debate['recommended_action']}")
+        except Exception as e:
+            print(f"    Debate error (non-fatal): {str(e)[:80]}")
 
         return review
 
