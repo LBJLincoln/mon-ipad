@@ -1,9 +1,9 @@
 {
   "department": "business",
   "dept_id": "D10",
-  "iteration": 4,
-  "timestamp": "2026-04-06T18:00:01Z",
-  "status": "blocked_by_product_quality",
+  "iteration": 5,
+  "timestamp": "2026-04-07T08:00:00Z",
+  "status": "blocked_by_betting_strategy",
   "metrics": {
     "active_users": 2,
     "paid_users": 0,
@@ -14,13 +14,16 @@
     "dashboard_status": "live",
     "bankroll": 91.29,
     "bankroll_change_pct": -8.71,
-    "record": "17W-27L",
-    "win_rate_pct": 37.8,
+    "record": "17W-27L-0P",
+    "win_rate_pct": 38.64,
     "latest_roi_pct": -8.71,
-    "best_brier_score": 0.2157,
+    "best_brier_score": 0.21545,
     "brier_target": 0.20,
     "latest_ev_cents": 16.43,
-    "latest_bet_exposure_pct": 18.6
+    "latest_bet_exposure_pct": 18.6,
+    "peak_balance": 110.43,
+    "max_drawdown_pct": -20.89,
+    "days_active": 23
   },
   "pricing": {
     "starter": 19,
@@ -35,18 +38,25 @@
     "paid": 0,
     "churned": 0
   },
-  "critical_blocker": "Bankroll down 8.71% (17W-27L). Product is losing money. Users will not convert to paid tier for losing picks. This is the hard blocker for revenue growth.",
+  "critical_blocker": "Betting ROI -8.71% vs target +5%. Peaked at $110.43, now $91.29 (max DD -20.89%). Model Brier excellent (0.21545 ATR) but Kelly fraction 0.35 too aggressive. Product is losing money — users will not convert to paid tier for losing picks.",
+  "diagnosis": {
+    "model_quality": "TOP QUARTILE — Brier 0.21545 (target 0.20, only 0.01545 away). TabICL ensemble works.",
+    "betting_execution": "CRITICAL FAILURE — 38.64% win rate, ROI -8.71%. Peaked then cratered. Issue: position sizing (Kelly 0.35) not variance-adjusted.",
+    "product_market_fit": "ZERO — losing money means zero PMF. Customers will not pay for negative-return picks."
+  },
   "dependency_chain": [
-    "D4 (Betting) must achieve positive ROI",
-    "D3 (Evolution) must improve Brier to 0.20+",
-    "Then D10 can convert users → paid → revenue"
+    "D4 (Betting) MUST fix betting strategy: reduce Kelly to 0.20-0.25 (variance-adjusted)",
+    "D4 MUST add EV > 1.10 filter to avoid marginal bets",
+    "D3 (Evolution) support: improve Brier 0.21545 → 0.20 (narrow gap)",
+    "THEN D10 can convert: 2 users → paid tiers"
   ],
-  "highest_impact_action": "Escalate to D3/D4: Fix betting strategy. Target: 50%+ win rate and +5% ROI before attempting to monetize. Current loss means zero product-market fit.",
+  "highest_impact_action": "D4 OWNS THIS: Test Kelly 0.20 + EV filter. Expected: smoother equity curve, ROI > 0%. Blocker is betting execution, NOT model quality.",
+  "monetization_readiness": "0% — cannot sell losing picks. Stripe payment links ready but dormant until ROI positive.",
   "next_actions": [
-    "URGENT: Review D4 betting strategy with D3 Evolution",
-    "Analyze why 17W-27L despite 0.2157 Brier (top quartile)",
-    "Hypothesis: Kelly fraction (0.35) too aggressive for draw downs",
-    "Test: Reduce Kelly to 0.20, expect smoother equity curve",
-    "Once ROI > 0%, execute Stripe payment links + trial onboarding"
+    "URGENT: D4 backtest Kelly 0.20 (vs current 0.35) on 17W-27L dataset",
+    "D4 test EV > 1.10 filter: expect fewer bets, higher quality",
+    "D3 continue evolution toward Brier 0.20 (0.01545 gap remains)",
+    "Once ROI > 0% (est. 3-5 days): activate Stripe payment links + trial onboarding",
+    "Prepare email/Telegram: 'Product ready for paid tiers' (template ready, not sent)"
   ]
 }
