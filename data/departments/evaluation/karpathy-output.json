@@ -1,83 +1,98 @@
 {
   "department": "evaluation",
-  "iteration": 8,
-  "timestamp": "2026-04-07T07:00:00.000000+00:00",
-  "model_version": "tabicl_ensemble (145 features, v3.0-37cat) — ATR 0.21545 | ZeroGPU claimed 0.19687 (VALIDITY DISPUTED — see critical findings)",
+  "iteration": 9,
+  "timestamp": "2026-04-07T12:30:00.000000+00:00",
+  "model_version": "tabicl_ensemble (110 features, v3.0-37cat) — ATR 0.21570 | ZeroGPU 0.19687 INVALIDATED (CACHE FRAUD, 4th run confirmed)",
 
   "games_audited": 58,
   "games_audited_breakdown": {
     "historical_bets": 44,
-    "experiment_games_apr6": 14,
+    "experiment_games_apr5": 14,
     "new_resolved_bets": 0,
-    "note": "No new resolved bets. Pipeline frozen 6th consecutive day. Odds merge still broken."
+    "note": "No new resolved bets. Pipeline frozen 7th consecutive day (last bet 2026-04-03). Odds merge still broken. Latest picks: bet_side=NO_ODDS for all 11 games."
   },
 
   "brier_current": 0.2157,
-  "brier_atr": 0.21545,
+  "brier_atr": 0.21570,
   "brier_zerogpu_claimed": 0.19687,
-  "brier_zerogpu_validity": "DISPUTED — see ZEROGPU_CACHE_FRAUD finding below",
-  "brier_zerogpu_consecutive_identical_runs": 3,
+  "brier_zerogpu_validity": "INVALIDATED — 4th consecutive run (2026-04-07T12:10:11Z). 92 total eval_failed entries in zerogpu-log.jsonl. ALL 4 candidates across ALL 3 accounts eval_failed every run since 2026-04-05. Returned value is exact match to nba-best-config.json#best_brier (13 decimal places). NOT a GPU measurement.",
+  "brier_zerogpu_consecutive_cache_runs": 4,
+  "brier_zerogpu_total_eval_failed": 92,
   "brier_experiment_consensus": 0.18929,
   "brier_experiment_best_agent": 0.16302,
-  "brier_kaggle_karpathy_best": 0.196874,
+  "brier_kaggle_karpathy_stored": 0.196874,
+  "brier_kaggle_karpathy_validity": "SUSPECT — best_brier=0.196874 was loaded from nba-best-config.json BEFORE Kaggle session started. All 15 iterations in nba-history.json show improved=false. Not discovered during session.",
   "brier_target": 0.20,
   "brier_gap_to_target": 0.0157,
-  "calibration_score": 0.2152,
+
+  "calibration_score": 0.2758,
+  "calibration_detail": {
+    "ece_historical_44games": 0.2758,
+    "ece_experiment_consensus_14games": 0.2152,
+    "ece_t1_llama70b_11games": 0.14,
+    "ece_t1_gemma27b_11games": 0.1318,
+    "ece_t1_qwen72b_8games": 0.3125,
+    "ece_target": 0.05,
+    "ece_gap_multiplier_historical": "5.5x above target",
+    "ece_gap_multiplier_experiment": "4.3x above target",
+    "avg_predicted_historical": 0.6629,
+    "avg_actual_historical": 0.3864,
+    "overconfidence_gap_pp": 27.65,
+    "worst_bucket_historical": "60-70%: predicted=0.63, actual=0.167, ECE=0.481",
+    "calibration_trend": "FROZEN — no new bets, no measurable change",
+    "note": "Significance tests on experiment agents all p>0.16 — samples too small (8-11 games) for reliable conclusions"
+  },
 
   "status": "completed",
 
-  "delta_vs_iter7": {
-    "brier_atr": {"iter7": 0.2157, "iter8": 0.2157, "delta": 0.0, "trend": "FROZEN — no new Colab run, no new bets (6 days)"},
-    "brier_zerogpu": {"iter7": 0.19687, "iter8": 0.19687, "delta": 0.0, "trend": "3rd IDENTICAL RUN — credibility DECREASING (eval_failed pattern discovered)"},
-    "fleet_progress": {
-      "S16": {"iter7_gen": 450, "iter8_gen": 636, "brier": 0.22268, "delta_gen": 186},
-      "S17": {"iter7_gen": 398, "iter8_gen": 576, "brier": 0.22502, "delta_gen": 178},
-      "S18": {"iter7_gen": 458, "iter8_gen": 681, "brier": 0.23928, "delta_gen": 223, "note": "3RD ITERATION STUCK — no improvement despite 223 new gens"},
-      "S19": {"iter7_gen": 379, "iter8_gen": 575, "brier": 0.2248, "delta_gen": 196},
-      "trend": "S16-S19 averaging +196 gens/iteration. S18 confirmed stuck (3 iterations at 0.23928)."
-    },
-    "days_without_bet": {"iter7": 5, "iter8": 6, "trend": "WORSENING — P0 fix still unimplemented"},
-    "roi_pct": {"iter7": -8.71, "iter8": -8.71, "delta": 0.0, "trend": "FROZEN"},
-    "kaggle_karpathy": {"status": "ACTIVE — 15 iterations logged, best=0.196874 (iter12: max_depth 10→12), zero improvements since"}
+  "delta_vs_iter8": {
+    "brier_atr": {"iter8": 0.2157, "iter9": 0.2157, "delta": 0.0, "trend": "FROZEN — 7th consecutive day, no new games evaluated"},
+    "zerogpu": {"iter8_runs": 3, "iter9_runs": 4, "new_eval_failed_added": 12, "trend": "4th CACHE READ — credibility ZERO. Brier target 0.20 NOT confirmed."},
+    "days_without_bet": {"iter8": 6, "iter9": 7, "trend": "CRITICAL — odds stale (2026-04-05 odds in latest-picks, games already played)"},
+    "zerogpu_total_log_lines": {"iter8": 80, "iter9": 92, "delta": 12, "trend": "12 new eval_failed in this iteration"},
+    "kaggle_stall": {"iter8_iters": 15, "iter9_iters": 15, "trend": "No new Kaggle runs this iteration — session complete, 0/15 improved"}
   },
 
   "new_findings_this_iteration": [
     {
-      "type": "ZEROGPU_CACHE_FRAUD",
+      "type": "ZEROGPU_CACHE_FRAUD_CONFIRMED_ITER4",
       "severity": "CRITICAL",
       "priority": "P0",
-      "detail": "ZeroGPU ran 3rd consecutive time at 2026-04-07T06:00:43Z — IDENTICAL result 0.19687 with n_candidates=4 in 9.3s. Investigation of zerogpu-log.jsonl reveals ALL candidate evaluations across ALL accounts (LBJLincoln, LBJLincoln26, Nomos42) show status='eval_failed' for every single candidate across every run since 2026-04-05. 68+ consecutive eval_failed entries logged. The 'baseline_brier=0.19687' exactly matches data/karpathy/nba-best-config.json#best_brier (0.1968744895643333). Conclusion: zerogpu-burst.py is returning the stored best_brier from nba-best-config.json when all GPU candidates eval_fail, NOT from an actual GPU evaluation. The 3 'consecutive confirmations' are all reading the same cached value.",
+      "detail": "ZeroGPU ran for 4th time at 2026-04-07T12:10:11Z. Log now at 92 total lines, ALL eval_failed. Latest run: LBJLincoln (4 candidates fail at 2026-04-07T12:03-12:05), LBJLincoln26 (4 candidates fail), Nomos42 (4 candidates fail). Total 292s run time with 0 real GPU evaluations. baseline_brier=0.1968744895643333 returned, exactly matching nba-best-config.json. The 4th 'confirmation' is a 4th cache read.",
       "evidence": {
-        "zerogpu_log_pattern": "All 68+ candidate evaluations: status=eval_failed",
-        "result_json_value": 0.1968744895643333,
-        "best_config_value": 0.1968744895643333,
-        "match": "EXACT — 13 decimal places identical",
-        "accounts_checked": ["LBJLincoln", "LBJLincoln26", "Nomos42"],
-        "conclusion": "baseline_brier is loaded from config file, not GPU-computed"
+        "log_file": "data/gpu-burst/zerogpu-log.jsonl",
+        "total_lines": 92,
+        "all_status": "eval_failed",
+        "latest_run": "2026-04-07T12:10:11Z",
+        "accounts_all_failing": ["LBJLincoln", "LBJLincoln26", "Nomos42"],
+        "returned_value": 0.1968744895643333,
+        "config_value": 0.1968744895643333,
+        "match_precision": "13 decimal places",
+        "conclusion": "zerogpu-burst.py returns stored best_brier when all GPU candidates eval_fail. Fix: read zerogpu-burst.py and find the eval_failed fallback path."
       },
-      "atf_brier_status": "UNKNOWN — zerogpu 0.19687 is NOT an independent validation. ATR remains 0.21545. Target 0.20 is NOT confirmed hit.",
-      "action": "Read scripts/gpu-burst/zerogpu-burst.py line by line. Find where baseline_brier is assigned. Fix eval_failed root cause (likely data path or GPU env issue). Run clean evaluation with temporal holdout.",
-      "impact": "This invalidates 3 iterations of 'positive confirmations'. The fleet's actual best validated Brier is 0.22268 (S16), not 0.19687."
+      "brier_target_status": "NOT HIT — 0.19687 is a config file value, not a GPU-measured result. ATR remains 0.21570."
     },
     {
-      "type": "KAGGLE_LOOP_STALLED",
+      "type": "ODDS_STALE_LATEST_PICKS",
+      "severity": "CRITICAL",
+      "priority": "P0",
+      "detail": "latest-picks.json dated 2026-04-05 shows bet_side=NO_ODDS for ALL 11 games. odds-latest.json contains Boston Celtics vs Toronto Raptors game (2026-04-05T19:40:00Z) — game already played. Odds pipeline is completely frozen. No live odds being consumed. Confirms 7 days without a bet.",
+      "impact": "Estimated 14+ missed bet opportunities since 2026-04-03. EV>20% strategy requires working odds pipeline.",
+      "fix": "predict_today.py: load fresh odds, join on home_team name after picks generation. ~10 lines Python."
+    },
+    {
+      "type": "KARPATHY_BASELINE_NOT_DISCOVERED",
       "severity": "HIGH",
-      "detail": "15 Kaggle Karpathy iterations logged (2026-04-07T04:00-04:25). Best found: 0.196874 on iteration 12 (max_depth 10→12) — but this exactly matches the stored best_brier in nba-best-config.json (same CACHE issue suspected). Iterations 1-15 show zero improvements: brier range 0.196-0.233, best_brier stays at 0.196874 throughout. Mutation pool is limited: only swap/add/remove features, model type switches, basic hyperparams. No LightGBM, no CatBoost, no adaptive perturbation.",
-      "iter12_concern": "Iter 12 shows brier=0.196874 but improved=false — suggests this was the STARTING baseline, not discovered during this session.",
-      "action": "Expand Kaggle mutation pool: add LightGBM (30%), CatBoost (30%), adaptive perturbation when no_improve_streak>=5. Verify Kaggle eval uses temporal split (not random)."
+      "detail": "Reviewed nba-history.json in full. Iteration 1 starts with best_brier=0.196874 ALREADY as baseline — it was not found during the Kaggle session. All 15 iterations show improved=false. brier range 0.2106-0.2329. The 0.196874 value was loaded from nba-best-config.json at session start, same source as ZeroGPU fraud.",
+      "implication": "True Kaggle Karpathy best discovered during live iteration is unknown. The system has no validated GPU Brier below 0.21570.",
+      "action": "Run fresh Kaggle session with explicit temporal holdout split. Log the pre-session baseline separately from discovered improvements."
     },
     {
-      "type": "S18_CONFIRMED_LOCAL_MINIMUM",
+      "type": "EXPERIMENT_SIGNIFICANCE_INSUFFICIENT",
       "severity": "MEDIUM",
-      "detail": "S18 is now in 3rd consecutive iteration at brier=0.23928, gen=681. The island has run 681 generations with no breakthrough past 0.239. S17 and S19 are both at 0.225 with similar configs, suggesting S18's initialization diverged early and is trapped. Diversity injection overdue by 2 iterations.",
-      "action": "POST /api/config to S18 with mut_rate=0.25 (above 0.15 cap for emergency diversification) or seed with top-10 genomes from S16. Monitor next 3 iterations for movement past 0.230."
-    },
-    {
-      "type": "EXPERIMENT_STRATEGY_INSIGHT",
-      "severity": "MEDIUM_POSITIVE",
-      "detail": "Apr 6 experiment strategy analysis on 1081 historical games: EV>20% + Kelly=10% strategy yields Sharpe=3.586, ROI=14.63%, win_rate=61.1%, 172 bets. This is the target strategy for live betting. BUT it requires calibrated probabilities and working odds merge. Currently blocked by odds merge failure.",
-      "calibration_note": "model_brier=0.2152 on historical data. Experiment ECE=0.2152 (consensus, 14 games). Consistent with ATR but small sample.",
-      "high_confidence_note": "t1_llama70b: ECE=0.14 on 11 games. 60-70% bucket: predicted=0.62, actual=1.0 (UNDERPREDICTION in this small sample vs persistent OVERPREDICTION in the 44-game historical set). Sample size insufficient for reliable calibration shift detection."
+      "detail": "Significance tests on Apr 5 experiment (data/experiments/nba-experiment-2026-04-07.json): t1_llama70b vs t1_gemma27b (p=0.163, n=11), t1_llama70b vs t1_qwen72b (p=0.169, n=8). NO test reaches p<0.05. All confidence intervals span >0.20 range. Experiment evaluation on 11-14 games has insufficient statistical power to confirm agent ranking.",
+      "minimum_sample": "Need ~100 games minimum for p<0.05 at observed effect sizes. Current 14-game window is 7x too small.",
+      "best_agent_note": "t1_llama70b Brier=0.16302 (n=11) is promising but not statistically validated. AUC=0.883 is strongest signal."
     }
   ],
 
@@ -85,75 +100,45 @@
     {
       "type": "ODDS_MERGE_BROKEN",
       "severity": "CRITICAL",
-      "iterations_unresolved": 6,
-      "days_unresolved": 6,
-      "estimated_missed_bets": 12,
-      "status": "UNRESOLVED — 6 days, ~12 missed bet opportunities. Fix is ~10 lines Python.",
-      "fix_location": "scripts/predict_today.py — after picks generation, join odds-latest.json on home_team name"
-    },
-    {
-      "type": "ECE_OVERCONFIDENCE",
-      "severity": "HIGH",
-      "iterations_unresolved": 6,
-      "ece_historical": 0.2758,
-      "ece_experiment_consensus": 0.2152,
-      "worst_bucket": "60-70%: ECE=0.4811, predicted 63% vs actual 16.7% win rate (historical 44 games)",
-      "threshold_mutation_proposed": {"old": 0.55, "new": 0.65, "status": "PROPOSED — blocked by odds merge"},
-      "status": "FROZEN — no new bets to measure improvement"
+      "iterations_unresolved": 7,
+      "days_unresolved": 7,
+      "status": "CRITICAL — 7 days, ~14 missed bet opportunities. bet_side=NO_ODDS in latest-picks. Odds file stale (Apr 5). Fix is ~10 lines in predict_today.py."
     },
     {
       "type": "ZEROGPU_EVAL_FAILED",
       "severity": "CRITICAL",
-      "iterations_unresolved": 3,
-      "log_entries": "68+ consecutive eval_failed across 3 accounts",
-      "status": "NEW CRITICAL — GPU evaluation broken since Apr 5. zerogpu-burst.py is silently masking failures by returning cached baseline."
+      "iterations_unresolved": 4,
+      "log_entries": 92,
+      "status": "92 consecutive eval_failed across 4 runs, 3 accounts. zerogpu-burst.py silently returning cached baseline. Brier target 0.20 NOT confirmed hit."
+    },
+    {
+      "type": "ECE_OVERCONFIDENCE",
+      "severity": "HIGH",
+      "iterations_unresolved": 7,
+      "ece_historical": 0.2758,
+      "ece_target": 0.05,
+      "worst_bucket": "60-70%: predicted=0.63, actual=0.167, ECE=0.481",
+      "status": "FROZEN — no new bets to measure. threshold_mutation 0.55→0.65 still blocked by odds merge."
     },
     {
       "type": "FLEET_RESET_S10_S15",
       "severity": "HIGH",
-      "iterations_unresolved": 3,
-      "status": "PERSISTENT — S10-S15 brier=1.0, gen=0 (3rd iteration). CLAUDE.md still lists S10-S15 as active fleet."
-    },
-    {
-      "type": "CORRUPTED_ODDS",
-      "severity": "HIGH",
-      "iterations_unresolved": 6,
-      "games": ["SAS@MIL (gap=0.744)", "SAC@ATL (gap=0.4276)"],
-      "status": "UNRESOLVED — odds sanity gate not deployed"
+      "iterations_unresolved": 4,
+      "status": "S10-S15 brier=1.0 gen=0. CLAUDE.md still lists them as active. S16-S19 are actual active fleet."
     }
   ],
 
-  "resolved_issues": [
-    {"type": "PHANTOM_GAME", "status": "RESOLVED — 0 phantom games"},
-    {"type": "TENSORFLOW_KELLY_BUG", "status": "RESOLVED"}
-  ],
-
-  "calibration_analysis": {
-    "ece_historical_44games": 0.2758,
-    "ece_experiment_14games": 0.2152,
-    "ece_target": 0.05,
-    "ece_gap_multiplier": "4.3x-5.5x above target",
-    "historical_avg_predicted": 0.6629,
-    "historical_actual_win_rate": 0.3864,
-    "overconfidence_gap_pp": 27.65,
-    "experiment_consensus_analysis": {
-      "40_50_bucket": {"predicted": 0.467, "actual": 1.0, "error": 0.533, "note": "UNDERPREDICTION — small sample"},
-      "50_60_bucket": {"predicted": 0.598, "actual": 1.0, "error": 0.402, "note": "UNDERPREDICTION"},
-      "60_70_bucket": {"predicted": 0.67, "actual": 0.333, "error": 0.337, "note": "OVERPREDICTION — consistent with historical"},
-      "70_80_bucket": {"predicted": 0.762, "actual": 0.667, "error": 0.095, "note": "NEAR CALIBRATED"},
-      "80_90_bucket": {"predicted": 0.859, "actual": 1.0, "error": 0.141, "note": "UNDERPREDICTION"},
-      "note": "14-game sample too small for reliable trend detection"
+  "calibration_mutation_this_iteration": {
+    "parameter": "confidence_threshold",
+    "proposed_value": 0.65,
+    "current_value": 0.55,
+    "status": "BLOCKED — odds merge must be fixed first. Threshold change has no effect while bet_side=NO_ODDS.",
+    "secondary_proposal": {
+      "action": "Isotonic recalibration on 44-game historical set",
+      "risk": "44 games is below recommended 100 minimum for isotonic regression — overfitting risk.",
+      "decision": "DEFER until 100+ game window available"
     },
-    "this_iteration_mutation": {
-      "parameter": "confidence_threshold",
-      "proposed_value": 0.65,
-      "status": "PROPOSED — blocked by odds merge. Priority drops behind ZeroGPU fix.",
-      "secondary_proposal": {
-        "action": "Deploy isotonic recalibration on 44-game historical set",
-        "rationale": "ECE=0.2758 is systematic overconfidence. Isotonic can reduce ECE to ~0.08 on this sample size.",
-        "risk": "Overfitting on 44 games. Need 100+ for reliable isotonic fit."
-      }
-    }
+    "brier_decomposition_note": "Cannot compute reliability/resolution/uncertainty decomposition with frozen pipeline. All three components unmeasurable with 0 new games."
   },
 
   "false_positive_rate": 0.40,
@@ -163,32 +148,26 @@
     "high_confidence_losses": 5,
     "fp_rate": 0.40,
     "fp_target": 0.25,
-    "status": "FAIL — frozen. Cannot measure improvement without new bets."
+    "status": "FAIL — frozen 7 iterations. Cannot measure improvement without new bets."
   },
 
   "fleet_evaluation": {
-    "as_of": "2026-04-07T06:45:19Z",
+    "as_of": "2026-04-07T12:10:00Z",
+    "note": "Fleet data from iter8 — HF space API not re-queried this cycle (no change expected in 5h window)",
     "active_nba": {
-      "S16": {"brier": 0.22268, "gen": 636, "trend": "BEST — +186 gens since iter7, holding 0.22268"},
-      "S17": {"brier": 0.22502, "gen": 576, "trend": "STEADY — +178 gens"},
-      "S18": {"brier": 0.23928, "gen": 681, "trend": "STUCK (3rd iteration) — inject diversity NOW"},
-      "S19": {"brier": 0.2248, "gen": 575, "trend": "STEADY — +196 gens"}
+      "S16": {"brier": 0.22268, "gen": 636, "trend": "BEST active island — holding steady"},
+      "S17": {"brier": 0.22502, "gen": 576, "trend": "STEADY"},
+      "S18": {"brier": 0.23928, "gen": 681, "trend": "STUCK 3rd iteration — emergency diversity injection overdue"},
+      "S19": {"brier": 0.2248, "gen": 575, "trend": "STEADY"}
     },
     "reset_nba": {
-      "S10_S15": {"status": "RESET", "brier": 1.0, "gen": 0, "iterations_reset": 3}
-    },
-    "political": {
-      "P2_pol": {"brier": 0.23134, "gen": 21837, "status": "BEST POLITICAL"},
-      "P4_pol": {"brier": 0.24803, "gen": 9709},
-      "P1_pol": {"brier": 0.24971, "gen": 17436},
-      "P3_pol": {"brier": 0.25168, "gen": 5977}
+      "S10_S15": {"status": "RESET", "brier": 1.0, "gen": 0, "iterations_reset": 4}
     },
     "fleet_nba_best": 0.22268,
     "fleet_nba_avg": 0.22545,
-    "fleet_nba_active_islands": 4,
+    "atr_brier": 0.21570,
     "zerogpu_claimed_best": 0.19687,
-    "zerogpu_validity": "DISPUTED — eval_failed pattern, cache read suspected",
-    "atr_brier": 0.21545
+    "zerogpu_validity": "INVALIDATED — 4th confirmed cache read"
   },
 
   "performance_trends": {
@@ -201,73 +180,69 @@
     "max_drawdown_pct": 20.89,
     "bankroll": 91.29,
     "peak_bankroll": 110.43,
-    "days_without_bet": 6,
+    "days_without_bet": 7,
     "last_bet": "2026-04-03",
-    "trend": "FROZEN — 6th consecutive day without a live bet"
+    "trend": "FROZEN — 7th consecutive day without a live bet. Latest picks have bet_side=NO_ODDS."
   },
 
   "recommendations": [
     {
       "priority": 1,
       "type": "P0_BUG_FIX",
-      "title": "Fix ZeroGPU eval_failed — read zerogpu-burst.py, identify root cause",
-      "department": "D7/INFRA + D6/EVALUATION",
-      "action": "Read scripts/gpu-burst/zerogpu-burst.py. Find where baseline_brier is assigned and where eval_failed triggers. Fix so GPU actually evaluates candidates. Add explicit logging to distinguish cache-read from GPU-evaluated results.",
-      "urgency": "3 iterations of false confidence on Brier target. All 68+ candidate evals silently failing."
+      "title": "Fix ZeroGPU eval_failed — read zerogpu-burst.py, find eval_failed fallback",
+      "action": "Read scripts/gpu-burst/zerogpu-burst.py. Locate where status==eval_failed causes baseline_brier to be returned from config file. Add explicit flag distinguishing 'GPU-evaluated' from 'config-loaded'. Fix root cause of eval_failed (likely data path, dependency import, or GPU env issue on HF ZeroGPU spaces).",
+      "urgency": "4 iterations of false confidence on Brier target. 0.19687 is NOT validated.",
+      "expected_impact": "Either confirms 0.19687 is real (target hit!) or reveals actual GPU Brier is higher"
     },
     {
       "priority": 2,
       "type": "P0_BUG_FIX",
-      "title": "Fix odds merge — 6th iteration unresolved",
-      "department": "D7/INFRA",
-      "action": "predict_today.py: after picks generation, load odds-latest.json, join on home_team name (~10 lines Python). Deploy immediately.",
-      "revenue_impact": "~12 missed bets over 6 days. EV>20% strategy requires working odds. Blocked by this."
+      "title": "Fix odds merge — 7th iteration, ~14 missed bets",
+      "action": "predict_today.py: after picks generation, load odds-latest.json, join on home_team name. Set bet_side based on edge. ~10 lines Python. This unblocks ALL downstream: live bets, ECE measurement, confidence threshold tuning.",
+      "revenue_impact": "~14 missed bets over 7 days. EV>20% + Kelly=10% strategy: Sharpe=3.586, ROI=14.63% when calibrated."
     },
     {
       "priority": 3,
       "type": "DIVERSITY_INJECTION",
-      "title": "S18 stuck 3 iterations — emergency diversity injection",
-      "department": "D3/EVOLUTION",
-      "action": "POST /api/config to S18 with mut_rate=0.25 (emergency mode) OR seed with S16 best genome. 681 gens at 0.23928 is confirmed local minimum.",
-      "expected_impact": "Potential 170bp improvement if S18 catches S16 level → fleet avg 0.22268→~0.22200"
+      "title": "S18 stuck 4+ iterations — emergency diversity injection",
+      "action": "POST /api/config to S18 with mut_rate=0.25 (emergency mode above 0.15 cap) OR seed with S16 best genome. 681 gens at 0.23928 = confirmed local minimum.",
+      "expected_impact": "170bp potential if S18 reaches S16 level"
     },
     {
       "priority": 4,
       "type": "DOCUMENTATION",
-      "title": "Update CLAUDE.md fleet definition S10-S15 → S16-S19",
-      "department": "D9/CROSS-REPO",
-      "action": "Replace HF SPACES table in CLAUDE.md with S16-S19 roles. 3 iterations of stale definition.",
-      "urgency": "LOW — documentation only"
+      "title": "Update CLAUDE.md: S10-S15 → S16-S19 active fleet",
+      "action": "Replace HF SPACES table in CLAUDE.md. 4 iterations of stale documentation sending agents to investigate dead islands.",
+      "urgency": "LOW — documentation only, but wastes agent cycles"
     },
     {
       "priority": 5,
       "type": "CALIBRATION",
-      "title": "Raise confidence_threshold 0.55 → 0.65 when pipeline restored",
-      "department": "D6/EVALUATION",
-      "action": "Set confidence_threshold=0.65 in predict_today.py. Eliminates ECE=0.4811 worst bucket. Apply after odds merge fix.",
+      "title": "Raise confidence_threshold 0.55 → 0.65 once odds merge fixed",
+      "action": "Deploy in predict_today.py AFTER odds merge fix. Eliminates worst ECE bucket (60-70%: ECE=0.481). Only effective when bets are flowing.",
       "expected_ece_delta": -0.13
     },
     {
       "priority": 6,
-      "type": "ENGINE_PARITY",
-      "title": "Deploy v3.1-54cat feature engine to S16-S19",
-      "department": "D9/CROSS-REPO",
-      "action": "Push updated features/engine.py (v3.1-54cat) to S16-S19. Unlocks Cat38-54 (17 categories, drive-rim/passing/play-type PPP).",
-      "expected_brier_delta": "0.001-0.003 reduction"
+      "type": "KARPATHY_EVAL_INTEGRITY",
+      "title": "Fix Karpathy baseline logging — separate config-loaded vs discovered",
+      "action": "In nba_karpathy_loop.py: log initial_brier (from config) separately from best_discovered_brier. If all iterations show improved=false, label session as 'no improvement found' vs claiming best_brier.",
+      "urgency": "MEDIUM — prevents false confidence on stale baseline"
     }
   ],
 
   "metrics_summary": {
     "brier_atr": 0.2157,
     "brier_zerogpu_claimed": 0.19687,
-    "brier_zerogpu_validity": "DISPUTED (eval_failed pattern, cache suspected)",
+    "brier_zerogpu_validity": "INVALIDATED — 4th confirmed cache read, 92 eval_failed entries",
     "brier_experiment_consensus": 0.18929,
     "brier_best_agent": 0.16302,
     "brier_target": 0.20,
-    "brier_gap_atf": 0.0157,
+    "brier_gap_atr": 0.0157,
     "ece_historical": 0.2758,
     "ece_experiment": 0.2152,
     "ece_target": 0.05,
+    "ece_gap": "4.3x-5.5x above target",
     "fp_rate": 0.40,
     "fp_target": 0.25,
     "win_rate": 0.3864,
@@ -276,24 +251,45 @@
     "bankroll": 91.29,
     "drawdown_from_peak_pct": 17.3,
     "phantom_games": 0,
-    "corrupted_odds_games": 2,
-    "days_without_bet": 6,
+    "odds_stale": true,
+    "odds_last_updated": "2026-04-05",
+    "picks_bet_side": "NO_ODDS",
+    "days_without_bet": 7,
     "odds_merge_healthy": false,
-    "fleet_s10_s15_status": "RESET (3rd iteration)",
+    "fleet_s10_s15_status": "RESET (4th iteration)",
     "fleet_s16_s19_best": 0.22268,
     "fleet_s16_s19_avg": 0.22545,
-    "kaggle_karpathy_best": 0.196874,
-    "zerogpu_eval_failed_count": "68+",
-    "status_overall": "CRITICAL — ZeroGPU eval_failed discovered (P0 new), odds merge broken (6th iter, P0), S10-S15 reset (3rd iter). Brier target NOT confirmed hit. Fleet S16-S19 progressing."
+    "kaggle_karpathy_stored": 0.196874,
+    "kaggle_karpathy_discovered": "NONE (0/15 improved, all improved=false)",
+    "zerogpu_eval_failed_total": 92,
+    "status_overall": "CRITICAL — ZeroGPU INVALIDATED (4th cache read, P0), odds merge broken day 7 (P0, ~14 missed bets), Brier target 0.20 NOT confirmed, pipeline completely frozen."
   },
 
   "critical_alerts": [
-    "ZEROGPU_CACHE_FRAUD (NEW P0): All 68+ candidate evaluations eval_failed since Apr 5. baseline_brier=0.19687 is read from nba-best-config.json, NOT GPU-computed. 3 'confirmations' were all cache reads. Brier target NOT hit. Read zerogpu-burst.py immediately.",
-    "ODDS_MERGE_BROKEN (6th iter): 6 days × ~2 missed bets = ~12 missed opportunities. Fix is ~10 lines Python in predict_today.py.",
-    "S18_LOCAL_MINIMUM (3rd iter): 681 gens at 0.23928. Emergency diversity injection required.",
-    "FLEET_RESET_S10_S15 (3rd iter): All 6 original islands at brier=1.0, gen=0. Update CLAUDE.md.",
-    "ECE=0.2758 FROZEN (6 days): threshold mutation 0.55→0.65 proposed. Apply when pipeline restored."
+    "ZEROGPU_INVALIDATED (P0, 4th iter): 92 eval_failed entries across 4 runs, 3 accounts. 0.19687 is nba-best-config.json value. Brier target NOT hit. Read zerogpu-burst.py immediately.",
+    "ODDS_MERGE_BROKEN (P0, 7th iter): 7 days, ~14 missed bets. Latest picks show bet_side=NO_ODDS. Odds file stale (Apr 5). Fix is ~10 lines in predict_today.py.",
+    "PIPELINE_FROZEN (7 days): 0 new bets, 0 new evaluation data. All calibration/ECE metrics frozen since Apr 3.",
+    "S18_LOCAL_MINIMUM (4+ iters): 681 gens at 0.23928. Emergency diversity injection required.",
+    "ECE=0.2758 (frozen 7 days): Worst bucket 60-70%: ECE=0.481. Threshold mutation BLOCKED by odds merge failure."
   ],
 
-  "next_iteration_focus": "P0 (1): Read zerogpu-burst.py — find eval_failed root cause and cache read pattern. P0 (2): Fix odds merge in predict_today.py. P1 (3): Inject diversity into S18 (3rd iteration stuck). P1 (4): Update CLAUDE.md fleet definition. If ZeroGPU fixed and evaluated cleanly with temporal holdout, we will know whether 0.19687 is real or an artifact."
+  "evaluation_integrity_score": {
+    "score": 2,
+    "max": 10,
+    "components": {
+      "zerogpu_valid": false,
+      "kaggle_baseline_valid": false,
+      "odds_pipeline_healthy": false,
+      "new_game_data": false,
+      "calibration_measurable": false,
+      "fleet_live": true,
+      "phantom_games": true,
+      "significance_testing": false,
+      "experiment_sample_size": false,
+      "brier_trend_available": false
+    },
+    "note": "Only 2/10: fleet is live and zero phantom games. Everything else is blocked or invalidated. Evaluation department cannot make progress until P0 bugs are fixed."
+  },
+
+  "next_iteration_focus": "P0 (1): Read zerogpu-burst.py — find eval_failed→cache_read fallback. Fix or disable ZeroGPU until repaired. P0 (2): Fix odds merge in predict_today.py (~10 lines). P1 (3): Once bets flow again, run isotonic recalibration after 100+ new games. P1 (4): S18 diversity injection. P2 (5): Update CLAUDE.md fleet definition."
 }
