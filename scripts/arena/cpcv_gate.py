@@ -193,6 +193,10 @@ def gate_strategies(rows: dict, trials: int, min_bets: int) -> dict:
             "roi_mean_pct": round(statistics.mean(rois), 3),
             "final_bankroll_mean": round(statistics.mean(banks), 2),
             "passes_gate": passes,
+            # Cycle 13: per-fold series for skfolio-style fold-band visualization
+            # on /trading-floor. Cap rounding to keep payload small.
+            "sharpes_per_fold": [round(s, 3) for s in sharpes],
+            "rois_per_fold": [round(r, 3) for r in rois],
         }
     return gated
 
