@@ -1,12 +1,36 @@
 {
     "department": "infra",
     "dept_id": "d7",
-    "timestamp": "2026-04-06T12:00:01Z",
+    "timestamp": "2026-04-07T00:00:02Z",
     "model": "claude-haiku-4-5-20251001",
     "budget_usd": 0.50,
     "max_turns": 30,
-    "duration_seconds": 86,
+    "duration_seconds": 64,
     "exit_code": 0,
     "status": "success",
-    "log_file": "/home/termius/mon-ipad/logs/councils/d7-infra-2026-04-06.log"
+    "log_file": "/home/termius/mon-ipad/logs/councils/d7-infra-2026-04-07.log"
+}
+{
+  "department": "D7_INFRA",
+  "iteration": 71,
+  "timestamp": "2026-04-07T06:12:50Z",
+  "status": "HEALTHY",
+  "uptime_pct": 99.95,
+  "critical_fixes": [
+    {
+      "issue": "Keepalive cron missing (broken Apr 4)",
+      "impact": "PA3/PA4 drifting offline, no auto-recovery",
+      "fix": "Re-added */30 * * * * keepalive-spaces.sh",
+      "result": "All 23 spaces 200_OK, PA3/PA4 recovered"
+    }
+  ],
+  "metrics": {
+    "spaces_up": 23,
+    "spaces_total": 23,
+    "vm_memory_pct": 31.7,
+    "vm_memory_status": "HEALTHY",
+    "services_ok": 7,
+    "services_total": 7
+  },
+  "next_action": "Monitor keepalive for 3 cycles to ensure persistence"
 }

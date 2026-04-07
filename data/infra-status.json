@@ -1,84 +1,31 @@
 {
-  "timestamp": "2026-04-06T18:09:55.633759Z",
-  "department": "D7_INFRA",
-  "cycle": "hermes-health-check",
-  "spaces": {
-    "S10": {
-      "status": "UP",
-      "gen": 443,
-      "brier": 0.23149
-    },
-    "S11": {
-      "status": "UP",
-      "gen": 486,
-      "brier": 0.22372
-    },
-    "S12": {
-      "status": "UP",
-      "gen": 750,
-      "brier": 0.22533
-    },
-    "S13": {
-      "status": "UP",
-      "gen": 351,
-      "brier": 0.22283
-    },
-    "S14": {
-      "status": "UP",
-      "gen": 619,
-      "brier": 0.22622
-    },
-    "S15": {
-      "status": "UP",
-      "gen": 199,
-      "brier": 0.2222
-    },
-    "S16": {
-      "status": "UP",
-      "gen": 214,
-      "brier": 0.22268
-    },
-    "S17": {
-      "status": "UP",
-      "gen": 183,
-      "brier": 0.22502
-    },
-    "S18": {
-      "status": "UP",
-      "gen": 223,
-      "brier": 0.23928
-    },
-    "S19": {
-      "status": "UP",
-      "gen": 163,
-      "brier": 0.2248
-    },
-    "PA1": {
-      "status": "UP",
-      "gen": 14045,
-      "brier": 0.24971
-    },
-    "PA2": {
-      "status": "UP",
-      "gen": 19275,
-      "brier": 0.23134
-    },
-    "PA3": {
-      "status": "UP",
-      "gen": 4257,
-      "brier": 0.25168
-    },
-    "PA4": {
-      "status": "UP",
-      "gen": 7810,
-      "brier": 0.24803
-    }
-  },
+  "timestamp": "2026-04-07T06:12:50.981248Z",
+  "cycle": 71,
   "summary": {
-    "total": 14,
-    "up": 14,
-    "uptime_pct": 100.0,
-    "nba_up": 10,
-    "political_up": 4
-  }
+    "nba_spaces": "10/10 UP",
+    "political_spaces": "4/4 UP",
+    "dept_spaces": "9/9 UP",
+    "total_up": 23,
+    "total": 23,
+    "keepalive_status": "RE-ENABLED"
+  },
+  "vm_health": {
+    "memory_mb_used": 648,
+    "memory_mb_total": 2047,
+    "memory_pct": 31.7,
+    "status": "HEALTHY"
+  },
+  "services": {
+    "data_server": "OK",
+    "bloomberg_api": "OK",
+    "crons": "RESTORED (keepalive)",
+    "kaggle_nba": "RELAUNCHED",
+    "kaggle_political": "RELAUNCHED"
+  },
+  "actions_taken": [
+    "RE-ADDED keepalive cron (*/30 * * * *) - was missing",
+    "RAN manual keepalive - all 23 spaces confirmed 200_OK",
+    "PA3/PA4 auto-recovered after wake signal",
+    "Memory improved: 86.7% \u2192 72.3%"
+  ]
 }
