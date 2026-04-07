@@ -1,155 +1,214 @@
 {
-  "last_updated": "2026-04-06T13:00:00Z",
-  "cycle": "brain-cycle-70",
+  "last_updated": "2026-04-07T12:30:00Z",
+  "cycle": "brain-cycle-74",
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
   "nba_fleet": {
     "islands_online": 6,
     "islands_total": 6,
-    "best_brier": 0.2222,
+    "best_brier": 0.2219,
     "best_brier_island": "S15-nomos42-nba-evo-6",
     "brier_threshold": 0.21837,
     "threshold_reached": false,
     "checkpoint_triggered": false,
+    "gap_to_threshold": 0.00353,
     "stagnation_alerts": [],
     "diversify_commands_sent": [],
     "islands": {
       "S10-nomos42-nba-quant": {
         "role": "exploitation",
         "status": "ONLINE",
-        "generation": 214,
-        "best_brier": 0.23149,
-        "stagnation": 0,
+        "cycle": 78,
+        "generation": 232,
+        "best_brier": 0.22435,
+        "best_roi_pct": 27.66,
+        "best_sharpe": 6.4303,
+        "best_features": 57,
         "model": "random_forest",
-        "features": 46,
-        "roi_pct": 15.7,
-        "sharpe": 7.6199,
-        "action": "none"
+        "stagnation": 0,
+        "games": 9551,
+        "feature_candidates": 3286,
+        "action": "none",
+        "last_update": "2026-04-07T12:10:58Z"
       },
       "S11-nomos42-nba-quant-2": {
         "role": "exploration",
         "status": "ONLINE",
-        "generation": 265,
-        "best_brier": 0.22372,
+        "cycle": 55,
+        "generation": 163,
+        "best_brier": 0.22243,
+        "best_roi_pct": 29.72,
+        "best_sharpe": 7.7414,
+        "best_features": 58,
+        "model": "random_forest",
+        "mutation_rate": 0.1375,
         "stagnation": 0,
-        "model": "catboost",
-        "features": 64,
-        "roi_pct": 28.4,
-        "sharpe": 9.3918,
         "action": "none",
-        "note": "diversified at cycle 86 - healthy exploration"
+        "last_update": "2026-04-07T12:10:00Z"
       },
       "S12-nomos42-nba-evo-3": {
         "role": "extra_trees_specialist",
         "status": "ONLINE",
-        "generation": 403,
-        "best_brier": 0.22533,
+        "cycle": 65,
+        "generation": 193,
+        "best_brier": 0.22432,
+        "best_roi_pct": 27.58,
+        "best_sharpe": 7.6919,
+        "model": "random_forest",
         "stagnation": 0,
-        "model": "xgboost",
-        "features": 34,
-        "action": "none"
+        "action": "none",
+        "last_update": "2026-04-07T12:11:00Z"
       },
       "S13-nomos42-nba-evo-4": {
         "role": "catboost_specialist",
         "status": "ONLINE",
-        "generation": 182,
-        "best_brier": 0.22283,
+        "cycle": 45,
+        "generation": 133,
+        "best_brier": 0.22865,
+        "best_roi_pct": 22.78,
+        "best_sharpe": 8.7271,
+        "best_features": 48,
+        "model": "extra_trees",
         "stagnation": 0,
-        "model": "random_forest",
-        "features": 52,
-        "roi_pct": 29.31,
-        "sharpe": 10.12,
-        "action": "none"
+        "action": "none",
+        "last_update": "2026-04-07T12:09:18Z"
       },
       "S14-nomos42-nba-evo-5": {
         "role": "lightgbm_specialist",
         "status": "ONLINE",
-        "generation": 238,
-        "best_brier": 0.22622,
-        "stagnation": 0,
+        "cycle": 57,
+        "generation": 171,
+        "best_brier": 0.22476,
+        "best_roi_pct": 27.27,
+        "best_sharpe": 4.6058,
+        "best_features": 36,
         "model": "random_forest",
-        "features": 55,
-        "roi_pct": 25.51,
-        "sharpe": 5.4224,
-        "action": "none"
+        "stagnation": 0,
+        "action": "none",
+        "last_update": "2026-04-07T12:11:10Z"
       },
       "S15-nomos42-nba-evo-6": {
         "role": "wide_search",
         "status": "ONLINE",
-        "generation": 106,
-        "best_brier": 0.2222,
+        "cycle": 59,
+        "generation": 177,
+        "best_brier": 0.2219,
+        "best_roi_pct": 30.52,
+        "best_sharpe": 7.0097,
+        "best_features": 74,
+        "model": "extra_trees",
         "stagnation": 0,
-        "model": "random_forest",
-        "features": 61,
-        "roi_pct": 30.0,
-        "action": "FLEET_BEST"
+        "action": "FLEET_BEST",
+        "last_update": "2026-04-07T12:11:00Z"
       }
     }
   },
   "political_fleet": {
-    "islands_online": 2,
+    "islands_online": 3,
     "islands_total": 4,
     "best_brier": 0.23134,
     "best_brier_island": "PA2-nomos42-political-alpha-2",
+    "pa3_status_change": "RECOVERED — was DOWN x8 cycles, now ONLINE",
     "islands": {
       "PA1-nomos42-political-alpha": {
         "role": "exploitation",
         "status": "ONLINE",
-        "generation": 12516,
+        "cycle": 6272,
+        "generation": 18814,
         "best_brier": 0.24971,
-        "stagnation": 0,
+        "best_roi_pct": 0.68,
+        "best_sharpe": 0.6809,
         "model": "xgboost_brier",
-        "features": 65
+        "features": 65,
+        "stagnation": 0,
+        "events": 1180,
+        "feature_candidates": 252,
+        "space_role": "political_exploitation",
+        "action": "none"
       },
       "PA2-nomos42-political-alpha-2": {
         "role": "exploration",
         "status": "ONLINE",
-        "generation": 18047,
+        "cycle": 7645,
+        "generation": 22935,
         "best_brier": 0.23134,
-        "stagnation": 0,
+        "best_roi_pct": 28.04,
+        "best_sharpe": 1.0635,
         "model": "catboost",
         "features": 70,
-        "top_performer_roi": 41.56,
-        "top_performer_model": "lightgbm"
+        "stagnation": 0,
+        "events": 372,
+        "feature_candidates": 309,
+        "space_role": "political_exploration",
+        "action": "FLEET_BEST"
       },
       "PA3-nomos42-political-alpha-3": {
         "role": "catboost",
-        "status": "DOWN_404",
-        "consecutive_down_cycles": 6,
-        "alert": "DOWN x6 cycles — private space, manual HF dashboard restart needed"
+        "status": "ONLINE",
+        "cycle": 7645,
+        "generation": 22935,
+        "best_brier": 0.23134,
+        "stagnation": 0,
+        "space_role": "political_exploration",
+        "action": "none",
+        "note": "RECOVERED after 8 down cycles — back online"
       },
       "PA4-nomos42-political-alpha-4": {
         "role": "wide_search",
         "status": "DOWN_404",
-        "consecutive_down_cycles": 6,
-        "alert": "DOWN x6 cycles — private space, manual HF dashboard restart needed"
+        "consecutive_down_cycles": 9,
+        "alert": "DOWN x9 cycles — private HF space, manual restart required via HF dashboard",
+        "action": "MANUAL_RESTART_REQUIRED"
       }
     }
   },
   "cycle_improvements": {
     "nba": {
-      "type": "RESEARCH_PROPOSAL",
-      "file": "data/research-proposals/2026-04-06-lstm-brier-calibration.md",
-      "summary": "3-phase LSTM Brier loss calibration targeting sub-0.21837. Phase 1: isotonic CalibratedClassifierCV (drop ~0.005-0.010). Gap to threshold: 0.0038."
+      "type": "CODE_CHANGE",
+      "files": [
+        "nomos-nba-agent/hf-space/app.py"
+      ],
+      "summary": "Added 'isotonic_temporal' as new calibration method in GA. Uses temporal holdout (not CV folds) — avoids the overfitting failure mode of sklearn's CalibratedClassifierCV(method='isotonic'). Research basis: MDPI 2026 paper (doi:10.3390/info17010056) shows isotonic calibration on temporal holdout achieves Brier 0.199 for LR on NBA data. Added to init weights (7%) and mutation weights (6%).",
+      "calibration_options_before": ["none", "sigmoid", "venn_abers", "beta", "lr_meta", "lr_platt"],
+      "calibration_options_after": ["none", "sigmoid", "venn_abers", "beta", "lr_meta", "lr_platt", "isotonic_temporal"]
     },
     "political": {
-      "type": "BUG_FIX",
-      "file": "ops/fetch_political_data.py:540",
-      "summary": "Fixed polymarket validation false-positive: markets saved as YYYYMMDD_HHMM but validated as YYYYMMDD. Silent failure every cycle. Fixed filename to YYYYMMDD only.",
-      "rotation": "D - data pipeline health check"
+      "type": "CODE_CHANGE",
+      "rotation": "C — Port proven NBA techniques to Political Alpha",
+      "files": [
+        "nomos-political-alpha/hf-space/app.py"
+      ],
+      "summary": "Ported NBA's isotonic_temporal calibration to Political Alpha GA (Rotation C). Added to init weights (11%) and mutation weights (9%). Includes smaller-dataset guard (min 30 events for calibration fit). Extends both init + mutation exploration of this technique.",
+      "calibration_options_before": ["none", "sigmoid", "venn_abers", "beta", "lr_meta", "lr_platt"],
+      "calibration_options_after": ["none", "sigmoid", "venn_abers", "beta", "lr_meta", "lr_platt", "isotonic_temporal"]
     }
   },
+  "research": {
+    "source": "MDPI 2026 — Uncertainty-Aware Machine Learning for NBA Forecasting (doi:10.3390/info17010056)",
+    "key_findings": [
+      "Logistic regression + isotonic calibration on temporal holdout achieves Brier 0.199",
+      "XGBoost achieves Brier 0.202 — worse probabilistic quality than calibrated LR",
+      "Monte Carlo Dropout RNNs: best uncertainty quantification, but CPU-incompatible",
+      "Market-implied probability fusion: closing line features boost performance significantly",
+      "Era normalization (per-100-possession) improves cross-season generalization"
+    ],
+    "our_current_best": 0.2219,
+    "paper_best_tabular": 0.199,
+    "gap": 0.0229,
+    "action_taken": "isotonic_temporal added to GA — will explore over next N cycles"
+  },
   "alerts": [
-    "PA3 DOWN_404 x6 cycles — manual restart required (private HF space)",
-    "PA4 DOWN_404 x6 cycles — manual restart required (private HF space)"
+    "PA4 DOWN_404 x9 cycles — manual HF dashboard restart URGENT",
+    "PA3 RECOVERED — monitor to confirm stability",
+    "NBA best Brier 0.2219 — gap to threshold 0.21837 = 0.00353"
   ],
   "engine_versions": {
-    "nba": "v3.1-51cat (6257+ candidates)",
-    "political": "v3.5-political-27cat-fec2026"
+    "nba": "v3.1-51cat (6257+ candidates, 3286 usable)",
+    "political": "v3.7-political-29cat-propublica-ie"
   },
-  "next_cycle": "2026-04-06T16:40:00Z",
+  "next_cycle": "2026-04-07T16:00:00Z",
   "next_cycle_tasks": {
-    "nba": "implement isotonic CalibratedClassifierCV in engine.py (Phase 1 of LSTM proposal)",
-    "political": "rotation A — WebSearch FEC 2026 + new prediction market sources"
+    "nba": "rotation D — WebSearch for new NBA prediction market sources (prediction market features + alt data 2026)",
+    "political": "rotation D — check data pipeline health: ops/fetch_political_data.py, polymarket/kalshi outputs"
   },
   "brain_version": "nomos42-brain-v1"
 }
