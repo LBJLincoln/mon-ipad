@@ -977,6 +977,12 @@ class BacktestEngine:
         self.real_only = real_only
         self.real_preds: Dict = {}
         self.season_files = season_files
+        # Real-Brier accumulators — filled during run_backtest() using ONLY
+        # games where a prospective real_pred exists. Emitted in export_results()
+        # as the primary model_brier, replacing the hardcoded simulator default
+        # (Cycle 14 Tier 4: stuck-Brier 0.2152 fix).
+        self.real_brier_sum: float = 0.0
+        self.real_brier_n: int = 0
 
     def load_data(self):
         """Load all historical games and odds."""
@@ -1072,6 +1078,15 @@ class BacktestEngine:
             if real_pred is not None:
                 pred = dict(real_pred)  # copy so we can mutate with _debate
                 real_pred_hits += 1
+                # Real Brier: score the prospective prediction against the
+                # actual outcome. This is the honest model_brier we emit.
+                try:
+                    ph = float(real_pred.get("prob_home", 0.5))
+                    y = 1.0 if bool(game.home_won) else 0.0
+                    self.real_brier_sum += (ph - y) ** 2
+                    self.real_brier_n += 1
+                except (TypeError, ValueError):
+                    pass
             else:
                 pred = self.model.predict_game(game, odds)
 
@@ -1332,9 +1347,20 @@ class BacktestEngine:
     def export_results(self, results: Dict[str, TraderResult], filepath: Path):
         """Export results to JSON."""
         filepath.parent.mkdir(parents=True, exist_ok=True)
+        # Real model Brier (Cycle 14 Tier 4): computed from self.real_preds
+        # scored against game.home_won during the run loop. Falls back to the
+        # synthetic simulator default only if zero real predictions were hit.
+        real_brier = (
+            round(self.real_brier_sum / self.real_brier_n, 5)
+            if self.real_brier_n > 0
+            else None
+        )
         output = {
             "timestamp": datetime.now().isoformat(),
-            "model_brier": self.model.model_brier,
+            "model_brier": real_brier if real_brier is not None else self.model.model_brier,
+            "real_brier": real_brier,
+            "real_brier_n": self.real_brier_n,
+            "synthetic_model_brier": self.model.model_brier,
             "games_total": len(self.games),
             "strategies": {},
             "category_stats": {},

@@ -191,6 +191,52 @@ run_department() {
     local status="success"
     [[ $exit_code -ne 0 ]] && status="failed"
 
+    # ── Stall-streak / no-op penalty metric (Cycle 14 Tier 4) ──
+    # Read the agent's self-reported ship status from its karpathy-output.json.
+    # If the agent shipped a change → reset streak. If it emitted no_op/failed
+    # or didn't write a status → increment the streak. Append an append-only
+    # row to data/departments/<dept>/metrics.jsonl so the dashboard can
+    # surface which councils are churning without shipping.
+    local agent_status="unknown"
+    local agent_reason=""
+    local karpathy_file="${DATA_DIR}/${dept_name}/karpathy-output.json"
+    if [[ -f "${karpathy_file}" ]]; then
+        agent_status=$(python3 -c "import json,sys; d=json.load(open('${karpathy_file}')); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
+        agent_reason=$(python3 -c "import json; d=json.load(open('${karpathy_file}')); print(d.get('reason_if_no_op','') or d.get('action',''))" 2>/dev/null || echo "")
+    fi
+
+    local metrics_file="${DATA_DIR}/${dept_name}/metrics.jsonl"
+    mkdir -p "$(dirname "${metrics_file}")"
+    local prev_streak=0
+    if [[ -f "${metrics_file}" ]]; then
+        prev_streak=$(tail -1 "${metrics_file}" 2>/dev/null | python3 -c "import json,sys; d=json.loads(sys.stdin.read() or '{}'); print(d.get('stall_streak',0))" 2>/dev/null || echo 0)
+    fi
+    local new_streak=0
+    if [[ "${agent_status}" == "shipped" ]]; then
+        new_streak=0
+    else
+        new_streak=$(( prev_streak + 1 ))
+    fi
+
+    python3 - "${metrics_file}" "${dept_id}" "${dept_name}" "${TIMESTAMP}" \
+        "${agent_status}" "${new_streak}" "${duration}" "${exit_code}" "${agent_reason}" <<'PYEOF'
+import json, sys
+(metrics_file, dept_id, dept_name, ts, agent_status,
+ new_streak, duration, exit_code, reason) = sys.argv[1:]
+row = {
+    "timestamp": ts,
+    "dept_id": dept_id,
+    "dept_name": dept_name,
+    "agent_status": agent_status,
+    "stall_streak": int(new_streak),
+    "duration_seconds": int(duration),
+    "exit_code": int(exit_code),
+    "reason": reason,
+}
+with open(metrics_file, "a") as f:
+    f.write(json.dumps(row) + "\n")
+PYEOF
+
     # Write council result
     cat > "${result_file}" << EOJSON
 {
@@ -203,6 +249,8 @@ run_department() {
     "duration_seconds": ${duration},
     "exit_code": ${exit_code},
     "status": "${status}",
+    "agent_status": "${agent_status}",
+    "stall_streak": ${new_streak},
     "log_file": "${log_file}"
 }
 EOJSON
