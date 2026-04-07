@@ -1,10 +1,10 @@
 # Betting Strategy & Bankroll
 
-> Auto-compiled from 96 raw sources on 2026-04-07
+> Auto-compiled from 100 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 96 research files spanning betting strategy & bankroll.
+This topic covers 100 research files spanning betting strategy & bankroll.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -24,10 +24,13 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/karpathy-researcher/obsidian_rag_implementation_april2026.md`
 - **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
+- **Evolution Fleet Status — April 2026** (1452 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
+- **Evolution Fleet Status — April 2026** (1452 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **Political Trading Season 2025-26 -- Agent CLAUDE** (1308 words) -- `raw/arena-docs/political-claude-season-2025-26.md`
 - **Political Trading Season 2025-26 -- Agent GROK** (1308 words) -- `raw/arena-docs/political-grok-season-2025-26.md`
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
+- **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
 - **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
 - **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
@@ -102,32 +105,33 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-04** (145 words) -- `raw/research/github-betting-scan-2026-04-04.md`
 - **Research Scan: github-betting-scan-2026-04-05** (145 words) -- `raw/research/github-betting-scan-2026-04-05.md`
 - **Research Scan: github-betting-scan-2026-04-06** (136 words) -- `raw/research/github-betting-scan-2026-04-06.md`
+- **Research Scan: github-betting-scan-2026-04-07** (136 words) -- `raw/research/github-betting-scan-2026-04-07.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/agent-memory/market-analyst_feedback_model_game_mismatch.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/market-analyst/feedback_model_game_mismatch.md`
 - **Political Alpha Arena Results** (100 words) -- `raw/political/arena-results-summary.md`
 
 ## Key Findings
 
-- Current Category List (v3.1-54cat) (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
-- Cat 52-54 Implementation Details (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
-- Key architecture facts (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
-- Known zero-padded / placeholder feature sets (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
-- Historical session notes (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
-- TLDR: What Is Obsidian RAG? (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Architecture: 3 Stages + File Structure (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Stage 1: Raw Ingest (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Stage 2: LLM Compilation (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Stage 3: Active Maintenance (Health Checks) (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Why We Haven't Implemented This Yet (Diagnosis) (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Implementation Plan for Nomos42 (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Phase 1: Ingest (1 day) (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Phase 2: Compilation Agent (1 day) (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Phase 3: Integration with Agent Loop (1 day) (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Phase 4: Health Checks (Optional, but high ROI) (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Open-Source Tools & Integration (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Expected Impact (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Research Velocity (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Knowledge Reuse (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
+- Current Fleet State (iter 8, 2026-04-07 04:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- ROOT CAUSE CONFIRMED (iter 6) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- ROOT CAUSE UPDATE (iter 8) — STARTUP-HARDCODED DECAY PROVEN (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 8 Interventions (all 200 OK, queued, 2026-04-07 04:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S15 — Emergency model reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S14 — Emergency diversity reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S10 — Feature + model restore (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S12 — Mutation boost (fleet best) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 6 Interventions (all 200 OK, queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S10 — Cross-pollination from S15 (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S12 — Diversity Reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S14 — Full Reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S13 — Preemptive Nudge (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Current Fleet State (iter 4, 2026-04-06 10:15 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 4 Interventions (all 200 OK, status: queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S10 — regression escape boost (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S12 — mutation nudge + feature boost (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S15 — fleet best maintenance (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Validated Emergency Protocol (from S13 recovery) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S14 Mutation Freeze Warning (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 
 ## Related Topics
 

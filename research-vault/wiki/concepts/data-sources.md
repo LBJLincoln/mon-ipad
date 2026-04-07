@@ -1,10 +1,10 @@
 # Data Sources & APIs
 
-> Auto-compiled from 67 raw sources on 2026-04-07
+> Auto-compiled from 68 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 67 research files spanning data sources & apis.
+This topic covers 68 research files spanning data sources & apis.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
@@ -76,6 +76,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-scan-2026-04-04** (13 words) -- `raw/research/arxiv-scan-2026-04-04.md`
 - **Research Scan: arxiv-scan-2026-04-05** (13 words) -- `raw/research/arxiv-scan-2026-04-05.md`
 - **Research Scan: arxiv-scan-2026-04-06** (13 words) -- `raw/research/arxiv-scan-2026-04-06.md`
+- **Research Scan: arxiv-scan-2026-04-07** (13 words) -- `raw/research/arxiv-scan-2026-04-07.md`
 
 ## Key Findings
 

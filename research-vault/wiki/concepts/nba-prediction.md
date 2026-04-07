@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 145 raw sources on 2026-04-07
+> Auto-compiled from 148 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 145 research files spanning nba prediction & ml models.
+This topic covers 148 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -31,13 +31,14 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/karpathy-researcher/karpathy_nba_adaptation.md`
+- **Evolution Fleet Status — April 2026** (1452 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
+- **Evolution Fleet Status — April 2026** (1452 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **22 -- Compute Mesh Topology** (1406 words) -- `raw/obsidian-docs/22-Compute-Mesh.md`
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/data-research/self-improvement-harness-sources-2026-03-31.md`
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/research/self-improvement-harness-sources-2026-03-31.md`
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
-- **Evolution Fleet Status — April 2026** (1203 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
-- **Evolution Fleet Status — April 2026** (1203 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
+- **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
 - **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
 - **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
@@ -147,6 +148,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-scan-2026-04-04** (149 words) -- `raw/research/github-scan-2026-04-04.md`
 - **Research Scan: github-scan-2026-04-05** (149 words) -- `raw/research/github-scan-2026-04-05.md`
 - **Research Scan: github-scan-2026-04-06** (149 words) -- `raw/research/github-scan-2026-04-06.md`
+- **Research Scan: github-scan-2026-04-07** (149 words) -- `raw/research/github-scan-2026-04-07.md`
 - **Research Scan: github-betting-scan-2026-03-31** (145 words) -- `raw/research/github-betting-scan-2026-03-31.md`
 - **Research Scan: github-betting-scan-2026-04-01** (145 words) -- `raw/research/github-betting-scan-2026-04-01.md`
 - **Research Scan: github-betting-scan-2026-04-02** (145 words) -- `raw/research/github-betting-scan-2026-04-02.md`
@@ -154,11 +156,18 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-04** (145 words) -- `raw/research/github-betting-scan-2026-04-04.md`
 - **Research Scan: github-betting-scan-2026-04-05** (145 words) -- `raw/research/github-betting-scan-2026-04-05.md`
 - **Research Scan: github-betting-scan-2026-04-06** (136 words) -- `raw/research/github-betting-scan-2026-04-06.md`
+- **Research Scan: github-betting-scan-2026-04-07** (136 words) -- `raw/research/github-betting-scan-2026-04-07.md`
 
 ## Key Findings
 
-- Current Fleet State (iter 7, 2026-04-07 00:00 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Current Fleet State (iter 8, 2026-04-07 04:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - ROOT CAUSE CONFIRMED (iter 6) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- ROOT CAUSE UPDATE (iter 8) — STARTUP-HARDCODED DECAY PROVEN (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 8 Interventions (all 200 OK, queued, 2026-04-07 04:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S15 — Emergency model reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S14 — Emergency diversity reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S10 — Feature + model restore (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S12 — Mutation boost (fleet best) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - Iter 6 Interventions (all 200 OK, queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - S10 — Cross-pollination from S15 (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - S12 — Diversity Reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
@@ -171,12 +180,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - S15 — fleet best maintenance (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - Validated Emergency Protocol (from S13 recovery) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - S14 Mutation Freeze Warning (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- API Discovery (iter 3, confirmed iter 4) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Iter 3 Interventions (outcome verified in iter4) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S13 — EMERGENCY boost (iter3 sent) → CONFIRMED EFFECTIVE in iter4 (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S12 — mutation nudge (iter3 sent) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S10 — regression escape boost (iter3 sent) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Critical Pattern: Model Drift Across All Islands (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 
 ## Related Topics
 

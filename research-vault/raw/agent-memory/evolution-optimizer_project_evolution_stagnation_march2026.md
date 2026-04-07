@@ -1,21 +1,23 @@
 ---
 name: Evolution Fleet Status — April 2026
-description: HF Space fleet health. Apr 7 iter7: NEW FLEET BEST 0.22094 (S10, xpoll worked). Fleet avg 0.22271 (best improvement yet). S12+S14 mutation STILL decaying despite resets. MUTATION_FLOOR code fix 7th iteration urgent.
+description: HF Space fleet health. Apr 7 iter8: FLEET BEST S12 0.22172. S15 CATASTROPHIC 0.247 (xgboost_brier NSGA2 bug). S14 MAJOR REGRESSION 0.230. STARTUP HARDCODED mutation decay PROVEN by math. D2 Code fix CRITICAL.
 type: project
 ---
 
-**Last verified: 2026-04-07 00:00 UTC (iteration 7)**
+**Last verified: 2026-04-07 04:30 UTC (iteration 8)**
 
-## Current Fleet State (iter 7, 2026-04-07 00:00 UTC)
+## Current Fleet State (iter 8, 2026-04-07 04:30 UTC)
 
-| Space | Gen | Best Brier | Best Model | Mut Rate | Trend | Action (iter7) |
+| Space | Gen | Best Brier | Best Model | Mut Rate | Trend | Action (iter8) |
 |-------|-----|-----------|------------|----------|-------|----------------|
-| S10 nba-quant | 156 | **0.22094 (FLEET BEST)** | extra_trees | 0.0759 | BREAKTHROUGH -0.01055 | none — preserve, used as S11 xpoll seed |
-| S11 nba-quant-2 | 178 | 0.22519 | catboost | 0.1342 | REGRESSION +0.00147 | XPOLL from S10: mut=0.11, feat=62, extra_trees |
-| S12 nba-evo-3 | 165 | 0.22112 | random_forest | 0.0576 | IMPROVED -0.00421 / MUT CRITICAL | Boost: mut=0.13, feat=56, pop=35 |
-| S13 nba-evo-4 | 171 | 0.22389 | extra_trees | 0.1186 | REGRESSION +0.00106 / FEAT=47 CRIT | Feature boost: mut=0.11, feat=58 |
-| S14 nba-evo-5 | 147 | 0.22220 | extra_trees | 0.0597 | IMPROVED -0.00402 / MUT CRITICAL | Boost: mut=0.125, feat=60 |
-| S15 nba-evo-6 | 191 | 0.22291 | random_forest | 0.0996 | MINOR REGRESSION +0.00071 | none — healthy |
+| S10 nba-quant | 243 | 0.22327 | random_forest | 0.0796 | REGRESSION +0.00233 / feat 60→46 | Model+feat restore: extra_trees, feat=63, mut=0.10 |
+| S11 nba-quant-2 | 169 | 0.22487 | catboost | 0.1089 | SLIGHT IMPROVE -0.00032 | none — monitoring xpoll effect |
+| S12 nba-evo-3 | 70 | **0.22172 (FLEET BEST)** | random_forest | 0.0697 | SLIGHT REGRESSION +0.00060 | Mut boost: 0.13, feat=65 |
+| S13 nba-evo-4 | 157 | 0.22416 | catboost | 0.1014 | FLAT +0.00027 / feat 47→80 RECOVERED | none — healthy |
+| S14 nba-evo-5 | 115 | 0.23002 | lightgbm | 0.0637 | MAJOR REGRESSION +0.00782 | Emergency reset: mut=0.15, feat=62, diversity_reset |
+| S15 nba-evo-6 | 231 | 0.24723 | xgboost_brier | 0.1430 | CATASTROPHIC +0.02432 | Emergency model reset: extra_trees, feat=70, diversity_reset |
+
+**Iter8 fleet avg: 0.23188 (degraded from 0.22271 due to S14/S15 collapses)**
 
 ## ROOT CAUSE CONFIRMED (iter 6)
 
@@ -31,7 +33,35 @@ new_mutation = max(MUTATION_FLOOR, computed_mutation)
 ```
 Deploy via git subtree push to all 6 spaces. Estimated -0.001 to -0.003 Brier.
 
-**Why S15 is healthy:** pop=50 (wide search) maintains diversity, resisting annealing.
+## ROOT CAUSE UPDATE (iter 8) — STARTUP-HARDCODED DECAY PROVEN
+
+**MATHEMATICAL PROOF (iter8):**
+- S12: startup log shows "Mutation: 0.08 -> 0.04 (decay 0.998/gen)". At gen 70: 0.08 * 0.998^70 = 0.0695. Observed: 0.0697. **EXACT MATCH.**
+- S14: same startup message. At gen 115: 0.08 * 0.998^115 = 0.0636. Observed: 0.0637. **EXACT MATCH.**
+
+**Code Fix Location CONFIRMED:** hf-space/app.py startup GA initialization parameters. The line `Mutation: 0.08 -> 0.04 (decay 0.998/gen)` is hardcoded. Change decay floor from 0.04 to 0.07. Not `adaptive_mutation()` function — the STARTUP PARAMS.
+
+**S15 NSGA-II BUG (new, iter8):** xgboost_brier model selected as Pareto-optimal individual (0.2472 holdout Brier) while individual gens show extra_trees at 0.2201. NSGA-II is trading Brier for ROI/Sharpe in multi-objective selection. Fix: add Brier upper-bound constraint or blacklist xgboost_brier.
+
+**Why S15 was healthy in iter7:** pop=50 (wide search) resists annealing. BUT NSGA-II model selection bug emerged when xgboost_brier joined candidate set.
+
+## Iter 8 Interventions (all 200 OK, queued, 2026-04-07 04:30 UTC)
+
+### S15 — Emergency model reset
+- Params: mutation_rate=0.15, target_features=70, crossover_rate=0.82, model_type=extra_trees, diversity_reset=true
+- Trigger: CATASTROPHIC 0.22291→0.24723 (+0.02432). xgboost_brier selected by NSGA-II
+
+### S14 — Emergency diversity reset
+- Params: mutation_rate=0.15, target_features=62, crossover_rate=0.85, model_type=lightgbm, diversity_reset=true
+- Trigger: MAJOR REGRESSION 0.22220→0.23002. Hardcoded mutation decay CONFIRMED.
+
+### S10 — Feature + model restore
+- Params: mutation_rate=0.10, target_features=63, crossover_rate=0.82, model_type=extra_trees
+- Trigger: Regression 0.22094→0.22327. Features 60→46. Model drifted to random_forest.
+
+### S12 — Mutation boost (fleet best)
+- Params: mutation_rate=0.13, target_features=65, crossover_rate=0.78
+- Trigger: Fleet best at 0.22172 but mutation decaying again (0.0697 at gen70)
 
 ## Iter 6 Interventions (all 200 OK, queued)
 
