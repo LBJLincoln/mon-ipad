@@ -1,10 +1,10 @@
 # Infrastructure & Compute
 
-> Auto-compiled from 94 raw sources on 2026-04-07
+> Auto-compiled from 92 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 94 research files spanning infrastructure & compute.
+This topic covers 92 research files spanning infrastructure & compute.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -37,7 +37,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **05 -- Infrastructure** (1069 words) -- `raw/obsidian-docs/05-Infrastructure.md`
 - **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/data-research/self-improvement-harness-quick-wins-2026-03-31.md`
 - **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/research/self-improvement-harness-quick-wins-2026-03-31.md`
-- **Research Proposal: Opening-Line Odds as Protected GA Features** (980 words) -- `raw/data-proposals/2026-04-05-opening-odds-protected-features.md`
 - **15 -- Business Plan** (936 words) -- `raw/obsidian-docs/15-Business-Plan.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/agent-memory/research-analyst_research_march2026_agentic_ai.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/research-analyst/research_march2026_agentic_ai.md`
@@ -84,7 +83,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle9_neural_architectures.md`
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/research-analyst/research_april2026_cycle9_neural_architectures.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
-- **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
 - **Evolution Fleet Status — April 2026** (453 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
 - **Evolution Fleet Status — April 2026** (453 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
@@ -162,7 +160,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - [[SHAP]]
 - [[Shot Chart]]
 - [[TabICL]]
-- [[Temperature Scaling]]
 - [[Trading Floor]]
 - [[Tree Models]]
 - [[Value Betting]]

@@ -6,7 +6,7 @@
 
 
 ## scan_time
-2026-04-07 06:00:02
+2026-04-07 18:00:04
 
 
 ## query
@@ -27,3 +27,6 @@ sports betting prediction python
   - URL: https://github.com/nawachte/sports-betting
 
 ## notable_repos
+
+- **nealmick/Sports-Betting-ML-Tools-NBA**: NBA Machine Learning Tools 
+  - URL: https://github.com/nealmick/Sports-Betting-ML-Tools-NBA

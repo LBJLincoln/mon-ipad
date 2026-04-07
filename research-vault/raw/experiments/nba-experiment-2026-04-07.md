@@ -1,12 +1,12 @@
 # NBA Scientific Experiment Report
-**Generated:** 2026-04-07 16:00:39
+**Generated:** 2026-04-07 20:02:32
 **Engine:** scientific-experiment.py v1.0
 
 ## Part 1: Model Evaluation
 
 ### Consensus Model Performance
 - **Predictions evaluated:** 14
-- **Brier Score:** 0.18929 (95% CI: [0.10203, 0.28976])
+- **Brier Score:** 0.18929 (95% CI: [0.09915, 0.27778])
 - **Log Loss:** 0.5454
 - **AUC-ROC:** 0.7556
 - **ECE (Calibration):** 0.2152
@@ -55,16 +55,16 @@ No statistically significant differences found at p < 0.05.
 | Rank | Strategy | Sharpe | ROI% | PnL | Bets | MaxDD |
 |------|----------|--------|------|-----|------|-------|
 | 1 | Specialist: Spread | 3.333 | 45.1% | $127082.10 | 445 | 0.537 |
-| 2 | Half Kelly (edge>3%) | -2.335 | -20.8% | $-80.12 | 143 | 0.801 |
-| 3 | Quarter Kelly (edge>3%) | -2.335 | -20.8% | $-80.82 | 171 | 0.809 |
-| 4 | Fixed 2% | -2.335 | -16.3% | $-50.95 | 198 | 0.509 |
-| 5 | Value Hunter (edge>5%) | -2.335 | -20.8% | $-80.12 | 143 | 0.801 |
+| 2 | Half Kelly (edge>3%) | -2.335 | -23.2% | $-80.32 | 188 | 0.803 |
+| 3 | Quarter Kelly (edge>3%) | -2.335 | -19.2% | $-80.02 | 220 | 0.800 |
+| 4 | Fixed 2% | -2.335 | -28.6% | $-50.70 | 124 | 0.507 |
+| 5 | Value Hunter (edge>5%) | -2.335 | -23.2% | $-80.32 | 188 | 0.803 |
 
 ### Kelly Fraction Optimization
 | Fraction | Min Edge | Sharpe | ROI% | MaxDD | Bets |
 |----------|----------|--------|------|-------|------|
-| 0.50 | 3% | -2.335 | -20.8% | 0.801 | 143 |
-| 0.25 | 3% | -2.335 | -20.8% | 0.809 | 171 |
+| 0.50 | 3% | -2.335 | -23.2% | 0.803 | 188 |
+| 0.25 | 3% | -2.335 | -19.2% | 0.800 | 220 |
 
 ### Regression Analysis: PnL ~ confidence + edge + odds
 - **N observations:** 10000

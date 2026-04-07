@@ -1,10 +1,10 @@
 # Data Sources & APIs
 
-> Auto-compiled from 72 raw sources on 2026-04-07
+> Auto-compiled from 70 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 72 research files spanning data sources & apis.
+This topic covers 70 research files spanning data sources & apis.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
@@ -23,7 +23,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
 - **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/data-research/self-improvement-harness-quick-wins-2026-03-31.md`
 - **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/research/self-improvement-harness-quick-wins-2026-03-31.md`
-- **Research Proposal: Opening-Line Odds as Protected GA Features** (980 words) -- `raw/data-proposals/2026-04-05-opening-odds-protected-features.md`
 - **Research Cycle 7 — Self-Improvement Harness (March 31 2026)** (925 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_self_improvement_harness.md`
 - **Research Cycle 7 — Self-Improvement Harness (March 31 2026)** (925 words) -- `raw/karpathy-researcher/research_cycle7_self_improvement_harness.md`
 - **project_agent_superpowers_scan** (920 words) -- `raw/agent-memory/repo-scout_project_agent_superpowers_scan.md`
@@ -60,7 +59,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Political Alpha Deployment** (363 words) -- `raw/feature-engineer/project_political_alpha_deploy.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/data-research/research-cycle-2026-03-26.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
-- **Research Proposal: Market Fusion for NBA Probability Calibration** (329 words) -- `raw/data-proposals/market-fusion-2026-04-01.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/agent-memory/repo-scout_project_historical_odds_sources.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/repo-scout/project_historical_odds_sources.md`
 - **Market Analyst Data Sources** (306 words) -- `raw/agent-memory/market-analyst_reference_data_sources.md`
@@ -138,7 +136,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - [[SHAP]]
 - [[Shot Chart]]
 - [[TabICL]]
-- [[Temperature Scaling]]
 - [[Trading Floor]]
 - [[Tree Models]]
 - [[Value Betting]]
