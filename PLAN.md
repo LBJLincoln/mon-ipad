@@ -5,10 +5,15 @@
 > have Claude Code on the web draft the next implementation step in CCR with
 > three parallel subagents + a critique pass.
 
-**Last refresh:** 2026-04-07 (Phase B shipped: trader pool refactored to free
-HF models, NBA/Political dashboard mocks removed, OASIS T3 swarm scaffolded,
-Alpaca paper client scaffolded, Obsidian compile cron live, Claude Code Web
-verified at claude.ai/code — research preview, Pro/Max/Team/Enterprise only)
+**Last refresh:** 2026-04-07 14:30 UTC (Phase B+ shipped: trader pool free-HF
+pivot, dashboard mocks removed, OASIS T3 swarm scaffold (50 agents), Alpaca
+paper client, Obsidian compile cron live AND auto-pushing every 2h, Claude
+Code Web verified, swarm→full-season-backtest aggregator wired so the NBA
+backtest API now reads fresh data instead of a 10-day-stale file, infra page
+FALLBACK_DEPARTMENTS/_BOTTLENECKS/_CRON_JOBS hardcoded fakes deleted +
+honest empty-state UI, forge-metrics route returns 503 instead of fake
+"FORGED" status for every repo, evolution page static-March ATR fallback
+deleted)
 **Repos in scope:**
 - `LBJLincoln/mon-ipad` (NBA Quant — engine, gates, dashboards)
 - `LBJLincoln/nomos-political-alpha` (Political Alpha — Cat 1-22 features)
@@ -33,26 +38,26 @@ ever runs live without `dsr > 0 at p < 0.05 and pbo < 0.40`.
 
 ---
 
-## Current state (as of 2026-04-07 12:35 UTC)
+## Current state (as of 2026-04-07 14:30 UTC)
 
 ### NBA — green
-- ✅ `scripts/arena/cpcv_gate.py` running, 7 backtest runs in pool
-- ✅ `scripts/arena/continuous-backtest-swarm.sh` cron 6×/day → fold files
-- ✅ 9-season backfill (`backfill_games_2025_26.py`) — 11,513 games
+- ✅ `scripts/arena/cpcv_gate.py` running, **7 backtest runs in pool, 0/40 strategies passing** (gate working — DSR rejecting until pool ≥ 24)
+- ✅ `scripts/arena/continuous-backtest-swarm.sh` cron 6×/day, latest run 12:45 UTC writes `data/arena/backtest-results/backtest-20260407-124522.json`
+- ✅ NEW: `scripts/arena/aggregate_swarm_to_season.py` runs at end of swarm and writes `data/nba-agent/full-season-backtest.json` (was 10d stale; now refreshes every 4h with real Sharpe/ROI/Brier from latest swarm + synthesized trade timestamps for the equity-curve view)
+- ✅ 9-season backfill — 11,513 games
 - ✅ 102 betting categories (`bet_categories.py`)
 - ✅ Bull/Bear debate UI on `/trading-floor` (mon-ipad 2f73c16f)
 - ✅ 102-cat heatmap on `/trading-floor` (nomos-dashboard 1cdf6d2)
-- ⚠️ Only `spec_spread` has positive Sharpe so far (sr=4.76±2.85, 665 bets)
-- ⚠️ DSR rejects everything until pool ≥ 24 runs (~4 days from now)
+- 📊 Best swarm strategy: **`spec_spread`** ROI +45.09%, Sharpe 3.33, win-rate 70.3%, 445 bets, Brier 0.21520
+- ⚠️ DSR p-value 0.9995 — needs ~17 more swarm runs (≈3 days) to clear gate
 
-### Political — yellow → green (this commit)
-- ✅ NEW: `scripts/arena/political_cpcv_gate.py` (parity with NBA gate)
-- ✅ NEW: `scripts/arena/continuous-political-backtest-swarm.sh` cron 6×/day
-- ✅ NEW: cron entry installed (`17 */4 * * *`)
-- ✅ Seeded with 1 fold from existing `political-trading-floor-latest.json`
-- ⚠️ Needs ≥3 folds for DSR (will have 18 folds in ~12h)
-- ❌ `data/arena/political-arena-v2.json` still 7d stale — Phase B
-- ❌ `/political/page.tsx` has hardcoded DONOR_UNIVERSE / MOCK_EVOLUTION — Phase B
+### Political — green
+- ✅ `scripts/arena/political_cpcv_gate.py` (parity with NBA gate)
+- ✅ `scripts/arena/continuous-political-backtest-swarm.sh` cron `17 */4 * * *`
+- ✅ Pool now has **2 runs, 5 strategies evaluated, 0 passing** — needs ≥3 folds for DSR
+- ✅ FRESHENED: `data/arena/political-arena-v2.json` synced from `nomos-political-alpha/data/arena/arena-results.json` (12:45 UTC, 200KB)
+- ✅ FIXED: `/political/page.tsx` DONOR_UNIVERSE + MOCK_EVOLUTION + MOCK_KAGGLE_LOG deleted (commit a226818d)
+- ✅ Obsidian compile cron live (`23 */2 * * *`), auto-pushed twice today (7e9e6539, bszi4xjd2)
 
 ### Vendored OSS (real, official, no more "lightweight adaptations")
 - ✅ `vendor/TradingAgents/` — TauricResearch/TradingAgents @ HEAD
@@ -69,6 +74,35 @@ ever runs live without `dsr > 0 at p < 0.05 and pbo < 0.40`.
 - ✅ Last political iter: 04:28 UTC, iter 30, brier 0.230493 / best 0.204543
 - ✅ Spaces are *executing real work*, not just keepalive blabbering
 - ⚠️ Best HF space Brier (0.22182, S14 catboost) still > Colab TabICL (0.21570)
+
+### Trader pool — free HF only (Phase B)
+- ✅ NBA + Political TF rebranded: gemini→Gemma 3 27B, openrouter→Qwen 2.5 72B,
+  codex→Llama 3.3 70B, grok→Mistral Large 2 (all on free HF Inference Router,
+  4 HF accounts cover quota). Claude Code CLI unchanged.
+- ✅ Dict keys preserved → existing `data/arena/traders/*-state.json` keep
+  bankroll history through the rename.
+
+### OASIS T3 specialist swarm
+- ✅ `scripts/arena/oasis_t3_swarm.py` writes 50 specialists across 10 personas
+  × 4 free HF backbones into `data/arena/agent-states-v5.json`
+- ✅ Total v5 agents: **274** (224 prior + 50 OASIS)
+- ⚠️ Lite-mode only (heavy `vendor/oasis` runtime opt-in via `--use-oasis-runtime`)
+- ⚠️ Not yet wired into v5 floor consensus (PLAN.md W2 acceptance)
+
+### Dashboard — enterprise-grade pass (this commit)
+- ✅ DELETED: `nomos-dashboard/src/app/api/forge-metrics/route.ts` FALLBACK_METRICS
+  (was marking every repo as `'FORGED'` even when VM unreachable). Now returns 503.
+- ✅ DELETED: `nomos-dashboard/src/app/infra/page.tsx` FALLBACK_DEPARTMENTS,
+  FALLBACK_BOTTLENECKS, FALLBACK_CRON_JOBS (~70 lines of fake data). Replaced
+  with honest empty-state cards: "Department data offline — VM unreachable".
+- ✅ DELETED: `nomos-dashboard/src/app/evolution/page.tsx` AtrProgress static
+  March history (4 fake entries). Replaced with empty state.
+- ✅ Phase B (commit a226818d): NBA backtest deterministic-RNG + political
+  hardcoded DONOR_UNIVERSE + MOCK_EVOLUTION + MOCK_KAGGLE_LOG removed.
+- 🟡 Remaining (W6 — see below): pricing TIERS still hardcoded; rgwa+terminal
+  pages last touched 2026-03-26 — need re-audit; control room loading skeletons
+  missing on metric grid; some chart components silently render empty when
+  upstream is null.
 
 ---
 
@@ -176,6 +210,40 @@ update if a strategy crosses the gate, and writes
 
 **Acceptance:** When `political_cpcv_gate.py` first promotes a strategy
 (currently 0/5 passing), the user gets a Telegram message within 30min.
+
+---
+
+### W6 — Enterprise visual polish (post Phase B+)
+
+**Goal:** Close the remaining "looks like a draft" issues from the
+2026-04-07 evening dashboard audit.
+
+**Hits already shipped this commit (don't redo):**
+- `forge-metrics/route.ts` returns 503 instead of fake FORGED status
+- `infra/page.tsx` empty-state cards instead of FALLBACK_* hardcoded fakes
+- `evolution/page.tsx` AtrProgress empty state instead of static March history
+- `political/page.tsx` already mock-free since Phase B
+
+**Files still to touch:**
+- `nomos-dashboard/src/app/pricing/page.tsx` lines 14-89: TIERS + FAQs
+  hardcoded → wire to `/api/pricing` so the user can update without redeploys
+- `nomos-dashboard/src/app/rgwa/page.tsx` (Mar 26 — 12d stale): re-audit for
+  stub HF space links and dead bot status
+- `nomos-dashboard/src/app/terminal/page.tsx` (Mar 26): verify the slash
+  commands shown actually exist as skills
+- `nomos-dashboard/src/app/control/page.tsx` lines 88-99: add `<Skeleton>`
+  loading state instead of bare metric grid pop-in
+- `nomos-dashboard/src/app/page.tsx` lines 420-425: replace `'...'` literals
+  in metric bar with `<Skeleton animate-pulse>`
+- `nomos-dashboard/src/app/nba/page.tsx` EquityCurve component: add
+  "backtest data unavailable" empty state
+- `nomos-dashboard/src/app/world/page.tsx` iframe `onError`: 10s timeout +
+  "Pixel World offline" message instead of perpetual 60% gradient bar
+- `nomos-dashboard/src/app/councils/page.tsx`: change `"never"` to
+  `"Pending first run"` for departments with no prior run
+
+**Acceptance:** A cold investor demo (every API blocked at the proxy) shows
+honest empty states everywhere, not a single hardcoded fake number.
 
 ---
 

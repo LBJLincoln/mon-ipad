@@ -62,11 +62,18 @@ timeout 60 python3 "${ROOT}/scripts/arena/map-backtest-to-agents.py" \
     >> "${LOG_FILE}" 2>&1 || echo "[3/4] Mapper exit=$?" >> "${LOG_FILE}"
 
 # 4. Build season leaderboard + category registry + $1M projection
-echo "[4/4] Season leaderboard + category registry + $1M projection" >> "${LOG_FILE}"
+echo "[4/5] Season leaderboard + category registry + \$1M projection" >> "${LOG_FILE}"
 timeout 60 python3 "${ROOT}/scripts/arena/season-leaderboard.py" \
-    >> "${LOG_FILE}" 2>&1 || echo "[4/4] Leaderboard exit=$?" >> "${LOG_FILE}"
+    >> "${LOG_FILE}" 2>&1 || echo "[4/5] Leaderboard exit=$?" >> "${LOG_FILE}"
 
-# 5. Commit + push
+# 5. Aggregate latest swarm result into the dashboard's full-season-backtest.json
+#    (the source the /api/nba/backtest route reads). Was previously stale because
+#    full_season_backtest.py needs Supabase predictions which are gone.
+echo "[5/5] Aggregate swarm -> data/nba-agent/full-season-backtest.json" >> "${LOG_FILE}"
+timeout 30 python3 "${ROOT}/scripts/arena/aggregate_swarm_to_season.py" \
+    >> "${LOG_FILE}" 2>&1 || echo "[5/5] Aggregator exit=$?" >> "${LOG_FILE}"
+
+# 6. Commit + push
 cd "${ROOT}"
 git add \
     data/arena/backtest-results/ \
@@ -75,6 +82,7 @@ git add \
     data/arena/season-leaderboard.json \
     data/arena/category-model-registry.json \
     data/arena/one-million-projection.json \
+    data/nba-agent/full-season-backtest.json \
     2>/dev/null || true
 
 if ! git diff --cached --quiet 2>/dev/null; then
