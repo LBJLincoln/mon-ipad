@@ -1,7 +1,7 @@
-# Political Trading Season 2025-26 -- Agent CLAUDE
+# Political Trading Season 2025-26 -- Agent CLAUDE CODE CLI
 
 ## Executive Summary
-- **Provider:** anthropic
+- **Provider:** anthropic_cli
 - **Personality:** conservative
 - **Risk Tolerance:** 0.4
 - **Primary Strategy:** mean_reversion
@@ -20,11 +20,11 @@
 ## Peer Comparison
 | Rank | Agent | Capital | ROI | Sharpe | Win Rate |
 |------|-------|---------|-----|--------|----------|
-| 1 | Codex | $101,085.21 | +1.0852% | 6.584 | 52.2% |
-| 2 | Gemini | $100,788.61 | +0.7886% | 12.258 | 61.0% |
-| 3 | OpenRouter | $100,380.31 | +0.3803% | 10.517 | 53.7% |
-| 4 | Claude ** | $100,030.02 | +0.0300% | 2.656 | 48.6% |
-| 5 | Grok | $99,707.79 | -0.2922% | -13.441 | 36.7% |
+| 1 | Gemma 3 27B | $100,662.81 | +0.6628% | 8.915 | 58.5% |
+| 2 | Qwen 3 72B | $100,203.63 | +0.2036% | 5.440 | 49.5% |
+| 3 | Llama 3.3 70B | $100,144.11 | +0.1441% | 1.870 | 46.9% |
+| 4 | Claude Code CLI ** | $100,030.02 | +0.0300% | 2.656 | 48.6% |
+| 5 | Mistral Large 2 | $99,707.79 | -0.2922% | -13.441 | 36.7% |
 
 ## Strategy Performance
 | Strategy | Trades | P&L | Win Rate |
