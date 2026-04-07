@@ -1,21 +1,21 @@
 ---
 name: Evolution Fleet Status — April 2026
-description: HF Space fleet health. Apr 6 iter6: ROOT CAUSE CONFIRMED — adaptive mutation annealing overrides API POSTs. S15 fleet best 0.2222. S10 XPOLL executed. S12+S14 diversity resets. CODE FIX REQUIRED: MUTATION_FLOOR=0.07.
+description: HF Space fleet health. Apr 7 iter7: NEW FLEET BEST 0.22094 (S10, xpoll worked). Fleet avg 0.22271 (best improvement yet). S12+S14 mutation STILL decaying despite resets. MUTATION_FLOOR code fix 7th iteration urgent.
 type: project
 ---
 
-**Last verified: 2026-04-06 16:15 UTC (iteration 6)**
+**Last verified: 2026-04-07 00:00 UTC (iteration 7)**
 
-## Current Fleet State (iter 6, 2026-04-06 16:15 UTC)
+## Current Fleet State (iter 7, 2026-04-07 00:00 UTC)
 
-| Space | Gen | Best Brier | Best Model | Mut Rate | Trend | Action (iter6) |
+| Space | Gen | Best Brier | Best Model | Mut Rate | Trend | Action (iter7) |
 |-------|-----|-----------|------------|----------|-------|----------------|
-| S10 nba-quant | 439 | 0.23149 | random_forest | 0.0809 | FLAT 3RD ITER | XPOLL from S15: mut=0.13, feat=61, cx=0.85 |
-| S11 nba-quant-2 | 480 | 0.22372 | catboost | 0.0800 | FLAT STABLE | none |
-| S12 nba-evo-3 | 743 | 0.22533 | lightgbm | 0.0488 | FLAT 3RD ITER | DIVERSITY RESET: mut=0.18, feat=70, extra_trees |
-| S13 nba-evo-4 | 347 | 0.22283 | random_forest | 0.0609 | FLAT NUDGE | nudge: mut=0.09, feat=55, cx=0.82 |
-| S14 nba-evo-5 | 610 | 0.22622 | random_forest | 0.0450 | FLAT 3RD ITER | FULL RESET: mut=0.15, feat=60 + CODE FIX FLAGGED |
-| S15 nba-evo-6 | 197 | **0.2222 (FLEET BEST)** | random_forest | 0.1145 | STABLE | XPOLL source for S10 |
+| S10 nba-quant | 156 | **0.22094 (FLEET BEST)** | extra_trees | 0.0759 | BREAKTHROUGH -0.01055 | none — preserve, used as S11 xpoll seed |
+| S11 nba-quant-2 | 178 | 0.22519 | catboost | 0.1342 | REGRESSION +0.00147 | XPOLL from S10: mut=0.11, feat=62, extra_trees |
+| S12 nba-evo-3 | 165 | 0.22112 | random_forest | 0.0576 | IMPROVED -0.00421 / MUT CRITICAL | Boost: mut=0.13, feat=56, pop=35 |
+| S13 nba-evo-4 | 171 | 0.22389 | extra_trees | 0.1186 | REGRESSION +0.00106 / FEAT=47 CRIT | Feature boost: mut=0.11, feat=58 |
+| S14 nba-evo-5 | 147 | 0.22220 | extra_trees | 0.0597 | IMPROVED -0.00402 / MUT CRITICAL | Boost: mut=0.125, feat=60 |
+| S15 nba-evo-6 | 191 | 0.22291 | random_forest | 0.0996 | MINOR REGRESSION +0.00071 | none — healthy |
 
 ## ROOT CAUSE CONFIRMED (iter 6)
 

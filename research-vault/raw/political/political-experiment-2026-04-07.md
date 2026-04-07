@@ -1,5 +1,5 @@
 # NOMOS42 Political Alpha — Scientific Experiment Report
-## Generated: 2026-04-06 22:15 UTC
+## Generated: 2026-04-07 00:15 UTC
 
 ---
 
@@ -37,8 +37,8 @@
 ### Aggregate Statistics (Bootstrap 95% CI)
 | Metric | Mean | 95% CI |
 |---|---|---|
-| ROI (%) | -53.26 | [-67.27, -37.56] |
-| Sharpe | -0.0388 | [-0.4430, 0.2576] |
+| ROI (%) | -53.26 | [-67.32, -37.20] |
+| Sharpe | -0.0388 | [-0.4448, 0.2718] |
 
 ## Market Performance
 | Metric | Value |

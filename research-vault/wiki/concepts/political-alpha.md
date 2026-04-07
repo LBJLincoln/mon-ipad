@@ -1,10 +1,10 @@
 # Political Alpha & Prediction Markets
 
-> Auto-compiled from 44 raw sources on 2026-04-06
+> Auto-compiled from 46 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 44 research files spanning political alpha & prediction markets.
+This topic covers 46 research files spanning political alpha & prediction markets.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Mutation Operators, Platt Scaling, Political Alpha.
 
 ## Sources
@@ -31,7 +31,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Nomos42 -- Knowledge Vault** (892 words) -- `raw/obsidian-docs/README.md`
 - **12 -- Agent Registry** (846 words) -- `raw/obsidian-docs/12-Agent-Registry.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-06.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-07.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-06.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-07.md`
 - **16 -- Karpathy Autoresearch Pattern** (800 words) -- `raw/obsidian-docs/16-Karpathy-Pattern.md`
 - **11 -- GPU Compute** (799 words) -- `raw/obsidian-docs/11-GPU-Compute.md`
 - **10 -- All Repos** (790 words) -- `raw/obsidian-docs/10-Repos.md`

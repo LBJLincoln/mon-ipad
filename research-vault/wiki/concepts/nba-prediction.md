@@ -1,6 +1,6 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 145 raw sources on 2026-04-06
+> Auto-compiled from 145 raw sources on 2026-04-07
 
 ## Overview
 
@@ -35,8 +35,8 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/data-research/self-improvement-harness-sources-2026-03-31.md`
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/research/self-improvement-harness-sources-2026-03-31.md`
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
-- **Evolution Fleet Status — April 2026** (1194 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
-- **Evolution Fleet Status — April 2026** (1194 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
+- **Evolution Fleet Status — April 2026** (1203 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
+- **Evolution Fleet Status — April 2026** (1203 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
 - **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
 - **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
@@ -157,7 +157,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 
 ## Key Findings
 
-- Current Fleet State (iter 6, 2026-04-06 16:15 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Current Fleet State (iter 7, 2026-04-07 00:00 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - ROOT CAUSE CONFIRMED (iter 6) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - Iter 6 Interventions (all 200 OK, queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - S10 — Cross-pollination from S15 (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)

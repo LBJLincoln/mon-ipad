@@ -1,10 +1,10 @@
 # Betting Strategy & Bankroll
 
-> Auto-compiled from 94 raw sources on 2026-04-06
+> Auto-compiled from 96 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 94 research files spanning betting strategy & bankroll.
+This topic covers 96 research files spanning betting strategy & bankroll.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -43,7 +43,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Nomos42 -- Knowledge Vault** (892 words) -- `raw/obsidian-docs/README.md`
 - **12 -- Agent Registry** (846 words) -- `raw/obsidian-docs/12-Agent-Registry.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-06.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-07.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-06.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-07.md`
 - **16 -- Karpathy Autoresearch Pattern** (800 words) -- `raw/obsidian-docs/16-Karpathy-Pattern.md`
 - **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
 - **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
