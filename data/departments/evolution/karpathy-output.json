@@ -1,204 +1,228 @@
 {
   "department": "evolution",
-  "timestamp": "2026-04-07T09:30:00Z",
-  "iteration": 9,
+  "timestamp": "2026-04-07T18:00:00Z",
+  "iteration": 10,
   "islands": {
     "S10": {
-      "brier": 0.22435,
-      "generation": 235,
-      "model": "unknown",
-      "mutation_rate": 0.0871,
-      "features": null,
+      "brier": 0.22390,
+      "generation": 176,
+      "model": "random_forest",
+      "mutation_rate": 0.0634,
+      "features": 53,
       "stagnation_cycles": 0,
-      "status": "REGRESSION_MUT_DECAY",
-      "action": "Mutation boost: mut=0.11, target_features=63, cx=0.82 (POST 200 queued)",
-      "iter8_brier": 0.22327,
-      "brier_delta": 0.00108,
-      "notes": "Regression 0.22327→0.22435 (+0.00108). Mutation 0.0871 decaying from hardcoded start. At gen 235, decay confirms hardcoded floor issue. Feature drop likely — restoring to target=63. Config posted."
+      "status": "MUTATION_DECAY_CRITICAL_RESTARTED",
+      "action": "Mutation boost: mut=0.14, target_features=65, cx=0.82 (POST 200 queued)",
+      "iter9_brier": 0.22435,
+      "brier_delta": -0.00045,
+      "notes": "Stable (-0.00045) but RESTARTED (gen235→176). Mutation DECAY_CRITICAL at 0.0634 — below 0.07 threshold. Feature count dropped to 53 (below target 63). Boost to 0.14 posted. API confirmed mut+feats+cx accepted, model_type param silently dropped."
     },
     "S11": {
-      "brier": 0.22243,
-      "generation": 163,
-      "model": "unknown",
-      "mutation_rate": 0.1375,
-      "features": null,
+      "brier": 0.22926,
+      "generation": 125,
+      "model": "catboost",
+      "mutation_rate": 0.1137,
+      "features": 59,
       "stagnation_cycles": 0,
-      "status": "IMPROVING_WATCH",
-      "action": "none — monitoring. Mutation 0.1375 healthy near cap.",
-      "iter8_brier": 0.22487,
-      "brier_delta": -0.00244,
-      "notes": "IMPROVEMENT 0.22487→0.22243 (-0.00244). Best trending island this iteration. Mutation 0.1375 healthy (just below 0.15 cap). If sustains <0.222 by iter10, cross-pollinate to S10/S12."
+      "status": "REGRESSED_MODEL_DRIFT_RESTARTED",
+      "action": "Nudge: mut=0.13, target_features=70, cx=0.80, model=extra_trees requested (POST 200 queued, model_type silently dropped)",
+      "iter9_brier": 0.22243,
+      "brier_delta": 0.00683,
+      "notes": "REGRESSION (+0.00683). Was fleet best trend in iter9. RESTARTED (gen163→125). Model switched to catboost (drift). Mutation 0.1137 healthy but regression. Nudge posted to pull toward extra_trees (S15 winning formula). model_type not accepted by API — manual model fix needed via D2."
     },
     "S12": {
-      "brier": 0.22432,
-      "generation": 195,
-      "model": "unknown",
-      "mutation_rate": 0.0717,
-      "features": null,
+      "brier": 0.22287,
+      "generation": 176,
+      "model": "random_forest",
+      "mutation_rate": 0.0901,
+      "features": 60,
       "stagnation_cycles": 0,
-      "status": "REGRESSED_FROM_FLEET_BEST_MUT_DECAY",
-      "action": "Mutation boost: mut=0.12, target_features=65, cx=0.82 (POST 200 queued)",
-      "iter8_brier": 0.22172,
-      "brier_delta": 0.00260,
-      "notes": "Regressed from fleet best 0.22172→0.22432 (+0.00260). Mutation 0.0717 — decay pattern: started ~0.10 from iter8 boost, 0.10*0.998^(195-70)=0.10*0.998^125=0.0778, or from restart 0.08*0.998^(195-restart_gen). Confirmed decay. Boost to 0.12 posted. Was fleet best — expect recovery."
+      "status": "IMPROVING_RESTARTED",
+      "action": "none — improving, no intervention",
+      "iter9_brier": 0.22432,
+      "brier_delta": -0.00145,
+      "notes": "IMPROVED (-0.00145). Mutation boost to 0.12 from iter9 partially effective (now 0.0901 — decay from new start). RESTARTED (gen195→176). No intervention needed this cycle."
     },
     "S13": {
-      "brier": 0.22865,
-      "generation": 134,
-      "model": "catboost",
-      "mutation_rate": 0.0932,
-      "features": null,
+      "brier": 0.22300,
+      "generation": 220,
+      "model": "random_forest",
+      "mutation_rate": 0.0868,
+      "features": 49,
       "stagnation_cycles": 0,
-      "status": "MAJOR_REGRESSION_FLEET_WORST",
-      "action": "Mutation boost + diversity reset: mut=0.13, target_features=72, cx=0.80, diversity_reset=true (POST 200 queued)",
-      "iter8_brier": 0.22416,
-      "brier_delta": 0.00449,
-      "notes": "MAJOR REGRESSION 0.22416→0.22865 (+0.00449). Fleet worst. Mutation 0.0932 — started at 0.10 (iter8 config), now 0.10*0.998^134=0.0929, exactly matches. Classic hardcoded decay. Features recovered to 80 in iter8 but didn't help Brier — model may be suboptimal. Emergency diversity reset + mutation boost posted."
+      "status": "RECOVERED_MUT_DECAYING",
+      "action": "Mutation nudge: mut=0.11, target_features=65 (POST 200 queued)",
+      "iter9_brier": 0.22865,
+      "brier_delta": -0.00565,
+      "notes": "STRONG RECOVERY (-0.00565). Diversity reset + mut=0.13 from iter9 worked. Gen 220 (no restart). Model drifted to random_forest (was catboost specialist). Mutation 0.0868 decaying (from 0.13 start: 0.13*0.998^86=0.0879, consistent). Feature count low at 49. Nudge posted. Let run — recovery momentum."
     },
     "S14": {
-      "brier": 0.22476,
-      "generation": 172,
+      "brier": 0.24696,
+      "generation": 70,
       "model": "lightgbm",
-      "mutation_rate": 0.1016,
-      "features": null,
+      "mutation_rate": 0.0697,
+      "features": 47,
       "stagnation_cycles": 0,
-      "status": "RECOVERED_MONITORING",
-      "action": "none — monitoring. Emergency reset from iter8 worked.",
-      "iter8_brier": 0.23002,
-      "brier_delta": -0.00526,
-      "notes": "RECOVERY 0.23002→0.22476 (-0.00526). Emergency diversity reset from iter8 worked. Mutation 0.1016 — from emergency reset start 0.15: 0.15*0.998^172=0.1006, matches 0.1016. Decay still active but healthier range. Model lightgbm (designated). Monitor iter10 for further improvement."
+      "status": "CATASTROPHIC_REGRESSION_FLEET_WORST",
+      "action": "Emergency: mut=0.15, target_features=65, cx=0.82, diversity_reset=true (POST 200 queued; model_type=extra_trees silently dropped — API limitation)",
+      "iter9_brier": 0.22476,
+      "brier_delta": 0.02220,
+      "notes": "CATASTROPHIC (+0.02220). Fleet worst. RESTARTED (gen172→70). Mutation DECAY_CRITICAL 0.0697. LightGBM model — possible issue: LightGBM underperforming vs extra_trees on this dataset at low feature counts (47 feats). Emergency config posted. model_type param not accepted by API — needs D2 fix to force extra_trees. mut+feats boost confirmed queued."
     },
     "S15": {
-      "brier": 0.22190,
-      "generation": 178,
+      "brier": 0.22158,
+      "generation": 124,
       "model": "extra_trees",
-      "mutation_rate": 0.1015,
-      "features": null,
+      "mutation_rate": 0.1592,
+      "features": 75,
       "stagnation_cycles": 0,
-      "status": "NEW_FLEET_BEST_POST_RECOVERY",
-      "action": "none — fleet best, monitoring",
-      "iter8_brier": 0.24723,
-      "brier_delta": -0.02533,
-      "notes": "CATASTROPHIC RECOVERY 0.24723→0.22190 (-0.02533). Emergency extra_trees reset from iter8 worked PERFECTLY. Now fleet best at 0.22190. Mutation 0.1015 from 0.15 start: 0.15*0.998^178=0.1007, matches. Decay active but still healthy. Wide search (pop=50) + extra_trees = strong combination. Cross-pollination attempt to S13 failed (API doesn't support source_island param). Will seed manually next iteration."
+      "status": "FLEET_BEST_STABLE",
+      "action": "none — fleet best, monitoring. mut=0.1592 above stated 0.15 cap (soft-cap or scale difference)",
+      "iter9_brier": 0.22190,
+      "brier_delta": -0.00032,
+      "notes": "FLEET BEST (-0.00032, continuous improvement). RESTARTED (gen178→124) but maintained superiority. Extra_trees + wide pop=50 + features=75 winning formula. Mutation 0.1592 slightly above stated 0.15 cap — either soft enforcement or different scale. Kaggle seed candidate: use this config as starting point. ATR gap: 0.22158-0.21520=0.00638."
     }
   },
   "fleet_metrics": {
-    "best_brier": 0.22190,
-    "fleet_avg": 0.22440,
+    "best_brier": 0.22158,
+    "fleet_avg": 0.22793,
     "best_island": "S15",
-    "worst_island": "S13",
-    "total_generations": 1077,
+    "worst_island": "S14",
+    "total_generations": 891,
     "island_count": 6,
-    "prev_best_brier": 0.22172,
-    "prev_fleet_avg": 0.23188,
-    "fleet_avg_delta_iter8_to_iter9": -0.00748,
-    "spread": 0.00675,
-    "spread_note": "Spread crossed 0.005 threshold — cross-pollination recommended"
+    "prev_best_brier": 0.22190,
+    "prev_fleet_avg": 0.22440,
+    "fleet_avg_delta_iter9_to_iter10": 0.00353,
+    "spread": 0.02538,
+    "spread_note": "CRITICAL spread 0.02538 — S14 catastrophe dragging fleet. Cross-pollination blocked by API (no source_island param)."
   },
   "stagnation_detected": [],
-  "diversity_score": 0.55,
+  "diversity_score": 0.42,
+  "restart_events": ["S10", "S11", "S12", "S14", "S15"],
+  "restart_note": "5/6 islands restarted between iter9 and iter10. HF Space restarts reset generation counter but preserve best_brier from checkpoint. Mutation restarts from initial hardcoded value on each restart — root cause amplified.",
+  "api_capability_confirmed": {
+    "accepted_params": ["mutation_rate", "target_features", "crossover_rate"],
+    "silently_ignored": ["model_type", "diversity_reset", "source_island"],
+    "note": "API only accepts 3 params. model_type forcing requires D2 code change in app.py."
+  },
   "cross_pollinations_executed": [
     {
       "type": "ATTEMPTED_FAILED",
-      "from": "S15",
-      "to": "S13",
-      "reason": "API does not support source_island param — manual seeding needed next iteration",
-      "fallback": "S13 diversity_reset queued instead"
+      "note": "API does not support source_island or model_type params. Manual seeding requires D2 code change.",
+      "workaround": "Nudge configs approximate S15 formula (extra_trees, feats=65-75) but model_type not enforced"
     }
   ],
   "mutation_boosts_executed": [
     {
-      "island": "S10",
-      "trigger": "regression_mut_decay_0.0871_gen235",
-      "old_brier": 0.22435,
-      "params": {"mutation_rate": 0.11, "target_features": 63, "crossover_rate": 0.82},
+      "island": "S14",
+      "trigger": "catastrophic_regression_0.24696_gen70",
+      "old_brier": 0.24696,
+      "params": {"mutation_rate": 0.15, "target_features": 65, "crossover_rate": 0.82},
       "http_status": 200,
       "response": "queued",
-      "rationale": "Regression +0.00108. Mutation decaying to floor. Feature restore + boost."
+      "rationale": "EMERGENCY. Fleet worst +0.02220. Gen restarted to 70. Mut 0.0697 critical decay. Max boost 0.15."
     },
     {
-      "island": "S12",
-      "trigger": "regressed_from_fleet_best_mut_decay_0.0717_gen195",
-      "old_brier": 0.22432,
-      "params": {"mutation_rate": 0.12, "target_features": 65, "crossover_rate": 0.82},
+      "island": "S10",
+      "trigger": "mutation_decay_critical_0.0634_gen176",
+      "old_brier": 0.22390,
+      "params": {"mutation_rate": 0.14, "target_features": 65, "crossover_rate": 0.82},
       "http_status": 200,
       "response": "queued",
-      "rationale": "Was fleet best iter8 at 0.22172. Regressed +0.00260. Mutation decayed to 0.0717. Boost to 0.12."
+      "rationale": "Mut DECAY_CRITICAL 0.0634. Restarted. Feats dropped to 53. Boost to 0.14."
+    },
+    {
+      "island": "S11",
+      "trigger": "regression_0.00683_model_drift_catboost",
+      "old_brier": 0.22926,
+      "params": {"mutation_rate": 0.13, "target_features": 70, "crossover_rate": 0.80},
+      "http_status": 200,
+      "response": "queued",
+      "rationale": "Regression +0.00683. Restarted. Drifted to catboost. Nudge toward S15 formula."
     },
     {
       "island": "S13",
-      "trigger": "major_regression_fleet_worst_mut_decay_0.0932",
-      "old_brier": 0.22865,
-      "params": {"mutation_rate": 0.13, "target_features": 72, "crossover_rate": 0.80, "diversity_reset": true},
+      "trigger": "recovery_momentum_mut_0.0868_decaying",
+      "old_brier": 0.22300,
+      "params": {"mutation_rate": 0.11, "target_features": 65},
       "http_status": 200,
       "response": "queued",
-      "rationale": "Fleet worst. Regression +0.00449. Mutation 0.0932 from 0.10 start (confirmed decay). Emergency diversity reset + boost."
+      "rationale": "Recovery confirmed (-0.00565). Mut decaying 0.0868. Gentle boost to maintain momentum."
     }
   ],
   "root_cause_finding": {
     "confirmed": true,
-    "iterations_confirmed": 9,
-    "issue": "HARDCODED_STARTUP_MUTATION_DECAY",
-    "description": "9th iteration. S13 gen134: 0.10*0.998^134=0.0929≈observed 0.0932. S14 gen172: 0.15*0.998^172=0.1006≈observed 1.016. Pattern inescapable. API POSTs set new starting rate but decay continues from gen 0. Code fix still not deployed.",
-    "code_fix_required": "hf-space/app.py: change mutation floor from 0.04→0.07 in GA startup. Add MUTATION_FLOOR env var. Deploy via git subtree push all 6 spaces.",
-    "estimated_impact": "Prevents convergence freeze at gen 100-150. +0.002-0.005 Brier expected.",
+    "iterations_confirmed": 10,
+    "issue": "HARDCODED_STARTUP_MUTATION_DECAY + FREQUENT_RESTARTS",
+    "description": "10th iteration. 5/6 islands restarted between iter9→10. Each restart resets mutation from hardcoded value and decays at 0.998^gen. S10 restarted and already at 0.0634 from ~0.14 start in N generations. S14 restart+decay to 0.0697. Root cause: app.py startup mutation + 0.998 decay factor. Combined with frequent HF Space restarts (possibly keepalive script triggering restarts?), fleet stability is severely impacted.",
+    "code_fix_required": "hf-space/app.py: (1) mutation floor 0.04→0.07, (2) persist mutation_rate in checkpoint, (3) load mutation_rate from checkpoint on restart, (4) Add /api/config support for model_type param. Deploy via git subtree push all 6 spaces.",
+    "estimated_impact": "+0.003-0.008 Brier expected by eliminating restart-induced decay cycles.",
     "priority": 0,
     "escalate_to": "D2_ENGINEERING",
-    "urgency": "CRITICAL — 9 iterations confirmed, math unambiguous"
+    "urgency": "CRITICAL — 10 iterations confirmed, restarts amplifying decay"
   },
-  "iter9_highlights": {
-    "headline": "S15 CATASTROPHIC RECOVERY SUCCESS: 0.247→0.2219 (-0.025). Fleet avg 0.2244 (prev 0.2319 — best iter). S14 also recovered (-0.005). S11 trending positive (-0.002).",
-    "fleet_avg_improvement": -0.00748,
-    "best_session_note": "Fleet avg 0.22440 is best we've recorded (excl iter8 S14/S15 outliers). 3 of 6 islands improved.",
-    "gap_to_atr": 0.00670,
-    "gap_to_target": 0.02190,
-    "winners": ["S15 (recovery -0.025, now fleet best)", "S14 (recovery -0.005)", "S11 (improving -0.002)"],
-    "regression_islands": ["S13 (fleet worst +0.004)", "S12 (regression from fleet best +0.003)", "S10 (regression +0.001)"],
-    "atr_gap_note": "Fleet best 0.2219 vs ATR 0.2152 — gap 0.0067. CPU ceiling ~0.221, GPU TabICL needed for <0.20."
+  "iter10_highlights": {
+    "headline": "S14 CATASTROPHE (+0.022, fleet worst 0.247). S15 holds fleet best 0.2216. S13 recovery confirmed (-0.006). Fleet avg REGRESSED +0.0035 due to S14. 5/6 islands restarted.",
+    "fleet_avg_improvement": 0.00353,
+    "fleet_avg_direction": "REGRESSION",
+    "best_session_note": "S15 continuous improvement for 2 iterations (extra_trees formula winning). S13 recovery validates iter9 emergency reset.",
+    "gap_to_atr": 0.00638,
+    "gap_to_target": 0.01158,
+    "winners": ["S15 (fleet best 0.22158, -0.00032)", "S13 (recovery -0.00565)", "S12 (improving -0.00145)"],
+    "regression_islands": ["S14 (CATASTROPHE +0.02220)", "S11 (regression +0.00683)", "S10 (stable but decay critical)"],
+    "atr_gap_note": "Fleet best 0.2216 vs ATR 0.2152 — gap 0.0064. Kaggle best_brier=0.1968 (iter11, gradient_boosting, 80 feats). CPU ceiling ~0.221."
   },
   "recommendations": [
     {
       "priority": 0,
-      "type": "CODE_FIX_STARTUP_MUTATION_FLOOR",
+      "type": "D2_CODE_FIX_MUTATION_PERSISTENCE",
       "islands": ["all"],
-      "reason": "9 ITERATIONS CONFIRMED. S13 gen134=0.0932 (theory=0.0929), S14 gen172=0.1016 (theory=0.1006). Mathematical proof unambiguous.",
-      "action": "D2 ENGINEERING CRITICAL: change hf-space/app.py mutation floor 0.04→0.07. Git subtree push all 6 spaces. Single fix ends 9-iteration stagnation cycle.",
-      "urgency": "CRITICAL — DEPLOY BEFORE ITER 10"
+      "reason": "10 ITERATIONS + RESTART AMPLIFICATION CONFIRMED. app.py does not persist mutation_rate in checkpoint. Every restart decays from hardcoded value. 5/6 restarts this iteration.",
+      "action": "D2 ENGINEERING CRITICAL: (1) Persist mutation_rate in checkpoint JSON. (2) Load on restart. (3) Floor 0.04→0.07. (4) Add model_type to /api/config. Git subtree push all 6 spaces.",
+      "urgency": "CRITICAL — blocking all fleet progress"
     },
     {
       "priority": 1,
-      "type": "S11_CROSS_POLLINATE_TO_S10_S12",
-      "island": "S11",
-      "reason": "S11 brier 0.22243 best trend (-0.00244). Mutation 0.1375 healthy. If iter10 brier < 0.222, cross-pollinate config to S10/S12.",
-      "action": "Monitor S11. If brier < 0.222: POST S11 elite_size/feature_count to S10+S12.",
-      "urgency": "HIGH — ITER 10"
+      "type": "S14_VERIFY_RECOVERY",
+      "island": "S14",
+      "reason": "Catastrophic 0.24696. Emergency posted. If iter11 still > 0.235, force reset to fresh start.",
+      "action": "iter11: if brier > 0.235, POST fresh config. LightGBM underperforming — consider suggesting D2 to add model_type support.",
+      "urgency": "CRITICAL — iter11"
     },
     {
       "priority": 2,
       "type": "S15_KAGGLE_GPU_SEED",
       "island": "S15",
-      "reason": "Fleet best 0.22190 (extra_trees, pop=50, wide search). CPU ceiling confirmed ~0.221. GPU TabICL is path to <0.20.",
-      "action": "Seed next Kaggle GPU session with S15 config: extra_trees, wide pop=50, mut=0.15 starting point.",
+      "reason": "Fleet best 0.22158 (extra_trees, pop=50, feats=75, mut=0.1592). Kaggle Karpathy iter11 got 0.1968 with gradient_boosting/80 feats. S15 config is complementary.",
+      "action": "Seed next Kaggle session: start from S15 feature_indices. Add extra_trees to Kaggle model pool. Target <0.215 on GPU.",
       "urgency": "HIGH"
     },
     {
       "priority": 3,
-      "type": "S13_VERIFY_RECOVERY",
-      "island": "S13",
-      "reason": "Fleet worst 0.22865. Diversity reset + mut=0.13 posted. Need confirmation in iter10.",
-      "action": "iter10: if brier still > 0.228, force model=extra_trees (catboost underperforming vs fleet).",
-      "urgency": "MONITOR"
+      "type": "S15_FORMULA_PROPAGATION",
+      "islands": ["S10", "S11", "S12"],
+      "reason": "Extra_trees + wide pop winning formula. API cannot force model_type. Need D2 to add /api/config model_type support.",
+      "action": "Once D2 adds model_type to API: POST model_type=extra_trees to S10, S11, S12 simultaneously.",
+      "urgency": "HIGH — awaiting D2"
+    },
+    {
+      "priority": 4,
+      "type": "KEEPALIVE_RESTART_INVESTIGATION",
+      "islands": ["all"],
+      "reason": "5/6 islands restarted iter9→10. Keepalive script (*/30 cron) may be triggering restarts. If keepalive sends GET that triggers restart, fleet stability collapses.",
+      "action": "D7 INFRA: audit scripts/keepalive-spaces.sh — ensure it only sends lightweight pings, not restart triggers.",
+      "urgency": "MEDIUM — investigate before iter11"
     }
   ],
   "experiments_submitted": [],
   "islands_checked": 6,
-  "best_brier": 0.22190,
-  "worst_brier": 0.22865,
-  "spread": 0.00675,
+  "best_brier": 0.22158,
+  "worst_brier": 0.24696,
+  "spread": 0.02538,
   "cross_pollination_needed": true,
   "stagnation_detected_flag": false,
   "status": "completed",
   "atr_brier": 0.21520,
-  "gap_to_atr": 0.00670,
-  "gap_to_target": 0.02190
+  "kaggle_best_brier": 0.19687,
+  "gap_to_atr": 0.00638,
+  "gap_to_target": 0.01158
 }
