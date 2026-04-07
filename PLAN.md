@@ -191,7 +191,19 @@ Anthropic's CCR will:
 4. On approval, either execute remotely (creates a PR on `LBJLincoln/mon-ipad`)
    or teleport the plan back to your terminal for local execution
 
-**Source:** [Claude Code on the web docs](https://docs.claude.com/en/docs/claude-code/claude-code-on-the-web)
+**Sources:**
+- [Plan in the cloud with ultraplan — official docs](https://code.claude.com/docs/en/ultraplan)
+- [Claude Code on the web — docs.claude.com](https://docs.claude.com/en/docs/claude-code/claude-code-on-the-web)
+
+**Operational note (no programmatic API).** Ultraplan has no REST/SDK — it
+is CLI/browser only. So we cannot cron-trigger `/ultraplan`. The right shape
+is: VM cron keeps running the muscle (NBA + Political CPCV swarms, Karpathy
+loops, dept councils), and the user invokes `/ultraplan @PLAN.md` 1-2x/day
+as a strategic checkpoint. Each ultraplan PR becomes a documented
+hypothesis; each merged PR becomes a validated experiment in the scientific
+log. This keeps "always running" (cron muscle) and "always analyzed"
+(ultraplan strategic review) on separate clocks, which is the only honest
+way to combine them.
 
 ---
 
