@@ -23,8 +23,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/karpathy-researcher/karpathy_nba_adaptation.md`
-- **Evolution Fleet Status — April 2026** (1452 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
-- **Evolution Fleet Status — April 2026** (1452 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **22 -- Compute Mesh Topology** (1406 words) -- `raw/obsidian-docs/22-Compute-Mesh.md`
 - **RGWA HuggingFace Models Survey March 2026** (1265 words) -- `raw/agent-memory/research-analyst_research_rgwa_hf_models_march2026.md`
 - **RGWA HuggingFace Models Survey March 2026** (1265 words) -- `raw/research-analyst/research_rgwa_hf_models_march2026.md`
@@ -86,6 +84,8 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/research-analyst/research_april2026_cycle9_neural_architectures.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
 - **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
+- **Evolution Fleet Status — April 2026** (453 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
+- **Evolution Fleet Status — April 2026** (453 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/repo-scout/project_nba_data_sources.md`
 - **Political Alpha Deployment** (363 words) -- `raw/agent-memory/feature-engineer_project_political_alpha_deploy.md`
@@ -104,26 +104,26 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 
 ## Key Findings
 
-- Current Fleet State (iter 8, 2026-04-07 04:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- ROOT CAUSE CONFIRMED (iter 6) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- ROOT CAUSE UPDATE (iter 8) — STARTUP-HARDCODED DECAY PROVEN (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Iter 8 Interventions (all 200 OK, queued, 2026-04-07 04:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S15 — Emergency model reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S14 — Emergency diversity reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S10 — Feature + model restore (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S12 — Mutation boost (fleet best) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Iter 6 Interventions (all 200 OK, queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S10 — Cross-pollination from S15 (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S12 — Diversity Reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S14 — Full Reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S13 — Preemptive Nudge (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Current Fleet State (iter 4, 2026-04-06 10:15 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Iter 4 Interventions (all 200 OK, status: queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S10 — regression escape boost (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S12 — mutation nudge + feature boost (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S15 — fleet best maintenance (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Validated Emergency Protocol (from S13 recovery) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S14 Mutation Freeze Warning (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- ROOT CAUSE CONFIRMED (iter 6) + AMPLIFIED BY RESTARTS (iter 10) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Current Fleet State (iter 10, 2026-04-07 18:00 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 10 Interventions (all 200 OK, queued, 2026-04-07 18:00 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 9 Interventions (all 200 OK, queued, 2026-04-07 09:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Key Insight: S15 Winning Formula (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Kaggle Karpathy Context (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Priority Actions (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Current Category List (v3.1-54cat) (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Cat 52-54 Implementation Details (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Key architecture facts (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Known zero-padded / placeholder feature sets (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Historical session notes (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Supabase Tables (ALL created successfully) (from `agent-memory/feature-engineer_project_political_alpha_deploy.md`)
+- VM Cron Jobs (installed) (from `agent-memory/feature-engineer_project_political_alpha_deploy.md`)
+- HF Space: PENDING (from `agent-memory/feature-engineer_project_political_alpha_deploy.md`)
+- Feature Engine Tests (from `agent-memory/feature-engineer_project_political_alpha_deploy.md`)
+- Data Fetcher Updates (2026-03-27) (from `agent-memory/feature-engineer_project_political_alpha_deploy.md`)
+- Data Fetcher Tests (from `agent-memory/feature-engineer_project_political_alpha_deploy.md`)
+- Executive Summary (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
+- 1. KAGGLE CLI SETUP & AUTHENTICATION (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
 
 ## Related Topics
 

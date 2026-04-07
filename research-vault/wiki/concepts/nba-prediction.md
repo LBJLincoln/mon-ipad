@@ -32,8 +32,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/karpathy-researcher/karpathy_nba_adaptation.md`
-- **Evolution Fleet Status — April 2026** (1452 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
-- **Evolution Fleet Status — April 2026** (1452 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **22 -- Compute Mesh Topology** (1406 words) -- `raw/obsidian-docs/22-Compute-Mesh.md`
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/data-research/self-improvement-harness-sources-2026-03-31.md`
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/research/self-improvement-harness-sources-2026-03-31.md`
@@ -101,6 +99,8 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/agent-memory/research-analyst_project_backtest_audit_march2026.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/research-analyst/project_backtest_audit_march2026.md`
+- **Evolution Fleet Status — April 2026** (453 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
+- **Evolution Fleet Status — April 2026** (453 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **project_claude_code_ecosystem** (449 words) -- `raw/agent-memory/repo-scout_project_claude_code_ecosystem.md`
 - **project_claude_code_ecosystem** (449 words) -- `raw/repo-scout/project_claude_code_ecosystem.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`
@@ -159,32 +159,32 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-03** (145 words) -- `raw/research/github-betting-scan-2026-04-03.md`
 - **Research Scan: github-betting-scan-2026-04-04** (145 words) -- `raw/research/github-betting-scan-2026-04-04.md`
 - **Research Scan: github-betting-scan-2026-04-05** (145 words) -- `raw/research/github-betting-scan-2026-04-05.md`
+- **Research Scan: github-betting-scan-2026-04-07** (145 words) -- `raw/research/github-betting-scan-2026-04-07.md`
 - **Research Scan: github-betting-scan-2026-04-06** (136 words) -- `raw/research/github-betting-scan-2026-04-06.md`
-- **Research Scan: github-betting-scan-2026-04-07** (136 words) -- `raw/research/github-betting-scan-2026-04-07.md`
 - **Current Fleet State (iter 9, 2026-04-07 09:30 UTC)** (130 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`
 
 ## Key Findings
 
-- Current Fleet State (iter 8, 2026-04-07 04:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- ROOT CAUSE CONFIRMED (iter 6) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- ROOT CAUSE UPDATE (iter 8) — STARTUP-HARDCODED DECAY PROVEN (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Iter 8 Interventions (all 200 OK, queued, 2026-04-07 04:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S15 — Emergency model reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S14 — Emergency diversity reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S10 — Feature + model restore (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S12 — Mutation boost (fleet best) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Iter 6 Interventions (all 200 OK, queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S10 — Cross-pollination from S15 (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S12 — Diversity Reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S14 — Full Reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S13 — Preemptive Nudge (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Current Fleet State (iter 4, 2026-04-06 10:15 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Iter 4 Interventions (all 200 OK, status: queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S10 — regression escape boost (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S12 — mutation nudge + feature boost (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S15 — fleet best maintenance (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Validated Emergency Protocol (from S13 recovery) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S14 Mutation Freeze Warning (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- ROOT CAUSE CONFIRMED (iter 6) + AMPLIFIED BY RESTARTS (iter 10) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Current Fleet State (iter 10, 2026-04-07 18:00 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 10 Interventions (all 200 OK, queued, 2026-04-07 18:00 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 9 Interventions (all 200 OK, queued, 2026-04-07 09:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Key Insight: S15 Winning Formula (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Kaggle Karpathy Context (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Priority Actions (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Current Fleet State (iter 9, 2026-04-07 09:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`)
+- Fleet Metrics (iter 9) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`)
+- ROOT CAUSE (9th iteration confirmation) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`)
+- Current Category List (v3.1-54cat) (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Cat 52-54 Implementation Details (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Key architecture facts (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Known zero-padded / placeholder feature sets (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Historical session notes (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- What We're Doing Right ✓ (from `agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`)
+- Why:** You built Nomos42 following principles Karpathy independently validated in Mar-Apr 2026. This is strong validation that your architecture is sound. (from `agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`)
+- How to Apply:** (from `agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`)
+- Key Quote from Karpathy (Apr 2026) (from `agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`)
+- Executive Summary (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
 
 ## Related Topics
 

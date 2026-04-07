@@ -19,8 +19,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/karpathy-researcher/karpathy_nba_adaptation.md`
-- **Evolution Fleet Status — April 2026** (1452 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
-- **Evolution Fleet Status — April 2026** (1452 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **22 -- Compute Mesh Topology** (1406 words) -- `raw/obsidian-docs/22-Compute-Mesh.md`
 - **RGWA HuggingFace Models Survey March 2026** (1265 words) -- `raw/agent-memory/research-analyst_research_rgwa_hf_models_march2026.md`
 - **RGWA HuggingFace Models Survey March 2026** (1265 words) -- `raw/research-analyst/research_rgwa_hf_models_march2026.md`
@@ -68,6 +66,8 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/karpathy-researcher/research_bloomberg_opencode_pi.md`
 - **Research Scan: self-improvement-harness-2026-03-31** (530 words) -- `raw/research/self-improvement-harness-2026-03-31.md`
 - **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
+- **Evolution Fleet Status — April 2026** (453 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
+- **Evolution Fleet Status — April 2026** (453 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **18 -- Creative (RGWA)** (379 words) -- `raw/obsidian-docs/18-Creative-RGWA.md`
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/karpathy-researcher/feedback_karpathy_patterns_validated.md`
@@ -83,26 +83,26 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 
 ## Key Findings
 
-- Current Fleet State (iter 8, 2026-04-07 04:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- ROOT CAUSE CONFIRMED (iter 6) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- ROOT CAUSE UPDATE (iter 8) — STARTUP-HARDCODED DECAY PROVEN (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Iter 8 Interventions (all 200 OK, queued, 2026-04-07 04:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S15 — Emergency model reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S14 — Emergency diversity reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S10 — Feature + model restore (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S12 — Mutation boost (fleet best) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Iter 6 Interventions (all 200 OK, queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S10 — Cross-pollination from S15 (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S12 — Diversity Reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S14 — Full Reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S13 — Preemptive Nudge (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Current Fleet State (iter 4, 2026-04-06 10:15 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Iter 4 Interventions (all 200 OK, status: queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S10 — regression escape boost (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S12 — mutation nudge + feature boost (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S15 — fleet best maintenance (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Validated Emergency Protocol (from S13 recovery) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- S14 Mutation Freeze Warning (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- ROOT CAUSE CONFIRMED (iter 6) + AMPLIFIED BY RESTARTS (iter 10) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Current Fleet State (iter 10, 2026-04-07 18:00 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 10 Interventions (all 200 OK, queued, 2026-04-07 18:00 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 9 Interventions (all 200 OK, queued, 2026-04-07 09:30 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Key Insight: S15 Winning Formula (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Kaggle Karpathy Context (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Priority Actions (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- What We're Doing Right ✓ (from `agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`)
+- Why:** You built Nomos42 following principles Karpathy independently validated in Mar-Apr 2026. This is strong validation that your architecture is sound. (from `agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`)
+- How to Apply:** (from `agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`)
+- Key Quote from Karpathy (Apr 2026) (from `agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`)
+- Executive Summary (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
+- 1. KAGGLE CLI SETUP & AUTHENTICATION (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
+- Installation (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
+- Authentication Setup (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
+- 2. KAGGLE KERNELS OPERATIONS (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
+- 2.1 Initialize Kernel Metadata (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
+- 2.2 Kernel Metadata Configuration (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
+- 2.3 Push Kernel → Auto-run (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
+- 2.4 Check Kernel Status (from `agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`)
 
 ## Related Topics
 
