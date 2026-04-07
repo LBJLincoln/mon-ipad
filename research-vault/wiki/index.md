@@ -1,7 +1,7 @@
 # Nomos42 Research Vault — Knowledge Index
 
-> Last compiled: 2026-04-07 09:17 UTC
-> Raw sources: 197 files | Topics: 11 | Concepts: 27
+> Last compiled: 2026-04-07 13:21 UTC
+> Raw sources: 200 files | Topics: 11 | Concepts: 27
 
 ## How to Use This Vault
 
@@ -16,27 +16,27 @@ This is a Markdown-first knowledge base (Karpathy LLM KB pattern).
 
 ### [[Betting Strategy & Bankroll]]
 - Wiki: `wiki/techniques/betting-strategy.md`
-- Sources: 100 raw files
+- Sources: 102 raw files
 
 ### [[Calibration & Probability Scoring]]
 - Wiki: `wiki/techniques/calibration.md`
-- Sources: 34 raw files
+- Sources: 35 raw files
 
 ### [[Data Sources & APIs]]
 - Wiki: `wiki/concepts/data-sources.md`
-- Sources: 68 raw files
+- Sources: 70 raw files
 
 ### [[Genetic Algorithm & Evolution]]
 - Wiki: `wiki/architectures/evolution.md`
-- Sources: 70 raw files
+- Sources: 71 raw files
 
 ### [[Feature Engineering & Selection]]
 - Wiki: `wiki/concepts/feature-engineering.md`
-- Sources: 53 raw files
+- Sources: 55 raw files
 
 ### [[Infrastructure & Compute]]
 - Wiki: `wiki/architectures/infrastructure.md`
-- Sources: 89 raw files
+- Sources: 91 raw files
 
 ### [[Karpathy Autoresearch & Agent Patterns]]
 - Wiki: `wiki/architectures/karpathy-patterns.md`
@@ -44,40 +44,40 @@ This is a Markdown-first knowledge base (Karpathy LLM KB pattern).
 
 ### [[NBA Prediction & ML Models]]
 - Wiki: `wiki/concepts/nba-prediction.md`
-- Sources: 148 raw files
+- Sources: 151 raw files
 
 ### [[Political Alpha & Prediction Markets]]
 - Wiki: `wiki/concepts/political-alpha.md`
-- Sources: 47 raw files
+- Sources: 49 raw files
 
 ### [[Trading Floor & AI Competition]]
 - Wiki: `wiki/architectures/trading-floor.md`
-- Sources: 36 raw files
+- Sources: 38 raw files
 
 ## Top Concepts (by mention frequency)
 
-- **[[Brier Score]]** -- 100 mentions across betting-strategy, data-sources, evolution
-- **[[HF Spaces]]** -- 65 mentions across evolution, feature-engineering, infrastructure
-- **[[Tree Models]]** -- 61 mentions across betting-strategy, data-sources, feature-engineering
-- **[[Calibration]]** -- 55 mentions across betting-strategy, data-sources, feature-engineering
+- **[[Brier Score]]** -- 103 mentions across betting-strategy, data-sources, evolution
+- **[[HF Spaces]]** -- 66 mentions across evolution, feature-engineering, infrastructure
+- **[[Tree Models]]** -- 63 mentions across betting-strategy, data-sources, feature-engineering
+- **[[Calibration]]** -- 56 mentions across betting-strategy, data-sources, feature-engineering
+- **[[Ensemble Methods]]** -- 52 mentions across data-sources, feature-engineering, infrastructure
 - **[[TabICL]]** -- 50 mentions across betting-strategy, data-sources, feature-engineering
-- **[[Ensemble Methods]]** -- 50 mentions across data-sources, feature-engineering, infrastructure
 - **[[Karpathy Loop]]** -- 43 mentions across evolution, infrastructure, karpathy-patterns
-- **[[Kelly Criterion]]** -- 41 mentions across betting-strategy, evolution, infrastructure
+- **[[Kelly Criterion]]** -- 43 mentions across betting-strategy, evolution, infrastructure
 - **[[Feature Engineering]]** -- 39 mentions across data-sources, evolution, infrastructure
 - **[[Political Alpha]]** -- 38 mentions across betting-strategy, evolution, infrastructure
-- **[[Trading Floor]]** -- 36 mentions across betting-strategy, evolution, infrastructure
-- **[[Bankroll Management]]** -- 35 mentions across betting-strategy, evolution, infrastructure
-- **[[Walk-Forward]]** -- 30 mentions across betting-strategy, data-sources, infrastructure
-- **[[Feature Selection]]** -- 30 mentions across feature-engineering, infrastructure, karpathy-patterns
-- **[[SHAP]]** -- 22 mentions across data-sources, infrastructure, nba-prediction
+- **[[Trading Floor]]** -- 38 mentions across betting-strategy, evolution, infrastructure
+- **[[Bankroll Management]]** -- 37 mentions across betting-strategy, evolution, infrastructure
+- **[[Walk-Forward]]** -- 32 mentions across betting-strategy, data-sources, infrastructure
+- **[[Feature Selection]]** -- 31 mentions across feature-engineering, infrastructure, karpathy-patterns
+- **[[SHAP]]** -- 23 mentions across data-sources, infrastructure, nba-prediction
 - **[[Genetic Algorithm]]** -- 18 mentions across evolution, infrastructure, karpathy-patterns
 - **[[Crossover]]** -- 17 mentions across evolution, infrastructure, nba-prediction
 - **[[Isotonic Regression]]** -- 17 mentions across nba-prediction
-- **[[Value Betting]]** -- 16 mentions across betting-strategy, evolution, nba-prediction
+- **[[Value Betting]]** -- 17 mentions across betting-strategy, evolution, nba-prediction
+- **[[Shot Chart]]** -- 16 mentions across data-sources, nba-prediction
 - **[[Venn-ABERS]]** -- 15 mentions across karpathy-patterns, nba-prediction
 - **[[Mutation Operators]]** -- 14 mentions across evolution, infrastructure, karpathy-patterns
-- **[[Shot Chart]]** -- 14 mentions across data-sources, nba-prediction
 - **[[Platt Scaling]]** -- 13 mentions across betting-strategy, infrastructure, karpathy-patterns
 - **[[Multi-Island Evolution]]** -- 9 mentions across evolution, karpathy-patterns, nba-prediction
 - **[[LLM Council]]** -- 5 mentions across karpathy-patterns
@@ -86,14 +86,14 @@ This is a Markdown-first knowledge base (Karpathy LLM KB pattern).
 
 | Source Directory | Files | Total Words |
 |-----------------|-------|-------------|
-| `raw/agent-memory/` | 52 | 38,381 |
-| `raw/arena-docs/` | 10 | 57,265 |
+| `raw/agent-memory/` | 54 | 38,999 |
+| `raw/arena-docs/` | 10 | 58,678 |
 | `raw/councils/` | 9 | 135 |
 | `raw/data-proposals/` | 5 | 2,351 |
 | `raw/data-reports/` | 1 | 1,597 |
 | `raw/data-research/` | 4 | 2,892 |
 | `raw/evolution-optimizer/` | 1 | 1,452 |
-| `raw/experiments/` | 3 | 2,711 |
+| `raw/experiments/` | 3 | 2,609 |
 | `raw/feature-engineer/` | 3 | 1,234 |
 | `raw/karpathy-researcher/` | 11 | 16,688 |
 | `raw/market-analyst/` | 4 | 893 |
@@ -101,9 +101,9 @@ This is a Markdown-first knowledge base (Karpathy LLM KB pattern).
 | `raw/obsidian-docs/` | 28 | 24,045 |
 | `raw/political/` | 3 | 1,784 |
 | `raw/repo-scout/` | 8 | 4,154 |
-| `raw/research/` | 32 | 6,709 |
+| `raw/research/` | 33 | 12,053 |
 | `raw/research-analyst/` | 19 | 12,855 |
 | `raw/scientific/` | 2 | 1,684 |
 
 ---
-*Generated by compile.py on 2026-04-07 09:17 UTC*
+*Generated by compile.py on 2026-04-07 13:21 UTC*

@@ -1,12 +1,12 @@
 # NBA Scientific Experiment Report
-**Generated:** 2026-04-07 08:28:58
+**Generated:** 2026-04-07 12:03:11
 **Engine:** scientific-experiment.py v1.0
 
 ## Part 1: Model Evaluation
 
 ### Consensus Model Performance
 - **Predictions evaluated:** 14
-- **Brier Score:** 0.18929 (95% CI: [0.1028, 0.28882])
+- **Brier Score:** 0.18929 (95% CI: [0.08675, 0.28024])
 - **Log Loss:** 0.5454
 - **AUC-ROC:** 0.7556
 - **ECE (Calibration):** 0.2152
@@ -48,31 +48,23 @@ No statistically significant differences found at p < 0.05.
 ## Part 2: Strategy Backtesting
 
 - **Model Brier:** 0.2152
-- **Games in backtest:** 1081
-- **Strategies tested:** 42
+- **Games in backtest:** 104
+- **Strategies tested:** 10
 
 ### Best Strategies by Sharpe Ratio
 | Rank | Strategy | Sharpe | ROI% | PnL | Bets | MaxDD |
 |------|----------|--------|------|-----|------|-------|
-| 1 | EV>20% Kelly=10% | 3.586 | 14.6% | $151.24 | 172 | 0.381 |
-| 2 | Tenth Kelly (edge>2%) | 3.581 | 18.3% | $256.40 | 210 | 0.352 |
-| 3 | Value Hunter (edge>15%) | 3.580 | 12.7% | $189.97 | 194 | 0.623 |
-| 4 | Conservative (low stakes, high threshold) | 3.579 | 11.9% | $49.38 | 192 | 0.320 |
-| 5 | Value Hunter (edge>10%) | 3.573 | 11.8% | $172.93 | 199 | 0.623 |
+| 1 | Specialist: Spread | 8.900 | 51.3% | $600.81 | 85 | 0.275 |
+| 2 | Aggressive (high stakes, low threshold) | -6.708 | -40.0% | $-87.83 | 75 | 0.878 |
+| 3 | Conservative (low stakes, high threshold) | -6.708 | -28.0% | $-50.00 | 129 | 0.500 |
+| 4 | Half Kelly (edge>3%) | -7.392 | -36.3% | $-80.88 | 92 | 0.809 |
+| 5 | Value Hunter (edge>5%) | -7.392 | -36.3% | $-80.88 | 92 | 0.809 |
 
 ### Kelly Fraction Optimization
 | Fraction | Min Edge | Sharpe | ROI% | MaxDD | Bets |
 |----------|----------|--------|------|-------|------|
-| 0.10 | 2% | 3.581 | 18.3% | 0.352 | 210 |
-| 0.10 | 5% | 3.565 | 12.8% | 0.459 | 197 |
-| 0.10 | 3% | 3.533 | 16.2% | 0.381 | 200 |
-| 0.25 | 5% | 3.505 | 12.4% | 0.572 | 212 |
-| 0.50 | 5% | 3.476 | 10.3% | 0.624 | 212 |
-| 0.25 | 2% | 3.439 | 18.2% | 0.470 | 223 |
-| 0.50 | 2% | 3.431 | 15.8% | 0.534 | 223 |
-| 0.25 | 3% | 3.279 | 15.8% | 0.470 | 213 |
-| 0.50 | 3% | 3.230 | 13.4% | 0.534 | 213 |
-| 1.00 | 5% | 3.212 | 8.0% | 0.866 | 212 |
+| 0.50 | 3% | -7.392 | -36.3% | 0.809 | 92 |
+| 0.25 | 3% | -8.241 | -39.7% | 0.807 | 99 |
 
 ### Regression Analysis: PnL ~ confidence + edge + odds
 - **N observations:** 10000
@@ -129,15 +121,15 @@ No statistically significant differences found at p < 0.05.
 ### Betting Category Profile (from Trading Floor)
 | Category | Bets | Avg Stake | Avg Conf | Avg Agreement | Avg Edge | Forced |
 |----------|------|-----------|----------|---------------|----------|--------|
-| ml_fg | 17 | $3.96 | 0.653 | 0.758 | 6.0% | 0 |
+| ml_fg | 31 | $25.64 | 0.557 | 0.655 | 13.6% | 0 |
 | spread_fg | 14 | $2.76 | 0.655 | 0.750 | 0.0% | 14 |
-| total_fg | 16 | $1.00 | 0.691 | 0.802 | 0.0% | 0 |
+| total_fg | 30 | $24.41 | 0.574 | 0.675 | 0.0% | 0 |
 
 ## Recommendations
 
 - CONSENSUS Brier 0.18929 is competitive. Target: < 0.21570 (ATR)
 - WARNING: Low-agreement bets outperform high-agreement. Consensus mechanism may be flawed.
-- BEST STRATEGY: EV>20% Kelly=10% (Sharpe 3.586, ROI 14.6%, MaxDD 0.381)
+- BEST STRATEGY: Specialist: Spread (Sharpe 8.900, ROI 51.3%, MaxDD 0.275)
 - OPTIMAL THRESHOLDS: confidence >= 0.55, edge >= 0.0%, Kelly fraction = 0.10
 - OUT-OF-SAMPLE validation positive: ROI 6470.4%. Strategy is robust.
 - REGRESSION: confidence significantly decreases PnL (beta=-8.6664, p=0.0002)

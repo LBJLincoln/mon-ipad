@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 148 raw sources on 2026-04-07
+> Auto-compiled from 151 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 148 research files spanning nba prediction & ml models.
+This topic covers 151 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -14,6 +14,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **2025-26 NBA Season — Agent CLAUDE** (9555 words) -- `raw/arena-docs/claude-season-2025-26.md`
 - **2025-26 NBA Season — Agent CODEX** (9547 words) -- `raw/arena-docs/codex-season-2025-26.md`
 - **2025-26 NBA Season — Agent GEMINI** (9540 words) -- `raw/arena-docs/gemini-season-2025-26.md`
+- **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
@@ -38,11 +39,11 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/research/self-improvement-harness-sources-2026-03-31.md`
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
-- **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
 - **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
 - **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
 - **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
+- **NBA Scientific Experiment Report** (1087 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
 - **00 — Live Dashboard** (1076 words) -- `raw/obsidian-docs/00-Dashboard.md`
 - **05 -- Infrastructure** (1069 words) -- `raw/obsidian-docs/05-Infrastructure.md`
 - **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/data-research/self-improvement-harness-quick-wins-2026-03-31.md`
@@ -95,6 +96,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/research-analyst/research_april2026_cycle9_neural_architectures.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle6.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/research-analyst/research_march2026_cycle6.md`
+- **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
 - **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/agent-memory/research-analyst_project_backtest_audit_march2026.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/research-analyst/project_backtest_audit_march2026.md`
@@ -157,6 +159,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-05** (145 words) -- `raw/research/github-betting-scan-2026-04-05.md`
 - **Research Scan: github-betting-scan-2026-04-06** (136 words) -- `raw/research/github-betting-scan-2026-04-06.md`
 - **Research Scan: github-betting-scan-2026-04-07** (136 words) -- `raw/research/github-betting-scan-2026-04-07.md`
+- **Current Fleet State (iter 9, 2026-04-07 09:30 UTC)** (130 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`
 
 ## Key Findings
 

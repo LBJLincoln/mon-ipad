@@ -1,23 +1,24 @@
 # Calibration & Probability Scoring
 
-> Auto-compiled from 34 raw sources on 2026-04-07
+> Auto-compiled from 35 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 34 research files spanning calibration & probability scoring.
+This topic covers 35 research files spanning calibration & probability scoring.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
 
+- **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/karpathy-researcher/obsidian_rag_implementation_april2026.md`
 - **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
-- **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
 - **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
 - **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
+- **NBA Scientific Experiment Report** (1087 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
 - **00 — Live Dashboard** (1076 words) -- `raw/obsidian-docs/00-Dashboard.md`
 - **07 -- Betting** (997 words) -- `raw/obsidian-docs/07-Betting.md`
 - **Research Proposal: Opening-Line Odds as Protected GA Features** (980 words) -- `raw/data-proposals/2026-04-05-opening-odds-protected-features.md`

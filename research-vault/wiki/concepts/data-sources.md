@@ -1,14 +1,15 @@
 # Data Sources & APIs
 
-> Auto-compiled from 68 raw sources on 2026-04-07
+> Auto-compiled from 70 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 68 research files spanning data sources & apis.
+This topic covers 70 research files spanning data sources & apis.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
 
+- **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/agent-memory/karpathy-researcher_research_cycle6_feature_proposals.md`
@@ -47,6 +48,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: self-improvement-harness-2026-03-31** (530 words) -- `raw/research/self-improvement-harness-2026-03-31.md`
 - **Political Alpha Research — March 2026** (527 words) -- `raw/agent-memory/research-analyst_research_political_alpha_march2026.md`
 - **Political Alpha Research — March 2026** (527 words) -- `raw/research-analyst/research_political_alpha_march2026.md`
+- **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/research-analyst/research_march2026_cycle8_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`

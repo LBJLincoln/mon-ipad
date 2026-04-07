@@ -1,14 +1,15 @@
 # Infrastructure & Compute
 
-> Auto-compiled from 89 raw sources on 2026-04-07
+> Auto-compiled from 91 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 89 research files spanning infrastructure & compute.
+This topic covers 91 research files spanning infrastructure & compute.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
 
+- **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
 - **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`
@@ -83,6 +84,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Browser Automation for HF Spaces — March 2026 Research** (601 words) -- `raw/research-analyst/research_browser_automation_march2026.md`
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle9_neural_architectures.md`
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/research-analyst/research_april2026_cycle9_neural_architectures.md`
+- **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
 - **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/repo-scout/project_nba_data_sources.md`

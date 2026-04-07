@@ -1,14 +1,15 @@
 # Genetic Algorithm & Evolution
 
-> Auto-compiled from 70 raw sources on 2026-04-07
+> Auto-compiled from 71 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 70 research files spanning genetic algorithm & evolution.
+This topic covers 71 research files spanning genetic algorithm & evolution.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
 
+- **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
 - **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`

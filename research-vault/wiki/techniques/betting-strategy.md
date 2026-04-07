@@ -1,10 +1,10 @@
 # Betting Strategy & Bankroll
 
-> Auto-compiled from 100 raw sources on 2026-04-07
+> Auto-compiled from 102 raw sources on 2026-04-07
 
 ## Overview
 
-This topic covers 100 research files spanning betting strategy & bankroll.
+This topic covers 102 research files spanning betting strategy & bankroll.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -14,27 +14,28 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **2025-26 NBA Season — Agent CLAUDE** (9555 words) -- `raw/arena-docs/claude-season-2025-26.md`
 - **2025-26 NBA Season — Agent CODEX** (9547 words) -- `raw/arena-docs/codex-season-2025-26.md`
 - **2025-26 NBA Season — Agent GEMINI** (9540 words) -- `raw/arena-docs/gemini-season-2025-26.md`
+- **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
-- **Political Trading Season 2025-26 -- Agent OPENROUTER** (2292 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent GEMINI** (2281 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent CODEX** (2265 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent OPENROUTER** (2661 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent GEMINI** (2650 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent CODEX** (2606 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/agent-memory/karpathy-researcher_research_cycle6_feature_proposals.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/karpathy-researcher/research_cycle6_feature_proposals.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/karpathy-researcher/obsidian_rag_implementation_april2026.md`
 - **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
+- **Political Trading Season 2025-26 -- Agent GROK** (1484 words) -- `raw/arena-docs/political-grok-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent CLAUDE** (1466 words) -- `raw/arena-docs/political-claude-season-2025-26.md`
 - **Evolution Fleet Status — April 2026** (1452 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
 - **Evolution Fleet Status — April 2026** (1452 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
-- **Political Trading Season 2025-26 -- Agent CLAUDE** (1308 words) -- `raw/arena-docs/political-claude-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent GROK** (1308 words) -- `raw/arena-docs/political-grok-season-2025-26.md`
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
-- **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
 - **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
 - **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
 - **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
+- **NBA Scientific Experiment Report** (1087 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
 - **00 — Live Dashboard** (1076 words) -- `raw/obsidian-docs/00-Dashboard.md`
 - **07 -- Betting** (997 words) -- `raw/obsidian-docs/07-Betting.md`
 - **Research Proposal: Opening-Line Odds as Protected GA Features** (980 words) -- `raw/data-proposals/2026-04-05-opening-odds-protected-features.md`
@@ -68,6 +69,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **research_april2026_cycle10_betting_markets** (562 words) -- `raw/research-analyst/research_april2026_cycle10_betting_markets.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle6.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/research-analyst/research_march2026_cycle6.md`
+- **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/agent-memory/research-analyst_project_backtest_audit_march2026.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/research-analyst/project_backtest_audit_march2026.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`
