@@ -5,7 +5,10 @@
 > have Claude Code on the web draft the next implementation step in CCR with
 > three parallel subagents + a critique pass.
 
-**Last refresh:** 2026-04-07
+**Last refresh:** 2026-04-07 (Phase B shipped: trader pool refactored to free
+HF models, NBA/Political dashboard mocks removed, OASIS T3 swarm scaffolded,
+Alpaca paper client scaffolded, Obsidian compile cron live, Claude Code Web
+verified at claude.ai/code — research preview, Pro/Max/Team/Enterprise only)
 **Repos in scope:**
 - `LBJLincoln/mon-ipad` (NBA Quant — engine, gates, dashboards)
 - `LBJLincoln/nomos-political-alpha` (Political Alpha — Cat 1-22 features)
@@ -178,18 +181,44 @@ update if a strategy crosses the gate, and writes
 
 ## How to invoke /ultraplan
 
-From any Claude Code session in `/home/termius/mon-ipad`:
+**Verified 2026-04-07** against the official docs at
+[code.claude.com/docs/en/ultraplan](https://code.claude.com/docs/en/ultraplan).
+Ultraplan is **research preview**, available to Claude **Pro / Max / Team /
+Enterprise** accounts only. It requires Claude Code on the web (claude.ai/code)
++ a connected GitHub repo + the Claude GitHub App installed on `LBJLincoln/mon-ipad`.
+
+**One-time setup (do this first):**
+1. Run `/web-setup` from any local Claude Code session — syncs your `gh auth token`
+2. OR visit [claude.ai/code](https://claude.ai/code) directly and connect GitHub
+3. Pick a default cloud environment
+
+**Invoke from local Claude Code session in `/home/termius/mon-ipad`:**
 
 ```
-/ultraplan @PLAN.md — design W1 (real LangGraph debate replacement) end-to-end
+/ultraplan design W1 (real LangGraph debate replacement) end-to-end using @PLAN.md
 ```
 
-Anthropic's CCR will:
-1. Spawn 3 parallel subagents (read existing code / draft changes / risk audit)
-2. Run a critique pass that rejects unsafe edits
-3. Return a browser link with the proposed plan
-4. On approval, either execute remotely (creates a PR on `LBJLincoln/mon-ipad`)
-   or teleport the plan back to your terminal for local execution
+Three ways to launch:
+- **Slash command**: `/ultraplan <prompt>` — opens confirmation dialog
+- **Keyword**: any prompt containing the word `ultraplan` — opens confirmation dialog
+- **From local plan**: when Claude finishes a local plan, choose "No, refine with
+  Ultraplan on Claude Code on the web" in the approval dialog (no extra confirm)
+
+CLI status indicator: `◇ ultraplan` → `◆ ultraplan ready`. Run `/tasks` to open
+the session detail view with the browser link, agent activity, and a
+**Stop ultraplan** action.
+
+In the browser at claude.ai/code:
+- Highlight any passage to leave inline comments
+- React with emojis to signal approval/concern
+- Iterate until the plan is right
+- Click **Approve plan and start coding** → executes in cloud, opens PR on `LBJLincoln/mon-ipad`
+- OR click **Approve plan and teleport back to terminal** → injects plan into
+  your local CLI session for local execution
+
+CLI alternative for non-plan tasks: `claude --remote "<prompt>"` creates a new
+web session that runs in the cloud while you keep working locally. Multiple
+`--remote` calls run in parallel.
 
 **Sources:**
 - [Plan in the cloud with ultraplan — official docs](https://code.claude.com/docs/en/ultraplan)

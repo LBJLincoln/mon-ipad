@@ -211,10 +211,16 @@ STRATEGIES = {
 }
 
 # ── AI TRADER DEFINITIONS ───────────────────────────────────────────────────
+# TRADER POOL — refactored 2026-04-07 from paid APIs to FREE HF models.
+# Same rebrand as scripts/arena/trading-floor-v4.py (NBA-side). Dict keys preserved
+# so existing state files under data/arena/traders/political-{key}-state.json keep
+# accumulating bankroll history. Only `name` and `provider` change.
+# Free HF models are routed via the HF Inference API; we have 4 HF accounts so
+# rate limits are effectively unlimited for batch trading.
 TRADERS = {
-    "gemini": {
-        "name":               "Gemini",
-        "provider":           "google",
+    "gemini": {  # was Google Gemini → now Gemma 3 27B (free, HF)
+        "name":               "Gemma 3 27B",
+        "provider":           "hf:google/gemma-3-27b-it",
         "personality":        "analytical",
         "risk_tolerance":     0.60,
         "capital":            INITIAL_CAPITAL,
@@ -224,9 +230,9 @@ TRADERS = {
         "ticker_focus":       ["XLK", "QQQ", "SPY", "LMT", "NVDA", "MSFT"],
         "event_weight":       {"exec_order": 1.2, "fed_rule": 1.0, "insider_trade": 0.8, "polymarket": 0.9},
     },
-    "openrouter": {
-        "name":               "OpenRouter",
-        "provider":           "openrouter",
+    "openrouter": {  # was OpenRouter → now Qwen 3 72B (free, HF)
+        "name":               "Qwen 3 72B",
+        "provider":           "hf:Qwen/Qwen2.5-72B-Instruct",
         "personality":        "diversified",
         "risk_tolerance":     0.50,
         "capital":            INITIAL_CAPITAL,
@@ -236,9 +242,9 @@ TRADERS = {
         "ticker_focus":       ["SPY", "IWM", "XLF", "XLE", "JPM", "XOM"],
         "event_weight":       {"exec_order": 1.0, "fed_rule": 1.1, "insider_trade": 1.2, "polymarket": 0.8},
     },
-    "claude": {
-        "name":               "Claude",
-        "provider":           "anthropic",
+    "claude": {  # Claude Code CLI — already free locally
+        "name":               "Claude Code CLI",
+        "provider":           "anthropic_cli",
         "personality":        "conservative",
         "risk_tolerance":     0.40,
         "capital":            INITIAL_CAPITAL,
@@ -248,9 +254,9 @@ TRADERS = {
         "ticker_focus":       ["TLT", "GLD", "XLV", "JNJ", "UNH", "SPY"],
         "event_weight":       {"exec_order": 0.8, "fed_rule": 1.3, "insider_trade": 0.7, "polymarket": 1.0},
     },
-    "codex": {
-        "name":               "Codex",
-        "provider":           "openai",
+    "codex": {  # was OpenAI Codex → now Llama 3.3 70B (free, HF)
+        "name":               "Llama 3.3 70B",
+        "provider":           "hf:meta-llama/Llama-3.3-70B-Instruct",
         "personality":        "aggressive",
         "risk_tolerance":     0.75,
         "capital":            INITIAL_CAPITAL,
@@ -260,9 +266,9 @@ TRADERS = {
         "ticker_focus":       ["QQQ", "XLK", "NVDA", "BA", "TSLA", "META"],
         "event_weight":       {"exec_order": 1.5, "fed_rule": 0.7, "insider_trade": 1.0, "polymarket": 1.3},
     },
-    "grok": {
-        "name":               "Grok",
-        "provider":           "xai",
+    "grok": {  # was xAI Grok → now Mistral Large 2 (free, HF)
+        "name":               "Mistral Large 2",
+        "provider":           "hf:mistralai/Mistral-Large-Instruct-2411",
         "personality":        "contrarian",
         "risk_tolerance":     0.65,
         "capital":            INITIAL_CAPITAL,

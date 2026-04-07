@@ -171,10 +171,16 @@ BANKROLL_THRESHOLDS = {
 #   - preferred_strategies: preferred bet sizing approach
 #   - pol_approach: political signal interpretation style
 #   - etf_sectors: sector focus for ETF trading
+# TRADER POOL — refactored 2026-04-07 from paid APIs (Gemini/Grok/OpenAI/OpenRouter)
+# to FREE HF models. We have 4 HF accounts (HF_TOKEN, HF_TOKEN_2/3, HF_TOKEN_FORGE)
+# so all of these are reachable via the HF Inference Router with no per-request cost.
+# Dict KEYS preserved (gemini/openrouter/claude/codex/grok) so existing state files
+# under data/arena/traders/{key}-state.json keep accumulating bankroll history.
+# Only `name` and `provider` change — they are display labels for the dashboard.
 TRADERS = {
-    "gemini": {
-        "name":               "Gemini",
-        "provider":           "google",
+    "gemini": {  # was Google Gemini → now Gemma 3 27B (free, HF)
+        "name":               "Gemma 3 27B",
+        "provider":           "hf:google/gemma-3-27b-it",
         "personality":        "analytical",
         "risk_tolerance":     0.60,
         "bankroll_nba":       100.0,
@@ -184,9 +190,9 @@ TRADERS = {
         "pol_approach":       "momentum",
         "etf_sectors":        ["XLK", "QQQ", "SPY"],
     },
-    "openrouter": {
-        "name":               "OpenRouter",
-        "provider":           "openrouter",
+    "openrouter": {  # was OpenRouter multi-model → now Qwen 3 72B (free, HF)
+        "name":               "Qwen 3 72B",
+        "provider":           "hf:Qwen/Qwen2.5-72B-Instruct",
         "personality":        "diversified",
         "risk_tolerance":     0.50,
         "bankroll_nba":       100.0,
@@ -197,9 +203,9 @@ TRADERS = {
         "pol_approach":       "sector_rotation",
         "etf_sectors":        ["SPY", "IWM", "XLF", "XLE"],
     },
-    "claude": {
-        "name":               "Claude",
-        "provider":           "anthropic",
+    "claude": {  # Claude Code CLI — already free locally, kept as-is
+        "name":               "Claude Code CLI",
+        "provider":           "anthropic_cli",
         "personality":        "conservative",
         "risk_tolerance":     0.40,
         "bankroll_nba":       100.0,
@@ -210,9 +216,9 @@ TRADERS = {
         "pol_approach":       "mean_reversion",
         "etf_sectors":        ["TLT", "GLD", "XLV"],
     },
-    "codex": {
-        "name":               "Codex",
-        "provider":           "openai",
+    "codex": {  # was OpenAI Codex → now Llama 3.3 70B (free, HF)
+        "name":               "Llama 3.3 70B",
+        "provider":           "hf:meta-llama/Llama-3.3-70B-Instruct",
         "personality":        "aggressive",
         "risk_tolerance":     0.70,
         "bankroll_nba":       100.0,
@@ -223,9 +229,9 @@ TRADERS = {
         "pol_approach":       "event_driven",
         "etf_sectors":        ["QQQ", "XLK", "XLI"],
     },
-    "grok": {
-        "name":               "Grok",
-        "provider":           "xai",
+    "grok": {  # was xAI Grok → now Mistral Large 2 (free, HF)
+        "name":               "Mistral Large 2",
+        "provider":           "hf:mistralai/Mistral-Large-Instruct-2411",
         "personality":        "contrarian",
         "risk_tolerance":     0.65,
         "bankroll_nba":       100.0,
