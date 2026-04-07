@@ -1,11 +1,11 @@
 {
-  "last_updated": "2026-04-06T13:00:00Z",
-  "cycle": "brain-cycle-70",
+  "last_updated": "2026-04-07T16:00:00Z",
+  "cycle": "brain-cycle-75",
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
   "nba_fleet": {
     "islands_online": 6,
     "islands_total": 6,
-    "best_brier": 0.2222,
+    "best_brier": 0.22158,
     "best_brier_island": "S15-nomos42-nba-evo-6",
     "brier_threshold": 0.21837,
     "threshold_reached": false,
@@ -16,141 +16,133 @@
       "S10-nomos42-nba-quant": {
         "role": "exploitation",
         "status": "ONLINE",
-        "generation": 214,
-        "best_brier": 0.23149,
+        "generation": 99,
+        "cycle": 33,
+        "best_brier": 0.2239,
         "stagnation": 0,
         "model": "random_forest",
-        "features": 46,
-        "roi_pct": 15.7,
-        "sharpe": 7.6199,
+        "features": 53,
+        "roi_pct": 28.09,
+        "sharpe": 6.7095,
+        "mutation_rate": 0.074,
+        "pop_size": 60,
+        "feature_candidates": 3286,
+        "games": 9551,
         "action": "none"
       },
       "S11-nomos42-nba-quant-2": {
         "role": "exploration",
         "status": "ONLINE",
-        "generation": 265,
-        "best_brier": 0.22372,
+        "generation": 73,
+        "cycle": 25,
+        "best_brier": 0.22926,
         "stagnation": 0,
         "model": "catboost",
-        "features": 64,
-        "roi_pct": 28.4,
-        "sharpe": 9.3918,
-        "action": "none",
-        "note": "diversified at cycle 86 - healthy exploration"
+        "features": 59,
+        "roi_pct": 21.51,
+        "sharpe": 3.3797,
+        "mutation_rate": 0.1196,
+        "pop_size": 60,
+        "feature_candidates": 3286,
+        "games": 9551,
+        "action": "none"
       },
       "S12-nomos42-nba-evo-3": {
         "role": "extra_trees_specialist",
         "status": "ONLINE",
-        "generation": 403,
-        "best_brier": 0.22533,
+        "generation": 105,
+        "cycle": 35,
+        "best_brier": 0.22287,
         "stagnation": 0,
-        "model": "xgboost",
-        "features": 34,
+        "model": "random_forest",
+        "features": 60,
+        "roi_pct": 29.23,
+        "sharpe": 7.8312,
+        "mutation_rate": 0.1039,
+        "pop_size": 60,
+        "feature_candidates": 3286,
+        "games": 9551,
         "action": "none"
       },
       "S13-nomos42-nba-evo-4": {
         "role": "catboost_specialist",
         "status": "ONLINE",
-        "generation": 182,
-        "best_brier": 0.22283,
+        "generation": 97,
+        "cycle": 33,
+        "best_brier": 0.223,
         "stagnation": 0,
         "model": "random_forest",
-        "features": 52,
-        "roi_pct": 29.31,
-        "sharpe": 10.12,
+        "features": 49,
+        "roi_pct": 28.86,
+        "sharpe": 8.7403,
+        "mutation_rate": 0.111,
+        "pop_size": 60,
+        "feature_candidates": 3286,
+        "games": 9551,
         "action": "none"
       },
       "S14-nomos42-nba-evo-5": {
         "role": "lightgbm_specialist",
         "status": "ONLINE",
-        "generation": 238,
-        "best_brier": 0.22622,
+        "generation": 37,
+        "cycle": 13,
+        "best_brier": 0.24696,
         "stagnation": 0,
-        "model": "random_forest",
-        "features": 55,
-        "roi_pct": 25.51,
-        "sharpe": 5.4224,
-        "action": "none"
+        "model": "lightgbm",
+        "features": 47,
+        "roi_pct": 3.14,
+        "sharpe": 3.1352,
+        "mutation_rate": 0.0744,
+        "pop_size": 60,
+        "feature_candidates": 3286,
+        "games": 9551,
+        "action": "none",
+        "note": "EARLY STAGE (gen 37 vs fleet avg 76) — Brier 0.247 expected, will converge"
       },
       "S15-nomos42-nba-evo-6": {
         "role": "wide_search",
         "status": "ONLINE",
-        "generation": 106,
-        "best_brier": 0.2222,
+        "generation": 69,
+        "cycle": 23,
+        "best_brier": 0.22158,
         "stagnation": 0,
-        "model": "random_forest",
-        "features": 61,
-        "roi_pct": 30.0,
+        "model": "extra_trees",
+        "features": 75,
+        "roi_pct": 30.91,
+        "sharpe": 6.7986,
+        "mutation_rate": 0.1682,
+        "pop_size": 50,
+        "feature_candidates": 3286,
+        "games": 9551,
         "action": "FLEET_BEST"
       }
     }
   },
-  "political_fleet": {
-    "islands_online": 2,
-    "islands_total": 4,
-    "best_brier": 0.23134,
-    "best_brier_island": "PA2-nomos42-political-alpha-2",
-    "islands": {
-      "PA1-nomos42-political-alpha": {
-        "role": "exploitation",
-        "status": "ONLINE",
-        "generation": 12516,
-        "best_brier": 0.24971,
-        "stagnation": 0,
-        "model": "xgboost_brier",
-        "features": 65
-      },
-      "PA2-nomos42-political-alpha-2": {
-        "role": "exploration",
-        "status": "ONLINE",
-        "generation": 18047,
-        "best_brier": 0.23134,
-        "stagnation": 0,
-        "model": "catboost",
-        "features": 70,
-        "top_performer_roi": 41.56,
-        "top_performer_model": "lightgbm"
-      },
-      "PA3-nomos42-political-alpha-3": {
-        "role": "catboost",
-        "status": "DOWN_404",
-        "consecutive_down_cycles": 6,
-        "alert": "DOWN x6 cycles — private space, manual HF dashboard restart needed by user"
-      },
-      "PA4-nomos42-political-alpha-4": {
-        "role": "wide_search",
-        "status": "DOWN_404",
-        "consecutive_down_cycles": 6,
-        "alert": "DOWN x6 cycles — private space, manual HF dashboard restart needed by user"
-      }
-    }
+  "cycle_improvement": {
+    "rotation": "B — WebSearch NBA techniques 2025-2026",
+    "type": "RESEARCH_PROPOSAL",
+    "file": "data/research-proposals/shot-zone-aggregation-cat50-2026-04-07.json",
+    "description": "Proposed Cat50 Shot-Zone Aggregation — CPU-compatible approximation of spatial shot-chart embeddings from MDPI 2026 paper (Brier 0.199 achieved with CNN shot embeddings). Aggregates FGA%, FG%, pts_per_shot, relative_efficiency per 7 court zones across rolling windows of 5, 15, and season. ~80 clean features after noise filtering. Expected Brier delta: -0.003 to -0.008.",
+    "source_paper": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets, MDPI Information 2026",
+    "key_finding": "LR Brier 0.199, XGBoost 0.202 on 2024 test season. Our best: 0.22158 (S15 ExtraTrees). Gap: 0.022. Shot embeddings + temporal form + market signals fused model yields best calibration.",
+    "next_action": "Implement Cat50 in features/engine.py, version bump to v3.1-47cat"
   },
-  "cycle_improvements": {
-    "nba": {
-      "type": "RESEARCH_PROPOSAL",
-      "file": "data/research-proposals/2026-04-06-lstm-brier-calibration.md",
-      "summary": "3-phase LSTM Brier loss calibration targeting sub-0.21837. Phase 1: isotonic CalibratedClassifierCV wrapper (drop ~0.005-0.010). Phase 2: lstm_brier GA model type. Gap to threshold: 0.0038.",
-      "sources": ["arxiv 2508.02725", "arxiv 2410.21484", "nature s41598-025-13657-1"]
-    },
-    "political": {
-      "type": "BUG_FIX",
-      "file": "ops/fetch_political_data.py",
-      "summary": "Fixed polymarket validation false-positive: markets saved as YYYYMMDD_HHMM but validated as YYYYMMDD. Silent failure every cycle. Fixed filename to YYYYMMDD only.",
-      "rotation": "D - data pipeline health check"
-    }
+  "fleet_observations": [
+    "S14 (LightGBM specialist) behind at Brier 0.247 — Gen 37 only, early stage, expected",
+    "S15 (ExtraTrees wide search) leads fleet with Brier 0.22158 — watch for checkpoint",
+    "All stagnation counters = 0 — fleet actively improving, no diversify needed",
+    "Best fleet ROI: S15 30.91%, S12 29.23%, S13 28.86%",
+    "Fleet avg generation: ~77 — all islands in mid-stage evolution"
+  ],
+  "cross_repo": {
+    "nba_best_brier": 0.22158,
+    "political_best_brier": 0.23134,
+    "engine_parity_status": "CHECK REQUIRED next cycle"
   },
   "alerts": [
-    "PA3 DOWN_404 x6 cycles — manual restart required (private space)",
-    "PA4 DOWN_404 x6 cycles — manual restart required (private space)"
+    "PA3 and PA4 political alpha spaces returning 404 — manual restart required via HF dashboard (no HF_TOKEN available)",
+    "S14 Brier 0.24696 — early stage gen 37, not alarming"
   ],
-  "engine_versions": {
-    "nba": "v3.1-51cat (6257+ candidates)",
-    "political": "v3.5-political-27cat-fec2026"
-  },
-  "next_cycle": "2026-04-06T16:40:00Z",
-  "next_cycle_rotation": {
-    "nba": "implement isotonic CalibratedClassifierCV in engine.py (Phase 1 of LSTM proposal)",
-    "political": "A - WebSearch new FEC/SEC data sources"
-  },
-  "brain_version": "nomos42-brain-v1"
+  "next_cycle_rotation": "C — Port working technique between repos",
+  "next_cycle": "2026-04-07T20:00:00Z"
 }
