@@ -1,7 +1,7 @@
 # Nomos42 Research Vault — Knowledge Index
 
-> Last compiled: 2026-04-07 18:26 UTC
-> Raw sources: 202 files | Topics: 11 | Concepts: 27
+> Last compiled: 2026-04-07 20:24 UTC
+> Raw sources: 206 files | Topics: 11 | Concepts: 27
 
 ## How to Use This Vault
 
@@ -16,27 +16,27 @@ This is a Markdown-first knowledge base (Karpathy LLM KB pattern).
 
 ### [[Betting Strategy & Bankroll]]
 - Wiki: `wiki/techniques/betting-strategy.md`
-- Sources: 100 raw files
+- Sources: 102 raw files
 
 ### [[Calibration & Probability Scoring]]
 - Wiki: `wiki/techniques/calibration.md`
-- Sources: 36 raw files
+- Sources: 37 raw files
 
 ### [[Data Sources & APIs]]
 - Wiki: `wiki/concepts/data-sources.md`
-- Sources: 70 raw files
+- Sources: 72 raw files
 
 ### [[Genetic Algorithm & Evolution]]
 - Wiki: `wiki/architectures/evolution.md`
-- Sources: 71 raw files
+- Sources: 72 raw files
 
 ### [[Feature Engineering & Selection]]
 - Wiki: `wiki/concepts/feature-engineering.md`
-- Sources: 56 raw files
+- Sources: 57 raw files
 
 ### [[Infrastructure & Compute]]
 - Wiki: `wiki/architectures/infrastructure.md`
-- Sources: 92 raw files
+- Sources: 94 raw files
 
 ### [[Karpathy Autoresearch & Agent Patterns]]
 - Wiki: `wiki/architectures/karpathy-patterns.md`
@@ -44,7 +44,7 @@ This is a Markdown-first knowledge base (Karpathy LLM KB pattern).
 
 ### [[NBA Prediction & ML Models]]
 - Wiki: `wiki/concepts/nba-prediction.md`
-- Sources: 153 raw files
+- Sources: 155 raw files
 
 ### [[Political Alpha & Prediction Markets]]
 - Wiki: `wiki/concepts/political-alpha.md`
@@ -56,26 +56,26 @@ This is a Markdown-first knowledge base (Karpathy LLM KB pattern).
 
 ## Top Concepts (by mention frequency)
 
-- **[[Brier Score]]** -- 104 mentions across betting-strategy, data-sources, evolution
-- **[[HF Spaces]]** -- 66 mentions across evolution, feature-engineering, infrastructure
-- **[[Tree Models]]** -- 63 mentions across betting-strategy, data-sources, evolution
-- **[[Calibration]]** -- 57 mentions across betting-strategy, data-sources, feature-engineering
-- **[[Ensemble Methods]]** -- 52 mentions across data-sources, feature-engineering, infrastructure
-- **[[TabICL]]** -- 50 mentions across betting-strategy, data-sources, evolution
+- **[[Brier Score]]** -- 106 mentions across betting-strategy, data-sources, evolution
+- **[[HF Spaces]]** -- 67 mentions across evolution, feature-engineering, infrastructure
+- **[[Tree Models]]** -- 64 mentions across betting-strategy, data-sources, evolution
+- **[[Calibration]]** -- 59 mentions across betting-strategy, calibration, data-sources
+- **[[Ensemble Methods]]** -- 53 mentions across data-sources, feature-engineering, infrastructure
+- **[[TabICL]]** -- 51 mentions across betting-strategy, data-sources, evolution
 - **[[Karpathy Loop]]** -- 44 mentions across evolution, infrastructure, karpathy-patterns
-- **[[Kelly Criterion]]** -- 43 mentions across betting-strategy, evolution, infrastructure
+- **[[Kelly Criterion]]** -- 44 mentions across betting-strategy, evolution, infrastructure
 - **[[Trading Floor]]** -- 40 mentions across betting-strategy, evolution, infrastructure
 - **[[Feature Engineering]]** -- 39 mentions across data-sources, evolution, infrastructure
 - **[[Political Alpha]]** -- 38 mentions across betting-strategy, evolution, infrastructure
-- **[[Bankroll Management]]** -- 37 mentions across betting-strategy, evolution, infrastructure
+- **[[Bankroll Management]]** -- 38 mentions across betting-strategy, evolution, infrastructure
 - **[[Feature Selection]]** -- 31 mentions across feature-engineering, infrastructure, karpathy-patterns
 - **[[Walk-Forward]]** -- 30 mentions across betting-strategy, data-sources, infrastructure
 - **[[SHAP]]** -- 23 mentions across data-sources, infrastructure, nba-prediction
 - **[[Genetic Algorithm]]** -- 18 mentions across evolution, infrastructure, karpathy-patterns
+- **[[Isotonic Regression]]** -- 18 mentions across calibration, nba-prediction
 - **[[Crossover]]** -- 17 mentions across evolution, infrastructure, nba-prediction
-- **[[Isotonic Regression]]** -- 17 mentions across nba-prediction
+- **[[Shot Chart]]** -- 17 mentions across data-sources, nba-prediction
 - **[[Value Betting]]** -- 17 mentions across betting-strategy, evolution, nba-prediction
-- **[[Shot Chart]]** -- 16 mentions across data-sources, nba-prediction
 - **[[Venn-ABERS]]** -- 15 mentions across karpathy-patterns, nba-prediction
 - **[[Mutation Operators]]** -- 14 mentions across evolution, infrastructure, karpathy-patterns
 - **[[Platt Scaling]]** -- 13 mentions across betting-strategy, infrastructure, karpathy-patterns
@@ -86,8 +86,8 @@ This is a Markdown-first knowledge base (Karpathy LLM KB pattern).
 
 | Source Directory | Files | Total Words |
 |-----------------|-------|-------------|
-| `raw/agent-memory/` | 56 | 38,734 |
-| `raw/arena-docs/` | 10 | 58,738 |
+| `raw/agent-memory/` | 60 | 40,210 |
+| `raw/arena-docs/` | 10 | 58,771 |
 | `raw/councils/` | 9 | 135 |
 | `raw/data-proposals/` | 5 | 2,351 |
 | `raw/data-reports/` | 1 | 1,597 |
@@ -106,4 +106,4 @@ This is a Markdown-first knowledge base (Karpathy LLM KB pattern).
 | `raw/scientific/` | 2 | 1,684 |
 
 ---
-*Generated by compile.py on 2026-04-07 18:26 UTC*
+*Generated by compile.py on 2026-04-07 20:24 UTC*
