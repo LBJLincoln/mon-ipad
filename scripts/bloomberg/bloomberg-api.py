@@ -26,6 +26,7 @@ All data is read from local JSON files in the data/ directory.
 
 import json
 import os
+import sqlite3
 import sys
 import datetime
 import argparse
@@ -245,6 +246,97 @@ def get_all() -> dict:
     }
 
 
+# ── Lineage (Hamilton UI foundation, Cycle 14 Tier 2.C2) ───────────────────
+LINEAGE_DB = Path(os.environ.get("NOMOS42_LINEAGE_DIR", str(Path.home() / ".nomos42"))) / "lineage.db"
+
+
+def get_lineage(query: dict | None = None) -> dict:
+    """Return experiment lineage rows from ~/.nomos42/lineage.db.
+
+    Query params:
+      experiment_id=<eid>   filter to one experiment
+      limit=<n>             max rows (default 50, cap 500)
+    """
+    q = query or {}
+    eid = (q.get("experiment_id") or [None])[0] if isinstance(q.get("experiment_id"), list) else q.get("experiment_id")
+    try:
+        limit_raw = (q.get("limit") or [50])[0] if isinstance(q.get("limit"), list) else q.get("limit", 50)
+        limit = max(1, min(int(limit_raw), 500))
+    except (TypeError, ValueError):
+        limit = 50
+
+    out: dict = {
+        "endpoint": "lineage",
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+        "db": str(LINEAGE_DB),
+        "db_exists": LINEAGE_DB.exists(),
+        "filter": {"experiment_id": eid, "limit": limit},
+        "rows": [],
+        "graph": {"nodes": [], "edges": []},
+    }
+
+    if not LINEAGE_DB.exists():
+        out["error"] = "lineage.db not found — run scripts/lineage/lineage_ingest.py"
+        return out
+
+    try:
+        conn = sqlite3.connect(f"file:{LINEAGE_DB}?mode=ro", uri=True)
+        conn.row_factory = sqlite3.Row
+        if eid:
+            cur = conn.execute(
+                "SELECT experiment_id, node, source, ingested_at, generated_at, payload "
+                "FROM runs WHERE experiment_id=? ORDER BY ingested_at DESC LIMIT ?",
+                (eid, limit),
+            )
+        else:
+            cur = conn.execute(
+                "SELECT experiment_id, node, source, ingested_at, generated_at, payload "
+                "FROM runs ORDER BY ingested_at DESC LIMIT ?",
+                (limit,),
+            )
+        rows = []
+        nodes: dict[str, dict] = {}
+        for r in cur.fetchall():
+            try:
+                payload = json.loads(r["payload"]) if r["payload"] else {}
+            except Exception:
+                payload = {}
+            row = {
+                "experiment_id": r["experiment_id"],
+                "node": r["node"],
+                "source": r["source"],
+                "ingested_at": r["ingested_at"],
+                "generated_at": r["generated_at"],
+                "engine_version": payload.get("engine_version"),
+                "metrics": payload.get("metrics", {}),
+                "path": payload.get("path"),
+            }
+            rows.append(row)
+            # Build node summary for graph rendering
+            n = nodes.setdefault(r["node"], {"id": r["node"], "count": 0, "sources": []})
+            n["count"] += 1
+            if r["source"] not in n["sources"]:
+                n["sources"].append(r["source"])
+        conn.close()
+        out["rows"] = rows
+        # Karpathy DAG edges — static chain for now
+        dag_order = [
+            "research", "engineering", "evolution", "evaluation",
+            "product", "business", "finance", "infra", "cross_repo",
+            "traders", "strategy_gate", "pnl",
+        ]
+        out["graph"]["nodes"] = [nodes[n] for n in dag_order if n in nodes]
+        out["graph"]["edges"] = [
+            {"from": dag_order[i], "to": dag_order[i + 1]}
+            for i in range(len(dag_order) - 1)
+            if dag_order[i] in nodes and dag_order[i + 1] in nodes
+        ]
+        out["count"] = len(rows)
+    except Exception as e:
+        out["error"] = f"{type(e).__name__}: {e}"
+    return out
+
+
 # ── HTTP Handler ───────────────────────────────────────────────────────────
 
 ROUTES = {
@@ -259,6 +351,11 @@ ROUTES = {
     "/api/all": get_all,
 }
 
+# Routes that accept the parsed query dict (takes **1** positional arg)
+QUERY_ROUTES = {
+    "/api/lineage": get_lineage,
+}
+
 
 class BloombergHandler(BaseHTTPRequestHandler):
     """HTTP request handler for the Bloomberg API."""
@@ -266,6 +363,7 @@ class BloombergHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
         path = parsed.path.rstrip("/")
+        query = parse_qs(parsed.query)
 
         # Root — show API index
         if path in ("", "/", "/api"):
@@ -273,13 +371,22 @@ class BloombergHandler(BaseHTTPRequestHandler):
                 "name": "Nomos42 Bloomberg API",
                 "version": "1.0",
                 "description": "NBA Betting Intelligence REST API",
-                "endpoints": list(ROUTES.keys()),
+                "endpoints": list(ROUTES.keys()) + list(QUERY_ROUTES.keys()),
                 "docs": "GET any endpoint above for JSON data",
                 "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
             })
             return
 
-        # Route matching
+        # Route matching — query routes first (they accept params)
+        q_handler = QUERY_ROUTES.get(path)
+        if q_handler:
+            try:
+                data = q_handler(query)
+                self._send_json(data)
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=500)
+            return
+
         handler = ROUTES.get(path)
         if handler:
             try:
@@ -291,7 +398,7 @@ class BloombergHandler(BaseHTTPRequestHandler):
             self._send_json({
                 "error": "Not found",
                 "path": path,
-                "available": list(ROUTES.keys()),
+                "available": list(ROUTES.keys()) + list(QUERY_ROUTES.keys()),
             }, status=404)
 
     def _send_json(self, data: dict, status: int = 200):
@@ -347,6 +454,7 @@ def main():
 ║    GET /api/bankroll       Bankroll & P&L                 ║
 ║    GET /api/quant          Quant summary                  ║
 ║    GET /api/health         System health                  ║
+║    GET /api/lineage        Experiment DAG (Cycle 14 C2)    ║
 ║    GET /api/all            Everything                     ║
 ║                                                          ║
 ║  Press Ctrl+C to stop                                    ║
