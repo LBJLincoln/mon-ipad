@@ -41,6 +41,11 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 SWARM_DIR = ROOT / "data" / "arena" / "backtest-results"
 OUTPUT = ROOT / "data" / "nba-agent" / "full-season-backtest.json"
 INITIAL_BANKROLL = 100.0
+# W3 bankroll parity (PLAN.md): NBA backtest is sized at $100, political is sized
+# at $100K. To render side-by-side on the dashboard we expose a derived
+# `display_bankroll = bankroll * DISPLAY_SCALE` so both arenas show in the same
+# $100K units without distorting the underlying ROI / Sharpe / Brier math.
+DISPLAY_SCALE = 1000.0  # $100 -> $100K parity with political
 SEASON_START = "2025-10-21"  # NBA 2025-26 season opener
 SEASON_END = "2026-04-13"    # NBA 2025-26 regular season end
 
@@ -118,12 +123,19 @@ def synth_trades(strat: dict, brier_n: int) -> list[dict]:
             "won": won,
             "pnl": round(pnl, 2),
             "bankroll": round(bankroll, 2),
+            # W3 parity: same value scaled to $100K so dashboard can render
+            # NBA + Political on a unified equity-curve axis.
+            "display_bankroll": round(bankroll * DISPLAY_SCALE, 2),
+            "display_pnl": round(pnl * DISPLAY_SCALE, 2),
+            "display_stake": round(INITIAL_BANKROLL * 0.025 * DISPLAY_SCALE, 2),
         })
     # Force the final bankroll to match exactly
     if trades:
         delta = final - trades[-1]["bankroll"]
         trades[-1]["pnl"] = round(trades[-1]["pnl"] + delta, 2)
         trades[-1]["bankroll"] = round(final, 2)
+        trades[-1]["display_bankroll"] = round(final * DISPLAY_SCALE, 2)
+        trades[-1]["display_pnl"] = round(trades[-1]["pnl"] * DISPLAY_SCALE, 2)
     return trades
 
 
@@ -157,6 +169,12 @@ def build_payload(swarm_path: Path, swarm: dict) -> dict:
     return {
         "initial_bankroll": INITIAL_BANKROLL,
         "final_bankroll": round(final, 2),
+        # W3 parity fields (PLAN.md): NBA $100 scaled to $100K so dashboard can
+        # render alongside political-arena-v2.json without unit confusion.
+        "display_initial_bankroll": round(INITIAL_BANKROLL * DISPLAY_SCALE, 2),
+        "display_final_bankroll": round(final * DISPLAY_SCALE, 2),
+        "display_scale": DISPLAY_SCALE,
+        "display_currency": "USD",
         "roi_pct": round(roi_pct, 3),
         "total_bets": n_bets,
         "wins": wins,
