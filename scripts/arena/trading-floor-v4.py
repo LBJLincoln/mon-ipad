@@ -42,6 +42,35 @@ def _save_iteration(it: Dict) -> None:
     _ITERATION_FILE.parent.mkdir(parents=True, exist_ok=True)
     _ITERATION_FILE.write_text(json.dumps(it, indent=2))
 
+# ── ATLAS-GIC DARWINIAN WEIGHTS (Cycle 13 — github.com/chrisworsey55/atlas-gic) ─
+# Per-trader allocation multiplier compounded daily by darwin_weights.py:
+#   top quartile  → x1.05
+#   bottom quart. → x0.95
+#   middle ranks  → x1.00
+# Bounded [0.30, 2.50]. Drives kelly_adj ⇒ winners get more capital, losers fade
+# gracefully without elimination. 4 days/yr published lift +22% on 16/54 traders.
+_DARWIN_FILE   = Path('/home/termius/mon-ipad/data/arena/trader-darwin-weights.json')
+_DARWIN_MIN_W  = 0.30
+_DARWIN_MAX_W  = 2.50
+
+def _load_darwin_weights() -> Dict[str, float]:
+    """Load per-trader Darwinian weights. Returns {trader_id: weight} mapping.
+    Missing file or unparseable JSON ⇒ all traders get neutral 1.0."""
+    if not _DARWIN_FILE.exists():
+        return {}
+    try:
+        raw = json.loads(_DARWIN_FILE.read_text())
+    except (OSError, json.JSONDecodeError):
+        return {}
+    out: Dict[str, float] = {}
+    for tid, entry in (raw.get("traders") or {}).items():
+        try:
+            w = float(entry.get("weight", 1.0))
+        except (TypeError, ValueError):
+            w = 1.0
+        out[tid] = max(_DARWIN_MIN_W, min(_DARWIN_MAX_W, w))
+    return out
+
 # ── ELIMINATED NBA STRATEGIES ─────────────────────────────────────────────────
 # These strategies have been permanently eliminated due to sustained negative ROI.
 # They are never selected by agents; kept here as a historical coffin record.
@@ -1770,10 +1799,15 @@ def agent_political_trades(trader_id: str, political_bankroll: float,
 def run_nba_backtest_for_agent(trader_id: str, matched: List,
                                others_states: Dict,
                                all_games: Optional[List[Dict]] = None,
-                               season_memory: Optional[Dict] = None) -> Dict:
+                               season_memory: Optional[Dict] = None,
+                               darwin_weight: float = 1.0) -> Dict:
     """
     v9: Full-season backtest WITH GAME-LEVEL LEARNING. Agent gets ALL context per game, bets freely
     across 16+ categories, provides justification for every bet.
+
+    darwin_weight: atlas-gic per-trader allocation multiplier (0.3..2.5). Applied
+    on top of kelly_adj so winners scale up daily and losers fade. Updated by
+    scripts/arena/darwin_weights.py before each iteration.
     """
     bankroll   = TRADERS[trader_id]["bankroll_nba"]
     comp_state = {"last_won": False, "win_streak": 0, "peak": bankroll}
@@ -1834,6 +1868,14 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
         if loss_cooldown > 0:
             kelly_adj *= 0.5
             loss_cooldown -= 1
+
+        # ── ATLAS-GIC DARWINIAN MULTIPLIER ──
+        # Compounds the rolling kelly adjustment by the trader's atlas-gic
+        # weight (top-quartile traders trend toward 2.5x stake, bottom toward
+        # 0.3x). Computed once per day so all bets on a given day share the
+        # same Darwinian scale.
+        if darwin_weight != 1.0:
+            kelly_adj *= darwin_weight
 
         # Budget for the day = full bankroll (agents deploy 100%)
         day_budget = bankroll
@@ -2187,6 +2229,7 @@ def build_leaderboard(all_results: Dict) -> List[Dict]:
             "political_max_drawdown": state.get("political_max_drawdown", 0.0),
             "combined_score":     round(combined, 4),
             "eliminated":         state.get("nba_eliminated_day") is not None,
+            "darwin_weight":      state.get("darwin_weight", 1.0),
         })
     board.sort(key=lambda x: x["combined_score"], reverse=True)
     for i, entry in enumerate(board, 1):
@@ -2247,18 +2290,29 @@ def run_full_competition() -> Dict:
     if season_memory.get("feature_correlations"):
         print(f"  Feature correlations: {len(season_memory['feature_correlations'])} features tracked")
 
+    # ── LOAD ATLAS-GIC DARWINIAN WEIGHTS (Cycle 13) ──
+    darwin_weights = _load_darwin_weights()
+    if darwin_weights:
+        snippet = ", ".join(f"{tid}={w:.3f}" for tid, w in sorted(darwin_weights.items()))
+        print(f"Darwin weights : {snippet}")
+    else:
+        print("Darwin weights : none yet (will seed at 1.0)")
+
     all_results: Dict[str, Dict] = {}
 
     for trader_id in TRADERS:
         cfg = TRADERS[trader_id]
         pol_profile = POLITICAL_TRADER_PROFILES.get(trader_id, {})
         pol_strat = pol_profile.get("primary_strategy", cfg.get("pol_approach", "momentum"))
-        print(f"\nAgent [{trader_id}] — {cfg['personality']} / NBA + Political ({pol_strat})")
+        dw = darwin_weights.get(trader_id, 1.0)
+        dw_tag = f" darwin={dw:.3f}" if dw != 1.0 else ""
+        print(f"\nAgent [{trader_id}] — {cfg['personality']} / NBA + Political ({pol_strat}){dw_tag}")
         others = load_other_trader_states(trader_id)
         pol_others = load_political_trader_states(trader_id)
 
         nba_result = run_nba_backtest_for_agent(trader_id, matched, others, all_games_sorted,
-                                                 season_memory=season_memory)
+                                                 season_memory=season_memory,
+                                                 darwin_weight=dw)
         pol_result = run_political_backtest_for_agent(
             trader_id, pol_events, social_snapshots, signals, pol_others)
 
@@ -2268,6 +2322,7 @@ def run_full_competition() -> Dict:
             "provider":       cfg["provider"],
             "personality":    cfg["personality"],
             "risk_tolerance": cfg["risk_tolerance"],
+            "darwin_weight":  round(dw, 4),
             **nba_result,
             **{k: v for k, v in pol_result.items() if k != "political_all_trades"},
             "saw_others":     list(others.keys()),

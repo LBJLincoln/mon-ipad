@@ -1,0 +1,101 @@
+{
+  "_meta": {
+    "generated_at": "2026-04-07T17:13:56.855130+00:00",
+    "reference": "github.com/chrisworsey55/atlas-gic",
+    "rules": {
+      "bottom_mult": 0.95,
+      "bottom_quartile": "ranks 5..5",
+      "max_weight": 2.5,
+      "min_weight": 0.3,
+      "top_mult": 1.05,
+      "top_quartile": "ranks 1..1"
+    },
+    "source": "scripts/arena/darwin_weights.py"
+  },
+  "history": [
+    {
+      "generation": 42840,
+      "iteration": 315,
+      "timestamp": "2026-04-07T17:13:56.855112+00:00",
+      "updates": [
+        {
+          "mult": 1.05,
+          "name": "Codex",
+          "new_weight": 1.05,
+          "prior_weight": 1.0,
+          "rank": 1,
+          "trader_id": "codex",
+          "zone": "top"
+        },
+        {
+          "mult": 1.0,
+          "name": "Gemini",
+          "new_weight": 1.0,
+          "prior_weight": 1.0,
+          "rank": 2,
+          "trader_id": "gemini",
+          "zone": "middle"
+        },
+        {
+          "mult": 1.0,
+          "name": "Grok",
+          "new_weight": 1.0,
+          "prior_weight": 1.0,
+          "rank": 3,
+          "trader_id": "grok",
+          "zone": "middle"
+        },
+        {
+          "mult": 1.0,
+          "name": "OpenRouter",
+          "new_weight": 1.0,
+          "prior_weight": 1.0,
+          "rank": 4,
+          "trader_id": "openrouter",
+          "zone": "middle"
+        },
+        {
+          "mult": 0.95,
+          "name": "Claude",
+          "new_weight": 0.95,
+          "prior_weight": 1.0,
+          "rank": 5,
+          "trader_id": "claude",
+          "zone": "bottom"
+        }
+      ]
+    }
+  ],
+  "traders": {
+    "claude": {
+      "last_rank": 5,
+      "name": "Claude",
+      "updated_at": "2026-04-07T17:13:56.855105+00:00",
+      "weight": 0.95
+    },
+    "codex": {
+      "last_rank": 1,
+      "name": "Codex",
+      "updated_at": "2026-04-07T17:13:56.854989+00:00",
+      "weight": 1.05
+    },
+    "gemini": {
+      "last_rank": 2,
+      "name": "Gemini",
+      "updated_at": "2026-04-07T17:13:56.855060+00:00",
+      "weight": 1.0
+    },
+    "grok": {
+      "last_rank": 3,
+      "name": "Grok",
+      "updated_at": "2026-04-07T17:13:56.855073+00:00",
+      "weight": 1.0
+    },
+    "openrouter": {
+      "last_rank": 4,
+      "name": "OpenRouter",
+      "updated_at": "2026-04-07T17:13:56.855088+00:00",
+      "weight": 1.0
+    }
+  }
+}
