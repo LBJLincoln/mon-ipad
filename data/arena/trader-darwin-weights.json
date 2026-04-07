@@ -1,10 +1,16 @@
 {
   "_meta": {
-    "generated_at": "2026-04-07T17:13:56.855130+00:00",
-    "reference": "github.com/chrisworsey55/atlas-gic",
+    "generated_at": "2026-04-07T20:42:00.280903+00:00",
+    "reference": [
+      "github.com/chrisworsey55/atlas-gic (rank layer)",
+      "arXiv:2602.09982 (Kelly-bankroll ensemble weighting, Feb 2026)"
+    ],
     "rules": {
       "bottom_mult": 0.95,
       "bottom_quartile": "ranks 5..5",
+      "kelly_blend": 0.5,
+      "kelly_formula": "kelly_mult = 1 + beta * (sharpe_adj_i / mean_sharpe_adj - 1)",
+      "kelly_sharpe_floor": 0.5,
       "max_weight": 2.5,
       "min_weight": 0.3,
       "top_mult": 1.05,
@@ -64,38 +70,115 @@
           "zone": "bottom"
         }
       ]
+    },
+    {
+      "generation": 42840,
+      "iteration": 315,
+      "timestamp": "2026-04-07T20:42:00.280895+00:00",
+      "updates": [
+        {
+          "kelly_adj": 0.5847,
+          "kelly_mult": 0.7924,
+          "mult": 0.832,
+          "name": "Codex",
+          "nba_sharpe": 2.116,
+          "new_weight": 0.8736,
+          "prior_weight": 1.05,
+          "rank": 1,
+          "rank_mult": 1.05,
+          "trader_id": "codex",
+          "zone": "top"
+        },
+        {
+          "kelly_adj": 0.8655,
+          "kelly_mult": 0.9328,
+          "mult": 0.9328,
+          "name": "Gemini",
+          "nba_sharpe": 2.892,
+          "new_weight": 0.9328,
+          "prior_weight": 1.0,
+          "rank": 2,
+          "rank_mult": 1.0,
+          "trader_id": "gemini",
+          "zone": "middle"
+        },
+        {
+          "kelly_adj": 1.751,
+          "kelly_mult": 1.3755,
+          "mult": 1.3755,
+          "name": "Grok",
+          "nba_sharpe": 5.339,
+          "new_weight": 1.3755,
+          "prior_weight": 1.0,
+          "rank": 3,
+          "rank_mult": 1.0,
+          "trader_id": "grok",
+          "zone": "middle"
+        },
+        {
+          "kelly_adj": 0.5518,
+          "kelly_mult": 0.7759,
+          "mult": 0.7759,
+          "name": "OpenRouter",
+          "nba_sharpe": 2.025,
+          "new_weight": 0.7759,
+          "prior_weight": 1.0,
+          "rank": 4,
+          "rank_mult": 1.0,
+          "trader_id": "openrouter",
+          "zone": "middle"
+        },
+        {
+          "kelly_adj": 1.2469,
+          "kelly_mult": 1.1235,
+          "mult": 1.0673,
+          "name": "Claude",
+          "nba_sharpe": 3.946,
+          "new_weight": 1.0139,
+          "prior_weight": 0.95,
+          "rank": 5,
+          "rank_mult": 0.95,
+          "trader_id": "claude",
+          "zone": "bottom"
+        }
+      ]
     }
   ],
   "traders": {
     "claude": {
+      "last_kelly_adj": 1.2469,
       "last_rank": 5,
       "name": "Claude",
-      "updated_at": "2026-04-07T17:13:56.855105+00:00",
-      "weight": 0.95
+      "updated_at": "2026-04-07T20:42:00.280890+00:00",
+      "weight": 1.0139
     },
     "codex": {
+      "last_kelly_adj": 0.5847,
       "last_rank": 1,
       "name": "Codex",
-      "updated_at": "2026-04-07T17:13:56.854989+00:00",
-      "weight": 1.05
+      "updated_at": "2026-04-07T20:42:00.280767+00:00",
+      "weight": 0.8736
     },
     "gemini": {
+      "last_kelly_adj": 0.8655,
       "last_rank": 2,
       "name": "Gemini",
-      "updated_at": "2026-04-07T17:13:56.855060+00:00",
-      "weight": 1.0
+      "updated_at": "2026-04-07T20:42:00.280845+00:00",
+      "weight": 0.9328
     },
     "grok": {
+      "last_kelly_adj": 1.751,
       "last_rank": 3,
       "name": "Grok",
-      "updated_at": "2026-04-07T17:13:56.855073+00:00",
-      "weight": 1.0
+      "updated_at": "2026-04-07T20:42:00.280862+00:00",
+      "weight": 1.3755
     },
     "openrouter": {
+      "last_kelly_adj": 0.5518,
       "last_rank": 4,
       "name": "OpenRouter",
-      "updated_at": "2026-04-07T17:13:56.855088+00:00",
-      "weight": 1.0
+      "updated_at": "2026-04-07T20:42:00.280876+00:00",
+      "weight": 0.7759
     }
   }
 }
