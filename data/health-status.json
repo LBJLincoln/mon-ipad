@@ -1,214 +1,136 @@
 {
-  "last_updated": "2026-04-07T12:30:00Z",
-  "cycle": "brain-cycle-74",
+  "last_updated": "2026-04-07T20:30:00Z",
+  "cycle": 76,
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
+  "improvement_rotation": "RESEARCH",
+  "improvement_task": "NBA stacked calibration proposal + Political Rotation A (FEC/SEC data sources)",
   "nba_fleet": {
     "islands_online": 6,
     "islands_total": 6,
-    "best_brier": 0.2219,
-    "best_brier_island": "S15-nomos42-nba-evo-6",
+    "best_brier": 0.22371,
+    "best_brier_island": "S13-nomos42-nba-evo-4",
     "brier_threshold": 0.21837,
     "threshold_reached": false,
     "checkpoint_triggered": false,
-    "gap_to_threshold": 0.00353,
-    "stagnation_alerts": [],
-    "diversify_commands_sent": [],
+    "gap_to_threshold": 0.00534,
+    "stagnation_alerts": ["S14-stagnation-22-DIVERSIFIED", "S11-stagnation-13-WATCH"],
+    "diversify_commands_sent": ["S14-nomos42-nba-evo-5"],
     "islands": {
       "S10-nomos42-nba-quant": {
         "role": "exploitation",
         "status": "ONLINE",
-        "cycle": 78,
-        "generation": 232,
-        "best_brier": 0.22435,
-        "best_roi_pct": 27.66,
-        "best_sharpe": 6.4303,
-        "best_features": 57,
+        "cycle": 11,
+        "generation": 32,
+        "best_brier": 0.22391,
+        "best_roi_pct": 28.16,
+        "best_sharpe": 8.0449,
+        "best_features": 49,
         "model": "random_forest",
         "stagnation": 0,
         "games": 9551,
-        "feature_candidates": 3286,
+        "feature_candidates": 3290,
         "action": "none",
-        "last_update": "2026-04-07T12:10:58Z"
+        "last_update": "2026-04-07T20:22:00Z"
       },
       "S11-nomos42-nba-quant-2": {
         "role": "exploration",
         "status": "ONLINE",
-        "cycle": 55,
-        "generation": 163,
-        "best_brier": 0.22243,
-        "best_roi_pct": 29.72,
-        "best_sharpe": 7.7414,
-        "best_features": 58,
-        "model": "random_forest",
-        "mutation_rate": 0.1375,
-        "stagnation": 0,
-        "action": "none",
-        "last_update": "2026-04-07T12:10:00Z"
+        "cycle": 11,
+        "generation": 31,
+        "best_brier": 0.22430,
+        "best_roi_pct": 27.69,
+        "best_sharpe": 7.3278,
+        "best_features": 57,
+        "model": "catboost",
+        "mutation_rate": 0.15,
+        "stagnation": 13,
+        "action": "WATCH_STAGNATION — 13 gens, threshold=15. Diversify next cycle if no improvement.",
+        "last_update": "2026-04-07T20:22:19Z"
       },
       "S12-nomos42-nba-evo-3": {
         "role": "extra_trees_specialist",
         "status": "ONLINE",
-        "cycle": 65,
-        "generation": 193,
-        "best_brier": 0.22432,
-        "best_roi_pct": 27.58,
-        "best_sharpe": 7.6919,
-        "model": "random_forest",
-        "stagnation": 0,
+        "cycle": 7,
+        "generation": 21,
+        "best_brier": 0.22452,
+        "best_roi_pct": 27.32,
+        "best_sharpe": 12.627,
+        "best_features": 42,
+        "model": "catboost",
+        "stagnation": 2,
         "action": "none",
-        "last_update": "2026-04-07T12:11:00Z"
+        "last_update": "2026-04-07T20:22:00Z"
       },
       "S13-nomos42-nba-evo-4": {
         "role": "catboost_specialist",
         "status": "ONLINE",
-        "cycle": 45,
-        "generation": 133,
-        "best_brier": 0.22865,
-        "best_roi_pct": 22.78,
-        "best_sharpe": 8.7271,
+        "cycle": 7,
+        "generation": 20,
+        "best_brier": 0.22371,
+        "best_roi_pct": 28.38,
+        "best_sharpe": 5.4666,
         "best_features": 48,
-        "model": "extra_trees",
+        "model": "xgboost",
         "stagnation": 0,
-        "action": "none",
-        "last_update": "2026-04-07T12:09:18Z"
+        "action": "FLEET_BEST",
+        "last_update": "2026-04-07T20:22:00Z"
       },
       "S14-nomos42-nba-evo-5": {
         "role": "lightgbm_specialist",
         "status": "ONLINE",
-        "cycle": 57,
-        "generation": 171,
-        "best_brier": 0.22476,
-        "best_roi_pct": 27.27,
-        "best_sharpe": 4.6058,
-        "best_features": 36,
-        "model": "random_forest",
-        "stagnation": 0,
-        "action": "none",
-        "last_update": "2026-04-07T12:11:10Z"
+        "cycle": 12,
+        "generation": 36,
+        "best_brier": 0.22919,
+        "best_roi_pct": 21.91,
+        "best_sharpe": 8.6272,
+        "best_features": 32,
+        "model": "extra_trees",
+        "stagnation": 22,
+        "action": "DIVERSIFY_SENT",
+        "diversify_sent_at": "2026-04-07T20:15:00Z",
+        "last_update": "2026-04-07T20:22:00Z"
       },
       "S15-nomos42-nba-evo-6": {
         "role": "wide_search",
-        "status": "ONLINE",
-        "cycle": 59,
-        "generation": 177,
-        "best_brier": 0.2219,
-        "best_roi_pct": 30.52,
-        "best_sharpe": 7.0097,
-        "best_features": 74,
-        "model": "extra_trees",
-        "stagnation": 0,
-        "action": "FLEET_BEST",
-        "last_update": "2026-04-07T12:11:00Z"
-      }
-    }
-  },
-  "political_fleet": {
-    "islands_online": 3,
-    "islands_total": 4,
-    "best_brier": 0.23134,
-    "best_brier_island": "PA2-nomos42-political-alpha-2",
-    "pa3_status_change": "RECOVERED — was DOWN x8 cycles, now ONLINE",
-    "islands": {
-      "PA1-nomos42-political-alpha": {
-        "role": "exploitation",
-        "status": "ONLINE",
-        "cycle": 6272,
-        "generation": 18814,
-        "best_brier": 0.24971,
-        "best_roi_pct": 0.68,
-        "best_sharpe": 0.6809,
+        "status": "ONLINE_RESTARTED",
+        "cycle": 16,
+        "generation": 46,
+        "best_brier": 0.22983,
+        "best_roi_pct": 21.31,
+        "best_sharpe": 21.3061,
+        "best_features": 69,
         "model": "xgboost_brier",
-        "features": 65,
         "stagnation": 0,
-        "events": 1180,
-        "feature_candidates": 252,
-        "space_role": "political_exploitation",
-        "action": "none"
-      },
-      "PA2-nomos42-political-alpha-2": {
-        "role": "exploration",
-        "status": "ONLINE",
-        "cycle": 7645,
-        "generation": 22935,
-        "best_brier": 0.23134,
-        "best_roi_pct": 28.04,
-        "best_sharpe": 1.0635,
-        "model": "catboost",
-        "features": 70,
-        "stagnation": 0,
-        "events": 372,
-        "feature_candidates": 309,
-        "space_role": "political_exploration",
-        "action": "FLEET_BEST"
-      },
-      "PA3-nomos42-political-alpha-3": {
-        "role": "catboost",
-        "status": "ONLINE",
-        "cycle": 7645,
-        "generation": 22935,
-        "best_brier": 0.23134,
-        "stagnation": 0,
-        "space_role": "political_exploration",
-        "action": "none",
-        "note": "RECOVERED after 8 down cycles — back online"
-      },
-      "PA4-nomos42-political-alpha-4": {
-        "role": "wide_search",
-        "status": "DOWN_404",
-        "consecutive_down_cycles": 9,
-        "alert": "DOWN x9 cycles — private HF space, manual restart required via HF dashboard",
-        "action": "MANUAL_RESTART_REQUIRED"
+        "action": "WATCH — restarted since cycle 74 (was 403). Previous fleet best 0.2219 at gen 177 is gone.",
+        "last_update": "2026-04-07T20:22:00Z"
       }
-    }
-  },
-  "cycle_improvements": {
-    "nba": {
-      "type": "CODE_CHANGE",
-      "files": [
-        "nomos-nba-agent/hf-space/app.py"
-      ],
-      "summary": "Added 'isotonic_temporal' as new calibration method in GA. Uses temporal holdout (not CV folds) — avoids the overfitting failure mode of sklearn's CalibratedClassifierCV(method='isotonic'). Research basis: MDPI 2026 paper (doi:10.3390/info17010056) shows isotonic calibration on temporal holdout achieves Brier 0.199 for LR on NBA data. Added to init weights (7%) and mutation weights (6%).",
-      "calibration_options_before": ["none", "sigmoid", "venn_abers", "beta", "lr_meta", "lr_platt"],
-      "calibration_options_after": ["none", "sigmoid", "venn_abers", "beta", "lr_meta", "lr_platt", "isotonic_temporal"]
     },
-    "political": {
-      "type": "CODE_CHANGE",
-      "rotation": "C — Port proven NBA techniques to Political Alpha",
-      "files": [
-        "nomos-political-alpha/hf-space/app.py"
-      ],
-      "summary": "Ported NBA's isotonic_temporal calibration to Political Alpha GA (Rotation C). Added to init weights (11%) and mutation weights (9%). Includes smaller-dataset guard (min 30 events for calibration fit). Extends both init + mutation exploration of this technique.",
-      "calibration_options_before": ["none", "sigmoid", "venn_abers", "beta", "lr_meta", "lr_platt"],
-      "calibration_options_after": ["none", "sigmoid", "venn_abers", "beta", "lr_meta", "lr_platt", "isotonic_temporal"]
+    "engine_parity": {
+      "features_engine_version": "v3.1-54cat",
+      "hf_space_engine_version": "v3.1-54cat",
+      "parity": "OK",
+      "feature_categories": 54,
+      "raw_features": 7213,
+      "usable_features": 3290
     }
   },
-  "research": {
-    "source": "MDPI 2026 — Uncertainty-Aware Machine Learning for NBA Forecasting (doi:10.3390/info17010056)",
-    "key_findings": [
-      "Logistic regression + isotonic calibration on temporal holdout achieves Brier 0.199",
-      "XGBoost achieves Brier 0.202 — worse probabilistic quality than calibrated LR",
-      "Monte Carlo Dropout RNNs: best uncertainty quantification, but CPU-incompatible",
-      "Market-implied probability fusion: closing line features boost performance significantly",
-      "Era normalization (per-100-possession) improves cross-season generalization"
-    ],
-    "our_current_best": 0.2219,
-    "paper_best_tabular": 0.199,
-    "gap": 0.0229,
-    "action_taken": "isotonic_temporal added to GA — will explore over next N cycles"
+  "cycle_improvement": {
+    "rotation": "RESEARCH",
+    "type": "RESEARCH_PROPOSAL",
+    "description": "Stacked isotonic regression + temperature scaling calibration post-training. Based on 2025-2026 sports ML literature: stacked calibration reduces ECE by 15-30%, estimated Brier improvement 0.224 → 0.210-0.215. Also: decay-weighted net rating delta features. Proposal: data/research-proposals/nba-stacked-calibration-2026-04-07.md",
+    "action_taken": "S14 diversify sent (stagnation=22). Research proposal written. Political Rotation A FEC/SEC sources evaluated.",
+    "priority": "HIGH",
+    "estimated_brier_gain": -0.010
   },
   "alerts": [
-    "PA4 DOWN_404 x9 cycles — manual HF dashboard restart URGENT",
-    "PA3 RECOVERED — monitor to confirm stability",
-    "NBA best Brier 0.2219 — gap to threshold 0.21837 = 0.00353"
+    "S14 stagnation=22 — diversify command SENT at 2026-04-07T20:15Z",
+    "S11 stagnation=13 — approaching threshold 15, diversify NEXT cycle if no improvement",
+    "S15 restarted — previous fleet best 0.2219 lost, rebuilding from gen 46",
+    "No island below Brier threshold 0.21837 — best=0.22371, gap=0.00534",
+    "PA3 DOWN_404 consecutive cycles — manual HF restart required",
+    "PA4 DOWN_404 x11+ cycles — URGENT manual HF restart required"
   ],
-  "engine_versions": {
-    "nba": "v3.1-51cat (6257+ candidates, 3286 usable)",
-    "political": "v3.7-political-29cat-propublica-ie"
-  },
-  "next_cycle": "2026-04-07T16:00:00Z",
-  "next_cycle_tasks": {
-    "nba": "rotation D — WebSearch for new NBA prediction market sources (prediction market features + alt data 2026)",
-    "political": "rotation D — check data pipeline health: ops/fetch_political_data.py, polymarket/kalshi outputs"
-  },
+  "next_cycle_rotation": "PORT — implement stacked calibration in calibration/calibrate.py if proposal approved",
+  "next_cycle": "2026-04-08T00:30:00Z",
   "brain_version": "nomos42-brain-v1"
 }

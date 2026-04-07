@@ -1,25 +1,58 @@
 {
-  "last_updated": "2026-04-06T13:00:00Z",
-  "cycle": 70,
-  "nba_best_brier": 0.2222,
+  "last_updated": "2026-04-07T20:30:00Z",
+  "cycle": 76,
+  "generated_by": "claude-sonnet-4-6 nomos42-brain",
+  "nba_best_brier": 0.22371,
   "political_best_brier": 0.23134,
+  "nba_best_individual": 0.21570,
+  "political_best_individual": 0.2182,
   "nba_islands_online": 6,
   "nba_islands_total": 6,
   "political_islands_online": 2,
   "political_islands_total": 4,
-  "fleet_brier_avg_nba": 0.22437,
+  "fleet_brier_avg_nba": 0.22685,
+  "fleet_brier_avg_political": 0.24053,
+  "engine_parity": {
+    "nba_engine_version": "v3.1-54cat",
+    "political_engine_version": "v2.0-13cat",
+    "nba_features": 7213,
+    "political_features": 2400,
+    "nba_usable": 3290,
+    "political_usable": 309
+  },
+  "cross_pollination_this_cycle": [
+    {
+      "from": "NBA",
+      "to": "Political",
+      "technique": "Monotone constraints for LightGBM/XGBoost (proposed NBA cycle 76)",
+      "political_analog": "Enforce monotonicity on donor_amount, policy_score, enforcement_risk features",
+      "status": "PROPOSED — pending NBA validation first"
+    }
+  ],
   "cross_pollination_candidates": [
-    "calibration: isotonic CalibratedClassifierCV (NBA Phase1 → Political next cycle)",
-    "ga_config: adaptive mutation_rate cap 0.15 (NBA → Political)",
-    "feature: rolling_window_elo patterns (NBA → Political engine)"
+    "NBA: monotone_constraints (proposed cycle 76) → Political: same technique for policy signals",
+    "NBA: Cat55 lineup continuity → Political: Cat23 executive team continuity/revolving door",
+    "NBA: isotonic calibration (proposed cycle 66) → Political: already tracking (both fleets have isotonic option)",
+    "NBA: stagnation detection + auto-diversify → Political: implemented but PA3/PA4 DOWN prevents full use"
   ],
   "alerts": [
-    "PA3 DOWN_404 x6 cycles — private space, user must restart on HF dashboard",
-    "PA4 DOWN_404 x6 cycles — private space, user must restart on HF dashboard",
-    "Political island 1: 94% synthetic data — real event collection critical"
+    "S14 (NBA) stagnation=22 — diversify sent cycle 76",
+    "S11 (NBA) stagnation=13 — approaching threshold 15",
+    "S15 (NBA) restarted — lost best 0.2219, rebuilding",
+    "PA3 DOWN_404 x2 cycles — manual restart required",
+    "PA4 DOWN_404 x11 cycles — URGENT manual restart required",
+    "Political: only 60 real events (312 synthetic) — data collection critical blocker",
+    "NBA Brier threshold 0.21837 not reached — current best 0.22371 (gap: 0.00534)"
   ],
   "data_pipeline_health": {
-    "polymarket_validation_bug": "FIXED in cycle-70 (Brain D rotation) — was silently failing every cycle",
-    "fetch_political_data_version": "post-fix-2026-04-06"
+    "nba_data_freshness": "OK — 9551 games, 8 seasons cached (2018-19 to 2025-26)",
+    "political_data_freshness": "PARTIAL — polymarket/kalshi healthy, only 60 real events collected",
+    "follow_the_money_state": "PROPOSED (cycle 75) — not integrated",
+    "propublica_ie_filings": "ACTIVE (Cat29 federal)"
+  },
+  "cycle_76_actions": {
+    "nba_action": "S14 diversify sent (stagnation=22). Research proposal: monotone constraints + Cat55 lineup continuity.",
+    "political_action": "Rotation A — FEC/SEC/executive order search running. brain-status.json updated.",
+    "cross_repo_action": "Monotone constraints technique flagged for cross-repo port after NBA validation."
   }
 }
