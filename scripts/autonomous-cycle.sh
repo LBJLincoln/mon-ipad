@@ -443,9 +443,29 @@ if [ -d "$POLITICAL_DIR" ]; then
             log "[POLITICAL] apply_patches.py FAILED (exit $PATCH_STATUS) — check log above"
         fi
     else
-        log "[POLITICAL] Patches already applied ($PATCHES_APPLIED matches) — no action needed"
-        # Still check for stagnant islands and send diversify if needed
-        # P3/P4 removed 2026-04-03 — spaces never existed on HF
+        log "[POLITICAL] Patches applied — checking engine version vs deployed..."
+
+        # ── Version-check deploy: redeploy if local engine version differs from HF ──
+        LOCAL_ENG_VER=$(grep 'ENGINE_VERSION\s*=' features/political_engine.py 2>/dev/null | head -1 | grep -oP '"[^"]+"' | head -1 || echo "unknown")
+        DEPLOYED_ENG_VER=$(curl -sL --max-time 10 \
+            "https://huggingface.co/spaces/Nomos42/political-alpha/raw/main/features/political_engine.py" 2>/dev/null \
+            | grep 'ENGINE_VERSION\s*=' | head -1 | grep -oP '"[^"]+"' | head -1 || echo "unknown")
+        log "[POLITICAL] Engine versions — local: $LOCAL_ENG_VER | deployed: $DEPLOYED_ENG_VER"
+
+        if [ "$LOCAL_ENG_VER" != "$DEPLOYED_ENG_VER" ] && [ "$LOCAL_ENG_VER" != "unknown" ]; then
+            log "[POLITICAL] Version mismatch → deploying to HF remotes..."
+            for HF_REMOTE in hf hf2 hf3 hf4; do
+                if git remote get-url $HF_REMOTE > /dev/null 2>&1; then
+                    git push $HF_REMOTE main 2>/dev/null && \
+                        log "[POLITICAL] Deployed $LOCAL_ENG_VER → $HF_REMOTE" || \
+                        log "[POLITICAL] Push to $HF_REMOTE FAILED"
+                fi
+            done
+        else
+            log "[POLITICAL] Engine versions match — no deploy needed"
+        fi
+
+        # ── Stagnation check (fix: use 'command' key, not 'action') ──
         for PA_URL in \
             "https://nomos42-political-alpha.hf.space" \
             "https://nomos42-political-alpha-2.hf.space"; do
@@ -455,9 +475,39 @@ if [ -d "$POLITICAL_DIR" ]; then
                 log "[POLITICAL] Stagnation=$STAG on $PA_URL — sending diversify"
                 curl -s -X POST "${PA_URL}/api/command" \
                     -H 'Content-Type: application/json' \
-                    -d '{"action":"diversify"}' >> "$LOG" 2>&1 || true
+                    -d '{"command":"diversify"}' >> "$LOG" 2>&1 || true
             fi
         done
+    fi
+
+    cd "$MON_DIR"
+fi
+
+# ── Phase 6: NBA HF Space Code Deploy (version-check) ──────
+NBA_DIR="/home/termius/nomos-nba-agent"
+if [ -d "$NBA_DIR" ]; then
+    log "[NBA-DEPLOY] === NBA HF Space Version Check ==="
+    cd "$NBA_DIR"
+    git pull --rebase origin main 2>/dev/null || true
+
+    # Compare local app.py hash vs deployed S14 (Nomos42 space we can read)
+    LOCAL_APP_HASH=$(sha256sum hf-space/app.py 2>/dev/null | cut -c1-16 || echo "unknown")
+    DEPLOYED_APP_HASH=$(curl -sL --max-time 15 \
+        "https://huggingface.co/spaces/Nomos42/nba-evo-5/raw/main/app.py" 2>/dev/null \
+        | sha256sum | cut -c1-16 || echo "different")
+    log "[NBA-DEPLOY] local=$LOCAL_APP_HASH deployed_S14=$DEPLOYED_APP_HASH"
+
+    if [ "$LOCAL_APP_HASH" != "$DEPLOYED_APP_HASH" ] && [ "$LOCAL_APP_HASH" != "unknown" ]; then
+        log "[NBA-DEPLOY] Code differs → deploying to NBA HF remotes..."
+        for HF_REMOTE in hf hf2 hf3 hf4 hf5 hf6; do
+            if git remote get-url $HF_REMOTE > /dev/null 2>&1; then
+                git push $HF_REMOTE main 2>/dev/null && \
+                    log "[NBA-DEPLOY] Pushed to $HF_REMOTE" || \
+                    log "[NBA-DEPLOY] Push to $HF_REMOTE FAILED"
+            fi
+        done
+    else
+        log "[NBA-DEPLOY] Code matches deployed — no action"
     fi
 
     cd "$MON_DIR"
