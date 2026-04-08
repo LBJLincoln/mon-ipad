@@ -1,80 +1,80 @@
 {
-  "timestamp": "2026-04-08T01:00:00Z",
+  "timestamp": "2026-04-08T07:00:00Z",
   "agent": "D9-cross-repo-hermes",
-  "iteration": 11,
+  "iteration": 12,
   "repos_checked": [
     {
       "repo": "mon-ipad",
       "path": "/home/termius/mon-ipad",
       "status": "DIRTY",
-      "dirty_files": 151,
+      "dirty_files": 155,
       "engine_version": "v3.1-54cat",
       "engine_lines": 7219,
       "engine_md5": "6579440891976a10ce4b82e94cc5c8b2",
-      "notes": "Dirty 151 (was 161 iter10, -10 improving). Engine SYNCED this iter: Cat15 polymarket fallback fix (691ab8c) propagated from nomos-nba-agent. 3-way parity restored."
+      "notes": "Dirty 155 (was 151 iter11, +4 slight rise from D6 eval activity). Engine 3-way parity CONFIRMED. Latest commit: D6 iter12 PAV refit (ECE 0.123→0.000 in-sample, Brier 0.242→0.218)."
     },
     {
       "repo": "nomos-dashboard",
       "path": "/home/termius/nomos-dashboard",
       "status": "CLEAN",
       "dirty_files": 0,
-      "notes": "CLEAN — 7th consecutive iteration clean. Rock-solid stable. CLAUDE.md 5 days old (within 7d threshold)."
+      "notes": "CLEAN — 8th consecutive iteration clean. CLAUDE.md 4 days old (well within 7d threshold). Rock-solid stable."
     },
     {
       "repo": "nomos-nba-agent",
       "path": "/home/termius/nomos-nba-agent",
       "status": "DIRTY",
-      "dirty_files": 38,
+      "dirty_files": 36,
       "engine_version": "v3.1-54cat",
       "engine_lines": 7219,
       "engine_md5": "6579440891976a10ce4b82e94cc5c8b2",
       "hf_space_parity": "CONFIRMED",
-      "notes": "38 dirty (was 35, +3). Canonical engine source. Latest commit 691ab8c: Cat15 polymarket market_wisdom_confidence fallback via books_disagreement proxy. hf-space parity CONFIRMED."
+      "notes": "36 dirty (was 38, -2 improving). Canonical engine source. hf-space parity CONFIRMED at 6579440891976a10ce4b82e94cc5c8b2."
     },
     {
       "repo": "nomos-political-alpha",
       "path": "/home/termius/nomos-political-alpha",
       "status": "DIRTY",
       "dirty_files": 19,
-      "notes": "19 dirty (was 20 iter10, -1). Stable improvement trend. .gitignore fix from iter10 holding."
+      "notes": "19 dirty (unchanged iter11→iter12). Latest commit: continuous backtest swarm 2026-04-08. CLAUDE.md 1 day old (fresh)."
     },
     {
       "repo": "rgwa",
       "path": "/home/termius/rgwa",
       "status": "DIRTY",
       "dirty_files": 13,
-      "notes": "STABLE at 13 (unchanged iter3→iter11 — 9 consecutive). Low priority creative repo."
+      "notes": "STABLE at 13 (unchanged iter3→iter12 — 10 consecutive). Low priority creative repo. CLAUDE.md 4 days old."
     }
   ],
-  "fixes_applied": [
+  "fixes_applied": [],
+  "stale_docs_found": [
     {
-      "priority": "CRITICAL",
-      "action": "Synced engine.py from nomos-nba-agent → mon-ipad (Cat15 polymarket fallback fix 691ab8c)",
-      "detail": "Added market_wisdom_confidence proxy: 1 - normalized(books_disagreement). 7213→7219 lines.",
-      "result": "3-way MD5 parity: 6579440891976a10ce4b82e94cc5c8b2"
+      "file": "/home/termius/nomos-nba-agent/README.md",
+      "age_days": 24,
+      "severity": "LOW",
+      "note": "README is 24 days old. Consider refreshing with current architecture (v19, 6 islands, Forge dept structure)."
     }
   ],
-  "stale_docs_found": [],
-  "stale_docs_count": 0,
+  "stale_docs_count": 1,
   "parity_issues": [],
   "engine_parity_ok": true,
   "repos_checked_count": 5,
   "status": "HEALTHY",
-  "health_score": 74,
-  "health_delta": 2,
-  "summary": "Iter11: Engine parity BROKEN on arrival (mon-ipad 7213L vs agent 7219L with Cat15 fix), FIXED by sync. market_wisdom_confidence now uses books_disagreement proxy fallback. 3-way parity at 6579440891976a10ce4b82e94cc5c8b2. mon-ipad dirty -10 (161→151). nomos-dashboard 7th consecutive CLEAN. No stale docs.",
+  "health_score": 75,
+  "health_delta": 1,
+  "summary": "Iter12: Engine 3-way parity HOLDS at 6579440891976a10ce4b82e94cc5c8b2 (7219L, v3.1-54cat). nomos-dashboard 8th consecutive CLEAN. nomos-nba-agent dirty -2 (38→36, improving). mon-ipad dirty +4 (151→155, minor rise from D6 eval PAV refit activity). nomos-political-alpha stable at 19. rgwa stable at 13 (10 consecutive iterations). One stale doc: nomos-nba-agent/README.md at 24 days.",
   "remaining_issues": [
     {
       "priority": "MEDIUM",
-      "action": "Sweep and commit mon-ipad data/ changes (151 dirty, trend improving)"
+      "action": "Sweep and commit mon-ipad data/ changes (155 dirty, slight rise this iter)"
     },
     {
       "priority": "MEDIUM",
-      "action": "Commit council outputs in nomos-nba-agent (38 dirty, +3 this iter)"
+      "action": "Commit council outputs in nomos-nba-agent (36 dirty, slowly improving)"
     },
     {
       "priority": "LOW",
-      "action": "nomos-dashboard CLAUDE.md is 5 days old — update before it hits 7d threshold"
+      "action": "Update nomos-nba-agent/README.md — 24 days stale, misses v19 arch / 6 islands / Forge structure"
     }
   ]
 }
