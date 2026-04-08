@@ -1,5 +1,5 @@
 # Council: cross-repo
-- Status: success
-- Timestamp: 2026-04-08T07:00:04Z
+- Status: failed
+- Timestamp: 2026-04-08T19:00:01Z
 - Model: claude-sonnet-4-6
-- Duration: 301s
+- Duration: 233s

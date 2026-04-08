@@ -1,5 +1,5 @@
 # Council: product
-- Status: success
-- Timestamp: 2026-04-08T08:00:04Z
+- Status: failed
+- Timestamp: 2026-04-08T20:00:01Z
 - Model: claude-sonnet-4-6
-- Duration: 1098s
+- Duration: 193s
