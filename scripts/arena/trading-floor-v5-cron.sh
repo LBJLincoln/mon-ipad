@@ -56,7 +56,10 @@ echo "[v5-cron] Starting run at ${TIMESTAMP} ${DRY_RUN}" >> "${LOG_FILE}"
 echo "======================================================================" >> "${LOG_FILE}"
 
 # Run v5 for today (or specified date)
-python3 "${SCRIPT}" ${DATE_ARG} ${DRY_RUN} 2>&1 | tee -a "${LOG_FILE}"
+# VM mode: --no-multiphase + synthetic LLM votes (real ML preds from HF spaces, real Kelly,
+# 217 agents, no LLM hangs). Full multiphase LIVE runs are launched separately via GPU burst.
+# Hard 25min timeout to prevent runaway runs blocking the next cron tick.
+timeout 1500 python3 -u "${SCRIPT}" ${DATE_ARG} ${DRY_RUN} --no-multiphase --dry-run 2>&1 | tee -a "${LOG_FILE}"
 EXIT_CODE=${PIPESTATUS[0]}
 
 echo "[v5-cron] Finished with exit code ${EXIT_CODE} at $(date '+%H:%M:%S UTC')" >> "${LOG_FILE}"
