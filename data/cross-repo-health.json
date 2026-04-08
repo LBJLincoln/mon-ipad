@@ -1,63 +1,62 @@
 {
-  "last_updated": "2026-04-07T20:45:00Z",
-  "cycle": 76,
+  "last_updated": "2026-04-08T08:10:00Z",
+  "cycle": 77,
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
-  "nba_best_brier": 0.22268,
+  "nba_best_brier": 0.22249,
   "political_best_brier": 0.23134,
   "nba_best_individual": 0.21570,
-  "political_best_individual": 0.2182,
-  "nba_islands_online": 8,
-  "nba_islands_total": 8,
+  "political_best_individual": 0.218,
+  "nba_islands_online": 5,
+  "nba_islands_total": 6,
   "political_islands_online": 2,
-  "political_islands_total": 2,
-  "fleet_brier_avg_nba": 0.22598,
+  "political_islands_total": 4,
+  "fleet_brier_avg_nba": 0.22786,
   "fleet_brier_avg_political": 0.24053,
   "key_discoveries_this_cycle": [
-    "S16 + S17 discovered on LBJLincoln26 HF account (created Apr 6). S16=0.22268 is new fleet best.",
-    "PA3/PA4 confirmed NON-EXISTENT on HuggingFace (not sleeping — never created or deleted).",
-    "FEC Q1 2026 data lands Apr 15-22 — set up automated poll.",
-    "Pharma tariff Section 232 EO + Nuclear/AI data center EO — new political signals.",
-    "GovInfo MCP Server launched (govinfo.gov) — best new free data source."
+    "API command format fix: use {\"command\":\"diversify\"} not {\"action\":\"diversify\"} — previous cycles may have failed silently",
+    "S13+S14 restarted with EXTENDED 11532-game dataset vs 9551 elsewhere — 21% more data, watch first brier",
+    "S11 approaching stagnation threshold: 14/15 — will trigger diversify next cycle if no gain",
+    "PA3/PA4 still returning 404 (consistent with cycle 76 — phantom islands, never existed or deleted)",
+    "PA2 Pareto-star: 155f LightGBM, Brier=0.218, ROI=41.56% at gen 8975 — best political result ever",
+    "Research: MDPI 2025 LR achieves Brier 0.199 — gap to our fleet is 0.023. Isotonic calibration EXP-2 proposed."
   ],
   "engine_parity": {
     "nba_engine_version": "v3.1-54cat",
-    "political_engine_version": "v2.0-13cat (CLAUDE.md) / v3.2-political-24cat (older brain-status)",
-    "nba_s10_s15_features": 3290,
-    "nba_s16_s17_features": 3266,
-    "s16_s17_parity_gap": "24 fewer feature candidates — investigate engine version",
+    "nba_hf_space_engine_version": "v3.1-54cat",
+    "nba_parity": "OK — both confirmed identical v3.1-54cat",
+    "political_engine_version": "v2.0-13cat",
+    "nba_feature_candidates_s10_s15": 3290,
     "political_features_pa1": 252,
-    "political_features_pa2": 309
+    "political_features_pa2": 309,
+    "note_s16_s17": "Previous cycle (76) discovered S16+S17 on LBJLincoln26. Not in current monitoring scope — update instructions to add them."
   },
   "cross_pollination_this_cycle": [
     {
-      "from": "NBA",
+      "from": "Research (MDPI 2025)",
+      "to": "Both",
+      "technique": "Isotonic calibration (CalibratedClassifierCV)",
+      "status": "PROPOSED — proposal written to mon-ipad/data/research-proposals/mc-dropout-lr-baseline-calibration-2026-04-08.json",
+      "expected_gain": "-0.003 to -0.008 Brier"
+    },
+    {
+      "from": "NBA S13/S14",
       "to": "Political",
-      "technique": "Monotone constraints (proposed cycle 76)",
-      "political_analog": "Enforce monotonicity on donor_amount, policy_score, enforcement_risk",
-      "status": "PROPOSED — pending NBA validation"
+      "technique": "Extended dataset (11532 games). Political could similarly expand events corpus.",
+      "status": "OBSERVATION — PA2 only has 372 events vs NBA's 9551+ games"
     }
   ],
-  "cross_pollination_candidates": [
-    "NBA monotone_constraints → Political: enforce on donor/policy signals",
-    "NBA Cat55 lineup continuity → Political: executive team continuity/revolving door feature",
-    "Political pharma tariff signal → NBA: no direct analog",
-    "GovInfo MCP → NBA: Federal Register EOs affecting sports gambling regulation?"
+  "action_items_next_cycle": [
+    "CHECK S11 stagnation: if still 15+ → diversify",
+    "IMPLEMENT EXP-2: isotonic calibration in calibration/conformal.py (30 min, -0.003 to -0.008 Brier)",
+    "CHECK S13/S14 first brier results (warm-up started 07:19Z and 07:23Z today)",
+    "MANUAL: Restart PA3+PA4 via HuggingFace dashboard (human action required)",
+    "CHECKPOINT: Save PA2 Pareto-star config (155f LightGBM, Brier=0.218) to Supabase political_experiments",
+    "FETCH S16+S17 status if they are confirmed real islands (cycle 76 found them on LBJLincoln26)"
   ],
   "alerts": [
-    "CLAUDE.md STALE: S16/S17 islands not documented. Fleet is 8 not 6. Update needed.",
-    "PA3/PA4 PHANTOM: were tracked as DOWN for 11+ cycles but never existed. Fix brain tracking.",
-    "S16 NEW FLEET BEST: Brier=0.22268, gap to threshold=0.00431",
-    "S11 stagnation=13 — diversify if still stagnant next cycle",
-    "FEC Q1 data arriving Apr 15-22 — opportunity for fresh political signal",
-    "OKLO (Tier 1 donor) + Nuclear EO = strong buy signal — check Form 4 filings"
-  ],
-  "action_items_next_cycle": [
-    "Add S16/S17 to CLAUDE.md island table",
-    "Remove PA3/PA4 from political fleet tracking (don't exist)",
-    "Implement monotone constraints in NBA hf-space/evolution/genetic_loop.py",
-    "Add GovInfo MCP to ops/fetch_political_data.py",
-    "Poll FEC for Q1 data starting Apr 16",
-    "Check S16/S17 engine version vs v3.1-54cat (24 feature candidate gap)",
-    "Add PFE/MRK/LLY to political donor Tier 5 (pharma tariff targets)"
+    "S11 stagnation 14/15 — watch next cycle",
+    "PA3+PA4 phantom/down — 50% political fleet offline",
+    "API command format was wrong ({\"action\"} vs {\"command\"}) — previous cycles may not have successfully diversified",
+    "PA2 Pareto-star (Brier=0.218) needs Supabase checkpoint before potential crash/restart"
   ]
 }
