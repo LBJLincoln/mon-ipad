@@ -1,49 +1,8 @@
 # NBA Scientific Experiment Report
-**Generated:** 2026-04-08 10:01:38
+**Generated:** 2026-04-08 16:00:08
 **Engine:** scientific-experiment.py v1.0
 
 ## Part 1: Model Evaluation
-
-### Consensus Model Performance
-- **Predictions evaluated:** 14
-- **Brier Score:** 0.18929 (95% CI: [0.09543, 0.28851])
-- **Log Loss:** 0.5454
-- **AUC-ROC:** 0.7556
-- **ECE (Calibration):** 0.2152
-- **Directional Accuracy:** 57.1%
-
-#### Agreement Analysis
-- High agreement (>80%): 7 games, accuracy 57.1%
-- Low agreement (<60%): 1 games, accuracy 100.0%
-
-#### Calibration (Reliability Diagram)
-| Bucket | Predicted | Actual | Count | Error |
-|--------|-----------|--------|-------|-------|
-| 0.1-0.2 | 0.155 | 0.000 | 1 | 0.155 |
-| 0.3-0.4 | 0.370 | 0.500 | 2 | 0.130 |
-| 0.4-0.5 | 0.467 | 1.000 | 1 | 0.533 |
-| 0.5-0.6 | 0.598 | 1.000 | 1 | 0.402 |
-| 0.6-0.7 | 0.670 | 0.333 | 3 | 0.337 |
-| 0.7-0.8 | 0.761 | 0.667 | 3 | 0.095 |
-| 0.8-0.9 | 0.859 | 1.000 | 2 | 0.141 |
-| 0.9-1.0 | 0.914 | 1.000 | 1 | 0.086 |
-
-#### Brier Score Progression
-| Date | Avg Brier | Games |
-|------|-----------|-------|
-| 2026-03-15 | 0.03050 | 2 |
-| 2026-04-04 | 0.00741 | 1 |
-| 2026-04-05 | 0.23469 | 11 |
-
-### Per-Agent Model Ranking
-| Rank | Agent | Brier | Log-Loss | AUC | Accuracy | N |
-|------|-------|-------|----------|-----|----------|---|
-| 1 | t1_llama70b | 0.16302 | 0.51130 | 0.8833 | 0.818 | 11 |
-| 2 | t1_gemma27b | 0.24432 | 0.68088 | 0.6667 | 0.545 | 11 |
-| 3 | t1_qwen72b | 0.25250 | 0.69582 | 0.7333 | 0.500 | 8 |
-
-### Statistical Significance (Paired Bootstrap)
-No statistically significant differences found at p < 0.05.
 
 ## Part 2: Strategy Backtesting
 
@@ -55,16 +14,16 @@ No statistically significant differences found at p < 0.05.
 | Rank | Strategy | Sharpe | ROI% | PnL | Bets | MaxDD |
 |------|----------|--------|------|-----|------|-------|
 | 1 | Specialist: Spread | 3.333 | 45.1% | $127082.10 | 445 | 0.537 |
-| 2 | Half Kelly (edge>3%) | -2.335 | -21.4% | $-80.67 | 175 | 0.807 |
-| 3 | Quarter Kelly (edge>3%) | -2.335 | -19.2% | $-80.13 | 181 | 0.801 |
-| 4 | Fixed 2% | -2.335 | -18.7% | $-50.83 | 196 | 0.508 |
-| 5 | Value Hunter (edge>5%) | -2.335 | -21.4% | $-80.67 | 175 | 0.807 |
+| 2 | Half Kelly (edge>3%) | -2.335 | -15.3% | $-80.52 | 202 | 0.805 |
+| 3 | Quarter Kelly (edge>3%) | -2.335 | -15.7% | $-80.32 | 197 | 0.812 |
+| 4 | Fixed 2% | -2.335 | -10.0% | $-50.39 | 349 | 0.505 |
+| 5 | Value Hunter (edge>5%) | -2.335 | -15.3% | $-80.52 | 202 | 0.805 |
 
 ### Kelly Fraction Optimization
 | Fraction | Min Edge | Sharpe | ROI% | MaxDD | Bets |
 |----------|----------|--------|------|-------|------|
-| 0.50 | 3% | -2.335 | -21.4% | 0.807 | 175 |
-| 0.25 | 3% | -2.335 | -19.2% | 0.801 | 181 |
+| 0.50 | 3% | -2.335 | -15.3% | 0.805 | 202 |
+| 0.25 | 3% | -2.335 | -15.7% | 0.812 | 197 |
 
 ### Regression Analysis: PnL ~ confidence + edge + odds
 - **N observations:** 10000
@@ -127,8 +86,6 @@ No statistically significant differences found at p < 0.05.
 
 ## Recommendations
 
-- CONSENSUS Brier 0.18929 is competitive. Target: < 0.21570 (ATR)
-- WARNING: Low-agreement bets outperform high-agreement. Consensus mechanism may be flawed.
 - BEST STRATEGY: Specialist: Spread (Sharpe 3.333, ROI 45.1%, MaxDD 0.537)
 - OPTIMAL THRESHOLDS: confidence >= 0.55, edge >= 0.0%, Kelly fraction = 0.10
 - OUT-OF-SAMPLE validation positive: ROI 6470.4%. Strategy is robust.
@@ -137,5 +94,3 @@ No statistically significant differences found at p < 0.05.
 - REGRESSION: odds significantly decreases PnL (beta=-0.6208, p=0.0277)
 - PROFITABLE categories (6): alt_spread_home_big, alt_spread_away_big, h1_ml_home, team_total_home_under, team_total_home_over
 - AVOID categories (5): ml_away, total_under, ml_home, spread_away, spread_home
-- BEST AGENT: t1_llama70b (Brier 0.16302)
-- WORST AGENT: t1_qwen72b (Brier 0.25250) — consider removing or retraining

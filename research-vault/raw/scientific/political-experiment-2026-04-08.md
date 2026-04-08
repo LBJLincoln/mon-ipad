@@ -1,5 +1,5 @@
 # NOMOS42 Political Alpha — Scientific Experiment Report
-## Generated: 2026-04-08 10:15 UTC
+## Generated: 2026-04-08 16:15 UTC
 
 ---
 
@@ -37,8 +37,8 @@
 ### Aggregate Statistics (Bootstrap 95% CI)
 | Metric | Mean | 95% CI |
 |---|---|---|
-| ROI (%) | -53.26 | [-67.57, -37.18] |
-| Sharpe | -0.0388 | [-0.4408, 0.2783] |
+| ROI (%) | -53.26 | [-67.70, -36.64] |
+| Sharpe | -0.0388 | [-0.4478, 0.2674] |
 
 ## Market Performance
 | Metric | Value |
@@ -90,10 +90,10 @@
 
 | Trader | Capital | ROI | Sharpe | Max DD | Win Rate | Trades |
 |---|---|---|---|---|---|---|
-| openrouter | $100,554 | 0.35% | 4.6251 | 0.29% | 53.2% | 569 |
-| gemini | $101,050 | 0.26% | 4.0446 | 0.26% | 61.1% | 710 |
-| grok | $99,753 | 0.05% | 3.7972 | 0.05% | 38.3% | 360 |
-| codex | $101,647 | 0.56% | 3.5875 | 0.48% | 56.5% | 678 |
+| codex | $101,903 | 0.81% | 5.2814 | 0.48% | 57.8% | 678 |
+| openrouter | $100,457 | 0.25% | 3.7478 | 0.29% | 53.2% | 569 |
+| gemini | $100,915 | 0.12% | 1.8034 | 0.26% | 61.0% | 711 |
+| grok | $99,708 | 0.00% | 0.0020 | 0.05% | 37.5% | 360 |
 | claude | $100,030 | 0.00% | 0.0000 | 0.00% | 48.6% | 210 |
 
 ---
@@ -105,7 +105,7 @@
 - TOP MARKET: ENERGY_LONG (profit $2264, WR 60.7%)
 - SIGNIFICANT PREDICTORS of ROI: win_rate, log_bets, max_drawdown
 - OUT-OF-SAMPLE R²: -58.1134 (weak — more data needed)
-- BEST TRADER: openrouter — consider increasing allocation
+- BEST TRADER: codex — consider increasing allocation
 - WORST TRADER: claude — consider retraining or replacing
 
 ---
