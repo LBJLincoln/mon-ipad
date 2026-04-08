@@ -1,0 +1,52 @@
+{
+  "id": "2026-04-04-ev-filter-fractional-kelly-fusion",
+  "title": "Selective Wagering EV Filter + Fractional Kelly 0.3x — From MDPI 2026",
+  "created": "2026-04-04T20:30:00Z",
+  "cycle": 62,
+  "source_paper": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets, MDPI Information 17(1):56, January 2026",
+  "source_url": "https://www.mdpi.com/2078-2489/17/1/56",
+  "priority": "HIGH",
+  "status": "PROPOSED",
+  "expected_brier_delta": null,
+  "expected_roi_delta": "+3 to +8 pp",
+
+  "summary": "The MDPI 2026 paper (Brier 0.089 via fused model) identifies two techniques that improve economic ROI without changing Brier score: (1) selective wagering with EV > 1.10 threshold and (2) fractional Kelly staking at 0.3x. Both act as a calibration filter — by skipping low-confidence predictions, the effective calibration of placed bets improves dramatically.",
+
+  "key_findings": {
+    "brier_fused_model": 0.089,
+    "brier_market_only": 0.20,
+    "brier_non_market_only": 0.20,
+    "insight": "Fusing market odds directly into the feature vector drops Brier from 0.20 to 0.089. We already include market features (include_market=True in NBAFeatureEngine) but may not be fusing them optimally.",
+    "calibration_finding": "Calibration-selected pipelines consistently achieve higher ROI under both fixed-stake and fractional-Kelly sizing, showing probability reliability affects economic outcomes more than accuracy.",
+    "ev_filter": "EV > 1.10 threshold: place bet only when model_prob × market_odds > 1.10. This filters out marginal bets and improves average calibration of the placed-bet subset.",
+    "kelly_fraction": "Fractional Kelly at 0.3x dampens overconfident prediction impact. Full Kelly is theoretically optimal but practically ruinous with miscalibrated probabilities.",
+    "era_normalization": "Within-season z-normalization + per-100-possessions standardization prevents league evolution from creating lookahead bias (3-point volume doubled 2010-2024)."
+  },
+
+  "proposed_implementation": {
+    "step_1_ev_filter": {
+      "file": "ops/bankroll_manager.py",
+      "change": "Add EV threshold filter: only place bet if (model_prob * implied_odds) >= 1.10. Currently no EV filter is applied.",
+      "code_sketch": "ev = model_prob * (1 / market_implied_prob); if ev < 1.10: skip_bet()"
+    },
+    "step_2_fractional_kelly": {
+      "file": "ops/bankroll_manager.py",
+      "change": "Reduce Kelly fraction from 0.5x (current) to 0.3x. Paper shows 0.3x optimal with miscalibrated models.",
+      "code_sketch": "KELLY_FRACTION = 0.3  # was 0.5"
+    },
+    "step_3_era_normalization": {
+      "file": "features/engine.py",
+      "change": "Add per-season z-normalization to rolling efficiency features (offensive/defensive rating, eFG%, TS%). Prevents 2020-bubble anomaly and 3PT era drift from creating bias.",
+      "status": "Already proposed in cat51-season-era-normalization-2026-04-03.json — prioritize implementation."
+    },
+    "step_4_market_fusion_check": {
+      "file": "features/engine.py",
+      "change": "Verify market features are properly fused: closing line, market movement (open-to-close), sharp money indicator (line move against public), and implied-prob-gap (our prob - market prob). The gap feature is the most valuable.",
+      "expected_impact": "If market-implied prob is already in features, the gap (our_model - market_implied) is the primary alpha signal."
+    }
+  },
+
+  "effort_estimate": "LOW — steps 1-2 are 10-line changes in bankroll_manager.py. Step 3 is already researched. Step 4 requires audit of engine.py market features.",
+  "blocking": "None — no new data sources required.",
+  "cross_project_applicability": "Apply steps 1-2 to nomos-political-alpha/ops/bankroll_manager.py identically. Kelly fraction and EV filter are model-agnostic."
+}

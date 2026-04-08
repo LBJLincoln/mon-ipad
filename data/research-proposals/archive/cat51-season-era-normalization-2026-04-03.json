@@ -1,0 +1,55 @@
+{
+  "proposal_id": "cat51-season-era-normalization-2026-04-03",
+  "date": "2026-04-03",
+  "status": "IMPLEMENTED",
+  "title": "Cat51: Season Era Normalization",
+  "summary": "Normalize each team's rolling efficiency stats (ORtg, DRtg, pace, net rating) against the league-wide running average FOR THIS SEASON. This removes era drift: the league averaged ~98 ORtg in 2018-19 but ~115 ORtg in 2025-26 due to rule changes and pace evolution. Without era normalization, a team's 'good' ORtg in 2025-26 looks different than the same raw number in 2018-19, confusing models trained on multi-season data.",
+  "research_basis": [
+    {
+      "source": "MDPI Information 2026 (10.3390/info17010056)",
+      "finding": "Season-fixed effects applied to handle era differences. Logistic regression with these features achieved Brier 0.199. Quote: 'Efficiency normalization: Points standardized per 100 possessions to remove pace effects; season-fixed effects applied to handle era differences.'"
+    },
+    {
+      "source": "Uncertainty-Aware ML for NBA Forecasting (MDPI Jan 2026)",
+      "finding": "Rolling 5-game lagged aggregates with strict temporal shifts to prevent lookahead bias. Season-fixed effects remove era-level confounds."
+    }
+  ],
+  "features_added": 8,
+  "feature_names": [
+    "era51_h_ortg_vs_league",
+    "era51_h_drtg_vs_league",
+    "era51_a_ortg_vs_league",
+    "era51_a_drtg_vs_league",
+    "era51_h_pace_vs_league",
+    "era51_a_pace_vs_league",
+    "era51_h_netrtg_vs_league",
+    "era51_h_ortg_a_drtg_edge"
+  ],
+  "feature_semantics": {
+    "era51_h_ortg_vs_league": "Home team's 10-game rolling ORtg z-scored vs all teams' ORtg in this season so far. Positive = above-average offense this era.",
+    "era51_h_drtg_vs_league": "Home team's DRtg z-scored vs league. NEGATIVE = better defense (lower DRtg is better).",
+    "era51_a_ortg_vs_league": "Away team's offense quality relative to this season's league context.",
+    "era51_a_drtg_vs_league": "Away team's defense quality relative to this season's league context.",
+    "era51_h_pace_vs_league": "Home team runs faster/slower than league this season. Affects style-clash features.",
+    "era51_a_pace_vs_league": "Away team pace in league context.",
+    "era51_h_netrtg_vs_league": "Home net rating (ORtg - DRtg) z-scored vs league net rating distribution this season. Best single-number team quality signal.",
+    "era51_h_ortg_a_drtg_edge": "Offensive advantage: h_ortg_z - a_drtg_z. Captures matchup quality: strong offense vs weak defense."
+  },
+  "implementation": {
+    "files_modified": ["features/engine.py", "hf-space/features/engine.py"],
+    "engine_version_before": "v3.1-50cat",
+    "engine_version_after": "v3.1-51cat",
+    "features_before": 6257,
+    "features_after": 6265,
+    "parity_verified": true,
+    "diff_lines": 0,
+    "key_design_decision": "Running per-season tracker (_era51_ortg, _era51_drtg, etc.) updated AFTER feature extraction for each game — ensures no lookahead bias. League averages for game G use only games before G in same season."
+  },
+  "expected_brier_delta": "-0.001 to -0.003",
+  "expected_mechanism": "The GA will discover that era51_h_netrtg_vs_league (net rating in season context) and era51_h_ortg_a_drtg_edge (matchup offensive advantage) are stronger predictors than raw ORtg/DRtg, especially for games across seasons where league scoring level differs.",
+  "validation_plan": "Monitor next 5 cycles — check if era51_h_netrtg_vs_league or era51_h_ortg_a_drtg_edge appear in any island's selected feature set. If yes → confirmed useful. The era51_h_ortg_a_drtg_edge feature is the most likely to be selected (directly captures offensive vs defensive matchup quality).",
+  "cross_project_applicability": {
+    "political": "Era normalization concept applies to political Brier scoring if we normalize political event outcomes by regime context (Trump 1.0 vs Trump 2.0 regulatory environments). Deferred pending NBA validation.",
+    "technique_name": "Regime-relative normalization (Political Cat26-candidate)"
+  }
+}

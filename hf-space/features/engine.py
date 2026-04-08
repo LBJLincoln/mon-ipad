@@ -2,7 +2,7 @@
 """
 NBA Quant Feature Engine — 6000+ Features with Genetic Selection
 =================================================================
-Generates ~6000+ feature candidates across 35 categories, then uses
+Generates ~6000+ feature candidates across 54 categories, then uses
 genetic algorithm to select optimal 150-400 features.
 
 Categories:
@@ -49,7 +49,10 @@ Categories:
   47. DRIVE-OFFENSE vs RIM-DEFENSE MATCHUP (14 features — drive FG%, rim protection, matchup edges)
   48. PASSING NETWORK QUALITY (10 features — AST/pass, potential assists, ball movement)
   49. PLAY-TYPE EFFICIENCY (10 features — iso/PnR/spot-up/transition PPP, versatility)
-  ≈ 6245+ feature candidates
+  52. ODDS LINE FEATURES (15 features — spread magnitude, total line, vig, percentiles, sharpness)
+  53. ATS RECORD FEATURES (12 features — cover rates, ATS streaks, fav/dog splits)
+  54. OVER/UNDER RECORD FEATURES (12 features — over rates, O/U streaks, pace vs total)
+  ≈ 6284+ feature candidates
 
 Architecture inspired by:
   - Starlizard: 500+ features, genetic selection, real-time adjustment
@@ -73,7 +76,7 @@ import csv
 import os
 
 # ── Engine Version ──
-ENGINE_VERSION = "v3.1-46cat"
+ENGINE_VERSION = "v3.1-54cat"
 
 # ── Team mappings ──
 TEAM_MAP = {
@@ -2624,6 +2627,63 @@ class NBAFeatureEngine:
             "play49_versatility_diff",   # Home play-type variety - away (# play types above 1.0 PPP)
         ])
 
+        # 52. ODDS LINE FEATURES (15 features)
+        # Deeper market features from spread/total/moneyline lines.
+        # Spread magnitude, total line, vig, season percentiles, ML-implied spread gap, sharpness.
+        names.extend([
+            "line52_abs_spread",           # |spread| — magnitude of line (favorites get big spreads)
+            "line52_total_line",           # O/U total line, raw /220 normalized
+            "line52_vig_home",             # Vig on home side (overround × fair_home - implied_home)
+            "line52_vig_away",             # Vig on away side
+            "line52_spread_pctile",        # Spread percentile vs season (0-1)
+            "line52_total_pctile",         # Total line percentile vs season (0-1)
+            "line52_ml_implied_spread",    # Spread implied from ML (logistic inversion)
+            "line52_spread_ml_gap",        # Actual spread - ML-implied spread (market disagreement)
+            "line52_h_ml_magnitude",       # |ML_home| / 100 (how strong favorite)
+            "line52_a_ml_magnitude",       # |ML_away| / 100
+            "line52_spread_total_ratio",   # |spread| / total (scoring environment tightness)
+            "line52_is_pickem",            # 1.0 if |spread| <= 1.0, else 0.0
+            "line52_is_big_fav",           # 1.0 if |spread| >= 8.0, else 0.0
+            "line52_total_high",           # 1.0 if total >= 230, else 0.0
+            "line52_total_low",            # 1.0 if total <= 210, else 0.0
+        ])
+
+        # 53. ATS RECORD FEATURES (12 features)
+        # Against-the-spread tracking: cover rates, streaks, situational splits.
+        # Uses _team_ats state tracker updated AFTER feature extraction (no lookahead).
+        names.extend([
+            "ats53_h_cover_rate10",        # Home team cover rate (last 10 games)
+            "ats53_a_cover_rate10",        # Away team cover rate (last 10 games)
+            "ats53_h_cover_season",        # Home team season cover rate
+            "ats53_a_cover_season",        # Away team season cover rate
+            "ats53_h_streak",              # Home ATS streak (positive=covering, negative=failing)
+            "ats53_a_streak",              # Away ATS streak
+            "ats53_h_cover_as_fav",        # Home cover rate when favored
+            "ats53_h_cover_as_dog",        # Home cover rate when underdog
+            "ats53_a_cover_as_fav",        # Away cover rate when favored
+            "ats53_a_cover_as_dog",        # Away cover rate when underdog
+            "ats53_h_margin_vs_spread",    # Home avg (actual_margin - spread) last 10
+            "ats53_a_margin_vs_spread",    # Away avg (actual_margin - spread) last 10
+        ])
+
+        # 54. OVER/UNDER RECORD FEATURES (12 features)
+        # Over/under tracking: over rates, O/U streaks, pace vs total, situational.
+        # Uses _team_ou state tracker updated AFTER feature extraction (no lookahead).
+        names.extend([
+            "ou54_h_over_rate10",          # Home team over rate (last 10 games)
+            "ou54_a_over_rate10",          # Away team over rate (last 10 games)
+            "ou54_h_over_season",          # Home team season over rate
+            "ou54_a_over_season",          # Away team season over rate
+            "ou54_h_streak",               # Home O/U streak (positive=over, negative=under)
+            "ou54_a_streak",               # Away O/U streak
+            "ou54_h_over_at_home",         # Home over rate in home games only
+            "ou54_a_over_on_road",         # Away over rate in away games only
+            "ou54_h_margin_vs_total",      # Home avg (actual_total - total_line) last 10
+            "ou54_a_margin_vs_total",      # Away avg (actual_total - total_line) last 10
+            "ou54_combined_over_rate",     # (h_over_rate + a_over_rate) / 2
+            "ou54_pace_vs_total",          # Combined pace estimate vs current total line
+        ])
+
         self.feature_names = names
 
     def build(self, games, market_data=None, referee_data=None, player_data=None, quarter_data=None, tracking_data=None, odds_data=None):
@@ -2669,6 +2729,14 @@ class NBAFeatureEngine:
         _MOVDA_ALPHA = 19.2511; _MOVDA_BETA = 0.002342
         _MOVDA_GAMMA = 648.0334; _MOVDA_DELTA = -645.8717
         _MOVDA_EWM_ALPHA = 0.3
+        # ── Category 52-54: ATS/O/U state trackers ──
+        # Updated AFTER feature extraction per game to prevent lookahead.
+        # _team_ats[team] = [(covered_bool, spread_home, is_home, margin_vs_spread)]
+        # _team_ou[team] = [(went_over_bool, total_line, is_home, margin_vs_total)]
+        _team_ats = defaultdict(list)
+        _team_ou = defaultdict(list)
+        _season_spreads = []   # All |spread| values seen this season (for percentile)
+        _season_totals = []    # All total line values seen this season (for percentile)
         # ── Category 18: Season-level trackers (precomputed per game via records) ──
         # These are derived from team_results on-the-fly (no extra state needed)
 
@@ -5822,8 +5890,217 @@ class NBAFeatureEngine:
             except Exception:
                 row.extend([0.88, 0.88, 0.87, 0.87, 1.04, 1.04, 1.12, 1.12, 0.0, 0.0])
 
+            # ── Cat 52: Odds Line Features (15 features) ──
+            try:
+                _odds_key52 = (gd, home, away)
+                _o52 = (odds_data or {}).get(_odds_key52, {})
+                if _o52:
+                    _sp52 = _o52.get('spread_home', None)
+                    _tot52 = _o52.get('total', None)
+                    _ip_h52 = _o52.get('implied_home_prob', 0.5)
+                    _ip_a52 = _o52.get('implied_away_prob', 0.5)
+                    _fp_h52 = _o52.get('fair_home_prob', 0.5)
+                    _overr52 = _o52.get('overround', 1.05)
+                    _ml_h52 = _o52.get('ml_home_raw', -110)
+                    _ml_a52 = _o52.get('ml_away_raw', -110)
+
+                    _abs_sp = abs(_sp52) if _sp52 is not None else 0.0
+                    _tot_norm52 = (_tot52 / 220.0) if _tot52 is not None else 1.0
+
+                    # Vig per side
+                    _vig_h = _ip_h52 - _fp_h52  # how much vig loaded onto home
+                    _vig_a = _ip_a52 - _o52.get('fair_away_prob', 0.5)
+
+                    # Percentiles vs season
+                    _sp_pctile = 0.5
+                    if _season_spreads and _sp52 is not None:
+                        _sp_pctile = sum(1 for s in _season_spreads if s <= _abs_sp) / len(_season_spreads)
+                    _tot_pctile = 0.5
+                    if _season_totals and _tot52 is not None:
+                        _tot_pctile = sum(1 for t in _season_totals if t <= _tot52) / len(_season_totals)
+
+                    # ML-implied spread (logistic inversion: spread = -7.5 * log10(p/(1-p)))
+                    if 0.01 < _fp_h52 < 0.99:
+                        _ml_imp_sp = -7.5 * math.log10(_fp_h52 / (1.0 - _fp_h52))
+                    else:
+                        _ml_imp_sp = 0.0
+                    _sp_ml_gap = (_sp52 - _ml_imp_sp) if _sp52 is not None else 0.0
+
+                    _h_ml_mag = abs(_ml_h52) / 100.0
+                    _a_ml_mag = abs(_ml_a52) / 100.0
+                    _sp_tot_ratio = (_abs_sp / _tot52) if _tot52 and _tot52 > 0 else 0.0
+                    _is_pickem = 1.0 if _abs_sp <= 1.0 else 0.0
+                    _is_big_fav = 1.0 if _abs_sp >= 8.0 else 0.0
+                    _tot_high = 1.0 if (_tot52 is not None and _tot52 >= 230) else 0.0
+                    _tot_low = 1.0 if (_tot52 is not None and _tot52 <= 210) else 0.0
+
+                    row.extend([
+                        _abs_sp / 10.0,    # line52_abs_spread (normalized)
+                        _tot_norm52,       # line52_total_line
+                        _vig_h,            # line52_vig_home
+                        _vig_a,            # line52_vig_away
+                        _sp_pctile,        # line52_spread_pctile
+                        _tot_pctile,       # line52_total_pctile
+                        _ml_imp_sp / 10.0, # line52_ml_implied_spread (normalized)
+                        _sp_ml_gap / 10.0, # line52_spread_ml_gap (normalized)
+                        _h_ml_mag,         # line52_h_ml_magnitude
+                        _a_ml_mag,         # line52_a_ml_magnitude
+                        _sp_tot_ratio,     # line52_spread_total_ratio
+                        _is_pickem,        # line52_is_pickem
+                        _is_big_fav,       # line52_is_big_fav
+                        _tot_high,         # line52_total_high
+                        _tot_low,          # line52_total_low
+                    ])
+                else:
+                    row.extend([0.0, 1.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 1.1, 1.1, 0.0, 0.0, 0.0, 0.0, 0.0])
+            except Exception:
+                row.extend([0.0, 1.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 1.1, 1.1, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+            # ── Cat 53: ATS Record Features (12 features) ──
+            try:
+                _h_ats = _team_ats[home]
+                _a_ats = _team_ats[away]
+
+                def _cover_rate(ats_list, n):
+                    s = ats_list[-n:] if n else ats_list
+                    return sum(1 for r in s if r[0]) / len(s) if s else 0.5
+
+                def _ats_streak(ats_list):
+                    if not ats_list:
+                        return 0.0
+                    streak = 0
+                    last = ats_list[-1][0]
+                    for r in reversed(ats_list):
+                        if r[0] == last:
+                            streak += 1
+                        else:
+                            break
+                    return (streak / 10.0) if last else (-streak / 10.0)
+
+                def _cover_as_fav(ats_list):
+                    fav = [r for r in ats_list if r[1] is not None and r[1] < 0]  # favored when spread < 0
+                    return sum(1 for r in fav if r[0]) / len(fav) if fav else 0.5
+
+                def _cover_as_dog(ats_list):
+                    dog = [r for r in ats_list if r[1] is not None and r[1] > 0]  # underdog when spread > 0
+                    return sum(1 for r in dog if r[0]) / len(dog) if dog else 0.5
+
+                def _avg_margin_vs_spread(ats_list, n):
+                    s = ats_list[-n:] if n else ats_list
+                    if not s:
+                        return 0.0
+                    return sum(r[3] for r in s) / len(s) / 10.0  # normalize
+
+                row.extend([
+                    _cover_rate(_h_ats, 10),              # ats53_h_cover_rate10
+                    _cover_rate(_a_ats, 10),              # ats53_a_cover_rate10
+                    _cover_rate(_h_ats, 0),               # ats53_h_cover_season (0 = all)
+                    _cover_rate(_a_ats, 0),               # ats53_a_cover_season
+                    _ats_streak(_h_ats),                  # ats53_h_streak
+                    _ats_streak(_a_ats),                  # ats53_a_streak
+                    _cover_as_fav(_h_ats),                # ats53_h_cover_as_fav
+                    _cover_as_dog(_h_ats),                # ats53_h_cover_as_dog
+                    _cover_as_fav(_a_ats),                # ats53_a_cover_as_fav
+                    _cover_as_dog(_a_ats),                # ats53_a_cover_as_dog
+                    _avg_margin_vs_spread(_h_ats, 10),    # ats53_h_margin_vs_spread
+                    _avg_margin_vs_spread(_a_ats, 10),    # ats53_a_margin_vs_spread
+                ])
+            except Exception:
+                row.extend([0.5] * 12)
+
+            # ── Cat 54: Over/Under Record Features (12 features) ──
+            try:
+                _h_ou = _team_ou[home]
+                _a_ou = _team_ou[away]
+
+                def _over_rate(ou_list, n):
+                    s = ou_list[-n:] if n else ou_list
+                    return sum(1 for r in s if r[0]) / len(s) if s else 0.5
+
+                def _ou_streak(ou_list):
+                    if not ou_list:
+                        return 0.0
+                    streak = 0
+                    last = ou_list[-1][0]
+                    for r in reversed(ou_list):
+                        if r[0] == last:
+                            streak += 1
+                        else:
+                            break
+                    return (streak / 10.0) if last else (-streak / 10.0)
+
+                def _over_at_venue(ou_list, is_home_flag):
+                    venue = [r for r in ou_list if r[2] == is_home_flag]
+                    return sum(1 for r in venue if r[0]) / len(venue) if venue else 0.5
+
+                def _avg_margin_vs_total(ou_list, n):
+                    s = ou_list[-n:] if n else ou_list
+                    if not s:
+                        return 0.0
+                    return sum(r[3] for r in s) / len(s) / 20.0  # normalize
+
+                _h_or10 = _over_rate(_h_ou, 10)
+                _a_or10 = _over_rate(_a_ou, 10)
+
+                # Pace vs total: estimate combined pace from recent PPG
+                _h_ppg = 0.0
+                _a_ppg = 0.0
+                if len(hr_) >= 5:
+                    _h_ppg = sum(r[4].get('pts', 0) for r in hr_[-5:]) / 5.0
+                if len(ar_) >= 5:
+                    _a_ppg = sum(r[4].get('pts', 0) for r in ar_[-5:]) / 5.0
+                _pace_est = _h_ppg + _a_ppg  # estimated total
+                _o52_data = (odds_data or {}).get((gd, home, away), {})
+                _curr_total = _o52_data.get('total', 220.0) or 220.0
+                _pace_vs_total = (_pace_est - _curr_total) / 20.0 if _pace_est > 0 else 0.0
+
+                row.extend([
+                    _h_or10,                                # ou54_h_over_rate10
+                    _a_or10,                                # ou54_a_over_rate10
+                    _over_rate(_h_ou, 0),                   # ou54_h_over_season
+                    _over_rate(_a_ou, 0),                   # ou54_a_over_season
+                    _ou_streak(_h_ou),                      # ou54_h_streak
+                    _ou_streak(_a_ou),                      # ou54_a_streak
+                    _over_at_venue(_h_ou, True),            # ou54_h_over_at_home
+                    _over_at_venue(_a_ou, False),           # ou54_a_over_on_road
+                    _avg_margin_vs_total(_h_ou, 10),        # ou54_h_margin_vs_total
+                    _avg_margin_vs_total(_a_ou, 10),        # ou54_a_margin_vs_total
+                    (_h_or10 + _a_or10) / 2.0,             # ou54_combined_over_rate
+                    _pace_vs_total,                         # ou54_pace_vs_total
+                ])
+            except Exception:
+                row.extend([0.5] * 12)
+
             X.append(row)
             y.append(1 if hs > as_ else 0)
+
+            # ── Update Cat 52-54 state trackers (AFTER feature extraction = no lookahead) ──
+            try:
+                _o_post = (odds_data or {}).get((gd, home, away), {})
+                _sp_post = _o_post.get('spread_home', None)
+                _tot_post = _o_post.get('total', None)
+                _actual_margin = hs - as_
+
+                # ATS: home covered if actual_margin > -spread (spread_home is negative when home favored)
+                if _sp_post is not None:
+                    _h_covered = _actual_margin > -_sp_post
+                    _a_covered = not _h_covered  # away covers when home doesn't
+                    _h_mvs = _actual_margin - (-_sp_post)   # margin vs spread for home
+                    _a_mvs = -_actual_margin - _sp_post     # margin vs spread for away
+                    _team_ats[home].append((_h_covered, _sp_post, True, _h_mvs))
+                    _team_ats[away].append((_a_covered, -_sp_post, False, _a_mvs))
+                    _season_spreads.append(abs(_sp_post))
+
+                # O/U: went over if actual total > total line
+                if _tot_post is not None:
+                    _actual_total = hs + as_
+                    _went_over = _actual_total > _tot_post
+                    _mvt = _actual_total - _tot_post
+                    _team_ou[home].append((_went_over, _tot_post, True, _mvt))
+                    _team_ou[away].append((_went_over, _tot_post, False, _mvt))
+                    _season_totals.append(_tot_post)
+            except Exception:
+                pass
 
             # Record this game
             self._record_game(team_results, team_last, team_elo,

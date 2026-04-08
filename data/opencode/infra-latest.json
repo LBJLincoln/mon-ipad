@@ -1,0 +1,83 @@
+{
+  "check_date": "2026-04-04",
+  "overall_health": "red",
+  "vm_status": {
+    "health": "red",
+    "disk_warning": true,
+    "memory_pressure": true,
+    "issues": [
+      "VM is critically overloaded with sustained high CPU load (load averages 6.7-8.0 for 1m, 5m, 15m respectively) on a single vCPU VM.",
+      "Disk usage is approaching critical levels (79% used, 6.1GB available), risking future service interruptions.",
+      "Low free memory (72MB) indicates potential memory pressure, especially given the severe CPU load."
+    ]
+  },
+  "spaces_status": {
+    "healthy_count": 6,
+    "total_count": 6,
+    "down_spaces": [],
+    "issues": []
+  },
+  "data_freshness": {
+    "health": "green",
+    "stale_files": [],
+    "issues": []
+  },
+  "cron_health": {
+    "health": "yellow",
+    "issues": [
+      "While data freshness indicates cron jobs are running, the extreme VM load poses a high risk of delayed execution, failures, or missed schedules for critical cron jobs (e.g., predictions, autonomous cycles)."
+    ]
+  },
+  "critical_alerts": [
+    {
+      "severity": "critical",
+      "component": "VM CPU",
+      "message": "Extreme CPU load detected (Load Averages: 6.76, 7.78, 8.04 for 1m, 5m, 15m respectively) on a 1 vCPU VM. This signifies severe resource exhaustion, leading to significant performance degradation across all VM-hosted services and potential unresponsiveness.",
+      "action": "Immediately investigate the processes consuming excessive CPU. Increase VM vCPU resources as a top priority."
+    },
+    {
+      "severity": "warning",
+      "component": "VM Disk",
+      "message": "Disk usage is at 79% (22G/30G), with only 6.1G available. This level is approaching critical capacity and could lead to service failures if the disk fills completely.",
+      "action": "Identify and remove old logs, temporary files, or unnecessary data. Implement automated disk cleanup routines and consider expanding disk size."
+    },
+    {
+      "severity": "warning",
+      "component": "VM Memory",
+      "message": "Low free memory (72MB) with only 366MB available out of 969MB total. While 'available' is higher, the low 'free' combined with high CPU load suggests potential memory contention affecting performance.",
+      "action": "Investigate memory-intensive processes. Consider increasing VM RAM or optimizing applications to reduce memory footprint."
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": 1,
+      "action": "Immediately upgrade the VM's vCPU count to at least 2 or 4, and potentially increase RAM.",
+      "reason": "The current 1 vCPU VM is severely overloaded, which is the primary bottleneck for all operations. Increasing CPU capacity is crucial for system stability and performance. Additional RAM would also alleviate memory pressure."
+    },
+    {
+      "priority": 1,
+      "action": "Conduct an urgent investigation to identify the specific processes or tasks causing the consistently high CPU load on the VM.",
+      "reason": "Understanding the root cause of the load is essential for targeted optimization or task offloading. This needs to be done immediately to prevent total system failure."
+    },
+    {
+      "priority": 2,
+      "action": "Implement a proactive disk space management strategy, including scheduled cleanup of old logs, temporary files, and historical data, as well as reviewing data retention policies.",
+      "reason": "The disk is nearing capacity, which can lead to service interruptions. Proactive management will prevent future outages."
+    },
+    {
+      "priority": 3,
+      "action": "Enhance VM monitoring to include detailed process-level resource utilization (CPU, memory, disk I/O) and alert thresholds.",
+      "reason": "Improved visibility will help in quickly identifying and troubleshooting resource-intensive processes and allow for earlier detection of potential issues."
+    },
+    {
+      "priority": 4,
+      "action": "Evaluate the possibility of offloading certain resource-intensive cron jobs or the data server role to a separate, appropriately provisioned instance or serverless functions.",
+      "reason": "Distributing critical services can reduce the load on the main VM, improve resilience, and ensure adherence to the 'ZERO ML allowed on VM' principle by focusing the VM strictly on core orchestration that can handle its load."
+    },
+    {
+      "priority": 5,
+      "action": "Review and optimize the execution frequency and efficiency of all cron jobs, especially those related to data processing or system maintenance.",
+      "reason": "Inefficient or overlapping cron jobs can contribute to the high VM load. Optimization can free up valuable CPU cycles."
+    }
+  ]
+}

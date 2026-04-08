@@ -2,6 +2,8 @@
 .env
 .env.local
 *.local
+logins*.txt
+*logins*.txt
 
 # Claude Code
 .claude/settings.json
@@ -16,6 +18,10 @@ package-lock.json
 .venv-litellm/
 __pycache__/
 *.pyc
+
+# Vendored OSS repos (TauricResearch/TradingAgents, camel-ai/oasis)
+# Cloned shallow on each VM via scripts/vendor/clone-vendor.sh
+/vendor/
 
 # Build
 dist/
@@ -70,3 +76,8 @@ Thumbs.db
 monetisation/sites/*/.vercel/
 n8n/archive/
 technicals/archive/
+nba-quant-gpu/features_cache_v38.npz
+catboost_info/
+obsidian-vault/
+nba-quant-space/
+.opencode/

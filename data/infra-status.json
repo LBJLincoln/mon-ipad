@@ -1,66 +1,31 @@
 {
-  "timestamp": "2026-04-02T17:15:15Z",
-  "summary": {
-    "total": 11,
-    "healthy": 8,
-    "restarted": 0,
-    "failed": 2
+  "timestamp": "2026-04-08T00:15:00Z",
+  "fleet_summary": {
+    "nba_spaces_up": 6,
+    "nba_total": 6,
+    "political_spaces_up": 0,
+    "political_total": 4,
+    "all_spaces": 10,
+    "spaces_up": 6,
+    "spaces_down": 4
   },
-  "hf_spaces": {
-    "P1_pol": {
-      "status": "running",
-      "brier": "0.24186",
-      "gen": "5964"
-    },
-    "P2_pol": {
-      "status": "running",
-      "brier": "0.25081",
-      "gen": "4174"
-    },
-    "P3_pol": {
-      "status": "down",
-      "http": "404"
-    },
-    "P4_pol": {
-      "status": "down",
-      "http": "404"
-    },
-    "S10_nba": {
-      "status": "running",
-      "brier": "0.22472",
-      "gen": "308"
-    },
-    "S11_nba": {
-      "status": "running",
-      "brier": "0.22615",
-      "gen": "368"
-    },
-    "S12_nba": {
-      "status": "running",
-      "brier": "0.22262",
-      "gen": "453"
-    },
-    "S13_nba": {
-      "status": "running",
-      "brier": "0.22446",
-      "gen": "403"
-    },
-    "S14_nba": {
-      "status": "running",
-      "brier": "0.22182",
-      "gen": "412"
-    },
-    "S15_nba": {
-      "status": "running",
-      "brier": "0.22471",
-      "gen": "372"
-    }
+  "services": {
+    "data_server_8080": "200_OK",
+    "bloomberg_api_8042": "200_OK"
   },
-  "kaggle": {
-    "nba": "[2026-04-02T17:15:09Z]   \u21bb Kaggle NBA: COMPLETE \u2014 relaunching... relaunched",
-    "political": "[2026-04-02T17:15:11Z]   \u21bb Kaggle Political: COMPLETE \u2014 relaunching... relaunched"
+  "spaces_detail": {
+    "S10": "200_OK",
+    "S11": "200_OK",
+    "S12": "200_OK",
+    "S13": "200_OK",
+    "S14": "200_OK",
+    "S15": "200_OK",
+    "PA1": "UNREACHABLE",
+    "PA2": "UNREACHABLE",
+    "PA3": "404_DOWN_5CYCLES",
+    "PA4": "404_DOWN_5CYCLES"
   },
-  "modal": {
-    "nba": "idle_peak"
-  }
+  "crons_active": 3,
+  "action_taken": "ESCALATION_PA3_PA4",
+  "reason": "PA3 and PA4 DOWN for 5+ consecutive iterations - requires manual HF Space restart"
 }

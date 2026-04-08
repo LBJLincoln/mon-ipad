@@ -73,9 +73,17 @@ Before production: Auth → List → Push → Status → Download → Parse → 
 
 - [research_cycle7_self_improvement_harness.md](research_cycle7_self_improvement_harness.md) — SOTA gap analysis: 0.199 → 0.21570 (-0.0157 Brier). 9 frameworks (AutoHarness, SAGE, Karpathy loop, EvoAgentX, EnCompass, ERL, trajectory memory, MIT DigiRL, Claude autonomy). 4-phase roadmap: Brier gates (+Telegram) → SAGE 4-agent → AutoHarness+EnCompass → 24/7 Claude team. Expected cumulative -0.008 Brier.
 
+## Cycle 8 — ONNX + ClearML Research (2026-04-03)
+
+- [research_cycle8_onnx_clearml.md](research_cycle8_onnx_clearml.md) — Inference speedup (Timber 336×, ONNX 5-10×, native best for CPU HF Spaces) + experiment tracking (ClearML beats DagsHub/MLflow for 6-island parallel evolution). Ready-to-deploy code + 4-phase roadmap.
+
 ## Cycle 6 — Unconventional Feature Research (2026-03-27)
 
 - [research_cycle6_feature_proposals.md](research_cycle6_feature_proposals.md) — 18 unconventional feature categories (Cat 39-56). Quick wins: Circadian (Cat39), Clutch (Cat43), Transition (Cat41), Load (Cat48), H2H (Cat55). All data sources mapped.
+
+## Cycle 9 — Bloomberg Terminal + Open-Source Agents (2026-04-03)
+
+- [research_bloomberg_opencode_pi.md](research_bloomberg_opencode_pi.md) — OpenBB fork (Dashboard v2, real-time odds), OpenCode (Groq cost savings $630/mo), Pi-Mono (custom agents). 3 phases, $0 cost, -0.0157 Brier+visible improvements.
 
 ## Previous Research
 

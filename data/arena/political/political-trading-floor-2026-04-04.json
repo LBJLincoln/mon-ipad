@@ -1,0 +1,525 @@
+{
+  "iteration": 115,
+  "generation": 15640,
+  "meta": {
+    "version": "political-trading-floor-integrated-v1",
+    "generated": "2026-04-04T22:13:27Z",
+    "date": "2026-04-04",
+    "traders": 5,
+    "strategies": 8,
+    "eliminated": 3,
+    "events_total": 1120,
+    "trading_days": 12,
+    "social_tickers": 26,
+    "etf_universe": 36
+  },
+  "leaderboard": [
+    {
+      "rank": 1,
+      "trader_id": "codex",
+      "name": "Codex",
+      "provider": "openai",
+      "personality": "aggressive",
+      "capital": 101423.06,
+      "roi_pct": 1.4231,
+      "sharpe": 9.604,
+      "total_trades": 113,
+      "wins": 63,
+      "losses": 50,
+      "win_rate": 55.8,
+      "max_drawdown": 0.0009,
+      "primary_strategy": "event_driven"
+    },
+    {
+      "rank": 2,
+      "trader_id": "gemini",
+      "name": "Gemini",
+      "provider": "google",
+      "personality": "analytical",
+      "capital": 101029.96,
+      "roi_pct": 1.03,
+      "sharpe": 20.231,
+      "total_trades": 119,
+      "wins": 71,
+      "losses": 48,
+      "win_rate": 59.7,
+      "max_drawdown": 0.0001,
+      "primary_strategy": "momentum"
+    },
+    {
+      "rank": 3,
+      "trader_id": "grok",
+      "name": "Grok",
+      "provider": "xai",
+      "personality": "contrarian",
+      "capital": 99707.79,
+      "roi_pct": -0.2922,
+      "sharpe": -13.441,
+      "total_trades": 60,
+      "wins": 22,
+      "losses": 38,
+      "win_rate": 36.7,
+      "max_drawdown": 0.0029,
+      "primary_strategy": "event_driven"
+    },
+    {
+      "rank": 4,
+      "trader_id": "openrouter",
+      "name": "OpenRouter",
+      "provider": "openrouter",
+      "personality": "diversified",
+      "capital": 100401.14,
+      "roi_pct": 0.4011,
+      "sharpe": 9.348,
+      "total_trades": 95,
+      "wins": 52,
+      "losses": 43,
+      "win_rate": 54.7,
+      "max_drawdown": 0.001,
+      "primary_strategy": "sector_rotation"
+    },
+    {
+      "rank": 5,
+      "trader_id": "claude",
+      "name": "Claude",
+      "provider": "anthropic",
+      "personality": "conservative",
+      "capital": 100030.02,
+      "roi_pct": 0.03,
+      "sharpe": 2.656,
+      "total_trades": 35,
+      "wins": 17,
+      "losses": 18,
+      "win_rate": 48.6,
+      "max_drawdown": 0.0004,
+      "primary_strategy": "mean_reversion"
+    }
+  ],
+  "traders": {
+    "gemini": {
+      "political_bankroll": 101029.96,
+      "political_roi_pct": 1.03,
+      "political_sharpe": 20.231,
+      "political_total_trades": 119,
+      "political_wins": 71,
+      "political_losses": 48,
+      "political_win_rate": 59.7,
+      "political_total_wagered": 214896.23,
+      "political_total_pnl": 1029.96,
+      "political_peak_capital": 101029.96,
+      "political_max_drawdown": 0.0001,
+      "political_trading_days": 12,
+      "political_approach": "momentum",
+      "political_strategy_breakdown": {
+        "momentum": {
+          "trades": 118,
+          "pnl": 1002.77,
+          "wins": 70,
+          "win_rate": 59.3
+        },
+        "sector_rotation": {
+          "trades": 1,
+          "pnl": 27.19,
+          "wins": 1,
+          "win_rate": 100.0
+        }
+      },
+      "political_sector_breakdown": {
+        "technology": 852.04,
+        "broad": 136.79,
+        "unknown": 66.29,
+        "defense": -25.16
+      }
+    },
+    "openrouter": {
+      "political_bankroll": 100401.14,
+      "political_roi_pct": 0.4011,
+      "political_sharpe": 9.348,
+      "political_total_trades": 95,
+      "political_wins": 52,
+      "political_losses": 43,
+      "political_win_rate": 54.7,
+      "political_total_wagered": 146403.2,
+      "political_total_pnl": 401.14,
+      "political_peak_capital": 100401.14,
+      "political_max_drawdown": 0.001,
+      "political_trading_days": 12,
+      "political_approach": "sector_rotation",
+      "political_strategy_breakdown": {
+        "insider_follow": {
+          "trades": 34,
+          "pnl": 191.62,
+          "wins": 20,
+          "win_rate": 58.8
+        },
+        "pairs_trading": {
+          "trades": 42,
+          "pnl": -21.15,
+          "wins": 21,
+          "win_rate": 50.0
+        },
+        "sector_rotation": {
+          "trades": 19,
+          "pnl": 230.67,
+          "wins": 11,
+          "win_rate": 57.9
+        }
+      },
+      "political_sector_breakdown": {
+        "broad": 219.07,
+        "unknown": 163.8,
+        "energy": 136.62,
+        "financials": -118.35
+      }
+    },
+    "claude": {
+      "political_bankroll": 100030.02,
+      "political_roi_pct": 0.03,
+      "political_sharpe": 2.656,
+      "political_total_trades": 35,
+      "political_wins": 17,
+      "political_losses": 18,
+      "political_win_rate": 48.6,
+      "political_total_wagered": 25197.03,
+      "political_total_pnl": 30.02,
+      "political_peak_capital": 100030.02,
+      "political_max_drawdown": 0.0004,
+      "political_trading_days": 12,
+      "political_approach": "mean_reversion",
+      "political_strategy_breakdown": {
+        "mean_reversion": {
+          "trades": 35,
+          "pnl": 30.02,
+          "wins": 17,
+          "win_rate": 48.6
+        }
+      },
+      "political_sector_breakdown": {
+        "healthcare": 30.02
+      }
+    },
+    "codex": {
+      "political_bankroll": 101423.06,
+      "political_roi_pct": 1.4231,
+      "political_sharpe": 9.604,
+      "political_total_trades": 113,
+      "political_wins": 63,
+      "political_losses": 50,
+      "political_win_rate": 55.8,
+      "political_total_wagered": 253099.16,
+      "political_total_pnl": 1423.06,
+      "political_peak_capital": 101423.06,
+      "political_max_drawdown": 0.0009,
+      "political_trading_days": 12,
+      "political_approach": "event_driven",
+      "political_strategy_breakdown": {
+        "momentum": {
+          "trades": 108,
+          "pnl": 612.37,
+          "wins": 59,
+          "win_rate": 54.6
+        },
+        "event_driven": {
+          "trades": 5,
+          "pnl": 810.69,
+          "wins": 4,
+          "win_rate": 80.0
+        }
+      },
+      "political_sector_breakdown": {
+        "technology": 1297.83,
+        "defense": 125.23
+      }
+    },
+    "grok": {
+      "political_bankroll": 99707.79,
+      "political_roi_pct": -0.2922,
+      "political_sharpe": -13.441,
+      "political_total_trades": 60,
+      "political_wins": 22,
+      "political_losses": 38,
+      "political_win_rate": 36.7,
+      "political_total_wagered": 72413.31,
+      "political_total_pnl": -292.21,
+      "political_peak_capital": 100000.0,
+      "political_max_drawdown": 0.0029,
+      "political_trading_days": 12,
+      "political_approach": "event_driven",
+      "political_strategy_breakdown": {
+        "mean_reversion": {
+          "trades": 60,
+          "pnl": -292.21,
+          "wins": 22,
+          "win_rate": 36.7
+        }
+      },
+      "political_sector_breakdown": {
+        "energy": -292.21
+      }
+    }
+  },
+  "strategies": {
+    "momentum": {
+      "family": "momentum",
+      "position_pct": 0.05
+    },
+    "mean_reversion": {
+      "family": "reversion",
+      "position_pct": 0.03
+    },
+    "event_driven": {
+      "family": "event",
+      "position_pct": 0.08
+    },
+    "pairs_trading": {
+      "family": "pairs",
+      "position_pct": 0.04
+    },
+    "sector_rotation": {
+      "family": "rotation",
+      "position_pct": 0.06
+    },
+    "safe_haven": {
+      "family": "defensive",
+      "position_pct": 0.04
+    },
+    "insider_follow": {
+      "family": "insider",
+      "position_pct": 0.05
+    },
+    "vol_scaled": {
+      "family": "vol_adjusted",
+      "position_pct": 0.04
+    }
+  },
+  "eliminations": {
+    "strategies": {
+      "SECTOR_ROTATE": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-75% ROI",
+        "final_roi": -0.75,
+        "department": "D7_POLITICAL"
+      },
+      "DEFENSE_LONG_individual": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-65% ROI on individual defense stock picks",
+        "final_roi": -0.65,
+        "department": "D7_POLITICAL"
+      },
+      "BILL_PASSES": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-64% ROI",
+        "final_roi": -0.64,
+        "department": "D7_POLITICAL"
+      }
+    },
+    "coffins": [
+      {
+        "name": "SECTOR_ROTATE",
+        "eliminated_at": "2026-03-31",
+        "reason": "-75% ROI",
+        "final_roi": -0.75,
+        "department": "D7_POLITICAL",
+        "type": "political_strategy"
+      },
+      {
+        "name": "DEFENSE_LONG_individual",
+        "eliminated_at": "2026-03-31",
+        "reason": "-65% ROI on individual defense stock picks",
+        "final_roi": -0.65,
+        "department": "D7_POLITICAL",
+        "type": "political_strategy"
+      },
+      {
+        "name": "BILL_PASSES",
+        "eliminated_at": "2026-03-31",
+        "reason": "-64% ROI",
+        "final_roi": -0.64,
+        "department": "D7_POLITICAL",
+        "type": "political_strategy"
+      }
+    ]
+  },
+  "etf_universe": {
+    "SPY": {
+      "name": "S&P 500",
+      "sector": "broad",
+      "type": "etf"
+    },
+    "QQQ": {
+      "name": "NASDAQ 100",
+      "sector": "technology",
+      "type": "etf"
+    },
+    "IWM": {
+      "name": "Russell 2000",
+      "sector": "small_cap",
+      "type": "etf"
+    },
+    "XLF": {
+      "name": "Financials",
+      "sector": "financials",
+      "type": "etf"
+    },
+    "XLE": {
+      "name": "Energy",
+      "sector": "energy",
+      "type": "etf"
+    },
+    "XLK": {
+      "name": "Technology",
+      "sector": "technology",
+      "type": "etf"
+    },
+    "XLV": {
+      "name": "Healthcare",
+      "sector": "healthcare",
+      "type": "etf"
+    },
+    "XLI": {
+      "name": "Industrials",
+      "sector": "industrials",
+      "type": "etf"
+    },
+    "XLD": {
+      "name": "Defense",
+      "sector": "defense",
+      "type": "etf"
+    },
+    "GLD": {
+      "name": "Gold",
+      "sector": "commodity",
+      "type": "etf"
+    },
+    "TLT": {
+      "name": "Long-term Treasuries",
+      "sector": "bonds",
+      "type": "etf"
+    },
+    "LMT": {
+      "name": "Lockheed Martin",
+      "sector": "defense",
+      "type": "stock"
+    },
+    "RTX": {
+      "name": "Raytheon",
+      "sector": "defense",
+      "type": "stock"
+    },
+    "BA": {
+      "name": "Boeing",
+      "sector": "defense",
+      "type": "stock"
+    },
+    "NOC": {
+      "name": "Northrop Grumman",
+      "sector": "defense",
+      "type": "stock"
+    },
+    "GD": {
+      "name": "General Dynamics",
+      "sector": "defense",
+      "type": "stock"
+    },
+    "AAPL": {
+      "name": "Apple",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "MSFT": {
+      "name": "Microsoft",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "GOOGL": {
+      "name": "Alphabet",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "META": {
+      "name": "Meta Platforms",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "NVDA": {
+      "name": "NVIDIA",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "AMZN": {
+      "name": "Amazon",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "TSLA": {
+      "name": "Tesla",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "JPM": {
+      "name": "JPMorgan Chase",
+      "sector": "financials",
+      "type": "stock"
+    },
+    "GS": {
+      "name": "Goldman Sachs",
+      "sector": "financials",
+      "type": "stock"
+    },
+    "MS": {
+      "name": "Morgan Stanley",
+      "sector": "financials",
+      "type": "stock"
+    },
+    "BLK": {
+      "name": "BlackRock",
+      "sector": "financials",
+      "type": "stock"
+    },
+    "AXP": {
+      "name": "American Express",
+      "sector": "financials",
+      "type": "stock"
+    },
+    "XOM": {
+      "name": "Exxon Mobil",
+      "sector": "energy",
+      "type": "stock"
+    },
+    "CVX": {
+      "name": "Chevron",
+      "sector": "energy",
+      "type": "stock"
+    },
+    "COP": {
+      "name": "ConocoPhillips",
+      "sector": "energy",
+      "type": "stock"
+    },
+    "OXY": {
+      "name": "Occidental",
+      "sector": "energy",
+      "type": "stock"
+    },
+    "HAL": {
+      "name": "Halliburton",
+      "sector": "energy",
+      "type": "stock"
+    },
+    "PFE": {
+      "name": "Pfizer",
+      "sector": "healthcare",
+      "type": "stock"
+    },
+    "JNJ": {
+      "name": "Johnson & Johnson",
+      "sector": "healthcare",
+      "type": "stock"
+    },
+    "UNH": {
+      "name": "UnitedHealth",
+      "sector": "healthcare",
+      "type": "stock"
+    }
+  }
+}

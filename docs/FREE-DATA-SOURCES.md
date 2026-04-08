@@ -3,7 +3,7 @@
 
 ## CRITICAL GAP DIAGNOSIS
 
-Our feature engine has 37 categories and ~6135 raw features — but **all are team-level**. Categories 12, 19, 24, 26 use player impact features that are **estimated from box scores, not from real player-level APIs**. This is the core gap to close.
+Our feature engine has 46 categories and ~6253 raw features — but **all are team-level**. Categories 12, 19, 24, 26 use player impact features that are **estimated from box scores, not from real player-level APIs**. This is the core gap to close.
 
 **What we lack that Montrucchio 2026 (Brier 0.199) had:**
 - Shot-chart spatial embeddings (CNN -> PCA -> features) — estimated Brier delta: -0.004

@@ -445,11 +445,10 @@ if [ -d "$POLITICAL_DIR" ]; then
     else
         log "[POLITICAL] Patches already applied ($PATCHES_APPLIED matches) — no action needed"
         # Still check for stagnant islands and send diversify if needed
+        # P3/P4 removed 2026-04-03 — spaces never existed on HF
         for PA_URL in \
             "https://nomos42-political-alpha.hf.space" \
-            "https://nomos42-political-alpha-2.hf.space" \
-            "https://nomos42-political-alpha-3.hf.space" \
-            "https://nomos42-political-alpha-4.hf.space"; do
+            "https://nomos42-political-alpha-2.hf.space"; do
             STAG=$(curl -s --max-time 8 "${PA_URL}/api/status" 2>/dev/null | \
                 python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('stagnation',0))" 2>/dev/null || echo "0")
             if [ "$STAG" -gt "15" ] 2>/dev/null; then

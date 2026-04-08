@@ -24,7 +24,7 @@ The interesting technical bits:
 
 **Multi-agent trading floor.** Five AI agents (Gemini, Claude, Codex, Grok, OpenRouter) each independently decide which model to use, which strategy to apply, and how much to bet per game. After 994 games: Codex reached $302K from $100 (full Kelly, extremely aggressive), Gemini reached $128K (half Kelly, 16.1 Sharpe). The agent diversity reveals strategy-level insights that single-agent optimization misses.
 
-**Department Karpathy loops.** The system has 11 departments (research, engineering, evolution, betting, evaluation, infrastructure, political alpha, creative, communication, business, finance), each running an autonomous 5-minute loop: mutate something, measure the result, keep or revert. A Guardian Orchestrator cross-pollinates wins between departments every 4 hours.
+**Department Karpathy loops.** The system has 9 departments (research, engineering, evolution, product, business, evaluation, infra, finance, cross-repo), each running an autonomous 5-minute loop: mutate something, measure the result, keep or revert. A Guardian Orchestrator cross-pollinates wins between departments every 4 hours.
 
 **Results.** Best Brier score: 0.21570 (TabICL on Colab T4). Walk-forward over 934 games: 0.22447. Market sportsbook average is roughly 0.25. The gap between our best (0.215) and our walk-forward (0.224) tells us there is real overfitting we have not fully solved.
 

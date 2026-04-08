@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI
 
-> Architecture v18 — Department Forge + Trading Floor v4 | Updated: 2026-03-31
+> Architecture v19 — Department Forge (9 depts) + Trading Floor v4 + Bloomberg | Updated: 2026-04-04
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -12,7 +12,7 @@ Build the best NBA prediction AI in the world.
 | Flagship | Repo | Bot | Status |
 |----------|------|-----|--------|
 | NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | ACTIVE -- 6 islands + Kaggle Karpathy |
-| Political Alpha | nomos-political-alpha | -- | ACTIVE -- v2.0 engine, 13 categories |
+| Political Alpha | nomos-political-alpha | -- | ACTIVE -- v3.1 engine, 22 categories |
 | AI Artistic Generation | rgwa | @RGWAbot | ACTIVE -- generative AI |
 | Dashboard Hub | nomos-dashboard | -- | ACTIVE -- /nba /political /rgwa /evolution |
 | Factory / Complex RAGs | rag-website | -- | SHELVED |
@@ -77,11 +77,23 @@ SYSTEM CRONS
 2. **Feature engine parity** — `features/engine.py` = `hf-space/features/engine.py` always
 3. **1 fix per iteration** — never multiple simultaneous changes
 4. **All experiments tagged** with `feature_engine_version` in Supabase
-5. **Feature engine** — v3.1-46cat = 46 categories, 6253 raw features (Cat47 Drive-Rim + Cat48 Passing + Cat49 Play-Type PPP)
+5. **Feature engine** — v3.1-54cat = 54 categories, 7213 raw features
 6. **MAX_FEATURES=200** — hard cap enforced in init/mutate/crossover on all spaces
 7. **Mutation cap** — adaptive mutation capped at 0.15 (deployed S10/S11/S12/S15)
 8. **CPU-only islands** — no neural models on CPU (tree-based only), stacking removed
 9. **Supabase** — primary (ayqviq) paused (402), using pooler connection (xivvnr)
+
+## New Tools (Apr 4)
+
+| Tool | Script | Purpose |
+|------|--------|---------|
+| Bloomberg Terminal | `scripts/bloomberg/nomos42-terminal.py` | Rich TUI: odds, predictions, fleet, bankroll |
+| Bloomberg API | `scripts/bloomberg/bloomberg-api.py` | HTTP API on port 8042 (auto-restart cron) |
+| Free Models | `scripts/forge/free-models-integration.py` | Qwen/Gemma/Mistral council advisors via HF API |
+| ZeroGPU Burst | `scripts/gpu-burst/zerogpu-burst.py` | H200 GPU burst (15 min/day free, 3 accounts) |
+| OpenCode Agents | `scripts/opencode/*.sh` | D1/D5/D7 automated agents (cron every 4-6h) |
+| Laptop Monitor | `scripts/laptop/agent-monitor.py` | Cross-repo health via local Ollama |
+| Cross-Repo Council | `scripts/councils/cross-repo-councils.sh` | Run dept councils across all 8 repos |
 
 ## Agent Directives (OBLIGATOIRE Overrides)
 
@@ -120,23 +132,21 @@ SYSTEM CRONS
 
 Channel: @Nomos42
 
-## Department Forge Structure (v18)
+## Department Forge Structure (v19)
 
 | Dept | Name | Karpathy Loop | Metric | Max Run |
 |------|------|---------------|--------|---------|
 | D1 | RESEARCH | paper→extract→propose→measure | papers/week, techniques tested | 5 min |
 | D2 | ENGINEERING | code→test→measure Brier→keep/revert | Brier delta, test pass rate | 5 min |
 | D3 | EVOLUTION | mutate→eval→measure fitness→select | gen/hr, best Brier, diversity | 5 min |
-| D4 | BETTING | strategy→backtest→measure ROI→keep/revert | ROI, Sharpe, Kelly edge | 5 min |
-| D5 | EVALUATION | audit→identify→fix→verify | false positive rate, calibration | 5 min |
-| D6 | INFRA | check→detect→fix→verify | uptime %, restart count | 5 min |
-| D7 | POLITICAL | signal→feature→measure alpha→keep/revert | political Brier, ETF ROI | 5 min |
-| D8 | CREATIVE (RGWA) | generate→quality→curate→publish | quality score, output/day | 5 min |
-| D9 | COMMUNICATION | content→post→measure engagement→optimize | engagement rate, channels active | 5 min |
-| D10 | BUSINESS | pricing→onboard→measure conversion→optimize | MRR, conversion rate, ARPU | 5 min |
-| D11 | FINANCE | track→report→reconcile→forecast | financial accuracy, burn rate | 5 min |
+| D4 | PRODUCT | build→test→ship→measure | features shipped, Brier delta | 5 min |
+| D5 | BUSINESS | price→onboard→convert→optimize | MRR, conversion rate, ARPU | 5 min |
+| D6 | EVALUATION | audit→identify→fix→verify | false positive rate, calibration | 5 min |
+| D7 | INFRA | check→detect→fix→verify | uptime %, restart count | 5 min |
+| D8 | FINANCE | track→report→reconcile→forecast | financial accuracy, burn rate | 5 min |
+| D9 | CROSS-REPO | sync→audit→fix→verify | parity score, cross-repo health | 5 min |
 
-Guardian Orchestrator v3: Analyzes ALL 11 department loops, allocates resources, cross-pollinates wins.
+Guardian Orchestrator v3: Analyzes ALL 9 department loops, allocates resources, cross-pollinates wins.
 
 ## Trading Floor v4 — Multi-AI Competition
 
@@ -165,3 +175,21 @@ Each shows: dept status, active loops, metrics, agent activity
 | 24/7 brain trigger | Sonnet 4.6 | Remote trigger |
 | Batch execution, search | Sonnet 4.6 | Agent(model: "sonnet") |
 | Codebase exploration | Haiku 4.5 | Agent(model: "haiku") |
+
+
+## Forge v19 — 3 Layers × 9 Departments (2026-04-04T08:00:00Z)
+
+```
+L1 STRATEGIC:  Claude Code CLI + User (vision, milestones, decisions)
+L2 APPLICATION: D1 Research | D2 Engineering | D3 Evolution | D4 Product | D5 Business | D6 Evaluation | D9 Cross-Repo
+L3 LOGISTICS:   D7 Infra | D8 Finance
+```
+
+Each department runs a Karpathy autoresearch loop:
+- SCAN → PROPOSE → EXECUTE (5-min) → EVALUATE → KEEP/REVERT
+- Council state: data/departments/council-<dept>.json
+- Metrics log: data/departments/<dept>/metrics.jsonl
+- Runner: scripts/councils/department-council.sh <dept>
+
+Shared infra: VM (control tower) + Laptop (local models) + HF Spaces (3 accounts) + GPU burst
+

@@ -1,122 +1,16 @@
 {
-  "department": "infra",
-  "timestamp": "2026-04-02T10:30:30Z",
-  "iteration": 1,
-  "vm_health": {
-    "cpu_load": 7.18,
-    "cpu_load_5m": 3.58,
-    "cpu_load_15m": 3.05,
-    "cpu_count": 1,
-    "cpu_overloaded": true,
-    "memory_mb": {
-      "total": 969,
-      "used": 874,
-      "free": 95,
-      "available": 226,
-      "used_pct": 90.2
-    },
-    "swap_mb": {
-      "used": 617,
-      "active": true
-    },
-    "disk_pct": 83,
-    "disk_avail_gb": 5,
-    "data_dir_mb": 56
-  },
-  "crons_active": 23,
-  "processes_running": {
-    "brain": "ALIVE",
-    "nba_bot": "ALIVE",
-    "forge_bot": "ALIVE",
-    "political_bot": "ALIVE",
-    "rgwa_bot": "ALIVE",
-    "terminal_api": "ALIVE",
-    "data_server": "ALIVE"
-  },
-  "data_server_http": "200",
-  "spaces_health": {
-    "S10": {
-      "status": "running",
-      "brier": null,
-      "generation": "87"
-    },
-    "S11": {
-      "status": "running",
-      "brier": null,
-      "generation": "118"
-    },
-    "S12": {
-      "status": "running",
-      "brier": null,
-      "generation": "157"
-    },
-    "S13": {
-      "status": "running",
-      "brier": null,
-      "generation": "117"
-    },
-    "S14": {
-      "status": "running",
-      "brier": null,
-      "generation": "157"
-    },
-    "S15": {
-      "status": "running",
-      "brier": null,
-      "generation": "127"
-    },
-    "PA1": {
-      "status": "running",
-      "brier": null,
-      "generation": "5307"
-    },
-    "PA2": {
-      "status": "running",
-      "brier": null,
-      "generation": "3423"
-    },
-    "PA3": {
-      "status": "down_404",
-      "brier": null,
-      "generation": null
-    },
-    "PA4": {
-      "status": "down_404",
-      "brier": null,
-      "generation": null
-    }
-  },
-  "spaces_summary": {
-    "nba_up": 6,
-    "nba_total": 6,
-    "political_up": 2,
-    "political_total": 4,
-    "fleet_up": 8,
-    "fleet_total": 10
-  },
-  "issues_detected": [
-    {
-      "severity": "HIGH",
-      "component": "cpu",
-      "description": "CPU overloaded: load 7.18 on 1 vCPU"
-    },
-    {
-      "severity": "HIGH",
-      "component": "disk",
-      "description": "Disk 83% used \u2014 WARNING"
-    },
-    {
-      "severity": "MEDIUM",
-      "component": "swap",
-      "description": "Swap active: 617MB used"
-    },
-    {
-      "severity": "MEDIUM",
-      "component": "political_spaces",
-      "description": "Political spaces DOWN: 2/4 running. PA3/PA4 need HF dashboard restart."
-    }
-  ],
-  "issues_count": 4,
-  "uptime_pct": 88.0,
-  "status": "completed"
+  "status": "shipped",
+  "action": "escalated_pa3_pa4",
+  "iteration": 71,
+  "timestamp": "2026-04-08T00:15:00Z",
+  "spaces_up": 6,
+  "spaces_down": 4,
+  "ports_up": ["8080", "8042"],
+  "ports_down": [],
+  "auto_fixed": [],
+  "escalated": ["PA3_unreachable", "PA4_unreachable"],
+  "crons_healthy": true,
+  "files_changed": ["data/infra-status.json", "data/departments/infra/escalation-queue.jsonl"],
+  "reason": "pa3_pa4_5cycle_outage",
+  "decision": "ESCALATION: PA3 and PA4 offline for 5 consecutive health checks. Manual HF Spaces dashboard intervention required. All NBA spaces and critical services (data-server, bloomberg-api) HEALTHY."
 }

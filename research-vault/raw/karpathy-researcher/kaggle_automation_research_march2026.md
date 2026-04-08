@@ -1,0 +1,1 @@
+/home/termius/mon-ipad/.claude/agent-memory/karpathy-researcher/kaggle_automation_research_march2026.md

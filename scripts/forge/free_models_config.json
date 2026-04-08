@@ -1,0 +1,295 @@
+{
+  "description": "Free AI models for council advisors — HF Inference API, OpenRouter free tier, Groq, Cerebras, local Ollama",
+  "updated": "2026-04-04",
+
+  "model_landscape_april2026": {
+    "gemma4_status": "RELEASED Apr 2 2026. 4 sizes: E2B(2.3B), E4B(4.5B), 26B-A4B(MoE), 31B(dense). Apache 2.0. 256K ctx. NO free HF Inference Provider yet — weights only. Free via: Ollama (all sizes), OpenRouter (paid only at $0.14/$0.40 per 1M). HF model IDs: google/gemma-4-E2B-it, google/gemma-4-E4B-it, google/gemma-4-26B-A4B-it, google/gemma-4-31B-it",
+    "qwen36_status": "Qwen3.6-Plus RELEASED Apr 2 2026. Proprietary cloud model (Alibaba Cloud). NO open weights. Available FREE on OpenRouter: qwen/qwen3.6-plus:free (1M ctx, 600 RPM). Previous note about HF model ID Qwen/Qwen3.6-Plus was WRONG — it is cloud-only.",
+    "qwen35_status": "Qwen3.5 RELEASED Feb 16 2026. Open weights on HF. Sizes: 0.8B, 2B, 4B, 9B, 27B, 122B-A10B, 397B-A17B. Model IDs: Qwen/Qwen3.5-4B, Qwen/Qwen3.5-9B, Qwen/Qwen3.5-27B. Ollama: ollama pull qwen3.5",
+    "qwen3_status": "Qwen3 (base series, 2025) open weights. Key: Qwen/Qwen3-0.6B, Qwen/Qwen3-4B, Qwen/Qwen3-8B. Available via HF Inference Provider (nebius/together). Groq free: qwen-qwq-32b (30K TPM, 1K RPD).",
+    "llama4_status": "RELEASED March 2025. Scout: 17Bx16E (109B total), Maverick: 17Bx128E (~400B total). Open weights (gated). HF: meta-llama/Llama-4-Scout-17B-16E-Instruct, meta-llama/Llama-4-Maverick-17B-128E-Instruct. FREE on Groq: llama-4-scout-17b-16e-instruct (30K TPM, 1K RPD). Ollama: ollama pull llama4:scout",
+    "mistral_small4_status": "Mistral Small 4 (119B MoE, 256K ctx) RELEASED March 2026. HF: mistralai/Mistral-Small-4-119B-2603. Apache 2.0. NOT on free HF Inference Provider yet. Previous models Mistral-Small-3.1-24B still available on HF."
+  },
+
+  "hf_inference_api": {
+    "description": "HF Inference Providers — $0.10 free credits/month (free user), $2.00 (PRO $9/mo). Pay-as-you-go after. NOTE: As of Apr 2026, hf-inference provider focuses on CPU inference (BERT, GPT-2, small LLMs). Larger models route to external providers (Nebius, Together, Novita, etc.) and consume paid credits.",
+    "free_budget_note": "Only $0.10/month free = ~10K tokens at typical rates. NOT suitable for heavy council use without PRO account.",
+    "models": {
+      "qwen3_4b": {
+        "model_id": "Qwen/Qwen3-4B",
+        "provider": "nebius or together",
+        "context": 32000,
+        "free": true,
+        "note": "Cheapest: $0.01/$0.03 per 1M tokens via nscale on HF"
+      },
+      "qwen35_9b": {
+        "model_id": "Qwen/Qwen3.5-9B",
+        "provider": "together",
+        "context": 32000,
+        "cost_per_1m": "$0.10/$0.15",
+        "free": false,
+        "note": "Cheapest Qwen3.5 on HF Inference Providers"
+      },
+      "gemma4_e4b": {
+        "model_id": "google/gemma-4-E4B-it",
+        "provider": "NONE — not deployed by any inference provider yet",
+        "context": 128000,
+        "free": false,
+        "note": "Weights available for local/self-hosted only as of Apr 4 2026"
+      },
+      "gemma4_31b": {
+        "model_id": "google/gemma-4-31B-it",
+        "provider": "novita (via OpenRouter)",
+        "context": 256000,
+        "free": false,
+        "cost_openrouter": "$0.14/$0.40 per 1M tokens"
+      },
+      "mistral_small_31": {
+        "model_id": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
+        "provider": "hf-inference (CPU) or nebius",
+        "context": 128000,
+        "free": true,
+        "note": "Still functional on HF Inference API"
+      },
+      "phi4": {
+        "model_id": "microsoft/phi-4",
+        "provider": "hf-inference",
+        "context": 16384,
+        "free": true,
+        "note": "Lightweight, fast, good for quick YES/NO decisions"
+      }
+    }
+  },
+
+  "openrouter_free": {
+    "description": "28 free models on OpenRouter as of Apr 2026. Rate limits: 20 RPM, 200 RPD. Model IDs end in :free.",
+    "api_base": "https://openrouter.ai/api/v1",
+    "auth": "Bearer OPENROUTER_API_KEY",
+    "rate_limits": {
+      "rpm": 20,
+      "rpd": 200,
+      "note": "$10 one-time deposit increases to 1000 RPD"
+    },
+    "models": {
+      "qwen36_plus": {
+        "model_id": "qwen/qwen3.6-plus:free",
+        "context": 1000000,
+        "free": true,
+        "provider": "Alibaba Cloud International",
+        "capabilities": "Text + image + video input, text output, tool use, 78.8 SWE-bench",
+        "note": "BEST FREE MODEL for council use. 1M ctx, 600 RPM (generous limit). Confirmed active Apr 4 2026."
+      },
+      "qwen3_coder_480b": {
+        "model_id": "qwen/qwen3-coder-480b:free",
+        "context": 262000,
+        "free": true,
+        "note": "Best free coding model — useful for feature engineering code review"
+      },
+      "llama33_70b": {
+        "model_id": "meta-llama/llama-3.3-70b-instruct:free",
+        "context": 65536,
+        "free": true,
+        "note": "Reliable general purpose free model"
+      },
+      "gemma3_27b": {
+        "model_id": "google/gemma-3-27b-it:free",
+        "context": 131072,
+        "free": true,
+        "note": "Gemma 3 (not 4) — still strong, available free"
+      },
+      "gemma3n_e4b": {
+        "model_id": "google/gemma-3n-e4b-it:free",
+        "context": 8192,
+        "free": true,
+        "note": "Gemma 3n E4B — Google's efficient mobile-class model"
+      },
+      "mistral_small_31": {
+        "model_id": "mistralai/mistral-small-3.1-24b-instruct:free",
+        "context": 96000,
+        "free": true,
+        "note": "Fast tool use and function calling"
+      },
+      "deepseek_r1": {
+        "model_id": "deepseek/deepseek-r1:free",
+        "context": 65536,
+        "free": true,
+        "note": "Strong reasoning — good for bet strategy decisions"
+      },
+      "deepseek_v3": {
+        "model_id": "deepseek/deepseek-v3-2:free",
+        "context": 65536,
+        "free": true,
+        "note": "DeepSeek V3.2 — fast general purpose"
+      },
+      "openrouter_auto_free": {
+        "model_id": "openrouter/auto:free",
+        "context": "varies",
+        "free": true,
+        "note": "Auto-selects best available free model for the request"
+      }
+    }
+  },
+
+  "groq_free": {
+    "description": "Groq API — permanently free tier, no credit card required. OpenAI-compatible. FASTEST inference available (750 tps for Llama4 Scout).",
+    "api_base": "https://api.groq.com/openai/v1",
+    "auth": "Bearer GROQ_API_KEY",
+    "signup": "https://console.groq.com",
+    "models": {
+      "llama4_scout": {
+        "model_id": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "context": 131072,
+        "free": true,
+        "rate_limits": {"rpm": 30, "rpd": 1000, "tpm": 30000},
+        "speed_tps": 750,
+        "note": "Multimodal, natively supports images. Best free model for speed."
+      },
+      "llama33_70b": {
+        "model_id": "llama-3.3-70b-versatile",
+        "context": 131072,
+        "free": true,
+        "rate_limits": {"rpm": 30, "rpd": 1000, "tpm": 6000},
+        "note": "Production model, reliable"
+      },
+      "qwen3_32b": {
+        "model_id": "qwen-qwq-32b",
+        "context": 131072,
+        "free": true,
+        "rate_limits": {"rpm": 60, "rpd": 1000, "tpm": 6000},
+        "note": "Preview — strong reasoning, QwQ variant"
+      },
+      "llama31_8b": {
+        "model_id": "llama-3.1-8b-instant",
+        "context": 131072,
+        "free": true,
+        "rate_limits": {"rpm": 30, "rpd": 14400, "tpm": 20000},
+        "note": "Highest daily limit — good for bulk council queries"
+      },
+      "gpt_oss_120b": {
+        "model_id": "openai/gpt-oss-120b",
+        "context": 131072,
+        "free": true,
+        "rate_limits": {"rpm": 30, "rpd": 1000, "tpm": 30000},
+        "note": "OpenAI open-source 120B — available free on Groq"
+      }
+    }
+  },
+
+  "cerebras_free": {
+    "description": "Cerebras Inference — permanently free tier. 1M tokens/day. Wafer-scale chip gives 1400+ tps. OpenAI-compatible.",
+    "api_base": "https://api.cerebras.ai/v1",
+    "auth": "Bearer CEREBRAS_API_KEY",
+    "signup": "https://cloud.cerebras.ai",
+    "free_tier": {"tokens_per_day": 1000000, "rpm": 30, "tpm": 60000},
+    "models": {
+      "qwen3_235b": {
+        "model_id": "qwen-3-235b-a22b-instruct-2507",
+        "context": 64000,
+        "free": true,
+        "speed_tps": 1400,
+        "note": "FLAGSHIP FREE MODEL. 235B MoE (22B active), 1400 tps. Best quality/speed ratio of any free model."
+      },
+      "qwen3_32b": {
+        "model_id": "qwen-3-32b",
+        "context": 131000,
+        "free": true,
+        "speed_tps": 2600,
+        "note": "2600 tps measured — ultra-fast 32B model"
+      },
+      "llama33_70b": {
+        "model_id": "llama3.3-70b",
+        "context": 131000,
+        "free": true,
+        "note": "Proven 70B, very fast on Cerebras silicon"
+      },
+      "gpt_oss_120b": {
+        "model_id": "gpt-oss-120b",
+        "context": 131000,
+        "free": true,
+        "note": "OpenAI open-source 120B"
+      }
+    }
+  },
+
+  "local_ollama": {
+    "description": "Run on Aurélien's laptop (Acer Aspire 3, Windows, WSL). RAM-gated.",
+    "endpoint": "http://localhost:11434",
+    "models": {
+      "gemma4_e4b": {
+        "command": "ollama pull gemma4:e4b",
+        "ram_required": "8GB",
+        "note": "4.5B params — fast on laptop"
+      },
+      "gemma4_26b": {
+        "command": "ollama pull gemma4:26b",
+        "ram_required": "20GB",
+        "note": "MoE, only 4B active — may fit on 16GB with quantization"
+      },
+      "gemma4_31b": {
+        "command": "ollama pull gemma4:31b",
+        "ram_required": "32GB+",
+        "note": "Dense 31B — needs high-end hardware"
+      },
+      "qwen35_4b": {
+        "command": "ollama pull qwen3.5:4b",
+        "ram_required": "4GB",
+        "note": "Qwen3.5 4B — very fast, low RAM"
+      },
+      "qwen35_9b": {
+        "command": "ollama pull qwen3.5",
+        "ram_required": "8GB",
+        "note": "Default Qwen3.5 (9B) — good balance"
+      },
+      "llama4_scout": {
+        "command": "ollama pull llama4:scout",
+        "ram_required": "64GB+",
+        "note": "109B total params — requires server-class RAM. NOT suitable for laptop."
+      },
+      "mistral_small": {
+        "command": "ollama pull mistral-small3.1",
+        "ram_required": "16GB",
+        "note": "Mistral Small 3.1 24B — tool use, function calling"
+      }
+    }
+  },
+
+  "council_strategy": {
+    "recommended_stack": "Use Cerebras (Qwen3-235B) as PRIMARY advisor — best quality, free, 1M tokens/day. Use Groq (Llama4-Scout) as FAST advisor — 30K TPM, 750 tps. Use OpenRouter (Qwen3.6-Plus:free) for LONG context (1M ctx window). Use HF (phi-4 / Mistral-Small-3.1) as FALLBACK.",
+    "provider_priority": ["cerebras", "groq", "openrouter", "hf"],
+    "daily_limits": {
+      "cerebras": "1M tokens/day (very generous)",
+      "groq_llama4": "1K requests/day = ~30M tokens if each is 30K tokens",
+      "openrouter_free": "200 requests/day",
+      "hf_free": "~$0.10 credit = ~10K tokens"
+    },
+    "recommended_for_councils": {
+      "complex_decisions": "cerebras/qwen-3-235b-a22b-instruct-2507",
+      "fast_yes_no": "groq/llama-3.1-8b-instant (14400 RPD)",
+      "long_context_analysis": "openrouter/qwen/qwen3.6-plus:free (1M ctx)",
+      "fallback": "hf/microsoft/phi-4"
+    }
+  },
+
+  "corrections_vs_previous_config": {
+    "qwen_36_plus_hf": "WRONG. Qwen/Qwen3.6-Plus does NOT exist as HF open weights. It is a proprietary cloud model (Alibaba Cloud). Free access is via OpenRouter qwen/qwen3.6-plus:free only.",
+    "gemma_4_27b_it": "WRONG. There is no google/gemma-4-27b-it. Correct sizes are: E2B, E4B, 26B-A4B, 31B. Use google/gemma-4-E4B-it or google/gemma-4-26B-A4B-it.",
+    "gemma4_hf_inference": "NOT available via HF Inference Providers as of Apr 4 2026. Weights-only download or use via local Ollama/transformers.",
+    "hf_free_credits": "$0.10/month is nearly nothing. Don't rely on HF Inference API for council heavy use — use Groq or Cerebras instead."
+  },
+
+  "inference_acceleration": {
+    "onnx_runtime": {
+      "install": "pip install onnxruntime-gpu skl2onnx",
+      "speedup": "2-5x for tree model inference on GPU"
+    },
+    "timber": {
+      "install": "pip install timber-ml",
+      "speedup": "336x faster than Python XGBoost inference",
+      "description": "AOT compiler: XGBoost/LightGBM/CatBoost → native C99"
+    },
+    "intel_daal4py": {
+      "install": "pip install scikit-learn-intelex",
+      "speedup": "Up to 36x faster sklearn on Intel CPUs"
+    }
+  }
+}

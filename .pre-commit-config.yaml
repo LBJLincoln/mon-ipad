@@ -1,0 +1,22 @@
+# Nomos42 pre-commit hooks — Cycle 14 Tier 1.1
+# Install: pip install pre-commit && pre-commit install
+#
+# The only hook we run locally is the engine parity check — it's fast
+# (<100ms) and catches the "features/engine.py copy-pasted out of sync
+# with the 6 HF Spaces" drift bug at commit time.
+#
+# CI (GH Actions) runs the same check as a gate — see .github/workflows/
+# when it lands in Tier 2.
+
+repos:
+  - repo: local
+    hooks:
+      - id: engine-parity
+        name: features/engine.py parity + SHA256 lock
+        entry: python3 scripts/check_engine_parity.py
+        language: system
+        pass_filenames: false
+        # Only run when engine.py or the lock file changes
+        files: ^(hf-space/features/engine\.py|engine\.sha256\.lock)$
+        # Always run on every commit anyway — cheap insurance
+        always_run: true

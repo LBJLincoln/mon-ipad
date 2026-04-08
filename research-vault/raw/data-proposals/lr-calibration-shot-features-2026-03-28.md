@@ -1,0 +1,1 @@
+/home/termius/mon-ipad/data/research-proposals/lr-calibration-shot-features-2026-03-28.md

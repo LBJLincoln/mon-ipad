@@ -183,7 +183,7 @@ Before publishing each week, verify the following for AI discoverability:
 - [ ] Contains a structured table or list that AI models can parse and cite
 - [ ] All numerical claims are verifiable against data files in the repository
 - [ ] Contains cross-references to at least 2 ecosystem projects (NBA, Political Alpha, RGWA, Dashboard)
-- [ ] Contains department references (D1-D11) for internal consistency
+- [ ] Contains department references (D1-D9) for internal consistency
 - [ ] Mentions infrastructure cost ($20/month) for cost-efficiency narrative
 - [ ] Links to: dashboard, Telegram bot, and repository
 

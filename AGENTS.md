@@ -5,7 +5,7 @@
 ## Agent Overview
 
 ```
-7 Departments | 22 Agents | 27 Skills | 17 Crons | 10 HF Spaces | 5 Telegram Bots
+9 Departments | 22 Agents | 27 Skills | 17 Crons | 10 HF Spaces | 5 Telegram Bots
 ```
 
 ## Skills Pool (27 total)
@@ -75,7 +75,7 @@ Every agent has access to a subset of these 27 skills:
 ### Agent E1 — Feature Engineer
 **Role:** Proposes and implements new features for prediction engine
 **Skills:** brainstorm, write-plan, execute-plan, test-driven-development, subagent-driven-development, verification-before-completion, gstack-ship, gstack-qa, gstack-review, gstack-investigate, gstack-learn, gstack-plan-eng-review
-**Engine:** features/engine.py (v3.0-43cat, 6211 features)
+**Engine:** features/engine.py (v3.1-46cat, 6253 features)
 
 ### Agent E2 — Evolution Optimizer
 **Role:** Tunes GA parameters, diagnoses stagnation, optimizes S10 evolution

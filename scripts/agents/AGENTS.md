@@ -1,5 +1,5 @@
 # Nomos42 Agent Swarm Architecture v3.0
-# 25 specialized agents across 8 departments
+# 25 specialized agents across 9 departments
 # Shared by NBA Quant + Political Alpha (project-agnostic)
 # Updated: 2026-03-28
 

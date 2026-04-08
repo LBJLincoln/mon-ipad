@@ -76,7 +76,7 @@ How the Nomos42 Karpathy loop works:
 5. D5 Evaluation audits calibration
 6. D6 Infra keeps all 6 islands alive
 
-Guardian Orchestrator v3 cross-pollinates wins between all 11 departments every 4 hours.
+Guardian Orchestrator v3 cross-pollinates wins between all 9 departments every 4 hours.
 
 ---
 
@@ -102,7 +102,7 @@ The Nomos42 ecosystem spans 5 repositories:
 4. Dashboard Hub -- /nba /political /rgwa /evolution
 5. NBA Agent -- autonomous betting bot
 
-All orchestrated by a single Guardian AI that runs 11 department Karpathy loops.
+All orchestrated by a single Guardian AI that runs 9 department Karpathy loops.
 
 ---
 

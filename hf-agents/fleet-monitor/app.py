@@ -35,8 +35,7 @@ HF_SPACES = {
     # Political alpha islands
     "Nomos42/political-alpha":   {"type": "Political", "url": "nomos42-political-alpha.hf.space"},
     "Nomos42/political-alpha-2": {"type": "Political", "url": "nomos42-political-alpha-2.hf.space"},
-    "Nomos42/political-alpha-3": {"type": "Political", "url": "nomos42-political-alpha-3.hf.space"},
-    "Nomos42/political-alpha-4": {"type": "Political", "url": "nomos42-political-alpha-4.hf.space"},
+    # P3/P4 removed 2026-04-03 — spaces never existed on HF
     # Brain
     "Nomos42/nomos42-brain":     {"type": "Brain",     "url": "nomos42-nomos42-brain.hf.space"},
 }

@@ -3,23 +3,31 @@
   "cycle": "brain-4h-auto",
   "brain_version": "sonnet-4.6",
   "nba_fleet": {
-    "total_islands": 6,
-    "online": 6,
-    "offline": [],
+    "total_islands": 8,
+    "documented_in_claude_md": 6,
+    "newly_discovered": [
+      "S16 (LBJLincoln26/nba-evo-s16)",
+      "S17 (LBJLincoln26/nba-evo-s17)"
+    ],
+    "online": 7,
+    "offline_403": [
+      "S17 (403 \u2014 sleeping)"
+    ],
     "best_brier": 0.22201,
-    "best_island": "nba-evo-3",
+    "best_island": "S12-nba-evo-3",
     "best_model": "random_forest",
     "best_features": 40,
     "best_generation": 147,
-    "fleet_average_brier": 0.22487,
+    "fleet_average_brier": 0.22415,
     "brier_target": 0.21837,
     "gap_to_target": 0.00364,
     "checkpoint_triggered": false,
-    "published_ceiling": 0.199,
-    "stagnation_alert": "S11 at 8 gens (threshold: 15)",
-    "diversify_triggered": false,
+    "published_ceiling_lr": 0.199,
+    "stagnation_alerts": "S11 at 8/15 (improved from 13 prev cycle)",
+    "diversify_sent_last_cycle": "S14 (stagnation 22 reset to 0 this cycle)",
+    "engine_parity_gap": "S16/S17 have 3266 feature candidates vs S10-S15=3290",
     "islands": {
-      "nba-quant": {
+      "S10-nba-quant": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
         "status": "ONLINE",
@@ -33,7 +41,7 @@
         "stagnation": 0,
         "mutation_rate": 0.1186
       },
-      "nba-quant-2": {
+      "S11-nba-quant-2": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
         "status": "ONLINE",
@@ -46,9 +54,9 @@
         "features": 57,
         "stagnation": 8,
         "mutation_rate": 0.13,
-        "alert": "stagnation=8 — monitor (diversify at 15)"
+        "alert": "stagnation=8 (was 13 prev cycle, improved); diversify if reaches 15"
       },
-      "nba-evo-3": {
+      "S12-nba-evo-3": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
         "status": "ONLINE",
@@ -61,9 +69,9 @@
         "features": 40,
         "stagnation": 0,
         "mutation_rate": 0.1101,
-        "note": "FLEET BEST — Pareto front has 200-feat model at 0.21984"
+        "note": "FLEET BEST \u2014 Pareto front has 200-feat XGBoost at 0.21984"
       },
-      "nba-evo-4": {
+      "S13-nba-evo-4": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
         "status": "ONLINE",
@@ -77,7 +85,7 @@
         "stagnation": 0,
         "mutation_rate": 0.1006
       },
-      "nba-evo-5": {
+      "S14-nba-evo-5": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
         "status": "ONLINE",
@@ -90,9 +98,9 @@
         "features": 50,
         "stagnation": 0,
         "mutation_rate": 0.1129,
-        "note": "Top model: 200-feat XGBoost at 0.21984 Brier, 32.6% ROI"
+        "note": "Diversified last cycle (stagnation 22 reset). Top Pareto model 0.21984 Brier."
       },
-      "nba-evo-6": {
+      "S15-nba-evo-6": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
         "status": "ONLINE",
@@ -105,18 +113,50 @@
         "features": 69,
         "stagnation": 0,
         "mutation_rate": 0.1292
+      },
+      "S16-nba-evo-s16": {
+        "url": "lbjlincoln26-nba-evo-s16.hf.space",
+        "role": "deep_exploitation",
+        "status": "ONLINE",
+        "hf_account": "LBJLincoln26",
+        "cycle": 398,
+        "generation": 1191,
+        "brier": 0.22268,
+        "roi": 0.295,
+        "sharpe": 8.0553,
+        "model": "catboost",
+        "features": 54,
+        "stagnation": 0,
+        "mutation_rate": 0.03,
+        "feature_candidates": 3266,
+        "note": "NEW ISLAND \u2014 not in CLAUDE.md. Discovered Apr 6. Parity gap: 3266 vs 3290."
+      },
+      "S17-nba-evo-s17": {
+        "url": "lbjlincoln26-nba-evo-s17.hf.space",
+        "role": "mid_exploration",
+        "status": "OFFLINE_403",
+        "hf_account": "LBJLincoln26",
+        "cycle": 363,
+        "generation": 1089,
+        "brier": 0.22502,
+        "model": "xgboost",
+        "features": 67,
+        "mutation_rate": 0.06,
+        "feature_candidates": 3266,
+        "note": "NEW ISLAND \u2014 403 this cycle. Not in CLAUDE.md."
       }
     }
   },
   "political_fleet": {
-    "total_islands": 4,
+    "total_islands": 2,
+    "note": "PA3/PA4 confirmed non-existent on HuggingFace",
     "online": 2,
-    "offline": ["political-alpha-3", "political-alpha-4"],
-    "offline_reason": "HTTP 404 — spaces never deployed",
     "best_brier": 0.23134,
-    "best_island": "political-alpha-2",
+    "best_island": "PA2-political-alpha-2",
+    "best_individual_brier": 0.2182,
+    "best_individual_note": "LightGBM 155f gen 8975 on PA2",
     "islands": {
-      "political-alpha": {
+      "PA1-political-alpha": {
         "url": "nomos42-political-alpha.hf.space",
         "status": "ONLINE",
         "cycle": 7390,
@@ -124,10 +164,11 @@
         "brier": 0.24971,
         "model": "xgboost_brier",
         "features": 65,
+        "feature_candidates": 252,
         "stagnation": 0,
-        "feature_candidates": 252
+        "alert": "feature_candidates=252 vs PA2=309 \u2014 Cat29 parity gap unresolved"
       },
-      "political-alpha-2": {
+      "PA2-political-alpha-2": {
         "url": "nomos42-political-alpha-2.hf.space",
         "status": "ONLINE",
         "cycle": 8296,
@@ -135,38 +176,24 @@
         "brier": 0.23134,
         "model": "catboost",
         "features": 70,
-        "stagnation": 0,
         "feature_candidates": 309,
-        "alert": "BOOTSTRAP MODE — fix deployed this cycle (1120 real events bundled)"
-      },
-      "political-alpha-3": {
-        "url": "nomos42-political-alpha-3.hf.space",
-        "status": "OFFLINE",
-        "error": "HTTP 404"
-      },
-      "political-alpha-4": {
-        "url": "nomos42-political-alpha-4.hf.space",
-        "status": "OFFLINE",
-        "error": "HTTP 404"
+        "stagnation": 0,
+        "alert": "BOOTSTRAP MODE \u2014 FIX DEPLOYED: 1120 real events bundled this cycle"
       }
     }
   },
   "cycle_actions": {
     "nba": {
-      "stagnation_check": "S11 at 8/15 — monitor, no action",
-      "checkpoint": "Not triggered (0.22201 > threshold 0.21837)",
-      "research": "Proposal written: NBA-MKT-ISOTONIC-2026-0408 (market-implied isotonic calibration)",
-      "improvement": "All 6 islands online and healthy"
+      "stagnation_check": "S11 at 8/15 (improved from 13). S14 diversified prev cycle (reset).",
+      "new_islands_discovered": "S16 + S17 via previous brain cycle. Add to CLAUDE.md!",
+      "engine_parity_todo": "S16/S17 feature_candidates=3266 vs 3290 \u2014 check engine version",
+      "checkpoint": "Not triggered (0.22201 > 0.21837)",
+      "research_proposal": "NBA-MKT-ISOTONIC-2026-0408: market-implied isotonic calibration"
     },
     "political": {
       "critical_fix": "Bundled 1,120 real events into hf-space/data/historical/ (was 60 synthetic)",
-      "deploy_fix": "Updated deploy.py to include data/historical/ in upload",
-      "offline_spaces": "P3/P4 at 404 — flagged for manual redeploy"
+      "deploy_fix": "deploy.py updated to auto-upload data/historical/ on all deploys",
+      "pa3_pa4": "Confirmed non-existent \u2014 removed from tracking"
     }
-  },
-  "cross_repo": {
-    "market_calibration_proposal": "Port market-isotonic calibration to political alpha (Polymarket as anchor)",
-    "feature_parity": "NBA engine v3.1-46cat synced; Political engine v3.2-24cat independent",
-    "next_priority": "Deploy P3/P4 political spaces + push political hf-space with bundled data"
   }
 }

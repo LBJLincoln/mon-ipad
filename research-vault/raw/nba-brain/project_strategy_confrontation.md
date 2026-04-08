@@ -1,0 +1,1 @@
+/home/termius/mon-ipad/.claude/agent-memory/nba-brain/project_strategy_confrontation.md

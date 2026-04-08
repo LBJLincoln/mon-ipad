@@ -1,0 +1,1 @@
+/home/termius/mon-ipad/docs/obsidian/00-Dashboard.md

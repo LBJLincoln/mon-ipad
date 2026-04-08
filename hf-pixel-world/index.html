@@ -1,0 +1,2332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Nomos42 Pixel World — Live Trading Floor</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a1a;
+    --panel-bg: #0e0e24;
+    --panel-border: #1a1a40;
+    --gold: #ffd700;
+    --gold-dim: #b8960c;
+    --blue: #4fc3f7;
+    --green: #66bb6a;
+    --purple: #ce93d8;
+    --red: #ef5350;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --ticker-bg: #050510;
+    --hud-bg: rgba(10,10,30,0.92);
+    --font-pixel: 'Courier New', Courier, monospace;
+    --font-ui: 'Segoe UI', system-ui, sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-pixel);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    user-select: none;
+  }
+
+  /* ─── LAYOUT ─── */
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+  }
+
+  /* ─── HEADER BAR ─── */
+  #header {
+    height: 44px;
+    background: var(--panel-bg);
+    border-bottom: 2px solid var(--gold-dim);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 16px;
+    z-index: 100;
+    flex-shrink: 0;
+  }
+
+  #header-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(255,215,0,0.6);
+    white-space: nowrap;
+  }
+
+  #header-title span {
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-left: 6px;
+    opacity: 0.7;
+  }
+
+  .header-stat {
+    font-size: 11px;
+    padding: 3px 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .header-stat .label { color: var(--text-dim); margin-right: 4px; }
+  .header-stat .val { color: var(--gold); font-weight: bold; }
+  .header-stat .val.green { color: var(--green); }
+  .header-stat .val.red { color: var(--red); }
+  .header-stat .val.blue { color: var(--blue); }
+
+  #header-spacer { flex: 1; }
+
+  .header-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--text);
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-family: var(--font-pixel);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .header-btn:hover { background: rgba(255,255,255,0.12); color: var(--gold); border-color: var(--gold-dim); }
+  .header-btn.active { background: rgba(255,215,0,0.15); border-color: var(--gold); color: var(--gold); }
+
+  /* ─── MAIN AREA ─── */
+  #main {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    position: relative;
+  }
+
+  /* ─── LEFT PANEL ─── */
+  #panel-left {
+    width: 200px;
+    flex-shrink: 0;
+    background: var(--panel-bg);
+    border-right: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 50;
+  }
+
+  /* ─── CENTER CANVAS ─── */
+  #canvas-wrapper {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #060618;
+  }
+
+  #pixiCanvas {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  /* ─── RIGHT PANEL ─── */
+  #panel-right {
+    width: 200px;
+    flex-shrink: 0;
+    background: var(--panel-bg);
+    border-left: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 50;
+  }
+
+  /* ─── PANEL SECTIONS ─── */
+  .panel-section {
+    border-bottom: 1px solid var(--panel-border);
+    padding: 8px;
+    flex-shrink: 0;
+  }
+
+  .panel-title {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .panel-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 10px;
+    background: var(--gold);
+  }
+
+  /* ─── LEADERBOARD ─── */
+  #leaderboard-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px;
+  }
+
+  #leaderboard-list::-webkit-scrollbar { width: 4px; }
+  #leaderboard-list::-webkit-scrollbar-track { background: transparent; }
+  #leaderboard-list::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+  .lb-entry {
+    display: flex;
+    align-items: center;
+    padding: 4px 5px;
+    margin-bottom: 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    font-size: 10px;
+    gap: 5px;
+  }
+
+  .lb-entry:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+
+  .lb-rank {
+    font-size: 9px;
+    color: var(--text-dim);
+    width: 14px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .lb-rank.r1 { color: var(--gold); font-size: 11px; }
+  .lb-rank.r2 { color: #c0c0c0; }
+  .lb-rank.r3 { color: #cd7f32; }
+
+  .lb-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+
+  .lb-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text);
+  }
+
+  .lb-val {
+    font-size: 9px;
+    color: var(--green);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .lb-val.neg { color: var(--red); }
+
+  /* ─── SPACE STATUS ─── */
+  .space-row {
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+    padding: 3px 0;
+    gap: 5px;
+  }
+
+  .space-led {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: pulse-led 2s infinite;
+  }
+
+  .space-led.up { background: var(--green); box-shadow: 0 0 4px var(--green); }
+  .space-led.down { background: var(--red); box-shadow: 0 0 4px var(--red); animation: none; }
+
+  @keyframes pulse-led {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .space-name { color: var(--blue); flex: 1; }
+  .space-brier { color: var(--text-dim); font-size: 9px; }
+  .space-gen { color: var(--gold); font-size: 9px; }
+
+  /* ─── DEPT STATUS ─── */
+  .dept-row {
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+    padding: 2px 0;
+    gap: 5px;
+    cursor: default;
+  }
+
+  .dept-badge {
+    font-size: 8px;
+    padding: 1px 4px;
+    border-radius: 2px;
+    font-weight: bold;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .dept-badge.active { background: rgba(102,187,106,0.2); color: var(--green); border: 1px solid rgba(102,187,106,0.3); }
+  .dept-badge.idle { background: rgba(79,195,247,0.1); color: var(--blue); border: 1px solid rgba(79,195,247,0.2); }
+  .dept-badge.warn { background: rgba(239,83,80,0.15); color: var(--red); border: 1px solid rgba(239,83,80,0.3); }
+
+  .dept-name { flex: 1; color: var(--text); font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dept-metric { font-size: 9px; color: var(--text-dim); white-space: nowrap; }
+
+  /* ─── PREDICTIONS ─── */
+  .pred-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 4px;
+    padding: 6px;
+    margin-bottom: 5px;
+    font-size: 10px;
+  }
+
+  .pred-teams {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+    font-size: 10px;
+  }
+
+  .pred-home { color: var(--blue); }
+  .pred-away { color: var(--text-dim); }
+  .pred-vs { color: var(--text-dim); font-size: 9px; }
+
+  .pred-bars {
+    display: flex;
+    gap: 2px;
+    height: 8px;
+    margin: 4px 0;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .pred-bar-home { background: var(--blue); height: 100%; transition: width 0.5s; }
+  .pred-bar-away { background: rgba(255,255,255,0.15); flex: 1; height: 100%; }
+
+  .pred-prob { font-size: 9px; color: var(--text-dim); display: flex; justify-content: space-between; }
+  .pred-prob .conf { color: var(--gold); }
+
+  /* ─── TICKER ─── */
+  #ticker {
+    height: 28px;
+    background: var(--ticker-bg);
+    border-top: 1px solid var(--panel-border);
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  #ticker-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    will-change: transform;
+  }
+
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    padding: 0 18px;
+    gap: 6px;
+    border-right: 1px solid rgba(255,255,255,0.07);
+    height: 100%;
+  }
+
+  .ticker-label { color: var(--text-dim); font-size: 10px; }
+  .ticker-team { color: var(--text); }
+  .ticker-prob { font-weight: bold; }
+  .ticker-prob.high { color: var(--green); }
+  .ticker-prob.med { color: var(--gold); }
+  .ticker-prob.low { color: var(--red); }
+  .ticker-sep { color: var(--text-dim); margin: 0 3px; }
+  .ticker-brier { color: var(--blue); font-size: 9px; }
+  .ticker-agent { color: var(--purple); font-size: 9px; }
+  .ticker-win { color: var(--green); font-size: 9px; }
+  .ticker-loss { color: var(--red); font-size: 9px; }
+
+  /* ─── AGENT POPUP ─── */
+  #agent-popup {
+    position: absolute;
+    background: var(--hud-bg);
+    border: 1px solid var(--gold-dim);
+    border-radius: 6px;
+    padding: 12px 14px;
+    min-width: 220px;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.15s, transform 0.15s;
+    backdrop-filter: blur(12px);
+    font-size: 11px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 20px rgba(255,215,0,0.08);
+  }
+
+  #agent-popup.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .popup-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .popup-sprite {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+  }
+
+  .popup-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--gold);
+    line-height: 1.2;
+  }
+
+  .popup-tier {
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-top: 2px;
+    display: inline-block;
+  }
+
+  .popup-tier.PREMIUM { background: rgba(255,215,0,0.15); color: var(--gold); border: 1px solid rgba(255,215,0,0.3); }
+  .popup-tier.FREE_POWER { background: rgba(79,195,247,0.15); color: var(--blue); border: 1px solid rgba(79,195,247,0.3); }
+  .popup-tier.SPECIALIST { background: rgba(102,187,106,0.15); color: var(--green); border: 1px solid rgba(102,187,106,0.3); }
+  .popup-tier.META { background: rgba(206,147,216,0.15); color: var(--purple); border: 1px solid rgba(206,147,216,0.3); }
+
+  .popup-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 10px;
+  }
+
+  .popup-stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .popup-stat-label { font-size: 9px; color: var(--text-dim); margin-bottom: 1px; }
+  .popup-stat-val { font-size: 12px; color: var(--text); font-weight: bold; }
+  .popup-stat-val.green { color: var(--green); }
+  .popup-stat-val.red { color: var(--red); }
+  .popup-stat-val.gold { color: var(--gold); }
+  .popup-stat-val.blue { color: var(--blue); }
+
+  .popup-strategy {
+    margin-top: 8px;
+    padding: 5px 8px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 3px;
+    font-size: 9px;
+  }
+
+  .popup-strategy-label { color: var(--text-dim); margin-bottom: 2px; }
+  .popup-strategy-val { color: var(--blue); }
+
+  .popup-speech {
+    margin-top: 8px;
+    padding: 6px 8px;
+    background: rgba(79,195,247,0.07);
+    border-left: 2px solid var(--blue);
+    border-radius: 0 4px 4px 0;
+    font-size: 10px;
+    color: var(--text);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .popup-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-size: 14px;
+    pointer-events: auto;
+    transition: color 0.15s;
+  }
+  .popup-close:hover { color: var(--gold); }
+
+  /* ─── NIGHT OVERLAY ─── */
+  #night-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,30,0);
+    pointer-events: none;
+    z-index: 5;
+    transition: background 3s;
+  }
+
+  /* ─── PARTICLE CANVAS ─── */
+  #particle-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* ─── LOADING SCREEN ─── */
+  #loading {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    gap: 16px;
+    transition: opacity 0.5s;
+  }
+
+  #loading.fade-out { opacity: 0; pointer-events: none; }
+
+  .loading-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-shadow: 0 0 20px rgba(255,215,0,0.5);
+    animation: flicker 2s infinite;
+  }
+
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    92% { opacity: 1; }
+    93% { opacity: 0.6; }
+    94% { opacity: 1; }
+  }
+
+  .loading-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  .loading-bar-wrap {
+    width: 240px;
+    height: 8px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .loading-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s;
+    box-shadow: 0 0 8px rgba(255,215,0,0.4);
+  }
+
+  .loading-status {
+    font-size: 10px;
+    color: var(--text-dim);
+    min-height: 14px;
+  }
+
+  /* ─── MINI MAP ─── */
+  #minimap-canvas {
+    position: absolute;
+    bottom: 40px;
+    right: 8px;
+    width: 100px;
+    height: 70px;
+    background: rgba(10,10,30,0.9);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 3px;
+    overflow: hidden;
+    z-index: 50;
+    display: block;
+  }
+
+  /* ─── CONTROLS ─── */
+  #controls-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 8px;
+    font-size: 9px;
+    color: rgba(255,255,255,0.25);
+    z-index: 50;
+    line-height: 1.6;
+    pointer-events: none;
+  }
+
+  /* ─── SPEECH BUBBLES (CSS, for pixi overlay) ─── */
+  .speech-bubble-css {
+    position: absolute;
+    background: rgba(10,10,30,0.92);
+    border: 1px solid rgba(79,195,247,0.4);
+    border-radius: 6px;
+    padding: 4px 7px;
+    font-size: 9px;
+    color: var(--text);
+    pointer-events: none;
+    z-index: 30;
+    white-space: nowrap;
+    max-width: 140px;
+    white-space: normal;
+    transform: translateX(-50%);
+    animation: bubble-pop 0.2s ease-out;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .speech-bubble-css::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 5px;
+    background: rgba(10,10,30,0.92);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    border-left: 1px solid rgba(79,195,247,0.4);
+    border-right: 1px solid rgba(79,195,247,0.4);
+  }
+
+  @keyframes bubble-pop {
+    from { transform: translateX(-50%) scale(0.8); opacity: 0; }
+    to { transform: translateX(-50%) scale(1); opacity: 1; }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    #panel-left, #panel-right { width: 0; overflow: hidden; display: none; }
+    #header { padding: 0 8px; gap: 8px; }
+    #header-title span { display: none; }
+    .header-stat { padding: 2px 5px; font-size: 10px; }
+  }
+
+  @media (max-width: 480px) {
+    #header { height: 38px; }
+    .header-stat:nth-child(n+4) { display: none; }
+  }
+
+  /* ─── SCANLINES ─── */
+  #scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.04) 3px,
+      rgba(0,0,0,0.04) 4px
+    );
+    opacity: 0.4;
+  }
+
+  /* ─── CRT VIGNETTE ─── */
+  #vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.45) 100%);
+  }
+
+  /* ─── FLOOR ZONES LABELS ─── */
+  .zone-label {
+    position: absolute;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.12);
+    pointer-events: none;
+    z-index: 4;
+  }
+
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div id="header">
+    <div id="header-title">NOMOS42<span>TRADING FLOOR v5</span></div>
+    <div class="header-stat"><span class="label">AGENTS</span><span class="val blue" id="hdr-agents">207</span></div>
+    <div class="header-stat"><span class="label">BRIER</span><span class="val green" id="hdr-brier">0.22159</span></div>
+    <div class="header-stat"><span class="label">GEN</span><span class="val" id="hdr-gen">1826</span></div>
+    <div class="header-stat"><span class="label">BANKROLL</span><span class="val" id="hdr-bankroll">$91.29</span></div>
+    <div class="header-stat"><span class="label">ROI</span><span class="val red" id="hdr-roi">-8.71%</span></div>
+    <div id="header-spacer"></div>
+    <button class="header-btn" id="btn-zoom-out">-</button>
+    <button class="header-btn" id="btn-zoom-in">+</button>
+    <button class="header-btn active" id="btn-sound" title="Toggle sound">SFX</button>
+    <button class="header-btn" id="btn-speed">1x</button>
+    <button class="header-btn" id="btn-follow">FOLLOW</button>
+    <div class="header-stat" id="hdr-time" style="min-width:60px;text-align:center;">
+      <span class="val blue" id="clock">00:00</span>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- LEFT PANEL -->
+    <div id="panel-left">
+      <div class="panel-section">
+        <div class="panel-title">Leaderboard</div>
+      </div>
+      <div id="leaderboard-list"></div>
+
+      <div class="panel-section" style="margin-top:auto;">
+        <div class="panel-title">Dept Status</div>
+        <div id="dept-list"></div>
+      </div>
+    </div>
+
+    <!-- CENTER -->
+    <div id="canvas-wrapper">
+      <canvas id="pixiCanvas"></canvas>
+      <canvas id="particle-canvas"></canvas>
+      <div id="scanlines"></div>
+      <div id="vignette"></div>
+      <div id="night-overlay"></div>
+      <canvas id="minimap-canvas"></canvas>
+
+      <div id="controls-hint">
+        WASD / drag: pan<br>
+        scroll: zoom<br>
+        click: select agent
+      </div>
+
+      <!-- Agent Popup -->
+      <div id="agent-popup">
+        <span class="popup-close" id="popup-close">✕</span>
+        <div class="popup-header">
+          <canvas class="popup-sprite" id="popup-sprite" width="32" height="32"></canvas>
+          <div>
+            <div class="popup-name" id="popup-name">—</div>
+            <div class="popup-tier" id="popup-tier">PREMIUM</div>
+          </div>
+        </div>
+        <div class="popup-stats">
+          <div class="popup-stat">
+            <div class="popup-stat-label">BANKROLL</div>
+            <div class="popup-stat-val gold" id="popup-bankroll">$10,000</div>
+          </div>
+          <div class="popup-stat">
+            <div class="popup-stat-label">ROI</div>
+            <div class="popup-stat-val" id="popup-roi">0.00%</div>
+          </div>
+          <div class="popup-stat">
+            <div class="popup-stat-label">WIN RATE</div>
+            <div class="popup-stat-val" id="popup-winrate">0%</div>
+          </div>
+          <div class="popup-stat">
+            <div class="popup-stat-label">TOTAL BETS</div>
+            <div class="popup-stat-val" id="popup-bets">0</div>
+          </div>
+        </div>
+        <div class="popup-strategy">
+          <div class="popup-strategy-label">Strategy</div>
+          <div class="popup-strategy-val" id="popup-strategy">—</div>
+        </div>
+        <div class="popup-speech" id="popup-speech">"Analyzing the floor…"</div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div id="panel-right">
+      <div class="panel-section">
+        <div class="panel-title">Today's Games</div>
+        <div id="predictions-list"></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">Spaces</div>
+        <div id="spaces-list"></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">Bankroll</div>
+        <div id="bankroll-stats" style="font-size:10px;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TICKER -->
+  <div id="ticker">
+    <div id="ticker-track"></div>
+  </div>
+
+</div>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loading-title">NOMOS42</div>
+  <div class="loading-sub">PIXEL WORLD v5</div>
+  <div class="loading-bar-wrap"><div class="loading-bar" id="loading-bar"></div></div>
+  <div class="loading-status" id="loading-status">Initializing…</div>
+</div>
+
+<!-- PIXI CDN -->
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@8/dist/pixi.min.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  NOMOS42 PIXEL WORLD — Main Application
+//  Architecture: PixiJS 8 + WebGL2 + Static Data JSON
+// ═══════════════════════════════════════════════════════════════
+
+'use strict';
+
+// ─── CONSTANTS ─────────────────────────────────────────────────
+const WORLD_W = 2400;
+const WORLD_H = 1600;
+const TILE = 32;
+const AGENT_SIZE = 16;
+const FPS_TARGET = 60;
+const DATA_REFRESH_MS = 30000;
+const TICKER_SPEED = 0.6;
+
+const TIER_COLORS = {
+  PREMIUM:    0xFFD700,
+  FREE_POWER: 0x4FC3F7,
+  SPECIALIST: 0x66BB6A,
+  META:       0xCE93D8,
+};
+
+const TIER_COLORS_HEX = {
+  PREMIUM:    '#ffd700',
+  FREE_POWER: '#4fc3f7',
+  SPECIALIST: '#66bb6a',
+  META:       '#ce93d8',
+};
+
+const ZONE_RECTS = {
+  pit:       { x: 700,  y: 500,  w: 1000, h: 600  },
+  research:  { x: 60,   y: 80,   w: 380,  h: 420  },
+  evolution: { x: 60,   y: 580,  w: 380,  h: 420  },
+  engineering:{ x: 1960,y: 80,   w: 380,  h: 420  },
+  infra:     { x: 1960, y: 580,  w: 380,  h: 420  },
+  leaderboard:{ x: 700, y: 60,   w: 1000, h: 340  },
+  lounge:    { x: 700,  y: 1200, w: 1000, h: 340  },
+};
+
+// Speech lines per strategy
+const SPEECHES = {
+  value_hunter:         ["Edge found! +4.2%", "This line is wrong", "Sharp money here", "Market inefficiency spotted"],
+  half_kelly:           ["Half Kelly, safe play", "Risk managed", "Variance reduction", "0.5x Kelly → placing"],
+  value_hunter_half_kelly: ["Best of both worlds", "Value + discipline", "Edge × 0.5 = optimal"],
+  proportional_edge:    ["Scaling by edge", "Proportional position", "No overbet today"],
+  confidence_scaled:    ["High conf → full size", "CI tight, going in", "Model agreement: 87%"],
+  flat_2pct:            ["Flat 2% → consistent", "Steady bankroll play", "No FOMO bets today"],
+  quarter_kelly:        ["Conservative sizing", "Quarter Kelly: safe", "Preserving capital"],
+  underdog_specialist:  ["Dogs have value today", "Market overvalues fav", "Contrarian edge: +7%"],
+  default:              ["Analyzing…", "Computing edge…", "Watching the floor", "Reading the tape…"],
+};
+
+// Dept data
+const DEPTS = [
+  { id:'D1', name:'Research',    status:'active', metric:'4 papers/wk' },
+  { id:'D2', name:'Engineering', status:'active', metric:'Δ Brier -0.003' },
+  { id:'D3', name:'Evolution',   status:'active', metric:'Gen 1826' },
+  { id:'D4', name:'Product',     status:'idle',   metric:'2 shipped' },
+  { id:'D5', name:'Business',    status:'idle',   metric:'MRR $0' },
+  { id:'D6', name:'Evaluation',  status:'active', metric:'Cal: 0.89' },
+  { id:'D7', name:'Infra',       status:'active', metric:'6/6 UP' },
+  { id:'D8', name:'Finance',     status:'idle',   metric:'$91.29 live' },
+  { id:'D9', name:'Cross-Repo',  status:'active', metric:'Parity 94%' },
+];
+
+// ─── STATE ─────────────────────────────────────────────────────
+const STATE = {
+  agents: {},
+  predictions: [],
+  bankroll: {},
+  health: {},
+  agentList: [],
+  viewX: WORLD_W / 2,
+  viewY: WORLD_H / 2,
+  zoom: 1.2,
+  dragging: false,
+  dragStart: { x:0, y:0 },
+  dragViewStart: { x:0, y:0 },
+  soundEnabled: true,
+  speed: 1,
+  followAgent: null,
+  selectedAgent: null,
+  tickerOffset: 0,
+  tickerWidth: 0,
+  lastUpdate: 0,
+  particles: [],
+  speechBubbles: [],
+};
+
+// ─── AUDIO CONTEXT ─────────────────────────────────────────────
+let audioCtx = null;
+
+function getAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+  return audioCtx;
+}
+
+function playTone(freq, dur, type='square', vol=0.08) {
+  if (!STATE.soundEnabled) return;
+  try {
+    const ctx = getAudio();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + dur);
+  } catch(e) {}
+}
+
+function playCoin() { playTone(880, 0.08, 'square', 0.06); setTimeout(()=>playTone(1320,0.12,'square',0.05),80); }
+function playWin()  {
+  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,0.15,'square',0.06),i*80));
+}
+function playLoss() { playTone(220, 0.25, 'sawtooth', 0.05); }
+function playSelect() { playTone(660, 0.05, 'square', 0.04); }
+function playTick() { playTone(440, 0.03, 'square', 0.02); }
+
+// ─── SPRITE GENERATOR ──────────────────────────────────────────
+// Generates 16×16 pixel sprites for each tier using Canvas 2D
+function makeSpriteCanvas(tier, id, size=16) {
+  const c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  const ctx = c.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  const palettes = {
+    PREMIUM:    ['#ffd700','#ffec6e','#b8960c','#fff8dc','#8b6914'],
+    FREE_POWER: ['#4fc3f7','#81d4fa','#0288d1','#e1f5fe','#01579b'],
+    SPECIALIST: ['#66bb6a','#a5d6a7','#2e7d32','#e8f5e9','#1b5e20'],
+    META:       ['#ce93d8','#e1bee7','#7b1fa2','#f3e5f5','#4a148c'],
+  };
+
+  const pal = palettes[tier] || palettes.SPECIALIST;
+  const s = size / 16; // scale factor
+
+  // Helper for drawing pixel blocks
+  const px = (x,y,c,w=1,h=1)=>{
+    ctx.fillStyle = c;
+    ctx.fillRect(x*s, y*s, w*s, h*s);
+  };
+
+  // Different sprites based on ID hash
+  const hash = (id || '').split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  const variant = hash % 4;
+
+  if (tier === 'PREMIUM') {
+    // Gold elite sprite — slightly larger, more detail
+    px(6,1,pal[1],4,1); // head top
+    px(5,2,pal[0],6,4); // head
+    px(5,2,pal[2],1,4); // shadow
+    px(5,4,pal[3],1,1); // eye left
+    px(9,4,pal[3],1,1); // eye right
+    px(6,6,pal[2],4,1); // mouth
+    px(4,6,pal[2],8,1); // shoulders
+    px(4,7,pal[0],8,5); // body
+    px(3,7,pal[2],1,5); // arm L
+    px(12,7,pal[2],1,5); // arm R
+    px(5,12,pal[2],3,4); // leg L
+    px(8,12,pal[2],3,4); // leg R
+    px(7,0,pal[1],2,1); // crown hint
+    px(6,0,pal[4],1,1); px(9,0,pal[4],1,1);
+  } else if (tier === 'FREE_POWER') {
+    // Blue agent
+    px(6,2,pal[1],4,1);
+    px(5,3,pal[0],6,4);
+    px(5,5,pal[3],1,1); // eye L
+    px(9,5,pal[3],1,1); // eye R
+    px(6,7,pal[2],4,1); // mouth
+    px(4,7,pal[2],8,1); // shoulders
+    px(4,8,pal[0],8,4); // body
+    px(3,8,pal[2],1,4); // arm L
+    px(12,8,pal[2],1,4); // arm R
+    px(5,12,pal[2],3,4); // leg L
+    px(8,12,pal[2],3,4); // leg R
+    if (variant===0) { px(6,1,pal[1],4,2); } // hat
+  } else if (tier === 'META') {
+    // Purple oracle — robed
+    px(6,1,pal[0],4,1);
+    px(5,2,pal[1],6,4);
+    px(5,4,pal[3],2,1); // eye L (bigger)
+    px(9,4,pal[3],2,1); // eye R
+    px(6,6,pal[4],4,1); // mystical mouth
+    px(3,7,pal[0],10,9); // wide robe
+    px(4,7,pal[2],1,8); // robe shadow L
+    px(11,7,pal[2],1,8); // robe shadow R
+    px(6,0,pal[4],1,2); px(9,0,pal[4],1,2); // antennae
+  } else {
+    // Green specialist — simple worker
+    const bodies = [
+      ()=>{ px(6,2,pal[0],4,4); px(5,4,pal[3],1,1); px(9,4,pal[3],1,1); px(4,6,pal[2],8,1); px(4,7,pal[1],8,4); px(3,7,pal[2],1,4); px(12,7,pal[2],1,4); px(5,11,pal[2],3,5); px(8,11,pal[2],3,5); },
+      ()=>{ px(7,2,pal[0],2,1); px(6,3,pal[0],4,4); px(5,5,pal[3],1,1); px(9,5,pal[3],1,1); px(5,7,pal[2],6,1); px(4,8,pal[1],8,4); px(3,8,pal[2],1,4); px(12,8,pal[2],1,4); px(5,12,pal[2],3,4); px(8,12,pal[2],3,4); },
+    ];
+    (bodies[variant%bodies.length] || bodies[0])();
+  }
+
+  return c;
+}
+
+// Generate walking frames (offset pixels slightly)
+function makeWalkFrames(tier, id, size=16) {
+  return [0,1,2,1].map(frame => {
+    const c = makeSpriteCanvas(tier, id, size);
+    if (frame === 1 || frame === 3) {
+      // Slight leg shift for walking illusion
+      const tmp = document.createElement('canvas');
+      tmp.width = size; tmp.height = size;
+      const tctx = tmp.getContext('2d');
+      tctx.imageSmoothingEnabled = false;
+      tctx.drawImage(c, 0, 0);
+      return tmp;
+    }
+    return c;
+  });
+}
+
+// ─── WORLD MAP ─────────────────────────────────────────────────
+// Generates the floor texture using Canvas 2D
+function buildWorldTexture(app) {
+  const c = document.createElement('canvas');
+  c.width = WORLD_W;
+  c.height = WORLD_H;
+  const ctx = c.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  // Background — dark floor tiles
+  for (let tx = 0; tx < WORLD_W; tx += TILE) {
+    for (let ty = 0; ty < WORLD_H; ty += TILE) {
+      const even = ((tx/TILE + ty/TILE) % 2 === 0);
+      ctx.fillStyle = even ? '#080818' : '#090920';
+      ctx.fillRect(tx, ty, TILE, TILE);
+    }
+  }
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+  ctx.lineWidth = 0.5;
+  for (let tx = 0; tx < WORLD_W; tx += TILE) {
+    ctx.beginPath(); ctx.moveTo(tx, 0); ctx.lineTo(tx, WORLD_H); ctx.stroke();
+  }
+  for (let ty = 0; ty < WORLD_H; ty += TILE) {
+    ctx.beginPath(); ctx.moveTo(0, ty); ctx.lineTo(WORLD_W, ty); ctx.stroke();
+  }
+
+  // Draw zones
+  function drawZone(zone, label, color, alpha=0.08) {
+    const r = ZONE_RECTS[zone];
+    if (!r) return;
+    ctx.fillStyle = `rgba(${hexToRgb(color)},${alpha})`;
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+    // Border
+    ctx.strokeStyle = `rgba(${hexToRgb(color)},0.25)`;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(r.x+1, r.y+1, r.w-2, r.h-2);
+    // Inner glow border
+    ctx.strokeStyle = `rgba(${hexToRgb(color)},0.1)`;
+    ctx.lineWidth = 8;
+    ctx.strokeRect(r.x+4, r.y+4, r.w-8, r.h-8);
+    // Label
+    ctx.fillStyle = `rgba(${hexToRgb(color)},0.18)`;
+    ctx.font = 'bold 28px monospace';
+    ctx.letterSpacing = '8px';
+    ctx.textAlign = 'center';
+    ctx.fillText(label.toUpperCase(), r.x + r.w/2, r.y + r.h/2 + 10);
+  }
+
+  function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `${r},${g},${b}`;
+  }
+
+  drawZone('pit',       'TRADING PIT',   '#ffd700', 0.06);
+  drawZone('research',  'RESEARCH',      '#4fc3f7', 0.09);
+  drawZone('evolution', 'EVOLUTION',     '#66bb6a', 0.09);
+  drawZone('engineering','ENGINEERING',  '#ce93d8', 0.09);
+  drawZone('infra',     'INFRA',         '#ef5350', 0.09);
+  drawZone('leaderboard','LEADERBOARD',  '#ffd700', 0.04);
+  drawZone('lounge',    'LOUNGE',        '#4fc3f7', 0.04);
+
+  // Bloomberg terminals (desk sprites)
+  drawTerminals(ctx);
+
+  // Decorative circuit traces
+  drawCircuitTraces(ctx);
+
+  return PIXI.Texture.from(c);
+}
+
+function drawTerminals(ctx) {
+  // Scattered terminal desks in the Trading Pit
+  const pit = ZONE_RECTS.pit;
+  const positions = [];
+  for (let i = 0; i < 24; i++) {
+    positions.push({
+      x: pit.x + 80 + (i % 6) * 145,
+      y: pit.y + 80 + Math.floor(i / 6) * 130,
+    });
+  }
+  positions.forEach(({x, y}) => {
+    // Desk
+    ctx.fillStyle = '#12122a';
+    ctx.fillRect(x - 24, y - 16, 48, 32);
+    ctx.strokeStyle = '#1a1a40';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x - 24, y - 16, 48, 32);
+    // Screen
+    ctx.fillStyle = '#0d2040';
+    ctx.fillRect(x - 16, y - 12, 32, 20);
+    // Screen glow
+    ctx.fillStyle = `rgba(79,195,247,${0.05 + Math.random() * 0.08})`;
+    ctx.fillRect(x - 15, y - 11, 30, 18);
+    // Scanline on screen
+    ctx.fillStyle = 'rgba(79,195,247,0.15)';
+    for (let sl = 0; sl < 4; sl++) {
+      ctx.fillRect(x - 15, y - 11 + sl * 4, 30, 1);
+    }
+  });
+}
+
+function drawCircuitTraces(ctx) {
+  ctx.strokeStyle = 'rgba(79,195,247,0.04)';
+  ctx.lineWidth = 1;
+  // Horizontal traces
+  for (let i = 0; i < 18; i++) {
+    const y = 100 + i * 85;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(WORLD_W, y);
+    ctx.stroke();
+  }
+  // Nodes
+  ctx.fillStyle = 'rgba(79,195,247,0.08)';
+  for (let i = 0; i < 40; i++) {
+    const x = Math.random() * WORLD_W;
+    const y = Math.random() * WORLD_H;
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+// ─── PIXI APP ──────────────────────────────────────────────────
+let pixiApp = null;
+let worldContainer = null;
+let agentContainer = null;
+let uiContainer = null;
+let worldSprite = null;
+const agentSprites = new Map();
+const speechBubblePool = [];
+
+async function initPixi() {
+  const wrapper = document.getElementById('canvas-wrapper');
+  const W = wrapper.clientWidth;
+  const H = wrapper.clientHeight;
+
+  pixiApp = new PIXI.Application();
+  await pixiApp.init({
+    canvas: document.getElementById('pixiCanvas'),
+    width: W,
+    height: H,
+    backgroundColor: 0x060618,
+    antialias: false,
+    resolution: Math.min(window.devicePixelRatio || 1, 2),
+    autoDensity: true,
+  });
+
+  // World container (panned/zoomed)
+  worldContainer = new PIXI.Container();
+  pixiApp.stage.addChild(worldContainer);
+
+  // World sprite
+  setLoadStatus('Generating world…', 40);
+  const worldTex = buildWorldTexture(pixiApp);
+  worldSprite = new PIXI.Sprite(worldTex);
+  worldSprite.x = 0;
+  worldSprite.y = 0;
+  worldContainer.addChild(worldSprite);
+
+  // Agent container
+  agentContainer = new PIXI.Container();
+  worldContainer.addChild(agentContainer);
+
+  // UI overlay container (screen-space)
+  uiContainer = new PIXI.Container();
+  pixiApp.stage.addChild(uiContainer);
+
+  // Center view
+  setViewCenter(STATE.viewX, STATE.viewY);
+
+  // Interaction
+  setupInteraction();
+
+  // Resize handler
+  window.addEventListener('resize', onResize);
+  onResize();
+}
+
+function onResize() {
+  const wrapper = document.getElementById('canvas-wrapper');
+  if (pixiApp && wrapper) {
+    pixiApp.renderer.resize(wrapper.clientWidth, wrapper.clientHeight);
+    setViewCenter(STATE.viewX, STATE.viewY);
+  }
+}
+
+// ─── VIEW TRANSFORM ────────────────────────────────────────────
+function setViewCenter(wx, wy) {
+  STATE.viewX = wx;
+  STATE.viewY = wy;
+  const W = pixiApp.screen.width;
+  const H = pixiApp.screen.height;
+  const z = STATE.zoom;
+  worldContainer.x = W/2 - wx * z;
+  worldContainer.y = H/2 - wy * z;
+  worldContainer.scale.set(z);
+}
+
+function clampView() {
+  const W = pixiApp.screen.width;
+  const H = pixiApp.screen.height;
+  const z = STATE.zoom;
+  const margin = 200;
+  STATE.viewX = Math.max(-margin/z, Math.min(WORLD_W + margin/z, STATE.viewX));
+  STATE.viewY = Math.max(-margin/z, Math.min(WORLD_H + margin/z, STATE.viewY));
+}
+
+// ─── INTERACTION ───────────────────────────────────────────────
+function setupInteraction() {
+  const canvas = document.getElementById('pixiCanvas');
+
+  // Drag to pan
+  canvas.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    STATE.dragging = true;
+    STATE.dragStart = { x: e.clientX, y: e.clientY };
+    STATE.dragViewStart = { x: STATE.viewX, y: STATE.viewY };
+    canvas.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+
+  window.addEventListener('pointermove', e => {
+    if (!STATE.dragging) return;
+    const dx = (e.clientX - STATE.dragStart.x) / STATE.zoom;
+    const dy = (e.clientY - STATE.dragStart.y) / STATE.zoom;
+    STATE.viewX = STATE.dragViewStart.x - dx;
+    STATE.viewY = STATE.dragViewStart.y - dy;
+    clampView();
+    setViewCenter(STATE.viewX, STATE.viewY);
+  });
+
+  window.addEventListener('pointerup', e => {
+    if (STATE.dragging) {
+      STATE.dragging = false;
+      canvas.style.cursor = 'default';
+    }
+  });
+
+  // Scroll to zoom
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    STATE.zoom = Math.max(0.4, Math.min(3.5, STATE.zoom + delta));
+    setViewCenter(STATE.viewX, STATE.viewY);
+  }, { passive: false });
+
+  // WASD keys
+  const keysDown = new Set();
+  window.addEventListener('keydown', e => keysDown.add(e.key.toLowerCase()));
+  window.addEventListener('keyup',   e => keysDown.delete(e.key.toLowerCase()));
+
+  pixiApp.ticker.add(() => {
+    if (STATE.dragging) return;
+    const speed = 8 / STATE.zoom;
+    let moved = false;
+    if (keysDown.has('w') || keysDown.has('arrowup'))    { STATE.viewY -= speed; moved=true; }
+    if (keysDown.has('s') || keysDown.has('arrowdown'))  { STATE.viewY += speed; moved=true; }
+    if (keysDown.has('a') || keysDown.has('arrowleft'))  { STATE.viewX -= speed; moved=true; }
+    if (keysDown.has('d') || keysDown.has('arrowright')) { STATE.viewX += speed; moved=true; }
+    if (moved) { clampView(); setViewCenter(STATE.viewX, STATE.viewY); }
+  });
+
+  // Popup close
+  document.getElementById('popup-close').addEventListener('click', () => {
+    closePopup();
+  });
+
+  // Header buttons
+  document.getElementById('btn-zoom-in').addEventListener('click', () => {
+    STATE.zoom = Math.min(3.5, STATE.zoom + 0.2);
+    setViewCenter(STATE.viewX, STATE.viewY);
+    playSelect();
+  });
+  document.getElementById('btn-zoom-out').addEventListener('click', () => {
+    STATE.zoom = Math.max(0.4, STATE.zoom - 0.2);
+    setViewCenter(STATE.viewX, STATE.viewY);
+    playSelect();
+  });
+
+  const soundBtn = document.getElementById('btn-sound');
+  soundBtn.addEventListener('click', () => {
+    STATE.soundEnabled = !STATE.soundEnabled;
+    soundBtn.classList.toggle('active', STATE.soundEnabled);
+    soundBtn.textContent = STATE.soundEnabled ? 'SFX' : 'MUTE';
+    // Unlock AudioContext
+    if (STATE.soundEnabled) { getAudio(); playTick(); }
+  });
+
+  const speedBtn = document.getElementById('btn-speed');
+  const speeds = [1, 2, 4];
+  let speedIdx = 0;
+  speedBtn.addEventListener('click', () => {
+    speedIdx = (speedIdx + 1) % speeds.length;
+    STATE.speed = speeds[speedIdx];
+    speedBtn.textContent = `${STATE.speed}x`;
+    playSelect();
+  });
+
+  const followBtn = document.getElementById('btn-follow');
+  followBtn.addEventListener('click', () => {
+    if (STATE.followAgent) {
+      STATE.followAgent = null;
+      followBtn.classList.remove('active');
+      followBtn.textContent = 'FOLLOW';
+    } else if (STATE.selectedAgent) {
+      STATE.followAgent = STATE.selectedAgent;
+      followBtn.classList.add('active');
+      followBtn.textContent = 'UNFOLLOW';
+      playSelect();
+    }
+  });
+}
+
+// ─── AGENTS ────────────────────────────────────────────────────
+class Agent {
+  constructor(data) {
+    this.id = data.id;
+    this.name = data.name || data.id;
+    this.tier = data.tier || 'SPECIALIST';
+    this.strategy = data.strategy || 'default';
+    this.bankroll = data.bankroll || 10000;
+    this.roi = data.roi || 0;
+    this.win_rate = data.win_rate || 0;
+    this.total_bets = data.total_bets || 0;
+    this.total_wins = data.total_wins || 0;
+    this.total_pnl = data.total_pnl || 0;
+    this.model = data.model || '';
+    this.provider = data.provider || '';
+
+    // World position (random start in tier zone)
+    const zone = this._homeZone();
+    this.x = zone.x + Math.random() * zone.w;
+    this.y = zone.y + Math.random() * zone.h;
+
+    // Movement
+    this.targetX = this.x;
+    this.targetY = this.y;
+    this.speed = 0.6 + Math.random() * 0.8;
+    this.moveTimer = 0;
+    this.moveCooldown = 120 + Math.random() * 300;
+    this.walkFrame = 0;
+    this.walkTimer = 0;
+    this.facingRight = Math.random() > 0.5;
+
+    // Sit at desk
+    this.sittingTimer = 0;
+    this.isSitting = false;
+
+    // Speech
+    this.speechText = null;
+    this.speechTimer = 0;
+
+    // Sprite
+    this.sprite = null;
+    this.spriteCanvas = makeSpriteCanvas(this.tier, this.id, AGENT_SIZE);
+    this.sparkTimer = 0;
+  }
+
+  _homeZone() {
+    if (this.tier === 'PREMIUM') return ZONE_RECTS.leaderboard;
+    if (this.tier === 'META')    return ZONE_RECTS.evolution;
+    if (this.tier === 'FREE_POWER') return ZONE_RECTS.research;
+    // Specialists spread across pit
+    return ZONE_RECTS.pit;
+  }
+
+  _randomTarget() {
+    // Premium agents prefer leaderboard
+    // Others wander pit and adjacent zones
+    const zones = this.tier === 'PREMIUM'
+      ? [ZONE_RECTS.leaderboard, ZONE_RECTS.pit]
+      : this.tier === 'META'
+      ? [ZONE_RECTS.evolution, ZONE_RECTS.pit]
+      : this.tier === 'FREE_POWER'
+      ? [ZONE_RECTS.research, ZONE_RECTS.pit, ZONE_RECTS.lounge]
+      : [ZONE_RECTS.pit, ZONE_RECTS.lounge, ZONE_RECTS.engineering];
+
+    const zone = zones[Math.floor(Math.random() * zones.length)];
+    return {
+      x: zone.x + 20 + Math.random() * (zone.w - 40),
+      y: zone.y + 20 + Math.random() * (zone.h - 40),
+    };
+  }
+
+  update(dt) {
+    const spd = this.speed * STATE.speed * dt;
+
+    // Sitting at desk
+    if (this.isSitting) {
+      this.sittingTimer -= dt;
+      if (this.sittingTimer <= 0) {
+        this.isSitting = false;
+        const t = this._randomTarget();
+        this.targetX = t.x;
+        this.targetY = t.y;
+      }
+      return;
+    }
+
+    this.moveTimer -= dt;
+
+    const dx = this.targetX - this.x;
+    const dy = this.targetY - this.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if (dist < 3 || this.moveTimer <= 0) {
+      // Reached target or timed out
+      // Chance to sit at a desk
+      if (Math.random() < 0.15) {
+        this.isSitting = true;
+        this.sittingTimer = 60 + Math.random() * 180;
+        this.speechText = this._speech();
+        this.speechTimer = 120 + Math.random() * 60;
+        if (STATE.soundEnabled && Math.random() < 0.01) playTick();
+      }
+      const t = this._randomTarget();
+      this.targetX = t.x;
+      this.targetY = t.y;
+      this.moveTimer = this.moveCooldown * (0.5 + Math.random());
+    } else {
+      // Move toward target
+      const speed = spd * (dist < 20 ? dist/20 : 1);
+      this.x += (dx / dist) * speed;
+      this.y += (dy / dist) * speed;
+      this.facingRight = dx > 0;
+    }
+
+    // Walk animation
+    this.walkTimer += dt;
+    if (this.walkTimer > 8) {
+      this.walkTimer = 0;
+      this.walkFrame = (this.walkFrame + 1) % 4;
+    }
+
+    // Speech timer
+    if (this.speechTimer > 0) {
+      this.speechTimer -= dt;
+      if (this.speechTimer <= 0) this.speechText = null;
+    }
+
+    // Spark timer for big wins
+    if (this.sparkTimer > 0) this.sparkTimer -= dt;
+  }
+
+  _speech() {
+    const lines = SPEECHES[this.strategy] || SPEECHES.default;
+    return lines[Math.floor(Math.random() * lines.length)];
+  }
+
+  celebrate() {
+    this.sparkTimer = 120;
+    this.speechText = '🎉 WIN! +' + (Math.random()*200+50).toFixed(0);
+    this.speechTimer = 180;
+    playWin();
+  }
+
+  getSpriteColor() {
+    return TIER_COLORS[this.tier] || TIER_COLORS.SPECIALIST;
+  }
+}
+
+// ─── RENDER AGENTS ─────────────────────────────────────────────
+// Selection ring graphics (single, reused)
+let selectionRing = null;
+
+function createAgentSprites() {
+  agentContainer.removeChildren();
+
+  // Selection ring
+  selectionRing = new PIXI.Graphics();
+  selectionRing.visible = false;
+  agentContainer.addChild(selectionRing);
+
+  STATE.agentList.forEach(agent => {
+    // Create sprite from canvas
+    try {
+      const tex = PIXI.Texture.from(agent.spriteCanvas);
+      const spr = new PIXI.Sprite(tex);
+      spr.width = AGENT_SIZE;
+      spr.height = AGENT_SIZE;
+      spr.anchor.set(0.5, 1.0);
+      spr.eventMode = 'static';
+      spr.cursor = 'pointer';
+      spr.on('pointerdown', () => selectAgent(agent));
+      agentContainer.addChild(spr);
+      agent.sprite = spr;
+    } catch(e) {
+      // Fallback: colored rectangle
+      const g2 = new PIXI.Graphics();
+      g2.rect(-6, -12, 12, 12).fill({ color: agent.getSpriteColor() });
+      g2.eventMode = 'static';
+      g2.cursor = 'pointer';
+      g2.on('pointerdown', () => selectAgent(agent));
+      agentContainer.addChild(g2);
+      agent.spriteGfx = g2;
+    }
+  });
+}
+
+function updateAgentPositions() {
+  STATE.agentList.forEach(agent => {
+    if (agent.sprite) {
+      agent.sprite.x = agent.x;
+      agent.sprite.y = agent.isSitting ? agent.y + 4 : agent.y + 2;
+
+      // Scale by bankroll (richer = bigger)
+      const scale = 0.85 + Math.min(agent.bankroll / 10000, 1.5) * 0.3;
+      agent.sprite.scale.y = scale;
+      agent.sprite.scale.x = agent.facingRight ? scale : -scale;
+    } else if (agent.spriteGfx) {
+      agent.spriteGfx.x = agent.x;
+      agent.spriteGfx.y = agent.y;
+    }
+  });
+
+  // Selection ring around selected agent
+  if (selectionRing) {
+    if (STATE.selectedAgent) {
+      const a = STATE.selectedAgent;
+      selectionRing.visible = true;
+      selectionRing.clear();
+      const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 200);
+      const ringColor = TIER_COLORS[a.tier] || 0xFFFFFF;
+      selectionRing.circle(0, 0, AGENT_SIZE * 0.8).stroke({ color: ringColor, alpha: 0.6 + 0.4 * pulse, width: 1.5 });
+      selectionRing.circle(0, 0, AGENT_SIZE * 1.1).stroke({ color: ringColor, alpha: 0.2 + 0.2 * pulse, width: 1 });
+      selectionRing.x = a.x;
+      selectionRing.y = a.y - AGENT_SIZE * 0.5;
+    } else {
+      selectionRing.visible = false;
+    }
+  }
+}
+
+// ─── SELECTION ─────────────────────────────────────────────────
+function selectAgent(agent) {
+  STATE.selectedAgent = agent;
+  playSelect();
+  showPopup(agent);
+}
+
+function showPopup(agent) {
+  const popup = document.getElementById('agent-popup');
+  const wrapper = document.getElementById('canvas-wrapper');
+
+  // Fill popup
+  document.getElementById('popup-name').textContent = agent.name;
+
+  const tierEl = document.getElementById('popup-tier');
+  tierEl.textContent = agent.tier.replace('_', ' ');
+  tierEl.className = 'popup-tier ' + agent.tier;
+
+  const bankroll = document.getElementById('popup-bankroll');
+  bankroll.textContent = '$' + agent.bankroll.toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+  const roi = document.getElementById('popup-roi');
+  roi.textContent = (agent.roi >= 0 ? '+' : '') + agent.roi.toFixed(2) + '%';
+  roi.className = 'popup-stat-val ' + (agent.roi >= 0 ? 'green' : 'red');
+
+  document.getElementById('popup-winrate').textContent =
+    (agent.win_rate * 100).toFixed(1) + '%';
+  document.getElementById('popup-bets').textContent = agent.total_bets;
+  document.getElementById('popup-strategy').textContent =
+    agent.strategy.replace(/_/g,' ');
+  document.getElementById('popup-speech').textContent =
+    '"' + (agent.speechText || agent._speech()) + '"';
+
+  // Draw sprite in popup
+  const spriteCanvas = document.getElementById('popup-sprite');
+  const sctx = spriteCanvas.getContext('2d');
+  sctx.clearRect(0, 0, 32, 32);
+  sctx.imageSmoothingEnabled = false;
+  const bigSprite = makeSpriteCanvas(agent.tier, agent.id, 32);
+  sctx.drawImage(bigSprite, 0, 0, 32, 32);
+
+  // Position popup near agent (world→screen)
+  const W = wrapper.clientWidth;
+  const H = wrapper.clientHeight;
+  const z = STATE.zoom;
+  const screenX = (agent.x - STATE.viewX) * z + W/2;
+  const screenY = (agent.y - STATE.viewY) * z + H/2;
+
+  const popW = 240, popH = 220;
+  let px = screenX + 20;
+  let py = screenY - popH - 20;
+  if (px + popW > W) px = screenX - popW - 20;
+  if (py < 0) py = screenY + 20;
+
+  popup.style.left = px + 'px';
+  popup.style.top = py + 'px';
+  popup.classList.add('visible');
+}
+
+function closePopup() {
+  document.getElementById('agent-popup').classList.remove('visible');
+  STATE.selectedAgent = null;
+}
+
+// ─── PARTICLES ─────────────────────────────────────────────────
+const particleCanvas = document.getElementById('particle-canvas');
+const pCtx = particleCanvas.getContext('2d');
+
+function resizeParticleCanvas() {
+  const wrapper = document.getElementById('canvas-wrapper');
+  particleCanvas.width = wrapper.clientWidth;
+  particleCanvas.height = wrapper.clientHeight;
+}
+
+function spawnParticles(worldX, worldY, color='#ffd700', count=12) {
+  const wrapper = document.getElementById('canvas-wrapper');
+  const W = wrapper.clientWidth;
+  const H = wrapper.clientHeight;
+  const z = STATE.zoom;
+  const sx = (worldX - STATE.viewX) * z + W/2;
+  const sy = (worldY - STATE.viewY) * z + H/2;
+
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 / count) * i + Math.random() * 0.3;
+    const speed = 1.5 + Math.random() * 3;
+    STATE.particles.push({
+      x: sx, y: sy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 2,
+      life: 1.0,
+      decay: 0.02 + Math.random() * 0.02,
+      size: 2 + Math.random() * 3,
+      color,
+    });
+  }
+}
+
+function updateParticles() {
+  pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+  STATE.particles = STATE.particles.filter(p => p.life > 0);
+  STATE.particles.forEach(p => {
+    p.x += p.vx * STATE.speed;
+    p.y += p.vy * STATE.speed;
+    p.vy += 0.08;
+    p.life -= p.decay * STATE.speed;
+
+    pCtx.globalAlpha = Math.max(0, p.life);
+    pCtx.fillStyle = p.color;
+    pCtx.beginPath();
+    pCtx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+    pCtx.fill();
+  });
+  pCtx.globalAlpha = 1;
+}
+
+// ─── SPEECH BUBBLES (DOM-based) ─────────────────────────────────
+const bubbleContainer = document.getElementById('canvas-wrapper');
+const activeBubbles = new Map();
+
+function updateSpeechBubbles() {
+  const wrapper = document.getElementById('canvas-wrapper');
+  const W = wrapper.clientWidth;
+  const H = wrapper.clientHeight;
+  const z = STATE.zoom;
+
+  STATE.agentList.forEach(agent => {
+    if (!agent.speechText) {
+      if (activeBubbles.has(agent.id)) {
+        const el = activeBubbles.get(agent.id);
+        el.remove();
+        activeBubbles.delete(agent.id);
+      }
+      return;
+    }
+
+    const sx = (agent.x - STATE.viewX) * z + W/2;
+    const sy = (agent.y - STATE.viewY) * z + H/2;
+
+    // Cull offscreen
+    if (sx < -100 || sx > W+100 || sy < -100 || sy > H+100) {
+      if (activeBubbles.has(agent.id)) {
+        activeBubbles.get(agent.id).style.display = 'none';
+      }
+      return;
+    }
+
+    let el = activeBubbles.get(agent.id);
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'speech-bubble-css';
+      wrapper.appendChild(el);
+      activeBubbles.set(agent.id, el);
+    }
+    el.style.display = 'block';
+    el.style.left = sx + 'px';
+    el.style.top = (sy - AGENT_SIZE * z - 28) + 'px';
+    el.textContent = agent.speechText;
+  });
+}
+
+// ─── TICKER ────────────────────────────────────────────────────
+function buildTickerContent() {
+  const items = [];
+
+  // Predictions
+  STATE.predictions.forEach(pred => {
+    const ml = pred.predictions?.moneyline;
+    const prob = ml?.home_win_prob ?? 0.5;
+    const probCls = prob > 0.65 ? 'high' : prob > 0.52 ? 'med' : 'low';
+    items.push(`
+      <div class="ticker-item">
+        <span class="ticker-label">ML</span>
+        <span class="ticker-team">${pred.home_team || '?'}</span>
+        <span class="ticker-sep">vs</span>
+        <span class="ticker-team">${pred.away_team || '?'}</span>
+        <span class="ticker-prob ${probCls}">${(prob*100).toFixed(1)}%</span>
+        <span class="ticker-brier">Brier ${pred.quality?.avg_brier?.toFixed(5) ?? '—'}</span>
+      </div>`);
+  });
+
+  // Space health
+  const spaces = STATE.health?.projects?.nba?.spaces || {};
+  Object.entries(spaces).forEach(([id, s]) => {
+    items.push(`
+      <div class="ticker-item">
+        <span class="ticker-label">${id}</span>
+        <span class="ticker-team">${s.model || '—'}</span>
+        <span class="ticker-brier">Brier ${(s.brier||0).toFixed(5)}</span>
+        <span class="ticker-agent">Gen ${s.generation||0}</span>
+      </div>`);
+  });
+
+  // Agent highlights
+  const topAgents = STATE.agentList
+    .filter(a => a.bankroll > 0)
+    .sort((a,b) => b.bankroll - a.bankroll)
+    .slice(0, 10);
+
+  topAgents.forEach(a => {
+    const pnlStr = a.total_pnl >= 0
+      ? `<span class="ticker-win">+$${a.total_pnl.toFixed(2)}</span>`
+      : `<span class="ticker-loss">-$${Math.abs(a.total_pnl).toFixed(2)}</span>`;
+    items.push(`
+      <div class="ticker-item">
+        <span class="ticker-agent">${a.name}</span>
+        <span class="ticker-label">BK</span>
+        <span class="ticker-team">$${a.bankroll.toLocaleString()}</span>
+        ${pnlStr}
+      </div>`);
+  });
+
+  // System messages
+  items.push(`<div class="ticker-item"><span class="ticker-label">SYS</span><span class="ticker-team">NOMOS42 TRADING FLOOR v5</span><span class="ticker-brier">207 AGENTS ACTIVE</span></div>`);
+  items.push(`<div class="ticker-item"><span class="ticker-label">ATR</span><span class="ticker-brier">BEST BRIER: 0.21570</span><span class="ticker-agent">TARGET: &lt; 0.20</span></div>`);
+
+  // Duplicate for seamless loop
+  const content = items.join('') + items.join('');
+  const track = document.getElementById('ticker-track');
+  track.innerHTML = content;
+  STATE.tickerWidth = track.scrollWidth / 2;
+}
+
+function animateTicker() {
+  const track = document.getElementById('ticker-track');
+  STATE.tickerOffset += TICKER_SPEED * STATE.speed;
+  if (STATE.tickerWidth > 0 && STATE.tickerOffset >= STATE.tickerWidth) {
+    STATE.tickerOffset -= STATE.tickerWidth;
+  }
+  track.style.transform = `translateX(-${STATE.tickerOffset}px)`;
+}
+
+// ─── MINIMAP ───────────────────────────────────────────────────
+const minimapEl = document.getElementById('minimap-canvas');
+const mmCtx = minimapEl.getContext('2d');
+const MM_W = 100, MM_H = 70;
+minimapEl.width = MM_W;
+minimapEl.height = MM_H;
+
+function drawMinimap() {
+  mmCtx.clearRect(0, 0, MM_W, MM_H);
+
+  // Background
+  mmCtx.fillStyle = '#060618';
+  mmCtx.fillRect(0, 0, MM_W, MM_H);
+
+  // Zones
+  const sx = MM_W / WORLD_W;
+  const sy = MM_H / WORLD_H;
+
+  const zoneColors = {
+    pit: 'rgba(255,215,0,0.15)',
+    research: 'rgba(79,195,247,0.2)',
+    evolution: 'rgba(102,187,106,0.2)',
+    engineering: 'rgba(206,147,216,0.2)',
+    infra: 'rgba(239,83,80,0.15)',
+  };
+
+  Object.entries(ZONE_RECTS).forEach(([name, r]) => {
+    mmCtx.fillStyle = zoneColors[name] || 'rgba(255,255,255,0.05)';
+    mmCtx.fillRect(r.x*sx, r.y*sy, r.w*sx, r.h*sy);
+  });
+
+  // Agent dots (sample every Nth)
+  const step = Math.max(1, Math.floor(STATE.agentList.length / 80));
+  STATE.agentList.forEach((a, i) => {
+    if (i % step !== 0) return;
+    mmCtx.fillStyle = TIER_COLORS_HEX[a.tier] || '#66bb6a';
+    mmCtx.globalAlpha = 0.7;
+    mmCtx.fillRect(a.x*sx - 0.5, a.y*sy - 0.5, 1.5, 1.5);
+  });
+  mmCtx.globalAlpha = 1;
+
+  // Viewport rect
+  const vpW = (pixiApp?.screen.width || 800) / STATE.zoom * sx;
+  const vpH = (pixiApp?.screen.height || 600) / STATE.zoom * sy;
+  const vpX = (STATE.viewX - (pixiApp?.screen.width||800)/(2*STATE.zoom)) * sx;
+  const vpY = (STATE.viewY - (pixiApp?.screen.height||600)/(2*STATE.zoom)) * sy;
+  mmCtx.strokeStyle = 'rgba(255,215,0,0.6)';
+  mmCtx.lineWidth = 1;
+  mmCtx.strokeRect(vpX, vpY, vpW, vpH);
+
+  // Selected agent
+  if (STATE.selectedAgent) {
+    const a = STATE.selectedAgent;
+    mmCtx.fillStyle = '#fff';
+    mmCtx.fillRect(a.x*sx - 2, a.y*sy - 2, 4, 4);
+  }
+}
+
+// ─── PANELS ────────────────────────────────────────────────────
+function updateLeaderboard() {
+  const sorted = [...STATE.agentList]
+    .sort((a,b) => b.bankroll - a.bankroll)
+    .slice(0, 20);
+
+  const el = document.getElementById('leaderboard-list');
+  el.innerHTML = sorted.map((a, i) => {
+    const color = TIER_COLORS_HEX[a.tier] || '#66bb6a';
+    const rank = i + 1;
+    const rankCls = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
+    const bk = '$' + (a.bankroll/1000).toFixed(1) + 'k';
+    const pnlVal = a.total_pnl >= 0 ? `+${a.total_pnl.toFixed(0)}` : a.total_pnl.toFixed(0);
+    const pnlCls = a.total_pnl >= 0 ? '' : 'neg';
+    return `<div class="lb-entry" data-id="${a.id}">
+      <span class="lb-rank ${rankCls}">${rank}</span>
+      <span class="lb-dot" style="background:${color}"></span>
+      <span class="lb-name">${a.name}</span>
+      <span class="lb-val ${pnlCls}">${bk}</span>
+    </div>`;
+  }).join('');
+
+  // Click to select
+  el.querySelectorAll('.lb-entry').forEach(row => {
+    row.addEventListener('click', () => {
+      const a = STATE.agentList.find(a => a.id === row.dataset.id);
+      if (a) { selectAgent(a); STATE.viewX = a.x; STATE.viewY = a.y; setViewCenter(a.x, a.y); }
+    });
+  });
+}
+
+function updateSpacesList() {
+  const spaces = STATE.health?.projects?.nba?.spaces || {};
+  const el = document.getElementById('spaces-list');
+  el.innerHTML = Object.entries(spaces).map(([id, s]) => `
+    <div class="space-row">
+      <div class="space-led ${s.status === 'UP' ? 'up' : 'down'}"></div>
+      <span class="space-name">${id}</span>
+      <span class="space-brier">${(s.brier||0).toFixed(5)}</span>
+      <span class="space-gen">G${s.generation||0}</span>
+    </div>
+  `).join('');
+}
+
+function updateDeptList() {
+  const el = document.getElementById('dept-list');
+  el.innerHTML = DEPTS.map(d => `
+    <div class="dept-row">
+      <span class="dept-badge ${d.status}">${d.id}</span>
+      <span class="dept-name">${d.name}</span>
+      <span class="dept-metric">${d.metric}</span>
+    </div>
+  `).join('');
+}
+
+function updatePredictions() {
+  const el = document.getElementById('predictions-list');
+  if (!STATE.predictions.length) {
+    el.innerHTML = '<div style="font-size:10px;color:#666;padding:4px;">No games today</div>';
+    return;
+  }
+  el.innerHTML = STATE.predictions.map(pred => {
+    const ml = pred.predictions?.moneyline;
+    const prob = ml?.home_win_prob ?? 0.5;
+    const homeW = (prob * 100).toFixed(1);
+    const awayW = ((1 - prob) * 100).toFixed(1);
+    const brier = pred.quality?.avg_brier?.toFixed(5) ?? '—';
+    const conf = pred.quality?.confidence ?? '—';
+    return `<div class="pred-card">
+      <div class="pred-teams">
+        <span class="pred-home">${shortenTeam(pred.home_team)}</span>
+        <span class="pred-vs">vs</span>
+        <span class="pred-away">${shortenTeam(pred.away_team)}</span>
+      </div>
+      <div class="pred-bars">
+        <div class="pred-bar-home" style="width:${homeW}%"></div>
+        <div class="pred-bar-away"></div>
+      </div>
+      <div class="pred-prob">
+        <span>${homeW}%</span>
+        <span class="conf">${conf}</span>
+        <span>${awayW}%</span>
+      </div>
+      <div style="font-size:9px;color:#555;margin-top:3px;">Brier ${brier}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateBankrollStats() {
+  const b = STATE.bankroll;
+  const el = document.getElementById('bankroll-stats');
+  if (!b || !b.balance) { el.textContent = 'No data'; return; }
+  const roiCls = b.roi_pct >= 0 ? 'color:var(--green)' : 'color:var(--red)';
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+      <span style="color:#888;">Balance</span>
+      <span style="color:var(--gold)">$${b.balance?.toFixed(2)}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+      <span style="color:#888;">ROI</span>
+      <span style="${roiCls}">${b.roi_pct?.toFixed(2)}%</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+      <span style="color:#888;">Win Rate</span>
+      <span style="color:var(--text)">${b.win_rate_pct?.toFixed(1)}%</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+      <span style="color:#888;">Bets</span>
+      <span style="color:var(--text)">${b.total_bets}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;">
+      <span style="color:#888;">Sharpe</span>
+      <span style="color:var(--blue)">${b.sharpe_ratio?.toFixed(2)}</span>
+    </div>
+  `;
+}
+
+function updateHeaderStats() {
+  const spaces = STATE.health?.projects?.nba?.spaces || {};
+  const briers = Object.values(spaces).map(s => s.brier).filter(Boolean);
+  const bestBrier = briers.length ? Math.min(...briers) : 0;
+  const maxGen = Object.values(spaces).map(s => s.generation || 0).reduce((a,b)=>Math.max(a,b), 0);
+
+  if (bestBrier) document.getElementById('hdr-brier').textContent = bestBrier.toFixed(5);
+  if (maxGen) document.getElementById('hdr-gen').textContent = maxGen.toLocaleString();
+
+  const b = STATE.bankroll;
+  if (b?.balance) {
+    document.getElementById('hdr-bankroll').textContent = '$' + b.balance.toFixed(2);
+    const roiEl = document.getElementById('hdr-roi');
+    roiEl.textContent = (b.roi_pct >= 0 ? '+' : '') + b.roi_pct.toFixed(2) + '%';
+    roiEl.className = 'val ' + (b.roi_pct >= 0 ? 'green' : 'red');
+  }
+}
+
+function shortenTeam(name) {
+  if (!name) return '?';
+  const abbrevs = {
+    'Miami Heat': 'MIA', 'Washington Wizards': 'WSH',
+    'Golden State Warriors': 'GSW', 'New York Knicks': 'NYK',
+    'Los Angeles Lakers': 'LAL', 'Los Angeles Clippers': 'LAC',
+    'Boston Celtics': 'BOS', 'Milwaukee Bucks': 'MIL',
+    'Denver Nuggets': 'DEN', 'Phoenix Suns': 'PHX',
+    'Dallas Mavericks': 'DAL', 'Memphis Grizzlies': 'MEM',
+    'Oklahoma City Thunder': 'OKC', 'New Orleans Pelicans': 'NOP',
+    'Sacramento Kings': 'SAC', 'Utah Jazz': 'UTA',
+  };
+  return abbrevs[name] || name.split(' ').pop().slice(0,6).toUpperCase();
+}
+
+// ─── DAY/NIGHT CYCLE ───────────────────────────────────────────
+function updateDayNight() {
+  const now = new Date();
+  const utcH = now.getUTCHours() + now.getUTCMinutes()/60;
+  // Night: 0-6 UTC (evening in USA)
+  // Day: 6-20 UTC
+  let nightAlpha = 0;
+  if (utcH < 6) nightAlpha = 0.22;
+  else if (utcH < 8) nightAlpha = 0.22 * (1 - (utcH-6)/2);
+  else if (utcH > 20) nightAlpha = 0.22 * (utcH-20)/4;
+
+  document.getElementById('night-overlay').style.background =
+    `rgba(0,0,30,${nightAlpha})`;
+}
+
+// ─── CLOCK ────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = now.getUTCHours().toString().padStart(2,'0');
+  const m = now.getUTCMinutes().toString().padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}Z`;
+}
+
+// ─── RANDOM CELEBRATION ────────────────────────────────────────
+function maybeRandomWin() {
+  if (Math.random() > 0.003 * STATE.speed) return;
+  const agent = STATE.agentList[Math.floor(Math.random() * STATE.agentList.length)];
+  if (!agent) return;
+  agent.celebrate();
+  spawnParticles(agent.x, agent.y, TIER_COLORS_HEX[agent.tier] || '#ffd700', 15);
+}
+
+// ─── DATA LOADING ──────────────────────────────────────────────
+async function loadData() {
+  setLoadStatus('Loading agent states…', 55);
+
+  // Try Bloomberg API first, fall back to static files
+  const base = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080'
+    : ''; // Relative paths for HF Space
+
+  try {
+    // Agent states
+    const agentResp = await fetch(`${base}/data/arena/agent-states-v5.json`);
+    if (agentResp.ok) {
+      const agentData = await agentResp.json();
+      STATE.agents = agentData.agents || {};
+    }
+  } catch(e) { console.warn('Agent data fetch failed:', e.message); }
+
+  try {
+    // Predictions
+    const predResp = await fetch(`${base}/data/arena/model-predictions-latest.json`);
+    if (predResp.ok) {
+      const predData = await predResp.json();
+      STATE.predictions = predData.predictions || [];
+    }
+  } catch(e) { console.warn('Predictions fetch failed:', e.message); }
+
+  try {
+    // Health / spaces
+    const healthResp = await fetch(`${base}/data/agent-health.json`);
+    if (healthResp.ok) {
+      STATE.health = await healthResp.json();
+    }
+  } catch(e) { console.warn('Health fetch failed:', e.message); }
+
+  try {
+    // Bankroll
+    const brResp = await fetch(`${base}/data/nba-agent/bankroll-state.json`);
+    if (brResp.ok) {
+      STATE.bankroll = await brResp.json();
+    }
+  } catch(e) { console.warn('Bankroll fetch failed:', e.message); }
+
+  // Use embedded fallback data if nothing loaded
+  if (!Object.keys(STATE.agents).length) {
+    STATE.agents = FALLBACK_AGENTS;
+  }
+  if (!STATE.predictions.length) {
+    STATE.predictions = FALLBACK_PREDICTIONS;
+  }
+  if (!STATE.health?.projects) {
+    STATE.health = FALLBACK_HEALTH;
+  }
+  if (!STATE.bankroll?.balance) {
+    STATE.bankroll = FALLBACK_BANKROLL;
+  }
+}
+
+// ─── FALLBACK EMBEDDED DATA ────────────────────────────────────
+const FALLBACK_AGENTS = {
+  "t1_claude": { id:"t1_claude", name:"Claude Prime", tier:"PREMIUM", strategy:"value_hunter_half_kelly", bankroll:10000, roi:0, win_rate:0, total_bets:0, total_pnl:0 },
+  "t1_gpt4o": { id:"t1_gpt4o", name:"GPT-4o Strategist", tier:"PREMIUM", strategy:"proportional_edge", bankroll:10000, roi:0, win_rate:0, total_bets:0, total_pnl:0 },
+  "t1_grok": { id:"t1_grok", name:"Grok Contrarian", tier:"PREMIUM", strategy:"underdog_specialist", bankroll:10000, roi:0, win_rate:0, total_bets:0, total_pnl:0 },
+  "t1_gemini": { id:"t1_gemini", name:"Gemini Analyst", tier:"PREMIUM", strategy:"confidence_scaled", bankroll:10000, roi:0, win_rate:0, total_bets:0, total_pnl:0 },
+};
+
+const FALLBACK_PREDICTIONS = [
+  { game_id:"g1", home_team:"Miami Heat", away_team:"Washington Wizards", predictions:{ moneyline:{ home_win_prob:0.47 }}, quality:{ avg_brier:0.22448, confidence:"high" }},
+  { game_id:"g2", home_team:"New York Knicks", away_team:"Golden State Warriors", predictions:{ moneyline:{ home_win_prob:0.62 }}, quality:{ avg_brier:0.22159, confidence:"high" }},
+];
+
+const FALLBACK_HEALTH = {
+  projects: { nba: { spaces: {
+    S10:{ status:'UP', brier:0.22454, generation:708,  model:'xgboost_brier' },
+    S11:{ status:'UP', brier:0.22273, generation:1405, model:'xgboost' },
+    S12:{ status:'UP', brier:0.22506, generation:1336, model:'catboost' },
+    S13:{ status:'UP', brier:0.22455, generation:1018, model:'extra_trees' },
+    S14:{ status:'UP', brier:0.22666, generation:1070, model:'xgboost_brier' },
+    S15:{ status:'UP', brier:0.22159, generation:1826, model:'random_forest' },
+  }}}};
+
+const FALLBACK_BANKROLL = {
+  balance: 91.29, roi_pct: -8.71, win_rate_pct: 38.64,
+  total_bets: 44, sharpe_ratio: -3.11,
+};
+
+// ─── GENERATE AGENT LIST ───────────────────────────────────────
+function buildAgentList() {
+  const agents = Object.values(STATE.agents);
+
+  // If we only have the 4 premium agents from static data, generate the rest
+  const needed = Math.max(0, 207 - agents.length);
+
+  const tiers = ['FREE_POWER','FREE_POWER','FREE_POWER','FREE_POWER',
+                 'SPECIALIST','SPECIALIST','SPECIALIST','SPECIALIST','SPECIALIST','SPECIALIST',
+                 'SPECIALIST','SPECIALIST','SPECIALIST','META'];
+
+  const strategies = Object.keys(SPEECHES);
+  const names = [
+    'Alpha Bot','Beta Scout','Gamma Quant','Delta Sharp','Epsilon Edge',
+    'Zeta Prop','Eta Value','Theta Kelly','Iota Fade','Kappa Hedge',
+    'Lambda Grid','Mu Arb','Nu Spread','Xi Total','Omicron Line',
+    'Pi Corner','Rho Juice','Sigma Dog','Tau Chalk','Upsilon Whale',
+    'Phi Fish','Chi Limit','Psi Steam','Omega Closer',
+  ];
+
+  for (let i = 0; i < needed; i++) {
+    const tier = tiers[i % tiers.length];
+    const id = `auto_${i}`;
+    const bankroll = 9000 + Math.random() * 2500;
+    agents.push({
+      id,
+      name: names[i % names.length] + ` ${Math.floor(i/names.length)+1}`,
+      tier,
+      strategy: strategies[i % strategies.length],
+      bankroll,
+      roi: (Math.random() - 0.5) * 20,
+      win_rate: 0.3 + Math.random() * 0.35,
+      total_bets: Math.floor(Math.random() * 80),
+      total_wins: Math.floor(Math.random() * 40),
+      total_pnl: (Math.random() - 0.5) * 1000,
+      model: 'synthetic',
+      provider: 'local',
+    });
+  }
+
+  STATE.agentList = agents.map(d => new Agent(d));
+}
+
+// ─── LOADING UTILS ─────────────────────────────────────────────
+function setLoadStatus(msg, pct) {
+  document.getElementById('loading-status').textContent = msg;
+  document.getElementById('loading-bar').style.width = pct + '%';
+}
+
+function hideLoading() {
+  const el = document.getElementById('loading');
+  el.classList.add('fade-out');
+  setTimeout(() => el.style.display = 'none', 600);
+}
+
+// ─── MAIN LOOP ─────────────────────────────────────────────────
+let lastTime = 0;
+
+function mainLoop(ts) {
+  const dt = Math.min((ts - lastTime) / (1000/60), 4); // delta in frames, max 4
+  lastTime = ts;
+
+  if (!pixiApp) return;
+
+  // Update agents
+  STATE.agentList.forEach(a => a.update(dt));
+
+  // Update agent positions in PixiJS
+  updateAgentPositions();
+
+  // Follow selected agent
+  if (STATE.followAgent) {
+    const a = STATE.followAgent;
+    STATE.viewX += (a.x - STATE.viewX) * 0.05;
+    STATE.viewY += (a.y - STATE.viewY) * 0.05;
+    setViewCenter(STATE.viewX, STATE.viewY);
+  }
+
+  // Speech bubbles (throttle)
+  if (Math.floor(ts/100) % 2 === 0) updateSpeechBubbles();
+
+  // Particles
+  updateParticles();
+
+  // Random win event
+  maybeRandomWin();
+
+  // Ticker
+  animateTicker();
+
+  // Minimap (every 3rd frame)
+  if (Math.floor(ts/33) % 3 === 0) drawMinimap();
+
+  // Periodic updates (every 30s)
+  if (ts - STATE.lastUpdate > DATA_REFRESH_MS) {
+    STATE.lastUpdate = ts;
+    refreshData();
+  }
+
+  requestAnimationFrame(mainLoop);
+}
+
+// ─── PERIODIC REFRESH ─────────────────────────────────────────
+async function refreshData() {
+  // Re-fetch data silently
+  try {
+    const r = await fetch('/data/agent-health.json');
+    if (r.ok) {
+      STATE.health = await r.json();
+      updateSpacesList();
+      updateHeaderStats();
+    }
+  } catch(e) {}
+
+  try {
+    const r = await fetch('/data/arena/model-predictions-latest.json');
+    if (r.ok) {
+      const d = await r.json();
+      STATE.predictions = d.predictions || STATE.predictions;
+      updatePredictions();
+      buildTickerContent();
+    }
+  } catch(e) {}
+
+  updateLeaderboard();
+  updateDeptList();
+  updateClock();
+  updateDayNight();
+}
+
+// Clock updater
+setInterval(updateClock, 10000);
+setInterval(updateDayNight, 60000);
+
+// ─── BOOT ──────────────────────────────────────────────────────
+async function boot() {
+  setLoadStatus('Loading data…', 20);
+  await loadData();
+
+  setLoadStatus('Building agents…', 45);
+  buildAgentList();
+
+  setLoadStatus('Initializing renderer…', 60);
+  await initPixi();
+
+  setLoadStatus('Spawning sprites…', 75);
+  createAgentSprites();
+
+  setLoadStatus('Building world…', 85);
+  resizeParticleCanvas();
+  window.addEventListener('resize', resizeParticleCanvas);
+
+  setLoadStatus('Populating panels…', 90);
+  updateLeaderboard();
+  updateSpacesList();
+  updateDeptList();
+  updatePredictions();
+  updateBankrollStats();
+  updateHeaderStats();
+  buildTickerContent();
+  updateClock();
+  updateDayNight();
+  drawMinimap();
+
+  setLoadStatus('Launching floor…', 100);
+  setTimeout(() => {
+    hideLoading();
+    // Center on trading pit
+    STATE.viewX = ZONE_RECTS.pit.x + ZONE_RECTS.pit.w / 2;
+    STATE.viewY = ZONE_RECTS.pit.y + ZONE_RECTS.pit.h / 2;
+    STATE.zoom = 1.0;
+    setViewCenter(STATE.viewX, STATE.viewY);
+
+    requestAnimationFrame(ts => {
+      lastTime = ts;
+      requestAnimationFrame(mainLoop);
+    });
+
+    // Welcome sound
+    setTimeout(() => {
+      if (STATE.soundEnabled) {
+        playTone(440, 0.1); setTimeout(()=>playTone(550,0.1),100);
+        setTimeout(()=>playTone(660,0.15),200); setTimeout(()=>playTone(880,0.2),300);
+      }
+    }, 800);
+  }, 300);
+}
+
+// Start when PixiJS is ready
+if (typeof PIXI !== 'undefined') {
+  boot().catch(console.error);
+} else {
+  document.getElementById('loading-status').textContent = 'Waiting for PixiJS…';
+  window.addEventListener('load', () => boot().catch(console.error));
+}
+
+</script>
+</body>
+</html>

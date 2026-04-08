@@ -1,0 +1,1 @@
+/home/termius/mon-ipad/data/research-reports/KARPATHY_APRIL_2026_FINDINGS.md
