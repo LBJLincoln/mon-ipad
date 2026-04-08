@@ -1,165 +1,33 @@
 {
-  "department": "finance",
-  "dept_id": "D11",
-  "iteration": 9,
-  "timestamp": "2026-04-07T19:15:00Z",
-  "status": "critical_alert",
-  "audit_summary": "Bankroll crisis (−8.71%) + platform failures (ZeroGPU 100% fail) + betting disabled 4 days. Compute all free tier. Revenue $0 (SaaS inactive). HF quota 84% (critical risk Apr 8+).",
-  "daily_snapshot": {
-    "date": "2026-04-07",
-    "bankroll": 91.29,
-    "bankroll_change": 0,
-    "roi_pct": -8.71,
-    "total_bets_placed": 44,
-    "total_bets_pending": 0,
-    "win_rate": 38.64,
-    "sharpe_ratio": -3.11,
-    "peak_balance": 110.43,
-    "current_drawdown_pct": 8.71,
-    "max_drawdown_pct": 20.89,
-    "days_since_last_bet": 4,
-    "daily_burn_rate_usd": 0.20,
-    "notes": "4th consecutive day without bets. TF v5 betting engine offline (edge_threshold/kelly agreement bug). Calibration error: reported_edge 126.63% vs actual Sharpe -3.11."
-  },
-  "compute_status": {
-    "timestamp": "2026-04-07T19:15:00Z",
-    "hf_spaces": {
-      "total_spaces": 8,
-      "active": 8,
-      "monthly_quota_hours": 2000,
-      "hours_used": 1680,
-      "hours_remaining": 320,
-      "pct_usage": 84,
-      "risk_level": "HIGH — quota exhaustion likely Apr 8-9"
-    },
-    "zerogpu_platform": {
-      "status": "CRITICAL FAILURE",
-      "accounts_monitored": 3,
-      "accounts_failing": 3,
-      "failure_rate_pct": 100,
-      "last_success": "2026-04-04T00:00:00Z",
-      "failed_attempts_48h": 20,
-      "error_type": "eval_failed (all attempts)"
-    },
-    "kaggle_gpu": {
-      "status": "ACTIVE",
-      "hours_used_estimated": 12,
-      "hours_remaining": 18,
-      "pct_used": 40
-    },
-    "colab_gpu": {
-      "status": "EXHAUSTED",
-      "best_brier": 0.21570
-    },
-    "modal_serverless": {
-      "status": "INACTIVE",
-      "monthly_estimated": 5
-    }
-  },
-  "cost_breakdown": {
-    "period": "2026-04",
-    "compute_total_monthly": 5,
-    "infra_total_monthly": 0,
-    "services_total_monthly": 1,
-    "total_monthly_cost": 6,
-    "total_ytd_cost": 42,
-    "daily_burn_rate_usd": 0.20,
-    "monthly_forecast_30day": 6,
-    "detail": "Modal $5/mo, Domain $1/mo. All GPU free (Kaggle 40%, Colab exhausted, Lightning 36%). HF Spaces, GCP VM, Vercel all free tier."
-  },
+  "status": "shipped",
+  "action": "ledger_append + tier_alert",
+  "bankroll": 91.29,
+  "daily_burn_usd": 0.20,
   "free_tier_utilization": {
-    "hf_spaces_quota": {
-      "quota_limit": 2000,
-      "quota_used": 1680,
-      "remaining": 320,
-      "pct_usage": 84,
-      "risk_assessment": "HIGH — Less than 1 week buffer. Exhaustion expected Apr 8-9.",
-      "action_required": "URGENT: Delete any dead/test spaces"
-    },
-    "zerogpu_status": "CRITICAL — Platform failure, 0 successful evals since Apr 4 (72hr+)",
-    "kaggle_quota": "40% used, 18 hrs remaining — SAFE",
-    "colab_quota": "EXHAUSTED (TabICL)",
-    "lightning_quota": "36% used, 14 hrs remaining — SAFE"
+    "modal": 0.05,
+    "kaggle": 0.40,
+    "zerogpu": 1.0,
+    "hf_spaces": 0.84
   },
-  "revenue_streams": {
-    "saas_subscriptions": {
-      "status": "INACTIVE",
-      "current_mrr": 0,
-      "tiers": "$19/$49/$149",
-      "breakeven_needed": 6,
-      "blocked_by": "No marketing/activation"
-    },
-    "api_licensing": {
-      "status": "NOT STARTED",
-      "target": "$10K+ MRR"
-    },
-    "trading_profits": {
-      "backtest_roi_ytd": -8.71,
-      "total_bets": 44,
-      "win_rate": 38.64,
-      "status": "NEGATIVE (TF v5 offline 4 days)"
-    }
-  },
-  "critical_blockers": [
-    {
-      "rank": 1,
-      "blocker": "TF v5 BETTING DISABLED 4 DAYS",
-      "impact": "Zero bets since Apr 3. Bankroll stalled. Calibration bug: reported_edge 126.63% vs actual Sharpe -3.11.",
-      "action": "DEBUG edge_threshold/kelly/agreement logic. URGENT (72h+ idle)."
-    },
-    {
-      "rank": 2,
-      "blocker": "ZEROGPU H200 PLATFORM FAILURE",
-      "impact": "100% eval_failed rate (20 attempts, all 3 accounts). No H200 since Apr 4.",
-      "action": "FILE HF support ticket. Fall back to Kaggle/Colab."
-    },
-    {
-      "rank": 3,
-      "blocker": "HF SPACES QUOTA EXHAUSTION (84% USED)",
-      "impact": "Only 320 hours left. Exhaustion expected Apr 8-9. Risk of service interruption.",
-      "action": "DELETE dead spaces. URGENT (next 24h)."
-    },
-    {
-      "rank": 4,
-      "blocker": "MODEL WIN RATE 38.64% < 50% BREAKEVEN",
-      "impact": "Negative EV. Bankroll −$8.71. Predictions not calibrated.",
-      "action": "VALIDATE backtest engine. RETRAIN on clean validation set. URGENT."
-    },
-    {
-      "rank": 5,
-      "blocker": "SAAS REVENUE = $0 (BUT SUSTAINABLE)",
-      "impact": "$6/mo burn sustainable indefinitely on free tier. Zero profitability path.",
-      "action": "ACTIVATE Stripe SaaS. Launch sales motion. This week."
-    }
+  "files_changed": [
+    "data/departments/finance/ledger.jsonl",
+    "data/departments/finance/free-tier-alerts.jsonl",
+    "data/departments/finance/karpathy-output.json"
   ],
-  "bankroll_trajectory": {
-    "start_balance": 100.0,
-    "current_balance": 91.29,
-    "total_loss": -8.71,
-    "roi_pct": -8.71,
-    "peak_balance": 110.43,
-    "drawdown_from_peak_pct": 17.33,
-    "recovery_needed_absolute": 11.86,
-    "est_bets_to_breakeven_50pct": 30,
-    "notes": "At 50% win rate: need 30 consecutive correct bets to reach $100. Currently 4 days idle."
-  },
-  "forecasts": {
-    "30day_cost": 6,
-    "90day_cost": 18,
-    "runway_months": "INFINITE (free tier)",
-    "breakeven_monthly_revenue": 6,
-    "trading_edge_gap": "Unknown — calibration_error prevents measurement",
-    "hf_quota_exhaustion": "2026-04-08 to 2026-04-09",
-    "zerogpu_recovery_eta": "Unknown — platform dependent"
-  },
+  "iteration": 10,
+  "timestamp": "2026-04-08T02:30:00Z",
+  "decision_rationale": "Bankroll unchanged ($91.29 since Apr 5), but fresh daily snapshot required per D11 protocol. HF quota at 84% (critical alert triggers > 80%). ZeroGPU remains 100% failed. TF v5 offline 5 days (zero bets placed). Ledger row appended for Apr 8. Free-tier-alert written due to HF threshold breach.",
+  "critical_items": [
+    "TF v5 BETTING DISABLED 5 DAYS — zero revenue opportunity",
+    "HF SPACES QUOTA 84% — exhaustion imminent Apr 8-9, 320 hours remaining",
+    "ZEROGPU PLATFORM 100% FAILURE — 72+ hours, all accounts failing",
+    "MODEL CALIBRATION ERROR — reported_edge 126.63% vs actual Sharpe -3.11"
+  ],
   "next_actions": [
-    "CRITICAL: Debug TF v5 betting engine (edge_threshold/kelly logic) — restore bets within 24h",
-    "CRITICAL: Audit & cleanup HF Spaces — free 200+ hours before Apr 8",
-    "URGENT: Validate model win_rate — target 50%+ or disable TF v5",
-    "URGENT: Activate Stripe SaaS subscriptions ($19/$49/$149)",
-    "URGENT: Escalate ZeroGPU platform failure to HF support",
-    "MONITOR: Bankroll recovery trajectory daily"
-  ],
-  "report_generated_by": "D11 FINANCE Hermes Agent",
-  "audit_notes": "Apr 7 19:15 UTC: Bankroll $91.29 (−8.71% YTD). CRITICAL: TF v5 offline 4 days (zero bets since Apr 3). Calibration bug: avg_edge 126.63% vs actual Sharpe −3.11 (severe overconfidence). ZeroGPU 100% fail (20 evals_failed, all 3 accounts, last success Apr 4). HF Spaces quota 84% used (320 hrs remaining, exhaustion Apr 8-9). Model win_rate 38.64% < 50% breakeven. SaaS revenue $0 (Stripe inactive). Compute: All free tier ($6/mo burn sustainable). Financial health: Positive cash position, infinite runway on free tier, BUT zero profitability path without SaaS activation. CRITICAL ACTIONS: (1) DEBUG TF v5 edge logic ASAP (72h+ idle unacceptable), (2) VALIDATE model on clean validation set, (3) DELETE dead HF spaces to preserve quota, (4) ACTIVATE SaaS sales, (5) ESCALATE ZeroGPU platform issue."
+    "URGENT (24h): Debug TF v5 edge_threshold/kelly logic, restore betting",
+    "URGENT (24h): Delete dead HF spaces (6 marked for deletion) to free 200+ hours",
+    "URGENT: Validate model win_rate on clean validation set (current 38.64% < 50% breakeven)",
+    "ACTIVATE Stripe SaaS ($19/$49/$149 tiers) — $0 MRR unsustainable long-term",
+    "ESCALATE ZeroGPU platform failure to HF support (external dependency)"
+  ]
 }
