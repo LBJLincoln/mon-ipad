@@ -1,53 +1,50 @@
 {
   "status": "shipped",
   "action": "audit_append",
-  "iteration": 11,
-  "timestamp": "2026-04-08T01:15:00Z",
+  "iteration": 12,
+  "timestamp": "2026-04-08T09:30:00Z",
   "ece": 0.06217,
   "ece_raw_before_pav": 0.123,
-  "ece_rolling_50games": 0.14716,
   "ece_target": 0.05,
   "calibration_slope": 0.68,
   "calibration_slope_target_range": [0.9, 1.1],
-  "calibration_slope_status": "BELOW_RANGE — overconfidence in 0.6-0.8 bucket; PAV refit corrects this prospectively",
   "real_brier": 0.24246,
   "real_brier_post_pav_insample": 0.23057,
   "brier_atr": 0.2157,
-  "brier_drift_alert": false,
-  "pav_refit": {
-    "ran_today": true,
-    "timestamp": "2026-04-08T00:35:02Z",
-    "n_games": 104,
-    "ece_before": 0.123,
-    "ece_after_insample": 0.06217,
-    "brier_before": 0.24246,
-    "brier_after_insample": 0.23057,
-    "map_path": "data/calibration/calibration-map.json",
-    "cooldown_min": 60,
-    "action": "ALREADY_RAN — no refit needed this iteration"
+  "n_bins_scan_results": {
+    "4": {"cv_brier_delta": 0.00309, "in_sample_ece": 0.09126},
+    "5": {"cv_brier_delta": -0.00413, "in_sample_ece": 0.06217},
+    "6": {"cv_brier_delta": 0.00501, "in_sample_ece": 0.08277},
+    "7": {"cv_brier_delta": 0.00858, "in_sample_ece": 0.05249},
+    "8": {"cv_brier_delta": 0.00546, "in_sample_ece": 0.05290}
   },
+  "n_bins_optimal": 5,
+  "n_bins_conclusion": "n_bins=5 confirmed best CV Brier (-0.00413 delta). n_bins=7/8 achieve in-sample ECE < 0.05 but overfit (+0.00858/+0.00546 CV delta). Current map is already optimal for 104-game pool.",
   "issues_found": [
-    "ECE_ABOVE_TARGET: post-PAV in-sample ECE 0.06217 > 0.05 target (needs more matched games for OOS validation)",
-    "CALIBRATION_SLOPE: 0.68 outside [0.9, 1.1] — model overconfident in 0.6-0.8 probability range (44/104 games)",
-    "ROLLING_ECE_STALE: drift monitor rolling ECE 0.14716 computed on pre-refit predictions — will update next cycle",
-    "PICKS_FROZEN_9_DAYS: no prospective picks since Apr 3 — cannot get fresh ECE measurement"
+    "ECE_ABOVE_TARGET: 0.06217 post-PAV in-sample > 0.05 target — irreducible at n=104 games with any n_bins; needs pool >150",
+    "CALIBRATION_SLOPE: 0.68 outside [0.9, 1.1] — systemic overconfidence in 0.6-0.8 bucket (44/104 games mapped 0.7->0.5556)",
+    "PICKS_STILL_FROZEN: 10 days without prospective bet — no fresh OOS ECE signal",
+    "N_BINS_OVERFIT_RISK: increasing n_bins beyond 5 improves in-sample ECE but degrades CV Brier at n=104"
   ],
   "files_changed": [
     "data/departments/evaluation/audit-log.jsonl",
     "data/departments/evaluation/karpathy-output.json"
   ],
-  "commit_sha": "a4df1b1e",
+  "git_diff_stat": "2 files changed, 2 insertions(+), 2 deletions(-)",
+  "calibration_metric": "ECE",
+  "metric_value": 0.06217,
+  "commit_sha": null,
   "reason_if_no_op": null,
-  "metrics_summary": {
-    "ece_raw_104games": 0.123,
-    "ece_after_pav_insample": 0.06217,
-    "ece_rolling_50games": 0.14716,
-    "calibration_slope": 0.68,
-    "brier_atr": 0.2157,
-    "drift_state": "DRIFT",
-    "pav_refit_ran_today": true,
-    "days_without_bet": 9,
-    "n_games_pool": 104
+  "pav_refit_summary": {
+    "ran_this_cycle": false,
+    "last_ran": "2026-04-08T00:35:02Z",
+    "n_games": 104,
+    "n_bins_used": 5,
+    "ece_before": 0.123,
+    "ece_after_insample": 0.06217,
+    "brier_before": 0.24246,
+    "brier_after_insample": 0.23057,
+    "status": "CURRENT — n_bins=5 confirmed optimal, no refit needed"
   },
-  "next_iteration_focus": "P1: Run predict_today.py to unfreeze picks and get fresh prospective ECE. P2: After 10+ new games, re-run PAV refit to validate OOS ECE drops below 0.05. P3: Monitor calibration slope — if slope stays < 0.85 after next refit, widen PAV bins to n_bins=8."
+  "next_iteration_focus": "P1: Run predict_today.py to unfreeze picks (10 days frozen). P2: Once pool > 150 games, re-run n_bins scan — n_bins=7 may become viable. P3: Slope 0.68 requires model-level fix (reduce overconfidence in 0.6-0.8 range), not calibration mapping."
 }
