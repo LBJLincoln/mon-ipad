@@ -1,16 +1,31 @@
 {
-  "status": "shipped",
-  "action": "escalated_pa3_pa4",
-  "iteration": 71,
-  "timestamp": "2026-04-08T00:15:00Z",
-  "spaces_up": 6,
+  "status": "no_op",
+  "action": "fleet_monitoring_escalation_ongoing",
+  "iteration": 72,
+  "timestamp": "2026-04-08T06:40:30Z",
+  "spaces_up": 10,
   "spaces_down": 4,
   "ports_up": ["8080", "8042"],
   "ports_down": [],
   "auto_fixed": [],
-  "escalated": ["PA3_unreachable", "PA4_unreachable"],
+  "escalated": ["P1_unreachable", "P2_unreachable", "P3_unreachable", "P4_unreachable"],
   "crons_healthy": true,
-  "files_changed": ["data/infra-status.json", "data/departments/infra/escalation-queue.jsonl"],
-  "reason": "pa3_pa4_5cycle_outage",
-  "decision": "ESCALATION: PA3 and PA4 offline for 5 consecutive health checks. Manual HF Spaces dashboard intervention required. All NBA spaces and critical services (data-server, bloomberg-api) HEALTHY."
+  "files_changed": ["data/infra-status.json"],
+  "reason": "political_spaces_persistent_outage",
+  "decision": "NO_OP: NBA fleet (S10-S15) 100% healthy. Political spaces (P1-P4) offline for 6+ consecutive iterations. Escalation from iter 71 remains active. Awaiting manual HF Spaces intervention.",
+  "nba_fleet": {
+    "S10": "up (2847ms)",
+    "S11": "up (1953ms)",
+    "S12": "up (890ms)",
+    "S13": "up (754ms)",
+    "S14": "up (618ms)",
+    "S15": "up (502ms)"
+  },
+  "political_fleet": {
+    "P1": "down (6 cycles)",
+    "P2": "down (6 cycles)",
+    "P3": "down (6 cycles)",
+    "P4": "down (6 cycles)"
+  },
+  "uptime_pct": 71.4
 }

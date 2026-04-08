@@ -1,31 +1,30 @@
 {
-  "timestamp": "2026-04-08T00:15:00Z",
-  "fleet_summary": {
-    "nba_spaces_up": 6,
-    "nba_total": 6,
-    "political_spaces_up": 0,
-    "political_total": 4,
-    "all_spaces": 10,
-    "spaces_up": 6,
-    "spaces_down": 4
+  "timestamp": "2026-04-08T06:40:30Z",
+  "iteration": 72,
+  "summary": {
+    "total_services": 14,
+    "healthy": 10,
+    "escalated": 4,
+    "restarted": 0
   },
-  "services": {
-    "data_server_8080": "200_OK",
-    "bloomberg_api_8042": "200_OK"
+  "nba_spaces": {
+    "S10": {"status": "running", "response_time_ms": 2847},
+    "S11": {"status": "running", "response_time_ms": 1953},
+    "S12": {"status": "running", "response_time_ms": 890},
+    "S13": {"status": "running", "response_time_ms": 754},
+    "S14": {"status": "running", "response_time_ms": 618},
+    "S15": {"status": "running", "response_time_ms": 502}
   },
-  "spaces_detail": {
-    "S10": "200_OK",
-    "S11": "200_OK",
-    "S12": "200_OK",
-    "S13": "200_OK",
-    "S14": "200_OK",
-    "S15": "200_OK",
-    "PA1": "UNREACHABLE",
-    "PA2": "UNREACHABLE",
-    "PA3": "404_DOWN_5CYCLES",
-    "PA4": "404_DOWN_5CYCLES"
+  "political_spaces": {
+    "P1": {"status": "down", "reason": "unreachable_5_cycles", "escalation_status": "active"},
+    "P2": {"status": "down", "reason": "unreachable_5_cycles", "escalation_status": "active"},
+    "P3": {"status": "down", "reason": "unreachable_5_cycles", "escalation_status": "active"},
+    "P4": {"status": "down", "reason": "unreachable_5_cycles", "escalation_status": "active"}
   },
-  "crons_active": 3,
-  "action_taken": "ESCALATION_PA3_PA4",
-  "reason": "PA3 and PA4 DOWN for 5+ consecutive iterations - requires manual HF Space restart"
+  "critical_services": {
+    "data_server_8080": {"status": "up", "type": "SimpleHTTPServer", "port": 8080},
+    "bloomberg_api_8042": {"status": "up", "type": "bloomberg-api.py", "port": 8042, "note": "BrokenPipeError in logs (non-fatal)"}
+  },
+  "crons_healthy": true,
+  "escalation_notes": "PA1-PA4 offline since iteration 71 (5+ consecutive health checks). Manual HF Spaces dashboard intervention required. NBA fleet at 100% availability."
 }
