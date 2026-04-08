@@ -1,31 +1,31 @@
 {
-  "timestamp": "2026-04-07T06:12:50.981248Z",
-  "cycle": 71,
-  "summary": {
-    "nba_spaces": "10/10 UP",
-    "political_spaces": "4/4 UP",
-    "dept_spaces": "9/9 UP",
-    "total_up": 23,
-    "total": 23,
-    "keepalive_status": "RE-ENABLED"
-  },
-  "vm_health": {
-    "memory_mb_used": 648,
-    "memory_mb_total": 2047,
-    "memory_pct": 31.7,
-    "status": "HEALTHY"
+  "timestamp": "2026-04-08T00:15:00Z",
+  "fleet_summary": {
+    "nba_spaces_up": 6,
+    "nba_total": 6,
+    "political_spaces_up": 0,
+    "political_total": 4,
+    "all_spaces": 10,
+    "spaces_up": 6,
+    "spaces_down": 4
   },
   "services": {
-    "data_server": "OK",
-    "bloomberg_api": "OK",
-    "crons": "RESTORED (keepalive)",
-    "kaggle_nba": "RELAUNCHED",
-    "kaggle_political": "RELAUNCHED"
+    "data_server_8080": "200_OK",
+    "bloomberg_api_8042": "200_OK"
   },
-  "actions_taken": [
-    "RE-ADDED keepalive cron (*/30 * * * *) - was missing",
-    "RAN manual keepalive - all 23 spaces confirmed 200_OK",
-    "PA3/PA4 auto-recovered after wake signal",
-    "Memory improved: 86.7% \u2192 72.3%"
-  ]
+  "spaces_detail": {
+    "S10": "200_OK",
+    "S11": "200_OK",
+    "S12": "200_OK",
+    "S13": "200_OK",
+    "S14": "200_OK",
+    "S15": "200_OK",
+    "PA1": "UNREACHABLE",
+    "PA2": "UNREACHABLE",
+    "PA3": "404_DOWN_5CYCLES",
+    "PA4": "404_DOWN_5CYCLES"
+  },
+  "crons_active": 3,
+  "action_taken": "ESCALATION_PA3_PA4",
+  "reason": "PA3 and PA4 DOWN for 5+ consecutive iterations - requires manual HF Space restart"
 }
