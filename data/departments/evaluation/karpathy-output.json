@@ -1,254 +1,53 @@
 {
-  "department": "evaluation",
-  "iteration": 10,
-  "timestamp": "2026-04-07T18:30:00.000000+00:00",
-  "model_version": "tabicl_ensemble (110 features, v3.0-37cat) — ATR 0.21570 | ZeroGPU 0.19687 INVALIDATED (5th cache read confirmed)",
-
-  "games_audited": 58,
-  "games_audited_breakdown": {
-    "historical_bets": 44,
-    "experiment_games_apr5": 14,
-    "new_resolved_bets": 0,
-    "note": "No new resolved bets. Picks pipeline frozen 8th consecutive day. PARTIAL RECOVERY: live-odds.json updated with WAS vs CHI Apr 7 23:00Z. predict_today.py has not run — picks still dated Apr 5."
+  "status": "shipped",
+  "action": "audit_append",
+  "iteration": 11,
+  "timestamp": "2026-04-08T01:15:00Z",
+  "ece": 0.06217,
+  "ece_raw_before_pav": 0.123,
+  "ece_rolling_50games": 0.14716,
+  "ece_target": 0.05,
+  "calibration_slope": 0.68,
+  "calibration_slope_target_range": [0.9, 1.1],
+  "calibration_slope_status": "BELOW_RANGE — overconfidence in 0.6-0.8 bucket; PAV refit corrects this prospectively",
+  "real_brier": 0.24246,
+  "real_brier_post_pav_insample": 0.23057,
+  "brier_atr": 0.2157,
+  "brier_drift_alert": false,
+  "pav_refit": {
+    "ran_today": true,
+    "timestamp": "2026-04-08T00:35:02Z",
+    "n_games": 104,
+    "ece_before": 0.123,
+    "ece_after_insample": 0.06217,
+    "brier_before": 0.24246,
+    "brier_after_insample": 0.23057,
+    "map_path": "data/calibration/calibration-map.json",
+    "cooldown_min": 60,
+    "action": "ALREADY_RAN — no refit needed this iteration"
   },
-
-  "brier_current": 0.2157,
-  "brier_atr": 0.21570,
-  "brier_zerogpu_claimed": 0.19687,
-  "brier_zerogpu_validity": "INVALIDATED — 5th consecutive run (2026-04-07T18:06:35Z). 102+ total eval_failed entries. latest-zerogpu-result.json: baseline_brier=0.1968744895643333, improvement=0.0, improved=false, n_candidates=4, total_time_sec=135.7. Exact match to nba-best-config.json. NOT GPU-measured.",
-  "brier_zerogpu_consecutive_cache_runs": 5,
-  "brier_zerogpu_total_eval_failed": 102,
-  "brier_experiment_consensus": 0.18929,
-  "brier_experiment_best_agent": 0.16302,
-  "brier_kaggle_karpathy_stored": 0.196874,
-  "brier_kaggle_karpathy_validity": "SUSPECT — 0/15 iterations improved=true. Brier range 0.2106-0.2329 in nba-history.json. Baseline loaded from config, not temporal holdout.",
-  "brier_target": 0.20,
-  "brier_gap_to_target": 0.0157,
-
-  "calibration_score": 0.2758,
-  "calibration_detail": {
-    "ece_historical_44games": 0.2758,
-    "ece_experiment_best_agent_llama70b": 0.14,
-    "ece_experiment_gemma27b": 0.1318,
-    "ece_target": 0.05,
-    "avg_predicted_historical": 0.6629,
-    "avg_actual_historical": 0.3864,
-    "overconfidence_gap_pp": 27.65,
-    "worst_bucket_historical": "60-70%: predicted=0.63, actual=0.167, ECE=0.481",
-    "calibration_trend": "FROZEN — no new bets since Apr 3"
-  },
-
-  "status": "completed",
-
-  "delta_vs_iter9": {
-    "brier_atr": {"iter9": 0.2157, "iter10": 0.2157, "delta": 0.0, "trend": "FROZEN — 8th consecutive day"},
-    "zerogpu": {
-      "iter9_runs": 4,
-      "iter10_runs": 5,
-      "new_eval_failed_added": 10,
-      "trend": "5th CACHE READ — latest-zerogpu-result.json confirms: improvement=0.0, improved=false"
-    },
-    "days_without_bet": {"iter9": 7, "iter10": 8, "trend": "CRITICAL"},
-    "odds_pipeline": {
-      "iter9_status": "STALE (Apr 5 odds)",
-      "iter10_status": "PARTIALLY_RECOVERED — live-odds.json + odds-latest.json updated with WAS vs CHI Apr 7 23:00Z",
-      "trend": "IMPROVEMENT: odds fetch script ran today. Fresh odds available. predict_today.py still has not run."
-    }
-  },
-
-  "new_findings_this_iteration": [
-    {
-      "type": "ZEROGPU_5TH_CACHE_READ",
-      "severity": "CRITICAL",
-      "priority": "P0",
-      "detail": "ZeroGPU ran 5th time at 18:02-18:10 UTC. latest-zerogpu-result.json: account=LBJLincoln26, baseline_brier=0.1968744895643333, best_brier_found=0.1968744895643333, improvement=0.0, improved=false, total_time_sec=135.7. Log now at 102+ eval_failed entries.",
-      "conclusion": "5 consecutive cache reads, 3 accounts, 102 eval_failed. ZeroGPU completely broken. Brier 0.19687 NOT a validated GPU result."
-    },
-    {
-      "type": "ODDS_PIPELINE_PARTIAL_RECOVERY",
-      "severity": "HIGH",
-      "priority": "P1_URGENT",
-      "detail": "live-odds.json and odds-latest.json now contain Washington Wizards vs Chicago Bulls (id=281942, 2026-04-07T23:00:00Z, CHI -225 / WAS +185). Odds fetch script ran today. iter9 showed stale Apr 5 data — this is a recovery.",
-      "implication": "Odds FETCH works. predict_today.py hasn't run to generate picks. Fix scope: trigger predict_today.py. Game starts 23:00 UTC — time-sensitive.",
-      "action": "Run python3 scripts/predict_today.py or scripts/autonomous-cycle.sh NOW."
-    },
-    {
-      "type": "KAGGLE_STALL_STRUCTURAL",
-      "severity": "HIGH",
-      "detail": "nba-history.json: 15 iterations, all improved=false. best_brier=0.196874 from nba-best-config.json loaded at session start (timestamp 2026-04-07T04:24:58Z, iteration=11). next_iteration_notes reference Apr 1 plans — 6 days stale. Structural fix needed: log initial_brier from temporal holdout separately from config-loaded baseline."
-    }
+  "issues_found": [
+    "ECE_ABOVE_TARGET: post-PAV in-sample ECE 0.06217 > 0.05 target (needs more matched games for OOS validation)",
+    "CALIBRATION_SLOPE: 0.68 outside [0.9, 1.1] — model overconfident in 0.6-0.8 probability range (44/104 games)",
+    "ROLLING_ECE_STALE: drift monitor rolling ECE 0.14716 computed on pre-refit predictions — will update next cycle",
+    "PICKS_FROZEN_9_DAYS: no prospective picks since Apr 3 — cannot get fresh ECE measurement"
   ],
-
-  "persistent_issues": [
-    {
-      "type": "PICKS_NOT_GENERATED_DESPITE_FRESH_ODDS",
-      "severity": "CRITICAL",
-      "iterations_unresolved": 8,
-      "status": "Odds fresh (WAS vs CHI Apr 7 23:00Z). predict_today.py not run. First bet opportunity in 8 days available. Game starts 23:00 UTC.",
-      "narrow_fix": "Run scripts/autonomous-cycle.sh or python3 scripts/predict_today.py"
-    },
-    {
-      "type": "ZEROGPU_EVAL_FAILED",
-      "severity": "CRITICAL",
-      "iterations_unresolved": 5,
-      "log_entries": 102,
-      "status": "5th consecutive cache read. Read zerogpu-burst.py to find eval_failed fallback returning stored config Brier."
-    },
-    {
-      "type": "ECE_OVERCONFIDENCE",
-      "severity": "HIGH",
-      "iterations_unresolved": 8,
-      "ece_historical": 0.2758,
-      "ece_target": 0.05,
-      "status": "FROZEN — no new bets to measure. Threshold mutation blocked."
-    },
-    {
-      "type": "FLEET_DOCUMENTATION_STALE",
-      "severity": "LOW",
-      "status": "CLAUDE.md lists S10-S15 as active but they reset. S16-S19 are actual active fleet."
-    }
+  "files_changed": [
+    "data/departments/evaluation/audit-log.jsonl",
+    "data/departments/evaluation/karpathy-output.json"
   ],
-
-  "false_positive_rate": 0.40,
-  "false_positive_detail": {
-    "threshold": 0.70,
-    "high_confidence_bets": 13,
-    "high_confidence_losses": 5,
-    "fp_rate": 0.40,
-    "fp_target": 0.25,
-    "status": "FAIL — frozen 8 iterations"
-  },
-
-  "fleet_evaluation": {
-    "as_of": "2026-04-07T18:30:00Z",
-    "active_nba": {
-      "S16": {"brier": 0.22268, "gen": 636, "trend": "BEST active island"},
-      "S17": {"brier": 0.22502, "gen": 576, "trend": "STEADY"},
-      "S18": {"brier": 0.23928, "gen": 681, "trend": "STUCK — emergency diversity injection overdue (5+ iters)"},
-      "S19": {"brier": 0.2248, "gen": 575, "trend": "STEADY"}
-    },
-    "fleet_nba_best": 0.22268,
-    "fleet_nba_avg": 0.22545,
-    "atr_brier": 0.21570,
-    "gap_fleet_to_atr": 0.00698
-  },
-
-  "performance_trends": {
-    "total_bets": 44,
-    "wins": 17,
-    "losses": 27,
-    "win_rate": 0.3864,
-    "roi_pct": -8.71,
-    "sharpe": -3.11,
-    "bankroll": 91.29,
-    "days_without_bet": 8,
-    "last_bet": "2026-04-03",
-    "odds_fetch_healthy": true,
-    "fresh_odds_game": "WAS vs CHI 2026-04-07T23:00Z (CHI -225 / WAS +185)",
-    "picks_generated_today": false
-  },
-
-  "calibration_mutation_this_iteration": {
-    "parameter": "confidence_threshold",
-    "proposed_value": 0.65,
-    "current_value": 0.55,
-    "status": "READY TO DEPLOY — odds now available. Block removed once predict_today.py runs.",
-    "action": "Deploy threshold=0.65 in predict_today.py for today's picks. Eliminates worst ECE bucket (60-70%: ECE=0.481).",
-    "expected_ece_delta": -0.13
-  },
-
-  "recommendations": [
-    {
-      "priority": 1,
-      "type": "P1_URGENT_PICKS",
-      "title": "Run predict_today.py — WAS vs CHI at 23:00 UTC today",
-      "action": "Run scripts/autonomous-cycle.sh or python3 scripts/predict_today.py. CHI -225 / WAS +185 odds available in live-odds.json. First bet opportunity in 8 days. GAME STARTS SOON.",
-      "urgency": "TIME-SENSITIVE — Apr 7 23:00 UTC"
-    },
-    {
-      "priority": 2,
-      "type": "P0_BUG_FIX",
-      "title": "Fix ZeroGPU eval_failed — read zerogpu-burst.py",
-      "action": "Read scripts/gpu-burst/zerogpu-burst.py. Find eval_failed→config_brier fallback. Add GPU_EVALUATED boolean flag to output. Fix root eval_failed cause.",
-      "urgency": "5 invalidated runs, 102 eval_failed. Brier target 0.19687 unconfirmed."
-    },
-    {
-      "priority": 3,
-      "type": "CALIBRATION_DEPLOY",
-      "title": "Deploy confidence_threshold=0.65 with today's picks",
-      "action": "After predict_today.py runs, set threshold=0.65 in picks config. Expected ECE delta: -0.13.",
-      "expected_ece_delta": -0.13
-    },
-    {
-      "priority": 4,
-      "type": "DIVERSITY_INJECTION",
-      "title": "S18 emergency diversity — 681 gens at 0.23928",
-      "action": "POST to S18 with mut_rate=0.25 OR seed from S16 best genome.",
-      "expected_impact": "~170bp if reaches S16 level"
-    },
-    {
-      "priority": 5,
-      "type": "KAGGLE_INTEGRITY",
-      "title": "Fix Karpathy baseline logging",
-      "action": "In nba_karpathy_loop.py: separate initial_brier (config-loaded) from best_discovered_brier (temporal holdout eval). Label 0-improve sessions correctly."
-    },
-    {
-      "priority": 6,
-      "type": "DOCUMENTATION",
-      "title": "Update CLAUDE.md: replace S10-S15 with S16-S19 fleet",
-      "action": "One-line table replacement in CLAUDE.md HF SPACES section."
-    }
-  ],
-
+  "commit_sha": null,
+  "reason_if_no_op": null,
   "metrics_summary": {
+    "ece_raw_104games": 0.123,
+    "ece_after_pav_insample": 0.06217,
+    "ece_rolling_50games": 0.14716,
+    "calibration_slope": 0.68,
     "brier_atr": 0.2157,
-    "brier_zerogpu_claimed": 0.19687,
-    "brier_zerogpu_validity": "INVALIDATED — 5th confirmed cache read, 102 eval_failed",
-    "brier_experiment_best_agent": 0.16302,
-    "brier_target": 0.20,
-    "ece_historical": 0.2758,
-    "ece_target": 0.05,
-    "fp_rate": 0.40,
-    "win_rate": 0.3864,
-    "roi_pct": -8.71,
-    "sharpe": -3.11,
-    "bankroll": 91.29,
-    "days_without_bet": 8,
-    "odds_fetch_healthy": true,
-    "odds_today_available": true,
-    "picks_generated_today": false,
-    "fleet_s16_s19_best": 0.22268,
-    "fleet_s16_s19_avg": 0.22545,
-    "zerogpu_eval_failed_total": 102,
-    "status_overall": "CRITICAL: ZeroGPU 5th cache read (P0), picks not generated despite fresh odds (P1-URGENT — WAS vs CHI 23:00 UTC), ECE frozen 8 days. PARTIAL IMPROVEMENT: odds fetch recovered."
+    "drift_state": "DRIFT",
+    "pav_refit_ran_today": true,
+    "days_without_bet": 9,
+    "n_games_pool": 104
   },
-
-  "critical_alerts": [
-    "URGENT_PICKS (P1): WAS vs CHI 23:00 UTC today. CHI -225 / WAS +185. Run predict_today.py NOW — first bet opportunity in 8 days. Game starts soon.",
-    "ZEROGPU_INVALIDATED (P0, 5th iter): 102 eval_failed. 0.19687 = nba-best-config.json value, NOT GPU result.",
-    "ODDS_FETCH_RECOVERED: live-odds.json updated today. Only gap is predict_today.py execution.",
-    "S18_LOCAL_MINIMUM (5+ iters): 681 gens at 0.23928. Emergency diversity injection overdue.",
-    "ECE=0.2758 FROZEN (8 days): Deploy threshold=0.65 after picks generated."
-  ],
-
-  "evaluation_integrity_score": {
-    "score": 3,
-    "max": 10,
-    "delta_vs_iter9": "+1",
-    "components": {
-      "zerogpu_valid": false,
-      "kaggle_baseline_valid": false,
-      "odds_fetch_healthy": true,
-      "picks_generated_today": false,
-      "new_game_data": false,
-      "calibration_measurable": false,
-      "fleet_live": true,
-      "phantom_games": true,
-      "significance_testing": false,
-      "experiment_sample_size": false
-    },
-    "note": "3/10: fleet live + zero phantoms + odds fetch recovered. Picks still not generated. ZeroGPU still broken."
-  },
-
-  "next_iteration_focus": "P1-URGENT: Run predict_today.py before WAS vs CHI 23:00 UTC. P0: Read zerogpu-burst.py find eval_failed fallback. P1: Deploy confidence_threshold=0.65 with first pick. P2: S18 diversity injection. P3: Update CLAUDE.md fleet definition."
+  "next_iteration_focus": "P1: Run predict_today.py to unfreeze picks and get fresh prospective ECE. P2: After 10+ new games, re-run PAV refit to validate OOS ECE drops below 0.05. P3: Monitor calibration slope — if slope stays < 0.85 after next refit, widen PAV bins to n_bins=8."
 }
