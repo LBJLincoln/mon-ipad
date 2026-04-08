@@ -1,62 +1,13 @@
 {
-  "department": "business",
-  "dept_id": "D10",
-  "iteration": 5,
-  "timestamp": "2026-04-07T08:00:00Z",
-  "status": "blocked_by_betting_strategy",
-  "metrics": {
-    "active_users": 2,
-    "paid_users": 0,
-    "mrr": 0,
-    "arpu": 0,
-    "conversion_rate": 0,
-    "churn_rate": 0,
-    "dashboard_status": "live",
-    "bankroll": 91.29,
-    "bankroll_change_pct": -8.71,
-    "record": "17W-27L-0P",
-    "win_rate_pct": 38.64,
-    "latest_roi_pct": -8.71,
-    "best_brier_score": 0.21545,
-    "brier_target": 0.20,
-    "latest_ev_cents": 16.43,
-    "latest_bet_exposure_pct": 18.6,
-    "peak_balance": 110.43,
-    "max_drawdown_pct": -20.89,
-    "days_active": 23
-  },
-  "pricing": {
-    "starter": 19,
-    "builder": 49,
-    "factory": 149,
-    "free_trial_days": 7
-  },
-  "funnel": {
-    "visitors": 0,
-    "signups": 2,
-    "trials": 0,
-    "paid": 0,
-    "churned": 0
-  },
-  "critical_blocker": "Betting ROI -8.71% vs target +5%. Peaked at $110.43, now $91.29 (max DD -20.89%). Model Brier excellent (0.21545 ATR) but Kelly fraction 0.35 too aggressive. Product is losing money — users will not convert to paid tier for losing picks.",
-  "diagnosis": {
-    "model_quality": "TOP QUARTILE — Brier 0.21545 (target 0.20, only 0.01545 away). TabICL ensemble works.",
-    "betting_execution": "CRITICAL FAILURE — 38.64% win rate, ROI -8.71%. Peaked then cratered. Issue: position sizing (Kelly 0.35) not variance-adjusted.",
-    "product_market_fit": "ZERO — losing money means zero PMF. Customers will not pay for negative-return picks."
-  },
-  "dependency_chain": [
-    "D4 (Betting) MUST fix betting strategy: reduce Kelly to 0.20-0.25 (variance-adjusted)",
-    "D4 MUST add EV > 1.10 filter to avoid marginal bets",
-    "D3 (Evolution) support: improve Brier 0.21545 → 0.20 (narrow gap)",
-    "THEN D10 can convert: 2 users → paid tiers"
-  ],
-  "highest_impact_action": "D4 OWNS THIS: Test Kelly 0.20 + EV filter. Expected: smoother equity curve, ROI > 0%. Blocker is betting execution, NOT model quality.",
-  "monetization_readiness": "0% — cannot sell losing picks. Stripe payment links ready but dormant until ROI positive.",
-  "next_actions": [
-    "URGENT: D4 backtest Kelly 0.20 (vs current 0.35) on 17W-27L dataset",
-    "D4 test EV > 1.10 filter: expect fewer bets, higher quality",
-    "D3 continue evolution toward Brier 0.20 (0.01545 gap remains)",
-    "Once ROI > 0% (est. 3-5 days): activate Stripe payment links + trial onboarding",
-    "Prepare email/Telegram: 'Product ready for paid tiers' (template ready, not sent)"
-  ]
+  "status": "no_op",
+  "action": "unchanged",
+  "bankroll": 91.29,
+  "daily_roi_pct": -8.71,
+  "7d_roi_pct": -8.71,
+  "num_bets_7d": 0,
+  "files_changed": [],
+  "commit_sha": null,
+  "reason_if_no_op": "Bankroll $91.29 unchanged since D5 iter5 (Apr 7). No new betting data since Apr 5. quant-summary.json and backtest-results.json stale. Live ROI still -8.71%, MRR $0, 0 paid users. Awaiting D4 (Betting) to ship Kelly/EV fix before D5 can monetize.",
+  "backtest_context": "Full-season synthetic backtest shows +45.09% ROI (70.34% win, Sharpe 3.333) but reflects swarm strategy, not live picks. Live execution gap is Kelly 0.35 over-aggressive. Model Brier 0.21545 is excellent.",
+  "next_trigger": "Once D4 ships betting fix: D5 will append metrics.jsonl + prepare Telegram comms draft for ROI > 0% milestone."
 }
