@@ -1,5 +1,5 @@
 # NOMOS42 Political Alpha — Scientific Experiment Report
-## Generated: 2026-04-08 00:15 UTC
+## Generated: 2026-04-08 04:15 UTC
 
 ---
 
@@ -37,8 +37,8 @@
 ### Aggregate Statistics (Bootstrap 95% CI)
 | Metric | Mean | 95% CI |
 |---|---|---|
-| ROI (%) | -53.26 | [-67.45, -35.88] |
-| Sharpe | -0.0388 | [-0.4339, 0.2798] |
+| ROI (%) | -53.26 | [-67.15, -36.48] |
+| Sharpe | -0.0388 | [-0.4366, 0.2828] |
 
 ## Market Performance
 | Metric | Value |
@@ -90,11 +90,11 @@
 
 | Trader | Capital | ROI | Sharpe | Max DD | Win Rate | Trades |
 |---|---|---|---|---|---|---|
-| gemini | $101,052 | 0.26% | 4.4548 | 0.26% | 61.2% | 593 |
-| codex | $101,696 | 0.61% | 4.2905 | 0.48% | 56.5% | 565 |
-| openrouter | $100,204 | 0.00% | 0.0126 | 0.29% | 52.6% | 475 |
-| grok | $99,708 | 0.00% | 0.0022 | 0.05% | 37.7% | 300 |
-| claude | $100,030 | 0.00% | 0.0000 | 0.00% | 48.6% | 175 |
+| grok | $99,753 | 0.05% | 3.7972 | 0.05% | 38.3% | 360 |
+| codex | $101,600 | 0.51% | 3.2662 | 0.48% | 56.3% | 678 |
+| gemini | $100,954 | 0.16% | 2.4311 | 0.26% | 60.8% | 711 |
+| openrouter | $100,300 | 0.10% | 1.6390 | 0.29% | 52.1% | 570 |
+| claude | $100,030 | 0.00% | 0.0000 | 0.00% | 48.6% | 210 |
 
 ---
 
@@ -105,7 +105,7 @@
 - TOP MARKET: ENERGY_LONG (profit $2264, WR 60.7%)
 - SIGNIFICANT PREDICTORS of ROI: win_rate, log_bets, max_drawdown
 - OUT-OF-SAMPLE R²: -58.1134 (weak — more data needed)
-- BEST TRADER: gemini — consider increasing allocation
+- BEST TRADER: grok — consider increasing allocation
 - WORST TRADER: claude — consider retraining or replacing
 
 ---
