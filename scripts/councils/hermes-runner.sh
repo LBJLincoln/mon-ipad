@@ -106,6 +106,22 @@ declare -A DEPT_TURNS=(
     [d9]="50"
 )
 
+# ── Per-department write allowlist (Cycle 14 Tier 4 — REAL shipper enforcement) ──
+# Each dept may only commit files under these prefixes. Anything else in the
+# working tree post-run is reported as `rejected_files` and dropped. This is
+# what makes councils into shippers instead of advisors writing JSON status.
+declare -A DEPT_WRITE_SCOPE=(
+    [d1]="data/departments/research/ data/research-proposals/ research-vault/"
+    [d2]="data/departments/engineering/ features/ scripts/arena/ hf-space/features/ nba-quant-space/features/"
+    [d3]="data/departments/evolution/ data/karpathy/ scripts/evolution/ scripts/councils/sync-island-config.sh"
+    [d4]="data/departments/product/ scripts/bloomberg/ scripts/forge/"
+    [d5]="data/departments/business/ data/business/"
+    [d6]="data/departments/evaluation/ scripts/calibration.py scripts/calibration_fit.py scripts/monitoring/auto_pav_refit.sh data/calibration/ data/nba-agent/calibration-map.json"
+    [d7]="data/departments/infra/ scripts/monitoring/ scripts/infra/ scripts/cron/"
+    [d8]="data/departments/finance/ data/finance/"
+    [d9]="data/departments/cross-repo/ scripts/councils/sync-to-sister-repos.sh"
+)
+
 # ═══════════════════════════════════════════════════════════════
 # RUN ONE DEPARTMENT
 # ═══════════════════════════════════════════════════════════════
@@ -175,11 +191,21 @@ run_department() {
     log "Launching Claude Code agent..."
     local start_time=$(date +%s)
 
+    # Snapshot pre-run HEAD + dirty file list so we can verify the agent
+    # actually shipped a real commit AND only report NEWLY touched out-of-scope
+    # files as rejected (not pre-existing dirty state).
+    local pre_sha
+    pre_sha=$(cd "${ROOT}" && git rev-parse HEAD 2>/dev/null || echo "unknown")
+    local pre_dirty_snapshot
+    pre_dirty_snapshot=$(cd "${ROOT}" && git status --porcelain 2>/dev/null | awk '{print $2}' | sort -u)
+
     claude -p "${full_prompt}" \
         --model "${model}" \
         --output-format json \
         --max-turns "${max_turns}" \
         --max-budget-usd "${budget}" \
+        --add-dir "${ROOT}" \
+        --allowed-tools "Read,Edit,Write,Bash,Grep,Glob" \
         --dangerously-skip-permissions \
         >> "${log_file}" 2>&1
 
@@ -199,12 +225,82 @@ run_department() {
     # surface which councils are churning without shipping.
     local agent_status="unknown"
     local agent_reason=""
+    local agent_claimed_sha=""
     local karpathy_file="${DATA_DIR}/${dept_name}/karpathy-output.json"
     if [[ -f "${karpathy_file}" ]]; then
         agent_status=$(python3 -c "import json,sys; d=json.load(open('${karpathy_file}')); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
         agent_reason=$(python3 -c "import json; d=json.load(open('${karpathy_file}')); print(d.get('reason_if_no_op','') or d.get('action',''))" 2>/dev/null || echo "")
+        # Normalise empty/null/None to empty string so the hallucination check
+        # below doesn't treat 'None' as a real sha claim.
+        agent_claimed_sha=$(python3 -c "import json; d=json.load(open('${karpathy_file}')); v=d.get('commit_sha',''); print(v if v not in (None,'','None','null') else '')" 2>/dev/null || echo "")
     fi
 
+    # ── Stage allowlisted edits + detect rejected files (Audit Edit 1) ──
+    cd "${ROOT}"
+    local rejected_files=""
+    local scope="${DEPT_WRITE_SCOPE[$dept_id]:-data/departments/${dept_name}/}"
+    # Compute NEWLY dirty files (current dirty MINUS pre-run dirty snapshot).
+    # Anything new and OUTSIDE the dept's scope = rejected scope creep.
+    local all_dirty
+    all_dirty=$(git status --porcelain 2>/dev/null | awk '{print $2}' | sort -u)
+    local new_dirty
+    new_dirty=$(comm -23 <(echo "${all_dirty}") <(echo "${pre_dirty_snapshot}") 2>/dev/null || echo "${all_dirty}")
+    if [[ -n "${new_dirty}" ]]; then
+        for f in ${new_dirty}; do
+            local in_scope=0
+            for prefix in ${scope}; do
+                if [[ "${f}" == ${prefix}* ]]; then
+                    in_scope=1
+                    break
+                fi
+            done
+            if [[ ${in_scope} -eq 0 ]]; then
+                rejected_files="${rejected_files}${f} "
+            fi
+        done
+    fi
+    # Stage only the in-scope files (tolerate non-existent paths)
+    for prefix in ${scope}; do
+        if [[ -e "${prefix}" || -d "${prefix}" ]]; then
+            git add "${prefix}" 2>/dev/null || true
+        fi
+    done
+    git add "${result_file}" 2>/dev/null || true
+
+    # ── Verify ship: was anything REAL staged (not just status metadata)? (Audit Edit 2) ──
+    # A "real ship" is anything in the dept's allowlist EXCEPT pure status/metadata files.
+    # Status files (karpathy-output.json, metrics.jsonl, council-*.json) are written every
+    # iteration regardless of whether the agent shipped a real change, so they don't count.
+    local staged_in_scope
+    staged_in_scope=$(git diff --cached --name-only 2>/dev/null \
+        | grep -v "^data/departments/${dept_name}/council-" \
+        | grep -v "^data/departments/${dept_name}/karpathy-output.json$" \
+        | grep -v "^data/departments/${dept_name}/metrics.jsonl$" \
+        | grep -v "^${result_file#${ROOT}/}$" || true)
+
+    # Commit only if there's something real (not just the result_file metadata)
+    local real_sha=""
+    if [[ -n "$(git diff --cached --name-only 2>/dev/null)" ]]; then
+        if git commit -m "council: ${dept_id^^} ${dept_name} Hermes iteration (${TIMESTAMP})" >> "${log_file}" 2>&1; then
+            real_sha=$(git rev-parse HEAD 2>/dev/null || echo "")
+        fi
+    fi
+
+    # Determine the verified ship status (Audit Edit 2 — hallucination detector)
+    local verified_status="${agent_status}"
+    if [[ "${agent_status}" == "shipped" ]]; then
+        if [[ -z "${staged_in_scope}" ]]; then
+            # Agent claimed shipped but no real files in scope changed → hallucinated
+            verified_status="hallucinated"
+        elif [[ -n "${agent_claimed_sha}" && -n "${real_sha}" && "${agent_claimed_sha}" != "${real_sha}" ]]; then
+            # Agent invented a sha that doesn't match reality → hallucinated
+            verified_status="hallucinated"
+        fi
+    fi
+
+    # ── Stall-streak / no-op penalty metric (Cycle 14 Tier 4) ──
+    # Read the agent's self-reported ship status, then DOWNGRADE based on
+    # post-commit verification. Hallucinated and unknown both count as stalls.
     local metrics_file="${DATA_DIR}/${dept_name}/metrics.jsonl"
     mkdir -p "$(dirname "${metrics_file}")"
     local prev_streak=0
@@ -212,57 +308,76 @@ run_department() {
         prev_streak=$(tail -1 "${metrics_file}" 2>/dev/null | python3 -c "import json,sys; d=json.loads(sys.stdin.read() or '{}'); print(d.get('stall_streak',0))" 2>/dev/null || echo 0)
     fi
     local new_streak=0
-    if [[ "${agent_status}" == "shipped" ]]; then
+    if [[ "${verified_status}" == "shipped" ]]; then
         new_streak=0
     else
         new_streak=$(( prev_streak + 1 ))
     fi
 
     python3 - "${metrics_file}" "${dept_id}" "${dept_name}" "${TIMESTAMP}" \
-        "${agent_status}" "${new_streak}" "${duration}" "${exit_code}" "${agent_reason}" <<'PYEOF'
+        "${agent_status}" "${verified_status}" "${new_streak}" "${duration}" "${exit_code}" "${agent_reason}" "${real_sha}" "${rejected_files}" <<'PYEOF'
 import json, sys
-(metrics_file, dept_id, dept_name, ts, agent_status,
- new_streak, duration, exit_code, reason) = sys.argv[1:]
+(metrics_file, dept_id, dept_name, ts, agent_status, verified_status,
+ new_streak, duration, exit_code, reason, real_sha, rejected_files) = sys.argv[1:]
 row = {
     "timestamp": ts,
     "dept_id": dept_id,
     "dept_name": dept_name,
     "agent_status": agent_status,
+    "verified_status": verified_status,
     "stall_streak": int(new_streak),
     "duration_seconds": int(duration),
     "exit_code": int(exit_code),
     "reason": reason,
+    "real_sha": real_sha,
+    "rejected_files": [f for f in rejected_files.split() if f],
 }
 with open(metrics_file, "a") as f:
     f.write(json.dumps(row) + "\n")
 PYEOF
 
-    # Write council result
-    cat > "${result_file}" << EOJSON
-{
-    "department": "${dept_name}",
-    "dept_id": "${dept_id}",
-    "timestamp": "${TIMESTAMP}",
-    "model": "${model}",
-    "budget_usd": ${budget},
-    "max_turns": ${max_turns},
-    "duration_seconds": ${duration},
-    "exit_code": ${exit_code},
-    "status": "${status}",
-    "agent_status": "${agent_status}",
-    "stall_streak": ${new_streak},
-    "log_file": "${log_file}"
+    # Write council result (now with verified_status, real_sha, rejected_files)
+    python3 - "${result_file}" "${dept_name}" "${dept_id}" "${TIMESTAMP}" \
+        "${model}" "${budget}" "${max_turns}" "${duration}" "${exit_code}" \
+        "${status}" "${agent_status}" "${verified_status}" "${new_streak}" \
+        "${log_file}" "${pre_sha}" "${real_sha}" "${rejected_files}" "${agent_claimed_sha}" <<'PYEOJ'
+import json, sys
+(out, dept_name, dept_id, ts, model, budget, max_turns, duration, exit_code,
+ status, agent_status, verified_status, stall_streak, log_file,
+ pre_sha, real_sha, rejected_files, agent_claimed_sha) = sys.argv[1:]
+data = {
+    "department": dept_name,
+    "dept_id": dept_id,
+    "timestamp": ts,
+    "model": model,
+    "budget_usd": float(budget),
+    "max_turns": int(max_turns),
+    "duration_seconds": int(duration),
+    "exit_code": int(exit_code),
+    "status": status,
+    "agent_status": agent_status,
+    "verified_status": verified_status,
+    "stall_streak": int(stall_streak),
+    "log_file": log_file,
+    "pre_sha": pre_sha,
+    "real_sha": real_sha,
+    "agent_claimed_sha": agent_claimed_sha,
+    "rejected_files": [f for f in rejected_files.split() if f],
 }
-EOJSON
+with open(out, "w") as f:
+    json.dump(data, f, indent=2)
+PYEOJ
 
     if [[ $exit_code -eq 0 ]]; then
-        ok "${dept_name} completed in ${duration}s"
-
-        # Git commit the department's changes
-        cd "${ROOT}"
-        if [[ -n "$(git status --porcelain -- data/departments/${dept_name}/ 2>/dev/null)" ]]; then
-            git add "data/departments/${dept_name}/" "${result_file}" 2>/dev/null
-            git commit -m "council: ${dept_id^^} ${dept_name} Hermes iteration (${TIMESTAMP})" 2>/dev/null || true
+        if [[ "${verified_status}" == "shipped" ]]; then
+            ok "${dept_name} SHIPPED in ${duration}s — sha=${real_sha:0:8}"
+        elif [[ "${verified_status}" == "hallucinated" ]]; then
+            err "${dept_name} HALLUCINATED in ${duration}s — claimed=${agent_claimed_sha:0:8} real=${real_sha:0:8}"
+        else
+            log "${dept_name} no-op in ${duration}s — streak=${new_streak}"
+        fi
+        if [[ -n "${rejected_files}" ]]; then
+            err "${dept_name} rejected out-of-scope edits: ${rejected_files}"
         fi
     else
         err "${dept_name} FAILED (exit ${exit_code}) after ${duration}s"

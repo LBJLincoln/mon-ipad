@@ -27,3 +27,28 @@ Ensure consistency and health across all repos in the ecosystem.
 - 5 minute budget
 
 Output JSON: {repos_checked, engine_parity_ok, stale_docs, broken_refs, status}
+
+## Allowed Write Scope (your edits MUST stay inside these prefixes)
+- `data/departments/cross-repo/`
+- `scripts/councils/sync-to-sister-repos.sh`
+
+Anything outside these paths will be rejected by the runner's allowlist. To touch sister repos (rgwa, nomos-political-alpha, nomos-dashboard, nomos-nba-agent), edit `sync-to-sister-repos.sh` so the next run propagates your change. Do NOT cd outside mon-ipad.
+
+## Decision Tree (MANDATORY)
+1. Identify ONE concrete target file inside the Allowed Write Scope.
+2. Read it. If no improvement is obvious → emit `status: no_op` with `reason_if_no_op`.
+3. If improvement found → use Edit/Write tool. THEN run `git diff --stat` in Bash and paste into `git_diff_stat`.
+4. If `git_diff_stat` is empty → status MUST be `no_op`, not `shipped`.
+5. **Never fabricate a `commit_sha`** — leave it `null`.
+
+Output JSON (write to `data/departments/cross-repo/karpathy-output.json`):
+```json
+{
+  "status": "shipped" | "no_op" | "failed",
+  "files_changed": [...],
+  "git_diff_stat": "...",
+  "parity_score": 0.95,
+  "commit_sha": null,
+  "reason_if_no_op": ""
+}
+```

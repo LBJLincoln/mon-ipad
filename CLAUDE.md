@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI
 
-> Architecture v19 — Department Forge (9 depts) + Trading Floor v4 + Bloomberg | Updated: 2026-04-04
+> Architecture v19 — Department Forge (9 depts) + Trading Floor v4 + Bloomberg | Updated: 2026-04-08
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -9,13 +9,13 @@ Build the best NBA prediction AI in the world.
 
 ## Nomos42 Ecosystem
 
-| Flagship | Repo | Bot | Status |
-|----------|------|-----|--------|
-| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | ACTIVE -- 6 islands + Kaggle Karpathy |
-| Political Alpha | nomos-political-alpha | -- | ACTIVE -- v3.1 engine, 22 categories |
-| AI Artistic Generation | rgwa | @RGWAbot | ACTIVE -- generative AI |
-| Dashboard Hub | nomos-dashboard | -- | ACTIVE -- /nba /political /rgwa /evolution |
-| Factory / Complex RAGs | rag-website | -- | SHELVED |
+| Flagship | Repo | Bot | Vercel | Status |
+|----------|------|-----|--------|--------|
+| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 6 islands + Kaggle Karpathy |
+| Political Alpha | nomos-political-alpha | -- | none (data only) | ACTIVE -- v3.1 engine, 22 categories. Surfaced through nomos-dashboard /political route |
+| Dashboard Hub | nomos-dashboard | -- | nomos42.com | ACTIVE -- /nba /political /evolution /trading-floor /forge |
+| AI Artistic Generation | rgwa | @RGWAbot | none | ZOMBIE -- no commits since Mar 2026, deprioritized |
+| Factory / Complex RAGs | rag-website | -- | none | SHELVED |
 
 ## 24/7 Autonomous Architecture
 

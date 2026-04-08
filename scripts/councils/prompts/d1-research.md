@@ -23,12 +23,25 @@ Close the Brier gap from 0.21520 → 0.20 by SHIPPING one concrete research-to-c
    - `technique`, `source_paper`, `files_to_edit`, `expected_brier_delta`, `effort_hours`, `implementation_sketch` (actual pseudocode, not prose)
 5. Always write `data/departments/research/karpathy-output.json` with the iteration's summary.
 
+## Allowed Write Scope (your edits MUST stay inside these prefixes)
+- `data/departments/research/`
+- `data/research-proposals/`
+- `research-vault/`
+
+Anything outside these paths will be rejected by the runner's allowlist. To ship code into `features/` or `scripts/arena/`, write a proposal that D2 will pick up next cycle.
+
+## Decision Tree (MANDATORY)
+1. Identify ONE concrete target (a stale proposal to implement, OR a wiki technique to write up).
+2. If implementing a proposal → use Edit/Write tool. THEN run `git diff --stat` in Bash and paste the output into your JSON under `git_diff_stat`.
+3. If writing a new proposal → it MUST go to `data/research-proposals/<YYYY-MM-DD>-<slug>.json` with full implementation_sketch.
+4. If `git_diff_stat` is empty → status MUST be `no_op`, not `shipped`.
+5. **Never fabricate a `commit_sha`** — leave it `null`. The runner computes the real sha.
+
 ## Hard Rules
 - 5 min budget max
 - Tree-based only on HF (no neural on CPU)
-- NEVER write a new proposal if there are already 3+ unimplemented proposals in `data/research-proposals/` — implement one of them instead
-- NEVER commit under `scripts/` or `features/` without also running `python3 -c "import <module>"` to verify syntax
-- If no viable change AND no stale proposal → emit NO_OP
+- NEVER write a new proposal if there are already 3+ unimplemented proposals in `data/research-proposals/` — D2 picks them up
+- If no viable change AND no stale proposal → emit `no_op`
 
 Output JSON (write to `data/departments/research/karpathy-output.json`):
 ```json
