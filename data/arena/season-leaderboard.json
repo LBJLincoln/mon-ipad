@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-04-08T12:46:00.367762+00:00",
-  "seasons_analyzed": 15,
+  "timestamp": "2026-04-08T16:45:04.820545+00:00",
+  "seasons_analyzed": 16,
   "per_season": [
     {
       "timestamp": "2026-04-05T18:14:01.853721",
@@ -1896,208 +1896,331 @@
         "bear": 122,
         "tie": 25
       }
+    },
+    {
+      "timestamp": "2026-04-08T16:45:02.996812",
+      "file": "backtest-20260408-164502.json",
+      "games_total": 1247,
+      "model_brier": 0.24246,
+      "top_20": [
+        {
+          "strategy_id": "spec_spread",
+          "name": "Specialist: Spread",
+          "total_bets": 445,
+          "win_rate": 0.7034,
+          "roi_pct": 45.09,
+          "sharpe": 3.333,
+          "max_drawdown_pct": 0.537,
+          "final_bankroll": 127182.12,
+          "score": 4.8358
+        },
+        {
+          "strategy_id": "fixed_0.02",
+          "name": "Fixed 2%",
+          "total_bets": 298,
+          "win_rate": 0.4664,
+          "roi_pct": -11.94,
+          "sharpe": -2.335,
+          "max_drawdown_pct": 0.506,
+          "final_bankroll": 49.4,
+          "score": -2.335
+        },
+        {
+          "strategy_id": "sharpe_max",
+          "name": "Sharpe Maximizer (risk-adjusted)",
+          "total_bets": 254,
+          "win_rate": 0.4449,
+          "roi_pct": -14.26,
+          "sharpe": -2.335,
+          "max_drawdown_pct": 0.673,
+          "final_bankroll": 32.7,
+          "score": -2.335
+        },
+        {
+          "strategy_id": "kelly_0.25_0.03",
+          "name": "Quarter Kelly (edge>3%)",
+          "total_bets": 298,
+          "win_rate": 0.4564,
+          "roi_pct": -11.25,
+          "sharpe": -2.335,
+          "max_drawdown_pct": 0.802,
+          "final_bankroll": 19.76,
+          "score": -2.335
+        },
+        {
+          "strategy_id": "bayesian_adapt",
+          "name": "Bayesian Adaptive (shrinkage)",
+          "total_bets": 298,
+          "win_rate": 0.4564,
+          "roi_pct": -11.25,
+          "sharpe": -2.335,
+          "max_drawdown_pct": 0.802,
+          "final_bankroll": 19.76,
+          "score": -2.335
+        },
+        {
+          "strategy_id": "kelly_0.5_0.03",
+          "name": "Half Kelly (edge>3%)",
+          "total_bets": 216,
+          "win_rate": 0.4444,
+          "roi_pct": -14.07,
+          "sharpe": -2.335,
+          "max_drawdown_pct": 0.807,
+          "final_bankroll": 19.31,
+          "score": -2.335
+        },
+        {
+          "strategy_id": "value_0.05",
+          "name": "Value Hunter (edge>5%)",
+          "total_bets": 216,
+          "win_rate": 0.4444,
+          "roi_pct": -14.07,
+          "sharpe": -2.335,
+          "max_drawdown_pct": 0.807,
+          "final_bankroll": 19.31,
+          "score": -2.335
+        },
+        {
+          "strategy_id": "aggressive",
+          "name": "Aggressive (high stakes, low threshold)",
+          "total_bets": 195,
+          "win_rate": 0.4564,
+          "roi_pct": -13.65,
+          "sharpe": -2.335,
+          "max_drawdown_pct": 0.885,
+          "final_bankroll": 11.52,
+          "score": -2.335
+        },
+        {
+          "strategy_id": "conservative",
+          "name": "Conservative (low stakes, high threshold)",
+          "total_bets": 171,
+          "win_rate": 0.4152,
+          "roi_pct": -22.82,
+          "sharpe": -2.801,
+          "max_drawdown_pct": 0.502,
+          "final_bankroll": 49.81,
+          "score": -2.801
+        },
+        {
+          "strategy_id": "spec_moneyline",
+          "name": "Specialist: Moneyline",
+          "total_bets": 123,
+          "win_rate": 0.3821,
+          "roi_pct": -25.97,
+          "sharpe": -4.33,
+          "max_drawdown_pct": 0.805,
+          "final_bankroll": 19.54,
+          "score": -4.33
+        }
+      ],
+      "debate_verdict_counts": {
+        "bull": 103,
+        "bear": 122,
+        "tie": 25
+      }
     }
   ],
   "consistency_top20": [
     {
       "strategy_id": "conservative",
-      "appearances": 15,
-      "total_seasons": 15,
-      "avg_roi": -9.641,
-      "avg_sharpe": -1.257,
-      "avg_bankroll": 1151.59,
+      "appearances": 16,
+      "total_seasons": 16,
+      "avg_roi": -10.465,
+      "avg_sharpe": -1.354,
+      "avg_bankroll": 1082.73,
       "best_bankroll": 16119.31,
       "consistency_pct": 100.0
     },
     {
       "strategy_id": "spec_spread",
-      "appearances": 14,
-      "total_seasons": 15,
-      "avg_roi": 39.2,
-      "avg_sharpe": 4.059,
-      "avg_bankroll": 74888.44,
+      "appearances": 15,
+      "total_seasons": 16,
+      "avg_roi": 39.593,
+      "avg_sharpe": 4.01,
+      "avg_bankroll": 78374.69,
       "best_bankroll": 127182.12,
-      "consistency_pct": 93.3
+      "consistency_pct": 93.8
     },
     {
       "strategy_id": "aggressive",
-      "appearances": 14,
-      "total_seasons": 15,
-      "avg_roi": -15.178,
-      "avg_sharpe": -1.433,
-      "avg_bankroll": 8986.89,
+      "appearances": 15,
+      "total_seasons": 16,
+      "avg_roi": -15.076,
+      "avg_sharpe": -1.493,
+      "avg_bankroll": 8388.53,
       "best_bankroll": 122694.24,
-      "consistency_pct": 93.3
+      "consistency_pct": 93.8
     },
     {
       "strategy_id": "value_0.05",
-      "appearances": 14,
-      "total_seasons": 15,
-      "avg_roi": -13.839,
-      "avg_sharpe": -1.541,
-      "avg_bankroll": 2110.31,
+      "appearances": 15,
+      "total_seasons": 16,
+      "avg_roi": -13.855,
+      "avg_sharpe": -1.594,
+      "avg_bankroll": 1970.91,
       "best_bankroll": 28424.27,
-      "consistency_pct": 93.3
+      "consistency_pct": 93.8
     },
     {
       "strategy_id": "kelly_0.5_0.03",
-      "appearances": 14,
-      "total_seasons": 15,
-      "avg_roi": -12.895,
-      "avg_sharpe": -1.576,
-      "avg_bankroll": 2608.22,
+      "appearances": 15,
+      "total_seasons": 16,
+      "avg_roi": -12.973,
+      "avg_sharpe": -1.627,
+      "avg_bankroll": 2435.63,
       "best_bankroll": 35175.04,
-      "consistency_pct": 93.3
+      "consistency_pct": 93.8
     },
     {
       "strategy_id": "kelly_0.25_0.03",
-      "appearances": 14,
-      "total_seasons": 15,
-      "avg_roi": -9.845,
-      "avg_sharpe": -1.674,
-      "avg_bankroll": 2950.69,
+      "appearances": 15,
+      "total_seasons": 16,
+      "avg_roi": -9.939,
+      "avg_sharpe": -1.718,
+      "avg_bankroll": 2755.3,
       "best_bankroll": 39817.16,
-      "consistency_pct": 93.3
+      "consistency_pct": 93.8
     },
     {
       "strategy_id": "bayesian_adapt",
-      "appearances": 14,
-      "total_seasons": 15,
-      "avg_roi": -10.016,
-      "avg_sharpe": -1.674,
-      "avg_bankroll": 2619.11,
+      "appearances": 15,
+      "total_seasons": 16,
+      "avg_roi": -10.098,
+      "avg_sharpe": -1.718,
+      "avg_bankroll": 2445.82,
       "best_bankroll": 35175.04,
-      "consistency_pct": 93.3
+      "consistency_pct": 93.8
     },
     {
       "strategy_id": "sharpe_max",
-      "appearances": 14,
-      "total_seasons": 15,
-      "avg_roi": -12.659,
-      "avg_sharpe": -1.729,
-      "avg_bankroll": 1478.47,
+      "appearances": 15,
+      "total_seasons": 16,
+      "avg_roi": -12.765,
+      "avg_sharpe": -1.77,
+      "avg_bankroll": 1382.08,
       "best_bankroll": 19749.55,
-      "consistency_pct": 93.3
+      "consistency_pct": 93.8
     },
     {
       "strategy_id": "fixed_0.02",
-      "appearances": 14,
-      "total_seasons": 15,
-      "avg_roi": -8.908,
-      "avg_sharpe": -1.763,
-      "avg_bankroll": 1630.03,
+      "appearances": 15,
+      "total_seasons": 16,
+      "avg_roi": -9.11,
+      "avg_sharpe": -1.801,
+      "avg_bankroll": 1524.65,
       "best_bankroll": 21734.76,
-      "consistency_pct": 93.3
+      "consistency_pct": 93.8
     },
     {
       "strategy_id": "spec_moneyline",
-      "appearances": 10,
-      "total_seasons": 15,
-      "avg_roi": -35.876,
-      "avg_sharpe": -5.129,
-      "avg_bankroll": 20.2,
+      "appearances": 11,
+      "total_seasons": 16,
+      "avg_roi": -34.975,
+      "avg_sharpe": -5.056,
+      "avg_bankroll": 20.14,
       "best_bankroll": 26.45,
-      "consistency_pct": 66.7
+      "consistency_pct": 68.8
     },
     {
       "strategy_id": "ev_0.2_k0.1",
       "appearances": 1,
-      "total_seasons": 15,
+      "total_seasons": 16,
       "avg_roi": 14.63,
       "avg_sharpe": 3.586,
       "avg_bankroll": 251.26,
       "best_bankroll": 251.26,
-      "consistency_pct": 6.7
+      "consistency_pct": 6.2
     },
     {
       "strategy_id": "kelly_0.1_0.02",
       "appearances": 1,
-      "total_seasons": 15,
+      "total_seasons": 16,
       "avg_roi": 18.27,
       "avg_sharpe": 3.581,
       "avg_bankroll": 356.42,
       "best_bankroll": 356.42,
-      "consistency_pct": 6.7
+      "consistency_pct": 6.2
     },
     {
       "strategy_id": "value_0.15",
       "appearances": 1,
-      "total_seasons": 15,
+      "total_seasons": 16,
       "avg_roi": 12.74,
       "avg_sharpe": 3.58,
       "avg_bankroll": 290.02,
       "best_bankroll": 290.02,
-      "consistency_pct": 6.7
+      "consistency_pct": 6.2
     },
     {
       "strategy_id": "value_0.1",
       "appearances": 1,
-      "total_seasons": 15,
+      "total_seasons": 16,
       "avg_roi": 11.77,
       "avg_sharpe": 3.573,
       "avg_bankroll": 273.02,
       "best_bankroll": 273.02,
-      "consistency_pct": 6.7
+      "consistency_pct": 6.2
     },
     {
       "strategy_id": "kelly_0.1_0.05",
       "appearances": 1,
-      "total_seasons": 15,
+      "total_seasons": 16,
       "avg_roi": 12.83,
       "avg_sharpe": 3.565,
       "avg_bankroll": 240.22,
       "best_bankroll": 240.22,
-      "consistency_pct": 6.7
+      "consistency_pct": 6.2
     },
     {
       "strategy_id": "ev_0.07_k0.1",
       "appearances": 1,
-      "total_seasons": 15,
+      "total_seasons": 16,
       "avg_roi": 12.83,
       "avg_sharpe": 3.565,
       "avg_bankroll": 240.22,
       "best_bankroll": 240.22,
-      "consistency_pct": 6.7
+      "consistency_pct": 6.2
     },
     {
       "strategy_id": "ev_0.15_k0.1",
       "appearances": 1,
-      "total_seasons": 15,
+      "total_seasons": 16,
       "avg_roi": 12.83,
       "avg_sharpe": 3.562,
       "avg_bankroll": 239.35,
       "best_bankroll": 239.35,
-      "consistency_pct": 6.7
+      "consistency_pct": 6.2
     },
     {
       "strategy_id": "ev_0.1_k0.1",
       "appearances": 1,
-      "total_seasons": 15,
+      "total_seasons": 16,
       "avg_roi": 12.75,
       "avg_sharpe": 3.562,
       "avg_bankroll": 239.15,
       "best_bankroll": 239.15,
-      "consistency_pct": 6.7
+      "consistency_pct": 6.2
     },
     {
       "strategy_id": "ev_0.15_k0.25",
       "appearances": 1,
-      "total_seasons": 15,
+      "total_seasons": 16,
       "avg_roi": 13.75,
       "avg_sharpe": 3.557,
       "avg_bankroll": 295.23,
       "best_bankroll": 295.23,
-      "consistency_pct": 6.7
+      "consistency_pct": 6.2
     },
     {
       "strategy_id": "dd_limit_10",
       "appearances": 1,
-      "total_seasons": 15,
+      "total_seasons": 16,
       "avg_roi": 18.77,
       "avg_sharpe": 3.55,
       "avg_bankroll": 373.52,
       "best_bankroll": 373.52,
-      "consistency_pct": 6.7
+      "consistency_pct": 6.2
     }
   ],
   "latest_season_top5": [
@@ -2115,45 +2238,45 @@
     {
       "strategy_id": "fixed_0.02",
       "name": "Fixed 2%",
-      "total_bets": 349,
-      "win_rate": 0.4756,
-      "roi_pct": -9.98,
+      "total_bets": 298,
+      "win_rate": 0.4664,
+      "roi_pct": -11.94,
       "sharpe": -2.335,
-      "max_drawdown_pct": 0.505,
-      "final_bankroll": 49.51,
+      "max_drawdown_pct": 0.506,
+      "final_bankroll": 49.4,
       "score": -2.335
     },
     {
       "strategy_id": "sharpe_max",
       "name": "Sharpe Maximizer (risk-adjusted)",
-      "total_bets": 224,
-      "win_rate": 0.4464,
-      "roi_pct": -15.9,
+      "total_bets": 254,
+      "win_rate": 0.4449,
+      "roi_pct": -14.26,
       "sharpe": -2.335,
-      "max_drawdown_pct": 0.67,
-      "final_bankroll": 33.01,
+      "max_drawdown_pct": 0.673,
+      "final_bankroll": 32.7,
       "score": -2.335
     },
     {
       "strategy_id": "kelly_0.25_0.03",
       "name": "Quarter Kelly (edge>3%)",
-      "total_bets": 197,
-      "win_rate": 0.4467,
-      "roi_pct": -15.65,
+      "total_bets": 298,
+      "win_rate": 0.4564,
+      "roi_pct": -11.25,
       "sharpe": -2.335,
-      "max_drawdown_pct": 0.812,
-      "final_bankroll": 19.66,
+      "max_drawdown_pct": 0.802,
+      "final_bankroll": 19.76,
       "score": -2.335
     },
     {
       "strategy_id": "bayesian_adapt",
       "name": "Bayesian Adaptive (shrinkage)",
-      "total_bets": 197,
-      "win_rate": 0.4467,
-      "roi_pct": -15.65,
+      "total_bets": 298,
+      "win_rate": 0.4564,
+      "roi_pct": -11.25,
       "sharpe": -2.335,
-      "max_drawdown_pct": 0.812,
-      "final_bankroll": 19.66,
+      "max_drawdown_pct": 0.802,
+      "final_bankroll": 19.76,
       "score": -2.335
     }
   ]
