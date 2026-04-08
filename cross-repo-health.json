@@ -1,25 +1,44 @@
 {
-  "last_updated": "2026-04-06T13:00:00Z",
-  "cycle": 70,
-  "nba_best_brier": 0.2222,
+  "last_updated": "2026-04-08T04:30:00Z",
+  "cycle": 76,
+  "nba_best_brier": 0.22086,
   "political_best_brier": 0.23134,
   "nba_islands_online": 6,
   "nba_islands_total": 6,
   "political_islands_online": 2,
-  "political_islands_total": 4,
-  "fleet_brier_avg_nba": 0.22437,
-  "cross_pollination_candidates": [
-    "calibration: isotonic_regression CalibratedClassifierCV (NBA Phase1 → Political next cycle)",
-    "ga_config: adaptive mutation_rate cap 0.15 (NBA → Political)",
-    "feature: rolling_window_elo patterns (NBA → Political engine)"
+  "political_islands_total": 2,
+  "note_pa3_pa4": "PA3/PA4 CONFIRMED NON-EXISTENT — spaces were never created on HuggingFace. Stop tracking as DOWN. Political fleet is 2/2, not 2/4.",
+  "fleet_brier_avg_nba": 0.22334,
+  "fleet_brier_improvement_nba": "0.22158 → 0.22086 (best) this 4h window",
+  "cross_pollination_this_cycle": {
+    "direction": "NBA → Political",
+    "technique": "GA-tunable LR regularization",
+    "file": "nomos-political-alpha/hf-space/app.py",
+    "change": "logistic_regression C=1/reg_lambda, solver=lbfgs (was static C=1.0, saga)",
+    "expected_impact": "Enables GA to find better-calibrated LR models. Research: LR Brier 0.199 with proper reg."
+  },
+  "cross_pollination_backlog": [
+    "NBA Cat50 shot-zone aggregation (proposed cycle 75) — not yet implemented",
+    "Political Cat2 pharma tariff features (Section 232) — proposed cycle 76, next up",
+    "NBA: monotone constraints proposal (cycle 76) — pending NBA validation before porting",
+    "Political → NBA: liberation day tariff signals as NBA schedule impact features (far future)"
   ],
+  "engine_parity": {
+    "nba": "CONFIRMED — features/engine.py SHA256: 8b3ac2d6...d9d2",
+    "political": "CONFIRMED — features/political_engine.py SHA256: 6a88c915...1951"
+  },
   "alerts": [
-    "PA3 DOWN_404 x6 cycles — private space, user must restart on HF dashboard",
-    "PA4 DOWN_404 x6 cycles — private space, user must restart on HF dashboard",
-    "Political island 1: 94% synthetic data — real event collection critical"
+    "NBA S11 stagnation=6 — watch for threshold (>15), diversify if reached",
+    "NBA S13 best brier 0.22086 — close to checkpoint threshold 0.21837",
+    "Political FEC pipeline: 9 days empty (20260326-20260403) — fix min_date filter in fetch_political_data.py",
+    "Political Polymarket: stale 3 days — check polymarket_tracker.py on VM",
+    "Political PA1 hyperparameter diversity collapse — false negative stagnation counter"
   ],
   "data_pipeline_health": {
-    "polymarket_validation_bug": "FIXED in cycle-70 (Brain D rotation) — was silently failing every cycle",
-    "fetch_political_data_version": "post-fix-2026-04-06"
+    "nba_odds_cat46_52": "UNKNOWN — coverage not verified this cycle (rotation D task)",
+    "political_fec_donors": "DEGRADED_RECOVERED — empty 9 days, returned 20260404",
+    "political_form4_insider": "HEALTHY — daily files up to 20260405",
+    "political_polymarket": "STALE — last update 20260405 (3 days)",
+    "political_congressional_trades": "HEALTHY — daily 274KB files"
   }
 }
