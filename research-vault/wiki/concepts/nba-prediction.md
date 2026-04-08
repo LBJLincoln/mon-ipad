@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 151 raw sources on 2026-04-08
+> Auto-compiled from 153 raw sources on 2026-04-08
 
 ## Overview
 
-This topic covers 151 research files spanning nba prediction & ml models.
+This topic covers 153 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -151,6 +151,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-scan-2026-04-05** (149 words) -- `raw/research/github-scan-2026-04-05.md`
 - **Research Scan: github-scan-2026-04-06** (149 words) -- `raw/research/github-scan-2026-04-06.md`
 - **Research Scan: github-scan-2026-04-07** (149 words) -- `raw/research/github-scan-2026-04-07.md`
+- **Research Scan: github-scan-2026-04-08** (149 words) -- `raw/research/github-scan-2026-04-08.md`
 - **Research Scan: github-betting-scan-2026-03-31** (145 words) -- `raw/research/github-betting-scan-2026-03-31.md`
 - **Research Scan: github-betting-scan-2026-04-01** (145 words) -- `raw/research/github-betting-scan-2026-04-01.md`
 - **Research Scan: github-betting-scan-2026-04-02** (145 words) -- `raw/research/github-betting-scan-2026-04-02.md`
@@ -158,6 +159,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-04** (145 words) -- `raw/research/github-betting-scan-2026-04-04.md`
 - **Research Scan: github-betting-scan-2026-04-05** (145 words) -- `raw/research/github-betting-scan-2026-04-05.md`
 - **Research Scan: github-betting-scan-2026-04-07** (145 words) -- `raw/research/github-betting-scan-2026-04-07.md`
+- **Research Scan: github-betting-scan-2026-04-08** (145 words) -- `raw/research/github-betting-scan-2026-04-08.md`
 - **Research Scan: github-betting-scan-2026-04-06** (136 words) -- `raw/research/github-betting-scan-2026-04-06.md`
 - **Current Fleet State (iter 9, 2026-04-07 09:30 UTC)** (130 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`
 

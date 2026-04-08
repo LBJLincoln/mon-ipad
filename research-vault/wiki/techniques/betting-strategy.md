@@ -1,10 +1,10 @@
 # Betting Strategy & Bankroll
 
-> Auto-compiled from 102 raw sources on 2026-04-08
+> Auto-compiled from 103 raw sources on 2026-04-08
 
 ## Overview
 
-This topic covers 102 research files spanning betting strategy & bankroll.
+This topic covers 103 research files spanning betting strategy & bankroll.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -107,6 +107,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-04** (145 words) -- `raw/research/github-betting-scan-2026-04-04.md`
 - **Research Scan: github-betting-scan-2026-04-05** (145 words) -- `raw/research/github-betting-scan-2026-04-05.md`
 - **Research Scan: github-betting-scan-2026-04-07** (145 words) -- `raw/research/github-betting-scan-2026-04-07.md`
+- **Research Scan: github-betting-scan-2026-04-08** (145 words) -- `raw/research/github-betting-scan-2026-04-08.md`
 - **Research Scan: github-betting-scan-2026-04-06** (136 words) -- `raw/research/github-betting-scan-2026-04-06.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/agent-memory/market-analyst_feedback_model_game_mismatch.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/market-analyst/feedback_model_game_mismatch.md`
