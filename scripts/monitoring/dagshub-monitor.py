@@ -91,6 +91,17 @@ SERVICES = {
     "bloomberg_api":    "http://localhost:8042/",
 }
 
+# 4 GPU websites × multi-account (public landing probes — we cannot auth
+# without exposing tokens, but a 200 landing proves DNS + TLS + platform up).
+GPU_PLATFORMS = {
+    "kaggle_lbjlincoln":    "https://www.kaggle.com/",
+    "colab_lbjlincoln":     "https://colab.research.google.com/",
+    "colab_aurelien":       "https://colab.research.google.com/",
+    "lightning_main":       "https://lightning.ai/",
+    "lightning_secondary":  "https://lightning.ai/",
+    "modal_main":           "https://modal.com/",
+}
+
 
 # ---------- probe functions -----------------------------------------------
 
@@ -213,6 +224,7 @@ def probe_all() -> dict:
     pol = {}
     council = {}
     svc = {}
+    gpu = {}
 
     futures = {}
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
@@ -224,6 +236,11 @@ def probe_all() -> dict:
             futures[pool.submit(probe_hf, label, url)] = ("council", label)
         for label, url in SERVICES.items():
             futures[pool.submit(probe_svc, label, url)] = ("svc", label)
+        for label, url in GPU_PLATFORMS.items():
+            futures[pool.submit(probe_svc, label, url)] = ("gpu", label)
+
+        buckets = {"nba": nba, "pol": pol, "council": council,
+                   "svc": svc, "gpu": gpu}
 
         for future in as_completed(futures, timeout=60):
             cat, fallback_label = futures[future]
@@ -234,9 +251,9 @@ def probe_all() -> dict:
                 result = {"status": 0, "latency_ms": 0, "ok": False,
                           "error": f"thread error: {str(e)[:60]}"}
 
-            {"nba": nba, "pol": pol, "council": council, "svc": svc}[cat][label] = result
+            buckets[cat][label] = result
 
-    return {"nba": nba, "pol": pol, "council": council, "svc": svc}
+    return buckets
 
 
 # ---------- CSV logging (always works, no deps) ---------------------------
@@ -278,8 +295,10 @@ def log_to_dagshub(flat_metrics: dict, step: int):
             eager_logging=True,
         )
         logger.log_hyperparams({
-            "monitor_version": "1.0",
-            "total_endpoints": len(NBA_SPACES) + len(POLITICAL_SPACES) + len(COUNCIL_SPACES) + len(SERVICES),
+            "monitor_version": "1.1",
+            "total_endpoints": (len(NBA_SPACES) + len(POLITICAL_SPACES)
+                                + len(COUNCIL_SPACES) + len(SERVICES)
+                                + len(GPU_PLATFORMS)),
         })
         logger.log_metrics(flat_metrics, step_num=step)
         logger.save()
@@ -303,7 +322,9 @@ def run_monitor():
     print(f"=== Nomos42 Monitor -- {ts_str} ===")
 
     # Phase 1: Probe all endpoints in parallel + VM metrics
-    print("\n[Probing 27 endpoints...]")
+    total_endpoints = (len(NBA_SPACES) + len(POLITICAL_SPACES) + len(COUNCIL_SPACES)
+                       + len(SERVICES) + len(GPU_PLATFORMS))
+    print(f"\n[Probing {total_endpoints} endpoints...]")
     probes = probe_all()
     vm = get_vm_metrics()
 
@@ -317,6 +338,7 @@ def run_monitor():
         "political_spaces": probes["pol"],
         "council_spaces": probes["council"],
         "services": probes["svc"],
+        "gpu_platforms": probes["gpu"],
         "vm": vm,
         "summary": {},
     }
@@ -347,6 +369,7 @@ def run_monitor():
     pol_up = print_group("Political Alpha Islands", probes["pol"], "pol")
     council_up = print_group("Department Councils", probes["council"], "council")
     svc_up = print_group("Services", probes["svc"], "svc")
+    gpu_up = print_group("GPU Platforms (multi-account)", probes["gpu"], "gpu")
 
     # VM
     print("\n[VM]")
@@ -359,13 +382,18 @@ def run_monitor():
     total_up = nba_up + pol_up + council_up
     total_svc = len(SERVICES)
 
+    total_gpu = len(GPU_PLATFORMS)
+    overall_up = total_up + svc_up + gpu_up
+    overall_total = total_spaces + total_svc + total_gpu
+
     summary = {
         "nba_up": nba_up, "nba_total": len(NBA_SPACES),
         "political_up": pol_up, "political_total": len(POLITICAL_SPACES),
         "council_up": council_up, "council_total": len(COUNCIL_SPACES),
         "services_up": svc_up, "services_total": total_svc,
+        "gpu_up": gpu_up, "gpu_total": total_gpu,
         "spaces_up": total_up, "spaces_total": total_spaces,
-        "uptime_pct": round(100.0 * (total_up + svc_up) / max(total_spaces + total_svc, 1), 1),
+        "uptime_pct": round(100.0 * overall_up / max(overall_total, 1), 1),
         "vm_cpu_pct": vm.get("cpu_pct", -1),
         "vm_ram_pct": vm.get("ram_pct", -1),
         "vm_disk_pct": vm.get("disk_pct", -1),
@@ -382,8 +410,9 @@ def run_monitor():
 
     print(f"\n[Summary]")
     print(f"  NBA: {nba_up}/{len(NBA_SPACES)} | Political: {pol_up}/{len(POLITICAL_SPACES)} | "
-          f"Councils: {council_up}/{len(COUNCIL_SPACES)} | Services: {svc_up}/{total_svc}")
-    print(f"  Overall: {total_up + svc_up}/{total_spaces + total_svc} ({summary['uptime_pct']}%)")
+          f"Councils: {council_up}/{len(COUNCIL_SPACES)} | Services: {svc_up}/{total_svc} | "
+          f"GPU: {gpu_up}/{total_gpu}")
+    print(f"  Overall: {overall_up}/{overall_total} ({summary['uptime_pct']}%)")
     print(f"  Health: {summary['health']}")
     print(f"  VM: CPU {vm.get('cpu_pct', '?')}% | RAM {vm.get('ram_pct', '?')}% | Disk {vm.get('disk_pct', '?')}%")
 
