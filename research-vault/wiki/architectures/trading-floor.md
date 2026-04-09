@@ -1,10 +1,10 @@
 # Trading Floor & AI Competition
 
-> Auto-compiled from 40 raw sources on 2026-04-08
+> Auto-compiled from 42 raw sources on 2026-04-09
 
 ## Overview
 
-This topic covers 40 research files spanning trading floor & ai competition.
+This topic covers 42 research files spanning trading floor & ai competition.
 Key concepts: Bankroll Management, Brier Score, Calibration, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
@@ -28,9 +28,11 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Ensemble Methods, F
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-06.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-07.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-08.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-09.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-06.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-07.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-08.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-09.md`
 - **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (826 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
 - **20 -- Session Log** (804 words) -- `raw/obsidian-docs/20-Session-Log.md`
 - **21 -- Free Models & Inference Stack** (795 words) -- `raw/obsidian-docs/21-Free-Models.md`
