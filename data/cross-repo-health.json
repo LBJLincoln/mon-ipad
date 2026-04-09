@@ -1,62 +1,66 @@
 {
-  "last_updated": "2026-04-08T08:10:00Z",
-  "cycle": 77,
+  "last_updated": "2026-04-09T08:30:00Z",
+  "cycle": 79,
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
-  "nba_best_brier": 0.22249,
+  "nba_best_brier": 0.22061,
   "political_best_brier": 0.23134,
-  "nba_best_individual": 0.21570,
-  "political_best_individual": 0.218,
-  "nba_islands_online": 5,
+  "nba_best_individual": 0.21854,
+  "political_best_individual": 0.23134,
+  "nba_islands_online": 6,
   "nba_islands_total": 6,
   "political_islands_online": 2,
   "political_islands_total": 4,
-  "fleet_brier_avg_nba": 0.22786,
+  "fleet_brier_avg_nba": 0.22346,
   "fleet_brier_avg_political": 0.24053,
   "key_discoveries_this_cycle": [
-    "API command format fix: use {\"command\":\"diversify\"} not {\"action\":\"diversify\"} — previous cycles may have failed silently",
-    "S13+S14 restarted with EXTENDED 11532-game dataset vs 9551 elsewhere — 21% more data, watch first brier",
-    "S11 approaching stagnation threshold: 14/15 — will trigger diversify next cycle if no gain",
-    "PA3/PA4 still returning 404 (consistent with cycle 76 — phantom islands, never existed or deleted)",
-    "PA2 Pareto-star: 155f LightGBM, Brier=0.218, ROI=41.56% at gen 8975 — best political result ever",
-    "Research: MDPI 2025 LR achieves Brier 0.199 — gap to our fleet is 0.023. Isotonic calibration EXP-2 proposed."
+    "S11 stagnation alert resolved — now 0 (was approaching 14/15 last cycle). All 6 NBA islands stagnation=0.",
+    "S15 (wide_search) is fleet Brier leader this poll: 0.22061 with extra_trees 200f, Sharpe=7.32.",
+    "S12 has actually the most generations (586) — lightgbm best 0.2273 with mutation rate now only 0.059 (well-tuned).",
+    "PA3+PA4 still 404 (confirmed down cycle 81, 82). HF MCP unavailable — manual restart required.",
+    "Political PA2 has Pareto front of 27 solutions at gen 29749 — healthy diversity.",
+    "FEC Schedule E (independent expenditures) added to fetch_political_data.py — new PAC flow signal.",
+    "NBA research: SHAP-seeded GA init proposed (shap-seeded-ga-init-2026-04-09.json) — convergence acceleration."
   ],
   "engine_parity": {
     "nba_engine_version": "v3.1-54cat",
     "nba_hf_space_engine_version": "v3.1-54cat",
-    "nba_parity": "OK — both confirmed identical v3.1-54cat",
-    "political_engine_version": "v2.0-13cat",
-    "nba_feature_candidates_s10_s15": 3290,
-    "political_features_pa1": 252,
-    "political_features_pa2": 309,
-    "note_s16_s17": "Previous cycle (76) discovered S16+S17 on LBJLincoln26. Not in current monitoring scope — update instructions to add them."
+    "nba_parity": "OK — confirmed identical v3.1-54cat (7213 features, 54 categories)",
+    "political_engine_version": "v3.8-political-30cat-scotus-judicial",
+    "political_hf_space_engine_version": "v3.8-political-30cat-scotus-judicial",
+    "political_parity": "OK — confirmed identical (2597 lines, same SHA)",
+    "nba_feature_candidates": 3290,
+    "political_feature_candidates_pa2": 309,
+    "political_feature_candidates_pa1": 252,
+    "pa1_pa2_gap_note": "PA1 has 57 fewer feature candidates than PA2 — Cat26-30 data not flowing to PA1. QUIVER_API_KEY required."
   },
   "cross_pollination_this_cycle": [
     {
-      "from": "Research (MDPI 2025)",
-      "to": "Both",
-      "technique": "Isotonic calibration (CalibratedClassifierCV)",
-      "status": "PROPOSED — proposal written to mon-ipad/data/research-proposals/mc-dropout-lr-baseline-calibration-2026-04-08.json",
-      "expected_gain": "-0.003 to -0.008 Brier"
+      "from": "NBA Research (PMC/NCBI 2024 + Scientific Reports 2025)",
+      "to": "NBA (primary) + Political (secondary)",
+      "technique": "SHAP-Seeded GA Initialization — bias init population toward top-30 SHAP features (2x selection weight)",
+      "status": "PROPOSED — shap-seeded-ga-init-2026-04-09.json written",
+      "expected_gain": "-0.002 to -0.006 Brier, 30-50% faster convergence"
     },
     {
-      "from": "NBA S13/S14",
-      "to": "Political",
-      "technique": "Extended dataset (11532 games). Political could similarly expand events corpus.",
-      "status": "OBSERVATION — PA2 only has 372 events vs NBA's 9551+ games"
+      "from": "FEC OpenAPI Research (Rotation A)",
+      "to": "Political Alpha",
+      "technique": "FEC Schedule E (independent expenditures) — PAC/SuperPAC sector spending flows as new forward-looking signal",
+      "status": "IMPLEMENTED — fetch_fec_independent_expenditures() added to ops/fetch_political_data.py + hf-space parity",
+      "expected_gain": "New Cat31+ signal for political engine: sector-level PAC spending → regulatory expectation"
     }
   ],
   "action_items_next_cycle": [
-    "CHECK S11 stagnation: if still 15+ → diversify",
-    "IMPLEMENT EXP-2: isotonic calibration in calibration/conformal.py (30 min, -0.003 to -0.008 Brier)",
-    "CHECK S13/S14 first brier results (warm-up started 07:19Z and 07:23Z today)",
-    "MANUAL: Restart PA3+PA4 via HuggingFace dashboard (human action required)",
-    "CHECKPOINT: Save PA2 Pareto-star config (155f LightGBM, Brier=0.218) to Supabase political_experiments",
-    "FETCH S16+S17 status if they are confirmed real islands (cycle 76 found them on LBJLincoln26)"
+    "IMPLEMENT SHAP-seeded init in S15/S11 hf-space/app.py (D2 engineering cycle)",
+    "MANUAL: Restart PA3+PA4 via HuggingFace dashboard (human action required — HF MCP unavailable)",
+    "IMPLEMENT ECE 4th Pareto objective (ece-4th-pareto-objective-2026-04-08.json — HIGH priority, pending)",
+    "IMPLEMENT LR model type (lr-ga-model-type-brier-reduction-2026-04-09.json — HIGH priority, pending)",
+    "Set QUIVER_API_KEY on VM to enable congressional_trades (Cat24) for PA1",
+    "Test fetch_fec_independent_expenditures() on VM: python3 ops/fetch_political_data.py --fast"
   ],
   "alerts": [
-    "S11 stagnation 14/15 — watch next cycle",
-    "PA3+PA4 phantom/down — 50% political fleet offline",
-    "API command format was wrong ({\"action\"} vs {\"command\"}) — previous cycles may not have successfully diversified",
-    "PA2 Pareto-star (Brier=0.218) needs Supabase checkpoint before potential crash/restart"
+    "PA3+PA4 down for 3+ cycles — manual HuggingFace restart required",
+    "Political pipeline health 69.2/100 (Grade C) — data staleness 4+ days",
+    "PA1 feature_candidates gap (252 vs PA2 309) — QUIVER_API_KEY missing",
+    "3 HIGH priority NBA proposals pending implementation — no engineering cycle yet"
   ]
 }
