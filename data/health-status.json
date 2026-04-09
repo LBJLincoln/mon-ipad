@@ -1,67 +1,81 @@
 {
-  "timestamp": "2026-04-02T17:10:00Z",
-  "cycle": "brain-4h-auto",
+  "last_updated": "2026-04-09T04:00:00Z",
+  "cycle": "brain-cycle-80",
+  "generated_by": "claude-sonnet-4-6 nomos42-brain",
+  "cycle_interval_h": 4,
   "nba_fleet": {
-    "total_islands": 6,
-    "online": 5,
-    "offline": ["nba-evo-2"],
-    "best_brier": 0.22182,
-    "best_island": "nba-evo-5",
-    "best_model": "catboost",
-    "fleet_average_brier": 0.22367,
-    "brier_target": 0.21837,
-    "gap_to_target": 0.00345,
+    "islands_online": 4,
+    "islands_total": 6,
+    "best_brier": 0.21854,
+    "best_brier_source": "S10 top_performer gen194 extra_trees_200f",
+    "best_brier_current_gen": 0.22093,
+    "brier_threshold": 0.21837,
+    "threshold_reached": false,
     "checkpoint_triggered": false,
-    "stagnation_count": 0,
-    "published_ceiling": 0.199,
+    "checkpoint_note": "Top_performer 0.21854 > threshold 0.21837 by 0.00017. Need ~1 Brier point improvement.",
+    "stagnation_alerts": [],
+    "diversify_commands_sent": [],
+    "engine_parity": "CONFIRMED — v3.1-54cat root=hf-space identical",
+    "improvement_this_cycle": "RESEARCH — lr-ga-model-type-brier-reduction-2026-04-09.json. MDPI 2025: LR Brier=0.199 vs XGBoost=0.202. Proposal: add logistic_regression to CPU_MODEL_TYPES.",
     "islands": {
-      "nba-quant":  {"status":"ONLINE","cycle":93, "generation":277,"brier":0.22472,"model":"xgboost_brier","features":57,"stagnation":0},
-      "nba-evo-2":  {"status":"OFFLINE","error":"HTTP 404"},
-      "nba-evo-3":  {"status":"ONLINE","cycle":141,"generation":421,"brier":0.22262,"model":"xgboost_brier","features":57,"stagnation":0},
-      "nba-evo-4":  {"status":"ONLINE","cycle":121,"generation":362,"brier":0.22446,"model":"random_forest","features":45,"stagnation":0},
-      "nba-evo-5":  {"status":"ONLINE","cycle":124,"generation":370,"brier":0.22182,"model":"catboost","features":62,"stagnation":0},
-      "nba-evo-6":  {"status":"ONLINE","cycle":116,"generation":348,"brier":0.22471,"model":"xgboost_brier","features":66,"stagnation":0}
+      "S10-nomos42-nba-quant": {
+        "role": "exploitation", "url": "nomos42-nba-quant.hf.space",
+        "status": "ONLINE (403 on /api/status — space running, cloudflare block)",
+        "generation": 240, "cycle": 80, "best_brier": 0.22412,
+        "top_performer_brier": 0.21854, "top_performer_gen": 194,
+        "stagnation": 0, "model": "xgboost_brier", "features": 49,
+        "roi_pct": 27.96, "sharpe": 5.49, "mutation_rate": 0.082,
+        "pop_size": 60, "feature_candidates": 3290, "games": 9551, "action": "none"
+      },
+      "S11-nomos42-nba-quant-2": {
+        "role": "exploration", "url": "nomos42-nba-quant-2.hf.space",
+        "status": "ONLINE",
+        "generation": 468, "cycle": 156, "best_brier": 0.22249,
+        "current_gen_brier": 0.22093, "current_gen_model": "extra_trees", "current_gen_features": 200,
+        "stagnation": 0, "model": "xgboost", "features": 61,
+        "roi_pct": 29.68, "sharpe": 6.68, "mutation_rate": 0.1066,
+        "pop_size": 60, "feature_candidates": 3290, "games": 9551, "action": "none"
+      },
+      "S12-nomos42-nba-evo-3": {
+        "role": "extra_trees_specialist", "url": "nomos42-nba-evo-3.hf.space",
+        "status": "ONLINE",
+        "generation": 490, "cycle": 164, "best_brier": 0.22726,
+        "stagnation": 0, "model": "lightgbm", "features": 41,
+        "roi_pct": 24.15, "sharpe": 7.70, "mutation_rate": 0.0717,
+        "pop_size": 60, "feature_candidates": 3290, "games": 9551, "action": "none"
+      },
+      "S13-nomos42-nba-evo-4": {
+        "role": "catboost_specialist", "url": "nomos42-nba-evo-4.hf.space",
+        "status": "ONLINE",
+        "generation": 376, "cycle": 126, "best_brier": 0.22316,
+        "stagnation": 0, "model": "extra_trees", "features": 79,
+        "roi_pct": 29.10, "sharpe": 4.19, "mutation_rate": 0.089,
+        "pop_size": 60, "feature_candidates": 3292, "games": 11532, "action": "none"
+      },
+      "S14-nomos42-nba-evo-5": {
+        "role": "lightgbm_specialist", "url": "nomos42-nba-evo-5.hf.space",
+        "status": "ONLINE",
+        "generation": 366, "cycle": 123, "best_brier": 0.22308,
+        "stagnation": 0, "model": "extra_trees", "features": 41,
+        "roi_pct": 29.33, "sharpe": 3.20, "mutation_rate": 0.0763,
+        "pop_size": 60, "feature_candidates": 3292, "games": 11532, "action": "none"
+      },
+      "S15-nomos42-nba-evo-6": {
+        "role": "wide_search", "url": "nomos42-nba-evo-6.hf.space",
+        "status": "ONLINE",
+        "generation": 388, "cycle": 130, "best_brier": 0.22291,
+        "stagnation": 0, "model": "xgboost_brier", "features": 47,
+        "roi_pct": 29.03, "sharpe": 7.32, "mutation_rate": 0.124,
+        "pop_size": 50, "feature_candidates": 3290, "games": 9551, "action": "none"
+      }
     }
   },
-  "political_fleet": {
-    "total_islands": 4,
-    "online": 2,
-    "offline": ["political-alpha-3","political-alpha-4"],
-    "best_brier": 0.24186,
-    "best_island": "political-alpha",
-    "best_top5_brier": 0.2346,
-    "islands": {
-      "political-alpha":   {"status":"ONLINE","role":"exploitation","cycle":1960,"generation":5878,"brier":0.24186,"model":"xgboost_brier","features":53},
-      "political-alpha-2": {"status":"ONLINE","role":"exploration","cycle":1360,"generation":4079,"brier":0.25081,"model":"extra_trees","features":61},
-      "political-alpha-3": {"status":"OFFLINE","error":"HTTP 404 — space not created"},
-      "political-alpha-4": {"status":"OFFLINE","error":"HTTP 404 — space not created"}
-    }
-  },
-  "improvements_this_cycle": {
-    "nba_1": "Research proposal: Shot-chart spatial embeddings (MDPI 2026) — expected Brier -0.010 to -0.020. See nomos-nba-agent/data/research-proposals/shot-chart-spatial-embeddings-2026-04.md",
-    "nba_2": "Research proposal: Isotonic regression calibration (corrected from temperature scaling — isotonic preferred for N>1000). Expected Brier -0.005 to -0.015. See nomos-nba-agent/data/research-proposals/gets-temperature-scaling-2026-04.md",
-    "political": "Added 10 committee×trades cross-category features to political_engine.py CAT24 — expected Brier -0.003 to -0.008"
-  },
-  "research_findings_2025_2026": {
-    "published_ceiling": "Brier 0.199 (MDPI Jan 2026, shot-chart embeddings + XGBoost)",
-    "gap_to_ceiling": 0.02282,
-    "top_techniques": [
-      {"name": "Shot-chart spatial embeddings", "brier_delta": "-0.010 to -0.020", "status": "PROPOSED"},
-      {"name": "Isotonic regression calibration", "brier_delta": "-0.005 to -0.015", "status": "PROPOSED"},
-      {"name": "Stacked ensemble (XGB+LGB+CatBoost+LogReg meta)", "brier_delta": "-0.005 to -0.010", "status": "ALREADY PARTIAL"},
-      {"name": "Dual ELO + rolling features", "brier_delta": "-0.020 to -0.030", "status": "LIKELY IMPLEMENTED"}
-    ]
-  },
-  "next_cycle_directives": [
-    "IMPLEMENT: Add isotonic calibration to hf-space/app.py (30 lines, immediate Brier gain)",
-    "IMPLEMENT: Add shot-chart zone fetcher to ops/ and Category 50 to features/engine.py",
-    "Create P3 catboost + P4 wide-search HuggingFace spaces for political",
-    "Verify political FEC data populated after 2026-04-01 committee ID fix",
-    "Wake S2 (nba-evo-2) — HTTP 404 since last cycle",
-    "If best_brier < 0.21837, checkpoint to Supabase"
-  ],
-  "engine_versions": {
-    "nba": "v3.1-49cat (6245+ features, 3265 deployed)",
-    "political": "v3.2-political-24cat (~3200 features, +10 cross-cat this cycle)"
+  "research_findings_this_cycle": {
+    "source": "MDPI 2078-2489/17/1/56 — Uncertainty-Aware ML for NBA Forecasting (2025)",
+    "key_finding": "LR Brier=0.199 vs XGBoost=0.202 — LR beats XGBoost on calibration. Fleet gap 0.022.",
+    "secondary": "MC dropout LSTM + shot-chart spatial embeddings Brier=0.089 (GPU-only Kaggle).",
+    "proposal_written": "lr-ga-model-type-brier-reduction-2026-04-09.json",
+    "priority": "HIGH",
+    "next_action": "Implement logistic_regression in S11/S15 hf-space/app.py"
   }
 }
