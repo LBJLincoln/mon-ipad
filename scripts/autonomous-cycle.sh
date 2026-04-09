@@ -27,7 +27,7 @@ cd "$AGENT_DIR"
 source .env.local 2>/dev/null
 
 # ── Phase 0: Quick Health Snapshot ───────────────────────────
-log "[HEALTH] Checking S10/S11 status..."
+log "[HEALTH] Checking NBA fleet + Political Alpha status..."
 S10_STATUS=$(curl -s --max-time 10 "$S10_URL/api/status" 2>/dev/null)
 S11_STATUS=$(curl -s --max-time 10 "$S11_URL/api/status" 2>/dev/null)
 
@@ -37,14 +37,24 @@ S10_STAG=$(echo "$S10_STATUS" | python3 -c "import sys,json; d=json.load(sys.std
 S11_QUEUE=$(echo "$S11_STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('queue_depth', d.get('pending',0)))" 2>/dev/null || echo "?")
 S11_ALIVE=$(echo "$S11_STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','DOWN'))" 2>/dev/null || echo "DOWN")
 
-# S12/S13 quick check
+# S12-S15 quick check (core 6 islands)
 S12_BRIER=$(curl -s --max-time 10 "$S12_URL/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 S13_BRIER=$(curl -s --max-time 10 "$S13_URL/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
-
 S14_BRIER=$(curl -s --max-time 10 "$S14_URL/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 S15_BRIER=$(curl -s --max-time 10 "$S15_URL/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 
-log "[HEALTH] S10=$S10_BRIER S11=? S12=$S12_BRIER S13=$S13_BRIER S14=$S14_BRIER S15=$S15_BRIER gen=$S10_GEN stag=$S10_STAG"
+# S16-S19 (extended islands — LBJLincoln26 + TESTforge42)
+S16_BRIER=$(curl -s --max-time 10 "https://lbjlincoln26-nba-evo-s16.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+S17_BRIER=$(curl -s --max-time 10 "https://lbjlincoln26-nba-evo-s17.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+S18_BRIER=$(curl -s --max-time 10 "https://testforge42-nba-evo-s18.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+S19_BRIER=$(curl -s --max-time 10 "https://testforge42-nba-evo-s19.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+
+# Political Alpha quick check
+P1_BRIER=$(curl -s --max-time 10 "https://nomos42-political-alpha.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+P2_BRIER=$(curl -s --max-time 10 "https://nomos42-political-alpha-2.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+
+log "[HEALTH] NBA S10=$S10_BRIER S11=? S12=$S12_BRIER S13=$S13_BRIER S14=$S14_BRIER S15=$S15_BRIER S16=$S16_BRIER S17=$S17_BRIER S18=$S18_BRIER S19=$S19_BRIER | gen=$S10_GEN stag=$S10_STAG"
+log "[HEALTH] Political P1=$P1_BRIER P2=$P2_BRIER"
 
 # ── Phase 1: Crew Research ───────────────────────────────────
 # Research is now handled by the Cloud Brain (Claude Code remote trigger at :00)
@@ -65,7 +75,9 @@ git diff --cached --quiet || {
 log "[CREW] Done + pushed"
 
 # ── Phase 2: Brain Recommendations ──────────────────────────
+# ── Phase 2: Brain Recommendations ─────────────────────────
 # Read brain's health-status.json and act on "VM SHOULD RUN" items
+# Brain writes recommendations[] at top level — this is the contract.
 if [ -f "$HEALTH" ]; then
     # Check if brain recommends CatBoost experiment submission
     HAS_CATBOOST_REC=$(python3 -c "
@@ -75,25 +87,54 @@ recs = d.get('recommendations', [])
 print('yes' if any('CatBoost' in r and 'S11' in r for r in recs) else 'no')
 " 2>/dev/null || echo "no")
 
-    # Check if brain recommends a checkpoint
-    HAS_CHECKPOINT_REC=$(python3 -c "
-import json
+    # Check if brain recommends a checkpoint, and WHICH island to save it on
+    # Brain encodes this as "checkpoint S<N>" or "checkpoint <url>"
+    CHECKPOINT_TARGET=$(python3 -c "
+import json, re
 with open('$HEALTH') as f: d = json.load(f)
 recs = d.get('recommendations', [])
-print('yes' if any('CHECKPOINT' in r.upper() for r in recs) else 'no')
-" 2>/dev/null || echo "no")
+for r in recs:
+    if 'checkpoint' in r.lower():
+        # Extract island ID: S10, S11, S12, S13, S14, S15
+        m = re.search(r'S(1[0-9])', r)
+        if m:
+            print(m.group(0))
+            exit()
+        print('S10')  # fallback
+        exit()
+print('')  # no checkpoint needed
+" 2>/dev/null || echo "")
+
+    # Map island ID to URL
+    checkpoint_url() {
+        case "$1" in
+            S10) echo "$S10_URL" ;;
+            S11) echo "$S11_URL" ;;
+            S12) echo "$S12_URL" ;;
+            S13) echo "$S13_URL" ;;
+            S14) echo "$S14_URL" ;;
+            S15) echo "$S15_URL" ;;
+            S16) echo "https://lbjlincoln26-nba-evo-s16.hf.space" ;;
+            S17) echo "https://lbjlincoln26-nba-evo-s17.hf.space" ;;
+            S18) echo "https://testforge42-nba-evo-s18.hf.space" ;;
+            S19) echo "https://testforge42-nba-evo-s19.hf.space" ;;
+            *)   echo "$S10_URL" ;;
+        esac
+    }
 
     if [ "$HAS_CATBOOST_REC" = "yes" ] && [ "$S11_ALIVE" != "DOWN" ]; then
         log "[BRAIN-REC] Brain recommends CatBoost experiment — submitting to S11..."
-        curl -s -X POST "$S10_URL/api/experiment/submit" \
+        curl -s -X POST "$S11_URL/api/experiment/submit" \
             -H 'Content-Type: application/json' \
             -d '{"description":"CatBoost auto-submit from muscle cycle","model_type":"catboost","pop_size":30,"generations":8,"target_features":120,"mutation_rate":0.15}' \
             >> "$LOG" 2>&1 || log "[S11] Experiment submission failed"
     fi
 
-    if [ "$HAS_CHECKPOINT_REC" = "yes" ]; then
-        log "[BRAIN-REC] Brain recommends checkpoint — saving..."
-        curl -s -X POST "$S10_URL/api/checkpoint" >> "$LOG" 2>&1 || log "[S10] Checkpoint failed"
+    if [ -n "$CHECKPOINT_TARGET" ]; then
+        CKPT_URL=$(checkpoint_url "$CHECKPOINT_TARGET")
+        log "[BRAIN-REC] Brain recommends checkpoint on $CHECKPOINT_TARGET ($CKPT_URL)..."
+        curl -s -X POST "$CKPT_URL/api/checkpoint" >> "$LOG" 2>&1 || \
+            log "[$CHECKPOINT_TARGET] Checkpoint failed"
     fi
 fi
 
@@ -465,17 +506,25 @@ if [ -d "$POLITICAL_DIR" ]; then
             log "[POLITICAL] Engine versions match — no deploy needed"
         fi
 
-        # ── Stagnation check (fix: use 'command' key, not 'action') ──
+        # ── Stagnation check — all 4 political islands ──
+        # BUG FIX (cycle 82): was d.get('stagnation',0) — API returns 'stagnation_count'.
+        # Political diversify was NEVER firing. Also added P3/P4 correct URLs.
         for PA_URL in \
             "https://nomos42-political-alpha.hf.space" \
-            "https://nomos42-political-alpha-2.hf.space"; do
-            STAG=$(curl -s --max-time 8 "${PA_URL}/api/status" 2>/dev/null | \
-                python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('stagnation',0))" 2>/dev/null || echo "0")
+            "https://nomos42-political-alpha-2.hf.space" \
+            "https://lbjlincoln-political-alpha-3.hf.space" \
+            "https://lbjlincoln-political-alpha-4.hf.space"; do
+            PA_STATUS=$(curl -s --max-time 8 "${PA_URL}/api/status" 2>/dev/null)
+            [ -z "$PA_STATUS" ] && continue  # skip if space is sleeping
+            STAG=$(echo "$PA_STATUS" | \
+                python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('stagnation_count', d.get('stagnation',0)))" 2>/dev/null || echo "0")
             if [ "$STAG" -gt "15" ] 2>/dev/null; then
                 log "[POLITICAL] Stagnation=$STAG on $PA_URL — sending diversify"
                 curl -s -X POST "${PA_URL}/api/command" \
                     -H 'Content-Type: application/json' \
                     -d '{"command":"diversify"}' >> "$LOG" 2>&1 || true
+            else
+                log "[POLITICAL] $PA_URL stagnation=$STAG OK"
             fi
         done
     fi

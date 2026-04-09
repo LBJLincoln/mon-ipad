@@ -11,31 +11,41 @@ if [ -f "/home/termius/mon-ipad/.env.local" ]; then
     source /home/termius/mon-ipad/.env.local 2>/dev/null
 fi
 
-# ── Helper: ping space + restart via HF API if 503 ────────────────────────────
+# ── Helper: ping space + restart via HF API if non-healthy ───────────────────
 # Usage: ping_or_restart <label> <url> <hf_space_id>
-# hf_space_id format: "owner/repo-name" e.g. "Nomos42/political-alpha-3"
+# hf_space_id format: "owner/repo-name" e.g. "LBJLincoln/political-alpha-3"
 # Tries all available HF tokens in order until one returns 200 from restart API.
 # NOTE: restart requires a token with write access to the space owner account.
-#   Nomos42 spaces need the Nomos42 account token (HF_TOKEN_3).
-#   If all tokens return 403, the tokens may need to be refreshed in .env.local.
+#   Nomos42 spaces → HF_TOKEN_3  |  LBJLincoln → HF_TOKEN  |  LBJLincoln26 → HF_TOKEN_2
+#
+# BUG FIX (cycle 82): was only restarting on 503. Added 502/404/000 (timeout).
+# P3/P4 were returning timeout/404 and NEVER got restarted. Fixed.
 ping_or_restart() {
     local label="$1"
     local url="$2"
     local space_id="$3"
 
-    code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$url" 2>/dev/null)
+    code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 12 "$url" 2>/dev/null)
+    [ -z "$code" ] && code="000"  # empty = timeout/DNS failure
     echo "$label: $code"
 
-    if [ "$code" = "503" ] && [ -n "$space_id" ]; then
-        echo "  [RESTART] $label returned 503 — triggering HF restart..."
-        # Try all tokens in order: HF_TOKEN_3 (Nomos42), HF_TOKEN (LBJLincoln), HF_TOKEN_2
-        for tok in "${HF_TOKEN_3}" "${HF_TOKEN}" "${HF_TOKEN_2}" "${HF_TOKEN_FORGE:-}"; do
+    # Restart triggers: 503 (sleeping), 502 (crashed), 000 (timeout), 404 (paused)
+    # No restart: 200 (OK), 301/302 (redirect = healthy), 429 (rate limit — wait)
+    local should_restart=0
+    case "$code" in
+        200|301|302|429) should_restart=0 ;;
+        *)               should_restart=1 ;;
+    esac
+
+    if [ "$should_restart" = "1" ] && [ -n "$space_id" ]; then
+        echo "  [RESTART] $label returned $code — triggering HF restart..."
+        for tok in "${HF_TOKEN_3:-}" "${HF_TOKEN:-}" "${HF_TOKEN_2:-}" "${HF_TOKEN_FORGE:-}"; do
             [ -z "$tok" ] && continue
             restart_resp=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
                 "https://huggingface.co/api/spaces/${space_id}/restart" \
                 -H "Authorization: Bearer ${tok}" \
                 --max-time 15 2>/dev/null)
-            echo "  [RESTART] $label restart API: $restart_resp"
+            echo "  [RESTART] $label restart API → $restart_resp (tok: ${tok:0:10}...)"
             if [ "$restart_resp" = "200" ] || [ "$restart_resp" = "204" ]; then
                 echo "  [RESTART] $label restart triggered successfully"
                 break
