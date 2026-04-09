@@ -1,67 +1,108 @@
 {
-  "timestamp": "2026-04-09T13:00:00Z",
-  "brain_cycle": "4h",
+  "timestamp": "2026-04-09T22:35:00Z",
+  "brain_cycle": 82,
   "ecosystem_health": {
     "nba_quant": {
       "status": "HEALTHY",
       "islands_active": 6,
-      "islands_total": 6,
       "best_brier": 0.22249,
       "pareto_best_brier": 0.21773,
       "below_checkpoint_threshold": true,
       "threshold": 0.21837,
       "all_time_best": 0.21570,
       "target": 0.20,
-      "progress_to_target_pct": 72.3
+      "progress_to_target_pct": 72.3,
+      "alert": "S12 mutation_rate=0.04 below target 0.08"
     },
     "political_alpha": {
       "status": "DEGRADED",
       "islands_active": 2,
       "islands_total": 4,
       "best_brier": 0.23134,
-      "pareto_best_brier": 0.2182,
-      "down_reason": "PA3 and PA4 returned 404 - manual HF restart needed",
-      "restart_url_pa3": "https://huggingface.co/spaces/nomos42/political-alpha-3",
-      "restart_url_pa4": "https://huggingface.co/spaces/nomos42/political-alpha-4"
+      "down_spaces": ["LBJLincoln/political-alpha-3", "LBJLincoln/political-alpha-4"],
+      "down_reason": "P3/P4 sleeping — previous brain used WRONG URLs (nomos42-political-alpha-3/4 don't exist). Correct: lbjlincoln-political-alpha-3/4.hf.space",
+      "engine_version": "v3.10-political-30cat-tariff-s122-fix"
     }
   },
   "cross_project_techniques": {
     "venn_abers_calibration": {
-      "discovered_in": "nba_s13",
-      "nba_brier_with": 0.21773,
-      "nba_brier_without": 0.22316,
-      "brier_delta": -0.00543,
-      "ported_to_political": false,
-      "action": "Port apply_venn_abers() to political_engine.py in next D2 cycle"
+      "source": "arXiv 2502.05676, ICML 2025 (van der Laan & Alaa)",
+      "discovered_impact_nba": "S13 pareto_best_brier 0.21773 (fleet record) using venn_abers",
+      "nba_brier_delta": -0.00543,
+      "nba_status": "IN PRODUCTION — hf-space/app.py init weight=22, mutation weight now 25 (was 14, fixed cycle 82)",
+      "political_status": "IN PRODUCTION — hf-space/app.py init weight=19, mutation weight now 24 (was 15, fixed cycle 82)",
+      "kaggle_status": "ADDED cycle 82 — was completely missing from genetic_loop_v3.py"
     },
-    "bradley_terry_glm_features": {
-      "source": "arxiv_2508.02725",
-      "expected_delta": -0.005,
-      "proposed_in": "data/research-proposals/2026-04-09-lstm-brier-calibration.md",
-      "implemented": false
+    "isotonic_temporal_calibration": {
+      "source": "MDPI Jan 2026 temporal holdout benchmark",
+      "nba_status": "IN PRODUCTION — init weight=7, mutation weight=10",
+      "political_status": "IN PRODUCTION — init weight=11, mutation weight=9"
+    },
+    "tariff_regime_signals_cat26": {
+      "source": "Internal, political only",
+      "political_status": "v3.10 — s122_rate fixed 0.15→0.10, +5 Section-122 expiry/CIT features"
+    },
+    "multi_horizon_rolling_windows": {
+      "source": "MDPI Information 2026 NBA uncertainty paper",
+      "nba_windows": [3, 5, 7, 10, 15, 20],
+      "nba_status": "IN PRODUCTION — engine.py WINDOWS=[3,5,7,10,15,20]",
+      "political_windows": [1, 3, 5, 7, 10, 15, 20, 30, 60, 90],
+      "political_status": "IN PRODUCTION — extended cycle 80"
+    },
+    "market_consensus_deviation_cat55": {
+      "source": "MDPI Information 2026: fused model AUC 0.95 vs 0.76/0.94 separate",
+      "nba_status": "PROPOSED — cycle 81 proposal. Expected delta -0.001 to -0.003",
+      "political_status": "NOT APPLICABLE (different signal structure)"
     }
   },
-  "research_cycle": {
-    "type": "odd_cycle",
-    "focus": "NBA techniques research",
-    "proposal_file": "data/research-proposals/2026-04-09-lstm-brier-calibration.md",
-    "sources": [
-      "arxiv 2508.02725 - LSTM Brier loss NCAA basketball",
-      "MDPI 2078-2489/17/1/56 - Uncertainty-Aware ML NBA betting",
-      "PMC 11265715 - XGBoost+SHAP NBA prediction"
-    ]
-  },
-  "alerts": [
-    "CHECKPOINT: S13 Pareto-front CatBoost+VennAbers Brier=0.21773 < 0.21837 threshold. Supabase checkpoint recommended.",
-    "DOWN: PA3 (nomos42-political-alpha-3) returning 404 - restart needed",
-    "DOWN: PA4 (nomos42-political-alpha-4) returning 404 - restart needed",
-    "LOW_EVENTS: PA1 only 1180 events, PA2 only 372 events - data pipeline check needed"
+  "critical_bugs_fixed": [
+    {
+      "bug": "Political P3/P4 wrong URLs in brain",
+      "old": "nomos42-political-alpha-3/4.hf.space (doesn't exist)",
+      "new": "lbjlincoln-political-alpha-3/4.hf.space (LBJLincoln/political-alpha-3/4)",
+      "fixed_cycle": 82
+    },
+    {
+      "bug": "Political GA mutation weight for 'none' was 36% vs 18% init — actively reverting to uncalibrated",
+      "old": "weights=[36, 10, 15, 15, 7, 8, 9] during mutation",
+      "new": "weights=[18, 10, 24, 20, 9, 10, 9]",
+      "fixed_cycle": 82
+    },
+    {
+      "bug": "NBA GA mutation weight for venn_abers dropped 22→14 — penalizing best calibration",
+      "old": "weights=[22, 12, 14, 18, 12, 12, 10] during mutation",
+      "new": "weights=[16, 12, 25, 20, 9, 10, 8]",
+      "fixed_cycle": 82
+    },
+    {
+      "bug": "Kaggle genetic_loop_v3.py missing venn_abers entirely — GPU loop never explored best calibration",
+      "old": "random.choice(['isotonic', 'sigmoid', 'none'])",
+      "new": "random.choices([...venn_abers...], weights=[16,12,25,20,14,13])",
+      "fixed_cycle": 82
+    },
+    {
+      "bug": "health-status.json used cycle_actions.improvements_this_cycle — invisible to autonomous-cycle.sh",
+      "old": "cycle_actions.improvements_this_cycle[]",
+      "new": "recommendations[] at top level (what autonomous-cycle.sh actually reads)",
+      "fixed_cycle": 82
+    },
+    {
+      "bug": "brain prompt nba-brain.md didn't mention Political Alpha, councils, guardian, correct P3/P4 URLs",
+      "old": "4-phase NBA-only brain, no council integration",
+      "new": "Full SOTA 2026 rewrite: both projects, 6-step cycle, council synthesis, guardian priority queue",
+      "fixed_cycle": 82
+    },
+    {
+      "bug": "Political engine Cat26 s122_rate default was 0.15 (proposed but unimplemented) vs 0.10 (enacted)",
+      "old": "0.15",
+      "new": "0.10 + 5 expiry/CIT features",
+      "fixed_cycle": 81
+    }
   ],
   "next_cycle_priorities": [
-    "Port Venn-Abers calibration to all NBA islands via engine.py update",
-    "Add Bradley-Terry GLM team quality features (Category 55)",
-    "Investigate PA3/PA4 space deletion vs sleep vs auth issue",
-    "Check PA ops/fetch_political_data.py for data pipeline health",
-    "Rotation B next cycle: Review political_engine.py for new features"
+    "IMPLEMENT: Market consensus deviation feature (Cat55) in NBA engine.py — proposal is 2 cycles old",
+    "EXECUTE: Guardian cross-pollination S14→S10 (projected +0.00545 Brier gain)",
+    "MONITOR: S12 mutation_rate=0.04 — reset to 0.08 target",
+    "MONITOR: P3/P4 wakeup after keepalive cron fixes URLs"
   ]
 }
