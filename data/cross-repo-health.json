@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-09T22:50:00Z",
+  "timestamp": "2026-04-09T23:20:00Z",
   "brain_cycle": 83,
   "ecosystem_health": {
     "nba_quant": {
@@ -12,97 +12,111 @@
       "all_time_best": 0.21570,
       "target": 0.20,
       "progress_to_target_pct": 72.3,
-      "engine_version": "v3.1-55cat",
-      "cycle83_actions": ["S11_mut_fixed_0.12", "S12_mut_fixed_0.08", "S13_checkpointed", "S14_S10_crosspollinated", "Cat55_added"]
+      "engine_version": "v3.1-58cat",
+      "feature_candidates": "6338+",
+      "cycle83_actions": ["S11_mut_fixed_0.12", "S12_mut_fixed_0.08", "S13_checkpointed",
+                          "S14_S10_crosspollinated", "Cat55_added", "Cat56_added", "Cat57_added", "Cat58_added"]
     },
     "political_alpha": {
-      "status": "RECOVERING",
+      "status": "HEALTHY",
       "islands_active": 4,
       "islands_total": 4,
       "best_brier": 0.23134,
       "down_spaces": [],
-      "note": "P3/P4 confirmed online after keepalive cron fix (cycle 82). P1/P2 restarted — early stage 372 events.",
-      "engine_version": "v3.10-political-30cat-tariff-s122-fix"
+      "note": "All 4 islands online. P1/P2 restarted — 372 events, early stage.",
+      "engine_version": "v3.11-political-31cat-cmd-seq-cal"
     }
   },
   "cross_project_techniques": {
     "venn_abers_calibration": {
-      "source": "arXiv 2502.05676, ICML 2025 (van der Laan & Alaa)",
-      "nba_status": "IN PRODUCTION — hf-space/app.py init weight=22, mutation weight=25 (fixed cycle 82)",
-      "political_status": "IN PRODUCTION — hf-space/app.py init weight=19, mutation weight=24 (fixed cycle 82)",
+      "source": "arXiv 2502.05676, ICML 2025",
+      "nba_status": "IN PRODUCTION — mutation weight=25 (fixed cycle 82)",
+      "political_status": "IN PRODUCTION — mutation weight=24 (fixed cycle 82)",
       "kaggle_status": "IN PRODUCTION — added genetic_loop_v3.py cycle 82",
-      "nba_brier_delta": -0.00543,
-      "discovered_impact_nba": "S13 pareto_best_brier 0.21773 (fleet record)"
-    },
-    "isotonic_temporal_calibration": {
-      "source": "MDPI Jan 2026 temporal holdout benchmark",
-      "nba_status": "IN PRODUCTION — init weight=7, mutation weight=10",
-      "political_status": "IN PRODUCTION — init weight=11, mutation weight=9"
+      "nba_brier_delta": -0.00543
     },
     "market_consensus_deviation_cat55": {
-      "source": "MDPI Information 2026: fused model AUC 0.95 vs 0.76/0.94 separate",
-      "nba_status": "IMPLEMENTED cycle 83 — 10 features in engine v3.1-55cat (cmd55_* prefix)",
-      "features": ["cmd55_fair_h_prob", "cmd55_fair_a_prob", "cmd55_ml_vs_spread_gap", "cmd55_books_internal_disagree", "cmd55_market_edge_h", "cmd55_liquidity_proxy", "cmd55_ml_confidence", "cmd55_spread_confidence", "cmd55_consensus_strength", "cmd55_vig_distortion"],
-      "expected_brier_delta": "-0.002 to -0.004",
-      "political_status": "PENDING — port Cat55 equivalent to political_engine.py next cycle"
+      "source": "MDPI Information 2026: fused model AUC 0.95 vs 0.76/0.94",
+      "nba_status": "IMPLEMENTED cycle 83 — 10 features, engine v3.1-55cat (cmd55_*)",
+      "political_status": "IMPLEMENTED cycle 83 — Cat31 (10 features, cmd31_*, Kalshi/Polymarket)",
+      "expected_brier_delta": "-0.002 to -0.004"
     },
-    "tariff_regime_signals_cat26": {
-      "source": "Internal, political only",
-      "political_status": "v3.10 — s122_rate fixed 0.15→0.10, +5 Section-122 expiry/CIT features"
+    "directional_circadian_cat56": {
+      "source": "Chronobiology Int'l 2022 + ScienceDaily 2024 (25,016 games, 21 seasons)",
+      "finding": "Westbound home teams win 63.5% vs 55.0% eastbound → +8.5pp effect",
+      "nba_status": "IMPLEMENTED cycle 83 — 10 features, engine v3.1-56cat (circ56_*)",
+      "political_status": "NOT APPLICABLE (political markets have no travel/circadian)",
+      "note": "Extends Cat39 which uses abs(); Cat56 uses SIGNED delta for direction"
+    },
+    "sequential_exponential_form_cat57": {
+      "source": "arXiv 2512.08591 (LSTM 8-season NBA) + MDPI 2026",
+      "finding": "72.35% accuracy, 76.13% AUC — sequential dependencies outperform rolling avg",
+      "nba_status": "IMPLEMENTED cycle 83 — 12 features, engine v3.1-57cat (seq57_*)",
+      "political_status": "IMPLEMENTED cycle 83 — Cat32 (10 features, seq32_*, return momentum)"
+    },
+    "calibration_anchors_cat58": {
+      "source": "arXiv 2303.06021: calibration-optimal models +5-7% ROI vs accuracy-optimal",
+      "nba_status": "IMPLEMENTED cycle 83 — 10 features, engine v3.1-58cat (cal58_*)",
+      "political_status": "IMPLEMENTED cycle 83 — Cat33 (8 features, cal33_*, market reliability)"
     },
     "multi_horizon_rolling_windows": {
       "source": "MDPI Information 2026 NBA uncertainty paper",
-      "nba_windows": [3, 5, 7, 10, 15, 20],
-      "nba_status": "IN PRODUCTION — engine.py WINDOWS=[3,5,7,10,15,20]",
-      "political_windows": [1, 3, 5, 7, 10, 15, 20, 30, 60, 90],
-      "political_status": "IN PRODUCTION — extended cycle 80"
+      "nba_status": "IN PRODUCTION — WINDOWS=[3,5,7,10,15,20]",
+      "political_status": "IN PRODUCTION — WINDOWS=[1,3,5,7,10,15,20,30,60,90]"
+    },
+    "tariff_regime_signals_cat26": {
+      "source": "Internal, political only",
+      "political_status": "v3.10 — s122_rate fixed 0.15→0.10, +5 Section-122/CIT features"
     }
   },
-  "critical_bugs_fixed": [
+  "research_papers_implemented_cycle83": [
     {
-      "bug": "Political P3/P4 wrong URLs in brain",
-      "old": "nomos42-political-alpha-3/4.hf.space (doesn't exist)",
-      "new": "lbjlincoln-political-alpha-3/4.hf.space (LBJLincoln/political-alpha-3/4)",
-      "fixed_cycle": 82,
-      "confirmed_working_cycle": 83
+      "paper": "MDPI Information 2026: Uncertainty-Aware NBA Forecasting",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "features_added": "Cat55 (NBA) + Cat31 political — cross-market consensus deviation",
+      "expected_delta": "-0.002 to -0.004 Brier"
     },
     {
-      "bug": "keepalive only restarted on 503 — P3/P4 returned 404/timeout and were NEVER restarted",
-      "old": "if code == '503': restart",
-      "new": "case 200|301|302|429: no restart | *: restart",
-      "fixed_cycle": 82,
-      "confirmed_working_cycle": 83
+      "paper": "Chronobiology Int'l 2022 + ScienceDaily 2024",
+      "url": "https://www.tandfonline.com/doi/abs/10.1080/07420528.2022.2113093",
+      "finding": "Westbound home: 63.5% vs 55.0% eastbound",
+      "features_added": "Cat56 (NBA) — directional circadian advantage (SIGNED tz delta)",
+      "expected_delta": "-0.001 to -0.003 Brier"
     },
     {
-      "bug": "autonomous-cycle.sh Phase 5 used stagnation instead of stagnation_count — political diversify NEVER fired",
-      "old": "d.get('stagnation',0)",
-      "new": "d.get('stagnation_count', d.get('stagnation',0))",
-      "fixed_cycle": 82
+      "paper": "arXiv 2512.08591 — Long-Sequence LSTM NBA Prediction (Dec 2025)",
+      "url": "https://arxiv.org/abs/2512.08591",
+      "finding": "8-season LSTM: 72.35% acc, 76.13% AUC — sequential > rolling",
+      "features_added": "Cat57 (NBA) + Cat32 political — exponential α=0.4 form momentum",
+      "expected_delta": "-0.001 to -0.002 Brier"
     },
     {
-      "bug": "S11 + S12 mutation_rate stuck at 0.04 — premature convergence",
-      "old": "S11: 0.04, S12: 0.04",
-      "new": "S11: 0.12 (exploration), S12: 0.08 (extra_trees target)",
-      "fixed_cycle": 83
+      "paper": "arXiv 2303.06021 — ML for Sports Betting: Calibration vs Accuracy",
+      "url": "https://arxiv.org/abs/2303.06021",
+      "finding": "Calibration-optimal model selection → +5-7% ROI vs accuracy-optimal",
+      "features_added": "Cat58 (NBA) + Cat33 political — calibration anchor signals",
+      "expected_delta": "-0.001 to -0.002 Brier (confidence-weighted predictions)"
     },
     {
-      "bug": "NBA GA mutation weight for venn_abers dropped 22→14 — penalizing best calibration",
-      "old": "weights=[22, 12, 14, 18, 12, 12, 10] during mutation",
-      "new": "weights=[16, 12, 25, 20, 9, 10, 8]",
-      "fixed_cycle": 82
+      "paper": "Scientific Reports 2025 — Stacked Ensemble NBA (Aug 2025)",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "finding": "SHAP: FG%, defensive rebounds, assists, turnovers top features",
+      "action": "Confirmed already in engine (Cat1-4 rolling performance, Cat2 four factors)",
+      "status": "Already covered — no new features needed"
     },
     {
-      "bug": "Political GA mutation weight for 'none' was 36% — reverting to uncalibrated",
-      "old": "weights=[36, 10, 15, 15, 7, 8, 9]",
-      "new": "weights=[18, 10, 24, 20, 9, 10, 9]",
-      "fixed_cycle": 82
+      "paper": "arXiv 2303.16741 — Graph Attention Networks for Sports (2023)",
+      "url": "https://arxiv.org/abs/2303.16741",
+      "finding": "GATv2-TCN: opponent scheduling affects performance via graph structure",
+      "action": "Partially covered by Cat7 (opponent-adjusted), Cat33 (H2H consistency)",
+      "status": "Considered for Cat59 — opponent graph features next cycle"
     }
   ],
   "next_cycle_priorities": [
-    "DEPLOY: Push engine v3.1-55cat to all HF Spaces via deploy_island.py (Cat55 not active until deployed)",
-    "IMPLEMENT: Port Cat55 market consensus deviation to political_engine.py",
-    "MONITOR: S11/S12 mutation_rate fix — confirm GA picks up new params next cycle",
-    "MONITOR: P1/P2 recovery — just restarted, watch for best_brier improvement over next 6 hours",
-    "MONITOR: Cat55 feature impact — watch for Brier delta on S10 after deploy"
+    "DEPLOY: Push NBA engine v3.1-58cat to all 6 HF Spaces (features not live until deploy)",
+    "DEPLOY: Push political engine v3.11 to P1-P4 HF Spaces",
+    "MONITOR: Cat55-58 feature impact — watch for Brier delta after space restart",
+    "IMPLEMENT: Cat59 — Opponent Graph Features (arXiv 2303.16741 GATv2-TCN approach)",
+    "MONITOR: S11/S12 mutation_rate fix pickup (0.12/0.08 queued, check next status)"
   ]
 }
