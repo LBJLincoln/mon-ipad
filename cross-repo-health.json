@@ -1,44 +1,69 @@
 {
-  "last_updated": "2026-04-08T04:30:00Z",
-  "cycle": 76,
-  "nba_best_brier": 0.22086,
+  "last_updated": "2026-04-09T00:30:00Z",
+  "cycle": 78,
+  "nba_best_brier": 0.21854,
+  "nba_best_brier_current_gen": 0.22093,
   "political_best_brier": 0.23134,
   "nba_islands_online": 6,
   "nba_islands_total": 6,
   "political_islands_online": 2,
   "political_islands_total": 2,
-  "note_pa3_pa4": "PA3/PA4 CONFIRMED NON-EXISTENT — spaces were never created on HuggingFace. Stop tracking as DOWN. Political fleet is 2/2, not 2/4.",
-  "fleet_brier_avg_nba": 0.22334,
-  "fleet_brier_improvement_nba": "0.22158 → 0.22086 (best) this 4h window",
+  "note_pa3_pa4": "PA3/PA4 CONFIRMED NON-EXISTENT — spaces were never created. Political fleet is 2/2.",
+  "fleet_brier_avg_nba": 0.22383,
+  "fleet_brier_leader_nba": "S11-nomos42-nba-quant-2 brier=0.22249",
+  "fleet_brier_leader_political": "PA2-nomos42-political-alpha-2 brier=0.23134",
+  "stagnation_status": "ALL CLEAR — no islands stagnation > 15 gens",
+  "threshold_check": {
+    "nba_checkpoint_threshold": 0.21837,
+    "nba_best_top_performer": 0.21854,
+    "gap": 0.00017,
+    "action": "NONE — not reached yet",
+    "note": "S10 top_performer (gen194, extra_trees 200f) at 0.21854 — very close. S15 current gen showing 0.2199 in recent eval."
+  },
   "cross_pollination_this_cycle": {
-    "direction": "NBA → Political",
-    "technique": "GA-tunable LR regularization",
-    "file": "nomos-political-alpha/hf-space/app.py",
-    "change": "logistic_regression C=1/reg_lambda, solver=lbfgs (was static C=1.0, saga)",
-    "expected_impact": "Enables GA to find better-calibrated LR models. Research: LR Brier 0.199 with proper reg."
+    "cycle": 78,
+    "direction": "internal — research only",
+    "nba_technique": "Rolling Calibration Windows (proposal written, not yet implemented)",
+    "political_technique": "Cat31 CFTC Prediction Market Regulatory Signals (proposal written)",
+    "nba_to_political": "Rolling calibration windows NOT applicable yet (political dataset too small <1180 events)",
+    "political_to_nba": "No new political technique applicable to NBA this cycle"
   },
   "cross_pollination_backlog": [
     "NBA Cat50 shot-zone aggregation (proposed cycle 75) — not yet implemented",
     "Political Cat2 pharma tariff features (Section 232) — proposed cycle 76, next up",
     "NBA: monotone constraints proposal (cycle 76) — pending NBA validation before porting",
+    "Rolling calibration windows (NBA cycle 78) — implement S10 in engineering cycle",
+    "Cat31 CFTC regulatory signals (political cycle 78) — implement in next B-rotation cycle",
     "Political → NBA: liberation day tariff signals as NBA schedule impact features (far future)"
   ],
   "engine_parity": {
-    "nba": "CONFIRMED — features/engine.py SHA256: 8b3ac2d6...d9d2",
-    "political": "CONFIRMED — features/political_engine.py SHA256: 6a88c915...1951"
+    "nba": "CONFIRMED — features/engine.py SHA256=8b3ac2d6...d9d2 = hf-space (v3.1-54cat, 54 categories, 7213 features)",
+    "political": "v3.8-political-30cat-scotus-judicial (30 categories, ~3200 features)"
+  },
+  "improvement_rotations": {
+    "nba": "RESEARCH (every other cycle) — rolling-calibration-windows-2026-04-09.json",
+    "political": "A (WebSearch: FEC/SEC/exec orders) — Cat31 proposal, new data sources identified"
   },
   "alerts": [
-    "NBA S11 stagnation=6 — watch for threshold (>15), diversify if reached",
-    "NBA S13 best brier 0.22086 — close to checkpoint threshold 0.21837",
-    "Political FEC pipeline: 9 days empty (20260326-20260403) — fix min_date filter in fetch_political_data.py",
-    "Political Polymarket: stale 3 days — check polymarket_tracker.py on VM",
-    "Political PA1 hyperparameter diversity collapse — false negative stagnation counter"
+    "NBA S10 top_performer brier=0.21854 — 0.00017 above checkpoint threshold 0.21837. Watch next cycles.",
+    "Political PA2: only 60 real events, bootstrapping synthetic — data volume is bottleneck",
+    "Political polymarket_tracker.py may be stale (last update Apr 5) — check on VM",
+    "NBA academic SOTA gap: our 0.21854 vs LR+isotonic 0.199 — rolling calibration windows proposal may close ~0.003-0.008"
   ],
   "data_pipeline_health": {
-    "nba_odds_cat46_52": "UNKNOWN — coverage not verified this cycle (rotation D task)",
-    "political_fec_donors": "DEGRADED_RECOVERED — empty 9 days, returned 20260404",
-    "political_form4_insider": "HEALTHY — daily files up to 20260405",
-    "political_polymarket": "STALE — last update 20260405 (3 days)",
-    "political_congressional_trades": "HEALTHY — daily 274KB files"
+    "nba_odds_pipeline": "HEALTHY — 9551 games cached",
+    "nba_engine_parity": "CONFIRMED",
+    "political_fec_donors": "RECOVERING — was empty Apr 3-7, returned Apr 4",
+    "political_form4_insider": "HEALTHY",
+    "political_polymarket": "STALE — last Apr 5",
+    "political_congressional_trades": "HEALTHY",
+    "political_kalshi": "UNKNOWN"
+  },
+  "system_health": {
+    "vm_infra": "ASSUMED OK — crons running",
+    "kaggle_karpathy": "UNKNOWN — not checked this cycle",
+    "bloomberg_terminal": "ASSUMED OK",
+    "hf_spaces_nba": "6/6 ONLINE",
+    "hf_spaces_political": "2/2 ONLINE"
   }
 }
