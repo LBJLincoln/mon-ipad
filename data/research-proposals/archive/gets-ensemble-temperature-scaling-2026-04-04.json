@@ -1,0 +1,54 @@
+{
+  "title": "GETS — Group-wise Ensemble Temperature Scaling for NBA Calibration",
+  "date": "2026-04-04",
+  "source": "ICLR 2025 paper: 'GETS: ENSEMBLE TEMPERATURE SCALING' (openreview.net/pdf?id=qgsXsqahMq)",
+  "priority": "HIGH",
+  "expected_brier_improvement": "-0.003 to -0.008 (estimated based on paper results)",
+  "current_best_brier": 0.22159,
+  "target_brier": 0.2145,
+
+  "problem": "Current fleet Brier is 0.22159 (S15 best). All islands use tree ensembles (XGBoost, CatBoost, RandomForest, ExtraTrees) with no explicit post-hoc calibration. Miscalibrated probabilities inflate Brier score unnecessarily.",
+
+  "solution": "Apply GETS (Group-wise Ensemble Temperature Scaling) as a post-hoc calibration step after GA evolution selects the best model. GETS extends classical temperature scaling by learning separate temperature parameters per group of ensemble members, correcting systematic over/under-confidence in different probability ranges.",
+
+  "implementation": {
+    "phase1": {
+      "description": "Add calibration wrapper to engine.py evaluate_individual()",
+      "file": "features/engine.py",
+      "method": "CalibratedClassifierCV with isotonic regression (5-fold) as baseline",
+      "notes": "Isotonic regression is the best non-parametric calibrator for tree models per 2025 research"
+    },
+    "phase2": {
+      "description": "Implement temperature scaling as post-processing on top GA individuals",
+      "file": "hf-space/evolution/calibrate.py (new file)",
+      "code_sketch": "def temperature_scale(logits, T): return logits / T; optimize T via Brier score on holdout set",
+      "notes": "Temperature scaling cannot hurt Brier score when T is optimized on val set"
+    },
+    "phase3": {
+      "description": "Implement GETS: group by model_type (xgboost/catboost/rf/et) and learn per-group T",
+      "benefit": "Allows systematic correction — CatBoost systematically over-confident vs RandomForest",
+      "expected_gain": "0.002-0.005 Brier improvement on top of baseline"
+    }
+  },
+
+  "existing_work_in_repo": "calibration/ directory exists, probability-clipping-brier-2026-03-28.md and temperature-scaling-calibration-2026-04-03.json proposals exist — this builds on those, adds group-wise extension",
+
+  "cpu_compatible": true,
+  "zero_ml_on_vm": true,
+  "notes_for_implementation": [
+    "Calibration must be computed on holdout (not training) set — use last 2 seasons as cal set",
+    "Temperature T is a scalar — no new model weights, just divides raw logits",
+    "Must be applied AFTER GA selects winners, not inside the GA loop (avoid leakage)",
+    "Apply to ALL 6 islands but tune T independently per island",
+    "Cross-check: calibrated Brier must be <= uncalibrated Brier, else revert"
+  ],
+
+  "references": [
+    "GETS: Ensemble Temperature Scaling — ICLR 2025 https://openreview.net/pdf?id=qgsXsqahMq",
+    "Stacked ensemble NBA 2025 — Nature Scientific Reports https://www.nature.com/articles/s41598-025-13657-1",
+    "XGBoost+SHAP NBA 2024 — PLOS One https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0307478"
+  ],
+
+  "status": "PROPOSED",
+  "implementer": "nomos42-brain cycle-59"
+}

@@ -33,18 +33,7 @@ POLITICAL_ISLANDS = [
         "url": "https://nomos42-political-alpha-2.hf.space",
         "role": "exploration",
     },
-    {
-        "id": "P3",
-        "name": "nomos42-political-alpha-3",
-        "url": "https://nomos42-political-alpha-3.hf.space",
-        "role": "specialist",
-    },
-    {
-        "id": "P4",
-        "name": "nomos42-political-alpha-4",
-        "url": "https://nomos42-political-alpha-4.hf.space",
-        "role": "wide_search",
-    },
+    # P3/P4 removed 2026-04-03 — spaces never existed on HF
 ]
 
 POLYMARKET_URL = "https://clob.polymarket.com/markets?limit=10&tag=politics"

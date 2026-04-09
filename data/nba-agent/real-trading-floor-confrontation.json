@@ -1,0 +1,3990 @@
+{
+  "meta": {
+    "backtest_type": "real_trading_floor_confrontation",
+    "season": "2025-26",
+    "games_total": 1006,
+    "games_with_odds": 994,
+    "date_range": "2025-10-21 to 2026-03-15",
+    "model": "walk_forward_elo_k20_ha100",
+    "model_brier": 0.22577,
+    "model_accuracy": 62.52,
+    "starting_bankroll": 10000,
+    "strategies_count": 22,
+    "run_timestamp": "2026-04-03T09:00:24.880606"
+  },
+  "strategies": {
+    "anti_martingale": {
+      "rank_by_roi": 1,
+      "rank_by_sharpe": 1,
+      "final_bankroll": 9539.7,
+      "roi_pct": -4.603,
+      "total_bets": 2487,
+      "wins": 1110,
+      "losses": 1377,
+      "win_rate": 44.63,
+      "sharpe": -0.5849,
+      "max_dd": 0.138907,
+      "avg_edge": 0.520691,
+      "best_market": "ML_HOME",
+      "strategy_type": "anti_martingale",
+      "config": {
+        "type": "anti_martingale",
+        "base": 5.0,
+        "min_edge": 0.02
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 215,
+          "wins": 99,
+          "win_rate": 46.05,
+          "pnl": -1490.96
+        },
+        "ATS_HOME": {
+          "bets": 561,
+          "wins": 266,
+          "win_rate": 47.42,
+          "pnl": 400.97
+        },
+        "ML_AWAY": {
+          "bets": 183,
+          "wins": 61,
+          "win_rate": 33.33,
+          "pnl": 394.96
+        },
+        "ML_HOME": {
+          "bets": 608,
+          "wins": 275,
+          "win_rate": 45.23,
+          "pnl": 688.88
+        },
+        "OVER": {
+          "bets": 184,
+          "wins": 78,
+          "win_rate": 42.39,
+          "pnl": -207.83
+        },
+        "UNDER": {
+          "bets": 564,
+          "wins": 293,
+          "win_rate": 51.95,
+          "pnl": -10.81
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 64,
+          "wins": 16,
+          "win_rate": 25.0,
+          "pnl": -96.0
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 108,
+          "wins": 22,
+          "win_rate": 20.37,
+          "pnl": -139.5
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9985.0
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 9701.98
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 9650.39
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 9515.86
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 9434.57
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 9334.01
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 9072.64
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 8836.21
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 8911.98
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 8935.71
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 8832.58
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 9537.49
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 9816.39
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 10172.31
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 10330.02
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 10137.28
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 9685.83
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 9666.37
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 9472.69
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 9317.03
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 9275.09
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 9539.7
+        }
+      ]
+    },
+    "fixed_50": {
+      "rank_by_roi": 2,
+      "rank_by_sharpe": 9,
+      "final_bankroll": 2793.6,
+      "roi_pct": -72.064,
+      "total_bets": 2487,
+      "wins": 1110,
+      "losses": 1377,
+      "win_rate": 44.63,
+      "sharpe": -3.2354,
+      "max_dd": 0.760699,
+      "avg_edge": 0.520691,
+      "best_market": "ML_AWAY",
+      "strategy_type": "fixed",
+      "config": {
+        "type": "fixed",
+        "amount": 50,
+        "min_edge": 0.02
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 215,
+          "wins": 99,
+          "win_rate": 46.05,
+          "pnl": -1300.45
+        },
+        "ATS_HOME": {
+          "bets": 561,
+          "wins": 266,
+          "win_rate": 47.42,
+          "pnl": -2660.3
+        },
+        "ML_AWAY": {
+          "bets": 183,
+          "wins": 61,
+          "win_rate": 33.33,
+          "pnl": 1131.97
+        },
+        "ML_HOME": {
+          "bets": 608,
+          "wins": 275,
+          "win_rate": 45.23,
+          "pnl": -1852.07
+        },
+        "OVER": {
+          "bets": 184,
+          "wins": 78,
+          "win_rate": 42.39,
+          "pnl": -1754.9
+        },
+        "UNDER": {
+          "bets": 564,
+          "wins": 293,
+          "win_rate": 51.95,
+          "pnl": -233.15
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 64,
+          "wins": 16,
+          "win_rate": 25.0,
+          "pnl": 92.5
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 108,
+          "wins": 22,
+          "win_rate": 20.37,
+          "pnl": -630.0
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9850.0
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 8849.5
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 9191.44
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 8872.14
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 7466.1
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 6977.01
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 6555.58
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 6571.66
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 6967.19
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 6480.25
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 6144.94
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 7348.69
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 8180.15
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 8543.36
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 7284.44
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 6393.69
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 4862.45
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 4868.89
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 3417.41
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 2701.21
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 2456.34
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 2793.6
+        }
+      ]
+    },
+    "diversified_flat": {
+      "rank_by_roi": 3,
+      "rank_by_sharpe": 10,
+      "final_bankroll": 1910.03,
+      "roi_pct": -80.8997,
+      "total_bets": 2550,
+      "wins": 1146,
+      "losses": 1404,
+      "win_rate": 44.94,
+      "sharpe": -3.2621,
+      "max_dd": 0.824292,
+      "avg_edge": 0.508092,
+      "best_market": "ML_AWAY",
+      "strategy_type": "flat",
+      "config": {
+        "type": "flat",
+        "bet_pct": 0.01,
+        "min_edge": 0.005
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 218,
+          "wins": 101,
+          "win_rate": 46.33,
+          "pnl": -1482.67
+        },
+        "ATS_HOME": {
+          "bets": 563,
+          "wins": 266,
+          "win_rate": 47.25,
+          "pnl": -2710.12
+        },
+        "ML_AWAY": {
+          "bets": 190,
+          "wins": 64,
+          "win_rate": 33.68,
+          "pnl": 999.32
+        },
+        "ML_HOME": {
+          "bets": 641,
+          "wins": 296,
+          "win_rate": 46.18,
+          "pnl": -1860.37
+        },
+        "OVER": {
+          "bets": 191,
+          "wins": 84,
+          "win_rate": 43.98,
+          "pnl": -1480.77
+        },
+        "UNDER": {
+          "bets": 575,
+          "wins": 297,
+          "win_rate": 51.65,
+          "pnl": -1008.21
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 64,
+          "wins": 16,
+          "win_rate": 25.0,
+          "pnl": -108.64
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 108,
+          "wins": 22,
+          "win_rate": 20.37,
+          "pnl": -438.49
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9702.99
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 7974.88
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 8349.29
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 7904.34
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 5920.21
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 5361.64
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 4910.88
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 4814.92
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 5253.69
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 4709.36
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 4383.7
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 5580.63
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 6618.32
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 6924.68
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 5235.76
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 4318.35
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 3142.23
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 3048.31
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 2209.76
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 1919.0
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 1786.82
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 1910.03
+        }
+      ]
+    },
+    "flat_1pct": {
+      "rank_by_roi": 4,
+      "rank_by_sharpe": 11,
+      "final_bankroll": 1860.48,
+      "roi_pct": -81.3952,
+      "total_bets": 2518,
+      "wins": 1126,
+      "losses": 1392,
+      "win_rate": 44.72,
+      "sharpe": -3.4586,
+      "max_dd": 0.828135,
+      "avg_edge": 0.51446,
+      "best_market": "ML_AWAY",
+      "strategy_type": "flat",
+      "config": {
+        "type": "flat",
+        "bet_pct": 0.01,
+        "min_edge": 0.01
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 217,
+          "wins": 100,
+          "win_rate": 46.08,
+          "pnl": -1466.1
+        },
+        "ATS_HOME": {
+          "bets": 562,
+          "wins": 266,
+          "win_rate": 47.33,
+          "pnl": -2540.2
+        },
+        "ML_AWAY": {
+          "bets": 187,
+          "wins": 62,
+          "win_rate": 33.16,
+          "pnl": 804.23
+        },
+        "ML_HOME": {
+          "bets": 625,
+          "wins": 286,
+          "win_rate": 45.76,
+          "pnl": -1807.82
+        },
+        "OVER": {
+          "bets": 185,
+          "wins": 79,
+          "win_rate": 42.7,
+          "pnl": -1573.51
+        },
+        "UNDER": {
+          "bets": 570,
+          "wins": 295,
+          "win_rate": 51.75,
+          "pnl": -953.25
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 64,
+          "wins": 16,
+          "win_rate": 25.0,
+          "pnl": -133.62
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 108,
+          "wins": 22,
+          "win_rate": 20.37,
+          "pnl": -469.26
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9702.99
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 7789.36
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 8155.06
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 7703.35
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 5827.95
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 5230.53
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 4747.64
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 4701.89
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 5034.02
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 4474.37
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 4105.82
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 5226.89
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 6155.27
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 6414.58
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 4899.07
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 4081.47
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 2982.88
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 2952.47
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 2140.28
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 1850.52
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 1740.47
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 1860.48
+        }
+      ]
+    },
+    "dog_value_plus": {
+      "rank_by_roi": 5,
+      "rank_by_sharpe": 2,
+      "final_bankroll": 950.04,
+      "roi_pct": -90.4996,
+      "total_bets": 448,
+      "wins": 110,
+      "losses": 338,
+      "win_rate": 24.55,
+      "sharpe": -1.0607,
+      "max_dd": 0.967743,
+      "avg_edge": 0.663812,
+      "best_market": "VALUE_DOG_AWAY",
+      "strategy_type": "kelly",
+      "config": {
+        "type": "kelly",
+        "fraction": 0.25,
+        "min_edge": 0.02,
+        "max_pct": 0.06,
+        "min_odds": 3.0
+      },
+      "market_breakdown": {
+        "ML_AWAY": {
+          "bets": 132,
+          "wins": 37,
+          "win_rate": 28.03,
+          "pnl": -446.25
+        },
+        "ML_HOME": {
+          "bets": 144,
+          "wins": 35,
+          "win_rate": 24.31,
+          "pnl": -6401.53
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 64,
+          "wins": 16,
+          "win_rate": 25.0,
+          "pnl": 1389.04
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 108,
+          "wins": 22,
+          "win_rate": 20.37,
+          "pnl": -3591.23
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9900.24
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 7864.84
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 12932.14
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 3403.69
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 1236.66
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 587.96
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 698.75
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 834.0
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 862.7
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 1226.19
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 936.98
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 2822.92
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 5979.77
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 13509.33
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 10718.32
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 7918.14
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 3825.93
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 3512.61
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 1534.97
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 898.89
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 699.99
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 950.04
+        }
+      ]
+    },
+    "martingale": {
+      "rank_by_roi": 6,
+      "rank_by_sharpe": 6,
+      "final_bankroll": 912.03,
+      "roi_pct": -90.8797,
+      "total_bets": 2487,
+      "wins": 1110,
+      "losses": 1377,
+      "win_rate": 44.63,
+      "sharpe": -2.8002,
+      "max_dd": 0.919959,
+      "avg_edge": 0.520691,
+      "best_market": "ATS_AWAY",
+      "strategy_type": "martingale",
+      "config": {
+        "type": "martingale",
+        "base": 5.0,
+        "min_edge": 0.02
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 215,
+          "wins": 99,
+          "win_rate": 46.05,
+          "pnl": 2293.17
+        },
+        "ATS_HOME": {
+          "bets": 561,
+          "wins": 266,
+          "win_rate": 47.42,
+          "pnl": -4706.84
+        },
+        "ML_AWAY": {
+          "bets": 183,
+          "wins": 61,
+          "win_rate": 33.33,
+          "pnl": 144.49
+        },
+        "ML_HOME": {
+          "bets": 608,
+          "wins": 275,
+          "win_rate": 45.23,
+          "pnl": -2690.68
+        },
+        "OVER": {
+          "bets": 184,
+          "wins": 78,
+          "win_rate": 42.39,
+          "pnl": -1805.11
+        },
+        "UNDER": {
+          "bets": 564,
+          "wins": 293,
+          "win_rate": 51.95,
+          "pnl": 459.24
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 64,
+          "wins": 16,
+          "win_rate": 25.0,
+          "pnl": -527.25
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 108,
+          "wins": 22,
+          "win_rate": 20.37,
+          "pnl": -2255.0
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9965.0
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 9153.66
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 9213.13
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 9221.47
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 6471.34
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 6422.88
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 7023.97
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 7337.67
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 7739.5
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 6276.01
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 6501.89
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 7083.8
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 8739.83
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 9110.1
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 7216.28
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 6721.25
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 4756.68
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 5354.39
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 1478.9
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 951.73
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 878.31
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 912.03
+        }
+      ]
+    },
+    "drawdown_adjusted": {
+      "rank_by_roi": 7,
+      "rank_by_sharpe": 13,
+      "final_bankroll": 695.58,
+      "roi_pct": -93.0442,
+      "total_bets": 2430,
+      "wins": 1082,
+      "losses": 1348,
+      "win_rate": 44.53,
+      "sharpe": -3.7219,
+      "max_dd": 0.939778,
+      "avg_edge": 0.531622,
+      "best_market": "UNDER",
+      "strategy_type": "drawdown_kelly",
+      "config": {
+        "type": "drawdown_kelly",
+        "fraction": 0.25,
+        "min_edge": 0.03,
+        "max_dd_target": 0.2
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 214,
+          "wins": 98,
+          "win_rate": 45.79,
+          "pnl": -2406.74
+        },
+        "ATS_HOME": {
+          "bets": 557,
+          "wins": 264,
+          "win_rate": 47.4,
+          "pnl": -3869.76
+        },
+        "ML_AWAY": {
+          "bets": 162,
+          "wins": 52,
+          "win_rate": 32.1,
+          "pnl": -577.25
+        },
+        "ML_HOME": {
+          "bets": 584,
+          "wins": 263,
+          "win_rate": 45.03,
+          "pnl": -1096.07
+        },
+        "OVER": {
+          "bets": 182,
+          "wins": 77,
+          "win_rate": 42.31,
+          "pnl": -710.17
+        },
+        "UNDER": {
+          "bets": 559,
+          "wins": 290,
+          "win_rate": 51.88,
+          "pnl": 97.09
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 64,
+          "wins": 16,
+          "win_rate": 25.0,
+          "pnl": -479.84
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 108,
+          "wins": 22,
+          "win_rate": 20.37,
+          "pnl": -261.67
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 8969.11
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 6490.3
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 7233.25
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 7855.83
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 6594.73
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 6595.24
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 5400.91
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 4715.0
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 3578.0
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 2453.27
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 2197.15
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 2823.36
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 2471.53
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 2128.97
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 1317.94
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 1053.8
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 777.02
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 749.17
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 664.41
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 635.85
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 642.19
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 695.58
+        }
+      ]
+    },
+    "flat_2pct": {
+      "rank_by_roi": 8,
+      "rank_by_sharpe": 12,
+      "final_bankroll": 247.35,
+      "roi_pct": -97.5265,
+      "total_bets": 2518,
+      "wins": 1126,
+      "losses": 1392,
+      "win_rate": 44.72,
+      "sharpe": -3.7094,
+      "max_dd": 0.978859,
+      "avg_edge": 0.51446,
+      "best_market": "ML_AWAY",
+      "strategy_type": "flat",
+      "config": {
+        "type": "flat",
+        "bet_pct": 0.02,
+        "min_edge": 0.01
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 217,
+          "wins": 100,
+          "win_rate": 46.08,
+          "pnl": -1418.15
+        },
+        "ATS_HOME": {
+          "bets": 562,
+          "wins": 266,
+          "win_rate": 47.33,
+          "pnl": -1887.88
+        },
+        "ML_AWAY": {
+          "bets": 187,
+          "wins": 62,
+          "win_rate": 33.16,
+          "pnl": 70.41
+        },
+        "ML_HOME": {
+          "bets": 625,
+          "wins": 286,
+          "win_rate": 45.76,
+          "pnl": -1804.82
+        },
+        "OVER": {
+          "bets": 185,
+          "wins": 79,
+          "win_rate": 42.7,
+          "pnl": -1009.6
+        },
+        "UNDER": {
+          "bets": 570,
+          "wins": 295,
+          "win_rate": 51.75,
+          "pnl": -2292.85
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 64,
+          "wins": 16,
+          "win_rate": 25.0,
+          "pnl": -704.97
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 108,
+          "wins": 22,
+          "win_rate": 20.37,
+          "pnl": -704.79
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9411.92
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 5951.45
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 6364.84
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 5586.24
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 3153.62
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 2489.24
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 2004.28
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 1921.38
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 2155.89
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 1668.49
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 1380.36
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 2183.11
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 2958.25
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 3142.25
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 1804.83
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 1236.68
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 650.92
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 632.04
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 330.53
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 246.22
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 216.79
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 247.35
+        }
+      ]
+    },
+    "underdog_specialist": {
+      "rank_by_roi": 9,
+      "rank_by_sharpe": 3,
+      "final_bankroll": 164.91,
+      "roi_pct": -98.3509,
+      "total_bets": 613,
+      "wins": 172,
+      "losses": 441,
+      "win_rate": 28.06,
+      "sharpe": -1.7525,
+      "max_dd": 0.992518,
+      "avg_edge": 0.583064,
+      "best_market": "VALUE_DOG_AWAY",
+      "strategy_type": "kelly",
+      "config": {
+        "type": "kelly",
+        "fraction": 0.25,
+        "min_edge": 0.03,
+        "max_pct": 0.08,
+        "min_odds": 2.2
+      },
+      "market_breakdown": {
+        "ML_AWAY": {
+          "bets": 157,
+          "wins": 46,
+          "win_rate": 29.3,
+          "pnl": -1948.28
+        },
+        "ML_HOME": {
+          "bets": 284,
+          "wins": 88,
+          "win_rate": 30.99,
+          "pnl": -5738.0
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 64,
+          "wins": 16,
+          "win_rate": 25.0,
+          "pnl": -454.49
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 108,
+          "wins": 22,
+          "win_rate": 20.37,
+          "pnl": -1694.32
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9900.24
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 6990.19
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 8748.06
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 2125.7
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 708.37
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 349.19
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 381.57
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 385.36
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 473.98
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 548.98
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 354.37
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 1154.34
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 1946.71
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 2984.37
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 2044.84
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 1787.21
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 770.27
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 629.43
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 241.43
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 153.61
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 110.8
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 164.91
+        }
+      ]
+    },
+    "confidence_scaled": {
+      "rank_by_roi": 10,
+      "rank_by_sharpe": 4,
+      "final_bankroll": 58.57,
+      "roi_pct": -99.4143,
+      "total_bets": 2410,
+      "wins": 1084,
+      "losses": 1326,
+      "win_rate": 44.98,
+      "sharpe": -2.2656,
+      "max_dd": 0.995352,
+      "avg_edge": 0.52299,
+      "best_market": "VALUE_DOG_HOME",
+      "strategy_type": "confidence",
+      "config": {
+        "type": "confidence",
+        "min_edge": 0.02,
+        "max_pct": 0.2,
+        "scale": 5.0
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 214,
+          "wins": 99,
+          "win_rate": 46.26,
+          "pnl": -1832.82
+        },
+        "ATS_HOME": {
+          "bets": 561,
+          "wins": 266,
+          "win_rate": 47.42,
+          "pnl": -3866.95
+        },
+        "ML_AWAY": {
+          "bets": 173,
+          "wins": 56,
+          "win_rate": 32.37,
+          "pnl": -625.45
+        },
+        "ML_HOME": {
+          "bets": 554,
+          "wins": 256,
+          "win_rate": 46.21,
+          "pnl": -372.02
+        },
+        "OVER": {
+          "bets": 184,
+          "wins": 78,
+          "win_rate": 42.39,
+          "pnl": -567.44
+        },
+        "UNDER": {
+          "bets": 564,
+          "wins": 293,
+          "win_rate": 51.95,
+          "pnl": -609.95
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 64,
+          "wins": 16,
+          "win_rate": 25.0,
+          "pnl": -1935.86
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 96,
+          "wins": 20,
+          "win_rate": 20.83,
+          "pnl": -130.94
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9418.68
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 5881.09
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 6210.27
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 8162.96
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 5493.86
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 5774.42
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 3890.45
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 2651.32
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 2119.91
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 1221.89
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 1018.4
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 1389.37
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 1385.79
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 1230.67
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 427.07
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 257.82
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 137.28
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 141.1
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 94.89
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 78.8
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 57.47
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 58.57
+        }
+      ]
+    },
+    "eighth_kelly": {
+      "rank_by_roi": 11,
+      "rank_by_sharpe": 7,
+      "final_bankroll": 19.75,
+      "roi_pct": -99.8025,
+      "total_bets": 2034,
+      "wins": 923,
+      "losses": 1111,
+      "win_rate": 45.38,
+      "sharpe": -2.8527,
+      "max_dd": 0.998118,
+      "avg_edge": 0.55057,
+      "best_market": "OVER",
+      "strategy_type": "kelly",
+      "config": {
+        "type": "kelly",
+        "fraction": 0.125,
+        "min_edge": 0.03,
+        "max_pct": 0.05
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 195,
+          "wins": 86,
+          "win_rate": 44.1,
+          "pnl": -550.77
+        },
+        "ATS_HOME": {
+          "bets": 501,
+          "wins": 238,
+          "win_rate": 47.5,
+          "pnl": 49.41
+        },
+        "ML_AWAY": {
+          "bets": 122,
+          "wins": 40,
+          "win_rate": 32.79,
+          "pnl": -1028.05
+        },
+        "ML_HOME": {
+          "bets": 416,
+          "wins": 190,
+          "win_rate": 45.67,
+          "pnl": -2116.93
+        },
+        "OVER": {
+          "bets": 149,
+          "wins": 64,
+          "win_rate": 42.95,
+          "pnl": 876.19
+        },
+        "UNDER": {
+          "bets": 516,
+          "wins": 271,
+          "win_rate": 52.52,
+          "pnl": -3946.79
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 55,
+          "wins": 14,
+          "win_rate": 25.45,
+          "pnl": -1212.26
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 80,
+          "wins": 20,
+          "win_rate": 25.0,
+          "pnl": -2051.06
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9380.43
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 4189.18
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 4857.5
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 6281.62
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 2530.25
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 1942.88
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 1153.87
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 934.18
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 461.45
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 160.8
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 87.15
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 176.94
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 146.01
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 141.18
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 37.22
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 19.75
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 19.75
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 19.75
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 19.75
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 19.75
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 19.75
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 19.75
+        }
+      ]
+    },
+    "conservative": {
+      "rank_by_roi": 12,
+      "rank_by_sharpe": 8,
+      "final_bankroll": 19.47,
+      "roi_pct": -99.8053,
+      "total_bets": 1937,
+      "wins": 878,
+      "losses": 1059,
+      "win_rate": 45.33,
+      "sharpe": -3.208,
+      "max_dd": 0.998082,
+      "avg_edge": 0.566425,
+      "best_market": "OVER",
+      "strategy_type": "kelly",
+      "config": {
+        "type": "kelly",
+        "fraction": 0.15,
+        "min_edge": 0.05,
+        "max_pct": 0.05
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 187,
+          "wins": 79,
+          "win_rate": 42.25,
+          "pnl": -546.13
+        },
+        "ATS_HOME": {
+          "bets": 484,
+          "wins": 234,
+          "win_rate": 48.35,
+          "pnl": 542.31
+        },
+        "ML_AWAY": {
+          "bets": 111,
+          "wins": 36,
+          "win_rate": 32.43,
+          "pnl": -1230.38
+        },
+        "ML_HOME": {
+          "bets": 385,
+          "wins": 171,
+          "win_rate": 44.42,
+          "pnl": -2258.81
+        },
+        "OVER": {
+          "bets": 136,
+          "wins": 55,
+          "win_rate": 40.44,
+          "pnl": 850.16
+        },
+        "UNDER": {
+          "bets": 505,
+          "wins": 270,
+          "win_rate": 53.47,
+          "pnl": -3971.66
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 53,
+          "wins": 14,
+          "win_rate": 26.42,
+          "pnl": -1279.88
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 76,
+          "wins": 19,
+          "win_rate": 25.0,
+          "pnl": -2086.13
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9356.6
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 4016.42
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 4550.23
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 5044.47
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 1761.3
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 1202.57
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 701.41
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 563.76
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 285.25
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 96.69
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 48.21
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 118.16
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 88.84
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 93.17
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 27.03
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 19.47
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 19.47
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 19.47
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 19.47
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 19.47
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 19.47
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 19.47
+        }
+      ]
+    },
+    "flat_5pct": {
+      "rank_by_roi": 13,
+      "rank_by_sharpe": 15,
+      "final_bankroll": 19.22,
+      "roi_pct": -99.8078,
+      "total_bets": 1454,
+      "wins": 643,
+      "losses": 811,
+      "win_rate": 44.22,
+      "sharpe": -5.0526,
+      "max_dd": 0.998078,
+      "avg_edge": 0.536972,
+      "best_market": "OVER",
+      "strategy_type": "flat",
+      "config": {
+        "type": "flat",
+        "bet_pct": 0.05,
+        "min_edge": 0.02
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 131,
+          "wins": 55,
+          "win_rate": 41.98,
+          "pnl": -487.36
+        },
+        "ATS_HOME": {
+          "bets": 347,
+          "wins": 165,
+          "win_rate": 47.55,
+          "pnl": -176.12
+        },
+        "ML_AWAY": {
+          "bets": 104,
+          "wins": 34,
+          "win_rate": 32.69,
+          "pnl": -1552.43
+        },
+        "ML_HOME": {
+          "bets": 301,
+          "wins": 135,
+          "win_rate": 44.85,
+          "pnl": -858.21
+        },
+        "OVER": {
+          "bets": 81,
+          "wins": 39,
+          "win_rate": 48.15,
+          "pnl": 648.59
+        },
+        "UNDER": {
+          "bets": 381,
+          "wins": 192,
+          "win_rate": 50.39,
+          "pnl": -5155.58
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 46,
+          "wins": 11,
+          "win_rate": 23.91,
+          "pnl": -1428.05
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 63,
+          "wins": 12,
+          "win_rate": 19.05,
+          "pnl": -971.61
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 8573.75
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 2493.39
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 2595.03
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 1536.51
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 317.2
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 151.54
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 75.07
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 57.66
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 65.82
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 31.43
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 19.22
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 19.22
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 19.22
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 19.22
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 19.22
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 19.22
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 19.22
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 19.22
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 19.22
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 19.22
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 19.22
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 19.22
+        }
+      ]
+    },
+    "quarter_kelly": {
+      "rank_by_roi": 14,
+      "rank_by_sharpe": 14,
+      "final_bankroll": 11.78,
+      "roi_pct": -99.8822,
+      "total_bets": 1051,
+      "wins": 461,
+      "losses": 590,
+      "win_rate": 43.86,
+      "sharpe": -4.4691,
+      "max_dd": 0.998822,
+      "avg_edge": 0.567203,
+      "best_market": "OVER",
+      "strategy_type": "kelly",
+      "config": {
+        "type": "kelly",
+        "fraction": 0.25,
+        "min_edge": 0.03,
+        "max_pct": 0.08
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 82,
+          "wins": 38,
+          "win_rate": 46.34,
+          "pnl": -312.41
+        },
+        "ATS_HOME": {
+          "bets": 267,
+          "wins": 132,
+          "win_rate": 49.44,
+          "pnl": -528.57
+        },
+        "ML_AWAY": {
+          "bets": 70,
+          "wins": 17,
+          "win_rate": 24.29,
+          "pnl": -1136.6
+        },
+        "ML_HOME": {
+          "bets": 209,
+          "wins": 90,
+          "win_rate": 43.06,
+          "pnl": -1748.09
+        },
+        "OVER": {
+          "bets": 48,
+          "wins": 25,
+          "win_rate": 52.08,
+          "pnl": 1125.13
+        },
+        "UNDER": {
+          "bets": 286,
+          "wins": 143,
+          "win_rate": 50.0,
+          "pnl": -5230.2
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 39,
+          "wins": 8,
+          "win_rate": 20.51,
+          "pnl": -958.25
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 50,
+          "wins": 8,
+          "win_rate": 16.0,
+          "pnl": -1199.24
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 8969.11
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 1914.85
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 1919.97
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 1883.29
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 298.3
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 138.89
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 49.71
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 26.25
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 11.78
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 11.78
+        }
+      ]
+    },
+    "value_hunter": {
+      "rank_by_roi": 15,
+      "rank_by_sharpe": 19,
+      "final_bankroll": 7.46,
+      "roi_pct": -99.9254,
+      "total_bets": 547,
+      "wins": 237,
+      "losses": 310,
+      "win_rate": 43.33,
+      "sharpe": -6.4045,
+      "max_dd": 0.999254,
+      "avg_edge": 0.57322,
+      "best_market": "OVER",
+      "strategy_type": "kelly",
+      "config": {
+        "type": "kelly",
+        "fraction": 0.5,
+        "min_edge": 0.05,
+        "max_pct": 0.12
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 33,
+          "wins": 17,
+          "win_rate": 51.52,
+          "pnl": -695.58
+        },
+        "ATS_HOME": {
+          "bets": 145,
+          "wins": 83,
+          "win_rate": 57.24,
+          "pnl": -3104.36
+        },
+        "ML_AWAY": {
+          "bets": 43,
+          "wins": 9,
+          "win_rate": 20.93,
+          "pnl": -577.22
+        },
+        "ML_HOME": {
+          "bets": 101,
+          "wins": 41,
+          "win_rate": 40.59,
+          "pnl": -1012.11
+        },
+        "OVER": {
+          "bets": 10,
+          "wins": 5,
+          "win_rate": 50.0,
+          "pnl": 673.22
+        },
+        "UNDER": {
+          "bets": 162,
+          "wins": 73,
+          "win_rate": 45.06,
+          "pnl": -5452.53
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 29,
+          "wins": 5,
+          "win_rate": 17.24,
+          "pnl": -28.38
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 24,
+          "wins": 4,
+          "win_rate": 16.67,
+          "pnl": 204.44
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 8360.97
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 479.08
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 256.36
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 116.29
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 7.46
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 7.46
+        }
+      ]
+    },
+    "half_kelly": {
+      "rank_by_roi": 16,
+      "rank_by_sharpe": 18,
+      "final_bankroll": 6.61,
+      "roi_pct": -99.9339,
+      "total_bets": 520,
+      "wins": 231,
+      "losses": 289,
+      "win_rate": 44.42,
+      "sharpe": -5.8558,
+      "max_dd": 0.999339,
+      "avg_edge": 0.555767,
+      "best_market": "OVER",
+      "strategy_type": "kelly",
+      "config": {
+        "type": "kelly",
+        "fraction": 0.5,
+        "min_edge": 0.02,
+        "max_pct": 0.15
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 31,
+          "wins": 16,
+          "win_rate": 51.61,
+          "pnl": -686.24
+        },
+        "ATS_HOME": {
+          "bets": 138,
+          "wins": 79,
+          "win_rate": 57.25,
+          "pnl": -4097.31
+        },
+        "ML_AWAY": {
+          "bets": 42,
+          "wins": 10,
+          "win_rate": 23.81,
+          "pnl": -268.31
+        },
+        "ML_HOME": {
+          "bets": 97,
+          "wins": 42,
+          "win_rate": 43.3,
+          "pnl": -1082.31
+        },
+        "OVER": {
+          "bets": 10,
+          "wins": 7,
+          "win_rate": 70.0,
+          "pnl": 747.67
+        },
+        "UNDER": {
+          "bets": 151,
+          "wins": 68,
+          "win_rate": 45.03,
+          "pnl": -5400.46
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 29,
+          "wins": 5,
+          "win_rate": 17.24,
+          "pnl": 179.41
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 22,
+          "wins": 4,
+          "win_rate": 18.18,
+          "pnl": 614.16
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 8075.94
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 206.6
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 89.09
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 40.43
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 6.61
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 6.61
+        }
+      ]
+    },
+    "proportional_edge": {
+      "rank_by_roi": 17,
+      "rank_by_sharpe": 20,
+      "final_bankroll": 6.31,
+      "roi_pct": -99.9369,
+      "total_bets": 238,
+      "wins": 99,
+      "losses": 139,
+      "win_rate": 41.6,
+      "sharpe": -7.4013,
+      "max_dd": 0.999369,
+      "avg_edge": 0.533252,
+      "best_market": "VALUE_DOG_HOME",
+      "strategy_type": "proportional",
+      "config": {
+        "type": "proportional",
+        "min_edge": 0.02,
+        "max_pct": 0.15,
+        "multiplier": 3.0
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 6,
+          "wins": 2,
+          "win_rate": 33.33,
+          "pnl": -653.61
+        },
+        "ATS_HOME": {
+          "bets": 70,
+          "wins": 37,
+          "win_rate": 52.86,
+          "pnl": -2746.97
+        },
+        "ML_AWAY": {
+          "bets": 20,
+          "wins": 4,
+          "win_rate": 20.0,
+          "pnl": -1348.74
+        },
+        "ML_HOME": {
+          "bets": 50,
+          "wins": 24,
+          "win_rate": 48.0,
+          "pnl": -722.33
+        },
+        "OVER": {
+          "bets": 3,
+          "wins": 1,
+          "win_rate": 33.33,
+          "pnl": 262.55
+        },
+        "UNDER": {
+          "bets": 70,
+          "wins": 27,
+          "win_rate": 38.57,
+          "pnl": -5122.29
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 12,
+          "wins": 2,
+          "win_rate": 16.67,
+          "pnl": 4.38
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 7,
+          "wins": 2,
+          "win_rate": 28.57,
+          "pnl": 333.32
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 6141.25
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 41.07
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 6.31
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 6.31
+        }
+      ]
+    },
+    "ev_threshold_110": {
+      "rank_by_roi": 18,
+      "rank_by_sharpe": 16,
+      "final_bankroll": 6.15,
+      "roi_pct": -99.9385,
+      "total_bets": 514,
+      "wins": 229,
+      "losses": 285,
+      "win_rate": 44.55,
+      "sharpe": -5.77,
+      "max_dd": 0.999385,
+      "avg_edge": 0.589616,
+      "best_market": "OVER",
+      "strategy_type": "kelly",
+      "config": {
+        "type": "kelly",
+        "fraction": 0.5,
+        "min_edge": 0.02,
+        "max_pct": 0.15,
+        "ev_gate": 1.1
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 30,
+          "wins": 15,
+          "win_rate": 50.0,
+          "pnl": -732.21
+        },
+        "ATS_HOME": {
+          "bets": 140,
+          "wins": 83,
+          "win_rate": 59.29,
+          "pnl": -4260.08
+        },
+        "ML_AWAY": {
+          "bets": 39,
+          "wins": 8,
+          "win_rate": 20.51,
+          "pnl": -252.55
+        },
+        "ML_HOME": {
+          "bets": 93,
+          "wins": 38,
+          "win_rate": 40.86,
+          "pnl": -1368.65
+        },
+        "OVER": {
+          "bets": 9,
+          "wins": 5,
+          "win_rate": 55.56,
+          "pnl": 833.08
+        },
+        "UNDER": {
+          "bets": 151,
+          "wins": 71,
+          "win_rate": 47.02,
+          "pnl": -5099.69
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 29,
+          "wins": 5,
+          "win_rate": 17.24,
+          "pnl": 231.54
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 23,
+          "wins": 4,
+          "win_rate": 17.39,
+          "pnl": 654.7
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 8500.0
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 238.08
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 119.56
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 61.34
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 6.15
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 6.15
+        }
+      ]
+    },
+    "grok_combo": {
+      "rank_by_roi": 19,
+      "rank_by_sharpe": 17,
+      "final_bankroll": 5.86,
+      "roi_pct": -99.9414,
+      "total_bets": 507,
+      "wins": 222,
+      "losses": 285,
+      "win_rate": 43.79,
+      "sharpe": -5.8385,
+      "max_dd": 0.999414,
+      "avg_edge": 0.570524,
+      "best_market": "OVER",
+      "strategy_type": "kelly",
+      "config": {
+        "type": "kelly",
+        "fraction": 0.5,
+        "min_edge": 0.05,
+        "max_pct": 0.15
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 28,
+          "wins": 14,
+          "win_rate": 50.0,
+          "pnl": -696.77
+        },
+        "ATS_HOME": {
+          "bets": 135,
+          "wins": 78,
+          "win_rate": 57.78,
+          "pnl": -4091.38
+        },
+        "ML_AWAY": {
+          "bets": 41,
+          "wins": 9,
+          "win_rate": 21.95,
+          "pnl": -276.81
+        },
+        "ML_HOME": {
+          "bets": 93,
+          "wins": 39,
+          "win_rate": 41.94,
+          "pnl": -1089.09
+        },
+        "OVER": {
+          "bets": 8,
+          "wins": 5,
+          "win_rate": 62.5,
+          "pnl": 750.86
+        },
+        "UNDER": {
+          "bets": 151,
+          "wins": 68,
+          "win_rate": 45.03,
+          "pnl": -5388.92
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 29,
+          "wins": 5,
+          "win_rate": 17.24,
+          "pnl": 177.85
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 22,
+          "wins": 4,
+          "win_rate": 18.18,
+          "pnl": 620.12
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 8075.94
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 213.52
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 89.89
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 38.83
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 5.86
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 5.86
+        }
+      ]
+    },
+    "aggressive": {
+      "rank_by_roi": 20,
+      "rank_by_sharpe": 22,
+      "final_bankroll": 4.52,
+      "roi_pct": -99.9548,
+      "total_bets": 172,
+      "wins": 67,
+      "losses": 105,
+      "win_rate": 38.95,
+      "sharpe": -9.1986,
+      "max_dd": 0.999548,
+      "avg_edge": 0.539258,
+      "best_market": "VALUE_DOG_HOME",
+      "strategy_type": "kelly",
+      "config": {
+        "type": "kelly",
+        "fraction": 0.75,
+        "min_edge": 0.01,
+        "max_pct": 0.2
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 4,
+          "wins": 1,
+          "win_rate": 25.0,
+          "pnl": -577.46
+        },
+        "ATS_HOME": {
+          "bets": 52,
+          "wins": 26,
+          "win_rate": 50.0,
+          "pnl": -4341.78
+        },
+        "ML_AWAY": {
+          "bets": 15,
+          "wins": 3,
+          "win_rate": 20.0,
+          "pnl": -313.58
+        },
+        "ML_HOME": {
+          "bets": 36,
+          "wins": 18,
+          "win_rate": 50.0,
+          "pnl": -1339.97
+        },
+        "OVER": {
+          "bets": 2,
+          "wins": 1,
+          "win_rate": 50.0,
+          "pnl": 514.06
+        },
+        "UNDER": {
+          "bets": 50,
+          "wins": 16,
+          "win_rate": 32.0,
+          "pnl": -4947.06
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 8,
+          "wins": 1,
+          "win_rate": 12.5,
+          "pnl": 265.99
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 5,
+          "wins": 1,
+          "win_rate": 20.0,
+          "pnl": 744.32
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 7404.98
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 21.4
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 4.52
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 4.52
+        }
+      ]
+    },
+    "full_kelly": {
+      "rank_by_roi": 21,
+      "rank_by_sharpe": 21,
+      "final_bankroll": 3.24,
+      "roi_pct": -99.9676,
+      "total_bets": 127,
+      "wins": 49,
+      "losses": 78,
+      "win_rate": 38.58,
+      "sharpe": -9.0572,
+      "max_dd": 0.999676,
+      "avg_edge": 0.533028,
+      "best_market": "VALUE_DOG_HOME",
+      "strategy_type": "kelly",
+      "config": {
+        "type": "kelly",
+        "fraction": 1.0,
+        "min_edge": 0.02,
+        "max_pct": 0.25
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 4,
+          "wins": 1,
+          "win_rate": 25.0,
+          "pnl": -352.3
+        },
+        "ATS_HOME": {
+          "bets": 37,
+          "wins": 17,
+          "win_rate": 45.95,
+          "pnl": -4391.15
+        },
+        "ML_AWAY": {
+          "bets": 12,
+          "wins": 3,
+          "win_rate": 25.0,
+          "pnl": -484.1
+        },
+        "ML_HOME": {
+          "bets": 24,
+          "wins": 12,
+          "win_rate": 50.0,
+          "pnl": -1571.24
+        },
+        "OVER": {
+          "bets": 1,
+          "wins": 1,
+          "win_rate": 100.0,
+          "pnl": 334.69
+        },
+        "UNDER": {
+          "bets": 38,
+          "wins": 13,
+          "win_rate": 34.21,
+          "pnl": -4276.21
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 7,
+          "wins": 1,
+          "win_rate": 14.29,
+          "pnl": 136.57
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 4,
+          "wins": 1,
+          "win_rate": 25.0,
+          "pnl": 606.96
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 6760.8
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 3.24
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 3.24
+        }
+      ]
+    },
+    "fixed_100": {
+      "rank_by_roi": 22,
+      "rank_by_sharpe": 5,
+      "final_bankroll": 0.0,
+      "roi_pct": -100.0,
+      "total_bets": 2193,
+      "wins": 984,
+      "losses": 1209,
+      "win_rate": 44.87,
+      "sharpe": -2.7085,
+      "max_dd": 1.0,
+      "avg_edge": 0.535696,
+      "best_market": "ML_AWAY",
+      "strategy_type": "fixed",
+      "config": {
+        "type": "fixed",
+        "amount": 100,
+        "min_edge": 0.03
+      },
+      "market_breakdown": {
+        "ATS_AWAY": {
+          "bets": 207,
+          "wins": 92,
+          "win_rate": 44.44,
+          "pnl": -3213.78
+        },
+        "ATS_HOME": {
+          "bets": 528,
+          "wins": 250,
+          "win_rate": 47.35,
+          "pnl": -5075.0
+        },
+        "ML_AWAY": {
+          "bets": 148,
+          "wins": 48,
+          "win_rate": 32.43,
+          "pnl": 2011.11
+        },
+        "ML_HOME": {
+          "bets": 462,
+          "wins": 207,
+          "win_rate": 44.81,
+          "pnl": -1244.05
+        },
+        "OVER": {
+          "bets": 169,
+          "wins": 71,
+          "win_rate": 42.01,
+          "pnl": -3346.1
+        },
+        "UNDER": {
+          "bets": 537,
+          "wins": 281,
+          "win_rate": 52.33,
+          "pnl": 12.82
+        },
+        "VALUE_DOG_AWAY": {
+          "bets": 58,
+          "wins": 15,
+          "win_rate": 25.86,
+          "pnl": 410.0
+        },
+        "VALUE_DOG_HOME": {
+          "bets": 84,
+          "wins": 20,
+          "win_rate": 23.81,
+          "pnl": 445.0
+        }
+      },
+      "equity_curve": [
+        {
+          "game_idx": 0,
+          "date": "2025-10-21",
+          "bankroll": 9700.0
+        },
+        {
+          "game_idx": 50,
+          "date": "2025-10-27",
+          "bankroll": 7699.01
+        },
+        {
+          "game_idx": 100,
+          "date": "2025-11-03",
+          "bankroll": 8291.98
+        },
+        {
+          "game_idx": 150,
+          "date": "2025-11-10",
+          "bankroll": 7592.77
+        },
+        {
+          "game_idx": 200,
+          "date": "2025-11-17",
+          "bankroll": 4550.69
+        },
+        {
+          "game_idx": 250,
+          "date": "2025-11-24",
+          "bankroll": 3681.62
+        },
+        {
+          "game_idx": 300,
+          "date": "2025-12-01",
+          "bankroll": 2838.75
+        },
+        {
+          "game_idx": 350,
+          "date": "2025-12-07",
+          "bankroll": 2634.12
+        },
+        {
+          "game_idx": 400,
+          "date": "2025-12-19",
+          "bankroll": 3399.18
+        },
+        {
+          "game_idx": 450,
+          "date": "2025-12-26",
+          "bankroll": 2490.22
+        },
+        {
+          "game_idx": 500,
+          "date": "2026-01-02",
+          "bankroll": 1828.7
+        },
+        {
+          "game_idx": 550,
+          "date": "2026-01-08",
+          "bankroll": 4236.19
+        },
+        {
+          "game_idx": 600,
+          "date": "2026-01-15",
+          "bankroll": 5814.38
+        },
+        {
+          "game_idx": 650,
+          "date": "2026-01-22",
+          "bankroll": 6469.36
+        },
+        {
+          "game_idx": 700,
+          "date": "2026-01-28",
+          "bankroll": 3460.63
+        },
+        {
+          "game_idx": 750,
+          "date": "2026-02-04",
+          "bankroll": 1674.13
+        },
+        {
+          "game_idx": 800,
+          "date": "2026-02-11",
+          "bankroll": 0.0
+        },
+        {
+          "game_idx": 850,
+          "date": "2026-02-23",
+          "bankroll": 0.0
+        },
+        {
+          "game_idx": 900,
+          "date": "2026-03-01",
+          "bankroll": 0.0
+        },
+        {
+          "game_idx": 950,
+          "date": "2026-03-08",
+          "bankroll": 0.0
+        },
+        {
+          "game_idx": 1000,
+          "date": "2026-03-15",
+          "bankroll": 0.0
+        },
+        {
+          "game_idx": 1005,
+          "date": "2026-03-15",
+          "bankroll": 0.0
+        }
+      ]
+    }
+  }
+}

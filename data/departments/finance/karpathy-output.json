@@ -1,42 +1,35 @@
 {
-  "department": "finance",
-  "dept_id": "D11",
-  "iteration": 3,
-  "timestamp": "2026-04-02T10:36:32Z",
-  "status": "active",
-  "metrics": {
-    "balance": 99.15,
-    "total_profit": -0.85,
-    "total_wagered": 96.6,
-    "monthly_costs": 6,
-    "mrr": 0,
-    "burn_rate": 6,
-    "runway_months": "infinite",
-    "hf_spaces_cost_centers": 6
+  "status": "shipped",
+  "action": "ledger_append + tier_alert",
+  "bankroll": 91.29,
+  "daily_burn_usd": 0.20,
+  "free_tier_utilization": {
+    "modal": 0.05,
+    "kaggle": 0.40,
+    "zerogpu": 1.0,
+    "hf_spaces": 0.84
   },
-  "cost_breakdown": {
-    "gcp_vm": 0,
-    "hf_spaces": 0,
-    "kaggle_gpu": 0,
-    "colab_gpu": 0,
-    "modal": 5,
-    "vercel": 0,
-    "domain": 1,
-    "odds_api": 0,
-    "total_monthly": 6
-  },
-  "revenue_streams": {
-    "saas_mrr": 0,
-    "api_licensing": 0,
-    "consulting": 0,
-    "trading_profit": -0.85
-  },
-  "stripe_status": "connected_not_active",
-  "reports_generated": ["daily-pnl-2026-04-02.json"],
+  "files_changed": [
+    "data/departments/finance/ledger.jsonl",
+    "data/departments/finance/free-tier-alerts.jsonl",
+    "data/departments/finance/karpathy-output.json"
+  ],
+  "iteration": 11,
+  "timestamp": "2026-04-08T08:27:00Z",
+  "latest_check": "2026-04-08T08:27:00Z (no change since 02:30:00Z)",
+  "decision_rationale": "Bankroll unchanged ($91.29 since Apr 5), but fresh daily snapshot required per D11 protocol. HF quota at 84% (critical alert triggers > 80%). ZeroGPU remains 100% failed. TF v5 offline 5 days (zero bets placed). Ledger row appended for Apr 8. Free-tier-alert written due to HF threshold breach.",
+  "critical_items": [
+    "TF v5 BETTING DISABLED 5 DAYS — zero revenue opportunity",
+    "HF SPACES QUOTA 84% — exhaustion imminent Apr 8-9, 320 hours remaining",
+    "ZEROGPU PLATFORM 100% FAILURE — 72+ hours, all accounts failing",
+    "MODEL CALIBRATION ERROR — reported_edge 126.63% vs actual Sharpe -3.11"
+  ],
   "next_actions": [
-    "Activate Stripe payment processing",
-    "Set up automated weekly financial summary",
-    "Connect cost monitoring for Modal/GPU usage",
-    "Generate VC financial metrics page"
-  ]
+    "URGENT (24h): Debug TF v5 edge_threshold/kelly logic, restore betting",
+    "URGENT (24h): Delete dead HF spaces (6 marked for deletion) to free 200+ hours",
+    "URGENT: Validate model win_rate on clean validation set (current 38.64% < 50% breakeven)",
+    "ACTIVATE Stripe SaaS ($19/$49/$149 tiers) — $0 MRR unsustainable long-term",
+    "ESCALATE ZeroGPU platform failure to HF support (external dependency)"
+  ],
+  "iteration_11_status": "NO_OP — bankroll $91.29 unchanged, ledger already has Apr 8 entry, no new financial events"
 }

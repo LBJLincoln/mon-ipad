@@ -33,11 +33,10 @@ Leaderboard:
 
 20 strategies active | 6 eliminated | Target: $1,000,000
 
-**11 Autonomous Departments**
+**9 Autonomous Departments**
 Each runs a Karpathy loop (5-min cycles, measure, keep or revert):
-D1 Research | D2 Engineering | D3 Evolution | D4 Betting
-D5 Evaluation | D6 Infrastructure | D7 Political Alpha
-D8 Creative (RGWA) | D9 Communication | D10 Business | D11 Finance
+D1 Research | D2 Engineering | D3 Evolution | D4 Product | D5 Business
+D6 Evaluation | D7 Infra | D8 Finance | D9 Cross-Repo
 
 Guardian Orchestrator v3 cross-pollinates wins every 4 hours.
 

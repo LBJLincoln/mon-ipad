@@ -3,7 +3,7 @@
 # NOMOS42 INFRA AGENT — Autonomous GPU Infrastructure Manager
 # ══════════════════════════════════════════════════════════════
 # Monitors, launches, restarts ALL evolution platforms:
-#   - HF Spaces (10 NBA + 4 Political)
+#   - HF Spaces (6 NBA + 2 Political)
 #   - Kaggle GPU kernels (NBA + Political)
 #   - Modal serverless GPU (NBA)
 #   - Keepalive pings
@@ -33,18 +33,22 @@ TOTAL=0; HEALTHY=0; RESTARTED=0; FAILED=0
 # ══════════════════════════════════════════════════════════════
 
 declare -A SPACES=(
-  # NBA islands
+  # NBA islands (10 total — S10-S19)
   ["S10_nba"]="https://nomos42-nba-quant.hf.space"
   ["S11_nba"]="https://nomos42-nba-quant-2.hf.space"
   ["S12_nba"]="https://nomos42-nba-evo-3.hf.space"
   ["S13_nba"]="https://nomos42-nba-evo-4.hf.space"
   ["S14_nba"]="https://nomos42-nba-evo-5.hf.space"
   ["S15_nba"]="https://nomos42-nba-evo-6.hf.space"
-  # Political islands
+  ["S16_nba"]="https://lbjlincoln26-nba-evo-s16.hf.space"
+  ["S17_nba"]="https://lbjlincoln26-nba-evo-s17.hf.space"
+  ["S18_nba"]="https://testforge42-nba-evo-s18.hf.space"
+  ["S19_nba"]="https://testforge42-nba-evo-s19.hf.space"
+  # Political islands (4 total — P1-P4)
   ["P1_pol"]="https://nomos42-political-alpha.hf.space"
   ["P2_pol"]="https://nomos42-political-alpha-2.hf.space"
-  ["P3_pol"]="https://nomos42-political-alpha-3.hf.space"
-  ["P4_pol"]="https://nomos42-political-alpha-4.hf.space"
+  ["P3_pol"]="https://lbjlincoln-political-alpha-3.hf.space"
+  ["P4_pol"]="https://lbjlincoln-political-alpha-4.hf.space"
 )
 
 HF_STATUS_JSON="{"
@@ -188,19 +192,16 @@ cat > "$STATUS_FILE" << STATUSEOF
 STATUSEOF
 
 # ══════════════════════════════════════════════════════════════
-# 5. TRADING FLOOR COUNCIL LOOP — Auto-relaunch if dead
+# 5. TRADING FLOOR COUNCIL LOOP — KILLED (2026-04-06)
+#    Replaced by: Hermes dept councils (hermes-runner.sh, cron every 4h)
+#    + HF Space councils (9 spaces with Gemma4/Qwen3.5/DeepSeek)
 # ══════════════════════════════════════════════════════════════
 
-TF_RUNNING=$(pgrep -f "trading-floor-council-loop" 2>/dev/null | wc -l)
-if [ "$TF_RUNNING" -eq 0 ]; then
-  log "Trading Floor council loop NOT running — relaunching..."
-  mkdir -p /home/termius/mon-ipad/logs/arena
-  nohup bash /home/termius/mon-ipad/scripts/arena/trading-floor-council-loop.sh 1000 300 \
-    >> /home/termius/mon-ipad/logs/arena/council-loop.log 2>&1 &
-  log "Trading Floor relaunched (PID=$!)"
-  RESTARTED=$((RESTARTED + 1))
-else
-  log "Trading Floor council loop running ($TF_RUNNING processes)"
+# Kill any lingering old loop processes
+OLD_TF=$(pgrep -f "trading-floor-council-loop" 2>/dev/null | wc -l)
+if [ "$OLD_TF" -gt 0 ]; then
+  log "KILLING old trading-floor-council-loop ($OLD_TF processes)"
+  pkill -f "trading-floor-council-loop" 2>/dev/null || true
 fi
 TOTAL=$((TOTAL + 1))
 

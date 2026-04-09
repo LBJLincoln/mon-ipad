@@ -16,6 +16,9 @@
 
 set -e
 
+# Ensure ~/.local/bin is in PATH (cron doesn't source .profile)
+export PATH="$HOME/.local/bin:$PATH"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
@@ -52,19 +55,45 @@ log() {
     echo "[$ts] [$level] $msg" | tee -a "${LOG_FILE}"
 }
 
-# Check Kaggle CLI — prefer venv, fallback to system
-KAGGLE_CMD="kaggle"
+# Check Kaggle CLI — priority: venv > ~/.local/bin > PATH > install into venv
+KAGGLE_CMD=""
 VENV_KAGGLE="${REPO_ROOT}/.venv/bin/kaggle"
+USER_KAGGLE="${HOME}/.local/bin/kaggle"
+
 if [ -x "$VENV_KAGGLE" ]; then
     KAGGLE_CMD="$VENV_KAGGLE"
-elif ! command -v kaggle &>/dev/null; then
-    log WARN "kaggle CLI not found. Installing in venv..."
-    python3 -m venv "${REPO_ROOT}/.venv" 2>/dev/null || true
-    "${REPO_ROOT}/.venv/bin/pip" install kaggle --quiet 2>/dev/null || {
-        log ERROR "Failed to install kaggle"
-        exit 1
+elif [ -x "$USER_KAGGLE" ]; then
+    KAGGLE_CMD="$USER_KAGGLE"
+elif command -v kaggle &>/dev/null; then
+    KAGGLE_CMD="kaggle"
+else
+    log WARN "kaggle CLI not found. Installing into user site-packages..."
+    pip install --user kaggle --quiet --break-system-packages 2>&1 || {
+        # Fallback: try venv with system site-packages
+        log WARN "User install failed, trying venv with --system-site-packages..."
+        python3 -m venv --system-site-packages "${REPO_ROOT}/.venv" 2>/dev/null || true
+        if [ -x "${REPO_ROOT}/.venv/bin/pip" ]; then
+            "${REPO_ROOT}/.venv/bin/pip" install kaggle --quiet 2>&1 || {
+                log ERROR "Failed to install kaggle (both user and venv methods)"
+                exit 1
+            }
+        else
+            log ERROR "Failed to create venv with pip (install python3-venv?)"
+            exit 1
+        fi
+        KAGGLE_CMD="$VENV_KAGGLE"
     }
-    KAGGLE_CMD="${REPO_ROOT}/.venv/bin/kaggle"
+    # After user install, check if it landed
+    if [ -z "$KAGGLE_CMD" ]; then
+        if [ -x "$USER_KAGGLE" ]; then
+            KAGGLE_CMD="$USER_KAGGLE"
+        elif command -v kaggle &>/dev/null; then
+            KAGGLE_CMD="kaggle"
+        else
+            log ERROR "kaggle installed but not found in PATH or ~/.local/bin"
+            exit 1
+        fi
+    fi
 fi
 
 # Read username from kaggle.json
@@ -85,8 +114,11 @@ log INFO "Username: $KAGGLE_USERNAME"
 log INFO "Kernel: $KAGGLE_KERNEL_SLUG"
 log INFO "Timeout: ${TIMEOUT_MINUTES}m"
 
-# Check notebook exists
-NOTEBOOK="${REPO_ROOT}/nomos-nba-agent/colab/nba_gpu_v2.ipynb"
+# Check notebook exists (nomos-nba-agent is a sibling repo, not inside mon-ipad)
+NOTEBOOK="${HOME}/nomos-nba-agent/colab/nba_gpu_v2.ipynb"
+if [ ! -f "$NOTEBOOK" ]; then
+    NOTEBOOK="${REPO_ROOT}/nomos-nba-agent/colab/nba_gpu_v2.ipynb"
+fi
 if [ ! -f "$NOTEBOOK" ]; then
     NOTEBOOK="${REPO_ROOT}/colab/nba_gpu_v2.ipynb"
 fi

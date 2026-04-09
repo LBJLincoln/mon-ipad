@@ -1,0 +1,203 @@
+{
+  "version": "v19",
+  "updated": "2026-04-03",
+  "layers": {
+    "L1_STRATEGIC": {
+      "name": "Strategic",
+      "role": "Product vision, milestones, temporal plan, decisions",
+      "who": "Claude Code CLI + User"
+    },
+    "L2_APPLICATION": {
+      "name": "Application",
+      "role": "Product, Business, Users — ship fast, reach $1M",
+      "who": "AI Agent Teams (councils + swarms)"
+    },
+    "L3_LOGISTICS": {
+      "name": "Logistics",
+      "role": "Infra, Storage, Finance, Accounting",
+      "who": "Automated systems + crons"
+    }
+  },
+  "departments": {
+    "research": {
+      "id": "D1",
+      "name": "Research",
+      "layer": "L2_APPLICATION",
+      "metrics": ["papers_scanned_per_week", "techniques_tested", "proposals_accepted"],
+      "council_agents": ["scanner", "extractor", "proposer", "evaluator"],
+      "karpathy_loop": "scan → extract → propose → measure impact → keep/revert",
+      "schedule": "hourly",
+      "per_repo": {
+        "mon-ipad": "NBA papers, ML techniques, SOTA methods",
+        "nomos-nba-agent": "NBA statistics, advanced metrics, injury models",
+        "nomos-political-alpha": "Political science, FEC data, policy impact",
+        "nomos-dashboard": "UX research, visualization best practices",
+        "rgwa": "Art techniques, generative AI models, style transfer",
+        "nomos-picks": "Odds research, line movement, sharp money",
+        "nomos-pierre": "User research, onboarding patterns, retention",
+        "OddsHarvester": "Bookmaker sources, API endpoints, data formats"
+      }
+    },
+    "engineering": {
+      "id": "D2",
+      "name": "Engineering",
+      "layer": "L2_APPLICATION",
+      "metrics": ["brier_delta", "test_pass_rate", "deploy_success_rate", "code_quality"],
+      "council_agents": ["builder", "tester", "reviewer", "deployer"],
+      "karpathy_loop": "code → test → measure quality → keep/revert",
+      "schedule": "hourly",
+      "per_repo": {
+        "mon-ipad": "Feature engine, evolution loop, prediction pipeline",
+        "nomos-nba-agent": "Prediction pipeline, calibration, fusion",
+        "nomos-political-alpha": "Signal engine, feature engineering",
+        "nomos-dashboard": "Frontend components, API routes, performance",
+        "rgwa": "Generation pipeline, quality scoring, mastering",
+        "nomos-picks": "Picks pipeline, value bet detection",
+        "nomos-pierre": "Onboarding flow, tutorial system",
+        "OddsHarvester": "Scraping engine, parsing, normalization"
+      }
+    },
+    "evolution": {
+      "id": "D3",
+      "name": "Evolution",
+      "layer": "L2_APPLICATION",
+      "metrics": ["gen_per_hour", "best_fitness", "diversity_index", "stagnation_cycles"],
+      "council_agents": ["mutator", "selector", "crossover", "archiver"],
+      "karpathy_loop": "mutate → evaluate → select → measure fitness → keep/revert",
+      "schedule": "continuous",
+      "per_repo": {
+        "mon-ipad": "GA islands (6 HF Spaces), NSGA-II, feature selection",
+        "nomos-nba-agent": "Model selection, hyperparameter tuning",
+        "nomos-political-alpha": "Feature GA, signal weight optimization",
+        "nomos-dashboard": "A/B testing, layout optimization",
+        "rgwa": "Style evolution, prompt optimization",
+        "nomos-picks": "Strategy optimization, threshold tuning",
+        "nomos-pierre": "Engagement optimization, funnel tuning",
+        "OddsHarvester": "Coverage optimization, source selection"
+      }
+    },
+    "product": {
+      "id": "D4",
+      "name": "Product",
+      "layer": "L2_APPLICATION",
+      "metrics": ["features_shipped", "user_satisfaction", "ux_score", "page_load_ms"],
+      "council_agents": ["designer", "builder", "qa", "launcher"],
+      "karpathy_loop": "design → build → measure UX → keep/revert",
+      "schedule": "every_2h",
+      "per_repo": {
+        "mon-ipad": "Dashboard + Trading Floor Game",
+        "nomos-nba-agent": "Daily picks delivery, prediction quality",
+        "nomos-political-alpha": "ETF signal dashboard, alpha reports",
+        "nomos-dashboard": "All pages, charts, visualizations",
+        "rgwa": "Gallery, generation UI, marketplace",
+        "nomos-picks": "User-facing picks, bet recommendations",
+        "nomos-pierre": "Tutorial, guided experience",
+        "OddsHarvester": "Data quality dashboard, API docs"
+      }
+    },
+    "business": {
+      "id": "D5",
+      "name": "Business",
+      "layer": "L2_APPLICATION",
+      "metrics": ["mrr", "conversion_rate", "users_active", "churn_rate"],
+      "council_agents": ["strategist", "pricer", "onboarder", "analyst"],
+      "karpathy_loop": "strategy → test → measure conversion → keep/revert",
+      "schedule": "daily",
+      "per_repo": {
+        "mon-ipad": "SaaS pricing ($19/$49/$149), go-to-market",
+        "nomos-nba-agent": "Betting edge monetization",
+        "nomos-political-alpha": "Alpha signal subscription",
+        "nomos-dashboard": "User growth, engagement metrics",
+        "rgwa": "Art marketplace, commission model",
+        "nomos-picks": "Picks subscription, premium tiers",
+        "nomos-pierre": "User retention, lifetime value",
+        "OddsHarvester": "API monetization, data licensing"
+      }
+    },
+    "evaluation": {
+      "id": "D6",
+      "name": "Evaluation",
+      "layer": "L2_APPLICATION",
+      "metrics": ["false_positive_rate", "calibration_ece", "backtest_sharpe", "roi_accuracy"],
+      "council_agents": ["auditor", "calibrator", "backtester", "reporter"],
+      "karpathy_loop": "audit → identify issue → fix → verify improvement",
+      "schedule": "every_2h",
+      "per_repo": {
+        "mon-ipad": "Brier score, ROI, Sharpe ratio validation",
+        "nomos-nba-agent": "Walk-forward validation, calibration curves",
+        "nomos-political-alpha": "Backtest accuracy, alpha decay analysis",
+        "nomos-dashboard": "Performance metrics, load testing",
+        "rgwa": "Quality scoring, FID/CLIP metrics",
+        "nomos-picks": "Hit rate, CLV measurement",
+        "nomos-pierre": "User feedback analysis, NPS",
+        "OddsHarvester": "Data accuracy, freshness, coverage"
+      }
+    },
+    "infra": {
+      "id": "D7",
+      "name": "Infra",
+      "layer": "L3_LOGISTICS",
+      "metrics": ["uptime_pct", "restart_count", "latency_p99", "disk_usage_pct"],
+      "council_agents": ["monitor", "healer", "scaler", "deployer"],
+      "karpathy_loop": "check → detect issue → fix → verify uptime",
+      "schedule": "every_30m",
+      "per_repo": {
+        "mon-ipad": "VM + HF Spaces + GPU + Laptop + Tailscale",
+        "nomos-nba-agent": "Crons, data pipelines, prediction delivery",
+        "nomos-political-alpha": "Data feeds, HF spaces, signal pipelines",
+        "nomos-dashboard": "Vercel deployment, CDN, API endpoints",
+        "rgwa": "HF Spaces, generation queues, storage",
+        "nomos-picks": "API availability, delivery SLA",
+        "nomos-pierre": "Monitoring, alerting, logging",
+        "OddsHarvester": "Scraping crons, rate limiting, proxy rotation"
+      }
+    },
+    "finance": {
+      "id": "D8",
+      "name": "Finance",
+      "layer": "L3_LOGISTICS",
+      "metrics": ["burn_rate_monthly", "roi_per_dollar", "cost_per_iteration", "revenue"],
+      "council_agents": ["tracker", "reporter", "forecaster", "optimizer"],
+      "karpathy_loop": "track costs → report → optimize → verify savings",
+      "schedule": "daily",
+      "per_repo": {
+        "mon-ipad": "Total ecosystem costs, API bills, compute costs",
+        "nomos-nba-agent": "Bankroll tracking, bet P&L",
+        "nomos-political-alpha": "Portfolio tracking, alpha P&L",
+        "nomos-dashboard": "Vercel costs, CDN costs",
+        "rgwa": "Generation costs, API usage",
+        "nomos-picks": "Subscription revenue, costs",
+        "nomos-pierre": "User acquisition cost, LTV",
+        "OddsHarvester": "Proxy costs, API costs"
+      }
+    },
+    "cross_repo_agents": {
+    "id": "D9",
+    "name": "Cross-Repo Agents",
+    "layer": "L2_APPLICATION",
+    "metrics": ["repos_monitored", "cross_pollinations", "agent_sync_rate", "parity_checks"],
+    "council_agents": ["monitor", "synchronizer", "pollinator", "auditor"],
+    "karpathy_loop": "scan all repos → detect drift → sync/fix → verify parity",
+    "schedule": "every_2h",
+    "per_repo": "ALL — monitors consistency, feature parity, config sync, health across 8 repos",
+    "responsibilities": [
+      "Feature engine parity (engine.py identical across HF spaces)",
+      "Config drift detection (CLAUDE.md, department-config.json)",
+      "Cross-pollination of best GA individuals between islands",
+      "Agent performance comparison across repos",
+      "Shared skills/processes propagation",
+      "Health aggregation (cross-repo-health.json)"
+    ]
+    }
+  },
+  "shared_infra": {
+    "compute": {
+      "vm": {"ip": "100.70.229.122", "role": "control_tower", "tools": ["claude_code_cli", "termius"]},
+      "laptop_aurelien": {"ip": "100.67.205.125", "role": "local_models", "tools": ["ollama", "qwen_3_6", "gemma_4", "hermes_agent", "vscode"]},
+      "laptop_brother": {"ip": null, "role": "extra_compute", "tools": ["termius", "hf_spaces"]},
+      "hf_spaces": {"accounts": ["LBJLincoln", "LBJLincoln26", "Nomos42"]},
+      "gpu": {"kaggle": "P100_9h", "colab": "T4_free", "modal": "configured"}
+    },
+    "storage": ["github", "hf_spaces", "supabase", "neo4j", "google_drive", "obsidian_vault"]
+  }
+}

@@ -22,3 +22,9 @@
 
 ## Backtest Audit
 - [project_backtest_audit_march2026.md](project_backtest_audit_march2026.md) — CRITICAL: 3 bugs in nba_season_backtest.py inflated ROI 4470% (circular odds), Sharpe 2.2x (sqrt annualization), DD understated. All 3 fixed 2026-03-28.
+
+## April 2026 Research
+- [research_april2026_cycle9_neural_architectures.md](research_april2026_cycle9_neural_architectures.md) — Apr 3 2026 cycle 9: neural arch sweep — MLP meta-learner (deploy now, -0.003), Brier loss obj (-0.002), TabICLv2 GPU (-0.004), discrete tokenization transformer arXiv:2603.07448 (watch for code, -0.005), GNN/TFT/NODE all SKIP
+- [research_april2026_cycle10_betting_markets.md](research_april2026_cycle10_betting_markets.md) — Apr 3 2026 cycle 10: 64-market NBA taxonomy (US + FR), softest markets (blocks/steals/Q1 props/alt team totals = efficiency 5), The Odds API keys, Pari+20 exclusive (FR), 4-phase expansion roadmap
+- [research_april2026_free_models_scan.md](research_april2026_free_models_scan.md) — Apr 4 2026: Gemma 4 (E2B/E4B/26B-A4B/31B), Qwen3.6-Plus (cloud-only), Qwen3.5 (open), Llama4 Scout, Mistral Small 4. Best free stack: Cerebras (Qwen3-235B, 1M tok/day) + Groq (Llama4/8B, 14400 RPD) + OpenRouter (Qwen3.6+:free, 1M ctx). 3 config errors corrected.
+- [research_april2026_free_inference_capacity.md](research_april2026_free_inference_capacity.md) — Apr 4 2026: Full capacity audit — Groq (per org, 5 keys potentially 72K RPD), OpenRouter (global limits, 7 keys = no benefit), Cerebras (14,400 RPD per account), HF ($0.10/mo per token), Gemini (1K RPD Flash-Lite), Mistral (2 RPM free, 1B tok/month). Total current: 16K-88K RPD. 200-agent floor feasible.

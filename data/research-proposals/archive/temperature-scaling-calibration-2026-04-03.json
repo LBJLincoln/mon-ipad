@@ -1,0 +1,99 @@
+{
+  "proposal_id": "temperature-scaling-calibration-2026-04-03",
+  "created": "2026-04-03T12:00:00Z",
+  "brain_cycle": 57,
+  "project": "nomos-nba-agent",
+  "priority": "HIGH",
+  "status": "PROPOSED",
+  "type": "calibration_improvement",
+  "expected_brier_delta": "-0.002 to -0.004",
+
+  "research_sources": [
+    "MDPI Jan 2026 (https://www.mdpi.com/2078-2489/17/1/56) — Uncertainty-Aware NBA: MC Dropout + calibration stack cuts ECE by 40%",
+    "Guo et al. 2017 — 'On Calibration of Modern Neural Networks' (temperature scaling canonical paper)",
+    "sklearn CalibratedClassifierCV — isotonic regression / Platt scaling, Brier-optimized"
+  ],
+
+  "problem": {
+    "current_state": "GA evolves models for composite fitness (Brier + ROI + Sharpe). Best raw Brier = 0.22182 (S14). Checkpoint threshold = 0.21837. Gap = 0.00345.",
+    "issue": "Tree models (XGBoost, RF, CatBoost) produce systematically over-confident raw probabilities near 0 and 1. Post-hoc calibration is known to reduce Brier by 0.002-0.005 with ZERO retraining cost.",
+    "opportunity": "Apply temperature scaling (single scalar T) or isotonic regression on validation set AFTER GA picks best model. Report both raw and calibrated Brier in /api/status."
+  },
+
+  "proposal": {
+    "name": "Post-Hoc Calibration Layer (Temperature Scaling + Isotonic)",
+    "method": "temperature_scaling_then_isotonic",
+    "implementation_location": "hf-space/app.py — add calibration step after GA cycle reports best model",
+
+    "algorithm": {
+      "step1": "At end of each GA cycle, take best model from Pareto front",
+      "step2": "Split X_val into calib_set (30%) and holdout (70%)",
+      "step3_a": "Temperature scaling: find T* = argmin Brier(sigmoid(logit(p)/T), y_calib). Optimize with scipy.optimize.minimize_scalar(bounds=(0.1, 5.0))",
+      "step3_b": "Isotonic regression: fit IsotonicRegression(out_of_bounds='clip') on p_raw, y_calib",
+      "step4": "Pick better of TS vs isotonic on calib_set by Brier",
+      "step5": "Report calibrated_brier on holdout in /api/status",
+      "step6": "If calibrated_brier < best_brier_ever → trigger Supabase checkpoint"
+    },
+
+    "code_sketch": [
+      "# Step 1: get raw probs from best model",
+      "p_raw_val = best_model.predict_proba(X_val)[:, 1]",
+      "",
+      "# Step 2: Temperature scaling",
+      "from scipy.optimize import minimize_scalar",
+      "import numpy as np",
+      "def brier_at_T(T):",
+      "    p_cal = 1 / (1 + np.exp(-np.log(p_raw_val / (1 - p_raw_val + 1e-9)) / T))",
+      "    return np.mean((p_cal - y_val) ** 2)",
+      "result = minimize_scalar(brier_at_T, bounds=(0.1, 5.0), method='bounded')",
+      "T_star = result.x",
+      "p_ts = 1 / (1 + np.exp(-np.log(p_raw_val / (1 - p_raw_val + 1e-9)) / T_star))",
+      "",
+      "# Step 3: Isotonic regression",
+      "from sklearn.isotonic import IsotonicRegression",
+      "iso = IsotonicRegression(out_of_bounds='clip').fit(p_raw_val, y_val)",
+      "p_iso = iso.predict(p_raw_val)",
+      "",
+      "# Step 4: Pick best",
+      "brier_ts = np.mean((p_ts - y_val) ** 2)",
+      "brier_iso = np.mean((p_iso - y_val) ** 2)",
+      "calibrated_brier = min(brier_ts, brier_iso)",
+      "calibration_method = 'temperature_scaling' if brier_ts < brier_iso else 'isotonic'",
+      "",
+      "# Step 5: Store T_star or iso model for inference",
+      "state['calibration'] = {'method': calibration_method, 'T': T_star, 'iso': iso}"
+    ],
+
+    "api_changes": {
+      "new_fields_in_status": [
+        "calibrated_brier: float",
+        "calibration_method: str (temperature_scaling | isotonic | none)",
+        "calibration_temperature: float (T* if temperature scaling)",
+        "raw_brier: float (unchanged existing best_brier)"
+      ]
+    },
+
+    "constraints": {
+      "cpu_compatible": true,
+      "no_new_deps": true,
+      "sklearn_isotonic": "already in scipy/sklearn stack",
+      "run_time": "< 2 seconds per cycle on CPU",
+      "no_data_leakage": "calibration uses val split only, not test"
+    }
+  },
+
+  "why_now": {
+    "gap_to_checkpoint": 0.00345,
+    "expected_improvement": "0.002-0.004 reduction = 58-116% of gap closed",
+    "risk": "LOW — pure post-processing, no architecture change, easy to revert",
+    "prior_art": "stacked-ensemble proposal (cycle 56) targets -0.003 to -0.006 but requires architecture change. Calibration is simpler and complementary."
+  },
+
+  "cross_project_port": {
+    "applicable_to_political": true,
+    "political_gain": "PA-2 Brier 0.23134 → estimated 0.227-0.229 after calibration",
+    "political_implementation": "same code, apply to nomos-political-alpha/hf-space/app.py"
+  },
+
+  "implementation_priority": "IMPLEMENT NEXT CYCLE in hf-space/app.py on S14 (fleet leader) first"
+}

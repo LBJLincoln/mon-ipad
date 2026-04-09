@@ -137,7 +137,7 @@ ATR_BRIER = 0.21570  # Current all-time record (Colab TabICL, 110f, iter 15)
     image=gpu_image,
     volumes={VOLUME_MOUNT: vol},
     secrets=[modal.Secret.from_name("nomos42-secrets")],
-    timeout=1800,  # 30 min: 43-cat engine on 9k+ games can take 15-25 min
+    timeout=3600,  # 60 min: 43-cat engine on 9k+ games can take 25-45 min first time
     retries=0,     # don't retry on timeout -- would double charges
 )
 def build_feature_cache() -> dict:

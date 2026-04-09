@@ -1,66 +1,30 @@
 {
-  "timestamp": "2026-04-02T17:15:15Z",
+  "timestamp": "2026-04-08T06:40:30Z",
+  "iteration": 72,
   "summary": {
-    "total": 11,
-    "healthy": 8,
-    "restarted": 0,
-    "failed": 2
+    "total_services": 14,
+    "healthy": 10,
+    "escalated": 4,
+    "restarted": 0
   },
-  "hf_spaces": {
-    "P1_pol": {
-      "status": "running",
-      "brier": "0.24186",
-      "gen": "5964"
-    },
-    "P2_pol": {
-      "status": "running",
-      "brier": "0.25081",
-      "gen": "4174"
-    },
-    "P3_pol": {
-      "status": "down",
-      "http": "404"
-    },
-    "P4_pol": {
-      "status": "down",
-      "http": "404"
-    },
-    "S10_nba": {
-      "status": "running",
-      "brier": "0.22472",
-      "gen": "308"
-    },
-    "S11_nba": {
-      "status": "running",
-      "brier": "0.22615",
-      "gen": "368"
-    },
-    "S12_nba": {
-      "status": "running",
-      "brier": "0.22262",
-      "gen": "453"
-    },
-    "S13_nba": {
-      "status": "running",
-      "brier": "0.22446",
-      "gen": "403"
-    },
-    "S14_nba": {
-      "status": "running",
-      "brier": "0.22182",
-      "gen": "412"
-    },
-    "S15_nba": {
-      "status": "running",
-      "brier": "0.22471",
-      "gen": "372"
-    }
+  "nba_spaces": {
+    "S10": {"status": "running", "response_time_ms": 2847},
+    "S11": {"status": "running", "response_time_ms": 1953},
+    "S12": {"status": "running", "response_time_ms": 890},
+    "S13": {"status": "running", "response_time_ms": 754},
+    "S14": {"status": "running", "response_time_ms": 618},
+    "S15": {"status": "running", "response_time_ms": 502}
   },
-  "kaggle": {
-    "nba": "[2026-04-02T17:15:09Z]   \u21bb Kaggle NBA: COMPLETE \u2014 relaunching... relaunched",
-    "political": "[2026-04-02T17:15:11Z]   \u21bb Kaggle Political: COMPLETE \u2014 relaunching... relaunched"
+  "political_spaces": {
+    "P1": {"status": "down", "reason": "unreachable_5_cycles", "escalation_status": "active"},
+    "P2": {"status": "down", "reason": "unreachable_5_cycles", "escalation_status": "active"},
+    "P3": {"status": "down", "reason": "unreachable_5_cycles", "escalation_status": "active"},
+    "P4": {"status": "down", "reason": "unreachable_5_cycles", "escalation_status": "active"}
   },
-  "modal": {
-    "nba": "idle_peak"
-  }
+  "critical_services": {
+    "data_server_8080": {"status": "up", "type": "SimpleHTTPServer", "port": 8080},
+    "bloomberg_api_8042": {"status": "up", "type": "bloomberg-api.py", "port": 8042, "note": "BrokenPipeError in logs (non-fatal)"}
+  },
+  "crons_healthy": true,
+  "escalation_notes": "PA1-PA4 offline since iteration 71 (5+ consecutive health checks). Manual HF Spaces dashboard intervention required. NBA fleet at 100% availability."
 }

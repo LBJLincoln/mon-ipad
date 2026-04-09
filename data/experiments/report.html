@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nomos42 Experiment Tracker</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: #0d1117; color: #c9d1d9; font-family: 'Cascadia Code', 'JetBrains Mono', monospace;
+        padding: 20px; max-width: 1200px; margin: 0 auto;
+    }
+    h1 { color: #58a6ff; margin-bottom: 5px; font-size: 1.8em; }
+    h2 { color: #79c0ff; margin: 25px 0 10px; font-size: 1.3em; border-bottom: 1px solid #21262d; padding-bottom: 5px; }
+    .subtitle { color: #8b949e; margin-bottom: 20px; }
+    .kpi-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px; margin: 20px 0;
+    }
+    .kpi {
+        background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+        padding: 15px; text-align: center;
+    }
+    .kpi .value { font-size: 2em; font-weight: bold; color: #58a6ff; }
+    .kpi .label { color: #8b949e; font-size: 0.85em; margin-top: 5px; }
+    .kpi.good .value { color: #3fb950; }
+    .kpi.bad .value { color: #f85149; }
+    .kpi.warn .value { color: #d29922; }
+    table {
+        width: 100%; border-collapse: collapse; margin: 10px 0;
+        background: #161b22; border-radius: 8px; overflow: hidden;
+    }
+    th { background: #21262d; color: #79c0ff; padding: 10px; text-align: left; font-weight: 600; }
+    td { padding: 8px 10px; border-top: 1px solid #21262d; }
+    tr:hover td { background: #1c2128; }
+    pre {
+        background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+        padding: 15px; overflow-x: auto; font-size: 0.9em; line-height: 1.4;
+    }
+    .chart-label { color: #8b949e; font-size: 0.8em; }
+    .footer { color: #484f58; margin-top: 30px; padding-top: 10px; border-top: 1px solid #21262d; font-size: 0.8em; }
+    .badge {
+        display: inline-block; padding: 2px 8px; border-radius: 12px;
+        font-size: 0.75em; font-weight: 600;
+    }
+    .badge-green { background: #238636; color: #fff; }
+    .badge-red { background: #da3633; color: #fff; }
+    .badge-yellow { background: #9e6a03; color: #fff; }
+</style>
+</head>
+<body>
+
+<h1>Nomos42 Experiment Tracker</h1>
+<p class="subtitle">Generated: 2026-04-04 09:58 UTC | Engine: v3.0-37cat | Gen: 435</p>
+
+<div class="kpi-grid">
+    <div class="kpi good">
+        <div class="value">0.2157</div>
+        <div class="label">ATR Brier Score</div>
+    </div>
+    <div class="kpi">
+        <div class="value">110</div>
+        <div class="label">Features Selected</div>
+    </div>
+    <div class="kpi bad">
+        <div class="value">$91.89</div>
+        <div class="label">Bankroll</div>
+    </div>
+    <div class="kpi bad">
+        <div class="value">-8.11%</div>
+        <div class="label">ROI</div>
+    </div>
+    <div class="kpi bad">
+        <div class="value">-2.99</div>
+        <div class="label">Sharpe Ratio</div>
+    </div>
+    <div class="kpi">
+        <div class="value">6</div>
+        <div class="label">Evolution Islands</div>
+    </div>
+</div>
+
+<h2>Brier Score Progression</h2>
+<pre>
+  BRIER SCORE PROGRESSION (lower is better)
+  ------------------------------------------------------------
+
+  ATR Timeline:
+  2026-03-16 |████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░| 0.22471 (logistic_regres)
+  2026-03-22 |███████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░| 0.22041 (xgboost)
+  2026-03-25 |███████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░| 0.21844 (extra_trees)
+  2026-03-27 |███████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░| 0.21570 (tabicl_ensemble)
+
+  Current Models:
+           tabicl |███████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░| 0.21570
+         catboost |███████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░| 0.22041
+          xgboost |███████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░| 0.22050
+         lightgbm |███████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░| 0.22080
+      extra_trees |████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░| 0.22250
+    random_forest |█████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░| 0.22447
+
+  ------------------------------------------------------------
+  Target: 0.20000 | Current ATR: 0.21570
+</pre>
+
+<h2>Model Leaderboard</h2>
+<table>
+    <tr><th>Model</th><th>Brier</th><th>Weight</th><th>Status</th></tr>
+    
+        <tr>
+            <td>tabicl</td>
+            <td><strong>0.2157</strong></td>
+            <td>30%</td>
+            <td><span style="color: #00e676;">ATR_BEST</span></td>
+        </tr>
+        <tr>
+            <td>catboost</td>
+            <td><strong>0.22041</strong></td>
+            <td>20%</td>
+            <td><span style="color: #ffc107;">ACTIVE</span></td>
+        </tr>
+        <tr>
+            <td>xgboost</td>
+            <td><strong>0.2205</strong></td>
+            <td>18%</td>
+            <td><span style="color: #ffc107;">ACTIVE</span></td>
+        </tr>
+        <tr>
+            <td>lightgbm</td>
+            <td><strong>0.2208</strong></td>
+            <td>16%</td>
+            <td><span style="color: #ffc107;">ACTIVE</span></td>
+        </tr>
+        <tr>
+            <td>extra_trees</td>
+            <td><strong>0.2225</strong></td>
+            <td>10%</td>
+            <td><span style="color: #ffc107;">ACTIVE</span></td>
+        </tr>
+        <tr>
+            <td>random_forest</td>
+            <td><strong>0.22447</strong></td>
+            <td>6%</td>
+            <td><span style="color: #ffc107;">ACTIVE</span></td>
+        </tr>
+</table>
+
+<h2>All-Time Record (ATR) History</h2>
+<table>
+    <tr><th>Date</th><th>Brier</th><th>Model</th><th>Features</th><th>Notes</th></tr>
+    
+        <tr>
+            <td>2026-03-27</td>
+            <td><strong>0.2157</strong></td>
+            <td>tabicl_ensemble</td>
+            <td>110</td>
+            <td>Colab TabICL iter15 - NEW ATR</td>
+        </tr>
+        <tr>
+            <td>2026-03-25</td>
+            <td><strong>0.21844</strong></td>
+            <td>extra_trees</td>
+            <td>94</td>
+            <td>Kaggle gen52</td>
+        </tr>
+        <tr>
+            <td>2026-03-22</td>
+            <td><strong>0.22041</strong></td>
+            <td>xgboost</td>
+            <td>194</td>
+            <td>S10 MOVDA-era best</td>
+        </tr>
+        <tr>
+            <td>2026-03-16</td>
+            <td><strong>0.22471</strong></td>
+            <td>logistic_regression</td>
+            <td>24</td>
+            <td></td>
+        </tr>
+</table>
+
+
+        <h2>Evolution Islands</h2>
+        <table>
+            <tr><th>Island</th><th>Role</th><th>Best Brier</th><th>Mutation Rate</th></tr>
+            
+                <tr>
+                    <td>S10</td>
+                    <td>exploitation</td>
+                    <td>0.22041</td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td>S11</td>
+                    <td>exploration</td>
+                    <td>N/A</td>
+                    <td>0.15</td>
+                </tr>
+                <tr>
+                    <td>S12</td>
+                    <td>extra_trees_specialist</td>
+                    <td>N/A</td>
+                    <td>0.08</td>
+                </tr>
+                <tr>
+                    <td>S13</td>
+                    <td>catboost_specialist</td>
+                    <td>N/A</td>
+                    <td>0.1</td>
+                </tr>
+                <tr>
+                    <td>S14</td>
+                    <td>lightgbm_specialist</td>
+                    <td>N/A</td>
+                    <td>0.08</td>
+                </tr>
+                <tr>
+                    <td>S15</td>
+                    <td>wide_search</td>
+                    <td>0.2225</td>
+                    <td>N/A</td>
+                </tr>
+        </table>
+        
+
+<h2>Trading Floor Agents</h2><table><tr><th>Trader</th><th>Balance</th><th>ROI</th><th>Record</th></tr>
+            <tr>
+                <td>claude</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A/N/A</td>
+            </tr>
+            <tr>
+                <td>codex</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A/N/A</td>
+            </tr>
+            <tr>
+                <td>gemini</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A/N/A</td>
+            </tr>
+            <tr>
+                <td>grok</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A/N/A</td>
+            </tr>
+            <tr>
+                <td>openrouter</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A/N/A</td>
+            </tr>
+            <tr>
+                <td>political-claude</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A/N/A</td>
+            </tr>
+            <tr>
+                <td>political-codex</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A/N/A</td>
+            </tr>
+            <tr>
+                <td>political-gemini</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A/N/A</td>
+            </tr>
+            <tr>
+                <td>political-grok</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A/N/A</td>
+            </tr>
+            <tr>
+                <td>political-openrouter</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A/N/A</td>
+            </tr></table>
+
+<h2>Department Status</h2><table><tr><th>Department</th><th>Status</th><th>Iterations</th><th>Last Run</th></tr>
+            <tr>
+                <td>betting</td>
+                <td>completed</td>
+                <td>?</td>
+                <td>2026-04-03T18:10:08</td>
+            </tr>
+            <tr>
+                <td>business</td>
+                <td>?</td>
+                <td>?</td>
+                <td>2026-04-04T08:00:01</td>
+            </tr>
+            <tr>
+                <td>comms</td>
+                <td>completed</td>
+                <td>?</td>
+                <td>2026-04-03T07:00:18</td>
+            </tr>
+            <tr>
+                <td>creative</td>
+                <td>completed</td>
+                <td>?</td>
+                <td>2026-04-03T09:00:01</td>
+            </tr>
+            <tr>
+                <td>cross_repo_agents</td>
+                <td>?</td>
+                <td>?</td>
+                <td>2026-04-04T08:50:33</td>
+            </tr>
+            <tr>
+                <td>engineering</td>
+                <td>?</td>
+                <td>?</td>
+                <td>2026-04-04T09:12:04</td>
+            </tr>
+            <tr>
+                <td>evaluation</td>
+                <td>?</td>
+                <td>?</td>
+                <td>2026-04-04T08:20:09</td>
+            </tr>
+            <tr>
+                <td>evolution</td>
+                <td>?</td>
+                <td>?</td>
+                <td>2026-04-04T09:22:02</td>
+            </tr>
+            <tr>
+                <td>finance</td>
+                <td>?</td>
+                <td>?</td>
+                <td>2026-04-04T07:50:04</td>
+            </tr>
+            <tr>
+                <td>infra</td>
+                <td>?</td>
+                <td>?</td>
+                <td>2026-04-04T08:40:07</td>
+            </tr>
+            <tr>
+                <td>political</td>
+                <td>completed</td>
+                <td>?</td>
+                <td>2026-04-03T20:01:45</td>
+            </tr>
+            <tr>
+                <td>product</td>
+                <td>?</td>
+                <td>?</td>
+                <td>2026-04-04T07:43:48</td>
+            </tr>
+            <tr>
+                <td>research</td>
+                <td>?</td>
+                <td>?</td>
+                <td>2026-04-04T09:02:05</td>
+            </tr></table>
+
+<h2>Evolution Config</h2>
+<table>
+    <tr><th>Parameter</th><th>Value</th></tr>
+    <tr><td>Generations</td><td>435</td></tr>
+    <tr><td>Population</td><td>60</td></tr>
+    <tr><td>Islands</td><td>6</td></tr>
+    <tr><td>Raw Features</td><td>6135</td></tr>
+    <tr><td>Selected Features</td><td>110</td></tr>
+    <tr><td>Max Features</td><td>200 (hard cap)</td></tr>
+    <tr><td>Feature Engine</td><td>v3.0-37cat</td></tr>
+    <tr><td>Categories</td><td>37</td></tr>
+    <tr><td>Platform</td><td>Colab TabICL + 6 HF Islands</td></tr>
+    <tr><td>Kaggle Iterations</td><td>15</td></tr>
+</table>
+
+<h2>Targets vs Actual</h2>
+<table>
+    <tr><th>Metric</th><th>Target</th><th>Actual</th><th>Gap</th></tr>
+    <tr>
+        <td>Brier Score</td><td>&lt; 0.200</td>
+        <td>0.2157</td>
+        <td style="color: #f85149;">+0.01570</td>
+    </tr>
+    <tr>
+        <td>ROI</td><td>&gt; 5%</td>
+        <td>-8.11%</td>
+        <td style="color: #f85149;">-13.11%</td>
+    </tr>
+    <tr>
+        <td>Sharpe Ratio</td><td>&gt; 1.5</td>
+        <td>-2.99</td>
+        <td style="color: #f85149;">-4.49</td>
+    </tr>
+</table>
+
+<div class="footer">
+    Nomos42 Experiment Tracker | Data sources: local JSON files
+      + ClearML
+    | Auto-generated by scripts/monitoring/experiment-tracker.py
+</div>
+
+</body>
+</html>

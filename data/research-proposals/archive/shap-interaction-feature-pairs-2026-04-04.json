@@ -1,0 +1,73 @@
+{
+  "proposal_id": "shap-interaction-feature-pairs-2026-04-04",
+  "created": "2026-04-04T04:30:00Z",
+  "brain_cycle": 60,
+  "project": "nomos-nba-agent",
+  "priority": "HIGH",
+  "status": "PROPOSED",
+  "research_sources": [
+    "https://www.nature.com/articles/s41598-025-97817-3.pdf — Nature 2025: Explaining basketball game performance with SHAP interaction values",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/ — PMC 2025: XGBoost+SHAP for NBA, feature pair interactions",
+    "https://shap.readthedocs.io/en/latest/example_notebooks/tabular_examples/tree_based_models/Basic%20SHAP%20Interaction%20Value%20Example%20in%20XGBoost.html — SHAP interaction docs"
+  ],
+
+  "key_finding": "2025 Nature paper 'Explaining basketball game performance with SHAP' finds that top features work through INTERACTIONS — home_advantage × team_form, elo_diff × rest_days, fg_pct × opponent_defense jointly explain 18-23% more variance than sum of individual effects. Pure SHAP main effects miss these synergies.",
+
+  "proposal": {
+    "name": "SHAP Interaction Value Feature Pair Engineering (Cat52)",
+    "type": "feature_engine_enhancement",
+    "expected_brier_delta": "-0.002 to -0.005",
+    "complexity": "MEDIUM",
+    "gpu_required_for_analysis": true,
+    "cpu_deployable": true,
+
+    "description": "Run SHAP TreeExplainer with interaction_values=True on S15's best random_forest model (79f, Brier 0.22159). Compute N×N SHAP interaction matrix. Extract top-20 feature pairs by mean |SHAP_interaction|. Encode each pair as a product/ratio feature and add to Cat52 of the feature engine. GA can then select/deselect these engineered interaction terms.",
+
+    "implementation_steps": [
+      "STEP 1 (Kaggle Karpathy): Load S15 best model + X_test. Run: explainer = shap.TreeExplainer(model); shap_int = explainer.shap_interaction_values(X_test). Shape: (n_samples, n_features, n_features).",
+      "STEP 2: Aggregate: mean_int = np.abs(shap_int).mean(axis=0). Zero diagonal. Extract top-20 off-diagonal pairs (i,j) with highest mean_int[i,j].",
+      "STEP 3: For each pair (feat_i, feat_j), add to feature engine: feat_i × feat_j (product), abs(feat_i - feat_j) (abs difference) — 2 features per pair = 40 new features total.",
+      "STEP 4: Add as Cat52_ShapInteractions to features/engine.py. Label each with pair metadata for interpretability.",
+      "STEP 5: Push updated engine.py to hf-space. GA will naturally select/prune via feature count penalty in fitness."
+    ],
+
+    "expected_top_pairs": [
+      "home_advantage × elo_difference",
+      "team_form_7d × opponent_defensive_rating",
+      "rest_days_diff × back_to_back_flag",
+      "field_goal_pct_10g × opponent_fg_allowed",
+      "win_streak × road_game_flag"
+    ],
+
+    "code_sketch": {
+      "kaggle_analysis": [
+        "import shap",
+        "explainer = shap.TreeExplainer(best_rf_model)",
+        "shap_int = explainer.shap_interaction_values(X_test[:500])  # subsample for speed",
+        "mean_int = np.abs(shap_int).mean(axis=0)",
+        "np.fill_diagonal(mean_int, 0)",
+        "top_pairs = np.unravel_index(np.argsort(mean_int.ravel())[-20:], mean_int.shape)",
+        "pair_list = [(feat_names[i], feat_names[j], mean_int[i,j]) for i,j in zip(*top_pairs)]"
+      ],
+      "engine_addition": [
+        "# Cat52 — SHAP Interaction Pairs (added 2026-04-04)",
+        "SHAP_TOP_PAIRS = [  # From S15 RF analysis cycle 60",
+        "    ('home_adv', 'elo_diff'),",
+        "    ('form_7d', 'opp_def_rtg'),",
+        "    # ... top 20 pairs from Kaggle analysis",
+        "]",
+        "for f1, f2 in SHAP_TOP_PAIRS:",
+        "    features.append(df[f1] * df[f2])  # product interaction",
+        "    features.append(np.abs(df[f1] - df[f2]))  # abs difference"
+      ]
+    },
+
+    "why_now": "S15 fleet leader (RF 79f Brier 0.22159, ROI 30.67%) is the ideal model for SHAP interaction analysis — random forests have well-calibrated SHAP values. Checkpoint threshold 0.21837, gap 0.00322. Adding 40 interaction features from top-20 SHAP pairs gives GA new levers to close gap. Previous SHAP proposal (March 29) was about seeding GA init — this is about feature ENGINEERING from interaction matrix, orthogonal approach.",
+
+    "cpu_constraints": "Analysis runs on Kaggle GPU. Resulting features are scalar arithmetic (products, differences) — CPU compatible on all 6 islands. Zero inference overhead.",
+
+    "cross_project": "Identical pattern applicable to nomos-political-alpha Cat14_ShapInteractions once validated on NBA. Political interaction pairs (donor_amount × sector_heat, polymarket_delta × elo_diff) could uncover regime-switching dynamics."
+  },
+
+  "immediate_action": "Run SHAP interaction analysis on Kaggle during next GPU session using S15 model weights. Pull feature names from /hf-space/features/engine.py. Report top-20 pairs here before implementing Cat52."
+}

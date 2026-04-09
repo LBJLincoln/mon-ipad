@@ -209,6 +209,18 @@ class IsotonicCalibration:
         Returns the modified game dict (does NOT mutate in place).
         """
         g = dict(game)
+        # Idempotency: if the in-process IsotonicPostCalibrator in
+        # nomos-nba-agent/predict_today.py (line 672) already calibrated
+        # this game, or a previous calibrate_game() pass ran, don't
+        # double-apply. Detect via model_version suffix or calibrated flag.
+        already_calibrated = (
+            g.get("calibrated") is True
+            or "+isotonic" in str(g.get("model_version", ""))
+            or "raw_home_win_prob" in g
+        )
+        if already_calibrated:
+            return g
+
         raw_home = float(g.get("home_win_prob", 0.5))
         raw_away = float(g.get("away_win_prob", 0.5))
 

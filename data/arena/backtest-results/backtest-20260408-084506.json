@@ -1,0 +1,733 @@
+{
+  "timestamp": "2026-04-08T08:45:06.117071",
+  "model_brier": 0.24246,
+  "real_brier": 0.24246,
+  "real_brier_n": 104,
+  "synthetic_model_brier": 0.2152,
+  "games_total": 1247,
+  "strategies": {
+    "kelly_0.5_0.03": {
+      "strategy": "kelly_0.5_0.03",
+      "name": "Half Kelly (edge>3%)",
+      "total_bets": 175,
+      "wins": 75,
+      "win_rate": 0.4286,
+      "total_pnl": -80.67,
+      "roi": -21.38,
+      "final_bankroll": 19.29,
+      "max_drawdown": 0.8071,
+      "sharpe": -2.335
+    },
+    "kelly_0.25_0.03": {
+      "strategy": "kelly_0.25_0.03",
+      "name": "Quarter Kelly (edge>3%)",
+      "total_bets": 181,
+      "wins": 75,
+      "win_rate": 0.4144,
+      "total_pnl": -80.13,
+      "roi": -19.25,
+      "final_bankroll": 19.87,
+      "max_drawdown": 0.8013,
+      "sharpe": -2.335
+    },
+    "fixed_0.02": {
+      "strategy": "fixed_0.02",
+      "name": "Fixed 2%",
+      "total_bets": 196,
+      "wins": 85,
+      "win_rate": 0.4337,
+      "total_pnl": -50.83,
+      "roi": -18.74,
+      "final_bankroll": 49.19,
+      "max_drawdown": 0.5081,
+      "sharpe": -2.335
+    },
+    "value_0.05": {
+      "strategy": "value_0.05",
+      "name": "Value Hunter (edge>5%)",
+      "total_bets": 175,
+      "wins": 75,
+      "win_rate": 0.4286,
+      "total_pnl": -80.67,
+      "roi": -21.38,
+      "final_bankroll": 19.29,
+      "max_drawdown": 0.8071,
+      "sharpe": -2.335
+    },
+    "spec_moneyline": {
+      "strategy": "spec_moneyline",
+      "name": "Specialist: Moneyline",
+      "total_bets": 148,
+      "wins": 61,
+      "win_rate": 0.4122,
+      "total_pnl": -80.7,
+      "roi": -26.41,
+      "final_bankroll": 19.27,
+      "max_drawdown": 0.8073,
+      "sharpe": -3.934
+    },
+    "spec_spread": {
+      "strategy": "spec_spread",
+      "name": "Specialist: Spread",
+      "total_bets": 445,
+      "wins": 313,
+      "win_rate": 0.7034,
+      "total_pnl": 127082.1,
+      "roi": 45.09,
+      "final_bankroll": 127182.12,
+      "max_drawdown": 0.5367,
+      "sharpe": 3.333
+    },
+    "aggressive": {
+      "strategy": "aggressive",
+      "name": "Aggressive (high stakes, low threshold)",
+      "total_bets": 137,
+      "wins": 59,
+      "win_rate": 0.4307,
+      "total_pnl": -87.86,
+      "roi": -24.19,
+      "final_bankroll": 12.14,
+      "max_drawdown": 0.8786,
+      "sharpe": -2.335
+    },
+    "conservative": {
+      "strategy": "conservative",
+      "name": "Conservative (low stakes, high threshold)",
+      "total_bets": 173,
+      "wins": 72,
+      "win_rate": 0.4162,
+      "total_pnl": -50.87,
+      "roi": -23.88,
+      "final_bankroll": 49.18,
+      "max_drawdown": 0.5082,
+      "sharpe": -2.701
+    },
+    "bayesian_adapt": {
+      "strategy": "bayesian_adapt",
+      "name": "Bayesian Adaptive (shrinkage)",
+      "total_bets": 181,
+      "wins": 75,
+      "win_rate": 0.4144,
+      "total_pnl": -80.13,
+      "roi": -19.25,
+      "final_bankroll": 19.87,
+      "max_drawdown": 0.8013,
+      "sharpe": -2.335
+    },
+    "sharpe_max": {
+      "strategy": "sharpe_max",
+      "name": "Sharpe Maximizer (risk-adjusted)",
+      "total_bets": 191,
+      "wins": 80,
+      "win_rate": 0.4188,
+      "total_pnl": -67.31,
+      "roi": -21.28,
+      "final_bankroll": 32.69,
+      "max_drawdown": 0.6731,
+      "sharpe": -2.335
+    }
+  },
+  "category_stats": {
+    "ml_fg": {
+      "bets": 48,
+      "wins": 6,
+      "pnl": -93.54,
+      "win_rate": 0.125
+    },
+    "ml_1h": {
+      "bets": 45,
+      "wins": 6,
+      "pnl": -85.42,
+      "win_rate": 0.1333
+    },
+    "ml_2h": {
+      "bets": 45,
+      "wins": 27,
+      "pnl": -1.23,
+      "win_rate": 0.6
+    },
+    "ml_q1": {
+      "bets": 44,
+      "wins": 24,
+      "pnl": -3.14,
+      "win_rate": 0.5455
+    },
+    "ml_q2": {
+      "bets": 44,
+      "wins": 19,
+      "pnl": -16.21,
+      "win_rate": 0.4318
+    },
+    "ml_q3": {
+      "bets": 44,
+      "wins": 28,
+      "pnl": 41.39,
+      "win_rate": 0.6364
+    },
+    "ml_q4": {
+      "bets": 44,
+      "wins": 5,
+      "pnl": -85.57,
+      "win_rate": 0.1136
+    },
+    "sp_alt_p2": {
+      "bets": 122,
+      "wins": 88,
+      "pnl": 21721.77,
+      "win_rate": 0.7213
+    },
+    "sp_alt_p5": {
+      "bets": 122,
+      "wins": 88,
+      "pnl": 16963.52,
+      "win_rate": 0.7213
+    },
+    "sp_alt_m2": {
+      "bets": 122,
+      "wins": 91,
+      "pnl": 25306.13,
+      "win_rate": 0.7459
+    },
+    "sp_alt_m5": {
+      "bets": 122,
+      "wins": 87,
+      "pnl": 30930.87,
+      "win_rate": 0.7131
+    },
+    "sp_alt_m10": {
+      "bets": 122,
+      "wins": 79,
+      "pnl": 32265.99,
+      "win_rate": 0.6475
+    },
+    "margin_1_5": {
+      "bets": 21,
+      "wins": 0,
+      "pnl": -46.83,
+      "win_rate": 0.0
+    },
+    "margin_6_10": {
+      "bets": 21,
+      "wins": 1,
+      "pnl": -41.9,
+      "win_rate": 0.0476
+    },
+    "margin_11_15": {
+      "bets": 21,
+      "wins": 8,
+      "pnl": -18.43,
+      "win_rate": 0.381
+    },
+    "margin_16_20": {
+      "bets": 21,
+      "wins": 12,
+      "pnl": 10.01,
+      "win_rate": 0.5714
+    },
+    "margin_21p": {
+      "bets": 21,
+      "wins": 0,
+      "pnl": -42.75,
+      "win_rate": 0.0
+    },
+    "odd_even": {
+      "bets": 21,
+      "wins": 7,
+      "pnl": -0.67,
+      "win_rate": 0.3333
+    },
+    "race_20": {
+      "bets": 16,
+      "wins": 14,
+      "pnl": 26.29,
+      "win_rate": 0.875
+    },
+    "race_30": {
+      "bets": 16,
+      "wins": 8,
+      "pnl": 11.3,
+      "win_rate": 0.5
+    },
+    "race_50": {
+      "bets": 15,
+      "wins": 5,
+      "pnl": -21.85,
+      "win_rate": 0.3333
+    },
+    "first_basket": {
+      "bets": 15,
+      "wins": 2,
+      "pnl": -29.27,
+      "win_rate": 0.1333
+    },
+    "first_to_10": {
+      "bets": 15,
+      "wins": 6,
+      "pnl": -16.71,
+      "win_rate": 0.4
+    },
+    "lead_after_q1": {
+      "bets": 15,
+      "wins": 3,
+      "pnl": -24.24,
+      "win_rate": 0.2
+    },
+    "pp_points_star1": {
+      "bets": 18,
+      "wins": 18,
+      "pnl": 28.16,
+      "win_rate": 1.0
+    },
+    "pp_points_star2": {
+      "bets": 18,
+      "wins": 10,
+      "pnl": 8.57,
+      "win_rate": 0.5556
+    },
+    "pp_points_star3": {
+      "bets": 18,
+      "wins": 2,
+      "pnl": -28.0,
+      "win_rate": 0.1111
+    },
+    "pp_points_role1": {
+      "bets": 18,
+      "wins": 9,
+      "pnl": 6.81,
+      "win_rate": 0.5
+    },
+    "pp_points_role2": {
+      "bets": 18,
+      "wins": 17,
+      "pnl": 26.64,
+      "win_rate": 0.9444
+    },
+    "pp_rebounds_star1": {
+      "bets": 18,
+      "wins": 9,
+      "pnl": 7.75,
+      "win_rate": 0.5
+    },
+    "pp_rebounds_star2": {
+      "bets": 18,
+      "wins": 9,
+      "pnl": -12.19,
+      "win_rate": 0.5
+    },
+    "pp_rebounds_star3": {
+      "bets": 18,
+      "wins": 0,
+      "pnl": -32.91,
+      "win_rate": 0.0
+    },
+    "pp_rebounds_role1": {
+      "bets": 18,
+      "wins": 9,
+      "pnl": -9.97,
+      "win_rate": 0.5
+    },
+    "pp_rebounds_role2": {
+      "bets": 18,
+      "wins": 18,
+      "pnl": 28.17,
+      "win_rate": 1.0
+    },
+    "pp_assists_star1": {
+      "bets": 18,
+      "wins": 8,
+      "pnl": -12.17,
+      "win_rate": 0.4444
+    },
+    "pp_assists_star2": {
+      "bets": 18,
+      "wins": 15,
+      "pnl": 21.15,
+      "win_rate": 0.8333
+    },
+    "pp_assists_star3": {
+      "bets": 18,
+      "wins": 8,
+      "pnl": 3.52,
+      "win_rate": 0.4444
+    },
+    "pp_assists_role1": {
+      "bets": 18,
+      "wins": 8,
+      "pnl": 5.05,
+      "win_rate": 0.4444
+    },
+    "pp_assists_role2": {
+      "bets": 18,
+      "wins": 3,
+      "pnl": -26.18,
+      "win_rate": 0.1667
+    },
+    "pp_threes_star1": {
+      "bets": 18,
+      "wins": 8,
+      "pnl": -12.87,
+      "win_rate": 0.4444
+    },
+    "pp_threes_star2": {
+      "bets": 18,
+      "wins": 17,
+      "pnl": 26.43,
+      "win_rate": 0.9444
+    },
+    "pp_threes_star3": {
+      "bets": 18,
+      "wins": 9,
+      "pnl": -10.25,
+      "win_rate": 0.5
+    },
+    "pp_threes_role1": {
+      "bets": 18,
+      "wins": 10,
+      "pnl": -6.16,
+      "win_rate": 0.5556
+    },
+    "pp_threes_role2": {
+      "bets": 18,
+      "wins": 7,
+      "pnl": 0.19,
+      "win_rate": 0.3889
+    },
+    "pp_steals_star1": {
+      "bets": 18,
+      "wins": 7,
+      "pnl": 1.21,
+      "win_rate": 0.3889
+    },
+    "pp_steals_star2": {
+      "bets": 18,
+      "wins": 8,
+      "pnl": -11.91,
+      "win_rate": 0.4444
+    },
+    "pp_steals_star3": {
+      "bets": 18,
+      "wins": 8,
+      "pnl": 3.46,
+      "win_rate": 0.4444
+    },
+    "pp_steals_role1": {
+      "bets": 17,
+      "wins": 2,
+      "pnl": -25.95,
+      "win_rate": 0.1176
+    },
+    "pp_steals_role2": {
+      "bets": 17,
+      "wins": 1,
+      "pnl": -27.02,
+      "win_rate": 0.0588
+    },
+    "pp_blocks_star1": {
+      "bets": 17,
+      "wins": 15,
+      "pnl": 21.1,
+      "win_rate": 0.8824
+    },
+    "pp_blocks_star2": {
+      "bets": 17,
+      "wins": 8,
+      "pnl": 4.79,
+      "win_rate": 0.4706
+    },
+    "pp_blocks_star3": {
+      "bets": 17,
+      "wins": 2,
+      "pnl": -25.17,
+      "win_rate": 0.1176
+    },
+    "pp_blocks_role1": {
+      "bets": 15,
+      "wins": 7,
+      "pnl": -9.92,
+      "win_rate": 0.4667
+    },
+    "pp_blocks_role2": {
+      "bets": 15,
+      "wins": 13,
+      "pnl": 19.04,
+      "win_rate": 0.8667
+    },
+    "margin_exact_home": {
+      "bets": 18,
+      "wins": 0,
+      "pnl": -27.31,
+      "win_rate": 0.0
+    },
+    "margin_exact_away": {
+      "bets": 18,
+      "wins": 0,
+      "pnl": -26.25,
+      "win_rate": 0.0
+    },
+    "lead_change_count": {
+      "bets": 12,
+      "wins": 6,
+      "pnl": -3.37,
+      "win_rate": 0.5
+    },
+    "tot_home_fg": {
+      "bets": 25,
+      "wins": 14,
+      "pnl": 15.75,
+      "win_rate": 0.56
+    },
+    "tot_away_fg": {
+      "bets": 25,
+      "wins": 11,
+      "pnl": -20.63,
+      "win_rate": 0.44
+    },
+    "both_100": {
+      "bets": 7,
+      "wins": 0,
+      "pnl": -19.62,
+      "win_rate": 0.0
+    },
+    "blowout_15": {
+      "bets": 7,
+      "wins": 7,
+      "pnl": 16.95,
+      "win_rate": 1.0
+    },
+    "overtime": {
+      "bets": 7,
+      "wins": 0,
+      "pnl": -19.49,
+      "win_rate": 0.0
+    },
+    "triple_double": {
+      "bets": 7,
+      "wins": 0,
+      "pnl": -18.47,
+      "win_rate": 0.0
+    },
+    "three_pt_total": {
+      "bets": 22,
+      "wins": 6,
+      "pnl": -22.25,
+      "win_rate": 0.2727
+    },
+    "parlay_2leg_ml": {
+      "bets": 7,
+      "wins": 0,
+      "pnl": -16.51,
+      "win_rate": 0.0
+    },
+    "parlay_3leg_ml": {
+      "bets": 7,
+      "wins": 0,
+      "pnl": -15.7,
+      "win_rate": 0.0
+    },
+    "parlay_2leg_spread": {
+      "bets": 7,
+      "wins": 7,
+      "pnl": 13.59,
+      "win_rate": 1.0
+    },
+    "teaser_6pt": {
+      "bets": 7,
+      "wins": 0,
+      "pnl": -15.6,
+      "win_rate": 0.0
+    },
+    "teaser_7pt": {
+      "bets": 7,
+      "wins": 7,
+      "pnl": 13.47,
+      "win_rate": 1.0
+    },
+    "round_robin": {
+      "bets": 7,
+      "wins": 0,
+      "pnl": -15.49,
+      "win_rate": 0.0
+    },
+    "live_q1_ml_flip": {
+      "bets": 7,
+      "wins": 0,
+      "pnl": -13.98,
+      "win_rate": 0.0
+    },
+    "live_halftime_flip": {
+      "bets": 7,
+      "wins": 0,
+      "pnl": -13.36,
+      "win_rate": 0.0
+    },
+    "live_run_10_0": {
+      "bets": 7,
+      "wins": 0,
+      "pnl": -12.72,
+      "win_rate": 0.0
+    },
+    "live_clutch_q4": {
+      "bets": 7,
+      "wins": 0,
+      "pnl": -12.11,
+      "win_rate": 0.0
+    },
+    "double_result": {
+      "bets": 6,
+      "wins": 0,
+      "pnl": -9.59,
+      "win_rate": 0.0
+    },
+    "highest_scoring_q": {
+      "bets": 5,
+      "wins": 0,
+      "pnl": -8.13,
+      "win_rate": 0.0
+    },
+    "lowest_scoring_q": {
+      "bets": 5,
+      "wins": 0,
+      "pnl": -7.74,
+      "win_rate": 0.0
+    },
+    "ft_differential": {
+      "bets": 17,
+      "wins": 12,
+      "pnl": 7.56,
+      "win_rate": 0.7059
+    },
+    "bench_pts_total": {
+      "bets": 17,
+      "wins": 5,
+      "pnl": -10.81,
+      "win_rate": 0.2941
+    },
+    "turnover_total": {
+      "bets": 17,
+      "wins": 1,
+      "pnl": -22.85,
+      "win_rate": 0.0588
+    },
+    "paint_pts_total": {
+      "bets": 17,
+      "wins": 10,
+      "pnl": 3.98,
+      "win_rate": 0.5882
+    },
+    "live_largest_lead": {
+      "bets": 8,
+      "wins": 5,
+      "pnl": 2.45,
+      "win_rate": 0.625
+    },
+    "momentum_q3": {
+      "bets": 5,
+      "wins": 0,
+      "pnl": -7.13,
+      "win_rate": 0.0
+    },
+    "live_garbage_time": {
+      "bets": 5,
+      "wins": 0,
+      "pnl": -6.83,
+      "win_rate": 0.0
+    },
+    "live_foul_trouble": {
+      "bets": 5,
+      "wins": 0,
+      "pnl": -6.53,
+      "win_rate": 0.0
+    },
+    "pace_over_100": {
+      "bets": 6,
+      "wins": 0,
+      "pnl": -9.23,
+      "win_rate": 0.0
+    }
+  },
+  "debate_performance": {
+    "bull": {
+      "bets": 1997,
+      "wins": 965,
+      "pnl": 126273.61,
+      "staked": 284740.19,
+      "win_rate": 0.4832,
+      "roi_pct": 44.35
+    },
+    "bull_high": {
+      "bets": 1216,
+      "wins": 518,
+      "pnl": 30144.9,
+      "staked": 96609.21,
+      "win_rate": 0.426,
+      "roi_pct": 31.2
+    },
+    "conviction_high": {
+      "bets": 1216,
+      "wins": 518,
+      "pnl": 30144.9,
+      "staked": 96609.21,
+      "win_rate": 0.426,
+      "roi_pct": 31.2
+    },
+    "bull_mid": {
+      "bets": 714,
+      "wins": 420,
+      "pnl": 85543.1,
+      "staked": 168334.14,
+      "win_rate": 0.5882,
+      "roi_pct": 50.82
+    },
+    "conviction_mid": {
+      "bets": 714,
+      "wins": 420,
+      "pnl": 85543.1,
+      "staked": 168334.14,
+      "win_rate": 0.5882,
+      "roi_pct": 50.82
+    },
+    "bull_low": {
+      "bets": 67,
+      "wins": 27,
+      "pnl": 10585.61,
+      "staked": 19796.84,
+      "win_rate": 0.403,
+      "roi_pct": 53.47
+    },
+    "conviction_low": {
+      "bets": 72,
+      "wins": 32,
+      "pnl": 10734.93,
+      "staked": 19960.92,
+      "win_rate": 0.4444,
+      "roi_pct": 53.78
+    },
+    "bear": {
+      "bets": 5,
+      "wins": 5,
+      "pnl": 149.32,
+      "staked": 164.08,
+      "win_rate": 1.0,
+      "roi_pct": 91.0
+    },
+    "bear_low": {
+      "bets": 5,
+      "wins": 5,
+      "pnl": 149.32,
+      "staked": 164.08,
+      "win_rate": 1.0,
+      "roi_pct": 91.0
+    }
+  },
+  "debate_verdict_counts": {
+    "bull": 103,
+    "bear": 122,
+    "tie": 25
+  },
+  "data_provenance": {
+    "real_pred_hits": 104,
+    "test_games_count": 250,
+    "real_only": false,
+    "total_real_preds_available": 136
+  }
+}

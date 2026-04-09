@@ -1,0 +1,42 @@
+{
+  "title": "Cat46/52 Market Feature Coverage Investigation: Unlocking the 0.199 Brier Floor",
+  "date": "2026-04-08",
+  "brain_cycle": 76,
+  "priority": "HIGH",
+  "status": "PROPOSED",
+  "proposed_by": "nomos42-brain cycle-76",
+  "source": "MDPI Information 2026 — Uncertainty-Aware Machine Learning for NBA Forecasting (doi:10.3390/info17010056)",
+  "motivation": "The MDPI 2026 paper achieved Brier 0.089 with LSTM + market features. LR alone with market features reached Brier 0.199. Our fleet best is 0.22086. The dominant signal in the paper was market-derived features (implied probability, spread, total, overround) — not the LSTM architecture. Our engine.py already has Cat46 (8 real odds features) and Cat52 (15 odds line features), but the GA may not be using them effectively if the underlying data has coverage gaps.",
+  "hypothesis": "Cat46/52 features are zero-filled for many historical games due to odds data unavailability, causing the GA to deprioritize them via noise filtering. If odds data coverage is <50%, these categories contribute noise rather than signal.",
+  "current_state": {
+    "cat46_features": 8,
+    "cat46_description": "Real odds market features — implied prob, spread, total from historical CSV",
+    "cat52_features": 15,
+    "cat52_description": "Odds line features — spread magnitude, total, vig, season percentiles",
+    "feature_candidates_total": 3290,
+    "noise_features_removed": 3024,
+    "clean_features": 3290,
+    "raw_features": 6314,
+    "question": "How many of 9551 training games have non-zero Cat46/52 features? If <50%, these features are filtered or diluted."
+  },
+  "proposed_investigation": {
+    "step1": "Run: python3 -c \"from features.engine import NBAFeatureEngine; e = NBAFeatureEngine(); X, y, names = e.build_matrix(); cat46_mask = [i for i, n in enumerate(names) if 'odds46' in n]; print('Cat46 non-zero rate:', (X[:, cat46_mask] != 0).any(axis=1).mean())\" on VM",
+    "step2": "Identify which seasons / date ranges have odds data coverage",
+    "step3": "If coverage >80% for 2020-21 onward: inject Cat46/52 features explicitly into island population via /api/inject-features (force GA to explore)",
+    "step4": "If coverage <50%: investigate odds data fetch pipeline (ops/fetch_odds.py or historical CSV)"
+  },
+  "quick_win_if_coverage_ok": {
+    "action": "POST to S10 /api/inject-features with Cat46 feature indices forced ON in 10 seed individuals",
+    "rationale": "If odds data is available but GA hasn't converged on using it, a forced injection of market-feature-heavy seeds bypasses the cold-start problem",
+    "expected_brier_delta": "-0.005 to -0.020 (market features are the dominant signal per ablation)"
+  },
+  "cross_repo_relevance": {
+    "political": "Political alpha already uses market features via Polymarket/Kalshi (PA2 best: 0.23134 with catboost 70 features). Verifying NBA market feature usage would confirm the thesis that market-implied probabilities are the highest-information signal."
+  },
+  "risks": [
+    "Odds data may only cover recent seasons (2020+) — historical games (2018-2020) would have zeros",
+    "Cat46 may already be well-represented in the 3290 clean features — GA may be correctly deprioritizing it",
+    "Forced injection may cause temporary fitness regression before convergence"
+  ],
+  "next_action": "Run coverage check script on VM (ZERO ML required — just counting non-zeros). Then decide on injection or pipeline fix. Target: understand why our best is 0.22086 when LR alone with market features reaches 0.199."
+}

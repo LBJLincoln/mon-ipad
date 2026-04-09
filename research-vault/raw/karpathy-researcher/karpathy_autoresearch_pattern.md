@@ -1,0 +1,1 @@
+/home/termius/mon-ipad/.claude/agent-memory/karpathy-researcher/karpathy_autoresearch_pattern.md

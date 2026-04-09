@@ -1,5 +1,5 @@
 # NOMOS42 — Complete Agent Registry
-> 30 Agents | 8 Departments | Updated 2026-03-31
+> 30 Agents | 9 Departments | Updated 2026-04-04
 
 ## Agent Matrix
 

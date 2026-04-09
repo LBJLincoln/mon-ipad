@@ -1,0 +1,331 @@
+{
+  "version": "v5_200_agents",
+  "date": "2026-04-03",
+  "iteration": 72,
+  "run_stats": {
+    "start_time": "2026-04-05T19:40:36.101440+00:00",
+    "end_time": "2026-04-05T19:40:36.149052+00:00",
+    "games_processed": 2,
+    "agents_called": 428,
+    "api_calls_made": 0,
+    "api_errors": 0,
+    "total_bets": 4,
+    "tier_calls": {
+      "1": 18,
+      "2": 50,
+      "3": 360,
+      "4": 0
+    },
+    "multiphase_calls": 0,
+    "phase1_hits": 0,
+    "phase2_screenings": 0,
+    "phase3_decisions": 0
+  },
+  "agent_count": 217,
+  "active_agents": 217,
+  "tier_summary": {
+    "T1_premium": 9,
+    "T2_free_power": 25,
+    "T3_specialist": 180,
+    "T4_meta": 3
+  },
+  "games_processed": 2,
+  "consensus": {
+    "2026-04-03_TOR@BOS": {
+      "consensus_ml": {
+        "direction": "away",
+        "confidence": 0.4496,
+        "agreement_pct": 0.5421
+      },
+      "consensus_spread": {
+        "direction": "away",
+        "confidence": 0.4234,
+        "agreement_pct": 0.5093
+      },
+      "consensus_total": {
+        "direction": "under",
+        "confidence": 0.4608,
+        "agreement_pct": 0.5561
+      },
+      "top_3_bets": [],
+      "avg_edge_pct": -29.922,
+      "num_agents": 214,
+      "narrative": "Statistical synthesis (aggregated agent votes)",
+      "_source": "statistical",
+      "_peer_review": {
+        "ml_consensus": "away",
+        "ml_agreement": 0.5421,
+        "ml_votes": {
+          "home": 98,
+          "away": 116
+        },
+        "spread_consensus": "away",
+        "spread_agreement": 0.5093,
+        "spread_votes": {
+          "home": 105,
+          "away": 109
+        },
+        "total_consensus": "under",
+        "total_agreement": 0.5561,
+        "total_votes": {
+          "over": 95,
+          "under": 119
+        },
+        "avg_confidence": 0.0796,
+        "avg_edge_pct": -29.922,
+        "num_predictions": 214,
+        "tier_breakdown": {
+          "PREMIUM": 9,
+          "FREE_POWER": 25,
+          "SPECIALIST": 180
+        }
+      }
+    },
+    "2026-04-03_WAS@BKN": {
+      "consensus_ml": {
+        "direction": "away",
+        "confidence": 0.4274,
+        "agreement_pct": 0.514
+      },
+      "consensus_spread": {
+        "direction": "home",
+        "confidence": 0.4274,
+        "agreement_pct": 0.514
+      },
+      "consensus_total": {
+        "direction": "under",
+        "confidence": 0.4424,
+        "agreement_pct": 0.5327
+      },
+      "top_3_bets": [],
+      "avg_edge_pct": -12.56,
+      "num_agents": 214,
+      "narrative": "Statistical synthesis (aggregated agent votes)",
+      "_source": "statistical",
+      "_peer_review": {
+        "ml_consensus": "away",
+        "ml_agreement": 0.514,
+        "ml_votes": {
+          "home": 104,
+          "away": 110
+        },
+        "spread_consensus": "home",
+        "spread_agreement": 0.514,
+        "spread_votes": {
+          "home": 110,
+          "away": 104
+        },
+        "total_consensus": "under",
+        "total_agreement": 0.5327,
+        "total_votes": {
+          "over": 100,
+          "under": 114
+        },
+        "avg_confidence": 0.081,
+        "avg_edge_pct": -12.56,
+        "num_predictions": 214,
+        "tier_breakdown": {
+          "PREMIUM": 9,
+          "FREE_POWER": 25,
+          "SPECIALIST": 180
+        }
+      }
+    }
+  },
+  "bets": [
+    {
+      "game_key": "2026-04-03_TOR@BOS",
+      "category": "ml_fg",
+      "direction": "away",
+      "confidence": 0.4496,
+      "agreement": 0.5421,
+      "edge_pct": 29.92,
+      "odds": 4.2,
+      "stake": 10.0,
+      "source": "consensus",
+      "agents": 214
+    },
+    {
+      "game_key": "2026-04-03_TOR@BOS",
+      "category": "total_fg",
+      "direction": "under",
+      "confidence": 0.4608,
+      "agreement": 0.5561,
+      "total_line": null,
+      "odds": 1.909,
+      "stake": 1.0,
+      "source": "consensus"
+    },
+    {
+      "game_key": "2026-04-03_WAS@BKN",
+      "category": "ml_fg",
+      "direction": "away",
+      "confidence": 0.4274,
+      "agreement": 0.514,
+      "edge_pct": 12.56,
+      "odds": 2.4,
+      "stake": 10.0,
+      "source": "consensus",
+      "agents": 214
+    },
+    {
+      "game_key": "2026-04-03_WAS@BKN",
+      "category": "total_fg",
+      "direction": "under",
+      "confidence": 0.4424,
+      "agreement": 0.5327,
+      "total_line": null,
+      "odds": 1.909,
+      "stake": 1.0,
+      "source": "consensus"
+    }
+  ],
+  "api_pool_status": {
+    "openai": {
+      "keys": 1,
+      "keys_available": 1,
+      "calls_today": 0,
+      "calls_remaining": 10000,
+      "max_daily": 10000,
+      "models": [
+        "gpt-4o",
+        "gpt-4o-mini"
+      ],
+      "is_free": false,
+      "status": "OK"
+    },
+    "xai": {
+      "keys": 1,
+      "keys_available": 1,
+      "calls_today": 0,
+      "calls_remaining": 5000,
+      "max_daily": 5000,
+      "models": [
+        "grok-3-mini",
+        "grok-3"
+      ],
+      "is_free": false,
+      "status": "OK"
+    },
+    "google": {
+      "keys": 1,
+      "keys_available": 1,
+      "calls_today": 0,
+      "calls_remaining": 10000,
+      "max_daily": 10000,
+      "models": [
+        "gemini-2.0-flash",
+        "gemini-2.5-flash",
+        "gemini-2.5-pro",
+        "gemini-2.5-flash-thinking",
+        "gemini-2.0-flash-lite"
+      ],
+      "is_free": false,
+      "status": "OK"
+    },
+    "anthropic_cli": {
+      "keys": 1,
+      "keys_available": 1,
+      "calls_today": 0,
+      "calls_remaining": 500,
+      "max_daily": 500,
+      "models": [
+        "claude-opus-4-6",
+        "claude-sonnet-4-6",
+        "claude-haiku-4-5-20251001"
+      ],
+      "is_free": false,
+      "status": "OK"
+    },
+    "cohere": {
+      "keys": 2,
+      "keys_available": 2,
+      "calls_today": 0,
+      "calls_remaining": 2000,
+      "max_daily": 2000,
+      "models": [
+        "command-a-03-2025",
+        "command-r7b-12-2024"
+      ],
+      "is_free": true,
+      "status": "OK"
+    },
+    "cerebras": {
+      "keys": 0,
+      "status": "NO_KEYS"
+    },
+    "huggingface": {
+      "keys": 4,
+      "keys_available": 4,
+      "calls_today": 0,
+      "calls_remaining": 8000,
+      "max_daily": 8000,
+      "models": [
+        "Qwen/Qwen2.5-72B-Instruct",
+        "google/gemma-3-27b-it",
+        "meta-llama/Llama-3.3-70B-Instruct",
+        "mistralai/Mistral-Small-24B-Instruct-2501",
+        "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",
+        "Qwen/Qwen3-8B",
+        "Qwen/Qwen2.5-Coder-32B-Instruct",
+        "microsoft/Phi-3.5-mini-instruct"
+      ],
+      "is_free": true,
+      "status": "OK"
+    }
+  },
+  "top_agents": [],
+  "leaderboard": [
+    {
+      "id": "t4_paperclip",
+      "name": "Paperclip Allocator",
+      "tier": "META",
+      "provider": "huggingface",
+      "model": "Qwen/Qwen2.5-72B-Instruct",
+      "strategy": "meta_allocation",
+      "bankroll": 100.0,
+      "total_bets": 0,
+      "total_wins": 0,
+      "win_rate": 0.0,
+      "roi": 0.0,
+      "total_pnl": 0.0,
+      "weight": 1.0,
+      "active": true,
+      "rank": 1
+    },
+    {
+      "id": "t4_hermes",
+      "name": "Hermes Router",
+      "tier": "META",
+      "provider": "huggingface",
+      "model": "google/gemma-3-27b-it",
+      "strategy": "meta_consensus",
+      "bankroll": 100.0,
+      "total_bets": 0,
+      "total_wins": 0,
+      "win_rate": 0.0,
+      "roi": 0.0,
+      "total_pnl": 0.0,
+      "weight": 1.0,
+      "active": true,
+      "rank": 2
+    },
+    {
+      "id": "t4_oracle",
+      "name": "Oracle Chairman",
+      "tier": "META",
+      "provider": "huggingface",
+      "model": "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",
+      "strategy": "meta_synthesis",
+      "bankroll": 100.0,
+      "total_bets": 0,
+      "total_wins": 0,
+      "win_rate": 0.0,
+      "roi": 0.0,
+      "total_pnl": 0.0,
+      "weight": 1.0,
+      "active": true,
+      "rank": 3
+    }
+  ]
+}

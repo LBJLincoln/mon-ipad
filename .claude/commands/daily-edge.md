@@ -38,7 +38,7 @@ This is the quantitative operational loop for daily NBA betting.
    ```
    ## Daily Edge Picks — YYYY-MM-DD
 
-   **Bankroll**: $XXX | **Model**: v3.0-35cat evolved
+   **Bankroll**: $XXX | **Model**: v3.1-46cat evolved
    **Games today**: X
 
    ### Value Bets (edge > 2%)

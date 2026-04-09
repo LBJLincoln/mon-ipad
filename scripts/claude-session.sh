@@ -69,8 +69,6 @@ declare -A ACTIVE_SPACES=(
   # Political Islands (Nomos42)
   ["P1"]="nomos42-political-alpha"
   ["P2"]="nomos42-political-alpha-2"
-  ["P3"]="nomos42-political-alpha-3"
-  ["P4"]="nomos42-political-alpha-4"
   # Infra/Other (Nomos42)
   ["INFRA"]="nomos42-nomos42-infra-brain"
   ["CLIP"]="nomos42-nomos42-paperclip"

@@ -128,8 +128,8 @@ Create this file in the repo root:
 - Nomos Picks: TBD (SaaS prototype)
 
 ## Data Access (API)
-curl -s https://nomos42-nomos42-infra-brain.hf.space/api/spaces
-curl -s https://nomos42-nomos42-infra-brain.hf.space/api/predictions
+curl -s https://nomos42-nba-quant.hf.space/api/status
+curl -s http://nomos42.duckdns.org:8080/api/predictions
 
 ## Rules
 1. ZERO ML training on laptop — use HF Spaces or Kaggle
@@ -263,8 +263,8 @@ NEO4J_PASSWORD=xxxxx
 PINECONE_API_KEY=xxxxx
 PINECONE_INDEX=pierre-nba
 
-# Infra Brain API (read-only access to Nomos42 data)
-INFRA_BRAIN_URL=https://nomos42-nomos42-infra-brain.hf.space
+# VM Data API (read-only access to Nomos42 data)
+VM_DATA_URL=http://nomos42.duckdns.org:8080
 INFRA_AUTH_TOKEN=pierre_read_xxxxx
 
 # Forge Bot

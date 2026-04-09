@@ -1,227 +1,50 @@
 {
-  "department": "evaluation",
-  "timestamp": "2026-04-01T00:29:32.377580+00:00",
-  "iteration": 2,
-  "model_version": "tabicl_ensemble (110 features, v3.0-37cat)",
-  "brier_score": 0.2157,
-  "calibration_analysis": {
-    "method": "ECE (Expected Calibration Error) over evaluated bets",
-    "n_bets_evaluated": 31,
-    "ece": 0.2758,
-    "ece_target": 0.05,
-    "brier_from_bets": 0.30441,
-    "overall_avg_predicted": 0.6629,
-    "overall_actual_win_rate": 0.3871,
-    "overall_calibration_error": 0.2758,
-    "direction": "OVERCONFIDENT",
-    "worst_bucket": "60-70%",
-    "worst_bucket_error": 0.4811,
-    "bins": {
-      "50-60%": {
-        "n": 9,
-        "avg_predicted": 0.5489,
-        "actual_win_rate": 0.4444,
-        "calibration_error": 0.1045,
-        "abs_error": 0.1045
-      },
-      "60-70%": {
-        "n": 12,
-        "avg_predicted": 0.6478,
-        "actual_win_rate": 0.1667,
-        "calibration_error": 0.4811,
-        "abs_error": 0.4811
-      },
-      "70-80%": {
-        "n": 6,
-        "avg_predicted": 0.7568,
-        "actual_win_rate": 0.5,
-        "calibration_error": 0.2568,
-        "abs_error": 0.2568
-      },
-      "80-90%": {
-        "n": 4,
-        "avg_predicted": 0.8242,
-        "actual_win_rate": 0.75,
-        "calibration_error": 0.0742,
-        "abs_error": 0.0742
-      },
-      "90-100%": {
-        "n": 0
-      }
-    }
+  "status": "shipped",
+  "action": "audit_append",
+  "iteration": 12,
+  "timestamp": "2026-04-08T09:30:00Z",
+  "ece": 0.06217,
+  "ece_raw_before_pav": 0.123,
+  "ece_target": 0.05,
+  "calibration_slope": 0.68,
+  "calibration_slope_target_range": [0.9, 1.1],
+  "real_brier": 0.24246,
+  "real_brier_post_pav_insample": 0.23057,
+  "brier_atr": 0.2157,
+  "n_bins_scan_results": {
+    "4": {"cv_brier_delta": 0.00309, "in_sample_ece": 0.09126},
+    "5": {"cv_brier_delta": -0.00413, "in_sample_ece": 0.06217},
+    "6": {"cv_brier_delta": 0.00501, "in_sample_ece": 0.08277},
+    "7": {"cv_brier_delta": 0.00858, "in_sample_ece": 0.05249},
+    "8": {"cv_brier_delta": 0.00546, "in_sample_ece": 0.05290}
   },
-  "false_positive_rate": 0.4,
-  "false_positive_detail": {
-    "threshold": 0.7,
-    "high_confidence_bets": 10,
-    "high_confidence_losses": 4,
-    "fp_rate": 0.4,
-    "fp_target": 0.25,
-    "status": "FAIL"
-  },
-  "prediction_distribution": {
-    "today_games_total": 7,
-    "today_valid_games": 6,
-    "today_phantom_games": 1,
-    "today_avg_prob": 0.5691,
-    "today_prob_min": 0.3025,
-    "today_prob_max": 0.8575,
-    "today_confidence_breakdown": {
-      "MEDIUM": 4,
-      "HIGH": 3
-    },
-    "backtest_prob_concentration": "60-70% range dominant (39% of bets)",
-    "backtest_avg_predicted": 0.6629
-  },
-  "bias_detected": [
-    {
-      "type": "PHANTOM_GAME",
-      "severity": "CRITICAL",
-      "count": 1,
-      "examples": [
-        {
-          "home": "BKN",
-          "away": "BKN",
-          "home_win_prob": 0.6128,
-          "market_implied": 0.0952,
-          "issue": "home == away (same team on both sides)"
-        }
-      ],
-      "fix": "Assert home != away; validate market_implied in [0.10, 0.90] before outputting any pick"
-    },
-    {
-      "type": "OVERCONFIDENCE_SYSTEMATIC",
-      "severity": "HIGH",
-      "ece": 0.2758,
-      "worst_bucket": "60-70%",
-      "fix": "Apply Platt scaling or isotonic regression post-hoc calibration"
-    },
-    {
-      "type": "HOME_BIAS",
-      "severity": "LOW",
-      "home_bets": 21,
-      "home_win_rate": 0.381,
-      "away_bets": 10,
-      "away_win_rate": 0.4,
-      "gap": 0.019,
-      "fix": "Recalibrate home_court_advantage weight (currently 2.8 pts)"
-    },
-    {
-      "type": "CORRUPTED_ODDS",
-      "severity": "HIGH",
-      "count": 5,
-      "description": "Model >60% win prob but market implies <15% \u2014 likely team normalization mismatch (SAS/SA bug)",
-      "examples": [
-        {
-          "date": "2026-03-21",
-          "game": "IND @ SAS",
-          "model_prob": 0.6833,
-          "odds": 11.0,
-          "market_implied": 0.0909,
-          "edge": 6.5163,
-          "won": false
-        },
-        {
-          "date": "2026-03-25",
-          "game": "SAS @ MEM",
-          "model_prob": 0.679,
-          "odds": 9.75,
-          "market_implied": 0.1026,
-          "edge": 5.6203,
-          "won": false
-        },
-        {
-          "date": "2026-03-27",
-          "game": "HOU @ MEM",
-          "model_prob": 0.6068,
-          "odds": 7.25,
-          "market_implied": 0.1379,
-          "edge": 3.3993,
-          "won": false
-        }
-      ],
-      "fix": "Validate TEAM_MAP completeness; add odds sanity gate: skip bet if |model_prob - market_implied| > 0.50"
-    }
+  "n_bins_optimal": 5,
+  "n_bins_conclusion": "n_bins=5 confirmed best CV Brier (-0.00413 delta). n_bins=7/8 achieve in-sample ECE < 0.05 but overfit (+0.00858/+0.00546 CV delta). Current map is already optimal for 104-game pool.",
+  "issues_found": [
+    "ECE_ABOVE_TARGET: 0.06217 post-PAV in-sample > 0.05 target — irreducible at n=104 games with any n_bins; needs pool >150",
+    "CALIBRATION_SLOPE: 0.68 outside [0.9, 1.1] — systemic overconfidence in 0.6-0.8 bucket (44/104 games mapped 0.7->0.5556)",
+    "PICKS_STILL_FROZEN: 10 days without prospective bet — no fresh OOS ECE signal",
+    "N_BINS_OVERFIT_RISK: increasing n_bins beyond 5 improves in-sample ECE but degrades CV Brier at n=104"
   ],
-  "performance_trends": {
-    "total_bets": 31,
-    "overall_win_rate": 0.3871,
-    "roi_pct": -2.6,
-    "sharpe": -1.22,
-    "early_win_rate": 0.4615,
-    "late_win_rate": 0.25,
-    "trend": "DECLINING"
-  },
-  "improvements_proposed": [
-    {
-      "priority": 1,
-      "type": "BUG_FIX",
-      "title": "Phantom game guard (home != away assertion)",
-      "effort": "trivial",
-      "expected_brier_delta": 0.0,
-      "expected_roi_delta": "+removes corrupted bets",
-      "department": "ENGINEERING",
-      "action": "Add to predict_today.py: assert game['home'] != game['away'] before appending"
-    },
-    {
-      "priority": 2,
-      "type": "CALIBRATION",
-      "title": "Platt scaling post-hoc calibration layer",
-      "effort": "medium",
-      "expected_brier_delta": -0.008,
-      "expected_ece_delta": -0.17,
-      "department": "ENGINEERING",
-      "action": "Train LogisticRegression(C=1) on held-out predictions. Deploy in HF Space inference path."
-    },
-    {
-      "priority": 3,
-      "type": "BUG_FIX",
-      "title": "Odds sanity gate \u2014 reject bets with |model_prob - market_implied| > 0.50",
-      "effort": "small",
-      "expected_roi_delta": "+eliminates 8 corrupted-odds bets from backtest",
-      "department": "ENGINEERING",
-      "action": "In evaluate_predictions.py and predict_today.py: skip bet if market_implied < 0.10 or > 0.90, or if abs(model_p - market_implied) > 0.50"
-    },
-    {
-      "priority": 4,
-      "type": "FEATURE",
-      "title": "Home court advantage weight reduction (2.8 \u2192 2.2 pts)",
-      "effort": "small",
-      "expected_brier_delta": -0.002,
-      "department": "D5/EVALUATION",
-      "action": "Update home_court_advantage in quant-summary.json calibration config; remeasure on backtest"
-    },
-    {
-      "priority": 5,
-      "type": "MONITORING",
-      "title": "Automated calibration alert when ECE > 0.15",
-      "effort": "small",
-      "department": "D5/EVALUATION",
-      "action": "Add ECE check to autonomous-cycle.sh; if ECE > 0.15, send Telegram alert and pause high-edge bets"
-    }
+  "files_changed": [
+    "data/departments/evaluation/audit-log.jsonl",
+    "data/departments/evaluation/karpathy-output.json"
   ],
-  "metrics_summary": {
-    "brier_atr": 0.2157,
-    "brier_target": 0.2,
-    "brier_gap": 0.0157,
-    "ece": 0.2758,
-    "ece_target": 0.05,
-    "fp_rate": 0.4,
-    "fp_target": 0.25,
-    "win_rate": 0.3871,
-    "roi_pct": -2.6,
-    "roi_target": 5.0,
-    "sharpe": -1.22,
-    "sharpe_target": 1.5,
-    "phantom_games": 1,
-    "corrupted_odds": 5,
-    "status_overall": "NEEDS_CALIBRATION"
+  "git_diff_stat": "2 files changed, 2 insertions(+), 2 deletions(-)",
+  "calibration_metric": "ECE",
+  "metric_value": 0.06217,
+  "commit_sha": null,
+  "reason_if_no_op": null,
+  "pav_refit_summary": {
+    "ran_this_cycle": false,
+    "last_ran": "2026-04-08T00:35:02Z",
+    "n_games": 104,
+    "n_bins_used": 5,
+    "ece_before": 0.123,
+    "ece_after_insample": 0.06217,
+    "brier_before": 0.24246,
+    "brier_after_insample": 0.23057,
+    "status": "CURRENT — n_bins=5 confirmed optimal, no refit needed"
   },
-  "critical_alerts": [
-    "PHANTOM: 1 phantom game(s) detected in today picks",
-    "ECE=0.2758 \u2014 calibration target <0.05, currently 5.5x over",
-    "CORRUPTED ODDS: 5 bets with model/market divergence >50pp",
-    "60-70% bucket calibration error=0.481 \u2014 catastrophic overconfidence"
-  ],
-  "status": "completed"
+  "next_iteration_focus": "P1: Run predict_today.py to unfreeze picks (10 days frozen). P2: Once pool > 150 games, re-run n_bins scan — n_bins=7 may become viable. P3: Slope 0.68 requires model-level fix (reduce overconfidence in 0.6-0.8 range), not calibration mapping."
 }

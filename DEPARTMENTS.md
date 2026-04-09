@@ -1,34 +1,36 @@
 # Nomos42 Departments — Karpathy Real Loop Architecture
 
-> v18 — 8 departments x 5-min iterative loops x Guardian Orchestrator
+> v19 — 9 departments x 5-min iterative loops x Guardian Orchestrator v3
 
 ## Architecture
 
 ```
-Guardian Orchestrator (cron every 30min)
+Guardian Orchestrator v3 (cron every 4h)
 ├── D1 Research      — paper→extract→propose→measure
 ├── D2 Engineering   — code→test→measure Brier→keep/revert
 ├── D3 Evolution     — mutate→eval→measure fitness→select
-├── D4 Betting       — strategy→backtest→measure ROI→keep/revert
-├── D5 Evaluation    — audit→identify→fix→verify
-├── D6 Infra         — check→detect→fix→verify
-├── D7 Political     — signal→feature→measure alpha→keep/revert
-└── D8 Creative      — generate→quality→curate→publish
+├── D4 Product       — build→test→ship→measure
+├── D5 Business      — price→onboard→convert→optimize
+├── D6 Evaluation    — audit→identify→fix→verify
+├── D7 Infra         — check→detect→fix→verify
+├── D8 Finance       — track→report→reconcile→forecast
+└── D9 Cross-Repo    — sync→audit→fix→verify
 ```
 
 ## File Layout
 
 ```
 scripts/departments/
-├── guardian-orchestrator.py          # Master runner (8 departments x 5min)
+├── guardian-orchestrator.py          # Master runner (9 departments x 5min)
 ├── research/research-loop.sh
 ├── engineering/engineering-loop.sh
 ├── evolution/evolution-loop.sh
-├── betting/betting-loop.sh
+├── product/product-loop.sh
+├── business/business-loop.sh
 ├── evaluation/evaluation-loop.sh
 ├── infra/infra-loop.sh
-├── political/political-loop.sh
-└── creative/creative-loop.sh
+├── finance/finance-loop.sh
+└── cross-repo/cross-repo-loop.sh
 
 data/departments/
 ├── guardian-status.json              # Latest full cycle result
@@ -58,40 +60,47 @@ data/departments/
 - **Scripts**: `scripts/departments/evolution/evolution-loop.sh`
 - **Islands**: S10–S15 on HF Spaces (Nomos42 account), data in `data/swarm-metrics.json`
 
-### D4 — Betting
-- **Loop**: Tweak strategy → backtest on historical → measure ROI/Sharpe → keep/revert
-- **Metric**: roi_delta, sharpe_ratio, kelly_edge, win_rate
-- **Agent swarm**: B1 (Odds), B2 (Value), B3 (Kelly), B4 (Strategist), B5 (Evaluator)
-- **Scripts**: `scripts/departments/betting/betting-loop.sh`
-- **Data**: `data/nba-agent/bankroll-state.json`, `data/nba-agent/live-odds.json`
+### D4 — Product
+- **Loop**: Build feature → test → ship → measure adoption
+- **Metric**: features_shipped, brier_delta, user_satisfaction
+- **Agent swarm**: Product Builder, Karpathy loop on feature requests
+- **Scripts**: `scripts/departments/product/product-loop.sh`
+- **Data**: `data/departments/council-product.json`
 
-### D5 — Evaluation
+### D5 — Business
+- **Loop**: Price → onboard → convert → optimize
+- **Metric**: MRR, conversion_rate, ARPU
+- **Agent swarm**: Business Strategist, pricing optimizer
+- **Scripts**: `scripts/departments/business/business-loop.sh`
+- **Data**: `data/departments/council-business.json`
+
+### D6 — Evaluation
 - **Loop**: Audit predictions → identify weaknesses → propose fixes → verify improvement
 - **Metric**: calibration_error, false_positive_rate, brier_improvement
 - **Agent swarm**: Q1 (Quality Auditor), Q2 (Benchmark Tracker)
 - **Scripts**: `scripts/departments/evaluation/evaluation-loop.sh`
 - **Data**: `data/nba-agent/latest-eval.json`
 
-### D6 — Infra
+### D7 — Infra
 - **Loop**: Health check all systems → detect issues → auto-fix → verify restoration
 - **Metric**: uptime_pct, restart_count, response_time_ms
 - **Agent swarm**: I1 (Fleet Manager), I2 (Infra Agent)
 - **Scripts**: `scripts/departments/infra/infra-loop.sh`
 - **Data**: `data/infra-status.json`, `data/agent-health.json`
 
-### D7 — Political
-- **Loop**: Scan political signals → test new features → measure alpha → keep/revert
-- **Metric**: political_brier, etf_roi, signal_accuracy
-- **Agent swarm**: 4 political agents (signals, social, insider, prices)
-- **Scripts**: `scripts/departments/political/political-loop.sh`
-- **Repo**: /home/termius/nomos-political-alpha
+### D8 — Finance
+- **Loop**: Track revenue/costs → report → reconcile → forecast
+- **Metric**: financial_accuracy, burn_rate, MRR
+- **Agent swarm**: Finance & Comptabilité agent
+- **Scripts**: `scripts/departments/finance/finance-loop.sh`
+- **Data**: `data/departments/council-finance.json`
 
-### D8 — Creative (RGWA)
-- **Loop**: Generate art → quality check → curate → publish
-- **Metric**: quality_score, pieces_per_day, diversity_index
-- **Agent swarm**: 5 RGWA agents (visual-artist, music-composer, video-director, quality-critic, style-curator)
-- **Scripts**: `scripts/departments/creative/creative-loop.sh`
-- **Repo**: /home/termius/rgwa
+### D9 — Cross-Repo
+- **Loop**: Sync → audit → fix → verify parity across all repos
+- **Metric**: parity_score, uncommitted_changes, cross_repo_health
+- **Agent swarm**: Cross-repo health monitor
+- **Scripts**: `scripts/councils/cross-repo-councils.sh`
+- **Data**: `data/cross-repo-health.json`
 
 ## Guardian Orchestrator
 
@@ -101,7 +110,7 @@ data/departments/
 - Collects JSON metrics from each loop's stdout (last line must be valid JSON)
 - Cross-pollinates wins: departments that report `"improved": true` write to `data/departments/wins-latest.json`
 - Writes full cycle result to `data/departments/guardian-status.json`
-- Total max wall-clock: 8 x 5min = 40min (in practice much less — most loops are fast checks)
+- Total max wall-clock: 9 x 5min = 45min (in practice much less — most loops are fast checks)
 
 ### Cron setup (add to crontab)
 
@@ -129,11 +138,12 @@ Each department loop MUST:
 | research | research-loop.sh | placeholder | proposals_generated |
 | engineering | engineering-loop.sh | placeholder | brier_delta |
 | evolution | evolution-loop.sh | placeholder | best_brier |
-| betting | betting-loop.sh | placeholder | roi_delta |
+| product | product-loop.sh | placeholder | features_shipped |
+| business | business-loop.sh | placeholder | MRR |
 | evaluation | evaluation-loop.sh | placeholder | calibration_error |
 | infra | infra-loop.sh | placeholder | uptime_pct |
-| political | political-loop.sh | placeholder | political_brier |
-| creative | creative-loop.sh | placeholder | quality_score |
+| finance | finance-loop.sh | placeholder | burn_rate |
+| cross-repo | cross-repo-loop.sh | placeholder | parity_score |
 
 All loops are currently in placeholder state — they read existing data files and report current
 state without making modifications. Promote to active loops by adding the modify→measure→revert

@@ -383,6 +383,18 @@ while [[ ${COMPLETED} -lt ${MAX_ITERATIONS} ]]; do
     log "Council iteration ${COUNCIL_ITER} / ${MAX_ITERATIONS} max"
     echo -e "${BOLD}────────────────────────────────────────────────────────────────${NC}"
 
+    # ── PHASE 0: atlas-gic Darwinian weight update (Cycle 13) ────────────
+    # Updates data/arena/trader-darwin-weights.json from the prior iteration's
+    # leaderboard so the upcoming run scales kelly_adj per trader. Top quartile
+    # x1.05/iter, bottom quartile x0.95/iter, bounded [0.30, 2.50].
+    DARWIN_SCRIPT="${SCRIPT_DIR}/darwin_weights.py"
+    if [[ -f "${DARWIN_SCRIPT}" ]]; then
+        log "Phase 0: atlas-gic Darwinian weight update..."
+        python3 "${DARWIN_SCRIPT}" 2>&1 | while IFS= read -r line; do
+            echo "  ${line}"
+        done || log_warn "darwin_weights.py exit non-zero (continuing)"
+    fi
+
     # ── PHASE 1: Run Karpathy iteration ──────────────────────────────────
     log "Phase 1: Running trading-floor-v4.py karpathy..."
 
@@ -429,6 +441,19 @@ while [[ ${COMPLETED} -lt ${MAX_ITERATIONS} ]]; do
         fi
 
         log_ok "Saved: ${COUNCIL_DIR}/council-iter-${COUNCIL_ITER}.json"
+
+        # ── PHASE 2b: Append to audit trail (incremental) ───────────────
+        AUDIT_SCRIPT="${SCRIPT_DIR}/audit_trail.py"
+        if [[ -f "${AUDIT_SCRIPT}" ]]; then
+            python3 "${AUDIT_SCRIPT}" --append "${COUNCIL_ITER}" 2>&1 | while IFS= read -r line; do
+                echo "  ${line}"
+            done
+            if [[ ${PIPESTATUS[0]} -eq 0 ]]; then
+                log_ok "Audit trail updated for iteration ${COUNCIL_ITER}"
+            else
+                log_warn "Audit trail append failed (non-fatal)"
+            fi
+        fi
     fi
 
     # ── PHASE 3: Git commit + push ───────────────────────────────────────
@@ -436,14 +461,16 @@ while [[ ${COMPLETED} -lt ${MAX_ITERATIONS} ]]; do
 
     cd "${ROOT}"
 
-    # Stage arena data files + council output
+    # Stage arena data files + council output + audit trail
     git add \
         data/arena/trading-floor-karpathy-output.json \
         data/arena/trading-floor-iteration.json \
         data/arena/trading-floor-v4-latest.json \
+        data/arena/trader-darwin-weights.json \
         data/arena/traders/ \
         data/arena/proposals/ \
         data/arena/council/ \
+        data/arena/audit/ \
         data/departments/trading_floor/ \
         2>/dev/null || true
 

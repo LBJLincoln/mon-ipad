@@ -1,61 +1,62 @@
 {
-  "last_updated": "2026-04-09T04:00:00Z",
-  "cycle": 81,
+  "last_updated": "2026-04-08T08:10:00Z",
+  "cycle": 77,
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
   "nba_best_brier": 0.22249,
-  "nba_best_brier_top_performer": 0.21854,
   "political_best_brier": 0.23134,
-  "nba_islands_online": 6,
+  "nba_best_individual": 0.21570,
+  "political_best_individual": 0.218,
+  "nba_islands_online": 5,
   "nba_islands_total": 6,
   "political_islands_online": 2,
   "political_islands_total": 4,
-  "fleet_brier_avg_nba": 0.22397,
+  "fleet_brier_avg_nba": 0.22786,
   "fleet_brier_avg_political": 0.24053,
   "key_discoveries_this_cycle": [
-    "MDPI 2025: LR Brier=0.199 vs XGBoost=0.202 — LR BEATS XGBoost on calibration. Proposal: lr-ga-model-type-brier-reduction-2026-04-09.json",
-    "NBA all 6 islands ONLINE — no stagnation detected fleet-wide. S12 at gen 490 cycle 164.",
-    "S10 top_performer 0.21854 still 0.00017 above threshold — ~1 Brier point from checkpoint",
-    "Political pipeline audit: congressional_trades (Cat24) MISSING — QUIVER_API_KEY required",
-    "Political data stale 4+ days — VM cron check needed. Added check_pipeline_health() to fetch_political_data.py",
-    "PA3/PA4 still 404. PA1 feature_candidates 252 vs PA2's 309 — Cat26-30 deployment lag persists"
+    "API command format fix: use {\"command\":\"diversify\"} not {\"action\":\"diversify\"} — previous cycles may have failed silently",
+    "S13+S14 restarted with EXTENDED 11532-game dataset vs 9551 elsewhere — 21% more data, watch first brier",
+    "S11 approaching stagnation threshold: 14/15 — will trigger diversify next cycle if no gain",
+    "PA3/PA4 still returning 404 (consistent with cycle 76 — phantom islands, never existed or deleted)",
+    "PA2 Pareto-star: 155f LightGBM, Brier=0.218, ROI=41.56% at gen 8975 — best political result ever",
+    "Research: MDPI 2025 LR achieves Brier 0.199 — gap to our fleet is 0.023. Isotonic calibration EXP-2 proposed."
   ],
   "engine_parity": {
     "nba_engine_version": "v3.1-54cat",
-    "nba_hf_space_parity": "OK — root = hf-space identical",
-    "political_engine_version": "v3.8-political-30cat-scotus-judicial",
-    "political_hf_space_parity": "OK — root = hf-space identical (2597 lines)",
+    "nba_hf_space_engine_version": "v3.1-54cat",
+    "nba_parity": "OK — both confirmed identical v3.1-54cat",
+    "political_engine_version": "v2.0-13cat",
+    "nba_feature_candidates_s10_s15": 3290,
     "political_features_pa1": 252,
     "political_features_pa2": 309,
-    "pa1_pa2_gap_note": "57 feature difference — Cat26-30 data not feeding PA1; restart PA1 space to resolve"
+    "note_s16_s17": "Previous cycle (76) discovered S16+S17 on LBJLincoln26. Not in current monitoring scope — update instructions to add them."
   },
   "cross_pollination_this_cycle": [
     {
-      "from": "MDPI 2025 research",
-      "to": "NBA + Political",
-      "technique": "Logistic Regression as GA model type (LR Brier=0.199 > XGBoost=0.202)",
-      "status": "PROPOSED — mon-ipad/data/research-proposals/lr-ga-model-type-brier-reduction-2026-04-09.json",
-      "expected_gain": "-0.010 to -0.020 Brier",
-      "implementation_target": "S11/S15 hf-space/app.py CPU_MODEL_TYPES next engineering cycle"
+      "from": "Research (MDPI 2025)",
+      "to": "Both",
+      "technique": "Isotonic calibration (CalibratedClassifierCV)",
+      "status": "PROPOSED — proposal written to mon-ipad/data/research-proposals/mc-dropout-lr-baseline-calibration-2026-04-08.json",
+      "expected_gain": "-0.003 to -0.008 Brier"
     },
     {
-      "from": "Political pipeline audit (Rotation D)",
+      "from": "NBA S13/S14",
       "to": "Political",
-      "technique": "check_pipeline_health() function in ops/fetch_political_data.py",
-      "status": "IMPLEMENTED — python3 ops/fetch_political_data.py --health",
-      "output": "data/pipeline-health.json with per-source grade and alerts"
+      "technique": "Extended dataset (11532 games). Political could similarly expand events corpus.",
+      "status": "OBSERVATION — PA2 only has 372 events vs NBA's 9551+ games"
     }
   ],
   "action_items_next_cycle": [
-    "IMPLEMENT: Add logistic_regression to S11/S15 hf-space/app.py CPU_MODEL_TYPES (Rotation C next)",
-    "FIX: Set QUIVER_API_KEY on VM for congressional_trades (Cat24) data",
-    "CHECK: VM cron status — run fetch_political_data.py --fast to restore 4-day data gap",
-    "CHECKPOINT: If S10 top_performer improves to <0.21837, checkpoint to Supabase immediately",
-    "MANUAL: Restart PA3+PA4 via HuggingFace dashboard"
+    "CHECK S11 stagnation: if still 15+ → diversify",
+    "IMPLEMENT EXP-2: isotonic calibration in calibration/conformal.py (30 min, -0.003 to -0.008 Brier)",
+    "CHECK S13/S14 first brier results (warm-up started 07:19Z and 07:23Z today)",
+    "MANUAL: Restart PA3+PA4 via HuggingFace dashboard (human action required)",
+    "CHECKPOINT: Save PA2 Pareto-star config (155f LightGBM, Brier=0.218) to Supabase political_experiments",
+    "FETCH S16+S17 status if they are confirmed real islands (cycle 76 found them on LBJLincoln26)"
   ],
   "alerts": [
-    "Political data pipeline stale 4+ days — VM cron likely down",
-    "congressional_trades CRITICAL MISSING — Cat24 zero-filled on all PA islands",
-    "PA3+PA4 still 404 — 50% political fleet offline",
-    "S10 top_performer 0.21854 vs threshold 0.21837 — 0.00017 from Supabase checkpoint"
+    "S11 stagnation 14/15 — watch next cycle",
+    "PA3+PA4 phantom/down — 50% political fleet offline",
+    "API command format was wrong ({\"action\"} vs {\"command\"}) — previous cycles may not have successfully diversified",
+    "PA2 Pareto-star (Brier=0.218) needs Supabase checkpoint before potential crash/restart"
   ]
 }

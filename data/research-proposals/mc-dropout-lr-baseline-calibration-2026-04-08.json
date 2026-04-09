@@ -1,0 +1,79 @@
+{
+  "proposal_id": "mc-dropout-lr-baseline-2026-04-08",
+  "created": "2026-04-08T08:10:00Z",
+  "created_by": "nomos42-brain (sonnet-4.6)",
+  "source_paper": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets, MDPI 2078-2489/17/1/56 (2025)",
+  "priority": "HIGH",
+  "brier_gap": "Our best: 0.22249 vs SOTA LR: 0.199 — gap = 0.023",
+  "title": "MC Dropout Calibration + Logistic Regression Baseline to Close 0.023 Brier Gap",
+
+  "findings_from_paper": {
+    "logistic_regression_brier": 0.199,
+    "xgboost_brier": 0.202,
+    "lstm_mc_dropout_ece": 0.025,
+    "lstm_mc_dropout_mce": 0.051,
+    "calibration_method": "Isotonic regression on market-implied probabilities",
+    "feature_approach": "Rolling 5-game averages, per-100-possession normalization, shot chart CNN+PCA(20 components)",
+    "staking": "Fractional Kelly 0.3x with EUR 100 cap, EV > 1.10 threshold",
+    "era_normalization": "Season fixed effects (3PT attempts doubled 2010-2024)"
+  },
+
+  "proposed_experiments": [
+    {
+      "id": "EXP-1",
+      "name": "Logistic Regression Baseline Audit",
+      "description": "Run calibrated LR (sigmoid + isotonic) on our current 3290 feature candidates. If LR alone hits Brier < 0.22, this validates that our tree models are overfitting relative to LR baseline.",
+      "implementation": "In evaluation island, add LogisticRegression(C=0.1, max_iter=500) as a model_type option in the GA. Let evolution discover which features work best with LR.",
+      "expected_brier_gain": "-0.010 to -0.020",
+      "effort": "LOW — add 1 model type to model_types list in evolution config",
+      "file_to_modify": "hf-space/app.py or evolution/genetic_loop.py — add 'logistic' to model_types"
+    },
+    {
+      "id": "EXP-2",
+      "name": "Post-hoc Isotonic Calibration",
+      "description": "After GA selects best features+model, apply sklearn CalibratedClassifierCV with isotonic regression to final model. Compare Brier before/after calibration.",
+      "implementation": "In predict_today.py and eval pipeline, wrap best model with CalibratedClassifierCV(method='isotonic', cv=5). Track calibration_brier vs raw_brier in Supabase.",
+      "expected_brier_gain": "-0.003 to -0.008",
+      "effort": "LOW — 5 lines of code in calibration/ module",
+      "file_to_modify": "calibration/conformal.py — add isotonic_calibrate() function"
+    },
+    {
+      "id": "EXP-3",
+      "name": "Era Normalization for Season Fixed Effects",
+      "description": "Per-100-possession normalization already exists. Add season_era feature: 3PT_rate_vs_league_season_avg to capture style drift. Pace has changed dramatically 2010-2026.",
+      "implementation": "Add ~10 era-normalized features to engine.py category 55 (or existing pace_adjusted_features.py). Normalize each stat by that season's league average.",
+      "expected_brier_gain": "-0.002 to -0.005",
+      "effort": "MEDIUM — add ~15 features to existing pace_adjusted_features.py",
+      "file_to_modify": "features/pace_adjusted_features.py"
+    },
+    {
+      "id": "EXP-4",
+      "name": "MC Dropout Uncertainty Features as Meta-Features",
+      "description": "Run LightGBM 100x with 10% feature dropout. Compute mean prediction, std, and confidence interval. Use (mean, std) as 2 additional meta-features in next GA layer.",
+      "implementation": "Adapt existing meta2_ calibration features (already in engine). Add mc_dropout_mean, mc_dropout_std, mc_dropout_ci_width using random feature subsampling.",
+      "expected_brier_gain": "-0.005 to -0.010",
+      "effort": "MEDIUM — extend meta_features section in engine.py",
+      "file_to_modify": "features/engine.py — meta features section (category ~45)"
+    }
+  ],
+
+  "quick_win": {
+    "experiment": "EXP-2 (Isotonic Calibration)",
+    "reason": "5 lines of code, proven -0.003 to -0.008 gain in paper, directly applicable to existing predict_today.py. No training needed — post-hoc only.",
+    "implementation_steps": [
+      "1. In calibration/conformal.py, add: from sklearn.calibration import CalibratedClassifierCV",
+      "2. Wrap best GA model: cal_model = CalibratedClassifierCV(best_model, method='isotonic', cv=5).fit(X_val, y_val)",
+      "3. Use cal_model.predict_proba() in predict_today.py instead of raw model",
+      "4. Log calibration_brier to Supabase alongside raw_brier",
+      "5. If calibrated_brier < raw_brier: use calibrated model for predictions"
+    ]
+  },
+
+  "cross_project_applicability": {
+    "political_alpha": "Same isotonic calibration applies to political_engine.py. PA2's Brier=0.218 could potentially reach 0.210 with proper calibration.",
+    "both_projects": "Fractional Kelly 0.3x staking rule from paper should replace any full-Kelly calculations in bankroll_manager.py"
+  },
+
+  "status": "PROPOSED — pending engineering review",
+  "next_action": "Implement EXP-2 (isotonic calibration) in calibration/conformal.py — estimated 30 min"
+}

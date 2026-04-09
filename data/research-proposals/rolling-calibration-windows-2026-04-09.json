@@ -1,0 +1,49 @@
+{
+  "id": "rolling-calibration-windows-2026-04-09",
+  "title": "Rolling Calibration Windows for Seasonal Drift Adaptation",
+  "created": "2026-04-09T00:00:00Z",
+  "source": "brain-cycle-78 / WebSearch 2026 NBA prediction literature",
+  "priority": "HIGH",
+  "category": "calibration",
+  "target_metric": "best_brier",
+  "current_best": 0.21854,
+  "expected_improvement": "0.003-0.008 Brier reduction (based on lit: LR achieves 0.199 vs XGBoost 0.202)",
+
+  "motivation": "Academic SOTA for NBA Brier is 0.199 (LR + isotonic calibration). Our best is 0.21854. Gap of ~0.019. Research shows NBA team dynamics shift mid-season (fatigue, trades, playoff seeding dynamics). Calibrating on full history smears early-season patterns into late-season predictions.",
+
+  "technique": "Rolling Calibration Windows",
+  "description": "Instead of fitting the calibrator (isotonic / Venn-Abers) on the full training set, apply a recency-weighted calibration: fit on the most recent N games only. This allows the calibration to adapt to current-season team quality and rest patterns rather than being dominated by old data.",
+
+  "implementation": {
+    "file": "features/feature_selection.py or calibration/calibrators.py",
+    "approach": [
+      "1. During evaluate_individual(), after XGB/ET/LGB prediction, collect (prob, outcome) pairs",
+      "2. Sort by game_date, take last 500 games for calibration fit (vs current: all ~9551)",
+      "3. Apply isotonic regression on rolling window only",
+      "4. Compare Brier on holdout (last 200 games) vs full-window calibration",
+      "5. Add ROLLING_CAL_WINDOW as a GA-tunable parameter (200, 500, 1000, 2000, all)"
+    ],
+    "ga_integration": "Add rolling_cal_window to individual genome (new gene slot). Values: [200, 500, 1000, 2000, 9999(=all)]. Crossover/mutate like n_features.",
+    "expected_code_delta": "~80 lines in evaluate_individual() and build_calibrator()",
+    "islands_to_test": ["S10-exploitation", "S12-extra_trees"],
+    "rollout": "Deploy to S10 only first, measure Brier delta over 20 generations, then fleet-wide"
+  },
+
+  "supporting_evidence": [
+    "MDPI 2026: 'Uncertainty-Aware Machine Learning for NBA Forecasting' — recurrent + MC dropout with rolling state achieves calibrated sequential probabilities",
+    "Nature 2025 stacked ensemble paper: best base learner (LR) Brier=0.199 vs XGBoost=0.202 — suggests calibration gap is larger than model gap",
+    "Current engine uses Venn-Abers on full set — already good, but seasonal drift not addressed",
+    "NBA mid-season trades (deadline Feb 2026) create distribution shift in team compositions"
+  ],
+
+  "risk": "LOW — calibration is post-hoc, does not affect feature engineering or model weights. Easy to A/B test and revert.",
+  "cross_project_applicability": "MEDIUM — political engine has only ~1180 events (too few for rolling window to help). Flag for when political dataset grows to >5000 events.",
+
+  "follow_up": [
+    "After validation: port rolling_cal_window gene to all 6 NBA islands",
+    "Explore adaptive window based on regime detection (pre/post All-Star, playoff push, etc.)"
+  ],
+
+  "status": "PROPOSED",
+  "assigned_island": "S10-nomos42-nba-quant"
+}

@@ -1,0 +1,107 @@
+{
+  "meta": {
+    "device": "Acer Aspire 3",
+    "expected_ram_gb": 8,
+    "max_ram_gb": 16,
+    "gpu": "integrated (no dedicated GPU)",
+    "os": "Windows 11",
+    "ollama_version": ">=0.3.0",
+    "created": "2026-04-04",
+    "notes": "CPU-only inference. All models selected for <4GB RAM usage. Context windows kept small to fit memory."
+  },
+  "models": {
+    "qwen2.5:3b": {
+      "pull_command": "ollama pull qwen2.5:3b",
+      "size_gb": 1.9,
+      "ram_usage_gb": 2.5,
+      "context_window": 4096,
+      "max_context": 32768,
+      "use_case": "Lightweight reasoning and analysis. Best all-rounder for the laptop. Good at structured JSON output, summarization, and basic code understanding.",
+      "speed_estimate": "~15 tokens/sec on CPU",
+      "parameters": "3B",
+      "quantization": "Q4_K_M",
+      "recommended_for": ["daily_analysis", "json_generation", "summarization"],
+      "ollama_config": {
+        "num_ctx": 4096,
+        "temperature": 0.3,
+        "top_p": 0.9,
+        "repeat_penalty": 1.1
+      }
+    },
+    "gemma2:2b": {
+      "pull_command": "ollama pull gemma2:2b",
+      "size_gb": 1.6,
+      "ram_usage_gb": 2.0,
+      "context_window": 4096,
+      "max_context": 8192,
+      "use_case": "Fast inference for quick health checks and status parsing. Smallest and fastest model. Use for frequent polling tasks where speed matters more than depth.",
+      "speed_estimate": "~20 tokens/sec on CPU",
+      "parameters": "2B",
+      "quantization": "Q4_K_M",
+      "recommended_for": ["health_checks", "status_parsing", "quick_summaries"],
+      "ollama_config": {
+        "num_ctx": 4096,
+        "temperature": 0.2,
+        "top_p": 0.85
+      }
+    },
+    "phi3:mini": {
+      "pull_command": "ollama pull phi3:mini",
+      "size_gb": 2.3,
+      "ram_usage_gb": 3.0,
+      "context_window": 4096,
+      "max_context": 128000,
+      "use_case": "Code generation and script analysis. Strong at understanding Python code, generating patches, and analyzing log files. Best choice for code-related monitoring tasks.",
+      "speed_estimate": "~12 tokens/sec on CPU",
+      "parameters": "3.8B",
+      "quantization": "Q4_K_M",
+      "recommended_for": ["code_analysis", "log_parsing", "script_generation"],
+      "ollama_config": {
+        "num_ctx": 4096,
+        "temperature": 0.1,
+        "top_p": 0.9
+      }
+    },
+    "hermes3:3b": {
+      "pull_command": "ollama pull hermes3:3b",
+      "size_gb": 2.0,
+      "ram_usage_gb": 2.7,
+      "context_window": 4096,
+      "max_context": 16384,
+      "use_case": "Agent mode — function calling and tool use. Trained specifically for agentic workflows. Best choice for the monitoring agent loop (structured output, decision-making, tool invocation patterns).",
+      "speed_estimate": "~14 tokens/sec on CPU",
+      "parameters": "3B",
+      "quantization": "Q4_K_M",
+      "recommended_for": ["agent_mode", "function_calling", "decision_making", "monitoring_loop"],
+      "ollama_config": {
+        "num_ctx": 4096,
+        "temperature": 0.3,
+        "top_p": 0.9,
+        "repeat_penalty": 1.05
+      }
+    }
+  },
+  "model_selection_strategy": {
+    "default": "qwen2.5:3b",
+    "fast_polling": "gemma2:2b",
+    "code_tasks": "phi3:mini",
+    "agent_loop": "hermes3:3b",
+    "notes": "On 8GB RAM, run only ONE model at a time. On 16GB, you can run two small models concurrently (e.g., gemma2:2b + qwen2.5:3b)."
+  },
+  "memory_budget": {
+    "8gb_system": {
+      "os_reserved_gb": 3.0,
+      "available_for_ollama_gb": 5.0,
+      "max_concurrent_models": 1,
+      "recommended_model": "qwen2.5:3b",
+      "notes": "Keep context window at 4096 to stay within budget"
+    },
+    "16gb_system": {
+      "os_reserved_gb": 4.0,
+      "available_for_ollama_gb": 12.0,
+      "max_concurrent_models": 2,
+      "recommended_combo": ["gemma2:2b", "qwen2.5:3b"],
+      "notes": "Can increase context to 8192 with single model"
+    }
+  }
+}

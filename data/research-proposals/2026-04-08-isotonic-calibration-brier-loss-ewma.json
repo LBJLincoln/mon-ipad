@@ -1,0 +1,88 @@
+{
+  "proposal_id": "2026-04-08-isotonic-calibration-brier-loss-ewma",
+  "created": "2026-04-08T16:10:00Z",
+  "cycle": 79,
+  "priority": "HIGH",
+  "estimated_brier_improvement": "0.005 to 0.010",
+  "applies_to": ["nba_fleet", "political_alpha"],
+
+  "summary": "Three research-backed techniques from 2025-2026 literature to push Brier from 0.222 toward 0.218 target. Sources: MDPI Information Jan 2026 (NBA XGBoost+calibration → Brier ~0.20), Scientific Reports 2025 (stacked ensemble SHAP analysis), arXiv 2508.02725 Aug 2025 (Brier-loss custom objective).",
+
+  "techniques": [
+    {
+      "rank": 1,
+      "name": "Post-hoc Isotonic Calibration (CalibratedClassifierCV)",
+      "impact": "HIGH — 0.005 to 0.010 Brier reduction, confirmed on NBA 2024 data",
+      "source": "MDPI Information 17(1):56, January 2026 — XGBoost + calibration → Brier ~0.20 vs uncalibrated ~0.23",
+      "implementation": {
+        "what": "Wrap each GA-evolved model in sklearn.calibration.CalibratedClassifierCV before scoring",
+        "code_sketch": "from sklearn.calibration import CalibratedClassifierCV\ncal_model = CalibratedClassifierCV(base_model, cv=5, method='isotonic')\ncal_model.fit(X_calib, y_calib)\nbrier = brier_score_loss(y_val, cal_model.predict_proba(X_val)[:,1])",
+        "where": "hf-space/app.py — in _evaluate_individual() after model.fit(). Use chronologically ordered train/calib/val split (no leakage).",
+        "caution": "Use isotonic (not sigmoid) only when calibration set >= 2000 samples. With smaller sets use sigmoid (Platt scaling).",
+        "ga_integration": "Add calibration_method as a GA hyperparameter: ['none', 'isotonic', 'sigmoid']. Let selection pressure find the best."
+      },
+      "already_in_use": "S13 uses Venn-Abers on best individual (Brier 0.22644 for 32f catboost). Generalize across all models.",
+      "files_to_edit": ["hf-space/app.py", "hf-space/features/engine.py (scoring section)"]
+    },
+    {
+      "rank": 2,
+      "name": "LightGBM Custom Brier-Loss Objective",
+      "impact": "MEDIUM — 0.003 to 0.008 Brier reduction, proven on NCAA basketball (arXiv 2508.02725)",
+      "source": "arXiv 2508.02725 Aug 2025 — LSTM trained with Brier loss: 0.1589 vs BCE baseline 0.1748 (same architecture)",
+      "implementation": {
+        "what": "Replace log-loss objective in LightGBM with custom Brier-score objective",
+        "code_sketch": "def brier_obj(preds, train_data):\n    labels = train_data.get_label()\n    p = 1.0 / (1.0 + np.exp(-preds))  # sigmoid\n    grad = 2.0 * (p - labels) * p * (1.0 - p)\n    hess = 2.0 * p * (1.0 - p) * (p * (1.0 - p) + (p - labels) * (1.0 - 2.0 * p))\n    return grad, hess\nlgb.train(params, train_data, fobj=brier_obj)",
+        "where": "hf-space/app.py — in _build_model() for LightGBM branch. Add loss_function hyperparameter ['logloss', 'brier'] to GA search space.",
+        "caution": "Custom Brier objective converges 30-40% slower. Increase n_estimators proportionally. Monitor training loss carefully."
+      },
+      "files_to_edit": ["hf-space/app.py"]
+    },
+    {
+      "rank": 3,
+      "name": "EWMA Rolling Momentum Differentials (5g, 10g)",
+      "impact": "MEDIUM — feature engineering improvement; +10-15 new features within 200-cap",
+      "source": "MDPI Information 17(1):56 Jan 2026 — EWMA rolling features cited as key contribution; PLOS ONE June 2025 confirms rolling differentials outperform static stats",
+      "implementation": {
+        "what": "Add exponentially weighted moving average differential features: EWMA(5g) and EWMA(10g) for key stats, computed as home_team - away_team",
+        "key_stats": ["eFG%", "TS%", "ORTG", "DRTG", "point_differential", "win_pct"],
+        "formula": "ewma_5g = series.ewm(span=5, adjust=False).mean().iloc[-1]\ndiff_feature = home_ewma_5g - away_ewma_5g",
+        "features_to_add": [
+          "efg_pct_ewma5g_diff", "efg_pct_ewma10g_diff",
+          "ortg_ewma5g_diff", "ortg_ewma10g_diff",
+          "drtg_ewma5g_diff", "drtg_ewma10g_diff",
+          "point_diff_ewma5g", "point_diff_ewma10g",
+          "win_pct_ewma5g_diff", "win_pct_ewma10g_diff",
+          "shooting_momentum_5g", "shooting_momentum_10g"
+        ],
+        "rest_travel_features": [
+          "days_rest_home", "days_rest_away", "rest_advantage",
+          "back_to_back_home", "back_to_back_away",
+          "road_trip_game_num_away", "timezone_cross_flag"
+        ],
+        "where": "features/engine.py — add new category (Cat47 or Cat55 depending on current count). Keep within MAX_FEATURES=200.",
+        "note": "SHAP analysis from Scientific Reports 2025 found AST near-zero importance. These momentum features should replace some assist-family features in GA search."
+      },
+      "files_to_edit": ["features/engine.py", "hf-space/features/engine.py"]
+    }
+  ],
+
+  "additional_finding": {
+    "name": "ECE as 4th Pareto Objective",
+    "impact": "LOW-MEDIUM — improves betting calibration in specific probability bins",
+    "description": "Expected Calibration Error (ECE) measures reliability across probability bins. Models with low Brier but high ECE are miscalibrated in specific ranges, killing Kelly betting even if aggregate Brier looks good. Add ECE as 4th NSGA-II objective alongside Brier, ROI, Sharpe.",
+    "already_noted": "Previous proposal ece-4th-pareto-objective-2026-04-08.json — confirm if implemented"
+  },
+
+  "cross_repo_application": {
+    "political_alpha": "Isotonic calibration (Technique 1) directly applicable to political engine. PA1 Brier 0.249 vs PA2 0.231 — calibration gap is primary driver. Apply CalibratedClassifierCV in political hf-space/app.py.",
+    "shared_code": "Both projects use identical evolution/genetic_loop.py. Any GA hyperparameter additions (calibration_method, loss_function) should be added to both in a single PR."
+  },
+
+  "benchmarks": {
+    "current_fleet_best": 0.22249,
+    "target": 0.21837,
+    "gap": 0.00412,
+    "published_sota_nba_2026": 0.20,
+    "published_sota_source": "MDPI Info 17(1):56 Jan 2026 — XGBoost + isotonic calibration"
+  }
+}

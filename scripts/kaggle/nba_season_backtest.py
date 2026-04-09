@@ -899,12 +899,18 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
     print(f"\nWeek {n_weeks}: {week_dates[0]}->{week_dates[-1]} | "
           f"Train: {len(train_idx)} | Test: {len(test_idx)}")
 
+    # P006: Temporal sample weighting — exponential decay (recent games up-weighted)
+    # lambda=0.005 → half-weight at ~139 samples back (~half season)
+    _n_tr = len(X_train)
+    _sw = np.exp(-0.005 * (_n_tr - 1 - np.arange(_n_tr)))
+    _sw = _sw * (_n_tr / _sw.sum())  # normalize: mean weight = 1.0
+
     # Train
     t0 = time.time()
     fitted = {}
     for name, model in make_models().items():
         try:
-            model.fit(X_train, y_train)
+            model.fit(X_train, y_train, sample_weight=_sw)
             fitted[name] = model
         except Exception as e:
             print(f"  {name} train failed: {e}")

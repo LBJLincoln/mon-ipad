@@ -1,0 +1,37 @@
+{
+  "iteration": 319,
+  "timestamp": "2026-04-04T02:01:22.598895+00:00",
+  "current_best_bankroll": 3687.51,
+  "distance_to_1M_pct": 99.6312,
+  "proposals": [
+    {
+      "type": "eliminate_strategies",
+      "strategies": [
+        "confidence_scaled",
+        "dog_value_plus"
+      ],
+      "reason": "2 strategies with negative ROI",
+      "priority": 1
+    },
+    {
+      "type": "promote_model",
+      "model": "elo_baseline",
+      "reason": "Top model with 46% win rate",
+      "priority": 2
+    },
+    {
+      "type": "increase_aggression",
+      "reason": "Only 0.4% to $1M",
+      "priority": 1
+    },
+    {
+      "type": "restrict_categories",
+      "categories": [
+        "ml_away"
+      ],
+      "reason": "1 categories with <40% win rate",
+      "priority": 2
+    }
+  ],
+  "proposals_count": 4
+}

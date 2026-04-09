@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-04-07T20:00:08.999546+00:00",
+  "state": "DRIFT",
+  "recalibration_needed": true,
+  "signals": {
+    "concept": "STABLE",
+    "calibration": "DRIFT",
+    "data": "DRIFT",
+    "label": "STABLE"
+  },
+  "metrics": {
+    "trades": 445,
+    "baseline_brier": 0.230983,
+    "cusum_peak": 0.156598,
+    "psi": 0.25379,
+    "label_z": 0.154,
+    "rolling_ece": 0.14716,
+    "rolling_ece_window": 50,
+    "recal_trigger_ece": 0.03
+  },
+  "sources": {
+    "backtest": "data/nba-agent/full-season-backtest.json",
+    "papers": [
+      "arXiv:2510.25573 (CUSUM calibration drift)",
+      "arXiv:2303.06021 (Wilkens NBA calibration)"
+    ]
+  }
+}

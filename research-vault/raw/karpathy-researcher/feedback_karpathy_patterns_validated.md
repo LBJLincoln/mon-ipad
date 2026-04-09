@@ -1,0 +1,1 @@
+/home/termius/mon-ipad/.claude/agent-memory/karpathy-researcher/feedback_karpathy_patterns_validated.md
