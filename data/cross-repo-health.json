@@ -1,66 +1,67 @@
 {
-  "last_updated": "2026-04-09T08:30:00Z",
-  "cycle": 79,
-  "generated_by": "claude-sonnet-4-6 nomos42-brain",
-  "nba_best_brier": 0.22061,
-  "political_best_brier": 0.23134,
-  "nba_best_individual": 0.21854,
-  "political_best_individual": 0.23134,
-  "nba_islands_online": 6,
-  "nba_islands_total": 6,
-  "political_islands_online": 2,
-  "political_islands_total": 4,
-  "fleet_brier_avg_nba": 0.22346,
-  "fleet_brier_avg_political": 0.24053,
-  "key_discoveries_this_cycle": [
-    "S11 stagnation alert resolved — now 0 (was approaching 14/15 last cycle). All 6 NBA islands stagnation=0.",
-    "S15 (wide_search) is fleet Brier leader this poll: 0.22061 with extra_trees 200f, Sharpe=7.32.",
-    "S12 has actually the most generations (586) — lightgbm best 0.2273 with mutation rate now only 0.059 (well-tuned).",
-    "PA3+PA4 still 404 (confirmed down cycle 81, 82). HF MCP unavailable — manual restart required.",
-    "Political PA2 has Pareto front of 27 solutions at gen 29749 — healthy diversity.",
-    "FEC Schedule E (independent expenditures) added to fetch_political_data.py — new PAC flow signal.",
-    "NBA research: SHAP-seeded GA init proposed (shap-seeded-ga-init-2026-04-09.json) — convergence acceleration."
-  ],
-  "engine_parity": {
-    "nba_engine_version": "v3.1-54cat",
-    "nba_hf_space_engine_version": "v3.1-54cat",
-    "nba_parity": "OK — confirmed identical v3.1-54cat (7213 features, 54 categories)",
-    "political_engine_version": "v3.8-political-30cat-scotus-judicial",
-    "political_hf_space_engine_version": "v3.8-political-30cat-scotus-judicial",
-    "political_parity": "OK — confirmed identical (2597 lines, same SHA)",
-    "nba_feature_candidates": 3290,
-    "political_feature_candidates_pa2": 309,
-    "political_feature_candidates_pa1": 252,
-    "pa1_pa2_gap_note": "PA1 has 57 fewer feature candidates than PA2 — Cat26-30 data not flowing to PA1. QUIVER_API_KEY required."
-  },
-  "cross_pollination_this_cycle": [
-    {
-      "from": "NBA Research (PMC/NCBI 2024 + Scientific Reports 2025)",
-      "to": "NBA (primary) + Political (secondary)",
-      "technique": "SHAP-Seeded GA Initialization — bias init population toward top-30 SHAP features (2x selection weight)",
-      "status": "PROPOSED — shap-seeded-ga-init-2026-04-09.json written",
-      "expected_gain": "-0.002 to -0.006 Brier, 30-50% faster convergence"
+  "timestamp": "2026-04-09T13:00:00Z",
+  "brain_cycle": "4h",
+  "ecosystem_health": {
+    "nba_quant": {
+      "status": "HEALTHY",
+      "islands_active": 6,
+      "islands_total": 6,
+      "best_brier": 0.22249,
+      "pareto_best_brier": 0.21773,
+      "below_checkpoint_threshold": true,
+      "threshold": 0.21837,
+      "all_time_best": 0.21570,
+      "target": 0.20,
+      "progress_to_target_pct": 72.3
     },
-    {
-      "from": "FEC OpenAPI Research (Rotation A)",
-      "to": "Political Alpha",
-      "technique": "FEC Schedule E (independent expenditures) — PAC/SuperPAC sector spending flows as new forward-looking signal",
-      "status": "IMPLEMENTED — fetch_fec_independent_expenditures() added to ops/fetch_political_data.py + hf-space parity",
-      "expected_gain": "New Cat31+ signal for political engine: sector-level PAC spending → regulatory expectation"
+    "political_alpha": {
+      "status": "DEGRADED",
+      "islands_active": 2,
+      "islands_total": 4,
+      "best_brier": 0.23134,
+      "pareto_best_brier": 0.2182,
+      "down_reason": "PA3 and PA4 returned 404 - manual HF restart needed",
+      "restart_url_pa3": "https://huggingface.co/spaces/nomos42/political-alpha-3",
+      "restart_url_pa4": "https://huggingface.co/spaces/nomos42/political-alpha-4"
     }
-  ],
-  "action_items_next_cycle": [
-    "IMPLEMENT SHAP-seeded init in S15/S11 hf-space/app.py (D2 engineering cycle)",
-    "MANUAL: Restart PA3+PA4 via HuggingFace dashboard (human action required — HF MCP unavailable)",
-    "IMPLEMENT ECE 4th Pareto objective (ece-4th-pareto-objective-2026-04-08.json — HIGH priority, pending)",
-    "IMPLEMENT LR model type (lr-ga-model-type-brier-reduction-2026-04-09.json — HIGH priority, pending)",
-    "Set QUIVER_API_KEY on VM to enable congressional_trades (Cat24) for PA1",
-    "Test fetch_fec_independent_expenditures() on VM: python3 ops/fetch_political_data.py --fast"
-  ],
+  },
+  "cross_project_techniques": {
+    "venn_abers_calibration": {
+      "discovered_in": "nba_s13",
+      "nba_brier_with": 0.21773,
+      "nba_brier_without": 0.22316,
+      "brier_delta": -0.00543,
+      "ported_to_political": false,
+      "action": "Port apply_venn_abers() to political_engine.py in next D2 cycle"
+    },
+    "bradley_terry_glm_features": {
+      "source": "arxiv_2508.02725",
+      "expected_delta": -0.005,
+      "proposed_in": "data/research-proposals/2026-04-09-lstm-brier-calibration.md",
+      "implemented": false
+    }
+  },
+  "research_cycle": {
+    "type": "odd_cycle",
+    "focus": "NBA techniques research",
+    "proposal_file": "data/research-proposals/2026-04-09-lstm-brier-calibration.md",
+    "sources": [
+      "arxiv 2508.02725 - LSTM Brier loss NCAA basketball",
+      "MDPI 2078-2489/17/1/56 - Uncertainty-Aware ML NBA betting",
+      "PMC 11265715 - XGBoost+SHAP NBA prediction"
+    ]
+  },
   "alerts": [
-    "PA3+PA4 down for 3+ cycles — manual HuggingFace restart required",
-    "Political pipeline health 69.2/100 (Grade C) — data staleness 4+ days",
-    "PA1 feature_candidates gap (252 vs PA2 309) — QUIVER_API_KEY missing",
-    "3 HIGH priority NBA proposals pending implementation — no engineering cycle yet"
+    "CHECKPOINT: S13 Pareto-front CatBoost+VennAbers Brier=0.21773 < 0.21837 threshold. Supabase checkpoint recommended.",
+    "DOWN: PA3 (nomos42-political-alpha-3) returning 404 - restart needed",
+    "DOWN: PA4 (nomos42-political-alpha-4) returning 404 - restart needed",
+    "LOW_EVENTS: PA1 only 1180 events, PA2 only 372 events - data pipeline check needed"
+  ],
+  "next_cycle_priorities": [
+    "Port Venn-Abers calibration to all NBA islands via engine.py update",
+    "Add Bradley-Terry GLM team quality features (Category 55)",
+    "Investigate PA3/PA4 space deletion vs sleep vs auth issue",
+    "Check PA ops/fetch_political_data.py for data pipeline health",
+    "Rotation B next cycle: Review political_engine.py for new features"
   ]
 }
