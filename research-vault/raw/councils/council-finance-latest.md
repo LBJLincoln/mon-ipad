@@ -1,5 +1,5 @@
 # Council: finance
 - Status: failed
-- Timestamp: 2026-04-10T08:00:03Z
+- Timestamp: 2026-04-10T14:00:02Z
 - Model: claude-haiku-4-5-20251001
-- Duration: 195s
+- Duration: 219s
