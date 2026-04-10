@@ -1,18 +1,18 @@
 {
-  "status": "no_op",
-  "action": "fleet_fully_recovered",
-  "iteration": 73,
-  "timestamp": "2026-04-08T12:00:00Z",
-  "spaces_up": 14,
-  "spaces_down": 0,
+  "status": "shipped",
+  "action": "fixed_cron_path_and_recovered_s17",
+  "iteration": 74,
+  "timestamp": "2026-04-10T21:55:23Z",
+  "spaces_up": 13,
+  "spaces_down": 1,
   "ports_up": ["8080", "8042"],
   "ports_down": [],
-  "auto_fixed": [],
-  "escalated": [],
+  "auto_fixed": ["S17_nba_restart_via_hf_api"],
+  "escalated": ["S16_nba_timeout_monitoring"],
   "crons_healthy": true,
-  "files_changed": [],
-  "reason": "fleet_green",
-  "decision": "NO_OP: All 14 HF spaces (10 NBA S10-S19, 4 Political P1-P4) healthy and reporting metrics. Data server (:8080) and Bloomberg API (:8042) responsive. Crons all green. Political spaces recovered from iter 72 outage. Uptime 100% this window.",
+  "files_changed": ["data/infra-status.json", "data/departments/infra/escalation-queue.jsonl"],
+  "reason": "partial_recovery_with_escalation",
+  "decision": "SHIPPED: (1) Fixed cron path from relative 'scripts/keepalive-spaces.sh' to absolute '/home/termius/mon-ipad/scripts/keepalive-spaces.sh' — cron was failing silently. (2) Ran keepalive script manually: S17 recovered to 200 via HF restart API. (3) S16 returned 000 (timeout) despite successful restart API call (200) — likely still booting. Escalated S16 to queue for 30-min monitoring. Political fleet (P1-P4) all healthy. Data server + Bloomberg API responsive.",
   "nba_fleet": {
     "S10": "up",
     "S11": "up",
@@ -20,17 +20,17 @@
     "S13": "up",
     "S14": "up",
     "S15": "up",
-    "S16": "up",
-    "S17": "up",
+    "S16": "timeout (restart triggered)",
+    "S17": "up (recovered)",
     "S18": "up",
     "S19": "up"
   },
   "political_fleet": {
     "P1": "up (brier: 0.24971)",
     "P2": "up (brier: 0.23134)",
-    "P3": "up (brier: 0.25168)",
-    "P4": "up (brier: 0.24803)"
+    "P3": "up (brier: 0.25229)",
+    "P4": "up (brier: 0.24533)"
   },
-  "uptime_pct": 100.0,
-  "escalation_status": "cleared"
+  "uptime_pct": 98.7,
+  "escalation_status": "s16_monitoring_active"
 }
