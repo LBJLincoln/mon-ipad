@@ -1,46 +1,40 @@
 ---
-name: NBA Feature Engine current state
-description: Engine v3.1-54cat: 6312 features, architecture facts (updated 2026-04-05)
+name: NBA Feature Engine v3.0-43cat state
+description: Engine analysis, Cat 38-44 additions, architecture facts (updated 2026-03-28)
 type: project
 ---
 
-Engine is at v3.1-54cat on 2026-04-05. Previous: v3.1-51cat (6257 features).
+Engine is at v3.0-43cat on 2026-03-28.
 
-**Why:** Added 3 new odds-derived categories (52, 53, 54) using the historical odds CSV.
+**Cat 38 (prior session):** Added venue-conditional matchup features — 14 new features comparing home team's home-only stats vs away team's road-only stats. `venue_wp_edge_{5,10,20}`, `venue_margin_edge_{5,10,20}`, `venue_ortg_edge_{5,10,20}`, `venue_drtg_edge_{5,10,20}`, `venue_home_boost`, `venue_road_penalty`.
 
-**How to apply:** When proposing more features, check what's already in the 54 categories listed below before adding new ones.
+**Cat 37 extension (prior session):** Added 7 raw delta_MOV rolling features. `h/a_delta_mov_raw`, `h/a_delta_mov_rolling_5`, `h/a_delta_mov_rolling_10`, `delta_mov_diff`. `_update_movda()` accepts `delta_mov_history` (positional arg between `mov_surprise_ewm` and `K`).
 
-## Current Category List (v3.1-54cat)
+**Cat 39 (2026-03-28):** Circadian Rhythm & Travel Fatigue — 8 normalized composite features. `circ_h/a_travel_dist` (dist/500 normalized), `circ_h/a_tz_shift`, `circ_h/a_fatigue_index` (= dist/500 + tz*0.5 + b2b*2 - min(rest,4)*0.3), `circ_advantage` (away - home fatigue), `circ_rest_nonlinear` (sqrt(h_rest) - sqrt(a_rest)). DISTINCT from Cat 6 raw values. Uses existing `_travel_dist`, `TIMEZONE_ET`, `haversine`.
 
-- Cat 1-15: Core stats (rolling perf, four factors, pace, scoring, momentum, rest, opp-adj, H2H, market, context, ref, player, quarter, def-matchup, polymarket)
-- Cat 16-35: Advanced expansion (interactions, EWMA, season trajectory, lineup, game theory, environmental, cross-window momentum, market II, power ratings, fatigue, player impact, referee, venue, market III, time series, cross-team matrix, Bayesian, network, ensemble, temporal decay)
-- Cat 37: MOVDA ELO (margin-of-victory deviation analysis)
-- Cat 38: Venue-conditional matchup features (home-only vs road-only stats)
-- Cat 39: Circadian Rhythm & Travel Fatigue (8 features)
-- Cat 41: Transition vs Half-Court Efficiency (7 features)
-- Cat 43: Clutch Performance (8 features, 30-game window)
-- Cat 44: Game Totals Prediction (10 features)
-- Cat 46: Real Odds Market Features (8 features, Cat46 — implied prob, fair prob, spread/total/overround)
-- Cat 47: Drive-Offense vs Rim-Defense Matchup (14 features, from tracking_data)
-- Cat 48: Passing Network Quality (10 features, from tracking_data)
-- Cat 49: Play-Type Efficiency (10 features, from tracking_data)
-- Cat 50: Temporal Win Sequence Encoding (12 features)
-- Cat 51: Season Era Normalization (8 features, z-score vs league running avg)
-- **Cat 52 (NEW 2026-04-05):** Odds Line Features (15 features) — spread magnitude, total line, vig, season percentiles, ML-implied spread vs actual gap, sharpness
-- **Cat 53 (NEW 2026-04-05):** ATS Record Features (12 features) — cover rate last 10/season, ATS streaks, as-fav/as-dog splits, home-only ATS, margin vs spread rolling avg
-- **Cat 54 (NEW 2026-04-05):** Over/Under Record Features (12 features) — over rate last 10/season, O/U streaks, pace vs total line, home/road O/U splits, margin vs total rolling avg
+**Cat 41 (2026-03-28):** Transition vs Half-Court Efficiency — 7 features. `trans41_h/a_fb_rate` (fb_pts/ppg), `trans41_h/a_halfcourt_eff` ((ppg*(1-fb_rate))/pace*100), `trans41_fb_rate_diff`, `trans41_pace_x_fb` (pace/100 * fb_rate), `trans41_halfcourt_edge`. All computed from existing `fb_pts`, `pace` stats — no external API.
 
-## Cat 52-54 Implementation Details
+**Cat 43 (2026-03-28):** Clutch Performance — 8 features. Filters last 30 records where |margin| <= 5. `clutch43_h/a_wp`, `clutch43_h/a_margin` (/10 normalized), `clutch43_h/a_ortg` ((ortg-100)/20 normalized), `clutch43_wp_diff`, `clutch43_margin_diff`. 30-game window (vs Cat 5's 10-game _clutch_wp). Adds margin + ortg breakdowns.
 
-**State trackers** (in build() method):
-- `_team_ats`: per-team list of (gd, covered_ats, spread_home, is_home_game, margin_vs_spread). Populated AFTER feature extraction to prevent lookahead.
-- `_team_ou`: per-team list of (gd, went_over, total, is_home_game, margin_vs_total). Populated after feature extraction.
-- `_season_spreads`: rolling list of abs(spread_home) values for percentile features.
-- `_season_totals`: rolling list of total line values for percentile features.
+**Cat 44 (2026-03-28):** Game Totals Prediction — 10 features. Encodes expected scoring environment normalized to league averages. `tot44_h/a_ppg10` (PPG/110), `tot44_h/a_papg10` (PAPG/110), `tot44_matchup_total` ((H_PPG + A_PAP + A_PPG + H_PAP) / 2 / 220), `tot44_pace_sum` (avg_pace/97), `tot44_pace_mismatch` (|h_pace - a_pace|/10), `tot44_ortg_sum` and `tot44_drtg_sum` (combined ratings/220), `tot44_score_env` ((ortg_sum - drtg_sum)/20). All derived from existing rolling stats — no new data source.
 
-**ATS cover formula:** `h_covered = actual_margin > -spread_home` (spread_home is negative when home is favored)
+**Totals model (2026-03-28):** `/home/termius/mon-ipad/scripts/totals_model.py` — standalone O/U predictor. RMSE 18.56 pts vs market 17.73 pts. NBA O/U market is highly efficient; no standalone betting edge above vig. Primary use: injury-adjusted prediction and as source of Cat44 features for moneyline model.
 
-**O/U formula:** `went_over = (hs + as_) > total_line`
+**Current total features: 5869** (was 5859 before this session). +10 new features.
+
+**Beta calibration (prior session):** Added `beta` as 4th calibration option in `hf-space/app.py`. Initial weights: [25,15,30,30] for [none,sigmoid,venn_abers,beta].
+
+**How to apply:** When proposing more features, note that home/away splits are already computed. `delta_mov_history` is a per-team list. Next feature ideas: opponent-adjusted eFG% differential, 4th-quarter-only stats, lineup continuity metrics.
+
+## Bugs found but NOT yet fixed
+
+1. **MOVDA parameters look suspicious but may be correct**: `GAMMA=648.0334, DELTA=-645.8717`. Do NOT change without validation.
+
+2. **ext_* features (~500)**: Declared in feature names but no compute path. These are zero-padded. GA ignores them.
+
+3. **meta2/meta3 ensemble features (~160)**: Hardcoded to 0.5/0.0. Require OOF predictions.
+
+4. **Bayesian game-level diffs (Cat 32)**: 9 of 10 features hardcoded to 0.0.
 
 ## Key architecture facts
 
@@ -48,32 +42,6 @@ Engine is at v3.1-54cat on 2026-04-05. Previous: v3.1-51cat (6257 features).
 - Evolution engine subsamples features for speed. MAX_FEATURES=200 hard cap.
 - Best result: Brier 0.21570 (Colab TabICL, 110f, iter 15).
 - MOVDA-era best on active spaces: 0.22041 (S10, xgboost, gen 435).
-- All new cats use try/except so failures never crash the engine.
+- New cats 39/41/43/44 use try/except so failures never crash the engine.
 - Engine parity rule: always cp features/engine.py to hf-space/features/engine.py and verify sha256sum.
-- SHA256 both files: 857e234dc908b66b53b54f2934101cc69af3df8224001929af583225f04c9836 (2026-04-05)
-- MOVDA parameters: GAMMA=648.0334, DELTA=-645.8717 — do NOT change without validation.
-
-## Known zero-padded / placeholder feature sets
-
-- ext_* features (~500): Declared in feature names but no compute path.
-- meta2/meta3 ensemble features (~160): Hardcoded to 0.5/0.0. Require OOF predictions.
-- Bayesian game-level diffs (Cat 32): 9 of 10 features hardcoded to 0.0.
-- Player tracking features (Cat 47-49): Fallback to league-average defaults when tracking_data=None.
-
-## Historical session notes
-
-**Cat 37 extension:** 7 raw delta_MOV rolling features. `_update_movda()` accepts `delta_mov_history` as positional arg.
-
-**Cat 38:** Venue-conditional matchup, 14 features.
-
-**Cat 39:** Circadian Rhythm, 8 normalized composite features. Distinct from Cat 6 raw values.
-
-**Cat 41:** Transition vs Half-Court Efficiency, 7 features from existing fb_pts/pace stats.
-
-**Cat 43:** Clutch Performance, 8 features from 30-game window close games.
-
-**Cat 44:** Game Totals Prediction, 10 features normalized to league averages.
-
-**Totals model:** `/home/termius/mon-ipad/scripts/totals_model.py` RMSE 18.56 pts vs market 17.73.
-
-**Beta calibration:** Added `beta` as 4th calibration option in `hf-space/app.py`. Initial weights [25,15,30,30].
+- Cat44 default values on exception: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0] (normalized to league avg, mismatch=0).

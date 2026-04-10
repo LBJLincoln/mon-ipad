@@ -1,57 +1,85 @@
 ---
 name: Evolution Fleet Status — April 2026
-description: HF Space island evolution monitoring — per-iteration fleet status, root causes, actions
+description: HF Space fleet health. Apr 5: S14 worst at 0.22666 (xgboost drift), S12 at 0.22506 (catboost drift), S15 fleet leader 0.22159. Cross-pollination and mutation boosts applied to 3 islands.
 type: project
 ---
 
-# Evolution Fleet — Iteration Log
+**Last verified: 2026-04-05 00:00 UTC**
 
-## ROOT CAUSE CONFIRMED (iter 6) + AMPLIFIED BY RESTARTS (iter 10)
-**Issue:** `HARDCODED_STARTUP_MUTATION_DECAY + FREQUENT_RESTARTS`
-- app.py starts mutation from hardcoded value and decays at 0.998^gen
-- Mutation NOT persisted in checkpoint — every restart resets decay
-- 5/6 islands restarted iter9→10, amplifying root cause severely
-- API only accepts: mutation_rate, target_features, crossover_rate (model_type, diversity_reset, source_island silently ignored)
-- **Fix required:** persist mutation_rate in checkpoint, floor 0.04→0.07, add model_type to /api/config
-- **Escalated to:** D2 ENGINEERING (CRITICAL)
+## Current Fleet State (2026-04-05 post-intervention)
 
-## Current Fleet State (iter 10, 2026-04-07 18:00 UTC)
-| Island | Brier | Gen | Mut | Model | Status |
-|--------|-------|-----|-----|-------|--------|
-| S10 | 0.22390 | 176 | 0.0634 | random_forest | DECAY_CRITICAL, RESTARTED |
-| S11 | 0.22926 | 125 | 0.1137 | catboost | REGRESSED +0.00683, RESTARTED |
-| S12 | 0.22287 | 176 | 0.0901 | random_forest | IMPROVING -0.00145, RESTARTED |
-| S13 | 0.22300 | 220 | 0.0868 | random_forest | RECOVERED -0.00565 |
-| S14 | 0.24696 | 70  | 0.0697 | lightgbm | CATASTROPHE +0.02220, RESTARTED |
-| S15 | 0.22158 | 124 | 0.1592 | extra_trees | FLEET BEST -0.00032, RESTARTED |
+| Space | Gen | Best Brier | Best Model | Mut Rate | Action Taken (Apr 5) |
+|-------|-----|-----------|------------|----------|----------------------|
+| S10 nba-quant | 787 | 0.22454 | xgboost_brier | 0.05 | boost_mutation queued: mut=0.10 |
+| S11 nba-quant-2 | — | — | — | — | no action this session |
+| S12 nba-evo-3 | 1473 | 0.22506 | catboost (DRIFT: should be extra_trees) | 0.04 | boost_mutation+model queued: mut=0.12, ET, feat=65 |
+| S13 nba-evo-4 | — | — | — | — | no action this session |
+| S14 nba-evo-5 | 1200 | 0.22666 (WORST) | xgboost_brier (DRIFT: should be lightgbm) | 0.04 | cross_pollinate from S15 queued: mut=0.12, lightgbm, feat=75, pop=50 |
+| S15 nba-evo-6 | 2103 | 0.22159 (BEST) | random_forest | 0.08 | source for S14 cross-pollination, no change |
 
-- Fleet avg: 0.22793 (regressed from 0.22440 due to S14)
-- Spread: 0.02538 (CRITICAL > 0.01)
-- ATR gap: 0.00638 | Target gap: 0.01158
+## Apr 5 Interventions (all 200 OK, status: queued)
 
-## Iter 10 Interventions (all 200 OK, queued, 2026-04-07 18:00 UTC)
-- S14 — Emergency: mut=0.15, target_features=65, cx=0.82 (catastrophe recovery)
-- S10 — Mutation boost: mut=0.14, target_features=65, cx=0.82 (decay critical)
-- S11 — Nudge: mut=0.13, target_features=70, cx=0.80 (regression fix)
-- S13 — Gentle boost: mut=0.11, target_features=65 (sustain recovery momentum)
+### S14 — cross_pollinate from S15
+- Command: `cross_pollinate`
+- Source: S15 (fleet leader, 0.22159, random_forest 79f)
+- Params: mutation_rate=0.12, model_type=lightgbm, feature_count=75, population_size=50
+- Rationale: S14 worst in fleet at 0.22666. Mutation frozen at 0.04. Full model drift to xgboost. Cross-pollination injects S15 diversity and restores lightgbm specialist mandate.
 
-## Iter 9 Interventions (all 200 OK, queued, 2026-04-07 09:30 UTC)
-- S10 — Mutation boost: mut=0.11, target_features=63, cx=0.82 (regression)
-- S12 — Mutation boost: mut=0.12, target_features=65, cx=0.82 (fleet best regression)
-- S13 — Emergency diversity reset: mut=0.13, target_features=72, cx=0.80 (fleet worst)
-- S15 — Emergency extra_trees reset from iter8 — now fleet best 0.22158
+### S12 — boost_mutation + model restore
+- Command: `boost_mutation`
+- Params: mutation_rate=0.12, model_type=extra_trees, feature_count=65
+- Rationale: S12 catboost takeover with mutation frozen at 0.04. extra_trees at 65 features is the proven CPU-fast specialist (Sharpe 8.39 in 1244 experiments). Boost breaks monoculture.
 
-## Key Insight: S15 Winning Formula
-extra_trees + pop=50 + feats=75 + mut=0.1592 = fleet best 0.22158
-Propagating this formula is the #1 priority (blocked by API not accepting model_type)
+### S10 — boost_mutation
+- Command: `boost_mutation`
+- Params: mutation_rate=0.10
+- Rationale: S10 plateau at gen 787. Mutation at 0.05 too conservative for escape. 0.10 is exploitation sweet spot.
 
-## Kaggle Karpathy Context
-- Kaggle best_brier: 0.1968 (iteration 11, gradient_boosting, 80 feats) — GPU advantage
-- Kaggle vs HF fleet gap: 0.0248 Brier — TabICL/GPU essential for <0.20
+## Critical Pattern: Mutation Freeze + Model Drift
 
-## Priority Actions
-0. D2: Fix mutation persistence in app.py checkpoint (10 iters confirmed)
-1. D2: Add model_type to /api/config endpoint
-2. D7: Audit keepalive-spaces.sh for restart triggers
-3. Iter11: Verify S14 recovery (if > 0.235, escalate)
-4. Seed next Kaggle session with S15 extra_trees config
+S12 and S14 both show mutation_rate=0.04 (adaptive decay has bottomed out) AND model drift to wrong families. This is the recurrent failure mode: once the GA finds a local optimum, adaptive mutation decays below 0.05 and the island becomes permanently locked. External boost commands are the only remedy without a code-level fix.
+
+**Why:**  Adaptive mutation decay is designed to exploit once a good region is found, but if the "good region" is actually a catboost/xgboost local trap, the island never escapes.
+**How to apply:** Any island showing mutation_rate <= 0.05 AND no Brier improvement for 50+ gens should receive a boost_mutation command immediately.
+
+## Apr 3 Session Context (prior interventions)
+
+| Island | Command | Status Brier at time | Gen |
+|--------|---------|---------------------|-----|
+| S10 | boost_mutation + config mut=0.12 feat=63 | 0.22563 | 108 |
+| S13 | diversify | 0.22455 | 153 |
+| S14 | diversify + config mut=0.15 feat=63 | 0.22666 | 174 |
+| S15 | diversify + config mut=0.15 feat=63 | 0.22159 | 164 |
+| S11 | 3 experiments: ET-63, LightGBM-55, ET-63 (pri=9) | 0.22799 | 207 |
+
+## Critical Findings (still unresolved)
+
+### 1. CatBoost is 3-5x slower than LightGBM on CPU
+- S12 (lightgbm): ~46s/gen
+- S10 (catboost): ~242s/gen
+- Fleet throughput: 219 gen/hr vs target 380 gen/hr
+
+### 2. NSGA-II composite does not protect Brier gains
+The best individual (S15 gen-1 random_forest 0.22159) was preserved in memory but could not be reproduced into the population. The GA has no elitism protecting top Brier individuals from replacement.
+
+### 3. Feat=200 catboost trap
+catboost at 200 features dominates training set Brier but cannot generalize. NSGA-II never punishes this because there is no feature-count penalty in the composite fitness.
+
+## Code Fixes Required (priority order, none deployed yet)
+
+1. **Elitism**: top-2 by Brier + top-2 by composite ALWAYS copied unchanged to next generation
+2. **CatBoost CPU cap**: if not gpu → n_estimators = min(n_estimators, 60), early_stopping_rounds=15
+3. **Brier weight**: increase to 40% in composite (from ~20-25%)
+4. **Walk-forward n_splits=3** during evolution (not 5+)
+5. **Feature penalty**: -0.001 * max(0, n_features - 80) for CPU islands
+
+## Fleet Speed Summary
+- Current: ~219 gen/hr total
+- Target (after code fixes): 320-380 gen/hr
+- S15 reference at 2103 gens is the longest-running island — fleet leader by historical persistence
+
+## ATR Context
+- CPU fleet ceiling: ~0.224-0.225 (diminishing returns without code fixes)
+- ATR (Colab TabICL): 0.21570
+- Target: < 0.20
+- GPU sessions (Kaggle/Colab) seeded from fleet best remain the primary path to target

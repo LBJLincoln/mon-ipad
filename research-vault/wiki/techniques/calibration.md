@@ -1,17 +1,16 @@
 # Calibration & Probability Scoring
 
-> Auto-compiled from 34 raw sources on 2026-04-10
+> Auto-compiled from 33 raw sources on 2026-04-10
 
 ## Overview
 
-This topic covers 34 research files spanning calibration & probability scoring.
+This topic covers 33 research files spanning calibration & probability scoring.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
 
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
-- **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/karpathy-researcher/obsidian_rag_implementation_april2026.md`
 - **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
@@ -19,7 +18,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
 - **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
 - **NBA Scientific Experiment Report** (1082 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
-- **NBA Scientific Experiment Report** (1082 words) -- `raw/experiments/nba-experiment-2026-04-10.md`
 - **00 — Live Dashboard** (1076 words) -- `raw/obsidian-docs/00-Dashboard.md`
 - **07 -- Betting** (997 words) -- `raw/obsidian-docs/07-Betting.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/agent-memory/research-analyst_research_march2026_agentic_ai.md`
@@ -34,9 +32,10 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **project_nba_research_state** (660 words) -- `raw/research-analyst/project_nba_research_state.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle6.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/research-analyst/research_march2026_cycle6.md`
+- **NBA Feature Engine v3.0-43cat state** (507 words) -- `raw/agent-memory/feature-engineer_project_engine_v38cat.md`
+- **NBA Feature Engine v3.0-43cat state** (507 words) -- `raw/feature-engineer/project_engine_v38cat.md`
 - **research_april2026_cycle13_dashboard** (504 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle13_dashboard.md`
 - **Backtesting & Multi-Agent Portfolio Research — April 2026 Cycle 11** (414 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle11_backtesting.md`
-- **Backtesting & Multi-Agent Portfolio Research — April 2026 Cycle 11** (414 words) -- `raw/research-analyst/research_april2026_cycle11_backtesting.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/data-research/research-cycle-2026-03-26.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
 - **Research Scan: latest-improvements-2026-03-31** (300 words) -- `raw/research/latest-improvements-2026-03-31.md`
@@ -46,6 +45,8 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 
 ## Key Findings
 
+- Bugs found but NOT yet fixed (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
+- Key architecture facts (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
 - TLDR: What Is Obsidian RAG? (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
 - Architecture: 3 Stages + File Structure (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
 - Stage 1: Raw Ingest (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
@@ -64,8 +65,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - Calibration (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
 - Why Everyone Talks About It (But Hasn't Deployed) (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
 - Recommendation (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Next Steps (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- NEW FINDINGS (Scan 4, 2026-03-26 — not in prior scans) (from `agent-memory/repo-scout_project_march2026_findings.md`)
 
 ## Related Topics
 

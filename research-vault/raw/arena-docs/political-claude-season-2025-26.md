@@ -5,7 +5,7 @@
 - **Personality:** conservative
 - **Risk Tolerance:** 0.4
 - **Primary Strategy:** mean_reversion
-- **Secondary Strategies:** safe_haven, vol_scaled
+- **Secondary:** safe_haven, vol_scaled
 - **Initial Capital:** $100,000.00
 - **Final Capital:** $100,000.00
 - **ROI:** +0.0000%
@@ -14,17 +14,16 @@
 - **Win Rate:** 0.0%
 - **Peak Capital:** $100,000.00
 - **Max Drawdown:** 0.0%
-- **Rank:** #5 of 5
-- **Total Wagered:** $0.00
+- **Wagered:** $0.00
 
 ## Peer Comparison
-| Rank | Agent | Capital | ROI | Sharpe | Win Rate |
-|------|-------|---------|-----|--------|----------|
-| 1 | Llama 3.3 70B | $100,602.34 | +0.6023% | 5.620 | 60.0% |
-| 2 | Qwen 3 72B | $100,302.13 | +0.3021% | 9.651 | 66.7% |
-| 3 | Gemma 3 27B | $100,236.42 | +0.2364% | 6.827 | 70.0% |
-| 4 | Mistral Large 2 | $100,009.22 | +0.0092% | 4.786 | 50.0% |
-| 5 | Claude Code CLI ** | $100,000.00 | +0.0000% | 0.000 | 0.0% |
+| Rank | Agent | Capital | ROI | Sharpe | WR | Trades |
+|------|-------|---------|-----|--------|-----|--------|
+| 1 | Llama 3.3 70B | $100,562.16 | +0.5622% | 5.620 | 60.0% | 5 |
+| 2 | Gemma 3 27B | $100,236.42 | +0.2364% | 6.827 | 70.0% | 10 |
+| 3 | Mistral Large 2 | $100,009.22 | +0.0092% | 4.786 | 50.0% | 2 |
+| 4 | Qwen 3 72B | $100,302.13 | +0.3021% | 9.651 | 66.7% | 9 |
+| 5 | Claude Code CLI ** | $100,000.00 | +0.0000% | 0.000 | 0.0% | 0 |
 
 ## Day-by-Day Results
 | Day | Date | Events | Trades | P&L | Capital |
@@ -41,5 +40,3 @@
 | 10 | 2026-03-25 | 10 | 0 | $+0.00 | $100,000.00 |
 | 11 | 2026-03-26 | 971 | 0 | $+0.00 | $100,000.00 |
 | 12 | 20260326 | 8 | 0 | $+0.00 | $100,000.00 |
-
-## Trade Log (sample: first 30 + last 30 of 0 total)

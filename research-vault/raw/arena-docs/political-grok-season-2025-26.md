@@ -5,7 +5,7 @@
 - **Personality:** contrarian
 - **Risk Tolerance:** 0.65
 - **Primary Strategy:** event_driven
-- **Secondary Strategies:** pairs_trading, mean_reversion
+- **Secondary:** pairs_trading, mean_reversion
 - **Initial Capital:** $100,000.00
 - **Final Capital:** $100,009.22
 - **ROI:** +0.0092%
@@ -14,17 +14,16 @@
 - **Win Rate:** 50.0%
 - **Peak Capital:** $100,009.22
 - **Max Drawdown:** 0.0%
-- **Rank:** #4 of 5
-- **Total Wagered:** $3,900.00
+- **Wagered:** $3,900.00
 
 ## Peer Comparison
-| Rank | Agent | Capital | ROI | Sharpe | Win Rate |
-|------|-------|---------|-----|--------|----------|
-| 1 | Llama 3.3 70B | $100,602.34 | +0.6023% | 5.620 | 60.0% |
-| 2 | Qwen 3 72B | $100,302.13 | +0.3021% | 9.651 | 66.7% |
-| 3 | Gemma 3 27B | $100,236.42 | +0.2364% | 6.827 | 70.0% |
-| 4 | Mistral Large 2 ** | $100,009.22 | +0.0092% | 4.786 | 50.0% |
-| 5 | Claude Code CLI | $100,000.00 | +0.0000% | 0.000 | 0.0% |
+| Rank | Agent | Capital | ROI | Sharpe | WR | Trades |
+|------|-------|---------|-----|--------|-----|--------|
+| 1 | Llama 3.3 70B | $100,562.16 | +0.5622% | 5.620 | 60.0% | 5 |
+| 2 | Gemma 3 27B | $100,236.42 | +0.2364% | 6.827 | 70.0% | 10 |
+| 3 | Mistral Large 2 ** | $100,009.22 | +0.0092% | 4.786 | 50.0% | 2 |
+| 4 | Qwen 3 72B | $100,302.13 | +0.3021% | 9.651 | 66.7% | 9 |
+| 5 | Claude Code CLI | $100,000.00 | +0.0000% | 0.000 | 0.0% | 0 |
 
 ## Strategy Performance
 | Strategy | Trades | P&L | Win Rate |
@@ -35,12 +34,6 @@
 | Sector | P&L |
 |--------|-----|
 | energy | $+9.22 |
-
-## Top/Bottom Tickers
-| Ticker | Trades | P&L | Win Rate |
-|--------|--------|-----|----------|
-| OXY | 1 | $+75.58 | 100.0% |
-| CVX | 1 | $-66.36 | 0.0% |
 
 ## Day-by-Day Results
 | Day | Date | Events | Trades | P&L | Capital |
@@ -58,18 +51,16 @@
 | 11 | 2026-03-26 | 971 | 2 | $+9.22 | $100,009.22 |
 | 12 | 20260326 | 8 | 0 | $+0.00 | $100,009.22 |
 
-## Trade Log (sample: first 30 + last 30 of 2 total)
+## Trade Log (first 30 + last 30 of 2 total)
 
 ### 2026-03-26 | OXY | short
 - **Strategy:** mean_reversion | **Signal:** 1.000
 - **Size:** $1,950.00 | **Return:** +3.876%
 - **Win** -> P&L $+75.58
 - **Reasoning:** strategy=mean_reversion | signal=1.000 short | event=insider_trade | beta=1.4
-- **Capital after:** $100,075.58
 
 ### 2026-03-26 | CVX | long
 - **Strategy:** mean_reversion | **Signal:** 1.000
 - **Size:** $1,950.00 | **Return:** -3.403%
 - **Loss** -> P&L $-66.36
 - **Reasoning:** strategy=mean_reversion | signal=1.000 long | event=insider_trade | beta=0.9
-- **Capital after:** $100,009.22
