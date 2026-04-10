@@ -209,7 +209,7 @@ run_department() {
     # causing intermittent EAI_AGAIN on GCP. Retry 3 times with backoff.
     local dns_ok=false
     for attempt in 1 2 3; do
-        if curl -sf --max-time 5 -o /dev/null https://api.anthropic.com/ 2>/dev/null; then
+        if curl -s --max-time 5 -o /dev/null https://api.anthropic.com/ 2>/dev/null; then
             dns_ok=true
             break
         fi
