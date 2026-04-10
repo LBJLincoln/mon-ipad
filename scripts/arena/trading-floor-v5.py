@@ -715,6 +715,13 @@ class TradingFloorV5:
 
     def __init__(self, dry_run: bool = False, multiphase: bool = False,
                  lite: bool = False, force_invest: bool = True):
+        # Guard: openai package is required for all real API calls.
+        # Without it, every provider silently returns None → synthetic fallback.
+        if not dry_run and not HAS_OPENAI:
+            print("ERROR: 'openai' package not installed. Real API calls impossible.")
+            print("       Run: pip install openai")
+            print("       Then retry. Use --dry-run to test without API calls.")
+            import sys; sys.exit(1)
         self.pool = get_pool()
         self.registry = AgentRegistry()
         self.dry_run = dry_run

@@ -1,167 +1,146 @@
 {
-  "last_updated": "2026-04-08T04:30:00Z",
-  "cycle": "brain-cycle-76",
-  "generated_by": "claude-sonnet-4-6 nomos42-brain",
+  "timestamp": "2026-04-09T16:30:00Z",
+  "brain_cycle": "4h-auto",
+  "cycle_date": "2026-04-09",
   "nba_fleet": {
-    "islands_online": 6,
-    "islands_total": 6,
-    "best_brier": 0.22086,
-    "best_brier_island": "S13-nomos42-nba-evo-4",
-    "brier_threshold": 0.21837,
-    "threshold_reached": false,
-    "checkpoint_triggered": false,
-    "stagnation_alerts": [
-      "S11 stagnation=6 — approaching threshold, monitor next cycle"
-    ],
-    "diversify_commands_sent": [],
-    "engine_parity": "CONFIRMED — SHA256 match: 8b3ac2d6...d9d2",
-    "islands": {
-      "S10-nomos42-nba-quant": {
-        "role": "exploitation",
-        "url": "nomos42-nba-quant.hf.space",
-        "status": "ONLINE",
-        "generation": 61,
-        "cycle": 21,
-        "best_brier": 0.22184,
-        "stagnation": 0,
-        "model": "random_forest",
-        "features": 62,
-        "roi_pct": 30.34,
-        "sharpe": 7.31,
-        "mutation_rate": 0.1056,
-        "pop_size": 60,
-        "feature_candidates": 3290,
-        "games": 9551,
-        "action": "none"
-      },
-      "S11-nomos42-nba-quant-2": {
-        "role": "exploration",
-        "url": "nomos42-nba-quant-2.hf.space",
-        "status": "ONLINE",
-        "generation": 232,
-        "cycle": 78,
-        "best_brier": 0.22348,
-        "stagnation": 6,
-        "model": "xgboost",
-        "features": 55,
-        "roi_pct": 28.53,
-        "sharpe": 4.86,
-        "mutation_rate": 0.12,
-        "pop_size": 60,
-        "feature_candidates": 3290,
-        "games": 9551,
-        "action": "WATCH — stagnation 6, diversify triggers at 15"
-      },
-      "S12-nomos42-nba-evo-3": {
-        "role": "extra_trees_specialist",
-        "url": "nomos42-nba-evo-3.hf.space",
-        "status": "ONLINE",
-        "generation": 107,
-        "cycle": 36,
-        "best_brier": 0.22226,
-        "stagnation": 0,
-        "model": "random_forest",
-        "features": 40,
-        "roi_pct": 29.7,
-        "sharpe": 13.62,
-        "mutation_rate": 0.1043,
-        "pop_size": 60,
-        "feature_candidates": 3290,
-        "games": 9551,
-        "action": "none"
-      },
-      "S13-nomos42-nba-evo-4": {
-        "role": "catboost_specialist",
-        "url": "nomos42-nba-evo-4.hf.space",
-        "status": "ONLINE",
-        "generation": 96,
-        "cycle": 33,
-        "best_brier": 0.22086,
-        "stagnation": 0,
-        "model": "random_forest",
-        "features": 74,
-        "roi_pct": 31.54,
-        "sharpe": 8.18,
-        "mutation_rate": 0.0825,
-        "pop_size": 60,
-        "feature_candidates": 3290,
-        "games": 9551,
-        "action": "FLEET_BEST"
-      },
-      "S14-nomos42-nba-evo-5": {
-        "role": "lightgbm_specialist",
-        "url": "nomos42-nba-evo-5.hf.space",
-        "status": "ONLINE",
-        "generation": 370,
-        "cycle": 124,
-        "best_brier": 0.22585,
-        "stagnation": 0,
-        "model": "xgboost_brier",
-        "features": 50,
-        "roi_pct": 26.01,
-        "sharpe": 6.03,
-        "mutation_rate": 0.0818,
-        "pop_size": 60,
-        "feature_candidates": 3290,
-        "games": 9551,
-        "action": "none",
-        "note": "Major progress since last cycle: gen 37 → gen 370, Brier 0.24696 → 0.22585"
-      },
-      "S15-nomos42-nba-evo-6": {
-        "role": "wide_search",
-        "url": "nomos42-nba-evo-6.hf.space",
-        "status": "ONLINE",
-        "generation": 67,
-        "cycle": 23,
-        "best_brier": 0.22776,
-        "stagnation": 2,
-        "model": "extra_trees",
-        "features": 53,
-        "roi_pct": 23.72,
-        "sharpe": 7.38,
-        "mutation_rate": 0.1497,
-        "pop_size": 50,
-        "feature_candidates": 3290,
-        "games": 9551,
-        "action": "none"
-      }
+    "S10": {
+      "name": "nomos42-nba-quant",
+      "role": "exploitation",
+      "status": "EVOLVING",
+      "cycle": 109,
+      "generation": 326,
+      "best_brier": 0.22412,
+      "best_roi": 0.2796,
+      "best_sharpe": 5.49,
+      "stagnation": 0,
+      "best_model": "xgboost_brier"
+    },
+    "S11": {
+      "name": "nomos42-nba-quant-2",
+      "role": "exploration",
+      "status": "EVOLVING",
+      "cycle": 237,
+      "generation": 711,
+      "best_brier": 0.22249,
+      "best_roi": 0.2968,
+      "best_sharpe": 6.6799,
+      "stagnation": 0,
+      "best_model": "xgboost"
+    },
+    "S12": {
+      "name": "nomos42-nba-evo-3",
+      "role": "extra_trees_specialist",
+      "status": "EVOLVING",
+      "cycle": 261,
+      "generation": 783,
+      "best_brier": 0.22726,
+      "best_roi": 0.2415,
+      "best_sharpe": 7.6992,
+      "stagnation": 0,
+      "best_model": "lightgbm"
+    },
+    "S13": {
+      "name": "nomos42-nba-evo-4",
+      "role": "catboost_specialist",
+      "status": "EVOLVING",
+      "cycle": 218,
+      "generation": 653,
+      "best_brier": 0.22316,
+      "best_roi": 0.291,
+      "best_sharpe": 4.1936,
+      "stagnation": 0,
+      "best_model": "extra_trees"
+    },
+    "S14": {
+      "name": "nomos42-nba-evo-5",
+      "role": "lightgbm_specialist",
+      "status": "EVOLVING",
+      "cycle": 172,
+      "generation": 516,
+      "best_brier": 0.22308,
+      "top_performer_brier": 0.22052,
+      "top_performer_calibration": "venn_abers",
+      "best_roi": 0.2933,
+      "best_sharpe": 3.195,
+      "stagnation": 0,
+      "best_model": "extra_trees"
+    },
+    "S15": {
+      "name": "nomos42-nba-evo-6",
+      "role": "wide_search",
+      "status": "EVOLVING",
+      "cycle": 194,
+      "generation": 582,
+      "best_brier": 0.22291,
+      "best_roi": 0.2903,
+      "best_sharpe": 7.3186,
+      "stagnation": 0,
+      "best_model": "xgboost_brier"
     }
   },
-  "cycle_improvement": {
-    "rotation": "C — Port working technique between repos",
-    "type": "CODE_CHANGE",
-    "project": "political_alpha",
-    "file": "nomos-political-alpha/hf-space/app.py",
-    "description": "Ported NBA's GA-tunable LR regularization to political alpha. Changed logistic_regression model from static C=1.0 + saga solver to C=1/reg_lambda (GA-tunable via existing hyperparam) + lbfgs solver. Political's LR was static — the GA could not tune its regularization. Now reg_lambda controls LR smoothness, same as NBA.",
-    "source": "nomos-nba-agent/hf-space/app.py line 1489-1498",
-    "expected_impact": "Enables GA to find better-calibrated LR configurations. Research (MDPI 2026) shows LR achieves Brier 0.199 with proper regularization — our LR was always C=1.0 (fixed). PA Brier gap vs NBA: 0.23134 vs 0.22086.",
-    "line_changed": "860-873"
+  "nba_summary": {
+    "fleet_best_brier": 0.22249,
+    "fleet_best_individual": 0.22052,
+    "target_brier": 0.21837,
+    "distance_to_target": 0.00412,
+    "checkpoint_triggered": false,
+    "diversify_triggered": false,
+    "islands_active": 6,
+    "islands_down": [],
+    "all_stagnation_zero": true
   },
-  "fleet_observations": [
-    "S13 (catboost specialist) leads fleet at Brier 0.22086 with random_forest 74 features — best of cycle",
-    "S14 made massive progress: gen 37 → 370, Brier 0.24696 → 0.22585 (most improved island)",
-    "S11 stagnation=6 — adaptive mutation already at 0.12, monitor for 15+ threshold",
-    "S12 achieves best Sharpe in fleet: 13.62 with only 40 features (exceptional parsimony)",
-    "All 6 islands online, engine parity confirmed, no checkpoint triggered (0.22086 > 0.21837)"
+  "political_fleet": {
+    "alpha-1": {
+      "name": "nomos42-political-alpha",
+      "role": "political_exploitation",
+      "status": "EVOLVING",
+      "cycle": 10016,
+      "generation": 30047,
+      "best_brier": 0.24971,
+      "best_roi": 0.0068,
+      "best_sharpe": 0.6809,
+      "stagnation": 0,
+      "best_model": "xgboost_brier"
+    },
+    "alpha-2": {
+      "name": "nomos42-political-alpha-2",
+      "role": "political_exploration",
+      "status": "EVOLVING",
+      "cycle": 10291,
+      "generation": 30872,
+      "best_brier": 0.23134,
+      "best_roi": 0.2804,
+      "best_sharpe": 1.0635,
+      "stagnation": 0,
+      "best_model": "catboost"
+    },
+    "alpha-3": {
+      "name": "nomos42-political-alpha-3",
+      "role": "catboost_specialist",
+      "status": "DOWN_404",
+      "generation": null,
+      "best_brier": null,
+      "alert": "Manual restart required via HF web UI"
+    },
+    "alpha-4": {
+      "name": "nomos42-political-alpha-4",
+      "role": "wide_search",
+      "status": "DOWN_404",
+      "generation": null,
+      "best_brier": null,
+      "alert": "Manual restart required via HF web UI"
+    }
+  },
+  "political_summary": {
+    "fleet_best_brier": 0.23134,
+    "islands_active": 2,
+    "islands_down": ["alpha-3", "alpha-4"],
+    "critical_alert": "2/4 Political Alpha islands DOWN - restart at huggingface.co/spaces"
+  },
+  "actions_this_cycle": [
+    "NBA: research proposal written - venn_abers ensemble calibration",
+    "Political: features/political_engine.py WINDOWS extended to [1,3,5,7,10,15,20,30,60,90]",
+    "Alert: political-alpha-3 and political-alpha-4 DOWN, manual restart needed"
   ],
-  "research": {
-    "source": "Uncertainty-Aware ML for NBA Forecasting (MDPI Information 2026, doi:10.3390/info17010056)",
-    "key_finding": "LSTM + shot embeddings + market features: Brier 0.089. LR alone with market features: Brier 0.199. Our gap: 0.022. Market features (implied prob, spread, total) are the dominant signal.",
-    "previous_proposal": "Cat50 shot-zone aggregation (brain-cycle-75) — status: PROPOSED, not yet implemented",
-    "new_proposal": "Cat51: Market Feature Importance Investigation — verify Cat46/52 odds data coverage and feature importance rank"
-  },
-  "cross_repo": {
-    "nba_best_brier": 0.22086,
-    "political_best_brier": 0.23134,
-    "engine_parity_nba": "CONFIRMED",
-    "engine_parity_political": "CONFIRMED",
-    "technique_ported_this_cycle": "LR regularization from NBA → Political"
-  },
-  "alerts": [
-    "PA3 and PA4 political alpha spaces returning 404 — require HuggingFace admin restart",
-    "FEC donor pipeline: 9 days of empty data (20260326-20260403) before recovering on 20260404 — possible DEMO_KEY rate exhaustion",
-    "S11 stagnation=6 — watch for diversify threshold (>15)"
-  ],
-  "next_cycle_rotation": "D — Check data pipeline health (NBA: odds data coverage Cat46/52; Political: FEC pipeline fix)",
-  "next_cycle": "2026-04-08T08:00:00Z"
+  "next_cycle_priority": "Apply venn_abers calibration standardization across all 6 NBA islands"
 }

@@ -1,44 +1,54 @@
 {
-  "last_updated": "2026-04-08T04:30:00Z",
-  "cycle": 76,
-  "nba_best_brier": 0.22086,
-  "political_best_brier": 0.23134,
-  "nba_islands_online": 6,
-  "nba_islands_total": 6,
-  "political_islands_online": 2,
-  "political_islands_total": 2,
-  "note_pa3_pa4": "PA3/PA4 CONFIRMED NON-EXISTENT — spaces were never created on HuggingFace. Stop tracking as DOWN. Political fleet is 2/2, not 2/4.",
-  "fleet_brier_avg_nba": 0.22334,
-  "fleet_brier_improvement_nba": "0.22158 → 0.22086 (best) this 4h window",
-  "cross_pollination_this_cycle": {
-    "direction": "NBA → Political",
-    "technique": "GA-tunable LR regularization",
-    "file": "nomos-political-alpha/hf-space/app.py",
-    "change": "logistic_regression C=1/reg_lambda, solver=lbfgs (was static C=1.0, saga)",
-    "expected_impact": "Enables GA to find better-calibrated LR models. Research: LR Brier 0.199 with proper reg."
+  "timestamp": "2026-04-09T16:35:00Z",
+  "brain_cycle": "4h-auto",
+  "ecosystem": {
+    "nba_quant": {
+      "repo": "lbjlincoln/nomos-nba-agent",
+      "engine_version": "v3.1-54cat",
+      "fleet_best_brier": 0.22249,
+      "fleet_individual_best": 0.22052,
+      "target_brier": 0.21837,
+      "distance_to_target": 0.00412,
+      "islands_active": 6,
+      "islands_down": [],
+      "health": "GREEN"
+    },
+    "political_alpha": {
+      "repo": "lbjlincoln/nomos-political-alpha",
+      "engine_version": "v3.9-political-30cat-extended-windows",
+      "fleet_best_brier": 0.23134,
+      "islands_active": 2,
+      "islands_down": ["alpha-3", "alpha-4"],
+      "health": "YELLOW",
+      "alert": "2/4 islands DOWN - manual HF restart needed"
+    }
   },
-  "cross_pollination_backlog": [
-    "NBA Cat50 shot-zone aggregation (proposed cycle 75) — not yet implemented",
-    "Political Cat2 pharma tariff features (Section 232) — proposed cycle 76, next up",
-    "NBA: monotone constraints proposal (cycle 76) — pending NBA validation before porting",
-    "Political → NBA: liberation day tariff signals as NBA schedule impact features (far future)"
-  ],
+  "cross_project_techniques": {
+    "venn_abers_calibration": {
+      "status": "active on NBA S14 (top performer 0.22052)",
+      "proposed_for": "all NBA islands + political alpha",
+      "next_action": "standardize across fleet next cycle"
+    },
+    "extended_temporal_windows": {
+      "status": "deployed to political engine v3.9 [1,3,5,7,10,15,20,30,60,90]",
+      "ported_from": "NBA multi-window pattern",
+      "expected_impact": "capture slow-burn policy/donor effects"
+    },
+    "genetic_feature_selection": {
+      "status": "mature in NBA (7213 features \u2192 150-400 GA selection)",
+      "political_status": "NOT YET PORTED - all 3200 features pass through",
+      "next_action": "port NBA GA selection to political engine (future cycle)"
+    }
+  },
   "engine_parity": {
-    "nba": "CONFIRMED — features/engine.py SHA256: 8b3ac2d6...d9d2",
-    "political": "CONFIRMED — features/political_engine.py SHA256: 6a88c915...1951"
+    "nba_engine": "features/engine.py v3.1-54cat",
+    "political_engine": "features/political_engine.py v3.9-30cat",
+    "note": "Political engine duplicated from NBA engine pattern - maintaining interface parity"
   },
   "alerts": [
-    "NBA S11 stagnation=6 — watch for threshold (>15), diversify if reached",
-    "NBA S13 best brier 0.22086 — close to checkpoint threshold 0.21837",
-    "Political FEC pipeline: 9 days empty (20260326-20260403) — fix min_date filter in fetch_political_data.py",
-    "Political Polymarket: stale 3 days — check polymarket_tracker.py on VM",
-    "Political PA1 hyperparameter diversity collapse — false negative stagnation counter"
-  ],
-  "data_pipeline_health": {
-    "nba_odds_cat46_52": "UNKNOWN — coverage not verified this cycle (rotation D task)",
-    "political_fec_donors": "DEGRADED_RECOVERED — empty 9 days, returned 20260404",
-    "political_form4_insider": "HEALTHY — daily files up to 20260405",
-    "political_polymarket": "STALE — last update 20260405 (3 days)",
-    "political_congressional_trades": "HEALTHY — daily 274KB files"
-  }
+    "CRITICAL: nomos42-political-alpha-3 DOWN (404) - restart needed",
+    "CRITICAL: nomos42-political-alpha-4 DOWN (404) - restart needed",
+    "INFO: NBA fleet all green, stagnation=0 across all 6 islands",
+    "INFO: NBA target 0.21837 not yet reached - best fleet 0.22249, best individual 0.22052"
+  ]
 }

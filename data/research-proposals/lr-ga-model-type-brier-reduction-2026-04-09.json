@@ -1,0 +1,54 @@
+{
+  "proposal_id": "lr-ga-model-type-brier-reduction-2026-04-09",
+  "created": "2026-04-09T04:00:00Z",
+  "created_by": "claude-sonnet-4-6 nomos42-brain cycle-80",
+  "priority": "HIGH",
+  "status": "PROPOSED",
+  "title": "Add Logistic Regression (LR) as GA Model Type — Expected Brier -0.010 to -0.020",
+
+  "motivation": {
+    "source_paper": "MDPI Information 2078-2489/17/1/56 — Uncertainty-Aware Machine Learning for NBA Forecasting (2025)",
+    "finding": "Logistic Regression achieves Brier=0.199 on 2024 NBA test season; XGBoost achieves 0.202. LR OUTPERFORMS XGBoost on calibration despite simpler architecture.",
+    "our_gap": "Our current fleet best_brier=0.221 vs LR baseline 0.199 = 0.022 gap. LR may be finding better-calibrated probability estimates because it directly optimises log-loss which maps well to Brier.",
+    "cpu_compatible": true,
+    "note": "This is distinct from the mc-dropout and rolling-calibration proposals — those are post-hoc. This adds LR as a GA-searchable model type so evolution can discover optimal LR feature subsets."
+  },
+
+  "implementation": {
+    "file": "hf-space/app.py",
+    "change_type": "Add new model type to CPU_MODEL_TYPES and _train_model()",
+    "cpu_model_types_addition": "logistic_regression",
+    "sklearn_call": "LogisticRegression(C=1.0, max_iter=1000, solver='lbfgs', n_jobs=-1)",
+    "requires_scaling": true,
+    "scaling_note": "LR needs StandardScaler — wrap in Pipeline([('scaler', StandardScaler()), ('clf', LogisticRegression(...))])",
+    "calibration": "LR outputs calibrated probabilities natively via predict_proba — no CalibratedClassifierCV needed",
+    "feature_selection_compat": "Full compat with GA feature selection (subsetting features before fitting pipeline)"
+  },
+
+  "code_change": {
+    "location_1": "app.py CPU_MODEL_TYPES list",
+    "add": "\"logistic_regression\"",
+    "location_2": "app.py _train_model() function",
+    "add_block": "elif model_type == 'logistic_regression':\n    from sklearn.pipeline import Pipeline\n    from sklearn.preprocessing import StandardScaler\n    from sklearn.linear_model import LogisticRegression\n    model = Pipeline([('scaler', StandardScaler()), ('clf', LogisticRegression(C=1.0, max_iter=1000, solver='lbfgs', n_jobs=-1))])\n    model.fit(X_train, y_train)\n    pred_proba = model.predict_proba(X_val)[:, 1]\n    brier = brier_score_loss(y_val, pred_proba)\n    return model, pred_proba, brier"
+  },
+
+  "expected_impact": {
+    "brier_improvement": "-0.010 to -0.020",
+    "basis": "Paper reports LR Brier=0.199 vs XGBoost=0.202 on similar NBA data; our fleet at 0.221 has larger headroom",
+    "mechanism": "LR minimises log-loss which provides well-calibrated probabilities, especially with many features post-GA selection (50-200 features from 3290 candidates)",
+    "risk": "LOW — adds one model type without changing others; GA naturally allocates population share",
+    "timeline": "1 evolution cycle (~4h) to see first LR candidates in Pareto front"
+  },
+
+  "deployment": {
+    "target_islands": ["S11-nomos42-nba-quant-2 (exploration)", "S15-nomos42-nba-evo-6 (wide search)"],
+    "test_first_on": "S11 (exploration role suits testing new model types)",
+    "do_not_touch": "S10 (exploitation, stick with best known config)"
+  },
+
+  "cross_repo": {
+    "also_apply_to_political_alpha": true,
+    "political_note": "Political engine hf-space/app.py already has xgboost_brier and catboost. Adding logistic_regression would give political GA a calibration-focused option.",
+    "rotation": "Apply political after NBA validation (Rotation C next cycle)"
+  }
+}

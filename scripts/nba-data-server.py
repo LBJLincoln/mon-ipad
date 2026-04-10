@@ -5,7 +5,7 @@ Runs on port 8080, serves files from /home/termius/mon-ipad/data/nba-agent/
 Also serves latest odds snapshots from nomos-nba-agent/data/
 Also serves arena/trading-floor data from /home/termius/mon-ipad/data/arena/
 
-CORS enabled for nomos42.vercel.app
+CORS enabled for nomosdashboard.vercel.app
 """
 
 import http.server
@@ -20,7 +20,10 @@ ARENA_DIR = Path("/home/termius/mon-ipad/data/arena")
 PORT = 8080
 
 ALLOWED_ORIGINS = [
-    "https://nomos42.vercel.app",
+    "https://nomosdashboard.vercel.app",
+    "https://nomos42.com",
+    "https://www.nomos42.com",
+    "https://nomos42.vercel.app",   # NBA agent app
     "http://localhost:3000",
     "http://localhost:3001",
 ]

@@ -18,10 +18,12 @@ Returns None on any failure — caller must fall back to existing peer_review.
 import json
 from typing import Optional
 
-# Prefer Claude for judge (best reasoning), Gemini/Groq for bull/bear
-BULL_PROVIDER = "gemini"
-BEAR_PROVIDER = "groq"
-JUDGE_PROVIDER = "claude"
+# groq: DEAD since 2026-04-05 (org restricted). openrouter free: also dead.
+# Active providers with call_llm() compat: google (Gemini), huggingface.
+# anthropic_cli uses subprocess (call_llm_cli), not call_llm — cannot use here.
+BULL_PROVIDER = "huggingface"
+BEAR_PROVIDER = "google"
+JUDGE_PROVIDER = "google"
 
 DEFAULT_ROUNDS = 2
 MAX_ARG_TOKENS = 350

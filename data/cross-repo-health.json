@@ -1,62 +1,75 @@
 {
-  "last_updated": "2026-04-08T08:10:00Z",
-  "cycle": 77,
-  "generated_by": "claude-sonnet-4-6 nomos42-brain",
-  "nba_best_brier": 0.22249,
-  "political_best_brier": 0.23134,
-  "nba_best_individual": 0.21570,
-  "political_best_individual": 0.218,
-  "nba_islands_online": 5,
-  "nba_islands_total": 6,
-  "political_islands_online": 2,
-  "political_islands_total": 4,
-  "fleet_brier_avg_nba": 0.22786,
-  "fleet_brier_avg_political": 0.24053,
-  "key_discoveries_this_cycle": [
-    "API command format fix: use {\"command\":\"diversify\"} not {\"action\":\"diversify\"} — previous cycles may have failed silently",
-    "S13+S14 restarted with EXTENDED 11532-game dataset vs 9551 elsewhere — 21% more data, watch first brier",
-    "S11 approaching stagnation threshold: 14/15 — will trigger diversify next cycle if no gain",
-    "PA3/PA4 still returning 404 (consistent with cycle 76 — phantom islands, never existed or deleted)",
-    "PA2 Pareto-star: 155f LightGBM, Brier=0.218, ROI=41.56% at gen 8975 — best political result ever",
-    "Research: MDPI 2025 LR achieves Brier 0.199 — gap to our fleet is 0.023. Isotonic calibration EXP-2 proposed."
-  ],
-  "engine_parity": {
-    "nba_engine_version": "v3.1-54cat",
-    "nba_hf_space_engine_version": "v3.1-54cat",
-    "nba_parity": "OK — both confirmed identical v3.1-54cat",
-    "political_engine_version": "v2.0-13cat",
-    "nba_feature_candidates_s10_s15": 3290,
-    "political_features_pa1": 252,
-    "political_features_pa2": 309,
-    "note_s16_s17": "Previous cycle (76) discovered S16+S17 on LBJLincoln26. Not in current monitoring scope — update instructions to add them."
+  "timestamp": "2026-04-10T05:00:00Z",
+  "brain_cycle": 85,
+  "ecosystem_health": {
+    "nba_quant": {
+      "status": "HEALTHY",
+      "active_islands": 6,
+      "fleet_best_brier": 0.22249,
+      "target_brier": 0.21837,
+      "gap": 0.00412,
+      "progress_pct": 74.3,
+      "engine_version": "v3.1-59cat",
+      "top_model": "S15_gen588_ExtraTrees_200f_Brier0.22041"
+    },
+    "political_alpha": {
+      "status": "DEGRADED",
+      "active_islands": 2,
+      "down_islands": ["P3", "P4"],
+      "fleet_best_brier": 0.23134,
+      "target_brier": 0.22,
+      "engine_version": "v3.13-political-35cat-insider-cluster",
+      "alert": "P3/P4 DOWN_404 — manual HuggingFace restart required"
+    }
   },
-  "cross_pollination_this_cycle": [
+  "cross_project_techniques": {
+    "implemented": [
+      "venn_abers_calibration (NBA→Political)",
+      "market_consensus_deviation (Political→NBA)",
+      "directional_circadian (NBA→Political)",
+      "sequential_exponential_form (NBA→Political)",
+      "calibration_anchors_cat33 (NBA→Political)",
+      "prior_probability_anchors_cat34 (Political native)",
+      "insider_cluster_velocity_cat35 (Political new, cycle85)"
+    ],
+    "proposed_next": [
+      "shap_seeded_ga_init (NBA S15, cycle86)",
+      "mlp_meta_learner_stacking (NBA, cycle87)",
+      "brier_decomposition_diagnostic (both repos, cycle86)",
+      "shap_seeded_init_political (P3/P4 once restarted, cycle87)"
+    ]
+  },
+  "research_pipeline": {
+    "cycle84_proposals": ["stacked-ensemble-shap-2026-04-10.md"],
+    "cycle85_proposals": ["2026-04-10-mlp-meta-learner-brier-decomp-cycle85.md"],
+    "key_papers_implemented": [
+      "Koch & Schiereck 2025 (+3.5pp CAR enforcement dismissed)",
+      "Aktug & Torul 2025 (Polymarket hours-lead)",
+      "CEPR 2025 (TPU 3.6-6.2% alpha)",
+      "arXiv 2303.06021 (calibration > accuracy for bet ROI)",
+      "PMC12357926 Scientific Reports 2025 (MLP 2x50 meta-learner NBA stacking, AUC 0.9213)",
+      "Lakonishok & Lee 2001 + OpenInsider 2025 (insider cluster velocity Cat35)"
+    ]
+  },
+  "alerts": [
     {
-      "from": "Research (MDPI 2025)",
-      "to": "Both",
-      "technique": "Isotonic calibration (CalibratedClassifierCV)",
-      "status": "PROPOSED — proposal written to mon-ipad/data/research-proposals/mc-dropout-lr-baseline-calibration-2026-04-08.json",
-      "expected_gain": "-0.003 to -0.008 Brier"
+      "severity": "CRITICAL",
+      "repo": "nomos-political-alpha",
+      "message": "P3 and P4 HF Spaces DOWN_404 — 2 of 4 political islands offline. Manual restart required at huggingface.co."
     },
     {
-      "from": "NBA S13/S14",
-      "to": "Political",
-      "technique": "Extended dataset (11532 games). Political could similarly expand events corpus.",
-      "status": "OBSERVATION — PA2 only has 372 events vs NBA's 9551+ games"
+      "severity": "WARN",
+      "repo": "nomos-nba-agent",
+      "message": "S13 converged at 0.2231-0.2232 for 500+ generations — possible local optimum. Queue diversify command if unchanged in cycle86."
+    },
+    {
+      "severity": "INFO",
+      "repo": "nomos-nba-agent",
+      "message": "S11 URL: nomos42-nba-quant-2.hf.space — NOT nomos42-nba-evo-2 (which returns 404). Brain URL corrected."
     }
   ],
-  "action_items_next_cycle": [
-    "CHECK S11 stagnation: if still 15+ → diversify",
-    "IMPLEMENT EXP-2: isotonic calibration in calibration/conformal.py (30 min, -0.003 to -0.008 Brier)",
-    "CHECK S13/S14 first brier results (warm-up started 07:19Z and 07:23Z today)",
-    "MANUAL: Restart PA3+PA4 via HuggingFace dashboard (human action required)",
-    "CHECKPOINT: Save PA2 Pareto-star config (155f LightGBM, Brier=0.218) to Supabase political_experiments",
-    "FETCH S16+S17 status if they are confirmed real islands (cycle 76 found them on LBJLincoln26)"
-  ],
-  "alerts": [
-    "S11 stagnation 14/15 — watch next cycle",
-    "PA3+PA4 phantom/down — 50% political fleet offline",
-    "API command format was wrong ({\"action\"} vs {\"command\"}) — previous cycles may not have successfully diversified",
-    "PA2 Pareto-star (Brier=0.218) needs Supabase checkpoint before potential crash/restart"
-  ]
+  "commits_this_cycle": {
+    "nomos-political-alpha": "feat: add Cat35 insider buy cluster velocity, restore hf-space parity to v3.13",
+    "mon-ipad": "brain[85]: cycle report, MLB meta-learner research proposal, health files updated"
+  }
 }
