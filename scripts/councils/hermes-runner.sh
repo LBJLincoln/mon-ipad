@@ -32,6 +32,11 @@
 
 set -uo pipefail
 
+# Force Node.js (Claude CLI) to use the system DNS resolver with retries.
+# Tailscale overrides /etc/resolv.conf → raw 8.8.8.8/1.1.1.1 without cache,
+# causing intermittent EAI_AGAIN on GCP. This env var enables DNS result caching.
+export NODE_OPTIONS="${NODE_OPTIONS:-} --dns-result-order=verbatim"
+
 ROOT="/home/termius/mon-ipad"
 PROMPTS_DIR="${ROOT}/scripts/councils/prompts"
 LOG_DIR="${ROOT}/logs/councils"
@@ -198,6 +203,44 @@ run_department() {
     pre_sha=$(cd "${ROOT}" && git rev-parse HEAD 2>/dev/null || echo "unknown")
     local pre_dirty_snapshot
     pre_dirty_snapshot=$(cd "${ROOT}" && git status --porcelain 2>/dev/null | awk '{print $2}' | sort -u)
+
+    # DNS pre-warm: force resolve api.anthropic.com before launching CLI.
+    # Tailscale overrides /etc/resolv.conf bypassing systemd-resolved cache,
+    # causing intermittent EAI_AGAIN on GCP. Retry 3 times with backoff.
+    local dns_ok=false
+    for attempt in 1 2 3; do
+        if curl -sf --max-time 5 -o /dev/null https://api.anthropic.com/ 2>/dev/null; then
+            dns_ok=true
+            break
+        fi
+        log "DNS warm-up attempt ${attempt}/3 failed, waiting $((attempt * 15))s..."
+        sleep $((attempt * 15))
+    done
+    if ! $dns_ok; then
+        log "DNS FAILED after 3 attempts — skipping ${dept_id}"
+        # Write dns_failure to metrics and council JSON
+        local now_ts
+        now_ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+        python3 -c "
+import json
+from pathlib import Path
+mf = Path('${DATA_DIR}/${dept_name}/metrics.jsonl')
+mf.parent.mkdir(parents=True, exist_ok=True)
+row = {'timestamp':'${now_ts}','agent_status':'dns_failure','verified_status':'dns_failure','stall_streak':-1,'duration':0,'exit_code':99}
+with open(mf, 'a') as f: f.write(json.dumps(row) + '\n')
+# Update council latest
+cf = Path('${DATA_DIR}/council-${dept_name}-latest.json')
+if cf.exists():
+    d = json.loads(cf.read_text())
+else:
+    d = {}
+d['agent_status'] = 'dns_failure'
+d['timestamp'] = '${now_ts}'
+d['stall_streak'] = d.get('stall_streak', 0) + 1
+cf.write_text(json.dumps(d, indent=2))
+" 2>/dev/null
+        return 1
+    fi
 
     claude -p "${full_prompt}" \
         --model "${model}" \
