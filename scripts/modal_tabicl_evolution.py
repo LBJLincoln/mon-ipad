@@ -62,11 +62,11 @@ gpu_image = (
         # GPU ML
         "torch",
         "tabicl",
-        # Tree models
-        "xgboost>=2.0",
-        "lightgbm",
-        "catboost",
-        "scikit-learn",
+        # Tree models (pinned to SOTA versions, Apr 2026)
+        "xgboost>=3.0",
+        "lightgbm>=4.0",
+        "catboost>=1.2",
+        "scikit-learn>=1.5",
         # Data
         "numpy",
         "pandas",
