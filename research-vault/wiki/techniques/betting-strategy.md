@@ -1,10 +1,10 @@
 # Betting Strategy & Bankroll
 
-> Auto-compiled from 106 raw sources on 2026-04-09
+> Auto-compiled from 109 raw sources on 2026-04-10
 
 ## Overview
 
-This topic covers 106 research files spanning betting strategy & bankroll.
+This topic covers 109 research files spanning betting strategy & bankroll.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -42,15 +42,18 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-07.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-08.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-09.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-10.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-06.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-07.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-08.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-09.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-10.md`
 - **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (826 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
 - **16 -- Karpathy Autoresearch Pattern** (800 words) -- `raw/obsidian-docs/16-Karpathy-Pattern.md`
 - **Political Trading Season 2025-26 -- Agent QWEN 3 72B** (784 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
 - **NBA Scientific Experiment Report** (777 words) -- `raw/experiments/nba-experiment-2026-04-08.md`
 - **NBA Scientific Experiment Report** (777 words) -- `raw/experiments/nba-experiment-2026-04-09.md`
+- **NBA Scientific Experiment Report** (777 words) -- `raw/experiments/nba-experiment-2026-04-10.md`
 - **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
 - **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
 - **09 -- Legal & Finance** (759 words) -- `raw/obsidian-docs/09-Legal-Finance.md`
