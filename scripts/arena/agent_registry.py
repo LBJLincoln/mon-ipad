@@ -139,7 +139,7 @@ def _build_tier1() -> List[TradingAgent]:
     named_premium = [
         TradingAgent(
             id="t1_gemma", name="Gemma", tier=AgentTier.PREMIUM,
-            provider="google-gemma", model="google/gemma-3-27b-it",
+            provider="huggingface", model="google/gemma-3-27b-it",
             strategy="value_hunter",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="analytical_ensemble", min_edge=0.04, risk_tolerance=0.5,
@@ -148,7 +148,7 @@ def _build_tier1() -> List[TradingAgent]:
         ),
         TradingAgent(
             id="t1_qwen", name="Qwen", tier=AgentTier.PREMIUM,
-            provider="qwen", model="Qwen/Qwen2.5-72B-Instruct",
+            provider="huggingface", model="Qwen/Qwen2.5-72B-Instruct",
             strategy="edge_seeker",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="deep_thinker", min_edge=0.05, risk_tolerance=0.5,
@@ -157,7 +157,7 @@ def _build_tier1() -> List[TradingAgent]:
         ),
         TradingAgent(
             id="t1_deepseek", name="DeepSeek", tier=AgentTier.PREMIUM,
-            provider="deepseek", model="deepseek-ai/DeepSeek-R1-0528",
+            provider="huggingface", model="deepseek-ai/DeepSeek-R1-0528",
             strategy="contrarian",
             focus_groups=["moneyline", "spread", "totals", "exotic", "margin"],
             personality="contrarian_value", min_edge=0.03, risk_tolerance=0.7,
@@ -166,7 +166,7 @@ def _build_tier1() -> List[TradingAgent]:
         ),
         TradingAgent(
             id="t1_mistral", name="Mistral", tier=AgentTier.PREMIUM,
-            provider="mistral", model="mistralai/Mistral-Small-24B-Instruct-2501",
+            provider="huggingface", model="mistralai/Mistral-Small-24B-Instruct-2501",
             strategy="kelly_quarter",
             focus_groups=["moneyline", "spread", "totals", "player_props"],
             personality="balanced_optimizer", min_edge=0.03, risk_tolerance=0.5,
@@ -175,7 +175,7 @@ def _build_tier1() -> List[TradingAgent]:
         ),
         TradingAgent(
             id="t1_llama", name="Llama", tier=AgentTier.PREMIUM,
-            provider="meta-llama", model="meta-llama/Llama-3.3-70B-Instruct",
+            provider="huggingface", model="meta-llama/Llama-3.3-70B-Instruct",
             strategy="momentum",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="momentum_tracker", min_edge=0.02, risk_tolerance=0.6,
@@ -266,8 +266,8 @@ def _build_tier2() -> List[TradingAgent]:
     hf_cohere_strategies = [
         ("flat_2pct", "HF Flat Diversifier", ["moneyline", "spread"], "huggingface", "Qwen/Qwen2.5-72B-Instruct"),
         ("half_kelly", "HF Sharp Shooter", ["spread", "totals"], "huggingface", "mistralai/Mistral-Small-24B-Instruct-2501"),
-        ("value_hunter", "Cohere Value Seeker", ["moneyline", "margin"], "cohere", "command-a-03-2025"),
-        ("eighth_kelly", "Cohere Safety Net", ["totals", "moneyline"], "cohere", "command-r7b-12-2024"),
+        ("value_hunter", "HF Value Seeker", ["moneyline", "margin"], "huggingface", "Qwen/Qwen2.5-72B-Instruct"),
+        ("eighth_kelly", "HF Safety Net", ["totals", "moneyline"], "huggingface", "meta-llama/Llama-3.3-70B-Instruct"),
         ("proportional_edge", "HF Edge Scaler", ["spread", "player_props"], "huggingface", "Qwen/Qwen2.5-72B-Instruct"),
     ]
     for i, (strat, name, groups, provider, model) in enumerate(hf_cohere_strategies):
@@ -329,7 +329,7 @@ def _build_tier2() -> List[TradingAgent]:
     ]):
         agents.append(TradingAgent(
             id=f"t2_cohere_{i}", name=name, tier=AgentTier.FREE_POWER,
-            provider="cohere", model="command-a-03-2025",
+            provider="huggingface", model="Qwen/Qwen2.5-72B-Instruct",
             strategy=strat, focus_groups=["moneyline", "spread", "totals"],
             personality="analytical", min_edge=0.03,
             description=f"Cohere Command-R+ free #{i}"
@@ -338,7 +338,7 @@ def _build_tier2() -> List[TradingAgent]:
     # --- 1x Cerebras Qwen3-235B ---
     agents.append(TradingAgent(
         id="t2_cerebras_0", name="Cerebras Thunder", tier=AgentTier.FREE_POWER,
-        provider="cerebras", model="qwen-3-32b",
+        provider="huggingface", model="Qwen/Qwen2.5-72B-Instruct",
         strategy="proportional_edge",
         focus_groups=["moneyline", "spread", "totals", "exotic"],
         personality="analytical", min_edge=0.03,
