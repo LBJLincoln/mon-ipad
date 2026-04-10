@@ -1,0 +1,119 @@
+{
+  "last_updated": "2026-04-10T17:00:00Z",
+  "ledger": [
+    {
+      "cycle": 79,
+      "date": "2026-04-07",
+      "project": "Both",
+      "technique": "Isotonic calibration (proposed)",
+      "file_changed": null,
+      "brier_before": null,
+      "brier_after": null,
+      "delta": null,
+      "verdict": "pending",
+      "notes": "Proposed in cycle 79, not yet implemented. Multiple follow-up proposals exist in research-proposals/."
+    },
+    {
+      "cycle": 82,
+      "date": "2026-04-08",
+      "project": "Both",
+      "technique": "Venn-Abers calibration",
+      "file_changed": "nomos-hf-space/app.py",
+      "brier_before": 0.2231,
+      "brier_after": 0.2177,
+      "delta": -0.0054,
+      "verdict": "keep",
+      "notes": "Applied to NBA + Political HF space app.py. Brier delta measured on S13 Pareto front. Meaningful calibration improvement kept."
+    },
+    {
+      "cycle": 83,
+      "date": "2026-04-08",
+      "project": "NBA",
+      "technique": "Cat59 opponent graph features",
+      "file_changed": "nomos-nba-agent/features/engine.py",
+      "brier_before": null,
+      "brier_after": null,
+      "delta": null,
+      "verdict": "unknown",
+      "notes": "Opponent graph features (Cat59) added to NBA feature engine in cycle 83. Brier delta not recorded."
+    },
+    {
+      "cycle": 83,
+      "date": "2026-04-08",
+      "project": "NBA",
+      "technique": "Market consensus deviation Cat55",
+      "file_changed": "nomos-nba-agent/features/engine.py",
+      "brier_before": null,
+      "brier_after": null,
+      "delta": null,
+      "verdict": "unknown",
+      "notes": "Market consensus deviation feature (Cat55) added to NBA engine in cycle 83. Brier delta not recorded."
+    },
+    {
+      "cycle": 89,
+      "date": "2026-04-10",
+      "project": "Political",
+      "technique": "Cat37 Tariff Sector Exposure",
+      "file_changed": "nomos-political-alpha/features/political_engine.py",
+      "brier_before": null,
+      "brier_after": null,
+      "delta": null,
+      "verdict": "unknown",
+      "notes": "Tariff sector exposure feature (Cat37) added to political engine in cycle 89. Brier delta not recorded."
+    },
+    {
+      "cycle": 88,
+      "date": "2026-04-10",
+      "project": "Both",
+      "technique": "Stacked ensemble (proposed)",
+      "file_changed": null,
+      "brier_before": null,
+      "brier_after": null,
+      "delta": null,
+      "verdict": "pending",
+      "notes": "Stacked ensemble research proposal spanning cycles 88-89. Not yet implemented. See stacked-ensemble-shap-2026-04-10.md and related proposals."
+    },
+    {
+      "cycle": 89,
+      "date": "2026-04-10",
+      "project": "Both",
+      "technique": "OOF stacking ensemble (proposed)",
+      "file_changed": null,
+      "brier_before": null,
+      "brier_after": null,
+      "delta": null,
+      "verdict": "pending",
+      "notes": "Out-of-fold stacking ensemble proposal from cycle 89. Not yet implemented."
+    }
+  ],
+  "unimplemented_proposals": [
+    "2026-04-08-ev-filter-rolling-form-fractional-kelly.json",
+    "2026-04-08-isotonic-calibration-brier-loss-ewma.json",
+    "2026-04-08-market-isotonic-calibration-baseline.json",
+    "2026-04-09-lstm-brier-calibration.md",
+    "2026-04-09-nba-venn-abers-ensemble.md",
+    "2026-04-09-uncertainty-aware-market-fusion-brier.md",
+    "2026-04-10-isotonic-calibration-15game-window-cycle86.md",
+    "2026-04-10-mlp-meta-learner-brier-decomp-cycle85.md",
+    "2026-04-10-phase-aware-stacking-ensemble-brier-2025.md",
+    "2026-04-10-stacked-ensemble-isotonic-calibration-nature2025.md",
+    "ece-4th-pareto-objective-2026-04-08.json",
+    "karpathy-april-2026-actionable.json",
+    "lr-ga-model-type-brier-reduction-2026-04-09.json",
+    "market-features-cat46-coverage-2026-04-08.json",
+    "mc-dropout-lr-baseline-calibration-2026-04-08.json",
+    "nba-monotone-constraints-lineup-continuity-2026-04-07.md",
+    "rolling-calibration-windows-2026-04-09.json",
+    "shap-seeded-ga-init-2026-04-09.json",
+    "shot-zone-aggregation-cat50-2026-04-07.json",
+    "stacked-ensemble-shap-2026-04-10.md"
+  ],
+  "summary": {
+    "total_experiments": 7,
+    "kept": 1,
+    "reverted": 0,
+    "pending": 3,
+    "best_technique": "Venn-Abers calibration",
+    "best_delta": -0.0054
+  }
+}

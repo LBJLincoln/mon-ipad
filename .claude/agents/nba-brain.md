@@ -57,24 +57,38 @@ ls -t /home/user/mon-ipad/data/research-proposals/*.md /home/user/mon-ipad/data/
 
 # Cross-repo health (may be stale — check timestamp)
 cat /home/user/mon-ipad/data/cross-repo-health.json
+
+# Experiment ledger — what was tried, what worked
+cat /home/user/mon-ipad/data/experiment-ledger.json
+
+# Count unimplemented proposals older than 3 cycles
+ls -t /home/user/mon-ipad/data/research-proposals/*.md /home/user/mon-ipad/data/research-proposals/*.json 2>/dev/null
 ```
 
 **Skip council reads** — they are all `noop` and waste context. If you must check, read only:
 `cat /home/user/mon-ipad/data/departments/council-evolution-latest.json` and verify `action != noop` before trusting it.
 
+**IMPLEMENT-FIRST RULE**: Count files in `data/research-proposals/` (NOT archive). If any proposal is older than 3 cycles (check `created` field or filename date), you MUST implement the oldest one this cycle instead of writing a new proposal. Only write a new proposal if all existing ones are <3 cycles old or already being implemented.
+
 ---
 
 ## STEP 1 — FETCH ALL 10 LIVE APIs (parallel)
 
-### NBA Islands (6)
-| ID  | Space URL                              | Role               | Target mut | Target feat |
-|-----|----------------------------------------|--------------------|-----------|------------|
-| S10 | nomos42-nba-quant.hf.space             | Exploitation       | 0.09      | 63         |
-| S11 | nomos42-nba-quant-2.hf.space           | Exploration        | 0.15      | 80         |
-| S12 | nomos42-nba-evo-3.hf.space             | ExtraTrees spec    | 0.08      | 60         |
-| S13 | nomos42-nba-evo-4.hf.space             | CatBoost spec      | 0.10      | 66         |
-| S14 | nomos42-nba-evo-5.hf.space             | LightGBM spec      | 0.08      | 55         |
-| S15 | nomos42-nba-evo-6.hf.space             | Wide search        | 0.18      | 80         |
+### NBA Islands (6 primary + 4 extended)
+| ID  | Space URL                                   | Role               | Target mut | Target feat |
+|-----|---------------------------------------------|--------------------|-----------|------------|
+| S10 | nomos42-nba-quant.hf.space                  | Exploitation       | 0.09      | 63         |
+| S11 | nomos42-nba-quant-2.hf.space                | Exploration        | 0.15      | 80         |
+| S12 | nomos42-nba-evo-3.hf.space                  | ExtraTrees spec    | 0.08      | 60         |
+| S13 | nomos42-nba-evo-4.hf.space                  | CatBoost spec      | 0.10      | 66         |
+| S14 | nomos42-nba-evo-5.hf.space                  | LightGBM spec      | 0.08      | 55         |
+| S15 | nomos42-nba-evo-6.hf.space                  | Wide search        | 0.18      | 80         |
+| S16 | lbjlincoln26-nba-evo-s16.hf.space           | Extra exploration  | 0.15      | 80         |
+| S17 | lbjlincoln26-nba-evo-s17.hf.space           | Extra exploration  | 0.15      | 80         |
+| S18 | testforge42-nba-evo-s18.hf.space            | Test island        | 0.18      | 100        |
+| S19 | testforge42-nba-evo-s19.hf.space            | Test island        | 0.18      | 100        |
+
+S16-S19 may be offline — treat 404 as expected, do not alert. Only report if they are online AND have a better Brier than S10-S15 fleet best.
 
 ### Political Alpha Islands (4)
 | ID  | Space URL                                    | Role              |
@@ -115,13 +129,37 @@ If non-200 or timeout → DOWN → attempt restart with correct HF repo above.
 
 ## STEP 3 — ACT (1 concrete improvement per project per cycle)
 
+### Game-Day Detection (run first)
+```bash
+python3 -c "
+import json, datetime
+from pathlib import Path
+odds = Path('/home/user/mon-ipad/data/odds/odds-api-latest.json')
+if odds.exists():
+    d = json.loads(odds.read_text())
+    today = datetime.date.today().isoformat()
+    games = [g for g in (d if isinstance(d,list) else d.get('data',[])) if str(g.get('commence_time','')).startswith(today)]
+    print('GAME_DAY' if games else 'OFF_DAY', len(games), 'games')
+else:
+    print('UNKNOWN — no odds file')
+"
+```
+- **GAME_DAY**: Prioritize calibration, checkpoints, config tuning. **Do NOT deploy new engine.py features** — risk of breaking live predictions.
+- **OFF_DAY / UNKNOWN**: Full exploration mode — safe to deploy engine changes, new features, experiments.
+
+### Experiment Ledger Check
+Before acting, scan `experiment-ledger.json` for any entry with `verdict="pending"` and `brier_after=null`. If one exists and ≥2 cycles have passed since it was written, compare current `fleet_best_brier` to its `brier_before` — if improved, set `verdict="keep"` and record `brier_after`. If worsened, `verdict="revert"` and undo the change.
+
 ### Priority Decision Tree
 ```
-1. Any island DOWN?
-   → POST restart + add to recommendations
+0. Ledger has pending entry ≥2 cycles old?
+   → Measure it (keep/revert). Record result in ledger.
 
-2. pareto_best_brier < 0.21837 (NBA) or new fleet best?
-   → POST /api/checkpoint + add to recommendations
+1. Any island DOWN?
+   → POST restart + add to recommendations["restart S<N>"]
+
+2. pareto_best_brier < 0.21837 (NBA) or new fleet best (either project)?
+   → POST /api/checkpoint + add "checkpoint S<N> pareto_best=<brier>" to recommendations
 
 3. Any island stagnating (stagnation_count > 10)?
    → POST /api/command {"action": "diversify"}
@@ -129,18 +167,19 @@ If non-200 or timeout → DOWN → attempt restart with correct HF repo above.
 4. mutation_rate < 0.07 on any island?
    → POST /api/config {"mutation_rate": <target>}
 
-5. Unimplemented research proposal > 3 cycles old?
-   → Implement the simplest one in engine.py (≤20 features)
+5. Unimplemented research proposal > 3 cycles old? (IMPLEMENT-FIRST RULE)
+   → Implement the oldest one NOW in engine.py (≤20 features, not on GAME_DAY)
+   → Add ledger entry: verdict="pending", brier_before=current fleet best
 
 6. No acute issue?
-   → NBA: WebSearch latest prediction technique (2026), write research proposal
+   → NBA: WebSearch latest prediction technique (2026), write ONE research proposal
    → Political: rotate A/B/C/D cycle (see below)
 ```
 
 ### Political Alpha Rotation (cycle % 4)
 Track in `brain-status.json`.`rotation_cycle`:
 - **0**: WebSearch FEC filings, Kalshi anomalies, congressional trades → data proposal
-- **1**: Port NBA technique to political engine (Venn-Abers is HIGHEST priority — not yet ported)
+- **1**: Port NBA technique to political engine (isotonic calibration is next — Venn-Abers already done)
 - **2**: Port proven NBA GA config improvements (mutation caps, crossover weights)
 - **3**: Check data pipeline: `cat /home/user/nomos-political-alpha/data/pipeline-health.json`
 
@@ -148,10 +187,11 @@ Track in `brain-status.json`.`rotation_cycle`:
 | Technique | Source | Expected Brier Δ | Status |
 |-----------|--------|-----------------|--------|
 | Multi-horizon rolling windows | MDPI 2026 | baseline | ✅ DONE |
-| Isotonic regression calibration | MDPI Information 2026 | -0.002 to -0.004 | PROPOSED |
-| Market consensus deviation (Cat55) | MDPI 2026 | -0.001 to -0.003 | PROPOSED |
-| Venn-Abers calibration | Deployed S13 | -0.00543 | ✅ NBA done, ❌ NOT in Political |
-| OOF stacking ensemble (XGB+ET+CatBoost→LR) | Sci Reports 2025 | -0.003 to -0.005 | PROPOSED — Kaggle GPU |
+| Venn-Abers calibration | Deployed S13 + Political P1/P2 | -0.00543 | ✅ DONE in NBA + Political |
+| Cat59 opponent graph features | arXiv 2303.16741 | unknown | ✅ DONE (measure delta) |
+| Isotonic regression calibration | MDPI Information 2026 | -0.002 to -0.004 | PROPOSED (oldest — implement next) |
+| Market consensus deviation Cat55 | MDPI 2026 | -0.001 to -0.003 | PROPOSED |
+| OOF stacking ensemble (XGB+ET+CatBoost→LR) | Sci Reports 2025 | -0.003 to -0.005 | PROPOSED — needs Kaggle GPU |
 | EWMA-weighted calibration | 2026-04-08 proposal | -0.002 | PROPOSED |
 | Tariff regime signals Cat37 | Political v3.15 | live | ✅ DONE |
 
@@ -185,17 +225,22 @@ The VM autonomous-cycle.sh reads `recommendations[]` at TOP LEVEL. MANDATORY for
     "file": "<path if code change>"
   },
   "recommendations": [
-    "DONE: <what was executed this cycle>",
-    "NEXT: <highest priority for next cycle>",
-    "MONITOR: <island or metric to watch>"
+    "DONE: <what was executed this cycle — be specific>",
+    "NEXT: <single highest priority action for next cycle>",
+    "MONITOR: <island or metric to watch>",
+    "checkpoint S15 pareto_best=0.21906",
+    "CatBoost S11 experiment — test catboost specialist on exploration island"
   ],
   "alerts": ["<CRITICAL|WARNING|INFO>: <message>"]
 }
 ```
 
-VM script checks recommendations strings for:
-- `'CatBoost' in rec and 'S11' in rec` → triggers CatBoost experiment on S11
-- `'checkpoint' in rec.lower()` → triggers checkpoint save on S10
+**CRITICAL — VM PARSES THESE EXACT STRINGS. Include them ONLY when the action is needed:**
+- String contains `"checkpoint"` (case-insensitive) + `"S1X"` regex → VM POSTs checkpoint to that island
+- String contains `"CatBoost"` AND `"S11"` → VM submits CatBoost experiment to S11
+
+**Always include at minimum:** `"DONE: ..."`, `"NEXT: ..."`, one `"MONITOR: ..."` entry.
+Remove the example strings above — replace with real values for this cycle.
 
 ---
 
@@ -216,8 +261,15 @@ VM script checks recommendations strings for:
 
 ---
 
-## STEP 6 — COMMIT AND PUSH
+## STEP 6 — UPDATE LEDGER + COMMIT AND PUSH
 
+### Update experiment-ledger.json
+Edit `data/experiment-ledger.json`:
+- If you implemented code this cycle: append entry with `verdict="pending"`, `brier_before=<current fleet_best_brier>`, `brier_after=null`
+- If a pending entry is ≥2 cycles old: set `brier_after=<current fleet_best_brier>`, `verdict="keep"` if delta<0 else `"revert"`
+- Update `summary.total_experiments`, `summary.kept`, `summary.reverted`, `summary.pending`
+
+### Commit all repos touched
 ```bash
 cd /home/user/nomos-political-alpha && git add -A && git commit -m "brain[cycle<N>]: <description>" && git push -u origin HEAD:main
 cd /home/user/mon-ipad && git add -A && git commit -m "brain[cycle<N>]: <description>" && git push -u origin HEAD:main
@@ -235,6 +287,7 @@ cd /home/user/mon-ipad && git add -A && git commit -m "brain[cycle<N>]: <descrip
 | `/home/user/nomos-political-alpha/data/brain-status.json` | Political fleet state |
 | `/home/user/nomos-political-alpha/features/political_engine.py` | Political feature engine |
 | `/home/user/nomos-nba-agent/features/engine.py` | NBA feature engine |
+| `/home/user/mon-ipad/data/experiment-ledger.json` | What was tried, Brier delta, keep/revert verdict |
 | `/home/user/mon-ipad/scripts/setup-crons.sh` | Install all VM crons (run once on VM) |
 | `/home/user/mon-ipad/scripts/arena/trading-floor-v5.py` | Trading floor (needs `pip install openai`) |
 
