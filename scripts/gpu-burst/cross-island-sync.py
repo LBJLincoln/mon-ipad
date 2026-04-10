@@ -229,27 +229,51 @@ def run_sync(dry_run: bool = False):
             synced.append(name)
             continue
 
-        config_payload = {
-            "best_brier": fleet_brier,
-            "features": best_island["feature_indices"],
-            "model_type": best_island["model_type"],
-            "hp": best_island["hp"],
-            "source": f"cross_island_sync_from_{fleet_name}",
-            "timestamp": ts(),
-        }
+        # /api/config accepts tuning params only (not feature injection).
+        # Use /api/command for population-level diversity, then tune mutation rate.
+        success = False
+
+        # Step 1: diversify — replaces 1/3 of population with new random individuals
         resp = http_post(
-            f"{data['url']}/api/config",
-            config_payload,
+            f"{data['url']}/api/command",
+            {"command": "diversify"},
             token=hf_token,
-            timeout=20,
+            timeout=15,
         )
-        if resp:
-            log(f"  OK — {name} seeded from {fleet_name} (was brier={data['brier']:.5f})")
+        if resp and "queued" in str(resp.get("status", "")):
+            log(f"  OK — {name} diversify queued (was brier={data['brier']:.5f})")
+            success = True
+        else:
+            log(f"  WARN — {name} diversify: {resp}", "WARN")
+
+        # Step 2: boost_mutation for large gaps or stagnation
+        if gap > 0.002 or stagnation > 15:
+            resp2 = http_post(
+                f"{data['url']}/api/command",
+                {"command": "boost_mutation"},
+                token=hf_token,
+                timeout=15,
+            )
+            if resp2 and "queued" in str(resp2.get("status", "")):
+                log(f"  OK — {name} boost_mutation queued")
+
+        # Step 3: tune mutation_rate via /api/config (capped at 0.20 per CLAUDE.md)
+        new_mut = round(min(0.20, max(0.10, 0.10 + gap * 10)), 3)
+        tune_resp = http_post(
+            f"{data['url']}/api/config",
+            {"mutation_rate": new_mut, "migrants_per_island": 5},
+            token=hf_token,
+            timeout=15,
+        )
+        if tune_resp and tune_resp.get("status") == "queued":
+            log(f"  OK — {name} mutation_rate→{new_mut} migrants→5 queued")
+            success = True
+
+        if success:
             last_sync[name] = now_ts
             synced.append(name)
         else:
-            log(f"  FAIL — {name} /api/config unresponsive", "WARN")
-            skipped.append((name, "api_config_failed"))
+            skipped.append((name, "all_api_calls_failed"))
 
     if not dry_run:
         save_last_sync(last_sync)
