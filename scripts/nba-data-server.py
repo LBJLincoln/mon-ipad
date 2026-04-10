@@ -20,6 +20,8 @@ ARENA_DIR = Path("/home/termius/mon-ipad/data/arena")
 PORT = 8080
 
 ALLOWED_ORIGINS = [
+    "https://nomos42.com",
+    "https://www.nomos42.com",
     "https://nomos42.vercel.app",
     "http://localhost:3000",
     "http://localhost:3001",

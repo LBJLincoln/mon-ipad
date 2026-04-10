@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-04-10T08:15:00Z",
-  "brain_cycle": 86,
+  "timestamp": "2026-04-10T11:30:00Z",
+  "brain_cycle": 87,
   "brain_model": "claude-sonnet-4-6",
-  "cycle_rotation": "A_political_datasources + NBA_calibration_research",
+  "cycle_rotation": "full_fleet_verify + cors_fix + cross_island_sync + p3_p4_recovery",
   "nba_fleet": {
     "S10": {
       "url": "nomos42-nba-quant.hf.space",
@@ -99,16 +99,19 @@
   },
   "nba_summary": {
     "total_islands": 6,
-    "online": 6,
-    "down": 0,
-    "fleet_best_brier": 0.22041,
-    "fleet_best_island": "S15",
+    "online": 5,
+    "down": 1,
+    "down_islands": ["S13 (503 transient)"],
+    "fleet_best_brier": 0.22249,
+    "fleet_best_island": "S11",
+    "live_briers": {"S10": 0.22412, "S11": 0.22249, "S12": 0.22726, "S13": "503", "S14": 0.22308, "S15": 0.22291},
     "target_brier": 0.21837,
-    "gap_to_target": 0.00204,
+    "gap_to_target": 0.00412,
     "stagnation_alerts": [],
-    "diversify_sent": [],
+    "diversify_sent": ["S10", "S12"],
     "checkpoint_triggered": false,
-    "checkpoint_threshold": 0.21837
+    "checkpoint_threshold": 0.21837,
+    "last_live_check": "2026-04-10T11:28:00Z"
   },
   "political_alpha": {
     "P1": {
@@ -141,37 +144,50 @@
       "note": "FLEET BEST political"
     },
     "P3": {
-      "url": "nomos42-political-alpha-3.hf.space",
-      "status": "DOWN_404",
-      "alert": "CRITICAL — manual restart required on HuggingFace dashboard (LBJLincoln26 account)"
+      "url": "lbjlincoln-political-alpha-3.hf.space",
+      "role": "exploration_2",
+      "status": "ONLINE",
+      "generation": 336,
+      "cycle": 112,
+      "best_brier": 0.25229,
+      "best_model_type": "lightgbm",
+      "stagnation": 0,
+      "note": "Recovered from DOWN_404 — was lbjlincoln account, URL corrected",
+      "actions_taken": "diversify + boost_mutation queued 2026-04-10"
     },
     "P4": {
-      "url": "nomos42-political-alpha-4.hf.space",
-      "status": "DOWN_404",
-      "alert": "CRITICAL — manual restart required on HuggingFace dashboard (Nomos42 account)"
+      "url": "lbjlincoln-political-alpha-4.hf.space",
+      "role": "exploration_3",
+      "status": "ONLINE",
+      "generation": 579,
+      "cycle": 193,
+      "best_brier": 0.24533,
+      "best_model_type": "catboost",
+      "stagnation": 0,
+      "note": "Recovered from DOWN_404 — was lbjlincoln account, URL corrected",
+      "actions_taken": "boost_mutation queued 2026-04-10"
     }
   },
   "political_summary": {
     "total_islands": 4,
-    "online": 2,
-    "down": 2,
+    "online": 4,
+    "down": 0,
     "fleet_best_brier": 0.23134,
     "fleet_best_island": "P2",
     "engine_version": "v3.14-political-36cat-iran-war",
     "hf_mcp_available": false,
-    "restart_required": ["P3", "P4"]
+    "restart_required": [],
+    "note": "P3+P4 confirmed ONLINE 2026-04-10 — URLs were wrong in health-status (lbjlincoln- prefix not nomos42-)"
   },
-  "cycle86_actions": {
-    "political_improvement": "Cat36 Iran War Catalyst (12 features): war_active, ceasefire_prob, defense/energy sector flags, Polymarket Iran volume+insider_flag, oil_spike, DoD budget signal, ceasefire×energy interaction. Parity synced to hf-space.",
-    "political_engine_version": "v3.14-political-36cat-iran-war",
-    "political_rotation": "A — WebSearch new data sources (Iran war, FEC Q1 2026, Polymarket midterms)",
-    "nba_research": "2026-04-10-isotonic-calibration-15game-window-cycle86.md written",
-    "nba_key_finding": "Isotonic calibration reduces Brier 0.003-0.007 vs sigmoid on tree ensembles (Nature Sci Rep 2025, MDPI 2025); 15-game window features rank higher than 20/30d in SHAP studies",
-    "stagnation_check": "PASS — all 6 NBA islands stagnation=0",
-    "s13_alert": "S13 stable at 0.2231 for 500+ gens — if unchanged at cycle 87, POST diversify",
-    "iran_war_context": "2026 US-Iran war ($255M Polymarket volume, ceasefire Apr-7 fragile) — new macro regime for political alpha",
-    "p3_p4_down": "PERSISTENT — 2nd cycle down. Manual HuggingFace restart required.",
-    "next_cycle": "B — Review political_engine.py Cat37 (2026 Midterm FEC Q1 acceleration) OR implement isotonic calibration on S15 (Kaggle test)"
+  "cycle87_actions": {
+    "timestamp": "2026-04-10T11:28:00Z",
+    "nba_sync": "cross-island-sync.py executed live — S10 diversify+tune, S12 diversify+boost+tune, S11 fleet best (0.22249)",
+    "political_sync": "P3 diversify+boost, P4 boost — all 4 islands now active",
+    "p3_p4_recovery": "P3/P4 were reported DOWN but actually ONLINE — health-status had wrong URL prefix (nomos42- vs lbjlincoln-)",
+    "cors_fix": "nomos42.com added to nba-data-server.py ALLOWED_ORIGINS (was missing, causing dashboard CORS failures)",
+    "vercel_data_staleness": "arena data 13h stale — requires autonomous-cycle.sh crontab on real VM (setup-crons.sh ready)",
+    "nba_fleet": "S10=0.22412 S11=0.22249(best) S12=0.22726 S13=503 S14=0.22308 S15=0.22291",
+    "next_priority": "Run setup-crons.sh on VM to start autonomous-cycle every 1h + start nba-data-server.py"
   },
   "cross_project": {
     "iso_calibration_nba_to_political": "Isotonic calibration improvement proposed for NBA applicable to P1/P2 (currently venn_abers)",
