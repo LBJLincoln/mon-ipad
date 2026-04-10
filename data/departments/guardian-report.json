@@ -1,15 +1,15 @@
 {
-  "timestamp": "2026-04-05T00:23:19.995581+00:00",
+  "timestamp": "2026-04-10T21:00:31.841281+00:00",
   "status": "completed",
   "departments_loaded": 12,
   "departments_total": 12,
   "dept_summaries": {
     "research": "14 papers | 18 techniques | status=completed",
     "engineering": "status=unknown",
-    "evolution": "Brier=0.22182 | status=completed",
+    "evolution": "Brier=0.22249 | status=shipped",
     "betting": "status=completed",
-    "evaluation": "status=completed",
-    "infra": "status=completed",
+    "evaluation": "status=shipped",
+    "infra": "14/None spaces UP | status=no_op",
     "political": "status=completed",
     "creative": "status=idle",
     "trading_floor": "status=completed",
@@ -17,45 +17,44 @@
     "political_signals": "status=active",
     "rgwa_creative": "status=warning"
   },
-  "wins": [],
-  "wins_count": 0,
-  "actions": [
+  "wins": [
     {
-      "from_department": "evolution",
-      "to_department": "evolution",
-      "route": "island_cross_pollination",
-      "action": "Seed S10 with S14 config (Brier gain: 0.00545)",
-      "priority": "MEDIUM",
-      "source_island": "S14",
-      "target_island": "S10",
-      "timestamp": "2026-04-05T00:23:20.253117+00:00"
-    },
-    {
-      "from_department": "evolution",
-      "to_department": "evolution",
-      "route": "island_cross_pollination",
-      "action": "Seed S10 with S12 config (Brier gain: 0.00465)",
-      "priority": "MEDIUM",
-      "source_island": "S12",
-      "target_island": "S10",
-      "timestamp": "2026-04-05T00:23:20.253146+00:00"
-    },
-    {
-      "from_department": "evolution",
-      "to_department": "evolution",
-      "route": "island_cross_pollination",
-      "action": "Seed S11 with S14 config (Brier gain: 0.00433)",
-      "priority": "MEDIUM",
-      "source_island": "S14",
-      "target_island": "S11",
-      "timestamp": "2026-04-05T00:23:20.253155+00:00"
+      "department": "infra",
+      "type": "metric_improvement",
+      "metric": "uptime_pct",
+      "previous": 88.0,
+      "current": 100.0,
+      "delta": 12.0,
+      "direction": "increased",
+      "timestamp": "2026-04-08T12:00:00Z"
     }
   ],
-  "actions_count": 3,
+  "wins_count": 1,
+  "actions": [
+    {
+      "from_department": "infra",
+      "to_department": "evolution",
+      "route": "space_restarted",
+      "win": {
+        "department": "infra",
+        "type": "metric_improvement",
+        "metric": "uptime_pct",
+        "previous": 88.0,
+        "current": 100.0,
+        "delta": 12.0,
+        "direction": "increased",
+        "timestamp": "2026-04-08T12:00:00Z"
+      },
+      "action": "Infra restarted space. Notify evolution evolution is back online.",
+      "priority": "LOW",
+      "timestamp": "2026-04-10T21:00:32.355689+00:00"
+    }
+  ],
+  "actions_count": 1,
   "actions_by_priority": {
     "HIGH": 0,
-    "MEDIUM": 3,
-    "LOW": 0
+    "MEDIUM": 0,
+    "LOW": 1
   },
   "cross_pollination": {
     "routes_active": 1,
@@ -64,25 +63,11 @@
   },
   "priority_queue": [
     {
-      "priority": "MEDIUM",
-      "from": "evolution",
+      "priority": "LOW",
+      "from": "infra",
       "to": "evolution",
-      "action": "Seed S10 with S14 config (Brier gain: 0.00545)",
-      "route": "island_cross_pollination"
-    },
-    {
-      "priority": "MEDIUM",
-      "from": "evolution",
-      "to": "evolution",
-      "action": "Seed S10 with S12 config (Brier gain: 0.00465)",
-      "route": "island_cross_pollination"
-    },
-    {
-      "priority": "MEDIUM",
-      "from": "evolution",
-      "to": "evolution",
-      "action": "Seed S11 with S14 config (Brier gain: 0.00433)",
-      "route": "island_cross_pollination"
+      "action": "Infra restarted space. Notify evolution evolution is back online.",
+      "route": "space_restarted"
     }
   ]
 }

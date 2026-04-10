@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-05T00:23:19.995581+00:00",
+  "timestamp": "2026-04-10T21:00:31.841281+00:00",
   "current_metrics": {
     "research": {
       "department": "research",
@@ -21,39 +21,17 @@
     },
     "evolution": {
       "department": "evolution",
-      "timestamp": "2026-04-02T10:29:54Z",
-      "iteration": 1,
-      "status": "completed",
+      "timestamp": "2026-04-08T12:15:00Z",
+      "iteration": 12,
+      "status": "shipped",
       "improved": false,
-      "best_brier": 0.22182,
-      "fleet_avg_brier": 0.2245,
-      "best_island": "S14",
-      "total_generations": 652,
+      "best_brier": 0.22249,
+      "fleet_avg_brier": 0.22502,
+      "best_island": "S11",
+      "total_generations": null,
       "stagnation_detected": [],
-      "cross_pollination_candidates": [
-        {
-          "source": "S14",
-          "source_brier": 0.22182,
-          "target": "S10",
-          "target_brier": 0.22727,
-          "potential_gain": 0.00545
-        },
-        {
-          "source": "S12",
-          "source_brier": 0.22262,
-          "target": "S10",
-          "target_brier": 0.22727,
-          "potential_gain": 0.00465
-        },
-        {
-          "source": "S14",
-          "source_brier": 0.22182,
-          "target": "S11",
-          "target_brier": 0.22615,
-          "potential_gain": 0.00433
-        }
-      ],
-      "diversity_score": 0.567
+      "cross_pollination_candidates": [],
+      "diversity_score": null
     },
     "betting": {
       "department": "betting",
@@ -100,142 +78,26 @@
     },
     "evaluation": {
       "department": "evaluation",
-      "timestamp": "2026-04-01T00:29:32.377580+00:00",
-      "iteration": 2,
-      "status": "completed",
+      "timestamp": "2026-04-08T09:30:00Z",
+      "iteration": 12,
+      "status": "shipped",
       "improved": false,
       "brier": null,
-      "ece": null,
+      "ece": 0.06217,
       "fp_rate": null,
       "roi_pct": null,
-      "bias_detected": [
-        {
-          "type": "PHANTOM_GAME",
-          "severity": "CRITICAL",
-          "count": 1,
-          "examples": [
-            {
-              "home": "BKN",
-              "away": "BKN",
-              "home_win_prob": 0.6128,
-              "market_implied": 0.0952,
-              "issue": "home == away (same team on both sides)"
-            }
-          ],
-          "fix": "Assert home != away; validate market_implied in [0.10, 0.90] before outputting any pick"
-        },
-        {
-          "type": "OVERCONFIDENCE_SYSTEMATIC",
-          "severity": "HIGH",
-          "ece": 0.2758,
-          "worst_bucket": "60-70%",
-          "fix": "Apply Platt scaling or isotonic regression post-hoc calibration"
-        },
-        {
-          "type": "HOME_BIAS",
-          "severity": "LOW",
-          "home_bets": 21,
-          "home_win_rate": 0.381,
-          "away_bets": 10,
-          "away_win_rate": 0.4,
-          "gap": 0.019,
-          "fix": "Recalibrate home_court_advantage weight (currently 2.8 pts)"
-        },
-        {
-          "type": "CORRUPTED_ODDS",
-          "severity": "HIGH",
-          "count": 5,
-          "description": "Model >60% win prob but market implies <15% \u2014 likely team normalization mismatch (SAS/SA bug)",
-          "examples": [
-            {
-              "date": "2026-03-21",
-              "game": "IND @ SAS",
-              "model_prob": 0.6833,
-              "odds": 11.0,
-              "market_implied": 0.0909,
-              "edge": 6.5163,
-              "won": false
-            },
-            {
-              "date": "2026-03-25",
-              "game": "SAS @ MEM",
-              "model_prob": 0.679,
-              "odds": 9.75,
-              "market_implied": 0.1026,
-              "edge": 5.6203,
-              "won": false
-            },
-            {
-              "date": "2026-03-27",
-              "game": "HOU @ MEM",
-              "model_prob": 0.6068,
-              "odds": 7.25,
-              "market_implied": 0.1379,
-              "edge": 3.3993,
-              "won": false
-            }
-          ],
-          "fix": "Validate TEAM_MAP completeness; add odds sanity gate: skip bet if |model_prob - market_implied| > 0.50"
-        }
-      ],
-      "improvements_proposed": [
-        {
-          "priority": 1,
-          "type": "BUG_FIX",
-          "title": "Phantom game guard (home != away assertion)",
-          "effort": "trivial",
-          "expected_brier_delta": 0.0,
-          "expected_roi_delta": "+removes corrupted bets",
-          "department": "ENGINEERING",
-          "action": "Add to predict_today.py: assert game['home'] != game['away'] before appending"
-        },
-        {
-          "priority": 2,
-          "type": "CALIBRATION",
-          "title": "Platt scaling post-hoc calibration layer",
-          "effort": "medium",
-          "expected_brier_delta": -0.008,
-          "expected_ece_delta": -0.17,
-          "department": "ENGINEERING",
-          "action": "Train LogisticRegression(C=1) on held-out predictions. Deploy in HF Space inference path."
-        },
-        {
-          "priority": 3,
-          "type": "BUG_FIX",
-          "title": "Odds sanity gate \u2014 reject bets with |model_prob - market_implied| > 0.50",
-          "effort": "small",
-          "expected_roi_delta": "+eliminates 8 corrupted-odds bets from backtest",
-          "department": "ENGINEERING",
-          "action": "In evaluate_predictions.py and predict_today.py: skip bet if market_implied < 0.10 or > 0.90, or if abs(model_p - market_implied) > 0.50"
-        },
-        {
-          "priority": 4,
-          "type": "FEATURE",
-          "title": "Home court advantage weight reduction (2.8 \u2192 2.2 pts)",
-          "effort": "small",
-          "expected_brier_delta": -0.002,
-          "department": "D5/EVALUATION",
-          "action": "Update home_court_advantage in quant-summary.json calibration config; remeasure on backtest"
-        },
-        {
-          "priority": 5,
-          "type": "MONITORING",
-          "title": "Automated calibration alert when ECE > 0.15",
-          "effort": "small",
-          "department": "D5/EVALUATION",
-          "action": "Add ECE check to autonomous-cycle.sh; if ECE > 0.15, send Telegram alert and pause high-edge bets"
-        }
-      ]
+      "bias_detected": [],
+      "improvements_proposed": []
     },
     "infra": {
       "department": "infra",
-      "timestamp": "2026-04-02T10:30:30Z",
-      "iteration": 1,
-      "status": "completed",
+      "timestamp": "2026-04-08T12:00:00Z",
+      "iteration": 73,
+      "status": "no_op",
       "improved": false,
-      "spaces_up": null,
+      "spaces_up": 14,
       "spaces_total": null,
-      "uptime_pct": 88.0,
+      "uptime_pct": 100.0,
       "restart_count": null
     },
     "political": {
@@ -259,8 +121,8 @@
     },
     "trading_floor": {
       "department": "trading_floor",
-      "timestamp": "2026-04-05T00:23:08.753562+00:00",
-      "iteration": 131,
+      "timestamp": "2026-04-10T21:00:23.349891+00:00",
+      "iteration": 316,
       "status": "completed",
       "improved": false,
       "traders": {},
@@ -299,5 +161,16 @@
       "pieces_today": null
     }
   },
-  "wins_this_cycle": []
+  "wins_this_cycle": [
+    {
+      "department": "infra",
+      "type": "metric_improvement",
+      "metric": "uptime_pct",
+      "previous": 88.0,
+      "current": 100.0,
+      "delta": 12.0,
+      "direction": "increased",
+      "timestamp": "2026-04-08T12:00:00Z"
+    }
+  ]
 }
