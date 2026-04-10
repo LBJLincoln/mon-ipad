@@ -7,7 +7,7 @@ Rich-based CLI terminal inspired by OpenBB / Bloomberg Terminal.
 Panels:
   [O] Odds        — Real-time NBA odds from data/nba-agent/odds-latest.json
   [P] Predictions — Model predictions from data/nba-agent/predictions-today.json
-  [T] Trading     — Trading Floor v4 leaderboard
+  [T] Trading     — Trading Floor leaderboard (version from live meta)
   [E] Evolution   — 6 HF island fleet status
   [B] Bankroll    — P&L, bankroll, and performance metrics
   [H] Health      — System health overview
@@ -322,8 +322,10 @@ def build_trading_floor_panel() -> Panel:
     meta = tf.get("meta", {})
     iteration = tf.get("iteration", "?")
     gen = tf.get("generation", "?")
-    subtitle = f"Iter {iteration} | Gen {gen} | Strategies: {meta.get('nba_strategies', '?')} active, {meta.get('nba_strategies_eliminated', '?')} eliminated"
-    return Panel(table, title="[bold red]TRADING FLOOR v4[/bold red]", subtitle=subtitle, border_style="red")
+    tf_version = meta.get("version", "trading-floor-v4").upper().replace("-", " ")
+    tf_date = meta.get("date", "?")
+    subtitle = f"Iter {iteration} | Gen {gen} | Date: {tf_date} | Strategies: {meta.get('nba_strategies', '?')} active, {meta.get('nba_strategies_eliminated', '?')} elim"
+    return Panel(table, title=f"[bold red]{tf_version}[/bold red]", subtitle=subtitle, border_style="red")
 
 
 def build_evolution_panel() -> Panel:
