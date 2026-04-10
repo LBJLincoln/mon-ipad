@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-REPO = Path("/home/termius/mon-ipad")
+REPO = Path("/home/lahargnedebartoli/mon-ipad")
 DB_DIR = Path(os.environ.get("NOMOS42_LINEAGE_DIR", str(Path.home() / ".nomos42")))
 DB_PATH = DB_DIR / "lineage.db"
 

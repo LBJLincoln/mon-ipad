@@ -869,7 +869,7 @@ def load_model_predictions():
     """
     import glob as glob_mod
 
-    pred_dir = Path("/home/termius/nomos-nba-agent/data/results")
+    pred_dir = Path("/home/lahargnedebartoli/nomos-nba-agent/data/results")
     pred_files = sorted(glob_mod.glob(str(pred_dir / "predictions-*.json")), reverse=True)
 
     # Also check mon-ipad data dir
@@ -903,7 +903,7 @@ def load_model_predictions():
 
 def load_previous_market():
     """Load previous market snapshot for steam detection."""
-    crew_path = Path("/home/termius/nomos-nba-agent/data/results/crew-market.json")
+    crew_path = Path("/home/lahargnedebartoli/nomos-nba-agent/data/results/crew-market.json")
     for p in [crew_path, MARKET_PATH]:
         try:
             if p.exists():
@@ -1118,7 +1118,7 @@ def main():
     MARKET_PATH.write_text(json.dumps(output, indent=2))
 
     # Write to crew-market.json (for agent compatibility)
-    crew_path = Path("/home/termius/nomos-nba-agent/data/results/crew-market.json")
+    crew_path = Path("/home/lahargnedebartoli/nomos-nba-agent/data/results/crew-market.json")
     crew_path.parent.mkdir(parents=True, exist_ok=True)
     crew_path.write_text(json.dumps(output, indent=2))
 

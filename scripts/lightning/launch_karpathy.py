@@ -29,7 +29,7 @@ import argparse
 from pathlib import Path
 
 # Load env
-ENV_FILE = Path("/home/termius/mon-ipad/.env.local")
+ENV_FILE = Path("/home/lahargnedebartoli/mon-ipad/.env.local")
 if ENV_FILE.exists():
     for line in ENV_FILE.read_text().splitlines():
         line = line.strip()
@@ -113,7 +113,7 @@ def main():
     print("GPU started!")
 
     # Upload the karpathy loop script
-    karpathy_script = Path("/home/termius/mon-ipad/scripts/lightning/nba_karpathy_lightning.py")
+    karpathy_script = Path("/home/lahargnedebartoli/mon-ipad/scripts/lightning/nba_karpathy_lightning.py")
     if karpathy_script.exists():
         studio.upload_file(str(karpathy_script), remote_path="nba_karpathy_lightning.py")
         print("Uploaded karpathy script")

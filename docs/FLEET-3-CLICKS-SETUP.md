@@ -194,9 +194,9 @@ jobs:
 
 ```bash
 # 1. Free disk space (VM at 92%)
-rm -rf /home/termius/nomos-picks/node_modules /home/termius/nomos-picks/.next
+rm -rf /home/lahargnedebartoli/nomos-picks/node_modules /home/lahargnedebartoli/nomos-picks/.next
 npm cache clean --force
-rm -rf /home/termius/.npm/_cacache
+rm -rf /home/lahargnedebartoli/.npm/_cacache
 
 # 2. Persist terminal token (survives reboot)
 echo 'export TERMINAL_TOKEN="QLF@26abe"' >> ~/.bashrc && source ~/.bashrc

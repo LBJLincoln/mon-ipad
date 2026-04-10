@@ -39,7 +39,7 @@ from typing import Optional, Dict, Any, List
 # CONFIGURATION
 # ══════════════════════════════════════════════════════════
 
-REPO_ROOT = Path("/home/termius/mon-ipad")
+REPO_ROOT = Path("/home/lahargnedebartoli/mon-ipad")
 RESULT_DIR = REPO_ROOT / "data" / "gpu-burst"
 LOG_FILE = RESULT_DIR / "hf-inference-log.jsonl"
 

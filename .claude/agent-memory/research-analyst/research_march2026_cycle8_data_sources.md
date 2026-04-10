@@ -8,7 +8,7 @@ type: project
 
 **Why:** All 37 feature categories use team-level data or proxies for player-level data. Montrucchio 2026 (Brier 0.199) used shot chart spatial features and real player data. Closing this gap = -0.008 to -0.015 Brier.
 
-**Full catalog:** `/home/termius/mon-ipad/docs/FREE-DATA-SOURCES.md`
+**Full catalog:** `/home/lahargnedebartoli/mon-ipad/docs/FREE-DATA-SOURCES.md`
 
 ## Top Priority Data Sources (ranked by Brier delta)
 

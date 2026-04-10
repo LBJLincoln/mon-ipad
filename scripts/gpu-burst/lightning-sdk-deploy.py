@@ -11,7 +11,7 @@ Usage:
     python3 scripts/gpu-burst/lightning-sdk-deploy.py --mode political
 
 Cron:
-    0 12 * * * /home/termius/mon-ipad/scripts/gpu-burst/lightning-sdk-deploy.py >> /home/termius/mon-ipad/logs/lightning-burst.log 2>&1
+    0 12 * * * /home/lahargnedebartoli/mon-ipad/scripts/gpu-burst/lightning-sdk-deploy.py >> /home/lahargnedebartoli/mon-ipad/logs/lightning-burst.log 2>&1
 
 Requires in .env.local:
     LIGHTNING_USER_ID=8c36cf20-9101-4f04-98c7-eb1f35ec3---
@@ -27,7 +27,7 @@ import subprocess
 from pathlib import Path
 from datetime import datetime, timezone
 
-REPO_ROOT = Path("/home/termius/mon-ipad")
+REPO_ROOT = Path("/home/lahargnedebartoli/mon-ipad")
 RESULT_DIR = REPO_ROOT / "data" / "gpu-burst"
 LOG_DIR = REPO_ROOT / "logs"
 BURST_SCRIPT = REPO_ROOT / "scripts" / "gpu-burst" / "lightning-burst.py"

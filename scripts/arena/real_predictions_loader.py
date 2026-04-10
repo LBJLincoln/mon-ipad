@@ -3,7 +3,7 @@
 REAL PREDICTIONS LOADER
 =========================
 Replaces backtest_engine.py's synthetic ModelSimulator with actual stored
-model predictions from /home/termius/nomos-nba-agent/data/predictions/.
+model predictions from /home/lahargnedebartoli/nomos-nba-agent/data/predictions/.
 
 Data sources (all REAL, generated prospectively before each game):
   1. predictions-YYYY-MM-DD.json  (16 daily files, ~136 games)
@@ -32,7 +32,7 @@ import json
 from pathlib import Path
 from typing import Dict, Tuple
 
-NBA_AGENT_PREDICTIONS = Path("/home/termius/nomos-nba-agent/data/predictions")
+NBA_AGENT_PREDICTIONS = Path("/home/lahargnedebartoli/nomos-nba-agent/data/predictions")
 DAILY_GLOB = str(NBA_AGENT_PREDICTIONS / "predictions-2026-*.json")
 JSONL_FILE = NBA_AGENT_PREDICTIONS / "predictions.jsonl"
 

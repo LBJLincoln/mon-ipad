@@ -95,4 +95,4 @@ Conducted 2026-03-25. Goal: find models, datasets, spaces, and papers to push Br
 - ThinkingRock/nba: GPT-style player token model, no reported Brier score
 
 **Why:** HF scan results to accelerate Brier from 0.2187 toward 0.20 target
-**How to apply:** (1) TabICLv2 as new HF island; (2) Rank-based ensemble fusion from CFA; (3) Multi-year lookback features; (4) Qwen3.5-9B for LLM-FE pipeline. Full findings at /home/termius/mon-ipad/data/hf-scan-march2026.md
+**How to apply:** (1) TabICLv2 as new HF island; (2) Rank-based ensemble fusion from CFA; (3) Multi-year lookback features; (4) Qwen3.5-9B for LLM-FE pipeline. Full findings at /home/lahargnedebartoli/mon-ipad/data/hf-scan-march2026.md

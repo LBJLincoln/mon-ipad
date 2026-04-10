@@ -18,13 +18,13 @@
 #     SSH Host: 100.70.229.122 (Tailscale) or your VM's public IP
 #     SSH User: termius
 #     Post-connect command:
-#       tmux attach -t nomos42 || /home/termius/mon-ipad/scripts/monitoring/cross-device-tmux.sh
+#       tmux attach -t nomos42 || /home/lahargnedebartoli/mon-ipad/scripts/monitoring/cross-device-tmux.sh
 #
 #   From Laptop (SSH):
-#     ssh termius@100.70.229.122 -t 'tmux attach -t nomos42 || /home/termius/mon-ipad/scripts/monitoring/cross-device-tmux.sh'
+#     ssh termius@100.70.229.122 -t 'tmux attach -t nomos42 || /home/lahargnedebartoli/mon-ipad/scripts/monitoring/cross-device-tmux.sh'
 #
 #   From Laptop (one-liner with dashboard):
-#     ssh termius@100.70.229.122 -t '/home/termius/mon-ipad/scripts/monitoring/cross-device-tmux.sh dashboard'
+#     ssh termius@100.70.229.122 -t '/home/lahargnedebartoli/mon-ipad/scripts/monitoring/cross-device-tmux.sh dashboard'
 #
 # MULTI-DEVICE SIMULTANEOUS ACCESS:
 #   Device 1: tmux attach -t nomos42
@@ -38,7 +38,7 @@
 # TERMIUS SETUP (iPad):
 #   1. Add new host: IP=100.70.229.122, User=termius, Key=your SSH key
 #   2. In host settings, set "Startup Command":
-#      tmux attach -t nomos42 || /home/termius/mon-ipad/scripts/monitoring/cross-device-tmux.sh
+#      tmux attach -t nomos42 || /home/lahargnedebartoli/mon-ipad/scripts/monitoring/cross-device-tmux.sh
 #   3. Connect. You'll see the shared tmux session.
 #   4. Navigate: swipe left/right for tmux windows (or Ctrl-B + 0-5)
 #
@@ -49,7 +49,7 @@
 #          HostName 100.70.229.122
 #          User termius
 #          RequestTTY yes
-#          RemoteCommand tmux attach -t nomos42 || /home/termius/mon-ipad/scripts/monitoring/cross-device-tmux.sh
+#          RemoteCommand tmux attach -t nomos42 || /home/lahargnedebartoli/mon-ipad/scripts/monitoring/cross-device-tmux.sh
 #   3. Then just: ssh nomos42-vm
 #
 # ============================================================================
@@ -57,9 +57,9 @@
 set -euo pipefail
 
 SESSION="nomos42"
-DASH_SCRIPT="/home/termius/mon-ipad/scripts/monitoring/tmux-dashboard.sh"
-LIVE_STATUS="/home/termius/mon-ipad/scripts/monitoring/live-status.py"
-BASE="/home/termius/mon-ipad"
+DASH_SCRIPT="/home/lahargnedebartoli/mon-ipad/scripts/monitoring/tmux-dashboard.sh"
+LIVE_STATUS="/home/lahargnedebartoli/mon-ipad/scripts/monitoring/live-status.py"
+BASE="/home/lahargnedebartoli/mon-ipad"
 
 # ── Colors for output ────────────────────────────────────────────────────────
 GREEN='\033[0;32m'

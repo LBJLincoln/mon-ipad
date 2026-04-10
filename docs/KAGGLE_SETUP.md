@@ -149,7 +149,7 @@ Or create standalone cron job:
 
 ```bash
 # Every 12 hours at 2am and 2pm
-0 2,14 * * * cd /home/termius/mon-ipad && bash scripts/kaggle-gpu-evolution.sh >> data/agent-kaggle.log 2>&1
+0 2,14 * * * cd /home/lahargnedebartoli/mon-ipad && bash scripts/kaggle-gpu-evolution.sh >> data/agent-kaggle.log 2>&1
 ```
 
 ## Available GPU Accelerators

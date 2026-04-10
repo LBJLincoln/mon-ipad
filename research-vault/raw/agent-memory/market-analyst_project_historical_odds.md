@@ -6,9 +6,9 @@ type: project
 
 Complete 2025-26 NBA season closing moneylines assembled 2026-03-28.
 
-**File:** `/home/termius/nomos-nba-agent/data/historical-odds/nba_2025-26_odds.csv`
-**Script:** `/home/termius/nomos-nba-agent/scripts/scrape_season_odds.py`
-**Docs:** `/home/termius/nomos-nba-agent/data/historical-odds/SOURCES.md`
+**File:** `/home/lahargnedebartoli/nomos-nba-agent/data/historical-odds/nba_2025-26_odds.csv`
+**Script:** `/home/lahargnedebartoli/nomos-nba-agent/scripts/scrape_season_odds.py`
+**Docs:** `/home/lahargnedebartoli/nomos-nba-agent/data/historical-odds/SOURCES.md`
 
 Coverage: 1,128 games, Oct 21 2025 – Mar 28 2026.
 
@@ -30,5 +30,5 @@ and model ROI validation. The Odds API historical endpoint costs $99/mo and is N
 
 **To extend coverage for playoff games (Apr 2026+):**
 ```bash
-python3 /home/termius/nomos-nba-agent/scripts/scrape_season_odds.py --source sbr --from-date 2026-04-01 --to-date YYYY-MM-DD
+python3 /home/lahargnedebartoli/nomos-nba-agent/scripts/scrape_season_odds.py --source sbr --from-date 2026-04-01 --to-date YYYY-MM-DD
 ```

@@ -1,8 +1,8 @@
 #!/bin/bash
 # Run Codex agent for ecosystem monitoring
 # Fallback if Claude Code is unavailable
-source /home/termius/mon-ipad/.env.local 2>/dev/null
-LOG="/home/termius/mon-ipad/logs/agents/codex-$(date +%Y-%m-%d).log"
+source /home/lahargnedebartoli/mon-ipad/.env.local 2>/dev/null
+LOG="/home/lahargnedebartoli/mon-ipad/logs/agents/codex-$(date +%Y-%m-%d).log"
 mkdir -p "$(dirname "$LOG")"
 
 echo "[$(date -u)] Starting Codex monitor..." >> "$LOG"

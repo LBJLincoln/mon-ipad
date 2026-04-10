@@ -8,7 +8,7 @@ import json, os, subprocess, sys, re
 from datetime import datetime, timezone
 from pathlib import Path
 
-OUTPUT = Path("/home/termius/mon-ipad/data/kaggle-live.json")
+OUTPUT = Path("/home/lahargnedebartoli/mon-ipad/data/kaggle-live.json")
 
 KERNELS = [
     {"id": "alexismoret6/nba-karpathy-loop", "name": "NBA Karpathy", "project": "nba"},

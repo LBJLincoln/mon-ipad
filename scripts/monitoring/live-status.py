@@ -51,7 +51,7 @@ except ImportError:
     sys.exit(1)
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-BASE_DIR = Path("/home/termius/mon-ipad")
+BASE_DIR = Path("/home/lahargnedebartoli/mon-ipad")
 DATA_DIR = BASE_DIR / "data"
 NBA_DIR = DATA_DIR / "nba-agent"
 ARENA_DIR = DATA_DIR / "arena"

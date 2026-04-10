@@ -171,7 +171,7 @@ else
     cat > "$ENV_FILE" << 'ENVEOF'
 # ============================================================
 # Nomos42 — Brother Laptop .env.local
-# Copy values from the VM's /home/termius/mon-ipad/.env.local
+# Copy values from the VM's /home/lahargnedebartoli/mon-ipad/.env.local
 # Then run: source ~/nomos42/.env.local
 # ============================================================
 
@@ -312,12 +312,12 @@ fi
 HF_MCP_SRC="$NOMOS_DIR/repos/mon-ipad/../mcp-servers/custom/huggingface-mcp-server.py"
 MCP_DST="$NOMOS_DIR/mcp-servers"
 mkdir -p "$MCP_DST"
-if [ -f "/home/termius/mcp-servers/custom/huggingface-mcp-server.py" ]; then
+if [ -f "/home/lahargnedebartoli/mcp-servers/custom/huggingface-mcp-server.py" ]; then
     # Running from VM context — copy directly
-    cp /home/termius/mcp-servers/custom/huggingface-mcp-server.py "$MCP_DST/" 2>/dev/null && log "HF MCP server copied"
+    cp /home/lahargnedebartoli/mcp-servers/custom/huggingface-mcp-server.py "$MCP_DST/" 2>/dev/null && log "HF MCP server copied"
 elif [ -f "$NOMOS_DIR/repos/mon-ipad/scripts/bloomberg/bloomberg-api.py" ]; then
     # Running on laptop — find it in repo
-    warn "Copy MCP server manually: scp termius@100.70.229.122:/home/termius/mcp-servers/custom/huggingface-mcp-server.py $MCP_DST/"
+    warn "Copy MCP server manually: scp termius@100.70.229.122:/home/lahargnedebartoli/mcp-servers/custom/huggingface-mcp-server.py $MCP_DST/"
 fi
 
 # ── 9. MEMORY SYNC ───────────────────────────────────────────
@@ -351,7 +351,7 @@ cat > "$MEMORY_DEST/MEMORY.md" << 'MEMEOF'
 - All deployed training on HF Spaces / Kaggle / Colab
 
 ## PROJECT CONTEXT
-- See full MEMORY.md on VM at /home/termius/.claude/projects/-home-termius-mon-ipad/memory/MEMORY.md
+- See full MEMORY.md on VM at /home/lahargnedebartoli/.claude/projects/-home-termius-mon-ipad/memory/MEMORY.md
 - Or in repo: ~/nomos42/repos/mon-ipad/ (check git log)
 
 ## WHAT THIS LAPTOP CAN DO (that the VM cannot)
@@ -478,7 +478,7 @@ echo "Next steps (MANUAL — required):"
 echo ""
 echo "  1. Fill in ~/.env.local:"
 echo "       nano $NOMOS_DIR/.env.local"
-echo "       (Copy values from VM: cat /home/termius/mon-ipad/.env.local)"
+echo "       (Copy values from VM: cat /home/lahargnedebartoli/mon-ipad/.env.local)"
 echo ""
 echo "  2. Auth GitHub CLI:"
 echo "       gh auth login"

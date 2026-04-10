@@ -41,4 +41,4 @@ Note: @pixi/react v8 had React 19 issues (Issue #551) — use @pixi/react@latest
 2. Add Moltcraft infra map + STONKS ticker (6h)
 3. Pixelact UI chrome + distinct trader colors from AgentRoom (8h)
 
-Full report: /home/termius/nomos-nba-agent/data/results/pixel-dashboard-scout.json
+Full report: /home/lahargnedebartoli/nomos-nba-agent/data/results/pixel-dashboard-scout.json

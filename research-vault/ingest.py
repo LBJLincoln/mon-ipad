@@ -35,8 +35,8 @@ from collections import defaultdict
 
 VAULT_ROOT = Path(__file__).parent
 RAW_DIR = VAULT_ROOT / "raw"
-ROOT = Path("/home/termius/mon-ipad")
-POL_ROOT = Path("/home/termius/nomos-political-alpha")
+ROOT = Path("/home/lahargnedebartoli/mon-ipad")
+POL_ROOT = Path("/home/lahargnedebartoli/nomos-political-alpha")
 
 
 def ensure_dirs():

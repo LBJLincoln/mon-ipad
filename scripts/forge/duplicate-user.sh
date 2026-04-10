@@ -11,7 +11,7 @@ TIER="${2:?Usage: $0 <username> <tier> — tiers: free, builder, factory}"
 PRODUCT_IDEA="${3:-TBD}"
 DATE=$(date +%Y-%m-%d)
 
-FORGE_DIR="/home/termius/mon-ipad"
+FORGE_DIR="/home/lahargnedebartoli/mon-ipad"
 TEMPLATE_DIR="$FORGE_DIR/scripts/forge/templates"
 AGENTS_DIR="$FORGE_DIR/scripts/forge/agents"
 USER_DIR="$FORGE_DIR/forge-users/$USERNAME"

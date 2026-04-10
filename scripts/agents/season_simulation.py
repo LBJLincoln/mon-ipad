@@ -425,7 +425,7 @@ def main():
 """)
 
     print("=" * 70)
-    print(f"Script: /home/termius/mon-ipad/scripts/agents/season_simulation.py")
+    print(f"Script: /home/lahargnedebartoli/mon-ipad/scripts/agents/season_simulation.py")
     print("=" * 70)
 
 

@@ -42,7 +42,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path("/home/termius/mon-ipad")
+ROOT = Path("/home/lahargnedebartoli/mon-ipad")
 NBA_GATE = ROOT / "data" / "arena" / "cpcv-gated-strategies.json"
 POL_GATE = ROOT / "data" / "arena" / "political-cpcv-gated-strategies.json"
 STATE_FILE = ROOT / "data" / "arena" / "cpcv-watcher-state.json"

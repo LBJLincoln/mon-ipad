@@ -7,8 +7,8 @@ queries HF Space /api/status endpoints (S10-S15, P1-P4), reads data
 server status, and produces a unified cross-repo-health.json.
 
 Usage:
-    python3 /home/termius/mon-ipad/scripts/sync/aggregate-health.py
-    python3 /home/termius/mon-ipad/scripts/sync/aggregate-health.py --output /tmp/health.json
+    python3 /home/lahargnedebartoli/mon-ipad/scripts/sync/aggregate-health.py
+    python3 /home/lahargnedebartoli/mon-ipad/scripts/sync/aggregate-health.py --output /tmp/health.json
 """
 
 import argparse
@@ -26,12 +26,12 @@ from typing import Any
 # Configuration
 # ---------------------------------------------------------------------------
 
-BRAIN = Path("/home/termius/mon-ipad")
+BRAIN = Path("/home/lahargnedebartoli/mon-ipad")
 OUTPUT_DEFAULT = BRAIN / "data" / "cross-repo-health.json"
 
 REPOS = {
     "mon-ipad": {
-        "path": Path("/home/termius/mon-ipad"),
+        "path": Path("/home/lahargnedebartoli/mon-ipad"),
         "type": "brain",
         "departments": [
             "research", "engineering", "evolution", "betting",
@@ -39,22 +39,22 @@ REPOS = {
         ],
     },
     "nomos-nba-agent": {
-        "path": Path("/home/termius/nomos-nba-agent"),
+        "path": Path("/home/lahargnedebartoli/nomos-nba-agent"),
         "type": "engine",
         "departments": ["prediction"],
     },
     "nomos-political-alpha": {
-        "path": Path("/home/termius/nomos-political-alpha"),
+        "path": Path("/home/lahargnedebartoli/nomos-political-alpha"),
         "type": "engine",
         "departments": ["signals"],
     },
     "rgwa": {
-        "path": Path("/home/termius/rgwa"),
+        "path": Path("/home/lahargnedebartoli/rgwa"),
         "type": "creative",
         "departments": ["creative"],
     },
     "nomos-dashboard": {
-        "path": Path("/home/termius/nomos-dashboard"),
+        "path": Path("/home/lahargnedebartoli/nomos-dashboard"),
         "type": "dashboard",
         "departments": [],
     },

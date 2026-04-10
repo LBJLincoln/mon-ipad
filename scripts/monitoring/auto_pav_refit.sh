@@ -10,7 +10,7 @@
 # calibration_fit.py" loop that took days of lag.
 #
 # Install (cron):
-#   */30 * * * * bash /home/termius/mon-ipad/scripts/monitoring/auto_pav_refit.sh >> /home/termius/mon-ipad/logs/auto-pav-refit.log 2>&1
+#   */30 * * * * bash /home/lahargnedebartoli/mon-ipad/scripts/monitoring/auto_pav_refit.sh >> /home/lahargnedebartoli/mon-ipad/logs/auto-pav-refit.log 2>&1
 #
 # Usage:
 #   bash scripts/monitoring/auto_pav_refit.sh          # check & refit if needed
@@ -19,7 +19,7 @@
 
 set -euo pipefail
 
-REPO="/home/termius/mon-ipad"
+REPO="/home/lahargnedebartoli/mon-ipad"
 SUMMARY="$REPO/data/monitoring/drift-summary.json"
 LEDGER="$REPO/data/monitoring/auto-pav-refit-ledger.json"
 LOG_DIR="$REPO/logs"

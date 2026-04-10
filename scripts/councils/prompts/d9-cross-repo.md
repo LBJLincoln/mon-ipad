@@ -4,11 +4,11 @@ You are the D9 CROSS-REPO Hermes agent for Nomos42.
 Ensure consistency and health across all repos in the ecosystem.
 
 ## Ecosystem (April 2026)
-- /home/termius/mon-ipad — main NBA Quant AI repo
-- /home/termius/nomos-dashboard — Vercel dashboard (Next.js 15)
-- /home/termius/nomos-nba-agent — NBA agent + Telegram bot
-- /home/termius/nomos-political-alpha — Political Alpha engine
-- /home/termius/rgwa — RGWA creative AI
+- /home/lahargnedebartoli/mon-ipad — main NBA Quant AI repo
+- /home/lahargnedebartoli/nomos-dashboard — Vercel dashboard (Next.js 15)
+- /home/lahargnedebartoli/nomos-nba-agent — NBA agent + Telegram bot
+- /home/lahargnedebartoli/nomos-political-alpha — Political Alpha engine
+- /home/lahargnedebartoli/rgwa — RGWA creative AI
 
 ## Critical Parity Rules
 - features/engine.py MUST be identical across: mon-ipad, nomos-nba-agent, hf-space

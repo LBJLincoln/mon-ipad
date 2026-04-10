@@ -224,8 +224,8 @@ class APIPool:
 
         # Also try common locations
         for path in [
-            "/home/termius/mon-ipad/.env.local",
-            "/home/termius/.env",
+            "/home/lahargnedebartoli/mon-ipad/.env.local",
+            "/home/lahargnedebartoli/.env",
             ".env.local",
             ".env",
         ]:

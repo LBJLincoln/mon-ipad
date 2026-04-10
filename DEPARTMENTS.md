@@ -116,7 +116,7 @@ data/departments/
 
 ```bash
 # Guardian Orchestrator — every 30min
-*/30 * * * * /usr/bin/python3 /home/termius/mon-ipad/scripts/departments/guardian-orchestrator.py >> /home/termius/mon-ipad/logs/guardian.log 2>&1
+*/30 * * * * /usr/bin/python3 /home/lahargnedebartoli/mon-ipad/scripts/departments/guardian-orchestrator.py >> /home/lahargnedebartoli/mon-ipad/logs/guardian.log 2>&1
 ```
 
 ## Karpathy Loop Contract

@@ -219,17 +219,17 @@
 ## Comprehensive Data Files
 
 ### Primary Research Data
-- **File:** `/home/termius/mon-ipad/data/research/self-improvement-harness-2026-03-31.json`
+- **File:** `/home/lahargnedebartoli/mon-ipad/data/research/self-improvement-harness-2026-03-31.json`
 - **Contents:** 9 major frameworks, 4 open-source repos, 7 techniques, 4-phase roadmap, implementation checklist
 - **Size:** ~15KB JSON
 
 ### Quick Wins Implementation Guide
-- **File:** `/home/termius/mon-ipad/data/research/self-improvement-harness-quick-wins-2026-03-31.md`
+- **File:** `/home/lahargnedebartoli/mon-ipad/data/research/self-improvement-harness-quick-wins-2026-03-31.md`
 - **Contents:** 6 actionable quick wins (1h-1w each), combined -0.0085 Brier target
 - **Implementation:** 1 week sprint plan
 
 ### Agent Memory
-- **File:** `/home/termius/mon-ipad/.claude/agent-memory/karpathy-researcher/research_cycle7_self_improvement_harness.md`
+- **File:** `/home/lahargnedebartoli/mon-ipad/.claude/agent-memory/karpathy-researcher/research_cycle7_self_improvement_harness.md`
 - **Contents:** Structured memory for future conversations
 
 ---

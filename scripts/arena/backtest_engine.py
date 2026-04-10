@@ -60,12 +60,12 @@ from real_predictions_loader import load_real_predictions
 # ═══════════════════════════════════════════════════════════════════════════════
 # PATHS
 # ═══════════════════════════════════════════════════════════════════════════════
-ROOT = Path("/home/termius/mon-ipad")
+ROOT = Path("/home/lahargnedebartoli/mon-ipad")
 DATA_DIR = ROOT / "data" / "arena"
 GAMES_DIR = ROOT / "nba-quant-space" / "data" / "historical"
 GAMES_FILE = GAMES_DIR / "games-2025-26.json"          # default single-season
 GAMES_FILES_ALL = sorted(GAMES_DIR.glob("games-*.json"))  # all 9 seasons
-ODDS_CSV = Path("/home/termius/nomos-nba-agent/data/historical-odds/nba_2025-26_odds.csv")
+ODDS_CSV = Path("/home/lahargnedebartoli/nomos-nba-agent/data/historical-odds/nba_2025-26_odds.csv")
 OUTPUT_DIR = DATA_DIR / "backtest-results"
 
 

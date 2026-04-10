@@ -6,7 +6,7 @@ Monitors all HF Spaces, VM system metrics, websites, and services.
 Logs to DagsHub (if DAGSHUB_TOKEN set) and always to local JSON/CSV.
 
 Run via cron every 30 min:
-    20,50 * * * * python3 /home/termius/mon-ipad/scripts/monitoring/dagshub-monitor.py
+    20,50 * * * * python3 /home/lahargnedebartoli/mon-ipad/scripts/monitoring/dagshub-monitor.py
 
 Endpoints monitored (27 total):
     - 10 NBA Evolution Islands (S10-S19)

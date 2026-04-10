@@ -12,10 +12,10 @@ You are a senior ML feature engineer at a sports analytics hedge fund.
 Analyze the current feature set, propose and implement specific new features to improve Brier score from 0.22041 to < 0.20.
 
 ## Key Files
-- **Feature engine**: `/home/termius/nomos-nba-agent/features/engine.py` (v3.1-46cat, 6253 features)
-- **HF Space engine** (must stay in sync): `/home/termius/nomos-nba-agent/hf-space/features/engine.py`
-- **Research findings**: `/home/termius/nomos-nba-agent/data/results/crew-research.json`
-- **Evolution results**: `/home/termius/nomos-nba-agent/data/results/evolution-*.json`
+- **Feature engine**: `/home/lahargnedebartoli/nomos-nba-agent/features/engine.py` (v3.1-46cat, 6253 features)
+- **HF Space engine** (must stay in sync): `/home/lahargnedebartoli/nomos-nba-agent/hf-space/features/engine.py`
+- **Research findings**: `/home/lahargnedebartoli/nomos-nba-agent/data/results/crew-research.json`
+- **Evolution results**: `/home/lahargnedebartoli/nomos-nba-agent/data/results/evolution-*.json`
 
 ## Tasks
 1. Read the current engine and identify missing feature categories
@@ -31,7 +31,7 @@ Analyze the current feature set, propose and implement specific new features to 
 - Changes must maintain backward compatibility with existing experiment results
 
 ## Output
-Write to `/home/termius/nomos-nba-agent/data/results/crew-features.json`:
+Write to `/home/lahargnedebartoli/nomos-nba-agent/data/results/crew-features.json`:
 ```json
 {
   "agent": "feature_engineer",

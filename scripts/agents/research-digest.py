@@ -11,7 +11,7 @@ import glob
 from datetime import datetime, timedelta
 from collections import Counter
 
-RESEARCH_DIR = "/home/termius/mon-ipad/data/research"
+RESEARCH_DIR = "/home/lahargnedebartoli/mon-ipad/data/research"
 TODAY = datetime.utcnow().strftime("%Y-%m-%d")
 WEEK_AGO = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
 

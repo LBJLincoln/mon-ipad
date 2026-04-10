@@ -207,7 +207,7 @@ Add:
 0 */4 * * * cd ~/nomos42/mon-ipad && source .env.local && python3 scripts/fetch_player_tracking.py >> /tmp/tracking.log 2>&1
 
 # Log aggregation every 4h
-0 */4 * * * ssh termius@<VM_IP> "cat /home/termius/mon-ipad/logs/*.log" >> ~/nomos42/logs/vm-aggregate.log 2>/dev/null
+0 */4 * * * ssh termius@<VM_IP> "cat /home/lahargnedebartoli/mon-ipad/logs/*.log" >> ~/nomos42/logs/vm-aggregate.log 2>/dev/null
 ```
 
 ### 3.8 WSL2 Auto-Start (Windows only)

@@ -18,7 +18,7 @@ Designed autonomous HF Space council system: 9 dept spaces, 4 HF accounts, free 
 
 **Gemma 4 status:** NOT available free as of 2026-04-05. Use `google/gemma-3-27b-it:free` on OpenRouter. Gemma 4 is weights-only on HF, paid-only on OpenRouter.
 
-**Plan file:** `/home/termius/mon-ipad/scripts/councils/hf-dept-spaces-plan.md`
+**Plan file:** `/home/lahargnedebartoli/mon-ipad/scripts/councils/hf-dept-spaces-plan.md`
 
 **Why:** Autonomous always-on councils that scan the 6 evolution islands and propose actions, without burning Claude Code API budget. Karpathy loop pattern in a Gradio Space.
 

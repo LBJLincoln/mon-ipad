@@ -20,7 +20,7 @@ Usage (run on the VM or any machine with internet):
     # --account 0 = LBJLincoln, 1 = LBJLincoln26, 2 = Nomos42, 3 = all (sequential)
 
 Cron (run all 3 accounts once per day):
-    0 6 * * * python3 /home/termius/mon-ipad/scripts/gpu-burst/zerogpu-burst.py --account all
+    0 6 * * * python3 /home/lahargnedebartoli/mon-ipad/scripts/gpu-burst/zerogpu-burst.py --account all
 """
 
 import os
@@ -58,7 +58,7 @@ HF_ISLANDS = {
 }
 
 # Paths
-REPO_ROOT = Path("/home/termius/mon-ipad")
+REPO_ROOT = Path("/home/lahargnedebartoli/mon-ipad")
 BEST_CONFIG_PATH = REPO_ROOT / "data" / "karpathy" / "nba-best-config.json"
 RESULTS_DIR = REPO_ROOT / "data" / "gpu-burst"
 LOG_FILE = RESULTS_DIR / "zerogpu-log.jsonl"

@@ -447,7 +447,7 @@ GET https://api.actionnetwork.com/web/v1/scoreboard/nba?periods=event&bookIds=15
 
 **Sharp/square signal:** When money% diverges from ticket% by 15%+, sharp bettors are fading the public.
 
-**Script:** `/home/termius/mon-ipad/scripts/fetch_free_odds.py`
+**Script:** `/home/lahargnedebartoli/mon-ipad/scripts/fetch_free_odds.py`
 
 **Expected Brier delta:** Public money % as Cat 9 feature -> -0.002 to -0.003 (market microstructure with real sharp data)
 

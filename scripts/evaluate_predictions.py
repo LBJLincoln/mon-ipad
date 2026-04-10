@@ -9,14 +9,14 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 # Output
-OUTPUT = Path("/home/termius/mon-ipad/data/nba-agent/backtest-results.json")
+OUTPUT = Path("/home/lahargnedebartoli/mon-ipad/data/nba-agent/backtest-results.json")
 OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 
 # Database
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 if not DATABASE_URL:
     # Try loading from .env.local
-    env_file = Path("/home/termius/mon-ipad/.env.local")
+    env_file = Path("/home/lahargnedebartoli/mon-ipad/.env.local")
     if env_file.exists():
         for line in env_file.read_text().splitlines():
             if line.startswith("DATABASE_URL="):

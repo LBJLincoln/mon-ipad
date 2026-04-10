@@ -5,10 +5,10 @@
 # ═══════════════════════════════════════════════════════════════
 
 set -euo pipefail
-export PATH="$PATH:/home/termius/.local/bin"
+export PATH="$PATH:/home/lahargnedebartoli/.local/bin"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-MON_DIR="/home/termius/mon-ipad"
-NBA_DIR="/home/termius/nomos-nba-agent"
+MON_DIR="/home/lahargnedebartoli/mon-ipad"
+NBA_DIR="/home/lahargnedebartoli/nomos-nba-agent"
 LOG_DIR="$MON_DIR/logs/agents"
 mkdir -p "$LOG_DIR"
 
@@ -77,7 +77,7 @@ fi
 
 # ─── HALFTIME RE-SCORE (every 2 min during game hours: 23-06 UTC) ──
 # Only runs from separate cron: */2 23-23,0-5 * * * (see below)
-# Integrated via: */2 23-23,0-5 * * * python3 /home/termius/mon-ipad/scripts/halftime_rescore.py --live
+# Integrated via: */2 23-23,0-5 * * * python3 /home/lahargnedebartoli/mon-ipad/scripts/halftime_rescore.py --live
 # The --live flag handles its own polling loop, so cron just ensures it starts.
 
 # ─── DAILY 12:00 + 18:00 UTC ─────────────────────────────────

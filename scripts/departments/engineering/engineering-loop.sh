@@ -73,7 +73,7 @@ if [ -f "$PICKS_FILE" ]; then
 import json, sys
 from pathlib import Path
 
-picks_file = Path("/home/termius/mon-ipad/data/nba-agent/latest-picks.json")
+picks_file = Path("/home/lahargnedebartoli/mon-ipad/data/nba-agent/latest-picks.json")
 if not picks_file.exists():
     print('{"count": 0, "games": []}')
     sys.exit(0)
@@ -110,7 +110,7 @@ if [ -f "$PICKS_FILE" ]; then
 import json, sys
 from pathlib import Path
 
-picks_file = Path("/home/termius/mon-ipad/data/nba-agent/latest-picks.json")
+picks_file = Path("/home/lahargnedebartoli/mon-ipad/data/nba-agent/latest-picks.json")
 if not picks_file.exists():
     print('{"violations": 0, "details": []}')
     sys.exit(0)

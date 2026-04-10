@@ -15,7 +15,7 @@ import glob
 from datetime import datetime, timedelta
 from pathlib import Path
 
-ROOT = Path("/home/termius/mon-ipad")
+ROOT = Path("/home/lahargnedebartoli/mon-ipad")
 RESEARCH_DIR = ROOT / "data" / "research"
 PROPOSALS_DIR = ROOT / "data" / "arena" / "proposals"
 DEPT_RESEARCH = ROOT / "data" / "departments" / "research"

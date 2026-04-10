@@ -571,7 +571,7 @@ mon-ipad VM (Claude Code)
 #!/bin/bash
 set -e
 
-cd /home/termius/mon-ipad
+cd /home/lahargnedebartoli/mon-ipad
 
 # Activate venv
 source venv/bin/activate

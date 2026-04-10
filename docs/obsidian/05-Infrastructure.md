@@ -147,11 +147,11 @@ Channel: **@Nomos42** -- public predictions + daily summary
 
 | Repo | Path | Size |
 |------|------|------|
-| mon-ipad | /home/termius/mon-ipad | 80 MB |
-| nomos-nba-agent | /home/termius/nomos-nba-agent | 32 MB |
-| nomos-political-alpha | /home/termius/nomos-political-alpha | 42 MB |
-| rgwa | /home/termius/rgwa | 7 MB |
-| nomos-dashboard | /home/termius/nomos-dashboard | ~0 MB |
+| mon-ipad | /home/lahargnedebartoli/mon-ipad | 80 MB |
+| nomos-nba-agent | /home/lahargnedebartoli/nomos-nba-agent | 32 MB |
+| nomos-political-alpha | /home/lahargnedebartoli/nomos-political-alpha | 42 MB |
+| rgwa | /home/lahargnedebartoli/rgwa | 7 MB |
+| nomos-dashboard | /home/lahargnedebartoli/nomos-dashboard | ~0 MB |
 
 ---
 

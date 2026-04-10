@@ -18,7 +18,7 @@ Usage (from VM -- orchestrates remote GPU work, zero local ML):
 
 Cron example:
     # On-demand only (costs money). Use compute-orchestrator.py for scheduling.
-    0 14 * * 1 python3 /home/termius/mon-ipad/scripts/gpu-burst/modal-deploy.py >> /home/termius/mon-ipad/logs/modal-burst.log 2>&1
+    0 14 * * 1 python3 /home/lahargnedebartoli/mon-ipad/scripts/gpu-burst/modal-deploy.py >> /home/lahargnedebartoli/mon-ipad/logs/modal-burst.log 2>&1
 """
 
 import argparse
@@ -34,7 +34,7 @@ from pathlib import Path
 # PATHS
 # ══════════════════════════════════════════════════════════
 
-REPO_ROOT = Path("/home/termius/mon-ipad")
+REPO_ROOT = Path("/home/lahargnedebartoli/mon-ipad")
 SCRIPT_DIR = REPO_ROOT / "scripts" / "gpu-burst"
 MODAL_BURST = SCRIPT_DIR / "modal-burst.py"
 RESULT_DIR = REPO_ROOT / "data" / "gpu-burst"

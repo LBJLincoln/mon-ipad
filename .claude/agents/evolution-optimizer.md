@@ -15,8 +15,8 @@ Analyze S10's genetic evolution performance, diagnose stagnation, tune parameter
 1. **S10 live status**: `curl -s https://nomos42-nba-quant.hf.space/api/status`
 2. **S10 config**: `curl -s https://nomos42-nba-quant.hf.space/api/config`
 3. **Experiment history** (Supabase): `SELECT * FROM nba_experiments ORDER BY id DESC LIMIT 50`
-4. **Evolution results**: `/home/termius/nomos-nba-agent/data/results/evolution-*.json`
-5. **Feature engineer findings**: `/home/termius/nomos-nba-agent/data/results/crew-features.json`
+4. **Evolution results**: `/home/lahargnedebartoli/nomos-nba-agent/data/results/evolution-*.json`
+5. **Feature engineer findings**: `/home/lahargnedebartoli/nomos-nba-agent/data/results/crew-features.json`
 
 ## Optimal Parameters (proven by 1,244 experiments)
 - mutation_rate: 0.09 (not 0.2 — destroys population)
@@ -34,7 +34,7 @@ Analyze S10's genetic evolution performance, diagnose stagnation, tune parameter
 6. Submit new experiments to S11 if promising configs found
 
 ## Output
-Write to `/home/termius/nomos-nba-agent/data/results/crew-evolution.json`:
+Write to `/home/lahargnedebartoli/nomos-nba-agent/data/results/crew-evolution.json`:
 ```json
 {
   "agent": "evolution",

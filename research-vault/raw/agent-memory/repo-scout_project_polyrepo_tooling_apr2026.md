@@ -16,7 +16,7 @@ Winner: moon v2 (moonrepo/moon). VERDICT: HIGH.
 
 **Type sharing:** JSON Schema (mon-ipad/schemas/) → datamodel-code-generator → Pydantic v2 (Python repos) + json-schema-to-typescript → src/types/generated.ts (nomos-dashboard). This is the type-sharing answer.
 
-**How to apply:** When user asks about cross-repo sync, schema drift, or replacing sync-to-sister-repos.sh — recommend moon v2 + JSON Schema source-of-truth pattern. Full JSON at /home/termius/nomos-nba-agent/data/results/repo-scout-polyrepo.json.
+**How to apply:** When user asks about cross-repo sync, schema drift, or replacing sync-to-sister-repos.sh — recommend moon v2 + JSON Schema source-of-truth pattern. Full JSON at /home/lahargnedebartoli/nomos-nba-agent/data/results/repo-scout-polyrepo.json.
 
 **Why:** bespoke sync-to-sister-repos.sh copies files by hardcoded path with no dep graph, no caching, no type safety. Moon solves all three.
 

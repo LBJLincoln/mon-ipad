@@ -36,7 +36,7 @@ from pathlib import Path
 ROOT = os.environ.get("EVAL_ROOT", "")
 if not ROOT:
     # Derive from script location
-    ROOT = str(Path(__file__).resolve().parents[3]) if "__file__" in dir() else "/home/termius/mon-ipad"
+    ROOT = str(Path(__file__).resolve().parents[3]) if "__file__" in dir() else "/home/lahargnedebartoli/mon-ipad"
 
 EVAL_FILE    = Path(ROOT) / "data/nba-agent/latest-eval.json"
 PICKS_FILE   = Path(ROOT) / "data/nba-agent/latest-picks.json"

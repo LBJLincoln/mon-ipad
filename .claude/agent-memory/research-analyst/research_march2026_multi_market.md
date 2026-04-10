@@ -52,4 +52,4 @@ The Odds API — props/period markets from May 2023, free tier 500 req/month.
 NBA.com publishes referee assignments free. Refs who call more fouls → games trend Over. Add referee_id as Cat 38 feature. 2h effort. Data from Covers.com referee stats.
 
 ## Document Location
-Full research: `/home/termius/mon-ipad/docs/MULTI-MARKET-BETTING-RESEARCH.md`
+Full research: `/home/lahargnedebartoli/mon-ipad/docs/MULTI-MARKET-BETTING-RESEARCH.md`

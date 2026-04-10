@@ -16,7 +16,7 @@ RGWA (Really Good Web Art) is the AI artistic generation arm of the Nomos42 ecos
 
 | Property | Value |
 |----------|-------|
-| Repo | `/home/termius/rgwa` |
+| Repo | `/home/lahargnedebartoli/rgwa` |
 | GitHub | github.com/LBJLincoln/rgwa |
 | Bot | @RGWAbot (Telegram) |
 | Status | IDLE -- 4 Karpathy iterations, 0 pieces generated |

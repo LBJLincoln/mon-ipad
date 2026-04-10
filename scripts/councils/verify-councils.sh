@@ -1,7 +1,7 @@
 #!/bin/bash
 # Verify all 9 department council spaces are alive and running.
 # Exit 0 = all healthy, Exit 1 = failures detected.
-# Can be added to cron: 0 * * * * /home/termius/mon-ipad/scripts/councils/verify-councils.sh
+# Can be added to cron: 0 * * * * /home/lahargnedebartoli/mon-ipad/scripts/councils/verify-councils.sh
 
 TS=$(date -u +"%Y-%m-%d %H:%M UTC")
 echo "=== Council Verification $TS ==="

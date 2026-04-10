@@ -13,24 +13,24 @@ This is the quantitative operational loop for daily NBA betting.
 
 1. **Ingest latest data** (skip if $ARGUMENTS = "recalibrate-only"):
    ```bash
-   cd /home/termius/nomos-nba-agent && source .env.local && python3 ops/ingest-nba.py
+   cd /home/lahargnedebartoli/nomos-nba-agent && source .env.local && python3 ops/ingest-nba.py
    ```
    Pulls: latest game results, player stats, odds from The Odds API.
 
 2. **Fetch live odds**:
    ```bash
-   cd /home/termius/nomos-nba-agent && source .env.local && python3 ops/fetch-odds.py --once
+   cd /home/lahargnedebartoli/nomos-nba-agent && source .env.local && python3 ops/fetch-odds.py --once
    ```
    Sources: Bovada, DraftKings, FanDuel, BetMGM, The Odds API.
 
 3. **Run predictions** (the core model):
    ```bash
-   cd /home/termius/nomos-nba-agent && source .env.local && python3 predict_today.py
+   cd /home/lahargnedebartoli/nomos-nba-agent && source .env.local && python3 predict_today.py
    ```
    This uses the S10 evolved model (60/40 blend) + ensemble (ELO, Poisson, MC, Power).
 
 4. **Analyze output** — read the predictions JSON:
-   - `/home/termius/nomos-nba-agent/data/predictions/predictions-YYYY-MM-DD.json`
+   - `/home/lahargnedebartoli/nomos-nba-agent/data/predictions/predictions-YYYY-MM-DD.json`
    - Extract: games, home_prob, away_prob, evolved_prob, edge, kelly_size
    - Flag value bets: edge > 2% AND kelly_size > 0
 
@@ -51,12 +51,12 @@ This is the quantitative operational loop for daily NBA betting.
 
 6. **Update data server files**:
    ```bash
-   cp /home/termius/nomos-nba-agent/data/predictions/predictions-*.json /home/termius/mon-ipad/data/nba-agent/latest-picks.json
+   cp /home/lahargnedebartoli/nomos-nba-agent/data/predictions/predictions-*.json /home/lahargnedebartoli/mon-ipad/data/nba-agent/latest-picks.json
    ```
 
 7. **Push to git** for Vercel to pick up:
    ```bash
-   cd /home/termius/mon-ipad && git add data/nba-agent/latest-picks.json && git commit -m "data: daily picks $(date +%Y-%m-%d)" && git push
+   cd /home/lahargnedebartoli/mon-ipad && git add data/nba-agent/latest-picks.json && git commit -m "data: daily picks $(date +%Y-%m-%d)" && git push
    ```
 
 ## Constraints

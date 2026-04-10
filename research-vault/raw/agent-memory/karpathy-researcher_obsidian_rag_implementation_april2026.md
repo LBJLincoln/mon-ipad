@@ -152,16 +152,16 @@ Output Quality:
 
 ```bash
 # Create vault structure
-mkdir -p /home/termius/mon-ipad/research-vault/{raw,wiki,health}
-mkdir -p /home/termius/mon-ipad/research-vault/raw/{papers,repos,articles,logs}
-mkdir -p /home/termius/mon-ipad/research-vault/wiki/{concepts,techniques,architectures,learnings}
+mkdir -p /home/lahargnedebartoli/mon-ipad/research-vault/{raw,wiki,health}
+mkdir -p /home/lahargnedebartoli/mon-ipad/research-vault/raw/{papers,repos,articles,logs}
+mkdir -p /home/lahargnedebartoli/mon-ipad/research-vault/wiki/{concepts,techniques,architectures,learnings}
 
 # Ingest existing materials
-cp /home/termius/mon-ipad/.claude/agent-memory/karpathy-researcher/*.md \
-   /home/termius/mon-ipad/research-vault/raw/articles/
+cp /home/lahargnedebartoli/mon-ipad/.claude/agent-memory/karpathy-researcher/*.md \
+   /home/lahargnedebartoli/mon-ipad/research-vault/raw/articles/
 
-cp /home/termius/mon-ipad/data/arena/docs/*.md \
-   /home/termius/mon-ipad/research-vault/raw/articles/
+cp /home/lahargnedebartoli/mon-ipad/data/arena/docs/*.md \
+   /home/lahargnedebartoli/mon-ipad/research-vault/raw/articles/
 
 # Create metadata for each raw file
 # (script: scripts/vault/ingest-to-vault.py)
@@ -221,8 +221,8 @@ class VaultCompiler:
 # Before: Agent reads scattered memory files
 # After: Agent reads wiki/index.md + wiki/concepts/* + raw/papers/*
 
-RESEARCH_CONTEXT=$(cat /home/termius/mon-ipad/research-vault/wiki/index.md \
-                    /home/termius/mon-ipad/research-vault/wiki/concepts/*.md)
+RESEARCH_CONTEXT=$(cat /home/lahargnedebartoli/mon-ipad/research-vault/wiki/index.md \
+                    /home/lahargnedebartoli/mon-ipad/research-vault/wiki/concepts/*.md)
 
 claude code --task "Find gaps in $RESEARCH_CONTEXT. Propose 3 new experiments." \
   --files "research-vault/raw/papers:ro" \

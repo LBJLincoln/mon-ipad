@@ -12,20 +12,20 @@
 # All other copies must match it exactly.
 #
 # Usage:
-#   /home/termius/mon-ipad/scripts/sync/sync-features.sh
-#   /home/termius/mon-ipad/scripts/sync/sync-features.sh --check-only
+#   /home/lahargnedebartoli/mon-ipad/scripts/sync/sync-features.sh
+#   /home/lahargnedebartoli/mon-ipad/scripts/sync/sync-features.sh --check-only
 # =============================================================================
 set -euo pipefail
 
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-SOURCE="/home/termius/nomos-nba-agent/features/engine.py"
+SOURCE="/home/lahargnedebartoli/nomos-nba-agent/features/engine.py"
 
 TARGETS=(
-    "/home/termius/nomos-nba-agent/hf-space/features/engine.py"
-    "/home/termius/mon-ipad/features/engine.py"
-    "/home/termius/mon-ipad/hf-space/features/engine.py"
+    "/home/lahargnedebartoli/nomos-nba-agent/hf-space/features/engine.py"
+    "/home/lahargnedebartoli/mon-ipad/features/engine.py"
+    "/home/lahargnedebartoli/mon-ipad/hf-space/features/engine.py"
 )
 
 TARGET_LABELS=(

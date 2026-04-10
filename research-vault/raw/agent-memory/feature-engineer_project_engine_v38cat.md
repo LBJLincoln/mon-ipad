@@ -74,6 +74,6 @@ Engine is at v3.1-54cat on 2026-04-05. Previous: v3.1-51cat (6257 features).
 
 **Cat 44:** Game Totals Prediction, 10 features normalized to league averages.
 
-**Totals model:** `/home/termius/mon-ipad/scripts/totals_model.py` RMSE 18.56 pts vs market 17.73.
+**Totals model:** `/home/lahargnedebartoli/mon-ipad/scripts/totals_model.py` RMSE 18.56 pts vs market 17.73.
 
 **Beta calibration:** Added `beta` as 4th calibration option in `hf-space/app.py`. Initial weights [25,15,30,30].

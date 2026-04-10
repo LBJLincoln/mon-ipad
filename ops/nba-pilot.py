@@ -10,8 +10,8 @@ import json, os, sys, time, subprocess, urllib.request, ssl
 from datetime import datetime, timezone
 from pathlib import Path
 
-NBA_DIR = Path("/home/termius/nomos-nba-agents")
-MON_IPAD = Path("/home/termius/mon-ipad")
+NBA_DIR = Path("/home/lahargnedebartoli/nomos-nba-agents")
+MON_IPAD = Path("/home/lahargnedebartoli/mon-ipad")
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8672296360:AAEvfje0wpQkQK2WpgUCwZnPHVvGAlHUNqk")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 

@@ -21,11 +21,11 @@ Find cutting-edge alpha sources from the LATEST 2026 research that can improve o
 
 ## Current System State
 Read these files for context before researching:
-- `/home/termius/nomos-nba-agent/data/results/crew-research.json` — previous research
-- `/home/termius/nomos-nba-agent/data/results/evolution-*.json` — latest evolution results
+- `/home/lahargnedebartoli/nomos-nba-agent/data/results/crew-research.json` — previous research
+- `/home/lahargnedebartoli/nomos-nba-agent/data/results/evolution-*.json` — latest evolution results
 
 ## Output Format
-Write results to `/home/termius/nomos-nba-agent/data/results/crew-research.json` as JSON:
+Write results to `/home/lahargnedebartoli/nomos-nba-agent/data/results/crew-research.json` as JSON:
 ```json
 {
   "agent": "research",

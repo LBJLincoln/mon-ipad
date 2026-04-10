@@ -20,7 +20,7 @@ MAX_PORTFOLIO_EXPOSURE = 0.25 # 25% max nightly exposure
 MIN_EDGE_THRESHOLD = 0.03     # 3% minimum expected value
 MIN_STAKE = 0.50              # Minimum $0.50 bet
 
-OUTPUT_DIR = Path("/home/termius/mon-ipad/data/nba-agent")
+OUTPUT_DIR = Path("/home/lahargnedebartoli/mon-ipad/data/nba-agent")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ── American → Decimal odds conversion ──
@@ -124,7 +124,7 @@ def load_predictions_supabase():
 
     DATABASE_URL = os.environ.get("DATABASE_URL", "")
     if not DATABASE_URL:
-        env_file = Path("/home/termius/mon-ipad/.env.local")
+        env_file = Path("/home/lahargnedebartoli/mon-ipad/.env.local")
         if env_file.exists():
             for line in env_file.read_text().splitlines():
                 if line.startswith("DATABASE_URL="):

@@ -17,7 +17,7 @@
 set -euo pipefail
 
 FORGE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MON_IPAD="/home/termius/mon-ipad"
+MON_IPAD="/home/lahargnedebartoli/mon-ipad"
 REPO_PATH="${1:-}"
 FORCE="${2:-}"
 
@@ -27,7 +27,7 @@ if [ -z "$REPO_PATH" ]; then
     echo "Usage: $0 <repo-path> [--force]"
     echo ""
     echo "Available repos:"
-    for d in /home/termius/*/; do
+    for d in /home/lahargnedebartoli/*/; do
         [ -d "$d/.git" ] && echo "  $(basename $d)"
     done
     exit 1
@@ -35,7 +35,7 @@ fi
 
 # Resolve path
 if [[ "$REPO_PATH" != /* ]]; then
-    REPO_PATH="/home/termius/$REPO_PATH"
+    REPO_PATH="/home/lahargnedebartoli/$REPO_PATH"
 fi
 
 if [ ! -d "$REPO_PATH/.git" ]; then
@@ -106,7 +106,7 @@ DEPT="${1:-}"
 DRY_RUN="${2:-}"
 
 source "$REPO_ROOT/.env.local" 2>/dev/null || true
-source "/home/termius/mon-ipad/.env.local" 2>/dev/null || true
+source "/home/lahargnedebartoli/mon-ipad/.env.local" 2>/dev/null || true
 
 if [ -z "$DEPT" ]; then
     echo "Usage: $0 <department> [--dry-run]"
@@ -116,7 +116,7 @@ fi
 
 # Use shared forge council from mon-ipad if local doesn't exist
 if [ ! -f "$FORGE_COUNCIL" ]; then
-    FORGE_COUNCIL="/home/termius/mon-ipad/scripts/forge/council-template.py"
+    FORGE_COUNCIL="/home/lahargnedebartoli/mon-ipad/scripts/forge/council-template.py"
 fi
 
 ARGS="--repo $REPO_ROOT --dept $DEPT"

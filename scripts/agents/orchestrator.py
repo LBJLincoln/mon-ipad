@@ -43,7 +43,7 @@ PROJECTS = {
     },
 }
 
-DATA_DIR = Path("/home/termius/mon-ipad/data")
+DATA_DIR = Path("/home/lahargnedebartoli/mon-ipad/data")
 HEALTH_FILE = DATA_DIR / "agent-health.json"
 
 # ═══════════════════════════════════════
@@ -92,7 +92,7 @@ def check_kaggle_kernel(kernel_ref):
 def check_data_server():
     """Check if local data server is running.
 
-    Data server serves from /home/termius/mon-ipad/data/ on port 8080,
+    Data server serves from /home/lahargnedebartoli/mon-ipad/data/ on port 8080,
     so files at data/nba-agent/*.json are at http://localhost:8080/nba-agent/*.json
     """
     endpoints = ["backtest-results.json", "bankroll-state.json", "quant-summary.json"]

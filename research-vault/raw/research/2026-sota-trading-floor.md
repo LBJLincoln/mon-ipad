@@ -350,7 +350,7 @@
 ---
 
 ### B9. Nomos42 Bloomberg Terminal — Current Implementation
-**Path:** `/home/termius/mon-ipad/scripts/bloomberg/nomos42-terminal.py`
+**Path:** `/home/lahargnedebartoli/mon-ipad/scripts/bloomberg/nomos42-terminal.py`
 **Context:** Our existing terminal uses Rich TUI. Current panels: odds, predictions, fleet, bankroll.
 
 **Gaps vs 2026 SOTA:**

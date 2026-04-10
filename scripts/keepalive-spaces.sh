@@ -7,8 +7,8 @@ TS=$(date -u +"%Y-%m-%d %H:%M UTC")
 echo "=== Keepalive $TS ==="
 
 # Load HF tokens from env file
-if [ -f "/home/termius/mon-ipad/.env.local" ]; then
-    source /home/termius/mon-ipad/.env.local 2>/dev/null
+if [ -f "/home/lahargnedebartoli/mon-ipad/.env.local" ]; then
+    source /home/lahargnedebartoli/mon-ipad/.env.local 2>/dev/null
 fi
 
 # ── Helper: ping space + restart via HF API if non-healthy ───────────────────

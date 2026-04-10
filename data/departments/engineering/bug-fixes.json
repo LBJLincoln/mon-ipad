@@ -8,7 +8,7 @@
       "title": "Phantom Game (BKN @ BKN)",
       "severity": "CRITICAL",
       "status": "FIXED",
-      "file": "/home/termius/nomos-nba-agent/predict_today.py",
+      "file": "/home/lahargnedebartoli/nomos-nba-agent/predict_today.py",
       "description": "The same team (BKN) appeared on both sides of a game, generating nonsensical predictions and corrupted value bets. Root cause: Bovada API returned a game event with a malformed description that caused both home and away to resolve to the same abbreviation.",
       "fix": [
         "In fetch_todays_games_bovada(): after parsing 'away @ home', skip the game if away_team == home_team.",
@@ -23,7 +23,7 @@
       "title": "Odds Sanity Gate (model vs market divergence)",
       "severity": "HIGH",
       "status": "FIXED",
-      "file": "/home/termius/nomos-nba-agent/predict_today.py",
+      "file": "/home/lahargnedebartoli/nomos-nba-agent/predict_today.py",
       "description": "For some games, the model probability and market implied probability diverged by >50 percentage points (e.g. SAS @ MIL: model=83.5% vs market=9.1%), indicating team code mismatch or corrupted odds data. These would generate wildly inflated Kelly bets on bogus edges.",
       "fix": [
         "Added a sanity gate in build_predictions_output() after computing home_implied.",
@@ -39,7 +39,7 @@
       "title": "Data Validation — latest-picks.json cleanup",
       "severity": "HIGH",
       "status": "FIXED",
-      "file": "/home/termius/mon-ipad/data/nba-agent/latest-picks.json",
+      "file": "/home/lahargnedebartoli/mon-ipad/data/nba-agent/latest-picks.json",
       "description": "The 2026-03-31 picks file contained 1 phantom game (BKN @ BKN) and 2 phantom value bets referencing BKN @ BKN spread and moneyline bets.",
       "fix": [
         "Removed phantom game entry: home=BKN, away=BKN.",
@@ -63,7 +63,7 @@
   "team_map_audit": {
     "sa_to_sas": {
       "status": "ALREADY_CORRECT",
-      "location": "/home/termius/mon-ipad/scripts/betting_agent.py",
+      "location": "/home/lahargnedebartoli/mon-ipad/scripts/betting_agent.py",
       "line": 73,
       "entry": "\"SA\": \"SAS\"",
       "note": "SA -> SAS normalization was already present in betting_agent.py TEAM_MAP. The odds analyzer uses NBA_TEAMS dict in power_ratings.py which uses SAS directly."

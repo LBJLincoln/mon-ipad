@@ -72,11 +72,11 @@ except Exception as e:
 
 # Data freshness checks
 data_files = {
-    'agent_health': '/home/termius/mon-ipad/data/agent-health.json',
-    'infra_status': '/home/termius/mon-ipad/data/infra-status.json',
-    'bankroll_state': '/home/termius/mon-ipad/data/nba-agent/bankroll-state.json',
-    'quant_summary': '/home/termius/mon-ipad/data/nba-agent/quant-summary.json',
-    'guardian_report': '/home/termius/mon-ipad/data/departments/guardian-report.json',
+    'agent_health': '/home/lahargnedebartoli/mon-ipad/data/agent-health.json',
+    'infra_status': '/home/lahargnedebartoli/mon-ipad/data/infra-status.json',
+    'bankroll_state': '/home/lahargnedebartoli/mon-ipad/data/nba-agent/bankroll-state.json',
+    'quant_summary': '/home/lahargnedebartoli/mon-ipad/data/nba-agent/quant-summary.json',
+    'guardian_report': '/home/lahargnedebartoli/mon-ipad/data/departments/guardian-report.json',
 }
 
 metrics['data_freshness'] = {}

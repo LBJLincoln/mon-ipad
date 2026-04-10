@@ -8,7 +8,7 @@ set -euo pipefail
 
 DEPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(dirname "$(dirname "$(dirname "$DEPT_DIR")")")"
-POLITICAL_ROOT="/home/termius/nomos-political-alpha"
+POLITICAL_ROOT="/home/lahargnedebartoli/nomos-political-alpha"
 OUTPUT_DIR="$ROOT/data/departments/political"
 LOG_FILE="$OUTPUT_DIR/loop.log"
 STATE_FILE="$OUTPUT_DIR/loop-state.json"
@@ -135,7 +135,7 @@ import json, os, sys
 from datetime import datetime
 from pathlib import Path
 
-POLITICAL_ROOT = Path("/home/termius/nomos-political-alpha")
+POLITICAL_ROOT = Path("/home/lahargnedebartoli/nomos-political-alpha")
 today = datetime.utcnow().strftime("%Y%m%d")
 
 # Load enforcement dismissals
@@ -235,7 +235,7 @@ measure_brier() {
 import json, math
 from pathlib import Path
 
-POLITICAL_ROOT = Path("/home/termius/nomos-political-alpha")
+POLITICAL_ROOT = Path("/home/lahargnedebartoli/nomos-political-alpha")
 events_file = POLITICAL_ROOT / "data/historical/consolidated_events.json"
 
 if not events_file.exists():
@@ -300,7 +300,7 @@ proposals.append({
     "effort_hours": 4,
     "expected_brier_delta": -0.015,
     "action": "In ops/fetch_political_data.py: parse Form4 XML transactionCode. P=buy, S=sell. Add buy_cluster_14d feature.",
-    "file": "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
+    "file": "/home/lahargnedebartoli/nomos-political-alpha/ops/fetch_political_data.py",
     "created_at": datetime.utcnow().isoformat() + "Z"
 })
 
@@ -313,7 +313,7 @@ proposals.append({
     "effort_hours": 3,
     "expected_brier_delta": -0.012,
     "action": "Update polymarket fetch to clob.polymarket.com. Track: tariff_reciprocal, china_trade_deal, trump_approval.",
-    "file": "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
+    "file": "/home/lahargnedebartoli/nomos-political-alpha/ops/fetch_political_data.py",
     "created_at": datetime.utcnow().isoformat() + "Z"
 })
 
@@ -326,7 +326,7 @@ proposals.append({
     "effort_hours": 6,
     "expected_brier_delta": -0.008,
     "action": "Add tariff_anniversary_flag, days_to_tariff_anniversary, import_intensity_sector. Short XLK/QQQ into April 2.",
-    "file": "/home/termius/nomos-political-alpha/features/political_engine.py",
+    "file": "/home/lahargnedebartoli/nomos-political-alpha/features/political_engine.py",
     "created_at": datetime.utcnow().isoformat() + "Z"
 })
 
@@ -339,7 +339,7 @@ proposals.append({
     "effort_hours": 2,
     "expected_brier_delta": -0.006,
     "action": "Debug ops/fetch_political_data.py fetch_usaspending(). gov_contracts returning {}. Check POST payload to /api/v2/search/spending_by_award/",
-    "file": "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
+    "file": "/home/lahargnedebartoli/nomos-political-alpha/ops/fetch_political_data.py",
     "created_at": datetime.utcnow().isoformat() + "Z"
 })
 
@@ -352,7 +352,7 @@ proposals.append({
     "effort_hours": 5,
     "expected_brier_delta": -0.020,
     "action": "Current signal_strength values (0.5, 0.7) are uncalibrated — naive Brier 0.28 > baseline 0.25. Apply isotonic calibration from calibration/isotonic_calibrator.py to output calibrated probs.",
-    "file": "/home/termius/nomos-political-alpha/calibration/isotonic_calibrator.py",
+    "file": "/home/lahargnedebartoli/nomos-political-alpha/calibration/isotonic_calibrator.py",
     "created_at": datetime.utcnow().isoformat() + "Z"
 })
 
@@ -390,7 +390,7 @@ etf_data      = json.loads(sys.argv[3]) if sys.argv[3] != "{}" else {}
 proposals     = json.loads(sys.argv[4]).get("proposals", [])
 signal_count  = int(sys.argv[5])
 
-out_path = "/home/termius/mon-ipad/data/departments/political/karpathy-output.json"
+out_path = "/home/lahargnedebartoli/mon-ipad/data/departments/political/karpathy-output.json"
 
 try:
     existing = json.load(open(out_path))

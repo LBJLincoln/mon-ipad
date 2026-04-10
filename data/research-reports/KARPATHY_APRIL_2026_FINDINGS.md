@@ -100,7 +100,7 @@ Your current research memory lives in scattered files:
 **Upgrade (4h work):**
 
 1. Create `wiki_compiler.py`:
-   - Reads all research_*.md files from `/home/termius/.claude/projects/.../memory/`
+   - Reads all research_*.md files from `/home/lahargnedebartoli/.claude/projects/.../memory/`
    - Extracts concepts: "NBA features", "calibration", "GPU platforms", "betting strategies", "overfitting risks"
    - Claude Opus generates wiki articles for each concept
    - Generates backlinks: "This feature (Cat39) relates to {{Circadian_Effects_Research}}"
@@ -276,9 +276,9 @@ Your 6 HF islands generate features independently. No quality audit between gene
 
 ## Files Generated
 
-- **Research Summary:** `/home/termius/mon-ipad/.claude/agent-memory/karpathy-researcher/research_karpathy_april2026.md`
-- **Actionable Proposals (JSON):** `/home/termius/mon-ipad/data/research-proposals/karpathy-april-2026-actionable.json`
-- **Memory Index:** Updated `/home/termius/.claude/projects/.../MEMORY.md`
+- **Research Summary:** `/home/lahargnedebartoli/mon-ipad/.claude/agent-memory/karpathy-researcher/research_karpathy_april2026.md`
+- **Actionable Proposals (JSON):** `/home/lahargnedebartoli/mon-ipad/data/research-proposals/karpathy-april-2026-actionable.json`
+- **Memory Index:** Updated `/home/lahargnedebartoli/.claude/projects/.../MEMORY.md`
 
 ---
 

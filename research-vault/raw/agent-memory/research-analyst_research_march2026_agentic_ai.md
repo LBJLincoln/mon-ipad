@@ -5,8 +5,8 @@ type: project
 ---
 
 Research completed: 2026-03-25
-NBA research output: /home/termius/nomos-nba-agent/data/results/crew-research.json
-Agent SDK landscape: /home/termius/mon-ipad/data/agent-sdk-landscape-march2026.md
+NBA research output: /home/lahargnedebartoli/nomos-nba-agent/data/results/crew-research.json
+Agent SDK landscape: /home/lahargnedebartoli/mon-ipad/data/agent-sdk-landscape-march2026.md
 
 ## Top Actionable Findings
 

@@ -42,7 +42,7 @@ from datetime import datetime
 # PATHS
 # ═══════════════════════════════════════
 
-BASE_DIR = Path("/home/termius/mon-ipad")
+BASE_DIR = Path("/home/lahargnedebartoli/mon-ipad")
 CAL_MAP_PATH = BASE_DIR / "data" / "calibration" / "calibration-map.json"
 CAL_REPORT_PATH = BASE_DIR / "data" / "calibration" / "calibration-report.json"
 PREDICTIONS_PATH = BASE_DIR / "data" / "nba-agent" / "predictions-today.json"

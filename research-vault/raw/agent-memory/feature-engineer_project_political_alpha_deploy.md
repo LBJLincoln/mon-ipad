@@ -4,7 +4,7 @@ description: Deploy status of nomos-political-alpha project — Supabase tables,
 type: project
 ---
 
-Deployed 2026-03-26. Project at /home/termius/nomos-political-alpha.
+Deployed 2026-03-26. Project at /home/lahargnedebartoli/nomos-political-alpha.
 
 **Why:** New project stream alongside NBA Quant AI — predicts excess stock returns of Trump donor companies following political events.
 

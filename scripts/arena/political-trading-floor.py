@@ -27,8 +27,8 @@ from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 
 # ── PATHS ────────────────────────────────────────────────────────────────────
-ROOT        = Path('/home/termius/mon-ipad')
-POLITICAL   = Path('/home/termius/nomos-political-alpha')
+ROOT        = Path('/home/lahargnedebartoli/mon-ipad')
+POLITICAL   = Path('/home/lahargnedebartoli/nomos-political-alpha')
 DATA_DIR    = ROOT / 'data' / 'arena'
 TRADERS_DIR = DATA_DIR / 'traders'
 POL_DIR     = DATA_DIR / 'political'

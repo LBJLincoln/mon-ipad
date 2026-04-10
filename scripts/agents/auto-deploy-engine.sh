@@ -4,11 +4,11 @@
 # Run via cron: 0 */6 * * * (every 6 hours)
 
 set -uo pipefail
-source /home/termius/mon-ipad/.env.local 2>/dev/null
+source /home/lahargnedebartoli/mon-ipad/.env.local 2>/dev/null
 
-NBA_REPO="/home/termius/nomos-nba-agent"
-LAST_HASH_FILE="/home/termius/mon-ipad/data/.last-engine-hash"
-LOG="/home/termius/mon-ipad/logs/agents/auto-deploy-$(date +%Y-%m-%d).log"
+NBA_REPO="/home/lahargnedebartoli/nomos-nba-agent"
+LAST_HASH_FILE="/home/lahargnedebartoli/mon-ipad/data/.last-engine-hash"
+LOG="/home/lahargnedebartoli/mon-ipad/logs/agents/auto-deploy-$(date +%Y-%m-%d).log"
 mkdir -p "$(dirname "$LOG")"
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $1" | tee -a "$LOG"; }

@@ -72,7 +72,7 @@ python3 scripts/alpaca/odds_api_client.py nba --compare   # model vs Pinnacle ed
 python3 scripts/alpaca/odds_api_client.py usage           # check remaining quota
 
 # Quota-efficient cron (3x daily = ~90 req/month on free tier)
-0 14,18,22 * * * python3 /home/termius/mon-ipad/scripts/alpaca/odds_api_client.py nba
+0 14,18,22 * * * python3 /home/lahargnedebartoli/mon-ipad/scripts/alpaca/odds_api_client.py nba
 ```
 
 **Output**: `data/odds/odds-api-latest.json` — same dir as existing odds files.
@@ -118,19 +118,19 @@ For production NBA odds — use `odds_api_client.py` (The Odds API) instead.
 crontab -e
 
 # NBA odds — 3x daily when games are likely
-0 14,18,22 * * * cd /home/termius/mon-ipad && python3 scripts/alpaca/odds_api_client.py nba >> logs/odds-api.log 2>&1
+0 14,18,22 * * * cd /home/lahargnedebartoli/mon-ipad && python3 scripts/alpaca/odds_api_client.py nba >> logs/odds-api.log 2>&1
 
 # Kraken ticker snapshot — every 30 min
-*/30 * * * * cd /home/termius/mon-ipad && python3 scripts/alpaca/kraken_client.py ticker >> logs/kraken.log 2>&1
+*/30 * * * * cd /home/lahargnedebartoli/mon-ipad && python3 scripts/alpaca/kraken_client.py ticker >> logs/kraken.log 2>&1
 
 # Alpaca account status — daily
-0 9 * * * cd /home/termius/mon-ipad && python3 scripts/alpaca/paper_client.py status >> logs/alpaca.log 2>&1
+0 9 * * * cd /home/lahargnedebartoli/mon-ipad && python3 scripts/alpaca/paper_client.py status >> logs/alpaca.log 2>&1
 
 # Compute orchestrator — 4x daily for GPU dispatch
-0 6,8,12,18 * * * python3 /home/termius/mon-ipad/scripts/gpu-burst/compute-orchestrator.py >> logs/compute-orchestrator.log 2>&1
+0 6,8,12,18 * * * python3 /home/lahargnedebartoli/mon-ipad/scripts/gpu-burst/compute-orchestrator.py >> logs/compute-orchestrator.log 2>&1
 
 # CRITICAL MISSING: autonomous cycle (trading floor + data server)
-30 * * * * /home/termius/mon-ipad/scripts/autonomous-cycle.sh >> /tmp/ac.log 2>&1
+30 * * * * /home/lahargnedebartoli/mon-ipad/scripts/autonomous-cycle.sh >> /tmp/ac.log 2>&1
 ```
 
 ---
@@ -139,7 +139,7 @@ crontab -e
 
 ```bash
 # Start permanently (add to autonomous-cycle.sh Phase 4 — already there, just needs scheduling)
-nohup python3 /home/termius/mon-ipad/scripts/nba-data-server.py > logs/data-server.log 2>&1 &
+nohup python3 /home/lahargnedebartoli/mon-ipad/scripts/nba-data-server.py > logs/data-server.log 2>&1 &
 echo $! > /tmp/data-server.pid
 ```
 

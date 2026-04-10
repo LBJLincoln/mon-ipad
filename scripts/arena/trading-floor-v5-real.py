@@ -586,9 +586,9 @@ def trader_select_bets(trader_cfg, all_bets, personality):
 # ============================================================================
 def run_backtest():
     # -- Paths --
-    odds_path = "/home/termius/nomos-nba-agent/data/historical-odds/nba_2025-26_odds.csv"
-    games_path = "/home/termius/mon-ipad/nba-quant-space/data/historical/games-2025-26.json"
-    output_path = "/home/termius/mon-ipad/data/nba-agent/trading-floor-v5-real.json"
+    odds_path = "/home/lahargnedebartoli/nomos-nba-agent/data/historical-odds/nba_2025-26_odds.csv"
+    games_path = "/home/lahargnedebartoli/mon-ipad/nba-quant-space/data/historical/games-2025-26.json"
+    output_path = "/home/lahargnedebartoli/mon-ipad/data/nba-agent/trading-floor-v5-real.json"
 
     if not os.path.exists(odds_path) or not os.path.exists(games_path):
         print("ERROR: Data files not found.")

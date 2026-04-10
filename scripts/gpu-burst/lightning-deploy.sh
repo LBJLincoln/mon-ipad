@@ -18,7 +18,7 @@
 #   - GITHUB_TOKEN env var (for pushing results)
 #
 # Cron example:
-#   0 12 * * * /home/termius/mon-ipad/scripts/gpu-burst/lightning-deploy.sh >> /home/termius/mon-ipad/logs/lightning-burst.log 2>&1
+#   0 12 * * * /home/lahargnedebartoli/mon-ipad/scripts/gpu-burst/lightning-deploy.sh >> /home/lahargnedebartoli/mon-ipad/logs/lightning-burst.log 2>&1
 # ═══════════════════════════════════════════════════════════════════
 
 set -euo pipefail

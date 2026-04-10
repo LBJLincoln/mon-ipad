@@ -6,7 +6,7 @@
 # This is the political analogue of continuous-backtest-swarm.sh (NBA).
 #
 # CRON entry (already-installed equivalent for NBA: every 4h):
-#   17 */4 * * * /home/termius/mon-ipad/scripts/arena/continuous-political-backtest-swarm.sh
+#   17 */4 * * * /home/lahargnedebartoli/mon-ipad/scripts/arena/continuous-political-backtest-swarm.sh
 #
 # Each invocation:
 #   1. Run political-trading-floor.py (full competition, ~15-90s)
@@ -17,7 +17,7 @@
 
 set -uo pipefail
 
-ROOT="/home/termius/mon-ipad"
+ROOT="/home/lahargnedebartoli/mon-ipad"
 RESULTS_DIR="$ROOT/data/arena/political-backtest-results"
 LATEST="$ROOT/data/arena/political/political-trading-floor-latest.json"
 LOG="$ROOT/data/arena/political-backtest-swarm.log"

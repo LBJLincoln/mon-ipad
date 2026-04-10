@@ -25,14 +25,14 @@
 #   ./hermes-runner.sh --status           # Show last run status
 #
 # Cron (every 4 hours, staggered):
-#   0  2,10,18 * * * /home/termius/mon-ipad/scripts/councils/hermes-runner.sh d1 d3 d7
-#   0  4,12,20 * * * /home/termius/mon-ipad/scripts/councils/hermes-runner.sh d2 d6 d9
-#   0  6,14,22 * * * /home/termius/mon-ipad/scripts/councils/hermes-runner.sh d4 d5 d8
+#   0  2,10,18 * * * /home/lahargnedebartoli/mon-ipad/scripts/councils/hermes-runner.sh d1 d3 d7
+#   0  4,12,20 * * * /home/lahargnedebartoli/mon-ipad/scripts/councils/hermes-runner.sh d2 d6 d9
+#   0  6,14,22 * * * /home/lahargnedebartoli/mon-ipad/scripts/councils/hermes-runner.sh d4 d5 d8
 # ═══════════════════════════════════════════════════════════════
 
 set -uo pipefail
 
-ROOT="/home/termius/mon-ipad"
+ROOT="/home/lahargnedebartoli/mon-ipad"
 PROMPTS_DIR="${ROOT}/scripts/councils/prompts"
 LOG_DIR="${ROOT}/logs/councils"
 DATA_DIR="${ROOT}/data/departments"

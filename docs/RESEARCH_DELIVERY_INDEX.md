@@ -57,8 +57,8 @@ Start here: **[KARPATHY_APRIL_2026_FINDINGS.md](./data/research-reports/KARPATHY
 ### Memory Files
 | File | Type | Purpose |
 |------|------|---------|
-| [research_karpathy_april2026.md](./home/termius/mon-ipad/.claude/agent-memory/karpathy-researcher/research_karpathy_april2026.md) | project | Detailed findings (Obsidian, LLM Council, AutoResearch, etc.) |
-| [feedback_karpathy_patterns_validated.md](./home/termius/mon-ipad/.claude/agent-memory/karpathy-researcher/feedback_karpathy_patterns_validated.md) | feedback | Validation: you're already following Karpathy's patterns |
+| [research_karpathy_april2026.md](./home/lahargnedebartoli/mon-ipad/.claude/agent-memory/karpathy-researcher/research_karpathy_april2026.md) | project | Detailed findings (Obsidian, LLM Council, AutoResearch, etc.) |
+| [feedback_karpathy_patterns_validated.md](./home/lahargnedebartoli/mon-ipad/.claude/agent-memory/karpathy-researcher/feedback_karpathy_patterns_validated.md) | feedback | Validation: you're already following Karpathy's patterns |
 
 ---
 

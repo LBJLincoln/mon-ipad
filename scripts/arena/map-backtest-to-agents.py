@@ -24,11 +24,11 @@ import math
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path("/home/termius/mon-ipad")
+ROOT = Path("/home/lahargnedebartoli/mon-ipad")
 DATA = ROOT / "data" / "arena"
 AGENT_STATE = DATA / "agent-states-v5.json"
 BACKTEST_DIR = DATA / "backtest-results"
-POLITICAL_RESULTS = Path("/home/termius/nomos-political-alpha/data/arena/arena-results.json")
+POLITICAL_RESULTS = Path("/home/lahargnedebartoli/nomos-political-alpha/data/arena/arena-results.json")
 STRATEGY_TRUTH = DATA / "strategy-truth.json"
 
 
