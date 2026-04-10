@@ -71,7 +71,7 @@ PROVIDERS = {
     "google": ProviderConfig(
         name="google",
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-        models=["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro",
+        models=["gemini-2.5-flash", "gemini-2.5-pro",
                 "gemini-2.5-flash-thinking", "gemini-2.0-flash-lite"],
         rpm=60, rpd=10000, is_free=False, timeout=60.0
     ),
