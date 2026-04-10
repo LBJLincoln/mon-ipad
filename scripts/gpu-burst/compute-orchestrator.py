@@ -31,7 +31,7 @@ Usage:
 
 Cron:
     # Run 4x daily to dispatch at optimal times
-    0 6,8,12,18 * * * python3 /home/lahargnedebartoli/mon-ipad/scripts/gpu-burst/compute-orchestrator.py >> /home/lahargnedebartoli/mon-ipad/logs/compute-orchestrator.log 2>&1
+    0 6,8,12,18 * * * python3 /home/termius/mon-ipad/scripts/gpu-burst/compute-orchestrator.py >> /home/termius/mon-ipad/logs/compute-orchestrator.log 2>&1
 """
 
 import argparse
@@ -48,7 +48,7 @@ from typing import Dict, Optional, List, Any
 # PATHS
 # ══════════════════════════════════════════════════════════
 
-REPO_ROOT = Path("/home/lahargnedebartoli/mon-ipad")
+REPO_ROOT = Path("/home/termius/mon-ipad")
 SCRIPTS_DIR = REPO_ROOT / "scripts" / "gpu-burst"
 DATA_DIR = REPO_ROOT / "data" / "gpu-burst"
 KARPATHY_DIR = REPO_ROOT / "data" / "karpathy"

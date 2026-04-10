@@ -42,7 +42,7 @@ from karpathy_utils import (
 )
 
 # ── Paths ──
-ROOT = Path("/home/lahargnedebartoli/mon-ipad")
+ROOT = Path("/home/termius/mon-ipad")
 DATA_DIR = ROOT / "data" / "karpathy"
 LOG_DIR = ROOT / "logs" / "karpathy"
 CONFIG_PATH = DATA_DIR / "nba-best-config.json"

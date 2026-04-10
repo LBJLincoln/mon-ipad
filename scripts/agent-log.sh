@@ -9,7 +9,7 @@ TYPE="${2:?Types: message|decision|result|error|thinking}"
 MSG="${3:?Message required}"
 TARGET="${4:-}"
 
-LOG_FILE="/home/lahargnedebartoli/mon-ipad/data/agent-activity.json"
+LOG_FILE="/home/termius/mon-ipad/data/agent-activity.json"
 MAX_ENTRIES=200
 
 # Create file if missing

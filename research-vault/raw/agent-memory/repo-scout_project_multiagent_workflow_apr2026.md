@@ -4,7 +4,7 @@ description: Top repos for orchestration, state management, council debate, moni
 type: project
 ---
 
-Scan date: 2026-04-07. Full JSON at /home/lahargnedebartoli/nomos-nba-agent/data/results/repo-scout-multiagent.json. 6 proposals inserted into Supabase research_proposals.
+Scan date: 2026-04-07. Full JSON at /home/termius/nomos-nba-agent/data/results/repo-scout-multiagent.json. 6 proposals inserted into Supabase research_proposals.
 
 ## Top finds
 

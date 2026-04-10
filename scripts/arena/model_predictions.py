@@ -26,7 +26,7 @@ from urllib.request import Request, urlopen
 from urllib.error import URLError
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-ROOT = Path('/home/lahargnedebartoli/mon-ipad')
+ROOT = Path('/home/termius/mon-ipad')
 DATA = ROOT / 'data'
 
 # ═══════════════════════════════════════════════════════════════

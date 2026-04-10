@@ -15,7 +15,7 @@ from datetime import datetime
 from collections import defaultdict
 
 RESULTS_PATH = '/tmp/kaggle-multi-market/season_backtest_results.json'
-OUTPUT_PATH = '/home/lahargnedebartoli/mon-ipad/data/nba-agent/verified-results.json'
+OUTPUT_PATH = '/home/termius/mon-ipad/data/nba-agent/verified-results.json'
 
 # ── Load raw results ──────────────────────────────────────────────────────────
 with open(RESULTS_PATH) as f:

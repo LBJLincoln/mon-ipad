@@ -260,7 +260,7 @@ Enterprise** accounts only. It requires Claude Code on the web (claude.ai/code)
 2. OR visit [claude.ai/code](https://claude.ai/code) directly and connect GitHub
 3. Pick a default cloud environment
 
-**Invoke from local Claude Code session in `/home/lahargnedebartoli/mon-ipad`:**
+**Invoke from local Claude Code session in `/home/termius/mon-ipad`:**
 
 ```
 /ultraplan design W1 (real LangGraph debate replacement) end-to-end using @PLAN.md

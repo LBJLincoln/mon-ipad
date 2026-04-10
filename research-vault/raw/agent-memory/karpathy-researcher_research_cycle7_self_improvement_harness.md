@@ -106,7 +106,7 @@ type: project
 
 All papers peer-reviewed or from major labs (Google DeepMind, MIT CSAIL, Stanford HAI, Anthropic, USTC).
 
-**Full data:** `/home/lahargnedebartoli/mon-ipad/data/research/self-improvement-harness-2026-03-31.json`
+**Full data:** `/home/termius/mon-ipad/data/research/self-improvement-harness-2026-03-31.json`
 
 ---
 

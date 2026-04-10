@@ -5,9 +5,9 @@
 # Brain writes recommendations to health-status.json → muscle reads and acts
 set -uo pipefail  # No -e: continue on individual failures
 
-LOG="/home/lahargnedebartoli/mon-ipad/logs/autonomous-cycle.log"
-AGENT_DIR="/home/lahargnedebartoli/nomos-nba-agent"
-MON_DIR="/home/lahargnedebartoli/mon-ipad"
+LOG="/home/termius/mon-ipad/logs/autonomous-cycle.log"
+AGENT_DIR="/home/termius/nomos-nba-agent"
+MON_DIR="/home/termius/mon-ipad"
 S10_URL="https://nomos42-nba-quant.hf.space"
 S11_URL="https://nomos42-nba-quant-2.hf.space"
 S12_URL="https://nomos42-nba-evo-3.hf.space"
@@ -152,12 +152,12 @@ timeout 300 python3 predict_today.py >> "$LOG" 2>&1 || log "[PREDICT] FAILED"
 python3 - << 'CAL_EOF' >> "$LOG" 2>/dev/null || true
 import json
 from pathlib import Path
-p = Path("/home/lahargnedebartoli/nomos-nba-agent/data/nba-agent/predictions-today.json")
+p = Path("/home/termius/nomos-nba-agent/data/nba-agent/predictions-today.json")
 if p.exists():
     d = json.loads(p.read_text())
     if not d.get("metadata", {}).get("calibration_applied"):
         import sys
-        sys.path.insert(0, '/home/lahargnedebartoli/mon-ipad/scripts')
+        sys.path.insert(0, '/home/termius/mon-ipad/scripts')
         from calibration import IsotonicCalibration, apply_to_predictions_file
         apply_to_predictions_file(p, IsotonicCalibration())
     else:
@@ -188,7 +188,7 @@ import json, os
 from pathlib import Path
 from datetime import datetime, timezone
 
-DATA_DIR = Path("/home/lahargnedebartoli/mon-ipad/data/nba-agent")
+DATA_DIR = Path("/home/termius/mon-ipad/data/nba-agent")
 backtest_file = DATA_DIR / "backtest-results.json"
 summary_file  = DATA_DIR / "quant-summary.json"
 eval_file     = DATA_DIR / "latest-eval.json"
@@ -474,7 +474,7 @@ fi
 # ── Phase 5: Political Alpha — Deploy Pending Patches ───────
 # Brain Cycle 10 (2026-03-30): autonomous-cycle.sh had no political alpha phase.
 # This section auto-deploys the 7-patch fix to resolve feature starvation (Brier=0.3 → <0.26).
-POLITICAL_DIR="/home/lahargnedebartoli/nomos-political-alpha"
+POLITICAL_DIR="/home/termius/nomos-political-alpha"
 if [ -d "$POLITICAL_DIR" ]; then
     log "[POLITICAL] === Political Alpha Patch Deploy Phase ==="
     cd "$POLITICAL_DIR"
@@ -565,7 +565,7 @@ if [ -d "$POLITICAL_DIR" ]; then
 fi
 
 # ── Phase 6: NBA HF Space Code Deploy (version-check) ──────
-NBA_DIR="/home/lahargnedebartoli/nomos-nba-agent"
+NBA_DIR="/home/termius/nomos-nba-agent"
 if [ -d "$NBA_DIR" ]; then
     log "[NBA-DEPLOY] === NBA HF Space Version Check ==="
     cd "$NBA_DIR"

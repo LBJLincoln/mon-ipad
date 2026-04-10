@@ -12,7 +12,7 @@
 
 set -euo pipefail
 
-MON_DIR="${MON_DIR:-/home/lahargnedebartoli/mon-ipad}"
+MON_DIR="${MON_DIR:-/home/termius/mon-ipad}"
 LOGDIR="$MON_DIR/logs"
 
 echo "Nomos42 — VM Cron Setup"

@@ -14,12 +14,12 @@ type: project
 - L3: Logistics & Intendance (infra, admin/legal, finance)
 
 **Key docs created:**
-- `/home/lahargnedebartoli/mon-ipad/docs/executive/07-ENTERPRISE-AGENT-MATRIX.md` — per-product agent map, deployment status
-- `/home/lahargnedebartoli/mon-ipad/docs/executive/08-SWARM-METRICS.md` — every agent's single metric with thresholds
-- `/home/lahargnedebartoli/mon-ipad/scripts/agents/swarm-metrics-collector.sh` — auto-collects to data/swarm-metrics.json
+- `/home/termius/mon-ipad/docs/executive/07-ENTERPRISE-AGENT-MATRIX.md` — per-product agent map, deployment status
+- `/home/termius/mon-ipad/docs/executive/08-SWARM-METRICS.md` — every agent's single metric with thresholds
+- `/home/termius/mon-ipad/scripts/agents/swarm-metrics-collector.sh` — auto-collects to data/swarm-metrics.json
 
 **swarm-metrics.json** reads: agent-health.json, bankroll-state.json, latest-eval.json, live-odds.json, engine.py version — no HTTP calls unless forced.
 
 **Engine path:** hf-space/features/engine.py (v3.0-43cat), NOT features/engine.py.
 
-**How to apply:** When asked about swarm health or agent performance, run the collector first (`bash /home/lahargnedebartoli/mon-ipad/scripts/agents/swarm-metrics-collector.sh`) then read `data/swarm-metrics.json`.
+**How to apply:** When asked about swarm health or agent performance, run the collector first (`bash /home/termius/mon-ipad/scripts/agents/swarm-metrics-collector.sh`) then read `data/swarm-metrics.json`.

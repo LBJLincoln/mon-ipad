@@ -73,5 +73,5 @@ Fans = only 2.2 additional wins/season. May need to downweight static is_home fe
 
 ## Research Output File
 
-/home/lahargnedebartoli/nomos-nba-agent/data/results/crew-research.json — v4 as of 2026-03-26. 13 papers, 13 techniques, 31 feature ideas, 12 market insights.
+/home/termius/nomos-nba-agent/data/results/crew-research.json — v4 as of 2026-03-26. 13 papers, 13 techniques, 31 feature ideas, 12 market insights.
 See memory file: research_march2026_cycle4.md for full cycle 4 details.

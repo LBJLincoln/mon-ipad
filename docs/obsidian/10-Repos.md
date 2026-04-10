@@ -37,7 +37,7 @@ graph TD
 
 | Property | Value |
 |----------|-------|
-| Path | `/home/lahargnedebartoli/mon-ipad` |
+| Path | `/home/termius/mon-ipad` |
 | GitHub | github.com/LBJLincoln/mon-ipad |
 | Last commit | `7b4384b6` -- cross-pollination S15->S14/S10 + TF docs |
 | Uncommitted | 11 files |
@@ -66,7 +66,7 @@ graph TD
 
 | Property | Value |
 |----------|-------|
-| Path | `/home/lahargnedebartoli/nomos-nba-agent` |
+| Path | `/home/termius/nomos-nba-agent` |
 | Last commit | `ae166414` -- evolution: 4 critical fixes |
 | Uncommitted | 18 files |
 | Size | 32 MB |
@@ -85,7 +85,7 @@ graph TD
 
 | Property | Value |
 |----------|-------|
-| Path | `/home/lahargnedebartoli/nomos-political-alpha` |
+| Path | `/home/termius/nomos-political-alpha` |
 | Last commit | `a860cf3d` -- deploy consolidated_events to HF |
 | Uncommitted | 364 files |
 | Size | 42 MB |
@@ -109,7 +109,7 @@ Details: [[17-Political-Alpha]]
 
 | Property | Value |
 |----------|-------|
-| Path | `/home/lahargnedebartoli/rgwa` |
+| Path | `/home/termius/rgwa` |
 | GitHub | github.com/LBJLincoln/rgwa |
 | Last commit | `fe1f3afe` -- Add creative Karpathy loop |
 | Uncommitted | 13 files |
@@ -125,7 +125,7 @@ Details: [[18-Creative-RGWA]]
 
 | Property | Value |
 |----------|-------|
-| Path | `/home/lahargnedebartoli/nomos-dashboard` |
+| Path | `/home/termius/nomos-dashboard` |
 | Deployment | Vercel auto-deploy |
 | Last commit | `75ca5e51` -- add 5 live charts to arena |
 | Size | ~0 MB (Next.js app) |
@@ -143,7 +143,7 @@ Details: [[18-Creative-RGWA]]
 
 | Property | Value |
 |----------|-------|
-| Path | `/home/lahargnedebartoli/mon-ipad/hf-brain` |
+| Path | `/home/termius/mon-ipad/hf-brain` |
 | Type | Subtree inside mon-ipad |
 | Deploy | `git subtree push` to HF repos |
 

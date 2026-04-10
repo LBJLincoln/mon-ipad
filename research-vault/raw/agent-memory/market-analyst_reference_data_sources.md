@@ -5,15 +5,15 @@ type: reference
 ---
 
 ## Live Odds Files
-- `/home/lahargnedebartoli/mon-ipad/data/nba-agent/live-odds.json` — structured odds from free sources
-- `/home/lahargnedebartoli/mon-ipad/data/nba-agent/odds-latest.json` — same data, flat array format
-- `/home/lahargnedebartoli/mon-ipad/data/nba-agent/market-data.json` — analysis: implied probs, edges, steam, sharp/square
-- `/home/lahargnedebartoli/mon-ipad/data/nba-agent/latest-picks.json` — model picks with win probs, spreads, totals, player props, Kelly sizing
-- `/home/lahargnedebartoli/mon-ipad/data/nba-agent/quant-summary.json` — model version info, Brier scores, bankroll state
-- `/home/lahargnedebartoli/nomos-nba-agent/data/results/crew-market.json` — output target for market reports
+- `/home/termius/mon-ipad/data/nba-agent/live-odds.json` — structured odds from free sources
+- `/home/termius/mon-ipad/data/nba-agent/odds-latest.json` — same data, flat array format
+- `/home/termius/mon-ipad/data/nba-agent/market-data.json` — analysis: implied probs, edges, steam, sharp/square
+- `/home/termius/mon-ipad/data/nba-agent/latest-picks.json` — model picks with win probs, spreads, totals, player props, Kelly sizing
+- `/home/termius/mon-ipad/data/nba-agent/quant-summary.json` — model version info, Brier scores, bankroll state
+- `/home/termius/nomos-nba-agent/data/results/crew-market.json` — output target for market reports
 
 ## Primary Odds Script (FREE, no API keys)
-`/home/lahargnedebartoli/mon-ipad/scripts/fetch_free_odds.py`
+`/home/termius/mon-ipad/scripts/fetch_free_odds.py`
 - Usage: `python3 scripts/fetch_free_odds.py --source all`
 - Historical: `python3 scripts/fetch_free_odds.py --historical 2026-01-01 2026-03-28`
 

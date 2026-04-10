@@ -5,7 +5,7 @@ type: project
 ---
 
 Research completed: 2026-03-26
-Output file: /home/lahargnedebartoli/nomos-nba-agent/data/results/crew-research.json (cycle march-2026-deep-sweep-v4)
+Output file: /home/termius/nomos-nba-agent/data/results/crew-research.json (cycle march-2026-deep-sweep-v4)
 
 ## New Findings This Cycle (Cycle 4 — additive to Cycle 3)
 

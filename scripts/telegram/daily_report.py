@@ -12,7 +12,7 @@ Usage:
   python3 scripts/telegram/daily_report.py --dry-run  # print only, no send
 
 Cron (09:00 UTC morning brief, 21:00 UTC evening recap):
-  0 9,21 * * * cd /home/lahargnedebartoli/mon-ipad && /usr/bin/env \
+  0 9,21 * * * cd /home/termius/mon-ipad && /usr/bin/env \
     $(grep -v '^#' .env.local | xargs) python3 scripts/telegram/daily_report.py \
     >> /tmp/daily_report.log 2>&1
 
@@ -31,7 +31,7 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-ROOT = Path("/home/lahargnedebartoli/mon-ipad")
+ROOT = Path("/home/termius/mon-ipad")
 DATA = ROOT / "data"
 
 BOT_TOKEN  = os.environ.get("TELEGRAM_BOT_TOKEN",   "8672296360:AAHZ5_3-fDE7BBb3b-RJBSRWlXA1qO31UVo")

@@ -6,22 +6,22 @@
 # parity, aggregates cross-repo health, and pushes changes back.
 #
 # Usage:
-#   /home/lahargnedebartoli/mon-ipad/scripts/sync/sync-all.sh
-#   /home/lahargnedebartoli/mon-ipad/scripts/sync/sync-all.sh --dry-run
-#   /home/lahargnedebartoli/mon-ipad/scripts/sync/sync-all.sh --no-push
+#   /home/termius/mon-ipad/scripts/sync/sync-all.sh
+#   /home/termius/mon-ipad/scripts/sync/sync-all.sh --dry-run
+#   /home/termius/mon-ipad/scripts/sync/sync-all.sh --no-push
 # =============================================================================
 set -euo pipefail
 
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-BRAIN="/home/lahargnedebartoli/mon-ipad"
+BRAIN="/home/termius/mon-ipad"
 REPOS=(
-    "/home/lahargnedebartoli/mon-ipad"
-    "/home/lahargnedebartoli/nomos-nba-agent"
-    "/home/lahargnedebartoli/nomos-political-alpha"
-    "/home/lahargnedebartoli/rgwa"
-    "/home/lahargnedebartoli/nomos-dashboard"
+    "/home/termius/mon-ipad"
+    "/home/termius/nomos-nba-agent"
+    "/home/termius/nomos-political-alpha"
+    "/home/termius/rgwa"
+    "/home/termius/nomos-dashboard"
 )
 REPO_NAMES=("mon-ipad" "nomos-nba-agent" "nomos-political-alpha" "rgwa" "nomos-dashboard")
 
@@ -150,9 +150,9 @@ done
 
 # Satellite repos
 declare -A SATELLITE_KARPATHY=(
-    ["nomos-nba-agent"]="/home/lahargnedebartoli/nomos-nba-agent/data/departments/prediction/karpathy-output.json"
-    ["nomos-political-alpha"]="/home/lahargnedebartoli/nomos-political-alpha/data/departments/signals/karpathy-output.json"
-    ["rgwa"]="/home/lahargnedebartoli/rgwa/data/departments/creative/karpathy-output.json"
+    ["nomos-nba-agent"]="/home/termius/nomos-nba-agent/data/departments/prediction/karpathy-output.json"
+    ["nomos-political-alpha"]="/home/termius/nomos-political-alpha/data/departments/signals/karpathy-output.json"
+    ["rgwa"]="/home/termius/rgwa/data/departments/creative/karpathy-output.json"
 )
 
 for repo_name in "${!SATELLITE_KARPATHY[@]}"; do

@@ -4,8 +4,8 @@
 # Sources API keys, locates binary, provides fallback to python3+HF Inference
 ################################################################################
 
-REPO_ROOT="/home/lahargnedebartoli/mon-ipad"
-OPENCODE_BIN="/home/lahargnedebartoli/.local/bin/opencode"
+REPO_ROOT="/home/termius/mon-ipad"
+OPENCODE_BIN="/home/termius/.local/bin/opencode"
 DATA_DIR="$REPO_ROOT/data/opencode"
 ENV_FILE="$REPO_ROOT/.env.local"
 TIMEOUT_SECONDS=300

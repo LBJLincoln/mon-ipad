@@ -6,7 +6,7 @@
 # Claude Code sessions can RAG against the latest paper-derived knowledge.
 #
 # CRON entry (installed 2026-04-07):
-#   23 */2 * * * /home/lahargnedebartoli/mon-ipad/scripts/research-vault/compile-cron.sh
+#   23 */2 * * * /home/termius/mon-ipad/scripts/research-vault/compile-cron.sh
 #
 # Why a wrapper script and not a direct cron line: compile.py needs PWD set
 # to research-vault/ AND we want to log + commit + push the diff so other VMs
@@ -14,7 +14,7 @@
 
 set -uo pipefail
 
-ROOT="/home/lahargnedebartoli/mon-ipad"
+ROOT="/home/termius/mon-ipad"
 VAULT="$ROOT/research-vault"
 LOG="$ROOT/data/research-vault-cron.log"
 

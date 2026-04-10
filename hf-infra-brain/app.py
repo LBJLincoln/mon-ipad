@@ -255,14 +255,14 @@ async def cron_vm_sync():
                 "last_check": state["last_health_check"],
             }
         })
-        await vm_exec(f"echo '{health_data}' > /home/lahargnedebartoli/mon-ipad/data/infra-brain-status.json")
+        await vm_exec(f"echo '{health_data}' > /home/termius/mon-ipad/data/infra-brain-status.json")
 
     state["cron_runs"].append({"job": "vm_sync", "time": datetime.now(timezone.utc).isoformat()})
 
 async def cron_odds_analysis():
     """Every 4 hours: analyze betting value with Gemini"""
     # Read latest odds from VM
-    odds_result = await vm_exec("cat /home/lahargnedebartoli/mon-ipad/data/nba-agent/odds-latest.json 2>/dev/null | head -200")
+    odds_result = await vm_exec("cat /home/termius/mon-ipad/data/nba-agent/odds-latest.json 2>/dev/null | head -200")
     if "output" in odds_result:
         prompt = f"""Analyze these NBA odds for value bets. Compare lines across bookmakers.
         Focus on: ML, spreads, totals. Flag any line that differs >3% from consensus.

@@ -16,8 +16,8 @@ Cross-pollination rules:
   - Infra fixed issue -> notify all affected departments
 
 Usage:
-    python3 /home/lahargnedebartoli/mon-ipad/scripts/sync/guardian-cross-pollinate.py
-    python3 /home/lahargnedebartoli/mon-ipad/scripts/sync/guardian-cross-pollinate.py --dry-run
+    python3 /home/termius/mon-ipad/scripts/sync/guardian-cross-pollinate.py
+    python3 /home/termius/mon-ipad/scripts/sync/guardian-cross-pollinate.py --dry-run
 """
 
 import argparse
@@ -32,7 +32,7 @@ from typing import Any
 # Configuration
 # ---------------------------------------------------------------------------
 
-BRAIN = Path("/home/lahargnedebartoli/mon-ipad")
+BRAIN = Path("/home/termius/mon-ipad")
 REPORT_OUTPUT = BRAIN / "data" / "departments" / "guardian-report.json"
 WINS_OUTPUT = BRAIN / "data" / "departments" / "wins-latest.json"
 
@@ -49,9 +49,9 @@ DEPARTMENT_SOURCES = {
     "creative": BRAIN / "data" / "departments" / "creative" / "karpathy-output.json",
     "trading_floor": BRAIN / "data" / "departments" / "trading_floor" / "karpathy-output.json",
     # Satellite repo departments
-    "nba_prediction": Path("/home/lahargnedebartoli/nomos-nba-agent/data/departments/prediction/karpathy-output.json"),
-    "political_signals": Path("/home/lahargnedebartoli/nomos-political-alpha/data/departments/signals/karpathy-output.json"),
-    "rgwa_creative": Path("/home/lahargnedebartoli/rgwa/data/departments/creative/karpathy-output.json"),
+    "nba_prediction": Path("/home/termius/nomos-nba-agent/data/departments/prediction/karpathy-output.json"),
+    "political_signals": Path("/home/termius/nomos-political-alpha/data/departments/signals/karpathy-output.json"),
+    "rgwa_creative": Path("/home/termius/rgwa/data/departments/creative/karpathy-output.json"),
 }
 
 # Cross-pollination routing: source_dept -> [target_depts]

@@ -6,7 +6,7 @@ type: project
 
 # Political Alpha Research Summary (March 2026)
 
-**Context:** Research conducted 2026-03-27 for nomos-political-alpha project (4,392 LOC, active). Output written to `/home/lahargnedebartoli/nomos-political-alpha/data/research/political-alpha-research-march2026.json`.
+**Context:** Research conducted 2026-03-27 for nomos-political-alpha project (4,392 LOC, active). Output written to `/home/termius/nomos-political-alpha/data/research/political-alpha-research-march2026.json`.
 
 ## Key Papers Found
 

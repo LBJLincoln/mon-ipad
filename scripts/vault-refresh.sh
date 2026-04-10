@@ -5,11 +5,11 @@
 # Runs ingest → compile → lint pipeline.
 # Cron: every 4 hours alongside Hermes councils.
 #
-#   0 1,5,9,13,17,21 * * * /home/lahargnedebartoli/mon-ipad/scripts/vault-refresh.sh
+#   0 1,5,9,13,17,21 * * * /home/termius/mon-ipad/scripts/vault-refresh.sh
 # ═══════════════════════════════════════════════════════════════
 set -uo pipefail
 
-ROOT="/home/lahargnedebartoli/mon-ipad"
+ROOT="/home/termius/mon-ipad"
 VAULT="${ROOT}/research-vault"
 LOG="${ROOT}/logs/vault-refresh.log"
 mkdir -p "$(dirname "$LOG")"

@@ -63,7 +63,7 @@ For each discovery, assess:
 - Google Colab (T4 GPU) for neural model training
 
 ## Output Format
-Write results to `/home/lahargnedebartoli/nomos-nba-agent/data/results/repo-scout.json`:
+Write results to `/home/termius/nomos-nba-agent/data/results/repo-scout.json`:
 ```json
 {
   "agent": "repo-scout",

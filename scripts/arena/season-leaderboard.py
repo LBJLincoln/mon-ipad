@@ -43,7 +43,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from bet_categories import ALL_CATEGORIES
 
-ROOT = Path("/home/lahargnedebartoli/mon-ipad")
+ROOT = Path("/home/termius/mon-ipad")
 DATA = ROOT / "data" / "arena"
 BACKTEST_DIR = DATA / "backtest-results"
 LEADERBOARD_FILE = DATA / "season-leaderboard.json"

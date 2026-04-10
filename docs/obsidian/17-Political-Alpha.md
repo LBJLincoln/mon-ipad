@@ -115,7 +115,7 @@ Starting capital: **$100,000** virtual | 12 trading days.
 
 | Property | Value |
 |----------|-------|
-| Path | `/home/lahargnedebartoli/nomos-political-alpha` |
+| Path | `/home/termius/nomos-political-alpha` |
 | Last commit | `a860cf3d` -- deploy consolidated_events to HF |
 | Uncommitted | 364 files (mostly data) |
 | Size | 42 MB |

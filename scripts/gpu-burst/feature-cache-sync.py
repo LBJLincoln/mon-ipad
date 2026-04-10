@@ -40,7 +40,7 @@ Usage:
     HF_TOKEN=hf_xxx python3 scripts/gpu-burst/feature-cache-sync.py
 
 Cron (daily 07:00 UTC — dispatched by compute-orchestrator.py):
-    0 7 * * * python3 /home/lahargnedebartoli/mon-ipad/scripts/gpu-burst/feature-cache-sync.py
+    0 7 * * * python3 /home/termius/mon-ipad/scripts/gpu-burst/feature-cache-sync.py
 """
 
 import json
@@ -52,7 +52,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-REPO_ROOT  = Path("/home/lahargnedebartoli/mon-ipad")
+REPO_ROOT  = Path("/home/termius/mon-ipad")
 CACHE_DIR  = REPO_ROOT / "data" / "feature-cache"
 LOG_FILE   = CACHE_DIR / "sync.log"
 CACHE_META = CACHE_DIR / "cache-metadata.json"

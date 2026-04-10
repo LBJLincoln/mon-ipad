@@ -74,7 +74,7 @@ With real market odds, 67% win rate, avg -110 to -120 odds:
 
 ## Files
 
-- Verification script: `/home/lahargnedebartoli/mon-ipad/scripts/verify_backtest.py`
-- Verified results: `/home/lahargnedebartoli/mon-ipad/data/nba-agent/verified-results.json`
-- Updated backtest: `/home/lahargnedebartoli/mon-ipad/data/nba-agent/backtest-results.json`
-- Fixed script: `/home/lahargnedebartoli/mon-ipad/scripts/kaggle/nba_season_backtest.py`
+- Verification script: `/home/termius/mon-ipad/scripts/verify_backtest.py`
+- Verified results: `/home/termius/mon-ipad/data/nba-agent/verified-results.json`
+- Updated backtest: `/home/termius/mon-ipad/data/nba-agent/backtest-results.json`
+- Fixed script: `/home/termius/mon-ipad/scripts/kaggle/nba_season_backtest.py`

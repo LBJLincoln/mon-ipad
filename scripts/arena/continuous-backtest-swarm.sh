@@ -19,8 +19,8 @@
 
 set -euo pipefail
 
-ROOT="/home/lahargnedebartoli/mon-ipad"
-POL_ROOT="/home/lahargnedebartoli/nomos-political-alpha"
+ROOT="/home/termius/mon-ipad"
+POL_ROOT="/home/termius/nomos-political-alpha"
 LOG_DIR="${ROOT}/logs/arena"
 LOG_FILE="${LOG_DIR}/continuous-backtest.log"
 PID_FILE="/tmp/continuous-backtest.pid"

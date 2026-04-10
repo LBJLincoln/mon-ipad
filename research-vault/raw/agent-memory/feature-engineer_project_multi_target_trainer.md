@@ -9,7 +9,7 @@ Multi-target evolution patch completed 2026-04-05.
 **Why:** Current GA trains one model (P(home_win)) per individual. Multi-task learning across 9 targets forces features to generalize across spread, total, margin betting — literature precedent shows Brier gains of 0.005-0.015.
 
 **How to apply:**
-- Patch file: /home/lahargnedebartoli/mon-ipad/scripts/patches/multi_target_patch.py
+- Patch file: /home/termius/mon-ipad/scripts/patches/multi_target_patch.py
 - Integration target: nba-quant-space/app.py
 - NOT engine.py (this is an evolution loop change, not a feature engineering change)
 - Self-test passes on 23,038 real games from nba_2008-2025.csv

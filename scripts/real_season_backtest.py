@@ -24,8 +24,8 @@ import os
 from datetime import datetime
 from collections import defaultdict
 
-ODDS_CSV = "/home/lahargnedebartoli/mon-ipad/data/historical-odds/nba_2008-2025.csv"
-OUTPUT_JSON = "/home/lahargnedebartoli/mon-ipad/data/nba-agent/real-strategy-confrontation.json"
+ODDS_CSV = "/home/termius/mon-ipad/data/historical-odds/nba_2008-2025.csv"
+OUTPUT_JSON = "/home/termius/mon-ipad/data/nba-agent/real-strategy-confrontation.json"
 SEASON = 2025
 BANKROLL = 10000.0
 

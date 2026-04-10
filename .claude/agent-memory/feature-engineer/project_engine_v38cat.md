@@ -18,7 +18,7 @@ Engine is at v3.0-43cat on 2026-03-28.
 
 **Cat 44 (2026-03-28):** Game Totals Prediction — 10 features. Encodes expected scoring environment normalized to league averages. `tot44_h/a_ppg10` (PPG/110), `tot44_h/a_papg10` (PAPG/110), `tot44_matchup_total` ((H_PPG + A_PAP + A_PPG + H_PAP) / 2 / 220), `tot44_pace_sum` (avg_pace/97), `tot44_pace_mismatch` (|h_pace - a_pace|/10), `tot44_ortg_sum` and `tot44_drtg_sum` (combined ratings/220), `tot44_score_env` ((ortg_sum - drtg_sum)/20). All derived from existing rolling stats — no new data source.
 
-**Totals model (2026-03-28):** `/home/lahargnedebartoli/mon-ipad/scripts/totals_model.py` — standalone O/U predictor. RMSE 18.56 pts vs market 17.73 pts. NBA O/U market is highly efficient; no standalone betting edge above vig. Primary use: injury-adjusted prediction and as source of Cat44 features for moneyline model.
+**Totals model (2026-03-28):** `/home/termius/mon-ipad/scripts/totals_model.py` — standalone O/U predictor. RMSE 18.56 pts vs market 17.73 pts. NBA O/U market is highly efficient; no standalone betting edge above vig. Primary use: injury-adjusted prediction and as source of Cat44 features for moneyline model.
 
 **Current total features: 5869** (was 5859 before this session). +10 new features.
 

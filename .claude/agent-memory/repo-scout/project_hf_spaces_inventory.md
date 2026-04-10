@@ -37,7 +37,7 @@ LBJLincoln: nomos-eve-agent, nomos-openclaw, nomos-rag-engine-7, nomos-docling-a
 LBJLincoln26: nomos-rag-engine-6, nomos-rag-engine-4, nomos-rag-engine-2, nomos-rag-engine-10 (runtime error!), nomos-rag-engine-8
 Nomos42: nomos-docling-2, nomos-rag-worker-2, nomos-litellm-2, nomos-embeddings-2, nomos-rag-engine-11
 
-Full inventory JSON: /home/lahargnedebartoli/nomos-nba-agent/data/results/hf-spaces-inventory.json
+Full inventory JSON: /home/termius/nomos-nba-agent/data/results/hf-spaces-inventory.json
 
 ### GPU constraint for RGWA
 - Wan2.1 video gen is GPU-heavy — CPU free tier will be extremely slow

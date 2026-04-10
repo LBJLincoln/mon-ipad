@@ -11,7 +11,7 @@
 
 set -uo pipefail
 
-ROOT="/home/lahargnedebartoli/mon-ipad"
+ROOT="/home/termius/mon-ipad"
 VENDOR="$ROOT/vendor"
 mkdir -p "$VENDOR"
 cd "$VENDOR" || exit 1

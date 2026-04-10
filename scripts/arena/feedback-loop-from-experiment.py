@@ -19,7 +19,7 @@ import glob
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path("/home/lahargnedebartoli/mon-ipad")
+ROOT = Path("/home/termius/mon-ipad")
 EXPERIMENTS_DIR = ROOT / "data" / "experiments"
 AGENT_STATE = ROOT / "data" / "arena" / "agent-states-v5.json"
 

@@ -28,7 +28,7 @@ DEPARTMENTS = {
     'finance': {'script': 'finance-loop.sh', 'metric': 'financial_accuracy', 'max_time': 300},
 }
 
-ROOT = Path('/home/lahargnedebartoli/mon-ipad')
+ROOT = Path('/home/termius/mon-ipad')
 DATA_DIR = ROOT / 'data' / 'departments'
 GUARDIAN_REPORT = DATA_DIR / 'guardian-report.json'
 ELIMINATIONS_FILE = DATA_DIR / 'eliminations.json'

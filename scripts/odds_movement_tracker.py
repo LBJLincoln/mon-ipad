@@ -351,7 +351,7 @@ if __name__ == "__main__":
 
     if not (args.fetch or args.features or args.history):
         parser.print_help()
-        print("\n# Cron: */120 * * * * cd /home/lahargnedebartoli/mon-ipad && python3 scripts/odds_movement_tracker.py --fetch >> /tmp/odds-tracker.log 2>&1")
+        print("\n# Cron: */120 * * * * cd /home/termius/mon-ipad && python3 scripts/odds_movement_tracker.py --fetch >> /tmp/odds-tracker.log 2>&1")
         sys.exit(0)
 
     if args.fetch:
@@ -376,7 +376,7 @@ if __name__ == "__main__":
     if args.history:
         show_history(args.history)
 
-    print("\n# Cron: */120 * * * * cd /home/lahargnedebartoli/mon-ipad && python3 scripts/odds_movement_tracker.py --fetch >> /tmp/odds-tracker.log 2>&1")
+    print("\n# Cron: */120 * * * * cd /home/termius/mon-ipad && python3 scripts/odds_movement_tracker.py --fetch >> /tmp/odds-tracker.log 2>&1")
 
 
 """

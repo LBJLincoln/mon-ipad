@@ -17,7 +17,7 @@ Key insight from empirical analysis:
   - Value focus: identify pace-mismatch extremes (high-pace vs high-pace = more possessions)
     and track team O/U tendencies as ancillary signals
 
-Data source: /home/lahargnedebartoli/mon-ipad/data/historical-odds/nba_2008-2025.csv
+Data source: /home/termius/mon-ipad/data/historical-odds/nba_2008-2025.csv
   Columns: date, away, home, score_away, score_home, total, moneyline_*, spread
 
 Betting logic:
@@ -666,7 +666,7 @@ def predict_single_game(
 def main():
     parser = argparse.ArgumentParser(description="NBA Totals Prediction Model")
     parser.add_argument("--data",
-        default="/home/lahargnedebartoli/mon-ipad/data/historical-odds/nba_2008-2025.csv")
+        default="/home/termius/mon-ipad/data/historical-odds/nba_2008-2025.csv")
     parser.add_argument("--buffer", type=float, default=2.5)
     parser.add_argument("--kelly", type=float, default=0.25)
     parser.add_argument("--max-bet", type=float, default=0.025)

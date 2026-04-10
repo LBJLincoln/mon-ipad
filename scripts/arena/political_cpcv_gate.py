@@ -48,7 +48,7 @@ import statistics
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path("/home/lahargnedebartoli/mon-ipad")
+ROOT = Path("/home/termius/mon-ipad")
 BACKTEST_DIR = ROOT / "data" / "arena" / "political-backtest-results"
 OUT_FILE = ROOT / "data" / "arena" / "political-cpcv-gated-strategies.json"
 

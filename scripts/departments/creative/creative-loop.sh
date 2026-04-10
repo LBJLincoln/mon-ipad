@@ -7,7 +7,7 @@ set -uo pipefail
 
 DEPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(dirname "$(dirname "$(dirname "$DEPT_DIR")")")"
-RGWA_ROOT="/home/lahargnedebartoli/rgwa"
+RGWA_ROOT="/home/termius/rgwa"
 
 OUTPUT_DIR="$ROOT/data/departments/creative"
 OUTPUT_FILE="$OUTPUT_DIR/karpathy-output.json"

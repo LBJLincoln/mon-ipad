@@ -8,13 +8,13 @@
 #   ./scripts/agents/swarm-metrics-collector.sh --quiet   (no stdout, just write JSON)
 #
 # Cron (every 4h, aligned to O1 brain cycle):
-#   0 0,4,8,12,16,20 * * * /home/lahargnedebartoli/mon-ipad/scripts/agents/swarm-metrics-collector.sh --quiet
+#   0 0,4,8,12,16,20 * * * /home/termius/mon-ipad/scripts/agents/swarm-metrics-collector.sh --quiet
 
 set -euo pipefail
 
-REPO_ROOT="/home/lahargnedebartoli/mon-ipad"
-POLITICAL_ROOT="/home/lahargnedebartoli/nomos-political-alpha"
-RGWA_ROOT="/home/lahargnedebartoli/rgwa"
+REPO_ROOT="/home/termius/mon-ipad"
+POLITICAL_ROOT="/home/termius/nomos-political-alpha"
+RGWA_ROOT="/home/termius/rgwa"
 OUTPUT_FILE="${REPO_ROOT}/data/swarm-metrics.json"
 ATR_BRIER="0.21570"
 QUIET=0

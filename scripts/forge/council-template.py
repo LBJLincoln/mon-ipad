@@ -418,7 +418,7 @@ def run_karpathy_loop(repo_path, dept, config, dry_run=False):
 
 # ── Data Helpers ───────────────────────────────────────────────────────
 
-MON_IPAD = Path("/home/lahargnedebartoli/mon-ipad")
+MON_IPAD = Path("/home/termius/mon-ipad")
 
 def _read_json(path, default=None):
     try:
@@ -543,7 +543,7 @@ def _scan_product(repo_path):
     import subprocess
     data = {}
     # Check dashboard repo
-    dash_dir = Path("/home/lahargnedebartoli/nomos-dashboard")
+    dash_dir = Path("/home/termius/nomos-dashboard")
     if dash_dir.exists():
         try:
             res = subprocess.run(["git", "-C", str(dash_dir), "log", "-1", "--format=%h %s"],
@@ -659,7 +659,7 @@ def _scan_cross_repo_agents(repo_path):
     active = 0
     drift_issues = []
     for r in repos:
-        rpath = Path(f"/home/lahargnedebartoli/{r}")
+        rpath = Path(f"/home/termius/{r}")
         if rpath.exists():
             active += 1
             # Check council state freshness
@@ -903,7 +903,7 @@ def _propose_product(repo_path, scan):
     if picks == 0:
         return {"summary": "No picks today — running prediction pipeline",
                 "action": "check_pipeline", "priority": "critical",
-                "cmd": "cd /home/lahargnedebartoli/nomos-nba-agent && timeout 300 python3 predict_today.py 2>&1 | tail -20"}
+                "cmd": "cd /home/termius/nomos-nba-agent && timeout 300 python3 predict_today.py 2>&1 | tail -20"}
     if bots_up < 2:
         return {"summary": f"Only {bots_up} bots running — restart bot fleet",
                 "action": "restart_bots", "priority": "high",
@@ -971,8 +971,8 @@ def _propose_infra(repo_path, scan):
         proposals.append(f"Disk at {disk}% — cleanup needed")
         # Safe cleanup: logs older than 7d, Python cache, tmp files, journal vacuum
         cmds.extend([
-            'find /home/lahargnedebartoli -name "*.log" -mtime +7 -delete 2>/dev/null || true',
-            'find /home/lahargnedebartoli -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true',
+            'find /home/termius -name "*.log" -mtime +7 -delete 2>/dev/null || true',
+            'find /home/termius -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true',
             'find /tmp -name "*.tmp" -mtime +3 -delete 2>/dev/null || true',
             'journalctl --vacuum-size=50M 2>/dev/null || true',
         ])
@@ -1042,7 +1042,7 @@ def _propose_cross_repo(repo_path, scan):
         issues.append(f"{len(heavy_uncommitted)} repos with 50+ uncommitted files: {', '.join(heavy_uncommitted)}")
         # Auto-commit data files for each heavy repo
         for r in heavy_uncommitted:
-            rpath = f"/home/lahargnedebartoli/{r}"
+            rpath = f"/home/termius/{r}"
             cmds.append(
                 f'cd {rpath} && git add data/ *.json 2>/dev/null; '
                 f'git commit -m "data: auto-commit council iteration (>50 uncommitted)" --no-verify 2>/dev/null || true')
@@ -1209,7 +1209,7 @@ def main():
     # Resolve repo path
     repo_path = args.repo
     if not os.path.isabs(repo_path):
-        repo_path = f"/home/lahargnedebartoli/{args.repo}"
+        repo_path = f"/home/termius/{args.repo}"
     if not os.path.isdir(repo_path):
         print(f"ERROR: Repo not found: {repo_path}")
         sys.exit(1)

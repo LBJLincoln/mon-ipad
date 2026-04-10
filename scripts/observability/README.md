@@ -70,8 +70,8 @@ bash scripts/observability/start-otel-sink.sh
 Add to cron to auto-restart on reboot/crash:
 
 ```
-@reboot bash /home/lahargnedebartoli/mon-ipad/scripts/observability/start-otel-sink.sh
-*/15 * * * * pgrep -f sqlite-otel > /dev/null || bash /home/lahargnedebartoli/mon-ipad/scripts/observability/start-otel-sink.sh
+@reboot bash /home/termius/mon-ipad/scripts/observability/start-otel-sink.sh
+*/15 * * * * pgrep -f sqlite-otel > /dev/null || bash /home/termius/mon-ipad/scripts/observability/start-otel-sink.sh
 ```
 
 ### On the laptop (Phoenix, on-demand)

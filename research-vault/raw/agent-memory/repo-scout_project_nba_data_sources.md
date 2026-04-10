@@ -4,7 +4,7 @@ description: Comprehensive map of free NBA data sources — GitHub repos, Kaggle
 type: project
 ---
 
-Scanned 2026-03-28. Full doc at `/home/lahargnedebartoli/mon-ipad/docs/REPO-SCOUT-NBA-DATA.md`.
+Scanned 2026-03-28. Full doc at `/home/termius/mon-ipad/docs/REPO-SCOUT-NBA-DATA.md`.
 
 ## Tier 1 — Essential Sources (use immediately)
 

@@ -17,15 +17,15 @@
 #
 # Cron entries (add via crontab -e):
 #   # GPU burst every 6h (ZeroGPU cascade)
-#   0 0,6,12,18 * * * /home/lahargnedebartoli/mon-ipad/scripts/gpu-burst/gpu-cron-launcher.sh >> /home/lahargnedebartoli/mon-ipad/logs/gpu-burst/gpu-cron.log 2>&1
+#   0 0,6,12,18 * * * /home/termius/mon-ipad/scripts/gpu-burst/gpu-cron-launcher.sh >> /home/termius/mon-ipad/logs/gpu-burst/gpu-cron.log 2>&1
 #   # Modal daily at 3am (paid, only if critical)
-#   0 3 * * * /home/lahargnedebartoli/mon-ipad/scripts/gpu-burst/gpu-cron-launcher.sh modal >> /home/lahargnedebartoli/mon-ipad/logs/gpu-burst/gpu-cron.log 2>&1
+#   0 3 * * * /home/termius/mon-ipad/scripts/gpu-burst/gpu-cron-launcher.sh modal >> /home/termius/mon-ipad/logs/gpu-burst/gpu-cron.log 2>&1
 # ══════════════════════════════════════════════════════════════════════
 
 set -euo pipefail
 
 # ── Constants ──
-REPO_ROOT="/home/lahargnedebartoli/mon-ipad"
+REPO_ROOT="/home/termius/mon-ipad"
 SCRIPTS_DIR="${REPO_ROOT}/scripts/gpu-burst"
 LOG_DIR="${REPO_ROOT}/logs/gpu-burst"
 DATA_DIR="${REPO_ROOT}/data/gpu-burst"
@@ -40,7 +40,7 @@ LIGHTNING_TIMEOUT=900   # 15 minutes for Lightning
 mkdir -p "${LOG_DIR}" "${DATA_DIR}"
 
 # Ensure ~/.local/bin is in PATH (cron has minimal PATH)
-export PATH="/home/lahargnedebartoli/.local/bin:${HOME}/.local/bin:/usr/local/bin:/usr/bin:/bin:${PATH}"
+export PATH="/home/termius/.local/bin:${HOME}/.local/bin:/usr/local/bin:/usr/bin:/bin:${PATH}"
 
 # Load environment variables from .env.local
 if [[ -f "${ENV_FILE}" ]]; then

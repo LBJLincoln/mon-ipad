@@ -25,7 +25,7 @@
 
 set -euo pipefail
 
-TERMIUS_ROOT="/home/lahargnedebartoli"
+TERMIUS_ROOT="/home/termius"
 NBA_REPO="$TERMIUS_ROOT/nomos-nba-agent"
 POL_REPO="$TERMIUS_ROOT/nomos-political-alpha"
 

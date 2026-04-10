@@ -108,9 +108,9 @@ except Exception as _openlit_err:  # noqa: BLE001
 # ═══════════════════════════════════════════════════════════════════════════════
 # PATHS
 # ═══════════════════════════════════════════════════════════════════════════════
-ROOT = Path("/home/lahargnedebartoli/mon-ipad")
-NBA_AGENT = Path("/home/lahargnedebartoli/nomos-nba-agent")
-POLITICAL = Path("/home/lahargnedebartoli/nomos-political-alpha")
+ROOT = Path("/home/termius/mon-ipad")
+NBA_AGENT = Path("/home/termius/nomos-nba-agent")
+POLITICAL = Path("/home/termius/nomos-political-alpha")
 DATA_DIR = ROOT / "data" / "arena"
 TRADERS_DIR = DATA_DIR / "traders-v5"
 OUTPUT_LATEST = DATA_DIR / "trading-floor-v5-latest.json"

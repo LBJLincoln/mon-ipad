@@ -78,16 +78,16 @@ def deploy_hf_space(token, space_id="LBJLincoln26/nomos-political-alpha"):
 CRON_JOBS = """
 # Nomos42 Political Alpha — Data Fetchers
 # Fast fetch (signals + polymarket): every 30 min
-*/30 * * * * cd /home/lahargnedebartoli/nomos-political-alpha && python3 ops/fetch_political_data.py --fast >> /tmp/political-fast.log 2>&1
+*/30 * * * * cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --fast >> /tmp/political-fast.log 2>&1
 
 # Full fetch (all data): every 6 hours
-0 */6 * * * cd /home/lahargnedebartoli/nomos-political-alpha && python3 ops/fetch_political_data.py --all >> /tmp/political-full.log 2>&1
+0 */6 * * * cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --all >> /tmp/political-full.log 2>&1
 
 # Insider trades: daily after market close (10 PM UTC = 4 PM ET)
-0 22 * * 1-5 cd /home/lahargnedebartoli/nomos-political-alpha && python3 ops/fetch_political_data.py --insider >> /tmp/political-insider.log 2>&1
+0 22 * * 1-5 cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --insider >> /tmp/political-insider.log 2>&1
 
 # Stock prices: daily at 10:30 PM UTC
-30 22 * * 1-5 cd /home/lahargnedebartoli/nomos-political-alpha && python3 ops/fetch_political_data.py --prices >> /tmp/political-prices.log 2>&1
+30 22 * * 1-5 cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --prices >> /tmp/political-prices.log 2>&1
 """
 
 def setup_vm_cron():

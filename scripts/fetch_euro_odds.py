@@ -14,7 +14,7 @@ Our live-odds.json already contains all 5 French books + Pinnacle:
   - parionssport / parionssport_fr  (ParionsSport / FDJ France)
   - pinnacle               (sharp reference line)
 
-The Odds API key: in /home/lahargnedebartoli/nomos-nba-agent/.env.local
+The Odds API key: in /home/termius/nomos-nba-agent/.env.local
   - Free tier: 500 requests/month (exhausted for March 2026)
   - Reset: April 1, 2026
   - FR region bookmaker keys: unibet_fr, winamax_fr, betclic_fr,
@@ -22,7 +22,7 @@ The Odds API key: in /home/lahargnedebartoli/nomos-nba-agent/.env.local
   - EU region: betsson, marathonbet, coolbet, nordicbet
 
 Historical snapshots (Mar 15-28 2026) in:
-  /home/lahargnedebartoli/nomos-nba-agent/data/odds-*.json
+  /home/termius/nomos-nba-agent/data/odds-*.json
   These already contain all French books (full EU coverage).
 
 nba_2008-2025.csv: 23118 games, American moneylines (no book breakdown).
@@ -86,9 +86,9 @@ from datetime import datetime, timezone
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LIVE_ODDS_PATH = os.path.join(BASE_DIR, "data", "nba-agent", "live-odds.json")
-SNAPSHOT_DIR   = "/home/lahargnedebartoli/nomos-nba-agent/data"
+SNAPSHOT_DIR   = "/home/termius/nomos-nba-agent/data"
 OUTPUT_DIR     = os.path.join(BASE_DIR, "data", "nba-agent")
-ENV_FILE       = "/home/lahargnedebartoli/nomos-nba-agent/.env.local"
+ENV_FILE       = "/home/termius/nomos-nba-agent/.env.local"
 
 # ─── The Odds API ─────────────────────────────────────────────────────────────
 

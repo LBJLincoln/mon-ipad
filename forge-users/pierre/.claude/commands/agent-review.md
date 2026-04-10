@@ -99,7 +99,7 @@ For `recommendations`: propose concrete fixes — e.g. "reduce WebFetch calls", 
 ### Step 5: Push to Git
 
 ```bash
-cd /home/lahargnedebartoli/mon-ipad
+cd /home/termius/mon-ipad
 git add data/agent-reviews/
 git commit -m "data: agent review $(date +%Y-%m-%d)"
 git push

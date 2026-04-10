@@ -3,10 +3,10 @@
 Deploy all 9 department council spaces to HuggingFace.
 
 Usage:
-    source /home/lahargnedebartoli/mon-ipad/.env.local
-    python3 /home/lahargnedebartoli/mon-ipad/council-spaces/deploy-all.py
-    python3 /home/lahargnedebartoli/mon-ipad/council-spaces/deploy-all.py --dept d1  # single dept
-    python3 /home/lahargnedebartoli/mon-ipad/council-spaces/deploy-all.py --dry-run
+    source /home/termius/mon-ipad/.env.local
+    python3 /home/termius/mon-ipad/council-spaces/deploy-all.py
+    python3 /home/termius/mon-ipad/council-spaces/deploy-all.py --dept d1  # single dept
+    python3 /home/termius/mon-ipad/council-spaces/deploy-all.py --dry-run
 """
 
 import os
@@ -18,7 +18,7 @@ import argparse
 from pathlib import Path
 
 # Load .env.local
-env_file = Path("/home/lahargnedebartoli/mon-ipad/.env.local")
+env_file = Path("/home/termius/mon-ipad/.env.local")
 if env_file.exists():
     for line in env_file.read_text().splitlines():
         line = line.strip()
@@ -110,7 +110,7 @@ DEPTS = [
     },
 ]
 
-TEMPLATE_DIR = Path("/home/lahargnedebartoli/mon-ipad/council-spaces/template")
+TEMPLATE_DIR = Path("/home/termius/mon-ipad/council-spaces/template")
 
 
 def make_readme(dept: dict) -> str:

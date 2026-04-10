@@ -54,7 +54,7 @@ type: project
 - Agent swarm drill-down: React Flow node graph (D1-D9 → subagents → decisions)
 
 ## Full Research Report
-Path: /home/lahargnedebartoli/mon-ipad/data/research/2026-sota-trading-floor.md
+Path: /home/termius/mon-ipad/data/research/2026-sota-trading-floor.md
 
 ## Why: User requested 2026 SOTA scientific trading floor experiments + enterprise visualization patterns. Specifically: multi-agent backtest architectures, walk-forward validation, Bayesian optimization, robust statistical testing (White Reality Check, SPA, DSR), portfolio construction, Kelly advances. Plus: Bloomberg, TradingView, Jane Street UI patterns for leaderboards, heatmaps, Bull/Bear debates, agent swarm drill-down.
 ## How to apply: Reference this cycle for shot-chart features (Cat50), Kelly-Bayesian ensemble, CPCV gating, HedgeAgents conference pattern for TF v5, and all visualization color tokens/patterns.

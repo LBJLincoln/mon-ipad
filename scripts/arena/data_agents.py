@@ -21,8 +21,8 @@ from datetime import datetime, timezone, timedelta
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 
-ROOT = Path('/home/lahargnedebartoli/mon-ipad')
-NBA_AGENT = Path('/home/lahargnedebartoli/nomos-nba-agent')
+ROOT = Path('/home/termius/mon-ipad')
+NBA_AGENT = Path('/home/termius/nomos-nba-agent')
 DATA = ROOT / 'data'
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -203,7 +203,7 @@ def validate_player_tracking() -> List[QualityIssue]:
 def validate_predictions() -> List[QualityIssue]:
     """Check today's predictions exist and are valid."""
     issues = []
-    pred_path = Path('/home/lahargnedebartoli/nomos-nba-agent/data/nba-agent/predictions-today.json')
+    pred_path = Path('/home/termius/nomos-nba-agent/data/nba-agent/predictions-today.json')
 
     if not pred_path.exists():
         pred_path = DATA / 'nba-agent' / 'latest-picks.json'

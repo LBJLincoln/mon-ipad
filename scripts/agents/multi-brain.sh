@@ -2,13 +2,13 @@
 # ═══════════════════════════════════════════════════════════════
 # NOMOS42 MULTI-BRAIN — Uses best available AI CLI
 # Priority: Claude Code > Codex > Gemini > Rule-based
-# Run via cron: 0 */4 * * * /home/lahargnedebartoli/mon-ipad/scripts/agents/multi-brain.sh
+# Run via cron: 0 */4 * * * /home/termius/mon-ipad/scripts/agents/multi-brain.sh
 # ═══════════════════════════════════════════════════════════════
 
 set -uo pipefail
-export PATH="$PATH:/home/lahargnedebartoli/.local/bin:/home/lahargnedebartoli/.npm-global/bin:/usr/local/bin"
+export PATH="$PATH:/home/termius/.local/bin:/home/termius/.npm-global/bin:/usr/local/bin"
 
-MON_DIR="/home/lahargnedebartoli/mon-ipad"
+MON_DIR="/home/termius/mon-ipad"
 LOG="$MON_DIR/logs/agents/multi-brain-$(date +%Y-%m-%d).log"
 mkdir -p "$(dirname "$LOG")"
 

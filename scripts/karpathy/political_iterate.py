@@ -41,7 +41,7 @@ from karpathy_utils import (
 )
 
 # ── Paths ──
-ROOT = Path("/home/lahargnedebartoli/mon-ipad")
+ROOT = Path("/home/termius/mon-ipad")
 POLITICAL_ROOT = ROOT / "nomos-political-alpha"
 DATA_DIR = ROOT / "data" / "karpathy"
 LOG_DIR = ROOT / "logs" / "karpathy"

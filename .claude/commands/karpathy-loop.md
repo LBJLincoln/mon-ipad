@@ -24,7 +24,7 @@ Pattern: mutate 1 config param → train model → measure Brier score → keep 
 3. **Run the REAL iteration loop**:
    ```bash
    # NBA (CPU fallback — always works on VM)
-   cd /home/lahargnedebartoli/mon-ipad
+   cd /home/termius/mon-ipad
    bash scripts/karpathy/run_karpathy.sh nba --iterations 30
 
    # Political

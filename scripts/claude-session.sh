@@ -29,10 +29,10 @@ done
 
 # ── Source all env files ──
 for envfile in \
-  /home/lahargnedebartoli/nomos-nba-agent/.env.local \
-  /home/lahargnedebartoli/mon-ipad/.env.local \
-  /home/lahargnedebartoli/rgwa/.env.local \
-  /home/lahargnedebartoli/nomos-political-alpha/.env.local; do
+  /home/termius/nomos-nba-agent/.env.local \
+  /home/termius/mon-ipad/.env.local \
+  /home/termius/rgwa/.env.local \
+  /home/termius/nomos-political-alpha/.env.local; do
   [ -f "$envfile" ] && source "$envfile" 2>/dev/null
 done
 
@@ -236,7 +236,7 @@ else
 fi
 
 # Colab
-COLAB_STATE="/home/lahargnedebartoli/mon-ipad/data/colab-state.json"
+COLAB_STATE="/home/termius/mon-ipad/data/colab-state.json"
 if [ -f "$COLAB_STATE" ]; then
   COLAB_TS=$(python3 -c "import json; d=json.load(open('$COLAB_STATE')); print(d.get('timestamp','?'))" 2>/dev/null)
   ok "Google Colab" "Last: $COLAB_TS"
@@ -346,11 +346,11 @@ fi
 header "Repositories (5 active)"
 
 declare -A REPOS=(
-  ["mon-ipad"]="/home/lahargnedebartoli/mon-ipad:Brain"
-  ["nomos-nba-agent"]="/home/lahargnedebartoli/nomos-nba-agent:NBA Engine"
-  ["nomos-political-alpha"]="/home/lahargnedebartoli/nomos-political-alpha:Political"
-  ["rgwa"]="/home/lahargnedebartoli/rgwa:RGWA"
-  ["nomos-dashboard"]="/home/lahargnedebartoli/nomos-dashboard:Dashboard"
+  ["mon-ipad"]="/home/termius/mon-ipad:Brain"
+  ["nomos-nba-agent"]="/home/termius/nomos-nba-agent:NBA Engine"
+  ["nomos-political-alpha"]="/home/termius/nomos-political-alpha:Political"
+  ["rgwa"]="/home/termius/rgwa:RGWA"
+  ["nomos-dashboard"]="/home/termius/nomos-dashboard:Dashboard"
 )
 
 for NAME in mon-ipad nomos-nba-agent nomos-political-alpha rgwa nomos-dashboard; do
@@ -396,7 +396,7 @@ done
 
 if [ "$ANY_DOWN" = true ]; then
   info "" "Auto-starting mon-ipad bots..."
-  cd /home/lahargnedebartoli/mon-ipad && bash scripts/telegram/start_bots.sh start 2>/dev/null
+  cd /home/termius/mon-ipad && bash scripts/telegram/start_bots.sh start 2>/dev/null
 fi
 
 # rgwa bot (separate repo)
@@ -404,7 +404,7 @@ if pgrep -f "rgwa_bot.py" > /dev/null 2>&1; then
   ok "@RGWAbot" "RUNNING — AI Art Terminal (~/rgwa)"
 else
   fail "@RGWAbot" "DOWN — AI Art Terminal (~/rgwa)"
-  cd /home/lahargnedebartoli/rgwa && bash scripts/telegram/start_bot.sh start 2>/dev/null
+  cd /home/termius/rgwa && bash scripts/telegram/start_bot.sh start 2>/dev/null
 fi
 
 # ══════════════════════════════════════════════════════════════════
@@ -491,7 +491,7 @@ for APROC in "orchestrator" "agent-cron" "betting_agent" "evaluate_predictions" 
 done
 
 # Check agent health from cached data
-AGENT_JSON="/home/lahargnedebartoli/mon-ipad/data/agent-activity.json"
+AGENT_JSON="/home/termius/mon-ipad/data/agent-activity.json"
 if [ -f "$AGENT_JSON" ]; then
   LAST_ACTIVITY=$(python3 -c "
 import json
@@ -520,7 +520,7 @@ info "Active processes" "${AGENT_RUNNING} agent processes running"
 # ══════════════════════════════════════════════════════════════════
 # 10. ALERTS (from cached infra data)
 # ══════════════════════════════════════════════════════════════════
-CROSS_JSON="/home/lahargnedebartoli/mon-ipad/data/cross-repo-health.json"
+CROSS_JSON="/home/termius/mon-ipad/data/cross-repo-health.json"
 if [ -f "$CROSS_JSON" ]; then
   ALERTS=$(python3 -c "
 import json
@@ -552,11 +552,11 @@ echo -e "${W}━━━━━━━━━━━━━━━━━━━━━━�
 
 # ── Launch Claude Code ──
 case "$PROJECT" in
-  nba)       WORKDIR="/home/lahargnedebartoli/mon-ipad" ;;
-  rgwa)      WORKDIR="/home/lahargnedebartoli/rgwa" ;;
-  political) WORKDIR="/home/lahargnedebartoli/nomos-political-alpha" ;;
-  dashboard) WORKDIR="/home/lahargnedebartoli/nomos-dashboard" ;;
-  all)       WORKDIR="/home/lahargnedebartoli/mon-ipad" ;;
+  nba)       WORKDIR="/home/termius/mon-ipad" ;;
+  rgwa)      WORKDIR="/home/termius/rgwa" ;;
+  political) WORKDIR="/home/termius/nomos-political-alpha" ;;
+  dashboard) WORKDIR="/home/termius/nomos-dashboard" ;;
+  all)       WORKDIR="/home/termius/mon-ipad" ;;
 esac
 
 echo ""

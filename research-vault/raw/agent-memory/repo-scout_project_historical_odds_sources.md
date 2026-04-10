@@ -4,7 +4,7 @@ description: Complete catalog of free and paid historical NBA odds sources, with
 type: project
 ---
 
-Researched 2026-03-28. Full doc at /home/lahargnedebartoli/mon-ipad/docs/HISTORICAL-ODDS-SOURCES.md
+Researched 2026-03-28. Full doc at /home/termius/mon-ipad/docs/HISTORICAL-ODDS-SOURCES.md
 
 ## Best Free Sources (immediate action)
 

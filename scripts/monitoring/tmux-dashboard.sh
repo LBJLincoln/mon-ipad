@@ -21,7 +21,7 @@
 set -eo pipefail
 
 SESSION="nomos42-dash"
-BASE="/home/lahargnedebartoli/mon-ipad"
+BASE="/home/termius/mon-ipad"
 DATA="$BASE/data"
 ARENA="$DATA/arena"
 DEPTS="$DATA/departments"

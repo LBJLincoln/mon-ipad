@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-ROOT="/home/lahargnedebartoli/mon-ipad"
+ROOT="/home/termius/mon-ipad"
 SCRIPT="${ROOT}/scripts/arena/trading-floor-v5.py"
 LOG_DIR="${ROOT}/logs/arena"
 LOG_FILE="${LOG_DIR}/trading-floor-v5.log"

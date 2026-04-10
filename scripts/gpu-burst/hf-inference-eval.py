@@ -44,7 +44,7 @@ from typing import Dict, List, Optional, Any
 # CONSTANTS
 # ══════════════════════════════════════════════════════════
 
-REPO_ROOT = Path("/home/lahargnedebartoli/mon-ipad")
+REPO_ROOT = Path("/home/termius/mon-ipad")
 RESULT_DIR = REPO_ROOT / "data" / "gpu-burst"
 KARPATHY_DIR = REPO_ROOT / "data" / "karpathy"
 LOG_FILE = RESULT_DIR / "hf-inference-eval-log.jsonl"

@@ -23,6 +23,6 @@ Created `scripts/gpu_evolution_v2.py` (1017 lines) merging Gemini's uploaded scr
 **How to apply:** When asked to run GPU evolution, point to this file. The original `modal_tabicl_evolution.py` remains for the Modal starmap path. The uploaded `.txt` file is NOT deleted per user instruction.
 
 **Source files read:**
-- `/home/lahargnedebartoli/mon-ipad/modigs gemini optimisation runtime gpu colab lahartgende bartoli.txt`
-- `/home/lahargnedebartoli/mon-ipad/scripts/modal_tabicl_evolution.py`
-- `/home/lahargnedebartoli/nomos-nba-agent/colab/nba_evolution_gpu.py`
+- `/home/termius/mon-ipad/modigs gemini optimisation runtime gpu colab lahartgende bartoli.txt`
+- `/home/termius/mon-ipad/scripts/modal_tabicl_evolution.py`
+- `/home/termius/nomos-nba-agent/colab/nba_evolution_gpu.py`

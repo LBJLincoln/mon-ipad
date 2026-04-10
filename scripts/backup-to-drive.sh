@@ -15,7 +15,7 @@ mkdir -p "$BACKUP_DIR"
 
 # Backup critical data (not git, not node_modules)
 for REPO in mon-ipad nomos-nba-agent nomos-political-alpha rgwa nomos-dashboard; do
-  if [ -d "/home/lahargnedebartoli/$REPO" ]; then
+  if [ -d "/home/termius/$REPO" ]; then
     echo "  Backing up $REPO..."
     tar czf "$BACKUP_DIR/${REPO}.tar.gz" \
       --exclude='.git' \
@@ -23,7 +23,7 @@ for REPO in mon-ipad nomos-nba-agent nomos-political-alpha rgwa nomos-dashboard;
       --exclude='__pycache__' \
       --exclude='.next' \
       --exclude='*.pyc' \
-      -C /home/lahargnedebartoli "$REPO" 2>/dev/null || true
+      -C /home/termius "$REPO" 2>/dev/null || true
   fi
 done
 

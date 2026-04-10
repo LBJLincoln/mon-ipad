@@ -23,7 +23,7 @@
 set -euo pipefail
 
 # ── PATHS ────────────────────────────────────────────────────────────────────
-ROOT="/home/lahargnedebartoli/mon-ipad"
+ROOT="/home/termius/mon-ipad"
 SCRIPT_DIR="${ROOT}/scripts/arena"
 TRADING_FLOOR="${SCRIPT_DIR}/trading-floor-v4.py"
 KARPATHY_OUTPUT="${ROOT}/data/arena/trading-floor-karpathy-output.json"

@@ -4,7 +4,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 set -a
-[ -f /home/lahargnedebartoli/mon-ipad/.env.local ] && source /home/lahargnedebartoli/mon-ipad/.env.local 2>/dev/null
+[ -f /home/termius/mon-ipad/.env.local ] && source /home/termius/mon-ipad/.env.local 2>/dev/null
 set +a
 
 MODE="${1:-start}"

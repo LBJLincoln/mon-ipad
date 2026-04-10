@@ -28,7 +28,7 @@ echo "  $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "=========================================="
 
 for repo in $REPOS; do
-    REPO_PATH="/home/lahargnedebartoli/$repo"
+    REPO_PATH="/home/termius/$repo"
     echo ""
     echo "--- $repo ---"
 

@@ -38,9 +38,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path("/home/lahargnedebartoli/mon-ipad")
+ROOT = Path("/home/termius/mon-ipad")
 CAL_MAP_PATH = ROOT / "data" / "calibration" / "calibration-map.json"
-ISO_BREAKPOINTS_PATH = Path("/home/lahargnedebartoli/nomos-nba-agent/calibration/isotonic_breakpoints.json")
+ISO_BREAKPOINTS_PATH = Path("/home/termius/nomos-nba-agent/calibration/isotonic_breakpoints.json")
 
 sys.path.insert(0, str(ROOT / "scripts" / "arena"))
 from real_predictions_loader import load_real_predictions  # noqa: E402

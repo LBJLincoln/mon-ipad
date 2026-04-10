@@ -453,9 +453,9 @@ def run_backtest():
     """Run the full trading floor confrontation backtest."""
 
     # Paths
-    odds_path = '/home/lahargnedebartoli/nomos-nba-agent/data/historical-odds/nba_2025-26_odds.csv'
-    games_path = '/home/lahargnedebartoli/mon-ipad/nba-quant-space/data/historical/games-2025-26.json'
-    output_path = '/home/lahargnedebartoli/mon-ipad/data/nba-agent/real-trading-floor-confrontation.json'
+    odds_path = '/home/termius/nomos-nba-agent/data/historical-odds/nba_2025-26_odds.csv'
+    games_path = '/home/termius/mon-ipad/nba-quant-space/data/historical/games-2025-26.json'
+    output_path = '/home/termius/mon-ipad/data/nba-agent/real-trading-floor-confrontation.json'
 
     print("=" * 100)
     print("  NOMOS42 TRADING FLOOR — REAL BACKTEST CONFRONTATION")

@@ -7,8 +7,8 @@
 # ═══════════════════════════════════════════════════════════════
 
 set -euo pipefail
-export PATH="$PATH:/home/lahargnedebartoli/.local/bin"
-MON_DIR="/home/lahargnedebartoli/mon-ipad"
+export PATH="$PATH:/home/termius/.local/bin"
+MON_DIR="/home/termius/mon-ipad"
 RESEARCH_DIR="$MON_DIR/data/research"
 LOG_DIR="$MON_DIR/logs/agents"
 TODAY=$(date +%Y-%m-%d)
