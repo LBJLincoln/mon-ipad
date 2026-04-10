@@ -324,29 +324,105 @@ def evaluate_on_space(config: dict, space_id: str, token: str) -> Optional[float
 
 
 def evaluate_on_inference_api(config: dict, token: str) -> Optional[float]:
-    """Try HF Inference API serverless (ZeroGPU under the hood).
+    """Try TabICL/TabPFN via HF Serverless Inference API (ZeroGPU path).
 
-    We query the HF Inference API with the TabPFN model using our
-    feature data as the context. This is a simplified evaluation:
-    if TabPFN is not configured, returns None and falls through.
+    Strategy:
+      1. Call S15 /api/tabicl_evaluate or /run/tabicl_eval (ZeroGPU H200 endpoint)
+         — returns Brier directly if the space has a TabICL evaluation function
+      2. Fetch /api/data_sample from S15 and call TabPFN serverless with real data
+         — requires the space to expose a data_sample endpoint
+      3. Log precisely which path failed, for future debugging
     """
-    # Only attempt if a serverless model is configured and reachable
-    url = f"https://api-inference.huggingface.co/models/{TABPFN_MODEL}"
-    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-    # Test connectivity first (light request)
-    try:
-        req = urllib.request.Request(
-            url,
-            data=json.dumps({"inputs": "test"}).encode(),
-            method="POST",
-            headers=headers,
-        )
-        with urllib.request.urlopen(req, timeout=10, context=_ssl_ctx()) as resp:
-            if resp.status == 200:
-                log(f"Inference API {TABPFN_MODEL} is reachable")
-    except Exception:
-        pass  # Not a hard failure — we have other paths
-    return None  # Full TabPFN integration would go here
+    if not token:
+        log("No HF token — skipping Inference API evaluation", "WARN")
+        return None
+
+    feature_indices = config.get("feature_indices", [])
+    if not feature_indices:
+        return None
+
+    # ── Path 2a: S15 ZeroGPU Space direct eval endpoint ───────────
+    # Tries both a simple REST endpoint and the Gradio /run/ format
+    eval_payload = {
+        "features": feature_indices,
+        "model_type": "tabicl",
+        "n_estimators": config.get("n_estimators", 200),
+        "max_depth": config.get("max_depth", 6),
+        "learning_rate": config.get("learning_rate", 0.1),
+    }
+    for endpoint, wrap_gradio in [("/api/tabicl_evaluate", False), ("/run/tabicl_eval", True)]:
+        url = f"{HF_ISLANDS['S15']}{endpoint}"
+        payload = {"data": [json.dumps(eval_payload)]} if wrap_gradio else eval_payload
+        resp = http_post(url, payload, token=token, timeout=180)
+        if resp:
+            # Gradio response: {"data": [result_json_str], "duration": ...}
+            # REST response: {"brier": float, "model_used": str}
+            if wrap_gradio and isinstance(resp.get("data"), list) and resp["data"]:
+                try:
+                    inner = resp["data"][0]
+                    resp = json.loads(inner) if isinstance(inner, str) else inner
+                except (ValueError, TypeError):
+                    continue
+            b = float(resp.get("brier", 1.0))
+            if 0.0 < b < 0.99:
+                model_used = resp.get("model_used", "tabicl")
+                log(f"S15 TabICL eval (path 2a, {endpoint}): brier={b:.5f} model={model_used}")
+                return b
+
+    # ── Path 2b: TabPFN serverless with cached data from S15 ──────
+    # Requires S15 to expose /api/data_sample — add to HF Space app.py to unlock
+    data_resp = http_get(f"{HF_ISLANDS['S15']}/api/data_sample", token=token, timeout=30)
+    if data_resp and "X_train" in data_resp and "y_train" in data_resp:
+        X_train = data_resp["X_train"]
+        y_train = data_resp["y_train"]
+        X_test  = data_resp.get("X_test", [])
+        y_test  = data_resp.get("y_test", [])
+
+        n_cols = len(X_train[0]) if X_train else 0
+        valid_idx = [i for i in feature_indices if i < n_cols]
+        if len(valid_idx) >= 5 and X_test and y_test:
+            X_tr_sel = [[row[i] for i in valid_idx] for row in X_train[-1000:]]
+            X_te_sel = [[row[i] for i in valid_idx] for row in X_test[-200:]]
+            y_tr_sel = y_train[-1000:]
+            y_te_sel = y_test[-200:]
+
+            tabpfn_url = f"https://api-inference.huggingface.co/models/{TABPFN_MODEL}"
+            tabpfn_payload = {"inputs": {
+                "train_X": X_tr_sel,
+                "train_y": y_tr_sel,
+                "test_X": X_te_sel,
+            }}
+            try:
+                req = urllib.request.Request(
+                    tabpfn_url,
+                    data=json.dumps(tabpfn_payload).encode(),
+                    method="POST",
+                    headers={
+                        "Authorization": f"Bearer {token}",
+                        "Content-Type": "application/json",
+                        "X-Wait-For-Model": "true",
+                    },
+                )
+                with urllib.request.urlopen(req, timeout=120, context=_ssl_ctx()) as r:
+                    result = json.loads(r.read())
+                if isinstance(result, list) and result:
+                    probs = [
+                        float(item.get("score", item) if isinstance(item, dict) else item)
+                        for item in result[:len(y_te_sel)]
+                    ]
+                    if probs and y_te_sel:
+                        brier = sum((p - y) ** 2 for p, y in zip(probs, y_te_sel)) / len(probs)
+                        if 0.0 < brier < 1.0:
+                            log(f"TabPFN serverless: brier={brier:.5f} ({len(probs)} games, {len(valid_idx)}f)")
+                            return brier
+            except Exception as e:
+                log(f"TabPFN serverless failed: {e}", "WARN")
+    else:
+        # Log what's needed to unlock this path
+        log("S15 /api/data_sample not available — TabPFN path inactive", "INFO")
+        log("To enable: add @app.get('/api/data_sample') to HF Space app.py", "INFO")
+
+    return None
 
 
 def evaluate_on_island_api(config: dict) -> Optional[float]:

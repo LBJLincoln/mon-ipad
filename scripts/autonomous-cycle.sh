@@ -430,6 +430,38 @@ OPSEOF
     log "[AUTO-ITERATE] Analysis complete — iter $CURRENT_ITER, best \$$CURRENT_BEST"
 fi
 
+# ── Phase 3e: Cross-Island Config Sync ────────────────────────
+# Seed fleet-best config (S15, brier=0.22041) to stagnant islands.
+# Breaks S13's 500+ gen stagnation; enforces 4h cooldown per island.
+log "[CROSS-SYNC] Broadcasting fleet-best config to lagging islands..."
+cd "$MON_DIR"
+python3 scripts/gpu-burst/cross-island-sync.py >> "$LOG" 2>&1 || \
+    log "[CROSS-SYNC] Script failed (non-fatal — will retry next cycle)"
+
+# ── Phase 3f: Trading Floor v5 (daily 18:00 UTC) ──────────────
+# v5 runs a full 224-agent dry-run simulation with market-data-aware strategies.
+# Runs once per day (18:00 UTC) to avoid compute overlap with v8 Karpathy loop.
+CURRENT_HOUR=$(date -u +%H)
+if [ "$CURRENT_HOUR" = "18" ] && [ -f "$MON_DIR/scripts/arena/trading-floor-v5.py" ]; then
+    log "[TF-V5] Daily 18:00 run starting..."
+    TF5_START=$(date +%s)
+    timeout 300 python3 scripts/arena/trading-floor-v5.py iterate 5 5 >> "$LOG" 2>&1
+    TF5_EXIT=$?
+    TF5_ELAPSED=$(( $(date +%s) - TF5_START ))
+    if [ $TF5_EXIT -eq 0 ]; then
+        log "[TF-V5] Completed (${TF5_ELAPSED}s)"
+        git add data/arena/ 2>/dev/null
+        git diff --cached --quiet || {
+            git commit -m "data: trading floor v5 daily run $(date -u +%Y-%m-%d)" --no-verify
+            git push origin main 2>/dev/null || log "[TF-V5] push failed (non-fatal)"
+        }
+    elif [ $TF5_EXIT -eq 124 ]; then
+        log "[TF-V5] TIMEOUT after ${TF5_ELAPSED}s"
+    else
+        log "[TF-V5] FAILED exit=$TF5_EXIT"
+    fi
+fi
+
 # ── Phase 4: Infrastructure ─────────────────────────────────
 # Ensure data server is alive
 if ! pgrep -f "nba-data-server" > /dev/null; then
