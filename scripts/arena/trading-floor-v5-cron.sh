@@ -55,11 +55,21 @@ echo "======================================================================" >>
 echo "[v5-cron] Starting run at ${TIMESTAMP} ${DRY_RUN}" >> "${LOG_FILE}"
 echo "======================================================================" >> "${LOG_FILE}"
 
-# Run v5 for today (or specified date)
-# VM mode: --no-multiphase + synthetic LLM votes (real ML preds from HF spaces, real Kelly,
-# 217 agents, no LLM hangs). Full multiphase LIVE runs are launched separately via GPU burst.
+# Run v5 for today (or specified date).
+# VM mode: --no-multiphase (no multi-phase thinking, keeps run fast on 1vCPU).
+# Real mode by default — LLM agents make real API calls using the pool.
+# Pass --dry-run explicitly to this cron wrapper to force synthetic mode.
 # Hard 25min timeout to prevent runaway runs blocking the next cron tick.
-timeout 1500 python3 -u "${SCRIPT}" ${DATE_ARG} ${DRY_RUN} --no-multiphase --dry-run 2>&1 | tee -a "${LOG_FILE}"
+#
+# Graceful degradation: if the openai package is missing (first boot / after
+# pip env wipe) we fall back to --dry-run so the cron never hard-fails and
+# the dashboard still gets fresh data (synthetic but complete).
+if ! python3 -c "import openai" 2>/dev/null; then
+    echo "[v5-cron] WARNING: openai package not installed — falling back to --dry-run" >> "${LOG_FILE}"
+    DRY_RUN="--dry-run"
+fi
+
+timeout 1500 python3 -u "${SCRIPT}" ${DATE_ARG} ${DRY_RUN} --no-multiphase 2>&1 | tee -a "${LOG_FILE}"
 EXIT_CODE=${PIPESTATUS[0]}
 
 echo "[v5-cron] Finished with exit code ${EXIT_CODE} at $(date '+%H:%M:%S UTC')" >> "${LOG_FILE}"

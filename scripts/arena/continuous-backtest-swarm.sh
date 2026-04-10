@@ -56,6 +56,15 @@ echo "[2/3] Political arena_confrontation.py" >> "${LOG_FILE}"
 timeout 600 python3 "${POL_ROOT}/scripts/arena/arena_confrontation.py" \
     >> "${LOG_FILE}" 2>&1 || echo "[2/3] Political arena exit=$?" >> "${LOG_FILE}"
 
+# 2b. Update backtest-latest.json symlink to the newest timestamped file.
+#     The dashboard route.ts fetches this path first so it always gets the
+#     freshest backtest without needing to know the exact timestamp filename.
+LATEST_BACKTEST=$(ls -t "${ROOT}/data/arena/backtest-results"/backtest-2*.json 2>/dev/null | head -1)
+if [[ -n "${LATEST_BACKTEST}" ]]; then
+    ln -sf "${LATEST_BACKTEST}" "${ROOT}/data/arena/backtest-results/backtest-latest.json"
+    echo "[continuous-backtest] backtest-latest.json → $(basename "${LATEST_BACKTEST}")" >> "${LOG_FILE}"
+fi
+
 # 3. Map results into agent-states-v5.json
 echo "[3/4] Map backtest results into agent-states-v5.json" >> "${LOG_FILE}"
 timeout 60 python3 "${ROOT}/scripts/arena/map-backtest-to-agents.py" \
@@ -77,6 +86,7 @@ timeout 30 python3 "${ROOT}/scripts/arena/aggregate_swarm_to_season.py" \
 cd "${ROOT}"
 git add \
     data/arena/backtest-results/ \
+    data/arena/backtest-results/backtest-latest.json \
     data/arena/agent-states-v5.json \
     data/arena/strategy-truth.json \
     data/arena/season-leaderboard.json \
