@@ -439,13 +439,14 @@ python3 scripts/gpu-burst/cross-island-sync.py >> "$LOG" 2>&1 || \
     log "[CROSS-SYNC] Script failed (non-fatal — will retry next cycle)"
 
 # ── Phase 3f: Trading Floor v5 (daily 18:00 UTC) ──────────────
-# v5 runs a full 224-agent dry-run simulation with market-data-aware strategies.
+# v5 runs LIVE API calls (Gemini + HF free models) in --lite mode (~20 agents).
 # Runs once per day (18:00 UTC) to avoid compute overlap with v8 Karpathy loop.
+# Requires: pip install openai (uses OpenAI-compat client for all providers)
 CURRENT_HOUR=$(date -u +%H)
 if [ "$CURRENT_HOUR" = "18" ] && [ -f "$MON_DIR/scripts/arena/trading-floor-v5.py" ]; then
-    log "[TF-V5] Daily 18:00 run starting..."
+    log "[TF-V5] Daily 18:00 run starting (LIVE --lite mode)..."
     TF5_START=$(date +%s)
-    timeout 300 python3 scripts/arena/trading-floor-v5.py iterate 5 5 >> "$LOG" 2>&1
+    timeout 300 python3 scripts/arena/trading-floor-v5.py --lite >> "$LOG" 2>&1
     TF5_EXIT=$?
     TF5_ELAPSED=$(( $(date +%s) - TF5_START ))
     if [ $TF5_EXIT -eq 0 ]; then
