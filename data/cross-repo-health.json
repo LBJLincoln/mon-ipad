@@ -1,131 +1,75 @@
 {
-  "timestamp": "2026-04-09T23:55:00Z",
-  "brain_cycle": 83,
+  "timestamp": "2026-04-10T05:00:00Z",
+  "brain_cycle": 85,
   "ecosystem_health": {
     "nba_quant": {
       "status": "HEALTHY",
-      "islands_active": 6,
-      "best_brier": 0.22249,
-      "pareto_best_brier": 0.21773,
-      "below_checkpoint_threshold": true,
-      "threshold": 0.21837,
-      "all_time_best": 0.2157,
-      "target": 0.2,
-      "progress_to_target_pct": 72.3,
+      "active_islands": 6,
+      "fleet_best_brier": 0.22249,
+      "target_brier": 0.21837,
+      "gap": 0.00412,
+      "progress_pct": 74.3,
       "engine_version": "v3.1-59cat",
-      "feature_candidates": "6350+",
-      "cycle83_actions": [
-        "S11_mut_fixed_0.12",
-        "S12_mut_fixed_0.08",
-        "S13_checkpointed",
-        "S14_S10_crosspollinated",
-        "Cat55_added",
-        "Cat56_added",
-        "Cat57_added",
-        "Cat58_added",
-        "Cat59_added"
-      ]
+      "top_model": "S15_gen588_ExtraTrees_200f_Brier0.22041"
     },
     "political_alpha": {
-      "status": "HEALTHY",
-      "islands_active": 4,
-      "islands_total": 4,
-      "best_brier": 0.23134,
-      "down_spaces": [],
-      "note": "All 4 islands online. P1/P2 restarted \u2014 372 events, early stage.",
-      "engine_version": "v3.11-political-31cat-cmd-seq-cal"
+      "status": "DEGRADED",
+      "active_islands": 2,
+      "down_islands": ["P3", "P4"],
+      "fleet_best_brier": 0.23134,
+      "target_brier": 0.22,
+      "engine_version": "v3.13-political-35cat-insider-cluster",
+      "alert": "P3/P4 DOWN_404 — manual HuggingFace restart required"
     }
   },
   "cross_project_techniques": {
-    "venn_abers_calibration": {
-      "source": "arXiv 2502.05676, ICML 2025",
-      "nba_status": "IN PRODUCTION \u2014 mutation weight=25 (fixed cycle 82)",
-      "political_status": "IN PRODUCTION \u2014 mutation weight=24 (fixed cycle 82)",
-      "kaggle_status": "IN PRODUCTION \u2014 added genetic_loop_v3.py cycle 82",
-      "nba_brier_delta": -0.00543
-    },
-    "market_consensus_deviation_cat55": {
-      "source": "MDPI Information 2026: fused model AUC 0.95 vs 0.76/0.94",
-      "nba_status": "IMPLEMENTED cycle 83 \u2014 10 features, engine v3.1-55cat (cmd55_*)",
-      "political_status": "IMPLEMENTED cycle 83 \u2014 Cat31 (10 features, cmd31_*, Kalshi/Polymarket)",
-      "expected_brier_delta": "-0.002 to -0.004"
-    },
-    "directional_circadian_cat56": {
-      "source": "Chronobiology Int'l 2022 + ScienceDaily 2024 (25,016 games, 21 seasons)",
-      "finding": "Westbound home teams win 63.5% vs 55.0% eastbound \u2192 +8.5pp effect",
-      "nba_status": "IMPLEMENTED cycle 83 \u2014 10 features, engine v3.1-56cat (circ56_*)",
-      "political_status": "NOT APPLICABLE (political markets have no travel/circadian)",
-      "note": "Extends Cat39 which uses abs(); Cat56 uses SIGNED delta for direction"
-    },
-    "sequential_exponential_form_cat57": {
-      "source": "arXiv 2512.08591 (LSTM 8-season NBA) + MDPI 2026",
-      "finding": "72.35% accuracy, 76.13% AUC \u2014 sequential dependencies outperform rolling avg",
-      "nba_status": "IMPLEMENTED cycle 83 \u2014 12 features, engine v3.1-57cat (seq57_*)",
-      "political_status": "IMPLEMENTED cycle 83 \u2014 Cat32 (10 features, seq32_*, return momentum)"
-    },
-    "calibration_anchors_cat58": {
-      "source": "arXiv 2303.06021: calibration-optimal models +5-7% ROI vs accuracy-optimal",
-      "nba_status": "IMPLEMENTED cycle 83 \u2014 10 features, engine v3.1-58cat (cal58_*)",
-      "political_status": "IMPLEMENTED cycle 83 \u2014 Cat33 (8 features, cal33_*, market reliability)"
-    },
-    "multi_horizon_rolling_windows": {
-      "source": "MDPI Information 2026 NBA uncertainty paper",
-      "nba_status": "IN PRODUCTION \u2014 WINDOWS=[3,5,7,10,15,20]",
-      "political_status": "IN PRODUCTION \u2014 WINDOWS=[1,3,5,7,10,15,20,30,60,90]"
-    },
-    "tariff_regime_signals_cat26": {
-      "source": "Internal, political only",
-      "political_status": "v3.10 \u2014 s122_rate fixed 0.15\u21920.10, +5 Section-122/CIT features"
-    }
+    "implemented": [
+      "venn_abers_calibration (NBA→Political)",
+      "market_consensus_deviation (Political→NBA)",
+      "directional_circadian (NBA→Political)",
+      "sequential_exponential_form (NBA→Political)",
+      "calibration_anchors_cat33 (NBA→Political)",
+      "prior_probability_anchors_cat34 (Political native)",
+      "insider_cluster_velocity_cat35 (Political new, cycle85)"
+    ],
+    "proposed_next": [
+      "shap_seeded_ga_init (NBA S15, cycle86)",
+      "mlp_meta_learner_stacking (NBA, cycle87)",
+      "brier_decomposition_diagnostic (both repos, cycle86)",
+      "shap_seeded_init_political (P3/P4 once restarted, cycle87)"
+    ]
   },
-  "research_papers_implemented_cycle83": [
+  "research_pipeline": {
+    "cycle84_proposals": ["stacked-ensemble-shap-2026-04-10.md"],
+    "cycle85_proposals": ["2026-04-10-mlp-meta-learner-brier-decomp-cycle85.md"],
+    "key_papers_implemented": [
+      "Koch & Schiereck 2025 (+3.5pp CAR enforcement dismissed)",
+      "Aktug & Torul 2025 (Polymarket hours-lead)",
+      "CEPR 2025 (TPU 3.6-6.2% alpha)",
+      "arXiv 2303.06021 (calibration > accuracy for bet ROI)",
+      "PMC12357926 Scientific Reports 2025 (MLP 2x50 meta-learner NBA stacking, AUC 0.9213)",
+      "Lakonishok & Lee 2001 + OpenInsider 2025 (insider cluster velocity Cat35)"
+    ]
+  },
+  "alerts": [
     {
-      "paper": "MDPI Information 2026: Uncertainty-Aware NBA Forecasting",
-      "url": "https://www.mdpi.com/2078-2489/17/1/56",
-      "features_added": "Cat55 (NBA) + Cat31 political \u2014 cross-market consensus deviation",
-      "expected_delta": "-0.002 to -0.004 Brier"
+      "severity": "CRITICAL",
+      "repo": "nomos-political-alpha",
+      "message": "P3 and P4 HF Spaces DOWN_404 — 2 of 4 political islands offline. Manual restart required at huggingface.co."
     },
     {
-      "paper": "Chronobiology Int'l 2022 + ScienceDaily 2024",
-      "url": "https://www.tandfonline.com/doi/abs/10.1080/07420528.2022.2113093",
-      "finding": "Westbound home: 63.5% vs 55.0% eastbound",
-      "features_added": "Cat56 (NBA) \u2014 directional circadian advantage (SIGNED tz delta)",
-      "expected_delta": "-0.001 to -0.003 Brier"
+      "severity": "WARN",
+      "repo": "nomos-nba-agent",
+      "message": "S13 converged at 0.2231-0.2232 for 500+ generations — possible local optimum. Queue diversify command if unchanged in cycle86."
     },
     {
-      "paper": "arXiv 2512.08591 \u2014 Long-Sequence LSTM NBA Prediction (Dec 2025)",
-      "url": "https://arxiv.org/abs/2512.08591",
-      "finding": "8-season LSTM: 72.35% acc, 76.13% AUC \u2014 sequential > rolling",
-      "features_added": "Cat57 (NBA) + Cat32 political \u2014 exponential \u03b1=0.4 form momentum",
-      "expected_delta": "-0.001 to -0.002 Brier"
-    },
-    {
-      "paper": "arXiv 2303.06021 \u2014 ML for Sports Betting: Calibration vs Accuracy",
-      "url": "https://arxiv.org/abs/2303.06021",
-      "finding": "Calibration-optimal model selection \u2192 +5-7% ROI vs accuracy-optimal",
-      "features_added": "Cat58 (NBA) + Cat33 political \u2014 calibration anchor signals",
-      "expected_delta": "-0.001 to -0.002 Brier (confidence-weighted predictions)"
-    },
-    {
-      "paper": "Scientific Reports 2025 \u2014 Stacked Ensemble NBA (Aug 2025)",
-      "url": "https://www.nature.com/articles/s41598-025-13657-1",
-      "finding": "SHAP: FG%, defensive rebounds, assists, turnovers top features",
-      "action": "Confirmed already in engine (Cat1-4 rolling performance, Cat2 four factors)",
-      "status": "Already covered \u2014 no new features needed"
-    },
-    {
-      "paper": "arXiv 2303.16741 \u2014 Graph Attention Networks for Sports (2023)",
-      "url": "https://arxiv.org/abs/2303.16741",
-      "finding": "GATv2-TCN: opponent scheduling affects performance via graph structure",
-      "status": "IMPLEMENTED cycle 83 \u2014 engine v3.1-59cat",
-      "features_added": "Cat59 (NBA) \u2014 12 features: 2nd-order SOS, common-opp advantage, transitive wins, opp form",
-      "expected_delta": "-0.001 to -0.002 Brier (schedule graph signal)"
+      "severity": "INFO",
+      "repo": "nomos-nba-agent",
+      "message": "S11 URL: nomos42-nba-quant-2.hf.space — NOT nomos42-nba-evo-2 (which returns 404). Brain URL corrected."
     }
   ],
-  "next_cycle_priorities": [
-    "DEPLOY: Run bash scripts/deploy-all-spaces.sh from VM \u2014 push NBA v3.1-59cat + political v3.11",
-    "MONITOR: Cat55-59 feature impact \u2014 watch Brier delta after spaces restart (6350+ features live)",
-    "MONITOR: S11/S12 mutation_rate fix pickup (0.12/0.08 queued, check next status)",
-    "IMPLEMENT: Cat60 \u2014 Season-Phase Momentum Regime (late-season push, tanking signals, playoff seeding pressure)"
-  ]
+  "commits_this_cycle": {
+    "nomos-political-alpha": "feat: add Cat35 insider buy cluster velocity, restore hf-space parity to v3.13",
+    "mon-ipad": "brain[85]: cycle report, MLB meta-learner research proposal, health files updated"
+  }
 }
