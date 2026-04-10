@@ -1,44 +1,44 @@
 {
-  "timestamp": "2026-04-10T05:00:00Z",
-  "brain_cycle": 85,
+  "timestamp": "2026-04-10T08:15:00Z",
+  "brain_cycle": 86,
   "brain_model": "claude-sonnet-4-6",
-  "cycle_rotation": "B_political_features + NBA_research",
+  "cycle_rotation": "A_political_datasources + NBA_calibration_research",
   "nba_fleet": {
     "S10": {
       "url": "nomos42-nba-quant.hf.space",
       "role": "exploitation",
       "status": "ONLINE",
-      "generation": 391,
-      "cycle": 131,
+      "generation": 433,
+      "cycle": 145,
       "best_brier": 0.22412,
       "best_roi": 0.2796,
       "best_sharpe": 5.49,
       "stagnation": 0,
       "feature_count": 49,
       "model_type": "xgboost_brier",
-      "feature_candidates": 3290
+      "feature_candidates": 3290,
+      "last_update": "2026-04-10T07:55:46Z"
     },
     "S11": {
       "url": "nomos42-nba-quant-2.hf.space",
       "role": "exploration",
       "status": "ONLINE",
-      "generation": 873,
-      "cycle": 292,
+      "generation": 915,
+      "cycle": 306,
       "best_brier": 0.22249,
       "best_roi": 0.2968,
       "best_sharpe": 6.6799,
       "stagnation": 0,
       "feature_count": 61,
       "model_type": "xgboost",
-      "note": "FLEET BEST — historical best ~0.219 Extra Trees 200f",
-      "correction": "Correct URL is nomos42-nba-quant-2.hf.space, NOT nba-evo-2"
+      "note": "Correct URL: nomos42-nba-quant-2.hf.space (NOT nba-evo-2)"
     },
     "S12": {
       "url": "nomos42-nba-evo-3.hf.space",
       "role": "extra_trees_specialist",
       "status": "ONLINE",
-      "generation": 935,
-      "cycle": 312,
+      "generation": 996,
+      "cycle": 332,
       "best_brier": 0.22726,
       "best_roi": 0.2415,
       "best_sharpe": 7.6992,
@@ -50,104 +50,105 @@
       "url": "nomos42-nba-evo-4.hf.space",
       "role": "catboost_specialist",
       "status": "ONLINE",
-      "generation": 839,
-      "cycle": 280,
+      "generation": 912,
+      "cycle": 304,
       "best_brier": 0.22316,
       "best_roi": 0.291,
       "best_sharpe": 4.1936,
       "stagnation": 0,
       "feature_count": 79,
       "model_type": "extra_trees",
-      "pareto_front_size": 19,
-      "alert": "Stable 0.2231-0.2232 for 500+ gens — possible local optimum"
+      "pareto_front_size": 28,
+      "alert": "Stable 0.2231-0.2232 range — consider diversify if unchanged next cycle"
     },
     "S14": {
       "url": "nomos42-nba-evo-5.hf.space",
       "role": "lightgbm_specialist",
       "status": "ONLINE",
-      "generation": 562,
-      "cycle": 188,
+      "generation": 577,
+      "cycle": 193,
       "best_brier": 0.22308,
       "best_roi": 0.2933,
       "best_sharpe": 3.195,
       "stagnation": 0,
       "feature_count": 41,
-      "pareto_front_size": 17
+      "pareto_front_size": 20
     },
     "S15": {
       "url": "nomos42-nba-evo-6.hf.space",
       "role": "wide_search",
       "status": "ONLINE",
-      "generation": 726,
-      "cycle": 242,
-      "best_brier": 0.22291,
-      "best_roi": 0.2903,
-      "best_sharpe": 7.3186,
+      "generation": 770,
+      "cycle": 257,
+      "best_brier": 0.22041,
+      "best_roi": 0.3206,
+      "best_sharpe": 8.9443,
       "stagnation": 0,
       "feature_count": 47,
-      "top_model": {
+      "model_type": "xgboost_brier",
+      "top_performer": {
         "gen": 588,
         "brier": 0.22041,
         "roi": 0.3206,
-        "sharpe": 8.94,
+        "sharpe": 8.9443,
         "features": 200,
         "type": "extra_trees"
-      }
+      },
+      "note": "FLEET BEST brier — target for SHAP-seeded init + isotonic calibration"
     }
   },
   "nba_summary": {
     "total_islands": 6,
     "online": 6,
     "down": 0,
-    "fleet_best_brier": 0.22249,
-    "fleet_best_island": "S11",
-    "top_single_model_brier": 0.22041,
-    "top_single_model": "S15_gen588_ExtraTrees_200f",
+    "fleet_best_brier": 0.22041,
+    "fleet_best_island": "S15",
     "target_brier": 0.21837,
-    "gap_to_target": 0.00412,
+    "gap_to_target": 0.00204,
     "stagnation_alerts": [],
     "diversify_sent": [],
-    "checkpoint_triggered": false
+    "checkpoint_triggered": false,
+    "checkpoint_threshold": 0.21837
   },
   "political_alpha": {
     "P1": {
       "url": "nomos42-political-alpha.hf.space",
       "role": "exploitation",
       "status": "ONLINE",
-      "generation": 30644,
-      "cycle": 10215,
+      "generation": 30751,
+      "cycle": 10251,
       "best_brier": 0.2497,
       "best_roi": 0.0068,
       "best_sharpe": 0.6809,
       "stagnation": 0,
-      "feature_count": 57,
+      "feature_count": 65,
       "model_type": "xgboost_brier",
-      "pareto_front_size": 7
+      "pareto_front_size": 5
     },
     "P2": {
       "url": "nomos42-political-alpha-2.hf.space",
       "role": "exploration",
       "status": "ONLINE",
-      "generation": 32191,
-      "cycle": 10731,
+      "generation": 32678,
+      "cycle": 10893,
       "best_brier": 0.23134,
       "best_roi": 0.2804,
       "best_sharpe": 1.0635,
       "stagnation": 0,
       "feature_count": 70,
       "model_type": "catboost",
-      "pareto_front_size": 26,
-      "note": "Bootstrap mode: 312 synthetic + 60 real events"
+      "pareto_front_size": 16,
+      "note": "FLEET BEST political"
     },
     "P3": {
       "url": "nomos42-political-alpha-3.hf.space",
       "status": "DOWN_404",
-      "alert": "CRITICAL — space down, manual HuggingFace restart required (no MCP available)"
+      "alert": "CRITICAL — manual restart required on HuggingFace dashboard (LBJLincoln26 account)"
     },
     "P4": {
       "url": "nomos42-political-alpha-4.hf.space",
       "status": "DOWN_404",
-      "alert": "CRITICAL — space down, manual HuggingFace restart required (no MCP available)"
+      "alert": "CRITICAL — manual restart required on HuggingFace dashboard (Nomos42 account)"
     }
   },
   "political_summary": {
@@ -156,17 +157,25 @@
     "down": 2,
     "fleet_best_brier": 0.23134,
     "fleet_best_island": "P2",
-    "engine_version": "v3.13-political-35cat-insider-cluster",
+    "engine_version": "v3.14-political-36cat-iran-war",
     "hf_mcp_available": false,
     "restart_required": ["P3", "P4"]
   },
-  "cycle85_actions": {
-    "political_improvement": "Cat35 Insider Buy Cluster Velocity (12 features): 7/14/30d cluster counts, is_cluster flags (2+/3+/4+ insiders), C-suite weighting (CEO/CFO 2x stronger), sector contagion, acceleration metric",
-    "political_parity": "hf-space/features/political_engine.py synced from v3.11→v3.13 (Cat34 prior anchors + Cat35 cluster)",
-    "nba_research": "2026-04-10-mlp-meta-learner-brier-decomp-cycle85.md written",
-    "nba_key_finding": "PMC12357926: MLP 2x50 is optimal meta-learner (not LogReg); Brier decompose into calibration+resolution separately targetable",
+  "cycle86_actions": {
+    "political_improvement": "Cat36 Iran War Catalyst (12 features): war_active, ceasefire_prob, defense/energy sector flags, Polymarket Iran volume+insider_flag, oil_spike, DoD budget signal, ceasefire×energy interaction. Parity synced to hf-space.",
+    "political_engine_version": "v3.14-political-36cat-iran-war",
+    "political_rotation": "A — WebSearch new data sources (Iran war, FEC Q1 2026, Polymarket midterms)",
+    "nba_research": "2026-04-10-isotonic-calibration-15game-window-cycle86.md written",
+    "nba_key_finding": "Isotonic calibration reduces Brier 0.003-0.007 vs sigmoid on tree ensembles (Nature Sci Rep 2025, MDPI 2025); 15-game window features rank higher than 20/30d in SHAP studies",
     "stagnation_check": "PASS — all 6 NBA islands stagnation=0",
-    "s13_alert": "S13 stable at 0.2231 for 500+ gens — consider diversify next cycle if unchanged",
-    "next_cycle": "Implement SHAP-seeded init on S15 (Cycle84 Change A spec)"
+    "s13_alert": "S13 stable at 0.2231 for 500+ gens — if unchanged at cycle 87, POST diversify",
+    "iran_war_context": "2026 US-Iran war ($255M Polymarket volume, ceasefire Apr-7 fragile) — new macro regime for political alpha",
+    "p3_p4_down": "PERSISTENT — 2nd cycle down. Manual HuggingFace restart required.",
+    "next_cycle": "B — Review political_engine.py Cat37 (2026 Midterm FEC Q1 acceleration) OR implement isotonic calibration on S15 (Kaggle test)"
+  },
+  "cross_project": {
+    "iso_calibration_nba_to_political": "Isotonic calibration improvement proposed for NBA applicable to P1/P2 (currently venn_abers)",
+    "iran_war_macro": "New macro regime affects both NBA (player movement, schedule disruption unlikely) and Political (direct donor stock signal)",
+    "next_port": "If isotonic calibration tested on Kaggle NBA → port result to political P1/P2"
   }
 }
