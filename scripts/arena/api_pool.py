@@ -300,10 +300,11 @@ class APIPool:
         if val:
             self.add_key("xai", val, 0)
 
-        # --- PAID: Google ---
-        val = os.environ.get("GOOGLE_API_KEY", "")
-        if val:
-            self.add_key("google", val, 0)
+        # --- PAID: Google (multiple keys for quota rotation) ---
+        for idx, key_name in enumerate(["GOOGLE_API_KEY", "GOOGLE_API_KEY_2", "GOOGLE_API_KEY_3"]):
+            val = os.environ.get(key_name, "")
+            if val:
+                self.add_key("google", val, idx)
 
         # --- Claude Code CLI (subprocess, no key needed — uses local claude CLI) ---
         self.add_key("anthropic_cli", "cli", 0)
