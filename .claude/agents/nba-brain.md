@@ -152,14 +152,13 @@ Before acting, scan `experiment-ledger.json` for any entry with `verdict="pendin
 
 ### Priority Decision Tree
 ```
-0. Ledger has pending entry ≥2 cycles old?
-   → Measure it (keep/revert). Record result in ledger.
+0.5. Check experiment-ledger.json — if any entry has verdict="pending" and brier_after is null → this is our top priority to measure (compare current fleet best against the brier_before of that entry to determine if it helped)
 
 1. Any island DOWN?
-   → POST restart + add to recommendations["restart S<N>"]
+   → POST restart + add to recommendations
 
-2. pareto_best_brier < 0.21837 (NBA) or new fleet best (either project)?
-   → POST /api/checkpoint + add "checkpoint S<N> pareto_best=<brier>" to recommendations
+2. pareto_best_brier < 0.21837 (NBA) or new fleet best?
+   → POST /api/checkpoint + add to recommendations
 
 3. Any island stagnating (stagnation_count > 10)?
    → POST /api/command {"action": "diversify"}
@@ -167,12 +166,11 @@ Before acting, scan `experiment-ledger.json` for any entry with `verdict="pendin
 4. mutation_rate < 0.07 on any island?
    → POST /api/config {"mutation_rate": <target>}
 
-5. Unimplemented research proposal > 3 cycles old? (IMPLEMENT-FIRST RULE)
-   → Implement the oldest one NOW in engine.py (≤20 features, not on GAME_DAY)
-   → Add ledger entry: verdict="pending", brier_before=current fleet best
+5. Unimplemented research proposal > 3 cycles old?
+   → Implement the simplest one in engine.py (≤20 features)
 
 6. No acute issue?
-   → NBA: WebSearch latest prediction technique (2026), write ONE research proposal
+   → NBA: WebSearch latest prediction technique (2026), write research proposal
    → Political: rotate A/B/C/D cycle (see below)
 ```
 
@@ -187,7 +185,7 @@ Track in `brain-status.json`.`rotation_cycle`:
 | Technique | Source | Expected Brier Δ | Status |
 |-----------|--------|-----------------|--------|
 | Multi-horizon rolling windows | MDPI 2026 | baseline | ✅ DONE |
-| Venn-Abers calibration | Deployed S13 + Political P1/P2 | -0.00543 | ✅ DONE in NBA + Political |
+| Venn-Abers calibration | Deployed S13 + Political P1/P2 | -0.00543 | ✅ DONE in both NBA and Political |
 | Cat59 opponent graph features | arXiv 2303.16741 | unknown | ✅ DONE (measure delta) |
 | Isotonic regression calibration | MDPI Information 2026 | -0.002 to -0.004 | PROPOSED (oldest — implement next) |
 | Market consensus deviation Cat55 | MDPI 2026 | -0.001 to -0.003 | PROPOSED |
@@ -225,22 +223,20 @@ The VM autonomous-cycle.sh reads `recommendations[]` at TOP LEVEL. MANDATORY for
     "file": "<path if code change>"
   },
   "recommendations": [
-    "DONE: <what was executed this cycle — be specific>",
+    "DONE: <what was executed this cycle — one line>",
     "NEXT: <single highest priority action for next cycle>",
-    "MONITOR: <island or metric to watch>",
+    "MONITOR: S11 Brier trending 0.2209 — checkpoint if sustained",
     "checkpoint S15 pareto_best=0.21906",
-    "CatBoost S11 experiment — test catboost specialist on exploration island"
+    "CatBoost S11 experiment — test catboost on exploration island"
   ],
   "alerts": ["<CRITICAL|WARNING|INFO>: <message>"]
 }
 ```
 
-**CRITICAL — VM PARSES THESE EXACT STRINGS. Include them ONLY when the action is needed:**
-- String contains `"checkpoint"` (case-insensitive) + `"S1X"` regex → VM POSTs checkpoint to that island
-- String contains `"CatBoost"` AND `"S11"` → VM submits CatBoost experiment to S11
-
-**Always include at minimum:** `"DONE: ..."`, `"NEXT: ..."`, one `"MONITOR: ..."` entry.
-Remove the example strings above — replace with real values for this cycle.
+**CRITICAL — VM READS THESE EXACT STRINGS:**
+- Contains `"checkpoint"` (case-insensitive) AND `"S1X"` → VM POSTs checkpoint to that island
+- Contains `"CatBoost"` AND `"S11"` → VM submits CatBoost experiment to S11
+- Only include these trigger strings when those actions are actually needed
 
 ---
 
