@@ -15,21 +15,21 @@
   "value": 91.29,
   "commit_sha": null,
   "reason_if_no_op": "Bankroll unchanged ($91.29) since Apr 5. Last bet placed Apr 3. Ledger already has Apr 8 entry with identical metrics. No material financial event since last snapshot. TF v5 remains offline (zero bets today). Streak continues: 7 days without betting, -$8.71 unrealized losses. Next action: restore TF v5 or activate Stripe SaaS to generate revenue.",
-  "iteration": 12,
-  "timestamp": "2026-04-10T20:30:00Z",
-  "previous_iteration_date": "2026-04-08T08:27:00Z",
-  "days_since_last_measurement": 2,
+  "iteration": 13,
+  "timestamp": "2026-04-11T00:45:00Z",
+  "previous_iteration_date": "2026-04-10T20:30:00Z",
+  "days_since_last_measurement": 1,
   "critical_items": [
-    "TF v5 BETTING DISABLED 7 DAYS (since Apr 3) — zero revenue opportunity cost ~$100+",
-    "HF SPACES QUOTA 84% (Apr 8) — dead spaces still not deleted, exhaustion risk persists",
-    "BANKROLL STAGNANT — $91.29 for 5+ days, no new bets, no calibration changes",
-    "ZERO MRR — SaaS tiers inactive, $0 revenue against -$8.71 trading loss",
-    "MODEL CALIBRATION ERROR — reported_edge 126.63% vs actual Sharpe -3.11 (confidence crisis)"
+    "TRADING FROZEN 8 DAYS (Apr 3→11) — TF v5 offline, zero revenue opportunity loss ~$150+",
+    "BANKROLL STALLED — $91.29 for 6+ days, no meaningful edge detected",
+    "ZERO MRR — no Stripe subscriptions activated, no revenue stream",
+    "HF SPACES QUOTA CRITICAL — 84% utilized, dead spaces (infra-brain, paperclip, etc.) not deleted",
+    "SHARPE RATIO NEGATIVE — -3.11 indicates model overfitting or data leakage (win_rate 38.64%)"
   ],
   "urgent_next_actions": [
-    "PRIORITY 1 (NOW): Restore TF v5 betting or investigate why edge_threshold/kelly logic is broken",
-    "PRIORITY 2 (24h): Delete 6 dead HF spaces (infra-brain, paperclip, brain, karpathy-arena, P3, P4) to reclaim 200+ hours",
-    "PRIORITY 3 (48h): Activate Stripe integration ($19/$49/$149 tiers) or add revenue stream to offset -8.71% loss",
-    "PRIORITY 4 (72h): Validate model on clean OOF/test set — 38.64% win rate suggests overfitting or data leakage"
+    "PRIORITY 1: Restore TF v5 betting or diagnose why edge_threshold/kelly logic blocked execution",
+    "PRIORITY 2: Delete 6+ dead HF spaces to free 200+ compute hours",
+    "PRIORITY 3: Activate Stripe revenue tiers ($19/$49/$149) to generate MRR",
+    "PRIORITY 4: Audit calibration on clean OOF/test set — negative Sharpe + 38.64% win rate = broken"
   ]
 }
