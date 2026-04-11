@@ -91,3 +91,52 @@ for repo in "${SISTER_REPOS[@]}"; do
 done
 
 echo "[sync] Done $(date '+%H:%M:%S UTC')" >> "${LOG}"
+
+# ─── ENGINE PARITY CHECK ─────────────────────────────────────────────────────
+# Verify features/engine.py is identical across mon-ipad, hf-space, and
+# nomos-nba-agent. Write a machine-readable status to cross-repo/ for D9 audit.
+check_engine_parity() {
+    local parity_file="${ROOT}/data/departments/cross-repo/engine-parity.json"
+    local engine_mon="${ROOT}/features/engine.py"
+    local engine_hf="${ROOT}/hf-space/features/engine.py"
+    local engine_agent="/home/termius/nomos-nba-agent/features/engine.py"
+
+    local md5_mon md5_hf md5_agent
+    md5_mon=$(md5sum "${engine_mon}" 2>/dev/null | awk '{print $1}' || echo "missing")
+    md5_hf=$(md5sum  "${engine_hf}"  2>/dev/null | awk '{print $1}' || echo "missing")
+    md5_agent=$(md5sum "${engine_agent}" 2>/dev/null | awk '{print $1}' || echo "missing")
+
+    local ok="true"
+    local diverged_repos="[]"
+    if [[ "${md5_mon}" != "${md5_agent}" || "${md5_mon}" != "${md5_hf}" ]]; then
+        ok="false"
+        diverged_repos="[\"nomos-nba-agent\"]"
+        echo "[sync] ENGINE PARITY BROKEN: mon-ipad=${md5_mon} hf-space=${md5_hf} nba-agent=${md5_agent}" >> "${LOG}"
+        echo "[sync] FIX: In mon-ipad features/engine.py line ~7516, change \`> 400\` to \`> target_features\` to align with MAX_FEATURES=200 rule, then re-run sync." >> "${LOG}"
+    else
+        echo "[sync] ENGINE PARITY OK: all three at ${md5_mon}" >> "${LOG}"
+    fi
+
+    mkdir -p "$(dirname "${parity_file}")"
+    cat > "${parity_file}" <<PARITY_JSON
+{
+  "timestamp": "$(date -u '+%Y-%m-%dT%H:%M:%SZ')",
+  "ok": ${ok},
+  "canonical": "mon-ipad",
+  "md5": {
+    "mon_ipad":       "${md5_mon}",
+    "hf_space":       "${md5_hf}",
+    "nomos_nba_agent": "${md5_agent}"
+  },
+  "diverged_repos": ${diverged_repos},
+  "fix_if_broken": "Update mon-ipad/features/engine.py line ~7516: change \`> 400\` to \`> target_features\` (MAX_FEATURES=200 rule). Then run this script to propagate to sister repos.",
+  "divergence_detail": {
+    "mon_ipad_line": "if len(selected) < 10 or len(selected) > 400:",
+    "nomos_nba_agent_line": "if len(selected) < 10 or len(selected) > target_features:",
+    "semantic_winner": "nomos_nba_agent — target_features=200 enforces MAX_FEATURES cap correctly"
+  }
+}
+PARITY_JSON
+}
+
+check_engine_parity
