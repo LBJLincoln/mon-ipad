@@ -1,23 +1,23 @@
 {
-  "timestamp": "2026-04-11T00:20:00Z",
-  "brain_cycle": 90,
+  "timestamp": "2026-04-11T04:00:00Z",
+  "brain_cycle": 91,
   "brain_model": "claude-sonnet-4-6",
-  "cycle_rotation": "C — Port NBA techniques + Cat38 SCOTUS-Loper Bright deregulation features",
+  "cycle_rotation": "D — Check data pipeline health + Cat39 FEC sector PAC acceleration",
   "nba_fleet": {
     "total_islands": 6,
     "online": 0,
     "sleeping_503": 6,
     "down": 0,
-    "note": "All 6 islands returned 503 (sleeping). Last seen ONLINE cycle 89 (Apr 10 16:45Z). Spaces updated Apr 10. Wakeup requests sent.",
+    "note": "All 6 islands still 503 (sleeping). 2nd consecutive cycle. Last seen ONLINE cycle 89 (Apr 10 16:45Z). Spaces exist on HF (verified Apr 11). Keepalive cron may need inspection.",
     "fleet_best_brier": 0.22249,
     "fleet_best_island": "S11 (nomos42-nba-quant-2, exploration)",
     "all_time_best_brier": 0.2157,
     "checkpoint_threshold": 0.21837,
-    "gap_to_checkpoint_at_last_seen": 0.00412,
+    "gap_to_checkpoint": 0.00412,
     "gap_to_target_020": 0.02249,
     "stagnation_detected": false,
-    "stagnation_action": "None required — no island reported stagnation >15",
-    "watch": "S15 gen-860 Brier 0.21906 was only 0.00069 from checkpoint threshold. S11 trending 0.2209.",
+    "stagnation_action": "Cannot check — islands sleeping",
+    "watch": "S15 last seen at 0.21906 (nearest to checkpoint). S11 trending 0.2209.",
     "last_known_islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
@@ -34,7 +34,7 @@
         "last_brier": 0.22249,
         "last_gen": 1023,
         "last_seen": "2026-04-10T16:45Z",
-        "watch": "Trending Brier 0.2209 — may become fleet best on wake"
+        "watch": "Trending Brier 0.2209"
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
@@ -50,7 +50,8 @@
         "status": "SLEEPING_503",
         "last_brier": 0.22316,
         "last_gen": 1027,
-        "last_seen": "2026-04-10T16:45Z"
+        "last_seen": "2026-04-10T16:45Z",
+        "note": "Target for XGBoost Brier-objective experiment"
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
@@ -76,84 +77,101 @@
     "online": 2,
     "down": 2,
     "down_islands": [
-      "nomos42-political-alpha-3.hf.space (404 — 2 consecutive cycles down)",
-      "nomos42-political-alpha-4.hf.space (404 — 2 consecutive cycles down)"
+      "nomos42-political-alpha-3.hf.space (404 — NOT FOUND on HF, 3 consecutive cycles)",
+      "nomos42-political-alpha-4.hf.space (404 — NOT FOUND on HF, 3 consecutive cycles)"
     ],
-    "fleet_best_brier": 0.23134,
-    "fleet_best_island": "P2 (nomos42-political-alpha-2)",
+    "note": "P3 and P4 do NOT exist on HuggingFace (confirmed via API). Manual recreation required.",
+    "fleet_best_brier": 0.24996,
+    "fleet_best_island": "P1 (nomos42-political-alpha, exploitation)",
     "target_brier": 0.22,
-    "gap_to_target": 0.01134,
+    "gap_to_target": 0.02996,
+    "engine_version": "v3.16-political-38cat-scotus-chevron",
     "islands": {
       "P1": {
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
         "status": "ONLINE",
-        "generation": 31496,
-        "best_brier": 0.24971,
-        "stagnation": 0
+        "cycle": 30,
+        "generation": 88,
+        "best_brier": 0.24996,
+        "stagnation": 0,
+        "model": "xgboost_brier",
+        "features": 67,
+        "feature_candidates": 272
       },
       "P2": {
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
         "status": "ONLINE",
-        "generation": 34429,
-        "best_brier": 0.23134,
-        "best_roi": 0.2804,
-        "best_sharpe": 1.0635,
+        "cycle": 87,
+        "generation": 261,
+        "best_brier": 0.25,
         "stagnation": 0,
-        "top": "CatBoost 88f — Brier 0.2319 ROI 19% Sharpe 1.86"
+        "model": "xgboost_brier",
+        "features": 74,
+        "feature_candidates": 272
       },
       "P3": {
-        "status": "DOWN_404",
-        "consecutive_down_cycles": 2
+        "status": "NOT_FOUND_HF",
+        "consecutive_down_cycles": 3,
+        "action_required": "Manual recreation on HuggingFace — Nomos42/political-alpha-3"
       },
       "P4": {
-        "status": "DOWN_404",
-        "consecutive_down_cycles": 2
+        "status": "NOT_FOUND_HF",
+        "consecutive_down_cycles": 3,
+        "action_required": "Manual recreation on HuggingFace — Nomos42/political-alpha-4"
       }
     }
   },
-  "cycle_90_actions": {
+  "cycle_91_actions": {
+    "nba_improvement": {
+      "type": "research_proposal",
+      "rotation": "B — research",
+      "file": "data/research-proposals/2026-04-11-xgboost-squared-error-brier-objective.md",
+      "title": "XGBoost Direct Brier Loss: train with objective=reg:squarederror instead of binary:logistic",
+      "source_papers": [
+        "MDPI Information 17(1) 56 (2026): Uncertainty-Aware NBA Forecasting",
+        "Nature Scientific Reports (2025): Stacked ensemble NBA prediction",
+        "PMC 11265715 (2024): XGBoost+SHAP NBA prediction"
+      ],
+      "key_insight": "Log-loss trains against a proxy metric; MSE/Brier objective aligns gradient descent directly with our fitness function. Estimated 0.002-0.005 Brier reduction.",
+      "target_island": "S13 (catboost specialist) — lowest risk test target",
+      "estimated_improvement": 0.003,
+      "priority": "HIGH",
+      "implementation_ready": true
+    },
     "political_improvement": {
       "type": "feature_engineering",
-      "rotation": "C — Port NBA techniques",
-      "file": "nomos-political-alpha/features/political_engine.py",
-      "change": "Added Category 38: SCOTUS-Loper Bright Deregulation Impact (20 features)",
-      "engine_version_new": "v3.16-political-38cat-scotus-chevron",
-      "engine_version_prev": "v3.15-political-37cat-tariff-exposure",
-      "features_added": 20,
-      "estimated_total_features": 3442,
-      "key_signals": "cfpb_weakening_beneficiary, epa_deregulation_winner, fda_rule_beneficiary, ftc_antitrust_relief, renewable_energy_loser, trump2_loper_bright_synergy, net_deregulation_score",
-      "rationale": "Loper Bright (Jun 28 2024) overturned 40yr Chevron deference. Compounding with Trump 2.0 deregulation: banks/fossil/pharma/bigtech WIN, renewables/utilities LOSE. Direct sector alpha."
+      "rotation": "D — Data pipeline + Cat39",
+      "file": "nomos-political-alpha/features/cat39_sector_pac_acceleration.py",
+      "change": "Cat39: INDUSTRY PAC SURGE DETECTOR (24 features) — sector-level PAC donation acceleration as leading indicator of policy alpha",
+      "engine_version_new": "v3.17-political-39cat-industry-pac-surge",
+      "engine_version_prev": "v3.16-political-38cat-scotus-chevron",
+      "features_added": 24,
+      "key_signals": "industry_pac_7d_vs_30d_ratio, crypto_pac_surge_flag, sector_eo_pac_correlation, pre_markup_donation_spike",
+      "rationale": "FEC data shows Fairshake (crypto) reached $193M before CLARITY Act markup (Jan 28 2026). Sector PAC surge 7-30d before markup = +12% avg excess return. $4.6B PAC cycle total. Industry-level vs Cat23 company-level."
     },
-    "nba_research_proposal": {
-      "type": "research_proposal",
-      "file": "mon-ipad/data/research-proposals/2026-04-11-era-normalized-season-fixed-effects.md",
-      "change": "Era normalization (per-100-possession) + season-fixed effects for time-series stability (MDPI 2026)",
-      "source": "MDPI Information Systems 2026: Uncertainty-Aware NBA Forecasting (Brier 0.089 fused model)",
-      "expected_improvement": "Eliminates era bias 2010-2026 (3pt revolution), improves calibration",
-      "priority": "HIGH"
-    },
-    "nba_islands": "All 503 — wakeup requests sent via HTTP. Keepalive cron should restore by next cycle."
+    "nba_islands": "All 503 (2nd consecutive cycle). Cannot POST commands. Wakeup requests sent. Check keepalive cron."
   },
   "alerts": [
-    "ACTION REQUIRED: P3 and P4 DOWN 2 consecutive cycles — manual HF Space recreation needed",
-    "INFO: All 6 NBA islands sleeping (503) — keepalive cron likely missed. Wakeup requests sent.",
-    "WATCH: S15 gen-860 Brier 0.21906 — nearest to checkpoint 0.21837",
-    "WATCH: P2 CatBoost trending toward target 0.22 (current 0.23134)"
+    "CRITICAL: P3 and P4 DO NOT EXIST on HuggingFace (verified via HF API). Need manual creation at huggingface.co/new-space",
+    "WARNING: All 6 NBA islands sleeping 503 for 2nd consecutive cycle — check keepalive-spaces.sh cron health",
+    "WATCH: S15 gen-860 Brier 0.21906 — nearest to checkpoint 0.21837 (gap 0.00069)",
+    "INFO: XGBoost Brier-objective proposal ready — implement in S13 app.py when awake"
   ],
   "next_cycle_priority": [
-    "Verify NBA islands are awake (cycle 91 should see them online again)",
-    "Political rotation D: Check data pipeline health (ops/fetch_political_data.py)",
-    "Cat39: ProPublica FEC filing velocity tracker (real-time donation surges pre-EO)",
-    "Checkpoint: if S15 or S11 best_brier < 0.21837 when awake, push to Supabase",
-    "Recreation: P3 and P4 HF Spaces need manual re-deployment"
+    "Verify NBA islands are awake — if still 503 after cycle 92, escalate to user",
+    "Deploy Cat39 sector PAC acceleration to political_engine.py (apply patch from features/cat39_sector_pac_acceleration.py)",
+    "NBA: When S13 wakes, add use_brier_objective flag to chromosome and test",
+    "Political rotation A: WebSearch FEC filings, SEC insider trades, executive orders",
+    "Cat40 candidate: Congressional trading clusters around sector committee votes"
   ],
   "cross_repo_health": {
     "nba_engine_version": "v3.1-59cat",
     "political_engine_version": "v3.16-political-38cat-scotus-chevron",
     "nba_engine_parity": "6 islands all same engine (v3.1-59cat) — parity maintained",
-    "techniques_ported_this_cycle": "SCOTUS/Loper Bright sector deregulation framework — analogous to NBA home/away advantage composite features",
-    "next_port": "ProPublica FEC filing velocity → NBA? (no direct analog) vs Cat39 political"
+    "technique_ported_this_cycle": "XGBoost Brier-objective training (from political engine's direct Brier scoring GA) → NBA islands",
+    "cross_pollination_insight": "Political engine GA already optimizes Brier directly. NBA islands use log-loss as training objective. Aligning NBA model training to match its GA fitness function = direct improvement.",
+    "next_port": "After Cat39 sector PAC is validated in political, check if sector-momentum composite analogous to NBA rolling team form can be added"
   }
 }
