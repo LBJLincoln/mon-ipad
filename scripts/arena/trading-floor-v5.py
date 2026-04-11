@@ -68,6 +68,13 @@ from bet_categories import (
 )
 from debate_round import run_bull_bear_debate
 
+# Guard for openai package
+try:
+    import openai  # noqa: F401
+    HAS_OPENAI = True
+except ImportError:
+    HAS_OPENAI = False
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # OBSERVABILITY — OpenLIT auto-instrumentation (Cycle 14 Tier 1.2)
