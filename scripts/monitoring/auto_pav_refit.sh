@@ -22,6 +22,7 @@ set -euo pipefail
 REPO="/home/termius/mon-ipad"
 SUMMARY="$REPO/data/monitoring/drift-summary.json"
 LEDGER="$REPO/data/monitoring/auto-pav-refit-ledger.json"
+CALIBRATION_MAP="$REPO/data/nba-agent/calibration-map.json"
 LOG_DIR="$REPO/logs"
 COOLDOWN_MIN=60  # never refit more than once per hour, even if drift persists
 
@@ -100,6 +101,32 @@ except Exception:
     fi
 fi
 
+# 2.5 Idempotency guard — skip if n_games_used hasn't grown since last refit.
+#     calibration_fit.py produces identical output on same game pool.
+if [[ -f "$CALIBRATION_MAP" && -f "$LEDGER" && $force -eq 0 ]]; then
+    current_n=$(python3 -c "
+import json
+try:
+    c = json.load(open('$CALIBRATION_MAP'))
+    print(c.get('_meta', {}).get('n_games_used', 0))
+except Exception:
+    print(0)
+")
+    last_n=$(python3 -c "
+import json
+try:
+    l = json.load(open('$LEDGER'))
+    print(l.get('last_refit_n_games', -1))
+except Exception:
+    print(-1)
+")
+    if [[ "$current_n" -eq "$last_n" && "$current_n" -gt 0 ]]; then
+        log "IDEMPOTENCY_GUARD: calibration pool still $current_n games (unchanged) — refit would produce identical map, skipping"
+        exit 0
+    fi
+    log "pool: current_n=$current_n last_refit_n=$last_n — will refit"
+fi
+
 # 3. Dry-run gate
 if [[ $dry -eq 1 ]]; then
     log "DRY-RUN: would trigger python3 scripts/calibration_fit.py"
@@ -113,12 +140,18 @@ if python3 scripts/calibration_fit.py >> "$LOG_DIR/auto-pav-refit.log" 2>&1; the
     log "PAV refit OK"
     python3 -c "
 import json, time
+try:
+    c = json.load(open('$CALIBRATION_MAP'))
+    n_games = c.get('_meta', {}).get('n_games_used', 0)
+except Exception:
+    n_games = 0
 ledger = {
     'last_refit_epoch': int(time.time()),
     'last_refit_iso': '$(ts)',
     'trigger_state': '$overall_state',
     'trigger_ece': $ece,
     'cooldown_min': $COOLDOWN_MIN,
+    'last_refit_n_games': n_games,
 }
 open('$LEDGER', 'w').write(json.dumps(ledger, indent=2))
 "

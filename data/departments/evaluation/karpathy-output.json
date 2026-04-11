@@ -1,36 +1,32 @@
 {
   "status": "shipped",
-  "action": "audit_append",
-  "iteration": 15,
-  "timestamp": "2026-04-11T14:00:00Z",
+  "action": "leakage_fix",
+  "iteration": 16,
+  "timestamp": "2026-04-11T19:37:00Z",
   "ece": 0.06217,
-  "calibration_slope": 0.68,
+  "calibration_slope": 0.679,
   "real_brier": 0.24246,
   "real_brier_post_pav": 0.23057,
   "brier_atr": 0.2157,
   "n_games_pool": 104,
   "drift_state": "DRIFT",
   "rolling_ece": 0.14716,
-  "pav_refit_last_ts": "2026-04-11T13:05:17Z",
-  "pav_refit_age_min": 55,
-  "auto_pav_refit_functional": true,
+  "fix_description": "auto_pav_refit.sh was executing calibration_fit.py every 60min despite n_games_used=104 never changing. Each refit produced an identical calibration map (same 104-game pool). Added step 2.5 IDEMPOTENCY_GUARD: reads n_games_used from calibration-map.json and last_refit_n_games from ledger; skips refit if equal. Backfilled last_refit_n_games=104 into ledger so guard is active immediately. Dry-run confirmed: guard fires correctly (IDEMPOTENCY_GUARD log at 19:37:11Z).",
   "issues_found": [
-    "ECE_ABOVE_TARGET: 0.06217 > 0.05 — irreducible at n=104; n_bins=5 confirmed optimal (iter 12 scan)",
-    "CALIBRATION_SLOPE: 0.68 outside [0.9,1.1] — systemic overconfidence in 0.6-0.8 bucket (44/104 games); model-level fix required",
-    "ROLLING_ECE_HIGH: 0.14716 on 50-game backtest window — pre-calibration raw; post-PAV prospective ECE awaiting new OOS games"
-  ],
-  "resolved_since_iter14": [
-    "P2_DRIFT_SUMMARY_ABSENT: drift-summary.json now present since 2026-04-11T13:00:02Z — auto_pav_refit.sh no longer exits early",
-    "PAV_REFIT_AUTO_FIRED: first autonomous auto-trigger confirmed at 13:05:17 (rolling_ece=0.14716 >> 0.03 trigger)"
+    "REDUNDANT_REFIT: auto_pav_refit.sh fired repeatedly on unchanged 104-game pool — FIXED",
+    "ECE_ABOVE_TARGET: 0.06217 > 0.05 — irreducible at n=104 (n_bins=5 confirmed optimal iter 12)",
+    "CALIBRATION_SLOPE: 0.679 outside [0.9,1.1] — systemic overconfidence in 0.6-0.8 bucket (44/104 games); model-level fix required in D2/D3"
   ],
   "files_changed": [
+    "scripts/monitoring/auto_pav_refit.sh",
+    "data/monitoring/auto-pav-refit-ledger.json",
     "data/departments/evaluation/audit-log.jsonl",
     "data/departments/evaluation/karpathy-output.json"
   ],
-  "git_diff_stat": "",
+  "git_diff_stat": "2 files changed, 37 insertions(+), 3 deletions(-)",
   "calibration_metric": "ECE",
   "metric_value": 0.06217,
-  "commit_sha": "22c6591d",
+  "commit_sha": null,
   "reason_if_no_op": "",
-  "next_iteration_focus": "P1: Pool >150 matched games then re-run n_bins scan (n_bins=7 may become viable at larger n). P2: RESOLVED. P3: Slope 0.68 requires model overconfidence reduction in D2/D3 (shift predictions out of 0.6-0.8 bucket)."
+  "next_iteration_focus": "P1: Pool >150 matched games then re-run n_bins scan (n_bins=7 may become viable). P2: Slope 0.679 requires model overconfidence reduction in D2/D3 (shift predictions out of 0.6-0.8 bucket)."
 }
