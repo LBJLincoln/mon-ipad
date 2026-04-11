@@ -1,133 +1,73 @@
 {
-  "timestamp": "2026-04-10T16:45:00Z",
-  "brain_cycle": 89,
+  "timestamp": "2026-04-11T00:20:00Z",
+  "brain_cycle": 90,
   "brain_model": "claude-sonnet-4-6",
-  "cycle_rotation": "A+B — Research NBA stacked ensemble (Nature 2025) + Political Cat37 tariff features",
+  "cycle_rotation": "C — Port NBA techniques + Cat38 SCOTUS-Loper Bright deregulation features",
   "nba_fleet": {
     "total_islands": 6,
-    "online": 6,
+    "online": 0,
+    "sleeping_503": 6,
     "down": 0,
+    "note": "All 6 islands returned 503 (sleeping). Last seen ONLINE cycle 89 (Apr 10 16:45Z). Spaces updated Apr 10. Wakeup requests sent.",
     "fleet_best_brier": 0.22249,
     "fleet_best_island": "S11 (nomos42-nba-quant-2, exploration)",
-    "all_time_best_brier": 0.21570,
+    "all_time_best_brier": 0.2157,
     "checkpoint_threshold": 0.21837,
-    "gap_to_checkpoint": 0.00412,
+    "gap_to_checkpoint_at_last_seen": 0.00412,
     "gap_to_target_020": 0.02249,
     "stagnation_detected": false,
-    "diversify_sent": false,
-    "watch": "S11 recent gens showing Brier 0.2209 — if sustained becomes fleet best near checkpoint",
-    "islands": {
+    "stagnation_action": "None required — no island reported stagnation >15",
+    "watch": "S15 gen-860 Brier 0.21906 was only 0.00069 from checkpoint threshold. S11 trending 0.2209.",
+    "last_known_islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "status": "ONLINE",
-        "generation": 469,
-        "cycle": 157,
-        "best_brier": 0.22412,
-        "best_roi": 0.2796,
-        "best_sharpe": 5.49,
-        "best_features": 49,
-        "best_model": "xgboost_brier",
-        "stagnation": 0,
-        "feature_candidates": 3290,
-        "games_evaluated": 9551,
-        "pop_size": 60,
-        "mutation_rate": 0.1456
+        "status": "SLEEPING_503",
+        "last_brier": 0.22412,
+        "last_gen": 469,
+        "last_seen": "2026-04-10T16:45Z"
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "status": "ONLINE",
-        "generation": 1023,
-        "cycle": 342,
-        "best_brier": 0.22249,
-        "best_roi": 0.2968,
-        "best_sharpe": 6.6799,
-        "best_features": 61,
-        "best_model": "xgboost",
-        "stagnation": 0,
-        "feature_candidates": 3290,
-        "games_evaluated": 9551,
-        "pop_size": 60,
-        "mutation_rate": 0.0958,
-        "watch": "Recent gens: Brier 0.2209 ROI 31.5% Sharpe 8.08 — trending below fleet best"
+        "status": "SLEEPING_503",
+        "last_brier": 0.22249,
+        "last_gen": 1023,
+        "last_seen": "2026-04-10T16:45Z",
+        "watch": "Trending Brier 0.2209 — may become fleet best on wake"
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees",
-        "status": "ONLINE",
-        "generation": 1074,
-        "cycle": 358,
-        "best_brier": 0.2273,
-        "best_roi": 0.188,
-        "best_sharpe": 9.81,
-        "best_features": 42,
-        "best_model": "extra_trees",
-        "stagnation": 0,
-        "feature_candidates": 3290,
-        "games_evaluated": 9551,
-        "pop_size": 60,
-        "mutation_rate": 0.1382
+        "status": "SLEEPING_503",
+        "last_brier": 0.2273,
+        "last_gen": 1074,
+        "last_seen": "2026-04-10T16:45Z"
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost",
-        "status": "ONLINE",
-        "generation": 1027,
-        "cycle": 343,
-        "best_brier": 0.22316,
-        "best_roi": 0.291,
-        "best_sharpe": 4.1936,
-        "best_features": 79,
-        "best_model": "extra_trees",
-        "stagnation": 0,
-        "feature_candidates": 3292,
-        "games_evaluated": 11532,
-        "pop_size": 60,
-        "mutation_rate": 0.05
+        "status": "SLEEPING_503",
+        "last_brier": 0.22316,
+        "last_gen": 1027,
+        "last_seen": "2026-04-10T16:45Z"
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm",
-        "status": "ONLINE",
-        "generation": 611,
-        "cycle": 204,
-        "best_brier": 0.22308,
-        "best_roi": 0.2933,
-        "best_sharpe": 3.195,
-        "best_features": 41,
-        "best_model": "extra_trees",
-        "stagnation": 0,
-        "feature_candidates": 3292,
-        "games_evaluated": 11532,
-        "pop_size": 60,
-        "mutation_rate": 0.0468
+        "status": "SLEEPING_503",
+        "last_brier": 0.22308,
+        "last_gen": 611,
+        "last_seen": "2026-04-10T16:45Z"
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "status": "ONLINE",
-        "generation": 864,
-        "cycle": 288,
-        "best_brier": 0.22291,
-        "best_roi": 0.2903,
-        "best_sharpe": 7.3186,
-        "best_features": 47,
-        "best_model": "xgboost_brier",
-        "stagnation": 0,
-        "feature_candidates": 3290,
-        "games_evaluated": 9551,
-        "pop_size": 50,
-        "mutation_rate": 0.08,
-        "top_performer": {
-          "generation": 860,
-          "brier": 0.21906,
-          "roi": 0.3385,
-          "sharpe": 9.7413,
-          "features": 200,
-          "model": "extra_trees",
-          "note": "CLOSEST TO CHECKPOINT — 0.21906 vs threshold 0.21837 (gap: 0.00069)"
-        }
+        "status": "SLEEPING_503",
+        "last_brier": 0.22291,
+        "last_gen": 864,
+        "last_seen": "2026-04-10T16:45Z",
+        "watch": "Gen-860 found Brier 0.21906 — NEAREST TO CHECKPOINT"
       }
     }
   },
@@ -136,99 +76,84 @@
     "online": 2,
     "down": 2,
     "down_islands": [
-      "nomos42-political-alpha-3.hf.space (catboost island, 404 — needs HF Space restart)",
-      "nomos42-political-alpha-4.hf.space (wide search island, 404 — needs HF Space restart)"
+      "nomos42-political-alpha-3.hf.space (404 — 2 consecutive cycles down)",
+      "nomos42-political-alpha-4.hf.space (404 — 2 consecutive cycles down)"
     ],
     "fleet_best_brier": 0.23134,
-    "fleet_best_island": "P2 (nomos42-political-alpha-2, catboost exploration)",
+    "fleet_best_island": "P2 (nomos42-political-alpha-2)",
     "target_brier": 0.22,
     "gap_to_target": 0.01134,
-    "stagnation_detected": false,
-    "note": "P3 and P4 returning 404. Manual HF restart required.",
     "islands": {
       "P1": {
         "url": "nomos42-political-alpha.hf.space",
-        "role": "political_exploitation",
+        "role": "exploitation",
         "status": "ONLINE",
-        "generation": 31108,
-        "cycle": 10370,
+        "generation": 31496,
         "best_brier": 0.24971,
-        "best_roi": 0.0068,
-        "best_sharpe": 0.6809,
-        "best_features": 65,
-        "best_model": "xgboost_brier",
-        "stagnation": 0,
-        "events": 1180,
-        "feature_candidates": 252
+        "stagnation": 0
       },
       "P2": {
         "url": "nomos42-political-alpha-2.hf.space",
-        "role": "political_exploration",
+        "role": "exploration",
         "status": "ONLINE",
-        "generation": 33679,
-        "cycle": 11227,
+        "generation": 34429,
         "best_brier": 0.23134,
         "best_roi": 0.2804,
         "best_sharpe": 1.0635,
-        "best_features": 70,
-        "best_model": "catboost",
         "stagnation": 0,
-        "events": 372,
-        "feature_candidates": 309
+        "top": "CatBoost 88f — Brier 0.2319 ROI 19% Sharpe 1.86"
       },
       "P3": {
-        "url": "nomos42-political-alpha-3.hf.space",
-        "role": "political_catboost",
         "status": "DOWN_404",
-        "note": "404 — needs manual HuggingFace Space restart"
+        "consecutive_down_cycles": 2
       },
       "P4": {
-        "url": "nomos42-political-alpha-4.hf.space",
-        "role": "political_wide_search",
         "status": "DOWN_404",
-        "note": "404 — needs manual HuggingFace Space restart"
+        "consecutive_down_cycles": 2
       }
     }
   },
-  "cycle_89_actions": {
-    "political_alpha_improvement": {
+  "cycle_90_actions": {
+    "political_improvement": {
       "type": "feature_engineering",
+      "rotation": "C — Port NBA techniques",
       "file": "nomos-political-alpha/features/political_engine.py",
-      "change": "Added Category 37: TARIFF SECTOR EXPOSURE (22 features)",
-      "engine_version_new": "v3.15-political-37cat-tariff-exposure",
-      "engine_version_prev": "v3.14-political-36cat-iran-war",
-      "rationale": "Liberation Day (Apr 2, 2025) regime flags, 90-day pause insider signal (Senate Dems called for SEC probe Apr 2026), per-ticker import/carve-out probability by donation tier, China 34% deal regime, VIX×import stress. Directly exploitable alpha.",
-      "features_added": 22,
-      "estimated_total_features": 3422,
-      "priority": "HIGH — will be picked up by HF Space on next deploy"
+      "change": "Added Category 38: SCOTUS-Loper Bright Deregulation Impact (20 features)",
+      "engine_version_new": "v3.16-political-38cat-scotus-chevron",
+      "engine_version_prev": "v3.15-political-37cat-tariff-exposure",
+      "features_added": 20,
+      "estimated_total_features": 3442,
+      "key_signals": "cfpb_weakening_beneficiary, epa_deregulation_winner, fda_rule_beneficiary, ftc_antitrust_relief, renewable_energy_loser, trump2_loper_bright_synergy, net_deregulation_score",
+      "rationale": "Loper Bright (Jun 28 2024) overturned 40yr Chevron deference. Compounding with Trump 2.0 deregulation: banks/fossil/pharma/bigtech WIN, renewables/utilities LOSE. Direct sector alpha."
     },
     "nba_research_proposal": {
       "type": "research_proposal",
-      "file": "mon-ipad/data/research-proposals/2026-04-10-stacked-ensemble-isotonic-calibration-nature2025.md",
-      "change": "OOF Stacking Ensemble: XGB+ET+CatBoost → LR meta-learner with isotonic calibration (Nature Sci Reports 2025)",
-      "expected_brier_improvement": "0.222 → 0.217-0.219",
-      "source": "Nature Scientific Reports 2025 + MDPI Uncertainty-Aware 2026",
-      "priority": "HIGH — assign to Kaggle Karpathy next GPU session",
-      "cross_port": "Also applicable to Political Alpha P1+P2 stacking after NBA validation"
-    }
+      "file": "mon-ipad/data/research-proposals/2026-04-11-era-normalized-season-fixed-effects.md",
+      "change": "Era normalization (per-100-possession) + season-fixed effects for time-series stability (MDPI 2026)",
+      "source": "MDPI Information Systems 2026: Uncertainty-Aware NBA Forecasting (Brier 0.089 fused model)",
+      "expected_improvement": "Eliminates era bias 2010-2026 (3pt revolution), improves calibration",
+      "priority": "HIGH"
+    },
+    "nba_islands": "All 503 — wakeup requests sent via HTTP. Keepalive cron should restore by next cycle."
   },
   "alerts": [
-    "ACTION REQUIRED: Political P3 (nomos42-political-alpha-3) DOWN — 404, manual HF restart needed",
-    "ACTION REQUIRED: Political P4 (nomos42-political-alpha-4) DOWN — 404, manual HF restart needed",
-    "WATCH: S11 recent gens Brier 0.2209 — if best_brier updates, fleet best approaches checkpoint",
-    "WATCH: S15 gen-860 found Brier 0.21906 — only 0.00069 from Supabase checkpoint threshold 0.21837"
+    "ACTION REQUIRED: P3 and P4 DOWN 2 consecutive cycles — manual HF Space recreation needed",
+    "INFO: All 6 NBA islands sleeping (503) — keepalive cron likely missed. Wakeup requests sent.",
+    "WATCH: S15 gen-860 Brier 0.21906 — nearest to checkpoint 0.21837",
+    "WATCH: P2 CatBoost trending toward target 0.22 (current 0.23134)"
   ],
   "next_cycle_priority": [
-    "Stacked ensemble Kaggle GPU run (OOF: XGB+ET+CatBoost → LR meta)",
-    "Restart Political P3 and P4 HF Spaces manually",
-    "Cat38: SCOTUS-Chevron sector impact tracker for political_engine.py",
-    "Verify S11 Brier 0.2209 is sustained — potential checkpoint if it becomes best_brier"
+    "Verify NBA islands are awake (cycle 91 should see them online again)",
+    "Political rotation D: Check data pipeline health (ops/fetch_political_data.py)",
+    "Cat39: ProPublica FEC filing velocity tracker (real-time donation surges pre-EO)",
+    "Checkpoint: if S15 or S11 best_brier < 0.21837 when awake, push to Supabase",
+    "Recreation: P3 and P4 HF Spaces need manual re-deployment"
   ],
   "cross_repo_health": {
     "nba_engine_version": "v3.1-59cat",
-    "political_engine_version": "v3.15-political-37cat-tariff-exposure",
-    "nba_engine_parity_note": "6 islands all running same engine — parity maintained",
-    "techniques_ported_this_cycle": "Isotonic calibration + OOF stacking documented in research proposal for cross-port",
-    "next_port": "OOF stacking ensemble NBA → Political (after Kaggle GPU validation)"
+    "political_engine_version": "v3.16-political-38cat-scotus-chevron",
+    "nba_engine_parity": "6 islands all same engine (v3.1-59cat) — parity maintained",
+    "techniques_ported_this_cycle": "SCOTUS/Loper Bright sector deregulation framework — analogous to NBA home/away advantage composite features",
+    "next_port": "ProPublica FEC filing velocity → NBA? (no direct analog) vs Cat39 political"
   }
 }
