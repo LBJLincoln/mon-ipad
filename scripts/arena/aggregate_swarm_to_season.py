@@ -75,6 +75,128 @@ def pick_best_strategy(swarm: dict) -> tuple[str, dict] | tuple[None, None]:
     return best_key, best_val
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Sortino-weighted ensemble (adopted from Sportstensor SN41 Sortino+PnL v2.5)
+# ─────────────────────────────────────────────────────────────────────────────
+# Background: Sportstensor's published NBA leaderboard (14% live ROI, 100+
+# miners) weights their ensemble by Sortino ratio — downside-risk-adjusted
+# return. We don't have per-trade PnL arrays in the swarm output yet, but the
+# strategy-level stats (sharpe, roi, max_drawdown, win_rate) are enough to
+# compute a defensible Sortino proxy without fabricating anything.
+#
+# Formula:
+#   weight_i = max(0, sharpe_i)
+#              * max(0, roi_pct_i / 100)
+#              * downside_penalty_i
+#
+# where downside_penalty_i = 1 / (1 + max_drawdown_i). Strategies with any of
+#   - negative sharpe
+#   - negative ROI
+#   - < MIN_BETS total bets
+# get weight=0 and are excluded from the ensemble.
+#
+# This is:
+#  * downside-aware (max_drawdown penalty directly from the data)
+#  * return-aware (ROI multiplier)
+#  * risk-adjusted (sharpe factor)
+#  * defensible (every input is a real swarm metric, not synthetic)
+#
+# If the ensemble has < 2 qualifying contributors we fall back to the existing
+# "pick single best by sharpe" path so behavior is backward-compatible on
+# degenerate swarms.
+MIN_BETS_FOR_ENSEMBLE = 50
+
+
+def sortino_weight(strat: dict) -> float:
+    """Sortino-style downside-aware weight for one strategy. Returns 0 if the
+    strategy should be excluded from the ensemble."""
+    bets = int(strat.get("total_bets") or 0)
+    if bets < MIN_BETS_FOR_ENSEMBLE:
+        return 0.0
+    sharpe = float(strat.get("sharpe") or 0.0)
+    roi_pct = float(strat.get("roi") or 0.0)
+    if sharpe <= 0 or roi_pct <= 0:
+        return 0.0
+    max_dd = float(strat.get("max_drawdown") or 0.0)
+    # max_drawdown can arrive as a fraction (0.2) or a percent (20). Normalize.
+    if max_dd > 1:
+        max_dd = max_dd / 100.0
+    downside_penalty = 1.0 / (1.0 + max_dd)
+    return sharpe * (roi_pct / 100.0) * downside_penalty
+
+
+def build_ensemble(swarm: dict) -> dict | None:
+    """Build a Sortino-weighted ensemble of the swarm strategies. Returns None
+    if fewer than 2 strategies qualify."""
+    strategies = swarm.get("strategies") or {}
+    scored: list[tuple[str, dict, float]] = []
+    for k, v in strategies.items():
+        w = sortino_weight(v)
+        if w > 0:
+            scored.append((k, v, w))
+    if len(scored) < 2:
+        return None
+
+    total_w = sum(w for _, _, w in scored)
+    if total_w <= 0:
+        return None
+
+    contributors = []
+    ens_roi = 0.0
+    ens_sharpe = 0.0
+    ens_winrate = 0.0
+    ens_max_dd = 0.0
+    ens_bets = 0
+    ens_wins = 0
+
+    for k, v, w in scored:
+        norm = w / total_w
+        roi = float(v.get("roi") or 0.0)
+        sharpe = float(v.get("sharpe") or 0.0)
+        wr = float(v.get("win_rate") or 0.0)
+        # win_rate may be 0..1 or 0..100 depending on strategy
+        wr_pct = wr * 100.0 if wr <= 1.0 else wr
+        max_dd = float(v.get("max_drawdown") or 0.0)
+        if max_dd > 1:
+            max_dd = max_dd / 100.0
+        bets = int(v.get("total_bets") or 0)
+        wins = int(v.get("wins") or round(bets * wr_pct / 100.0))
+
+        ens_roi += norm * roi
+        ens_sharpe += norm * sharpe
+        ens_winrate += norm * wr_pct
+        ens_max_dd += norm * max_dd
+        # Bet count is cumulative across contributors — that's the capital
+        # deployed by the ensemble strategy over the season
+        ens_bets += bets
+        ens_wins += wins
+
+        contributors.append({
+            "key": k,
+            "name": v.get("name") or k,
+            "roi_pct": round(roi, 3),
+            "sharpe": round(sharpe, 3),
+            "win_rate_pct": round(wr_pct, 2),
+            "max_drawdown": round(max_dd, 4),
+            "total_bets": bets,
+            "sortino_weight": round(w, 4),
+            "normalized_weight": round(norm, 4),
+        })
+
+    return {
+        "roi_pct": round(ens_roi, 3),
+        "sharpe": round(ens_sharpe, 3),
+        "win_rate_pct": round(ens_winrate, 2),
+        "max_drawdown": round(ens_max_dd, 4),
+        "total_bets": ens_bets,
+        "wins": ens_wins,
+        "losses": ens_bets - ens_wins,
+        "contributors": contributors,
+        "method": "sortino_weighted_ensemble_v1",
+        "source": "adopted from Sportstensor SN41 Sortino+PnL v2.5 incentive",
+    }
+
+
 def synth_trades(strat: dict, brier_n: int) -> list[dict]:
     """Synthesize a uniformly-distributed trade-by-trade log so the equity
     curve renders. Real ROI/Sharpe/win-rate from the swarm are preserved at
@@ -140,29 +262,59 @@ def synth_trades(strat: dict, brier_n: int) -> list[dict]:
 
 
 def build_payload(swarm_path: Path, swarm: dict) -> dict:
-    best_key, best = pick_best_strategy(swarm)
-    if not best:
-        raise SystemExit("[aggregate] no strategies in latest swarm result")
+    # Try Sortino-weighted ensemble first (Sportstensor SN41 methodology). If
+    # < 2 strategies qualify, fall back to the legacy "pick single best" path.
+    ensemble = build_ensemble(swarm)
 
-    n_bets = int(best.get("total_bets") or 0)
-    wins = int(best.get("wins") or round(n_bets * (best.get("win_rate") or 0) / 100.0))
-    # Trust ROI % from the swarm; the swarm's `final_bankroll` field uses a
-    # per-strategy starting capital that isn't comparable across strategies,
-    # so we always re-derive final from INITIAL_BANKROLL * (1 + roi/100).
-    roi_pct = float(best.get("roi") or 0.0)
+    if ensemble is not None:
+        strategy_label = f"sortino_ensemble({len(ensemble['contributors'])})"
+        strategy_name = (
+            "Sortino-Weighted Ensemble ("
+            + ", ".join(c["name"] for c in ensemble["contributors"][:3])
+            + ("" if len(ensemble["contributors"]) <= 3 else f" +{len(ensemble['contributors']) - 3}")
+            + ")"
+        )
+        n_bets = int(ensemble["total_bets"])
+        wins = int(ensemble["wins"])
+        roi_pct = float(ensemble["roi_pct"])
+        sharpe_out = float(ensemble["sharpe"])
+        max_dd_out = float(ensemble["max_drawdown"])
+        win_rate_pct = float(ensemble["win_rate_pct"])
+        best_for_synth = {
+            "name": strategy_name,
+            "total_bets": n_bets,
+            "wins": wins,
+            "win_rate": win_rate_pct,
+            "roi": roi_pct,
+            "sharpe": sharpe_out,
+            "max_drawdown": max_dd_out,
+        }
+    else:
+        best_key, best = pick_best_strategy(swarm)
+        if not best:
+            raise SystemExit("[aggregate] no strategies in latest swarm result")
+        strategy_label = best_key
+        strategy_name = best.get("name") or best_key
+        n_bets = int(best.get("total_bets") or 0)
+        wins = int(best.get("wins") or round(n_bets * (best.get("win_rate") or 0) / 100.0))
+        roi_pct = float(best.get("roi") or 0.0)
+        sharpe_out = float(best.get("sharpe") or 0.0)
+        max_dd_raw = float(best.get("max_drawdown") or 0.0)
+        max_dd_out = max_dd_raw / 100.0 if max_dd_raw > 1 else max_dd_raw
+        win_rate_raw = best.get("win_rate") or 0.0
+        win_rate_pct = win_rate_raw * 100.0 if win_rate_raw <= 1.0 else win_rate_raw
+        if not best.get("wins"):
+            wins = round(n_bets * win_rate_pct / 100.0)
+        best_for_synth = dict(best)
+
+    # Trust ROI % from the ensemble/strategy; re-derive final from $100 base so
+    # it's comparable across aggregations.
     final = round(INITIAL_BANKROLL * (1.0 + roi_pct / 100.0), 2)
     brier = float(swarm.get("model_brier") or 0.0)
     games_total = int(swarm.get("games_total") or 0)
 
-    # Win rate sometimes comes back as a 0..1 fraction, sometimes as 0..100.
-    win_rate_raw = best.get("win_rate") or 0.0
-    win_rate_pct = win_rate_raw * 100.0 if win_rate_raw <= 1.0 else win_rate_raw
-    if not best.get("wins"):
-        wins = round(n_bets * win_rate_pct / 100.0)
-
     # Inject the *real* final into the strategy dict before synthesizing trades
     # so synth_trades targets the correct endpoint.
-    best_for_synth = dict(best)
     best_for_synth["final_bankroll"] = final
     trades = synth_trades(best_for_synth, brier_n=games_total)
 
@@ -180,11 +332,13 @@ def build_payload(swarm_path: Path, swarm: dict) -> dict:
         "wins": wins,
         "losses": n_bets - wins,
         "win_rate": round(win_rate_pct, 2),
-        "sharpe": round(best.get("sharpe") or 0.0, 3),
-        "max_dd": round(best.get("max_drawdown") or 0.0, 2),
+        "sharpe": round(sharpe_out, 3),
+        "max_dd": round(max_dd_out, 4),
         "brier": round(brier, 5),
         "brier_n": games_total,
-        "strategy": best.get("name") or best_key,
+        "strategy": strategy_name,
+        "strategy_id": strategy_label,
+        "ensemble": ensemble,  # None if single-best fallback
         "source_swarm_file": swarm_path.name,
         "source_swarm_ts": swarm.get("timestamp"),
         "generated_at": datetime.now(timezone.utc).isoformat(),
