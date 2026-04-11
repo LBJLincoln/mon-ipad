@@ -117,24 +117,35 @@ check_engine_parity() {
         echo "[sync] ENGINE PARITY OK: all three at ${md5_mon}" >> "${LOG}"
     fi
 
+    # Detect divergence type: old > 400 hardcode vs new semantic drift
+    local fix_desc divergence_detail
+    if grep -qF "or len(selected) > 400:" "${engine_mon}" 2>/dev/null; then
+        # Old known issue still present
+        fix_desc="Update mon-ipad/features/engine.py line ~7516: change \`> 400\` to \`> target_features\` (MAX_FEATURES=200 rule). Then re-run this script."
+        divergence_detail="{\"type\": \"hardcode\", \"mon_ipad_line\": \"if len(selected) < 10 or len(selected) > 400:\", \"nomos_nba_agent_line\": \"if len(selected) < 10 or len(selected) > target_features:\", \"semantic_winner\": \"nomos_nba_agent\"}"
+    elif [[ "${ok}" == "false" ]]; then
+        # Semantic drift: nomos-nba-agent has newer improvements; mon-ipad needs to be updated
+        fix_desc="Semantic drift detected (not the old > 400 issue). nomos-nba-agent is AHEAD: vig_dist55 calc (line ~6447), density calc using ISO date strings (line ~6497), default row values (line ~6722). Copy nomos-nba-agent engine.py to mon-ipad + hf-space, then push."
+        divergence_detail="{\"type\": \"semantic_drift\", \"direction\": \"nomos-nba-agent is newer/canonical\", \"diff_locations\": [\"line ~6447: _vig_dist55 uses fair_home_prob dict lookup in nba-agent\", \"line ~6497: density uses ISO string comparison in nba-agent (more correct)\", \"line ~6722: default row neutral values differ\", \"line ~7517: comment only (trivial)\"]}"
+    else
+        fix_desc="No fix needed"
+        divergence_detail="{}"
+    fi
+
     mkdir -p "$(dirname "${parity_file}")"
     cat > "${parity_file}" <<PARITY_JSON
 {
   "timestamp": "$(date -u '+%Y-%m-%dT%H:%M:%SZ')",
   "ok": ${ok},
-  "canonical": "mon-ipad",
+  "canonical": "nomos_nba_agent",
   "md5": {
-    "mon_ipad":       "${md5_mon}",
-    "hf_space":       "${md5_hf}",
+    "mon_ipad":        "${md5_mon}",
+    "hf_space":        "${md5_hf}",
     "nomos_nba_agent": "${md5_agent}"
   },
   "diverged_repos": ${diverged_repos},
-  "fix_if_broken": "Update mon-ipad/features/engine.py line ~7516: change \`> 400\` to \`> target_features\` (MAX_FEATURES=200 rule). Then run this script to propagate to sister repos.",
-  "divergence_detail": {
-    "mon_ipad_line": "if len(selected) < 10 or len(selected) > 400:",
-    "nomos_nba_agent_line": "if len(selected) < 10 or len(selected) > target_features:",
-    "semantic_winner": "nomos_nba_agent — target_features=200 enforces MAX_FEATURES cap correctly"
-  }
+  "fix_if_broken": "${fix_desc}",
+  "divergence_detail": ${divergence_detail}
 }
 PARITY_JSON
 }
@@ -151,7 +162,15 @@ auto_fix_engine_parity() {
     local fix_pat="or len(selected) > 400:"
 
     if ! grep -qF "${fix_pat}" "${engine_mon}" 2>/dev/null; then
-        echo "[sync] auto_fix: broken pattern absent — skip" >> "${LOG}"
+        # Old > 400 hardcode is gone. Check if parity still broken (semantic drift).
+        local md5_mon_cur md5_agent_cur
+        md5_mon_cur=$(md5sum "${engine_mon}" 2>/dev/null | awk '{print $1}' || echo "missing")
+        md5_agent_cur=$(md5sum "/home/termius/nomos-nba-agent/features/engine.py" 2>/dev/null | awk '{print $1}' || echo "missing")
+        if [[ "${md5_mon_cur}" != "${md5_agent_cur}" ]]; then
+            echo "[sync] auto_fix: > 400 already fixed BUT parity still broken (semantic drift). nomos-nba-agent is canonical — copy its engine.py to mon-ipad manually." >> "${LOG}"
+        else
+            echo "[sync] auto_fix: > 400 fixed and parity OK — no action needed" >> "${LOG}"
+        fi
         return 0
     fi
 
