@@ -7513,7 +7513,7 @@ def genetic_feature_selection(X, y, feature_names, n_generations=50,
     def fitness(chromosome):
         """Evaluate chromosome fitness = negative Brier score."""
         selected = [i for i, bit in enumerate(chromosome) if bit]
-        if len(selected) < 10 or len(selected) > 400:
+        if len(selected) < 10 or len(selected) > target_features:
             return -0.30  # Penalty for too few or too many
         X_sub = X[:, selected]
         briers = []
