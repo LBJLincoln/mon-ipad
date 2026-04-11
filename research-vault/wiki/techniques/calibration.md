@@ -15,12 +15,12 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
 - **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
+- **NBA Scientific Experiment Report** (1134 words) -- `raw/experiments/nba-experiment-2026-04-11.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
 - **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
 - **NBA Scientific Experiment Report** (1082 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
 - **00 — Live Dashboard** (1076 words) -- `raw/obsidian-docs/00-Dashboard.md`
 - **NBA Scientific Experiment Report** (1063 words) -- `raw/experiments/nba-experiment-2026-04-10.md`
-- **NBA Scientific Experiment Report** (1063 words) -- `raw/experiments/nba-experiment-2026-04-11.md`
 - **07 -- Betting** (997 words) -- `raw/obsidian-docs/07-Betting.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/agent-memory/research-analyst_research_march2026_agentic_ai.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/research-analyst/research_march2026_agentic_ai.md`

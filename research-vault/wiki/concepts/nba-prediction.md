@@ -1,19 +1,19 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 154 raw sources on 2026-04-11
+> Auto-compiled from 156 raw sources on 2026-04-11
 
 ## Overview
 
-This topic covers 154 research files spanning nba prediction & ml models.
+This topic covers 156 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
 
-- **2025-26 NBA Season — Agent GEMMA ANALYST** (9884 words) -- `raw/arena-docs/gemini-season-2025-26.md`
-- **2025-26 NBA Season — Agent LLAMA VANGUARD** (9879 words) -- `raw/arena-docs/codex-season-2025-26.md`
-- **2025-26 NBA Season — Agent QWEN STRATEGIST** (9877 words) -- `raw/arena-docs/openrouter-season-2025-26.md`
-- **2025-26 NBA Season — Agent CLAUDE SENTINEL** (9854 words) -- `raw/arena-docs/claude-season-2025-26.md`
-- **2025-26 NBA Season — Agent MISTRAL MAVERICK** (9827 words) -- `raw/arena-docs/grok-season-2025-26.md`
+- **2025-26 NBA Season — Agent QWEN STRATEGIST** (10059 words) -- `raw/arena-docs/openrouter-season-2025-26.md`
+- **2025-26 NBA Season — Agent GEMMA ANALYST** (10057 words) -- `raw/arena-docs/gemini-season-2025-26.md`
+- **2025-26 NBA Season — Agent CLAUDE SENTINEL** (10043 words) -- `raw/arena-docs/claude-season-2025-26.md`
+- **2025-26 NBA Season — Agent LLAMA VANGUARD** (10041 words) -- `raw/arena-docs/codex-season-2025-26.md`
+- **2025-26 NBA Season — Agent MISTRAL MAVERICK** (9899 words) -- `raw/arena-docs/grok-season-2025-26.md`
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
@@ -38,13 +38,13 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
 - **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
 - **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
+- **NBA Scientific Experiment Report** (1134 words) -- `raw/experiments/nba-experiment-2026-04-11.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
 - **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
 - **NBA Scientific Experiment Report** (1082 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
 - **00 — Live Dashboard** (1076 words) -- `raw/obsidian-docs/00-Dashboard.md`
 - **05 -- Infrastructure** (1069 words) -- `raw/obsidian-docs/05-Infrastructure.md`
 - **NBA Scientific Experiment Report** (1063 words) -- `raw/experiments/nba-experiment-2026-04-10.md`
-- **NBA Scientific Experiment Report** (1063 words) -- `raw/experiments/nba-experiment-2026-04-11.md`
 - **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/data-research/self-improvement-harness-quick-wins-2026-03-31.md`
 - **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/research/self-improvement-harness-quick-wins-2026-03-31.md`
 - **07 -- Betting** (997 words) -- `raw/obsidian-docs/07-Betting.md`
@@ -162,7 +162,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-06** (145 words) -- `raw/research/github-betting-scan-2026-04-06.md`
 - **Research Scan: github-betting-scan-2026-04-07** (145 words) -- `raw/research/github-betting-scan-2026-04-07.md`
 - **Research Scan: github-betting-scan-2026-04-08** (145 words) -- `raw/research/github-betting-scan-2026-04-08.md`
+- **Research Scan: github-betting-scan-2026-04-11** (145 words) -- `raw/research/github-betting-scan-2026-04-11.md`
 - **Current Fleet State (iter 9, 2026-04-07 09:30 UTC)** (130 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`
+- **Research Scan: github-scan-2026-04-11** (123 words) -- `raw/research/github-scan-2026-04-11.md`
 
 ## Key Findings
 
