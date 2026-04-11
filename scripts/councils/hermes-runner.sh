@@ -270,7 +270,13 @@ cf.write_text(json.dumps(d, indent=2))
     local agent_reason=""
     local agent_claimed_sha=""
     local karpathy_file="${DATA_DIR}/${dept_name}/karpathy-output.json"
-    if [[ -f "${karpathy_file}" ]]; then
+
+    # ── DNS/API error detection — don't read stale karpathy-output.json ──
+    if [[ $exit_code -ne 0 ]] && grep -q "EAI_AGAIN\|ENOTFOUND\|ETIMEDOUT\|Unable to connect" "${log_file}" 2>/dev/null; then
+        agent_status="dns_error"
+        agent_reason="DNS resolution failed (EAI_AGAIN/ENOTFOUND) — not a real agent failure"
+        log_msg "⚠️ DNS error detected for ${dept_name} — skipping stale karpathy-output.json"
+    elif [[ -f "${karpathy_file}" ]]; then
         agent_status=$(python3 -c "import json,sys; d=json.load(open('${karpathy_file}')); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
         agent_reason=$(python3 -c "import json; d=json.load(open('${karpathy_file}')); print(d.get('reason_if_no_op','') or d.get('action',''))" 2>/dev/null || echo "")
         # Normalise empty/null/None to empty string so the hallucination check
@@ -353,6 +359,9 @@ cf.write_text(json.dumps(d, indent=2))
     local new_streak=0
     if [[ "${verified_status}" == "shipped" ]]; then
         new_streak=0
+    elif [[ "${agent_status}" == "dns_error" ]]; then
+        # DNS failures are infra issues, not agent stalls — don't inflate streak
+        new_streak=${prev_streak}
     else
         new_streak=$(( prev_streak + 1 ))
     fi

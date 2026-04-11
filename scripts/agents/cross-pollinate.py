@@ -44,6 +44,8 @@ ISLANDS = {
     "S13": {"url": "nomos42-nba-evo-4", "role": "catboost_specialist"},
     "S14": {"url": "nomos42-nba-evo-5", "role": "lightgbm_specialist"},
     "S15": {"url": "nomos42-nba-evo-6", "role": "wide_search"},
+    "S16": {"url": "lbjlincoln26-nba-evo-s16", "role": "gradient_boost"},
+    "S17": {"url": "lbjlincoln26-nba-evo-s17", "role": "ensemble"},
 }
 
 # Thresholds

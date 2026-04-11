@@ -77,6 +77,8 @@ HF_ISLANDS = {
     "S13": "https://nomos42-nba-evo-4.hf.space",
     "S14": "https://nomos42-nba-evo-5.hf.space",
     "S15": "https://nomos42-nba-evo-6.hf.space",
+    "S16": "https://lbjlincoln26-nba-evo-s16.hf.space",
+    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space",
 }
 
 POPULATION_SIZE = 24
@@ -204,7 +206,7 @@ def build_feature_cache() -> dict:
     image=gpu_image,
     volumes={VOLUME_MOUNT: vol},
     secrets=[modal.Secret.from_name("nomos42-secrets")],
-    timeout=900,  # 15 min safety margin for 10 min burst
+    timeout=1800,  # 30 min safety margin for setup + evolution
     retries=0,
 )
 def run_burst(max_duration: int = MAX_DURATION_SECONDS) -> dict:
@@ -587,14 +589,13 @@ def run_burst(max_duration: int = MAX_DURATION_SECONDS) -> dict:
             except Exception as e:
                 print(f"[PUSH] Failed: {e}")
 
-        # Update HF Space S10
+        # Update HF Space S10 — nudge target_features toward GPU-found optimum
+        # /api/config accepts: pop_size, mutation_rate, target_features, crossover_rate, etc.
+        # We set target_features so the CPU island converges toward the winning feature count.
         try:
+            target_features = min(len(best_features), 150)  # cap within space guard
             payload = json.dumps({
-                "best_brier": best_ever,
-                "features": best_features,
-                "model_type": best_ind["model_type"],
-                "hp": best_ind["hp"],
-                "source": "modal-burst",
+                "target_features": target_features,
             }).encode("utf-8")
             import urllib.request, ssl
             ctx = ssl.create_default_context()
@@ -605,10 +606,11 @@ def run_burst(max_duration: int = MAX_DURATION_SECONDS) -> dict:
                 data=payload, method="POST",
                 headers={"Content-Type": "application/json"},
             )
-            urllib.request.urlopen(req, timeout=15, context=ctx)
-            print("[HF] Updated S10 config")
-        except Exception:
-            pass
+            with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
+                resp_data = json.loads(resp.read())
+            print(f"[HF] Updated S10 config: target_features={target_features} → {resp_data}")
+        except Exception as e:
+            print(f"[HF] S10 /api/config failed (space may be sleeping): {type(e).__name__}: {e}")
 
     # Telegram alert
     try:

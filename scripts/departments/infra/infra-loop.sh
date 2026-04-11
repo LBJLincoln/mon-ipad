@@ -115,6 +115,8 @@ done < <({
     check_space "S13" "https://nomos42-nba-evo-4.hf.space"
     check_space "S14" "https://nomos42-nba-evo-5.hf.space"
     check_space "S15" "https://nomos42-nba-evo-6.hf.space"
+    check_space "S16" "https://lbjlincoln26-nba-evo-s16.hf.space"
+    check_space "S17" "https://lbjlincoln26-nba-evo-s17.hf.space"
 } | grep -E '^S[0-9]+:')
 
 # Also check political spaces (P1-P2 only; P3/P4 removed 2026-04-03 — never existed on HF)
@@ -136,8 +138,8 @@ for r in "${POL_RESULTS[@]}"; do
     [[ "$r" == *":running:"* ]] && POL_UP=$((POL_UP + 1))
 done
 FLEET_UP=$((NBA_UP + POL_UP))
-FLEET_TOTAL=8
-echo "  NBA: $NBA_UP/6 | Political: $POL_UP/2 | Total: $FLEET_UP/$FLEET_TOTAL"
+FLEET_TOTAL=10
+echo "  NBA: $NBA_UP/8 | Political: $POL_UP/2 | Total: $FLEET_UP/$FLEET_TOTAL"
 
 # ─── 6. ISSUES DETECTION ─────────────────────────────────────────────────────
 echo "[6/8] Issue detection..."
@@ -170,7 +172,7 @@ MEM_PCT=$(python3 -c "print(round($MEM_USED_MB / $MEM_TOTAL_MB * 100, 1))")
 [[ "$POL_UP" -lt 2 ]] && ISSUES+=('{"severity":"MEDIUM","component":"political_spaces","description":"Political spaces DOWN: '"$POL_UP"'/2 running."}')
 
 # NBA spaces
-[[ "$NBA_UP" -lt 6 ]] && ISSUES+=('{"severity":"HIGH","component":"nba_spaces","description":"NBA spaces DOWN: '"$NBA_UP"'/6 running"}')
+[[ "$NBA_UP" -lt 8 ]] && ISSUES+=('{"severity":"HIGH","component":"nba_spaces","description":"NBA spaces DOWN: '"$NBA_UP"'/8 running"}')
 
 # Large data dir
 [[ "$DATA_DIR_MB" -gt 200 ]] && ISSUES+=('{"severity":"LOW","component":"disk","description":"data/ directory is '"$DATA_DIR_MB"'MB — consider archiving arena/karpathy logs"}')
@@ -261,7 +263,7 @@ output = {
     'spaces_health': json.loads('''${SPACES_JSON}'''),
     'spaces_summary': {
         'nba_up': $NBA_UP,
-        'nba_total': 6,
+        'nba_total': 8,
         'political_up': $POL_UP,
         'political_total': 2,
         'fleet_up': $FLEET_UP,

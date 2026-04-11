@@ -34,18 +34,20 @@ VM MUSCLE (cron, every 4h at :30)
     └── Auto-restart data server
     Script: scripts/autonomous-cycle.sh
 
-HF SPACES (6 islands, always-on, CPU tree-only, MAX_FEATURES=200)
-    ├── S10 Nomos42/nba-quant:   exploitation (mut=0.09, cx=0.80, feat=63) → nomos42-nba-quant.hf.space
-    ├── S11 Nomos42/nba-quant-2: exploration  (mut=0.15, feat=80)          → nomos42-nba-quant-2.hf.space
-    ├── S12 Nomos42/nba-evo-3:   extra_trees specialist (mut=0.08, feat=60)
-    ├── S13 Nomos42/nba-evo-4:   catboost specialist    (mut=0.10, feat=66)
-    ├── S14 Nomos42/nba-evo-5:   lightgbm specialist    (mut=0.08, feat=55)
-    └── S15 Nomos42/nba-evo-6:   wide search            (mut=0.18, feat=80, pop=50)
+HF SPACES (8 NBA islands, always-on, CPU tree-only, MAX_FEATURES=200)
+    ├── S10 Nomos42/nba-quant:        exploitation (mut=0.09, cx=0.80, feat=63) → nomos42-nba-quant.hf.space
+    ├── S11 Nomos42/nba-quant-2:      exploration  (mut=0.15, feat=80)          → nomos42-nba-quant-2.hf.space
+    ├── S12 Nomos42/nba-evo-3:        extra_trees specialist (mut=0.08, feat=60)
+    ├── S13 Nomos42/nba-evo-4:        catboost specialist    (mut=0.10, feat=66)
+    ├── S14 Nomos42/nba-evo-5:        lightgbm specialist    (mut=0.08, feat=55)
+    ├── S15 Nomos42/nba-evo-6:        wide search            (mut=0.18, feat=80, pop=50)
+    ├── S16 LBJLincoln26/nba-evo-s16: gradient boost         → lbjlincoln26-nba-evo-s16.hf.space
+    └── S17 LBJLincoln26/nba-evo-s17: ensemble               → lbjlincoln26-nba-evo-s17.hf.space
 
 NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
 
 KAGGLE KARPATHY LOOP (GPU, 9h sessions, Karpathy autoresearch pattern)
-    ├── scripts/kaggle/nba_karpathy_loop.py: NBA evolution (seeds from 6 islands)
+    ├── scripts/kaggle/nba_karpathy_loop.py: NBA evolution (seeds from 8 islands)
     └── scripts/kaggle/political_karpathy_loop.py: Political alpha evolution
     Pattern: modify config → run 5min → measure Brier → keep if better → loop
     Rate: 12 iterations/hr, ~100/session

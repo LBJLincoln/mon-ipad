@@ -261,6 +261,8 @@ def fetch_island_seeds():
         "https://nomos42-nba-evo-4.hf.space/api/best",
         "https://nomos42-nba-evo-5.hf.space/api/best",
         "https://nomos42-nba-evo-6.hf.space/api/best",
+        "https://lbjlincoln26-nba-evo-s16.hf.space/api/best",
+        "https://lbjlincoln26-nba-evo-s17.hf.space/api/best",
     ]
     import urllib.request
     for url in spaces:

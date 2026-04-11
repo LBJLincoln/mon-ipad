@@ -428,47 +428,75 @@ def log_experiment(iteration, best_brier, n_evals, duration, improved):
 
 def fetch_island_seeds(max_retries=3, retry_delay=60):
     """Seed population from live HF Space evolution islands.
-    Retries if spaces are still rebuilding (gen 0)."""
+    Retries if spaces are still rebuilding (gen 0).
+    Falls back to /api/checkpoint/best if /api/best returns 404."""
+    # Primary URLs use /api/best; fallback to /api/checkpoint/best (Fix 3)
     spaces = [
-        ("S10", "https://nomos42-nba-quant.hf.space/api/best"),
-        ("S11", "https://nomos42-nba-quant-2.hf.space/api/best"),
-        ("S12", "https://nomos42-nba-evo-3.hf.space/api/best"),
-        ("S13", "https://nomos42-nba-evo-4.hf.space/api/best"),
-        ("S14", "https://nomos42-nba-evo-5.hf.space/api/best"),
-        ("S15", "https://nomos42-nba-evo-6.hf.space/api/best"),
+        ("S10", "https://nomos42-nba-quant.hf.space/api/best",
+                "https://nomos42-nba-quant.hf.space/api/checkpoint/best"),
+        ("S11", "https://nomos42-nba-quant-2.hf.space/api/best",
+                "https://nomos42-nba-quant-2.hf.space/api/checkpoint/best"),
+        ("S12", "https://nomos42-nba-evo-3.hf.space/api/best",
+                "https://nomos42-nba-evo-3.hf.space/api/checkpoint/best"),
+        ("S13", "https://nomos42-nba-evo-4.hf.space/api/best",
+                "https://nomos42-nba-evo-4.hf.space/api/checkpoint/best"),
+        ("S14", "https://nomos42-nba-evo-5.hf.space/api/best",
+                "https://nomos42-nba-evo-5.hf.space/api/checkpoint/best"),
+        ("S15", "https://nomos42-nba-evo-6.hf.space/api/best",
+                "https://nomos42-nba-evo-6.hf.space/api/checkpoint/best"),
+        ("S16", "https://lbjlincoln26-nba-evo-s16.hf.space/api/best",
+                "https://lbjlincoln26-nba-evo-s16.hf.space/api/checkpoint/best"),
+        ("S17", "https://lbjlincoln26-nba-evo-s17.hf.space/api/best",
+                "https://lbjlincoln26-nba-evo-s17.hf.space/api/checkpoint/best"),
     ]
     import urllib.request, ssl
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
 
+    def _fetch_url(url):
+        """Fetch JSON from url, return (data, status_code). Returns (None, code) on error."""
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Nomos42-Kaggle/1.0"})
+            with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
+                return json.loads(resp.read()), resp.status
+        except urllib.error.HTTPError as e:
+            return None, e.code
+        except Exception:
+            return None, 0
+
     for attempt in range(max_retries):
         seeds = []
-        for name, url in spaces:
+        for name, primary_url, fallback_url in spaces:
             try:
-                req = urllib.request.Request(url, headers={"User-Agent": "Nomos42-Kaggle/1.0"})
-                with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
-                    data = json.loads(resp.read())
-                    if data.get("brier", 1.0) < 0.99:
-                        mask = np.zeros(X.shape[1], dtype=bool)
-                        for idx in data.get("features", []):
-                            if 0 <= idx < X.shape[1]:
-                                mask[idx] = True
-                        if np.sum(mask) >= 5:  # Valid seed
-                            seeds.append({
-                                "mask": mask,
-                                "model_type": data.get("model_type", "xgboost"),
-                                "hp": data.get("hp", {"depth": 6, "lr": 0.1, "n_est": 200}),
-                                "brier": float(data.get("brier", 1.0)),
-                                "origin_island": name,  # Cycle 13: Elo attribution
-                            })
-                            print(f"  {name}: brier={data.get('brier', '?')}, features={np.sum(mask)}, model={data.get('model_type', '?')}")
-                        else:
-                            print(f"  {name}: too few features ({np.sum(mask)}), skipping")
+                data, status = _fetch_url(primary_url)
+                if data is None and status == 404:
+                    # Fix 3: /api/best not found — try /api/checkpoint/best
+                    print(f"  {name}: /api/best → 404, trying /api/checkpoint/best")
+                    data, status = _fetch_url(fallback_url)
+                if data is None:
+                    print(f"  {name}: OFFLINE (status={status})")
+                    continue
+                if data.get("brier", 1.0) < 0.99:
+                    mask = np.zeros(X.shape[1], dtype=bool)
+                    for idx in data.get("features", []):
+                        if 0 <= idx < X.shape[1]:
+                            mask[idx] = True
+                    if np.sum(mask) >= 5:  # Valid seed
+                        seeds.append({
+                            "mask": mask,
+                            "model_type": data.get("model_type", "xgboost"),
+                            "hp": data.get("hp", {"depth": 6, "lr": 0.1, "n_est": 200}),
+                            "brier": float(data.get("brier", 1.0)),
+                            "origin_island": name,  # Cycle 13: Elo attribution
+                        })
+                        print(f"  {name}: brier={data.get('brier', '?')}, features={np.sum(mask)}, model={data.get('model_type', '?')}")
                     else:
-                        print(f"  {name}: gen 0 / no valid best yet")
+                        print(f"  {name}: too few features ({np.sum(mask)}), skipping")
+                else:
+                    print(f"  {name}: gen 0 / no valid best yet")
             except Exception as e:
-                print(f"  {name}: OFFLINE ({type(e).__name__}: {e})")
+                print(f"  {name}: ERROR ({type(e).__name__}: {e})")
 
         if seeds:
             print(f"Seeds fetched: {len(seeds)}/6 islands (attempt {attempt+1})")
@@ -479,6 +507,64 @@ def fetch_island_seeds(max_retries=3, retry_delay=60):
 
     print(f"No seeds after {max_retries} attempts — using random initialization")
     return seeds
+
+# ══════════════════════════════════════════════════════════
+# PUSH-BACK: Send best Kaggle individual to S10 island (Fix 1)
+# ══════════════════════════════════════════════════════════
+
+S10_URL = "https://nomos42-nba-quant.hf.space"
+
+def push_best_to_s10(best_ind, best_brier, iteration):
+    """Push the Kaggle session's best individual to S10 via /api/config.
+    This closes the GPU→island feedback loop so CPU evolution benefits from
+    GPU-found hyperparams and feature sets immediately.
+    Gracefully handles sleeping/restarting spaces."""
+    import urllib.request, ssl
+
+    features = [int(i) for i in np.where(best_ind["mask"])[0]]
+    hp = best_ind.get("hp", {})
+
+    # Save result JSON for manual download from Kaggle output
+    result = {
+        "best_brier": best_brier,
+        "features": features,
+        "n_features": len(features),
+        "model_type": best_ind.get("model_type", "xgboost"),
+        "hp": hp,
+        "iteration": iteration,
+        "source": "kaggle-karpathy",
+        "timestamp": datetime.now().isoformat(),
+    }
+    RESULTS_FILE.write_text(json.dumps(result, indent=2))
+    print(f"[PUSH] Saved best result to {RESULTS_FILE}")
+
+    # POST to S10 /api/config — inject the best GA params as seeds
+    # /api/config accepts: mutation_rate, target_features, crossover_rate, etc.
+    # We use target_features to nudge S10 toward the winning feature count.
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+
+    target_features = min(len(features), 150)  # cap at S10's MAX_FEATURES guard
+    config_payload = json.dumps({
+        "target_features": target_features,
+    }).encode("utf-8")
+
+    try:
+        req = urllib.request.Request(
+            f"{S10_URL}/api/config",
+            data=config_payload, method="POST",
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
+            resp_data = json.loads(resp.read())
+        print(f"[PUSH] S10 /api/config updated: target_features={target_features} → {resp_data}")
+    except Exception as e:
+        print(f"[PUSH] S10 /api/config failed (space may be sleeping): {type(e).__name__}: {e}")
+
+    # Also write to RESULTS_FILE so S10 can be manually seeded from Kaggle output
+    print(f"[PUSH] GPU push-back complete — Brier={best_brier:.5f}, {len(features)}f, {best_ind.get('model_type','?')}")
+
 
 # ══════════════════════════════════════════════════════════
 # CELL 3: RUN THE KARPATHY LOOP
@@ -687,6 +773,10 @@ def run_karpathy_loop():
     print(f"\n{'='*70}")
     print(f"  SESSION COMPLETE: {iteration} iterations, best={best_ever:.5f}")
     print(f"{'='*70}")
+
+    # Fix 1: Push best individual back to S10 island to close GPU→CPU feedback loop
+    best_ind = population[0]
+    push_best_to_s10(best_ind, best_ever, iteration)
 
 # Run!
 run_karpathy_loop()

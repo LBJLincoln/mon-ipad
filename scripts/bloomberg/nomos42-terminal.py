@@ -67,6 +67,8 @@ HF_SPACES = {
     "S13": "https://nomos42-nba-evo-4.hf.space",
     "S14": "https://nomos42-nba-evo-5.hf.space",
     "S15": "https://nomos42-nba-evo-6.hf.space",
+    "S16": "https://lbjlincoln26-nba-evo-s16.hf.space",
+    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space",
 }
 
 HF_ROLES = {
@@ -76,6 +78,8 @@ HF_ROLES = {
     "S13": "CatBoost",
     "S14": "LightGBM",
     "S15": "Wide Search",
+    "S16": "Gradient",
+    "S17": "Ensemble",
 }
 
 console = Console()

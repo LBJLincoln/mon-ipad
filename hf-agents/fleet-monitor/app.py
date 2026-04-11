@@ -32,6 +32,8 @@ HF_SPACES = {
     "Nomos42/nba-evo-4":   {"type": "NBA",       "url": "nomos42-nba-evo-4.hf.space"},
     "Nomos42/nba-evo-5":   {"type": "NBA",       "url": "nomos42-nba-evo-5.hf.space"},
     "Nomos42/nba-evo-6":   {"type": "NBA",       "url": "nomos42-nba-evo-6.hf.space"},
+    "LBJLincoln26/nba-evo-s16": {"type": "NBA", "url": "lbjlincoln26-nba-evo-s16.hf.space"},
+    "LBJLincoln26/nba-evo-s17": {"type": "NBA", "url": "lbjlincoln26-nba-evo-s17.hf.space"},
     # Political alpha islands
     "Nomos42/political-alpha":   {"type": "Political", "url": "nomos42-political-alpha.hf.space"},
     "Nomos42/political-alpha-2": {"type": "Political", "url": "nomos42-political-alpha-2.hf.space"},

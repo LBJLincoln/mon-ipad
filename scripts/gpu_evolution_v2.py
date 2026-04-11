@@ -113,7 +113,7 @@ ATR_BRIER = 0.21570            # all-time record to beat
 # Colab/Kaggle state file -- survives disconnects
 STATE_FILE = Path("/content/evolution_state.json")
 
-# HF Space islands (S10-S15) for initial seed pull
+# HF Space islands (S10-S17) for initial seed pull
 ISLAND_URLS = {
     "S10": "https://nomos42-nba-quant.hf.space",
     "S11": "https://nomos42-nba-quant-2.hf.space",
@@ -121,6 +121,8 @@ ISLAND_URLS = {
     "S13": "https://nomos42-nba-evo-4.hf.space",
     "S14": "https://nomos42-nba-evo-5.hf.space",
     "S15": "https://nomos42-nba-evo-6.hf.space",
+    "S16": "https://lbjlincoln26-nba-evo-s16.hf.space",
+    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space",
 }
 
 # Model type weights for weighted-random selection

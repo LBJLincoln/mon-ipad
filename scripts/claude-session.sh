@@ -66,6 +66,9 @@ declare -A ACTIVE_SPACES=(
   ["S13"]="nomos42-nba-evo-4"
   ["S14"]="nomos42-nba-evo-5"
   ["S15"]="nomos42-nba-evo-6"
+  # NBA Islands (LBJLincoln26)
+  ["S16"]="lbjlincoln26-nba-evo-s16"
+  ["S17"]="lbjlincoln26-nba-evo-s17"
   # Political Islands (Nomos42)
   ["P1"]="nomos42-political-alpha"
   ["P2"]="nomos42-political-alpha-2"
@@ -102,13 +105,14 @@ wait
 header "HF: Nomos42 (13 spaces) — Primary account"
 
 echo -e "  ${C}NBA Evolution Islands:${N}"
-for TAG in S10 S11 S12 S13 S14 S15; do
+for TAG in S10 S11 S12 S13 S14 S15 S16 S17; do
   if [ -f "$TMPDIR/$TAG" ]; then
     IFS='|' read -r STATUS BRIER GEN MODEL < "$TMPDIR/$TAG"
     ROLES=""
     case $TAG in
       S10) ROLES="exploitation" ;; S11) ROLES="exploration" ;; S12) ROLES="extra_trees" ;;
       S13) ROLES="catboost" ;; S14) ROLES="lightgbm" ;; S15) ROLES="wide_search" ;;
+      S16) ROLES="gradient_boost" ;; S17) ROLES="ensemble" ;;
     esac
     if [ "$STATUS" = "UP" ]; then
       DETAIL=""
@@ -173,8 +177,30 @@ fi
 info "nomos-nba-quant" "OLD (migrated to Nomos42)"
 info "nomos-nba-quant-2" "OLD (migrated to Nomos42)"
 
-# ── Display: LBJLincoln26 account (8 spaces) ──
-header "HF: LBJLincoln26 (8 spaces) — Legacy/Political"
+# ── Display: LBJLincoln26 account (10 spaces) ──
+header "HF: LBJLincoln26 (10 spaces) — NBA S16/S17 + Political"
+
+echo -e "  ${C}NBA Evolution Islands (LBJLincoln26):${N}"
+for TAG in S16 S17; do
+  if [ -f "$TMPDIR/$TAG" ]; then
+    IFS='|' read -r STATUS BRIER GEN MODEL < "$TMPDIR/$TAG"
+    ROLES=""
+    case $TAG in
+      S16) ROLES="gradient_boost" ;; S17) ROLES="ensemble" ;;
+    esac
+    if [ "$STATUS" = "UP" ]; then
+      DETAIL=""
+      [ -n "$BRIER" ] && DETAIL="brier=$BRIER"
+      [ -n "$GEN" ] && DETAIL="$DETAIL gen=$GEN"
+      [ -n "$MODEL" ] && DETAIL="$DETAIL [$MODEL]"
+      ok "$TAG ($ROLES)" "$DETAIL"
+    else
+      fail "$TAG ($ROLES)" "DOWN (HTTP $BRIER)"
+    fi
+  else
+    warn "$TAG" "no response"
+  fi
+done
 
 if [ -f "$TMPDIR/P0_26" ]; then
   IFS='|' read -r STATUS BRIER GEN MODEL < "$TMPDIR/P0_26"

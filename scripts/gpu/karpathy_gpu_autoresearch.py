@@ -1038,6 +1038,8 @@ def _fetch_island_seeds(n_features):
         ("S13", "https://nomos42-nba-evo-4.hf.space/api/best"),
         ("S14", "https://nomos42-nba-evo-5.hf.space/api/best"),
         ("S15", "https://nomos42-nba-evo-6.hf.space/api/best"),
+        ("S16", "https://lbjlincoln26-nba-evo-s16.hf.space/api/best"),
+        ("S17", "https://lbjlincoln26-nba-evo-s17.hf.space/api/best"),
     ]
     ctx = ssl.create_default_context()
     ctx.check_hostname = False

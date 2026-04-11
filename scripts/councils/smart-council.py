@@ -69,12 +69,14 @@ _load_env()
 # ─── Island definitions ───────────────────────────────────────────────────────
 
 ISLANDS = {
-    "S10": {"url": "nomos42-nba-quant",   "role": "exploitation",          "mut": 0.09, "feat": 63,  "model": None},
-    "S11": {"url": "nomos42-nba-quant-2", "role": "exploration",           "mut": 0.15, "feat": 80,  "model": None},
-    "S12": {"url": "nomos42-nba-evo-3",   "role": "extra_trees_specialist","mut": 0.08, "feat": 60,  "model": "extra_trees"},
-    "S13": {"url": "nomos42-nba-evo-4",   "role": "catboost_specialist",   "mut": 0.10, "feat": 66,  "model": "catboost"},
-    "S14": {"url": "nomos42-nba-evo-5",   "role": "lightgbm_specialist",   "mut": 0.08, "feat": 55,  "model": "lightgbm"},
-    "S15": {"url": "nomos42-nba-evo-6",   "role": "wide_search",           "mut": 0.18, "feat": 80,  "model": None},
+    "S10": {"url": "nomos42-nba-quant",        "role": "exploitation",          "mut": 0.09, "feat": 63,  "model": None},
+    "S11": {"url": "nomos42-nba-quant-2",      "role": "exploration",           "mut": 0.15, "feat": 80,  "model": None},
+    "S12": {"url": "nomos42-nba-evo-3",        "role": "extra_trees_specialist","mut": 0.08, "feat": 60,  "model": "extra_trees"},
+    "S13": {"url": "nomos42-nba-evo-4",        "role": "catboost_specialist",   "mut": 0.10, "feat": 66,  "model": "catboost"},
+    "S14": {"url": "nomos42-nba-evo-5",        "role": "lightgbm_specialist",   "mut": 0.08, "feat": 55,  "model": "lightgbm"},
+    "S15": {"url": "nomos42-nba-evo-6",        "role": "wide_search",           "mut": 0.18, "feat": 80,  "model": None},
+    "S16": {"url": "lbjlincoln26-nba-evo-s16", "role": "gradient_boost",        "mut": 0.10, "feat": 70,  "model": None},
+    "S17": {"url": "lbjlincoln26-nba-evo-s17", "role": "ensemble",              "mut": 0.10, "feat": 70,  "model": None},
 }
 
 # ─── LLM Backend (reusing free-models-integration logic inline) ───────────────

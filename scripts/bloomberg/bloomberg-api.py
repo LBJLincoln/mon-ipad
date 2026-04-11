@@ -62,6 +62,8 @@ HF_SPACES = {
     "S13": {"url": "https://nomos42-nba-evo-4.hf.space", "role": "catboost"},
     "S14": {"url": "https://nomos42-nba-evo-5.hf.space", "role": "lightgbm"},
     "S15": {"url": "https://nomos42-nba-evo-6.hf.space", "role": "wide_search"},
+    "S16": {"url": "https://lbjlincoln26-nba-evo-s16.hf.space", "role": "gradient_boost"},
+    "S17": {"url": "https://lbjlincoln26-nba-evo-s17.hf.space", "role": "ensemble"},
 }
 
 

@@ -90,6 +90,8 @@ modal run scripts/gpu-burst/modal-burst.py::check_status  # Check results
 | S13 | nomos42-nba-evo-4.hf.space | CatBoost specialist |
 | S14 | nomos42-nba-evo-5.hf.space | LightGBM specialist |
 | S15 | nomos42-nba-evo-6.hf.space | Wide search (pop=50) |
+| S16 | lbjlincoln26-nba-evo-s16.hf.space | Gradient boost (LBJLincoln26) |
+| S17 | lbjlincoln26-nba-evo-s17.hf.space | Ensemble (LBJLincoln26) |
 
 ## Evolution Engine
 

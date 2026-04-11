@@ -65,6 +65,8 @@ HF_SPACES = {
     "S13": {"url": "https://nomos42-nba-evo-4.hf.space", "role": "CatBoost", "key": "S13_nba"},
     "S14": {"url": "https://nomos42-nba-evo-5.hf.space", "role": "LightGBM", "key": "S14_nba"},
     "S15": {"url": "https://nomos42-nba-evo-6.hf.space", "role": "Wide Search", "key": "S15_nba"},
+    "S16": {"url": "https://lbjlincoln26-nba-evo-s16.hf.space", "role": "Gradient", "key": "S16_nba"},
+    "S17": {"url": "https://lbjlincoln26-nba-evo-s17.hf.space", "role": "Ensemble", "key": "S17_nba"},
 }
 
 console = Console()

@@ -4,7 +4,7 @@
 # ============================================================================
 # Creates a 6-window tmux session showing all running systems:
 #   W0: overview  — system health, git, cron, disk
-#   W1: evolution — 6 HF Spaces (S10-S15) live status
+#   W1: evolution — 8 HF Spaces (S10-S17) live status
 #   W2: trading   — Trading Floor leaderboard + iteration state
 #   W3: councils  — Department council states (11 depts)
 #   W4: logs      — Live log tailing
@@ -89,6 +89,8 @@ declare -A SPACE_URLS=(
     ["S13"]="https://nomos42-nba-evo-4.hf.space"
     ["S14"]="https://nomos42-nba-evo-5.hf.space"
     ["S15"]="https://nomos42-nba-evo-6.hf.space"
+    ["S16"]="https://lbjlincoln26-nba-evo-s16.hf.space"
+    ["S17"]="https://lbjlincoln26-nba-evo-s17.hf.space"
 )
 declare -A SPACE_ROLES=(
     ["S10"]="Exploitation"
@@ -97,34 +99,23 @@ declare -A SPACE_ROLES=(
     ["S13"]="CatBoost"
     ["S14"]="LightGBM"
     ["S15"]="Wide Search"
+    ["S16"]="Gradient"
+    ["S17"]="Ensemble"
 )
 
-SPACES_ORDERED=(S10 S11 S12 S13 S14 S15)
+SPACES_ORDERED=(S10 S11 S12 S13 S14 S15 S16 S17)
 
-# Create 6-pane grid (3 columns x 2 rows)
+# Create 8-pane grid (4 columns x 2 rows) for S10-S17
 # First pane: S10
 SID="${SPACES_ORDERED[0]}"
 tmux send-keys -t "$SESSION:1.0" "watch -n 90 'echo \"=== $SID (${SPACE_ROLES[$SID]}) ===\"; echo \"URL: ${SPACE_URLS[$SID]}\"; echo; STATUS=\$(curl -s --max-time 10 \"${SPACE_URLS[$SID]}/api/status\" 2>/dev/null); if [ -n \"\$STATUS\" ]; then echo \"\$STATUS\" | python3 -m json.tool 2>/dev/null || echo \"\$STATUS\"; else echo \"[TIMEOUT/UNREACHABLE]\"; fi; echo; echo \"--- Infra cache ---\"; python3 -c \"import json; d=json.load(open(\\\"$DATA/infra-status.json\\\")); s=d.get(\\\"hf_spaces\\\",{}).get(\\\"${SID}_nba\\\",{}); print(f\\\"Brier: {s.get(\\\"brier\\\",\\\"?\\\")}, Gen: {s.get(\\\"gen\\\",\\\"?\\\")}, Status: {s.get(\\\"status\\\",\\\"?\\\")}\\\")\" 2>/dev/null'" Enter
 
-# Split for remaining 5 panes
-for i in 1 2 3 4 5; do
-    if [ $i -le 2 ]; then
-        # S11, S12: split horizontally from previous
-        tmux split-window -t "$SESSION:1" -h
-    elif [ $i -eq 3 ]; then
-        # S13: split vertically from pane 0
-        tmux split-window -t "$SESSION:1.0" -v
-    elif [ $i -eq 4 ]; then
-        # S14: split horizontally from S13
-        tmux split-window -t "$SESSION:1.3" -h
-    else
-        # S15: split horizontally from S14
-        tmux split-window -t "$SESSION:1.4" -h
-    fi
+# Split for remaining 7 panes (S11-S17)
+for i in 1 2 3 4 5 6 7; do
+    tmux split-window -t "$SESSION:1" -h
 
     SID="${SPACES_ORDERED[$i]}"
     PANE_IDX=$i
-    # Adjust pane index due to tmux renumbering after splits
     tmux send-keys -t "$SESSION:1.${PANE_IDX}" "watch -n 90 'echo \"=== $SID (${SPACE_ROLES[$SID]}) ===\"; echo \"URL: ${SPACE_URLS[$SID]}\"; echo; STATUS=\$(curl -s --max-time 10 \"${SPACE_URLS[$SID]}/api/status\" 2>/dev/null); if [ -n \"\$STATUS\" ]; then echo \"\$STATUS\" | python3 -m json.tool 2>/dev/null || echo \"\$STATUS\"; else echo \"[TIMEOUT/UNREACHABLE]\"; fi; echo; echo \"--- Infra cache ---\"; python3 -c \"import json; d=json.load(open(\\\"$DATA/infra-status.json\\\")); s=d.get(\\\"hf_spaces\\\",{}).get(\\\"${SID}_nba\\\",{}); print(f\\\"Brier: {s.get(\\\"brier\\\",\\\"?\\\")}, Gen: {s.get(\\\"gen\\\",\\\"?\\\")}, Status: {s.get(\\\"status\\\",\\\"?\\\")}\\\")\" 2>/dev/null'" Enter
 done
 
@@ -404,7 +395,7 @@ echo "  Nomos42 Dashboard — Session '$SESSION'"
 echo "============================================"
 echo "  Windows:"
 echo "    0: overview    — system health, git, cron, disk"
-echo "    1: evolution   — 6 HF Spaces (S10-S15)"
+echo "    1: evolution   — 8 HF Spaces (S10-S17)"
 echo "    2: trading-floor — NBA + Political leaderboard"
 echo "    3: councils    — Department council states"
 echo "    4: logs        — Agent health, eval, infra"

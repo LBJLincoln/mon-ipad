@@ -82,13 +82,13 @@ declare -A PLATFORM_LAST_BRIER
 declare -A PLATFORM_LAST_TIME
 declare -A PLATFORM_NEXT_RUN
 
-# ── 1. HF Spaces (6 CPU islands, always running) ──
+# ── 1. HF Spaces (8 CPU islands, always running) ──
 check_hf_spaces() {
     local running=0
-    local total=6
+    local total=8
     local best_brier="?"
 
-    for island in S10 S11 S12 S13 S14 S15; do
+    for island in S10 S11 S12 S13 S14 S15 S16 S17; do
         case $island in
             S10) url="https://nomos42-nba-quant.hf.space" ;;
             S11) url="https://nomos42-nba-quant-2.hf.space" ;;
@@ -96,6 +96,8 @@ check_hf_spaces() {
             S13) url="https://nomos42-nba-evo-4.hf.space" ;;
             S14) url="https://nomos42-nba-evo-5.hf.space" ;;
             S15) url="https://nomos42-nba-evo-6.hf.space" ;;
+            S16) url="https://lbjlincoln26-nba-evo-s16.hf.space" ;;
+            S17) url="https://lbjlincoln26-nba-evo-s17.hf.space" ;;
         esac
 
         if timeout 8 curl -s --connect-timeout 3 --max-time 6 "${url}/api/status" &>/dev/null; then

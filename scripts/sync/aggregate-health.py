@@ -67,6 +67,8 @@ HF_NBA_SPACES = {
     "S13": "https://nomos42-nba-evo-4.hf.space",
     "S14": "https://nomos42-nba-evo-5.hf.space",
     "S15": "https://nomos42-nba-evo-6.hf.space",
+    "S16": "https://lbjlincoln26-nba-evo-s16.hf.space",
+    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space",
 }
 
 HF_POLITICAL_SPACES = {
@@ -420,7 +422,7 @@ def main():
     # -----------------------------------------------------------------------
     nba_spaces = {}
     political_spaces = {}
-    nba_fleet_summary = {"total": 6, "running_count": 0, "best_brier": None}
+    nba_fleet_summary = {"total": 8, "running_count": 0, "best_brier": None}
     political_fleet_summary = {"total": 2, "running_count": 0, "best_brier": None}
 
     if not args.skip_hf:
@@ -546,7 +548,7 @@ def main():
         print("=" * 60)
         print(f"  Repos:       {report['summary']['active_repos']}/{report['summary']['total_repos']} active")
         print(f"  Departments: {report['summary']['departments_reporting']}/{report['summary']['departments_total']} reporting")
-        print(f"  NBA Fleet:   {nba_fleet_summary['running_count']}/6 running | Best Brier: {nba_fleet_summary.get('best_brier', 'N/A')}")
+        print(f"  NBA Fleet:   {nba_fleet_summary['running_count']}/8 running | Best Brier: {nba_fleet_summary.get('best_brier', 'N/A')}")
         print(f"  Political:   {political_fleet_summary['running_count']}/2 running | Best Brier: {political_fleet_summary.get('best_brier', 'N/A')}")
         print(f"  Data Server: {data_server['status']}")
         print(f"  Blockers:    {len(blockers)} total ({report['blocker_counts']['critical']} critical)")

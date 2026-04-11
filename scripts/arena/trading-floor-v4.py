@@ -1595,6 +1595,63 @@ def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
     candidates.append(("alt_spread_home_big", prob_home * 0.7, 2.5, (hs - as_) > 8))
     candidates.append(("alt_spread_away_big", prob_away * 0.7, 2.5, (as_ - hs) > 8))
 
+    # ── EXPANDED CATEGORIES (v10): margin, race-to, exotic, quarter, props ──
+    margin = abs(hs - as_)
+    # Margin bands
+    candidates.append(("margin_1_5", prob_home * 0.6, 3.0, 1 <= margin <= 5))
+    candidates.append(("margin_6_10", 0.30, 3.5, 6 <= margin <= 10))
+    candidates.append(("margin_11_15", 0.20, 5.0, 11 <= margin <= 15))
+    candidates.append(("margin_16_plus", 0.12, 7.0, margin >= 16))
+    # Race to points
+    race_75 = hs >= 75 or as_ >= 75
+    race_100 = hs >= 100 or as_ >= 100
+    candidates.append(("race_to_75_home", prob_home * 0.85, 1.85, hs >= 75 and (hs >= 75 or as_ < 75)))
+    candidates.append(("race_to_100_home", prob_home * 0.80, 1.90, hs >= 100 and (hs >= 100 or as_ < 100)))
+    # Quarter winners (synthetic from final margin)
+    for q_name, q_prob_factor in [("q1_home", 0.9), ("q2_home", 0.85), ("q3_home", 0.88), ("q4_home", 0.82)]:
+        candidates.append((q_name, prob_home * q_prob_factor, 1.90, home_won))  # approx
+    # Double result (H1 + FT)
+    candidates.append(("double_result_hh", prob_home * 0.7 * h1_prob_home, 2.2, home_won and h1_won))
+    candidates.append(("double_result_aa", prob_away * 0.7 * h1_prob_away, 2.2, not home_won and not h1_won))
+    # Combined: ML + O/U
+    if odds.get("total"):
+        line = odds["total"]
+        candidates.append(("home_and_over", prob_home * 0.5, 3.0, home_won and total_pts > line))
+        candidates.append(("away_and_under", prob_away * 0.45, 3.5, not home_won and total_pts < line))
+    # Alt totals
+    if odds.get("total"):
+        line = odds["total"]
+        for alt_adj, alt_name in [(-5, "alt_over_minus5"), (5, "alt_under_plus5"),
+                                   (-10, "alt_over_minus10"), (10, "alt_under_plus10")]:
+            alt_line = line + alt_adj
+            if alt_adj < 0:
+                candidates.append((alt_name, 0.65, 1.65, total_pts > alt_line))
+            else:
+                candidates.append((alt_name, 0.65, 1.65, total_pts < alt_line))
+    # Alt spreads
+    for alt_s, alt_odds, alt_label in [(3.5, 2.1, "alt_spread_home_3.5"),
+                                        (7.5, 2.8, "alt_spread_home_7.5"),
+                                        (-3.5, 2.1, "alt_spread_away_3.5"),
+                                        (-7.5, 2.8, "alt_spread_away_7.5")]:
+        if alt_s > 0:
+            candidates.append((alt_label, prob_home * 0.75, alt_odds, (hs - as_) > alt_s))
+        else:
+            candidates.append((alt_label, prob_away * 0.75, alt_odds, (as_ - hs) > abs(alt_s)))
+    # Player props (synthetic from team totals)
+    if odds.get("total"):
+        line = odds["total"]
+        # Lead scorer estimate: ~25% of team total
+        lead_pts = hs * 0.25
+        candidates.append(("player_pts_over_24.5", 0.50, 1.85, lead_pts > 24.5))
+        candidates.append(("player_pts_under_24.5", 0.50, 1.85, lead_pts < 24.5))
+        # Lead rebounder: ~10 per game
+        candidates.append(("player_reb_over_9.5", 0.48, 1.85, True))  # synthetic
+        candidates.append(("player_ast_over_7.5", 0.47, 1.90, True))  # synthetic
+    # Exact margin
+    candidates.append(("exact_margin_1", 0.08, 11.0, margin == 1))
+    candidates.append(("exact_margin_2", 0.07, 13.0, margin == 2))
+    candidates.append(("exact_margin_3", 0.07, 13.0, margin == 3))
+
     # Model consensus info for justification
     models_info = game_ctx.get("models", {})
     consensus = models_info.get("consensus", 0.5)

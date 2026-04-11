@@ -33,6 +33,8 @@ ISLANDS = [
     {"id": "S13", "name": "nba-evo-4",   "url": "https://nomos42-nba-evo-4.hf.space",   "role": "CatBoost"},
     {"id": "S14", "name": "nba-evo-5",   "url": "https://nomos42-nba-evo-5.hf.space",   "role": "LightGBM"},
     {"id": "S15", "name": "nba-evo-6",   "url": "https://nomos42-nba-evo-6.hf.space",   "role": "Wide Search"},
+    {"id": "S16", "name": "nba-evo-s16", "url": "https://lbjlincoln26-nba-evo-s16.hf.space", "role": "Gradient"},
+    {"id": "S17", "name": "nba-evo-s17", "url": "https://lbjlincoln26-nba-evo-s17.hf.space", "role": "Ensemble"},
 ]
 
 VM_EVAL_URL = "http://nomos42.duckdns.org:7860/data/nba-agent/latest-eval.json"

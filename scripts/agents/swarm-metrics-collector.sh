@@ -197,8 +197,10 @@ ISLAND_URLS=(
     "https://nomos42-nba-evo-4.hf.space"
     "https://nomos42-nba-evo-5.hf.space"
     "https://nomos42-nba-evo-6.hf.space"
+    "https://lbjlincoln26-nba-evo-s16.hf.space"
+    "https://lbjlincoln26-nba-evo-s17.hf.space"
 )
-ISLAND_IDS=("S10" "S11" "S12" "S13" "S14" "S15")
+ISLAND_IDS=("S10" "S11" "S12" "S13" "S14" "S15" "S16" "S17")
 V1_ISLANDS_UP=0
 declare -A ISLAND_STATUS
 declare -A ISLAND_BRIER

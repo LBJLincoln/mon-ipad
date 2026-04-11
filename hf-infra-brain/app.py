@@ -85,6 +85,8 @@ SPACES = {
     "S13": "nomos42-nba-evo-4",
     "S14": "nomos42-nba-evo-5",
     "S15": "nomos42-nba-evo-6",
+    "S16": "lbjlincoln26-nba-evo-s16",
+    "S17": "lbjlincoln26-nba-evo-s17",
 }
 
 async def check_all_spaces():

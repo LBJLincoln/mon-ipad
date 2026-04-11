@@ -242,7 +242,7 @@ def _call_llm(prompt: str, max_tokens: int = 500, temperature: float = 0.3) -> t
 # -- Scan: read public HF Space status ----------------------------------------
 
 def _scan_spaces() -> dict:
-    """Fetch status from the 6 NBA evolution islands (public API, no auth)."""
+    """Fetch status from the 8 NBA evolution islands (public API, no auth)."""
     islands = {
         "S10": "https://nomos42-nba-quant.hf.space/api/status",
         "S11": "https://nomos42-nba-quant-2.hf.space/api/status",
@@ -250,6 +250,8 @@ def _scan_spaces() -> dict:
         "S13": "https://nomos42-nba-evo-4.hf.space/api/status",
         "S14": "https://nomos42-nba-evo-5.hf.space/api/status",
         "S15": "https://nomos42-nba-evo-6.hf.space/api/status",
+        "S16": "https://lbjlincoln26-nba-evo-s16.hf.space/api/status",
+        "S17": "https://lbjlincoln26-nba-evo-s17.hf.space/api/status",
     }
     results = {}
     for name, url in islands.items():

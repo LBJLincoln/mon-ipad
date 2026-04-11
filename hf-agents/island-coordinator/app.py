@@ -57,6 +57,16 @@ ISLANDS = {
         "role": "wide_search",
         "domain": "NBA",
     },
+    "S16": {
+        "url": "https://lbjlincoln26-nba-evo-s16.hf.space/api/status",
+        "role": "gradient_boost",
+        "domain": "NBA",
+    },
+    "S17": {
+        "url": "https://lbjlincoln26-nba-evo-s17.hf.space/api/status",
+        "role": "ensemble",
+        "domain": "NBA",
+    },
     # Political islands
     "P1": {
         "url": "https://nomos42-political-alpha.hf.space/api/status",

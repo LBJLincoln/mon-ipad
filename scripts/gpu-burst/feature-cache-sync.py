@@ -65,6 +65,8 @@ HF_ISLANDS = {
     "S15": "https://nomos42-nba-evo-6.hf.space",   # fleet best (0.22041)
     "S11": "https://nomos42-nba-quant-2.hf.space",  # exploration
     "S10": "https://nomos42-nba-quant.hf.space",    # exploitation
+    "S16": "https://lbjlincoln26-nba-evo-s16.hf.space",
+    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space",
 }
 
 MAX_CACHE_AGE_HOURS = 24
