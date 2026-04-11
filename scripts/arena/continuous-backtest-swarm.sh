@@ -83,7 +83,15 @@ timeout 30 python3 "${ROOT}/scripts/arena/aggregate_swarm_to_season.py" \
     >> "${LOG_FILE}" 2>&1 || echo "[5/5] Aggregator exit=$?" >> "${LOG_FILE}"
 
 # 6. Commit + push
+# IMPORTANT: rebase against origin BEFORE committing so we don't lose every push
+# to the Apr 11 audit-discovered race condition. Prior symptom in the swarm log:
+#   ! [rejected]  main -> main (fetch first)
+#   error: failed to push some refs...
+# Root cause: this cron fires every 4h while Hermes councils, Karpathy loops,
+# research-vault compiles, and manual edits also land commits on main between
+# our add and our push. We were LOSING swarm data every run.
 cd "${ROOT}"
+git pull --rebase --quiet origin main 2>>"${LOG_FILE}" || echo "[continuous-backtest] rebase(mon-ipad) failed" >> "${LOG_FILE}"
 git add \
     data/arena/backtest-results/ \
     data/arena/backtest-results/backtest-latest.json \
@@ -98,16 +106,29 @@ git add \
 if ! git diff --cached --quiet 2>/dev/null; then
     DATE_STR=$(date '+%Y-%m-%d')
     git commit -m "data: continuous backtest swarm ${DATE_STR} (NBA + Political)" --quiet || true
-    git push --quiet || true
-    echo "[continuous-backtest] Pushed NBA results" >> "${LOG_FILE}"
+    if git push --quiet 2>>"${LOG_FILE}"; then
+        echo "[continuous-backtest] Pushed NBA results" >> "${LOG_FILE}"
+    else
+        echo "[continuous-backtest] NBA push rejected — one retry after rebase" >> "${LOG_FILE}"
+        git pull --rebase --quiet origin main 2>>"${LOG_FILE}" && git push --quiet 2>>"${LOG_FILE}" \
+            && echo "[continuous-backtest] Pushed NBA results on retry" >> "${LOG_FILE}" \
+            || echo "[continuous-backtest] NBA push still rejected — data on disk, will retry next run" >> "${LOG_FILE}"
+    fi
 fi
 
 cd "${POL_ROOT}"
+git pull --rebase --quiet origin main 2>>"${LOG_FILE}" || echo "[continuous-backtest] rebase(political) failed" >> "${LOG_FILE}"
 git add data/arena/arena-results.json data/arena/arena-live.json 2>/dev/null || true
 if ! git diff --cached --quiet 2>/dev/null; then
     git commit -m "data: continuous backtest swarm $(date '+%Y-%m-%d')" --quiet || true
-    git push --quiet || true
-    echo "[continuous-backtest] Pushed Political results" >> "${LOG_FILE}"
+    if git push --quiet 2>>"${LOG_FILE}"; then
+        echo "[continuous-backtest] Pushed Political results" >> "${LOG_FILE}"
+    else
+        echo "[continuous-backtest] Political push rejected — one retry after rebase" >> "${LOG_FILE}"
+        git pull --rebase --quiet origin main 2>>"${LOG_FILE}" && git push --quiet 2>>"${LOG_FILE}" \
+            && echo "[continuous-backtest] Pushed Political results on retry" >> "${LOG_FILE}" \
+            || echo "[continuous-backtest] Political push still rejected — data on disk, will retry next run" >> "${LOG_FILE}"
+    fi
 fi
 
 echo "[continuous-backtest] Done $(date '+%H:%M:%S UTC')" >> "${LOG_FILE}"
