@@ -1,8 +1,8 @@
 {
-  "status": "shipped",
-  "action": "escalate_s10_s17_persistent_crash",
-  "iteration": 76,
-  "timestamp": "2026-04-11T06:00:00Z",
+  "status": "no_op",
+  "action": "escalation_active_awaiting_manual_investigation",
+  "iteration": 77,
+  "timestamp": "2026-04-11T12:00:00Z",
   "spaces_up": 12,
   "spaces_down": 8,
   "ports_up": ["8080", "8042"],
@@ -54,6 +54,10 @@
   "data_server": "8080 — UP (http.server responding)",
   "bloomberg_api": "8042 — UP (API responding)",
   "uptime_pct": 55.0,
-  "escalation_status": "CRITICAL_S10_S17_crash_loop_requires_manual_investigation",
-  "next_action": "D7_INFRA operator must: (1) SSH to HF spaces and check Docker logs, (2) verify app dependencies installed, (3) check /tmp/gradio_cached_examples for disk full, (4) inspect last deployment config, (5) consider force-purge and redeploy if no config fix found"
+  "escalation_status": "ACTIVE — tier 76 escalation in progress",
+  "uptime_window_hrs": "5.75",
+  "cycle_failures": 17,
+  "keepalive_status": "continuing_restart_attempts_every_30min",
+  "diagnosis": "Application-level crash not transient sleep: HF restart API returns 200 but spaces fail to recover. Likely causes: (1) broken config inside space, (2) missing dependencies, (3) out-of-memory, (4) corrupted app state. Auto-recovery impossible without manual intervention.",
+  "next_action": "Awaiting manual HF space investigation — check Docker logs, verify dependencies, inspect disk usage, review config"
 }
