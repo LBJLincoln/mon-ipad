@@ -204,6 +204,21 @@ run_department() {
     local pre_dirty_snapshot
     pre_dirty_snapshot=$(cd "${ROOT}" && git status --porcelain 2>/dev/null | awk '{print $2}' | sort -u)
 
+    # ── Karpathy best-Brier BEFORE snapshot (2026-04-11 Phase 3) ──
+    # Capture the ATR best_brier right before the agent runs so we can
+    # measure brier_delta at the end. This is the only metric that
+    # matters for real research progress — did this iteration actually
+    # move the needle?
+    local brier_before
+    brier_before=$(python3 -c "
+import json
+try:
+    with open('${ROOT}/data/karpathy/nba-best-config.json') as f:
+        print(json.load(f).get('best_brier', ''))
+except Exception:
+    print('')
+" 2>/dev/null)
+
     # DNS pre-warm: force resolve api.anthropic.com before launching CLI.
     # Tailscale overrides /etc/resolv.conf bypassing systemd-resolved cache,
     # causing intermittent EAI_AGAIN on GCP. Retry 3 times with backoff.
@@ -366,11 +381,40 @@ cf.write_text(json.dumps(d, indent=2))
         new_streak=$(( prev_streak + 1 ))
     fi
 
+    # ── Karpathy best-Brier AFTER snapshot (2026-04-11 Phase 3) ──
+    # Re-read the ATR config so we can compute brier_delta. Positive delta
+    # means the iteration moved backwards (higher Brier = worse), negative
+    # delta means the council actually advanced the frontier.
+    local brier_after
+    brier_after=$(python3 -c "
+import json
+try:
+    with open('${ROOT}/data/karpathy/nba-best-config.json') as f:
+        print(json.load(f).get('best_brier', ''))
+except Exception:
+    print('')
+" 2>/dev/null)
+
     python3 - "${metrics_file}" "${dept_id}" "${dept_name}" "${TIMESTAMP}" \
-        "${agent_status}" "${verified_status}" "${new_streak}" "${duration}" "${exit_code}" "${agent_reason}" "${real_sha}" "${rejected_files}" <<'PYEOF'
+        "${agent_status}" "${verified_status}" "${new_streak}" "${duration}" "${exit_code}" "${agent_reason}" "${real_sha}" "${rejected_files}" \
+        "${brier_before}" "${brier_after}" <<'PYEOF'
 import json, sys
 (metrics_file, dept_id, dept_name, ts, agent_status, verified_status,
- new_streak, duration, exit_code, reason, real_sha, rejected_files) = sys.argv[1:]
+ new_streak, duration, exit_code, reason, real_sha, rejected_files,
+ brier_before_s, brier_after_s) = sys.argv[1:]
+
+def _f(s):
+    try:
+        return float(s) if s else None
+    except (TypeError, ValueError):
+        return None
+
+brier_before = _f(brier_before_s)
+brier_after = _f(brier_after_s)
+brier_delta = None
+if brier_before is not None and brier_after is not None:
+    brier_delta = round(brier_after - brier_before, 6)
+
 row = {
     "timestamp": ts,
     "dept_id": dept_id,
@@ -383,20 +427,44 @@ row = {
     "reason": reason,
     "real_sha": real_sha,
     "rejected_files": [f for f in rejected_files.split() if f],
+    # 2026-04-11 Phase 3: honest per-iteration improvement metric.
+    # brier_delta < 0 means this council iteration actually improved
+    # the ATR (lower Brier). brier_delta == 0 means no movement.
+    # brier_delta > 0 means regression. null means the config file
+    # was missing or unreadable at one of the two snapshots.
+    "brier_before": brier_before,
+    "brier_after": brier_after,
+    "brier_delta": brier_delta,
 }
 with open(metrics_file, "a") as f:
     f.write(json.dumps(row) + "\n")
 PYEOF
 
-    # Write council result (now with verified_status, real_sha, rejected_files)
+    # Write council result (now with verified_status, real_sha, rejected_files,
+    # and brier_before/after/delta from Phase 3 — 2026-04-11 audit).
     python3 - "${result_file}" "${dept_name}" "${dept_id}" "${TIMESTAMP}" \
         "${model}" "${budget}" "${max_turns}" "${duration}" "${exit_code}" \
         "${status}" "${agent_status}" "${verified_status}" "${new_streak}" \
-        "${log_file}" "${pre_sha}" "${real_sha}" "${rejected_files}" "${agent_claimed_sha}" <<'PYEOJ'
+        "${log_file}" "${pre_sha}" "${real_sha}" "${rejected_files}" "${agent_claimed_sha}" \
+        "${brier_before}" "${brier_after}" <<'PYEOJ'
 import json, sys
 (out, dept_name, dept_id, ts, model, budget, max_turns, duration, exit_code,
  status, agent_status, verified_status, stall_streak, log_file,
- pre_sha, real_sha, rejected_files, agent_claimed_sha) = sys.argv[1:]
+ pre_sha, real_sha, rejected_files, agent_claimed_sha,
+ brier_before_s, brier_after_s) = sys.argv[1:]
+
+def _f(s):
+    try:
+        return float(s) if s else None
+    except (TypeError, ValueError):
+        return None
+
+brier_before = _f(brier_before_s)
+brier_after = _f(brier_after_s)
+brier_delta = None
+if brier_before is not None and brier_after is not None:
+    brier_delta = round(brier_after - brier_before, 6)
+
 data = {
     "department": dept_name,
     "dept_id": dept_id,
@@ -415,24 +483,43 @@ data = {
     "real_sha": real_sha,
     "agent_claimed_sha": agent_claimed_sha,
     "rejected_files": [f for f in rejected_files.split() if f],
+    # 2026-04-11 Phase 3: honest per-iteration improvement tracking
+    "brier_before": brier_before,
+    "brier_after": brier_after,
+    "brier_delta": brier_delta,
 }
 with open(out, "w") as f:
     json.dump(data, f, indent=2)
 PYEOJ
 
+    # Compose a brier-delta suffix for the terminal line.
+    local brier_suffix=""
+    if [[ -n "${brier_before}" && -n "${brier_after}" ]]; then
+        local brier_delta_fmt
+        brier_delta_fmt=$(python3 -c "
+try:
+    d = float('${brier_after}') - float('${brier_before}')
+    sign = '+' if d >= 0 else ''
+    print(f' brier={float(\"${brier_before}\"):.5f}→{float(\"${brier_after}\"):.5f} ({sign}{d:+.6f})')
+except Exception:
+    print('')
+" 2>/dev/null)
+        brier_suffix="${brier_delta_fmt}"
+    fi
+
     if [[ $exit_code -eq 0 ]]; then
         if [[ "${verified_status}" == "shipped" ]]; then
-            ok "${dept_name} SHIPPED in ${duration}s — sha=${real_sha:0:8}"
+            ok "${dept_name} SHIPPED in ${duration}s — sha=${real_sha:0:8}${brier_suffix}"
         elif [[ "${verified_status}" == "hallucinated" ]]; then
-            err "${dept_name} HALLUCINATED in ${duration}s — claimed=${agent_claimed_sha:0:8} real=${real_sha:0:8}"
+            err "${dept_name} HALLUCINATED in ${duration}s — claimed=${agent_claimed_sha:0:8} real=${real_sha:0:8}${brier_suffix}"
         else
-            log "${dept_name} no-op in ${duration}s — streak=${new_streak}"
+            log "${dept_name} no-op in ${duration}s — streak=${new_streak}${brier_suffix}"
         fi
         if [[ -n "${rejected_files}" ]]; then
             err "${dept_name} rejected out-of-scope edits: ${rejected_files}"
         fi
     else
-        err "${dept_name} FAILED (exit ${exit_code}) after ${duration}s"
+        err "${dept_name} FAILED (exit ${exit_code}) after ${duration}s${brier_suffix}"
     fi
 
     return $exit_code
