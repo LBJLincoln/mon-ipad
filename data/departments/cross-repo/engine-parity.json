@@ -1,17 +1,13 @@
 {
-  "timestamp": "2026-04-11T15:30:07Z",
+  "timestamp": "2026-04-11T21:30:34Z",
   "ok": false,
-  "canonical": "mon-ipad",
+  "canonical": "nomos_nba_agent",
   "md5": {
-    "mon_ipad":       "e713429296c0a6bfaf362071d8bda535",
-    "hf_space":       "e713429296c0a6bfaf362071d8bda535",
-    "nomos_nba_agent": "a6764756807e78aa2e05dfa994dc8ff7"
+    "mon_ipad":        "e713429296c0a6bfaf362071d8bda535",
+    "hf_space":        "e713429296c0a6bfaf362071d8bda535",
+    "nomos_nba_agent": "a5288441b0fc43d1f9a7f8b0678ebc61"
   },
   "diverged_repos": ["nomos-nba-agent"],
-  "fix_if_broken": "Update mon-ipad/features/engine.py line ~7516: change `> 400` to `> target_features` (MAX_FEATURES=200 rule). Then run this script to propagate to sister repos.",
-  "divergence_detail": {
-    "mon_ipad_line": "if len(selected) < 10 or len(selected) > 400:",
-    "nomos_nba_agent_line": "if len(selected) < 10 or len(selected) > target_features:",
-    "semantic_winner": "nomos_nba_agent — target_features=200 enforces MAX_FEATURES cap correctly"
-  }
+  "fix_if_broken": "Semantic drift detected (not the old > 400 issue). nomos-nba-agent is AHEAD: vig_dist55 calc (line ~6447), density calc using ISO date strings (line ~6497), default row values (line ~6722). Copy nomos-nba-agent engine.py to mon-ipad + hf-space, then push.",
+  "divergence_detail": {"type": "semantic_drift", "direction": "nomos-nba-agent is newer/canonical", "diff_locations": ["line ~6447: _vig_dist55 uses fair_home_prob dict lookup in nba-agent", "line ~6497: density uses ISO string comparison in nba-agent (more correct)", "line ~6722: default row neutral values differ", "line ~7517: comment only (trivial)"]}
 }

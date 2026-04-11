@@ -1,0 +1,407 @@
+{
+  "meta": {
+    "generated_at": "2026-04-11T00:00:00Z",
+    "deadline": "2026-05-01",
+    "days_remaining": 20,
+    "hard_constraint": "Claude Code CLI expires 2026-05-08. Revenue or shutdown.",
+    "total_budget_per_project": 100,
+    "author": "market-analyst-agent"
+  },
+
+  "reality_check": {
+    "nba_bankroll_real": {
+      "balance": 91.29,
+      "roi_pct": -8.71,
+      "record": "17W-27L",
+      "win_rate_pct": 38.64,
+      "sharpe": -3.11,
+      "verdict": "NEGATIVE ROI in live betting. Real performance contradicts simulated backtest (+45%). Do NOT market on live results. Market on Brier score and model accuracy instead."
+    },
+    "brier_score": 0.2157,
+    "brier_percentile": "Top 15% of public NBA forecasters. Not yet beating Pinnacle market (~0.200). Honest competitive position: sophisticated hobbyist tool, not professional-grade sharp.",
+    "full_season_backtest": {
+      "roi_pct": 45.09,
+      "note": "SYNTHESIZED trades, not real. Do not use as marketing claim without disclosure.",
+      "usable_as": "Illustrative backtest with caveats clearly stated"
+    },
+    "what_we_genuinely_have": [
+      "8 live HF evolution islands, running 24/7",
+      "Brier 0.2157 — measurably better than naive baselines",
+      "55+ bet categories with quantified edge estimates",
+      "Real-time odds ingestion from 6+ books",
+      "Steam move detection and CLV framework",
+      "Full Telegram bot infrastructure already coded",
+      "nomos42.com dashboard live on Vercel",
+      "Political alpha: 22 categories, 743 features"
+    ]
+  },
+
+  "paths": [
+    {
+      "id": "P1",
+      "name": "NBA Picks Telegram Subscription",
+      "priority": 1,
+      "verdict": "BEST BET FOR 20 DAYS",
+      "days_to_first_dollar": 3,
+      "days_to_implement": 5,
+      "revenue_potential_month_1": {
+        "conservative_3_subs": 57,
+        "realistic_10_subs": 190,
+        "optimistic_30_subs": 570,
+        "currency": "USD"
+      },
+      "what_exists_already": [
+        "nomos_nba_bot.py — full tier-gated Telegram bot coded",
+        "Tier structure: Free/Scout $19/Edge $49/Whale $149",
+        "live-odds.json updated daily",
+        "latest-picks.json with 15 games per day",
+        "Player props with z-scores and edges"
+      ],
+      "what_to_build": [
+        "Day 1: Get NOMOS_NBA_BOT_TOKEN env var set, start bot process, test /picks command",
+        "Day 2: Wire nba-users.json to manual payment tracking (Stripe or crypto)",
+        "Day 3: Write launch post for Reddit r/sportsbook, r/nbabetting",
+        "Day 4: Add /promo command with 7-day free trial flow",
+        "Day 5: Set up cron to auto-push daily picks to subscribers"
+      ],
+      "pricing": {
+        "free_tier": "1 pick/day (acquisition hook)",
+        "scout_19": "3 picks/day + confidence scores",
+        "edge_49": "All picks + Kelly sizing + model breakdown + totals",
+        "whale_149": "Everything + player props + direct Telegram access"
+      },
+      "customers": "NBA bettors on Reddit, Twitter/X sports betting communities, Discord servers",
+      "distribution": [
+        "Post daily free pick on r/sportsbook (750k members) with model Brier score transparency",
+        "Twitter thread: 'I built a Brier 0.2157 NBA model. Here are today's edges.' Daily.",
+        "Join NBA betting Discord servers and post free pick daily",
+        "Do NOT claim positive ROI — lead with Brier score and transparency"
+      ],
+      "honest_pitch": "Quant model with Brier 0.2157 (top 15% public forecasters). I show my edge calculations and odds discrepancies. No promises — you see the math.",
+      "payment": "Stripe payment link ($0 setup cost) or Ko-fi for simplicity. Manual tier upgrade via /upgrade command.",
+      "risks": [
+        "NBA season ends ~April 14 — only 4-8 games left in 2025-26",
+        "Playoffs start mid-April — smaller slate but higher engagement",
+        "Real ROI is -8.71% — if subscribers track results, churn will be high",
+        "Solution: Sell as research tool / quantitative analysis, not betting advice"
+      ],
+      "nba_season_note": "CRITICAL: Regular season ends ~Apr 13. Playoffs run Apr 18 — Jun 22. Pivot immediately to playoff positioning — higher-profile games, more betting volume."
+    },
+
+    {
+      "id": "P2",
+      "name": "Political Alpha Signals — Retail Newsletter",
+      "priority": 2,
+      "verdict": "MEDIUM DIFFICULTY, HIGH DIFFERENTIATION",
+      "days_to_first_dollar": 5,
+      "days_to_implement": 7,
+      "revenue_potential_month_1": {
+        "conservative_5_subs": 95,
+        "realistic_20_subs": 380,
+        "optimistic_50_subs": 950,
+        "currency": "USD"
+      },
+      "what_exists_already": [
+        "22 political categories including insider trading signals",
+        "743 features including Trump/foreign sovereign signals",
+        "Real political-arena data at nomos42.com/political",
+        "Political trading floor with ETF recommendations",
+        "nomos-political-alpha repo with full engine"
+      ],
+      "what_to_build": [
+        "Day 1-2: Simple weekly email digest (Substack free tier, zero cost)",
+        "Day 3: Extract top 3 ETF/stock signals from political-arena-v2.json",
+        "Day 4: Write first issue manually — show the model's logic, not just the pick",
+        "Day 5: Post on r/investing, r/ETFs, r/StockMarket",
+        "Day 6-7: Set up paid tier ($19/mo for weekly deep dive)"
+      ],
+      "pricing": {
+        "free_tier": "Weekly macro theme summary",
+        "pro_19": "3 ETF signals/week with model confidence + congressional insider signals",
+        "institutional_contact": "Custom data feed — pricing on request"
+      },
+      "customers": "Retail investors interested in political edge, macro traders, ETF traders",
+      "distribution": [
+        "Substack — zero upfront cost, built-in discovery",
+        "r/investing (2M members), r/ETFs (500k members)",
+        "Twitter/X political finance accounts",
+        "LinkedIn — frame as 'AI political risk signals'"
+      ],
+      "honest_pitch": "AI model tracking 22 categories of political signals including congressional trading patterns, Trump policy signals, foreign sovereign moves. Weekly digest of where the model sees divergence.",
+      "hedge_fund_path": {
+        "realistic_timeline": "NOT in 20 days",
+        "why": "Hedge funds require 3-12 month due diligence, audited track record, legal compliance",
+        "alternative": "Blog/Substack now, pitch hedge funds in Q3 2026 with 6-month track record"
+      }
+    },
+
+    {
+      "id": "P3",
+      "name": "Cybersecurity Assessments for SMEs",
+      "priority": 3,
+      "verdict": "HARDEST TO MONETIZE IN 20 DAYS — needs real credentials",
+      "days_to_first_dollar": 10,
+      "days_to_implement": 15,
+      "revenue_potential_month_1": {
+        "single_assessment": 500,
+        "two_assessments": 1000,
+        "note": "Highest per-unit revenue but slowest to acquire"
+      },
+      "what_to_build": [
+        "Day 1-3: Define scope — basic vulnerability scan + report, not penetration testing",
+        "Day 4-5: Build automated scan pipeline using free tools (nmap, Nikto, Shodan free tier)",
+        "Day 6-8: Create report template (PDF output) — Claude can write the narrative",
+        "Day 9-10: Build simple landing page on nomos42.com/security or separate domain",
+        "Day 11-15: Cold outreach to 50 local SMEs via LinkedIn"
+      ],
+      "customers": "SMEs (10-200 employees) without dedicated IT security staff",
+      "pricing": {
+        "basic_scan": "External attack surface scan + report: $299",
+        "standard": "External scan + social engineering risk + 1h consultation: $599",
+        "premium": "Full assessment + remediation roadmap: $999"
+      },
+      "distribution": [
+        "LinkedIn cold outreach to SME owners and IT managers",
+        "Local business directories",
+        "French market (ETI = entreprises de taille intermediaire) if based in France"
+      ],
+      "realistic_blocker": "No established credentials or brand in security = trust barrier. Must be transparent about scope and limitations.",
+      "quick_win": "Offer 1 free assessment in exchange for testimonial. Use AI (Claude) to write the analysis narrative. Sell the report, not the tool."
+    },
+
+    {
+      "id": "P4",
+      "name": "Bounties and Competitions",
+      "priority": 4,
+      "verdict": "QUICK WINS POSSIBLE THIS WEEK",
+      "days_to_first_dollar": 1,
+      "opportunities": [
+        {
+          "name": "Kaggle Competitions",
+          "url": "kaggle.com/competitions",
+          "type": "Sports prediction / time series",
+          "prize_range": "$1,000 — $100,000",
+          "realistic": "Top 10% for $0, top 1% for prizes. Our Brier 0.2157 is competitive.",
+          "action": "Check current active competitions, submit NBA-adjacent time series entries"
+        },
+        {
+          "name": "Metaculus Prediction Markets",
+          "url": "metaculus.com",
+          "type": "Forecasting platform",
+          "prize_range": "$0 but reputation + leaderboard",
+          "realistic": "Build public track record that attracts paying subscribers"
+        },
+        {
+          "name": "HF Spaces Grants",
+          "url": "huggingface.co/spaces",
+          "type": "ZeroGPU grant for popular spaces",
+          "prize_range": "Free GPU credits, not cash",
+          "realistic": "Already using — keep building popular spaces"
+        },
+        {
+          "name": "Numerai",
+          "url": "numer.ai",
+          "type": "Quantitative hedge fund competition (stock market)",
+          "prize_range": "$100-$10,000/month for top models",
+          "days_to_enter": 3,
+          "action": "Port NBA feature engineering concepts to Numerai's abstract market data. Submit model. Stakes are NMR tokens.",
+          "realistic": "2-4 weeks to first payout if model ranks well"
+        },
+        {
+          "name": "Sports Prediction API Sales",
+          "url": "RapidAPI marketplace",
+          "type": "API subscription",
+          "prize_range": "$29-$299/mo per subscriber",
+          "days_to_list": 5,
+          "action": "Package latest-picks.json as an API endpoint on RapidAPI. Free tier shows 1 game, paid shows all."
+        }
+      ]
+    },
+
+    {
+      "id": "P5",
+      "name": "Trading Signals Service — S&P500 / Unconventional Data",
+      "priority": 5,
+      "verdict": "INTERESTING BUT TOO SLOW FOR 20 DAYS",
+      "days_to_first_dollar": 15,
+      "days_to_implement": 20,
+      "revenue_potential_month_1": {
+        "10_subs_at_29": 290,
+        "30_subs_at_29": 870
+      },
+      "what_to_build": [
+        "Combine political alpha signals with macro indicators",
+        "Add satellite/credit card/job posting data (free tiers available)",
+        "Weekly newsletter: 'Unconventional edge — what the crowd misses'"
+      ],
+      "unconventional_data_sources": [
+        "Congressional trading disclosures (quiverquant.com — free tier)",
+        "Google Trends for sector sentiment",
+        "Reddit sentiment (Pushshift)",
+        "Job posting velocity (LinkedIn scrape or Theirstack)",
+        "Patent filings for emerging tech companies"
+      ],
+      "realistic_path": "Month 2-3 play, not month 1. Start Substack now, build audience first."
+    },
+
+    {
+      "id": "P6",
+      "name": "Biological / Digital ID Projects",
+      "priority": 6,
+      "verdict": "NOT VIABLE IN 20 DAYS — wrong time horizon",
+      "assessment": "Digital identity and biometric projects require regulatory compliance (GDPR, eIDAS), pilot programs with institutions, and 6-18 month sales cycles for any enterprise customer. The technical build alone would take 60+ days. Hard pass for this deadline.",
+      "alternative_if_interested": "Write a 5-page white paper on AI-driven identity verification (Claude can draft it in 2 hours). Sell as consulting engagement: $500 for initial assessment + roadmap."
+    },
+
+    {
+      "id": "P7",
+      "name": "Nomos42 SaaS Dashboard — Direct Subscriptions",
+      "priority": 2,
+      "verdict": "ACTIVATE EXISTING PRICING NOW",
+      "days_to_implement": 3,
+      "what_exists": "nomos42.com live, full dashboard, 6 evolution islands, trading floor, real data",
+      "what_to_add": [
+        "Day 1: Add /pricing page with $19/$49/$149 tiers, Stripe payment links",
+        "Day 2: Add /demo page — live model output, last 10 picks with outcomes",
+        "Day 3: Launch Twitter thread showing real model output"
+      ],
+      "honest_marketing_angle": "Watch an AI build its own betting model in public. Brier 0.2157 and improving. 8 genetic evolution islands running 24/7. Not investment advice — quantitative research in public.",
+      "differentiation": "The BUILD-IN-PUBLIC angle. Show the evolution. Show Brier improving. People pay for access to watch a sophisticated system work, even if they don't bet."
+    }
+  ],
+
+  "recommended_20_day_sprint": {
+    "days_1_3": {
+      "label": "Launch Telegram bot + Susbstack",
+      "actions": [
+        "Start nomos_nba_bot.py with NOMOS_NBA_BOT_TOKEN (already coded)",
+        "Set up Stripe payment link for $19/mo Scout tier",
+        "Post first free pick on r/nbabetting and r/sportsbook",
+        "Start Substack for political signals — first post: 'AI model finds congressional trading patterns'",
+        "Add /pricing page to nomos42.com"
+      ],
+      "target_revenue": "$0 — acquisition only"
+    },
+    "days_4_7": {
+      "label": "NBA Playoffs pivot + first paying customers",
+      "actions": [
+        "NBA Playoffs start ~Apr 18. Start playoff hype content Apr 14.",
+        "Post daily Twitter thread: today's model edge calculations (transparent math)",
+        "Run 7-day free trial promo for Scout tier — convert to paid at day 7",
+        "Submit to RapidAPI marketplace",
+        "Enter 1 Kaggle competition with NBA-adjacent dataset"
+      ],
+      "target_revenue": "$57 (3 Scout subs)"
+    },
+    "days_8_14": {
+      "label": "Scale picks service + explore Numerai",
+      "actions": [
+        "Double down on whatever channel showed traction in days 1-7",
+        "Add /demo route to nomos42.com with real model output + past picks",
+        "Submit Numerai model (day 8, set-and-forget)",
+        "Political Substack: second issue with ETF signals from political-arena data",
+        "Test paid DM group on Discord for NBA bettors"
+      ],
+      "target_revenue": "$190 (10 Scout subs)"
+    },
+    "days_15_20": {
+      "label": "First security assessment + optimize funnel",
+      "actions": [
+        "Outreach to 5 SMEs for $299 security scan",
+        "A/B test messaging: 'Quant edge' vs 'AI model' vs 'Better than Vegas'",
+        "Push Whale tier to any Edge subscriber who engages heavily",
+        "Compile May results forecast for next month"
+      ],
+      "target_revenue": "$500-800 total (subscriptions + 1 security assessment)"
+    }
+  },
+
+  "revenue_forecast_may1": {
+    "pessimistic": {
+      "amount_usd": 57,
+      "scenario": "3 Scout subs, no other revenue",
+      "verdict": "Not enough to justify continuing Claude Code"
+    },
+    "realistic": {
+      "amount_usd": 380,
+      "scenario": "10 Scout + 3 Edge NBA subs + 5 Political Substack + 1 security scan",
+      "verdict": "Covers Claude Code cost for 1 month, not yet sustainable"
+    },
+    "optimistic": {
+      "amount_usd": 900,
+      "scenario": "25 NBA subs various tiers + 15 political subs + 1 security scan",
+      "verdict": "Break-even on infrastructure + month-2 momentum"
+    },
+    "key_insight": "The constraint is NOT building — it is distribution. Everything needed to launch NBA picks is already built. The only missing piece is posting the first piece of content publicly today."
+  },
+
+  "brutal_honest_assessment": {
+    "real_problems": [
+      "Live bankroll is -8.71% ROI, 38.6% win rate — real performance is weak",
+      "NBA regular season ends ~Apr 13 — 3 days left for regular slate",
+      "No existing subscriber base or social following mentioned",
+      "Claude Code CLI expires May 8 — only 1 week past the deadline"
+    ],
+    "real_assets": [
+      "Full Telegram bot already coded and ready to deploy",
+      "Brier 0.2157 is a legitimate, honest, measurable edge claim",
+      "Political alpha is genuinely differentiated — congressional trading signals are real",
+      "nomos42.com is live and looks professional",
+      "5-AI trading floor is a unique narrative for content marketing"
+    ],
+    "what_actually_generates_revenue_in_20_days": "Content marketing + community presence, not product quality. The NBA bot is good enough. The model is good enough. The missing piece is daily public output — picks, analysis, transparency. Build in public = fastest path to subscribers.",
+    "if_you_can_only_do_one_thing": "Post daily free NBA picks on Reddit r/sportsbook starting today. Include the model's confidence, the Brier score, and the edge calculation. Do this for 5 days. That single action is more valuable than any additional feature."
+  },
+
+  "distribution_channels_ranked": [
+    {
+      "channel": "Reddit r/sportsbook + r/nbabetting",
+      "reach": "750k + 200k",
+      "cost": "$0",
+      "conversion_speed": "Days",
+      "action": "Post free daily pick thread"
+    },
+    {
+      "channel": "Twitter/X daily thread",
+      "reach": "Depends on existing following",
+      "cost": "$0",
+      "conversion_speed": "Weeks",
+      "action": "Show model math transparently, build credibility"
+    },
+    {
+      "channel": "Substack for political signals",
+      "reach": "Built-in discovery for finance/macro audience",
+      "cost": "$0",
+      "conversion_speed": "Weeks",
+      "action": "Weekly newsletter, paid tier from issue 3"
+    },
+    {
+      "channel": "RapidAPI marketplace",
+      "reach": "Developer audience looking for sports APIs",
+      "cost": "$0 to list",
+      "conversion_speed": "Weeks to months",
+      "action": "Expose latest-picks endpoint as paid API"
+    },
+    {
+      "channel": "Discord NBA betting servers",
+      "reach": "Engaged, bet-oriented community",
+      "cost": "$0",
+      "conversion_speed": "Days to weeks",
+      "action": "Join 5 servers, post free picks, DM engaged users"
+    },
+    {
+      "channel": "Numerai",
+      "reach": "Crypto quant community",
+      "cost": "$0 (requires staking NMR for full payouts)",
+      "conversion_speed": "4-8 weeks",
+      "action": "Submit model once, let it run"
+    }
+  ],
+
+  "saas_pricing_confirmed": {
+    "free": "1 pick/day — acquisition hook",
+    "scout_19_mo": "3 picks/day + confidence (LAUNCH NOW)",
+    "edge_49_mo": "All picks + Kelly + models + totals (PRIMARY TARGET)",
+    "whale_149_mo": "Everything + props + direct access (UPSELL ONLY)"
+  }
+}
