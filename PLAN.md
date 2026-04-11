@@ -5,14 +5,16 @@
 > have Claude Code on the web draft the next implementation step in CCR with
 > three parallel subagents + a critique pass.
 
-**Last refresh:** 2026-04-11 15:00 UTC (Apr 11 audit session — "verify not
-bullshit" directive. Replaced two fictitious data-source URLs (OpenSky
-blocked from GCP egress, OpenSeaMap API is fictitious 404). Now using
-api.adsb.lol + meri.digitraffic.fi with real live data verified on disk.
-Brier proxy cold-import runtime 100s → 0.8s cached. Cat 41 rewritten from
-global chokepoints to honest Baltic/Russia signals. Paperclip runner
-semantic gap documented — gate is effectively a crash-gate until councils
-output predictions files. See new W7/W8 below and mon-ipad 38f1df19 +
+**Last refresh:** 2026-04-11 15:30 UTC (Apr 11 audit session RESUMED after
+battery-cutoff on prior VM/Termius session — finished the 3 pending audits
+#19/#20/#21. Added fresh findings below. Prior: "verify not bullshit"
+directive, replaced two fictitious data-source URLs (OpenSky blocked from
+GCP egress, OpenSeaMap API is fictitious 404). Now using api.adsb.lol +
+meri.digitraffic.fi with real live data verified on disk. Brier proxy
+cold-import runtime 100s → 0.8s cached. Cat 41 rewritten from global
+chokepoints to honest Baltic/Russia signals. Paperclip runner semantic gap
+documented — gate is effectively a crash-gate until councils output
+predictions files. See new W7/W8 below and mon-ipad 38f1df19 +
 nomos-political-alpha 47332a6.)
 
 **Prior refresh:** 2026-04-07 14:30 UTC (Phase B+ shipped: trader pool
@@ -90,15 +92,58 @@ ever runs live without `dsr > 0 at p < 0.05 and pbo < 0.40`.
   W8 below. Until then, the "Karpathy keep/revert" claim on hermes-runner
   councils is aspirational, not functional.
 
-### Pending Apr 11 audits (battery-cut; resume next session)
-- ⏳ #19 Paperclip FULL integration test (stub Hermes → commit → verify
-  real `git revert` fires on forced regression via compare mode).
-- ⏳ #20 Sortino ensemble aggregator — verify it actually runs via cron
-  (`aggregate_swarm_to_season.py`), not just committed. Check crontab +
-  latest mtime on `full-season-backtest.json`.
-- ⏳ #21 OOS leaderboard gate — verify live on Vercel by fetching
-  `https://nomos42.com/api/dashboard/home` and confirming `metrics.oos_*`
-  + `trading_floor._sample/_warning` fields present.
+### Apr 11 audits finished this session (#19 / #20 / #21)
+- ✅ **#19 Paperclip FULL integration test — PASS.** Built a scratch git repo
+  at `/tmp/paperclip-test` with a mock `brier_proxy.py` that returns two
+  canned values (forcing a synthetic before/after delta) and a mock
+  `hermes-runner.sh` that commits a stub "council iteration" file. Ran the
+  **real** `scripts/councils/paperclip-runner.sh` (path-patched copy) twice:
+    1. **Forced regression** (0.25 → 0.27, delta +0.02 > 0.005 threshold) →
+       verdict `reverted`, real `git revert --no-edit <sha>` fired and
+       produced a `Revert "council: stub d1 iteration..."` commit on top
+       of the stub, ledger recorded `reverted: true`.
+    2. **Improvement** (0.27 → 0.25, delta -0.02) → verdict
+       `kept_improvement`, no revert, ledger recorded `reverted: false`.
+  The revert code path is correct end-to-end. The remaining gap is purely
+  semantic (W8 below) — the real `brier_proxy.py --json baseline_cv` is a
+  constant function of holdout.json, so on the live councils the
+  before/after delta is always 0. Test harness at `/tmp/paperclip-test/`
+  left in place for future re-runs.
+- ✅ **#20 Sortino aggregator cron wire — PASS.** Aggregator is NOT a
+  standalone cron entry, it's step **[5/5]** inside
+  `scripts/arena/continuous-backtest-swarm.sh` (cron
+  `45 0,4,8,12,16,20 * * *`). Verified via `logs/arena/continuous-backtest.log`
+  last run `2026-04-11 12:45:06 UTC`:
+  `[5/5] Aggregate swarm -> data/nba-agent/full-season-backtest.json`
+  `[aggregate] wrote ... (strategy='Specialist: Spread', trades=445, roi=+45.09%, brier=0.24246)`.
+  `data/nba-agent/full-season-backtest.json` mtime 14:27 UTC — fresh.
+  Side finding: both the NBA and Political git pushes at end of that script
+  **are failing** with `! [rejected] main -> main (fetch first)` because the
+  swarm doesn't `git pull --rebase` first; the data still lands on disk and
+  is served via VM URLs so the dashboard is OK, but the repo drift should
+  be fixed (add `git pull --rebase || true` before the commit block).
+- ⚠️ **#21 OOS leaderboard on Vercel — SHIPPED in git, NOT LIVE on Vercel.**
+  Code for the honest OOS gate **is** committed and pushed in
+  `nomos-dashboard 4be7b76 "feat(dashboard): honest OOS leaderboard gate +
+  in-sample warning ribbon"` (`git rev-list HEAD ^origin/main --count = 0`).
+  Route file at `src/app/api/dashboard/home/route.ts` lines 97-122 and
+  180-188 unconditionally emit `metrics.oos_{roi_pct,brier,sharpe,bets,generated_at}`,
+  `trading_floor._sample`, `trading_floor._warning`, `trading_floor._oos`.
+  But `curl https://nomos-dashboard.vercel.app/api/dashboard/home`
+  (with `x-vercel-cache: MISS`, fresh invocation) returns a response that
+  contains **zero** of those keys. The `/api/health` probe route from commit
+  8784479 *does* respond, so Vercel is deploying *something*, but the
+  4be7b76 build did not reach production. Two side findings from the live
+  response that are **not** in-scope for this audit but worth flagging:
+    - `metrics.hf_spaces_running = 6 / hf_spaces_total = 6` — fleet is now
+      **8 islands** after S16 and S17 were added on Apr 10. Agent health
+      source is still reporting only S10-S15.
+    - `projects.arena.best_roi = "309,625%"` is exactly the kind of
+      in-sample fantasy number the OOS gate was written to hide. Urgency
+      of shipping it for real has gone up.
+  **Action item (tracked as W9 below):** investigate why Vercel is not
+  serving commit 4be7b76. Likely either a silent build-error rollback or
+  the Vercel project is pointing at a different branch.
 
 ### Current state (carried from 2026-04-07 14:30 UTC)
 
@@ -380,6 +425,49 @@ purpose of the whole Paperclip autoresearch pattern.
 
 ---
 
+### W9 — Honest OOS leaderboard must reach Vercel production
+**Goal:** Commit `nomos-dashboard 4be7b76` shipped the honest OOS gate
+(`metrics.oos_*`, `trading_floor._sample`, `trading_floor._warning`) to the
+git remote but the live Vercel response still lacks every one of those
+keys. The in-sample `309,625%` ROI headline is still being served to the
+public. We either have a failing build, a wrong-branch deploy target, or a
+Vercel project-level cache stuck on an older artifact.
+
+**Files to read first:**
+- `nomos-dashboard/src/app/api/dashboard/home/route.ts` (lines 97-122, 180-188 — the OOS block)
+- `nomos-dashboard/vercel.json`
+- `nomos-dashboard/package.json` (build + type-check scripts)
+- `nomos-dashboard/.vercel/project.json` if present locally
+
+**Diagnosis steps:**
+1. Run `npx tsc --noEmit` locally in nomos-dashboard — if the build fails
+   locally it almost certainly fails on Vercel too, and Vercel may be
+   rolling back to the last green deploy.
+2. If TSC is clean, `vercel ls` (logged in as the dashboard project owner)
+   to list recent deployments and check the `4be7b76` commit status.
+3. If `vercel ls` shows a failed prod build, `vercel logs <deployment>` to
+   capture the error.
+4. If `vercel ls` shows `4be7b76` as `● Ready` then the cache is stale —
+   force a redeploy with `vercel --prod --force` or trigger via the
+   dashboard UI.
+
+**Acceptance:** `curl https://nomos-dashboard.vercel.app/api/dashboard/home`
+returns a JSON response where:
+- `metrics.oos_roi_pct` is either a number or `null` (key present)
+- `metrics.oos_brier` is either a number or `null` (key present)
+- `trading_floor._sample` is one of `"in_sample"|"out_of_sample"|"unknown"`
+- `trading_floor._warning` is either a string or `null` (key present)
+
+**Related side fixes (bundle into the same PR if small):**
+- Agent-health source reports only 6 spaces — add S16/S17 to the pipeline
+  that populates `agent-health.json.projects.nba.spaces` (the crawler in
+  `scripts/agents/agent-health.sh` or equivalent — confirm source first).
+- `continuous-backtest-swarm.sh` git-push conflict — add
+  `git pull --rebase --quiet origin main || true` before the commit block
+  so the swarm stops losing its push on every run.
+
+---
+
 ## How to invoke /ultraplan
 
 **Verified 2026-04-07** against the official docs at
@@ -453,8 +541,14 @@ A trading floor experiment is "scientifically perfect" iff:
 | No hardcoded UI mocks | ⚠ | ⚠ (W4 80% shipped) |
 | Fold pool refreshed within 24h | ✓ | ✓ |
 | Real data sources (no fictitious URLs) | ✓ | ✓ (W7 Apr 11) |
-| Paperclip runner is a real keep/revert gate | ✗ | ✗ (W8) |
+| Paperclip runner git-revert path verified end-to-end | ✓ (#19) | ✓ (#19) |
+| Paperclip runner is a real keep/revert gate (semantic) | ✗ | ✗ (W8) |
+| Sortino aggregator feeding full-season-backtest.json via cron | ✓ (#20) | n/a |
+| Honest OOS leaderboard **live on Vercel** | ✗ (W9) | ✗ (W9) |
 | Spatial-intel features (Cat 39/40/41) in gate | n/a | ✗ (W7) |
 
-**Score today: 15/24.** Target after W1-W8: 24/24.
-May 1 monetization deadline: W4, W7, W8 are blocking; W1, W2 are not.
+**Score today: 18/28.** Target after W1-W9: 28/28.
+May 1 monetization deadline: W4, W7, W8, **W9** are blocking; W1, W2 are not.
+(W9 elevated to blocking because the investor-visible `/api/dashboard/home`
+is still serving the 309,625% in-sample ROI headline — the gate that
+hides it was shipped to git on Apr 7 but has not reached production.)
