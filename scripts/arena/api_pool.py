@@ -101,10 +101,12 @@ PROVIDERS = {
     ),
 
     # --- FREE: CEREBRAS ---
+    # 2026-04-11: verified live models via /v1/models — old "qwen-3-32b"
+    # returned 404. Now using the actual available models.
     "cerebras": ProviderConfig(
         name="cerebras",
         base_url="https://api.cerebras.ai/v1",
-        models=["qwen-3-32b"],
+        models=["llama3.1-8b", "qwen-3-235b-a22b-instruct-2507"],
         rpm=30, rpd=1000, tpm=1_000_000, is_free=True, timeout=15.0, max_tokens=512
     ),
 

@@ -1102,12 +1102,26 @@ class TradingFloorV5:
 
         return predictions
 
+    # Fallback provider chain (2026-04-11 Phase 4 audit fix):
+    # When the primary provider returns None (e.g. HF Router 402
+    # "depleted monthly credits" or Google 429 quota), iterate through
+    # these fallbacks in order so the whole swarm doesn't flatline on
+    # one provider outage. Each entry is (provider_key, model_override).
+    # - cerebras llama3.1-8b: ultra-fast (~2000 tok/s), 1k rpd free tier,
+    #   verified live 2026-04-11.
+    # - google gemini-2.0-flash-lite: no internal thinking → predictable
+    #   token usage. Free tier has tight quota so kept second.
+    _PROVIDER_FALLBACK_CHAIN = [
+        ("cerebras", "llama3.1-8b"),
+        ("google", "gemini-2.0-flash-lite"),
+    ]
+
     def _call_agent(self, agent: TradingAgent, ctx: dict, game_key: str) -> Optional[dict]:
         """Call a single agent's LLM to get a prediction."""
         self.run_stats["agents_called"] += 1
-        self.run_stats["api_calls_made"] += 1
 
         if self.dry_run:
+            self.run_stats["api_calls_made"] += 1
             return self._synthetic_prediction(agent, ctx)
 
         # Build prompt based on tier
@@ -1133,26 +1147,45 @@ class TradingFloorV5:
         personality_prefix = personality_preamble(agent.personality or "analytical")
         system_prompt = personality_prefix + "\n\n" + base_system
 
-        # Route to correct backend
-        if agent.provider == "anthropic_cli":
-            # Claude Code CLI via subprocess
-            result = _call_claude_cli(self.pool, agent, prompt, system=system_prompt)
-        else:
-            # Standard OpenAI-compat API pool
-            temp = 0.3
-            if agent.personality and "contrarian" in agent.personality:
-                temp += 0.2
-            elif agent.personality in ("aggressive", "momentum_tracker"):
-                temp += 0.1
-            elif agent.personality == "conservative":
-                temp = max(0.15, temp - 0.1)
-            result = self.pool.call_llm(
-                provider=agent.provider,
-                prompt=prompt,
-                model=agent.model,
-                system=system_prompt,
-                temperature=temp,
-            )
+        temp = 0.3
+        if agent.personality and "contrarian" in agent.personality:
+            temp += 0.2
+        elif agent.personality in ("aggressive", "momentum_tracker"):
+            temp += 0.1
+        elif agent.personality == "conservative":
+            temp = max(0.15, temp - 0.1)
+
+        # Try primary provider first, then walk the fallback chain.
+        # Every network attempt increments api_calls_made (success OR
+        # failure) so run_stats reflects real outbound traffic.
+        attempts: List[tuple] = [(agent.provider, agent.model)]
+        for prov, fallback_model in self._PROVIDER_FALLBACK_CHAIN:
+            if prov != agent.provider:
+                attempts.append((prov, fallback_model))
+
+        result = None
+        used_provider = None
+        used_model = None
+        for prov, model in attempts:
+            self.run_stats["api_calls_made"] += 1
+            if prov == "anthropic_cli":
+                # Claude Code CLI via subprocess
+                r = _call_claude_cli(self.pool, agent, prompt, system=system_prompt)
+            else:
+                r = self.pool.call_llm(
+                    provider=prov,
+                    prompt=prompt,
+                    model=model,
+                    system=system_prompt,
+                    temperature=temp,
+                )
+            if r:
+                result = r
+                used_provider = prov
+                used_model = model
+                break
+            # Primary failed — count the error so run_stats shows it
+            self.run_stats["api_errors"] = self.run_stats.get("api_errors", 0) + 1
 
         if result:
             result["_agent_id"] = agent.id
@@ -1161,6 +1194,11 @@ class TradingFloorV5:
             result["_agent_strategy"] = getattr(agent, "strategy", "") or ""
             result["_game_key"] = game_key
             result["_timestamp"] = datetime.now(timezone.utc).isoformat()
+            # Honest provenance: which provider/model actually answered?
+            result["_provider_used"] = used_provider or agent.provider
+            result["_model_used"] = used_model or agent.model
+            result["_is_real"] = True
+            result["_source"] = "llm_real"
             self.predictions.setdefault(agent.id, {})[game_key] = result
 
         return result
