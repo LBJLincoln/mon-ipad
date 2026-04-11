@@ -51,7 +51,7 @@ ARENA_DIR = DATA_DIR / "arena"
 ODDS_FILE = NBA_DIR / "odds-latest.json"
 PREDICTIONS_FILE = NBA_DIR / "predictions-today.json"
 VALUE_BETS_FILE = NBA_DIR / "value-bets.json"
-TRADING_FLOOR_FILE = ARENA_DIR / "trading-floor-v4-latest.json"
+TRADING_FLOOR_FILE = ARENA_DIR / "trading-floor-v5-latest.json"
 BANKROLL_FILE = NBA_DIR / "bankroll-state.json"
 QUANT_FILE = NBA_DIR / "quant-summary.json"
 EVAL_FILE = NBA_DIR / "latest-eval.json"
@@ -266,70 +266,73 @@ def build_value_bets_panel() -> Panel:
 
 
 def build_trading_floor_panel() -> Panel:
-    """Build the Trading Floor leaderboard."""
+    """Build the Trading Floor leaderboard (v5: 224-agent fleet)."""
     tf = load_json(TRADING_FLOOR_FILE)
     if not tf:
         return Panel("[dim]No trading floor data[/dim]", title="[bold red]TRADING FLOOR[/bold red]", border_style="red")
 
     table = Table(box=box.SIMPLE_HEAVY, show_header=True, header_style="bold red", expand=True)
     table.add_column("#", justify="center", style="bold", width=3)
-    table.add_column("Trader", style="bold white", ratio=1)
-    table.add_column("Provider", style="dim", ratio=1)
-    table.add_column("NBA $", justify="right", style="green", ratio=1)
-    table.add_column("NBA ROI", justify="right", ratio=1)
-    table.add_column("Sharpe", justify="right", ratio=1)
+    table.add_column("Trader", style="bold white", ratio=2)
+    table.add_column("Tier", justify="center", ratio=1)
+    table.add_column("Bankroll", justify="right", style="green", ratio=1)
+    table.add_column("ROI%", justify="right", ratio=1)
+    table.add_column("W%", justify="right", ratio=1)
     table.add_column("W/L", justify="center", ratio=1)
-    table.add_column("Pol $", justify="right", style="blue", ratio=1)
     table.add_column("Status", justify="center", ratio=1)
 
+    TIER_STYLES = {
+        "META": "[bold magenta]META[/bold magenta]",
+        "PREMIUM": "[bold yellow]PREM[/bold yellow]",
+        "FREE_POWER": "[cyan]FREE+[/cyan]",
+        "SPECIALIST": "[dim]SPEC[/dim]",
+    }
+
     leaderboard = tf.get("leaderboard", [])
-    for trader in leaderboard:
+    for trader in leaderboard[:15]:  # top 15 of 217
         rank = trader.get("rank", "?")
         name = trader.get("name", "?")
-        provider = trader.get("provider", "?")
-        nba_bank = trader.get("nba_bankroll", 0)
-        nba_roi = trader.get("nba_roi_pct", 0)
-        sharpe = trader.get("nba_sharpe", 0)
-        wins = trader.get("nba_wins", 0)
-        losses = trader.get("nba_losses", 0)
-        pol_bank = trader.get("political_bankroll", 0)
-        eliminated = trader.get("eliminated", False)
+        tier = trader.get("tier", "?")
+        bankroll = trader.get("bankroll", 0) or 0
+        roi = trader.get("roi", 0) or 0
+        win_rate = trader.get("win_rate", 0) or 0
+        total_bets = trader.get("total_bets", 0) or 0
+        total_wins = trader.get("total_wins", 0) or 0
+        active = trader.get("active", True)
 
-        # Color coding
-        roi_style = "green" if nba_roi > 0 else "red"
-        sharpe_style = "green" if sharpe > 1 else ("yellow" if sharpe > 0 else "red")
-        status = "[red]DEAD[/red]" if eliminated else "[green]LIVE[/green]"
+        roi_style = "green" if roi > 0 else "red"
+        wr_style = "green" if win_rate >= 0.52 else ("yellow" if win_rate >= 0.48 else "red")
+        status = "[green]LIVE[/green]" if active else "[red]OUT[/red]"
 
-        # Format bankroll
-        if nba_bank >= 1000:
-            bank_str = f"${nba_bank/1000:.1f}K"
+        if bankroll >= 1000:
+            bank_str = f"${bankroll/1000:.1f}K"
         else:
-            bank_str = f"${nba_bank:.2f}"
+            bank_str = f"${bankroll:.2f}"
 
-        pol_str = f"${pol_bank/1000:.0f}K" if pol_bank >= 1000 else f"${pol_bank:.0f}"
-
-        # Medal for top 3
+        losses = total_bets - total_wins
         rank_str = {1: "[gold1]1[/gold1]", 2: "[grey70]2[/grey70]", 3: "[orange3]3[/orange3]"}.get(rank, str(rank))
+        tier_fmt = TIER_STYLES.get(tier, tier)
 
         table.add_row(
             rank_str,
             name,
-            provider,
+            tier_fmt,
             bank_str,
-            f"[{roi_style}]{nba_roi:+.1f}%[/{roi_style}]",
-            f"[{sharpe_style}]{sharpe:.2f}[/{sharpe_style}]",
-            f"{wins}/{losses}",
-            pol_str,
+            f"[{roi_style}]{roi:+.0f}%[/{roi_style}]",
+            f"[{wr_style}]{win_rate:.1%}[/{wr_style}]",
+            f"{total_wins}/{losses}",
             status,
         )
 
-    meta = tf.get("meta", {})
+    version = tf.get("version", "v5").upper().replace("_", " ")
     iteration = tf.get("iteration", "?")
-    gen = tf.get("generation", "?")
-    tf_version = meta.get("version", "trading-floor-v4").upper().replace("-", " ")
-    tf_date = meta.get("date", "?")
-    subtitle = f"Iter {iteration} | Gen {gen} | Date: {tf_date} | Strategies: {meta.get('nba_strategies', '?')} active, {meta.get('nba_strategies_eliminated', '?')} elim"
-    return Panel(table, title=f"[bold red]{tf_version}[/bold red]", subtitle=subtitle, border_style="red")
+    tf_date = tf.get("date", "?")
+    agent_count = tf.get("agent_count", "?")
+    active_agents = tf.get("active_agents", "?")
+    tiers = tf.get("tier_summary", {})
+    tier_str = f"T1:{tiers.get('T1_premium',0)} T2:{tiers.get('T2_free_power',0)} T3:{tiers.get('T3_specialist',0)} T4:{tiers.get('T4_meta',0)}"
+    subtitle = f"Iter {iteration} | Date: {tf_date} | Agents: {active_agents}/{agent_count} active | {tier_str}"
+    return Panel(table, title=f"[bold red]TRADING FLOOR {version}[/bold red]", subtitle=subtitle, border_style="red")
 
 
 def build_evolution_panel() -> Panel:
