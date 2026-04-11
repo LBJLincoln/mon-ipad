@@ -1,51 +1,80 @@
 {
-  "timestamp": "2026-04-11T00:15:00Z",
+  "timestamp": "2026-04-11T10:18:42Z",
   "summary": {
-    "total": 23,
-    "healthy": 22,
-    "restarted": 4,
-    "failed": 0,
-    "escalated": 1
+    "total": 15,
+    "healthy": 6,
+    "restarted": 1,
+    "failed": 8
   },
   "hf_spaces": {
-    "S10_nba": {"status": "running", "brier": "0.23052", "gen": "57"},
-    "S11_nba": {"status": "running", "brier": "0.22529", "gen": "81"},
-    "S12_nba": {"status": "running", "brier": "0.2221", "gen": "30"},
-    "S13_nba": {"status": "running", "brier": "0.22592", "gen": "9"},
-    "S14_nba": {"status": "recovered", "brier": "0.22815", "gen": "3"},
-    "S15_nba": {"status": "recovered", "brier": "0.22471", "gen": "15"},
-    "S16_nba": {"status": "monitoring", "brier": "0.22476", "gen": "4"},
-    "S17_nba": {"status": "running", "brier": "0.22716", "gen": "27"},
-    "S18_nba": {"status": "running", "brier": "0.22454", "gen": "379"},
-    "S19_nba": {"status": "running", "brier": "0.22175", "gen": "133"},
-    "P1_pol": {"status": "running", "brier": "0.24971", "gen": "31473"},
-    "P2_pol": {"status": "running", "brier": "0.23134", "gen": "34387"},
-    "P3_pol": {"status": "running", "brier": "0.25229", "gen": "532"},
-    "P4_pol": {"status": "running", "brier": "0.24533", "gen": "961"},
-    "D1_research": {"status": "running"},
-    "D2_engineering": {"status": "running"},
-    "D3_evolution": {"status": "running"},
-    "D4_product": {"status": "running"},
-    "D5_business": {"status": "recovered"},
-    "D6_evaluation": {"status": "recovered"},
-    "D7_infra": {"status": "running"},
-    "D8_finance": {"status": "running"},
-    "D9_cross_repo": {"status": "running"}
-  },
-  "ports": {
-    "data_server_8080": {"status": "up", "type": "http.server"},
-    "bloomberg_api_8042": {"status": "restart_triggered", "type": "Bloomberg Terminal API"}
+    "P1_pol": {
+      "status": "running",
+      "brier": "0.24996",
+      "gen": "289"
+    },
+    "P2_pol": {
+      "status": "running",
+      "brier": "0.25",
+      "gen": "692"
+    },
+    "P3_pol": {
+      "status": "running",
+      "brier": "0.2499",
+      "gen": "1778"
+    },
+    "P4_pol": {
+      "status": "running",
+      "brier": "0.25426",
+      "gen": "654"
+    },
+    "S10_nba": {
+      "status": "down",
+      "http": "503"
+    },
+    "S11_nba": {
+      "status": "down",
+      "http": "503"
+    },
+    "S12_nba": {
+      "status": "down",
+      "http": "503"
+    },
+    "S13_nba": {
+      "status": "down",
+      "http": "503"
+    },
+    "S14_nba": {
+      "status": "down",
+      "http": "503"
+    },
+    "S15_nba": {
+      "status": "down",
+      "http": "503"
+    },
+    "S16_nba": {
+      "status": "down",
+      "http": "503"
+    },
+    "S17_nba": {
+      "status": "down",
+      "http": "503"
+    },
+    "S18_nba": {
+      "status": "running",
+      "brier": "0.22454",
+      "gen": "516"
+    },
+    "S19_nba": {
+      "status": "running",
+      "brier": "0.22175",
+      "gen": "210"
+    }
   },
   "kaggle": {
-    "nba": "ACTIVE — periodic launches",
-    "political": "ACTIVE — periodic launches"
+    "nba": "relaunched",
+    "political": "running"
   },
   "modal": {
-    "status": "idle"
-  },
-  "keepalive_status": {
-    "cron": "*/30 * * * * running",
-    "last_execution": "2026-04-11T00:03:34Z",
-    "auto_restarts_this_cycle": 4
+    "nba": "launched"
   }
 }

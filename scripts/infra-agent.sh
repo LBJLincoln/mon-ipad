@@ -20,7 +20,7 @@ mkdir -p "$(dirname "$LOG")" "$(dirname "$STATUS_FILE")"
 
 source /home/termius/mon-ipad/.env.local 2>/dev/null
 
-log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $1" | tee -a "$LOG"; }
+log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $1" | tee -a "$LOG" >&2; }
 now_epoch() { date +%s; }
 
 log "═══ INFRA AGENT CYCLE START ═══"
@@ -171,25 +171,55 @@ fi
 # 4. Write status JSON
 # ══════════════════════════════════════════════════════════════
 
-cat > "$STATUS_FILE" << STATUSEOF
-{
-  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "summary": {
-    "total": $TOTAL,
-    "healthy": $HEALTHY,
-    "restarted": $RESTARTED,
-    "failed": $FAILED
-  },
-  "hf_spaces": $HF_STATUS_JSON,
-  "kaggle": {
-    "nba": "$KAGGLE_NBA_STATUS",
-    "political": "$KAGGLE_POL_STATUS"
-  },
-  "modal": {
-    "nba": "$MODAL_STATUS"
-  }
+# Defensive JSON emission: python3 handles string escaping (control chars,
+# embedded newlines, etc.) so shell-captured outputs can never corrupt the file.
+# Historical bug (2026-04-11): log() via tee-to-stdout was slurped into
+# KAGGLE_*_STATUS command substitutions, embedding literal newlines and turning
+# this file into invalid JSON for ~days, which silently broke /api/dashboard/home
+# and /api/dashboard/infra on Vercel. Fix: log now goes to stderr AND we json-escape.
+# IMPORTANT: export MUST come before the python call so os.environ sees the vars.
+export HF_STATUS_JSON KAGGLE_NBA_STATUS KAGGLE_POL_STATUS MODAL_STATUS
+TS_NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+export TS_NOW TOTAL HEALTHY RESTARTED FAILED
+python3 - "$STATUS_FILE" <<'PYEOF'
+import json, sys, os
+hf_raw = os.environ.get('HF_STATUS_JSON') or '{}'
+try:
+    hf = json.loads(hf_raw)
+except Exception:
+    hf = {"_parse_error": hf_raw[:200]}
+
+def last_line(name: str) -> str:
+    v = os.environ.get(name) or 'unknown'
+    lines = [l for l in v.strip().splitlines() if l.strip()]
+    return lines[-1] if lines else 'unknown'
+
+def as_int(name: str) -> int:
+    try:
+        return int(os.environ.get(name, '0') or 0)
+    except ValueError:
+        return 0
+
+payload = {
+    "timestamp": os.environ.get('TS_NOW', ''),
+    "summary": {
+        "total":     as_int('TOTAL'),
+        "healthy":   as_int('HEALTHY'),
+        "restarted": as_int('RESTARTED'),
+        "failed":    as_int('FAILED'),
+    },
+    "hf_spaces": hf,
+    "kaggle": {
+        "nba":       last_line('KAGGLE_NBA_STATUS'),
+        "political": last_line('KAGGLE_POL_STATUS'),
+    },
+    "modal": {
+        "nba": last_line('MODAL_STATUS'),
+    },
 }
-STATUSEOF
+with open(sys.argv[1], 'w') as f:
+    json.dump(payload, f, indent=2)
+PYEOF
 
 # ══════════════════════════════════════════════════════════════
 # 5. TRADING FLOOR COUNCIL LOOP — KILLED (2026-04-06)
