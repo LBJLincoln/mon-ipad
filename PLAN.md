@@ -5,15 +5,22 @@
 > have Claude Code on the web draft the next implementation step in CCR with
 > three parallel subagents + a critique pass.
 
-**Last refresh:** 2026-04-07 14:30 UTC (Phase B+ shipped: trader pool free-HF
-pivot, dashboard mocks removed, OASIS T3 swarm scaffold (50 agents), Alpaca
-paper client, Obsidian compile cron live AND auto-pushing every 2h, Claude
-Code Web verified, swarm→full-season-backtest aggregator wired so the NBA
-backtest API now reads fresh data instead of a 10-day-stale file, infra page
-FALLBACK_DEPARTMENTS/_BOTTLENECKS/_CRON_JOBS hardcoded fakes deleted +
-honest empty-state UI, forge-metrics route returns 503 instead of fake
-"FORGED" status for every repo, evolution page static-March ATR fallback
-deleted)
+**Last refresh:** 2026-04-11 15:00 UTC (Apr 11 audit session — "verify not
+bullshit" directive. Replaced two fictitious data-source URLs (OpenSky
+blocked from GCP egress, OpenSeaMap API is fictitious 404). Now using
+api.adsb.lol + meri.digitraffic.fi with real live data verified on disk.
+Brier proxy cold-import runtime 100s → 0.8s cached. Cat 41 rewritten from
+global chokepoints to honest Baltic/Russia signals. Paperclip runner
+semantic gap documented — gate is effectively a crash-gate until councils
+output predictions files. See new W7/W8 below and mon-ipad 38f1df19 +
+nomos-political-alpha 47332a6.)
+
+**Prior refresh:** 2026-04-07 14:30 UTC (Phase B+ shipped: trader pool
+free-HF pivot, dashboard mocks removed, OASIS T3 swarm scaffold (50 agents),
+Alpaca paper client, Obsidian compile cron live AND auto-pushing every 2h,
+Claude Code Web verified, swarm→full-season-backtest aggregator wired,
+infra page FALLBACK_DEPARTMENTS/_BOTTLENECKS/_CRON_JOBS deleted,
+forge-metrics route 503, evolution page static-March ATR fallback deleted)
 **Repos in scope:**
 - `LBJLincoln/mon-ipad` (NBA Quant — engine, gates, dashboards)
 - `LBJLincoln/nomos-political-alpha` (Political Alpha — Cat 1-22 features)
@@ -38,7 +45,62 @@ ever runs live without `dsr > 0 at p < 0.05 and pbo < 0.40`.
 
 ---
 
-## Current state (as of 2026-04-07 14:30 UTC)
+## Current state (as of 2026-04-11 15:00 UTC)
+
+### Apr 11 audit deltas (this session)
+- ✅ **Cat 40 ADS-B poller RESCUED.** `scripts/fetch_opensky.py` rewritten to
+  use `api.adsb.lol/v2/lat/{}/lon/{}/dist/250` (5 regions: DC-NYC, LA-SF,
+  London, Dubai, Tokyo). OpenSky anonymous tier is TCP-blocked from GCP
+  egress — verified 20-45s timeouts. adsb.lol returns REAL ICAO emitter
+  categories (A1-A7) instead of callsign heuristics. Live sample
+  2026-04-11 12:38 UTC: 1651 flights, 136 A2 bizjets, 29 A7 helicopters,
+  5/5 regions OK. Cat 40 baselines recalibrated (was sized for 9500-flight
+  global, now 1650-flight regional) — z-scores no longer pinned at -5 floor.
+- ✅ **Cat 41 AIS poller FIXED + REWRITTEN.** `openseamap.org/api/ship_density_summary.json`
+  was a **fictitious endpoint** (404 verified) — invented in a prior session.
+  Replaced with `meri.digitraffic.fi/api/ais/v1/locations` (Finnish Transport
+  Agency, requires gzip Accept-Encoding). Coverage is Baltic-only — Hamburg,
+  Rotterdam, Gdansk tried and returned 0 vessels, dropped from the port
+  list. Live sample: 18,248 real vessels, 5,204 oil tankers, 1,294
+  Russian-flag (7.09%), Primorsk=45, Ust-Luga=168, St Petersburg=139,
+  Kaliningrad=39. Cat 41 module completely rewritten from global-chokepoint
+  (Hormuz/Suez/Panama/Taiwan) to honest Russia/Baltic signals (tanker share,
+  Russia-flag ratio, Primorsk/Ust-Luga surge, sanctions-evasion reflagging
+  proxy, composite Russia oil export signal). 12 features unchanged in
+  count, all honest about what they measure.
+- ✅ **Political engine v3.19 integration verified.** 718 total features;
+  tc39=24 (sector/PAC acceleration), tc40=15 (ADS-B jet activity), tc41=12
+  (Baltic maritime). All three lazy-imported, all producing non-zero values
+  on real 2026-04-11 data.
+- ✅ **Brier proxy cached.** `scripts/brier_proxy.py` baseline_cv mode
+  runtime was 100-110s on this 1vCPU VM (sklearn cold-import = 99% of time).
+  Added SHA1-keyed cache at `data/proxy/baseline_cache.json`. Verified:
+  cold run 107s compute, warm runs 0.007s + 0.001s, all identical
+  brier=0.253826 (n=100, feature_dim=10). 150× speedup on repeat calls.
+- ✅ **Paperclip verdict logic verified** via 7-scenario shell test at
+  `/tmp/test_paperclip_revert.sh`: big regression → revert, tiny → flat,
+  threshold boundary correct, improvement → keep, no commit → no_op, all 7
+  PASS. Compare mode exit codes correct (0 on improvement, 1 on regression).
+- ⚠️ **Paperclip SEMANTIC GAP (new W8 below).** baseline_cv is a constant
+  function of holdout.json — councils don't rewrite it and don't output
+  predictions files, so delta is always 0 and Paperclip always verdicts
+  no_op. The runner is currently effectively a CRASH gate (catches
+  commits that broke holdout loading, sklearn import, or the proxy itself),
+  NOT a Brier gate. Documented honestly in both scripts. Real fix requires
+  W8 below. Until then, the "Karpathy keep/revert" claim on hermes-runner
+  councils is aspirational, not functional.
+
+### Pending Apr 11 audits (battery-cut; resume next session)
+- ⏳ #19 Paperclip FULL integration test (stub Hermes → commit → verify
+  real `git revert` fires on forced regression via compare mode).
+- ⏳ #20 Sortino ensemble aggregator — verify it actually runs via cron
+  (`aggregate_swarm_to_season.py`), not just committed. Check crontab +
+  latest mtime on `full-season-backtest.json`.
+- ⏳ #21 OOS leaderboard gate — verify live on Vercel by fetching
+  `https://nomos42.com/api/dashboard/home` and confirming `metrics.oos_*`
+  + `trading_floor._sample/_warning` fields present.
+
+### Current state (carried from 2026-04-07 14:30 UTC)
 
 ### NBA — green
 - ✅ `scripts/arena/cpcv_gate.py` running, **7 backtest runs in pool, 0/40 strategies passing** (gate working — DSR rejecting until pool ≥ 24)
@@ -247,6 +309,77 @@ honest empty states everywhere, not a single hardcoded fake number.
 
 ---
 
+### W7 — Gate Cat 39/40/41 into political CPCV promotion
+**Goal:** Cat 39 (sector/PAC acceleration), Cat 40 (ADS-B jet activity),
+Cat 41 (Baltic maritime) are wired into `features/political_engine.py`
+(v3.19-political-41cat-spatial-intel, 718 features verified 2026-04-11).
+But the political CPCV gate still uses the old 22-cat feature set and has
+never validated the new spatial-intel features against the political
+scientific gate (DSR + PBO + CPCV). Until this runs, we don't know if the
+new features improve or hurt the Political strategy pool.
+
+**Files to read first:**
+- `nomos-political-alpha/features/political_engine.py` (v3.19 entry point — `build()`)
+- `nomos-political-alpha/features/cat39_sector_pac_acceleration.py` (24 features)
+- `nomos-political-alpha/features/cat40_adsb_jet_activity.py` (15 features)
+- `nomos-political-alpha/features/cat41_maritime_chokepoint.py` (12 features, Baltic rewrite)
+- `mon-ipad/scripts/arena/political_cpcv_gate.py` (current gate)
+- `mon-ipad/scripts/arena/continuous-political-backtest-swarm.sh` (cron `17 */4 * * *`)
+
+**Constraints:**
+- The new cats expect data in `nomos-political-alpha/data/{opensky,ais}/`
+  — mon-ipad swarm script must know how to reach those or sync copies.
+- Cat 41 baseline constants are calibrated to the 2026-04-11 sample; expect
+  ratios = 1.0 on the first few runs until a 7-day rolling window builds.
+- Each swarm run now costs 51 extra features × N strategies × M games —
+  budget memory carefully.
+
+**Acceptance:** `data/arena/political-pool.json` contains at least one
+strategy tagged `engine_version: v3.19-political-41cat-spatial-intel` with
+a valid Brier + ROI + Sharpe. DSR computed against baseline 22-cat strategies.
+
+---
+
+### W8 — Make Paperclip runner a real keep/revert gate
+**Goal:** As of 2026-04-11 the Paperclip runner (`scripts/councils/paperclip-runner.sh`)
+measures Brier via `brier_proxy.py --json` (baseline_cv mode), which is a
+CONSTANT function of `data/proxy/holdout.json`. Councils never rewrite the
+holdout, so the proxy always returns the same value and the runner always
+verdicts `no_op`. It is currently a crash-gate only. This defeats the
+purpose of the whole Paperclip autoresearch pattern.
+
+**Fix direction (three-step):**
+1. Each council (D1-D9 in `scripts/councils/hermes-runner.sh`) must output
+   a predictions file at a council-specific path
+   (e.g. `data/councils/<dept>/predictions.json`) mapping
+   `{game_id: home_win_prob}` whenever the iteration touches anything
+   downstream of the scoring path. Council iterations that only touch
+   non-scoring files (docs, config) can skip this.
+2. `paperclip-runner.sh` `measure_brier()` must switch from baseline_cv to
+   `brier_proxy.py --before <prev-preds> --after <new-preds> --json` —
+   the compare mode, which already works (verified 2026-04-11 with exit
+   codes 0/1 on synthetic improvement/regression).
+3. Retain the existing cache as a read-only fallback when a council has
+   never produced a predictions file (first-run iteration → compare
+   against the LR baseline as the "before").
+
+**Files to read first:**
+- `scripts/councils/paperclip-runner.sh` (current measure_brier function)
+- `scripts/councils/hermes-runner.sh` (parent runner delegated to by Paperclip)
+- `scripts/brier_proxy.py` (already supports compare mode — see docstring)
+- `data/proxy/holdout.json` (100 games, 10 features — the reference fold)
+
+**Acceptance:**
+- At least one council iteration produces `data/councils/<dept>/predictions.json`
+- `data/councils/paperclip-ledger.jsonl` contains at least one row where
+  `verdict != "no_op"` — either `kept_improvement`, `kept_flat`, or
+  `reverted` — driven by a REAL before/after Brier diff.
+- Forced-regression smoke test: feed a deliberately-bad predictions file
+  as "after" and verify `git revert` actually fires (currently untested
+  end-to-end).
+
+---
+
 ## How to invoke /ultraplan
 
 **Verified 2026-04-07** against the official docs at
@@ -312,12 +445,16 @@ A trading floor experiment is "scientifically perfect" iff:
 |---|---|---|
 | Same starting bankroll (literal or normalized) | ✓ | ✓ (W3 makes literal) |
 | Same 5 named traders | ✓ | ✓ |
-| Same CPCV+DSR+PBO promotion gate | ✓ | ✓ (this commit) |
+| Same CPCV+DSR+PBO promotion gate | ✓ | ✓ |
 | Same fold count (≥24) | ⚠ 7 | ⚠ 1 |
 | Real LangGraph debate (not adapter) | ✗ | ✗ (W1) |
 | Real OASIS agent society for T3 | ✗ | ✗ (W2) |
-| Continuous CPCV watcher with alerts | ✗ | ✗ (W5) |
-| No hardcoded UI mocks | ⚠ | ✗ (W4) |
-| Fold pool refreshed within 24h | ✓ | ✓ (this commit) |
+| Continuous CPCV watcher with alerts | ✓ | ✓ (W5 shipped Apr 7) |
+| No hardcoded UI mocks | ⚠ | ⚠ (W4 80% shipped) |
+| Fold pool refreshed within 24h | ✓ | ✓ |
+| Real data sources (no fictitious URLs) | ✓ | ✓ (W7 Apr 11) |
+| Paperclip runner is a real keep/revert gate | ✗ | ✗ (W8) |
+| Spatial-intel features (Cat 39/40/41) in gate | n/a | ✗ (W7) |
 
-**Score today: 12/18.** Target after W1-W5: 18/18.
+**Score today: 15/24.** Target after W1-W8: 24/24.
+May 1 monetization deadline: W4, W7, W8 are blocking; W1, W2 are not.
