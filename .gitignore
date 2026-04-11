@@ -81,3 +81,11 @@ catboost_info/
 obsidian-vault/
 nba-quant-space/
 .opencode/
+
+# Trading Floor v5 raw per-agent council logs — too large for git, streamed
+# via VM data server at http://34.136.180.66:8080/arena/council-log-v5/.
+# The small per-date bet-audit-*.json and backfill-summary.json are committed.
+data/arena/council-log-v5/council-log-*.jsonl
+# Raw predictions dumps (one file per day, ~1-2MB each) — regenerable via
+# scripts/arena/backfill-v5-season.py, not committed.
+data/arena/predictions-v5/predictions-*.json
