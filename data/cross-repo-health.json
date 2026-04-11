@@ -1,54 +1,70 @@
 {
-  "timestamp": "2026-04-11T04:00:00Z",
-  "brain_cycle": 91,
-  "ecosystem_status": "PARTIAL — NBA sleeping, Political 50% online",
-  "repos": {
-    "nomos-nba-agent": {
-      "status": "ACTIVE",
-      "last_commit": "2026-04-11",
+  "timestamp": "2026-04-11T12:30:00Z",
+  "brain_cycle": 92,
+  "ecosystem_status": "DEGRADED",
+  "degradation_reason": "6 NBA islands sleeping 503 (3+ cycles). Political P3/P4 not found on HF (4 cycles).",
+  "projects": {
+    "nba_quant_ai": {
+      "status": "DEGRADED",
+      "islands_online": 0,
+      "islands_total": 6,
+      "best_brier": 0.21906,
+      "best_brier_island": "S15 (last seen Apr 10)",
+      "target_brier": 0.20,
       "engine_version": "v3.1-59cat",
-      "fleet_best_brier": 0.22249,
-      "all_time_best_brier": 0.2157,
-      "target": 0.20,
-      "gap_to_target": 0.02249,
-      "island_health": "6/6 SLEEPING (503) — 2nd consecutive cycle",
-      "action_needed": "Check keepalive-spaces.sh cron"
+      "last_active": "2026-04-10T16:45Z",
+      "critical_alert": "Islands sleeping 3+ cycles. Keepalive cron broken?"
     },
-    "nomos-political-alpha": {
-      "status": "ACTIVE",
-      "last_commit": "2026-04-11",
-      "engine_version": "v3.16-political-38cat-scotus-chevron",
-      "engine_version_pending": "v3.17 (Cat39 ready)",
-      "fleet_best_brier": 0.24996,
-      "target": 0.22,
-      "gap_to_target": 0.02996,
-      "island_health": "2/4 ONLINE (P3+P4 NOT_FOUND on HF)",
-      "action_needed": "Manual HF space creation: Nomos42/political-alpha-3 and political-alpha-4"
-    },
-    "mon-ipad": {
-      "status": "ACTIVE",
-      "last_commit": "2026-04-11",
-      "dashboard_url": "nomos42.com",
-      "health_file": "data/health-status.json"
+    "political_alpha": {
+      "status": "PARTIAL",
+      "islands_online": 2,
+      "islands_total": 4,
+      "best_brier_current": 0.24996,
+      "best_brier_alltime": 0.23134,
+      "target_brier": 0.22,
+      "engine_version_live": "v3.16-political-38cat-scotus-chevron",
+      "engine_version_staged": "v3.19-political-42cat (Cat39+40+41+42 pending)",
+      "feature_files_staged": ["cat39_sector_pac_acceleration.py", "cat40_adsb_jet_activity.py", "cat41_maritime_chokepoint.py", "cat42_congressional_stock_act.py"],
+      "feature_files_integrated": "cat01 through cat38 in political_engine.py",
+      "p3_p4_status": "NOT FOUND on HuggingFace (4 cycles) — need manual recreation"
     }
   },
-  "cross_pollination_cycle91": {
-    "nba_to_political": "none this cycle",
-    "political_to_nba": "XGBoost Brier-objective insight: political engine GA optimizes Brier, NBA models train on log-loss. Proposal written: 2026-04-11-xgboost-squared-error-brier-objective.md",
-    "insight": "Training objective alignment — make model training minimize the same metric as GA evaluation"
-  },
-  "parity_check": {
-    "nba_engine_parity": "MAINTAINED — all 6 islands same v3.1-59cat",
-    "political_engine_parity": "P1+P2 both v3.16, P3+P4 offline",
-    "ga_config_parity": "NBA islands have diverged GA configs (by design). Political P1+P2 share config."
-  },
-  "critical_alerts": [
-    "P3+P4 NOT FOUND on HuggingFace — manual creation at huggingface.co/new-space",
-    "NBA keepalive cron possibly broken — check scripts/keepalive-spaces.sh"
+  "techniques_cross_pollinated": [
+    {
+      "from": "NBA",
+      "to": "Political",
+      "technique": "XGBoost direct Brier objective training",
+      "cycle": 91,
+      "status": "Research proposal created"
+    },
+    {
+      "from": "Political",
+      "to": "NBA",
+      "technique": "Direct Brier GA fitness function (already used in political engine)",
+      "cycle": 91,
+      "status": "Proposal to align NBA training objective with GA fitness"
+    },
+    {
+      "from": "Research",
+      "to": "NBA",
+      "technique": "Market-implied probability as anchor feature (SHAP 0.803)",
+      "cycle": 92,
+      "status": "Research proposal committed — ready to implement"
+    },
+    {
+      "from": "Research",
+      "to": "Political",
+      "technique": "Congressional cluster trading + STOCK Act disclosure timing",
+      "cycle": 92,
+      "status": "Cat42 feature file committed — pending engine integration"
+    }
   ],
-  "upcoming_priorities": [
-    "Cycle 92: Deploy Cat39 to political_engine.py, NBA Brier-objective to S13 app.py",
-    "Cycle 93: Cat40 candidate = Congressional trading clusters around committee sector votes",
-    "On-demand: When NBA islands wake, POST diversify if stagnation >15 gens"
+  "pending_actions": [
+    "Integrate Cat39+40+41+42 into political_engine.py (v3.16 → v3.19)",
+    "Add market-implied prob features to NBA engine.py (6 features)",
+    "Add CalibratedClassifierCV isotonic calibration to NBA app.py",
+    "Manually restart NBA keepalive-spaces.sh cron",
+    "Manually create P3 and P4 HuggingFace Spaces",
+    "Check nba-daily-odds.py output in data/historical-odds/"
   ]
 }
