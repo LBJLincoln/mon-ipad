@@ -10,9 +10,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 ## Sources
 
 - **2025-26 NBA Season — Agent QWEN STRATEGIST** (10059 words) -- `raw/arena-docs/openrouter-season-2025-26.md`
-- **2025-26 NBA Season — Agent GEMMA ANALYST** (10057 words) -- `raw/arena-docs/gemini-season-2025-26.md`
-- **2025-26 NBA Season — Agent CLAUDE SENTINEL** (10043 words) -- `raw/arena-docs/claude-season-2025-26.md`
+- **2025-26 NBA Season — Agent GEMMA ANALYST** (10050 words) -- `raw/arena-docs/gemini-season-2025-26.md`
 - **2025-26 NBA Season — Agent LLAMA VANGUARD** (10041 words) -- `raw/arena-docs/codex-season-2025-26.md`
+- **2025-26 NBA Season — Agent CLAUDE SENTINEL** (10036 words) -- `raw/arena-docs/claude-season-2025-26.md`
 - **2025-26 NBA Season — Agent MISTRAL MAVERICK** (9899 words) -- `raw/arena-docs/grok-season-2025-26.md`
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
