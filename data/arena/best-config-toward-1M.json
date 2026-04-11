@@ -1,32 +1,37 @@
 {
-  "best_bankroll": 302154.67,
+  "best_bankroll": 309725.17,
   "best_trader_id": "codex",
-  "best_iteration": 6,
-  "distance_to_1M_pct": 69.7845,
+  "best_iteration": 320,
+  "distance_to_1M_pct": 69.0275,
   "history": [
     {
       "iteration": 6,
       "bankroll": 302154.67,
       "trader": "codex",
       "timestamp": "2026-04-01T10:57:45.916659+00:00"
+    },
+    {
+      "iteration": 320,
+      "bankroll": 309725.17,
+      "trader": "codex",
+      "timestamp": "2026-04-11T08:30:32.115997+00:00"
     }
   ],
   "agent_configs": {
     "codex": {
       "preferred_strategies": [
-        "full_kelly",
-        "streak_momentum",
-        "anti_martingale",
-        "proportional_edge"
+        "underdog_specialist",
+        "half_kelly",
+        "value_hunter"
       ],
       "preferred_models": [
-        "xgboost",
-        "lightgbm",
-        "catboost"
+        "elo_baseline",
+        "consensus_ensemble",
+        "xgboost"
       ],
       "personality": "aggressive",
       "risk_tolerance": 0.7,
-      "bankroll_achieved": 302154.67
+      "bankroll_achieved": 309725.17
     }
   }
 }

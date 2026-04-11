@@ -5,1004 +5,1024 @@
 - **Personality:** conservative
 - **Risk Tolerance:** 0.4
 - **Initial Bankroll:** $100.00
-- **Final Bankroll:** $321.61
-- **ROI:** +221.6%
-- **Sharpe Ratio:** 5.059
-- **Record:** 1021W-1033L
-- **Peak Bankroll:** $321.61
-- **Max Drawdown:** 19.5%
-- **Rank:** #5 of 5
-- **Total Wagered:** $1,253.15
+- **Final Bankroll:** $79,889.75
+- **ROI:** +79,789.8%
+- **Sharpe Ratio:** 10.357
+- **Record:** 5607W-3672L
+- **Peak Bankroll:** $79,889.75
+- **Max Drawdown:** 16.0%
+- **Rank:** #4 of 5
+- **Total Wagered:** $316,882.05
 
 ## Peer Comparison
 | Rank | Agent | Bankroll | ROI | Sharpe |
 |------|-------|----------|-----|--------|
-| 1 | Llama Vanguard | $9,337.23 | +9,237.2% | 3.859 |
-| 2 | Gemma Analyst | $5,485.17 | +5,385.2% | 3.458 |
-| 3 | Mistral Maverick | $3,807.54 | +3,707.5% | 4.957 |
-| 4 | Qwen Strategist | $950.50 | +850.5% | 3.148 |
-| 5 | Claude Sentinel ** | $321.61 | +221.6% | 5.059 |
+| 1 | Llama Vanguard | $309,725.17 | +309,625.2% | 9.149 |
+| 2 | Qwen Strategist | $149,465.13 | +149,365.1% | 12.412 |
+| 3 | Gemma Analyst | $104,086.80 | +103,986.8% | 9.788 |
+| 4 | Claude Sentinel ** | $79,889.75 | +79,789.8% | 10.357 |
+| 5 | Mistral Maverick | $14,033.55 | +13,933.5% | 7.132 |
 
 ## Model Performance
 | Model | Bets | Profit |
 |-------|------|--------|
-| catboost | 661 | $+94.93 |
-| tabicl | 651 | $+67.26 |
-| consensus_ensemble | 742 | $+59.42 |
+| catboost | 3052 | $+27,249.46 |
+| consensus_ensemble | 3137 | $+27,181.89 |
+| tabicl | 3090 | $+25,358.41 |
 
 ## Strategy Performance
 | Strategy | Bets | Profit |
 |----------|------|--------|
-| quarter_kelly | 2054 | $+221.61 |
+| quarter_kelly | 9279 | $+79,789.75 |
 
 ## Category Breakdown
 | Category | Bets | WR% | Profit |
 |----------|------|-----|--------|
-| alt_spread_home_big | 551 | 48.1% | $+176.92 |
-| alt_spread_away_big | 289 | 47.8% | $+63.37 |
-| h1_ml_home | 131 | 55.7% | $+20.10 |
-| team_total_home_under | 160 | 63.1% | $+10.44 |
-| team_total_home_over | 38 | 81.6% | $+4.41 |
-| ml_away | 1 | 0.0% | $-0.02 |
-| total_under | 95 | 42.1% | $-3.61 |
-| ml_home | 207 | 48.3% | $-3.75 |
-| spread_away | 194 | 46.9% | $-22.30 |
-| spread_home | 388 | 46.9% | $-23.95 |
+| race_to_75_home | 406 | 100.0% | $+14,103.68 |
+| race_to_100_home | 364 | 95.6% | $+11,474.64 |
+| q1_home | 482 | 74.9% | $+7,014.00 |
+| q2_home | 431 | 76.8% | $+6,919.40 |
+| q3_home | 464 | 75.6% | $+6,874.58 |
+| alt_spread_home_7.5 | 644 | 48.1% | $+6,854.12 |
+| q4_home | 394 | 76.9% | $+6,405.82 |
+| alt_spread_home_3.5 | 407 | 68.3% | $+6,086.00 |
+| alt_spread_away_7.5 | 412 | 46.8% | $+4,606.29 |
+| alt_spread_home_big | 498 | 49.2% | $+4,353.93 |
+| alt_under_plus10 | 554 | 71.5% | $+3,829.42 |
+| alt_spread_away_3.5 | 167 | 73.1% | $+2,736.94 |
+| alt_spread_away_big | 252 | 48.8% | $+2,367.86 |
+| alt_under_plus5 | 554 | 61.6% | $+1,495.68 |
+| h1_ml_home | 53 | 50.9% | $+1,285.52 |
+| home_and_over | 262 | 36.6% | $+928.75 |
+| alt_over_minus10 | 554 | 68.2% | $+543.38 |
+| team_total_home_under | 78 | 65.4% | $+483.78 |
+| team_total_home_over | 11 | 81.8% | $+52.73 |
+| total_under | 32 | 50.0% | $+34.02 |
+| double_result_hh | 156 | 41.7% | $+22.79 |
+| ml_away | 1 | 0.0% | $-1.85 |
+| away_and_under | 118 | 30.5% | $-3.51 |
+| margin_6_10 | 246 | 23.2% | $-6.64 |
+| double_result_aa | 28 | 46.4% | $-111.13 |
+| ml_home | 97 | 38.1% | $-557.91 |
+| spread_away | 176 | 46.0% | $-951.34 |
+| spread_home | 362 | 47.2% | $-1,882.86 |
+| alt_over_minus5 | 554 | 59.6% | $-2,273.16 |
+| margin_1_5 | 522 | 25.3% | $-2,895.17 |
 
 ## Day-by-Day Results
 | Day | Date | Games | Bets | P&L | Bankroll | Models | Strategies |
 |-----|------|-------|------|-----|----------|--------|------------|
-| 1 | 2025-10-21 | 2 | 3 | $-1.66 | $98.34 | catboost | quarter_kelly |
-| 2 | 2025-10-22 | 12 | 26 | $-4.48 | $93.86 | catboost,consensus_e | quarter_kelly |
-| 3 | 2025-10-23 | 2 | 4 | $-0.76 | $93.09 | catboost | quarter_kelly |
-| 4 | 2025-10-24 | 12 | 24 | $-1.25 | $91.84 | catboost,consensus_e | quarter_kelly |
-| 5 | 2025-10-25 | 5 | 12 | $+0.74 | $92.58 | catboost,consensus_e | quarter_kelly |
-| 6 | 2025-10-26 | 9 | 15 | $-2.02 | $90.56 | catboost,consensus_e | quarter_kelly |
-| 7 | 2025-10-27 | 11 | 21 | $+1.61 | $92.17 | consensus_ensemble,t | quarter_kelly |
-| 8 | 2025-10-28 | 5 | 8 | $-1.39 | $90.77 | consensus_ensemble,t | quarter_kelly |
-| 9 | 2025-10-29 | 10 | 19 | $-0.38 | $90.40 | catboost,consensus_e | quarter_kelly |
-| 10 | 2025-10-30 | 4 | 11 | $+1.41 | $91.81 | catboost,tabicl | quarter_kelly |
-| 11 | 2025-10-31 | 8 | 13 | $-4.00 | $87.81 | catboost,consensus_e | quarter_kelly |
-| 12 | 2025-11-01 | 5 | 14 | $+0.13 | $87.94 | catboost,consensus_e | quarter_kelly |
-| 13 | 2025-11-02 | 8 | 14 | $+6.47 | $94.40 | catboost,consensus_e | quarter_kelly |
-| 14 | 2025-11-03 | 9 | 22 | $-6.10 | $88.30 | catboost,consensus_e | quarter_kelly |
-| 15 | 2025-11-04 | 6 | 13 | $+2.49 | $90.79 | catboost,consensus_e | quarter_kelly |
-| 16 | 2025-11-05 | 11 | 20 | $+5.75 | $96.55 | catboost,consensus_e | quarter_kelly |
-| 17 | 2025-11-06 | 1 | 0 | $+0.00 | $96.55 |  |  |
-| 18 | 2025-11-07 | 11 | 28 | $+20.52 | $117.07 | catboost,consensus_e | quarter_kelly |
-| 19 | 2025-11-08 | 8 | 15 | $-1.05 | $116.02 | catboost,consensus_e | quarter_kelly |
-| 20 | 2025-11-09 | 7 | 15 | $+11.01 | $127.03 | catboost,consensus_e | quarter_kelly |
-| 21 | 2025-11-10 | 9 | 24 | $-5.61 | $121.42 | catboost,consensus_e | quarter_kelly |
-| 22 | 2025-11-11 | 6 | 16 | $+4.78 | $126.20 | catboost,consensus_e | quarter_kelly |
-| 23 | 2025-11-12 | 12 | 25 | $+3.40 | $129.61 | catboost,consensus_e | quarter_kelly |
-| 24 | 2025-11-13 | 3 | 4 | $-0.45 | $129.16 | catboost,tabicl | quarter_kelly |
-| 25 | 2025-11-14 | 9 | 21 | $+1.83 | $130.99 | catboost,consensus_e | quarter_kelly |
-| 26 | 2025-11-15 | 5 | 9 | $-0.22 | $130.77 | catboost,consensus_e | quarter_kelly |
-| 27 | 2025-11-16 | 8 | 16 | $+0.60 | $131.37 | catboost,consensus_e | quarter_kelly |
-| 28 | 2025-11-17 | 8 | 20 | $+2.24 | $133.61 | catboost,consensus_e | quarter_kelly |
-| 29 | 2025-11-18 | 6 | 13 | $+3.16 | $136.78 | catboost,consensus_e | quarter_kelly |
-| 30 | 2025-11-19 | 9 | 17 | $-0.35 | $136.43 | catboost,consensus_e | quarter_kelly |
-| 31 | 2025-11-20 | 4 | 3 | $+1.50 | $137.93 | consensus_ensemble | quarter_kelly |
-| 32 | 2025-11-21 | 9 | 21 | $+0.38 | $138.31 | catboost,consensus_e | quarter_kelly |
-| 33 | 2025-11-22 | 7 | 14 | $-0.74 | $137.56 | catboost,consensus_e | quarter_kelly |
-| 34 | 2025-11-23 | 8 | 16 | $+6.10 | $143.67 | catboost,consensus_e | quarter_kelly |
-| 35 | 2025-11-24 | 10 | 29 | $+8.72 | $152.38 | catboost,consensus_e | quarter_kelly |
-| 36 | 2025-11-25 | 3 | 10 | $+1.22 | $153.61 | catboost,consensus_e | quarter_kelly |
-| 37 | 2025-11-26 | 9 | 17 | $-2.63 | $150.98 | catboost,consensus_e | quarter_kelly |
-| 38 | 2025-11-28 | 11 | 24 | $-0.46 | $150.52 | catboost,consensus_e | quarter_kelly |
-| 39 | 2025-11-29 | 8 | 17 | $-3.67 | $146.85 | catboost,consensus_e | quarter_kelly |
-| 40 | 2025-11-30 | 8 | 20 | $+1.01 | $147.86 | catboost,consensus_e | quarter_kelly |
-| 41 | 2025-12-01 | 9 | 23 | $-10.32 | $137.54 | catboost,consensus_e | quarter_kelly |
-| 42 | 2025-12-02 | 6 | 17 | $+0.45 | $137.98 | catboost,consensus_e | quarter_kelly |
-| 43 | 2025-12-03 | 9 | 20 | $+0.17 | $138.15 | catboost,consensus_e | quarter_kelly |
-| 44 | 2025-12-04 | 5 | 12 | $+1.64 | $139.79 | consensus_ensemble,t | quarter_kelly |
-| 45 | 2025-12-05 | 12 | 23 | $+5.86 | $145.65 | catboost,consensus_e | quarter_kelly |
-| 46 | 2025-12-06 | 7 | 20 | $-1.40 | $144.25 | consensus_ensemble,t | quarter_kelly |
-| 47 | 2025-12-07 | 7 | 12 | $+2.22 | $146.47 | catboost,consensus_e | quarter_kelly |
-| 48 | 2025-12-08 | 3 | 10 | $-3.09 | $143.38 | catboost,tabicl | quarter_kelly |
-| 49 | 2025-12-09 | 2 | 4 | $+0.34 | $143.73 | catboost,consensus_e | quarter_kelly |
-| 50 | 2025-12-10 | 2 | 5 | $+1.77 | $145.50 | catboost | quarter_kelly |
-| 51 | 2025-12-11 | 4 | 13 | $-1.69 | $143.81 | catboost,consensus_e | quarter_kelly |
-| 52 | 2025-12-12 | 7 | 18 | $-4.14 | $139.67 | catboost,consensus_e | quarter_kelly |
-| 53 | 2025-12-14 | 8 | 15 | $-2.00 | $137.67 | catboost,tabicl | quarter_kelly |
-| 54 | 2025-12-15 | 5 | 5 | $-0.71 | $136.96 | consensus_ensemble,t | quarter_kelly |
-| 55 | 2025-12-17 | 2 | 5 | $-0.45 | $136.51 | consensus_ensemble,t | quarter_kelly |
-| 56 | 2025-12-18 | 12 | 30 | $+0.63 | $137.14 | catboost,consensus_e | quarter_kelly |
-| 57 | 2025-12-19 | 5 | 11 | $-0.21 | $136.93 | catboost,consensus_e | quarter_kelly |
-| 58 | 2025-12-20 | 10 | 19 | $-1.65 | $135.27 | catboost,consensus_e | quarter_kelly |
-| 59 | 2025-12-21 | 6 | 18 | $-2.34 | $132.94 | catboost,consensus_e | quarter_kelly |
-| 60 | 2025-12-22 | 7 | 15 | $+1.49 | $134.43 | catboost,consensus_e | quarter_kelly |
-| 61 | 2025-12-23 | 13 | 28 | $-3.34 | $131.08 | catboost,consensus_e | quarter_kelly |
-| 62 | 2025-12-25 | 5 | 7 | $+0.05 | $131.13 | catboost,consensus_e | quarter_kelly |
-| 63 | 2025-12-26 | 9 | 20 | $-1.34 | $129.79 | catboost,tabicl | quarter_kelly |
-| 64 | 2025-12-27 | 9 | 14 | $-1.39 | $128.40 | catboost,tabicl | quarter_kelly |
-| 65 | 2025-12-28 | 6 | 16 | $+2.38 | $130.78 | catboost,consensus_e | quarter_kelly |
-| 66 | 2025-12-29 | 11 | 21 | $-1.10 | $129.69 | catboost,consensus_e | quarter_kelly |
-| 67 | 2025-12-30 | 4 | 9 | $+3.73 | $133.42 | catboost,consensus_e | quarter_kelly |
-| 68 | 2025-12-31 | 9 | 22 | $-2.35 | $131.07 | catboost,consensus_e | quarter_kelly |
-| 69 | 2026-01-01 | 5 | 14 | $+2.77 | $133.84 | catboost,tabicl | quarter_kelly |
-| 70 | 2026-01-02 | 10 | 21 | $+1.82 | $135.66 | catboost,consensus_e | quarter_kelly |
-| 71 | 2026-01-03 | 8 | 13 | $-2.23 | $133.43 | catboost,consensus_e | quarter_kelly |
-| 72 | 2026-01-04 | 8 | 21 | $+3.50 | $136.93 | catboost,consensus_e | quarter_kelly |
-| 73 | 2026-01-05 | 8 | 18 | $-2.19 | $134.74 | catboost,consensus_e | quarter_kelly |
-| 74 | 2026-01-06 | 6 | 21 | $-4.98 | $129.75 | catboost,consensus_e | quarter_kelly |
-| 75 | 2026-01-07 | 12 | 26 | $+2.45 | $132.21 | catboost,consensus_e | quarter_kelly |
-| 76 | 2026-01-08 | 3 | 4 | $-0.44 | $131.77 | catboost,consensus_e | quarter_kelly |
-| 77 | 2026-01-09 | 10 | 23 | $+1.08 | $132.85 | catboost,consensus_e | quarter_kelly |
-| 78 | 2026-01-10 | 6 | 10 | $+1.32 | $134.17 | catboost,consensus_e | quarter_kelly |
-| 79 | 2026-01-11 | 10 | 28 | $+1.23 | $135.40 | catboost,consensus_e | quarter_kelly |
-| 80 | 2026-01-12 | 6 | 16 | $-7.31 | $128.09 | catboost,consensus_e | quarter_kelly |
-| 81 | 2026-01-13 | 7 | 7 | $+1.09 | $129.19 | consensus_ensemble,t | quarter_kelly |
-| 82 | 2026-01-14 | 7 | 11 | $+0.62 | $129.80 | catboost,consensus_e | quarter_kelly |
-| 83 | 2026-01-15 | 8 | 11 | $+2.68 | $132.48 | catboost,consensus_e | quarter_kelly |
-| 84 | 2026-01-16 | 6 | 7 | $+2.96 | $135.44 | catboost,consensus_e | quarter_kelly |
-| 85 | 2026-01-17 | 9 | 19 | $+0.32 | $135.76 | catboost,consensus_e | quarter_kelly |
-| 86 | 2026-01-18 | 5 | 7 | $+3.57 | $139.32 | catboost,consensus_e | quarter_kelly |
-| 87 | 2026-01-19 | 9 | 20 | $+3.44 | $142.76 | catboost,consensus_e | quarter_kelly |
-| 88 | 2026-01-20 | 7 | 13 | $-3.29 | $139.48 | catboost,consensus_e | quarter_kelly |
-| 89 | 2026-01-21 | 7 | 16 | $+2.86 | $142.33 | catboost,consensus_e | quarter_kelly |
-| 90 | 2026-01-22 | 8 | 17 | $+1.73 | $144.07 | catboost,consensus_e | quarter_kelly |
-| 91 | 2026-01-23 | 8 | 19 | $-14.56 | $129.50 | catboost,consensus_e | quarter_kelly |
-| 92 | 2026-01-24 | 5 | 13 | $-0.36 | $129.14 | catboost,consensus_e | quarter_kelly |
-| 93 | 2026-01-25 | 6 | 14 | $-0.48 | $128.66 | catboost,consensus_e | quarter_kelly |
-| 94 | 2026-01-26 | 6 | 8 | $+0.24 | $128.90 | consensus_ensemble,t | quarter_kelly |
-| 95 | 2026-01-27 | 7 | 21 | $+2.30 | $131.20 | catboost,consensus_e | quarter_kelly |
-| 96 | 2026-01-28 | 8 | 19 | $+3.50 | $134.69 | catboost,consensus_e | quarter_kelly |
-| 97 | 2026-01-29 | 8 | 12 | $-1.83 | $132.87 | catboost,tabicl | quarter_kelly |
-| 98 | 2026-01-30 | 9 | 12 | $+4.81 | $137.67 | catboost,consensus_e | quarter_kelly |
-| 99 | 2026-01-31 | 6 | 13 | $+1.44 | $139.12 | catboost,consensus_e | quarter_kelly |
-| 100 | 2026-02-01 | 2 | 2 | $+3.82 | $142.94 | catboost | quarter_kelly |
-| 101 | 2026-02-02 | 4 | 10 | $-4.05 | $138.89 | catboost,consensus_e | quarter_kelly |
-| 102 | 2026-02-03 | 10 | 21 | $+2.45 | $141.33 | catboost,consensus_e | quarter_kelly |
-| 103 | 2026-02-04 | 7 | 10 | $+1.03 | $142.36 | consensus_ensemble,t | quarter_kelly |
-| 104 | 2026-02-05 | 8 | 22 | $-1.19 | $141.17 | catboost,consensus_e | quarter_kelly |
-| 105 | 2026-02-06 | 6 | 10 | $+0.02 | $141.19 | catboost,consensus_e | quarter_kelly |
-| 106 | 2026-02-07 | 10 | 20 | $-1.02 | $140.18 | catboost,consensus_e | quarter_kelly |
-| 107 | 2026-02-08 | 4 | 12 | $+1.77 | $141.95 | catboost,consensus_e | quarter_kelly |
-| 108 | 2026-02-09 | 10 | 20 | $+8.00 | $149.95 | catboost,consensus_e | quarter_kelly |
-| 109 | 2026-02-10 | 4 | 12 | $+0.70 | $150.65 | catboost,consensus_e | quarter_kelly |
-| 110 | 2026-02-11 | 14 | 31 | $+5.74 | $156.39 | catboost,consensus_e | quarter_kelly |
-| 111 | 2026-02-12 | 3 | 8 | $-0.55 | $155.84 | consensus_ensemble,t | quarter_kelly |
-| 112 | 2026-02-19 | 10 | 12 | $+8.06 | $163.91 | catboost,consensus_e | quarter_kelly |
-| 113 | 2026-02-20 | 9 | 6 | $+2.77 | $166.67 | catboost,consensus_e | quarter_kelly |
-| 114 | 2026-02-21 | 6 | 8 | $+7.52 | $174.19 | catboost,consensus_e | quarter_kelly |
-| 115 | 2026-02-22 | 11 | 14 | $+3.32 | $177.51 | catboost,consensus_e | quarter_kelly |
-| 116 | 2026-02-23 | 3 | 3 | $+2.87 | $180.39 | consensus_ensemble,t | quarter_kelly |
-| 117 | 2026-02-24 | 11 | 13 | $+5.70 | $186.09 | catboost,consensus_e | quarter_kelly |
-| 118 | 2026-02-25 | 6 | 6 | $+1.65 | $187.74 | catboost,consensus_e | quarter_kelly |
-| 119 | 2026-02-26 | 10 | 14 | $+6.98 | $194.72 | catboost,consensus_e | quarter_kelly |
-| 120 | 2026-02-27 | 5 | 5 | $+2.02 | $196.73 | catboost,consensus_e | quarter_kelly |
-| 121 | 2026-02-28 | 5 | 4 | $+5.65 | $202.39 | catboost,consensus_e | quarter_kelly |
-| 122 | 2026-03-01 | 11 | 13 | $+13.21 | $215.60 | catboost,consensus_e | quarter_kelly |
-| 123 | 2026-03-02 | 4 | 4 | $-5.27 | $210.33 | consensus_ensemble,t | quarter_kelly |
-| 124 | 2026-03-03 | 10 | 13 | $+3.92 | $214.25 | catboost,consensus_e | quarter_kelly |
-| 125 | 2026-03-04 | 6 | 7 | $-0.90 | $213.35 | catboost,tabicl | quarter_kelly |
-| 126 | 2026-03-05 | 9 | 12 | $-0.39 | $212.95 | catboost,consensus_e | quarter_kelly |
-| 127 | 2026-03-06 | 7 | 6 | $+1.31 | $214.27 | catboost,consensus_e | quarter_kelly |
-| 128 | 2026-03-07 | 6 | 8 | $-1.57 | $212.70 | catboost,consensus_e | quarter_kelly |
-| 129 | 2026-03-08 | 10 | 10 | $+2.99 | $215.69 | catboost,consensus_e | quarter_kelly |
-| 130 | 2026-03-09 | 5 | 4 | $+0.96 | $216.65 | consensus_ensemble,t | quarter_kelly |
-| 131 | 2026-03-10 | 11 | 13 | $+9.08 | $225.73 | catboost,consensus_e | quarter_kelly |
-| 132 | 2026-03-11 | 6 | 6 | $+1.56 | $227.29 | catboost,consensus_e | quarter_kelly |
-| 133 | 2026-03-12 | 9 | 12 | $+4.60 | $231.90 | catboost,tabicl | quarter_kelly |
-| 134 | 2026-03-13 | 8 | 11 | $+5.18 | $237.08 | catboost,consensus_e | quarter_kelly |
-| 135 | 2026-03-14 | 7 | 8 | $+2.41 | $239.49 | catboost,consensus_e | quarter_kelly |
-| 136 | 2026-03-15 | 7 | 7 | $-0.94 | $238.55 | catboost,consensus_e | quarter_kelly |
-| 137 | 2026-03-16 | 8 | 10 | $+3.54 | $242.09 | catboost,consensus_e | quarter_kelly |
-| 138 | 2026-03-17 | 8 | 13 | $+13.89 | $255.98 | catboost,consensus_e | quarter_kelly |
-| 139 | 2026-03-18 | 9 | 10 | $+13.23 | $269.21 | catboost,consensus_e | quarter_kelly |
-| 140 | 2026-03-19 | 8 | 13 | $+2.17 | $271.38 | catboost,consensus_e | quarter_kelly |
-| 141 | 2026-03-20 | 6 | 7 | $-5.26 | $266.12 | catboost,consensus_e | quarter_kelly |
-| 142 | 2026-03-21 | 10 | 11 | $+7.94 | $274.06 | catboost,consensus_e | quarter_kelly |
-| 143 | 2026-03-22 | 5 | 6 | $+3.84 | $277.90 | catboost,consensus_e | quarter_kelly |
-| 144 | 2026-03-23 | 10 | 9 | $+18.09 | $295.99 | catboost,consensus_e | quarter_kelly |
-| 145 | 2026-03-24 | 4 | 5 | $-0.64 | $295.35 | catboost,consensus_e | quarter_kelly |
-| 146 | 2026-03-25 | 12 | 13 | $+4.33 | $299.68 | catboost,consensus_e | quarter_kelly |
-| 147 | 2026-03-26 | 3 | 3 | $-2.20 | $297.48 | consensus_ensemble,t | quarter_kelly |
-| 148 | 2026-03-27 | 10 | 13 | $+7.79 | $305.27 | catboost,consensus_e | quarter_kelly |
-| 149 | 2026-03-28 | 6 | 5 | $+16.34 | $321.61 | catboost,consensus_e | quarter_kelly |
+| 1 | 2025-10-21 | 2 | 24 | $+3.80 | $103.80 | consensus_ensemble,c | quarter_kelly |
+| 2 | 2025-10-22 | 12 | 151 | $+2.50 | $106.30 | consensus_ensemble,t | quarter_kelly |
+| 3 | 2025-10-23 | 2 | 18 | $-0.84 | $105.46 | catboost | quarter_kelly |
+| 4 | 2025-10-24 | 12 | 155 | $-1.00 | $104.45 | catboost,tabicl,cons | quarter_kelly |
+| 5 | 2025-10-25 | 5 | 71 | $+10.31 | $114.77 | consensus_ensemble,t | quarter_kelly |
+| 6 | 2025-10-26 | 9 | 109 | $+19.80 | $134.57 | catboost,tabicl,cons | quarter_kelly |
+| 7 | 2025-10-27 | 11 | 117 | $+26.56 | $161.13 | tabicl,catboost,cons | quarter_kelly |
+| 8 | 2025-10-28 | 5 | 49 | $+3.66 | $164.79 | tabicl,consensus_ens | quarter_kelly |
+| 9 | 2025-10-29 | 10 | 114 | $+10.92 | $175.71 | consensus_ensemble,c | quarter_kelly |
+| 10 | 2025-10-30 | 4 | 56 | $+21.62 | $197.33 | tabicl,catboost | quarter_kelly |
+| 11 | 2025-10-31 | 8 | 82 | $-7.94 | $189.39 | catboost,tabicl,cons | quarter_kelly |
+| 12 | 2025-11-01 | 5 | 57 | $+1.91 | $191.30 | tabicl,catboost,cons | quarter_kelly |
+| 13 | 2025-11-02 | 8 | 101 | $+67.29 | $258.59 | consensus_ensemble,t | quarter_kelly |
+| 14 | 2025-11-03 | 9 | 137 | $+7.50 | $266.09 | catboost,tabicl,cons | quarter_kelly |
+| 15 | 2025-11-04 | 6 | 65 | $+34.56 | $300.65 | consensus_ensemble,c | quarter_kelly |
+| 16 | 2025-11-05 | 11 | 147 | $+77.12 | $377.77 | tabicl,consensus_ens | quarter_kelly |
+| 17 | 2025-11-06 | 1 | 7 | $+4.60 | $382.37 | catboost | quarter_kelly |
+| 18 | 2025-11-07 | 11 | 139 | $+253.16 | $635.53 | consensus_ensemble,c | quarter_kelly |
+| 19 | 2025-11-08 | 8 | 104 | $+101.28 | $736.82 | consensus_ensemble,c | quarter_kelly |
+| 20 | 2025-11-09 | 7 | 81 | $+188.53 | $925.35 | catboost,tabicl,cons | quarter_kelly |
+| 21 | 2025-11-10 | 9 | 112 | $+79.20 | $1,004.55 | consensus_ensemble,c | quarter_kelly |
+| 22 | 2025-11-11 | 6 | 75 | $+279.89 | $1,284.44 | tabicl,consensus_ens | quarter_kelly |
+| 23 | 2025-11-12 | 12 | 144 | $+245.46 | $1,529.90 | consensus_ensemble,t | quarter_kelly |
+| 24 | 2025-11-13 | 3 | 33 | $-17.60 | $1,512.30 | catboost,tabicl | quarter_kelly |
+| 25 | 2025-11-14 | 9 | 128 | $+541.95 | $2,054.25 | consensus_ensemble,c | quarter_kelly |
+| 26 | 2025-11-15 | 5 | 56 | $+173.09 | $2,227.34 | consensus_ensemble,t | quarter_kelly |
+| 27 | 2025-11-16 | 8 | 94 | $+357.62 | $2,584.96 | catboost,tabicl,cons | quarter_kelly |
+| 28 | 2025-11-17 | 8 | 127 | $+628.95 | $3,213.91 | tabicl,consensus_ens | quarter_kelly |
+| 29 | 2025-11-18 | 6 | 70 | $+775.72 | $3,989.63 | catboost,tabicl,cons | quarter_kelly |
+| 30 | 2025-11-19 | 9 | 103 | $+690.32 | $4,679.95 | catboost,tabicl,cons | quarter_kelly |
+| 31 | 2025-11-20 | 4 | 35 | $+475.17 | $5,155.12 | consensus_ensemble,t | quarter_kelly |
+| 32 | 2025-11-21 | 9 | 117 | $+423.93 | $5,579.05 | tabicl,catboost,cons | quarter_kelly |
+| 33 | 2025-11-22 | 7 | 78 | $+138.97 | $5,718.02 | tabicl,catboost,cons | quarter_kelly |
+| 34 | 2025-11-23 | 8 | 107 | $+1,718.65 | $7,436.67 | consensus_ensemble,c | quarter_kelly |
+| 35 | 2025-11-24 | 10 | 102 | $+1,064.29 | $8,500.96 | consensus_ensemble,c | quarter_kelly |
+| 36 | 2025-11-25 | 3 | 30 | $+307.88 | $8,808.83 | consensus_ensemble,c | quarter_kelly |
+| 37 | 2025-11-26 | 9 | 88 | $+169.77 | $8,978.61 | catboost,tabicl,cons | quarter_kelly |
+| 38 | 2025-11-28 | 11 | 133 | $+1,063.43 | $10,042.04 | catboost,tabicl,cons | quarter_kelly |
+| 39 | 2025-11-29 | 8 | 93 | $+608.17 | $10,650.20 | consensus_ensemble,c | quarter_kelly |
+| 40 | 2025-11-30 | 8 | 92 | $+1,529.82 | $12,180.03 | catboost,consensus_e | quarter_kelly |
+| 41 | 2025-12-01 | 9 | 115 | $-117.18 | $12,062.85 | catboost,consensus_e | quarter_kelly |
+| 42 | 2025-12-02 | 6 | 73 | $+656.42 | $12,719.27 | tabicl,catboost,cons | quarter_kelly |
+| 43 | 2025-12-03 | 9 | 110 | $-274.34 | $12,444.93 | catboost,tabicl,cons | quarter_kelly |
+| 44 | 2025-12-04 | 5 | 42 | $+515.42 | $12,960.35 | tabicl,consensus_ens | quarter_kelly |
+| 45 | 2025-12-05 | 12 | 152 | $+1,987.93 | $14,948.28 | tabicl,catboost,cons | quarter_kelly |
+| 46 | 2025-12-06 | 7 | 95 | $+176.12 | $15,124.39 | tabicl,consensus_ens | quarter_kelly |
+| 47 | 2025-12-07 | 7 | 47 | $+832.77 | $15,957.17 | consensus_ensemble,c | quarter_kelly |
+| 48 | 2025-12-08 | 3 | 36 | $-427.53 | $15,529.64 | tabicl,catboost | quarter_kelly |
+| 49 | 2025-12-09 | 2 | 14 | $+173.34 | $15,702.98 | catboost,consensus_e | quarter_kelly |
+| 50 | 2025-12-10 | 2 | 33 | $+394.71 | $16,097.68 | catboost | quarter_kelly |
+| 51 | 2025-12-11 | 4 | 44 | $+386.02 | $16,483.70 | consensus_ensemble,c | quarter_kelly |
+| 52 | 2025-12-12 | 7 | 96 | $+195.10 | $16,678.80 | catboost,consensus_e | quarter_kelly |
+| 53 | 2025-12-14 | 8 | 92 | $-812.78 | $15,866.02 | catboost,tabicl | quarter_kelly |
+| 54 | 2025-12-15 | 5 | 38 | $-910.02 | $14,956.00 | consensus_ensemble,t | quarter_kelly |
+| 55 | 2025-12-17 | 2 | 23 | $-251.01 | $14,704.98 | tabicl,consensus_ens | quarter_kelly |
+| 56 | 2025-12-18 | 12 | 123 | $+1,726.67 | $16,431.65 | catboost,consensus_e | quarter_kelly |
+| 57 | 2025-12-19 | 5 | 54 | $-305.17 | $16,126.48 | consensus_ensemble,c | quarter_kelly |
+| 58 | 2025-12-20 | 10 | 91 | $-90.71 | $16,035.77 | catboost,tabicl,cons | quarter_kelly |
+| 59 | 2025-12-21 | 6 | 77 | $+13.55 | $16,049.31 | tabicl,consensus_ens | quarter_kelly |
+| 60 | 2025-12-22 | 7 | 96 | $+2,319.07 | $18,368.38 | tabicl,consensus_ens | quarter_kelly |
+| 61 | 2025-12-23 | 13 | 125 | $+166.87 | $18,535.25 | consensus_ensemble,c | quarter_kelly |
+| 62 | 2025-12-25 | 5 | 51 | $+173.21 | $18,708.46 | tabicl,consensus_ens | quarter_kelly |
+| 63 | 2025-12-26 | 9 | 80 | $-262.67 | $18,445.79 | tabicl,consensus_ens | quarter_kelly |
+| 64 | 2025-12-27 | 9 | 85 | $-359.64 | $18,086.14 | tabicl,catboost | quarter_kelly |
+| 65 | 2025-12-28 | 6 | 63 | $+1,056.12 | $19,142.27 | catboost,consensus_e | quarter_kelly |
+| 66 | 2025-12-29 | 11 | 92 | $+1,237.02 | $20,379.29 | catboost,consensus_e | quarter_kelly |
+| 67 | 2025-12-30 | 4 | 36 | $+1,869.02 | $22,248.31 | catboost,tabicl,cons | quarter_kelly |
+| 68 | 2025-12-31 | 9 | 102 | $+246.05 | $22,494.35 | tabicl,catboost,cons | quarter_kelly |
+| 69 | 2026-01-01 | 5 | 59 | $+1,702.16 | $24,196.51 | tabicl,catboost,cons | quarter_kelly |
+| 70 | 2026-01-02 | 10 | 110 | $+3,032.16 | $27,228.68 | tabicl,consensus_ens | quarter_kelly |
+| 71 | 2026-01-03 | 8 | 81 | $-131.16 | $27,097.51 | consensus_ensemble,t | quarter_kelly |
+| 72 | 2026-01-04 | 8 | 87 | $+1,832.42 | $28,929.93 | tabicl,catboost,cons | quarter_kelly |
+| 73 | 2026-01-05 | 8 | 98 | $+93.85 | $29,023.79 | consensus_ensemble,c | quarter_kelly |
+| 74 | 2026-01-06 | 6 | 50 | $-656.41 | $28,367.38 | tabicl,consensus_ens | quarter_kelly |
+| 75 | 2026-01-07 | 12 | 157 | $+5,990.21 | $34,357.59 | tabicl,catboost,cons | quarter_kelly |
+| 76 | 2026-01-08 | 3 | 14 | $-223.79 | $34,133.80 | consensus_ensemble,c | quarter_kelly |
+| 77 | 2026-01-09 | 10 | 48 | $+2,134.20 | $36,267.99 | tabicl,catboost,cons | quarter_kelly |
+| 78 | 2026-01-10 | 6 | 13 | $+288.47 | $36,556.47 | tabicl,consensus_ens | quarter_kelly |
+| 79 | 2026-01-11 | 10 | 85 | $+1,786.91 | $38,343.38 | catboost,consensus_e | quarter_kelly |
+| 80 | 2026-01-12 | 6 | 30 | $-302.31 | $38,041.07 | consensus_ensemble,c | quarter_kelly |
+| 81 | 2026-01-13 | 7 | 41 | $+1,165.44 | $39,206.52 | consensus_ensemble,c | quarter_kelly |
+| 82 | 2026-01-14 | 7 | 27 | $+287.76 | $39,494.28 | consensus_ensemble,t | quarter_kelly |
+| 83 | 2026-01-15 | 8 | 42 | $+1,105.73 | $40,600.01 | consensus_ensemble,t | quarter_kelly |
+| 84 | 2026-01-16 | 6 | 19 | $+316.45 | $40,916.46 | tabicl,consensus_ens | quarter_kelly |
+| 85 | 2026-01-17 | 9 | 59 | $+1,288.12 | $42,204.58 | consensus_ensemble,c | quarter_kelly |
+| 86 | 2026-01-18 | 5 | 23 | $+909.61 | $43,114.19 | catboost,consensus_e | quarter_kelly |
+| 87 | 2026-01-19 | 9 | 56 | $+506.62 | $43,620.81 | tabicl,catboost,cons | quarter_kelly |
+| 88 | 2026-01-20 | 7 | 15 | $-79.32 | $43,541.49 | tabicl,consensus_ens | quarter_kelly |
+| 89 | 2026-01-21 | 7 | 39 | $+1,388.32 | $44,929.81 | catboost,tabicl,cons | quarter_kelly |
+| 90 | 2026-01-22 | 8 | 30 | $+424.50 | $45,354.31 | tabicl,consensus_ens | quarter_kelly |
+| 91 | 2026-01-23 | 8 | 57 | $-914.87 | $44,439.44 | consensus_ensemble,t | quarter_kelly |
+| 92 | 2026-01-24 | 5 | 19 | $+333.36 | $44,772.80 | catboost,consensus_e | quarter_kelly |
+| 93 | 2026-01-25 | 6 | 63 | $-257.09 | $44,515.71 | tabicl,catboost,cons | quarter_kelly |
+| 94 | 2026-01-26 | 6 | 45 | $+1,654.74 | $46,170.45 | tabicl,consensus_ens | quarter_kelly |
+| 95 | 2026-01-27 | 7 | 63 | $+1,871.52 | $48,041.98 | consensus_ensemble,c | quarter_kelly |
+| 96 | 2026-01-28 | 8 | 23 | $+690.71 | $48,732.68 | consensus_ensemble,c | quarter_kelly |
+| 97 | 2026-01-29 | 8 | 32 | $+352.29 | $49,084.97 | tabicl,consensus_ens | quarter_kelly |
+| 98 | 2026-01-30 | 9 | 32 | $+1,513.95 | $50,598.92 | tabicl,consensus_ens | quarter_kelly |
+| 99 | 2026-01-31 | 6 | 36 | $+552.42 | $51,151.34 | catboost,tabicl,cons | quarter_kelly |
+| 100 | 2026-02-01 | 2 | 13 | $+470.71 | $51,622.05 | catboost | quarter_kelly |
+| 101 | 2026-02-02 | 4 | 19 | $-12.63 | $51,609.42 | consensus_ensemble,t | quarter_kelly |
+| 102 | 2026-02-03 | 10 | 45 | $+996.64 | $52,606.06 | consensus_ensemble,c | quarter_kelly |
+| 103 | 2026-02-04 | 7 | 34 | $+6.13 | $52,612.19 | tabicl,consensus_ens | quarter_kelly |
+| 104 | 2026-02-05 | 8 | 71 | $+568.10 | $53,180.29 | tabicl,consensus_ens | quarter_kelly |
+| 105 | 2026-02-06 | 6 | 42 | $+761.95 | $53,942.24 | catboost,consensus_e | quarter_kelly |
+| 106 | 2026-02-07 | 10 | 60 | $+1,838.15 | $55,780.39 | tabicl,consensus_ens | quarter_kelly |
+| 107 | 2026-02-08 | 4 | 34 | $+83.31 | $55,863.70 | catboost,consensus_e | quarter_kelly |
+| 108 | 2026-02-09 | 10 | 68 | $+2,129.99 | $57,993.69 | consensus_ensemble,t | quarter_kelly |
+| 109 | 2026-02-10 | 4 | 43 | $+701.65 | $58,695.34 | tabicl,catboost,cons | quarter_kelly |
+| 110 | 2026-02-11 | 14 | 104 | $+2,358.64 | $61,053.98 | catboost,tabicl,cons | quarter_kelly |
+| 111 | 2026-02-12 | 3 | 25 | $-116.48 | $60,937.50 | consensus_ensemble,t | quarter_kelly |
+| 112 | 2026-02-19 | 10 | 33 | $+1,913.97 | $62,851.47 | consensus_ensemble,t | quarter_kelly |
+| 113 | 2026-02-20 | 9 | 41 | $+1,266.33 | $64,117.80 | tabicl,consensus_ens | quarter_kelly |
+| 114 | 2026-02-21 | 6 | 33 | $+1,814.63 | $65,932.43 | tabicl,consensus_ens | quarter_kelly |
+| 115 | 2026-02-22 | 11 | 37 | $+658.92 | $66,591.36 | catboost,tabicl,cons | quarter_kelly |
+| 116 | 2026-02-23 | 3 | 13 | $+691.40 | $67,282.75 | consensus_ensemble,t | quarter_kelly |
+| 117 | 2026-02-24 | 11 | 32 | $+671.72 | $67,954.47 | tabicl,consensus_ens | quarter_kelly |
+| 118 | 2026-02-25 | 6 | 25 | $+302.06 | $68,256.53 | catboost,tabicl,cons | quarter_kelly |
+| 119 | 2026-02-26 | 10 | 36 | $+299.31 | $68,555.85 | tabicl,consensus_ens | quarter_kelly |
+| 120 | 2026-02-27 | 5 | 36 | $+275.55 | $68,831.40 | tabicl,catboost,cons | quarter_kelly |
+| 121 | 2026-02-28 | 5 | 16 | $+271.93 | $69,103.33 | catboost,consensus_e | quarter_kelly |
+| 122 | 2026-03-01 | 11 | 48 | $+546.31 | $69,649.64 | consensus_ensemble,t | quarter_kelly |
+| 123 | 2026-03-02 | 4 | 8 | $-15.75 | $69,633.90 | consensus_ensemble,t | quarter_kelly |
+| 124 | 2026-03-03 | 10 | 64 | $+975.98 | $70,609.88 | tabicl,catboost,cons | quarter_kelly |
+| 125 | 2026-03-04 | 6 | 33 | $+157.66 | $70,767.54 | catboost,tabicl | quarter_kelly |
+| 126 | 2026-03-05 | 9 | 52 | $+238.34 | $71,005.87 | tabicl,catboost,cons | quarter_kelly |
+| 127 | 2026-03-06 | 7 | 52 | $+344.82 | $71,350.69 | tabicl,catboost,cons | quarter_kelly |
+| 128 | 2026-03-07 | 6 | 53 | $+121.66 | $71,472.35 | consensus_ensemble,t | quarter_kelly |
+| 129 | 2026-03-08 | 10 | 42 | $+512.72 | $71,985.08 | tabicl,consensus_ens | quarter_kelly |
+| 130 | 2026-03-09 | 5 | 16 | $+138.72 | $72,123.80 | tabicl,consensus_ens | quarter_kelly |
+| 131 | 2026-03-10 | 11 | 44 | $+515.72 | $72,639.52 | tabicl,consensus_ens | quarter_kelly |
+| 132 | 2026-03-11 | 6 | 16 | $+132.68 | $72,772.20 | tabicl,catboost,cons | quarter_kelly |
+| 133 | 2026-03-12 | 9 | 69 | $+767.52 | $73,539.72 | tabicl,catboost | quarter_kelly |
+| 134 | 2026-03-13 | 8 | 51 | $+698.47 | $74,238.19 | catboost,consensus_e | quarter_kelly |
+| 135 | 2026-03-14 | 7 | 56 | $+384.78 | $74,622.96 | tabicl,catboost,cons | quarter_kelly |
+| 136 | 2026-03-15 | 7 | 44 | $+186.29 | $74,809.25 | consensus_ensemble,c | quarter_kelly |
+| 137 | 2026-03-16 | 8 | 39 | $+563.60 | $75,372.85 | catboost,tabicl,cons | quarter_kelly |
+| 138 | 2026-03-17 | 8 | 44 | $+538.68 | $75,911.54 | tabicl,consensus_ens | quarter_kelly |
+| 139 | 2026-03-18 | 9 | 37 | $+486.91 | $76,398.45 | tabicl,consensus_ens | quarter_kelly |
+| 140 | 2026-03-19 | 8 | 28 | $+245.33 | $76,643.78 | catboost,consensus_e | quarter_kelly |
+| 141 | 2026-03-20 | 6 | 22 | $-2.11 | $76,641.67 | consensus_ensemble,c | quarter_kelly |
+| 142 | 2026-03-21 | 10 | 53 | $+350.77 | $76,992.44 | tabicl,catboost,cons | quarter_kelly |
+| 143 | 2026-03-22 | 5 | 38 | $+192.94 | $77,185.37 | consensus_ensemble,t | quarter_kelly |
+| 144 | 2026-03-23 | 10 | 56 | $+646.56 | $77,831.93 | tabicl,consensus_ens | quarter_kelly |
+| 145 | 2026-03-24 | 4 | 33 | $+363.19 | $78,195.13 | tabicl,catboost,cons | quarter_kelly |
+| 146 | 2026-03-25 | 12 | 55 | $+450.73 | $78,645.85 | catboost,tabicl,cons | quarter_kelly |
+| 147 | 2026-03-26 | 3 | 14 | $+158.96 | $78,804.81 | consensus_ensemble,t | quarter_kelly |
+| 148 | 2026-03-27 | 10 | 82 | $+661.52 | $79,466.33 | consensus_ensemble,c | quarter_kelly |
+| 149 | 2026-03-28 | 6 | 31 | $+423.42 | $79,889.75 | consensus_ensemble,c | quarter_kelly |
 
-## Bet Log (sample: first 50 + last 50 of 2054 total)
+## Bet Log (sample: first 50 + last 50 of 9279 total)
+
+### 2025-10-21 | LAL vs GSW | margin_6_10
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.300 vs implied 0.286 | **Edge:** +5.0%
+- **Bet:** $0.02 @ 3.500 | **Win** → $+0.06
+- **Context:** LAL (1-5) vs GSW (3-2)
+- **Reasoning:** consensus_ensemble P(LAL): 0.462 | consensus: 0.444 (disagree: 0.033) | LAL 1-5 | GSW 3-2 | LAL L6: 1-5 | GSW L5: 3-2 | kelly_adj: 0.30
+- **Bankroll after:** $100.06
+
+### 2025-10-21 | LAL vs GSW | alt_over_minus5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.52 @ 1.650 | **Win** → $+0.34
+- **Context:** LAL (1-5) vs GSW (3-2)
+- **Reasoning:** consensus_ensemble P(LAL): 0.462 | consensus: 0.444 (disagree: 0.033) | LAL 1-5 | GSW 3-2 | LAL L6: 1-5 | GSW L5: 3-2 | kelly_adj: 1.24
+- **Bankroll after:** $100.39
+
+### 2025-10-21 | LAL vs GSW | alt_under_plus5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.56 @ 1.650 | **Win** → $+0.37
+- **Context:** LAL (1-5) vs GSW (3-2)
+- **Reasoning:** consensus_ensemble P(LAL): 0.462 | consensus: 0.444 (disagree: 0.033) | LAL 1-5 | GSW 3-2 | LAL L6: 1-5 | GSW L5: 3-2 | kelly_adj: 1.40
+- **Bankroll after:** $100.76
+
+### 2025-10-21 | LAL vs GSW | alt_over_minus10
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.59 @ 1.650 | **Win** → $+0.38
+- **Context:** LAL (1-5) vs GSW (3-2)
+- **Reasoning:** consensus_ensemble P(LAL): 0.462 | consensus: 0.444 (disagree: 0.033) | LAL 1-5 | GSW 3-2 | LAL L6: 1-5 | GSW L5: 3-2 | kelly_adj: 1.52
+- **Bankroll after:** $101.14
+
+### 2025-10-21 | LAL vs GSW | alt_under_plus10
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.56 @ 1.650 | **Win** → $+0.37
+- **Context:** LAL (1-5) vs GSW (3-2)
+- **Reasoning:** consensus_ensemble P(LAL): 0.462 | consensus: 0.444 (disagree: 0.033) | LAL 1-5 | GSW 3-2 | LAL L6: 1-5 | GSW L5: 3-2 | kelly_adj: 1.52
+- **Bankroll after:** $101.51
+
+### 2025-10-21 | LAL vs GSW | alt_spread_away_7.5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.403 vs implied 0.357 | **Edge:** +12.9%
+- **Bet:** $0.23 @ 2.800 | **Win** → $+0.42
+- **Context:** LAL (1-5) vs GSW (3-2)
+- **Reasoning:** consensus_ensemble P(LAL): 0.462 | consensus: 0.444 (disagree: 0.033) | LAL 1-5 | GSW 3-2 | LAL L6: 1-5 | GSW L5: 3-2 | kelly_adj: 1.01
+- **Bankroll after:** $101.93
 
 ### 2025-10-21 | OKC vs HOU | ml_home
 - **Model:** catboost | **Strategy:** quarter_kelly
 - **Prob:** 0.744 vs implied 0.714 | **Edge:** +4.2%
-- **Bet:** $0.40 @ 1.400 | **Win** → $+0.16
+- **Bet:** $0.41 @ 1.400 | **Win** → $+0.16
 - **Context:** OKC (4-2) vs HOU (4-0)
 - **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.01
-- **Bankroll after:** $100.16
+- **Bankroll after:** $102.09
 
 ### 2025-10-21 | OKC vs HOU | spread_home
 - **Model:** catboost | **Strategy:** quarter_kelly
 - **Prob:** 0.670 vs implied 0.524 | **Edge:** +27.9%
-- **Bet:** $1.14 @ 1.909 | **Loss** → $-1.14
+- **Bet:** $1.16 @ 1.909 | **Loss** → $-1.16
 - **Context:** OKC (4-2) vs HOU (4-0)
 - **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.01
-- **Bankroll after:** $99.02
+- **Bankroll after:** $100.93
 
 ### 2025-10-21 | OKC vs HOU | alt_spread_home_big
 - **Model:** catboost | **Strategy:** quarter_kelly
 - **Prob:** 0.521 vs implied 0.400 | **Edge:** +30.3%
-- **Bet:** $0.69 @ 2.500 | **Loss** → $-0.69
+- **Bet:** $0.70 @ 2.500 | **Loss** → $-0.70
 - **Context:** OKC (4-2) vs HOU (4-0)
 - **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.01
-- **Bankroll after:** $98.34
+- **Bankroll after:** $100.23
+
+### 2025-10-21 | OKC vs HOU | margin_1_5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.447 vs implied 0.333 | **Edge:** +34.0%
+- **Bet:** $0.17 @ 3.000 | **Win** → $+0.34
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 0.30
+- **Bankroll after:** $100.57
+
+### 2025-10-21 | OKC vs HOU | margin_6_10
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.300 vs implied 0.286 | **Edge:** +5.0%
+- **Bet:** $0.02 @ 3.500 | **Loss** → $-0.02
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 0.30
+- **Bankroll after:** $100.55
+
+### 2025-10-21 | OKC vs HOU | race_to_75_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.633 vs implied 0.540 | **Edge:** +17.1%
+- **Bet:** $0.98 @ 1.850 | **Win** → $+0.83
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.52
+- **Bankroll after:** $101.38
+
+### 2025-10-21 | OKC vs HOU | race_to_100_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.596 vs implied 0.526 | **Edge:** +13.2%
+- **Bet:** $0.66 @ 1.900 | **Win** → $+0.59
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.52
+- **Bankroll after:** $101.97
+
+### 2025-10-21 | OKC vs HOU | q1_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.670 vs implied 0.526 | **Edge:** +27.3%
+- **Bet:** $0.90 @ 1.900 | **Win** → $+0.81
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.52
+- **Bankroll after:** $102.78
+
+### 2025-10-21 | OKC vs HOU | q2_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.633 vs implied 0.526 | **Edge:** +20.2%
+- **Bet:** $0.82 @ 1.900 | **Win** → $+0.74
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.52
+- **Bankroll after:** $103.52
+
+### 2025-10-21 | OKC vs HOU | q3_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.655 vs implied 0.526 | **Edge:** +24.5%
+- **Bet:** $0.76 @ 1.900 | **Win** → $+0.68
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.52
+- **Bankroll after:** $104.20
+
+### 2025-10-21 | OKC vs HOU | q4_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.610 vs implied 0.526 | **Edge:** +16.0%
+- **Bet:** $0.59 @ 1.900 | **Win** → $+0.53
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.52
+- **Bankroll after:** $104.73
+
+### 2025-10-21 | OKC vs HOU | home_and_over
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.372 vs implied 0.333 | **Edge:** +11.7%
+- **Bet:** $0.10 @ 3.000 | **Win** → $+0.20
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 0.84
+- **Bankroll after:** $104.93
+
+### 2025-10-21 | OKC vs HOU | alt_over_minus5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.28 @ 1.650 | **Win** → $+0.18
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.24
+- **Bankroll after:** $105.11
+
+### 2025-10-21 | OKC vs HOU | alt_under_plus5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.30 @ 1.650 | **Loss** → $-0.30
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.40
+- **Bankroll after:** $104.81
+
+### 2025-10-21 | OKC vs HOU | alt_over_minus10
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.32 @ 1.650 | **Win** → $+0.21
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.52
+- **Bankroll after:** $105.02
+
+### 2025-10-21 | OKC vs HOU | alt_under_plus10
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.30 @ 1.650 | **Loss** → $-0.30
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.52
+- **Bankroll after:** $104.71
+
+### 2025-10-21 | OKC vs HOU | alt_spread_home_3.5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.558 vs implied 0.476 | **Edge:** +17.2%
+- **Bet:** $0.41 @ 2.100 | **Loss** → $-0.41
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.52
+- **Bankroll after:** $104.31
+
+### 2025-10-21 | OKC vs HOU | alt_spread_home_7.5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.558 vs implied 0.357 | **Edge:** +56.3%
+- **Bet:** $0.51 @ 2.800 | **Loss** → $-0.51
+- **Context:** OKC (4-2) vs HOU (4-0)
+- **Reasoning:** catboost P(OKC): 0.744 | consensus: 0.727 (disagree: 0.031) | OKC 4-2 | HOU 4-0 | OKC L6: 4-2 | HOU L4: 4-0 | kelly_adj: 1.01
+- **Bankroll after:** $103.80
 
 ### 2025-10-22 | ATL vs TOR | spread_home
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.613 vs implied 0.524 | **Edge:** +17.0%
-- **Bet:** $0.70 @ 1.909 | **Loss** → $-0.70
+- **Bet:** $0.18 @ 1.909 | **Loss** → $-0.18
 - **Context:** ATL (2-2) vs TOR (4-2)
-- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 1.01
-- **Bankroll after:** $97.64
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.25
+- **Bankroll after:** $103.61
 
 ### 2025-10-22 | ATL vs TOR | alt_spread_home_big
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.477 vs implied 0.400 | **Edge:** +19.2%
-- **Bet:** $0.46 @ 2.500 | **Loss** → $-0.46
+- **Bet:** $0.12 @ 2.500 | **Loss** → $-0.12
 - **Context:** ATL (2-2) vs TOR (4-2)
-- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 1.01
-- **Bankroll after:** $97.18
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.25
+- **Bankroll after:** $103.49
+
+### 2025-10-22 | ATL vs TOR | margin_1_5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.409 vs implied 0.333 | **Edge:** +22.6%
+- **Bet:** $0.03 @ 3.000 | **Loss** → $-0.03
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.08
+- **Bankroll after:** $103.45
+
+### 2025-10-22 | ATL vs TOR | margin_6_10
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.300 vs implied 0.286 | **Edge:** +5.0%
+- **Bet:** $0.01 @ 3.500 | **Loss** → $-0.01
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.08
+- **Bankroll after:** $103.45
+
+### 2025-10-22 | ATL vs TOR | race_to_75_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.579 vs implied 0.540 | **Edge:** +7.1%
+- **Bet:** $0.12 @ 1.850 | **Win** → $+0.10
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.38
+- **Bankroll after:** $103.55
+
+### 2025-10-22 | ATL vs TOR | race_to_100_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.545 vs implied 0.526 | **Edge:** +3.5%
+- **Bet:** $0.06 @ 1.900 | **Win** → $+0.05
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.38
+- **Bankroll after:** $103.60
+
+### 2025-10-22 | ATL vs TOR | q1_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.613 vs implied 0.526 | **Edge:** +16.5%
+- **Bet:** $0.26 @ 1.900 | **Loss** → $-0.26
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.38
+- **Bankroll after:** $103.34
+
+### 2025-10-22 | ATL vs TOR | q2_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.579 vs implied 0.526 | **Edge:** +10.0%
+- **Bet:** $0.16 @ 1.900 | **Loss** → $-0.16
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.38
+- **Bankroll after:** $103.18
+
+### 2025-10-22 | ATL vs TOR | q3_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.599 vs implied 0.526 | **Edge:** +13.9%
+- **Bet:** $0.21 @ 1.900 | **Loss** → $-0.21
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.38
+- **Bankroll after:** $102.97
+
+### 2025-10-22 | ATL vs TOR | q4_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.558 vs implied 0.526 | **Edge:** +6.1%
+- **Bet:** $0.09 @ 1.900 | **Loss** → $-0.09
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.38
+- **Bankroll after:** $102.88
+
+### 2025-10-22 | ATL vs TOR | alt_over_minus5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.12 @ 1.650 | **Win** → $+0.08
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.31
+- **Bankroll after:** $102.96
+
+### 2025-10-22 | ATL vs TOR | alt_under_plus5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.14 @ 1.650 | **Loss** → $-0.14
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.35
+- **Bankroll after:** $102.82
+
+### 2025-10-22 | ATL vs TOR | alt_over_minus10
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.15 @ 1.650 | **Win** → $+0.10
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.38
+- **Bankroll after:** $102.92
+
+### 2025-10-22 | ATL vs TOR | alt_under_plus10
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.15 @ 1.650 | **Loss** → $-0.15
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.38
+- **Bankroll after:** $102.77
+
+### 2025-10-22 | ATL vs TOR | alt_spread_home_3.5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.511 vs implied 0.476 | **Edge:** +7.3%
+- **Bet:** $0.09 @ 2.100 | **Loss** → $-0.09
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.38
+- **Bankroll after:** $102.68
+
+### 2025-10-22 | ATL vs TOR | alt_spread_home_7.5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.511 vs implied 0.357 | **Edge:** +43.0%
+- **Bet:** $0.21 @ 2.800 | **Loss** → $-0.21
+- **Context:** ATL (2-2) vs TOR (4-2)
+- **Reasoning:** consensus_ensemble P(ATL): 0.681 | consensus: 0.684 (disagree: 0.032) | ATL 2-2 | TOR 4-2 | ATL L4: 2-2 | TOR L6: 4-2 | kelly_adj: 0.25
+- **Bankroll after:** $102.48
 
 ### 2025-10-22 | BOS vs PHI | spread_home
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.606 vs implied 0.524 | **Edge:** +15.7%
-- **Bet:** $0.64 @ 1.909 | **Loss** → $-0.64
+- **Bet:** $0.17 @ 1.909 | **Loss** → $-0.17
 - **Context:** BOS (3-1) vs PHI (2-1)
-- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 1.01
-- **Bankroll after:** $96.54
+- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 0.25
+- **Bankroll after:** $102.31
 
 ### 2025-10-22 | BOS vs PHI | alt_spread_home_big
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.471 vs implied 0.400 | **Edge:** +17.8%
-- **Bet:** $0.42 @ 2.500 | **Loss** → $-0.42
+- **Bet:** $0.11 @ 2.500 | **Loss** → $-0.11
 - **Context:** BOS (3-1) vs PHI (2-1)
-- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 1.01
-- **Bankroll after:** $96.12
+- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 0.25
+- **Bankroll after:** $102.19
 
-### 2025-10-22 | CHA vs BKN | spread_home
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.576 vs implied 0.524 | **Edge:** +10.0%
-- **Bet:** $0.40 @ 1.909 | **Win** → $+0.36
-- **Context:** CHA (2-3) vs BKN (2-1)
-- **Reasoning:** catboost P(CHA): 0.640 | consensus: 0.676 (disagree: 0.033) | CHA 2-3 | BKN 2-1 | CHA L5: 2-3 | BKN L3: 2-1 | kelly_adj: 1.01
-- **Bankroll after:** $96.49
-
-### 2025-10-22 | CHA vs BKN | alt_spread_home_big
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.448 vs implied 0.400 | **Edge:** +12.0%
-- **Bet:** $0.28 @ 2.500 | **Win** → $+0.43
-- **Context:** CHA (2-3) vs BKN (2-1)
-- **Reasoning:** catboost P(CHA): 0.640 | consensus: 0.676 (disagree: 0.033) | CHA 2-3 | BKN 2-1 | CHA L5: 2-3 | BKN L3: 2-1 | kelly_adj: 1.01
-- **Bankroll after:** $96.91
-
-### 2025-10-22 | DAL vs SAS | spread_home
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.556 vs implied 0.524 | **Edge:** +6.1%
-- **Bet:** $0.25 @ 1.909 | **Loss** → $-0.25
-- **Context:** DAL (3-1) vs SAS (5-0)
-- **Reasoning:** tabicl P(DAL): 0.617 | consensus: 0.618 (disagree: 0.019) | DAL 3-1 | SAS 5-0 | DAL L4: 3-1 | SAS L5: 5-0 | kelly_adj: 1.01
-- **Bankroll after:** $96.67
-
-### 2025-10-22 | DAL vs SAS | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.432 vs implied 0.400 | **Edge:** +8.0%
-- **Bet:** $0.19 @ 2.500 | **Loss** → $-0.19
-- **Context:** DAL (3-1) vs SAS (5-0)
-- **Reasoning:** tabicl P(DAL): 0.617 | consensus: 0.618 (disagree: 0.019) | DAL 3-1 | SAS 5-0 | DAL L4: 3-1 | SAS L5: 5-0 | kelly_adj: 1.01
-- **Bankroll after:** $96.47
-
-### 2025-10-22 | MEM vs NOP | spread_home
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.590 vs implied 0.524 | **Edge:** +12.6%
-- **Bet:** $0.51 @ 1.909 | **Win** → $+0.46
-- **Context:** MEM (1-4) vs NOP (2-2)
-- **Reasoning:** tabicl P(MEM): 0.655 | consensus: 0.639 (disagree: 0.030) | MEM 1-4 | NOP 2-2 | MEM L5: 1-4 | NOP L4: 2-2 | kelly_adj: 1.01
-- **Bankroll after:** $96.94
-
-### 2025-10-22 | MEM vs NOP | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.459 vs implied 0.400 | **Edge:** +14.7%
-- **Bet:** $0.35 @ 2.500 | **Loss** → $-0.35
-- **Context:** MEM (1-4) vs NOP (2-2)
-- **Reasoning:** tabicl P(MEM): 0.655 | consensus: 0.639 (disagree: 0.030) | MEM 1-4 | NOP 2-2 | MEM L5: 1-4 | NOP L4: 2-2 | kelly_adj: 1.01
-- **Bankroll after:** $96.59
-
-### 2025-10-22 | MIL vs WAS | spread_home
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.737 vs implied 0.524 | **Edge:** +40.7%
-- **Bet:** $1.16 @ 1.909 | **Win** → $+1.05
-- **Context:** MIL (3-1) vs WAS (1-2)
-- **Reasoning:** tabicl P(MIL): 0.819 | consensus: 0.829 (disagree: 0.032) | MIL 3-1 | WAS 1-2 | MIL L4: 3-1 | WAS L3: 1-2 | kelly_adj: 1.01
-- **Bankroll after:** $97.64
-
-### 2025-10-22 | MIL vs WAS | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.573 vs implied 0.400 | **Edge:** +43.3%
-- **Bet:** $0.98 @ 2.500 | **Win** → $+1.46
-- **Context:** MIL (3-1) vs WAS (1-2)
-- **Reasoning:** tabicl P(MIL): 0.819 | consensus: 0.829 (disagree: 0.032) | MIL 3-1 | WAS 1-2 | MIL L4: 3-1 | WAS L3: 1-2 | kelly_adj: 1.01
-- **Bankroll after:** $99.11
-
-### 2025-10-22 | NYK vs CLE | ml_home
+### 2025-10-22 | BOS vs PHI | margin_1_5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.497 vs implied 0.476 | **Edge:** +4.4%
-- **Bet:** $0.15 @ 2.100 | **Win** → $+0.17
-- **Context:** NYK (3-1) vs CLE (1-3)
-- **Reasoning:** consensus_ensemble P(NYK): 0.497 | consensus: 0.481 (disagree: 0.038) | NYK 3-1 | CLE 1-3 | NYK L4: 3-1 | CLE L4: 1-3 | kelly_adj: 1.01
-- **Bankroll after:** $99.27
+- **Prob:** 0.404 vs implied 0.333 | **Edge:** +21.2%
+- **Bet:** $0.03 @ 3.000 | **Win** → $+0.06
+- **Context:** BOS (3-1) vs PHI (2-1)
+- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 0.08
+- **Bankroll after:** $102.25
 
-### 2025-10-22 | ORL vs MIA | spread_home
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.698 vs implied 0.524 | **Edge:** +33.3%
-- **Bet:** $1.19 @ 1.909 | **Loss** → $-1.19
-- **Context:** ORL (4-0) vs MIA (0-6)
-- **Reasoning:** tabicl P(ORL): 0.776 | consensus: 0.768 (disagree: 0.028) | ORL 4-0 | MIA 0-6 | ORL L4: 4-0 | MIA L6: 0-6 | kelly_adj: 1.01
-- **Bankroll after:** $98.08
-
-### 2025-10-22 | ORL vs MIA | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.543 vs implied 0.400 | **Edge:** +35.8%
-- **Bet:** $0.83 @ 2.500 | **Loss** → $-0.83
-- **Context:** ORL (4-0) vs MIA (0-6)
-- **Reasoning:** tabicl P(ORL): 0.776 | consensus: 0.768 (disagree: 0.028) | ORL 4-0 | MIA 0-6 | ORL L4: 4-0 | MIA L6: 0-6 | kelly_adj: 1.01
-- **Bankroll after:** $97.25
-
-### 2025-10-22 | PHX vs SAC | spread_home
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.553 vs implied 0.524 | **Edge:** +5.5%
-- **Bet:** $0.23 @ 1.909 | **Win** → $+0.21
-- **Context:** PHX (3-0) vs SAC (1-3)
-- **Reasoning:** tabicl P(PHX): 0.614 | consensus: 0.616 (disagree: 0.033) | PHX 3-0 | SAC 1-3 | PHX L3: 3-0 | SAC L4: 1-3 | kelly_adj: 1.01
-- **Bankroll after:** $97.46
-
-### 2025-10-22 | PHX vs SAC | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.430 vs implied 0.400 | **Edge:** +7.5%
-- **Bet:** $0.18 @ 2.500 | **Loss** → $-0.18
-- **Context:** PHX (3-0) vs SAC (1-3)
-- **Reasoning:** tabicl P(PHX): 0.614 | consensus: 0.616 (disagree: 0.033) | PHX 3-0 | SAC 1-3 | PHX L3: 3-0 | SAC L4: 1-3 | kelly_adj: 1.01
-- **Bankroll after:** $97.27
-
-### 2025-10-22 | POR vs MIN | spread_away
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.598 vs implied 0.524 | **Edge:** +14.1%
-- **Bet:** $0.57 @ 1.909 | **Loss** → $-0.57
-- **Context:** POR (1-3) vs MIN (2-4)
-- **Reasoning:** tabicl P(POR): 0.336 | consensus: 0.365 (disagree: 0.026) | POR 1-3 | MIN 2-4 | POR L4: 1-3 | MIN L6: 2-4 | kelly_adj: 1.01
-- **Bankroll after:** $96.70
-
-### 2025-10-22 | POR vs MIN | team_total_home_under
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.545 vs implied 0.524 | **Edge:** +4.0%
-- **Bet:** $0.22 @ 1.909 | **Loss** → $-0.22
-- **Context:** POR (1-3) vs MIN (2-4)
-- **Reasoning:** tabicl P(POR): 0.336 | consensus: 0.365 (disagree: 0.026) | POR 1-3 | MIN 2-4 | POR L4: 1-3 | MIN L6: 2-4 | kelly_adj: 1.47
-- **Bankroll after:** $96.48
-
-### 2025-10-22 | POR vs MIN | h1_ml_home
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.422 vs implied 0.397 | **Edge:** +6.3%
-- **Bet:** $0.15 @ 2.518 | **Win** → $+0.22
-- **Context:** POR (1-3) vs MIN (2-4)
-- **Reasoning:** tabicl P(POR): 0.336 | consensus: 0.365 (disagree: 0.026) | POR 1-3 | MIN 2-4 | POR L4: 1-3 | MIN L6: 2-4 | kelly_adj: 1.02
-- **Bankroll after:** $96.70
-
-### 2025-10-22 | POR vs MIN | alt_spread_away_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.465 vs implied 0.400 | **Edge:** +16.2%
-- **Bet:** $0.37 @ 2.500 | **Loss** → $-0.37
-- **Context:** POR (1-3) vs MIN (2-4)
-- **Reasoning:** tabicl P(POR): 0.336 | consensus: 0.365 (disagree: 0.026) | POR 1-3 | MIN 2-4 | POR L4: 1-3 | MIN L6: 2-4 | kelly_adj: 1.01
-- **Bankroll after:** $96.33
-
-### 2025-10-22 | UTA vs LAC | spread_away
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.731 vs implied 0.524 | **Edge:** +39.5%
-- **Bet:** $1.16 @ 1.909 | **Loss** → $-1.16
-- **Context:** UTA (1-3) vs LAC (3-1)
-- **Reasoning:** tabicl P(UTA): 0.188 | consensus: 0.222 (disagree: 0.042) | UTA 1-3 | LAC 3-1 | UTA L4: 1-3 | LAC L4: 3-1 | kelly_adj: 1.01
-- **Bankroll after:** $95.17
-
-### 2025-10-22 | UTA vs LAC | total_under
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.551 vs implied 0.524 | **Edge:** +5.2%
-- **Bet:** $0.19 @ 1.909 | **Loss** → $-0.19
-- **Context:** UTA (1-3) vs LAC (3-1)
-- **Reasoning:** tabicl P(UTA): 0.188 | consensus: 0.222 (disagree: 0.042) | UTA 1-3 | LAC 3-1 | UTA L4: 1-3 | LAC L4: 3-1 | kelly_adj: 1.01
-- **Bankroll after:** $94.98
-
-### 2025-10-22 | UTA vs LAC | team_total_home_under
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.567 vs implied 0.524 | **Edge:** +8.2%
-- **Bet:** $0.43 @ 1.909 | **Loss** → $-0.43
-- **Context:** UTA (1-3) vs LAC (3-1)
-- **Reasoning:** tabicl P(UTA): 0.188 | consensus: 0.222 (disagree: 0.042) | UTA 1-3 | LAC 3-1 | UTA L4: 1-3 | LAC L4: 3-1 | kelly_adj: 1.47
-- **Bankroll after:** $94.54
-
-### 2025-10-22 | UTA vs LAC | h1_ml_home
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.255 vs implied 0.239 | **Edge:** +6.5%
-- **Bet:** $0.07 @ 4.180 | **Win** → $+0.21
-- **Context:** UTA (1-3) vs LAC (3-1)
-- **Reasoning:** tabicl P(UTA): 0.188 | consensus: 0.222 (disagree: 0.042) | UTA 1-3 | LAC 3-1 | UTA L4: 1-3 | LAC L4: 3-1 | kelly_adj: 1.02
-- **Bankroll after:** $94.75
-
-### 2025-10-22 | UTA vs LAC | alt_spread_away_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.568 vs implied 0.400 | **Edge:** +42.1%
-- **Bet:** $0.90 @ 2.500 | **Loss** → $-0.90
-- **Context:** UTA (1-3) vs LAC (3-1)
-- **Reasoning:** tabicl P(UTA): 0.188 | consensus: 0.222 (disagree: 0.042) | UTA 1-3 | LAC 3-1 | UTA L4: 1-3 | LAC L4: 3-1 | kelly_adj: 1.01
-- **Bankroll after:** $93.86
-
-### 2025-10-23 | IND vs OKC | ml_home
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.312 vs implied 0.294 | **Edge:** +6.2%
-- **Bet:** $0.05 @ 3.400 | **Loss** → $-0.05
-- **Context:** IND (2-2) vs OKC (5-2)
-- **Reasoning:** catboost P(IND): 0.312 | consensus: 0.299 (disagree: 0.040) | IND 2-2 | OKC 5-2 | IND L4: 2-2 | OKC L7: 5-2 | kelly_adj: 0.51
-- **Bankroll after:** $93.81
-
-### 2025-10-23 | IND vs OKC | spread_away
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.619 vs implied 0.524 | **Edge:** +18.1%
-- **Bet:** $0.35 @ 1.909 | **Loss** → $-0.35
-- **Context:** IND (2-2) vs OKC (5-2)
-- **Reasoning:** catboost P(IND): 0.312 | consensus: 0.299 (disagree: 0.040) | IND 2-2 | OKC 5-2 | IND L4: 2-2 | OKC L7: 5-2 | kelly_adj: 0.51
-- **Bankroll after:** $93.46
-
-### 2025-10-23 | IND vs OKC | team_total_home_under
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.548 vs implied 0.524 | **Edge:** +4.6%
-- **Bet:** $0.13 @ 1.909 | **Loss** → $-0.13
-- **Context:** IND (2-2) vs OKC (5-2)
-- **Reasoning:** catboost P(IND): 0.312 | consensus: 0.299 (disagree: 0.040) | IND 2-2 | OKC 5-2 | IND L4: 2-2 | OKC L7: 5-2 | kelly_adj: 0.73
-- **Bankroll after:** $93.33
-
-### 2025-10-23 | IND vs OKC | alt_spread_away_big
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.481 vs implied 0.400 | **Edge:** +20.3%
-- **Bet:** $0.23 @ 2.500 | **Loss** → $-0.23
-- **Context:** IND (2-2) vs OKC (5-2)
-- **Reasoning:** catboost P(IND): 0.312 | consensus: 0.299 (disagree: 0.040) | IND 2-2 | OKC 5-2 | IND L4: 2-2 | OKC L7: 5-2 | kelly_adj: 0.51
-- **Bankroll after:** $93.09
-
-### 2025-10-24 | BKN vs CLE | ml_home
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.191 vs implied 0.182 | **Edge:** +4.8%
-- **Bet:** $0.01 @ 5.500 | **Loss** → $-0.01
-- **Context:** BKN (2-2) vs CLE (1-4)
-- **Reasoning:** catboost P(BKN): 0.191 | consensus: 0.183 (disagree: 0.031) | BKN 2-2 | CLE 1-4 | BKN L4: 2-2 | CLE L5: 1-4 | kelly_adj: 0.20
-- **Bankroll after:** $93.09
-
-### 2025-10-24 | BKN vs CLE | spread_away
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.729 vs implied 0.524 | **Edge:** +39.1%
-- **Bet:** $0.30 @ 1.909 | **Loss** → $-0.30
-- **Context:** BKN (2-2) vs CLE (1-4)
-- **Reasoning:** catboost P(BKN): 0.191 | consensus: 0.183 (disagree: 0.031) | BKN 2-2 | CLE 1-4 | BKN L4: 2-2 | CLE L5: 1-4 | kelly_adj: 0.20
-- **Bankroll after:** $92.78
-
-### 2025-10-24 | BKN vs CLE | total_under
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.551 vs implied 0.524 | **Edge:** +5.2%
-- **Bet:** $0.04 @ 1.909 | **Loss** → $-0.04
-- **Context:** BKN (2-2) vs CLE (1-4)
-- **Reasoning:** catboost P(BKN): 0.191 | consensus: 0.183 (disagree: 0.031) | BKN 2-2 | CLE 1-4 | BKN L4: 2-2 | CLE L5: 1-4 | kelly_adj: 0.20
-- **Bankroll after:** $92.74
-
-### 2025-10-24 | BKN vs CLE | team_total_home_under
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.566 vs implied 0.524 | **Edge:** +8.1%
-- **Bet:** $0.09 @ 1.909 | **Loss** → $-0.09
-- **Context:** BKN (2-2) vs CLE (1-4)
-- **Reasoning:** catboost P(BKN): 0.191 | consensus: 0.183 (disagree: 0.031) | BKN 2-2 | CLE 1-4 | BKN L4: 2-2 | CLE L5: 1-4 | kelly_adj: 0.29
-- **Bankroll after:** $92.65
-
-### 2025-10-24 | BKN vs CLE | alt_spread_away_big
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.567 vs implied 0.400 | **Edge:** +41.7%
-- **Bet:** $0.19 @ 2.500 | **Loss** → $-0.19
-- **Context:** BKN (2-2) vs CLE (1-4)
-- **Reasoning:** catboost P(BKN): 0.191 | consensus: 0.183 (disagree: 0.031) | BKN 2-2 | CLE 1-4 | BKN L4: 2-2 | CLE L5: 1-4 | kelly_adj: 0.20
-- **Bankroll after:** $92.46
-
-### 2025-10-24 | DAL vs WAS | spread_home
+### 2025-10-22 | BOS vs PHI | margin_6_10
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.738 vs implied 0.524 | **Edge:** +40.9%
-- **Bet:** $0.32 @ 1.909 | **Loss** → $-0.32
-- **Context:** DAL (3-2) vs WAS (1-3)
-- **Reasoning:** consensus_ensemble P(DAL): 0.820 | consensus: 0.812 (disagree: 0.024) | DAL 3-2 | WAS 1-3 | DAL L5: 3-2 | WAS L4: 1-3 | kelly_adj: 0.20
-- **Bankroll after:** $92.15
+- **Prob:** 0.300 vs implied 0.286 | **Edge:** +5.0%
+- **Bet:** $0.01 @ 3.500 | **Loss** → $-0.01
+- **Context:** BOS (3-1) vs PHI (2-1)
+- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 0.08
+- **Bankroll after:** $102.25
 
-### 2025-10-24 | DAL vs WAS | alt_spread_home_big
+### 2025-10-22 | BOS vs PHI | race_to_75_home
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.574 vs implied 0.400 | **Edge:** +43.5%
-- **Bet:** $0.20 @ 2.500 | **Loss** → $-0.20
-- **Context:** DAL (3-2) vs WAS (1-3)
-- **Reasoning:** consensus_ensemble P(DAL): 0.820 | consensus: 0.812 (disagree: 0.024) | DAL 3-2 | WAS 1-3 | DAL L5: 3-2 | WAS L4: 1-3 | kelly_adj: 0.20
-- **Bankroll after:** $91.95
+- **Prob:** 0.572 vs implied 0.540 | **Edge:** +5.9%
+- **Bet:** $0.10 @ 1.850 | **Win** → $+0.08
+- **Context:** BOS (3-1) vs PHI (2-1)
+- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 0.38
+- **Bankroll after:** $102.33
 
-### 2025-10-24 | HOU vs DET | spread_home
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.650 vs implied 0.524 | **Edge:** +24.1%
-- **Bet:** $0.19 @ 1.909 | **Loss** → $-0.19
-- **Context:** HOU (4-1) vs DET (2-3)
-- **Reasoning:** tabicl P(HOU): 0.722 | consensus: 0.708 (disagree: 0.019) | HOU 4-1 | DET 2-3 | HOU L5: 4-1 | DET L5: 2-3 | kelly_adj: 0.20
-- **Bankroll after:** $91.76
+### 2025-10-22 | BOS vs PHI | q1_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.606 vs implied 0.526 | **Edge:** +15.1%
+- **Bet:** $0.24 @ 1.900 | **Loss** → $-0.24
+- **Context:** BOS (3-1) vs PHI (2-1)
+- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 0.38
+- **Bankroll after:** $102.09
 
-### 2025-10-24 | HOU vs DET | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.505 vs implied 0.400 | **Edge:** +26.4%
-- **Bet:** $0.12 @ 2.500 | **Loss** → $-0.12
-- **Context:** HOU (4-1) vs DET (2-3)
-- **Reasoning:** tabicl P(HOU): 0.722 | consensus: 0.708 (disagree: 0.019) | HOU 4-1 | DET 2-3 | HOU L5: 4-1 | DET L5: 2-3 | kelly_adj: 0.20
-- **Bankroll after:** $91.64
+### 2025-10-22 | BOS vs PHI | q2_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.572 vs implied 0.526 | **Edge:** +8.7%
+- **Bet:** $0.14 @ 1.900 | **Loss** → $-0.14
+- **Context:** BOS (3-1) vs PHI (2-1)
+- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 0.38
+- **Bankroll after:** $101.96
 
-### 2025-10-24 | LAC vs PHX | spread_home
+### 2025-10-22 | BOS vs PHI | q3_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.593 vs implied 0.526 | **Edge:** +12.6%
+- **Bet:** $0.19 @ 1.900 | **Loss** → $-0.19
+- **Context:** BOS (3-1) vs PHI (2-1)
+- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 0.38
+- **Bankroll after:** $101.76
+
+### 2025-10-22 | BOS vs PHI | q4_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.552 vs implied 0.526 | **Edge:** +4.9%
+- **Bet:** $0.07 @ 1.900 | **Loss** → $-0.07
+- **Context:** BOS (3-1) vs PHI (2-1)
+- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 0.38
+- **Bankroll after:** $101.69
+
+### 2025-10-22 | BOS vs PHI | alt_over_minus5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.650 vs implied 0.606 | **Edge:** +7.2%
+- **Bet:** $0.12 @ 1.650 | **Win** → $+0.08
+- **Context:** BOS (3-1) vs PHI (2-1)
+- **Reasoning:** consensus_ensemble P(BOS): 0.673 | consensus: 0.669 (disagree: 0.025) | BOS 3-1 | PHI 2-1 | BOS L4: 3-1 | PHI L3: 2-1 | kelly_adj: 0.31
+- **Bankroll after:** $101.77
+
+
+*... (9179 bets omitted) ...*
+
+### 2026-03-27 | POR vs DAL | race_to_75_home
 - **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.736 vs implied 0.524 | **Edge:** +40.5%
-- **Bet:** $0.31 @ 1.909 | **Win** → $+0.28
-- **Context:** LAC (3-2) vs PHX (4-0)
-- **Reasoning:** catboost P(LAC): 0.818 | consensus: 0.803 (disagree: 0.027) | LAC 3-2 | PHX 4-0 | LAC L5: 3-2 | PHX L4: 4-0 | kelly_adj: 0.20
-- **Bankroll after:** $91.92
+- **Prob:** 0.712 vs implied 0.540 | **Edge:** +31.7%
+- **Bet:** $19.96 @ 1.850 | **Win** → $+16.97
+- **Context:** POR (38-40) vs DAL (27-50)
+- **Reasoning:** catboost P(POR): 0.838 | consensus: 0.834 (disagree: 0.026) | POR 38-40 | DAL 27-50 | POR L10: 7-3 | DAL L10: 2-8 | kelly_adj: 1.14
+- **Bankroll after:** $79,451.58
 
-### 2025-10-24 | LAC vs PHX | alt_spread_home_big
+### 2026-03-27 | POR vs DAL | race_to_100_home
 - **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.572 vs implied 0.400 | **Edge:** +43.1%
-- **Bet:** $0.20 @ 2.500 | **Win** → $+0.29
-- **Context:** LAC (3-2) vs PHX (4-0)
-- **Reasoning:** catboost P(LAC): 0.818 | consensus: 0.803 (disagree: 0.027) | LAC 3-2 | PHX 4-0 | LAC L5: 3-2 | PHX L4: 4-0 | kelly_adj: 0.20
-- **Bankroll after:** $92.22
+- **Prob:** 0.670 vs implied 0.526 | **Edge:** +27.3%
+- **Bet:** $19.93 @ 1.900 | **Loss** → $-19.93
+- **Context:** POR (38-40) vs DAL (27-50)
+- **Reasoning:** catboost P(POR): 0.838 | consensus: 0.834 (disagree: 0.026) | POR 38-40 | DAL 27-50 | POR L10: 7-3 | DAL L10: 2-8 | kelly_adj: 1.14
+- **Bankroll after:** $79,431.65
 
-### 2025-10-24 | MEM vs MIA | ml_home
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.637 vs implied 0.600 | **Edge:** +6.1%
-- **Bet:** $0.06 @ 1.667 | **Loss** → $-0.06
-- **Context:** MEM (2-4) vs MIA (0-7)
-- **Reasoning:** consensus_ensemble P(MEM): 0.637 | consensus: 0.600 (disagree: 0.029) | MEM 2-4 | MIA 0-7 | MEM L6: 2-4 | MIA L7: 0-7 | kelly_adj: 0.20
-- **Bankroll after:** $92.15
-
-### 2025-10-24 | MEM vs MIA | spread_home
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.573 vs implied 0.524 | **Edge:** +9.4%
-- **Bet:** $0.07 @ 1.909 | **Loss** → $-0.07
-- **Context:** MEM (2-4) vs MIA (0-7)
-- **Reasoning:** consensus_ensemble P(MEM): 0.637 | consensus: 0.600 (disagree: 0.029) | MEM 2-4 | MIA 0-7 | MEM L6: 2-4 | MIA L7: 0-7 | kelly_adj: 0.20
-- **Bankroll after:** $92.08
-
-### 2025-10-24 | MEM vs MIA | alt_spread_home_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.446 vs implied 0.400 | **Edge:** +11.4%
-- **Bet:** $0.05 @ 2.500 | **Loss** → $-0.05
-- **Context:** MEM (2-4) vs MIA (0-7)
-- **Reasoning:** consensus_ensemble P(MEM): 0.637 | consensus: 0.600 (disagree: 0.029) | MEM 2-4 | MIA 0-7 | MEM L6: 2-4 | MIA L7: 0-7 | kelly_adj: 0.20
-- **Bankroll after:** $92.03
-
-### 2025-10-24 | NOP vs SAS | spread_away
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.548 vs implied 0.524 | **Edge:** +4.7%
-- **Bet:** $0.04 @ 1.909 | **Win** → $+0.03
-- **Context:** NOP (2-3) vs SAS (6-0)
-- **Reasoning:** tabicl P(NOP): 0.391 | consensus: 0.388 (disagree: 0.035) | NOP 2-3 | SAS 6-0 | NOP L5: 2-3 | SAS L6: 6-0 | kelly_adj: 0.20
-- **Bankroll after:** $92.06
-
-### 2025-10-24 | NOP vs SAS | h1_ml_home
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.450 vs implied 0.430 | **Edge:** +4.7%
-- **Bet:** $0.03 @ 2.328 | **Win** → $+0.03
-- **Context:** NOP (2-3) vs SAS (6-0)
-- **Reasoning:** tabicl P(NOP): 0.391 | consensus: 0.388 (disagree: 0.035) | NOP 2-3 | SAS 6-0 | NOP L5: 2-3 | SAS L6: 6-0 | kelly_adj: 0.20
-- **Bankroll after:** $92.09
-
-### 2025-10-24 | NOP vs SAS | alt_spread_away_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.426 vs implied 0.400 | **Edge:** +6.6%
-- **Bet:** $0.03 @ 2.500 | **Loss** → $-0.03
-- **Context:** NOP (2-3) vs SAS (6-0)
-- **Reasoning:** tabicl P(NOP): 0.391 | consensus: 0.388 (disagree: 0.035) | NOP 2-3 | SAS 6-0 | NOP L5: 2-3 | SAS L6: 6-0 | kelly_adj: 0.20
-- **Bankroll after:** $92.06
-
-
-*... (1954 bets omitted) ...*
-
-### 2026-03-22 | PHX vs TOR | alt_spread_away_big
+### 2026-03-27 | POR vs DAL | q1_home
 - **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.425 vs implied 0.400 | **Edge:** +6.2%
-- **Bet:** $0.43 @ 2.500 | **Loss** → $-0.43
-- **Context:** PHX (42-32) vs TOR (43-32)
-- **Reasoning:** catboost P(PHX): 0.393 | consensus: 0.396 (disagree: 0.030) | PHX 42-32 | TOR 43-32 | PHX L10: 4-6 | TOR L10: 5-5 | kelly_adj: 1.01
-- **Bankroll after:** $279.64
+- **Prob:** 0.754 vs implied 0.526 | **Edge:** +43.2%
+- **Bet:** $19.89 @ 1.900 | **Loss** → $-19.89
+- **Context:** POR (38-40) vs DAL (27-50)
+- **Reasoning:** catboost P(POR): 0.838 | consensus: 0.834 (disagree: 0.026) | POR 38-40 | DAL 27-50 | POR L10: 7-3 | DAL L10: 2-8 | kelly_adj: 1.14
+- **Bankroll after:** $79,411.76
 
-### 2026-03-22 | SAC vs BKN | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.498 vs implied 0.400 | **Edge:** +24.6%
-- **Bet:** $1.74 @ 2.500 | **Loss** → $-1.74
-- **Context:** SAC (19-56) vs BKN (19-54)
-- **Reasoning:** tabicl P(SAC): 0.712 | consensus: 0.715 (disagree: 0.030) | SAC 19-56 | BKN 19-54 | SAC L10: 4-6 | BKN L10: 2-8 | kelly_adj: 1.01
-- **Bankroll after:** $277.90
-
-### 2026-03-23 | ATL vs MEM | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.628 vs implied 0.400 | **Edge:** +57.1%
-- **Bet:** $3.33 @ 2.500 | **Win** → $+5.00
-- **Context:** ATL (41-34) vs MEM (26-49)
-- **Reasoning:** tabicl P(ATL): 0.898 | consensus: 0.889 (disagree: 0.030) | ATL 41-34 | MEM 26-49 | ATL L10: 9-1 | MEM L10: 1-9 | kelly_adj: 1.01
-- **Bankroll after:** $282.91
-
-### 2026-03-23 | CHI vs HOU | h1_ml_home
+### 2026-03-27 | POR vs DAL | q2_home
 - **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.280 vs implied 0.257 | **Edge:** +8.8%
-- **Bet:** $0.33 @ 3.895 | **Loss** → $-0.33
-- **Context:** CHI (31-44) vs HOU (47-27)
-- **Reasoning:** catboost P(CHI): 0.237 | consensus: 0.236 (disagree: 0.030) | CHI 31-44 | HOU 47-27 | CHI L10: 4-6 | HOU L10: 5-5 | kelly_adj: 1.02
-- **Bankroll after:** $282.57
+- **Prob:** 0.712 vs implied 0.526 | **Edge:** +35.3%
+- **Bet:** $19.86 @ 1.900 | **Loss** → $-19.86
+- **Context:** POR (38-40) vs DAL (27-50)
+- **Reasoning:** catboost P(POR): 0.838 | consensus: 0.834 (disagree: 0.026) | POR 38-40 | DAL 27-50 | POR L10: 7-3 | DAL L10: 2-8 | kelly_adj: 1.14
+- **Bankroll after:** $79,391.90
 
-### 2026-03-23 | CHI vs HOU | alt_spread_away_big
+### 2026-03-27 | POR vs DAL | q3_home
 - **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.534 vs implied 0.400 | **Edge:** +33.6%
-- **Bet:** $2.39 @ 2.500 | **Loss** → $-2.39
-- **Context:** CHI (31-44) vs HOU (47-27)
-- **Reasoning:** catboost P(CHI): 0.237 | consensus: 0.236 (disagree: 0.030) | CHI 31-44 | HOU 47-27 | CHI L10: 4-6 | HOU L10: 5-5 | kelly_adj: 1.01
-- **Bankroll after:** $280.19
+- **Prob:** 0.737 vs implied 0.526 | **Edge:** +40.0%
+- **Bet:** $19.83 @ 1.900 | **Loss** → $-19.83
+- **Context:** POR (38-40) vs DAL (27-50)
+- **Reasoning:** catboost P(POR): 0.838 | consensus: 0.834 (disagree: 0.026) | POR 38-40 | DAL 27-50 | POR L10: 7-3 | DAL L10: 2-8 | kelly_adj: 1.14
+- **Bankroll after:** $79,372.07
 
-### 2026-03-23 | LAC vs MIL | alt_spread_home_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.632 vs implied 0.400 | **Edge:** +58.0%
-- **Bet:** $3.36 @ 2.500 | **Win** → $+5.04
-- **Context:** LAC (38-37) vs MIL (32-42)
-- **Reasoning:** consensus_ensemble P(LAC): 0.903 | consensus: 0.898 (disagree: 0.038) | LAC 38-37 | MIL 32-42 | LAC L10: 5-5 | MIL L10: 3-7 | kelly_adj: 1.01
-- **Bankroll after:** $285.23
-
-### 2026-03-23 | ORL vs IND | alt_spread_home_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.588 vs implied 0.400 | **Edge:** +47.0%
-- **Bet:** $3.40 @ 2.500 | **Loss** → $-3.40
-- **Context:** ORL (42-30) vs IND (17-58)
-- **Reasoning:** consensus_ensemble P(ORL): 0.840 | consensus: 0.856 (disagree: 0.034) | ORL 42-30 | IND 17-58 | ORL L10: 6-4 | IND L10: 0-10 | kelly_adj: 1.01
-- **Bankroll after:** $281.83
-
-### 2026-03-23 | PHI vs OKC | alt_spread_away_big
+### 2026-03-27 | POR vs DAL | q4_home
 - **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.627 vs implied 0.400 | **Edge:** +56.9%
-- **Bet:** $3.38 @ 2.500 | **Win** → $+5.07
-- **Context:** PHI (41-33) vs OKC (60-16)
-- **Reasoning:** catboost P(PHI): 0.104 | consensus: 0.112 (disagree: 0.033) | PHI 41-33 | OKC 60-16 | PHI L10: 6-4 | OKC L10: 10-0 | kelly_adj: 1.01
-- **Bankroll after:** $286.90
+- **Prob:** 0.687 vs implied 0.526 | **Edge:** +30.5%
+- **Bet:** $19.79 @ 1.900 | **Loss** → $-19.79
+- **Context:** POR (38-40) vs DAL (27-50)
+- **Reasoning:** catboost P(POR): 0.838 | consensus: 0.834 (disagree: 0.026) | POR 38-40 | DAL 27-50 | POR L10: 7-3 | DAL L10: 2-8 | kelly_adj: 1.14
+- **Bankroll after:** $79,352.28
 
-### 2026-03-23 | POR vs BKN | alt_spread_home_big
+### 2026-03-27 | POR vs DAL | double_result_hh
 - **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.635 vs implied 0.400 | **Edge:** +58.8%
-- **Bet:** $3.44 @ 2.500 | **Win** → $+5.16
-- **Context:** POR (36-40) vs BKN (19-55)
-- **Reasoning:** catboost P(POR): 0.907 | consensus: 0.913 (disagree: 0.030) | POR 36-40 | BKN 19-55 | POR L10: 6-4 | BKN L10: 2-8 | kelly_adj: 1.01
-- **Bankroll after:** $292.07
-
-### 2026-03-23 | UTA vs TOR | ml_home
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.220 vs implied 0.210 | **Edge:** +4.3%
-- **Bet:** $0.13 @ 4.750 | **Loss** → $-0.13
-- **Context:** UTA (22-53) vs TOR (43-33)
-- **Reasoning:** catboost P(UTA): 0.220 | consensus: 0.212 (disagree: 0.031) | UTA 22-53 | TOR 43-33 | UTA L10: 3-7 | TOR L10: 4-6 | kelly_adj: 1.01
-- **Bankroll after:** $291.94
-
-### 2026-03-23 | UTA vs TOR | alt_spread_away_big
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.546 vs implied 0.400 | **Edge:** +36.6%
-- **Bet:** $2.70 @ 2.500 | **Win** → $+4.05
-- **Context:** UTA (22-53) vs TOR (43-33)
-- **Reasoning:** catboost P(UTA): 0.220 | consensus: 0.212 (disagree: 0.031) | UTA 22-53 | TOR 43-33 | UTA L10: 3-7 | TOR L10: 4-6 | kelly_adj: 1.01
-- **Bankroll after:** $295.99
-
-### 2026-03-24 | CHA vs SAC | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.665 vs implied 0.400 | **Edge:** +66.2%
-- **Bet:** $3.55 @ 2.500 | **Win** → $+5.33
-- **Context:** CHA (39-37) vs SAC (20-56)
-- **Reasoning:** tabicl P(CHA): 0.950 | consensus: 0.947 (disagree: 0.007) | CHA 39-37 | SAC 20-56 | CHA L10: 7-3 | SAC L10: 5-5 | kelly_adj: 1.01
-- **Bankroll after:** $301.32
-
-### 2026-03-24 | CLE vs ORL | alt_spread_home_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.581 vs implied 0.400 | **Edge:** +45.2%
-- **Bet:** $3.45 @ 2.500 | **Loss** → $-3.45
-- **Context:** CLE (45-30) vs ORL (42-31)
-- **Reasoning:** consensus_ensemble P(CLE): 0.830 | consensus: 0.825 (disagree: 0.032) | CLE 45-30 | ORL 42-31 | CLE L10: 7-3 | ORL L10: 5-5 | kelly_adj: 1.01
-- **Bankroll after:** $297.86
-
-### 2026-03-24 | NYK vs NOP | alt_spread_home_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.533 vs implied 0.400 | **Edge:** +33.3%
-- **Bet:** $2.51 @ 2.500 | **Loss** → $-2.51
-- **Context:** NYK (50-26) vs NOP (27-49)
-- **Reasoning:** consensus_ensemble P(NYK): 0.761 | consensus: 0.777 (disagree: 0.030) | NYK 50-26 | NOP 27-49 | NYK L10: 7-3 | NOP L10: 6-4 | kelly_adj: 1.01
-- **Bankroll after:** $295.35
-
-### 2026-03-24 | PHX vs DEN | h1_ml_home
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.386 vs implied 0.351 | **Edge:** +10.0%
-- **Bet:** $0.61 @ 2.850 | **Win** → $+1.14
-- **Context:** PHX (43-32) vs DEN (47-30)
-- **Reasoning:** catboost P(PHX): 0.340 | consensus: 0.344 (disagree: 0.027) | PHX 43-32 | DEN 47-30 | PHX L10: 5-5 | DEN L10: 6-4 | kelly_adj: 1.02
-- **Bankroll after:** $296.49
-
-### 2026-03-24 | PHX vs DEN | alt_spread_away_big
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.462 vs implied 0.400 | **Edge:** +15.5%
-- **Bet:** $1.14 @ 2.500 | **Loss** → $-1.14
-- **Context:** PHX (43-32) vs DEN (47-30)
-- **Reasoning:** catboost P(PHX): 0.340 | consensus: 0.344 (disagree: 0.027) | PHX 43-32 | DEN 47-30 | PHX L10: 5-5 | DEN L10: 6-4 | kelly_adj: 1.01
-- **Bankroll after:** $295.35
-
-### 2026-03-25 | CLE vs MIA | alt_spread_home_big
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.426 vs implied 0.400 | **Edge:** +6.4%
-- **Bet:** $0.48 @ 2.500 | **Loss** → $-0.48
-- **Context:** CLE (46-30) vs MIA (38-40)
-- **Reasoning:** catboost P(CLE): 0.608 | consensus: 0.601 (disagree: 0.028) | CLE 46-30 | MIA 38-40 | CLE L10: 7-3 | MIA L10: 5-5 | kelly_adj: 1.01
-- **Bankroll after:** $294.87
-
-### 2026-03-25 | DEN vs DAL | alt_spread_home_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.595 vs implied 0.400 | **Edge:** +48.9%
-- **Bet:** $3.54 @ 2.500 | **Loss** → $-3.54
-- **Context:** DEN (48-30) vs DAL (27-49)
-- **Reasoning:** consensus_ensemble P(DEN): 0.851 | consensus: 0.854 (disagree: 0.031) | DEN 48-30 | DAL 27-49 | DEN L10: 6-4 | DAL L10: 2-8 | kelly_adj: 1.01
-- **Bankroll after:** $291.33
-
-### 2026-03-25 | DET vs ATL | h1_ml_home
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.652 vs implied 0.632 | **Edge:** +3.3%
-- **Bet:** $0.63 @ 1.583 | **Loss** → $-0.63
-- **Context:** DET (53-21) vs ATL (42-34)
-- **Reasoning:** consensus_ensemble P(DET): 0.592 | consensus: 0.591 (disagree: 0.030) | DET 53-21 | ATL 42-34 | DET L10: 7-3 | ATL L10: 9-1 | kelly_adj: 1.02
-- **Bankroll after:** $290.70
-
-### 2026-03-25 | DET vs ATL | alt_spread_home_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.414 vs implied 0.400 | **Edge:** +3.6%
-- **Bet:** $0.26 @ 2.500 | **Loss** → $-0.26
-- **Context:** DET (53-21) vs ATL (42-34)
-- **Reasoning:** consensus_ensemble P(DET): 0.592 | consensus: 0.591 (disagree: 0.030) | DET 53-21 | ATL 42-34 | DET L10: 7-3 | ATL L10: 9-1 | kelly_adj: 1.01
-- **Bankroll after:** $290.44
-
-### 2026-03-25 | GSW vs BKN | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.616 vs implied 0.400 | **Edge:** +54.0%
-- **Bet:** $3.49 @ 2.500 | **Loss** → $-3.49
-- **Context:** GSW (37-40) vs BKN (19-56)
-- **Reasoning:** tabicl P(GSW): 0.880 | consensus: 0.853 (disagree: 0.034) | GSW 37-40 | BKN 19-56 | GSW L10: 2-8 | BKN L10: 2-8 | kelly_adj: 1.01
-- **Bankroll after:** $286.96
-
-### 2026-03-25 | IND vs LAL | ml_home
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.273 vs implied 0.238 | **Edge:** +14.5%
-- **Bet:** $0.49 @ 4.200 | **Loss** → $-0.49
-- **Context:** IND (18-58) vs LAL (47-31)
-- **Reasoning:** consensus_ensemble P(IND): 0.273 | consensus: 0.257 (disagree: 0.035) | IND 18-58 | LAL 47-31 | IND L10: 1-9 | LAL L10: 9-1 | kelly_adj: 1.01
-- **Bankroll after:** $286.46
-
-### 2026-03-25 | IND vs LAL | alt_spread_away_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.509 vs implied 0.400 | **Edge:** +27.3%
-- **Bet:** $1.96 @ 2.500 | **Loss** → $-1.96
-- **Context:** IND (18-58) vs LAL (47-31)
-- **Reasoning:** consensus_ensemble P(IND): 0.273 | consensus: 0.257 (disagree: 0.035) | IND 18-58 | LAL 47-31 | IND L10: 1-9 | LAL L10: 9-1 | kelly_adj: 1.01
-- **Bankroll after:** $284.50
-
-### 2026-03-25 | LAC vs TOR | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.450 vs implied 0.400 | **Edge:** +12.6%
-- **Bet:** $0.91 @ 2.500 | **Win** → $+1.36
-- **Context:** LAC (39-37) vs TOR (44-33)
-- **Reasoning:** tabicl P(LAC): 0.643 | consensus: 0.642 (disagree: 0.032) | LAC 39-37 | TOR 44-33 | LAC L10: 6-4 | TOR L10: 5-5 | kelly_adj: 1.01
-- **Bankroll after:** $285.86
-
-### 2026-03-25 | MEM vs SAS | alt_spread_away_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.655 vs implied 0.400 | **Edge:** +63.9%
-- **Bet:** $3.43 @ 2.500 | **Win** → $+5.15
-- **Context:** MEM (26-50) vs SAS (59-18)
-- **Reasoning:** tabicl P(MEM): 0.064 | consensus: 0.080 (disagree: 0.021) | MEM 26-50 | SAS 59-18 | MEM L10: 1-9 | SAS L10: 9-1 | kelly_adj: 1.01
-- **Bankroll after:** $291.01
-
-### 2026-03-25 | MIN vs HOU | ml_home
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.507 vs implied 0.488 | **Edge:** +4.0%
-- **Bet:** $0.43 @ 2.050 | **Win** → $+0.45
-- **Context:** MIN (46-32) vs HOU (47-28)
-- **Reasoning:** tabicl P(MIN): 0.508 | consensus: 0.483 (disagree: 0.032) | MIN 46-32 | HOU 47-28 | MIN L10: 5-5 | HOU L10: 5-5 | kelly_adj: 1.01
-- **Bankroll after:** $291.45
-
-### 2026-03-25 | PHI vs CHI | alt_spread_home_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.518 vs implied 0.400 | **Edge:** +29.5%
-- **Bet:** $2.18 @ 2.500 | **Win** → $+3.27
-- **Context:** PHI (41-34) vs CHI (32-44)
-- **Reasoning:** consensus_ensemble P(PHI): 0.740 | consensus: 0.728 (disagree: 0.038) | PHI 41-34 | CHI 32-44 | PHI L10: 5-5 | CHI L10: 4-6 | kelly_adj: 1.01
-- **Bankroll after:** $294.73
-
-### 2026-03-25 | POR vs MIL | alt_spread_home_big
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.623 vs implied 0.400 | **Edge:** +55.7%
-- **Bet:** $3.54 @ 2.500 | **Win** → $+5.31
-- **Context:** POR (37-40) vs MIL (32-43)
-- **Reasoning:** catboost P(POR): 0.890 | consensus: 0.905 (disagree: 0.026) | POR 37-40 | MIL 32-43 | POR L10: 6-4 | MIL L10: 3-7 | kelly_adj: 1.01
-- **Bankroll after:** $300.03
-
-### 2026-03-25 | UTA vs WAS | alt_spread_home_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.418 vs implied 0.400 | **Edge:** +4.6%
-- **Bet:** $0.35 @ 2.500 | **Loss** → $-0.35
-- **Context:** UTA (22-54) vs WAS (17-57)
-- **Reasoning:** consensus_ensemble P(UTA): 0.598 | consensus: 0.603 (disagree: 0.024) | UTA 22-54 | WAS 17-57 | UTA L10: 3-7 | WAS L10: 0-10 | kelly_adj: 1.01
-- **Bankroll after:** $299.68
-
-### 2026-03-26 | CHA vs NYK | alt_spread_home_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.414 vs implied 0.400 | **Edge:** +3.6%
-- **Bet:** $0.21 @ 2.500 | **Win** → $+0.31
-- **Context:** CHA (40-37) vs NYK (51-26)
-- **Reasoning:** consensus_ensemble P(CHA): 0.592 | consensus: 0.579 (disagree: 0.034) | CHA 40-37 | NYK 51-26 | CHA L10: 7-3 | NYK L10: 8-2 | kelly_adj: 0.76
-- **Bankroll after:** $299.99
-
-### 2026-03-26 | DET vs NOP | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.452 vs implied 0.400 | **Edge:** +12.9%
-- **Bet:** $0.74 @ 2.500 | **Win** → $+1.11
-- **Context:** DET (53-22) vs NOP (27-50)
-- **Reasoning:** tabicl P(DET): 0.645 | consensus: 0.675 (disagree: 0.028) | DET 53-22 | NOP 27-50 | DET L10: 7-3 | NOP L10: 6-4 | kelly_adj: 0.76
-- **Bankroll after:** $301.09
-
-### 2026-03-26 | ORL vs SAC | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.664 vs implied 0.400 | **Edge:** +66.1%
-- **Bet:** $3.61 @ 2.500 | **Loss** → $-3.61
-- **Context:** ORL (42-32) vs SAC (20-57)
-- **Reasoning:** tabicl P(ORL): 0.949 | consensus: 0.925 (disagree: 0.024) | ORL 42-32 | SAC 20-57 | ORL L10: 4-6 | SAC L10: 5-5 | kelly_adj: 0.76
-- **Bankroll after:** $297.48
-
-### 2026-03-27 | BOS vs ATL | alt_spread_home_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.478 vs implied 0.400 | **Edge:** +19.5%
-- **Bet:** $1.10 @ 2.500 | **Loss** → $-1.10
-- **Context:** BOS (51-25) vs ATL (43-34)
-- **Reasoning:** consensus_ensemble P(BOS): 0.683 | consensus: 0.678 (disagree: 0.041) | BOS 51-25 | ATL 43-34 | BOS L10: 7-3 | ATL L10: 9-1 | kelly_adj: 0.76
-- **Bankroll after:** $296.38
-
-### 2026-03-27 | CLE vs MIA | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.469 vs implied 0.400 | **Edge:** +17.3%
-- **Bet:** $0.97 @ 2.500 | **Win** → $+1.46
-- **Context:** CLE (46-31) vs MIA (39-40)
-- **Reasoning:** tabicl P(CLE): 0.670 | consensus: 0.685 (disagree: 0.038) | CLE 46-31 | MIA 39-40 | CLE L10: 6-4 | MIA L10: 5-5 | kelly_adj: 0.76
-- **Bankroll after:** $297.84
-
-### 2026-03-27 | DEN vs UTA | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.650 vs implied 0.400 | **Edge:** +62.5%
-- **Bet:** $3.54 @ 2.500 | **Loss** → $-3.54
-- **Context:** DEN (49-30) vs UTA (22-55)
-- **Reasoning:** tabicl P(DEN): 0.929 | consensus: 0.937 (disagree: 0.013) | DEN 49-30 | UTA 22-55 | DEN L10: 7-3 | UTA L10: 2-8 | kelly_adj: 0.76
-- **Bankroll after:** $294.30
-
-### 2026-03-27 | GSW vs WAS | alt_spread_home_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.605 vs implied 0.400 | **Edge:** +51.2%
-- **Bet:** $2.86 @ 2.500 | **Loss** → $-2.86
-- **Context:** GSW (38-40) vs WAS (18-57)
-- **Reasoning:** tabicl P(GSW): 0.864 | consensus: 0.886 (disagree: 0.024) | GSW 38-40 | WAS 18-57 | GSW L10: 3-7 | WAS L10: 1-9 | kelly_adj: 0.76
-- **Bankroll after:** $291.44
-
-### 2026-03-27 | IND vs LAC | ml_home
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.260 vs implied 0.250 | **Edge:** +3.8%
-- **Bet:** $0.10 @ 4.000 | **Loss** → $-0.10
-- **Context:** IND (18-59) vs LAC (40-37)
-- **Reasoning:** tabicl P(IND): 0.259 | consensus: 0.261 (disagree: 0.022) | IND 18-59 | LAC 40-37 | IND L10: 1-9 | LAC L10: 6-4 | kelly_adj: 0.76
-- **Bankroll after:** $291.33
-
-### 2026-03-27 | IND vs LAC | alt_spread_away_big
-- **Model:** tabicl | **Strategy:** quarter_kelly
-- **Prob:** 0.518 vs implied 0.400 | **Edge:** +29.6%
-- **Bet:** $1.64 @ 2.500 | **Loss** → $-1.64
-- **Context:** IND (18-59) vs LAC (40-37)
-- **Reasoning:** tabicl P(IND): 0.259 | consensus: 0.261 (disagree: 0.022) | IND 18-59 | LAC 40-37 | IND L10: 1-9 | LAC L10: 6-4 | kelly_adj: 0.76
-- **Bankroll after:** $289.70
-
-### 2026-03-27 | LAL vs BKN | alt_spread_home_big
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.655 vs implied 0.400 | **Edge:** +63.9%
-- **Bet:** $3.48 @ 2.500 | **Win** → $+5.21
-- **Context:** LAL (48-31) vs BKN (19-57)
-- **Reasoning:** catboost P(LAL): 0.936 | consensus: 0.941 (disagree: 0.012) | LAL 48-31 | BKN 19-57 | LAL L10: 9-1 | BKN L10: 1-9 | kelly_adj: 0.76
-- **Bankroll after:** $294.91
-
-### 2026-03-27 | MEM vs HOU | ml_home
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.175 vs implied 0.138 | **Edge:** +26.9%
-- **Bet:** $0.36 @ 7.250 | **Loss** → $-0.36
-- **Context:** MEM (26-51) vs HOU (47-29)
-- **Reasoning:** consensus_ensemble P(MEM): 0.175 | consensus: 0.146 (disagree: 0.036) | MEM 26-51 | HOU 47-29 | MEM L10: 1-9 | HOU L10: 4-6 | kelly_adj: 0.76
-- **Bankroll after:** $294.55
-
-### 2026-03-27 | MEM vs HOU | h1_ml_home
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.174 vs implied 0.145 | **Edge:** +19.8%
-- **Bet:** $0.28 @ 6.888 | **Win** → $+1.67
-- **Context:** MEM (26-51) vs HOU (47-29)
-- **Reasoning:** consensus_ensemble P(MEM): 0.175 | consensus: 0.146 (disagree: 0.036) | MEM 26-51 | HOU 47-29 | MEM L10: 1-9 | HOU L10: 4-6 | kelly_adj: 0.77
-- **Bankroll after:** $296.22
-
-### 2026-03-27 | MEM vs HOU | alt_spread_away_big
-- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.577 vs implied 0.400 | **Edge:** +44.4%
-- **Bet:** $2.45 @ 2.500 | **Win** → $+3.68
-- **Context:** MEM (26-51) vs HOU (47-29)
-- **Reasoning:** consensus_ensemble P(MEM): 0.175 | consensus: 0.146 (disagree: 0.036) | MEM 26-51 | HOU 47-29 | MEM L10: 1-9 | HOU L10: 4-6 | kelly_adj: 0.76
-- **Bankroll after:** $299.90
-
-### 2026-03-27 | OKC vs CHI | alt_spread_home_big
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.655 vs implied 0.400 | **Edge:** +63.8%
-- **Bet:** $3.60 @ 2.500 | **Win** → $+5.40
-- **Context:** OKC (61-17) vs CHI (32-45)
-- **Reasoning:** catboost P(OKC): 0.936 | consensus: 0.938 (disagree: 0.016) | OKC 61-17 | CHI 32-45 | OKC L10: 9-1 | CHI L10: 4-6 | kelly_adj: 0.76
-- **Bankroll after:** $305.30
-
-### 2026-03-27 | POR vs DAL | alt_spread_home_big
-- **Model:** catboost | **Strategy:** quarter_kelly
-- **Prob:** 0.586 vs implied 0.400 | **Edge:** +46.6%
-- **Bet:** $2.70 @ 2.500 | **Loss** → $-2.70
+- **Prob:** 0.515 vs implied 0.455 | **Edge:** +13.4%
+- **Bet:** $19.76 @ 2.200 | **Loss** → $-19.76
 - **Context:** POR (38-40) vs DAL (27-50)
 - **Reasoning:** catboost P(POR): 0.838 | consensus: 0.834 (disagree: 0.026) | POR 38-40 | DAL 27-50 | POR L10: 7-3 | DAL L10: 2-8 | kelly_adj: 0.76
-- **Bankroll after:** $302.59
+- **Bankroll after:** $79,332.52
+
+### 2026-03-27 | POR vs DAL | alt_spread_home_3.5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.628 vs implied 0.476 | **Edge:** +31.9%
+- **Bet:** $19.73 @ 2.100 | **Loss** → $-19.73
+- **Context:** POR (38-40) vs DAL (27-50)
+- **Reasoning:** catboost P(POR): 0.838 | consensus: 0.834 (disagree: 0.026) | POR 38-40 | DAL 27-50 | POR L10: 7-3 | DAL L10: 2-8 | kelly_adj: 1.14
+- **Bankroll after:** $79,312.79
+
+### 2026-03-27 | POR vs DAL | alt_spread_home_7.5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.628 vs implied 0.357 | **Edge:** +75.9%
+- **Bet:** $19.69 @ 2.800 | **Loss** → $-19.69
+- **Context:** POR (38-40) vs DAL (27-50)
+- **Reasoning:** catboost P(POR): 0.838 | consensus: 0.834 (disagree: 0.026) | POR 38-40 | DAL 27-50 | POR L10: 7-3 | DAL L10: 2-8 | kelly_adj: 0.76
+- **Bankroll after:** $79,293.10
 
 ### 2026-03-27 | TOR vs NOP | alt_spread_home_big
 - **Model:** catboost | **Strategy:** quarter_kelly
 - **Prob:** 0.524 vs implied 0.400 | **Edge:** +31.0%
-- **Bet:** $1.79 @ 2.500 | **Win** → $+2.68
+- **Bet:** $19.98 @ 2.500 | **Win** → $+29.97
 - **Context:** TOR (44-34) vs NOP (27-51)
 - **Reasoning:** catboost P(TOR): 0.749 | consensus: 0.764 (disagree: 0.026) | TOR 44-34 | NOP 27-51 | TOR L10: 5-5 | NOP L10: 5-5 | kelly_adj: 0.76
-- **Bankroll after:** $305.27
+- **Bankroll after:** $79,323.07
+
+### 2026-03-27 | TOR vs NOP | margin_1_5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.449 vs implied 0.333 | **Edge:** +34.8%
+- **Bet:** $19.95 @ 3.000 | **Loss** → $-19.95
+- **Context:** TOR (44-34) vs NOP (27-51)
+- **Reasoning:** catboost P(TOR): 0.749 | consensus: 0.764 (disagree: 0.026) | TOR 44-34 | NOP 27-51 | TOR L10: 5-5 | NOP L10: 5-5 | kelly_adj: 0.23
+- **Bankroll after:** $79,303.12
+
+### 2026-03-27 | TOR vs NOP | race_to_75_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.636 vs implied 0.540 | **Edge:** +17.8%
+- **Bet:** $19.91 @ 1.850 | **Win** → $+16.93
+- **Context:** TOR (44-34) vs NOP (27-51)
+- **Reasoning:** catboost P(TOR): 0.749 | consensus: 0.764 (disagree: 0.026) | TOR 44-34 | NOP 27-51 | TOR L10: 5-5 | NOP L10: 5-5 | kelly_adj: 1.14
+- **Bankroll after:** $79,320.05
+
+### 2026-03-27 | TOR vs NOP | race_to_100_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.599 vs implied 0.526 | **Edge:** +13.8%
+- **Bet:** $19.88 @ 1.900 | **Win** → $+17.89
+- **Context:** TOR (44-34) vs NOP (27-51)
+- **Reasoning:** catboost P(TOR): 0.749 | consensus: 0.764 (disagree: 0.026) | TOR 44-34 | NOP 27-51 | TOR L10: 5-5 | NOP L10: 5-5 | kelly_adj: 1.14
+- **Bankroll after:** $79,337.94
+
+### 2026-03-27 | TOR vs NOP | q1_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.674 vs implied 0.526 | **Edge:** +28.0%
+- **Bet:** $19.85 @ 1.900 | **Win** → $+17.86
+- **Context:** TOR (44-34) vs NOP (27-51)
+- **Reasoning:** catboost P(TOR): 0.749 | consensus: 0.764 (disagree: 0.026) | TOR 44-34 | NOP 27-51 | TOR L10: 5-5 | NOP L10: 5-5 | kelly_adj: 1.14
+- **Bankroll after:** $79,355.81
+
+### 2026-03-27 | TOR vs NOP | q2_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.636 vs implied 0.526 | **Edge:** +20.9%
+- **Bet:** $19.81 @ 1.900 | **Win** → $+17.83
+- **Context:** TOR (44-34) vs NOP (27-51)
+- **Reasoning:** catboost P(TOR): 0.749 | consensus: 0.764 (disagree: 0.026) | TOR 44-34 | NOP 27-51 | TOR L10: 5-5 | NOP L10: 5-5 | kelly_adj: 1.14
+- **Bankroll after:** $79,373.64
+
+### 2026-03-27 | TOR vs NOP | q3_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.659 vs implied 0.526 | **Edge:** +25.2%
+- **Bet:** $19.78 @ 1.900 | **Win** → $+17.80
+- **Context:** TOR (44-34) vs NOP (27-51)
+- **Reasoning:** catboost P(TOR): 0.749 | consensus: 0.764 (disagree: 0.026) | TOR 44-34 | NOP 27-51 | TOR L10: 5-5 | NOP L10: 5-5 | kelly_adj: 1.14
+- **Bankroll after:** $79,391.44
+
+### 2026-03-27 | TOR vs NOP | q4_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.614 vs implied 0.526 | **Edge:** +16.7%
+- **Bet:** $19.75 @ 1.900 | **Win** → $+17.77
+- **Context:** TOR (44-34) vs NOP (27-51)
+- **Reasoning:** catboost P(TOR): 0.749 | consensus: 0.764 (disagree: 0.026) | TOR 44-34 | NOP 27-51 | TOR L10: 5-5 | NOP L10: 5-5 | kelly_adj: 1.14
+- **Bankroll after:** $79,409.22
+
+### 2026-03-27 | TOR vs NOP | alt_spread_home_3.5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.562 vs implied 0.476 | **Edge:** +17.9%
+- **Bet:** $19.71 @ 2.100 | **Win** → $+21.69
+- **Context:** TOR (44-34) vs NOP (27-51)
+- **Reasoning:** catboost P(TOR): 0.749 | consensus: 0.764 (disagree: 0.026) | TOR 44-34 | NOP 27-51 | TOR L10: 5-5 | NOP L10: 5-5 | kelly_adj: 1.14
+- **Bankroll after:** $79,430.90
+
+### 2026-03-27 | TOR vs NOP | alt_spread_home_7.5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.562 vs implied 0.357 | **Edge:** +57.2%
+- **Bet:** $19.68 @ 2.800 | **Win** → $+35.43
+- **Context:** TOR (44-34) vs NOP (27-51)
+- **Reasoning:** catboost P(TOR): 0.749 | consensus: 0.764 (disagree: 0.026) | TOR 44-34 | NOP 27-51 | TOR L10: 5-5 | NOP L10: 5-5 | kelly_adj: 0.76
+- **Bankroll after:** $79,466.33
 
 ### 2026-03-28 | ATL vs SAC | alt_spread_home_big
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.622 vs implied 0.400 | **Edge:** +55.5%
-- **Bet:** $3.66 @ 2.500 | **Win** → $+5.49
+- **Bet:** $20.03 @ 2.500 | **Win** → $+30.04
 - **Context:** ATL (43-35) vs SAC (20-58)
-- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 1.01
-- **Bankroll after:** $310.77
+- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 0.91
+- **Bankroll after:** $79,496.37
+
+### 2026-03-28 | ATL vs SAC | margin_1_5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.533 vs implied 0.333 | **Edge:** +60.0%
+- **Bet:** $19.99 @ 3.000 | **Loss** → $-19.99
+- **Context:** ATL (43-35) vs SAC (20-58)
+- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 0.27
+- **Bankroll after:** $79,476.38
+
+### 2026-03-28 | ATL vs SAC | race_to_75_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.755 vs implied 0.540 | **Edge:** +39.8%
+- **Bet:** $19.96 @ 1.850 | **Win** → $+16.96
+- **Context:** ATL (43-35) vs SAC (20-58)
+- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 1.37
+- **Bankroll after:** $79,493.34
+
+### 2026-03-28 | ATL vs SAC | race_to_100_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.711 vs implied 0.526 | **Edge:** +35.1%
+- **Bet:** $19.92 @ 1.900 | **Win** → $+17.93
+- **Context:** ATL (43-35) vs SAC (20-58)
+- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 1.37
+- **Bankroll after:** $79,511.27
+
+### 2026-03-28 | ATL vs SAC | q1_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.800 vs implied 0.526 | **Edge:** +52.0%
+- **Bet:** $19.89 @ 1.900 | **Win** → $+17.90
+- **Context:** ATL (43-35) vs SAC (20-58)
+- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 1.37
+- **Bankroll after:** $79,529.18
+
+### 2026-03-28 | ATL vs SAC | q2_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.755 vs implied 0.526 | **Edge:** +43.5%
+- **Bet:** $19.86 @ 1.900 | **Win** → $+17.87
+- **Context:** ATL (43-35) vs SAC (20-58)
+- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 1.37
+- **Bankroll after:** $79,547.05
+
+### 2026-03-28 | ATL vs SAC | q3_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.782 vs implied 0.526 | **Edge:** +48.6%
+- **Bet:** $19.82 @ 1.900 | **Win** → $+17.84
+- **Context:** ATL (43-35) vs SAC (20-58)
+- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 1.37
+- **Bankroll after:** $79,564.89
+
+### 2026-03-28 | ATL vs SAC | q4_home
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.729 vs implied 0.526 | **Edge:** +38.5%
+- **Bet:** $19.79 @ 1.900 | **Win** → $+17.81
+- **Context:** ATL (43-35) vs SAC (20-58)
+- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 1.37
+- **Bankroll after:** $79,582.70
+
+### 2026-03-28 | ATL vs SAC | double_result_hh
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.567 vs implied 0.455 | **Edge:** +24.8%
+- **Bet:** $19.76 @ 2.200 | **Win** → $+23.71
+- **Context:** ATL (43-35) vs SAC (20-58)
+- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 0.91
+- **Bankroll after:** $79,606.41
+
+### 2026-03-28 | ATL vs SAC | alt_spread_home_3.5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.667 vs implied 0.476 | **Edge:** +40.0%
+- **Bet:** $19.72 @ 2.100 | **Win** → $+21.70
+- **Context:** ATL (43-35) vs SAC (20-58)
+- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 1.37
+- **Bankroll after:** $79,628.11
+
+### 2026-03-28 | ATL vs SAC | alt_spread_home_7.5
+- **Model:** consensus_ensemble | **Strategy:** quarter_kelly
+- **Prob:** 0.667 vs implied 0.357 | **Edge:** +86.6%
+- **Bet:** $19.69 @ 2.800 | **Win** → $+35.44
+- **Context:** ATL (43-35) vs SAC (20-58)
+- **Reasoning:** consensus_ensemble P(ATL): 0.889 | consensus: 0.913 (disagree: 0.032) | ATL 43-35 | SAC 20-58 | ATL L10: 8-2 | SAC L10: 5-5 | kelly_adj: 0.91
+- **Bankroll after:** $79,663.55
 
 ### 2026-03-28 | CHA vs PHI | alt_spread_home_big
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.458 vs implied 0.400 | **Edge:** +14.6%
-- **Bet:** $1.15 @ 2.500 | **Loss** → $-1.15
+- **Bet:** $20.08 @ 2.500 | **Loss** → $-20.08
 - **Context:** CHA (41-37) vs PHI (42-34)
-- **Reasoning:** tabicl P(CHA): 0.655 | consensus: 0.686 (disagree: 0.033) | CHA 41-37 | PHI 42-34 | CHA L10: 7-3 | PHI L10: 6-4 | kelly_adj: 1.01
-- **Bankroll after:** $309.61
+- **Reasoning:** tabicl P(CHA): 0.655 | consensus: 0.686 (disagree: 0.033) | CHA 41-37 | PHI 42-34 | CHA L10: 7-3 | PHI L10: 6-4 | kelly_adj: 0.91
+- **Bankroll after:** $79,643.48
 
-### 2026-03-28 | MEM vs CHI | h1_ml_home
+### 2026-03-28 | CHA vs PHI | margin_1_5
+- **Model:** tabicl | **Strategy:** quarter_kelly
+- **Prob:** 0.393 vs implied 0.333 | **Edge:** +17.9%
+- **Bet:** $20.04 @ 3.000 | **Win** → $+40.08
+- **Context:** CHA (41-37) vs PHI (42-34)
+- **Reasoning:** tabicl P(CHA): 0.655 | consensus: 0.686 (disagree: 0.033) | CHA 41-37 | PHI 42-34 | CHA L10: 7-3 | PHI L10: 6-4 | kelly_adj: 0.27
+- **Bankroll after:** $79,683.56
+
+### 2026-03-28 | CHA vs PHI | alt_spread_home_7.5
+- **Model:** tabicl | **Strategy:** quarter_kelly
+- **Prob:** 0.491 vs implied 0.357 | **Edge:** +37.5%
+- **Bet:** $20.01 @ 2.800 | **Loss** → $-20.01
+- **Context:** CHA (41-37) vs PHI (42-34)
+- **Reasoning:** tabicl P(CHA): 0.655 | consensus: 0.686 (disagree: 0.033) | CHA 41-37 | PHI 42-34 | CHA L10: 7-3 | PHI L10: 6-4 | kelly_adj: 0.91
+- **Bankroll after:** $79,663.55
+
+### 2026-03-28 | MEM vs CHI | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
-- **Prob:** 0.475 vs implied 0.448 | **Edge:** +6.0%
-- **Bet:** $0.58 @ 2.232 | **Win** → $+0.72
+- **Prob:** 0.431 vs implied 0.357 | **Edge:** +20.7%
+- **Bet:** $20.08 @ 2.800 | **Loss** → $-20.08
 - **Context:** MEM (26-52) vs CHI (32-46)
-- **Reasoning:** consensus_ensemble P(MEM): 0.425 | consensus: 0.423 (disagree: 0.026) | MEM 26-52 | CHI 32-46 | MEM L10: 1-9 | CHI L10: 3-7 | kelly_adj: 1.02
-- **Bankroll after:** $310.33
+- **Reasoning:** consensus_ensemble P(MEM): 0.425 | consensus: 0.423 (disagree: 0.026) | MEM 26-52 | CHI 32-46 | MEM L10: 1-9 | CHI L10: 3-7 | kelly_adj: 0.91
+- **Bankroll after:** $79,643.48
 
 ### 2026-03-28 | MIL vs SAS | alt_spread_away_big
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.645 vs implied 0.400 | **Edge:** +61.3%
-- **Bet:** $3.72 @ 2.500 | **Win** → $+5.59
+- **Bet:** $20.07 @ 2.500 | **Win** → $+30.11
 - **Context:** MIL (32-44) vs SAS (60-18)
-- **Reasoning:** tabicl P(MIL): 0.078 | consensus: 0.083 (disagree: 0.022) | MIL 32-44 | SAS 60-18 | MIL L10: 2-8 | SAS L10: 9-1 | kelly_adj: 1.01
-- **Bankroll after:** $315.92
+- **Reasoning:** tabicl P(MIL): 0.078 | consensus: 0.083 (disagree: 0.022) | MIL 32-44 | SAS 60-18 | MIL L10: 2-8 | SAS L10: 9-1 | kelly_adj: 0.91
+- **Bankroll after:** $79,673.58
+
+### 2026-03-28 | MIL vs SAS | double_result_aa
+- **Model:** tabicl | **Strategy:** quarter_kelly
+- **Prob:** 0.613 vs implied 0.455 | **Edge:** +34.9%
+- **Bet:** $20.04 @ 2.200 | **Win** → $+24.04
+- **Context:** MIL (32-44) vs SAS (60-18)
+- **Reasoning:** tabicl P(MIL): 0.078 | consensus: 0.083 (disagree: 0.022) | MIL 32-44 | SAS 60-18 | MIL L10: 2-8 | SAS L10: 9-1 | kelly_adj: 0.91
+- **Bankroll after:** $79,697.63
+
+### 2026-03-28 | MIL vs SAS | alt_spread_away_3.5
+- **Model:** tabicl | **Strategy:** quarter_kelly
+- **Prob:** 0.691 vs implied 0.476 | **Edge:** +45.2%
+- **Bet:** $20.00 @ 2.100 | **Win** → $+22.00
+- **Context:** MIL (32-44) vs SAS (60-18)
+- **Reasoning:** tabicl P(MIL): 0.078 | consensus: 0.083 (disagree: 0.022) | MIL 32-44 | SAS 60-18 | MIL L10: 2-8 | SAS L10: 9-1 | kelly_adj: 1.37
+- **Bankroll after:** $79,719.63
+
+### 2026-03-28 | MIL vs SAS | alt_spread_away_7.5
+- **Model:** tabicl | **Strategy:** quarter_kelly
+- **Prob:** 0.691 vs implied 0.357 | **Edge:** +93.6%
+- **Bet:** $19.97 @ 2.800 | **Win** → $+35.94
+- **Context:** MIL (32-44) vs SAS (60-18)
+- **Reasoning:** tabicl P(MIL): 0.078 | consensus: 0.083 (disagree: 0.022) | MIL 32-44 | SAS 60-18 | MIL L10: 2-8 | SAS L10: 9-1 | kelly_adj: 0.91
+- **Bankroll after:** $79,755.57
+
+### 2026-03-28 | MIN vs DET | alt_spread_home_7.5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.424 vs implied 0.357 | **Edge:** +18.9%
+- **Bet:** $20.10 @ 2.800 | **Loss** → $-20.10
+- **Context:** MIN (47-32) vs DET (54-22)
+- **Reasoning:** catboost P(MIN): 0.566 | consensus: 0.561 (disagree: 0.036) | MIN 47-32 | DET 54-22 | MIN L10: 5-5 | DET L10: 8-2 | kelly_adj: 0.91
+- **Bankroll after:** $79,735.48
 
 ### 2026-03-28 | PHX vs UTA | alt_spread_home_big
 - **Model:** catboost | **Strategy:** quarter_kelly
 - **Prob:** 0.656 vs implied 0.400 | **Edge:** +64.1%
-- **Bet:** $3.79 @ 2.500 | **Win** → $+5.69
+- **Bet:** $20.09 @ 2.500 | **Win** → $+30.14
 - **Context:** PHX (43-33) vs UTA (22-56)
-- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 1.01
-- **Bankroll after:** $321.61
+- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 0.91
+- **Bankroll after:** $79,765.62
+
+### 2026-03-28 | PHX vs UTA | margin_1_5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.563 vs implied 0.333 | **Edge:** +68.8%
+- **Bet:** $20.06 @ 3.000 | **Loss** → $-20.06
+- **Context:** PHX (43-33) vs UTA (22-56)
+- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 0.27
+- **Bankroll after:** $79,745.56
+
+### 2026-03-28 | PHX vs UTA | race_to_75_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.797 vs implied 0.540 | **Edge:** +47.4%
+- **Bet:** $20.03 @ 1.850 | **Win** → $+17.02
+- **Context:** PHX (43-33) vs UTA (22-56)
+- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 1.37
+- **Bankroll after:** $79,762.58
+
+### 2026-03-28 | PHX vs UTA | race_to_100_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.750 vs implied 0.526 | **Edge:** +42.5%
+- **Bet:** $19.99 @ 1.900 | **Win** → $+17.99
+- **Context:** PHX (43-33) vs UTA (22-56)
+- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 1.37
+- **Bankroll after:** $79,780.57
+
+### 2026-03-28 | PHX vs UTA | q1_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.844 vs implied 0.526 | **Edge:** +60.3%
+- **Bet:** $19.96 @ 1.900 | **Win** → $+17.96
+- **Context:** PHX (43-33) vs UTA (22-56)
+- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 1.37
+- **Bankroll after:** $79,798.53
+
+### 2026-03-28 | PHX vs UTA | q2_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.797 vs implied 0.526 | **Edge:** +51.4%
+- **Bet:** $19.93 @ 1.900 | **Win** → $+17.93
+- **Context:** PHX (43-33) vs UTA (22-56)
+- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 1.37
+- **Bankroll after:** $79,816.47
+
+### 2026-03-28 | PHX vs UTA | q3_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.825 vs implied 0.526 | **Edge:** +56.8%
+- **Bet:** $19.89 @ 1.900 | **Win** → $+17.90
+- **Context:** PHX (43-33) vs UTA (22-56)
+- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 1.37
+- **Bankroll after:** $79,834.37
+
+### 2026-03-28 | PHX vs UTA | q4_home
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.769 vs implied 0.526 | **Edge:** +46.1%
+- **Bet:** $19.86 @ 1.900 | **Win** → $+17.87
+- **Context:** PHX (43-33) vs UTA (22-56)
+- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 1.37
+- **Bankroll after:** $79,852.24
+
+### 2026-03-28 | PHX vs UTA | double_result_hh
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.620 vs implied 0.455 | **Edge:** +36.4%
+- **Bet:** $19.82 @ 2.200 | **Loss** → $-19.82
+- **Context:** PHX (43-33) vs UTA (22-56)
+- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 0.91
+- **Bankroll after:** $79,832.42
+
+### 2026-03-28 | PHX vs UTA | alt_spread_home_3.5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.703 vs implied 0.476 | **Edge:** +47.7%
+- **Bet:** $19.79 @ 2.100 | **Win** → $+21.77
+- **Context:** PHX (43-33) vs UTA (22-56)
+- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 1.37
+- **Bankroll after:** $79,854.19
+
+### 2026-03-28 | PHX vs UTA | alt_spread_home_7.5
+- **Model:** catboost | **Strategy:** quarter_kelly
+- **Prob:** 0.703 vs implied 0.357 | **Edge:** +96.9%
+- **Bet:** $19.76 @ 2.800 | **Win** → $+35.56
+- **Context:** PHX (43-33) vs UTA (22-56)
+- **Reasoning:** catboost P(PHX): 0.938 | consensus: 0.925 (disagree: 0.026) | PHX 43-33 | UTA 22-56 | PHX L10: 4-6 | UTA L10: 2-8 | kelly_adj: 0.91
+- **Bankroll after:** $79,889.75
