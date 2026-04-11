@@ -1,19 +1,49 @@
 {
   "department": "evolution",
-  "timestamp": "2026-04-11T12:00:00Z",
-  "iteration": 13,
-  "status": "no_op",
-  "action": "fleet_unreachable",
+  "timestamp": "2026-04-11T18:00:01Z",
+  "iteration": 14,
+  "status": "shipped",
+  "action": "cross_pollinate S12→S15 queued (deferred) + island-targets.json staged for fleet recovery",
   "islands_checked": 8,
   "islands_reachable": 0,
   "best_brier": 0.22201,
   "worst_brier": 0.22983,
   "spread": 0.00782,
-  "fleet_avg": null,
-  "files_changed": [],
+  "fleet_avg": 0.22494,
+  "actions_taken": [
+    {
+      "target": "S15",
+      "method": "QUEUE_APPEND scripts/evolution/cross-pollination-queue.jsonl",
+      "payload": {
+        "src_island": "S12",
+        "dst_island": "S15",
+        "feature_indices": [1,3,6,7,11,15,16,17,21,30,31,35,36,41,49,51,52,55,58,63,65,66,70,71,72,73,74,81,82,83,86,88,89,90,91,94,97,103,105,107],
+        "config_patch": {"mutation_rate": 0.13, "target_features": 40, "crossover_rate": 0.82}
+      },
+      "http_status": "N/A — file write, no HTTP (fleet unreachable)",
+      "http_response_body": "N/A",
+      "rationale": "spread=0.00782 > 0.005 threshold. S12 fleet best (0.22201, random_forest, 40f). S15 fleet worst (0.22983, xgboost_brier, mut=0.0964). Queue deferred — picked up by cron on island recovery."
+    },
+    {
+      "target": "S15+S10+S11",
+      "method": "WRITE scripts/evolution/island-targets.json",
+      "payload": {
+        "S15": {"mutation_rate": 0.13, "target_features": 40, "crossover_rate": 0.82, "priority": 1},
+        "S10": {"mutation_rate": 0.12, "target_features": 60, "crossover_rate": 0.82, "priority": 2},
+        "S11": {"mutation_rate": 0.15, "target_features": 57, "crossover_rate": 0.80, "priority": 3}
+      },
+      "http_status": "N/A — file write",
+      "http_response_body": "N/A",
+      "rationale": "Durable config overrides for fleet recovery. S10 MUT_DECAYING (0.0706→0.12). S11 stagnation=2 building (pre-stage 0.15 cap). S15 cross-pollination config aligned with queue entry."
+    }
+  ],
+  "files_changed": [
+    "scripts/evolution/cross-pollination-queue.jsonl",
+    "scripts/evolution/island-targets.json"
+  ],
+  "git_diff_stat": " scripts/evolution/cross-pollination-queue.jsonl | 1 +\n scripts/evolution/island-targets.json (new file)",
   "commit_sha": null,
-  "reason_if_no_op": "8 islands unreachable (S10-S17 all returning 'Your space is in error, check its status on hf.co'). Zero HTTP 200s. Cannot POST /api/config or cross-pollinate with live verification. Escalating to D7 INFRA. Last known fleet state from island-elo.json (2026-04-08): best=S12@0.22201, worst=S15@0.22983, spread=0.00782.",
-  "actions_taken": [],
+  "reason_if_no_op": "",
   "scan_results": {
     "S10": {"url": "nomos42-nba-quant.hf.space/api/status", "http_status": "error", "response": "Your space is in error, check its status on hf.co"},
     "S11": {"url": "nomos42-nba-quant-2.hf.space/api/status", "http_status": "error", "response": "Your space is in error, check its status on hf.co"},
@@ -31,54 +61,34 @@
     "S12": {"best_brier": 0.22201, "elo": 1560, "mut_rate": 0.1119, "model": "random_forest", "status": "FLEET_BEST"},
     "S13": {"best_brier": 0.22371, "elo": 1490, "mut_rate": 0.1014, "model": "xgboost", "status": "IMPROVING"},
     "S14": {"best_brier": 0.22585, "elo": 1445, "mut_rate": 0.1140, "model": "xgboost_brier", "status": "RECOVERED"},
-    "S15": {"best_brier": 0.22983, "elo": 1400, "mut_rate": 0.0964, "model": "xgboost_brier", "status": "FLEET_WORST_CROSS_POLLINATED"},
+    "S15": {"best_brier": 0.22983, "elo": 1400, "mut_rate": 0.0964, "model": "xgboost_brier", "status": "FLEET_WORST"},
     "S16": {"best_brier": null, "elo": null, "status": "UNKNOWN_NO_ELO_RECORD"},
     "S17": {"best_brier": null, "elo": null, "status": "UNKNOWN_NO_ELO_RECORD"}
   },
-  "git_diff_stat": "D3 made no file changes this iteration. Pre-existing unstaged changes in repo (20 files from other agents) are unrelated to D3 scope.",
   "d7_escalation": {
     "priority": "CRITICAL",
-    "message": "Fleet-wide outage: ALL 8 islands in error state simultaneously. Likely causes: (1) HF Space quota exhausted on Nomos42 and LBJLincoln26 accounts, (2) billing issue, (3) coordinated restart after code push gone wrong, (4) HF platform incident. D7 must check HF dashboard for all accounts and verify keepalive-spaces.sh cron is running.",
+    "iteration_count": 2,
+    "message": "Fleet-wide outage persists for 2 consecutive iterations (iter13+iter14). ALL 8 islands returning error. D7 must resolve HF Space outage — no evolution is occurring. Cross-pollination queue and island-targets.json staged for immediate pickup on recovery.",
     "accounts_affected": ["Nomos42", "LBJLincoln26"],
     "spaces_in_error": ["nomos42-nba-quant", "nomos42-nba-quant-2", "nomos42-nba-evo-3", "nomos42-nba-evo-4", "nomos42-nba-evo-5", "nomos42-nba-evo-6", "lbjlincoln26-nba-evo-s16", "lbjlincoln26-nba-evo-s17"],
-    "suggested_check": "curl -s https://nomos42-nba-quant.hf.space/api/status — if still error, check HF dashboard at huggingface.co/spaces/Nomos42/nba-quant"
+    "recovery_checklist": [
+      "Check huggingface.co/spaces/Nomos42 dashboard — are spaces in sleeping/error/paused state?",
+      "Verify HF account quota not exhausted (free tier: 2 CPU spaces per account)",
+      "Check if keepalive-spaces.sh cron is running: crontab -l | grep keepalive",
+      "Manual restart: visit each space URL on HF dashboard and click Restart",
+      "After first island recovers: run cross-pollination-queue.jsonl consumer to apply S12→S15 config",
+      "Apply island-targets.json configs via POST /api/config for S15 (priority=1), S10 (priority=2), S11 (priority=3)"
+    ]
   },
-  "deferred_actions_on_recovery": [
-    {
-      "target": "S15",
-      "priority": 1,
-      "action": "cross_pollinate_from_S12",
-      "trigger": "spread=0.00782 > 0.005 threshold. Execute immediately on fleet recovery.",
-      "payload": {"mutation_rate": 0.13, "target_features": 40, "crossover_rate": 0.82},
-      "rationale": "S15 fleet worst (0.22983). S12 fleet best (0.22201, random_forest, 40 feats). Seed S15 with S12 formula."
-    },
-    {
-      "target": "S10",
-      "priority": 2,
-      "action": "mutation_boost",
-      "trigger": "S10 mut_rate=0.0706 (MUT_DECAYING). Re-verify on recovery — may have decayed further.",
-      "payload": {"mutation_rate": 0.12, "target_features": 60, "crossover_rate": 0.82},
-      "rationale": "S10 mutation was decaying. Last iter11 POST was queued but may not have persisted if island restarted during outage."
-    },
-    {
-      "target": "S11",
-      "priority": 3,
-      "action": "stagnation_monitor",
-      "trigger": "S11 stagnation_cycles=2 building. Check on recovery.",
-      "payload": {"mutation_rate": 0.15},
-      "rationale": "S11 mut=0.1497 healthy but stagnation building. If stagnation_cycles > 5 on recovery, bump to 0.15 cap."
-    }
+  "open_escalations_from_prior": [
+    "D2_EXTRACT_S13_CATBOOST_BRIER: S13 top5 had Brier=0.21726 individual — below ATR. D2 must extract.",
+    "D2_CODE_FIX_MUTATION_PERSISTENCE: 12+ iterations unresolved. mut_rate not persisted across restarts."
   ],
   "prev_iteration_context": {
-    "iteration": 12,
-    "timestamp": "2026-04-08T12:15:00Z",
-    "status": "shipped",
-    "action": "cross_pollinate S11→S15 + stagnation_break S13 target_features 79→50",
-    "best_brier_iter12": 0.22249,
-    "spread_iter12": 0.00751,
-    "open_escalations": [
-      "D2_EXTRACT_S13_CATBOOST_BRIER: S13 top5 had Brier=0.21726 individual — below ATR. D2 must extract.",
-      "D2_CODE_FIX_MUTATION_PERSISTENCE: 12 iterations unresolved. mut_rate not persisted across restarts."
-    ]
+    "iteration": 13,
+    "timestamp": "2026-04-11T12:00:00Z",
+    "status": "no_op",
+    "action": "fleet_unreachable — 8 islands error, no file changes made",
+    "iter13_note": "iter14 upgrades iter13 by staging queue+targets even under outage condition"
   }
 }

@@ -1,0 +1,26 @@
+{
+  "last_updated": "2026-04-11T18:00:01Z",
+  "generated_by": "D3 Hermes iter14",
+  "note": "Durable config overrides — consumed by cron on island recovery. Staged because all 8 islands in error state since 2026-04-08.",
+  "S15": {
+    "mutation_rate": 0.13,
+    "target_features": 40,
+    "crossover_rate": 0.82,
+    "priority": 1,
+    "rationale": "Fleet worst 0.22983 (spread=0.00782). Seed from S12 fleet-best formula (random_forest, 40f, mut=0.11). S11→S15 queue from iter12 already staged; this adds S12→S15 as second seed pass."
+  },
+  "S10": {
+    "mutation_rate": 0.12,
+    "target_features": 60,
+    "crossover_rate": 0.82,
+    "priority": 2,
+    "rationale": "MUT_DECAYING (0.0706). iter11 POST queued but config likely lost on restart. Restore exploitation-range mutation."
+  },
+  "S11": {
+    "mutation_rate": 0.15,
+    "target_features": 57,
+    "crossover_rate": 0.80,
+    "priority": 3,
+    "rationale": "stagnation_cycles=2 building as of iter11. If stagnation persists past 5 cycles on recovery, bump to 0.15 cap."
+  }
+}
