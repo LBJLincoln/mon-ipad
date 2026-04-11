@@ -1669,7 +1669,7 @@ class TradingFloorV5:
         # --- TOTAL BET ---
         tt_conf = tt_c.get("confidence", 0)
         tt_agree = tt_c.get("agreement_pct", 0)
-        if (tt_conf > 0.35 and tt_agree > 0.40):
+        if (tt_conf > 0.35 and tt_agree > 0.40 and odds_entry is not None):
             direction = tt_c.get("direction", "over")
             tt_edge = abs(tt_c.get("confidence", 0.5) - 0.5) + 0.01
             stake = _sz_confidence_scaled(tt_edge, 1.909, base_bankroll)
