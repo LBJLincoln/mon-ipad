@@ -370,67 +370,71 @@ def load_odds() -> Dict[Tuple[str, str, str], OddsLine]:
 
 class ModelSimulator:
     """
-    Simulate our evolved ML model's predictions for historical games.
+    MARKET-BASELINE fallback predictor (NOT "our model").
 
-    Our model achieves Brier ~0.215 (ATR).
-    Market achieves Brier ~0.240.
-    This ~10% edge is what we convert into betting profit.
+    2026-04-11 audit: the previous implementation peeked at
+    ``game.home_won`` and shifted predictions toward the true outcome,
+    producing a fake Brier of ~0.215 by construction. That was ground-
+    truth leakage — a calibrated lie. It has been removed.
 
-    The simulator:
-    1. Takes market-implied probability as baseline
-    2. Adds calibrated noise + skill to approximate our model's predictions
-    3. Ensures the simulated predictions match our known Brier score
+    This class now returns ONLY market-derived predictions:
+      - prob_home = market_prob + tiny zero-mean noise (no ground truth)
+      - predicted_margin = probit mapping of prob_home
+      - predicted_total = market total (or league avg) + zero-mean noise
+
+    Every prediction is flagged with ``_is_real=False`` and
+    ``_source="market_baseline"`` so downstream consumers can tell it
+    apart from real prospective model predictions loaded via
+    ``real_predictions_loader.load_real_predictions``.
+
+    The honest way to backtest our model is to require
+    ``real_only=True`` (now the default on BacktestEngine) so games
+    without a real prospective prediction are DROPPED, not faked.
     """
 
     def __init__(self, model_brier: float = 0.2152, market_brier: float = 0.240):
+        # Kept on the object for legacy callers that read .model_brier,
+        # but these values are now purely informational — no leakage.
         self.model_brier = model_brier
         self.market_brier = market_brier
-        # How much our model improves on market
-        self.skill_ratio = 1.0 - (model_brier / market_brier)
         self.rng = random.Random(42)  # Reproducible
 
     def predict_game(self, game: Game, odds: Optional[OddsLine]) -> dict:
         """
-        Generate model prediction for a historical game.
+        Generate a MARKET-BASELINE prediction for a historical game.
 
-        Returns dict with:
-          - prob_home: P(home_win) from model
-          - predicted_margin: expected home-away margin
-          - predicted_total: expected total points
-          - confidence: model confidence (0-1)
-          - edge_ml: edge vs market moneyline
-          - edge_spread: edge vs market spread
-          - edge_total: edge vs market total
+        NO access to ``game.home_won`` is allowed here. The ``game``
+        argument is kept only for signature compatibility with real
+        predictors. If a caller wants real model predictions they must
+        load them via ``real_predictions_loader`` and use BacktestEngine
+        with ``real_only=True``.
         """
+        # Market-implied P(home_win). Fall back to 0.5 if no odds.
         market_prob = odds.impl_home if odds else 0.5
-        actual_home_won = 1.0 if game.home_won else 0.0
 
-        # Simulate model prediction:
-        # Model = market + skill_shift + noise
-        # skill_shift moves toward truth, noise adds randomness
-        skill_shift = (actual_home_won - market_prob) * self.skill_ratio * 0.6
-        noise = self.rng.gauss(0, 0.04)
-        model_prob = max(0.05, min(0.95, market_prob + skill_shift + noise))
+        # Small zero-mean noise so repeated calls don't return identical
+        # probabilities (helps non-degenerate Kelly/ROI math). This noise
+        # is symmetric around market_prob and therefore adds no edge.
+        noise = self.rng.gauss(0, 0.02)
+        model_prob = max(0.05, min(0.95, market_prob + noise))
 
-        # Predicted margin from probability (probit-style)
-        # NBA: ~12 pts std dev per game margin
-        from_prob = (model_prob - 0.5) * 24.0  # rough linear mapping
-        actual_noise = self.rng.gauss(0, 2.0)
-        predicted_margin = from_prob + actual_noise
+        # Predicted margin from probability (probit-style). NBA: ~12 pts
+        # std dev per game margin, so ΔP of 0.5 ≈ 24-pt swing.
+        from_prob = (model_prob - 0.5) * 24.0
+        margin_noise = self.rng.gauss(0, 2.0)
+        predicted_margin = from_prob + margin_noise
 
-        # Predicted total: based on team pace and offensive ratings
+        # Predicted total: market total if available, otherwise league avg.
         avg_total = 224.5  # NBA 2025-26 avg
-        if odds and odds.total > 0:
-            base_total = odds.total
-        else:
-            base_total = avg_total
+        base_total = odds.total if (odds and odds.total > 0) else avg_total
         total_shift = self.rng.gauss(0, 4.0)
         predicted_total = base_total + total_shift
 
-        # Edges vs market
+        # Edges vs market. By construction edge_ml is just the noise
+        # term — market-baseline has no real moneyline edge.
         edge_ml = model_prob - market_prob if odds else 0.0
         edge_spread = (predicted_margin - (odds.spread_home if odds else 0)) if odds else 0.0
-        edge_total = 0.0  # No total edge for now
+        edge_total = 0.0
         if odds and odds.total > 0:
             edge_total = predicted_total - odds.total
 
@@ -444,8 +448,11 @@ class ModelSimulator:
             "confidence": confidence,
             "edge_ml": edge_ml,
             "edge_spread": edge_spread / 12.0,  # Normalize: 1 pt spread = ~8% edge
-            "edge_total": edge_total / 10.0,     # Normalize similarly
+            "edge_total": edge_total / 10.0,
             "market_prob": market_prob,
+            # Honesty markers: downstream code / dashboards can filter on these
+            "_is_real": False,
+            "_source": "market_baseline",
         }
 
 
@@ -958,14 +965,18 @@ BACKTESTABLE_CATEGORIES = {
 class BacktestEngine:
     """Run full historical backtests across categories × strategies × games."""
 
-    def __init__(self, model_brier: float = 0.2152, real_only: bool = False,
+    def __init__(self, model_brier: float = 0.2152, real_only: bool = True,
                  season_files: Optional[List[Path]] = None):
         """
         Args:
-            model_brier: target Brier for the synthetic fallback model.
-            real_only: if True, DROP any game that does not have a real
-                       prospectively-stored prediction. Result is a much
-                       smaller but scientifically honest backtest.
+            model_brier: informational — no longer used to fake predictions.
+                       Kept for backward-compat with callers that pass it.
+            real_only: if True (DEFAULT as of 2026-04-11 audit), DROP any
+                       game that does not have a real prospectively-stored
+                       prediction. This is the scientifically honest mode.
+                       If False, fall back to ModelSimulator which returns
+                       MARKET-BASELINE predictions (not "our model") — use
+                       only for infra smoke tests, never for reported Brier.
             season_files: optional list of season files to load. Defaults to
                        the current season only (2025-26). Pass GAMES_FILES_ALL
                        to backtest against all 9 historical seasons.
@@ -1039,6 +1050,25 @@ class BacktestEngine:
         if max_games > 0:
             games = games[:max_games]
 
+        # Guard: real_only + empty games means no prospective predictions
+        # were ever stored for this season. Return an empty result set
+        # rather than splitting []/[] and crashing on games[0].date.
+        if not games:
+            print(
+                "\n⚠  No games to backtest. real_only=" f"{self.real_only}. "
+                "If real_only=True, this means 0 games had a stored "
+                "prospective prediction — check "
+                "/home/termius/nomos-nba-agent/data/predictions/ and "
+                "re-run predict_today.py daily to populate."
+            )
+            return {
+                strat.id: TraderResult(
+                    strategy=TraderStrategy(**{**strat.__dict__}),
+                    bankroll_history=[strat.bankroll],
+                )
+                for strat in strategies
+            }
+
         # Walk-forward split
         split_idx = int(len(games) * walk_forward_split)
         train_games = games[:split_idx]
@@ -1066,6 +1096,7 @@ class BacktestEngine:
         # Process test games (out-of-sample)
         total_bets = 0
         real_pred_hits = 0
+        market_baseline_hits = 0
         # Per-game debate buckets → measured against bet ROI at end
         debate_verdict_counts = {"bull": 0, "bear": 0, "tie": 0}
         for game_idx, game in enumerate(test_games):
@@ -1073,10 +1104,14 @@ class BacktestEngine:
             odds = self.odds.get(odds_key)
 
             # Prefer stored REAL prediction (prospective, no look-ahead bias);
-            # fall back to ModelSimulator only if no real pred is available.
+            # fall back to ModelSimulator (market-baseline, no real model)
+            # only if no real pred is available AND real_only is False.
             real_pred = self.real_preds.get(odds_key)
             if real_pred is not None:
                 pred = dict(real_pred)  # copy so we can mutate with _debate
+                # Carry honesty markers through to downstream bet-audit logs
+                pred.setdefault("_is_real", True)
+                pred.setdefault("_source", "real_prospective")
                 real_pred_hits += 1
                 # Real Brier: score the prospective prediction against the
                 # actual outcome. This is the honest model_brier we emit.
@@ -1088,7 +1123,11 @@ class BacktestEngine:
                 except (TypeError, ValueError):
                     pass
             else:
+                # real_only should have already filtered this out at
+                # load_data(), but belt-and-suspenders: if somehow we
+                # got here, use the market-baseline ModelSimulator.
                 pred = self.model.predict_game(game, odds)
+                market_baseline_hits += 1
 
             # Run stats-only Bull vs Bear debate for this game and
             # attach the verdict onto the prediction so each bet can
@@ -1193,11 +1232,14 @@ class BacktestEngine:
 
         print(f"\n  TOTAL: {total_bets:,} bets across {len(strategies)} strategies")
         print(f"  REAL predictions used: {real_pred_hits}/{len(test_games)} "
-              f"games ({100.0 * real_pred_hits / max(len(test_games), 1):.1f}%)\n")
+              f"games ({100.0 * real_pred_hits / max(len(test_games), 1):.1f}%)")
+        print(f"  MARKET-BASELINE fallbacks: {market_baseline_hits}/{len(test_games)} "
+              f"games ({100.0 * market_baseline_hits / max(len(test_games), 1):.1f}%)\n")
 
         # Expose debate verdict distribution so export_results can surface it
         self.debate_verdict_counts = debate_verdict_counts
         self.real_pred_hits = real_pred_hits
+        self.market_baseline_hits = market_baseline_hits
         self.test_games_count = len(test_games)
         total_dbt = sum(debate_verdict_counts.values()) or 1
         print(f"  Debate verdicts across test games: "
@@ -1347,20 +1389,33 @@ class BacktestEngine:
     def export_results(self, results: Dict[str, TraderResult], filepath: Path):
         """Export results to JSON."""
         filepath.parent.mkdir(parents=True, exist_ok=True)
-        # Real model Brier (Cycle 14 Tier 4): computed from self.real_preds
-        # scored against game.home_won during the run loop. Falls back to the
-        # synthetic simulator default only if zero real predictions were hit.
+        # Real model Brier (Cycle 14 Tier 4, hardened 2026-04-11): computed
+        # from self.real_preds scored against game.home_won during the run
+        # loop. This is the ONLY honest model_brier we can report — the
+        # synthetic ModelSimulator is a market-baseline fallback and never
+        # represents "our model" regardless of what the CLI --brier flag says.
         real_brier = (
             round(self.real_brier_sum / self.real_brier_n, 5)
             if self.real_brier_n > 0
             else None
         )
+        model_brier_source = (
+            "real_prospective" if real_brier is not None
+            else "market_baseline"
+        )
         output = {
             "timestamp": datetime.now().isoformat(),
-            "model_brier": real_brier if real_brier is not None else self.model.model_brier,
+            # model_brier is ONLY set when we have ≥1 real prospective
+            # prediction scored against reality. Otherwise it is null so
+            # downstream dashboards can render "No real data" honestly
+            # instead of greenwashing the synthetic 0.2152.
+            "model_brier": real_brier,
+            "model_brier_source": model_brier_source,
             "real_brier": real_brier,
             "real_brier_n": self.real_brier_n,
-            "synthetic_model_brier": self.model.model_brier,
+            # Kept for back-compat with older dashboards that read this key,
+            # but explicitly labelled as NOT the model's Brier.
+            "market_baseline_brier_target": self.model.model_brier,
             "games_total": len(self.games),
             "strategies": {},
             "category_stats": {},
@@ -1410,9 +1465,12 @@ class BacktestEngine:
         output["debate_verdict_counts"] = getattr(self, "debate_verdict_counts", {})
         output["data_provenance"] = {
             "real_pred_hits": getattr(self, "real_pred_hits", 0),
+            "market_baseline_hits": getattr(self, "market_baseline_hits", 0),
             "test_games_count": getattr(self, "test_games_count", 0),
             "real_only": self.real_only,
             "total_real_preds_available": len(self.real_preds),
+            # Explicit honesty flag for dashboards / bet-audit downstream
+            "is_real": real_brier is not None,
         }
 
         filepath.write_text(json.dumps(output, indent=2, default=str))
@@ -1432,16 +1490,25 @@ def main():
     parser.add_argument("--brier", type=float, default=0.2152, help="Model Brier score")
     parser.add_argument("--max-games", type=int, default=0, help="Limit games")
     parser.add_argument("--top", type=int, default=25, help="Show top N strategies")
-    parser.add_argument("--real-only", action="store_true",
-                        help="Drop games without real prospective predictions (no synthetic fallback)")
+    parser.add_argument("--real-only", action="store_true", default=True,
+                        help="[DEFAULT] Drop games without real prospective predictions. "
+                             "Kept as a flag for back-compat — it is now the default behavior.")
+    parser.add_argument("--allow-simulator-fallback", action="store_true",
+                        help="Opt back in to the market-baseline ModelSimulator for games "
+                             "without a real prospective prediction. NOT the model's Brier — "
+                             "use only for infra smoke tests, never for reported metrics.")
     parser.add_argument("--all-seasons", action="store_true",
                         help="Load all 9 historical seasons (2017-18 → 2025-26) instead of current season only")
     args = parser.parse_args()
 
+    # 2026-04-11 audit: real_only is now the default. --allow-simulator-fallback
+    # is the only way to opt back in to the market-baseline fallback.
+    real_only = not args.allow_simulator_fallback
+
     season_files = GAMES_FILES_ALL if args.all_seasons else None
     engine = BacktestEngine(
         model_brier=args.brier,
-        real_only=args.real_only,
+        real_only=real_only,
         season_files=season_files,
     )
     engine.load_data()
