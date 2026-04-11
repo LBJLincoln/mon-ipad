@@ -425,46 +425,42 @@ purpose of the whole Paperclip autoresearch pattern.
 
 ---
 
-### W9 — Honest OOS leaderboard must reach Vercel production
-**Goal:** Commit `nomos-dashboard 4be7b76` shipped the honest OOS gate
-(`metrics.oos_*`, `trading_floor._sample`, `trading_floor._warning`) to the
-git remote but the live Vercel response still lacks every one of those
-keys. The in-sample `309,625%` ROI headline is still being served to the
-public. We either have a failing build, a wrong-branch deploy target, or a
-Vercel project-level cache stuck on an older artifact.
+### W9 — Honest OOS leaderboard on Vercel production ✅ RESOLVED 2026-04-11T16:39Z
 
-**Files to read first:**
-- `nomos-dashboard/src/app/api/dashboard/home/route.ts` (lines 97-122, 180-188 — the OOS block)
-- `nomos-dashboard/vercel.json`
-- `nomos-dashboard/package.json` (build + type-check scripts)
-- `nomos-dashboard/.vercel/project.json` if present locally
+**Root cause (found via `vercel inspect --logs`):**
+```
+./src/app/api/dashboard/home/route.ts:162:49
+Type error: Parameter 't' implicitly has an 'any' type.
+  const hasAbsurdRoi = tradingFloorSummary.some(t => ...)
+```
 
-**Diagnosis steps:**
-1. Run `npx tsc --noEmit` locally in nomos-dashboard — if the build fails
-   locally it almost certainly fails on Vercel too, and Vercel may be
-   rolling back to the last green deploy.
-2. If TSC is clean, `vercel ls` (logged in as the dashboard project owner)
-   to list recent deployments and check the `4be7b76` commit status.
-3. If `vercel ls` shows a failed prod build, `vercel logs <deployment>` to
-   capture the error.
-4. If `vercel ls` shows `4be7b76` as `● Ready` then the cache is stale —
-   force a redeploy with `vercel --prod --force` or trigger via the
-   dashboard UI.
+The OOS gate landed in `4be7b76` (Apr 7) with two untyped `.some()`
+callbacks. Next.js 15 strict-mode type-check rejected the build. Every
+deployment since Apr 7 errored out in ~35s, and Vercel (correctly) kept
+serving the last green artifact — so the _appearance_ was "stale cache"
+but the reality was "5 days of failed builds".
 
-**Acceptance:** `curl https://nomos-dashboard.vercel.app/api/dashboard/home`
-returns a JSON response where:
-- `metrics.oos_roi_pct` is either a number or `null` (key present)
-- `metrics.oos_brier` is either a number or `null` (key present)
-- `trading_floor._sample` is one of `"in_sample"|"out_of_sample"|"unknown"`
-- `trading_floor._warning` is either a string or `null` (key present)
+**Fix:** `nomos-dashboard ad25a58` — added explicit `TFRow` type,
+annotated the `.some()` and `.map()` callbacks. ~12 line diff.
 
-**Related side fixes (bundle into the same PR if small):**
-- Agent-health source reports only 6 spaces — add S16/S17 to the pipeline
-  that populates `agent-health.json.projects.nba.spaces` (the crawler in
-  `scripts/agents/agent-health.sh` or equivalent — confirm source first).
-- `continuous-backtest-swarm.sh` git-push conflict — add
-  `git pull --rebase --quiet origin main || true` before the commit block
-  so the swarm stops losing its push on every run.
+**Verification (post-deploy 2026-04-11T16:39Z):**
+```json
+{
+  "_build_marker": "W9-diag-2026-04-11T1545Z",
+  "metrics": { "oos_roi_pct": 45.09, "oos_brier": 0.24246, ... },
+  "trading_floor": { "_sample": "out_of_sample", "_warning": null, ... }
+}
+```
+
+All four acceptance criteria met. Deployment `nomos-dashboard-ec3djpoun`
+is Ready. 5 additional stacked dashboard commits (dead-page cut, Bloomberg
+theme, /world rewrite, SOTA ranking) shipped in the same unblock.
+
+**Lessons for PLAN.md-style work:**
+- Always run `npx tsc --noEmit` locally before assuming "Vercel cache is stuck"
+- `vercel inspect <url> --logs` is the first-line tool when deploys silently fail
+- Next.js build = compile + type-check. A route can compile cleanly on VM but
+  fail in Vercel's stricter build because dev mode doesn't enforce type-check.
 
 ---
 
