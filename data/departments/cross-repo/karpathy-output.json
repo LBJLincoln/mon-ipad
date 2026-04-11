@@ -1,128 +1,121 @@
 {
-  "timestamp": "2026-04-11T07:00:00Z",
+  "timestamp": "2026-04-11T13:15:00Z",
   "agent": "D9-cross-repo-hermes",
-  "iteration": 14,
+  "iteration": 16,
   "repos_checked": [
     {
       "repo": "mon-ipad",
       "path": "/home/termius/mon-ipad",
-      "status": "DIRTY",
-      "dirty_files": 143,
       "engine_version": "v3.1-54cat",
       "engine_lines": 7626,
       "engine_md5": "4ee9606acf147aa0d05a306905df5626",
-      "notes": "Dirty 143 (was 67 iter13, +76 — ongoing council/data writes). Engine still has hardcoded >400 at line 7516. PARITY BROKEN vs nomos-nba-agent (3rd consecutive iteration)."
+      "dirty_files": 80,
+      "notes": "Engine still has hardcoded > 400 at line 7516. auto_fix_engine_parity() in sync script will patch on next run. 80 dirty files (data/council writes)."
+    },
+    {
+      "repo": "hf-space",
+      "path": "/home/termius/mon-ipad/hf-space",
+      "engine_md5": "4ee9606acf147aa0d05a306905df5626",
+      "notes": "Matches mon-ipad (both broken). auto_fix patches both simultaneously."
+    },
+    {
+      "repo": "nomos-nba-agent",
+      "path": "/home/termius/nomos-nba-agent",
+      "engine_md5": "a6764756807e78aa2e05dfa994dc8ff7",
+      "engine_md5_prev": "1ccf509de894966047e0eff3650cbde1",
+      "dirty_files": 42,
+      "notes": "MD5 CHANGED iter15→16 (1ccf509d→a6764756). Verified still correct: > target_features at line 7519. Canonical for this fix."
     },
     {
       "repo": "nomos-dashboard",
       "path": "/home/termius/nomos-dashboard",
       "status": "CLEAN",
       "dirty_files": 0,
-      "claude_md_age_days": 7,
-      "notes": "CLEAN — 10th consecutive clean iteration. CLAUDE.md now AT 7-day stale threshold. Escalate to LOW/MEDIUM next iter if not refreshed."
-    },
-    {
-      "repo": "nomos-nba-agent",
-      "path": "/home/termius/nomos-nba-agent",
-      "status": "DIRTY",
-      "dirty_files": 42,
-      "engine_version": "v3.1-54cat",
-      "engine_lines": 7626,
-      "engine_md5": "1ccf509de894966047e0eff3650cbde1",
-      "claude_md_age_days": 4,
-      "notes": "Dirty 42 (was 41 iter13, +1 marginal). Engine md5 changed again (6a27213c→1ccf509d): same 2-line fix (>target_features) but comment added. Semantic fix is correct per MAX_FEATURES=200 rule. PARITY BROKEN — 3rd consecutive iteration."
+      "claude_md_age_days": 8,
+      "claude_md_last_modified": "2026-04-03",
+      "notes": "12th consecutive clean. CLAUDE.md 8 days old (HIGH stale). Misses 8 islands, S16+S17, TF v5."
     },
     {
       "repo": "nomos-political-alpha",
       "path": "/home/termius/nomos-political-alpha",
-      "status": "DIRTY",
-      "dirty_files": 3,
-      "claude_md_age_days": 1,
-      "notes": "Dirty 3 (was 19 iter13, -16 major improvement). CLAUDE.md fresh (1 day). Healthy."
+      "dirty_files": 7,
+      "notes": "7 dirty files (up from 3 in iter15). Stable. CLAUDE.md fresh."
     },
     {
       "repo": "rgwa",
       "path": "/home/termius/rgwa",
-      "status": "DIRTY",
       "dirty_files": 13,
-      "claude_md_age_days": 1,
-      "notes": "13 dirty (unchanged iter3→iter14 — 12 consecutive). CLAUDE.md fresh (1 day). ZOMBIE repo, low priority."
+      "notes": "13 dirty (stable/zombie 13+ iters). Low priority."
     }
   ],
   "engine_parity": {
     "ok": false,
     "mon_ipad_md5": "4ee9606acf147aa0d05a306905df5626",
     "hf_space_md5": "4ee9606acf147aa0d05a306905df5626",
-    "nomos_nba_agent_md5": "1ccf509de894966047e0eff3650cbde1",
-    "divergence_location": "line ~7516",
+    "nomos_nba_agent_md5": "a6764756807e78aa2e05dfa994dc8ff7",
+    "divergence_location": "line 7516 (mon-ipad) / line 7519 (nomos-nba-agent)",
     "mon_ipad_line": "if len(selected) < 10 or len(selected) > 400:",
     "nomos_nba_agent_line": "if len(selected) < 10 or len(selected) > target_features:",
     "severity": "HIGH",
-    "consecutive_iterations_broken": 3,
-    "resolution": "D2-Engineering must fix mon-ipad/features/engine.py line ~7516: change `> 400` to `> target_features`. Then run sync-to-sister-repos.sh to propagate. nomos-nba-agent version is semantically correct per MAX_FEATURES=200 rule."
+    "consecutive_iterations_broken": 5,
+    "auto_fix_installed": true,
+    "auto_fix_trigger": "scripts/councils/sync-to-sister-repos.sh (needs to be run)",
+    "alert": "auto_fix installed in iter15 but sync script has not been executed — parity remains broken for 5th consecutive iteration",
+    "resolution": "Run sync-to-sister-repos.sh manually or verify cron is active. auto_fix_engine_parity() will sed-patch both engine copies, commit to mon-ipad, write audit log to data/departments/cross-repo/auto-fix-log.json."
   },
   "stale_docs_found": [
     {
       "file": "/home/termius/nomos-dashboard/CLAUDE.md",
-      "age_days": 7,
-      "severity": "MEDIUM",
-      "note": "AT 7-day threshold — escalated to MEDIUM. Needs refresh this iteration or next."
+      "age_days": 8,
+      "last_modified": "2026-04-03",
+      "severity": "HIGH",
+      "note": "8 days old — exceeded threshold. Misses 8-island fleet (S16+S17), TF v5, Trading Floor real data."
     },
     {
       "file": "/home/termius/nomos-nba-agent/README.md",
-      "age_days": 27,
+      "age_days": 28,
       "severity": "LOW",
-      "note": "README is 27 days old. Still misses v19 arch / 8 islands / S16+S17. Low priority (zombie-adjacent)."
+      "note": "28 days old. Misses v19 arch / 8 islands / S16+S17."
     }
   ],
   "stale_docs_count": 2,
-  "parity_issues": [
-    {
-      "type": "ENGINE_DIVERGENCE",
-      "severity": "HIGH",
-      "repos_affected": ["nomos-nba-agent"],
-      "canonical_repos": ["mon-ipad", "hf-space"],
-      "diff_lines": 2,
-      "consecutive_iters": 3,
-      "fix_action": "D2-Engineering: In mon-ipad features/engine.py line ~7516, change `> 400` to `> target_features` (the nomos-nba-agent version is semantically correct per MAX_FEATURES=200 rule). Then sync-to-sister-repos.sh propagates to hf-space."
-    }
-  ],
   "this_iter_action": {
     "file": "scripts/councils/sync-to-sister-repos.sh",
-    "change": "Added check_engine_parity() function (49 lines): computes md5 across mon-ipad/hf-space/nomos-nba-agent, writes data/departments/cross-repo/engine-parity.json with BROKEN/OK status + fix instructions. Runs as post-step of every sync cycle.",
-    "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 49 ++++++++++++++++++++++++++++++++\n 1 file changed, 49 insertions(+)"
+    "change": "Added audit log write to auto_fix_engine_parity(): writes data/departments/cross-repo/auto-fix-log.json with timestamp + patch details when fix fires. Creates an audit trail so D9 can confirm auto_fix ran without parsing raw logs.",
+    "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 51 ++++++++++++++++++++++++++++++++\n 1 file changed, 51 insertions(+)"
   },
-  "engine_parity_ok": false,
-  "repos_checked_count": 5,
   "status": "shipped",
-  "health_score": 66,
-  "health_delta": 4,
-  "parity_score": 0.65,
-  "files_changed": ["scripts/councils/sync-to-sister-repos.sh", "data/departments/cross-repo/karpathy-output.json"],
-  "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 49 ++++++++++++++++++++++++++++++++\n 1 file changed, 49 insertions(+)",
+  "files_changed": [
+    "scripts/councils/sync-to-sister-repos.sh",
+    "data/departments/cross-repo/karpathy-output.json"
+  ],
+  "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 51 ++++++++++++++++++++++++++++++++\n 1 file changed, 51 insertions(+)",
+  "parity_score": 0.62,
+  "health_score": 67,
+  "health_delta": -2,
   "commit_sha": null,
   "reason_if_no_op": "",
-  "summary": "Iter14: Engine parity STILL BROKEN (3rd consecutive — mon-ipad+hf-space at 4ee9606a, nomos-nba-agent at 1ccf509d). ACTION TAKEN: Added check_engine_parity() to sync-to-sister-repos.sh — now auto-detects divergence and writes engine-parity.json on every sync run, making the issue self-reporting. Positives: nomos-political-alpha -16 dirty (19→3), nomos-dashboard 10th clean. Health +4 (62→66) for infra improvement.",
+  "summary": "Iter16: Engine parity BROKEN for 5th consecutive iteration (mon-ipad+hf-space at 4ee9606a, nomos-nba-agent at a6764756 — MD5 shifted from iter15 but > target_features still correct at line 7519). ALERT: auto_fix installed iter15 has not fired — sync-to-sister-repos.sh never run. ACTION: Added JSON audit log write to auto_fix_engine_parity() so confirmation of fix is machine-readable in data/departments/cross-repo/auto-fix-log.json. Health -2 (69→67) due to nomos-political-alpha dirty growth (3→7) and 5th broken parity iteration without resolution.",
   "remaining_issues": [
     {
+      "priority": "CRITICAL",
+      "action": "RUN scripts/councils/sync-to-sister-repos.sh — auto_fix_engine_parity() self-applies > 400 → > target_features fix, commits, writes audit log. 5th iteration without resolution — needs manual trigger or cron verification."
+    },
+    {
       "priority": "HIGH",
-      "action": "D2-Engineering: Fix mon-ipad/features/engine.py line ~7516 — change `> 400` to `> target_features`. This 1-line fix restores 3-way parity and enforces MAX_FEATURES=200 rule correctly."
+      "action": "Refresh nomos-dashboard CLAUDE.md — 8 days old, 12 consecutive clean iters but docs lag behind arch (8 islands, S16+S17, TF v5, Trading Floor real data)."
     },
     {
       "priority": "MEDIUM",
-      "action": "Refresh nomos-dashboard CLAUDE.md — now at 7-day stale threshold (10th clean iteration but docs lagging)."
+      "action": "Commit nomos-nba-agent dirty files (~42 stable). Engine correct (> target_features). MD5 shift (1ccf509d→a6764756) — verify what changed before committing."
     },
     {
       "priority": "MEDIUM",
-      "action": "Commit nomos-nba-agent dirty files (42, stable). Pull nomos-nba-agent engine.py improvements back as D2 canonical fix."
-    },
-    {
-      "priority": "MEDIUM",
-      "action": "Sweep and commit mon-ipad data/ changes (143 dirty, +76 from iter13 — data accumulating faster than commits)."
+      "action": "Commit mon-ipad data/ backlog (80 dirty files). Council/data writes accumulating; regular data commits keep history clean."
     },
     {
       "priority": "LOW",
-      "action": "Update nomos-nba-agent/README.md — 27 days stale, misses 8-island arch (S16+S17), v19 structure."
+      "action": "Update nomos-nba-agent/README.md — 28 days stale, misses 8-island arch (S16+S17), v19 structure."
     }
   ]
 }

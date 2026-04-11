@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-04-11T09:31:04Z",
+  "ok": false,
+  "canonical": "mon-ipad",
+  "md5": {
+    "mon_ipad":       "4ee9606acf147aa0d05a306905df5626",
+    "hf_space":       "4ee9606acf147aa0d05a306905df5626",
+    "nomos_nba_agent": "1ccf509de894966047e0eff3650cbde1"
+  },
+  "diverged_repos": ["nomos-nba-agent"],
+  "fix_if_broken": "Update mon-ipad/features/engine.py line ~7516: change `> 400` to `> target_features` (MAX_FEATURES=200 rule). Then run this script to propagate to sister repos.",
+  "divergence_detail": {
+    "mon_ipad_line": "if len(selected) < 10 or len(selected) > 400:",
+    "nomos_nba_agent_line": "if len(selected) < 10 or len(selected) > target_features:",
+    "semantic_winner": "nomos_nba_agent — target_features=200 enforces MAX_FEATURES cap correctly"
+  }
+}

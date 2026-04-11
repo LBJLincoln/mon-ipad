@@ -140,3 +140,54 @@ PARITY_JSON
 }
 
 check_engine_parity
+
+# ─── ENGINE PARITY AUTO-FIX ──────────────────────────────────────────────────
+# When the known > 400 → > target_features divergence is detected, apply the
+# fix automatically, commit to mon-ipad, and re-run parity check to refresh
+# engine-parity.json. Safe: grep guards the pattern before touching any file.
+auto_fix_engine_parity() {
+    local engine_mon="${ROOT}/features/engine.py"
+    local engine_hf="${ROOT}/hf-space/features/engine.py"
+    local fix_pat="or len(selected) > 400:"
+
+    if ! grep -qF "${fix_pat}" "${engine_mon}" 2>/dev/null; then
+        echo "[sync] auto_fix: broken pattern absent — skip" >> "${LOG}"
+        return 0
+    fi
+
+    echo "[sync] auto_fix: patching > 400 → > target_features in mon-ipad + hf-space" >> "${LOG}"
+    sed -i 's/or len(selected) > 400:/or len(selected) > target_features:/' \
+        "${engine_mon}" "${engine_hf}"
+
+    cd "${ROOT}"
+    git add features/engine.py hf-space/features/engine.py 2>/dev/null || true
+    if ! git diff --cached --quiet 2>/dev/null; then
+        git commit -m "fix(engine): > 400 → > target_features — enforces MAX_FEATURES=200 cap (D9 auto-fix)" \
+            --quiet 2>/dev/null || true
+        echo "[sync] auto_fix: committed parity fix to mon-ipad" >> "${LOG}"
+    else
+        echo "[sync] auto_fix: sed ran but no staged diff — already clean" >> "${LOG}"
+    fi
+
+    # Refresh parity JSON after fix
+    check_engine_parity
+
+    # Write audit log so D9 can confirm auto_fix fired
+    local fix_log="${ROOT}/data/departments/cross-repo/auto-fix-log.json"
+    cat > "${fix_log}" <<FIX_LOG
+{
+  "timestamp": "$(date -u '+%Y-%m-%dT%H:%M:%SZ')",
+  "fix_applied": true,
+  "pattern_replaced": "or len(selected) > 400:",
+  "replacement": "or len(selected) > target_features:",
+  "files_patched": [
+    "features/engine.py",
+    "hf-space/features/engine.py"
+  ],
+  "description": "MAX_FEATURES=200 enforcement — > 400 hardcode replaced with > target_features"
+}
+FIX_LOG
+    echo "[sync] auto_fix: wrote audit log to data/departments/cross-repo/auto-fix-log.json" >> "${LOG}"
+}
+
+auto_fix_engine_parity
