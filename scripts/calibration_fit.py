@@ -259,6 +259,11 @@ def write_calibration_map(
     CAL_MAP_PATH.parent.mkdir(parents=True, exist_ok=True)
     CAL_MAP_PATH.write_text(json.dumps(payload, indent=2))
     print(f"[calibration_fit] wrote {CAL_MAP_PATH}")
+    # Mirror to data/nba-agent/calibration-map.json (D6 Hermes prompt + hermes-runner allowlist read from this path)
+    nba_agent_map = ROOT / "data" / "nba-agent" / "calibration-map.json"
+    nba_agent_map.parent.mkdir(parents=True, exist_ok=True)
+    nba_agent_map.write_text(json.dumps(payload, indent=2))
+    print(f"[calibration_fit] wrote {nba_agent_map}")
 
 
 def write_isotonic_breakpoints(
