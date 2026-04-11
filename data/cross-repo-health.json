@@ -1,75 +1,54 @@
 {
-  "timestamp": "2026-04-10T05:00:00Z",
-  "brain_cycle": 85,
-  "ecosystem_health": {
-    "nba_quant": {
-      "status": "HEALTHY",
-      "active_islands": 6,
-      "fleet_best_brier": 0.22249,
-      "target_brier": 0.21837,
-      "gap": 0.00412,
-      "progress_pct": 74.3,
+  "timestamp": "2026-04-11T04:00:00Z",
+  "brain_cycle": 91,
+  "ecosystem_status": "PARTIAL — NBA sleeping, Political 50% online",
+  "repos": {
+    "nomos-nba-agent": {
+      "status": "ACTIVE",
+      "last_commit": "2026-04-11",
       "engine_version": "v3.1-59cat",
-      "top_model": "S15_gen588_ExtraTrees_200f_Brier0.22041"
+      "fleet_best_brier": 0.22249,
+      "all_time_best_brier": 0.2157,
+      "target": 0.20,
+      "gap_to_target": 0.02249,
+      "island_health": "6/6 SLEEPING (503) — 2nd consecutive cycle",
+      "action_needed": "Check keepalive-spaces.sh cron"
     },
-    "political_alpha": {
-      "status": "DEGRADED",
-      "active_islands": 2,
-      "down_islands": ["P3", "P4"],
-      "fleet_best_brier": 0.23134,
-      "target_brier": 0.22,
-      "engine_version": "v3.13-political-35cat-insider-cluster",
-      "alert": "P3/P4 DOWN_404 — manual HuggingFace restart required"
+    "nomos-political-alpha": {
+      "status": "ACTIVE",
+      "last_commit": "2026-04-11",
+      "engine_version": "v3.16-political-38cat-scotus-chevron",
+      "engine_version_pending": "v3.17 (Cat39 ready)",
+      "fleet_best_brier": 0.24996,
+      "target": 0.22,
+      "gap_to_target": 0.02996,
+      "island_health": "2/4 ONLINE (P3+P4 NOT_FOUND on HF)",
+      "action_needed": "Manual HF space creation: Nomos42/political-alpha-3 and political-alpha-4"
+    },
+    "mon-ipad": {
+      "status": "ACTIVE",
+      "last_commit": "2026-04-11",
+      "dashboard_url": "nomos42.com",
+      "health_file": "data/health-status.json"
     }
   },
-  "cross_project_techniques": {
-    "implemented": [
-      "venn_abers_calibration (NBA→Political)",
-      "market_consensus_deviation (Political→NBA)",
-      "directional_circadian (NBA→Political)",
-      "sequential_exponential_form (NBA→Political)",
-      "calibration_anchors_cat33 (NBA→Political)",
-      "prior_probability_anchors_cat34 (Political native)",
-      "insider_cluster_velocity_cat35 (Political new, cycle85)"
-    ],
-    "proposed_next": [
-      "shap_seeded_ga_init (NBA S15, cycle86)",
-      "mlp_meta_learner_stacking (NBA, cycle87)",
-      "brier_decomposition_diagnostic (both repos, cycle86)",
-      "shap_seeded_init_political (P3/P4 once restarted, cycle87)"
-    ]
+  "cross_pollination_cycle91": {
+    "nba_to_political": "none this cycle",
+    "political_to_nba": "XGBoost Brier-objective insight: political engine GA optimizes Brier, NBA models train on log-loss. Proposal written: 2026-04-11-xgboost-squared-error-brier-objective.md",
+    "insight": "Training objective alignment — make model training minimize the same metric as GA evaluation"
   },
-  "research_pipeline": {
-    "cycle84_proposals": ["stacked-ensemble-shap-2026-04-10.md"],
-    "cycle85_proposals": ["2026-04-10-mlp-meta-learner-brier-decomp-cycle85.md"],
-    "key_papers_implemented": [
-      "Koch & Schiereck 2025 (+3.5pp CAR enforcement dismissed)",
-      "Aktug & Torul 2025 (Polymarket hours-lead)",
-      "CEPR 2025 (TPU 3.6-6.2% alpha)",
-      "arXiv 2303.06021 (calibration > accuracy for bet ROI)",
-      "PMC12357926 Scientific Reports 2025 (MLP 2x50 meta-learner NBA stacking, AUC 0.9213)",
-      "Lakonishok & Lee 2001 + OpenInsider 2025 (insider cluster velocity Cat35)"
-    ]
+  "parity_check": {
+    "nba_engine_parity": "MAINTAINED — all 6 islands same v3.1-59cat",
+    "political_engine_parity": "P1+P2 both v3.16, P3+P4 offline",
+    "ga_config_parity": "NBA islands have diverged GA configs (by design). Political P1+P2 share config."
   },
-  "alerts": [
-    {
-      "severity": "CRITICAL",
-      "repo": "nomos-political-alpha",
-      "message": "P3 and P4 HF Spaces DOWN_404 — 2 of 4 political islands offline. Manual restart required at huggingface.co."
-    },
-    {
-      "severity": "WARN",
-      "repo": "nomos-nba-agent",
-      "message": "S13 converged at 0.2231-0.2232 for 500+ generations — possible local optimum. Queue diversify command if unchanged in cycle86."
-    },
-    {
-      "severity": "INFO",
-      "repo": "nomos-nba-agent",
-      "message": "S11 URL: nomos42-nba-quant-2.hf.space — NOT nomos42-nba-evo-2 (which returns 404). Brain URL corrected."
-    }
+  "critical_alerts": [
+    "P3+P4 NOT FOUND on HuggingFace — manual creation at huggingface.co/new-space",
+    "NBA keepalive cron possibly broken — check scripts/keepalive-spaces.sh"
   ],
-  "commits_this_cycle": {
-    "nomos-political-alpha": "feat: add Cat35 insider buy cluster velocity, restore hf-space parity to v3.13",
-    "mon-ipad": "brain[85]: cycle report, MLB meta-learner research proposal, health files updated"
-  }
+  "upcoming_priorities": [
+    "Cycle 92: Deploy Cat39 to political_engine.py, NBA Brier-objective to S13 app.py",
+    "Cycle 93: Cat40 candidate = Congressional trading clusters around committee sector votes",
+    "On-demand: When NBA islands wake, POST diversify if stagnation >15 gens"
+  ]
 }
