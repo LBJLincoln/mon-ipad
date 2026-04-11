@@ -84,7 +84,15 @@ if [[ ${#DEPTS[@]} -eq 0 ]]; then
     exit 1
 fi
 
-# ── Measure baseline Brier proxy ───────────────────────────────
+# ── Measure Brier via proxy ────────────────────────────────────
+# HONEST NOTE: this currently uses `brier_proxy.py --json` (baseline_cv mode)
+# which is a CONSTANT function of data/proxy/holdout.json. As long as the
+# council doesn't regenerate that holdout file or a predictions file, delta
+# will always be 0 and Paperclip will always verdict=no_op. The runner
+# still delivers value as a crash gate (it will catch commits that break
+# holdout loading, sklearn import, or the proxy script itself). A proper
+# keep/revert gate requires councils to output per-game predictions and
+# switching this call to --before/--after compare mode.
 measure_brier() {
     cd "${ROOT}"
     local raw
