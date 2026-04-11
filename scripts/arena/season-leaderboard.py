@@ -138,52 +138,103 @@ def trader_consistency(seasons: list) -> dict:
     return {sid: data for sid, data in ranked[:TOP_N_TRADERS]}
 
 
+def _init_cat_row(name: str, group: str) -> dict:
+    return {
+        "name": name,
+        "group": group,
+        "seasons_seen": 0,
+        "total_bets": 0,
+        "total_wins": 0,
+        "total_pnl": 0.0,
+        "win_rate": 0.0,
+        "avg_pnl_per_bet": 0.0,
+        "status": "pending",    # pending | active | untrained
+        "has_model": False,
+        # Per-season pnl samples → powers risk-adjusted SOTA ranking below.
+        "season_pnls": [],
+        "best_season_pnl": 0.0,
+        "worst_season_pnl": 0.0,
+    }
+
+
+def _sota_score(r: dict) -> float:
+    """
+    SOTA category score — risk-adjusted PnL per bet.
+
+    Raw total_pnl is a terrible ranking proxy: it rewards big-volume, high-
+    variance categories even when the avg-per-bet is thin, and a single
+    lucky season flashes through to the top of the board (prior behaviour).
+
+    Instead we blend four signals:
+
+        base      = avg_pnl_per_bet                         (mean edge)
+        maturity  = min(1, seasons_seen / 20)               (sample size)
+        consist   = profitable_seasons / seasons_seen       (repeatability)
+        volume    = sqrt(log1p(total_bets) / log1p(5000))   (stat reliability)
+        risk      = mean_season / (std_season + 1e-6)       (Sharpe-ish)
+
+        score     = base × maturity × consist × volume × sigmoid(risk)
+
+    Negative base → score preserves sign so losers sort last. A category
+    with one explosive season and 23 flat seasons lands near zero (consist
+    low) even if total_pnl is high. A thin-edge category with 24 consistent
+    profitable seasons beats a volatile winner at the same total_pnl — this
+    is the "stop rewarding fantasy backtests" anchor.
+    """
+    import math
+    seasons = r["seasons_seen"]
+    bets = r["total_bets"]
+    if seasons == 0 or bets == 0:
+        return 0.0
+
+    base = r["avg_pnl_per_bet"]  # signed
+    pnls = r.get("season_pnls") or []
+    if len(pnls) >= 2:
+        mean = sum(pnls) / len(pnls)
+        var = sum((p - mean) ** 2 for p in pnls) / (len(pnls) - 1)
+        std = math.sqrt(var)
+        sharpe_like = mean / (std + 1e-6)
+    else:
+        sharpe_like = 0.0
+
+    profitable = sum(1 for p in pnls if p > 0)
+    consist = profitable / max(seasons, 1)
+    maturity = min(1.0, seasons / 20.0)
+    volume = math.sqrt(math.log1p(bets) / math.log1p(5000))
+
+    # Compress sharpe_like with a tanh so extreme single-season flashes
+    # (div-by-tiny std) don't dominate the product.
+    risk_mult = 0.5 + 0.5 * math.tanh(sharpe_like)
+
+    score = base * maturity * consist * volume * risk_mult
+    # Preserve sign of base so losers still rank at the bottom with
+    # magnitudes sensibly ordered.
+    if base < 0:
+        score = -abs(score)
+    return float(score)
+
+
 def build_category_registry(seasons: list) -> dict:
     """
     Accumulate per-category stats across all recent seasons.
     Every one of the 102 ALL_CATEGORIES gets an entry, even if zero bets.
+
+    Champions are now ranked by `_sota_score` (risk-adjusted, consistency-
+    weighted), NOT raw total_pnl. See `_sota_score` for rationale.
     """
-    # Init all 102 categories with baseline zeros
-    registry = {}
+    registry: dict = {}
     for cat in ALL_CATEGORIES:
         cat_id = cat.id if hasattr(cat, "id") else cat.get("id")
         cat_group = cat.group if hasattr(cat, "group") else cat.get("group", "?")
         cat_name = cat.name if hasattr(cat, "name") else cat.get("name", cat_id)
-        registry[cat_id] = {
-            "name": cat_name,
-            "group": cat_group,
-            "seasons_seen": 0,
-            "total_bets": 0,
-            "total_wins": 0,
-            "total_pnl": 0.0,
-            "win_rate": 0.0,
-            "avg_pnl_per_bet": 0.0,
-            "status": "pending",    # pending | active | untrained
-            "has_model": False,
-            "best_season_pnl": 0.0,
-            "worst_season_pnl": 0.0,
-        }
+        registry[cat_id] = _init_cat_row(cat_name, cat_group)
 
     # Aggregate across seasons
     for season in seasons:
         cat_stats = season.get("category_stats", {}) or {}
         for cat_id, s in cat_stats.items():
             if cat_id not in registry:
-                # Unknown category from backtest; register it
-                registry[cat_id] = {
-                    "name": cat_id,
-                    "group": "unknown",
-                    "seasons_seen": 0,
-                    "total_bets": 0,
-                    "total_wins": 0,
-                    "total_pnl": 0.0,
-                    "win_rate": 0.0,
-                    "avg_pnl_per_bet": 0.0,
-                    "status": "pending",
-                    "has_model": False,
-                    "best_season_pnl": 0.0,
-                    "worst_season_pnl": 0.0,
-                }
+                registry[cat_id] = _init_cat_row(cat_id, "unknown")
             r = registry[cat_id]
             bets = int(s.get("bets", 0))
             wins = int(s.get("wins", 0))
@@ -193,12 +244,13 @@ def build_category_registry(seasons: list) -> dict:
                 r["total_bets"] += bets
                 r["total_wins"] += wins
                 r["total_pnl"] += pnl
+                r["season_pnls"].append(round(pnl, 2))
                 if pnl > r["best_season_pnl"]:
                     r["best_season_pnl"] = round(pnl, 2)
                 if pnl < r["worst_season_pnl"]:
                     r["worst_season_pnl"] = round(pnl, 2)
 
-    # Finalize per-category metrics + status
+    # Finalize per-category metrics + status + SOTA score
     coverage = {"active": 0, "untrained": 0, "pending": 0}
     for cat_id, r in registry.items():
         if r["total_bets"] > 0:
@@ -207,32 +259,46 @@ def build_category_registry(seasons: list) -> dict:
             r["total_pnl"] = round(r["total_pnl"], 2)
             r["status"] = "active"
             r["has_model"] = True
+            # Risk-adjusted metrics
+            pnls = r["season_pnls"]
+            if pnls:
+                mean = sum(pnls) / len(pnls)
+                profitable = sum(1 for p in pnls if p > 0)
+                r["mean_season_pnl"] = round(mean, 2)
+                r["profitable_seasons"] = profitable
+                r["consistency"] = round(profitable / len(pnls), 3)
+            r["sota_score"] = round(_sota_score(r), 4)
         elif r["seasons_seen"] == 0:
             r["status"] = "untrained"  # category defined but never bet on
+            r["sota_score"] = 0.0
         coverage[r["status"]] += 1
 
-    # Champions list: top categories by total_pnl with >= 20 bets
-    champions = [
+    # Champions list: top categories by sota_score with >= 20 bets and
+    # >= 2 seasons seen. Require multi-season exposure so single-season
+    # flukes can't rank — fantasy-backtest filter.
+    eligible = [
         {"category_id": cid, **r}
         for cid, r in registry.items()
-        if r["total_bets"] >= 20
+        if r["total_bets"] >= 20 and r["seasons_seen"] >= 2
     ]
-    champions.sort(key=lambda c: -c["total_pnl"])
+    eligible.sort(key=lambda c: -c.get("sota_score", 0))
+    champions = eligible[:TOP_N_CATEGORIES]
 
-    worst = [
-        {"category_id": cid, **r}
-        for cid, r in registry.items()
-        if r["total_bets"] >= 20
-    ]
-    worst.sort(key=lambda c: c["total_pnl"])
+    losers = sorted(eligible, key=lambda c: c.get("sota_score", 0))[:10]
+
+    # Also keep a parallel raw-pnl ranking so the UI can show both views.
+    by_raw_pnl = sorted(eligible, key=lambda c: -c["total_pnl"])[:TOP_N_CATEGORIES]
 
     return {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "total_categories": len(registry),
         "coverage": coverage,
+        "ranking_method": "sota_score = avg_pnl_per_bet × maturity × consistency × √volume × σ(sharpe_like)",
+        "eligibility": "total_bets >= 20 AND seasons_seen >= 2",
         "registry": registry,
-        "champions_top20": champions[:TOP_N_CATEGORIES],
-        "losers_bottom10": worst[:10],
+        "champions_top20": champions,
+        "champions_top20_by_raw_pnl": by_raw_pnl,
+        "losers_bottom10": losers,
     }
 
 
