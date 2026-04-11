@@ -1,5 +1,5 @@
 # NOMOS42 Political Alpha — Scientific Experiment Report
-## Generated: 2026-04-11 16:15 UTC
+## Generated: 2026-04-11 20:16 UTC
 
 ---
 
@@ -37,8 +37,8 @@
 ### Aggregate Statistics (Bootstrap 95% CI)
 | Metric | Mean | 95% CI |
 |---|---|---|
-| ROI (%) | -53.26 | [-67.19, -35.61] |
-| Sharpe | -0.0388 | [-0.4387, 0.2593] |
+| ROI (%) | -53.26 | [-66.90, -36.68] |
+| Sharpe | -0.0388 | [-0.4418, 0.2725] |
 
 ## Market Performance
 | Metric | Value |
@@ -91,8 +91,8 @@
 | Trader | Capital | ROI | Sharpe | Max DD | Win Rate | Trades |
 |---|---|---|---|---|---|---|
 | openrouter | $100,510 | 0.31% | 5.8480 | 0.19% | 54.1% | 484 |
-| codex | $101,664 | 0.57% | 2.0451 | 1.20% | 56.3% | 570 |
-| gemini | $100,957 | 0.17% | 0.8930 | 0.79% | 59.4% | 603 |
+| codex | $101,749 | 0.66% | 2.2800 | 1.20% | 56.5% | 570 |
+| gemini | $101,051 | 0.26% | 1.3189 | 0.79% | 59.5% | 603 |
 | grok | $99,708 | 0.00% | 0.0127 | 0.30% | 37.8% | 302 |
 | claude | $100,030 | 0.00% | 0.0013 | 0.03% | 48.6% | 175 |
 
