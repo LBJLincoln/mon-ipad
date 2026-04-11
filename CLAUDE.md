@@ -153,15 +153,15 @@ Guardian Orchestrator v3: Analyzes ALL 9 department loops, allocates resources, 
 ## Trading Floor v4 — Multi-AI Competition
 
 ### NBA Traders (5 AI Agents)
-| # | Agent | Provider | Sees | Decides |
-|---|-------|----------|------|---------|
-| T1 | Gemini | Google | All predictions + all strategies + others' results | Betting strategy + Kelly sizing |
-| T2 | OpenRouter | Multi-model | Same | Same |
-| T3 | Claude | Anthropic CLI | Same | Same |
-| T4 | Codex | OpenAI | Same | Same |
-| T5 | Grok | xAI | Same | Same |
+| # | Agent | Model | Personality | Strategy |
+|---|-------|-------|-------------|----------|
+| T1 | Gemma Analyst | Gemma 3 27B (HF) | Analytical | half_kelly, confidence_scaled |
+| T2 | Qwen Strategist | Qwen 3 72B (HF) | Diversified | quarter_kelly, value_hunter |
+| T3 | Claude Sentinel | Claude CLI | Conservative | half_kelly, drawdown_adjusted |
+| T4 | Llama Vanguard | Llama 3.3 70B (HF) | Aggressive | full_kelly, streak_momentum |
+| T5 | Mistral Maverick | Mistral Large 2 (HF) | Contrarian | underdog_specialist, dog_value |
 
-### Political Traders (5 AI Agents — same providers)
+### Political Traders (5 AI Agents — same models)
 Trading: ETFs, index funds, real stocks based on political signals
 Starting capital: $100,000 virtual | Daily rebalancing
 

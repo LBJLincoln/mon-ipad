@@ -208,7 +208,7 @@ BANKROLL_THRESHOLDS = {
 # Only `name` and `provider` change — they are display labels for the dashboard.
 TRADERS = {
     "gemini": {  # was Google Gemini → now Gemma 3 27B (free, HF)
-        "name":               "Gemma 3 27B",
+        "name":               "Gemma Analyst",
         "provider":           "hf:google/gemma-3-27b-it",
         "personality":        "analytical",
         "risk_tolerance":     0.60,
@@ -220,7 +220,7 @@ TRADERS = {
         "etf_sectors":        ["XLK", "QQQ", "SPY"],
     },
     "openrouter": {  # was OpenRouter multi-model → now Qwen 3 72B (free, HF)
-        "name":               "Qwen 3 72B",
+        "name":               "Qwen Strategist",
         "provider":           "hf:Qwen/Qwen2.5-72B-Instruct",
         "personality":        "diversified",
         "risk_tolerance":     0.50,
@@ -233,7 +233,7 @@ TRADERS = {
         "etf_sectors":        ["SPY", "IWM", "XLF", "XLE"],
     },
     "claude": {  # Claude Code CLI — already free locally, kept as-is
-        "name":               "Claude Code CLI",
+        "name":               "Claude Sentinel",
         "provider":           "anthropic_cli",
         "personality":        "conservative",
         "risk_tolerance":     0.40,
@@ -246,7 +246,7 @@ TRADERS = {
         "etf_sectors":        ["TLT", "GLD", "XLV"],
     },
     "codex": {  # was OpenAI Codex → now Llama 3.3 70B (free, HF)
-        "name":               "Llama 3.3 70B",
+        "name":               "Llama Vanguard",
         "provider":           "hf:meta-llama/Llama-3.3-70B-Instruct",
         "personality":        "aggressive",
         "risk_tolerance":     0.70,
@@ -259,7 +259,7 @@ TRADERS = {
         "etf_sectors":        ["QQQ", "XLK", "XLI"],
     },
     "grok": {  # was xAI Grok → now Mistral Large 2 (free, HF)
-        "name":               "Mistral Large 2",
+        "name":               "Mistral Maverick",
         "provider":           "hf:mistralai/Mistral-Large-Instruct-2411",
         "personality":        "contrarian",
         "risk_tolerance":     0.65,

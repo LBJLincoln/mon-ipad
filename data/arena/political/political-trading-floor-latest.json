@@ -1,10 +1,10 @@
 {
-  "iteration": 318,
-  "generation": 43287,
+  "iteration": 4,
+  "generation": 48,
   "meta": {
-    "version": "political-trading-floor-integrated-v1",
-    "generated": "2026-04-10T21:08:07Z",
-    "date": "2026-04-10",
+    "version": "political-trading-floor-v1",
+    "generated": "2026-04-11T00:17:03Z",
+    "date": "2026-04-11",
     "traders": 5,
     "strategies": 8,
     "eliminated": 3,
@@ -17,226 +17,286 @@
     {
       "rank": 1,
       "trader_id": "codex",
-      "name": "Llama 3.3 70B",
+      "name": "Llama Vanguard",
       "provider": "hf:meta-llama/Llama-3.3-70B-Instruct",
       "personality": "aggressive",
-      "capital": 100562.16,
-      "roi_pct": 0.5622,
-      "sharpe": 5.62,
-      "total_trades": 5,
-      "wins": 3,
-      "losses": 2,
-      "win_rate": 60.0,
-      "max_drawdown": 0.0,
-      "primary_strategy": "event_driven"
+      "primary_strategy": "event_driven",
+      "capital": 101663.8,
+      "roi_pct": 1.6638,
+      "sharpe": 10.247,
+      "total_trades": 113,
+      "wins": 67,
+      "losses": 46,
+      "win_rate": 59.3,
+      "max_drawdown": 0.0013,
+      "trading_days": 12
     },
     {
       "rank": 2,
       "trader_id": "gemini",
-      "name": "Gemma 3 27B",
+      "name": "Gemma Analyst",
       "provider": "hf:google/gemma-3-27b-it",
       "personality": "analytical",
-      "capital": 100236.42,
-      "roi_pct": 0.2364,
-      "sharpe": 6.827,
-      "total_trades": 10,
-      "wins": 7,
-      "losses": 3,
-      "win_rate": 70.0,
-      "max_drawdown": 0.0005,
-      "primary_strategy": "momentum"
+      "primary_strategy": "momentum",
+      "capital": 100957.44,
+      "roi_pct": 0.9574,
+      "sharpe": 14.605,
+      "total_trades": 118,
+      "wins": 74,
+      "losses": 44,
+      "win_rate": 62.7,
+      "max_drawdown": 0.0007,
+      "trading_days": 12
     },
     {
       "rank": 3,
-      "trader_id": "grok",
-      "name": "Mistral Large 2",
-      "provider": "hf:mistralai/Mistral-Large-Instruct-2411",
-      "personality": "contrarian",
-      "capital": 100009.22,
-      "roi_pct": 0.0092,
-      "sharpe": 4.786,
-      "total_trades": 2,
-      "wins": 1,
-      "losses": 1,
-      "win_rate": 50.0,
-      "max_drawdown": 0.0,
-      "primary_strategy": "event_driven"
+      "trader_id": "openrouter",
+      "name": "Qwen Strategist",
+      "provider": "hf:Qwen/Qwen2.5-72B-Instruct",
+      "personality": "diversified",
+      "primary_strategy": "sector_rotation",
+      "capital": 100509.96,
+      "roi_pct": 0.51,
+      "sharpe": 13.279,
+      "total_trades": 95,
+      "wins": 53,
+      "losses": 42,
+      "win_rate": 55.8,
+      "max_drawdown": 0.0004,
+      "trading_days": 12
     },
     {
       "rank": 4,
-      "trader_id": "openrouter",
-      "name": "Qwen 3 72B",
-      "provider": "hf:Qwen/Qwen2.5-72B-Instruct",
-      "personality": "diversified",
-      "capital": 100302.13,
-      "roi_pct": 0.3021,
-      "sharpe": 9.651,
-      "total_trades": 9,
-      "wins": 6,
-      "losses": 3,
-      "win_rate": 66.7,
+      "trader_id": "claude",
+      "name": "Claude Sentinel",
+      "provider": "anthropic_cli",
+      "personality": "conservative",
+      "primary_strategy": "mean_reversion",
+      "capital": 100030.02,
+      "roi_pct": 0.03,
+      "sharpe": 2.656,
+      "total_trades": 35,
+      "wins": 17,
+      "losses": 18,
+      "win_rate": 48.6,
       "max_drawdown": 0.0004,
-      "primary_strategy": "sector_rotation"
+      "trading_days": 12
     },
     {
       "rank": 5,
-      "trader_id": "claude",
-      "name": "Claude Code CLI",
-      "provider": "anthropic_cli",
-      "personality": "conservative",
-      "capital": 100000.0,
-      "roi_pct": 0.0,
-      "sharpe": 0.0,
-      "total_trades": 0,
-      "wins": 0,
-      "losses": 0,
-      "win_rate": 0,
-      "max_drawdown": 0.0,
-      "primary_strategy": "mean_reversion"
+      "trader_id": "grok",
+      "name": "Mistral Maverick",
+      "provider": "hf:mistralai/Mistral-Large-Instruct-2411",
+      "personality": "contrarian",
+      "primary_strategy": "event_driven",
+      "capital": 99707.79,
+      "roi_pct": -0.2922,
+      "sharpe": -13.441,
+      "total_trades": 60,
+      "wins": 22,
+      "losses": 38,
+      "win_rate": 36.7,
+      "max_drawdown": 0.0029,
+      "trading_days": 12
     }
   ],
   "traders": {
     "gemini": {
-      "political_bankroll": 100236.42,
-      "political_roi_pct": 0.2364,
-      "political_sharpe": 6.827,
-      "political_total_trades": 10,
-      "political_wins": 7,
-      "political_losses": 3,
-      "political_win_rate": 70.0,
-      "political_total_wagered": 27683.82,
-      "political_total_pnl": 236.42,
-      "political_peak_capital": 100236.42,
-      "political_max_drawdown": 0.0005,
-      "political_trading_days": 12,
-      "political_approach": "momentum",
-      "political_strategy_breakdown": {
+      "trader_id": "gemini",
+      "name": "Gemma Analyst",
+      "provider": "hf:google/gemma-3-27b-it",
+      "personality": "analytical",
+      "risk_tolerance": 0.6,
+      "primary_strategy": "momentum",
+      "capital": 100957.44,
+      "initial_capital": 100000.0,
+      "roi_pct": 0.9574,
+      "sharpe": 14.605,
+      "total_trades": 118,
+      "wins": 74,
+      "losses": 44,
+      "win_rate": 62.7,
+      "total_wagered": 212694.54,
+      "total_pnl": 957.44,
+      "peak_capital": 100957.44,
+      "max_drawdown": 0.0007,
+      "trading_days": 12,
+      "strategy_breakdown": {
         "momentum": {
-          "trades": 9,
-          "pnl": 209.42,
-          "wins": 6,
-          "win_rate": 66.7
+          "trades": 117,
+          "pnl": 930.3,
+          "wins": 73,
+          "win_rate": 62.4,
+          "roi_pct": 0.8
         },
         "sector_rotation": {
           "trades": 1,
-          "pnl": 27.0,
+          "pnl": 27.14,
           "wins": 1,
-          "win_rate": 100.0
+          "win_rate": 100.0,
+          "roi_pct": 2.71
         }
       },
-      "political_sector_breakdown": {
-        "technology": 139.31,
-        "broad": 136.51,
-        "defense": -39.4
+      "sector_breakdown": {
+        "technology": 748.11,
+        "broad": 136.71,
+        "defense": 72.62
       }
     },
     "openrouter": {
-      "political_bankroll": 100302.13,
-      "political_roi_pct": 0.3021,
-      "political_sharpe": 9.651,
-      "political_total_trades": 9,
-      "political_wins": 6,
-      "political_losses": 3,
-      "political_win_rate": 66.7,
-      "political_total_wagered": 24528.77,
-      "political_total_pnl": 302.13,
-      "political_peak_capital": 100302.13,
-      "political_max_drawdown": 0.0004,
-      "political_trading_days": 12,
-      "political_approach": "sector_rotation",
-      "political_strategy_breakdown": {
+      "trader_id": "openrouter",
+      "name": "Qwen Strategist",
+      "provider": "hf:Qwen/Qwen2.5-72B-Instruct",
+      "personality": "diversified",
+      "risk_tolerance": 0.5,
+      "primary_strategy": "sector_rotation",
+      "capital": 100509.96,
+      "initial_capital": 100000.0,
+      "roi_pct": 0.51,
+      "sharpe": 13.279,
+      "total_trades": 95,
+      "wins": 53,
+      "losses": 42,
+      "win_rate": 55.8,
+      "total_wagered": 148631.2,
+      "total_pnl": 509.96,
+      "peak_capital": 100509.96,
+      "max_drawdown": 0.0004,
+      "trading_days": 12,
+      "strategy_breakdown": {
         "insider_follow": {
-          "trades": 3,
-          "pnl": -1.35,
-          "wins": 1,
-          "win_rate": 33.3
+          "trades": 35,
+          "pnl": 138.69,
+          "wins": 17,
+          "win_rate": 48.6,
+          "roi_pct": 0.4
         },
         "pairs_trading": {
-          "trades": 1,
-          "pnl": 30.81,
-          "wins": 1,
-          "win_rate": 100.0
+          "trades": 38,
+          "pnl": 118.91,
+          "wins": 22,
+          "win_rate": 57.9,
+          "roi_pct": 0.31
         },
         "sector_rotation": {
-          "trades": 5,
-          "pnl": 272.67,
-          "wins": 4,
-          "win_rate": 80.0
+          "trades": 22,
+          "pnl": 252.36,
+          "wins": 14,
+          "win_rate": 63.6,
+          "roi_pct": 1.15
         }
       },
-      "political_sector_breakdown": {
-        "broad": 219.09,
-        "energy": 83.04
+      "sector_breakdown": {
+        "broad": 219.2,
+        "financials": 156.62,
+        "energy": 134.14
       }
     },
     "claude": {
-      "political_bankroll": 100000.0,
-      "political_roi_pct": 0.0,
-      "political_sharpe": 0.0,
-      "political_total_trades": 0,
-      "political_wins": 0,
-      "political_losses": 0,
-      "political_win_rate": 0,
-      "political_total_wagered": 0.0,
-      "political_total_pnl": 0.0,
-      "political_peak_capital": 100000.0,
-      "political_max_drawdown": 0.0,
-      "political_trading_days": 12,
-      "political_approach": "mean_reversion",
-      "political_strategy_breakdown": {},
-      "political_sector_breakdown": {}
-    },
-    "codex": {
-      "political_bankroll": 100562.16,
-      "political_roi_pct": 0.5622,
-      "political_sharpe": 5.62,
-      "political_total_trades": 5,
-      "political_wins": 3,
-      "political_losses": 2,
-      "political_win_rate": 60.0,
-      "political_total_wagered": 26617.44,
-      "political_total_pnl": 562.16,
-      "political_peak_capital": 100562.16,
-      "political_max_drawdown": 0.0,
-      "political_trading_days": 12,
-      "political_approach": "event_driven",
-      "political_strategy_breakdown": {
-        "event_driven": {
-          "trades": 5,
-          "pnl": 562.16,
-          "wins": 3,
-          "win_rate": 60.0
+      "trader_id": "claude",
+      "name": "Claude Sentinel",
+      "provider": "anthropic_cli",
+      "personality": "conservative",
+      "risk_tolerance": 0.4,
+      "primary_strategy": "mean_reversion",
+      "capital": 100030.02,
+      "initial_capital": 100000.0,
+      "roi_pct": 0.03,
+      "sharpe": 2.656,
+      "total_trades": 35,
+      "wins": 17,
+      "losses": 18,
+      "win_rate": 48.6,
+      "total_wagered": 25197.03,
+      "total_pnl": 30.02,
+      "peak_capital": 100030.02,
+      "max_drawdown": 0.0004,
+      "trading_days": 12,
+      "strategy_breakdown": {
+        "mean_reversion": {
+          "trades": 35,
+          "pnl": 30.02,
+          "wins": 17,
+          "win_rate": 48.6,
+          "roi_pct": 0.09
         }
       },
-      "political_sector_breakdown": {
-        "technology": 479.11,
-        "defense": 83.05
+      "sector_breakdown": {
+        "healthcare": 30.02
+      }
+    },
+    "codex": {
+      "trader_id": "codex",
+      "name": "Llama Vanguard",
+      "provider": "hf:meta-llama/Llama-3.3-70B-Instruct",
+      "personality": "aggressive",
+      "risk_tolerance": 0.75,
+      "primary_strategy": "event_driven",
+      "capital": 101663.8,
+      "initial_capital": 100000.0,
+      "roi_pct": 1.6638,
+      "sharpe": 10.247,
+      "total_trades": 113,
+      "wins": 67,
+      "losses": 46,
+      "win_rate": 59.3,
+      "total_wagered": 271269.99,
+      "total_pnl": 1663.8,
+      "peak_capital": 101663.8,
+      "max_drawdown": 0.0013,
+      "trading_days": 12,
+      "strategy_breakdown": {
+        "momentum": {
+          "trades": 108,
+          "pnl": 794.02,
+          "wins": 63,
+          "win_rate": 58.3,
+          "roi_pct": 0.74
+        },
+        "event_driven": {
+          "trades": 5,
+          "pnl": 869.78,
+          "wins": 4,
+          "win_rate": 80.0,
+          "roi_pct": 17.4
+        }
+      },
+      "sector_breakdown": {
+        "technology": 1339.0,
+        "defense": 324.8
       }
     },
     "grok": {
-      "political_bankroll": 100009.22,
-      "political_roi_pct": 0.0092,
-      "political_sharpe": 4.786,
-      "political_total_trades": 2,
-      "political_wins": 1,
-      "political_losses": 1,
-      "political_win_rate": 50.0,
-      "political_total_wagered": 3900.0,
-      "political_total_pnl": 9.22,
-      "political_peak_capital": 100009.22,
-      "political_max_drawdown": 0.0,
-      "political_trading_days": 12,
-      "political_approach": "event_driven",
-      "political_strategy_breakdown": {
+      "trader_id": "grok",
+      "name": "Mistral Maverick",
+      "provider": "hf:mistralai/Mistral-Large-Instruct-2411",
+      "personality": "contrarian",
+      "risk_tolerance": 0.65,
+      "primary_strategy": "event_driven",
+      "capital": 99707.79,
+      "initial_capital": 100000.0,
+      "roi_pct": -0.2922,
+      "sharpe": -13.441,
+      "total_trades": 60,
+      "wins": 22,
+      "losses": 38,
+      "win_rate": 36.7,
+      "total_wagered": 72413.31,
+      "total_pnl": -292.21,
+      "peak_capital": 100000.0,
+      "max_drawdown": 0.0029,
+      "trading_days": 12,
+      "strategy_breakdown": {
         "mean_reversion": {
-          "trades": 2,
-          "pnl": 9.22,
-          "wins": 1,
-          "win_rate": 50.0
+          "trades": 60,
+          "pnl": -292.21,
+          "wins": 22,
+          "win_rate": 36.7,
+          "roi_pct": -0.49
         }
       },
-      "political_sector_breakdown": {
-        "energy": 9.22
+      "sector_breakdown": {
+        "energy": -292.21
       }
     }
   },
@@ -279,20 +339,17 @@
       "SECTOR_ROTATE": {
         "eliminated_at": "2026-03-31",
         "reason": "-75% ROI",
-        "final_roi": -0.75,
-        "department": "D7_POLITICAL"
+        "final_roi": -0.75
       },
       "DEFENSE_LONG_individual": {
         "eliminated_at": "2026-03-31",
         "reason": "-65% ROI on individual defense stock picks",
-        "final_roi": -0.65,
-        "department": "D7_POLITICAL"
+        "final_roi": -0.65
       },
       "BILL_PASSES": {
         "eliminated_at": "2026-03-31",
         "reason": "-64% ROI",
-        "final_roi": -0.64,
-        "department": "D7_POLITICAL"
+        "final_roi": -0.64
       }
     },
     "coffins": [
@@ -301,7 +358,6 @@
         "eliminated_at": "2026-03-31",
         "reason": "-75% ROI",
         "final_roi": -0.75,
-        "department": "D7_POLITICAL",
         "type": "political_strategy"
       },
       {
@@ -309,7 +365,6 @@
         "eliminated_at": "2026-03-31",
         "reason": "-65% ROI on individual defense stock picks",
         "final_roi": -0.65,
-        "department": "D7_POLITICAL",
         "type": "political_strategy"
       },
       {
@@ -317,7 +372,6 @@
         "eliminated_at": "2026-03-31",
         "reason": "-64% ROI",
         "final_roi": -0.64,
-        "department": "D7_POLITICAL",
         "type": "political_strategy"
       }
     ]
