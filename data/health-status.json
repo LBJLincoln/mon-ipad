@@ -1,24 +1,24 @@
 {
-  "timestamp": "2026-04-11T12:30:00Z",
-  "brain_cycle": 92,
+  "timestamp": "2026-04-11T16:30:00Z",
+  "brain_cycle": 93,
   "brain_model": "claude-sonnet-4-6",
-  "cycle_rotation": "A — WebSearch FEC/SEC/EO data sources → Cat42 Congressional STOCK Act Cluster",
+  "cycle_rotation": "B \u2014 Review political_engine.py \u2192 integrate Cat42 Congressional STOCK Act | NBA wake pings sent",
   "nba_fleet": {
     "total_islands": 6,
     "online": 0,
     "sleeping_503": 6,
     "status_severity": "CRITICAL",
-    "note": "All 6 NBA islands 503 for 3rd+ consecutive cycle (last seen online cycle 89, Apr 10 16:45Z). Approximately 20+ hours sleeping. ESCALATE: keepalive-spaces.sh cron appears non-functional.",
+    "note": "All 6 NBA islands 503 for 4th+ consecutive cycle. Wake pings sent this cycle (hitting space URLs triggers HF wake-up sequence ~2-3 min delay). keepalive-spaces.sh cron appears non-functional since Apr 10 16:45Z.",
     "fleet_best_brier": 0.22249,
-    "fleet_best_island": "S11 (nomos42-nba-quant-2, exploration) — last seen Apr 10",
-    "all_time_best_brier": 0.21570,
+    "fleet_best_island": "S11 (nomos42-nba-quant-2, exploration) \u2014 last seen Apr 10",
+    "all_time_best_brier": 0.2157,
     "checkpoint_threshold": 0.21837,
     "gap_to_checkpoint": 0.00412,
     "gap_to_target_020": 0.02249,
     "stagnation_detected": false,
-    "stagnation_action": "Cannot check — islands sleeping",
-    "action_taken": "Cannot POST /api/command — all 503",
-    "watch": "S15 last seen Brier 0.21906 — nearest to checkpoint (gap 0.00069)",
+    "stagnation_action": "Cannot check \u2014 islands sleeping",
+    "wake_pings_sent": true,
+    "wake_ping_timestamp": "2026-04-11T16:10Z",
     "last_known_islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
@@ -69,7 +69,7 @@
         "last_brier": 0.21906,
         "last_gen": 864,
         "last_seen": "2026-04-10T16:45Z",
-        "watch": "NEAREST TO CHECKPOINT — gap 0.00069"
+        "watch": "NEAREST TO CHECKPOINT \u2014 gap 0.00069"
       }
     }
   },
@@ -78,129 +78,99 @@
     "online": 2,
     "down": 2,
     "down_islands": [
-      "nomos42-political-alpha-3.hf.space (404 — NOT FOUND on HF, 4 consecutive cycles)",
-      "nomos42-political-alpha-4.hf.space (404 — NOT FOUND on HF, 4 consecutive cycles)"
+      "nomos42-political-alpha-3.hf.space (404)",
+      "nomos42-political-alpha-4.hf.space (404)"
     ],
-    "note": "P1+P2 RESTARTED today 2026-04-11T01:31Z — fresh run. Currently low Brier (early generations). All-time best 0.23134 from P2 pre-restart.",
     "fleet_all_time_best_brier": 0.23134,
     "fleet_current_best_brier": 0.24996,
-    "fleet_best_island": "P1 (nomos42-political-alpha, exploitation) — current cycle",
     "target_brier": 0.22,
-    "gap_to_target": 0.02996,
-    "engine_version": "v3.16-political-38cat-scotus-chevron",
-    "engine_version_pending": "v3.18-political-42cat-congress-insider-cluster (Cat39+Cat42 pending integration into political_engine.py)",
+    "engine_version": "v3.20-political-42cat-congress-stock-act",
+    "engine_version_previous": "v3.19-political-41cat-spatial-intel",
     "islands": {
       "P1": {
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
         "status": "ONLINE",
-        "cycle": 114,
-        "generation": 340,
+        "cycle": 160,
+        "generation": 480,
         "best_brier": 0.24996,
-        "best_roi": 0.0009,
-        "best_sharpe": 0.0853,
-        "stagnation": 0,
-        "model": "xgboost_brier",
-        "features": 67,
-        "feature_candidates": 272,
-        "restart_note": "Restarted 01:31Z today — fresh evolution, improving"
+        "stagnation": 0
       },
       "P2": {
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
         "status": "ONLINE",
-        "cycle": 275,
-        "generation": 824,
-        "best_brier": 0.25,
-        "best_roi": 0.0016,
-        "best_sharpe": 0.1621,
-        "stagnation": 0,
-        "model": "xgboost_brier",
-        "features": 74,
-        "feature_candidates": 272,
-        "restart_note": "Restarted 01:31Z today — all-time best was 0.23134 (CatBoost 88f pre-restart)"
+        "cycle": 30,
+        "generation": 90,
+        "best_brier": 0.25223,
+        "stagnation": 0
       },
       "P3": {
         "status": "NOT_FOUND_HF",
-        "consecutive_down_cycles": 4,
-        "action_required": "Manual HF Space creation at huggingface.co/new-space"
+        "consecutive_down_cycles": 5,
+        "action_required": "Manual HF Space creation"
       },
       "P4": {
         "status": "NOT_FOUND_HF",
-        "consecutive_down_cycles": 4,
-        "action_required": "Manual HF Space creation at huggingface.co/new-space"
+        "consecutive_down_cycles": 5,
+        "action_required": "Manual HF Space creation"
       }
     }
   },
-  "cycle_92_actions": {
+  "cycle_93_actions": {
     "political_improvement": {
-      "type": "new_feature_category",
-      "rotation": "A — WebSearch FEC/SEC/EO data sources",
-      "file": "features/cat42_congressional_stock_act.py",
-      "title": "Cat42: Congressional STOCK Act Cluster Trading (26 features)",
-      "data_sources_found": [
-        "InsiderTape.com — STOCK Act congressional disclosures + Form 4",
-        "OpenInsider — SEC Form 4 cluster screener",
-        "H.R.7008 Stop Insider Trading Act (2026-01-12) — pre-trade notice requirement",
-        "Section 16(a) extended to foreign private issuers (NDAA Dec 2025)",
-        "FEC Statistical Summary 2025-2026: $4.6B PAC total, $1.5B H/S candidate receipts"
-      ],
+      "type": "feature_integration",
+      "file": "features/political_engine.py",
+      "version_bump": "v3.19-political-41cat-spatial-intel \u2192 v3.20-political-42cat-congress-stock-act",
+      "commit": "48e7622a57f349be23698b87a3ee9f554f7b1273",
+      "title": "Cat42: Congressional STOCK Act Cluster Trading (26 features) integrated",
+      "features_added": 26,
+      "total_categories": 42,
+      "total_features_approx": 3476,
       "key_signals": [
-        "tc42_congress_cluster_buy_7d: congressional members buying in sector (7d window)",
+        "tc42_congress_cluster_buy_7d: unique congress members buying in sector (7d)",
         "tc42_committee_chair_buy_flag: committee chair purchase (highest info advantage)",
         "tc42_pre_vote_window_flag: 0-30d before committee vote",
-        "tc42_composite_congress_insider_alpha: chair x cluster x vote_proximity x sector_alpha",
+        "tc42_senate_weighted_alpha: senate buys \u00d7 1.4 multiplier",
+        "tc42_composite_congress_insider_alpha: chair \u00d7 cluster \u00d7 vote_proximity \u00d7 sector_alpha",
         "tc42_regime_adj_disclosure_alpha: exploit 45-day STOCK Act lag"
       ],
-      "features_added": 26,
-      "engine_version_new": "v3.18-political-42cat-congress-insider-cluster",
-      "empirical_basis": "Congressional cluster buys before committee vote: +8.3% avg excess return 14d post-vote. Form 4 officer $100k+ before EO: +11.2% premium.",
-      "integration_status": "cat42 file committed. Pending: integrate into political_engine.py (next VM cycle)"
+      "discovery": "Cat39/40/41 already integrated in v3.19 (not v3.16 as brain-status.json said \u2014 stale metadata)"
     },
-    "nba_improvement": {
-      "type": "research_proposal",
-      "rotation": "B — NBA research (WebSearch results)",
-      "file": "data/research-proposals/2026-04-11-market-implied-prob-isotonic-calibration.md",
-      "title": "Market-Implied Probability + Isotonic Calibration",
-      "source": "MDPI Information 17(1):56 (2026) — Uncertainty-Aware ML for NBA Forecasting",
-      "key_finding": "Market features (spread, total, implied_prob) SHAP importance 0.803. Fused model (tree + market) Brier 0.089 vs 0.202 tree-only.",
-      "proposed_features": [
-        "market_home_win_prob (American odds converted to probability)",
-        "market_overround_adj_prob (vig-removed)",
-        "spread_normalized",
-        "total_normalized",
-        "line_movement (open-to-close spread movement)",
-        "market_logit (log-odds transform)"
+    "nba_research": {
+      "type": "research_rotation",
+      "rotation": "B \u2014 NBA WebSearch (every-other-cycle)",
+      "key_findings": [
+        "Auto-calibration: Brier loss auto-selects sigmoid/isotonic/none \u2014 better than fixed isotonic",
+        "SVM: 0.7749 accuracy (AutoGluon 0.7738, DNN 0.7726) \u2014 CPU-feasible but complex",
+        "Stacked ensemble (Nature 2025): XGBoost + RF stacking improves outcome prediction",
+        "Key features confirmed: home_next, team_elo_5_y, team_elo (already in our engine)"
       ],
-      "estimated_brier_delta": "-0.008 to -0.024 combined (market features + isotonic calibration + era norm)",
-      "target_island": "S13 (catboost) — test first",
-      "data_source": "The Odds API (free tier) — check if scripts/nba-daily-odds.py already fetching",
-      "priority": "CRITICAL — deploy immediately when islands wake up"
+      "new_proposal": "Auto-calibration: use Brier-CV to select between sigmoid/isotonic/none per island. Estimated -0.002 Brier.",
+      "target_island": "S13 (catboost) \u2014 deploy when islands wake up"
     },
-    "nba_islands": "All 503 (3rd+ consecutive cycle). Cannot POST commands. ESCALATE: keepalive cron may be down."
+    "nba_action": "Wake pings sent to all 6 islands. HF spaces self-wake within 2-3min of traffic."
   },
   "alerts": [
-    "CRITICAL: All 6 NBA islands sleeping 503 for 3+ consecutive cycles — keepalive-spaces.sh not working. Last seen Apr 10 16:45Z. MANUAL INTERVENTION REQUIRED.",
-    "CRITICAL: P3 and P4 DO NOT EXIST on HuggingFace (4 consecutive cycles) — need manual creation",
-    "WARNING: P1+P2 restarted fresh today — all-time best 0.23134 (P2 pre-restart) not yet recovered",
-    "WARNING: Cat39, Cat40, Cat41, Cat42 feature files exist but NOT integrated into political_engine.py (still v3.16-38cat)",
-    "INFO: Market-implied prob proposal ready — 6 anchor features + isotonic calibration. Estimated -0.008 to -0.024 Brier.",
-    "WATCH: S15 last seen Brier 0.21906 — gap 0.00069 to checkpoint"
+    "CRITICAL: All 6 NBA islands sleeping 503 for 4+ cycles \u2014 keepalive-spaces.sh cron broken. Wake pings sent this cycle.",
+    "CRITICAL: P3 and P4 NOT FOUND on HuggingFace (5 consecutive cycles) \u2014 manual creation required",
+    "WARNING: P1+P2 restarted fresh Apr 11 \u2014 all-time best 0.23134 (P2 pre-restart) not yet recovered",
+    "INFO: political_engine.py v3.20 committed \u2014 Cat42 (26f) integrated, all staged categories now live",
+    "INFO: Auto-calibration proposal (Brier-CV sigmoid/isotonic/none) ready for S13 when awake",
+    "WATCH: S15 last seen Brier 0.21906 \u2014 gap 0.00069 to checkpoint"
   ],
   "next_cycle_priority": [
-    "CRITICAL: Check if NBA islands are still 503. If yes, manually restart via HF UI or check keepalive-spaces.sh cron output",
-    "Integrate Cat39+Cat40+Cat41+Cat42 into political_engine.py (bump v3.16 → v3.19-political-42cat)",
-    "NBA: When S13 wakes, add market-implied prob features to engine.py (The Odds API integration)",
-    "NBA: When S13 awake, add CalibratedClassifierCV isotonic calibration to app.py",
-    "Political rotation B: Review political_engine.py — Cat40 ADSB + Cat41 Maritime not yet verified integrated",
-    "Check if nba-daily-odds.py is actually writing odds data to data/historical-odds/"
+    "Check if NBA islands woke up from this cycle's pings. If still 503, ping again.",
+    "Political rotation C: Port proven NBA calibration techniques to political_engine.py",
+    "Deploy auto-calibration (Brier-CV) to S13 when NBA islands wake up",
+    "Political: Check data pipeline health \u2014 ops/fetch_political_data.py outputs, AIS+ADSB snapshots",
+    "NBA: Add isotonic/auto calibration to app.py on whichever island wakes first"
   ],
   "cross_repo_health": {
     "nba_engine_version": "v3.1-59cat (last parity check cycle 91)",
-    "political_engine_version": "v3.16-political-38cat-scotus-chevron (live)",
-    "political_engine_pending": "v3.19-political-42cat (Cat39+40+41+42 staged, pending political_engine.py integration)",
-    "technique_ported_this_cycle": "Congressional cluster trading patterns (Cat42) as analog to NBA home-next + team form signals — both track institutional insider behavior ahead of public information",
-    "cross_pollination_insight": "NBA XGBoost Brier-objective proposal (cycle 91) is being tested in parallel. Political engine already uses direct Brier GA fitness. Cross-training: NBA ← Political's calibration-first philosophy.",
-    "data_pipeline_check": "data/historical-odds/ not verified — check if nba-daily-odds.py is writing odds data. If yes, market features can be deployed immediately."
+    "political_engine_version": "v3.20-political-42cat-congress-stock-act (LIVE \u2014 just committed)",
+    "staged_categories": "All staged categories now integrated (Cat39+40+41+42 all live in v3.20)",
+    "technique_ported_this_cycle": "Auto-calibration research (Brier-CV method selection) queued for both NBA + political",
+    "cross_pollination": "NBA market-implied prob features (cycle 92) \u2192 pending deploy to S13. Political cluster trading patterns (Cat42) = analog to NBA team form + insider signals."
   }
 }
