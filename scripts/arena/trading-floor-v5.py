@@ -67,6 +67,9 @@ from bet_categories import (
     get_specialist_prompt, get_tier2_prompt, get_tier1_prompt, get_meta_prompt,
 )
 from debate_round import run_bull_bear_debate
+# 2026-04-11 Audit — Phase A: enriched context with rest/H2H/advanced/line_movement/injuries
+# and per-agent personality preambles.
+from game_context_v2 import enrich_context, personality_preamble
 
 # Guard for openai package
 try:
@@ -124,6 +127,7 @@ OUTPUT_LATEST = DATA_DIR / "trading-floor-v5-latest.json"
 AGENT_STATE_FILE = DATA_DIR / "agent-states-v5.json"
 RETROLEARN_FILE = DATA_DIR / "retrolearn-v5.json"
 PREDICTIONS_DIR = DATA_DIR / "predictions-v5"
+COUNCIL_LOG_DIR = DATA_DIR / "council-log-v5"
 V5_ITER_FILE = DATA_DIR / "trading-floor-v5-iteration.json"
 
 # External data sources
@@ -584,6 +588,13 @@ def build_game_context(game: Dict, odds_entry: Optional[Dict],
         h_stand.get("ppg", 110) + a_stand.get("ppg", 110)
     ) if h_stand or a_stand else 224.0
 
+    # Phase A enrichment — rest, H2H, advanced stats, line movement, injuries
+    try:
+        enrich_context(ctx, game, all_games)
+    except Exception as _exc:
+        ctx["_enriched_version"] = "v2_error"
+        ctx["_enriched_error"] = str(_exc)[:160]
+
     return ctx
 
 
@@ -964,7 +975,10 @@ class TradingFloorV5:
                       f"{len(multiphase_bets)} bets")
 
             # === Generate bets from synthesis ===
-            game_bets = self._generate_bets(synthesis, ctx, odds_entry, game_key, game)
+            game_bets = self._generate_bets(
+                synthesis, ctx, odds_entry, game_key, game,
+                game_predictions=game_predictions,
+            )
             # Merge multi-phase bets (deduplicate by category)
             if multiphase_bets:
                 existing_cats = {b["category"] for b in game_bets}
@@ -1048,9 +1062,17 @@ class TradingFloorV5:
         predictions = {}
 
         if self.dry_run:
+            # Dry-run path — still persist each prediction so per-agent audit
+            # trails are non-empty (2026-04-11 audit fix).
+            now_iso = datetime.now(timezone.utc).isoformat()
             for agent in agents:
                 pred = self._synthetic_prediction(agent, ctx)
+                pred["_agent_id"] = agent.id
+                pred["_agent_tier"] = agent.tier.name
+                pred["_game_key"] = game_key
+                pred["_timestamp"] = now_iso
                 predictions[agent.id] = pred
+                self.predictions.setdefault(agent.id, {})[game_key] = pred
                 self.run_stats["agents_called"] += 1
             return predictions
 
@@ -1101,22 +1123,42 @@ class TradingFloorV5:
         else:
             return None  # Meta agents handled separately
 
+        # Build personality-flavored system prompt (2026-04-11 audit fix #7)
+        # So an agent's personality is reflected in actual LLM reasoning,
+        # not just a temperature bump.
+        base_system = (
+            "You are an elite NBA betting analyst. "
+            "Respond only with valid JSON."
+        )
+        personality_prefix = personality_preamble(agent.personality or "analytical")
+        system_prompt = personality_prefix + "\n\n" + base_system
+
         # Route to correct backend
         if agent.provider == "anthropic_cli":
             # Claude Code CLI via subprocess
-            result = _call_claude_cli(self.pool, agent, prompt)
+            result = _call_claude_cli(self.pool, agent, prompt, system=system_prompt)
         else:
             # Standard OpenAI-compat API pool
+            temp = 0.3
+            if agent.personality and "contrarian" in agent.personality:
+                temp += 0.2
+            elif agent.personality in ("aggressive", "momentum_tracker"):
+                temp += 0.1
+            elif agent.personality == "conservative":
+                temp = max(0.15, temp - 0.1)
             result = self.pool.call_llm(
                 provider=agent.provider,
                 prompt=prompt,
                 model=agent.model,
-                temperature=0.3 + (0.2 if agent.personality == "contrarian" else 0.0),
+                system=system_prompt,
+                temperature=temp,
             )
 
         if result:
             result["_agent_id"] = agent.id
             result["_agent_tier"] = agent.tier.name
+            result["_agent_personality"] = agent.personality or "analytical"
+            result["_agent_strategy"] = getattr(agent, "strategy", "") or ""
             result["_game_key"] = game_key
             result["_timestamp"] = datetime.now(timezone.utc).isoformat()
             self.predictions.setdefault(agent.id, {})[game_key] = result
@@ -1153,6 +1195,8 @@ class TradingFloorV5:
             "_synthetic": True,
             "_agent_id": agent.id,
             "_agent_tier": agent.tier.name,
+            "_agent_personality": agent.personality or "analytical",
+            "_agent_strategy": getattr(agent, "strategy", "") or "",
         }
 
     # ===================================================================
@@ -1614,13 +1658,41 @@ class TradingFloorV5:
     # ===================================================================
     def _generate_bets(self, synthesis: dict, ctx: dict,
                        odds_entry: Optional[dict], game_key: str,
-                       game: Dict) -> List[dict]:
-        """Convert consensus into actionable bets with Kelly sizing."""
+                       game: Dict,
+                       game_predictions: Optional[Dict[str, dict]] = None) -> List[dict]:
+        """Convert consensus into actionable bets with Kelly sizing.
+
+        game_predictions is the {agent_id: pred} map from Stage 1. Used to
+        attach per-bet voting_agents metadata so councils can audit which
+        agents supported each bet (2026-04-11 Phase B).
+        """
         bets = []
 
         ml_c = synthesis.get("consensus_ml", {})
         sp_c = synthesis.get("consensus_spread", {})
         tt_c = synthesis.get("consensus_total", {})
+
+        # Build per-category voter lists (agents whose prediction side matches
+        # the consensus direction). Empty if game_predictions not provided.
+        def _voters(cat_key: str, direction: str) -> List[Dict[str, Any]]:
+            if not game_predictions:
+                return []
+            out: List[Dict[str, Any]] = []
+            for agent_id, pred in game_predictions.items():
+                if not isinstance(pred, dict):
+                    continue
+                slot = pred.get(cat_key) or {}
+                if not isinstance(slot, dict):
+                    continue
+                if slot.get("direction") == direction:
+                    out.append({
+                        "agent_id": agent_id,
+                        "tier": pred.get("_agent_tier", ""),
+                        "personality": pred.get("_agent_personality", ""),
+                        "confidence": slot.get("confidence", 0),
+                        "edge_pct": slot.get("edge_pct", 0),
+                    })
+            return out
 
         # Shared bankroll source: Paperclip (meta-trader) or fallback
         paperclip = self.registry.get("t4_paperclip")
@@ -1640,6 +1712,7 @@ class TradingFloorV5:
             stake = _sz_value_hunter_half_kelly(edge, bet_odds, base_bankroll)
             stake = min(stake, base_bankroll * 0.10)
 
+            ml_voters = _voters("ml_fg", direction)
             bets.append({
                 "game_key": game_key,
                 "category": "ml_fg",
@@ -1651,6 +1724,8 @@ class TradingFloorV5:
                 "stake": round(max(stake, 0), 2),
                 "source": "consensus",
                 "agents": synthesis.get("num_agents", 0),
+                "voting_agents": ml_voters,
+                "voter_count": len(ml_voters),
             })
 
         # --- SPREAD BET ---
@@ -1661,6 +1736,7 @@ class TradingFloorV5:
             direction = sp_c.get("direction", "home")
             sp_edge = abs(sp_c.get("confidence", 0.5) - 0.5) + 0.01
             stake = _sz_confidence_scaled(sp_edge, 1.909, base_bankroll)
+            sp_voters = _voters("spread_fg", direction)
             bets.append({
                 "game_key": game_key,
                 "category": "spread_fg",
@@ -1671,6 +1747,8 @@ class TradingFloorV5:
                 "odds": 1.909,
                 "stake": round(min(stake, base_bankroll * 0.10), 2),
                 "source": "consensus",
+                "voting_agents": sp_voters,
+                "voter_count": len(sp_voters),
             })
 
         # --- TOTAL BET ---
@@ -1680,6 +1758,7 @@ class TradingFloorV5:
             direction = tt_c.get("direction", "over")
             tt_edge = abs(tt_c.get("confidence", 0.5) - 0.5) + 0.01
             stake = _sz_confidence_scaled(tt_edge, 1.909, base_bankroll)
+            tt_voters = _voters("total_fg", direction)
             bets.append({
                 "game_key": game_key,
                 "category": "total_fg",
@@ -1690,6 +1769,8 @@ class TradingFloorV5:
                 "odds": 1.909,
                 "stake": round(min(stake, base_bankroll * 0.10), 2),
                 "source": "consensus",
+                "voting_agents": tt_voters,
+                "voter_count": len(tt_voters),
             })
 
         # --- Oracle's Top-3 bets ---
@@ -2020,6 +2101,7 @@ class TradingFloorV5:
         DATA_DIR.mkdir(parents=True, exist_ok=True)
         TRADERS_DIR.mkdir(parents=True, exist_ok=True)
         PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
+        COUNCIL_LOG_DIR.mkdir(parents=True, exist_ok=True)
 
         self.iteration["total_api_calls"] = (
             self.iteration.get("total_api_calls", 0) + self.run_stats["api_calls_made"]
@@ -2066,9 +2148,82 @@ class TradingFloorV5:
         with open(pred_file, "w") as f:
             json.dump(pred_data, f, indent=2, default=str)
 
+        # Council-readable per-agent log (JSONL) — one line per (agent, game)
+        # with personality, tier, strategy and prediction payload. Councils tail
+        # this file instead of parsing the full nested predictions JSON.
+        council_log = COUNCIL_LOG_DIR / f"council-log-{target_date}.jsonl"
+        council_count = 0
+        with open(council_log, "w") as f:
+            for aid, gpreds in self.predictions.items():
+                agent = self.registry.get(aid)
+                for game_key, pred in gpreds.items():
+                    if not isinstance(pred, dict):
+                        continue
+                    rec = {
+                        "agent_id": aid,
+                        "agent_name": getattr(agent, "name", aid) if agent else aid,
+                        "tier": pred.get("_agent_tier", ""),
+                        "personality": pred.get(
+                            "_agent_personality",
+                            getattr(agent, "personality", "") if agent else "",
+                        ),
+                        "strategy": pred.get(
+                            "_agent_strategy",
+                            getattr(agent, "strategy", "") if agent else "",
+                        ),
+                        "provider": getattr(agent, "provider", "") if agent else "",
+                        "model": getattr(agent, "model", "") if agent else "",
+                        "game_key": game_key,
+                        "timestamp": pred.get("_timestamp", ""),
+                        "prediction": _safe_serialize(
+                            {k: v for k, v in pred.items() if not k.startswith("_")}
+                        ),
+                    }
+                    f.write(json.dumps(rec, default=str) + "\n")
+                    council_count += 1
+
+        # Bet audit sidecar — per-bet expansion with voter rollup per personality/tier
+        bet_audit = COUNCIL_LOG_DIR / f"bet-audit-{target_date}.json"
+        audit_rows: List[dict] = []
+        for b in self.bets:
+            voters = b.get("voting_agents", []) or []
+            by_personality: Dict[str, int] = defaultdict(int)
+            by_tier: Dict[str, int] = defaultdict(int)
+            for v in voters:
+                by_personality[v.get("personality", "unknown")] += 1
+                by_tier[v.get("tier", "unknown")] += 1
+            audit_rows.append({
+                "game_key": b.get("game_key", ""),
+                "category": b.get("category", ""),
+                "direction": b.get("direction", ""),
+                "stake": b.get("stake", 0),
+                "confidence": b.get("confidence", 0),
+                "agreement": b.get("agreement", 0),
+                "source": b.get("source", ""),
+                "voter_count": b.get("voter_count", len(voters)),
+                "by_personality": dict(by_personality),
+                "by_tier": dict(by_tier),
+                "top_voters": [
+                    {"id": v.get("agent_id", ""),
+                     "personality": v.get("personality", ""),
+                     "confidence": v.get("confidence", 0)}
+                    for v in sorted(voters, key=lambda x: x.get("confidence", 0), reverse=True)[:10]
+                ],
+            })
+        with open(bet_audit, "w") as f:
+            json.dump({
+                "date": target_date,
+                "iteration": self.iteration["iteration"],
+                "total_bets": len(self.bets),
+                "total_council_log_rows": council_count,
+                "bets": audit_rows,
+            }, f, indent=2, default=str)
+
         print(f"\n  Saved: {OUTPUT_LATEST}")
         print(f"  Saved: {_output_dated(target_date)}")
         print(f"  Saved: {AGENT_STATE_FILE}")
+        print(f"  Saved: {council_log} ({council_count} rows)")
+        print(f"  Saved: {bet_audit}")
 
     def _build_leaderboard(self) -> List[dict]:
         """Build a leaderboard from all agents (T1 premium + META always shown)."""

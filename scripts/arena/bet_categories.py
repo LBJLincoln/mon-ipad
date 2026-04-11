@@ -265,6 +265,77 @@ for cat in ALL_CATEGORIES:
 TOTAL_SPECIALIST_AGENTS = sum(cat.sides for cat in ALL_CATEGORIES)
 
 
+def _build_context_v2_section(game_context: dict) -> str:
+    """Serialize the game_context_v2 enrichment into a prompt-friendly block.
+
+    Surfaces rest days, H2H, advanced stats, line movement and injuries so
+    the 224+ swarm reasons on the same facts the councils audit.
+    """
+    if game_context.get("_enriched_version") != "v2":
+        return ""
+
+    lines = ["=== ENRICHED GAME CONTEXT (v2) ==="]
+
+    hr = game_context.get("home_rest") or {}
+    ar = game_context.get("away_rest") or {}
+    if hr or ar:
+        home = game_context.get("home_team", game_context.get("home", "HOME"))
+        away = game_context.get("away_team", game_context.get("away", "AWAY"))
+        lines.append(
+            f"Rest: {home}={hr.get('rest_days','?')}d"
+            f" (B2B={hr.get('back_to_back',False)}) | "
+            f"{away}={ar.get('rest_days','?')}d"
+            f" (B2B={ar.get('back_to_back',False)})"
+        )
+
+    h2h = game_context.get("h2h") or {}
+    if h2h.get("meetings"):
+        lines.append(
+            f"H2H STD: {h2h['meetings']} meetings, "
+            f"home_wins={h2h.get('home_wins_in_series',0)}, "
+            f"avg_margin_home={h2h.get('avg_margin_for_home',0)}, "
+            f"avg_total={h2h.get('avg_total',0)}"
+        )
+
+    ha = game_context.get("home_advanced") or {}
+    aa = game_context.get("away_advanced") or {}
+    if ha.get("games") or aa.get("games"):
+        lines.append(
+            f"ORtg/DRtg/Pace: HOME {ha.get('ortg','?')}/{ha.get('drtg','?')}/{ha.get('pace','?')} "
+            f"(net {ha.get('net_rating','?')}) | "
+            f"AWAY {aa.get('ortg','?')}/{aa.get('drtg','?')}/{aa.get('pace','?')} "
+            f"(net {aa.get('net_rating','?')})"
+        )
+
+    lm = game_context.get("line_movement") or {}
+    if lm.get("movement") == "present":
+        lines.append(
+            f"Line move: home {lm.get('opening_home_dec','?')}→{lm.get('closing_home_dec','?')} "
+            f"({lm.get('home_drift_pct',0):+g}%) | "
+            f"away {lm.get('opening_away_dec','?')}→{lm.get('closing_away_dec','?')} "
+            f"({lm.get('away_drift_pct',0):+g}%) "
+            f"over {lm.get('n_snapshots','?')} snapshots"
+        )
+
+    inj = game_context.get("injuries") or {}
+    src = inj.get("source", "")
+    home_inj = inj.get("home_injured", []) or []
+    away_inj = inj.get("away_injured", []) or []
+    if src == "prebaked" and (home_inj or away_inj):
+        lines.append(
+            f"Injuries: HOME {len(home_inj)} ({','.join(home_inj[:3])}) | "
+            f"AWAY {len(away_inj)} ({','.join(away_inj[:3])})"
+        )
+    elif src == "historical_unavailable":
+        lines.append(
+            "Injuries: not available for historical date — do not speculate"
+        )
+    elif src.startswith("nba_api"):
+        lines.append(f"Injuries: source={src} (best-effort)")
+
+    return "\n".join(lines) + "\n"
+
+
 def _build_ml_section(game_context: dict) -> str:
     """Build ML model predictions section for agent prompts."""
     model_prob = game_context.get("model_prob_home")
@@ -350,12 +421,14 @@ P(home win): {model_prob:.3f} | Confidence: {model_conf}
             ml_section += f"Edge vs market: {ml_edge:+.1%}\n"
         ml_section += "IMPORTANT: Base your analysis on these ML predictions, NOT your intuition.\n"
 
+    ctx_v2_section = _build_context_v2_section(game_context)
+
     return f"""NBA Bet Analysis — {cat.name}{side_label}
 
 Game: {away} @ {home}
 Spread: {home} {spread} | Total: {total}
 Moneyline: {home} {odds_home} / {away} {odds_away}
-{ml_section}
+{ml_section}{ctx_v2_section}
 Your ONLY job: Analyze category "{cat.name}" for this game.
 {cat.prompt_hint}
 
@@ -375,11 +448,13 @@ def get_tier2_prompt(game_context: dict, focus_groups: List[str]) -> str:
     # Real ML model predictions
     ml_section = _build_ml_section(game_context)
 
+    ctx_v2_section = _build_context_v2_section(game_context)
+
     return f"""NBA Betting Analysis — {away} @ {home}
 
 Spread: {home} {spread} | Total: {total}
 Focus areas: {groups_str}
-{ml_section}
+{ml_section}{ctx_v2_section}
 Analyze this game across the focus areas. Use the ML model predictions above as your primary signal.
 For each relevant bet type, provide your assessment.
 
@@ -407,13 +482,15 @@ def get_tier1_prompt(game_context: dict, other_predictions: List[dict] = None) -
     # Real ML model predictions
     ml_section = _build_ml_section(game_context)
 
+    ctx_v2_section = _build_context_v2_section(game_context)
+
     return f"""COMPREHENSIVE NBA GAME ANALYSIS — {away} @ {home}
 
 === GAME INFO ===
 Spread: {home} {spread} | Total: {total}
 Home Form: {form_home} | Away Form: {form_away}
 Injuries: {injuries}
-{ml_section}{peers_section}
+{ml_section}{ctx_v2_section}{peers_section}
 CRITICAL: Use ML model predictions above as your PRIMARY signal. Only bet where model edge > 3%.
 Analyze ALL major bet categories for this game:
 1. Moneyline (full game + halves + quarters)
