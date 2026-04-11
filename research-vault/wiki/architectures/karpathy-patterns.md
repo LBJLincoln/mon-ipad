@@ -1,6 +1,6 @@
 # Karpathy Autoresearch & Agent Patterns
 
-> Auto-compiled from 31 raw sources on 2026-04-10
+> Auto-compiled from 31 raw sources on 2026-04-11
 
 ## Overview
 

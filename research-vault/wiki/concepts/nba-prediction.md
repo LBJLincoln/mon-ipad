@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 150 raw sources on 2026-04-10
+> Auto-compiled from 151 raw sources on 2026-04-11
 
 ## Overview
 
-This topic covers 150 research files spanning nba prediction & ml models.
+This topic covers 151 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -44,6 +44,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **00 — Live Dashboard** (1076 words) -- `raw/obsidian-docs/00-Dashboard.md`
 - **05 -- Infrastructure** (1069 words) -- `raw/obsidian-docs/05-Infrastructure.md`
 - **NBA Scientific Experiment Report** (1063 words) -- `raw/experiments/nba-experiment-2026-04-10.md`
+- **NBA Scientific Experiment Report** (1063 words) -- `raw/experiments/nba-experiment-2026-04-11.md`
 - **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/data-research/self-improvement-harness-quick-wins-2026-03-31.md`
 - **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/research/self-improvement-harness-quick-wins-2026-03-31.md`
 - **07 -- Betting** (997 words) -- `raw/obsidian-docs/07-Betting.md`

@@ -1,10 +1,10 @@
 # Political Alpha & Prediction Markets
 
-> Auto-compiled from 56 raw sources on 2026-04-10
+> Auto-compiled from 57 raw sources on 2026-04-11
 
 ## Overview
 
-This topic covers 56 research files spanning political alpha & prediction markets.
+This topic covers 57 research files spanning political alpha & prediction markets.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Mutation Operators, Platt Scaling, Political Alpha.
 
 ## Sources
@@ -12,6 +12,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
+- **Political Trading Season 2025-26 -- Agent QWEN 3 72B** (2673 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (2662 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent LLAMA 3.3 70B** (2618 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/agent-memory/karpathy-researcher_karpathy_autoresearch_pattern.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/karpathy-researcher/karpathy_autoresearch_pattern.md`
 - **22 -- Compute Mesh Topology** (1406 words) -- `raw/obsidian-docs/22-Compute-Mesh.md`
@@ -33,26 +36,24 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-08.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-09.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-10.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-11.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-06.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-07.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-08.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-09.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-10.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-11.md`
 - **16 -- Karpathy Autoresearch Pattern** (800 words) -- `raw/obsidian-docs/16-Karpathy-Pattern.md`
 - **11 -- GPU Compute** (799 words) -- `raw/obsidian-docs/11-GPU-Compute.md`
 - **10 -- All Repos** (790 words) -- `raw/obsidian-docs/10-Repos.md`
 - **01 -- Architecture (Forge v19)** (770 words) -- `raw/obsidian-docs/01-Architecture.md`
 - **09 -- Legal & Finance** (759 words) -- `raw/obsidian-docs/09-Legal-Finance.md`
-- **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (739 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
 - **19 -- Cross-Repo (D9)** (724 words) -- `raw/obsidian-docs/19-Cross-Repo.md`
-- **Political Trading Season 2025-26 -- Agent QWEN 3 72B** (710 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
 - **17 -- Political Alpha** (701 words) -- `raw/obsidian-docs/17-Political-Alpha.md`
 - **14 -- Communication** (665 words) -- `raw/obsidian-docs/14-Communication.md`
-- **Political Trading Season 2025-26 -- Agent LLAMA 3.3 70B** (560 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
 - **Political Alpha Research — March 2026** (527 words) -- `raw/agent-memory/research-analyst_research_political_alpha_march2026.md`
 - **Political Alpha Research — March 2026** (527 words) -- `raw/research-analyst/research_political_alpha_march2026.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
-- **Political Trading Season 2025-26 -- Agent MISTRAL LARGE 2** (456 words) -- `raw/arena-docs/political-grok-season-2025-26.md`
 - **Political Alpha Deployment** (363 words) -- `raw/agent-memory/feature-engineer_project_political_alpha_deploy.md`
 - **Political Alpha Deployment** (363 words) -- `raw/feature-engineer/project_political_alpha_deploy.md`
 - **Political Alpha Scientific Experiment Report** (333 words) -- `raw/experiments/political-experiment-2026-04-06.md`
