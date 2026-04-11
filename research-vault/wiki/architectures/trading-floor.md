@@ -1,26 +1,26 @@
 # Trading Floor & AI Competition
 
-> Auto-compiled from 46 raw sources on 2026-04-11
+> Auto-compiled from 47 raw sources on 2026-04-11
 
 ## Overview
 
-This topic covers 46 research files spanning trading floor & ai competition.
+This topic covers 47 research files spanning trading floor & ai competition.
 Key concepts: Bankroll Management, Brier Score, Calibration, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
 
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
-- **Political Trading Season 2025-26 -- Agent QWEN 3 72B** (2673 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (2662 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent LLAMA 3.3 70B** (2618 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent QWEN STRATEGIST** (2667 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent GEMMA ANALYST** (2656 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent LLAMA VANGUARD** (2612 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
 - **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/agent-memory/research-analyst_research_april2026_free_inference_capacity.md`
 - **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/research-analyst/research_april2026_free_inference_capacity.md`
 - **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
-- **Political Trading Season 2025-26 -- Agent MISTRAL LARGE 2** (1496 words) -- `raw/arena-docs/political-grok-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent CLAUDE CODE CLI** (1478 words) -- `raw/arena-docs/political-claude-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent MISTRAL MAVERICK** (1490 words) -- `raw/arena-docs/political-grok-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent CLAUDE SENTINEL** (1472 words) -- `raw/arena-docs/political-claude-season-2025-26.md`
 - **22 -- Compute Mesh Topology** (1406 words) -- `raw/obsidian-docs/22-Compute-Mesh.md`
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
 - **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
@@ -52,6 +52,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Ensemble Methods, F
 - **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/agent-memory/repo-scout_project_pixel_dashboard_apr2026.md`
 - **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/repo-scout/project_pixel_dashboard_apr2026.md`
 - **25 -- ML Prediction System** (406 words) -- `raw/obsidian-docs/25-ML-Predictions.md`
+- **Trading Floor v4/v5 SOTA Audit — April 11 2026** (403 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle17_tf_sota.md`
 - **Political Alpha Scientific Experiment Report** (333 words) -- `raw/experiments/political-experiment-2026-04-06.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/agent-memory/nba-brain_project_strategy_confrontation.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/nba-brain/project_strategy_confrontation.md`

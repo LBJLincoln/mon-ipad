@@ -1,10 +1,10 @@
 # Karpathy Autoresearch & Agent Patterns
 
-> Auto-compiled from 31 raw sources on 2026-04-11
+> Auto-compiled from 32 raw sources on 2026-04-11
 
 ## Overview
 
-This topic covers 31 research files spanning karpathy autoresearch & agent patterns.
+This topic covers 32 research files spanning karpathy autoresearch & agent patterns.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -36,6 +36,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **01 -- Architecture (Forge v19)** (770 words) -- `raw/obsidian-docs/01-Architecture.md`
 - **13 -- Tools** (724 words) -- `raw/obsidian-docs/13-Tools.md`
 - **24 -- GPU Autoresearch System** (689 words) -- `raw/obsidian-docs/24-GPU-Autoresearch.md`
+- **April 2026 Cycle 18 — Competitor Audit + Council Honest Assessment** (604 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle18_competitor_audit.md`
 - **Research Scan: self-improvement-harness-2026-03-31** (530 words) -- `raw/research/self-improvement-harness-2026-03-31.md`
 - **18 -- Creative (RGWA)** (379 words) -- `raw/obsidian-docs/18-Creative-RGWA.md`
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`
@@ -95,6 +96,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - [[Mutation Operators]]
 - [[Platt Scaling]]
 - [[Political Alpha]]
+- [[Shot Chart]]
 - [[TabICL]]
 - [[Trading Floor]]
 - [[Tree Models]]

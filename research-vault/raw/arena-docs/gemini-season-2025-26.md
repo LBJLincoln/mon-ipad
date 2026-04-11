@@ -1,4 +1,4 @@
-# 2025-26 NBA Season — Agent GEMMA 3 27B
+# 2025-26 NBA Season — Agent GEMMA ANALYST
 
 ## Executive Summary
 - **Provider:** hf:google/gemma-3-27b-it
@@ -17,11 +17,11 @@
 ## Peer Comparison
 | Rank | Agent | Bankroll | ROI | Sharpe |
 |------|-------|----------|-----|--------|
-| 1 | Llama 3.3 70B | $9,337.23 | +9,237.2% | 3.859 |
-| 2 | Gemma 3 27B ** | $5,485.17 | +5,385.2% | 3.458 |
-| 3 | Mistral Large 2 | $3,807.54 | +3,707.5% | 4.957 |
-| 4 | Qwen 3 72B | $950.50 | +850.5% | 3.148 |
-| 5 | Claude Code CLI | $321.61 | +221.6% | 5.059 |
+| 1 | Llama Vanguard | $9,337.23 | +9,237.2% | 3.859 |
+| 2 | Gemma Analyst ** | $5,485.17 | +5,385.2% | 3.458 |
+| 3 | Mistral Maverick | $3,807.54 | +3,707.5% | 4.957 |
+| 4 | Qwen Strategist | $950.50 | +850.5% | 3.148 |
+| 5 | Claude Sentinel | $321.61 | +221.6% | 5.059 |
 
 ## Model Performance
 | Model | Bets | Profit |
