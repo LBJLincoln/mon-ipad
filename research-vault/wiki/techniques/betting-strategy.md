@@ -17,7 +17,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
-- **NBA Scientific Experiment Report** (2586 words) -- `raw/experiments/nba-experiment-2026-04-11.md`
+- **NBA Scientific Experiment Report** (2594 words) -- `raw/experiments/nba-experiment-2026-04-11.md`
 - **Political Trading Season 2025-26 -- Agent QWEN STRATEGIST** (2298 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
 - **Political Trading Season 2025-26 -- Agent GEMMA ANALYST** (2287 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
 - **Political Trading Season 2025-26 -- Agent LLAMA VANGUARD** (2271 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
