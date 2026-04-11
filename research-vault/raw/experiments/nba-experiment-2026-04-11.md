@@ -1,12 +1,12 @@
 # NBA Scientific Experiment Report
-**Generated:** 2026-04-11 00:03:37
+**Generated:** 2026-04-11 12:00:15
 **Engine:** scientific-experiment.py v1.0
 
 ## Part 1: Model Evaluation
 
 ### Consensus Model Performance
 - **Predictions evaluated:** 14
-- **Brier Score:** 0.18929 (95% CI: [0.09544, 0.28132])
+- **Brier Score:** 0.18929 (95% CI: [0.09876, 0.29123])
 - **Log Loss:** 0.5454
 - **AUC-ROC:** 0.7556
 - **ECE (Calibration):** 0.2152
@@ -55,42 +55,46 @@ No statistically significant differences found at p < 0.05.
 | Rank | Strategy | Sharpe | ROI% | PnL | Bets | MaxDD |
 |------|----------|--------|------|-----|------|-------|
 | 1 | Specialist: Spread | 3.333 | 45.1% | $127082.10 | 445 | 0.537 |
-| 2 | Half Kelly (edge>3%) | -2.335 | -16.7% | $-80.82 | 233 | 0.808 |
-| 3 | Quarter Kelly (edge>3%) | -2.335 | -17.0% | $-80.34 | 230 | 0.804 |
-| 4 | Fixed 2% | -2.335 | -22.6% | $-50.59 | 156 | 0.506 |
-| 5 | Value Hunter (edge>5%) | -2.335 | -16.7% | $-80.82 | 233 | 0.808 |
+| 2 | Half Kelly (edge>3%) | -2.335 | -24.1% | $-80.88 | 137 | 0.809 |
+| 3 | Quarter Kelly (edge>3%) | -2.335 | -21.3% | $-80.33 | 160 | 0.804 |
+| 4 | Fixed 2% | -2.335 | -16.5% | $-50.90 | 198 | 0.509 |
+| 5 | Value Hunter (edge>5%) | -2.335 | -24.1% | $-80.88 | 137 | 0.809 |
 
 ### Kelly Fraction Optimization
 | Fraction | Min Edge | Sharpe | ROI% | MaxDD | Bets |
 |----------|----------|--------|------|-------|------|
-| 0.50 | 3% | -2.335 | -16.7% | 0.808 | 233 |
-| 0.25 | 3% | -2.335 | -17.0% | 0.804 | 230 |
+| 0.50 | 3% | -2.335 | -24.1% | 0.809 | 137 |
+| 0.25 | 3% | -2.335 | -21.3% | 0.804 | 160 |
 
 ### Regression Analysis: PnL ~ confidence + edge + odds
 - **N observations:** 10000
-- **R-squared:** 0.0215
+- **R-squared:** 0.0561
 
 | Variable | Coefficient | Std Error | p-value | Sig |
 |----------|-------------|-----------|---------|-----|
-| intercept | -0.880337 | 2.333705 | 0.7060 |  |
-| confidence | -5.676557 | 3.384837 | 0.0936 |  |
-| edge_pct | 0.216754 | 0.017893 | 0.0000 | *** |
-| odds | 0.335744 | 0.336550 | 0.3185 |  |
+| intercept | -314.105172 | 16.908241 | 0.0000 | *** |
+| confidence | 447.240661 | 22.112879 | 0.0000 | *** |
+| edge_pct | -0.467759 | 0.103265 | 0.0000 | *** |
+| odds | 43.696244 | 2.920430 | 0.0000 | *** |
 
 ### Profit by Betting Category
 | Category | Bets | Win Rate | Total Profit | Avg Profit | Avg Edge |
 |----------|------|----------|--------------|------------|----------|
-| alt_spread_home_big | 3357 | 0.485 | +$15199.75 | $4.5278 | 35.1% |
-| alt_spread_away_big | 1769 | 0.483 | +$5755.98 | $3.2538 | 27.2% |
-| h1_ml_home | 660 | 0.504 | +$3738.02 | $5.6637 | 10.2% |
-| h1_ml_away | 20 | 0.700 | +$327.38 | $16.3691 | 5.2% |
-| team_total_home_under | 434 | 0.634 | +$123.99 | $0.2857 | 6.1% |
-| team_total_home_over | 104 | 0.740 | +$36.70 | $0.3528 | 3.5% |
-| total_under | 270 | 0.470 | -$51.76 | $-0.1917 | 4.4% |
-| ml_away | 280 | 0.139 | -$78.56 | $-0.2806 | 6.0% |
-| spread_away | 545 | 0.473 | -$674.97 | $-1.2385 | 23.3% |
-| ml_home | 1458 | 0.422 | -$875.04 | $-0.6002 | 10.9% |
-| spread_home | 1103 | 0.475 | -$1011.40 | $-0.9170 | 31.4% |
+| alt_spread_home_7.5 | 1291 | 0.508 | +$47841.36 | $37.0576 | 59.9% |
+| race_to_75_home | 457 | 1.000 | +$41715.96 | $91.2822 | 32.5% |
+| alt_spread_home_big | 1018 | 0.554 | +$39600.91 | $38.9007 | 41.5% |
+| race_to_100_home | 416 | 0.964 | +$37519.33 | $90.1907 | 29.8% |
+| q1_home | 539 | 0.809 | +$32479.64 | $60.2591 | 40.0% |
+| alt_spread_home_3.5 | 460 | 0.763 | +$31774.22 | $69.0744 | 32.6% |
+| q3_home | 520 | 0.811 | +$31186.16 | $59.9734 | 37.9% |
+| q2_home | 489 | 0.822 | +$30565.99 | $62.5071 | 34.6% |
+| alt_spread_away_7.5 | 766 | 0.526 | +$29802.56 | $38.9067 | 48.5% |
+| q4_home | 448 | 0.821 | +$27903.15 | $62.2838 | 31.7% |
+| h1_ml_home | 89 | 0.461 | +$18374.07 | $206.4502 | 19.8% |
+| alt_spread_away_3.5 | 199 | 0.844 | +$16379.40 | $82.3085 | 29.2% |
+| alt_spread_away_big | 495 | 0.533 | +$14664.37 | $29.6250 | 35.7% |
+| double_result_aa | 114 | 0.509 | +$3064.40 | $26.8807 | 23.7% |
+| home_and_over | 165 | 0.370 | +$1793.40 | $10.8691 | 20.7% |
 
 ### Optimal Threshold Search (Walk-Forward)
 - **Train/Test split:** 7000 / 3000 bets
@@ -98,25 +102,25 @@ No statistically significant differences found at p < 0.05.
 
 **Optimal Configuration:**
 - Min Confidence: 0.50
-- Min Edge: 0.0%
-- Kelly Fraction: 0.05
-- Train ROI: 9476.5% | Test ROI: 9900.0
-- Train Sharpe: 2.147 | Test Sharpe: 8.053
-- Test Max Drawdown: 0.36
+- Min Edge: 15.0%
+- Kelly Fraction: 0.25
+- Train ROI: 9462.1% | Test ROI: 9519.57
+- Train Sharpe: 9.915 | Test Sharpe: 19.559
+- Test Max Drawdown: 0.4453
 
 **Top 10 Configurations by Train Sharpe:**
 | Conf | Edge | Kelly | Train ROI | Train Sharpe | Bets |
 |------|------|-------|-----------|--------------|------|
-| 0.55 | 15% | 0.10 | 9244.3% | 3.075 | 2220 |
-| 0.55 | 8% | 0.10 | 9244.3% | 3.070 | 2587 |
-| 0.55 | 5% | 0.10 | 9244.3% | 3.025 | 3202 |
-| 0.55 | 10% | 0.10 | 9244.3% | 3.022 | 2398 |
-| 0.55 | 8% | 0.25 | 9275.6% | 3.015 | 2587 |
-| 0.55 | 8% | 0.50 | 9275.6% | 3.009 | 2587 |
-| 0.55 | 15% | 0.25 | 9275.6% | 2.992 | 2220 |
-| 0.55 | 15% | 0.50 | 9275.6% | 2.992 | 2220 |
-| 0.55 | 0% | 0.10 | 9244.3% | 2.983 | 3360 |
-| 0.55 | 2% | 0.10 | 9244.3% | 2.983 | 3360 |
+| 0.50 | 0% | 0.50 | 9175.2% | 10.134 | 4779 |
+| 0.50 | 2% | 0.50 | 9175.2% | 10.134 | 4779 |
+| 0.50 | 5% | 0.50 | 9175.2% | 10.134 | 4779 |
+| 0.50 | 8% | 0.50 | 9175.2% | 10.124 | 4775 |
+| 0.50 | 0% | 0.25 | 9177.3% | 10.118 | 4779 |
+| 0.50 | 2% | 0.25 | 9177.3% | 10.118 | 4779 |
+| 0.50 | 5% | 0.25 | 9177.3% | 10.118 | 4779 |
+| 0.50 | 8% | 0.25 | 9177.3% | 10.108 | 4775 |
+| 0.50 | 10% | 0.50 | 9175.2% | 10.102 | 4761 |
+| 0.50 | 10% | 0.25 | 9177.3% | 10.093 | 4761 |
 
 ### Betting Category Profile (from Trading Floor)
 | Category | Bets | Avg Stake | Avg Conf | Avg Agreement | Avg Edge | Forced |
@@ -130,10 +134,12 @@ No statistically significant differences found at p < 0.05.
 - CONSENSUS Brier 0.18929 is competitive. Target: < 0.21570 (ATR)
 - WARNING: Low-agreement bets outperform high-agreement. Consensus mechanism may be flawed.
 - BEST STRATEGY: Specialist: Spread (Sharpe 3.333, ROI 45.1%, MaxDD 0.537)
-- OPTIMAL THRESHOLDS: confidence >= 0.50, edge >= 0.0%, Kelly fraction = 0.05
-- OUT-OF-SAMPLE validation positive: ROI 9900.0%. Strategy is robust.
-- REGRESSION: edge_pct significantly increases PnL (beta=0.2168, p=0.0000)
-- PROFITABLE categories (6): alt_spread_home_big, alt_spread_away_big, h1_ml_home, h1_ml_away, team_total_home_under
-- AVOID categories (5): total_under, ml_away, spread_away, ml_home, spread_home
+- OPTIMAL THRESHOLDS: confidence >= 0.50, edge >= 15.0%, Kelly fraction = 0.25
+- OUT-OF-SAMPLE validation positive: ROI 9519.6%. Strategy is robust.
+- REGRESSION: confidence significantly increases PnL (beta=447.2407, p=0.0000)
+- REGRESSION: edge_pct significantly decreases PnL (beta=-0.4678, p=0.0000)
+- REGRESSION: odds significantly increases PnL (beta=43.6962, p=0.0000)
+- PROFITABLE categories (16): alt_spread_home_7.5, race_to_75_home, alt_spread_home_big, race_to_100_home, q1_home
+- AVOID categories (7): away_and_under, margin_6_10, ml_away, spread_home, ml_home
 - BEST AGENT: t1_llama70b (Brier 0.16302)
 - WORST AGENT: t1_qwen72b (Brier 0.25250) — consider removing or retraining

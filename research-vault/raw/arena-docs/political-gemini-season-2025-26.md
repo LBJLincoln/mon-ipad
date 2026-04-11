@@ -1,4 +1,4 @@
-# Political Trading Season 2025-26 -- Agent GEMMA ANALYST
+# Political Trading Season 2025-26 -- Agent GEMMA 3 27B
 
 ## Executive Summary
 - **Provider:** hf:google/gemma-3-27b-it
@@ -20,11 +20,11 @@
 ## Peer Comparison
 | Rank | Agent | Capital | ROI | Sharpe | Win Rate |
 |------|-------|---------|-----|--------|----------|
-| 1 | Llama Vanguard | $101,663.80 | +1.6638% | 10.247 | 59.3% |
-| 2 | Gemma Analyst ** | $100,957.44 | +0.9574% | 14.605 | 62.7% |
-| 3 | Qwen Strategist | $100,509.96 | +0.5100% | 13.279 | 55.8% |
-| 4 | Claude Sentinel | $100,030.02 | +0.0300% | 2.656 | 48.6% |
-| 5 | Mistral Maverick | $99,707.79 | -0.2922% | -13.441 | 36.7% |
+| 1 | Llama 3.3 70B | $101,663.80 | +1.6638% | 10.247 | 59.3% |
+| 2 | Gemma 3 27B ** | $100,957.44 | +0.9574% | 14.605 | 62.7% |
+| 3 | Qwen 3 72B | $100,509.96 | +0.5100% | 13.279 | 55.8% |
+| 4 | Claude Code CLI | $100,030.02 | +0.0300% | 2.656 | 48.6% |
+| 5 | Mistral Large 2 | $99,707.79 | -0.2922% | -13.441 | 36.7% |
 
 ## Strategy Performance
 | Strategy | Trades | P&L | Win Rate |
