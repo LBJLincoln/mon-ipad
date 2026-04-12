@@ -145,6 +145,17 @@ ever runs live without `dsr > 0 at p < 0.05 and pbo < 0.40`.
   serving commit 4be7b76. Likely either a silent build-error rollback or
   the Vercel project is pointing at a different branch.
 
+### Vision v20 — shipped 2026-04-12
+
+- ✅ **Per-agent bets pipeline** — `_generate_per_agent_bets` + `_extract_agent_slots` + `_normalize_category` in `trading-floor-v5.py`. 55 per-agent bets from 43 agents in iter 85, expected to grow with T1 fix.
+- ✅ **T1 PREMIUM fix** — all 14 T1 agents switched from dead providers (HF 402 + CLI timeout) to `cerebras/qwen-3-235b` (235B params). Fallback chain: cerebras → huggingface → google. Commit `08385ad5`.
+- ✅ **`/floor` social feed** — live Bloomberg-themed page consuming per-agent bets, tier/category filters, run stats strip, 20-agent bankroll leaderboard. Commit `40de9ec` + `b2a35ab`.
+- ✅ **`/agent/:id` profile** — per-agent stats card + bet history. Same commit.
+- ✅ **Cross-links** — SiteNav, /trading-floor breadcrumbs, /agent back-links, homepage card all link to /floor.
+- ✅ **Dead file cleanup** — 15 files / 2130 lines removed (9 stale arxiv scans, 5 outdated fleet docs, 1 dead GPU script). Commit `13cadcec`.
+- ⬜ /world pixel upgrade (XP.css + @pixi/react + Kenney 1-Bit) — researched, not started
+- ⬜ V4→V5 migration — 27 files still reference v4, autonomous-cycle.sh calls v4 iterate
+
 ### Current state (carried from 2026-04-07 14:30 UTC)
 
 ### NBA — green
