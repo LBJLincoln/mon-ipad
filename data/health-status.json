@@ -1,212 +1,153 @@
 {
-  "timestamp": "2026-04-12T17:00:00Z",
-  "brain_cycle": 97,
-  "brain_model": "claude-sonnet-4-6",
-  "cycle_rotation": "NBA: calibration_weight_boost (non-research cycle) | Political: Rotation B — integrate Cat43 into engine",
-  "nba_fleet": {
-    "total_islands": 6,
-    "online": 6,
-    "sleeping_503": 0,
-    "status_severity": "OK",
-    "fleet_best_brier": 0.22258,
-    "fleet_best_island": "S13 (nomos42-nba-evo-4, catboost) — gen 54, cycle 18",
-    "all_time_best_brier": 0.2157,
+  "timestamp": "2026-04-12T20:15:00Z",
+  "cycle": "2026-04-12T20:00Z",
+  "brain_version": "sonnet-4.6",
+  "fleet": {
+    "best_brier": 0.22112,
+    "best_island": "S12",
     "checkpoint_threshold": 0.21837,
-    "gap_to_checkpoint": 0.00421,
-    "gap_to_target_020": 0.02258,
-    "stagnation_detected": false,
-    "stagnation_action": "None — S15 stagnation=7 (threshold: 15, not triggered)",
-    "diversify_commands": "NONE SENT",
-    "engine_parity": "All 6 islands: v4 ISLAND+NSGA-II confirmed",
-    "supabase_checkpoint": "NOT TRIGGERED — best active 0.22258 above threshold 0.21837",
-    "current_islands": {
-      "S10": {
-        "url": "nomos42-nba-quant.hf.space",
-        "role": "exploitation",
-        "status": "BUILDING_FEATURES",
-        "current_gen": 0,
-        "current_brier": 1.0,
-        "last_known_brier": 0.22412,
-        "started_at": "2026-04-12T15:01:12Z",
-        "mut_rate": 0.09,
-        "target_features": 63
-      },
-      "S11": {
-        "url": "nomos42-nba-quant-2.hf.space",
-        "role": "exploration",
-        "status": "EVOLVING",
-        "cycle": 4,
-        "current_gen": 10,
-        "current_brier": 0.22363,
-        "stagnation": 0,
-        "best_model": "random_forest",
-        "features": 60,
-        "mutation_rate": 0.1194
-      },
-      "S12": {
-        "url": "nomos42-nba-evo-3.hf.space",
-        "role": "extra_trees",
-        "status": "EVOLVING",
-        "cycle": 1,
-        "current_gen": 2,
-        "current_brier": 0.22479,
-        "stagnation": 0,
-        "best_model": "xgboost",
-        "features": 68,
-        "mutation_rate": 0.0798
-      },
-      "S13": {
-        "url": "nomos42-nba-evo-4.hf.space",
-        "role": "catboost",
-        "status": "EVOLVING",
-        "cycle": 18,
-        "current_gen": 54,
-        "current_brier": 0.22258,
-        "stagnation": 0,
-        "best_model": "catboost",
-        "features": 51,
-        "mutation_rate": 0.1144,
-        "watch": "FLEET BEST ACTIVE"
-      },
-      "S14": {
-        "url": "nomos42-nba-evo-5.hf.space",
-        "role": "lightgbm",
-        "status": "EVOLVING",
-        "cycle": 36,
-        "current_gen": 106,
-        "current_brier": 0.22325,
-        "stagnation": 0,
-        "best_model": "xgboost",
-        "features": 55,
-        "mutation_rate": 0.1114
-      },
-      "S15": {
-        "url": "nomos42-nba-evo-6.hf.space",
-        "role": "wide_search",
-        "status": "EVOLVING",
-        "cycle": 18,
-        "current_gen": 54,
-        "current_brier": 0.23095,
-        "stagnation": 7,
-        "best_model": "extra_trees",
-        "features": 52,
-        "pop_size": 50,
-        "mutation_rate": 0.13,
-        "watch": "STAGNATION=7 — monitor, diversify if reaches 15"
-      }
-    }
+    "checkpoint_triggered": false,
+    "gap_to_target": 0.02112,
+    "gap_to_checkpoint": 0.00275
   },
-  "political_fleet": {
-    "total_islands": 4,
-    "online": 2,
-    "down": 2,
-    "down_islands": [
-      "nomos42-political-alpha-3.hf.space (NOT_FOUND_HF — 9+ cycles)",
-      "nomos42-political-alpha-4.hf.space (NOT_FOUND_HF — 9+ cycles)"
-    ],
-    "fleet_current_best_brier": 0.24996,
-    "fleet_all_time_best_brier": 0.23134,
-    "target_brier": 0.22,
-    "engine_version": "v3.21-political-43cat-fec-national-party",
-    "islands": {
-      "P1": {
-        "url": "nomos42-political-alpha.hf.space",
-        "role": "exploitation",
-        "status": "EVOLVING",
-        "cycle": 460,
-        "generation": 1378,
-        "best_brier": 0.24996,
-        "best_roi": 0.0009,
-        "best_sharpe": 0.0853,
-        "stagnation": 0,
-        "best_model": "xgboost_brier",
-        "features": 67,
-        "mutation_rate": 0.1456,
-        "events_processed": 1180,
-        "feature_candidates": 272
-      },
-      "P2": {
-        "url": "nomos42-political-alpha-2.hf.space",
-        "role": "exploration",
-        "status": "EVOLVING",
-        "cycle": 316,
-        "generation": 948,
-        "best_brier": 0.25223,
-        "best_roi": 0.0045,
-        "best_sharpe": 0.4477,
-        "stagnation": 0,
-        "best_model": "lightgbm",
-        "features": 60,
-        "mutation_rate": 0.1374,
-        "events_processed": 1180,
-        "feature_candidates": 272
-      },
-      "P3": {
-        "status": "NOT_FOUND_HF",
-        "down_cycles": 9,
-        "action_required": "Manual HF Space creation — nomos42/political-alpha-3 not found via API"
-      },
-      "P4": {
-        "status": "NOT_FOUND_HF",
-        "down_cycles": 9,
-        "action_required": "Manual HF Space creation — nomos42/political-alpha-4 not found via API"
-      }
-    }
-  },
-  "cycle_97_actions": {
-    "nba_improvement": {
-      "type": "calibration_config",
-      "title": "2x isotonic_temporal calibration weight in GA (7→14 init, 8→15 mutate)",
-      "rationale": "MDPI 2026 research: LR+isotonic_temporal achieves Brier ~0.199 on NBA data. Previously at 7-8% population weight; now at 14-15%. Affects hf-space/app.py Individual.__init__ and mutate(). Compound improvement over 50+ generations as more individuals explore isotonic calibration.",
-      "file": "hf-space/app.py",
-      "repo": "nomos-nba-agent",
-      "expected_brier_delta": "-0.001 to -0.003 over 50+ generations",
-      "difficulty": "low — weights only, no structural change",
-      "stagnation_check": "S15=7 (threshold 15) — no action",
-      "checkpoint_check": "S13 0.22258 — above 0.21837 threshold — no Supabase checkpoint"
+  "islands": {
+    "S10": {
+      "name": "nomos42-nba-quant",
+      "url": "nomos42-nba-quant.hf.space",
+      "role": "exploitation",
+      "status": "BUILDING_FEATURES",
+      "generation": 0,
+      "best_brier": 1.0,
+      "best_roi": 0.0,
+      "stagnation_gens": 0,
+      "features": 0,
+      "model": "none",
+      "mut_rate": 0.09,
+      "cx_rate": 0.80,
+      "pop": 60,
+      "note": "Just restarted — building features phase",
+      "alert": false
     },
-    "political_improvement": {
-      "type": "code_change",
-      "rotation": "B — review engine.py + add features from new data",
-      "title": "Cat43 FecNationalPartyCluster integrated into political_engine.py (v3.20→v3.21)",
-      "file": "features/political_engine.py",
-      "repo": "nomos-political-alpha",
-      "changes": [
-        "ENGINE_VERSION: v3.20 → v3.21-political-43cat-fec-national-party",
-        "43 categories (was 42), ~3,500 features (was ~3,476)",
-        "Lazy import FecNationalPartyCluster in __init__",
-        "Added ('43_fec_national_party', self._cat43.extract) to categories_ext"
-      ],
-      "cat43_features": 24,
-      "cat43_blocks": ["A: National party committee routing (10f)", "B: SEC Form4 insider cluster (10f)", "C: Triple convergence composites (4f)"],
-      "expected_brier_delta": "-0.002 to -0.005"
+    "S11": {
+      "name": "nomos42-nba-quant-2",
+      "url": "nomos42-nba-quant-2.hf.space",
+      "role": "exploration",
+      "status": "EVOLVING",
+      "cycle": 10,
+      "generation": 30,
+      "best_brier": 0.22363,
+      "best_roi": 0.2797,
+      "best_sharpe": 4.5799,
+      "stagnation_gens": 0,
+      "features": 60,
+      "model": "random_forest",
+      "mut_rate": 0.117,
+      "cx_rate": 0.70,
+      "pop": 60,
+      "alert": false
     },
-    "cross_repo_insight": {
-      "direction": "Bidirectional this cycle",
-      "nba_to_political": "isotonic_temporal weight pattern ports to political GA next cycle (Rotation C)",
-      "political_to_nba": "P1 best_model=xgboost_brier at gen 1378 confirms Brier-objective works cross-domain. Cat43 triple-convergence concept (PAC+committee+insider) inspires NBA Cat52 (shot-zone+market+fatigue triple signal)"
+    "S12": {
+      "name": "nomos42-nba-evo-3",
+      "url": "nomos42-nba-evo-3.hf.space",
+      "role": "extra_trees_specialist",
+      "status": "EVOLVING",
+      "cycle": 11,
+      "generation": 32,
+      "best_brier": 0.22112,
+      "best_roi": 0.3139,
+      "best_sharpe": 9.8061,
+      "stagnation_gens": 0,
+      "features": 67,
+      "model": "extra_trees",
+      "mut_rate": 0.1151,
+      "pop": 60,
+      "pareto_front": 10,
+      "fleet_best": true,
+      "alert": false
+    },
+    "S13": {
+      "name": "nomos42-nba-evo-4",
+      "url": "nomos42-nba-evo-4.hf.space",
+      "role": "catboost_specialist",
+      "status": "EVOLVING",
+      "cycle": 35,
+      "generation": 103,
+      "best_brier": 0.22258,
+      "best_roi": 0.3325,
+      "best_sharpe": 10.25,
+      "stagnation_gens": 0,
+      "features": 44,
+      "model": "extra_trees",
+      "mut_rate": 0.1427,
+      "pop": 60,
+      "note": "Hard reset at cycle 26 led to renewal",
+      "alert": false
+    },
+    "S14": {
+      "name": "nomos42-nba-evo-5",
+      "url": "nomos42-nba-evo-5.hf.space",
+      "role": "lightgbm_specialist",
+      "status": "EVOLVING",
+      "cycle": 70,
+      "generation": 210,
+      "best_brier": 0.22325,
+      "best_roi": 0.2885,
+      "best_sharpe": 5.6979,
+      "stagnation_gens": 0,
+      "features": 55,
+      "model": "xgboost",
+      "mut_rate": 0.1494,
+      "pop": 60,
+      "note": "Hard reset at cycle 69, stable",
+      "alert": false
+    },
+    "S15": {
+      "name": "nomos42-nba-evo-6",
+      "url": "nomos42-nba-evo-6.hf.space",
+      "role": "wide_search",
+      "status": "EVOLVING",
+      "cycle": 28,
+      "generation": 84,
+      "best_brier": 0.23095,
+      "best_roi": 0.2017,
+      "best_sharpe": 15.9076,
+      "stagnation_gens": 7,
+      "features": 52,
+      "model": "extra_trees",
+      "mut_rate": 0.13,
+      "pop": 50,
+      "pareto_front": 17,
+      "alert": "WATCH — stagnation at 7 (threshold 15)",
+      "diversify_at": 15
     }
   },
-  "alerts": [
-    "INFO: S10 restarted — BUILDING_FEATURES (auto, expected)",
-    "WARN: S15 stagnation=7 — approaching threshold. Diversify if =15 next cycle.",
-    "CRITICAL: P3 and P4 NOT_FOUND HuggingFace (9 cycles). Requires MANUAL user action to create spaces.",
-    "INFO: Cat43 FecNationalPartyCluster deployed — political_engine v3.21",
-    "INFO: isotonic_temporal weight doubled (7→14, 8→15) in NBA GA per MDPI 2026 research"
+  "actions_this_cycle": [
+    "No diversify needed: max stagnation = 7 (S15), threshold = 15",
+    "No checkpoint: best Brier 0.22112 > threshold 0.21837",
+    "S10 restarted naturally — building features normally",
+    "Research proposal written: market-odds-calibration-features"
   ],
-  "next_cycle_priority": [
-    "1. NBA: Check if any island beats 0.21837 checkpoint — Supabase if yes",
-    "2. NBA: Monitor S15 stagnation (now=7) — diversify POST if reaches 15",
-    "3. NBA: Research cycle 98 — search momentum/rolling features (Nature Sci Reports 2025)",
-    "4. Political: Rotation C — port NBA calibration weights (venn_abers=22%, beta=22%, isotonic=14%) to political GA",
-    "5. Political: Add Cat43 data fetch to ops/fetch_political_data.py (FEC party-accounts + OpenInsider)",
-    "6. CRITICAL: P3/P4 manual HF Space recreation"
+  "next_actions": [
+    "Monitor S15 stagnation — diversify if reaches 15",
+    "Implement cat55_market_calibration in features/engine.py if historical-odds data available",
+    "Monitor S12 progress (fleet best, gen 32 — early stage)",
+    "S10 should be evolving by next cycle"
   ],
-  "cross_repo_health": {
-    "nba_engine_version": "v4 ISLAND+NSGA-II (6/6 confirmed)",
-    "political_engine_version": "v3.21-political-43cat-fec-national-party (DEPLOYED cycle 97)",
-    "nba_calibration_mix": "isotonic_temporal=14%, venn_abers=22%, beta=22%, none=11%, sigmoid=12%",
-    "technique_ported_cycle97": "isotonic_temporal weight boost (NBA) + Cat43 triple-convergence insight (Political→NBA Cat52 concept)",
-    "ecosystem_uptime": "NBA 6/6, Political 2/4 (P3/P4 down 9 cycles)"
+  "supabase_issues": {
+    "space_id_column_missing": true,
+    "affected_islands": ["S14", "S15"],
+    "workaround": "Individual generation logs still complete successfully"
+  },
+  "research": {
+    "cycle_topic": "NBA prediction techniques 2025-2026",
+    "key_finding": "Bookmaker implied probability features push Brier from 0.221 to 0.200",
+    "paper": "MDPI Information 2025 doi:10.3390/info17010056",
+    "proposal_file": "data/research-proposals/2026-04-12-market-odds-calibration-features.md",
+    "action_required": "Check data/historical-odds/ for existing moneyline data before implementing"
+  },
+  "ecosystem_summary": {
+    "nba_fleet_health": "GOOD",
+    "political_fleet_health": "STABLE",
+    "overall": "GREEN"
   }
 }
