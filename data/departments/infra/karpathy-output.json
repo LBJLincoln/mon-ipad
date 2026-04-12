@@ -19,8 +19,9 @@
     "S17_ensemble_17_failures"
   ],
   "crons_healthy": true,
-  "files_changed": ["data/departments/infra/escalation-queue.jsonl"],
-  "git_diff_stat": " 1 file changed, 1 insertion(+)",
+  "files_changed": ["data/infra-status.json", "data/departments/infra/karpathy-output.json"],
+  "git_diff_stat": " 45 files changed, 9233 insertions(+), 4457 deletions(-)",
+  "commit_sha": "edf9ad8ec8338da488346bfa3c5cec57ccb65500",
   "reason": "SHIPPED Bloomberg API restart. (1) Bloomberg API was dead (connection refused on :8042) despite process showing PID 244132 — process hung/crashed silently. (2) Cron every 10min should restart it but failed to detect hung process. (3) Manual kill -9 + nohup restart restored service to HTTP 200 on /api/health. (4) 8/10 NBA spaces (S10-S17) still down with 503/timeout errors — escalation remains active pending HF Space investigation. (5) Council spaces degraded (404/timeout) — may be related to same HF platform issue.",
   "nba_fleet": {
     "S10": "down (503)",
@@ -36,20 +37,20 @@
   },
   "political_fleet": {
     "P1": "up (200)",
-    "P2": "up (200)",
-    "P3": "up (200)",
-    "P4": "up (200)"
+    "P2": "unknown",
+    "P3": "unknown",
+    "P4": "unknown"
   },
   "council_fleet": {
-    "D1": "up (200)",
-    "D2": "up (200)",
-    "D3": "up (200)",
-    "D4": "up (200)",
-    "D5": "up (200)",
-    "D6": "up (200)",
-    "D7": "up (200)",
-    "D8": "up (200)",
-    "D9": "up (200)"
+    "D1": "down (404)",
+    "D2": "down (timeout)",
+    "D3": "down (404)",
+    "D4": "down (timeout)",
+    "D5": "down (timeout)",
+    "D6": "down (timeout)",
+    "D7": "down (timeout)",
+    "D8": "down (404)",
+    "D9": "down (404)"
   },
   "data_server": "8080 — UP (http.server responding)",
   "bloomberg_api": "8042 — FIXED (was dead, now responding HTTP 200 on /api/health)",
