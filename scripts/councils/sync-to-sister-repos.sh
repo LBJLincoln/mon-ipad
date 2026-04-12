@@ -218,3 +218,30 @@ FIX_LOG
 }
 
 auto_fix_engine_parity
+
+# ─── MON-IPAD BACKLOG CHECK ──────────────────────────────────────────────────
+# Warn when mon-ipad has accumulated too many uncommitted data/ writes.
+# Threshold: 40 dirty files. At 60+ files the data/ council/arena writes are
+# at crash-loss risk if the VM goes down before a commit.
+check_monpad_backlog() {
+    local dirty_count
+    dirty_count=$(cd "${ROOT}" && git status --short | wc -l 2>/dev/null || echo 0)
+    local threshold=40
+    if [[ "${dirty_count}" -gt "${threshold}" ]]; then
+        echo "[sync] WARNING: mon-ipad has ${dirty_count} dirty files (threshold ${threshold}). Data backlog — commit data/ writes to avoid crash-loss." >> "${LOG}"
+        cat > "${ROOT}/data/departments/cross-repo/monpad-backlog-alert.json" <<BACKLOG_JSON
+{
+  "timestamp": "$(date -u '+%Y-%m-%dT%H:%M:%SZ')",
+  "dirty_count": ${dirty_count},
+  "threshold": ${threshold},
+  "severity": "WARNING",
+  "message": "mon-ipad has ${dirty_count} uncommitted files (>${threshold} threshold). Suggested fix: cd /home/termius/mon-ipad && git add data/ && git commit -m 'data: commit accumulated council/arena writes'",
+  "risk": "crash-loss of data/ council/arena writes if VM reboots before commit"
+}
+BACKLOG_JSON
+    else
+        echo "[sync] mon-ipad backlog OK: ${dirty_count} dirty files (threshold ${threshold})" >> "${LOG}"
+    fi
+}
+
+check_monpad_backlog

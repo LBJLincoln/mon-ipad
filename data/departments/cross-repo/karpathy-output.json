@@ -1,15 +1,15 @@
 {
-  "timestamp": "2026-04-12T01:30:00Z",
+  "timestamp": "2026-04-12T07:00:00Z",
   "agent": "D9-cross-repo-hermes",
-  "iteration": 18,
+  "iteration": 19,
   "repos_checked": [
     {
       "repo": "mon-ipad",
       "path": "/home/termius/mon-ipad",
       "engine_version": "v3.1-54cat",
       "engine_md5": "e713429296c0a6bfaf362071d8bda535",
-      "dirty_files": 24,
-      "notes": "24 dirty (data/ writes accumulating). CLAUDE.md fresh (2026-04-11, 1 day old). engine.py committed and clean."
+      "dirty_files": 60,
+      "notes": "60 dirty files (up from 24 in iter18 — significant backlog jump). CLAUDE.md fresh (2026-04-11). engine.py clean and committed. Crash-loss risk on data/ writes."
     },
     {
       "repo": "hf-space",
@@ -20,10 +20,10 @@
     {
       "repo": "nomos-nba-agent",
       "path": "/home/termius/nomos-nba-agent",
-      "engine_md5": "71d937a56c1bbf96b4dadf227ddf4c3e",
+      "engine_md5": "4ca9b14cc63d9d37eaa2ddce70f2c14c",
       "engine_dirty": true,
       "dirty_files": 42,
-      "notes": "NEW: engine.py is DIRTY (+29/-24 unstaged lines). Hash changed from a5288441 (iter17) to 71d937a56c. Last 3 commits: revert of /home/termius->lahargnedebartoli path fix. Do NOT copy from canonical until engine.py is committed. Still the semantic leader for vig_dist55/density logic."
+      "notes": "ESCALATED: engine.py DIRTY (+55/-38 unstaged, up from +29/-24 in iter18). Hash changed 71d937a56c->4ca9b14cc6. Divergence is widening. Block copy until committed. Still semantic leader for vig_dist55/density logic."
     },
     {
       "repo": "nomos-dashboard",
@@ -32,13 +32,13 @@
       "dirty_files": 0,
       "claude_md_age_days": 9,
       "claude_md_last_modified": "2026-04-03",
-      "notes": "14th consecutive clean iteration. CLAUDE.md now 9 days old (HIGH stale). Misses 8-island fleet (S16+S17), TF v5, Trading Floor real data."
+      "notes": "15th consecutive clean iteration. CLAUDE.md 9 days old (HIGH stale). Still misses 8-island fleet (S16+S17), TF v5, Trading Floor real data."
     },
     {
       "repo": "nomos-political-alpha",
       "path": "/home/termius/nomos-political-alpha",
       "dirty_files": 3,
-      "notes": "IMPROVED: 7 -> 3 dirty files (partial commit activity). Low priority."
+      "notes": "3 dirty files (stable vs iter18). Low priority."
     },
     {
       "repo": "rgwa",
@@ -51,16 +51,16 @@
     "ok": false,
     "mon_ipad_md5": "e713429296c0a6bfaf362071d8bda535",
     "hf_space_md5": "e713429296c0a6bfaf362071d8bda535",
-    "nomos_nba_agent_md5": "71d937a56c1bbf96b4dadf227ddf4c3e",
+    "nomos_nba_agent_md5": "4ca9b14cc63d9d37eaa2ddce70f2c14c",
     "nomos_nba_agent_engine_dirty": true,
     "mon_ipad_hf_space_parity": true,
     "severity": "HIGH",
-    "consecutive_iterations_broken": 7,
+    "consecutive_iterations_broken": 8,
     "divergence_type": "semantic_drift + canonical_dirty",
-    "new_this_iter": "nomos-nba-agent engine.py is now DIRTY (+29/-24 unstaged). Copying from it would propagate uncommitted changes. Block copy until committed.",
+    "new_this_iter": "Unstaged diff grew +29/-24 (iter18) → +55/-38 (iter19). Hash changed 71d937a56c → 4ca9b14cc6. Divergence is actively widening.",
     "canonical": "nomos-nba-agent",
-    "fix_needed": "1) Commit nomos-nba-agent/features/engine.py first (resolve unstaged changes). 2) Then copy committed version to mon-ipad + hf-space. 3) Verify MD5 parity. Do NOT copy dirty working tree.",
-    "progress_vs_iter17": "nomos-nba-agent hash changed a5288441->71d937a56c due to revert of path fix. Engine is now also DIRTY. Parity still broken (7th iter). Added canonical_dirty check to sync script to prevent unsafe copy."
+    "fix_needed": "1) Commit nomos-nba-agent/features/engine.py (resolve +55/-38 unstaged). 2) Copy committed version to mon-ipad + hf-space. 3) Verify MD5 parity. Do NOT copy dirty working tree.",
+    "progress_vs_iter18": "Hash changed again (71d937a56c->4ca9b14cc6), unstaged diff grew significantly. Parity broken 8th consecutive iteration. Situation escalating."
   },
   "stale_docs_found": [
     {
@@ -68,38 +68,42 @@
       "age_days": 9,
       "last_modified": "2026-04-03",
       "severity": "HIGH",
-      "note": "9 days old (+1 from iter17). Misses 8-island fleet (S16+S17), TF v5, Trading Floor real data. 14 consecutive clean iters but docs lag."
+      "note": "9 days old (unchanged from iter18). Misses 8-island fleet (S16+S17), TF v5, Trading Floor real data. 15 consecutive clean iters but docs lag."
     },
     {
       "file": "/home/termius/nomos-nba-agent/README.md",
       "age_days": 29,
       "last_modified": "2026-03-14",
       "severity": "LOW",
-      "note": "29 days old (unchanged from iter17). Misses v19 arch / 8 islands / S16+S17."
+      "note": "29 days old (unchanged from iter18). Misses v19 arch / 8 islands / S16+S17."
     }
   ],
   "stale_docs_count": 2,
   "this_iter_action": {
     "file": "scripts/councils/sync-to-sister-repos.sh",
-    "change": "1) Added dirty-canonical guard: checks if nomos-nba-agent/features/engine.py has unstaged changes before recommending copy. Logs WARNING when canonical is dirty. 2) Removed stale > 400 fix advice from main divergence log (that issue fixed in iter16). 3) Added canonical_dirty field to engine-parity.json output.",
-    "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 12 ++++++++++--\n 1 file changed, 10 insertions(+), 2 deletions(-)"
+    "change": "Added check_monpad_backlog() function: fires after auto_fix_engine_parity, counts mon-ipad dirty files, warns and writes monpad-backlog-alert.json when count exceeds 40. Triggered by iter19 jump from 24→60 dirty files (crash-loss risk).",
+    "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 27 +++++++++++++++++++++++++++\n 1 file changed, 27 insertions(+)"
   },
   "status": "shipped",
   "files_changed": [
     "scripts/councils/sync-to-sister-repos.sh",
     "data/departments/cross-repo/karpathy-output.json"
   ],
-  "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 12 ++++++++++--\n 1 file changed, 10 insertions(+), 2 deletions(-)",
+  "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 27 +++++++++++++++++++++++++++\n 1 file changed, 27 insertions(+)",
   "parity_score": 0.60,
-  "health_score": 67,
-  "health_delta": -1,
+  "health_score": 65,
+  "health_delta": -2,
   "commit_sha": null,
   "reason_if_no_op": "",
-  "summary": "Iter18: NEW RISK — nomos-nba-agent engine.py is now DIRTY (+29/-24 unstaged lines after path-fix revert). Hash changed a5288441->71d937a56c. Parity broken 7th consecutive iter. Health -1 (68->67) due to dirty canonical escalating copy risk. Fix: sync script now has dirty-canonical guard + removed stale > 400 log message. nomos-political-alpha improved 7->3 dirty files. nomos-dashboard still clean (14th iter).",
+  "summary": "Iter19: mon-ipad dirty files jumped 24→60 (new crash-loss risk). nomos-nba-agent engine.py unstaged diff grew +29/-24 → +55/-38, hash changed again (71d937a56c→4ca9b14cc6). Parity broken 8th consecutive iteration. Health -2 (67→65). Fix: added check_monpad_backlog() to sync script — warns + writes alert JSON when mon-ipad exceeds 40 dirty files. nomos-dashboard clean (15th iter), political-alpha stable at 3.",
   "remaining_issues": [
     {
       "priority": "CRITICAL",
-      "action": "Commit nomos-nba-agent/features/engine.py first (resolve +29/-24 unstaged changes from path-fix revert). Then copy to mon-ipad + hf-space. 7th iteration broken. BLOCK copy while dirty."
+      "action": "Commit nomos-nba-agent/features/engine.py (resolve +55/-38 unstaged, 8th broken iter). Block copy while dirty. Parity gap actively widening."
+    },
+    {
+      "priority": "HIGH",
+      "action": "Commit mon-ipad data/ backlog: 60 dirty files (up from 24). Council/arena writes at crash-loss risk. Run: git add data/ && git commit -m 'data: commit accumulated writes'."
     },
     {
       "priority": "HIGH",
@@ -107,11 +111,7 @@
     },
     {
       "priority": "MEDIUM",
-      "action": "Commit mon-ipad data/ backlog (24 dirty files). Council/data writes accumulating."
-    },
-    {
-      "priority": "MEDIUM",
-      "action": "Commit nomos-nba-agent dirty files (~42 stable, engine.py now dirty too)."
+      "action": "Commit nomos-nba-agent dirty files (~42 stable including dirty engine.py)."
     },
     {
       "priority": "LOW",
