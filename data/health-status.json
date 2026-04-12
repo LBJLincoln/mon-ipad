@@ -1,14 +1,14 @@
 {
-  "timestamp": "2026-04-11T20:30:00Z",
-  "brain_cycle": 94,
+  "timestamp": "2026-04-12T00:40:00Z",
+  "brain_cycle": 95,
   "brain_model": "claude-sonnet-4-6",
-  "cycle_rotation": "C — Port NBA techniques to political | SHAP-seeded stagnation injection deployed",
+  "cycle_rotation": "A — NBA research (SHAP efficiency ratios Cat51) | D — Political Rotation-D data pipeline health (filing velocity)",
   "nba_fleet": {
     "total_islands": 6,
     "online": 0,
     "sleeping_503": 6,
     "status_severity": "CRITICAL",
-    "note": "All 6 NBA islands 503 for 5th+ consecutive cycle. Wake pings sent again this cycle. keepalive-spaces.sh cron still non-functional. Islands show Updated:11 Apr 2026 on HF Hub — recently modified but sleeping. Manual intervention needed to restore keepalive cron.",
+    "note": "All 6 NBA islands 503 for 6th consecutive cycle. Wake pings sent again. keepalive-spaces.sh cron broken. HF Hub shows all spaces last updated Apr 11, 2026 — recently modified but consistently sleeping. URGENT: manual VM cron repair needed.",
     "fleet_best_brier": 0.22249,
     "fleet_best_island": "S11 (nomos42-nba-quant-2, exploration) — last seen Apr 10",
     "all_time_best_brier": 0.2157,
@@ -18,7 +18,8 @@
     "stagnation_detected": false,
     "stagnation_action": "Cannot check — islands sleeping",
     "wake_pings_sent": true,
-    "wake_ping_timestamp": "2026-04-11T20:10Z",
+    "wake_ping_timestamp": "2026-04-12T00:10Z",
+    "consecutive_503_cycles": 6,
     "last_known_islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
@@ -52,7 +53,11 @@
         "last_brier": 0.22316,
         "last_gen": 1027,
         "last_seen": "2026-04-10T16:45Z",
-        "pending_improvement": "Auto-calibration Brier-CV (cycle 93) + overround features (cycle 94) — deploy when awake"
+        "pending_improvements": [
+          "Auto-calibration Brier-CV (cycle 93)",
+          "Overround market-spread features (cycle 94)",
+          "Cat51 SHAP efficiency ratios (cycle 95) — deploy when awake"
+        ]
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
@@ -69,7 +74,10 @@
         "last_brier": 0.21906,
         "last_gen": 864,
         "last_seen": "2026-04-10T16:45Z",
-        "watch": "NEAREST TO CHECKPOINT — gap 0.00069"
+        "watch": "NEAREST TO CHECKPOINT — gap 0.00069",
+        "pending_improvements": [
+          "Cat51 SHAP efficiency ratios (cycle 95) — deploy when awake"
+        ]
       }
     }
   },
@@ -78,8 +86,8 @@
     "online": 2,
     "down": 2,
     "down_islands": [
-      "nomos42-political-alpha-3.hf.space (NOT_FOUND_HF — 6 cycles)",
-      "nomos42-political-alpha-4.hf.space (NOT_FOUND_HF — 6 cycles)"
+      "nomos42-political-alpha-3.hf.space (NOT_FOUND_HF — 7 cycles)",
+      "nomos42-political-alpha-4.hf.space (NOT_FOUND_HF — 7 cycles)"
     ],
     "fleet_all_time_best_brier": 0.23134,
     "fleet_current_best_brier": 0.24996,
@@ -90,76 +98,101 @@
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
         "status": "ONLINE",
-        "cycle": 201,
-        "generation": 601,
+        "cycle": 254,
+        "generation": 761,
         "best_brier": 0.24996,
         "stagnation": 0,
-        "delta_from_last_cycle": "+41 cycles, +121 gens, progressing"
+        "delta_from_last_cycle": "+53 cycles, +160 gens — actively evolving"
       },
       "P2": {
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
         "status": "ONLINE",
-        "cycle": 78,
-        "generation": 234,
+        "cycle": 139,
+        "generation": 415,
         "best_brier": 0.25223,
         "stagnation": 0,
         "all_time_best": 0.23134,
-        "delta_from_last_cycle": "+48 cycles, +144 gens, progressing"
+        "model_type": "LightGBM (extra_trees top performer)",
+        "features": 60,
+        "delta_from_last_cycle": "+61 cycles, +181 gens — actively evolving"
       },
       "P3": {
         "status": "NOT_FOUND_HF",
-        "consecutive_down_cycles": 6,
+        "consecutive_down_cycles": 7,
         "action_required": "Manual HF Space creation"
       },
       "P4": {
         "status": "NOT_FOUND_HF",
-        "consecutive_down_cycles": 6,
+        "consecutive_down_cycles": 7,
         "action_required": "Manual HF Space creation"
       }
     }
   },
-  "cycle_94_actions": {
+  "cycle_95_actions": {
+    "nba_improvement": {
+      "type": "research_proposal",
+      "rotation": "A — NBA research (every-other-cycle)",
+      "title": "SHAP-Informed Efficiency Ratio Features (Cat51)",
+      "file": "data/research-proposals/2026-04-12-cycle95-shap-efficiency-ratio-features-cat51.md",
+      "source": "Nature Scientific Reports 2025 stacked ensemble paper (PMC12357926) — SHAP shows FGA/2PA have NEGATIVE impact; efficiency ratios (eFG%, TS%, FG/FGA) outperform raw counts",
+      "key_features": [
+        "tc51_efg_vs_opp_def (efficiency above opponent defensive baseline)",
+        "tc51_ts_momentum_10g (true shooting % trend vs season avg)",
+        "tc51_fg_efficiency (FG made / FGA ratio)",
+        "tc51_shot_quality_adj (zone-weighted scoring per attempt)",
+        "tc51_ppa (points per shot attempt comprehensive)",
+        "tc51_reb_leverage (rebound efficiency vs opponent)",
+        "tc51_paint_perimeter_ratio (2PA/3PA style indicator)",
+        "tc51_opp_fga_gen_ratio (defensive efficiency)"
+      ],
+      "candidates_added": 24,
+      "engine_version_target": "v3.1-60cat",
+      "estimated_brier_delta": "-0.002 to -0.004",
+      "deploy_when": "S13/S15 wake from 503 sleep"
+    },
     "political_improvement": {
       "type": "code_change",
-      "rotation": "C — Port proven NBA techniques (calibration, feature selection, GA config)",
-      "title": "SHAP-seeded stagnation injection — Individual.__init__ now accepts feature_importance",
-      "file": "hf-space/app.py",
-      "technique": "Individual.__init__ extended with feature_importance param. All 4 fresh-individual creation sites during stagnation injection (levels 3, 7) and diversity restart now pass _feature_importance. High-importance features get 0.5x-2x probability boost vs base rate.",
-      "impact_estimate": "~30% faster recovery after hard resets. Expected: reach 0.23 Brier 30-50 gens sooner after restart.",
-      "ported_from": "NBA directed-mutation (mutate(rate, feature_importance=_feature_importance)) extended to initialization",
-      "affected_lines": ["Individual.__init__ (line ~452)", "stagnation>=7 injection", "stagnation>=3 injection", "DIVERSITY_RESTART injection"]
+      "rotation": "D — Data pipeline health",
+      "title": "Filing Velocity Signal Computation (ops/compute_filing_velocity.py)",
+      "file": "ops/compute_filing_velocity.py",
+      "summary": "New standalone script: aggregates accumulated ProPublica filing data files (last 7d, 30d), computes velocity ratio (7d daily avg vs 30d baseline), F24 urgent IE notices count, IE support/oppose balance, amount momentum. Writes data/signals/filing_velocity_{today}.json for engine consumption.",
+      "key_signals": [
+        "filing_velocity_7d_vs_30d (burst ratio — core momentum signal)",
+        "filing_burst_flag (>1.5x acceleration)",
+        "filing_decel_flag (<0.5x slowdown)",
+        "f24_count_7d (urgent 24/48-hr IE notices)",
+        "f24_burst_flag (≥3 urgent filings in 24h)",
+        "ie_net_support_7d (support minus oppose balance)",
+        "total_amount_7d + largest_amount_7d"
+      ],
+      "cross_pollination": "Ported from NBA SHAP insight: velocity/ratios outperform raw counts — same principle applied to campaign finance signals",
+      "next_step": "Add filing_velocity signals to features/political_engine.py Cat_XX (cycle 96+)"
     },
-    "nba_research": {
-      "type": "research_proposal",
-      "rotation": "C — NBA research proposal (every-other-cycle)",
-      "title": "Overround + market-spread features (Cat50 candidate, MDPI 2026)",
-      "source": "MDPI 2026 uncertainty-aware ML paper (LR Brier 0.199 with market features)",
-      "key_features": ["tc50_overround", "tc50_market_elo_agreement", "tc50_market_surprise", "tc50_spread_abs", "tc50_total_norm"],
-      "estimated_impact": "-0.002 to -0.004 Brier",
-      "target_island": "S13 (catboost) first, then S15 (wide_search) when awake",
-      "file": "data/research-proposals/2026-04-11-cycle94-overround-market-spread-features.md"
-    },
-    "nba_action": "Wake pings sent again to all 6 islands. Still 503 after 5 cycles. Needs keepalive-spaces.sh cron repair."
+    "nba_wake_pings": "6th consecutive wake ping sent to all 6 islands — still 503. keepalive-spaces.sh cron repair is CRITICAL.",
+    "stagnation_check": "SKIPPED — all islands sleeping",
+    "engine_parity_check": "SKIPPED — cannot access HF space code",
+    "supabase_checkpoint": "NOT NEEDED — last known best 0.21906 above threshold 0.21837"
   },
   "alerts": [
-    "CRITICAL: All 6 NBA islands sleeping 503 for 5+ cycles — keepalive-spaces.sh cron broken. URGENT: repair cron on VM.",
-    "CRITICAL: P3 and P4 NOT FOUND on HuggingFace (6 consecutive cycles) — manual creation required",
-    "INFO: political_alpha hf-space/app.py updated — SHAP-seeded stagnation injection deployed (cycle 94)",
-    "INFO: P1+P2 actively evolving — P1 at 601 gens, P2 at 234 gens, both progressing since restart",
+    "CRITICAL: All 6 NBA islands sleeping 503 for 6 consecutive cycles — keepalive-spaces.sh cron broken. URGENT: manual VM intervention needed.",
+    "CRITICAL: P3 and P4 NOT FOUND on HuggingFace (7 consecutive cycles) — manual HF Space recreation required",
+    "INFO: ops/compute_filing_velocity.py deployed to nomos-political-alpha — Rotation-D velocity signals",
+    "INFO: NBA Cat51 SHAP efficiency ratio research proposal written (cycle 95)",
+    "INFO: P1 at gen 761 (Brier 0.24996), P2 at gen 415 (Brier 0.25223) — both actively evolving, stagnation=0",
     "WATCH: S15 last known Brier 0.21906 — gap 0.00069 to checkpoint threshold 0.21837"
   ],
   "next_cycle_priority": [
-    "D — Check data pipeline health: ops/fetch_political_data.py outputs, AIS+ADSB snapshots, FEC data freshness",
-    "NBA: If islands wake up, deploy auto-calibration (Brier-CV) to S13 + overround features to S13/S15",
-    "NBA: If S15 wakes and Brier < 0.21837, checkpoint to Supabase immediately",
-    "Political: Monitor SHAP-seeded init impact — P1+P2 should recover faster from any future resets",
-    "URGENT: Investigate keepalive-spaces.sh cron — why is it not keeping NBA islands alive?"
+    "A — Political: WebSearch FEC filings, SEC insider trades, executive orders for new data sources (Rotation A)",
+    "NBA: Cat51 efficiency ratio features — add to features/engine.py + hf-space/features/engine.py when islands wake",
+    "NBA: If any island wakes and reports Brier < 0.21837, checkpoint to Supabase immediately",
+    "URGENT: Investigate/repair keepalive-spaces.sh cron on VM — why are all 6 NBA islands sleeping?",
+    "Political: Integrate filing_velocity signals into features/political_engine.py Cat_XX"
   ],
   "cross_repo_health": {
-    "nba_engine_version": "v3.1-59cat (last parity check cycle 91)",
+    "nba_engine_version": "v3.1-59cat (last parity check cycle 91, cannot verify — islands sleeping)",
     "political_engine_version": "v3.20-political-42cat-congress-stock-act (LIVE)",
-    "technique_ported_this_cycle": "SHAP-seeded stagnation injection: NBA directed mutation extended to initialization, deployed to political alpha hf-space/app.py",
-    "cross_pollination": "NBA: overround as predictive feature (Cat50, MDPI 2026). Political: SHAP-seeded init (from NBA GA infrastructure). Both repos benefit: feature importance as initialization prior = better recovery from resets."
+    "technique_ported_this_cycle": "NBA SHAP insight (efficiency ratios > raw counts) → Political filing velocity ratios. Same principle: velocity/ratio features outperform raw counts/amounts.",
+    "cross_pollination_pattern": "Cycle 94: SHAP-seeded initialization (NBA→Political). Cycle 95: SHAP efficiency ratio insight (NBA research→Political filing velocity). Both repos converging on same meta-principle: momentum/efficiency signals beat raw statistics."
   }
 }
