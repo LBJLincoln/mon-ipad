@@ -1,0 +1,61 @@
+name: Continuous Backtest Swarm
+
+on:
+  schedule:
+    # Every 4 hours
+    - cron: '30 2,6,10,14,18,22 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Backtest mode: quick or full'
+        required: false
+        default: 'quick'
+
+permissions:
+  contents: write
+
+jobs:
+  nba-backtest:
+    name: NBA Backtest + Agent Mapping
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install scikit-learn lightgbm numpy catboost
+
+      - name: Run NBA backtest engine
+        run: |
+          mkdir -p data/arena/backtest-results
+          python3 scripts/arena/backtest_engine.py \
+            --${{ github.event.inputs.mode || 'quick' }} --export \
+            2>&1 | tail -40
+
+      - name: Map backtest results to agents
+        run: |
+          python3 scripts/arena/map-backtest-to-agents.py 2>&1 | tail -20
+
+      - name: Commit backtest results
+        run: |
+          git config user.name "Backtest Bot"
+          git config user.email "backtest@nomos42.ai"
+          git add data/arena/backtest-results/ data/arena/agent-states-v5.json \
+                  data/arena/backtest-latest.json data/arena/category-model-registry.json \
+                  data/arena/cpcv-gated-strategies.json data/arena/one-million-projection.json \
+                  2>/dev/null || true
+          if ! git diff --cached --quiet 2>/dev/null; then
+            git commit -m "data: continuous backtest swarm $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase origin main
+            git push
+          else
+            echo "No backtest changes to commit"
+          fi

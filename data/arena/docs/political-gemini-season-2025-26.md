@@ -7,73 +7,74 @@
 - **Primary Strategy:** momentum
 - **Secondary Strategies:** sector_rotation, vol_scaled
 - **Initial Capital:** $100,000.00
-- **Final Capital:** $100,968.33
-- **ROI:** +0.9683%
-- **Sharpe Ratio:** 15.625
-- **Record:** 73W-45L
-- **Win Rate:** 61.9%
-- **Peak Capital:** $100,968.33
-- **Max Drawdown:** 0.0%
-- **Rank:** #2 of 5
-- **Total Wagered:** $212,236.04
+- **Final Capital:** $100,770.15
+- **ROI:** +0.7701%
+- **Sharpe Ratio:** 12.119
+- **Record:** 69W-48L
+- **Win Rate:** 59.0%
+- **Peak Capital:** $100,847.32
+- **Max Drawdown:** 0.2%
+- **Rank:** #2 of 6
+- **Total Wagered:** $210,273.71
 
 ## Peer Comparison
 | Rank | Agent | Capital | ROI | Sharpe | Win Rate |
 |------|-------|---------|-----|--------|----------|
-| 1 | Llama 3.3 70B | $101,405.23 | +1.4052% | 8.853 | 54.9% |
-| 2 | Gemma 3 27B ** | $100,968.33 | +0.9683% | 15.625 | 61.9% |
-| 3 | Qwen 3 72B | $100,468.89 | +0.4689% | 14.344 | 54.3% |
-| 4 | Claude Code CLI | $100,030.02 | +0.0300% | 2.656 | 48.6% |
-| 5 | Mistral Large 2 | $99,707.79 | -0.2922% | -13.441 | 36.7% |
+| 1 | Llama 3.3 70B | $101,149.78 | +1.1498% | 6.938 | 53.1% |
+| 2 | Gemma 3 27B ** | $100,770.15 | +0.7701% | 12.119 | 59.0% |
+| 3 | GLM-5.1 Architect | $100,565.55 | +0.5656% | 10.621 | 57.3% |
+| 4 | Qwen 3 72B | $100,500.74 | +0.5007% | 15.680 | 57.9% |
+| 5 | Claude Code CLI | $100,030.02 | +0.0300% | 2.656 | 48.6% |
+| 6 | Mistral Large 2 | $99,823.06 | -0.1769% | -10.340 | 36.7% |
 
 ## Strategy Performance
 | Strategy | Trades | P&L | Win Rate |
 |----------|--------|-----|----------|
-| momentum | 117 | $+941.17 | 61.5% |
-| sector_rotation | 1 | $+27.16 | 100.0% |
+| momentum | 116 | $+743.03 | 58.6% |
+| sector_rotation | 1 | $+27.12 | 100.0% |
 
 ## Sector Performance
 | Sector | P&L |
 |--------|-----|
-| technology | $+711.93 |
-| broad | $+136.80 |
-| defense | $+119.60 |
+| technology | $+513.95 |
+| broad | $+136.75 |
+| defense | $+119.45 |
 
 ## Top/Bottom Tickers
 | Ticker | Trades | P&L | Win Rate |
 |--------|--------|-----|----------|
-| AMZN | 12 | $+225.07 | 83.3% |
-| MSFT | 11 | $+223.68 | 90.9% |
-| SPY | 7 | $+136.80 | 71.4% |
-| TSLA | 1 | $+112.99 | 100.0% |
-| RTX | 12 | $+69.17 | 58.3% |
-| GOOGL | 12 | $+67.61 | 66.7% |
-| LMT | 12 | $+48.58 | 75.0% |
-| META | 11 | $+46.51 | 54.5% |
-| NVDA | 11 | $+45.88 | 63.6% |
-| GD | 5 | $+28.53 | 60.0% |
+| AMZN | 12 | $+224.91 | 83.3% |
+| MSFT | 11 | $+223.46 | 90.9% |
+| SPY | 7 | $+136.75 | 71.4% |
+| RTX | 12 | $+69.09 | 58.3% |
+| LMT | 12 | $+48.55 | 75.0% |
+| META | 11 | $+46.50 | 54.5% |
+| NVDA | 11 | $+45.77 | 63.6% |
+| GD | 5 | $+28.54 | 60.0% |
+| AAPL | 11 | $-9.80 | 36.4% |
+| NOC | 1 | $-11.00 | 0.0% |
 | ... | | | |
-| AAPL | 11 | $-9.81 | 36.4% |
-| NOC | 1 | $-11.02 | 0.0% |
-| BA | 12 | $-15.66 | 25.0% |
+| NOC | 1 | $-11.00 | 0.0% |
+| BA | 12 | $-15.73 | 25.0% |
+| TSLA | 12 | $-16.89 | 41.7% |
 
 ## Day-by-Day Results
 | Day | Date | Events | Trades | P&L | Capital |
 |-----|------|--------|--------|-----|---------|
-| 1 | 2026-03-12 | 3 | 10 | $+91.32 | $100,091.32 |
-| 2 | 2026-03-13 | 10 | 10 | $+59.77 | $100,151.09 |
-| 3 | 2026-03-16 | 10 | 10 | $+48.10 | $100,199.19 |
-| 4 | 2026-03-17 | 16 | 10 | $+1.99 | $100,201.18 |
-| 5 | 2026-03-18 | 16 | 10 | $-3.77 | $100,197.41 |
-| 6 | 2026-03-19 | 6 | 10 | $+22.05 | $100,219.46 |
-| 7 | 2026-03-20 | 10 | 10 | $+63.10 | $100,282.56 |
-| 8 | 2026-03-23 | 34 | 10 | $+191.66 | $100,474.22 |
-| 9 | 2026-03-24 | 26 | 10 | $+186.89 | $100,661.11 |
-| 10 | 2026-03-25 | 10 | 10 | $+49.98 | $100,711.09 |
-| 11 | 2026-03-26 | 971 | 8 | $+256.76 | $100,967.85 |
-| 12 | 20260326 | 8 | 10 | $+0.48 | $100,968.33 |
+| 1 | 2026-03-12 | 3 | 10 | $+89.37 | $100,089.37 |
+| 2 | 2026-03-13 | 10 | 10 | $+138.39 | $100,227.76 |
+| 3 | 2026-03-16 | 10 | 10 | $-32.84 | $100,194.92 |
+| 4 | 2026-03-17 | 16 | 10 | $-64.90 | $100,130.02 |
+| 5 | 2026-03-18 | 16 | 10 | $+16.70 | $100,146.72 |
+| 6 | 2026-03-19 | 6 | 10 | $-26.85 | $100,119.87 |
+| 7 | 2026-03-20 | 10 | 10 | $+71.05 | $100,190.92 |
+| 8 | 2026-03-23 | 34 | 10 | $+169.55 | $100,360.47 |
+| 9 | 2026-03-24 | 26 | 10 | $+147.51 | $100,507.98 |
+| 10 | 2026-03-25 | 10 | 10 | $+38.37 | $100,546.35 |
+| 11 | 2026-03-26 | 971 | 7 | $+208.69 | $100,755.04 |
+| 12 | 20260326 | 8 | 10 | $+15.11 | $100,770.15 |
 
-## Trade Log (sample: first 30 + last 30 of 118 total)
+## Trade Log (sample: first 30 + last 30 of 117 total)
 
 ### 2026-03-12 | SPY | long
 - **Strategy:** momentum | **Signal:** 0.750
@@ -110,390 +111,390 @@
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.1
 - **Capital after:** $100,030.38
 
-### 2026-03-12 | GOOGL | long
-- **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,800.00 | **Return:** +0.235%
-- **Win** -> P&L $+4.24
-- **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.1
-- **Capital after:** $100,034.62
-
 ### 2026-03-12 | META | long
 - **Strategy:** momentum | **Signal:** 0.300
 - **Size:** $1,800.00 | **Return:** +1.970%
 - **Win** -> P&L $+35.46
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.3
-- **Capital after:** $100,070.08
+- **Capital after:** $100,065.84
 
 ### 2026-03-12 | AMZN | long
 - **Strategy:** momentum | **Signal:** 0.300
 - **Size:** $1,800.00 | **Return:** +0.928%
 - **Win** -> P&L $+16.70
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.2
-- **Capital after:** $100,086.78
+- **Capital after:** $100,082.54
+
+### 2026-03-12 | TSLA | short
+- **Strategy:** momentum | **Signal:** 0.300
+- **Size:** $1,800.00 | **Return:** +0.127%
+- **Win** -> P&L $+2.29
+- **Reasoning:** strategy=momentum | signal=0.300 short | beta=1.8
+- **Capital after:** $100,084.83
 
 ### 2026-03-12 | RTX | long
 - **Strategy:** momentum | **Signal:** 0.300
 - **Size:** $1,800.00 | **Return:** +0.679%
 - **Win** -> P&L $+12.22
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.8
-- **Capital after:** $100,099.00
+- **Capital after:** $100,097.05
 
 ### 2026-03-12 | BA | long
 - **Strategy:** momentum | **Signal:** 0.300
 - **Size:** $600.00 | **Return:** -1.279%
 - **Loss** -> P&L $-7.68
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.2
-- **Capital after:** $100,091.32
+- **Capital after:** $100,089.37
 
 ### 2026-03-13 | SPY | long
 - **Strategy:** momentum | **Signal:** 1.000
-- **Size:** $3,002.74 | **Return:** +2.696%
+- **Size:** $3,002.68 | **Return:** +2.696%
 - **Win** -> P&L $+80.96
 - **Reasoning:** strategy=momentum | signal=1.000 long | event=fed_rule | beta=1.0
-- **Capital after:** $100,172.28
+- **Capital after:** $100,170.33
 
 ### 2026-03-13 | LMT | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,801.64 | **Return:** -1.060%
+- **Size:** $1,801.61 | **Return:** -1.060%
 - **Loss** -> P&L $-19.10
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.7
-- **Capital after:** $100,153.18
+- **Capital after:** $100,151.23
 
 ### 2026-03-13 | NVDA | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,801.64 | **Return:** +0.147%
+- **Size:** $1,801.61 | **Return:** +0.147%
 - **Win** -> P&L $+2.66
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.5
-- **Capital after:** $100,155.84
+- **Capital after:** $100,153.89
 
 ### 2026-03-13 | MSFT | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,801.64 | **Return:** +1.595%
+- **Size:** $1,801.61 | **Return:** +1.595%
 - **Win** -> P&L $+28.74
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.0
-- **Capital after:** $100,184.58
+- **Capital after:** $100,182.63
 
 ### 2026-03-13 | AAPL | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,801.64 | **Return:** -0.194%
+- **Size:** $1,801.61 | **Return:** -0.194%
 - **Loss** -> P&L $-3.50
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.1
-- **Capital after:** $100,181.08
-
-### 2026-03-13 | GOOGL | long
-- **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,801.64 | **Return:** -2.302%
-- **Loss** -> P&L $-41.48
-- **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.1
-- **Capital after:** $100,139.60
+- **Capital after:** $100,179.13
 
 ### 2026-03-13 | META | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,801.64 | **Return:** -0.624%
+- **Size:** $1,801.61 | **Return:** -0.624%
 - **Loss** -> P&L $-11.25
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.3
-- **Capital after:** $100,128.35
+- **Capital after:** $100,167.88
 
 ### 2026-03-13 | AMZN | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,801.64 | **Return:** +0.009%
+- **Size:** $1,801.61 | **Return:** +0.009%
 - **Win** -> P&L $+0.16
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.2
-- **Capital after:** $100,128.51
+- **Capital after:** $100,168.04
+
+### 2026-03-13 | TSLA | short
+- **Strategy:** momentum | **Signal:** 0.300
+- **Size:** $1,801.61 | **Return:** +2.062%
+- **Win** -> P&L $+37.14
+- **Reasoning:** strategy=momentum | signal=0.300 short | beta=1.8
+- **Capital after:** $100,205.18
 
 ### 2026-03-13 | RTX | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,801.64 | **Return:** +1.676%
+- **Size:** $1,801.61 | **Return:** +1.676%
 - **Win** -> P&L $+30.20
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.8
-- **Capital after:** $100,158.71
+- **Capital after:** $100,235.38
 
 ### 2026-03-13 | BA | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $600.58 | **Return:** -1.270%
+- **Size:** $600.53 | **Return:** -1.270%
 - **Loss** -> P&L $-7.62
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.2
-- **Capital after:** $100,151.09
+- **Capital after:** $100,227.76
 
 ### 2026-03-16 | SPY | long
 - **Strategy:** momentum | **Signal:** 1.000
-- **Size:** $3,004.53 | **Return:** +0.413%
-- **Win** -> P&L $+12.41
+- **Size:** $3,006.83 | **Return:** +0.413%
+- **Win** -> P&L $+12.42
 - **Reasoning:** strategy=momentum | signal=1.000 long | event=fed_rule | beta=1.0
-- **Capital after:** $100,163.50
+- **Capital after:** $100,240.18
 
 ### 2026-03-16 | LMT | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,802.72 | **Return:** +0.645%
-- **Win** -> P&L $+11.62
+- **Size:** $1,804.10 | **Return:** +0.645%
+- **Win** -> P&L $+11.63
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.7
-- **Capital after:** $100,175.12
+- **Capital after:** $100,251.81
 
 ### 2026-03-16 | NVDA | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,802.72 | **Return:** +0.071%
+- **Size:** $1,804.10 | **Return:** +0.071%
 - **Win** -> P&L $+1.28
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.5
-- **Capital after:** $100,176.40
+- **Capital after:** $100,253.09
 
 ### 2026-03-16 | MSFT | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,802.72 | **Return:** +1.042%
-- **Win** -> P&L $+18.78
+- **Size:** $1,804.10 | **Return:** +1.042%
+- **Win** -> P&L $+18.80
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.0
-- **Capital after:** $100,195.18
+- **Capital after:** $100,271.89
 
 ### 2026-03-16 | AAPL | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,802.72 | **Return:** -0.995%
-- **Loss** -> P&L $-17.94
+- **Size:** $1,804.10 | **Return:** -0.995%
+- **Loss** -> P&L $-17.95
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.1
-- **Capital after:** $100,177.24
-
-### 2026-03-16 | GOOGL | long
-- **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,802.72 | **Return:** +1.803%
-- **Win** -> P&L $+32.51
-- **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.1
-- **Capital after:** $100,209.75
+- **Capital after:** $100,253.94
 
 ### 2026-03-16 | META | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,802.72 | **Return:** -0.509%
-- **Loss** -> P&L $-9.18
+- **Size:** $1,804.10 | **Return:** -0.509%
+- **Loss** -> P&L $-9.19
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.3
-- **Capital after:** $100,200.57
+- **Capital after:** $100,244.75
 
 ### 2026-03-16 | AMZN | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,802.72 | **Return:** +1.783%
-- **Win** -> P&L $+32.14
+- **Size:** $1,804.10 | **Return:** +1.783%
+- **Win** -> P&L $+32.16
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.2
-- **Capital after:** $100,232.71
+- **Capital after:** $100,276.91
+
+### 2026-03-16 | TSLA | short
+- **Strategy:** momentum | **Signal:** 0.300
+- **Size:** $1,804.10 | **Return:** -2.685%
+- **Loss** -> P&L $-48.44
+- **Reasoning:** strategy=momentum | signal=0.300 short | beta=1.8
+- **Capital after:** $100,228.47
 
 ### 2026-03-16 | RTX | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,802.72 | **Return:** -1.448%
-- **Loss** -> P&L $-26.10
+- **Size:** $1,804.10 | **Return:** -1.448%
+- **Loss** -> P&L $-26.12
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.8
-- **Capital after:** $100,206.61
+- **Capital after:** $100,202.35
 
 ### 2026-03-16 | BA | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $600.91 | **Return:** -1.235%
-- **Loss** -> P&L $-7.42
+- **Size:** $601.37 | **Return:** -1.235%
+- **Loss** -> P&L $-7.43
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.2
-- **Capital after:** $100,199.19
+- **Capital after:** $100,194.92
 
 
-*... (58 trades omitted) ...*
+*... (57 trades omitted) ...*
+
+### 2026-03-24 | TSLA | short
+- **Strategy:** momentum | **Signal:** 0.300
+- **Size:** $1,806.49 | **Return:** -0.673%
+- **Loss** -> P&L $-12.16
+- **Reasoning:** strategy=momentum | signal=0.300 short | beta=1.8
+- **Capital after:** $100,464.33
 
 ### 2026-03-24 | RTX | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,808.54 | **Return:** +1.481%
-- **Win** -> P&L $+26.79
+- **Size:** $1,806.49 | **Return:** +1.481%
+- **Win** -> P&L $+26.76
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.8
-- **Capital after:** $100,644.20
+- **Capital after:** $100,491.09
 
 ### 2026-03-24 | BA | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $602.81 | **Return:** +2.806%
-- **Win** -> P&L $+16.91
+- **Size:** $602.15 | **Return:** +2.806%
+- **Win** -> P&L $+16.89
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.2
-- **Capital after:** $100,661.11
+- **Capital after:** $100,507.98
 
 ### 2026-03-25 | SPY | long
 - **Strategy:** momentum | **Signal:** 1.000
-- **Size:** $3,019.83 | **Return:** +1.313%
-- **Win** -> P&L $+39.65
+- **Size:** $3,015.24 | **Return:** +1.313%
+- **Win** -> P&L $+39.59
 - **Reasoning:** strategy=momentum | signal=1.000 long | event=fed_rule | beta=1.0
-- **Capital after:** $100,700.76
+- **Capital after:** $100,547.57
 
 ### 2026-03-25 | LMT | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,811.90 | **Return:** -1.276%
-- **Loss** -> P&L $-23.12
+- **Size:** $1,809.14 | **Return:** -1.276%
+- **Loss** -> P&L $-23.08
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.7
-- **Capital after:** $100,677.64
+- **Capital after:** $100,524.49
 
 ### 2026-03-25 | NVDA | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,811.90 | **Return:** +2.776%
-- **Win** -> P&L $+50.30
+- **Size:** $1,809.14 | **Return:** +2.776%
+- **Win** -> P&L $+50.22
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.5
-- **Capital after:** $100,727.94
+- **Capital after:** $100,574.71
 
 ### 2026-03-25 | MSFT | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,811.90 | **Return:** +0.845%
-- **Win** -> P&L $+15.31
+- **Size:** $1,809.14 | **Return:** +0.845%
+- **Win** -> P&L $+15.28
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.0
-- **Capital after:** $100,743.25
+- **Capital after:** $100,589.99
 
 ### 2026-03-25 | AAPL | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,811.90 | **Return:** -0.288%
-- **Loss** -> P&L $-5.22
+- **Size:** $1,809.14 | **Return:** -0.288%
+- **Loss** -> P&L $-5.21
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.1
-- **Capital after:** $100,738.03
-
-### 2026-03-25 | GOOGL | long
-- **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,811.90 | **Return:** -1.334%
-- **Loss** -> P&L $-24.17
-- **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.1
-- **Capital after:** $100,713.86
+- **Capital after:** $100,584.78
 
 ### 2026-03-25 | META | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,811.90 | **Return:** +0.531%
-- **Win** -> P&L $+9.62
+- **Size:** $1,809.14 | **Return:** +0.531%
+- **Win** -> P&L $+9.61
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.3
-- **Capital after:** $100,723.48
+- **Capital after:** $100,594.39
 
 ### 2026-03-25 | AMZN | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,811.90 | **Return:** -0.950%
-- **Loss** -> P&L $-17.21
+- **Size:** $1,809.14 | **Return:** -0.950%
+- **Loss** -> P&L $-17.18
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.2
-- **Capital after:** $100,706.27
+- **Capital after:** $100,577.21
+
+### 2026-03-25 | TSLA | short
+- **Strategy:** momentum | **Signal:** 0.300
+- **Size:** $1,809.14 | **Return:** -1.971%
+- **Loss** -> P&L $-35.66
+- **Reasoning:** strategy=momentum | signal=0.300 short | beta=1.8
+- **Capital after:** $100,541.55
 
 ### 2026-03-25 | RTX | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,811.90 | **Return:** -0.562%
-- **Loss** -> P&L $-10.18
+- **Size:** $1,809.14 | **Return:** -0.562%
+- **Loss** -> P&L $-10.17
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.8
-- **Capital after:** $100,696.09
+- **Capital after:** $100,531.38
 
 ### 2026-03-25 | BA | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $603.97 | **Return:** +2.483%
-- **Win** -> P&L $+15.00
+- **Size:** $603.08 | **Return:** +2.483%
+- **Win** -> P&L $+14.97
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.2
-- **Capital after:** $100,711.09
+- **Capital after:** $100,546.35
 
 ### 2026-03-26 | LMT | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,812.80 | **Return:** +0.588%
-- **Win** -> P&L $+10.66
+- **Size:** $1,809.83 | **Return:** +0.588%
+- **Win** -> P&L $+10.64
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.7
-- **Capital after:** $100,721.75
-
-### 2026-03-26 | GOOGL | long
-- **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,812.80 | **Return:** +2.633%
-- **Win** -> P&L $+47.74
-- **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.1
-- **Capital after:** $100,769.49
+- **Capital after:** $100,556.99
 
 ### 2026-03-26 | AMZN | long
 - **Strategy:** sector_rotation | **Signal:** 0.168
-- **Size:** $1,216.55 | **Return:** +2.233%
-- **Win** -> P&L $+27.16
+- **Size:** $1,214.56 | **Return:** +2.233%
+- **Win** -> P&L $+27.12
 - **Reasoning:** strategy=sector_rotation | signal=0.168 long | event=insider_trade | beta=1.2
-- **Capital after:** $100,796.65
+- **Capital after:** $100,584.11
 
 ### 2026-03-26 | TSLA | short
 - **Strategy:** momentum | **Signal:** 0.410
-- **Size:** $2,475.08 | **Return:** +4.565%
-- **Win** -> P&L $+112.99
+- **Size:** $2,471.03 | **Return:** +4.565%
+- **Win** -> P&L $+112.81
 - **Reasoning:** strategy=momentum | signal=0.410 short | event=insider_trade | beta=1.8
-- **Capital after:** $100,909.64
+- **Capital after:** $100,696.92
 
 ### 2026-03-26 | RTX | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,812.80 | **Return:** +1.651%
-- **Win** -> P&L $+29.93
+- **Size:** $1,809.83 | **Return:** +1.651%
+- **Win** -> P&L $+29.88
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.8
-- **Capital after:** $100,939.57
+- **Capital after:** $100,726.80
 
 ### 2026-03-26 | BA | long
 - **Strategy:** momentum | **Signal:** 0.262
-- **Size:** $1,584.05 | **Return:** +2.986%
-- **Win** -> P&L $+47.31
+- **Size:** $1,581.46 | **Return:** +2.986%
+- **Win** -> P&L $+47.23
 - **Reasoning:** strategy=momentum | signal=0.262 long | event=insider_trade | beta=1.2
-- **Capital after:** $100,986.88
+- **Capital after:** $100,774.03
 
 ### 2026-03-26 | GD | long
 - **Strategy:** momentum | **Signal:** 0.270
-- **Size:** $1,631.52 | **Return:** -0.491%
-- **Loss** -> P&L $-8.01
+- **Size:** $1,628.85 | **Return:** -0.491%
+- **Loss** -> P&L $-7.99
 - **Reasoning:** strategy=momentum | signal=0.270 long | beta=0.7
-- **Capital after:** $100,978.87
+- **Capital after:** $100,766.04
 
 ### 2026-03-26 | NOC | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,812.80 | **Return:** -0.608%
-- **Loss** -> P&L $-11.02
+- **Size:** $1,809.83 | **Return:** -0.608%
+- **Loss** -> P&L $-11.00
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.6
-- **Capital after:** $100,967.85
+- **Capital after:** $100,755.04
 
 ### 20260326 | LMT | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,817.42 | **Return:** +1.374%
-- **Win** -> P&L $+24.97
+- **Size:** $1,813.59 | **Return:** +1.374%
+- **Win** -> P&L $+24.92
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.7
-- **Capital after:** $100,992.82
+- **Capital after:** $100,779.96
 
 ### 20260326 | NVDA | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,817.42 | **Return:** +0.956%
-- **Win** -> P&L $+17.38
+- **Size:** $1,813.59 | **Return:** +0.956%
+- **Win** -> P&L $+17.34
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.5
-- **Capital after:** $101,010.20
+- **Capital after:** $100,797.30
 
 ### 20260326 | MSFT | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,817.42 | **Return:** +2.758%
-- **Win** -> P&L $+50.12
+- **Size:** $1,813.59 | **Return:** +2.758%
+- **Win** -> P&L $+50.02
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.0
-- **Capital after:** $101,060.32
+- **Capital after:** $100,847.32
 
 ### 20260326 | AAPL | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,817.42 | **Return:** -1.296%
-- **Loss** -> P&L $-23.56
+- **Size:** $1,813.59 | **Return:** -1.296%
+- **Loss** -> P&L $-23.51
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.1
-- **Capital after:** $101,036.76
-
-### 20260326 | GOOGL | long
-- **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,817.42 | **Return:** -2.614%
-- **Loss** -> P&L $-47.51
-- **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.1
-- **Capital after:** $100,989.25
+- **Capital after:** $100,823.81
 
 ### 20260326 | META | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,817.42 | **Return:** -0.649%
-- **Loss** -> P&L $-11.80
+- **Size:** $1,813.59 | **Return:** -0.649%
+- **Loss** -> P&L $-11.78
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.3
-- **Capital after:** $100,977.45
+- **Capital after:** $100,812.03
 
 ### 20260326 | AMZN | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,817.42 | **Return:** +1.081%
-- **Win** -> P&L $+19.65
+- **Size:** $1,813.59 | **Return:** +1.081%
+- **Win** -> P&L $+19.61
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.2
-- **Capital after:** $100,997.10
+- **Capital after:** $100,831.64
+
+### 20260326 | TSLA | short
+- **Strategy:** momentum | **Signal:** 0.300
+- **Size:** $1,813.59 | **Return:** -1.808%
+- **Loss** -> P&L $-32.78
+- **Reasoning:** strategy=momentum | signal=0.300 short | beta=1.8
+- **Capital after:** $100,798.86
 
 ### 20260326 | RTX | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,817.42 | **Return:** -0.588%
-- **Loss** -> P&L $-10.69
+- **Size:** $1,813.59 | **Return:** -0.588%
+- **Loss** -> P&L $-10.67
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=0.8
-- **Capital after:** $100,986.41
+- **Capital after:** $100,788.19
 
 ### 20260326 | BA | long
 - **Strategy:** momentum | **Signal:** 0.300
-- **Size:** $1,817.42 | **Return:** -0.503%
-- **Loss** -> P&L $-9.15
+- **Size:** $1,813.59 | **Return:** -0.503%
+- **Loss** -> P&L $-9.13
 - **Reasoning:** strategy=momentum | signal=0.300 long | beta=1.2
-- **Capital after:** $100,977.26
+- **Capital after:** $100,779.06
 
 ### 20260326 | GD | long
 - **Strategy:** momentum | **Signal:** 0.270
-- **Size:** $1,635.68 | **Return:** -0.546%
-- **Loss** -> P&L $-8.93
+- **Size:** $1,632.23 | **Return:** -0.546%
+- **Loss** -> P&L $-8.91
 - **Reasoning:** strategy=momentum | signal=0.270 long | beta=0.7
-- **Capital after:** $100,968.33
+- **Capital after:** $100,770.15

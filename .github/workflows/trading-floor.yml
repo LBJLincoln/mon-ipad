@@ -1,0 +1,100 @@
+name: Trading Floor Iteration
+
+on:
+  schedule:
+    # Every 4 hours at :45 (offset from backtest at :30)
+    - cron: '45 2,6,10,14,18,22 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  nba-trading:
+    name: NBA Trading Floor Iteration
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install scikit-learn lightgbm numpy
+
+      - name: Run NBA Trading Floor iteration
+        run: |
+          mkdir -p data/arena/traders data/arena/docs logs/arena
+          python3 scripts/arena/trading-floor-v4.py iterate --max-iterations 1 \
+            2>&1 | tail -40
+        continue-on-error: true
+
+      - name: Run Political Trading Floor iteration
+        run: |
+          mkdir -p data/arena/political
+          python3 scripts/arena/political-trading-floor.py \
+            2>&1 | tail -40
+        continue-on-error: true
+
+      - name: Commit trading results
+        run: |
+          git config user.name "Trading Floor Bot"
+          git config user.email "trading@nomos42.ai"
+          git add data/arena/traders/ data/arena/political/ \
+                  data/arena/docs/ data/arena/trading-floor-iteration.json \
+                  data/arena/agent-states-v5.json \
+                  data/arena/cpcv-watcher-state.json \
+                  2>/dev/null || true
+          if ! git diff --cached --quiet 2>/dev/null; then
+            git commit -m "data: trading floor iteration $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase origin main
+            git push
+          else
+            echo "No trading changes to commit"
+          fi
+
+  political-backtest:
+    name: Political Backtest Swarm
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install scikit-learn numpy
+
+      - name: Run Political backtest swarm
+        run: |
+          if [ -f scripts/arena/continuous-political-backtest-swarm.sh ]; then
+            bash scripts/arena/continuous-political-backtest-swarm.sh 2>&1 | tail -30
+          else
+            echo "Political backtest script not found, skipping"
+          fi
+        continue-on-error: true
+
+      - name: Commit political results
+        run: |
+          git config user.name "Trading Floor Bot"
+          git config user.email "trading@nomos42.ai"
+          git add data/arena/political/ 2>/dev/null || true
+          if ! git diff --cached --quiet 2>/dev/null; then
+            git commit -m "data: political backtest $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase origin main
+            git push
+          else
+            echo "No political changes to commit"
+          fi
