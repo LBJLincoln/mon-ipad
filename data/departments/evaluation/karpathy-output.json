@@ -1,8 +1,8 @@
 {
-  "status": "shipped",
-  "action": "audit_append",
-  "iteration": 17,
-  "timestamp": "2026-04-12T01:15:00Z",
+  "status": "no_op",
+  "action": "within_thresholds",
+  "iteration": 18,
+  "timestamp": "2026-04-12T07:30:00Z",
   "ece": 0.06217,
   "calibration_slope": 0.677,
   "real_brier": 0.24246,
@@ -11,24 +11,20 @@
   "n_games_pool": 104,
   "drift_state": "PARTIAL",
   "rolling_ece": 0.22794,
-  "rolling_ece_prev_iter": 0.14716,
-  "rolling_ece_delta": 0.08078,
-  "pav_refit_status": "BLOCKED_IDEMPOTENT (pool=104, last_refit_n=104)",
+  "rolling_ece_prev_iter": 0.22794,
+  "rolling_ece_delta": 0.0,
+  "pav_refit_status": "BLOCKED_IDEMPOTENT (pool=104, last_refit_n=104, drift monitor re-confirmed 07:00:09Z)",
   "issues_found": [
-    "ROLLING_ECE_ESCALATION: 0.22794 (iter17) vs 0.14716 (iter16) — +0.08078 increase; drift monitor 50-game window now includes recent games not covered by current calibration map",
+    "ROLLING_ECE_PERSISTENT: 0.22794 — unchanged from iter17; drift monitor confirmed stable at 07:00:09Z (no new matched games since Apr 10)",
     "ECE_ABOVE_TARGET: 0.06217 post-PAV in-sample > 0.05 — irreducible at n=104 (n_bins=5 optimal, confirmed iter 12)",
-    "CALIBRATION_SLOPE: 0.677 outside [0.9,1.1] — systemic overconfidence in 0.6-0.8 bucket (44/104 games); requires D2/D3 model fix",
-    "PAV_REFIT_BLOCKED: idempotency guard correctly preventing refit (pool unchanged at 104)"
+    "CALIBRATION_SLOPE: 0.677 outside [0.9,1.1] — systemic overconfidence in 0.6-0.8 bucket (44/104 games); requires D2/D3 model fix"
   ],
-  "files_changed": [
-    "data/departments/evaluation/audit-log.jsonl",
-    "data/departments/evaluation/karpathy-output.json"
-  ],
+  "files_changed": [],
   "git_diff_stat": "",
   "calibration_metric": "ECE",
   "metric_value": 0.06217,
   "rolling_ece_metric": 0.22794,
-  "commit_sha": "8332e3e3",
-  "reason_if_no_op": "",
-  "next_iteration_focus": "P1: Pool >150 matched games unlocks meaningful ECE reduction and n_bins re-scan (n_bins=7 may become viable). P2: rolling_ece=0.22794 signals recent game predictions are miscalibrated — new Apr 11-12 games in 50-game window not covered by Apr 10 calibration map. P3: Slope 0.677 requires model-level overconfidence reduction in D2/D3 (shift predictions out of 0.6-0.8 bucket)."
+  "commit_sha": null,
+  "reason_if_no_op": "All metrics identical to iter17 (pool=104 unchanged, rolling_ece=0.22794 stable, slope=0.677). PAV refit correctly blocked by idempotency guard — would produce identical map. Appending duplicate audit row provides zero information gain. Calibration slope fix requires D2/D3 model-level overconfidence reduction (outside D6 write scope). Unlock condition: new matched games grow pool beyond 104.",
+  "next_iteration_focus": "P1: Pool >150 matched games unlocks meaningful ECE reduction and n_bins re-scan (n_bins=7 may become viable). P2: Slope 0.677 requires model-level overconfidence reduction in D2/D3 — shift 44 predictions out of 0.6-0.8 bucket. P3: Monitor for Apr 11-12 game results to be matched — will unblock PAV refit and drop rolling_ece."
 }
