@@ -107,7 +107,7 @@ PROVIDERS = {
         name="cerebras",
         base_url="https://api.cerebras.ai/v1",
         models=["llama3.1-8b", "qwen-3-235b-a22b-instruct-2507"],
-        rpm=30, rpd=1000, tpm=1_000_000, is_free=True, timeout=15.0, max_tokens=512
+        rpm=30, rpd=1000, tpm=1_000_000, is_free=True, timeout=30.0, max_tokens=1024
     ),
 
     # --- PRIMARY FREE: HUGGINGFACE (4 tokens, dozens of models) ---

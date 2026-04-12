@@ -95,146 +95,157 @@ class TradingAgent:
 # TIER 1: PREMIUM TRADERS (14 agents — 4 HF base + 5 named + 5 Claude CLI)
 # ============================================================================
 def _build_tier1() -> List[TradingAgent]:
-    """14 premium traders: 4 HF base + 5 named visible + 5 Claude CLI."""
+    """14 premium traders: 4 base + 5 named visible + 5 deep thinkers.
+
+    2026-04-12: All T1 switched to cerebras/qwen-3-235b (235B params)
+    as primary provider. HF Router is depleted (402), Claude CLI
+    subprocess too slow (90s timeout). Cerebras Qwen-3-235B is the
+    best available free model — 235B params, ultra-fast inference.
+    Fallback chain still tries HF and google if cerebras is down.
+    """
     base = [
         TradingAgent(
             id="t1_qwen72b", name="Qwen-72B Strategist", tier=AgentTier.PREMIUM,
-            provider="huggingface", model="Qwen/Qwen2.5-72B-Instruct",
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="value_hunter_half_kelly",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="analytical", min_edge=0.04, risk_tolerance=0.4,
             kelly_fraction=0.5,
-            description="Qwen 72B via HF Router. Deep reasoning, value hunting."
+            description="Qwen 235B via Cerebras. Deep reasoning, value hunting."
         ),
         TradingAgent(
             id="t1_llama70b", name="Llama-70B Analyst", tier=AgentTier.PREMIUM,
-            provider="huggingface", model="meta-llama/Llama-3.3-70B-Instruct",
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="proportional_edge",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.6,
             kelly_fraction=0.5,
-            description="Llama 3.3 70B via HF. Proportional edge sizing."
+            description="Qwen 235B via Cerebras. Proportional edge sizing."
         ),
         TradingAgent(
             id="t1_gemma27b", name="Gemma-27B Contrarian", tier=AgentTier.PREMIUM,
-            provider="huggingface", model="google/gemma-3-27b-it",
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="underdog_specialist",
             focus_groups=["moneyline", "spread", "exotic", "margin"],
             personality="contrarian", min_edge=0.03, risk_tolerance=0.7,
             kelly_fraction=0.5,
-            description="Gemma 3 27B via HF. Contrarian underdog specialist."
+            description="Qwen 235B via Cerebras. Contrarian underdog specialist."
         ),
         TradingAgent(
             id="t1_mistral24b", name="Mistral-24B Analyst", tier=AgentTier.PREMIUM,
-            provider="huggingface", model="mistralai/Mistral-Small-24B-Instruct-2501",
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="confidence_scaled",
             focus_groups=["moneyline", "spread", "totals", "player_props"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
             kelly_fraction=0.5,
-            description="Mistral Small 24B via HF. Fast analytical coverage."
+            description="Qwen 235B via Cerebras. Fast analytical coverage."
         ),
     ]
 
-    # --- 5 Named Premium Traders (visible T1_premium, free HF Router models) ---
+    # --- 5 Named Premium Traders (visible T1_premium) ---
+    # 2026-04-12: Switched from dead HF Router to cerebras/qwen-3-235b
     named_premium = [
         TradingAgent(
             id="t1_gemma", name="Gemma", tier=AgentTier.PREMIUM,
-            provider="huggingface", model="google/gemma-3-27b-it",
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="value_hunter",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="analytical_ensemble", min_edge=0.04, risk_tolerance=0.5,
             kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
-            description="Gemma 27B via HF Router. Analytical ensemble, value hunting specialist."
+            description="Qwen 235B via Cerebras. Analytical ensemble, value hunting specialist."
         ),
         TradingAgent(
             id="t1_qwen", name="Qwen", tier=AgentTier.PREMIUM,
-            provider="huggingface", model="Qwen/Qwen2.5-72B-Instruct",
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="edge_seeker",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="deep_thinker", min_edge=0.05, risk_tolerance=0.5,
             kelly_fraction=0.6, bankroll=100.0, peak_bankroll=100.0,
-            description="Qwen 72B via HF Router. Deep thinker, edge seeker with high conviction."
+            description="Qwen 235B via Cerebras. Deep thinker, edge seeker with high conviction."
         ),
         TradingAgent(
             id="t1_deepseek", name="DeepSeek", tier=AgentTier.PREMIUM,
-            provider="huggingface", model="deepseek-ai/DeepSeek-R1-0528",
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="contrarian",
             focus_groups=["moneyline", "spread", "totals", "exotic", "margin"],
             personality="contrarian_value", min_edge=0.03, risk_tolerance=0.7,
             kelly_fraction=0.4, bankroll=100.0, peak_bankroll=100.0,
-            description="DeepSeek R1 via HF Router. Contrarian value player, fades public sentiment."
+            description="Qwen 235B via Cerebras. Contrarian value player, fades public sentiment."
         ),
         TradingAgent(
             id="t1_mistral", name="Mistral", tier=AgentTier.PREMIUM,
-            provider="huggingface", model="mistralai/Mistral-Small-24B-Instruct-2501",
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="kelly_quarter",
             focus_groups=["moneyline", "spread", "totals", "player_props"],
             personality="balanced_optimizer", min_edge=0.03, risk_tolerance=0.5,
             kelly_fraction=0.25, bankroll=100.0, peak_bankroll=100.0,
-            description="Mistral 24B via HF Router. Balanced optimizer, conservative Kelly sizing."
+            description="Qwen 235B via Cerebras. Balanced optimizer, conservative Kelly sizing."
         ),
         TradingAgent(
             id="t1_llama", name="Llama", tier=AgentTier.PREMIUM,
-            provider="huggingface", model="meta-llama/Llama-3.3-70B-Instruct",
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="momentum",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="momentum_tracker", min_edge=0.02, risk_tolerance=0.6,
             kelly_fraction=0.35, bankroll=100.0, peak_bankroll=100.0,
-            description="Llama 70B via HF Router. Momentum tracker, follows streaks and trends."
+            description="Qwen 235B via Cerebras. Momentum tracker, follows streaks and trends."
         ),
     ]
 
-    # --- Claude Code CLI agents (5 new) ---
-    # provider="anthropic_cli" routes to subprocess `claude` command
-    cli_agents = [
+    # --- Premium deep thinkers (5) ---
+    # 2026-04-12: Formerly anthropic_cli (subprocess `claude`), which
+    # caused 90s timeout + 0/14 T1 predictions in iter 85. Switched to
+    # cerebras/qwen-3-235b for immediate results. Re-enable CLI when
+    # Anthropic HTTP API key (not CLI subprocess) is available.
+    deep_agents = [
         TradingAgent(
-            id="t1_claude_code_opus", name="Claude Opus CLI", tier=AgentTier.PREMIUM,
-            provider="anthropic_cli", model="claude-opus-4-6",
+            id="t1_claude_code_opus", name="Deep Thinker Alpha", tier=AgentTier.PREMIUM,
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="value_hunter_half_kelly",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="conservative", min_edge=0.04, risk_tolerance=0.4,
             kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
-            description="Claude Opus 4.6 via CLI. Deepest reasoning, highest quality."
+            description="Qwen 235B via Cerebras. Deepest reasoning, value hunting."
         ),
         TradingAgent(
-            id="t1_claude_code_sonnet", name="Claude Sonnet CLI", tier=AgentTier.PREMIUM,
-            provider="anthropic_cli", model="claude-sonnet-4-6",
+            id="t1_claude_code_sonnet", name="Deep Thinker Beta", tier=AgentTier.PREMIUM,
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="half_kelly",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
             kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
-            description="Claude Sonnet 4.6 via CLI. Balanced speed and quality."
+            description="Qwen 235B via Cerebras. Balanced analytical coverage."
         ),
         TradingAgent(
-            id="t1_claude_code_haiku", name="Claude Haiku CLI", tier=AgentTier.PREMIUM,
-            provider="anthropic_cli", model="claude-haiku-4-5-20251001",
+            id="t1_claude_code_haiku", name="Deep Thinker Gamma", tier=AgentTier.PREMIUM,
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="proportional_edge",
             focus_groups=["moneyline", "spread", "totals"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
             kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
-            description="Claude Haiku 4.5 via CLI. Fast, focused analysis."
+            description="Qwen 235B via Cerebras. Fast, focused analysis."
         ),
         TradingAgent(
-            id="t2_claude_code_research", name="Claude Research CLI", tier=AgentTier.PREMIUM,
-            provider="anthropic_cli", model="claude-sonnet-4-6",
+            id="t2_claude_code_research", name="Deep Thinker Research", tier=AgentTier.PREMIUM,
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="value_hunter_half_kelly",
             focus_groups=["player_props", "exotic", "margin"],
             personality="analytical", min_edge=0.04, risk_tolerance=0.4,
             kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
-            description="Claude Sonnet via CLI. Specialist: research-informed bets."
+            description="Qwen 235B via Cerebras. Research-informed prop bets."
         ),
         TradingAgent(
-            id="t2_claude_code_quant", name="Claude Quant CLI", tier=AgentTier.PREMIUM,
-            provider="anthropic_cli", model="claude-sonnet-4-6",
+            id="t2_claude_code_quant", name="Deep Thinker Quant", tier=AgentTier.PREMIUM,
+            provider="cerebras", model="qwen-3-235b-a22b-instruct-2507",
             strategy="proportional_edge",
             focus_groups=["moneyline", "spread", "totals"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
             kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
-            description="Claude Sonnet via CLI. Quantitative analysis, ML-guided."
+            description="Qwen 235B via Cerebras. Quantitative, ML-guided."
         ),
     ]
 
-    return base + named_premium + cli_agents
+    return base + named_premium + deep_agents
 
 
 # ============================================================================

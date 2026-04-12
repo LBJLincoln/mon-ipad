@@ -1160,17 +1160,17 @@ class TradingFloorV5:
 
         return predictions
 
-    # Fallback provider chain (2026-04-11 Phase 4 audit fix):
-    # When the primary provider returns None (e.g. HF Router 402
-    # "depleted monthly credits" or Google 429 quota), iterate through
-    # these fallbacks in order so the whole swarm doesn't flatline on
-    # one provider outage. Each entry is (provider_key, model_override).
-    # - cerebras llama3.1-8b: ultra-fast (~2000 tok/s), 1k rpd free tier,
-    #   verified live 2026-04-11.
-    # - google gemini-2.0-flash-lite: no internal thinking → predictable
-    #   token usage. Free tier has tight quota so kept second.
+    # Fallback provider chain (2026-04-12 T1 fix):
+    # When the primary provider returns None, iterate through these
+    # fallbacks so the swarm doesn't flatline on one provider outage.
+    # - cerebras llama3.1-8b: ultra-fast (~2000 tok/s), 1k rpd free.
+    # - huggingface: free router, works when monthly credits reset.
+    # - google gemini-2.0-flash-lite: tight quota, last resort.
+    # Note: _call_agent skips any entry matching agent.provider, so
+    # cerebras-primary T1 agents won't double-call cerebras.
     _PROVIDER_FALLBACK_CHAIN = [
         ("cerebras", "llama3.1-8b"),
+        ("huggingface", "Qwen/Qwen2.5-72B-Instruct"),
         ("google", "gemini-2.0-flash-lite"),
     ]
 
