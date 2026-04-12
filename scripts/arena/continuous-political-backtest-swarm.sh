@@ -58,11 +58,22 @@ fi
 # Step 4 — commit + push (silent on no-op)
 if ! git diff --quiet -- data/arena/political-cpcv-gated-strategies.json \
                           data/arena/political-backtest-results/ 2>/dev/null; then
+  git stash --quiet 2>/dev/null || true
+  git pull --rebase --quiet origin main 2>>"$LOG" || log "WARN rebase failed"
+  git stash pop --quiet 2>/dev/null || true
   git add data/arena/political-cpcv-gated-strategies.json \
-          data/arena/political-backtest-results/ 2>/dev/null || true
+          data/arena/political-backtest-results/ \
+          data/arena/political/political-trading-floor-latest.json \
+          data/arena/political-trading-floor-iteration.json \
+          2>/dev/null || true
   git commit -m "political-swarm: $(date -u +%Y-%m-%dT%H:%MZ) fold + CPCV gate" \
              >>"$LOG" 2>&1 || true
-  git push origin main >>"$LOG" 2>&1 || log "WARN push failed (will retry next run)"
+  if ! git push origin main >>"$LOG" 2>&1; then
+    log "WARN push rejected — retry after rebase"
+    git stash --quiet 2>/dev/null || true
+    git pull --rebase --quiet origin main 2>>"$LOG" && { git stash pop --quiet 2>/dev/null || true; } && git push origin main >>"$LOG" 2>&1 \
+      || log "WARN push still rejected — data on disk, will retry next run"
+  fi
 fi
 
 log "swarm-run done"
