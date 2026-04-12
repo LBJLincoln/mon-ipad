@@ -82,7 +82,13 @@ echo "[5/5] Aggregate swarm -> data/nba-agent/full-season-backtest.json" >> "${L
 timeout 30 python3 "${ROOT}/scripts/arena/aggregate_swarm_to_season.py" \
     >> "${LOG_FILE}" 2>&1 || echo "[5/5] Aggregator exit=$?" >> "${LOG_FILE}"
 
-# 6. Commit + push
+# 6. Run CPCV gate — evaluate all backtest results against scientific gate
+#    Updates data/arena/cpcv-gated-strategies.json which the watcher polls.
+echo "[6/7] CPCV gate evaluation" >> "${LOG_FILE}"
+timeout 120 python3 "${ROOT}/scripts/arena/cpcv_gate.py" \
+    >> "${LOG_FILE}" 2>&1 || echo "[6/7] CPCV gate exit=$?" >> "${LOG_FILE}"
+
+# 7. Commit + push
 # IMPORTANT: rebase against origin BEFORE committing so we don't lose every push
 # to the Apr 11 audit-discovered race condition. Prior symptom in the swarm log:
 #   ! [rejected]  main -> main (fetch first)
@@ -101,6 +107,7 @@ git add \
     data/arena/category-model-registry.json \
     data/arena/one-million-projection.json \
     data/nba-agent/full-season-backtest.json \
+    data/arena/cpcv-gated-strategies.json \
     2>/dev/null || true
 
 if ! git diff --cached --quiet 2>/dev/null; then
