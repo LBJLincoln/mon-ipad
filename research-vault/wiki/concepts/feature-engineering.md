@@ -1,10 +1,10 @@
 # Feature Engineering & Selection
 
-> Auto-compiled from 53 raw sources on 2026-04-12
+> Auto-compiled from 54 raw sources on 2026-04-12
 
 ## Overview
 
-This topic covers 53 research files spanning feature engineering & selection.
+This topic covers 54 research files spanning feature engineering & selection.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -14,6 +14,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
 - **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (2662 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
 - **Political Trading Season 2025-26 -- Agent LLAMA 3.3 70B** (2651 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
+- **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/agent-memory/karpathy-researcher_research_cycle6_feature_proposals.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/karpathy-researcher/research_cycle6_feature_proposals.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`

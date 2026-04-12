@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 156 raw sources on 2026-04-12
+> Auto-compiled from 158 raw sources on 2026-04-12
 
 ## Overview
 
-This topic covers 156 research files spanning nba prediction & ml models.
+This topic covers 158 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -17,11 +17,13 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
+- **NBA Scientific Experiment Report** (2599 words) -- `raw/experiments/nba-experiment-2026-04-12.md`
 - **NBA Scientific Experiment Report** (2594 words) -- `raw/experiments/nba-experiment-2026-04-11.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
 - **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`
 - **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/karpathy-researcher/kaggle_automation_research_march2026.md`
+- **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/agent-memory/karpathy-researcher_research_cycle6_feature_proposals.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/karpathy-researcher/research_cycle6_feature_proposals.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/agent-memory/karpathy-researcher_karpathy_autoresearch_pattern.md`

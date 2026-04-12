@@ -1,10 +1,10 @@
 # Political Alpha & Prediction Markets
 
-> Auto-compiled from 62 raw sources on 2026-04-12
+> Auto-compiled from 63 raw sources on 2026-04-12
 
 ## Overview
 
-This topic covers 62 research files spanning political alpha & prediction markets.
+This topic covers 63 research files spanning political alpha & prediction markets.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Mutation Operators, Platt Scaling, Political Alpha.
 
 ## Sources
@@ -15,6 +15,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (2662 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
 - **Political Trading Season 2025-26 -- Agent LLAMA 3.3 70B** (2651 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
 - **Political Trading Season 2025-26 -- Agent QWEN 3 72B** (2640 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
+- **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/agent-memory/karpathy-researcher_karpathy_autoresearch_pattern.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/karpathy-researcher/karpathy_autoresearch_pattern.md`
 - **22 -- Compute Mesh Topology** (1406 words) -- `raw/obsidian-docs/22-Compute-Mesh.md`

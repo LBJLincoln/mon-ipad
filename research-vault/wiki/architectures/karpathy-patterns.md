@@ -1,16 +1,17 @@
 # Karpathy Autoresearch & Agent Patterns
 
-> Auto-compiled from 32 raw sources on 2026-04-12
+> Auto-compiled from 33 raw sources on 2026-04-12
 
 ## Overview
 
-This topic covers 32 research files spanning karpathy autoresearch & agent patterns.
+This topic covers 33 research files spanning karpathy autoresearch & agent patterns.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
 
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
+- **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/agent-memory/karpathy-researcher_karpathy_autoresearch_pattern.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/karpathy-researcher/karpathy_autoresearch_pattern.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
@@ -100,5 +101,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - [[TabICL]]
 - [[Trading Floor]]
 - [[Tree Models]]
+- [[Value Betting]]
 - [[Venn-ABERS]]
 - [[Walk-Forward]]

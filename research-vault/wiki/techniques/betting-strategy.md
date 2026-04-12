@@ -1,10 +1,10 @@
 # Betting Strategy & Bankroll
 
-> Auto-compiled from 114 raw sources on 2026-04-12
+> Auto-compiled from 116 raw sources on 2026-04-12
 
 ## Overview
 
-This topic covers 114 research files spanning betting strategy & bankroll.
+This topic covers 116 research files spanning betting strategy & bankroll.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -20,7 +20,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (2662 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
 - **Political Trading Season 2025-26 -- Agent LLAMA 3.3 70B** (2651 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
 - **Political Trading Season 2025-26 -- Agent QWEN 3 72B** (2640 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
+- **NBA Scientific Experiment Report** (2599 words) -- `raw/experiments/nba-experiment-2026-04-12.md`
 - **NBA Scientific Experiment Report** (2594 words) -- `raw/experiments/nba-experiment-2026-04-11.md`
+- **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/agent-memory/karpathy-researcher_research_cycle6_feature_proposals.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/karpathy-researcher/research_cycle6_feature_proposals.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`

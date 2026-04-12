@@ -1,10 +1,10 @@
 # Trading Floor & AI Competition
 
-> Auto-compiled from 49 raw sources on 2026-04-12
+> Auto-compiled from 50 raw sources on 2026-04-12
 
 ## Overview
 
-This topic covers 49 research files spanning trading floor & ai competition.
+This topic covers 50 research files spanning trading floor & ai competition.
 Key concepts: Bankroll Management, Brier Score, Calibration, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
@@ -15,6 +15,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Ensemble Methods, F
 - **Political Trading Season 2025-26 -- Agent QWEN 3 72B** (2640 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
+- **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
 - **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/agent-memory/research-analyst_research_april2026_free_inference_capacity.md`
 - **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/research-analyst/research_april2026_free_inference_capacity.md`
@@ -80,7 +81,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Ensemble Methods, F
 - Why Everyone Talks About It (But Hasn't Deployed) (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
 - Recommendation (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
 - Next Steps (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- 1. OBSIDIAN WORKFLOW & LLM KNOWLEDGE BASES (from `agent-memory/karpathy-researcher_research_karpathy_april2026.md`)
+- TOP 7 PAPERS (Prioritized by Implementation Urgency & Expected Brier Delta) (from `agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`)
 
 ## Related Topics
 

@@ -1,10 +1,10 @@
 # Infrastructure & Compute
 
-> Auto-compiled from 91 raw sources on 2026-04-12
+> Auto-compiled from 92 raw sources on 2026-04-12
 
 ## Overview
 
-This topic covers 91 research files spanning infrastructure & compute.
+This topic covers 92 research files spanning infrastructure & compute.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -14,6 +14,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
 - **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`
 - **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/karpathy-researcher/kaggle_automation_research_march2026.md`
+- **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/agent-memory/karpathy-researcher_karpathy_autoresearch_pattern.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/karpathy-researcher/karpathy_autoresearch_pattern.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`

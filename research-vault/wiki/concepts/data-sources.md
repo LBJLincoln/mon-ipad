@@ -1,10 +1,10 @@
 # Data Sources & APIs
 
-> Auto-compiled from 76 raw sources on 2026-04-12
+> Auto-compiled from 77 raw sources on 2026-04-12
 
 ## Overview
 
-This topic covers 76 research files spanning data sources & apis.
+This topic covers 77 research files spanning data sources & apis.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
@@ -12,6 +12,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
+- **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/agent-memory/karpathy-researcher_research_cycle6_feature_proposals.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/karpathy-researcher/research_cycle6_feature_proposals.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
