@@ -1,19 +1,23 @@
 {
-  "timestamp": "2026-04-11T12:30:00Z",
-  "brain_cycle": 92,
-  "ecosystem_status": "DEGRADED",
-  "degradation_reason": "6 NBA islands sleeping 503 (3+ cycles). Political P3/P4 not found on HF (4 cycles).",
+  "timestamp": "2026-04-12T17:00:00Z",
+  "brain_cycle": 97,
+  "ecosystem_status": "PARTIAL",
+  "degradation_reason": "Political P3/P4 NOT_FOUND on HuggingFace (9 cycles) — manual recreation needed. NBA: 6/6 islands active.",
   "projects": {
     "nba_quant_ai": {
-      "status": "DEGRADED",
-      "islands_online": 0,
+      "status": "OK",
+      "islands_online": 6,
       "islands_total": 6,
-      "best_brier": 0.21906,
-      "best_brier_island": "S15 (last seen Apr 10)",
-      "target_brier": 0.20,
-      "engine_version": "v3.1-59cat",
-      "last_active": "2026-04-10T16:45Z",
-      "critical_alert": "Islands sleeping 3+ cycles. Keepalive cron broken?"
+      "best_active_brier": 0.22258,
+      "best_active_island": "S13 (catboost, gen 54)",
+      "all_time_best_brier": 0.2157,
+      "checkpoint_threshold": 0.21837,
+      "gap_to_checkpoint": 0.00421,
+      "target_brier": 0.2,
+      "engine_version": "v4 ISLAND+NSGA-II (all 6 islands)",
+      "calibration_population": "isotonic_temporal=14% (2x boost cycle97), venn_abers=22%, beta=22%",
+      "stagnation_watch": "S15 stagnation=7 (threshold 15)",
+      "last_improvement": "cycle97: 2x isotonic_temporal calibration weight (7→14 per MDPI2026 research)"
     },
     "political_alpha": {
       "status": "PARTIAL",
@@ -22,49 +26,52 @@
       "best_brier_current": 0.24996,
       "best_brier_alltime": 0.23134,
       "target_brier": 0.22,
-      "engine_version_live": "v3.16-political-38cat-scotus-chevron",
-      "engine_version_staged": "v3.19-political-42cat (Cat39+40+41+42 pending)",
-      "feature_files_staged": ["cat39_sector_pac_acceleration.py", "cat40_adsb_jet_activity.py", "cat41_maritime_chokepoint.py", "cat42_congressional_stock_act.py"],
-      "feature_files_integrated": "cat01 through cat38 in political_engine.py",
-      "p3_p4_status": "NOT FOUND on HuggingFace (4 cycles) — need manual recreation"
+      "engine_version_live": "v3.21-political-43cat-fec-national-party",
+      "categories": 43,
+      "feature_candidates": 272,
+      "p1_status": "EVOLVING — cycle 460, gen 1378, brier 0.24996",
+      "p2_status": "EVOLVING — cycle 316, gen 948, brier 0.25223",
+      "p3_p4_status": "NOT_FOUND on HuggingFace (9 cycles) — manual recreation required",
+      "last_improvement": "cycle97: Cat43 FecNationalPartyCluster (24f) — FEC national party routing + SEC Form4 insider cluster"
     }
   },
   "techniques_cross_pollinated": [
     {
+      "cycle": 97,
       "from": "NBA",
-      "to": "Political",
-      "technique": "XGBoost direct Brier objective training",
-      "cycle": 91,
-      "status": "Research proposal created"
+      "to": "Political (pending Rotation C)",
+      "technique": "isotonic_temporal calibration weight pattern",
+      "status": "PROPOSED — Political GA calibration weights will be updated cycle 98 Rotation C"
     },
     {
+      "cycle": 97,
       "from": "Political",
       "to": "NBA",
-      "technique": "Direct Brier GA fitness function (already used in political engine)",
-      "cycle": 91,
-      "status": "Proposal to align NBA training objective with GA fitness"
+      "technique": "xgboost_brier model_type confirmation (P1 best_model gen 1378)",
+      "status": "CONFIRMED — NBA already uses xgboost_brier; political success validates cross-domain effectiveness"
     },
     {
-      "from": "Research",
+      "cycle": 96,
+      "from": "Political",
       "to": "NBA",
-      "technique": "Market-implied probability as anchor feature (SHAP 0.803)",
-      "cycle": 92,
-      "status": "Research proposal committed — ready to implement"
+      "technique": "Triple-convergence feature concept (PAC+committee+insider → Cat43)",
+      "status": "ACTIVE — Cat43 deployed; concept maps to NBA Cat52 (shot-zone+market+fatigue triple signal)"
     },
     {
-      "from": "Research",
+      "cycle": 95,
+      "from": "NBA",
       "to": "Political",
-      "technique": "Congressional cluster trading + STOCK Act disclosure timing",
-      "cycle": 92,
-      "status": "Cat42 feature file committed — pending engine integration"
+      "technique": "SHAP efficiency ratio features",
+      "status": "DEPLOYED — Cat51 NBA, political SHAP ratio features in engine"
     }
   ],
-  "pending_actions": [
-    "Integrate Cat39+40+41+42 into political_engine.py (v3.16 → v3.19)",
-    "Add market-implied prob features to NBA engine.py (6 features)",
-    "Add CalibratedClassifierCV isotonic calibration to NBA app.py",
-    "Manually restart NBA keepalive-spaces.sh cron",
-    "Manually create P3 and P4 HuggingFace Spaces",
-    "Check nba-daily-odds.py output in data/historical-odds/"
-  ]
+  "critical_actions": [
+    "MANUAL: Create nomos42/political-alpha-3 and nomos42/political-alpha-4 on HuggingFace (9 cycles down)",
+    "MONITOR: S15 stagnation=7 — diversify if reaches 15 next cycle",
+    "WATCH: S13 brier=0.22258 — Supabase checkpoint if beats 0.21837"
+  ],
+  "next_cycle_98_plan": {
+    "nba": "Research cycle — WebSearch NBA momentum/rolling features (Nature Sci Reports 2025 stacked ensemble)",
+    "political": "Rotation C — port NBA GA calibration weights (venn_abers=22%, beta=22%, isotonic=14%) to Political Individual; also update ops/fetch_political_data.py for Cat43 data sources"
+  }
 }
