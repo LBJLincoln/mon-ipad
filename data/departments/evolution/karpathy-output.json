@@ -1,58 +1,31 @@
 {
   "department": "evolution",
-  "timestamp": "2026-04-11T18:00:01Z",
-  "iteration": 14,
-  "status": "shipped",
-  "action": "cross_pollinate S12→S15 queued (deferred) + island-targets.json staged for fleet recovery",
+  "timestamp": "2026-04-12T00:00:00Z",
+  "iteration": 15,
+  "status": "no_op",
+  "action": "fleet_unreachable",
   "islands_checked": 8,
   "islands_reachable": 0,
   "best_brier": 0.22201,
   "worst_brier": 0.22983,
   "spread": 0.00782,
   "fleet_avg": 0.22494,
-  "actions_taken": [
-    {
-      "target": "S15",
-      "method": "QUEUE_APPEND scripts/evolution/cross-pollination-queue.jsonl",
-      "payload": {
-        "src_island": "S12",
-        "dst_island": "S15",
-        "feature_indices": [1,3,6,7,11,15,16,17,21,30,31,35,36,41,49,51,52,55,58,63,65,66,70,71,72,73,74,81,82,83,86,88,89,90,91,94,97,103,105,107],
-        "config_patch": {"mutation_rate": 0.13, "target_features": 40, "crossover_rate": 0.82}
-      },
-      "http_status": "N/A — file write, no HTTP (fleet unreachable)",
-      "http_response_body": "N/A",
-      "rationale": "spread=0.00782 > 0.005 threshold. S12 fleet best (0.22201, random_forest, 40f). S15 fleet worst (0.22983, xgboost_brier, mut=0.0964). Queue deferred — picked up by cron on island recovery."
-    },
-    {
-      "target": "S15+S10+S11",
-      "method": "WRITE scripts/evolution/island-targets.json",
-      "payload": {
-        "S15": {"mutation_rate": 0.13, "target_features": 40, "crossover_rate": 0.82, "priority": 1},
-        "S10": {"mutation_rate": 0.12, "target_features": 60, "crossover_rate": 0.82, "priority": 2},
-        "S11": {"mutation_rate": 0.15, "target_features": 57, "crossover_rate": 0.80, "priority": 3}
-      },
-      "http_status": "N/A — file write",
-      "http_response_body": "N/A",
-      "rationale": "Durable config overrides for fleet recovery. S10 MUT_DECAYING (0.0706→0.12). S11 stagnation=2 building (pre-stage 0.15 cap). S15 cross-pollination config aligned with queue entry."
-    }
-  ],
-  "files_changed": [
-    "scripts/evolution/cross-pollination-queue.jsonl",
-    "scripts/evolution/island-targets.json"
-  ],
-  "git_diff_stat": " scripts/evolution/cross-pollination-queue.jsonl | 1 +\n scripts/evolution/island-targets.json (new file)",
+  "actions_taken": [],
+  "files_changed": [],
+  "git_diff_stat": " data/departments/evolution/karpathy-output.json | 1 +",
   "commit_sha": null,
-  "reason_if_no_op": "",
+  "reason_if_no_op": "8/8 islands unreachable (503 error) — 3rd consecutive outage iteration (iter13+14+15). All spaces returning 'Your space is in error, check its status on hf.co'. S18/S19 confirmed non-existent (404). D7 CRITICAL escalation active. Queue (2 deferred entries) and island-targets.json already staged from iter14 — committed in e0b79ae5. No new evolution actions possible until HF Spaces recover.",
   "scan_results": {
-    "S10": {"url": "nomos42-nba-quant.hf.space/api/status", "http_status": "error", "response": "Your space is in error, check its status on hf.co"},
-    "S11": {"url": "nomos42-nba-quant-2.hf.space/api/status", "http_status": "error", "response": "Your space is in error, check its status on hf.co"},
-    "S12": {"url": "nomos42-nba-evo-3.hf.space/api/status", "http_status": "error", "response": "Your space is in error, check its status on hf.co"},
-    "S13": {"url": "nomos42-nba-evo-4.hf.space/api/status", "http_status": "error", "response": "Your space is in error, check its status on hf.co"},
-    "S14": {"url": "nomos42-nba-evo-5.hf.space/api/status", "http_status": "error", "response": "Your space is in error, check its status on hf.co"},
-    "S15": {"url": "nomos42-nba-evo-6.hf.space/api/status", "http_status": "error", "response": "Your space is in error, check its status on hf.co"},
-    "S16": {"url": "lbjlincoln26-nba-evo-s16.hf.space/api/status", "http_status": "error", "response": "Your space is in error, check its status on hf.co"},
-    "S17": {"url": "lbjlincoln26-nba-evo-s17.hf.space/api/status", "http_status": "error", "response": "Your space is in error, check its status on hf.co"}
+    "S10": {"url": "nomos42-nba-quant.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
+    "S11": {"url": "nomos42-nba-quant-2.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
+    "S12": {"url": "nomos42-nba-evo-3.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
+    "S13": {"url": "nomos42-nba-evo-4.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
+    "S14": {"url": "nomos42-nba-evo-5.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
+    "S15": {"url": "nomos42-nba-evo-6.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
+    "S16": {"url": "lbjlincoln26-nba-evo-s16.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
+    "S17": {"url": "lbjlincoln26-nba-evo-s17.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
+    "S18": {"url": "lbjlincoln26-nba-evo-s18.hf.space/api/status", "http_status": 404, "response": "HF space not found — S18 does not exist"},
+    "S19": {"url": "lbjlincoln26-nba-evo-s19.hf.space/api/status", "http_status": 404, "response": "HF space not found — S19 does not exist"}
   },
   "last_known_fleet": {
     "source": "data/karpathy/island-elo.json (2026-04-08T00:14:06Z)",
@@ -65,30 +38,33 @@
     "S16": {"best_brier": null, "elo": null, "status": "UNKNOWN_NO_ELO_RECORD"},
     "S17": {"best_brier": null, "elo": null, "status": "UNKNOWN_NO_ELO_RECORD"}
   },
+  "staged_for_recovery": {
+    "cross_pollination_queue": "2 entries in scripts/evolution/cross-pollination-queue.jsonl — S12→S15 (iter14, deferred)",
+    "island_targets": "scripts/evolution/island-targets.json — S15(mut=0.13,feats=40), S10(mut=0.12,feats=60), S11(mut=0.15,feats=57)"
+  },
   "d7_escalation": {
     "priority": "CRITICAL",
-    "iteration_count": 2,
-    "message": "Fleet-wide outage persists for 2 consecutive iterations (iter13+iter14). ALL 8 islands returning error. D7 must resolve HF Space outage — no evolution is occurring. Cross-pollination queue and island-targets.json staged for immediate pickup on recovery.",
+    "iteration_count": 3,
+    "consecutive_outage_iters": [13, 14, 15],
+    "downtime_estimate": "~36+ hours (last live data: 2026-04-08T00:14:06Z)",
+    "message": "Fleet-wide outage persists for 3 consecutive iterations (iter13+14+15). ALL 8 islands returning 503 error. Zero evolution occurring. S18/S19 confirmed non-existent. D7 must resolve HF Space outage immediately.",
     "accounts_affected": ["Nomos42", "LBJLincoln26"],
-    "spaces_in_error": ["nomos42-nba-quant", "nomos42-nba-quant-2", "nomos42-nba-evo-3", "nomos42-nba-evo-4", "nomos42-nba-evo-5", "nomos42-nba-evo-6", "lbjlincoln26-nba-evo-s16", "lbjlincoln26-nba-evo-s17"],
+    "spaces_in_error": [
+      "nomos42-nba-quant", "nomos42-nba-quant-2", "nomos42-nba-evo-3",
+      "nomos42-nba-evo-4", "nomos42-nba-evo-5", "nomos42-nba-evo-6",
+      "lbjlincoln26-nba-evo-s16", "lbjlincoln26-nba-evo-s17"
+    ],
     "recovery_checklist": [
-      "Check huggingface.co/spaces/Nomos42 dashboard — are spaces in sleeping/error/paused state?",
+      "Check huggingface.co/spaces/Nomos42 dashboard — spaces in sleeping/error/paused state?",
       "Verify HF account quota not exhausted (free tier: 2 CPU spaces per account)",
-      "Check if keepalive-spaces.sh cron is running: crontab -l | grep keepalive",
+      "Check keepalive-spaces.sh cron: crontab -l | grep keepalive",
       "Manual restart: visit each space URL on HF dashboard and click Restart",
-      "After first island recovers: run cross-pollination-queue.jsonl consumer to apply S12→S15 config",
-      "Apply island-targets.json configs via POST /api/config for S15 (priority=1), S10 (priority=2), S11 (priority=3)"
+      "After first island recovers: POST /api/config from island-targets.json (S15 priority=1, S10 priority=2, S11 priority=3)",
+      "Cross-pollination queue consumer will auto-apply S12→S15 config on recovery"
     ]
   },
-  "open_escalations_from_prior": [
-    "D2_EXTRACT_S13_CATBOOST_BRIER: S13 top5 had Brier=0.21726 individual — below ATR. D2 must extract.",
-    "D2_CODE_FIX_MUTATION_PERSISTENCE: 12+ iterations unresolved. mut_rate not persisted across restarts."
-  ],
-  "prev_iteration_context": {
-    "iteration": 13,
-    "timestamp": "2026-04-11T12:00:00Z",
-    "status": "no_op",
-    "action": "fleet_unreachable — 8 islands error, no file changes made",
-    "iter13_note": "iter14 upgrades iter13 by staging queue+targets even under outage condition"
-  }
+  "open_escalations": [
+    "D2_EXTRACT_S13_CATBOOST_BRIER: S13 top5 had Brier=0.21726 individual — below ATR 0.21520. D2 must extract.",
+    "D2_CODE_FIX_MUTATION_PERSISTENCE: 12+ iterations unresolved. mut_rate not persisted across HF Space restarts."
+  ]
 }
