@@ -1,0 +1,453 @@
+{
+  "_meta": {
+    "generated": "2026-04-12",
+    "purpose": "Audit of all free/cheap AI model providers for Nomos42 trading floor agents",
+    "context": "11 traders (5 NBA + 6 political). Current primary: HF Inference API (unreliable). Need self-hosted fallbacks."
+  },
+
+  "self_hosted": {
+    "hf_spaces_free_cpu": {
+      "hardware": "2 vCPU, 16 GB RAM (free tier, CPU Basic)",
+      "status": "DEPLOYABLE",
+      "deploy_files": "scripts/deploy/hf-llm-space/",
+      "server": "llama-cpp-python 0.3.9 + FastAPI + Gradio",
+      "endpoint": "POST /v1/chat/completions (OpenAI-compatible)",
+      "recommended_models": [
+        {
+          "model": "Qwen/Qwen3-1.7B-GGUF",
+          "file": "qwen3-1.7b-q4_k_m.gguf",
+          "size_gb": 1.2,
+          "ram_needed_gb": 1.5,
+          "speed_toks": 12,
+          "quality": "medium-high",
+          "recommendation": "PRIMARY — best quality/size for free CPU tier",
+          "context_window": 32768,
+          "chat_format": "chatml"
+        },
+        {
+          "model": "Qwen/Qwen3-0.6B-GGUF",
+          "file": "qwen3-0.6b-q4_k_m.gguf",
+          "size_gb": 0.5,
+          "ram_needed_gb": 0.8,
+          "speed_toks": 25,
+          "quality": "low-medium",
+          "recommendation": "FALLBACK — ultra-fast, acceptable for simple JSON decisions",
+          "context_window": 32768,
+          "chat_format": "chatml"
+        },
+        {
+          "model": "HuggingFaceTB/SmolLM2-1.7B-Instruct-GGUF",
+          "file": "smollm2-1.7b-instruct-q4_k_m.gguf",
+          "size_gb": 1.1,
+          "ram_needed_gb": 1.4,
+          "speed_toks": 14,
+          "quality": "medium",
+          "recommendation": "ALTERNATIVE — HF's own model, good instruction following",
+          "context_window": 8192,
+          "chat_format": "chatml"
+        },
+        {
+          "model": "bartowski/Llama-3.2-1B-Instruct-GGUF",
+          "file": "Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+          "size_gb": 0.8,
+          "ram_needed_gb": 1.1,
+          "speed_toks": 18,
+          "quality": "medium",
+          "recommendation": "ALTERNATIVE — Meta's 1B, reliable JSON from Llama family",
+          "context_window": 131072,
+          "chat_format": "llama-3"
+        },
+        {
+          "model": "microsoft/Phi-4-mini-instruct-GGUF",
+          "file": "Phi-4-mini-instruct-q4.gguf",
+          "size_gb": 2.5,
+          "ram_needed_gb": 3.0,
+          "speed_toks": 8,
+          "quality": "high",
+          "recommendation": "OPTIONAL — 3.8B params in 2.5 GB, best quality but slower",
+          "context_window": 16384,
+          "chat_format": "chatml",
+          "note": "Still fits 16 GB free tier with headroom"
+        }
+      ],
+      "not_recommended_for_free_cpu": [
+        {
+          "model": "Gemma 3 12B Q4_K_M",
+          "size_gb": 8.1,
+          "reason": "Needs 10 GB RAM — too tight on 16 GB free tier under load"
+        },
+        {
+          "model": "Qwen3-4B Q4_K_M",
+          "size_gb": 2.9,
+          "reason": "Fits but slower than Phi-4-mini at similar quality"
+        }
+      ],
+      "api_pool_config": {
+        "provider_key": "self_hosted_hf",
+        "env_var": "SELF_HOSTED_HF_URL",
+        "example_url": "https://nomos42-llm-cpu.hf.space",
+        "rpm": 4,
+        "rpd": 288,
+        "timeout_seconds": 120
+      }
+    },
+
+    "github_codespace": {
+      "hardware": "2 vCPU, 8 GB RAM (free 60h/month)",
+      "status": "DEPLOYABLE",
+      "deploy_files": "scripts/deploy/codespace-llm/",
+      "server": "llama-cpp-python built-in server (python -m llama_cpp.server)",
+      "endpoint": "POST /v1/chat/completions (OpenAI-compatible, native)",
+      "recommended_models": [
+        {
+          "model": "Qwen/Qwen3-7B-GGUF",
+          "file": "qwen3-7b-q4_k_m.gguf",
+          "size_gb": 4.7,
+          "ram_needed_gb": 5.2,
+          "speed_toks": 8,
+          "quality": "high",
+          "recommendation": "PRIMARY — best quality for 8 GB, leaves 2.8 GB headroom",
+          "context_window": 32768
+        },
+        {
+          "model": "Qwen/Qwen3-4B-GGUF",
+          "file": "qwen3-4b-q4_k_m.gguf",
+          "size_gb": 2.9,
+          "ram_needed_gb": 3.2,
+          "speed_toks": 14,
+          "quality": "medium-high",
+          "recommendation": "FAST ALTERNATIVE — 4x faster than 7B, adequate for agents",
+          "context_window": 32768
+        },
+        {
+          "model": "bartowski/Llama-3.2-8B-Instruct-GGUF",
+          "file": "Llama-3.2-8B-Instruct-Q4_K_M.gguf",
+          "size_gb": 5.0,
+          "ram_needed_gb": 5.5,
+          "speed_toks": 7,
+          "quality": "high",
+          "recommendation": "ALTERNATIVE — Meta's 8B, very good instruction following",
+          "context_window": 131072
+        }
+      ],
+      "not_recommended_for_codespace_8gb": [
+        {
+          "model": "Gemma 3 12B Q4_K_M",
+          "size_gb": 8.1,
+          "reason": "Will OOM: 8.1 GB model + Python overhead exceeds 8 GB RAM"
+        },
+        {
+          "model": "Qwen3-14B Q4_K_M",
+          "size_gb": 9.3,
+          "reason": "Does not fit in 8 GB"
+        }
+      ],
+      "api_pool_config": {
+        "provider_key": "self_hosted_codespace",
+        "env_var": "SELF_HOSTED_CS_URL",
+        "example_url": "https://HASH-8080.githubpreview.dev",
+        "rpm": 3,
+        "rpd": 150,
+        "timeout_seconds": 180
+      },
+      "note": "GitHub Codespace port forwarding exposes localhost:8080 as HTTPS URL. Free tier: 60h/month (2h/day continuous). Good for on-demand fallback but not 24/7."
+    }
+  },
+
+  "free_api_providers": {
+    "huggingface_inference_api": {
+      "status": "ACTIVE — primary",
+      "base_url": "https://router.huggingface.co/v1",
+      "auth": "HF_TOKEN (4 tokens available)",
+      "free_tier": {
+        "rpm": 15,
+        "rpd": "~2000 (soft limit, varies by model load)",
+        "quota_type": "token-based, shared across all free users"
+      },
+      "reliability": "UNRELIABLE — models go down under load, cold starts, 503s common",
+      "top_free_models": [
+        "Qwen/Qwen2.5-72B-Instruct",
+        "google/gemma-3-27b-it",
+        "meta-llama/Llama-3.3-70B-Instruct",
+        "mistralai/Mistral-Small-24B-Instruct-2501",
+        "Qwen/Qwen3-8B",
+        "deepseek-ai/DeepSeek-R1-0528"
+      ],
+      "recommendation": "Keep as primary, but always have fallback"
+    },
+
+    "cerebras": {
+      "status": "ACTIVE — free tier verified 2026-04-11",
+      "base_url": "https://api.cerebras.ai/v1",
+      "auth": "CEREBRAS_API_KEY",
+      "free_tier": {
+        "rpm": 30,
+        "tpm": 1000000,
+        "rpd": 1000,
+        "cost": "FREE — 1M tokens/day"
+      },
+      "reliability": "HIGH — purpose-built inference hardware",
+      "available_models": [
+        {
+          "id": "llama3.1-8b",
+          "quality": "good",
+          "speed": "ultra-fast (2000 tok/s on Cerebras silicon)"
+        },
+        {
+          "id": "qwen-3-235b-a22b-instruct-2507",
+          "quality": "excellent (235B MoE model)",
+          "speed": "fast for its size",
+          "note": "Verified live 2026-04-11"
+        }
+      ],
+      "recommendation": "TOP PRIORITY fallback — fast + free + reliable"
+    },
+
+    "cohere": {
+      "status": "ACTIVE — free tier",
+      "base_url": "https://api.cohere.com/compatibility/v1",
+      "auth": "COHERE_API_KEY",
+      "free_tier": {
+        "rpm": 20,
+        "rpd": 1000,
+        "cost": "FREE"
+      },
+      "reliability": "MEDIUM",
+      "available_models": [
+        "command-a-03-2025",
+        "command-r7b-12-2024"
+      ],
+      "recommendation": "SECONDARY fallback"
+    },
+
+    "groq": {
+      "status": "DEAD — Organization restricted/banned 2026-04-05",
+      "base_url": "https://api.groq.com/openai/v1",
+      "free_tier": {
+        "rpm": 30,
+        "rpd": 14400,
+        "cost": "FREE"
+      },
+      "available_models_when_active": [
+        "llama-3.1-8b-instant",
+        "llama-3.3-70b-versatile",
+        "gemma2-9b-it",
+        "mixtral-8x7b-32768"
+      ],
+      "recommendation": "DO NOT USE — banned. New account might work but same pattern likely."
+    },
+
+    "google_gemini": {
+      "status": "ACTIVE — paid key in use",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
+      "auth": "GOOGLE_API_KEY",
+      "free_tier": {
+        "gemini-2.0-flash-lite": {
+          "rpm": 30,
+          "rpd": 1500,
+          "cost": "FREE",
+          "context_window": 1000000
+        },
+        "gemini-2.0-flash": {
+          "rpm": 15,
+          "rpd": 1500,
+          "cost": "FREE"
+        },
+        "gemini-2.5-flash": {
+          "rpm": 10,
+          "rpd": 500,
+          "cost": "FREE (limited)"
+        },
+        "gemini-2.5-pro": {
+          "rpm": 5,
+          "rpd": 25,
+          "cost": "FREE (very limited)",
+          "note": "Not practical for trading floor"
+        }
+      },
+      "reliability": "HIGH",
+      "recommendation": "Add gemini-2.0-flash-lite to free model pool — 1500 RPD free, very reliable"
+    },
+
+    "openrouter": {
+      "status": "ACTIVE — re-enabled 2026-04-12 for GLM-5.1",
+      "base_url": "https://openrouter.ai/api/v1",
+      "auth": "OPENROUTER_API_KEY (7 keys available)",
+      "free_tier": {
+        "note": "Free models marked :free — rate limits vary",
+        "rpm": 20,
+        "rpd": 200,
+        "daily_free_credits": "$0 — free models are zero-cost but rate limited"
+      },
+      "top_free_models": [
+        {
+          "id": "google/gemma-3-27b-it:free",
+          "quality": "high",
+          "rpm": 15,
+          "rpd": 200
+        },
+        {
+          "id": "meta-llama/llama-3.3-70b-instruct:free",
+          "quality": "high",
+          "rpm": 10,
+          "rpd": 200
+        },
+        {
+          "id": "deepseek/deepseek-chat-v3-0324:free",
+          "quality": "very high",
+          "rpm": 10,
+          "rpd": 200,
+          "note": "DeepSeek V3 — best free model on OpenRouter"
+        },
+        {
+          "id": "google/gemma-3-12b-it:free",
+          "quality": "high",
+          "rpm": 20,
+          "rpd": 500
+        },
+        {
+          "id": "mistralai/mistral-7b-instruct:free",
+          "quality": "medium",
+          "rpm": 20,
+          "rpd": 500
+        }
+      ],
+      "paid_models_in_use": [
+        "z-ai/glm-5.1"
+      ],
+      "recommendation": "GOOD — add deepseek-chat-v3:free + gemma-3-12b:free to rotation"
+    },
+
+    "together_ai": {
+      "status": "NOT IN USE — free tier available",
+      "base_url": "https://api.together.xyz/v1",
+      "auth": "TOGETHER_API_KEY (need new key)",
+      "free_tier": {
+        "signup_credit": "$1.00 free on signup",
+        "free_models": "None — all models are paid (but cheap)",
+        "cheapest": "$0.0002/1K tokens for Llama-3.2-3B-Instruct-Turbo"
+      },
+      "reliability": "HIGH",
+      "top_models": [
+        "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        "Qwen/Qwen2.5-72B-Instruct-Turbo",
+        "google/gemma-2-27b-it"
+      ],
+      "recommendation": "LOW PRIORITY — no free tier, use credit only"
+    },
+
+    "github_copilot": {
+      "status": "NOT APPLICABLE",
+      "free_tier": "Free plan (2000 completions/month)",
+      "api_access": "NO public API for chat/completions — IDE only",
+      "models": ["GPT-4o", "Claude Sonnet", "Gemini Pro"],
+      "recommendation": "Cannot use for programmatic trading floor agents — IDE extension only"
+    },
+
+    "openai_codex": {
+      "status": "LEGACY — deprecated",
+      "note": "OpenAI Codex API (code-davinci-002 etc.) was shut down March 2023. GPT-4o is the replacement — paid only.",
+      "free_tier": "NONE",
+      "recommendation": "DO NOT USE — deprecated"
+    },
+
+    "gemini_code_assist": {
+      "status": "NOT APPLICABLE for trading floor",
+      "note": "Google Gemini Code Assist is IDE-based (VS Code / JetBrains), not a REST API",
+      "recommendation": "Cannot use programmatically"
+    }
+  },
+
+  "model_priority_matrix": {
+    "description": "Recommended call order for trading floor agents when primary HF Inference API fails",
+    "fallback_chain": [
+      {
+        "tier": 1,
+        "provider": "huggingface (router.huggingface.co)",
+        "model": "Qwen/Qwen2.5-72B-Instruct",
+        "reason": "Primary — highest quality free model, existing 4-token pool",
+        "rpm": 60,
+        "rpd": 8000
+      },
+      {
+        "tier": 2,
+        "provider": "cerebras",
+        "model": "qwen-3-235b-a22b-instruct-2507",
+        "reason": "Best fallback — 235B MoE free, ultra-fast hardware",
+        "rpm": 30,
+        "rpd": 1000
+      },
+      {
+        "tier": 3,
+        "provider": "openrouter (:free models)",
+        "model": "deepseek/deepseek-chat-v3-0324:free",
+        "reason": "DeepSeek V3 free — excellent quality, 7 key rotation",
+        "rpm": 70,
+        "rpd": 1400
+      },
+      {
+        "tier": 4,
+        "provider": "google (gemini-2.0-flash-lite)",
+        "model": "gemini-2.0-flash-lite",
+        "reason": "Free tier 1500 RPD, very reliable",
+        "rpm": 30,
+        "rpd": 1500
+      },
+      {
+        "tier": 5,
+        "provider": "cohere",
+        "model": "command-a-03-2025",
+        "reason": "Free 1000 RPD secondary fallback",
+        "rpm": 20,
+        "rpd": 1000
+      },
+      {
+        "tier": 6,
+        "provider": "self_hosted_hf (CPU Space)",
+        "model": "Qwen/Qwen3-1.7B",
+        "reason": "Always-on self-hosted, no quota limits, slow but reliable",
+        "rpm": 4,
+        "rpd": 288,
+        "note": "Needs SELF_HOSTED_HF_URL env var set"
+      }
+    ],
+    "total_free_daily_capacity": {
+      "huggingface": 8000,
+      "cerebras": 1000,
+      "openrouter_free": 1400,
+      "google_free": 1500,
+      "cohere": 1000,
+      "self_hosted_hf": 288,
+      "TOTAL": 13188,
+      "comment": "13K+ free calls/day — more than enough for 11 traders × 4 calls/day"
+    }
+  },
+
+  "action_items": [
+    {
+      "priority": "HIGH",
+      "action": "Add gemini-2.0-flash-lite to google provider in api_pool.py",
+      "reason": "1500 RPD free, currently missing from free model pool"
+    },
+    {
+      "priority": "HIGH",
+      "action": "Add deepseek/deepseek-chat-v3-0324:free to openrouter models list",
+      "reason": "Best free model on OpenRouter, not currently in rotation"
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Deploy scripts/deploy/hf-llm-space/ to Nomos42/nomos42-llm-cpu Space",
+      "reason": "Self-hosted always-on CPU fallback, no quota limits"
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Set SELF_HOSTED_HF_URL in .env.local once Space is deployed",
+      "reason": "Activates the self_hosted_hf provider in api_pool.py"
+    },
+    {
+      "priority": "LOW",
+      "action": "Deploy codespace-llm/ when 8 GB Codespace is active",
+      "reason": "On-demand higher-quality fallback (Qwen3-7B), 60h/month free"
+    }
+  ]
+}

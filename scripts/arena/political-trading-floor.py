@@ -28,6 +28,27 @@ from typing import Dict, List, Optional, Tuple
 
 # ── PATHS ────────────────────────────────────────────────────────────────────
 ROOT        = Path('/home/termius/mon-ipad')
+
+# ── DMAD: Diverse Multi-Agent Debate (ICLR 2025) ─────────────────────────────
+_DMAD_AVAILABLE = False
+try:
+    sys.path.insert(0, str(ROOT / "scripts" / "arena"))
+    from dmad_profiles import (  # type: ignore
+        filter_political_signals,
+        check_political_consensus,
+        compute_dmad_divergence,
+        POLITICAL_DMAD_PROFILES,
+        CONSENSUS_DAMPING,
+        CONSENSUS_THRESHOLD,
+    )
+    _DMAD_AVAILABLE = True
+except Exception as _dmad_import_err:
+    def filter_political_signals(sigs, evts, trader_id): return sigs, evts  # type: ignore[misc]
+    def check_political_consensus(positions, ticker): return {"consensus": False, "damping_factor": 1.0}  # type: ignore[misc]
+    def compute_dmad_divergence(decisions): return {"divergence": 0.0, "consensus_events": 0, "healthy": True}  # type: ignore[misc]
+    POLITICAL_DMAD_PROFILES = {}  # type: ignore[assignment]
+    CONSENSUS_DAMPING = 0.60
+    CONSENSUS_THRESHOLD = 3
 POLITICAL   = Path('/home/termius/nomos-political-alpha')
 DATA_DIR    = ROOT / 'data' / 'arena'
 TRADERS_DIR = DATA_DIR / 'traders'
@@ -537,11 +558,19 @@ def simulate_trade_outcome(ticker: str, direction: str, signal_strength: float,
 
 def agent_decide_positions(trader_id: str, day_date: str, capital: float,
                            social_signals: Dict, day_events: List[Dict],
-                           others: Dict, existing_positions: int) -> List[Dict]:
+                           others: Dict, existing_positions: int,
+                           dmad_ticker_damping: Optional[Dict[str, float]] = None) -> List[Dict]:
     """
     Agent decides all positions for one trading day.
     Returns list of position dicts with full justification.
+
+    dmad_ticker_damping: per-ticker consensus damping from prior run.
+    When >= CONSENSUS_THRESHOLD agents agreed on a ticker last round,
+    position size is multiplied by CONSENSUS_DAMPING (0.60).
     """
+    # ── DMAD: filter signals/events to this agent's locked data partition ──────
+    social_signals, day_events = filter_political_signals(social_signals, day_events, trader_id)
+
     cfg = TRADERS[trader_id]
     personality = cfg["personality"]
     primary_strat = cfg["primary_strategy"]
@@ -562,6 +591,7 @@ def agent_decide_positions(trader_id: str, day_date: str, capital: float,
     positions = []
     budget_remaining = capital * risk * 0.3  # Max 30% of risk-adjusted capital per day
     pos_count = existing_positions
+    _dmad_damp_map = dmad_ticker_damping or {}
 
     for ticker in candidates:
         if budget_remaining <= 0:
@@ -622,6 +652,11 @@ def agent_decide_positions(trader_id: str, day_date: str, capital: float,
         if size <= 0:
             continue
 
+        # ── DMAD: apply prior-round consensus damping for this ticker ──────────
+        _ticker_damp = _dmad_damp_map.get(ticker, 1.0)
+        if _ticker_damp < 1.0:
+            size = size * _ticker_damp
+
         # Find matching event return if available
         event_return = None
         ticker_events = [e for e in day_events if e.get("ticker") == ticker]
@@ -642,6 +677,12 @@ def agent_decide_positions(trader_id: str, day_date: str, capital: float,
         if ticker_events:
             reasoning_parts.append(f"event={ticker_events[0].get('event_type','?')}")
         reasoning_parts.append(f"beta={ETF_UNIVERSE.get(ticker, {}).get('beta', 1.0)}")
+        # Append DMAD metadata to reasoning
+        _pol_dmad = POLITICAL_DMAD_PROFILES.get(trader_id, {})
+        if _pol_dmad:
+            reasoning_parts.append(f"dmad_role={_pol_dmad.get('name', '?')}")
+        if _ticker_damp < 1.0:
+            reasoning_parts.append(f"CONSENSUS_WARNING damp={_ticker_damp:.2f}")
 
         position = {
             "date":           day_date,
@@ -659,6 +700,8 @@ def agent_decide_positions(trader_id: str, day_date: str, capital: float,
             "outcome":        "Win" if pnl > 0 else "Loss",
             "reasoning":      " | ".join(reasoning_parts),
             "event_count":    len(ticker_events),
+            "dmad_role":      POLITICAL_DMAD_PROFILES.get(trader_id, {}).get("name", ""),
+            "dmad_damping":   round(_ticker_damp, 4),
         }
         positions.append(position)
         budget_remaining -= size
@@ -667,15 +710,56 @@ def agent_decide_positions(trader_id: str, day_date: str, capital: float,
     return positions
 
 
+# ── POLITICAL DMAD CONSENSUS MAP ─────────────────────────────────────────────
+
+def build_political_dmad_consensus_map(all_trader_states: Dict[str, Dict]) -> Dict[str, float]:
+    """
+    Build per-ticker consensus damping from prior run's trade histories.
+    Returns {ticker: CONSENSUS_DAMPING} for tickers where >= CONSENSUS_THRESHOLD
+    agents took the same direction.
+    """
+    if not _DMAD_AVAILABLE:
+        return {}
+
+    votes: Dict[str, Dict[str, list]] = {}
+    for trader_id, state in all_trader_states.items():
+        trades = state.get("trades_history", state.get("all_trades", []))
+        for trade in trades:
+            ticker = trade.get("ticker", "")
+            direction = trade.get("direction", "")
+            if not ticker or not direction:
+                continue
+            if ticker not in votes:
+                votes[ticker] = {"long": [], "short": []}
+            if trader_id not in votes[ticker].get(direction, []):
+                votes[ticker].setdefault(direction, []).append(trader_id)
+
+    damping_map: Dict[str, float] = {}
+    for ticker, dirs in votes.items():
+        max_agreement = max(
+            len(dirs.get("long", [])),
+            len(dirs.get("short", []))
+        )
+        if max_agreement >= CONSENSUS_THRESHOLD:
+            damping_map[ticker] = CONSENSUS_DAMPING
+
+    if damping_map:
+        print(f"  [DMAD Political] {len(damping_map)} ticker(s) with prior consensus → "
+              f"position x{CONSENSUS_DAMPING}")
+    return damping_map
+
+
 # ── FULL BACKTEST PER AGENT ──────────────────────────────────────────────────
 
 def run_backtest_for_agent(trader_id: str, events: List[Dict],
                            social_snapshots: List[Tuple[str, Dict]],
                            latest_signals: Dict,
-                           others_states: Dict) -> Dict:
+                           others_states: Dict,
+                           dmad_ticker_damping: Optional[Dict[str, float]] = None) -> Dict:
     """
     Run political ETF trading backtest for one AI agent.
-    Iterates through each day of political events, makes decisions, tracks P&L.
+    DMAD-aware: each agent sees only its locked signal/event partition.
+    Consensus-detected tickers get position size x0.60 (anti-groupthink).
     """
     capital = TRADERS[trader_id]["capital"]
     peak_capital = capital
@@ -725,6 +809,7 @@ def run_backtest_for_agent(trader_id: str, events: List[Dict],
             trader_id, day_date, capital,
             day_signals, day_events, others_states,
             existing_positions=0,
+            dmad_ticker_damping=dmad_ticker_damping,
         )
 
         day_pnl = 0.0
@@ -1017,15 +1102,35 @@ def run_full_competition() -> Dict:
     TRADERS_DIR.mkdir(parents=True, exist_ok=True)
     POL_DIR.mkdir(parents=True, exist_ok=True)
 
+    # ── DMAD: build prior-round consensus map ─────────────────────────────────
+    _all_prior_pol_states: Dict[str, Dict] = {}
+    for _tid in TRADERS:
+        _sf = TRADERS_DIR / f"political-{_tid}-state.json"
+        if _sf.exists():
+            try:
+                _all_prior_pol_states[_tid] = json.loads(_sf.read_text())
+            except Exception:
+                pass
+    dmad_ticker_damping = build_political_dmad_consensus_map(_all_prior_pol_states)
+    if _DMAD_AVAILABLE:
+        _pol_role_summary = {tid: POLITICAL_DMAD_PROFILES.get(tid, {}).get("name", "?") for tid in TRADERS}
+        print(f"DMAD pol profiles : {_pol_role_summary}")
+        print(f"DMAD pol consensus: {len(dmad_ticker_damping)} ticker(s) flagged from prior run")
+    else:
+        print("DMAD              : not available (dmad_profiles.py missing)")
+
     all_results: Dict[str, Dict] = {}
 
     for trader_id in TRADERS:
         cfg = TRADERS[trader_id]
-        print(f"\nAgent [{trader_id}] -- {cfg['personality']} / {cfg['primary_strategy']}")
+        _pol_role = POLITICAL_DMAD_PROFILES.get(trader_id, {}).get("name", "") if _DMAD_AVAILABLE else ""
+        _pol_role_tag = f" dmad={_pol_role}" if _pol_role else ""
+        print(f"\nAgent [{trader_id}] -- {cfg['personality']} / {cfg['primary_strategy']}{_pol_role_tag}")
         others = load_other_trader_states(trader_id)
 
         result = run_backtest_for_agent(
-            trader_id, events, social_snapshots, latest_signals, others
+            trader_id, events, social_snapshots, latest_signals, others,
+            dmad_ticker_damping=dmad_ticker_damping,
         )
         all_results[trader_id] = result
 
@@ -1042,6 +1147,16 @@ def run_full_competition() -> Dict:
               f"  Trades: {result['total_trades']}")
 
     board = build_leaderboard(all_results)
+
+    # ── DMAD: divergence metrics across this run ───────────────────────────────
+    if _DMAD_AVAILABLE:
+        _pol_all_trades: Dict[str, list] = {
+            tid: res.get("all_trades", res.get("trades_history", [])) for tid, res in all_results.items()
+        }
+        _pol_div = compute_dmad_divergence(_pol_all_trades)
+        _pol_health = "HEALTHY" if _pol_div["healthy"] else "GROUPTHINK RISK"
+        print(f"\nDMAD pol divergence: {_pol_div['divergence']:.3f}  "
+              f"consensus_tickers={_pol_div['consensus_events']}  [{_pol_health}]")
 
     # Generate season docs
     print("\nGenerating political season documents...")

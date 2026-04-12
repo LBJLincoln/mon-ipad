@@ -133,6 +133,39 @@ PROVIDERS = {
         ],
         rpm=15, rpd=2000, is_free=True, timeout=60.0, max_tokens=512
     ),
+
+    # ── SELF-HOSTED FALLBACKS ────────────────────────────────────────────────
+    # These use the configs/deploy files at scripts/deploy/.
+    # Set SELF_HOSTED_HF_URL / SELF_HOSTED_CS_URL env vars to activate.
+    # URLs are empty strings by default so the slots are never activated
+    # unless the Space / Codespace is actually running.
+    #
+    # HF Space (free CPU tier): Qwen3-1.7B Q4_K_M — ~12 tok/s
+    # Deploy: git push nomos42/nomos42-llm-cpu (scripts/deploy/hf-llm-space/)
+    "self_hosted_hf": ProviderConfig(
+        name="self_hosted_hf",
+        base_url=os.environ.get("SELF_HOSTED_HF_URL", ""),   # e.g. https://nomos42-llm-cpu.hf.space
+        models=["Qwen/Qwen3-1.7B"],
+        rpm=4,           # CPU is slow: 1 req per ~15s @ 512 tokens
+        rpd=288,         # ~4 req/hr × 24h = 288/day (conservative)
+        is_free=True,
+        timeout=120.0,   # CPU 512-token response can take 40-60s
+        max_tokens=512,
+    ),
+
+    # Codespace (8 GB RAM): Qwen3-7B Q4_K_M — better quality, ~8 tok/s
+    # Deploy: run scripts/deploy/codespace-llm/setup.sh + serve.sh in Codespace
+    # Forward port 8080 or use Codespace forwarding URL.
+    "self_hosted_codespace": ProviderConfig(
+        name="self_hosted_codespace",
+        base_url=os.environ.get("SELF_HOSTED_CS_URL", ""),   # e.g. https://HASH-8080.githubpreview.dev
+        models=["Qwen/Qwen3-7B"],
+        rpm=3,           # 7B is slower than 1.7B on CPU
+        rpd=150,
+        is_free=True,
+        timeout=180.0,
+        max_tokens=512,
+    ),
 }
 
 # --- HF Router aliases for named T1_premium agents ---
@@ -316,6 +349,14 @@ class APIPool:
 
         # --- Claude Code CLI (subprocess, no key needed — uses local claude CLI) ---
         self.add_key("anthropic_cli", "cli", 0)
+
+        # --- SELF-HOSTED fallbacks (activated by env vars) ---
+        # Set SELF_HOSTED_HF_URL to enable HF Space CPU fallback
+        if os.environ.get("SELF_HOSTED_HF_URL", ""):
+            self.add_key("self_hosted_hf", "no_key_needed", 0)
+        # Set SELF_HOSTED_CS_URL to enable Codespace fallback
+        if os.environ.get("SELF_HOSTED_CS_URL", ""):
+            self.add_key("self_hosted_codespace", "no_key_needed", 0)
 
     def _load_env_file(self, path: str):
         """Load environment variables from a file (KEY=VALUE or export KEY=VALUE format)."""

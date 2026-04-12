@@ -1,0 +1,637 @@
+{
+  "audit_date": "2026-04-12",
+  "repo": "/home/termius/mon-ipad",
+
+  "dead_scripts": [
+    {
+      "path": "scripts/observability/laptop-phoenix-bootstrap.sh",
+      "reason": "Phoenix UI on brother laptop — no Tailscale deployment active, brother laptop deprioritized"
+    },
+    {
+      "path": "scripts/observability/start-otel-sink.sh",
+      "reason": "OpenTelemetry sink companion — same laptop/Phoenix setup, never deployed"
+    },
+    {
+      "path": "scripts/laptop/deploy_to_laptop.sh",
+      "reason": "Laptop evolution worker deploy — brother laptop shelved per memory notes"
+    },
+    {
+      "path": "scripts/laptop/setup-brother-laptop.sh",
+      "reason": "Brother laptop setup — laptop node never operationalized"
+    },
+    {
+      "path": "scripts/laptop/setup-ollama.sh",
+      "reason": "Local Ollama setup — laptop is zombie, no active deployment"
+    },
+    {
+      "path": "scripts/laptop/push-env-to-laptop.sh",
+      "reason": "Env push to laptop — same dead deployment"
+    },
+    {
+      "path": "scripts/laptop/check_laptop.sh",
+      "reason": "Laptop health check — no active laptop node"
+    },
+    {
+      "path": "scripts/laptop/setup_and_run.sh",
+      "reason": "Laptop runner — same dead node"
+    },
+    {
+      "path": "scripts/councils/verify-councils.sh",
+      "reason": "Council verifier — old council system killed per memory notes; never referenced in cron or scripts"
+    },
+    {
+      "path": "scripts/councils/v5-review.sh",
+      "reason": "v5 review script — only references predictions-v5 dir for read, never executed from cron; orphan"
+    },
+    {
+      "path": "scripts/councils/paperclip-runner.sh",
+      "reason": "Paperclip runner — memory notes say Paperclip is blocked by W8 (brier_proxy constant), local runner dead"
+    },
+    {
+      "path": "scripts/gpu/modal_autoresearch.py",
+      "reason": "Modal GPU autoresearch — Modal is dead (free tier exhausted, replaced by Kaggle/GH Actions)"
+    },
+    {
+      "path": "scripts/gpu/lightning_autoresearch.py",
+      "reason": "Lightning AI autoresearch — Lightning SDK approach superseded by Kaggle Karpathy loop"
+    },
+    {
+      "path": "scripts/gpu/colab_autoresearch.py",
+      "reason": "Colab autoresearch — Colab replaced by nba_karpathy_loop.py on Kaggle; orphan"
+    },
+    {
+      "path": "scripts/gpu/kaggle_autoresearch.py",
+      "reason": "Old Kaggle autoresearch — superseded by scripts/kaggle/nba_karpathy_loop.py (different path)"
+    },
+    {
+      "path": "scripts/gpu-burst/lightning-sdk-deploy.py",
+      "reason": "Lightning SDK deploy — Lightning approach dead, replaced by ZeroGPU burst"
+    },
+    {
+      "path": "scripts/gpu-burst/gpu-status.sh",
+      "reason": "GPU status shell — orphan, no cron reference, superseded by gpu-cron-state.json reporting"
+    },
+    {
+      "path": "scripts/monitoring/dagshub-monitor.py",
+      "reason": "DagsHub monitor — still in cron (0 */6) but DagsHub import takes 14s on VM and is an optional logger; core monitoring is in nba_drift_monitor.py. However it IS in crontab so not fully dead — flagged as bloat"
+    },
+    {
+      "path": "scripts/monitoring/onnx-export.py",
+      "reason": "ONNX exporter — explicitly says 'run on GPU machine NOT on VM'; orphan on VM, no GPU deployment active"
+    },
+    {
+      "path": "scripts/monitoring/wandb-logger.py",
+      "reason": "Local W&B logger — local experiment logging, never referenced by any active script"
+    },
+    {
+      "path": "scripts/monitoring/cross-device-tmux.sh",
+      "reason": "Cross-device tmux setup — no multi-device deployment active"
+    },
+    {
+      "path": "scripts/monitoring/experiment-tracker.py",
+      "reason": "Experiment tracker — orphan, Supabase is the primary tracker"
+    },
+    {
+      "path": "scripts/agents/pierre-monitor.py",
+      "reason": "Pierre user monitor — Pierre is test user only; not a live agent loop"
+    },
+    {
+      "path": "scripts/agents/codex-monitor.sh",
+      "reason": "Codex monitor — orphan, no active Codex agent deployment"
+    },
+    {
+      "path": "scripts/agents/swarm-metrics-collector.sh",
+      "reason": "Swarm metrics shell — orphan, aggregate_swarm_to_season.py replaced this"
+    },
+    {
+      "path": "scripts/agents/multi-brain.sh",
+      "reason": "Multi-brain shell — orphan, concept never deployed"
+    },
+    {
+      "path": "scripts/agents/season_simulation.py",
+      "reason": "Season simulation — superseded by backtest_engine.py; orphan"
+    },
+    {
+      "path": "scripts/arena/trading-floor-council-loop.sh",
+      "reason": "EXPLICITLY DEAD — infra-agent.sh actively kills it: 'pkill -f trading-floor-council-loop'"
+    },
+    {
+      "path": "scripts/arena/trading-floor-v5-cron.sh",
+      "reason": "v5 cron shell — moved to GitHub Actions (.github/workflows/trading-floor.yml); crontab comment confirms removal"
+    },
+    {
+      "path": "scripts/arena/oasis_t3_swarm.py",
+      "reason": "OASIS T3 swarm — blocked by W8 (brier_proxy constant); scaffold only, never producing predictions"
+    },
+    {
+      "path": "scripts/arena/season_debate.py",
+      "reason": "Season debate — superseded by debate_round.py; orphan"
+    },
+    {
+      "path": "scripts/arena/backfill-v5-season.py",
+      "reason": "Backfill v5 season — one-off backfill script; season already backfilled"
+    },
+    {
+      "path": "scripts/arena/model_predictions.py",
+      "reason": "Model predictions loader — orphan, superseded by real_predictions_loader.py"
+    },
+    {
+      "path": "scripts/arena/real_predictions_loader.py",
+      "reason": "Real predictions loader — orphan, not imported by any currently active script"
+    },
+    {
+      "path": "scripts/arena/game_context_v2.py",
+      "reason": "Game context v2 — orphan, no references in active scripts"
+    },
+    {
+      "path": "scripts/arena/data_agents.py",
+      "reason": "Data agents — orphan, superseded by backtest_engine.py data loading"
+    },
+    {
+      "path": "scripts/arena/backfill_games_2025_26.py",
+      "reason": "Season backfill — one-off backfill, season already populated"
+    },
+    {
+      "path": "scripts/youtube_transcript_miner.py",
+      "reason": "YouTube transcript miner — orphan; data/youtube-transcripts/ exists but no active pipeline"
+    },
+    {
+      "path": "scripts/youtube_feature_extractor.py",
+      "reason": "YouTube feature extractor — orphan companion to transcript miner"
+    },
+    {
+      "path": "scripts/sync/sync-all.sh",
+      "reason": "Sync all repos — superseded by councils/sync-to-sister-repos.sh"
+    },
+    {
+      "path": "scripts/deploy-all-spaces.sh",
+      "reason": "Deploy all spaces — orphan; individual deploy scripts handle this"
+    },
+    {
+      "path": "scripts/deploy-pixel-world.sh",
+      "reason": "Pixel world deploy — hf-pixel-world/ is dead (no cron reference, no active Space)"
+    },
+    {
+      "path": "scripts/kaggle-gpu-evolution.sh",
+      "reason": "Old Kaggle GPU evolution shell — superseded by GH Actions gpu-cron-launcher.yml"
+    },
+    {
+      "path": "scripts/departments/guardian-orchestrator.py",
+      "reason": "Department guardian orchestrator — councils killed per memory; departments run via karpathy-output.json but guardian itself is orphan"
+    },
+    {
+      "path": "scripts/forge/aggregate-metrics.py",
+      "reason": "Forge aggregate metrics — orphan, no cron reference"
+    },
+    {
+      "path": "scripts/forge/verify-forge.sh",
+      "reason": "Forge verifier — orphan, no reference"
+    },
+    {
+      "path": "scripts/forge/duplicate-user.sh",
+      "reason": "Forge duplicate user — orphan utility"
+    },
+    {
+      "path": "scripts/forge/optimization_patches.py",
+      "reason": "Optimization patches — orphan, no cron reference"
+    },
+    {
+      "path": "scripts/forge/agent-status.py",
+      "reason": "Forge agent status — orphan, superseded by health-status.json pipeline"
+    },
+    {
+      "path": "scripts/forge/free-models-integration.py",
+      "reason": "Free models integration — orphan; free model calls integrated directly into trading-floor-v4.py"
+    },
+    {
+      "path": "scripts/karpathy/karpathy_utils.py",
+      "reason": "Karpathy utils — orphan, utilities moved inline to karpathy loop scripts"
+    },
+    {
+      "path": "scripts/karpathy/karpathy-scheduler.sh",
+      "reason": "Karpathy scheduler — removed from crontab per crontab comments; GH Actions handles this"
+    },
+    {
+      "path": "scripts/karpathy/codespace-runner.sh",
+      "reason": "Codespace runner — GitHub Codespace created Apr 12 but this runner is orphan"
+    },
+    {
+      "path": "scripts/karpathy/run_karpathy.sh",
+      "reason": "Karpathy runner shell — orphan wrapper, actual runs via GH Actions"
+    },
+    {
+      "path": "scripts/lineage/experiment_id_injector.py",
+      "reason": "CONFLICTING: IS in crontab (15,45 * * * *) but also listed as orphan by script scanner. NOT dead — keep"
+    },
+    {
+      "path": "scripts/council-api.py",
+      "reason": "Council API — old REST API for councils; councils killed, orphan"
+    },
+    {
+      "path": "scripts/claude-session.sh",
+      "reason": "Claude session launcher — orphan utility shell"
+    },
+    {
+      "path": "scripts/real_political_backtest.py",
+      "reason": "Real political backtest — orphan, superseded by continuous-political-backtest-swarm.sh + GH Actions"
+    },
+    {
+      "path": "scripts/real_season_backtest.py",
+      "reason": "Real season backtest — orphan, superseded by backtest_engine.py"
+    },
+    {
+      "path": "scripts/real_trading_floor_backtest.py",
+      "reason": "Real TF backtest — orphan, superseded by trading-floor-v5-real.py"
+    },
+    {
+      "path": "scripts/multi_market_backtest.py",
+      "reason": "Multi-market backtest — orphan, superseded by backtest_engine.py"
+    },
+    {
+      "path": "scripts/verify_backtest.py",
+      "reason": "Backtest verifier — orphan, no cron reference"
+    },
+    {
+      "path": "scripts/totals_model.py",
+      "reason": "Totals model — orphan, separate over/under model never integrated"
+    },
+    {
+      "path": "scripts/fetch_player_tracking.py",
+      "reason": "Player tracking fetcher — orphan, data/player-tracking/ exists but nothing uses it actively"
+    },
+    {
+      "path": "scripts/fetch_injury_reports.py",
+      "reason": "Injury report fetcher — orphan, injury features not in active engine"
+    },
+    {
+      "path": "scripts/odds_movement_tracker.py",
+      "reason": "CONFLICTING: IS in crontab (0 */2). NOT dead — keep"
+    },
+    {
+      "path": "scripts/agent_log.py",
+      "reason": "Agent log utility — orphan Python script"
+    },
+    {
+      "path": "scripts/agent-log.sh",
+      "reason": "Agent log shell — orphan shell companion"
+    },
+    {
+      "path": "scripts/setup-crons.sh",
+      "reason": "Cron setup script — one-off, crons already installed"
+    },
+    {
+      "path": "scripts/check_engine_parity.py",
+      "reason": "Engine parity checker — orphan, parity now tracked via data/departments/cross-repo/engine-parity.json"
+    },
+    {
+      "path": "scripts/gdrive-auth.py",
+      "reason": "Google Drive auth — backup-to-drive.sh IS in crontab but gdrive-auth.py itself is orphan setup"
+    },
+    {
+      "path": "scripts/build_tracking_data.py",
+      "reason": "Tracking data builder — orphan, data/player-tracking/ populated by other means"
+    },
+    {
+      "path": "scripts/modal_tabicl_evolution.py",
+      "reason": "Modal TabICL evolution — Modal dead, Colab/Kaggle replaced this"
+    },
+    {
+      "path": "scripts/research-vault/compile-cron.sh",
+      "reason": "CONFLICTING: IS in crontab (23 */2). NOT dead — keep"
+    },
+    {
+      "path": "scripts/telegram/start_forge_bot.sh",
+      "reason": "Forge bot starter — Telegram bots killed by user per crontab comments"
+    },
+    {
+      "path": "scripts/telegram/daily_report.py",
+      "reason": "Telegram daily report — Telegram bots killed"
+    }
+  ],
+
+  "stale_data": [
+    {
+      "path": "data/arena/trading-floor-v5-*.json (177 daily files)",
+      "age_days": "oldest: Oct 3 2025 (190+ days ago)",
+      "size_mb": 67,
+      "reason": "Daily backtest snapshots from Oct 2025 to Apr 2026. trading-floor-v5-latest.json is live; individual day files are archive bloat with no read references besides v5-review.sh (orphan). Only 2 files referenced actively: latest + iteration."
+    },
+    {
+      "path": "data/arena/trading-floor-v4-2026-04-04.json",
+      "size_mb": 4.5,
+      "reason": "Superseded dated snapshot — trading-floor-v4-latest.json is the live file"
+    },
+    {
+      "path": "data/arena/trading-floor-v4-2026-04-05.json",
+      "size_mb": 4.5,
+      "reason": "Superseded dated snapshot"
+    },
+    {
+      "path": "data/arena/trading-floor-v4-2026-04-06.json",
+      "size_mb": 4.5,
+      "reason": "Superseded dated snapshot"
+    },
+    {
+      "path": "data/arena/trading-floor-v4-2026-04-10.json",
+      "size_mb": 4.8,
+      "reason": "Superseded dated snapshot — keep last 2 as rollback but 04-04/05/06 can go"
+    },
+    {
+      "path": "data/arena/council-log-v5/ (bet-audit-*.json, 176 files)",
+      "size_mb": 155,
+      "reason": "158MB total. bet-audit files (176 of them) are per-day audit logs from Oct 2025 - Mar 2026. backfill-summary.json is the only meaningful summary. council-log-*.jsonl files (5) are active."
+    },
+    {
+      "path": "data/arena/traders/gemini-state.json",
+      "size_mb": 11,
+      "reason": "Trader state files are massive (11MB each) because they store full game-by-game history. These are live files but should be pruned to rolling 30-day window. gemini/codex at 11MB each are bloated."
+    },
+    {
+      "path": "data/arena/traders/codex-state.json",
+      "size_mb": 11,
+      "reason": "Same — full season history bloat"
+    },
+    {
+      "path": "data/arena/predictions-v5/ (177 files)",
+      "size_mb": 180,
+      "reason": "180MB of per-day prediction JSON files from Oct 2025. scientific-experiment.py reads ALL of them. Historical data is useful for backtesting but files older than 60 days could be compressed/archived."
+    },
+    {
+      "path": "data/departments/engineering/bug-fixes.json",
+      "age": "Apr 1 2026",
+      "reason": "12+ days old, static department loop output — no longer updated"
+    },
+    {
+      "path": "data/departments/political/fixes-applied.json",
+      "age": "Apr 1 2026",
+      "reason": "Static old department output"
+    },
+    {
+      "path": "data/departments/engineering/engineering-loop-output.json",
+      "age": "Apr 1 2026",
+      "reason": "Static old department output"
+    },
+    {
+      "path": "data/departments/business/pricing.json",
+      "age": "Apr 1 2026",
+      "reason": "Static, old pricing data"
+    },
+    {
+      "path": "data/research/arxiv-scan-2026-04-01.json",
+      "age": "Apr 1 2026",
+      "reason": "Old arxiv scan — research scans older than 7 days are stale (10 of 34 research files)"
+    },
+    {
+      "path": "data/arena/proposals/karpathy-iter-30-proposal-2026-04-01.json",
+      "age": "Apr 1 2026",
+      "reason": "Old proposal — 20 proposal files, oldest from Apr 1"
+    },
+    {
+      "path": "data/karpathy/nba_cached_data.npz.synthetic-bak",
+      "reason": "Explicit .synthetic-bak file — backup of the fake data before fix. Safe to delete."
+    }
+  ],
+
+  "dead_docs": [
+    {
+      "path": "RESEARCH_DELIVERY_INDEX.md",
+      "reason": "References KARPATHY_RESEARCH_CYCLE_5_SUMMARY.txt and docs/KARPATHY_LLM_COUNCIL_IMPLEMENTATION.md — neither file exists at these paths. Navigation index for a cycle that's long complete."
+    },
+    {
+      "path": "DEPARTMENTS.md",
+      "reason": "Last updated Apr 7 11:26. References scripts/departments/guardian-orchestrator.py layout which has never matched actual structure. Department councils killed per memory notes — this doc describes zombie architecture."
+    },
+    {
+      "path": "AGENTS.md",
+      "reason": "Last updated Apr 7 11:26. Describes '22 agents × 27 skills' — agent count based on killed councils. References 5 Telegram bots (all killed). 17 crons listed don't match current lean crontab."
+    },
+    {
+      "path": "PIXEL-DESIGN.md",
+      "reason": "30KB pixel world design document. hf-pixel-world/ has no active Space, deploy-pixel-world.sh is orphan. Design doc for unbuilt/shelved feature."
+    },
+    {
+      "path": "OPERATIONS.md",
+      "reason": "Apr 11 update but references 8 spaces (S10-S17) while codebase tracks S10-S19. Also references Telegram bots and processes killed in crontab. Partially stale."
+    }
+  ],
+
+  "dead_vendor": [
+    {
+      "path": "vendor/TradingAgents/ (8.7MB)",
+      "status": "MINIMALLY USED",
+      "reason": "Only scripts/arena/debate_round.py has an import. The import comment says 'currently a lightweight adapter' and debate_round.py itself is orphaned (no cron or active pipeline reference). Vendored 8.7MB for a script that runs nowhere."
+    },
+    {
+      "path": "vendor/oasis/ (75MB)",
+      "status": "DEAD WEIGHT",
+      "reason": "75MB vendored. oasis_adapter.py and oasis_t3_swarm.py reference it, but oasis_t3_swarm.py is explicitly blocked (W8: brier_proxy constant). oasis_adapter.py is itself orphaned. Memory notes: 'Mirofish = camel-ai/oasis already vendored... lite-mode only... blocked by W8'. Zero production usage."
+    }
+  ],
+
+  "duplicates": [
+    {
+      "scripts": [
+        "scripts/arena/trading-floor-v4.py (170KB, 3714 lines)",
+        "scripts/arena/trading-floor-v5.py (130KB, 2905 lines)",
+        "scripts/arena/trading-floor-v5-real.py (40KB, 972 lines)"
+      ],
+      "assessment": "v4 IS ACTIVE (in crontab via autonomous-cycle.sh). v5 runs at 18:00 only (--lite mode). v5-real is a standalone backtester. All three are needed but v4 and v5 have significant overlap in trader logic and game loading code (~40% redundant)."
+    },
+    {
+      "scripts": [
+        "scripts/calibration.py (34KB) — applies pre-fitted calibration at runtime",
+        "scripts/calibration_fit.py (15KB) — fits the isotonic map from prospective data"
+      ],
+      "assessment": "NOT duplicates — complementary tools. calibration.py applies, calibration_fit.py builds. Both needed. calibration_fit.py referenced by auto_pav_refit.sh (in cron). Keep both."
+    },
+    {
+      "scripts": [
+        "scripts/councils/smart-council.py — real executing AI councils",
+        "scripts/forge/council-template.py — Karpathy loop template for any dept"
+      ],
+      "assessment": "Different purpose but heavily overlapping. smart-council.py is the v1 that was replaced by council-template.py. councils killed per memory notes. Both are orphans but for different reasons."
+    },
+    {
+      "dirs": [
+        "hf-space/ (868KB) — original space code",
+        "nba-quant-space/ (9.3MB) — current active space code with deploy scripts"
+      ],
+      "assessment": "hf-space/ is the ancestor of nba-quant-space/. Both have features/engine.py. nba-quant-space/ is the active one. hf-space/ should be confirmed dead or explicitly archived."
+    },
+    {
+      "dirs": [
+        "hf-space-council/ (88KB)",
+        "hf-space-creative-forge/ (40KB)",
+        "hf-space-forge/ (92KB)",
+        "hf-space-nba-forge/ (56KB)",
+        "hf-space-political-forge/ (36KB)"
+      ],
+      "assessment": "5 zombie HF Space directories. None referenced in crontab or active scripts (grep found 0 references). The council Spaces were 'killed by user' per memory notes. All are dead local copies."
+    },
+    {
+      "dirs": [
+        "hf-spaces/ (40KB) — old generic spaces dir",
+        "hf-paperclip/ (52KB) — Paperclip HF space code",
+        "hf-infra-brain/ (32KB) — infra brain space"
+      ],
+      "assessment": "All zombie HF Space local directories. hf-paperclip is dead per memory notes. hf-infra-brain never deployed. hf-spaces is an old collection dir."
+    }
+  ],
+
+  "size_bloat": [
+    {
+      "category": "data/arena/trading-floor-v5-*.json (177 daily files)",
+      "size_mb": 67,
+      "description": "Full season of daily snapshots. Only trading-floor-v5-latest.json is read by any active script. The per-day files are written by trading-floor-v5.py but never explicitly consumed. Safe to archive or delete all but last 30 days."
+    },
+    {
+      "category": "data/arena/predictions-v5/ (177 files)",
+      "size_mb": 180,
+      "description": "Per-day prediction files Oct 2025 - Apr 2026. Needed by scientific-experiment.py for full-season Brier computation. Cannot delete without losing scientific grounding. However files >60 days old (Oct-Jan, ~100 files, ~100MB) could be compressed."
+    },
+    {
+      "category": "data/arena/council-log-v5/ (bet-audit files)",
+      "size_mb": 3,
+      "description": "176 bet-audit-*.json files (3MB total). backfill-summary.json is the summary. Per-day audit files are pure archive."
+    },
+    {
+      "category": "data/arena/traders/*.json (NBA trader states)",
+      "size_mb": 44,
+      "description": "gemini=11MB, codex=11MB, claude=9.5MB, grok=6.8MB, openrouter=6.5MB. These are live files but bloated with full game history since Oct 2025. Should implement rolling window (keep last 60 days of decisions)."
+    },
+    {
+      "category": "vendor/oasis/ (dead weight)",
+      "size_mb": 75,
+      "description": "75MB vendored for a completely blocked feature (W8). Largest single removable chunk in the repo."
+    },
+    {
+      "category": "data/arena/trading-floor-v4-latest.json + v4-2026-04-11.json",
+      "size_mb": 36,
+      "description": "Two copies of essentially the same 18MB file. The -latest.json is a symlink-equivalent. Old dated snapshots (04-04/05/06) are 13.5MB of redundant history."
+    },
+    {
+      "category": "scripts/arena/__pycache__",
+      "size_mb": 0.764,
+      "description": "764KB pycache from scripts. Not in .gitignore for scripts/ — these committed bytecodes are bloat."
+    },
+    {
+      "category": "hf-space/ (ancestor space dir)",
+      "size_mb": 0.868,
+      "description": "Original HF space dir, superseded by nba-quant-space/. Features engine code duplicated."
+    },
+    {
+      "category": "5x hf-space-* zombie dirs + hf-paperclip + hf-infra-brain + hf-spaces",
+      "size_mb": 0.5,
+      "description": "8 zombie HF Space directories totaling ~500KB. All dead per audit."
+    }
+  ],
+
+  "recommended_deletions": [
+    {
+      "action": "DELETE vendor/oasis/",
+      "savings_mb": 75,
+      "risk": "LOW — only imported by oasis_adapter.py (itself orphaned) and oasis_t3_swarm.py (blocked). Re-clone via scripts/vendor/clone-vendor.sh if ever needed."
+    },
+    {
+      "action": "DELETE data/arena/trading-floor-v5-*.json except last 30 days (keep 2026-03-13 through latest)",
+      "savings_mb": 40,
+      "risk": "LOW — these are per-day snapshots, never read by active scripts. Keep latest + iteration."
+    },
+    {
+      "action": "DELETE data/arena/council-log-v5/bet-audit-*.json (176 files)",
+      "savings_mb": 3,
+      "risk": "LOW — pure archive, backfill-summary.json retains the summary"
+    },
+    {
+      "action": "DELETE data/arena/trading-floor-v4-2026-04-04.json, -04-05.json, -04-06.json",
+      "savings_mb": 13.5,
+      "risk": "LOW — superseded snapshots, keep -04-10 and -04-11 as rollback"
+    },
+    {
+      "action": "DELETE all 8 zombie hf-space-* dirs (hf-space-council, hf-space-creative-forge, hf-space-forge, hf-space-nba-forge, hf-space-political-forge, hf-spaces, hf-paperclip, hf-infra-brain)",
+      "savings_mb": 0.5,
+      "risk": "LOW — no cron/script references, Spaces killed per memory notes"
+    },
+    {
+      "action": "DELETE scripts/arena/trading-floor-council-loop.sh",
+      "savings_mb": 0.01,
+      "risk": "ZERO — infra-agent.sh already kills any running instance; script actively deprecated"
+    },
+    {
+      "action": "DELETE 6 scripts/laptop/*.sh (deploy, setup, push-env, check, setup_and_run + observability/laptop-phoenix-bootstrap.sh + observability/start-otel-sink.sh)",
+      "savings_mb": 0.05,
+      "risk": "LOW — brother laptop is shelved, no active Tailscale deployment"
+    },
+    {
+      "action": "DELETE 5 scripts/gpu/*.py (modal, lightning, colab, kaggle autoresearch + lightning-sdk-deploy)",
+      "savings_mb": 0.1,
+      "risk": "LOW — all GPU compute now on Kaggle Karpathy loop (different path) + GH Actions"
+    },
+    {
+      "action": "DELETE data/karpathy/nba_cached_data.npz.synthetic-bak",
+      "savings_mb": 0.5,
+      "risk": "ZERO — explicit synthetic data backup, real data already in .npz"
+    },
+    {
+      "action": "DELETE DEPARTMENTS.md and AGENTS.md (or archive to docs/)",
+      "savings_mb": 0.017,
+      "risk": "LOW — both describe killed council architecture. CLAUDE.md supersedes them."
+    },
+    {
+      "action": "DELETE PIXEL-DESIGN.md",
+      "savings_mb": 0.031,
+      "risk": "LOW — hf-pixel-world/ is dead, no active deployment"
+    },
+    {
+      "action": "DELETE RESEARCH_DELIVERY_INDEX.md",
+      "savings_mb": 0.011,
+      "risk": "LOW — references non-existent files, pure navigation doc for completed cycle"
+    },
+    {
+      "action": "ARCHIVE (not delete) data/arena/predictions-v5/ files older than 60 days to compressed tarball",
+      "savings_mb": 100,
+      "risk": "MEDIUM — scientific-experiment.py reads all files. Compress Oct-Jan files, update script to also load from tarball OR accept the loss (backtest still works with Mar-Apr data)."
+    },
+    {
+      "action": "PRUNE trader state JSON files to rolling 60-day window",
+      "savings_mb": 30,
+      "risk": "MEDIUM — these are live files. Requires adding pruning to trading-floor-v4.py iterate cycle."
+    }
+  ],
+
+  "notes": {
+    "false_positives_in_orphan_scan": [
+      "scripts/lineage/experiment_id_injector.py — IS in crontab",
+      "scripts/odds_movement_tracker.py — IS in crontab",
+      "scripts/research-vault/compile-cron.sh — IS in crontab",
+      "scripts/vault-refresh.sh — IS in crontab",
+      "scripts/agent-log.sh — actually referenced by some cron scripts",
+      "scripts/arena/cpcv_watcher.py — IS in crontab",
+      "scripts/bloomberg/bloomberg-api.py — IS in crontab (not flagged as orphan correctly)",
+      "scripts/daily-summary.py — IS in crontab",
+      "scripts/backup-to-drive.sh — IS in crontab"
+    ],
+    "active_script_clarifications": {
+      "calibration.py vs calibration_fit.py": "Complementary, both needed",
+      "trading-floor-v4.py": "ACTIVE — runs in autonomous-cycle.sh every 4h",
+      "trading-floor-v5.py": "ACTIVE — runs at 18:00 via autonomous-cycle.sh (lite mode)",
+      "trading-floor-v5-real.py": "PASSIVE — standalone real-data backtester, not in cron"
+    }
+  },
+
+  "estimated_savings_mb": {
+    "vendor_oasis_deletion": 75,
+    "trading_floor_v5_old_snapshots": 40,
+    "trader_state_pruning": 30,
+    "predictions_v5_compression": 100,
+    "trading_floor_v4_old_snapshots": 13.5,
+    "council_log_bet_audits": 3,
+    "synthetic_bak_file": 0.5,
+    "zombie_hf_space_dirs": 0.5,
+    "dead_scripts_total": 0.3,
+    "stale_docs": 0.07,
+    "total_safe_deletions": 132,
+    "total_with_compression": 232,
+    "note": "vendor/oasis (75MB) + predictions-v5 compression (100MB) are the two biggest wins. Together they recover ~175MB with minimal risk."
+  }
+}

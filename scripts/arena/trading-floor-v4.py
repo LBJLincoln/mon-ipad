@@ -46,6 +46,34 @@ except Exception as _oasis_import_err:
     def oasis_prob_nudge(trader_id, oasis_ctx, base_prob):  # type: ignore[misc]
         return base_prob
 
+# ── DMAD: Diverse Multi-Agent Debate (ICLR 2025) ─────────────────────────────
+# Import lazily so the floor still runs if the module is missing.
+_DMAD_AVAILABLE = False
+try:
+    from dmad_profiles import (  # type: ignore
+        filter_nba_context,
+        filter_political_signals,
+        check_nba_consensus,
+        check_political_consensus,
+        compute_dmad_divergence,
+        NBA_DMAD_PROFILES,
+        POLITICAL_DMAD_PROFILES,
+        CONSENSUS_DAMPING,
+        CONSENSUS_THRESHOLD,
+    )
+    _DMAD_AVAILABLE = True
+except Exception as _dmad_import_err:
+    # No-op stubs — floor runs normally without DMAD filtering
+    def filter_nba_context(ctx, trader_id): return ctx  # type: ignore[misc]
+    def filter_political_signals(sigs, evts, trader_id): return sigs, evts  # type: ignore[misc]
+    def check_nba_consensus(decisions, key): return {"consensus": False, "damping_factor": 1.0}  # type: ignore[misc]
+    def check_political_consensus(positions, ticker): return {"consensus": False, "damping_factor": 1.0}  # type: ignore[misc]
+    def compute_dmad_divergence(decisions): return {"divergence": 0.0, "consensus_events": 0, "healthy": True}  # type: ignore[misc]
+    NBA_DMAD_PROFILES = {}  # type: ignore[assignment]
+    POLITICAL_DMAD_PROFILES = {}  # type: ignore[assignment]
+    CONSENSUS_DAMPING = 0.60
+    CONSENSUS_THRESHOLD = 3
+
 # ── ITERATION / GENERATION TRACKING ──────────────────────────────────────────
 # Incremented each run; generation tracks game-day count
 _ITERATION_FILE = Path('/home/termius/mon-ipad/data/arena/trading-floor-iteration.json')
@@ -1117,6 +1145,56 @@ def load_other_trader_states(exclude: str) -> Dict:
     return results
 
 
+# ── DMAD: PRIOR-RUN CONSENSUS MAP ────────────────────────────────────────────
+
+def build_dmad_consensus_map(all_trader_states: Dict[str, Dict]) -> Dict[str, float]:
+    """
+    Build a per-game damping map from last iteration's bet histories.
+
+    For each game key (date_home_away), count how many agents bet the same
+    primary direction (ml_home vs ml_away). If >= CONSENSUS_THRESHOLD agree,
+    record CONSENSUS_DAMPING; otherwise 1.0.
+
+    This is the DMAD "last-round consensus penalty" — agents that would group-
+    think on a game get a 40% Kelly reduction on that game next round.
+
+    Returns: {game_key: damping_factor}  e.g. {"2026-01-15_BOS_LAL": 0.60}
+    """
+    if not _DMAD_AVAILABLE:
+        return {}
+
+    # Accumulate votes: game_key -> {direction: [trader_ids]}
+    votes: Dict[str, Dict[str, list]] = {}
+
+    for trader_id, state in all_trader_states.items():
+        bets = state.get("nba_bets_history", [])
+        for bet in bets:
+            game = bet.get("game", "")
+            date = bet.get("date", "")
+            cat = bet.get("category", "")
+            if not game or not date or not cat:
+                continue
+            key = f"{date}_{game.replace(' vs ', '_')}"
+            # Determine direction: "home" if category contains "home", else "away"
+            direction = "home" if "home" in cat else "away"
+            if key not in votes:
+                votes[key] = {"home": [], "away": []}
+            if trader_id not in votes[key][direction]:
+                votes[key][direction].append(trader_id)
+
+    damping_map: Dict[str, float] = {}
+    for key, dirs in votes.items():
+        max_agreement = max(len(dirs["home"]), len(dirs["away"]))
+        if max_agreement >= CONSENSUS_THRESHOLD:
+            damping_map[key] = CONSENSUS_DAMPING
+
+    if damping_map:
+        n_consensus = len(damping_map)
+        print(f"  [DMAD] {n_consensus} game(s) with prior-round consensus → "
+              f"Kelly x{CONSENSUS_DAMPING} applied")
+    return damping_map
+
+
 # ── POLITICAL SIGNAL COMPUTATION ─────────────────────────────────────────────
 
 def compute_political_ticker_signal(ticker: str, social_signals: Dict,
@@ -1572,15 +1650,20 @@ def agent_pick_strategies_for_game(trader_id: str, game_ctx: Dict,
 def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
                            day_budget: float, others: Dict, comp_state: Dict,
                            kelly_adj: float = 1.0,
-                           category_weights: Optional[Dict[str, float]] = None) -> List[Dict]:
+                           category_weights: Optional[Dict[str, float]] = None,
+                           dmad_damping: float = 1.0) -> List[Dict]:
     """
     v9 CORE: Agent decides ALL bets for ONE game with LEARNING.
     Now uses:
     - kelly_adj: rolling-window adjustment from season memory (0.25-2.0)
     - category_weights: per-category boost/penalty from feature correlations
+    - dmad_damping: DMAD consensus damping factor (0.60 when >3/5 agents agree)
     Agent sees: standings, team form, all model predictions, odds, other agents.
+    DMAD: each agent sees only its locked data partition (see dmad_profiles.py).
     Agent chooses: model, strategies, categories — all freely.
     """
+    # ── DMAD: filter context to this agent's locked data partition ────────────
+    game_ctx = filter_nba_context(game_ctx, trader_id)
     cfg = TRADERS[trader_id]
     odds = game_ctx["odds"]
     result = game_ctx["_result"]
@@ -1717,7 +1800,8 @@ def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
 
             # Apply per-category weight from feature correlations
             cat_adj = cat_weights.get(f"strat={strat_name}|cat={cat}", 1.0)
-            effective_kelly_adj = kelly_adj * cat_adj
+            # Apply DMAD consensus damping (anti-groupthink: 40% reduction when >3/5 agree)
+            effective_kelly_adj = kelly_adj * cat_adj * dmad_damping
 
             bet_size = get_bet_size(strat_name, prob, odds_val, remaining_budget,
                                     comp_state, kelly_adj=effective_kelly_adj)
@@ -1742,6 +1826,12 @@ def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
                 reasoning_parts.append(f"{game_ctx['away']} L{a_form['games']}: {a_form['w']}-{a_form['l']}")
             if effective_kelly_adj != 1.0:
                 reasoning_parts.append(f"kelly_adj: {effective_kelly_adj:.2f}")
+            # Append DMAD role tag to reasoning for audit trail
+            _dmad_meta = game_ctx.get("_dmad", {})
+            if _dmad_meta:
+                reasoning_parts.append(f"dmad_role: {_dmad_meta.get('role', '?')}")
+            if dmad_damping < 1.0:
+                reasoning_parts.append(f"CONSENSUS_WARNING dmad_damp={dmad_damping:.2f}")
 
             bet_record = {
                 "date": game_ctx["date"],
@@ -1759,6 +1849,8 @@ def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
                 "outcome": "Win" if outcome else "Loss",
                 "profit": round(profit, 4),
                 "kelly_adjustment": round(effective_kelly_adj, 4),
+                "dmad_role": _dmad_meta.get("role", ""),
+                "dmad_damping": round(dmad_damping, 4),
             }
             bets.append(bet_record)
             remaining_budget -= bet_size
@@ -1892,10 +1984,11 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
                                all_games: Optional[List[Dict]] = None,
                                season_memory: Optional[Dict] = None,
                                darwin_weight: float = 1.0,
-                               oasis_ctx: Optional[Dict] = None) -> Dict:
+                               oasis_ctx: Optional[Dict] = None,
+                               dmad_consensus_map: Optional[Dict[str, float]] = None) -> Dict:
     """
-    v9: Full-season backtest WITH GAME-LEVEL LEARNING. Agent gets ALL context per game, bets freely
-    across 16+ categories, provides justification for every bet.
+    v9+DMAD: Full-season backtest WITH GAME-LEVEL LEARNING + DIVERSE MULTI-AGENT DEBATE.
+    Agent gets a DMAD-filtered context (locked to its data partition, see dmad_profiles.py).
 
     darwin_weight: atlas-gic per-trader allocation multiplier (0.3..2.5). Applied
     on top of kelly_adj so winners scale up daily and losers fade. Updated by
@@ -1905,6 +1998,9 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
     the Kelly multiplier and probability nudges from the multi-agent discussion
     are blended into this agent's decisions (additive integration, never replaces).
     Load via: oasis_ctx = load_oasis_context()
+
+    dmad_consensus_map: per-game damping factors from prior iteration's consensus
+    check (built by build_dmad_consensus_map). Keys are "date_home_away" strings.
     """
     bankroll   = TRADERS[trader_id]["bankroll_nba"]
     comp_state = {"last_won": False, "win_streak": 0, "peak": bankroll}
@@ -2028,6 +2124,11 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
             if _oasis_ctx:
                 game_ctx["oasis"] = _oasis_ctx.get("decisions", {}).get(trader_id, {})
 
+            # ── DMAD: look up prior-round consensus damping for this game ──────
+            _game_key = f"{key[0]}_{key[1]}_{key[2]}"
+            _dmad_map = dmad_consensus_map or {}
+            _dmad_damp = _dmad_map.get(_game_key, 1.0)
+
             # Agent decides all bets for this game
             # Budget per game: split remaining budget across remaining games
             games_remaining = max(1, len(day_games) - day_games.index((key, game_entry, odd)))
@@ -2039,7 +2140,8 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
 
             game_bets = agent_decide_game_bets(
                 trader_id, game_ctx, bankroll, game_budget, others_states, comp_state,
-                kelly_adj=kelly_adj, category_weights=category_weights
+                kelly_adj=kelly_adj, category_weights=category_weights,
+                dmad_damping=_dmad_damp,
             )
 
             for bet in game_bets:
@@ -2437,6 +2539,25 @@ def run_full_competition() -> Dict:
     else:
         print("OASIS discussion : none for today (run oasis_adapter.py to generate)")
 
+    # ── DMAD: build prior-round consensus map from all existing state files ────
+    # Load ALL trader states to determine which games had consensus last run.
+    # Any game where >= CONSENSUS_THRESHOLD agents agreed → Kelly x0.60 this run.
+    _all_prior_states: Dict[str, Dict] = {}
+    for _tid in TRADERS:
+        _sf = TRADERS_DIR / f"{_tid}-state.json"
+        if _sf.exists():
+            try:
+                _all_prior_states[_tid] = json.loads(_sf.read_text())
+            except Exception:
+                pass
+    dmad_consensus_map = build_dmad_consensus_map(_all_prior_states)
+    if _DMAD_AVAILABLE:
+        _dmad_role_summary = {tid: NBA_DMAD_PROFILES.get(tid, {}).get("name", "?") for tid in TRADERS}
+        print(f"DMAD profiles    : {_dmad_role_summary}")
+        print(f"DMAD consensus   : {len(dmad_consensus_map)} game(s) flagged from prior run")
+    else:
+        print("DMAD             : not available (dmad_profiles.py missing)")
+
     all_results: Dict[str, Dict] = {}
 
     for trader_id in TRADERS:
@@ -2445,14 +2566,17 @@ def run_full_competition() -> Dict:
         pol_strat = pol_profile.get("primary_strategy", cfg.get("pol_approach", "momentum"))
         dw = darwin_weights.get(trader_id, 1.0)
         dw_tag = f" darwin={dw:.3f}" if dw != 1.0 else ""
-        print(f"\nAgent [{trader_id}] — {cfg['personality']} / NBA + Political ({pol_strat}){dw_tag}")
+        _dmad_role = NBA_DMAD_PROFILES.get(trader_id, {}).get("name", "") if _DMAD_AVAILABLE else ""
+        _dmad_tag = f" dmad={_dmad_role}" if _dmad_role else ""
+        print(f"\nAgent [{trader_id}] — {cfg['personality']} / NBA + Political ({pol_strat}){dw_tag}{_dmad_tag}")
         others = load_other_trader_states(trader_id)
         pol_others = load_political_trader_states(trader_id)
 
         nba_result = run_nba_backtest_for_agent(trader_id, matched, others, all_games_sorted,
                                                  season_memory=season_memory,
                                                  darwin_weight=dw,
-                                                 oasis_ctx=oasis_ctx)
+                                                 oasis_ctx=oasis_ctx,
+                                                 dmad_consensus_map=dmad_consensus_map)
         pol_result = run_political_backtest_for_agent(
             trader_id, pol_events, social_snapshots, signals, pol_others)
 
@@ -2494,6 +2618,24 @@ def run_full_competition() -> Dict:
 
     board     = build_leaderboard(all_results)
     cc_status = build_command_center_status(dept_data)
+
+    # ── DMAD: compute divergence metrics for this iteration ───────────────────
+    if _DMAD_AVAILABLE:
+        _dmad_all_bets: Dict[str, list] = {
+            tid: res.get("nba_all_bets", []) for tid, res in all_results.items()
+        }
+        _dmad_div = compute_dmad_divergence(_dmad_all_bets)
+        _health_tag = "HEALTHY" if _dmad_div["healthy"] else "GROUPTHINK RISK"
+        print(f"\nDMAD divergence  : {_dmad_div['divergence']:.3f}  "
+              f"consensus_events={_dmad_div['consensus_events']}  [{_health_tag}]")
+        if not _dmad_div["healthy"]:
+            print("  WARNING: Low divergence — agents may be reasoning too similarly. "
+                  "Check DMAD profiles.")
+        # Persist divergence to state for dashboard display
+        for tid in all_results:
+            all_results[tid]["dmad_divergence"] = _dmad_div["divergence"]
+            all_results[tid]["dmad_consensus_games"] = _dmad_div["consensus_events"]
+            all_results[tid]["dmad_healthy"] = _dmad_div["healthy"]
 
     # ── UPDATE SEASON MEMORY with new bets from this iteration ──
     for tid, res in all_results.items():
