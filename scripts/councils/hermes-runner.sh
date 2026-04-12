@@ -205,20 +205,14 @@ run_department() {
     local pre_dirty_snapshot
     pre_dirty_snapshot=$(cd "${ROOT}" && git status --porcelain 2>/dev/null | awk '{print $2}' | sort -u)
 
-    # ── Karpathy best-Brier BEFORE snapshot (2026-04-11 Phase 3) ──
-    # Capture the ATR best_brier right before the agent runs so we can
-    # measure brier_delta at the end. This is the only metric that
-    # matters for real research progress — did this iteration actually
-    # move the needle?
+    # ── Live Brier BEFORE snapshot (2026-04-12 fix: use brier_proxy.py) ──
+    # Read from brier_proxy.py (live mode) which checks backtest-latest.json,
+    # full-season-backtest.json, karpathy best-config in priority order.
+    # This returns a value that actually changes as the fleet improves —
+    # unlike the old direct karpathy read which was constant between iterations.
     local brier_before
-    brier_before=$(python3 -c "
-import json
-try:
-    with open('${ROOT}/data/karpathy/nba-best-config.json') as f:
-        print(json.load(f).get('best_brier', ''))
-except Exception:
-    print('')
-" 2>/dev/null)
+    brier_before=$(python3 "${ROOT}/scripts/brier_proxy.py" --json 2>/dev/null \
+        | python3 -c "import json,sys; d=json.loads(sys.stdin.read() or '{}'); print(d.get('brier',''))" 2>/dev/null || echo "")
 
     # DNS pre-warm: force resolve api.anthropic.com before launching CLI.
     # Tailscale overrides /etc/resolv.conf bypassing systemd-resolved cache,
@@ -382,19 +376,15 @@ cf.write_text(json.dumps(d, indent=2))
         new_streak=$(( prev_streak + 1 ))
     fi
 
-    # ── Karpathy best-Brier AFTER snapshot (2026-04-11 Phase 3) ──
-    # Re-read the ATR config so we can compute brier_delta. Positive delta
-    # means the iteration moved backwards (higher Brier = worse), negative
-    # delta means the council actually advanced the frontier.
+    # ── Live Brier AFTER snapshot (2026-04-12 fix: use brier_proxy.py) ──
+    # Same source as before — brier_proxy.py live mode. Within a single council
+    # run the backtest file usually won't change (it updates every 4h), so
+    # brier_delta will be 0 for most iterations. That's honest: a single council
+    # run doesn't move the live Brier. The delta becomes non-zero when the swarm
+    # updates backtest-latest.json between two consecutive council runs.
     local brier_after
-    brier_after=$(python3 -c "
-import json
-try:
-    with open('${ROOT}/data/karpathy/nba-best-config.json') as f:
-        print(json.load(f).get('best_brier', ''))
-except Exception:
-    print('')
-" 2>/dev/null)
+    brier_after=$(python3 "${ROOT}/scripts/brier_proxy.py" --json 2>/dev/null \
+        | python3 -c "import json,sys; d=json.loads(sys.stdin.read() or '{}'); print(d.get('brier',''))" 2>/dev/null || echo "")
 
     python3 - "${metrics_file}" "${dept_id}" "${dept_name}" "${TIMESTAMP}" \
         "${agent_status}" "${verified_status}" "${new_streak}" "${duration}" "${exit_code}" "${agent_reason}" "${real_sha}" "${rejected_files}" \

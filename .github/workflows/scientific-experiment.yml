@@ -1,0 +1,68 @@
+name: Scientific Experiment
+
+on:
+  schedule:
+    # Every 2 hours
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project to run: nba, political, or all'
+        required: false
+        default: 'all'
+
+permissions:
+  contents: write
+
+jobs:
+  run-experiment:
+    name: Scientific Experiment + Feedback Loop
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install numpy scipy scikit-learn requests 2>/dev/null || true
+
+      - name: Run NBA scientific experiment
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          mkdir -p data/scientific-results research-vault/raw/scientific logs
+          python3 scripts/scientific-experiment.py --project ${{ github.event.inputs.project || 'nba' }} \
+            2>&1 | tail -50
+        continue-on-error: true
+
+      - name: Run feedback loop from experiment
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          python3 scripts/arena/feedback-loop-from-experiment.py \
+            2>&1 | tail -30
+        continue-on-error: true
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/scientific-results/ research-vault/raw/scientific/ \
+                  data/arena/ 2>/dev/null || true
+          if ! git diff --cached --quiet 2>/dev/null; then
+            git commit -m "data: scientific experiment $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase origin main
+            git push
+          else
+            echo "No experiment changes to commit"
+          fi

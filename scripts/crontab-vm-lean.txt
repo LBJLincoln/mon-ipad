@@ -1,0 +1,63 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# NOMOS42 VM CRONTAB — LEAN MODE (2026-04-12)
+# ═══════════════════════════════════════════════════════════════════════════
+# VM = 1 vCPU / 969 MB RAM. HEAVY compute moved to GitHub Actions.
+#
+# REMOVED (now on GH Actions):
+#   scientific-experiment.py        → .github/workflows/scientific-experiment.yml
+#   continuous-backtest-swarm.sh    → .github/workflows/backtest-swarm.yml
+#   continuous-political-backtest-swarm.sh → (included in backtest-swarm.yml)
+#   trading-floor-v5-cron.sh       → .github/workflows/trading-floor.yml
+#   karpathy-scheduler.sh          → Kaggle only (ZERO ML on VM)
+#   gpu-cron-launcher.sh           → .github/workflows/gpu-cron-launcher.yml
+#   arena-engine.py                → .github/workflows/arena-engine.yml
+#
+# REMOVED (killed by user):
+#   Telegram bots (nomos42_brain, forge_bot, nomos_nba_bot, political_bot, rgwa_bot)
+#
+# ═══════════════════════════════════════════════════════════════════════════
+
+PATH=/home/termius/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+SHELL=/bin/bash
+
+# ── DATA FETCHING (lightweight API calls) ─────────────────────────────────
+*/30 18-23,0-6 * * * set -a && . /home/termius/mon-ipad/.env.local && set +a && cd /home/termius/mon-ipad && python3 scripts/fetch_free_odds.py >> /home/termius/mon-ipad/logs/odds-monitor.log 2>&1
+0 */2 * * * cd /home/termius/mon-ipad && python3 scripts/odds_movement_tracker.py --fetch >> /tmp/odds-tracker.log 2>&1
+*/30 * * * * cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --fast >> /tmp/political-fast.log 2>&1
+0 */6 * * * cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --all >> /tmp/political-full.log 2>&1
+0 22 * * 1-5 cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --insider >> /tmp/political-insider.log 2>&1
+30 22 * * 1-5 cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --prices >> /tmp/political-prices.log 2>&1
+30 */2 * * * cd /home/termius/nomos-political-alpha && python3 ops/fetch_social_signals.py --all >> /tmp/social-signals.log 2>&1
+
+# ── EVALUATION (lightweight, reads JSON) ──────────────────────────────────
+0 10 * * * set -a && . /home/termius/mon-ipad/.env.local && set +a && cd /home/termius/mon-ipad && python3 scripts/evaluate_predictions.py >> /home/termius/mon-ipad/logs/evaluator.log 2>&1
+0 22 * * * set -a && . /home/termius/mon-ipad/.env.local && set +a && python3 scripts/betting_agent.py >> /home/termius/mon-ipad/logs/betting-agent.log 2>&1
+
+# ── MONITORING (reads files, HTTP pings) ──────────────────────────────────
+*/30 * * * * /bin/bash /home/termius/mon-ipad/scripts/keepalive-spaces.sh >> /tmp/keepalive.log 2>&1
+*/30 * * * * /usr/bin/python3 /home/termius/mon-ipad/scripts/arena/cpcv_watcher.py >> /home/termius/mon-ipad/logs/arena/cpcv-watcher.log 2>&1
+*/30 * * * * /usr/bin/python3 /home/termius/mon-ipad/scripts/monitoring/nba_drift_monitor.py >> /home/termius/mon-ipad/logs/drift-monitor.log 2>&1
+15,45 * * * * /home/termius/mon-ipad/scripts/infra-agent.sh >> /home/termius/mon-ipad/logs/infra-agent-cron.log 2>&1
+5,35 * * * * /bin/bash /home/termius/mon-ipad/scripts/monitoring/auto_pav_refit.sh >> /home/termius/mon-ipad/logs/auto-pav-refit.log 2>&1
+15,45 * * * * cd /home/termius/mon-ipad && /usr/bin/python3 scripts/lineage/experiment_id_injector.py >> logs/lineage.log 2>&1 && /usr/bin/python3 scripts/lineage/lineage_ingest.py >> logs/lineage.log 2>&1
+0 */6 * * * python3 /home/termius/mon-ipad/scripts/monitoring/dagshub-monitor.py >> /home/termius/mon-ipad/logs/dagshub-monitor.log 2>&1
+
+# ── SERVICES (always-on APIs) ─────────────────────────────────────────────
+*/10 * * * * pgrep -f "bloomberg-api.py" > /dev/null || (cd /home/termius/mon-ipad && nohup python3 /home/termius/mon-ipad/scripts/bloomberg/bloomberg-api.py --host 0.0.0.0 --port 8042 >> /tmp/bloomberg-api.log 2>&1 &)
+
+# ── GIT OPS (sync, vault, backup) ─────────────────────────────────────────
+17 */4 * * * /home/termius/mon-ipad/scripts/vault-refresh.sh >> /home/termius/mon-ipad/logs/vault-refresh.log 2>&1
+23 */2 * * * /home/termius/mon-ipad/scripts/research-vault/compile-cron.sh
+30 3,9,15,21 * * * /home/termius/mon-ipad/scripts/councils/sync-to-sister-repos.sh >> /home/termius/mon-ipad/logs/councils/sync-sister-repos.log 2>&1
+30 */6 * * * /home/termius/mon-ipad/scripts/agents/auto-deploy-engine.sh >> /home/termius/mon-ipad/logs/auto-deploy-engine.log 2>&1
+0 6,18 * * * /home/termius/mon-ipad/scripts/agents/research-cron.sh >> /home/termius/mon-ipad/logs/research-cron.log 2>&1
+0 4 * * * python3 /home/termius/mon-ipad/scripts/agents/cross-pollinate.py >> /home/termius/mon-ipad/logs/cross-pollinate.log 2>&1
+0 3 * * * /home/termius/mon-ipad/scripts/backup-to-drive.sh >> /tmp/backup.log 2>&1
+30 23 * * * set -a && . /home/termius/mon-ipad/.env.local && set +a && python3 /home/termius/mon-ipad/scripts/daily-summary.py >> /home/termius/mon-ipad/logs/daily-summary.log 2>&1
+5,35 * * * * /home/termius/nomos-political-alpha/scripts/agents/agent-cron.sh >> /home/termius/nomos-political-alpha/logs/agents/cron.log 2>&1
+
+# ── CALIBRATION (monthly) ─────────────────────────────────────────────────
+0 6 1 * * /bin/bash /home/termius/mon-ipad/scripts/fit-calibration.sh >> /home/termius/mon-ipad/logs/fit-calibration.log 2>&1
+
+# ── AUTONOMOUS CYCLE (lightweight orchestration) ──────────────────────────
+30 0,4,8,12,16,20 * * * set -a && . /home/termius/mon-ipad/.env.local && set +a && /home/termius/mon-ipad/scripts/autonomous-cycle.sh >> /home/termius/mon-ipad/logs/autonomous-cycle.log 2>&1

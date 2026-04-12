@@ -2,12 +2,21 @@
 """
 brier_proxy.py — Cached Brier proxy metric for Hermes councils.
 
-Three modes:
+Four modes:
 
-1. Baseline mode (no args): 5-fold LR CV on data/proxy/holdout.json. Result
-   is CACHED in data/proxy/baseline_cache.json keyed on a SHA1 of the holdout.
-   First call ~100s (sklearn cold import dominates on 1vCPU VM). Subsequent
-   calls ~0.8s until the holdout file changes.
+1. Baseline mode (no args, or --json alone): reads the LATEST real backtest
+   results from data/arena/backtest-results/backtest-latest.json or
+   data/karpathy/nba-best-config.json. Returns the live model Brier — a
+   value that actually changes as the evolution loop improves the fleet.
+
+   Priority order for the Brier source:
+     a) data/arena/backtest-results/backtest-latest.json  → real_brier / model_brier
+     b) data/nba-agent/full-season-backtest.json          → brier field
+     c) data/karpathy/nba-best-config.json                → best_brier
+     d) data/nba-agent/backtest-results.json              → brier_score
+     e) Fallback: 5-fold LogReg CV on data/proxy/holdout.json (CACHED)
+        ⚠ This fallback is a constant function of the holdout file. Use only
+          when none of the above exist (e.g. fresh VM without a Karpathy run).
 
 2. Predictions mode (--predictions path.json): read a JSON file mapping
    {"game_id": float_prob_home_win} and score those predictions against the
@@ -18,20 +27,19 @@ Three modes:
    and return delta (negative = improvement). Exit code 0 if after <= before,
    otherwise 1. THIS IS THE MODE THAT SHOULD DRIVE KEEP/REVERT.
 
+4. Live-compute mode (--compute): compute Brier directly from the per-game
+   model_prob + won fields in backtest trade records. More precise than the
+   pre-stored scalar but slightly slower (file parsing only, no sklearn).
+
 ──────────────────────────────────────────────────────────────────────────
-⚠ HONEST LIMITATION (2026-04-11 audit):
+FIX 2026-04-12: The previous baseline_cv mode was a CONSTANT function of
+data/proxy/holdout.json. If called before/after a council iteration, delta
+was always exactly 0.0, making the Paperclip keep/revert gate useless.
 
-`baseline_cv` mode is a CONSTANT function of the holdout file. If you call
-it before and after a council iteration, the delta is ALWAYS 0 (unless the
-council itself rewrites data/proxy/holdout.json, which none currently do).
-A Paperclip runner calling only baseline_cv can NEVER trigger a revert.
-
-To make Paperclip actually gate keep/revert, the council must produce a
-predictions file (e.g. data/proxy/council_preds.json) and Paperclip must
-call this script in --before/--after compare mode against before/after
-versions of that file. Until councils output predictions, Paperclip's
-baseline_cv mode is effectively a syntax/crash gate only — it catches
-commits that broke the holdout loader, nothing else.
+This rewrite switches the default mode to read real backtest data, which
+IS updated as the fleet evolves. Councils in hermes-runner.sh also read
+data/karpathy/nba-best-config.json directly — that file IS updated by the
+Kaggle Karpathy loop, so those deltas are also now meaningful.
 ──────────────────────────────────────────────────────────────────────────
 """
 from __future__ import annotations
@@ -48,9 +56,107 @@ ROOT = Path(__file__).resolve().parent.parent
 HOLDOUT_PATH = ROOT / "data" / "proxy" / "holdout.json"
 CACHE_PATH = ROOT / "data" / "proxy" / "baseline_cache.json"
 
+# Live data sources (checked in priority order)
+_BACKTEST_LATEST = ROOT / "data" / "arena" / "backtest-results" / "backtest-latest.json"
+_FULL_SEASON = ROOT / "data" / "nba-agent" / "full-season-backtest.json"
+_KARPATHY_BEST = ROOT / "data" / "karpathy" / "nba-best-config.json"
+_BACKTEST_RESULTS = ROOT / "data" / "nba-agent" / "backtest-results.json"
+
 
 def brier(probs: list[float], labels: list[int]) -> float:
     return sum((p - y) ** 2 for p, y in zip(probs, labels)) / len(labels)
+
+
+def read_live_brier() -> tuple[float | None, str, dict]:
+    """Read the most current real Brier score from live data files.
+
+    Returns (brier_value, source_description, extra_metadata).
+    Returns (None, "not_found", {}) if no live data available.
+    """
+    # Priority 1: backtest-latest.json (updated every 4h by swarm)
+    if _BACKTEST_LATEST.exists():
+        try:
+            d = json.loads(_BACKTEST_LATEST.read_text())
+            b = d.get("real_brier") or d.get("model_brier")
+            n = d.get("real_brier_n") or d.get("games_total") or 0
+            if b and isinstance(b, (int, float)) and 0 < b < 1:
+                return float(b), "backtest-latest", {
+                    "n_games": n,
+                    "timestamp": d.get("timestamp", ""),
+                }
+        except (OSError, json.JSONDecodeError, TypeError):
+            pass
+
+    # Priority 2: full-season-backtest.json (updated by aggregate_swarm)
+    if _FULL_SEASON.exists():
+        try:
+            d = json.loads(_FULL_SEASON.read_text())
+            b = d.get("brier")
+            n = d.get("brier_n") or len(d.get("trades", []))
+            if b and isinstance(b, (int, float)) and 0 < b < 1:
+                return float(b), "full-season-backtest", {
+                    "n_games": n,
+                    "timestamp": d.get("generated_at", ""),
+                }
+        except (OSError, json.JSONDecodeError, TypeError):
+            pass
+
+    # Priority 3: karpathy best-config (updated by Kaggle Karpathy loop)
+    if _KARPATHY_BEST.exists():
+        try:
+            d = json.loads(_KARPATHY_BEST.read_text())
+            b = d.get("best_brier")
+            if b and isinstance(b, (int, float)) and 0 < b < 1:
+                return float(b), "karpathy-best-config", {
+                    "iteration": d.get("iteration", 0),
+                    "timestamp": d.get("timestamp", ""),
+                }
+        except (OSError, json.JSONDecodeError, TypeError):
+            pass
+
+    # Priority 4: nba-agent backtest-results.json
+    if _BACKTEST_RESULTS.exists():
+        try:
+            d = json.loads(_BACKTEST_RESULTS.read_text())
+            b = d.get("brier_score")
+            n = d.get("predictions_evaluated") or d.get("total_bets") or 0
+            if b and isinstance(b, (int, float)) and 0 < b < 1:
+                return float(b), "backtest-results", {
+                    "n_games": n,
+                    "timestamp": d.get("last_updated", ""),
+                }
+        except (OSError, json.JSONDecodeError, TypeError):
+            pass
+
+    return None, "not_found", {}
+
+
+def compute_brier_from_trades() -> tuple[float | None, str, int]:
+    """Compute Brier score directly from model_prob + won fields in trade records.
+
+    More precise than a pre-stored scalar because it recomputes from raw data.
+    Returns (brier, source, n_games).
+    """
+    for path, field in [(_FULL_SEASON, "trades"), (_BACKTEST_RESULTS, "trades")]:
+        if not path.exists():
+            continue
+        try:
+            d = json.loads(path.read_text())
+            trades = d.get(field, [])
+            if not trades:
+                continue
+            valid = [(t["model_prob"], 1 if t["won"] else 0)
+                     for t in trades
+                     if "model_prob" in t and "won" in t]
+            if len(valid) < 5:
+                continue
+            probs = [v[0] for v in valid]
+            labels = [v[1] for v in valid]
+            b = brier(probs, labels)
+            return float(b), str(path.name), len(valid)
+        except (OSError, json.JSONDecodeError, KeyError, TypeError):
+            continue
+    return None, "not_found", 0
 
 
 def load_holdout() -> dict:
@@ -149,12 +255,17 @@ def main() -> int:
     p.add_argument("--before", type=Path, help="Baseline predictions JSON")
     p.add_argument("--after", type=Path, help="Candidate predictions JSON")
     p.add_argument("--json", action="store_true", help="emit structured JSON")
+    p.add_argument("--compute", action="store_true",
+                   help="Compute Brier directly from trade records (model_prob+won)")
+    p.add_argument("--baseline-cv", action="store_true",
+                   help="Force old 5-fold LogReg CV mode on holdout.json (CONSTANT — only use for regression testing)")
     args = p.parse_args()
 
     start = time.time()
-    holdout = load_holdout()
 
+    # ── Compare mode: score two predictions files ──────────────────────────
     if args.before and args.after:
+        holdout = load_holdout()
         b_before, matched_b, total = score_predictions_file(args.before, holdout)
         b_after, matched_a, _ = score_predictions_file(args.after, holdout)
         delta = b_after - b_before
@@ -178,7 +289,9 @@ def main() -> int:
                   f"({elapsed:.2f}s, matched={matched_a}/{total})")
         return 0 if delta <= 0 else 1
 
+    # ── Predictions score mode ─────────────────────────────────────────────
     if args.predictions:
+        holdout = load_holdout()
         b, matched, total = score_predictions_file(args.predictions, holdout)
         elapsed = time.time() - start
         result = {
@@ -194,11 +307,90 @@ def main() -> int:
             print(f"[proxy] brier={b:.5f} matched={matched}/{total} ({elapsed:.2f}s)")
         return 0
 
-    # Baseline mode — 5-fold CV LogReg, CACHED by holdout hash.
-    # Rationale: the CV result is a deterministic function of the holdout
-    # file. If the holdout hasn't changed, there's nothing to recompute and
-    # paying sklearn's ~100s cold-import on this 1vCPU VM is wasteful. Cache
-    # invalidates automatically when build_proxy_holdout.py rewrites the file.
+    # ── Direct trade-record compute mode ──────────────────────────────────
+    if args.compute:
+        b, source, n = compute_brier_from_trades()
+        if b is None:
+            print("[proxy] no trade records available for compute mode", file=sys.stderr)
+            sys.exit(2)
+        elapsed = time.time() - start
+        result = {
+            "mode": "compute",
+            "brier": round(b, 6),
+            "source": source,
+            "n_games": n,
+            "elapsed_sec": round(elapsed, 3),
+        }
+        if args.json:
+            print(json.dumps(result))
+        else:
+            print(f"[proxy] compute brier={b:.5f} (n={n}, source={source}, {elapsed:.2f}s)")
+        return 0
+
+    # ── Legacy baseline-cv mode (explicit flag) ────────────────────────────
+    if args.baseline_cv:
+        holdout = load_holdout()
+        h = holdout_hash()
+        cached = read_cached_baseline(h)
+        if cached is not None:
+            brier_cv = cached
+            from_cache = True
+        else:
+            brier_cv = fit_logreg_cv(holdout["X"], holdout["y"])
+            write_cached_baseline(h, brier_cv)
+            from_cache = False
+        elapsed = time.time() - start
+        result = {
+            "mode": "baseline_cv",
+            "brier": round(brier_cv, 6),
+            "n_games": holdout["n_games"],
+            "home_win_rate": holdout["home_win_rate"],
+            "feature_dim": len(holdout["feature_names"]),
+            "elapsed_sec": round(elapsed, 3),
+            "cached": from_cache,
+            "holdout_hash": h,
+            "warning": "CONSTANT: this value is cached by holdout hash and never changes between council iterations. Use default (live) mode instead.",
+        }
+        if args.json:
+            print(json.dumps(result))
+        else:
+            print(f"[proxy] baseline 5-fold CV LogReg brier={brier_cv:.5f} "
+                  f"(n={holdout['n_games']}, {elapsed:.2f}s, WARNING: constant)")
+        return 0
+
+    # ── DEFAULT: Live mode — read real backtest data ───────────────────────
+    # This replaces the old baseline_cv default. Reads the freshest real Brier
+    # from backtest files updated every 4h. NOT a constant function — the value
+    # changes as the fleet evolves, enabling real keep/revert gating.
+    #
+    # Fallback chain:
+    #   backtest-latest.json → full-season-backtest.json → karpathy-best-config
+    #   → backtest-results.json → holdout LogReg CV (constant fallback)
+    b_live, source, meta = read_live_brier()
+
+    if b_live is not None:
+        elapsed = time.time() - start
+        result = {
+            "mode": "live",
+            "brier": round(b_live, 6),
+            "source": source,
+            "elapsed_sec": round(elapsed, 3),
+            **meta,
+        }
+        if args.json:
+            print(json.dumps(result))
+        else:
+            print(f"[proxy] live brier={b_live:.5f} (source={source}, {elapsed:.2f}s)")
+        return 0
+
+    # Last-resort fallback: holdout LogReg CV (still constant but at least
+    # returns something rather than crashing when no backtest files exist).
+    if not HOLDOUT_PATH.exists():
+        print("[proxy] ERROR: no live data and no holdout.json — cannot compute Brier",
+              file=sys.stderr)
+        sys.exit(2)
+
+    holdout = load_holdout()
     h = holdout_hash()
     cached = read_cached_baseline(h)
     if cached is not None:
@@ -210,20 +402,20 @@ def main() -> int:
         from_cache = False
     elapsed = time.time() - start
     result = {
-        "mode": "baseline_cv",
+        "mode": "live_fallback_cv",
         "brier": round(brier_cv, 6),
+        "source": "holdout_logreg_cv",
         "n_games": holdout["n_games"],
-        "home_win_rate": holdout["home_win_rate"],
-        "feature_dim": len(holdout["feature_names"]),
         "elapsed_sec": round(elapsed, 3),
         "cached": from_cache,
         "holdout_hash": h,
+        "warning": "FALLBACK: no live backtest data found. Value is constant until backtest files appear.",
     }
     if args.json:
         print(json.dumps(result))
     else:
-        print(f"[proxy] baseline 5-fold CV LogReg brier={brier_cv:.5f} "
-              f"(n={holdout['n_games']}, {elapsed:.2f}s)")
+        print(f"[proxy] fallback CV brier={brier_cv:.5f} "
+              f"(WARNING: constant, no live data found, {elapsed:.2f}s)")
     return 0
 
 

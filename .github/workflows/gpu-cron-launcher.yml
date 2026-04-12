@@ -1,0 +1,126 @@
+name: GPU Compute Burst
+
+on:
+  schedule:
+    # Every 6 hours — cascade: ZeroGPU (free H200) -> Modal -> Lightning
+    - cron: '0 0,6,12,18 * * *'
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform: zerogpu, modal, lightning, or all'
+        required: false
+        default: 'zerogpu'
+
+permissions:
+  contents: write
+
+# NOTE: This workflow handles the GPU burst orchestration that previously
+# ran on the VM (OOM risk). ZeroGPU runs via HF Spaces API; Modal/Lightning
+# require secrets (MODAL_TOKEN_ID, MODAL_TOKEN_SECRET, LIGHTNING_API_KEY).
+# The VM gpu-cron-launcher.sh also ran: 0 3 * * * modal-only daily burst —
+# that is folded into the workflow_dispatch input above.
+
+jobs:
+  zerogpu-burst:
+    name: ZeroGPU Burst (Free H200)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Only run zerogpu on the scheduled trigger or when explicitly requested
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event.inputs.platform == 'zerogpu' ||
+      github.event.inputs.platform == 'all'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install requests huggingface_hub 2>/dev/null || true
+
+      - name: Run ZeroGPU burst
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_TOKEN_2: ${{ secrets.HF_TOKEN_2 }}
+          HF_TOKEN_3: ${{ secrets.HF_TOKEN_3 }}
+        run: |
+          mkdir -p data/gpu-burst logs/gpu-burst
+          python3 scripts/gpu-burst/zerogpu-burst.py \
+            2>&1 | tail -40
+        continue-on-error: true
+
+      - name: Commit GPU results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/gpu-burst/ 2>/dev/null || true
+          if ! git diff --cached --quiet 2>/dev/null; then
+            git commit -m "data: gpu burst zerogpu $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase origin main
+            git push
+          else
+            echo "No GPU results to commit"
+          fi
+
+  modal-burst:
+    name: Modal Burst (A10G — paid)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Only run modal when explicitly requested (paid platform)
+    if: >-
+      github.event.inputs.platform == 'modal' ||
+      github.event.inputs.platform == 'all'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install modal requests 2>/dev/null || true
+
+      - name: Authenticate Modal
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: |
+          if [ -n "$MODAL_TOKEN_ID" ] && [ -n "$MODAL_TOKEN_SECRET" ]; then
+            python3 -c "import modal; modal.config.Config().token_id = '$MODAL_TOKEN_ID'"
+          else
+            echo "MODAL_TOKEN_ID or MODAL_TOKEN_SECRET not set — skipping Modal burst"
+            exit 0
+          fi
+
+      - name: Run Modal burst
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: |
+          mkdir -p data/gpu-burst logs/gpu-burst
+          python3 scripts/gpu-burst/modal-burst.py \
+            2>&1 | tail -40
+        continue-on-error: true
+
+      - name: Commit Modal results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/gpu-burst/ 2>/dev/null || true
+          if ! git diff --cached --quiet 2>/dev/null; then
+            git commit -m "data: gpu burst modal $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase origin main
+            git push
+          else
+            echo "No Modal results to commit"
+          fi

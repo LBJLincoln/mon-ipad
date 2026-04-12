@@ -1,0 +1,73 @@
+name: Arena Engine (Daily)
+
+on:
+  schedule:
+    # Daily at 11:00 UTC — after the VM results evaluator at 10:00 UTC
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Mode: all, nba, political'
+        required: false
+        default: 'all'
+
+permissions:
+  contents: write
+
+# Replaces the VM cron: 0 11 * * * python3 scripts/arena/arena-engine.py all
+# arena-engine.py maps to backtest_engine.py + season aggregation in scripts/arena/
+
+jobs:
+  arena-engine:
+    name: Arena Engine Full Run
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install scikit-learn lightgbm catboost numpy pandas requests 2>/dev/null || true
+
+      - name: Run backtest engine (full season)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          mkdir -p data/arena/backtest-results logs/arena
+          python3 scripts/arena/backtest_engine.py --full --export \
+            2>&1 | tail -50
+        continue-on-error: true
+
+      - name: Aggregate swarm to full season
+        run: |
+          python3 scripts/arena/aggregate_swarm_to_season.py \
+            2>&1 | tail -20
+        continue-on-error: true
+
+      - name: Run season leaderboard
+        run: |
+          python3 scripts/arena/season-leaderboard.py \
+            2>&1 | tail -20
+        continue-on-error: true
+
+      - name: Commit arena results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/arena/ data/nba-agent/ 2>/dev/null || true
+          if ! git diff --cached --quiet 2>/dev/null; then
+            git commit -m "data: arena engine daily $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase origin main
+            git push
+          else
+            echo "No arena changes to commit"
+          fi
