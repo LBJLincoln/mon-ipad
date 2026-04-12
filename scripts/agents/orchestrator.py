@@ -24,6 +24,8 @@ PROJECTS = {
             ("nomos42-nba-evo-4", "S13"),
             ("nomos42-nba-evo-5", "S14"),
             ("nomos42-nba-evo-6", "S15"),
+            ("lbjlincoln26-nba-evo-s16", "S16"),
+            ("lbjlincoln26-nba-evo-s17", "S17"),
         ],
         "kaggle_kernels": [
             "alexismoret6/nba-karpathy-loop",
