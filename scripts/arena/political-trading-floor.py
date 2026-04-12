@@ -748,6 +748,14 @@ def run_backtest_for_agent(trader_id: str, events: List[Dict],
                 total_losses += 1
 
             capital += pnl
+            # Track intraday peak for accurate drawdown measurement
+            if capital > peak_capital:
+                peak_capital = capital
+            # Compute drawdown after each trade (intraday, not just end-of-day)
+            dd = 1.0 - capital / peak_capital if peak_capital > 0 else 0.0
+            if dd > max_drawdown:
+                max_drawdown = dd
+
             sector_pnl[pos.get("sector", "unknown")] += pnl
             strategy_pnl[pos["strategy_used"]]["count"] += 1
             strategy_pnl[pos["strategy_used"]]["pnl"] += pnl
@@ -758,12 +766,6 @@ def run_backtest_for_agent(trader_id: str, events: List[Dict],
 
             pos["capital_after"] = round(capital, 2)
             all_trades.append(pos)
-
-        if capital > peak_capital:
-            peak_capital = capital
-        dd = 1.0 - capital / peak_capital if peak_capital > 0 else 0.0
-        if dd > max_drawdown:
-            max_drawdown = dd
 
         day_results.append({
             "day":        day_num,
