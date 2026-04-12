@@ -1,382 +1,249 @@
 #!/bin/bash
-# Department: EVALUATION (D5) — Karpathy Loop
-# Pattern: audit predictions → compute calibration → identify weaknesses → propose fixes → verify
-# Metrics: ECE, calibration_error_per_bucket, false_positive_rate, brier_improvement
-# Max run: 5 min per iteration
-set -euo pipefail
+# Department: EVALUATION — Karpathy Mutator Loop (Real)
+# Pattern: MUTATE calibration config → MEASURE ECE → KEEP if better → REVERT if worse
+# Metric: ECE (Expected Calibration Error) — lower is better
+# Output: data/departments/evaluation/karpathy-output.json
+#         data/departments/evaluation/metrics.jsonl
+set -uo pipefail
 
 DEPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(dirname "$(dirname "$(dirname "$DEPT_DIR")")")"
 export ROOT
-export EVAL_ROOT="${ROOT}"
-
-EVAL_FILE="$ROOT/data/nba-agent/latest-eval.json"
-PICKS_FILE="$ROOT/data/nba-agent/latest-picks.json"
+DATA_OUT="$ROOT/data/departments/evaluation"
+CONFIG_FILE="$DATA_OUT/config.json"
+METRICS_FILE="$DATA_OUT/metrics.jsonl"
+OUTPUT_FILE="$DATA_OUT/karpathy-output.json"
 BACKTEST_FILE="$ROOT/data/nba-agent/backtest-results.json"
-OUTPUT_DIR="$ROOT/data/departments/evaluation"
-OUTPUT_FILE="$OUTPUT_DIR/karpathy-output.json"
 
-mkdir -p "$OUTPUT_DIR"
+mkdir -p "$DATA_OUT"
 
-TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000000+00:00")
+ONCE=false
+for arg in "$@"; do
+    [[ "$arg" == "--once" ]] && ONCE=true
+done
 
-# ── Read current iteration number ──
-PREV_ITER=0
-if [[ -f "$OUTPUT_FILE" ]]; then
-    PREV_ITER=$(python3 -c "import json; d=json.load(open('$OUTPUT_FILE')); print(d.get('iteration', 0))" 2>/dev/null || echo 0)
+# ── Ensure config exists ──────────────────────────────────────────────────────
+if [ ! -f "$CONFIG_FILE" ]; then
+    cat > "$CONFIG_FILE" << 'CFGEOF'
+{
+  "ece_target": 0.05,
+  "fp_rate_target": 0.25,
+  "high_confidence_threshold": 0.70,
+  "calibration_shift": 0.0,
+  "overconfidence_damping": 1.0,
+  "isotonic_n_breakpoints": 10,
+  "_description": "Evaluation dept config — mutated by Karpathy loop",
+  "_version": 1
+}
+CFGEOF
 fi
-ITERATION=$((PREV_ITER + 1))
 
-echo "[D5 EVALUATION] Iteration $ITERATION — $(date -u)"
+# ── Iteration counter ─────────────────────────────────────────────────────────
+ITER_FILE="$DATA_OUT/.iteration"
+ITERATION=$(cat "$ITER_FILE" 2>/dev/null || echo 0)
+ITERATION=$((ITERATION + 1))
+echo "$ITERATION" > "$ITER_FILE"
 
-# ── Core calibration + audit via Python ──
-python3 << 'PYEOF'
-import json, os, sys, math
-from datetime import datetime
-from pathlib import Path
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+echo "=== EVALUATION KARPATHY iter=$ITERATION @ $TIMESTAMP ==="
 
-ROOT = os.environ.get("EVAL_ROOT", "")
-if not ROOT:
-    # Derive from script location
-    ROOT = str(Path(__file__).resolve().parents[3]) if "__file__" in dir() else os.environ.get("ROOT", "")
+# ── Helper: compute ECE from backtest trades with given calibration params ────
+compute_ece() {
+    local shift="$1"
+    local damping="$2"
+    local threshold="$3"
+    python3 - "$shift" "$damping" "$threshold" << 'PYEOF'
+import json, os, math, sys
 
-EVAL_FILE    = Path(ROOT) / "data/nba-agent/latest-eval.json"
-PICKS_FILE   = Path(ROOT) / "data/nba-agent/latest-picks.json"
-BACKTEST_FILE= Path(ROOT) / "data/nba-agent/backtest-results.json"
-OUTPUT_FILE  = Path(ROOT) / "data/departments/evaluation/karpathy-output.json"
-OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+shift     = float(sys.argv[1])
+damping   = float(sys.argv[2])
+threshold = float(sys.argv[3])
 
-# ── Read iteration from existing output ──
-prev_iter = 0
-if OUTPUT_FILE.exists():
-    try:
-        prev_iter = json.loads(OUTPUT_FILE.read_text()).get("iteration", 0)
-    except Exception:
-        pass
-iteration = prev_iter + 1
+ROOT = os.environ.get("ROOT", "")
+bt_file = os.path.join(ROOT, "data/nba-agent/backtest-results.json")
 
-timestamp = datetime.utcnow().isoformat() + "+00:00"
+try:
+    bt = json.loads(open(bt_file).read()) if os.path.exists(bt_file) else {}
+    trades = bt.get("trades", [])
+    if not trades:
+        print("null")
+        sys.exit(0)
 
-# ── Load data ──
-eval_data    = json.loads(EVAL_FILE.read_text())    if EVAL_FILE.exists()    else {}
-picks_data   = json.loads(PICKS_FILE.read_text())   if PICKS_FILE.exists()  else {}
-backtest     = json.loads(BACKTEST_FILE.read_text()) if BACKTEST_FILE.exists() else {}
+    bin_defs = [
+        ("50-60%", 0.50, 0.60), ("60-70%", 0.60, 0.70),
+        ("70-80%", 0.70, 0.80), ("80-90%", 0.80, 0.90),
+        ("90-100%", 0.90, 1.01),
+    ]
+    bins = {name: {"probs": [], "wins": 0, "count": 0} for name, _, _ in bin_defs}
+    n_total = 0
 
-brier_atr  = eval_data.get("brier_score", 0.2157)
-trades     = backtest.get("trades", [])
-games      = picks_data.get("games", [])
+    for t in trades:
+        raw_p = float(t.get("model_prob", 0))
+        won   = bool(t.get("won", False))
 
-# ── Phantom game detection ──
-phantom_games = []
-valid_games   = []
-for g in games:
-    if g.get("home") == g.get("away"):
-        phantom_games.append({
-            "home": g.get("home"), "away": g.get("away"),
-            "home_win_prob": g.get("home_win_prob"),
-            "market_implied": g.get("market_implied"),
-            "issue": "home == away (same team on both sides)"
-        })
-    elif g.get("market_implied", 0.5) < 0.10 or g.get("market_implied", 0.5) > 0.90:
-        phantom_games.append({
-            "home": g.get("home"), "away": g.get("away"),
-            "market_implied": g.get("market_implied"),
-            "issue": f"market_implied={g.get('market_implied'):.3f} outside [0.10, 0.90] — likely corrupt odds"
-        })
-    else:
-        valid_games.append(g)
+        # Apply calibration config: shift then damp overconfidence toward 0.5
+        p = raw_p + shift
+        if damping != 1.0:
+            p = 0.5 + (p - 0.5) * damping
+        p = max(0.01, min(0.99, p))
 
-# ── Calibration analysis from backtest trades ──
-bin_defs = [
-    ("50-60%", 0.50, 0.60),
-    ("60-70%", 0.60, 0.70),
-    ("70-80%", 0.70, 0.80),
-    ("80-90%", 0.80, 0.90),
-    ("90-100%",0.90, 1.01),
-]
-bins = {name: {"probs": [], "wins": 0, "count": 0} for name, _, _ in bin_defs}
+        n_total += 1
+        for name, lo, hi in bin_defs:
+            if lo <= p < hi:
+                bins[name]["probs"].append(p)
+                bins[name]["count"] += 1
+                if won:
+                    bins[name]["wins"] += 1
+                break
 
-corrupted_odds_bets = []
-for t in trades:
-    p   = float(t.get("model_prob", 0))
-    won = bool(t.get("won", False))
-    odds= float(t.get("odds", 1))
-    edge= float(t.get("edge", 0))
+    ece = 0.0
+    for name, b in bins.items():
+        if b["count"] > 0:
+            avg_pred = sum(b["probs"]) / b["count"]
+            actual_freq = b["wins"] / b["count"]
+            ece += abs(avg_pred - actual_freq) * b["count"] / n_total
 
-    # Detect corrupted odds: model says >60% but market odds imply <15%
-    market_imp = 1.0 / odds if odds > 0 else 0.5
-    if p > 0.60 and market_imp < 0.15:
-        corrupted_odds_bets.append({
-            "date":        t.get("date"),
-            "game":        t.get("game"),
-            "model_prob":  round(p, 4),
-            "odds":        odds,
-            "market_implied": round(market_imp, 4),
-            "edge":        round(edge, 4),
-            "won":         won
-        })
+    print(round(ece, 6))
 
-    for name, lo, hi in bin_defs:
-        if lo <= p < hi:
-            bins[name]["probs"].append(p)
-            bins[name]["count"] += 1
-            if won:
-                bins[name]["wins"] += 1
-            break
-
-# ECE computation
-n_total = len(trades)
-ece = 0.0
-calibration_bins = {}
-for name, b in bins.items():
-    if b["count"] > 0:
-        avg_pred    = sum(b["probs"]) / b["count"]
-        actual_freq = b["wins"] / b["count"]
-        abs_err     = abs(avg_pred - actual_freq)
-        calib_err   = avg_pred - actual_freq
-        ece += abs_err * b["count"] / n_total if n_total > 0 else 0
-        calibration_bins[name] = {
-            "n":                  b["count"],
-            "avg_predicted":      round(avg_pred, 4),
-            "actual_win_rate":    round(actual_freq, 4),
-            "calibration_error":  round(calib_err, 4),
-            "abs_error":          round(abs_err, 4),
-        }
-    else:
-        calibration_bins[name] = {"n": 0}
-
-# Overall calibration
-avg_pred_overall = sum(float(t.get("model_prob",0)) for t in trades) / n_total if n_total else 0
-actual_wr_overall= sum(1 for t in trades if t.get("won")) / n_total if n_total else 0
-brier_from_bets  = sum((float(t.get("model_prob",0)) - int(bool(t.get("won"))))**2
-                       for t in trades) / n_total if n_total else 0
-
-# False positive rate (high-confidence bets)
-hc_bets  = [t for t in trades if float(t.get("model_prob", 0)) >= 0.70]
-hc_losses= [t for t in hc_bets  if not t.get("won")]
-fp_rate  = len(hc_losses) / len(hc_bets) if hc_bets else 0.0
-
-# Home/away bias
-home_bets = [t for t in trades if t.get("bet_side") == "home"]
-away_bets = [t for t in trades if t.get("bet_side") == "away"]
-home_wr   = sum(1 for t in home_bets if t.get("won")) / len(home_bets) if home_bets else 0
-away_wr   = sum(1 for t in away_bets if t.get("won")) / len(away_bets) if away_bets else 0
-
-# Today's picks distribution
-today_probs = [g["home_win_prob"] for g in games]
-conf_breakdown = {}
-for g in games:
-    c = g.get("confidence", "UNKNOWN")
-    conf_breakdown[c] = conf_breakdown.get(c, 0) + 1
-
-# Daily trend analysis (win rate last 3 days vs first 3 days)
-daily_log = backtest.get("daily_log", [])
-early_wr = late_wr = None
-if len(daily_log) >= 6:
-    early_wins   = sum(d["wins"] for d in daily_log[:3])
-    early_bets   = sum(d["bets"] for d in daily_log[:3])
-    late_wins    = sum(d["wins"] for d in daily_log[-3:])
-    late_bets    = sum(d["bets"] for d in daily_log[-3:])
-    early_wr     = round(early_wins / early_bets, 4) if early_bets else None
-    late_wr      = round(late_wins  / late_bets,  4) if late_bets  else None
-
-# Determine worst calibration bucket
-worst_bucket = None
-worst_err    = 0.0
-for name, d in calibration_bins.items():
-    if d.get("n", 0) >= 3 and abs(d.get("calibration_error", 0)) > worst_err:
-        worst_err    = abs(d["calibration_error"])
-        worst_bucket = name
-
-# ── Assemble output ──
-output = {
-    "department":    "evaluation",
-    "timestamp":     timestamp,
-    "iteration":     iteration,
-    "model_version": eval_data.get("model", "tabicl_ensemble"),
-    "brier_score":   brier_atr,
-
-    "calibration_analysis": {
-        "method":                    "ECE (Expected Calibration Error) over evaluated bets",
-        "n_bets_evaluated":          n_total,
-        "ece":                       round(ece, 4),
-        "ece_target":                0.05,
-        "brier_from_bets":           round(brier_from_bets, 5),
-        "overall_avg_predicted":     round(avg_pred_overall, 4),
-        "overall_actual_win_rate":   round(actual_wr_overall, 4),
-        "overall_calibration_error": round(avg_pred_overall - actual_wr_overall, 4),
-        "direction":                 "OVERCONFIDENT" if avg_pred_overall > actual_wr_overall else "UNDERCONFIDENT",
-        "worst_bucket":              worst_bucket,
-        "worst_bucket_error":        round(worst_err, 4),
-        "bins":                      calibration_bins,
-    },
-
-    "false_positive_rate": round(fp_rate, 4),
-    "false_positive_detail": {
-        "threshold":              0.70,
-        "high_confidence_bets":  len(hc_bets),
-        "high_confidence_losses":len(hc_losses),
-        "fp_rate":                round(fp_rate, 4),
-        "fp_target":              0.25,
-        "status":                "FAIL" if fp_rate > 0.30 else "PASS",
-    },
-
-    "prediction_distribution": {
-        "today_games_total":     len(games),
-        "today_valid_games":     len(valid_games),
-        "today_phantom_games":   len(phantom_games),
-        "today_avg_prob":        round(sum(today_probs)/len(today_probs), 4) if today_probs else 0,
-        "today_prob_min":        round(min(today_probs), 4) if today_probs else 0,
-        "today_prob_max":        round(max(today_probs), 4) if today_probs else 0,
-        "today_confidence_breakdown": conf_breakdown,
-        "backtest_prob_concentration": "60-70% range dominant (39% of bets)",
-        "backtest_avg_predicted": round(avg_pred_overall, 4),
-    },
-
-    "bias_detected": [
-        {
-            "type":        "PHANTOM_GAME",
-            "severity":    "CRITICAL" if phantom_games else "NONE",
-            "count":       len(phantom_games),
-            "examples":    phantom_games[:3],
-            "fix":         "Assert home != away; validate market_implied in [0.10, 0.90] before outputting any pick"
-        },
-        {
-            "type":        "OVERCONFIDENCE_SYSTEMATIC",
-            "severity":    "HIGH" if ece > 0.15 else ("MEDIUM" if ece > 0.08 else "LOW"),
-            "ece":         round(ece, 4),
-            "worst_bucket":worst_bucket,
-            "fix":         "Apply Platt scaling or isotonic regression post-hoc calibration"
-        },
-        {
-            "type":        "HOME_BIAS",
-            "severity":    "MEDIUM" if (home_wr is not None and away_wr is not None and away_wr - home_wr > 0.03) else "LOW",
-            "home_bets":   len(home_bets),
-            "home_win_rate": round(home_wr, 4),
-            "away_bets":   len(away_bets),
-            "away_win_rate": round(away_wr, 4),
-            "gap":         round(away_wr - home_wr, 4) if (home_wr and away_wr) else 0,
-            "fix":         "Recalibrate home_court_advantage weight (currently 2.8 pts)"
-        },
-        {
-            "type":        "CORRUPTED_ODDS",
-            "severity":    "HIGH" if len(corrupted_odds_bets) >= 3 else ("MEDIUM" if corrupted_odds_bets else "NONE"),
-            "count":       len(corrupted_odds_bets),
-            "description": "Model >60% win prob but market implies <15% — likely team normalization mismatch (SAS/SA bug)",
-            "examples":    corrupted_odds_bets[:3],
-            "fix":         "Validate TEAM_MAP completeness; add odds sanity gate: skip bet if |model_prob - market_implied| > 0.50"
-        }
-    ],
-
-    "performance_trends": {
-        "total_bets":     n_total,
-        "overall_win_rate": round(actual_wr_overall, 4),
-        "roi_pct":        backtest.get("total_roi_pct", 0),
-        "sharpe":         backtest.get("sharpe_ratio", 0),
-        "early_win_rate": early_wr,
-        "late_win_rate":  late_wr,
-        "trend":          "DECLINING" if (early_wr and late_wr and late_wr < early_wr - 0.05) else "STABLE"
-    },
-
-    "improvements_proposed": [
-        {
-            "priority":     1,
-            "type":         "BUG_FIX",
-            "title":        "Phantom game guard (home != away assertion)",
-            "effort":       "trivial",
-            "expected_brier_delta": 0.000,
-            "expected_roi_delta": "+removes corrupted bets",
-            "department":   "ENGINEERING",
-            "action":       "Add to predict_today.py: assert game['home'] != game['away'] before appending"
-        },
-        {
-            "priority":     2,
-            "type":         "CALIBRATION",
-            "title":        "Platt scaling post-hoc calibration layer",
-            "effort":       "medium",
-            "expected_brier_delta": -0.008,
-            "expected_ece_delta": -0.17,
-            "department":   "ENGINEERING",
-            "action":       "Train LogisticRegression(C=1) on held-out predictions. Deploy in HF Space inference path."
-        },
-        {
-            "priority":     3,
-            "type":         "BUG_FIX",
-            "title":        "Odds sanity gate — reject bets with |model_prob - market_implied| > 0.50",
-            "effort":       "small",
-            "expected_roi_delta": "+eliminates 8 corrupted-odds bets from backtest",
-            "department":   "ENGINEERING",
-            "action":       "In evaluate_predictions.py and predict_today.py: skip bet if market_implied < 0.10 or > 0.90, or if abs(model_p - market_implied) > 0.50"
-        },
-        {
-            "priority":     4,
-            "type":         "FEATURE",
-            "title":        "Home court advantage weight reduction (2.8 → 2.2 pts)",
-            "effort":       "small",
-            "expected_brier_delta": -0.002,
-            "department":   "D5/EVALUATION",
-            "action":       "Update home_court_advantage in quant-summary.json calibration config; remeasure on backtest"
-        },
-        {
-            "priority":     5,
-            "type":         "MONITORING",
-            "title":        "Automated calibration alert when ECE > 0.15",
-            "effort":       "small",
-            "department":   "D5/EVALUATION",
-            "action":       "Add ECE check to autonomous-cycle.sh; if ECE > 0.15, send Telegram alert and pause high-edge bets"
-        }
-    ],
-
-    "metrics_summary": {
-        "brier_atr":       brier_atr,
-        "brier_target":    0.20,
-        "brier_gap":       round(brier_atr - 0.20, 5),
-        "ece":             round(ece, 4),
-        "ece_target":      0.05,
-        "fp_rate":         round(fp_rate, 4),
-        "fp_target":       0.25,
-        "win_rate":        round(actual_wr_overall, 4),
-        "roi_pct":         backtest.get("total_roi_pct", 0),
-        "roi_target":      5.0,
-        "sharpe":          backtest.get("sharpe_ratio", 0),
-        "sharpe_target":   1.5,
-        "phantom_games":   len(phantom_games),
-        "corrupted_odds":  len(corrupted_odds_bets),
-        "status_overall":  "NEEDS_CALIBRATION" if ece > 0.15 else ("NEEDS_IMPROVEMENT" if brier_atr > 0.21 else "ON_TRACK")
-    },
-
-    "critical_alerts": (
-        (["PHANTOM: " + str(len(phantom_games)) + " phantom game(s) detected in today picks"] if phantom_games else []) +
-        (["ECE=" + str(round(ece,4)) + " — calibration target <0.05, currently " + str(round(ece/0.05,1)) + "x over"] if ece > 0.15 else []) +
-        (["CORRUPTED ODDS: " + str(len(corrupted_odds_bets)) + " bets with model/market divergence >50pp"] if len(corrupted_odds_bets) >= 3 else []) +
-        (["60-70% bucket calibration error=" + str(round(calibration_bins.get("60-70%", {}).get("calibration_error", 0), 3)) + " — catastrophic overconfidence"] if abs(calibration_bins.get("60-70%", {}).get("calibration_error", 0)) > 0.30 else [])
-    ),
-
-    "status": "completed"
+except Exception as e:
+    print("null")
+PYEOF
 }
 
-OUTPUT_FILE.write_text(json.dumps(output, indent=2))
-print(json.dumps({
+# ── STEP 1: Baseline ECE ──────────────────────────────────────────────────────
+CURRENT_SHIFT=$(python3 -c "import json; c=json.load(open('$CONFIG_FILE')); print(c.get('calibration_shift', 0.0))" 2>/dev/null || echo 0.0)
+CURRENT_DAMPING=$(python3 -c "import json; c=json.load(open('$CONFIG_FILE')); print(c.get('overconfidence_damping', 1.0))" 2>/dev/null || echo 1.0)
+CURRENT_THRESHOLD=$(python3 -c "import json; c=json.load(open('$CONFIG_FILE')); print(c.get('high_confidence_threshold', 0.70))" 2>/dev/null || echo 0.70)
+
+BASELINE_ECE=$(compute_ece "$CURRENT_SHIFT" "$CURRENT_DAMPING" "$CURRENT_THRESHOLD")
+echo "  Baseline ECE: $BASELINE_ECE  (shift=$CURRENT_SHIFT  damping=$CURRENT_DAMPING)"
+
+# ── STEP 2: Backup config ─────────────────────────────────────────────────────
+cp "$CONFIG_FILE" "$CONFIG_FILE.bak"
+
+# ── STEP 3: Mutate one calibration param ─────────────────────────────────────
+MUTATION_RESULT=$(python3 - << 'PYEOF'
+import json, random, os
+from pathlib import Path
+
+config_file = Path(os.environ.get("ROOT", "")) / "data/departments/evaluation/config.json"
+c = json.loads(config_file.read_text())
+
+mutable = {k: v for k, v in c.items() if not k.startswith("_") and isinstance(v, (int, float))}
+param = random.choice(list(mutable.keys()))
+old_val = c[param]
+
+BOUNDS = {
+    "calibration_shift":         (-0.05, 0.05),
+    "overconfidence_damping":    (0.75, 1.00),
+    "high_confidence_threshold": (0.60, 0.80),
+    "isotonic_n_breakpoints":    (5, 20),
+    "ece_target":                (0.03, 0.10),
+    "fp_rate_target":            (0.15, 0.35),
+}
+
+lo, hi = BOUNDS.get(param, (old_val * 0.9, old_val * 1.1))
+if param == "isotonic_n_breakpoints":
+    new_val = random.randint(int(lo), int(hi))
+else:
+    new_val = round(random.uniform(lo, hi), 4)
+
+c[param] = new_val
+config_file.write_text(json.dumps(c, indent=2))
+print(json.dumps({"param": param, "old": old_val, "new": new_val}))
+PYEOF
+)
+
+MUTATED_PARAM=$(echo "$MUTATION_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('param', 'none'))" 2>/dev/null || echo "none")
+MUTATED_OLD=$(echo "$MUTATION_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('old', 0))" 2>/dev/null || echo 0)
+MUTATED_NEW=$(echo "$MUTATION_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('new', 0))" 2>/dev/null || echo 0)
+echo "  Mutated: $MUTATED_PARAM  $MUTATED_OLD → $MUTATED_NEW"
+
+# ── STEP 4: Measure ECE after mutation ───────────────────────────────────────
+NEW_SHIFT=$(python3 -c "import json; c=json.load(open('$CONFIG_FILE')); print(c.get('calibration_shift', 0.0))" 2>/dev/null || echo 0.0)
+NEW_DAMPING=$(python3 -c "import json; c=json.load(open('$CONFIG_FILE')); print(c.get('overconfidence_damping', 1.0))" 2>/dev/null || echo 1.0)
+NEW_THRESHOLD=$(python3 -c "import json; c=json.load(open('$CONFIG_FILE')); print(c.get('high_confidence_threshold', 0.70))" 2>/dev/null || echo 0.70)
+
+AFTER_ECE=$(compute_ece "$NEW_SHIFT" "$NEW_DAMPING" "$NEW_THRESHOLD")
+echo "  After ECE: $AFTER_ECE"
+
+# ── STEP 5: Keep or revert (lower ECE = better) ───────────────────────────────
+KEPT=false
+DELTA="0.0"
+DECISION="no_baseline"
+
+if [ "$BASELINE_ECE" != "null" ] && [ "$AFTER_ECE" != "null" ]; then
+    DELTA=$(python3 -c "print(round($BASELINE_ECE - $AFTER_ECE, 6))" 2>/dev/null || echo "0.0")
+    if python3 -c "exit(0 if $AFTER_ECE <= $BASELINE_ECE else 1)" 2>/dev/null; then
+        KEPT=true
+        DECISION="kept"
+        rm -f "$CONFIG_FILE.bak"
+        echo "  IMPROVED ECE by $DELTA — keeping"
+    else
+        DECISION="reverted"
+        mv "$CONFIG_FILE.bak" "$CONFIG_FILE"
+        echo "  WORSE ECE by $DELTA — reverting"
+    fi
+else
+    rm -f "$CONFIG_FILE.bak"
+    KEPT=true
+    DECISION="kept_no_baseline"
+    echo "  No ECE baseline — keeping"
+fi
+
+# ── STEP 6: Compute current Brier also (for reference) ───────────────────────
+BRIER=$(python3 "$ROOT/scripts/brier_proxy.py" --json 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin).get('brier', 'null'))" 2>/dev/null || echo "null")
+
+# ── STEP 7: Write output + metrics ───────────────────────────────────────────
+python3 - << PYEOF
+import json, os
+
+out = {
+    "department": "evaluation",
+    "timestamp": "$TIMESTAMP",
+    "iteration": $ITERATION,
+    "karpathy": {
+        "metric": "ECE",
+        "baseline_ece": $BASELINE_ECE if "$BASELINE_ECE" != "null" else None,
+        "after_ece": $AFTER_ECE if "$AFTER_ECE" != "null" else None,
+        "delta": $DELTA,
+        "mutation": {
+            "param": "$MUTATED_PARAM",
+            "old": "$MUTATED_OLD",
+            "new": "$MUTATED_NEW",
+        },
+        "decision": "$DECISION",
+        "kept": "$KEPT" == "true",
+    },
+    "calibration_config": {
+        "shift": $NEW_SHIFT,
+        "damping": $NEW_DAMPING,
+        "threshold": $NEW_THRESHOLD,
+    },
+    "brier_reference": $BRIER if "$BRIER" != "null" else None,
     "status": "completed",
-    "iteration": iteration,
-    "ece": round(ece, 4),
-    "fp_rate": round(fp_rate, 4),
-    "phantom_games": len(phantom_games),
-    "corrupted_odds": len(corrupted_odds_bets),
-    "worst_bucket": worst_bucket,
-    "brier": brier_atr
-}))
+}
+with open("$OUTPUT_FILE", "w") as f:
+    json.dump(out, f, indent=2)
+
+metric = {
+    "ts": "$TIMESTAMP",
+    "iter": $ITERATION,
+    "ece_before": $BASELINE_ECE if "$BASELINE_ECE" != "null" else None,
+    "ece_after": $AFTER_ECE if "$AFTER_ECE" != "null" else None,
+    "delta": $DELTA,
+    "param": "$MUTATED_PARAM",
+    "old": "$MUTATED_OLD",
+    "new": "$MUTATED_NEW",
+    "decision": "$DECISION",
+}
+with open("$METRICS_FILE", "a") as f:
+    f.write(json.dumps(metric) + "\n")
 PYEOF
 
-# ── Set exit code based on critical alerts ──
-ALERTS=$(python3 -c "
-import json
-try:
-    d = json.load(open('$OUTPUT_FILE'))
-    print(len(d.get('critical_alerts', [])))
-except:
-    print(0)
-" 2>/dev/null || echo 0)
+echo "  Output: $OUTPUT_FILE | decision=$DECISION  ECE_delta=$DELTA"
+[ "$ONCE" = "true" ] && exit 0
 
-echo "[D5 EVALUATION] Done — $ALERTS critical alerts. Output: $OUTPUT_FILE"
-exit 0
+echo "  Sleeping 5 minutes..."
+sleep 300
+exec "$0" "$@"
