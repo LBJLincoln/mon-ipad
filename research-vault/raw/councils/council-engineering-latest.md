@@ -1,5 +1,5 @@
 # Council: engineering
-- Status: success
-- Timestamp: 2026-04-11T13:00:02Z
+- Status: failed
+- Timestamp: 2026-04-12T01:00:04Z
 - Model: claude-sonnet-4-6
-- Duration: 792s
+- Duration: 1399s
