@@ -97,7 +97,9 @@ timeout 120 python3 "${ROOT}/scripts/arena/cpcv_gate.py" \
 # research-vault compiles, and manual edits also land commits on main between
 # our add and our push. We were LOSING swarm data every run.
 cd "${ROOT}"
+git stash --quiet 2>/dev/null || true
 git pull --rebase --quiet origin main 2>>"${LOG_FILE}" || echo "[continuous-backtest] rebase(mon-ipad) failed" >> "${LOG_FILE}"
+git stash pop --quiet 2>/dev/null || true
 git add \
     data/arena/backtest-results/ \
     data/arena/backtest-results/backtest-latest.json \
@@ -117,14 +119,17 @@ if ! git diff --cached --quiet 2>/dev/null; then
         echo "[continuous-backtest] Pushed NBA results" >> "${LOG_FILE}"
     else
         echo "[continuous-backtest] NBA push rejected — one retry after rebase" >> "${LOG_FILE}"
-        git pull --rebase --quiet origin main 2>>"${LOG_FILE}" && git push --quiet 2>>"${LOG_FILE}" \
+        git stash --quiet 2>/dev/null || true
+        git pull --rebase --quiet origin main 2>>"${LOG_FILE}" && { git stash pop --quiet 2>/dev/null || true; } && git push --quiet 2>>"${LOG_FILE}" \
             && echo "[continuous-backtest] Pushed NBA results on retry" >> "${LOG_FILE}" \
             || echo "[continuous-backtest] NBA push still rejected — data on disk, will retry next run" >> "${LOG_FILE}"
     fi
 fi
 
 cd "${POL_ROOT}"
+git stash --quiet 2>/dev/null || true
 git pull --rebase --quiet origin main 2>>"${LOG_FILE}" || echo "[continuous-backtest] rebase(political) failed" >> "${LOG_FILE}"
+git stash pop --quiet 2>/dev/null || true
 git add data/arena/arena-results.json data/arena/arena-live.json 2>/dev/null || true
 if ! git diff --cached --quiet 2>/dev/null; then
     git commit -m "data: continuous backtest swarm $(date '+%Y-%m-%d')" --quiet || true
@@ -132,7 +137,8 @@ if ! git diff --cached --quiet 2>/dev/null; then
         echo "[continuous-backtest] Pushed Political results" >> "${LOG_FILE}"
     else
         echo "[continuous-backtest] Political push rejected — one retry after rebase" >> "${LOG_FILE}"
-        git pull --rebase --quiet origin main 2>>"${LOG_FILE}" && git push --quiet 2>>"${LOG_FILE}" \
+        git stash --quiet 2>/dev/null || true
+        git pull --rebase --quiet origin main 2>>"${LOG_FILE}" && { git stash pop --quiet 2>/dev/null || true; } && git push --quiet 2>>"${LOG_FILE}" \
             && echo "[continuous-backtest] Pushed Political results on retry" >> "${LOG_FILE}" \
             || echo "[continuous-backtest] Political push still rejected — data on disk, will retry next run" >> "${LOG_FILE}"
     fi
