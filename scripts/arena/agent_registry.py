@@ -245,7 +245,21 @@ def _build_tier1() -> List[TradingAgent]:
         ),
     ]
 
-    return base + named_premium + deep_agents
+    # --- GLM-5.1 Agent (Z.ai, Apr 2026) ---
+    # 754B MoE, #1 SWE-Bench Pro, $0.95/M input via OpenRouter
+    glm_agent = [
+        TradingAgent(
+            id="t1_glm51", name="GLM-5.1 Architect", tier=AgentTier.PREMIUM,
+            provider="openrouter", model="z-ai/glm-5.1",
+            strategy="value_hunter_half_kelly",
+            focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
+            personality="systematic", min_edge=0.03, risk_tolerance=0.55,
+            kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
+            description="GLM-5.1 754B MoE via OpenRouter. #1 SWE-Bench, systematic value hunter."
+        ),
+    ]
+
+    return base + named_premium + deep_agents + glm_agent
 
 
 # ============================================================================

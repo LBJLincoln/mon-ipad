@@ -89,8 +89,14 @@ PROVIDERS = {
     # --- DEAD: GROQ (restricted/banned 2026-04-05) ---
     # "groq": disabled — Organization restricted
 
-    # --- DEAD: OPENROUTER (free models 404/429 2026-04-05) ---
-    # "openrouter": disabled — free models removed or rate limited
+    # --- OPENROUTER (re-enabled 2026-04-12 for GLM-5.1 and paid models) ---
+    "openrouter": ProviderConfig(
+        name="openrouter",
+        base_url="https://openrouter.ai/api/v1",
+        models=["z-ai/glm-5.1", "google/gemma-3-27b-it:free",
+                "meta-llama/llama-3.3-70b-instruct:free"],
+        rpm=60, rpd=5000, is_free=False, timeout=60.0, max_tokens=1024
+    ),
 
     # --- FREE: COHERE ---
     "cohere": ProviderConfig(

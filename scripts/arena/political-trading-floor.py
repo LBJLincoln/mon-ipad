@@ -278,6 +278,18 @@ TRADERS = {
         "ticker_focus":       ["XLE", "GLD", "IWM", "TLT", "OXY", "CVX"],
         "event_weight":       {"exec_order": 0.9, "fed_rule": 1.0, "insider_trade": 1.3, "polymarket": 1.1},
     },
+    "glm": {  # GLM-5.1 (Z.ai, Apr 2026) — 754B MoE, #1 SWE-Bench Pro, via OpenRouter
+        "name":               "GLM-5.1 Architect",
+        "provider":           "openrouter:z-ai/glm-5.1",
+        "personality":        "systematic",
+        "risk_tolerance":     0.55,
+        "capital":            INITIAL_CAPITAL,
+        "primary_strategy":   "vol_scaled",
+        "secondary_strategies": ["sector_rotation", "event_driven"],
+        "sector_focus":       ["technology", "broad", "financials", "healthcare"],
+        "ticker_focus":       ["SPY", "QQQ", "XLF", "XLV", "NVDA", "AAPL"],
+        "event_weight":       {"exec_order": 1.1, "fed_rule": 1.2, "insider_trade": 1.0, "polymarket": 1.1},
+    },
 }
 
 # ── TRADER CONFIG PERSISTENCE ────────────────────────────────────────────────
