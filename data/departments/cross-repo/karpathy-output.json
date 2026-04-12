@@ -1,41 +1,44 @@
 {
-  "timestamp": "2026-04-11T19:30:00Z",
+  "timestamp": "2026-04-12T01:30:00Z",
   "agent": "D9-cross-repo-hermes",
-  "iteration": 17,
+  "iteration": 18,
   "repos_checked": [
     {
       "repo": "mon-ipad",
       "path": "/home/termius/mon-ipad",
       "engine_version": "v3.1-54cat",
       "engine_md5": "e713429296c0a6bfaf362071d8bda535",
-      "notes": "> 400 hardcode FIXED (was 4ee9606a in iter16, now e713429296). auto_fix_engine_parity() ran. mon-ipad and hf-space now in parity with each other."
+      "dirty_files": 24,
+      "notes": "24 dirty (data/ writes accumulating). CLAUDE.md fresh (2026-04-11, 1 day old). engine.py committed and clean."
     },
     {
       "repo": "hf-space",
       "path": "/home/termius/mon-ipad/hf-space",
       "engine_md5": "e713429296c0a6bfaf362071d8bda535",
-      "notes": "In parity with mon-ipad. Both fixed from > 400 hardcode."
+      "notes": "In parity with mon-ipad. engine.py clean."
     },
     {
       "repo": "nomos-nba-agent",
       "path": "/home/termius/nomos-nba-agent",
-      "engine_md5": "a5288441b0fc43d1f9a7f8b0678ebc61",
-      "notes": "STILL DIVERGED. nomos-nba-agent is NOW the semantic leader — it has better vig_dist55 (uses fair_home_prob dict lookup), better density calc (ISO string comparison), and corrected default row values. 4 diff locations vs mon-ipad."
+      "engine_md5": "71d937a56c1bbf96b4dadf227ddf4c3e",
+      "engine_dirty": true,
+      "dirty_files": 42,
+      "notes": "NEW: engine.py is DIRTY (+29/-24 unstaged lines). Hash changed from a5288441 (iter17) to 71d937a56c. Last 3 commits: revert of /home/termius->lahargnedebartoli path fix. Do NOT copy from canonical until engine.py is committed. Still the semantic leader for vig_dist55/density logic."
     },
     {
       "repo": "nomos-dashboard",
       "path": "/home/termius/nomos-dashboard",
       "status": "CLEAN",
       "dirty_files": 0,
-      "claude_md_age_days": 8,
+      "claude_md_age_days": 9,
       "claude_md_last_modified": "2026-04-03",
-      "notes": "13th consecutive clean. CLAUDE.md 8 days old (HIGH stale). Misses 8-island fleet (S16+S17), TF v5."
+      "notes": "14th consecutive clean iteration. CLAUDE.md now 9 days old (HIGH stale). Misses 8-island fleet (S16+S17), TF v5, Trading Floor real data."
     },
     {
       "repo": "nomos-political-alpha",
       "path": "/home/termius/nomos-political-alpha",
-      "dirty_files": 7,
-      "notes": "7 dirty (stable). CLAUDE.md fresh."
+      "dirty_files": 3,
+      "notes": "IMPROVED: 7 -> 3 dirty files (partial commit activity). Low priority."
     },
     {
       "repo": "rgwa",
@@ -48,70 +51,67 @@
     "ok": false,
     "mon_ipad_md5": "e713429296c0a6bfaf362071d8bda535",
     "hf_space_md5": "e713429296c0a6bfaf362071d8bda535",
-    "nomos_nba_agent_md5": "a5288441b0fc43d1f9a7f8b0678ebc61",
+    "nomos_nba_agent_md5": "71d937a56c1bbf96b4dadf227ddf4c3e",
+    "nomos_nba_agent_engine_dirty": true,
     "mon_ipad_hf_space_parity": true,
     "severity": "HIGH",
-    "consecutive_iterations_broken": 6,
-    "divergence_type": "semantic_drift",
-    "divergence_locations": [
-      "line ~6447: _vig_dist55 — nba-agent uses fair_home_prob dict lookup (better); mon-ipad uses simpler abs(_fair_h55 - _ip55h)",
-      "line ~6497: density calc — nba-agent uses ISO date string comparison (correct); mon-ipad uses hasattr type-check anti-pattern",
-      "line ~6722: default row neutral values differ (2 positions)",
-      "line ~7517: comment only (trivial)"
-    ],
+    "consecutive_iterations_broken": 7,
+    "divergence_type": "semantic_drift + canonical_dirty",
+    "new_this_iter": "nomos-nba-agent engine.py is now DIRTY (+29/-24 unstaged). Copying from it would propagate uncommitted changes. Block copy until committed.",
     "canonical": "nomos-nba-agent",
-    "fix_needed": "Copy nomos-nba-agent/features/engine.py to mon-ipad/features/engine.py and hf-space/features/engine.py. nomos-nba-agent is semantically ahead with more correct vig/density calculations.",
-    "progress_vs_iter16": "> 400 hardcode RESOLVED. New divergence is semantic drift, not a hardcode bug. mon-ipad/hf-space now in parity with each other (partial win)."
+    "fix_needed": "1) Commit nomos-nba-agent/features/engine.py first (resolve unstaged changes). 2) Then copy committed version to mon-ipad + hf-space. 3) Verify MD5 parity. Do NOT copy dirty working tree.",
+    "progress_vs_iter17": "nomos-nba-agent hash changed a5288441->71d937a56c due to revert of path fix. Engine is now also DIRTY. Parity still broken (7th iter). Added canonical_dirty check to sync script to prevent unsafe copy."
   },
   "stale_docs_found": [
     {
       "file": "/home/termius/nomos-dashboard/CLAUDE.md",
-      "age_days": 8,
+      "age_days": 9,
       "last_modified": "2026-04-03",
       "severity": "HIGH",
-      "note": "8 days old — exceeded threshold. Misses 8-island fleet (S16+S17), TF v5, Trading Floor real data."
+      "note": "9 days old (+1 from iter17). Misses 8-island fleet (S16+S17), TF v5, Trading Floor real data. 14 consecutive clean iters but docs lag."
     },
     {
       "file": "/home/termius/nomos-nba-agent/README.md",
       "age_days": 29,
+      "last_modified": "2026-03-14",
       "severity": "LOW",
-      "note": "29 days old. Misses v19 arch / 8 islands / S16+S17."
+      "note": "29 days old (unchanged from iter17). Misses v19 arch / 8 islands / S16+S17."
     }
   ],
   "stale_docs_count": 2,
   "this_iter_action": {
     "file": "scripts/councils/sync-to-sister-repos.sh",
-    "change": "Updated check_engine_parity() to detect divergence TYPE (old > 400 hardcode vs new semantic drift) and write appropriate fix instructions. Updated auto_fix_engine_parity() to detect and log semantic drift when > 400 is absent but parity still broken. Changed canonical from mon-ipad to nomos-nba-agent since nba-agent is now semantically ahead.",
-    "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 39 ++++++++++++++++++++++++--------\n 1 file changed, 29 insertions(+), 10 deletions(-)"
+    "change": "1) Added dirty-canonical guard: checks if nomos-nba-agent/features/engine.py has unstaged changes before recommending copy. Logs WARNING when canonical is dirty. 2) Removed stale > 400 fix advice from main divergence log (that issue fixed in iter16). 3) Added canonical_dirty field to engine-parity.json output.",
+    "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 12 ++++++++++--\n 1 file changed, 10 insertions(+), 2 deletions(-)"
   },
   "status": "shipped",
   "files_changed": [
     "scripts/councils/sync-to-sister-repos.sh",
     "data/departments/cross-repo/karpathy-output.json"
   ],
-  "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 39 ++++++++++++++++++++++++--------\n 1 file changed, 29 insertions(+), 10 deletions(-)",
-  "parity_score": 0.65,
-  "health_score": 68,
-  "health_delta": 1,
+  "git_diff_stat": "scripts/councils/sync-to-sister-repos.sh | 12 ++++++++++--\n 1 file changed, 10 insertions(+), 2 deletions(-)",
+  "parity_score": 0.60,
+  "health_score": 67,
+  "health_delta": -1,
   "commit_sha": null,
   "reason_if_no_op": "",
-  "summary": "Iter17: PROGRESS — > 400 hardcode fixed (mon-ipad MD5 4ee9606a→e713429296, hf-space matches). But parity still BROKEN (6th iter) due to semantic drift: nomos-nba-agent has BETTER vig_dist55 + density calculations. Fixed canonical direction in sync script (nba-agent is now leader, not mon-ipad). Updated check_engine_parity() to accurately diagnose drift type. Health +1 (67→68).",
+  "summary": "Iter18: NEW RISK — nomos-nba-agent engine.py is now DIRTY (+29/-24 unstaged lines after path-fix revert). Hash changed a5288441->71d937a56c. Parity broken 7th consecutive iter. Health -1 (68->67) due to dirty canonical escalating copy risk. Fix: sync script now has dirty-canonical guard + removed stale > 400 log message. nomos-political-alpha improved 7->3 dirty files. nomos-dashboard still clean (14th iter).",
   "remaining_issues": [
     {
       "priority": "CRITICAL",
-      "action": "Copy nomos-nba-agent/features/engine.py → mon-ipad/features/engine.py and hf-space/features/engine.py. 4 semantic differences; nba-agent has the correct vig_dist55 (fair_home_prob dict) and density (ISO string comparison). 6th iteration broken."
+      "action": "Commit nomos-nba-agent/features/engine.py first (resolve +29/-24 unstaged changes from path-fix revert). Then copy to mon-ipad + hf-space. 7th iteration broken. BLOCK copy while dirty."
     },
     {
       "priority": "HIGH",
-      "action": "Refresh nomos-dashboard CLAUDE.md — 8 days old, 13 consecutive clean iters but docs lag behind arch (8 islands, S16+S17, TF v5, Trading Floor real data)."
+      "action": "Refresh nomos-dashboard CLAUDE.md — 9 days old, misses 8-island fleet (S16+S17), TF v5, Trading Floor real data."
     },
     {
       "priority": "MEDIUM",
-      "action": "Commit nomos-nba-agent dirty files (~42 stable). Engine is semantically correct and canonical."
+      "action": "Commit mon-ipad data/ backlog (24 dirty files). Council/data writes accumulating."
     },
     {
       "priority": "MEDIUM",
-      "action": "Commit mon-ipad data/ backlog (80+ dirty files). Council/data writes accumulating."
+      "action": "Commit nomos-nba-agent dirty files (~42 stable, engine.py now dirty too)."
     },
     {
       "priority": "LOW",

@@ -108,11 +108,18 @@ check_engine_parity() {
 
     local ok="true"
     local diverged_repos="[]"
+    # Check if canonical (nomos-nba-agent) engine.py is dirty — warn before fix attempt
+    local agent_dirty="false"
+    if cd /home/termius/nomos-nba-agent 2>/dev/null && ! git diff --quiet features/engine.py 2>/dev/null; then
+        agent_dirty="true"
+        echo "[sync] WARNING: nomos-nba-agent/features/engine.py is DIRTY (unstaged changes). Canonical has uncommitted edits — do NOT copy until committed." >> "${LOG}"
+    fi
+    cd "${ROOT}"
+
     if [[ "${md5_mon}" != "${md5_agent}" || "${md5_mon}" != "${md5_hf}" ]]; then
         ok="false"
         diverged_repos="[\"nomos-nba-agent\"]"
-        echo "[sync] ENGINE PARITY BROKEN: mon-ipad=${md5_mon} hf-space=${md5_hf} nba-agent=${md5_agent}" >> "${LOG}"
-        echo "[sync] FIX: In mon-ipad features/engine.py line ~7516, change \`> 400\` to \`> target_features\` to align with MAX_FEATURES=200 rule, then re-run sync." >> "${LOG}"
+        echo "[sync] ENGINE PARITY BROKEN: mon-ipad=${md5_mon} hf-space=${md5_hf} nba-agent=${md5_agent} (canonical_dirty=${agent_dirty})" >> "${LOG}"
     else
         echo "[sync] ENGINE PARITY OK: all three at ${md5_mon}" >> "${LOG}"
     fi
@@ -144,6 +151,7 @@ check_engine_parity() {
     "nomos_nba_agent": "${md5_agent}"
   },
   "diverged_repos": ${diverged_repos},
+  "canonical_dirty": ${agent_dirty},
   "fix_if_broken": "${fix_desc}",
   "divergence_detail": ${divergence_detail}
 }
