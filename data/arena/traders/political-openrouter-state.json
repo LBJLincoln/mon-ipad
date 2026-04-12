@@ -1,129 +1,130 @@
 {
   "trader_id": "openrouter",
-  "political_bankroll": 100324.87,
-  "political_roi_pct": 0.3249,
-  "political_sharpe": 7.747,
-  "political_total_trades": 95,
-  "political_wins": 50,
-  "political_losses": 45,
-  "political_win_rate": 52.6,
-  "political_total_wagered": 146419.58,
-  "political_total_pnl": 324.87,
-  "political_peak_capital": 100324.87,
-  "political_max_drawdown": 0.0008,
-  "political_trading_days": 12,
-  "political_approach": "sector_rotation",
-  "political_strategy_breakdown": {
+  "name": "Qwen 3 72B",
+  "provider": "hf:Qwen/Qwen2.5-72B-Instruct",
+  "personality": "diversified",
+  "risk_tolerance": 0.5,
+  "primary_strategy": "sector_rotation",
+  "capital": 100468.89,
+  "initial_capital": 100000.0,
+  "roi_pct": 0.4689,
+  "sharpe": 14.344,
+  "total_trades": 92,
+  "wins": 50,
+  "losses": 42,
+  "win_rate": 54.3,
+  "total_wagered": 144700.25,
+  "total_pnl": 468.89,
+  "peak_capital": 100468.89,
+  "max_drawdown": 0.0003,
+  "trading_days": 12,
+  "strategy_breakdown": {
     "insider_follow": {
-      "trades": 34,
-      "pnl": 27.16,
-      "wins": 14,
-      "win_rate": 41.2
+      "trades": 33,
+      "pnl": 163.27,
+      "wins": 16,
+      "win_rate": 48.5,
+      "roi_pct": 0.49
     },
     "pairs_trading": {
-      "trades": 42,
-      "pnl": 48.79,
-      "wins": 23,
-      "win_rate": 54.8
+      "trades": 37,
+      "pnl": 53.24,
+      "wins": 20,
+      "win_rate": 54.1,
+      "roi_pct": 0.14
     },
     "sector_rotation": {
-      "trades": 19,
-      "pnl": 248.92,
-      "wins": 13,
-      "win_rate": 68.4
+      "trades": 22,
+      "pnl": 252.38,
+      "wins": 14,
+      "win_rate": 63.6,
+      "roi_pct": 1.15
     }
   },
-  "political_sector_breakdown": {
-    "broad": 219.05,
-    "energy": 136.65,
-    "financials": 133.01,
-    "unknown": -163.84
+  "sector_breakdown": {
+    "broad": 219.2,
+    "energy": 134.1,
+    "financials": 115.59
   },
-  "political_ticker_breakdown": {
+  "ticker_breakdown": {
     "SPY": {
       "trades": 7,
-      "pnl": 219.05,
+      "pnl": 219.2,
       "wins": 5,
       "win_rate": 71.4
     },
     "CVX": {
       "trades": 12,
-      "pnl": 168.39,
+      "pnl": 168.57,
       "wins": 8,
       "win_rate": 66.7
     },
     "HAL": {
-      "trades": 7,
-      "pnl": 101.64,
-      "wins": 5,
-      "win_rate": 71.4
+      "trades": 9,
+      "pnl": 112.2,
+      "wins": 6,
+      "win_rate": 66.7
     },
     "JPM": {
       "trades": 12,
-      "pnl": 88.14,
+      "pnl": 88.2,
       "wins": 8,
       "win_rate": 66.7
     },
     "BLK": {
-      "trades": 2,
-      "pnl": 22.75,
-      "wins": 2,
-      "win_rate": 100.0
-    },
-    "GS": {
-      "trades": 8,
-      "pnl": 14.79,
-      "wins": 3,
-      "win_rate": 37.5
+      "trades": 5,
+      "pnl": 48.01,
+      "wins": 4,
+      "win_rate": 80.0
     },
     "AXP": {
-      "trades": 2,
-      "pnl": 7.33,
-      "wins": 1,
-      "win_rate": 50.0
+      "trades": 6,
+      "pnl": 17.37,
+      "wins": 2,
+      "win_rate": 33.3
     },
     "COP": {
       "trades": 12,
-      "pnl": -32.83,
+      "pnl": -32.84,
       "wins": 6,
       "win_rate": 50.0
     },
+    "MS": {
+      "trades": 5,
+      "pnl": -37.99,
+      "wins": 1,
+      "win_rate": 20.0
+    },
     "XOM": {
       "trades": 12,
-      "pnl": -48.21,
+      "pnl": -48.16,
       "wins": 6,
       "win_rate": 50.0
     },
     "OXY": {
-      "trades": 9,
-      "pnl": -52.34,
-      "wins": 3,
-      "win_rate": 33.3
-    },
-    "WMT": {
       "trades": 12,
-      "pnl": -163.84,
-      "wins": 3,
-      "win_rate": 25.0
+      "pnl": -65.67,
+      "wins": 4,
+      "win_rate": 33.3
     }
   },
-  "political_day_results": [
+  "day_results": [
     {
       "day": 1,
       "date": "2026-03-12",
       "trades": 8,
       "events": 3,
-      "pnl": 75.35,
-      "capital": 100075.35,
+      "pnl": 38.01,
+      "capital": 100038.01,
       "strategies": [
+        "pairs_trading",
         "insider_follow",
-        "pairs_trading"
+        "sector_rotation"
       ],
       "sectors": [
         "broad",
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     },
     {
@@ -131,18 +132,17 @@
       "date": "2026-03-13",
       "trades": 8,
       "events": 10,
-      "pnl": -43.5,
-      "capital": 100031.85,
+      "pnl": -24.23,
+      "capital": 100013.78,
       "strategies": [
+        "pairs_trading",
         "insider_follow",
-        "sector_rotation",
-        "pairs_trading"
+        "sector_rotation"
       ],
       "sectors": [
         "broad",
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     },
     {
@@ -150,36 +150,34 @@
       "date": "2026-03-16",
       "trades": 8,
       "events": 10,
-      "pnl": -16.32,
-      "capital": 100015.53,
+      "pnl": 7.43,
+      "capital": 100021.21,
       "strategies": [
-        "insider_follow",
-        "pairs_trading"
+        "pairs_trading",
+        "insider_follow"
       ],
       "sectors": [
         "broad",
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     },
     {
       "day": 4,
       "date": "2026-03-17",
-      "trades": 8,
+      "trades": 7,
       "events": 16,
-      "pnl": 80.79,
-      "capital": 100096.32,
+      "pnl": 56.27,
+      "capital": 100077.48,
       "strategies": [
+        "pairs_trading",
         "insider_follow",
-        "sector_rotation",
-        "pairs_trading"
+        "sector_rotation"
       ],
       "sectors": [
         "broad",
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     },
     {
@@ -187,52 +185,50 @@
       "date": "2026-03-18",
       "trades": 8,
       "events": 16,
-      "pnl": 0.84,
-      "capital": 100097.16,
+      "pnl": 68.34,
+      "capital": 100145.82,
       "strategies": [
+        "pairs_trading",
         "insider_follow",
-        "sector_rotation",
-        "pairs_trading"
+        "sector_rotation"
       ],
       "sectors": [
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     },
     {
       "day": 6,
       "date": "2026-03-19",
-      "trades": 8,
+      "trades": 7,
       "events": 6,
-      "pnl": -40.9,
-      "capital": 100056.26,
+      "pnl": -15.45,
+      "capital": 100130.37,
       "strategies": [
+        "pairs_trading",
         "insider_follow",
-        "pairs_trading"
+        "sector_rotation"
       ],
       "sectors": [
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     },
     {
       "day": 7,
       "date": "2026-03-20",
-      "trades": 8,
+      "trades": 7,
       "events": 10,
-      "pnl": -26.23,
-      "capital": 100030.03,
+      "pnl": -13.09,
+      "capital": 100117.28,
       "strategies": [
+        "pairs_trading",
         "insider_follow",
-        "sector_rotation",
-        "pairs_trading"
+        "sector_rotation"
       ],
       "sectors": [
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     },
     {
@@ -240,18 +236,17 @@
       "date": "2026-03-23",
       "trades": 8,
       "events": 34,
-      "pnl": -14.92,
-      "capital": 100015.11,
+      "pnl": 24.98,
+      "capital": 100142.26,
       "strategies": [
+        "pairs_trading",
         "insider_follow",
-        "sector_rotation",
-        "pairs_trading"
+        "sector_rotation"
       ],
       "sectors": [
         "broad",
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     },
     {
@@ -259,18 +254,17 @@
       "date": "2026-03-24",
       "trades": 8,
       "events": 26,
-      "pnl": 63.55,
-      "capital": 100078.66,
+      "pnl": 81.11,
+      "capital": 100223.37,
       "strategies": [
+        "pairs_trading",
         "insider_follow",
-        "sector_rotation",
-        "pairs_trading"
+        "sector_rotation"
       ],
       "sectors": [
         "broad",
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     },
     {
@@ -278,18 +272,17 @@
       "date": "2026-03-25",
       "trades": 8,
       "events": 10,
-      "pnl": 107.92,
-      "capital": 100186.58,
+      "pnl": 64.4,
+      "capital": 100287.77,
       "strategies": [
+        "pairs_trading",
         "insider_follow",
-        "sector_rotation",
-        "pairs_trading"
+        "sector_rotation"
       ],
       "sectors": [
         "broad",
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     },
     {
@@ -297,17 +290,15 @@
       "date": "2026-03-26",
       "trades": 7,
       "events": 971,
-      "pnl": 111.15,
-      "capital": 100297.73,
+      "pnl": 127.14,
+      "capital": 100414.91,
       "strategies": [
-        "insider_follow",
-        "sector_rotation",
-        "pairs_trading"
+        "pairs_trading",
+        "sector_rotation"
       ],
       "sectors": [
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     },
     {
@@ -315,21 +306,20 @@
       "date": "20260326",
       "trades": 8,
       "events": 8,
-      "pnl": 27.14,
-      "capital": 100324.87,
+      "pnl": 53.98,
+      "capital": 100468.89,
       "strategies": [
+        "pairs_trading",
         "insider_follow",
-        "sector_rotation",
-        "pairs_trading"
+        "sector_rotation"
       ],
       "sectors": [
         "financials",
-        "energy",
-        "unknown"
+        "energy"
       ]
     }
   ],
-  "political_trades_history": [
+  "trades_history": [
     {
       "date": "2026-03-12",
       "ticker": "SPY",
@@ -357,7 +347,7 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
+      "net_direction": 0.01,
       "position_size": 1200.0,
       "trade_return": 0.00295,
       "pnl": 3.54,
@@ -368,24 +358,6 @@
     },
     {
       "date": "2026-03-12",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "insider_follow",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1500.0,
-      "trade_return": -0.006368,
-      "pnl": -9.55,
-      "outcome": "Loss",
-      "reasoning": "strategy=insider_follow | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 100051.81
-    },
-    {
-      "date": "2026-03-12",
       "ticker": "XOM",
       "name": "Exxon Mobil",
       "type": "stock",
@@ -393,14 +365,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
+      "net_direction": 0.02,
       "position_size": 1200.0,
       "trade_return": -0.009908,
       "pnl": -11.89,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100039.92
+      "capital_after": 100049.47
     },
     {
       "date": "2026-03-12",
@@ -411,14 +383,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
+      "net_direction": 0.03,
       "position_size": 1200.0,
       "trade_return": 0.008566,
       "pnl": 10.28,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=0.9",
       "event_count": 0,
-      "capital_after": 100050.2
+      "capital_after": 100059.75
     },
     {
       "date": "2026-03-12",
@@ -429,32 +401,32 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
+      "net_direction": 0.03,
       "position_size": 1200.0,
       "trade_return": -0.018056,
       "pnl": -21.67,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100028.53
+      "capital_after": 100038.08
     },
     {
       "date": "2026-03-12",
-      "ticker": "GS",
-      "name": "Goldman Sachs",
+      "ticker": "OXY",
+      "name": "Occidental",
       "type": "stock",
-      "sector": "financials",
-      "direction": "short",
-      "strategy_used": "insider_follow",
+      "sector": "energy",
+      "direction": "long",
+      "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1500.0,
-      "trade_return": 0.026544,
-      "pnl": 39.82,
+      "net_direction": 0.02,
+      "position_size": 1800.0,
+      "trade_return": 0.000352,
+      "pnl": 0.63,
       "outcome": "Win",
-      "reasoning": "strategy=insider_follow | signal=0.300 short | beta=1.3",
+      "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.4",
       "event_count": 0,
-      "capital_after": 100068.35
+      "capital_after": 100038.71
     },
     {
       "date": "2026-03-12",
@@ -465,14 +437,32 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.08,
+      "net_direction": 0.09,
       "position_size": 1200.0,
       "trade_return": 0.005834,
       "pnl": 7.0,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100075.35
+      "capital_after": 100045.71
+    },
+    {
+      "date": "2026-03-12",
+      "ticker": "AXP",
+      "name": "American Express",
+      "type": "stock",
+      "sector": "financials",
+      "direction": "long",
+      "strategy_used": "pairs_trading",
+      "signal_strength": 0.3,
+      "net_direction": 0.06,
+      "position_size": 1200.0,
+      "trade_return": -0.00642,
+      "pnl": -7.7,
+      "outcome": "Loss",
+      "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.0",
+      "event_count": 0,
+      "capital_after": 100038.01
     },
     {
       "date": "2026-03-13",
@@ -484,13 +474,13 @@
       "strategy_used": "pairs_trading",
       "signal_strength": 1.0,
       "net_direction": 0.2,
-      "position_size": 2001.51,
+      "position_size": 2000.76,
       "trade_return": 0.015397,
-      "pnl": 30.82,
+      "pnl": 30.81,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=1.000 long | event=fed_rule | beta=1.0",
       "event_count": 10,
-      "capital_after": 100106.17
+      "capital_after": 100068.82
     },
     {
       "date": "2026-03-13",
@@ -501,32 +491,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
-      "position_size": 1501.13,
+      "net_direction": 0.01,
+      "position_size": 1500.57,
       "trade_return": -0.003992,
       "pnl": -5.99,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100100.18
-    },
-    {
-      "date": "2026-03-13",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "pairs_trading",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1200.9,
-      "trade_return": -0.019316,
-      "pnl": -23.2,
-      "outcome": "Loss",
-      "reasoning": "strategy=pairs_trading | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 100076.98
+      "capital_after": 100062.83
     },
     {
       "date": "2026-03-13",
@@ -537,14 +509,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1501.13,
+      "net_direction": 0.02,
+      "position_size": 1500.57,
       "trade_return": -0.012364,
-      "pnl": -18.56,
+      "pnl": -18.55,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100058.42
+      "capital_after": 100044.28
     },
     {
       "date": "2026-03-13",
@@ -555,14 +527,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1200.9,
+      "net_direction": 0.03,
+      "position_size": 1200.46,
       "trade_return": 0.01294,
-      "pnl": 15.54,
+      "pnl": 15.53,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=0.9",
       "event_count": 0,
-      "capital_after": 100073.96
+      "capital_after": 100059.81
     },
     {
       "date": "2026-03-13",
@@ -573,14 +545,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
-      "position_size": 1801.36,
+      "net_direction": 0.03,
+      "position_size": 1800.68,
       "trade_return": -0.009482,
-      "pnl": -17.08,
+      "pnl": -17.07,
       "outcome": "Loss",
       "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100056.88
+      "capital_after": 100042.74
     },
     {
       "date": "2026-03-13",
@@ -591,32 +563,50 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1501.13,
+      "net_direction": 0.02,
+      "position_size": 1500.57,
       "trade_return": -0.000844,
       "pnl": -1.27,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.4",
       "event_count": 0,
-      "capital_after": 100055.61
+      "capital_after": 100041.47
     },
     {
       "date": "2026-03-13",
-      "ticker": "GS",
-      "name": "Goldman Sachs",
+      "ticker": "MS",
+      "name": "Morgan Stanley",
       "type": "stock",
       "sector": "financials",
-      "direction": "short",
+      "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1501.13,
-      "trade_return": -0.01583,
-      "pnl": -23.76,
+      "net_direction": 0.11,
+      "position_size": 1500.57,
+      "trade_return": -0.010848,
+      "pnl": -16.28,
       "outcome": "Loss",
-      "reasoning": "strategy=insider_follow | signal=0.300 short | beta=1.3",
+      "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.2",
       "event_count": 0,
-      "capital_after": 100031.85
+      "capital_after": 100025.19
+    },
+    {
+      "date": "2026-03-13",
+      "ticker": "BLK",
+      "name": "BlackRock",
+      "type": "stock",
+      "sector": "financials",
+      "direction": "long",
+      "strategy_used": "pairs_trading",
+      "signal_strength": 0.3,
+      "net_direction": 0.09,
+      "position_size": 1200.46,
+      "trade_return": -0.009508,
+      "pnl": -11.41,
+      "outcome": "Loss",
+      "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
+      "event_count": 0,
+      "capital_after": 100013.78
     },
     {
       "date": "2026-03-16",
@@ -628,13 +618,13 @@
       "strategy_used": "insider_follow",
       "signal_strength": 1.0,
       "net_direction": 0.2,
-      "position_size": 2500.8,
+      "position_size": 2500.34,
       "trade_return": -0.007269,
-      "pnl": -18.18,
+      "pnl": -18.17,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=1.000 long | event=fed_rule | beta=1.0",
       "event_count": 10,
-      "capital_after": 100013.67
+      "capital_after": 99995.61
     },
     {
       "date": "2026-03-16",
@@ -645,32 +635,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
-      "position_size": 1200.38,
+      "net_direction": 0.01,
+      "position_size": 1200.17,
       "trade_return": -0.000496,
       "pnl": -0.6,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100013.07
-    },
-    {
-      "date": "2026-03-16",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "pairs_trading",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1200.38,
-      "trade_return": 2e-05,
-      "pnl": 0.02,
-      "outcome": "Win",
-      "reasoning": "strategy=pairs_trading | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 100013.09
+      "capital_after": 99995.01
     },
     {
       "date": "2026-03-16",
@@ -681,14 +653,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1200.38,
+      "net_direction": 0.02,
+      "position_size": 1200.17,
       "trade_return": -0.015112,
       "pnl": -18.14,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 99994.95
+      "capital_after": 99976.87
     },
     {
       "date": "2026-03-16",
@@ -699,14 +671,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1200.38,
+      "net_direction": 0.03,
+      "position_size": 1200.17,
       "trade_return": -0.015544,
       "pnl": -18.66,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=0.9",
       "event_count": 0,
-      "capital_after": 99976.29
+      "capital_after": 99958.21
     },
     {
       "date": "2026-03-16",
@@ -717,14 +689,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
-      "position_size": 1500.48,
+      "net_direction": 0.03,
+      "position_size": 1500.21,
       "trade_return": -0.002986,
       "pnl": -4.48,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 99971.81
+      "capital_after": 99953.73
     },
     {
       "date": "2026-03-16",
@@ -735,14 +707,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1200.38,
+      "net_direction": 0.02,
+      "position_size": 1200.17,
       "trade_return": 0.013044,
       "pnl": 15.66,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.4",
       "event_count": 0,
-      "capital_after": 99987.47
+      "capital_after": 99969.39
     },
     {
       "date": "2026-03-16",
@@ -754,13 +726,31 @@
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
       "net_direction": 0.12,
-      "position_size": 1500.48,
+      "position_size": 1500.21,
       "trade_return": 0.018702,
       "pnl": 28.06,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.3",
       "event_count": 0,
-      "capital_after": 100015.53
+      "capital_after": 99997.45
+    },
+    {
+      "date": "2026-03-16",
+      "ticker": "BLK",
+      "name": "BlackRock",
+      "type": "stock",
+      "sector": "financials",
+      "direction": "long",
+      "strategy_used": "insider_follow",
+      "signal_strength": 0.3,
+      "net_direction": 0.09,
+      "position_size": 1500.21,
+      "trade_return": 0.015838,
+      "pnl": 23.76,
+      "outcome": "Win",
+      "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.1",
+      "event_count": 0,
+      "capital_after": 100021.21
     },
     {
       "date": "2026-03-17",
@@ -772,13 +762,13 @@
       "strategy_used": "sector_rotation",
       "signal_strength": 1.0,
       "net_direction": -0.125,
-      "position_size": 3000.47,
+      "position_size": 3000.64,
       "trade_return": 0.023407,
-      "pnl": 70.23,
+      "pnl": 70.24,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=1.000 short | event=fed_rule | beta=1.0",
       "event_count": 16,
-      "capital_after": 100085.76
+      "capital_after": 100091.45
     },
     {
       "date": "2026-03-17",
@@ -789,32 +779,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
-      "position_size": 1200.19,
+      "net_direction": 0.01,
+      "position_size": 1200.25,
       "trade_return": -0.00426,
       "pnl": -5.11,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100080.65
-    },
-    {
-      "date": "2026-03-17",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "sector_rotation",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1800.28,
-      "trade_return": 0.012824,
-      "pnl": 23.09,
-      "outcome": "Win",
-      "reasoning": "strategy=sector_rotation | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 100103.74
+      "capital_after": 100086.34
     },
     {
       "date": "2026-03-17",
@@ -825,14 +797,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1800.28,
+      "net_direction": 0.02,
+      "position_size": 1800.38,
       "trade_return": -0.019848,
       "pnl": -35.73,
       "outcome": "Loss",
       "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100068.01
+      "capital_after": 100050.61
     },
     {
       "date": "2026-03-17",
@@ -843,14 +815,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1500.23,
+      "net_direction": 0.03,
+      "position_size": 1500.32,
       "trade_return": 0.00851,
       "pnl": 12.77,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=0.9",
       "event_count": 0,
-      "capital_after": 100080.78
+      "capital_after": 100063.38
     },
     {
       "date": "2026-03-17",
@@ -861,14 +833,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
-      "position_size": 1500.23,
+      "net_direction": 0.03,
+      "position_size": 1500.32,
       "trade_return": 0.020706,
-      "pnl": 31.06,
+      "pnl": 31.07,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100111.84
+      "capital_after": 100094.45
     },
     {
       "date": "2026-03-17",
@@ -879,32 +851,32 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1200.19,
+      "net_direction": 0.02,
+      "position_size": 1200.25,
       "trade_return": -0.012244,
       "pnl": -14.7,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.4",
       "event_count": 0,
-      "capital_after": 100097.14
+      "capital_after": 100079.75
     },
     {
       "date": "2026-03-17",
-      "ticker": "GS",
-      "name": "Goldman Sachs",
+      "ticker": "AXP",
+      "name": "American Express",
       "type": "stock",
       "sector": "financials",
-      "direction": "short",
-      "strategy_used": "pairs_trading",
+      "direction": "long",
+      "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1200.19,
-      "trade_return": -0.000686,
-      "pnl": -0.82,
+      "net_direction": 0.06,
+      "position_size": 1500.32,
+      "trade_return": -0.001512,
+      "pnl": -2.27,
       "outcome": "Loss",
-      "reasoning": "strategy=pairs_trading | signal=0.300 short | beta=1.3",
+      "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100096.32
+      "capital_after": 100077.48
     },
     {
       "date": "2026-03-18",
@@ -915,32 +887,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
-      "position_size": 1501.44,
+      "net_direction": 0.01,
+      "position_size": 1501.16,
       "trade_return": 0.021258,
-      "pnl": 31.92,
+      "pnl": 31.91,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100128.24
-    },
-    {
-      "date": "2026-03-18",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "pairs_trading",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1201.16,
-      "trade_return": -0.022724,
-      "pnl": -27.3,
-      "outcome": "Loss",
-      "reasoning": "strategy=pairs_trading | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 100100.94
+      "capital_after": 100109.39
     },
     {
       "date": "2026-03-18",
@@ -951,14 +905,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1201.16,
+      "net_direction": 0.02,
+      "position_size": 1200.93,
       "trade_return": 0.004304,
       "pnl": 5.17,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100106.11
+      "capital_after": 100114.56
     },
     {
       "date": "2026-03-18",
@@ -969,14 +923,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1801.73,
+      "net_direction": 0.03,
+      "position_size": 1801.39,
       "trade_return": -0.01335,
       "pnl": -24.05,
       "outcome": "Loss",
       "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=0.9",
       "event_count": 0,
-      "capital_after": 100082.06
+      "capital_after": 100090.51
     },
     {
       "date": "2026-03-18",
@@ -987,14 +941,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
-      "position_size": 1201.16,
+      "net_direction": 0.03,
+      "position_size": 1200.93,
       "trade_return": 0.006184,
       "pnl": 7.43,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100089.49
+      "capital_after": 100097.94
     },
     {
       "date": "2026-03-18",
@@ -1005,14 +959,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1501.44,
+      "net_direction": 0.02,
+      "position_size": 1501.16,
       "trade_return": -0.007696,
-      "pnl": -11.56,
+      "pnl": -11.55,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.4",
       "event_count": 0,
-      "capital_after": 100077.93
+      "capital_after": 100086.39
     },
     {
       "date": "2026-03-18",
@@ -1024,31 +978,49 @@
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
       "net_direction": 0.12,
-      "position_size": 1201.16,
+      "position_size": 1200.93,
       "trade_return": 0.022,
-      "pnl": 26.43,
+      "pnl": 26.42,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.3",
       "event_count": 0,
-      "capital_after": 100104.36
+      "capital_after": 100112.81
     },
     {
       "date": "2026-03-18",
-      "ticker": "GS",
-      "name": "Goldman Sachs",
+      "ticker": "BLK",
+      "name": "BlackRock",
       "type": "stock",
       "sector": "financials",
-      "direction": "short",
+      "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1201.16,
-      "trade_return": -0.005998,
-      "pnl": -7.2,
-      "outcome": "Loss",
-      "reasoning": "strategy=pairs_trading | signal=0.300 short | beta=1.3",
+      "net_direction": 0.09,
+      "position_size": 1200.93,
+      "trade_return": 0.010738,
+      "pnl": 12.9,
+      "outcome": "Win",
+      "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100097.16
+      "capital_after": 100125.71
+    },
+    {
+      "date": "2026-03-18",
+      "ticker": "AXP",
+      "name": "American Express",
+      "type": "stock",
+      "sector": "financials",
+      "direction": "long",
+      "strategy_used": "insider_follow",
+      "signal_strength": 0.3,
+      "net_direction": 0.06,
+      "position_size": 1501.16,
+      "trade_return": 0.013396,
+      "pnl": 20.11,
+      "outcome": "Win",
+      "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.0",
+      "event_count": 0,
+      "capital_after": 100145.82
     },
     {
       "date": "2026-03-19",
@@ -1059,32 +1031,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
-      "position_size": 1201.17,
+      "net_direction": 0.01,
+      "position_size": 1201.75,
       "trade_return": 0.00117,
       "pnl": 1.41,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100098.57
-    },
-    {
-      "date": "2026-03-19",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "pairs_trading",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1201.17,
-      "trade_return": 0.007424,
-      "pnl": 8.92,
-      "outcome": "Win",
-      "reasoning": "strategy=pairs_trading | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 100107.49
+      "capital_after": 100147.23
     },
     {
       "date": "2026-03-19",
@@ -1095,14 +1049,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1501.46,
+      "net_direction": 0.02,
+      "position_size": 1502.19,
       "trade_return": -0.016016,
-      "pnl": -24.05,
+      "pnl": -24.06,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100083.44
+      "capital_after": 100123.17
     },
     {
       "date": "2026-03-19",
@@ -1113,14 +1067,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1201.17,
+      "net_direction": 0.03,
+      "position_size": 1201.75,
       "trade_return": -0.004584,
       "pnl": -5.51,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=0.9",
       "event_count": 0,
-      "capital_after": 100077.93
+      "capital_after": 100117.66
     },
     {
       "date": "2026-03-19",
@@ -1131,14 +1085,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
-      "position_size": 1201.17,
+      "net_direction": 0.03,
+      "position_size": 1201.75,
       "trade_return": 0.004576,
       "pnl": 5.5,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100083.43
+      "capital_after": 100123.16
     },
     {
       "date": "2026-03-19",
@@ -1149,32 +1103,32 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1501.46,
+      "net_direction": 0.02,
+      "position_size": 1502.19,
       "trade_return": -0.0044,
       "pnl": -6.61,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.4",
       "event_count": 0,
-      "capital_after": 100076.82
+      "capital_after": 100116.55
     },
     {
       "date": "2026-03-19",
-      "ticker": "GS",
-      "name": "Goldman Sachs",
+      "ticker": "HAL",
+      "name": "Halliburton",
       "type": "stock",
-      "sector": "financials",
-      "direction": "short",
-      "strategy_used": "pairs_trading",
+      "sector": "energy",
+      "direction": "long",
+      "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1201.17,
-      "trade_return": -0.008938,
-      "pnl": -10.74,
-      "outcome": "Loss",
-      "reasoning": "strategy=pairs_trading | signal=0.300 short | beta=1.3",
+      "net_direction": 0.12,
+      "position_size": 1802.62,
+      "trade_return": 0.013118,
+      "pnl": 23.65,
+      "outcome": "Win",
+      "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.3",
       "event_count": 0,
-      "capital_after": 100066.08
+      "capital_after": 100140.2
     },
     {
       "date": "2026-03-19",
@@ -1185,14 +1139,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.07,
-      "position_size": 1201.17,
+      "net_direction": 0.06,
+      "position_size": 1201.75,
       "trade_return": -0.008176,
-      "pnl": -9.82,
+      "pnl": -9.83,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100056.26
+      "capital_after": 100130.37
     },
     {
       "date": "2026-03-20",
@@ -1203,32 +1157,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
-      "position_size": 1200.68,
+      "net_direction": 0.01,
+      "position_size": 1201.56,
       "trade_return": 0.013138,
-      "pnl": 15.77,
+      "pnl": 15.79,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100072.03
-    },
-    {
-      "date": "2026-03-20",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "insider_follow",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1500.84,
-      "trade_return": -0.00944,
-      "pnl": -14.17,
-      "outcome": "Loss",
-      "reasoning": "strategy=insider_follow | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 100057.86
+      "capital_after": 100146.16
     },
     {
       "date": "2026-03-20",
@@ -1239,14 +1175,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1500.84,
+      "net_direction": 0.02,
+      "position_size": 1501.96,
       "trade_return": 0.00926,
-      "pnl": 13.9,
+      "pnl": 13.91,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100071.76
+      "capital_after": 100160.07
     },
     {
       "date": "2026-03-20",
@@ -1257,14 +1193,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1801.01,
+      "net_direction": 0.03,
+      "position_size": 1802.35,
       "trade_return": 0.004936,
-      "pnl": 8.89,
+      "pnl": 8.9,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=0.9",
       "event_count": 0,
-      "capital_after": 100080.65
+      "capital_after": 100168.97
     },
     {
       "date": "2026-03-20",
@@ -1275,14 +1211,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
-      "position_size": 1200.68,
+      "net_direction": 0.03,
+      "position_size": 1201.56,
       "trade_return": -0.014934,
-      "pnl": -17.93,
+      "pnl": -17.94,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100062.72
+      "capital_after": 100151.03
     },
     {
       "date": "2026-03-20",
@@ -1293,14 +1229,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1801.01,
+      "net_direction": 0.02,
+      "position_size": 1802.35,
       "trade_return": -0.023636,
-      "pnl": -42.57,
+      "pnl": -42.6,
       "outcome": "Loss",
       "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.4",
       "event_count": 0,
-      "capital_after": 100020.15
+      "capital_after": 100108.43
     },
     {
       "date": "2026-03-20",
@@ -1312,31 +1248,31 @@
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
       "net_direction": 0.12,
-      "position_size": 1500.84,
+      "position_size": 1501.96,
       "trade_return": -0.004096,
       "pnl": -6.15,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.3",
       "event_count": 0,
-      "capital_after": 100014.0
+      "capital_after": 100102.28
     },
     {
       "date": "2026-03-20",
-      "ticker": "GS",
-      "name": "Goldman Sachs",
+      "ticker": "MS",
+      "name": "Morgan Stanley",
       "type": "stock",
       "sector": "financials",
-      "direction": "short",
-      "strategy_used": "pairs_trading",
+      "direction": "long",
+      "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1200.68,
-      "trade_return": 0.01335,
-      "pnl": 16.03,
+      "net_direction": 0.11,
+      "position_size": 1501.96,
+      "trade_return": 0.009988,
+      "pnl": 15.0,
       "outcome": "Win",
-      "reasoning": "strategy=pairs_trading | signal=0.300 short | beta=1.3",
+      "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.2",
       "event_count": 0,
-      "capital_after": 100030.03
+      "capital_after": 100117.28
     },
     {
       "date": "2026-03-23",
@@ -1348,13 +1284,13 @@
       "strategy_used": "insider_follow",
       "signal_strength": 1.0,
       "net_direction": 0.1176,
-      "position_size": 2500.75,
+      "position_size": 2502.93,
       "trade_return": -0.016367,
-      "pnl": -40.93,
+      "pnl": -40.97,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=1.000 long | event=fed_rule | beta=1.0",
       "event_count": 34,
-      "capital_after": 99989.1
+      "capital_after": 100076.31
     },
     {
       "date": "2026-03-23",
@@ -1365,32 +1301,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
-      "position_size": 1200.36,
+      "net_direction": 0.01,
+      "position_size": 1201.41,
       "trade_return": 0.026548,
-      "pnl": 31.87,
+      "pnl": 31.9,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100020.97
-    },
-    {
-      "date": "2026-03-23",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "sector_rotation",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1800.54,
-      "trade_return": -0.017992,
-      "pnl": -32.4,
-      "outcome": "Loss",
-      "reasoning": "strategy=sector_rotation | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 99988.57
+      "capital_after": 100108.21
     },
     {
       "date": "2026-03-23",
@@ -1401,14 +1319,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1500.45,
+      "net_direction": 0.02,
+      "position_size": 1501.76,
       "trade_return": 0.0077,
-      "pnl": 11.55,
+      "pnl": 11.56,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100000.12
+      "capital_after": 100119.77
     },
     {
       "date": "2026-03-23",
@@ -1419,14 +1337,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1800.54,
+      "net_direction": 0.03,
+      "position_size": 1802.11,
       "trade_return": 0.01771,
-      "pnl": 31.89,
+      "pnl": 31.92,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=0.9",
       "event_count": 0,
-      "capital_after": 100032.01
+      "capital_after": 100151.69
     },
     {
       "date": "2026-03-23",
@@ -1437,14 +1355,32 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
-      "position_size": 1200.36,
+      "net_direction": 0.03,
+      "position_size": 1201.41,
       "trade_return": -0.017746,
-      "pnl": -21.3,
+      "pnl": -21.32,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100010.71
+      "capital_after": 100130.37
+    },
+    {
+      "date": "2026-03-23",
+      "ticker": "OXY",
+      "name": "Occidental",
+      "type": "stock",
+      "sector": "energy",
+      "direction": "long",
+      "strategy_used": "sector_rotation",
+      "signal_strength": 0.3,
+      "net_direction": 0.02,
+      "position_size": 1802.11,
+      "trade_return": -0.001976,
+      "pnl": -3.56,
+      "outcome": "Loss",
+      "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.4",
+      "event_count": 0,
+      "capital_after": 100126.81
     },
     {
       "date": "2026-03-23",
@@ -1456,31 +1392,31 @@
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
       "net_direction": 0.12,
-      "position_size": 1500.45,
+      "position_size": 1501.76,
       "trade_return": 0.016456,
-      "pnl": 24.69,
+      "pnl": 24.71,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.3",
       "event_count": 0,
-      "capital_after": 100035.4
+      "capital_after": 100151.52
     },
     {
       "date": "2026-03-23",
-      "ticker": "GS",
-      "name": "Goldman Sachs",
+      "ticker": "MS",
+      "name": "Morgan Stanley",
       "type": "stock",
       "sector": "financials",
-      "direction": "short",
+      "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1500.45,
-      "trade_return": -0.013524,
-      "pnl": -20.29,
+      "net_direction": 0.11,
+      "position_size": 1501.76,
+      "trade_return": -0.006168,
+      "pnl": -9.26,
       "outcome": "Loss",
-      "reasoning": "strategy=insider_follow | signal=0.300 short | beta=1.3",
+      "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.2",
       "event_count": 0,
-      "capital_after": 100015.11
+      "capital_after": 100142.26
     },
     {
       "date": "2026-03-24",
@@ -1492,13 +1428,13 @@
       "strategy_used": "sector_rotation",
       "signal_strength": 1.0,
       "net_direction": 0.4615,
-      "position_size": 3000.45,
+      "position_size": 3004.27,
       "trade_return": 0.007133,
-      "pnl": 21.4,
+      "pnl": 21.43,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=1.000 long | event=fed_rule | beta=1.0",
       "event_count": 26,
-      "capital_after": 100036.51
+      "capital_after": 100163.69
     },
     {
       "date": "2026-03-24",
@@ -1509,32 +1445,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
-      "position_size": 1500.23,
+      "net_direction": 0.01,
+      "position_size": 1502.13,
       "trade_return": 0.01128,
-      "pnl": 16.92,
+      "pnl": 16.94,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100053.43
-    },
-    {
-      "date": "2026-03-24",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "insider_follow",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1500.23,
-      "trade_return": -0.011708,
-      "pnl": -17.56,
-      "outcome": "Loss",
-      "reasoning": "strategy=insider_follow | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 100035.87
+      "capital_after": 100180.63
     },
     {
       "date": "2026-03-24",
@@ -1545,14 +1463,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1500.23,
+      "net_direction": 0.02,
+      "position_size": 1502.13,
       "trade_return": 0.020224,
-      "pnl": 30.34,
+      "pnl": 30.38,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100066.21
+      "capital_after": 100211.01
     },
     {
       "date": "2026-03-24",
@@ -1563,14 +1481,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1500.23,
+      "net_direction": 0.03,
+      "position_size": 1502.13,
       "trade_return": -1.6e-05,
       "pnl": -0.02,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=0.9",
       "event_count": 0,
-      "capital_after": 100066.19
+      "capital_after": 100210.99
     },
     {
       "date": "2026-03-24",
@@ -1581,14 +1499,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
-      "position_size": 1800.27,
+      "net_direction": 0.03,
+      "position_size": 1802.56,
       "trade_return": 0.002844,
-      "pnl": 5.12,
+      "pnl": 5.13,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100071.31
+      "capital_after": 100216.12
     },
     {
       "date": "2026-03-24",
@@ -1599,14 +1517,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1200.18,
+      "net_direction": 0.02,
+      "position_size": 1201.71,
       "trade_return": 0.013624,
-      "pnl": 16.35,
+      "pnl": 16.37,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.4",
       "event_count": 0,
-      "capital_after": 100087.66
+      "capital_after": 100232.49
     },
     {
       "date": "2026-03-24",
@@ -1618,13 +1536,31 @@
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
       "net_direction": 0.12,
-      "position_size": 1200.18,
+      "position_size": 1201.71,
       "trade_return": -0.007498,
-      "pnl": -9.0,
+      "pnl": -9.01,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.3",
       "event_count": 0,
-      "capital_after": 100078.66
+      "capital_after": 100223.48
+    },
+    {
+      "date": "2026-03-24",
+      "ticker": "AXP",
+      "name": "American Express",
+      "type": "stock",
+      "sector": "financials",
+      "direction": "long",
+      "strategy_used": "insider_follow",
+      "signal_strength": 0.3,
+      "net_direction": 0.06,
+      "position_size": 1502.13,
+      "trade_return": -7.2e-05,
+      "pnl": -0.11,
+      "outcome": "Loss",
+      "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.0",
+      "event_count": 0,
+      "capital_after": 100223.37
     },
     {
       "date": "2026-03-25",
@@ -1636,13 +1572,13 @@
       "strategy_used": "sector_rotation",
       "signal_strength": 1.0,
       "net_direction": 0.2,
-      "position_size": 3002.36,
+      "position_size": 3006.7,
       "trade_return": 0.032606,
-      "pnl": 97.89,
+      "pnl": 98.04,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=1.000 long | event=fed_rule | beta=1.0",
       "event_count": 10,
-      "capital_after": 100176.55
+      "capital_after": 100321.41
     },
     {
       "date": "2026-03-25",
@@ -1653,32 +1589,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
-      "position_size": 1801.42,
+      "net_direction": 0.01,
+      "position_size": 1804.02,
       "trade_return": 0.004752,
-      "pnl": 8.56,
+      "pnl": 8.57,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100185.11
-    },
-    {
-      "date": "2026-03-25",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "pairs_trading",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1200.94,
-      "trade_return": -0.010112,
-      "pnl": -12.14,
-      "outcome": "Loss",
-      "reasoning": "strategy=pairs_trading | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 100172.97
+      "capital_after": 100329.98
     },
     {
       "date": "2026-03-25",
@@ -1689,14 +1607,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1501.18,
+      "net_direction": 0.02,
+      "position_size": 1503.35,
       "trade_return": -0.013248,
-      "pnl": -19.89,
+      "pnl": -19.92,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100153.08
+      "capital_after": 100310.06
     },
     {
       "date": "2026-03-25",
@@ -1707,14 +1625,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1200.94,
+      "net_direction": 0.03,
+      "position_size": 1202.68,
       "trade_return": 0.004046,
-      "pnl": 4.86,
+      "pnl": 4.87,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=0.9",
       "event_count": 0,
-      "capital_after": 100157.94
+      "capital_after": 100314.93
     },
     {
       "date": "2026-03-25",
@@ -1725,14 +1643,32 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
-      "position_size": 1200.94,
+      "net_direction": 0.03,
+      "position_size": 1202.68,
       "trade_return": -0.017102,
-      "pnl": -20.54,
+      "pnl": -20.57,
       "outcome": "Loss",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100137.4
+      "capital_after": 100294.36
+    },
+    {
+      "date": "2026-03-25",
+      "ticker": "OXY",
+      "name": "Occidental",
+      "type": "stock",
+      "sector": "energy",
+      "direction": "long",
+      "strategy_used": "sector_rotation",
+      "signal_strength": 0.3,
+      "net_direction": 0.02,
+      "position_size": 1804.02,
+      "trade_return": -0.00576,
+      "pnl": -10.39,
+      "outcome": "Loss",
+      "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.4",
+      "event_count": 0,
+      "capital_after": 100283.97
     },
     {
       "date": "2026-03-25",
@@ -1744,31 +1680,31 @@
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
       "net_direction": 0.12,
-      "position_size": 1501.18,
+      "position_size": 1503.35,
       "trade_return": 0.018274,
-      "pnl": 27.43,
+      "pnl": 27.47,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.3",
       "event_count": 0,
-      "capital_after": 100164.83
+      "capital_after": 100311.44
     },
     {
       "date": "2026-03-25",
-      "ticker": "GS",
-      "name": "Goldman Sachs",
+      "ticker": "MS",
+      "name": "Morgan Stanley",
       "type": "stock",
       "sector": "financials",
-      "direction": "short",
+      "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1200.94,
-      "trade_return": 0.018114,
-      "pnl": 21.75,
-      "outcome": "Win",
-      "reasoning": "strategy=pairs_trading | signal=0.300 short | beta=1.3",
+      "net_direction": 0.11,
+      "position_size": 1202.68,
+      "trade_return": -0.01968,
+      "pnl": -23.67,
+      "outcome": "Loss",
+      "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.2",
       "event_count": 0,
-      "capital_after": 100186.58
+      "capital_after": 100287.77
     },
     {
       "date": "2026-03-26",
@@ -1779,32 +1715,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
-      "position_size": 1803.36,
+      "net_direction": 0.01,
+      "position_size": 1805.18,
       "trade_return": 0.005462,
-      "pnl": 9.85,
+      "pnl": 9.86,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100196.43
-    },
-    {
-      "date": "2026-03-26",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "insider_follow",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1502.8,
-      "trade_return": -0.010816,
-      "pnl": -16.25,
-      "outcome": "Loss",
-      "reasoning": "strategy=insider_follow | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 100180.18
+      "capital_after": 100297.63
     },
     {
       "date": "2026-03-26",
@@ -1815,14 +1733,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 1.0,
-      "net_direction": 0.0071,
-      "position_size": 3005.6,
+      "net_direction": 0.0035,
+      "position_size": 3008.63,
       "trade_return": 0.004254,
-      "pnl": 12.79,
+      "pnl": 12.8,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=1.000 long | event=insider_trade | beta=1.0",
       "event_count": 4,
-      "capital_after": 100192.97
+      "capital_after": 100310.43
     },
     {
       "date": "2026-03-26",
@@ -1833,14 +1751,14 @@
       "direction": "short",
       "strategy_used": "sector_rotation",
       "signal_strength": 1.0,
-      "net_direction": -0.1901,
-      "position_size": 3005.6,
+      "net_direction": -0.1905,
+      "position_size": 3008.63,
       "trade_return": 0.035638,
-      "pnl": 107.11,
+      "pnl": 107.22,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=1.000 short | event=insider_trade | beta=0.9",
       "event_count": 20,
-      "capital_after": 100300.08
+      "capital_after": 100417.65
     },
     {
       "date": "2026-03-26",
@@ -1851,14 +1769,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
-      "position_size": 1803.36,
+      "net_direction": 0.03,
+      "position_size": 1805.18,
       "trade_return": 0.006416,
-      "pnl": 11.57,
+      "pnl": 11.58,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100311.65
+      "capital_after": 100429.23
     },
     {
       "date": "2026-03-26",
@@ -1869,14 +1787,14 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 1.0,
-      "net_direction": 0.0579,
-      "position_size": 3005.6,
+      "net_direction": 0.057,
+      "position_size": 3008.63,
       "trade_return": -0.00802,
-      "pnl": -24.1,
+      "pnl": -24.13,
       "outcome": "Loss",
       "reasoning": "strategy=sector_rotation | signal=1.000 long | event=insider_trade | beta=1.4",
       "event_count": 17,
-      "capital_after": 100287.55
+      "capital_after": 100405.1
     },
     {
       "date": "2026-03-26",
@@ -1888,13 +1806,31 @@
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
       "net_direction": 0.12,
-      "position_size": 901.6669999999972,
+      "position_size": 1203.45,
       "trade_return": 0.011292,
-      "pnl": 10.18,
+      "pnl": 13.59,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.3",
       "event_count": 0,
-      "capital_after": 100297.73
+      "capital_after": 100418.69
+    },
+    {
+      "date": "2026-03-26",
+      "ticker": "MS",
+      "name": "Morgan Stanley",
+      "type": "stock",
+      "sector": "financials",
+      "direction": "long",
+      "strategy_used": "pairs_trading",
+      "signal_strength": 0.3,
+      "net_direction": 0.11,
+      "position_size": 1203.45,
+      "trade_return": -0.003144,
+      "pnl": -3.78,
+      "outcome": "Loss",
+      "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.2",
+      "event_count": 0,
+      "capital_after": 100414.91
     },
     {
       "date": "20260326",
@@ -1905,32 +1841,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.09,
-      "position_size": 1504.47,
+      "net_direction": 0.01,
+      "position_size": 1506.22,
       "trade_return": -0.013292,
-      "pnl": -20.0,
+      "pnl": -20.02,
       "outcome": "Loss",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100277.73
-    },
-    {
-      "date": "20260326",
-      "ticker": "WMT",
-      "name": "WMT",
-      "type": "stock",
-      "sector": "unknown",
-      "direction": "short",
-      "strategy_used": "insider_follow",
-      "signal_strength": 0.3,
-      "net_direction": -0.03,
-      "position_size": 1504.47,
-      "trade_return": -0.028784,
-      "pnl": -43.3,
-      "outcome": "Loss",
-      "reasoning": "strategy=insider_follow | signal=0.300 short | beta=1.0",
-      "event_count": 0,
-      "capital_after": 100234.43
+      "capital_after": 100394.89
     },
     {
       "date": "20260326",
@@ -1941,14 +1859,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1504.47,
+      "net_direction": 0.02,
+      "position_size": 1506.22,
       "trade_return": 0.004188,
-      "pnl": 6.3,
+      "pnl": 6.31,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100240.73
+      "capital_after": 100401.2
     },
     {
       "date": "20260326",
@@ -1959,14 +1877,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1203.57,
+      "net_direction": 0.03,
+      "position_size": 1204.98,
       "trade_return": 0.021016,
-      "pnl": 25.29,
+      "pnl": 25.32,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=0.9",
       "event_count": 0,
-      "capital_after": 100266.02
+      "capital_after": 100426.52
     },
     {
       "date": "20260326",
@@ -1977,14 +1895,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.02,
-      "position_size": 1203.57,
+      "net_direction": 0.03,
+      "position_size": 1204.98,
       "trade_return": 0.007884,
-      "pnl": 9.49,
+      "pnl": 9.5,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100275.51
+      "capital_after": 100436.02
     },
     {
       "date": "20260326",
@@ -1995,14 +1913,32 @@
       "direction": "long",
       "strategy_used": "sector_rotation",
       "signal_strength": 0.3,
-      "net_direction": 0.04,
-      "position_size": 1805.36,
+      "net_direction": 0.02,
+      "position_size": 1807.47,
       "trade_return": 0.009116,
-      "pnl": 16.46,
+      "pnl": 16.48,
       "outcome": "Win",
       "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.4",
       "event_count": 0,
-      "capital_after": 100291.97
+      "capital_after": 100452.5
+    },
+    {
+      "date": "20260326",
+      "ticker": "HAL",
+      "name": "Halliburton",
+      "type": "stock",
+      "sector": "energy",
+      "direction": "long",
+      "strategy_used": "sector_rotation",
+      "signal_strength": 0.3,
+      "net_direction": 0.12,
+      "position_size": 1807.47,
+      "trade_return": -0.009152,
+      "pnl": -16.54,
+      "outcome": "Loss",
+      "reasoning": "strategy=sector_rotation | signal=0.300 long | beta=1.3",
+      "event_count": 0,
+      "capital_after": 100435.96
     },
     {
       "date": "20260326",
@@ -2013,14 +1949,14 @@
       "direction": "long",
       "strategy_used": "pairs_trading",
       "signal_strength": 0.3,
-      "net_direction": 0.08,
-      "position_size": 1203.57,
+      "net_direction": 0.09,
+      "position_size": 1204.98,
       "trade_return": 0.013082,
-      "pnl": 15.75,
+      "pnl": 15.76,
       "outcome": "Win",
       "reasoning": "strategy=pairs_trading | signal=0.300 long | beta=1.1",
       "event_count": 0,
-      "capital_after": 100307.72
+      "capital_after": 100451.72
     },
     {
       "date": "20260326",
@@ -2031,17 +1967,14 @@
       "direction": "long",
       "strategy_used": "insider_follow",
       "signal_strength": 0.3,
-      "net_direction": 0.07,
-      "position_size": 1504.47,
+      "net_direction": 0.06,
+      "position_size": 1506.22,
       "trade_return": 0.0114,
-      "pnl": 17.15,
+      "pnl": 17.17,
       "outcome": "Win",
       "reasoning": "strategy=insider_follow | signal=0.300 long | beta=1.0",
       "event_count": 0,
-      "capital_after": 100324.87
+      "capital_after": 100468.89
     }
-  ],
-  "name": "Qwen Strategist",
-  "provider": "hf:Qwen/Qwen2.5-72B-Instruct",
-  "personality": "diversified"
+  ]
 }

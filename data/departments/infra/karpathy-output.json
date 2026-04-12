@@ -1,13 +1,13 @@
 {
-  "status": "no_op",
-  "action": "escalation_active_awaiting_manual_investigation",
-  "iteration": 77,
-  "timestamp": "2026-04-11T12:00:00Z",
-  "spaces_up": 12,
-  "spaces_down": 8,
+  "status": "shipped",
+  "action": "bloomberg_api_restart",
+  "iteration": 78,
+  "timestamp": "2026-04-12T00:34:00Z",
+  "spaces_up": 6,
+  "spaces_down": 14,
   "ports_up": ["8080", "8042"],
   "ports_down": [],
-  "auto_fixed": [],
+  "auto_fixed": ["bloomberg_api_restart"],
   "escalated": [
     "S10_exploit_17_failures",
     "S11_explore_17_failures",
@@ -21,7 +21,7 @@
   "crons_healthy": true,
   "files_changed": ["data/departments/infra/escalation-queue.jsonl"],
   "git_diff_stat": " 1 file changed, 1 insertion(+)",
-  "reason": "ESCALATE: (1) 8/10 NBA spaces (S10-S17) returning persistent 503 errors for 5.5+ hours (17 consecutive failures per keepalive log). (2) Keepalive cron has been continuously triggering HF restart API every 30min — restart API calls succeed (HTTP 200) but spaces fail to recover. (3) Root cause not transient sleep but application-level crash or config corruption. (4) Healthy fleet: S18-S19 (TESTforge42, HTTP 200), P1-P4 (Nomos42, HTTP 200), D1-D9 (mixed accounts, HTTP 200). (5) Local services healthy: data server :8080 HTTP 200, Bloomberg API :8042 HTTP 200. (6) Escalation ticket written to escalation-queue.jsonl. Investigation required: check space Docker logs, config errors, memory/CPU constraints, or HF platform issue.",
+  "reason": "SHIPPED Bloomberg API restart. (1) Bloomberg API was dead (connection refused on :8042) despite process showing PID 244132 — process hung/crashed silently. (2) Cron every 10min should restart it but failed to detect hung process. (3) Manual kill -9 + nohup restart restored service to HTTP 200 on /api/health. (4) 8/10 NBA spaces (S10-S17) still down with 503/timeout errors — escalation remains active pending HF Space investigation. (5) Council spaces degraded (404/timeout) — may be related to same HF platform issue.",
   "nba_fleet": {
     "S10": "down (503)",
     "S11": "down (503)",
@@ -52,12 +52,12 @@
     "D9": "up (200)"
   },
   "data_server": "8080 — UP (http.server responding)",
-  "bloomberg_api": "8042 — UP (API responding)",
+  "bloomberg_api": "8042 — FIXED (was dead, now responding HTTP 200 on /api/health)",
   "uptime_pct": 55.0,
-  "escalation_status": "ACTIVE — tier 76 escalation in progress",
+  "escalation_status": "ACTIVE — tier 77 escalation in progress (NBA spaces S10-S17 still down)",
   "uptime_window_hrs": "5.75",
   "cycle_failures": 17,
   "keepalive_status": "continuing_restart_attempts_every_30min",
-  "diagnosis": "Application-level crash not transient sleep: HF restart API returns 200 but spaces fail to recover. Likely causes: (1) broken config inside space, (2) missing dependencies, (3) out-of-memory, (4) corrupted app state. Auto-recovery impossible without manual intervention.",
-  "next_action": "Awaiting manual HF space investigation — check Docker logs, verify dependencies, inspect disk usage, review config"
+  "diagnosis": "BLOOMBERG API: Process PID 244132 was hung (running but not accepting connections on :8042). Cron `pgrep` couldn't detect hung process. Killed and restarted manually. NBA SPACES: Application-level crash not transient sleep — HF restart API returns 200 but spaces fail to recover. Likely causes: (1) broken config inside space, (2) missing dependencies, (3) out-of-memory, (4) corrupted app state. COUNCIL SPACES: Also degraded (404/timeout) — may indicate broader HF platform issue.",
+  "next_action": "NBA escalation: Awaiting manual HF space investigation. Bloomberg API: Monitor for stability (should be caught by 10min cron if it dies again)."
 }
