@@ -36,10 +36,12 @@ POL_RESULT="skipped"
 NBA_BRIER=""
 POL_BRIER=""
 
-# ── Check memory (skip if < 150MB available) ──
+# ── Check memory (skip if < 100MB available) ──
+# Lowered from 150→100 on 2026-04-12: councils killed, Karpathy is more important.
+# sklearn needs ~80MB peak, 100 gives a safety margin.
 FREE_MB=$(free -m | awk '/Mem:/ {print $7}')
-if [ "$FREE_MB" -lt 150 ]; then
-    echo "SKIP: Only ${FREE_MB}MB available (need 150MB). VM under pressure."
+if [ "$FREE_MB" -lt 100 ]; then
+    echo "SKIP: Only ${FREE_MB}MB available (need 100MB). VM under pressure."
     echo "{\"ts\":\"$(date -u +%FT%TZ)\",\"status\":\"skipped\",\"reason\":\"low_memory\",\"free_mb\":$FREE_MB}" > "$RESULTS_FILE"
     exit 0
 fi

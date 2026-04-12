@@ -29,8 +29,16 @@ from sklearn.ensemble import (
     GradientBoostingClassifier,
 )
 
+try:
+    import lightgbm as lgb
+    HAS_LIGHTGBM = True
+except ImportError:
+    HAS_LIGHTGBM = False
+
 # ── Constants ──
 MODEL_TYPES = ["random_forest", "extra_trees", "gradient_boosting"]
+if HAS_LIGHTGBM:
+    MODEL_TYPES.append("lightgbm")
 MUTATION_TYPES = [
     "change_model",
     "change_n_estimators",
@@ -236,6 +244,18 @@ def build_model(config: Dict[str, Any]):
             random_state=42,
             learning_rate=0.1,
             subsample=0.8,
+        )
+    elif model_type == "lightgbm" and HAS_LIGHTGBM:
+        return lgb.LGBMClassifier(
+            n_estimators=config["n_estimators"],
+            max_depth=config["max_depth"],
+            min_child_samples=max(config["min_samples_leaf"], 5),
+            colsample_bytree=config["max_features_ratio"],
+            random_state=42,
+            n_jobs=-1,
+            learning_rate=0.05,
+            subsample=0.8,
+            verbosity=-1,
         )
     else:
         raise ValueError(f"Unknown model_type: {model_type}")

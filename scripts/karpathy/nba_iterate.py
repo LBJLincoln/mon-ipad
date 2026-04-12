@@ -95,6 +95,7 @@ def load_real_nba_data() -> tuple:
             # Load game data from available JSON files
             games = []
             data_dirs = [
+                ROOT / "nba-quant-space" / "data" / "historical",
                 ROOT / "hf-space" / "data" / "historical",
                 ROOT / "data" / "historical-odds",
             ]
