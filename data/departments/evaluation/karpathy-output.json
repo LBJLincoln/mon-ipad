@@ -1,30 +1,25 @@
 {
-  "status": "no_op",
-  "action": "within_thresholds",
-  "iteration": 18,
-  "timestamp": "2026-04-12T07:30:00Z",
-  "ece": 0.06217,
-  "calibration_slope": 0.677,
-  "real_brier": 0.24246,
-  "real_brier_post_pav": 0.23057,
-  "brier_atr": 0.2157,
-  "n_games_pool": 104,
-  "drift_state": "PARTIAL",
-  "rolling_ece": 0.22794,
-  "rolling_ece_prev_iter": 0.22794,
-  "rolling_ece_delta": 0.0,
-  "pav_refit_status": "BLOCKED_IDEMPOTENT (pool=104, last_refit_n=104, drift monitor re-confirmed 07:00:09Z)",
-  "issues_found": [
-    "ROLLING_ECE_PERSISTENT: 0.22794 — unchanged from iter17; drift monitor confirmed stable at 07:00:09Z (no new matched games since Apr 10)",
-    "ECE_ABOVE_TARGET: 0.06217 post-PAV in-sample > 0.05 — irreducible at n=104 (n_bins=5 optimal, confirmed iter 12)",
-    "CALIBRATION_SLOPE: 0.677 outside [0.9,1.1] — systemic overconfidence in 0.6-0.8 bucket (44/104 games); requires D2/D3 model fix"
-  ],
-  "files_changed": [],
-  "git_diff_stat": "",
-  "calibration_metric": "ECE",
-  "metric_value": 0.06217,
-  "rolling_ece_metric": 0.22794,
-  "commit_sha": null,
-  "reason_if_no_op": "All metrics identical to iter17 (pool=104 unchanged, rolling_ece=0.22794 stable, slope=0.677). PAV refit correctly blocked by idempotency guard — would produce identical map. Appending duplicate audit row provides zero information gain. Calibration slope fix requires D2/D3 model-level overconfidence reduction (outside D6 write scope). Unlock condition: new matched games grow pool beyond 104.",
-  "next_iteration_focus": "P1: Pool >150 matched games unlocks meaningful ECE reduction and n_bins re-scan (n_bins=7 may become viable). P2: Slope 0.677 requires model-level overconfidence reduction in D2/D3 — shift 44 predictions out of 0.6-0.8 bucket. P3: Monitor for Apr 11-12 game results to be matched — will unblock PAV refit and drop rolling_ece."
+  "department": "evaluation",
+  "timestamp": "2026-04-12T20:51:40Z",
+  "iteration": 1,
+  "karpathy": {
+    "metric": "ECE",
+    "baseline_ece": 0.282814,
+    "after_ece": 0.240908,
+    "delta": 0.041906,
+    "mutation": {
+      "param": "overconfidence_damping",
+      "old": "1.0",
+      "new": "0.7523"
+    },
+    "decision": "kept",
+    "kept": true
+  },
+  "calibration_config": {
+    "shift": 0.0,
+    "damping": 0.7523,
+    "threshold": 0.7
+  },
+  "brier_reference": 0.20939,
+  "status": "completed"
 }

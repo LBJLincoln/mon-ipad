@@ -26,6 +26,26 @@ from typing import Dict, List, Optional, Tuple
 
 ROOT        = Path('/home/termius/mon-ipad')
 
+# ── OASIS ADAPTER (social discussion → per-trader biases) ────────────────────
+# Import lazily so the trading floor still runs if the adapter is missing.
+_OASIS_ADAPTER_AVAILABLE = False
+try:
+    sys.path.insert(0, str(ROOT / "scripts" / "arena"))
+    from oasis_adapter import (  # type: ignore
+        load_oasis_context,
+        oasis_kelly_modifier,
+        oasis_prob_nudge,
+    )
+    _OASIS_ADAPTER_AVAILABLE = True
+except Exception as _oasis_import_err:
+    # Define no-op stubs so the rest of the code can call these unconditionally
+    def load_oasis_context(target_date=None):  # type: ignore[misc]
+        return {}
+    def oasis_kelly_modifier(trader_id, oasis_ctx):  # type: ignore[misc]
+        return 1.0
+    def oasis_prob_nudge(trader_id, oasis_ctx, base_prob):  # type: ignore[misc]
+        return base_prob
+
 # ── ITERATION / GENERATION TRACKING ──────────────────────────────────────────
 # Incremented each run; generation tracks game-day count
 _ITERATION_FILE = Path('/home/termius/mon-ipad/data/arena/trading-floor-iteration.json')
@@ -1452,12 +1472,19 @@ def get_bet_size(strat_name: str, prob: float, odds: float,
 # ── PER-GAME AGENT DECISION ENGINE (v5) ──────────────────────────────────────
 
 def agent_pick_model_for_game(trader_id: str, game_ctx: Dict) -> str:
-    """Agent picks which model to trust for THIS specific game based on full context."""
+    """Agent picks which model to trust for THIS specific game based on full context.
+    Respects OASIS discussion model_bias if the game_ctx carries one."""
     cfg = TRADERS[trader_id]
     personality = cfg["personality"]
     preferred = cfg["preferred_models"]
     models_info = game_ctx.get("models", {})
     preds = models_info.get("predictions", {})
+
+    # ── OASIS model bias (additive: bias model must be in MODELS to apply) ────
+    oasis_bias = game_ctx.get("oasis", {})
+    oasis_model = oasis_bias.get("model_bias", "")
+    if oasis_model and oasis_model in MODELS:
+        return oasis_model
 
     if personality == "analytical":
         # Trust the model with highest edge (furthest from implied, in profit direction)
@@ -1488,12 +1515,19 @@ def agent_pick_model_for_game(trader_id: str, game_ctx: Dict) -> str:
 
 def agent_pick_strategies_for_game(trader_id: str, game_ctx: Dict,
                                    bankroll: float, others: Dict) -> List[str]:
-    """Agent picks which strategies to use for THIS game. Can pick multiple."""
+    """Agent picks which strategies to use for THIS game. Can pick multiple.
+    Respects OASIS discussion strategy_bias if the game_ctx carries one."""
     cfg = TRADERS[trader_id]
     personality = cfg["personality"]
     preferred = [s for s in cfg["preferred_strategies"] if s not in ELIMINATED_STRATEGIES]
     if not preferred:
         preferred = ["half_kelly"]
+
+    # ── OASIS strategy bias (additive: bias strategy must be active to apply) ─
+    oasis_bias = game_ctx.get("oasis", {})
+    oasis_strategy = oasis_bias.get("strategy_bias", "")
+    if oasis_strategy and oasis_strategy in STRATEGIES and oasis_strategy not in ELIMINATED_STRATEGIES:
+        return [oasis_strategy]
 
     # Competitive awareness
     other_bankrolls = [s.get("nba_bankroll", 100.0) for s in others.values() if "nba_bankroll" in s]
@@ -1857,7 +1891,8 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
                                others_states: Dict,
                                all_games: Optional[List[Dict]] = None,
                                season_memory: Optional[Dict] = None,
-                               darwin_weight: float = 1.0) -> Dict:
+                               darwin_weight: float = 1.0,
+                               oasis_ctx: Optional[Dict] = None) -> Dict:
     """
     v9: Full-season backtest WITH GAME-LEVEL LEARNING. Agent gets ALL context per game, bets freely
     across 16+ categories, provides justification for every bet.
@@ -1865,6 +1900,11 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
     darwin_weight: atlas-gic per-trader allocation multiplier (0.3..2.5). Applied
     on top of kelly_adj so winners scale up daily and losers fade. Updated by
     scripts/arena/darwin_weights.py before each iteration.
+
+    oasis_ctx: optional OASIS social-discussion output for today.  If present,
+    the Kelly multiplier and probability nudges from the multi-agent discussion
+    are blended into this agent's decisions (additive integration, never replaces).
+    Load via: oasis_ctx = load_oasis_context()
     """
     bankroll   = TRADERS[trader_id]["bankroll_nba"]
     comp_state = {"last_won": False, "win_streak": 0, "peak": bankroll}
@@ -1875,6 +1915,15 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
     all_bets: List[Dict] = []  # Full justified bet history
     eliminated_day = None
     day_results    = []
+
+    # ── OASIS: per-trader discussion biases ──────────────────────────────────
+    # oasis_kelly_mod  — scalar applied to kelly_adj for every bet this session
+    # oasis_prob_nudge — applied per-game to the home-win probability estimate
+    _oasis_ctx       = oasis_ctx or {}
+    oasis_kelly_mod  = oasis_kelly_modifier(trader_id, _oasis_ctx)
+    if oasis_kelly_mod != 1.0:
+        print(f"  [oasis] {trader_id} Kelly modifier: {oasis_kelly_mod:.4f}  "
+              f"(consensus={_oasis_ctx.get('consensus', {}).get('sentiment', 'n/a')})")
 
     # ── GAME-LEVEL LEARNING: Load prior bets from season memory ──
     memory = season_memory or {}
@@ -1934,6 +1983,13 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
         if darwin_weight != 1.0:
             kelly_adj *= darwin_weight
 
+        # ── OASIS SOCIAL DISCUSSION MODIFIER ──
+        # Applied once per day after Darwin to layer in peer-discussion signal.
+        # oasis_kelly_mod comes from the discussion consensus + trader personality.
+        # Bounded 0.70–1.30 by the adapter so it can never dominate.
+        if oasis_kelly_mod != 1.0:
+            kelly_adj *= oasis_kelly_mod
+
         # Budget for the day = full bankroll (agents deploy 100%)
         day_budget = bankroll
         day_bets_count = 0
@@ -1948,6 +2004,13 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
             # Compute all 11 model predictions for this game
             home_won = game_entry["home_score"] > game_entry["away_score"]
             implied = 1.0 / odd["ml_home_dec"] if odd.get("ml_home_dec") else 0.5
+            # ── OASIS probability nudge ──
+            # The OASIS discussion may have shifted this trader's home-win
+            # prior slightly (confidence_delta in [-0.10, +0.10]).  We apply
+            # the nudge to the implied probability before passing it to the
+            # model ensemble so the discussion signal propagates through all
+            # downstream bet-sizing calculations.
+            implied = oasis_prob_nudge(trader_id, _oasis_ctx, implied)
             seed_val = f"{key[0]}_{key[1]}_{key[2]}"
             model_preds = compute_all_model_predictions(list(MODELS.keys()), implied, seed_val, home_won)
 
@@ -1960,6 +2023,10 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
                  "away_stats": game_entry.get("away_stats", {})},
                 odd, all_games, standings, model_preds
             )
+            # Tag the game context with OASIS decision so agent_pick_* functions
+            # can optionally use it for model/strategy selection
+            if _oasis_ctx:
+                game_ctx["oasis"] = _oasis_ctx.get("decisions", {}).get(trader_id, {})
 
             # Agent decides all bets for this game
             # Budget per game: split remaining budget across remaining games
@@ -2355,6 +2422,21 @@ def run_full_competition() -> Dict:
     else:
         print("Darwin weights : none yet (will seed at 1.0)")
 
+    # ── LOAD OASIS SOCIAL DISCUSSION (additive signal layer) ─────────────────
+    # If data/arena/oasis-discussions/YYYY-MM-DD.json exists for today, load it.
+    # If not, oasis_ctx will be {} and all oasis_* helpers are no-ops.
+    # To generate today's discussion: python3 scripts/arena/oasis_adapter.py
+    today_str = date.today().isoformat()
+    oasis_ctx = load_oasis_context(today_str)
+    if oasis_ctx:
+        oasis_mode = oasis_ctx.get("mode", "lite")
+        oasis_sentiment = oasis_ctx.get("consensus", {}).get("sentiment", "n/a")
+        oasis_conf = oasis_ctx.get("consensus", {}).get("home_confidence", 0.5)
+        print(f"OASIS discussion : {today_str}  mode={oasis_mode}"
+              f"  consensus={oasis_sentiment}  home_conf={oasis_conf:.3f}")
+    else:
+        print("OASIS discussion : none for today (run oasis_adapter.py to generate)")
+
     all_results: Dict[str, Dict] = {}
 
     for trader_id in TRADERS:
@@ -2369,7 +2451,8 @@ def run_full_competition() -> Dict:
 
         nba_result = run_nba_backtest_for_agent(trader_id, matched, others, all_games_sorted,
                                                  season_memory=season_memory,
-                                                 darwin_weight=dw)
+                                                 darwin_weight=dw,
+                                                 oasis_ctx=oasis_ctx)
         pol_result = run_political_backtest_for_agent(
             trader_id, pol_events, social_snapshots, signals, pol_others)
 

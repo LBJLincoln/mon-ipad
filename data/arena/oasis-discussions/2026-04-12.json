@@ -1,0 +1,109 @@
+{
+  "date": "2026-04-12",
+  "mode": "lite",
+  "context": {
+    "game_count": 0,
+    "top_game": "home vs away",
+    "model_disagreement": 0.05,
+    "consensus_home_pct": 55.0,
+    "top_model": "consensus_ensemble"
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "posts": [
+        {
+          "agent_id": "gemini",
+          "post": "Gemma Analyst: Looking at today's slate \u2014 0 NBA games. Model consensus sits at 55% home. I'm backing the consensus_ensemble signal here.",
+          "sentiment": 0.4224
+        },
+        {
+          "agent_id": "openrouter",
+          "post": "Qwen Strategist: 0 games today. Spreading across value spots rather than concentrating. Quarter Kelly across 3+ bets.",
+          "sentiment": 0.4074
+        },
+        {
+          "agent_id": "claude",
+          "post": "Claude Sentinel: Models disagree more than usual today (0.05 spread). Low confidence = reduced sizing.",
+          "sentiment": 0.29
+        },
+        {
+          "agent_id": "codex",
+          "post": "Llama Vanguard: home vs away is a screaming value bet. Full Kelly on the consensus_ensemble edge.",
+          "sentiment": 0.7226
+        },
+        {
+          "agent_id": "grok",
+          "post": "Mistral Maverick: The consensus_ensemble model agrees with the market \u2014 that's a fade signal for me. Dog value plus is the move.",
+          "sentiment": 0.4068
+        }
+      ],
+      "replies": []
+    },
+    {
+      "round": 2,
+      "posts": [],
+      "replies": [
+        {
+          "agent_id": "grok",
+          "to": "codex",
+          "reply": "Mistral Maverick to Vanguard: chasing momentum blows up accounts. I'll take the dog \u2014 market overreacted.",
+          "sentiment": 0.5015
+        },
+        {
+          "agent_id": "claude",
+          "to": "codex",
+          "reply": "Claude Sentinel to Vanguard: bankroll preservation isn't cowardice. One blowup erases 5 wins. I'll stay at half_kelly.",
+          "sentiment": 0.4198
+        },
+        {
+          "agent_id": "gemini",
+          "to": "codex",
+          "reply": "Gemma Analyst to Vanguard: full Kelly is reckless with a 0.05 model spread. Even half is aggressive today.",
+          "sentiment": 0.5124
+        }
+      ]
+    }
+  ],
+  "decisions": {
+    "gemini": {
+      "model_bias": "consensus_ensemble",
+      "strategy_bias": "",
+      "confidence_delta": 0.0013,
+      "final_sentiment": 0.5124,
+      "rationale": "Gemma Analyst (analytical): discussion sentiment 0.51, confidence nudge +0.0013, model=consensus_ensemble, strategy=unchanged"
+    },
+    "openrouter": {
+      "model_bias": "",
+      "strategy_bias": "",
+      "confidence_delta": -0.0056,
+      "final_sentiment": 0.4074,
+      "rationale": "Qwen Strategist (diversified): discussion sentiment 0.41, confidence nudge -0.0056, model=unchanged, strategy=unchanged"
+    },
+    "claude": {
+      "model_bias": "consensus_ensemble",
+      "strategy_bias": "",
+      "confidence_delta": -0.004,
+      "final_sentiment": 0.4198,
+      "rationale": "Claude Sentinel (conservative): discussion sentiment 0.42, confidence nudge -0.0040, model=consensus_ensemble, strategy=unchanged"
+    },
+    "codex": {
+      "model_bias": "tabicl",
+      "strategy_bias": "full_kelly",
+      "confidence_delta": 0.0334,
+      "final_sentiment": 0.7226,
+      "rationale": "Llama Vanguard (aggressive): discussion sentiment 0.72, confidence nudge +0.0334, model=tabicl, strategy=full_kelly"
+    },
+    "grok": {
+      "model_bias": "",
+      "strategy_bias": "value_hunter",
+      "confidence_delta": -0.0031,
+      "final_sentiment": 0.5015,
+      "rationale": "Mistral Maverick (contrarian): discussion sentiment 0.50, confidence nudge -0.0031, model=unchanged, strategy=value_hunter"
+    }
+  },
+  "consensus": {
+    "home_confidence": 0.5128,
+    "sentiment": "neutral"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "date": "2026-04-13",
+  "mode": "lite",
+  "context": {
+    "game_count": 8,
+    "top_game": "LAL vs BOS",
+    "model_disagreement": 0.07,
+    "consensus_home_pct": 52.0,
+    "top_model": "tabicl"
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "posts": [
+        {
+          "agent_id": "gemini",
+          "post": "Gemma Analyst: Brier gap between our top and bottom model is 0.0120. That's meaningful \u2014 sticking to consensus_ensemble.",
+          "sentiment": 0.4853
+        },
+        {
+          "agent_id": "openrouter",
+          "post": "Qwen Strategist: 8 games today. Spreading across value spots rather than concentrating. Quarter Kelly across 3+ bets.",
+          "sentiment": 0.3588
+        },
+        {
+          "agent_id": "claude",
+          "post": "Claude Sentinel: Given the 0-game streak, pulling back to flat_1pct. Drawdown protection first.",
+          "sentiment": 0.2132
+        },
+        {
+          "agent_id": "codex",
+          "post": "Llama Vanguard: On a 5-game run. Pressing with streak_momentum \u2014 3+ strategies on the marquee game.",
+          "sentiment": 0.8033
+        },
+        {
+          "agent_id": "grok",
+          "post": "Mistral Maverick: Public is hammering home favorites hard today. Going the other way on LAL vs BOS \u2014 home ML is juiced.",
+          "sentiment": 0.4103
+        }
+      ],
+      "replies": []
+    },
+    {
+      "round": 2,
+      "posts": [],
+      "replies": [
+        {
+          "agent_id": "gemini",
+          "to": "grok",
+          "reply": "Gemma Analyst to Maverick: the Brier says consensus is right more often than not. Data wins over narrative.",
+          "sentiment": 0.4628
+        },
+        {
+          "agent_id": "grok",
+          "to": "codex",
+          "reply": "Mistral Maverick to Vanguard: chasing momentum blows up accounts. I'll take the dog \u2014 market overreacted.",
+          "sentiment": 0.5282
+        },
+        {
+          "agent_id": "openrouter",
+          "to": "claude",
+          "reply": "Qwen Strategist to Sentinel: your flat_1pct leaves ROI on the table. At least do quarter_kelly.",
+          "sentiment": 0.3151
+        }
+      ]
+    }
+  ],
+  "decisions": {
+    "gemini": {
+      "model_bias": "consensus_ensemble",
+      "strategy_bias": "",
+      "confidence_delta": -0.0036,
+      "final_sentiment": 0.4628,
+      "rationale": "Gemma Analyst (analytical): discussion sentiment 0.46, confidence nudge -0.0036, model=consensus_ensemble, strategy=unchanged"
+    },
+    "openrouter": {
+      "model_bias": "",
+      "strategy_bias": "",
+      "confidence_delta": -0.0111,
+      "final_sentiment": 0.3151,
+      "rationale": "Qwen Strategist (diversified): discussion sentiment 0.32, confidence nudge -0.0111, model=unchanged, strategy=unchanged"
+    },
+    "claude": {
+      "model_bias": "consensus_ensemble",
+      "strategy_bias": "",
+      "confidence_delta": -0.0143,
+      "final_sentiment": 0.2132,
+      "rationale": "Claude Sentinel (conservative): discussion sentiment 0.21, confidence nudge -0.0143, model=consensus_ensemble, strategy=unchanged"
+    },
+    "codex": {
+      "model_bias": "tabicl",
+      "strategy_bias": "full_kelly",
+      "confidence_delta": 0.0455,
+      "final_sentiment": 0.8033,
+      "rationale": "Llama Vanguard (aggressive): discussion sentiment 0.80, confidence nudge +0.0455, model=tabicl, strategy=full_kelly"
+    },
+    "grok": {
+      "model_bias": "",
+      "strategy_bias": "value_hunter",
+      "confidence_delta": 0.0103,
+      "final_sentiment": 0.5282,
+      "rationale": "Mistral Maverick (contrarian): discussion sentiment 0.53, confidence nudge +0.0103, model=unchanged, strategy=value_hunter"
+    }
+  },
+  "consensus": {
+    "home_confidence": 0.4645,
+    "sentiment": "neutral"
+  }
+}

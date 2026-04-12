@@ -1,37 +1,27 @@
 {
   "department": "engineering",
-  "timestamp": "2026-04-02T10:29:36.000000+00:00",
-  "iteration": 7,
+  "timestamp": "2026-04-12T20:51:01Z",
+  "iteration": 9,
   "health": "ok",
-  "critical_issues": [],
-  "parity_check": {
+  "karpathy": {
+    "baseline_brier": 0.20939,
+    "after_brier": 0.20939,
+    "delta": 0.0,
+    "mutation": {
+      "param": "min_market_implied",
+      "old": "0.1",
+      "new": "0.16"
+    },
+    "decision": "kept",
+    "kept": true
+  },
+  "parity": {
     "status": "match",
-    "local_path": "features/engine.py",
-    "hf_path": "hf-space/features/engine.py",
-    "local_md5": "80319035f827188209437df4acf9bda7",
-    "hf_md5": "80319035f827188209437df4acf9bda7",
-    "hf_lines": 6695,
-    "hf_bytes": 357090,
-    "engine_version": "v3.1-46cat"
+    "hf_md5": "e713429296c0a6bfaf362071d8bda535",
+    "local_md5": "e713429296c0a6bfaf362071d8bda535",
+    "engine_version": "v3.1-59cat",
+    "hf_lines": 7626
   },
-  "feature_count": {
-    "category_count": 60,
-    "feature_append_calls": 679,
-    "declared_version": "v3.1-46cat"
-  },
-  "phantom_games": {
-    "count": 0,
-    "games": []
-  },
-  "odds_sanity": {
-    "violations": 0,
-    "threshold": 0.50,
-    "details": []
-  },
-  "test_suite": {
-    "total": 14,
-    "passed": 11,
-    "pass_rate": 0.7857
-  },
-  "best_brier": null
+  "phantom_games": 0,
+  "status": "completed"
 }
