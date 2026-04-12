@@ -4,12 +4,15 @@
 # Example: agent-log.sh darwin decision "Injecting individual from S14 to S10"
 # Example: agent-log.sh karpathy message "Found TabICLv2 paper" darwin
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
 AGENT="${1:?Usage: agent-log.sh <agent> <type> <message> [target]}"
 TYPE="${2:?Types: message|decision|result|error|thinking}"
 MSG="${3:?Message required}"
 TARGET="${4:-}"
 
-LOG_FILE="/home/termius/mon-ipad/data/agent-activity.json"
+LOG_FILE="${ROOT}/data/agent-activity.json"
 MAX_ENTRIES=200
 
 # Create file if missing

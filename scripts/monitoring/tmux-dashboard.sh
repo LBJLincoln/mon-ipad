@@ -20,8 +20,9 @@
 
 set -eo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SESSION="nomos42-dash"
-BASE="/home/termius/mon-ipad"
+BASE="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 DATA="$BASE/data"
 ARENA="$DATA/arena"
 DEPTS="$DATA/departments"

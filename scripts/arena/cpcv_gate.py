@@ -42,7 +42,7 @@ import statistics
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path("/home/termius/mon-ipad")
+ROOT = Path(__file__).resolve().parent.parent.parent
 BACKTEST_DIR = ROOT / "data" / "arena" / "backtest-results"
 OUT_FILE = ROOT / "data" / "arena" / "cpcv-gated-strategies.json"
 

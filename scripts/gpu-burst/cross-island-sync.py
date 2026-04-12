@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-REPO_ROOT = Path("/home/termius/mon-ipad")
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DATA_DIR  = REPO_ROOT / "data" / "gpu-burst"
 LOG_FILE        = DATA_DIR / "cross-island-sync.jsonl"
 LAST_SYNC_FILE  = DATA_DIR / "cross-island-last-sync.json"

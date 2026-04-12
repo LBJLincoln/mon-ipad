@@ -34,8 +34,8 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path("/home/termius/mon-ipad")
-NBA_AGENT = Path("/home/termius/nomos-nba-agent")
+ROOT = Path(__file__).resolve().parent.parent.parent
+NBA_AGENT = ROOT.parent / "nomos-nba-agent"
 
 sys.path.insert(0, str(ROOT / "scripts" / "arena"))
 

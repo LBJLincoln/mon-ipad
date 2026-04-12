@@ -51,7 +51,7 @@ from typing import Optional
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-BASE_DIR = Path("/home/termius/mon-ipad")
+BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data" / "nba-agent"
 SIGNALS_FILE = DATA_DIR / "live-2h-signals.json"
 ARCHIVE_DIR = DATA_DIR / "halftime-archive"

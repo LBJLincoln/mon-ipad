@@ -19,7 +19,8 @@
 
 set -euo pipefail
 
-REPO="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 SUMMARY="$REPO/data/monitoring/drift-summary.json"
 LEDGER="$REPO/data/monitoring/auto-pav-refit-ledger.json"
 CALIBRATION_MAP="$REPO/data/nba-agent/calibration-map.json"

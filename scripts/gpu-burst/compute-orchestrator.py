@@ -48,7 +48,7 @@ from typing import Dict, Optional, List, Any
 # PATHS
 # ══════════════════════════════════════════════════════════
 
-REPO_ROOT = Path("/home/termius/mon-ipad")
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SCRIPTS_DIR = REPO_ROOT / "scripts" / "gpu-burst"
 DATA_DIR = REPO_ROOT / "data" / "gpu-burst"
 KARPATHY_DIR = REPO_ROOT / "data" / "karpathy"

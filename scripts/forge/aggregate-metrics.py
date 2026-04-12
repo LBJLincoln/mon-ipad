@@ -11,15 +11,17 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
+_ROOT = Path(__file__).resolve().parent.parent.parent
+
 REPOS = [
-    "/home/termius/mon-ipad",
-    "/home/termius/nomos-nba-agent",
-    "/home/termius/nomos-political-alpha",
-    "/home/termius/nomos-dashboard",
-    "/home/termius/rgwa",
-    "/home/termius/nomos-picks",
-    "/home/termius/nomos-pierre",
-    "/home/termius/OddsHarvester",
+    str(_ROOT),
+    str(_ROOT.parent / "nomos-nba-agent"),
+    str(_ROOT.parent / "nomos-political-alpha"),
+    str(_ROOT.parent / "nomos-dashboard"),
+    str(_ROOT.parent / "rgwa"),
+    str(_ROOT.parent / "nomos-picks"),
+    str(_ROOT.parent / "nomos-pierre"),
+    str(_ROOT.parent / "OddsHarvester"),
 ]
 
 DEPARTMENTS = ["research", "engineering", "evolution", "product", "business", "evaluation", "infra", "finance"]
@@ -93,7 +95,7 @@ def collect_metrics():
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Forge v19 — Cross-repo metrics")
-    parser.add_argument("--output", default="/home/termius/mon-ipad/data/forge-metrics.json")
+    parser.add_argument("--output", default=str(_ROOT / "data" / "forge-metrics.json"))
     args = parser.parse_args()
 
     report = collect_metrics()

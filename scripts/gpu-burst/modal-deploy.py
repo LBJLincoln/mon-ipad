@@ -34,7 +34,7 @@ from pathlib import Path
 # PATHS
 # ══════════════════════════════════════════════════════════
 
-REPO_ROOT = Path("/home/termius/mon-ipad")
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SCRIPT_DIR = REPO_ROOT / "scripts" / "gpu-burst"
 MODAL_BURST = SCRIPT_DIR / "modal-burst.py"
 RESULT_DIR = REPO_ROOT / "data" / "gpu-burst"

@@ -31,7 +31,7 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-ROOT = Path("/home/termius/mon-ipad")
+ROOT = Path(__file__).resolve().parent.parent.parent
 DATA = ROOT / "data"
 
 BOT_TOKEN  = os.environ.get("TELEGRAM_BOT_TOKEN",   "8672296360:AAHZ5_3-fDE7BBb3b-RJBSRWlXA1qO31UVo")

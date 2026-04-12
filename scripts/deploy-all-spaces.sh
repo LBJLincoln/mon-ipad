@@ -25,16 +25,17 @@
 
 set -euo pipefail
 
-TERMIUS_ROOT="/home/termius"
-NBA_REPO="$TERMIUS_ROOT/nomos-nba-agent"
-POL_REPO="$TERMIUS_ROOT/nomos-political-alpha"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+NBA_REPO="${ROOT}/../nomos-nba-agent"
+POL_REPO="${ROOT}/../nomos-political-alpha"
 
 # Load tokens
-if [ -f "$TERMIUS_ROOT/mon-ipad/.env.local" ]; then
-    source "$TERMIUS_ROOT/mon-ipad/.env.local"
+if [ -f "${ROOT}/.env.local" ]; then
+    source "${ROOT}/.env.local"
     echo "Tokens loaded from .env.local"
 else
-    echo "ERROR: .env.local not found at $TERMIUS_ROOT/mon-ipad/.env.local"
+    echo "ERROR: .env.local not found at ${ROOT}/.env.local"
     exit 1
 fi
 

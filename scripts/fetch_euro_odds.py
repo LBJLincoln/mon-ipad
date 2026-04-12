@@ -86,9 +86,10 @@ from datetime import datetime, timezone
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LIVE_ODDS_PATH = os.path.join(BASE_DIR, "data", "nba-agent", "live-odds.json")
-SNAPSHOT_DIR   = "/home/termius/nomos-nba-agent/data"
+_ROOT = Path(__file__).resolve().parent.parent
+SNAPSHOT_DIR   = str(_ROOT.parent / "nomos-nba-agent" / "data")
 OUTPUT_DIR     = os.path.join(BASE_DIR, "data", "nba-agent")
-ENV_FILE       = "/home/termius/nomos-nba-agent/.env.local"
+ENV_FILE       = str(_ROOT.parent / "nomos-nba-agent" / ".env.local")
 
 # ─── The Odds API ─────────────────────────────────────────────────────────────
 

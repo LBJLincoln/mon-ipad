@@ -5,6 +5,10 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+REPOS_PARENT="$(cd "${ROOT}/.." && pwd)"
+
 BACKUP_DIR="/tmp/nomos42-backup"
 DATE=$(date +%Y-%m-%d)
 ARCHIVE="nomos42-backup-${DATE}.tar.gz"
@@ -15,7 +19,7 @@ mkdir -p "$BACKUP_DIR"
 
 # Backup critical data (not git, not node_modules)
 for REPO in mon-ipad nomos-nba-agent nomos-political-alpha rgwa nomos-dashboard; do
-  if [ -d "/home/termius/$REPO" ]; then
+  if [ -d "${REPOS_PARENT}/$REPO" ]; then
     echo "  Backing up $REPO..."
     tar czf "$BACKUP_DIR/${REPO}.tar.gz" \
       --exclude='.git' \
@@ -23,7 +27,7 @@ for REPO in mon-ipad nomos-nba-agent nomos-political-alpha rgwa nomos-dashboard;
       --exclude='__pycache__' \
       --exclude='.next' \
       --exclude='*.pyc' \
-      -C /home/termius "$REPO" 2>/dev/null || true
+      -C "${REPOS_PARENT}" "$REPO" 2>/dev/null || true
   fi
 done
 

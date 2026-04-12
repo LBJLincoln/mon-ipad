@@ -31,7 +31,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO = Path("/home/termius/mon-ipad")
+REPO = Path(__file__).resolve().parent.parent.parent
 ENGINE_LOCK = REPO / "engine.sha256.lock"
 ENGINE_VERSION = "v3.1-54cat"  # keep in sync with CLAUDE.md
 

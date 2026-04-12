@@ -32,7 +32,8 @@ import json
 from pathlib import Path
 from typing import Dict, Tuple
 
-NBA_AGENT_PREDICTIONS = Path("/home/termius/nomos-nba-agent/data/predictions")
+_ROOT = Path(__file__).resolve().parent.parent.parent
+NBA_AGENT_PREDICTIONS = _ROOT.parent / "nomos-nba-agent" / "data" / "predictions"
 DAILY_GLOB = str(NBA_AGENT_PREDICTIONS / "predictions-2026-*.json")
 JSONL_FILE = NBA_AGENT_PREDICTIONS / "predictions.jsonl"
 

@@ -31,8 +31,9 @@ from datetime import datetime
 from pathlib import Path
 from nba_api.stats.endpoints import leaguegamefinder
 
-MON_ROOT = Path("/home/termius/mon-ipad/nba-quant-space/data/historical")
-NBA_ROOT = Path("/home/termius/nomos-nba-agent/data/historical")
+_ROOT = Path(__file__).resolve().parent.parent.parent
+MON_ROOT = _ROOT / "nba-quant-space" / "data" / "historical"
+NBA_ROOT = _ROOT.parent / "nomos-nba-agent" / "data" / "historical"
 
 SEASONS = [
     "2017-18", "2018-19", "2019-20", "2020-21", "2021-22",

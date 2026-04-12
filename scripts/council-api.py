@@ -18,7 +18,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 
 PORT = 8043
-LOG_DIR = Path("/home/termius/mon-ipad/logs")
+LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
 LOG_FILE = LOG_DIR / "council-actions.jsonl"
 MAX_HISTORY = 200
 

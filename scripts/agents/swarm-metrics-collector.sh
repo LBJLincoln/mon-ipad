@@ -12,9 +12,10 @@
 
 set -euo pipefail
 
-REPO_ROOT="/home/termius/mon-ipad"
-POLITICAL_ROOT="/home/termius/nomos-political-alpha"
-RGWA_ROOT="/home/termius/rgwa"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+POLITICAL_ROOT="${REPO_ROOT}/../nomos-political-alpha"
+RGWA_ROOT="${REPO_ROOT}/../rgwa"
 OUTPUT_FILE="${REPO_ROOT}/data/swarm-metrics.json"
 ATR_BRIER="0.21570"
 QUIET=0

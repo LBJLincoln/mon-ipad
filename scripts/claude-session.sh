@@ -16,6 +16,9 @@
 
 set -uo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
 # ── Colors ──
 R='\033[0;31m'; G='\033[0;32m'; Y='\033[0;33m'; B='\033[0;34m'
 C='\033[0;36m'; W='\033[1;37m'; D='\033[0;90m'; M='\033[0;35m'; N='\033[0m'
@@ -49,10 +52,10 @@ done
 # ── Source all env files (safely, even under set -u) ──
 set +u
 for envfile in \
-  /home/termius/nomos-nba-agent/.env.local \
-  /home/termius/mon-ipad/.env.local \
-  /home/termius/rgwa/.env.local \
-  /home/termius/nomos-political-alpha/.env.local; do
+  "${ROOT}/../nomos-nba-agent/.env.local" \
+  "${ROOT}/.env.local" \
+  "${ROOT}/../rgwa/.env.local" \
+  "${ROOT}/../nomos-political-alpha/.env.local"; do
   [ -f "$envfile" ] && source "$envfile" 2>/dev/null || true
 done
 set -u
@@ -70,11 +73,11 @@ show() { [ -z "$SECTION" ] || [ "$SECTION" = "$1" ]; }
 # Quiet mode: straight to launch
 if [ -n "$QUIET" ]; then
   case "$PROJECT" in
-    nba)       WORKDIR="/home/termius/mon-ipad" ;;
-    rgwa)      WORKDIR="/home/termius/rgwa" ;;
-    political) WORKDIR="/home/termius/nomos-political-alpha" ;;
-    dashboard) WORKDIR="/home/termius/nomos-dashboard" ;;
-    all)       WORKDIR="/home/termius/mon-ipad" ;;
+    nba)       WORKDIR="${ROOT}" ;;
+    rgwa)      WORKDIR="${ROOT}/../rgwa" ;;
+    political) WORKDIR="${ROOT}/../nomos-political-alpha" ;;
+    dashboard) WORKDIR="${ROOT}/../nomos-dashboard" ;;
+    all)       WORKDIR="${ROOT}" ;;
   esac
   cd "$WORKDIR"
   [ -n "$NO_LAUNCH" ] && exit 0
@@ -292,7 +295,7 @@ if show gpu; then
   fi
 
   # Colab
-  COLAB_STATE="/home/termius/mon-ipad/data/colab-state.json"
+  COLAB_STATE="${ROOT}/data/colab-state.json"
   if [ -f "$COLAB_STATE" ]; then
     COLAB_TS=$(python3 -c "import json,sys; d=json.load(open('$COLAB_STATE')); print(d.get('timestamp','?'))" 2>/dev/null || echo "?")
     ok "Google Colab" "Last: $COLAB_TS"
@@ -398,11 +401,11 @@ if show repos; then
   header "Repositories (5 active)"
 
   declare -A REPOS=(
-    ["mon-ipad"]="/home/termius/mon-ipad:Brain"
-    ["nomos-nba-agent"]="/home/termius/nomos-nba-agent:NBA Engine"
-    ["nomos-political-alpha"]="/home/termius/nomos-political-alpha:Political"
-    ["rgwa"]="/home/termius/rgwa:RGWA"
-    ["nomos-dashboard"]="/home/termius/nomos-dashboard:Dashboard"
+    ["mon-ipad"]="${ROOT}:Brain"
+    ["nomos-nba-agent"]="${ROOT}/../nomos-nba-agent:NBA Engine"
+    ["nomos-political-alpha"]="${ROOT}/../nomos-political-alpha:Political"
+    ["rgwa"]="${ROOT}/../rgwa:RGWA"
+    ["nomos-dashboard"]="${ROOT}/../nomos-dashboard:Dashboard"
   )
 
   for NAME in mon-ipad nomos-nba-agent nomos-political-alpha rgwa nomos-dashboard; do
@@ -449,14 +452,14 @@ if show bots; then
 
   if [ "$ANY_DOWN" = true ] && [ -z "$NO_LAUNCH" ]; then
     info "" "Auto-starting mon-ipad bots..."
-    cd /home/termius/mon-ipad && bash scripts/telegram/start_bots.sh start 2>/dev/null || true
+    cd "${ROOT}" && bash scripts/telegram/start_bots.sh start 2>/dev/null || true
   fi
 
   if pgrep -f "rgwa_bot.py" > /dev/null 2>&1; then
     count_ok "@RGWAbot" "RUNNING — AI Art Terminal"
   else
     count_fail "@RGWAbot" "DOWN — AI Art Terminal"
-    [ -z "$NO_LAUNCH" ] && { cd /home/termius/rgwa && bash scripts/telegram/start_bot.sh start 2>/dev/null || true; }
+    [ -z "$NO_LAUNCH" ] && { cd "${ROOT}/../rgwa" && bash scripts/telegram/start_bot.sh start 2>/dev/null || true; }
   fi
 fi
 
@@ -523,7 +526,7 @@ if show agents; then
     pgrep -f "$APROC" > /dev/null 2>&1 && AGENT_RUNNING=$((AGENT_RUNNING + 1))
   done
 
-  AGENT_JSON="/home/termius/mon-ipad/data/agent-activity.json"
+  AGENT_JSON="${ROOT}/data/agent-activity.json"
   if [ -f "$AGENT_JSON" ]; then
     LAST_ACTIVITY=$(python3 -c "
 import json
@@ -556,7 +559,7 @@ fi
 if show forge; then
   header "Department Forge v19 — 9 Councils"
 
-  DEPT_DIR="/home/termius/mon-ipad/data/departments"
+  DEPT_DIR="${ROOT}/data/departments"
   for DEPT in research engineering evolution product business evaluation infra finance cross-repo; do
     LATEST="${DEPT_DIR}/council-${DEPT}-latest.json"
     if [ -f "$LATEST" ]; then
@@ -593,7 +596,7 @@ fi
 if show forge; then
   header "Trading Floor v5 + Backtest"
 
-  TF_STATE="/home/termius/mon-ipad/data/arena/agent-states-v5.json"
+  TF_STATE="${ROOT}/data/arena/agent-states-v5.json"
   if [ -f "$TF_STATE" ]; then
     TF_LINE=$(python3 -c "
 import json
@@ -609,7 +612,7 @@ except Exception as e: print(f'err {e}')
     count_warn "TF v5 state" "missing"
   fi
 
-  BT="/home/termius/mon-ipad/data/nba-agent/full-season-backtest.json"
+  BT="${ROOT}/data/nba-agent/full-season-backtest.json"
   if [ -f "$BT" ]; then
     BT_LINE=$(python3 -c "
 import json
@@ -627,14 +630,14 @@ except Exception as e: print(f'parse-error: {e}')
     count_warn "Season backtest" "missing"
   fi
 
-  POL_STATE="/home/termius/mon-ipad/data/arena/political-trading-floor-iteration.json"
+  POL_STATE="${ROOT}/data/arena/political-trading-floor-iteration.json"
   if [ -f "$POL_STATE" ]; then
     count_ok "Political TF" "state present"
   else
     info "Political TF" "no state"
   fi
 
-  CPCV="/home/termius/mon-ipad/data/arena/cpcv-watcher-state.json"
+  CPCV="${ROOT}/data/arena/cpcv-watcher-state.json"
   if [ -f "$CPCV" ]; then
     count_ok "CPCV watcher" "state present"
   else
@@ -647,7 +650,7 @@ fi
 # ══════════════════════════════════════════════════════════════════
 # 12. ALERTS
 # ══════════════════════════════════════════════════════════════════
-CROSS_JSON="/home/termius/mon-ipad/data/cross-repo-health.json"
+CROSS_JSON="${ROOT}/data/cross-repo-health.json"
 if [ -f "$CROSS_JSON" ]; then
   ALERTS=$(python3 -c "
 import json
@@ -694,11 +697,11 @@ echo -e "${W}━━━━━━━━━━━━━━━━━━━━━━�
 
 # ── Launch Claude Code ──
 case "$PROJECT" in
-  nba)       WORKDIR="/home/termius/mon-ipad" ;;
-  rgwa)      WORKDIR="/home/termius/rgwa" ;;
-  political) WORKDIR="/home/termius/nomos-political-alpha" ;;
-  dashboard) WORKDIR="/home/termius/nomos-dashboard" ;;
-  all)       WORKDIR="/home/termius/mon-ipad" ;;
+  nba)       WORKDIR="${ROOT}" ;;
+  rgwa)      WORKDIR="${ROOT}/../rgwa" ;;
+  political) WORKDIR="${ROOT}/../nomos-political-alpha" ;;
+  dashboard) WORKDIR="${ROOT}/../nomos-dashboard" ;;
+  all)       WORKDIR="${ROOT}" ;;
 esac
 
 echo ""

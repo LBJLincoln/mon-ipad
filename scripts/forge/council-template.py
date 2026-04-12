@@ -420,7 +420,7 @@ def run_karpathy_loop(repo_path, dept, config, dry_run=False):
 
 # ── Data Helpers ───────────────────────────────────────────────────────
 
-MON_IPAD = Path("/home/termius/mon-ipad")
+MON_IPAD = Path(__file__).resolve().parent.parent.parent
 
 def _read_json(path, default=None):
     try:
@@ -545,7 +545,7 @@ def _scan_product(repo_path):
     import subprocess
     data = {}
     # Check dashboard repo
-    dash_dir = Path("/home/termius/nomos-dashboard")
+    dash_dir = MON_IPAD.parent / "nomos-dashboard"
     if dash_dir.exists():
         try:
             res = subprocess.run(["git", "-C", str(dash_dir), "log", "-1", "--format=%h %s"],
@@ -661,7 +661,7 @@ def _scan_cross_repo_agents(repo_path):
     active = 0
     drift_issues = []
     for r in repos:
-        rpath = Path(f"/home/termius/{r}")
+        rpath = MON_IPAD.parent / r
         if rpath.exists():
             active += 1
             # Check council state freshness
@@ -905,7 +905,7 @@ def _propose_product(repo_path, scan):
     if picks == 0:
         return {"summary": "No picks today — running prediction pipeline",
                 "action": "check_pipeline", "priority": "critical",
-                "cmd": "cd /home/termius/nomos-nba-agent && timeout 300 python3 predict_today.py 2>&1 | tail -20"}
+                "cmd": f"cd {MON_IPAD.parent / chr(39) + "nomos-nba-agent" + chr(39)} && timeout 300 python3 predict_today.py 2>&1 | tail -20"}
     if bots_up < 2:
         return {"summary": f"Only {bots_up} bots running — restart bot fleet",
                 "action": "restart_bots", "priority": "high",
@@ -1044,7 +1044,7 @@ def _propose_cross_repo(repo_path, scan):
         issues.append(f"{len(heavy_uncommitted)} repos with 50+ uncommitted files: {', '.join(heavy_uncommitted)}")
         # Auto-commit data files for each heavy repo
         for r in heavy_uncommitted:
-            rpath = f"/home/termius/{r}"
+            rpath = str(MON_IPAD.parent / r)
             cmds.append(
                 f'cd {rpath} && git add data/ *.json 2>/dev/null; '
                 f'git commit -m "data: auto-commit council iteration (>50 uncommitted)" --no-verify 2>/dev/null || true')
@@ -1211,7 +1211,7 @@ def main():
     # Resolve repo path
     repo_path = args.repo
     if not os.path.isabs(repo_path):
-        repo_path = f"/home/termius/{args.repo}"
+        repo_path = str(MON_IPAD.parent / args.repo)
     if not os.path.isdir(repo_path):
         print(f"ERROR: Repo not found: {repo_path}")
         sys.exit(1)

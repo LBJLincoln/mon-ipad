@@ -62,8 +62,8 @@ SAME_GAME_MARKET_CORR = 0.30
 CROSS_GAME_CORR = 0.05
 
 # Paths
-MON_DIR = Path("/home/termius/mon-ipad")
-NBA_AGENT_DIR = Path("/home/termius/nomos-nba-agent")
+MON_DIR = Path(__file__).resolve().parent.parent
+NBA_AGENT_DIR = MON_DIR.parent / "nomos-nba-agent"
 DATA_DIR = MON_DIR / "data" / "nba-agent"
 PREDICTIONS_PATH = NBA_AGENT_DIR / "data" / "nba-agent" / "predictions-today.json"
 ODDS_PATH = DATA_DIR / "live-odds.json"
@@ -459,7 +459,7 @@ def load_inputs(bankroll_override=None):
         if not pred.get("calibrated"):
             try:
                 import sys as _sys
-                _sys.path.insert(0, '/home/termius/mon-ipad/scripts')
+                _sys.path.insert(0, str(MON_DIR / 'scripts'))
                 from calibration import IsotonicCalibration as _IsoCal
                 _cal = _IsoCal()
                 model_prob = _cal.calibrate(model_prob)

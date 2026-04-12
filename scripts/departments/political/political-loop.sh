@@ -8,7 +8,9 @@ set -euo pipefail
 
 DEPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(dirname "$(dirname "$(dirname "$DEPT_DIR")")")"
-POLITICAL_ROOT="/home/termius/nomos-political-alpha"
+POLITICAL_ROOT="${ROOT}/../nomos-political-alpha"
+export ROOT
+export POLITICAL_ROOT
 OUTPUT_DIR="$ROOT/data/departments/political"
 LOG_FILE="$OUTPUT_DIR/loop.log"
 STATE_FILE="$OUTPUT_DIR/loop-state.json"
@@ -135,7 +137,7 @@ import json, os, sys
 from datetime import datetime
 from pathlib import Path
 
-POLITICAL_ROOT = Path("/home/termius/nomos-political-alpha")
+POLITICAL_ROOT = Path(os.environ.get("POLITICAL_ROOT") or str(Path(os.environ.get("ROOT", "")).parent / "nomos-political-alpha"))
 today = datetime.utcnow().strftime("%Y%m%d")
 
 # Load enforcement dismissals
@@ -235,7 +237,7 @@ measure_brier() {
 import json, math
 from pathlib import Path
 
-POLITICAL_ROOT = Path("/home/termius/nomos-political-alpha")
+POLITICAL_ROOT = Path(os.environ.get("POLITICAL_ROOT") or str(Path(os.environ.get("ROOT", "")).parent / "nomos-political-alpha"))
 events_file = POLITICAL_ROOT / "data/historical/consolidated_events.json"
 
 if not events_file.exists():
@@ -381,7 +383,7 @@ update_output() {
     local signal_count="$5"
 
     python3 - "$iteration" "$brier_json" "$etf_json" "$proposals_json" "$signal_count" <<'PYEOF'
-import json, sys
+import json, os, sys
 from datetime import datetime
 
 iteration     = int(sys.argv[1])
@@ -390,7 +392,7 @@ etf_data      = json.loads(sys.argv[3]) if sys.argv[3] != "{}" else {}
 proposals     = json.loads(sys.argv[4]).get("proposals", [])
 signal_count  = int(sys.argv[5])
 
-out_path = "/home/termius/mon-ipad/data/departments/political/karpathy-output.json"
+out_path = os.path.join(os.environ.get("ROOT", ""), "data/departments/political/karpathy-output.json")
 
 try:
     existing = json.load(open(out_path))

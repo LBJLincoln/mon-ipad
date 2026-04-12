@@ -15,7 +15,8 @@
 
 set -euo pipefail
 
-ROOT="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 LOG_DIR="$ROOT/data/arena/council-log-v5"
 PRED_DIR="$ROOT/data/arena/predictions-v5"
 

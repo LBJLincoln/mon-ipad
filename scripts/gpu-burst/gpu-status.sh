@@ -15,7 +15,8 @@
 
 set -euo pipefail
 
-REPO_ROOT="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 DATA_DIR="$REPO_ROOT/data/gpu-burst"
 KARPATHY_DIR="$REPO_ROOT/data/karpathy"
 LOG_DIR="$REPO_ROOT/logs"

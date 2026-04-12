@@ -40,7 +40,7 @@ except ImportError:
 # ═══════════════════════════════════════════════════════════════════════════════
 # PATHS
 # ═══════════════════════════════════════════════════════════════════════════════
-ROOT = Path("/home/termius/mon-ipad")
+ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data" / "arena"
 PREDICTIONS_DIR = DATA_DIR / "predictions-v5"
 BACKTEST_DIR = DATA_DIR / "backtest-results"

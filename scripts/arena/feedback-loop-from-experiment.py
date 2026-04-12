@@ -19,7 +19,7 @@ import glob
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path("/home/termius/mon-ipad")
+ROOT = Path(__file__).resolve().parent.parent.parent
 EXPERIMENTS_DIR = ROOT / "data" / "experiments"
 AGENT_STATE = ROOT / "data" / "arena" / "agent-states-v5.json"
 

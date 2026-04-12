@@ -17,15 +17,19 @@
 # =============================================================================
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+REPOS_PARENT="$(cd "${ROOT}/.." && pwd)"
+
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-SOURCE="/home/termius/nomos-nba-agent/features/engine.py"
+SOURCE="${REPOS_PARENT}/nomos-nba-agent/features/engine.py"
 
 TARGETS=(
-    "/home/termius/nomos-nba-agent/hf-space/features/engine.py"
-    "/home/termius/mon-ipad/features/engine.py"
-    "/home/termius/mon-ipad/hf-space/features/engine.py"
+    "${REPOS_PARENT}/nomos-nba-agent/hf-space/features/engine.py"
+    "${ROOT}/features/engine.py"
+    "${ROOT}/hf-space/features/engine.py"
 )
 
 TARGET_LABELS=(

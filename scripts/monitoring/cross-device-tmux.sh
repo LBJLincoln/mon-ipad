@@ -56,10 +56,11 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SESSION="nomos42"
-DASH_SCRIPT="/home/termius/mon-ipad/scripts/monitoring/tmux-dashboard.sh"
-LIVE_STATUS="/home/termius/mon-ipad/scripts/monitoring/live-status.py"
-BASE="/home/termius/mon-ipad"
+BASE="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+DASH_SCRIPT="${SCRIPT_DIR}/tmux-dashboard.sh"
+LIVE_STATUS="${SCRIPT_DIR}/live-status.py"
 
 # ── Colors for output ────────────────────────────────────────────────────────
 GREEN='\033[0;32m'

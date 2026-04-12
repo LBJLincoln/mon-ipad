@@ -38,7 +38,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # ─── Paths ───────────────────────────────────────────────────────────────────
 
-ROOT = Path("/home/termius/mon-ipad")
+ROOT = Path(__file__).resolve().parent.parent.parent
 DATA_DIR = ROOT / "data"
 COUNCILS_DIR = DATA_DIR / "councils"
 PROPOSALS_DIR = DATA_DIR / "research-proposals"

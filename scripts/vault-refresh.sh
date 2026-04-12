@@ -9,7 +9,8 @@
 # ═══════════════════════════════════════════════════════════════
 set -uo pipefail
 
-ROOT="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 VAULT="${ROOT}/research-vault"
 LOG="${ROOT}/logs/vault-refresh.log"
 mkdir -p "$(dirname "$LOG")"

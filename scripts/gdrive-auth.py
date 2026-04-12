@@ -71,7 +71,7 @@ rclone_token = json.dumps({
 })
 
 # Step 4: Write rclone config
-config_path = "/home/termius/.config/rclone/rclone.conf"
+config_path = str(Path.home() / ".config" / "rclone" / "rclone.conf")
 config = f"""[gdrive]
 type = drive
 client_id = {CLIENT_ID}

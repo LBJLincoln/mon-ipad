@@ -6,9 +6,10 @@
 # ═══════════════════════════════════════════════════════════════
 
 set -uo pipefail
-export PATH="$PATH:/home/termius/.local/bin:/home/termius/.npm-global/bin:/usr/local/bin"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export PATH="$PATH:${HOME}/.local/bin:${HOME}/.npm-global/bin:/usr/local/bin"
 
-MON_DIR="/home/termius/mon-ipad"
+MON_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 LOG="$MON_DIR/logs/agents/multi-brain-$(date +%Y-%m-%d).log"
 mkdir -p "$(dirname "$LOG")"
 

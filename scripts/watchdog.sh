@@ -3,12 +3,14 @@
 # Monitors ALL services, auto-restarts dead ones, alerts via Telegram
 set -uo pipefail
 
-LOG="/home/termius/mon-ipad/logs/watchdog.log"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+LOG="${ROOT}/logs/watchdog.log"
 ALERT_COOLDOWN="/tmp/watchdog-alert-cooldown"
 mkdir -p "$(dirname "$LOG")"
 
 # Source env for tokens
-source /home/termius/mon-ipad/.env.local 2>/dev/null
+source "${ROOT}/.env.local" 2>/dev/null
 
 log() { echo "[$(date -u +%Y-%m-%d\ %H:%M:%S)] $1" >> "$LOG"; }
 
@@ -39,7 +41,7 @@ FIXES=0
 # @Nomos42Bot
 if ! pgrep -f "nomos42_brain.py" > /dev/null 2>&1; then
     log "[BOT] @Nomos42Bot DOWN — restarting"
-    cd /home/termius/mon-ipad && bash scripts/telegram/start_bots.sh start >> "$LOG" 2>&1
+    cd "${ROOT}" && bash scripts/telegram/start_bots.sh start >> "$LOG" 2>&1
     FIXES=$((FIXES + 1))
     alert "@Nomos42Bot was DOWN — restarted"
 else
@@ -49,7 +51,7 @@ fi
 # @RGWAbot
 if ! pgrep -f "rgwa_bot.py" > /dev/null 2>&1; then
     log "[BOT] @RGWAbot DOWN — restarting"
-    cd /home/termius/rgwa && bash scripts/telegram/start_bot.sh start >> "$LOG" 2>&1
+    cd "${ROOT}/../rgwa" && bash scripts/telegram/start_bot.sh start >> "$LOG" 2>&1
     FIXES=$((FIXES + 1))
     alert "@RGWAbot was DOWN — restarted"
 else
@@ -60,7 +62,7 @@ fi
 # Check for either the custom server script OR the http.server fallback (both serve on 8080)
 if ! { pgrep -f "nba-data-server" > /dev/null 2>&1 || pgrep -f "http\.server 8080" > /dev/null 2>&1; }; then
     log "[SERVER] Data server DOWN — restarting"
-    nohup python3 -m http.server 8080 -b 0.0.0.0 --directory /home/termius/mon-ipad/data > /dev/null 2>&1 &
+    nohup python3 -m http.server 8080 -b 0.0.0.0 --directory "${ROOT}/data" > /dev/null 2>&1 &
     FIXES=$((FIXES + 1))
     alert "Data server was DOWN — restarted (PID $!)"
 else
@@ -70,8 +72,8 @@ fi
 # ── 2b. Terminal API (port 8081) ──────────────────────────────
 if ! pgrep -f "terminal_api.py" > /dev/null 2>&1; then
     log "[TERMINAL] Terminal API DOWN — restarting"
-    source /home/termius/mon-ipad/.env.local 2>/dev/null
-    nohup python3 /home/termius/mon-ipad/scripts/terminal_api.py > /tmp/terminal_api.log 2>&1 &
+    source "${ROOT}/.env.local" 2>/dev/null
+    nohup python3 "${ROOT}/scripts/terminal_api.py" > /tmp/terminal_api.log 2>&1 &
     FIXES=$((FIXES + 1))
     alert "Terminal API was DOWN — restarted (PID $!)"
 else
@@ -128,12 +130,12 @@ if [ "$DISK_PCT" -gt 90 ]; then
     log "[DISK] WARNING: ${DISK_PCT}% full"
     alert "Disk ${DISK_PCT}% full!"
     # Auto-clean old logs
-    find /home/termius/mon-ipad/logs/ -name "*.log" -size +50M -exec truncate -s 10M {} \;
+    find "${ROOT}/logs/" -name "*.log" -size +50M -exec truncate -s 10M {} \;
     find /tmp/ -name "watchdog-alert-cooldown-*" -mtime +1 -delete 2>/dev/null
 fi
 
 # ── 6. Log rotation (keep logs under 20MB each) ──────────────
-for logfile in /home/termius/mon-ipad/logs/*.log /tmp/nomos42-brain.log /tmp/rgwa-bot.log; do
+for logfile in "${ROOT}/logs"/*.log /tmp/nomos42-brain.log /tmp/rgwa-bot.log; do
     if [ -f "$logfile" ]; then
         SIZE=$(stat -c%s "$logfile" 2>/dev/null || echo 0)
         if [ "$SIZE" -gt 20971520 ]; then  # 20MB

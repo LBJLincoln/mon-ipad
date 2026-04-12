@@ -7,8 +7,9 @@
 # ═══════════════════════════════════════════════════════════════
 
 set -euo pipefail
-export PATH="$PATH:/home/termius/.local/bin"
-MON_DIR="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export PATH="$PATH:${HOME}/.local/bin"
+MON_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 RESEARCH_DIR="$MON_DIR/data/research"
 LOG_DIR="$MON_DIR/logs/agents"
 TODAY=$(date +%Y-%m-%d)

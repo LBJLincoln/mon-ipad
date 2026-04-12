@@ -7,6 +7,10 @@
 # ============================================================
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+VM_HOME="${VM_HOME:-/home/termius}"
+
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
 log()  { echo -e "${GREEN}[OK]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
@@ -312,9 +316,9 @@ fi
 HF_MCP_SRC="$NOMOS_DIR/repos/mon-ipad/../mcp-servers/custom/huggingface-mcp-server.py"
 MCP_DST="$NOMOS_DIR/mcp-servers"
 mkdir -p "$MCP_DST"
-if [ -f "/home/termius/mcp-servers/custom/huggingface-mcp-server.py" ]; then
+if [ -f "${VM_HOME}/mcp-servers/custom/huggingface-mcp-server.py" ]; then
     # Running from VM context — copy directly
-    cp /home/termius/mcp-servers/custom/huggingface-mcp-server.py "$MCP_DST/" 2>/dev/null && log "HF MCP server copied"
+    cp "${VM_HOME}/mcp-servers/custom/huggingface-mcp-server.py" "$MCP_DST/" 2>/dev/null && log "HF MCP server copied"
 elif [ -f "$NOMOS_DIR/repos/mon-ipad/scripts/bloomberg/bloomberg-api.py" ]; then
     # Running on laptop — find it in repo
     warn "Copy MCP server manually: scp termius@100.70.229.122:/home/termius/mcp-servers/custom/huggingface-mcp-server.py $MCP_DST/"

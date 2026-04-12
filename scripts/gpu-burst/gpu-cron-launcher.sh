@@ -25,7 +25,8 @@
 set -euo pipefail
 
 # ── Constants ──
-REPO_ROOT="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 SCRIPTS_DIR="${REPO_ROOT}/scripts/gpu-burst"
 LOG_DIR="${REPO_ROOT}/logs/gpu-burst"
 DATA_DIR="${REPO_ROOT}/data/gpu-burst"
@@ -40,7 +41,7 @@ LIGHTNING_TIMEOUT=900   # 15 minutes for Lightning
 mkdir -p "${LOG_DIR}" "${DATA_DIR}"
 
 # Ensure ~/.local/bin is in PATH (cron has minimal PATH)
-export PATH="/home/termius/.local/bin:${HOME}/.local/bin:/usr/local/bin:/usr/bin:/bin:${PATH}"
+export PATH="${HOME}/.local/bin:/usr/local/bin:/usr/bin:/bin:${PATH}"
 
 # Load environment variables from .env.local
 if [[ -f "${ENV_FILE}" ]]; then

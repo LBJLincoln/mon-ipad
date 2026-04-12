@@ -19,8 +19,9 @@
 
 set -euo pipefail
 
-ROOT="/home/termius/mon-ipad"
-POL_ROOT="/home/termius/nomos-political-alpha"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+POL_ROOT="${ROOT}/../nomos-political-alpha"
 LOG_DIR="${ROOT}/logs/arena"
 LOG_FILE="${LOG_DIR}/continuous-backtest.log"
 PID_FILE="/tmp/continuous-backtest.pid"

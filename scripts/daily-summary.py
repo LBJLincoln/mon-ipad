@@ -16,10 +16,10 @@ import urllib.parse
 from pathlib import Path
 from datetime import datetime, timezone
 
-ROOT = Path("/home/termius/mon-ipad")
-NBA_AGENT = Path("/home/termius/nomos-nba-agent")
-POLITICAL = Path("/home/termius/nomos-political-alpha")
-RGWA = Path("/home/termius/rgwa")
+ROOT = Path(__file__).resolve().parent.parent
+NBA_AGENT = ROOT.parent / "nomos-nba-agent"
+POLITICAL = ROOT.parent / "nomos-political-alpha"
+RGWA = ROOT.parent / "rgwa"
 
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 CHANNEL_ID = os.environ.get("TELEGRAM_CHANNEL_ID", "@Nomos42")

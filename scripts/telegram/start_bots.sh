@@ -4,7 +4,9 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 set -a
-[ -f /home/termius/mon-ipad/.env.local ] && source /home/termius/mon-ipad/.env.local 2>/dev/null
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+[ -f "${_ROOT}/.env.local" ] && source "${_ROOT}/.env.local" 2>/dev/null
 set +a
 
 MODE="${1:-start}"

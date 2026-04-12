@@ -17,7 +17,8 @@
 
 set -uo pipefail
 
-ROOT="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 RESULTS_DIR="$ROOT/data/arena/political-backtest-results"
 LATEST="$ROOT/data/arena/political/political-trading-floor-latest.json"
 LOG="$ROOT/data/arena/political-backtest-swarm.log"

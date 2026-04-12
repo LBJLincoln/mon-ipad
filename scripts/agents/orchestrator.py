@@ -45,7 +45,8 @@ PROJECTS = {
     },
 }
 
-DATA_DIR = Path("/home/termius/mon-ipad/data")
+_ROOT = Path(__file__).resolve().parent.parent.parent
+DATA_DIR = _ROOT / "data"
 HEALTH_FILE = DATA_DIR / "agent-health.json"
 
 # ═══════════════════════════════════════

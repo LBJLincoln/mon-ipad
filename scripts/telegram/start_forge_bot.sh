@@ -8,7 +8,9 @@ PID_FILE="/tmp/forge42-bot.pid"
 LOG_FILE="/tmp/forge-bot.log"
 
 # Source mon-ipad env for tokens
-[ -f /home/termius/mon-ipad/.env.local ] && source /home/termius/mon-ipad/.env.local 2>/dev/null
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+[ -f "${_ROOT}/.env.local" ] && source "${_ROOT}/.env.local" 2>/dev/null
 
 MODE="${1:-start}"
 
@@ -22,7 +24,7 @@ start_forge() {
     [ -z "$FORGE_BOT_TOKEN" ] && export FORGE_BOT_TOKEN="${FORGE42_BOT_TOKEN:-}"
     if [ -z "$FORGE_BOT_TOKEN" ]; then
         echo "ERROR: FORGE_BOT_TOKEN / FORGE42_BOT_TOKEN not set."
-        echo "  Add it to /home/termius/mon-ipad/.env.local or export it before running."
+        echo "  Add it to .env.local in repo root or export it before running."
         exit 1
     fi
 

@@ -12,16 +12,20 @@
 # =============================================================================
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+REPOS_PARENT="$(cd "${ROOT}/.." && pwd)"
+
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-BRAIN="/home/termius/mon-ipad"
+BRAIN="${ROOT}"
 REPOS=(
-    "/home/termius/mon-ipad"
-    "/home/termius/nomos-nba-agent"
-    "/home/termius/nomos-political-alpha"
-    "/home/termius/rgwa"
-    "/home/termius/nomos-dashboard"
+    "${ROOT}"
+    "${REPOS_PARENT}/nomos-nba-agent"
+    "${REPOS_PARENT}/nomos-political-alpha"
+    "${REPOS_PARENT}/rgwa"
+    "${REPOS_PARENT}/nomos-dashboard"
 )
 REPO_NAMES=("mon-ipad" "nomos-nba-agent" "nomos-political-alpha" "rgwa" "nomos-dashboard")
 
@@ -150,9 +154,9 @@ done
 
 # Satellite repos
 declare -A SATELLITE_KARPATHY=(
-    ["nomos-nba-agent"]="/home/termius/nomos-nba-agent/data/departments/prediction/karpathy-output.json"
-    ["nomos-political-alpha"]="/home/termius/nomos-political-alpha/data/departments/signals/karpathy-output.json"
-    ["rgwa"]="/home/termius/rgwa/data/departments/creative/karpathy-output.json"
+    ["nomos-nba-agent"]="${REPOS_PARENT}/nomos-nba-agent/data/departments/prediction/karpathy-output.json"
+    ["nomos-political-alpha"]="${REPOS_PARENT}/nomos-political-alpha/data/departments/signals/karpathy-output.json"
+    ["rgwa"]="${REPOS_PARENT}/rgwa/data/departments/creative/karpathy-output.json"
 )
 
 for repo_name in "${!SATELLITE_KARPATHY[@]}"; do

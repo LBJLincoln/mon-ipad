@@ -32,7 +32,7 @@ from typing import Any
 # Configuration
 # ---------------------------------------------------------------------------
 
-BRAIN = Path("/home/termius/mon-ipad")
+BRAIN = Path(__file__).resolve().parent.parent.parent
 REPORT_OUTPUT = BRAIN / "data" / "departments" / "guardian-report.json"
 WINS_OUTPUT = BRAIN / "data" / "departments" / "wins-latest.json"
 

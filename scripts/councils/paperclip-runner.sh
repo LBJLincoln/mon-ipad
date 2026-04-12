@@ -35,7 +35,8 @@
 
 set -uo pipefail
 
-ROOT="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 LOG_DIR="${ROOT}/logs/councils"
 LEDGER="${ROOT}/data/councils/paperclip-ledger.jsonl"
 HERMES="${ROOT}/scripts/councils/hermes-runner.sh"

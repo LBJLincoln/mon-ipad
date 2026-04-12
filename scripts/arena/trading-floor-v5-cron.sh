@@ -13,7 +13,8 @@
 
 set -euo pipefail
 
-ROOT="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 SCRIPT="${ROOT}/scripts/arena/trading-floor-v5.py"
 LOG_DIR="${ROOT}/logs/arena"
 LOG_FILE="${LOG_DIR}/trading-floor-v5.log"

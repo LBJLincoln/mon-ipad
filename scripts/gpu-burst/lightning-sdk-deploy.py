@@ -27,7 +27,7 @@ import subprocess
 from pathlib import Path
 from datetime import datetime, timezone
 
-REPO_ROOT = Path("/home/termius/mon-ipad")
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 RESULT_DIR = REPO_ROOT / "data" / "gpu-burst"
 LOG_DIR = REPO_ROOT / "logs"
 BURST_SCRIPT = REPO_ROOT / "scripts" / "gpu-burst" / "lightning-burst.py"

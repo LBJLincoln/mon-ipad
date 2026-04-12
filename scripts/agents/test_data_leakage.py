@@ -36,7 +36,8 @@ def test(name, condition, detail=""):
 # ═══════════════════════════════════════
 print("\n[TEST 1] Feature engine temporal integrity")
 
-engine_path = Path("/home/termius/nomos-nba-agent/features/engine.py")
+_ROOT = Path(__file__).resolve().parent.parent.parent
+engine_path = _ROOT.parent / "nomos-nba-agent" / "features" / "engine.py"
 if engine_path.exists():
     engine_code = engine_path.read_text()
 
@@ -75,7 +76,7 @@ else:
 # ═══════════════════════════════════════
 print("\n[TEST 2] Prediction pipeline odds integrity")
 
-predict_path = Path("/home/termius/nomos-nba-agent/predict_today.py")
+predict_path = _ROOT.parent / "nomos-nba-agent" / "predict_today.py"
 if predict_path.exists():
     predict_code = predict_path.read_text()
 
@@ -96,7 +97,7 @@ else:
 # ═══════════════════════════════════════
 print("\n[TEST 3] Season backtest walk-forward integrity")
 
-backtest_path = Path("/home/termius/mon-ipad/scripts/kaggle/nba_season_backtest.py")
+backtest_path = _ROOT / "scripts" / "kaggle" / "nba_season_backtest.py"
 if backtest_path.exists():
     bt_code = backtest_path.read_text()
 
@@ -132,7 +133,7 @@ else:
 # ═══════════════════════════════════════
 print("\n[TEST 4] Evaluator odds consistency")
 
-eval_path = Path("/home/termius/mon-ipad/scripts/evaluate_predictions.py")
+eval_path = _ROOT / "scripts" / "evaluate_predictions.py"
 if eval_path.exists():
     eval_code = eval_path.read_text()
 
@@ -156,7 +157,7 @@ print("\n[TEST 5] Supabase data integrity (via config)")
 # Check that DATABASE_URL is available
 import os
 db_url = os.environ.get("DATABASE_URL", "")
-env_file = Path("/home/termius/mon-ipad/.env.local")
+env_file = _ROOT / ".env.local"
 if not db_url and env_file.exists():
     for line in env_file.read_text().splitlines():
         if line.startswith("DATABASE_URL="):

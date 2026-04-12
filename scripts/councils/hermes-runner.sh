@@ -37,7 +37,8 @@ set -uo pipefail
 # causing intermittent EAI_AGAIN on GCP. This env var enables DNS result caching.
 export NODE_OPTIONS="${NODE_OPTIONS:-} --dns-result-order=verbatim"
 
-ROOT="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 PROMPTS_DIR="${ROOT}/scripts/councils/prompts"
 LOG_DIR="${ROOT}/logs/councils"
 DATA_DIR="${ROOT}/data/departments"

@@ -5,10 +5,10 @@
 # ═══════════════════════════════════════════════════════════════
 
 set -euo pipefail
-export PATH="$PATH:/home/termius/.local/bin"
+export PATH="$PATH:${HOME}/.local/bin"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-MON_DIR="/home/termius/mon-ipad"
-NBA_DIR="/home/termius/nomos-nba-agent"
+MON_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+NBA_DIR="${MON_DIR}/../nomos-nba-agent"
 LOG_DIR="$MON_DIR/logs/agents"
 mkdir -p "$LOG_DIR"
 

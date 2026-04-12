@@ -3,12 +3,15 @@
 # Called by cron: */30 * * * *
 # 25 active spaces: 10 NBA + 4 Political + 9 Department Councils + 1 Pixel World (4 HF accounts)
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
 TS=$(date -u +"%Y-%m-%d %H:%M UTC")
 echo "=== Keepalive $TS ==="
 
 # Load HF tokens from env file
-if [ -f "/home/termius/mon-ipad/.env.local" ]; then
-    source /home/termius/mon-ipad/.env.local 2>/dev/null
+if [ -f "${ROOT}/.env.local" ]; then
+    source "${ROOT}/.env.local" 2>/dev/null
 fi
 
 # ── Helper: ping space + restart via HF API if non-healthy ───────────────────

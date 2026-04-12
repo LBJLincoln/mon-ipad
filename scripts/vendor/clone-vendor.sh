@@ -11,7 +11,8 @@
 
 set -uo pipefail
 
-ROOT="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 VENDOR="$ROOT/vendor"
 mkdir -p "$VENDOR"
 cd "$VENDOR" || exit 1

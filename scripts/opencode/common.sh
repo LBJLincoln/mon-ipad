@@ -4,8 +4,9 @@
 # Sources API keys, locates binary, provides fallback to python3+HF Inference
 ################################################################################
 
-REPO_ROOT="/home/termius/mon-ipad"
-OPENCODE_BIN="/home/termius/.local/bin/opencode"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+OPENCODE_BIN="${HOME}/.local/bin/opencode"
 DATA_DIR="$REPO_ROOT/data/opencode"
 ENV_FILE="$REPO_ROOT/.env.local"
 TIMEOUT_SECONDS=300

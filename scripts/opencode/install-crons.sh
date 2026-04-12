@@ -21,8 +21,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-POLITICAL_DIR="/home/termius/nomos-political-alpha"
-TERMIUS_ROOT="/home/termius"
+POLITICAL_DIR="${REPO_ROOT}/../nomos-political-alpha"
+TERMIUS_ROOT="$(cd "${REPO_ROOT}/.." && pwd)"
 
 # ── All cron entries ─────────────────────────────────────────────────────────
 # Times are staggered to prevent resource contention with the 4h brain cycle (:00).

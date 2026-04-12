@@ -19,13 +19,15 @@ Starting bankroll: $10,000.
 
 import csv
 import json
+from pathlib import Path
 import math
 import os
 from datetime import datetime
 from collections import defaultdict
 
-ODDS_CSV = "/home/termius/mon-ipad/data/historical-odds/nba_2008-2025.csv"
-OUTPUT_JSON = "/home/termius/mon-ipad/data/nba-agent/real-strategy-confrontation.json"
+_ROOT = Path(__file__).resolve().parent.parent
+ODDS_CSV = str(_ROOT / "data" / "historical-odds" / "nba_2008-2025.csv")
+OUTPUT_JSON = str(_ROOT / "data" / "nba-agent" / "real-strategy-confrontation.json")
 SEASON = 2025
 BANKROLL = 10000.0
 

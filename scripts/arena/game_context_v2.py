@@ -22,8 +22,8 @@ from datetime import datetime, date as _date
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-ROOT = Path("/home/termius/mon-ipad")
-NBA_AGENT = Path("/home/termius/nomos-nba-agent")
+ROOT = Path(__file__).resolve().parent.parent.parent
+NBA_AGENT = ROOT.parent / "nomos-nba-agent"
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # REST DAYS / B2B / 3-IN-4

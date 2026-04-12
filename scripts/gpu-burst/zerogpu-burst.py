@@ -60,7 +60,7 @@ HF_ISLANDS = {
 }
 
 # Paths
-REPO_ROOT = Path("/home/termius/mon-ipad")
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 BEST_CONFIG_PATH = REPO_ROOT / "data" / "karpathy" / "nba-best-config.json"
 RESULTS_DIR = REPO_ROOT / "data" / "gpu-burst"
 LOG_FILE = RESULTS_DIR / "zerogpu-log.jsonl"

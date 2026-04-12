@@ -16,19 +16,20 @@
 
 set -euo pipefail
 
-ROOT="/home/termius/mon-ipad"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 SRC="${ROOT}/data/departments"
 LOG="${ROOT}/logs/councils/sync-sister-repos.log"
 
 mkdir -p "$(dirname "${LOG}")"
 
 SISTER_REPOS=(
-    "/home/termius/nomos-political-alpha"
-    "/home/termius/nomos-nba-agent"
-    "/home/termius/nomos-dashboard"
-    "/home/termius/rgwa"
-    "/home/termius/nomos-picks"
-    "/home/termius/nomos-pierre"
+    "${ROOT}/../nomos-political-alpha"
+    "${ROOT}/../nomos-nba-agent"
+    "${ROOT}/../nomos-dashboard"
+    "${ROOT}/../rgwa"
+    "${ROOT}/../nomos-picks"
+    "${ROOT}/../nomos-pierre"
 )
 
 TS=$(date '+%Y-%m-%d %H:%M:%S UTC')
@@ -99,7 +100,7 @@ check_engine_parity() {
     local parity_file="${ROOT}/data/departments/cross-repo/engine-parity.json"
     local engine_mon="${ROOT}/features/engine.py"
     local engine_hf="${ROOT}/hf-space/features/engine.py"
-    local engine_agent="/home/termius/nomos-nba-agent/features/engine.py"
+    local engine_agent="${ROOT}/../nomos-nba-agent/features/engine.py"
 
     local md5_mon md5_hf md5_agent
     md5_mon=$(md5sum "${engine_mon}" 2>/dev/null | awk '{print $1}' || echo "missing")
@@ -110,7 +111,7 @@ check_engine_parity() {
     local diverged_repos="[]"
     # Check if canonical (nomos-nba-agent) engine.py is dirty — warn before fix attempt
     local agent_dirty="false"
-    if cd /home/termius/nomos-nba-agent 2>/dev/null && ! git diff --quiet features/engine.py 2>/dev/null; then
+    if cd "${ROOT}/../nomos-nba-agent" 2>/dev/null && ! git diff --quiet features/engine.py 2>/dev/null; then
         agent_dirty="true"
         echo "[sync] WARNING: nomos-nba-agent/features/engine.py is DIRTY (unstaged changes). Canonical has uncommitted edits — do NOT copy until committed." >> "${LOG}"
     fi
@@ -173,7 +174,7 @@ auto_fix_engine_parity() {
         # Old > 400 hardcode is gone. Check if parity still broken (semantic drift).
         local md5_mon_cur md5_agent_cur
         md5_mon_cur=$(md5sum "${engine_mon}" 2>/dev/null | awk '{print $1}' || echo "missing")
-        md5_agent_cur=$(md5sum "/home/termius/nomos-nba-agent/features/engine.py" 2>/dev/null | awk '{print $1}' || echo "missing")
+        md5_agent_cur=$(md5sum "${ROOT}/../nomos-nba-agent/features/engine.py" 2>/dev/null | awk '{print $1}' || echo "missing")
         if [[ "${md5_mon_cur}" != "${md5_agent_cur}" ]]; then
             echo "[sync] auto_fix: > 400 already fixed BUT parity still broken (semantic drift). nomos-nba-agent is canonical — copy its engine.py to mon-ipad manually." >> "${LOG}"
         else

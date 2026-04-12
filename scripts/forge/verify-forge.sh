@@ -6,6 +6,10 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+REPOS_PARENT="$(cd "${ROOT}/.." && pwd)"
+
 REPOS="mon-ipad nomos-nba-agent nomos-political-alpha nomos-dashboard rgwa nomos-picks nomos-pierre OddsHarvester"
 DEPARTMENTS="research engineering evolution product business evaluation infra finance"
 PASS=0
@@ -28,7 +32,7 @@ echo "  $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "=========================================="
 
 for repo in $REPOS; do
-    REPO_PATH="/home/termius/$repo"
+    REPO_PATH="${REPOS_PARENT}/$repo"
     echo ""
     echo "--- $repo ---"
 

@@ -4,9 +4,11 @@
 # Run: bash scripts/deploy-pixel-world.sh
 
 set -euo pipefail
-source /home/termius/mon-ipad/.env.local 2>/dev/null || true
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+source "${ROOT}/.env.local" 2>/dev/null || true
 
-REPO_DIR="/home/termius/mon-ipad"
+REPO_DIR="${ROOT}"
 SPACE_DIR="hf-pixel-world"
 SPACE_ID="Nomos42/pixel-world"
 HF_TOKEN_DEPLOY="${HF_TOKEN_3:-${HF_TOKEN:-}}"

@@ -14,9 +14,10 @@ import os
 from pathlib import Path
 from datetime import datetime, timezone
 
-NBA_AGENT_DIR = Path("/home/termius/mon-ipad/data/nba-agent")
-ODDS_DIR = Path("/home/termius/nomos-nba-agent/data")
-ARENA_DIR = Path("/home/termius/mon-ipad/data/arena")
+_ROOT = Path(__file__).resolve().parent.parent
+NBA_AGENT_DIR = _ROOT / "data" / "nba-agent"
+ODDS_DIR = _ROOT.parent / "nomos-nba-agent" / "data"
+ARENA_DIR = _ROOT / "data" / "arena"
 PORT = 8080
 
 ALLOWED_ORIGINS = [

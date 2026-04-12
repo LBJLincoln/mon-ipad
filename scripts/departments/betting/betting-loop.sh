@@ -7,6 +7,7 @@ set -euo pipefail
 
 DEPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(dirname "$(dirname "$(dirname "$DEPT_DIR")")")"
+export ROOT
 DATA_DIR="$ROOT/data"
 ARENA_DIR="$DATA_DIR/arena"
 NBA_AGENT_DIR="$DATA_DIR/nba-agent"
@@ -36,7 +37,7 @@ python3 - << 'PYEOF'
 import json, os, math, sys
 from datetime import datetime, timezone
 
-ROOT        = os.environ.get("ROOT", "/home/termius/mon-ipad")
+ROOT        = os.environ.get("ROOT", "")
 DATA_DIR    = os.path.join(ROOT, "data")
 ARENA_DIR   = os.path.join(DATA_DIR, "arena")
 NBA_AGENT   = os.path.join(DATA_DIR, "nba-agent")

@@ -52,7 +52,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-REPO_ROOT  = Path("/home/termius/mon-ipad")
+REPO_ROOT  = Path(__file__).resolve().parent.parent.parent
 CACHE_DIR  = REPO_ROOT / "data" / "feature-cache"
 LOG_FILE   = CACHE_DIR / "sync.log"
 CACHE_META = CACHE_DIR / "cache-metadata.json"

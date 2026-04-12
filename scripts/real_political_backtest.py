@@ -41,7 +41,7 @@ TICKERS = {
     "EFA": "Intl Developed", "EEM": "Emerging Mkts", "FXI": "China",
 }
 
-ROOT = Path("/home/termius/mon-ipad")
+ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_FILE = ROOT / "data" / "nba-agent" / "real-political-confrontation.json"
 
 # ── DATA DOWNLOAD ───────────────────────────────────────────────────────────

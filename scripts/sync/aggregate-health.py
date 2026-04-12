@@ -26,7 +26,7 @@ from typing import Any
 # Configuration
 # ---------------------------------------------------------------------------
 
-BRAIN = Path("/home/termius/mon-ipad")
+BRAIN = Path(__file__).resolve().parent.parent.parent
 OUTPUT_DEFAULT = BRAIN / "data" / "cross-repo-health.json"
 
 REPOS = {

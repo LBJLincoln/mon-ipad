@@ -7,11 +7,13 @@ Generates a weekly Markdown digest
 
 import json
 import os
+from pathlib import Path
 import glob
 from datetime import datetime, timedelta
 from collections import Counter
 
-RESEARCH_DIR = "/home/termius/mon-ipad/data/research"
+_ROOT = Path(__file__).resolve().parent.parent.parent
+RESEARCH_DIR = str(_ROOT / "data" / "research")
 TODAY = datetime.utcnow().strftime("%Y-%m-%d")
 WEEK_AGO = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
 

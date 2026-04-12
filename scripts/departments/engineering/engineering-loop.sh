@@ -14,6 +14,7 @@ set -uo pipefail
 
 DEPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(dirname "$(dirname "$(dirname "$DEPT_DIR")")")"
+export ROOT
 DATA_OUT="$ROOT/data/departments/engineering"
 PICKS_FILE="$ROOT/data/nba-agent/latest-picks.json"
 HF_ENGINE="$ROOT/hf-space/features/engine.py"
@@ -70,10 +71,10 @@ PHANTOM_GAMES="[]"
 
 if [ -f "$PICKS_FILE" ]; then
     PHANTOM_RESULT=$(python3 - << 'PYEOF'
-import json, sys
+import json, os, sys
 from pathlib import Path
 
-picks_file = Path("/home/termius/mon-ipad/data/nba-agent/latest-picks.json")
+picks_file = Path(os.environ.get("ROOT", "") + "/data/nba-agent/latest-picks.json")
 if not picks_file.exists():
     print('{"count": 0, "games": []}')
     sys.exit(0)
@@ -107,10 +108,10 @@ SANITY_DETAILS="[]"
 
 if [ -f "$PICKS_FILE" ]; then
     SANITY_RESULT=$(python3 - << 'PYEOF'
-import json, sys
+import json, os, sys
 from pathlib import Path
 
-picks_file = Path("/home/termius/mon-ipad/data/nba-agent/latest-picks.json")
+picks_file = Path(os.environ.get("ROOT", "") + "/data/nba-agent/latest-picks.json")
 if not picks_file.exists():
     print('{"violations": 0, "details": []}')
     sys.exit(0)

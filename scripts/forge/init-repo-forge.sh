@@ -17,7 +17,8 @@
 set -euo pipefail
 
 FORGE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MON_IPAD="/home/termius/mon-ipad"
+MON_IPAD="$(cd "${FORGE_ROOT}/../.." && pwd)"
+REPOS_PARENT="$(cd "${MON_IPAD}/.." && pwd)"
 REPO_PATH="${1:-}"
 FORCE="${2:-}"
 
@@ -27,7 +28,7 @@ if [ -z "$REPO_PATH" ]; then
     echo "Usage: $0 <repo-path> [--force]"
     echo ""
     echo "Available repos:"
-    for d in /home/termius/*/; do
+    for d in "${REPOS_PARENT}"/*/; do
         [ -d "$d/.git" ] && echo "  $(basename $d)"
     done
     exit 1
@@ -35,7 +36,7 @@ fi
 
 # Resolve path
 if [[ "$REPO_PATH" != /* ]]; then
-    REPO_PATH="/home/termius/$REPO_PATH"
+    REPO_PATH="${REPOS_PARENT}/$REPO_PATH"
 fi
 
 if [ ! -d "$REPO_PATH/.git" ]; then
@@ -106,7 +107,8 @@ DEPT="${1:-}"
 DRY_RUN="${2:-}"
 
 source "$REPO_ROOT/.env.local" 2>/dev/null || true
-source "/home/termius/mon-ipad/.env.local" 2>/dev/null || true
+MON_IPAD_INFERRED="$(cd "${REPO_ROOT}/../mon-ipad" 2>/dev/null && pwd || echo "")"
+[ -n "$MON_IPAD_INFERRED" ] && source "$MON_IPAD_INFERRED/.env.local" 2>/dev/null || true
 
 if [ -z "$DEPT" ]; then
     echo "Usage: $0 <department> [--dry-run]"
@@ -115,8 +117,8 @@ if [ -z "$DEPT" ]; then
 fi
 
 # Use shared forge council from mon-ipad if local doesn't exist
-if [ ! -f "$FORGE_COUNCIL" ]; then
-    FORGE_COUNCIL="/home/termius/mon-ipad/scripts/forge/council-template.py"
+if [ ! -f "$FORGE_COUNCIL" ] && [ -n "$MON_IPAD_INFERRED" ]; then
+    FORGE_COUNCIL="$MON_IPAD_INFERRED/scripts/forge/council-template.py"
 fi
 
 ARGS="--repo $REPO_ROOT --dept $DEPT"

@@ -12,13 +12,15 @@
 # Or:  bash scripts/infra-agent.sh          (manual run)
 # ══════════════════════════════════════════════════════════════
 set -uo pipefail
-export PATH="$PATH:/home/termius/.local/bin"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+export PATH="$PATH:${HOME}/.local/bin"
 
-LOG="/home/termius/mon-ipad/logs/infra-agent.log"
-STATUS_FILE="/home/termius/mon-ipad/data/infra-status.json"
+LOG="${ROOT}/logs/infra-agent.log"
+STATUS_FILE="${ROOT}/data/infra-status.json"
 mkdir -p "$(dirname "$LOG")" "$(dirname "$STATUS_FILE")"
 
-source /home/termius/mon-ipad/.env.local 2>/dev/null
+source "${ROOT}/.env.local" 2>/dev/null
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $1" | tee -a "$LOG" >&2; }
 now_epoch() { date +%s; }
@@ -134,8 +136,8 @@ check_kaggle() {
   echo "$RESULT"
 }
 
-KAGGLE_NBA_STATUS=$(check_kaggle "alexismoret6/nba-karpathy-loop" "/home/termius/mon-ipad/scripts/kaggle" "NBA")
-KAGGLE_POL_STATUS=$(check_kaggle "alexismoret6/political-alpha-karpathy-loop" "/home/termius/nomos-political-alpha/scripts/kaggle" "Political")
+KAGGLE_NBA_STATUS=$(check_kaggle "alexismoret6/nba-karpathy-loop" "${ROOT}/scripts/kaggle" "NBA")
+KAGGLE_POL_STATUS=$(check_kaggle "alexismoret6/political-alpha-karpathy-loop" "${ROOT}/../nomos-political-alpha/scripts/kaggle" "Political")
 
 # ══════════════════════════════════════════════════════════════
 # 3. MODAL — Check if running, launch if idle
@@ -158,7 +160,7 @@ else
   # Only auto-launch during off-peak (to conserve budget)
   if [ "$HOUR" -ge 2 ] && [ "$HOUR" -le 14 ]; then
     log "  ↻ Modal NBA: IDLE — launching 200 iterations..."
-    cd /home/termius/nomos-nba-agent && nohup modal run scripts/modal_karpathy.py --iterations 200 --budget 300 >> "$LOG" 2>&1 &
+    cd "${ROOT}/../nomos-nba-agent" && nohup modal run scripts/modal_karpathy.py --iterations 200 --budget 300 >> "$LOG" 2>&1 &
     RESTARTED=$((RESTARTED + 1))
     MODAL_STATUS="launched"
   else
