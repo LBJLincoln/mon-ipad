@@ -245,12 +245,77 @@ ADVANCED_CATS = [
 ]
 
 # ============================================================================
+# GROUP 11: PLAYOFF-SPECIFIC CATEGORIES (active only during playoffs)
+# ============================================================================
+
+def is_playoff_game(game: dict) -> bool:
+    """Detect playoff games from game data.
+
+    NBA regular season typically ends mid-April (~Apr 13 for 2025-26).
+    Playoffs start around April 19. Uses season_type field when present,
+    falls back to date-based detection for 2025-26 season.
+    """
+    season_type = game.get("season_type", "")
+    if season_type:
+        return season_type.lower() in ("playoffs", "playoff", "post")
+    game_date = game.get("date", game.get("game_date", ""))
+    if game_date:
+        return str(game_date)[:10] >= "2026-04-19"
+    return False
+
+
+def is_b2b_spot(game: dict) -> bool:
+    """Return True if either team is in a back-to-back situation."""
+    home_rest = game.get("home_rest") or {}
+    away_rest = game.get("away_rest") or {}
+    return bool(home_rest.get("back_to_back") or away_rest.get("back_to_back"))
+
+
+def is_game_7(game: dict) -> bool:
+    """Return True if this is a Game 7."""
+    return game.get("series_game_number", 0) == 7 or game.get("game_label", "") == "Game 7"
+
+
+def is_elimination_game(game: dict) -> bool:
+    """Return True for any elimination game (one team faces series elimination)."""
+    g = game.get("series_game_number", 0)
+    # Games 4-7 can be elimination games depending on series score
+    return g >= 4 or game.get("is_elimination", False)
+
+
+PLAYOFF_CATS = [
+    BetCategory("playoff_1h_under", "Playoff 1H Totals Under", "playoffs",
+                "First-half unders in playoff games. Coaching conservatism + elevated "
+                "defensive intensity cut over% to ~45% vs 52% in regular season. "
+                "Analyze 1H pace, defensive schemes, playoff first-half trends."),
+    BetCategory("playoff_series", "Playoff Series Winner", "playoffs",
+                "Series outcome prediction using momentum and series-context features. "
+                "Analyze team Brier model probabilities, H2H series trends, home-court "
+                "advantage in this playoff round, coaching adjustments across games.",
+                sides=2),
+    BetCategory("playoff_game7_under", "Game 7 Totals Under", "playoffs",
+                "Game 7 is historically defense-dominant with lower scoring. "
+                "Both teams play maximum-effort defense, pace slows, offense "
+                "becomes conservative. Analyze historical Game 7 totals, team DRTG.",
+                sides=1),
+    BetCategory("playoff_elimination_spread", "Elimination Game Spreads", "playoffs",
+                "Higher variance in elimination games creates pricing inefficiencies. "
+                "When the model has high confidence, Kelly edge is larger vs regular season. "
+                "Analyze desperation factor, team-by-team elimination game ATS history."),
+    BetCategory("playoff_star_props_under", "Star Props Under (B2B Playoffs)", "playoffs",
+                "Player props under for star players in back-to-back playoff spots. "
+                "Fatigue compounds in high-intensity playoff minutes. "
+                "Analyze star player B2B performance history, minutes reduction tendency.",
+                sides=1),
+]
+
+# ============================================================================
 # MASTER REGISTRY
 # ============================================================================
 ALL_CATEGORIES: List[BetCategory] = (
     MONEYLINE_CATS + SPREAD_CATS + TOTALS_CATS + PLAYER_PROP_CATS +
     MARGIN_CATS + RACE_CATS + EXOTIC_CATS + PARLAY_CATS + LIVE_CATS +
-    ADVANCED_CATS
+    ADVANCED_CATS + PLAYOFF_CATS
 )
 
 # Quick lookup

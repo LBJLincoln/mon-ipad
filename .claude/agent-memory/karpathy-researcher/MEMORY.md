@@ -85,6 +85,10 @@ Before production: Auth → List → Push → Status → Download → Parse → 
 
 - [research_bloomberg_opencode_pi.md](research_bloomberg_opencode_pi.md) — OpenBB fork (Dashboard v2, real-time odds), OpenCode (Groq cost savings $630/mo), Pi-Mono (custom agents). 3 phases, $0 cost, -0.0157 Brier+visible improvements.
 
+## Cycle 10 — Claude Code Karpathy Plugins (2026-04-12)
+
+- [research_claude_code_plugins_apr2026.md](research_claude_code_plugins_apr2026.md) — WHAT EXISTS: karpathy/autoresearch (pattern), uditgoenka/autoresearch (universal skill), forrestchang CLAUDE.md (coding pitfalls), wiki-skills (knowledge). GAP: NO Brier-specific plugin, no GPU-fleet distribution, no feature-engine integration. BUILD PLAN: `/karpathy-nba` skill (7-10d, -0.001 to -0.003 Brier).
+
 ## Previous Research
 
 - [project_research_march2026.md](../../research-analyst/project_research_march2026.md) — Cycle 3 (calibration, config, proposals)

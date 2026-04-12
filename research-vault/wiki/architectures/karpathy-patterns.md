@@ -1,10 +1,10 @@
 # Karpathy Autoresearch & Agent Patterns
 
-> Auto-compiled from 34 raw sources on 2026-04-12
+> Auto-compiled from 35 raw sources on 2026-04-12
 
 ## Overview
 
-This topic covers 34 research files spanning karpathy autoresearch & agent patterns.
+This topic covers 35 research files spanning karpathy autoresearch & agent patterns.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -35,6 +35,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **16 -- Karpathy Autoresearch Pattern** (800 words) -- `raw/obsidian-docs/16-Karpathy-Pattern.md`
 - **11 -- GPU Compute** (799 words) -- `raw/obsidian-docs/11-GPU-Compute.md`
 - **10 -- All Repos** (790 words) -- `raw/obsidian-docs/10-Repos.md`
+- **Claude Code Karpathy Plugins & Ecosystem (April 2026)** (776 words) -- `raw/agent-memory/karpathy-researcher_research_claude_code_plugins_apr2026.md`
 - **01 -- Architecture (Forge v19)** (770 words) -- `raw/obsidian-docs/01-Architecture.md`
 - **13 -- Tools** (724 words) -- `raw/obsidian-docs/13-Tools.md`
 - **24 -- GPU Autoresearch System** (689 words) -- `raw/obsidian-docs/24-GPU-Autoresearch.md`

@@ -18,12 +18,20 @@ Returns None on any failure — caller must fall back to existing peer_review.
 import json
 from typing import Optional
 
-# groq: DEAD since 2026-04-05 (org restricted). openrouter free: also dead.
-# Active providers with call_llm() compat: google (Gemini), huggingface.
+# 2026-04-12: HF Inference credits exhausted. Updated routing:
+#   BULL: cerebras (qwen-3-235b, 1M tok/day, working)
+#   BEAR: google key rotation (KEY_2 working, KEY_1 as fallback)
+#   JUDGE: google key rotation (same)
+# huggingface + groq: DEAD (credits/banned).
 # anthropic_cli uses subprocess (call_llm_cli), not call_llm — cannot use here.
-BULL_PROVIDER = "huggingface"
+BULL_PROVIDER = "cerebras"
 BEAR_PROVIDER = "google"
 JUDGE_PROVIDER = "google"
+
+# Model overrides for Cerebras (must use exact model name from /v1/models)
+BULL_MODEL = "qwen-3-235b-a22b-instruct-2507"
+BEAR_MODEL = None    # google: uses default (gemini-2.5-flash first key in pool)
+JUDGE_MODEL = None   # google: uses default
 
 DEFAULT_ROUNDS = 2
 MAX_ARG_TOKENS = 350
@@ -135,26 +143,46 @@ def run_bull_bear_debate(pool, ctx: dict, predictions: dict,
     bear_previous: Optional[str] = None
 
     for round_idx in range(rounds):
-        # BULL
+        # BULL — cerebras primary, google fallback
         bull_result = pool.call_llm(
             provider=BULL_PROVIDER,
             prompt=_bull_prompt(ctx, preds_summary, bear_previous),
+            model=BULL_MODEL,
             max_tokens=MAX_ARG_TOKENS,
             temperature=0.4,
         )
+        if not bull_result or not isinstance(bull_result, dict):
+            # Fallback: try google
+            bull_result = pool.call_llm(
+                provider="google",
+                prompt=_bull_prompt(ctx, preds_summary, bear_previous),
+                model=BEAR_MODEL,
+                max_tokens=MAX_ARG_TOKENS,
+                temperature=0.4,
+            )
         if not bull_result or not isinstance(bull_result, dict):
             return None
         bull_text = bull_result.get("argument", "") or ""
         if not bull_text:
             return None
 
-        # BEAR
+        # BEAR — google primary, cerebras fallback
         bear_result = pool.call_llm(
             provider=BEAR_PROVIDER,
             prompt=_bear_prompt(ctx, preds_summary, bull_text),
+            model=BEAR_MODEL,
             max_tokens=MAX_ARG_TOKENS,
             temperature=0.4,
         )
+        if not bear_result or not isinstance(bear_result, dict):
+            # Fallback: try cerebras
+            bear_result = pool.call_llm(
+                provider="cerebras",
+                prompt=_bear_prompt(ctx, preds_summary, bull_text),
+                model=BULL_MODEL,
+                max_tokens=MAX_ARG_TOKENS,
+                temperature=0.4,
+            )
         if not bear_result or not isinstance(bear_result, dict):
             return None
         bear_text = bear_result.get("argument", "") or ""
@@ -164,13 +192,22 @@ def run_bull_bear_debate(pool, ctx: dict, predictions: dict,
         debate_rounds.append({"bull": bull_result, "bear": bear_result})
         bear_previous = bear_text
 
-    # JUDGE
+    # JUDGE — google primary, cerebras fallback
     verdict = pool.call_llm(
         provider=JUDGE_PROVIDER,
         prompt=_judge_prompt(ctx, debate_rounds),
+        model=JUDGE_MODEL,
         max_tokens=MAX_JUDGE_TOKENS,
         temperature=0.2,
     )
+    if not verdict or not isinstance(verdict, dict):
+        verdict = pool.call_llm(
+            provider="cerebras",
+            prompt=_judge_prompt(ctx, debate_rounds),
+            model=BULL_MODEL,
+            max_tokens=MAX_JUDGE_TOKENS,
+            temperature=0.2,
+        )
     if not verdict or not isinstance(verdict, dict):
         return None
 

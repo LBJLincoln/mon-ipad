@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-12T18:15:22.920866Z",
+  "timestamp": "2026-04-12T20:15:11.936344Z",
   "engine_version": "1.0",
   "experiment_type": "political_alpha",
   "strategy_evaluation": {
@@ -170,13 +170,13 @@
     "aggregate_stats": {
       "roi_mean": -53.259168,
       "roi_ci_95": [
-        -67.550052,
-        -37.132716
+        -67.028329,
+        -37.445206
       ],
       "sharpe_mean": -0.038762,
       "sharpe_ci_95": [
-        -0.461982,
-        0.264806
+        -0.447197,
+        0.271587
       ]
     }
   },
@@ -407,39 +407,30 @@
   "trader_evaluation": {
     "traders": {
       "openrouter": {
-        "final_capital": 100468.89,
-        "roi_pct": 0.2647,
-        "sharpe": 5.0709,
+        "final_capital": 100500.74,
+        "roi_pct": 0.2965,
+        "sharpe": 5.4773,
         "max_drawdown": 0.0019,
-        "total_trades": 576,
-        "win_rate": 0.5365,
-        "iterations_observed": 7
-      },
-      "codex": {
-        "final_capital": 101405.23,
-        "roi_pct": 0.3187,
-        "sharpe": 1.1061,
-        "max_drawdown": 0.012,
-        "total_trades": 683,
-        "win_rate": 0.5608,
-        "iterations_observed": 7
-      },
-      "gemini": {
-        "final_capital": 100968.33,
-        "roi_pct": 0.1765,
-        "sharpe": 0.8836,
-        "max_drawdown": 0.0079,
-        "total_trades": 722,
-        "win_rate": 0.5997,
+        "total_trades": 579,
+        "win_rate": 0.5423,
         "iterations_observed": 7
       },
       "grok": {
-        "final_capital": 99707.79,
-        "roi_pct": 0.0,
-        "sharpe": 0.0118,
+        "final_capital": 99823.06,
+        "roi_pct": 0.1156,
+        "sharpe": 1.6709,
         "max_drawdown": 0.003,
-        "total_trades": 362,
-        "win_rate": 0.3757,
+        "total_trades": 351,
+        "win_rate": 0.3761,
+        "iterations_observed": 7
+      },
+      "codex": {
+        "final_capital": 101149.78,
+        "roi_pct": 0.066,
+        "sharpe": 0.2676,
+        "max_drawdown": 0.012,
+        "total_trades": 683,
+        "win_rate": 0.5578,
         "iterations_observed": 7
       },
       "claude": {
@@ -450,10 +441,28 @@
         "total_trades": 210,
         "win_rate": 0.4857,
         "iterations_observed": 7
+      },
+      "glm": {
+        "final_capital": 100565.55,
+        "roi_pct": 0.0,
+        "sharpe": 0,
+        "max_drawdown": 0,
+        "total_trades": 96,
+        "win_rate": 0.5729,
+        "iterations_observed": 1
+      },
+      "gemini": {
+        "final_capital": 100770.15,
+        "roi_pct": -0.0202,
+        "sharpe": -0.0587,
+        "max_drawdown": 0.0079,
+        "total_trades": 721,
+        "win_rate": 0.595,
+        "iterations_observed": 7
       }
     },
     "best_trader": "openrouter",
-    "worst_trader": "claude"
+    "worst_trader": "gemini"
   },
   "recommendations": [
     "BEST STRATEGY: Prop_2.5pct_mut0 (Sharpe 5.7939, ROI 550.1%, WR 57.1%)",
@@ -462,6 +471,6 @@
     "SIGNIFICANT PREDICTORS of ROI: win_rate, log_bets, max_drawdown",
     "OUT-OF-SAMPLE R\u00b2: -58.1134 (weak \u2014 more data needed)",
     "BEST TRADER: openrouter \u2014 consider increasing allocation",
-    "WORST TRADER: claude \u2014 consider retraining or replacing"
+    "WORST TRADER: gemini \u2014 consider retraining or replacing"
   ]
 }

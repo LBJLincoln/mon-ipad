@@ -103,6 +103,10 @@ ETF_UNIVERSE = {
     "XLV":  {"name": "Healthcare",           "sector": "healthcare",   "beta": 0.8,  "type": "etf"},
     "XLI":  {"name": "Industrials",          "sector": "industrials",  "beta": 1.0,  "type": "etf"},
     "XLD":  {"name": "Defense",              "sector": "defense",      "beta": 0.9,  "type": "etf"},
+    "ITA":  {"name": "iShares US Aerospace & Defense", "sector": "defense", "beta": 0.9, "type": "etf"},
+    "XAR":  {"name": "SPDR Aerospace & Defense",       "sector": "defense", "beta": 0.9, "type": "etf"},
+    "XOP":  {"name": "Oil & Gas Exploration (XOP)",    "sector": "energy",  "beta": 1.5, "type": "etf"},
+    "XPH":  {"name": "Pharma ETF (XPH)",               "sector": "healthcare", "beta": 0.8, "type": "etf"},
     # Safe haven
     "GLD":  {"name": "Gold",                 "sector": "commodity",    "beta": 0.3,  "type": "etf"},
     "TLT":  {"name": "Long-term Treasuries", "sector": "bonds",        "beta": -0.2, "type": "etf"},
@@ -139,10 +143,10 @@ ETF_UNIVERSE = {
 }
 
 SECTOR_MAP = {
-    "defense":     ["XLD", "LMT", "RTX", "BA", "GD", "NOC"],
+    "defense":     ["XLD", "ITA", "XAR", "LMT", "RTX", "BA", "GD", "NOC"],
     "technology":  ["XLK", "QQQ", "AAPL", "MSFT", "GOOGL", "META", "NVDA", "AMZN", "TSLA"],
-    "energy":      ["XLE", "XOM", "CVX", "COP", "OXY", "HAL"],
-    "healthcare":  ["XLV", "PFE", "JNJ", "UNH"],
+    "energy":      ["XLE", "XOP", "XOM", "CVX", "COP", "OXY", "HAL"],
+    "healthcare":  ["XLV", "XPH", "PFE", "JNJ", "UNH"],
     "financials":  ["XLF", "JPM", "GS", "MS", "BLK", "AXP"],
     "broad":       ["SPY", "IWM"],
     "small_cap":   ["IWM"],

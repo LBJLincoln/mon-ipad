@@ -712,6 +712,167 @@ def get_pool() -> APIPool:
 
 
 # ============================================================================
+# PROVIDER FALLBACK ROUTING (2026-04-12)
+# ============================================================================
+# Maps a provider spec ("cerebras:llama3.1-8b", "google:gemini-2.5-flash",
+# "hf:Qwen/Qwen2.5-72B-Instruct") to (pool_provider, model_name) pairs.
+#
+# Priority order when HF Inference credits are exhausted:
+#   cerebras → google → anthropic_cli → openrouter (if credits return)
+#
+# Usage:
+#   text = get_completion("cerebras:qwen-3-235b", "Say hi in 3 words")
+#   text = get_completion("google:gemini-2.5-flash", "Say hi in 3 words")
+#   text = call_with_fallback(["cerebras:llama3.1-8b", "google:gemini-2.5-flash"], "prompt")
+
+# Per-trader fallback chains: primary → fallback1 → fallback2
+# Updated 2026-04-12: HF credits exhausted, routing to Cerebras + Google KEY_2
+TRADER_PROVIDER_MAP: Dict[str, List[str]] = {
+    # T1 Gemma Analyst — was hf:google/gemma-3-27b-it
+    "gemini":      ["cerebras:qwen-3-235b-a22b-instruct-2507", "google:gemini-2.5-flash"],
+    # T2 Qwen Strategist — was hf:Qwen/Qwen2.5-72B-Instruct
+    "openrouter":  ["cerebras:qwen-3-235b-a22b-instruct-2507", "google:gemini-2.5-flash"],
+    # T3 Claude Sentinel — always uses anthropic_cli (working)
+    "claude":      ["anthropic_cli"],
+    # T4 Llama Vanguard — was hf:meta-llama/Llama-3.3-70B-Instruct
+    "codex":       ["cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
+    # T5 Mistral Maverick — was hf:mistralai/Mistral-Large-Instruct-2411
+    "grok":        ["cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
+    # T6 GLM Architect (political only) — was openrouter:z-ai/glm-5.1
+    "glm":         ["cerebras:qwen-3-235b-a22b-instruct-2507", "google:gemini-2.5-flash"],
+    # Debate round providers
+    "debate_bull":  ["cerebras:qwen-3-235b-a22b-instruct-2507", "google:gemini-2.5-flash"],
+    "debate_bear":  ["google:gemini-2.5-flash", "cerebras:llama3.1-8b"],
+    "debate_judge": ["google:gemini-2.5-flash", "cerebras:qwen-3-235b-a22b-instruct-2507"],
+}
+
+
+def _parse_provider_spec(spec: str) -> tuple:
+    """Parse 'provider:model' or 'hf:org/model' → (pool_provider, model_or_None).
+
+    Examples:
+      'cerebras:llama3.1-8b'          → ('cerebras', 'llama3.1-8b')
+      'google:gemini-2.5-flash'       → ('google', 'gemini-2.5-flash')
+      'hf:Qwen/Qwen2.5-72B-Instruct'  → ('huggingface', 'Qwen/Qwen2.5-72B-Instruct')
+      'anthropic_cli'                 → ('anthropic_cli', None)
+      'openrouter:z-ai/glm-5.1'       → ('openrouter', 'z-ai/glm-5.1')
+    """
+    if spec == "anthropic_cli":
+        return ("anthropic_cli", None)
+    if spec.startswith("hf:"):
+        return ("huggingface", spec[3:])
+    if ":" in spec:
+        provider, model = spec.split(":", 1)
+        return (provider, model)
+    return (spec, None)
+
+
+def get_completion(spec: str, prompt: str,
+                   system: str = "You are a helpful assistant.",
+                   max_tokens: int = 512,
+                   temperature: float = 0.3) -> Optional[str]:
+    """
+    Get a raw text completion from a provider spec like 'cerebras:llama3.1-8b'.
+    Returns the text string or None on failure.
+    """
+    pool = get_pool()
+    provider, model = _parse_provider_spec(spec)
+
+    if provider == "anthropic_cli":
+        result = pool.call_llm_cli(
+            model=model or "claude-sonnet-4-6",
+            prompt=prompt,
+            system=system,
+            max_tokens=max_tokens,
+        )
+        if result and isinstance(result, dict):
+            return result.get("result") or str(result)
+        return None
+
+    return pool.call_llm_raw(
+        provider=provider,
+        prompt=prompt,
+        model=model,
+        system=system,
+        max_tokens=max_tokens,
+        temperature=temperature,
+    )
+
+
+def call_with_fallback(specs: List[str], prompt: str,
+                       system: str = "You are a helpful assistant.",
+                       max_tokens: int = 512,
+                       temperature: float = 0.3,
+                       parse_json: bool = False) -> Optional[Any]:
+    """
+    Try each provider spec in order, returning the first successful response.
+
+    Args:
+        specs: list of provider specs e.g. ['cerebras:llama3.1-8b', 'google:gemini-2.5-flash']
+        prompt: the user prompt
+        system: system message
+        max_tokens: max tokens to generate
+        temperature: temperature
+        parse_json: if True, try to parse response as JSON
+
+    Returns:
+        str (or dict if parse_json=True) on first success, or None if all fail.
+    """
+    pool = get_pool()
+    for spec in specs:
+        provider, model = _parse_provider_spec(spec)
+        try:
+            if provider == "anthropic_cli":
+                result = pool.call_llm_cli(
+                    model=model or "claude-sonnet-4-6",
+                    prompt=prompt,
+                    system=system,
+                    max_tokens=max_tokens,
+                )
+                if result is not None:
+                    return result
+                continue
+
+            if parse_json:
+                result = pool.call_llm(
+                    provider=provider,
+                    prompt=prompt,
+                    model=model,
+                    system=system,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                )
+            else:
+                result = pool.call_llm_raw(
+                    provider=provider,
+                    prompt=prompt,
+                    model=model,
+                    system=system,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                )
+            if result is not None:
+                return result
+        except Exception:
+            continue
+
+    return None
+
+
+def get_trader_completion(trader_id: str, prompt: str,
+                          system: str = "You are an NBA betting analyst. Respond only with valid JSON.",
+                          max_tokens: int = 512,
+                          temperature: float = 0.3) -> Optional[Any]:
+    """
+    Get a JSON-parsed LLM response for a trader, using the trader's fallback chain.
+    Automatically routes through the TRADER_PROVIDER_MAP with fallbacks.
+    """
+    specs = TRADER_PROVIDER_MAP.get(trader_id, ["cerebras:llama3.1-8b", "google:gemini-2.5-flash"])
+    return call_with_fallback(specs, prompt, system=system, max_tokens=max_tokens,
+                              temperature=temperature, parse_json=True)
+
+
+# ============================================================================
 # CLI
 # ============================================================================
 if __name__ == "__main__":

@@ -1,10 +1,10 @@
 # Infrastructure & Compute
 
-> Auto-compiled from 94 raw sources on 2026-04-12
+> Auto-compiled from 95 raw sources on 2026-04-12
 
 ## Overview
 
-This topic covers 94 research files spanning infrastructure & compute.
+This topic covers 95 research files spanning infrastructure & compute.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -53,6 +53,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **11 -- GPU Compute** (799 words) -- `raw/obsidian-docs/11-GPU-Compute.md`
 - **21 -- Free Models & Inference Stack** (795 words) -- `raw/obsidian-docs/21-Free-Models.md`
 - **10 -- All Repos** (790 words) -- `raw/obsidian-docs/10-Repos.md`
+- **Claude Code Karpathy Plugins & Ecosystem (April 2026)** (776 words) -- `raw/agent-memory/karpathy-researcher_research_claude_code_plugins_apr2026.md`
 - **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
 - **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
 - **01 -- Architecture (Forge v19)** (770 words) -- `raw/obsidian-docs/01-Architecture.md`
