@@ -1,0 +1,56 @@
+name: Karpathy Autonomous Tuning
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 0,6,12,18 * * *'
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: 'Number of iterations per run'
+        required: false
+        default: '50'
+
+jobs:
+  nba-tuning:
+    name: NBA Karpathy Loop
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install scikit-learn lightgbm numpy
+
+      - name: Run NBA Karpathy loop
+        run: |
+          mkdir -p logs/karpathy data/karpathy
+          python3 scripts/karpathy/nba_iterate.py \
+            --iterations ${{ github.event.inputs.iterations || '50' }} \
+            2>&1 | tail -30
+
+      - name: Run Political Karpathy loop
+        run: |
+          python3 scripts/karpathy/political_iterate.py \
+            --iterations ${{ github.event.inputs.iterations || '50' }} \
+            2>&1 | tail -30
+
+      - name: Commit improved configs
+        run: |
+          git config user.name "Karpathy Bot"
+          git config user.email "karpathy@nomos42.ai"
+          git add data/karpathy/ 2>/dev/null || true
+          if ! git diff --cached --quiet 2>/dev/null; then
+            git commit -m "karpathy: GH Actions tuning $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          else
+            echo "No improvements to commit"
+          fi
