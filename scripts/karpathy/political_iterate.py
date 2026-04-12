@@ -41,8 +41,8 @@ from karpathy_utils import (
 )
 
 # ── Paths ──
-ROOT = Path("/home/termius/mon-ipad")
-POLITICAL_ROOT = ROOT / "nomos-political-alpha"
+ROOT = Path(__file__).resolve().parent.parent.parent
+POLITICAL_ROOT = ROOT / "nomos-political-alpha"  # only on VM
 DATA_DIR = ROOT / "data" / "karpathy"
 LOG_DIR = ROOT / "logs" / "karpathy"
 CONFIG_PATH = DATA_DIR / "political-best-config.json"
