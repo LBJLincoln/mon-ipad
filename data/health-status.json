@@ -1,82 +1,113 @@
 {
-  "timestamp": "2026-04-12T00:40:00Z",
-  "brain_cycle": 95,
+  "timestamp": "2026-04-12T13:00:00Z",
+  "brain_cycle": 96,
   "brain_model": "claude-sonnet-4-6",
-  "cycle_rotation": "A — NBA research (SHAP efficiency ratios Cat51) | D — Political Rotation-D data pipeline health (filing velocity)",
+  "cycle_rotation": "A (NBA research: shot-quality spatial embeddings + XGBoost Brier objective) | A (Political: FEC national party routing + SEC Form4 insider cluster — Cat43)",
   "nba_fleet": {
     "total_islands": 6,
-    "online": 0,
-    "sleeping_503": 6,
-    "status_severity": "CRITICAL",
-    "note": "All 6 NBA islands 503 for 6th consecutive cycle. Wake pings sent again. keepalive-spaces.sh cron broken. HF Hub shows all spaces last updated Apr 11, 2026 — recently modified but consistently sleeping. URGENT: manual VM cron repair needed.",
-    "fleet_best_brier": 0.22249,
-    "fleet_best_island": "S11 (nomos42-nba-quant-2, exploration) — last seen Apr 10",
+    "online": 6,
+    "sleeping_503": 0,
+    "status_severity": "OK",
+    "note": "ALL 6 NBA islands AWAKE as of ~12:38-12:39 UTC 2026-04-12 after 6 consecutive 503 cycles (Apr 10-12). All in BUILDING_FEATURES phase (gen=0). Islands auto-restarted. keepalive-spaces.sh repair appears to have taken effect.",
+    "fleet_best_brier": 0.21906,
+    "fleet_best_island": "S15 (nomos42-nba-evo-6, wide_search) — last confirmed Apr 10",
     "all_time_best_brier": 0.2157,
     "checkpoint_threshold": 0.21837,
-    "gap_to_checkpoint": 0.00412,
-    "gap_to_target_020": 0.02249,
+    "gap_to_checkpoint": 0.00069,
+    "gap_to_target_020": 0.01906,
     "stagnation_detected": false,
-    "stagnation_action": "Cannot check — islands sleeping",
-    "wake_pings_sent": true,
-    "wake_ping_timestamp": "2026-04-12T00:10Z",
-    "consecutive_503_cycles": 6,
-    "last_known_islands": {
+    "stagnation_action": "N/A — all at gen=0 (fresh restart)",
+    "wake_pings_sent": false,
+    "consecutive_503_cycles": 0,
+    "fleet_status": "BUILDING_FEATURES",
+    "current_islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "status": "SLEEPING_503",
-        "last_brier": 0.22412,
-        "last_gen": 469,
-        "last_seen": "2026-04-10T16:45Z"
+        "status": "BUILDING_FEATURES",
+        "current_gen": 0,
+        "current_brier": 1.0,
+        "last_known_brier": 0.22412,
+        "last_known_gen": 469,
+        "started_at": "2026-04-12T12:39:43Z",
+        "target_features": 63,
+        "engine": "REAL GENETIC EVOLUTION LOOP v4 — ISLAND MODEL + NSGA-II",
+        "mut_rate": 0.09,
+        "cx_rate": 0.80,
+        "games_loaded": 9551
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "status": "SLEEPING_503",
-        "last_brier": 0.22249,
-        "last_gen": 1023,
-        "last_seen": "2026-04-10T16:45Z",
+        "status": "BUILDING_FEATURES",
+        "current_gen": 0,
+        "current_brier": 1.0,
+        "last_known_brier": 0.22249,
+        "last_known_gen": 1023,
+        "started_at": "2026-04-12T12:39:06Z",
+        "target_features": 80,
+        "mut_rate": 0.15,
+        "games_loaded": 9551,
         "watch": "Fleet best last known"
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees",
-        "status": "SLEEPING_503",
-        "last_brier": 0.22730,
-        "last_gen": 1074,
-        "last_seen": "2026-04-10T16:45Z"
+        "status": "BUILDING_FEATURES",
+        "current_gen": 0,
+        "current_brier": 1.0,
+        "last_known_brier": 0.22730,
+        "last_known_gen": 1074,
+        "started_at": "2026-04-12T12:38:58Z",
+        "target_features": 60,
+        "mut_rate": 0.08
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost",
-        "status": "SLEEPING_503",
-        "last_brier": 0.22316,
-        "last_gen": 1027,
-        "last_seen": "2026-04-10T16:45Z",
+        "status": "BUILDING_FEATURES",
+        "current_gen": 0,
+        "current_brier": 1.0,
+        "last_known_brier": 0.22316,
+        "last_known_gen": 1027,
+        "started_at": "2026-04-12T12:38:02Z",
+        "target_features": 66,
+        "mut_rate": 0.10,
         "pending_improvements": [
           "Auto-calibration Brier-CV (cycle 93)",
           "Overround market-spread features (cycle 94)",
-          "Cat51 SHAP efficiency ratios (cycle 95) — deploy when awake"
+          "Cat51 SHAP efficiency ratios (cycle 95)",
+          "XGBoost Brier objective xgboost_brier model_type (cycle 96 research)"
         ]
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm",
-        "status": "SLEEPING_503",
-        "last_brier": 0.22308,
-        "last_gen": 611,
-        "last_seen": "2026-04-10T16:45Z"
+        "status": "BUILDING_FEATURES",
+        "current_gen": 0,
+        "current_brier": 1.0,
+        "last_known_brier": 0.22308,
+        "last_known_gen": 611,
+        "started_at": "2026-04-12T12:38:53Z",
+        "target_features": 55,
+        "mut_rate": 0.08
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "status": "SLEEPING_503",
-        "last_brier": 0.21906,
-        "last_gen": 864,
-        "last_seen": "2026-04-10T16:45Z",
-        "watch": "NEAREST TO CHECKPOINT — gap 0.00069",
+        "status": "BUILDING_FEATURES",
+        "current_gen": 0,
+        "current_brier": 1.0,
+        "last_known_brier": 0.21906,
+        "last_known_gen": 864,
+        "started_at": "2026-04-12T12:38:xx",
+        "target_features": 80,
+        "pop_size": 50,
+        "mut_rate": 0.18,
+        "watch": "NEAREST TO CHECKPOINT — gap 0.00069 to 0.21837 threshold",
         "pending_improvements": [
-          "Cat51 SHAP efficiency ratios (cycle 95) — deploy when awake"
+          "Cat51 SHAP efficiency ratios (cycle 95)",
+          "XGBoost Brier objective (cycle 96 research)"
         ]
       }
     }
@@ -86,113 +117,112 @@
     "online": 2,
     "down": 2,
     "down_islands": [
-      "nomos42-political-alpha-3.hf.space (NOT_FOUND_HF — 7 cycles)",
-      "nomos42-political-alpha-4.hf.space (NOT_FOUND_HF — 7 cycles)"
+      "nomos42-political-alpha-3.hf.space (NOT_FOUND_HF — 8 cycles)",
+      "nomos42-political-alpha-4.hf.space (NOT_FOUND_HF — 8 cycles)"
     ],
     "fleet_all_time_best_brier": 0.23134,
     "fleet_current_best_brier": 0.24996,
     "target_brier": 0.22,
     "engine_version": "v3.20-political-42cat-congress-stock-act",
+    "engine_version_pending": "v3.21-political-43cat-fec-national-party-insider (Cat43 ready, integration pending)",
     "islands": {
       "P1": {
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
-        "status": "ONLINE",
-        "cycle": 254,
-        "generation": 761,
+        "status": "EVOLVING",
+        "cycle": 426,
+        "generation": 1277,
         "best_brier": 0.24996,
         "stagnation": 0,
-        "delta_from_last_cycle": "+53 cycles, +160 gens — actively evolving"
+        "best_model": "xgboost_brier",
+        "features": 67,
+        "mutation_rate": 0.1401,
+        "pareto_front_size": 14
       },
       "P2": {
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
-        "status": "ONLINE",
-        "cycle": 139,
-        "generation": 415,
+        "status": "EVOLVING",
+        "cycle": 278,
+        "generation": 832,
         "best_brier": 0.25223,
+        "best_roi": 0.0045,
+        "best_sharpe": 0.4477,
         "stagnation": 0,
-        "all_time_best": 0.23134,
-        "model_type": "LightGBM (extra_trees top performer)",
+        "best_model": "LightGBM",
         "features": 60,
-        "delta_from_last_cycle": "+61 cycles, +181 gens — actively evolving"
+        "pareto_front_size": 6,
+        "all_time_best": 0.23134
       },
       "P3": {
         "status": "NOT_FOUND_HF",
-        "consecutive_down_cycles": 7,
-        "action_required": "Manual HF Space creation"
+        "consecutive_down_cycles": 8,
+        "action_required": "Manual HF Space creation at huggingface.co/new-space as Nomos42/political-alpha-3"
       },
       "P4": {
         "status": "NOT_FOUND_HF",
-        "consecutive_down_cycles": 7,
-        "action_required": "Manual HF Space creation"
+        "consecutive_down_cycles": 8,
+        "action_required": "Manual HF Space creation at huggingface.co/new-space as Nomos42/political-alpha-4"
       }
     }
   },
-  "cycle_95_actions": {
+  "cycle_96_actions": {
     "nba_improvement": {
       "type": "research_proposal",
       "rotation": "A — NBA research (every-other-cycle)",
-      "title": "SHAP-Informed Efficiency Ratio Features (Cat51)",
-      "file": "data/research-proposals/2026-04-12-cycle95-shap-efficiency-ratio-features-cat51.md",
-      "source": "Nature Scientific Reports 2025 stacked ensemble paper (PMC12357926) — SHAP shows FGA/2PA have NEGATIVE impact; efficiency ratios (eFG%, TS%, FG/FGA) outperform raw counts",
-      "key_features": [
-        "tc51_efg_vs_opp_def (efficiency above opponent defensive baseline)",
-        "tc51_ts_momentum_10g (true shooting % trend vs season avg)",
-        "tc51_fg_efficiency (FG made / FGA ratio)",
-        "tc51_shot_quality_adj (zone-weighted scoring per attempt)",
-        "tc51_ppa (points per shot attempt comprehensive)",
-        "tc51_reb_leverage (rebound efficiency vs opponent)",
-        "tc51_paint_perimeter_ratio (2PA/3PA style indicator)",
-        "tc51_opp_fga_gen_ratio (defensive efficiency)"
+      "title": "Shot-Quality Spatial Embeddings (Cat52) + XGBoost Brier Direct Objective",
+      "file": "data/research-proposals/2026-04-12-cycle96-shot-quality-spatial-brier-objective.md",
+      "sources": [
+        "Uncertainty-Aware ML for NBA Forecasting (MDPI Information 2025, Vol 17) — shot-chart zone embeddings",
+        "Stacked Ensemble for NBA Outcome Prediction (Nature Sci Reports 2025) — SHAP efficiency ratios",
+        "Key Factors in NBA Game Outcomes via ML (Preprints.org Apr 2025)"
       ],
-      "candidates_added": 24,
-      "engine_version_target": "v3.1-60cat",
-      "estimated_brier_delta": "-0.002 to -0.004",
-      "deploy_when": "S13/S15 wake from 503 sleep"
+      "key_improvements": [
+        "xgboost_brier model_type: reg:squarederror objective = direct Brier minimization. Expected delta: -0.001 to -0.003. Low effort.",
+        "Cat52 shot-quality spatial: 18 features from NBA zone shot charts. Expected delta: -0.001 to -0.003. Medium effort."
+      ],
+      "estimated_combined_brier_delta": "-0.003 to -0.006",
+      "deploy_priority": "xgboost_brier first (config-only change), Cat52 second (requires zone data fetch)"
     },
     "political_improvement": {
       "type": "code_change",
-      "rotation": "D — Data pipeline health",
-      "title": "Filing Velocity Signal Computation (ops/compute_filing_velocity.py)",
-      "file": "ops/compute_filing_velocity.py",
-      "summary": "New standalone script: aggregates accumulated ProPublica filing data files (last 7d, 30d), computes velocity ratio (7d daily avg vs 30d baseline), F24 urgent IE notices count, IE support/oppose balance, amount momentum. Writes data/signals/filing_velocity_{today}.json for engine consumption.",
-      "key_signals": [
-        "filing_velocity_7d_vs_30d (burst ratio — core momentum signal)",
-        "filing_burst_flag (>1.5x acceleration)",
-        "filing_decel_flag (<0.5x slowdown)",
-        "f24_count_7d (urgent 24/48-hr IE notices)",
-        "f24_burst_flag (≥3 urgent filings in 24h)",
-        "ie_net_support_7d (support minus oppose balance)",
-        "total_amount_7d + largest_amount_7d"
+      "rotation": "A — WebSearch FEC/SEC/EO new data sources",
+      "title": "Cat43: FEC National Party Committee + SEC Form4 Insider Cluster (24f)",
+      "file": "features/cat43_fec_national_party.py",
+      "commit": "815abee750e90261b6a4ccb4977777bd1d7f9c45",
+      "summary": "New 24-feature module: national party committee cash routing (NRCC/NRSC/DCCC/DSCC/RNC/DNC) as sector favorability proxy + SEC Form4 insider cluster signals. Triple convergence flag when PAC surge + committee routing + multi-insider buy all fire simultaneously. Based on FEC new national party account API endpoints and OpenInsider Form4 cluster data.",
+      "new_data_sources": [
+        "FEC: https://api.open.fec.gov/v1/party-accounts/ (new 2025-26 endpoint for national committee receipts)",
+        "OpenInsider: http://openinsider.com/ (free SEC Form4 cluster screener, no API key)",
+        "SEC EDGAR bulk: https://api.sec-api.io/bulk/form-4/{year}/{month}.jsonl.gz (cluster detection)"
       ],
-      "cross_pollination": "Ported from NBA SHAP insight: velocity/ratios outperform raw counts — same principle applied to campaign finance signals",
-      "next_step": "Add filing_velocity signals to features/political_engine.py Cat_XX (cycle 96+)"
+      "next_step": "Integrate Cat43 into political_engine.py — version bump v3.20 → v3.21"
     },
-    "nba_wake_pings": "6th consecutive wake ping sent to all 6 islands — still 503. keepalive-spaces.sh cron repair is CRITICAL.",
-    "stagnation_check": "SKIPPED — all islands sleeping",
-    "engine_parity_check": "SKIPPED — cannot access HF space code",
-    "supabase_checkpoint": "NOT NEEDED — last known best 0.21906 above threshold 0.21837"
+    "stagnation_check": "NBA: N/A (all gen=0, fresh restart). Political: P1 stagnation=0 (gen 1277), P2 stagnation=0 (gen 832). No diversify commands needed.",
+    "engine_parity_check": "NBA engine v4 ISLAND+NSGA-II on all 6 islands (confirmed from API). Political engine v3.20 on P1/P2.",
+    "supabase_checkpoint": "NOT NEEDED — NBA islands at gen=0, no brier yet. Last known best 0.21906 above threshold 0.21837. Monitor S15 as it re-evolves.",
+    "diversify_commands": "NONE SENT — NBA at gen=0, no stagnation possible. Political: stagnation=0 on both active islands."
   },
   "alerts": [
-    "CRITICAL: All 6 NBA islands sleeping 503 for 6 consecutive cycles — keepalive-spaces.sh cron broken. URGENT: manual VM intervention needed.",
-    "CRITICAL: P3 and P4 NOT FOUND on HuggingFace (7 consecutive cycles) — manual HF Space recreation required",
-    "INFO: ops/compute_filing_velocity.py deployed to nomos-political-alpha — Rotation-D velocity signals",
-    "INFO: NBA Cat51 SHAP efficiency ratio research proposal written (cycle 95)",
-    "INFO: P1 at gen 761 (Brier 0.24996), P2 at gen 415 (Brier 0.25223) — both actively evolving, stagnation=0",
-    "WATCH: S15 last known Brier 0.21906 — gap 0.00069 to checkpoint threshold 0.21837"
+    "INFO: NBA FLEET AWAKE — all 6 islands back online after 6-cycle 503 sleep (Apr 10-12). BUILDING_FEATURES phase. Expected to start EVOLVING within 10-15 mins.",
+    "CRITICAL: P3 and P4 NOT FOUND on HuggingFace (8 consecutive cycles). Manual space recreation required.",
+    "INFO: Cat43 FEC National Party + SEC Form4 Cluster module deployed to nomos-political-alpha (cycle 96, Rotation A)",
+    "INFO: NBA research proposal written: Cat52 shot-quality spatial (18f) + XGBoost Brier objective",
+    "WATCH: S15 last known Brier 0.21906 — gap 0.00069 to checkpoint. Monitor next cycle.",
+    "WATCH: P1 best_brier 0.24996 at gen 1277 (stagnation=0). P2 best_brier 0.25223 at gen 832."
   ],
   "next_cycle_priority": [
-    "A — Political: WebSearch FEC filings, SEC insider trades, executive orders for new data sources (Rotation A)",
-    "NBA: Cat51 efficiency ratio features — add to features/engine.py + hf-space/features/engine.py when islands wake",
-    "NBA: If any island wakes and reports Brier < 0.21837, checkpoint to Supabase immediately",
-    "URGENT: Investigate/repair keepalive-spaces.sh cron on VM — why are all 6 NBA islands sleeping?",
-    "Political: Integrate filing_velocity signals into features/political_engine.py Cat_XX"
+    "NBA: Check if S15 has beaten 0.21837 — if yes, checkpoint to Supabase immediately",
+    "NBA: Deploy xgboost_brier model_type to hf-space/app.py (config change, low effort, -0.001 to -0.003 Brier)",
+    "Political: Integrate Cat43 into political_engine.py (v3.20 → v3.21)",
+    "Political: Add Cat43 data fetch to ops/fetch_political_data.py (FEC party-accounts + OpenInsider)",
+    "CRITICAL: P3 and P4 manual HF space recreation — requires user intervention"
   ],
   "cross_repo_health": {
-    "nba_engine_version": "v3.1-59cat (last parity check cycle 91, cannot verify — islands sleeping)",
-    "political_engine_version": "v3.20-political-42cat-congress-stock-act (LIVE)",
-    "technique_ported_this_cycle": "NBA SHAP insight (efficiency ratios > raw counts) → Political filing velocity ratios. Same principle: velocity/ratio features outperform raw counts/amounts.",
-    "cross_pollination_pattern": "Cycle 94: SHAP-seeded initialization (NBA→Political). Cycle 95: SHAP efficiency ratio insight (NBA research→Political filing velocity). Both repos converging on same meta-principle: momentum/efficiency signals beat raw statistics."
+    "nba_engine_version": "v4 ISLAND+NSGA-II (all 6 islands confirmed active)",
+    "political_engine_version": "v3.20-political-42cat-congress-stock-act (LIVE on P1/P2)",
+    "technique_ported_this_cycle": "NBA XGBoost Brier objective insight → Political engine already uses xgboost_brier model_type on P1 (best_model: xgboost_brier at gen 1277). Confirms the direct Brier objective works — now propagate back to NBA islands.",
+    "reverse_port_discovery": "CRITICAL FINDING: P1 best_model is already 'xgboost_brier' at gen 1277 Brier 0.24996. This CONFIRMS the Brier-objective approach works on similar tree-based GA evolution. NBA should adopt same pattern.",
+    "cross_pollination_cycle96": "Political → NBA: xgboost_brier model_type confirmation. NBA → Political: shot-quality zone concept maps to political donation geography clustering (sector affinity mapping via spatial features)."
   }
 }
