@@ -562,6 +562,32 @@ class AgentRegistry:
         )
         for agent in all_agents:
             self.agents[agent.id] = agent
+        self._diversify_providers()
+
+    def _diversify_providers(self):
+        """Remap generic 'huggingface' to model-specific aliases.
+
+        The api_pool.py has separate rate-limit buckets for google-gemma,
+        qwen, deepseek, mistral, meta-llama (each 2000 RPD, 4 keys).
+        Routing agents to model-specific aliases spreads the load across
+        5× the capacity instead of bottlenecking on the single 'huggingface'
+        bucket. Iter 86 had 95% API errors from this bottleneck.
+        """
+        MODEL_TO_PROVIDER = {
+            "google/gemma-3-27b-it": "google-gemma",
+            "Qwen/Qwen2.5-72B-Instruct": "qwen",
+            "Qwen/Qwen2.5-Coder-32B-Instruct": "qwen",
+            "Qwen/Qwen3-8B": "qwen",
+            "meta-llama/Llama-3.3-70B-Instruct": "meta-llama",
+            "mistralai/Mistral-Small-24B-Instruct-2501": "mistral",
+            "microsoft/Phi-3.5-mini-instruct": "mistral",  # share mistral bucket
+            "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF": "meta-llama",
+        }
+        remapped = 0
+        for agent in self.agents.values():
+            if agent.provider == "huggingface" and agent.model in MODEL_TO_PROVIDER:
+                agent.provider = MODEL_TO_PROVIDER[agent.model]
+                remapped += 1
 
     @property
     def tier1(self) -> List[TradingAgent]:
