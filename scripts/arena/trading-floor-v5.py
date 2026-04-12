@@ -762,6 +762,7 @@ class TradingFloorV5:
             "api_calls_made": 0,
             "api_errors": 0,
             "total_bets": 0,
+            "per_agent_bets": 0,  # Vision v20 / arXiv 2604.07355 — individual P&L
             "tier_calls": {1: 0, 2: 0, 3: 0, 4: 0},
             "multiphase_calls": 0,
             "phase1_hits": 0,
@@ -865,23 +866,63 @@ class TradingFloorV5:
                         away_full = g.get("away_team", g.get("away", ""))
                         home = TEAM_MAP.get(home_full, home_full[:3].upper() if home_full else "UNK")
                         away = TEAM_MAP.get(away_full, away_full[:3].upper() if away_full else "UNK")
-                        # Extract bookmaker odds directly from game object
+                        # Extract odds from game object — supports:
+                        #   (a) TheOddsAPI format: bookmakers[].markets[{key:"h2h"}].outcomes[]
+                        #   (b) ActionNetwork format: markets.{moneyline,spread,total}[]
                         live_odds_entry = None
-                        for bk in g.get("bookmakers", []):
-                            for mkt in bk.get("markets", []):
-                                if mkt["key"] == "h2h":
-                                    outcomes = {o["name"]: o["price"] for o in mkt.get("outcomes", [])}
-                                    ml_h = outcomes.get(home_full, 1.91)
-                                    ml_a = outcomes.get(away_full, 1.91)
-                                    live_odds_entry = {
-                                        "ml_home_dec": ml_h, "ml_away_dec": ml_a,
-                                        "impl_home": 1.0 / ml_h, "impl_away": 1.0 / ml_a,
-                                        "ml_home_raw": str(ml_h), "ml_away_raw": str(ml_a),
-                                        "spread_home": None, "total": None,
-                                    }
+                        markets_obj = g.get("markets")
+                        if isinstance(markets_obj, dict):
+                            # ActionNetwork-style nested markets dict
+                            ml_h = ml_a = None
+                            spread_home_val = None
+                            total_val = None
+                            try:
+                                for entry in markets_obj.get("moneyline", []) or []:
+                                    nm = entry.get("name", "")
+                                    price = entry.get("american") or entry.get("price") or entry.get("decimal")
+                                    if price is None:
+                                        continue
+                                    dec = american_to_decimal(price)
+                                    if nm == home_full:
+                                        ml_h = dec
+                                    elif nm == away_full:
+                                        ml_a = dec
+                                for entry in markets_obj.get("spread", []) or []:
+                                    if entry.get("name") == home_full and entry.get("handicap") is not None:
+                                        spread_home_val = float(entry["handicap"])
+                                        break
+                                for entry in markets_obj.get("total", []) or []:
+                                    if entry.get("handicap") is not None:
+                                        total_val = float(entry["handicap"])
+                                        break
+                            except (ValueError, TypeError, KeyError):
+                                pass
+                            if ml_h and ml_a:
+                                live_odds_entry = {
+                                    "ml_home_dec": ml_h, "ml_away_dec": ml_a,
+                                    "impl_home": 1.0 / ml_h, "impl_away": 1.0 / ml_a,
+                                    "ml_home_raw": str(ml_h), "ml_away_raw": str(ml_a),
+                                    "spread_home": spread_home_val,
+                                    "total": total_val,
+                                    "_source": g.get("source", "action_network"),
+                                }
+                        if live_odds_entry is None:
+                            # Legacy TheOddsAPI path
+                            for bk in g.get("bookmakers", []):
+                                for mkt in bk.get("markets", []):
+                                    if mkt.get("key") == "h2h":
+                                        outcomes = {o["name"]: o["price"] for o in mkt.get("outcomes", [])}
+                                        ml_h = outcomes.get(home_full, 1.91)
+                                        ml_a = outcomes.get(away_full, 1.91)
+                                        live_odds_entry = {
+                                            "ml_home_dec": ml_h, "ml_away_dec": ml_a,
+                                            "impl_home": 1.0 / ml_h, "impl_away": 1.0 / ml_a,
+                                            "ml_home_raw": str(ml_h), "ml_away_raw": str(ml_a),
+                                            "spread_home": None, "total": None,
+                                        }
+                                        break
+                                if live_odds_entry:
                                     break
-                            if live_odds_entry:
-                                break
                         ml_preds = _inject_ml_predictions(home, away, target_date)
                         ml_prob = ml_preds.get("model_prob_home", 0.5)
                         date_games.append({
@@ -986,6 +1027,18 @@ class TradingFloorV5:
                     if mb.get("category") not in existing_cats:
                         game_bets.append(mb)
                         existing_cats.add(mb["category"])
+
+            # === Per-agent bets (Vision v20 / arXiv 2604.07355) ===
+            # One bet per responding agent per category, staked from the
+            # agent's own bankroll. No averaging-away.
+            per_agent_bets = self._generate_per_agent_bets(
+                game_predictions, ctx, odds_entry, game_key, game,
+            )
+            if per_agent_bets:
+                print(f"  [Per-agent] {len(per_agent_bets)} independent bets "
+                      f"from {len({b['agent_id'] for b in per_agent_bets})} agents")
+            game_bets.extend(per_agent_bets)
+
             self.bets.extend(game_bets)
             self.run_stats["games_processed"] += 1
 
@@ -993,7 +1046,12 @@ class TradingFloorV5:
             if game.get("home_won") is not None:
                 self._settle_bets(game_bets, game)
 
-            extra = f" ({len(multiphase_bets)} from multi-phase)" if multiphase_bets else ""
+            extra_parts = []
+            if multiphase_bets:
+                extra_parts.append(f"{len(multiphase_bets)} multi-phase")
+            if per_agent_bets:
+                extra_parts.append(f"{len(per_agent_bets)} per-agent")
+            extra = f" ({', '.join(extra_parts)})" if extra_parts else ""
             print(f"\n  Summary: {len(game_predictions)} predictions -> "
                   f"{len(game_bets)} bets generated{extra}")
 
@@ -1829,6 +1887,230 @@ class TradingFloorV5:
         return bets
 
     # ===================================================================
+    # PER-AGENT BET GENERATION — Vision v20 / arXiv 2604.07355 pattern
+    # ===================================================================
+    def _generate_per_agent_bets(
+        self,
+        game_predictions: Dict[str, dict],
+        ctx: dict,
+        odds_entry: Optional[dict],
+        game_key: str,
+        game: Dict,
+    ) -> List[dict]:
+        """Emit ONE bet per (agent, category) where the agent returned a
+        concrete direction + confidence. Each bet is staked from the agent's
+        OWN bankroll using its OWN kelly_fraction — no averaging-away.
+
+        Source: arXiv 2604.07355 (Prediction Arena, Mar 28 2026) —
+        "Replace consensus averaging with individual agent P&L tracking".
+        Vision v20, 2026-04-11 restructure.
+
+        Only emits a bet when:
+          - agent.provider is still active
+          - prediction carries _is_real=True OR has structured direction
+          - confidence >= agent.min_edge floor (agent personality gate)
+        """
+        if not game_predictions:
+            return []
+
+        bets: List[dict] = []
+        # Debug counters (Phase 4+ per-agent audit)
+        dbg = {
+            "total": 0, "not_dict": 0, "no_agent": 0, "prov_gate": 0,
+            "no_slot": 0, "no_dir": 0, "conf_low": 0, "no_cat": 0,
+            "no_line": 0, "neg_edge": 0, "dust": 0, "emitted": 0,
+        }
+
+        for agent_id, pred in game_predictions.items():
+            dbg["total"] += 1
+            if not isinstance(pred, dict):
+                dbg["not_dict"] += 1
+                continue
+            agent = self.registry.get(agent_id)
+            if agent is None or not agent.active:
+                dbg["no_agent"] += 1
+                continue
+
+            # Provenance gate — STRICT: only real LLM responses earn a slot.
+            # Synth / unknown / error provenance always rejected.
+            if pred.get("_is_real") is not True:
+                if pred.get("_source") not in (
+                    "llm_real", "oracle_real", "peer_review_real"
+                ):
+                    dbg["prov_gate"] += 1
+                    continue
+
+            # Normalize each tier's prediction schema into a list of
+            # (cat_key, direction, confidence) triples.
+            #   T1 PREMIUM     : {ml_fg: {...}, spread_fg: {...}, total_fg: {...}}
+            #   T2 FREE_POWER  : {bets: [{category, direction, confidence, ...}]}
+            #   T3 SPECIALIST  : {direction, confidence, ...} (category from agent.focus_category)
+            slots = self._extract_agent_slots(agent, pred)
+            if not slots:
+                dbg["no_slot"] += 1
+                continue
+
+            for cat_key, direction, conf in slots:
+                if direction not in ("home", "away", "over", "under"):
+                    dbg["no_dir"] += 1
+                    continue
+                if conf < max(0.30, agent.min_edge + 0.02):
+                    # Agent itself didn't meet its personal edge floor
+                    dbg["conf_low"] += 1
+                    continue
+
+                # Resolve odds for this category
+                bet_odds = 1.909
+                spread_line = None
+                total_line = None
+                if cat_key == "ml_fg" and odds_entry:
+                    bet_odds = (
+                        odds_entry.get("ml_home_dec", 1.91)
+                        if direction == "home"
+                        else odds_entry.get("ml_away_dec", 1.91)
+                    )
+                elif cat_key == "spread_fg":
+                    spread_line = odds_entry.get("spread_home") if odds_entry else None
+                    if spread_line is None:
+                        dbg["no_line"] += 1
+                        continue
+                elif cat_key == "total_fg":
+                    total_line = odds_entry.get("total") if odds_entry else None
+                    if total_line is None:
+                        dbg["no_line"] += 1
+                        continue
+                else:
+                    # Prop / exotic — no standard odds. Skip for now.
+                    dbg["no_cat"] += 1
+                    continue
+
+                # Edge from the agent's own confidence delta vs. implied.
+                # For spread/total, use a neutral 0.50 baseline since confidence
+                # already encodes direction agreement.
+                if cat_key == "ml_fg":
+                    implied = 1.0 / float(bet_odds) if bet_odds else 0.5
+                else:
+                    implied = 0.50
+                edge = max(0.0, conf - implied)
+                if edge <= 0:
+                    dbg["neg_edge"] += 1
+                    continue
+
+                bankroll = max(1.0, float(agent.bankroll))
+                kelly = edge / max(0.01, float(bet_odds) - 1.0)
+                stake = round(
+                    max(0.0, min(bankroll * 0.10, bankroll * kelly * agent.kelly_fraction)),
+                    2,
+                )
+                if stake < 0.5:
+                    dbg["dust"] += 1
+                    continue
+
+                bet = {
+                    "game_key": game_key,
+                    "category": cat_key,
+                    "direction": direction,
+                    "confidence": round(conf, 4),
+                    "edge_pct": round(edge * 100, 2),
+                    "odds": round(float(bet_odds), 3),
+                    "stake": stake,
+                    "source": "per_agent",
+                    "agent_id": agent_id,
+                    "agent_name": agent.name,
+                    "agent_tier": agent.tier.name,
+                    "agent_personality": agent.personality,
+                    "provider_used": pred.get("_provider_used", agent.provider),
+                    "model_used": pred.get("_model_used", agent.model),
+                    "is_real": pred.get("_is_real", False),
+                }
+                if spread_line is not None:
+                    bet["spread_line"] = spread_line
+                if total_line is not None:
+                    bet["total_line"] = total_line
+                bets.append(bet)
+                dbg["emitted"] += 1
+
+        # Telemetry — surfaces where the gate is dropping candidates
+        if dbg["total"] > 0 and dbg["emitted"] == 0:
+            print(
+                f"  [Per-agent DBG] 0 bets from {dbg['total']} agents: "
+                f"prov_gate={dbg['prov_gate']} no_slot={dbg['no_slot']} "
+                f"no_dir={dbg['no_dir']} conf_low={dbg['conf_low']} "
+                f"no_cat={dbg['no_cat']} no_line={dbg['no_line']} "
+                f"neg_edge={dbg['neg_edge']} dust={dbg['dust']} "
+                f"not_dict={dbg['not_dict']} no_agent={dbg['no_agent']}"
+            )
+
+        self.run_stats["total_bets"] += len(bets)
+        self.run_stats.setdefault("per_agent_bets", 0)
+        self.run_stats["per_agent_bets"] += len(bets)
+        return bets
+
+    @staticmethod
+    def _normalize_category(raw: str) -> Optional[str]:
+        """Map an LLM-emitted category label to a canonical key.
+
+        Agents return many variants: ml / ml_fg / moneyline / ml_home,
+        spread / sp_fg / margin, total / ov_fg / u_fg / over_under.
+        Returns one of: ml_fg, spread_fg, total_fg, or None for props/exotics.
+        """
+        if not raw:
+            return None
+        s = str(raw).strip().lower()
+        # Totals before spread since 'ml_total_over' contains 'ml'
+        if any(t in s for t in ("total", "ov_fg", "u_fg", "uo_fg", "over_under", "over/under", "ou")):
+            return "total_fg"
+        if any(t in s for t in ("spread", "sp_fg", "margin", "ats")):
+            return "spread_fg"
+        if any(t in s for t in ("ml", "moneyline", "money_line", "head_to_head", "h2h")):
+            return "ml_fg"
+        return None
+
+    def _extract_agent_slots(
+        self, agent: "TradingAgent", pred: dict
+    ) -> List[tuple]:
+        """Normalize a T1/T2/T3 prediction into [(cat_key, direction, confidence)].
+
+        T1 PREMIUM  : pred has ml_fg/spread_fg/total_fg as dicts.
+        T2 FREE_POWER: pred has bets=[{category, direction, confidence, ...}].
+        T3 SPECIALIST: pred is flat {direction, confidence, ...}; category
+                       is inferred from agent.focus_category via CATEGORY_BY_ID.
+        """
+        slots: List[tuple] = []
+        # T1 shape
+        for cat_key in ("ml_fg", "spread_fg", "total_fg"):
+            slot = pred.get(cat_key)
+            if isinstance(slot, dict):
+                d = slot.get("direction")
+                c = float(slot.get("confidence", 0) or 0)
+                slots.append((cat_key, d, c))
+        if slots:
+            return slots
+        # T2 shape — bets[] array
+        bets_arr = pred.get("bets") or pred.get("picks")
+        if isinstance(bets_arr, list) and bets_arr:
+            for b in bets_arr:
+                if not isinstance(b, dict):
+                    continue
+                cat = self._normalize_category(b.get("category", ""))
+                if cat is None:
+                    continue
+                d = b.get("direction")
+                c = float(b.get("confidence", 0) or 0)
+                slots.append((cat, d, c))
+            if slots:
+                return slots
+        # T3 shape — flat direction + confidence
+        if "direction" in pred and "confidence" in pred:
+            focus_cat = getattr(agent, "focus_category", None)
+            cat = self._normalize_category(focus_cat) if focus_cat else None
+            if cat:
+                d = pred.get("direction")
+                c = float(pred.get("confidence", 0) or 0)
+                slots.append((cat, d, c))
+        return slots
+
+    # ===================================================================
     # FORCE INVEST — 100% bankroll allocation rule
     # ===================================================================
     def _force_invest_allocation(self, all_game_contexts: List[dict],
@@ -2054,16 +2336,37 @@ class TradingFloorV5:
                 pnl = round(stake * (odds - 1) if won else -stake, 2)
                 bet["pnl"] = pnl
 
-                # Update Paperclip bankroll (central betting account)
-                paperclip = self.registry.get("t4_paperclip")
-                if paperclip:
-                    paperclip.bankroll = round(paperclip.bankroll + pnl, 2)
-                    paperclip.total_bets += 1
-                    paperclip.total_pnl = round(paperclip.total_pnl + pnl, 2)
-                    if won:
-                        paperclip.total_wins += 1
-                    if paperclip.bankroll > paperclip.peak_bankroll:
-                        paperclip.peak_bankroll = paperclip.bankroll
+                # Per-agent bets (Vision v20) credit the agent's own bankroll;
+                # the house (Paperclip) only owns consensus / force-invest bets.
+                agent_owner_id = bet.get("agent_id") if bet.get("source") == "per_agent" else None
+                if agent_owner_id:
+                    owner = self.registry.get(agent_owner_id)
+                    if owner:
+                        owner.bankroll = round(owner.bankroll + pnl, 2)
+                        owner.total_bets += 1
+                        owner.total_pnl = round(owner.total_pnl + pnl, 2)
+                        if won:
+                            owner.total_wins += 1
+                            owner.win_streak = (owner.win_streak or 0) + 1
+                        else:
+                            owner.win_streak = 0
+                        if owner.bankroll > owner.peak_bankroll:
+                            owner.peak_bankroll = owner.bankroll
+                        owner.accuracy_history.append(1.0 if won else 0.0)
+                        # Keep history bounded
+                        if len(owner.accuracy_history) > 200:
+                            owner.accuracy_history = owner.accuracy_history[-200:]
+                else:
+                    # House / consensus bets land on Paperclip
+                    paperclip = self.registry.get("t4_paperclip")
+                    if paperclip:
+                        paperclip.bankroll = round(paperclip.bankroll + pnl, 2)
+                        paperclip.total_bets += 1
+                        paperclip.total_pnl = round(paperclip.total_pnl + pnl, 2)
+                        if won:
+                            paperclip.total_wins += 1
+                        if paperclip.bankroll > paperclip.peak_bankroll:
+                            paperclip.peak_bankroll = paperclip.bankroll
 
     # ===================================================================
     # RETROLEARNING
@@ -2213,6 +2516,14 @@ class TradingFloorV5:
                         "model": getattr(agent, "model", "") if agent else "",
                         "game_key": game_key,
                         "timestamp": pred.get("_timestamp", ""),
+                        # Provenance markers (Phase 4 audit — 2026-04-11):
+                        # promote _is_real / _source / _provider_used / _model_used
+                        # to top-level fields so downstream councils can filter
+                        # on real-vs-synthetic without reading the embedded dict.
+                        "is_real": pred.get("_is_real", False),
+                        "source": pred.get("_source", "unknown"),
+                        "provider_used": pred.get("_provider_used", ""),
+                        "model_used": pred.get("_model_used", ""),
                         "prediction": _safe_serialize(
                             {k: v for k, v in pred.items() if not k.startswith("_")}
                         ),
