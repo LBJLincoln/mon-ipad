@@ -30,6 +30,8 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Ensemble Methods, F
 - **07 -- Betting** (997 words) -- `raw/obsidian-docs/07-Betting.md`
 - **03 -- Trading Floor v4** (974 words) -- `raw/obsidian-docs/03-Trading-Floor.md`
 - **Nomos42 -- Knowledge Vault** (892 words) -- `raw/obsidian-docs/README.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (857 words) -- `raw/political/political-experiment-2026-04-12.md`
+- **NOMOS42 Political Alpha — Scientific Experiment Report** (857 words) -- `raw/scientific/political-experiment-2026-04-12.md`
 - **12 -- Agent Registry** (846 words) -- `raw/obsidian-docs/12-Agent-Registry.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-06.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-07.md`
@@ -37,14 +39,12 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Ensemble Methods, F
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-09.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-10.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-11.md`
-- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-12.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-06.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-07.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-08.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-09.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-10.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-11.md`
-- **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-12.md`
 - **20 -- Session Log** (804 words) -- `raw/obsidian-docs/20-Session-Log.md`
 - **21 -- Free Models & Inference Stack** (795 words) -- `raw/obsidian-docs/21-Free-Models.md`
 - **10 -- All Repos** (790 words) -- `raw/obsidian-docs/10-Repos.md`
