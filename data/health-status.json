@@ -1,25 +1,24 @@
 {
-  "timestamp": "2026-04-12T13:00:00Z",
-  "brain_cycle": 96,
+  "timestamp": "2026-04-12T17:00:00Z",
+  "brain_cycle": 97,
   "brain_model": "claude-sonnet-4-6",
-  "cycle_rotation": "A (NBA research: shot-quality spatial embeddings + XGBoost Brier objective) | A (Political: FEC national party routing + SEC Form4 insider cluster — Cat43)",
+  "cycle_rotation": "NBA: calibration_weight_boost (non-research cycle) | Political: Rotation B — integrate Cat43 into engine",
   "nba_fleet": {
     "total_islands": 6,
     "online": 6,
     "sleeping_503": 0,
     "status_severity": "OK",
-    "note": "ALL 6 NBA islands AWAKE as of ~12:38-12:39 UTC 2026-04-12 after 6 consecutive 503 cycles (Apr 10-12). All in BUILDING_FEATURES phase (gen=0). Islands auto-restarted. keepalive-spaces.sh repair appears to have taken effect.",
-    "fleet_best_brier": 0.21906,
-    "fleet_best_island": "S15 (nomos42-nba-evo-6, wide_search) — last confirmed Apr 10",
+    "fleet_best_brier": 0.22258,
+    "fleet_best_island": "S13 (nomos42-nba-evo-4, catboost) — gen 54, cycle 18",
     "all_time_best_brier": 0.2157,
     "checkpoint_threshold": 0.21837,
-    "gap_to_checkpoint": 0.00069,
-    "gap_to_target_020": 0.01906,
+    "gap_to_checkpoint": 0.00421,
+    "gap_to_target_020": 0.02258,
     "stagnation_detected": false,
-    "stagnation_action": "N/A — all at gen=0 (fresh restart)",
-    "wake_pings_sent": false,
-    "consecutive_503_cycles": 0,
-    "fleet_status": "BUILDING_FEATURES",
+    "stagnation_action": "None — S15 stagnation=7 (threshold: 15, not triggered)",
+    "diversify_commands": "NONE SENT",
+    "engine_parity": "All 6 islands: v4 ISLAND+NSGA-II confirmed",
+    "supabase_checkpoint": "NOT TRIGGERED — best active 0.22258 above threshold 0.21837",
     "current_islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
@@ -28,87 +27,72 @@
         "current_gen": 0,
         "current_brier": 1.0,
         "last_known_brier": 0.22412,
-        "last_known_gen": 469,
-        "started_at": "2026-04-12T12:39:43Z",
-        "target_features": 63,
-        "engine": "REAL GENETIC EVOLUTION LOOP v4 — ISLAND MODEL + NSGA-II",
+        "started_at": "2026-04-12T15:01:12Z",
         "mut_rate": 0.09,
-        "cx_rate": 0.80,
-        "games_loaded": 9551
+        "target_features": 63
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "status": "BUILDING_FEATURES",
-        "current_gen": 0,
-        "current_brier": 1.0,
-        "last_known_brier": 0.22249,
-        "last_known_gen": 1023,
-        "started_at": "2026-04-12T12:39:06Z",
-        "target_features": 80,
-        "mut_rate": 0.15,
-        "games_loaded": 9551,
-        "watch": "Fleet best last known"
+        "status": "EVOLVING",
+        "cycle": 4,
+        "current_gen": 10,
+        "current_brier": 0.22363,
+        "stagnation": 0,
+        "best_model": "random_forest",
+        "features": 60,
+        "mutation_rate": 0.1194
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees",
-        "status": "BUILDING_FEATURES",
-        "current_gen": 0,
-        "current_brier": 1.0,
-        "last_known_brier": 0.22730,
-        "last_known_gen": 1074,
-        "started_at": "2026-04-12T12:38:58Z",
-        "target_features": 60,
-        "mut_rate": 0.08
+        "status": "EVOLVING",
+        "cycle": 1,
+        "current_gen": 2,
+        "current_brier": 0.22479,
+        "stagnation": 0,
+        "best_model": "xgboost",
+        "features": 68,
+        "mutation_rate": 0.0798
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost",
-        "status": "BUILDING_FEATURES",
-        "current_gen": 0,
-        "current_brier": 1.0,
-        "last_known_brier": 0.22316,
-        "last_known_gen": 1027,
-        "started_at": "2026-04-12T12:38:02Z",
-        "target_features": 66,
-        "mut_rate": 0.10,
-        "pending_improvements": [
-          "Auto-calibration Brier-CV (cycle 93)",
-          "Overround market-spread features (cycle 94)",
-          "Cat51 SHAP efficiency ratios (cycle 95)",
-          "XGBoost Brier objective xgboost_brier model_type (cycle 96 research)"
-        ]
+        "status": "EVOLVING",
+        "cycle": 18,
+        "current_gen": 54,
+        "current_brier": 0.22258,
+        "stagnation": 0,
+        "best_model": "catboost",
+        "features": 51,
+        "mutation_rate": 0.1144,
+        "watch": "FLEET BEST ACTIVE"
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm",
-        "status": "BUILDING_FEATURES",
-        "current_gen": 0,
-        "current_brier": 1.0,
-        "last_known_brier": 0.22308,
-        "last_known_gen": 611,
-        "started_at": "2026-04-12T12:38:53Z",
-        "target_features": 55,
-        "mut_rate": 0.08
+        "status": "EVOLVING",
+        "cycle": 36,
+        "current_gen": 106,
+        "current_brier": 0.22325,
+        "stagnation": 0,
+        "best_model": "xgboost",
+        "features": 55,
+        "mutation_rate": 0.1114
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "status": "BUILDING_FEATURES",
-        "current_gen": 0,
-        "current_brier": 1.0,
-        "last_known_brier": 0.21906,
-        "last_known_gen": 864,
-        "started_at": "2026-04-12T12:38:xx",
-        "target_features": 80,
+        "status": "EVOLVING",
+        "cycle": 18,
+        "current_gen": 54,
+        "current_brier": 0.23095,
+        "stagnation": 7,
+        "best_model": "extra_trees",
+        "features": 52,
         "pop_size": 50,
-        "mut_rate": 0.18,
-        "watch": "NEAREST TO CHECKPOINT — gap 0.00069 to 0.21837 threshold",
-        "pending_improvements": [
-          "Cat51 SHAP efficiency ratios (cycle 95)",
-          "XGBoost Brier objective (cycle 96 research)"
-        ]
+        "mutation_rate": 0.13,
+        "watch": "STAGNATION=7 — monitor, diversify if reaches 15"
       }
     }
   },
@@ -117,112 +101,112 @@
     "online": 2,
     "down": 2,
     "down_islands": [
-      "nomos42-political-alpha-3.hf.space (NOT_FOUND_HF — 8 cycles)",
-      "nomos42-political-alpha-4.hf.space (NOT_FOUND_HF — 8 cycles)"
+      "nomos42-political-alpha-3.hf.space (NOT_FOUND_HF — 9+ cycles)",
+      "nomos42-political-alpha-4.hf.space (NOT_FOUND_HF — 9+ cycles)"
     ],
-    "fleet_all_time_best_brier": 0.23134,
     "fleet_current_best_brier": 0.24996,
+    "fleet_all_time_best_brier": 0.23134,
     "target_brier": 0.22,
-    "engine_version": "v3.20-political-42cat-congress-stock-act",
-    "engine_version_pending": "v3.21-political-43cat-fec-national-party-insider (Cat43 ready, integration pending)",
+    "engine_version": "v3.21-political-43cat-fec-national-party",
     "islands": {
       "P1": {
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
         "status": "EVOLVING",
-        "cycle": 426,
-        "generation": 1277,
+        "cycle": 460,
+        "generation": 1378,
         "best_brier": 0.24996,
+        "best_roi": 0.0009,
+        "best_sharpe": 0.0853,
         "stagnation": 0,
         "best_model": "xgboost_brier",
         "features": 67,
-        "mutation_rate": 0.1401,
-        "pareto_front_size": 14
+        "mutation_rate": 0.1456,
+        "events_processed": 1180,
+        "feature_candidates": 272
       },
       "P2": {
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
         "status": "EVOLVING",
-        "cycle": 278,
-        "generation": 832,
+        "cycle": 316,
+        "generation": 948,
         "best_brier": 0.25223,
         "best_roi": 0.0045,
         "best_sharpe": 0.4477,
         "stagnation": 0,
-        "best_model": "LightGBM",
+        "best_model": "lightgbm",
         "features": 60,
-        "pareto_front_size": 6,
-        "all_time_best": 0.23134
+        "mutation_rate": 0.1374,
+        "events_processed": 1180,
+        "feature_candidates": 272
       },
       "P3": {
         "status": "NOT_FOUND_HF",
-        "consecutive_down_cycles": 8,
-        "action_required": "Manual HF Space creation at huggingface.co/new-space as Nomos42/political-alpha-3"
+        "down_cycles": 9,
+        "action_required": "Manual HF Space creation — nomos42/political-alpha-3 not found via API"
       },
       "P4": {
         "status": "NOT_FOUND_HF",
-        "consecutive_down_cycles": 8,
-        "action_required": "Manual HF Space creation at huggingface.co/new-space as Nomos42/political-alpha-4"
+        "down_cycles": 9,
+        "action_required": "Manual HF Space creation — nomos42/political-alpha-4 not found via API"
       }
     }
   },
-  "cycle_96_actions": {
+  "cycle_97_actions": {
     "nba_improvement": {
-      "type": "research_proposal",
-      "rotation": "A — NBA research (every-other-cycle)",
-      "title": "Shot-Quality Spatial Embeddings (Cat52) + XGBoost Brier Direct Objective",
-      "file": "data/research-proposals/2026-04-12-cycle96-shot-quality-spatial-brier-objective.md",
-      "sources": [
-        "Uncertainty-Aware ML for NBA Forecasting (MDPI Information 2025, Vol 17) — shot-chart zone embeddings",
-        "Stacked Ensemble for NBA Outcome Prediction (Nature Sci Reports 2025) — SHAP efficiency ratios",
-        "Key Factors in NBA Game Outcomes via ML (Preprints.org Apr 2025)"
-      ],
-      "key_improvements": [
-        "xgboost_brier model_type: reg:squarederror objective = direct Brier minimization. Expected delta: -0.001 to -0.003. Low effort.",
-        "Cat52 shot-quality spatial: 18 features from NBA zone shot charts. Expected delta: -0.001 to -0.003. Medium effort."
-      ],
-      "estimated_combined_brier_delta": "-0.003 to -0.006",
-      "deploy_priority": "xgboost_brier first (config-only change), Cat52 second (requires zone data fetch)"
+      "type": "calibration_config",
+      "title": "2x isotonic_temporal calibration weight in GA (7→14 init, 8→15 mutate)",
+      "rationale": "MDPI 2026 research: LR+isotonic_temporal achieves Brier ~0.199 on NBA data. Previously at 7-8% population weight; now at 14-15%. Affects hf-space/app.py Individual.__init__ and mutate(). Compound improvement over 50+ generations as more individuals explore isotonic calibration.",
+      "file": "hf-space/app.py",
+      "repo": "nomos-nba-agent",
+      "expected_brier_delta": "-0.001 to -0.003 over 50+ generations",
+      "difficulty": "low — weights only, no structural change",
+      "stagnation_check": "S15=7 (threshold 15) — no action",
+      "checkpoint_check": "S13 0.22258 — above 0.21837 threshold — no Supabase checkpoint"
     },
     "political_improvement": {
       "type": "code_change",
-      "rotation": "A — WebSearch FEC/SEC/EO new data sources",
-      "title": "Cat43: FEC National Party Committee + SEC Form4 Insider Cluster (24f)",
-      "file": "features/cat43_fec_national_party.py",
-      "commit": "815abee750e90261b6a4ccb4977777bd1d7f9c45",
-      "summary": "New 24-feature module: national party committee cash routing (NRCC/NRSC/DCCC/DSCC/RNC/DNC) as sector favorability proxy + SEC Form4 insider cluster signals. Triple convergence flag when PAC surge + committee routing + multi-insider buy all fire simultaneously. Based on FEC new national party account API endpoints and OpenInsider Form4 cluster data.",
-      "new_data_sources": [
-        "FEC: https://api.open.fec.gov/v1/party-accounts/ (new 2025-26 endpoint for national committee receipts)",
-        "OpenInsider: http://openinsider.com/ (free SEC Form4 cluster screener, no API key)",
-        "SEC EDGAR bulk: https://api.sec-api.io/bulk/form-4/{year}/{month}.jsonl.gz (cluster detection)"
+      "rotation": "B — review engine.py + add features from new data",
+      "title": "Cat43 FecNationalPartyCluster integrated into political_engine.py (v3.20→v3.21)",
+      "file": "features/political_engine.py",
+      "repo": "nomos-political-alpha",
+      "changes": [
+        "ENGINE_VERSION: v3.20 → v3.21-political-43cat-fec-national-party",
+        "43 categories (was 42), ~3,500 features (was ~3,476)",
+        "Lazy import FecNationalPartyCluster in __init__",
+        "Added ('43_fec_national_party', self._cat43.extract) to categories_ext"
       ],
-      "next_step": "Integrate Cat43 into political_engine.py — version bump v3.20 → v3.21"
+      "cat43_features": 24,
+      "cat43_blocks": ["A: National party committee routing (10f)", "B: SEC Form4 insider cluster (10f)", "C: Triple convergence composites (4f)"],
+      "expected_brier_delta": "-0.002 to -0.005"
     },
-    "stagnation_check": "NBA: N/A (all gen=0, fresh restart). Political: P1 stagnation=0 (gen 1277), P2 stagnation=0 (gen 832). No diversify commands needed.",
-    "engine_parity_check": "NBA engine v4 ISLAND+NSGA-II on all 6 islands (confirmed from API). Political engine v3.20 on P1/P2.",
-    "supabase_checkpoint": "NOT NEEDED — NBA islands at gen=0, no brier yet. Last known best 0.21906 above threshold 0.21837. Monitor S15 as it re-evolves.",
-    "diversify_commands": "NONE SENT — NBA at gen=0, no stagnation possible. Political: stagnation=0 on both active islands."
+    "cross_repo_insight": {
+      "direction": "Bidirectional this cycle",
+      "nba_to_political": "isotonic_temporal weight pattern ports to political GA next cycle (Rotation C)",
+      "political_to_nba": "P1 best_model=xgboost_brier at gen 1378 confirms Brier-objective works cross-domain. Cat43 triple-convergence concept (PAC+committee+insider) inspires NBA Cat52 (shot-zone+market+fatigue triple signal)"
+    }
   },
   "alerts": [
-    "INFO: NBA FLEET AWAKE — all 6 islands back online after 6-cycle 503 sleep (Apr 10-12). BUILDING_FEATURES phase. Expected to start EVOLVING within 10-15 mins.",
-    "CRITICAL: P3 and P4 NOT FOUND on HuggingFace (8 consecutive cycles). Manual space recreation required.",
-    "INFO: Cat43 FEC National Party + SEC Form4 Cluster module deployed to nomos-political-alpha (cycle 96, Rotation A)",
-    "INFO: NBA research proposal written: Cat52 shot-quality spatial (18f) + XGBoost Brier objective",
-    "WATCH: S15 last known Brier 0.21906 — gap 0.00069 to checkpoint. Monitor next cycle.",
-    "WATCH: P1 best_brier 0.24996 at gen 1277 (stagnation=0). P2 best_brier 0.25223 at gen 832."
+    "INFO: S10 restarted — BUILDING_FEATURES (auto, expected)",
+    "WARN: S15 stagnation=7 — approaching threshold. Diversify if =15 next cycle.",
+    "CRITICAL: P3 and P4 NOT_FOUND HuggingFace (9 cycles). Requires MANUAL user action to create spaces.",
+    "INFO: Cat43 FecNationalPartyCluster deployed — political_engine v3.21",
+    "INFO: isotonic_temporal weight doubled (7→14, 8→15) in NBA GA per MDPI 2026 research"
   ],
   "next_cycle_priority": [
-    "NBA: Check if S15 has beaten 0.21837 — if yes, checkpoint to Supabase immediately",
-    "NBA: Deploy xgboost_brier model_type to hf-space/app.py (config change, low effort, -0.001 to -0.003 Brier)",
-    "Political: Integrate Cat43 into political_engine.py (v3.20 → v3.21)",
-    "Political: Add Cat43 data fetch to ops/fetch_political_data.py (FEC party-accounts + OpenInsider)",
-    "CRITICAL: P3 and P4 manual HF space recreation — requires user intervention"
+    "1. NBA: Check if any island beats 0.21837 checkpoint — Supabase if yes",
+    "2. NBA: Monitor S15 stagnation (now=7) — diversify POST if reaches 15",
+    "3. NBA: Research cycle 98 — search momentum/rolling features (Nature Sci Reports 2025)",
+    "4. Political: Rotation C — port NBA calibration weights (venn_abers=22%, beta=22%, isotonic=14%) to political GA",
+    "5. Political: Add Cat43 data fetch to ops/fetch_political_data.py (FEC party-accounts + OpenInsider)",
+    "6. CRITICAL: P3/P4 manual HF Space recreation"
   ],
   "cross_repo_health": {
-    "nba_engine_version": "v4 ISLAND+NSGA-II (all 6 islands confirmed active)",
-    "political_engine_version": "v3.20-political-42cat-congress-stock-act (LIVE on P1/P2)",
-    "technique_ported_this_cycle": "NBA XGBoost Brier objective insight → Political engine already uses xgboost_brier model_type on P1 (best_model: xgboost_brier at gen 1277). Confirms the direct Brier objective works — now propagate back to NBA islands.",
-    "reverse_port_discovery": "CRITICAL FINDING: P1 best_model is already 'xgboost_brier' at gen 1277 Brier 0.24996. This CONFIRMS the Brier-objective approach works on similar tree-based GA evolution. NBA should adopt same pattern.",
-    "cross_pollination_cycle96": "Political → NBA: xgboost_brier model_type confirmation. NBA → Political: shot-quality zone concept maps to political donation geography clustering (sector affinity mapping via spatial features)."
+    "nba_engine_version": "v4 ISLAND+NSGA-II (6/6 confirmed)",
+    "political_engine_version": "v3.21-political-43cat-fec-national-party (DEPLOYED cycle 97)",
+    "nba_calibration_mix": "isotonic_temporal=14%, venn_abers=22%, beta=22%, none=11%, sigmoid=12%",
+    "technique_ported_cycle97": "isotonic_temporal weight boost (NBA) + Cat43 triple-convergence insight (Political→NBA Cat52 concept)",
+    "ecosystem_uptime": "NBA 6/6, Political 2/4 (P3/P4 down 9 cycles)"
   }
 }
