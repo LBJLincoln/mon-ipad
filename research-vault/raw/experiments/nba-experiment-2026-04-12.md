@@ -1,12 +1,12 @@
 # NBA Scientific Experiment Report
-**Generated:** 2026-04-12 04:39:56
+**Generated:** 2026-04-12 08:07:07
 **Engine:** scientific-experiment.py v1.0
 
 ## Part 1: Model Evaluation
 
 ### Consensus Model Performance
 - **Predictions evaluated:** 1217
-- **Brier Score:** 0.24341 (95% CI: [0.22492, 0.25932])
+- **Brier Score:** 0.24341 (95% CI: [0.22747, 0.2593])
 - **Log Loss:** 0.71394
 - **AUC-ROC:** 0.697
 - **ECE (Calibration):** 0.1483
@@ -243,16 +243,16 @@ No statistically significant differences found at p < 0.05.
 | Rank | Strategy | Sharpe | ROI% | PnL | Bets | MaxDD |
 |------|----------|--------|------|-----|------|-------|
 | 1 | Specialist: Spread | 8.900 | 51.3% | $600.81 | 85 | 0.275 |
-| 2 | Aggressive (high stakes, low threshold) | -6.708 | -24.7% | $-87.62 | 84 | 0.876 |
-| 3 | Conservative (low stakes, high threshold) | -6.708 | -17.7% | $-50.54 | 198 | 0.506 |
-| 4 | Half Kelly (edge>3%) | -7.681 | -26.0% | $-80.60 | 107 | 0.806 |
-| 5 | Value Hunter (edge>5%) | -7.681 | -26.0% | $-80.60 | 107 | 0.806 |
+| 2 | Aggressive (high stakes, low threshold) | -6.708 | -32.7% | $-87.59 | 84 | 0.876 |
+| 3 | Conservative (low stakes, high threshold) | -6.981 | -11.9% | $-50.37 | 277 | 0.504 |
+| 4 | Half Kelly (edge>3%) | -7.629 | -31.7% | $-80.12 | 97 | 0.801 |
+| 5 | Value Hunter (edge>5%) | -7.629 | -31.7% | $-80.12 | 97 | 0.801 |
 
 ### Kelly Fraction Optimization
 | Fraction | Min Edge | Sharpe | ROI% | MaxDD | Bets |
 |----------|----------|--------|------|-------|------|
-| 0.50 | 3% | -7.681 | -26.0% | 0.806 | 107 |
-| 0.25 | 3% | -8.775 | -25.5% | 0.808 | 137 |
+| 0.50 | 3% | -7.629 | -31.7% | 0.801 | 97 |
+| 0.25 | 3% | -8.762 | -19.0% | 0.804 | 243 |
 
 ### Regression Analysis: PnL ~ confidence + edge + odds
 - **N observations:** 10000
@@ -313,9 +313,9 @@ No statistically significant differences found at p < 0.05.
 ### Betting Category Profile (from Trading Floor)
 | Category | Bets | Avg Stake | Avg Conf | Avg Agreement | Avg Edge | Forced |
 |----------|------|-----------|----------|---------------|----------|--------|
-| ml_fg | 1253 | $157.83 | 0.796 | 0.871 | 2.9% | 0 |
-| spread_fg | 32 | $2168.23 | 0.647 | 0.354 | 7.4% | 14 |
-| total_fg | 65 | $879.25 | 0.622 | 0.321 | 8.8% | 0 |
+| ml_fg | 1361 | $145.48 | 0.795 | 0.804 | 5.6% | 0 |
+| spread_fg | 165 | $3.73 | 0.727 | 0.120 | 21.0% | 14 |
+| total_fg | 197 | $215.29 | 0.671 | 0.153 | 15.5% | 0 |
 
 ## Recommendations
 
