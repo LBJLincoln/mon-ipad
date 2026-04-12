@@ -1,0 +1,561 @@
+{
+  "iteration": 8,
+  "generation": 96,
+  "meta": {
+    "version": "political-trading-floor-v1",
+    "generated": "2026-04-12T04:17:55Z",
+    "date": "2026-04-12",
+    "traders": 5,
+    "strategies": 8,
+    "eliminated": 3,
+    "events_total": 1120,
+    "trading_days": 12,
+    "social_tickers": 26,
+    "etf_universe": 36
+  },
+  "leaderboard": [
+    {
+      "rank": 1,
+      "trader_id": "codex",
+      "name": "Llama 3.3 70B",
+      "provider": "hf:meta-llama/Llama-3.3-70B-Instruct",
+      "personality": "aggressive",
+      "primary_strategy": "event_driven",
+      "capital": 101083.03,
+      "roi_pct": 1.083,
+      "sharpe": 6.569,
+      "total_trades": 113,
+      "wins": 59,
+      "losses": 54,
+      "win_rate": 52.2,
+      "max_drawdown": 0.0022,
+      "trading_days": 12
+    },
+    {
+      "rank": 2,
+      "trader_id": "gemini",
+      "name": "Gemma 3 27B",
+      "provider": "hf:google/gemma-3-27b-it",
+      "personality": "analytical",
+      "primary_strategy": "momentum",
+      "capital": 100791.08,
+      "roi_pct": 0.7911,
+      "sharpe": 12.282,
+      "total_trades": 118,
+      "wins": 72,
+      "losses": 46,
+      "win_rate": 61.0,
+      "max_drawdown": 0.0004,
+      "trading_days": 12
+    },
+    {
+      "rank": 3,
+      "trader_id": "openrouter",
+      "name": "Qwen 3 72B",
+      "provider": "hf:Qwen/Qwen2.5-72B-Instruct",
+      "personality": "diversified",
+      "primary_strategy": "sector_rotation",
+      "capital": 100293.08,
+      "roi_pct": 0.2931,
+      "sharpe": 8.237,
+      "total_trades": 92,
+      "wins": 46,
+      "losses": 46,
+      "win_rate": 50.0,
+      "max_drawdown": 0.001,
+      "trading_days": 12
+    },
+    {
+      "rank": 4,
+      "trader_id": "claude",
+      "name": "Claude Code CLI",
+      "provider": "anthropic_cli",
+      "personality": "conservative",
+      "primary_strategy": "mean_reversion",
+      "capital": 100030.02,
+      "roi_pct": 0.03,
+      "sharpe": 2.656,
+      "total_trades": 35,
+      "wins": 17,
+      "losses": 18,
+      "win_rate": 48.6,
+      "max_drawdown": 0.0004,
+      "trading_days": 12
+    },
+    {
+      "rank": 5,
+      "trader_id": "grok",
+      "name": "Mistral Large 2",
+      "provider": "hf:mistralai/Mistral-Large-Instruct-2411",
+      "personality": "contrarian",
+      "primary_strategy": "event_driven",
+      "capital": 99823.06,
+      "roi_pct": -0.1769,
+      "sharpe": -10.34,
+      "total_trades": 49,
+      "wins": 18,
+      "losses": 31,
+      "win_rate": 36.7,
+      "max_drawdown": 0.0018,
+      "trading_days": 12
+    }
+  ],
+  "traders": {
+    "gemini": {
+      "trader_id": "gemini",
+      "name": "Gemma 3 27B",
+      "provider": "hf:google/gemma-3-27b-it",
+      "personality": "analytical",
+      "risk_tolerance": 0.6,
+      "primary_strategy": "momentum",
+      "capital": 100791.08,
+      "initial_capital": 100000.0,
+      "roi_pct": 0.7911,
+      "sharpe": 12.282,
+      "total_trades": 118,
+      "wins": 72,
+      "losses": 46,
+      "win_rate": 61.0,
+      "total_wagered": 212678.64,
+      "total_pnl": 791.08,
+      "peak_capital": 100814.49,
+      "max_drawdown": 0.0004,
+      "trading_days": 12,
+      "strategy_breakdown": {
+        "momentum": {
+          "trades": 117,
+          "pnl": 763.96,
+          "wins": 71,
+          "win_rate": 60.7,
+          "roi_pct": 0.65
+        },
+        "sector_rotation": {
+          "trades": 1,
+          "pnl": 27.12,
+          "wins": 1,
+          "win_rate": 100.0,
+          "roi_pct": 2.71
+        }
+      },
+      "sector_breakdown": {
+        "technology": 581.7,
+        "broad": 136.78,
+        "defense": 72.6
+      }
+    },
+    "openrouter": {
+      "trader_id": "openrouter",
+      "name": "Qwen 3 72B",
+      "provider": "hf:Qwen/Qwen2.5-72B-Instruct",
+      "personality": "diversified",
+      "risk_tolerance": 0.5,
+      "primary_strategy": "sector_rotation",
+      "capital": 100293.08,
+      "initial_capital": 100000.0,
+      "roi_pct": 0.2931,
+      "sharpe": 8.237,
+      "total_trades": 92,
+      "wins": 46,
+      "losses": 46,
+      "win_rate": 50.0,
+      "total_wagered": 143445.02,
+      "total_pnl": 293.08,
+      "peak_capital": 100293.08,
+      "max_drawdown": 0.001,
+      "trading_days": 12,
+      "strategy_breakdown": {
+        "insider_follow": {
+          "trades": 33,
+          "pnl": 118.32,
+          "wins": 16,
+          "win_rate": 48.5,
+          "roi_pct": 0.36
+        },
+        "pairs_trading": {
+          "trades": 37,
+          "pnl": -42.12,
+          "wins": 18,
+          "win_rate": 48.6,
+          "roi_pct": -0.11
+        },
+        "sector_rotation": {
+          "trades": 22,
+          "pnl": 216.88,
+          "wins": 12,
+          "win_rate": 54.5,
+          "roi_pct": 0.99
+        }
+      },
+      "sector_breakdown": {
+        "broad": 219.01,
+        "energy": 134.87,
+        "financials": -60.8
+      }
+    },
+    "claude": {
+      "trader_id": "claude",
+      "name": "Claude Code CLI",
+      "provider": "anthropic_cli",
+      "personality": "conservative",
+      "risk_tolerance": 0.4,
+      "primary_strategy": "mean_reversion",
+      "capital": 100030.02,
+      "initial_capital": 100000.0,
+      "roi_pct": 0.03,
+      "sharpe": 2.656,
+      "total_trades": 35,
+      "wins": 17,
+      "losses": 18,
+      "win_rate": 48.6,
+      "total_wagered": 25197.03,
+      "total_pnl": 30.02,
+      "peak_capital": 100030.02,
+      "max_drawdown": 0.0004,
+      "trading_days": 12,
+      "strategy_breakdown": {
+        "mean_reversion": {
+          "trades": 35,
+          "pnl": 30.02,
+          "wins": 17,
+          "win_rate": 48.6,
+          "roi_pct": 0.09
+        }
+      },
+      "sector_breakdown": {
+        "healthcare": 30.02
+      }
+    },
+    "codex": {
+      "trader_id": "codex",
+      "name": "Llama 3.3 70B",
+      "provider": "hf:meta-llama/Llama-3.3-70B-Instruct",
+      "personality": "aggressive",
+      "risk_tolerance": 0.75,
+      "primary_strategy": "event_driven",
+      "capital": 101083.03,
+      "initial_capital": 100000.0,
+      "roi_pct": 1.083,
+      "sharpe": 6.569,
+      "total_trades": 113,
+      "wins": 59,
+      "losses": 54,
+      "win_rate": 52.2,
+      "total_wagered": 270818.31,
+      "total_pnl": 1083.03,
+      "peak_capital": 101083.03,
+      "max_drawdown": 0.0022,
+      "trading_days": 12,
+      "strategy_breakdown": {
+        "momentum": {
+          "trades": 108,
+          "pnl": 216.96,
+          "wins": 55,
+          "win_rate": 50.9,
+          "roi_pct": 0.2
+        },
+        "event_driven": {
+          "trades": 5,
+          "pnl": 866.07,
+          "wins": 4,
+          "win_rate": 80.0,
+          "roi_pct": 17.32
+        }
+      },
+      "sector_breakdown": {
+        "technology": 759.2,
+        "defense": 323.83
+      }
+    },
+    "grok": {
+      "trader_id": "grok",
+      "name": "Mistral Large 2",
+      "provider": "hf:mistralai/Mistral-Large-Instruct-2411",
+      "personality": "contrarian",
+      "risk_tolerance": 0.65,
+      "primary_strategy": "event_driven",
+      "capital": 99823.06,
+      "initial_capital": 100000.0,
+      "roi_pct": -0.1769,
+      "sharpe": -10.34,
+      "total_trades": 49,
+      "wins": 18,
+      "losses": 31,
+      "win_rate": 36.7,
+      "total_wagered": 59604.45,
+      "total_pnl": -176.94,
+      "peak_capital": 100000.0,
+      "max_drawdown": 0.0018,
+      "trading_days": 12,
+      "strategy_breakdown": {
+        "mean_reversion": {
+          "trades": 49,
+          "pnl": -176.94,
+          "wins": 18,
+          "win_rate": 36.7,
+          "roi_pct": -0.36
+        }
+      },
+      "sector_breakdown": {
+        "energy": -176.94
+      }
+    }
+  },
+  "strategies": {
+    "momentum": {
+      "family": "momentum",
+      "position_pct": 0.05
+    },
+    "mean_reversion": {
+      "family": "reversion",
+      "position_pct": 0.03
+    },
+    "event_driven": {
+      "family": "event",
+      "position_pct": 0.08
+    },
+    "pairs_trading": {
+      "family": "pairs",
+      "position_pct": 0.04
+    },
+    "sector_rotation": {
+      "family": "rotation",
+      "position_pct": 0.06
+    },
+    "safe_haven": {
+      "family": "defensive",
+      "position_pct": 0.04
+    },
+    "insider_follow": {
+      "family": "insider",
+      "position_pct": 0.05
+    },
+    "vol_scaled": {
+      "family": "vol_adjusted",
+      "position_pct": 0.04
+    }
+  },
+  "eliminations": {
+    "strategies": {
+      "SECTOR_ROTATE": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-75% ROI",
+        "final_roi": -0.75
+      },
+      "DEFENSE_LONG_individual": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-65% ROI on individual defense stock picks",
+        "final_roi": -0.65
+      },
+      "BILL_PASSES": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-64% ROI",
+        "final_roi": -0.64
+      }
+    },
+    "coffins": [
+      {
+        "name": "SECTOR_ROTATE",
+        "eliminated_at": "2026-03-31",
+        "reason": "-75% ROI",
+        "final_roi": -0.75,
+        "type": "political_strategy"
+      },
+      {
+        "name": "DEFENSE_LONG_individual",
+        "eliminated_at": "2026-03-31",
+        "reason": "-65% ROI on individual defense stock picks",
+        "final_roi": -0.65,
+        "type": "political_strategy"
+      },
+      {
+        "name": "BILL_PASSES",
+        "eliminated_at": "2026-03-31",
+        "reason": "-64% ROI",
+        "final_roi": -0.64,
+        "type": "political_strategy"
+      }
+    ]
+  },
+  "etf_universe": {
+    "SPY": {
+      "name": "S&P 500",
+      "sector": "broad",
+      "type": "etf"
+    },
+    "QQQ": {
+      "name": "NASDAQ 100",
+      "sector": "technology",
+      "type": "etf"
+    },
+    "IWM": {
+      "name": "Russell 2000",
+      "sector": "small_cap",
+      "type": "etf"
+    },
+    "XLF": {
+      "name": "Financials",
+      "sector": "financials",
+      "type": "etf"
+    },
+    "XLE": {
+      "name": "Energy",
+      "sector": "energy",
+      "type": "etf"
+    },
+    "XLK": {
+      "name": "Technology",
+      "sector": "technology",
+      "type": "etf"
+    },
+    "XLV": {
+      "name": "Healthcare",
+      "sector": "healthcare",
+      "type": "etf"
+    },
+    "XLI": {
+      "name": "Industrials",
+      "sector": "industrials",
+      "type": "etf"
+    },
+    "XLD": {
+      "name": "Defense",
+      "sector": "defense",
+      "type": "etf"
+    },
+    "GLD": {
+      "name": "Gold",
+      "sector": "commodity",
+      "type": "etf"
+    },
+    "TLT": {
+      "name": "Long-term Treasuries",
+      "sector": "bonds",
+      "type": "etf"
+    },
+    "LMT": {
+      "name": "Lockheed Martin",
+      "sector": "defense",
+      "type": "stock"
+    },
+    "RTX": {
+      "name": "Raytheon",
+      "sector": "defense",
+      "type": "stock"
+    },
+    "BA": {
+      "name": "Boeing",
+      "sector": "defense",
+      "type": "stock"
+    },
+    "NOC": {
+      "name": "Northrop Grumman",
+      "sector": "defense",
+      "type": "stock"
+    },
+    "GD": {
+      "name": "General Dynamics",
+      "sector": "defense",
+      "type": "stock"
+    },
+    "AAPL": {
+      "name": "Apple",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "MSFT": {
+      "name": "Microsoft",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "GOOGL": {
+      "name": "Alphabet",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "META": {
+      "name": "Meta Platforms",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "NVDA": {
+      "name": "NVIDIA",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "AMZN": {
+      "name": "Amazon",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "TSLA": {
+      "name": "Tesla",
+      "sector": "technology",
+      "type": "stock"
+    },
+    "JPM": {
+      "name": "JPMorgan Chase",
+      "sector": "financials",
+      "type": "stock"
+    },
+    "GS": {
+      "name": "Goldman Sachs",
+      "sector": "financials",
+      "type": "stock"
+    },
+    "MS": {
+      "name": "Morgan Stanley",
+      "sector": "financials",
+      "type": "stock"
+    },
+    "BLK": {
+      "name": "BlackRock",
+      "sector": "financials",
+      "type": "stock"
+    },
+    "AXP": {
+      "name": "American Express",
+      "sector": "financials",
+      "type": "stock"
+    },
+    "XOM": {
+      "name": "Exxon Mobil",
+      "sector": "energy",
+      "type": "stock"
+    },
+    "CVX": {
+      "name": "Chevron",
+      "sector": "energy",
+      "type": "stock"
+    },
+    "COP": {
+      "name": "ConocoPhillips",
+      "sector": "energy",
+      "type": "stock"
+    },
+    "OXY": {
+      "name": "Occidental",
+      "sector": "energy",
+      "type": "stock"
+    },
+    "HAL": {
+      "name": "Halliburton",
+      "sector": "energy",
+      "type": "stock"
+    },
+    "PFE": {
+      "name": "Pfizer",
+      "sector": "healthcare",
+      "type": "stock"
+    },
+    "JNJ": {
+      "name": "Johnson & Johnson",
+      "sector": "healthcare",
+      "type": "stock"
+    },
+    "UNH": {
+      "name": "UnitedHealth",
+      "sector": "healthcare",
+      "type": "stock"
+    }
+  }
+}
