@@ -390,7 +390,7 @@ TRADERS = {
         "risk_tolerance":     0.75,
         "bankroll_nba":       100.0,
         "bankroll_political": 100_000.0,
-        "preferred_models":   ["catboost", "gradient_boosting", "xgboost"],
+        "preferred_models":   ["catboost", "tabnet", "xgboost"],
         "preferred_strategies": ["full_kelly", "anti_martingale", "dog_value_plus"],
         "pol_approach":       "event_driven",
         "etf_sectors":        ["XLE", "XLK", "IWM", "QQQ"],
