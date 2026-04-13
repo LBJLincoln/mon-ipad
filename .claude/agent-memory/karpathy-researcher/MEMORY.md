@@ -89,6 +89,10 @@ Before production: Auth → List → Push → Status → Download → Parse → 
 
 - [research_claude_code_plugins_apr2026.md](research_claude_code_plugins_apr2026.md) — WHAT EXISTS: karpathy/autoresearch (pattern), uditgoenka/autoresearch (universal skill), forrestchang CLAUDE.md (coding pitfalls), wiki-skills (knowledge). GAP: NO Brier-specific plugin, no GPU-fleet distribution, no feature-engine integration. BUILD PLAN: `/karpathy-nba` skill (7-10d, -0.001 to -0.003 Brier).
 
+## Cycle 11 — Multi-Agent LLM Systems Research (2026-04-13)
+
+- [research_multi_agent_llm_systems_apr2026.md](research_multi_agent_llm_systems_apr2026.md) — REAL implementations: Prediction Arena (live capital, -30% loss), PolySwarm (50-agent swarm, Polymarket), Agent Trading Arena (chart viz +40%), TradingAgents (free Ollama), OASIS (1M agents), MiroFish (consensus collapse risk). Cost breakdown + free models (Qwen 3.6/Gemma 4/Llama). NO sports betting benchmarks yet. Chart-based context >> text (-0.001 to -0.003 Brier potential).
+
 ## Previous Research
 
 - [project_research_march2026.md](../../research-analyst/project_research_march2026.md) — Cycle 3 (calibration, config, proposals)

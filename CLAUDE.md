@@ -1,19 +1,19 @@
-# Nomos42 — NBA Quant AI
+# Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v19 — Department Forge (9 depts) + Trading Floor v4 + Bloomberg | Updated: 2026-04-08
+> Architecture v20 — Department Forge (9 depts) + Trading Floor v5 (10 real LLM agents) + 16 Evolution Islands | Updated: 2026-04-13
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.21570 (Colab TabICL, 110f, iter 15) | Latest run: 0.21677 (Gen 38, 200f) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.21570 (Colab TabICL, 110f, iter 15) | Fleet best: 0.22251 (S14 LightGBM, gen 108) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
 
 ## Nomos42 Ecosystem
 
 | Flagship | Repo | Bot | Vercel | Status |
 |----------|------|-----|--------|--------|
-| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 6 islands + Kaggle Karpathy |
-| Political Alpha | nomos-political-alpha | -- | none (data only) | ACTIVE -- v3.1 engine, 22 categories. Surfaced through nomos-dashboard /political route |
-| Dashboard Hub | nomos-dashboard | -- | nomosdashboard.vercel.app | ACTIVE -- /nba /political /evolution /trading-floor /forge |
+| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 8 NBA islands + 4 Political islands + Kaggle Karpathy |
+| Political Alpha | nomos-political-alpha | -- | none (data only) | ACTIVE -- v3.19 engine, 22 categories, 718 features |
+| Dashboard Hub | nomos-dashboard | -- | nomosdashboard.vercel.app | ACTIVE -- /nba /political /evolution /trading-floor /forge /world |
 | AI Artistic Generation | rgwa | @RGWAbot | none | ZOMBIE -- no commits since Mar 2026, deprioritized |
 | Factory / Complex RAGs | rag-website | -- | none | SHELVED |
 
@@ -21,10 +21,10 @@ Build the best NBA prediction AI in the world.
 
 ```
 CLOUD BRAIN (Sonnet 4.6, every 4h at :00)
-    ├── Monitor S10-S15 via public /api/status
+    ├── Monitor S10-S17 + P1-P4 via public /api/status
     ├── Research via 4 Claude Code subagents
     ├── DECIDE: tune GA / diversify / inject features / checkpoint
-    ├── ACT on S10 via POST /api/config
+    ├── ACT on islands via POST /api/config
     └── Write health-status.json + push
     Trigger: trig_01BS3ixBvt2uKHY9p5EemcgD
 
@@ -34,17 +34,35 @@ VM MUSCLE (cron, every 4h at :30)
     └── Auto-restart data server
     Script: scripts/autonomous-cycle.sh
 
-HF SPACES (8 NBA islands, always-on, CPU tree-only, MAX_FEATURES=200)
-    ├── S10 Nomos42/nba-quant:        exploitation (mut=0.09, cx=0.80, feat=63) → nomos42-nba-quant.hf.space
-    ├── S11 Nomos42/nba-quant-2:      exploration  (mut=0.15, feat=80)          → nomos42-nba-quant-2.hf.space
-    ├── S12 Nomos42/nba-evo-3:        extra_trees specialist (mut=0.08, feat=60)
-    ├── S13 Nomos42/nba-evo-4:        catboost specialist    (mut=0.10, feat=66)
-    ├── S14 Nomos42/nba-evo-5:        lightgbm specialist    (mut=0.08, feat=55)
-    ├── S15 Nomos42/nba-evo-6:        wide search            (mut=0.18, feat=80, pop=50)
-    ├── S16 LBJLincoln26/nba-evo-s16: gradient boost         → lbjlincoln26-nba-evo-s16.hf.space
-    └── S17 LBJLincoln26/nba-evo-s17: ensemble               → lbjlincoln26-nba-evo-s17.hf.space
+HF EVOLUTION ISLANDS (8 NBA + 4 Political = 12 active, target 16)
+    NBA Islands (all UP, CPU tree-only, MAX_FEATURES=200):
+    ├── S10 Nomos42/nba-quant:        exploitation  gen=86   brier=0.22825  → nomos42-nba-quant.hf.space
+    ├── S11 Nomos42/nba-quant-2:      exploration   gen=141  brier=0.24572  → nomos42-nba-quant-2.hf.space
+    ├── S12 Nomos42/nba-evo-3:        extra_trees   gen=160  brier=0.23252  → nomos42-nba-evo-3.hf.space
+    ├── S13 Nomos42/nba-evo-4:        catboost      gen=130  brier=0.22749  → nomos42-nba-evo-4.hf.space
+    ├── S14 Nomos42/nba-evo-5:        lightgbm      gen=108  brier=0.22251  → nomos42-nba-evo-5.hf.space  ★ FLEET BEST
+    ├── S15 Nomos42/nba-evo-6:        wide search   gen=127  brier=0.22418  → nomos42-nba-evo-6.hf.space
+    ├── S16 LBJLincoln26/nba-evo-s16: gradient_boost gen=86  brier=0.22573  → lbjlincoln26-nba-evo-s16.hf.space
+    └── S17 LBJLincoln26/nba-evo-s17: ensemble      gen=139  brier=0.22493  → lbjlincoln26-nba-evo-s17.hf.space
+    Political Islands (all UP, CPU tree-only):
+    ├── P1 Nomos42/political-alpha:      xgboost   gen=3042  brier=0.24996  → nomos42-political-alpha.hf.space
+    ├── P2 Nomos42/political-alpha-2:    lightgbm  gen=2212  brier=0.25223  → nomos42-political-alpha-2.hf.space
+    ├── P3 LBJLincoln/political-alpha-3: xgboost   gen=10344 brier=0.24990  → lbjlincoln-political-alpha-3.hf.space  ★ POL BEST
+    ├── P4 LBJLincoln/political-alpha-4: logistic  gen=4301  brier=0.25146  → lbjlincoln-political-alpha-4.hf.space
+    └── P5-P8: NOT YET DEPLOYED (need 4 more for 8-island parity with NBA)
 
 NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
+
+HF TRADING FLOOR (Real LLM experiment, 10 agents)
+    ├── LBJLincoln26/nba-llm-trading-floor: Live 10-agent NBA experiment
+    └── Source: scripts/arena/hf-llm-trading-floor/
+
+HF OTHER SPACES (25 total across 3 accounts)
+    ├── Dept Councils: d1-research, d2-engineering, d3-evolution, d4-product, d5-business, d6-evaluation
+    ├── Free LLM Chat: gemma4-chat, qwen35-chat
+    ├── Docker Runtimes: nomos42-llm-cpu, nomos42-llm
+    ├── Legacy TF: Nomos42/nba-trading-floor (v4, superseded)
+    └── Pixel World: Nomos42/pixel-world (static)
 
 KAGGLE KARPATHY LOOP (GPU, 9h sessions, Karpathy autoresearch pattern)
     ├── scripts/kaggle/nba_karpathy_loop.py: NBA evolution (seeds from 8 islands)
@@ -55,10 +73,19 @@ KAGGLE KARPATHY LOOP (GPU, 9h sessions, Karpathy autoresearch pattern)
 GOOGLE COLAB (GPU, on-demand)
     └── colab/nba_evolution_gpu.ipynb: T4 GPU evolution
 
-SYSTEM CRONS
-    ├── */30  keepalive-spaces.sh (all 6 islands)
+GITHUB ACTIONS (3 workflows on schedule)
+    ├── Trading Floor:        */2h — 10-agent real LLM iteration
+    ├── Backtest Swarm:       */2h — continuous scientific backtest
+    ├── Scientific Experiment: */2h — CPCV + DSR gate
+    ├── GPU Cron Launcher:    manual — Kaggle/Colab trigger
+    └── Arena Engine:         daily — full arena evaluation
+
+SYSTEM CRONS (28 active on VM, all lightweight)
+    ├── */30  keepalive-spaces.sh (all 12 islands + TF)
     ├── 12,18 nba-daily-odds.py
-    └── :30   autonomous-cycle.sh
+    ├── :30   autonomous-cycle.sh
+    ├── */2h  monitoring, vault sync, political data
+    └──       Bloomberg API (port 8042), data server (port 8080)
 ```
 
 ## Skills
@@ -68,7 +95,7 @@ SYSTEM CRONS
 | `/karpathy-loop` | Autonomous research cycle (5 subagents → proposals → quick wins) |
 | `/daily-edge` | Daily predictions + value bets + Kelly sizing |
 | `/progress-10pct` | Target 10% improvement in weakest metric |
-| `/spaces-health` | Health check all 6 HF evolution islands |
+| `/spaces-health` | Health check all 12+ HF evolution islands |
 | `/evolve-report` | Comprehensive evolution progress report |
 | `/agent-review` | Weekly agent performance review (Jensen HR model) |
 | `/cross-repo-audit` | Audit all 5 repos for consistency and improvements |
@@ -150,24 +177,44 @@ Channel: @Nomos42
 
 Guardian Orchestrator v3: Analyzes ALL 9 department loops, allocates resources, cross-pollinates wins.
 
-## Trading Floor v4 — Multi-AI Competition
+## Trading Floor v5 — 10 Real LLM Agents (Apr 13, 2026)
 
-### NBA Traders (5 AI Agents)
-| # | Agent | Model | Personality | Strategy |
-|---|-------|-------|-------------|----------|
-| T1 | Gemma Analyst | Gemma 3 27B (HF) | Analytical | half_kelly, confidence_scaled |
-| T2 | Qwen Strategist | Qwen 3 72B (HF) | Diversified | quarter_kelly, value_hunter |
-| T3 | Claude Sentinel | Claude CLI | Conservative | half_kelly, drawdown_adjusted |
-| T4 | Llama Vanguard | Llama 3.3 70B (HF) | Aggressive | full_kelly, streak_momentum |
-| T5 | Mistral Maverick | Mistral Large 2 (HF) | Contrarian | underdog_specialist, dog_value |
+Every agent is a **real LLM API call** — no hash simulation, no mocks.
+Each receives full game context (odds, standings, form, 100+ categories, 22 SOTA strategies)
+and REASONS about what to bet. Full 2025-26 season (1257 games).
 
-### Political Traders (5 AI Agents — same models)
+Architecture: TradingAgents (arXiv 2412.20138) + Prediction Arena (2604.07355) + DMAD anti-groupthink
+
+### NBA Traders (10 AI Agents — all real LLM calls)
+| # | Agent | Model | Provider | Personality | Risk |
+|---|-------|-------|----------|-------------|------|
+| T1 | Gemini Flash | Gemini 2.5 Flash | Google (key 1) | Analytical | 0.60 |
+| T2 | Gemini 3 Flash | Gemini 3 Flash Preview | Google (key 2) | Diversified | 0.50 |
+| T3 | Qwen 3 235B | Qwen 3 235B-A22B | Cerebras | Quantitative | 0.55 |
+| T4 | Llama 3.1 8B | Llama 3.1 8B | Cerebras | Contrarian | 0.65 |
+| T5 | ZAI GLM 4.7 | GLM 4.7 | Cerebras | Conservative | 0.40 |
+| T6 | GPT-OSS 120B | GPT-OSS 120B | Cerebras | Aggressive | 0.70 |
+| T7 | Gemma 4 26B | Gemma 4 26B | OpenRouter (free) | Arbitrage | 0.75 |
+| T8 | Nemotron 120B | Nemotron 3 Super 120B | OpenRouter (free) | Tactical | 0.60 |
+| T9 | MiniMax M2.5 | MiniMax M2.5 | OpenRouter (free) | Theoretical | 0.35 |
+| T10 | Qwen3 80B | Qwen3 Next 80B | OpenRouter (free) | Ensemble | 0.50 |
+
+### Providers (verified 2026-04-13)
+| Provider | Status | Models | Cost |
+|----------|--------|--------|------|
+| Cerebras | WORKING | qwen-3-235b, llama3.1-8b, zai-glm-4.7, gpt-oss-120b | Free, 30 RPM |
+| Google Gemini | WORKING | gemini-2.5-flash (key 1), gemini-3-flash-preview (key 2) | Free tier, 14 RPM |
+| OpenRouter | FREE ONLY | gemma-4-26b, nemotron-120b, minimax-m2.5, qwen3-80b | Free tier, 20 RPM |
+| HF Inference | DEAD | — | Monthly credits exhausted |
+
+### HF Space
+Live experiment: `LBJLincoln26/nba-llm-trading-floor` (Gradio, ~4-6h for full season)
+Source: `scripts/arena/hf-llm-trading-floor/app.py` (1296 lines)
+GH Action: runs every 2h via `.github/workflows/trading-floor.yml`
+
+### Political Traders (10 AI Agents — same models, same providers)
 Trading: ETFs, index funds, real stocks based on political signals
 Starting capital: $100,000 virtual | Daily rebalancing
-
-### Command Center Offices (Backend Departments)
-Research HQ | Engineering Lab | Evolution Chamber | Betting Ops | Infra Bridge | Political Intel
-Each shows: dept status, active loops, metrics, agent activity
 
 ## Delegation
 

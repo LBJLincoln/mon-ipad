@@ -134,45 +134,57 @@ ever runs live without `dsr > 0 at p < 0.05 and pbo < 0.40`.
   serving commit 4be7b76. Likely either a silent build-error rollback or
   the Vercel project is pointing at a different branch.
 
-### Current state (2026-04-13 00:30 UTC — HONEST)
+### Current state (2026-04-13 12:00 UTC — HONEST)
 
 ### What's ACTUALLY running right now
 
-**HF Evolution Islands (6/8 producing):**
-| Island | Gen | Best Brier | Status |
-|--------|-----|-----------|--------|
-| S10 (exploitation) | 10 | 0.22476 | RUNNING |
-| S11 (exploration) | 40 | 0.22363 | RUNNING |
-| S12 (extra_trees) | 0 | 1.0 | BROKEN — never evolved |
-| S13 (catboost) | 0 | 1.0 | BROKEN — never evolved |
-| S14 (lightgbm) | 271 | **0.22325** | RUNNING — fleet best |
-| S15 (wide) | 107 | 0.23095 | RUNNING |
-| S16 (gradient boost) | 104 | 0.22335 | RUNNING |
-| S17 (ensemble) | 77 | 0.22579 | RUNNING |
+**NBA Evolution Islands (8/8 ALL UP):**
+| Island | Specialist | Gen | Best Brier | Status |
+|--------|-----------|-----|-----------|--------|
+| S10 (exploitation) | random_forest | 86 | 0.22825 | RUNNING |
+| S11 (exploration) | random_forest | 141 | 0.24572 | RUNNING |
+| S12 (extra_trees) | catboost | 160 | 0.23252 | RUNNING — RECOVERED |
+| S13 (catboost) | catboost | 130 | 0.22749 | RUNNING — RECOVERED |
+| S14 (lightgbm) | lightgbm | 108 | **0.22251** | RUNNING — ★ FLEET BEST |
+| S15 (wide) | wide | 127 | 0.22418 | RUNNING |
+| S16 (gradient_boost) | gradient_boost | 86 | 0.22573 | RUNNING |
+| S17 (ensemble) | ensemble | 139 | 0.22493 | RUNNING |
 
-**GH Actions (3 workflows on schedule):**
-| Workflow | Schedule | Last Run | Status |
-|----------|----------|----------|--------|
-| Trading Floor | */2h | 23:06 UTC | SUCCESS |
-| Backtest Swarm | */2h | 23:00 UTC | SUCCESS |
-| Scientific Experiment | */2h | 22:43 UTC | FIXED (was failing — git race) |
-| GPU Cron Launcher | manual | — | NOT TRIGGERED YET |
-| Arena Engine | daily | — | NOT TRIGGERED YET |
+**Political Evolution Islands (4/4 UP, target 8):**
+| Island | Model | Gen | Best Brier | Status |
+|--------|-------|-----|-----------|--------|
+| P1 (political-alpha) | xgboost | 3042 | 0.24996 | RUNNING |
+| P2 (political-alpha-2) | lightgbm | 2212 | 0.25223 | RUNNING |
+| P3 (political-alpha-3) | xgboost | 10344 | **0.24990** | RUNNING — ★ POL BEST |
+| P4 (political-alpha-4) | logistic | 4301 | 0.25146 | RUNNING |
+
+**Trading Floor v5 (10 real LLM agents):**
+- HF Space: LBJLincoln26/nba-llm-trading-floor
+- GH Action: every 2h, full-season experiment
+- Providers: Cerebras (4 models) + Gemini (2 keys) + OpenRouter (4 free models)
+
+**GH Actions (5 workflows):**
+| Workflow | Schedule | Status |
+|----------|----------|--------|
+| Trading Floor | */2h | SUCCESS |
+| Backtest Swarm | */2h | SUCCESS |
+| Scientific Experiment | */2h | SUCCESS |
+| GPU Cron Launcher | manual | READY |
+| Arena Engine | daily | READY |
 
 **VM Crons (28 active, all lightweight):**
 - Odds fetch, political data, monitoring, keepalive, vault sync, Bloomberg API
-- RAM: 631MB used / 969MB total. Swap: 536MB/2GB. Healthy.
+- RAM: 637MB used / 969MB total. Swap: 156MB/2GB. Healthy.
 
-**Providers (HONEST):**
+**Providers (HONEST, verified 2026-04-13):**
 | Provider | Status | Models | Used By |
 |----------|--------|--------|---------|
-| Cerebras | WORKING | qwen-3-235b, llama-3.1-8b | T1-T5 NBA+Political |
-| Google (KEY_2) | WORKING | gemini-2.5-flash | Bull/Bear debate judge |
-| OpenRouter (2 keys) | FREE TIER ONLY | gemma-3-27b:free, llama-3.3:free | Rate-limited, 402 on paid |
-| HF Inference | ALL 4 DEAD | — | Monthly credits exhausted |
-| Self-hosted | NOT DEPLOYED | — | Configs ready, needs HF Space deploy |
+| Cerebras | WORKING | qwen-3-235b, llama3.1-8b, zai-glm-4.7, gpt-oss-120b | T3-T6 |
+| Google Gemini | WORKING (2 keys) | gemini-2.5-flash, gemini-3-flash-preview | T1-T2 + debate judge |
+| OpenRouter (3 keys) | FREE ONLY | gemma-4-26b, nemotron-120b, minimax-m2.5, qwen3-80b | T7-T10 |
+| HF Inference | DEAD | — | Monthly credits exhausted |
 
-### What's ACTUALLY shipped (Apr 12)
+### What's ACTUALLY shipped (Apr 12-13)
 - ✅ 98 scripts hardcoded `/home/termius` → relative `Path(__file__)` (ed565071)
 - ✅ brier_proxy.py: constant 0.253826 → live 0.20939 (root cause of 7/9 dept stall)
 - ✅ 4 dept loops (engineering/betting/evaluation/political) → real Karpathy mutators
@@ -184,17 +196,19 @@ ever runs live without `dsr > 0 at p < 0.05 and pbo < 0.40`.
 - ✅ /world page rewritten with @pixi/react v8 + XP.css (pending Vercel deploy)
 - ✅ /floor social feed + per-agent bets pipeline
 - ✅ Karpathy skill rewritten (366 lines, 6-phase loop)
+- ✅ S12 + S13 RECOVERED (were gen 0 brier 1.0, now evolving normally)
+- ✅ Trading Floor v5: 10 real LLM agents (was 5 with dead HF Inference)
+- ✅ Real LLM calls wired: only recent games (last 7 days) use live API calls (47d3fdfa)
+- ✅ HF LLM Trading Floor Space built (scripts/arena/hf-llm-trading-floor/)
 
 ### What's NOT done (honest)
-- ❌ S12 + S13 never evolved (gen 0, brier 1.0) — need investigation
-- ❌ Dashboard deploy not yet verified (Vercel rebuild just pushed)
+- ❌ P5-P8 Political islands not deployed (need 4 more for 8-island parity)
+- ❌ Dashboard deploy not yet verified on Vercel
 - ❌ OpenRouter only works on free tier — paid models 402
 - ❌ Self-hosted LLM not deployed on any HF Space
-- ❌ Codex plugin not researched
 - ❌ Obsidian Karpathy brain not integrated
-- ❌ Playoff categories written but NOT committed (bet_categories.py)
 - ❌ Dead file cleanup (70MB) staged but NOT committed
-- ❌ V4→V5 migration incomplete — autonomous-cycle.sh still calls v4
+- ❌ Legacy TF v4 spaces still live (should delete)
 
 ### vs Mirofish (camel-ai/oasis)
 We vendored it and built an adapter (oasis_adapter.py), but it's LITE MODE
