@@ -2,8 +2,8 @@ name: Karpathy Autonomous Tuning
 
 on:
   schedule:
-    # Run every 6 hours
-    - cron: '0 0,6,12,18 * * *'
+    # Every 6 hours at :05 (slot A — no overlap with other workflows)
+    - cron: '5 0,6,12,18 * * *'
   workflow_dispatch:
     inputs:
       iterations:

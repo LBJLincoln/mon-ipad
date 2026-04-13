@@ -2,8 +2,8 @@ name: GPU Compute Burst
 
 on:
   schedule:
-    # Every 6 hours — cascade: ZeroGPU (free H200) -> Modal -> Lightning
-    - cron: '0 0,6,12,18 * * *'
+    # Every 6 hours at :50 (slot F — no overlap, runs after karpathy finishes)
+    - cron: '50 0,6,12,18 * * *'
   workflow_dispatch:
     inputs:
       platform:

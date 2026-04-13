@@ -53,6 +53,37 @@ NBA_DMAD_PROFILES: Dict[str, Dict] = {
         "excluded": ["home_standings", "away_standings", "models"],
         "reasoning_label": "Looks for spots where market is likely wrong on recent form.",
     },
+    # ── New traders (expanded roster Apr 2026) ─────────────────────────────
+    "deepseek": {
+        "name": "Full-Context Quant",
+        "data_sources": ["home_standings", "away_standings", "odds", "models"],
+        "excluded": ["home_form_L10", "away_form_L10"],
+        "reasoning_label": "Sees full season + market but ignores recent form. Long-term statistical anchor.",
+    },
+    "phi": {
+        "name": "Model-Only Theorist",
+        "data_sources": ["models"],
+        "excluded": ["home_standings", "away_standings", "odds", "home_form_L10", "away_form_L10"],
+        "reasoning_label": "Pure model output. No human-readable context. Trust the math.",
+    },
+    "cohere": {
+        "name": "Form + Market Tactician",
+        "data_sources": ["home_form_L10", "away_form_L10", "odds"],
+        "excluded": ["home_standings", "away_standings", "models"],
+        "reasoning_label": "Recent form meets market pricing. Short-term tactical view.",
+    },
+    "gemma": {
+        "name": "Odds Arbitrageur",
+        "data_sources": ["odds", "models"],
+        "excluded": ["home_standings", "away_standings", "home_form_L10", "away_form_L10"],
+        "reasoning_label": "Finds model-vs-market disagreement. Pure edge detection.",
+    },
+    "mixtral": {
+        "name": "Everything Ensemble",
+        "data_sources": ["home_standings", "away_standings", "home_form_L10", "away_form_L10", "odds", "models"],
+        "excluded": [],
+        "reasoning_label": "Sees all data. Ensemble view with no blind spots but groupthink risk.",
+    },
 }
 
 # ── POLITICAL DMAD PROFILES ───────────────────────────────────────────────────
@@ -96,10 +127,46 @@ POLITICAL_DMAD_PROFILES: Dict[str, Dict] = {
         "excluded_signals": ["technology", "financials"],
         "reasoning_label": "Energy and commodity contrarian signals only.",
     },
+    # ── New traders (expanded roster Apr 2026) ─────────────────────────────
+    "deepseek": {
+        "name": "Macro Quant",
+        "event_filter": ["fed_rule", "TARIFF_ESCALATE", "ENFORCEMENT_DROP", "exec_order"],
+        "signal_keys": ["broad", "financials", "small_cap", "technology"],
+        "excluded_signals": ["commodity"],
+        "reasoning_label": "Macro policy signals: Fed, tariffs, executive orders. Broad market view.",
+    },
+    "phi": {
+        "name": "Safe Haven Theorist",
+        "event_filter": ["fed_rule", "INSIDER_SELL", "ENFORCEMENT_DROP"],
+        "signal_keys": ["bonds", "commodity", "healthcare"],
+        "excluded_signals": ["technology", "energy", "defense"],
+        "reasoning_label": "Risk-off signals only: rate moves, insider selling, enforcement drops.",
+    },
+    "cohere": {
+        "name": "Tech Policy Tracker",
+        "event_filter": ["exec_order", "CONTRACT_AWARD", "polymarket", "SECTOR_LONG"],
+        "signal_keys": ["technology", "industrials", "broad"],
+        "excluded_signals": ["commodity", "bonds"],
+        "reasoning_label": "Government tech spending, contracts, and sector-specific policy.",
+    },
+    "gemma": {
+        "name": "Volatility Hunter",
+        "event_filter": ["EXECUTIVE_ORDER", "TARIFF_ESCALATE", "CEO_PERSONAL", "EVENT_BINARY"],
+        "signal_keys": ["energy", "technology", "small_cap"],
+        "excluded_signals": ["bonds", "healthcare"],
+        "reasoning_label": "High-volatility catalysts: tariffs, exec orders, CEO events.",
+    },
+    "mixtral": {
+        "name": "Cross-Sector Rotator",
+        "event_filter": ["fed_rule", "exec_order", "insider_trade", "SECTOR_LONG", "ENERGY_LONG"],
+        "signal_keys": ["broad", "financials", "energy", "bonds"],
+        "excluded_signals": ["defense"],
+        "reasoning_label": "Broad cross-sector rotation signals. Sees most event types.",
+    },
 }
 
 # ── ANTI-GROUPTHINK CONSTANTS ─────────────────────────────────────────────────
-CONSENSUS_THRESHOLD = 3       # out of 5 agents must agree to trigger damping
+CONSENSUS_THRESHOLD = 5       # out of 10 agents must agree to trigger damping (was 3/5)
 CONSENSUS_DAMPING   = 0.60    # multiply Kelly by this when consensus fires (40% reduction)
 
 

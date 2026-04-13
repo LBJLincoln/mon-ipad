@@ -79,6 +79,47 @@ AGENT_OBJECTIVES = {
         "min_edge_override": 0.05,  # only big edges
         "max_bet_mult": 1.5,  # bigger bets on conviction
     },
+    # ── New traders (expanded roster Apr 2026) ─────────────────────────────
+    "deepseek": {
+        "name": "Variance Minimizer",
+        "objective": "min_variance",
+        "description": "Minimizes return variance. Flat sizing across high-confidence bets.",
+        "edge_scaling": lambda edge: min(edge, 0.10),  # cap edge to reduce variance
+        "min_edge_override": 0.03,
+        "max_bet_mult": 0.6,  # small, consistent bets
+    },
+    "phi": {
+        "name": "Information Ratio Maximizer",
+        "objective": "max_info_ratio",
+        "description": "Maximizes information ratio (alpha per unit tracking error). Very selective.",
+        "edge_scaling": lambda edge: edge * 1.3 if edge > 0.06 else 0.0,  # strong filter
+        "min_edge_override": 0.06,  # high selectivity
+        "max_bet_mult": 0.4,  # tiny bets, pure alpha
+    },
+    "cohere": {
+        "name": "Sortino Optimizer",
+        "objective": "max_sortino",
+        "description": "Maximizes Sortino ratio. Penalizes downside risk, tolerates upside volatility.",
+        "edge_scaling": lambda edge: edge * 1.1,  # slight boost
+        "min_edge_override": 0.02,
+        "max_bet_mult": 0.9,  # near-full sizing
+    },
+    "gemma": {
+        "name": "Tail Risk Harvester",
+        "objective": "max_tail_return",
+        "description": "Hunts large payoffs. Concentrated on high-odds underdogs and exotic bets.",
+        "edge_scaling": lambda edge: edge * 2.5 if edge > 0.12 else edge * 0.5,  # big or bust
+        "min_edge_override": 0.01,  # takes small edges at long odds
+        "max_bet_mult": 2.0,  # oversized on conviction
+    },
+    "mixtral": {
+        "name": "Ensemble Consensus",
+        "objective": "ensemble_avg",
+        "description": "Averages signals from multiple model families. Smooth, diversified approach.",
+        "edge_scaling": lambda edge: edge * 0.9,  # slight discount for averaging noise
+        "min_edge_override": 0.02,
+        "max_bet_mult": 0.8,
+    },
 }
 
 

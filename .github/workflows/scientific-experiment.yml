@@ -2,8 +2,8 @@ name: Scientific Experiment
 
 on:
   schedule:
-    # Every 2 hours
-    - cron: '0 */2 * * *'
+    # Every 4 hours at :15 (slot B — staggered from karpathy :05 and backtest :25)
+    - cron: '15 1,5,9,13,17,21 * * *'
   workflow_dispatch:
     inputs:
       project:
