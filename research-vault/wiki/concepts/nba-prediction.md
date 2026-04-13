@@ -9,11 +9,11 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 
 ## Sources
 
-- **2025-26 NBA Season — Agent MIXTRAL ENSEMBLE** (10640 words) -- `raw/arena-docs/mixtral-season-2025-26.md`
-- **2025-26 NBA Season — Agent COMMAND TACTICIAN** (10225 words) -- `raw/arena-docs/cohere-season-2025-26.md`
-- **2025-26 NBA Season — Agent DEEPSEEK QUANT** (9834 words) -- `raw/arena-docs/deepseek-season-2025-26.md`
-- **2025-26 NBA Season — Agent QWEN STRATEGIST** (9286 words) -- `raw/arena-docs/openrouter-season-2025-26.md`
-- **2025-26 NBA Season — Agent GEMMA ARBITRAGEUR** (9284 words) -- `raw/arena-docs/gemma-season-2025-26.md`
+- **2025-26 NBA Season — Agent MIXTRAL ENSEMBLE** (10655 words) -- `raw/arena-docs/mixtral-season-2025-26.md`
+- **2025-26 NBA Season — Agent COMMAND TACTICIAN** (10203 words) -- `raw/arena-docs/cohere-season-2025-26.md`
+- **2025-26 NBA Season — Agent DEEPSEEK QUANT** (9843 words) -- `raw/arena-docs/deepseek-season-2025-26.md`
+- **2025-26 NBA Season — Agent QWEN STRATEGIST** (9299 words) -- `raw/arena-docs/openrouter-season-2025-26.md`
+- **2025-26 NBA Season — Agent GEMMA ARBITRAGEUR** (9256 words) -- `raw/arena-docs/gemma-season-2025-26.md`
 - **2025-26 NBA Season — Agent PHI THEORIST** (9075 words) -- `raw/arena-docs/phi-season-2025-26.md`
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
