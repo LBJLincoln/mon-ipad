@@ -1085,7 +1085,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # Build log entry for this agent's decision
             log_entry = {
                 "game_idx": game_idx,
-                "game": f"{game_ctx.get('away_team', '?')} @ {game_ctx.get('home_team', '?')}",
+                "game": f"{game_ctx.get('away', '?')} @ {game_ctx.get('home', '?')}",
                 "date": game_ctx.get("date", ""),
                 "action": "pass",
                 "reasoning": (raw_response or "")[:300],  # First 300 chars of LLM reasoning
