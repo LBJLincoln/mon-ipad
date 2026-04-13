@@ -65,4 +65,4 @@ No papers found this week.
 - **Target:** Brier < 0.20, ROI > 5%, Sharpe > 1.5
 
 ---
-*Generated: 2026-04-13 06:00 UTC by research-digest.py*
+*Generated: 2026-04-13 18:00 UTC by research-digest.py*
