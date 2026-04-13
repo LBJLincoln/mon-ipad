@@ -1,7 +1,7 @@
 #!/bin/bash
 # Keepalive for HF Spaces — prevents auto-sleep on free tier
 # Called by cron: */30 * * * *
-# 25 active spaces: 10 NBA + 4 Political + 9 Department Councils + 1 Pixel World (4 HF accounts)
+# 27 active spaces: 10 NBA + 4 Political + 2 TF/Gateway + 9 Dept Councils + 2 TESTforge42 (4 HF accounts)
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -76,6 +76,10 @@ ping_or_restart "P1 (exploit)"  https://nomos42-political-alpha.hf.space/   "Nom
 ping_or_restart "P2 (explore)"  https://nomos42-political-alpha-2.hf.space/ "Nomos42/political-alpha-2"
 ping_or_restart "P3 (political3)" https://lbjlincoln-political-alpha-3.hf.space/ "LBJLincoln/political-alpha-3"
 ping_or_restart "P4 (political4)" https://lbjlincoln-political-alpha-4.hf.space/ "LBJLincoln/political-alpha-4"
+
+# Trading Floor + LLM Gateway (LBJLincoln26 account)
+ping_or_restart "TF (trading)"  https://lbjlincoln26-nba-llm-trading-floor.hf.space/ "LBJLincoln26/nba-llm-trading-floor"
+ping_or_restart "GW (gateway)"  https://lbjlincoln26-llm-gateway.hf.space/            "LBJLincoln26/llm-gateway"
 
 # Department Council Spaces (9) — across 4 HF accounts
 # LBJLincoln: D1, D2 | LBJLincoln26: D3, D4 | Nomos42: D5, D6 | TESTforge42: D7, D8, D9

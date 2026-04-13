@@ -77,6 +77,8 @@ ISLANDS = {
     "S15": {"url": "nomos42-nba-evo-6",        "role": "wide_search",           "mut": 0.18, "feat": 80,  "model": None},
     "S16": {"url": "lbjlincoln26-nba-evo-s16", "role": "gradient_boost",        "mut": 0.10, "feat": 70,  "model": None},
     "S17": {"url": "lbjlincoln26-nba-evo-s17", "role": "ensemble",              "mut": 0.10, "feat": 70,  "model": None},
+    "S18": {"url": "testforge42-nba-evo-s18",  "role": "cat_brier",             "mut": 0.08, "feat": 65,  "model": "catboost"},
+    "S19": {"url": "testforge42-nba-evo-s19",  "role": "ultra_wide",            "mut": 0.15, "feat": 90,  "model": None},
 }
 
 # ─── LLM Backend (reusing free-models-integration logic inline) ───────────────
@@ -496,7 +498,7 @@ def scan_nba_engineering() -> dict:
     return {
         "atr": 0.21570,
         "current_best_brier": best_brier,
-        "feature_engine_version": "v3.1-46cat",
+        "feature_engine_version": "v3.1-54cat",
         "feature_count": 6253,
         "max_features": 200,
         "recent_commits": recent_git,

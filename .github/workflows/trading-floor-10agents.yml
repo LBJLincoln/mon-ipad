@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'Run mode: full or lite'
+        description: 'Run mode: status or trigger'
         required: false
-        default: 'full'
+        default: 'status'
   schedule:
     # Every 4 hours at :45 (slot D — staggered from backtest :25)
     - cron: '45 2,6,10,14,18,22 * * *'
@@ -15,76 +15,68 @@ permissions:
   contents: write
 
 jobs:
-  nba-trading:
-    name: NBA Trading Floor (10 agents)
+  # ── NBA TRADING FLOOR: HF Space is primary, GH Action just monitors ──
+  nba-trading-monitor:
+    name: NBA Trading Floor Monitor
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Checkout nomos-nba-agent (game + odds data)
-        uses: actions/checkout@v4
-        with:
-          repository: LBJLincoln/nomos-nba-agent
-          path: nomos-nba-agent
-
-      - name: Symlink nomos-nba-agent to parent directory
-        run: ln -sfn "$GITHUB_WORKSPACE/nomos-nba-agent" "$GITHUB_WORKSPACE/../nomos-nba-agent"
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: pip install requests
-
-      - name: Run 10-Agent Real LLM Trading Floor (batch)
-        env:
-          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
-          OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
-          OPENROUTER_KEY_PME: ${{ secrets.OPENROUTER_KEY_PME }}
-          OPENROUTER_KEY_BARTOLI: ${{ secrets.OPENROUTER_KEY_BARTOLI }}
+      - name: Check HF Trading Floor Space status
         run: |
+          echo "=== Nomos42 Trading Floor Status ==="
+          # Get status from HF Space API
+          STATUS=$(curl -s --max-time 15 \
+            "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status" || echo '{"error":"unreachable"}')
+          echo "$STATUS" | python3 -c "
+          import sys, json
+          try:
+              d = json.load(sys.stdin)
+              print(f\"Running: {d.get('running', '?')}\")
+              print(f\"Games: {d.get('games_processed', '?')}/{d.get('games_total', '?')}\")
+              print(f\"LLM calls: {d.get('llm_calls', '?')} (fails: {d.get('llm_failures', '?')})\")
+              if d.get('agents'):
+                  for tid, ts in sorted(d['agents'].items(), key=lambda x: -x[1].get('bankroll', 0)):
+                      print(f\"  {tid:12s} \${ts.get('bankroll',100):>8.2f}  bets={ts.get('total_bets',0)}\")
+          except:
+              print(f'Raw: {d}' if 'd' in dir() else 'Failed to parse')
+          "
+
+          # Get leaderboard
+          echo ""
+          echo "=== Leaderboard ==="
+          curl -s --max-time 15 \
+            "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard" \
+            | python3 -m json.tool 2>/dev/null | head -40 || echo "Leaderboard unavailable"
+
+          # Save status to file for commit
           mkdir -p data/arena
-          python3 scripts/arena/trading-floor-10agents-cli.py --games 15 \
-            2>&1 | tail -80
+          echo "$STATUS" > data/arena/trading-floor-status.json
 
-      - name: Run Political Trading Floor iteration
-        env:
-          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
-          GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
-          OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
-          OPENROUTER_KEY_PME: ${{ secrets.OPENROUTER_KEY_PME }}
+      - name: Check LLM Gateway health
         run: |
-          mkdir -p data/arena/political
-          if [ -f scripts/arena/political-trading-floor.py ]; then
-            python3 scripts/arena/political-trading-floor.py 2>&1 | tail -40
-          fi
-        continue-on-error: true
+          echo "=== LLM Gateway Status ==="
+          curl -s --max-time 10 \
+            "https://lbjlincoln26-llm-gateway.hf.space/gradio_api/call/list_models" \
+            -X POST -H "Content-Type: application/json" -d '{"data": []}' \
+            | python3 -c "import sys,json; print(json.load(sys.stdin).get('event_id','no event'))" 2>/dev/null \
+            && echo "Gateway: RESPONDING" || echo "Gateway: DOWN"
 
-      - name: Commit trading results
+      - name: Commit status snapshot
         run: |
           git config user.name "Trading Floor Bot"
           git config user.email "trading@nomos42.ai"
-          git add data/arena/trading-floor-10agents-state.json \
-                  data/arena/trading-floor-10agents-latest.json \
-                  data/arena/political/ \
-                  2>/dev/null || true
+          git add data/arena/trading-floor-status.json 2>/dev/null || true
           if ! git diff --cached --quiet 2>/dev/null; then
             git stash --include-untracked
             git pull --rebase origin main
             git stash pop || true
-            git add data/arena/trading-floor-10agents-state.json \
-                    data/arena/trading-floor-10agents-latest.json \
-                    data/arena/political/ \
-                    2>/dev/null || true
-            git commit -m "data: trading floor 10-agent iteration $(date -u +%Y-%m-%dT%H:%MZ)"
+            git add data/arena/trading-floor-status.json 2>/dev/null || true
+            git commit -m "data: trading floor status $(date -u +%Y-%m-%dT%H:%MZ)"
             for attempt in 1 2 3; do
               git pull --rebase || true
               git push && break
@@ -92,9 +84,10 @@ jobs:
               git pull --rebase origin main || true
             done
           else
-            echo "No trading changes to commit"
+            echo "No status changes to commit"
           fi
 
+  # ── POLITICAL BACKTEST (unchanged — still runs locally) ──
   political-backtest:
     name: Political Backtest Swarm
     runs-on: ubuntu-latest

@@ -23,6 +23,10 @@ import time
 import requests
 import traceback
 import io
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 # ── STARTUP DIAGNOSTICS ─────────────────────────────────────────────────────
 print("=" * 60)
@@ -44,6 +48,51 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
+
+# ── CONTROL STATE (stop/mutate/resume) ──────────────────────────────────────
+_stop_event = threading.Event()
+_experiment_running = False
+_experiment_state = {}  # Persisted to disk
+_agent_logs: Dict[str, List[dict]] = defaultdict(list)  # Per-agent decision log
+_state_lock = threading.Lock()
+STATE_PATH = Path("/tmp/tf-state.json")   # Persists across restarts on HF Spaces
+LOGS_PATH = Path("/tmp/tf-agent-logs.json")
+GATEWAY_URL = os.environ.get("GATEWAY_URL", "").rstrip("/")
+
+def _save_state_to_disk(state: dict):
+    """Persist experiment state to disk (survives Space restarts)."""
+    try:
+        STATE_PATH.write_text(json.dumps(state, default=str))
+    except Exception:
+        pass
+
+def _load_state_from_disk() -> Optional[dict]:
+    """Load persisted state if available."""
+    try:
+        if STATE_PATH.exists():
+            return json.loads(STATE_PATH.read_text())
+    except Exception:
+        pass
+    return None
+
+def _save_logs_to_disk():
+    """Persist agent logs."""
+    try:
+        LOGS_PATH.write_text(json.dumps(dict(_agent_logs), default=str))
+    except Exception:
+        pass
+
+def _load_logs_from_disk():
+    """Load persisted logs."""
+    global _agent_logs
+    try:
+        if LOGS_PATH.exists():
+            data = json.loads(LOGS_PATH.read_text())
+            _agent_logs = defaultdict(list, data)
+    except Exception:
+        pass
+
+_load_logs_from_disk()
 
 # ── TEAM MAP ────────────────────────────────────────────────────────────────
 TEAM_MAP = {
@@ -86,19 +135,20 @@ PROVIDERS = {
         "max_tokens": 400,
         "rpm": 30,
     },
-    "cerebras:zai-glm-4.7": {
-        "url": "https://api.cerebras.ai/v1/chat/completions",
-        "model": "zai-glm-4.7",
-        "key_env": "CEREBRAS_API_KEY",
+    # NOTE: cerebras:zai-glm-4.7 and gpt-oss-120b return 404 — replaced with OpenRouter
+    "openrouter:glm-4.5-air:free": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "z-ai/glm-4.5-air:free",
+        "key_env": "OPENROUTER_KEY_BARTOLI",
         "max_tokens": 400,
-        "rpm": 30,
+        "rpm": 20,
     },
-    "cerebras:gpt-oss-120b": {
-        "url": "https://api.cerebras.ai/v1/chat/completions",
-        "model": "gpt-oss-120b",
-        "key_env": "CEREBRAS_API_KEY",
+    "openrouter:gpt-oss-20b:free": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "openai/gpt-oss-20b:free",
+        "key_env": "OPENROUTER_KEY_ORCHESTRATOR",
         "max_tokens": 400,
-        "rpm": 30,
+        "rpm": 20,
     },
     # ── GEMINI (2 keys) ──
     "google:gemini-2.5-flash": {
@@ -165,11 +215,11 @@ TRADERS = {
         "personality": "contrarian", "risk_tolerance": 0.65,
     },
     "glm": {
-        "name": "ZAI GLM 4.7", "provider": "cerebras:zai-glm-4.7",
+        "name": "GLM 4.5 Air", "provider": "openrouter:glm-4.5-air:free",
         "personality": "conservative", "risk_tolerance": 0.40,
     },
     "gptoss": {
-        "name": "GPT-OSS 120B", "provider": "cerebras:gpt-oss-120b",
+        "name": "GPT-OSS 20B", "provider": "openrouter:gpt-oss-20b:free",
         "personality": "aggressive", "risk_tolerance": 0.70,
     },
     "gemma4": {
@@ -219,14 +269,14 @@ EDGE DETECTION: Target games where public betting % diverges from sharp money. L
 RISK: High (0.65). Larger positions on strong contrarian signals. Willing to bet big on +200 underdogs.
 SPECIALTY: Spread betting, especially taking points. Track line movement for reverse line moves.""",
 
-    "glm": """You are ZAI GLM 4.7, a conservative capital-preservation agent powered by Zhipu AI.
+    "glm": """You are GLM 4.5 Air, a conservative capital-preservation agent powered by Zhipu AI.
 APPROACH: Only bet when multiple signals align: model prediction + odds value + form + matchup advantage all pointing same direction.
 PREFERRED STRATEGIES: eighth_kelly, flat_1pct, drawdown_adjusted
 EDGE DETECTION: Require edge >5% AND model confidence >65% AND positive recent form. Triple confirmation.
 RISK: Very low (0.40). Pass on most games. When you bet, it's small. Steady low-variance growth.
 SPECIALTY: Home favorites with strong recent form. Rarely bet road teams or underdogs.""",
 
-    "gptoss": """You are GPT-OSS 120B, an aggressive high-conviction betting agent.
+    "gptoss": """You are GPT-OSS 20B, an aggressive high-conviction betting agent.
 APPROACH: Go big or go home. Find strongest edges and bet aggressively. Analyze player matchups, rest days, back-to-back situations.
 PREFERRED STRATEGIES: full_kelly, streak_momentum, confidence_scaled
 EDGE DETECTION: When edge >3%, bet big. Weight player-level stats heavily — if star averages 28 PPG and total seems low, hammer over.
@@ -905,6 +955,27 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             "max_drawdown": 0.0,
         }
 
+    global _experiment_running, _experiment_state
+    _experiment_running = True
+    _stop_event.clear()
+
+    # Check for persisted state (resume after restart)
+    saved = _load_state_from_disk()
+    start_from = 0
+    if saved and not saved.get("completed") and saved.get("games_processed", 0) > 0:
+        # Resume from where we left off
+        state = {tid: saved["agents"][tid] for tid in TRADERS if tid in saved.get("agents", {})}
+        start_from = saved.get("games_processed", 0)
+        for tid in TRADERS:
+            if tid not in state:
+                state[tid] = {
+                    "bankroll": 100.0, "total_bets": 0, "wins": 0, "losses": 0,
+                    "passes": 0, "llm_calls": 0, "llm_ok": 0,
+                    "history": [100.0], "game_log": [], "best_bankroll": 100.0,
+                    "worst_bankroll": 100.0, "max_drawdown": 0.0,
+                }
+        print(f"RESUMING from game {start_from}")
+
     start_time = time.time()
     odds_matched = 0
     odds_synthetic = 0
@@ -915,11 +986,21 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     log_lines.append(f"Season: 2025-26 | Games: {n_games} | Agents: {len(TRADERS)}")
     log_lines.append(f"API keys: {key_summary or 'NONE FOUND'}")
     log_lines.append(f"Data: {len(rosters)} rosters | {len(team_advanced)} teams adv | {len(full_odds)} odds games | {len(model_preds)} predictions | {len(strategies)} strategies")
+    if start_from > 0:
+        log_lines.append(f"RESUMED from game {start_from}")
     log_lines.append(f"Start: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
-    log_lines.append(f"Estimated runtime: 4-6 hours")
     log_lines.append("=" * 50)
 
     for game_idx, game in enumerate(all_games):
+        # Skip already-processed games (resume support)
+        if game_idx < start_from:
+            game_dates_seen.add(game["date"])
+            continue
+
+        # Check stop signal
+        if _stop_event.is_set():
+            log_lines.append(f"=== STOPPED at game {game_idx} by user/council ===")
+            break
         game_date = game["date"]
         home = game["home"]
         away = game["away"]
@@ -1048,6 +1129,20 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         decisions_str = " | ".join(game_decisions[:5]) if game_decisions else "all passed"
         game_log_entry += decisions_str
         log_lines.append(game_log_entry)
+
+        # Persist state to disk every 10 games (survive restarts)
+        if (game_idx + 1) % 10 == 0:
+            with _state_lock:
+                _experiment_state = {
+                    "games_processed": game_idx + 1,
+                    "games_total": n_games,
+                    "completed": False,
+                    "agents": {tid: {k: v for k, v in ts.items() if k != "history"}
+                               for tid, ts in state.items()},
+                    "updated": datetime.now(timezone.utc).isoformat(),
+                }
+                _save_state_to_disk(_experiment_state)
+                _save_logs_to_disk()
 
         # Yield update every 5 games or at milestones
         if (game_idx + 1) % 5 == 0 or game_idx == n_games - 1 or game_idx < 3:
@@ -1179,8 +1274,28 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         ])
 
     fig = make_bankroll_chart(state, n_games)
-    status = f"COMPLETE | {n_games} games | {elapsed/60:.1f}min | Winner: {TRADERS[final_ranking[0][0]]['name']} ${final_ranking[0][1]['bankroll']:.2f}"
+    stopped = _stop_event.is_set()
+    winner = TRADERS[final_ranking[0][0]]['name']
+    winner_bank = final_ranking[0][1]['bankroll']
+    games_done = game_idx + 1 if 'game_idx' in dir() else n_games
+    status = f"{'STOPPED' if stopped else 'COMPLETE'} | {games_done} games | {elapsed/60:.1f}min | Winner: {winner} ${winner_bank:.2f}"
     log_text = "\n".join(log_lines[-50:])
+
+    # Final state save
+    with _state_lock:
+        _experiment_state = {
+            "games_processed": games_done,
+            "games_total": n_games,
+            "completed": not stopped,
+            "stopped": stopped,
+            "agents": {tid: {k: v for k, v in ts.items() if k != "history"}
+                       for tid, ts in state.items()},
+            "updated": datetime.now(timezone.utc).isoformat(),
+            "elapsed_seconds": round(elapsed, 1),
+        }
+        _save_state_to_disk(_experiment_state)
+        _save_logs_to_disk()
+    _experiment_running = False
 
     yield (status, lb_data, fig, log_text)
 
@@ -1242,7 +1357,7 @@ with gr.Blocks(
     .gradio-container { max-width: 1200px !important; }
     .status-bar { font-family: monospace; font-size: 14px; }
     """
-) as app:
+) as demo:
     gr.Markdown("""
 # Nomos42 Real LLM Trading Floor
 ### 10 AI Agents x 1257 NBA Games x Real LLM Reasoning
@@ -1260,8 +1375,8 @@ combination actually makes money.
 | Gemini 3 Flash | Gemini 3 Flash Preview | Google (key 2) | Diversified | 0.50 |
 | Qwen 3 235B | Qwen 3 235B-A22B | Cerebras | Quantitative | 0.55 |
 | Llama 3.1 8B | Llama 3.1 8B | Cerebras | Contrarian | 0.65 |
-| ZAI GLM 4.7 | GLM 4.7 | Cerebras | Conservative | 0.40 |
-| GPT-OSS 120B | GPT-OSS 120B | Cerebras | Aggressive | 0.70 |
+| GLM 4.5 Air | GLM 4.5 Air | OpenRouter | Conservative | 0.40 |
+| GPT-OSS 20B | GPT-OSS 20B | OpenRouter | Aggressive | 0.70 |
 | Gemma 4 26B | Gemma 4 26B | OpenRouter | Arbitrage | 0.75 |
 | Nemotron 120B | Nemotron 3 Super 120B | OpenRouter | Tactical | 0.60 |
 | MiniMax M2.5 | MiniMax M2.5 | OpenRouter | Theoretical | 0.35 |
@@ -1269,8 +1384,9 @@ combination actually makes money.
     """)
 
     with gr.Row():
-        start_btn = gr.Button("Start Full Season Experiment", variant="primary", scale=3)
-        status_box = gr.Textbox(label="Status", interactive=False, scale=7, elem_classes=["status-bar"])
+        start_btn = gr.Button("Start / Resume Experiment", variant="primary", scale=3)
+        stop_btn = gr.Button("Stop", variant="stop", scale=1)
+        status_box = gr.Textbox(label="Status", interactive=False, scale=6, elem_classes=["status-bar"])
 
     with gr.Row():
         leaderboard = gr.Dataframe(
@@ -1287,10 +1403,122 @@ combination actually makes money.
         log_box = gr.Textbox(label="Game Log (last 30 entries)", lines=15, interactive=False,
                              show_copy_button=True)
 
+    def stop_experiment():
+        _stop_event.set()
+        return "STOPPING... (will finish current game)"
+
     start_btn.click(
         fn=run_experiment,
         outputs=[status_box, leaderboard, chart, log_box],
     )
+    stop_btn.click(
+        fn=stop_experiment,
+        outputs=[status_box],
+    )
+
+
+# ── FASTAPI CONTROL API ────────────────────────────────────────────────────
+# Mounted alongside Gradio for programmatic control (councils, GH Actions, CLI)
+
+api = FastAPI()
+
+@api.get("/api/status")
+async def api_status():
+    """Current experiment status — for councils, monitoring, GH Actions."""
+    with _state_lock:
+        state = dict(_experiment_state) if _experiment_state else {}
+    state["running"] = _experiment_running
+    state["stopped"] = _stop_event.is_set()
+    state["llm_calls"] = _llm_calls
+    state["llm_failures"] = _llm_failures
+    state["gateway_url"] = GATEWAY_URL or None
+    return JSONResponse(state)
+
+@api.post("/api/run")
+async def api_run(request: Request):
+    """Trigger experiment start (same as clicking the button).
+    For GH Actions / council triggers. Non-blocking — returns immediately."""
+    if _experiment_running:
+        return JSONResponse({"status": "already_running", "games_processed": _experiment_state.get("games_processed", 0)})
+    # Can't start from API directly (Gradio owns the generator), but we clear stop
+    _stop_event.clear()
+    return JSONResponse({"status": "ready", "message": "Stop flag cleared. Click Start in Gradio UI or use gradio_api."})
+
+@api.post("/api/stop")
+async def api_stop():
+    """Graceful stop — finishes current game then saves state."""
+    _stop_event.set()
+    return JSONResponse({"status": "stopping", "running": _experiment_running})
+
+@api.post("/api/reset")
+async def api_reset():
+    """Reset experiment state (delete saved state)."""
+    if _experiment_running:
+        return JSONResponse({"status": "error", "message": "Cannot reset while running. Stop first."}, status_code=409)
+    global _experiment_state, _agent_logs
+    _experiment_state = {}
+    _agent_logs = defaultdict(list)
+    try:
+        STATE_PATH.unlink(missing_ok=True)
+        LOGS_PATH.unlink(missing_ok=True)
+    except Exception:
+        pass
+    return JSONResponse({"status": "reset", "message": "State cleared. Next run starts fresh."})
+
+@api.post("/api/mutate")
+async def api_mutate(request: Request):
+    """Mutate agent parameters mid-experiment.
+    Body: {"agent": "gemini", "risk_tolerance": 0.8, "personality": "aggressive"}"""
+    body = await request.json()
+    agent_id = body.get("agent")
+    if agent_id not in TRADERS:
+        return JSONResponse({"status": "error", "message": f"Unknown agent: {agent_id}"}, status_code=400)
+    changed = []
+    if "risk_tolerance" in body:
+        TRADERS[agent_id]["risk_tolerance"] = float(body["risk_tolerance"])
+        changed.append(f"risk_tolerance={body['risk_tolerance']}")
+    if "personality" in body:
+        TRADERS[agent_id]["personality"] = body["personality"]
+        changed.append(f"personality={body['personality']}")
+    return JSONResponse({"status": "mutated", "agent": agent_id, "changes": changed})
+
+@api.get("/api/logs")
+async def api_logs(agent: str = None, limit: int = 50):
+    """Per-agent decision log. ?agent=gemini&limit=20"""
+    if agent:
+        logs = list(_agent_logs.get(agent, []))[-limit:]
+        return JSONResponse({"agent": agent, "count": len(logs), "logs": logs})
+    # All agents summary
+    summary = {tid: len(logs) for tid, logs in _agent_logs.items()}
+    return JSONResponse({"agents": summary, "total_entries": sum(summary.values())})
+
+@api.get("/api/leaderboard")
+async def api_leaderboard():
+    """Current leaderboard as JSON."""
+    with _state_lock:
+        agents = _experiment_state.get("agents", {})
+    if not agents:
+        return JSONResponse({"status": "no_data", "message": "No experiment data yet"})
+    lb = []
+    for tid, ts in sorted(agents.items(), key=lambda x: -x[1].get("bankroll", 0)):
+        cfg = TRADERS.get(tid, {})
+        bankroll = ts.get("bankroll", 100)
+        roi = ((bankroll - 100) / 100) * 100
+        lb.append({
+            "trader_id": tid,
+            "name": cfg.get("name", tid),
+            "provider": cfg.get("provider", "?"),
+            "bankroll": round(bankroll, 2),
+            "roi_pct": round(roi, 2),
+            "total_bets": ts.get("total_bets", 0),
+            "wins": ts.get("wins", 0),
+            "losses": ts.get("losses", 0),
+        })
+    return JSONResponse({"leaderboard": lb, "games_processed": _experiment_state.get("games_processed", 0)})
+
+# Mount FastAPI alongside Gradio
+app = gr.mount_gradio_app(api, demo, path="/")
 
 if __name__ == "__main__":
-    app.launch(server_name="0.0.0.0", server_port=7860, show_error=True)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=7860)

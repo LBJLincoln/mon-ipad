@@ -53,8 +53,14 @@ HF EVOLUTION ISLANDS (8 NBA + 4 Political = 12 active, target 16)
 
 NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
 
-HF TRADING FLOOR (Real LLM experiment, 10 agents)
-    ├── LBJLincoln26/nba-llm-trading-floor: Live 10-agent NBA experiment
+HF TRADING FLOOR (Real LLM experiment, 10 agents — HF-first with FastAPI control)
+    ├── LBJLincoln26/nba-llm-trading-floor: PRIMARY engine (FastAPI + Gradio)
+    │   ├── /api/status — progress, agent bankrolls, running state
+    │   ├── /api/run, /api/stop — start/stop experiment remotely
+    │   ├── /api/mutate — change agent params mid-experiment
+    │   ├── /api/logs — per-agent decision log stream
+    │   └── /api/leaderboard — current standings JSON
+    ├── LBJLincoln26/llm-gateway: Centralized LLM proxy (11 models, fallback chains)
     └── Source: scripts/arena/hf-llm-trading-floor/
 
 HF OTHER SPACES (25 total across 3 accounts)
@@ -73,14 +79,14 @@ GPU PLATFORMS (5 active, ranked by usefulness)
     └── Paperspace Gradient (NEW): free GPU, unlimited restarts — SETUP IN PROGRESS
 
 GITHUB ACTIONS (3 workflows on schedule)
-    ├── Trading Floor:        */2h — 10-agent real LLM iteration
+    ├── Trading Floor:        */4h — MONITOR ONLY (curls HF Space /api/status, commits snapshot)
     ├── Backtest Swarm:       */2h — continuous scientific backtest
     ├── Scientific Experiment: */2h — CPCV + DSR gate
     ├── GPU Cron Launcher:    manual — Kaggle/Colab trigger
     └── Arena Engine:         daily — full arena evaluation
 
 SYSTEM CRONS (28 active on VM, all lightweight)
-    ├── */30  keepalive-spaces.sh (all 12 islands + TF)
+    ├── */30  keepalive-spaces.sh (12 islands + TF + Gateway + 9 depts = 27 spaces)
     ├── 12,18 nba-daily-odds.py
     ├── :30   autonomous-cycle.sh
     ├── */2h  monitoring, vault sync, political data
@@ -191,8 +197,8 @@ Architecture: TradingAgents (arXiv 2412.20138) + Prediction Arena (2604.07355) +
 | T2 | Gemini 3 Flash | Gemini 3 Flash Preview | Google (key 2) | Diversified | 0.50 |
 | T3 | Qwen 3 235B | Qwen 3 235B-A22B | Cerebras | Quantitative | 0.55 |
 | T4 | Llama 3.1 8B | Llama 3.1 8B | Cerebras | Contrarian | 0.65 |
-| T5 | ZAI GLM 4.7 | GLM 4.7 | Cerebras | Conservative | 0.40 |
-| T6 | GPT-OSS 120B | GPT-OSS 120B | Cerebras | Aggressive | 0.70 |
+| T5 | GLM 4.5 Air | GLM 4.5 Air | OpenRouter (free) | Conservative | 0.40 |
+| T6 | GPT-OSS 20B | GPT-OSS 20B | OpenRouter (free) | Aggressive | 0.70 |
 | T7 | Gemma 4 26B | Gemma 4 26B | OpenRouter (free) | Arbitrage | 0.75 |
 | T8 | Nemotron 120B | Nemotron 3 Super 120B | OpenRouter (free) | Tactical | 0.60 |
 | T9 | MiniMax M2.5 | MiniMax M2.5 | OpenRouter (free) | Theoretical | 0.35 |
@@ -201,15 +207,18 @@ Architecture: TradingAgents (arXiv 2412.20138) + Prediction Arena (2604.07355) +
 ### Providers (verified 2026-04-13)
 | Provider | Status | Models | Cost |
 |----------|--------|--------|------|
-| Cerebras | WORKING | qwen-3-235b, llama3.1-8b, zai-glm-4.7, gpt-oss-120b | Free, 30 RPM |
+| Cerebras | WORKING | qwen-3-235b, llama3.1-8b | Free, 30 RPM |
 | Google Gemini | WORKING | gemini-2.5-flash (key 1), gemini-3-flash-preview (key 2) | Free tier, 14 RPM |
-| OpenRouter | FREE ONLY | gemma-4-26b, nemotron-120b, minimax-m2.5, qwen3-80b | Free tier, 20 RPM |
+| OpenRouter | FREE ONLY | gemma-4-26b, nemotron-120b, minimax-m2.5, qwen3-80b, glm-4.5-air, gpt-oss-20b | Free tier, 20 RPM |
 | HF Inference | DEAD | — | Monthly credits exhausted |
+| LLM Gateway | DEPLOYED | All 10 models via centralized proxy | HF Space: LBJLincoln26/llm-gateway |
 
-### HF Space
-Live experiment: `LBJLincoln26/nba-llm-trading-floor` (Gradio, ~4-6h for full season)
-Source: `scripts/arena/hf-llm-trading-floor/app.py` (1296 lines)
-GH Action: runs every 2h via `.github/workflows/trading-floor.yml`
+### HF Space (HF-First Architecture)
+PRIMARY engine: `LBJLincoln26/nba-llm-trading-floor` (FastAPI + Gradio, ~4-6h for full season)
+Source: `scripts/arena/hf-llm-trading-floor/app.py` (~1450 lines)
+Control: FastAPI endpoints (/api/status, /api/run, /api/stop, /api/mutate, /api/logs, /api/leaderboard)
+LLM Gateway: `LBJLincoln26/llm-gateway` (centralized proxy, 11 models, fallback chains)
+GH Action: `.github/workflows/trading-floor-10agents.yml` — MONITOR ONLY (curls /api/status, commits snapshot)
 
 ### Political Traders (10 AI Agents — same models, same providers)
 Trading: ETFs, index funds, real stocks based on political signals

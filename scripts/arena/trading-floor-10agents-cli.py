@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 ROOT = Path(__file__).resolve().parent.parent.parent  # mon-ipad/
 HF_DATA = Path(__file__).resolve().parent / "hf-llm-trading-floor" / "data"
@@ -51,15 +52,16 @@ PROVIDERS = {
         "model": "llama3.1-8b", "key_env": "CEREBRAS_API_KEY",
         "max_tokens": 400, "rpm": 30,
     },
-    "cerebras:zai-glm-4.7": {
-        "url": "https://api.cerebras.ai/v1/chat/completions",
-        "model": "zai-glm-4.7", "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 400, "rpm": 30,
+    # NOTE: cerebras:zai-glm-4.7 and gpt-oss-120b return 404 — replaced with OpenRouter
+    "openrouter:glm-4.5-air:free": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "z-ai/glm-4.5-air:free", "key_env": "OPENROUTER_KEY_BARTOLI",
+        "max_tokens": 400, "rpm": 20,
     },
-    "cerebras:gpt-oss-120b": {
-        "url": "https://api.cerebras.ai/v1/chat/completions",
-        "model": "gpt-oss-120b", "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 400, "rpm": 30,
+    "openrouter:gpt-oss-20b:free": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "openai/gpt-oss-20b:free", "key_env": "OPENROUTER_KEY_ORCHESTRATOR",
+        "max_tokens": 400, "rpm": 20,
     },
     "google:gemini-2.5-flash": {
         "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
@@ -99,8 +101,8 @@ TRADERS = {
     "gemini3":  {"name": "Gemini 3 Flash",  "provider": "google:gemini-3-flash",         "personality": "diversified",  "risk": 0.50},
     "qwen":     {"name": "Qwen 3 235B",     "provider": "cerebras:qwen-3-235b",          "personality": "quantitative", "risk": 0.55},
     "llama":    {"name": "Llama 3.1 8B",    "provider": "cerebras:llama3.1-8b",           "personality": "contrarian",   "risk": 0.65},
-    "glm":      {"name": "ZAI GLM 4.7",     "provider": "cerebras:zai-glm-4.7",          "personality": "conservative", "risk": 0.40},
-    "gptoss":   {"name": "GPT-OSS 120B",    "provider": "cerebras:gpt-oss-120b",         "personality": "aggressive",   "risk": 0.70},
+    "glm":      {"name": "GLM 4.5 Air",      "provider": "openrouter:glm-4.5-air:free",   "personality": "conservative", "risk": 0.40},
+    "gptoss":   {"name": "GPT-OSS 20B",     "provider": "openrouter:gpt-oss-20b:free",   "personality": "aggressive",   "risk": 0.70},
     "gemma4":   {"name": "Gemma 4 26B",     "provider": "openrouter:gemma-4-26b:free",   "personality": "arbitrage",    "risk": 0.75},
     "nemotron": {"name": "Nemotron 120B",   "provider": "openrouter:nemotron-120b:free",  "personality": "tactical",     "risk": 0.60},
     "minimax":  {"name": "MiniMax M2.5",    "provider": "openrouter:minimax-m2.5:free",   "personality": "theoretical",  "risk": 0.35},
@@ -112,8 +114,8 @@ SYSTEM_PROMPTS = {
     "gemini3":  "You are Gemini 3 Flash, diversified strategy rotation agent. Rotate strategies based on performance. quarter_kelly, value_hunter. Risk: 0.50.",
     "qwen":     "You are Qwen 3 235B, pure quant agent. Calculate implied probabilities, compute Kelly fractions. half_kelly, ev_threshold. Risk: 0.55.",
     "llama":    "You are Llama 3.1 8B, contrarian agent. Fade the public. When public money >70% on one side, find value on the other. underdog_specialist. Risk: 0.65.",
-    "glm":      "You are ZAI GLM 4.7, conservative capital-preservation agent. Only bet when multiple signals align. eighth_kelly. Risk: 0.40.",
-    "gptoss":   "You are GPT-OSS 120B, aggressive high-conviction agent. Go big or go home. full_kelly, streak_momentum. Risk: 0.70.",
+    "glm":      "You are GLM 4.5 Air, conservative capital-preservation agent. Only bet when multiple signals align. eighth_kelly. Risk: 0.40.",
+    "gptoss":   "You are GPT-OSS 20B, aggressive high-conviction agent. Go big or go home. full_kelly, streak_momentum. Risk: 0.70.",
     "gemma4":   "You are Gemma 4 26B, arbitrage-hunting agent. Hunt pricing inefficiencies between categories. confidence_scaled. Risk: 0.75.",
     "nemotron": "You are Nemotron 120B, tactical agent. Military precision. Analyze form, rest, travel. half_kelly, schedule-based. Risk: 0.60.",
     "minimax":  "You are MiniMax M2.5, theoretical/academic agent. Game theory + information theory. eighth_kelly. Risk: 0.35.",
@@ -124,6 +126,9 @@ SYSTEM_PROMPTS = {
 _last_call: Dict[str, float] = {}
 _llm_calls = 0
 _llm_fails = 0
+
+# Gateway mode: if GATEWAY_URL is set, route all LLM calls through the proxy
+GATEWAY_URL = os.environ.get("GATEWAY_URL", "").rstrip("/")  # e.g. https://lbjlincoln26-llm-gateway.hf.space
 
 def rate_limit(provider: str):
     cfg = PROVIDERS.get(provider, {})
@@ -136,8 +141,52 @@ def rate_limit(provider: str):
     _last_call[key] = time.time()
 
 
+def _call_via_gateway(provider: str, system: str, user: str) -> Optional[str]:
+    """Route LLM call through the centralized gateway (automatic failover).
+    Uses Gradio 5.x two-step API: POST event → GET result."""
+    try:
+        # Step 1: Create event
+        resp = requests.post(
+            f"{GATEWAY_URL}/gradio_api/call/call_model",
+            json={"data": [provider, system, user, 400]},
+            timeout=15,
+        )
+        if resp.status_code != 200:
+            return None
+        event_id = resp.json().get("event_id")
+        if not event_id:
+            return None
+
+        # Step 2: Get result (SSE stream)
+        resp2 = requests.get(
+            f"{GATEWAY_URL}/gradio_api/call/call_model/{event_id}",
+            timeout=60,
+            stream=True,
+        )
+        for line in resp2.iter_lines(decode_unicode=True):
+            if line and line.startswith("data: "):
+                data = json.loads(line[6:])
+                if isinstance(data, list) and data:
+                    result = json.loads(data[0])
+                    return result.get("content")
+    except Exception as e:
+        print(f"  [gateway] {provider} failed: {e}", file=sys.stderr)
+    return None
+
+
 def call_llm(provider: str, system: str, user: str) -> Optional[str]:
     global _llm_calls, _llm_fails
+    _llm_calls += 1
+
+    # Route through gateway if available
+    if GATEWAY_URL:
+        result = _call_via_gateway(provider, system, user)
+        if result:
+            return result
+        _llm_fails += 1
+        return None
+
+    # Direct API calls (original path)
     cfg = PROVIDERS.get(provider)
     if not cfg:
         _llm_fails += 1
@@ -148,7 +197,6 @@ def call_llm(provider: str, system: str, user: str) -> Optional[str]:
         return None
 
     rate_limit(provider)
-    _llm_calls += 1
 
     for attempt in range(2):
         try:
@@ -380,7 +428,7 @@ def save_output(state: Dict, games_total: int):
 # ── MAIN LOOP ─────────────────────────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser(description="10-agent real LLM trading floor CLI")
-    parser.add_argument("--games", type=int, default=10, help="Games to process this run")
+    parser.add_argument("--games", type=int, default=100, help="Games to process this run")
     parser.add_argument("--reset", action="store_true", help="Reset state and start fresh")
     args = parser.parse_args()
 
@@ -467,12 +515,12 @@ def main():
 
         game_bets = []
 
-        for tid, cfg in TRADERS.items():
+        # ── PARALLEL: Call all 10 agents simultaneously ──
+        def _agent_call(tid):
+            cfg = TRADERS[tid]
             ts = state["agents"][tid]
             if ts["bankroll"] <= 1.0:
-                ts["passes"] += 1
-                continue
-
+                return tid, None, True  # pass
             roi = ((ts["bankroll"] - 100) / 100) * 100
             prompt = (
                 f"GAME: {away} @ {home} | {game_date}\n"
@@ -485,46 +533,57 @@ def main():
                 f"Categories: ml_home, ml_away, spread_home, spread_away, total_over, total_under\n"
                 f"Rules: max 2 bets, bet_pct 0.005-0.08, pass if no edge."
             )
-
-            ts["llm_calls"] += 1
             raw = call_llm(cfg["provider"], SYSTEM_PROMPTS[tid], prompt)
+            return tid, raw, False
 
-            if raw:
-                ts["llm_ok"] += 1
-                decision = parse_decision(raw)
-            else:
-                decision = None
+        with ThreadPoolExecutor(max_workers=10) as pool:
+            futures = {pool.submit(_agent_call, tid): tid for tid in TRADERS}
+            for future in as_completed(futures):
+                tid, raw, was_pass = future.result()
+                cfg = TRADERS[tid]
+                ts = state["agents"][tid]
 
-            if decision and isinstance(decision.get("bets"), list) and not decision.get("pass", True):
-                for bet in decision["bets"][:2]:
-                    cat = bet.get("category", "").lower()
-                    edge = float(bet.get("edge", 0))
-                    bet_pct = min(float(bet.get("bet_pct", 0.01)), 0.08)
-                    if not cat or edge <= 0 or bet_pct <= 0:
-                        continue
-                    amount = round(ts["bankroll"] * bet_pct, 2)
-                    amount = min(amount, ts["bankroll"] * 0.1)
-                    if amount < 0.10:
-                        continue
+                if was_pass:
+                    ts["passes"] += 1
+                    continue
 
-                    won = resolve_bet(cat, odds, hs, as_, home_won)
-                    odds_dec = get_odds_dec(cat, odds)
+                ts["llm_calls"] += 1
+                if raw:
+                    ts["llm_ok"] += 1
+                    decision = parse_decision(raw)
+                else:
+                    decision = None
 
-                    if won:
-                        ts["bankroll"] += round(amount * (odds_dec - 1), 2)
-                        ts["wins"] += 1
-                    else:
-                        ts["bankroll"] -= amount
-                        ts["losses"] += 1
-                    ts["bankroll"] = round(ts["bankroll"], 2)
-                    ts["total_bets"] += 1
-                    game_bets.append(f"{cfg['name'][:8]}:{cat}({'W' if won else 'L'})")
-            else:
-                ts["passes"] += 1
+                if decision and isinstance(decision.get("bets"), list) and not decision.get("pass", True):
+                    for bet in decision["bets"][:2]:
+                        cat = bet.get("category", "").lower()
+                        edge = float(bet.get("edge", 0))
+                        bet_pct = min(float(bet.get("bet_pct", 0.01)), 0.08)
+                        if not cat or edge <= 0 or bet_pct <= 0:
+                            continue
+                        amount = round(ts["bankroll"] * bet_pct, 2)
+                        amount = min(amount, ts["bankroll"] * 0.1)
+                        if amount < 0.10:
+                            continue
 
-            ts["best_bankroll"] = max(ts["best_bankroll"], ts["bankroll"])
-            dd = (ts["best_bankroll"] - ts["bankroll"]) / ts["best_bankroll"] if ts["best_bankroll"] > 0 else 0
-            ts["max_drawdown"] = max(ts["max_drawdown"], dd)
+                        won = resolve_bet(cat, odds, hs, as_, home_won)
+                        odds_dec = get_odds_dec(cat, odds)
+
+                        if won:
+                            ts["bankroll"] += round(amount * (odds_dec - 1), 2)
+                            ts["wins"] += 1
+                        else:
+                            ts["bankroll"] -= amount
+                            ts["losses"] += 1
+                        ts["bankroll"] = round(ts["bankroll"], 2)
+                        ts["total_bets"] += 1
+                        game_bets.append(f"{cfg['name'][:8]}:{cat}({'W' if won else 'L'})")
+                else:
+                    ts["passes"] += 1
+
+                ts["best_bankroll"] = max(ts["best_bankroll"], ts["bankroll"])
+                dd = (ts["best_bankroll"] - ts["bankroll"]) / ts["best_bankroll"] if ts["best_bankroll"] > 0 else 0
+                ts["max_drawdown"] = max(ts["max_drawdown"], dd)
 
         state["games_processed"] = game_idx + 1
         bets_str = " | ".join(game_bets[:5]) if game_bets else "all passed"
