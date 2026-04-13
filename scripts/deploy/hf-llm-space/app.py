@@ -107,7 +107,6 @@ def download_model():
             repo_id=MODEL_REPO,
             filename=MODEL_FILE,
             local_dir=str(MODEL_DIR),
-            local_dir_use_symlinks=False,
         )
         size_gb = MODEL_PATH.stat().st_size / 1e9
         logging.info(f"Downloaded: {MODEL_PATH} ({size_gb:.2f} GB)")
@@ -294,13 +293,20 @@ def status_fn():
 
 
 def chat_fn(message: str, history: list):
-    """Simple chat interface for testing the model."""
+    """Simple chat interface for testing the model. gradio 5.x passes history as list of dicts."""
     if model_load_status != "ready" or llm is None:
         return f"Model not ready: {model_load_status}"
 
-    messages = [{"role": "user" if i % 2 == 0 else "assistant", "content": m}
-                for i, pair in enumerate(history)
-                for m in pair]
+    messages = []
+    for item in history:
+        if isinstance(item, dict):
+            messages.append({"role": item.get("role", "user"), "content": item.get("content", "")})
+        elif isinstance(item, (list, tuple)) and len(item) == 2:
+            # Legacy tuple format (user, assistant)
+            if item[0]:
+                messages.append({"role": "user", "content": item[0]})
+            if item[1]:
+                messages.append({"role": "assistant", "content": item[1]})
     messages.append({"role": "user", "content": message})
 
     try:
@@ -319,11 +325,14 @@ with gr.Blocks(title="Nomos42 LLM Space") as demo:
     gr.Markdown("OpenAI-compatible inference server for trading floor agents.")
 
     with gr.Tab("Status"):
-        status_box = gr.Textbox(value=status_fn, label="Server Status",
-                                lines=20, every=5, interactive=False)
+        # gradio 5.x removed the 'every' param on Textbox; use a button to refresh
+        status_box = gr.Textbox(value=status_fn(), label="Server Status",
+                                lines=20, interactive=False)
+        refresh_btn = gr.Button("Refresh Status")
+        refresh_btn.click(fn=status_fn, outputs=status_box)
 
     with gr.Tab("Test Chat"):
-        chat = gr.ChatInterface(chat_fn, title="Test Model")
+        chat = gr.ChatInterface(chat_fn)
 
     gr.Markdown("**API:** POST `/v1/chat/completions` (OpenAI-compatible)")
 

@@ -243,9 +243,9 @@ STRATEGIES = {
 # Free HF models are routed via the HF Inference API; we have 4 HF accounts so
 # rate limits are effectively unlimited for batch trading.
 TRADERS = {
-    "gemini": {  # was Google Gemini → now Gemma 3 27B (free, HF)
+    "gemini": {  # Gemma Analyst — cerebras:qwen-3-235b primary (HF credits exhausted 2026-04-12)
         "name":               "Gemma 3 27B",
-        "provider":           "hf:google/gemma-3-27b-it",
+        "provider":           "cerebras:qwen-3-235b-a22b-instruct-2507",
         "personality":        "analytical",
         "risk_tolerance":     0.60,
         "capital":            INITIAL_CAPITAL,
@@ -255,9 +255,9 @@ TRADERS = {
         "ticker_focus":       ["XLK", "QQQ", "SPY", "LMT", "NVDA", "MSFT"],
         "event_weight":       {"exec_order": 1.2, "fed_rule": 1.0, "insider_trade": 0.8, "polymarket": 0.9},
     },
-    "openrouter": {  # was OpenRouter → now Qwen 3 72B (free, HF)
+    "openrouter": {  # Qwen Strategist — cerebras:qwen-3-235b primary
         "name":               "Qwen 3 72B",
-        "provider":           "hf:Qwen/Qwen2.5-72B-Instruct",
+        "provider":           "cerebras:qwen-3-235b-a22b-instruct-2507",
         "personality":        "diversified",
         "risk_tolerance":     0.50,
         "capital":            INITIAL_CAPITAL,
@@ -267,7 +267,7 @@ TRADERS = {
         "ticker_focus":       ["SPY", "IWM", "XLF", "XLE", "JPM", "XOM"],
         "event_weight":       {"exec_order": 1.0, "fed_rule": 1.1, "insider_trade": 1.2, "polymarket": 0.8},
     },
-    "claude": {  # Claude Code CLI — already free locally
+    "claude": {  # Claude Sentinel — Claude Code CLI (always working)
         "name":               "Claude Code CLI",
         "provider":           "anthropic_cli",
         "personality":        "conservative",
@@ -279,9 +279,9 @@ TRADERS = {
         "ticker_focus":       ["TLT", "GLD", "XLV", "JNJ", "UNH", "SPY"],
         "event_weight":       {"exec_order": 0.8, "fed_rule": 1.3, "insider_trade": 0.7, "polymarket": 1.0},
     },
-    "codex": {  # was OpenAI Codex → now Llama 3.3 70B (free, HF)
+    "codex": {  # Llama Vanguard — cerebras:llama3.1-8b primary
         "name":               "Llama 3.3 70B",
-        "provider":           "hf:meta-llama/Llama-3.3-70B-Instruct",
+        "provider":           "cerebras:llama3.1-8b",
         "personality":        "aggressive",
         "risk_tolerance":     0.75,
         "capital":            INITIAL_CAPITAL,
@@ -291,9 +291,9 @@ TRADERS = {
         "ticker_focus":       ["QQQ", "XLK", "NVDA", "BA", "TSLA", "META"],
         "event_weight":       {"exec_order": 1.5, "fed_rule": 0.7, "insider_trade": 1.0, "polymarket": 1.3},
     },
-    "grok": {  # was xAI Grok → now Mistral Large 2 (free, HF)
+    "grok": {  # Mistral Maverick — cerebras:llama3.1-8b primary
         "name":               "Mistral Large 2",
-        "provider":           "hf:mistralai/Mistral-Large-Instruct-2411",
+        "provider":           "cerebras:llama3.1-8b",
         "personality":        "contrarian",
         "risk_tolerance":     0.65,
         "capital":            INITIAL_CAPITAL,
@@ -303,9 +303,9 @@ TRADERS = {
         "ticker_focus":       ["XLE", "GLD", "IWM", "TLT", "OXY", "CVX"],
         "event_weight":       {"exec_order": 0.9, "fed_rule": 1.0, "insider_trade": 1.3, "polymarket": 1.1},
     },
-    "glm": {  # GLM-5.1 (Z.ai, Apr 2026) — 754B MoE, #1 SWE-Bench Pro, via OpenRouter
+    "glm": {  # GLM Architect — cerebras:qwen-3-235b primary (OpenRouter credits needed for GLM-5.1)
         "name":               "GLM-5.1 Architect",
-        "provider":           "openrouter:z-ai/glm-5.1",
+        "provider":           "cerebras:qwen-3-235b-a22b-instruct-2507",
         "personality":        "systematic",
         "risk_tolerance":     0.55,
         "capital":            INITIAL_CAPITAL,

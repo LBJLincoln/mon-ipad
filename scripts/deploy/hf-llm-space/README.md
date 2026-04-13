@@ -3,9 +3,7 @@ title: Nomos42 LLM
 emoji: 🏀
 colorFrom: blue
 colorTo: purple
-sdk: gradio
-sdk_version: 4.44.0
-app_file: app.py
+sdk: docker
 pinned: false
 hardware: cpu-basic
 license: mit

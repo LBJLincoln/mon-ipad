@@ -2,14 +2,16 @@
 # Python 3.10+ required
 
 # Core: GGUF model runner
-# Prebuilt CPU wheels from abetlen — no compilation required on HF Spaces
-llama-cpp-python==0.3.9
+# Prebuilt CPU wheel — avoids C++ compilation on HF Spaces (30+ min build)
+# Using extra-index-url with prebuilt wheel from abetlen/llama-cpp-python releases
+--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+llama-cpp-python==0.3.2
 
 # HuggingFace Hub — for model download
 huggingface_hub>=0.23.0
 
 # Web framework
-gradio>=4.44.0
+gradio>=5.9.0
 fastapi>=0.111.0
 uvicorn>=0.30.0
 pydantic>=2.7.0

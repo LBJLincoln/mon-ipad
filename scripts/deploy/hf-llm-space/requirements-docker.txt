@@ -1,0 +1,14 @@
+# Nomos42 LLM Space — Docker-based HF Space (Python 3.11, Debian glibc)
+# Compiled from source with cmake — no musl/manylinux issues
+
+# GGUF inference (compiled from source with proper glibc)
+llama-cpp-python==0.3.9
+
+# HuggingFace Hub — model download
+huggingface_hub>=0.23.0
+
+# Web framework (gradio 5.x is Python 3.13 compatible but we use 3.11 here)
+gradio>=5.9.0,<6.0.0
+fastapi>=0.111.0
+uvicorn>=0.30.0
+pydantic>=2.7.0

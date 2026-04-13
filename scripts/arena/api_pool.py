@@ -360,6 +360,7 @@ class APIPool:
 
     def _load_env_file(self, path: str):
         """Load environment variables from a file (KEY=VALUE or export KEY=VALUE format)."""
+        import re as _re
         try:
             with open(path) as f:
                 for line in f:
@@ -371,7 +372,18 @@ class APIPool:
                         line = line[7:].strip()
                     key, _, val = line.partition("=")
                     key = key.strip()
-                    val = val.strip().strip('"').strip("'")
+                    val = val.strip()
+                    # Handle quoted values: 'value' or "value" (may have inline # comments outside)
+                    if val.startswith(("'", '"')):
+                        quote_char = val[0]
+                        end_quote = val.find(quote_char, 1)
+                        if end_quote != -1:
+                            val = val[1:end_quote]  # extract content between quotes
+                        else:
+                            val = val.strip(quote_char)
+                    else:
+                        # Unquoted: strip inline comments (space + #)
+                        val = _re.split(r'\s+#', val)[0].strip()
                     if key and val and key not in os.environ:
                         os.environ[key] = val
         except Exception:
