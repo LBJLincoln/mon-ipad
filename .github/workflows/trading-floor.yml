@@ -100,12 +100,58 @@ jobs:
             2>&1 | tail -40
         continue-on-error: true
 
+      - name: Run council analysis on karpathy output
+        run: |
+          if [ -f data/arena/trading-floor-karpathy-output.json ]; then
+            python3 -c "
+import json, sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path('.')
+kf = ROOT / 'data/arena/trading-floor-karpathy-output.json'
+council_dir = ROOT / 'data/arena/council'
+council_dir.mkdir(parents=True, exist_ok=True)
+
+kdata = json.loads(kf.read_text())
+lb = kdata.get('leaderboard', [])
+strats = kdata.get('strategy_rankings', [])
+elims = kdata.get('new_eliminations', [])
+mutations = kdata.get('mutations', {})
+
+# Council decision: summarize + recommend
+best = lb[0] if lb else {}
+worst = lb[-1] if lb else {}
+top_strat = strats[0] if strats else {}
+
+council = {
+    'timestamp': datetime.now(timezone.utc).isoformat(),
+    'agents_count': len(lb),
+    'best_trader': best.get('trader_id', 'unknown'),
+    'best_bankroll': best.get('nba_bankroll', 100.0),
+    'worst_trader': worst.get('trader_id', 'unknown'),
+    'worst_bankroll': worst.get('nba_bankroll', 100.0),
+    'eliminations': len(elims),
+    'mutations': len(mutations),
+    'top_strategy': top_strat.get('name', 'unknown') if isinstance(top_strat, dict) else str(top_strat),
+    'recommendation': 'Continue' if best.get('nba_bankroll', 100) > 100 else 'Investigate losses',
+}
+(council_dir / 'council-latest.json').write_text(json.dumps(council, indent=2))
+print(f'Council: {len(lb)} agents, best={best.get(\"trader_id\",\"?\")} \${best.get(\"nba_bankroll\",100):.2f}, {len(elims)} eliminated, {len(mutations)} mutated')
+" 2>&1 | tail -10
+          else
+            echo "No karpathy output to analyze"
+          fi
+        continue-on-error: true
+
       - name: Commit trading results
         run: |
           git config user.name "Trading Floor Bot"
           git config user.email "trading@nomos42.ai"
           git add data/arena/traders/ data/arena/political/ \
-                  data/arena/docs/ data/arena/trading-floor-iteration.json \
+                  data/arena/docs/ data/arena/council/ \
+                  data/arena/trading-floor-iteration.json \
+                  data/arena/trading-floor-karpathy-output.json \
                   data/arena/agent-states-v5.json \
                   data/arena/cpcv-watcher-state.json \
                   2>/dev/null || true
@@ -113,8 +159,12 @@ jobs:
             git stash --include-untracked
             git pull --rebase origin main
             git stash pop || true
-            git add data/arena/ data/arena/docs/ data/arena/trading-floor-iteration.json \
-                    data/arena/agent-states-v5.json data/arena/cpcv-watcher-state.json \
+            git add data/arena/traders/ data/arena/political/ \
+                    data/arena/docs/ data/arena/council/ \
+                    data/arena/trading-floor-iteration.json \
+                    data/arena/trading-floor-karpathy-output.json \
+                    data/arena/agent-states-v5.json \
+                    data/arena/cpcv-watcher-state.json \
                     2>/dev/null || true
             git commit -m "data: trading floor iteration $(date -u +%Y-%m-%dT%H:%MZ)"
             for attempt in 1 2 3; do
