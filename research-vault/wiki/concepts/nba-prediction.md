@@ -122,6 +122,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Arena Lessons Learned** (354 words) -- `raw/learnings/arena-lessons-learned.md`
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/karpathy-researcher/feedback_karpathy_patterns_validated.md`
+- **Karpathy NBA — Mutation Effectiveness Analysis** (346 words) -- `raw/karpathy/nba-mutation-analysis.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/data-research/research-cycle-2026-03-26.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
 - **Karpathy Iteration Log Summary** (326 words) -- `raw/karpathy/iteration-log-summary.md`
@@ -129,6 +130,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Historical NBA Odds Sources** (313 words) -- `raw/agent-memory/repo-scout_project_historical_odds_sources.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/repo-scout/project_historical_odds_sources.md`
 - **Market Analyst Data Sources** (306 words) -- `raw/agent-memory/market-analyst_reference_data_sources.md`
+- **Karpathy POLITICAL — Mutation Effectiveness Analysis** (306 words) -- `raw/karpathy/political-mutation-analysis.md`
 - **Market Analyst Data Sources** (306 words) -- `raw/market-analyst/reference_data_sources.md`
 - **Nomos42 Weekly Research Digest** (305 words) -- `raw/research/weekly-digest-2026-04-06.md`
 - **Research Scan: latest-improvements-2026-03-31** (300 words) -- `raw/research/latest-improvements-2026-03-31.md`
@@ -140,8 +142,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Nomos42 Weekly Research Digest** (277 words) -- `raw/research/weekly-digest-2026-03-31.md`
 - **Political Trading Season 2025-26 -- Agent MIXTRAL ENSEMBLE** (276 words) -- `raw/arena-docs/political-mixtral-season-2025-26.md`
 - **multi_target_trainer** (275 words) -- `raw/agent-memory/feature-engineer_project_multi_target_trainer.md`
-- **Karpathy POLITICAL — Mutation Effectiveness Analysis** (273 words) -- `raw/karpathy/political-mutation-analysis.md`
-- **Karpathy NBA — Mutation Effectiveness Analysis** (262 words) -- `raw/karpathy/nba-mutation-analysis.md`
 - **May 2026 Monetization Sprint** (245 words) -- `raw/agent-memory/market-analyst_project_monetization_sprint.md`
 - **project_scan_history** (235 words) -- `raw/agent-memory/repo-scout_project_scan_history.md`
 - **project_scan_history** (235 words) -- `raw/repo-scout/project_scan_history.md`

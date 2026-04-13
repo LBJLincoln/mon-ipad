@@ -1,10 +1,10 @@
 # Current State — System Snapshot
 
-> Auto-generated on 2026-04-13 14:23 UTC
+> Auto-generated on 2026-04-13 16:23 UTC
 
 ## Brier Scores
 
-- NBA Karpathy best: 1.0
+- NBA Karpathy best: 0.21349678992299034
 - Political Karpathy best: 0.20454312075559716
 - Backtest live Brier: 0.20939
 - TARGET: 0.20000
@@ -30,18 +30,18 @@
 
 ## NBA Karpathy Loop
 
-- Total iterations: 10
-- Improvements: 0
-- Improvement rate: 0.0%
-- No-improve streak: 10
+- Total iterations: 50
+- Improvements: 4
+- Improvement rate: 8.0%
+- No-improve streak: 8
 - Local minimum: YES
 
 ## POLITICAL Karpathy Loop
 
-- Total iterations: 10
+- Total iterations: 50
 - Improvements: 0
 - Improvement rate: 0.0%
-- No-improve streak: 10
+- No-improve streak: 50
 - Local minimum: YES
 
 ## Bankroll
