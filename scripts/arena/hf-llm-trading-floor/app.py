@@ -1438,10 +1438,10 @@ async def api_status():
 async def api_run(request: Request):
     """Trigger experiment start (same as clicking the button).
     For GH Actions / council triggers. Non-blocking — returns immediately."""
-    if _experiment_running:
-        return JSONResponse({"status": "already_running", "games_processed": _experiment_state.get("games_processed", 0)})
-    # Can't start from API directly (Gradio owns the generator), but we clear stop
+    # Always clear stop flag — allows resuming a stopped-but-still-running experiment
     _stop_event.clear()
+    if _experiment_running:
+        return JSONResponse({"status": "resumed", "games_processed": _experiment_state.get("games_processed", 0), "message": "Stop flag cleared, experiment continues."})
     return JSONResponse({"status": "ready", "message": "Stop flag cleared. Click Start in Gradio UI or use gradio_api."})
 
 @api.post("/api/stop")
