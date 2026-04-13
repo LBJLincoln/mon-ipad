@@ -24,7 +24,7 @@ from datetime import datetime, timezone, date
 from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 
-ROOT        = Path('/home/termius/mon-ipad')
+ROOT        = Path(__file__).resolve().parent.parent.parent
 
 # ── OASIS ADAPTER (social discussion → per-trader biases) ────────────────────
 # Import lazily so the trading floor still runs if the adapter is missing.
@@ -76,7 +76,7 @@ except Exception as _dmad_import_err:
 
 # ── ITERATION / GENERATION TRACKING ──────────────────────────────────────────
 # Incremented each run; generation tracks game-day count
-_ITERATION_FILE = Path('/home/termius/mon-ipad/data/arena/trading-floor-iteration.json')
+_ITERATION_FILE = ROOT / 'data' / 'arena' / 'trading-floor-iteration.json'
 
 def _load_iteration() -> Dict:
     if _ITERATION_FILE.exists():
@@ -97,7 +97,7 @@ def _save_iteration(it: Dict) -> None:
 #   middle ranks  → x1.00
 # Bounded [0.30, 2.50]. Drives kelly_adj ⇒ winners get more capital, losers fade
 # gracefully without elimination. 4 days/yr published lift +22% on 16/54 traders.
-_DARWIN_FILE   = Path('/home/termius/mon-ipad/data/arena/trader-darwin-weights.json')
+_DARWIN_FILE   = ROOT / 'data' / 'arena' / 'trader-darwin-weights.json'
 _DARWIN_MIN_W  = 0.30
 _DARWIN_MAX_W  = 2.50
 
@@ -165,8 +165,8 @@ ELIMINATED_POLITICAL_STRATEGIES: Dict[str, Dict] = {
     },
 }
 
-NBA_AGENT   = Path('/home/termius/nomos-nba-agent')
-POLITICAL   = Path('/home/termius/nomos-political-alpha')
+NBA_AGENT   = ROOT.parent / 'nomos-nba-agent'
+POLITICAL   = ROOT.parent / 'nomos-political-alpha'
 DATA_DIR    = ROOT / 'data' / 'arena'
 TRADERS_DIR = DATA_DIR / 'traders'
 
@@ -3562,9 +3562,9 @@ def run_karpathy_loop() -> Dict:
 # ── CROSS-REPO INTEGRATION ────────────────────────────────────────────────────
 
 SATELLITE_REPOS = {
-    "nomos-nba-agent":       Path("/home/termius/nomos-nba-agent"),
-    "nomos-political-alpha": Path("/home/termius/nomos-political-alpha"),
-    "rgwa":                  Path("/home/termius/rgwa"),
+    "nomos-nba-agent":       ROOT.parent / "nomos-nba-agent",
+    "nomos-political-alpha": ROOT.parent / "nomos-political-alpha",
+    "rgwa":                  ROOT.parent / "rgwa",
 }
 
 def sync_satellite_repos() -> Dict[str, str]:

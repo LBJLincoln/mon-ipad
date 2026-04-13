@@ -27,7 +27,7 @@ from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 
 # ── PATHS ────────────────────────────────────────────────────────────────────
-ROOT        = Path('/home/termius/mon-ipad')
+ROOT        = Path(__file__).resolve().parent.parent.parent
 
 # ── DMAD: Diverse Multi-Agent Debate (ICLR 2025) ─────────────────────────────
 _DMAD_AVAILABLE = False
@@ -49,7 +49,7 @@ except Exception as _dmad_import_err:
     POLITICAL_DMAD_PROFILES = {}  # type: ignore[assignment]
     CONSENSUS_DAMPING = 0.60
     CONSENSUS_THRESHOLD = 3
-POLITICAL   = Path('/home/termius/nomos-political-alpha')
+POLITICAL   = ROOT.parent / 'nomos-political-alpha'
 DATA_DIR    = ROOT / 'data' / 'arena'
 TRADERS_DIR = DATA_DIR / 'traders'
 POL_DIR     = DATA_DIR / 'political'
