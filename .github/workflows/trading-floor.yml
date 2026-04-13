@@ -24,7 +24,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: LBJLincoln/nomos-nba-agent
-          path: ../nomos-nba-agent
+          path: nomos-nba-agent
+
+      - name: Symlink nomos-nba-agent to parent directory
+        run: ln -sfn "$GITHUB_WORKSPACE/nomos-nba-agent" "$GITHUB_WORKSPACE/../nomos-nba-agent"
 
       - uses: actions/setup-python@v5
         with:
