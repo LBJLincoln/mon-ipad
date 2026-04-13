@@ -68,6 +68,22 @@ jobs:
             2>&1 | tail -40
         continue-on-error: true
 
+      - name: Run Trading Floor v5 (224-agent swarm, lite mode)
+        env:
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
+          OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
+          OPENROUTER_KEY_PME: ${{ secrets.OPENROUTER_KEY_PME }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_TOKEN_2: ${{ secrets.HF_TOKEN_2 }}
+          HF_TOKEN_3: ${{ secrets.HF_TOKEN_3 }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          cd scripts/arena
+          python3 trading-floor-v5.py --lite --games 3 \
+            2>&1 | tail -40
+        continue-on-error: true
+
       - name: Run Political Trading Floor iteration
         env:
           CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}

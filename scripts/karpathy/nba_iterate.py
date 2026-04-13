@@ -50,8 +50,8 @@ HISTORY_PATH = DATA_DIR / "nba-history.json"
 CACHE_PATH = DATA_DIR / "nba_cached_data.npz"
 
 # ── CPU Mode Constants ──
-CPU_TRAIN_GAMES = 4000
-CPU_VAL_GAMES = 200
+CPU_TRAIN_GAMES = 3500
+CPU_VAL_GAMES = 700
 CPU_TOTAL = CPU_TRAIN_GAMES + CPU_VAL_GAMES
 CPU_MAX_FEATURES = 200
 CPU_TIMEOUT = 180  # 3 min max per eval
