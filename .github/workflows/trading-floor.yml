@@ -52,8 +52,13 @@ jobs:
                   data/arena/cpcv-watcher-state.json \
                   2>/dev/null || true
           if ! git diff --cached --quiet 2>/dev/null; then
-            git commit -m "data: trading floor iteration $(date -u +%Y-%m-%dT%H:%MZ)"
+            git stash --include-untracked
             git pull --rebase origin main
+            git stash pop || true
+            git add data/arena/ data/arena/docs/ data/arena/trading-floor-iteration.json \
+                    data/arena/agent-states-v5.json data/arena/cpcv-watcher-state.json \
+                    2>/dev/null || true
+            git commit -m "data: trading floor iteration $(date -u +%Y-%m-%dT%H:%MZ)"
             git push
           else
             echo "No trading changes to commit"
@@ -92,8 +97,11 @@ jobs:
           git config user.email "trading@nomos42.ai"
           git add data/arena/political/ 2>/dev/null || true
           if ! git diff --cached --quiet 2>/dev/null; then
-            git commit -m "data: political backtest $(date -u +%Y-%m-%dT%H:%MZ)"
+            git stash --include-untracked
             git pull --rebase origin main
+            git stash pop || true
+            git add data/arena/political/ 2>/dev/null || true
+            git commit -m "data: political backtest $(date -u +%Y-%m-%dT%H:%MZ)"
             git push
           else
             echo "No political changes to commit"

@@ -60,8 +60,12 @@ jobs:
           git add data/scientific-results/ research-vault/raw/scientific/ \
                   data/arena/ 2>/dev/null || true
           if ! git diff --cached --quiet 2>/dev/null; then
-            git commit -m "data: scientific experiment $(date -u +%Y-%m-%dT%H:%MZ)"
+            git stash --include-untracked
             git pull --rebase origin main
+            git stash pop || true
+            git add data/scientific-results/ research-vault/raw/scientific/ \
+                    data/arena/ 2>/dev/null || true
+            git commit -m "data: scientific experiment $(date -u +%Y-%m-%dT%H:%MZ)"
             git push
           else
             echo "No experiment changes to commit"

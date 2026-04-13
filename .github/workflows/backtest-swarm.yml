@@ -53,8 +53,14 @@ jobs:
                   data/arena/cpcv-gated-strategies.json data/arena/one-million-projection.json \
                   2>/dev/null || true
           if ! git diff --cached --quiet 2>/dev/null; then
-            git commit -m "data: continuous backtest swarm $(date -u +%Y-%m-%dT%H:%MZ)"
+            git stash --include-untracked
             git pull --rebase origin main
+            git stash pop || true
+            git add data/arena/backtest-results/ data/arena/agent-states-v5.json \
+                    data/arena/backtest-latest.json data/arena/category-model-registry.json \
+                    data/arena/cpcv-gated-strategies.json data/arena/one-million-projection.json \
+                    2>/dev/null || true
+            git commit -m "data: continuous backtest swarm $(date -u +%Y-%m-%dT%H:%MZ)"
             git push
           else
             echo "No backtest changes to commit"
