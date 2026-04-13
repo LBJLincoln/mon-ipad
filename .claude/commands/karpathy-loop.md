@@ -89,15 +89,29 @@ print(f'No-improve streak (recent): {streak}')
 "
 ```
 
+**1f. Consult the Obsidian Karpathy Brain** (data-driven proposal engine):
+```bash
+cd /home/termius/mon-ipad
+python3 scripts/research-vault/karpathy-brain.py --domain nba --json 2>/dev/null || echo "Brain not available — using manual heuristics"
+```
+Replace `nba` with the domain-appropriate value. The brain reads wiki/learnings/ (what works, what fails, current state), the full iteration history, fleet status, and calibration drift to propose ranked mutations. **Use the brain's top proposal as the default unless you have a specific reason to override it.**
+
 After running the SCAN, analyze the results and note:
 - Current best Brier in config
 - What has been tried recently (last 10 mutations)
 - No-improvement streak length
 - Whether we're in a local minimum (streak >= 5)
+- Brain's top recommendation and score (from step 1f)
 
 ---
 
 ## PHASE 2 — PROPOSE one mutation
+
+**Default: Use the brain's top proposal** from step 1f. The brain already applies all the decision logic below (stagnation detection, alternation rule, fleet seeding, etc.) using empirical data. Override only if:
+- The brain recommends a mutation that was tried in the LAST 2 iterations (check 1b output)
+- You have domain-specific context the brain cannot see (e.g., user request, external research)
+
+If the brain is unavailable, fall back to the manual decision logic below:
 
 Based on the SCAN results, propose exactly ONE mutation. Use this decision logic:
 
@@ -266,6 +280,13 @@ with open(log_path, 'a') as f:
 
 print('Logged:', json.dumps(record, indent=2))
 "
+```
+
+**5b. Record outcome in brain** (so future proposals learn from this result):
+```bash
+cd /home/termius/mon-ipad
+# Replace MUTATION_TYPE with the actual mutation tried, DECISION with KEEP/REVERT, DELTA with numeric brier delta
+python3 scripts/research-vault/karpathy-brain.py --domain nba --record-outcome "MUTATION_TYPE" "DECISION" "DELTA" 2>/dev/null || true
 ```
 
 ---

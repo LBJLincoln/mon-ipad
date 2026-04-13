@@ -38,6 +38,12 @@ if [[ -f ingest.py ]]; then
   python3 ingest.py >>"$LOG" 2>&1 || log "WARN ingest.py exit=$?"
 fi
 
+# Stage 2b — deep ingest: parse JSON experiment data into structured articles
+DEEP_INGEST="$ROOT/scripts/research-vault/obsidian-ingest.py"
+if [[ -f "$DEEP_INGEST" ]]; then
+  python3 "$DEEP_INGEST" >>"$LOG" 2>&1 || log "WARN obsidian-ingest.py exit=$?"
+fi
+
 # Stage 3 — recompile wiki/ + backlinks.json
 if [[ -f compile.py ]]; then
   python3 compile.py >>"$LOG" 2>&1 || { log "ERR compile.py exit=$?"; exit 3; }
@@ -46,15 +52,28 @@ else
   exit 4
 fi
 
+# Stage 3b — build learnings wiki (what-works, what-fails, current-state)
+WIKI_BUILDER="$ROOT/scripts/research-vault/wiki-builder.py"
+if [[ -f "$WIKI_BUILDER" ]]; then
+  python3 "$WIKI_BUILDER" >>"$LOG" 2>&1 || log "WARN wiki-builder.py exit=$?"
+fi
+
 # Stage 4 — lint (warn-only)
 if [[ -f lint.py ]]; then
   python3 lint.py >>"$LOG" 2>&1 || log "WARN lint.py reported issues"
 fi
 
+# Stage 4b — brain proposals (generate next mutation suggestions)
+BRAIN="$ROOT/scripts/research-vault/karpathy-brain.py"
+if [[ -f "$BRAIN" ]]; then
+  python3 "$BRAIN" --domain nba >>"$LOG" 2>&1 || log "WARN karpathy-brain.py nba exit=$?"
+  python3 "$BRAIN" --domain political >>"$LOG" 2>&1 || log "WARN karpathy-brain.py political exit=$?"
+fi
+
 # Stage 5 — commit + push changes (silent on no-op)
 cd "$ROOT" || exit 0
-if ! git diff --quiet -- research-vault/ 2>/dev/null; then
-  git add research-vault/wiki/ research-vault/backlinks.json 2>/dev/null || true
+if ! git diff --quiet -- research-vault/ data/karpathy/brain-proposals.json 2>/dev/null; then
+  git add research-vault/wiki/ research-vault/raw/ research-vault/backlinks.json data/karpathy/brain-proposals.json 2>/dev/null || true
   git commit -m "research-vault: $(date -u +%Y-%m-%dT%H:%MZ) compile" >>"$LOG" 2>&1 || true
   git push origin main >>"$LOG" 2>&1 || log "WARN push failed (will retry next run)"
 fi

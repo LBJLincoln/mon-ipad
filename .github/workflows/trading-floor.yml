@@ -20,6 +20,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout nomos-nba-agent (game + odds data)
+        uses: actions/checkout@v4
+        with:
+          repository: LBJLincoln/nomos-nba-agent
+          path: ../nomos-nba-agent
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -28,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: pip install scikit-learn lightgbm numpy
 
-      - name: Run NBA Trading Floor iteration
+      - name: Run NBA Trading Floor full competition
         env:
           CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
           GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
@@ -40,6 +46,21 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           mkdir -p data/arena/traders data/arena/docs logs/arena
+          python3 scripts/arena/trading-floor-v4.py run \
+            2>&1 | tail -60
+        continue-on-error: true
+
+      - name: Run NBA Trading Floor iterate (strategy evolution)
+        env:
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
+          OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
+          OPENROUTER_KEY_PME: ${{ secrets.OPENROUTER_KEY_PME }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_TOKEN_2: ${{ secrets.HF_TOKEN_2 }}
+          HF_TOKEN_3: ${{ secrets.HF_TOKEN_3 }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
           python3 scripts/arena/trading-floor-v4.py iterate 1 \
             2>&1 | tail -40
         continue-on-error: true
