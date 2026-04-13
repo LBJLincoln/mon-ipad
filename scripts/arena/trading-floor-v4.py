@@ -26,6 +26,17 @@ from typing import Dict, List, Optional, Tuple
 
 ROOT        = Path(__file__).resolve().parent.parent.parent
 
+# ── REAL LLM AGENTS ──────────────────────────────────────────────────────────
+# Import the real LLM decision engine. When available, agents make actual API
+# calls to reason about each game. Falls back to hash-based simulation if missing.
+_LLM_AGENTS_AVAILABLE = False
+try:
+    from llm_agents import agent_llm_decide, get_llm_stats, AGENT_SYSTEM_PROMPTS
+    _LLM_AGENTS_AVAILABLE = True
+    print("[TRADING FLOOR] LLM agents loaded — REAL reasoning enabled")
+except ImportError:
+    print("[TRADING FLOOR] llm_agents not available — using hash simulation fallback")
+
 # ── SOTA TECHNIQUES (10 papers — P1-P10) ────────────────────────────────────
 # Import lazily so the trading floor still runs if the module is missing.
 _SOTA_AVAILABLE = False
@@ -1771,6 +1782,29 @@ def agent_pick_strategies_for_game(trader_id: str, game_ctx: Dict,
     return [preferred[0]]
 
 
+def _resolve_bet_outcome(category: str, odds: Dict, result: Dict,
+                         hs: int, as_: int, total_pts: int, home_won: bool) -> bool:
+    """Resolve whether a bet category won based on game outcome."""
+    cat = category.lower()
+    spread = odds.get("spread_home", 0) or 0
+    total_line = odds.get("total", 0) or 0
+    margin = abs(hs - as_)
+
+    outcomes = {
+        "ml_home": home_won,
+        "ml_away": not home_won,
+        "spread_home": (hs + spread) > as_,
+        "spread_away": (as_ - spread) > hs,
+        "total_over": total_pts > total_line,
+        "total_under": total_pts < total_line,
+        "h1_ml_home": home_won,  # approximation
+        "h1_ml_away": not home_won,
+        "team_total_home_over": hs > (total_line / 2),
+        "team_total_home_under": hs < (total_line / 2),
+    }
+    return outcomes.get(cat, False)
+
+
 def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
                            day_budget: float, others: Dict, comp_state: Dict,
                            kelly_adj: float = 1.0,
@@ -1795,6 +1829,41 @@ def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
     hs, as_ = result["home_score"], result["away_score"]
     total_pts = hs + as_
     seed_val = f"{game_ctx['date']}_{game_ctx['home']}_{game_ctx['away']}"
+
+    # ── REAL LLM DECISION (when available) ────────────────────────────────────
+    # Each agent calls its real LLM provider to reason about the game.
+    # The LLM sees: odds, standings, form, model predictions, its own track record.
+    # It returns structured JSON bets. Falls back to hash simulation if LLM fails.
+    if _LLM_AGENTS_AVAILABLE and os.environ.get(cfg.get("_key_env", ""), "") or _LLM_AGENTS_AVAILABLE:
+        provider = cfg.get("provider", "")
+        trader_state = comp_state.get(trader_id, {})
+        llm_result = agent_llm_decide(trader_id, provider, game_ctx, trader_state)
+        if llm_result.get("llm_used") and not llm_result.get("pass"):
+            # Convert LLM bets to trading floor format
+            llm_bets = []
+            for lb in llm_result.get("bets", []):
+                cat = lb.get("category", "")
+                conf = float(lb.get("confidence", 0.5))
+                edge_est = float(lb.get("edge", 0.0))
+                bet_pct = float(lb.get("bet_pct", 0.01))
+                if cat and edge_est > 0 and bet_pct > 0:
+                    # Resolve outcome for this category
+                    cat_won = _resolve_bet_outcome(cat, odds, result, hs, as_, total_pts, home_won)
+                    llm_bets.append({
+                        "category": cat,
+                        "bet_size": round(min(bet_pct, day_budget / bankroll) * bankroll, 4),
+                        "odds_dec": odds.get(f"{cat.split('_')[0]}_dec", 1.909),
+                        "prob": round(conf, 4),
+                        "edge": round(edge_est, 4),
+                        "won": cat_won,
+                        "model": "llm_reasoning",
+                        "strategy": "llm_agent",
+                        "reasoning": llm_result.get("reasoning", ""),
+                        "llm_provider": provider,
+                    })
+            if llm_bets:
+                return llm_bets
+        # If LLM passed or failed, fall through to hash simulation below
 
     # Agent picks model for this game
     chosen_model = agent_pick_model_for_game(trader_id, game_ctx)
