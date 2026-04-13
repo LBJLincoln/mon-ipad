@@ -40,55 +40,20 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install scikit-learn lightgbm numpy
+        run: pip install requests
 
-      - name: Run NBA Trading Floor full competition (10 agents)
+      - name: Run 10-Agent Real LLM Trading Floor (batch)
         env:
           CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
           OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
           OPENROUTER_KEY_PME: ${{ secrets.OPENROUTER_KEY_PME }}
-          COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_TOKEN_2: ${{ secrets.HF_TOKEN_2 }}
-          HF_TOKEN_3: ${{ secrets.HF_TOKEN_3}}
-          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          OPENROUTER_KEY_BARTOLI: ${{ secrets.OPENROUTER_KEY_BARTOLI }}
         run: |
-          mkdir -p data/arena/traders data/arena/docs logs/arena
-          python3 scripts/arena/trading-floor-v4.py run \
-            2>&1 | tail -60
-        continue-on-error: true
-
-      - name: Run NBA Trading Floor iterate (strategy evolution)
-        env:
-          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
-          GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
-          OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
-          OPENROUTER_KEY_PME: ${{ secrets.OPENROUTER_KEY_PME }}
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_TOKEN_2: ${{ secrets.HF_TOKEN_2 }}
-          HF_TOKEN_3: ${{ secrets.HF_TOKEN_3 }}
-          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-        run: |
-          python3 scripts/arena/trading-floor-v4.py iterate 1 \
-            2>&1 | tail -40
-        continue-on-error: true
-
-      - name: Run Trading Floor v5 (224-agent swarm, lite mode)
-        env:
-          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
-          GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
-          OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
-          OPENROUTER_KEY_PME: ${{ secrets.OPENROUTER_KEY_PME }}
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_TOKEN_2: ${{ secrets.HF_TOKEN_2 }}
-          HF_TOKEN_3: ${{ secrets.HF_TOKEN_3 }}
-          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-        run: |
-          cd scripts/arena
-          python3 trading-floor-v5.py --lite --games 3 \
-            2>&1 | tail -40
-        continue-on-error: true
+          mkdir -p data/arena
+          python3 scripts/arena/trading-floor-10agents-cli.py --games 15 \
+            2>&1 | tail -80
 
       - name: Run Political Trading Floor iteration
         env:
@@ -96,55 +61,10 @@ jobs:
           GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
           OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
           OPENROUTER_KEY_PME: ${{ secrets.OPENROUTER_KEY_PME }}
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_TOKEN_2: ${{ secrets.HF_TOKEN_2 }}
-          HF_TOKEN_3: ${{ secrets.HF_TOKEN_3 }}
         run: |
           mkdir -p data/arena/political
-          python3 scripts/arena/political-trading-floor.py \
-            2>&1 | tail -40
-        continue-on-error: true
-
-      - name: Run council analysis on karpathy output
-        run: |
-          if [ -f data/arena/trading-floor-karpathy-output.json ]; then
-            python3 -c "
-          import json, sys
-          from datetime import datetime, timezone
-          from pathlib import Path
-
-          ROOT = Path('.')
-          kf = ROOT / 'data/arena/trading-floor-karpathy-output.json'
-          council_dir = ROOT / 'data/arena/council'
-          council_dir.mkdir(parents=True, exist_ok=True)
-
-          kdata = json.loads(kf.read_text())
-          lb = kdata.get('leaderboard', [])
-          strats = kdata.get('strategy_rankings', [])
-          elims = kdata.get('new_eliminations', [])
-          mutations = kdata.get('mutations', {})
-
-          best = lb[0] if lb else {}
-          worst = lb[-1] if lb else {}
-          top_strat = strats[0] if strats else {}
-
-          council = {
-              'timestamp': datetime.now(timezone.utc).isoformat(),
-              'agents_count': len(lb),
-              'best_trader': best.get('trader_id', 'unknown'),
-              'best_bankroll': best.get('nba_bankroll', 100.0),
-              'worst_trader': worst.get('trader_id', 'unknown'),
-              'worst_bankroll': worst.get('nba_bankroll', 100.0),
-              'eliminations': len(elims),
-              'mutations': len(mutations),
-              'top_strategy': top_strat.get('name', 'unknown') if isinstance(top_strat, dict) else str(top_strat),
-              'recommendation': 'Continue' if best.get('nba_bankroll', 100) > 100 else 'Investigate losses',
-          }
-          (council_dir / 'council-latest.json').write_text(json.dumps(council, indent=2))
-          print(f'Council: {len(lb)} agents, best={best.get(\"trader_id\",\"?\")} bankroll={best.get(\"nba_bankroll\",100):.2f}')
-          " 2>&1 | tail -10
-          else
-            echo "No karpathy output to analyze"
+          if [ -f scripts/arena/political-trading-floor.py ]; then
+            python3 scripts/arena/political-trading-floor.py 2>&1 | tail -40
           fi
         continue-on-error: true
 
@@ -152,23 +72,17 @@ jobs:
         run: |
           git config user.name "Trading Floor Bot"
           git config user.email "trading@nomos42.ai"
-          git add data/arena/traders/ data/arena/political/ \
-                  data/arena/docs/ data/arena/council/ \
-                  data/arena/trading-floor-iteration.json \
-                  data/arena/trading-floor-karpathy-output.json \
-                  data/arena/agent-states-v5.json \
-                  data/arena/cpcv-watcher-state.json \
+          git add data/arena/trading-floor-10agents-state.json \
+                  data/arena/trading-floor-10agents-latest.json \
+                  data/arena/political/ \
                   2>/dev/null || true
           if ! git diff --cached --quiet 2>/dev/null; then
             git stash --include-untracked
             git pull --rebase origin main
             git stash pop || true
-            git add data/arena/traders/ data/arena/political/ \
-                    data/arena/docs/ data/arena/council/ \
-                    data/arena/trading-floor-iteration.json \
-                    data/arena/trading-floor-karpathy-output.json \
-                    data/arena/agent-states-v5.json \
-                    data/arena/cpcv-watcher-state.json \
+            git add data/arena/trading-floor-10agents-state.json \
+                    data/arena/trading-floor-10agents-latest.json \
+                    data/arena/political/ \
                     2>/dev/null || true
             git commit -m "data: trading floor 10-agent iteration $(date -u +%Y-%m-%dT%H:%MZ)"
             for attempt in 1 2 3; do
