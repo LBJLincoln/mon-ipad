@@ -1830,11 +1830,18 @@ def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
     total_pts = hs + as_
     seed_val = f"{game_ctx['date']}_{game_ctx['home']}_{game_ctx['away']}"
 
-    # ── REAL LLM DECISION (when available) ────────────────────────────────────
-    # Each agent calls its real LLM provider to reason about the game.
-    # The LLM sees: odds, standings, form, model predictions, its own track record.
-    # It returns structured JSON bets. Falls back to hash simulation if LLM fails.
-    if _LLM_AGENTS_AVAILABLE and os.environ.get(cfg.get("_key_env", ""), "") or _LLM_AGENTS_AVAILABLE:
+    # ── REAL LLM DECISION (for live/recent games only) ──────────────────────
+    # Full-season backtest = hash simulation (1000+ games, too many API calls).
+    # Live/recent games (last 7 days) = REAL LLM reasoning per agent.
+    # This lets us scientifically compare LLM reasoning vs hash simulation.
+    _is_recent = False
+    try:
+        from datetime import timedelta
+        game_date = datetime.strptime(game_ctx.get("date", "2020-01-01"), "%Y-%m-%d").date()
+        _is_recent = (date.today() - game_date).days <= 7
+    except Exception:
+        pass
+    if _LLM_AGENTS_AVAILABLE and _is_recent:
         provider = cfg.get("provider", "")
         trader_state = comp_state.get(trader_id, {})
         llm_result = agent_llm_decide(trader_id, provider, game_ctx, trader_state)
