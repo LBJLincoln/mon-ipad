@@ -18,6 +18,8 @@ import os
 import sys
 import json
 import time
+import copy
+import random
 import argparse
 import logging
 from pathlib import Path
@@ -230,11 +232,46 @@ def run_karpathy_loop(iterations: int, gpu: bool, verbose: bool) -> None:
     )
 
     # ── MAIN LOOP ──
+    no_improve_count = 0
     for i in range(1, iterations + 1):
         iter_start = time.time()
 
-        # Mutate
-        candidate, mutation_desc = mutate_config(config, n_total_features)
+        # Anti-stagnation: escalating exploration when stuck
+        if no_improve_count >= 20:
+            # HARD RESET: reseed 70% of features randomly
+            log.info(f"[STAGNATION] {no_improve_count} iterations stuck — HARD RESET (reseed 70% features)")
+            n_keep = max(15, len(config.get("feature_indices", [])) // 3)
+            kept = sorted(np.random.choice(config["feature_indices"], n_keep, replace=False).tolist()) if config.get("feature_indices") else []
+            n_new = min(max_features - n_keep, n_total_features - n_keep)
+            available = sorted(set(range(n_total_features)) - set(kept))
+            new_feats = sorted(np.random.choice(available, min(n_new, len(available)), replace=False).tolist())
+            config["feature_indices"] = sorted(kept + new_feats)
+            config["n_features"] = len(config["feature_indices"])
+            no_improve_count = 0
+        elif no_improve_count >= 10:
+            # MEDIUM SHAKE: swap 30 features + change model
+            log.info(f"[STAGNATION] {no_improve_count} iterations stuck — swapping 30 features + model change")
+
+        # Mutate (with larger swaps when stagnating)
+        if no_improve_count >= 10:
+            # Force large swap mutation instead of random choice
+            candidate = copy.deepcopy(config)
+            indices = set(candidate.get("feature_indices", []))
+            available = sorted(set(range(n_total_features)) - indices)
+            n_swap = min(30, len(indices) - 15, len(available))
+            if n_swap > 0:
+                to_remove = sorted(np.random.choice(sorted(indices), n_swap, replace=False).tolist())
+                to_add = sorted(np.random.choice(available, n_swap, replace=False).tolist())
+                indices -= set(to_remove)
+                indices.update(to_add)
+            candidate["feature_indices"] = sorted(indices)
+            candidate["n_features"] = len(candidate["feature_indices"])
+            # Also try a different model
+            models = ["extra_trees", "random_forest", "lightgbm", "catboost", "xgboost", "gradient_boosting"]
+            candidate["model_type"] = random.choice([m for m in models if m != config["model_type"]])
+            mutation_desc = f"STAGNATION swap {n_swap} features + model -> {candidate['model_type']}"
+        else:
+            candidate, mutation_desc = mutate_config(config, n_total_features)
 
         # Enforce max features cap
         if len(candidate["feature_indices"]) > max_features:
@@ -252,6 +289,7 @@ def run_karpathy_loop(iterations: int, gpu: bool, verbose: bool) -> None:
 
         if improved:
             improvements += 1
+            no_improve_count = 0
             delta = best_brier - score
             log.info(
                 f"[{i}/{iterations}] IMPROVED {mutation_desc} | "
@@ -279,9 +317,10 @@ def run_karpathy_loop(iterations: int, gpu: bool, verbose: bool) -> None:
                     f"Model: {config['model_type']}, Features: {config['n_features']}"
                 )
         else:
+            no_improve_count += 1
             if i % 10 == 0 or verbose:
                 log.info(
-                    f"[{i}/{iterations}] no improvement | {mutation_desc} | "
+                    f"[{i}/{iterations}] no improvement (stuck={no_improve_count}) | {mutation_desc} | "
                     f"Brier: {score:.5f} (best: {best_brier:.5f}) | {elapsed:.1f}s"
                 )
 
