@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 163 raw sources on 2026-04-13
+> Auto-compiled from 169 raw sources on 2026-04-13
 
 ## Overview
 
-This topic covers 163 research files spanning nba prediction & ml models.
+This topic covers 169 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -117,14 +117,18 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/repo-scout/project_nba_data_sources.md`
 - **Multi-Market NBA Betting Research March 2026** (377 words) -- `raw/agent-memory/research-analyst_research_march2026_multi_market.md`
 - **Multi-Market NBA Betting Research March 2026** (377 words) -- `raw/research-analyst/research_march2026_multi_market.md`
+- **Arena Lessons Learned** (354 words) -- `raw/learnings/arena-lessons-learned.md`
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/karpathy-researcher/feedback_karpathy_patterns_validated.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/data-research/research-cycle-2026-03-26.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
+- **Karpathy Iteration Log Summary** (326 words) -- `raw/karpathy/iteration-log-summary.md`
 - **Nomos42 Weekly Research Digest** (314 words) -- `raw/research/weekly-digest-2026-04-13.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/agent-memory/repo-scout_project_historical_odds_sources.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/repo-scout/project_historical_odds_sources.md`
 - **Market Analyst Data Sources** (306 words) -- `raw/agent-memory/market-analyst_reference_data_sources.md`
+- **Karpathy NBA — Mutation Effectiveness Analysis** (306 words) -- `raw/karpathy/nba-mutation-analysis.md`
+- **Karpathy POLITICAL — Mutation Effectiveness Analysis** (306 words) -- `raw/karpathy/political-mutation-analysis.md`
 - **Market Analyst Data Sources** (306 words) -- `raw/market-analyst/reference_data_sources.md`
 - **Nomos42 Weekly Research Digest** (305 words) -- `raw/research/weekly-digest-2026-04-06.md`
 - **Research Scan: latest-improvements-2026-03-31** (300 words) -- `raw/research/latest-improvements-2026-03-31.md`
@@ -147,12 +151,14 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-scan-2026-03-31** (186 words) -- `raw/research/github-scan-2026-03-31.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/agent-memory/nba-brain_project_strategy_confrontation.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/nba-brain/project_strategy_confrontation.md`
+- **Fleet Health Snapshot** (176 words) -- `raw/learnings/fleet-health-snapshot.md`
 - **Research Scan: github-scan-2026-04-01** (167 words) -- `raw/research/github-scan-2026-04-01.md`
 - **Research Scan: github-scan-2026-04-02** (167 words) -- `raw/research/github-scan-2026-04-02.md`
 - **Enterprise Agent Matrix — 3-product 3-layer architecture** (161 words) -- `raw/agent-memory/nba-brain_project_enterprise_architecture.md`
 - **Enterprise Agent Matrix — 3-product 3-layer architecture** (161 words) -- `raw/nba-brain/project_enterprise_architecture.md`
 - **user_role** (153 words) -- `raw/agent-memory/research-analyst_user_role.md`
 - **user_role** (152 words) -- `raw/agent-memory/repo-scout_user_role.md`
+- **Department Council Summary** (151 words) -- `raw/councils/department-summary.md`
 - **Research Scan: github-scan-2026-04-03** (149 words) -- `raw/research/github-scan-2026-04-03.md`
 - **Research Scan: github-scan-2026-04-04** (149 words) -- `raw/research/github-scan-2026-04-04.md`
 - **Research Scan: github-scan-2026-04-05** (149 words) -- `raw/research/github-scan-2026-04-05.md`
