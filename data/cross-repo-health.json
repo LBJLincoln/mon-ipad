@@ -1,27 +1,30 @@
 {
-  "timestamp": "2026-04-13T09:00:00Z",
-  "brain_cycle": "cycle98",
+  "timestamp": "2026-04-13T13:00:00Z",
+  "brain_cycle": "cycle99",
   "brain_model": "claude-sonnet-4-6",
-  "ecosystem_status": "DEGRADED — PA3+PA4 deleted, 8/10 spaces operational",
+  "ecosystem_status": "HEALTHY — all 12 islands operational (8 NBA + 4 Political)",
 
   "nba_quant_ai": {
     "project": "NBA Quant AI",
     "repo": "nomos-nba-agent",
-    "hf_spaces_total": 6,
-    "hf_spaces_up": 6,
-    "engine_version": "v3.1-59cat",
-    "engine_parity": true,
+    "hf_spaces_total": 8,
+    "hf_spaces_up": 8,
+    "engine_sha": "1cfdbe6d7cccf346f27674e09baab1af5b579e11",
+    "engine_version_note": "DISCREPANCY: CLAUDE.md=v3.1-54cat vs prev-health=v3.1-59cat — verify next cycle",
+    "engine_parity": "UNVERIFIED_THIS_CYCLE",
     "best_brier_live": 0.22251,
+    "best_island_live": "S14",
     "best_brier_supabase": 0.22066,
     "brier_threshold": 0.21837,
     "threshold_reached": false,
     "gap_to_threshold": 0.00414,
-    "fleet_actions": {
-      "S10_diversify": "SENT (stagnation=19)",
-      "S14_flag": "FLEET_BEST at 0.22251",
-      "S15_notable": "Gen47 config reached 0.21952 — closest to threshold"
+    "fleet_actions_this_cycle": {
+      "S12_diversify": "SENT (stagnation=22 > threshold=15)",
+      "S17_diversify": "SENT (stagnation=16 > threshold=15)",
+      "S11_boost_mutation": "SENT (brier=0.24572 worst in fleet after 161 gens)",
+      "API_fix": "Discovered: use {command:X} not {action:X} for /api/command"
     },
-    "research_proposal_today": "cat60-playoff-context-features",
+    "research_proposal_today": "pace-norm-ev-filter-fractional-kelly",
     "health": "GOOD"
   },
 
@@ -29,56 +32,68 @@
     "project": "Political Alpha",
     "repo": "nomos-political-alpha",
     "hf_spaces_total": 4,
-    "hf_spaces_up": 2,
-    "hf_spaces_deleted": ["PA3 (Nomos42/political-alpha-3)", "PA4 (Nomos42/political-alpha-4)"],
+    "hf_spaces_up": 4,
+    "hf_spaces_down": 0,
+    "recovery_note": "P3 (lbjlincoln-political-alpha-3) and P4 (lbjlincoln-political-alpha-4) are BACK UP vs cycle98 degraded state",
     "engine_version": "v3.1-54cat",
-    "best_brier_live": 0.24996,
-    "total_events": 1180,
+    "best_brier_live": 0.2499,
+    "best_island": "P3",
+    "total_political_generations": 20521,
     "feature_candidates": 272,
-    "supabase_political_runs": "empty",
-    "improvement_mode": "A — FEC/SEC data sources",
-    "research_proposal_today": "fec-burn-rate-features",
-    "critical_action": "Recreate PA3 and PA4 spaces in HuggingFace",
-    "health": "DEGRADED"
+    "improvement_mode": "A — FEC Q1-2026 filings (due April 15)",
+    "research_proposal_today": "fec-fundraising-ratio-feature",
+    "health": "GOOD"
   },
 
   "cross_pollination_this_cycle": [
     {
-      "from": "NBA S14 (extra_trees)",
-      "to": "Political Alpha",
-      "insight": "ExtraTreesClassifier achieves best Brier on NBA. Recommend GA config bias toward extra_trees in PA1.",
-      "applied": false
+      "from": "NBA research (MDPI 2025 uncertainty-aware paper)",
+      "to": "Political Alpha decision layer",
+      "insight": "EV filter p*o > 1.10 before fractional-Kelly sizing. Apply to political prediction markets.",
+      "applied": false,
+      "status": "DOCUMENTED in nomos-political-alpha/data/brain-status.json"
     },
     {
-      "from": "NBA cat57 (sequential exponential form)",
-      "to": "Political Alpha",
-      "insight": "Alpha-weighted rolling momentum outperforms simple rolling avg. Apply to PA polling momentum features.",
-      "applied": false
+      "from": "NBA research (per-100 possessions normalization)",
+      "to": "Political Alpha features",
+      "insight": "Normalize political features per-N-voters or per-district-size, same concept as pace normalization.",
+      "applied": false,
+      "status": "PROPOSED for rotation B next cycle"
     },
     {
-      "from": "Political Alpha FEC burn rate",
-      "to": "NBA",
-      "insight": "Financial pressure features (team cap stress) analogy validated in political context. Cat20 Game Theory features confirmed valuable.",
-      "applied": false
+      "from": "Political FEC data (fundraising ratio)",
+      "to": "NBA (team budget proxy)",
+      "insight": "Payroll/cap utilization ratio as proxy for team financial commitment (similar to campaign cash-on-hand ratio)",
+      "applied": false,
+      "status": "FLAGGED for NBA feature engine review"
     }
   ],
 
+  "api_fixes_discovered": {
+    "hf_space_command_format": {
+      "wrong": "POST /api/command {\"action\": \"diversify\"}",
+      "correct": "POST /api/command {\"command\": \"diversify\"}",
+      "valid_commands": ["diversify", "boost_mutation", "backfill_boxscores"],
+      "note": "Brain instructions say 'action' but API expects 'command'. Fixed this cycle."
+    }
+  },
+
   "ecosystem_summary": {
-    "total_spaces": 10,
-    "spaces_operational": 8,
-    "spaces_deleted": 2,
+    "total_spaces": 12,
+    "spaces_operational": 12,
     "nba_best_brier": 0.22251,
-    "pa_best_brier": 0.24996,
+    "pa_best_brier": 0.2499,
     "proposals_written_today": 2,
     "supabase_project": "xivvnrkbtuhfsphtmmtv",
-    "next_brier_checkpoint_candidate": "S15 (0.21952 in Gen47 config)"
+    "commits_this_cycle": 3,
+    "repos_updated": ["lbjlincoln/mon-ipad", "lbjlincoln/nomos-political-alpha"]
   },
 
   "priority_actions_next_cycle": [
-    "1. Recreate PA3 (catboost) and PA4 (wide_search) HuggingFace spaces",
-    "2. Implement cat60 playoff features in hf-space/features/engine.py",
-    "3. Implement ops/fetch_fec_data.py for FEC burn rate pipeline",
-    "4. Monitor S15 Gen47 direction — if 0.21952 becomes stable, checkpoint to Supabase",
-    "5. Check S13 stagnation (currently 8, diversify if reaches 15)"
+    "1. Verify engine version: grep first 20 lines of features/engine.py for FEATURE_ENGINE_VERSION value",
+    "2. Fetch FEC Q1-2026 filings (deadline April 15) — add fundraising_ratio to fetch_political_data.py",
+    "3. S11 monitor: if still >0.245 after boost_mutation, consider complete reinit",
+    "4. NBA: verify per_100 features exist in engine.py, if not add as cat55",
+    "5. Add EV filter (p*o > 1.10) to predict_today.py decision layer (low-effort quick win)"
   ]
 }
