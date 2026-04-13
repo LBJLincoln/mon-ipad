@@ -75,6 +75,7 @@ cd "$ROOT" || exit 0
 if ! git diff --quiet -- research-vault/ data/karpathy/brain-proposals.json 2>/dev/null; then
   git add research-vault/wiki/ research-vault/raw/ research-vault/backlinks.json data/karpathy/brain-proposals.json 2>/dev/null || true
   git commit -m "research-vault: $(date -u +%Y-%m-%dT%H:%MZ) compile" >>"$LOG" 2>&1 || true
+  git pull --rebase --quiet origin main 2>/dev/null || true
   git push origin main >>"$LOG" 2>&1 || log "WARN push failed (will retry next run)"
 fi
 

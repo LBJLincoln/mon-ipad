@@ -172,6 +172,7 @@ jobs:
                     2>/dev/null || true
             git commit -m "data: trading floor 10-agent iteration $(date -u +%Y-%m-%dT%H:%MZ)"
             for attempt in 1 2 3; do
+              git pull --rebase || true
               git push && break
               echo "Push attempt $attempt failed, retrying..."
               git pull --rebase origin main || true
@@ -219,6 +220,7 @@ jobs:
             git add data/arena/political/ 2>/dev/null || true
             git commit -m "data: political backtest $(date -u +%Y-%m-%dT%H:%MZ)"
             for attempt in 1 2 3; do
+              git pull --rebase || true
               git push && break
               echo "Push attempt $attempt failed, retrying..."
               git pull --rebase origin main || true

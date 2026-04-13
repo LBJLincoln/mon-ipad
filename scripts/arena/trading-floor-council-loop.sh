@@ -500,6 +500,7 @@ with open('${ITERATION_FILE}') as f:
         git commit -m "${COMMIT_MSG}" --quiet 2>/dev/null || log_warn "Commit failed (may be empty)"
 
         # Push (non-blocking, tolerate failure)
+        git pull --rebase --quiet origin main 2>/dev/null || true
         git push --quiet 2>/dev/null &
         PUSH_PID=$!
         # Wait up to 30s for push

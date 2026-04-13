@@ -73,6 +73,7 @@ jobs:
             git add data/karpathy/ 2>/dev/null || true
             git commit -m "karpathy: GH Actions tuning $(date -u +%Y-%m-%dT%H:%MZ)"
             for attempt in 1 2 3; do
+              git pull --rebase || true
               git push && break
               echo "Push attempt $attempt failed, retrying..."
               git pull --rebase origin main || true

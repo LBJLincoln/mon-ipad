@@ -98,6 +98,7 @@ except:
     print(0)
 " 2>/dev/null || echo "?")
         git commit -m "data: Trading Floor v5 iter ${ITER} (${DATE_STR} — 200+ agent swarm)" --quiet 2>/dev/null || true
+        git pull --rebase --quiet origin main 2>/dev/null || true
         git push --quiet 2>/dev/null || true
         echo "[v5-cron] Git pushed iteration ${ITER}" >> "${LOG_FILE}"
     else

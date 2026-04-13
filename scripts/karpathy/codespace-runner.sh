@@ -42,6 +42,7 @@ run_iteration() {
     git add data/karpathy/ 2>/dev/null || true
     if ! git diff --cached --quiet 2>/dev/null; then
         git commit -m "karpathy: codespace tuning $(date -u +%Y-%m-%dT%H:%MZ)" --quiet 2>/dev/null || true
+        git pull --rebase --quiet origin main 2>/dev/null || true
         git push --quiet 2>/dev/null || echo "Push failed (will retry next iteration)"
     fi
 }

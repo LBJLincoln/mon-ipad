@@ -29,6 +29,7 @@ cd "$REPO_DIR"
 if ! git diff --quiet "$SPACE_DIR/" 2>/dev/null || git ls-files --others --exclude-standard "$SPACE_DIR/" | grep -q .; then
     git add "$SPACE_DIR/"
     git commit -m "feat: Nomos42 Pixel World — 207 agent trading floor (pixel art, PixiJS 8)" || true
+    git pull --rebase --quiet origin main 2>/dev/null || true
     git push origin main || true
 fi
 

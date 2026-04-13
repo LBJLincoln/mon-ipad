@@ -61,6 +61,7 @@ jobs:
                     data/arena/cpcv-gated-strategies.json data/arena/one-million-projection.json \
                     2>/dev/null || true
             git commit -m "data: continuous backtest swarm $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase || true
             git push
           else
             echo "No backtest changes to commit"

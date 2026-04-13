@@ -66,6 +66,7 @@ jobs:
             git stash pop || true
             git add data/gpu-burst/ 2>/dev/null || true
             git commit -m "data: gpu burst zerogpu $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase || true
             git push
           else
             echo "No GPU results to commit"
@@ -126,6 +127,7 @@ jobs:
             git stash pop || true
             git add data/gpu-burst/ 2>/dev/null || true
             git commit -m "data: gpu burst modal $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase || true
             git push
           else
             echo "No Modal results to commit"

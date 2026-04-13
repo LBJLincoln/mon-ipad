@@ -35,6 +35,7 @@ cd "$NBA_REPO"
 if ! git diff --quiet hf-space/features/engine.py 2>/dev/null; then
     git add hf-space/features/engine.py
     git commit -m "sync: engine.py to hf-space (auto-deploy)" || true
+    git pull --rebase --quiet origin main 2>/dev/null || true
     git push || true
 fi
 

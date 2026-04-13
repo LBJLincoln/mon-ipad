@@ -70,6 +70,7 @@ jobs:
             git stash pop || true
             git add data/arena/ data/nba-agent/ 2>/dev/null || true
             git commit -m "data: arena engine daily $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase || true
             git push
           else
             echo "No arena changes to commit"

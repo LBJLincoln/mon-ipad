@@ -73,6 +73,7 @@ cd "$AGENT_DIR"
 git add data/results/crew-*.json data/results/crew-cycle-latest.json 2>/dev/null
 git diff --cached --quiet || {
     git commit -m "data: crew cycle $(date -u +%Y-%m-%d-%H%M)" --no-verify
+    git pull --rebase --quiet origin main 2>/dev/null || true
     git push origin main 2>/dev/null || log "[GIT] push failed (nomos-nba-agent)"
 }
 log "[CREW] Done + pushed"
@@ -184,6 +185,7 @@ cd "$MON_DIR"
 git add data/nba-agent/latest-picks.json 2>/dev/null
 git diff --cached --quiet || {
     git commit -m "data: picks ${TODAY}" --no-verify
+    git pull --rebase --quiet origin main 2>/dev/null || true
     git push origin main 2>/dev/null || log "[GIT] push failed (mon-ipad)"
 }
 
@@ -328,6 +330,7 @@ print(f'iter={it} best=\${opt.get(\"current_best\",0):,.0f} strat={bs.get(\"name
             data/departments/guardian-report.json OPERATIONS.md 2>/dev/null
     git diff --cached --quiet || {
         git commit -m "data: trading floor v8 iter $(date -u +%Y-%m-%d-%H%M)" --no-verify
+        git pull --rebase --quiet origin main 2>/dev/null || true
         git push origin main 2>/dev/null || log "[GIT] push failed (trading-floor)"
     }
 elif [ $TF_EXIT -eq 124 ]; then
@@ -431,6 +434,7 @@ OPSEOF
     git add data/arena/proposals/ OPERATIONS.md 2>/dev/null
     git diff --cached --quiet || {
         git commit -m "data: auto-iterate proposals iter $CURRENT_ITER — best \$$CURRENT_BEST" --no-verify
+        git pull --rebase --quiet origin main 2>/dev/null || true
         git push origin main 2>/dev/null || log "[GIT] push failed (auto-iterate)"
     }
     log "[AUTO-ITERATE] Analysis complete — iter $CURRENT_ITER, best \$$CURRENT_BEST"
@@ -460,6 +464,7 @@ if [ "$CURRENT_HOUR" = "18" ] && [ -f "$MON_DIR/scripts/arena/trading-floor-v5.p
         git add data/arena/ 2>/dev/null
         git diff --cached --quiet || {
             git commit -m "data: trading floor v5 daily run $(date -u +%Y-%m-%d)" --no-verify
+            git pull --rebase --quiet origin main 2>/dev/null || true
             git push origin main 2>/dev/null || log "[TF-V5] push failed (non-fatal)"
         }
     elif [ $TF5_EXIT -eq 124 ]; then
@@ -510,6 +515,7 @@ if [ -d "$POLITICAL_DIR" ]; then
             log "[POLITICAL] All 7 patches applied successfully"
             git add hf-space/app.py
             git commit -m "fix: deploy 7 patches — feature starvation + LR model (auto via cycle)" --no-verify 2>/dev/null || true
+            git pull --rebase --quiet origin main 2>/dev/null || true
             git push origin main 2>/dev/null || log "[POLITICAL] origin push failed"
             # Push patched app to each HF space remote (hf, hf2, hf3, hf4)
             for HF_REMOTE in hf hf2 hf3 hf4; do
