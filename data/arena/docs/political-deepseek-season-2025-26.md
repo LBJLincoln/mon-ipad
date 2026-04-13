@@ -1,11 +1,11 @@
-# Political Trading Season 2025-26 -- Agent QWEN 3 72B
+# Political Trading Season 2025-26 -- Agent DEEPSEEK QUANT
 
 ## Executive Summary
-- **Provider:** cerebras:qwen-3-235b-a22b-instruct-2507
-- **Personality:** diversified
-- **Risk Tolerance:** 0.5
-- **Primary Strategy:** sector_rotation
-- **Secondary Strategies:** insider_follow, pairs_trading
+- **Provider:** cerebras:deepseek-r1-distill-llama-70b
+- **Personality:** quantitative
+- **Risk Tolerance:** 0.55
+- **Primary Strategy:** statistical_arb
+- **Secondary Strategies:** pairs_trading, vol_scaled
 - **Initial Capital:** $100,000.00
 - **Final Capital:** $100,000.00
 - **ROI:** +0.0000%
@@ -14,19 +14,19 @@
 - **Win Rate:** 0.0%
 - **Peak Capital:** $100,000.00
 - **Max Drawdown:** 0.0%
-- **Rank:** #2 of 11
+- **Rank:** #7 of 11
 - **Total Wagered:** $0.00
 
 ## Peer Comparison
 | Rank | Agent | Capital | ROI | Sharpe | Win Rate |
 |------|-------|---------|-----|--------|----------|
 | 1 | Gemma 3 27B | $100,000.00 | +0.0000% | 0.000 | 0.0% |
-| 2 | Qwen 3 72B ** | $100,000.00 | +0.0000% | 0.000 | 0.0% |
+| 2 | Qwen 3 72B | $100,000.00 | +0.0000% | 0.000 | 0.0% |
 | 3 | Claude Sentinel | $100,000.00 | +0.0000% | 0.000 | 0.0% |
 | 4 | Llama 3.3 70B | $100,000.00 | +0.0000% | 0.000 | 0.0% |
 | 5 | Mistral Large 2 | $100,000.00 | +0.0000% | 0.000 | 0.0% |
 | 6 | GLM-5.1 Architect | $100,000.00 | +0.0000% | 0.000 | 0.0% |
-| 7 | DeepSeek Quant | $100,000.00 | +0.0000% | 0.000 | 0.0% |
+| 7 | DeepSeek Quant ** | $100,000.00 | +0.0000% | 0.000 | 0.0% |
 | 8 | Phi Theorist | $100,000.00 | +0.0000% | 0.000 | 0.0% |
 | 9 | Command Tactician | $100,000.00 | +0.0000% | 0.000 | 0.0% |
 | 10 | Gemma Arbitrageur | $100,000.00 | +0.0000% | 0.000 | 0.0% |
