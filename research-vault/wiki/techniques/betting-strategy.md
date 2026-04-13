@@ -9,18 +9,14 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 
 ## Sources
 
-- **2025-26 NBA Season — Agent QWEN STRATEGIST** (10059 words) -- `raw/arena-docs/openrouter-season-2025-26.md`
-- **2025-26 NBA Season — Agent GEMMA ANALYST** (10050 words) -- `raw/arena-docs/gemini-season-2025-26.md`
-- **2025-26 NBA Season — Agent LLAMA VANGUARD** (10041 words) -- `raw/arena-docs/codex-season-2025-26.md`
-- **2025-26 NBA Season — Agent CLAUDE SENTINEL** (10036 words) -- `raw/arena-docs/claude-season-2025-26.md`
-- **2025-26 NBA Season — Agent MISTRAL MAVERICK** (9899 words) -- `raw/arena-docs/grok-season-2025-26.md`
+- **2025-26 NBA Season — Agent MISTRAL MAVERICK** (9742 words) -- `raw/arena-docs/grok-season-2025-26.md`
+- **2025-26 NBA Season — Agent CLAUDE SENTINEL** (9544 words) -- `raw/arena-docs/claude-season-2025-26.md`
+- **2025-26 NBA Season — Agent GEMMA ANALYST** (9358 words) -- `raw/arena-docs/gemini-season-2025-26.md`
+- **2025-26 NBA Season — Agent LLAMA VANGUARD** (9344 words) -- `raw/arena-docs/codex-season-2025-26.md`
+- **2025-26 NBA Season — Agent QWEN STRATEGIST** (8988 words) -- `raw/arena-docs/openrouter-season-2025-26.md`
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
-- **Political Trading Season 2025-26 -- Agent QWEN 3 72B** (2687 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (2676 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent LLAMA 3.3 70B** (2632 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent GLM-5.1 ARCHITECT** (2632 words) -- `raw/arena-docs/political-glm-season-2025-26.md`
 - **NBA Scientific Experiment Report** (2599 words) -- `raw/experiments/nba-experiment-2026-04-12.md`
 - **NBA Scientific Experiment Report** (2594 words) -- `raw/experiments/nba-experiment-2026-04-11.md`
 - **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
@@ -28,8 +24,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/karpathy-researcher/research_cycle6_feature_proposals.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
 - **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
-- **Political Trading Season 2025-26 -- Agent MISTRAL LARGE 2** (1510 words) -- `raw/arena-docs/political-grok-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent CLAUDE CODE CLI** (1492 words) -- `raw/arena-docs/political-claude-season-2025-26.md`
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
 - **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
@@ -110,6 +104,12 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **research_april2026_cycle14_drift_monitoring** (289 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle14_drift_monitoring.md`
 - **multi_target_trainer** (275 words) -- `raw/agent-memory/feature-engineer_project_multi_target_trainer.md`
 - **May 2026 Monetization Sprint** (245 words) -- `raw/agent-memory/market-analyst_project_monetization_sprint.md`
+- **Political Trading Season 2025-26 -- Agent CLAUDE CODE CLI** (208 words) -- `raw/arena-docs/political-claude-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent LLAMA 3.3 70B** (208 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (208 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent MISTRAL LARGE 2** (208 words) -- `raw/arena-docs/political-grok-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent QWEN 3 72B** (208 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
+- **Political Trading Season 2025-26 -- Agent GLM-5.1 ARCHITECT** (207 words) -- `raw/arena-docs/political-glm-season-2025-26.md`
 - **Historical odds dataset 2025-26** (190 words) -- `raw/agent-memory/market-analyst_project_historical_odds.md`
 - **Historical odds dataset 2025-26** (190 words) -- `raw/market-analyst/project_historical_odds.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/agent-memory/nba-brain_project_strategy_confrontation.md`

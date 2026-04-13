@@ -1,19 +1,18 @@
 # Feature Engineering & Selection
 
-> Auto-compiled from 56 raw sources on 2026-04-13
+> Auto-compiled from 55 raw sources on 2026-04-13
 
 ## Overview
 
-This topic covers 56 research files spanning feature engineering & selection.
+This topic covers 55 research files spanning feature engineering & selection.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
 
+- **2025-26 NBA Season — Agent CLAUDE SENTINEL** (9544 words) -- `raw/arena-docs/claude-season-2025-26.md`
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
-- **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (2676 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent LLAMA 3.3 70B** (2632 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
 - **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/agent-memory/karpathy-researcher_research_cycle6_feature_proposals.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/karpathy-researcher/research_cycle6_feature_proposals.md`

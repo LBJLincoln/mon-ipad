@@ -1,10 +1,10 @@
 # Political Alpha & Prediction Markets
 
-> Auto-compiled from 65 raw sources on 2026-04-13
+> Auto-compiled from 61 raw sources on 2026-04-13
 
 ## Overview
 
-This topic covers 65 research files spanning political alpha & prediction markets.
+This topic covers 61 research files spanning political alpha & prediction markets.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Mutation Operators, Platt Scaling, Political Alpha.
 
 ## Sources
@@ -12,10 +12,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
-- **Political Trading Season 2025-26 -- Agent QWEN 3 72B** (2687 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (2676 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent LLAMA 3.3 70B** (2632 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent GLM-5.1 ARCHITECT** (2632 words) -- `raw/arena-docs/political-glm-season-2025-26.md`
 - **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/agent-memory/karpathy-researcher_karpathy_autoresearch_pattern.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/karpathy-researcher/karpathy_autoresearch_pattern.md`

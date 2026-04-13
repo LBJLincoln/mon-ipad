@@ -1,19 +1,16 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 169 raw sources on 2026-04-13
+> Auto-compiled from 166 raw sources on 2026-04-13
 
 ## Overview
 
-This topic covers 169 research files spanning nba prediction & ml models.
+This topic covers 166 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
 
-- **2025-26 NBA Season — Agent QWEN STRATEGIST** (10059 words) -- `raw/arena-docs/openrouter-season-2025-26.md`
-- **2025-26 NBA Season — Agent GEMMA ANALYST** (10050 words) -- `raw/arena-docs/gemini-season-2025-26.md`
-- **2025-26 NBA Season — Agent LLAMA VANGUARD** (10041 words) -- `raw/arena-docs/codex-season-2025-26.md`
-- **2025-26 NBA Season — Agent CLAUDE SENTINEL** (10036 words) -- `raw/arena-docs/claude-season-2025-26.md`
-- **2025-26 NBA Season — Agent MISTRAL MAVERICK** (9899 words) -- `raw/arena-docs/grok-season-2025-26.md`
+- **2025-26 NBA Season — Agent LLAMA VANGUARD** (9344 words) -- `raw/arena-docs/codex-season-2025-26.md`
+- **2025-26 NBA Season — Agent QWEN STRATEGIST** (8988 words) -- `raw/arena-docs/openrouter-season-2025-26.md`
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`

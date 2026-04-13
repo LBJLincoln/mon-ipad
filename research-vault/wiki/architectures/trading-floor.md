@@ -1,19 +1,15 @@
 # Trading Floor & AI Competition
 
-> Auto-compiled from 51 raw sources on 2026-04-13
+> Auto-compiled from 45 raw sources on 2026-04-13
 
 ## Overview
 
-This topic covers 51 research files spanning trading floor & ai competition.
+This topic covers 45 research files spanning trading floor & ai competition.
 Key concepts: Bankroll Management, Brier Score, Calibration, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
 
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
-- **Political Trading Season 2025-26 -- Agent QWEN 3 72B** (2687 words) -- `raw/arena-docs/political-openrouter-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent GEMMA 3 27B** (2676 words) -- `raw/arena-docs/political-gemini-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent LLAMA 3.3 70B** (2632 words) -- `raw/arena-docs/political-codex-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent GLM-5.1 ARCHITECT** (2632 words) -- `raw/arena-docs/political-glm-season-2025-26.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
 - **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
@@ -21,8 +17,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Ensemble Methods, F
 - **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/agent-memory/research-analyst_research_april2026_free_inference_capacity.md`
 - **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/research-analyst/research_april2026_free_inference_capacity.md`
 - **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
-- **Political Trading Season 2025-26 -- Agent MISTRAL LARGE 2** (1510 words) -- `raw/arena-docs/political-grok-season-2025-26.md`
-- **Political Trading Season 2025-26 -- Agent CLAUDE CODE CLI** (1492 words) -- `raw/arena-docs/political-claude-season-2025-26.md`
 - **22 -- Compute Mesh Topology** (1406 words) -- `raw/obsidian-docs/22-Compute-Mesh.md`
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
 - **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
