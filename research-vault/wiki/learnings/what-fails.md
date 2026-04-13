@@ -1,6 +1,6 @@
 # What Fails — Avoid These
 
-> Auto-generated from experiment data on 2026-04-13 06:50 UTC
+> Auto-generated from experiment data on 2026-04-13 08:25 UTC
 > Only includes findings backed by measured failure
 
 ## Eliminated Strategies
@@ -29,37 +29,21 @@ Optimizing strategy parameters on a weak model is polishing a turd.
 - **Quarter Kelly (edge>3%)**: DSR -19.183, p=1.0000
 - **Bayesian Adaptive (shrinkage)**: DSR -19.183, p=1.0000
 
-## NBA — Never-Improving Mutations
-
-- **swap_features**: tried 5 times, ZERO improvements. Skip this.
-- **change_max_depth**: tried 5 times, ZERO improvements. Skip this.
-- **change_min_samples_leaf**: tried 11 times, ZERO improvements. Skip this.
-- **change_model**: tried 4 times, ZERO improvements. Skip this.
-- **change_max_features_ratio**: tried 6 times, ZERO improvements. Skip this.
-- **add_features**: tried 7 times, ZERO improvements. Skip this.
-- **remove_features**: tried 7 times, ZERO improvements. Skip this.
-- **change_n_estimators**: tried 5 times, ZERO improvements. Skip this.
-
 ## POLITICAL — Never-Improving Mutations
 
-- **change_min_samples_leaf**: tried 13 times, ZERO improvements. Skip this.
-- **remove_features**: tried 4 times, ZERO improvements. Skip this.
-- **swap_features**: tried 5 times, ZERO improvements. Skip this.
-- **add_features**: tried 4 times, ZERO improvements. Skip this.
-- **change_model**: tried 7 times, ZERO improvements. Skip this.
-- **change_max_features_ratio**: tried 5 times, ZERO improvements. Skip this.
 - **change_n_estimators**: tried 8 times, ZERO improvements. Skip this.
+- **add_features**: tried 12 times, ZERO improvements. Skip this.
 - **change_max_depth**: tried 4 times, ZERO improvements. Skip this.
-
-## NBA — Underperforming Models
-
-- **random_forest**: best=0.21663, avg=0.21663 (vs champion gradient_boosting best=0.19097)
+- **change_max_features_ratio**: tried 6 times, ZERO improvements. Skip this.
+- **swap_features**: tried 7 times, ZERO improvements. Skip this.
+- **change_min_samples_leaf**: tried 4 times, ZERO improvements. Skip this.
+- **change_model**: tried 5 times, ZERO improvements. Skip this.
+- **remove_features**: tried 4 times, ZERO improvements. Skip this.
 
 ## POLITICAL — Underperforming Models
 
 - **gradient_boosting**: best=0.26569, avg=0.26569 (vs champion random_forest best=0.20454)
 - **extra_trees**: best=0.24356, avg=0.24356 (vs champion random_forest best=0.20454)
-- **lightgbm**: best=0.24506, avg=0.24506 (vs champion random_forest best=0.20454)
 
 ## Personality Anti-Patterns
 

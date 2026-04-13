@@ -1,6 +1,6 @@
 # What Works — Empirically Validated
 
-> Auto-generated from experiment data on 2026-04-13 06:50 UTC
+> Auto-generated from experiment data on 2026-04-13 08:25 UTC
 > Only includes findings backed by measured improvement
 
 ## NBA — Mutation Effectiveness
@@ -20,14 +20,14 @@
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_min_samples_leaf | 13 | 0 | 0% | +0.01386 |
-| remove_features | 4 | 0 | 0% | +0.03169 |
-| swap_features | 5 | 0 | 0% | +0.03414 |
-| add_features | 4 | 0 | 0% | +0.02975 |
-| change_model | 7 | 0 | 0% | +0.04893 |
-| change_max_features_ratio | 5 | 0 | 0% | +0.02081 |
-| change_n_estimators | 8 | 0 | 0% | +0.00822 |
-| change_max_depth | 4 | 0 | 0% | +0.01643 |
+| change_n_estimators | 8 | 0 | 0% | +0.00451 |
+| add_features | 12 | 0 | 0% | +0.01773 |
+| change_max_depth | 4 | 0 | 0% | +0.01646 |
+| change_max_features_ratio | 6 | 0 | 0% | +0.02298 |
+| swap_features | 7 | 0 | 0% | +0.01901 |
+| change_min_samples_leaf | 4 | 0 | 0% | +0.01035 |
+| change_model | 5 | 0 | 0% | +0.05229 |
+| remove_features | 4 | 0 | 0% | +0.02737 |
 
 ## Arena — Proven Insights
 

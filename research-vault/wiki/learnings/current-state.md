@@ -1,6 +1,6 @@
 # Current State — System Snapshot
 
-> Auto-generated on 2026-04-13 06:50 UTC
+> Auto-generated on 2026-04-13 08:25 UTC
 
 ## Brier Scores
 
@@ -14,27 +14,19 @@
 
 | Island | Brier |
 |--------|-------|
-| S10_nba | 1.00000 |
-| S11_nba | 1.00000 |
-| S12_nba | 1.00000 |
-| S13_nba | 1.00000 |
-| S14_nba | 1.00000 |
-| S15_nba | 1.00000 |
-| S16_nba | 1.00000 |
-| S17_nba | 1.00000 |
-| S18_nba | 1.00000 |
-| S19_nba | 1.00000 |
+| S18_nba | 0.22114 |
+| S14_nba | 0.22251 |
+| S15_nba | 0.22418 |
+| S10_nba | 0.22825 |
+| S19_nba | 0.22896 |
+| S13_nba | 0.23217 |
+| S12_nba | 0.23252 |
+| S17_nba | 0.23826 |
+| S16_nba | 0.24264 |
+| S11_nba | 0.24572 |
 
-- Fleet champion: S10_nba (1.00000)
-- Fleet average: 1.00000
-
-## NBA Karpathy Loop
-
-- Total iterations: 50
-- Improvements: 0
-- Improvement rate: 0.0%
-- No-improve streak: 50
-- Local minimum: YES
+- Fleet champion: S18_nba (0.22114)
+- Fleet average: 0.23163
 
 ## POLITICAL Karpathy Loop
 
