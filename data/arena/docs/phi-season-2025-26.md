@@ -5,48 +5,48 @@
 - **Personality:** theoretical
 - **Risk Tolerance:** 0.35
 - **Initial Bankroll:** $100.00
-- **Final Bankroll:** $100.57
-- **ROI:** +0.6%
-- **Sharpe Ratio:** 0.049
+- **Final Bankroll:** $100.35
+- **ROI:** +0.3%
+- **Sharpe Ratio:** 0.030
 - **Record:** 537W-786L
 - **Peak Bankroll:** $113.20
-- **Max Drawdown:** 14.4%
+- **Max Drawdown:** 14.7%
 - **Rank:** #7 of 10
-- **Total Wagered:** $113.51
+- **Total Wagered:** $114.19
 
 ## Peer Comparison
 | Rank | Agent | Bankroll | ROI | Sharpe |
 |------|-------|----------|-----|--------|
-| 1 | Mixtral Ensemble | $1,082.04 | +982.0% | 9.750 |
-| 2 | Gemma Arbitrageur | $701.49 | +601.5% | 10.710 |
-| 3 | Mistral Maverick | $654.90 | +554.9% | 8.816 |
-| 4 | Command Tactician | $648.90 | +548.9% | 7.731 |
-| 5 | Qwen Strategist | $559.85 | +459.9% | 9.601 |
-| 6 | DeepSeek Quant | $298.12 | +198.1% | 7.331 |
-| 7 | Phi Theorist ** | $100.57 | +0.6% | 0.049 |
+| 1 | Mixtral Ensemble | $1,057.10 | +957.1% | 9.720 |
+| 2 | Gemma Arbitrageur | $703.29 | +603.3% | 10.942 |
+| 3 | Command Tactician | $669.85 | +569.9% | 7.696 |
+| 4 | Mistral Maverick | $657.08 | +557.1% | 8.862 |
+| 5 | Qwen Strategist | $551.46 | +451.5% | 9.443 |
+| 6 | DeepSeek Quant | $305.29 | +205.3% | 7.929 |
+| 7 | Phi Theorist ** | $100.35 | +0.3% | 0.030 |
 | 8 | Llama Vanguard | $100.00 | +0.0% | 0.000 |
-| 9 | Claude Sentinel | $91.84 | -8.2% | -2.379 |
-| 10 | Gemma Analyst | $75.15 | -24.9% | -3.149 |
+| 9 | Claude Sentinel | $91.21 | -8.8% | -2.565 |
+| 10 | Gemma Analyst | $73.73 | -26.3% | -3.317 |
 
 ## Model Performance
 | Model | Bets | Profit |
 |-------|------|--------|
-| tabicl | 1323 | $+0.57 |
+| tabicl | 1323 | $+0.35 |
 
 ## Strategy Performance
 | Strategy | Bets | Profit |
 |----------|------|--------|
-| quarter_kelly | 1323 | $+0.57 |
+| quarter_kelly | 1323 | $+0.35 |
 
 ## Category Breakdown
 | Category | Bets | WR% | Profit |
 |----------|------|-----|--------|
-| ml_away | 216 | 48.1% | $+3.24 |
-| ml_home | 221 | 52.5% | $+3.11 |
-| alt_spread_home_7.5 | 425 | 38.6% | $+0.92 |
+| ml_away | 216 | 48.1% | $+3.12 |
+| ml_home | 221 | 52.5% | $+3.02 |
+| alt_spread_home_7.5 | 425 | 38.6% | $+0.90 |
 | h1_ml_home | 3 | 66.7% | $+0.01 |
 | h1_ml_away | 7 | 42.9% | $-1.06 |
-| alt_spread_away_7.5 | 451 | 32.8% | $-5.65 |
+| alt_spread_away_7.5 | 451 | 32.8% | $-5.64 |
 
 ## Day-by-Day Results
 | Day | Date | Games | Bets | P&L | Bankroll | Models | Strategies |
@@ -145,48 +145,48 @@
 | 92 | 2026-01-24 | 5 | 8 | $-0.69 | $105.63 | tabicl | quarter_kelly |
 | 93 | 2026-01-25 | 6 | 7 | $-0.30 | $105.33 | tabicl | quarter_kelly |
 | 94 | 2026-01-26 | 6 | 5 | $+0.14 | $105.47 | tabicl | quarter_kelly |
-| 95 | 2026-01-27 | 7 | 6 | $-0.10 | $105.37 | tabicl | quarter_kelly |
-| 96 | 2026-01-28 | 8 | 13 | $-0.08 | $105.29 | tabicl | quarter_kelly |
-| 97 | 2026-01-29 | 8 | 11 | $-0.54 | $104.75 | tabicl | quarter_kelly |
-| 98 | 2026-01-30 | 9 | 12 | $+0.71 | $105.46 | tabicl | quarter_kelly |
-| 99 | 2026-01-31 | 6 | 10 | $-1.75 | $103.71 | tabicl | quarter_kelly |
-| 100 | 2026-02-01 | 2 | 3 | $-0.10 | $103.61 | tabicl | quarter_kelly |
-| 101 | 2026-02-02 | 4 | 4 | $+0.12 | $103.73 | tabicl | quarter_kelly |
-| 102 | 2026-02-03 | 10 | 14 | $-0.51 | $103.22 | tabicl | quarter_kelly |
-| 103 | 2026-02-04 | 7 | 8 | $-2.92 | $100.29 | tabicl | quarter_kelly |
-| 104 | 2026-02-05 | 8 | 12 | $-0.38 | $99.91 | tabicl | quarter_kelly |
-| 105 | 2026-02-06 | 6 | 7 | $+0.88 | $100.79 | tabicl | quarter_kelly |
-| 106 | 2026-02-07 | 10 | 12 | $-1.65 | $99.15 | tabicl | quarter_kelly |
-| 107 | 2026-02-08 | 4 | 6 | $+0.24 | $99.39 | tabicl | quarter_kelly |
-| 108 | 2026-02-09 | 10 | 10 | $-0.23 | $99.16 | tabicl | quarter_kelly |
-| 109 | 2026-02-10 | 4 | 5 | $+1.25 | $100.41 | tabicl | quarter_kelly |
-| 110 | 2026-02-11 | 14 | 21 | $-1.41 | $99.00 | tabicl | quarter_kelly |
-| 111 | 2026-02-12 | 3 | 5 | $-1.20 | $97.80 | tabicl | quarter_kelly |
-| 112 | 2026-02-19 | 10 | 15 | $+0.09 | $97.89 | tabicl | quarter_kelly |
-| 113 | 2026-02-20 | 9 | 13 | $-0.29 | $97.60 | tabicl | quarter_kelly |
-| 114 | 2026-02-21 | 6 | 6 | $+2.29 | $99.89 | tabicl | quarter_kelly |
-| 115 | 2026-02-22 | 11 | 18 | $+3.14 | $103.02 | tabicl | quarter_kelly |
-| 116 | 2026-02-23 | 3 | 4 | $+1.40 | $104.43 | tabicl | quarter_kelly |
-| 117 | 2026-02-24 | 11 | 11 | $-3.14 | $101.28 | tabicl | quarter_kelly |
-| 118 | 2026-02-25 | 6 | 8 | $-0.36 | $100.92 | tabicl | quarter_kelly |
-| 119 | 2026-02-26 | 10 | 12 | $+0.38 | $101.30 | tabicl | quarter_kelly |
-| 120 | 2026-02-27 | 5 | 7 | $-0.72 | $100.59 | tabicl | quarter_kelly |
-| 121 | 2026-02-28 | 5 | 8 | $+0.88 | $101.47 | tabicl | quarter_kelly |
-| 122 | 2026-03-01 | 11 | 17 | $+0.04 | $101.52 | tabicl | quarter_kelly |
-| 123 | 2026-03-02 | 4 | 4 | $-2.78 | $98.73 | tabicl | quarter_kelly |
-| 124 | 2026-03-03 | 10 | 10 | $-0.35 | $98.38 | tabicl | quarter_kelly |
-| 125 | 2026-03-04 | 6 | 10 | $-0.77 | $97.61 | tabicl | quarter_kelly |
-| 126 | 2026-03-05 | 9 | 8 | $-0.38 | $97.22 | tabicl | quarter_kelly |
-| 127 | 2026-03-06 | 7 | 9 | $-0.23 | $96.99 | tabicl | quarter_kelly |
-| 128 | 2026-03-07 | 6 | 11 | $+0.43 | $97.42 | tabicl | quarter_kelly |
-| 129 | 2026-03-08 | 10 | 12 | $+0.77 | $98.19 | tabicl | quarter_kelly |
-| 130 | 2026-03-09 | 5 | 4 | $+0.13 | $98.32 | tabicl | quarter_kelly |
-| 131 | 2026-03-10 | 11 | 15 | $+2.88 | $101.20 | tabicl | quarter_kelly |
-| 132 | 2026-03-11 | 6 | 6 | $+1.57 | $102.77 | tabicl | quarter_kelly |
-| 133 | 2026-03-12 | 9 | 8 | $-0.52 | $102.25 | tabicl | quarter_kelly |
-| 134 | 2026-03-13 | 8 | 11 | $+0.43 | $102.67 | tabicl | quarter_kelly |
-| 135 | 2026-03-14 | 7 | 10 | $-2.64 | $100.03 | tabicl | quarter_kelly |
-| 136 | 2026-03-15 | 7 | 10 | $+0.54 | $100.57 | tabicl | quarter_kelly |
+| 95 | 2026-01-27 | 7 | 6 | $-0.08 | $105.38 | tabicl | quarter_kelly |
+| 96 | 2026-01-28 | 8 | 13 | $-0.08 | $105.31 | tabicl | quarter_kelly |
+| 97 | 2026-01-29 | 8 | 11 | $-0.54 | $104.76 | tabicl | quarter_kelly |
+| 98 | 2026-01-30 | 9 | 12 | $+0.74 | $105.50 | tabicl | quarter_kelly |
+| 99 | 2026-01-31 | 6 | 10 | $-1.75 | $103.75 | tabicl | quarter_kelly |
+| 100 | 2026-02-01 | 2 | 3 | $-0.10 | $103.64 | tabicl | quarter_kelly |
+| 101 | 2026-02-02 | 4 | 4 | $+0.12 | $103.77 | tabicl | quarter_kelly |
+| 102 | 2026-02-03 | 10 | 14 | $-0.52 | $103.25 | tabicl | quarter_kelly |
+| 103 | 2026-02-04 | 7 | 8 | $-2.92 | $100.33 | tabicl | quarter_kelly |
+| 104 | 2026-02-05 | 8 | 12 | $-0.43 | $99.90 | tabicl | quarter_kelly |
+| 105 | 2026-02-06 | 6 | 7 | $+0.88 | $100.77 | tabicl | quarter_kelly |
+| 106 | 2026-02-07 | 10 | 12 | $-1.65 | $99.13 | tabicl | quarter_kelly |
+| 107 | 2026-02-08 | 4 | 6 | $+0.24 | $99.37 | tabicl | quarter_kelly |
+| 108 | 2026-02-09 | 10 | 10 | $-0.23 | $99.14 | tabicl | quarter_kelly |
+| 109 | 2026-02-10 | 4 | 5 | $+1.25 | $100.39 | tabicl | quarter_kelly |
+| 110 | 2026-02-11 | 14 | 21 | $-1.36 | $99.03 | tabicl | quarter_kelly |
+| 111 | 2026-02-12 | 3 | 5 | $-1.28 | $97.75 | tabicl | quarter_kelly |
+| 112 | 2026-02-19 | 10 | 15 | $+0.10 | $97.84 | tabicl | quarter_kelly |
+| 113 | 2026-02-20 | 9 | 13 | $-0.29 | $97.55 | tabicl | quarter_kelly |
+| 114 | 2026-02-21 | 6 | 6 | $+2.29 | $99.83 | tabicl | quarter_kelly |
+| 115 | 2026-02-22 | 11 | 18 | $+3.12 | $102.95 | tabicl | quarter_kelly |
+| 116 | 2026-02-23 | 3 | 4 | $+1.40 | $104.36 | tabicl | quarter_kelly |
+| 117 | 2026-02-24 | 11 | 11 | $-3.50 | $100.85 | tabicl | quarter_kelly |
+| 118 | 2026-02-25 | 6 | 8 | $-0.32 | $100.53 | tabicl | quarter_kelly |
+| 119 | 2026-02-26 | 10 | 12 | $+0.35 | $100.88 | tabicl | quarter_kelly |
+| 120 | 2026-02-27 | 5 | 7 | $-0.71 | $100.17 | tabicl | quarter_kelly |
+| 121 | 2026-02-28 | 5 | 8 | $+0.88 | $101.05 | tabicl | quarter_kelly |
+| 122 | 2026-03-01 | 11 | 17 | $+0.04 | $101.09 | tabicl | quarter_kelly |
+| 123 | 2026-03-02 | 4 | 4 | $-2.77 | $98.32 | tabicl | quarter_kelly |
+| 124 | 2026-03-03 | 10 | 10 | $-0.35 | $97.97 | tabicl | quarter_kelly |
+| 125 | 2026-03-04 | 6 | 10 | $-0.77 | $97.20 | tabicl | quarter_kelly |
+| 126 | 2026-03-05 | 9 | 8 | $-0.37 | $96.83 | tabicl | quarter_kelly |
+| 127 | 2026-03-06 | 7 | 9 | $-0.26 | $96.58 | tabicl | quarter_kelly |
+| 128 | 2026-03-07 | 6 | 11 | $+0.42 | $97.00 | tabicl | quarter_kelly |
+| 129 | 2026-03-08 | 10 | 12 | $+1.06 | $98.05 | tabicl | quarter_kelly |
+| 130 | 2026-03-09 | 5 | 4 | $+0.50 | $98.56 | tabicl | quarter_kelly |
+| 131 | 2026-03-10 | 11 | 15 | $+2.45 | $101.01 | tabicl | quarter_kelly |
+| 132 | 2026-03-11 | 6 | 6 | $+1.56 | $102.57 | tabicl | quarter_kelly |
+| 133 | 2026-03-12 | 9 | 8 | $-0.51 | $102.07 | tabicl | quarter_kelly |
+| 134 | 2026-03-13 | 8 | 11 | $+0.36 | $102.43 | tabicl | quarter_kelly |
+| 135 | 2026-03-14 | 7 | 10 | $-2.62 | $99.81 | tabicl | quarter_kelly |
+| 136 | 2026-03-15 | 7 | 10 | $+0.54 | $100.35 | tabicl | quarter_kelly |
 
 ## Bet Log (sample: first 50 + last 50 of 1323 total)
 
@@ -599,7 +599,7 @@
 - **Bet:** $0.15 @ 2.000 | **Win** → $+0.37
 - **Context:** PHI (0-0) vs MEM (0-0)
 - **Reasoning:** tabicl P(PHI): 0.540 | consensus: 0.664 (disagree: 0.035) | kelly_adj: 0.75 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $99.19
+- **Bankroll after:** $99.12
 
 ### 2026-03-10 | PHI vs MEM | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -607,15 +607,15 @@
 - **Bet:** $0.11 @ 2.800 | **Win** → $+0.51
 - **Context:** PHI (0-0) vs MEM (0-0)
 - **Reasoning:** tabicl P(PHI): 0.540 | consensus: 0.664 (disagree: 0.035) | kelly_adj: 0.62 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $99.70
+- **Bankroll after:** $99.63
 
 ### 2026-03-10 | POR vs CHA | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.396 vs implied 0.357 | **Edge:** +14.3%
-- **Bet:** $0.07 @ 2.800 | **Loss** → $-0.19
+- **Bet:** $0.12 @ 2.800 | **Loss** → $-0.31
 - **Context:** POR (0-0) vs CHA (0-0)
-- **Reasoning:** tabicl P(POR): 0.529 | consensus: 0.429 (disagree: 0.026) | kelly_adj: 0.37 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $99.51
+- **Reasoning:** tabicl P(POR): 0.529 | consensus: 0.429 (disagree: 0.026) | kelly_adj: 0.62 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
+- **Bankroll after:** $99.32
 
 ### 2026-03-10 | SAC vs IND | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -623,7 +623,7 @@
 - **Bet:** $0.07 @ 2.800 | **Loss** → $-0.17
 - **Context:** SAC (0-0) vs IND (0-0)
 - **Reasoning:** tabicl P(SAC): 0.495 | consensus: 0.615 (disagree: 0.033) | kelly_adj: 0.41 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $99.34
+- **Bankroll after:** $99.15
 
 ### 2026-03-10 | SAS vs BOS | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -631,7 +631,7 @@
 - **Bet:** $0.41 @ 2.800 | **Win** → $+1.86
 - **Context:** SAS (0-0) vs BOS (0-0)
 - **Reasoning:** tabicl P(SAS): 0.535 | consensus: 0.637 (disagree: 0.033) | kelly_adj: 0.62 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $101.20
+- **Bankroll after:** $101.01
 
 ### 2026-03-11 | LAC vs MIN | ml_home
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -639,7 +639,7 @@
 - **Bet:** $0.17 @ 2.000 | **Win** → $+0.43
 - **Context:** LAC (0-0) vs MIN (0-0)
 - **Reasoning:** tabicl P(LAC): 0.542 | consensus: 0.565 (disagree: 0.028) | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $101.63
+- **Bankroll after:** $101.44
 
 ### 2026-03-11 | LAC vs MIN | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -647,7 +647,7 @@
 - **Bet:** $0.12 @ 2.800 | **Win** → $+0.57
 - **Context:** LAC (0-0) vs MIN (0-0)
 - **Reasoning:** tabicl P(LAC): 0.542 | consensus: 0.565 (disagree: 0.028) | kelly_adj: 0.83 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.20
+- **Bankroll after:** $102.00
 
 ### 2026-03-11 | NOP vs TOR | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -655,7 +655,7 @@
 - **Bet:** $0.06 @ 2.800 | **Loss** → $-0.15
 - **Context:** NOP (0-0) vs TOR (0-0)
 - **Reasoning:** tabicl P(NOP): 0.487 | consensus: 0.469 (disagree: 0.019) | kelly_adj: 0.54 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.05
+- **Bankroll after:** $101.86
 
 ### 2026-03-11 | ORL vs CLE | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -663,7 +663,7 @@
 - **Bet:** $0.10 @ 2.800 | **Loss** → $-0.25
 - **Context:** ORL (0-0) vs CLE (0-0)
 - **Reasoning:** tabicl P(ORL): 0.476 | consensus: 0.410 (disagree: 0.032) | kelly_adj: 0.54 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $101.80
+- **Bankroll after:** $101.61
 
 ### 2026-03-11 | SAC vs CHA | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -671,15 +671,15 @@
 - **Bet:** $0.17 @ 2.800 | **Loss** → $-0.43
 - **Context:** SAC (0-0) vs CHA (0-0)
 - **Reasoning:** tabicl P(SAC): 0.511 | consensus: 0.130 (disagree: 0.028) | kelly_adj: 0.83 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $101.37
+- **Bankroll after:** $101.18
 
 ### 2026-03-11 | UTA vs NYK | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.395 vs implied 0.357 | **Edge:** +13.6%
-- **Bet:** $0.31 @ 2.800 | **Win** → $+1.40
+- **Bet:** $0.31 @ 2.800 | **Win** → $+1.39
 - **Context:** UTA (0-0) vs NYK (0-0)
 - **Reasoning:** tabicl P(UTA): 0.474 | consensus: 0.147 (disagree: 0.033) | kelly_adj: 0.54 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.77
+- **Bankroll after:** $102.57
 
 ### 2026-03-12 | DET vs PHI | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -687,7 +687,7 @@
 - **Bet:** $0.02 @ 2.800 | **Loss** → $-0.05
 - **Context:** DET (0-0) vs PHI (0-0)
 - **Reasoning:** tabicl P(DET): 0.484 | consensus: 0.906 (disagree: 0.030) | kelly_adj: 0.32 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.72
+- **Bankroll after:** $102.53
 
 ### 2026-03-12 | IND vs PHX | ml_away
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -695,7 +695,7 @@
 - **Bet:** $0.11 @ 2.000 | **Win** → $+0.29
 - **Context:** IND (0-0) vs PHX (0-0)
 - **Reasoning:** tabicl P(IND): 0.461 | consensus: 0.233 (disagree: 0.033) | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $103.01
+- **Bankroll after:** $102.81
 
 ### 2026-03-12 | IND vs PHX | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -703,15 +703,15 @@
 - **Bet:** $0.06 @ 2.800 | **Win** → $+0.25
 - **Context:** IND (0-0) vs PHX (0-0)
 - **Reasoning:** tabicl P(IND): 0.461 | consensus: 0.233 (disagree: 0.033) | kelly_adj: 0.54 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $103.26
+- **Bankroll after:** $103.06
 
 ### 2026-03-12 | LAL vs CHI | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.397 vs implied 0.357 | **Edge:** +14.5%
-- **Bet:** $0.03 @ 2.800 | **Loss** → $-0.09
+- **Bet:** $0.05 @ 2.800 | **Loss** → $-0.14
 - **Context:** LAL (0-0) vs CHI (0-0)
-- **Reasoning:** tabicl P(LAL): 0.471 | consensus: 0.841 (disagree: 0.035) | kelly_adj: 0.32 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $103.17
+- **Reasoning:** tabicl P(LAL): 0.471 | consensus: 0.841 (disagree: 0.035) | kelly_adj: 0.54 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
+- **Bankroll after:** $102.92
 
 ### 2026-03-12 | MEM vs DAL | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -719,7 +719,7 @@
 - **Bet:** $0.06 @ 2.800 | **Loss** → $-0.15
 - **Context:** MEM (0-0) vs DAL (0-0)
 - **Reasoning:** tabicl P(MEM): 0.506 | consensus: 0.349 (disagree: 0.034) | kelly_adj: 0.83 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $103.02
+- **Bankroll after:** $102.78
 
 ### 2026-03-12 | MIA vs MIL | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -727,15 +727,15 @@
 - **Bet:** $0.04 @ 2.800 | **Loss** → $-0.11
 - **Context:** MIA (0-0) vs MIL (0-0)
 - **Reasoning:** tabicl P(MIA): 0.478 | consensus: 0.713 (disagree: 0.028) | kelly_adj: 0.32 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.92
+- **Bankroll after:** $102.67
 
 ### 2026-03-12 | OKC vs BOS | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.381 vs implied 0.357 | **Edge:** +8.7%
-- **Bet:** $0.07 @ 2.800 | **Loss** → $-0.17
+- **Bet:** $0.04 @ 2.800 | **Loss** → $-0.10
 - **Context:** OKC (0-0) vs BOS (0-0)
-- **Reasoning:** tabicl P(OKC): 0.492 | consensus: 0.772 (disagree: 0.027) | kelly_adj: 0.54 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.75
+- **Reasoning:** tabicl P(OKC): 0.492 | consensus: 0.772 (disagree: 0.027) | kelly_adj: 0.32 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
+- **Bankroll after:** $102.56
 
 ### 2026-03-12 | ORL vs WAS | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -743,7 +743,7 @@
 - **Bet:** $0.20 @ 2.800 | **Loss** → $-0.50
 - **Context:** ORL (0-0) vs WAS (0-0)
 - **Reasoning:** tabicl P(ORL): 0.517 | consensus: 0.904 (disagree: 0.030) | kelly_adj: 0.83 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.25
+- **Bankroll after:** $102.07
 
 ### 2026-03-13 | DAL vs CLE | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -751,7 +751,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** DAL (0-0) vs CLE (0-0)
 - **Reasoning:** tabicl P(DAL): 0.507 | consensus: 0.160 (disagree: 0.026) | kelly_adj: 0.17 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.23
+- **Bankroll after:** $102.05
 
 ### 2026-03-13 | DET vs MEM | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -759,7 +759,7 @@
 - **Bet:** $0.01 @ 2.800 | **Win** → $+0.03
 - **Context:** DET (0-0) vs MEM (0-0)
 - **Reasoning:** tabicl P(DET): 0.522 | consensus: 0.931 (disagree: 0.016) | kelly_adj: 0.10 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.26
+- **Bankroll after:** $102.08
 
 ### 2026-03-13 | GSW vs MIN | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -767,23 +767,23 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.04
 - **Context:** GSW (0-0) vs MIN (0-0)
 - **Reasoning:** tabicl P(GSW): 0.521 | consensus: 0.373 (disagree: 0.025) | kelly_adj: 0.17 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.22
+- **Bankroll after:** $102.04
 
 ### 2026-03-13 | HOU vs NOP | ml_away
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.550 vs implied 0.500 | **Edge:** +13.0%
-- **Bet:** $0.02 @ 2.000 | **Loss** → $-0.06
+- **Bet:** $0.04 @ 2.000 | **Loss** → $-0.10
 - **Context:** HOU (0-0) vs NOP (0-0)
-- **Reasoning:** tabicl P(HOU): 0.450 | consensus: 0.691 (disagree: 0.037) | kelly_adj: 0.12 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.16
+- **Reasoning:** tabicl P(HOU): 0.450 | consensus: 0.691 (disagree: 0.037) | kelly_adj: 0.20 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
+- **Bankroll after:** $101.94
 
 ### 2026-03-13 | HOU vs NOP | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.412 vs implied 0.357 | **Edge:** +20.1%
-- **Bet:** $0.01 @ 2.800 | **Loss** → $-0.03
+- **Bet:** $0.02 @ 2.800 | **Loss** → $-0.05
 - **Context:** HOU (0-0) vs NOP (0-0)
-- **Reasoning:** tabicl P(HOU): 0.450 | consensus: 0.691 (disagree: 0.037) | kelly_adj: 0.06 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.13
+- **Reasoning:** tabicl P(HOU): 0.450 | consensus: 0.691 (disagree: 0.037) | kelly_adj: 0.11 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
+- **Bankroll after:** $101.90
 
 ### 2026-03-13 | IND vs NYK | ml_away
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -791,7 +791,7 @@
 - **Bet:** $0.05 @ 2.000 | **Win** → $+0.13
 - **Context:** IND (0-0) vs NYK (0-0)
 - **Reasoning:** tabicl P(IND): 0.448 | consensus: 0.156 (disagree: 0.036) | kelly_adj: 0.20 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.27
+- **Bankroll after:** $102.03
 
 ### 2026-03-13 | IND vs NYK | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -799,7 +799,7 @@
 - **Bet:** $0.02 @ 2.800 | **Win** → $+0.11
 - **Context:** IND (0-0) vs NYK (0-0)
 - **Reasoning:** tabicl P(IND): 0.448 | consensus: 0.156 (disagree: 0.036) | kelly_adj: 0.11 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.38
+- **Bankroll after:** $102.14
 
 ### 2026-03-13 | LAC vs CHI | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -807,7 +807,7 @@
 - **Bet:** $0.02 @ 2.800 | **Loss** → $-0.05
 - **Context:** LAC (0-0) vs CHI (0-0)
 - **Reasoning:** tabicl P(LAC): 0.479 | consensus: 0.904 (disagree: 0.031) | kelly_adj: 0.11 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.33
+- **Bankroll after:** $102.09
 
 ### 2026-03-13 | POR vs UTA | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -815,7 +815,7 @@
 - **Bet:** $0.04 @ 2.800 | **Win** → $+0.19
 - **Context:** POR (0-0) vs UTA (0-0)
 - **Reasoning:** tabicl P(POR): 0.519 | consensus: 0.933 (disagree: 0.019) | kelly_adj: 0.17 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.52
+- **Bankroll after:** $102.28
 
 ### 2026-03-13 | TOR vs PHX | ml_home
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -823,7 +823,7 @@
 - **Bet:** $0.21 @ 2.000 | **Win** → $+0.52
 - **Context:** TOR (0-0) vs PHX (0-0)
 - **Reasoning:** tabicl P(TOR): 0.551 | consensus: 0.666 (disagree: 0.033) | kelly_adj: 0.20 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $103.04
+- **Bankroll after:** $102.80
 
 ### 2026-03-13 | TOR vs PHX | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -831,7 +831,7 @@
 - **Bet:** $0.15 @ 2.800 | **Loss** → $-0.37
 - **Context:** TOR (0-0) vs PHX (0-0)
 - **Reasoning:** tabicl P(TOR): 0.551 | consensus: 0.666 (disagree: 0.033) | kelly_adj: 0.17 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.67
+- **Bankroll after:** $102.43
 
 ### 2026-03-14 | BOS vs WAS | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -839,7 +839,7 @@
 - **Bet:** $0.02 @ 2.800 | **Win** → $+0.07
 - **Context:** BOS (0-0) vs WAS (0-0)
 - **Reasoning:** tabicl P(BOS): 0.519 | consensus: 0.939 (disagree: 0.016) | kelly_adj: 0.19 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.74
+- **Bankroll after:** $102.50
 
 ### 2026-03-14 | LAC vs SAC | ml_away
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -847,7 +847,7 @@
 - **Bet:** $0.04 @ 2.000 | **Win** → $+0.09
 - **Context:** LAC (0-0) vs SAC (0-0)
 - **Reasoning:** tabicl P(LAC): 0.459 | consensus: 0.907 (disagree: 0.032) | kelly_adj: 0.22 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.84
+- **Bankroll after:** $102.60
 
 ### 2026-03-14 | LAC vs SAC | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -855,15 +855,15 @@
 - **Bet:** $0.02 @ 2.800 | **Win** → $+0.08
 - **Context:** LAC (0-0) vs SAC (0-0)
 - **Reasoning:** tabicl P(LAC): 0.459 | consensus: 0.907 (disagree: 0.032) | kelly_adj: 0.12 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.92
+- **Bankroll after:** $102.68
 
 ### 2026-03-14 | LAL vs DEN | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.380 vs implied 0.357 | **Edge:** +8.2%
-- **Bet:** $0.02 @ 2.800 | **Loss** → $-0.05
+- **Bet:** $0.01 @ 2.800 | **Loss** → $-0.03
 - **Context:** LAL (0-0) vs DEN (0-0)
-- **Reasoning:** tabicl P(LAL): 0.494 | consensus: 0.492 (disagree: 0.030) | kelly_adj: 0.20 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.88
+- **Reasoning:** tabicl P(LAL): 0.494 | consensus: 0.492 (disagree: 0.030) | kelly_adj: 0.12 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
+- **Bankroll after:** $102.65
 
 ### 2026-03-14 | MIA vs ORL | ml_home
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -871,15 +871,15 @@
 - **Bet:** $0.14 @ 2.000 | **Loss** → $-0.34
 - **Context:** MIA (0-0) vs ORL (0-0)
 - **Reasoning:** tabicl P(MIA): 0.552 | consensus: 0.664 (disagree: 0.032) | kelly_adj: 0.38 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.54
+- **Bankroll after:** $102.32
 
 ### 2026-03-14 | MIA vs ORL | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.414 vs implied 0.357 | **Edge:** +20.8%
-- **Bet:** $0.10 @ 2.800 | **Loss** → $-0.24
+- **Bet:** $0.10 @ 2.800 | **Loss** → $-0.23
 - **Context:** MIA (0-0) vs ORL (0-0)
 - **Reasoning:** tabicl P(MIA): 0.552 | consensus: 0.664 (disagree: 0.032) | kelly_adj: 0.31 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $102.31
+- **Bankroll after:** $102.08
 
 ### 2026-03-14 | PHI vs BKN | ml_away
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -887,7 +887,7 @@
 - **Bet:** $0.21 @ 2.000 | **Loss** → $-0.51
 - **Context:** PHI (0-0) vs BKN (0-0)
 - **Reasoning:** tabicl P(PHI): 0.447 | consensus: 0.794 (disagree: 0.033) | kelly_adj: 0.38 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $101.80
+- **Bankroll after:** $101.58
 
 ### 2026-03-14 | PHI vs BKN | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -895,23 +895,23 @@
 - **Bet:** $0.09 @ 2.800 | **Loss** → $-0.23
 - **Context:** PHI (0-0) vs BKN (0-0)
 - **Reasoning:** tabicl P(PHI): 0.447 | consensus: 0.794 (disagree: 0.033) | kelly_adj: 0.20 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $101.57
+- **Bankroll after:** $101.35
 
 ### 2026-03-14 | SAS vs CHA | ml_away
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.556 vs implied 0.500 | **Edge:** +14.6%
-- **Bet:** $0.44 @ 2.000 | **Loss** → $-1.07
+- **Bet:** $0.44 @ 2.000 | **Loss** → $-1.06
 - **Context:** SAS (0-0) vs CHA (0-0)
 - **Reasoning:** tabicl P(SAS): 0.444 | consensus: 0.719 (disagree: 0.036) | kelly_adj: 0.38 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $100.50
+- **Bankroll after:** $100.28
 
 ### 2026-03-14 | SAS vs CHA | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.417 vs implied 0.357 | **Edge:** +21.8%
-- **Bet:** $0.20 @ 2.800 | **Loss** → $-0.47
+- **Bet:** $0.19 @ 2.800 | **Loss** → $-0.47
 - **Context:** SAS (0-0) vs CHA (0-0)
 - **Reasoning:** tabicl P(SAS): 0.444 | consensus: 0.719 (disagree: 0.036) | kelly_adj: 0.20 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $100.03
+- **Bankroll after:** $99.81
 
 ### 2026-03-15 | CLE vs DAL | ml_home
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -919,7 +919,7 @@
 - **Bet:** $0.01 @ 2.000 | **Loss** → $-0.03
 - **Context:** CLE (0-0) vs DAL (0-0)
 - **Reasoning:** tabicl P(CLE): 0.551 | consensus: 0.926 (disagree: 0.021) | kelly_adj: 0.09 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $100.00
+- **Bankroll after:** $99.78
 
 ### 2026-03-15 | CLE vs DAL | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -927,7 +927,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** CLE (0-0) vs DAL (0-0)
 - **Reasoning:** tabicl P(CLE): 0.551 | consensus: 0.926 (disagree: 0.021) | kelly_adj: 0.07 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $99.97
+- **Bankroll after:** $99.76
 
 ### 2026-03-15 | MIL vs IND | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -935,7 +935,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.01
 - **Context:** MIL (0-0) vs IND (0-0)
 - **Reasoning:** tabicl P(MIL): 0.471 | consensus: 0.735 (disagree: 0.034) | kelly_adj: 0.05 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $99.96
+- **Bankroll after:** $99.74
 
 ### 2026-03-15 | OKC vs MIN | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -943,7 +943,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** OKC (0-0) vs MIN (0-0)
 - **Reasoning:** tabicl P(OKC): 0.480 | consensus: 0.775 (disagree: 0.026) | kelly_adj: 0.05 | dmad_role: Model-Only Theorist | CONSENSUS_WARNING dmad_damp=0.60 | P6:Information Ratio Maximizer
-- **Bankroll after:** $99.94
+- **Bankroll after:** $99.73
 
 ### 2026-03-15 | PHI vs POR | ml_away
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -951,7 +951,7 @@
 - **Bet:** $0.05 @ 2.000 | **Loss** → $-0.11
 - **Context:** PHI (0-0) vs POR (0-0)
 - **Reasoning:** tabicl P(PHI): 0.455 | consensus: 0.267 (disagree: 0.038) | kelly_adj: 0.15 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $99.83
+- **Bankroll after:** $99.61
 
 ### 2026-03-15 | PHI vs POR | alt_spread_away_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -959,7 +959,7 @@
 - **Bet:** $0.02 @ 2.800 | **Loss** → $-0.05
 - **Context:** PHI (0-0) vs POR (0-0)
 - **Reasoning:** tabicl P(PHI): 0.455 | consensus: 0.267 (disagree: 0.038) | kelly_adj: 0.08 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $99.78
+- **Bankroll after:** $99.56
 
 ### 2026-03-15 | SAC vs UTA | ml_home
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -967,7 +967,7 @@
 - **Bet:** $0.07 @ 2.000 | **Win** → $+0.16
 - **Context:** SAC (0-0) vs UTA (0-0)
 - **Reasoning:** tabicl P(SAC): 0.542 | consensus: 0.610 (disagree: 0.032) | kelly_adj: 0.15 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $99.93
+- **Bankroll after:** $99.72
 
 ### 2026-03-15 | SAC vs UTA | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -975,7 +975,7 @@
 - **Bet:** $0.05 @ 2.800 | **Loss** → $-0.12
 - **Context:** SAC (0-0) vs UTA (0-0)
 - **Reasoning:** tabicl P(SAC): 0.542 | consensus: 0.610 (disagree: 0.032) | kelly_adj: 0.12 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $99.81
+- **Bankroll after:** $99.60
 
 ### 2026-03-15 | TOR vs DET | ml_home
 - **Model:** tabicl | **Strategy:** quarter_kelly
@@ -983,12 +983,12 @@
 - **Bet:** $0.14 @ 2.000 | **Win** → $+0.32
 - **Context:** TOR (0-0) vs DET (0-0)
 - **Reasoning:** tabicl P(TOR): 0.543 | consensus: 0.452 (disagree: 0.029) | kelly_adj: 0.15 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $100.14
+- **Bankroll after:** $99.92
 
 ### 2026-03-15 | TOR vs DET | alt_spread_home_7.5
 - **Model:** tabicl | **Strategy:** quarter_kelly
 - **Prob:** 0.407 vs implied 0.357 | **Edge:** +18.2%
-- **Bet:** $0.10 @ 2.800 | **Win** → $+0.44
+- **Bet:** $0.10 @ 2.800 | **Win** → $+0.43
 - **Context:** TOR (0-0) vs DET (0-0)
 - **Reasoning:** tabicl P(TOR): 0.543 | consensus: 0.452 (disagree: 0.029) | kelly_adj: 0.12 | dmad_role: Model-Only Theorist | P6:Information Ratio Maximizer
-- **Bankroll after:** $100.57
+- **Bankroll after:** $100.35

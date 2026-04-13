@@ -1,113 +1,113 @@
 {
   "department": "trading_floor",
-  "timestamp": "2026-04-13T09:40:40.721301+00:00",
-  "iteration": 333,
-  "generation": 45217,
+  "timestamp": "2026-04-13T11:55:50.501664+00:00",
+  "iteration": 335,
+  "generation": 45489,
   "status": "completed",
   "best_strategy": {
-    "name": "full_kelly",
-    "roi_pct": 311.03,
+    "name": "flat_2pct",
+    "roi_pct": 330.36,
     "bets": 500
   },
   "best_model": {
     "name": "elo_baseline",
-    "avg_daily_pnl": 0.9865,
+    "avg_daily_pnl": 0.9892,
     "bets": 500
   },
   "best_category": {
     "name": "race_to_75_home",
     "win_rate_pct": 100.0,
-    "bets": 64
+    "bets": 65
   },
   "strategy_rankings": [
     {
-      "strategy": "full_kelly",
-      "bets": 500,
-      "wins": 295,
-      "losses": 205,
-      "profit": 311.02620000000013,
-      "traders_using": [
-        "gemma"
-      ],
-      "roi_pct": 311.03,
-      "win_rate_pct": 59.0
-    },
-    {
       "strategy": "flat_2pct",
       "bets": 500,
-      "wins": 323,
-      "losses": 177,
-      "profit": 281.9901999999999,
+      "wins": 328,
+      "losses": 172,
+      "profit": 330.3625000000001,
       "traders_using": [
         "mixtral"
       ],
-      "roi_pct": 281.99,
-      "win_rate_pct": 64.6
+      "roi_pct": 330.36,
+      "win_rate_pct": 65.6
+    },
+    {
+      "strategy": "full_kelly",
+      "bets": 500,
+      "wins": 299,
+      "losses": 201,
+      "profit": 326.2792999999999,
+      "traders_using": [
+        "gemma"
+      ],
+      "roi_pct": 326.28,
+      "win_rate_pct": 59.8
     },
     {
       "strategy": "value_hunter",
-      "bets": 1215,
-      "wins": 623,
-      "losses": 592,
-      "profit": 678.4020000000008,
+      "bets": 1219,
+      "wins": 632,
+      "losses": 587,
+      "profit": 723.9977999999999,
       "traders_using": [
-        "grok",
+        "cohere",
         "openrouter",
         "gemini",
-        "cohere"
+        "grok"
       ],
-      "roi_pct": 169.6,
-      "win_rate_pct": 51.3
+      "roi_pct": 181.0,
+      "win_rate_pct": 51.8
     },
     {
       "strategy": "half_kelly",
       "bets": 500,
-      "wins": 227,
-      "losses": 273,
-      "profit": 42.66019999999996,
+      "wins": 225,
+      "losses": 275,
+      "profit": 37.9319,
       "traders_using": [
         "deepseek"
       ],
-      "roi_pct": 42.66,
-      "win_rate_pct": 45.4
+      "roi_pct": 37.93,
+      "win_rate_pct": 45.0
     },
     {
       "strategy": "confidence_scaled",
-      "bets": 621,
-      "wins": 320,
-      "losses": 301,
-      "profit": 70.63130000000004,
+      "bets": 610,
+      "wins": 308,
+      "losses": 302,
+      "profit": 55.406699999999994,
       "traders_using": [
         "openrouter",
         "gemini"
       ],
-      "roi_pct": 35.32,
-      "win_rate_pct": 51.5
+      "roi_pct": 27.7,
+      "win_rate_pct": 50.5
     },
     {
       "strategy": "underdog_specialist",
-      "bets": 164,
-      "wins": 50,
-      "losses": 114,
-      "profit": 2.2521999999999984,
+      "bets": 171,
+      "wins": 49,
+      "losses": 122,
+      "profit": -1.3668999999999976,
       "traders_using": [
         "openrouter",
         "gemini"
       ],
-      "roi_pct": 1.13,
-      "win_rate_pct": 30.5
+      "roi_pct": -0.68,
+      "win_rate_pct": 28.7
     },
     {
       "strategy": "quarter_kelly",
       "bets": 1000,
       "wins": 371,
       "losses": 629,
-      "profit": -11.533299999999988,
+      "profit": -12.388300000000005,
       "traders_using": [
         "claude",
         "phi"
       ],
-      "roi_pct": -5.77,
+      "roi_pct": -6.19,
       "win_rate_pct": 37.1
     }
   ],
@@ -115,317 +115,326 @@
     {
       "model": "elo_baseline",
       "bets": 500,
-      "total_profit": 493.2528999999999,
-      "wins": 330,
-      "losses": 170,
+      "total_profit": 494.6130999999999,
+      "wins": 325,
+      "losses": 175,
       "traders_using": [
         "grok"
       ],
-      "avg_daily_pnl": 0.9865,
-      "win_rate_pct": 66.0
+      "avg_daily_pnl": 0.9892,
+      "win_rate_pct": 65.0
     },
     {
       "model": "catboost",
       "bets": 500,
-      "total_profit": 311.02620000000013,
-      "wins": 295,
-      "losses": 205,
+      "total_profit": 326.2792999999999,
+      "wins": 299,
+      "losses": 201,
       "traders_using": [
         "gemma"
       ],
-      "avg_daily_pnl": 0.6221,
-      "win_rate_pct": 59.0
-    },
-    {
-      "model": "lightgbm",
-      "bets": 892,
-      "total_profit": 241.62940000000023,
-      "wins": 463,
-      "losses": 429,
-      "traders_using": [
-        "openrouter",
-        "cohere"
-      ],
-      "avg_daily_pnl": 0.2709,
-      "win_rate_pct": 51.9
+      "avg_daily_pnl": 0.6526,
+      "win_rate_pct": 59.8
     },
     {
       "model": "extra_trees",
-      "bets": 70,
-      "total_profit": 18.0505,
-      "wins": 22,
-      "losses": 48,
+      "bets": 74,
+      "total_profit": 23.465800000000012,
+      "wins": 28,
+      "losses": 46,
       "traders_using": [
         "openrouter"
       ],
-      "avg_daily_pnl": 0.2579,
-      "win_rate_pct": 31.4
+      "avg_daily_pnl": 0.3171,
+      "win_rate_pct": 37.8
+    },
+    {
+      "model": "lightgbm",
+      "bets": 881,
+      "total_profit": 265.4864999999999,
+      "wins": 459,
+      "losses": 422,
+      "traders_using": [
+        "cohere",
+        "openrouter"
+      ],
+      "avg_daily_pnl": 0.3013,
+      "win_rate_pct": 52.1
     },
     {
       "model": "consensus_ensemble",
-      "bets": 1538,
-      "total_profit": 278.7006999999999,
-      "wins": 683,
-      "losses": 855,
+      "bets": 1545,
+      "total_profit": 322.55520000000007,
+      "wins": 687,
+      "losses": 858,
       "traders_using": [
-        "mixtral",
         "claude",
         "openrouter",
-        "gemini"
+        "gemini",
+        "mixtral"
       ],
-      "avg_daily_pnl": 0.1812,
-      "win_rate_pct": 44.4
+      "avg_daily_pnl": 0.2088,
+      "win_rate_pct": 44.5
     },
     {
       "model": "xgboost",
       "bets": 500,
-      "total_profit": 42.66019999999996,
-      "wins": 227,
-      "losses": 273,
+      "total_profit": 37.9319,
+      "wins": 225,
+      "losses": 275,
       "traders_using": [
         "deepseek"
       ],
-      "avg_daily_pnl": 0.0853,
-      "win_rate_pct": 45.4
+      "avg_daily_pnl": 0.0759,
+      "win_rate_pct": 45.0
     },
     {
       "model": "tabicl",
       "bets": 500,
-      "total_profit": -9.891099999999994,
+      "total_profit": -10.108800000000011,
       "wins": 189,
       "losses": 311,
       "traders_using": [
         "phi"
       ],
-      "avg_daily_pnl": -0.0198,
+      "avg_daily_pnl": -0.0202,
       "win_rate_pct": 37.8
     }
   ],
   "category_rankings": [
     {
       "category": "race_to_75_home",
-      "bets": 64,
-      "profit": 61.34289999999999,
-      "wins": 64,
+      "bets": 65,
+      "profit": 66.44829999999999,
+      "wins": 65,
       "losses": 0,
       "win_rate_pct": 100.0,
-      "roi_pct": 95.85
+      "roi_pct": 102.23
     },
     {
       "category": "race_to_100_home",
-      "bets": 55,
-      "profit": 42.35910000000002,
-      "wins": 54,
-      "losses": 1,
-      "win_rate_pct": 98.2,
-      "roi_pct": 77.02
-    },
-    {
-      "category": "alt_spread_away_3.5",
-      "bets": 22,
-      "profit": 15.395099999999996,
-      "wins": 19,
-      "losses": 3,
-      "win_rate_pct": 86.4,
-      "roi_pct": 69.98
-    },
-    {
-      "category": "q3_home",
-      "bets": 153,
-      "profit": 189.98690000000005,
-      "wins": 129,
-      "losses": 24,
-      "win_rate_pct": 84.3,
-      "roi_pct": 124.17
-    },
-    {
-      "category": "alt_under_plus10",
-      "bets": 32,
-      "profit": 5.6085,
-      "wins": 26,
-      "losses": 6,
-      "win_rate_pct": 81.2,
-      "roi_pct": 17.53
+      "bets": 58,
+      "profit": 48.0047,
+      "wins": 56,
+      "losses": 2,
+      "win_rate_pct": 96.6,
+      "roi_pct": 82.77
     },
     {
       "category": "q4_home",
-      "bets": 145,
-      "profit": 125.99500000000002,
-      "wins": 117,
-      "losses": 28,
-      "win_rate_pct": 80.7,
-      "roi_pct": 86.89
+      "bets": 148,
+      "profit": 140.02570000000003,
+      "wins": 124,
+      "losses": 24,
+      "win_rate_pct": 83.8,
+      "roi_pct": 94.61
     },
     {
-      "category": "q1_home",
-      "bets": 118,
-      "profit": 110.7155,
-      "wins": 94,
-      "losses": 24,
-      "win_rate_pct": 79.7,
-      "roi_pct": 93.83
+      "category": "q3_home",
+      "bets": 155,
+      "profit": 191.71410000000003,
+      "wins": 129,
+      "losses": 26,
+      "win_rate_pct": 83.2,
+      "roi_pct": 123.69
+    },
+    {
+      "category": "alt_under_plus10",
+      "bets": 29,
+      "profit": 5.6803,
+      "wins": 24,
+      "losses": 5,
+      "win_rate_pct": 82.8,
+      "roi_pct": 19.59
+    },
+    {
+      "category": "alt_spread_away_3.5",
+      "bets": 16,
+      "profit": 9.065299999999999,
+      "wins": 13,
+      "losses": 3,
+      "win_rate_pct": 81.2,
+      "roi_pct": 56.66
     },
     {
       "category": "q2_home",
-      "bets": 102,
-      "profit": 88.47480000000004,
+      "bets": 100,
+      "profit": 87.93399999999997,
       "wins": 81,
-      "losses": 21,
-      "win_rate_pct": 79.4,
-      "roi_pct": 86.74
+      "losses": 19,
+      "win_rate_pct": 81.0,
+      "roi_pct": 87.93
+    },
+    {
+      "category": "q1_home",
+      "bets": 115,
+      "profit": 116.2063,
+      "wins": 93,
+      "losses": 22,
+      "win_rate_pct": 80.9,
+      "roi_pct": 101.05
     },
     {
       "category": "alt_over_minus10",
-      "bets": 28,
-      "profit": 4.7869,
+      "bets": 29,
+      "profit": 3.4965999999999995,
       "wins": 22,
-      "losses": 6,
-      "win_rate_pct": 78.6,
-      "roi_pct": 17.1
-    },
-    {
-      "category": "alt_under_plus5",
-      "bets": 32,
-      "profit": 3.7021999999999995,
-      "wins": 24,
-      "losses": 8,
-      "win_rate_pct": 75.0,
-      "roi_pct": 11.57
+      "losses": 7,
+      "win_rate_pct": 75.9,
+      "roi_pct": 12.06
     },
     {
       "category": "alt_spread_home_3.5",
-      "bets": 278,
-      "profit": 166.52390000000003,
-      "wins": 202,
-      "losses": 76,
-      "win_rate_pct": 72.7,
-      "roi_pct": 59.9
+      "bets": 287,
+      "profit": 195.58680000000004,
+      "wins": 215,
+      "losses": 72,
+      "win_rate_pct": 74.9,
+      "roi_pct": 68.15
+    },
+    {
+      "category": "alt_under_plus5",
+      "bets": 34,
+      "profit": 3.9284999999999997,
+      "wins": 25,
+      "losses": 9,
+      "win_rate_pct": 73.5,
+      "roi_pct": 11.55
     },
     {
       "category": "double_result_hh",
-      "bets": 87,
-      "profit": 11.890799999999999,
-      "wins": 50,
-      "losses": 37,
-      "win_rate_pct": 57.5,
-      "roi_pct": 13.67
-    },
-    {
-      "category": "alt_over_minus5",
-      "bets": 35,
-      "profit": -0.8902,
-      "wins": 20,
-      "losses": 15,
-      "win_rate_pct": 57.1,
-      "roi_pct": -2.54
-    },
-    {
-      "category": "alt_spread_away_big",
-      "bets": 49,
-      "profit": 15.9392,
-      "wins": 28,
-      "losses": 21,
-      "win_rate_pct": 57.1,
-      "roi_pct": 32.53
+      "bets": 99,
+      "profit": 18.175199999999997,
+      "wins": 58,
+      "losses": 41,
+      "win_rate_pct": 58.6,
+      "roi_pct": 18.36
     },
     {
       "category": "alt_spread_home_big",
-      "bets": 105,
-      "profit": 37.443099999999994,
-      "wins": 59,
-      "losses": 46,
+      "bets": 112,
+      "profit": 46.5627,
+      "wins": 63,
+      "losses": 49,
       "win_rate_pct": 56.2,
-      "roi_pct": 35.66
+      "roi_pct": 41.57
+    },
+    {
+      "category": "alt_over_minus5",
+      "bets": 31,
+      "profit": -1.9699999999999989,
+      "wins": 17,
+      "losses": 14,
+      "win_rate_pct": 54.8,
+      "roi_pct": -6.35
     },
     {
       "category": "h1_ml_home",
-      "bets": 29,
-      "profit": 2.1801,
-      "wins": 16,
-      "losses": 13,
-      "win_rate_pct": 55.2,
-      "roi_pct": 7.52
+      "bets": 26,
+      "profit": 1.5077999999999998,
+      "wins": 14,
+      "losses": 12,
+      "win_rate_pct": 53.8,
+      "roi_pct": 5.8
     },
     {
       "category": "ml_home",
-      "bets": 274,
-      "profit": -3.599299999999999,
-      "wins": 136,
-      "losses": 138,
-      "win_rate_pct": 49.6,
-      "roi_pct": -1.31
-    },
-    {
-      "category": "home_and_over",
-      "bets": 113,
-      "profit": 36.797399999999996,
-      "wins": 54,
-      "losses": 59,
-      "win_rate_pct": 47.8,
-      "roi_pct": 32.56
+      "bets": 259,
+      "profit": -7.274899999999999,
+      "wins": 129,
+      "losses": 130,
+      "win_rate_pct": 49.8,
+      "roi_pct": -2.81
     },
     {
       "category": "alt_spread_home_7.5",
-      "bets": 987,
-      "profit": 485.2172999999997,
-      "wins": 471,
-      "losses": 516,
-      "win_rate_pct": 47.7,
-      "roi_pct": 49.16
+      "bets": 996,
+      "profit": 522.0188000000004,
+      "wins": 479,
+      "losses": 517,
+      "win_rate_pct": 48.1,
+      "roi_pct": 52.41
     },
     {
       "category": "spread_home",
-      "bets": 44,
-      "profit": -10.4946,
-      "wins": 19,
-      "losses": 25,
-      "win_rate_pct": 43.2,
-      "roi_pct": -23.85
+      "bets": 50,
+      "profit": -3.7881999999999993,
+      "wins": 24,
+      "losses": 26,
+      "win_rate_pct": 48.0,
+      "roi_pct": -7.58
+    },
+    {
+      "category": "alt_spread_away_big",
+      "bets": 37,
+      "profit": 5.521699999999999,
+      "wins": 17,
+      "losses": 20,
+      "win_rate_pct": 45.9,
+      "roi_pct": 14.92
+    },
+    {
+      "category": "home_and_over",
+      "bets": 114,
+      "profit": 28.35050000000001,
+      "wins": 52,
+      "losses": 62,
+      "win_rate_pct": 45.6,
+      "roi_pct": 24.87
     },
     {
       "category": "ml_away",
-      "bets": 189,
-      "profit": -2.4710000000000005,
-      "wins": 80,
-      "losses": 109,
-      "win_rate_pct": 42.3,
-      "roi_pct": -1.31
+      "bets": 192,
+      "profit": -2.430600000000001,
+      "wins": 81,
+      "losses": 111,
+      "win_rate_pct": 42.2,
+      "roi_pct": -1.27
+    },
+    {
+      "category": "double_result_aa",
+      "bets": 10,
+      "profit": -0.8501999999999996,
+      "wins": 4,
+      "losses": 6,
+      "win_rate_pct": 40.0,
+      "roi_pct": -8.5
     },
     {
       "category": "alt_spread_away_7.5",
-      "bets": 547,
-      "profit": 71.70940000000004,
-      "wins": 199,
-      "losses": 348,
-      "win_rate_pct": 36.4,
-      "roi_pct": 13.11
+      "bets": 545,
+      "profit": 65.686,
+      "wins": 194,
+      "losses": 351,
+      "win_rate_pct": 35.6,
+      "roi_pct": 12.05
     },
     {
       "category": "h1_ml_away",
       "bets": 15,
-      "profit": -1.0152999999999999,
+      "profit": -1.0189,
       "wins": 5,
       "losses": 10,
       "win_rate_pct": 33.3,
-      "roi_pct": -6.77
+      "roi_pct": -6.79
     },
     {
       "category": "margin_6_10",
-      "bets": 576,
-      "profit": -3.9656000000000002,
-      "wins": 140,
-      "losses": 436,
-      "win_rate_pct": 24.3,
-      "roi_pct": -0.69
+      "bets": 573,
+      "profit": -5.214500000000003,
+      "wins": 132,
+      "losses": 441,
+      "win_rate_pct": 23.0,
+      "roi_pct": -0.91
     },
     {
       "category": "margin_1_5",
-      "bets": 397,
-      "profit": -83.60770000000004,
-      "wins": 86,
-      "losses": 311,
-      "win_rate_pct": 21.7,
-      "roi_pct": -21.06
+      "bets": 389,
+      "profit": -76.94069999999994,
+      "wins": 87,
+      "losses": 302,
+      "win_rate_pct": 22.4,
+      "roi_pct": -19.78
     }
   ],
   "new_eliminations": [],
@@ -472,69 +481,103 @@
     }
   },
   "mutations": {
-    "phi": {
-      "type": "bayesian_swap",
-      "added_strategy": "value_hunter",
-      "posterior": 0.104387,
+    "openrouter": {
+      "type": "strategy_theft",
+      "from_trader": "mixtral",
+      "stolen_strategy": "flat_2pct",
       "old_preferences": [
-        "quarter_kelly",
-        "drawdown_adjusted",
-        "flat_2pct"
+        "underdog_specialist",
+        "value_hunter",
+        "confidence_scaled"
       ],
       "new_preferences": [
+        "flat_2pct",
+        "underdog_specialist",
+        "value_hunter"
+      ],
+      "steal_probability": 0.2,
+      "reason": "openrouter (ROI +451.5%) steals 'flat_2pct' from mixtral (ROI +957.1%)"
+    },
+    "gemini": {
+      "type": "strategy_theft",
+      "from_trader": "mixtral",
+      "stolen_strategy": "flat_2pct",
+      "old_preferences": [
+        "underdog_specialist",
+        "value_hunter",
+        "confidence_scaled"
+      ],
+      "new_preferences": [
+        "flat_2pct",
+        "underdog_specialist",
+        "value_hunter"
+      ],
+      "steal_probability": 0.4,
+      "reason": "gemini (ROI -26.3%) steals 'flat_2pct' from mixtral (ROI +957.1%)"
+    },
+    "phi": {
+      "type": "bayesian_swap",
+      "added_strategy": "flat_2pct",
+      "posterior": 0.122913,
+      "old_preferences": [
         "quarter_kelly",
         "drawdown_adjusted",
         "value_hunter"
       ],
-      "reason": "phi stagnant (ROI +0.6%) \u2014 Bayesian swap: add 'value_hunter' (posterior 0.1044)"
+      "new_preferences": [
+        "quarter_kelly",
+        "drawdown_adjusted",
+        "flat_2pct"
+      ],
+      "reason": "phi stagnant (ROI +0.3%) \u2014 Bayesian swap: add 'flat_2pct' (posterior 0.1229)"
     },
     "codex": {
       "type": "bayesian_swap",
-      "added_strategy": "flat_2pct",
-      "posterior": 0.119032,
+      "added_strategy": "value_hunter",
+      "posterior": 0.105203,
       "old_preferences": [
-        "underdog_specialist",
-        "half_kelly",
-        "value_hunter"
-      ],
-      "new_preferences": [
         "underdog_specialist",
         "half_kelly",
         "flat_2pct"
       ],
-      "reason": "codex stagnant (ROI +0.0%) \u2014 Bayesian swap: add 'flat_2pct' (posterior 0.1190)"
+      "new_preferences": [
+        "underdog_specialist",
+        "half_kelly",
+        "value_hunter"
+      ],
+      "reason": "codex stagnant (ROI +0.0%) \u2014 Bayesian swap: add 'value_hunter' (posterior 0.1052)"
     }
   },
   "learning": {
     "season_memory_bets": 20000,
     "bayesian_posteriors": {
-      "full_kelly": 0.067317,
-      "half_kelly": 0.072586,
-      "quarter_kelly": 0.029619,
-      "eighth_kelly": 0.036742,
-      "flat_1pct": 0.036742,
-      "flat_2pct": 0.119032,
-      "flat_5pct": 0.036742,
-      "diversified_flat": 0.036742,
-      "confidence_scaled": 0.0872,
-      "proportional_edge": 0.036742,
-      "ev_threshold_110": 0.036742,
-      "value_hunter": 0.104387,
-      "underdog_specialist": 0.04221,
-      "dog_value_plus": 0.036742,
-      "first_half_sniper": 0.036742,
-      "first_half_away": 0.036742,
-      "home_specialist": 0.036742,
-      "anti_martingale": 0.036742,
-      "drawdown_adjusted": 0.036742,
-      "streak_momentum": 0.036742
+      "full_kelly": 0.068112,
+      "half_kelly": 0.073862,
+      "quarter_kelly": 0.029576,
+      "eighth_kelly": 0.036831,
+      "flat_1pct": 0.036831,
+      "flat_2pct": 0.122913,
+      "flat_5pct": 0.036831,
+      "diversified_flat": 0.036831,
+      "confidence_scaled": 0.084947,
+      "proportional_edge": 0.036831,
+      "ev_threshold_110": 0.036831,
+      "value_hunter": 0.105203,
+      "underdog_specialist": 0.036588,
+      "dog_value_plus": 0.036831,
+      "first_half_sniper": 0.036831,
+      "first_half_away": 0.036831,
+      "home_specialist": 0.036831,
+      "anti_martingale": 0.036831,
+      "drawdown_adjusted": 0.036831,
+      "streak_momentum": 0.036831
     },
-    "feature_correlations_count": 185,
-    "cross_trader_steals": 14,
+    "feature_correlations_count": 186,
+    "cross_trader_steals": 16,
     "trader_rolling_stats": {
       "gemini": {
         "accuracy": 0.4,
-        "roi": 0.4312,
+        "roi": 0.5245,
         "streak": 2,
         "streak_type": "win",
         "bet_type_accuracy": {
@@ -567,30 +610,30 @@
       },
       "openrouter": {
         "accuracy": 0.7,
-        "roi": 0.4421,
+        "roi": 0.2921,
         "streak": 2,
         "streak_type": "win",
         "bet_type_accuracy": {
-          "margin": 0.286,
+          "margin": 0.333,
           "race": 1.0,
           "q1": 1.0,
           "q2": 1.0,
           "q3": 1.0,
           "q4": 1.0,
           "double": 1.0,
-          "alt": 0.833
+          "alt": 0.714
         },
         "confidence_accuracy": {
-          "0-10%": 0.6,
           "20-30%": 0.625,
           "30-40%": 1.0,
-          "10-20%": 0.667
+          "10-20%": 0.5,
+          "0-10%": 0.75
         },
         "team_accuracy": {
-          "BOS": 0.818,
-          "WAS": 0.818,
-          "LAC": 0.5,
-          "SAC": 0.5,
+          "BOS": 0.9,
+          "WAS": 0.9,
+          "LAC": 0.333,
+          "SAC": 0.333,
           "LAL": 0.0,
           "DEN": 0.0,
           "MIA": 0.5,
@@ -601,7 +644,7 @@
       },
       "claude": {
         "accuracy": 0.3,
-        "roi": -0.7061,
+        "roi": -0.6506,
         "streak": 1,
         "streak_type": "win",
         "bet_type_accuracy": {
@@ -675,28 +718,32 @@
         }
       },
       "grok": {
-        "accuracy": 0.95,
-        "roi": 0.7555,
-        "streak": 16,
+        "accuracy": 0.8,
+        "roi": 0.7061,
+        "streak": 14,
         "streak_type": "win",
         "bet_type_accuracy": {
-          "q3": 1.0,
-          "q4": 1.0,
-          "alt": 0.933
+          "alt": 0.929,
+          "margin": 0.25,
+          "q3": 1.0
         },
         "confidence_accuracy": {
-          "20-30%": 1.0,
-          "10-20%": 0.9,
-          "0-10%": 1.0,
-          "30-40%": 1.0
+          "10-20%": 0.889,
+          "0-10%": 0.5,
+          "30-40%": 1.0,
+          "20-30%": 1.0
         },
         "team_accuracy": {
-          "DEN": 0.75,
-          "MEM": 0.8,
-          "MIN": 1.0,
-          "POR": 1.0,
-          "CLE": 1.0,
-          "BKN": 1.0,
+          "DEN": 0.0,
+          "MEM": 0.5,
+          "HOU": 1.0,
+          "LAC": 1.0,
+          "MIN": 0.5,
+          "POR": 0.5,
+          "ORL": 0.0,
+          "MIL": 0.0,
+          "CLE": 0.5,
+          "BKN": 0.857,
           "ATL": 1.0,
           "WAS": 1.0,
           "CHA": 1.0,
@@ -708,48 +755,50 @@
         }
       },
       "deepseek": {
-        "accuracy": 0.6,
-        "roi": 0.8614,
-        "streak": 1,
-        "streak_type": "win",
+        "accuracy": 0.25,
+        "roi": -0.7386,
+        "streak": 3,
+        "streak_type": "loss",
         "bet_type_accuracy": {
-          "margin": 0.5,
+          "margin": 0.294,
           "double": 0.0,
-          "h1": 1.0,
-          "alt": 0.5,
-          "ml": 0.5,
-          "race": 1.0,
-          "q4": 1.0
+          "alt": 0.0
         },
         "confidence_accuracy": {
-          "20-30%": 0.5,
-          "10-20%": 0.667,
-          "0-10%": 0.8,
-          "30-40%": 0.5
+          "20-30%": 0.294,
+          "0-10%": 0.0,
+          "10-20%": 0.0
         },
         "team_accuracy": {
           "DET": 0.0,
-          "MEM": 0.0,
+          "PHI": 0.0,
+          "IND": 0.5,
+          "PHX": 0.0,
+          "LAL": 0.0,
+          "CHI": 0.0,
+          "MEM": 0.5,
+          "DAL": 0.5,
+          "MIA": 0.5,
+          "MIL": 0.5,
+          "OKC": 0.0,
+          "BOS": 0.0,
+          "CLE": 0.0,
           "GSW": 1.0,
           "MIN": 1.0,
-          "HOU": 0.714,
-          "NOP": 0.714,
-          "IND": 0.667,
-          "NYK": 0.667,
+          "HOU": 0.0,
+          "NOP": 0.0,
+          "NYK": 1.0,
           "LAC": 0.5,
-          "CHI": 0.0,
-          "POR": 1.0,
-          "UTA": 1.0,
           "ATL": 0.0,
-          "MIL": 0.0,
-          "BOS": 0.0,
           "WAS": 0.0,
-          "SAC": 1.0
+          "SAC": 1.0,
+          "DEN": 0.0,
+          "ORL": 0.0
         }
       },
       "phi": {
         "accuracy": 0.4,
-        "roi": -1.2126,
+        "roi": -1.2247,
         "streak": 7,
         "streak_type": "loss",
         "bet_type_accuracy": {
@@ -789,61 +838,66 @@
         }
       },
       "cohere": {
-        "accuracy": 0.35,
-        "roi": 0.4256,
+        "accuracy": 0.3,
+        "roi": 0.1451,
         "streak": 1,
-        "streak_type": "loss",
+        "streak_type": "win",
         "bet_type_accuracy": {
-          "margin": 0.25,
           "double": 0.0,
-          "alt": 1.0
+          "alt": 1.0,
+          "margin": 0.235
         },
         "confidence_accuracy": {
           "0-10%": 0.125,
-          "20-30%": 0.4,
-          "10-20%": 1.0
+          "10-20%": 1.0,
+          "20-30%": 0.364
         },
         "team_accuracy": {
-          "LAL": 0.2,
-          "CHI": 0.25,
-          "MEM": 0.333,
-          "DAL": 1.0,
+          "DET": 0.4,
+          "PHI": 0.5,
+          "IND": 0.0,
+          "PHX": 0.0,
+          "LAL": 0.0,
+          "CHI": 0.0,
+          "MEM": 0.5,
+          "DAL": 0.5,
           "MIA": 0.5,
-          "MIL": 0.4,
+          "MIL": 0.25,
           "OKC": 0.5,
-          "BOS": 0.4,
-          "DET": 0.0,
-          "ATL": 0.333,
-          "WAS": 0.333,
+          "BOS": 0.25,
+          "CLE": 0.0,
+          "ATL": 0.0,
+          "WAS": 0.0,
           "LAC": 0.5,
-          "SAC": 0.5,
-          "DEN": 0.0
+          "SAC": 0.5
         }
       },
       "gemma": {
-        "accuracy": 0.85,
-        "roi": 0.4034,
+        "accuracy": 0.9,
+        "roi": 0.416,
         "streak": 2,
         "streak_type": "loss",
         "bet_type_accuracy": {
-          "alt": 0.842,
+          "alt": 0.895,
           "q4": 1.0
         },
         "confidence_accuracy": {
-          "10-20%": 0.923,
+          "10-20%": 1.0,
           "0-10%": 1.0,
           "20-30%": 0.667
         },
         "team_accuracy": {
-          "DET": 0.75,
-          "BKN": 0.75,
           "NOP": 1.0,
           "WAS": 1.0,
           "POR": 1.0,
           "IND": 1.0,
           "ATL": 1.0,
           "DAL": 1.0,
+          "HOU": 1.0,
+          "TOR": 1.0,
           "MIA": 1.0,
+          "BKN": 1.0,
+          "DET": 1.0,
           "PHI": 1.0,
           "LAL": 1.0,
           "CHI": 1.0,
@@ -855,32 +909,35 @@
         }
       },
       "mixtral": {
-        "accuracy": 0.7,
-        "roi": 0.6283,
+        "accuracy": 0.75,
+        "roi": 0.6356,
         "streak": 1,
         "streak_type": "loss",
         "bet_type_accuracy": {
-          "margin": 0.0,
+          "alt": 1.0,
+          "margin": 0.167,
           "q1": 1.0,
-          "q2": 1.0,
           "q3": 1.0,
-          "alt": 1.0
+          "race": 1.0,
+          "q2": 1.0,
+          "q4": 1.0
         },
         "confidence_accuracy": {
-          "0-10%": 0.0,
-          "20-30%": 1.0,
           "10-20%": 1.0,
-          "30-40%": 1.0
+          "0-10%": 0.167,
+          "30-40%": 1.0,
+          "20-30%": 1.0
         },
         "team_accuracy": {
-          "DET": 0.8,
-          "PHI": 0.8,
+          "DET": 0.875,
+          "PHI": 1.0,
           "LAL": 0.667,
           "CHI": 0.667,
-          "MEM": 0.8,
-          "ATL": 0.0,
-          "MIL": 0.0,
-          "BOS": 0.8,
+          "OKC": 1.0,
+          "BOS": 0.833,
+          "MEM": 0.857,
+          "ATL": 0.5,
+          "MIL": 0.5,
           "WAS": 0.8,
           "LAC": 0.0,
           "SAC": 0.0
@@ -890,11 +947,11 @@
   },
   "optimization": {
     "target": 1000000,
-    "current_best": 1082.04,
+    "current_best": 1057.1,
     "record_best": 309725.17,
     "record_trader": "codex",
-    "distance_to_1M_pct": 99.8918,
-    "multiplier_needed": 924.2,
+    "distance_to_1M_pct": 99.8943,
+    "multiplier_needed": 946.0,
     "improved_this_iteration": false
   },
   "leaderboard": [
@@ -904,12 +961,12 @@
       "name": "Mixtral Ensemble",
       "provider": "cerebras:llama-4-scout-17b-16e-instruct",
       "personality": "ensemble",
-      "nba_bankroll": 1082.0402,
-      "nba_roi_pct": 982.04,
-      "nba_sharpe": 9.75,
-      "nba_bets": 2946,
-      "nba_wins": 1858,
-      "nba_losses": 1088,
+      "nba_bankroll": 1057.1028,
+      "nba_roi_pct": 957.1,
+      "nba_sharpe": 9.72,
+      "nba_bets": 3225,
+      "nba_wins": 2039,
+      "nba_losses": 1186,
       "political_bankroll": 100000.0,
       "political_roi_pct": 0.0,
       "political_sharpe": 0.0,
@@ -919,7 +976,7 @@
       "political_losses": 0,
       "political_win_rate": 0,
       "political_max_drawdown": 0.0,
-      "combined_score": 982.04,
+      "combined_score": 957.1,
       "eliminated": false,
       "darwin_weight": 1.0
     },
@@ -929,12 +986,12 @@
       "name": "Gemma Arbitrageur",
       "provider": "hf:google/gemma-3-27b-it",
       "personality": "arbitrage",
-      "nba_bankroll": 701.4889,
-      "nba_roi_pct": 601.49,
-      "nba_sharpe": 10.71,
-      "nba_bets": 1039,
-      "nba_wins": 661,
-      "nba_losses": 378,
+      "nba_bankroll": 703.2862,
+      "nba_roi_pct": 603.29,
+      "nba_sharpe": 10.942,
+      "nba_bets": 1020,
+      "nba_wins": 646,
+      "nba_losses": 374,
       "political_bankroll": 100000.0,
       "political_roi_pct": 0.0,
       "political_sharpe": 0.0,
@@ -944,47 +1001,22 @@
       "political_losses": 0,
       "political_win_rate": 0,
       "political_max_drawdown": 0.0,
-      "combined_score": 601.49,
+      "combined_score": 603.29,
       "eliminated": false,
       "darwin_weight": 1.0
     },
     {
       "rank": 3,
-      "trader_id": "grok",
-      "name": "Mistral Maverick",
-      "provider": "cerebras:llama3.1-8b",
-      "personality": "contrarian",
-      "nba_bankroll": 654.9043,
-      "nba_roi_pct": 554.9,
-      "nba_sharpe": 8.816,
-      "nba_bets": 641,
-      "nba_wins": 419,
-      "nba_losses": 222,
-      "political_bankroll": 100000.0,
-      "political_roi_pct": 0.0,
-      "political_sharpe": 0.0,
-      "political_approach": "event_driven",
-      "political_total_trades": 0,
-      "political_wins": 0,
-      "political_losses": 0,
-      "political_win_rate": 0,
-      "political_max_drawdown": 0.0,
-      "combined_score": 554.9,
-      "eliminated": false,
-      "darwin_weight": 1.3755
-    },
-    {
-      "rank": 4,
       "trader_id": "cohere",
       "name": "Command Tactician",
       "provider": "cohere:command-r-plus",
       "personality": "tactical",
-      "nba_bankroll": 648.8974,
-      "nba_roi_pct": 548.9,
-      "nba_sharpe": 7.731,
-      "nba_bets": 1651,
-      "nba_wins": 857,
-      "nba_losses": 794,
+      "nba_bankroll": 669.8471,
+      "nba_roi_pct": 569.85,
+      "nba_sharpe": 7.696,
+      "nba_bets": 1897,
+      "nba_wins": 967,
+      "nba_losses": 930,
       "political_bankroll": 100000.0,
       "political_roi_pct": 0.0,
       "political_sharpe": 0.0,
@@ -994,9 +1026,34 @@
       "political_losses": 0,
       "political_win_rate": 0,
       "political_max_drawdown": 0.0,
-      "combined_score": 548.9,
+      "combined_score": 569.85,
       "eliminated": false,
       "darwin_weight": 1.0
+    },
+    {
+      "rank": 4,
+      "trader_id": "grok",
+      "name": "Mistral Maverick",
+      "provider": "cerebras:llama3.1-8b",
+      "personality": "contrarian",
+      "nba_bankroll": 657.0832,
+      "nba_roi_pct": 557.08,
+      "nba_sharpe": 8.862,
+      "nba_bets": 651,
+      "nba_wins": 419,
+      "nba_losses": 232,
+      "political_bankroll": 100000.0,
+      "political_roi_pct": 0.0,
+      "political_sharpe": 0.0,
+      "political_approach": "event_driven",
+      "political_total_trades": 0,
+      "political_wins": 0,
+      "political_losses": 0,
+      "political_win_rate": 0,
+      "political_max_drawdown": 0.0,
+      "combined_score": 557.08,
+      "eliminated": false,
+      "darwin_weight": 1.3755
     },
     {
       "rank": 5,
@@ -1004,12 +1061,12 @@
       "name": "Qwen Strategist",
       "provider": "cerebras:qwen-3-235b-a22b-instruct-2507",
       "personality": "diversified",
-      "nba_bankroll": 559.8495,
-      "nba_roi_pct": 459.85,
-      "nba_sharpe": 9.601,
-      "nba_bets": 3498,
-      "nba_wins": 1897,
-      "nba_losses": 1601,
+      "nba_bankroll": 551.4606,
+      "nba_roi_pct": 451.46,
+      "nba_sharpe": 9.443,
+      "nba_bets": 3532,
+      "nba_wins": 1901,
+      "nba_losses": 1631,
       "political_bankroll": 100000.0,
       "political_roi_pct": 0.0,
       "political_sharpe": 0.0,
@@ -1019,7 +1076,7 @@
       "political_losses": 0,
       "political_win_rate": 0,
       "political_max_drawdown": 0.0,
-      "combined_score": 459.85,
+      "combined_score": 451.46,
       "eliminated": false,
       "darwin_weight": 0.7759
     },
@@ -1029,12 +1086,12 @@
       "name": "DeepSeek Quant",
       "provider": "cerebras:deepseek-r1-distill-llama-70b",
       "personality": "quantitative",
-      "nba_bankroll": 298.1227,
-      "nba_roi_pct": 198.12,
-      "nba_sharpe": 7.331,
-      "nba_bets": 3450,
-      "nba_wins": 1734,
-      "nba_losses": 1716,
+      "nba_bankroll": 305.2872,
+      "nba_roi_pct": 205.29,
+      "nba_sharpe": 7.929,
+      "nba_bets": 3414,
+      "nba_wins": 1724,
+      "nba_losses": 1690,
       "political_bankroll": 100000.0,
       "political_roi_pct": 0.0,
       "political_sharpe": 0.0,
@@ -1044,7 +1101,7 @@
       "political_losses": 0,
       "political_win_rate": 0,
       "political_max_drawdown": 0.0,
-      "combined_score": 198.12,
+      "combined_score": 205.29,
       "eliminated": false,
       "darwin_weight": 1.0
     },
@@ -1054,9 +1111,9 @@
       "name": "Phi Theorist",
       "provider": "openrouter:microsoft/phi-4:free",
       "personality": "theoretical",
-      "nba_bankroll": 100.5705,
-      "nba_roi_pct": 0.57,
-      "nba_sharpe": 0.049,
+      "nba_bankroll": 100.3528,
+      "nba_roi_pct": 0.35,
+      "nba_sharpe": 0.03,
       "nba_bets": 1323,
       "nba_wins": 537,
       "nba_losses": 786,
@@ -1069,7 +1126,7 @@
       "political_losses": 0,
       "political_win_rate": 0,
       "political_max_drawdown": 0.0,
-      "combined_score": 0.57,
+      "combined_score": 0.35,
       "eliminated": false,
       "darwin_weight": 1.0
     },
@@ -1104,9 +1161,9 @@
       "name": "Claude Sentinel",
       "provider": "cerebras:llama3.3-70b",
       "personality": "conservative",
-      "nba_bankroll": 91.8435,
-      "nba_roi_pct": -8.16,
-      "nba_sharpe": -2.379,
+      "nba_bankroll": 91.2062,
+      "nba_roi_pct": -8.79,
+      "nba_sharpe": -2.565,
       "nba_bets": 1249,
       "nba_wins": 452,
       "nba_losses": 797,
@@ -1119,7 +1176,7 @@
       "political_losses": 0,
       "political_win_rate": 0,
       "political_max_drawdown": 0.0,
-      "combined_score": -8.16,
+      "combined_score": -8.79,
       "eliminated": false,
       "darwin_weight": 1.0139
     },
@@ -1129,9 +1186,9 @@
       "name": "Gemma Analyst",
       "provider": "google:gemini-2.5-flash",
       "personality": "analytical",
-      "nba_bankroll": 75.1487,
-      "nba_roi_pct": -24.85,
-      "nba_sharpe": -3.149,
+      "nba_bankroll": 73.7334,
+      "nba_roi_pct": -26.27,
+      "nba_sharpe": -3.317,
       "nba_bets": 3640,
       "nba_wins": 1185,
       "nba_losses": 2455,
@@ -1144,7 +1201,7 @@
       "political_losses": 0,
       "political_win_rate": 0,
       "political_max_drawdown": 0.0,
-      "combined_score": -24.85,
+      "combined_score": -26.27,
       "eliminated": false,
       "darwin_weight": 0.9328
     }
@@ -1154,16 +1211,16 @@
     {
       "target_dept": "betting",
       "type": "promote_strategy",
-      "strategy": "full_kelly",
-      "roi_pct": 311.03,
-      "reason": "Top strategy 'full_kelly' with +311.0% ROI \u2014 promote to live betting"
+      "strategy": "flat_2pct",
+      "roi_pct": 330.36,
+      "reason": "Top strategy 'flat_2pct' with +330.4% ROI \u2014 promote to live betting"
     },
     {
       "target_dept": "evolution",
       "type": "promote_model",
       "model": "elo_baseline",
-      "avg_daily_pnl": 0.9865,
-      "reason": "Model 'elo_baseline' has avg daily pnl +0.9865 \u2014 prioritize in evolution"
+      "avg_daily_pnl": 0.9892,
+      "reason": "Model 'elo_baseline' has avg daily pnl +0.9892 \u2014 prioritize in evolution"
     }
   ]
 }

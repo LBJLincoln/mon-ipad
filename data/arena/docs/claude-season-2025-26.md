@@ -5,46 +5,46 @@
 - **Personality:** conservative
 - **Risk Tolerance:** 0.4
 - **Initial Bankroll:** $100.00
-- **Final Bankroll:** $91.84
-- **ROI:** -8.2%
-- **Sharpe Ratio:** -2.379
+- **Final Bankroll:** $91.21
+- **ROI:** -8.8%
+- **Sharpe Ratio:** -2.565
 - **Record:** 452W-797L
 - **Peak Bankroll:** $100.40
 - **Max Drawdown:** 9.9%
 - **Rank:** #9 of 10
-- **Total Wagered:** $46.97
+- **Total Wagered:** $47.52
 
 ## Peer Comparison
 | Rank | Agent | Bankroll | ROI | Sharpe |
 |------|-------|----------|-----|--------|
-| 1 | Mixtral Ensemble | $1,082.04 | +982.0% | 9.750 |
-| 2 | Gemma Arbitrageur | $701.49 | +601.5% | 10.710 |
-| 3 | Mistral Maverick | $654.90 | +554.9% | 8.816 |
-| 4 | Command Tactician | $648.90 | +548.9% | 7.731 |
-| 5 | Qwen Strategist | $559.85 | +459.9% | 9.601 |
-| 6 | DeepSeek Quant | $298.12 | +198.1% | 7.331 |
-| 7 | Phi Theorist | $100.57 | +0.6% | 0.049 |
+| 1 | Mixtral Ensemble | $1,057.10 | +957.1% | 9.720 |
+| 2 | Gemma Arbitrageur | $703.29 | +603.3% | 10.942 |
+| 3 | Command Tactician | $669.85 | +569.9% | 7.696 |
+| 4 | Mistral Maverick | $657.08 | +557.1% | 8.862 |
+| 5 | Qwen Strategist | $551.46 | +451.5% | 9.443 |
+| 6 | DeepSeek Quant | $305.29 | +205.3% | 7.929 |
+| 7 | Phi Theorist | $100.35 | +0.3% | 0.030 |
 | 8 | Llama Vanguard | $100.00 | +0.0% | 0.000 |
-| 9 | Claude Sentinel ** | $91.84 | -8.2% | -2.379 |
-| 10 | Gemma Analyst | $75.15 | -24.9% | -3.149 |
+| 9 | Claude Sentinel ** | $91.21 | -8.8% | -2.565 |
+| 10 | Gemma Analyst | $73.73 | -26.3% | -3.317 |
 
 ## Model Performance
 | Model | Bets | Profit |
 |-------|------|--------|
-| consensus_ensemble | 1249 | $-8.16 |
+| consensus_ensemble | 1249 | $-8.79 |
 
 ## Strategy Performance
 | Strategy | Bets | Profit |
 |----------|------|--------|
-| quarter_kelly | 1249 | $-8.16 |
+| quarter_kelly | 1249 | $-8.79 |
 
 ## Category Breakdown
 | Category | Bets | WR% | Profit |
 |----------|------|-----|--------|
-| ml_home | 195 | 52.8% | $+1.37 |
-| alt_spread_home_7.5 | 443 | 35.4% | $-1.25 |
-| alt_spread_away_7.5 | 420 | 28.1% | $-3.51 |
-| ml_away | 191 | 38.7% | $-4.77 |
+| ml_home | 195 | 52.8% | $+1.24 |
+| alt_spread_home_7.5 | 443 | 35.4% | $-1.53 |
+| alt_spread_away_7.5 | 420 | 28.1% | $-3.69 |
+| ml_away | 191 | 38.7% | $-4.80 |
 
 ## Day-by-Day Results
 | Day | Date | Games | Bets | P&L | Bankroll | Models | Strategies |
@@ -141,50 +141,50 @@
 | 90 | 2026-01-22 | 8 | 7 | $-0.10 | $92.68 | consensus_ensemble | quarter_kelly |
 | 91 | 2026-01-23 | 8 | 13 | $-0.16 | $92.53 | consensus_ensemble | quarter_kelly |
 | 92 | 2026-01-24 | 5 | 7 | $-0.31 | $92.22 | consensus_ensemble | quarter_kelly |
-| 93 | 2026-01-25 | 6 | 8 | $+0.26 | $92.48 | consensus_ensemble | quarter_kelly |
-| 94 | 2026-01-26 | 6 | 5 | $+0.03 | $92.50 | consensus_ensemble | quarter_kelly |
-| 95 | 2026-01-27 | 7 | 12 | $-0.41 | $92.10 | consensus_ensemble | quarter_kelly |
-| 96 | 2026-01-28 | 8 | 10 | $+0.51 | $92.61 | consensus_ensemble | quarter_kelly |
-| 97 | 2026-01-29 | 8 | 9 | $-0.67 | $91.94 | consensus_ensemble | quarter_kelly |
-| 98 | 2026-01-30 | 9 | 11 | $+0.08 | $92.01 | consensus_ensemble | quarter_kelly |
+| 93 | 2026-01-25 | 6 | 8 | $+0.24 | $92.46 | consensus_ensemble | quarter_kelly |
+| 94 | 2026-01-26 | 6 | 5 | $+0.03 | $92.49 | consensus_ensemble | quarter_kelly |
+| 95 | 2026-01-27 | 7 | 12 | $-0.36 | $92.13 | consensus_ensemble | quarter_kelly |
+| 96 | 2026-01-28 | 8 | 10 | $+0.51 | $92.64 | consensus_ensemble | quarter_kelly |
+| 97 | 2026-01-29 | 8 | 9 | $-0.67 | $91.97 | consensus_ensemble | quarter_kelly |
+| 98 | 2026-01-30 | 9 | 11 | $+0.05 | $92.02 | consensus_ensemble | quarter_kelly |
 | 99 | 2026-01-31 | 6 | 6 | $-0.17 | $91.84 | consensus_ensemble | quarter_kelly |
 | 100 | 2026-02-01 | 2 | 3 | $-0.03 | $91.82 | consensus_ensemble | quarter_kelly |
 | 101 | 2026-02-02 | 4 | 4 | $-0.22 | $91.60 | consensus_ensemble | quarter_kelly |
 | 102 | 2026-02-03 | 10 | 14 | $-0.08 | $91.52 | consensus_ensemble | quarter_kelly |
-| 103 | 2026-02-04 | 7 | 11 | $-0.14 | $91.37 | consensus_ensemble | quarter_kelly |
-| 104 | 2026-02-05 | 8 | 9 | $-0.04 | $91.33 | consensus_ensemble | quarter_kelly |
-| 105 | 2026-02-06 | 6 | 10 | $-0.06 | $91.27 | consensus_ensemble | quarter_kelly |
-| 106 | 2026-02-07 | 10 | 12 | $-0.71 | $90.56 | consensus_ensemble | quarter_kelly |
-| 107 | 2026-02-08 | 4 | 5 | $+0.04 | $90.60 | consensus_ensemble | quarter_kelly |
-| 108 | 2026-02-09 | 10 | 16 | $+0.57 | $91.17 | consensus_ensemble | quarter_kelly |
-| 109 | 2026-02-10 | 4 | 5 | $+0.26 | $91.42 | consensus_ensemble | quarter_kelly |
-| 110 | 2026-02-11 | 14 | 21 | $+0.41 | $91.84 | consensus_ensemble | quarter_kelly |
-| 111 | 2026-02-12 | 3 | 5 | $+0.82 | $92.66 | consensus_ensemble | quarter_kelly |
-| 112 | 2026-02-19 | 10 | 9 | $-1.08 | $91.58 | consensus_ensemble | quarter_kelly |
-| 113 | 2026-02-20 | 9 | 13 | $+0.07 | $91.65 | consensus_ensemble | quarter_kelly |
-| 114 | 2026-02-21 | 6 | 8 | $+0.00 | $91.65 | consensus_ensemble | quarter_kelly |
-| 115 | 2026-02-22 | 11 | 13 | $+0.32 | $91.97 | consensus_ensemble | quarter_kelly |
-| 116 | 2026-02-23 | 3 | 3 | $+0.37 | $92.33 | consensus_ensemble | quarter_kelly |
-| 117 | 2026-02-24 | 11 | 12 | $-0.05 | $92.28 | consensus_ensemble | quarter_kelly |
-| 118 | 2026-02-25 | 6 | 10 | $+0.54 | $92.82 | consensus_ensemble | quarter_kelly |
-| 119 | 2026-02-26 | 10 | 11 | $-0.27 | $92.56 | consensus_ensemble | quarter_kelly |
-| 120 | 2026-02-27 | 5 | 8 | $-0.17 | $92.38 | consensus_ensemble | quarter_kelly |
-| 121 | 2026-02-28 | 5 | 4 | $+0.09 | $92.47 | consensus_ensemble | quarter_kelly |
-| 122 | 2026-03-01 | 11 | 17 | $-0.31 | $92.16 | consensus_ensemble | quarter_kelly |
-| 123 | 2026-03-02 | 4 | 5 | $-0.14 | $92.02 | consensus_ensemble | quarter_kelly |
-| 124 | 2026-03-03 | 10 | 11 | $+0.21 | $92.23 | consensus_ensemble | quarter_kelly |
-| 125 | 2026-03-04 | 6 | 8 | $+0.23 | $92.46 | consensus_ensemble | quarter_kelly |
-| 126 | 2026-03-05 | 9 | 11 | $+0.40 | $92.86 | consensus_ensemble | quarter_kelly |
-| 127 | 2026-03-06 | 7 | 7 | $-0.29 | $92.56 | consensus_ensemble | quarter_kelly |
-| 128 | 2026-03-07 | 6 | 6 | $+0.31 | $92.88 | consensus_ensemble | quarter_kelly |
-| 129 | 2026-03-08 | 10 | 14 | $-0.01 | $92.87 | consensus_ensemble | quarter_kelly |
-| 130 | 2026-03-09 | 5 | 6 | $-0.31 | $92.57 | consensus_ensemble | quarter_kelly |
-| 131 | 2026-03-10 | 11 | 11 | $+0.32 | $92.89 | consensus_ensemble | quarter_kelly |
-| 132 | 2026-03-11 | 6 | 6 | $-0.29 | $92.60 | consensus_ensemble | quarter_kelly |
-| 133 | 2026-03-12 | 9 | 15 | $-0.40 | $92.20 | consensus_ensemble | quarter_kelly |
-| 134 | 2026-03-13 | 8 | 8 | $-0.09 | $92.11 | consensus_ensemble | quarter_kelly |
-| 135 | 2026-03-14 | 7 | 10 | $-0.23 | $91.88 | consensus_ensemble | quarter_kelly |
-| 136 | 2026-03-15 | 7 | 8 | $-0.04 | $91.84 | consensus_ensemble | quarter_kelly |
+| 103 | 2026-02-04 | 7 | 11 | $-0.14 | $91.38 | consensus_ensemble | quarter_kelly |
+| 104 | 2026-02-05 | 8 | 9 | $+0.01 | $91.38 | consensus_ensemble | quarter_kelly |
+| 105 | 2026-02-06 | 6 | 10 | $-0.06 | $91.32 | consensus_ensemble | quarter_kelly |
+| 106 | 2026-02-07 | 10 | 12 | $-0.71 | $90.61 | consensus_ensemble | quarter_kelly |
+| 107 | 2026-02-08 | 4 | 5 | $+0.04 | $90.65 | consensus_ensemble | quarter_kelly |
+| 108 | 2026-02-09 | 10 | 16 | $+0.56 | $91.20 | consensus_ensemble | quarter_kelly |
+| 109 | 2026-02-10 | 4 | 5 | $+0.26 | $91.46 | consensus_ensemble | quarter_kelly |
+| 110 | 2026-02-11 | 14 | 21 | $+0.23 | $91.69 | consensus_ensemble | quarter_kelly |
+| 111 | 2026-02-12 | 3 | 5 | $+0.80 | $92.49 | consensus_ensemble | quarter_kelly |
+| 112 | 2026-02-19 | 10 | 9 | $-1.17 | $91.31 | consensus_ensemble | quarter_kelly |
+| 113 | 2026-02-20 | 9 | 13 | $+0.06 | $91.38 | consensus_ensemble | quarter_kelly |
+| 114 | 2026-02-21 | 6 | 8 | $+0.00 | $91.38 | consensus_ensemble | quarter_kelly |
+| 115 | 2026-02-22 | 11 | 13 | $+0.31 | $91.68 | consensus_ensemble | quarter_kelly |
+| 116 | 2026-02-23 | 3 | 3 | $+0.37 | $92.05 | consensus_ensemble | quarter_kelly |
+| 117 | 2026-02-24 | 11 | 12 | $-0.19 | $91.86 | consensus_ensemble | quarter_kelly |
+| 118 | 2026-02-25 | 6 | 10 | $+0.56 | $92.42 | consensus_ensemble | quarter_kelly |
+| 119 | 2026-02-26 | 10 | 11 | $-0.33 | $92.09 | consensus_ensemble | quarter_kelly |
+| 120 | 2026-02-27 | 5 | 8 | $-0.17 | $91.92 | consensus_ensemble | quarter_kelly |
+| 121 | 2026-02-28 | 5 | 4 | $+0.09 | $92.00 | consensus_ensemble | quarter_kelly |
+| 122 | 2026-03-01 | 11 | 17 | $-0.31 | $91.69 | consensus_ensemble | quarter_kelly |
+| 123 | 2026-03-02 | 4 | 5 | $-0.14 | $91.55 | consensus_ensemble | quarter_kelly |
+| 124 | 2026-03-03 | 10 | 11 | $+0.21 | $91.77 | consensus_ensemble | quarter_kelly |
+| 125 | 2026-03-04 | 6 | 8 | $+0.23 | $91.99 | consensus_ensemble | quarter_kelly |
+| 126 | 2026-03-05 | 9 | 11 | $+0.39 | $92.39 | consensus_ensemble | quarter_kelly |
+| 127 | 2026-03-06 | 7 | 7 | $-0.33 | $92.06 | consensus_ensemble | quarter_kelly |
+| 128 | 2026-03-07 | 6 | 6 | $+0.27 | $92.34 | consensus_ensemble | quarter_kelly |
+| 129 | 2026-03-08 | 10 | 14 | $-0.19 | $92.15 | consensus_ensemble | quarter_kelly |
+| 130 | 2026-03-09 | 5 | 6 | $-0.32 | $91.83 | consensus_ensemble | quarter_kelly |
+| 131 | 2026-03-10 | 11 | 11 | $+0.34 | $92.17 | consensus_ensemble | quarter_kelly |
+| 132 | 2026-03-11 | 6 | 6 | $-0.29 | $91.88 | consensus_ensemble | quarter_kelly |
+| 133 | 2026-03-12 | 9 | 15 | $-0.35 | $91.53 | consensus_ensemble | quarter_kelly |
+| 134 | 2026-03-13 | 8 | 8 | $-0.09 | $91.43 | consensus_ensemble | quarter_kelly |
+| 135 | 2026-03-14 | 7 | 10 | $-0.19 | $91.25 | consensus_ensemble | quarter_kelly |
+| 136 | 2026-03-15 | 7 | 8 | $-0.04 | $91.21 | consensus_ensemble | quarter_kelly |
 
 ## Bet Log (sample: first 50 + last 50 of 1249 total)
 
@@ -594,10 +594,10 @@
 ### 2026-03-10 | POR vs CHA | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.411 vs implied 0.357 | **Edge:** +9.1%
-- **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
+- **Bet:** $0.01 @ 2.800 | **Loss** → $-0.03
 - **Context:** POR (0-0) vs CHA (0-0)
-- **Reasoning:** consensus_ensemble P(POR): 0.452 | consensus: 0.414 (disagree: 0.026) | POR L10: 5-5 | CHA L10: 6-4 | kelly_adj: 0.06 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.86
+- **Reasoning:** consensus_ensemble P(POR): 0.452 | consensus: 0.414 (disagree: 0.026) | POR L10: 5-5 | CHA L10: 6-4 | kelly_adj: 0.10 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
+- **Bankroll after:** $92.14
 
 ### 2026-03-10 | SAC vs IND | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -605,7 +605,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** SAC (0-0) vs IND (0-0)
 - **Reasoning:** consensus_ensemble P(SAC): 0.483 | consensus: 0.600 (disagree: 0.033) | SAC L10: 3-7 | IND L10: 1-9 | kelly_adj: 0.10 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.84
+- **Bankroll after:** $92.12
 
 ### 2026-03-10 | SAS vs BOS | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -613,7 +613,7 @@
 - **Bet:** $0.01 @ 2.800 | **Win** → $+0.05
 - **Context:** SAS (0-0) vs BOS (0-0)
 - **Reasoning:** consensus_ensemble P(SAS): 0.523 | consensus: 0.623 (disagree: 0.033) | SAS L10: 9-1 | BOS L10: 8-2 | kelly_adj: 0.15 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.89
+- **Bankroll after:** $92.17
 
 ### 2026-03-11 | DEN vs HOU | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -621,7 +621,7 @@
 - **Bet:** $0.04 @ 2.800 | **Win** → $+0.12
 - **Context:** DEN (0-0) vs HOU (0-0)
 - **Reasoning:** consensus_ensemble P(DEN): 0.517 | consensus: 0.705 (disagree: 0.036) | DEN L10: 4-6 | HOU L10: 6-4 | kelly_adj: 0.42 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $93.01
+- **Bankroll after:** $92.29
 
 ### 2026-03-11 | LAC vs MIN | ml_away
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -629,7 +629,7 @@
 - **Bet:** $0.07 @ 2.000 | **Loss** → $-0.13
 - **Context:** LAC (0-0) vs MIN (0-0)
 - **Reasoning:** consensus_ensemble P(LAC): 0.463 | consensus: 0.550 (disagree: 0.028) | LAC L10: 6-4 | MIN L10: 7-3 | kelly_adj: 0.51 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.88
+- **Bankroll after:** $92.16
 
 ### 2026-03-11 | LAC vs MIN | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -637,7 +637,7 @@
 - **Bet:** $0.03 @ 2.800 | **Loss** → $-0.07
 - **Context:** LAC (0-0) vs MIN (0-0)
 - **Reasoning:** consensus_ensemble P(LAC): 0.463 | consensus: 0.550 (disagree: 0.028) | LAC L10: 6-4 | MIN L10: 7-3 | kelly_adj: 0.27 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.82
+- **Bankroll after:** $92.10
 
 ### 2026-03-11 | ORL vs CLE | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -645,7 +645,7 @@
 - **Bet:** $0.03 @ 2.800 | **Loss** → $-0.06
 - **Context:** ORL (0-0) vs CLE (0-0)
 - **Reasoning:** consensus_ensemble P(ORL): 0.513 | consensus: 0.396 (disagree: 0.032) | ORL L10: 7-3 | CLE L10: 6-4 | kelly_adj: 0.42 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.75
+- **Bankroll after:** $92.03
 
 ### 2026-03-11 | SAC vs CHA | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -653,7 +653,7 @@
 - **Bet:** $0.04 @ 2.800 | **Loss** → $-0.08
 - **Context:** SAC (0-0) vs CHA (0-0)
 - **Reasoning:** consensus_ensemble P(SAC): 0.521 | consensus: 0.115 (disagree: 0.028) | SAC L10: 4-6 | CHA L10: 7-3 | kelly_adj: 0.42 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.68
+- **Bankroll after:** $91.96
 
 ### 2026-03-11 | UTA vs NYK | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -661,15 +661,15 @@
 - **Bet:** $0.04 @ 2.800 | **Loss** → $-0.08
 - **Context:** UTA (0-0) vs NYK (0-0)
 - **Reasoning:** consensus_ensemble P(UTA): 0.522 | consensus: 0.133 (disagree: 0.033) | UTA L10: 2-8 | NYK L10: 6-4 | kelly_adj: 0.42 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.60
+- **Bankroll after:** $91.88
 
 ### 2026-03-12 | ATL vs BKN | ml_away
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.553 vs implied 0.500 | **Edge:** +6.4%
-- **Bet:** $0.02 @ 2.000 | **Loss** → $-0.05
+- **Bet:** $0.02 @ 2.000 | **Loss** → $-0.04
 - **Context:** ATL (0-0) vs BKN (0-0)
 - **Reasoning:** consensus_ensemble P(ATL): 0.447 | consensus: 0.908 (disagree: 0.039) | ATL L10: 8-2 | BKN L10: 2-8 | kelly_adj: 0.12 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.55
+- **Bankroll after:** $91.84
 
 ### 2026-03-12 | ATL vs BKN | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -677,7 +677,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** ATL (0-0) vs BKN (0-0)
 - **Reasoning:** consensus_ensemble P(ATL): 0.447 | consensus: 0.908 (disagree: 0.039) | ATL L10: 8-2 | BKN L10: 2-8 | kelly_adj: 0.07 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.53
+- **Bankroll after:** $91.82
 
 ### 2026-03-12 | DET vs PHI | ml_away
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -685,7 +685,7 @@
 - **Bet:** $0.02 @ 2.000 | **Loss** → $-0.04
 - **Context:** DET (0-0) vs PHI (0-0)
 - **Reasoning:** consensus_ensemble P(DET): 0.455 | consensus: 0.893 (disagree: 0.032) | DET L10: 5-5 | PHI L10: 5-5 | kelly_adj: 0.12 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.49
+- **Bankroll after:** $91.78
 
 ### 2026-03-12 | DET vs PHI | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -693,7 +693,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** DET (0-0) vs PHI (0-0)
 - **Reasoning:** consensus_ensemble P(DET): 0.455 | consensus: 0.893 (disagree: 0.032) | DET L10: 5-5 | PHI L10: 5-5 | kelly_adj: 0.07 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.48
+- **Bankroll after:** $91.76
 
 ### 2026-03-12 | IND vs PHX | ml_home
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -701,7 +701,7 @@
 - **Bet:** $0.04 @ 2.000 | **Loss** → $-0.07
 - **Context:** IND (0-0) vs PHX (0-0)
 - **Reasoning:** consensus_ensemble P(IND): 0.552 | consensus: 0.219 (disagree: 0.033) | IND L10: 0-10 | PHX L10: 6-4 | kelly_adj: 0.20 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.40
+- **Bankroll after:** $91.69
 
 ### 2026-03-12 | IND vs PHX | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -709,15 +709,15 @@
 - **Bet:** $0.03 @ 2.800 | **Loss** → $-0.05
 - **Context:** IND (0-0) vs PHX (0-0)
 - **Reasoning:** consensus_ensemble P(IND): 0.552 | consensus: 0.219 (disagree: 0.033) | IND L10: 0-10 | PHX L10: 6-4 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.35
+- **Bankroll after:** $91.64
 
 ### 2026-03-12 | LAL vs CHI | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.399 vs implied 0.357 | **Edge:** +7.1%
-- **Bet:** $0.01 @ 2.800 | **Win** → $+0.04
+- **Bet:** $0.02 @ 2.800 | **Win** → $+0.07
 - **Context:** LAL (0-0) vs CHI (0-0)
-- **Reasoning:** consensus_ensemble P(LAL): 0.532 | consensus: 0.827 (disagree: 0.035) | LAL L10: 6-4 | CHI L10: 3-7 | kelly_adj: 0.10 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.39
+- **Reasoning:** consensus_ensemble P(LAL): 0.532 | consensus: 0.827 (disagree: 0.035) | LAL L10: 6-4 | CHI L10: 3-7 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
+- **Bankroll after:** $91.71
 
 ### 2026-03-12 | MEM vs DAL | ml_home
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -725,7 +725,7 @@
 - **Bet:** $0.03 @ 2.000 | **Loss** → $-0.05
 - **Context:** MEM (0-0) vs DAL (0-0)
 - **Reasoning:** consensus_ensemble P(MEM): 0.539 | consensus: 0.335 (disagree: 0.034) | MEM L10: 2-8 | DAL L10: 2-8 | kelly_adj: 0.20 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.34
+- **Bankroll after:** $91.65
 
 ### 2026-03-12 | MEM vs DAL | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -733,7 +733,7 @@
 - **Bet:** $0.02 @ 2.800 | **Loss** → $-0.04
 - **Context:** MEM (0-0) vs DAL (0-0)
 - **Reasoning:** consensus_ensemble P(MEM): 0.539 | consensus: 0.335 (disagree: 0.034) | MEM L10: 2-8 | DAL L10: 2-8 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.30
+- **Bankroll after:** $91.61
 
 ### 2026-03-12 | MIA vs MIL | ml_away
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -741,7 +741,7 @@
 - **Bet:** $0.02 @ 2.000 | **Loss** → $-0.04
 - **Context:** MIA (0-0) vs MIL (0-0)
 - **Reasoning:** consensus_ensemble P(MIA): 0.451 | consensus: 0.698 (disagree: 0.028) | MIA L10: 8-2 | MIL L10: 3-7 | kelly_adj: 0.12 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.26
+- **Bankroll after:** $91.57
 
 ### 2026-03-12 | MIA vs MIL | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -749,15 +749,15 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** MIA (0-0) vs MIL (0-0)
 - **Reasoning:** consensus_ensemble P(MIA): 0.451 | consensus: 0.698 (disagree: 0.028) | MIA L10: 8-2 | MIL L10: 3-7 | kelly_adj: 0.07 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.24
+- **Bankroll after:** $91.55
 
 ### 2026-03-12 | OKC vs BOS | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.396 vs implied 0.357 | **Edge:** +6.6%
-- **Bet:** $0.02 @ 2.800 | **Loss** → $-0.04
+- **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** OKC (0-0) vs BOS (0-0)
-- **Reasoning:** consensus_ensemble P(OKC): 0.528 | consensus: 0.758 (disagree: 0.027) | OKC L10: 9-1 | BOS L10: 7-3 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.20
+- **Reasoning:** consensus_ensemble P(OKC): 0.528 | consensus: 0.758 (disagree: 0.027) | OKC L10: 9-1 | BOS L10: 7-3 | kelly_adj: 0.10 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
+- **Bankroll after:** $91.53
 
 ### 2026-03-12 | ORL vs WAS | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -765,7 +765,7 @@
 - **Bet:** $0.02 @ 2.800 | **Loss** → $-0.03
 - **Context:** ORL (0-0) vs WAS (0-0)
 - **Reasoning:** consensus_ensemble P(ORL): 0.522 | consensus: 0.889 (disagree: 0.030) | ORL L10: 7-3 | WAS L10: 1-9 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.17
+- **Bankroll after:** $91.50
 
 ### 2026-03-12 | SAS vs DEN | ml_away
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -773,7 +773,7 @@
 - **Bet:** $0.03 @ 2.000 | **Win** → $+0.06
 - **Context:** SAS (0-0) vs DEN (0-0)
 - **Reasoning:** consensus_ensemble P(SAS): 0.456 | consensus: 0.610 (disagree: 0.028) | SAS L10: 9-1 | DEN L10: 5-5 | kelly_adj: 0.20 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.23
+- **Bankroll after:** $91.56
 
 ### 2026-03-12 | SAS vs DEN | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -781,7 +781,7 @@
 - **Bet:** $0.02 @ 2.800 | **Loss** → $-0.03
 - **Context:** SAS (0-0) vs DEN (0-0)
 - **Reasoning:** consensus_ensemble P(SAS): 0.456 | consensus: 0.610 (disagree: 0.028) | SAS L10: 9-1 | DEN L10: 5-5 | kelly_adj: 0.11 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.20
+- **Bankroll after:** $91.53
 
 ### 2026-03-13 | DAL vs CLE | ml_home
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -789,7 +789,7 @@
 - **Bet:** $0.03 @ 2.000 | **Loss** → $-0.05
 - **Context:** DAL (0-0) vs CLE (0-0)
 - **Reasoning:** consensus_ensemble P(DAL): 0.538 | consensus: 0.146 (disagree: 0.026) | DAL L10: 2-8 | CLE L10: 5-5 | kelly_adj: 0.20 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.15
+- **Bankroll after:** $91.48
 
 ### 2026-03-13 | DAL vs CLE | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -797,7 +797,7 @@
 - **Bet:** $0.02 @ 2.800 | **Loss** → $-0.04
 - **Context:** DAL (0-0) vs CLE (0-0)
 - **Reasoning:** consensus_ensemble P(DAL): 0.538 | consensus: 0.146 (disagree: 0.026) | DAL L10: 2-8 | CLE L10: 5-5 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.11
+- **Bankroll after:** $91.43
 
 ### 2026-03-13 | DET vs MEM | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -805,7 +805,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.01
 - **Context:** DET (0-0) vs MEM (0-0)
 - **Reasoning:** consensus_ensemble P(DET): 0.470 | consensus: 0.921 (disagree: 0.022) | DET L10: 5-5 | MEM L10: 2-8 | kelly_adj: 0.07 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.09
+- **Bankroll after:** $91.42
 
 ### 2026-03-13 | GSW vs MIN | ml_home
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -813,7 +813,7 @@
 - **Bet:** $0.03 @ 2.000 | **Loss** → $-0.05
 - **Context:** GSW (0-0) vs MIN (0-0)
 - **Reasoning:** consensus_ensemble P(GSW): 0.538 | consensus: 0.359 (disagree: 0.025) | GSW L10: 3-7 | MIN L10: 6-4 | kelly_adj: 0.20 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.04
+- **Bankroll after:** $91.37
 
 ### 2026-03-13 | GSW vs MIN | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -821,15 +821,15 @@
 - **Bet:** $0.02 @ 2.800 | **Loss** → $-0.04
 - **Context:** GSW (0-0) vs MIN (0-0)
 - **Reasoning:** consensus_ensemble P(GSW): 0.538 | consensus: 0.359 (disagree: 0.025) | GSW L10: 3-7 | MIN L10: 6-4 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.00
+- **Bankroll after:** $91.33
 
 ### 2026-03-13 | HOU vs NOP | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.381 vs implied 0.357 | **Edge:** +4.0%
-- **Bet:** $0.00 @ 2.800 | **Loss** → $-0.01
+- **Bet:** $0.01 @ 2.800 | **Loss** → $-0.01
 - **Context:** HOU (0-0) vs NOP (0-0)
-- **Reasoning:** consensus_ensemble P(HOU): 0.492 | consensus: 0.676 (disagree: 0.037) | HOU L10: 6-4 | NOP L10: 7-3 | kelly_adj: 0.07 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $91.99
+- **Reasoning:** consensus_ensemble P(HOU): 0.492 | consensus: 0.676 (disagree: 0.037) | HOU L10: 6-4 | NOP L10: 7-3 | kelly_adj: 0.11 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
+- **Bankroll after:** $91.31
 
 ### 2026-03-13 | LAC vs CHI | ml_home
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -837,7 +837,7 @@
 - **Bet:** $0.03 @ 2.000 | **Win** → $+0.05
 - **Context:** LAC (0-0) vs CHI (0-0)
 - **Reasoning:** consensus_ensemble P(LAC): 0.536 | consensus: 0.890 (disagree: 0.031) | LAC L10: 6-4 | CHI L10: 3-7 | kelly_adj: 0.20 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.04
+- **Bankroll after:** $91.36
 
 ### 2026-03-13 | LAC vs CHI | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -845,7 +845,7 @@
 - **Bet:** $0.02 @ 2.800 | **Win** → $+0.07
 - **Context:** LAC (0-0) vs CHI (0-0)
 - **Reasoning:** consensus_ensemble P(LAC): 0.536 | consensus: 0.890 (disagree: 0.031) | LAC L10: 6-4 | CHI L10: 3-7 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.11
+- **Bankroll after:** $91.43
 
 ### 2026-03-14 | ATL vs MIL | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -853,7 +853,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.01
 - **Context:** ATL (0-0) vs MIL (0-0)
 - **Reasoning:** consensus_ensemble P(ATL): 0.479 | consensus: 0.812 (disagree: 0.024) | ATL L10: 9-1 | MIL L10: 3-7 | kelly_adj: 0.07 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.10
+- **Bankroll after:** $91.42
 
 ### 2026-03-14 | BOS vs WAS | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -861,7 +861,7 @@
 - **Bet:** $0.01 @ 2.800 | **Win** → $+0.02
 - **Context:** BOS (0-0) vs WAS (0-0)
 - **Reasoning:** consensus_ensemble P(BOS): 0.508 | consensus: 0.939 (disagree: 0.016) | BOS L10: 6-4 | WAS L10: 0-10 | kelly_adj: 0.10 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.12
+- **Bankroll after:** $91.45
 
 ### 2026-03-14 | LAC vs SAC | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -869,23 +869,23 @@
 - **Bet:** $0.01 @ 2.800 | **Win** → $+0.02
 - **Context:** LAC (0-0) vs SAC (0-0)
 - **Reasoning:** consensus_ensemble P(LAC): 0.486 | consensus: 0.893 (disagree: 0.033) | LAC L10: 7-3 | SAC L10: 4-6 | kelly_adj: 0.07 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $92.14
+- **Bankroll after:** $91.46
 
 ### 2026-03-14 | LAL vs DEN | ml_away
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.547 vs implied 0.500 | **Edge:** +5.7%
-- **Bet:** $0.03 @ 2.000 | **Loss** → $-0.07
+- **Bet:** $0.02 @ 2.000 | **Loss** → $-0.04
 - **Context:** LAL (0-0) vs DEN (0-0)
-- **Reasoning:** consensus_ensemble P(LAL): 0.453 | consensus: 0.477 (disagree: 0.030) | LAL L10: 7-3 | DEN L10: 5-5 | kelly_adj: 0.20 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.07
+- **Reasoning:** consensus_ensemble P(LAL): 0.453 | consensus: 0.477 (disagree: 0.030) | LAL L10: 7-3 | DEN L10: 5-5 | kelly_adj: 0.12 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
+- **Bankroll after:** $91.42
 
 ### 2026-03-14 | LAL vs DEN | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
 - **Prob:** 0.411 vs implied 0.357 | **Edge:** +9.0%
-- **Bet:** $0.02 @ 2.800 | **Loss** → $-0.03
+- **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** LAL (0-0) vs DEN (0-0)
-- **Reasoning:** consensus_ensemble P(LAL): 0.453 | consensus: 0.477 (disagree: 0.030) | LAL L10: 7-3 | DEN L10: 5-5 | kelly_adj: 0.11 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $92.04
+- **Reasoning:** consensus_ensemble P(LAL): 0.453 | consensus: 0.477 (disagree: 0.030) | LAL L10: 7-3 | DEN L10: 5-5 | kelly_adj: 0.07 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
+- **Bankroll after:** $91.40
 
 ### 2026-03-14 | MIA vs ORL | ml_home
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -893,7 +893,7 @@
 - **Bet:** $0.04 @ 2.000 | **Loss** → $-0.07
 - **Context:** MIA (0-0) vs ORL (0-0)
 - **Reasoning:** consensus_ensemble P(MIA): 0.553 | consensus: 0.650 (disagree: 0.032) | MIA L10: 8-2 | ORL L10: 8-2 | kelly_adj: 0.20 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $91.97
+- **Bankroll after:** $91.33
 
 ### 2026-03-14 | MIA vs ORL | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -901,7 +901,7 @@
 - **Bet:** $0.03 @ 2.800 | **Loss** → $-0.05
 - **Context:** MIA (0-0) vs ORL (0-0)
 - **Reasoning:** consensus_ensemble P(MIA): 0.553 | consensus: 0.650 (disagree: 0.032) | MIA L10: 8-2 | ORL L10: 8-2 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $91.92
+- **Bankroll after:** $91.28
 
 ### 2026-03-14 | PHI vs BKN | ml_away
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -909,7 +909,7 @@
 - **Bet:** $0.03 @ 2.000 | **Loss** → $-0.06
 - **Context:** PHI (0-0) vs BKN (0-0)
 - **Reasoning:** consensus_ensemble P(PHI): 0.454 | consensus: 0.780 (disagree: 0.033) | PHI L10: 5-5 | BKN L10: 2-8 | kelly_adj: 0.20 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $91.85
+- **Bankroll after:** $91.22
 
 ### 2026-03-14 | PHI vs BKN | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -917,7 +917,7 @@
 - **Bet:** $0.02 @ 2.800 | **Loss** → $-0.03
 - **Context:** PHI (0-0) vs BKN (0-0)
 - **Reasoning:** consensus_ensemble P(PHI): 0.454 | consensus: 0.780 (disagree: 0.033) | PHI L10: 5-5 | BKN L10: 2-8 | kelly_adj: 0.11 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $91.82
+- **Bankroll after:** $91.19
 
 ### 2026-03-14 | SAS vs CHA | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -925,7 +925,7 @@
 - **Bet:** $0.02 @ 2.800 | **Win** → $+0.06
 - **Context:** SAS (0-0) vs CHA (0-0)
 - **Reasoning:** consensus_ensemble P(SAS): 0.527 | consensus: 0.704 (disagree: 0.036) | SAS L10: 8-2 | CHA L10: 8-2 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $91.88
+- **Bankroll after:** $91.25
 
 ### 2026-03-15 | CLE vs DAL | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -933,7 +933,7 @@
 - **Bet:** $0.01 @ 2.800 | **Win** → $+0.02
 - **Context:** CLE (0-0) vs DAL (0-0)
 - **Reasoning:** consensus_ensemble P(CLE): 0.484 | consensus: 0.915 (disagree: 0.026) | CLE L10: 5-5 | DAL L10: 1-9 | kelly_adj: 0.07 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $91.90
+- **Bankroll after:** $91.27
 
 ### 2026-03-15 | MIL vs IND | ml_away
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -941,7 +941,7 @@
 - **Bet:** $0.02 @ 2.000 | **Loss** → $-0.04
 - **Context:** MIL (0-0) vs IND (0-0)
 - **Reasoning:** consensus_ensemble P(MIL): 0.457 | consensus: 0.721 (disagree: 0.034) | MIL L10: 2-8 | IND L10: 0-10 | kelly_adj: 0.12 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $91.87
+- **Bankroll after:** $91.23
 
 ### 2026-03-15 | MIL vs IND | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -949,7 +949,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** MIL (0-0) vs IND (0-0)
 - **Reasoning:** consensus_ensemble P(MIL): 0.457 | consensus: 0.721 (disagree: 0.034) | MIL L10: 2-8 | IND L10: 0-10 | kelly_adj: 0.07 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $91.85
+- **Bankroll after:** $91.21
 
 ### 2026-03-15 | NYK vs GSW | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -957,7 +957,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** NYK (0-0) vs GSW (0-0)
 - **Reasoning:** consensus_ensemble P(NYK): 0.509 | consensus: 0.899 (disagree: 0.035) | NYK L10: 6-4 | GSW L10: 3-7 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $91.83
+- **Bankroll after:** $91.19
 
 ### 2026-03-15 | OKC vs MIN | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -965,7 +965,7 @@
 - **Bet:** $0.00 @ 2.800 | **Loss** → $-0.01
 - **Context:** OKC (0-0) vs MIN (0-0)
 - **Reasoning:** consensus_ensemble P(OKC): 0.489 | consensus: 0.761 (disagree: 0.026) | OKC L10: 9-1 | MIN L10: 6-4 | kelly_adj: 0.07 | dmad_role: Momentum Tracker | CONSENSUS_WARNING dmad_damp=0.60 | P6:Drawdown Minimizer
-- **Bankroll after:** $91.82
+- **Bankroll after:** $91.18
 
 ### 2026-03-15 | PHI vs POR | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -973,7 +973,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** PHI (0-0) vs POR (0-0)
 - **Reasoning:** consensus_ensemble P(PHI): 0.483 | consensus: 0.252 (disagree: 0.038) | PHI L10: 5-5 | POR L10: 5-5 | kelly_adj: 0.11 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $91.80
+- **Bankroll after:** $91.16
 
 ### 2026-03-15 | SAC vs UTA | alt_spread_away_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -981,7 +981,7 @@
 - **Bet:** $0.01 @ 2.800 | **Loss** → $-0.02
 - **Context:** SAC (0-0) vs UTA (0-0)
 - **Reasoning:** consensus_ensemble P(SAC): 0.471 | consensus: 0.596 (disagree: 0.032) | SAC L10: 5-5 | UTA L10: 2-8 | kelly_adj: 0.11 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $91.78
+- **Bankroll after:** $91.14
 
 ### 2026-03-15 | TOR vs DET | alt_spread_home_7.5
 - **Model:** consensus_ensemble | **Strategy:** quarter_kelly
@@ -989,4 +989,4 @@
 - **Bet:** $0.02 @ 2.800 | **Win** → $+0.07
 - **Context:** TOR (0-0) vs DET (0-0)
 - **Reasoning:** consensus_ensemble P(TOR): 0.532 | consensus: 0.438 (disagree: 0.029) | TOR L10: 4-6 | DET L10: 6-4 | kelly_adj: 0.17 | dmad_role: Momentum Tracker | P6:Drawdown Minimizer
-- **Bankroll after:** $91.84
+- **Bankroll after:** $91.21
