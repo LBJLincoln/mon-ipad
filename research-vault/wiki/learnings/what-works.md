@@ -1,33 +1,28 @@
 # What Works — Empirically Validated
 
-> Auto-generated from experiment data on 2026-04-13 08:25 UTC
+> Auto-generated from experiment data on 2026-04-13 10:25 UTC
 > Only includes findings backed by measured improvement
 
 ## NBA — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| swap_features | 5 | 0 | 0% | +0.03617 |
-| change_max_depth | 5 | 0 | 0% | +0.00430 |
-| change_min_samples_leaf | 11 | 0 | 0% | +0.02529 |
-| change_model | 4 | 0 | 0% | +0.02562 |
-| change_max_features_ratio | 6 | 0 | 0% | +0.03118 |
-| add_features | 7 | 0 | 0% | +0.02562 |
-| remove_features | 7 | 0 | 0% | +0.02715 |
-| change_n_estimators | 5 | 0 | 0% | +0.00183 |
+| remove_features | 1 | 0 | 0% | +0.06790 |
+| change_n_estimators | 3 | 0 | 0% | +0.05797 |
+| swap_features | 2 | 0 | 0% | +0.06317 |
+| add_features | 1 | 0 | 0% | +0.05884 |
+| change_max_depth | 2 | 0 | 0% | +0.06524 |
+| change_model | 1 | 0 | 0% | +0.03818 |
 
 ## POLITICAL — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_n_estimators | 8 | 0 | 0% | +0.00451 |
-| add_features | 12 | 0 | 0% | +0.01773 |
-| change_max_depth | 4 | 0 | 0% | +0.01646 |
-| change_max_features_ratio | 6 | 0 | 0% | +0.02298 |
-| swap_features | 7 | 0 | 0% | +0.01901 |
-| change_min_samples_leaf | 4 | 0 | 0% | +0.01035 |
-| change_model | 5 | 0 | 0% | +0.05229 |
-| remove_features | 4 | 0 | 0% | +0.02737 |
+| remove_features | 1 | 0 | 0% | +0.00639 |
+| change_model | 3 | 0 | 0% | +0.04689 |
+| change_max_depth | 1 | 0 | 0% | +0.01240 |
+| change_max_features_ratio | 2 | 0 | 0% | +0.01785 |
+| change_n_estimators | 3 | 0 | 0% | +0.00275 |
 
 ## Arena — Proven Insights
 
@@ -68,13 +63,13 @@
 
 ## NBA — Best Known Config
 
-- Model: **gradient_boosting**
-- n_estimators: 125
-- max_depth: 10
-- min_samples_leaf: 7
-- max_features_ratio: 0.4
-- n_features: 85
-- Best Brier: 0.1909689543969487
+- Model: **extra_trees**
+- n_estimators: 200
+- max_depth: 12
+- min_samples_leaf: 5
+- max_features_ratio: 0.3
+- n_features: 0
+- Best Brier: 1.0
 
 ## POLITICAL — Best Known Config
 

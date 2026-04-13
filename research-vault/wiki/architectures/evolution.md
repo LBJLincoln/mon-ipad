@@ -75,9 +75,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/karpathy-researcher/feedback_karpathy_patterns_validated.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/data-research/research-cycle-2026-03-26.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
-- **Karpathy NBA — Mutation Effectiveness Analysis** (306 words) -- `raw/karpathy/nba-mutation-analysis.md`
-- **Karpathy POLITICAL — Mutation Effectiveness Analysis** (295 words) -- `raw/karpathy/political-mutation-analysis.md`
 - **multi_target_trainer** (275 words) -- `raw/agent-memory/feature-engineer_project_multi_target_trainer.md`
+- **Karpathy POLITICAL — Mutation Effectiveness Analysis** (273 words) -- `raw/karpathy/political-mutation-analysis.md`
+- **Karpathy NBA — Mutation Effectiveness Analysis** (262 words) -- `raw/karpathy/nba-mutation-analysis.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/agent-memory/feature-engineer_project_gpu_evolution_v2.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/feature-engineer/project_gpu_evolution_v2.md`
 - **HF Department Council Spaces Architecture** (184 words) -- `raw/agent-memory/feature-engineer_project_hf_dept_council_spaces.md`
