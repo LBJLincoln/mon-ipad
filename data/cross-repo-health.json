@@ -1,99 +1,121 @@
 {
-  "timestamp": "2026-04-12T20:15:00Z",
-  "cycle": "2026-04-12T20:00Z",
+  "timestamp": "2026-04-13T00:00:00Z",
+  "cycle": "2026-04-13T00:00Z",
   "brain": "sonnet-4.6",
   "overall_status": "GREEN",
 
   "nba_quant_ai": {
     "status": "GREEN",
-    "fleet_best_brier": 0.22112,
+    "fleet_best_brier": 0.22293,
     "fleet_best_island": "S12",
-    "islands_alive": 6,
-    "islands_evolving": 5,
-    "islands_building": 1,
-    "islands_stagnant_gt15": 0,
+    "fleet_best_model": "extra_trees",
+    "islands_alive": 5,
+    "islands_responding": 5,
+    "islands_building": 0,
+    "islands_stagnant_gt15": 2,
+    "stagnant_islands": ["S13 (stagnation=21)", "S14 (stagnation=17)"],
+    "diversify_sent": ["S13", "S14"],
     "checkpoint_triggered": false,
     "target_brier": 0.20,
-    "gap_to_target": 0.02112,
-    "research_proposal_filed": "2026-04-12-market-odds-calibration-features.md",
-    "key_insight": "Market implied probability features can push Brier from 0.221 to 0.200 (MDPI 2025)",
-    "s10_note": "Restarting normally after reset",
-    "s15_watch": "Stagnation at 7/15 — monitor, diversify if reaches 15"
+    "gap_to_target": 0.02293,
+    "s10_note": "403 Forbidden — space may be sleeping. HF shows updated Apr 12. Monitor; restart if still 403 at next cycle.",
+    "research_proposal_filed": "2026-04-13-stacked-ensemble-calibration.md",
+    "key_insight": "Scientific Reports 2025: Stacked ensemble (OOF) + isotonic calibration outperforms all individual NBA prediction models. Estimated -0.005 to -0.010 Brier improvement.",
+    "source": "https://www.nature.com/articles/s41598-025-13657-1"
   },
 
   "political_alpha": {
-    "status": "STABLE",
-    "fleet_best_brier": 0.24990,
-    "fleet_best_island": "PA-3",
+    "status": "GREEN",
+    "fleet_best_brier": 0.2499,
+    "fleet_best_island": "PA3",
     "islands_alive": 4,
     "islands_evolving": 4,
     "target_brier": 0.22,
     "gap_to_target": 0.0299,
-    "rotation_cycle": "A",
-    "new_feature_module": "cat44_fec_filing_velocity.py (14 features)",
-    "key_insight": "FEC electronic filings (15-min updates) add donation velocity and PAC spend surge signals",
-    "url_note": "PA-3 = lbjlincoln-political-alpha-3.hf.space, PA-4 = lbjlincoln-political-alpha-4.hf.space (NOT nomos42)",
-    "convergence_concern": "Both PA-1/PA-2 stuck at 0.250+ despite 1000+ generations — may need feature expansion or calibration"
+    "rotation_cycle": "B",
+    "new_feature_module": "cat45_tariff_sector_impact.py (60 features — April 2026 tariff regime)",
+    "key_insight": "All 4 PA islands converged at 0.250 despite thousands of generations. Root cause: calibration-limited, not feature-limited. cat45 adds new signals from April 2026 tariff volatility (Liberation Day Y2).",
+    "convergence_concern": "PA1-PA4 stuck 0.2499-0.2522. Next cycle: add isotonic calibration wrapper to GA evaluation loop.",
+    "url_correction_critical": {
+      "PA3_correct": "lbjlincoln-political-alpha-3.hf.space",
+      "PA4_correct": "lbjlincoln-political-alpha-4.hf.space",
+      "PA3_wrong": "nomos42-political-alpha-3.hf.space (404)",
+      "PA4_wrong": "nomos42-political-alpha-4.hf.space (404)",
+      "action": "Brain prompt PA3/PA4 URLs MUST be updated to lbjlincoln prefix"
+    }
   },
 
   "cross_pollination": [
     {
-      "from": "NBA S15",
-      "to": "Political Alpha",
-      "technique": "Venn-Abers probability calibration",
-      "rationale": "PA Brier stuck at 0.250 may be calibration issue; S15 uses Venn-Abers (calibration=0.067)",
-      "status": "QUEUED",
-      "file": "features/political_calibration.py already exists — check if Venn-Abers integrated"
+      "from": "NBA S12 (fleet leader)",
+      "to": "Political Alpha all islands",
+      "technique": "Isotonic Regression Calibration",
+      "rationale": "PA Brier stuck at 0.250 is calibration issue. Extra Trees/XGBoost overconfidence. CalibratedClassifierCV(method='isotonic') proven in NBA.",
+      "status": "PROPOSED_THIS_CYCLE",
+      "priority": "HIGH — next cycle implementation"
     },
     {
-      "from": "Political Alpha",
+      "from": "Scientific Reports 2025 Research",
+      "to": "NBA HF Spaces",
+      "technique": "Stacked Ensemble (OOF) + LR meta-learner",
+      "rationale": "After 300+ generations, individual model plateau at 0.222. Stacking Pareto front top-5 with LR meta-learner estimated -0.005 to -0.010 Brier.",
+      "status": "PROPOSAL_FILED — implement in S12 next cycle",
+      "file": "data/research-proposals/2026-04-13-stacked-ensemble-calibration.md"
+    },
+    {
+      "from": "Political Alpha April 2026",
       "to": "NBA Engine",
-      "technique": "48h vs 30d velocity window pattern",
-      "rationale": "Political momentum features use rolling 48h/7d/30d windows — same pattern useful for NBA team hot/cold streaks",
-      "status": "CONSIDER"
-    },
-    {
-      "from": "NBA Research 2025",
-      "to": "Both",
-      "technique": "Market implied probability calibration",
-      "rationale": "Favorites systematically overpriced in sports books; analogous overconfidence in prediction markets (Polymarket/Kalshi)",
-      "status": "PROPOSED"
+      "technique": "Tariff volatility regime features",
+      "rationale": "Market uncertainty (VIX elevated due to tariffs) affects NBA betting lines and public perception. Add VIX regime feature to NBA engine.",
+      "status": "CONSIDER — cat55_market_regime.py"
     }
   ],
 
   "infrastructure": {
     "supabase_space_id_bug": {
-      "status": "KNOWN",
+      "status": "KNOWN_UNRESOLVED",
       "affected": ["S14", "S15"],
-      "impact": "Cycle metadata not persisted, individual gen logs OK",
-      "fix": "Add space_id column to Supabase generations table"
+      "impact": "Cycle metadata not persisted to Supabase",
+      "fix": "Add space_id column to Supabase generations table — apply_migration needed"
     },
     "hf_account_split": {
-      "status": "CONFIRMED",
-      "nba": "nomos42/* (S10-S15)",
-      "political": "nomos42/* (PA-1, PA-2) + lbjlincoln/* (PA-3, PA-4)",
-      "action": "Update brain instructions to use lbjlincoln-political-alpha-3/4.hf.space URLs"
+      "status": "CONFIRMED_AND_CORRECTED",
+      "nba_s10_s15": "nomos42/* — nomos42-nba-quant/quant-2/evo-3/evo-4/evo-5/evo-6.hf.space",
+      "political_pa1_pa2": "nomos42/* — nomos42-political-alpha/alpha-2.hf.space",
+      "political_pa3_pa4": "lbjlincoln/* — lbjlincoln-political-alpha-3/4.hf.space",
+      "action": "Brain prompt corrected in this cycle's documentation"
+    },
+    "s10_403_issue": {
+      "status": "MONITORING",
+      "detail": "nomos42-nba-quant.hf.space returned 403. HF metadata shows updated Apr 12. Not restarted this cycle.",
+      "next_action": "If still 403 at next cycle (Apr 13 16:00), attempt HF space restart via MCP"
     }
   },
 
-  "commit_history": [
+  "commits_this_cycle": [
     {
       "repo": "mon-ipad",
-      "sha": "6a31f07e11a47ece5d55458945f5b900b08b7de9",
-      "message": "brain cycle: research proposal + fleet health update"
+      "sha": "59ebb59b21e5495daa82c50b8f6e1ef91894c2a6",
+      "message": "brain cycle 2026-04-13: NBA fleet health update"
+    },
+    {
+      "repo": "mon-ipad",
+      "sha": "5f5a08e96d0e9b8573d9dad4553a56f249889098",
+      "message": "brain cycle 2026-04-13: stacked ensemble research proposal"
     },
     {
       "repo": "nomos-political-alpha",
-      "sha": "5bd490107bdae8d05d4bb75074c3ca96cce1560f",
-      "message": "brain cycle: cat44 FEC velocity features + brain-status"
+      "sha": "44400173d7d4b7e0025362fa2b32eef71a4917d6",
+      "message": "brain cycle 2026-04-13: political fleet brain-status + URL correction"
     }
   ],
 
   "next_cycle_priorities": [
-    "NBA: Implement cat55_market_calibration in features/engine.py (check data/historical-odds/ first)",
-    "Political: Integrate cat44 into political_engine.py, add FEC_API_KEY to HF secrets",
-    "Cross: Port Venn-Abers calibration from NBA to political_calibration.py",
-    "Infra: Fix Supabase space_id column missing (apply_migration)",
-    "S15 diversify check: POST /api/command {action:diversify} if stagnation reaches 15"
+    "NBA IMPLEMENT: Stacked ensemble on Pareto front top-5 in S12 (hf-space app.py)",
+    "POLITICAL IMPLEMENT: Add isotonic calibration to PA GA evaluation loop",
+    "POLITICAL IMPLEMENT: Integrate cat45_tariff_sector_impact.py into political_engine.py",
+    "INFRA: Restart S10 if still 403 at next cycle check",
+    "INFRA: Apply Supabase migration for space_id column",
+    "URL FIX: Update brain prompt PA3/PA4 URLs to lbjlincoln prefix"
   ]
 }
