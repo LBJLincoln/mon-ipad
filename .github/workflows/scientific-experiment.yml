@@ -38,6 +38,10 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
+          OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           mkdir -p data/scientific-results research-vault/raw/scientific logs
           python3 scripts/scientific-experiment.py --project ${{ github.event.inputs.project || 'nba' }} \
@@ -48,6 +52,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
         run: |
           python3 scripts/arena/feedback-loop-from-experiment.py \
             2>&1 | tail -30

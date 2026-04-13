@@ -29,6 +29,15 @@ jobs:
         run: pip install scikit-learn lightgbm numpy
 
       - name: Run NBA Trading Floor iteration
+        env:
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
+          OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
+          OPENROUTER_KEY_PME: ${{ secrets.OPENROUTER_KEY_PME }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_TOKEN_2: ${{ secrets.HF_TOKEN_2 }}
+          HF_TOKEN_3: ${{ secrets.HF_TOKEN_3 }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           mkdir -p data/arena/traders data/arena/docs logs/arena
           python3 scripts/arena/trading-floor-v4.py iterate --max-iterations 1 \
@@ -36,6 +45,14 @@ jobs:
         continue-on-error: true
 
       - name: Run Political Trading Floor iteration
+        env:
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
+          OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
+          OPENROUTER_KEY_PME: ${{ secrets.OPENROUTER_KEY_PME }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_TOKEN_2: ${{ secrets.HF_TOKEN_2 }}
+          HF_TOKEN_3: ${{ secrets.HF_TOKEN_3 }}
         run: |
           mkdir -p data/arena/political
           python3 scripts/arena/political-trading-floor.py \
