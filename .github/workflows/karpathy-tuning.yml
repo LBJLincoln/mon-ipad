@@ -72,7 +72,11 @@ jobs:
             git stash pop || true
             git add data/karpathy/ 2>/dev/null || true
             git commit -m "karpathy: GH Actions tuning $(date -u +%Y-%m-%dT%H:%MZ)"
-            git push
+            for attempt in 1 2 3; do
+              git push && break
+              echo "Push attempt $attempt failed, retrying..."
+              git pull --rebase origin main || true
+            done
           else
             echo "No improvements to commit"
           fi

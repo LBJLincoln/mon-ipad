@@ -116,7 +116,11 @@ jobs:
                     data/arena/agent-states-v5.json data/arena/cpcv-watcher-state.json \
                     2>/dev/null || true
             git commit -m "data: trading floor iteration $(date -u +%Y-%m-%dT%H:%MZ)"
-            git push
+            for attempt in 1 2 3; do
+              git push && break
+              echo "Push attempt $attempt failed, retrying..."
+              git pull --rebase origin main || true
+            done
           else
             echo "No trading changes to commit"
           fi
@@ -159,7 +163,11 @@ jobs:
             git stash pop || true
             git add data/arena/political/ 2>/dev/null || true
             git commit -m "data: political backtest $(date -u +%Y-%m-%dT%H:%MZ)"
-            git push
+            for attempt in 1 2 3; do
+              git push && break
+              echo "Push attempt $attempt failed, retrying..."
+              git pull --rebase origin main || true
+            done
           else
             echo "No political changes to commit"
           fi

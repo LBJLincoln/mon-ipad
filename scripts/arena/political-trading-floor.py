@@ -29,10 +29,26 @@ from typing import Dict, List, Optional, Tuple
 # ── PATHS ────────────────────────────────────────────────────────────────────
 ROOT        = Path(__file__).resolve().parent.parent.parent
 
+# ── SOTA TECHNIQUES (10 papers — P1-P10) ────────────────────────────────────
+_SOTA_AVAILABLE = False
+try:
+    sys.path.insert(0, str(ROOT / "scripts" / "arena"))
+    from sota_techniques import (  # type: ignore
+        SOTAEnhancer,
+        apply_heterogeneous_objective,
+        apply_coherence_gate,
+        compute_agent_brier,
+        detect_whale,
+        apply_whale_dampening,
+        AGENT_OBJECTIVES,
+    )
+    _SOTA_AVAILABLE = True
+except Exception as _sota_err:
+    pass
+
 # ── DMAD: Diverse Multi-Agent Debate (ICLR 2025) ─────────────────────────────
 _DMAD_AVAILABLE = False
 try:
-    sys.path.insert(0, str(ROOT / "scripts" / "arena"))
     from dmad_profiles import (  # type: ignore
         filter_political_signals,
         check_political_consensus,
@@ -1149,6 +1165,29 @@ def run_full_competition() -> Dict:
               f"  Sharpe {result['sharpe']:.3f}"
               f"  ({result['wins']}W-{result['losses']}L)"
               f"  Trades: {result['total_trades']}")
+
+    # ── SOTA: Cross-agent enhancements (P2 Debate, P10 Whale Guard, P1 P&L) ──
+    if _SOTA_AVAILABLE:
+        _sota_enhancer = SOTAEnhancer()
+        _pol_agent_bets = {
+            tid: res.get("all_trades", res.get("trades_history", []))
+            for tid, res in all_results.items()
+        }
+        _pol_agent_probs = {tid: 0.5 for tid in all_results}
+        _pol_histories = _pol_agent_bets
+        _enhanced = _sota_enhancer.enhance_game(
+            "political_season", _pol_agent_bets, _pol_agent_probs, _pol_histories
+        )
+        _sota_summary = _sota_enhancer.get_enhancement_summary()
+        for tid in all_results:
+            all_results[tid]["sota_papers_active"] = _sota_summary["papers_implemented"]
+            all_results[tid]["sota_techniques"] = _sota_summary["techniques"]
+            _pnl = _sota_summary["agent_pnl"].get(tid, {})
+            all_results[tid]["sota_pnl_capital"] = _pnl.get("capital", 100.0)
+        print(f"\nSOTA papers      : {_sota_summary['papers_implemented']} active")
+        print(f"SOTA debates     : {_sota_summary['debates_triggered']} triggered")
+    else:
+        print("\nSOTA techniques  : not available")
 
     board = build_leaderboard(all_results)
 

@@ -26,6 +26,32 @@ from typing import Dict, List, Optional, Tuple
 
 ROOT        = Path(__file__).resolve().parent.parent.parent
 
+# ── SOTA TECHNIQUES (10 papers — P1-P10) ────────────────────────────────────
+# Import lazily so the trading floor still runs if the module is missing.
+_SOTA_AVAILABLE = False
+try:
+    from sota_techniques import (  # type: ignore
+        SOTAEnhancer,
+        apply_heterogeneous_objective,
+        apply_coherence_gate,
+        compute_agent_brier,
+        compute_brier_weights,
+        apply_brier_weight,
+        detect_debate_trigger,
+        resolve_debate,
+        run_belief_market,
+        opinion_dynamics_converge,
+        detect_whale,
+        apply_whale_dampening,
+        build_chart_context,
+        discover_correlations,
+        apply_correlation_boost,
+        AGENT_OBJECTIVES,
+    )
+    _SOTA_AVAILABLE = True
+except Exception as _sota_err:
+    pass
+
 # ── OASIS ADAPTER (social discussion → per-trader biases) ────────────────────
 # Import lazily so the trading floor still runs if the adapter is missing.
 _OASIS_ADAPTER_AVAILABLE = False
@@ -2144,6 +2170,19 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
                 dmad_damping=_dmad_damp,
             )
 
+            # ── SOTA: Per-agent enhancements (P6 Heterogeneous Objectives + P9 Coherence Gate) ──
+            if _SOTA_AVAILABLE and game_bets:
+                # [P6] Apply agent-specific objective function (Sharpe/ROI/Drawdown/WinRate/Kelly)
+                game_bets = apply_heterogeneous_objective(trader_id, game_bets)
+                # [P9] Coherence gate: reject bets where reasoning contradicts prediction
+                game_bets, _rejected = apply_coherence_gate(game_bets)
+                # [P4] Rolling Brier weight for this agent
+                agent_brier = compute_agent_brier(running_bets, window=50)
+                _brier_w = max(0.5, min(1.8, 1.0 / (agent_brier + 0.01) / 4.0))
+                for _b in game_bets:
+                    _b["bet_size"] = round(_b["bet_size"] * _brier_w, 4)
+                    _b["brier_weight"] = round(_brier_w, 4)
+
             for bet in game_bets:
                 total_bets += 1
                 day_bets_count += 1
@@ -2615,6 +2654,46 @@ def run_full_competition() -> Dict:
               f"  Sharpe {pol_result['political_sharpe']:.3f}"
               f"  ({pol_result['political_wins']}W-{pol_result['political_losses']}L"
               f"  {pol_result['political_total_trades']} trades)")
+
+    # ── SOTA: Cross-agent enhancements (P2 Debate, P5 Opinion, P7 Belief, P10 Whale) ──
+    if _SOTA_AVAILABLE:
+        _sota_enhancer = SOTAEnhancer()
+        # Collect all agent bets and compute cross-agent metrics
+        _all_agent_bets = {tid: res.get("nba_all_bets", []) for tid, res in all_results.items()}
+        _all_agent_probs = {}
+        for tid, res in all_results.items():
+            # Average model probability across all bets as agent's "belief"
+            bets = res.get("nba_all_bets", [])
+            if bets:
+                _all_agent_probs[tid] = sum(b.get("model_prob", 0.5) for b in bets) / len(bets)
+            else:
+                _all_agent_probs[tid] = 0.5
+        _agent_histories = {tid: res.get("nba_all_bets", []) for tid, res in all_results.items()}
+
+        # Apply cross-agent enhancements
+        _enhanced = _sota_enhancer.enhance_game(
+            "full_season", _all_agent_bets, _all_agent_probs, _agent_histories
+        )
+        # Get SOTA summary and persist to state
+        _sota_summary = _sota_enhancer.get_enhancement_summary()
+        for tid in all_results:
+            all_results[tid]["sota_papers_active"] = _sota_summary["papers_implemented"]
+            all_results[tid]["sota_techniques"] = _sota_summary["techniques"]
+            all_results[tid]["sota_debates"] = _sota_summary["debates_triggered"]
+            _pnl = _sota_summary["agent_pnl"].get(tid, {})
+            all_results[tid]["sota_pnl_capital"] = _pnl.get("capital", 100.0)
+            all_results[tid]["sota_pnl_sharpe"] = _pnl.get("sharpe", 0.0)
+            all_results[tid]["sota_pnl_max_dd"] = _pnl.get("max_drawdown_pct", 0.0)
+        print(f"\nSOTA papers      : {_sota_summary['papers_implemented']} active")
+        print(f"SOTA techniques  : {', '.join(_sota_summary['techniques'][:5])}...")
+        print(f"SOTA debates     : {_sota_summary['debates_triggered']} triggered")
+        for tid, pnl in _sota_summary["agent_pnl"].items():
+            print(f"  P1 {tid}: ${pnl.get('capital', 0):.2f}  "
+                  f"ROI {pnl.get('roi_pct', 0):+.1f}%  "
+                  f"Sharpe {pnl.get('sharpe', 0):.2f}  "
+                  f"MaxDD {pnl.get('max_drawdown_pct', 0):.1f}%")
+    else:
+        print("\nSOTA techniques  : not available (sota_techniques.py missing)")
 
     board     = build_leaderboard(all_results)
     cc_status = build_command_center_status(dept_data)
