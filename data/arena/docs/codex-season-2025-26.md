@@ -5,39 +5,35 @@
 - **Personality:** aggressive
 - **Risk Tolerance:** 0.7
 - **Initial Bankroll:** $100.00
-- **Final Bankroll:** $96.68
-- **ROI:** -3.3%
-- **Sharpe Ratio:** -1.677
-- **Record:** 1W-4L
-- **Peak Bankroll:** $100.72
-- **Max Drawdown:** 4.0%
+- **Final Bankroll:** $100.00
+- **ROI:** +0.0%
+- **Sharpe Ratio:** 0.000
+- **Record:** 0W-0L
+- **Peak Bankroll:** $100.00
+- **Max Drawdown:** 0.0%
 - **Rank:** #3 of 5
-- **Total Wagered:** $3.43
+- **Total Wagered:** $0.00
 
 ## Peer Comparison
 | Rank | Agent | Bankroll | ROI | Sharpe |
 |------|-------|----------|-----|--------|
-| 1 | Mistral Maverick | $676.89 | +576.9% | 9.300 |
-| 2 | Qwen Strategist | $538.45 | +438.4% | 8.735 |
-| 3 | Llama Vanguard ** | $96.68 | -3.3% | -1.677 |
-| 4 | Claude Sentinel | $92.53 | -7.5% | -2.301 |
-| 5 | Gemma Analyst | $72.42 | -27.6% | -3.484 |
+| 1 | Mistral Maverick | $661.35 | +561.4% | 9.083 |
+| 2 | Qwen Strategist | $547.14 | +447.1% | 9.633 |
+| 3 | Llama Vanguard ** | $100.00 | +0.0% | 0.000 |
+| 4 | Claude Sentinel | $92.56 | -7.4% | -2.318 |
+| 5 | Gemma Analyst | $74.34 | -25.7% | -3.282 |
 
 ## Model Performance
 | Model | Bets | Profit |
 |-------|------|--------|
-| tabicl | 5 | $-3.32 |
 
 ## Strategy Performance
 | Strategy | Bets | Profit |
 |----------|------|--------|
-| full_kelly | 5 | $-3.32 |
 
 ## Category Breakdown
 | Category | Bets | WR% | Profit |
 |----------|------|-----|--------|
-| ml_home | 2 | 50.0% | $+0.07 |
-| ml_away | 3 | 0.0% | $-3.39 |
 
 ## Day-by-Day Results
 | Day | Date | Games | Bets | P&L | Bankroll | Models | Strategies |
@@ -163,60 +159,20 @@
 | 119 | 2026-02-26 | 10 | 0 | $+0.00 | $100.00 |  |  |
 | 120 | 2026-02-27 | 5 | 0 | $+0.00 | $100.00 |  |  |
 | 121 | 2026-02-28 | 5 | 0 | $+0.00 | $100.00 |  |  |
-| 122 | 2026-03-01 | 11 | 1 | $+0.72 | $100.72 | tabicl | full_kelly |
-| 123 | 2026-03-02 | 4 | 0 | $+0.00 | $100.72 |  |  |
-| 124 | 2026-03-03 | 10 | 0 | $+0.00 | $100.72 |  |  |
-| 125 | 2026-03-04 | 6 | 0 | $+0.00 | $100.72 |  |  |
-| 126 | 2026-03-05 | 9 | 0 | $+0.00 | $100.72 |  |  |
-| 127 | 2026-03-06 | 7 | 1 | $-1.12 | $99.60 | tabicl | full_kelly |
-| 128 | 2026-03-07 | 6 | 0 | $+0.00 | $99.60 |  |  |
-| 129 | 2026-03-08 | 10 | 0 | $+0.00 | $99.60 |  |  |
-| 130 | 2026-03-09 | 5 | 0 | $+0.00 | $99.60 |  |  |
-| 131 | 2026-03-10 | 11 | 0 | $+0.00 | $99.60 |  |  |
-| 132 | 2026-03-11 | 6 | 0 | $+0.00 | $99.60 |  |  |
-| 133 | 2026-03-12 | 9 | 0 | $+0.00 | $99.60 |  |  |
-| 134 | 2026-03-13 | 8 | 0 | $+0.00 | $99.60 |  |  |
-| 135 | 2026-03-14 | 7 | 2 | $-2.26 | $97.34 | tabicl | full_kelly |
-| 136 | 2026-03-15 | 7 | 1 | $-0.65 | $96.68 | tabicl | full_kelly |
+| 122 | 2026-03-01 | 11 | 0 | $+0.00 | $100.00 |  |  |
+| 123 | 2026-03-02 | 4 | 0 | $+0.00 | $100.00 |  |  |
+| 124 | 2026-03-03 | 10 | 0 | $+0.00 | $100.00 |  |  |
+| 125 | 2026-03-04 | 6 | 0 | $+0.00 | $100.00 |  |  |
+| 126 | 2026-03-05 | 9 | 0 | $+0.00 | $100.00 |  |  |
+| 127 | 2026-03-06 | 7 | 0 | $+0.00 | $100.00 |  |  |
+| 128 | 2026-03-07 | 6 | 0 | $+0.00 | $100.00 |  |  |
+| 129 | 2026-03-08 | 10 | 0 | $+0.00 | $100.00 |  |  |
+| 130 | 2026-03-09 | 5 | 0 | $+0.00 | $100.00 |  |  |
+| 131 | 2026-03-10 | 11 | 0 | $+0.00 | $100.00 |  |  |
+| 132 | 2026-03-11 | 6 | 0 | $+0.00 | $100.00 |  |  |
+| 133 | 2026-03-12 | 9 | 0 | $+0.00 | $100.00 |  |  |
+| 134 | 2026-03-13 | 8 | 0 | $+0.00 | $100.00 |  |  |
+| 135 | 2026-03-14 | 7 | 0 | $+0.00 | $100.00 |  |  |
+| 136 | 2026-03-15 | 7 | 0 | $+0.00 | $100.00 |  |  |
 
-## Bet Log (sample: first 50 + last 50 of 5 total)
-
-### 2026-03-01 | LAC vs NOP | ml_home
-- **Model:** tabicl | **Strategy:** full_kelly
-- **Prob:** 0.555 vs implied 0.500 | **Edge:** +16.5%
-- **Bet:** $0.52 @ 2.000 | **Win** → $+0.72
-- **Context:** LAC (30-32) vs NOP (21-44)
-- **Reasoning:** tabicl P(LAC): 0.555 | consensus: 0.823 (disagree: 0.031) | LAC 30-32 | NOP 21-44 | kelly_adj: 0.13 | dmad_role: Regression Analyst | CONSENSUS_WARNING dmad_damp=0.60 | P6:Win Rate Maximizer
-- **Bankroll after:** $100.72
-
-### 2026-03-06 | PHX vs NOP | ml_away
-- **Model:** tabicl | **Strategy:** full_kelly
-- **Prob:** 0.553 vs implied 0.500 | **Edge:** +15.9%
-- **Bet:** $0.82 @ 2.000 | **Loss** → $-1.12
-- **Context:** PHX (38-27) vs NOP (22-46)
-- **Reasoning:** tabicl P(PHX): 0.447 | consensus: 0.680 (disagree: 0.037) | PHX 38-27 | NOP 22-46 | kelly_adj: 0.21 | dmad_role: Regression Analyst | CONSENSUS_WARNING dmad_damp=0.60 | P6:Win Rate Maximizer
-- **Bankroll after:** $99.60
-
-### 2026-03-14 | PHI vs BKN | ml_away
-- **Model:** tabicl | **Strategy:** full_kelly
-- **Prob:** 0.553 vs implied 0.500 | **Edge:** +15.9%
-- **Bet:** $0.79 @ 2.000 | **Loss** → $-1.11
-- **Context:** PHI (37-32) vs BKN (19-50)
-- **Reasoning:** tabicl P(PHI): 0.447 | consensus: 0.840 (disagree: 0.033) | PHI 37-32 | BKN 19-50 | kelly_adj: 0.21 | dmad_role: Regression Analyst | CONSENSUS_WARNING dmad_damp=0.60 | P6:Win Rate Maximizer
-- **Bankroll after:** $98.49
-
-### 2026-03-14 | SAS vs CHA | ml_away
-- **Model:** tabicl | **Strategy:** full_kelly
-- **Prob:** 0.556 vs implied 0.500 | **Edge:** +16.8%
-- **Bet:** $0.83 @ 2.000 | **Loss** → $-1.16
-- **Context:** SAS (53-18) vs CHA (36-36)
-- **Reasoning:** tabicl P(SAS): 0.444 | consensus: 0.764 (disagree: 0.036) | SAS 53-18 | CHA 36-36 | kelly_adj: 0.21 | dmad_role: Regression Analyst | CONSENSUS_WARNING dmad_damp=0.60 | P6:Win Rate Maximizer
-- **Bankroll after:** $97.34
-
-### 2026-03-15 | CLE vs DAL | ml_home
-- **Model:** tabicl | **Strategy:** full_kelly
-- **Prob:** 0.551 vs implied 0.500 | **Edge:** +15.3%
-- **Bet:** $0.46 @ 2.000 | **Loss** → $-0.65
-- **Context:** CLE (42-29) vs DAL (26-45)
-- **Reasoning:** tabicl P(CLE): 0.551 | consensus: 0.941 (disagree: 0.010) | CLE 42-29 | DAL 26-45 | kelly_adj: 0.13 | dmad_role: Regression Analyst | CONSENSUS_WARNING dmad_damp=0.60 | P6:Win Rate Maximizer
-- **Bankroll after:** $96.68
+## Bet Log (sample: first 50 + last 50 of 0 total)
