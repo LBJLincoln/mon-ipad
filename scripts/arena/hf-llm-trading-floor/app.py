@@ -1082,6 +1082,18 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             else:
                 decision = None
 
+            # Build log entry for this agent's decision
+            log_entry = {
+                "game_idx": game_idx,
+                "game": f"{game_ctx.get('away_team', '?')} @ {game_ctx.get('home_team', '?')}",
+                "date": game_ctx.get("date", ""),
+                "action": "pass",
+                "reasoning": (raw_response or "")[:300],  # First 300 chars of LLM reasoning
+                "bets": [],
+                "bankroll_before": bankroll,
+                "bankroll_after": bankroll,
+            }
+
             if decision and isinstance(decision.get("bets"), list) and not decision.get("pass", True):
                 bets = decision["bets"][:2]  # Max 2 per game
                 for bet in bets:
@@ -1117,8 +1129,20 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     bankroll = ts["bankroll"]
 
                     game_decisions.append(f"{cfg['name'][:8]}:{cat}({'W' if won else 'L'})")
+                    log_entry["bets"].append({
+                        "category": cat, "confidence": conf, "edge": round(edge, 4),
+                        "amount": bet_amount, "won": won, "odds": odds_dec,
+                        "profit": round(profit if won else -bet_amount, 2),
+                    })
+                log_entry["action"] = "bet"
             else:
                 ts["passes"] += 1
+
+            log_entry["bankroll_after"] = ts["bankroll"]
+            _agent_logs[tid].append(log_entry)
+            # Keep max 200 entries per agent to avoid memory bloat
+            if len(_agent_logs[tid]) > 200:
+                _agent_logs[tid] = _agent_logs[tid][-200:]
 
             ts["history"].append(ts["bankroll"])
             ts["best_bankroll"] = max(ts["best_bankroll"], ts["bankroll"])
@@ -1130,19 +1154,20 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         game_log_entry += decisions_str
         log_lines.append(game_log_entry)
 
-        # Persist state to disk every 10 games (survive restarts)
+        # Update in-memory state every game (for /api/status)
+        with _state_lock:
+            _experiment_state = {
+                "games_processed": game_idx + 1,
+                "games_total": n_games,
+                "completed": False,
+                "agents": {tid: {k: v for k, v in ts.items() if k != "history"}
+                           for tid, ts in state.items()},
+                "updated": datetime.now(timezone.utc).isoformat(),
+            }
+        # Persist to disk every 10 games (survive restarts)
         if (game_idx + 1) % 10 == 0:
-            with _state_lock:
-                _experiment_state = {
-                    "games_processed": game_idx + 1,
-                    "games_total": n_games,
-                    "completed": False,
-                    "agents": {tid: {k: v for k, v in ts.items() if k != "history"}
-                               for tid, ts in state.items()},
-                    "updated": datetime.now(timezone.utc).isoformat(),
-                }
-                _save_state_to_disk(_experiment_state)
-                _save_logs_to_disk()
+            _save_state_to_disk(_experiment_state)
+            _save_logs_to_disk()
 
         # Yield update every 5 games or at milestones
         if (game_idx + 1) % 5 == 0 or game_idx == n_games - 1 or game_idx < 3:
