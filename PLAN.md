@@ -5,24 +5,13 @@
 > have Claude Code on the web draft the next implementation step in CCR with
 > three parallel subagents + a critique pass.
 
-**Last refresh:** 2026-04-11 15:30 UTC (Apr 11 audit session RESUMED after
-battery-cutoff on prior VM/Termius session — finished the 3 pending audits
-#19/#20/#21. Added fresh findings below. Prior: "verify not bullshit"
-directive, replaced two fictitious data-source URLs (OpenSky blocked from
-GCP egress, OpenSeaMap API is fictitious 404). Now using api.adsb.lol +
-meri.digitraffic.fi with real live data verified on disk. Brier proxy
-cold-import runtime 100s → 0.8s cached. Cat 41 rewritten from global
-chokepoints to honest Baltic/Russia signals. Paperclip runner semantic gap
-documented — gate is effectively a crash-gate until councils output
-predictions files. See new W7/W8 below and mon-ipad 38f1df19 +
-nomos-political-alpha 47332a6.)
-
-**Prior refresh:** 2026-04-07 14:30 UTC (Phase B+ shipped: trader pool
-free-HF pivot, dashboard mocks removed, OASIS T3 swarm scaffold (50 agents),
-Alpaca paper client, Obsidian compile cron live AND auto-pushing every 2h,
-Claude Code Web verified, swarm→full-season-backtest aggregator wired,
-infra page FALLBACK_DEPARTMENTS/_BOTTLENECKS/_CRON_JOBS deleted,
-forge-metrics route 503, evolution page static-March ATR fallback deleted)
+**Last refresh:** 2026-04-13 00:30 UTC (Apr 12-13 "make it real" session.
+Dashboard was broken for 19h (2 TS errors → 5 failed Vercel builds → fixed
+ecaecf8). All 6 GH Actions had git push race condition → fixed. brier_proxy
+rewritten from constant→live. DMAD anti-groupthink + OASIS adapter shipped.
+4 dept loops → real Karpathy mutators. 8 heavy crons → GH Actions. VM lean:
+631MB used, 310MB available. OpenRouter ORCHESTRATOR+PME keys re-enabled
+(free tier only, paid 402). 98 scripts hardcoded→relative paths.)
 **Repos in scope:**
 - `LBJLincoln/mon-ipad` (NBA Quant — engine, gates, dashboards)
 - `LBJLincoln/nomos-political-alpha` (Political Alpha — Cat 1-22 features)
@@ -145,82 +134,80 @@ ever runs live without `dsr > 0 at p < 0.05 and pbo < 0.40`.
   serving commit 4be7b76. Likely either a silent build-error rollback or
   the Vercel project is pointing at a different branch.
 
-### Vision v20 — shipped 2026-04-12
+### Current state (2026-04-13 00:30 UTC — HONEST)
 
-- ✅ **Per-agent bets pipeline** — `_generate_per_agent_bets` + `_extract_agent_slots` + `_normalize_category` in `trading-floor-v5.py`. 55 per-agent bets from 43 agents in iter 85, expected to grow with T1 fix.
-- ✅ **T1 PREMIUM fix** — all 14 T1 agents switched from dead providers (HF 402 + CLI timeout) to `cerebras/qwen-3-235b` (235B params). Fallback chain: cerebras → huggingface → google. Commit `08385ad5`.
-- ✅ **`/floor` social feed** — live Bloomberg-themed page consuming per-agent bets, tier/category filters, run stats strip, 20-agent bankroll leaderboard. Commit `40de9ec` + `b2a35ab`.
-- ✅ **`/agent/:id` profile** — per-agent stats card + bet history. Same commit.
-- ✅ **Cross-links** — SiteNav, /trading-floor breadcrumbs, /agent back-links, homepage card all link to /floor.
-- ✅ **Dead file cleanup** — 15 files / 2130 lines removed (9 stale arxiv scans, 5 outdated fleet docs, 1 dead GPU script). Commit `13cadcec`.
-- ⬜ /world pixel upgrade (XP.css + @pixi/react + Kenney 1-Bit) — researched, not started
-- ⬜ V4→V5 migration — 27 files still reference v4, autonomous-cycle.sh calls v4 iterate
+### What's ACTUALLY running right now
 
-### Current state (carried from 2026-04-07 14:30 UTC)
+**HF Evolution Islands (6/8 producing):**
+| Island | Gen | Best Brier | Status |
+|--------|-----|-----------|--------|
+| S10 (exploitation) | 10 | 0.22476 | RUNNING |
+| S11 (exploration) | 40 | 0.22363 | RUNNING |
+| S12 (extra_trees) | 0 | 1.0 | BROKEN — never evolved |
+| S13 (catboost) | 0 | 1.0 | BROKEN — never evolved |
+| S14 (lightgbm) | 271 | **0.22325** | RUNNING — fleet best |
+| S15 (wide) | 107 | 0.23095 | RUNNING |
+| S16 (gradient boost) | 104 | 0.22335 | RUNNING |
+| S17 (ensemble) | 77 | 0.22579 | RUNNING |
 
-### NBA — green
-- ✅ `scripts/arena/cpcv_gate.py` running, **7 backtest runs in pool, 0/40 strategies passing** (gate working — DSR rejecting until pool ≥ 24)
-- ✅ `scripts/arena/continuous-backtest-swarm.sh` cron 6×/day, latest run 12:45 UTC writes `data/arena/backtest-results/backtest-20260407-124522.json`
-- ✅ NEW: `scripts/arena/aggregate_swarm_to_season.py` runs at end of swarm and writes `data/nba-agent/full-season-backtest.json` (was 10d stale; now refreshes every 4h with real Sharpe/ROI/Brier from latest swarm + synthesized trade timestamps for the equity-curve view)
-- ✅ 9-season backfill — 11,513 games
-- ✅ 102 betting categories (`bet_categories.py`)
-- ✅ Bull/Bear debate UI on `/trading-floor` (mon-ipad 2f73c16f)
-- ✅ 102-cat heatmap on `/trading-floor` (nomos-dashboard 1cdf6d2)
-- 📊 Best swarm strategy: **`spec_spread`** ROI +45.09%, Sharpe 3.33, win-rate 70.3%, 445 bets, Brier 0.21520
-- ⚠️ DSR p-value 0.9995 — needs ~17 more swarm runs (≈3 days) to clear gate
+**GH Actions (3 workflows on schedule):**
+| Workflow | Schedule | Last Run | Status |
+|----------|----------|----------|--------|
+| Trading Floor | */2h | 23:06 UTC | SUCCESS |
+| Backtest Swarm | */2h | 23:00 UTC | SUCCESS |
+| Scientific Experiment | */2h | 22:43 UTC | FIXED (was failing — git race) |
+| GPU Cron Launcher | manual | — | NOT TRIGGERED YET |
+| Arena Engine | daily | — | NOT TRIGGERED YET |
 
-### Political — green
-- ✅ `scripts/arena/political_cpcv_gate.py` (parity with NBA gate)
-- ✅ `scripts/arena/continuous-political-backtest-swarm.sh` cron `17 */4 * * *`
-- ✅ Pool now has **2 runs, 5 strategies evaluated, 0 passing** — needs ≥3 folds for DSR
-- ✅ FRESHENED: `data/arena/political-arena-v2.json` synced from `nomos-political-alpha/data/arena/arena-results.json` (12:45 UTC, 200KB)
-- ✅ FIXED: `/political/page.tsx` DONOR_UNIVERSE + MOCK_EVOLUTION + MOCK_KAGGLE_LOG deleted (commit a226818d)
-- ✅ Obsidian compile cron live (`23 */2 * * *`), auto-pushed twice today (7e9e6539, bszi4xjd2)
+**VM Crons (28 active, all lightweight):**
+- Odds fetch, political data, monitoring, keepalive, vault sync, Bloomberg API
+- RAM: 631MB used / 969MB total. Swap: 536MB/2GB. Healthy.
 
-### Vendored OSS (real, official, no more "lightweight adaptations")
-- ✅ `vendor/TradingAgents/` — TauricResearch/TradingAgents @ HEAD
-- ✅ `vendor/oasis/` — camel-ai/oasis @ HEAD (was MiroFish)
-- ✅ `scripts/vendor/clone-vendor.sh` bootstraps both on any new VM
-- ✅ `vendor/` is in `.gitignore` (each VM clones locally)
-- ❌ Not yet wired: `scripts/arena/debate_round.py` still calls api_pool
-  directly. Migration to real `tradingagents.graph.trading_graph` is planned
-  in **WORKSTREAM 2** below.
+**Providers (HONEST):**
+| Provider | Status | Models | Used By |
+|----------|--------|--------|---------|
+| Cerebras | WORKING | qwen-3-235b, llama-3.1-8b | T1-T5 NBA+Political |
+| Google (KEY_2) | WORKING | gemini-2.5-flash | Bull/Bear debate judge |
+| OpenRouter (2 keys) | FREE TIER ONLY | gemma-3-27b:free, llama-3.3:free | Rate-limited, 402 on paid |
+| HF Inference | ALL 4 DEAD | — | Monthly credits exhausted |
+| Self-hosted | NOT DEPLOYED | — | Configs ready, needs HF Space deploy |
 
-### HF Spaces council
-- ✅ Karpathy scheduler bumped from 2×/day → 4×/day (cron `0 1,7,13,19`)
-- ✅ Last real iteration: 04:24 UTC today (NBA, iter 30, Brier 0.215448)
-- ✅ Last political iter: 04:28 UTC, iter 30, brier 0.230493 / best 0.204543
-- ✅ Spaces are *executing real work*, not just keepalive blabbering
-- ⚠️ Best HF space Brier (0.22182, S14 catboost) still > Colab TabICL (0.21570)
+### What's ACTUALLY shipped (Apr 12)
+- ✅ 98 scripts hardcoded `/home/termius` → relative `Path(__file__)` (ed565071)
+- ✅ brier_proxy.py: constant 0.253826 → live 0.20939 (root cause of 7/9 dept stall)
+- ✅ 4 dept loops (engineering/betting/evaluation/political) → real Karpathy mutators
+- ✅ DMAD anti-groupthink: 5 locked data profiles, consensus damping 40% (dmad_profiles.py)
+- ✅ OASIS adapter: lite-mode multi-agent discussions (oasis_adapter.py)
+- ✅ 8 heavy crons → GH Actions (scientific, swarm, TF, arena, GPU)
+- ✅ 5 Telegram bots killed (freed ~100MB)
+- ✅ Dashboard TS errors fixed → Vercel rebuild triggered (ecaecf8)
+- ✅ /world page rewritten with @pixi/react v8 + XP.css (pending Vercel deploy)
+- ✅ /floor social feed + per-agent bets pipeline
+- ✅ Karpathy skill rewritten (366 lines, 6-phase loop)
 
-### Trader pool — free HF only (Phase B)
-- ✅ NBA + Political TF rebranded: gemini→Gemma 3 27B, openrouter→Qwen 2.5 72B,
-  codex→Llama 3.3 70B, grok→Mistral Large 2 (all on free HF Inference Router,
-  4 HF accounts cover quota). Claude Code CLI unchanged.
-- ✅ Dict keys preserved → existing `data/arena/traders/*-state.json` keep
-  bankroll history through the rename.
+### What's NOT done (honest)
+- ❌ S12 + S13 never evolved (gen 0, brier 1.0) — need investigation
+- ❌ Dashboard deploy not yet verified (Vercel rebuild just pushed)
+- ❌ OpenRouter only works on free tier — paid models 402
+- ❌ Self-hosted LLM not deployed on any HF Space
+- ❌ Codex plugin not researched
+- ❌ Obsidian Karpathy brain not integrated
+- ❌ Playoff categories written but NOT committed (bet_categories.py)
+- ❌ Dead file cleanup (70MB) staged but NOT committed
+- ❌ V4→V5 migration incomplete — autonomous-cycle.sh still calls v4
 
-### OASIS T3 specialist swarm
-- ✅ `scripts/arena/oasis_t3_swarm.py` writes 50 specialists across 10 personas
-  × 4 free HF backbones into `data/arena/agent-states-v5.json`
-- ✅ Total v5 agents: **274** (224 prior + 50 OASIS)
-- ⚠️ Lite-mode only (heavy `vendor/oasis` runtime opt-in via `--use-oasis-runtime`)
-- ⚠️ Not yet wired into v5 floor consensus (PLAN.md W2 acceptance)
+### vs Mirofish (camel-ai/oasis)
+We vendored it and built an adapter (oasis_adapter.py), but it's LITE MODE
+only — template discussions, no real OASIS runtime. Real OASIS needs an LLM
+backend we can't afford (HF dead, OpenRouter free-only). We are NOT better
+than Mirofish yet. We have the architecture, not the execution.
 
-### Dashboard — enterprise-grade pass (this commit)
-- ✅ DELETED: `nomos-dashboard/src/app/api/forge-metrics/route.ts` FALLBACK_METRICS
-  (was marking every repo as `'FORGED'` even when VM unreachable). Now returns 503.
-- ✅ DELETED: `nomos-dashboard/src/app/infra/page.tsx` FALLBACK_DEPARTMENTS,
-  FALLBACK_BOTTLENECKS, FALLBACK_CRON_JOBS (~70 lines of fake data). Replaced
-  with honest empty-state cards: "Department data offline — VM unreachable".
-- ✅ DELETED: `nomos-dashboard/src/app/evolution/page.tsx` AtrProgress static
-  March history (4 fake entries). Replaced with empty state.
-- ✅ Phase B (commit a226818d): NBA backtest deterministic-RNG + political
-  hardcoded DONOR_UNIVERSE + MOCK_EVOLUTION + MOCK_KAGGLE_LOG removed.
-- 🟡 Remaining (W6 — see below): pricing TIERS still hardcoded; rgwa+terminal
-  pages last touched 2026-03-26 — need re-audit; control room loading skeletons
-  missing on metric grid; some chart components silently render empty when
-  upstream is null.
+### vs Paperclip (keep/revert gate)
+brier_proxy now returns real data (0.20939 vs old constant 0.253826).
+4 dept loops use real Karpathy mutators. BUT Paperclip runner still
+can't do real keep/revert because councils don't output predictions files.
+W8 still open. The dept loops bypass Paperclip and do their own
+backup→mutate→measure→keep/revert directly.
 
 ---
 
@@ -472,6 +459,76 @@ theme, /world rewrite, SOTA ranking) shipped in the same unblock.
 - `vercel inspect <url> --logs` is the first-line tool when deploys silently fail
 - Next.js build = compile + type-check. A route can compile cleanly on VM but
   fail in Vercel's stricter build because dev mode doesn't enforce type-check.
+
+---
+
+### W10 — Fix S12 + S13 (dead islands)
+**Goal:** S12 (extra_trees) and S13 (catboost) are at gen 0, brier 1.0.
+They were listed as evolving on Apr 12 morning but have reset. Diagnose
+and fix — these are 2/8 of our evolution fleet doing nothing.
+
+**Acceptance:** Both spaces at gen > 5 with Brier < 0.25.
+
+---
+
+### W11 — Deploy self-hosted LLM on HF Space
+**Goal:** Get at least 1 free LLM endpoint we control, so traders aren't
+100% dependent on Cerebras (single point of failure).
+
+**Config ready:** `scripts/deploy/hf-llm-space/` (Gradio + llama-cpp-python,
+Qwen3-1.7B Q4_K_M, OpenAI-compatible /v1/chat/completions).
+
+**Acceptance:** `curl <space-url>/v1/chat/completions` returns a valid
+response. At least 1 trader in api_pool.py uses it as fallback.
+
+---
+
+### W12 — Karpathy GH Actions (cloud execution)
+**Goal:** Run Karpathy autoresearch loops on GH Actions instead of VM or
+Kaggle. The Karpathy pattern (mutate → 5min run → measure → keep/revert)
+fits perfectly in a 30-min GH Actions job.
+
+**Files:** `.github/workflows/karpathy-nba.yml`, `.github/workflows/karpathy-political.yml`
+**Schedule:** Every 4h, 30-min timeout, uses secrets for API keys.
+
+**Acceptance:** At least 3 Karpathy iterations complete in a single GH Actions
+run with real Brier measurements logged to `data/departments/`.
+
+---
+
+### W13 — NBA Playoff categories (commit + wire)
+**Goal:** 5 playoff betting categories already written in `bet_categories.py`
+but NOT committed. Wire them into the backtest swarm and trading floor.
+
+Categories: playoff_1h_under, playoff_series, playoff_game7_under,
+playoff_elimination_spread, playoff_star_props_under.
+
+Playoffs start ~Apr 19 2026 — 6 days away. Must be live before then.
+
+**Acceptance:** `ALL_CATEGORIES` returns 107 (was 102). Backtest swarm
+processes at least 1 playoff category.
+
+---
+
+### W14 — Provider diversification (kill Cerebras single-point-of-failure)
+**Goal:** Right now ALL 5 NBA traders + ALL 5 political traders route to
+Cerebras. If Cerebras goes down, the entire trading floor stops.
+
+**Available providers:**
+- Cerebras: WORKING (free 1M tok/day)
+- Google gemini-2.5-flash: WORKING (KEY_2)
+- OpenRouter free tier: WORKING (gemma-3-27b, llama-3.3-70b free routes)
+- Self-hosted HF Space: NOT YET DEPLOYED (W11)
+
+**Target routing:**
+- T1 gemini → Google gemini-2.5-flash
+- T2 qwen → Cerebras qwen-3-235b
+- T3 claude → Claude CLI (already works)
+- T4 llama → OpenRouter llama-3.3-70b:free
+- T5 mistral → Cerebras llama-3.1-8b (or self-hosted when W11 ships)
+
+**Acceptance:** No 2 traders share the same single provider. Trading floor
+completes a full iteration with all 5 producing bets.
 
 ---
 
