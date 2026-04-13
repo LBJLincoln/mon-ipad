@@ -13,7 +13,7 @@ Build the best NBA prediction AI in the world.
 |----------|------|-----|--------|--------|
 | NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 6 islands + Kaggle Karpathy |
 | Political Alpha | nomos-political-alpha | -- | none (data only) | ACTIVE -- v3.1 engine, 22 categories. Surfaced through nomos-dashboard /political route |
-| Dashboard Hub | nomos-dashboard | -- | nomos42.com | ACTIVE -- /nba /political /evolution /trading-floor /forge |
+| Dashboard Hub | nomos-dashboard | -- | nomosdashboard.vercel.app | ACTIVE -- /nba /political /evolution /trading-floor /forge |
 | AI Artistic Generation | rgwa | @RGWAbot | none | ZOMBIE -- no commits since Mar 2026, deprioritized |
 | Factory / Complex RAGs | rag-website | -- | none | SHELVED |
 
