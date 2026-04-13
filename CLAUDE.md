@@ -64,14 +64,13 @@ HF OTHER SPACES (25 total across 3 accounts)
     ├── Legacy TF: Nomos42/nba-trading-floor (v4, superseded)
     └── Pixel World: Nomos42/pixel-world (static)
 
-KAGGLE KARPATHY LOOP (GPU, 9h sessions, Karpathy autoresearch pattern)
-    ├── scripts/kaggle/nba_karpathy_loop.py: NBA evolution (seeds from 8 islands)
-    └── scripts/kaggle/political_karpathy_loop.py: Political alpha evolution
-    Pattern: modify config → run 5min → measure Brier → keep if better → loop
-    Rate: 12 iterations/hr, ~100/session
-
-GOOGLE COLAB (GPU, on-demand)
-    └── colab/nba_evolution_gpu.ipynb: T4 GPU evolution
+GPU PLATFORMS (5 active, ranked by usefulness)
+    ├── Kaggle P100 (9h sessions): scripts/kaggle/nba_karpathy_loop.py — STALE since Mar 28
+    ├── Google Colab T4 (manual): 2 accounts, best 0.21570 (TabICL) — manual only, no .ipynb in repo
+    ├── ZeroGPU H200 (auto): scripts/gpu-burst/zerogpu-burst.py — GH Action every 6h
+    ├── Modal A10G (GH Actions): scripts/gpu-burst/modal-burst.py — no VM creds, GH only
+    ├── Lightning.ai T4 (dormant): scripts/lightning/launch_karpathy.py — creds exist, never used
+    └── Paperspace Gradient (NEW): free GPU, unlimited restarts — SETUP IN PROGRESS
 
 GITHUB ACTIONS (3 workflows on schedule)
     ├── Trading Floor:        */2h — 10-agent real LLM iteration
