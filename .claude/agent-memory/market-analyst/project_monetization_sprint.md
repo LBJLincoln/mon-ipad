@@ -18,7 +18,7 @@ Claude Code CLI expires May 8. Must generate real revenue by May 1 or shut down 
 
 ## Priority Order
 1. P1: NBA Picks Telegram bot ($19/$49/$149) — already coded, deploy TODAY
-2. P7: nomos42.com /pricing page — 3 days to activate
+2. P7: nomosdashboard.vercel.app /pricing page — 3 days to activate
 3. P2: Political alpha Substack — free, differentiated, 5 days
 4. P4: Numerai submission — 3 days, passive income potential
 5. P3: Cybersecurity SME assessments — 10+ days, $299-999/scan

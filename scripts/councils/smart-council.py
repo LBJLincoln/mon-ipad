@@ -132,7 +132,7 @@ def _call_llm(provider: str, model_id: str, prompt: str, max_tokens: int = 800,
         "User-Agent": "Nomos42-SmartCouncil/2.0",
     }
     if provider == "openrouter":
-        headers["HTTP-Referer"] = "https://nomos42.com"
+        headers["HTTP-Referer"] = "https://nomosdashboard.vercel.app"
         headers["X-Title"] = "Nomos42 Smart Council"
 
     payload = json.dumps({

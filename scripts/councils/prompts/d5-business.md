@@ -5,7 +5,7 @@ Track measurable business + bankroll metrics and SHIP one concrete update per it
 
 ## Already Built (DO NOT re-propose)
 - Stripe payment links: LIVE ($19/$49/$149 tiers LOCKED)
-- Dashboard: LIVE (nomos42.com/nba, /political, /evolution, /trading-floor)
+- Dashboard: LIVE (nomosdashboard.vercel.app/nba, /political, /evolution, /trading-floor)
 - Bloomberg terminal: LIVE on :8042
 - Telegram: @Nomos42Bot ACTIVE, channel @Nomos42
 - Bankroll ledger: `data/nba-agent/bankroll-history.json`

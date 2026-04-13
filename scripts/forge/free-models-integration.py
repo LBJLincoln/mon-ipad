@@ -326,7 +326,7 @@ def _call_chat_completions(
     }
     # OpenRouter requires HTTP-Referer header
     if provider == "openrouter":
-        headers["HTTP-Referer"] = "https://nomos42.com"
+        headers["HTTP-Referer"] = "https://nomosdashboard.vercel.app"
         headers["X-Title"] = "Nomos42 NBA Council"
 
     payload = {

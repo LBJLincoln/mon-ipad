@@ -674,7 +674,7 @@ HTTP 429 Too Many Requests
   "limit": 20,
   "window": "1 minute",
   "reset_at": "2026-04-03T20:01:00Z",
-  "upgrade_url": "https://nomos42.com/pricing"
+  "upgrade_url": "https://nomosdashboard.vercel.app/pricing"
 }
 ```
 

@@ -25,6 +25,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout nomos-nba-agent (game data)
+        uses: actions/checkout@v4
+        with:
+          repository: LBJLincoln/nomos-nba-agent
+          path: nomos-nba-agent
+
+      - name: Symlink nomos-nba-agent to parent directory
+        run: ln -sfn "$GITHUB_WORKSPACE/nomos-nba-agent" "$GITHUB_WORKSPACE/../nomos-nba-agent"
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -33,9 +42,14 @@ jobs:
       - name: Install dependencies
         run: pip install scikit-learn lightgbm numpy
 
-      - name: Run NBA Karpathy loop
+      - name: Build real NBA feature cache
         run: |
           mkdir -p logs/karpathy data/karpathy
+          python3 scripts/karpathy/build_cache.py --max-seasons 5 \
+            2>&1 | tail -20
+
+      - name: Run NBA Karpathy loop
+        run: |
           python3 scripts/karpathy/nba_iterate.py \
             --iterations ${{ github.event.inputs.iterations || '50' }} \
             2>&1 | tail -30
@@ -45,6 +59,7 @@ jobs:
           python3 scripts/karpathy/political_iterate.py \
             --iterations ${{ github.event.inputs.iterations || '50' }} \
             2>&1 | tail -30
+        continue-on-error: true
 
       - name: Commit improved configs
         run: |
@@ -52,6 +67,10 @@ jobs:
           git config user.email "karpathy@nomos42.ai"
           git add data/karpathy/ 2>/dev/null || true
           if ! git diff --cached --quiet 2>/dev/null; then
+            git stash --include-untracked
+            git pull --rebase origin main
+            git stash pop || true
+            git add data/karpathy/ 2>/dev/null || true
             git commit -m "karpathy: GH Actions tuning $(date -u +%Y-%m-%dT%H:%MZ)"
             git push
           else

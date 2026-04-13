@@ -159,7 +159,7 @@ def _call_llm(prompt: str, max_tokens: int = 500, temperature: float = 0.3) -> t
             "openrouter/auto:free",
             prompt, max_tokens, temperature,
             extra_headers={
-                "HTTP-Referer": "https://nomos42.com",
+                "HTTP-Referer": "https://nomosdashboard.vercel.app",
                 "X-Title": f"Nomos42 Dept Council {DEPT_ID.upper()}",
             },
         )
@@ -203,7 +203,7 @@ def _call_llm(prompt: str, max_tokens: int = 500, temperature: float = 0.3) -> t
                 f"Bearer {OPENROUTER_API_KEY}", model_id,
                 prompt, max_tokens, temperature,
                 extra_headers={
-                    "HTTP-Referer": "https://nomos42.com",
+                    "HTTP-Referer": "https://nomosdashboard.vercel.app",
                     "X-Title": f"Nomos42 Dept Council {DEPT_ID.upper()}",
                 },
             ))

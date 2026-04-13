@@ -86,7 +86,7 @@ VERCEL_ERROR=$(echo "$VERCEL_STATUS" | python3 -c "import sys,json; print(json.l
 echo "  Vercel deployment: $DEPLOYMENT_STATE"
 
 # ── STEP 2: Ping dashboard health endpoint ────────────────────────────────────
-DASHBOARD_URL="https://nomos42.com"
+DASHBOARD_URL="https://nomosdashboard.vercel.app"
 DASHBOARD_HEALTH=$(timeout 8 python3 - "$DASHBOARD_URL" << 'PYEOF'
 import sys, json, urllib.request, urllib.error, time
 
@@ -115,7 +115,7 @@ except Exception as e:
 print(json.dumps(result))
 PYEOF
 )
-[ -z "$DASHBOARD_HEALTH" ] && DASHBOARD_HEALTH='{"url":"https://nomos42.com","reachable":false,"status_code":null,"latency_ms":null,"error":"timeout"}'
+[ -z "$DASHBOARD_HEALTH" ] && DASHBOARD_HEALTH='{"url":"https://nomosdashboard.vercel.app","reachable":false,"status_code":null,"latency_ms":null,"error":"timeout"}'
 
 STATUS_CODE=$(echo "$DASHBOARD_HEALTH" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status_code'))" 2>/dev/null || echo "null")
 LATENCY_MS=$(echo "$DASHBOARD_HEALTH" | python3 -c "import sys,json; print(json.load(sys.stdin).get('latency_ms'))" 2>/dev/null || echo "null")
@@ -134,7 +134,7 @@ routes = [
 results = {}
 
 for route in routes:
-    url = f"https://nomos42.com{route}"
+    url = f"https://nomosdashboard.vercel.app{route}"
     try:
         start = time.time()
         req = urllib.request.Request(url, headers={"User-Agent": "Nomos42-HealthMonitor/1.0"})

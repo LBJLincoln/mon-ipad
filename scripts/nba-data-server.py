@@ -22,8 +22,8 @@ PORT = 8080
 
 ALLOWED_ORIGINS = [
     "https://nomosdashboard.vercel.app",
-    "https://nomos42.com",
-    "https://www.nomos42.com",
+    "https://nomosdashboard.vercel.app",
+    "https://nomosdashboard.vercel.app",
     "https://nomos42.vercel.app",   # NBA agent app
     "http://localhost:3000",
     "http://localhost:3001",

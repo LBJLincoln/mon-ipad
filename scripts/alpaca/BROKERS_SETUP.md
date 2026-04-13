@@ -143,7 +143,7 @@ nohup python3 /home/termius/mon-ipad/scripts/nba-data-server.py > logs/data-serv
 echo $! > /tmp/data-server.pid
 ```
 
-The website `nomos42.com/trading-floor` shows stale April 6-7 data because:
+The website `nomosdashboard.vercel.app/trading-floor` shows stale April 6-7 data because:
 1. `nba-data-server.py` is not running (port 8080 down)
 2. `autonomous-cycle.sh` has no crontab entry
 Both must be fixed for the dashboard to go live.

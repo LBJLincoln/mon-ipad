@@ -87,7 +87,7 @@ COUNCIL_SPACES = {
 }
 
 SERVICES = {
-    "dashboard":        "https://nomos42.com/",
+    "dashboard":        "https://nomosdashboard.vercel.app/",
     "bloomberg_api":    "http://localhost:8042/",
 }
 

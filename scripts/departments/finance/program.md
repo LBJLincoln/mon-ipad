@@ -28,7 +28,7 @@ Track all financial flows (revenue, costs, investments), maintain clean books, g
 | Lightning AI | $0 (free 22h) | Compute |
 | Modal | ~$5 (pay-per-use) | Compute |
 | Vercel (5 deployments) | $0 (hobby) | Hosting |
-| Domain (nomos42.com) | ~$1/mo | Hosting |
+| Domain (nomosdashboard.vercel.app) | ~$1/mo | Hosting |
 | The Odds API | $0 (free tier) | Data |
 | GitHub (5 repos) | $0 | DevOps |
 | Supabase | $0 (free tier) | Database |
