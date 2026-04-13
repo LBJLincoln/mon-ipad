@@ -17,16 +17,16 @@
 ## Peer Comparison
 | Rank | Agent | Bankroll | ROI | Sharpe |
 |------|-------|----------|-----|--------|
-| 1 | Mixtral Ensemble | $1,033.80 | +933.8% | 9.590 |
-| 2 | Gemma Arbitrageur | $774.66 | +674.7% | 11.410 |
-| 3 | Mistral Maverick | $668.86 | +568.9% | 9.089 |
-| 4 | Command Tactician | $607.03 | +507.0% | 7.289 |
-| 5 | Qwen Strategist | $567.05 | +467.1% | 9.902 |
-| 6 | DeepSeek Quant | $307.64 | +207.6% | 7.733 |
-| 7 | Phi Theorist | $108.76 | +8.8% | 0.745 |
+| 1 | Mixtral Ensemble | $1,064.21 | +964.2% | 9.733 |
+| 2 | Gemma Arbitrageur | $702.00 | +602.0% | 10.889 |
+| 3 | Command Tactician | $671.56 | +571.6% | 7.596 |
+| 4 | Mistral Maverick | $658.93 | +558.9% | 9.113 |
+| 5 | Qwen Strategist | $578.14 | +478.1% | 10.398 |
+| 6 | DeepSeek Quant | $309.79 | +209.8% | 7.187 |
+| 7 | Phi Theorist | $100.28 | +0.3% | 0.024 |
 | 8 | Llama Vanguard ** | $100.00 | +0.0% | 0.000 |
-| 9 | Claude Sentinel | $91.98 | -8.0% | -2.396 |
-| 10 | Gemma Analyst | $74.10 | -25.9% | -3.257 |
+| 9 | Claude Sentinel | $91.54 | -8.5% | -2.478 |
+| 10 | Gemma Analyst | $75.10 | -24.9% | -3.191 |
 
 ## Model Performance
 | Model | Bets | Profit |
