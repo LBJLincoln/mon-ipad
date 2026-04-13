@@ -243,9 +243,9 @@ STRATEGIES = {
 # Free HF models are routed via the HF Inference API; we have 4 HF accounts so
 # rate limits are effectively unlimited for batch trading.
 TRADERS = {
-    "gemini": {  # Gemma Analyst — cerebras:qwen-3-235b primary (HF credits exhausted 2026-04-12)
+    "gemini": {  # Gemma Analyst — google:gemini-2.5-flash primary (diversified 2026-04-12)
         "name":               "Gemma 3 27B",
-        "provider":           "cerebras:qwen-3-235b-a22b-instruct-2507",
+        "provider":           "google:gemini-2.5-flash",
         "personality":        "analytical",
         "risk_tolerance":     0.60,
         "capital":            INITIAL_CAPITAL,
@@ -279,9 +279,9 @@ TRADERS = {
         "ticker_focus":       ["TLT", "GLD", "XLV", "JNJ", "UNH", "SPY"],
         "event_weight":       {"exec_order": 0.8, "fed_rule": 1.3, "insider_trade": 0.7, "polymarket": 1.0},
     },
-    "codex": {  # Llama Vanguard — cerebras:llama3.1-8b primary
+    "codex": {  # Llama Vanguard — openrouter:llama-3.3-70b free tier (diversified 2026-04-12)
         "name":               "Llama 3.3 70B",
-        "provider":           "cerebras:llama3.1-8b",
+        "provider":           "openrouter:meta-llama/llama-3.3-70b-instruct:free",
         "personality":        "aggressive",
         "risk_tolerance":     0.75,
         "capital":            INITIAL_CAPITAL,
@@ -291,7 +291,7 @@ TRADERS = {
         "ticker_focus":       ["QQQ", "XLK", "NVDA", "BA", "TSLA", "META"],
         "event_weight":       {"exec_order": 1.5, "fed_rule": 0.7, "insider_trade": 1.0, "polymarket": 1.3},
     },
-    "grok": {  # Mistral Maverick — cerebras:llama3.1-8b primary
+    "grok": {  # Mistral Maverick — cerebras:llama3.1-8b primary (kept on cerebras)
         "name":               "Mistral Large 2",
         "provider":           "cerebras:llama3.1-8b",
         "personality":        "contrarian",

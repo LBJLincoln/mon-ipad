@@ -255,9 +255,9 @@ BANKROLL_THRESHOLDS = {
 # under data/arena/traders/{key}-state.json keep accumulating bankroll history.
 # Only `name` and `provider` change — they are display labels for the dashboard.
 TRADERS = {
-    "gemini": {  # Gemma Analyst — cerebras:qwen-3-235b primary (HF credits exhausted 2026-04-12)
+    "gemini": {  # Gemma Analyst — google:gemini-2.5-flash primary (diversified 2026-04-12)
         "name":               "Gemma Analyst",
-        "provider":           "cerebras:qwen-3-235b-a22b-instruct-2507",
+        "provider":           "google:gemini-2.5-flash",
         "personality":        "analytical",
         "risk_tolerance":     0.60,
         "bankroll_nba":       100.0,
@@ -293,9 +293,9 @@ TRADERS = {
         "pol_approach":       "mean_reversion",
         "etf_sectors":        ["TLT", "GLD", "XLV"],
     },
-    "codex": {  # Llama Vanguard — cerebras:llama3.1-8b primary
+    "codex": {  # Llama Vanguard — openrouter:llama-3.3-70b free tier (diversified 2026-04-12)
         "name":               "Llama Vanguard",
-        "provider":           "cerebras:llama3.1-8b",
+        "provider":           "openrouter:meta-llama/llama-3.3-70b-instruct:free",
         "personality":        "aggressive",
         "risk_tolerance":     0.70,
         "bankroll_nba":       100.0,
@@ -306,7 +306,7 @@ TRADERS = {
         "pol_approach":       "event_driven",
         "etf_sectors":        ["QQQ", "XLK", "XLI"],
     },
-    "grok": {  # Mistral Maverick — cerebras:llama3.1-8b primary
+    "grok": {  # Mistral Maverick — cerebras:llama3.1-8b primary (kept on cerebras)
         "name":               "Mistral Maverick",
         "provider":           "cerebras:llama3.1-8b",
         "personality":        "contrarian",

@@ -738,23 +738,28 @@ def get_pool() -> APIPool:
 #   text = call_with_fallback(["cerebras:llama3.1-8b", "google:gemini-2.5-flash"], "prompt")
 
 # Per-trader fallback chains: primary → fallback1 → fallback2
-# Updated 2026-04-12: HF credits exhausted, routing to Cerebras + Google KEY_2
+# Updated 2026-04-12: diversified across 3 providers (google, cerebras, openrouter)
+# to eliminate single-provider SPOF.  Keys used:
+#   google  → GOOGLE_API_KEY_2 (gemini-2.5-flash)
+#   cerebras → CEREBRAS_API_KEY (qwen-3-235b, llama3.1-8b)
+#   openrouter → OPENROUTER_KEY_ORCHESTRATOR / PME (free-tier :free models)
 TRADER_PROVIDER_MAP: Dict[str, List[str]] = {
-    # T1 Gemma Analyst — was hf:google/gemma-3-27b-it
-    "gemini":      ["cerebras:qwen-3-235b-a22b-instruct-2507", "google:gemini-2.5-flash"],
-    # T2 Qwen Strategist — was hf:Qwen/Qwen2.5-72B-Instruct
-    "openrouter":  ["cerebras:qwen-3-235b-a22b-instruct-2507", "google:gemini-2.5-flash"],
-    # T3 Claude Sentinel — always uses anthropic_cli (working)
+    # ── NBA + Political traders (diversified — no 2 traders share same primary) ──
+    # T1 Gemma Analyst → Google gemini-2.5-flash (GOOGLE_API_KEY_2)
+    "gemini":      ["google:gemini-2.5-flash", "cerebras:qwen-3-235b-a22b-instruct-2507", "self_hosted_hf:Qwen/Qwen3-1.7B"],
+    # T2 Qwen Strategist → Cerebras qwen-3-235b (free 1M tok/day)
+    "openrouter":  ["cerebras:qwen-3-235b-a22b-instruct-2507", "openrouter:google/gemma-3-27b-it:free", "self_hosted_hf:Qwen/Qwen3-1.7B"],
+    # T3 Claude Sentinel → Claude CLI
     "claude":      ["anthropic_cli"],
-    # T4 Llama Vanguard — was hf:meta-llama/Llama-3.3-70B-Instruct
-    "codex":       ["cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
-    # T5 Mistral Maverick — was hf:mistralai/Mistral-Large-Instruct-2411
-    "grok":        ["cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
-    # T6 GLM Architect (political only) — was openrouter:z-ai/glm-5.1
-    "glm":         ["cerebras:qwen-3-235b-a22b-instruct-2507", "google:gemini-2.5-flash"],
-    # Debate round providers
+    # T4 Llama Vanguard → OpenRouter free tier (ORCHESTRATOR key)
+    "codex":       ["openrouter:meta-llama/llama-3.3-70b-instruct:free", "cerebras:llama3.1-8b", "self_hosted_hf:Qwen/Qwen3-1.7B"],
+    # T5 Mistral Maverick → Cerebras llama3.1-8b (different model than T2)
+    "grok":        ["cerebras:llama3.1-8b", "openrouter:google/gemma-3-27b-it:free", "self_hosted_hf:Qwen/Qwen3-1.7B"],
+    # T6 GLM Architect (political only)
+    "glm":         ["openrouter:google/gemma-3-27b-it:free", "cerebras:qwen-3-235b-a22b-instruct-2507", "self_hosted_hf:Qwen/Qwen3-1.7B"],
+    # ── Debate round providers ──
     "debate_bull":  ["cerebras:qwen-3-235b-a22b-instruct-2507", "google:gemini-2.5-flash"],
-    "debate_bear":  ["google:gemini-2.5-flash", "cerebras:llama3.1-8b"],
+    "debate_bear":  ["google:gemini-2.5-flash", "openrouter:meta-llama/llama-3.3-70b-instruct:free"],
     "debate_judge": ["google:gemini-2.5-flash", "cerebras:qwen-3-235b-a22b-instruct-2507"],
 }
 

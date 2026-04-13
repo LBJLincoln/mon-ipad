@@ -65,8 +65,8 @@ except ImportError:
 #      REPO: "microsoft/Phi-4-mini-instruct-GGUF"  FILE: "Phi-4-mini-instruct-q4.gguf"
 #      NOTE: needs 4+ GB RAM headroom; fits on 16 GB free tier
 
-MODEL_REPO = os.environ.get("MODEL_REPO", "Qwen/Qwen3-1.7B-GGUF")
-MODEL_FILE = os.environ.get("MODEL_FILE", "qwen3-1.7b-q4_k_m.gguf")
+MODEL_REPO = os.environ.get("MODEL_REPO", "unsloth/Qwen3-1.7B-GGUF")
+MODEL_FILE = os.environ.get("MODEL_FILE", "Qwen3-1.7B-Q4_K_M.gguf")
 MODEL_DISPLAY = os.environ.get("MODEL_DISPLAY", "Qwen/Qwen3-1.7B")
 
 # Server config
