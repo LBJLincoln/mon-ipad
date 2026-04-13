@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-10T21:08:26.132459+00:00",
+  "timestamp": "2026-04-13T07:06:04.654053+00:00",
   "current_metrics": {
     "research": {
       "department": "research",
@@ -14,20 +14,20 @@
     },
     "engineering": {
       "department": "engineering",
-      "timestamp": "2026-04-02T10:29:36.000000+00:00",
-      "iteration": 7,
-      "status": "unknown",
+      "timestamp": "2026-04-12T20:51:01Z",
+      "iteration": 9,
+      "status": "completed",
       "improved": false
     },
     "evolution": {
       "department": "evolution",
-      "timestamp": "2026-04-08T12:15:00Z",
-      "iteration": 12,
-      "status": "shipped",
+      "timestamp": "2026-04-12T00:00:00Z",
+      "iteration": 15,
+      "status": "no_op",
       "improved": false,
-      "best_brier": 0.22249,
-      "fleet_avg_brier": 0.22502,
-      "best_island": "S11",
+      "best_brier": 0.22201,
+      "fleet_avg_brier": null,
+      "best_island": null,
       "total_generations": null,
       "stagnation_detected": [],
       "cross_pollination_candidates": [],
@@ -35,55 +35,24 @@
     },
     "betting": {
       "department": "betting",
-      "timestamp": "2026-04-02T10:30:22Z",
-      "iteration": 1,
+      "timestamp": "2026-04-12T21:03:07Z",
+      "iteration": 2,
       "status": "completed",
       "improved": false,
       "bankroll": null,
       "roi_pct": null,
       "sharpe": null,
       "win_rate_pct": null,
-      "strategy_rankings": [
-        {
-          "rank": 1,
-          "strategy": "full_kelly",
-          "avg_roi_pct": 135550.14,
-          "verdict": "ELITE"
-        },
-        {
-          "rank": 2,
-          "strategy": "anti_martingale",
-          "avg_roi_pct": 125583.03,
-          "verdict": "ELITE"
-        },
-        {
-          "rank": 3,
-          "strategy": "proportional_edge",
-          "avg_roi_pct": 73111.58,
-          "verdict": "STRONG"
-        },
-        {
-          "rank": 4,
-          "strategy": "ev_threshold_110",
-          "avg_roi_pct": 52320.41,
-          "verdict": "STRONG"
-        },
-        {
-          "rank": 5,
-          "strategy": "half_kelly",
-          "avg_roi_pct": 34738.73,
-          "verdict": "STRONG"
-        }
-      ]
+      "strategy_rankings": []
     },
     "evaluation": {
       "department": "evaluation",
-      "timestamp": "2026-04-08T09:30:00Z",
-      "iteration": 12,
-      "status": "shipped",
+      "timestamp": "2026-04-12T20:51:40Z",
+      "iteration": 1,
+      "status": "completed",
       "improved": false,
       "brier": null,
-      "ece": 0.06217,
+      "ece": null,
       "fp_rate": null,
       "roi_pct": null,
       "bias_detected": [],
@@ -91,19 +60,19 @@
     },
     "infra": {
       "department": "infra",
-      "timestamp": "2026-04-08T12:00:00Z",
-      "iteration": 73,
+      "timestamp": "2026-04-12T06:30:00Z",
+      "iteration": 79,
       "status": "no_op",
       "improved": false,
-      "spaces_up": 14,
+      "spaces_up": 4,
       "spaces_total": null,
-      "uptime_pct": 100.0,
+      "uptime_pct": 55.0,
       "restart_count": null
     },
     "political": {
       "department": "political",
-      "timestamp": "2026-04-02T10:31:49.047442+00:00",
-      "iteration": 7,
+      "timestamp": "2026-04-12T20:52:05Z",
+      "iteration": 1,
       "status": "completed",
       "improved": false,
       "brier": null,
@@ -112,54 +81,34 @@
     },
     "creative": {
       "department": "creative",
-      "timestamp": "2026-04-02T10:36:30Z",
-      "iteration": 4,
-      "status": "idle",
+      "timestamp": "2026-04-12T21:02:43Z",
+      "iteration": 9,
+      "status": "completed",
       "improved": false,
       "quality_score": null,
-      "pieces_today": 0
+      "pieces_today": null
     },
     "trading_floor": {
       "department": "trading_floor",
-      "timestamp": "2026-04-10T21:08:20.882032+00:00",
-      "iteration": 318,
+      "timestamp": "2026-04-13T07:06:04.475084+00:00",
+      "iteration": 323,
       "status": "completed",
       "improved": false,
       "traders": {},
       "best_trader": null,
       "total_pnl": null
-    },
-    "nba_prediction": {
-      "department": "nba_prediction",
-      "timestamp": "2026-04-01T11:09:27Z",
-      "iteration": 1,
-      "status": "active",
-      "improved": false,
-      "predictions_made": null,
-      "accuracy": {
-        "games_evaluated": 0,
-        "correct": 0,
-        "accuracy": null
-      }
-    },
-    "political_signals": {
-      "department": "political_signals",
-      "timestamp": "2026-04-01T11:09:45Z",
-      "iteration": 1,
-      "status": "active",
-      "improved": false,
-      "signals_detected": null,
-      "categories": null
-    },
-    "rgwa_creative": {
-      "department": "rgwa_creative",
-      "timestamp": "2026-04-01T11:09:59Z",
-      "iteration": 1,
-      "status": "warning",
-      "improved": false,
-      "quality_score": null,
-      "pieces_today": null
     }
   },
-  "wins_this_cycle": []
+  "wins_this_cycle": [
+    {
+      "department": "evolution",
+      "type": "metric_improvement",
+      "metric": "best_brier",
+      "previous": 0.22249,
+      "current": 0.22201,
+      "delta": -0.00048,
+      "direction": "decreased",
+      "timestamp": "2026-04-12T00:00:00Z"
+    }
+  ]
 }

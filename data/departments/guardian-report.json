@@ -1,35 +1,95 @@
 {
-  "timestamp": "2026-04-10T21:08:26.132459+00:00",
+  "timestamp": "2026-04-13T07:06:04.654053+00:00",
   "status": "completed",
-  "departments_loaded": 12,
+  "departments_loaded": 9,
   "departments_total": 12,
   "dept_summaries": {
     "research": "14 papers | 18 techniques | status=completed",
-    "engineering": "status=unknown",
-    "evolution": "Brier=0.22249 | status=shipped",
+    "engineering": "status=completed",
+    "evolution": "Brier=0.22201 | status=no_op",
     "betting": "status=completed",
-    "evaluation": "status=shipped",
-    "infra": "14/None spaces UP | status=no_op",
+    "evaluation": "status=completed",
+    "infra": "4/None spaces UP | status=no_op",
     "political": "status=completed",
-    "creative": "status=idle",
-    "trading_floor": "status=completed",
-    "nba_prediction": "status=active",
-    "political_signals": "status=active",
-    "rgwa_creative": "status=warning"
+    "creative": "status=completed",
+    "trading_floor": "status=completed"
   },
-  "wins": [],
-  "wins_count": 0,
-  "actions": [],
-  "actions_count": 0,
+  "wins": [
+    {
+      "department": "evolution",
+      "type": "metric_improvement",
+      "metric": "best_brier",
+      "previous": 0.22249,
+      "current": 0.22201,
+      "delta": -0.00048,
+      "direction": "decreased",
+      "timestamp": "2026-04-12T00:00:00Z"
+    }
+  ],
+  "wins_count": 1,
+  "actions": [
+    {
+      "from_department": "evolution",
+      "to_department": "engineering",
+      "route": "better_brier",
+      "win": {
+        "department": "evolution",
+        "type": "metric_improvement",
+        "metric": "best_brier",
+        "previous": 0.22249,
+        "current": 0.22201,
+        "delta": -0.00048,
+        "direction": "decreased",
+        "timestamp": "2026-04-12T00:00:00Z"
+      },
+      "action": "Evolution achieved Brier 0.22201 (delta -0.00048). Deploy winning config to engineering.",
+      "priority": "HIGH",
+      "timestamp": "2026-04-13T07:06:04.655030+00:00"
+    },
+    {
+      "from_department": "evolution",
+      "to_department": "trading_floor",
+      "route": "better_brier",
+      "win": {
+        "department": "evolution",
+        "type": "metric_improvement",
+        "metric": "best_brier",
+        "previous": 0.22249,
+        "current": 0.22201,
+        "delta": -0.00048,
+        "direction": "decreased",
+        "timestamp": "2026-04-12T00:00:00Z"
+      },
+      "action": "Evolution achieved Brier 0.22201 (delta -0.00048). Deploy winning config to trading_floor.",
+      "priority": "HIGH",
+      "timestamp": "2026-04-13T07:06:04.655039+00:00"
+    }
+  ],
+  "actions_count": 2,
   "actions_by_priority": {
-    "HIGH": 0,
+    "HIGH": 2,
     "MEDIUM": 0,
     "LOW": 0
   },
   "cross_pollination": {
-    "routes_active": 0,
-    "departments_sending": 0,
-    "departments_receiving": 0
+    "routes_active": 1,
+    "departments_sending": 1,
+    "departments_receiving": 2
   },
-  "priority_queue": []
+  "priority_queue": [
+    {
+      "priority": "HIGH",
+      "from": "evolution",
+      "to": "engineering",
+      "action": "Evolution achieved Brier 0.22201 (delta -0.00048). Deploy winning config to engineering.",
+      "route": "better_brier"
+    },
+    {
+      "priority": "HIGH",
+      "from": "evolution",
+      "to": "trading_floor",
+      "action": "Evolution achieved Brier 0.22201 (delta -0.00048). Deploy winning config to trading_floor.",
+      "route": "better_brier"
+    }
+  ]
 }
