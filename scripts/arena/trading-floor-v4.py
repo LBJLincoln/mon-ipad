@@ -354,7 +354,7 @@ TRADERS = {
         "risk_tolerance":     0.55,
         "bankroll_nba":       100.0,
         "bankroll_political": 100_000.0,
-        "preferred_models":   ["gradient_boosting", "catboost", "consensus_ensemble"],
+        "preferred_models":   ["xgboost", "catboost", "consensus_ensemble"],
         "preferred_strategies": ["half_kelly", "proportional_edge", "flat_2pct"],
         "pol_approach":       "statistical_arb",
         "etf_sectors":        ["SPY", "QQQ", "XLF", "IWM"],
