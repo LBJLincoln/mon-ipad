@@ -1,6 +1,6 @@
 # Calibration & Drift Monitoring
 
-> Snapshot at 2026-04-14 18:23 UTC
+> Snapshot at 2026-04-14 20:23 UTC
 
 ## Drift Summary
 
@@ -17,7 +17,7 @@
 - cusum_peak: None
 - psi: 0.0
 - label_z: 0.0
-- rolling_ece: 0.22794
+- rolling_ece: 0.14135
 - rolling_ece_window: 50
 - recal_trigger_ece: 0.03
 ### sources
@@ -32,7 +32,7 @@
 - baseline_brier: 0.0
 - n: 85
 ### rolling_ece
-- ece: 0.22794
+- ece: 0.14135
 - window: 50
 - n: 85
 - recal_needed: True

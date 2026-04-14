@@ -1,6 +1,6 @@
 # Current State — System Snapshot
 
-> Auto-generated on 2026-04-14 18:23 UTC
+> Auto-generated on 2026-04-14 20:23 UTC
 
 ## Brier Scores
 
@@ -55,7 +55,7 @@
 ## Calibration Health
 
 - Recalibration needed: YES
-- Rolling ECE: 0.22794
+- Rolling ECE: 0.14135
 - State: PARTIAL
 
 ## Department Health
