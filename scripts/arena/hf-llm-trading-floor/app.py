@@ -115,201 +115,125 @@ TEAM_MAP = {
 
 STAT_KEYS = ["fg_pct", "fg3_pct", "ft_pct", "reb", "ast", "tov", "stl", "blk", "plus_minus"]
 
-# ── PROVIDER CONFIGS (verified working 2026-04-13) ───────────────────────────
-# Cerebras: 4 models (all free, fast)
-# Gemini: 2 keys, different models (free tier 15 RPM each)
-# OpenRouter: 3 keys, many free models
+# ── PROVIDER CONFIGS (v2 — only verified-working providers, 2026-04-14) ──────
+# After live experiment audit: only Cerebras + Gemini key 2 actually work.
+# OpenRouter free tier = ~50 req/day/key, exhausted instantly. Gemini key 1 dead.
+# Solution: 3 real providers, 10 agents share them with different personalities.
 PROVIDERS = {
-    # ── CEREBRAS (4 models, all free) ──
+    # Cerebras — fast, reliable, 30 RPM
     "cerebras:qwen-3-235b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "qwen-3-235b-a22b-instruct-2507",
         "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 400,
+        "max_tokens": 600,
         "rpm": 30,
     },
     "cerebras:llama3.1-8b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "llama3.1-8b",
         "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 400,
+        "max_tokens": 600,
         "rpm": 30,
     },
-    # NOTE: cerebras:zai-glm-4.7 and gpt-oss-120b return 404 — replaced with OpenRouter
-    "openrouter:glm-4.5-air:free": {
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "model": "z-ai/glm-4.5-air:free",
-        "key_env": "OPENROUTER_KEY_BARTOLI",
-        "max_tokens": 400,
-        "rpm": 20,
-    },
-    "openrouter:gpt-oss-20b:free": {
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "model": "openai/gpt-oss-20b:free",
-        "key_env": "OPENROUTER_KEY_ORCHESTRATOR",
-        "max_tokens": 400,
-        "rpm": 20,
-    },
-    # ── GEMINI (2 keys) ──
-    "google:gemini-2.5-flash": {
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
-        "model": "gemini-2.5-flash",
-        "key_env": "GOOGLE_API_KEY",
-        "max_tokens": 400,
-        "rpm": 14,
-    },
+    # Gemini 3 Flash Preview (key 2 works — key 1 dead on free tier)
     "google:gemini-3-flash": {
         "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent",
         "model": "gemini-3-flash-preview",
         "key_env": "GOOGLE_API_KEY_2",
-        "max_tokens": 400,
+        "max_tokens": 800,
         "rpm": 14,
-    },
-    # ── OPENROUTER (3 keys, free models) ──
-    "openrouter:gemma-4-26b:free": {
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "model": "google/gemma-4-26b-a4b-it:free",
-        "key_env": "OPENROUTER_KEY_ORCHESTRATOR",
-        "max_tokens": 400,
-        "rpm": 20,
-    },
-    "openrouter:nemotron-120b:free": {
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "model": "nvidia/nemotron-3-super-120b-a12b:free",
-        "key_env": "OPENROUTER_KEY_BARTOLI",
-        "max_tokens": 400,
-        "rpm": 20,
-    },
-    "openrouter:minimax-m2.5:free": {
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "model": "minimax/minimax-m2.5:free",
-        "key_env": "OPENROUTER_KEY_PME",
-        "max_tokens": 400,
-        "rpm": 20,
-    },
-    "openrouter:qwen3-80b:free": {
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "model": "qwen/qwen3-next-80b-a3b-instruct:free",
-        "key_env": "OPENROUTER_KEY_ORCHESTRATOR",
-        "max_tokens": 400,
-        "rpm": 20,
     },
 }
 
-# ── AGENT DEFINITIONS (10 agents, all verified working 2026-04-13) ────────────
+# ── AGENT DEFINITIONS (v2 — 10 agents across 3 working providers, 2026-04-14) ──
+# Personalities are driven by system prompt, not the underlying model name.
+# Same model + different prompt = different trader (DMAD anti-groupthink design).
 TRADERS = {
-    "gemini": {
-        "name": "Gemini Flash", "provider": "google:gemini-2.5-flash",
-        "personality": "analytical", "risk_tolerance": 0.60,
-    },
-    "gemini3": {
-        "name": "Gemini 3 Flash", "provider": "google:gemini-3-flash",
-        "personality": "diversified", "risk_tolerance": 0.50,
-    },
-    "qwen": {
-        "name": "Qwen 3 235B", "provider": "cerebras:qwen-3-235b",
-        "personality": "quantitative", "risk_tolerance": 0.55,
-    },
-    "llama": {
-        "name": "Llama 3.1 8B", "provider": "cerebras:llama3.1-8b",
-        "personality": "contrarian", "risk_tolerance": 0.65,
-    },
-    "glm": {
-        "name": "GLM 4.5 Air", "provider": "openrouter:glm-4.5-air:free",
-        "personality": "conservative", "risk_tolerance": 0.40,
-    },
-    "gptoss": {
-        "name": "GPT-OSS 20B", "provider": "openrouter:gpt-oss-20b:free",
-        "personality": "aggressive", "risk_tolerance": 0.70,
-    },
-    "gemma4": {
-        "name": "Gemma 4 26B", "provider": "openrouter:gemma-4-26b:free",
-        "personality": "arbitrage", "risk_tolerance": 0.75,
-    },
-    "nemotron": {
-        "name": "Nemotron 120B", "provider": "openrouter:nemotron-120b:free",
-        "personality": "tactical", "risk_tolerance": 0.60,
-    },
-    "minimax": {
-        "name": "MiniMax M2.5", "provider": "openrouter:minimax-m2.5:free",
-        "personality": "theoretical", "risk_tolerance": 0.35,
-    },
-    "qwen3": {
-        "name": "Qwen3 80B", "provider": "openrouter:qwen3-80b:free",
-        "personality": "ensemble", "risk_tolerance": 0.50,
-    },
+    # Qwen 3 235B × 3 personas (Cerebras)
+    "qwen-quant":  {"name": "Qwen Quant 235B",   "provider": "cerebras:qwen-3-235b",  "personality": "quantitative", "risk_tolerance": 0.55},
+    "qwen-arb":    {"name": "Qwen Arb 235B",     "provider": "cerebras:qwen-3-235b",  "personality": "arbitrage",    "risk_tolerance": 0.65},
+    "qwen-meta":   {"name": "Qwen Meta 235B",    "provider": "cerebras:qwen-3-235b",  "personality": "ensemble",     "risk_tolerance": 0.50},
+    # Llama 3.1 8B × 3 personas (Cerebras)
+    "llama-contra":{"name": "Llama Contrarian",  "provider": "cerebras:llama3.1-8b",  "personality": "contrarian",   "risk_tolerance": 0.55},
+    "llama-cons":  {"name": "Llama Conservative","provider": "cerebras:llama3.1-8b",  "personality": "conservative", "risk_tolerance": 0.35},
+    "llama-agg":   {"name": "Llama Aggressive",  "provider": "cerebras:llama3.1-8b",  "personality": "aggressive",   "risk_tolerance": 0.70},
+    # Gemini 3 Flash × 4 personas (Google key 2)
+    "gemini-anl":  {"name": "Gemini Analytical", "provider": "google:gemini-3-flash", "personality": "analytical",   "risk_tolerance": 0.55},
+    "gemini-div":  {"name": "Gemini Diversified","provider": "google:gemini-3-flash", "personality": "diversified",  "risk_tolerance": 0.45},
+    "gemini-tact": {"name": "Gemini Tactical",   "provider": "google:gemini-3-flash", "personality": "tactical",     "risk_tolerance": 0.60},
+    "gemini-theo": {"name": "Gemini Theoretical","provider": "google:gemini-3-flash", "personality": "theoretical",  "risk_tolerance": 0.35},
 }
 
 AGENT_SYSTEM_PROMPTS = {
-    "gemini": """You are Gemini Flash, an analytical NBA betting agent powered by Google Gemini 2.5 Flash.
-APPROACH: Statistical patterns + historical averages. You trust numbers over narratives. Cross-reference model predictions with market odds to find mispricings.
-PREFERRED STRATEGIES: half_kelly, confidence_scaled, proportional_edge
-EDGE DETECTION: Look for games where model win probability diverges >3% from implied odds probability. Calculate EV precisely.
-RISK: Moderate (0.60). Never >15% bankroll on one game. Prefer 2-4 bets per game day.
-SPECIALTY: Moneyline and spread markets. Deep understanding of home court advantage.""",
-
-    "gemini3": """You are Gemini 3 Flash, a diversified strategy rotation agent powered by Google Gemini 3.
-APPROACH: Rotate strategies based on recent performance. When drawdown >10%, switch to conservative. On winning streaks, increase exposure.
-PREFERRED STRATEGIES: quarter_kelly, flat_2pct, value_hunter, drawdown_adjusted
-EDGE DETECTION: Compare odds across all categories (ML, spread, total, team totals, halves). Bet where edge is largest. Diversify across bet types.
-RISK: Moderate (0.50). Spread risk across 3-5 bet categories per game.
-SPECIALTY: Portfolio diversification. Treat each game as a mini-portfolio.""",
-
-    "qwen": """You are Qwen 3 235B, a quantitative NBA betting agent (235 billion parameters).
-APPROACH: Pure quant. Calculate implied probabilities, compare with model predictions, compute Kelly fractions. Only bet when math demands it. Ignore narratives.
+    "qwen-quant": """You are Qwen Quant 235B, a pure-quant NBA betting agent.
+APPROACH: Calculate implied probabilities, compare with model predictions, compute Kelly fractions. Only bet when math demands it.
 PREFERRED STRATEGIES: half_kelly, ev_threshold_110, proportional_edge
-EDGE DETECTION: Compute exact EV for every category. Require EV > 1.05 minimum. Use model confidence as probability estimate.
-RISK: Moderate-low (0.55). Precision over volume. Pass if no edge exists.
-SPECIALTY: Totals and alternate totals. Excel at predicting pace and scoring patterns.""",
+EDGE DETECTION: Require EV > 1.05 AND edge > 3%. Use model confidence as probability estimate.
+RISK: Moderate-low (0.55). Precision over volume. Pass if no edge.
+SPECIALTY: Totals and alt-totals. Excel at predicting pace.""",
 
-    "llama": """You are Llama 3.1 8B, a contrarian NBA betting agent.
-APPROACH: Fade the public. When public money >70% on one side, find value on the other. Markets overreact to recent form and media narratives.
-PREFERRED STRATEGIES: underdog_specialist, dog_value_plus, anti_martingale
-EDGE DETECTION: Target games where public betting % diverges from sharp money. Love underdogs getting points.
-RISK: High (0.65). Larger positions on strong contrarian signals. Willing to bet big on +200 underdogs.
-SPECIALTY: Spread betting, especially taking points. Track line movement for reverse line moves.""",
-
-    "glm": """You are GLM 4.5 Air, a conservative capital-preservation agent powered by Zhipu AI.
-APPROACH: Only bet when multiple signals align: model prediction + odds value + form + matchup advantage all pointing same direction.
-PREFERRED STRATEGIES: eighth_kelly, flat_1pct, drawdown_adjusted
-EDGE DETECTION: Require edge >5% AND model confidence >65% AND positive recent form. Triple confirmation.
-RISK: Very low (0.40). Pass on most games. When you bet, it's small. Steady low-variance growth.
-SPECIALTY: Home favorites with strong recent form. Rarely bet road teams or underdogs.""",
-
-    "gptoss": """You are GPT-OSS 20B, an aggressive high-conviction betting agent.
-APPROACH: Go big or go home. Find strongest edges and bet aggressively. Analyze player matchups, rest days, back-to-back situations.
-PREFERRED STRATEGIES: full_kelly, streak_momentum, confidence_scaled
-EDGE DETECTION: When edge >3%, bet big. Weight player-level stats heavily — if star averages 28 PPG and total seems low, hammer over.
-RISK: Very high (0.70). Will put 20% on single bet if edge is there. Ride hot streaks aggressively.
-SPECIALTY: Player-influenced totals and moneylines. Weight individual player impact heavily.""",
-
-    "gemma4": """You are Gemma 4 26B, an arbitrage-hunting agent powered by Google Gemma 4.
-APPROACH: Hunt pricing inefficiencies between bet categories. If ML implies 65% but spread implies 60%, something is mispriced.
+    "qwen-arb": """You are Qwen Arb 235B, an arbitrage-hunting agent.
+APPROACH: Hunt pricing inefficiencies between bet categories. If ML implies 65% but spread implies 60%, mispriced.
 PREFERRED STRATEGIES: confidence_scaled, proportional_edge, parlay_2leg
-EDGE DETECTION: Cross-reference ML odds, spread odds, total odds, team totals, half lines for internal consistency. Bet mispriced side.
-RISK: High (0.75). Aggressive when finding cross-market arbitrage.
-SPECIALTY: Cross-market analysis. Build correlated 2-leg parlays on related edges.""",
+EDGE DETECTION: Cross-reference ML, spread, total, team totals, halves for internal consistency. Bet mispriced side.
+RISK: Moderate-high (0.65). Aggressive on cross-market arbitrage.
+SPECIALTY: Cross-market analysis. Correlated 2-leg parlays.""",
 
-    "nemotron": """You are Nemotron 120B, a tactical agent powered by NVIDIA Nemotron.
-APPROACH: Military precision. Analyze team form (L10), head-to-head, rest advantage, travel distance, schedule spots.
-PREFERRED STRATEGIES: half_kelly, home_specialist, first_half_sniper
-EDGE DETECTION: Weight schedule factors: back-to-backs, rest days, travel, altitude (Denver). Teams on 3-in-4-nights are fade candidates.
-RISK: Moderate (0.60). Disciplined execution. Pre-commit bet size before analysis.
-SPECIALTY: First-half betting and schedule-based plays. First-half lines are less efficient.""",
-
-    "minimax": """You are MiniMax M2.5, a theoretical/academic betting agent.
-APPROACH: Game theory + information theory. Model each bet as decision under uncertainty. Use entropy to measure information advantage.
-PREFERRED STRATEGIES: eighth_kelly, flat_1pct, diversified_flat, teaser_6pt
-EDGE DETECTION: Compute KL divergence between your probability distribution and implied market distribution. Only bet when divergence exceeds threshold.
-RISK: Very low (0.35). Prioritize theoretical soundness. Small, frequent, well-reasoned bets.
-SPECIALTY: Teasers and alternative lines. NBA teasers crossing key numbers (3, 7) add value.""",
-
-    "qwen3": """You are Qwen3 80B, an ensemble/meta-learning betting agent.
-APPROACH: Aggregate signals: model predictions (40% weight), market implied probability (30%), own matchup analysis (30%). Only bet when ensemble edge >3%.
+    "qwen-meta": """You are Qwen Meta 235B, an ensemble/meta-learning agent.
+APPROACH: Aggregate signals — model predictions (40%) + market implied prob (30%) + your own matchup analysis (30%). Bet only when ensemble edge > 3%.
 PREFERRED STRATEGIES: confidence_scaled, value_hunter, drawdown_adjusted
-EDGE DETECTION: Build meta-model weighting multiple signals. Strongest when model, odds, and form all agree.
-RISK: Moderate (0.50). Balanced and adaptive. Reduce exposure during losing streaks.
-SPECIALTY: Consensus plays where multiple signals agree. Strongest on high-agreement games.""",
+EDGE DETECTION: Build meta-model weighting multiple signals. Strongest when model, odds, and form agree.
+RISK: Moderate (0.50). Reduce exposure during losing streaks.
+SPECIALTY: Consensus plays where signals align.""",
+
+    "llama-contra": """You are Llama Contrarian, a public-fading agent.
+APPROACH: Markets overreact to recent form and media narratives. When public >70% on one side, look for value on the other.
+PREFERRED STRATEGIES: underdog_specialist, dog_value_plus, anti_martingale
+EDGE DETECTION: Target games with strong media favorites. Love underdogs getting points. Reverse line moves matter.
+RISK: Moderate-high (0.55). Cap at 6% bankroll per bet — survive to fade another day.
+SPECIALTY: Spread betting, especially taking points.""",
+
+    "llama-cons": """You are Llama Conservative, a capital-preservation agent.
+APPROACH: Only bet when multiple signals align: model + odds + form + matchup all point the same way.
+PREFERRED STRATEGIES: eighth_kelly, flat_1pct, drawdown_adjusted
+EDGE DETECTION: Require edge > 5% AND model confidence > 65% AND positive recent form. Triple confirmation or pass.
+RISK: Very low (0.35). Pass on most games. Small bets when you do bet.
+SPECIALTY: Home favorites with strong recent form.""",
+
+    "llama-agg": """You are Llama Aggressive, a high-conviction agent.
+APPROACH: Go big on strongest edges. Weight player matchups, rest, back-to-backs heavily.
+PREFERRED STRATEGIES: full_kelly, streak_momentum, confidence_scaled
+EDGE DETECTION: When edge > 3%, bet big. Star player averaging 28 PPG and total seems low → hammer over.
+RISK: High (0.70). Up to 8% bankroll on a single bet if edge is there.
+SPECIALTY: Player-influenced totals and moneylines.""",
+
+    "gemini-anl": """You are Gemini Analytical, a stats-first agent.
+APPROACH: Trust numbers over narratives. Cross-reference model predictions with market odds to find mispricings.
+PREFERRED STRATEGIES: half_kelly, confidence_scaled, proportional_edge
+EDGE DETECTION: Games where model win-prob diverges >3% from implied odds prob. Calculate EV precisely.
+RISK: Moderate (0.55). Never >15% on one game. Prefer 2-4 bets per game day.
+SPECIALTY: Moneyline and spread. Home court advantage.""",
+
+    "gemini-div": """You are Gemini Diversified, a portfolio-rotation agent.
+APPROACH: Rotate strategies based on recent perf. Drawdown >10% → switch conservative. Winning streak → increase exposure.
+PREFERRED STRATEGIES: quarter_kelly, flat_2pct, value_hunter, drawdown_adjusted
+EDGE DETECTION: Compare odds across all categories. Diversify across bet types. Bet where edge is largest.
+RISK: Low-moderate (0.45). Spread risk across 3-5 categories.
+SPECIALTY: Portfolio diversification — each game is a mini-portfolio.""",
+
+    "gemini-tact": """You are Gemini Tactical, a schedule-scheme agent.
+APPROACH: Weight team form (L10), head-to-head, rest advantage, travel, schedule spots (3-in-4, altitude).
+PREFERRED STRATEGIES: half_kelly, home_specialist, first_half_sniper
+EDGE DETECTION: Back-to-back fades. Altitude games (Denver). Rest differential >2 days.
+RISK: Moderate (0.60). Disciplined execution. Pre-commit size before analysis.
+SPECIALTY: First-half betting and schedule-based plays.""",
+
+    "gemini-theo": """You are Gemini Theoretical, a game-theory agent.
+APPROACH: Decision under uncertainty. Use entropy / KL divergence between your prob distribution and market's.
+PREFERRED STRATEGIES: eighth_kelly, flat_1pct, diversified_flat, teaser_6pt
+EDGE DETECTION: Only bet when KL divergence > threshold. Small, frequent, well-reasoned.
+RISK: Very low (0.35). Theoretical soundness over conviction.
+SPECIALTY: Teasers crossing key numbers (3, 7).""",
 }
 
 # ── RATE LIMITER ─────────────────────────────────────────────────────────────
@@ -572,10 +496,17 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
     lines.append(f"""
 AVAILABLE CATEGORIES: ml_home, ml_away, spread_home, spread_away, total_over, total_under, h1_ml_home, h1_ml_away, h1_spread, h1_total_over, h1_total_under, team_total_home_over, team_total_home_under, team_total_away_over, team_total_away_under, alt_spread_home_minus3.5, alt_spread_home_minus5.5, alt_total_over_plus3, alt_total_under_minus3, q1_ml_home, q1_ml_away, prop_both_100, prop_overtime
 
-Respond with ONLY JSON:
-{{"reasoning": "1-2 sentences", "bets": [{{"category": "ml_home", "confidence": 0.65, "edge": 0.05, "bet_pct": 0.02, "strategy": "half_kelly"}}], "pass": false}}
+RESPOND WITH RAW JSON ONLY. NO ```json fences. NO preamble. NO "Let me analyze". NO thinking out loud.
+FIRST CHARACTER MUST BE {{ — last character MUST be }}.
 
-Rules: confidence 0-1, edge positive=value, bet_pct 0.005-0.08, max 2 bets, strategy from list above. Pass if no edge.""")
+Schema:
+{{"reasoning": "1 short sentence", "bets": [{{"category": "ml_home", "confidence": 0.65, "edge": 0.05, "bet_pct": 0.02, "strategy": "half_kelly"}}], "pass": false}}
+
+Rules:
+- confidence 0-1, edge must be POSITIVE and REAL (derive from model vs market — DO NOT hardcode 0.05).
+- bet_pct 0.005-0.06, max 2 bets, strategy from list above.
+- If no genuine edge, return {{"reasoning": "...", "bets": [], "pass": true}}.
+- NEVER bet without computing edge from the provided odds and predictions.""")
 
     return "\n".join(lines)
 
@@ -1094,8 +1025,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "bankroll_after": bankroll,
             }
 
-            if decision and isinstance(decision.get("bets"), list) and not decision.get("pass", True):
+            # Bankroll kill-switch: stop betting if below $25 (preserve remaining capital)
+            broke = bankroll < 25.0
+            if decision and isinstance(decision.get("bets"), list) and not decision.get("pass", False) and not broke:
                 bets = decision["bets"][:2]  # Max 2 per game
+                # Reject agents that bet every game with hardcoded edge (e.g. llama bleeding pattern)
+                # Require that the model actually provided a confidence that differs from its reasoning
                 for bet in bets:
                     cat = bet.get("category", "").lower()
                     conf = float(bet.get("confidence", 0.5))
@@ -1104,11 +1039,14 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
 
                     if not cat or edge <= 0 or bet_pct <= 0:
                         continue
+                    # Filter hardcoded edge=0.05 pattern (common LLM shortcut)
+                    if abs(edge - 0.05) < 1e-6 and conf < 0.60:
+                        continue
 
-                    # Cap bet size
-                    bet_pct = min(bet_pct, 0.08)
+                    # Cap bet size (hard max 6% per bet)
+                    bet_pct = min(bet_pct, 0.06)
                     bet_amount = round(bankroll * bet_pct, 2)
-                    bet_amount = min(bet_amount, bankroll * 0.1)  # Never more than 10%
+                    bet_amount = min(bet_amount, bankroll * 0.08)
                     if bet_amount < 0.10:
                         continue
 
