@@ -87,45 +87,56 @@ jobs:
             echo "No status changes to commit"
           fi
 
-  # ── POLITICAL BACKTEST (unchanged — still runs locally) ──
-  political-backtest:
-    name: Political Backtest Swarm
+  # ── POLITICAL TRADING FLOOR: HF Space is primary, GH Action just monitors ──
+  political-trading-monitor:
+    name: Political Trading Floor Monitor
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: pip install scikit-learn numpy
-
-      - name: Run Political backtest swarm
+      - name: Check Political HF Space status
         run: |
-          if [ -f scripts/arena/continuous-political-backtest-swarm.sh ]; then
-            bash scripts/arena/continuous-political-backtest-swarm.sh 2>&1 | tail -30
-          else
-            echo "Political backtest script not found, skipping"
-          fi
-        continue-on-error: true
+          echo "=== Nomos42 Political Trading Floor Status ==="
+          STATUS=$(curl -s --max-time 15 \
+            "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status" || echo '{"error":"unreachable"}')
+          echo "$STATUS" | python3 -c "
+          import sys, json
+          try:
+              d = json.load(sys.stdin)
+              print(f\"Running: {d.get('running', '?')}\")
+              print(f\"Events: {d.get('events_processed', '?')}/{d.get('events_total', '?')}\")
+              print(f\"Days: {d.get('days_processed', '?')}/{d.get('days_total', '?')}\")
+              print(f\"LLM calls: {d.get('llm_calls', '?')} (fails: {d.get('llm_failures', '?')})\")
+              if d.get('agents'):
+                  for tid, ts in sorted(d['agents'].items(), key=lambda x: -x[1].get('bankroll', 0)):
+                      print(f\"  {tid:14s} \${ts.get('bankroll',100):>8.2f}  bets={ts.get('total_bets',0)}\")
+          except Exception as e:
+              print(f'Parse failed: {e}')
+          "
+          echo ""
+          echo "=== Political Leaderboard ==="
+          curl -s --max-time 15 \
+            "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/leaderboard" \
+            | python3 -m json.tool 2>/dev/null | head -40 || echo "Leaderboard unavailable"
 
-      - name: Commit political results
+          mkdir -p data/arena/political
+          echo "$STATUS" > data/arena/political/political-trading-floor-status.json
+
+      - name: Commit political status snapshot
         run: |
           git config user.name "Trading Floor Bot"
           git config user.email "trading@nomos42.ai"
-          git add data/arena/political/ 2>/dev/null || true
+          git add data/arena/political/political-trading-floor-status.json 2>/dev/null || true
           if ! git diff --cached --quiet 2>/dev/null; then
             git stash --include-untracked
             git pull --rebase origin main
             git stash pop || true
-            git add data/arena/political/ 2>/dev/null || true
-            git commit -m "data: political backtest $(date -u +%Y-%m-%dT%H:%MZ)"
+            git add data/arena/political/political-trading-floor-status.json 2>/dev/null || true
+            git commit -m "data: political TF status $(date -u +%Y-%m-%dT%H:%MZ)"
             for attempt in 1 2 3; do
               git pull --rebase || true
               git push && break
@@ -133,5 +144,5 @@ jobs:
               git pull --rebase origin main || true
             done
           else
-            echo "No political changes to commit"
+            echo "No political status changes to commit"
           fi

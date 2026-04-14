@@ -53,15 +53,13 @@ HF EVOLUTION ISLANDS (8 NBA + 4 Political = 12 active, target 16)
 
 NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
 
-HF TRADING FLOOR (Real LLM experiment, 10 agents — HF-first with FastAPI control)
-    ├── LBJLincoln26/nba-llm-trading-floor: PRIMARY engine (FastAPI + Gradio)
-    │   ├── /api/status — progress, agent bankrolls, running state
-    │   ├── /api/run, /api/stop — start/stop experiment remotely
-    │   ├── /api/mutate — change agent params mid-experiment
-    │   ├── /api/logs — per-agent decision log stream
-    │   └── /api/leaderboard — current standings JSON
-    ├── LBJLincoln26/llm-gateway: Centralized LLM proxy (11 models, fallback chains)
-    └── Source: scripts/arena/hf-llm-trading-floor/
+HF TRADING FLOORS (Real LLM experiment, 10 agents each — HF-first with FastAPI control)
+    ├── LBJLincoln26/nba-llm-trading-floor: NBA engine (1257 games, FastAPI + Gradio)
+    │   └── Source: scripts/arena/hf-llm-trading-floor/
+    ├── LBJLincoln26/political-llm-trading-floor: POLITICAL engine (1120 events, same architecture)
+    │   └── Source: scripts/arena/hf-political-trading-floor/
+    ├── Both expose: /api/status /run /stop /reset /mutate /logs /day-decisions /leaderboard
+    └── LBJLincoln26/llm-gateway: Centralized LLM proxy (11 models, fallback chains)
 
 HF OTHER SPACES (25 total across 3 accounts)
     ├── Dept Councils: d1-research, d2-engineering, d3-evolution, d4-product, d5-business, d6-evaluation
