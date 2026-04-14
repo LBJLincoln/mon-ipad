@@ -23,12 +23,47 @@ from pathlib import Path
 HF_BASE = "https://lbjlincoln26-nba-llm-trading-floor.hf.space"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEPT_DIR = REPO_ROOT / "data" / "departments"
+ACTUATOR_STATE_PATH = DEPT_DIR / "tf-actuator-state.json"
+ACTUATOR_LOG_PATH = DEPT_DIR / "tf-actuator-log.jsonl"
+
+TRADER_DEFAULT_RISK = {
+    "qwen-quant": 0.55, "qwen-arb": 0.65, "llama-contra": 0.55,
+    "gemini-anl": 0.55, "gemini-tact": 0.60,
+    "mistral-large": 0.50, "mistral-medium": 0.45, "mistral-small": 0.35,
+    "mistral-nemo": 0.70, "mistral-ministral": 0.35,
+}
 
 
 def fetch(path: str, timeout: float = 30.0):
     req = urllib.request.Request(f"{HF_BASE}{path}")
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return json.loads(resp.read().decode())
+
+
+def post_mutate(agent_id: str, risk_tolerance: float, timeout: float = 15.0) -> dict:
+    body = json.dumps({"agent": agent_id, "risk_tolerance": risk_tolerance}).encode()
+    req = urllib.request.Request(
+        f"{HF_BASE}/api/mutate",
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read().decode())
+
+
+def load_actuator_state() -> dict:
+    if ACTUATOR_STATE_PATH.exists():
+        try:
+            return json.loads(ACTUATOR_STATE_PATH.read_text())
+        except Exception:
+            return {}
+    return {}
+
+
+def save_actuator_state(state: dict):
+    DEPT_DIR.mkdir(parents=True, exist_ok=True)
+    ACTUATOR_STATE_PATH.write_text(json.dumps(state, indent=2))
 
 
 def analyze(since: str | None = None) -> dict:
@@ -212,10 +247,90 @@ def write_council_verdicts(analysis: dict):
     (DEPT_DIR / "trading-floor-v3-analysis-latest.json").write_text(json.dumps(analysis, indent=2))
 
 
+def actuate_mutations(
+    analysis: dict,
+    dry_run: bool = True,
+    gap_threshold: float = 0.20,
+    step: float = 0.10,
+    floor: float = 0.15,
+    min_allocs: int = 5,
+    min_bankroll: float = 10.0,
+) -> list:
+    """Close the D6-observe → HF-mutate loop (research W1, arXiv:2604.01658 CORAL pattern).
+
+    For each agent with calibration_gap > gap_threshold, reduce risk_tolerance by `step`
+    (floored at `floor`) via POST /api/mutate. Idempotent via ACTUATOR_STATE_PATH —
+    we track last_applied_risk per agent and monotonically step down only (no oscillation).
+
+    Skips:
+      - agents with fewer than `min_allocs` bets (likely silent-fail like gemini parser bug)
+      - agents already bankrupt (< `min_bankroll`) — mutation won't revive them
+    """
+    if "error" in analysis:
+        return []
+    per_agent = analysis.get("per_agent", {})
+    state = load_actuator_state()
+    actions: list = []
+
+    for tid, m in per_agent.items():
+        gap = m.get("calibration_gap", 0)
+        bankroll = m.get("final_bankroll", 100)
+        n_allocs = m.get("total_allocations", 0)
+
+        if n_allocs < min_allocs or bankroll < min_bankroll or gap <= gap_threshold:
+            continue
+
+        prev = state.get(tid, {})
+        last_risk = prev.get("last_applied_risk")
+        baseline = last_risk if last_risk is not None else TRADER_DEFAULT_RISK.get(tid, 0.55)
+        new_risk = max(floor, round(baseline - step, 2))
+
+        if new_risk >= baseline:
+            continue  # already at floor
+
+        action = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "agent": tid,
+            "calibration_gap": gap,
+            "total_allocations": n_allocs,
+            "final_bankroll": bankroll,
+            "prev_risk": baseline,
+            "new_risk_tolerance": new_risk,
+            "reason": f"overconfident (gap={gap:.3f} > {gap_threshold})",
+            "dry_run": dry_run,
+        }
+
+        if not dry_run:
+            try:
+                resp = post_mutate(tid, new_risk)
+                action["api_response"] = resp
+                state[tid] = {
+                    "last_applied_risk": new_risk,
+                    "last_gap": gap,
+                    "last_ts": action["ts"],
+                }
+            except Exception as e:
+                action["error"] = str(e)
+
+        actions.append(action)
+
+    if not dry_run and actions:
+        save_actuator_state(state)
+        with ACTUATOR_LOG_PATH.open("a") as f:
+            for a in actions:
+                f.write(json.dumps(a) + "\n")
+
+    return actions
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--since", help="ISO date YYYY-MM-DD, only include days on/after")
     ap.add_argument("--dry-run", action="store_true", help="Print analysis without writing")
+    ap.add_argument("--actuate", action="store_true",
+                    help="Close the loop: POST /api/mutate for overconfident agents (gap>0.20)")
+    ap.add_argument("--actuate-dry", action="store_true",
+                    help="Print mutation plan without POSTing (safe default for first run)")
     args = ap.parse_args()
 
     print(f"[{datetime.now(timezone.utc).isoformat()}] Fetching from {HF_BASE}...", file=sys.stderr)
@@ -224,10 +339,17 @@ def main():
         print(json.dumps(analysis, indent=2))
         return
     write_council_verdicts(analysis)
+
+    actions = []
+    if args.actuate or args.actuate_dry:
+        actions = actuate_mutations(analysis, dry_run=args.actuate_dry)
+
     print(json.dumps({
         "status": "ok",
         "agents_analyzed": len(analysis.get("per_agent", {})),
         "councils_written": ["d3-evolution", "d6-evaluation"],
+        "mutations_attempted": len(actions),
+        "mutations": actions,
     }, indent=2))
 
 
