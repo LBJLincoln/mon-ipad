@@ -1,33 +1,33 @@
 # What Works — Empirically Validated
 
-> Auto-generated from experiment data on 2026-04-14 10:23 UTC
+> Auto-generated from experiment data on 2026-04-14 12:23 UTC
 > Only includes findings backed by measured improvement
 
 ## NBA — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_max_depth | 3 | 1 | 33% | +0.00174 |
-| change_model | 21 | 1 | 5% | +0.34545 |
-| remove_features | 8 | 1 | 12% | +0.00172 |
-| change_n_estimators | 2 | 1 | 50% | +0.00118 |
-| change_max_features_ratio | 3 | 0 | 0% | +0.00180 |
-| change_min_samples_leaf | 4 | 0 | 0% | +0.00158 |
-| swap_features | 6 | 0 | 0% | +0.00163 |
-| add_features | 3 | 0 | 0% | +0.00137 |
+| change_n_estimators | 7 | 0 | 0% | +0.00896 |
+| change_max_features_ratio | 2 | 0 | 0% | +0.00906 |
+| remove_features | 3 | 0 | 0% | +0.00756 |
+| change_max_depth | 9 | 0 | 0% | +0.00881 |
+| add_features | 2 | 0 | 0% | +0.00993 |
+| swap_features | 4 | 0 | 0% | +0.01016 |
+| change_model | 22 | 0 | 0% | +0.27317 |
+| change_min_samples_leaf | 1 | 0 | 0% | +0.00768 |
 
 ## POLITICAL — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_max_depth | 6 | 0 | 0% | +0.01547 |
-| swap_features | 7 | 0 | 0% | +0.02492 |
-| change_max_features_ratio | 6 | 0 | 0% | +0.02150 |
-| add_features | 6 | 0 | 0% | +0.02047 |
-| change_n_estimators | 4 | 0 | 0% | +0.00933 |
-| remove_features | 5 | 0 | 0% | +0.03432 |
-| change_min_samples_leaf | 9 | 0 | 0% | +0.00980 |
-| change_model | 7 | 0 | 0% | +0.05188 |
+| remove_features | 8 | 0 | 0% | +0.01924 |
+| change_min_samples_leaf | 7 | 0 | 0% | +0.01384 |
+| change_max_features_ratio | 5 | 0 | 0% | +0.02511 |
+| swap_features | 4 | 0 | 0% | +0.02150 |
+| change_model | 6 | 0 | 0% | +0.05033 |
+| add_features | 9 | 0 | 0% | +0.01817 |
+| change_n_estimators | 6 | 0 | 0% | +0.01106 |
+| change_max_depth | 5 | 0 | 0% | +0.01986 |
 
 ## Arena — Proven Insights
 
@@ -69,12 +69,12 @@
 ## NBA — Best Known Config
 
 - Model: **random_forest**
-- n_estimators: 175
+- n_estimators: 275
 - max_depth: 13
 - min_samples_leaf: 5
-- max_features_ratio: 0.3
+- max_features_ratio: 0.32
 - n_features: 200
-- Best Brier: 0.21349678992299034
+- Best Brier: 0.21218334576044304
 
 ## POLITICAL — Best Known Config
 

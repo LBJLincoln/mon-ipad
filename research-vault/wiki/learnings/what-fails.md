@@ -1,6 +1,6 @@
 # What Fails — Avoid These
 
-> Auto-generated from experiment data on 2026-04-14 10:23 UTC
+> Auto-generated from experiment data on 2026-04-14 12:23 UTC
 > Only includes findings backed by measured failure
 
 ## Eliminated Strategies
@@ -31,27 +31,29 @@ Optimizing strategy parameters on a weak model is polishing a turd.
 
 ## NBA — Never-Improving Mutations
 
-- **change_max_features_ratio**: tried 3 times, ZERO improvements. Skip this.
-- **change_min_samples_leaf**: tried 4 times, ZERO improvements. Skip this.
-- **swap_features**: tried 6 times, ZERO improvements. Skip this.
-- **add_features**: tried 3 times, ZERO improvements. Skip this.
+- **change_n_estimators**: tried 7 times, ZERO improvements. Skip this.
+- **remove_features**: tried 3 times, ZERO improvements. Skip this.
+- **change_max_depth**: tried 9 times, ZERO improvements. Skip this.
+- **swap_features**: tried 4 times, ZERO improvements. Skip this.
+- **change_model**: tried 22 times, ZERO improvements. Skip this.
 
 ## POLITICAL — Never-Improving Mutations
 
-- **change_max_depth**: tried 6 times, ZERO improvements. Skip this.
-- **swap_features**: tried 7 times, ZERO improvements. Skip this.
-- **change_max_features_ratio**: tried 6 times, ZERO improvements. Skip this.
-- **add_features**: tried 6 times, ZERO improvements. Skip this.
-- **change_n_estimators**: tried 4 times, ZERO improvements. Skip this.
-- **remove_features**: tried 5 times, ZERO improvements. Skip this.
-- **change_min_samples_leaf**: tried 9 times, ZERO improvements. Skip this.
-- **change_model**: tried 7 times, ZERO improvements. Skip this.
+- **remove_features**: tried 8 times, ZERO improvements. Skip this.
+- **change_min_samples_leaf**: tried 7 times, ZERO improvements. Skip this.
+- **change_max_features_ratio**: tried 5 times, ZERO improvements. Skip this.
+- **swap_features**: tried 4 times, ZERO improvements. Skip this.
+- **change_model**: tried 6 times, ZERO improvements. Skip this.
+- **add_features**: tried 9 times, ZERO improvements. Skip this.
+- **change_n_estimators**: tried 6 times, ZERO improvements. Skip this.
+- **change_max_depth**: tried 5 times, ZERO improvements. Skip this.
 
 ## NBA — Underperforming Models
 
-- **gradient_boosting**: best=0.24387, avg=0.25242 (vs champion random_forest best=0.21350)
-- **xgboost**: best=1.00000, avg=1.00000 (vs champion random_forest best=0.21350)
-- **catboost**: best=1.00000, avg=1.00000 (vs champion random_forest best=0.21350)
+- **catboost**: best=1.00000, avg=1.00000 (vs champion extra_trees best=0.21771)
+- **lightgbm**: best=0.22948, avg=0.23373 (vs champion extra_trees best=0.21771)
+- **xgboost**: best=1.00000, avg=1.00000 (vs champion extra_trees best=0.21771)
+- **gradient_boosting**: best=0.26354, avg=0.27180 (vs champion extra_trees best=0.21771)
 
 ## POLITICAL — Underperforming Models
 
