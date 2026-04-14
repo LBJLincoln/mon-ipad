@@ -1,6 +1,6 @@
 # Calibration & Drift Monitoring
 
-> Snapshot at 2026-04-14 02:23 UTC
+> Snapshot at 2026-04-14 04:23 UTC
 
 ## Drift Summary
 
