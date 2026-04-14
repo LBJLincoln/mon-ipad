@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 172 raw sources on 2026-04-14
+> Auto-compiled from 174 raw sources on 2026-04-14
 
 ## Overview
 
-This topic covers 172 research files spanning nba prediction & ml models.
+This topic covers 174 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -178,9 +178,11 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-08** (145 words) -- `raw/research/github-betting-scan-2026-04-08.md`
 - **Research Scan: github-betting-scan-2026-04-11** (145 words) -- `raw/research/github-betting-scan-2026-04-11.md`
 - **Research Scan: github-betting-scan-2026-04-13** (145 words) -- `raw/research/github-betting-scan-2026-04-13.md`
+- **Research Scan: github-betting-scan-2026-04-14** (145 words) -- `raw/research/github-betting-scan-2026-04-14.md`
 - **Current Fleet State (iter 9, 2026-04-07 09:30 UTC)** (130 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`
 - **Research Scan: github-scan-2026-04-11** (123 words) -- `raw/research/github-scan-2026-04-11.md`
 - **Research Scan: github-scan-2026-04-13** (123 words) -- `raw/research/github-scan-2026-04-13.md`
+- **Research Scan: github-scan-2026-04-14** (123 words) -- `raw/research/github-scan-2026-04-14.md`
 
 ## Key Findings
 
