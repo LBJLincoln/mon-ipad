@@ -1,11 +1,12 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v20 — Department Forge (9 depts) + Trading Floor v5 (10 real LLM agents) + 16 Evolution Islands | Updated: 2026-04-13
+> Architecture v20 — Department Forge (9 depts) + Trading Floor v5 (10 real LLM agents) + 16 Evolution Islands | Updated: 2026-04-14
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.21570 (Colab TabICL, 110f, iter 15) | Fleet best: 0.22251 (S14 LightGBM, gen 108) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.21514 (Colab TabICL, 186f, iter 129) | Fleet best: 0.22085 (S17, gen 524) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
+**Political TF (50-day expanded dataset, 2026-04-14):** llama-contra +223.5% ROI ($100→$323.53), 58.1% WR on 246 bets. 5/10 agents profitable, Gemini parser still 0 bets.
 
 ## Nomos42 Ecosystem
 
