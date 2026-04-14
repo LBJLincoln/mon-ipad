@@ -313,7 +313,44 @@ def simulate_betting(predictions, external_odds=None):
         std_ret = var_ret ** 0.5
         sharpe = (mean_ret / std_ret) * (252 ** 0.5) if std_ret > 0 else 0
     else:
+        daily_returns = []
         sharpe = 0
+
+    # Sortino ratio (penalizes downside volatility only)
+    if len(daily_returns) >= 2:
+        downside = [min(0, r) for r in daily_returns]
+        downside_var = sum(d ** 2 for d in downside) / (len(downside) - 1)
+        downside_std = downside_var ** 0.5
+        sortino = (mean_ret / downside_std) * (252 ** 0.5) if downside_std > 0 else 0
+    else:
+        sortino = 0
+
+    # Calmar ratio (annualized return / max drawdown)
+    ann_return = roi_pct * 252 / max(1, len(daily_results))
+    calmar = ann_return / max_dd if max_dd > 0 else 0
+
+    # Profit factor (gross wins / gross losses)
+    gross_wins = sum(t['pnl'] for t in trades if t['won'])
+    gross_losses = abs(sum(t['pnl'] for t in trades if not t['won']))
+    profit_factor = gross_wins / gross_losses if gross_losses > 0 else float('inf')
+
+    # Streak tracking
+    win_streak = 0
+    lose_streak = 0
+    max_win_streak = 0
+    max_lose_streak = 0
+    for t in trades:
+        if t['won']:
+            win_streak += 1
+            lose_streak = 0
+            max_win_streak = max(max_win_streak, win_streak)
+        else:
+            lose_streak += 1
+            win_streak = 0
+            max_lose_streak = max(max_lose_streak, lose_streak)
+
+    # Average edge on placed bets
+    avg_edge = sum(t['edge'] for t in trades) / len(trades) if trades else 0
 
     return {
         "initial_bankroll": INITIAL_BANKROLL,
@@ -324,7 +361,13 @@ def simulate_betting(predictions, external_odds=None):
         "losses": losses,
         "win_rate": round(win_rate, 1),
         "sharpe": round(sharpe, 2),
+        "sortino": round(sortino, 2),
+        "calmar": round(calmar, 2),
+        "profit_factor": round(profit_factor, 2) if profit_factor != float('inf') else None,
         "max_dd": round(max_dd, 2),
+        "win_streak_max": max_win_streak,
+        "lose_streak_max": max_lose_streak,
+        "avg_edge": round(avg_edge, 4),
         "brier": round(brier, 5) if brier else None,
         "brier_n": len(brier_scores),
         "trades": trades,
@@ -378,7 +421,9 @@ def main():
     print("=" * 60)
     print(f"  Bankroll: ${INITIAL_BANKROLL} → ${results['final_bankroll']} ({results['roi_pct']:+.2f}%)")
     print(f"  Bets: {results['total_bets']} | W: {results['wins']} L: {results['losses']} | Win rate: {results['win_rate']}%")
-    print(f"  Sharpe: {results['sharpe']} | Max DD: {results['max_dd']}%")
+    print(f"  Sharpe: {results['sharpe']} | Sortino: {results['sortino']} | Calmar: {results['calmar']}")
+    print(f"  Max DD: {results['max_dd']}% | Profit Factor: {results['profit_factor']}")
+    print(f"  Streaks: {results['win_streak_max']}W max / {results['lose_streak_max']}L max | Avg Edge: {results['avg_edge']:.4f}")
     if results['brier']:
         print(f"  Brier: {results['brier']:.5f} ({results['brier_n']} games)")
     print(f"  Strategy: {results['strategy']}")
