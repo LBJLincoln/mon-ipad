@@ -5,7 +5,12 @@
 > have Claude Code on the web draft the next implementation step in CCR with
 > three parallel subagents + a critique pass.
 
-**Last refresh:** 2026-04-13 00:30 UTC (Apr 12-13 "make it real" session.
+**Last refresh:** 2026-04-14 12:00 UTC (Apr 14 day-bucket pivot — TF v5
+killed at game 1040/1247, replaced by v3 day-bucket: 1 LLM call/day/agent
+= 1,800 total calls instead of 12,570 per-game. New providers Cerebras +
+Gemini + Mistral, OpenRouter dropped (6/7 keys exhausted). Mistral key
+added. Council analyzer scripts/councils/analyze-trading-floor.py wires
+/api/day-decisions to D3+D6 verdicts. Apr 12-13 prior session:
 Dashboard was broken for 19h (2 TS errors → 5 failed Vercel builds → fixed
 ecaecf8). All 6 GH Actions had git push race condition → fixed. brier_proxy
 rewritten from constant→live. DMAD anti-groupthink + OASIS adapter shipped.
@@ -158,10 +163,13 @@ ever runs live without `dsr > 0 at p < 0.05 and pbo < 0.40`.
 | P3 (political-alpha-3) | xgboost | 10344 | **0.24990** | RUNNING — ★ POL BEST |
 | P4 (political-alpha-4) | logistic | 4301 | 0.25146 | RUNNING |
 
-**Trading Floor v5 (10 real LLM agents):**
-- HF Space: LBJLincoln26/nba-llm-trading-floor
-- GH Action: every 2h, full-season experiment
-- Providers: Cerebras (4 models) + Gemini (2 keys) + OpenRouter (4 free models)
+**Trading Floor v3 DAY-BUCKET (10 real LLM agents — Apr 14 pivot):**
+- HF Space: LBJLincoln26/nba-llm-trading-floor (sha c7be3a2)
+- Design: 1 LLM call per agent per day, allocate 100% bankroll across day's slate
+- Providers: Cerebras (qwen-3-235b, llama3.1-8b) + Gemini (2.5-flash, 3-flash-preview) + Mistral (large/medium/small/nemo/ministral-8b)
+- Trader IDs: qwen-quant, qwen-arb, llama-contra, gemini-anl, gemini-tact, mistral-large, mistral-medium, mistral-small, mistral-nemo, mistral-ministral
+- Council wiring: scripts/councils/analyze-trading-floor.py → D3 (rationale keyword mining) + D6 (calibration audit)
+- Leakage-safe: standings + form computed strictly up-to-but-not-including each day
 
 **GH Actions (5 workflows):**
 | Workflow | Schedule | Status |
@@ -524,25 +532,66 @@ processes at least 1 playoff category.
 
 ---
 
-### W14 — Provider diversification (kill Cerebras single-point-of-failure)
+### W15 — Game-day player availability / injury feed (BLOCKING for v3 quality)
+**Goal:** v3 day-bucket prompt currently shows top-3 players by season PPG only.
+Zero injury / DNP / inactive list. Agents allocate bankroll without knowing
+if a star is sitting out. This is the single largest information gap in the
+day prompt.
+
+**Sources to evaluate (free, no auth):**
+- `nba_api.stats.endpoints.commonteamroster` (already used) — no inactive flag
+- `nba_api.live.endpoints.boxscore` — DNP after tipoff only (post-leak)
+- ESPN `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news` —
+  unreliable, requires text parsing
+- **Best:** NBA.com `stats/playergamelogs?Season=2025-26` and cross-reference
+  vs roster — a player NOT in the post-game log was inactive that day.
+  This is leakage-safe because we read it from the SHIPPED season log, not
+  pregame intent.
+- **Alt:** `rotowire.com/basketball/injuries.htm` HTML scrape, daily snapshot
+  archived to `data/nba-agent/injuries-{date}.json`.
+
+**Files to add:**
+- `scripts/data/fetch_inactive_players.py` (one-shot historical builder)
+- `scripts/arena/hf-llm-trading-floor/data/inactive-players-2025-26.json`
+  schema: `{"YYYY-MM-DD": {"TEAM": ["Player Name", ...]}}`
+- Update `_format_game_block` in app.py:580 to inject one line:
+  `OUT: HOM (Star A, Star B) | AWY (Star C)` when present
+
+**Acceptance:** A spot-check on 5 known high-impact absences (e.g. LeBron rest
+day, Curry knee) shows the prompt now says `OUT:` with the right name, and
+agents reference it in rationale. Brier delta vs no-injury runs measured.
+
+---
+
+### W14 — Provider diversification (kill Cerebras single-point-of-failure) — PARTIAL Apr 14
+**Update 2026-04-14:** v3 day-bucket pivot redistributed providers:
+- 2 traders on Cerebras (qwen-3-235b, llama-3.1-8b)
+- 2 traders on Google Gemini (2.5-flash, 3-flash-preview)
+- 5 traders on Mistral la Plateforme (large/medium/small/nemo/ministral-8b)
+- 1 self-hosted via LLM Gateway HF Space
+**Remaining risk:** No single provider holds majority. W11 (self-hosted LLM)
+still needed for total independence.
+
+
 **Goal:** Right now ALL 5 NBA traders + ALL 5 political traders route to
 Cerebras. If Cerebras goes down, the entire trading floor stops.
 
-**Available providers:**
-- Cerebras: WORKING (free 1M tok/day)
-- Google gemini-2.5-flash: WORKING (KEY_2)
-- OpenRouter free tier: WORKING (gemma-3-27b, llama-3.3-70b free routes)
+**Available providers (verified 2026-04-14):**
+- Cerebras: WORKING (free 30 RPM)
+- Google gemini-2.5-flash + gemini-3-flash-preview: WORKING (2 keys, 14 RPM each)
+- Mistral la Plateforme: WORKING (free tier, 5 models)
+- OpenRouter: 6/7 keys EXHAUSTED — dropped from v3
 - Self-hosted HF Space: NOT YET DEPLOYED (W11)
 
-**Target routing:**
-- T1 gemini → Google gemini-2.5-flash
-- T2 qwen → Cerebras qwen-3-235b
-- T3 claude → Claude CLI (already works)
-- T4 llama → OpenRouter llama-3.3-70b:free
-- T5 mistral → Cerebras llama-3.1-8b (or self-hosted when W11 ships)
+**v3 routing (LIVE Apr 14):**
+- qwen-quant + qwen-arb → Cerebras qwen-3-235b
+- llama-contra → Cerebras llama-3.1-8b
+- gemini-anl → Google gemini-2.5-flash
+- gemini-tact → Google gemini-3-flash-preview
+- mistral-large/medium/small/nemo/ministral → Mistral la Plateforme
 
-**Acceptance:** No 2 traders share the same single provider. Trading floor
-completes a full iteration with all 5 producing bets.
+**Acceptance:** No single provider holds majority. ✅ Cerebras 3, Mistral 5,
+Gemini 2 — Mistral is biggest single dep, fix via W11 self-hosted.
 
 ---
 
@@ -625,8 +674,9 @@ A trading floor experiment is "scientifically perfect" iff:
 | Honest OOS leaderboard **live on Vercel** | ✗ (W9) | ✗ (W9) |
 | Spatial-intel features (Cat 39/40/41) in gate | n/a | ✗ (W7) |
 
-**Score today: 18/28.** Target after W1-W9: 28/28.
-May 1 monetization deadline: W4, W7, W8, **W9** are blocking; W1, W2 are not.
+**Score today (2026-04-14): 19/29** (+W15 line for game-day player availability).
+Target after W1-W9 + W15: 29/29.
+May 1 monetization deadline: W4, W7, W8, W9, **W15** are blocking; W1, W2 are not.
 (W9 elevated to blocking because the investor-visible `/api/dashboard/home`
 is still serving the 309,625% in-sample ROI headline — the gate that
 hides it was shipped to git on Apr 7 but has not reached production.)
