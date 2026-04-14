@@ -214,24 +214,25 @@ def simulate_betting(predictions, external_odds=None):
                 outcome = 1.0 if actual else 0.0
                 brier_scores.append((model_p - outcome) ** 2)
 
-            # Determine bet side
-            bet_odds = None
-            bet_on_home = None
+            # Determine bet side — check edge on BOTH sides, pick the better one
+            home_edge = -999
+            away_edge = -999
+            if odds_home and 1.01 < odds_home <= 15.0:
+                home_edge = model_p * odds_home - 1
+            if odds_away and 1.01 < odds_away <= 15.0:
+                away_edge = (1 - model_p) * odds_away - 1
 
-            if model_p > 0.5 and odds_home and 1.01 < odds_home <= 15.0:
+            if home_edge >= away_edge and home_edge >= MIN_EDGE_THRESHOLD:
                 bet_odds = odds_home
                 bet_on_home = True
-            elif model_p < 0.5 and odds_away and 1.01 < odds_away <= 15.0:
+                bet_prob = model_p
+                real_edge = home_edge
+            elif away_edge > home_edge and away_edge >= MIN_EDGE_THRESHOLD:
                 bet_odds = odds_away
                 bet_on_home = False
-
-            if bet_odds is None:
-                continue
-
-            bet_prob = model_p if bet_on_home else (1 - model_p)
-            real_edge = bet_prob * bet_odds - 1
-
-            if real_edge < MIN_EDGE_THRESHOLD:
+                bet_prob = 1 - model_p
+                real_edge = away_edge
+            else:
                 continue
 
             # Kelly sizing
@@ -372,7 +373,7 @@ def simulate_betting(predictions, external_odds=None):
         "brier_n": len(brier_scores),
         "trades": trades,
         "daily_results": daily_results,
-        "strategy": f"Quarter-Kelly (f={KELLY_FRACTION}) + Portfolio Cap ({MAX_PORTFOLIO_EXPOSURE*100}%) + Real Market Odds",
+        "strategy": f"Dual-Side Edge Scan + Quarter-Kelly (f={KELLY_FRACTION}) + Portfolio Cap ({MAX_PORTFOLIO_EXPOSURE*100}%) + Real Market Odds",
     }
 
 # ── Main ──
