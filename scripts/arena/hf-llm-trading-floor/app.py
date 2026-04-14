@@ -1259,7 +1259,13 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 day_log["cash_held_pct"] = parsed["cash_held_pct"]
                 day_log["cash_rationale"] = parsed["cash_rationale"]
 
-                starting_bankroll = bankroll
+                # Stake-sizing fix (2026-04-14): use CURRENT bankroll, not fixed
+                # starting_bankroll, and cap LLM-chosen pct at 5% (half-Kelly equivalent)
+                # plus require edge > 0.03 to skip unprofitable bets.
+                # Without these caps, agents with 60-65% WR drained their bankroll to $0
+                # because the same $15 stake wiped out a $10 bankroll.
+                MAX_PCT_PER_BET = 0.05  # half-Kelly cap
+                MIN_EDGE = 0.03         # only bet meaningful edges
                 for alloc in parsed["allocations"]:
                     gidx = alloc["game_idx"] - 1  # 1-indexed in prompt
                     if gidx < 0 or gidx >= len(day_games):
@@ -1268,8 +1274,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     odds = day_odds_list[gidx]
                     cat = alloc["category"]
 
-                    stake = round(starting_bankroll * alloc["pct"], 2)
-                    if stake < 0.50:
+                    edge_val = alloc.get("edge", 0.0) or 0.0
+                    if edge_val < MIN_EDGE:
+                        continue
+                    capped_pct = min(alloc["pct"], MAX_PCT_PER_BET)
+                    stake = round(ts["bankroll"] * capped_pct, 2)
+                    if stake < 0.50 or stake > ts["bankroll"]:
                         continue
 
                     won = resolve_bet(cat, odds, g["home_score"], g["away_score"], g["home_won"])
