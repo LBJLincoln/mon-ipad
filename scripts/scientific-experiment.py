@@ -990,40 +990,40 @@ def optimal_threshold_search(season_memory: dict) -> dict:
                     if prob < min_conf or edge < min_edge:
                         continue
 
-                    # Kelly sizing
                     p = prob
-                    b = odds - 1  # net decimal odds
+                    b = odds - 1
                     if b <= 0:
                         continue
                     q = 1 - p
                     kelly_stake = max(0, (p * b - q) / b) * kelly_f
-                    kelly_stake = min(kelly_stake, 0.03)  # max 3% per bet (realistic constraint)
+                    kelly_stake = min(kelly_stake, 0.03)
                     stake = bankroll * kelly_stake
 
                     if stake <= 0 or stake < 0.01:
                         continue
 
                     n_bets += 1
+                    pre_bet_bankroll = bankroll
                     if won:
                         profit = stake * (odds - 1)
                     else:
                         profit = -stake
 
                     bankroll += profit
-                    # Cap bankroll at $10K for realistic simulation
-                    bankroll = min(bankroll, 10000.0)
-                    total_pnl += profit
-                    daily_returns[date_str] += profit
+                    if bankroll <= 0:
+                        bankroll = 0.0
+                        break
+                    pct_return = profit / pre_bet_bankroll if pre_bet_bankroll > 0 else 0
+                    daily_returns[date_str] += pct_return
 
                     peak = max(peak, bankroll)
                     dd = (peak - bankroll) / peak if peak > 0 else 0
                     max_dd = max(max_dd, dd)
 
                 if n_bets >= 5:
-                    # ROI = (final - initial) / initial * 100
-                    roi = ((bankroll - 100.0) / 100.0) * 100
+                    total_pnl = bankroll - 100.0
+                    roi = (total_pnl / 100.0) * 100
 
-                    # Sharpe
                     returns = list(daily_returns.values())
                     if len(returns) >= 2:
                         mean_r = sum(returns) / len(returns)
@@ -1081,27 +1081,31 @@ def optimal_threshold_search(season_memory: dict) -> dict:
             continue
         q = 1 - p
         kelly_stake = max(0, (p * b - q) / b) * kelly_f
-        kelly_stake = min(kelly_stake, 0.03)  # max 3% per bet
+        kelly_stake = min(kelly_stake, 0.03)
         stake = bankroll * kelly_stake
 
         if stake <= 0 or stake < 0.01:
             continue
 
         n_bets += 1
+        pre_bet_bankroll = bankroll
         if won:
             profit = stake * (odds - 1)
         else:
             profit = -stake
 
         bankroll += profit
-        bankroll = min(bankroll, 10000.0)  # Liquidity cap
-        total_pnl += profit
-        daily_returns[date_str] += profit
+        if bankroll <= 0:
+            bankroll = 0.0
+            break
+        pct_return = profit / pre_bet_bankroll if pre_bet_bankroll > 0 else 0
+        daily_returns[date_str] += pct_return
 
         peak = max(peak, bankroll)
         dd = (peak - bankroll) / peak if peak > 0 else 0
         max_dd = max(max_dd, dd)
 
+    total_pnl = bankroll - 100.0
     test_result = {
         "test_bets": n_bets,
         "test_pnl": round(total_pnl, 2),
@@ -1109,8 +1113,7 @@ def optimal_threshold_search(season_memory: dict) -> dict:
         "test_max_dd": round(max_dd, 4),
     }
     if n_bets > 0:
-        # ROI = (final - initial) / initial * 100
-        test_result["test_roi"] = round(((bankroll - 100.0) / 100.0) * 100, 2)
+        test_result["test_roi"] = round((total_pnl / 100.0) * 100, 2)
         returns = list(daily_returns.values())
         if len(returns) >= 2:
             mean_r = sum(returns) / len(returns)
