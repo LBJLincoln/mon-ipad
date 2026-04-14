@@ -1,56 +1,78 @@
 {
-  "timestamp": "2026-04-04T20:00:45.620367Z",
+  "timestamp": "2026-04-14T15:32:10.186612Z",
   "projects": {
     "nba": {
       "name": "NBA Quant AI",
       "spaces": {
         "S10": {
           "status": "UP",
-          "brier": 0.22454,
-          "generation": 662,
-          "model": "xgboost_brier",
+          "brier": 0.2271,
+          "generation": 511,
+          "model": "random_forest",
           "last_improvement": null,
-          "stagnation_cycles": 0
+          "stagnation_cycles": 22,
+          "stagnation": {
+            "stagnant": true,
+            "stagnation_cycles": 22,
+            "gens_since_improvement": 220,
+            "recommendation": "inject_diversity"
+          }
         },
         "S11": {
           "status": "UP",
-          "brier": 0.22273,
-          "generation": 1271,
-          "model": "xgboost",
+          "brier": 0.22486,
+          "generation": 622,
+          "model": "extra_trees",
           "last_improvement": null,
           "stagnation_cycles": 0
         },
         "S12": {
           "status": "UP",
-          "brier": 0.22506,
-          "generation": 1291,
-          "model": "catboost",
+          "brier": 0.22334,
+          "generation": 1110,
+          "model": "xgboost",
           "last_improvement": null,
           "stagnation_cycles": 0
         },
         "S13": {
           "status": "UP",
-          "brier": 0.22455,
-          "generation": 969,
-          "model": "extra_trees",
+          "brier": 0.22326,
+          "generation": 49,
+          "model": "random_forest",
           "last_improvement": null,
-          "stagnation_cycles": 0
+          "stagnation_cycles": 19
         },
         "S14": {
           "status": "UP",
-          "brier": 0.22666,
-          "generation": 1010,
-          "model": "xgboost_brier",
+          "brier": 0.22251,
+          "generation": 462,
+          "model": "extra_trees",
           "last_improvement": null,
           "stagnation_cycles": 0
         },
         "S15": {
           "status": "UP",
-          "brier": 0.22159,
-          "generation": 1712,
-          "model": "random_forest",
+          "brier": 0.22328,
+          "generation": 709,
+          "model": "lightgbm",
           "last_improvement": null,
           "stagnation_cycles": 0
+        },
+        "S16": {
+          "status": "UP",
+          "brier": 0.22573,
+          "generation": 538,
+          "model": "xgboost",
+          "last_improvement": null,
+          "stagnation_cycles": 0
+        },
+        "S17": {
+          "status": "UP",
+          "brier": 0.22169,
+          "generation": 489,
+          "model": "random_forest",
+          "last_improvement": null,
+          "stagnation_cycles": 1
         }
       },
       "kaggle": {
@@ -58,16 +80,49 @@
           "status": "COMPLETE"
         },
         "nba-season-backtest": {
-          "status": "COMPLETE"
+          "status": "KernelsApiService/GetKernelSessionStatus"
         }
       }
     },
     "political": {
       "name": "Political Alpha",
-      "spaces": {},
+      "spaces": {
+        "P1": {
+          "status": "UP",
+          "brier": 0.24996,
+          "generation": 8809,
+          "model": "xgboost_brier",
+          "last_improvement": null,
+          "stagnation_cycles": 0
+        },
+        "P2": {
+          "status": "UP",
+          "brier": 0.25223,
+          "generation": 5820,
+          "model": "lightgbm",
+          "last_improvement": null,
+          "stagnation_cycles": 0
+        },
+        "P3": {
+          "status": "UP",
+          "brier": 0.2499,
+          "generation": 15740,
+          "model": "xgboost_brier",
+          "last_improvement": null,
+          "stagnation_cycles": 0
+        },
+        "P4": {
+          "status": "UP",
+          "brier": 0.25146,
+          "generation": 11364,
+          "model": "logistic_regression",
+          "last_improvement": null,
+          "stagnation_cycles": 0
+        }
+      },
       "kaggle": {
         "political-alpha-karpathy-loop": {
-          "status": "RUNNING"
+          "status": "COMPLETE"
         }
       }
     }
@@ -79,15 +134,17 @@
       "quant-summary.json": 200
     },
     "telegram": {
-      "brain": "ALIVE"
+      "brain": "DOWN"
     }
   },
   "actions_taken": [],
-  "issues": [],
+  "issues": [
+    "S10 stagnant: 220 gens without improvement"
+  ],
   "summary": {
-    "spaces": "6/6 UP",
-    "issues": 0,
+    "spaces": "12/12 UP",
+    "issues": 1,
     "actions": 0,
-    "status": "HEALTHY"
+    "status": "DEGRADED"
   }
 }

@@ -36,7 +36,12 @@ PROJECTS = {
     },
     "political": {
         "name": "Political Alpha",
-        "spaces": [],
+        "spaces": [
+            ("nomos42-political-alpha", "P1"),
+            ("nomos42-political-alpha-2", "P2"),
+            ("lbjlincoln-political-alpha-3", "P3"),
+            ("lbjlincoln-political-alpha-4", "P4"),
+        ],
         "kaggle_kernels": [
             "alexismoret6/political-alpha-karpathy-loop",
         ],
