@@ -1,99 +1,57 @@
 {
-  "timestamp": "2026-04-13T13:00:00Z",
-  "brain_cycle": "cycle99",
-  "brain_model": "claude-sonnet-4-6",
-  "ecosystem_status": "HEALTHY — all 12 islands operational (8 NBA + 4 Political)",
-
-  "nba_quant_ai": {
-    "project": "NBA Quant AI",
-    "repo": "nomos-nba-agent",
-    "hf_spaces_total": 8,
-    "hf_spaces_up": 8,
-    "engine_sha": "1cfdbe6d7cccf346f27674e09baab1af5b579e11",
-    "engine_version_note": "DISCREPANCY: CLAUDE.md=v3.1-54cat vs prev-health=v3.1-59cat — verify next cycle",
-    "engine_parity": "UNVERIFIED_THIS_CYCLE",
-    "best_brier_live": 0.22251,
-    "best_island_live": "S14",
-    "best_brier_supabase": 0.22066,
-    "brier_threshold": 0.21837,
-    "threshold_reached": false,
-    "gap_to_threshold": 0.00414,
-    "fleet_actions_this_cycle": {
-      "S12_diversify": "SENT (stagnation=22 > threshold=15)",
-      "S17_diversify": "SENT (stagnation=16 > threshold=15)",
-      "S11_boost_mutation": "SENT (brier=0.24572 worst in fleet after 161 gens)",
-      "API_fix": "Discovered: use {command:X} not {action:X} for /api/command"
+  "timestamp": "2026-04-14T00:14:00Z",
+  "brain_cycle": "cycle100",
+  "ecosystem_health": "OPERATIONAL",
+  "repos": {
+    "nomos-nba-agent": {
+      "status": "ACTIVE",
+      "engine_version": "v3.1-54cat",
+      "engine_sha": "1cfdbe6d7cccf346f27674e09baab1af5b579e11",
+      "categories": 54,
+      "raw_features": 7213,
+      "islands_active": 8,
+      "fleet_best_brier": 0.22251,
+      "fleet_best_island": "S14",
+      "target_brier": 0.21837,
+      "gap_to_target": 0.00414,
+      "this_cycle_changes": "Diversify sent to S11 (stagnation=22) and S13 (stagnation=16)"
     },
-    "research_proposal_today": "pace-norm-ev-filter-fractional-kelly",
-    "health": "GOOD"
-  },
-
-  "political_alpha": {
-    "project": "Political Alpha",
-    "repo": "nomos-political-alpha",
-    "hf_spaces_total": 4,
-    "hf_spaces_up": 4,
-    "hf_spaces_down": 0,
-    "recovery_note": "P3 (lbjlincoln-political-alpha-3) and P4 (lbjlincoln-political-alpha-4) are BACK UP vs cycle98 degraded state",
-    "engine_version": "v3.1-54cat",
-    "best_brier_live": 0.2499,
-    "best_island": "P3",
-    "total_political_generations": 20521,
-    "feature_candidates": 272,
-    "improvement_mode": "A — FEC Q1-2026 filings (due April 15)",
-    "research_proposal_today": "fec-fundraising-ratio-feature",
-    "health": "GOOD"
-  },
-
-  "cross_pollination_this_cycle": [
-    {
-      "from": "NBA research (MDPI 2025 uncertainty-aware paper)",
-      "to": "Political Alpha decision layer",
-      "insight": "EV filter p*o > 1.10 before fractional-Kelly sizing. Apply to political prediction markets.",
-      "applied": false,
-      "status": "DOCUMENTED in nomos-political-alpha/data/brain-status.json"
+    "nomos-political-alpha": {
+      "status": "ACTIVE",
+      "engine_version": "v3.22-political-44cat-fec-q1-2026",
+      "categories": 44,
+      "feature_candidates": 287,
+      "islands_active": 4,
+      "fleet_best_brier": 0.2499,
+      "fleet_best_island": "P3",
+      "this_cycle_changes": "Cat44 FEC Q1-2026 Quarterly Signals added (15 features). ENGINE_VERSION v3.21→v3.22."
     },
-    {
-      "from": "NBA research (per-100 possessions normalization)",
-      "to": "Political Alpha features",
-      "insight": "Normalize political features per-N-voters or per-district-size, same concept as pace normalization.",
-      "applied": false,
-      "status": "PROPOSED for rotation B next cycle"
-    },
-    {
-      "from": "Political FEC data (fundraising ratio)",
-      "to": "NBA (team budget proxy)",
-      "insight": "Payroll/cap utilization ratio as proxy for team financial commitment (similar to campaign cash-on-hand ratio)",
-      "applied": false,
-      "status": "FLAGGED for NBA feature engine review"
-    }
-  ],
-
-  "api_fixes_discovered": {
-    "hf_space_command_format": {
-      "wrong": "POST /api/command {\"action\": \"diversify\"}",
-      "correct": "POST /api/command {\"command\": \"diversify\"}",
-      "valid_commands": ["diversify", "boost_mutation", "backfill_boxscores"],
-      "note": "Brain instructions say 'action' but API expects 'command'. Fixed this cycle."
+    "mon-ipad": {
+      "status": "ACTIVE",
+      "role": "Brain dashboard + data hub",
+      "this_cycle_changes": "health-status.json updated, research proposal written (uncertainty calibration)"
     }
   },
-
-  "ecosystem_summary": {
-    "total_spaces": 12,
-    "spaces_operational": 12,
-    "nba_best_brier": 0.22251,
-    "pa_best_brier": 0.2499,
-    "proposals_written_today": 2,
-    "supabase_project": "xivvnrkbtuhfsphtmmtv",
-    "commits_this_cycle": 3,
-    "repos_updated": ["lbjlincoln/mon-ipad", "lbjlincoln/nomos-political-alpha"]
+  "cross_project_improvements": {
+    "nba_to_political": {
+      "technique": "EV-gated decision filter (NBA cycle99) → political prediction markets",
+      "calibration_port": "Conformal prediction (NBA cycle100 research) → political engine rotation C",
+      "status": "PROPOSED for cycle101"
+    },
+    "political_to_nba": {
+      "technique": "None this cycle"
+    }
   },
-
-  "priority_actions_next_cycle": [
-    "1. Verify engine version: grep first 20 lines of features/engine.py for FEATURE_ENGINE_VERSION value",
-    "2. Fetch FEC Q1-2026 filings (deadline April 15) — add fundraising_ratio to fetch_political_data.py",
-    "3. S11 monitor: if still >0.245 after boost_mutation, consider complete reinit",
-    "4. NBA: verify per_100 features exist in engine.py, if not add as cat55",
-    "5. Add EV filter (p*o > 1.10) to predict_today.py decision layer (low-effort quick win)"
+  "fleet_wide_concern": {
+    "issue": "Fleet-wide Brier stagnation: all 8 NBA islands have SAME Brier as 12h ago despite continuing evolution",
+    "analysis": "Hard resets are resetting stagnation counters but not breaking local optima. Diversify commands may help S11/S13. S15 shows internal candidate at 0.2203 which hasn't become the official best_brier yet — monitor.",
+    "proposed_fix": "Conformal calibration may unlock 0.001-0.003 Brier improvement without new features"
+  },
+  "next_cycle_priorities": [
+    "NBA: Check S11/S13 post-diversify progress",
+    "NBA: Implement conformal prediction calibration (research proposal)",
+    "Political: Rotation C — port NBA calibration techniques",
+    "Political: Fetch Q1-2026 FEC data via api.open.fec.gov",
+    "Cross: Verify political engine Cat44 integration active in HF spaces"
   ]
 }
