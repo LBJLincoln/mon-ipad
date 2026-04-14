@@ -1,57 +1,62 @@
 {
-  "timestamp": "2026-04-14T00:14:00Z",
-  "brain_cycle": "cycle100",
-  "ecosystem_health": "OPERATIONAL",
-  "repos": {
-    "nomos-nba-agent": {
-      "status": "ACTIVE",
-      "engine_version": "v3.1-54cat",
-      "engine_sha": "1cfdbe6d7cccf346f27674e09baab1af5b579e11",
-      "categories": 54,
-      "raw_features": 7213,
-      "islands_active": 8,
-      "fleet_best_brier": 0.22251,
-      "fleet_best_island": "S14",
-      "target_brier": 0.21837,
-      "gap_to_target": 0.00414,
-      "this_cycle_changes": "Diversify sent to S11 (stagnation=22) and S13 (stagnation=16)"
+  "timestamp": "2026-04-14T04:14:00Z",
+  "brain_cycle": "cycle101",
+  "ecosystem_health": "GOOD",
+  "nba_quant": {
+    "fleet_best_brier": 0.22251,
+    "fleet_best_island": "S14",
+    "brier_target": 0.21837,
+    "gap_to_target": 0.00414,
+    "islands_up": 8,
+    "islands_stagnant": 3,
+    "diversify_sent": ["S12", "S16", "S17"],
+    "recovered_this_cycle": ["S11", "S13"],
+    "engine_version": "v3.1-54cat",
+    "engine_sha": "1cfdbe6d7cccf346f27674e09baab1af5b579e11",
+    "status": "ACTIVE"
+  },
+  "political_alpha": {
+    "fleet_best_brier": 0.2499,
+    "fleet_best_island": "P3",
+    "islands_up": 4,
+    "islands_stagnant": 0,
+    "engine_version": "v3.22-political-44cat-fec-q1-2026",
+    "feature_candidates": 272,
+    "this_cycle_improvement": "Cat23 v1.2: +3 split conformal calibration features (q90_score, coverage_rate, uncertainty_band)",
+    "rotation": "C — Port NBA calibration techniques",
+    "status": "ACTIVE"
+  },
+  "cross_project_syncs": [
+    {
+      "date": "2026-04-14",
+      "cycle": "cycle101",
+      "technique": "Split Conformal Calibration",
+      "direction": "NBA→Political",
+      "status": "IMPLEMENTED",
+      "file": "nomos-political-alpha/features/political_calibration.py v1.2"
     },
-    "nomos-political-alpha": {
-      "status": "ACTIVE",
-      "engine_version": "v3.22-political-44cat-fec-q1-2026",
-      "categories": 44,
-      "feature_candidates": 287,
-      "islands_active": 4,
-      "fleet_best_brier": 0.2499,
-      "fleet_best_island": "P3",
-      "this_cycle_changes": "Cat44 FEC Q1-2026 Quarterly Signals added (15 features). ENGINE_VERSION v3.21→v3.22."
+    {
+      "date": "2026-04-14",
+      "cycle": "cycle101",
+      "technique": "EWM Rolling Form Features",
+      "direction": "NBA→Political (proposed)",
+      "status": "PROPOSED",
+      "file": "data/research-proposals/2026-04-14-cycle101-uncertainty-aware-rolling-form-stacked-mlp.md"
     },
-    "mon-ipad": {
-      "status": "ACTIVE",
-      "role": "Brain dashboard + data hub",
-      "this_cycle_changes": "health-status.json updated, research proposal written (uncertainty calibration)"
+    {
+      "date": "2026-04-14",
+      "cycle": "cycle100",
+      "technique": "Cat44 FEC Q1-2026 Quarterly Filing",
+      "direction": "Political new feature",
+      "status": "COMMITTED",
+      "file": "nomos-political-alpha/features/cat44_fec_q1_2026_quarterly.py"
     }
-  },
-  "cross_project_improvements": {
-    "nba_to_political": {
-      "technique": "EV-gated decision filter (NBA cycle99) → political prediction markets",
-      "calibration_port": "Conformal prediction (NBA cycle100 research) → political engine rotation C",
-      "status": "PROPOSED for cycle101"
-    },
-    "political_to_nba": {
-      "technique": "None this cycle"
-    }
-  },
-  "fleet_wide_concern": {
-    "issue": "Fleet-wide Brier stagnation: all 8 NBA islands have SAME Brier as 12h ago despite continuing evolution",
-    "analysis": "Hard resets are resetting stagnation counters but not breaking local optima. Diversify commands may help S11/S13. S15 shows internal candidate at 0.2203 which hasn't become the official best_brier yet — monitor.",
-    "proposed_fix": "Conformal calibration may unlock 0.001-0.003 Brier improvement without new features"
-  },
-  "next_cycle_priorities": [
-    "NBA: Check S11/S13 post-diversify progress",
-    "NBA: Implement conformal prediction calibration (research proposal)",
-    "Political: Rotation C — port NBA calibration techniques",
-    "Political: Fetch Q1-2026 FEC data via api.open.fec.gov",
-    "Cross: Verify political engine Cat44 integration active in HF spaces"
-  ]
+  ],
+  "diversify_effectiveness": {
+    "cycle100_sent": ["S11", "S13"],
+    "cycle101_confirmed_recovered": ["S11", "S13"],
+    "effectiveness_rate": "100% (2/2 recovered in 4h)",
+    "cycle101_sent": ["S12", "S16", "S17"],
+    "expected_recovery": "cycle102"
+  }
 }
