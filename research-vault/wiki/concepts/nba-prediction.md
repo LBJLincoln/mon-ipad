@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 174 raw sources on 2026-04-14
+> Auto-compiled from 178 raw sources on 2026-04-14
 
 ## Overview
 
-This topic covers 174 research files spanning nba prediction & ml models.
+This topic covers 178 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -16,6 +16,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **2025-26 NBA Season — Agent GEMMA ARBITRAGEUR** (9256 words) -- `raw/arena-docs/gemma-season-2025-26.md`
 - **2025-26 NBA Season — Agent PHI THEORIST** (9075 words) -- `raw/arena-docs/phi-season-2025-26.md`
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
+- **Dashboard Redesign Research — Apr 14 2026** (3866 words) -- `raw/research/dashboard-redesign-apr14-2026.md`
+- **Dashboard Libraries & Agent Studio UI Patterns — April 2026 SOTA** (3295 words) -- `raw/research/dashboard-libraries-apr14-2026.md`
+- **Autonomous AI Organization Benchmark — April 14, 2026** (3224 words) -- `raw/research/autonomous-org-benchmark-apr14-2026.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
 - **NBA Scientific Experiment Report** (2599 words) -- `raw/experiments/nba-experiment-2026-04-12.md`
@@ -54,6 +57,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/research/self-improvement-harness-quick-wins-2026-03-31.md`
 - **07 -- Betting** (997 words) -- `raw/obsidian-docs/07-Betting.md`
 - **03 -- Trading Floor v4** (974 words) -- `raw/obsidian-docs/03-Trading-Floor.md`
+- **Dashboard Libraries & Agent Studio UI SOTA (April 2026)** (945 words) -- `raw/agent-memory/karpathy-researcher_research_dashboard_libraries_apr14_2026.md`
 - **15 -- Business Plan** (936 words) -- `raw/obsidian-docs/15-Business-Plan.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/agent-memory/research-analyst_research_march2026_agentic_ai.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/research-analyst/research_march2026_agentic_ai.md`
@@ -161,7 +165,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Enterprise Agent Matrix — 3-product 3-layer architecture** (161 words) -- `raw/nba-brain/project_enterprise_architecture.md`
 - **user_role** (153 words) -- `raw/agent-memory/research-analyst_user_role.md`
 - **user_role** (152 words) -- `raw/agent-memory/repo-scout_user_role.md`
-- **Department Council Summary** (151 words) -- `raw/councils/department-summary.md`
+- **Department Council Summary** (150 words) -- `raw/councils/department-summary.md`
 - **Research Scan: github-scan-2026-04-03** (149 words) -- `raw/research/github-scan-2026-04-03.md`
 - **Research Scan: github-scan-2026-04-04** (149 words) -- `raw/research/github-scan-2026-04-04.md`
 - **Research Scan: github-scan-2026-04-05** (149 words) -- `raw/research/github-scan-2026-04-05.md`

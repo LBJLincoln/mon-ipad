@@ -1,5 +1,5 @@
-# Council: evaluation
-- Status: success
-- Timestamp: 2026-04-12T01:00:04Z
-- Model: claude-sonnet-4-6
-- Duration: 423s
+# Council: council-evaluation-latest
+- Status: ?
+- Timestamp: 2026-04-14T14:15:41.464911+00:00
+- Model: ?
+- Duration: ?s
