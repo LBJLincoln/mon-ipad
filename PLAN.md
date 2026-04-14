@@ -563,6 +563,37 @@ agents reference it in rationale. Brier delta vs no-injury runs measured.
 
 ---
 
+### W16 — @Nomos42Picks revenue ship (May 1 DEADLINE, added 2026-04-14)
+**Goal:** Ship a paid Telegram picks product. First sub by Apr 21, ≥5 subs = $95/mo by May 8.
+Without this, Claude Code / housing cliff kills the project May 8.
+
+**Status 2026-04-14:**
+- ✅ MONETIZATION.md day-by-day plan written
+- ✅ `/subscribe` page shipped on nomos-dashboard (env-driven Stripe Payment Link)
+- ✅ SiteNav Subscribe link added
+- ⏳ Stripe Payment Link URL — user must create in Stripe Dashboard and paste into
+  Vercel env var `NEXT_PUBLIC_STRIPE_PAYMENT_LINK`
+- ⏳ Private Telegram channel `@Nomos42Picks` created + @Nomos42Bot admin perms
+- ⏳ Vercel webhook `/api/billing/stripe` that whitelists the sub's telegram handle
+- ⏳ 09:00 ET cron posting from `predict_today.py` output
+- ⏳ Landing page copy iteration based on first 10 visitor reactions
+- ⏳ Soft launch to personal network (day 20, 2026-04-20)
+- ⏳ Public launch Reddit r/sportsbook + Twitter (day 21-28)
+
+**Files to touch:**
+- `nomos-dashboard/src/app/subscribe/page.tsx` (copy iteration, testimonials when earned)
+- `nomos-dashboard/src/app/api/billing/stripe/route.ts` (NEW — webhook + Telegram bot add)
+- `scripts/telegram/auto_post_picks.sh` (NEW — 09:00 ET cron, format predict_today.py output)
+- `scripts/telegram/whitelist_manager.py` (NEW — read paying subs from Supabase, enforce)
+
+**Acceptance:** First Stripe payment event reaches webhook → telegram handle added to channel
+→ user receives 09:00 ET picks the next morning.
+
+**Why this is the only workstream that matters until May 8:** everything else is research
+polish. No revenue = no project. Anything not on this path is a distraction.
+
+---
+
 ### W14 — Provider diversification (kill Cerebras single-point-of-failure) — PARTIAL Apr 14
 **Update 2026-04-14:** v3 day-bucket pivot redistributed providers:
 - 2 traders on Cerebras (qwen-3-235b, llama-3.1-8b)
@@ -676,7 +707,13 @@ A trading floor experiment is "scientifically perfect" iff:
 
 **Score today (2026-04-14): 19/29** (+W15 line for game-day player availability).
 Target after W1-W9 + W15: 29/29.
-May 1 monetization deadline: W4, W7, W8, W9, **W15** are blocking; W1, W2 are not.
+May 1 monetization deadline: **W16 (revenue ship) is the ONLY blocker.** W4/W7/W8/W9/W15
+are credibility polish — necessary for conversion but no substitute for a Stripe link +
+Telegram channel. W1, W2 are pure research, deferred until after May 8.
+
+**Autonomous hourly execution (2026-04-14):** `scripts/autonomous-hourly-plan.sh` runs at
+`15 * * * *` — invokes claude CLI with PLAN.md+MONETIZATION.md context, picks one W16/W4
+item, ships it. Logs to `logs/autonomous-hourly.log`.
 (W9 elevated to blocking because the investor-visible `/api/dashboard/home`
 is still serving the 309,625% in-sample ROI headline — the gate that
 hides it was shipped to git on Apr 7 but has not reached production.)
