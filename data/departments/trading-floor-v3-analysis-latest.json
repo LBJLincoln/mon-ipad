@@ -1,18 +1,13 @@
 {
   "timestamp": "2026-04-14T12:36:17.674821+00:00",
-  "council": "d6-evaluation",
-  "subject": "Trading Floor v3 Calibration Audit",
-  "findings": {
-    "n_agents": 10,
-    "well_calibrated": [],
-    "overconfident": [
-      "mistral-ministral"
-    ],
-    "best_bankroll": 1838.15,
-    "worst_bankroll": 0.0,
-    "bankroll_spread": 1838.15
+  "experiment_state": {
+    "days_processed": 22,
+    "days_total": 175,
+    "games_total": 1247,
+    "design": "day-bucket-v3",
+    "completed": false
   },
-  "per_agent_summary": {
+  "per_agent": {
     "qwen-quant": {
       "trader_id": "qwen-quant",
       "days_traded": 23,
@@ -148,8 +143,111 @@
       "worst_bankroll": 13.18
     }
   },
-  "verdicts": [
-    "1 agent(s) overconfident (gap>0.15): mistral-ministral",
-    "<50% agents well-calibrated \u2014 tighten prompt edge-computation instructions"
-  ]
+  "rationale_patterns": {
+    "net rating": {
+      "mentions": 270,
+      "wins": 156,
+      "win_rate": 0.578
+    },
+    "edge": {
+      "mentions": 186,
+      "wins": 102,
+      "win_rate": 0.548
+    },
+    "model": {
+      "mentions": 160,
+      "wins": 90,
+      "win_rate": 0.562
+    },
+    "pace": {
+      "mentions": 98,
+      "wins": 60,
+      "win_rate": 0.612
+    },
+    "form": {
+      "mentions": 94,
+      "wins": 53,
+      "win_rate": 0.564
+    },
+    "line": {
+      "mentions": 38,
+      "wins": 23,
+      "win_rate": 0.605
+    },
+    "rest": {
+      "mentions": 20,
+      "wins": 12,
+      "win_rate": 0.6
+    },
+    "star": {
+      "mentions": 18,
+      "wins": 10,
+      "win_rate": 0.556
+    },
+    "defrtg": {
+      "mentions": 7,
+      "wins": 4,
+      "win_rate": 0.571
+    },
+    "home court": {
+      "mentions": 5,
+      "wins": 4,
+      "win_rate": 0.8
+    },
+    "sharp": {
+      "mentions": 4,
+      "wins": 2,
+      "win_rate": 0.5
+    },
+    "rebound": {
+      "mentions": 3,
+      "wins": 2,
+      "win_rate": 0.667
+    },
+    "offrtg": {
+      "mentions": 3,
+      "wins": 1,
+      "win_rate": 0.333
+    },
+    "injury": {
+      "mentions": 3,
+      "wins": 2,
+      "win_rate": 0.667
+    },
+    "3pt": {
+      "mentions": 2,
+      "wins": 1,
+      "win_rate": 0.5
+    },
+    "altitude": {
+      "mentions": 1,
+      "wins": 1,
+      "win_rate": 1.0
+    },
+    "public": {
+      "mentions": 1,
+      "wins": 1,
+      "win_rate": 1.0
+    },
+    "consensus": {
+      "mentions": 1,
+      "wins": 1,
+      "win_rate": 1.0
+    },
+    "back-to-back": {
+      "mentions": 1,
+      "wins": 1,
+      "win_rate": 1.0
+    },
+    "travel": {
+      "mentions": 1,
+      "wins": 1,
+      "win_rate": 1.0
+    },
+    "shooting": {
+      "mentions": 1,
+      "wins": 1,
+      "win_rate": 1.0
+    }
+  }
 }
