@@ -115,56 +115,132 @@ TEAM_MAP = {
 
 STAT_KEYS = ["fg_pct", "fg3_pct", "ft_pct", "reb", "ast", "tov", "stl", "blk", "plus_minus"]
 
-# ── PROVIDER CONFIGS (v2 — only verified-working providers, 2026-04-14) ──────
-# After live experiment audit: only Cerebras + Gemini key 2 actually work.
-# OpenRouter free tier = ~50 req/day/key, exhausted instantly. Gemini key 1 dead.
-# Solution: 3 real providers, 10 agents share them with different personalities.
+# ── PROVIDER CONFIGS (v3 — day-bucket design, 3 real providers, 2026-04-14) ──
+# Verified by live experiment audit + /api/probe on 2026-04-14:
+#   Cerebras qwen-3-235b + llama3.1-8b: 100% success, 30 RPM
+#   Google Gemini 3 Flash (key 2):      100% success, 14 RPM
+#   Mistral (la Plateforme free tier):  large/medium/small/nemo/ministral all OK
+# Dead: OpenRouter (6 models, quota), Gemini key 1, Groq keys (org restricted).
+# With day-bucket design: 1 call/agent/day × 180 days × 10 agents = 1800 calls
+# — fits free tiers with 10x headroom.
 PROVIDERS = {
-    # Cerebras — fast, reliable, 30 RPM
+    # Cerebras (shared key, 30 RPM)
     "cerebras:qwen-3-235b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "qwen-3-235b-a22b-instruct-2507",
         "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 600,
+        "max_tokens": 1200,
         "rpm": 30,
     },
     "cerebras:llama3.1-8b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "llama3.1-8b",
         "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 600,
+        "max_tokens": 1200,
         "rpm": 30,
     },
-    # Gemini 3 Flash Preview (key 2 works — key 1 dead on free tier)
+    # Google Gemini 3 Flash (key 2)
     "google:gemini-3-flash": {
         "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent",
         "model": "gemini-3-flash-preview",
         "key_env": "GOOGLE_API_KEY_2",
-        "max_tokens": 800,
+        "max_tokens": 1500,
         "rpm": 14,
+    },
+    # Mistral la Plateforme (free tier — added 2026-04-14)
+    "mistral:large": {
+        "url": "https://api.mistral.ai/v1/chat/completions",
+        "model": "mistral-large-latest",
+        "key_env": "MISTRAL_API_KEY",
+        "max_tokens": 1200,
+        "rpm": 20,
+    },
+    "mistral:medium": {
+        "url": "https://api.mistral.ai/v1/chat/completions",
+        "model": "mistral-medium-latest",
+        "key_env": "MISTRAL_API_KEY",
+        "max_tokens": 1200,
+        "rpm": 20,
+    },
+    "mistral:small": {
+        "url": "https://api.mistral.ai/v1/chat/completions",
+        "model": "mistral-small-latest",
+        "key_env": "MISTRAL_API_KEY",
+        "max_tokens": 1200,
+        "rpm": 20,
+    },
+    "mistral:nemo": {
+        "url": "https://api.mistral.ai/v1/chat/completions",
+        "model": "open-mistral-nemo",
+        "key_env": "MISTRAL_API_KEY",
+        "max_tokens": 1200,
+        "rpm": 20,
+    },
+    "mistral:ministral-8b": {
+        "url": "https://api.mistral.ai/v1/chat/completions",
+        "model": "ministral-8b-latest",
+        "key_env": "MISTRAL_API_KEY",
+        "max_tokens": 1200,
+        "rpm": 20,
     },
 }
 
-# ── AGENT DEFINITIONS (v2 — 10 agents across 3 working providers, 2026-04-14) ──
-# Personalities are driven by system prompt, not the underlying model name.
-# Same model + different prompt = different trader (DMAD anti-groupthink design).
+# ── AGENT DEFINITIONS (v3 — 10 personas across 3 providers, 2026-04-14) ──────
+# Each agent gets a real distinct model where possible. Same model + different
+# system prompt = DMAD-style distinct reasoning (Prediction Arena 2604.07355).
 TRADERS = {
-    # Qwen 3 235B × 3 personas (Cerebras)
+    # Cerebras Qwen 3 235B — heaviest reasoning model, 2 personas
     "qwen-quant":  {"name": "Qwen Quant 235B",   "provider": "cerebras:qwen-3-235b",  "personality": "quantitative", "risk_tolerance": 0.55},
     "qwen-arb":    {"name": "Qwen Arb 235B",     "provider": "cerebras:qwen-3-235b",  "personality": "arbitrage",    "risk_tolerance": 0.65},
-    "qwen-meta":   {"name": "Qwen Meta 235B",    "provider": "cerebras:qwen-3-235b",  "personality": "ensemble",     "risk_tolerance": 0.50},
-    # Llama 3.1 8B × 3 personas (Cerebras)
+    # Cerebras Llama 3.1 8B — small/fast, 1 persona
     "llama-contra":{"name": "Llama Contrarian",  "provider": "cerebras:llama3.1-8b",  "personality": "contrarian",   "risk_tolerance": 0.55},
-    "llama-cons":  {"name": "Llama Conservative","provider": "cerebras:llama3.1-8b",  "personality": "conservative", "risk_tolerance": 0.35},
-    "llama-agg":   {"name": "Llama Aggressive",  "provider": "cerebras:llama3.1-8b",  "personality": "aggressive",   "risk_tolerance": 0.70},
-    # Gemini 3 Flash × 4 personas (Google key 2)
+    # Google Gemini 3 Flash — 2 personas
     "gemini-anl":  {"name": "Gemini Analytical", "provider": "google:gemini-3-flash", "personality": "analytical",   "risk_tolerance": 0.55},
-    "gemini-div":  {"name": "Gemini Diversified","provider": "google:gemini-3-flash", "personality": "diversified",  "risk_tolerance": 0.45},
     "gemini-tact": {"name": "Gemini Tactical",   "provider": "google:gemini-3-flash", "personality": "tactical",     "risk_tolerance": 0.60},
-    "gemini-theo": {"name": "Gemini Theoretical","provider": "google:gemini-3-flash", "personality": "theoretical",  "risk_tolerance": 0.35},
+    # Mistral — 5 distinct models, 1 persona each
+    "mistral-large":    {"name": "Mistral Large",    "provider": "mistral:large",        "personality": "ensemble",     "risk_tolerance": 0.50},
+    "mistral-medium":   {"name": "Mistral Medium",   "provider": "mistral:medium",       "personality": "diversified",  "risk_tolerance": 0.45},
+    "mistral-small":    {"name": "Mistral Small",    "provider": "mistral:small",        "personality": "conservative", "risk_tolerance": 0.35},
+    "mistral-nemo":     {"name": "Mistral Nemo",     "provider": "mistral:nemo",         "personality": "aggressive",   "risk_tolerance": 0.70},
+    "mistral-ministral":{"name": "Ministral 8B",     "provider": "mistral:ministral-8b", "personality": "theoretical",  "risk_tolerance": 0.35},
 }
 
 AGENT_SYSTEM_PROMPTS = {
+    "mistral-large": """You are Mistral Large, an ensemble/meta-learning allocator.
+APPROACH: Aggregate signals — model predictions (40%) + market implied prob (30%) + matchup analysis (30%). Deploy capital where consensus is strongest.
+PREFERRED STRATEGIES: confidence_scaled, value_hunter, drawdown_adjusted
+EDGE DETECTION: Meta-model across signals. Strongest when model/odds/form agree.
+RISK: Moderate (0.50). Reduce exposure during losing streaks.
+SPECIALTY: Consensus plays.""",
+
+    "mistral-medium": """You are Mistral Medium, a portfolio diversification allocator.
+APPROACH: Day = mini-portfolio. Spread across 3-5 game/category slices. Correlation-aware: avoid stacking same team's ML + spread + total.
+PREFERRED STRATEGIES: quarter_kelly, flat_2pct, diversified_flat
+EDGE DETECTION: Balanced exposure. Prefer moderate edge × many bets over one big bet.
+RISK: Low-moderate (0.45). Diversification over conviction.
+SPECIALTY: Portfolio construction.""",
+
+    "mistral-small": """You are Mistral Small, a capital-preservation allocator.
+APPROACH: Only deploy capital when multiple signals align. When none align, hold cash — that's a valid decision.
+PREFERRED STRATEGIES: eighth_kelly, flat_1pct, drawdown_adjusted
+EDGE DETECTION: Require edge >5% AND model confidence >65%. Otherwise cash.
+RISK: Very low (0.35). Cash is fine. Small wins compound.
+SPECIALTY: Home favorites with strong form.""",
+
+    "mistral-nemo": """You are Mistral Nemo, an aggressive high-conviction allocator.
+APPROACH: Day's best edge gets 25-40% of bankroll. Secondary bets get 10-20%. Cash only if truly no edge anywhere.
+PREFERRED STRATEGIES: full_kelly, streak_momentum, confidence_scaled
+EDGE DETECTION: Weight player matchups, rest, back-to-backs heavily. Hunt the biggest edge.
+RISK: High (0.70). Big bets on strongest signals.
+SPECIALTY: Player-influenced totals and moneylines.""",
+
+    "mistral-ministral": """You are Ministral 8B, a game-theory allocator.
+APPROACH: Decision under uncertainty. Use entropy / KL divergence between your prob distribution and market's to size positions.
+PREFERRED STRATEGIES: eighth_kelly, flat_1pct, teaser_6pt
+EDGE DETECTION: Only bet when KL divergence > threshold. Small frequent allocations.
+RISK: Very low (0.35). Theoretical soundness.
+SPECIALTY: Teasers crossing key numbers (3, 7).""",
+
     "qwen-quant": """You are Qwen Quant 235B, a pure-quant NBA betting agent.
 APPROACH: Calculate implied probabilities, compare with model predictions, compute Kelly fractions. Only bet when math demands it.
 PREFERRED STRATEGIES: half_kelly, ev_threshold_110, proportional_edge
@@ -179,61 +255,26 @@ EDGE DETECTION: Cross-reference ML, spread, total, team totals, halves for inter
 RISK: Moderate-high (0.65). Aggressive on cross-market arbitrage.
 SPECIALTY: Cross-market analysis. Correlated 2-leg parlays.""",
 
-    "qwen-meta": """You are Qwen Meta 235B, an ensemble/meta-learning agent.
-APPROACH: Aggregate signals — model predictions (40%) + market implied prob (30%) + your own matchup analysis (30%). Bet only when ensemble edge > 3%.
-PREFERRED STRATEGIES: confidence_scaled, value_hunter, drawdown_adjusted
-EDGE DETECTION: Build meta-model weighting multiple signals. Strongest when model, odds, and form agree.
-RISK: Moderate (0.50). Reduce exposure during losing streaks.
-SPECIALTY: Consensus plays where signals align.""",
-
-    "llama-contra": """You are Llama Contrarian, a public-fading agent.
+    "llama-contra": """You are Llama Contrarian, a public-fading allocator.
 APPROACH: Markets overreact to recent form and media narratives. When public >70% on one side, look for value on the other.
 PREFERRED STRATEGIES: underdog_specialist, dog_value_plus, anti_martingale
 EDGE DETECTION: Target games with strong media favorites. Love underdogs getting points. Reverse line moves matter.
-RISK: Moderate-high (0.55). Cap at 6% bankroll per bet — survive to fade another day.
+RISK: Moderate-high (0.55). Survive to fade another day.
 SPECIALTY: Spread betting, especially taking points.""",
 
-    "llama-cons": """You are Llama Conservative, a capital-preservation agent.
-APPROACH: Only bet when multiple signals align: model + odds + form + matchup all point the same way.
-PREFERRED STRATEGIES: eighth_kelly, flat_1pct, drawdown_adjusted
-EDGE DETECTION: Require edge > 5% AND model confidence > 65% AND positive recent form. Triple confirmation or pass.
-RISK: Very low (0.35). Pass on most games. Small bets when you do bet.
-SPECIALTY: Home favorites with strong recent form.""",
-
-    "llama-agg": """You are Llama Aggressive, a high-conviction agent.
-APPROACH: Go big on strongest edges. Weight player matchups, rest, back-to-backs heavily.
-PREFERRED STRATEGIES: full_kelly, streak_momentum, confidence_scaled
-EDGE DETECTION: When edge > 3%, bet big. Star player averaging 28 PPG and total seems low → hammer over.
-RISK: High (0.70). Up to 8% bankroll on a single bet if edge is there.
-SPECIALTY: Player-influenced totals and moneylines.""",
-
-    "gemini-anl": """You are Gemini Analytical, a stats-first agent.
+    "gemini-anl": """You are Gemini Analytical, a stats-first allocator.
 APPROACH: Trust numbers over narratives. Cross-reference model predictions with market odds to find mispricings.
 PREFERRED STRATEGIES: half_kelly, confidence_scaled, proportional_edge
 EDGE DETECTION: Games where model win-prob diverges >3% from implied odds prob. Calculate EV precisely.
-RISK: Moderate (0.55). Never >15% on one game. Prefer 2-4 bets per game day.
+RISK: Moderate (0.55). Prefer 2-4 allocations per day.
 SPECIALTY: Moneyline and spread. Home court advantage.""",
 
-    "gemini-div": """You are Gemini Diversified, a portfolio-rotation agent.
-APPROACH: Rotate strategies based on recent perf. Drawdown >10% → switch conservative. Winning streak → increase exposure.
-PREFERRED STRATEGIES: quarter_kelly, flat_2pct, value_hunter, drawdown_adjusted
-EDGE DETECTION: Compare odds across all categories. Diversify across bet types. Bet where edge is largest.
-RISK: Low-moderate (0.45). Spread risk across 3-5 categories.
-SPECIALTY: Portfolio diversification — each game is a mini-portfolio.""",
-
-    "gemini-tact": """You are Gemini Tactical, a schedule-scheme agent.
+    "gemini-tact": """You are Gemini Tactical, a schedule/scheme allocator.
 APPROACH: Weight team form (L10), head-to-head, rest advantage, travel, schedule spots (3-in-4, altitude).
 PREFERRED STRATEGIES: half_kelly, home_specialist, first_half_sniper
 EDGE DETECTION: Back-to-back fades. Altitude games (Denver). Rest differential >2 days.
-RISK: Moderate (0.60). Disciplined execution. Pre-commit size before analysis.
+RISK: Moderate (0.60). Disciplined execution.
 SPECIALTY: First-half betting and schedule-based plays.""",
-
-    "gemini-theo": """You are Gemini Theoretical, a game-theory agent.
-APPROACH: Decision under uncertainty. Use entropy / KL divergence between your prob distribution and market's.
-PREFERRED STRATEGIES: eighth_kelly, flat_1pct, diversified_flat, teaser_6pt
-EDGE DETECTION: Only bet when KL divergence > threshold. Small, frequent, well-reasoned.
-RISK: Very low (0.35). Theoretical soundness over conviction.
-SPECIALTY: Teasers crossing key numbers (3, 7).""",
 }
 
 # ── RATE LIMITER ─────────────────────────────────────────────────────────────
@@ -530,6 +571,204 @@ def parse_llm_decision(raw: str) -> Optional[Dict]:
         except json.JSONDecodeError:
             pass
     return None
+
+
+# ── DAY-BUCKET PROMPT BUILDER (v3 design, 2026-04-14) ─────────────────────────
+
+def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
+                       away_std: Dict, home_form: Dict, away_form: Dict,
+                       team_advanced: Dict, player_stats: Dict,
+                       full_odds: Dict, model_preds: Dict) -> str:
+    """Compact single-game block for day-level prompts."""
+    home, away, date = game["home"], game["away"], game["date"]
+    ml_h = odds.get("ml_home_dec", 2.0)
+    ml_a = odds.get("ml_away_dec", 2.0)
+    impl_h = round(1.0 / ml_h, 3) if ml_h > 1 else 0.5
+    impl_a = round(1.0 / ml_a, 3) if ml_a > 1 else 0.5
+
+    lines = [f"\n[{idx}] {away} @ {home}"]
+    lines.append(f"  STAND: {home} {home_std.get('w',0)}-{home_std.get('l',0)} ({home_std.get('win_pct',0):.3f}) | {away} {away_std.get('w',0)}-{away_std.get('l',0)} ({away_std.get('win_pct',0):.3f})")
+    h_form = f"{home_form.get('w','?')}-{home_form.get('l','?')}" if home_form.get("games", 0) > 0 else "N/A"
+    a_form = f"{away_form.get('w','?')}-{away_form.get('l','?')}" if away_form.get("games", 0) > 0 else "N/A"
+    lines.append(f"  FORM L10: {home} {h_form} | {away} {a_form}")
+
+    if team_advanced:
+        h_adv = team_advanced.get(home, {})
+        a_adv = team_advanced.get(away, {})
+        if h_adv or a_adv:
+            lines.append(f"  ADV: {home} Off={h_adv.get('OFF_RATING','?')} Def={h_adv.get('DEF_RATING','?')} Net={h_adv.get('NET_RATING','?')} | {away} Off={a_adv.get('OFF_RATING','?')} Def={a_adv.get('DEF_RATING','?')} Net={a_adv.get('NET_RATING','?')}")
+
+    lines.append(f"  ODDS: ML {home} {ml_h:.2f} ({impl_h:.1%}) | {away} {ml_a:.2f} ({impl_a:.1%}) | Spread {odds.get('spread_home','?')} | Total {odds.get('total','?')}")
+
+    # Top 3 players only for day prompt (space budget)
+    if player_stats:
+        for t, label in [(home, "H"), (away, "A")]:
+            ps_entry = player_stats.get(t, {})
+            players = (ps_entry.get("players", ps_entry) if isinstance(ps_entry, dict) else ps_entry) or []
+            if isinstance(players, list):
+                players = players[:3]
+                if players:
+                    pstrs = [f"{p.get('name','?')[:15]} {p.get('PPG',p.get('ppg',0)) or 0:.0f}p" for p in players]
+                    lines.append(f"  {label}: {' | '.join(pstrs)}")
+
+    # Model prediction
+    game_key = f"{date}_{away}@{home}"
+    pred = (model_preds or {}).get(game_key, {})
+    if pred:
+        lines.append(f"  AI MODEL: ML {pred.get('consensus_ml_direction','?')} conf={pred.get('consensus_ml_confidence',0):.0%} ({pred.get('ml_agree',0)}/{pred.get('total_agents',0)})")
+
+    # Count of full odds available
+    fo_raw = (full_odds or {}).get(game_key, {})
+    fo = fo_raw.get("categories", fo_raw) if isinstance(fo_raw, dict) else {}
+    if fo and isinstance(fo, dict):
+        lines.append(f"  FULL ODDS: {len(fo)} categories available")
+    return "\n".join(lines)
+
+
+def build_day_prompt(day_date: str, day_games: List[Dict], day_odds: List[Dict],
+                     day_standings: List[Dict], day_forms: List[Dict],
+                     trader_state: Dict, rosters=None, team_advanced=None,
+                     player_stats=None, full_odds=None, model_preds=None,
+                     strategies=None, recent_decisions: List[Dict] = None) -> str:
+    """Build comprehensive day-level prompt. Agent sees ALL games of the day."""
+    bankroll = trader_state.get("bankroll", 100.0)
+    total_allocs = trader_state.get("total_bets", 0)
+    wins = trader_state.get("wins", 0)
+    losses = trader_state.get("losses", 0)
+    roi = ((bankroll - 100.0) / 100.0) * 100
+
+    lines = [f"=== TRADING DAY: {day_date} | {len(day_games)} GAMES ===",
+             f"",
+             f"YOUR STATE: ${bankroll:.2f} | {total_allocs} total allocations | {wins}W-{losses}L | ROI {roi:+.1f}%"]
+
+    if recent_decisions:
+        lines.append("\nRECENT DAYS (last 3):")
+        for d in recent_decisions[-3:]:
+            lines.append(f"  {d.get('date','?')}: {d.get('summary','—')}")
+
+    lines.append("\nGAMES (leakage-safe, standings/form computed up to but not including these games):")
+    for i, g in enumerate(day_games, 1):
+        idx = i - 1
+        lines.append(_format_game_block(
+            i, g, day_odds[idx], day_standings[idx][0], day_standings[idx][1],
+            day_forms[idx][0], day_forms[idx][1],
+            team_advanced, player_stats, full_odds, model_preds
+        ))
+
+    if strategies:
+        lines.append(f"\nSTRATEGIES ({len(strategies)}): {', '.join(list(strategies.keys())[:12])}...")
+
+    lines.append("""
+=== YOUR TASK ===
+Allocate 100% of your bankroll across today's games.
+Each allocation = one bet on one game/category. Total allocations + cash_held must sum to 1.00.
+Holding cash is allowed BUT you must justify it (no edge found is a valid reason).
+
+AVAILABLE BET CATEGORIES (same as /game pricing):
+  ml_home, ml_away, spread_home, spread_away, total_over, total_under,
+  h1_ml_home, h1_ml_away, h1_spread, h1_total_over, h1_total_under,
+  team_total_home_over, team_total_home_under, team_total_away_over, team_total_away_under,
+  alt_spread_home_minus3.5, alt_spread_home_minus5.5, alt_total_over_plus3, alt_total_under_minus3,
+  q1_ml_home, q1_ml_away, prop_both_100, prop_overtime
+
+RESPOND WITH RAW JSON ONLY. No ```json fences. No preamble. First character must be {, last must be }.
+
+Schema:
+{
+  "day_strategy": "1-2 sentences on today's overall approach",
+  "allocations": [
+    {
+      "game_idx": 1,
+      "game": "AWAY@HOME",
+      "category": "ml_home",
+      "pct": 0.15,
+      "confidence": 0.65,
+      "edge": 0.04,
+      "strategy": "half_kelly",
+      "rationale": "1 sentence: which stat/metric drove this and why it beats market price"
+    }
+  ],
+  "cash_held_pct": 0.25,
+  "cash_rationale": "1 sentence if cash > 0"
+}
+
+STRICT RULES:
+- Sum of all allocation pct + cash_held_pct = 1.00 (±0.01)
+- Max 1 allocation per game_idx (no hedging same game both sides)
+- Max 10 allocations
+- Each allocation pct: 0.01–0.40
+- cash_held_pct: 0.0–1.0
+- Rationale MUST cite a specific stat/metric (not "I think they'll win")
+- Edge must be computed from model vs implied odds, NOT hardcoded
+""")
+    return "\n".join(lines)
+
+
+def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
+    """Parse day allocation JSON. Validates sum=1.0 within tolerance.
+
+    Returns dict with: day_strategy, allocations (normalized), cash_held_pct,
+    cash_rationale. Returns None if unparseable or grossly invalid.
+    """
+    parsed = parse_llm_decision(raw)
+    if not parsed:
+        return None
+    allocations = parsed.get("allocations") or []
+    if not isinstance(allocations, list):
+        allocations = []
+    cash = float(parsed.get("cash_held_pct", 0.0) or 0.0)
+
+    # Filter invalid allocations
+    clean = []
+    seen_games = set()
+    for a in allocations[:10]:
+        if not isinstance(a, dict):
+            continue
+        gidx = a.get("game_idx")
+        cat = (a.get("category") or "").lower().strip()
+        try:
+            pct = float(a.get("pct", 0) or 0)
+            conf = float(a.get("confidence", 0.5) or 0.5)
+            edge = float(a.get("edge", 0) or 0)
+        except (TypeError, ValueError):
+            continue
+        if not cat or pct <= 0 or edge <= 0:
+            continue
+        if gidx is None or not isinstance(gidx, int):
+            continue
+        if gidx < 1 or gidx > n_games:
+            continue
+        if gidx in seen_games:
+            continue
+        seen_games.add(gidx)
+        clean.append({
+            "game_idx": gidx,
+            "game": a.get("game", ""),
+            "category": cat,
+            "pct": max(0.01, min(0.40, pct)),
+            "confidence": max(0.0, min(1.0, conf)),
+            "edge": max(0.0, edge),
+            "strategy": (a.get("strategy") or "half_kelly")[:30],
+            "rationale": (a.get("rationale") or "")[:300],
+        })
+
+    total = sum(a["pct"] for a in clean) + max(0.0, min(1.0, cash))
+    if total <= 0:
+        return None
+    # Normalize to sum exactly 1.0 (soft tolerance — agent gave proportions)
+    if abs(total - 1.0) > 0.02:
+        scale = 1.0 / total
+        for a in clean:
+            a["pct"] = a["pct"] * scale
+        cash = cash * scale
+
+    return {
+        "day_strategy": (parsed.get("day_strategy") or parsed.get("reasoning") or "")[:500],
+        "allocations": clean,
+        "cash_held_pct": round(max(0.0, min(1.0, cash)), 4),
+        "cash_rationale": (parsed.get("cash_rationale") or "")[:300],
+        "raw_sum": round(total, 4),
+    }
 
 
 # ── BET RESOLUTION ──────────────────────────────────────────────────────────
@@ -840,7 +1079,12 @@ def compute_form(all_games: List[Dict], team: str, up_to_date: str, window: int 
 # ── EXPERIMENT RUNNER ────────────────────────────────────────────────────────
 
 def run_experiment(progress=gr.Progress(track_tqdm=False)):
-    """Main experiment: 10 agents × all games. Yields live updates."""
+    """v3 DAY-BUCKET experiment: 10 agents × all game-days.
+
+    Each agent receives ALL games of a single day in one prompt, and must
+    allocate 100% of their bankroll across them (or explicitly hold cash with
+    rationale). One LLM call per agent per day (not per game).
+    """
     global _llm_calls, _llm_failures
     _llm_calls = 0
     _llm_failures = 0
@@ -860,262 +1104,252 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         yield ("No game data found!", None, None, "Error: No game data in data/ directory")
         return
 
-    # Check which API keys are available
+    # ── Group games by date ──
+    games_by_date = defaultdict(list)
+    for g in all_games:
+        games_by_date[g["date"]].append(g)
+    dates_sorted = sorted(games_by_date.keys())
+    n_days = len(dates_sorted)
+
+    # ── Key availability ──
     available_keys = {}
     for prov, cfg in PROVIDERS.items():
-        key = os.environ.get(cfg["key_env"], "")
-        if key:
+        if os.environ.get(cfg["key_env"], ""):
             available_keys[cfg["key_env"]] = True
     key_summary = ", ".join(sorted(available_keys.keys()))
 
-    # Init trader state
+    # ── Init trader state ──
     state = {}
     for tid, cfg in TRADERS.items():
         state[tid] = {
             "bankroll": 100.0,
-            "total_bets": 0,
+            "total_bets": 0,  # cumulative allocations resolved
             "wins": 0,
             "losses": 0,
-            "passes": 0,
+            "passes": 0,  # days where cash=100%
             "llm_calls": 0,
             "llm_ok": 0,
             "history": [100.0],
-            "game_log": [],
             "best_bankroll": 100.0,
             "worst_bankroll": 100.0,
             "max_drawdown": 0.0,
+            "days_traded": 0,
+            "recent_decisions": [],  # last 3 for memory
         }
 
     global _experiment_running, _experiment_state
     _experiment_running = True
     _stop_event.clear()
 
-    # Check for persisted state (resume after restart)
+    # ── Resume support (day-indexed) ──
     saved = _load_state_from_disk()
-    start_from = 0
-    if saved and not saved.get("completed") and saved.get("games_processed", 0) > 0:
-        # Resume from where we left off
-        state = {tid: saved["agents"][tid] for tid in TRADERS if tid in saved.get("agents", {})}
-        start_from = saved.get("games_processed", 0)
+    start_from_day = 0
+    if saved and not saved.get("completed") and saved.get("days_processed", 0) > 0:
+        saved_agents = saved.get("agents", {})
         for tid in TRADERS:
-            if tid not in state:
-                state[tid] = {
-                    "bankroll": 100.0, "total_bets": 0, "wins": 0, "losses": 0,
-                    "passes": 0, "llm_calls": 0, "llm_ok": 0,
-                    "history": [100.0], "game_log": [], "best_bankroll": 100.0,
-                    "worst_bankroll": 100.0, "max_drawdown": 0.0,
-                }
-        print(f"RESUMING from game {start_from}")
+            if tid in saved_agents:
+                # merge what we saved; ensure new keys exist
+                state[tid].update({k: v for k, v in saved_agents[tid].items() if k in state[tid]})
+        start_from_day = saved.get("days_processed", 0)
+        print(f"RESUMING from day {start_from_day}/{n_days}")
 
     start_time = time.time()
     odds_matched = 0
     odds_synthetic = 0
-    game_dates_seen = set()
     log_lines = []
 
-    log_lines.append(f"=== NOMOS42 REAL LLM TRADING FLOOR ===")
-    log_lines.append(f"Season: 2025-26 | Games: {n_games} | Agents: {len(TRADERS)}")
+    log_lines.append("=== NOMOS42 REAL LLM TRADING FLOOR v3 (DAY-BUCKET) ===")
+    log_lines.append(f"Season: 2025-26 | Days: {n_days} | Games: {n_games} | Agents: {len(TRADERS)}")
     log_lines.append(f"API keys: {key_summary or 'NONE FOUND'}")
-    log_lines.append(f"Data: {len(rosters)} rosters | {len(team_advanced)} teams adv | {len(full_odds)} odds games | {len(model_preds)} predictions | {len(strategies)} strategies")
-    if start_from > 0:
-        log_lines.append(f"RESUMED from game {start_from}")
+    log_lines.append(f"Data: {len(rosters)} rosters | {len(team_advanced)} teams adv | {len(full_odds)} odds | {len(model_preds)} preds | {len(strategies)} strategies")
+    log_lines.append(f"Design: 1 LLM call per agent per day. 100% bankroll deployed (cash allowed with rationale).")
+    if start_from_day > 0:
+        log_lines.append(f"RESUMED from day {start_from_day}")
     log_lines.append(f"Start: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
     log_lines.append("=" * 50)
 
-    for game_idx, game in enumerate(all_games):
-        # Skip already-processed games (resume support)
-        if game_idx < start_from:
-            game_dates_seen.add(game["date"])
+    for day_idx, day_date in enumerate(dates_sorted):
+        if day_idx < start_from_day:
             continue
-
-        # Check stop signal
         if _stop_event.is_set():
-            log_lines.append(f"=== STOPPED at game {game_idx} by user/council ===")
+            log_lines.append(f"=== STOPPED at day {day_idx} by user/council ===")
             break
-        game_date = game["date"]
-        home = game["home"]
-        away = game["away"]
-        hs = game["home_score"]
-        as_ = game["away_score"]
-        home_won = game["home_won"]
-        game_dates_seen.add(game_date)
 
-        # Build context
-        standings = compute_standings(all_games, game_date)
-        home_stand = standings.get(home, {})
-        away_stand = standings.get(away, {})
-        home_form = compute_form(all_games, home, game_date)
-        away_form = compute_form(all_games, away, game_date)
+        day_games = games_by_date[day_date]
 
-        # Get odds
-        odds_key = (game_date, home, away)
-        if odds_key in odds_dict:
-            odds = odds_dict[odds_key]
-            odds_matched += 1
-        else:
-            # Try reverse (some odds have teams swapped)
-            odds_key_rev = (game_date, away, home)
-            if odds_key_rev in odds_dict:
-                raw = odds_dict[odds_key_rev]
-                odds = {
-                    "ml_home_dec": raw.get("ml_away_dec", 2.0),
-                    "ml_away_dec": raw.get("ml_home_dec", 2.0),
-                    "spread_home": -(raw.get("spread_home", 0) or 0),
-                    "total": raw.get("total"),
-                    "swapped": True,
-                }
+        # Pre-compute per-game context for this day (leakage-safe — uses day_date cutoff)
+        standings_at_day = compute_standings(all_games, day_date)
+        day_odds_list = []
+        day_stand_list = []
+        day_form_list = []
+        for g in day_games:
+            home, away = g["home"], g["away"]
+            h_std = standings_at_day.get(home, {})
+            a_std = standings_at_day.get(away, {})
+            h_form = compute_form(all_games, home, day_date)
+            a_form = compute_form(all_games, away, day_date)
+
+            odds_key = (day_date, home, away)
+            if odds_key in odds_dict:
+                odds = odds_dict[odds_key]
                 odds_matched += 1
             else:
-                odds = generate_implied_odds(
-                    home_stand.get("win_pct", 0.5),
-                    away_stand.get("win_pct", 0.5),
-                )
-                odds_synthetic += 1
+                odds_key_rev = (day_date, away, home)
+                if odds_key_rev in odds_dict:
+                    raw = odds_dict[odds_key_rev]
+                    odds = {
+                        "ml_home_dec": raw.get("ml_away_dec", 2.0),
+                        "ml_away_dec": raw.get("ml_home_dec", 2.0),
+                        "spread_home": -(raw.get("spread_home", 0) or 0),
+                        "total": raw.get("total"),
+                        "swapped": True,
+                    }
+                    odds_matched += 1
+                else:
+                    odds = generate_implied_odds(h_std.get("win_pct", 0.5), a_std.get("win_pct", 0.5))
+                    odds_synthetic += 1
+            day_odds_list.append(odds)
+            day_stand_list.append((h_std, a_std))
+            day_form_list.append((h_form, a_form))
 
-        game_ctx = {
-            "date": game_date, "home": home, "away": away,
-            "odds": odds,
-            "home_standings": home_stand,
-            "away_standings": away_stand,
-            "home_form_L10": home_form,
-            "away_form_L10": away_form,
-        }
+        day_summary_lines = [f"[day {day_idx+1}/{n_days}] {day_date} | {len(day_games)} games"]
 
-        game_log_entry = f"[{game_idx+1}/{n_games}] {game_date} {home} vs {away} | {hs}-{as_} "
-        game_decisions = []
-
-        # Each agent decides
+        # Each agent decides for the whole day
         for tid, cfg in TRADERS.items():
             provider = cfg["provider"]
             ts = state[tid]
             bankroll = ts["bankroll"]
 
-            if bankroll <= 1.0:
-                # Bankrupt — skip
+            if bankroll <= 5.0:
+                # Bankrupt — skip, record history
                 ts["passes"] += 1
                 ts["history"].append(bankroll)
                 continue
 
-            system_prompt = AGENT_SYSTEM_PROMPTS.get(tid, "You are an NBA betting agent.")
-            user_prompt = build_game_prompt(
-                game_ctx, ts, rosters=rosters, team_advanced=team_advanced,
+            system_prompt = AGENT_SYSTEM_PROMPTS.get(tid, "You are an NBA betting allocator.")
+            user_prompt = build_day_prompt(
+                day_date, day_games, day_odds_list, day_stand_list, day_form_list,
+                ts, rosters=rosters, team_advanced=team_advanced,
                 player_stats=player_stats, full_odds=full_odds,
-                model_preds=model_preds, strategies=strategies
+                model_preds=model_preds, strategies=strategies,
+                recent_decisions=ts.get("recent_decisions", []),
             )
 
-            # REAL LLM CALL
             ts["llm_calls"] += 1
-            raw_response = _call_llm(provider, system_prompt, user_prompt)
-
+            raw_response = _call_llm(provider, system_prompt, user_prompt, timeout=30.0)
             if raw_response:
                 ts["llm_ok"] += 1
-                decision = parse_llm_decision(raw_response)
-            else:
-                decision = None
+            parsed = parse_day_allocation(raw_response, len(day_games)) if raw_response else None
 
-            # Build log entry for this agent's decision
-            log_entry = {
-                "game_idx": game_idx,
-                "game": f"{game_ctx.get('away', '?')} @ {game_ctx.get('home', '?')}",
-                "date": game_ctx.get("date", ""),
-                "action": "pass",
-                "reasoning": (raw_response or "")[:300],  # First 300 chars of LLM reasoning
-                "bets": [],
-                "bankroll_before": bankroll,
-                "bankroll_after": bankroll,
+            day_log = {
+                "day_idx": day_idx,
+                "date": day_date,
+                "n_games": len(day_games),
+                "bankroll_before": round(bankroll, 2),
+                "bankroll_after": round(bankroll, 2),
+                "day_strategy": "",
+                "cash_held_pct": 1.0,
+                "cash_rationale": "no LLM response" if not raw_response else "unparseable response",
+                "allocations": [],  # resolved outcomes
+                "raw_preview": (raw_response or "")[:400],
             }
 
-            # Bankroll kill-switch: stop betting if below $25 (preserve remaining capital)
-            broke = bankroll < 25.0
-            if decision and isinstance(decision.get("bets"), list) and not decision.get("pass", False) and not broke:
-                bets = decision["bets"][:2]  # Max 2 per game
-                # Reject agents that bet every game with hardcoded edge (e.g. llama bleeding pattern)
-                # Require that the model actually provided a confidence that differs from its reasoning
-                for bet in bets:
-                    cat = bet.get("category", "").lower()
-                    conf = float(bet.get("confidence", 0.5))
-                    edge = float(bet.get("edge", 0.0))
-                    bet_pct = float(bet.get("bet_pct", 0.01))
+            if parsed and parsed.get("allocations"):
+                day_log["day_strategy"] = parsed["day_strategy"]
+                day_log["cash_held_pct"] = parsed["cash_held_pct"]
+                day_log["cash_rationale"] = parsed["cash_rationale"]
 
-                    if not cat or edge <= 0 or bet_pct <= 0:
+                starting_bankroll = bankroll
+                for alloc in parsed["allocations"]:
+                    gidx = alloc["game_idx"] - 1  # 1-indexed in prompt
+                    if gidx < 0 or gidx >= len(day_games):
                         continue
-                    # Filter hardcoded edge=0.05 pattern (common LLM shortcut)
-                    if abs(edge - 0.05) < 1e-6 and conf < 0.60:
-                        continue
+                    g = day_games[gidx]
+                    odds = day_odds_list[gidx]
+                    cat = alloc["category"]
 
-                    # Cap bet size (hard max 6% per bet)
-                    bet_pct = min(bet_pct, 0.06)
-                    bet_amount = round(bankroll * bet_pct, 2)
-                    bet_amount = min(bet_amount, bankroll * 0.08)
-                    if bet_amount < 0.10:
+                    stake = round(starting_bankroll * alloc["pct"], 2)
+                    if stake < 0.50:
                         continue
 
-                    # Resolve
-                    won = resolve_bet(cat, odds, hs, as_, home_won)
+                    won = resolve_bet(cat, odds, g["home_score"], g["away_score"], g["home_won"])
                     odds_dec = get_odds_dec(cat, odds)
-
                     if won:
-                        profit = bet_amount * (odds_dec - 1)
+                        profit = stake * (odds_dec - 1)
                         ts["bankroll"] += profit
                         ts["wins"] += 1
                     else:
-                        ts["bankroll"] -= bet_amount
+                        profit = -stake
+                        ts["bankroll"] -= stake
                         ts["losses"] += 1
-
                     ts["total_bets"] += 1
                     ts["bankroll"] = round(ts["bankroll"], 2)
-                    bankroll = ts["bankroll"]
 
-                    game_decisions.append(f"{cfg['name'][:8]}:{cat}({'W' if won else 'L'})")
-                    log_entry["bets"].append({
-                        "category": cat, "confidence": conf, "edge": round(edge, 4),
-                        "amount": bet_amount, "won": won, "odds": odds_dec,
-                        "profit": round(profit if won else -bet_amount, 2),
+                    day_log["allocations"].append({
+                        "game": f"{g['away']}@{g['home']}",
+                        "category": cat,
+                        "pct": round(alloc["pct"], 4),
+                        "stake": stake,
+                        "confidence": alloc["confidence"],
+                        "edge": round(alloc["edge"], 4),
+                        "rationale": alloc["rationale"],
+                        "won": won,
+                        "odds": round(odds_dec, 3),
+                        "profit": round(profit, 2),
                     })
-                log_entry["action"] = "bet"
             else:
-                ts["passes"] += 1
+                ts["passes"] += 1  # full-cash day
 
-            log_entry["bankroll_after"] = ts["bankroll"]
-            _agent_logs[tid].append(log_entry)
-            # Keep max 200 entries per agent to avoid memory bloat
+            # Track recent decisions for next-day prompt
+            n_bets = len(day_log["allocations"])
+            n_wins = sum(1 for a in day_log["allocations"] if a["won"])
+            day_pnl = ts["bankroll"] - bankroll
+            summary = f"{n_bets} bets, {n_wins}W, pnl {day_pnl:+.2f}"
+            ts["recent_decisions"] = (ts.get("recent_decisions", []) + [{
+                "date": day_date, "summary": summary,
+            }])[-5:]
+            ts["days_traded"] += 1
+            ts["bankroll"] = round(ts["bankroll"], 2)
+            ts["history"].append(ts["bankroll"])
+            ts["best_bankroll"] = max(ts["best_bankroll"], ts["bankroll"])
+            if ts["best_bankroll"] > 0:
+                dd = (ts["best_bankroll"] - ts["bankroll"]) / ts["best_bankroll"]
+                ts["max_drawdown"] = max(ts["max_drawdown"], dd)
+
+            day_log["bankroll_after"] = round(ts["bankroll"], 2)
+            _agent_logs[tid].append(day_log)
             if len(_agent_logs[tid]) > 200:
                 _agent_logs[tid] = _agent_logs[tid][-200:]
 
-            ts["history"].append(ts["bankroll"])
-            ts["best_bankroll"] = max(ts["best_bankroll"], ts["bankroll"])
-            dd = (ts["best_bankroll"] - ts["bankroll"]) / ts["best_bankroll"] if ts["best_bankroll"] > 0 else 0
-            ts["max_drawdown"] = max(ts["max_drawdown"], dd)
+            day_summary_lines.append(f"  {cfg['name'][:16]:<16} ${ts['bankroll']:>7.2f} ({n_bets} bets, {n_wins}W, {day_log['cash_held_pct']:.0%} cash)")
 
-        # Log
-        decisions_str = " | ".join(game_decisions[:5]) if game_decisions else "all passed"
-        game_log_entry += decisions_str
-        log_lines.append(game_log_entry)
+        log_lines.extend(day_summary_lines)
 
-        # Update in-memory state every game (for /api/status)
+        # Update live state
         with _state_lock:
             _experiment_state = {
-                "games_processed": game_idx + 1,
+                "days_processed": day_idx + 1,
+                "days_total": n_days,
+                "games_processed": sum(len(games_by_date[d]) for d in dates_sorted[:day_idx + 1]),
                 "games_total": n_games,
                 "completed": False,
-                "agents": {tid: {k: v for k, v in ts.items() if k != "history"}
+                "design": "day-bucket-v3",
+                "agents": {tid: {k: v for k, v in ts.items() if k not in ("history", "recent_decisions")}
                            for tid, ts in state.items()},
                 "updated": datetime.now(timezone.utc).isoformat(),
             }
-        # Persist to disk every 10 games (survive restarts)
-        if (game_idx + 1) % 10 == 0:
+        if (day_idx + 1) % 5 == 0 or day_idx == n_days - 1:
             _save_state_to_disk(_experiment_state)
             _save_logs_to_disk()
 
-        # Yield update every 5 games or at milestones
-        if (game_idx + 1) % 5 == 0 or game_idx == n_games - 1 or game_idx < 3:
+        if (day_idx + 1) % 1 == 0:  # Yield every day (slower pace than games)
             elapsed = time.time() - start_time
-            games_done = game_idx + 1
-            rate = games_done / (elapsed / 60) if elapsed > 0 else 0
-            eta_min = (n_games - games_done) / rate if rate > 0 else 0
+            days_done = day_idx + 1
+            rate = days_done / (elapsed / 60) if elapsed > 0 else 0
+            eta_min = (n_days - days_done) / rate if rate > 0 else 0
 
-            progress(games_done / n_games,
-                     desc=f"Game {games_done}/{n_games} | {rate:.1f} games/min | ETA {eta_min:.0f}min")
+            progress(days_done / n_days,
+                     desc=f"Day {days_done}/{n_days} | {rate:.2f} days/min | ETA {eta_min:.0f}min")
 
             # Build leaderboard
             lb_data = []
@@ -1137,6 +1371,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 ])
 
             # Build chart
+            games_done = sum(len(games_by_date[d]) for d in dates_sorted[:day_idx + 1])
             fig = make_bankroll_chart(state, games_done)
 
             # Show recent unique errors
@@ -1146,16 +1381,15 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 err_summary = " | ERRORS: " + "; ".join(unique_errs)
 
             status = (
-                f"Game {games_done}/{n_games} | "
-                f"{len(game_dates_seen)} game days | "
+                f"Day {days_done}/{n_days} ({games_done}/{n_games} games) | "
                 f"LLM calls: {_llm_calls} (fail: {_llm_failures}) | "
                 f"Odds: {odds_matched} real + {odds_synthetic} synthetic | "
-                f"Rate: {rate:.1f} g/min | ETA: {eta_min:.0f}min | "
+                f"Rate: {rate:.2f} d/min | ETA: {eta_min:.0f}min | "
                 f"Elapsed: {elapsed/60:.1f}min"
                 f"{err_summary}"
             )
 
-            log_text = "\n".join(log_lines[-30:])  # Last 30 lines
+            log_text = "\n".join(log_lines[-30:])
 
             yield (status, lb_data, fig, log_text)
 
@@ -1183,8 +1417,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     results = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "season": "2025-26",
+        "design": "day-bucket-v3",
         "games_processed": n_games,
-        "game_days": len(game_dates_seen),
+        "days_processed": n_days,
         "odds_matched": odds_matched,
         "odds_synthetic": odds_synthetic,
         "llm_calls": _llm_calls,
@@ -1240,18 +1475,19 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     stopped = _stop_event.is_set()
     winner = TRADERS[final_ranking[0][0]]['name']
     winner_bank = final_ranking[0][1]['bankroll']
-    games_done = game_idx + 1 if 'game_idx' in dir() else n_games
-    status = f"{'STOPPED' if stopped else 'COMPLETE'} | {games_done} games | {elapsed/60:.1f}min | Winner: {winner} ${winner_bank:.2f}"
+    days_done = day_idx + 1 if 'day_idx' in dir() else n_days
+    status = f"{'STOPPED' if stopped else 'COMPLETE'} | {days_done}/{n_days} days | {elapsed/60:.1f}min | Winner: {winner} ${winner_bank:.2f}"
     log_text = "\n".join(log_lines[-50:])
 
-    # Final state save
     with _state_lock:
         _experiment_state = {
-            "games_processed": games_done,
+            "days_processed": days_done,
+            "days_total": n_days,
             "games_total": n_games,
             "completed": not stopped,
             "stopped": stopped,
-            "agents": {tid: {k: v for k, v in ts.items() if k != "history"}
+            "design": "day-bucket-v3",
+            "agents": {tid: {k: v for k, v in ts.items() if k not in ("history", "recent_decisions")}
                        for tid, ts in state.items()},
             "updated": datetime.now(timezone.utc).isoformat(),
             "elapsed_seconds": round(elapsed, 1),
@@ -1454,6 +1690,42 @@ async def api_logs(agent: str = None, limit: int = 50):
     # All agents summary
     summary = {tid: len(logs) for tid, logs in _agent_logs.items()}
     return JSONResponse({"agents": summary, "total_entries": sum(summary.values())})
+
+@api.get("/api/day-decisions")
+async def api_day_decisions(date: str = None, agent: str = None, limit: int = 200):
+    """Day-level decisions for council analysis.
+
+    ?date=2025-10-21 — all agents' decisions for that day
+    ?agent=qwen-quant — all days for one agent
+    (no params) — summary by day with total allocations
+    """
+    out = {}
+    if date:
+        for tid, logs in _agent_logs.items():
+            day_logs = [l for l in logs if l.get("date") == date]
+            if day_logs:
+                out[tid] = day_logs[0]  # one entry per agent per day
+        return JSONResponse({"date": date, "agents": out, "n_agents": len(out)})
+    if agent:
+        logs = list(_agent_logs.get(agent, []))[-limit:]
+        return JSONResponse({"agent": agent, "count": len(logs), "days": logs})
+    # Summary: list dates with count of agents that traded
+    by_date = {}
+    for tid, logs in _agent_logs.items():
+        for l in logs:
+            d = l.get("date")
+            if not d:
+                continue
+            if d not in by_date:
+                by_date[d] = {"date": d, "agents": 0, "total_allocations": 0, "total_cash_pct": 0.0}
+            by_date[d]["agents"] += 1
+            by_date[d]["total_allocations"] += len(l.get("allocations", []))
+            by_date[d]["total_cash_pct"] += l.get("cash_held_pct", 0.0)
+    days = sorted(by_date.values(), key=lambda x: x["date"])
+    for d in days:
+        d["avg_cash_pct"] = round(d["total_cash_pct"] / max(1, d["agents"]), 3)
+    return JSONResponse({"total_days": len(days), "days": days[-limit:]})
+
 
 @api.get("/api/leaderboard")
 async def api_leaderboard():
