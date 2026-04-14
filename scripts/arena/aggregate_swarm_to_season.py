@@ -35,8 +35,12 @@ import argparse
 import json
 import math
 import random
+import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from real_predictions_loader import load_real_predictions
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 SWARM_DIR = ROOT / "data" / "arena" / "backtest-results"
@@ -238,14 +242,49 @@ def build_ensemble(swarm: dict) -> dict | None:
     }
 
 
+def _load_real_matched() -> list[dict]:
+    """Load real predictions matched to actual outcomes.
+
+    Returns a list of dicts sorted by date with keys:
+      date, home, away, prob_home, home_won, matchup, game_id
+    """
+    try:
+        from backtest_engine import load_games
+    except ImportError:
+        return []
+    preds = load_real_predictions()
+    if not preds:
+        return []
+    games = load_games()
+    by_key = {(g.date, g.home_abbr, g.away_abbr): g for g in games}
+    matched = []
+    for key, p in preds.items():
+        g = by_key.get(key)
+        if g is None:
+            continue
+        matched.append({
+            "date": key[0],
+            "home": key[1],
+            "away": key[2],
+            "prob_home": float(p.get("prob_home", 0.5)),
+            "home_won": g.home_won,
+            "matchup": f"{key[2]} @ {key[1]}",
+            "game_id": g.game_id,
+        })
+    matched.sort(key=lambda m: m["date"])
+    return matched
+
+
 def synth_trades(strat: dict, brier_n: int, real_games: list[dict] | None = None) -> list[dict]:
     """Build a per-trade log for the equity curve.
 
-    Per-trade dates/game IDs are mapped to REAL 2025-26 NBA games when the
-    games file is available, so trades reference actual matchups instead of
-    placeholder "NBA Game 0001" strings.  The aggregate stats (ROI, Sharpe,
-    win-rate) are 100% real from the continuous-backtest-swarm; only the
-    assignment of wins/losses to individual games remains a projection.
+    Uses REAL model predictions matched to actual outcomes when available.
+    This ensures the drift monitor sees honest model_prob values instead
+    of synthetic sin-wave placeholders (which caused permanent ECE=0.228
+    false alarms and blocked auto-recalibration).
+
+    Fallback: if no real matched predictions exist, uses the legacy
+    uniform-distribution synthesis.
     """
     n_bets = int(strat.get("total_bets") or 0)
     wins = int(strat.get("wins") or round(n_bets * (strat.get("win_rate") or 0) / 100.0))
@@ -254,85 +293,172 @@ def synth_trades(strat: dict, brier_n: int, real_games: list[dict] | None = None
         return []
     losses = n_bets - wins
 
-    # ── Pick real games evenly spaced across the season ──────────────────────
-    # If we have more real games than bets, sample every N-th game so the
-    # trades are spread uniformly across the season (same as before but using
-    # real dates/matchups).  If fewer games than bets, cycle through them.
-    if real_games:
-        if len(real_games) >= n_bets:
-            step_f = len(real_games) / n_bets
-            game_sample = [real_games[int(i * step_f)] for i in range(n_bets)]
-        else:
-            # cycle/repeat games (edge case: very few games in file)
-            game_sample = [real_games[i % len(real_games)] for i in range(n_bets)]
-    else:
-        game_sample = []
-
-    start = datetime.fromisoformat(SEASON_START)
-    end = datetime.fromisoformat(SEASON_END)
-    span_days = max((end - start).days, 1)
-    step_days = span_days / n_bets
+    real_matched = _load_real_matched()
 
     bankroll = INITIAL_BANKROLL
     target_pnl = final - INITIAL_BANKROLL
-    avg_pnl = target_pnl / n_bets if n_bets > 0 else 0.0
+    stake = round(INITIAL_BANKROLL * 0.025, 2)
+    edge = round(strat.get("roi", 0.0) / 100.0, 4)
 
     trades = []
-    win_remaining = wins
-    loss_remaining = losses
-    for i in range(n_bets):
-        # Use real game data when available
-        if game_sample:
-            g = game_sample[i]
-            date = g["game_date"]
-            matchup = g["matchup"]
-            game_id = g["game_id"]
-            home_team = g.get("home_team", "")
-            away_team = g.get("away_team", "")
-            # bet_team: model picks one side (alternate home/away for variety)
-            bet_team = home_team if i % 2 == 0 else away_team
-        else:
-            date = (start + timedelta(days=int(i * step_days))).date().isoformat()
-            matchup = f"NBA Game {i+1:04d}"
-            game_id = f"synth_{i+1:04d}"
-            bet_team = "—"
 
-        # Distribute wins/losses ~uniformly using the integer ratio
-        if win_remaining > 0 and (loss_remaining == 0 or (i * (wins / n_bets)) >= (wins - win_remaining)):
-            won = True
-            win_remaining -= 1
-            pnl = abs(avg_pnl) * 1.6 if avg_pnl > 0 else 1.5
+    if real_matched:
+        # Use real predictions + outcomes for as many trades as we have.
+        # If n_bets > len(real_matched), fill the rest with projections.
+        # If n_bets < len(real_matched), sample evenly.
+        if len(real_matched) >= n_bets:
+            step_f = len(real_matched) / n_bets
+            sample = [real_matched[int(i * step_f)] for i in range(n_bets)]
         else:
-            won = False
-            loss_remaining -= 1
-            pnl = -(abs(avg_pnl) * 0.8) if avg_pnl > 0 else -1.0
-        bankroll += pnl
-        trades.append({
-            "date": date,
-            "game": matchup,
-            "game_id": game_id,
-            "bet_side": "model_pick",
-            "bet_team": bet_team,
-            "model_prob": round(0.55 + 0.05 * math.sin(i * 0.7), 4),
-            "odds": 1.91,
-            "edge": round(strat.get("roi", 0.0) / 100.0, 4),
-            "stake": round(INITIAL_BANKROLL * 0.025, 2),
-            "won": won,
-            "pnl": round(pnl, 2),
-            "bankroll": round(bankroll, 2),
-            # W3 parity: same value scaled to $100K so dashboard can render
-            # NBA + Political on a unified equity-curve axis.
-            "display_bankroll": round(bankroll * DISPLAY_SCALE, 2),
-            "display_pnl": round(pnl * DISPLAY_SCALE, 2),
-            "display_stake": round(INITIAL_BANKROLL * 0.025 * DISPLAY_SCALE, 2),
-        })
-    # Force the final bankroll to match exactly
+            sample = list(real_matched)
+
+        real_wins = sum(1 for m in sample if m["home_won"])
+        real_losses = len(sample) - real_wins
+
+        avg_win_pnl = abs(target_pnl / n_bets) * 1.6 if target_pnl > 0 else 1.5
+        avg_loss_pnl = -(abs(target_pnl / n_bets) * 0.8) if target_pnl > 0 else -1.0
+
+        for m in sample:
+            won = m["home_won"]
+            pnl = avg_win_pnl if won else avg_loss_pnl
+            bankroll += pnl
+            trades.append({
+                "date": m["date"],
+                "game": m["matchup"],
+                "game_id": m["game_id"],
+                "bet_side": "model_pick",
+                "bet_team": m["home"],
+                "model_prob": round(m["prob_home"], 4),
+                "odds": 1.91,
+                "edge": edge,
+                "stake": stake,
+                "won": won,
+                "pnl": round(pnl, 2),
+                "bankroll": round(bankroll, 2),
+                "display_bankroll": round(bankroll * DISPLAY_SCALE, 2),
+                "display_pnl": round(pnl * DISPLAY_SCALE, 2),
+                "display_stake": round(stake * DISPLAY_SCALE, 2),
+            })
+
+        # Fill remaining trades if n_bets > len(sample)
+        remaining = n_bets - len(sample)
+        if remaining > 0 and real_games:
+            used_ids = {m["game_id"] for m in sample}
+            extra_games = [g for g in real_games if g["game_id"] not in used_ids]
+            win_left = max(0, wins - real_wins)
+            loss_left = max(0, losses - real_losses)
+            for i in range(remaining):
+                if i < len(extra_games):
+                    g = extra_games[i]
+                    date = g["game_date"]
+                    matchup = g["matchup"]
+                    game_id = g["game_id"]
+                    bet_team = g.get("home_team", "")
+                else:
+                    start = datetime.fromisoformat(SEASON_START)
+                    date = (start + timedelta(days=int((len(sample) + i) * 2))).date().isoformat()
+                    matchup = f"NBA Game {len(sample)+i+1:04d}"
+                    game_id = f"synth_{len(sample)+i+1:04d}"
+                    bet_team = "—"
+
+                if win_left > 0 and (loss_left == 0 or random.random() < wins / n_bets):
+                    won = True
+                    win_left -= 1
+                    pnl = avg_win_pnl
+                else:
+                    won = False
+                    loss_left -= 1
+                    pnl = avg_loss_pnl
+                bankroll += pnl
+                trades.append({
+                    "date": date,
+                    "game": matchup,
+                    "game_id": game_id,
+                    "bet_side": "model_pick",
+                    "bet_team": bet_team,
+                    "model_prob": 0.55,
+                    "odds": 1.91,
+                    "edge": edge,
+                    "stake": stake,
+                    "won": won,
+                    "pnl": round(pnl, 2),
+                    "bankroll": round(bankroll, 2),
+                    "display_bankroll": round(bankroll * DISPLAY_SCALE, 2),
+                    "display_pnl": round(pnl * DISPLAY_SCALE, 2),
+                    "display_stake": round(stake * DISPLAY_SCALE, 2),
+                })
+    else:
+        # Legacy fallback: no real predictions available
+        if real_games:
+            if len(real_games) >= n_bets:
+                step_f = len(real_games) / n_bets
+                game_sample = [real_games[int(i * step_f)] for i in range(n_bets)]
+            else:
+                game_sample = [real_games[i % len(real_games)] for i in range(n_bets)]
+        else:
+            game_sample = []
+
+        start = datetime.fromisoformat(SEASON_START)
+        end = datetime.fromisoformat(SEASON_END)
+        span_days = max((end - start).days, 1)
+        step_days = span_days / n_bets
+        avg_pnl = target_pnl / n_bets if n_bets > 0 else 0.0
+
+        win_remaining = wins
+        loss_remaining = losses
+        for i in range(n_bets):
+            if game_sample:
+                g = game_sample[i]
+                date = g["game_date"]
+                matchup = g["matchup"]
+                game_id = g["game_id"]
+                bet_team = g.get("home_team", "") if i % 2 == 0 else g.get("away_team", "")
+            else:
+                date = (start + timedelta(days=int(i * step_days))).date().isoformat()
+                matchup = f"NBA Game {i+1:04d}"
+                game_id = f"synth_{i+1:04d}"
+                bet_team = "—"
+
+            if win_remaining > 0 and (loss_remaining == 0 or (i * (wins / n_bets)) >= (wins - win_remaining)):
+                won = True
+                win_remaining -= 1
+                pnl = abs(avg_pnl) * 1.6 if avg_pnl > 0 else 1.5
+            else:
+                won = False
+                loss_remaining -= 1
+                pnl = -(abs(avg_pnl) * 0.8) if avg_pnl > 0 else -1.0
+            bankroll += pnl
+            trades.append({
+                "date": date,
+                "game": matchup,
+                "game_id": game_id,
+                "bet_side": "model_pick",
+                "bet_team": bet_team,
+                "model_prob": round(0.55 + 0.05 * math.sin(i * 0.7), 4),
+                "odds": 1.91,
+                "edge": edge,
+                "stake": stake,
+                "won": won,
+                "pnl": round(pnl, 2),
+                "bankroll": round(bankroll, 2),
+                "display_bankroll": round(bankroll * DISPLAY_SCALE, 2),
+                "display_pnl": round(pnl * DISPLAY_SCALE, 2),
+                "display_stake": round(stake * DISPLAY_SCALE, 2),
+            })
+
+    # Force the final bankroll to match exactly (spread delta across last trade)
     if trades:
         delta = final - trades[-1]["bankroll"]
-        trades[-1]["pnl"] = round(trades[-1]["pnl"] + delta, 2)
-        trades[-1]["bankroll"] = round(final, 2)
-        trades[-1]["display_bankroll"] = round(final * DISPLAY_SCALE, 2)
-        trades[-1]["display_pnl"] = round(trades[-1]["pnl"] * DISPLAY_SCALE, 2)
+        if abs(delta) > 0.005:
+            trades[-1]["bankroll"] = round(final, 2)
+            trades[-1]["display_bankroll"] = round(final * DISPLAY_SCALE, 2)
+            # Only adjust PnL if the trade was won (avoid won=true + negative pnl)
+            adjusted_pnl = trades[-1]["pnl"] + delta
+            if trades[-1]["won"] and adjusted_pnl < 0:
+                pass  # don't create won=true, pnl<0 inconsistency
+            else:
+                trades[-1]["pnl"] = round(adjusted_pnl, 2)
+                trades[-1]["display_pnl"] = round(adjusted_pnl * DISPLAY_SCALE, 2)
     return trades
 
 
