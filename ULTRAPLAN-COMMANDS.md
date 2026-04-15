@@ -37,7 +37,7 @@ Best for: scheduled / repeatable heavy jobs. Already wired:
 
 ```bash
 # Trigger Trading Floor monitor refresh
-gh workflow run trading-floor-10agents.yml -R LBJLincoln/mon-ipad
+gh workflow run trading-floor.yml -R LBJLincoln/mon-ipad
 
 # Trigger backtest swarm (CPCV gate)
 gh workflow run backtest-swarm.yml -R LBJLincoln/mon-ipad
@@ -46,7 +46,7 @@ gh workflow run backtest-swarm.yml -R LBJLincoln/mon-ipad
 gh workflow run gpu-burst.yml -R LBJLincoln/mon-ipad
 
 # View last run status
-gh run list -R LBJLincoln/mon-ipad --workflow trading-floor-10agents.yml -L 3
+gh run list -R LBJLincoln/mon-ipad --workflow trading-floor.yml -L 3
 ```
 
 ### Create a one-shot ultraplan workflow

@@ -7,7 +7,7 @@ Build the best NBA prediction AI in the world.
 **Best:** Brier 0.21514 (Colab TabICL, 186f, iter 129) | Fleet best: 0.22085 (S17, gen 524) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
 **NBA TF v3 (day-bucket, Apr 15 fresh run, 12 agents):** Stake-fix DEPLOYED (half-Kelly 5% cap + min edge 0.03 + current bankroll). Gemini parser FIXED (thinkingBudget=0, max_tokens 4096, all-parts join — gemini-anl/gemini-tact were 0 bets across 27 days, now betting on day 2). +1 NVIDIA Nemotron-120B agent (4 providers: Cerebras / Google / Mistral / OpenRouter). HF sha `9dca67ed`. Mutation actuator unblocked (gap_threshold 0.20→0.12).
-**Political TF (Apr 14 snapshot):** 50 days / 834 events processed, 0 trades by 11 agents (parser bug). Prior claim "llama-contra +223.5%" was from mid-run, now stale.
+**Political TF (Apr 14 snapshot):** 50 days / 834 events processed, 0 trades by 10 agents (parser bug). Prior claim "llama-contra +223.5%" was from mid-run, now stale.
 
 ## Nomos42 Ecosystem
 
@@ -60,7 +60,7 @@ HF EVOLUTION ISLANDS (10 NBA + 8 Political = 18 active, parity achieved 2026-04-
 
 NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
 
-HF TRADING FLOORS (Real LLM experiment, 10 agents each — HF-first with FastAPI control)
+HF TRADING FLOORS (Real LLM experiment, NBA 12 agents / Political 10 agents — HF-first with FastAPI control)
     ├── LBJLincoln26/nba-llm-trading-floor: NBA engine (1257 games, FastAPI + Gradio)
     │   └── Source: scripts/arena/hf-llm-trading-floor/
     ├── LBJLincoln26/political-llm-trading-floor: POLITICAL engine (1120 events, same architecture)
@@ -68,8 +68,20 @@ HF TRADING FLOORS (Real LLM experiment, 10 agents each — HF-first with FastAPI
     ├── Both expose: /api/status /run /stop /reset /mutate /logs /day-decisions /leaderboard
     └── LBJLincoln26/llm-gateway: Centralized LLM proxy (11 models, fallback chains)
 
+HF DEPT COUNCILS (9 Spaces, all on TESTforge42 — consolidated 2026-04-15 Option B migration)
+    ├── D1 TESTforge42/nomos-dept-d1-research     → testforge42-nomos-dept-d1-research.hf.space
+    ├── D2 TESTforge42/nomos-dept-d2-engineering  → testforge42-nomos-dept-d2-engineering.hf.space
+    ├── D3 TESTforge42/nomos-dept-d3-evolution    → testforge42-nomos-dept-d3-evolution.hf.space
+    ├── D4 TESTforge42/nomos-dept-d4-product      → testforge42-nomos-dept-d4-product.hf.space
+    ├── D5 TESTforge42/nomos-dept-d5-business     → testforge42-nomos-dept-d5-business.hf.space
+    ├── D6 TESTforge42/nomos-dept-d6-evaluation   → testforge42-nomos-dept-d6-evaluation.hf.space
+    ├── D7 TESTforge42/nomos-dept-d7-infra        → testforge42-nomos-dept-d7-infra.hf.space
+    ├── D8 TESTforge42/nomos-dept-d8-finance      → testforge42-nomos-dept-d8-finance.hf.space
+    └── D9 TESTforge42/nomos-dept-d9-cross-repo   → testforge42-nomos-dept-d9-cross-repo.hf.space
+    Secrets per council: NOMOS_HF_TOKEN, CEREBRAS_API_KEY, OPENROUTER_API_KEY, MISTRAL_API_KEY, GOOGLE_API_KEY, GATEWAY_URL
+    Vars per council:    DEPT_ID, DEPT_NAME, DEPT_MISSION, LOOP_INTERVAL_MINUTES=30
+
 HF OTHER SPACES (across 3 accounts, post-cleanup 2026-04-15)
-    ├── Dept Councils: d1-research, d2-engineering, d3-evolution, d4-product, d5-business, d6-evaluation
     ├── Free LLM Chat: gemma4-chat, qwen35-chat
     ├── Docker Runtime: Nomos42/nomos42-llm-cpu (self-hosted Qwen3-1.7B GGUF for api_pool)
     └── Pixel World: Nomos42/pixel-world (static)
@@ -186,7 +198,7 @@ Channel: @Nomos42
 
 Guardian Orchestrator v3: Analyzes ALL 9 department loops, allocates resources, cross-pollinates wins.
 
-## Trading Floor v5 — 10 Real LLM Agents (Apr 13, 2026)
+## Trading Floor v5 — 12 Real LLM Agents (NBA) / 10 (Political) — Apr 15, 2026
 
 Every agent is a **real LLM API call** — no hash simulation, no mocks.
 Each receives full game context (odds, standings, form, 100+ categories, 22 SOTA strategies)
@@ -257,7 +269,7 @@ Each department runs a Karpathy autoresearch loop:
 - SCAN → PROPOSE → EXECUTE (5-min) → EVALUATE → KEEP/REVERT
 - Council state: data/departments/council-<dept>.json
 - Metrics log: data/departments/<dept>/metrics.jsonl
-- Runner: scripts/councils/department-council.sh <dept>
+- Runner: scripts/councils/hermes-runner.sh <dept>
 
 Shared infra: VM (control tower) + Laptop (local models) + HF Spaces (3 accounts) + GPU burst
 
