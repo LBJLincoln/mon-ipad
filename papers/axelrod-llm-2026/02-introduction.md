@@ -1,0 +1,121 @@
+# Introduction
+
+## The Axelrod Legacy
+
+In 1980, Robert Axelrod invited game theorists, computer scientists, economists, and
+political scientists to submit strategies for a round-robin iterated Prisoner's Dilemma
+(IPD) tournament [@axelrod1980effective]. Fourteen strategies competed; the winner, Anatol
+Rapoport's *Tit-for-Tat*, cooperated on the first move and thereafter mirrored its
+opponent's previous action. Axelrod's follow-up tournament [@axelrod1980more], his
+landmark 1984 book [@axelrod1984evolution], and a celebrated 2006 *Science* review with
+Hammond [@axelrod2006evolution] elevated these findings into a general theory: cooperation
+is evolutionarily stable when interactions are repeated, agents have sufficient memory, and
+defection is sufficiently punished. Nowak's 2006 *Science* synthesis of the five rules for
+the evolution of cooperation — kin selection, direct reciprocity, indirect reciprocity,
+network reciprocity, and group selection [@nowak2006five] — further cemented the IPD as a
+foundational model for social dynamics across disciplines.
+
+Yet the Axelrod tournament was, by necessity, severely circumscribed. Agents were
+hand-coded finite automata. The action space was binary: cooperate or defect. Strategies
+were static for the duration of a tournament round. There was no mechanism for the
+population itself to detect and correct dangerous homogeneity — a condition Axelrod himself
+noted could make a cooperative equilibrium fragile to invasion by defectors
+[@axelrod1984evolution, ch. 3]. These constraints were appropriate for 1980 computing
+resources and theoretical tractability, but they leave open a rich family of
+generalizations that modern AI systems are uniquely positioned to explore.
+
+## The Rise of LLM Agent Societies
+
+Large language models (LLMs) have enabled a qualitatively new class of multi-agent
+system. Rather than encoding strategy as explicit state-machine transitions, LLM agents
+receive natural-language descriptions of their role, history, and environment and generate
+free-text reasoning before committing to an action. This shifts the locus of strategy from
+the programmer to the model's emergent reasoning, enabling far richer behavioral
+repertoires. CAMEL [@li2023camel] pioneered role-playing LLM societies; AutoGen
+[@wu2023autogen] formalized multi-agent conversation patterns; MetaGPT [@hong2023metagpt]
+introduced role-specialization with shared memory. More recently, TradingAgents
+[@liu2024tradingagents, arXiv:2412.20138] instantiated a multi-LLM financial trading
+system with analyst, risk management, and execution roles communicating through structured
+dialogues — the closest antecedent to our architecture. Oasis [@yang2024oasis,
+camel-ai/oasis] extended multi-agent interaction to one-million-node social simulations on
+real social network topologies.
+
+A critical and under-studied challenge in all of these systems is **behavioral
+homogeneity**: when agents share the same underlying model family or receive similar
+prompts, their outputs collapse toward consensus, forfeiting the ensemble's principal
+advantage over any single agent. DMAD [@zhou2025dmad, arXiv:2502] — Diverse Multi-Agent
+Debate — addresses this through adversarial prompting to force disagreement, but does so
+via external intervention rather than an endogenous mechanism the agents themselves invoke.
+The Prediction Arena framework [@anonymous2026arena, arXiv:2604.07355] provides an
+evaluation scaffold for prediction-market multi-agent experiments but does not formalize
+diversity as a first-class optimization target. The Agent Trading Arena [@du2025agenttrading,
+arXiv:2502.17967] introduces competitive market microstructure for LLM agents but studies
+price-formation rather than cooperative diversity dynamics.
+
+## The Gap This Paper Fills
+
+Three key elements are missing from the existing literature:
+
+**1. Endogenous diversity maintenance.** Current approaches to LLM ensemble diversity
+require external adversarial prompting [@zhou2025dmad] or architectural separation between
+agent roles [@liu2024tradingagents]. Neither approach is self-correcting: if all agents
+receive prompts that accidentally converge (e.g., all see the same high-salience news
+event), no internal mechanism restores diversity. We need an *intrinsic* mechanism that
+agents invoke based on their own performance signal.
+
+**2. Continuous-action, real-world grounding.** Axelrod's binary cooperate/defect has no
+natural analog in real prediction markets, where actions are probability estimates on a
+$[0,1]$ continuum and the payoff function is the negated Brier score. Generalizing IPD
+theory to continuous action spaces with real-world ground truth requires new formalism.
+
+**3. The sacrificial role.** Evolutionary biology recognizes altruistic sacrifice —
+organisms that reduce their own fitness to improve group fitness [@hamilton1964genetical].
+No analogous mechanism has been introduced in LLM multi-agent systems: the question of
+whether an agent should voluntarily explore a lower-EV strategy archetype to preserve
+societal diversity remains unasked, let alone answered.
+
+## Contributions
+
+This paper makes four contributions:
+
+1. **Axelrod-LLM formalization.** We define the *LLM Prediction Society Game* (LPSG) as a
+   Bayesian population game over a continuous-action prediction market with common-knowledge
+   day-end broadcasts, generalizing the IPD to the LLM agent setting (§4).
+
+2. **Sacrificial Role Reallocation (SRR).** We introduce SRR, a novel mechanism wherein
+   an agent with persistent performance deficiency (defined formally as sustained negative
+   regret relative to the society mean) probabilistically adopts an underrepresented
+   strategy archetype from a predefined taxonomy, increasing population-level Jensen–Shannon
+   divergence (§4.3). We prove under mild assumptions that SRR is a Nash equilibrium
+   refinement: no agent can unilaterally deviate and improve *societal* Brier score (§4.4).
+
+3. **Real-world LLM trading experiment.** We deploy 12 heterogeneous LLM agents (spanning
+   five provider ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, and
+   self-hosted Phi-3.5) on the full 2025–26 NBA season (1,257 games) and 1,120 US
+   political events, constituting — to our knowledge — the largest real-money-equivalent
+   LLM prediction market experiment in peer-reviewed literature (§5).
+
+4. **Empirical validation of diversity-accuracy coupling.** We show that population-level
+   Jensen–Shannon divergence of agent prediction distributions is positively correlated
+   with ensemble Brier-score improvement, and that SRR reliably increases this divergence
+   versus a fixed-ensemble control, an ablation of mechanism components, and a DMAD
+   baseline (§6).
+
+## Paper Organization
+
+Section 2 surveys related work across evolutionary game theory, LLM multi-agent systems,
+and prediction market mechanisms. Section 3 formalizes the LPSG and SRR. Section 4
+describes the experimental setup. Section 5 presents results. Section 6 discusses
+connections to cooperation theory and implications for LLM ensemble design. Section 7
+covers limitations and ethics. Appendices provide full agent prompt templates, strategy
+archetype taxonomy, and derivation of the diversity–accuracy bound.
+
+---
+
+> **A note on timing.** The 1980 Axelrod tournament and the 1997 anniversary volume
+> [@axelrod1997complexity] bracket a remarkable period in which game theory and computer
+> science began to co-evolve. The 2025–26 NBA season constitutes our arena precisely
+> because it provides 1,257 independent binary-outcome events with transparent, objective
+> resolution — a ground-truth discipline that social simulations lack. Political event
+> markets provide a complementary domain with higher uncertainty, longer time horizons, and
+> richer information asymmetries, enabling domain-transfer tests of our core claims.
