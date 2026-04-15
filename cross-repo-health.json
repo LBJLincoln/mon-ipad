@@ -1,63 +1,72 @@
 {
-  "timestamp": "2026-04-15T04:00:00Z",
+  "timestamp": "2026-04-15T16:30:00Z",
   "brain_cycle": "4h-auto",
   "ecosystem": {
     "nba_quant": {
       "repo": "lbjlincoln/nomos-nba-agent",
       "engine_version": "v3.1-54cat",
       "fleet_best_brier": 0.22085,
-      "fleet_individual_best": 0.21917,
+      "fleet_best_individual": 0.21917,
+      "fleet_leader": "S17 (ensemble_specialist, extra_trees, 34f)",
       "target_brier": 0.21837,
       "distance_to_target": 0.00248,
       "islands_active": 8,
       "islands_down": [],
-      "stagnation_alerts": ["S15 (14 cycles)", "S17 (15 cycles — diversify sent)"],
+      "stagnation_alerts": ["S17 (15 cycles — diversify sent prev cycle)"],
       "health": "GREEN",
-      "note": "8 islands confirmed (S10-S17). S17 fleet best. Diversify triggered on S17."
+      "note": "8 islands active. S17 individual 0.21917 extremely close to target. S16/S17 URLs missing from CLAUDE.md."
     },
     "political_alpha": {
       "repo": "lbjlincoln/nomos-political-alpha",
-      "engine_version": "v3.22-political-44cat-fec-q1-2026",
-      "fleet_best_brier": 0.2499,
-      "islands_active": 4,
-      "islands_down": [],
-      "health": "GREEN",
-      "note": "All 4 islands UP. P3/P4 URL fix confirmed (lbjlincoln- prefix). Q1 FEC data fetcher added."
+      "engine_version_root": "v3.23-political-45cat-market-preposition",
+      "engine_version_hfspace": "v3.15-political-37cat-market-preposition",
+      "fleet_best_brier": 0.24996,
+      "fleet_best_known": 0.23134,
+      "islands_active": 2,
+      "islands_down": ["alpha-2", "alpha-4"],
+      "health": "YELLOW",
+      "alert": "Alpha-2 (fleet leader 0.23134) + alpha-4 DOWN. Manual HF restart needed."
     }
   },
   "cross_project_techniques": {
+    "market_preposition_signals": {
+      "status": "NEW - deployed to political engine Cat45 (root) + Cat37 (hf-space) cycle102",
+      "nba_analog": "N/A (no dark pool / options pre-positioning analog for NBA games)",
+      "expected_impact": "detect institutional knowledge of policy moves 48-72h early"
+    },
+    "cross_island_pareto_distillation": {
+      "status": "PROPOSED - research proposal written 2026-04-15",
+      "applies_to": "both NBA (8 islands) and political (4 islands)",
+      "next_action": "implement /api/pareto-front GET endpoint on each NBA island",
+      "expected_brier_improvement": "0.002-0.005 within 50 generations"
+    },
     "venn_abers_calibration": {
-      "status": "active on NBA S14 top_performer=0.21993, Political P2 top_performer=0.25107",
-      "proposed_for": "all political islands — port to political evaluation",
-      "next_action": "implement CalibratedClassifierCV(isotonic) in political hf-space/app.py"
+      "status": "active on NBA S14 top_performer (extra_trees). S17 top_performer 0.21917",
+      "proposed_for": "all NBA islands + political alpha calibration/political_calibration.py",
+      "next_action": "deploy CalibratedClassifierCV(isotonic) in political hf-space/app.py"
     },
     "extended_temporal_windows": {
-      "status": "deployed to political engine v3.22 [1,3,5,7,10,15,20,30,60,90]",
-      "ported_from": "NBA multi-window pattern",
-      "expected_impact": "capture slow-burn policy/donor effects"
-    },
-    "cross_island_ensemble_stacking": {
-      "status": "PROPOSAL WRITTEN (2026-04-15) — cross-island-ensemble-stacking-2026-04-15.md",
-      "approach": "LR meta-learner over 8 NBA island checkpoints",
-      "expected_brier": "~0.215 (from 0.22085)",
-      "applicability_to_political": "same approach for 4 political islands — expected 0.247-0.248"
+      "status": "deployed to political engine [1,3,5,7,10,15,20,30,60,90] (v3.9)",
+      "ported_from": "NBA multi-window pattern"
     },
     "fec_q1_2026_data": {
-      "status": "IMPLEMENTED (2026-04-15) — fetch_fec_q1_candidate_reports() added",
-      "ported_to": "nomos-political-alpha/ops/fetch_political_data.py",
-      "timing": "Q1 deadline = today, fresh data available NOW"
+      "status": "LIVE (cat44, cycle100). Q1-2026 deadline was today Apr-15.",
+      "note": "Fresh FEC data now feeding political islands via cat44"
     }
   },
   "engine_parity": {
-    "nba_engine": "features/engine.py v3.1-54cat",
-    "political_engine": "features/political_engine.py v3.22-political-44cat",
-    "note": "Political engine at 44 categories. Both repos maintain same GA interface."
+    "nba_engine": "features/engine.py v3.1-54cat (7213 features, 54 categories)",
+    "nba_hfspace_must_match": "hf-space/features/engine.py — check parity with deploy_island.py",
+    "political_root": "features/political_engine.py v3.23 (stub + lazy imports for Cat39-45)",
+    "political_hfspace": "hf-space/features/political_engine.py v3.15 (full inline implementation, 37 cats)",
+    "note": "Political root and hf-space versions DIVERGED by design. Root = metadata+late cats. HF = full inline."
   },
   "alerts": [
-    "INFO: S17 (fleet best 0.22085) diversify triggered — stagnation=15",
-    "INFO: S15 stagnation at 14 cycles — monitor next cycle",
-    "INFO: Political fleet all GREEN — P3/P4 URL fix resolved false DOWN alerts",
-    "INFO: Cross-island stacking proposal could push NBA below 0.21837 target",
-    "INFO: FEC Q1 2026 data fetcher added — real fundraising data now feeding cat44"
+    "CRITICAL: nomos42-political-alpha-2 DOWN (fleet leader 0.23134) - restart via HF web UI",
+    "CRITICAL: nomos42-political-alpha-4 DOWN - restart via HF web UI",
+    "INFO: S17 individual best 0.21917 — only 0.00080 from target 0.21837! Check S17 next cycle.",
+    "INFO: Political alpha-3 RECOVERED (was DOWN prev cycle, now EVOLVING at 0.25223)",
+    "INFO: S16/S17 URLs not in CLAUDE.md — add them so brain can monitor all 8 islands",
+    "INFO: Cross-island Pareto distillation proposal ready for implementation"
   ]
 }

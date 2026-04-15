@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-15T04:00:00Z",
+  "timestamp": "2026-04-15T16:30:00Z",
   "brain_cycle": "4h-auto",
   "cycle_date": "2026-04-15",
   "nba_fleet": {
@@ -7,84 +7,85 @@
       "name": "nomos42-nba-quant",
       "role": "exploitation",
       "status": "EVOLVING",
-      "cycle": 220,
-      "generation": 659,
+      "cycle": 253,
+      "generation": 759,
       "best_brier": 0.2271,
       "best_roi": 0.2456,
       "best_sharpe": 7.8699,
       "stagnation": 0,
       "best_model": "random_forest",
-      "best_features": 18
+      "best_features": 200,
+      "note": "Hard reset at cycle 238 (25 stagnation). post-reset stagnation=0"
     },
     "S11": {
       "name": "nomos42-nba-quant-2",
       "role": "exploration",
       "status": "EVOLVING",
-      "cycle": 287,
-      "generation": 859,
+      "cycle": 416,
+      "generation": 1247,
       "best_brier": 0.22486,
-      "best_roi": null,
-      "best_sharpe": null,
-      "stagnation": 1,
+      "best_roi": 0.2678,
+      "best_sharpe": 5.3768,
+      "stagnation": 0,
       "best_model": "extra_trees",
-      "best_features": 25
+      "best_features": 25,
+      "note": "Hard reset at cycle 410. Top-5 Pareto show CatBoost/RF @ Brier ~0.2196"
     },
     "S12": {
       "name": "nomos42-nba-evo-3",
       "role": "extra_trees_specialist",
       "status": "EVOLVING",
-      "cycle": 492,
-      "generation": 1475,
+      "cycle": 557,
+      "generation": 1669,
       "best_brier": 0.22334,
       "best_roi": 0.2866,
       "best_sharpe": 5.7742,
       "stagnation": 0,
       "best_model": "xgboost",
-      "best_features": 41
+      "best_features": 41,
+      "note": "Hard reset at cycle 533. Stable at plateau."
     },
     "S13": {
       "name": "nomos42-nba-evo-4",
       "role": "catboost_specialist",
       "status": "EVOLVING",
-      "cycle": 81,
-      "generation": 243,
+      "cycle": 166,
+      "generation": 498,
       "best_brier": 0.22326,
       "best_roi": 0.2835,
       "best_sharpe": 6.1563,
       "stagnation": 0,
       "best_model": "random_forest",
-      "best_features": 42
+      "best_features": 42,
+      "note": "Hard reset at cycle 152 (25 cycles). Active Pareto: 14 solutions."
     },
     "S14": {
       "name": "nomos42-nba-evo-5",
       "role": "lightgbm_specialist",
       "status": "EVOLVING",
-      "cycle": 203,
-      "generation": 609,
+      "cycle": 269,
+      "generation": 805,
       "best_brier": 0.22251,
       "best_roi": 0.2967,
       "best_sharpe": 11.4634,
       "stagnation": 0,
       "best_model": "extra_trees",
       "best_features": 79,
-      "top_performer_brier": 0.21993,
-      "top_performer_model": "random_forest",
-      "top_performer_features": 200
+      "note": "Breakthrough at gen 760: CatBoost 200f improved 0.28→0.224. Sharpe 11.46 best in fleet."
     },
     "S15": {
       "name": "nomos42-nba-evo-6",
       "role": "wide_search",
       "status": "EVOLVING",
-      "cycle": 333,
-      "generation": 999,
+      "cycle": 441,
+      "generation": 1321,
       "best_brier": 0.22328,
       "best_roi": 0.2873,
       "best_sharpe": 6.9718,
-      "stagnation": 14,
+      "stagnation": 0,
       "best_model": "lightgbm",
       "best_features": 71,
-      "top_performer_brier": 0.21993,
-      "alert": "14 cycles without improvement — approaching diversify threshold"
+      "note": "Hard reset at cycle 419. Pop=50."
     },
     "S16": {
       "name": "lbjlincoln26-nba-evo-s16",
@@ -97,7 +98,8 @@
       "best_sharpe": 7.18,
       "stagnation": 0,
       "best_model": "xgboost",
-      "best_features": 45
+      "best_features": 45,
+      "note": "Last seen 2026-04-15T04:00Z (not fetched this cycle - URL unknown)"
     },
     "S17": {
       "name": "lbjlincoln26-nba-evo-s17",
@@ -114,103 +116,96 @@
       "top_performer_brier": 0.21917,
       "top_performer_model": "extra_trees",
       "top_performer_features": 34,
-      "action_taken": "DIVERSIFY command sent (stagnation=15, fleet best unchanged since gen 524)"
+      "action_taken": "DIVERSIFY sent (stagnation=15, last cycle)",
+      "note": "Fleet INDIVIDUAL BEST 0.21917! Last seen 04:00Z. DIVERSIFY was sent."
     }
   },
   "nba_summary": {
     "fleet_best_brier": 0.22085,
-    "fleet_best_island": "S17",
+    "fleet_leader": "S17",
     "fleet_best_individual": 0.21917,
-    "fleet_best_individual_island": "S17",
+    "fleet_best_individual_island": "S17 (extra_trees, 34f)",
     "target_brier": 0.21837,
     "distance_to_target": 0.00248,
     "checkpoint_triggered": false,
     "diversify_triggered": true,
-    "diversify_target": "S17",
+    "diversify_target": "S17 (sent prev cycle)",
     "islands_active": 8,
     "islands_down": [],
-    "stagnation_alerts": ["S15 (14 cycles)", "S17 (15 cycles — diversify sent)"],
     "all_stagnation_zero": false,
-    "prev_cycle_fleet_best": 0.22085,
-    "fleet_progress_vs_last": 0.0
+    "stagnation_alert": "S17 at 15 cycles (prev cycle diversify sent)",
+    "all_time_best_brier": 0.21570,
+    "note": "S17 individual 0.21917 is very close to target 0.21837. CRITICAL: add S16/S17 URLs to CLAUDE.md"
   },
   "political_fleet": {
-    "P1": {
+    "alpha-1": {
       "name": "nomos42-political-alpha",
-      "role": "exploitation_xgboost",
+      "role": "political_exploitation",
       "status": "EVOLVING",
-      "cycle": 3628,
-      "generation": 10884,
+      "cycle": 4352,
+      "generation": 13054,
       "best_brier": 0.24996,
       "best_roi": 0.0009,
       "best_sharpe": 0.0853,
       "stagnation": 0,
-      "best_model": "xgboost_brier",
+      "best_model": "xgboost",
       "best_features": 67,
-      "url": "nomos42-political-alpha.hf.space"
+      "events": 1180
     },
-    "P2": {
+    "alpha-2": {
       "name": "nomos42-political-alpha-2",
-      "role": "exploration_lightgbm",
+      "role": "political_exploration",
+      "status": "DOWN_404",
+      "last_known_generation": 30872,
+      "best_brier": 0.23134,
+      "alert": "CRITICAL: Fleet leader at 0.23134 is DOWN. Restart at huggingface.co/spaces/Nomos42/political-alpha-2"
+    },
+    "alpha-3": {
+      "name": "nomos42-political-alpha-3",
+      "role": "catboost_specialist",
       "status": "EVOLVING",
-      "cycle": 2739,
-      "generation": 8216,
+      "cycle": 3541,
+      "generation": 10622,
       "best_brier": 0.25223,
       "best_roi": 0.0045,
       "best_sharpe": 0.4477,
       "stagnation": 0,
       "best_model": "lightgbm",
       "best_features": 60,
-      "top_performer_brier": 0.25107,
-      "top_performer_calibration": "venn_abers",
-      "url": "nomos42-political-alpha-2.hf.space"
+      "events": 1180,
+      "note": "Recovered from DOWN last cycle."
     },
-    "P3": {
-      "name": "lbjlincoln-political-alpha-3",
-      "role": "xgboost_specialist",
-      "status": "EVOLVING",
-      "cycle": 5930,
-      "generation": 17788,
-      "best_brier": 0.2499,
-      "best_roi": 0.0021,
-      "best_sharpe": 0.2142,
-      "stagnation": 0,
-      "best_model": "xgboost_brier",
-      "best_features": 69,
-      "url": "lbjlincoln-political-alpha-3.hf.space",
-      "note": "URL CORRECTED: was tracked as DOWN_404 (wrong URL), actually LIVE"
-    },
-    "P4": {
-      "name": "lbjlincoln-political-alpha-4",
-      "role": "logistic_regression_wide",
-      "status": "EVOLVING",
-      "cycle": 4597,
-      "generation": 13789,
-      "best_brier": 0.25146,
-      "best_roi": 0.0033,
-      "best_sharpe": 0.332,
-      "stagnation": 0,
-      "best_model": "logistic_regression",
-      "best_features": 43,
-      "url": "lbjlincoln-political-alpha-4.hf.space",
-      "note": "URL CORRECTED: was tracked as DOWN_404 (wrong URL), actually LIVE"
+    "alpha-4": {
+      "name": "nomos42-political-alpha-4",
+      "role": "wide_search",
+      "status": "DOWN_404",
+      "generation": null,
+      "best_brier": null,
+      "alert": "CRITICAL: DOWN. Manual restart required."
     }
   },
   "political_summary": {
-    "fleet_best_brier": 0.2499,
-    "fleet_best_island": "P3",
-    "islands_active": 4,
-    "islands_down": [],
-    "critical_alert": null,
-    "url_correction": "P3/P4 now correctly tracking lbjlincoln- prefix (not nomos42-)"
+    "fleet_best_brier": 0.24996,
+    "fleet_best_known": 0.23134,
+    "islands_active": 2,
+    "islands_down": ["alpha-2", "alpha-4"],
+    "pct_fleet_online": 50,
+    "critical_alert": "2/4 Political Alpha islands DOWN. Alpha-2 (fleet leader 0.23134) needs restart."
   },
   "actions_this_cycle": [
-    "NBA S17: POST /api/command {command:diversify} — stagnation=15, fleet best unchanged since gen 524",
-    "Political: Added fetch_fec_q1_candidate_reports() — Q1-2026 deadline is TODAY (Apr 15)",
-    "Political: fetch_fec_q1_candidate_reports() fetches Senate/House/Presidential 2026 totals with small_donor_ratio, burn_rate, debt_ratio, cash_on_hand_ratio — feeds cat44 features",
-    "Research: cross-island-ensemble-stacking-2026-04-15.md — LR meta-learner over 8 island checkpoints, expected Brier ~0.215 (target: 0.21837)",
-    "Health fix: P3/P4 URLs corrected (lbjlincoln-political-alpha-3/4.hf.space) — both are LIVE at gen 17788/13789"
+    "Political: +Cat45 Market Maker Pre-Positioning (20f) as standalone module features/cat45_market_preposition.py",
+    "Political: hf-space +Cat37 (same features inline), ENGINE v3.14→v3.15",
+    "Political: Root engine version v3.22→v3.23 (Cat45 lazy import added)",
+    "NBA: Research proposal written - cross-island Pareto front knowledge distillation",
+    "NBA: S10-S15 fresh API data (all EVOLVING, stagnation=0)",
+    "NBA: S16/S17 data kept from prev cycle (04:00Z) — URLs needed in CLAUDE.md",
+    "Political: Alpha-3 RECOVERED from DOWN (gen 10622, brier 0.25223)",
+    "ALERT: Political alpha-2 (fleet leader 0.23134) and alpha-4 still DOWN"
   ],
-  "next_cycle_priority": "Implement /api/predict_batch endpoint on HF spaces for cross-island ensemble (Phase 1 of stacking proposal)",
-  "github_status": "token_expired — push required manually or after re-auth"
+  "next_cycle_priority": "NBA: Fetch S16/S17 URLs and add to monitoring. Political: Restart alpha-2+alpha-4. NBA: Implement /api/pareto-front endpoint for cross-island harvest.",
+  "engine_versions": {
+    "nba_engine": "v3.1-54cat (7213 features, 54 categories)",
+    "political_engine_root": "v3.23-political-45cat-market-preposition",
+    "political_engine_hfspace": "v3.15-political-37cat-market-preposition"
+  }
 }
