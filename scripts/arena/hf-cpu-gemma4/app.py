@@ -21,29 +21,51 @@ MODEL_FILE = os.environ.get("MODEL_FILE", "gemma-4-E4B-it-UD-Q4_K_XL.gguf")
 N_CTX = int(os.environ.get("N_CTX", "4096"))
 N_THREADS = int(os.environ.get("N_THREADS", "2"))
 
+FALLBACK_MODELS = [
+    ("bartowski/Phi-3.5-mini-instruct-GGUF", "Phi-3.5-mini-instruct-Q4_K_M.gguf"),
+    ("bartowski/Qwen2.5-3B-Instruct-GGUF", "Qwen2.5-3B-Instruct-Q4_K_M.gguf"),
+    ("Qwen/Qwen2.5-3B-Instruct-GGUF", "qwen2.5-3b-instruct-q4_k_m.gguf"),
+]
+_active_model: tuple[str, str] | None = None
+
 _llm: Llama | None = None
 _load_error: str | None = None
 _load_lock = threading.Lock()
 _stats = {"calls": 0, "errors": 0, "total_tokens_out": 0, "total_seconds": 0.0}
 
 
+def _try_load(repo: str, filename: str) -> Llama | None:
+    """Download + load one model. Returns Llama or None."""
+    try:
+        path = hf_hub_download(repo_id=repo, filename=filename)
+        return Llama(
+            model_path=path,
+            n_ctx=N_CTX,
+            n_threads=N_THREADS,
+            n_batch=256,
+            verbose=False,
+            seed=42,
+        )
+    except Exception:
+        return None
+
+
 def _load_model() -> None:
-    global _llm, _load_error
+    """Try primary model first, then fallbacks. First success wins."""
+    global _llm, _load_error, _active_model
     with _load_lock:
-        if _llm is not None or _load_error is not None:
+        if _llm is not None:
             return
-        try:
-            path = hf_hub_download(repo_id=MODEL_REPO, filename=MODEL_FILE)
-            _llm = Llama(
-                model_path=path,
-                n_ctx=N_CTX,
-                n_threads=N_THREADS,
-                n_batch=256,
-                verbose=False,
-                seed=42,
-            )
-        except Exception as e:
-            _load_error = f"load failed: {e}"
+        attempts = [(MODEL_REPO, MODEL_FILE)] + FALLBACK_MODELS
+        errors = []
+        for repo, fname in attempts:
+            llm = _try_load(repo, fname)
+            if llm is not None:
+                _llm = llm
+                _active_model = (repo, fname)
+                return
+            errors.append(f"{repo}/{fname}")
+        _load_error = "all model loads failed: " + " | ".join(errors)
 
 
 @asynccontextmanager
@@ -67,7 +89,8 @@ class DecideIn(BaseModel):
 def root():
     return {
         "service": "nomos-cpu-gemma4",
-        "model": f"{MODEL_REPO}/{MODEL_FILE}",
+        "model_requested": f"{MODEL_REPO}/{MODEL_FILE}",
+        "model_active": f"{_active_model[0]}/{_active_model[1]}" if _active_model else None,
         "ready": _llm is not None,
         "load_error": _load_error,
         "stats": _stats,

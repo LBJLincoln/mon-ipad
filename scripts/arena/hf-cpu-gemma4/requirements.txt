@@ -1,5 +1,7 @@
-fastapi==0.115.6
-uvicorn[standard]==0.32.1
-pydantic==2.10.4
-huggingface_hub==0.27.0
-llama-cpp-python==0.3.5
+fastapi>=0.115.6
+uvicorn[standard]>=0.32.1
+pydantic>=2.10.4
+huggingface_hub>=0.27.0
+# llama-cpp-python: Gemma 4 needs Apr 2026 build (>=0.3.7).
+# If wheel install fails on HF Space, falls back to source build via Dockerfile.
+llama-cpp-python>=0.3.7
