@@ -788,6 +788,48 @@ def api_status():
     return api_health()
 
 
+from pydantic import BaseModel  # noqa: E402
+from typing import List, Optional  # noqa: E402
+
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+
+class ChatRequest(BaseModel):
+    model: str = "cerebras:qwen-3-235b"
+    messages: List[ChatMessage]
+    max_tokens: Optional[int] = 400
+
+
+@fastapi_app.post("/api/chat")
+def api_chat(req: ChatRequest):
+    """JSON chat endpoint — councils, agents, TF all call this.
+
+    Request:  {"model": "cerebras:qwen-3-235b",
+               "messages": [{"role":"user","content":"..."}],
+               "max_tokens": 400}
+    Response: {"content": str, "model_used": str, "fallback": bool,
+               "latency_ms": float, "errors": list}
+    503 if all models in the fallback chain failed.
+    """
+    msgs = [{"role": m.role, "content": m.content} for m in req.messages]
+    try:
+        result = call_llm(req.model, msgs, max_tokens=req.max_tokens or 400)
+        return JSONResponse(content=result, status_code=200)
+    except ValueError as e:
+        return JSONResponse(
+            content={"error": str(e), "content": None, "model_used": None},
+            status_code=503,
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"error": f"internal: {e}", "content": None, "model_used": None},
+            status_code=500,
+        )
+
+
 if __name__ == "__main__":
     import sys
     if "--test" in sys.argv:
