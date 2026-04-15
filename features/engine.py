@@ -59,7 +59,11 @@ Categories:
   57. SEQUENTIAL EXPONENTIAL FORM (12 features — α-weighted momentum, hot hand, form variance)
   58. MODEL CONFIDENCE & CALIBRATION ANCHORS (10 features — spread confidence, H2H consistency)
   59. OPPONENT GRAPH FEATURES (12 features — 2nd-order SOS, transitive wins, common-opp advantage)
-  ≈ 6350+ feature candidates
+  60. SCORE MARGIN DISTRIBUTION (12 features — margin percentiles, skew, kurtosis proxy)
+  61. PACE-ADJUSTED NET RATING (10 features — offensive/defensive efficiency, tempo mismatch)
+  62. CLUTCH PERFORMANCE (10 features — close-game DNA, ≤5pt margin win%, edge)
+  63. PYTHAGOREAN LUCK (12 features — Morey expected WP, luck gap, regression signal)
+  ≈ 6400+ feature candidates
 
 Architecture inspired by:
   - Starlizard: 500+ features, genetic selection, real-time adjustment
@@ -83,7 +87,7 @@ import csv
 import os
 
 # ── Engine Version ──
-ENGINE_VERSION = "v3.1-61cat"  # Cat61: pace-adjusted net rating (off/def efficiency, tempo mismatch)
+ENGINE_VERSION = "v3.1-63cat"  # Cat63: Pythagorean luck (expected vs actual WP, regression signal)
 
 # ── Team mappings ──
 TEAM_MAP = {
@@ -2867,6 +2871,24 @@ class NBAFeatureEngine:
             "clutch62_clutch_edge_diff",     # h_clutch_edge - a_clutch_edge
             "clutch62_h_close_margin_avg",   # Home avg margin in close games (signed)
             "clutch62_a_close_margin_avg",   # Away avg margin in close games (signed)
+        ])
+
+        # ── Cat 63: Pythagorean Luck — expected vs actual win% (12 features) ──
+        # Morey exponent 13.91 (Basketball-Reference standard). Teams outperforming
+        # their Pythagorean expectation regress; underperformers bounce back.
+        names.extend([
+            "pyth63_h_pyth_wp5",             # Home Pythagorean win% (last 5)
+            "pyth63_a_pyth_wp5",             # Away Pythagorean win% (last 5)
+            "pyth63_h_pyth_wp10",            # Home Pythagorean win% (last 10)
+            "pyth63_a_pyth_wp10",            # Away Pythagorean win% (last 10)
+            "pyth63_h_luck5",                # Home actual WP - pyth WP (last 5, +luck)
+            "pyth63_a_luck5",                # Away actual WP - pyth WP (last 5)
+            "pyth63_h_luck10",               # Home actual WP - pyth WP (last 10)
+            "pyth63_a_luck10",               # Away actual WP - pyth WP (last 10)
+            "pyth63_pyth_wp_diff",            # h_pyth_wp10 - a_pyth_wp10
+            "pyth63_luck_diff",              # h_luck10 - a_luck10 (who's luckier)
+            "pyth63_h_regression_signal",    # |luck10| — magnitude of regression expected
+            "pyth63_a_regression_signal",    # |luck10| — magnitude of regression expected
         ])
 
         self.feature_names = names
@@ -6918,6 +6940,45 @@ class NBAFeatureEngine:
                 ])
             except Exception:
                 row.extend([0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+            # ── Cat 63: Pythagorean Luck (12 features) ──
+            try:
+                _MOREY = 13.91
+
+                def _pyth63(recs, n):
+                    recent = recs[-n:] if len(recs) >= n else recs
+                    if len(recent) < 3:
+                        return 0.5, 0.5, 0.0
+                    pf = sum(r[4].get("pts", 100) for r in recent)
+                    pa = sum(r[4].get("opp_pts", 100) for r in recent)
+                    if pf + pa == 0:
+                        return 0.5, 0.5, 0.0
+                    pyth_wp = pf ** _MOREY / max(pf ** _MOREY + pa ** _MOREY, 1e-9)
+                    actual_wp = sum(1 for r in recent if r[1]) / len(recent)
+                    luck = actual_wp - pyth_wp
+                    return pyth_wp, actual_wp, luck
+
+                _h63_pw5, _h63_aw5, _h63_l5 = _pyth63(hr_, 5)
+                _a63_pw5, _a63_aw5, _a63_l5 = _pyth63(ar_, 5)
+                _h63_pw10, _h63_aw10, _h63_l10 = _pyth63(hr_, 10)
+                _a63_pw10, _a63_aw10, _a63_l10 = _pyth63(ar_, 10)
+
+                row.extend([
+                    _h63_pw5,                      # pyth63_h_pyth_wp5
+                    _a63_pw5,                      # pyth63_a_pyth_wp5
+                    _h63_pw10,                     # pyth63_h_pyth_wp10
+                    _a63_pw10,                     # pyth63_a_pyth_wp10
+                    _h63_l5,                       # pyth63_h_luck5
+                    _a63_l5,                       # pyth63_a_luck5
+                    _h63_l10,                      # pyth63_h_luck10
+                    _a63_l10,                      # pyth63_a_luck10
+                    _h63_pw10 - _a63_pw10,         # pyth63_pyth_wp_diff
+                    _h63_l10 - _a63_l10,           # pyth63_luck_diff
+                    abs(_h63_l10),                 # pyth63_h_regression_signal
+                    abs(_a63_l10),                 # pyth63_a_regression_signal
+                ])
+            except Exception:
+                row.extend([0.5, 0.5, 0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
             X.append(row)
             y.append(1 if hs > as_ else 0)
