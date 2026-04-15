@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-15T08:15:06.494260+00:00",
+  "timestamp": "2026-04-14T18:15:06.750785+00:00",
   "council": "d6-evaluation",
   "subject": "Trading Floor v3 Calibration Audit",
   "findings": {
@@ -13,39 +13,39 @@
       "mistral-medium",
       "mistral-ministral"
     ],
-    "best_bankroll": 110.04,
+    "best_bankroll": 136.5,
     "worst_bankroll": 0.0,
-    "bankroll_spread": 110.04
+    "bankroll_spread": 136.5
   },
   "per_agent_summary": {
     "qwen-quant": {
       "trader_id": "qwen-quant",
-      "days_traded": 175,
-      "total_allocations": 36,
-      "wins": 19,
-      "losses": 17,
-      "win_rate": 0.528,
-      "avg_confidence": 0.698,
-      "calibration_gap": 0.17,
-      "avg_declared_edge": 0.0581,
-      "realized_ev": -0.0228,
-      "final_bankroll": 92.94,
+      "days_traded": 127,
+      "total_allocations": 33,
+      "wins": 18,
+      "losses": 15,
+      "win_rate": 0.545,
+      "avg_confidence": 0.7,
+      "calibration_gap": 0.154,
+      "avg_declared_edge": 0.0602,
+      "realized_ev": 0.0082,
+      "final_bankroll": 109.45,
       "best_bankroll": 174.39,
-      "worst_bankroll": 92.94
+      "worst_bankroll": 100.0
     },
     "qwen-arb": {
       "trader_id": "qwen-arb",
-      "days_traded": 175,
-      "total_allocations": 25,
-      "wins": 16,
-      "losses": 9,
-      "win_rate": 0.64,
-      "avg_confidence": 0.656,
-      "calibration_gap": 0.016,
-      "avg_declared_edge": 0.1016,
-      "realized_ev": 0.0885,
-      "final_bankroll": 110.04,
-      "best_bankroll": 150.46,
+      "days_traded": 126,
+      "total_allocations": 17,
+      "wins": 11,
+      "losses": 6,
+      "win_rate": 0.647,
+      "avg_confidence": 0.66,
+      "calibration_gap": 0.013,
+      "avg_declared_edge": 0.1131,
+      "realized_ev": 0.1972,
+      "final_bankroll": 136.5,
+      "best_bankroll": 136.5,
       "worst_bankroll": 85.4
     },
     "llama-contra": {
@@ -65,16 +65,16 @@
     },
     "gemini-anl": {
       "trader_id": "gemini-anl",
-      "days_traded": 175,
+      "days_traded": 126,
       "total_allocations": 0,
-      "all_cash_days": 175,
+      "all_cash_days": 126,
       "final_bankroll": 100.0
     },
     "gemini-tact": {
       "trader_id": "gemini-tact",
-      "days_traded": 175,
+      "days_traded": 126,
       "total_allocations": 0,
-      "all_cash_days": 175,
+      "all_cash_days": 126,
       "final_bankroll": 100.0
     },
     "mistral-large": {
@@ -156,7 +156,5 @@
   "verdicts": [
     "3 agent(s) overconfident (gap>0.15): qwen-quant, mistral-medium, mistral-ministral",
     "<50% agents well-calibrated \u2014 tighten prompt edge-computation instructions"
-  ],
-  "experiment_id": "fa4160140e12",
-  "experiment_id_written_at": "2026-04-15T08:45:02.154105+00:00"
+  ]
 }

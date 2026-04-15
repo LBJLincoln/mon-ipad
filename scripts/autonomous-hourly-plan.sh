@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Autonomous hourly PLAN.md executor — spans 3 projects
-# Invokes claude CLI non-interactively with full env, picks one PLAN.md item,
-# executes it across mon-ipad + nomos-political-alpha + nomos-dashboard, commits.
+# Autonomous hourly executor — LASER-FOCUSED on visible product
+# Pivoted 2026-04-15: user explicitly banned talk-only + feature-cat procrastination.
 
 set -euo pipefail
 
@@ -10,7 +9,6 @@ LOG_DIR="/home/termius/mon-ipad/logs"
 LOG="$LOG_DIR/autonomous-hourly.log"
 mkdir -p "$LOG_DIR"
 
-# Lock to avoid overlap
 LOCK="/tmp/autonomous-hourly.lock"
 exec 9>"$LOCK"
 if ! flock -n 9; then
@@ -23,68 +21,74 @@ echo "════════════════════════�
 echo "[$TS] AUTONOMOUS HOURLY — start" >> "$LOG"
 echo "════════════════════════════════════════════════════════════" >> "$LOG"
 
-# Load all API keys (HF, Google, Supabase, Stripe, Telegram, Twitter, Vercel…)
 set -a
 . /home/termius/mon-ipad/.env.local
 set +a
 
 cd /home/termius/mon-ipad
 
-# Prompt: pick the highest-leverage PLAN.md / MONETIZATION item and execute it.
-# Monetization deadline May 1 takes precedence. But also: improve website design
-# and improve experiments every hour — never stop.
 PROMPT=$(cat <<'EOF'
-You are running autonomously. DEADLINE IS MAY 1 2026 — revenue or project shutdown.
-Every hour through the night, ship ONE concrete improvement. No plans, no reports.
+You are executing autonomously. May 1 2026 revenue deadline.
 
-Context files (read in this order):
-1. /home/termius/mon-ipad/MONETIZATION.md — revenue path
-2. /home/termius/mon-ipad/PLAN.md — W1..W16 workstreams (W16 = revenue ship)
-3. /home/termius/mon-ipad/CLAUDE.md — architecture rules (ZERO ML on VM, rules 1-10)
-4. /home/termius/nomos-dashboard/DESIGN.md — Bloomberg palette, type scale
-5. /home/termius/nomos-dashboard/PIXEL-DESIGN.md — pixel/world styling
+STOP shipping new NBA feature categories (Cat 60-65 were procrastination — the user explicitly called this out). The engine is at 65 cats, 6434 features. The model is already good enough. The PRODUCT is broken.
 
-You have write access to THREE repos:
-- /home/termius/mon-ipad (NBA quant engine)
-- /home/termius/nomos-political-alpha (political engine)
-- /home/termius/nomos-dashboard (Next.js UI deployed to Vercel)
+Work ONLY on the VISIBLE-PRODUCT fix list below. Each run, pick the FIRST item that is still broken. Verify it's broken by reading the relevant file/API. Fix it. Commit + push. Exit.
 
-Pick EXACTLY ONE of these three tracks each run, rotating across runs:
+VERIFIED-BROKEN CHECKLIST (2026-04-15):
 
-  TRACK A — REVENUE (W16): anything shipping @Nomos42Picks — /subscribe copy
-    polish, Stripe webhook hardening, Telegram bot whitelist logic, 09:00 ET
-    auto-post cron, landing-page proof widgets wired to real /api/* endpoints.
+  [1] HOMEPAGE HARDCODED FALLBACK
+      File: /home/termius/nomos-dashboard/src/app/page.tsx
+      Line 33: DEFAULT_PROJECTS const — contains hardcoded bankroll, agent counts, spaces counts
+      Line ~337: banner "Brier 0.215 · 51.3% walk-forward ROI" — hardcoded string
+      DONE WHEN: homepage renders "data unavailable" instead of fake fallback numbers
+      when /api/dashboard/home returns null, AND banner text is sourced from live /api/nba/metrics.
 
-  TRACK B — DESIGN: visually improve nomos-dashboard. Pick one page (/, /nba,
-    /evolution, /trading-floor, /subscribe, /political, /infra, /floor) and
-    make a measurable design improvement: tighter spacing, better typography
-    hierarchy, replace placeholder text with real data, add loading skeletons,
-    remove dead sections, improve color contrast per WCAG, add empty states.
-    DO NOT run `next build` or `tsc` on the VM — they OOM. Trust TypeScript
-    errors are caught by Vercel's CI.
+  [2] /trading-floor + /floor PAGES SHOW STALE DATA
+      Files: /home/termius/nomos-dashboard/src/app/trading-floor/page.tsx, floor/page.tsx
+      The backend JSON (data/arena/trading-floor-status.json) shows day-bucket-v3
+      FINISHED on Apr 14 with 9/10 agents bankrupted. Display needs a clear
+      "RUN ENDED · 1/10 profitable · stake-sizing bug fixed, restart pending"
+      banner at top, with timestamp of last run.
+      DONE WHEN: pages clearly communicate the run ended + which agent won,
+      instead of looking "live".
 
-  TRACK C — EXPERIMENTS: improve one NBA or political experiment — feature
-    engineering (new category), better walk-forward split, improved CPCV fold
-    logic, calibration fix, or HF Space script tweak (push via subtree).
+  [3] /world LACKS SOTA PIXEL ASSETS
+      File: /home/termius/nomos-dashboard/src/components/pixel/PixelWorldPixi.tsx
+      Currently uses programmatic PixiJS Graphics only — no Kenney 1-Bit sprites,
+      no XP.css window chrome (both specified in reference_sota_pixel_stack_apr11.md).
+      DONE WHEN: either (a) Kenney 1-Bit sprite sheet vendored + used for agent
+      characters, OR (b) at least one XP.css window/title-bar component wraps
+      an overlay (leaderboard or agent detail).
+
+  [4] NBA TF v4 NOT RUNNING
+      HF Space: LBJLincoln26/nba-llm-trading-floor (design = 10agents-real-llm)
+      Current state: running=false, games_processed=null, stake-sizing fix
+      (commit 0893bb83 in scripts/arena/hf-llm-trading-floor/app.py) NEVER
+      deployed to the HF subtree.
+      DONE WHEN: git subtree push to LBJLincoln26/nba-llm-trading-floor from
+      scripts/arena/hf-llm-trading-floor/, then curl POST /api/run, then
+      curl GET /api/status shows running=true.
+
+  [5] DASHBOARD CLAIMED METRICS vs REALITY
+      CLAUDE.md claims "Political TF llama-contra +223.5% ROI" — the current
+      data/arena/political/political-trading-floor-latest.json shows 0 trades
+      on 11 agents. Either re-run the engine or edit CLAUDE.md to tell the truth.
+      DONE WHEN: CLAUDE.md text matches the JSON state file.
 
 RULES:
-- Do ONE concrete change. Commit. Push.
-- ALWAYS `git push` after committing — otherwise Vercel doesn't redeploy and
-  the user sees "nothing changed". A commit without a push is a failure.
-- Never edit .env.local. Never run training on the VM.
-- Never push to HF subtrees unless the task explicitly requires it (it rarely does).
-- Budget: 10 min max. Stop and exit when one ship is done.
-- If a track is blocked (file missing, unclear target), switch to another track.
+- Pick the lowest-numbered item that is still broken. Verify by reading. Fix.
+- One concrete change. Commit. Push.
+- DO NOT add new NBA feature categories (Cat 66+). Banned.
+- DO NOT write new research vault entries. Banned.
+- DO NOT write new memory files. Banned.
+- 10 min budget max. Stop and exit when one ship is done.
+- ALWAYS `git push` after committing.
 
-Rotate tracks across hours: glance at `git log --oneline -6` in /home/termius/nomos-dashboard
-to see what the last hours shipped; do something DIFFERENT.
-
-Do not ask questions. Do not produce a plan. Ship and push.
+Before picking, run: `git log --oneline -6` in nomos-dashboard to see what
+the last hours shipped. Do something different.
 EOF
 )
 
-# Run claude non-interactively, all 3 dirs in scope, 10 min timeout.
-# Prompt piped via stdin — more reliable than positional arg with flags.
 echo "$PROMPT" | timeout 900 /usr/bin/claude \
     --print \
     --dangerously-skip-permissions \

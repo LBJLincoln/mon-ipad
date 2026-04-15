@@ -1,12 +1,13 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v20 — Department Forge (9 depts) + Trading Floor v5 (10 real LLM agents) + 16 Evolution Islands | Updated: 2026-04-14
+> Architecture v20 — Department Forge (9 depts) + Trading Floor v5 (10 real LLM agents) + 16 Evolution Islands | Updated: 2026-04-15
 
 ## Mission
 Build the best NBA prediction AI in the world.
 **Best:** Brier 0.21514 (Colab TabICL, 186f, iter 129) | Fleet best: 0.22085 (S17, gen 524) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
-**Political TF (50-day expanded dataset, 2026-04-14):** llama-contra +223.5% ROI ($100→$323.53), 58.1% WR on 246 bets. 5/10 agents profitable, Gemini parser still 0 bets.
+**NBA TF v3 (day-bucket, 175/175 days, Apr 14):** 9/10 agents bankrupted by stake-sizing bug. Best: qwen-arb +10% ($110.04). llama-contra peaked +802% ($902) then crashed to $2.37 (−99.7% DD). Stake-fix shipped commit `0893bb83` but NOT YET deployed to HF subtree.
+**Political TF (Apr 14 snapshot):** 50 days / 834 events processed, 0 trades by 11 agents (parser bug). Prior claim "llama-contra +223.5%" was from mid-run, now stale.
 
 ## Nomos42 Ecosystem
 
