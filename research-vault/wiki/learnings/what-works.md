@@ -1,33 +1,33 @@
 # What Works — Empirically Validated
 
-> Auto-generated from experiment data on 2026-04-15 16:25 UTC
+> Auto-generated from experiment data on 2026-04-15 18:25 UTC
 > Only includes findings backed by measured improvement
 
 ## NBA — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_n_estimators | 5 | 0 | 0% | +0.00682 |
-| change_min_samples_leaf | 2 | 0 | 0% | +0.00647 |
-| swap_features | 6 | 0 | 0% | +0.00745 |
-| remove_features | 2 | 0 | 0% | +0.00635 |
-| add_features | 5 | 0 | 0% | +0.00645 |
-| change_max_features_ratio | 4 | 0 | 0% | +0.00703 |
-| change_model | 22 | 0 | 0% | +0.20329 |
-| change_max_depth | 4 | 0 | 0% | +0.00863 |
+| change_min_samples_leaf | 7 | 0 | 0% | +0.00689 |
+| change_max_features_ratio | 6 | 0 | 0% | +0.00600 |
+| change_n_estimators | 4 | 0 | 0% | +0.00586 |
+| swap_features | 2 | 0 | 0% | +0.00622 |
+| change_max_depth | 3 | 0 | 0% | +0.00590 |
+| change_model | 24 | 0 | 0% | +0.34501 |
+| remove_features | 2 | 0 | 0% | +0.00717 |
+| add_features | 2 | 0 | 0% | +0.00501 |
 
 ## POLITICAL — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_max_depth | 10 | 0 | 0% | +0.01453 |
-| change_model | 4 | 0 | 0% | +0.05599 |
-| swap_features | 6 | 0 | 0% | +0.02536 |
-| add_features | 6 | 0 | 0% | +0.01541 |
-| change_n_estimators | 12 | 0 | 0% | +0.00427 |
-| change_max_features_ratio | 5 | 0 | 0% | +0.01695 |
-| change_min_samples_leaf | 4 | 0 | 0% | +0.01553 |
-| remove_features | 3 | 0 | 0% | +0.02366 |
+| swap_features | 11 | 0 | 0% | +0.03394 |
+| add_features | 7 | 0 | 0% | +0.01628 |
+| change_model | 6 | 0 | 0% | +0.05377 |
+| remove_features | 5 | 0 | 0% | +0.02729 |
+| change_n_estimators | 10 | 0 | 0% | +0.00657 |
+| change_min_samples_leaf | 2 | 0 | 0% | +0.00925 |
+| change_max_depth | 6 | 0 | 0% | +0.01752 |
+| change_max_features_ratio | 3 | 0 | 0% | +0.02100 |
 
 ## Arena — Proven Insights
 
