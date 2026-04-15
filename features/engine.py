@@ -88,7 +88,7 @@ import csv
 import os
 
 # ── Engine Version ──
-ENGINE_VERSION = "v3.1-64cat"  # Cat64: Opponent-Elo-weighted performance (quality-adjusted rolling stats)
+ENGINE_VERSION = "v3.1-65cat"  # Cat65: Style Matchup Advantage (4-factor offense vs defense matchup edges)
 
 # ── Team mappings ──
 TEAM_MAP = {
@@ -2906,6 +2906,24 @@ class NBAFeatureEngine:
             "elow64_margin_diff",            # h_elo_margin - a_elo_margin
             "elow64_h_trend",                # h_elo_margin5 - h_elo_margin10 (improving?)
             "elow64_a_trend",                # a_elo_margin5 - a_elo_margin10 (improving?)
+        ])
+
+        # ── Cat 65: Style Matchup Advantage (12 features) ──
+        # Measures how each team's offensive strengths exploit the opponent's defensive gaps.
+        # e.g. high-3PA offense vs poor 3P-defense = large matchup advantage.
+        names.extend([
+            "style65_h_efg_vs_opp_def",      # Home eFG% - Away opp_eFG% (shooting edge)
+            "style65_a_efg_vs_opp_def",      # Away eFG% - Home opp_eFG% (shooting edge)
+            "style65_h_tov_vs_opp_force",    # Home TOV rate - Away opp_TOV rate (ball security edge)
+            "style65_a_tov_vs_opp_force",    # Away TOV rate - Home opp_TOV rate
+            "style65_h_orb_vs_opp_drb",      # Home ORB% - Away opp_ORB% (glass edge)
+            "style65_a_orb_vs_opp_drb",      # Away ORB% - Home opp_ORB%
+            "style65_h_ftr_vs_opp_ftr",      # Home FT rate - Away opp_FT rate (foul-drawing edge)
+            "style65_a_ftr_vs_opp_ftr",      # Away FT rate - Home opp_FT rate
+            "style65_matchup_asymmetry",     # |h_composite_edge - a_composite_edge|
+            "style65_h_composite_edge",      # Weighted sum of h's 4-factor edges
+            "style65_a_composite_edge",      # Weighted sum of a's 4-factor edges
+            "style65_net_style_edge",        # h_composite - a_composite (positive = home style advantage)
         ])
 
         self.feature_names = names
@@ -7040,6 +7058,54 @@ class NBAFeatureEngine:
                 ])
             except Exception:
                 row.extend([0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+            # ── Cat 65: Style Matchup Advantage (12 features) ──
+            try:
+                _h65_efg = self._efg(hr_, 10)
+                _a65_efg = self._efg(ar_, 10)
+                _h65_opp_efg = self._opp_efg(hr_, 10)
+                _a65_opp_efg = self._opp_efg(ar_, 10)
+                _h65_tov = self._tov_rate(hr_, 10)
+                _a65_tov = self._tov_rate(ar_, 10)
+                _h65_opp_tov = self._opp_tov_rate(hr_, 10)
+                _a65_opp_tov = self._opp_tov_rate(ar_, 10)
+                _h65_orb = self._orb_rate(hr_, 10)
+                _a65_orb = self._orb_rate(ar_, 10)
+                _h65_opp_orb = self._opp_orb_rate(hr_, 10)
+                _a65_opp_orb = self._opp_orb_rate(ar_, 10)
+                _h65_ftr = self._ft_rate(hr_, 10)
+                _a65_ftr = self._ft_rate(ar_, 10)
+                _h65_opp_ftr = self._opp_ft_rate(hr_, 10)
+                _a65_opp_ftr = self._opp_ft_rate(ar_, 10)
+
+                _h65_efg_edge = _h65_efg - _a65_opp_efg
+                _a65_efg_edge = _a65_efg - _h65_opp_efg
+                _h65_tov_edge = _a65_opp_tov - _h65_tov
+                _a65_tov_edge = _h65_opp_tov - _a65_tov
+                _h65_orb_edge = _h65_orb - _a65_opp_orb
+                _a65_orb_edge = _a65_orb - _h65_opp_orb
+                _h65_ftr_edge = _h65_ftr - _a65_opp_ftr
+                _a65_ftr_edge = _a65_ftr - _h65_opp_ftr
+
+                _h65_comp = 0.40 * _h65_efg_edge + 0.25 * _h65_tov_edge + 0.20 * _h65_orb_edge + 0.15 * _h65_ftr_edge
+                _a65_comp = 0.40 * _a65_efg_edge + 0.25 * _a65_tov_edge + 0.20 * _a65_orb_edge + 0.15 * _a65_ftr_edge
+
+                row.extend([
+                    _h65_efg_edge,                     # style65_h_efg_vs_opp_def
+                    _a65_efg_edge,                     # style65_a_efg_vs_opp_def
+                    _h65_tov_edge,                     # style65_h_tov_vs_opp_force
+                    _a65_tov_edge,                     # style65_a_tov_vs_opp_force
+                    _h65_orb_edge,                     # style65_h_orb_vs_opp_drb
+                    _a65_orb_edge,                     # style65_a_orb_vs_opp_drb
+                    _h65_ftr_edge,                     # style65_h_ftr_vs_opp_ftr
+                    _a65_ftr_edge,                     # style65_a_ftr_vs_opp_ftr
+                    abs(_h65_comp - _a65_comp),        # style65_matchup_asymmetry
+                    _h65_comp,                         # style65_h_composite_edge
+                    _a65_comp,                         # style65_a_composite_edge
+                    _h65_comp - _a65_comp,             # style65_net_style_edge
+                ])
+            except Exception:
+                row.extend([0.0] * 12)
 
             X.append(row)
             y.append(1 if hs > as_ else 0)
