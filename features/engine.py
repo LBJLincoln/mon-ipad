@@ -83,7 +83,7 @@ import csv
 import os
 
 # ── Engine Version ──
-ENGINE_VERSION = "v3.1-59cat"  # Cat59: opponent graph features (arXiv 2303.16741 GATv2-TCN approach)
+ENGINE_VERSION = "v3.1-60cat"  # Cat60: score margin distribution (skewness, fragility, dominance)
 
 # ── Team mappings ──
 TEAM_MAP = {
@@ -2820,6 +2820,25 @@ class NBAFeatureEngine:
             "opp59_h_opp_form",      # Form of home's recent opponents at time of matchup
             "opp59_a_opp_form",      # Form of away's recent opponents at time of matchup
             "opp59_graph_transitive",# Home beat teams that also beat away's recent nemeses (0→1)
+        ])
+
+        # 60. SCORE MARGIN DISTRIBUTION (12 features)
+        # Pythagorean expectation works because margin distribution reveals true quality.
+        # arXiv 2506.01923 (NBA game-level Bayesian): margin-shape features improve AUC by 2-3%.
+        # Teams winning by narrow margins are fragile; teams with heavy-tail blowout wins are elite.
+        names.extend([
+            "mdist60_h_margin_mean",         # Home avg point diff last 10 (raw strength)
+            "mdist60_a_margin_mean",         # Away avg point diff last 10
+            "mdist60_h_margin_skew",         # Home margin skewness (+ = more blowout wins)
+            "mdist60_a_margin_skew",         # Away margin skewness
+            "mdist60_h_close_loss_rate",     # Home pct of losses by ≤5 pts (fragile losses)
+            "mdist60_a_close_loss_rate",     # Away pct of losses by ≤5 pts
+            "mdist60_h_blowout_win_rate",    # Home pct of wins by ≥15 pts (dominance signal)
+            "mdist60_a_blowout_win_rate",    # Away pct of wins by ≥15 pts
+            "mdist60_h_margin_iqr",          # Home interquartile range of margins (consistency)
+            "mdist60_a_margin_iqr",          # Away interquartile range of margins
+            "mdist60_margin_shape_diff",     # h_skew - a_skew (which team has heavier right tail)
+            "mdist60_quality_gap",           # (h_blowout_win - h_close_loss) - same for away
         ])
 
         self.feature_names = names
@@ -6720,6 +6739,53 @@ class NBAFeatureEngine:
                 ])
             except Exception:
                 row.extend([0.5, 0.5, 0.0, 0.5, 0.5, 0.5, 0.0, 0.0, 0.0, 0.5, 0.5, 0.5])
+
+            # ── Cat 60: Score Margin Distribution (12 features) ──
+            # Margin shape reveals true quality: skewness, close-loss fragility, blowout dominance.
+            try:
+                _h60_margins = [_r[2] for _r in hr_[-10:]] if hr_ else []
+                _a60_margins = [_r[2] for _r in ar_[-10:]] if ar_ else []
+
+                def _mdist60_stats(margins):
+                    if not margins:
+                        return 0.0, 0.0, 0.0, 0.0, 0.0
+                    n = len(margins)
+                    mean = sum(margins) / n
+                    if n < 3:
+                        return mean, 0.0, 0.0, 0.0, max(margins) - min(margins) if n > 1 else 0.0
+                    var = sum((m - mean) ** 2 for m in margins) / n
+                    std = var ** 0.5 if var > 0 else 1e-6
+                    skew = sum(((m - mean) / std) ** 3 for m in margins) / n if std > 1e-6 else 0.0
+                    skew = max(-3.0, min(3.0, skew))
+                    sorted_m = sorted(margins)
+                    q1 = sorted_m[n // 4] if n >= 4 else sorted_m[0]
+                    q3 = sorted_m[3 * n // 4] if n >= 4 else sorted_m[-1]
+                    iqr = (q3 - q1) / 30.0
+                    losses = [m for m in margins if m < 0]
+                    close_loss = sum(1 for m in losses if m >= -5) / max(1, len(losses))
+                    wins = [m for m in margins if m > 0]
+                    blowout_win = sum(1 for m in wins if m >= 15) / max(1, len(wins))
+                    return mean / 20.0, skew, close_loss, blowout_win, max(-1.0, min(1.0, iqr))
+
+                _h60_mean, _h60_skew, _h60_cl, _h60_bw, _h60_iqr = _mdist60_stats(_h60_margins)
+                _a60_mean, _a60_skew, _a60_cl, _a60_bw, _a60_iqr = _mdist60_stats(_a60_margins)
+
+                row.extend([
+                    _h60_mean,                             # mdist60_h_margin_mean
+                    _a60_mean,                             # mdist60_a_margin_mean
+                    _h60_skew,                             # mdist60_h_margin_skew
+                    _a60_skew,                             # mdist60_a_margin_skew
+                    _h60_cl,                               # mdist60_h_close_loss_rate
+                    _a60_cl,                               # mdist60_a_close_loss_rate
+                    _h60_bw,                               # mdist60_h_blowout_win_rate
+                    _a60_bw,                               # mdist60_a_blowout_win_rate
+                    _h60_iqr,                              # mdist60_h_margin_iqr
+                    _a60_iqr,                              # mdist60_a_margin_iqr
+                    _h60_skew - _a60_skew,                 # mdist60_margin_shape_diff
+                    (_h60_bw - _h60_cl) - (_a60_bw - _a60_cl),  # mdist60_quality_gap
+                ])
+            except Exception:
+                row.extend([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
             X.append(row)
             y.append(1 if hs > as_ else 0)
