@@ -111,6 +111,45 @@ _cooperation_pacts: Dict[str, dict] = {}
 _reputation: Dict[str, Dict[str, int]] = defaultdict(lambda: {"pact_honored": 0, "pact_broken": 0})
 GATEWAY_URL = os.environ.get("GATEWAY_URL", "").rstrip("/")
 
+# DMAD (ICLR 2025, OpenReview t6QHYUOQL7) — structurally distinct reasoning per agent (political flavor).
+REASONING_TEMPLATES = {
+    "qwen-quant":        "REASONING TEMPLATE (DMAD): EXPECTED-UTILITY MAXIMIZATION. Compute E[V] = (p_event × sector_move) − cost. Trade iff E[V]/stake > 0.05.",
+    "qwen-arb":          "REASONING TEMPLATE (DMAD): CROSS-SECTOR ARBITRAGE. Spot correlated ETFs diverging > 2σ from historical beta.",
+    "llama-contra":      "REASONING TEMPLATE (DMAD): CONTRARIAN INVERSION. Start from consensus narrative, argue the OPPOSITE with 3 reasons.",
+    "gemini-anl":        "REASONING TEMPLATE (DMAD): FIRST-PRINCIPLES DECOMPOSITION. List 3 decisive political drivers, weight each, multiply to get signal.",
+    "gemini-tact":       "REASONING TEMPLATE (DMAD): TACTICAL TIMING. Focus on calendar risk (votes, summits). No imminent catalyst → PASS.",
+    "mistral-large":     "REASONING TEMPLATE (DMAD): SCENARIO MAJORITY. Enumerate 5 macro scenarios, assign P, trade iff ≥3 align.",
+    "mistral-medium":    "REASONING TEMPLATE (DMAD): DIVERSIFIED PORTFOLIO. Split across 2-3 uncorrelated sectors.",
+    "mistral-small":     "REASONING TEMPLATE (DMAD): RISK-AVERSE STRESS. Assume worst-case tail; trade only if still +EV.",
+    "mistral-nemo":      "REASONING TEMPLATE (DMAD): MOMENTUM CHASE. Bet hardest on sectors with 5-day momentum > 2σ.",
+    "mistral-ministral": "REASONING TEMPLATE (DMAD): THEORETICAL MODEL. Mental factor model from 3 coefficients → compute expected sector return.",
+    "nemotron-120b":     "REASONING TEMPLATE (DMAD): EXPLICIT 7-STEP CoT. context → hypothesis → evidence → counter → weight → conclusion → trade.",
+    "gemma4-selfhost":   "REASONING TEMPLATE (DMAD): 4-RULE CHECKLIST. (1) edge > 0.05 (2) bankroll > $30 (3) not same sector as yesterday (4) political catalyst dated within 14d. Trade iff ALL pass.",
+    "qwen25-micro":      "REASONING TEMPLATE (DMAD): PATTERN-MATCH. Find most similar historical political event in COMMON_KNOWLEDGE, mimic sector rotation.",
+    "llama32-micro":     "REASONING TEMPLATE (DMAD): ANCHOR & ADJUST. Anchor at consensus polling / betting-market prob, adjust ±10% on strongest signal.",
+    "gemma2-micro":      "REASONING TEMPLATE (DMAD): MINIMALIST. Pick the SINGLE highest-conviction trade of the day or PASS. Never > 1 trade.",
+}
+
+def get_stackelberg_leader(state: dict) -> Optional[str]:
+    """Stackelberg (arXiv 2507.09407): yesterday's top-bankroll trader is today's leader."""
+    active = [(tid, st.get("bankroll", 0)) for tid, st in state.items()
+              if isinstance(st, dict) and tid in TRADERS and st.get("bankroll", 0) > 5.0]
+    if not active:
+        return None
+    return max(active, key=lambda x: x[1])[0]
+
+def build_stackelberg_role_block(tid: str, leader_tid: Optional[str]) -> str:
+    if not leader_tid:
+        return ""
+    if tid == leader_tid:
+        return ("\n=== STACKELBERG ROLE TODAY: LEADER ===\n"
+                "You are today's leader (highest bankroll prior day). Commit trades FIRST with full "
+                "public reasoning. Your decisions enter COMMON_KNOWLEDGE for followers.\n")
+    return (f"\n=== STACKELBERG ROLE TODAY: FOLLOWER (leader = {leader_tid}) ===\n"
+            "After leader's public commitments, you must either:\n"
+            "  (a) AGREE — align with leader's logic where same sector applies, OR\n"
+            "  (b) DEVIATE — state one explicit reason to best-respond differently.\n")
+
 def _save_state_to_disk(state: dict):
     """Persist experiment state to disk (survives Space restarts)."""
     try:
@@ -1224,6 +1263,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         day_proposals: Dict[str, dict] = {}
         day_actual_bets: Dict[str, set] = {}
 
+        # Stackelberg leader for the day (arXiv 2507.09407)
+        _stackelberg_leader = get_stackelberg_leader(state)
         # Each agent decides for the whole day
         for tid, cfg in TRADERS.items():
             provider = cfg["provider"]
@@ -1237,6 +1278,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 continue
 
             system_prompt = AGENT_SYSTEM_PROMPTS.get(tid, "You are a political alpha allocator.")
+            # DMAD (ICLR 2025): structurally distinct reasoning template per agent
+            _template = REASONING_TEMPLATES.get(tid)
+            if _template:
+                system_prompt = system_prompt + "\n\n" + _template
+            # Stackelberg role (leader or follower)
+            system_prompt = system_prompt + build_stackelberg_role_block(tid, _stackelberg_leader)
             # Axelrod Mech B: sacrificial role injection
             if tid in _sacrificial_assignments:
                 system_prompt = system_prompt + build_sacrificial_system_suffix(_sacrificial_assignments[tid])

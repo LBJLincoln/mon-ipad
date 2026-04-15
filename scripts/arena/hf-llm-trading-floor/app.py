@@ -115,6 +115,48 @@ _cooperation_pacts: Dict[str, dict] = {}
 _reputation: Dict[str, Dict[str, int]] = defaultdict(lambda: {"pact_honored": 0, "pact_broken": 0})
 GATEWAY_URL = os.environ.get("GATEWAY_URL", "").rstrip("/")
 
+# DMAD (ICLR 2025, OpenReview t6QHYUOQL7) — structurally distinct reasoning templates per agent.
+# Each trader MUST reason via its own template; prevents groupthink across Qwen/Llama/Gemini/Mistral.
+REASONING_TEMPLATES = {
+    "qwen-quant":        "REASONING TEMPLATE (DMAD): EXPECTED-UTILITY MAXIMIZATION. Compute E[V] = (p_win × win_amount) − ((1−p_win) × stake). Bet iff E[V]/stake > 0.05.",
+    "qwen-arb":          "REASONING TEMPLATE (DMAD): CROSS-MARKET ARBITRAGE. Scan line discrepancies vs implied prob > 2σ. If no arb signal, PASS.",
+    "llama-contra":      "REASONING TEMPLATE (DMAD): CONTRARIAN INVERSION. Start from public prior, argue the OPPOSITE with 3 reasons. Bet only if inversion survives.",
+    "gemini-anl":        "REASONING TEMPLATE (DMAD): FIRST-PRINCIPLES DECOMPOSITION. List the 3 most decisive factors, weight each ∈[0,1], multiply to get signal.",
+    "gemini-tact":       "REASONING TEMPLATE (DMAD): TACTICAL TIMING. Focus on line movement + steam. No sharp action → PASS.",
+    "mistral-large":     "REASONING TEMPLATE (DMAD): SCENARIO MAJORITY. Enumerate 5 scenarios, assign P to each, bet iff ≥3 align.",
+    "mistral-medium":    "REASONING TEMPLATE (DMAD): DIVERSIFIED PORTFOLIO. Split across 2-3 uncorrelated games. Never all-in one game.",
+    "mistral-small":     "REASONING TEMPLATE (DMAD): RISK-AVERSE STRESS TEST. Assume worst-case; bet only if still +EV in worst case.",
+    "mistral-nemo":      "REASONING TEMPLATE (DMAD): MOMENTUM CHASE. Bet hardest on last-5 form streaks ≥ 4-1.",
+    "mistral-ministral": "REASONING TEMPLATE (DMAD): THEORETICAL MODEL. Mental logistic regression from 3 coefficients → compute p.",
+    "nemotron-120b":     "REASONING TEMPLATE (DMAD): EXPLICIT 7-STEP CoT. context → hypothesis → evidence → counter → weight → conclusion → bet.",
+    "gemma4-selfhost":   "REASONING TEMPLATE (DMAD): 4-RULE CHECKLIST. (1) edge > 0.05 (2) bankroll > $30 (3) not same game as yesterday (4) category in top-3. Bet iff ALL pass.",
+    "qwen25-micro":      "REASONING TEMPLATE (DMAD): PATTERN-MATCH. Find the single most similar historical game in COMMON_KNOWLEDGE, mimic bet logic.",
+    "llama32-micro":     "REASONING TEMPLATE (DMAD): ANCHOR & ADJUST. Anchor at implied_prob, adjust ±10% on the 1 strongest signal, bet iff edge > 0.04.",
+    "gemma2-micro":      "REASONING TEMPLATE (DMAD): MINIMALIST. Pick the SINGLE highest-conviction bet of the day or PASS. Never > 1 bet.",
+}
+
+def get_stackelberg_leader(state: dict) -> Optional[str]:
+    """Stackelberg (arXiv 2507.09407): yesterday's top-bankroll trader is today's leader."""
+    active = [(tid, st.get("bankroll", 0)) for tid, st in state.items()
+              if isinstance(st, dict) and tid in TRADERS and st.get("bankroll", 0) > 5.0]
+    if not active:
+        return None
+    return max(active, key=lambda x: x[1])[0]
+
+def build_stackelberg_role_block(tid: str, leader_tid: Optional[str]) -> str:
+    """Role suffix appended to system_prompt: LEADER commits first, FOLLOWERS best-respond."""
+    if not leader_tid:
+        return ""
+    if tid == leader_tid:
+        return ("\n=== STACKELBERG ROLE TODAY: LEADER ===\n"
+                "You are today's leader (highest bankroll from prior day). Commit your bets FIRST "
+                "with full public reasoning. Your decisions enter COMMON_KNOWLEDGE for followers.\n")
+    return (f"\n=== STACKELBERG ROLE TODAY: FOLLOWER (leader = {leader_tid}) ===\n"
+            "After the leader's public commitments (in COMMON_KNOWLEDGE), you must either:\n"
+            "  (a) AGREE — align with leader's logic where the same game/category applies, OR\n"
+            "  (b) DEVIATE — state one explicit reason why you best-respond differently.\n"
+            "Best-respond to the leader's move; do not blindly follow.\n")
+
 def _save_state_to_disk(state: dict):
     """Persist experiment state to disk (survives Space restarts)."""
     try:
@@ -1692,6 +1734,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         day_proposals: Dict[str, dict] = {}
         day_actual_bets: Dict[str, set] = {}
 
+        # Stackelberg leader for the day (arXiv 2507.09407): yesterday's top bankroll.
+        _stackelberg_leader = get_stackelberg_leader(state)
         # Each agent decides for the whole day
         for tid, cfg in TRADERS.items():
             provider = cfg["provider"]
@@ -1705,6 +1749,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 continue
 
             system_prompt = AGENT_SYSTEM_PROMPTS.get(tid, "You are an NBA betting allocator.")
+            # DMAD (ICLR 2025): structurally distinct reasoning template per agent
+            _template = REASONING_TEMPLATES.get(tid)
+            if _template:
+                system_prompt = system_prompt + "\n\n" + _template
+            # Stackelberg role (leader or follower)
+            system_prompt = system_prompt + build_stackelberg_role_block(tid, _stackelberg_leader)
             # Axelrod Mech B: sacrificial role injection
             if tid in _sacrificial_assignments:
                 system_prompt = system_prompt + build_sacrificial_system_suffix(_sacrificial_assignments[tid])
