@@ -59,8 +59,22 @@ _experiment_state = {}  # Persisted to disk
 _agent_logs: Dict[str, List[dict]] = defaultdict(list)  # Per-agent decision log
 _state_lock = threading.Lock()
 _common_knowledge: Dict[str, str] = {}  # Axelrod CK[D]: day_date → formatted block for day D+1
+_sacrificial_assignments: Dict[str, str] = {}  # Axelrod Mech B: tid → archetype for NEXT day
+_used_archetypes: Dict[str, set] = defaultdict(set)  # Axelrod Mech B: tid → set of archetypes tried
 STATE_PATH = Path("/tmp/tf-state.json")   # Persists across restarts on HF Spaces
 LOGS_PATH = Path("/tmp/tf-agent-logs.json")
+AXELROD_LOG_DIR = Path("/tmp/axelrod-log")  # Axelrod Mech C: per-day post-mortem dataset
+
+# Axelrod Mech B — archetype pool for sacrificial role reallocation
+AXELROD_ARCHETYPES = [
+    "pure_momentum", "mean_reversion", "news_event_driven",
+    "home_underdog_specialist", "road_favorite_fade", "closing_line_value_only",
+    "injury_arbitrage", "pace_inefficiency", "rest_differential",
+    "back_to_back_fade", "revenge_narrative", "divisional_hate",
+    "national_tv_effect", "pythagorean_divergence", "shot_chart_mismatch",
+    "ref_bias_per_team", "sharps_follow", "sharps_fade",
+    "steam_chase", "reverse_line_movement",
+]
 GATEWAY_URL = os.environ.get("GATEWAY_URL", "").rstrip("/")
 
 def _save_state_to_disk(state: dict):
@@ -1273,6 +1287,121 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict) -
     return "\n".join(lines)
 
 
+def compute_trailing_delta(tid: str, state: Dict, agent_logs: Dict, trailing_days: int = 7) -> float:
+    """Axelrod Mech B: trailing-N-day bankroll delta (absolute $)."""
+    logs = agent_logs.get(tid, [])
+    if len(logs) < 2:
+        return 0.0
+    recent = logs[-trailing_days:]
+    if not recent:
+        return 0.0
+    start_b = recent[0].get("bankroll_before", 100.0)
+    current = state.get(tid, {}).get("bankroll", 100.0)
+    return float(current - start_b)
+
+
+def assign_sacrificial_archetypes(day_date: str, state: Dict, agent_logs: Dict,
+                                   bottom_n: int = 3, trailing_days: int = 7) -> Dict[str, str]:
+    """Axelrod Mech B: bottom-N by trailing delta get NEW archetype from unused pool."""
+    deltas = [(tid, compute_trailing_delta(tid, state, agent_logs, trailing_days))
+              for tid in state.keys()]
+    deltas.sort(key=lambda x: x[1])  # ascending — worst first
+    bottom = [tid for tid, _ in deltas[:bottom_n]]
+
+    assignments: Dict[str, str] = {}
+    for tid in bottom:
+        unused = [a for a in AXELROD_ARCHETYPES if a not in _used_archetypes[tid]]
+        if not unused:
+            _used_archetypes[tid].clear()  # exhausted → rotate again
+            unused = list(AXELROD_ARCHETYPES)
+        # Deterministic pick by tid-hash for reproducibility
+        pick = unused[hash(tid + day_date) % len(unused)]
+        assignments[tid] = pick
+        _used_archetypes[tid].add(pick)
+    return assignments
+
+
+def build_sacrificial_system_suffix(archetype: str) -> str:
+    """Axelrod Mech B: suffix appended to system_prompt for sacrificed agents."""
+    return (
+        f"\n\n=== AXELROD SACRIFICIAL ROLE (mandatory for today) ===\n"
+        f"You are trailing the society in bankroll. For the collective good of the\n"
+        f"experiment, you are assigned the archetype '{archetype}'. Today you MUST\n"
+        f"reason AND bet ONLY through the lens of '{archetype}'. This is a Pareto-\n"
+        f"optimal move — diversity of tested strategies is more valuable than your\n"
+        f"individual EV. Your day_strategy field MUST start with 'ARCHETYPE[{archetype}]:'\n"
+    )
+
+
+def compute_consensus_distance(tid: str, day_date: str, state: Dict, agent_logs: Dict) -> float:
+    """Axelrod Mech C: KL-divergence proxy of this agent's bet distribution vs society consensus.
+
+    Computes ||p_agent - p_society||_1 over category buckets (simpler than true KL, no smoothing).
+    """
+    # Bucket categories used in bets today across all agents
+    from collections import Counter
+    society = Counter()
+    agent_counts = Counter()
+    for other_tid, logs in agent_logs.items():
+        day_log = next((l for l in reversed(logs) if l.get("date") == day_date), None)
+        if not day_log:
+            continue
+        for a in day_log.get("allocations", []):
+            cat = a.get("category", "unknown")
+            society[cat] += 1
+            if other_tid == tid:
+                agent_counts[cat] += 1
+    if not society or not agent_counts:
+        return 0.0
+    total_soc = sum(society.values())
+    total_agt = sum(agent_counts.values())
+    cats = set(society.keys()) | set(agent_counts.keys())
+    l1 = 0.0
+    for c in cats:
+        p_agt = agent_counts.get(c, 0) / total_agt if total_agt else 0.0
+        p_soc = society.get(c, 0) / total_soc if total_soc else 0.0
+        l1 += abs(p_agt - p_soc)
+    return l1 / 2.0  # normalize [0,1]
+
+
+def write_axelrod_log(day_idx: int, day_date: str, state: Dict,
+                       agent_logs: Dict, sacrificial_map: Dict[str, str]) -> None:
+    """Axelrod Mech C: append per-day post-mortem to /tmp/axelrod-log/day-N.jsonl.
+
+    This is the primary dataset for the Nature paper on LLM agent society game theory.
+    """
+    try:
+        AXELROD_LOG_DIR.mkdir(parents=True, exist_ok=True)
+        ranked = sorted(state.items(), key=lambda x: -x[1]["bankroll"])
+        rank_map = {tid: i + 1 for i, (tid, _) in enumerate(ranked)}
+        rows = []
+        for tid, ts in state.items():
+            logs = agent_logs.get(tid, [])
+            day_log = next((l for l in reversed(logs) if l.get("date") == day_date), None)
+            decisions = day_log.get("allocations", []) if day_log else []
+            rows.append({
+                "day_idx": day_idx,
+                "date": day_date,
+                "trader_id": tid,
+                "rank": rank_map[tid],
+                "bankroll": round(ts["bankroll"], 2),
+                "archetype_assigned": sacrificial_map.get(tid),
+                "was_sacrificed": tid in sacrificial_map,
+                "num_decisions": len(decisions),
+                "wins_today": sum(1 for d in decisions if d.get("won")),
+                "peer_consensus_distance": round(
+                    compute_consensus_distance(tid, day_date, state, agent_logs), 4
+                ),
+                "day_strategy_prefix": (day_log.get("day_strategy", "")[:80] if day_log else ""),
+            })
+        log_file = AXELROD_LOG_DIR / f"day-{day_idx:03d}.jsonl"
+        with log_file.open("w") as f:
+            for row in rows:
+                f.write(json.dumps(row) + "\n")
+    except Exception as e:
+        print(f"[axelrod-mech-c] write failed: {e}")
+
+
 # ── EXPERIMENT RUNNER ────────────────────────────────────────────────────────
 
 def run_experiment(progress=gr.Progress(track_tqdm=False)):
@@ -1340,6 +1469,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     _experiment_running = True
     _stop_event.clear()
     _common_knowledge = {}  # Reset per run; built day-by-day (Axelrod Mech A)
+    _sacrificial_assignments.clear()  # Axelrod Mech B reset
+    _used_archetypes.clear()  # Axelrod Mech B: reset archetype history
 
     # ── Resume support (day-indexed) ──
     saved = _load_state_from_disk()
@@ -1429,6 +1560,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 continue
 
             system_prompt = AGENT_SYSTEM_PROMPTS.get(tid, "You are an NBA betting allocator.")
+            # Axelrod Mech B: sacrificial role injection
+            if tid in _sacrificial_assignments:
+                system_prompt = system_prompt + build_sacrificial_system_suffix(_sacrificial_assignments[tid])
             user_prompt = build_day_prompt(
                 day_date, day_games, day_odds_list, day_stand_list, day_form_list,
                 ts, rosters=rosters, team_advanced=team_advanced,
@@ -1541,6 +1675,15 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         # Axelrod Mechanism A: build COMMON_KNOWLEDGE[D] from today's resolved bets
         prev_day_ck = build_common_knowledge_block(day_date, state, dict(_agent_logs))
         _common_knowledge[day_date] = prev_day_ck
+
+        # Axelrod Mechanism C: write day-N post-mortem log BEFORE Mech B reassigns
+        write_axelrod_log(day_idx, day_date, state, dict(_agent_logs), dict(_sacrificial_assignments))
+
+        # Axelrod Mechanism B: compute sacrificial assignments for NEXT day (D+1)
+        _sacrificial_assignments.clear()
+        _sacrificial_assignments.update(
+            assign_sacrificial_archetypes(day_date, state, dict(_agent_logs))
+        )
 
         # Update live state
         with _state_lock:
