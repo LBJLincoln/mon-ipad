@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v20 — Department Forge (9 depts) + Trading Floor v3 (12 real LLM agents) + 18 Evolution Islands (10 NBA + 8 Political) | Updated: 2026-04-15
+> Architecture v20 — Department Forge (9 depts) + Trading Floor v3 (12 real LLM agents) + 21 Evolution Islands (13 NBA + 8 Political) | Updated: 2026-04-15
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -13,7 +13,7 @@ Build the best NBA prediction AI in the world.
 
 | Flagship | Repo | Bot | Vercel | Status |
 |----------|------|-----|--------|--------|
-| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 10 NBA islands + 8 Political islands + Kaggle Karpathy |
+| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 13 NBA islands + 8 Political islands + Kaggle Karpathy |
 | Political Alpha | nomos-political-alpha | -- | none (data only) | ACTIVE -- v3.19 engine, 22 categories, 718 features |
 | Dashboard Hub | nomos-dashboard | -- | nomosdashboard.vercel.app | ACTIVE -- /nba /political /evolution /trading-floor /forge /world |
 | AI Artistic Generation | rgwa | @RGWAbot | none | ZOMBIE -- no commits since Mar 2026, deprioritized |
@@ -36,7 +36,7 @@ VM MUSCLE (cron, every 4h at :30)
     └── Auto-restart data server
     Script: scripts/autonomous-cycle.sh
 
-HF EVOLUTION ISLANDS (10 NBA + 8 Political = 18 active, parity achieved 2026-04-15)
+HF EVOLUTION ISLANDS (13 NBA + 8 Political = 21 active, S20/S21/S22 deployed 2026-04-15)
     NBA Islands (all UP, CPU tree-only, MAX_FEATURES=200):
     ├── S10 Nomos42/nba-quant:        exploitation  gen=86    brier=0.22825  → nomos42-nba-quant.hf.space
     ├── S11 Nomos42/nba-quant-2:      exploration   gen=141   brier=0.24572  → nomos42-nba-quant-2.hf.space
@@ -47,7 +47,10 @@ HF EVOLUTION ISLANDS (10 NBA + 8 Political = 18 active, parity achieved 2026-04-
     ├── S16 LBJLincoln26/nba-evo-s16: gradient_boost gen=86   brier=0.22573  → lbjlincoln26-nba-evo-s16.hf.space
     ├── S17 LBJLincoln26/nba-evo-s17: ensemble      gen=139   brier=0.22493  → lbjlincoln26-nba-evo-s17.hf.space
     ├── S18 TESTforge42/nba-evo-s18:  catboost_spec gen=1030  brier=0.22114  → testforge42-nba-evo-s18.hf.space  (promoted 2026-04-15)
-    └── S19 TESTforge42/nba-evo-s19:  wide_search   gen=849   brier=0.22257  → testforge42-nba-evo-s19.hf.space  (promoted 2026-04-15)
+    ├── S19 TESTforge42/nba-evo-s19:  wide_search   gen=849   brier=0.22257  → testforge42-nba-evo-s19.hf.space  (promoted 2026-04-15)
+    ├── S20 LBJLincoln26/nba-evo-s20: isotonic_cpcv gen=0    brier=—         → lbjlincoln26-nba-evo-s20.hf.space  (NEW 2026-04-15 — Prediction Arena 2604.07355)
+    ├── S21 LBJLincoln26/nba-evo-s21: darwinian_weights gen=0 brier=—        → lbjlincoln26-nba-evo-s21.hf.space  (NEW 2026-04-15 — atlas-gic PnL)
+    └── S22 TESTforge42/nba-evo-s22:  venn_abers_fusion gen=0 brier=—        → testforge42-nba-evo-s22.hf.space   (NEW 2026-04-15 — Venn-Abers fusion)
     Political Islands (8 live, CPU tree-only — parity with NBA achieved 2026-04-15):
     ├── P1 Nomos42/political-alpha:      xgboost        gen=3042  brier=0.24996  → nomos42-political-alpha.hf.space
     ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=2212  brier=0.25223  → nomos42-political-alpha-2.hf.space

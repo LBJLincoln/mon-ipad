@@ -35,7 +35,7 @@ TOTAL=0; HEALTHY=0; RESTARTED=0; FAILED=0
 # ══════════════════════════════════════════════════════════════
 
 declare -A SPACES=(
-  # NBA islands (10 total — S10-S19)
+  # NBA islands (13 total — S10-S22)
   ["S10_nba"]="https://nomos42-nba-quant.hf.space"
   ["S11_nba"]="https://nomos42-nba-quant-2.hf.space"
   ["S12_nba"]="https://nomos42-nba-evo-3.hf.space"
@@ -46,6 +46,9 @@ declare -A SPACES=(
   ["S17_nba"]="https://lbjlincoln26-nba-evo-s17.hf.space"
   ["S18_nba"]="https://testforge42-nba-evo-s18.hf.space"
   ["S19_nba"]="https://testforge42-nba-evo-s19.hf.space"
+  ["S20_nba"]="https://lbjlincoln26-nba-evo-s20.hf.space"
+  ["S21_nba"]="https://lbjlincoln26-nba-evo-s21.hf.space"
+  ["S22_nba"]="https://testforge42-nba-evo-s22.hf.space"
   # Political islands (8 total — P1-P8)
   ["P1_pol"]="https://nomos42-political-alpha.hf.space"
   ["P2_pol"]="https://nomos42-political-alpha-2.hf.space"

@@ -15,6 +15,9 @@
 #   S17 LBJLincoln26/nba-evo-s17   → HF_TOKEN_NBA
 #   S18 TESTforge42/nba-evo-s18    → HF_TOKEN_COUNCILS
 #   S19 TESTforge42/nba-evo-s19    → HF_TOKEN_COUNCILS
+#   S20 LBJLincoln26/nba-evo-s20   → HF_TOKEN_NBA (isotonic_cpcv)
+#   S21 LBJLincoln26/nba-evo-s21   → HF_TOKEN_NBA (darwinian_weights)
+#   S22 TESTforge42/nba-evo-s22    → HF_TOKEN_COUNCILS (venn_abers_fusion)
 #
 # Political Spaces:
 #   P1 Nomos42/political-alpha      → HF_TOKEN_LLM
@@ -138,6 +141,9 @@ deploy_nba "LBJLincoln26/nba-evo-s16" "exploration"       "HF_TOKEN_NBA"
 deploy_nba "LBJLincoln26/nba-evo-s17" "wide_search"       "HF_TOKEN_NBA"
 deploy_nba "TESTforge42/nba-evo-s18"  "catboost_specialist" "HF_TOKEN_COUNCILS"
 deploy_nba "TESTforge42/nba-evo-s19"  "wide_search"         "HF_TOKEN_COUNCILS"
+deploy_nba "LBJLincoln26/nba-evo-s20" "isotonic_cpcv"       "HF_TOKEN_NBA"
+deploy_nba "LBJLincoln26/nba-evo-s21" "darwinian_weights"   "HF_TOKEN_NBA"
+deploy_nba "TESTforge42/nba-evo-s22"  "venn_abers_fusion"   "HF_TOKEN_COUNCILS"
 
 echo ""
 echo "── Political Islands ──"

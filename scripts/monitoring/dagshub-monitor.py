@@ -8,8 +8,8 @@ Logs to DagsHub (if DAGSHUB_TOKEN set) and always to local JSON/CSV.
 Run via cron every 30 min:
     20,50 * * * * python3 /home/termius/mon-ipad/scripts/monitoring/dagshub-monitor.py
 
-Endpoints monitored (27 total):
-    - 10 NBA Evolution Islands (S10-S19)
+Endpoints monitored (30 total):
+    - 13 NBA Evolution Islands (S10-S22)
     - 4 Political Alpha Islands (P1-P4)
     - 9 Department Council Spaces (D1-D9)
     - 2 Services (dashboard, Bloomberg API)
@@ -65,6 +65,9 @@ NBA_SPACES = {
     "S17_ensemble":     "https://lbjlincoln26-nba-evo-s17.hf.space/",
     "S18_cat_brier":    "https://testforge42-nba-evo-s18.hf.space/",
     "S19_ultra_wide":   "https://testforge42-nba-evo-s19.hf.space/",
+    "S20_iso_cpcv":     "https://lbjlincoln26-nba-evo-s20.hf.space/",
+    "S21_darwinian":    "https://lbjlincoln26-nba-evo-s21.hf.space/",
+    "S22_venn_abers":   "https://testforge42-nba-evo-s22.hf.space/",
 }
 
 POLITICAL_SPACES = {

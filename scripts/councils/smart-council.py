@@ -79,6 +79,9 @@ ISLANDS = {
     "S17": {"url": "lbjlincoln26-nba-evo-s17", "role": "ensemble",              "mut": 0.10, "feat": 70,  "model": None},
     "S18": {"url": "testforge42-nba-evo-s18",  "role": "cat_brier",             "mut": 0.08, "feat": 65,  "model": "catboost"},
     "S19": {"url": "testforge42-nba-evo-s19",  "role": "ultra_wide",            "mut": 0.15, "feat": 90,  "model": None},
+    "S20": {"url": "lbjlincoln26-nba-evo-s20", "role": "isotonic_cpcv",         "mut": 0.10, "feat": 70,  "model": None},
+    "S21": {"url": "lbjlincoln26-nba-evo-s21", "role": "darwinian_weights",     "mut": 0.12, "feat": 72,  "model": None},
+    "S22": {"url": "testforge42-nba-evo-s22",  "role": "venn_abers_fusion",     "mut": 0.10, "feat": 68,  "model": None},
 }
 
 # ─── LLM Backend (reusing free-models-integration logic inline) ───────────────
