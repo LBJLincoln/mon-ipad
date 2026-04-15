@@ -74,8 +74,8 @@ GPU PLATFORMS (5 active, ranked by usefulness)
     ├── Kaggle P100 (9h sessions): scripts/kaggle/nba_karpathy_loop.py — STALE since Mar 28
     ├── Google Colab T4 (manual): 2 accounts, best 0.21570 (TabICL) — manual only, no .ipynb in repo
     ├── ZeroGPU H200 (auto): scripts/gpu-burst/zerogpu-burst.py — GH Action every 6h
-    ├── Modal A10G (GH Actions): scripts/gpu-burst/modal-burst.py — no VM creds, GH only
-    ├── Lightning.ai T4 (dormant): scripts/lightning/launch_karpathy.py — creds exist, never used
+    ├── Modal A10G (auto): scripts/gpu-burst/modal-burst.py — ACTIVE via GH Action every 4h (.github/workflows/modal-burst.yml)
+    ├── Lightning.ai T4 (auto): scripts/lightning/launch_karpathy.py — ACTIVE via GH Action 2x/day (NBA 02:00 UTC, Political 14:00 UTC, .github/workflows/lightning-burst.yml)
     └── Paperspace Gradient (NEW): free GPU, unlimited restarts — SETUP IN PROGRESS
 
 GITHUB ACTIONS (3 workflows on schedule)

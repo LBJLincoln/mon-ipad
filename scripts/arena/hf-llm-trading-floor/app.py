@@ -193,6 +193,17 @@ PROVIDERS = {
         "max_tokens": 1500,
         "rpm": 12,
     },
+    # Self-hosted CPU LLM on HF Space Nomos42/nomos-cpu-gemma4 — no auth, no quota.
+    # Space requested gemma-4-E4B-it-GGUF but that file 404s on HF, so falls back to
+    # bartowski/Phi-3.5-mini-instruct-GGUF (Q4_K_M). OK for tactical 1-shot bets.
+    # Endpoint is NOT OpenAI-compat: POST /api/decide {system, user, max_tokens} -> {text}.
+    "selfhost:cpu-gemma4": {
+        "url": "https://nomos42-nomos-cpu-gemma4.hf.space/api/decide",
+        "model": "phi-3.5-mini-instruct-q4_k_m",
+        "key_env": "SELFHOST_NOOP",  # sentinel — no auth needed
+        "max_tokens": 800,
+        "rpm": 6,  # slow CPU, ~5-12s/call
+    },
 }
 
 # ── AGENT DEFINITIONS (v3 — 10 personas across 3 providers, 2026-04-14) ──────
@@ -215,6 +226,8 @@ TRADERS = {
     "mistral-ministral":{"name": "Ministral 8B",     "provider": "mistral:ministral-8b", "personality": "theoretical",  "risk_tolerance": 0.35},
     # NEW 2026-04-15 — +1 NVIDIA Nemotron 120B (OpenRouter free, verified responsive)
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55},
+    # NEW 2026-04-15 T12 — self-hosted CPU Phi-3.5 on HF Space (no quota, slow ~8s/call)
+    "gemma4-selfhost":  {"name": "Gemma4 SelfHost",  "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -294,6 +307,13 @@ PREFERRED STRATEGIES: value_hunter, half_kelly, proportional_edge
 EDGE DETECTION: Cross-category scan — team totals, alt spreads, halves often mispriced. Require edge >4%.
 RISK: Moderate (0.55). Depth of reasoning over breadth.
 SPECIALTY: Alt-markets (team totals, alt spreads, quarter lines).""",
+
+    "gemma4-selfhost": """You are Gemma4 SelfHost, a disciplined self-hosted allocator on CPU Phi-3.5-mini.
+APPROACH: Small model, small bets. Pick one high-conviction play per day. No multi-leg parlays. Prefer ML over totals.
+PREFERRED STRATEGIES: flat_1pct, quarter_kelly, top_edge_only
+EDGE DETECTION: Only bet when moneyline edge >5% AND confidence >65%. Otherwise pass.
+RISK: Low (0.40). Capital preservation over chase.
+SPECIALTY: Single-bet conviction plays. Slow-thinking CPU inference.""",
 }
 
 # ── RATE LIMITER ─────────────────────────────────────────────────────────────
@@ -329,8 +349,10 @@ def _call_llm(provider: str, system_prompt: str, user_prompt: str,
             _llm_errors.append(f"{provider}: unknown provider")
         return None
 
-    api_key = os.environ.get(cfg["key_env"], "")
-    if not api_key:
+    # Self-hosted HF Space endpoints are public — no API key required.
+    is_selfhost = provider.startswith("selfhost:")
+    api_key = "" if is_selfhost else os.environ.get(cfg["key_env"], "")
+    if not is_selfhost and not api_key:
         _llm_failures += 1
         if len(_llm_errors) < 50:
             _llm_errors.append(f"{provider}: no key ({cfg['key_env']})")
@@ -416,6 +438,31 @@ def _call_llm(provider: str, system_prompt: str, user_prompt: str,
                     data = resp.json()
                     return data.get("choices", [{}])[0].get("message", {}).get("content", "")
                 last_error = f"HTTP {resp.status_code}: {resp.text[:120]}"
+                if resp.status_code in (429, 503) and attempt == 0:
+                    time.sleep(8)
+                    continue
+            elif is_selfhost:
+                # Self-hosted HF Space — non-OpenAI shape: POST /api/decide
+                # {system, user, max_tokens, temperature, json_only} -> {text, ...}
+                payload = {
+                    "system": system_prompt,
+                    "user": user_prompt,
+                    "max_tokens": cfg["max_tokens"],
+                    "temperature": 0.3,
+                    "json_only": True,
+                }
+                resp = requests.post(cfg["url"], json=payload, timeout=max(timeout, 45))
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if isinstance(data, dict) and data.get("error"):
+                        last_error = f"selfhost error: {data.get('error')[:120]}"
+                    else:
+                        text = data.get("text") or data.get("content") or ""
+                        if text:
+                            return text
+                        last_error = f"selfhost empty response: {str(data)[:120]}"
+                else:
+                    last_error = f"HTTP {resp.status_code}: {resp.text[:120]}"
                 if resp.status_code in (429, 503) and attempt == 0:
                     time.sleep(8)
                     continue

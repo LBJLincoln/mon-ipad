@@ -1,0 +1,93 @@
+name: Modal A10G Burst
+
+# Runs a 10-min NBA evolution burst on Modal A10G (~$0.18/burst).
+# Schedule: every 4 hours. Modal executes serverless -- the GH runner only
+# drives `modal run` and waits for the function to return.
+#
+# Requires GitHub repo secrets:
+#   MODAL_TOKEN_ID, MODAL_TOKEN_SECRET -- Modal account
+# Secrets the Modal function itself consumes are configured in the Modal
+# dashboard under the `nomos42-secrets` secret (HF_TOKEN, GITHUB_TOKEN,
+# DATABASE_URL, TELEGRAM_BOT_TOKEN, ADMIN_TELEGRAM_ID).
+
+on:
+  schedule:
+    - cron: '15 */4 * * *'  # every 4h at :15 (offset from zerogpu :50, karpathy slots)
+  workflow_dispatch:
+    inputs:
+      gpu:
+        description: 'GPU type (A10G or A100)'
+        required: false
+        default: 'A10G'
+      timeout:
+        description: 'Burst duration in seconds'
+        required: false
+        default: '600'
+
+permissions:
+  contents: write
+
+jobs:
+  modal-burst:
+    name: Modal Burst (A10G serverless)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Modal CLI
+        run: pip install --quiet modal
+
+      - name: Check Modal credentials
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: |
+          if [ -z "$MODAL_TOKEN_ID" ] || [ -z "$MODAL_TOKEN_SECRET" ]; then
+            echo "MODAL_TOKEN_ID or MODAL_TOKEN_SECRET not set -- skipping Modal burst"
+            exit 0
+          fi
+          echo "Modal credentials present."
+
+      - name: Run Modal burst
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: |
+          if [ -z "$MODAL_TOKEN_ID" ] || [ -z "$MODAL_TOKEN_SECRET" ]; then
+            exit 0
+          fi
+          mkdir -p data/gpu-burst logs/gpu-burst
+          GPU="${{ github.event.inputs.gpu || 'A10G' }}"
+          TIMEOUT="${{ github.event.inputs.timeout || '600' }}"
+          modal run scripts/gpu-burst/modal-burst.py::main \
+            --gpu "$GPU" \
+            --timeout "$TIMEOUT" \
+            2>&1 | tee "logs/gpu-burst/modal-$(date -u +%Y%m%dT%H%M%SZ).log" \
+            | tail -60
+        continue-on-error: true
+
+      - name: Commit Modal results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/gpu-burst/ 2>/dev/null || true
+          if ! git diff --cached --quiet 2>/dev/null; then
+            git stash --include-untracked
+            git pull --rebase origin main
+            git stash pop || true
+            git add data/gpu-burst/ 2>/dev/null || true
+            git commit -m "data: gpu burst modal $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase || true
+            git push
+          else
+            echo "No Modal results to commit (function pushes directly from within Modal)"
+          fi

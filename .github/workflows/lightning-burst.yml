@@ -1,0 +1,105 @@
+name: Lightning AI Burst
+
+# Runs the Karpathy autoresearch loop on Lightning.ai (T4/A10G GPU).
+# The user has 2 Lightning accounts = 44h free GPU/day -- we burn that
+# budget on NBA (02:00 UTC) and Political (14:00 UTC) every day.
+#
+# Requires GitHub repo secrets:
+#   LIGHTNING_USER_ID, LIGHTNING_API_KEY -- Lightning account
+#   HF_TOKEN                             -- clone feature engine from HF Space
+#   GITHUB_TOKEN                         -- built-in, for pushing results
+#   TELEGRAM_BOT_TOKEN, ADMIN_TELEGRAM_ID -- optional alerts
+
+on:
+  schedule:
+    - cron: '0 2 * * *'   # 02:00 UTC -- NBA burst
+    - cron: '0 14 * * *'  # 14:00 UTC -- Political burst
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project (nba or political)'
+        required: false
+        default: 'nba'
+      duration:
+        description: 'Burst duration in seconds'
+        required: false
+        default: '600'
+
+permissions:
+  contents: write
+
+jobs:
+  lightning-burst:
+    name: Lightning GPU Burst
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Pick project by schedule
+        id: pick
+        run: |
+          # Map cron slot -> project. 02:00 UTC = NBA, 14:00 UTC = Political.
+          # workflow_dispatch overrides via inputs.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "project=${{ github.event.inputs.project }}" >> "$GITHUB_OUTPUT"
+            echo "duration=${{ github.event.inputs.duration }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "0 14 * * *" ]; then
+            echo "project=political" >> "$GITHUB_OUTPUT"
+            echo "duration=600" >> "$GITHUB_OUTPUT"
+          else
+            echo "project=nba" >> "$GITHUB_OUTPUT"
+            echo "duration=600" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies
+        run: |
+          pip install --quiet numpy scikit-learn requests xgboost lightgbm catboost \
+            psycopg2-binary huggingface_hub lightning-sdk 2>/dev/null || true
+
+      - name: Launch Karpathy burst on Lightning
+        env:
+          LIGHTNING_USER_ID: ${{ secrets.LIGHTNING_USER_ID }}
+          LIGHTNING_API_KEY: ${{ secrets.LIGHTNING_API_KEY }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          ADMIN_TELEGRAM_ID: ${{ secrets.ADMIN_TELEGRAM_ID }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "$LIGHTNING_API_KEY" ] || [ -z "$LIGHTNING_USER_ID" ]; then
+            echo "LIGHTNING_USER_ID or LIGHTNING_API_KEY missing -- skipping Lightning burst"
+            exit 0
+          fi
+          mkdir -p data/gpu-burst logs/gpu-burst
+          python3 scripts/lightning/launch_karpathy.py \
+            --project "${{ steps.pick.outputs.project }}" \
+            --duration "${{ steps.pick.outputs.duration }}" \
+            2>&1 | tee "logs/gpu-burst/lightning-${{ steps.pick.outputs.project }}-$(date -u +%Y%m%dT%H%M%SZ).log" \
+            | tail -60
+        continue-on-error: true
+
+      - name: Commit Lightning results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/gpu-burst/ 2>/dev/null || true
+          if ! git diff --cached --quiet 2>/dev/null; then
+            git stash --include-untracked
+            git pull --rebase origin main
+            git stash pop || true
+            git add data/gpu-burst/ 2>/dev/null || true
+            git commit -m "data: gpu burst lightning ${{ steps.pick.outputs.project }} $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase || true
+            git push
+          else
+            echo "No Lightning results to commit"
+          fi

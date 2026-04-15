@@ -6,7 +6,15 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install FastAPI + HF hub first (fast)
+RUN pip install --no-cache-dir fastapi>=0.115.6 "uvicorn[standard]>=0.32.1" \
+    pydantic>=2.10.4 huggingface_hub>=0.27.0
+
+# llama-cpp-python: prefer prebuilt CPU wheel — avoids source compile OOM.
+# --prefer-binary forces pip to pick a wheel even if PyPI has newer sources.
+RUN pip install --no-cache-dir --prefer-binary \
+    --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu \
+    llama-cpp-python==0.3.7
 
 COPY app.py .
 
