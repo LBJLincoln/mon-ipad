@@ -139,12 +139,13 @@ PROVIDERS = {
         "max_tokens": 1200,
         "rpm": 30,
     },
-    # Google Gemini 3 Flash (key 2)
+    # Google Gemini 3 Flash (key 2) — thinking model, needs big token budget +
+    # thinkingBudget=0 or all tokens get eaten by thought traces.
     "google:gemini-3-flash": {
         "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent",
         "model": "gemini-3-flash-preview",
         "key_env": "GOOGLE_API_KEY_2",
-        "max_tokens": 1500,
+        "max_tokens": 4096,
         "rpm": 14,
     },
     # Mistral la Plateforme (free tier — added 2026-04-14)
@@ -183,6 +184,15 @@ PROVIDERS = {
         "max_tokens": 1200,
         "rpm": 20,
     },
+    # OpenRouter Nemotron 120B free — only free-tier model that reliably responds
+    # (verified 2026-04-15: qwen3-80b / glm-4.5-air / llama-3.3-70b all 429 across 3 keys).
+    "openrouter:nemotron-120b": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "nvidia/nemotron-3-super-120b-a12b:free",
+        "key_env": "OPENROUTER_KEY_BARTOLI",
+        "max_tokens": 1500,
+        "rpm": 12,
+    },
 }
 
 # ── AGENT DEFINITIONS (v3 — 10 personas across 3 providers, 2026-04-14) ──────
@@ -203,6 +213,8 @@ TRADERS = {
     "mistral-small":    {"name": "Mistral Small",    "provider": "mistral:small",        "personality": "conservative", "risk_tolerance": 0.35},
     "mistral-nemo":     {"name": "Mistral Nemo",     "provider": "mistral:nemo",         "personality": "aggressive",   "risk_tolerance": 0.70},
     "mistral-ministral":{"name": "Ministral 8B",     "provider": "mistral:ministral-8b", "personality": "theoretical",  "risk_tolerance": 0.35},
+    # NEW 2026-04-15 — +1 NVIDIA Nemotron 120B (OpenRouter free, verified responsive)
+    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -275,6 +287,13 @@ PREFERRED STRATEGIES: half_kelly, home_specialist, first_half_sniper
 EDGE DETECTION: Back-to-back fades. Altitude games (Denver). Rest differential >2 days.
 RISK: Moderate (0.60). Disciplined execution.
 SPECIALTY: First-half betting and schedule-based plays.""",
+
+    "nemotron-120b": """You are Nemotron 120B, a chain-of-thought value hunter.
+APPROACH: Rank every available category by |model_prob - implied_prob|. Size the top 1-2 mispricings using half-Kelly. Ignore noisy edges.
+PREFERRED STRATEGIES: value_hunter, half_kelly, proportional_edge
+EDGE DETECTION: Cross-category scan — team totals, alt spreads, halves often mispriced. Require edge >4%.
+RISK: Moderate (0.55). Depth of reasoning over breadth.
+SPECIALTY: Alt-markets (team totals, alt spreads, quarter lines).""",
 }
 
 # ── RATE LIMITER ─────────────────────────────────────────────────────────────
@@ -327,12 +346,37 @@ def _call_llm(provider: str, system_prompt: str, user_prompt: str,
                 url = f"{cfg['url']}?key={api_key}"
                 payload = {
                     "contents": [{"parts": [{"text": f"{system_prompt}\n\n{user_prompt}"}]}],
-                    "generationConfig": {"maxOutputTokens": cfg["max_tokens"], "temperature": 0.3},
+                    "generationConfig": {
+                        "maxOutputTokens": cfg["max_tokens"],
+                        "temperature": 0.3,
+                        "responseMimeType": "application/json",
+                        "thinkingConfig": {"thinkingBudget": 0},
+                    },
                 }
                 resp = requests.post(url, json=payload, timeout=timeout)
                 if resp.status_code == 200:
                     data = resp.json()
-                    return data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                    cand = (data.get("candidates") or [{}])[0]
+                    # Join ALL non-thought parts (Gemini 3 can split response).
+                    parts = (cand.get("content") or {}).get("parts") or []
+                    pieces = []
+                    for p in parts:
+                        if not isinstance(p, dict):
+                            continue
+                        if p.get("thought") is True:
+                            continue
+                        t = p.get("text")
+                        if t:
+                            pieces.append(t)
+                    text = "".join(pieces)
+                    if text:
+                        return text
+                    # Empty: log finishReason for debug
+                    fr = cand.get("finishReason", "EMPTY")
+                    last_error = f"Gemini finishReason={fr} parts={len(parts)}"
+                    if attempt == 0:
+                        time.sleep(1)
+                        continue
                 last_error = f"HTTP {resp.status_code}: {resp.text[:120]}"
                 if resp.status_code == 429 and attempt == 0:
                     time.sleep(5)

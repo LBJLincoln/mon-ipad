@@ -31,6 +31,7 @@ TRADER_DEFAULT_RISK = {
     "gemini-anl": 0.55, "gemini-tact": 0.60,
     "mistral-large": 0.50, "mistral-medium": 0.45, "mistral-small": 0.35,
     "mistral-nemo": 0.70, "mistral-ministral": 0.35,
+    "nemotron-120b": 0.55,
 }
 
 
@@ -250,10 +251,10 @@ def write_council_verdicts(analysis: dict):
 def actuate_mutations(
     analysis: dict,
     dry_run: bool = True,
-    gap_threshold: float = 0.20,
-    step: float = 0.10,
+    gap_threshold: float = 0.12,
+    step: float = 0.08,
     floor: float = 0.15,
-    min_allocs: int = 5,
+    min_allocs: int = 15,
     min_bankroll: float = 10.0,
 ) -> list:
     """Close the D6-observe → HF-mutate loop (research W1, arXiv:2604.01658 CORAL pattern).
