@@ -1,1 +1,146 @@
-placeholder
+{
+  "version": 1,
+  "updated_at": "2026-04-15T18:00:00Z",
+  "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
+  "items": [
+    {
+      "id": "R7",
+      "priority": 2,
+      "status": "pending",
+      "owner": "local-agent-a63b2bad",
+      "subject": "Deploy S20/S21/S22 NBA islands",
+      "scope": "3 new HF Spaces with isotonic+CPCV / Darwinian weights / Venn-Abers fusion. CPU-only, MAX_FEATURES=200.",
+      "target_accounts": [
+        "LBJLincoln26",
+        "LBJLincoln26",
+        "TESTforge42"
+      ],
+      "update_files": [
+        "scripts/keepalive-spaces.sh",
+        "scripts/autonomous-cycle.sh",
+        "scripts/infra-agent.sh",
+        "scripts/deploy-all-spaces.sh",
+        "scripts/councils/smart-council.py",
+        "scripts/monitoring/dagshub-monitor.py",
+        "CLAUDE.md"
+      ],
+      "commit_message": "feat(fleet): deploy S20/S21/S22 NBA islands (isotonic+CPCV / Darwinian / Venn-Abers)",
+      "do_not_push": true,
+      "notes": "S20 LBJLincoln26/nba-evo-s20 isotonic-calibrated stacking + CPCV gate. S21 LBJLincoln26/nba-evo-s21 Darwinian weights (30-day rolling PnL). S22 TESTforge42/nba-evo-s22 Venn-Abers fusion xgb+catb+lgb. Clone S17 or S18 template, inject new genotype."
+    },
+    {
+      "id": "R8",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-agent-ab8a71a3",
+      "subject": "5 dashboard coverage gaps",
+      "scope": "nomos-dashboard repo \u2014 local commits only, no push.",
+      "gaps": [
+        "Gap 1: Add S16-S19 to /api/evolution/route.ts SPACE_META + /api/infra/status/route.ts NBA_SPACES",
+        "Gap 2: Create /api/arena/political-trading-floor/route.ts + /political-floor/page.tsx mirroring NBA",
+        "Gap 3: Repoint /floor/page.tsx from /api/arena/v5-floor to /api/arena/trading-floor",
+        "Gap 4: Create /api/github/workflows/route.ts + GH Actions strip on /infra",
+        "Gap 5: Create /api/gateway/status/route.ts + 3-row strip on /floor header"
+      ],
+      "commit_message": "feat(dashboard): R8 \u2014 5 coverage gaps (S16-S19, political TF page, GH Actions, gateway)",
+      "do_not_push": true
+    },
+    {
+      "id": "R10",
+      "priority": 1,
+      "status": "in_progress",
+      "owner": "primary-cli",
+      "subject": "Gateway T12 self-host priority",
+      "scope": "Reorder FALLBACK_CHAINS in llm-gateway Space (LBJLincoln26/llm-gateway) to prefer Nomos42/nomos42-llm-cpu (T12 Phi-3.5) for low-stakes reasoning calls.",
+      "files": [
+        "scripts/gateway/app.py OR hf-brain/llm-gateway/app.py"
+      ],
+      "commit_message": "feat(gateway): prioritize T12 self-host for low-stakes calls",
+      "do_not_push": true
+    },
+    {
+      "id": "pixel-world-scaffold",
+      "priority": 3,
+      "status": "pending",
+      "owner": "local-agent-a994b656",
+      "subject": "Phaser + XP.css + Kenney 1-Bit scaffold",
+      "scope": "nomos-dashboard local scaffold only, not wired to live data. Commit locally, no push.",
+      "commit_message": "chore(dashboard): scaffold Phaser pixel world foundation (not wired)"
+    },
+    {
+      "id": "dead-file-audit",
+      "priority": 4,
+      "status": "pending",
+      "owner": "local-agent-a71bc1f6",
+      "subject": "Audit 7 repos for dead files",
+      "scope": "Read-only. Output to /tmp/dead-file-audit-2026-04-15.md. No deletions.",
+      "repos": [
+        "mon-ipad",
+        "nomos-dashboard",
+        "nomos-nba-agent",
+        "nomos-political-alpha",
+        "rgwa",
+        "rag-website",
+        "forge-users"
+      ]
+    },
+    {
+      "id": "tf-axelrod-mech-a",
+      "priority": 5,
+      "status": "done",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod Mechanism A \u2014 day-end common knowledge broadcast (both NBA + Political TF)",
+      "scope": "Implemented in scripts/arena/hf-llm-trading-floor/app.py and scripts/arena/hf-political-trading-floor/app.py. DO NOT push to HF Space \u2014 committed to mon-ipad only.",
+      "completed_at": "2026-04-15T18:00:00Z",
+      "commit_message": "feat(tf): Axelrod mechanism A \u2014 day-end common knowledge broadcast (both NBA+Political)",
+      "do_not_push_hf_space_yet": true,
+      "notes": "Added build_common_knowledge_block() to both apps. After each day-bucket resolves, all agent bets + leaderboard published as COMMON_KNOWLEDGE[D] prepended to day D+1 prompts. DMAD anti-groupthink: day_strategy must start with CONSENSUS AGREE/DIVERGE. _common_knowledge dict persists in module scope + last_ck_block in saved state for resume support."
+    },
+    {
+      "id": "tf-axelrod-mech-b",
+      "priority": 6,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod Mechanism B \u2014 sacrificial role reallocation (bottom-3 archetype swap)",
+      "scope": "Patch both NBA + Political TF apps. At end of each day compute trailing-7d bankroll delta rank. Bottom 3 agents: replace system_prompt with SACRIFICIAL_PROMPT[D] instructing an archetype from the never-used pool. Track USED_ARCHETYPES per day. Pareto-optimal for society (diversity > individual EV). Archetypes list in PLAN.md mission spec.",
+      "files": [
+        "scripts/arena/hf-llm-trading-floor/app.py",
+        "scripts/arena/hf-political-trading-floor/app.py"
+      ],
+      "commit_message": "feat(tf): Axelrod mechanism B \u2014 sacrificial role reallocation (bottom-3 archetype swap)",
+      "do_not_push_hf_space_yet": true,
+      "depends_on": "tf-axelrod-mech-a",
+      "notes": "Strategy archetypes: pure_momentum, mean_reversion, news_event_driven, home_underdog_specialist, road_favorite_fade, closing_line_value_only, injury_arbitrage, pace_inefficiency, rest_differential, back_to_back_fade, revenge_narrative, divisional_hate, national_tv_effect, pythagorean_divergence, shot_chart_mismatch, ref_bias_per_team, sharps_follow, sharps_fade, steam_chase, reverse_line_movement"
+    },
+    {
+      "id": "tf-axelrod-mech-c",
+      "priority": 7,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod Mechanism C \u2014 end-of-game post-mortem log (paper dataset)",
+      "scope": "Patch both NBA + Political TF apps. Each day-end writes data/arena/axelrod-log/day-N.jsonl with per-agent {decisions, rank, archetype_assigned, was_sacrificed, peer_consensus_distance (KL divergence from CK)}. This is the primary dataset for the paper.",
+      "files": [
+        "scripts/arena/hf-llm-trading-floor/app.py",
+        "scripts/arena/hf-political-trading-floor/app.py",
+        "data/arena/axelrod-log/.gitkeep"
+      ],
+      "commit_message": "feat(tf): Axelrod mechanism C \u2014 end-of-day post-mortem log + paper dataset schema",
+      "do_not_push_hf_space_yet": true,
+      "depends_on": "tf-axelrod-mech-b",
+      "notes": "day-N.jsonl schema: {day_idx, date, agents: [{trader_id, rank, archetype_assigned, was_sacrificed, decisions: [...], peer_consensus_distance: float}]}. KL divergence computed from bet distribution vs consensus distribution across available categories."
+    }
+  ],
+  "recovery_protocol": {
+    "on_brain_wake": [
+      "Read this file.",
+      "For each item where status=pending and owner contains 'local-agent-' \u2014 ASSUME the local CLI crashed if the local commit hasn't appeared in git log within 6h of updated_at.",
+      "Pick lowest-priority pending item; do the scope; commit (do_not_push=true means don't push).",
+      "Update this file: set status=done + commit_hash + completed_at OR status=blocked + reason."
+    ],
+    "on_cli_resume": [
+      "CLI reads this file first.",
+      "Skips items with status=done.",
+      "Re-dispatches status=pending items whose local-agent hasn't committed in 30 min."
+    ]
+  }
+}

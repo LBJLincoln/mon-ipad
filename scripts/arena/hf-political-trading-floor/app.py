@@ -60,6 +60,7 @@ _experiment_running = False
 _experiment_state = {}  # Persisted to disk
 _agent_logs: Dict[str, List[dict]] = defaultdict(list)  # Per-agent decision log
 _state_lock = threading.Lock()
+_common_knowledge: Dict[str, str] = {}  # Axelrod CK[D]: day_date → formatted block for day D+1
 STATE_PATH = Path("/tmp/ptf-state.json")   # Persists across restarts on HF Spaces
 LOGS_PATH = Path("/tmp/ptf-agent-logs.json")
 GATEWAY_URL = os.environ.get("GATEWAY_URL", "").rstrip("/")
@@ -540,7 +541,8 @@ def compute_sector_trends(events: List[Dict], up_to_date: str, window_days: int 
 
 def build_day_prompt(day_date: str, day_events: List[Dict], sector_trends: Dict,
                      trader_state: Dict, strategies=None,
-                     recent_decisions: List[Dict] = None) -> str:
+                     recent_decisions: List[Dict] = None,
+                     common_knowledge_block: Optional[str] = None) -> str:
     """Build comprehensive day-level prompt. Agent sees ALL political events of the day."""
     bankroll = trader_state.get("bankroll", 100.0)
     total_allocs = trader_state.get("total_bets", 0)
@@ -568,6 +570,9 @@ def build_day_prompt(day_date: str, day_events: List[Dict], sector_trends: Dict,
 
     if strategies:
         lines.append(f"\nSTRATEGIES ({len(strategies)}): {', '.join(list(strategies.keys())[:12])}...")
+
+    if common_knowledge_block:
+        lines.append("\n" + common_knowledge_block)
 
     lines.append("""
 === YOUR TASK ===
@@ -741,6 +746,67 @@ def load_strategies():
     return {}
 
 
+def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict) -> str:
+    """Build COMMON_KNOWLEDGE[D] block: peer trades + leaderboard for day D+1 prompts.
+
+    Implements Axelrod-2026 Mechanism A (day-end common knowledge broadcast).
+    Prepended to every agent's prompt on day D+1 so the society can coordinate
+    and diverge deliberately (DMAD anti-groupthink protocol).
+    """
+    lines = [
+        f"=== AXELROD COMMON KNOWLEDGE — Day {day_date} ===",
+        "(Peer decisions from yesterday are now public. Review before you decide.)",
+        "",
+    ]
+
+    # Leaderboard: ranked by bankroll growth factor = bankroll / $100 start
+    ranked = sorted(state.items(), key=lambda x: -x[1]["bankroll"])
+    lines.append("LEADERBOARD (growth factor = bankroll / $100 start):")
+    for rank, (tid, ts) in enumerate(ranked, 1):
+        cfg = TRADERS.get(tid, {})
+        gf = ts["bankroll"] / 100.0
+        roi = (gf - 1.0) * 100
+        lines.append(
+            f"  #{rank} {cfg.get('name', tid):<20} {gf:.4f}x ({roi:+.1f}%)"
+            f" | {ts['total_bets']} trades | {ts['wins']}W-{ts['losses']}L"
+            f" | DD {ts['max_drawdown']:.1%}"
+        )
+
+    # Per-agent trade summary for day D (resolved outcomes)
+    lines.append(f"\nPEER TRADES on {day_date} (outcomes resolved):")
+    for rank, (tid, _ts) in enumerate(ranked, 1):
+        logs = agent_logs.get(tid, [])
+        day_log = next((l for l in reversed(logs) if l.get("date") == day_date), None)
+        if not day_log:
+            continue
+        cfg = TRADERS.get(tid, {})
+        name = cfg.get("name", tid)
+        allocs = day_log.get("allocations", [])
+        strat = day_log.get("day_strategy", "")[:100]
+        if not allocs:
+            lines.append(f"  #{rank} {name}: CASH — \"{strat}\"")
+        else:
+            parts = []
+            for a in allocs[:3]:  # cap at 3 to control token budget
+                outcome = "W" if a["won"] else "L"
+                parts.append(
+                    f"{a['ticker']} {a['direction']} {a.get('event_type','?')}→{outcome}"
+                )
+            suffix = f" +{len(allocs)-3}more" if len(allocs) > 3 else ""
+            lines.append(f"  #{rank} {name}: {' | '.join(parts)}{suffix}")
+            if strat:
+                lines.append(f"           Strategy: \"{strat}\"")
+
+    lines.append(
+        "AXELROD ANTI-GROUPTHINK (DMAD — MANDATORY):\n"
+        "Your day_strategy field MUST begin with one of:\n"
+        "  CONSENSUS AGREE [peer_name]: <reason your strategy supports the same sector/direction>\n"
+        "  CONSENSUS DIVERGE [peer_name]: <specific signal/agency counter-argument>\n"
+        "Copying the consensus without justification violates DMAD protocol.\n"
+    )
+    return "\n".join(lines)
+
+
 # ── EXPERIMENT RUNNER ────────────────────────────────────────────────────────
 
 def run_experiment(progress=gr.Progress(track_tqdm=False)):
@@ -798,9 +864,10 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             "recent_decisions": [],  # last 3 for memory
         }
 
-    global _experiment_running, _experiment_state
+    global _experiment_running, _experiment_state, _common_knowledge
     _experiment_running = True
     _stop_event.clear()
+    _common_knowledge = {}  # Reset per run; built day-by-day (Axelrod Mech A)
 
     # ── Resume support (day-indexed) ──
     saved = _load_state_from_disk()
@@ -825,6 +892,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         log_lines.append(f"RESUMED from day {start_from_day}")
     log_lines.append(f"Start: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
     log_lines.append("=" * 50)
+
+    prev_day_ck: Optional[str] = None  # Axelrod CK[D-1], prepended to day D prompts
 
     for day_idx, day_date in enumerate(dates_sorted):
         if day_idx < start_from_day:
@@ -857,6 +926,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 day_date, day_events, sector_trends, ts,
                 strategies=strategies,
                 recent_decisions=ts.get("recent_decisions", []),
+                common_knowledge_block=prev_day_ck,
             )
 
             ts["llm_calls"] += 1
@@ -948,6 +1018,10 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
 
         log_lines.extend(day_summary_lines)
 
+        # Axelrod Mechanism A: build COMMON_KNOWLEDGE[D] from today's resolved trades
+        prev_day_ck = build_common_knowledge_block(day_date, state, dict(_agent_logs))
+        _common_knowledge[day_date] = prev_day_ck
+
         # Update live state
         with _state_lock:
             _experiment_state = {
@@ -960,6 +1034,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "agents": {tid: {k: v for k, v in ts.items() if k not in ("history", "recent_decisions")}
                            for tid, ts in state.items()},
                 "updated": datetime.now(timezone.utc).isoformat(),
+                "last_ck_block": prev_day_ck,  # Axelrod Mech A: persist for resume
             }
         if (day_idx + 1) % 5 == 0 or day_idx == n_days - 1:
             _save_state_to_disk(_experiment_state)
