@@ -625,6 +625,63 @@ with gr.Blocks(title="Nomos42 LLM Gateway", css=DARK_CSS, theme=gr.themes.Base()
         refresh_btn.click(fn=gradio_list_models, outputs=models_out, api_name="list_models")
 
 
+# ── FastAPI JSON observability layer ─────────────────────────────────────────
+# Gateway was previously Gradio-only — `/api/*` returned HTML. This mounts
+# FastAPI + Gradio on the same port so external tools can curl JSON health.
+from fastapi import FastAPI  # noqa: E402
+from fastapi.responses import JSONResponse  # noqa: E402
+
+fastapi_app = FastAPI(title="Nomos42 LLM Gateway", docs_url="/api/docs", redoc_url=None)
+
+
+@fastapi_app.get("/api/health")
+def api_health():
+    """Terse health snapshot: 200 if any model is healthy, 503 if all dead."""
+    with health_lock:
+        snap = {mid: dict(h) for mid, h in model_health.items()}
+    alive = sum(1 for h in snap.values() if h.get("status") == "ok")
+    degraded = sum(1 for h in snap.values() if h.get("status") == "degraded")
+    dead = sum(1 for h in snap.values() if h.get("status") == "down")
+    body = {
+        "ok": alive > 0,
+        "alive": alive,
+        "degraded": degraded,
+        "down": dead,
+        "total": len(snap),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+    status_code = 200 if alive > 0 else 503
+    return JSONResponse(content=body, status_code=status_code)
+
+
+@fastapi_app.get("/api/stats")
+def api_stats():
+    """Per-model counters (calls_ok, calls_fail, avg_latency, last_error)."""
+    with health_lock:
+        snap = {mid: dict(h) for mid, h in model_health.items()}
+    return {
+        "models": snap,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+@fastapi_app.get("/api/models")
+def api_models():
+    """Registered models + their fallback chains."""
+    return {
+        "models": sorted(MODELS.keys()),
+        "fallback_chains": FALLBACK_CHAINS,
+        "tiers": {tier: [m for m in MODELS if MODELS[m].get("tier") == tier]
+                  for tier in {cfg.get("tier") for cfg in MODELS.values() if cfg.get("tier")}},
+    }
+
+
+@fastapi_app.get("/api/status")
+def api_status():
+    """Alias of /api/health — matches other Nomos42 Spaces convention."""
+    return api_health()
+
+
 if __name__ == "__main__":
     import sys
     if "--test" in sys.argv:
@@ -633,4 +690,7 @@ if __name__ == "__main__":
         print("\n📊 Dashboard:")
         print(get_health_dashboard())
     else:
-        demo.launch(server_name="0.0.0.0", server_port=7860)
+        import uvicorn
+        # Mount Gradio UI on root; FastAPI routes at /api/*.
+        app_combined = gr.mount_gradio_app(fastapi_app, demo, path="/")
+        uvicorn.run(app_combined, host="0.0.0.0", port=7860)
