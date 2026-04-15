@@ -224,6 +224,42 @@ PROVIDERS = {
         "max_tokens": 1200,
         "rpm": 20,
     },
+    # NEW 2026-04-15 — parity with NBA TF (T11-T15)
+    "openrouter:nemotron-120b": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "nvidia/nemotron-3-super-120b:free",
+        "key_env": "OPENROUTER_API_KEY",
+        "max_tokens": 1200,
+        "rpm": 12,
+    },
+    "selfhost:cpu-gemma4": {
+        "url": "https://nomos42-nomos-cpu-gemma4.hf.space/api/decide",
+        "model": "phi-3.5-mini-instruct-q4_k_m",
+        "key_env": "SELFHOST_NOOP",
+        "max_tokens": 800,
+        "rpm": 6,
+    },
+    "selfhost:qwen2.5-0.5b": {
+        "url": "https://nomos42-qwen25-05b-cpu.hf.space/chat/completions",
+        "model": "qwen2.5-0.5b-instruct",
+        "key_env": "SELFHOST_NOOP",
+        "max_tokens": 800,
+        "rpm": 12,
+    },
+    "selfhost:llama-3.2-1b": {
+        "url": "https://nomos42-llama32-1b-cpu.hf.space/chat/completions",
+        "model": "llama-3.2-1b-instruct",
+        "key_env": "SELFHOST_NOOP",
+        "max_tokens": 800,
+        "rpm": 10,
+    },
+    "selfhost:gemma-2-2b": {
+        "url": "https://nomos42-gemma2-2b-cpu.hf.space/chat/completions",
+        "model": "gemma-2-2b-it",
+        "key_env": "SELFHOST_NOOP",
+        "max_tokens": 800,
+        "rpm": 4,
+    },
 }
 
 # ── AGENT DEFINITIONS (v3 — 10 personas across 3 providers, 2026-04-14) ──────
@@ -244,6 +280,12 @@ TRADERS = {
     "mistral-small":    {"name": "Mistral Small",    "provider": "mistral:small",        "personality": "conservative", "risk_tolerance": 0.35},
     "mistral-nemo":     {"name": "Mistral Nemo",     "provider": "mistral:nemo",         "personality": "aggressive",   "risk_tolerance": 0.70},
     "mistral-ministral":{"name": "Ministral 8B",     "provider": "mistral:ministral-8b", "personality": "theoretical",  "risk_tolerance": 0.35},
+    # NEW 2026-04-15 — parity with NBA TF (T11-T15)
+    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b", "personality": "chainthought", "risk_tolerance": 0.55},
+    "gemma4-selfhost":  {"name": "Gemma4 SelfHost",  "provider": "selfhost:cpu-gemma4",      "personality": "disciplined",  "risk_tolerance": 0.40},
+    "qwen25-micro":     {"name": "Qwen2.5 0.5B",     "provider": "selfhost:qwen2.5-0.5b",    "personality": "reactive",     "risk_tolerance": 0.30},
+    "llama32-micro":    {"name": "Llama 3.2 1B",     "provider": "selfhost:llama-3.2-1b",    "personality": "balanced",     "risk_tolerance": 0.45},
+    "gemma2-micro":     {"name": "Gemma 2 2B",       "provider": "selfhost:gemma-2-2b",      "personality": "deliberate",   "risk_tolerance": 0.40},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -316,6 +358,41 @@ PREFERRED STRATEGIES: half_kelly, calendar_window, fomc_fade
 EDGE DETECTION: FOMC-week Fed rules get 1.5× weight. Insider trades filed on earnings blackout edge = fade signal. Election-cycle donor signals = follow.
 RISK: Moderate (0.60). Disciplined calendar-based execution.
 SPECIALTY: FOMC-week sector positioning, earnings-window insider pattern recognition.""",
+
+    "nemotron-120b": """You are Nemotron 120B, a chain-of-thought sector value hunter.
+APPROACH: Rank every sector ETF by |regulatory_signal_strength × sector_beta - implied_market_move|. Size top 1-2 mispricings using half-Kelly. Ignore noisy edges.
+PREFERRED STRATEGIES: value_hunter, half_kelly, sector_arb
+EDGE DETECTION: Cross-signal scan — when 2+ regulatory events point same sector AND market hasn't moved >1%, that's the edge. Require signal_strength × sector_beta > 1.04.
+RISK: Moderate (0.55). Depth of reasoning over breadth.
+SPECIALTY: Healthcare/finance/defense ETFs on multi-agency corroboration.""",
+
+    "gemma4-selfhost": """You are Gemma4 SelfHost, a disciplined self-hosted political allocator on CPU Phi-3.5-mini.
+APPROACH: Small model, small bets. Pick one high-conviction sector ETF play per day. Prefer SPDR sector funds (XLF, XLE, XLV, XLI, XLK) over individual stocks.
+PREFERRED STRATEGIES: flat_1pct, quarter_kelly, top_signal_only
+EDGE DETECTION: Only deploy when signal_strength >0.7 AND single sector has ≥2 corroborating events. Otherwise cash.
+RISK: Low (0.40). Capital preservation over chase.
+SPECIALTY: Single sector ETF on multi-agency consensus. Slow CPU inference.""",
+
+    "qwen25-micro": """You are Qwen2.5 0.5B Micro, a reactive ultra-small political allocator on CPU.
+APPROACH: Tiny model, single decision. React only to the single strongest political signal of the day. One sector ETF max. No multi-leg, no individual stocks.
+PREFERRED STRATEGIES: flat_1pct, top_signal_only
+EDGE DETECTION: Require signal_strength >0.75 AND clear sector mapping. If signal is mixed or sector ambiguous, cash.
+RISK: Very low (0.30). Preserve capital; enter only on cleanest political catalyst.
+SPECIALTY: First-reaction plays on executive orders or major Fed rulings.""",
+
+    "llama32-micro": """You are Llama 3.2 1B Micro, a balanced self-hosted political allocator on CPU.
+APPROACH: Mid-tier small model. Balanced 1-2 sector ETF allocations per day. Respect signal thresholds; never force.
+PREFERRED STRATEGIES: quarter_kelly, sector_neutral, diversified_flat
+EDGE DETECTION: signal_strength >0.6 AND at least 1 corroborating donor or insider event. Diversify across 1-2 sectors rather than concentrate.
+RISK: Moderate-low (0.45). Steady compound approach.
+SPECIALTY: Cross-sector pairs (e.g., long XLV + long XLF on healthcare-finance regulatory bundle).""",
+
+    "gemma2-micro": """You are Gemma 2 2B Micro, a deliberate self-hosted political allocator on CPU (slow inference).
+APPROACH: Largest of the micro-agents, takes time to think. 1-2 high-quality sector plays per day. Prefer events with clear narrative + regulatory alignment.
+PREFERRED STRATEGIES: half_kelly, confidence_scaled, sector_value_hunter
+EDGE DETECTION: signal_strength >0.65 AND at least 2 distinct event types (e.g., insider_trade + fed_rule) align on same sector.
+RISK: Low-moderate (0.40). Depth over speed.
+SPECIALTY: Multi-event sector convergence plays. Strongest on healthcare and energy.""",
 }
 
 # ── RATE LIMITER ─────────────────────────────────────────────────────────────
@@ -349,8 +426,10 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
     if not cfg:
         return None
 
-    api_key = os.environ.get(cfg["key_env"], "")
-    if not api_key:
+    # Self-hosted HF Space endpoints are public — no API key required.
+    is_selfhost = provider.startswith("selfhost:")
+    api_key = "" if is_selfhost else os.environ.get(cfg["key_env"], "")
+    if not is_selfhost and not api_key:
         return None
 
     _rate_limit(provider)
@@ -410,9 +489,35 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
                 if resp.status_code in (429, 503) and attempt == 0:
                     time.sleep(8)
                     continue
+            elif is_selfhost and cfg["url"].endswith("/api/decide"):
+                # Legacy self-hosted HF Space (T12 cpu-gemma4) — non-OpenAI shape.
+                payload = {
+                    "system": system_prompt,
+                    "user": user_prompt,
+                    "max_tokens": cfg["max_tokens"],
+                    "temperature": 0.3,
+                    "json_only": True,
+                }
+                resp = requests.post(cfg["url"], json=payload, timeout=max(timeout, 45))
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if isinstance(data, dict) and data.get("error"):
+                        last_error = f"selfhost error: {str(data.get('error'))[:120]}"
+                    else:
+                        text = data.get("text") or data.get("content") or ""
+                        if text:
+                            return text
+                        last_error = f"selfhost empty response: {str(data)[:120]}"
+                else:
+                    last_error = f"HTTP {resp.status_code}: {resp.text[:120]}"
+                if resp.status_code in (429, 503) and attempt == 0:
+                    time.sleep(8)
+                    continue
             else:
-                # OpenAI-compatible (Cerebras, OpenRouter, Mistral)
-                headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+                # OpenAI-compatible (Cerebras, OpenRouter, Mistral, selfhost /chat/completions)
+                headers = {"Content-Type": "application/json"}
+                if api_key:
+                    headers["Authorization"] = f"Bearer {api_key}"
                 if "openrouter" in provider:
                     headers["HTTP-Referer"] = "https://nomos42.ai"
                     headers["X-Title"] = "Nomos42 Political Trading Floor"
@@ -425,7 +530,9 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
                     "max_tokens": cfg["max_tokens"],
                     "temperature": 0.3,
                 }
-                resp = requests.post(cfg["url"], json=payload, headers=headers, timeout=timeout)
+                # Selfhost quantized CPUs are slow — extend timeout.
+                effective_timeout = max(timeout, 180.0) if is_selfhost else timeout
+                resp = requests.post(cfg["url"], json=payload, headers=headers, timeout=effective_timeout)
                 if resp.status_code == 200:
                     data = resp.json()
                     return data.get("choices", [{}])[0].get("message", {}).get("content", "")
