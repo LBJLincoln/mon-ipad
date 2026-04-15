@@ -109,6 +109,14 @@ add_cron \
     "Feature cache sync (daily 07:00 UTC)" \
     "feature-cache-sync.py"
 
+# ── @Nomos42Picks daily picks ────────────────────────────────────
+# 09:00 ET = 13:00 UTC. Posts value bets to private Telegram channel.
+add_cron \
+    "0 13 * * *" \
+    "cd $MON_DIR && /usr/bin/env \$(grep -v '^#' .env.local | xargs) python3 scripts/telegram/daily_picks.py >> $LOGDIR/daily-picks.log 2>&1" \
+    "@Nomos42Picks daily picks (09:00 ET / 13:00 UTC)" \
+    "daily_picks.py"
+
 # ── HF Space keepalive ───────────────────────────────────────────
 # Ping all 6 NBA islands + 4 political islands every 30 min to prevent
 # them going to sleep on the free tier (sleeps after 15 min idle).
