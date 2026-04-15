@@ -13,7 +13,7 @@ Build the best NBA prediction AI in the world.
 
 | Flagship | Repo | Bot | Vercel | Status |
 |----------|------|-----|--------|--------|
-| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 8 NBA islands + 4 Political islands + Kaggle Karpathy |
+| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 10 NBA islands + 4 Political islands + Kaggle Karpathy |
 | Political Alpha | nomos-political-alpha | -- | none (data only) | ACTIVE -- v3.19 engine, 22 categories, 718 features |
 | Dashboard Hub | nomos-dashboard | -- | nomosdashboard.vercel.app | ACTIVE -- /nba /political /evolution /trading-floor /forge /world |
 | AI Artistic Generation | rgwa | @RGWAbot | none | ZOMBIE -- no commits since Mar 2026, deprioritized |
@@ -23,7 +23,7 @@ Build the best NBA prediction AI in the world.
 
 ```
 CLOUD BRAIN (Sonnet 4.6, every 4h at :00)
-    ├── Monitor S10-S17 + P1-P4 via public /api/status
+    ├── Monitor S10-S19 + P1-P4 via public /api/status
     ├── Research via 4 Claude Code subagents
     ├── DECIDE: tune GA / diversify / inject features / checkpoint
     ├── ACT on islands via POST /api/config
@@ -36,16 +36,18 @@ VM MUSCLE (cron, every 4h at :30)
     └── Auto-restart data server
     Script: scripts/autonomous-cycle.sh
 
-HF EVOLUTION ISLANDS (8 NBA + 4 Political = 12 active, target 16)
+HF EVOLUTION ISLANDS (10 NBA + 4 Political = 14 active, target 16)
     NBA Islands (all UP, CPU tree-only, MAX_FEATURES=200):
-    ├── S10 Nomos42/nba-quant:        exploitation  gen=86   brier=0.22825  → nomos42-nba-quant.hf.space
-    ├── S11 Nomos42/nba-quant-2:      exploration   gen=141  brier=0.24572  → nomos42-nba-quant-2.hf.space
-    ├── S12 Nomos42/nba-evo-3:        extra_trees   gen=160  brier=0.23252  → nomos42-nba-evo-3.hf.space
-    ├── S13 Nomos42/nba-evo-4:        catboost      gen=130  brier=0.22749  → nomos42-nba-evo-4.hf.space
-    ├── S14 Nomos42/nba-evo-5:        lightgbm      gen=108  brier=0.22251  → nomos42-nba-evo-5.hf.space  ★ FLEET BEST
-    ├── S15 Nomos42/nba-evo-6:        wide search   gen=127  brier=0.22418  → nomos42-nba-evo-6.hf.space
-    ├── S16 LBJLincoln26/nba-evo-s16: gradient_boost gen=86  brier=0.22573  → lbjlincoln26-nba-evo-s16.hf.space
-    └── S17 LBJLincoln26/nba-evo-s17: ensemble      gen=139  brier=0.22493  → lbjlincoln26-nba-evo-s17.hf.space
+    ├── S10 Nomos42/nba-quant:        exploitation  gen=86    brier=0.22825  → nomos42-nba-quant.hf.space
+    ├── S11 Nomos42/nba-quant-2:      exploration   gen=141   brier=0.24572  → nomos42-nba-quant-2.hf.space
+    ├── S12 Nomos42/nba-evo-3:        extra_trees   gen=160   brier=0.23252  → nomos42-nba-evo-3.hf.space
+    ├── S13 Nomos42/nba-evo-4:        catboost      gen=130   brier=0.22749  → nomos42-nba-evo-4.hf.space
+    ├── S14 Nomos42/nba-evo-5:        lightgbm      gen=108   brier=0.22251  → nomos42-nba-evo-5.hf.space  ★ FLEET BEST
+    ├── S15 Nomos42/nba-evo-6:        wide search   gen=127   brier=0.22418  → nomos42-nba-evo-6.hf.space
+    ├── S16 LBJLincoln26/nba-evo-s16: gradient_boost gen=86   brier=0.22573  → lbjlincoln26-nba-evo-s16.hf.space
+    ├── S17 LBJLincoln26/nba-evo-s17: ensemble      gen=139   brier=0.22493  → lbjlincoln26-nba-evo-s17.hf.space
+    ├── S18 TESTforge42/nba-evo-s18:  catboost_spec gen=1030  brier=0.22114  → testforge42-nba-evo-s18.hf.space  (promoted 2026-04-15)
+    └── S19 TESTforge42/nba-evo-s19:  wide_search   gen=849   brier=0.22257  → testforge42-nba-evo-s19.hf.space  (promoted 2026-04-15)
     Political Islands (all UP, CPU tree-only):
     ├── P1 Nomos42/political-alpha:      xgboost   gen=3042  brier=0.24996  → nomos42-political-alpha.hf.space
     ├── P2 Nomos42/political-alpha-2:    lightgbm  gen=2212  brier=0.25223  → nomos42-political-alpha-2.hf.space
@@ -63,11 +65,10 @@ HF TRADING FLOORS (Real LLM experiment, 10 agents each — HF-first with FastAPI
     ├── Both expose: /api/status /run /stop /reset /mutate /logs /day-decisions /leaderboard
     └── LBJLincoln26/llm-gateway: Centralized LLM proxy (11 models, fallback chains)
 
-HF OTHER SPACES (25 total across 3 accounts)
+HF OTHER SPACES (across 3 accounts, post-cleanup 2026-04-15)
     ├── Dept Councils: d1-research, d2-engineering, d3-evolution, d4-product, d5-business, d6-evaluation
     ├── Free LLM Chat: gemma4-chat, qwen35-chat
-    ├── Docker Runtimes: nomos42-llm-cpu, nomos42-llm
-    ├── Legacy TF: Nomos42/nba-trading-floor (v4, superseded)
+    ├── Docker Runtime: Nomos42/nomos42-llm-cpu (self-hosted Qwen3-1.7B GGUF for api_pool)
     └── Pixel World: Nomos42/pixel-world (static)
 
 GPU PLATFORMS (5 active, ranked by usefulness)
@@ -86,7 +87,7 @@ GITHUB ACTIONS (3 workflows on schedule)
     └── Arena Engine:         daily — full arena evaluation
 
 SYSTEM CRONS (28 active on VM, all lightweight)
-    ├── */30  keepalive-spaces.sh (12 islands + TF + Gateway + 9 depts = 27 spaces)
+    ├── */30  keepalive-spaces.sh (14 islands + TF + Gateway + 9 depts = 29 spaces)
     ├── 12,18 nba-daily-odds.py
     ├── :30   autonomous-cycle.sh
     ├── */2h  monitoring, vault sync, political data
