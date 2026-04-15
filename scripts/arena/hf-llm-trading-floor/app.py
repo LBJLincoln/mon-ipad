@@ -75,6 +75,44 @@ AXELROD_ARCHETYPES = [
     "ref_bias_per_team", "sharps_follow", "sharps_fade",
     "steam_chase", "reverse_line_movement",
 ]
+
+# Axelrod 1980 canon — every agent is told these results so strategies
+# are grounded in the literature instead of re-deriving cooperation from scratch.
+# Source: Axelrod 1980 "Effective Choice in the Prisoner's Dilemma" +
+#         Axelrod & Hamilton 1981 Science + Nowak & Sigmund 1993 Pavlov +
+#         Du et al. 2023 DMAD + Prediction Arena 2604.07355 (Mar 2026).
+AXELROD_CANON = (
+    "=== AXELROD CANON (mandatory reading) ===\n"
+    "You are a trader in an iterated multi-agent society. Axelrod's 1980 tournament "
+    "proved that the winning strategies share 4 properties: NICE (never defect first), "
+    "RETALIATORY (punish defection immediately), FORGIVING (one-shot retaliation, then reset), "
+    "CLEAR (legible so peers can reason about you).\n"
+    "Canonical strategies you must know by name:\n"
+    "  - TIT_FOR_TAT (Rapoport): cooperate first, then copy last move of peer.\n"
+    "  - GRIM_TRIGGER: cooperate until one defection, then defect forever.\n"
+    "  - PAVLOV / WIN-STAY-LOSE-SHIFT (Nowak-Sigmund 1993): keep last move if it paid, flip if it lost.\n"
+    "  - GENEROUS_TFT: TFT with ~10% forgiveness to escape noise-driven defection spirals.\n"
+    "  - FIRM_BUT_FAIR: cooperate unless suckered, then retaliate once and return to cooperation.\n"
+    "DMAD (Du et al. 2023, Debate with Multi-Agent Diverse-reasoning): groupthink collapses "
+    "ensemble accuracy by ~18%. Your reasoning chain MUST be structurally distinct from peers' "
+    "chains reported in COMMON_KNOWLEDGE — if consensus is obvious, state the strongest counter-argument.\n"
+    "Prediction Arena (arXiv 2604.07355, Mar 2026): 1 bet per agent per day with public "
+    "resolution + reputation score beats unconstrained betting by 31% ROI.\n"
+    "COOPERATION RULES (Mech D — binding this season):\n"
+    "  1. You may propose a COALITION with another agent: both agents bet the SAME game_idx "
+    "     on the SAME category on day D. Honored coalitions get a 'pact_honored' reputation credit.\n"
+    "  2. You may EXIT a coalition any day by simply not repeating it. No hidden defection.\n"
+    "  3. Your reputation field (pact_honored / pact_broken counters) is visible to peers in "
+    "     COMMON_KNOWLEDGE the next day. Pavlov-style opponents will track your reputation.\n"
+    "  4. Coalitions do NOT change stake math — only reputation. Edge must still justify the bet.\n"
+    "=== END AXELROD CANON ===\n"
+)
+
+# Axelrod Mech D — cooperation ledger
+# _cooperation_pacts[(tid_a, tid_b, day_date)] = {"game_idx": int, "category": str, "honored": bool}
+_cooperation_pacts: Dict[str, dict] = {}
+# _reputation[tid] = {"pact_honored": int, "pact_broken": int}
+_reputation: Dict[str, Dict[str, int]] = defaultdict(lambda: {"pact_honored": 0, "pact_broken": 0})
 GATEWAY_URL = os.environ.get("GATEWAY_URL", "").rstrip("/")
 
 def _save_state_to_disk(state: dict):
@@ -839,7 +877,13 @@ Schema:
     }
   ],
   "cash_held_pct": 0.25,
-  "cash_rationale": "1 sentence if cash > 0"
+  "cash_rationale": "1 sentence if cash > 0",
+  "coalition_proposal": {
+    "peer": "qwen-quant",
+    "game_idx": 1,
+    "category": "ml_home",
+    "rationale": "optional 1 sentence — why you want to pact with this peer"
+  }
 }
 
 STRICT RULES:
@@ -850,6 +894,10 @@ STRICT RULES:
 - cash_held_pct: 0.0–1.0
 - Rationale MUST cite a specific stat/metric (not "I think they'll win")
 - Edge must be computed from model vs implied odds, NOT hardcoded
+- coalition_proposal is OPTIONAL (null or omit if you are not pacting today).
+  If present, you MUST also place a matching allocation for that game_idx+category,
+  or your reputation is marked pact_broken. Peer only sees your proposal via
+  COMMON_KNOWLEDGE the next day — mutual pacts emerge from independent proposals.
 """)
     return "\n".join(lines)
 
@@ -912,12 +960,28 @@ def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
             a["pct"] = a["pct"] * scale
         cash = cash * scale
 
+    # Mech D — coalition_proposal extraction (optional, single peer per day)
+    coalition = None
+    cp = parsed.get("coalition_proposal")
+    if isinstance(cp, dict):
+        peer = (cp.get("peer") or "").strip()
+        cp_gidx = cp.get("game_idx")
+        cp_cat = (cp.get("category") or "").lower().strip()
+        if peer and isinstance(cp_gidx, int) and 1 <= cp_gidx <= n_games and cp_cat:
+            coalition = {
+                "peer": peer[:40],
+                "game_idx": cp_gidx,
+                "category": cp_cat[:30],
+                "rationale": (cp.get("rationale") or "")[:200],
+            }
+
     return {
         "day_strategy": (parsed.get("day_strategy") or parsed.get("reasoning") or "")[:500],
         "allocations": clean,
         "cash_held_pct": round(max(0.0, min(1.0, cash)), 4),
         "cash_rationale": (parsed.get("cash_rationale") or "")[:300],
         "raw_sum": round(total, 4),
+        "coalition_proposal": coalition,
     }
 
 
@@ -1226,7 +1290,9 @@ def compute_form(all_games: List[Dict], team: str, up_to_date: str, window: int 
     return {"games": len(last_n), "w": wins, "l": len(last_n) - wins}
 
 
-def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict) -> str:
+def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
+                                  reputation: Optional[Dict] = None,
+                                  pact_events: Optional[List[dict]] = None) -> str:
     """Build COMMON_KNOWLEDGE[D] block: peer bets + leaderboard for day D+1 prompts.
 
     Implements Axelrod-2026 Mechanism A (day-end common knowledge broadcast).
@@ -1276,6 +1342,29 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict) -
             lines.append(f"  #{rank} {name}: {' | '.join(parts)}{suffix}")
             if strat:
                 lines.append(f"           Strategy: \"{strat}\"")
+
+    # Mech D — Cooperation reputation + today's pact resolutions
+    if reputation:
+        lines.append("\nCOOPERATION REPUTATION (Mech D — pact honored vs broken):")
+        rep_items = sorted(
+            reputation.items(),
+            key=lambda x: -(x[1].get("pact_honored", 0) - x[1].get("pact_broken", 0)),
+        )
+        for tid, rep in rep_items:
+            h = rep.get("pact_honored", 0)
+            b = rep.get("pact_broken", 0)
+            if h == 0 and b == 0:
+                continue
+            cfg = TRADERS.get(tid, {})
+            name = cfg.get("name", tid)
+            lines.append(f"  {name:<20} honored={h} broken={b} (net {h - b:+d})")
+    if pact_events:
+        lines.append(f"\nTODAY'S PACTS on {day_date}:")
+        for ev in pact_events[:10]:
+            lines.append(
+                f"  [{ev['status'].upper()}] {ev['proposer']} → {ev['peer']} "
+                f"on game#{ev['game_idx']} {ev['category']}"
+            )
 
     lines.append(
         "AXELROD ANTI-GROUPTHINK (DMAD — MANDATORY):\n"
@@ -1547,6 +1636,10 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
 
         day_summary_lines = [f"[day {day_idx+1}/{n_days}] {day_date} | {len(day_games)} games"]
 
+        # Axelrod Mech D — day-scope collection for coalition resolution after all agents decide
+        day_proposals: Dict[str, dict] = {}
+        day_actual_bets: Dict[str, set] = {}
+
         # Each agent decides for the whole day
         for tid, cfg in TRADERS.items():
             provider = cfg["provider"]
@@ -1563,6 +1656,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # Axelrod Mech B: sacrificial role injection
             if tid in _sacrificial_assignments:
                 system_prompt = system_prompt + build_sacrificial_system_suffix(_sacrificial_assignments[tid])
+            # Axelrod Canon + Mech D cooperation rules (prepended so base role still reads last)
+            system_prompt = AXELROD_CANON + "\n" + system_prompt
             user_prompt = build_day_prompt(
                 day_date, day_games, day_odds_list, day_stand_list, day_form_list,
                 ts, rosters=rosters, team_advanced=team_advanced,
@@ -1590,6 +1685,10 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "allocations": [],  # resolved outcomes
                 "raw_preview": (raw_response or "")[:400],
             }
+
+            # Mech D — stash coalition proposal even if allocations are empty
+            if parsed and parsed.get("coalition_proposal"):
+                day_proposals[tid] = parsed["coalition_proposal"]
 
             if parsed and parsed.get("allocations"):
                 day_log["day_strategy"] = parsed["day_strategy"]
@@ -1644,6 +1743,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         "odds": round(odds_dec, 3),
                         "profit": round(profit, 2),
                     })
+                    # Mech D — record actual (game_idx, category) pairs for coalition resolution
+                    day_actual_bets.setdefault(tid, set()).add((alloc["game_idx"], cat))
             else:
                 ts["passes"] += 1  # full-cash day
 
@@ -1672,8 +1773,36 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
 
         log_lines.extend(day_summary_lines)
 
+        # Axelrod Mech D — resolve coalitions for today
+        day_pact_events: List[dict] = []
+        for tid, prop in day_proposals.items():
+            peer = prop.get("peer")
+            gidx = prop.get("game_idx")
+            cat = prop.get("category")
+            key = (gidx, cat)
+            self_executed = key in day_actual_bets.get(tid, set())
+            peer_executed = peer in day_actual_bets and key in day_actual_bets[peer]
+            if self_executed and peer_executed:
+                _reputation[tid]["pact_honored"] += 1
+                day_pact_events.append({
+                    "day": day_date, "proposer": tid, "peer": peer,
+                    "game_idx": gidx, "category": cat, "status": "honored",
+                })
+                _cooperation_pacts[f"{tid}|{peer}|{day_date}"] = {
+                    "game_idx": gidx, "category": cat, "honored": True,
+                }
+            elif not self_executed:
+                _reputation[tid]["pact_broken"] += 1
+                day_pact_events.append({
+                    "day": day_date, "proposer": tid, "peer": peer,
+                    "game_idx": gidx, "category": cat, "status": "broken",
+                })
+
         # Axelrod Mechanism A: build COMMON_KNOWLEDGE[D] from today's resolved bets
-        prev_day_ck = build_common_knowledge_block(day_date, state, dict(_agent_logs))
+        prev_day_ck = build_common_knowledge_block(
+            day_date, state, dict(_agent_logs),
+            reputation=dict(_reputation), pact_events=day_pact_events,
+        )
         _common_knowledge[day_date] = prev_day_ck
 
         # Axelrod Mechanism C: write day-N post-mortem log BEFORE Mech B reassigns
@@ -2000,6 +2129,11 @@ async def api_status():
     # Back-compat (deprecated, keep for a release)
     state["gateway_routed_count"] = _gateway_routed
     state["gateway_fallback_count"] = _gateway_fallback
+    # Axelrod Mech B/D — sacrificial + cooperation exposure
+    state["sacrificial_assignments"] = dict(_sacrificial_assignments)
+    state["reputation"] = {tid: dict(r) for tid, r in _reputation.items()}
+    state["cooperation_pacts_count"] = len(_cooperation_pacts)
+    state["axelrod_canon_active"] = True
     return JSONResponse(state)
 
 @api.post("/api/run")
