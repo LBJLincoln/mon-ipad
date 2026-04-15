@@ -1,12 +1,14 @@
 {
   "version": 1,
-  "updated_at": "2026-04-15T18:00:00Z",
+  "updated_at": "2026-04-15T21:20:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
       "id": "R7",
       "priority": 2,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-04-15T19:00:00Z",
+      "commit_hash": "61c4b61394e2381ab0e1702f0581c292055b235c",
       "owner": "local-agent-a63b2bad",
       "subject": "Deploy S20/S21/S22 NBA islands",
       "scope": "3 new HF Spaces with isotonic+CPCV / Darwinian weights / Venn-Abers fusion. CPU-only, MAX_FEATURES=200.",
@@ -31,7 +33,10 @@
     {
       "id": "R8",
       "priority": 1,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-04-15T20:30:00Z",
+      "commit_hash": "218e95c (nomos-dashboard repo)",
+      "notes_resolution": "Pushed to origin/main. Vercel build status unknown — user reports Vercel stuck.",
       "owner": "local-agent-ab8a71a3",
       "subject": "5 dashboard coverage gaps",
       "scope": "nomos-dashboard repo \u2014 local commits only, no push.",
@@ -48,7 +53,9 @@
     {
       "id": "R10",
       "priority": 1,
-      "status": "in_progress",
+      "status": "done",
+      "completed_at": "2026-04-15T19:30:00Z",
+      "commit_hash": "29525b0f9050e5d018db2773dce5833b53949d61",
       "owner": "primary-cli",
       "subject": "Gateway T12 self-host priority",
       "scope": "Reorder FALLBACK_CHAINS in llm-gateway Space (LBJLincoln26/llm-gateway) to prefer Nomos42/nomos42-llm-cpu (T12 Phi-3.5) for low-stakes reasoning calls.",
@@ -61,7 +68,9 @@
     {
       "id": "pixel-world-scaffold",
       "priority": 3,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-04-15T20:40:00Z",
+      "commit_hash": "8daedba (nomos-dashboard) + follow-ups 2ee6fd7, 991e898, 70d2e41",
       "owner": "local-agent-a994b656",
       "subject": "Phaser + XP.css + Kenney 1-Bit scaffold",
       "scope": "nomos-dashboard local scaffold only, not wired to live data. Commit locally, no push.",
@@ -70,7 +79,19 @@
     {
       "id": "dead-file-audit",
       "priority": 4,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-04-15T21:50:00Z",
+      "output_file": "/tmp/dead-file-audit-2026-04-15.md",
+      "candidates_flagged": 261,
+      "key_findings": [
+        "mon-ipad: ~65 orphan scripts (councils/laptop/opencode/telegram migrated to HF)",
+        "scripts/forge/free-models-integration.py has broken import (hyphen vs underscore)",
+        "nomos-nba-agent zombie: 218 odds JSON ~70MB, no cron consumers",
+        "nomos-dashboard: 14 unimported React components (~150KB)",
+        "rgwa scripts/ tree dead (already marked ZOMBIE in CLAUDE.md)",
+        "forge-users/ ~40 stub files, no producers",
+        "council JSONs NOT dead — all <7d, loop alive"
+      ],
       "owner": "local-agent-a71bc1f6",
       "subject": "Audit 7 repos for dead files",
       "scope": "Read-only. Output to /tmp/dead-file-audit-2026-04-15.md. No deletions.",
@@ -99,7 +120,9 @@
     {
       "id": "tf-axelrod-mech-b",
       "priority": 6,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-04-15T20:15:00Z",
+      "commit_hash": "e5af3536a9f364a36021eca705304226b51d690c",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mechanism B \u2014 sacrificial role reallocation (bottom-3 archetype swap)",
       "scope": "Patch both NBA + Political TF apps. At end of each day compute trailing-7d bankroll delta rank. Bottom 3 agents: replace system_prompt with SACRIFICIAL_PROMPT[D] instructing an archetype from the never-used pool. Track USED_ARCHETYPES per day. Pareto-optimal for society (diversity > individual EV). Archetypes list in PLAN.md mission spec.",
@@ -115,7 +138,9 @@
     {
       "id": "tf-axelrod-mech-c",
       "priority": 7,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-04-15T20:15:00Z",
+      "commit_hash": "e5af3536a9f364a36021eca705304226b51d690c",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mechanism C \u2014 end-of-game post-mortem log (paper dataset)",
       "scope": "Patch both NBA + Political TF apps. Each day-end writes data/arena/axelrod-log/day-N.jsonl with per-agent {decisions, rank, archetype_assigned, was_sacrificed, peer_consensus_distance (KL divergence from CK)}. This is the primary dataset for the paper.",
