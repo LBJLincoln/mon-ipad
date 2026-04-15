@@ -40,6 +40,34 @@ MODELS = {
         "rpm": 60,
         "tier": "fast",
     },
+    # ── SELF-HOST (Qwen2.5-0.5B / Llama-3.2-1B / Gemma-2-2B — new CPU GGUF fleet) ──
+    "selfhost:qwen2.5-0.5b": {
+        "url": "https://nomos42-qwen25-05b-cpu.hf.space/chat/completions",
+        "model": "qwen2.5-0.5b-instruct",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "fast",
+    },
+    "selfhost:llama-3.2-1b": {
+        "url": "https://nomos42-llama32-1b-cpu.hf.space/chat/completions",
+        "model": "llama-3.2-1b-instruct",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "fast",
+    },
+    "selfhost:gemma-2-2b": {
+        "url": "https://nomos42-gemma2-2b-cpu.hf.space/chat/completions",
+        "model": "gemma-2-2b-it",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "fast",
+    },
     # ── CEREBRAS (free, ultra-fast ~2000 tok/s, 30 RPM) ──
     "cerebras:qwen-3-235b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
@@ -151,18 +179,21 @@ MODELS = {
 # If primary model fails, try these in order. T12 self-host appended as last
 # resort on every chain (no quota, no rate limit — slow but never fails).
 FALLBACK_CHAINS = {
-    "selfhost:phi-3.5":              ["cerebras:llama3.1-8b", "google:gemini-2.5-flash", "openrouter:gemma-4-26b:free"],
-    "cerebras:qwen-3-235b":          ["cerebras:llama3.1-8b", "openrouter:qwen3-80b:free", "google:gemini-2.5-flash", "selfhost:phi-3.5"],
-    "cerebras:llama3.1-8b":          ["cerebras:qwen-3-235b", "google:gemini-2.5-flash", "openrouter:llama-3.3-70b:free", "selfhost:phi-3.5"],
-    "openrouter:glm-4.5-air:free":   ["cerebras:llama3.1-8b", "openrouter:gpt-oss-20b:free", "google:gemini-3-flash", "selfhost:phi-3.5"],
-    "openrouter:gpt-oss-20b:free":   ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "cerebras:llama3.1-8b", "selfhost:phi-3.5"],
-    "google:gemini-2.5-flash":       ["google:gemini-3-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-3.5"],
-    "google:gemini-3-flash":         ["google:gemini-2.5-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-3.5"],
-    "openrouter:gemma-4-26b:free":   ["openrouter:llama-3.3-70b:free", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-3.5"],
-    "openrouter:nemotron-120b:free": ["openrouter:qwen3-80b:free", "cerebras:qwen-3-235b", "openrouter:llama-3.3-70b:free", "selfhost:phi-3.5"],
-    "openrouter:minimax-m2.5:free":  ["openrouter:gpt-oss-20b:free", "openrouter:glm-4.5-air:free", "cerebras:llama3.1-8b", "selfhost:phi-3.5"],
-    "openrouter:qwen3-80b:free":     ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:llama-3.3-70b:free", "selfhost:phi-3.5"],
-    "openrouter:llama-3.3-70b:free": ["cerebras:llama3.1-8b", "openrouter:nemotron-120b:free", "google:gemini-2.5-flash", "selfhost:phi-3.5"],
+    "selfhost:phi-3.5":              ["cerebras:llama3.1-8b", "google:gemini-2.5-flash", "openrouter:gemma-4-26b:free", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "selfhost:qwen2.5-0.5b":         ["selfhost:llama-3.2-1b", "selfhost:gemma-2-2b", "selfhost:phi-3.5", "cerebras:llama3.1-8b"],
+    "selfhost:llama-3.2-1b":         ["selfhost:qwen2.5-0.5b", "selfhost:gemma-2-2b", "selfhost:phi-3.5", "cerebras:llama3.1-8b"],
+    "selfhost:gemma-2-2b":           ["selfhost:llama-3.2-1b", "selfhost:qwen2.5-0.5b", "selfhost:phi-3.5", "cerebras:llama3.1-8b"],
+    "cerebras:qwen-3-235b":          ["cerebras:llama3.1-8b", "openrouter:qwen3-80b:free", "google:gemini-2.5-flash", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "cerebras:llama3.1-8b":          ["cerebras:qwen-3-235b", "google:gemini-2.5-flash", "openrouter:llama-3.3-70b:free", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "openrouter:glm-4.5-air:free":   ["cerebras:llama3.1-8b", "openrouter:gpt-oss-20b:free", "google:gemini-3-flash", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "openrouter:gpt-oss-20b:free":   ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "cerebras:llama3.1-8b", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "google:gemini-2.5-flash":       ["google:gemini-3-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "google:gemini-3-flash":         ["google:gemini-2.5-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "openrouter:gemma-4-26b:free":   ["openrouter:llama-3.3-70b:free", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "openrouter:nemotron-120b:free": ["openrouter:qwen3-80b:free", "cerebras:qwen-3-235b", "openrouter:llama-3.3-70b:free", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "openrouter:minimax-m2.5:free":  ["openrouter:gpt-oss-20b:free", "openrouter:glm-4.5-air:free", "cerebras:llama3.1-8b", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "openrouter:qwen3-80b:free":     ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:llama-3.3-70b:free", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "openrouter:llama-3.3-70b:free": ["cerebras:llama3.1-8b", "openrouter:nemotron-120b:free", "google:gemini-2.5-flash", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
 }
 
 # ── HEALTH TRACKER ──────────────────────────────────────────────────────────
