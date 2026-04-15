@@ -71,6 +71,15 @@
             "command": "if echo \"$CLAUDE_FILE_PATH\" | grep -q 'features/engine.py'; then echo '⚠️  ENGINE WRITE — sync to ALL 6 HF Spaces required! Run: /spaces-health then deploy.'; fi"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FP=\"$CLAUDE_FILE_PATH\"; case \"$FP\" in /home/termius/mon-ipad/*) REPO=/home/termius/mon-ipad ;; /home/termius/nomos-dashboard/*) REPO=/home/termius/nomos-dashboard ;; /home/termius/nomos-nba-agent/*) REPO=/home/termius/nomos-nba-agent ;; /home/termius/nomos-political-alpha/*) REPO=/home/termius/nomos-political-alpha ;; *) exit 0 ;; esac; cd \"$REPO\" && git add -A -- \"$FP\" >/dev/null 2>&1 && git -c commit.gpgsign=false commit -m \"wip: auto-checkpoint $(basename $FP)\" --quiet >/dev/null 2>&1; exit 0"
+          }
+        ]
       }
     ],
     "Stop": [
