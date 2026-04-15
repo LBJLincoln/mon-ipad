@@ -2855,6 +2855,20 @@ class NBAFeatureEngine:
             "pace61_pace_mismatch",          # |h_pace - a_pace| (tempo clash signal)
         ])
 
+        # ── Cat 62: Clutch Performance — close-game DNA (10 features) ──
+        names.extend([
+            "clutch62_h_close_winpct",       # Home win% in games decided by ≤5 pts
+            "clutch62_a_close_winpct",       # Away win% in games decided by ≤5 pts
+            "clutch62_h_clutch_edge",        # Home close_winpct - overall_winpct (clutch lift)
+            "clutch62_a_clutch_edge",        # Away close_winpct - overall_winpct
+            "clutch62_h_close_freq",         # Fraction of home games that were close
+            "clutch62_a_close_freq",         # Fraction of away games that were close
+            "clutch62_close_wr_diff",        # h_close_winpct - a_close_winpct
+            "clutch62_clutch_edge_diff",     # h_clutch_edge - a_clutch_edge
+            "clutch62_h_close_margin_avg",   # Home avg margin in close games (signed)
+            "clutch62_a_close_margin_avg",   # Away avg margin in close games (signed)
+        ])
+
         self.feature_names = names
 
     def build(self, games, market_data=None, referee_data=None, player_data=None, quarter_data=None, tracking_data=None, odds_data=None):
@@ -6868,6 +6882,42 @@ class NBAFeatureEngine:
                 ])
             except Exception:
                 row.extend([0.5, 0.5, 0.5, 0.5, 0.0, 0.0, 0.0, 0.5, 0.5, 0.0])
+
+            # ── Cat 62: Clutch Performance — close-game DNA (10 features) ──
+            try:
+                def _clutch62(recs):
+                    if not recs:
+                        return 0.5, 0.0, 0.0, 0.0
+                    wins = sum(1 for r in recs if r[2] > r[3])
+                    overall_wr = wins / len(recs) if recs else 0.5
+                    close = [(r[2] - r[3]) for r in recs if abs(r[2] - r[3]) <= 5]
+                    close_wins = sum(1 for m in close if m > 0)
+                    close_wr = close_wins / len(close) if close else 0.5
+                    close_freq = len(close) / len(recs) if recs else 0.0
+                    clutch_edge = close_wr - overall_wr
+                    close_margin = sum(close) / len(close) if close else 0.0
+                    return close_wr, clutch_edge, close_freq, close_margin / 20.0
+
+                _h62_recs = [(r[0], r[1], r[2], r[3]) for r in hr_[-15:] if len(r) >= 4 and r[2] is not None and r[3] is not None]
+                _a62_recs = [(r[0], r[1], r[2], r[3]) for r in ar_[-15:] if len(r) >= 4 and r[2] is not None and r[3] is not None]
+
+                _h62_cwr, _h62_ce, _h62_cf, _h62_cm = _clutch62(_h62_recs)
+                _a62_cwr, _a62_ce, _a62_cf, _a62_cm = _clutch62(_a62_recs)
+
+                row.extend([
+                    _h62_cwr,                  # clutch62_h_close_winpct
+                    _a62_cwr,                  # clutch62_a_close_winpct
+                    _h62_ce,                   # clutch62_h_clutch_edge
+                    _a62_ce,                   # clutch62_a_clutch_edge
+                    _h62_cf,                   # clutch62_h_close_freq
+                    _a62_cf,                   # clutch62_a_close_freq
+                    _h62_cwr - _a62_cwr,       # clutch62_close_wr_diff
+                    _h62_ce - _a62_ce,         # clutch62_clutch_edge_diff
+                    _h62_cm,                   # clutch62_h_close_margin_avg
+                    _a62_cm,                   # clutch62_a_close_margin_avg
+                ])
+            except Exception:
+                row.extend([0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
             X.append(row)
             y.append(1 if hs > as_ else 0)
