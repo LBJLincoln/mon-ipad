@@ -34,7 +34,17 @@ STOP shipping new NBA feature categories (Cat 60-65 were procrastination — the
 
 Work ONLY on the VISIBLE-PRODUCT fix list below. Each run, pick the FIRST item that is still broken. Verify it's broken by reading the relevant file/API. Fix it. Commit + push. Exit.
 
-VERIFIED-BROKEN CHECKLIST (2026-04-15):
+VERIFIED-BROKEN CHECKLIST (2026-04-15, ordered by severity):
+
+  [0] /political PAGE HAS 14-DAY-OLD FAKE DATA (HIGHEST SEVERITY)
+      File: /home/termius/nomos-dashboard/src/app/political/page.tsx:693
+      Contains `ARENA_SNAPSHOT` const dated 2026-04-01 with fake champion
+      "Prop_2.5pct_mut0 +550% ROI" that contradicts its own bankroll $16.48.
+      5 top traders + 33 rounds all hardcoded. Page presents this as live truth.
+      DONE WHEN: ARENA_SNAPSHOT replaced with either live fetch OR empty state
+      "Arena v2 archive 2026-04-01 — new run in progress. Check /floor instead."
+      This takes priority over all other items because it's the biggest lie.
+
 
   [1] HOMEPAGE HARDCODED FALLBACK
       File: /home/termius/nomos-dashboard/src/app/page.tsx
