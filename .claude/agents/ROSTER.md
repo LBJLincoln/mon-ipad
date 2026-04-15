@@ -17,45 +17,45 @@ which repo it can write to. Orchestrator dispatches — never duplicates.
 
 | # | Agent | Replaces | Repo | Cred env | Cadence |
 |---|---|---|---|---|---|
-| 1 | **brain-orchestrator** | `nba-brain` | mon-ipad | all HF tokens (read-only) | `:00` every 4h |
-| 2 | **nba-fleet-ops** | — (split from `evolution-optimizer`) | mon-ipad | `HF_TOKEN_NBA` | `:10` every 4h |
-| 3 | **political-fleet-ops** | — (new) | nomos-political-alpha | `HF_TOKEN` | `:15` every 4h |
-| 4 | **llm-fleet-ops** | — (new) | mon-ipad | `HF_TOKEN_LLM` | `:20` every 6h |
-| 5 | **councils-ops** | — (split from `nba-brain`) | mon-ipad | `HF_TOKEN_COUNCILS` | `:25` every 4h |
-| 6 | **market-scanner** | `market-analyst` | nomos-nba-agent | `ODDS_API_KEY` | every 30 min |
-| 7 | **picks-publisher** | — (new) | nomos-nba-agent | `BOT_TOKEN_NBA`, `STRIPE_SECRET_KEY` | daily 18:00 UTC |
-| 8 | **research-scout** | merges `karpathy-researcher` + `research-analyst` + `repo-scout` | mon-ipad | `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`, `EXA_API_KEY` | daily 06:00 UTC |
-| 9 | **feature-lab** | merges `feature-engineer` + `karpathy-feature-eng` | mon-ipad | `MISTRAL_API_KEY`, `GOOGLE_API_KEY` | every 12h |
-| 10 | **monetization-ops** | — (new, deadline-critical) | nomos-dashboard | `STRIPE_SECRET_KEY`, `WHOP_API_KEY`, `LEMON_SQUEEZY_API_KEY` | daily 09:00 UTC |
+| 1 | **nomos-brain** | `nba-brain` | mon-ipad | all HF tokens (read-only) | `:00` every 4h |
+| 2 | **nomos-hoops** | — (split from `evolution-optimizer`) | mon-ipad | `HF_TOKEN_NBA` | `:10` every 4h |
+| 3 | **nomos-alpha** | — (new) | nomos-political-alpha | `HF_TOKEN` | `:15` every 4h |
+| 4 | **nomos-llm** | — (new) | mon-ipad | `HF_TOKEN_LLM` | `:20` every 6h |
+| 5 | **nomos-forge** | — (split from `nba-brain`) | mon-ipad | `HF_TOKEN_COUNCILS` | `:25` every 4h |
+| 6 | **nomos-tape** | `market-analyst` | nomos-nba-agent | `ODDS_API_KEY` | every 30 min |
+| 7 | **nomos-wire** | — (new) | nomos-nba-agent | `BOT_TOKEN_NBA`, `STRIPE_SECRET_KEY` | daily 18:00 UTC |
+| 8 | **nomos-scout** | merges `karpathy-researcher` + `research-analyst` + `repo-scout` | mon-ipad | `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`, `EXA_API_KEY` | daily 06:00 UTC |
+| 9 | **nomos-lab** | merges `feature-engineer` + `karpathy-feature-eng` | mon-ipad | `MISTRAL_API_KEY`, `GOOGLE_API_KEY` | every 12h |
+| 10 | **nomos-pay** | — (new, deadline-critical) | nomos-dashboard | `STRIPE_SECRET_KEY`, `WHOP_API_KEY`, `LEMON_SQUEEZY_API_KEY` | daily 09:00 UTC |
 
 ## Cron schedule (aggregated)
 
 ```
-*/30  market-scanner               (every 30 min)
-0 */4 brain-orchestrator           (:00 every 4h)
-10 */4 nba-fleet-ops               (:10 every 4h)
-15 */4 political-fleet-ops         (:15 every 4h)
-20 */6 llm-fleet-ops               (:20 every 6h)
-25 */4 councils-ops                (:25 every 4h)
-0 */12 feature-lab                 (00:00 and 12:00 UTC)
-0 6 * research-scout               (06:00 UTC daily)
-0 9 * monetization-ops             (09:00 UTC daily)
-0 18 * picks-publisher             (18:00 UTC daily)
+*/30  nomos-tape               (every 30 min)
+0 */4 nomos-brain           (:00 every 4h)
+10 */4 nomos-hoops               (:10 every 4h)
+15 */4 nomos-alpha         (:15 every 4h)
+20 */6 nomos-llm               (:20 every 6h)
+25 */4 nomos-forge                (:25 every 4h)
+0 */12 nomos-lab                 (00:00 and 12:00 UTC)
+0 6 * nomos-scout               (06:00 UTC daily)
+0 9 * nomos-pay             (09:00 UTC daily)
+0 18 * nomos-wire             (18:00 UTC daily)
 ```
 
 ## Session-start bootstrap
 
-Every Claude Code session: brain-orchestrator runs once via
+Every Claude Code session: nomos-brain runs once via
 `.claude/settings.json` SessionStart hook to emit a health snapshot
 (which agents last ran / last failed / what's stale).
 
 ## Retired agents (migrate + delete)
 
-- `nba-brain` → split into `brain-orchestrator` + `nba-fleet-ops` + `councils-ops`
-- `evolution-optimizer` → absorbed into `nba-fleet-ops` + `political-fleet-ops`
-- `karpathy-researcher`, `research-analyst`, `repo-scout` → merged into `research-scout`
-- `feature-engineer`, `karpathy-feature-eng` → merged into `feature-lab`
-- `market-analyst` → renamed `market-scanner`
+- `nba-brain` → split into `nomos-brain` + `nomos-hoops` + `nomos-forge`
+- `evolution-optimizer` → absorbed into `nomos-hoops` + `nomos-alpha`
+- `karpathy-researcher`, `research-analyst`, `repo-scout` → merged into `nomos-scout`
+- `feature-engineer`, `karpathy-feature-eng` → merged into `nomos-lab`
+- `market-analyst` → renamed `nomos-tape`
 
 ## Cred mapping per agent
 

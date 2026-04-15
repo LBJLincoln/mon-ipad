@@ -68,6 +68,34 @@ MODELS = {
         "rpm": 60,
         "tier": "fast",
     },
+    # ── SELF-HOST tier-2 (Qwen3-4B / SmolLM3-3B / Gemma-3-4B — 2026 SOTA small CPU) ──
+    "selfhost:qwen3-4b": {
+        "url": "https://nomos42-qwen3-4b-cpu.hf.space/v1/chat/completions",
+        "model": "qwen3-4b-instruct",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "medium",
+    },
+    "selfhost:smollm3-3b": {
+        "url": "https://nomos42-smollm3-3b-cpu.hf.space/v1/chat/completions",
+        "model": "smollm3-3b",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "medium",
+    },
+    "selfhost:gemma-3-4b": {
+        "url": "https://nomos42-gemma3-4b-cpu.hf.space/v1/chat/completions",
+        "model": "gemma-3-4b-it",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "medium",
+    },
     # ── CEREBRAS (free, ultra-fast ~2000 tok/s, 30 RPM) ──
     "cerebras:qwen-3-235b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
@@ -124,6 +152,52 @@ MODELS = {
         "provider": "google",
         "max_tokens": 400,
         "rpm": 14,
+        "tier": "fast",
+    },
+    # ── MISTRAL (free tier, 20 RPM, 5 models — T6-T10 direct lane) ──
+    "mistral:large": {
+        "url": "https://api.mistral.ai/v1/chat/completions",
+        "model": "mistral-large-latest",
+        "key_env": "MISTRAL_API_KEY",
+        "provider": "mistral",
+        "max_tokens": 400,
+        "rpm": 20,
+        "tier": "large",
+    },
+    "mistral:medium": {
+        "url": "https://api.mistral.ai/v1/chat/completions",
+        "model": "mistral-medium-latest",
+        "key_env": "MISTRAL_API_KEY",
+        "provider": "mistral",
+        "max_tokens": 400,
+        "rpm": 20,
+        "tier": "medium",
+    },
+    "mistral:small": {
+        "url": "https://api.mistral.ai/v1/chat/completions",
+        "model": "mistral-small-latest",
+        "key_env": "MISTRAL_API_KEY",
+        "provider": "mistral",
+        "max_tokens": 400,
+        "rpm": 20,
+        "tier": "medium",
+    },
+    "mistral:nemo": {
+        "url": "https://api.mistral.ai/v1/chat/completions",
+        "model": "open-mistral-nemo",
+        "key_env": "MISTRAL_API_KEY",
+        "provider": "mistral",
+        "max_tokens": 400,
+        "rpm": 20,
+        "tier": "fast",
+    },
+    "mistral:ministral-8b": {
+        "url": "https://api.mistral.ai/v1/chat/completions",
+        "model": "ministral-8b-latest",
+        "key_env": "MISTRAL_API_KEY",
+        "provider": "mistral",
+        "max_tokens": 400,
+        "rpm": 20,
         "tier": "fast",
     },
     # ── OPENROUTER (free models, 20 RPM per key) ──
@@ -194,6 +268,16 @@ FALLBACK_CHAINS = {
     "openrouter:minimax-m2.5:free":  ["openrouter:gpt-oss-20b:free", "openrouter:glm-4.5-air:free", "cerebras:llama3.1-8b", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
     "openrouter:qwen3-80b:free":     ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:llama-3.3-70b:free", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
     "openrouter:llama-3.3-70b:free": ["cerebras:llama3.1-8b", "openrouter:nemotron-120b:free", "google:gemini-2.5-flash", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    # Mistral fallback chains — all 5 models chain to Mistral siblings first, then cross-provider
+    "mistral:large":                 ["mistral:medium", "mistral:small", "cerebras:qwen-3-235b", "google:gemini-3-flash", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "mistral:medium":                ["mistral:small", "mistral:large", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "mistral:small":                 ["mistral:ministral-8b", "mistral:nemo", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "mistral:nemo":                  ["mistral:small", "mistral:ministral-8b", "cerebras:llama3.1-8b", "openrouter:llama-3.3-70b:free", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    "mistral:ministral-8b":          ["mistral:nemo", "mistral:small", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-3.5", "selfhost:qwen2.5-0.5b", "selfhost:llama-3.2-1b", "selfhost:gemma-2-2b"],
+    # Tier-2 self-host (2026 SOTA small CPU) — chain to siblings first then proven self-host tier-1
+    "selfhost:qwen3-4b":             ["selfhost:smollm3-3b", "selfhost:gemma-3-4b", "selfhost:phi-3.5", "cerebras:llama3.1-8b", "selfhost:gemma-2-2b"],
+    "selfhost:smollm3-3b":           ["selfhost:qwen3-4b", "selfhost:gemma-3-4b", "selfhost:phi-3.5", "cerebras:llama3.1-8b", "selfhost:gemma-2-2b"],
+    "selfhost:gemma-3-4b":           ["selfhost:qwen3-4b", "selfhost:smollm3-3b", "selfhost:phi-3.5", "cerebras:llama3.1-8b", "selfhost:gemma-2-2b"],
 }
 
 # ── HEALTH TRACKER ──────────────────────────────────────────────────────────
@@ -349,11 +433,33 @@ def _call_selfhost(model_cfg: dict, messages: list, max_tokens: int) -> str:
     raise ValueError(f"Self-host unexpected response: {json.dumps(data)[:200]}")
 
 
+def _call_mistral(model_cfg: dict, messages: list, max_tokens: int) -> str:
+    """Mistral API — OpenAI-compatible /v1/chat/completions, 20 RPM free tier."""
+    key = os.environ.get(model_cfg["key_env"], "")
+    if not key:
+        raise ValueError(f"Missing key: {model_cfg['key_env']}")
+    resp = requests.post(
+        model_cfg["url"],
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+        json={"model": model_cfg["model"], "messages": messages,
+              "max_tokens": max_tokens, "temperature": 0.7},
+        timeout=30,
+    )
+    if resp.status_code == 429:
+        raise ValueError("Rate limited (429)")
+    resp.raise_for_status()
+    data = resp.json()
+    if "choices" in data and data["choices"]:
+        return data["choices"][0]["message"]["content"]
+    raise ValueError(f"Mistral unexpected response: {json.dumps(data)[:200]}")
+
+
 PROVIDER_CALLERS = {
     "cerebras": _call_cerebras,
     "google": _call_google,
     "openrouter": _call_openrouter,
     "selfhost": _call_selfhost,
+    "mistral": _call_mistral,
 }
 
 
