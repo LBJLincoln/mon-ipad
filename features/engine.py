@@ -83,7 +83,7 @@ import csv
 import os
 
 # ── Engine Version ──
-ENGINE_VERSION = "v3.1-60cat"  # Cat60: score margin distribution (skewness, fragility, dominance)
+ENGINE_VERSION = "v3.1-61cat"  # Cat61: pace-adjusted net rating (off/def efficiency, tempo mismatch)
 
 # ── Team mappings ──
 TEAM_MAP = {
@@ -2839,6 +2839,20 @@ class NBAFeatureEngine:
             "mdist60_a_margin_iqr",          # Away interquartile range of margins
             "mdist60_margin_shape_diff",     # h_skew - a_skew (which team has heavier right tail)
             "mdist60_quality_gap",           # (h_blowout_win - h_close_loss) - same for away
+        ])
+
+        # ── Cat 61: Pace-Adjusted Net Rating (10 features) ──
+        names.extend([
+            "pace61_h_off_rtg",              # Home offensive rating (pts per 100 poss)
+            "pace61_a_off_rtg",              # Away offensive rating
+            "pace61_h_def_rtg",              # Home defensive rating (opp pts per 100 poss)
+            "pace61_a_def_rtg",              # Away defensive rating
+            "pace61_h_net_rtg",              # Home net rating (off - def)
+            "pace61_a_net_rtg",              # Away net rating
+            "pace61_net_rtg_diff",           # h_net - a_net (pace-adjusted strength gap)
+            "pace61_h_pace",                 # Home possessions per game (normalized)
+            "pace61_a_pace",                 # Away possessions per game (normalized)
+            "pace61_pace_mismatch",          # |h_pace - a_pace| (tempo clash signal)
         ])
 
         self.feature_names = names
@@ -6786,6 +6800,74 @@ class NBAFeatureEngine:
                 ])
             except Exception:
                 row.extend([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+            # ── Cat 61: Pace-Adjusted Net Rating (10 features) ──
+            # Possessions ≈ FGA + 0.44*FTA - ORB + TOV; net rating = (pts/poss)*100
+            try:
+                def _pace61_ratings(recs, stat_fn):
+                    if not recs:
+                        return 0.5, 0.5, 0.0, 0.5
+                    off_rtgs, def_rtgs, paces = [], [], []
+                    for _r in recs[-10:]:
+                        _s = stat_fn(_r)
+                        if not _s:
+                            continue
+                        fga = _s.get('fga', 0) or 0
+                        fta = _s.get('fta', 0) or 0
+                        orb = _s.get('orb', 0) or 0
+                        tov = _s.get('tov', _s.get('to', 0)) or 0
+                        pts = _r[2] if _r[2] is not None else 0
+                        opp_pts = _r[3] if len(_r) > 3 and _r[3] is not None else 0
+                        poss = fga + 0.44 * fta - orb + tov
+                        if poss < 10:
+                            continue
+                        off_rtgs.append((pts / poss) * 100.0)
+                        def_rtgs.append((opp_pts / poss) * 100.0)
+                        paces.append(poss)
+                    if not off_rtgs:
+                        return 0.5, 0.5, 0.0, 0.5
+                    o = sum(off_rtgs) / len(off_rtgs) / 200.0
+                    d = sum(def_rtgs) / len(def_rtgs) / 200.0
+                    p = sum(paces) / len(paces) / 200.0
+                    return max(0.0, min(1.0, o)), max(0.0, min(1.0, d)), o - d, max(0.0, min(1.0, p))
+
+                def _h_stat61(r):
+                    return r[4] if len(r) > 4 else None
+                def _a_stat61(r):
+                    return r[5] if len(r) > 5 else None
+
+                # Build enriched records: (date, opp, own_score, opp_score, own_stats, opp_stats)
+                _h61_recs = []
+                for _r in hr_[-10:]:
+                    if len(_r) >= 6:
+                        _h61_recs.append(_r)
+                    elif len(_r) >= 4:
+                        _h61_recs.append(_r)
+
+                _a61_recs = []
+                for _r in ar_[-10:]:
+                    if len(_r) >= 6:
+                        _a61_recs.append(_r)
+                    elif len(_r) >= 4:
+                        _a61_recs.append(_r)
+
+                _h61_off, _h61_def, _h61_net, _h61_pace = _pace61_ratings(_h61_recs, _h_stat61)
+                _a61_off, _a61_def, _a61_net, _a61_pace = _pace61_ratings(_a61_recs, _a_stat61)
+
+                row.extend([
+                    _h61_off,                              # pace61_h_off_rtg
+                    _a61_off,                              # pace61_a_off_rtg
+                    _h61_def,                              # pace61_h_def_rtg
+                    _a61_def,                              # pace61_a_def_rtg
+                    _h61_net,                              # pace61_h_net_rtg
+                    _a61_net,                              # pace61_a_net_rtg
+                    _h61_net - _a61_net,                   # pace61_net_rtg_diff
+                    _h61_pace,                             # pace61_h_pace
+                    _a61_pace,                             # pace61_a_pace
+                    abs(_h61_pace - _a61_pace),            # pace61_pace_mismatch
+                ])
+            except Exception:
+                row.extend([0.5, 0.5, 0.5, 0.5, 0.0, 0.0, 0.0, 0.5, 0.5, 0.0])
 
             X.append(row)
             y.append(1 if hs > as_ else 0)
