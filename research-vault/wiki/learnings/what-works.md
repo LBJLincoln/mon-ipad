@@ -1,33 +1,33 @@
 # What Works — Empirically Validated
 
-> Auto-generated from experiment data on 2026-04-15 02:23 UTC
+> Auto-generated from experiment data on 2026-04-15 04:23 UTC
 > Only includes findings backed by measured improvement
 
 ## NBA — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| add_features | 5 | 0 | 0% | +0.00855 |
-| change_min_samples_leaf | 3 | 0 | 0% | +0.00801 |
-| change_max_features_ratio | 4 | 0 | 0% | +0.00735 |
-| change_n_estimators | 4 | 0 | 0% | +0.00796 |
-| change_model | 24 | 0 | 0% | +0.28626 |
-| change_max_depth | 3 | 0 | 0% | +0.00868 |
-| remove_features | 3 | 0 | 0% | +0.00872 |
-| swap_features | 4 | 0 | 0% | +0.00719 |
+| remove_features | 5 | 0 | 0% | +0.00680 |
+| add_features | 3 | 0 | 0% | +0.00558 |
+| change_max_depth | 5 | 0 | 0% | +0.00583 |
+| swap_features | 1 | 0 | 0% | +0.00534 |
+| change_n_estimators | 5 | 0 | 0% | +0.00545 |
+| change_min_samples_leaf | 6 | 0 | 0% | +0.00619 |
+| change_model | 23 | 0 | 0% | +0.38540 |
+| change_max_features_ratio | 2 | 0 | 0% | +0.00769 |
 
 ## POLITICAL — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| add_features | 7 | 0 | 0% | +0.01584 |
-| change_max_depth | 8 | 0 | 0% | +0.01483 |
-| change_min_samples_leaf | 7 | 0 | 0% | +0.01222 |
-| swap_features | 6 | 0 | 0% | +0.02205 |
-| change_max_features_ratio | 7 | 0 | 0% | +0.02702 |
-| change_n_estimators | 6 | 0 | 0% | +0.00484 |
-| remove_features | 6 | 0 | 0% | +0.02507 |
-| change_model | 3 | 0 | 0% | +0.03952 |
+| change_max_depth | 5 | 0 | 0% | +0.01656 |
+| change_model | 9 | 0 | 0% | +0.04935 |
+| add_features | 3 | 0 | 0% | +0.02278 |
+| remove_features | 4 | 0 | 0% | +0.03054 |
+| change_max_features_ratio | 9 | 0 | 0% | +0.01980 |
+| change_n_estimators | 10 | 0 | 0% | +0.00657 |
+| swap_features | 4 | 0 | 0% | +0.03060 |
+| change_min_samples_leaf | 6 | 0 | 0% | +0.00308 |
 
 ## Arena — Proven Insights
 
