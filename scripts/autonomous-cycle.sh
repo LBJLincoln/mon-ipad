@@ -46,11 +46,14 @@ S13_BRIER=$(curl -s --max-time 10 "$S13_URL/api/status" 2>/dev/null | python3 -c
 S14_BRIER=$(curl -s --max-time 10 "$S14_URL/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 S15_BRIER=$(curl -s --max-time 10 "$S15_URL/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 
-# S16-S19 (extended islands — LBJLincoln26 + TESTforge42)
+# S16-S22 (extended islands — LBJLincoln26 + TESTforge42)
 S16_BRIER=$(curl -s --max-time 10 "https://lbjlincoln26-nba-evo-s16.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 S17_BRIER=$(curl -s --max-time 10 "https://lbjlincoln26-nba-evo-s17.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 S18_BRIER=$(curl -s --max-time 10 "https://testforge42-nba-evo-s18.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 S19_BRIER=$(curl -s --max-time 10 "https://testforge42-nba-evo-s19.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+S20_BRIER=$(curl -s --max-time 10 "https://lbjlincoln26-nba-evo-s20.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+S21_BRIER=$(curl -s --max-time 10 "https://lbjlincoln26-nba-evo-s21.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+S22_BRIER=$(curl -s --max-time 10 "https://testforge42-nba-evo-s22.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 
 # Political Alpha quick check
 P1_BRIER=$(curl -s --max-time 10 "https://nomos42-political-alpha.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
@@ -62,7 +65,7 @@ P6_BRIER=$(curl -s --max-time 10 "https://lbjlincoln-political-alpha-6.hf.space/
 P7_BRIER=$(curl -s --max-time 10 "https://lbjlincoln-political-alpha-7.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 P8_BRIER=$(curl -s --max-time 10 "https://lbjlincoln-political-alpha-8.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 
-log "[HEALTH] NBA S10=$S10_BRIER S11=? S12=$S12_BRIER S13=$S13_BRIER S14=$S14_BRIER S15=$S15_BRIER S16=$S16_BRIER S17=$S17_BRIER S18=$S18_BRIER S19=$S19_BRIER | gen=$S10_GEN stag=$S10_STAG"
+log "[HEALTH] NBA S10=$S10_BRIER S11=? S12=$S12_BRIER S13=$S13_BRIER S14=$S14_BRIER S15=$S15_BRIER S16=$S16_BRIER S17=$S17_BRIER S18=$S18_BRIER S19=$S19_BRIER S20=$S20_BRIER S21=$S21_BRIER S22=$S22_BRIER | gen=$S10_GEN stag=$S10_STAG"
 log "[HEALTH] Political P1=$P1_BRIER P2=$P2_BRIER P3=$P3_BRIER P4=$P4_BRIER P5=$P5_BRIER P6=$P6_BRIER P7=$P7_BRIER P8=$P8_BRIER"
 
 # ── Phase 1: Crew Research ───────────────────────────────────
@@ -128,6 +131,9 @@ print('')  # no checkpoint needed
             S17) echo "https://lbjlincoln26-nba-evo-s17.hf.space" ;;
             S18) echo "https://testforge42-nba-evo-s18.hf.space" ;;
             S19) echo "https://testforge42-nba-evo-s19.hf.space" ;;
+            S20) echo "https://lbjlincoln26-nba-evo-s20.hf.space" ;;
+            S21) echo "https://lbjlincoln26-nba-evo-s21.hf.space" ;;
+            S22) echo "https://testforge42-nba-evo-s22.hf.space" ;;
             *)   echo "$S10_URL" ;;
         esac
     }

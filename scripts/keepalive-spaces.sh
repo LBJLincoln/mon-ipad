@@ -65,11 +65,14 @@ ping_or_restart "S13 (catboost)"    https://nomos42-nba-evo-4.hf.space/    "Nomo
 ping_or_restart "S14 (lightgbm)"    https://nomos42-nba-evo-5.hf.space/    "Nomos42/nba-evo-5"
 ping_or_restart "S15 (wide)"        https://nomos42-nba-evo-6.hf.space/    "Nomos42/nba-evo-6"
 
-# NBA Evolution Islands S16-S19 (new — LBJLincoln26 + TESTforge42)
+# NBA Evolution Islands S16-S22 (new — LBJLincoln26 + TESTforge42)
 ping_or_restart "S16 (gradient)" https://lbjlincoln26-nba-evo-s16.hf.space/ "LBJLincoln26/nba-evo-s16"
 ping_or_restart "S17 (ensemble)" https://lbjlincoln26-nba-evo-s17.hf.space/ "LBJLincoln26/nba-evo-s17"
 ping_or_restart "S18 (cat_brier)" https://testforge42-nba-evo-s18.hf.space/ "TESTforge42/nba-evo-s18"
 ping_or_restart "S19 (ultra_wide)" https://testforge42-nba-evo-s19.hf.space/ "TESTforge42/nba-evo-s19"
+ping_or_restart "S20 (iso_cpcv)" https://lbjlincoln26-nba-evo-s20.hf.space/ "LBJLincoln26/nba-evo-s20"
+ping_or_restart "S21 (darwinian)" https://lbjlincoln26-nba-evo-s21.hf.space/ "LBJLincoln26/nba-evo-s21"
+ping_or_restart "S22 (venn_abers)" https://testforge42-nba-evo-s22.hf.space/ "TESTforge42/nba-evo-s22"
 
 # Political Alpha Evolution (4 islands) — Nomos42 + LBJLincoln accounts
 ping_or_restart "P1 (exploit)"  https://nomos42-political-alpha.hf.space/   "Nomos42/political-alpha"

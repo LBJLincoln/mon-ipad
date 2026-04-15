@@ -1,13 +1,25 @@
 {
   "timestamp": "2026-04-15T12:16:35.787531+00:00",
-  "experiment_state": {
-    "days_processed": 104,
-    "days_total": 175,
-    "games_total": 1247,
-    "design": "day-bucket-v3",
-    "completed": false
+  "council": "d6-evaluation",
+  "subject": "Trading Floor v3 Calibration Audit",
+  "findings": {
+    "n_agents": 11,
+    "well_calibrated": [
+      "qwen-arb",
+      "mistral-large"
+    ],
+    "overconfident": [
+      "qwen-quant",
+      "llama-contra",
+      "gemini-tact",
+      "mistral-medium",
+      "mistral-ministral"
+    ],
+    "best_bankroll": 249.22,
+    "worst_bankroll": 9.66,
+    "bankroll_spread": 239.56
   },
-  "per_agent": {
+  "per_agent_summary": {
     "qwen-quant": {
       "trader_id": "qwen-quant",
       "days_traded": 105,
@@ -166,111 +178,8 @@
       "final_bankroll": 100.0
     }
   },
-  "rationale_patterns": {
-    "net rating": {
-      "mentions": 1840,
-      "wins": 1119,
-      "win_rate": 0.608
-    },
-    "form": {
-      "mentions": 1436,
-      "wins": 848,
-      "win_rate": 0.591
-    },
-    "edge": {
-      "mentions": 873,
-      "wins": 512,
-      "win_rate": 0.586
-    },
-    "model": {
-      "mentions": 750,
-      "wins": 445,
-      "win_rate": 0.593
-    },
-    "pace": {
-      "mentions": 444,
-      "wins": 220,
-      "win_rate": 0.495
-    },
-    "line": {
-      "mentions": 204,
-      "wins": 105,
-      "win_rate": 0.515
-    },
-    "rest": {
-      "mentions": 109,
-      "wins": 58,
-      "win_rate": 0.532
-    },
-    "star": {
-      "mentions": 98,
-      "wins": 54,
-      "win_rate": 0.551
-    },
-    "home court": {
-      "mentions": 78,
-      "wins": 49,
-      "win_rate": 0.628
-    },
-    "defrtg": {
-      "mentions": 39,
-      "wins": 16,
-      "win_rate": 0.41
-    },
-    "altitude": {
-      "mentions": 32,
-      "wins": 16,
-      "win_rate": 0.5
-    },
-    "sharp": {
-      "mentions": 25,
-      "wins": 17,
-      "win_rate": 0.68
-    },
-    "3pt": {
-      "mentions": 16,
-      "wins": 7,
-      "win_rate": 0.438
-    },
-    "back-to-back": {
-      "mentions": 14,
-      "wins": 7,
-      "win_rate": 0.5
-    },
-    "travel": {
-      "mentions": 10,
-      "wins": 5,
-      "win_rate": 0.5
-    },
-    "offrtg": {
-      "mentions": 9,
-      "wins": 4,
-      "win_rate": 0.444
-    },
-    "public": {
-      "mentions": 5,
-      "wins": 3,
-      "win_rate": 0.6
-    },
-    "injury": {
-      "mentions": 5,
-      "wins": 3,
-      "win_rate": 0.6
-    },
-    "rebound": {
-      "mentions": 4,
-      "wins": 2,
-      "win_rate": 0.5
-    },
-    "consensus": {
-      "mentions": 3,
-      "wins": 3,
-      "win_rate": 1.0
-    },
-    "shooting": {
-      "mentions": 2,
-      "wins": 1,
-      "win_rate": 0.5
-    }
-  }
+  "verdicts": [
+    "5 agent(s) overconfident (gap>0.15): qwen-quant, llama-contra, gemini-tact, mistral-medium, mistral-ministral",
+    "<50% agents well-calibrated \u2014 tighten prompt edge-computation instructions"
+  ]
 }
