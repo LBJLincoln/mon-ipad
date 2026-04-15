@@ -1,6 +1,6 @@
 # What Fails — Avoid These
 
-> Auto-generated from experiment data on 2026-04-15 12:25 UTC
+> Auto-generated from experiment data on 2026-04-15 16:25 UTC
 > Only includes findings backed by measured failure
 
 ## Eliminated Strategies

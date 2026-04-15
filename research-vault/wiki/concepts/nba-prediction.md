@@ -153,12 +153,12 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Polyrepo Tooling Scan (April 2026)** (227 words) -- `raw/agent-memory/repo-scout_project_polyrepo_tooling_apr2026.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/agent-memory/feature-engineer_project_gpu_evolution_v2.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/feature-engineer/project_gpu_evolution_v2.md`
+- **Fleet Health Snapshot** (212 words) -- `raw/learnings/fleet-health-snapshot.md`
 - **Historical odds dataset 2025-26** (190 words) -- `raw/agent-memory/market-analyst_project_historical_odds.md`
 - **Historical odds dataset 2025-26** (190 words) -- `raw/market-analyst/project_historical_odds.md`
 - **Research Scan: github-scan-2026-03-31** (186 words) -- `raw/research/github-scan-2026-03-31.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/agent-memory/nba-brain_project_strategy_confrontation.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/nba-brain/project_strategy_confrontation.md`
-- **Fleet Health Snapshot** (176 words) -- `raw/learnings/fleet-health-snapshot.md`
 - **Research Scan: github-scan-2026-04-01** (167 words) -- `raw/research/github-scan-2026-04-01.md`
 - **Research Scan: github-scan-2026-04-02** (167 words) -- `raw/research/github-scan-2026-04-02.md`
 - **Enterprise Agent Matrix — 3-product 3-layer architecture** (161 words) -- `raw/agent-memory/nba-brain_project_enterprise_architecture.md`
