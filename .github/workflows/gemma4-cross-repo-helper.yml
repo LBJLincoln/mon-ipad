@@ -1,0 +1,122 @@
+name: Gemma4 Cross-Repo Helper (Self-host Phi-3.5)
+
+on:
+  schedule:
+    # Every 6h at :45 UTC — off-slot vs all other cron workflows (which
+    # run at :00/:10/:15/:20/:25/:30). Suggestion-only, never auto-merges.
+    - cron: '45 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      max_suggestions:
+        description: 'Max repos to advise this run (default 3, hard cap 4)'
+        required: false
+        default: '3'
+
+permissions:
+  contents: write
+
+jobs:
+  helper:
+    name: Cross-repo audit via self-host Phi-3.5
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      MAX_SUGGESTIONS: ${{ github.event.inputs.max_suggestions || '3' }}
+      NOMOS_HF_TOKEN: ${{ secrets.NOMOS_HF_TOKEN }}
+      # PAT precedence: NOMOS_CROSSREPO_PAT > HF_TOKEN_GH > GITHUB_TOKEN
+      # (GITHUB_TOKEN only unlocks mon-ipad — sibling checkouts will be skipped)
+      CROSSREPO_PAT: ${{ secrets.NOMOS_CROSSREPO_PAT || secrets.HF_TOKEN_GH || secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Check out mon-ipad
+        uses: actions/checkout@v4
+        with:
+          path: mon-ipad
+          fetch-depth: 20
+
+      - name: Check out nomos-dashboard
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          repository: Nomos42/nomos-dashboard
+          path: repos/nomos-dashboard
+          token: ${{ env.CROSSREPO_PAT }}
+          fetch-depth: 20
+
+      - name: Check out nomos-nba-agent
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          repository: Nomos42/nomos-nba-agent
+          path: repos/nomos-nba-agent
+          token: ${{ env.CROSSREPO_PAT }}
+          fetch-depth: 20
+
+      - name: Check out nomos-political-alpha
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          repository: Nomos42/nomos-political-alpha
+          path: repos/nomos-political-alpha
+          token: ${{ env.CROSSREPO_PAT }}
+          fetch-depth: 20
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run self-host helper across repos
+        working-directory: mon-ipad
+        run: |
+          set -e
+          mkdir -p data/gemma4-helper
+          COUNT=0
+          CAP=${MAX_SUGGESTIONS:-3}
+          if [ "$CAP" -gt 4 ]; then CAP=4; fi
+          declare -A TARGETS=(
+            ["mon-ipad"]="$GITHUB_WORKSPACE/mon-ipad"
+            ["nomos-dashboard"]="$GITHUB_WORKSPACE/repos/nomos-dashboard"
+            ["nomos-nba-agent"]="$GITHUB_WORKSPACE/repos/nomos-nba-agent"
+            ["nomos-political-alpha"]="$GITHUB_WORKSPACE/repos/nomos-political-alpha"
+          )
+          # Stable order: mon-ipad first (always present), then siblings.
+          for NAME in mon-ipad nomos-dashboard nomos-nba-agent nomos-political-alpha; do
+            if [ "$COUNT" -ge "$CAP" ]; then
+              echo "[cap] reached $CAP suggestions — stopping"
+              break
+            fi
+            REPO_PATH="${TARGETS[$NAME]}"
+            if [ ! -d "$REPO_PATH/.git" ]; then
+              echo "[skip] $NAME: checkout missing (likely PAT scope)"
+              continue
+            fi
+            python3 scripts/gemma4/cross-repo-helper.py \
+              --repo "$REPO_PATH" \
+              --name "$NAME" \
+              --out "$GITHUB_WORKSPACE/mon-ipad/data/gemma4-helper" \
+              || echo "[warn] $NAME helper exited non-zero — continuing"
+            COUNT=$((COUNT + 1))
+          done
+          echo "[done] wrote $COUNT suggestion file(s)"
+
+      - name: Commit suggestions to mon-ipad
+        working-directory: mon-ipad
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/gemma4-helper/ 2>/dev/null || true
+          if git diff --cached --quiet 2>/dev/null; then
+            echo "[nop] no new suggestions to commit"
+            exit 0
+          fi
+          git stash --include-untracked || true
+          git pull --rebase origin main || true
+          git stash pop || true
+          git add data/gemma4-helper/ 2>/dev/null || true
+          git commit -m "data(gemma4): cross-repo suggestions $(date -u +%Y-%m-%dT%H:%MZ)" || exit 0
+          git push || echo "[warn] push failed — will retry next cycle"
