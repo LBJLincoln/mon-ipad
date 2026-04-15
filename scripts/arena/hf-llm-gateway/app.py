@@ -30,6 +30,16 @@ from datetime import datetime, timezone
 # ── MODEL REGISTRY ──────────────────────────────────────────────────────────
 # Every model we can route to, organized by provider
 MODELS = {
+    # ── SELF-HOST (T12 Phi-3.5, CPU GGUF, no quota — R10 primary for low-stakes) ──
+    "selfhost:phi-3.5": {
+        "url": "https://nomos42-nomos42-llm-cpu.hf.space/chat/completions",
+        "model": "phi-3.5-mini",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "fast",
+    },
     # ── CEREBRAS (free, ultra-fast ~2000 tok/s, 30 RPM) ──
     "cerebras:qwen-3-235b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
@@ -138,20 +148,21 @@ MODELS = {
 }
 
 # ── FALLBACK CHAINS ─────────────────────────────────────────────────────────
-# If primary model fails, try these in order
+# If primary model fails, try these in order. T12 self-host appended as last
+# resort on every chain (no quota, no rate limit — slow but never fails).
 FALLBACK_CHAINS = {
-    "cerebras:qwen-3-235b":          ["cerebras:llama3.1-8b", "openrouter:qwen3-80b:free", "google:gemini-2.5-flash"],
-    "cerebras:llama3.1-8b":          ["cerebras:qwen-3-235b", "google:gemini-2.5-flash", "openrouter:llama-3.3-70b:free"],
-    "openrouter:glm-4.5-air:free":   ["cerebras:llama3.1-8b", "openrouter:gpt-oss-20b:free", "google:gemini-3-flash"],
-    "openrouter:gpt-oss-20b:free":   ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "cerebras:llama3.1-8b"],
-    "google:gemini-2.5-flash":       ["google:gemini-3-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free"],
-    "google:gemini-3-flash":         ["google:gemini-2.5-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free"],
-    "openrouter:gemma-4-26b:free":   ["openrouter:llama-3.3-70b:free", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
-    "openrouter:nemotron-120b:free": ["openrouter:qwen3-80b:free", "cerebras:qwen-3-235b", "openrouter:llama-3.3-70b:free"],
-    "openrouter:minimax-m2.5:free":  ["openrouter:gpt-oss-20b:free", "openrouter:glm-4.5-air:free", "cerebras:llama3.1-8b"],
-    "openrouter:qwen3-80b:free":     ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:llama-3.3-70b:free"],
-    "openrouter:llama-3.3-70b:free": ["cerebras:llama3.1-8b", "openrouter:nemotron-120b:free", "google:gemini-2.5-flash"],
-    "openrouter:gpt-oss-20b:free":   ["openrouter:glm-4.5-air:free", "cerebras:qwen-3-235b", "cerebras:llama3.1-8b"],
+    "selfhost:phi-3.5":              ["cerebras:llama3.1-8b", "google:gemini-2.5-flash", "openrouter:gemma-4-26b:free"],
+    "cerebras:qwen-3-235b":          ["cerebras:llama3.1-8b", "openrouter:qwen3-80b:free", "google:gemini-2.5-flash", "selfhost:phi-3.5"],
+    "cerebras:llama3.1-8b":          ["cerebras:qwen-3-235b", "google:gemini-2.5-flash", "openrouter:llama-3.3-70b:free", "selfhost:phi-3.5"],
+    "openrouter:glm-4.5-air:free":   ["cerebras:llama3.1-8b", "openrouter:gpt-oss-20b:free", "google:gemini-3-flash", "selfhost:phi-3.5"],
+    "openrouter:gpt-oss-20b:free":   ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "cerebras:llama3.1-8b", "selfhost:phi-3.5"],
+    "google:gemini-2.5-flash":       ["google:gemini-3-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-3.5"],
+    "google:gemini-3-flash":         ["google:gemini-2.5-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-3.5"],
+    "openrouter:gemma-4-26b:free":   ["openrouter:llama-3.3-70b:free", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-3.5"],
+    "openrouter:nemotron-120b:free": ["openrouter:qwen3-80b:free", "cerebras:qwen-3-235b", "openrouter:llama-3.3-70b:free", "selfhost:phi-3.5"],
+    "openrouter:minimax-m2.5:free":  ["openrouter:gpt-oss-20b:free", "openrouter:glm-4.5-air:free", "cerebras:llama3.1-8b", "selfhost:phi-3.5"],
+    "openrouter:qwen3-80b:free":     ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:llama-3.3-70b:free", "selfhost:phi-3.5"],
+    "openrouter:llama-3.3-70b:free": ["cerebras:llama3.1-8b", "openrouter:nemotron-120b:free", "google:gemini-2.5-flash", "selfhost:phi-3.5"],
 }
 
 # ── HEALTH TRACKER ──────────────────────────────────────────────────────────
@@ -286,10 +297,32 @@ def _call_openrouter(model_cfg: dict, messages: list, max_tokens: int) -> str:
     raise ValueError(f"Unexpected response: {json.dumps(data)[:200]}")
 
 
+def _call_selfhost(model_cfg: dict, messages: list, max_tokens: int) -> str:
+    """T12 self-host (Nomos42/nomos42-llm-cpu). No quota, ~5-8s/call on CPU."""
+    key = os.environ.get(model_cfg["key_env"], "")
+    headers = {"Content-Type": "application/json"}
+    if key:
+        headers["Authorization"] = f"Bearer {key}"
+    resp = requests.post(
+        model_cfg["url"],
+        headers=headers,
+        json={"model": model_cfg["model"], "messages": messages, "max_tokens": max_tokens, "temperature": 0.7},
+        timeout=60,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    if "choices" in data and data["choices"]:
+        return data["choices"][0]["message"]["content"]
+    if "content" in data:
+        return data["content"]
+    raise ValueError(f"Self-host unexpected response: {json.dumps(data)[:200]}")
+
+
 PROVIDER_CALLERS = {
     "cerebras": _call_cerebras,
     "google": _call_google,
     "openrouter": _call_openrouter,
+    "selfhost": _call_selfhost,
 }
 
 
