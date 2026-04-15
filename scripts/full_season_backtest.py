@@ -353,6 +353,44 @@ def simulate_betting(predictions, external_odds=None):
     # Average edge on placed bets
     avg_edge = sum(t['edge'] for t in trades) / len(trades) if trades else 0
 
+    # Monthly breakdown
+    monthly = defaultdict(lambda: {"bets": 0, "wins": 0, "losses": 0, "pnl": 0.0, "gross_wins": 0.0, "gross_losses": 0.0})
+    for t in trades:
+        month_key = t['date'][:7]  # "2025-10"
+        m = monthly[month_key]
+        m['bets'] += 1
+        if t['won']:
+            m['wins'] += 1
+            m['gross_wins'] += t['pnl']
+        else:
+            m['losses'] += 1
+            m['gross_losses'] += abs(t['pnl'])
+        m['pnl'] += t['pnl']
+
+    monthly_results = []
+    running_bankroll = INITIAL_BANKROLL
+    for month_key in sorted(monthly.keys()):
+        m = monthly[month_key]
+        running_bankroll += m['pnl']
+        wr = m['wins'] / m['bets'] * 100 if m['bets'] > 0 else 0
+        pf = m['gross_wins'] / m['gross_losses'] if m['gross_losses'] > 0 else None
+        monthly_results.append({
+            "month": month_key,
+            "bets": m['bets'],
+            "wins": m['wins'],
+            "losses": m['losses'],
+            "win_rate": round(wr, 1),
+            "pnl": round(m['pnl'], 2),
+            "profit_factor": round(pf, 2) if pf is not None else None,
+            "bankroll": round(running_bankroll, 2),
+        })
+
+    # CLV proxy: average edge realized (positive = beating the closing line)
+    winning_edges = [t['edge'] for t in trades if t['won']]
+    losing_edges = [t['edge'] for t in trades if not t['won']]
+    avg_winning_edge = sum(winning_edges) / len(winning_edges) if winning_edges else 0
+    avg_losing_edge = sum(losing_edges) / len(losing_edges) if losing_edges else 0
+
     return {
         "initial_bankroll": INITIAL_BANKROLL,
         "final_bankroll": round(bankroll, 2),
@@ -371,8 +409,11 @@ def simulate_betting(predictions, external_odds=None):
         "avg_edge": round(avg_edge, 4),
         "brier": round(brier, 5) if brier else None,
         "brier_n": len(brier_scores),
+        "avg_winning_edge": round(avg_winning_edge, 4),
+        "avg_losing_edge": round(avg_losing_edge, 4),
         "trades": trades,
         "daily_results": daily_results,
+        "monthly_results": monthly_results,
         "strategy": f"Dual-Side Edge Scan + Quarter-Kelly (f={KELLY_FRACTION}) + Portfolio Cap ({MAX_PORTFOLIO_EXPOSURE*100}%) + Real Market Odds",
     }
 
