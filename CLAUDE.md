@@ -1,12 +1,12 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v20 — Department Forge (9 depts) + Trading Floor v5 (10 real LLM agents) + 16 Evolution Islands | Updated: 2026-04-15
+> Architecture v20 — Department Forge (9 depts) + Trading Floor v3 (11 real LLM agents) + 16 Evolution Islands | Updated: 2026-04-15
 
 ## Mission
 Build the best NBA prediction AI in the world.
 **Best:** Brier 0.21514 (Colab TabICL, 186f, iter 129) | Fleet best: 0.22085 (S17, gen 524) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
-**NBA TF v3 (day-bucket, 175/175 days, Apr 14):** 9/10 agents bankrupted by stake-sizing bug. Best: qwen-arb +10% ($110.04). llama-contra peaked +802% ($902) then crashed to $2.37 (−99.7% DD). Stake-fix shipped commit `0893bb83` but NOT YET deployed to HF subtree.
+**NBA TF v3 (day-bucket, Apr 15 fresh run, 11 agents):** Stake-fix DEPLOYED (half-Kelly 5% cap + min edge 0.03 + current bankroll). Gemini parser FIXED (thinkingBudget=0, max_tokens 4096, all-parts join — gemini-anl/gemini-tact were 0 bets across 27 days, now betting on day 2). +1 NVIDIA Nemotron-120B agent (4 providers: Cerebras / Google / Mistral / OpenRouter). HF sha `9dca67ed`. Mutation actuator unblocked (gap_threshold 0.20→0.12).
 **Political TF (Apr 14 snapshot):** 50 days / 834 events processed, 0 trades by 11 agents (parser bug). Prior claim "llama-contra +223.5%" was from mid-run, now stale.
 
 ## Nomos42 Ecosystem
@@ -190,28 +190,31 @@ and REASONS about what to bet. Full 2025-26 season (1257 games).
 
 Architecture: TradingAgents (arXiv 2412.20138) + Prediction Arena (2604.07355) + DMAD anti-groupthink
 
-### NBA Traders (10 AI Agents — all real LLM calls)
-| # | Agent | Model | Provider | Personality | Risk |
-|---|-------|-------|----------|-------------|------|
-| T1 | Gemini Flash | Gemini 2.5 Flash | Google (key 1) | Analytical | 0.60 |
-| T2 | Gemini 3 Flash | Gemini 3 Flash Preview | Google (key 2) | Diversified | 0.50 |
-| T3 | Qwen 3 235B | Qwen 3 235B-A22B | Cerebras | Quantitative | 0.55 |
-| T4 | Llama 3.1 8B | Llama 3.1 8B | Cerebras | Contrarian | 0.65 |
-| T5 | GLM 4.5 Air | GLM 4.5 Air | OpenRouter (free) | Conservative | 0.40 |
-| T6 | GPT-OSS 20B | GPT-OSS 20B | OpenRouter (free) | Aggressive | 0.70 |
-| T7 | Gemma 4 26B | Gemma 4 26B | OpenRouter (free) | Arbitrage | 0.75 |
-| T8 | Nemotron 120B | Nemotron 3 Super 120B | OpenRouter (free) | Tactical | 0.60 |
-| T9 | MiniMax M2.5 | MiniMax M2.5 | OpenRouter (free) | Theoretical | 0.35 |
-| T10 | Qwen3 80B | Qwen3 Next 80B | OpenRouter (free) | Ensemble | 0.50 |
+### NBA Traders (11 AI Agents — all real LLM calls, day-bucket-v3, verified live 2026-04-15)
+| # | trader_id | Model | Provider | Personality | Risk |
+|---|-----------|-------|----------|-------------|------|
+| T1 | qwen-quant | Qwen 3 235B-A22B | Cerebras | quantitative | 0.55 |
+| T2 | qwen-arb | Qwen 3 235B-A22B | Cerebras | arbitrage | 0.65 |
+| T3 | llama-contra | Llama 3.1 8B | Cerebras | contrarian | 0.55 |
+| T4 | gemini-anl | Gemini 3 Flash Preview | Google (key 2) | analytical | 0.55 |
+| T5 | gemini-tact | Gemini 3 Flash Preview | Google (key 2) | tactical | 0.60 |
+| T6 | mistral-large | mistral-large-latest | Mistral | ensemble | 0.50 |
+| T7 | mistral-medium | mistral-medium-latest | Mistral | diversified | 0.45 |
+| T8 | mistral-small | mistral-small-latest | Mistral | conservative | 0.35 |
+| T9 | mistral-nemo | open-mistral-nemo | Mistral | aggressive | 0.70 |
+| T10 | mistral-ministral | ministral-8b-latest | Mistral | theoretical | 0.35 |
+| T11 | nemotron-120b | NVIDIA Nemotron-3-Super-120B | OpenRouter (free) | chainthought | 0.55 |
 
-### Providers (verified 2026-04-13)
-| Provider | Status | Models | Cost |
-|----------|--------|--------|------|
-| Cerebras | WORKING | qwen-3-235b, llama3.1-8b | Free, 30 RPM |
-| Google Gemini | WORKING | gemini-2.5-flash (key 1), gemini-3-flash-preview (key 2) | Free tier, 14 RPM |
-| OpenRouter | FREE ONLY | gemma-4-26b, nemotron-120b, minimax-m2.5, qwen3-80b, glm-4.5-air, gpt-oss-20b | Free tier, 20 RPM |
+### Providers (verified 2026-04-15)
+| Provider | Status | Models in use | Notes |
+|----------|--------|---------------|-------|
+| Cerebras | WORKING | qwen-3-235b-a22b-instruct-2507, llama3.1-8b | Free, 30 RPM. Other models (gpt-oss-120b, zai-glm-4.7) listed but 404 on POST. |
+| Google Gemini | WORKING (parser fixed) | gemini-3-flash-preview (key 2) | Free tier, 14 RPM. **MUST set thinkingBudget=0** or thinking eats all tokens. |
+| Mistral | WORKING | large/medium/small/nemo/ministral-8b | Free tier, 20 RPM |
+| OpenRouter | FREE-LIMITED | nemotron-3-super-120b:free | All other free models 429 across 3 keys (qwen3-80b, llama-3.3-70b, glm-4.5-air, hermes-3-405b) |
+| Kimi (Moonshot) | DEAD | — | KIMI_API_KEY 401 invalid |
+| Gemini 2.5 Pro | DEAD | — | Key 2 forces thinking, key 3 API disabled |
 | HF Inference | DEAD | — | Monthly credits exhausted |
-| LLM Gateway | DEPLOYED | All 10 models via centralized proxy | HF Space: LBJLincoln26/llm-gateway |
 
 ### HF Space (HF-First Architecture)
 PRIMARY engine: `LBJLincoln26/nba-llm-trading-floor` (FastAPI + Gradio, ~4-6h for full season)
