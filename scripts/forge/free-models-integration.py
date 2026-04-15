@@ -140,7 +140,7 @@ MODELS["gemma"] = MODELS["gemma3"]
 HF_API_BASE = "https://api-inference.huggingface.co/models"
 
 # Account token env vars (try in order until one works)
-TOKEN_ENV_VARS = ["HF_TOKEN", "HF_TOKEN_2", "HF_TOKEN_3"]
+TOKEN_ENV_VARS = ["HF_TOKEN", "HF_TOKEN_NBA", "HF_TOKEN_LLM"]
 
 # Reasonable defaults for council queries (short, decisive answers)
 DEFAULT_MAX_TOKENS = 512
@@ -161,10 +161,10 @@ def get_token(provider: str = "hf", prefer_env: Optional[str] = None) -> str:
 
     Provider token env vars:
       cerebras  → CEREBRAS_API_KEY
-      scaleway  → HF_TOKEN / HF_TOKEN_2 / HF_TOKEN_3  (Scaleway via HF Inference Providers)
+      scaleway  → HF_TOKEN / HF_TOKEN_NBA / HF_TOKEN_LLM  (Scaleway via HF Inference Providers)
       groq      → GROQ_API_KEY
       openrouter→ OPENROUTER_API_KEY
-      hf        → HF_TOKEN / HF_TOKEN_2 / HF_TOKEN_3
+      hf        → HF_TOKEN / HF_TOKEN_NBA / HF_TOKEN_LLM
     """
     if prefer_env:
         tok = os.environ.get(prefer_env, "").strip()

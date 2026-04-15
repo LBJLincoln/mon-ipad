@@ -132,8 +132,8 @@ check_zerogpu() {
 
     local tokens=0
     [[ -n "${HF_TOKEN:-}" ]] && tokens=$((tokens + 1)) || true
-    [[ -n "${HF_TOKEN_2:-}" ]] && tokens=$((tokens + 1)) || true
-    [[ -n "${HF_TOKEN_3:-}" ]] && tokens=$((tokens + 1)) || true
+    [[ -n "${HF_TOKEN_NBA:-}" ]] && tokens=$((tokens + 1)) || true
+    [[ -n "${HF_TOKEN_LLM:-}" ]] && tokens=$((tokens + 1)) || true
 
     if $cron_exists && [[ $tokens -gt 0 ]]; then
         PLATFORM_STATUS[zerogpu]="OK (cron + ${tokens} tokens)"

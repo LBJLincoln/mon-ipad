@@ -140,19 +140,19 @@ run_zerogpu() {
     # Verify tokens
     local has_token=0
     [[ -n "${HF_TOKEN:-}" ]] && has_token=1
-    [[ -n "${HF_TOKEN_2:-}" ]] && has_token=1
-    [[ -n "${HF_TOKEN_3:-}" ]] && has_token=1
+    [[ -n "${HF_TOKEN_NBA:-}" ]] && has_token=1
+    [[ -n "${HF_TOKEN_LLM:-}" ]] && has_token=1
 
     if (( has_token == 0 )); then
-        log_error "No HF tokens available (HF_TOKEN, HF_TOKEN_2, HF_TOKEN_3)"
+        log_error "No HF tokens available (HF_TOKEN, HF_TOKEN_NBA, HF_TOKEN_LLM)"
         log_error "Check ${ENV_FILE} has these tokens set"
         return 1
     fi
 
     local token_status=""
     [[ -n "${HF_TOKEN:-}" ]] && token_status+="HF_TOKEN=SET "
-    [[ -n "${HF_TOKEN_2:-}" ]] && token_status+="HF_TOKEN_2=SET "
-    [[ -n "${HF_TOKEN_3:-}" ]] && token_status+="HF_TOKEN_3=SET "
+    [[ -n "${HF_TOKEN_NBA:-}" ]] && token_status+="HF_TOKEN_NBA=SET "
+    [[ -n "${HF_TOKEN_LLM:-}" ]] && token_status+="HF_TOKEN_LLM=SET "
     log "Tokens: ${token_status}"
 
     local script="${SCRIPTS_DIR}/zerogpu-burst.py"

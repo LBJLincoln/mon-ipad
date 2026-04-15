@@ -313,7 +313,7 @@ def check_platform_available(platform: str, state: dict) -> dict:
     if platform == "zerogpu":
         # Check if tokens are available
         has_token = False
-        for env in ["HF_TOKEN", "HF_TOKEN_2", "HF_TOKEN_3"]:
+        for env in ["HF_TOKEN", "HF_TOKEN_NBA", "HF_TOKEN_LLM"]:
             if os.environ.get(env):
                 has_token = True
                 break

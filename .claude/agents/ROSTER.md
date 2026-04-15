@@ -8,22 +8,22 @@ which repo it can write to. Orchestrator dispatches — never duplicates.
 
 | Account | Token env | Role | Spaces |
 |---|---|---|---|
-| **LBJLincoln26** | `HF_TOKEN_2` | 🏀 NBA evolution | S10 S11 S12 S13 S14 S15 S16 S17 |
+| **LBJLincoln26** | `HF_TOKEN_NBA` | 🏀 NBA evolution | S10 S11 S12 S13 S14 S15 S16 S17 |
 | **LBJLincoln** | `HF_TOKEN` | 🗳 Political evolution | P1 P2 P3 P4 P5 P6 P7 P8 |
-| **Nomos42** | `HF_TOKEN_3` | 🧠 LLM + TFs + pixel | llm-gateway, gemma4-chat, qwen35-chat, cpu-gemma4, nba-TF, political-TF, pixel-world, langfuse |
-| **TESTforge42** | `HF_TOKEN_FORGE` | ⚙️ Councils + evo overflow | D1 D2 D3 D4 D5 D6 D7 D8 (D9 → GH Action) |
+| **Nomos42** | `HF_TOKEN_LLM` | 🧠 LLM + TFs + pixel | llm-gateway, gemma4-chat, qwen35-chat, cpu-gemma4, nba-TF, political-TF, pixel-world, langfuse |
+| **TESTforge42** | `HF_TOKEN_COUNCILS` | ⚙️ Councils + evo overflow | D1 D2 D3 D4 D5 D6 D7 D8 (D9 → GH Action) |
 
 ## New agent roster (10 agents)
 
 | # | Agent | Replaces | Repo | Cred env | Cadence |
 |---|---|---|---|---|---|
 | 1 | **brain-orchestrator** | `nba-brain` | mon-ipad | all HF tokens (read-only) | `:00` every 4h |
-| 2 | **nba-fleet-ops** | — (split from `evolution-optimizer`) | mon-ipad | `HF_TOKEN_2` | `:10` every 4h |
+| 2 | **nba-fleet-ops** | — (split from `evolution-optimizer`) | mon-ipad | `HF_TOKEN_NBA` | `:10` every 4h |
 | 3 | **political-fleet-ops** | — (new) | nomos-political-alpha | `HF_TOKEN` | `:15` every 4h |
-| 4 | **llm-fleet-ops** | — (new) | mon-ipad | `HF_TOKEN_3` | `:20` every 6h |
-| 5 | **councils-ops** | — (split from `nba-brain`) | mon-ipad | `HF_TOKEN_FORGE` | `:25` every 4h |
+| 4 | **llm-fleet-ops** | — (new) | mon-ipad | `HF_TOKEN_LLM` | `:20` every 6h |
+| 5 | **councils-ops** | — (split from `nba-brain`) | mon-ipad | `HF_TOKEN_COUNCILS` | `:25` every 4h |
 | 6 | **market-scanner** | `market-analyst` | nomos-nba-agent | `ODDS_API_KEY` | every 30 min |
-| 7 | **picks-publisher** | — (new) | nomos-nba-agent | `NOMOS_NBA_BOT_TOKEN`, `STRIPE_SECRET_KEY` | daily 18:00 UTC |
+| 7 | **picks-publisher** | — (new) | nomos-nba-agent | `BOT_TOKEN_NBA`, `STRIPE_SECRET_KEY` | daily 18:00 UTC |
 | 8 | **research-scout** | merges `karpathy-researcher` + `research-analyst` + `repo-scout` | mon-ipad | `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`, `EXA_API_KEY` | daily 06:00 UTC |
 | 9 | **feature-lab** | merges `feature-engineer` + `karpathy-feature-eng` | mon-ipad | `MISTRAL_API_KEY`, `GOOGLE_API_KEY` | every 12h |
 | 10 | **monetization-ops** | — (new, deadline-critical) | nomos-dashboard | `STRIPE_SECRET_KEY`, `WHOP_API_KEY`, `LEMON_SQUEEZY_API_KEY` | daily 09:00 UTC |

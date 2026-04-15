@@ -13,7 +13,7 @@ Providers used:
 
 Environment secrets (set in HF Space settings):
   GOOGLE_API_KEY, GOOGLE_API_KEY_2   — Gemini
-  HF_TOKEN, HF_TOKEN_2, HF_TOKEN_3  — HF Inference
+  HF_TOKEN, HF_TOKEN_NBA, HF_TOKEN_LLM  — HF Inference
   COHERE_API_KEY                     — Cohere
   CEREBRAS_API_KEY                   — Cerebras
   GIT_REPO_URL                       — (optional) git push results back

@@ -49,7 +49,7 @@ FAIL=0
 
 for SPACE in $SPACES; do
     log "  Pushing to Nomos42/$SPACE..."
-    if git push "https://user:${HF_TOKEN_3}@huggingface.co/spaces/Nomos42/$SPACE" hf-deploy:main --force 2>>"$LOG"; then
+    if git push "https://user:${HF_TOKEN_LLM}@huggingface.co/spaces/Nomos42/$SPACE" hf-deploy:main --force 2>>"$LOG"; then
         log "  ✓ $SPACE deployed"
         SUCCESS=$((SUCCESS + 1))
     else

@@ -46,9 +46,9 @@ VM_DATA_SERVER = "http://nomos42.duckdns.org:7860"
 
 TELEGRAM_BOTS = {
     "Nomos42Bot":          "TELEGRAM_BOT_TOKEN",
-    "NomosNBABot":         "NOMOS_NBA_BOT_TOKEN",
-    "StupidPoliticalBot":  "STUPID_POLITICAL_BOT_TOKEN",
-    "Forge42Bot":          "FORGE_BOT_TOKEN",
+    "NomosNBABot":         "BOT_TOKEN_NBA",
+    "StupidPoliticalBot":  "BOT_TOKEN_POL",
+    "Forge42Bot":          "BOT_TOKEN_FORGE",
 }
 
 # ---------------------------------------------------------------------------

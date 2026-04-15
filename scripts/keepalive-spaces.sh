@@ -19,7 +19,7 @@ fi
 # hf_space_id format: "owner/repo-name" e.g. "LBJLincoln/political-alpha-3"
 # Tries all available HF tokens in order until one returns 200 from restart API.
 # NOTE: restart requires a token with write access to the space owner account.
-#   Nomos42 spaces → HF_TOKEN_3  |  LBJLincoln → HF_TOKEN  |  LBJLincoln26 → HF_TOKEN_2
+#   Nomos42 spaces → HF_TOKEN_LLM  |  LBJLincoln → HF_TOKEN  |  LBJLincoln26 → HF_TOKEN_NBA
 #
 # BUG FIX (cycle 82): was only restarting on 503. Added 502/404/000 (timeout).
 # P3/P4 were returning timeout/404 and NEVER got restarted. Fixed.
@@ -42,7 +42,7 @@ ping_or_restart() {
 
     if [ "$should_restart" = "1" ] && [ -n "$space_id" ]; then
         echo "  [RESTART] $label returned $code — triggering HF restart..."
-        for tok in "${HF_TOKEN_3:-}" "${HF_TOKEN:-}" "${HF_TOKEN_2:-}" "${HF_TOKEN_FORGE:-}"; do
+        for tok in "${HF_TOKEN_LLM:-}" "${HF_TOKEN:-}" "${HF_TOKEN_NBA:-}" "${HF_TOKEN_COUNCILS:-}"; do
             [ -z "$tok" ] && continue
             restart_resp=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
                 "https://huggingface.co/api/spaces/${space_id}/restart" \

@@ -9,7 +9,7 @@
 #   ./scripts/deploy/deploy-llm-space.sh [ACCOUNT]
 #   ACCOUNT: nomos42 (default) | lbjlincoln | lbjlincoln26
 #
-# Prerequisites: huggingface-cli installed + logged in (or HF_TOKEN_3 set)
+# Prerequisites: huggingface-cli installed + logged in (or HF_TOKEN_LLM set)
 #
 # The Space runs Qwen3-1.7B Q4_K_M via llama.cpp for ~12 tok/s on CPU.
 # ~512 tok response takes ~40s. Rate: ~4 req/min, RPD ~288.
@@ -23,15 +23,15 @@ DEPLOY_DIR="$(dirname "$0")/hf-llm-space"
 
 # Pick the right HF token based on account
 case "$ACCOUNT" in
-  nomos42)      HF_TOKEN_USE="${HF_TOKEN_3:-${HF_TOKEN:-}}" ;;
+  nomos42)      HF_TOKEN_USE="${HF_TOKEN_LLM:-${HF_TOKEN:-}}" ;;
   lbjlincoln)   HF_TOKEN_USE="${HF_TOKEN:-}" ;;
-  lbjlincoln26) HF_TOKEN_USE="${HF_TOKEN_2:-}" ;;
+  lbjlincoln26) HF_TOKEN_USE="${HF_TOKEN_NBA:-}" ;;
   *)            echo "Unknown account: $ACCOUNT"; exit 1 ;;
 esac
 
 if [ -z "$HF_TOKEN_USE" ]; then
   echo "ERROR: No HF token found for account $ACCOUNT"
-  echo "Set HF_TOKEN_3 (nomos42), HF_TOKEN (lbjlincoln), or HF_TOKEN_2 (lbjlincoln26)"
+  echo "Set HF_TOKEN_LLM (nomos42), HF_TOKEN (lbjlincoln), or HF_TOKEN_NBA (lbjlincoln26)"
   exit 1
 fi
 

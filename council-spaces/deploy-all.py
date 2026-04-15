@@ -54,7 +54,7 @@ DEPTS = [
     },
     {
         "dept_id": "d3", "name": "evolution",
-        "account": "LBJLincoln26", "token_env": "HF_TOKEN_2",
+        "account": "LBJLincoln26", "token_env": "HF_TOKEN_NBA",
         "emoji": "🧬",
         "mission": "Optimize genetic algorithm parameters across 10 NBA evolution islands.",
         "color_from": "green", "color_to": "yellow",
@@ -62,7 +62,7 @@ DEPTS = [
     },
     {
         "dept_id": "d4", "name": "product",
-        "account": "LBJLincoln26", "token_env": "HF_TOKEN_2",
+        "account": "LBJLincoln26", "token_env": "HF_TOKEN_NBA",
         "emoji": "📦",
         "mission": "Improve user-facing products: dashboard, Telegram bot, Bloomberg terminal.",
         "color_from": "yellow", "color_to": "red",
@@ -70,7 +70,7 @@ DEPTS = [
     },
     {
         "dept_id": "d5", "name": "business",
-        "account": "Nomos42", "token_env": "HF_TOKEN_3",
+        "account": "Nomos42", "token_env": "HF_TOKEN_LLM",
         "emoji": "💼",
         "mission": "Grow revenue, track bankroll performance, optimize bet sizing. Stripe already integrated.",
         "color_from": "indigo", "color_to": "purple",
@@ -78,7 +78,7 @@ DEPTS = [
     },
     {
         "dept_id": "d6", "name": "evaluation",
-        "account": "Nomos42", "token_env": "HF_TOKEN_3",
+        "account": "Nomos42", "token_env": "HF_TOKEN_LLM",
         "emoji": "📊",
         "mission": "Audit prediction quality, calibration, and catch anomalies.",
         "color_from": "red", "color_to": "yellow",
@@ -86,7 +86,7 @@ DEPTS = [
     },
     {
         "dept_id": "d7", "name": "infra",
-        "account": "TESTforge42", "token_env": "HF_TOKEN_FORGE",
+        "account": "TESTforge42", "token_env": "HF_TOKEN_COUNCILS",
         "emoji": "\U0001f3d7\ufe0f",
         "mission": "Monitor and maintain all 10 HF evolution islands, VM, and crons.",
         "color_from": "gray", "color_to": "green",
@@ -94,7 +94,7 @@ DEPTS = [
     },
     {
         "dept_id": "d8", "name": "finance",
-        "account": "TESTforge42", "token_env": "HF_TOKEN_FORGE",
+        "account": "TESTforge42", "token_env": "HF_TOKEN_COUNCILS",
         "emoji": "💰",
         "mission": "Track bankroll, ROI, burn rate, and financial health.",
         "color_from": "yellow", "color_to": "green",
@@ -102,7 +102,7 @@ DEPTS = [
     },
     {
         "dept_id": "d9", "name": "cross-repo",
-        "account": "TESTforge42", "token_env": "HF_TOKEN_FORGE",
+        "account": "TESTforge42", "token_env": "HF_TOKEN_COUNCILS",
         "emoji": "🔗",
         "mission": "Ensure consistency across all 4 repos: engine parity, cron sync, docs.",
         "color_from": "purple", "color_to": "blue",
@@ -237,8 +237,8 @@ def deploy_space(dept: dict, dry_run: bool = False) -> bool:
 
     # HF Token for free inference via HF Router
     # Use NOMOS_HF_TOKEN because HF_TOKEN is reserved/auto-set on Spaces
-    # Use HF_TOKEN_2 (LBJLincoln26) which has free credits available
-    hf_token_for_inference = os.environ.get("HF_TOKEN_2", "") or os.environ.get("HF_TOKEN_FORGE", "")
+    # Use HF_TOKEN_NBA (LBJLincoln26) which has free credits available
+    hf_token_for_inference = os.environ.get("HF_TOKEN_NBA", "") or os.environ.get("HF_TOKEN_COUNCILS", "")
     if hf_token_for_inference:
         secrets["NOMOS_HF_TOKEN"] = hf_token_for_inference
 

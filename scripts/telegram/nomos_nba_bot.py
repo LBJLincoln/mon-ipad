@@ -3,7 +3,7 @@
 @NomosNBABot — SaaS bot for NBA Quant subscribers.
 Tier-gated: free/scout/edge/whale. Serves NBA picks, bankroll, models, props.
 
-Env: NOMOS_NBA_BOT_TOKEN
+Env: BOT_TOKEN_NBA
 Users: data/forge-users/nba-users.json
 """
 
@@ -27,7 +27,7 @@ logging.basicConfig(
 )
 log = logging.getLogger("nba")
 
-TOKEN = os.environ.get("NOMOS_NBA_BOT_TOKEN", "")
+TOKEN = os.environ.get("BOT_TOKEN_NBA", "")
 DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "nba-agent"
 USERS_FILE = Path(__file__).resolve().parent.parent.parent / "data" / "forge-users" / "nba-users.json"
 
@@ -305,7 +305,7 @@ def handle(chat_id, mid, tid, username, text):
 
 def main():
     if not TOKEN:
-        log.error("Set NOMOS_NBA_BOT_TOKEN"); sys.exit(1)
+        log.error("Set BOT_TOKEN_NBA"); sys.exit(1)
     me = tg("getMe")
     if me.get("ok"):
         log.info(f"Started @{me['result'].get('username', '?')}")

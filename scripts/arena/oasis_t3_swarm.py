@@ -9,7 +9,7 @@ contrarian / momentum / mean-reverter / etc) and a different free-HF backbone.
 
 Dependencies:
   - vendor/oasis must be cloned (run scripts/vendor/clone-vendor.sh)
-  - HF_TOKEN (or HF_TOKEN_2/3/FORGE) for the inference router
+  - HF_TOKEN (or HF_TOKEN_NBA/3/FORGE) for the inference router
   - Python 3.11 with the standard mon-ipad venv
 
 Usage:

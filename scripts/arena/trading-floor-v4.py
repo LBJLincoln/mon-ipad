@@ -286,7 +286,7 @@ BANKROLL_THRESHOLDS = {
 #   - pol_approach: political signal interpretation style
 #   - etf_sectors: sector focus for ETF trading
 # TRADER POOL — refactored 2026-04-07 from paid APIs (Gemini/Grok/OpenAI/OpenRouter)
-# to FREE HF models. We have 4 HF accounts (HF_TOKEN, HF_TOKEN_2/3, HF_TOKEN_FORGE)
+# to FREE HF models. We have 4 HF accounts (HF_TOKEN, HF_TOKEN_NBA/3, HF_TOKEN_COUNCILS)
 # so all of these are reachable via the HF Inference Router with no per-request cost.
 # Dict KEYS preserved (gemini/openrouter/claude/codex/grok) so existing state files
 # under data/arena/traders/{key}-state.json keep accumulating bankroll history.

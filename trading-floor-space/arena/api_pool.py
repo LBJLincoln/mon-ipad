@@ -278,7 +278,7 @@ class APIPool:
 
         # --- HUGGINGFACE (4 tokens) ---
         hf_keys = []
-        for var in ["HF_TOKEN", "HF_TOKEN_2", "HF_TOKEN_3", "HF_TOKEN_USERS"]:
+        for var in ["HF_TOKEN", "HF_TOKEN_NBA", "HF_TOKEN_LLM", "HF_TOKEN_COUNCILS"]:
             val = os.environ.get(var, "")
             if val:
                 hf_keys.append(val)

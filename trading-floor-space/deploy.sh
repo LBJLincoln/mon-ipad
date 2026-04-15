@@ -68,7 +68,7 @@ done
 
 # Step 4: Push to HF (only if HF_TOKEN is set)
 echo "[4/4] Pushing to HuggingFace..."
-if [ -z "${HF_TOKEN:-}" ] && [ -z "${HF_TOKEN_3:-}" ]; then
+if [ -z "${HF_TOKEN:-}" ] && [ -z "${HF_TOKEN_LLM:-}" ]; then
     echo "  No HF_TOKEN set. To push manually:"
     echo "    cd $SCRIPT_DIR"
     echo "    git init"
@@ -80,7 +80,7 @@ if [ -z "${HF_TOKEN:-}" ] && [ -z "${HF_TOKEN_3:-}" ]; then
     echo "  Or use huggingface-cli:"
     echo "    huggingface-cli upload $SPACE_NAME $SCRIPT_DIR . --repo-type=space"
 else
-    TOKEN="${HF_TOKEN_3:-$HF_TOKEN}"
+    TOKEN="${HF_TOKEN_LLM:-$HF_TOKEN}"
     echo "  Using HF token to upload..."
 
     # Check if huggingface-cli is available

@@ -5,20 +5,20 @@
 #   bash scripts/deploy-all-spaces.sh
 #
 # NBA Spaces (token mapping):
-#   S10 Nomos42/nba-quant          → HF_TOKEN_3
-#   S11 Nomos42/nba-quant-2        → HF_TOKEN_3
-#   S12 Nomos42/nba-evo-3          → HF_TOKEN_3
-#   S13 Nomos42/nba-evo-4          → HF_TOKEN_3
-#   S14 Nomos42/nba-evo-5          → HF_TOKEN_3
-#   S15 Nomos42/nba-evo-6          → HF_TOKEN_3
-#   S16 LBJLincoln26/nba-evo-s16   → HF_TOKEN_2
-#   S17 LBJLincoln26/nba-evo-s17   → HF_TOKEN_2
-#   S18 TESTforge42/nba-evo-s18    → HF_TOKEN_FORGE
-#   S19 TESTforge42/nba-evo-s19    → HF_TOKEN_FORGE
+#   S10 Nomos42/nba-quant          → HF_TOKEN_LLM
+#   S11 Nomos42/nba-quant-2        → HF_TOKEN_LLM
+#   S12 Nomos42/nba-evo-3          → HF_TOKEN_LLM
+#   S13 Nomos42/nba-evo-4          → HF_TOKEN_LLM
+#   S14 Nomos42/nba-evo-5          → HF_TOKEN_LLM
+#   S15 Nomos42/nba-evo-6          → HF_TOKEN_LLM
+#   S16 LBJLincoln26/nba-evo-s16   → HF_TOKEN_NBA
+#   S17 LBJLincoln26/nba-evo-s17   → HF_TOKEN_NBA
+#   S18 TESTforge42/nba-evo-s18    → HF_TOKEN_COUNCILS
+#   S19 TESTforge42/nba-evo-s19    → HF_TOKEN_COUNCILS
 #
 # Political Spaces:
-#   P1 Nomos42/political-alpha      → HF_TOKEN_3
-#   P2 Nomos42/political-alpha-2    → HF_TOKEN_3
+#   P1 Nomos42/political-alpha      → HF_TOKEN_LLM
+#   P2 Nomos42/political-alpha-2    → HF_TOKEN_LLM
 #   P3 LBJLincoln/political-alpha-3 → HF_TOKEN
 #   P4 LBJLincoln/political-alpha-4 → HF_TOKEN
 ################################################################################
@@ -40,7 +40,7 @@ else
 fi
 
 # Verify required tokens
-for var in HF_TOKEN HF_TOKEN_2 HF_TOKEN_3; do
+for var in HF_TOKEN HF_TOKEN_NBA HF_TOKEN_LLM; do
     if [ -z "${!var:-}" ]; then
         echo "WARNING: $var not set — spaces using that token will be skipped"
     else
@@ -124,21 +124,21 @@ print('  Upload OK')
 }
 
 echo "── NBA Islands ──"
-deploy_nba "Nomos42/nba-quant"    "exploitation"          "HF_TOKEN_3"
-deploy_nba "Nomos42/nba-quant-2"  "exploration"           "HF_TOKEN_3"
-deploy_nba "Nomos42/nba-evo-3"    "extra_trees_specialist" "HF_TOKEN_3"
-deploy_nba "Nomos42/nba-evo-4"    "catboost_specialist"   "HF_TOKEN_3"
-deploy_nba "Nomos42/nba-evo-5"    "lightgbm_specialist"   "HF_TOKEN_3"
-deploy_nba "Nomos42/nba-evo-6"    "wide_search"           "HF_TOKEN_3"
-deploy_nba "LBJLincoln26/nba-evo-s16" "exploration"       "HF_TOKEN_2"
-deploy_nba "LBJLincoln26/nba-evo-s17" "wide_search"       "HF_TOKEN_2"
-deploy_nba "TESTforge42/nba-evo-s18"  "catboost_specialist" "HF_TOKEN_FORGE"
-deploy_nba "TESTforge42/nba-evo-s19"  "wide_search"         "HF_TOKEN_FORGE"
+deploy_nba "Nomos42/nba-quant"    "exploitation"          "HF_TOKEN_LLM"
+deploy_nba "Nomos42/nba-quant-2"  "exploration"           "HF_TOKEN_LLM"
+deploy_nba "Nomos42/nba-evo-3"    "extra_trees_specialist" "HF_TOKEN_LLM"
+deploy_nba "Nomos42/nba-evo-4"    "catboost_specialist"   "HF_TOKEN_LLM"
+deploy_nba "Nomos42/nba-evo-5"    "lightgbm_specialist"   "HF_TOKEN_LLM"
+deploy_nba "Nomos42/nba-evo-6"    "wide_search"           "HF_TOKEN_LLM"
+deploy_nba "LBJLincoln26/nba-evo-s16" "exploration"       "HF_TOKEN_NBA"
+deploy_nba "LBJLincoln26/nba-evo-s17" "wide_search"       "HF_TOKEN_NBA"
+deploy_nba "TESTforge42/nba-evo-s18"  "catboost_specialist" "HF_TOKEN_COUNCILS"
+deploy_nba "TESTforge42/nba-evo-s19"  "wide_search"         "HF_TOKEN_COUNCILS"
 
 echo ""
 echo "── Political Islands ──"
-deploy_political "Nomos42/political-alpha"    "HF_TOKEN_3"
-deploy_political "Nomos42/political-alpha-2"  "HF_TOKEN_3"
+deploy_political "Nomos42/political-alpha"    "HF_TOKEN_LLM"
+deploy_political "Nomos42/political-alpha-2"  "HF_TOKEN_LLM"
 deploy_political "LBJLincoln/political-alpha-3" "HF_TOKEN"
 deploy_political "LBJLincoln/political-alpha-4" "HF_TOKEN"
 

@@ -11,7 +11,7 @@ source "${ROOT}/.env.local" 2>/dev/null || true
 REPO_DIR="${ROOT}"
 SPACE_DIR="hf-pixel-world"
 SPACE_ID="Nomos42/pixel-world"
-HF_TOKEN_DEPLOY="${HF_TOKEN_3:-${HF_TOKEN:-}}"
+HF_TOKEN_DEPLOY="${HF_TOKEN_LLM:-${HF_TOKEN:-}}"
 
 log() { echo "[$(date -u +%H:%M:%SZ)] $1"; }
 
@@ -37,7 +37,7 @@ fi
 log "Deploying to HF Space: $SPACE_ID"
 
 if [ -z "$HF_TOKEN_DEPLOY" ]; then
-    log "ERROR: No HF token available. Set HF_TOKEN_3 or HF_TOKEN in .env.local"
+    log "ERROR: No HF token available. Set HF_TOKEN_LLM or HF_TOKEN in .env.local"
     exit 1
 fi
 

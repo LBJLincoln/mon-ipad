@@ -82,8 +82,8 @@ TABPFN_MODEL = "Prior-Labs/TabPFN"        # TabPFN v2 — free via HF Inference 
 # Account rotation — each account gets ~5 min/day free H200 time
 ACCOUNTS = [
     {"name": "LBJLincoln",   "token_env": "HF_TOKEN"},
-    {"name": "LBJLincoln26", "token_env": "HF_TOKEN_2"},
-    {"name": "Nomos42",      "token_env": "HF_TOKEN_3"},
+    {"name": "LBJLincoln26", "token_env": "HF_TOKEN_NBA"},
+    {"name": "Nomos42",      "token_env": "HF_TOKEN_LLM"},
 ]
 
 # Mutation parameters

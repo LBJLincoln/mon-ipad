@@ -4,7 +4,7 @@
 Tier-gated: free/scout/edge/whale. Serves political signals, insider trades,
 polymarket data, portfolio recommendations.
 
-Env: STUPID_POLITICAL_BOT_TOKEN
+Env: BOT_TOKEN_POL
 Users: data/forge-users/political-users.json
 """
 
@@ -28,7 +28,7 @@ logging.basicConfig(
 )
 log = logging.getLogger("political")
 
-TOKEN = os.environ.get("STUPID_POLITICAL_BOT_TOKEN", "")
+TOKEN = os.environ.get("BOT_TOKEN_POL", "")
 POLITICAL_DIR = Path.home() / "nomos-political-alpha" / "data"
 DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 USERS_FILE = DATA_DIR / "forge-users" / "political-users.json"
@@ -353,7 +353,7 @@ def handle(chat_id, mid, tid, username, text):
 
 def main():
     if not TOKEN:
-        log.error("Set STUPID_POLITICAL_BOT_TOKEN"); sys.exit(1)
+        log.error("Set BOT_TOKEN_POL"); sys.exit(1)
     me = tg("getMe")
     if me.get("ok"):
         log.info(f"Started @{me['result'].get('username', '?')}")

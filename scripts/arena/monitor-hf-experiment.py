@@ -27,13 +27,13 @@ SPACES_TO_CHECK = [
         "label": "LBJLincoln26/nba-llm-trading-floor (active client)",
         "api_url": "https://huggingface.co/api/spaces/LBJLincoln26/nba-llm-trading-floor/runtime",
         "space_url": "https://lbjlincoln26-nba-llm-trading-floor.hf.space",
-        "token_env": "HF_TOKEN_2",
+        "token_env": "HF_TOKEN_NBA",
     },
     {
         "label": "Nomos42/hf-llm-trading-floor",
         "api_url": "https://huggingface.co/api/spaces/Nomos42/hf-llm-trading-floor/runtime",
         "space_url": "https://nomos42-hf-llm-trading-floor.hf.space",
-        "token_env": "HF_TOKEN_3",
+        "token_env": "HF_TOKEN_LLM",
     },
 ]
 

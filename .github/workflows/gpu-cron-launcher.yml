@@ -47,8 +47,8 @@ jobs:
       - name: Run ZeroGPU burst
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_TOKEN_2: ${{ secrets.HF_TOKEN_2 }}
-          HF_TOKEN_3: ${{ secrets.HF_TOKEN_3 }}
+          HF_TOKEN_NBA: ${{ secrets.HF_TOKEN_NBA }}
+          HF_TOKEN_LLM: ${{ secrets.HF_TOKEN_LLM }}
         run: |
           mkdir -p data/gpu-burst logs/gpu-burst
           python3 scripts/gpu-burst/zerogpu-burst.py \

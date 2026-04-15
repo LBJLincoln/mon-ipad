@@ -66,6 +66,6 @@ python3 hf-space/deploy_island.py SPACE_NAME ROLE HF_TOKEN
 ## HF Accounts
 | Account | Token | Spaces |
 |---------|-------|--------|
-| Nomos42 | HF_TOKEN_3 | S10, S11, S12, S13, S14, S15 (all 6 NBA islands) |
+| Nomos42 | HF_TOKEN_LLM | S10, S11, S12, S13, S14, S15 (all 6 NBA islands) |
 | LBJLincoln | HF_TOKEN | LBJLincoln spaces (auxiliary) |
-| LBJLincoln26 | HF_TOKEN_2 | LBJLincoln26 spaces (secondary) |
+| LBJLincoln26 | HF_TOKEN_NBA | LBJLincoln26 spaces (secondary) |

@@ -188,10 +188,10 @@ export GOOGLE_API_KEY=
 
 # ── HuggingFace (3 accounts) ─────────────────────────────────
 export HF_TOKEN=          # LBJLincoln (primary)
-export HF_TOKEN_2=        # LBJLincoln26
-export HF_TOKEN_3=        # Nomos42
-export HF_TOKEN_FORGE=
-export HF_TOKEN_USERS=
+export HF_TOKEN_NBA=        # LBJLincoln26
+export HF_TOKEN_LLM=        # Nomos42
+export HF_TOKEN_COUNCILS=
+export HF_TOKEN_COUNCILS=
 
 # ── HF Spaces ────────────────────────────────────────────────
 export HF_SPACE_1_URL=https://nomos42-nba-quant.hf.space

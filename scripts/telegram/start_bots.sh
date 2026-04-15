@@ -14,9 +14,9 @@ MODE="${1:-start}"
 # Bot definitions: name, script, pidfile, token_var
 BOTS=(
     "brain:nomos42_brain.py:nomos42-brain:TELEGRAM_BOT_TOKEN"
-    "forge:forge_bot.py:forge-bot:FORGE_BOT_TOKEN"
-    "nba:nomos_nba_bot.py:nba-bot:NOMOS_NBA_BOT_TOKEN"
-    "political:stupid_political_bot.py:political-bot:STUPID_POLITICAL_BOT_TOKEN"
+    "forge:forge_bot.py:forge-bot:BOT_TOKEN_FORGE"
+    "nba:nomos_nba_bot.py:nba-bot:BOT_TOKEN_NBA"
+    "political:stupid_political_bot.py:political-bot:BOT_TOKEN_POL"
 )
 
 start_bot() {

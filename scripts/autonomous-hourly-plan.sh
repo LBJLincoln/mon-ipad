@@ -85,7 +85,7 @@ VERIFIED-BROKEN CHECKLIST (2026-04-15, ordered by severity):
         folder_path='scripts/arena/hf-llm-trading-floor',
         repo_id='LBJLincoln26/nba-llm-trading-floor',
         repo_type='space',
-        token='$HF_TOKEN_2',
+        token='$HF_TOKEN_NBA',
         commit_message='deploy: 11-agent + Gemini parser fix',
         ignore_patterns=['__pycache__', '*.pyc', 'data/full-odds-*.json'])"`
       Then curl POST /api/run, then curl GET /api/status shows running=true.

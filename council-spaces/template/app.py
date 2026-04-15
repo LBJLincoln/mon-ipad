@@ -48,13 +48,13 @@ DEPT_MODEL_MAP = {
 }
 
 # HF token -- try multiple env var names (HF_TOKEN may be reserved on Spaces)
-HF_TOKEN = os.environ.get("NOMOS_HF_TOKEN", "") or os.environ.get("HF_TOKEN", "") or os.environ.get("HF_TOKEN_3", "")
+HF_TOKEN = os.environ.get("NOMOS_HF_TOKEN", "") or os.environ.get("HF_TOKEN", "") or os.environ.get("HF_TOKEN_LLM", "")
 
 # Debug: log which token sources are available at startup
 _token_sources = []
 if os.environ.get("NOMOS_HF_TOKEN"): _token_sources.append("NOMOS_HF_TOKEN")
 if os.environ.get("HF_TOKEN"): _token_sources.append("HF_TOKEN")
-if os.environ.get("HF_TOKEN_3"): _token_sources.append("HF_TOKEN_3")
+if os.environ.get("HF_TOKEN_LLM"): _token_sources.append("HF_TOKEN_LLM")
 print(f"[COUNCIL] HF_TOKEN sources: {_token_sources}, len={len(HF_TOKEN)}")
 
 # Optional: external LLM API keys (set as HF Space secrets)

@@ -21,9 +21,9 @@ start_forge() {
     fi
 
     # Accept either env var name
-    [ -z "$FORGE_BOT_TOKEN" ] && export FORGE_BOT_TOKEN="${FORGE42_BOT_TOKEN:-}"
-    if [ -z "$FORGE_BOT_TOKEN" ]; then
-        echo "ERROR: FORGE_BOT_TOKEN / FORGE42_BOT_TOKEN not set."
+    [ -z "$BOT_TOKEN_FORGE" ] && export BOT_TOKEN_FORGE="${FORGE42_BOT_TOKEN:-}"
+    if [ -z "$BOT_TOKEN_FORGE" ]; then
+        echo "ERROR: BOT_TOKEN_FORGE / FORGE42_BOT_TOKEN not set."
         echo "  Add it to .env.local in repo root or export it before running."
         exit 1
     fi

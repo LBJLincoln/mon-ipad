@@ -5,7 +5,7 @@ Commands are gated by subscription tier (free/scout/edge/whale).
 
 Users authenticate with a login code, get tier-adapted picks & data.
 
-Env: FORGE_BOT_TOKEN
+Env: BOT_TOKEN_FORGE
 Users: data/forge-users/users.json
 """
 
@@ -30,7 +30,7 @@ logging.basicConfig(
 )
 log = logging.getLogger("forge")
 
-TOKEN = os.environ.get("FORGE_BOT_TOKEN", "")
+TOKEN = os.environ.get("BOT_TOKEN_FORGE", "")
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DATA_DIR = REPO_ROOT / "data"
 USERS_FILE = DATA_DIR / "forge-users" / "users.json"
@@ -555,7 +555,7 @@ def handle(chat_id, mid, tid, username, text):
 
 def main():
     if not TOKEN:
-        log.error("Set FORGE_BOT_TOKEN"); sys.exit(1)
+        log.error("Set BOT_TOKEN_FORGE"); sys.exit(1)
 
     me = tg("getMe")
     if me.get("ok"):
