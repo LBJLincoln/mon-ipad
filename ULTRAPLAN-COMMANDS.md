@@ -85,7 +85,7 @@ Best for: training, evaluation, anything that needs >24h or stable IP.
 
 ```bash
 # Restart any space (force fresh build)
-curl -X POST -H "Authorization: Bearer $HF_TOKEN_3" \
+curl -X POST -H "Authorization: Bearer $HF_TOKEN_LLM" \
   https://huggingface.co/api/spaces/Nomos42/nomos-cpu-gemma4/restart
 
 # Trigger a run via FastAPI

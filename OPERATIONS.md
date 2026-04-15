@@ -99,7 +99,7 @@ Iteration N finishes
 
 ## HF SPACE AUDIT (4 accounts, 8 max per account)
 
-### Account: Nomos42 (HF_TOKEN_3) — MAIN PRODUCTION (14 spaces → 8 after cleanup)
+### Account: Nomos42 (HF_TOKEN_LLM) — MAIN PRODUCTION (14 spaces → 8 after cleanup)
 | Space | Role | Status | Action |
 |-------|------|--------|--------|
 | Nomos42/nba-quant (S10) | NBA exploitation | ACTIVE | KEEP |
@@ -125,7 +125,7 @@ Iteration N finishes
 | LBJLincoln/island-coordinator | Old coordinator | DEAD | **DELETE** |
 **Planned:** P3 (political CatBoost), P4 (political wide), RGWA gen-1, RGWA gen-2 → 4/8
 
-### Account: LBJLincoln26 (HF_TOKEN_2) — SECONDARY (4 spaces → 0, then +2 planned)
+### Account: LBJLincoln26 (HF_TOKEN_NBA) — SECONDARY (4 spaces → 0, then +2 planned)
 | Space | Role | Status | Action |
 |-------|------|--------|--------|
 | LBJLincoln26/research-radar | Old monitor | DEAD | **DELETE** |
