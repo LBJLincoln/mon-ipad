@@ -99,6 +99,25 @@ MODELS = {
     "deepseek":("openrouter", "deepseek/deepseek-r1:free"),
 }
 
+# Gateway routing — when GATEWAY_URL is set, all calls go through
+# LBJLincoln26/llm-gateway. Short aliases map to gateway's registry keys
+# (see scripts/arena/hf-llm-gateway/app.py MODELS).
+GATEWAY_URL = os.environ.get("GATEWAY_URL", "").rstrip("/")
+GATEWAY_ALIAS_MAP = {
+    "qwen":     "cerebras:qwen-3-235b",
+    "qwen32b":  "cerebras:qwen-3-235b",           # nearest tier on gateway
+    "llama8b":  "cerebras:llama3.1-8b",
+    "llama4":   "openrouter:llama-3.3-70b:free",
+    "gemma3":   "openrouter:gemma-4-26b:free",
+    "mistral":  "openrouter:minimax-m2.5:free",
+    "deepseek": "openrouter:nemotron-120b:free",
+}
+
+# Gateway counters — exposed via --gateway-stats for observability
+_gateway_routed_count = 0
+_gateway_fallback_count = 0
+_gateway_failed_count = 0
+
 _last_call: Dict[str, float] = {}
 
 def _get_token(provider: str) -> str:
@@ -156,9 +175,64 @@ def _call_llm(provider: str, model_id: str, prompt: str, max_tokens: int = 800,
         pass
     return ""
 
+def _call_via_gateway(model_alias: str, prompt: str, max_tokens: int,
+                       temperature: float = 0.2) -> Tuple[Optional[str], Optional[str]]:
+    """Route a single call through LBJLincoln26/llm-gateway (Gradio 5.x two-step).
+    Returns (text or None, error str or None). Uses urllib to stay dep-free."""
+    gw_model = GATEWAY_ALIAS_MAP.get(model_alias, model_alias)
+    try:
+        payload = json.dumps({"data": [gw_model, "", prompt, int(max_tokens)]}).encode()
+        req = urllib.request.Request(
+            f"{GATEWAY_URL}/gradio_api/call/call_model",
+            data=payload, method="POST",
+            headers={"Content-Type": "application/json",
+                     "User-Agent": "Nomos42-SmartCouncil/3.0"},
+        )
+        with urllib.request.urlopen(req, timeout=15, context=_ssl()) as resp:
+            if resp.status >= 500:
+                return None, f"HTTP {resp.status}"
+            event_id = json.loads(resp.read()).get("event_id")
+        if not event_id:
+            return None, "no event_id"
+        req2 = urllib.request.Request(
+            f"{GATEWAY_URL}/gradio_api/call/call_model/{event_id}",
+            headers={"User-Agent": "Nomos42-SmartCouncil/3.0"},
+        )
+        with urllib.request.urlopen(req2, timeout=60, context=_ssl()) as resp2:
+            for raw in resp2:
+                line = raw.decode("utf-8", errors="ignore").strip()
+                if line.startswith("data: "):
+                    payload_obj = json.loads(line[6:])
+                    if isinstance(payload_obj, list) and payload_obj:
+                        result = json.loads(payload_obj[0])
+                        content = result.get("content")
+                        if content:
+                            return content, None
+                        return None, result.get("error") or "empty content"
+        return None, "no data line"
+    except Exception as e:
+        return None, f"{type(e).__name__}: {str(e)[:120]}"
+
+
 def query_llm(prompt: str, model: str = "qwen", max_tokens: int = 800) -> str:
-    """Query LLM with automatic provider fallback."""
-    # Try requested model first
+    """Query LLM with automatic provider fallback.
+
+    If GATEWAY_URL is set, try the gateway first (single call, its own failover
+    chain handles provider rotation). On gateway failure, fall back to the
+    legacy direct-provider fallback chain so councils keep running.
+    """
+    global _gateway_routed_count, _gateway_fallback_count, _gateway_failed_count
+
+    # ── Gateway path ──
+    if GATEWAY_URL:
+        text, err = _call_via_gateway(model, prompt, max_tokens)
+        if text:
+            _gateway_routed_count += 1
+            return text
+        _gateway_fallback_count += 1
+        # fall through to direct provider chain
+
+    # ── Direct-provider path (original behaviour) ──
     if model in MODELS:
         provider, model_id = MODELS[model]
         result = _call_llm(provider, model_id, prompt, max_tokens)
@@ -177,7 +251,25 @@ def query_llm(prompt: str, model: str = "qwen", max_tokens: int = 800) -> str:
         if result:
             return result
 
+    _gateway_failed_count += 1
     return ""
+
+
+def gateway_stats() -> dict:
+    """Observability hook — counters for routed/fallback/failed calls."""
+    return {
+        # True iff at least one call successfully round-tripped through the gateway
+        "gateway_routed": bool(_gateway_routed_count),
+        "gateway_enabled": bool(GATEWAY_URL),
+        "gateway_url": GATEWAY_URL or None,
+        # Canonical names (match TF /api/status contract)
+        "gateway_call_count": _gateway_routed_count,
+        "direct_fallback_count": _gateway_fallback_count,
+        "gateway_failed_count": _gateway_failed_count,
+        # Back-compat
+        "gateway_routed_count": _gateway_routed_count,
+        "gateway_fallback_count": _gateway_fallback_count,
+    }
 
 def extract_json_from_response(text: str) -> Optional[dict]:
     """Extract the first JSON object from an LLM response."""
@@ -1017,6 +1109,8 @@ Examples:
                         help="List all configured councils and their actions")
     parser.add_argument("--show-log", action="store_true", default=False,
                         help="Show last 3 log entries for the specified project/dept")
+    parser.add_argument("--gateway-stats", action="store_true", default=False,
+                        help="After run, print gateway routing counters")
 
     args = parser.parse_args()
 
@@ -1062,6 +1156,8 @@ Examples:
             a = r.get("action", {}).get("action", "unknown")
             action_summary[a] = action_summary.get(a, 0) + 1
         print(f"  Actions: {json.dumps(action_summary)}")
+        if args.gateway_stats:
+            print(f"  Gateway: {json.dumps(gateway_stats())}")
         return
 
     # ── Single council run ──
@@ -1077,6 +1173,9 @@ Examples:
         model_override=args.model,
         verbose=not args.quiet,
     )
+
+    if args.gateway_stats:
+        print(f"Gateway: {json.dumps(gateway_stats())}")
 
     if "error" in record:
         sys.exit(1)

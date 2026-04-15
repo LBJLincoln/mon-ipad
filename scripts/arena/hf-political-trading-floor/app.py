@@ -29,6 +29,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+# Centralised gateway router (vendored into Space; see scripts/arena/gateway_client.py)
+from gateway_client import gateway_call as _gateway_call, GATEWAY_URL as _GATEWAY_URL
+
 # ── STARTUP DIAGNOSTICS ─────────────────────────────────────────────────────
 print("=" * 60)
 print("NOMOS42 POLITICAL LLM TRADING FLOOR — STARTUP")
@@ -289,27 +292,21 @@ def _rate_limit(provider: str):
 _llm_calls = 0
 _llm_failures = 0
 _llm_errors: List[str] = []  # Recent errors for debugging
+_gateway_routed = 0
+_gateway_fallback = 0
 
-def _call_llm(provider: str, system_prompt: str, user_prompt: str,
-              timeout: float = 20.0) -> Optional[str]:
-    """Make a real LLM API call. Returns raw text or None on failure."""
-    global _llm_calls, _llm_failures
+def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
+                     timeout: float = 20.0) -> Optional[str]:
+    """Direct provider call (original path). Used as fallback when gateway down."""
     cfg = PROVIDERS.get(provider)
     if not cfg:
-        _llm_failures += 1
-        if len(_llm_errors) < 50:
-            _llm_errors.append(f"{provider}: unknown provider")
         return None
 
     api_key = os.environ.get(cfg["key_env"], "")
     if not api_key:
-        _llm_failures += 1
-        if len(_llm_errors) < 50:
-            _llm_errors.append(f"{provider}: no key ({cfg['key_env']})")
         return None
 
     _rate_limit(provider)
-    _llm_calls += 1
 
     last_error = ""
     for attempt in range(2):  # 1 retry
@@ -396,9 +393,51 @@ def _call_llm(provider: str, system_prompt: str, user_prompt: str,
                 continue
             break
 
+    if last_error and len(_llm_errors) < 100:
+        _llm_errors.append(f"{provider} (direct): {last_error}")
+    return None
+
+
+def _call_llm(provider: str, system_prompt: str, user_prompt: str,
+              timeout: float = 20.0) -> Optional[str]:
+    """Transport-layer entry. Routes through llm-gateway if GATEWAY_URL is set,
+    else calls the provider directly. Preserves existing failure counters."""
+    global _llm_calls, _llm_failures, _gateway_routed, _gateway_fallback
+    _llm_calls += 1
+
+    cfg = PROVIDERS.get(provider)
+    if not cfg:
+        _llm_failures += 1
+        if len(_llm_errors) < 50:
+            _llm_errors.append(f"{provider}: unknown provider")
+        return None
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+
+    def _direct(_sys: str, _usr: str) -> Optional[str]:
+        return _call_llm_direct(provider, _sys, _usr, timeout=timeout)
+
+    max_tokens = cfg.get("max_tokens", 1200)
+    result = _gateway_call(
+        provider, messages,
+        temperature=0.3, max_tokens=max_tokens,
+        fallback_direct=True, direct_fn=_direct,
+        timeout=max(timeout, 30.0),
+    )
+
+    if result["routed_via"] == "gateway":
+        _gateway_routed += 1
+        return result["text"]
+    if result["routed_via"] == "direct":
+        _gateway_fallback += 1
+        return result["text"]
+
     _llm_failures += 1
     if len(_llm_errors) < 100:
-        _llm_errors.append(f"{provider}: {last_error}")
+        _llm_errors.append(f"{provider}: {result.get('error')}")
     return None
 
 
@@ -711,9 +750,11 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     must allocate 100% of their bankroll (long/short sector ETFs) or hold cash.
     One LLM call per agent per day (not per event).
     """
-    global _llm_calls, _llm_failures
+    global _llm_calls, _llm_failures, _gateway_routed, _gateway_fallback
     _llm_calls = 0
     _llm_failures = 0
+    _gateway_routed = 0
+    _gateway_fallback = 0
 
     # Load data
     all_events = load_events()
@@ -1212,6 +1253,14 @@ async def api_status():
     state["llm_calls"] = _llm_calls
     state["llm_failures"] = _llm_failures
     state["gateway_url"] = GATEWAY_URL or None
+    # True iff at least one successful gateway round-trip this session
+    state["gateway_routed"] = bool(_gateway_routed)
+    state["gateway_enabled"] = bool(_GATEWAY_URL)
+    state["gateway_call_count"] = _gateway_routed
+    state["direct_fallback_count"] = _gateway_fallback
+    # Back-compat (deprecated, keep for a release)
+    state["gateway_routed_count"] = _gateway_routed
+    state["gateway_fallback_count"] = _gateway_fallback
     return JSONResponse(state)
 
 @api.post("/api/run")
