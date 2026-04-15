@@ -1,10 +1,10 @@
 # Trading Floor & AI Competition
 
-> Auto-compiled from 50 raw sources on 2026-04-15
+> Auto-compiled from 51 raw sources on 2026-04-15
 
 ## Overview
 
-This topic covers 50 research files spanning trading floor & ai competition.
+This topic covers 51 research files spanning trading floor & ai competition.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -57,6 +57,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Trading Floor v4/v5 SOTA Audit — April 11 2026** (403 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle17_tf_sota.md`
 - **Political Alpha Scientific Experiment Report** (333 words) -- `raw/experiments/political-experiment-2026-04-06.md`
 - **Autonomous Org Benchmark April 2026** (292 words) -- `raw/agent-memory/research-analyst_research_april2026_autonomous_org_benchmark.md`
+- **HF Self-Host LLM Expansion — April 2026 Cycle 20** (248 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle20_hf_self_host.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/agent-memory/nba-brain_project_strategy_confrontation.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/nba-brain/project_strategy_confrontation.md`
 
