@@ -53,14 +53,18 @@ VERIFIED-BROKEN CHECKLIST (2026-04-15, ordered by severity):
       DONE WHEN: homepage renders "data unavailable" instead of fake fallback numbers
       when /api/dashboard/home returns null, AND banner text is sourced from live /api/nba/metrics.
 
-  [2] /trading-floor + /floor PAGES SHOW STALE DATA
+  [2] /trading-floor + /floor PAGES SHOW STALE DATA + WRONG PROGRESS UNIT
       Files: /home/termius/nomos-dashboard/src/app/trading-floor/page.tsx, floor/page.tsx
-      The backend JSON (data/arena/trading-floor-status.json) shows day-bucket-v3
-      FINISHED on Apr 14 with 9/10 agents bankrupted. Display needs a clear
-      "RUN ENDED · 1/10 profitable · stake-sizing bug fixed, restart pending"
-      banner at top, with timestamp of last run.
-      DONE WHEN: pages clearly communicate the run ended + which agent won,
-      instead of looking "live".
+      Two bugs at once:
+      (a) The display still shows "games_processed/games_total" (e.g. 152/1247)
+          but the engine is day-bucket-v3 — agents trade ONCE PER DAY, not per
+          game. Replace progress bar with `days_processed/days_total` and add
+          "N matches today" annotation. data is at /api/status (now exposes
+          games_total + days_processed since 2026-04-15 deploy 9dca67ed).
+      (b) When run ended, banner must say "RUN ENDED · winner: <agent> +X%"
+          with timestamp.
+      DONE WHEN: pages show "Day 27/175 · 8 matches today" instead of "152/1247
+      games" AND end-state banner appears when running=false.
 
   [3] /world LACKS SOTA PIXEL ASSETS
       File: /home/termius/nomos-dashboard/src/components/pixel/PixelWorldPixi.tsx
@@ -70,14 +74,21 @@ VERIFIED-BROKEN CHECKLIST (2026-04-15, ordered by severity):
       characters, OR (b) at least one XP.css window/title-bar component wraps
       an overlay (leaderboard or agent detail).
 
-  [4] NBA TF v4 NOT RUNNING
-      HF Space: LBJLincoln26/nba-llm-trading-floor (design = 10agents-real-llm)
-      Current state: running=false, games_processed=null, stake-sizing fix
-      (commit 0893bb83 in scripts/arena/hf-llm-trading-floor/app.py) NEVER
-      deployed to the HF subtree.
-      DONE WHEN: git subtree push to LBJLincoln26/nba-llm-trading-floor from
-      scripts/arena/hf-llm-trading-floor/, then curl POST /api/run, then
-      curl GET /api/status shows running=true.
+  [4] NBA TF v3 11-AGENT NOT DEPLOYED
+      HF Space: LBJLincoln26/nba-llm-trading-floor (design = day-bucket-v3)
+      Current state: app.py has Gemini parser fix + nemotron-120b 11th agent
+      (commits cecfb0e03 + d8311a2ff) NOT YET deployed to the HF Space.
+      DO NOT USE `git subtree push` — old commit 2756d75a9 inside the subtree
+      added an 11MB data/full-odds-2025-26.json that exceeds HF's 10MiB limit;
+      the file was removed in bce1dce71 but pre-receive hook scans full history.
+      USE: `python3 -c "from huggingface_hub import HfApi; HfApi().upload_folder(
+        folder_path='scripts/arena/hf-llm-trading-floor',
+        repo_id='LBJLincoln26/nba-llm-trading-floor',
+        repo_type='space',
+        token='$HF_TOKEN_2',
+        commit_message='deploy: 11-agent + Gemini parser fix',
+        ignore_patterns=['__pycache__', '*.pyc', 'data/full-odds-*.json'])"`
+      Then curl POST /api/run, then curl GET /api/status shows running=true.
 
   [5] DASHBOARD CLAIMED METRICS vs REALITY
       CLAUDE.md claims "Political TF llama-contra +223.5% ROI" — the current
