@@ -21,6 +21,10 @@
 #   P2 Nomos42/political-alpha-2    → HF_TOKEN_LLM
 #   P3 LBJLincoln/political-alpha-3 → HF_TOKEN
 #   P4 LBJLincoln/political-alpha-4 → HF_TOKEN
+#   P5 LBJLincoln/political-alpha-5 → HF_TOKEN (catboost_specialist)
+#   P6 LBJLincoln/political-alpha-6 → HF_TOKEN (extra_trees_specialist)
+#   P7 LBJLincoln/political-alpha-7 → HF_TOKEN (gradient_boost_specialist)
+#   P8 LBJLincoln/political-alpha-8 → HF_TOKEN (ensemble_stacking)
 ################################################################################
 
 set -euo pipefail
@@ -141,6 +145,10 @@ deploy_political "Nomos42/political-alpha"    "HF_TOKEN_LLM"
 deploy_political "Nomos42/political-alpha-2"  "HF_TOKEN_LLM"
 deploy_political "LBJLincoln/political-alpha-3" "HF_TOKEN"
 deploy_political "LBJLincoln/political-alpha-4" "HF_TOKEN"
+deploy_political "LBJLincoln/political-alpha-5" "HF_TOKEN"
+deploy_political "LBJLincoln/political-alpha-6" "HF_TOKEN"
+deploy_political "LBJLincoln/political-alpha-7" "HF_TOKEN"
+deploy_political "LBJLincoln/political-alpha-8" "HF_TOKEN"
 
 echo ""
 echo "╔══════════════════════════════════════════════════════╗"

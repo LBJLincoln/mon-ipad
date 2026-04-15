@@ -46,11 +46,15 @@ declare -A SPACES=(
   ["S17_nba"]="https://lbjlincoln26-nba-evo-s17.hf.space"
   ["S18_nba"]="https://testforge42-nba-evo-s18.hf.space"
   ["S19_nba"]="https://testforge42-nba-evo-s19.hf.space"
-  # Political islands (4 total — P1-P4)
+  # Political islands (8 total — P1-P8)
   ["P1_pol"]="https://nomos42-political-alpha.hf.space"
   ["P2_pol"]="https://nomos42-political-alpha-2.hf.space"
   ["P3_pol"]="https://lbjlincoln-political-alpha-3.hf.space"
   ["P4_pol"]="https://lbjlincoln-political-alpha-4.hf.space"
+  ["P5_pol"]="https://lbjlincoln-political-alpha-5.hf.space"
+  ["P6_pol"]="https://lbjlincoln-political-alpha-6.hf.space"
+  ["P7_pol"]="https://lbjlincoln-political-alpha-7.hf.space"
+  ["P8_pol"]="https://lbjlincoln-political-alpha-8.hf.space"
 )
 
 HF_STATUS_JSON="{"

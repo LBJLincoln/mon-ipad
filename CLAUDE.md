@@ -1,19 +1,19 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v20 — Department Forge (9 depts) + Trading Floor v3 (11 real LLM agents) + 16 Evolution Islands | Updated: 2026-04-15
+> Architecture v20 — Department Forge (9 depts) + Trading Floor v3 (12 real LLM agents) + 18 Evolution Islands (10 NBA + 8 Political) | Updated: 2026-04-15
 
 ## Mission
 Build the best NBA prediction AI in the world.
 **Best:** Brier 0.21514 (Colab TabICL, 186f, iter 129) | Fleet best: 0.22085 (S17, gen 524) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
-**NBA TF v3 (day-bucket, Apr 15 fresh run, 11 agents):** Stake-fix DEPLOYED (half-Kelly 5% cap + min edge 0.03 + current bankroll). Gemini parser FIXED (thinkingBudget=0, max_tokens 4096, all-parts join — gemini-anl/gemini-tact were 0 bets across 27 days, now betting on day 2). +1 NVIDIA Nemotron-120B agent (4 providers: Cerebras / Google / Mistral / OpenRouter). HF sha `9dca67ed`. Mutation actuator unblocked (gap_threshold 0.20→0.12).
+**NBA TF v3 (day-bucket, Apr 15 fresh run, 12 agents):** Stake-fix DEPLOYED (half-Kelly 5% cap + min edge 0.03 + current bankroll). Gemini parser FIXED (thinkingBudget=0, max_tokens 4096, all-parts join — gemini-anl/gemini-tact were 0 bets across 27 days, now betting on day 2). +1 NVIDIA Nemotron-120B agent (4 providers: Cerebras / Google / Mistral / OpenRouter). HF sha `9dca67ed`. Mutation actuator unblocked (gap_threshold 0.20→0.12).
 **Political TF (Apr 14 snapshot):** 50 days / 834 events processed, 0 trades by 11 agents (parser bug). Prior claim "llama-contra +223.5%" was from mid-run, now stale.
 
 ## Nomos42 Ecosystem
 
 | Flagship | Repo | Bot | Vercel | Status |
 |----------|------|-----|--------|--------|
-| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 10 NBA islands + 4 Political islands + Kaggle Karpathy |
+| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 10 NBA islands + 8 Political islands + Kaggle Karpathy |
 | Political Alpha | nomos-political-alpha | -- | none (data only) | ACTIVE -- v3.19 engine, 22 categories, 718 features |
 | Dashboard Hub | nomos-dashboard | -- | nomosdashboard.vercel.app | ACTIVE -- /nba /political /evolution /trading-floor /forge /world |
 | AI Artistic Generation | rgwa | @RGWAbot | none | ZOMBIE -- no commits since Mar 2026, deprioritized |
@@ -36,7 +36,7 @@ VM MUSCLE (cron, every 4h at :30)
     └── Auto-restart data server
     Script: scripts/autonomous-cycle.sh
 
-HF EVOLUTION ISLANDS (10 NBA + 4 Political = 14 active, target 16)
+HF EVOLUTION ISLANDS (10 NBA + 8 Political = 18 active, parity achieved 2026-04-15)
     NBA Islands (all UP, CPU tree-only, MAX_FEATURES=200):
     ├── S10 Nomos42/nba-quant:        exploitation  gen=86    brier=0.22825  → nomos42-nba-quant.hf.space
     ├── S11 Nomos42/nba-quant-2:      exploration   gen=141   brier=0.24572  → nomos42-nba-quant-2.hf.space
@@ -48,12 +48,15 @@ HF EVOLUTION ISLANDS (10 NBA + 4 Political = 14 active, target 16)
     ├── S17 LBJLincoln26/nba-evo-s17: ensemble      gen=139   brier=0.22493  → lbjlincoln26-nba-evo-s17.hf.space
     ├── S18 TESTforge42/nba-evo-s18:  catboost_spec gen=1030  brier=0.22114  → testforge42-nba-evo-s18.hf.space  (promoted 2026-04-15)
     └── S19 TESTforge42/nba-evo-s19:  wide_search   gen=849   brier=0.22257  → testforge42-nba-evo-s19.hf.space  (promoted 2026-04-15)
-    Political Islands (all UP, CPU tree-only):
-    ├── P1 Nomos42/political-alpha:      xgboost   gen=3042  brier=0.24996  → nomos42-political-alpha.hf.space
-    ├── P2 Nomos42/political-alpha-2:    lightgbm  gen=2212  brier=0.25223  → nomos42-political-alpha-2.hf.space
-    ├── P3 LBJLincoln/political-alpha-3: xgboost   gen=10344 brier=0.24990  → lbjlincoln-political-alpha-3.hf.space  ★ POL BEST
-    ├── P4 LBJLincoln/political-alpha-4: logistic  gen=4301  brier=0.25146  → lbjlincoln-political-alpha-4.hf.space
-    └── P5-P8: NOT YET DEPLOYED (need 4 more for 8-island parity with NBA)
+    Political Islands (8 live, CPU tree-only — parity with NBA achieved 2026-04-15):
+    ├── P1 Nomos42/political-alpha:      xgboost        gen=3042  brier=0.24996  → nomos42-political-alpha.hf.space
+    ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=2212  brier=0.25223  → nomos42-political-alpha-2.hf.space
+    ├── P3 LBJLincoln/political-alpha-3: xgboost        gen=10344 brier=0.24990  → lbjlincoln-political-alpha-3.hf.space  ★ POL BEST
+    ├── P4 LBJLincoln/political-alpha-4: logistic       gen=4301  brier=0.25146  → lbjlincoln-political-alpha-4.hf.space
+    ├── P5 LBJLincoln/political-alpha-5: catboost       gen=0     brier=—        → lbjlincoln-political-alpha-5.hf.space  (NEW, mirrors S13)
+    ├── P6 LBJLincoln/political-alpha-6: extra_trees    gen=0     brier=—        → lbjlincoln-political-alpha-6.hf.space  (NEW, mirrors S12)
+    ├── P7 LBJLincoln/political-alpha-7: gradient_boost gen=0     brier=—        → lbjlincoln-political-alpha-7.hf.space  (NEW, mirrors S16)
+    └── P8 LBJLincoln/political-alpha-8: ensemble       gen=0     brier=—        → lbjlincoln-political-alpha-8.hf.space  (NEW, mirrors S17)
 
 NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
 
@@ -87,7 +90,7 @@ GITHUB ACTIONS (3 workflows on schedule)
     └── Arena Engine:         daily — full arena evaluation
 
 SYSTEM CRONS (28 active on VM, all lightweight)
-    ├── */30  keepalive-spaces.sh (14 islands + TF + Gateway + 9 depts = 29 spaces)
+    ├── */30  keepalive-spaces.sh (18 islands + TF + Gateway + 9 depts = 33 spaces)
     ├── 12,18 nba-daily-odds.py
     ├── :30   autonomous-cycle.sh
     ├── */2h  monitoring, vault sync, political data
@@ -191,7 +194,7 @@ and REASONS about what to bet. Full 2025-26 season (1257 games).
 
 Architecture: TradingAgents (arXiv 2412.20138) + Prediction Arena (2604.07355) + DMAD anti-groupthink
 
-### NBA Traders (11 AI Agents — all real LLM calls, day-bucket-v3, verified live 2026-04-15)
+### NBA Traders (12 AI Agents — all real LLM calls, day-bucket-v3, verified live 2026-04-15)
 | # | trader_id | Model | Provider | Personality | Risk |
 |---|-----------|-------|----------|-------------|------|
 | T1 | qwen-quant | Qwen 3 235B-A22B | Cerebras | quantitative | 0.55 |
@@ -205,6 +208,7 @@ Architecture: TradingAgents (arXiv 2412.20138) + Prediction Arena (2604.07355) +
 | T9 | mistral-nemo | open-mistral-nemo | Mistral | aggressive | 0.70 |
 | T10 | mistral-ministral | ministral-8b-latest | Mistral | theoretical | 0.35 |
 | T11 | nemotron-120b | NVIDIA Nemotron-3-Super-120B | OpenRouter (free) | chainthought | 0.55 |
+| T12 | gemma4-selfhost | Phi-3.5 (self-hosted CPU) | Self-Host (Nomos42/nomos42-llm-cpu) | disciplined | 0.40 |
 
 ### Providers (verified 2026-04-15)
 | Provider | Status | Models in use | Notes |
@@ -213,6 +217,7 @@ Architecture: TradingAgents (arXiv 2412.20138) + Prediction Arena (2604.07355) +
 | Google Gemini | WORKING (parser fixed) | gemini-3-flash-preview (key 2) | Free tier, 14 RPM. **MUST set thinkingBudget=0** or thinking eats all tokens. |
 | Mistral | WORKING | large/medium/small/nemo/ministral-8b | Free tier, 20 RPM |
 | OpenRouter | FREE-LIMITED | nemotron-3-super-120b:free | All other free models 429 across 3 keys (qwen3-80b, llama-3.3-70b, glm-4.5-air, hermes-3-405b) |
+| Self-Host (Nomos42/nomos42-llm-cpu) | WORKING | Phi-3.5 GGUF (CPU) | No quota, slow ~8s/call. Used by T12 gemma4-selfhost. |
 | Kimi (Moonshot) | DEAD | — | KIMI_API_KEY 401 invalid |
 | Gemini 2.5 Pro | DEAD | — | Key 2 forces thinking, key 3 API disabled |
 | HF Inference | DEAD | — | Monthly credits exhausted |
@@ -222,11 +227,13 @@ PRIMARY engine: `LBJLincoln26/nba-llm-trading-floor` (FastAPI + Gradio, ~4-6h fo
 Source: `scripts/arena/hf-llm-trading-floor/app.py` (~1450 lines)
 Control: FastAPI endpoints (/api/status, /api/run, /api/stop, /api/mutate, /api/logs, /api/leaderboard)
 LLM Gateway: `LBJLincoln26/llm-gateway` (centralized proxy, 11 models, fallback chains)
-GH Action: `.github/workflows/trading-floor-10agents.yml` — MONITOR ONLY (curls /api/status, commits snapshot)
+GH Action: `.github/workflows/trading-floor.yml` — MONITOR ONLY (curls /api/status, commits snapshot)
 
-### Political Traders (10 AI Agents — same models, same providers)
+### Political Traders (10 AI Agents — subset of NBA, excludes T11 nemotron-120b and T12 gemma4-selfhost)
 Trading: ETFs, index funds, real stocks based on political signals
 Starting capital: $100,000 virtual | Daily rebalancing
+<!-- TODO(fleet): add T11 + T12 for parity with NBA -->
+**Political TF drift (2026-04-15):** `scripts/arena/hf-political-trading-floor/app.py` has 10 TRADERS (T1–T10 Cerebras/Google/Mistral). NBA has 12 (+T11 nemotron-120b, +T12 gemma4-selfhost). Parity requires patching political app.py and redeploying the Space.
 
 ## Delegation
 

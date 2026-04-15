@@ -55,9 +55,15 @@ S19_BRIER=$(curl -s --max-time 10 "https://testforge42-nba-evo-s19.hf.space/api/
 # Political Alpha quick check
 P1_BRIER=$(curl -s --max-time 10 "https://nomos42-political-alpha.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 P2_BRIER=$(curl -s --max-time 10 "https://nomos42-political-alpha-2.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+P3_BRIER=$(curl -s --max-time 10 "https://lbjlincoln-political-alpha-3.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+P4_BRIER=$(curl -s --max-time 10 "https://lbjlincoln-political-alpha-4.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+P5_BRIER=$(curl -s --max-time 10 "https://lbjlincoln-political-alpha-5.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+P6_BRIER=$(curl -s --max-time 10 "https://lbjlincoln-political-alpha-6.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+P7_BRIER=$(curl -s --max-time 10 "https://lbjlincoln-political-alpha-7.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+P8_BRIER=$(curl -s --max-time 10 "https://lbjlincoln-political-alpha-8.hf.space/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 
 log "[HEALTH] NBA S10=$S10_BRIER S11=? S12=$S12_BRIER S13=$S13_BRIER S14=$S14_BRIER S15=$S15_BRIER S16=$S16_BRIER S17=$S17_BRIER S18=$S18_BRIER S19=$S19_BRIER | gen=$S10_GEN stag=$S10_STAG"
-log "[HEALTH] Political P1=$P1_BRIER P2=$P2_BRIER"
+log "[HEALTH] Political P1=$P1_BRIER P2=$P2_BRIER P3=$P3_BRIER P4=$P4_BRIER P5=$P5_BRIER P6=$P6_BRIER P7=$P7_BRIER P8=$P8_BRIER"
 
 # ── Phase 1: Crew Research ───────────────────────────────────
 # Research is now handled by the Cloud Brain (Claude Code remote trigger at :00)
