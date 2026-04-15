@@ -63,6 +63,7 @@ Categories:
   61. PACE-ADJUSTED NET RATING (10 features — offensive/defensive efficiency, tempo mismatch)
   62. CLUTCH PERFORMANCE (10 features — close-game DNA, ≤5pt margin win%, edge)
   63. PYTHAGOREAN LUCK (12 features — Morey expected WP, luck gap, regression signal)
+  64. OPPONENT-ELO-WEIGHTED PERFORMANCE (10 features — quality-adjusted rolling stats, trend)
   ≈ 6400+ feature candidates
 
 Architecture inspired by:
@@ -87,7 +88,7 @@ import csv
 import os
 
 # ── Engine Version ──
-ENGINE_VERSION = "v3.1-63cat"  # Cat63: Pythagorean luck (expected vs actual WP, regression signal)
+ENGINE_VERSION = "v3.1-64cat"  # Cat64: Opponent-Elo-weighted performance (quality-adjusted rolling stats)
 
 # ── Team mappings ──
 TEAM_MAP = {
@@ -2889,6 +2890,22 @@ class NBAFeatureEngine:
             "pyth63_luck_diff",              # h_luck10 - a_luck10 (who's luckier)
             "pyth63_h_regression_signal",    # |luck10| — magnitude of regression expected
             "pyth63_a_regression_signal",    # |luck10| — magnitude of regression expected
+        ])
+
+        # ── Cat 64: Opponent-Elo-Weighted Performance (10 features) ──
+        # Weight rolling stats by opponent Elo: +10 margin vs 1600-Elo team > +10 vs 1400-Elo.
+        # Separates true quality from schedule-inflated stats.
+        names.extend([
+            "elow64_h_wp10",                 # Home Elo-weighted win% (last 10)
+            "elow64_a_wp10",                 # Away Elo-weighted win% (last 10)
+            "elow64_h_margin10",             # Home Elo-weighted avg margin (last 10)
+            "elow64_a_margin10",             # Away Elo-weighted avg margin (last 10)
+            "elow64_h_netrtg10",             # Home Elo-weighted net rating (last 10)
+            "elow64_a_netrtg10",             # Away Elo-weighted net rating (last 10)
+            "elow64_wp_diff",                # h_elo_wp - a_elo_wp
+            "elow64_margin_diff",            # h_elo_margin - a_elo_margin
+            "elow64_h_trend",                # h_elo_margin5 - h_elo_margin10 (improving?)
+            "elow64_a_trend",                # a_elo_margin5 - a_elo_margin10 (improving?)
         ])
 
         self.feature_names = names
@@ -6979,6 +6996,50 @@ class NBAFeatureEngine:
                 ])
             except Exception:
                 row.extend([0.5, 0.5, 0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+            # ── Cat 64: Opponent-Elo-Weighted Performance (10 features) ──
+            try:
+                def _elow64(recs, n, team_elo_ref):
+                    recent = recs[-n:] if len(recs) >= n else recs
+                    if len(recent) < 3:
+                        return 0.5, 0.0, 0.0
+                    total_w = 0.0
+                    wp_w = 0.0
+                    margin_w = 0.0
+                    netrtg_w = 0.0
+                    for r in recent:
+                        opp = r[3]
+                        opp_elo = team_elo_ref.get(opp, 1500.0)
+                        w = opp_elo / 1500.0
+                        total_w += w
+                        wp_w += w * (1.0 if r[1] else 0.0)
+                        margin_w += w * r[2]
+                        ortg = r[4].get("ortg", 100)
+                        drtg = r[4].get("drtg", 100)
+                        netrtg_w += w * (ortg - drtg)
+                    if total_w < 1e-9:
+                        return 0.5, 0.0, 0.0
+                    return wp_w / total_w, margin_w / total_w, netrtg_w / total_w
+
+                _h64_wp10, _h64_m10, _h64_nr10 = _elow64(hr_, 10, team_elo)
+                _a64_wp10, _a64_m10, _a64_nr10 = _elow64(ar_, 10, team_elo)
+                _h64_wp5, _h64_m5, _h64_nr5 = _elow64(hr_, 5, team_elo)
+                _a64_wp5, _a64_m5, _a64_nr5 = _elow64(ar_, 5, team_elo)
+
+                row.extend([
+                    _h64_wp10,                         # elow64_h_wp10
+                    _a64_wp10,                         # elow64_a_wp10
+                    _h64_m10,                          # elow64_h_margin10
+                    _a64_m10,                          # elow64_a_margin10
+                    _h64_nr10,                         # elow64_h_netrtg10
+                    _a64_nr10,                         # elow64_a_netrtg10
+                    _h64_wp10 - _a64_wp10,             # elow64_wp_diff
+                    _h64_m10 - _a64_m10,               # elow64_margin_diff
+                    _h64_m5 - _h64_m10,                # elow64_h_trend
+                    _a64_m5 - _a64_m10,                # elow64_a_trend
+                ])
+            except Exception:
+                row.extend([0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
             X.append(row)
             y.append(1 if hs > as_ else 0)
