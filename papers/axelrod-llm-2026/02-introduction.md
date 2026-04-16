@@ -6,14 +6,16 @@ In 1980, Robert Axelrod invited game theorists, computer scientists, economists,
 political scientists to submit strategies for a round-robin iterated Prisoner's Dilemma
 (IPD) tournament [@axelrod1980effective]. Fourteen strategies competed; the winner, Anatol
 Rapoport's *Tit-for-Tat*, cooperated on the first move and thereafter mirrored its
-opponent's previous action. Axelrod's follow-up tournament [@axelrod1980more], his
-landmark 1984 book [@axelrod1984evolution], and a celebrated 2006 *Science* review with
-Hammond [@axelrod2006evolution] elevated these findings into a general theory: cooperation
-is evolutionarily stable when interactions are repeated, agents have sufficient memory, and
-defection is sufficiently punished. Nowak's 2006 *Science* synthesis of the five rules for
-the evolution of cooperation — kin selection, direct reciprocity, indirect reciprocity,
-network reciprocity, and group selection [@nowak2006five] — further cemented the IPD as a
-foundational model for social dynamics across disciplines.
+opponent's previous action. Axelrod's follow-up tournament [@axelrod1980more] and his
+landmark 1984 book [@axelrod1984evolution] elevated these findings into a general theory:
+cooperation is evolutionarily stable when interactions are repeated, agents have sufficient
+memory, and defection is sufficiently punished. Nowak's 2006 *Science* synthesis of the
+five rules for the evolution of cooperation — kin selection, direct reciprocity, indirect
+reciprocity, network reciprocity, and group selection [@nowak2006five] — cemented the IPD
+as a foundational model for social dynamics across disciplines. Axelrod himself revisited
+these themes in *The Complexity of Cooperation* [@axelrod1997complexity], extending his
+framework to norms, social structure, and adaptive agents — a precursor, in spirit, to the
+LLM generalization we undertake here.
 
 Yet the Axelrod tournament was, by necessity, severely circumscribed. Agents were
 hand-coded finite automata. The action space was binary: cooperate or defect. Strategies
@@ -32,8 +34,9 @@ receive natural-language descriptions of their role, history, and environment an
 free-text reasoning before committing to an action. This shifts the locus of strategy from
 the programmer to the model's emergent reasoning, enabling far richer behavioral
 repertoires. CAMEL [@li2023camel] pioneered role-playing LLM societies; AutoGen
-[@wu2023autogen] formalized multi-agent conversation patterns; MetaGPT [@hong2023metagpt]
-introduced role-specialization with shared memory. More recently, TradingAgents
+[@wu2023autogen] formalized multi-agent conversation patterns; MetaGPT
+[@hong2023metagpt, arXiv:2308.00352 — *verify*] introduced role-specialization with
+shared memory. More recently, TradingAgents
 [@liu2024tradingagents, arXiv:2412.20138] instantiated a multi-LLM financial trading
 system with analyst, risk management, and execution roles communicating through structured
 dialogues — the closest antecedent to our architecture. Oasis [@yang2024oasis,
@@ -43,9 +46,10 @@ real social network topologies.
 A critical and under-studied challenge in all of these systems is **behavioral
 homogeneity**: when agents share the same underlying model family or receive similar
 prompts, their outputs collapse toward consensus, forfeiting the ensemble's principal
-advantage over any single agent. DMAD [@zhou2025dmad, arXiv:2502] — Diverse Multi-Agent
-Debate — addresses this through adversarial prompting to force disagreement, but does so
-via external intervention rather than an endogenous mechanism the agents themselves invoke.
+advantage over any single agent. DMAD [@zhou2025dmad, arXiv:2502.XXXXX — *full ID to be confirmed in §2 BibTeX*] —
+Diverse Multi-Agent Debate — addresses this through adversarial prompting to force
+disagreement, but does so via external intervention rather than an endogenous mechanism
+the agents themselves invoke.
 The Prediction Arena framework [@anonymous2026arena, arXiv:2604.07355] provides an
 evaluation scaffold for prediction-market multi-agent experiments but does not formalize
 diversity as a first-class optimization target. The Agent Trading Arena [@du2025agenttrading,
@@ -80,26 +84,26 @@ This paper makes four contributions:
 
 1. **Axelrod-LLM formalization.** We define the *LLM Prediction Society Game* (LPSG) as a
    Bayesian population game over a continuous-action prediction market with common-knowledge
-   day-end broadcasts, generalizing the IPD to the LLM agent setting (§4).
+   day-end broadcasts, generalizing the IPD to the LLM agent setting (§3).
 
 2. **Sacrificial Role Reallocation (SRR).** We introduce SRR, a novel mechanism wherein
    an agent with persistent performance deficiency (defined formally as sustained negative
    regret relative to the society mean) probabilistically adopts an underrepresented
    strategy archetype from a predefined taxonomy, increasing population-level Jensen–Shannon
-   divergence (§4.3). We prove under mild assumptions that SRR is a Nash equilibrium
-   refinement: no agent can unilaterally deviate and improve *societal* Brier score (§4.4).
+   divergence (§3.3). We prove under mild assumptions that SRR is a Nash equilibrium
+   refinement: no agent can unilaterally deviate and improve *societal* Brier score (§3.4).
 
 3. **Real-world LLM trading experiment.** We deploy 12 heterogeneous LLM agents (spanning
    five provider ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, and
    self-hosted Phi-3.5) on the full 2025–26 NBA season (1,257 games) and 1,120 US
    political events, constituting — to our knowledge — the largest real-money-equivalent
-   LLM prediction market experiment in peer-reviewed literature (§5).
+   LLM prediction market experiment in peer-reviewed literature (§4).
 
 4. **Empirical validation of diversity-accuracy coupling.** We show that population-level
    Jensen–Shannon divergence of agent prediction distributions is positively correlated
    with ensemble Brier-score improvement, and that SRR reliably increases this divergence
    versus a fixed-ensemble control, an ablation of mechanism components, and a DMAD
-   baseline (§6).
+   baseline (§5).
 
 ## Paper Organization
 
