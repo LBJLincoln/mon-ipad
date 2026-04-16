@@ -84,9 +84,20 @@ ping_or_restart "P6 (extra_trees)" https://lbjlincoln-political-alpha-6.hf.space
 ping_or_restart "P7 (grad_boost)" https://lbjlincoln-political-alpha-7.hf.space/ "LBJLincoln/political-alpha-7"
 ping_or_restart "P8 (ensemble)"   https://lbjlincoln-political-alpha-8.hf.space/ "LBJLincoln/political-alpha-8"
 
-# Trading Floor + LLM Gateway (LBJLincoln26 account)
-ping_or_restart "TF (trading)"  https://lbjlincoln26-nba-llm-trading-floor.hf.space/ "LBJLincoln26/nba-llm-trading-floor"
-ping_or_restart "GW (gateway)"  https://lbjlincoln26-llm-gateway.hf.space/            "LBJLincoln26/llm-gateway"
+# Trading Floors + LLM Gateway (LBJLincoln26 account)
+ping_or_restart "TF-NBA"        https://lbjlincoln26-nba-llm-trading-floor.hf.space/         "LBJLincoln26/nba-llm-trading-floor"
+ping_or_restart "TF-Political"  https://lbjlincoln26-political-llm-trading-floor.hf.space/   "LBJLincoln26/political-llm-trading-floor"
+ping_or_restart "GW (gateway)"  https://lbjlincoln26-llm-gateway.hf.space/                   "LBJLincoln26/llm-gateway"
+
+# Pixel World + CPU LLM backends (Nomos42 account)
+ping_or_restart "PixelWorld"       https://nomos42-pixel-world.hf.space/        "Nomos42/pixel-world"
+ping_or_restart "LLM-CPU-Phi35"    https://nomos42-nomos42-llm-cpu.hf.space/    "Nomos42/nomos42-llm-cpu"
+ping_or_restart "LLM-Qwen3-4B"     https://nomos42-qwen3-4b-cpu.hf.space/       "Nomos42/qwen3-4b-cpu"
+ping_or_restart "LLM-SmolLM3"      https://nomos42-smollm3-3b-cpu.hf.space/     "Nomos42/smollm3-3b-cpu"
+ping_or_restart "LLM-Gemma3-4B"    https://nomos42-gemma3-4b-cpu.hf.space/      "Nomos42/gemma3-4b-cpu"
+ping_or_restart "LLM-Qwen25-05B"   https://nomos42-qwen25-05b-cpu.hf.space/     "Nomos42/qwen25-05b-cpu"
+ping_or_restart "LLM-Llama32-1B"   https://nomos42-llama32-1b-cpu.hf.space/     "Nomos42/llama32-1b-cpu"
+ping_or_restart "LLM-Gemma2-2B"    https://nomos42-gemma2-2b-cpu.hf.space/      "Nomos42/gemma2-2b-cpu"
 
 # Department Council Spaces (9) — all consolidated on TESTforge42 (2026-04-15 Option B migration)
 # TESTforge42: D1, D2, D3, D4, D5, D6, D7, D8, D9
