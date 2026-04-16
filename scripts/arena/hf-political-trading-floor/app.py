@@ -1402,34 +1402,25 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
 
         # Stackelberg leader for the day (arXiv 2507.09407)
         _stackelberg_leader = get_stackelberg_leader(state)
-        # Each agent decides for the whole day
-        for tid, cfg in TRADERS.items():
+
+        # PHASE 1 — parallel LLM calls (intra-day only; days remain sequential
+        # because Mech A common-knowledge broadcast on day N+1 reads day N).
+        def _agent_llm_worker(tid_cfg):
+            tid, cfg = tid_cfg
             provider = cfg["provider"]
             ts = state[tid]
-            bankroll = ts["bankroll"]
-
-            if bankroll <= 5.0:
-                # Bankrupt — skip, record history
-                ts["passes"] += 1
-                ts["history"].append(bankroll)
-                continue
-
+            if ts.get("bankroll", 0) <= 5.0:
+                return tid, None
             system_prompt = AGENT_SYSTEM_PROMPTS.get(tid, "You are a political alpha allocator.")
-            # DMAD (ICLR 2025): structurally distinct reasoning template per agent
             _template = REASONING_TEMPLATES.get(tid)
             if _template:
                 system_prompt = system_prompt + "\n\n" + _template
-            # Stackelberg role (leader or follower)
             system_prompt = system_prompt + build_stackelberg_role_block(tid, _stackelberg_leader)
-            # Axelrod Mech B: sacrificial role injection (bottom tier)
             if tid in _sacrificial_assignments:
                 system_prompt = system_prompt + build_sacrificial_system_suffix(_sacrificial_assignments[tid])
-            # Axelrod Mech B: mid-tier challenge injection (CHALLENGE[D])
             elif tid in _challenge_assignments:
                 system_prompt = system_prompt + build_challenge_block(tid, _challenge_assignments[tid], len(TRADERS))
-            # Axelrod Canon + Mech D cooperation rules
             system_prompt = AXELROD_CANON + "\n" + system_prompt
-            # Axelrod-Python real-library advice (per-peer C/D from canon strategy)
             _active_peers = [p for p in TRADERS if p != tid and state[p].get("bankroll", 0) > 5.0]
             _axl_block = _axelrod_advice_block(tid, _active_peers)
             if _axl_block:
@@ -1440,9 +1431,29 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 recent_decisions=ts.get("recent_decisions", []),
                 common_knowledge_block=prev_day_ck,
             )
+            try:
+                raw = _call_llm(provider, system_prompt, user_prompt, timeout=30.0)
+            except Exception:
+                raw = None
+            return tid, raw
 
+        _max_workers = min(len(TRADERS), 16)
+        with ThreadPoolExecutor(max_workers=_max_workers) as _pool:
+            _responses = dict(_pool.map(_agent_llm_worker, list(TRADERS.items())))
+
+        # PHASE 2 — sequential resolution.
+        for tid, cfg in TRADERS.items():
+            provider = cfg["provider"]
+            ts = state[tid]
+            bankroll = ts["bankroll"]
+
+            if bankroll <= 5.0:
+                ts["passes"] += 1
+                ts["history"].append(bankroll)
+                continue
+
+            raw_response = _responses.get(tid)
             ts["llm_calls"] += 1
-            raw_response = _call_llm(provider, system_prompt, user_prompt, timeout=30.0)
             if raw_response:
                 ts["llm_ok"] += 1
             parsed = parse_day_allocation(raw_response, len(day_events)) if raw_response else None
