@@ -158,11 +158,6 @@ AXELROD_STRATEGIES = {
     "mistral-small":     "Cooperator",
     "mistral-nemo":      "Defector",
     "mistral-ministral": "FirmButFair",
-    "nemotron-120b":     "Adaptive",
-    "gemma4-selfhost":   "Tullock",
-    "qwen25-micro":      "Random",
-    "llama32-micro":     "Cycler CCD",
-    "gemma2-micro":      "HardGoByMajority",
 }
 _axelrod_agents: Dict[str, object] = {}
 
@@ -240,11 +235,6 @@ REASONING_TEMPLATES = {
     "mistral-small":     "REASONING TEMPLATE (DMAD): RISK-AVERSE STRESS. Assume worst-case tail; trade only if still +EV.",
     "mistral-nemo":      "REASONING TEMPLATE (DMAD): MOMENTUM CHASE. Bet hardest on sectors with 5-day momentum > 2σ.",
     "mistral-ministral": "REASONING TEMPLATE (DMAD): THEORETICAL MODEL. Mental factor model from 3 coefficients → compute expected sector return.",
-    "nemotron-120b":     "REASONING TEMPLATE (DMAD): EXPLICIT 7-STEP CoT. context → hypothesis → evidence → counter → weight → conclusion → trade.",
-    "gemma4-selfhost":   "REASONING TEMPLATE (DMAD): 4-RULE CHECKLIST. (1) edge > 0.05 (2) bankroll > $30 (3) not same sector as yesterday (4) political catalyst dated within 14d. Trade iff ALL pass.",
-    "qwen25-micro":      "REASONING TEMPLATE (DMAD): PATTERN-MATCH. Find most similar historical political event in COMMON_KNOWLEDGE, mimic sector rotation.",
-    "llama32-micro":     "REASONING TEMPLATE (DMAD): ANCHOR & ADJUST. Anchor at consensus polling / betting-market prob, adjust ±10% on strongest signal.",
-    "gemma2-micro":      "REASONING TEMPLATE (DMAD): MINIMALIST. Pick the SINGLE highest-conviction trade of the day or PASS. Never > 1 trade.",
 }
 
 def get_stackelberg_leader(state: dict) -> Optional[str]:
@@ -380,43 +370,6 @@ PROVIDERS = {
         "max_tokens": 1200,
         "rpm": 20,
     },
-    # NEW 2026-04-15 — parity with NBA TF (T11-T15)
-    "openrouter:nemotron-120b": {
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "model": "nvidia/nemotron-3-super-120b:free",
-        "key_env": "OPENROUTER_API_KEY",
-        "max_tokens": 1200,
-        "rpm": 12,
-    },
-    "selfhost:cpu-gemma4": {
-        "url": "https://nomos42-nomos-cpu-gemma4.hf.space/api/decide",
-        "model": "phi-3.5-mini-instruct-q4_k_m",
-        "key_env": "SELFHOST_NOOP",
-        "max_tokens": 800,
-        "rpm": 6,
-    },
-    # 2026-04-16 REFRESH — 3 self-host CPU Spaces upgraded to 2026 SOTA (URLs unchanged)
-    "selfhost:qwen3-0.6b": {
-        "url": "https://nomos42-qwen25-05b-cpu.hf.space/chat/completions",
-        "model": "qwen3-0.6b-instruct",
-        "key_env": "SELFHOST_NOOP",
-        "max_tokens": 800,
-        "rpm": 12,
-    },
-    "selfhost:dolphin3-llama-3.2-3b": {
-        "url": "https://nomos42-llama32-1b-cpu.hf.space/chat/completions",
-        "model": "dolphin3-llama3.2-3b",
-        "key_env": "SELFHOST_NOOP",
-        "max_tokens": 800,
-        "rpm": 8,
-    },
-    "selfhost:gemma-4-e2b": {
-        "url": "https://nomos42-gemma2-2b-cpu.hf.space/chat/completions",
-        "model": "gemma-4-e2b-it",
-        "key_env": "SELFHOST_NOOP",
-        "max_tokens": 800,
-        "rpm": 4,
-    },
 }
 
 # ── AGENT DEFINITIONS (v3 — 10 personas across 3 providers, 2026-04-14) ──────
@@ -437,12 +390,6 @@ TRADERS = {
     "mistral-small":    {"name": "Mistral Small",    "provider": "mistral:small",        "personality": "conservative", "risk_tolerance": 0.35},
     "mistral-nemo":     {"name": "Mistral Nemo",     "provider": "mistral:nemo",         "personality": "aggressive",   "risk_tolerance": 0.70},
     "mistral-ministral":{"name": "Ministral 8B",     "provider": "mistral:ministral-8b", "personality": "theoretical",  "risk_tolerance": 0.35},
-    # NEW 2026-04-15 — parity with NBA TF (T11-T15)
-    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b", "personality": "chainthought", "risk_tolerance": 0.55},
-    "gemma4-selfhost":  {"name": "Gemma4 SelfHost",  "provider": "selfhost:cpu-gemma4",      "personality": "disciplined",  "risk_tolerance": 0.40},
-    "qwen25-micro":     {"name": "Qwen3 0.6B",       "provider": "selfhost:qwen3-0.6b",             "personality": "reactive",     "risk_tolerance": 0.30},
-    "llama32-micro":    {"name": "Dolphin3 Llama 3B","provider": "selfhost:dolphin3-llama-3.2-3b",  "personality": "balanced",     "risk_tolerance": 0.45},
-    "gemma2-micro":     {"name": "Gemma 4 E2B",      "provider": "selfhost:gemma-4-e2b",            "personality": "deliberate",   "risk_tolerance": 0.40},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -522,34 +469,6 @@ PREFERRED STRATEGIES: value_hunter, half_kelly, sector_arb
 EDGE DETECTION: Cross-signal scan — when 2+ regulatory events point same sector AND market hasn't moved >1%, that's the edge. Require signal_strength × sector_beta > 1.04.
 RISK: Moderate (0.55). Depth of reasoning over breadth.
 SPECIALTY: Healthcare/finance/defense ETFs on multi-agency corroboration.""",
-
-    "gemma4-selfhost": """You are Gemma4 SelfHost, a disciplined self-hosted political allocator on CPU Phi-3.5-mini.
-APPROACH: Small model, small bets. Pick one high-conviction sector ETF play per day. Prefer SPDR sector funds (XLF, XLE, XLV, XLI, XLK) over individual stocks.
-PREFERRED STRATEGIES: flat_1pct, quarter_kelly, top_signal_only
-EDGE DETECTION: Only deploy when signal_strength >0.7 AND single sector has ≥2 corroborating events. Otherwise cash.
-RISK: Low (0.40). Capital preservation over chase.
-SPECIALTY: Single sector ETF on multi-agency consensus. Slow CPU inference.""",
-
-    "qwen25-micro": """You are Qwen2.5 0.5B Micro, a reactive ultra-small political allocator on CPU.
-APPROACH: Tiny model, single decision. React only to the single strongest political signal of the day. One sector ETF max. No multi-leg, no individual stocks.
-PREFERRED STRATEGIES: flat_1pct, top_signal_only
-EDGE DETECTION: Require signal_strength >0.75 AND clear sector mapping. If signal is mixed or sector ambiguous, cash.
-RISK: Very low (0.30). Preserve capital; enter only on cleanest political catalyst.
-SPECIALTY: First-reaction plays on executive orders or major Fed rulings.""",
-
-    "llama32-micro": """You are Llama 3.2 1B Micro, a balanced self-hosted political allocator on CPU.
-APPROACH: Mid-tier small model. Balanced 1-2 sector ETF allocations per day. Respect signal thresholds; never force.
-PREFERRED STRATEGIES: quarter_kelly, sector_neutral, diversified_flat
-EDGE DETECTION: signal_strength >0.6 AND at least 1 corroborating donor or insider event. Diversify across 1-2 sectors rather than concentrate.
-RISK: Moderate-low (0.45). Steady compound approach.
-SPECIALTY: Cross-sector pairs (e.g., long XLV + long XLF on healthcare-finance regulatory bundle).""",
-
-    "gemma2-micro": """You are Gemma 2 2B Micro, a deliberate self-hosted political allocator on CPU (slow inference).
-APPROACH: Largest of the micro-agents, takes time to think. 1-2 high-quality sector plays per day. Prefer events with clear narrative + regulatory alignment.
-PREFERRED STRATEGIES: half_kelly, confidence_scaled, sector_value_hunter
-EDGE DETECTION: signal_strength >0.65 AND at least 2 distinct event types (e.g., insider_trade + fed_rule) align on same sector.
-RISK: Low-moderate (0.40). Depth over speed.
-SPECIALTY: Multi-event sector convergence plays. Strongest on healthcare and energy.""",
 }
 
 # ── RATE LIMITER ─────────────────────────────────────────────────────────────

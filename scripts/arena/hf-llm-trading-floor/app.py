@@ -48,20 +48,20 @@ from typing import Dict, List, Optional, Tuple
 from pathlib import Path
 import math
 
-# ── LANGFUSE OBSERVABILITY ──────────────────────────────────────────────────
+# ── LANGFUSE OBSERVABILITY (non-blocking — never delays TF startup) ────────
 _langfuse = None
 try:
     from langfuse import Langfuse
     _lf_pub = os.environ.get("LANGFUSE_PUBLIC_KEY", "")
     _lf_sec = os.environ.get("LANGFUSE_SECRET_KEY", "")
-    _lf_host = os.environ.get("LANGFUSE_HOST", "https://nomos42-langfuse.hf.space")
-    if _lf_pub and _lf_sec:
-        _langfuse = Langfuse(public_key=_lf_pub, secret_key=_lf_sec, host=_lf_host)
-        print(f"  LANGFUSE: connected → {_lf_host}")
+    _lf_host = os.environ.get("LANGFUSE_HOST", "")
+    if _lf_pub and _lf_sec and _lf_host:
+        _langfuse = Langfuse(public_key=_lf_pub, secret_key=_lf_sec, host=_lf_host, enabled=True, timeout=5)
+        print(f"  LANGFUSE: initialized → {_lf_host}")
     else:
-        print("  LANGFUSE: keys not set (observability disabled)")
-except ImportError:
-    print("  LANGFUSE: SDK not installed (pip install langfuse)")
+        print("  LANGFUSE: keys/host not set (observability disabled)")
+except Exception as e:
+    print(f"  LANGFUSE: init failed ({e}) — continuing without observability")
 
 def benjamini_hochberg(edges: List[Tuple[str, float]], alpha: float = 0.05) -> set:
     """Return set of category tags that survive BH FDR correction.
