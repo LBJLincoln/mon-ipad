@@ -89,14 +89,15 @@ ping_or_restart "TF-NBA"        https://lbjlincoln26-nba-llm-trading-floor.hf.sp
 ping_or_restart "TF-Political"  https://lbjlincoln26-political-llm-trading-floor.hf.space/   "LBJLincoln26/political-llm-trading-floor"
 ping_or_restart "GW (gateway)"  https://lbjlincoln26-llm-gateway.hf.space/                   "LBJLincoln26/llm-gateway"
 
-# CPU LLM backends (Nomos42 account) — pixel world moved to Vercel /world (HF static CDN bug)
-ping_or_restart "LLM-CPU-Phi35"    https://nomos42-nomos42-llm-cpu.hf.space/    "Nomos42/nomos42-llm-cpu"
+# CPU LLM backends (Nomos42 account) — 7 slots, 2026 SOTA fleet (Apr 16 2026 refresh).
+# Gemma-3-4B removed (superseded by Gemma-4-E4B + Qwen3-4B, fleet 8→7).
+# URLs unchanged — weights inside each Space refreshed. See llm-spaces/ Dockerfiles.
+ping_or_restart "LLM-Phi4mini"     https://nomos42-nomos42-llm-cpu.hf.space/    "Nomos42/nomos42-llm-cpu"
 ping_or_restart "LLM-Qwen3-4B"     https://nomos42-qwen3-4b-cpu.hf.space/       "Nomos42/qwen3-4b-cpu"
 ping_or_restart "LLM-SmolLM3"      https://nomos42-smollm3-3b-cpu.hf.space/     "Nomos42/smollm3-3b-cpu"
-ping_or_restart "LLM-Gemma3-4B"    https://nomos42-gemma3-4b-cpu.hf.space/      "Nomos42/gemma3-4b-cpu"
-ping_or_restart "LLM-Qwen25-05B"   https://nomos42-qwen25-05b-cpu.hf.space/     "Nomos42/qwen25-05b-cpu"
-ping_or_restart "LLM-Llama32-1B"   https://nomos42-llama32-1b-cpu.hf.space/     "Nomos42/llama32-1b-cpu"
-ping_or_restart "LLM-Gemma2-2B"    https://nomos42-gemma2-2b-cpu.hf.space/      "Nomos42/gemma2-2b-cpu"
+ping_or_restart "LLM-Qwen3-0.6B"   https://nomos42-qwen25-05b-cpu.hf.space/     "Nomos42/qwen25-05b-cpu"
+ping_or_restart "LLM-Dolphin3L3"   https://nomos42-llama32-1b-cpu.hf.space/     "Nomos42/llama32-1b-cpu"
+ping_or_restart "LLM-Gemma4-E2B"   https://nomos42-gemma2-2b-cpu.hf.space/      "Nomos42/gemma2-2b-cpu"
 
 # Department Council Spaces (9) — all consolidated on TESTforge42 (2026-04-15 Option B migration)
 # TESTforge42: D1, D2, D3, D4, D5, D6, D7, D8, D9

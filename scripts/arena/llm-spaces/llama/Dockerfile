@@ -1,4 +1,4 @@
-# Nomos42 Llama-3.2-1B CPU LLM Space — Docker SDK
+# Nomos42 Dolphin3.0-Llama3.2-3B CPU LLM Space — Docker SDK (2026 SOTA upgrade, JSON/function-calling tuned)
 FROM python:3.11-slim-bookworm
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -17,11 +17,11 @@ EXPOSE 7860
 RUN useradd -m -u 1000 user
 USER user
 
-ENV MODEL_REPO=bartowski/Llama-3.2-1B-Instruct-GGUF \
-    MODEL_FILE=Llama-3.2-1B-Instruct-Q4_K_M.gguf \
-    MODEL_DISPLAY=llama-3.2-1b-instruct \
+ENV MODEL_REPO=bartowski/Dolphin3.0-Llama3.2-3B-GGUF \
+    MODEL_FILE=Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf \
+    MODEL_DISPLAY=dolphin3-llama3.2-3b \
     CHAT_FORMAT=llama-3 \
-    N_CTX=2048 \
+    N_CTX=4096 \
     N_THREADS=2 \
     HF_HOME=/tmp/hf-cache
 

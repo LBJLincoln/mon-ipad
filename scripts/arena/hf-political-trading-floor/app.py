@@ -366,23 +366,24 @@ PROVIDERS = {
         "max_tokens": 800,
         "rpm": 6,
     },
-    "selfhost:qwen2.5-0.5b": {
+    # 2026-04-16 REFRESH — 3 self-host CPU Spaces upgraded to 2026 SOTA (URLs unchanged)
+    "selfhost:qwen3-0.6b": {
         "url": "https://nomos42-qwen25-05b-cpu.hf.space/chat/completions",
-        "model": "qwen2.5-0.5b-instruct",
+        "model": "qwen3-0.6b-instruct",
         "key_env": "SELFHOST_NOOP",
         "max_tokens": 800,
         "rpm": 12,
     },
-    "selfhost:llama-3.2-1b": {
+    "selfhost:dolphin3-llama-3.2-3b": {
         "url": "https://nomos42-llama32-1b-cpu.hf.space/chat/completions",
-        "model": "llama-3.2-1b-instruct",
+        "model": "dolphin3-llama3.2-3b",
         "key_env": "SELFHOST_NOOP",
         "max_tokens": 800,
-        "rpm": 10,
+        "rpm": 8,
     },
-    "selfhost:gemma-2-2b": {
+    "selfhost:gemma-4-e2b": {
         "url": "https://nomos42-gemma2-2b-cpu.hf.space/chat/completions",
-        "model": "gemma-2-2b-it",
+        "model": "gemma-4-e2b-it",
         "key_env": "SELFHOST_NOOP",
         "max_tokens": 800,
         "rpm": 4,
@@ -410,9 +411,9 @@ TRADERS = {
     # NEW 2026-04-15 — parity with NBA TF (T11-T15)
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b", "personality": "chainthought", "risk_tolerance": 0.55},
     "gemma4-selfhost":  {"name": "Gemma4 SelfHost",  "provider": "selfhost:cpu-gemma4",      "personality": "disciplined",  "risk_tolerance": 0.40},
-    "qwen25-micro":     {"name": "Qwen2.5 0.5B",     "provider": "selfhost:qwen2.5-0.5b",    "personality": "reactive",     "risk_tolerance": 0.30},
-    "llama32-micro":    {"name": "Llama 3.2 1B",     "provider": "selfhost:llama-3.2-1b",    "personality": "balanced",     "risk_tolerance": 0.45},
-    "gemma2-micro":     {"name": "Gemma 2 2B",       "provider": "selfhost:gemma-2-2b",      "personality": "deliberate",   "risk_tolerance": 0.40},
+    "qwen25-micro":     {"name": "Qwen3 0.6B",       "provider": "selfhost:qwen3-0.6b",             "personality": "reactive",     "risk_tolerance": 0.30},
+    "llama32-micro":    {"name": "Dolphin3 Llama 3B","provider": "selfhost:dolphin3-llama-3.2-3b",  "personality": "balanced",     "risk_tolerance": 0.45},
+    "gemma2-micro":     {"name": "Gemma 4 E2B",      "provider": "selfhost:gemma-4-e2b",            "personality": "deliberate",   "risk_tolerance": 0.40},
 }
 
 AGENT_SYSTEM_PROMPTS = {

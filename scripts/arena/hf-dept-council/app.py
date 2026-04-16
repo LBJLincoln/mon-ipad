@@ -41,11 +41,11 @@ DEPT_GATEWAY_MAP = {
     "d2": "cerebras:llama3.1-8b",     # Engineering — fast code
     "d3": "cerebras:qwen-3-235b",     # Evolution — analytical
     "d4": "mistral:medium",           # Product — ensemble, balanced
-    "d5": "selfhost:gemma-2-2b",      # Business — local CPU (low-traffic, fast Gemma)
+    "d5": "selfhost:gemma-4-e2b",     # Business — local CPU (Gemma-4 native JSON, Apr 2026)
     "d6": "cerebras:qwen-3-235b",     # Evaluation — best reasoning (stays cloud)
     "d7": "cerebras:llama3.1-8b",     # Infra — fast + reliable
     "d8": "selfhost:qwen3-4b",        # Finance — local CPU (Qwen3-4B reasoning, no quota)
-    "d9": "selfhost:phi-3.5",         # Cross-repo — local CPU (mature Phi-3.5 self-host)
+    "d9": "selfhost:phi-4-mini",      # Cross-repo — local CPU (Phi-4-mini 128K ctx, MIT)
 }
 
 # Legacy HF-Router map kept only as fallback if the gateway is fully down.

@@ -1,4 +1,4 @@
-# Nomos42 Qwen2.5-0.5B CPU LLM Space — Docker SDK
+# Nomos42 Qwen3-0.6B CPU LLM Space — Docker SDK (2026 SOTA upgrade)
 FROM python:3.11-slim-bookworm
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -17,10 +17,11 @@ EXPOSE 7860
 RUN useradd -m -u 1000 user
 USER user
 
-ENV MODEL_REPO=Qwen/Qwen2.5-0.5B-Instruct-GGUF \
-    MODEL_FILE=qwen2.5-0.5b-instruct-q4_k_m.gguf \
-    MODEL_DISPLAY=qwen2.5-0.5b-instruct \
-    N_CTX=2048 \
+ENV MODEL_REPO=unsloth/Qwen3-0.6B-GGUF \
+    MODEL_FILE=Qwen3-0.6B-Q4_K_M.gguf \
+    MODEL_DISPLAY=qwen3-0.6b-instruct \
+    CHAT_FORMAT=chatml \
+    N_CTX=4096 \
     N_THREADS=2 \
     HF_HOME=/tmp/hf-cache
 
