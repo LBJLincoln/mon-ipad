@@ -129,6 +129,11 @@ AXELROD_STRATEGIES = {
     "mistral-small":     "Cooperator",
     "mistral-nemo":      "Defector",
     "mistral-ministral": "FirmButFair",
+    "nemotron-120b":     "Adaptive",
+    "gemma4-selfhost":   "Tullock",
+    "qwen25-micro":      "Random",
+    "llama32-micro":     "Cycler CCD",
+    "gemma2-micro":      "HardGoByMajority",
 }
 _axelrod_agents: Dict[str, object] = {}
 
