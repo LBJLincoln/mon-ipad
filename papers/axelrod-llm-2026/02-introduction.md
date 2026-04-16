@@ -35,19 +35,20 @@ free-text reasoning before committing to an action. This shifts the locus of str
 the programmer to the model's emergent reasoning, enabling far richer behavioral
 repertoires. CAMEL [@li2023camel] pioneered role-playing LLM societies; AutoGen
 [@wu2023autogen] formalized multi-agent conversation patterns; MetaGPT
-[@hong2023metagpt, arXiv:2308.00352 — *verify*] introduced role-specialization with
+[@hong2023metagpt, arXiv:2308.00352] introduced role-specialization with
 shared memory. More recently, TradingAgents
-[@liu2024tradingagents, arXiv:2412.20138] instantiated a multi-LLM financial trading
+[@liu2024tradingagents] instantiated a multi-LLM financial trading
 system with analyst, risk management, and execution roles communicating through structured
-dialogues — the closest antecedent to our architecture. Oasis [@yang2024oasis,
-camel-ai/oasis] extended multi-agent interaction to one-million-node social simulations on
+dialogues — the closest antecedent to our architecture. Oasis [@yang2024oasis]
+extended multi-agent interaction to one-million-node social simulations on
 real social network topologies.
 
 A critical and under-studied challenge in all of these systems is **behavioral
 homogeneity**: when agents share the same underlying model family or receive similar
 prompts, their outputs collapse toward consensus, forfeiting the ensemble's principal
-advantage over any single agent. DMAD [@zhou2025dmad, arXiv:2502.XXXXX — *full ID to be confirmed in §2 BibTeX*] —
-Diverse Multi-Agent Debate — addresses this through adversarial prompting to force
+advantage over any single agent. DMAD [@liu2025dmad] —
+*Breaking Mental Set to Improve Reasoning through Diverse Multi-Agent Debate* (ICLR 2025) —
+addresses this through adversarial prompting to force
 disagreement, but does so via external intervention rather than an endogenous mechanism
 the agents themselves invoke.
 The Prediction Arena framework [@anonymous2026arena, arXiv:2604.07355] provides an
