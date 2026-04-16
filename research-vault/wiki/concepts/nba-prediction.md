@@ -131,8 +131,8 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/karpathy-researcher/feedback_karpathy_patterns_validated.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/data-research/research-cycle-2026-03-26.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
-- **Karpathy NBA — Mutation Effectiveness Analysis** (328 words) -- `raw/karpathy/nba-mutation-analysis.md`
 - **Karpathy Iteration Log Summary** (326 words) -- `raw/karpathy/iteration-log-summary.md`
+- **Karpathy NBA — Mutation Effectiveness Analysis** (317 words) -- `raw/karpathy/nba-mutation-analysis.md`
 - **Nomos42 Weekly Research Digest** (314 words) -- `raw/research/weekly-digest-2026-04-13.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/agent-memory/repo-scout_project_historical_odds_sources.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/repo-scout/project_historical_odds_sources.md`
