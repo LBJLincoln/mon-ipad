@@ -54,10 +54,11 @@ except Exception as _lf_exc:
 # ── MODEL REGISTRY ──────────────────────────────────────────────────────────
 # Every model we can route to, organized by provider
 MODELS = {
-    # ── SELF-HOST tier-1 (2026 SOTA upgrade: Phi-4-mini, Qwen3-0.6B, Dolphin3-Llama3.2-3B, Gemma-4-E2B) ──
-    # URLs kept identical to avoid HF Space rename cost; model displays reflect new weights.
+    # ── SELF-HOST (only Spaces with ready=true kept. Pruned 2026-04-16:
+    #    qwen25-05b-cpu (404), llama32-1b-cpu (404), gemma2-2b-cpu (download_failed),
+    #    smollm3-3b-cpu (download_failed). Phi-4-mini URL fixed to /v1/chat/completions.) ──
     "selfhost:phi-4-mini": {
-        "url": "https://nomos42-nomos42-llm-cpu.hf.space/chat/completions",
+        "url": "https://nomos42-nomos42-llm-cpu.hf.space/v1/chat/completions",
         "model": "phi-4-mini-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
@@ -65,46 +66,9 @@ MODELS = {
         "rpm": 60,
         "tier": "fast",
     },
-    "selfhost:qwen3-0.6b": {
-        "url": "https://nomos42-qwen25-05b-cpu.hf.space/chat/completions",
-        "model": "qwen3-0.6b-instruct",
-        "key_env": "NOMOS_HF_TOKEN",
-        "provider": "selfhost",
-        "max_tokens": 400,
-        "rpm": 60,
-        "tier": "fast",
-    },
-    "selfhost:dolphin3-llama-3.2-3b": {
-        "url": "https://nomos42-llama32-1b-cpu.hf.space/chat/completions",
-        "model": "dolphin3-llama3.2-3b",
-        "key_env": "NOMOS_HF_TOKEN",
-        "provider": "selfhost",
-        "max_tokens": 400,
-        "rpm": 60,
-        "tier": "fast",
-    },
-    "selfhost:gemma-4-e2b": {
-        "url": "https://nomos42-gemma2-2b-cpu.hf.space/chat/completions",
-        "model": "gemma-4-e2b-it",
-        "key_env": "NOMOS_HF_TOKEN",
-        "provider": "selfhost",
-        "max_tokens": 400,
-        "rpm": 60,
-        "tier": "fast",
-    },
-    # ── SELF-HOST tier-2 (Qwen3-4B / SmolLM3-3B — 2026 SOTA small CPU; Gemma-3-4B DELETED Apr 16) ──
     "selfhost:qwen3-4b": {
         "url": "https://nomos42-qwen3-4b-cpu.hf.space/v1/chat/completions",
         "model": "qwen3-4b-instruct",
-        "key_env": "NOMOS_HF_TOKEN",
-        "provider": "selfhost",
-        "max_tokens": 400,
-        "rpm": 60,
-        "tier": "medium",
-    },
-    "selfhost:smollm3-3b": {
-        "url": "https://nomos42-smollm3-3b-cpu.hf.space/v1/chat/completions",
-        "model": "smollm3-3b",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
@@ -268,31 +232,26 @@ MODELS = {
 # If primary model fails, try these in order. T12 self-host appended as last
 # resort on every chain (no quota, no rate limit — slow but never fails).
 FALLBACK_CHAINS = {
-    # ── SELF-HOST tier-1 (2026 SOTA: Phi-4-mini, Qwen3-0.6B, Dolphin3-Llama3.2-3B, Gemma-4-E2B) ──
-    "selfhost:phi-4-mini":               ["cerebras:llama3.1-8b", "google:gemini-2.5-flash", "openrouter:gemma-4-26b:free", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "selfhost:qwen3-0.6b":               ["selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b", "selfhost:phi-4-mini", "cerebras:llama3.1-8b"],
-    "selfhost:dolphin3-llama-3.2-3b":    ["selfhost:qwen3-0.6b", "selfhost:gemma-4-e2b", "selfhost:phi-4-mini", "cerebras:llama3.1-8b"],
-    "selfhost:gemma-4-e2b":              ["selfhost:dolphin3-llama-3.2-3b", "selfhost:qwen3-0.6b", "selfhost:phi-4-mini", "cerebras:llama3.1-8b"],
-    "cerebras:qwen-3-235b":              ["cerebras:llama3.1-8b", "openrouter:qwen3-80b:free", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "cerebras:llama3.1-8b":              ["cerebras:qwen-3-235b", "google:gemini-2.5-flash", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "openrouter:glm-4.5-air:free":       ["cerebras:llama3.1-8b", "openrouter:gpt-oss-20b:free", "google:gemini-3-flash", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "openrouter:gpt-oss-20b:free":       ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "cerebras:llama3.1-8b", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "google:gemini-2.5-flash":           ["google:gemini-3-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "google:gemini-3-flash":             ["google:gemini-2.5-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "openrouter:gemma-4-26b:free":       ["openrouter:llama-3.3-70b:free", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "openrouter:nemotron-120b:free":     ["openrouter:qwen3-80b:free", "cerebras:qwen-3-235b", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "openrouter:minimax-m2.5:free":      ["openrouter:gpt-oss-20b:free", "openrouter:glm-4.5-air:free", "cerebras:llama3.1-8b", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "openrouter:qwen3-80b:free":         ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "openrouter:llama-3.3-70b:free":     ["cerebras:llama3.1-8b", "openrouter:nemotron-120b:free", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    # Mistral fallback chains — all 5 models chain to Mistral siblings first, then cross-provider
-    "mistral:large":                     ["mistral:medium", "mistral:small", "cerebras:qwen-3-235b", "google:gemini-3-flash", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "mistral:medium":                    ["mistral:small", "mistral:large", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "mistral:small":                     ["mistral:ministral-8b", "mistral:nemo", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "mistral:nemo":                      ["mistral:small", "mistral:ministral-8b", "cerebras:llama3.1-8b", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    "mistral:ministral-8b":              ["mistral:nemo", "mistral:small", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-4-mini", "selfhost:qwen3-0.6b", "selfhost:dolphin3-llama-3.2-3b", "selfhost:gemma-4-e2b"],
-    # Tier-2 self-host (2026 SOTA small CPU) — Gemma-3-4B deleted Apr 16, fleet 8→7
-    "selfhost:qwen3-4b":                 ["selfhost:smollm3-3b", "selfhost:phi-4-mini", "cerebras:llama3.1-8b", "selfhost:gemma-4-e2b"],
-    "selfhost:smollm3-3b":               ["selfhost:qwen3-4b", "selfhost:phi-4-mini", "cerebras:llama3.1-8b", "selfhost:gemma-4-e2b"],
+    # Self-host tier (2 live Spaces: phi-4-mini on nomos42-llm-cpu, qwen3-4b on nomos42-qwen3-4b-cpu).
+    # Dead refs pruned 2026-04-16: qwen3-0.6b, dolphin3-llama-3.2-3b, gemma-4-e2b, smollm3-3b.
+    "selfhost:phi-4-mini":               ["cerebras:llama3.1-8b", "google:gemini-2.5-flash", "openrouter:gemma-4-26b:free", "selfhost:qwen3-4b"],
+    "selfhost:qwen3-4b":                 ["selfhost:phi-4-mini", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
+    "cerebras:qwen-3-235b":              ["cerebras:llama3.1-8b", "openrouter:qwen3-80b:free", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "cerebras:llama3.1-8b":              ["cerebras:qwen-3-235b", "google:gemini-2.5-flash", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "openrouter:glm-4.5-air:free":       ["cerebras:llama3.1-8b", "openrouter:gpt-oss-20b:free", "google:gemini-3-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "openrouter:gpt-oss-20b:free":       ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "cerebras:llama3.1-8b", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "google:gemini-2.5-flash":           ["google:gemini-3-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "google:gemini-3-flash":             ["google:gemini-2.5-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "openrouter:gemma-4-26b:free":       ["openrouter:llama-3.3-70b:free", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "openrouter:nemotron-120b:free":     ["openrouter:qwen3-80b:free", "cerebras:qwen-3-235b", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "openrouter:minimax-m2.5:free":      ["openrouter:gpt-oss-20b:free", "openrouter:glm-4.5-air:free", "cerebras:llama3.1-8b", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "openrouter:qwen3-80b:free":         ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "openrouter:llama-3.3-70b:free":     ["cerebras:llama3.1-8b", "openrouter:nemotron-120b:free", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "mistral:large":                     ["mistral:medium", "mistral:small", "cerebras:qwen-3-235b", "google:gemini-3-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "mistral:medium":                    ["mistral:small", "mistral:large", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "mistral:small":                     ["mistral:ministral-8b", "mistral:nemo", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "mistral:nemo":                      ["mistral:small", "mistral:ministral-8b", "cerebras:llama3.1-8b", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "mistral:ministral-8b":              ["mistral:nemo", "mistral:small", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
 }
 
 # ── HEALTH TRACKER ──────────────────────────────────────────────────────────

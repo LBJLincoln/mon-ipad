@@ -85,6 +85,19 @@ class DecideIn(BaseModel):
     json_only: bool = True
 
 
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+
+class ChatCompletionIn(BaseModel):
+    model: str | None = None
+    messages: list[ChatMessage]
+    max_tokens: int = 600
+    temperature: float = 0.3
+    response_format: dict | None = None
+
+
 @app.get("/")
 def root():
     return {
@@ -142,6 +155,31 @@ def decide(payload: DecideIn):
             "tokens_out": usage.get("completion_tokens"),
             "model": MODEL_FILE,
         }
+    except Exception as e:
+        _stats["errors"] += 1
+        return {"error": str(e), "elapsed_s": round(time.time() - t0, 2)}
+
+
+@app.post("/v1/chat/completions")
+def openai_chat_completions(payload: ChatCompletionIn):
+    if _llm is None:
+        return {"error": _load_error or "model still loading", "ready": False}
+    t0 = time.time()
+    try:
+        kwargs = dict(
+            messages=[m.model_dump() for m in payload.messages],
+            max_tokens=payload.max_tokens,
+            temperature=payload.temperature,
+        )
+        if payload.response_format:
+            kwargs["response_format"] = payload.response_format
+        out = _llm.create_chat_completion(**kwargs)
+        usage = out.get("usage", {})
+        elapsed = time.time() - t0
+        _stats["calls"] += 1
+        _stats["total_seconds"] += elapsed
+        _stats["total_tokens_out"] += int(usage.get("completion_tokens", 0))
+        return out
     except Exception as e:
         _stats["errors"] += 1
         return {"error": str(e), "elapsed_s": round(time.time() - t0, 2)}
