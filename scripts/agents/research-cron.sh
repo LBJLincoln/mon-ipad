@@ -43,7 +43,7 @@ log "═══ RESEARCH SCAN START ═══"
 # ─── R1: ArXiv Scan ──────────────────────────────────────────
 log "[R1] Scanning ArXiv for NBA prediction / sports ML papers..."
 
-ARXIV_URL="http://export.arxiv.org/api/query?search_query=all:NBA+prediction+OR+all:sports+betting+machine+learning+OR+all:Brier+score+calibration&sortBy=submittedDate&sortOrder=descending&max_results=5"
+ARXIV_URL="https://export.arxiv.org/api/query?search_query=all:NBA+prediction+OR+all:sports+betting+machine+learning+OR+all:Brier+score+calibration&sortBy=submittedDate&sortOrder=descending&max_results=5"
 ARXIV_XML=$(curl -sf --max-time 30 "$ARXIV_URL" 2>/dev/null) || ARXIV_XML=""
 
 if [ -n "$ARXIV_XML" ]; then
@@ -193,7 +193,7 @@ fi
 # ─── R3: Additional ArXiv queries (calibration + ensemble) ───
 log "[R3] Scanning ArXiv for calibration & ensemble methods..."
 
-ARXIV_URL2="http://export.arxiv.org/api/query?search_query=all:probability+calibration+neural+network+OR+all:ensemble+sports+prediction&sortBy=submittedDate&sortOrder=descending&max_results=5"
+ARXIV_URL2="https://export.arxiv.org/api/query?search_query=all:probability+calibration+neural+network+OR+all:ensemble+sports+prediction&sortBy=submittedDate&sortOrder=descending&max_results=5"
 ARXIV_XML2=$(curl -sf --max-time 30 "$ARXIV_URL2" 2>/dev/null) || ARXIV_XML2=""
 
 if [ -n "$ARXIV_XML2" ]; then
@@ -330,10 +330,95 @@ else
     log "[R4] GitHub betting query unreachable, skipping"
 fi
 
+# ─── R5: ArXiv — Axelrod / iterated prisoner / multi-agent cooperation ───
+log "[R5] Scanning ArXiv for Axelrod / multi-agent cooperation papers..."
+
+ARXIV_URL5="https://export.arxiv.org/api/query?search_query=%28cat%3Acs.MA+OR+cat%3Acs.GT%29+AND+%28all%3Aaxelrod+OR+all%3A%22iterated+prisoner%22+OR+all%3A%22multi-agent+cooperation%22+OR+all%3A%22LLM+agents+cooperation%22%29&sortBy=submittedDate&sortOrder=descending&max_results=10"
+ARXIV_XML5=$(curl -sf --max-time 30 "$ARXIV_URL5" 2>/dev/null) || ARXIV_XML5=""
+
+if [ -n "$ARXIV_XML5" ]; then
+    python3 -c "
+import xml.etree.ElementTree as ET
+import json, sys
+xml_data = sys.stdin.read()
+ns = {'atom': 'http://www.w3.org/2005/Atom'}
+root = ET.fromstring(xml_data)
+papers = []
+for entry in root.findall('atom:entry', ns):
+    title = entry.find('atom:title', ns)
+    summary = entry.find('atom:summary', ns)
+    published = entry.find('atom:published', ns)
+    link = entry.find('atom:id', ns)
+    authors = [a.find('atom:name', ns).text for a in entry.findall('atom:author', ns)]
+    papers.append({
+        'title': title.text.strip().replace('\n', ' ') if title is not None else '',
+        'summary': summary.text.strip()[:500].replace('\n', ' ') if summary is not None else '',
+        'published': published.text if published is not None else '',
+        'url': link.text if link is not None else '',
+        'authors': authors,
+    })
+json.dump({'scan_date':'$TODAY','query':'cs.MA+cs.GT axelrod OR iterated prisoner OR multi-agent cooperation','paper_count':len(papers),'papers':papers}, sys.stdout, indent=2)
+" <<< "$ARXIV_XML5" > "$RESEARCH_DIR/arxiv-axelrod-scan-$TODAY.json" 2>>"$LOGFILE"
+    AXEL_COUNT=$(python3 -c "import json; print(json.load(open('$RESEARCH_DIR/arxiv-axelrod-scan-$TODAY.json'))['paper_count'])" 2>/dev/null || echo "0")
+    log "[R5] Found $AXEL_COUNT Axelrod/cooperation papers"
+    if [ "${AXEL_COUNT:-0}" -gt 0 ]; then
+        NEWEST=$(python3 -c "import json; d=json.load(open('$RESEARCH_DIR/arxiv-axelrod-scan-$TODAY.json')); p=d['papers'][0]; print(p['title'][:100]+' | '+p['url'])" 2>/dev/null || echo "")
+        send_telegram "🤝 <b>R5 AXELROD ALERT</b>%0A%0A${AXEL_COUNT} new cooperation papers%0A%0ATop: ${NEWEST}"
+    fi
+else
+    log "[R5] ArXiv axelrod query unreachable"
+    send_telegram "⚠️ R5 arXiv axelrod query unreachable (silent failure detector)"
+fi
+
+# ─── R6: ArXiv — multi-agent LLM trading / financial arena ───
+log "[R6] Scanning ArXiv for multi-agent LLM trading papers..."
+
+ARXIV_URL6="https://export.arxiv.org/api/query?search_query=%28all%3A%22multi-agent+LLM%22+OR+all%3A%22trading+agents%22+OR+all%3A%22prediction+arena%22+OR+all%3A%22agent+trading%22%29+AND+%28all%3Atrading+OR+all%3Afinancial+OR+all%3Abetting+OR+all%3Aarena%29&sortBy=submittedDate&sortOrder=descending&max_results=10"
+ARXIV_XML6=$(curl -sf --max-time 30 "$ARXIV_URL6" 2>/dev/null) || ARXIV_XML6=""
+
+if [ -n "$ARXIV_XML6" ]; then
+    python3 -c "
+import xml.etree.ElementTree as ET
+import json, sys
+xml_data = sys.stdin.read()
+ns = {'atom': 'http://www.w3.org/2005/Atom'}
+root = ET.fromstring(xml_data)
+papers = []
+for entry in root.findall('atom:entry', ns):
+    title = entry.find('atom:title', ns)
+    summary = entry.find('atom:summary', ns)
+    published = entry.find('atom:published', ns)
+    link = entry.find('atom:id', ns)
+    authors = [a.find('atom:name', ns).text for a in entry.findall('atom:author', ns)]
+    papers.append({
+        'title': title.text.strip().replace('\n', ' ') if title is not None else '',
+        'summary': summary.text.strip()[:500].replace('\n', ' ') if summary is not None else '',
+        'published': published.text if published is not None else '',
+        'url': link.text if link is not None else '',
+        'authors': authors,
+    })
+json.dump({'scan_date':'$TODAY','query':'multi-agent LLM trading OR prediction arena','paper_count':len(papers),'papers':papers}, sys.stdout, indent=2)
+" <<< "$ARXIV_XML6" > "$RESEARCH_DIR/arxiv-multiagent-trading-scan-$TODAY.json" 2>>"$LOGFILE"
+    MAT_COUNT=$(python3 -c "import json; print(json.load(open('$RESEARCH_DIR/arxiv-multiagent-trading-scan-$TODAY.json'))['paper_count'])" 2>/dev/null || echo "0")
+    log "[R6] Found $MAT_COUNT multi-agent trading papers"
+else
+    log "[R6] ArXiv multi-agent trading query unreachable"
+fi
+
+# ─── Silent-failure alerts on R1/R3 (previously swallowed) ───
+if [ -z "$ARXIV_XML" ]; then
+    send_telegram "⚠️ R1 arXiv NBA query unreachable (silent failure detector)"
+fi
+if [ -z "$ARXIV_XML2" ]; then
+    send_telegram "⚠️ R3 arXiv calibration query unreachable (silent failure detector)"
+fi
+
 # ─── Summary ─────────────────────────────────────────────────
 log "═══ RESEARCH SCAN COMPLETE ═══"
 log "  ArXiv NBA/sports: ${PAPER_COUNT:-0} papers"
 log "  ArXiv calibration: ${CAL_COUNT:-0} papers"
+log "  ArXiv axelrod/coop: ${AXEL_COUNT:-0} papers"
+log "  ArXiv multi-agent trading: ${MAT_COUNT:-0} papers"
 log "  GitHub NBA ML: ${REPO_COUNT:-0} repos"
 log "  GitHub betting: ${BET_COUNT:-0} repos"
 

@@ -43,7 +43,7 @@ DEPT_GATEWAY_MAP = {
     "d4": "mistral:medium",           # Product — ensemble, balanced
     "d5": "mistral:small",            # Business — fast
     "d6": "cerebras:qwen-3-235b",     # Evaluation — best reasoning
-    "d7": "selfhost:qwen3-4b",        # Infra — local CPU, no quota
+    "d7": "cerebras:llama3.1-8b",     # Infra — fast + reliable (selfhost timed out)
     "d8": "mistral:large",            # Finance — deep analytical
     "d9": "cerebras:qwen-3-235b",     # Cross-repo — big-context reasoning
 }
@@ -305,95 +305,196 @@ def _scan_spaces() -> dict:
             results[name] = {"error": str(e)[:100]}
     return results
 
+
+# -- Live arXiv feed per department (real, not hardcoded) ---------------------
+
+DEPT_ARXIV_QUERIES = {
+    "d1": "(cat:cs.LG OR cat:stat.ML) AND (all:%22Brier+score%22 OR all:%22probability+calibration%22 OR all:%22isotonic+regression%22 OR all:%22Venn-Abers%22 OR all:TabPFN)",
+    "d2": "(cat:cs.SE OR cat:cs.LG) AND (all:%22feature+engineering%22 OR all:%22tabular+learning%22 OR all:AutoML)",
+    "d3": "(cat:cs.NE OR cat:cs.AI) AND (all:%22evolutionary+algorithm%22 OR all:%22genetic+algorithm%22 OR all:%22darwinian%22 OR all:%22island+model%22)",
+    "d4": "(cat:cs.HC) AND (all:dashboard OR all:%22information+design%22 OR all:%22data+visualization%22 OR all:%22social+media+engagement%22)",
+    "d5": "(cat:q-fin.PM OR cat:q-fin.TR OR cat:econ.GN) AND (all:%22Kelly+criterion%22 OR all:%22optimal+pricing%22 OR all:%22customer+acquisition%22 OR all:SaaS)",
+    "d6": "(cat:cs.LG OR cat:stat.ME) AND (all:%22model+audit%22 OR all:%22calibration+error%22 OR all:%22backtest%22 OR all:%22combinatorial+purged%22)",
+    "d7": "(cat:cs.DC OR cat:cs.SE) AND (all:%22MLOps%22 OR all:%22uptime%22 OR all:%22model+serving%22 OR all:Kubernetes)",
+    "d8": "(cat:q-fin.RM OR cat:q-fin.PM) AND (all:%22risk+management%22 OR all:%22Monte+Carlo%22 OR all:%22value+at+risk%22 OR all:%22Sharpe+ratio%22)",
+    "d9": "(cat:cs.SE) AND (all:%22monorepo%22 OR all:%22cross-repo%22 OR all:%22code+parity%22 OR all:%22schema+migration%22)",
+}
+
+def _fetch_dept_papers(dept_id: str, max_results: int = 5) -> list:
+    """Fetch the NEWEST arXiv papers matching this dept's domain.
+    Real, live, not hardcoded. Returns list of {title, summary, url, published}."""
+    query = DEPT_ARXIV_QUERIES.get(dept_id, DEPT_ARXIV_QUERIES["d1"])
+    url = (
+        f"https://export.arxiv.org/api/query?search_query={query}"
+        f"&sortBy=submittedDate&sortOrder=descending&max_results={max_results}"
+    )
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Nomos42Council/1.0"})
+        with urllib.request.urlopen(req, timeout=20, context=_ssl_ctx()) as resp:
+            import xml.etree.ElementTree as ET
+            root = ET.fromstring(resp.read())
+            ns = {"atom": "http://www.w3.org/2005/Atom"}
+            out = []
+            for entry in root.findall("atom:entry", ns):
+                t = entry.find("atom:title", ns)
+                s = entry.find("atom:summary", ns)
+                p = entry.find("atom:published", ns)
+                l = entry.find("atom:id", ns)
+                out.append({
+                    "title": (t.text or "").strip().replace("\n", " ")[:200],
+                    "summary": (s.text or "").strip().replace("\n", " ")[:400],
+                    "published": (p.text or "")[:10],
+                    "url": (l.text or ""),
+                })
+            return out
+    except Exception:
+        return []
+
 # -- Department-specific prompts -----------------------------------------------
 
 DEPT_PROMPTS = {
-    "d1": """You are the RESEARCH department AI for Nomos42 NBA quant AI.
+    "d1": """You are the D1 RESEARCH department head for Nomos42 NBA quant AI.
+Niche: probability calibration, tabular SOTA (TabPFN/TabICL), Brier < 0.20 hunting.
 Mission: {mission}
-Current fleet status:
+
+Fleet status:
 {context}
 
-Your task: Propose ONE concrete research action for the next 5 minutes.
-Output ONLY valid JSON (no markdown, no explanation outside the JSON):
-{{"action": "string (one of: propose_feature, propose_calibration, write_proposal, scan_paper)", "description": "1 sentence max", "priority": "high|medium|low", "reasoning": "2 sentences max"}}""",
+Latest arXiv papers in your niche (FRESH, pulled live):
+{papers}
 
-    "d2": """You are the ENGINEERING department AI for Nomos42 NBA quant AI.
+Your job: pick ONE paper above and propose applying its core technique to our 21 evolution islands.
+Output ONLY valid JSON:
+{{"action": "propose_feature|propose_calibration|write_proposal|scan_paper", "paper_url": "arxiv url from list above or empty", "technique": "the concrete technique to try", "target_island": "S10..S22", "expected_brier_delta": "-0.001|-0.002|-0.005", "reasoning": "2 sentences"}}""",
+
+    "d2": """You are the D2 ENGINEERING department head for Nomos42.
+Niche: features/engine.py parity, AutoML, tabular SOTA, code hygiene.
 Mission: {mission}
-Current fleet status:
+
+Fleet status:
 {context}
 
-Your task: Propose ONE concrete engineering action for the next 5 minutes.
-Output ONLY valid JSON (no markdown):
-{{"action": "string (one of: add_feature, fix_bug, optimize_code, verify_parity)", "description": "1 sentence max", "target_file": "features/engine.py or other", "priority": "high|medium|low", "reasoning": "2 sentences max"}}""",
+Latest arXiv papers in your niche:
+{papers}
 
-    "d3": """You are the EVOLUTION department AI for Nomos42 NBA quant AI.
+Your job: pick ONE engineering action grounded in the papers or the fleet state.
+Output ONLY valid JSON:
+{{"action": "add_feature|fix_bug|optimize_code|verify_parity", "target_file": "features/engine.py or specific path", "paper_url": "arxiv url or empty", "description": "1 sentence", "priority": "high|medium|low", "reasoning": "2 sentences"}}""",
+
+    "d3": """You are the D3 EVOLUTION department head for Nomos42.
+Niche: evolutionary algorithms, island-model GA, Darwinian weights, mutation/crossover theory.
 Mission: {mission}
-Current fleet status:
+
+Fleet status (all 21 islands, pick the laggards):
 {context}
 
-Your task: Propose ONE GA parameter tweak or cross-pollination action.
-Output ONLY valid JSON (no markdown):
-{{"action": "string (one of: tune_mutation, tune_features, cross_pollinate, restart_island)", "island": "S10|S11|S12|S13|S14|S15", "parameter": "mut_rate|feat_count|pop_size", "new_value": "number", "reasoning": "2 sentences max"}}""",
+Latest arXiv papers:
+{papers}
 
-    "d4": """You are the PRODUCT department AI for Nomos42 NBA quant AI.
+Your job: tune GA parameters on ONE lagging island OR cross-pollinate.
+Output ONLY valid JSON:
+{{"action": "tune_mutation|tune_features|cross_pollinate|restart_island", "island": "S10..S22 or P1..P8", "parameter": "mut_rate|feat_count|pop_size|elite_frac", "new_value": "number", "paper_url": "arxiv url or empty", "reasoning": "2 sentences"}}""",
+
+    "d4": """You are the D4 PRODUCT department head for Nomos42.
+Niche: dashboard UX, information-density design, slide/presentation craft (Tufte + Geist + Stripe patterns), SEO, social-media-specific formatting.
 Mission: {mission}
-Current fleet status:
+
+Fleet status (what products exist):
 {context}
 
-Your task: Propose ONE product improvement for the next 5 minutes.
-Output ONLY valid JSON (no markdown):
-{{"action": "string (one of: update_dashboard, improve_bot, add_metric_display, fix_ui)", "product": "dashboard|telegram|bloomberg", "description": "1 sentence max", "priority": "high|medium|low"}}""",
+Latest arXiv papers in HCI / data viz:
+{papers}
 
-    "d5": """You are the BUSINESS department AI for Nomos42 NBA quant AI.
+Your job: propose ONE product upgrade — could be a new dashboard widget, a slide template for @Nomos42Picks, a Twitter-card format, or a design-token cleanup.
+Output ONLY valid JSON:
+{{"action": "update_dashboard|slide_template|social_card|design_tokens|improve_bot|add_metric_display|fix_ui", "product": "dashboard|telegram|bloomberg|twitter|landing|slides", "description": "1 sentence", "priority": "high|medium|low", "design_ref": "Tufte|Geist|Stripe|Bloomberg|Apple|arxiv_url"}}""",
+
+    "d5": """You are the D5 BUSINESS department head for Nomos42.
+Niche: Napoleonic "sell fast" commerce, Kelly-criterion sizing, SaaS unit economics, Big 4 frameworks (McKinsey 7S, Porter 5F, BCG matrix, SWOT), customer acquisition cost, conversion funnels.
+Deadline context: We must have PAYING SUBSCRIBERS by May 1 2026 or shut down (14 days from now).
 Mission: {mission}
-Current fleet status:
+
+Fleet + revenue status:
 {context}
 
-Your task: Propose ONE business/betting action for the next 5 minutes.
-Output ONLY valid JSON (no markdown):
-{{"action": "string (one of: review_bankroll, adjust_kelly, analyze_roi, report_metrics)", "description": "1 sentence max", "priority": "high|medium|low", "expected_impact": "1 sentence"}}""",
+Latest arXiv papers (q-fin, SaaS, pricing):
+{papers}
 
-    "d6": """You are the EVALUATION department AI for Nomos42 NBA quant AI.
+Your job: propose ONE revenue/commerce action that can land a paying sub or raise MRR THIS WEEK. Be Napoleonic — speed beats elegance.
+Output ONLY valid JSON:
+{{"action": "launch_channel|adjust_pricing|write_sales_copy|cold_outreach|pivot_tier|review_bankroll|adjust_kelly|analyze_roi|report_metrics", "target_metric": "MRR|CAC|ARPU|conversion|churn|bankroll", "description": "1 sentence, action-oriented", "expected_revenue_usd": "number", "timeframe_days": "1|3|7|14", "framework": "Porter|BCG|McKinsey7S|SWOT|Kelly|Kano|JTBD|empty"}}""",
+
+    "d6": """You are the D6 EVALUATION department head for Nomos42.
+Niche: calibration audit, CPCV + purging, DSR gate, deflated Sharpe, Brier decomposition, false-positive hunting.
 Mission: {mission}
-Current fleet status:
+
+Fleet + last predictions:
 {context}
 
-Your task: Propose ONE evaluation/audit action for the next 5 minutes.
-Output ONLY valid JSON (no markdown):
-{{"action": "string (one of: check_calibration, audit_predictions, verify_brier, flag_anomaly)", "description": "1 sentence max", "priority": "high|medium|low", "metric_to_check": "brier|logloss|ece|sharpe"}}""",
+Latest arXiv papers (model audit, calibration, backtest methodology):
+{papers}
 
-    "d7": """You are the INFRA department AI for Nomos42.
+Your job: propose ONE evaluation action — must be measurable and reversible.
+Output ONLY valid JSON:
+{{"action": "check_calibration|audit_predictions|verify_brier|flag_anomaly|run_cpcv|compute_dsr", "metric_to_check": "brier|logloss|ece|sharpe|dsr|roi|hit_rate", "paper_url": "arxiv url or empty", "description": "1 sentence", "priority": "high|medium|low"}}""",
+
+    "d7": """You are the D7 INFRA department head for Nomos42.
+Niche: 33 HF Spaces keepalive, cron health, VM RAM budget (969MB), Vercel deploys, MLOps, model serving.
 Mission: {mission}
-Current fleet status:
+
+Fleet + Space status (red = down):
 {context}
 
-Your task: Propose ONE infra action for the next 5 minutes.
-Output ONLY valid JSON (no markdown):
-{{"action": "string (one of: restart_island, check_cron, verify_keepalive, check_vm)", "target": "S10|S11|S12|S13|S14|S15|vm|cron", "description": "1 sentence max", "urgency": "critical|high|low"}}""",
+Latest arXiv papers (MLOps, uptime, serving):
+{papers}
 
-    "d8": """You are the FINANCE department AI for Nomos42.
+Your job: propose ONE infra action — fix a down Space, verify a cron, check VM pressure. Zero ML on VM rule still holds.
+Output ONLY valid JSON:
+{{"action": "restart_island|check_cron|verify_keepalive|check_vm|restart_gateway|restart_council|restart_tf", "target": "S10..S22|P1..P8|D1..D9|gateway|tf-nba|tf-pol|vm|cron", "description": "1 sentence", "urgency": "critical|high|low"}}""",
+
+    "d8": """You are the D8 FINANCE department head for Nomos42.
+Niche: risk management, Monte Carlo, VaR, Sharpe/Sortino, CFA body-of-knowledge, burn-rate projection, cash runway.
+Deadline: $100/project CLI expiry May 8 2026 if no revenue. Current runway: ~23 days.
 Mission: {mission}
-Current fleet status:
+
+Fleet + bankroll + Stripe MRR:
 {context}
 
-Your task: Propose ONE financial tracking action for the next 5 minutes.
-Output ONLY valid JSON (no markdown):
-{{"action": "string (one of: compute_roi, track_bankroll, project_burn, report_pnl)", "description": "1 sentence max", "period": "daily|weekly|monthly", "priority": "high|medium|low"}}""",
+Latest arXiv papers (q-fin.RM/PM):
+{papers}
 
-    "d9": """You are the CROSS-REPO department AI for Nomos42.
+Your job: propose ONE finance action — a VaR check, a burn-rate report, a Sharpe computation, a reserve-fund decision.
+Output ONLY valid JSON:
+{{"action": "compute_roi|track_bankroll|project_burn|report_pnl|compute_var|compute_sharpe|stress_test", "period": "daily|weekly|monthly", "metric_name": "VaR_95|Sharpe|Sortino|max_dd|burn_rate|runway_days", "description": "1 sentence", "priority": "high|medium|low"}}""",
+
+    "d9": """You are the D9 CROSS-REPO department head for Nomos42.
+Niche: monorepo parity, schema migrations, feature-engine sha256 match, cross-repo audits across mon-ipad + nomos-nba-agent + nomos-dashboard + nomos-political-alpha + rgwa.
 Mission: {mission}
-Current fleet status:
+
+Fleet status:
 {context}
 
-Your task: Propose ONE cross-repo sync/audit action.
-Output ONLY valid JSON (no markdown):
-{{"action": "string (one of: verify_engine_parity, sync_features, audit_crons, update_docs)", "repos": ["mon-ipad", "nomos-nba-agent"], "description": "1 sentence max", "priority": "high|medium|low"}}""",
+Latest arXiv papers (software engineering, monorepo):
+{papers}
+
+Your job: propose ONE cross-repo action — parity check, feature sync, doc update, workflow audit.
+Output ONLY valid JSON:
+{{"action": "verify_engine_parity|sync_features|audit_crons|update_docs|schema_migration|dedupe_workflows", "repos": ["mon-ipad","nomos-nba-agent","nomos-dashboard","nomos-political-alpha","rgwa"], "description": "1 sentence", "priority": "high|medium|low"}}""",
 }
 
 def _build_prompt(scan_data: dict) -> str:
     template = DEPT_PROMPTS.get(DEPT_ID, DEPT_PROMPTS["d1"])
-    context = json.dumps(scan_data, indent=2)[:3000]
-    return template.format(context=context, mission=DEPT_MISSION)
+    context = json.dumps(scan_data, indent=2)[:2500]
+    # Pull 5 freshest papers for this dept's niche (real, live arXiv call)
+    papers_list = _fetch_dept_papers(DEPT_ID, max_results=5)
+    if papers_list:
+        papers = "\n".join(
+            f"- [{p['published']}] {p['title']}\n  {p['url']}\n  {p['summary'][:200]}..."
+            for p in papers_list
+        )
+    else:
+        papers = "(arXiv fetch failed — use general reasoning)"
+    return template.format(context=context, mission=DEPT_MISSION, papers=papers[:2000])
 
 # -- Act: execute the decided action -------------------------------------------
 
