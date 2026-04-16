@@ -57,6 +57,30 @@ jobs:
           mkdir -p data/arena
           echo "$STATUS" > data/arena/trading-floor-status.json
 
+      - name: Sync Axelrod post-mortem logs (Mech C paper dataset)
+        run: |
+          # Pull day-N.jsonl files from HF Space /api/axelrod-log and commit to repo
+          # These are the primary dataset for the Axelrod-2026 LLM agent society paper.
+          mkdir -p data/arena/axelrod-log
+          AXELROD=$(curl -s --max-time 20 \
+            "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/axelrod-log" \
+            || echo '{"error":"unreachable"}')
+          if echo "$AXELROD" | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if 'files' in d else 1)" 2>/dev/null; then
+            echo "$AXELROD" | python3 -c "
+          import sys, json, os
+          d = json.load(sys.stdin)
+          written = 0
+          for fname, lines in d.get('files', {}).items():
+              path = f'data/arena/axelrod-log/{fname}'
+              with open(path, 'w') as f:
+                  f.write(lines)
+              written += 1
+          print(f'Axelrod log: wrote {written} day files to data/arena/axelrod-log/')
+          "
+          else
+            echo "Axelrod log: Space not running or no data yet — skipping"
+          fi
+
       - name: Check LLM Gateway health
         run: |
           echo "=== LLM Gateway Status ==="
@@ -71,12 +95,14 @@ jobs:
           git config user.name "Trading Floor Bot"
           git config user.email "trading@nomos42.ai"
           git add data/arena/trading-floor-status.json 2>/dev/null || true
+          git add data/arena/axelrod-log/ 2>/dev/null || true
           if ! git diff --cached --quiet 2>/dev/null; then
             git stash --include-untracked
             git pull --rebase origin main
             git stash pop || true
             git add data/arena/trading-floor-status.json 2>/dev/null || true
-            git commit -m "data: trading floor status $(date -u +%Y-%m-%dT%H:%MZ)"
+            git add data/arena/axelrod-log/ 2>/dev/null || true
+            git commit -m "data: trading floor status + axelrod log $(date -u +%Y-%m-%dT%H:%MZ)"
             for attempt in 1 2 3; do
               git pull --rebase || true
               git push && break
@@ -126,17 +152,41 @@ jobs:
           mkdir -p data/arena/political
           echo "$STATUS" > data/arena/political/political-trading-floor-status.json
 
+      - name: Sync Political Axelrod post-mortem logs (Mech C paper dataset)
+        run: |
+          mkdir -p data/arena/axelrod-log-political
+          AXELROD=$(curl -s --max-time 20 \
+            "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/axelrod-log" \
+            || echo '{"error":"unreachable"}')
+          if echo "$AXELROD" | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if 'files' in d else 1)" 2>/dev/null; then
+            echo "$AXELROD" | python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)
+          written = 0
+          for fname, lines in d.get('files', {}).items():
+              path = f'data/arena/axelrod-log-political/{fname}'
+              with open(path, 'w') as f:
+                  f.write(lines)
+              written += 1
+          print(f'Political axelrod log: wrote {written} day files to data/arena/axelrod-log-political/')
+          "
+          else
+            echo "Political axelrod log: Space not running or no data yet — skipping"
+          fi
+
       - name: Commit political status snapshot
         run: |
           git config user.name "Trading Floor Bot"
           git config user.email "trading@nomos42.ai"
           git add data/arena/political/political-trading-floor-status.json 2>/dev/null || true
+          git add data/arena/axelrod-log-political/ 2>/dev/null || true
           if ! git diff --cached --quiet 2>/dev/null; then
             git stash --include-untracked
             git pull --rebase origin main
             git stash pop || true
             git add data/arena/political/political-trading-floor-status.json 2>/dev/null || true
-            git commit -m "data: political TF status $(date -u +%Y-%m-%dT%H:%MZ)"
+            git add data/arena/axelrod-log-political/ 2>/dev/null || true
+            git commit -m "data: political TF status + axelrod log $(date -u +%Y-%m-%dT%H:%MZ)"
             for attempt in 1 2 3; do
               git pull --rebase || true
               git push && break
