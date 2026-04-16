@@ -181,8 +181,8 @@
       <div class="tscroll"><div class="tstream" id="bt-stream">awaiting day-decisions…</div></div>
     </div>
     <div id="boot-log">
-      <div class="bl-head">◉ NOMOS42 PIXEL WORLD v2.0 — BOOT</div>
-      <div class="bl-line">[ok] PixiJS 8 loaded · 56×32 grid · 207 agents</div>
+      <div class="bl-head">◉ NOMOS42 PIXEL WORLD v2.2 — BOOT</div>
+      <div class="bl-line">[ok] PixiJS 8 loaded · 56×32 grid · 52 real agents</div>
       <div class="bl-line">[ok] palette=30 letter-badges=12 halos=axelrod</div>
       <div class="bl-line">[ok] ticker=/api/day-decisions · minimap=live · a*-home=on</div>
       <div class="bl-line">[ok] paper-link=/paper (FastAPI HTMLResponse) · status=/api/status</div>
@@ -227,7 +227,7 @@
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-// NOMOS42 PIXEL WORLD v2.0 — distinct trader sprites + halos + live-bet ticker
+// NOMOS42 PIXEL WORLD v2.2 — distinct trader sprites + halos + live-bet ticker
 //                         + paper/status buttons + mini-map + home-island A*
 // ═══════════════════════════════════════════════════════════════════════════
 (async () => {
@@ -294,9 +294,12 @@ const ZONES = {
 const NBA_TRADERS = [
   "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
   "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral",
-  "nemotron-120b","gemma4-selfhost","qwen25-micro","llama32-micro","gemma2-micro"
+  "nemotron-120b","gemma4-selfhost"
 ];
-const POL_TRADERS = [...NBA_TRADERS];
+const POL_TRADERS = [
+  "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
+  "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral"
+];
 const ISLANDS = [
   ["S10","https://nomos42-nba-quant.hf.space/api/status"],
   ["S11","https://nomos42-nba-quant-2.hf.space/api/status"],
