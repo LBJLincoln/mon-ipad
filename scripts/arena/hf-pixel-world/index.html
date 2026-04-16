@@ -234,7 +234,7 @@
 const TILE = 20;
 const GRID_W = 56, GRID_H = 32;
 const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
-const CHAR_W = 20, CHAR_H = 30;   // 1.0×1.5 tiles — pixel-art canon scale
+const CHAR_W = 42, CHAR_H = 36;   // 1.5× native 28×24 frame — proper aspect ratio
 
 const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c };
 const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", island:"#50fa7b", infra:"#50fa7b", pol_infra:"#8be9fd", council:"#ffb86c" };
@@ -488,7 +488,17 @@ async function loadTex(url) {
   } catch(e) { return null; }
 }
 const TEX = { chars:[], floors:[], furn:{} };
-for (let i=0;i<6;i++) TEX.chars.push(await loadTex(`assets/characters/char_${i}.png`));
+// Spritesheets are 112×96 = 4×4 grid of 28×24 frames. Extract front-facing idle (0,0).
+for (let i=0;i<6;i++) {
+  const sheet = await loadTex(`assets/characters/char_${i}.png`);
+  if (sheet) {
+    const frame = new PIXI.Rectangle(0, 0, 28, 24);
+    const sub = new PIXI.Texture({ source: sheet.source, frame });
+    TEX.chars.push(sub);
+  } else {
+    TEX.chars.push(null);
+  }
+}
 for (let i=0;i<9;i++) TEX.floors.push(await loadTex(`assets/floors/floor_${i}.png`));
 const FURN_FILES = {
   DESK:"DESK/DESK_FRONT.png", PC:"PC/PC_FRONT_ON_1.png",
