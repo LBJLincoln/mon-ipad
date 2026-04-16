@@ -171,7 +171,7 @@
       "do_not_push_hf_space_yet": true,
       "bugs_fixed": [
         "PARITY BUG: Political compute_trailing_delta had default bankroll 100000.0 instead of 100.0 — sacrificial tier rank was subtly wrong when bankroll_before key absent",
-        "SPEC GAP: Mechanism A CK block lacked 'stake' and 'edge_rationale' fields from AXELROD-2026 spec {trader_id, game/event, pick, stake, edge_rationale}. Both NBA and Political CK peer-bet lines now include stake=$X.X and rationale/thesis snippet (≤55 chars)"
+        "SPEC GAP: Mechanism A CK block lacked 'stake' and 'edge_rationale' fields from AXELROD-2026 spec {trader_id, game/event, pick, stake, edge_rationale}. Both NBA and Political CK peer-bet lines now include stake=$X.X and rationale/thesis snippet (\u226455 chars)"
       ],
       "files": [
         "scripts/arena/hf-llm-trading-floor/app.py",
@@ -180,11 +180,43 @@
       ],
       "checks_passed": [
         "py_compile PASS: both apps",
-        "Political compute_trailing_delta default corrected 100000.0→100.0",
+        "Political compute_trailing_delta default corrected 100000.0\u2192100.0",
         "NBA CK block: stake=${stake:.1f} + rationale[:55] appended per alloc line",
         "Political CK block: stake=${stake:.1f} + thesis/rationale[:55] appended per alloc line (domain-parity)"
       ],
       "commit_message": "fix(tf): Axelrod verify+tune 4 — CK stake+rationale spec + Political trailing-delta default\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+    },
+    {
+      "id": "tf-axelrod-verify-tune-5",
+      "priority": 12,
+      "status": "done",
+      "completed_at": "2026-04-16T18:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod verify+tune fire 5 — Mech B society-wide archetype dedup + axelrod-log GH Actions sync",
+      "depends_on": "tf-axelrod-verify-tune-4",
+      "do_not_push_hf_space_yet": true,
+      "audit_results": {
+        "mech_a": "FULLY CORRECT — build_common_knowledge_block() leaderboard, peer bets (stake+rationale), DMAD mandate, CK injected as prev_day_ck in run_experiment, restored on resume from last_ck_block",
+        "mech_b_sacrificial": "CORRECT — assign_sacrificial_archetypes() uses trailing-7-day bankroll delta, bottom-3, archetype from unused pool. GAP FIXED this fire: was per-agent, now society-wide",
+        "mech_b_challenge": "CORRECT — assign_challenge_tiers() + build_challenge_block() injected for mid-tier (neither top-3 bankroll nor sacrificed). Mutual exclusion verified.",
+        "mech_c": "CORRECT — write_axelrod_log() writes day-N.jsonl with trader_id, rank, bankroll, archetype_assigned, was_sacrificed, wins_today, peer_consensus_distance (L1/2 proxy), day_strategy_prefix. Both apps have parity.",
+        "resume_ck": "CORRECT — prev_day_ck = saved.get('last_ck_block') on Space restart. Both apps.",
+        "parity": "CORRECT — 15 traders in both NBA and Political TRADERS dicts. Same functions, domain-appropriate text (bet/game vs trade/sector)."
+      },
+      "spec_gap_found": "Mech B _used_archetypes was per-agent (tid \u2192 set). Spec requires 'NEVER USED in prior 7 days by anyone'. Fixed: new global _society_archetypes_by_day tracks society-wide used archetypes with trailing 7-day window cutoff. Per-agent tracking kept for reference.",
+      "new_globals": [
+        "_society_archetypes_by_day: Dict[str, set] = defaultdict(set)  # day_date \u2192 archetypes used society-wide"
+      ],
+      "logic_change": "assign_sacrificial_archetypes now computes cutoff = day_date - 7 days, collects society_used = union of _society_archetypes_by_day[d] for d >= cutoff, filters AXELROD_ARCHETYPES against society_used. Falls back to full pool if all 20 exhausted. Records assignments into _society_archetypes_by_day[day_date] after each call.",
+      "axelrod_log_sync": "Added axelrod-log-sync step to .github/workflows/trading-floor.yml — calls /api/axelrod-log on both NBA and Political HF Spaces every 4h, commits pulled JSONL files to data/arena/axelrod-log/ (NBA) and data/arena/axelrod-log-political/ (Political) in mon-ipad. This makes the Mech C paper dataset version-controlled.",
+      "files": [
+        "scripts/arena/hf-llm-trading-floor/app.py",
+        "scripts/arena/hf-political-trading-floor/app.py",
+        "data/work-queue.json",
+        ".github/workflows/trading-floor.yml"
+      ],
+      "py_compile": "PASS both apps",
+      "commit_message": "fix(tf): Axelrod verify+tune 5 — society-wide archetype dedup (Mech B) + axelrod-log GH sync\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
     }
   ],
   "recovery_protocol": {
