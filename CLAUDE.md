@@ -83,6 +83,16 @@ HF DEPT COUNCILS (9 Spaces, all on TESTforge42 — consolidated 2026-04-15 Optio
     └── D9 TESTforge42/nomos-dept-d9-cross-repo   → testforge42-nomos-dept-d9-cross-repo.hf.space
     Secrets per council: NOMOS_HF_TOKEN, CEREBRAS_API_KEY, OPENROUTER_API_KEY, MISTRAL_API_KEY, GOOGLE_API_KEY, GATEWAY_URL
     Vars per council:    DEPT_ID, DEPT_NAME, DEPT_MISSION, LOOP_INTERVAL_MINUTES=30
+    LLM routing (2026-04-16, selfhost-first via gateway, 7 CPU Spaces cover 7 depts + 2 cloud):
+      D1 Research    → selfhost:qwen3-4b             (Qwen3-4B,          Nomos42/qwen3-4b-cpu)
+      D2 Engineering → selfhost:dolphin3-llama-3.2-3b(Dolphin3-L3.2-3B,  Nomos42/llama32-1b-cpu)
+      D3 Evolution   → selfhost:gemma-4-e2b          (Gemma-3-4B,        Nomos42/gemma2-2b-cpu)
+      D4 Product     → selfhost:smollm3-3b           (SmolLM3-3B,        Nomos42/smollm3-3b-cpu)
+      D5 Business    → selfhost:qwen3-0.6b           (Qwen3-0.6B,        Nomos42/qwen25-05b-cpu)
+      D6 Evaluation  → selfhost:cpu-gemma4           (Phi-3.5-mini,      Nomos42/nomos-cpu-gemma4)
+      D7 Infra       → selfhost:phi-4-mini           (Qwen2.5-1.5B,      Nomos42/nomos42-llm-cpu)
+      D8 Finance     → mistral:large                 (cloud — deep analytical)
+      D9 Cross-repo  → cerebras:qwen-3-235b          (cloud — 235B big-context)
 
 HF OTHER SPACES (across 3 accounts, post-cleanup 2026-04-15)
     ├── Free LLM Chat: gemma4-chat, qwen35-chat
