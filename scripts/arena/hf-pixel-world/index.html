@@ -180,9 +180,9 @@ const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
 // Characters dominate furniture (research: canonical ratio is char=16×24, furniture=16×16..32×32)
 const CHAR_W = 88, CHAR_H = 132;   // at TILE=28 → char = 3.1 tiles wide × 4.7 tall
 
-const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, island:0x50fa7b, council:0xffb86c };
-const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", island:"#50fa7b", council:"#ffb86c" };
-const KIND_GLYPHS = { nba:"🏀", political:"🗳", island:"🧬", council:"⚖" };
+const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c };
+const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", island:"#50fa7b", infra:"#50fa7b", pol_infra:"#8be9fd", council:"#ffb86c" };
+const KIND_GLYPHS = { nba:"🏀", political:"🗳", island:"🧬", infra:"🗼", pol_infra:"🗼", council:"⚖" };
 
 // Axelrod strategy families → colors (cooperators green, defectors red, random purple, complex amber)
 const STRATEGY_FAMILIES = {
@@ -195,10 +195,11 @@ const STRATEGY_FAMILIES = {
 const FAMILY_COLORS = { coop:0x50fa7b, def:0xff5c5c, rand:0xbd93f9, complex:0xffb020, unknown:0x5b6478 };
 
 const ZONES = {
-  nba:       { x:2,  y:2,  w:20, h:13, floor:3, label:"NBA TRADING FLOOR" },
-  political: { x:34, y:2,  w:20, h:13, floor:5, label:"POLITICAL FLOOR" },
-  evolution: { x:2,  y:17, w:20, h:13, floor:6, label:"EVOLUTION LAB" },
-  councils:  { x:34, y:17, w:20, h:13, floor:1, label:"COUNCIL CHAMBERS" },
+  nba:       { x:2,  y:2,  w:20, h:11, floor:3, label:"NBA TRADING FLOOR" },
+  political: { x:34, y:2,  w:20, h:11, floor:5, label:"POLITICAL FLOOR" },
+  "nba-infra":  { x:2,  y:15, w:26, h:7, floor:6, label:"NBA EVOLUTION · 13 ISLANDS" },
+  "pol-infra":  { x:30, y:15, w:24, h:7, floor:6, label:"POLITICAL EVOLUTION · 8 ISLANDS" },
+  councils:  { x:2,  y:24, w:52, h:6, floor:1, label:"COUNCIL CHAMBERS" },
 };
 
 const NBA_TRADERS = [
@@ -253,7 +254,12 @@ const ENDPOINTS = {
 const AGENTS = [
   ...NBA_TRADERS.map((id,i)=>({ id, key:id, label:id, kind:"nba", zone:"nba", idx:i, char:i%6 })),
   ...POL_TRADERS.map((id,i)=>({ id:`p-${id}`, key:id, label:id, kind:"political", zone:"political", idx:i, char:(i+2)%6 })),
-  ...ISLANDS.map(([lbl,url],i)=>({ id:`island-${lbl.toLowerCase()}`, key:lbl, label:lbl, kind:"island", zone:"evolution", idx:i, char:i%6, url })),
+  ...ISLANDS.map(([lbl,url],i)=>({
+    id:`island-${lbl.toLowerCase()}`, key:lbl, label:lbl,
+    kind: lbl.startsWith("P") ? "pol_infra" : "infra",
+    zone: lbl.startsWith("P") ? "pol-infra" : "nba-infra",
+    idx:i, char:0, url, _isInfra:true,
+  })),
   ...COUNCIL_DEPTS.map(([c,n,m],i)=>({ id:`dept-${c.toLowerCase()}`, key:c, label:`${c} ${n}`, kind:"council", zone:"councils", idx:i, char:(i+3)%6, mission:m })),
 ];
 
@@ -262,21 +268,24 @@ function assignSeats() {
   for (const [zoneId, z] of Object.entries(ZONES)) {
     const list = AGENTS.filter(a => a.zone === zoneId);
     if (!list.length) continue;
-    const cols = Math.min(5, list.length);
+    const isInfraZone = zoneId === "nba-infra" || zoneId === "pol-infra";
+    // Infra: single-row lineup of towers, tight spacing, no wander.
+    // Agents: classic 5-col seat grid with Brownian wander.
+    const cols = isInfraZone ? list.length : Math.min(5, list.length);
     const rows = Math.ceil(list.length / cols);
-    const padX = (z.w - cols*3) / (cols+1);
-    const padY = (z.h - rows*4) / (rows+1);
-    list.forEach((a,i) => {
-      const c = i % cols, r = Math.floor(i/cols);
+    const padX = (z.w - cols * (isInfraZone ? 1.7 : 3)) / (cols + 1);
+    const padY = (z.h - rows * (isInfraZone ? 3 : 4)) / (rows + 1);
+    list.forEach((a, i) => {
+      const c = i % cols, r = Math.floor(i / cols);
       a.seat = {
-        x: z.x + padX*(c+1) + c*3 + 1.5,
-        y: z.y + padY*(r+1) + r*4 + 2.5,
+        x: z.x + padX * (c + 1) + c * (isInfraZone ? 1.7 : 3) + (isInfraZone ? 0.85 : 1.5),
+        y: z.y + padY * (r + 1) + r * (isInfraZone ? 3 : 4) + (isInfraZone ? 2.0 : 2.5),
       };
       a.home = { ...a.seat };
       a.phase = Math.random() * Math.PI * 2;
-      a.freq  = 0.35 + Math.random() * 0.55;
-      a.wamp  = 0.12 + Math.random() * 0.12;
-      a.speed = 0.9 + Math.random() * 0.5;
+      a.freq  = isInfraZone ? 0 : 0.35 + Math.random() * 0.55;
+      a.wamp  = isInfraZone ? 0 : 0.12 + Math.random() * 0.12;
+      a.speed = isInfraZone ? 0 : 0.9 + Math.random() * 0.5;
       a.x = a.seat.x; a.y = a.seat.y;
       a.vx = 0; a.vy = 0;
       a.state = "idle"; a.data = null; a.bubble = ""; a.activeUntil = 0;
@@ -367,7 +376,11 @@ document.getElementById("loader").style.display = "none";
 
 // ── WORLD BUILD ─────────────────────────────────────────────────────────────
 function zoneIdToKind(zoneId) {
-  return zoneId === "nba" ? "nba" : zoneId === "political" ? "political" : zoneId === "evolution" ? "island" : "council";
+  if (zoneId === "nba") return "nba";
+  if (zoneId === "political") return "political";
+  if (zoneId === "nba-infra") return "infra";
+  if (zoneId === "pol-infra") return "pol_infra";
+  return "council";
 }
 
 for (const [zoneId, z] of Object.entries(ZONES)) {
