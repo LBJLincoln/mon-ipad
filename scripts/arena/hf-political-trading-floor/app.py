@@ -48,6 +48,35 @@ from datetime import datetime, timezone
 from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
+import math
+
+def benjamini_hochberg(edges: List[Tuple[str, float]], alpha: float = 0.05) -> set:
+    """Return set of category tags that survive BH FDR correction.
+    Treats |edge| as a test statistic under H0: edge=0. With ~22 political
+    categories derived from Normal CDF, the SE of each derived edge is ~0.03-0.05.
+    We use SE=0.04 as conservative estimate for all categories."""
+    SE = 0.04
+    n = len(edges)
+    if n == 0:
+        return set()
+    pvals = []
+    for tag, edge_val in edges:
+        z = abs(edge_val) / SE
+        p = 2 * (1 - _norm_cdf(z))
+        pvals.append((p, tag))
+    pvals.sort()
+    passing = set()
+    for rank, (p, tag) in enumerate(pvals, 1):
+        threshold = alpha * rank / n
+        if p <= threshold:
+            passing.add(tag)
+        else:
+            break
+    return passing
+
+def _norm_cdf(x: float) -> float:
+    return 0.5 * (1 + math.erf(x / math.sqrt(2)))
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -1055,63 +1084,81 @@ def load_strategies():
 
 def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
                                   reputation: Optional[Dict] = None,
-                                  pact_events: Optional[List[dict]] = None) -> str:
-    """Build COMMON_KNOWLEDGE[D] block: peer trades + leaderboard for day D+1 prompts.
+                                  pact_events: Optional[List[dict]] = None,
+                                  day_idx: int = 0) -> str:
+    """Build COMMON_KNOWLEDGE[D] block: full transparency for day D+1 prompts.
 
     Implements Axelrod-2026 Mechanism A (day-end common knowledge broadcast).
-    Prepended to every agent's prompt on day D+1 so the society can coordinate
-    and diverge deliberately (DMAD anti-groupthink protocol).
+    All agents see ALL other agents' allocations, results, strategies, and bankrolls
+    from the last 3 days, enabling true collective optimization.
     """
+    n_traders = len(TRADERS)
+    total_start = n_traders * 100.0
     lines = [
-        f"=== AXELROD COMMON KNOWLEDGE — Day {day_date} ===",
-        "(Peer decisions from yesterday are now public. Review before you decide.)",
+        f"=== COMMON KNOWLEDGE — Day {day_date} (full transparency) ===",
+        f"COLLECTIVE GOAL: maximize TOTAL GROUP bankroll → target ${total_start:.0f} ($100×{n_traders} start).",
+        f"You are ONE of {n_traders} political-alpha traders. Every allocation you make affects the group.",
         "",
     ]
 
-    # Leaderboard: ranked by bankroll growth factor = bankroll / $100 start
+    # Leaderboard with collective stats
     ranked = sorted(state.items(), key=lambda x: -x[1]["bankroll"])
-    lines.append("LEADERBOARD (growth factor = bankroll / $100 start):")
+    total_bankroll = sum(ts["bankroll"] for _, ts in ranked)
+    total_bets = sum(ts["total_bets"] for _, ts in ranked)
+    total_wins = sum(ts["wins"] for _, ts in ranked)
+    lines.append(f"GROUP TOTAL: ${total_bankroll:.2f} (started ${total_start:.0f}) | "
+                 f"ROI {((total_bankroll / total_start) - 1) * 100:+.1f}% | "
+                 f"{total_bets} allocations | {total_wins}W")
+    lines.append("")
+    lines.append("LEADERBOARD:")
     for rank, (tid, ts) in enumerate(ranked, 1):
         cfg = TRADERS.get(tid, {})
         gf = ts["bankroll"] / 100.0
         roi = (gf - 1.0) * 100
+        wr = (ts["wins"] / max(ts["total_bets"], 1)) * 100
+        role = ""
+        if ts["bankroll"] < 50:
+            role = " [RESCUE MODE]"
+        elif rank <= 3:
+            role = " [TOP-3]"
         lines.append(
-            f"  #{rank} {cfg.get('name', tid):<20} {gf:.4f}x ({roi:+.1f}%)"
-            f" | {ts['total_bets']} trades | {ts['wins']}W-{ts['losses']}L"
-            f" | DD {ts['max_drawdown']:.1%}"
+            f"  #{rank} {cfg.get('name', tid):<20} ${ts['bankroll']:.2f} ({roi:+.1f}%)"
+            f" | {ts['total_bets']}b {wr:.0f}%WR | DD {ts['max_drawdown']:.1%}{role}"
         )
 
-    # Per-agent trade summary for day D (resolved outcomes)
-    lines.append(f"\nPEER TRADES on {day_date} (outcomes resolved):")
-    for rank, (tid, _ts) in enumerate(ranked, 1):
-        logs = agent_logs.get(tid, [])
-        day_log = next((l for l in reversed(logs) if l.get("date") == day_date), None)
-        if not day_log:
-            continue
-        cfg = TRADERS.get(tid, {})
-        name = cfg.get("name", tid)
-        allocs = day_log.get("allocations", [])
-        strat = day_log.get("day_strategy", "")[:100]
-        if not allocs:
-            lines.append(f"  #{rank} {name}: CASH — \"{strat}\"")
-        else:
-            parts = []
-            for a in allocs[:3]:  # cap at 3 to control token budget
-                outcome = "W" if a["won"] else "L"
-                rat = (a.get("thesis") or a.get("rationale") or "")[:55]
-                parts.append(
-                    f"{a['ticker']} {a['direction']} {a.get('event_type','?')}"
-                    f" stake=${a.get('stake', 0):.1f}→{outcome}"
-                    + (f" [{rat}]" if rat else "")
-                )
-            suffix = f" +{len(allocs)-3}more" if len(allocs) > 3 else ""
-            lines.append(f"  #{rank} {name}: {' | '.join(parts)}{suffix}")
-            if strat:
-                lines.append(f"           Strategy: \"{strat}\"")
+    # 3-day rolling allocation history from ALL agents (full transparency)
+    all_dates = set()
+    for tid in state:
+        for log in agent_logs.get(tid, []):
+            all_dates.add(log.get("date", ""))
+    recent_dates = sorted(all_dates)[-3:]
+
+    for past_date in recent_dates:
+        lines.append(f"\n--- ALL ALLOCATIONS on {past_date} (resolved) ---")
+        for tid, _ts in ranked:
+            logs = agent_logs.get(tid, [])
+            day_log = next((l for l in reversed(logs) if l.get("date") == past_date), None)
+            if not day_log:
+                continue
+            cfg = TRADERS.get(tid, {})
+            name = cfg.get("name", tid)
+            allocs = day_log.get("allocations", [])
+            strat = day_log.get("day_strategy", "")[:80]
+            if not allocs:
+                lines.append(f"  {name}: CASH — \"{strat}\"")
+            else:
+                for a in allocs:
+                    outcome = "W" if a["won"] else "L"
+                    lines.append(
+                        f"  {name}: {a['ticker']} {a['direction']} {a.get('event_type', '?')} "
+                        f"${a.get('stake', 0):.1f} edge={a.get('edge', 0):.3f}→{outcome} "
+                        f"pnl={a.get('profit', 0):+.1f}")
+                if strat:
+                    lines.append(f"    Strategy: \"{strat}\"")
 
     # Mech D — Cooperation reputation + today's pact resolutions
     if reputation:
-        lines.append("\nCOOPERATION REPUTATION (Mech D — pact honored vs broken):")
+        lines.append("\nCOOPERATION REPUTATION:")
         rep_items = sorted(
             reputation.items(),
             key=lambda x: -(x[1].get("pact_honored", 0) - x[1].get("pact_broken", 0)),
@@ -1132,12 +1179,36 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
                 f"on event#{ev['event_idx']} {ev['direction']}"
             )
 
+    # Council day protocol — every 15 days, agents reorganize
+    is_council_day = (day_idx > 0 and day_idx % 15 == 0)
+    if is_council_day:
+        lines.append(
+            "\n=== COUNCIL DAY (every 15 days) ===\n"
+            "Today is a strategy reorganization day. In addition to your allocations,\n"
+            "add a 'council_vote' field to your JSON:\n"
+            "  \"council_vote\": {\n"
+            "    \"worst_strategy\": \"name of peer whose strategy should change\",\n"
+            "    \"suggested_change\": \"what they should try instead\",\n"
+            "    \"my_adjustment\": \"what I will change about my own strategy\"\n"
+            "  }\n"
+            "Review the 3-day history above. Identify what's working and what isn't.\n"
+            "Agents in RESCUE MODE should take higher-variance positions.\n"
+            "TOP-3 agents should protect capital and mentor via coalition proposals.\n"
+        )
+
     lines.append(
-        "AXELROD ANTI-GROUPTHINK (DMAD — MANDATORY):\n"
-        "Your day_strategy field MUST begin with one of:\n"
-        "  CONSENSUS AGREE [peer_name]: <reason your strategy supports the same sector/direction>\n"
+        "\nCOLLABORATION RULES:\n"
+        "- You see ALL traders' allocations from last 3 days. Learn from winners.\n"
+        "- AVOID duplicating the exact same sector/direction as a peer (diversify coverage).\n"
+        "- If your bankroll is in RESCUE MODE (<$50), take higher-variance positions\n"
+        "  (indirect beneficiary plays, cross-sector arb, high-beta sectors) — the group needs you swinging.\n"
+        "- TOP-3 traders: protect capital, use corroborated multi-agency signals.\n"
+        "- Propose coalitions with traders whose strategies complement yours.\n"
+        "\n"
+        "ANTI-GROUPTHINK (DMAD — MANDATORY):\n"
+        "Your day_strategy MUST begin with one of:\n"
+        "  CONSENSUS AGREE [peer_name]: <reason your strategy supports same sector/direction>\n"
         "  CONSENSUS DIVERGE [peer_name]: <specific signal/agency counter-argument>\n"
-        "Copying the consensus without justification violates DMAD protocol.\n"
     )
     return "\n".join(lines)
 
@@ -1425,6 +1496,15 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             _axl_block = _axelrod_advice_block(tid, _active_peers)
             if _axl_block:
                 system_prompt = system_prompt + _axl_block
+            # Rescue protocol: agents under $50 get risk-on mandate
+            if ts["bankroll"] < 50.0 and ts["bankroll"] > 5.0:
+                system_prompt += (
+                    "\n\n[RESCUE MODE ACTIVE] Your bankroll is critically low. "
+                    "The group needs you to take HIGHER-VARIANCE positions: "
+                    "indirect beneficiary plays, high-beta sectors, cross-sector arb. "
+                    "Minimum edge 5%. Allocate 15-40% per position. "
+                    "Conservative corroborated-only plays won't recover your position."
+                )
             user_prompt = build_day_prompt(
                 day_date, day_events, sector_trends, ts,
                 strategies=strategies,
@@ -1576,6 +1656,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         prev_day_ck = build_common_knowledge_block(
             day_date, state, dict(_agent_logs),
             reputation=dict(_reputation), pact_events=day_pact_events,
+            day_idx=day_idx,
         )
         _common_knowledge[day_date] = prev_day_ck
 
@@ -2109,6 +2190,16 @@ async def api_axelrod_log(day: int = None, since: int = None):
         return JSONResponse({"n_days": len(index), "index": index})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@api.get("/paper")
+async def serve_paper():
+    """Serve the Axelrod-LLM research paper inline (not as download)."""
+    from fastapi.responses import HTMLResponse
+    paper_path = Path(__file__).parent / "paper.html"
+    if paper_path.exists():
+        return HTMLResponse(content=paper_path.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>Paper not yet generated</h1><p>Run md_to_html.py to build paper.html</p>", status_code=404)
 
 
 # Mount FastAPI alongside Gradio
