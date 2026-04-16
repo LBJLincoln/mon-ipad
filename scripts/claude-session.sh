@@ -32,7 +32,7 @@ NO_PROBE=""
 SECTION=""
 for arg in "$@"; do
   case "$arg" in
-    --skip-perms)              SKIP_PERMS="--allowedTools '*'" ;;
+    --skip-perms|--bypass|--yolo) SKIP_PERMS="--dangerously-skip-permissions" ;;
     --nba|--project=nba)       PROJECT="nba" ;;
     --rgwa|--project=rgwa)     PROJECT="rgwa" ;;
     --political|--project=political) PROJECT="political" ;;

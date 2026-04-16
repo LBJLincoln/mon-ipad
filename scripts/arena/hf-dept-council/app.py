@@ -41,11 +41,11 @@ DEPT_GATEWAY_MAP = {
     "d2": "cerebras:llama3.1-8b",     # Engineering — fast code
     "d3": "cerebras:qwen-3-235b",     # Evolution — analytical
     "d4": "mistral:medium",           # Product — ensemble, balanced
-    "d5": "mistral:small",            # Business — fast
-    "d6": "cerebras:qwen-3-235b",     # Evaluation — best reasoning
-    "d7": "cerebras:llama3.1-8b",     # Infra — fast + reliable (selfhost timed out)
-    "d8": "mistral:large",            # Finance — deep analytical
-    "d9": "cerebras:qwen-3-235b",     # Cross-repo — big-context reasoning
+    "d5": "selfhost:gemma-2-2b",      # Business — local CPU (low-traffic, fast Gemma)
+    "d6": "cerebras:qwen-3-235b",     # Evaluation — best reasoning (stays cloud)
+    "d7": "cerebras:llama3.1-8b",     # Infra — fast + reliable
+    "d8": "selfhost:qwen3-4b",        # Finance — local CPU (Qwen3-4B reasoning, no quota)
+    "d9": "selfhost:phi-3.5",         # Cross-repo — local CPU (mature Phi-3.5 self-host)
 }
 
 # Legacy HF-Router map kept only as fallback if the gateway is fully down.
@@ -141,7 +141,10 @@ def _call_gateway(prompt: str, max_tokens: int, temperature: float) -> tuple:
             data=data, method="POST",
             headers={"Content-Type": "application/json", "User-Agent": "Nomos42Council/1.0"},
         )
-        with urllib.request.urlopen(req, timeout=60, context=_ssl_ctx()) as resp:
+        # 180s timeout: selfhost CPU inference (Phi-3.5 / Qwen3-4B / Gemma-2-2B)
+        # takes 20-60s per call; cloud providers respond <5s. Gateway internal
+        # fallback chain kicks in after model-level timeouts, not this socket.
+        with urllib.request.urlopen(req, timeout=180, context=_ssl_ctx()) as resp:
             result = json.loads(resp.read())
             content = result.get("content") or result.get("message", {}).get("content") or ""
             if content:
