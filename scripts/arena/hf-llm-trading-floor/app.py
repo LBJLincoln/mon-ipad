@@ -921,10 +921,32 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
     # ── NOMOS42 MODEL PREDICTIONS ──
     pred = (model_preds or {}).get(game_key, {})
     if pred:
-        lines.append(f"\nNOMOS42 AI MODEL (Brier=0.217, {pred.get('total_agents',0)} agents):")
-        lines.append(f"  ML: {pred.get('consensus_ml_direction','?')} conf={pred.get('consensus_ml_confidence',0):.1%} ({pred.get('ml_agree',0)}/{pred.get('total_agents',0)} agree)")
-        lines.append(f"  Spread: {pred.get('consensus_spread_direction','?')} conf={pred.get('consensus_spread_confidence',0):.1%}")
-        lines.append(f"  Total: {pred.get('consensus_total_direction','?')} conf={pred.get('consensus_total_confidence',0):.1%}")
+        n_agents = pred.get('ml_total_agents', pred.get('total_agents', 0))
+        core = pred.get('derived_core', {})
+        lines.append(f"\nNOMOS42 AI MODEL (Brier=0.217, {n_agents} agents, fleet S10-S22):")
+        lines.append(f"  ML: {pred.get('consensus_ml_direction','?')} (agree {pred.get('ml_agreement_pct',0):.0f}%)")
+        lines.append(f"  Spread: {pred.get('consensus_spread_direction','?')} (agree {pred.get('spread_agreement_pct',0):.0f}%)")
+        lines.append(f"  Total: {pred.get('consensus_total_direction','?')} (agree {pred.get('total_agreement_pct',0):.0f}%)")
+        if core:
+            lines.append(f"  Predicted margin: {core.get('predicted_margin',0):+.1f} | Total pts: {core.get('predicted_total',0):.1f} | P(home): {core.get('predicted_p_home',0):.1%}")
+
+        # Per-category predictions — every category with edge ≥ 3%
+        per_cat = pred.get('per_category', {})
+        if per_cat:
+            strong_cats = []
+            for tag, info in per_cat.items():
+                prob = info.get('prob', 0)
+                edge = info.get('edge')
+                if edge is not None and abs(edge) >= 0.03:
+                    sign = '+' if edge > 0 else ''
+                    strong_cats.append(f"{tag}={prob:.2f} (edge {sign}{edge:+.1%})")
+                elif prob >= 0.55 or prob <= 0.45:  # interesting probs even without edge
+                    strong_cats.append(f"{tag}={prob:.2f}")
+            # Show top-12 most informative
+            if strong_cats:
+                lines.append(f"  MODEL PER-CATEGORY ({len(per_cat)} cats, showing top-12 with edge or prob>0.55):")
+                for s in strong_cats[:12]:
+                    lines.append(f"    · {s}")
 
     # ── TRACK RECORD ──
     lines.append(f"\nYOUR TRACK RECORD: ${bankroll:.2f} | {total_bets} bets | {wins}W-{losses}L | ROI {roi:+.1f}%")
@@ -1012,17 +1034,40 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
                     pstrs = [f"{p.get('name','?')[:15]} {p.get('PPG',p.get('ppg',0)) or 0:.0f}p" for p in players]
                     lines.append(f"  {label}: {' | '.join(pstrs)}")
 
-    # Model prediction
+    # Model prediction (base + derived core)
     game_key = f"{date}_{away}@{home}"
     pred = (model_preds or {}).get(game_key, {})
     if pred:
-        lines.append(f"  AI MODEL: ML {pred.get('consensus_ml_direction','?')} conf={pred.get('consensus_ml_confidence',0):.0%} ({pred.get('ml_agree',0)}/{pred.get('total_agents',0)})")
+        core = pred.get("derived_core", {})
+        if core:
+            lines.append(f"  AI MODEL: ML {pred.get('consensus_ml_direction','?')} (agree {pred.get('ml_agreement_pct',0):.0f}%) | pred_margin={core.get('predicted_margin',0):+.1f} | pred_total={core.get('predicted_total',0):.0f} | P(home)={core.get('predicted_p_home',0):.0%}")
+        else:
+            lines.append(f"  AI MODEL: ML {pred.get('consensus_ml_direction','?')} (agree {pred.get('ml_agreement_pct',0):.0f}%)")
+        # Top edges vs market
+        per_cat = pred.get("per_category", {})
+        if per_cat:
+            top_edges = []
+            for tag, info in per_cat.items():
+                e = info.get("edge")
+                if e is not None and abs(e) >= 0.04:
+                    top_edges.append((abs(e), tag, info))
+            top_edges.sort(reverse=True)
+            if top_edges:
+                edge_strs = [f"{tag}(p={info.get('prob',0):.2f}, edge{info.get('edge',0):+.1%})" for _, tag, info in top_edges[:5]]
+                lines.append(f"  MODEL EDGES: {' | '.join(edge_strs)}")
 
-    # Count of full odds available
+    # Full-odds categories
     fo_raw = (full_odds or {}).get(game_key, {})
     fo = fo_raw.get("categories", fo_raw) if isinstance(fo_raw, dict) else {}
     if fo and isinstance(fo, dict):
-        lines.append(f"  FULL ODDS: {len(fo)} categories available")
+        n = fo_raw.get("category_count", len(fo))
+        # Show sample of alt lines
+        alt_samples = [k for k in list(fo.keys()) if k.startswith("alt_") or k.startswith("team_total")][:6]
+        if alt_samples:
+            sample_strs = [f"{k}={fo[k].get('odds') if isinstance(fo[k],dict) else fo[k]}" for k in alt_samples]
+            lines.append(f"  FULL ODDS ({n} cats): {', '.join(sample_strs)}...")
+        else:
+            lines.append(f"  FULL ODDS: {n} categories available")
     return "\n".join(lines)
 
 
@@ -1069,12 +1114,16 @@ Allocate 100% of your bankroll across today's games.
 Each allocation = one bet on one game/category. Total allocations + cash_held must sum to 1.00.
 Holding cash is allowed BUT you must justify it (no edge found is a valid reason).
 
-AVAILABLE BET CATEGORIES (same as /game pricing):
-  ml_home, ml_away, spread_home, spread_away, total_over, total_under,
-  h1_ml_home, h1_ml_away, h1_spread, h1_total_over, h1_total_under,
-  team_total_home_over, team_total_home_under, team_total_away_over, team_total_away_under,
-  alt_spread_home_minus3.5, alt_spread_home_minus5.5, alt_total_over_plus3, alt_total_under_minus3,
-  q1_ml_home, q1_ml_away, prop_both_100, prop_overtime
+AVAILABLE BET CATEGORIES (~90 per game — pick from MODEL EDGES block first):
+  BASE:   ml_home, ml_away, spread_home, spread_away, total_over, total_under
+  ALT SP: alt_spread_home_plus0..plus10, alt_spread_home_minus1..minus10 (same for away)
+  ALT TO: alt_total_over_plus2..plus10, alt_total_under_minus2..minus10
+  TEAMS:  team_total_home_over_X, team_total_home_under_X, team_total_away_over_X, team_total_away_under_X
+  HALVES: h1_ml_home, h1_ml_away, h1_spread_home, h1_spread_away, h1_total_over, h1_total_under
+  Q1:     q1_ml_home, q1_ml_away, q1_total_over, q1_total_under
+  PROPS:  prop_both_100, prop_overtime, prop_blowout_20
+
+Each category in MODEL EDGES above comes with a model_prob and edge vs market — use those for bet sizing.
 
 RESPOND WITH RAW JSON ONLY. No ```json fences. No preamble. First character must be {, last must be }.
 

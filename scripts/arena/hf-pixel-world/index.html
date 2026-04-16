@@ -3,7 +3,7 @@
 <head><script>window.huggingface={variables:{"SPACE_CREATOR_USER_ID":"698653c38d72821326e9e4fe"}};</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nomos42 Pixel World — v0.9 · Bloomberg Terminal</title>
+<title>Nomos42 Pixel World — v2.0 · Bloomberg Terminal</title>
 <style>
   :root {
     --bg:#0b0d12; --bg-2:#14171f; --bg-3:#1a1f2a; --line:#1e2330;
@@ -105,6 +105,44 @@
   #panel-trades-list .r .m.up { color:var(--ok); } #panel-trades-list .r .m.down { color:var(--err); }
   .loader { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:var(--ink-3);
     font-size:11px; letter-spacing:0.1em; text-transform:uppercase; z-index:4; }
+  /* ═══ v2.0 ═══ Paper/Status buttons, live bet ticker, mini-map, boot log */
+  #hud-top .ext-btns { display:flex; gap:6px; margin-left:8px; pointer-events:auto; }
+  #hud-top .ext-btns a { display:inline-flex; align-items:center; gap:4px;
+    background:#000; border:1px solid #3a2600; color:#ffa500;
+    font-family:"IBM Plex Mono","JetBrains Mono",monospace; font-size:10px;
+    letter-spacing:0.12em; padding:5px 10px; text-decoration:none; border-radius:2px;
+    text-transform:uppercase; transition:all 0.15s; }
+  #hud-top .ext-btns a:hover { background:#1a1000; border-color:#ffa500; box-shadow:0 0 8px rgba(255,165,0,0.4); }
+  #bet-ticker { position:absolute; bottom:26px; left:12px; right:12px; height:22px; z-index:7;
+    background:rgba(0,0,0,0.88); border:1px solid #3a2600; border-radius:2px;
+    overflow:hidden; display:flex; align-items:center;
+    font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:#ffa500;
+    box-shadow:0 0 12px rgba(255,165,0,0.14); }
+  #bet-ticker .tlbl { padding:0 10px; color:#805300; font-weight:700; letter-spacing:0.14em;
+    border-right:1px solid #3a2600; flex-shrink:0; }
+  #bet-ticker .tscroll { flex:1; overflow:hidden; white-space:nowrap; position:relative; }
+  #bet-ticker .tscroll .tstream { display:inline-block; padding-left:100%; animation:tmarq 60s linear infinite; }
+  #bet-ticker .titem { display:inline-block; margin:0 18px; }
+  #bet-ticker .titem .a { color:#ff79c6; font-weight:700; } /* nba default */
+  #bet-ticker .titem.pol .a { color:#8be9fd; }
+  #bet-ticker .titem .c { color:#ffd700; }
+  #bet-ticker .titem .e { color:#00ff88; }
+  #bet-ticker .titem .e.neg { color:#ff5c5c; }
+  @keyframes tmarq { from { transform:translateX(0); } to { transform:translateX(-100%); } }
+  #minimap { position:absolute; top:42px; right:12px; z-index:7;
+    width:120px; height:80px; background:rgba(11,13,18,0.92);
+    border:1px solid var(--line); border-radius:2px; overflow:hidden;
+    box-shadow:0 4px 12px rgba(0,0,0,0.45); }
+  #minimap canvas { display:block; width:120px; height:80px; image-rendering:pixelated; }
+  #minimap .mm-lbl { position:absolute; top:2px; left:4px; font-size:8px;
+    letter-spacing:0.14em; color:var(--ink-3); text-transform:uppercase; pointer-events:none; }
+  #boot-log { position:absolute; bottom:56px; left:12px; z-index:8;
+    background:rgba(0,0,0,0.92); border:1px solid #3a2600; padding:8px 12px;
+    font-family:"IBM Plex Mono",monospace; font-size:10px; color:#ffa500;
+    max-width:360px; border-radius:2px; transition:opacity 0.5s;
+    box-shadow:0 0 14px rgba(255,165,0,0.2); pointer-events:none; }
+  #boot-log .bl-line { color:#00ff88; margin:1px 0; }
+  #boot-log .bl-head { color:#ffd700; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:4px; }
 </style>
 </head>
 <body>
@@ -121,7 +159,13 @@
 <div id="root">
   <div id="stage">
     <div id="hud-top">
-      <div><span class="brand">NOMOS42 · PIXEL WORLD</span> · v0.9 · PixiJS · live · bloomberg-term</div>
+      <div>
+        <span class="brand">NOMOS42 · PIXEL WORLD</span> · v2.0 · PixiJS · live · bloomberg-term
+        <span class="ext-btns">
+          <a href="https://huggingface.co/spaces/LBJLincoln26/nba-llm-trading-floor/resolve/main/paper.html" target="_blank" rel="noopener" title="Whitepaper PDF">📄 PAPER</a>
+          <a href="https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status" target="_blank" rel="noopener" title="NBA TF live status JSON">📊 LIVE STATUS</a>
+        </span>
+      </div>
       <div id="room-tabs">
         <button data-room="world" class="active">WORLD</button>
         <button data-room="nba">NBA 🏀</button>
@@ -130,6 +174,18 @@
         <button data-room="councils">COUNCILS ⚖</button>
       </div>
       <div><span class="tick" id="hud-tick">· booting</span></div>
+    </div>
+    <div id="minimap"><span class="mm-lbl">MAP</span><canvas id="mm-canvas" width="120" height="80"></canvas></div>
+    <div id="bet-ticker">
+      <span class="tlbl">◉ LIVE BETS</span>
+      <div class="tscroll"><div class="tstream" id="bt-stream">awaiting day-decisions…</div></div>
+    </div>
+    <div id="boot-log">
+      <div class="bl-head">◉ NOMOS42 PIXEL WORLD v2.0 — BOOT</div>
+      <div class="bl-line">[ok] PixiJS 8 loaded · 56×32 grid · 207 agents</div>
+      <div class="bl-line">[ok] palette=30 letter-badges=12 halos=axelrod</div>
+      <div class="bl-line">[ok] ticker=/api/day-decisions · minimap=live · a*-home=on</div>
+      <div class="bl-line">[ok] paper-link=/resolve/main/paper.html · status=/api/status</div>
     </div>
     <div id="scanlines"></div>
     <div id="vignette"></div>
@@ -171,7 +227,8 @@
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-// NOMOS42 PIXEL WORLD v0.9 — Bloomberg terminal strip + pulsing pacts + rooms
+// NOMOS42 PIXEL WORLD v2.0 — distinct trader sprites + halos + live-bet ticker
+//                         + paper/status buttons + mini-map + home-island A*
 // ═══════════════════════════════════════════════════════════════════════════
 (async () => {
 const TILE = 28;
@@ -193,6 +250,39 @@ const STRATEGY_FAMILIES = {
   Adaptive:"complex", HardTitForTat:"complex", Forgiver:"complex", SoftGrudger:"complex",
 };
 const FAMILY_COLORS = { coop:0x50fa7b, def:0xff5c5c, rand:0xbd93f9, complex:0xffb020, unknown:0x5b6478 };
+
+// ═══ v2.0: 30-color Kenney-ish palette — each trader gets a distinct hue ═══
+const TRADER_PALETTE = [
+  0xff5c5c, 0xff79c6, 0xffa500, 0xffd700, 0x50fa7b, 0x00d9a7, 0x8be9fd, 0x6272ff,
+  0xbd93f9, 0xff9e64, 0xe0af68, 0x73daca, 0x7aa2f7, 0xc0caf5, 0xf7768e, 0x9ece6a,
+  0xe95678, 0xfab387, 0xf9e2af, 0xa6e3a1, 0x94e2d5, 0x89dceb, 0x89b4fa, 0xcba6f7,
+  0xf5c2e7, 0xb4befe, 0xff9770, 0x70d6ff, 0x8ac926, 0x1982c4,
+];
+// Model-keyword → single-letter badge (6x6 pixel overlay)
+const TRADER_BADGES = [
+  ["qwen",     "Q"], ["mistral",  "M"], ["gemini",   "G"], ["gemma",    "E"],
+  ["llama",    "L"], ["nemotron", "N"], ["phi",      "P"], ["deepseek", "D"],
+  ["kimi",     "K"], ["command",  "C"], ["claude",   "A"], ["grok",     "X"],
+];
+function traderBadge(id) {
+  const lo = (id || "").toLowerCase();
+  for (const [k, b] of TRADER_BADGES) if (lo.includes(k)) return b;
+  return "?";
+}
+// Model-keyword → home island (for gameplay loop: walk from island → match floor)
+const MODEL_HOME = [
+  ["qwen",     "S14"], ["mistral",  "S13"], ["gemini",   "S17"],
+  ["gemma",    "S10"], ["llama",    "S11"], ["nemotron", "S18"],
+  ["phi",      "S16"], ["deepseek", "S19"], ["selfhost", "S20"],
+  ["gpt",      "S21"], ["claude",   "S22"], ["grok",     "S12"],
+];
+function homeIslandFor(id) {
+  const lo = (id || "").toLowerCase();
+  for (const [k, s] of MODEL_HOME) if (lo.includes(k)) return s;
+  return null;
+}
+// Match floor center (in tile coords) — agents pilgrimage here when betting
+const MATCH_FLOOR = { x: 28, y: 14 };
 
 const ZONES = {
   nba:       { x:2,  y:2,  w:20, h:11, floor:3, label:"NBA TRADING FLOOR" },
@@ -252,8 +342,10 @@ const ENDPOINTS = {
 };
 
 const AGENTS = [
-  ...NBA_TRADERS.map((id,i)=>({ id, key:id, label:id, kind:"nba", zone:"nba", idx:i, char:i%6 })),
-  ...POL_TRADERS.map((id,i)=>({ id:`p-${id}`, key:id, label:id, kind:"political", zone:"political", idx:i, char:(i+2)%6 })),
+  ...NBA_TRADERS.map((id,i)=>({ id, key:id, label:id, kind:"nba", zone:"nba", idx:i, char:i%6,
+    tint: TRADER_PALETTE[i % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) })),
+  ...POL_TRADERS.map((id,i)=>({ id:`p-${id}`, key:id, label:id, kind:"political", zone:"political", idx:i, char:(i+2)%6,
+    tint: TRADER_PALETTE[(i + 15) % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) })),
   ...ISLANDS.map(([lbl,url],i)=>({
     id:`island-${lbl.toLowerCase()}`, key:lbl, label:lbl,
     kind: lbl.startsWith("P") ? "pol_infra" : "infra",
@@ -439,6 +531,10 @@ function makeAgentContainer(a) {
   shadow.ellipse(0, CHAR_H*0.05, CHAR_W*0.3, 6).fill({ color:0x000000, alpha:0.45 });
   c.addChild(shadow);
 
+  // v2.0: Reputation halo (axelrod strategy color), drawn beneath the sprite
+  const halo = new PIXI.Graphics();
+  c.addChild(halo); c._halo = halo;
+
   // Kind pip at feet
   const pip = new PIXI.Graphics();
   pip.circle(0, CHAR_H*0.05, 5).fill(KIND_COLORS[a.kind]);
@@ -455,15 +551,44 @@ function makeAgentContainer(a) {
     tower.rect(-CHAR_W*0.22, -CHAR_H*0.72, CHAR_W*0.44, CHAR_H*0.72)
          .fill({ color:0x1a1f2a, alpha:0.96 })
          .stroke({ width:2, color:KIND_COLORS[a.kind], alpha:0.85 });
+    // v2.0: Sxx/Pxx label + current Brier under the rack
+    const iLbl = new PIXI.Text({ text: a.label, style:{
+      fontFamily:"IBM Plex Mono, monospace", fontSize:9, fontWeight:"700",
+      fill: 0xffd700, letterSpacing:0.5,
+    }});
+    iLbl.anchor.set(0.5, 0); iLbl.y = CHAR_H*0.08;
+    c.addChild(iLbl); c._iLbl = iLbl;
+    const iBr = new PIXI.Text({ text: "—", style:{
+      fontFamily:"IBM Plex Mono, monospace", fontSize:8,
+      fill: 0x00d9a7,
+    }});
+    iBr.anchor.set(0.5, 0); iBr.y = CHAR_H*0.08 + 11;
+    c.addChild(iBr); c._iBr = iBr;
   } else {
-    // Character sprite — BIG
+    // Character sprite — BIG, with v2.0 per-trader tint
     const tex = TEX.chars[a.char];
     if (tex) {
       const spr = new PIXI.Sprite(tex);
       spr.anchor.set(0.5, 1); spr.y = 0;
       spr.width = CHAR_W; spr.height = CHAR_H;
+      if (a.tint) spr.tint = a.tint;
       c.addChild(spr);
       c._spr = spr;
+    }
+    // v2.0: 6x6 letter badge overlay (model family: Q/M/G/L/N/P/E/D/…)
+    if (a.badge) {
+      const bg = new PIXI.Graphics();
+      bg.roundRect(-9, -CHAR_H*0.78, 18, 18, 3)
+        .fill({ color: a.tint || 0xffa500, alpha: 0.95 })
+        .stroke({ width: 1, color: 0x000000, alpha: 0.85 });
+      c.addChild(bg);
+      const bTxt = new PIXI.Text({ text: a.badge, style:{
+        fontFamily:"IBM Plex Mono, monospace", fontSize:12, fontWeight:"900",
+        fill:0x0b0d12, align:"center",
+      }});
+      bTxt.anchor.set(0.5, 0.5);
+      bTxt.x = 0; bTxt.y = -CHAR_H*0.78 + 9;
+      c.addChild(bTxt);
     }
   }
 
@@ -531,6 +656,13 @@ function tickMotion(ms) {
   const t = ms / 1000;
   for (const a of AGENTS) {
     let tx = a.home.x, ty = a.home.y;
+    // v2.0 gameplay: if trader just placed a bet, walk toward MATCH_FLOOR
+    // (center of map). After bet pulse expires, return home. Cheap greedy
+    // path-seek (no true A*, but tile grid + separation already handles it).
+    if (!a._isInfra && a.activeUntil > ms) {
+      tx = MATCH_FLOOR.x + ((a.idx % 5) - 2) * 0.7;
+      ty = MATCH_FLOOR.y + (Math.floor(a.idx / 5) - 1) * 0.7;
+    }
     if (a.pactPartner) {
       const p = AGENTS.find(x => x.id === a.pactPartner);
       if (p) { const m = MEETING_SPOTS[(a.idx + p.idx) % MEETING_SPOTS.length]; tx = m.x; ty = m.y; }
@@ -613,6 +745,29 @@ function tickRender(ms) {
     // Pip state color
     const pipCol = a.state === "profit" ? 0x00d9a7 : a.state === "loss" ? 0xff5c5c : a.state === "error" ? 0xff5c5c : KIND_COLORS[a.kind];
     a._cnt._pip.clear().circle(0, CHAR_H*0.05, 5).fill(pipCol);
+
+    // v2.0 reputation halo — 3px ring underfoot, color = axelrod family,
+    // pulses when a bet was just placed (activeUntil in future)
+    if (a._cnt._halo && !a._isInfra) {
+      const h = a._cnt._halo; h.clear();
+      const fam = STRATEGY_FAMILIES[a.strategy] || "unknown";
+      const haloCol = FAMILY_COLORS[fam];
+      const pulsing = a.activeUntil > ms;
+      const pulseBoost = pulsing ? (0.6 + 0.4 * Math.sin(ms/180)) : 0.35;
+      h.ellipse(0, CHAR_H*0.06, CHAR_W*0.34, 6)
+        .stroke({ width:3, color: haloCol, alpha: pulseBoost });
+      if (pulsing) {
+        h.ellipse(0, CHAR_H*0.06, CHAR_W*0.42, 8)
+          .stroke({ width:1, color: haloCol, alpha: 0.22 });
+      }
+    }
+    // v2.0 infra tower label refresh
+    if (a._isInfra && a._cnt._iBr && a.data) {
+      const b = (a.data.best_brier || 0);
+      a._cnt._iBr.text = b > 0 ? b.toFixed(5) : "—";
+      const isBest = b > 0 && b <= _fleetBestBrier + 0.00001;
+      a._cnt._iBr.style.fill = isBest ? 0xffd700 : (a.data.stagnation > 100 ? 0xff5c5c : 0x00d9a7);
+    }
 
     // Pulse dot
     if (a.state === "profit" || a.state === "loss") {
@@ -1026,19 +1181,100 @@ async function refresh() {
   const best = AGENTS.filter(x => x._isInfra && x.data && x.data.best_brier)
                      .sort((a,b) => a.data.best_brier - b.data.best_brier)[0];
   if (best) setTx("bt-fleet", `${best.label} ${best.data.best_brier.toFixed(5)}`, "star");
+
+  // ═══ v2.0: Live bet ticker — scroll last 20 allocations from both TFs ═══
+  renderBetTicker();
+  // ═══ v2.0: Mini-map ═══
+  renderMinimap();
+  // Fade boot-log after first refresh
+  const bl = document.getElementById("boot-log");
+  if (bl && !bl._faded) {
+    bl._faded = true;
+    setTimeout(() => { bl.style.opacity = "0"; setTimeout(() => bl.remove(), 700); }, 6000);
+  }
+}
+
+// ═══ v2.0: Live bet ticker ═══════════════════════════════════════════════
+function renderBetTicker() {
+  const stream = document.getElementById("bt-stream"); if (!stream) return;
+  const bets = [];
+  for (const a of AGENTS) {
+    if (!a.dayDecision || !Array.isArray(a.dayDecision.allocations)) continue;
+    for (const al of a.dayDecision.allocations) {
+      if (!al.category) continue;
+      const amt = al.stake_amount != null ? al.stake_amount
+                : al.stake != null ? al.stake
+                : al.amount != null ? al.amount : 0;
+      const edge = al.edge != null ? al.edge
+                : al.ev != null ? al.ev
+                : al.expected_value != null ? al.expected_value : null;
+      bets.push({
+        agent: a.label, kind: a.kind, cat: al.category,
+        amt: +amt || 0, edge: edge == null ? null : +edge,
+        profit: al.profit == null ? null : +al.profit,
+      });
+    }
+  }
+  // Keep last 20, freshest first
+  const last = bets.slice(-20).reverse();
+  if (!last.length) { stream.textContent = "awaiting day-decisions…"; return; }
+  stream.innerHTML = last.map(b => {
+    const klass = b.kind === "political" ? "titem pol" : "titem";
+    const edgeStr = b.edge == null ? "" :
+      ` (edge ${b.edge >= 0 ? "+" : ""}${(b.edge*100).toFixed(1)}%)`;
+    const edgeCls = b.edge != null && b.edge < 0 ? "e neg" : "e";
+    const amt = b.amt > 0 ? `$${b.amt.toFixed(0)}` : "pass";
+    return `<span class="${klass}">» <span class="a">${escapeHtml(b.agent)}</span> ${amt} on <span class="c">${escapeHtml(b.cat)}</span><span class="${edgeCls}">${edgeStr}</span></span>`;
+  }).join("");
+}
+
+// ═══ v2.0: Mini-map (top-right, 120x80) ═══════════════════════════════════
+function renderMinimap() {
+  const cvs = document.getElementById("mm-canvas"); if (!cvs) return;
+  const ctx = cvs.getContext("2d");
+  const W = 120, H = 80;
+  ctx.fillStyle = "#0b0d12"; ctx.fillRect(0,0,W,H);
+  // Zone outlines
+  const sx = W / (GRID_W * TILE), sy = H / (GRID_H * TILE);
+  for (const [zid, z] of Object.entries(ZONES)) {
+    ctx.strokeStyle = KIND_COLORS_HEX[zoneIdToKind(zid)] || "#333";
+    ctx.globalAlpha = 0.55;
+    ctx.strokeRect(z.x*TILE*sx, z.y*TILE*sy, z.w*TILE*sx, z.h*TILE*sy);
+  }
+  // Agent density heatmap (2x2 cells)
+  ctx.globalAlpha = 1.0;
+  const cellW = 4, cellH = 4;
+  const heat = {};
+  for (const a of AGENTS) {
+    const cx = Math.floor(a.x*TILE*sx / cellW);
+    const cy = Math.floor(a.y*TILE*sy / cellH);
+    const k = `${cx},${cy}`;
+    heat[k] = (heat[k] || 0) + 1;
+  }
+  for (const [k, n] of Object.entries(heat)) {
+    const [cx,cy] = k.split(",").map(Number);
+    const alpha = Math.min(0.85, 0.2 + n * 0.14);
+    ctx.fillStyle = `rgba(255,165,0,${alpha})`;
+    ctx.fillRect(cx*cellW, cy*cellH, cellW, cellH);
+  }
+  // Islands as bright dots
+  for (const a of AGENTS.filter(x => x._isInfra)) {
+    ctx.fillStyle = a.kind === "pol_infra" ? "#8be9fd" : "#50fa7b";
+    ctx.fillRect(a.x*TILE*sx - 1, a.y*TILE*sy - 1, 3, 3);
+  }
 }
 
 // ── BOOT ────────────────────────────────────────────────────────────────────
 computeCamera();
 camScale = camTargetScale; camX = camTargetX; camY = camTargetY;  // snap on boot
 await refresh();
-setInterval(refresh, 30000);
+setInterval(refresh, 15000); // v2.0: 15s poll (was 30s) — safe under HF rate-limit
 // Bloomberg UTC clock — tick every second independent of data refresh
 setInterval(() => {
   const el = document.getElementById("bt-utc");
   if (el) el.textContent = new Date().toISOString().slice(11,19);
 }, 1000);
-logTrade("council", "pixel-world", "v0.9 boot · 51 agents · 21 islands · full leaderboard · infra-towers · 21 islands as server racks");
+logTrade("council", "pixel-world", "v2.0 boot · 30 distinct traders · 21 racked islands · live-bet ticker · mini-map · reputation halos · paper-link");
 
 })();
 </script>
