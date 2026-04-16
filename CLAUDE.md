@@ -53,13 +53,13 @@ HF EVOLUTION ISLANDS (13 NBA + 8 Political = 21 active, S20/S21/S22 deployed 202
     └── S22 TESTforge42/nba-evo-s22:  venn_abers_fusion gen=0 brier=—        → testforge42-nba-evo-s22.hf.space   (NEW 2026-04-15 — Venn-Abers fusion)
     Political Islands (8 live, CPU tree-only — parity with NBA achieved 2026-04-15):
     ├── P1 Nomos42/political-alpha:      xgboost        gen=3042  brier=0.24996  → nomos42-political-alpha.hf.space
-    ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=2212  brier=0.25223  → nomos42-political-alpha-2.hf.space
-    ├── P3 LBJLincoln/political-alpha-3: xgboost        gen=10344 brier=0.24990  → lbjlincoln-political-alpha-3.hf.space  ★ POL BEST
-    ├── P4 LBJLincoln/political-alpha-4: logistic       gen=4301  brier=0.25146  → lbjlincoln-political-alpha-4.hf.space
-    ├── P5 LBJLincoln/political-alpha-5: catboost       gen=0     brier=—        → lbjlincoln-political-alpha-5.hf.space  (NEW, mirrors S13)
-    ├── P6 LBJLincoln/political-alpha-6: extra_trees    gen=0     brier=—        → lbjlincoln-political-alpha-6.hf.space  (NEW, mirrors S12)
-    ├── P7 LBJLincoln/political-alpha-7: gradient_boost gen=0     brier=—        → lbjlincoln-political-alpha-7.hf.space  (NEW, mirrors S16)
-    └── P8 LBJLincoln/political-alpha-8: ensemble       gen=0     brier=—        → lbjlincoln-political-alpha-8.hf.space  (NEW, mirrors S17)
+    ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=11953 brier=0.25223  → nomos42-political-alpha-2.hf.space
+    ├── P3 LBJLincoln/political-alpha-3: xgboost        gen=14043 brier=0.24996  → lbjlincoln-political-alpha-3.hf.space
+    ├── P4 LBJLincoln/political-alpha-4: logistic       gen=16728 brier=0.25146  → lbjlincoln-political-alpha-4.hf.space
+    ├── P5 LBJLincoln/political-alpha-5: catboost       gen=1567  brier=0.25347  → lbjlincoln-political-alpha-5.hf.space
+    ├── P6 LBJLincoln/political-alpha-6: extra_trees    gen=40    brier=0.25358  → lbjlincoln-political-alpha-6.hf.space  (diversify sent 2026-04-16 00:15Z)
+    ├── P7 LBJLincoln/political-alpha-7: gradient_boost gen=2098  brier=0.24987  → lbjlincoln-political-alpha-7.hf.space  ★ POL BEST
+    └── P8 LBJLincoln/political-alpha-8: ensemble       gen=1786  brier=0.25597  → lbjlincoln-political-alpha-8.hf.space
 
 NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
 
