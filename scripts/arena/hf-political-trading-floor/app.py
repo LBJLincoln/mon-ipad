@@ -158,6 +158,8 @@ AXELROD_STRATEGIES = {
     "mistral-small":     "Cooperator",
     "mistral-nemo":      "Defector",
     "mistral-ministral": "FirmButFair",
+    "nemotron-120b":     "Adaptive",
+    "gemma4-selfhost":   "Tullock",
 }
 _axelrod_agents: Dict[str, object] = {}
 
@@ -235,6 +237,8 @@ REASONING_TEMPLATES = {
     "mistral-small":     "REASONING TEMPLATE (DMAD): RISK-AVERSE STRESS. Assume worst-case tail; trade only if still +EV.",
     "mistral-nemo":      "REASONING TEMPLATE (DMAD): MOMENTUM CHASE. Bet hardest on sectors with 5-day momentum > 2σ.",
     "mistral-ministral": "REASONING TEMPLATE (DMAD): THEORETICAL MODEL. Mental factor model from 3 coefficients → compute expected sector return.",
+    "nemotron-120b":     "REASONING TEMPLATE (DMAD): EXPLICIT 7-STEP CoT. context → hypothesis → evidence → counter → weight → conclusion → trade.",
+    "gemma4-selfhost":   "REASONING TEMPLATE (DMAD): 4-RULE CHECKLIST. (1) edge > 0.05 (2) bankroll > $30 (3) not same sector as yesterday (4) political catalyst dated within 14d. Trade iff ALL pass.",
 }
 
 def get_stackelberg_leader(state: dict) -> Optional[str]:
@@ -370,6 +374,20 @@ PROVIDERS = {
         "max_tokens": 1200,
         "rpm": 20,
     },
+    "openrouter:nemotron-120b": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "nvidia/nemotron-3-super-120b:free",
+        "key_env": "OPENROUTER_API_KEY",
+        "max_tokens": 1200,
+        "rpm": 12,
+    },
+    "selfhost:cpu-gemma4": {
+        "url": "https://nomos42-nomos-cpu-gemma4.hf.space/api/decide",
+        "model": "phi-3.5-mini-instruct-q4_k_m",
+        "key_env": "SELFHOST_NOOP",
+        "max_tokens": 800,
+        "rpm": 6,
+    },
 }
 
 # ── AGENT DEFINITIONS (v3 — 10 personas across 3 providers, 2026-04-14) ──────
@@ -390,6 +408,8 @@ TRADERS = {
     "mistral-small":    {"name": "Mistral Small",    "provider": "mistral:small",        "personality": "conservative", "risk_tolerance": 0.35},
     "mistral-nemo":     {"name": "Mistral Nemo",     "provider": "mistral:nemo",         "personality": "aggressive",   "risk_tolerance": 0.70},
     "mistral-ministral":{"name": "Ministral 8B",     "provider": "mistral:ministral-8b", "personality": "theoretical",  "risk_tolerance": 0.35},
+    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55},
+    "gemma4-selfhost":  {"name": "Gemma4 SelfHost",  "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -469,6 +489,20 @@ PREFERRED STRATEGIES: value_hunter, half_kelly, sector_arb
 EDGE DETECTION: Cross-signal scan — when 2+ regulatory events point same sector AND market hasn't moved >1%, that's the edge. Require signal_strength × sector_beta > 1.04.
 RISK: Moderate (0.55). Depth of reasoning over breadth.
 SPECIALTY: Healthcare/finance/defense ETFs on multi-agency corroboration.""",
+
+    "nemotron-120b": """You are Nemotron 120B, a chain-of-thought sector value hunter.
+APPROACH: Rank every sector by |political_signal - market_consensus|. Size the top 1-2 mispricings using half-Kelly. Ignore noisy signals.
+PREFERRED STRATEGIES: value_hunter, half_kelly, proportional_edge
+EDGE DETECTION: Cross-sector scan — healthcare, defense, energy often mispriced after regulatory events. Require edge >4%.
+RISK: Moderate (0.55). Depth of reasoning over breadth.
+SPECIALTY: Healthcare/defense/energy ETFs with deep CoT reasoning.""",
+
+    "gemma4-selfhost": """You are Gemma4 SelfHost, a disciplined self-hosted political allocator on CPU Phi-3.5-mini.
+APPROACH: Small model, small bets. Pick one high-conviction sector ETF play per day. Prefer SPDR sector funds (XLF, XLE, XLV, XLI, XLK) over individual stocks.
+PREFERRED STRATEGIES: flat_1pct, quarter_kelly, top_signal_only
+EDGE DETECTION: Only deploy when signal_strength >0.7 AND single sector has ≥2 corroborating events. Otherwise cash.
+RISK: Low (0.40). Capital preservation over chase.
+SPECIALTY: Single sector ETF on multi-agency consensus.""",
 }
 
 # ── RATE LIMITER ─────────────────────────────────────────────────────────────

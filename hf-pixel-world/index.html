@@ -182,7 +182,7 @@
     </div>
     <div id="boot-log">
       <div class="bl-head">◉ NOMOS42 PIXEL WORLD v2.3 — BOOT</div>
-      <div class="bl-line">[ok] PixiJS 8 loaded · 56×32 grid · 52 real agents</div>
+      <div class="bl-line">[ok] PixiJS 8 loaded · 56×32 grid · 54 real agents</div>
       <div class="bl-line">[ok] palette=30 · badges=12 · breathing=on · emotes=state</div>
       <div class="bl-line">[ok] particles=ambient · nameplates=perf-gradient · halos=axelrod</div>
       <div class="bl-line">[ok] ticker=/api/day-decisions · minimap=live · paper=/paper</div>
@@ -298,7 +298,8 @@ const NBA_TRADERS = [
 ];
 const POL_TRADERS = [
   "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
-  "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral"
+  "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral",
+  "nemotron-120b","gemma4-selfhost"
 ];
 const ISLANDS = [
   ["S10","https://nomos42-nba-quant.hf.space/api/status"],
@@ -1382,7 +1383,7 @@ setInterval(() => {
   const el = document.getElementById("bt-utc");
   if (el) el.textContent = new Date().toISOString().slice(11,19);
 }, 1000);
-logTrade("council", "pixel-world", "v2.3 boot · 22 traders (12 NBA + 10 POL) · 21 islands · 9 depts · breathing · emotes · particles");
+logTrade("council", "pixel-world", "v2.3 boot · 24 traders (12 NBA + 12 POL) · 21 islands · 9 depts · breathing · emotes · particles");
 
 })();
 </script>
