@@ -1,33 +1,33 @@
 # What Works — Empirically Validated
 
-> Auto-generated from experiment data on 2026-04-15 22:24 UTC
+> Auto-generated from experiment data on 2026-04-16 00:25 UTC
 > Only includes findings backed by measured improvement
 
 ## NBA — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_max_features_ratio | 6 | 0 | 0% | +0.00587 |
-| change_max_depth | 4 | 0 | 0% | +0.00542 |
-| remove_features | 5 | 0 | 0% | +0.00579 |
-| swap_features | 2 | 0 | 0% | +0.00661 |
-| add_features | 7 | 0 | 0% | +0.00641 |
-| change_model | 23 | 0 | 0% | +0.42341 |
-| change_n_estimators | 2 | 0 | 0% | +0.00677 |
-| change_min_samples_leaf | 1 | 0 | 0% | +0.00573 |
+| change_model | 22 | 0 | 0% | +0.23191 |
+| change_max_depth | 6 | 0 | 0% | +0.00827 |
+| remove_features | 6 | 0 | 0% | +0.00848 |
+| change_n_estimators | 2 | 0 | 0% | +0.00657 |
+| add_features | 4 | 0 | 0% | +0.00882 |
+| swap_features | 5 | 0 | 0% | +0.00987 |
+| change_max_features_ratio | 2 | 0 | 0% | +0.01015 |
+| change_min_samples_leaf | 3 | 0 | 0% | +0.01235 |
 
 ## POLITICAL — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| remove_features | 5 | 0 | 0% | +0.02269 |
-| add_features | 7 | 0 | 0% | +0.01903 |
-| change_model | 13 | 0 | 0% | +0.04141 |
-| change_max_features_ratio | 7 | 0 | 0% | +0.02233 |
-| change_max_depth | 6 | 0 | 0% | +0.01349 |
-| change_n_estimators | 3 | 0 | 0% | +0.01203 |
-| swap_features | 3 | 0 | 0% | +0.04502 |
-| change_min_samples_leaf | 6 | 0 | 0% | +0.00540 |
+| add_features | 9 | 0 | 0% | +0.01659 |
+| swap_features | 9 | 0 | 0% | +0.02874 |
+| change_model | 6 | 0 | 0% | +0.04346 |
+| change_min_samples_leaf | 8 | 0 | 0% | +0.00664 |
+| remove_features | 5 | 0 | 0% | +0.03140 |
+| change_max_features_ratio | 5 | 0 | 0% | +0.02212 |
+| change_n_estimators | 5 | 0 | 0% | +0.00911 |
+| change_max_depth | 3 | 0 | 0% | +0.01660 |
 
 ## Arena — Proven Insights
 
