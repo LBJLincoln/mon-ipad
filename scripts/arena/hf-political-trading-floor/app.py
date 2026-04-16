@@ -2029,6 +2029,77 @@ async def api_leaderboard():
         })
     return JSONResponse({"leaderboard": lb, "events_processed": _experiment_state.get("events_processed", 0)})
 
+
+@api.get("/api/axelrod-log")
+async def api_axelrod_log(day: int = None, since: int = None):
+    """Axelrod Mech C export — serves the per-day post-mortem dataset used as
+    the primary dataset for the Axelrod-LLM paper (§6 results).
+
+    Logs are written by write_axelrod_log to AXELROD_LOG_DIR/day-NNN.jsonl.
+    Space /tmp is ephemeral, so this endpoint is the canonical way for the VM
+    to pull the log into data/arena/axelrod-log/ for version-controlled analysis.
+
+    Params:
+      ?day=N      — return only day-N as a list of rows
+      ?since=N    — return all days with day_idx >= N
+      (no params) — index: list available days with row counts
+    """
+    try:
+        if not AXELROD_LOG_DIR.exists():
+            return JSONResponse({"status": "no_data", "message": "axelrod log dir not created yet"})
+        files = sorted(AXELROD_LOG_DIR.glob("day-*.jsonl"))
+        if not files:
+            return JSONResponse({"status": "no_data", "days": []})
+
+        def _read(fp):
+            rows = []
+            with fp.open() as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        rows.append(json.loads(line))
+                    except Exception:
+                        continue
+            return rows
+
+        if day is not None:
+            fp = AXELROD_LOG_DIR / f"day-{int(day):03d}.jsonl"
+            if not fp.exists():
+                return JSONResponse({"status": "not_found", "day": day}, status_code=404)
+            return JSONResponse({"day_idx": int(day), "rows": _read(fp)})
+
+        if since is not None:
+            out = []
+            for fp in files:
+                try:
+                    idx = int(fp.stem.split("-")[1])
+                except Exception:
+                    continue
+                if idx >= int(since):
+                    out.append({"day_idx": idx, "rows": _read(fp)})
+            return JSONResponse({"since": int(since), "days": out, "n_days": len(out)})
+
+        index = []
+        for fp in files:
+            try:
+                idx = int(fp.stem.split("-")[1])
+            except Exception:
+                continue
+            rows = _read(fp)
+            if not rows:
+                continue
+            index.append({
+                "day_idx": idx,
+                "date": rows[0].get("date"),
+                "n_rows": len(rows),
+            })
+        return JSONResponse({"n_days": len(index), "index": index})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
 # Mount FastAPI alongside Gradio
 app = gr.mount_gradio_app(api, demo, path="/")
 
