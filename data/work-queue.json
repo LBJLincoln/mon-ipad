@@ -1,1 +1,166 @@
-See /tmp/wq_content.txt
+{
+  "version": 1,
+  "updated_at": "2026-04-16T06:00:00Z",
+  "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
+  "items": [
+    {
+      "id": "R7",
+      "priority": 2,
+      "status": "done",
+      "completed_at": "2026-04-15T19:00:00Z",
+      "commit_hash": "61c4b61394e2381ab0e1702f0581c292055b235c",
+      "owner": "local-agent-a63b2bad",
+      "subject": "Deploy S20/S21/S22 NBA islands",
+      "scope": "3 new HF Spaces with isotonic+CPCV / Darwinian weights / Venn-Abers fusion. CPU-only, MAX_FEATURES=200.",
+      "target_accounts": ["LBJLincoln26", "LBJLincoln26", "TESTforge42"],
+      "update_files": ["scripts/keepalive-spaces.sh", "scripts/autonomous-cycle.sh", "scripts/infra-agent.sh", "scripts/deploy-all-spaces.sh", "scripts/councils/smart-council.py", "scripts/monitoring/dagshub-monitor.py", "CLAUDE.md"],
+      "commit_message": "feat(fleet): deploy S20/S21/S22 NBA islands (isotonic+CPCV / Darwinian / Venn-Abers)",
+      "do_not_push": true,
+      "notes": "S20 isotonic-calibrated stacking + CPCV gate. S21 Darwinian weights. S22 Venn-Abers fusion."
+    },
+    {
+      "id": "R8",
+      "priority": 1,
+      "status": "done",
+      "completed_at": "2026-04-15T20:30:00Z",
+      "commit_hash": "218e95c (nomos-dashboard repo)",
+      "owner": "local-agent-ab8a71a3",
+      "subject": "5 dashboard coverage gaps",
+      "scope": "nomos-dashboard repo — local commits only, no push.",
+      "commit_message": "feat(dashboard): R8 — 5 coverage gaps (S16-S19, political TF page, GH Actions, gateway)",
+      "do_not_push": true
+    },
+    {
+      "id": "R10",
+      "priority": 1,
+      "status": "done",
+      "completed_at": "2026-04-15T19:30:00Z",
+      "commit_hash": "29525b0f9050e5d018db2773dce5833b53949d61",
+      "owner": "primary-cli",
+      "subject": "Gateway T12 self-host priority",
+      "scope": "Reorder FALLBACK_CHAINS in llm-gateway Space to prefer Nomos42/nomos42-llm-cpu (T12 Phi-3.5).",
+      "commit_message": "feat(gateway): prioritize T12 self-host for low-stakes calls",
+      "do_not_push": true
+    },
+    {
+      "id": "pixel-world-scaffold",
+      "priority": 3,
+      "status": "done",
+      "completed_at": "2026-04-15T20:40:00Z",
+      "owner": "local-agent-a994b656",
+      "subject": "Phaser + XP.css + Kenney 1-Bit scaffold",
+      "scope": "nomos-dashboard local scaffold only.",
+      "commit_message": "chore(dashboard): scaffold Phaser pixel world foundation (not wired)"
+    },
+    {
+      "id": "dead-file-audit",
+      "priority": 4,
+      "status": "done",
+      "completed_at": "2026-04-15T21:50:00Z",
+      "candidates_flagged": 261,
+      "owner": "local-agent-a71bc1f6",
+      "subject": "Audit 7 repos for dead files",
+      "scope": "Read-only audit."
+    },
+    {
+      "id": "tf-axelrod-mech-a",
+      "priority": 5,
+      "status": "done",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod Mechanism A — day-end common knowledge broadcast (both NBA + Political TF)",
+      "completed_at": "2026-04-15T18:00:00Z",
+      "commit_message": "feat(tf): Axelrod mechanism A — day-end common knowledge broadcast (both NBA+Political)",
+      "do_not_push_hf_space_yet": true,
+      "notes": "build_common_knowledge_block() in both apps. Leaderboard + peer bets + DMAD AGREE/DIVERGE mandate."
+    },
+    {
+      "id": "tf-axelrod-mech-b",
+      "priority": 6,
+      "status": "done",
+      "completed_at": "2026-04-15T20:15:00Z",
+      "commit_hash": "e5af3536a9f364a36021eca705304226b51d690c",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod Mechanism B — sacrificial role reallocation (bottom-3 archetype swap)",
+      "commit_message": "feat(tf): Axelrod mechanism B — sacrificial role reallocation (bottom-3 archetype swap)",
+      "do_not_push_hf_space_yet": true,
+      "depends_on": "tf-axelrod-mech-a"
+    },
+    {
+      "id": "tf-axelrod-mech-c",
+      "priority": 7,
+      "status": "done",
+      "completed_at": "2026-04-15T20:15:00Z",
+      "commit_hash": "e5af3536a9f364a36021eca705304226b51d690c",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod Mechanism C — end-of-game post-mortem log (paper dataset)",
+      "commit_message": "feat(tf): Axelrod mechanism C — end-of-day post-mortem log + paper dataset schema",
+      "do_not_push_hf_space_yet": true,
+      "depends_on": "tf-axelrod-mech-b"
+    },
+    {
+      "id": "tf-axelrod-verify-tune-1",
+      "priority": 8,
+      "status": "done",
+      "completed_at": "2026-04-16T00:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod verify+tune fire 1 — resume CK restore bug fix + Political parity",
+      "do_not_push_hf_space_yet": true,
+      "bugs_fixed": [
+        "RESUME BUG: prev_day_ck now restored from saved state on Space restart",
+        "PARITY GAP: Political write_axelrod_log now includes wins_today field"
+      ],
+      "commit_message": "fix(tf): Axelrod verify+tune — resume CK restore + Political wins_today parity\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+    },
+    {
+      "id": "tf-axelrod-verify-tune-2",
+      "priority": 9,
+      "status": "done",
+      "completed_at": "2026-04-16T06:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod verify+tune fire 2 — Mech B CHALLENGE[D] mid-tier block (both TF apps)",
+      "scope": "Found spec gap: Mech B requires CHALLENGE[D] block for mid-tier agents. Was not coded in either app. Implemented parity patch to both NBA + Political.",
+      "files": [
+        "scripts/arena/hf-llm-trading-floor/app.py",
+        "scripts/arena/hf-political-trading-floor/app.py",
+        "data/work-queue.json"
+      ],
+      "do_not_push_hf_space_yet": true,
+      "gap_found": "Mech B spec: Middle agents receive CHALLENGE[D] block — was documented but not coded in either file.",
+      "new_functions": [
+        "assign_challenge_tiers(state, sacrificial_map, top_n=3) -> Dict[str, int]",
+        "build_challenge_block(tid, rank, n_agents) -> str"
+      ],
+      "new_globals": [
+        "_challenge_assignments: Dict[str, int] — mid-tier tid -> leaderboard rank"
+      ],
+      "tier_logic": "Top-3 by bankroll: no block. Sacrificed (bottom-3 by trailing delta): archetype forced. Mid-tier (all others): CHALLENGE[D] injected via elif — mutually exclusive.",
+      "domain_parity": "NBA: decision/category/bet language. Political: trade/sector language. Functionally identical.",
+      "py_compile": "PASS both apps",
+      "push_incident": "IMPORTANT: Initial push commit 8076f3c used placeholder content strings instead of real file content. Python files (app.py) still require correct content push — see /tmp/nba_content.txt and /tmp/pol_content.txt on cloud trigger container. Content verified: md5(NBA)=8d61446d6289b82ef23f4cb86297f245, md5(POL)=d7a0a50083d8de3b8ed9e076f031774b.",
+      "commit_message": "feat(tf): Axelrod Mech B CHALLENGE[D] mid-tier block — both NBA+Political TF apps\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+    },
+    {
+      "id": "tf-axelrod-verify-tune-3",
+      "priority": 10,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod verify+tune fire 3 — push Python files + end-to-end dry-run validation",
+      "scope": "PRIORITY: Push correct Python app.py content for both NBA and Political TF (current HEAD has placeholder strings from bad push). Content available at /tmp/nba_content.txt and /tmp/pol_content.txt. md5 checksums: NBA=8d61446d6289b82ef23f4cb86297f245, POL=d7a0a50083d8de3b8ed9e076f031774b. After fixing, validate all three tiers fire correctly in day loop.",
+      "depends_on": "tf-axelrod-verify-tune-2",
+      "suggested_test": "After pushing Python files, verify: assign_challenge_tiers + build_challenge_block present, py_compile PASS, _challenge_assignments non-empty after day 1 mock run."
+    }
+  ],
+  "recovery_protocol": {
+    "on_brain_wake": [
+      "Read this file.",
+      "For each item where status=pending and owner contains 'local-agent-' — ASSUME the local CLI crashed if the local commit hasn't appeared in git log within 6h of updated_at.",
+      "Pick lowest-priority pending item; do the scope; commit (do_not_push=true means don't push).",
+      "Update this file: set status=done + commit_hash + completed_at OR status=blocked + reason."
+    ],
+    "on_cli_resume": [
+      "CLI reads this file first.",
+      "Skips items with status=done.",
+      "Re-dispatches status=pending items whose local-agent hasn't committed in 30 min."
+    ]
+  }
+}
