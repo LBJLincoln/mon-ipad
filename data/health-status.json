@@ -1,252 +1,91 @@
 {
-  "_meta": {
-    "updated_at": "2026-04-15T00:30:00Z",
-    "brain_cycle": "2026-04-15T00:30Z",
-    "brain_model": "claude-sonnet-4-6",
-    "cycle_note": "S14 was 503 DOWN — woken via main-page ping (now STARTING). P2 RECOVERED from last cycle's persistent 503. All political islands UP. No stagnation anywhere. Active fleet best S13=0.22326. S15 pop-best individual 0.22054 (unconfirmed). Research: temperature scaling calibration proposal written."
+  "generated_at": "2026-04-16T00:20:00Z",
+  "brain_trigger": "cloud-4h-cycle",
+  "brain_model": "claude-sonnet-4-6",
+
+  "step0_crash_recovery": {
+    "status": "clean",
+    "note": "All 8 work-queue items are status=done. Latest commit a4c78fbc (Apr-15 23:50Z) <6h ago. No recovery needed."
   },
+
+  "engine_parity": {
+    "status": "PASS",
+    "sha": "f0a7917f18fe452a1d94a8bc9d0dba5c8e6e1c07",
+    "repos_checked": ["lbjlincoln/nomos-nba-agent", "lbjlincoln/mon-ipad"],
+    "note": "features/engine.py SHA matches exactly across both repos."
+  },
+
   "nba_fleet": {
-    "fleet_best_brier": 0.22169,
-    "fleet_best_brier_note": "S17 pre-sleep 0.22169 remains historical best; active measured best is S13=0.22326",
+    "fleet_best_brier": 0.22085,
     "fleet_best_island": "S17",
-    "fleet_best_model": "random_forest",
-    "active_fleet_best_brier": 0.22326,
-    "active_fleet_best_island": "S13",
-    "checkpoint_threshold": 0.21837,
-    "gap_to_checkpoint": 0.00489,
-    "target_brier": 0.20,
-    "colab_best": 0.21514,
-    "s15_population_best": 0.22054,
-    "s15_population_best_note": "S15 gen895 top individual Brier=0.22054 ROI=31.87% Sharpe=8.21 200f — unconfirmed, walk-forward validation needed before claiming fleet best",
+    "fleet_best_gen": 979,
+    "checkpoint_needed": false,
+    "checkpoint_threshold": 0.22085,
     "islands": {
-      "S10": {
-        "url": "nomos42-nba-quant.hf.space",
-        "role": "exploitation",
-        "status": "UP",
-        "cycle": 198,
-        "generation": 592,
-        "best_brier": 0.2271,
-        "best_roi": 0.2456,
-        "best_sharpe": 7.8699,
-        "best_features": 18,
-        "best_model": "random_forest",
-        "stagnation": 0,
-        "mutation_rate": 0.1421,
-        "pop_size": 60,
-        "feature_candidates": 3335,
-        "games_evaluated": 9551,
-        "alert": null
-      },
-      "S11": {
-        "url": "nomos42-nba-quant-2.hf.space",
-        "role": "exploration",
-        "status": "UP",
-        "cycle": 251,
-        "generation": 752,
-        "best_brier": 0.22486,
-        "best_roi": 0.2678,
-        "best_sharpe": 5.3768,
-        "best_features": 25,
-        "best_model": "extra_trees",
-        "stagnation": 0,
-        "mutation_rate": 0.1431,
-        "pop_size": 60,
-        "feature_candidates": 3335,
-        "games_evaluated": 9551,
-        "alert": "Hard reset at cycle 235 after 25 stagnant cycles — fully recovered"
-      },
-      "S12": {
-        "url": "nomos42-nba-evo-3.hf.space",
-        "role": "xgboost",
-        "status": "UP",
-        "cycle": 456,
-        "generation": 1367,
-        "best_brier": 0.22334,
-        "best_roi": 0.2866,
-        "best_sharpe": 5.7742,
-        "best_features": 41,
-        "best_model": "xgboost",
-        "stagnation": 0,
-        "mutation_rate": 0.1312,
-        "pop_size": 60,
-        "feature_candidates": 3335,
-        "games_evaluated": 9551,
-        "alert": "Hard reset at cycle 433 after 25 stagnant cycles — fully recovered"
-      },
-      "S13": {
-        "url": "nomos42-nba-evo-4.hf.space",
-        "role": "catboost",
-        "status": "UP",
-        "cycle": 56,
-        "generation": 168,
-        "best_brier": 0.22326,
-        "best_roi": 0.2835,
-        "best_sharpe": 6.1563,
-        "best_features": 42,
-        "best_model": "random_forest",
-        "stagnation": 0,
-        "mutation_rate": 0.1467,
-        "pop_size": 60,
-        "feature_candidates": 3335,
-        "games_evaluated": 9551,
-        "alert": null,
-        "flag": "ACTIVE_FLEET_BEST"
-      },
-      "S14": {
-        "url": "nomos42-nba-evo-5.hf.space",
-        "role": "lightgbm",
-        "status": "STARTING",
-        "cycle": 0,
-        "generation": 0,
-        "last_known_cycle": 299,
-        "last_known_generation": 895,
-        "best_brier": 0.22328,
-        "best_roi": 0.3187,
-        "best_sharpe": 8.21,
-        "best_features": 200,
-        "best_model": "random_forest",
-        "stagnation": null,
-        "alert": "503 → STARTING: woken by brain main-page ping. Hard reset at cycle 269 confirmed from logs.",
-        "population_best_unconfirmed": 0.22054,
-        "population_best_note": "Last cycle top individual 0.22054 — needs walk-forward to confirm"
-      },
-      "S15": {
-        "url": "nomos42-nba-evo-6.hf.space",
-        "role": "wide_search",
-        "status": "UP",
-        "cycle": 299,
-        "generation": 895,
-        "best_brier": 0.22328,
-        "best_roi": 0.3187,
-        "best_sharpe": 8.21,
-        "best_features": 200,
-        "best_model": "random_forest",
-        "stagnation": 0,
-        "mutation_rate": 0.1481,
-        "pop_size": 50,
-        "feature_candidates": 3335,
-        "games_evaluated": 9551,
-        "alert": "Hard reset at cycle 269. Pop top individual 0.22054 — unconfirmed fleet best.",
-        "population_best": 0.22054
-      }
+      "S10": {"space": "nomos42-nba-quant",      "gen": 116,  "brier": 0.2469,  "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none - post-hard-reset active"},
+      "S11": {"space": "nomos42-nba-quant-2",    "gen": 91,   "brier": 0.22123, "stagnation_cycles": 25, "status": "EVOLVING", "action": "DIVERSIFY QUEUED"},
+      "S12": {"space": "nomos42-nba-evo-3",      "gen": 58,   "brier": 0.2207,  "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none - internal REMOTE DIVERSIFY at cy17 already fired"},
+      "S13": {"space": "nomos42-nba-evo-4",      "gen": 166,  "brier": 0.23245, "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none"},
+      "S14": {"space": "nomos42-nba-evo-5",      "gen": 116,  "brier": 0.22186, "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none"},
+      "S15": {"space": "nomos42-nba-evo-6",      "gen": 141,  "brier": 0.23563, "stagnation_cycles": 20, "status": "EVOLVING", "action": "DIVERSIFY QUEUED"},
+      "S16": {"space": "lbjlincoln26-nba-evo-s16","gen": 924,  "brier": 0.22573, "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none"},
+      "S17": {"space": "lbjlincoln26-nba-evo-s17","gen": 979,  "brier": 0.22085, "stagnation_cycles": 3,  "status": "EVOLVING", "action": "monitor - fleet best, 3-cycle stagnation"},
+      "S18": {"space": "testforge42-nba-evo-s18", "gen": 1077, "brier": 0.22114, "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none"},
+      "S19": {"space": "testforge42-nba-evo-s19", "gen": 960,  "brier": 0.22257, "stagnation_cycles": 17, "status": "EVOLVING", "action": "DIVERSIFY QUEUED"}
     },
-    "diversify_triggered": [],
-    "islands_up": 5,
-    "islands_starting": 1,
-    "islands_down": 0
+    "diversify_triggered": ["S11", "S15", "S19"],
+    "diversify_command_format": "{\"command\":\"diversify\"}  (NOT action field)"
   },
+
   "political_fleet": {
-    "fleet_best_brier": 0.2499,
-    "fleet_best_island": "P3",
-    "target_brier": 0.24,
-    "trading_floor": {
-      "best_agent": "llama-contra",
-      "roi": 2.235,
-      "win_rate": 0.581,
-      "bets": 246,
-      "note": "+223.5% ROI, 58.1% WR on 246 bets (50-day expanded dataset, 2026-04-14)"
-    },
+    "pol_best_brier": 0.24987,
+    "pol_best_island": "P7",
+    "pol_best_gen": 2063,
+    "note": "P7 (lbjlincoln-political-alpha-7, gradient_boost) at 0.24987 is NEW political best — edges out P3 (0.24990). Update CLAUDE.md next cycle.",
     "islands": {
-      "P1": {
-        "url": "nomos42-political-alpha.hf.space",
-        "role": "exploitation_xgboost",
-        "status": "UP",
-        "cycle": 3382,
-        "generation": 10146,
-        "best_brier": 0.24996,
-        "best_model": "xgboost_brier",
-        "best_features": 67,
-        "stagnation": 0,
-        "mutation_rate": 0.1432,
-        "pop_size": 60,
-        "feature_candidates": 272,
-        "alert": "Hard resets at cycles 3334 and 3374. Currently stable."
-      },
-      "P2": {
-        "url": "nomos42-political-alpha-2.hf.space",
-        "role": "exploration_lightgbm",
-        "status": "UP",
-        "cycle": 2460,
-        "generation": 7380,
-        "best_brier": 0.25223,
-        "best_model": "lightgbm",
-        "best_features": 60,
-        "stagnation": 0,
-        "mutation_rate": 0.1341,
-        "pop_size": 60,
-        "feature_candidates": 272,
-        "alert": null,
-        "flag": "RECOVERED — was persistent 503 last cycle, now UP gen=7380"
-      },
-      "P3": {
-        "url": "lbjlincoln-political-alpha-3.hf.space",
-        "role": "exploitation_xgboost",
-        "status": "UP",
-        "cycle": 5714,
-        "generation": 17142,
-        "best_brier": 0.2499,
-        "best_model": "xgboost_brier",
-        "best_features": 69,
-        "stagnation": 0,
-        "mutation_rate": 0.1387,
-        "pop_size": 60,
-        "feature_candidates": 272,
-        "alert": null,
-        "flag": "FLEET_BEST"
-      },
-      "P4": {
-        "url": "lbjlincoln-political-alpha-4.hf.space",
-        "role": "logistic",
-        "status": "UP",
-        "cycle": 4310,
-        "generation": 12928,
-        "best_brier": 0.25146,
-        "best_model": "logistic",
-        "best_features": 43,
-        "stagnation": 0,
-        "mutation_rate": 0.1404,
-        "pop_size": 60,
-        "feature_candidates": 272,
-        "alert": "Hard resets at cycles 4258 and 4298. Currently stable."
-      }
+      "P1": {"space": "nomos42-political-alpha",     "gen": 14032, "brier": 0.24996, "status": "UP"},
+      "P2": {"space": "nomos42-political-alpha-2",   "gen": 11931, "brier": 0.25223, "status": "UP"},
+      "P3": {"space": "lbjlincoln-political-alpha-3", "gen": 20015, "brier": 0.24990, "status": "UP"},
+      "P4": {"space": "lbjlincoln-political-alpha-4", "gen": 16718, "brier": 0.25146, "status": "UP"},
+      "P5": {"space": "lbjlincoln-political-alpha-5", "gen": 35,    "brier": 0.25358, "status": "UP (new)"},
+      "P6": {"space": "lbjlincoln-political-alpha-6", "gen": 1544,  "brier": 0.25347, "status": "UP"},
+      "P7": {"space": "lbjlincoln-political-alpha-7", "gen": 2063,  "brier": 0.24987, "status": "UP - NEW POL BEST"},
+      "P8": {"space": "lbjlincoln-political-alpha-8", "gen": 1755,  "brier": 0.25597, "status": "UP"}
     },
-    "diversify_triggered": [],
-    "islands_up": 4,
-    "islands_starting": 0,
-    "islands_down": 0,
-    "recovery_note": "P2 self-recovered from persistent 503 between cycles — keepalive likely restored"
+    "restarts_needed": 0,
+    "rotation_executed": "B - political_engine.py review (v3.22-44cat)"
   },
-  "cross_project": {
-    "total_islands_checked": 10,
-    "islands_up": 9,
-    "islands_starting": 1,
-    "islands_down": 0,
-    "nba_fleet_best": 0.22169,
-    "nba_active_best": 0.22326,
-    "political_fleet_best": 0.2499,
-    "checkpoint_to_supabase": false,
-    "checkpoint_note": "Gap to threshold 0.21837 = 0.00489. S15 pop-best 0.22054 unconfirmed. Next milestone: validate S14/S15 pop best via walk-forward.",
-    "fec_q1_2026_deadline": "2026-04-15 — FEC Q1 filings due TODAY. cat44 features should reflect post-deadline regime.",
-    "feature_pool_disparity": "NBA: 3335 candidates | Political: 272 candidates — 12x gap. Expanding political pool is highest-leverage improvement.",
-    "nba_proposal_this_cycle": "Temperature scaling / isotonic calibration — expected Brier -0.004 to -0.007",
-    "political_rotation_this_cycle": "B — FEC Q1 deadline urgency + prediction market calibration edge feature"
+
+  "dept_councils": {
+    "status_summary": "All 9 UP, iteration=0 STARTING state",
+    "root_cause": "Gateway wiring commit a4c78fbc pushed ~30min before this cycle — spaces restarted, in startup jitter",
+    "action": "none - do NOT restart again, let startup jitter complete",
+    "expected_first_loop": "~30min from restart",
+    "councils": {
+      "D1": "STARTING (iter=0)",
+      "D2": "STARTING (iter=0)",
+      "D3": "STARTING (iter=0)",
+      "D4": "STARTING (iter=0)",
+      "D5": "STARTING (iter=0)",
+      "D6": "STARTING (iter=0)",
+      "D7": "STARTING (iter=0)",
+      "D8": "STARTING (iter=0)",
+      "D9": "STARTING (iter=0)"
+    }
   },
-  "actions_taken": [
-    "Fetched all 6 NBA island APIs (S10-S15)",
-    "Fetched all 4 Political island APIs (P1-P4)",
-    "S14 (nba-evo-5): 503 DOWN → pinged main page → STARTING (woken)",
-    "P2 (political-alpha-2): RECOVERED — was persistent 503 last cycle, now UP at gen=7380",
-    "Stagnation check: all active islands stagnation=0, no diversify commands sent",
-    "NBA: wrote temperature-scaling calibration research proposal",
-    "Political: rotation B — FEC Q1 deadline + prediction market calibration edge",
-    "Wrote data/health-status.json"
-  ],
-  "next_cycle_alerts": [
-    "S14: verify gen > 0 at next check (confirm full restart, not just STARTING)",
-    "S15 pop-best 0.22054: compare vs historical fleet best 0.22169 — run walk-forward to validate",
-    "FEC Q1 2026: data filed TODAY — trigger ops/fetch_political_data.py FEC refresh ASAP",
-    "Political feature pool (272) vs NBA (3335): investigate which cat modules return empty — fix data deps",
-    "NBA: implement temperature scaling in island evaluate_individual() — expected -0.004 Brier",
-    "Next political rotation: C — port NBA calibration + GA config improvements to political islands"
-  ]
+
+  "step4_dashboard": {
+    "status": "No pending R8 items. All work-queue items complete. No action."
+  },
+
+  "step5_cross_project": {
+    "nba_to_political": "REMOTE DIVERSIFY (S12 auto-trigger at cy17) is more granular than full hard-reset — port this technique to political engine GA loop as early-stagnation intervention at 15 cycles (vs current 20-cycle threshold)",
+    "political_to_nba": "P7 gradient_boost achieving pol-best 0.24987 — mirrors S16 role, confirm S16 (gradient_boost) GA is running correctly"
+  },
+
+  "sota_research": {
+    "search_date": "2026-04-16",
+    "key_finding": "Uncertainty-aware RNN with Monte Carlo Dropout achieves Brier=0.199 (logistic baseline) — best SOTA calibration technique. Auto-selection among sigmoid/isotonic/none calibration based on Brier loss is active in S20 (isotonic_cpcv). Stacked ensemble (Nature Sci Reports 2025) shows >0.221 is achievable with tree stacks.",
+    "proposal_file": "data/research-proposals/2026-04-16-nba-sota.md"
+  }
 }
