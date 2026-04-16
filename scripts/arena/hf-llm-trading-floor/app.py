@@ -186,9 +186,6 @@ AXELROD_STRATEGIES = {
     "mistral-ministral": "FirmButFair",         # cooperate unless suckered (theoretical)
     "nemotron-120b":     "Adaptive",            # long-run learner (chainthought)
     "gemma4-selfhost":   "Tullock",             # probabilistic nice (disciplined)
-    "qwen25-micro":      "Random",              # pattern-match baseline
-    "llama32-micro":     "Cycler CCD",          # 3-cycle (anchor+adjust)
-    "gemma2-micro":      "HardGoByMajority",    # copies majority move (minimalist)
 }
 # Per-trader instantiated strategy object (populated on first call)
 _axelrod_agents: Dict[str, object] = {}
@@ -297,9 +294,6 @@ REASONING_TEMPLATES = {
     "mistral-ministral": "REASONING TEMPLATE (DMAD): THEORETICAL MODEL. Mental logistic regression from 3 coefficients → compute p.",
     "nemotron-120b":     "REASONING TEMPLATE (DMAD): EXPLICIT 7-STEP CoT. context → hypothesis → evidence → counter → weight → conclusion → bet.",
     "gemma4-selfhost":   "REASONING TEMPLATE (DMAD): 4-RULE CHECKLIST. (1) edge > 0.05 (2) bankroll > $30 (3) not same game as yesterday (4) category in top-3. Bet iff ALL pass.",
-    "qwen25-micro":      "REASONING TEMPLATE (DMAD): PATTERN-MATCH. Find the single most similar historical game in COMMON_KNOWLEDGE, mimic bet logic.",
-    "llama32-micro":     "REASONING TEMPLATE (DMAD): ANCHOR & ADJUST. Anchor at implied_prob, adjust ±10% on the 1 strongest signal, bet iff edge > 0.04.",
-    "gemma2-micro":      "REASONING TEMPLATE (DMAD): MINIMALIST. Pick the SINGLE highest-conviction bet of the day or PASS. Never > 1 bet.",
 }
 
 def get_stackelberg_leader(state: dict) -> Optional[str]:
@@ -469,29 +463,6 @@ PROVIDERS = {
         "max_tokens": 800,
         "rpm": 6,  # slow CPU, ~5-12s/call
     },
-    # 2026-04-16 REFRESH — 3 OpenAI-compat quantized CPU Spaces upgraded to 2026 SOTA
-    # URLs kept identical to preserve HF Space slugs; model weights refreshed inside.
-    "selfhost:qwen3-0.6b": {
-        "url": "https://nomos42-qwen25-05b-cpu.hf.space/chat/completions",
-        "model": "qwen3-0.6b-instruct",
-        "key_env": "SELFHOST_NOOP",
-        "max_tokens": 800,
-        "rpm": 12,  # fastest (~3-5s warm), 36T training, /think reasoning mode
-    },
-    "selfhost:dolphin3-llama-3.2-3b": {
-        "url": "https://nomos42-llama32-1b-cpu.hf.space/chat/completions",
-        "model": "dolphin3-llama3.2-3b",
-        "key_env": "SELFHOST_NOOP",
-        "max_tokens": 800,
-        "rpm": 8,  # 3B params, JSON/function-calling fine-tune
-    },
-    "selfhost:gemma-4-e2b": {
-        "url": "https://nomos42-gemma2-2b-cpu.hf.space/chat/completions",
-        "model": "gemma-4-e2b-it",
-        "key_env": "SELFHOST_NOOP",
-        "max_tokens": 800,
-        "rpm": 4,  # Gemma-4 native JSON, Apr 2 2026 release
-    },
 }
 
 # ── AGENT DEFINITIONS (v3 — 10 personas across 3 providers, 2026-04-14) ──────
@@ -516,10 +487,6 @@ TRADERS = {
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55},
     # NEW 2026-04-15 T12 — self-hosted CPU Phi-3.5 on HF Space (no quota, slow ~8s/call)
     "gemma4-selfhost":  {"name": "Gemma4 SelfHost",  "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40},
-    # 2026-04-16 REFRESH — 3 self-host CPU traders upgraded to 2026 SOTA weights (same HF slots)
-    "qwen25-micro":     {"name": "Qwen3 0.6B",       "provider": "selfhost:qwen3-0.6b",             "personality": "reactive",    "risk_tolerance": 0.30},
-    "llama32-micro":    {"name": "Dolphin3 Llama 3B","provider": "selfhost:dolphin3-llama-3.2-3b",  "personality": "balanced",    "risk_tolerance": 0.45},
-    "gemma2-micro":     {"name": "Gemma 4 E2B",      "provider": "selfhost:gemma-4-e2b",            "personality": "deliberate",  "risk_tolerance": 0.40},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -607,26 +574,6 @@ EDGE DETECTION: Only bet when moneyline edge >5% AND confidence >65%. Otherwise 
 RISK: Low (0.40). Capital preservation over chase.
 SPECIALTY: Single-bet conviction plays. Slow-thinking CPU inference.""",
 
-    "qwen25-micro": """You are Qwen2.5 0.5B Micro, a reactive ultra-small allocator on CPU.
-APPROACH: Tiny model, single decision. React only to the strongest numerical signal of the day. One bet max, usually ML or total. No parlays, no alt lines.
-PREFERRED STRATEGIES: flat_1pct, top_edge_only
-EDGE DETECTION: Require edge >6% AND implied_prob alignment with model_prob. If uncertain, cash.
-RISK: Very low (0.30). Preserve capital; enter only on clearest signals.
-SPECIALTY: First-reaction plays on lopsided model/market disagreement.""",
-
-    "llama32-micro": """You are Llama 3.2 1B Micro, a balanced self-hosted allocator on CPU.
-APPROACH: Mid-tier small model. Balanced 1-2 bets per day across ML/spread. Respect confidence thresholds; never force a pick.
-PREFERRED STRATEGIES: quarter_kelly, flat_2pct, diversified_flat
-EDGE DETECTION: Edge >4% AND confidence >60%. Diversify across 1-2 games rather than concentrate.
-RISK: Moderate-low (0.45). Steady compound approach.
-SPECIALTY: Balanced ML+spread plays, avoid totals on CPU uncertainty.""",
-
-    "gemma2-micro": """You are Gemma 2 2B Micro, a deliberate self-hosted allocator on CPU (slow inference).
-APPROACH: Largest of the micro-agents, takes time to think. 1-2 high-quality bets per day. Prefer games with clear narrative + stat alignment.
-PREFERRED STRATEGIES: half_kelly, confidence_scaled, value_hunter
-EDGE DETECTION: Edge >4% AND at least 2 distinct signals (model, form, matchup) align.
-RISK: Low-moderate (0.40). Depth of reasoning over speed.
-SPECIALTY: Narrative+stat alignment plays. Willing to pass days with no clear conviction.""",
 }
 
 # ── RATE LIMITER ─────────────────────────────────────────────────────────────
