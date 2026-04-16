@@ -1,7 +1,7 @@
 #!/bin/bash
 # Keepalive for HF Spaces — prevents auto-sleep on free tier
 # Called by cron: */30 * * * *
-# 33 active spaces: 10 NBA + 8 Political + 2 TF/Gateway + 9 Dept Councils + 2 TESTforge42 (4 HF accounts)
+# 41 active spaces: 13 NBA + 8 Political + 3 TF/Gateway + 7 CPU LLM + 1 Langfuse + 9 Dept Councils (4 HF accounts)
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -98,6 +98,10 @@ ping_or_restart "LLM-SmolLM3"      https://nomos42-smollm3-3b-cpu.hf.space/     
 ping_or_restart "LLM-Qwen3-0.6B"   https://nomos42-qwen25-05b-cpu.hf.space/     "Nomos42/qwen25-05b-cpu"
 ping_or_restart "LLM-Dolphin3L3"   https://nomos42-llama32-1b-cpu.hf.space/     "Nomos42/llama32-1b-cpu"
 ping_or_restart "LLM-Gemma4-E2B"   https://nomos42-gemma2-2b-cpu.hf.space/      "Nomos42/gemma2-2b-cpu"
+ping_or_restart "LLM-CpuGemma4"    https://nomos42-nomos-cpu-gemma4.hf.space/   "Nomos42/nomos-cpu-gemma4"
+
+# Observability (Langfuse on Nomos42)
+ping_or_restart "Langfuse"          https://nomos42-langfuse.hf.space/           "Nomos42/langfuse"
 
 # Department Council Spaces (9) — all consolidated on TESTforge42 (2026-04-15 Option B migration)
 # TESTforge42: D1, D2, D3, D4, D5, D6, D7, D8, D9
