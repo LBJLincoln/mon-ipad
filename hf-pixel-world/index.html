@@ -231,11 +231,10 @@
 //                         + paper/status buttons + mini-map + home-island A*
 // ═══════════════════════════════════════════════════════════════════════════
 (async () => {
-const TILE = 28;
+const TILE = 20;
 const GRID_W = 56, GRID_H = 32;
 const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
-// Characters dominate furniture (research: canonical ratio is char=16×24, furniture=16×16..32×32)
-const CHAR_W = 88, CHAR_H = 132;   // at TILE=28 → char = 3.1 tiles wide × 4.7 tall
+const CHAR_W = 20, CHAR_H = 30;   // 1.0×1.5 tiles — pixel-art canon scale
 
 const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c };
 const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", island:"#50fa7b", infra:"#50fa7b", pol_infra:"#8be9fd", council:"#ffb86c" };
@@ -380,7 +379,7 @@ function assignSeats() {
       a.speed = isInfraZone ? 0 : 0.9 + Math.random() * 0.5;
       a.x = a.seat.x; a.y = a.seat.y;
       a.vx = 0; a.vy = 0;
-      a.state = "idle"; a.data = null; a.bubble = ""; a.activeUntil = 0;
+      a.state = "idle"; a.data = null; a.bubble = `${a.label}\nbooting…`; a.activeUntil = 0;
       a.pactPartner = null; a.sacrificial = null; a.strategy = null; a.recent = "";
     });
   }

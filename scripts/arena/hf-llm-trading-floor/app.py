@@ -1589,63 +1589,79 @@ def compute_form(all_games: List[Dict], team: str, up_to_date: str, window: int 
 
 def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
                                   reputation: Optional[Dict] = None,
-                                  pact_events: Optional[List[dict]] = None) -> str:
-    """Build COMMON_KNOWLEDGE[D] block: peer bets + leaderboard for day D+1 prompts.
+                                  pact_events: Optional[List[dict]] = None,
+                                  day_idx: int = 0) -> str:
+    """Build COMMON_KNOWLEDGE[D] block: full transparency for day D+1 prompts.
 
     Implements Axelrod-2026 Mechanism A (day-end common knowledge broadcast).
-    Prepended to every agent's prompt on day D+1 so the society can coordinate
-    and diverge deliberately (DMAD anti-groupthink protocol).
+    All agents see ALL other agents' bets, results, strategies, and bankrolls
+    from the last 3 days, enabling true collective optimization.
     """
     lines = [
-        f"=== AXELROD COMMON KNOWLEDGE — Day {day_date} ===",
-        "(Peer decisions from yesterday are now public. Review before you decide.)",
+        f"=== COMMON KNOWLEDGE — Day {day_date} (full transparency) ===",
+        f"COLLECTIVE GOAL: maximize TOTAL GROUP bankroll → target $1,200 ($100×12 start).",
+        f"You are ONE of 12 traders. Every bet you make affects the group.",
         "",
     ]
 
-    # Leaderboard: ranked by bankroll growth factor = bankroll / $100 start
+    # Leaderboard with collective stats
     ranked = sorted(state.items(), key=lambda x: -x[1]["bankroll"])
-    lines.append("LEADERBOARD (growth factor = bankroll / $100 start):")
+    total_bankroll = sum(ts["bankroll"] for _, ts in ranked)
+    total_bets = sum(ts["total_bets"] for _, ts in ranked)
+    total_wins = sum(ts["wins"] for _, ts in ranked)
+    lines.append(f"GROUP TOTAL: ${total_bankroll:.2f} (started $1,200) | "
+                 f"ROI {((total_bankroll / 1200.0) - 1) * 100:+.1f}% | "
+                 f"{total_bets} bets | {total_wins}W")
+    lines.append("")
+    lines.append("LEADERBOARD:")
     for rank, (tid, ts) in enumerate(ranked, 1):
         cfg = TRADERS.get(tid, {})
         gf = ts["bankroll"] / 100.0
         roi = (gf - 1.0) * 100
+        wr = (ts["wins"] / max(ts["total_bets"], 1)) * 100
+        role = ""
+        if ts["bankroll"] < 50:
+            role = " [RESCUE MODE]"
+        elif rank <= 3:
+            role = " [TOP-3]"
         lines.append(
-            f"  #{rank} {cfg.get('name', tid):<20} {gf:.4f}x ({roi:+.1f}%)"
-            f" | {ts['total_bets']} bets | {ts['wins']}W-{ts['losses']}L"
-            f" | DD {ts['max_drawdown']:.1%}"
+            f"  #{rank} {cfg.get('name', tid):<20} ${ts['bankroll']:.2f} ({roi:+.1f}%)"
+            f" | {ts['total_bets']}b {wr:.0f}%WR | DD {ts['max_drawdown']:.1%}{role}"
         )
 
-    # Per-agent bet summary for day D (resolved outcomes)
-    lines.append(f"\nPEER BETS on {day_date} (outcomes resolved):")
-    for rank, (tid, _ts) in enumerate(ranked, 1):
-        logs = agent_logs.get(tid, [])
-        day_log = next((l for l in reversed(logs) if l.get("date") == day_date), None)
-        if not day_log:
-            continue
-        cfg = TRADERS.get(tid, {})
-        name = cfg.get("name", tid)
-        allocs = day_log.get("allocations", [])
-        strat = day_log.get("day_strategy", "")[:100]
-        if not allocs:
-            lines.append(f"  #{rank} {name}: CASH — \"{strat}\"")
-        else:
-            parts = []
-            for a in allocs[:3]:  # cap at 3 to control token budget
-                outcome = "W" if a["won"] else "L"
-                rat = (a.get("rationale") or "")[:55]
-                parts.append(
-                    f"{a['game']} {a['category']} stake=${a.get('stake', 0):.1f}"
-                    f" edge={a['edge']:.3f}→{outcome}"
-                    + (f" [{rat}]" if rat else "")
-                )
-            suffix = f" +{len(allocs)-3}more" if len(allocs) > 3 else ""
-            lines.append(f"  #{rank} {name}: {' | '.join(parts)}{suffix}")
-            if strat:
-                lines.append(f"           Strategy: \"{strat}\"")
+    # 3-day rolling bet history from ALL agents (full transparency)
+    all_dates = set()
+    for tid in state:
+        for log in agent_logs.get(tid, []):
+            all_dates.add(log.get("date", ""))
+    recent_dates = sorted(all_dates)[-3:]
+
+    for past_date in recent_dates:
+        lines.append(f"\n--- ALL BETS on {past_date} (resolved) ---")
+        for tid, _ts in ranked:
+            logs = agent_logs.get(tid, [])
+            day_log = next((l for l in reversed(logs) if l.get("date") == past_date), None)
+            if not day_log:
+                continue
+            cfg = TRADERS.get(tid, {})
+            name = cfg.get("name", tid)
+            allocs = day_log.get("allocations", [])
+            strat = day_log.get("day_strategy", "")[:80]
+            if not allocs:
+                lines.append(f"  {name}: CASH — \"{strat}\"")
+            else:
+                for a in allocs:
+                    outcome = "W" if a["won"] else "L"
+                    lines.append(
+                        f"  {name}: {a['game']} {a['category']} "
+                        f"${a.get('stake', 0):.1f} edge={a['edge']:.3f}→{outcome} "
+                        f"pnl={a.get('profit', 0):+.1f}")
+                if strat:
+                    lines.append(f"    Strategy: \"{strat}\"")
 
     # Mech D — Cooperation reputation + today's pact resolutions
     if reputation:
-        lines.append("\nCOOPERATION REPUTATION (Mech D — pact honored vs broken):")
+        lines.append("\nCOOPERATION REPUTATION:")
         rep_items = sorted(
             reputation.items(),
             key=lambda x: -(x[1].get("pact_honored", 0) - x[1].get("pact_broken", 0)),
@@ -1666,12 +1682,36 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
                 f"on game#{ev['game_idx']} {ev['category']}"
             )
 
+    # Council day protocol — every 15 days, agents reorganize
+    is_council_day = (day_idx > 0 and day_idx % 15 == 0)
+    if is_council_day:
+        lines.append(
+            "\n=== COUNCIL DAY (every 15 days) ===\n"
+            "Today is a strategy reorganization day. In addition to your bets,\n"
+            "add a 'council_vote' field to your JSON:\n"
+            "  \"council_vote\": {\n"
+            "    \"worst_strategy\": \"name of peer whose strategy should change\",\n"
+            "    \"suggested_change\": \"what they should try instead\",\n"
+            "    \"my_adjustment\": \"what I will change about my own strategy\"\n"
+            "  }\n"
+            "Review the 3-day history above. Identify what's working and what isn't.\n"
+            "Agents in RESCUE MODE should take riskier bets (alt spreads, props).\n"
+            "TOP-3 agents should protect capital and mentor via coalition proposals.\n"
+        )
+
     lines.append(
-        "AXELROD ANTI-GROUPTHINK (DMAD — MANDATORY):\n"
-        "Your day_strategy field MUST begin with one of:\n"
-        "  CONSENSUS AGREE [peer_name]: <reason your strategy supports the same pick>\n"
+        "\nCOLLABORATION RULES:\n"
+        "- You see ALL traders' bets from last 3 days. Learn from winners.\n"
+        "- AVOID duplicating the exact same bet as a peer (diversify coverage).\n"
+        "- If your bankroll is in RESCUE MODE (<$50), take higher-variance bets\n"
+        "  (alt spreads, props, quarters) — the group needs you swinging.\n"
+        "- TOP-3 traders: protect capital, use conservative base categories.\n"
+        "- Propose coalitions with traders whose strategies complement yours.\n"
+        "\n"
+        "ANTI-GROUPTHINK (DMAD — MANDATORY):\n"
+        "Your day_strategy MUST begin with one of:\n"
+        "  CONSENSUS AGREE [peer_name]: <reason your strategy supports same pick>\n"
         "  CONSENSUS DIVERGE [peer_name]: <specific stat/metric counter-argument>\n"
-        "Copying the consensus without justification violates DMAD protocol.\n"
     )
     return "\n".join(lines)
 
@@ -2010,6 +2050,15 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             _axl_block = _axelrod_advice_block(tid, _active_peers)
             if _axl_block:
                 system_prompt = system_prompt + _axl_block
+            # Rescue protocol: agents under $50 get risk-on mandate
+            if ts["bankroll"] < 50.0 and ts["bankroll"] > 5.0:
+                system_prompt += (
+                    "\n\n[RESCUE MODE ACTIVE] Your bankroll is critically low. "
+                    "The group needs you to take HIGHER-VARIANCE bets: "
+                    "alt spreads (+5 to +10), quarter totals, game props. "
+                    "Minimum edge 5%. Bet 15-40% per allocation. "
+                    "Conservative base bets won't recover your position."
+                )
             user_prompt = build_day_prompt(
                 day_date, day_games, day_odds_list, day_stand_list, day_form_list,
                 ts, rosters=rosters, team_advanced=team_advanced,
@@ -2179,6 +2228,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         prev_day_ck = build_common_knowledge_block(
             day_date, state, dict(_agent_logs),
             reputation=dict(_reputation), pact_events=day_pact_events,
+            day_idx=day_idx,
         )
         _common_knowledge[day_date] = prev_day_ck
 
