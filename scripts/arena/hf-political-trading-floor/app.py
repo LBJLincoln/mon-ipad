@@ -1908,7 +1908,15 @@ async def api_run(request: Request):
     _stop_event.clear()
     if _experiment_running:
         return JSONResponse({"status": "resumed", "events_processed": _experiment_state.get("events_processed", 0), "message": "Stop flag cleared, experiment continues."})
-    return JSONResponse({"status": "ready", "message": "Stop flag cleared. Click Start in Gradio UI or use gradio_api."})
+    import threading
+    def _bg():
+        try:
+            for _ in run_experiment():
+                pass
+        except Exception as e:
+            print(f"[api_run bg] {e}")
+    threading.Thread(target=_bg, daemon=True, name="api_run_bg").start()
+    return JSONResponse({"status": "started", "message": "Experiment launched in background thread."})
 
 @api.post("/api/stop")
 async def api_stop():
