@@ -1,8 +1,9 @@
-name: Modal A10G Burst
+name: Modal A10G Burst (CPCV+DSR)
 
-# Runs a 10-min NBA evolution burst on Modal A10G (~$0.18/burst).
-# Schedule: every 4 hours. Modal executes serverless -- the GH runner only
-# drives `modal run` and waits for the function to return.
+# Runs a 5-min CPCV walk-forward + DSR gate on Modal A10G (~$0.18/burst).
+# Schedule: every 4h. Modal executes serverless. GH runner drives `modal run`.
+# Specialized 2026-04-16: was Karpathy mutate (redundant w/ Lightning T4),
+# now CPCV+DSR (no other GPU in fleet runs this).
 #
 # Requires GitHub repo secrets:
 #   MODAL_TOKEN_ID, MODAL_TOKEN_SECRET -- Modal account
@@ -66,12 +67,8 @@ jobs:
             exit 0
           fi
           mkdir -p data/gpu-burst logs/gpu-burst
-          GPU="${{ github.event.inputs.gpu || 'A10G' }}"
-          TIMEOUT="${{ github.event.inputs.timeout || '600' }}"
-          modal run scripts/gpu-burst/modal-burst.py::main \
-            --gpu "$GPU" \
-            --timeout "$TIMEOUT" \
-            2>&1 | tee "logs/gpu-burst/modal-$(date -u +%Y%m%dT%H%M%SZ).log" \
+          modal run scripts/gpu-burst/modal-cpcv.py::main \
+            2>&1 | tee "logs/gpu-burst/modal-cpcv-$(date -u +%Y%m%dT%H%M%SZ).log" \
             | tail -60
         continue-on-error: true
 

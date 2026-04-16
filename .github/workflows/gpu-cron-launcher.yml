@@ -51,8 +51,15 @@ jobs:
           HF_TOKEN_LLM: ${{ secrets.HF_TOKEN_LLM }}
         run: |
           mkdir -p data/gpu-burst logs/gpu-burst
-          python3 scripts/gpu-burst/zerogpu-burst.py \
-            2>&1 | tail -40
+          # Specialized 2026-04-16: TabPFN-2.5 inference (H200 VRAM-bound,
+          # only platform in fleet that can run it). Falls back to legacy
+          # zerogpu-burst.py if TABPFN_SPACE_URL Space isn't deployed yet.
+          if [ -n "$HF_TOKEN_LLM" ]; then
+            python3 scripts/gpu-burst/zerogpu-tabpfn.py 2>&1 | tail -40 || \
+            python3 scripts/gpu-burst/zerogpu-burst.py 2>&1 | tail -40
+          else
+            python3 scripts/gpu-burst/zerogpu-burst.py 2>&1 | tail -40
+          fi
         continue-on-error: true
 
       - name: Commit GPU results
