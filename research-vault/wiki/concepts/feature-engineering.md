@@ -1,10 +1,10 @@
 # Feature Engineering & Selection
 
-> Auto-compiled from 57 raw sources on 2026-04-16
+> Auto-compiled from 58 raw sources on 2026-04-16
 
 ## Overview
 
-This topic covers 57 research files spanning feature engineering & selection.
+This topic covers 58 research files spanning feature engineering & selection.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -65,6 +65,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
 - **Research Scan: latest-improvements-2026-03-31** (300 words) -- `raw/research/latest-improvements-2026-03-31.md`
 - **Multi-Agent Workflow Scan (April 2026)** (230 words) -- `raw/agent-memory/repo-scout_project_multiagent_workflow_apr2026.md`
+- **Research Scan: arxiv-scan-2026-04-16** (228 words) -- `raw/research/arxiv-scan-2026-04-16.md`
 - **Research Scan: feature-proposals-2026-03-31** (171 words) -- `raw/research/feature-proposals-2026-03-31.md`
 
 ## Key Findings

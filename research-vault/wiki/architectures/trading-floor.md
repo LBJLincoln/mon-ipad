@@ -1,10 +1,10 @@
 # Trading Floor & AI Competition
 
-> Auto-compiled from 52 raw sources on 2026-04-16
+> Auto-compiled from 53 raw sources on 2026-04-16
 
 ## Overview
 
-This topic covers 52 research files spanning trading floor & ai competition.
+This topic covers 53 research files spanning trading floor & ai competition.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -52,6 +52,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **research_april2026_cycle13_dashboard** (504 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle13_dashboard.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-15** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-15.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-16** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-16.md`
 - **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/agent-memory/repo-scout_project_pixel_dashboard_apr2026.md`
 - **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/repo-scout/project_pixel_dashboard_apr2026.md`
 - **25 -- ML Prediction System** (406 words) -- `raw/obsidian-docs/25-ML-Predictions.md`
