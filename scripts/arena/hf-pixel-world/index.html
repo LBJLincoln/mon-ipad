@@ -3,28 +3,23 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nomos42 Pixel World — 38 agents, live thinking</title>
+<title>Nomos42 Pixel World — live experiments</title>
 <style>
   :root {
-    --bg: #0b0d12;
-    --bg-2: #14171f;
-    --line: #1e2330;
-    --ink: #e6e8ee;
-    --ink-2: #9aa3b5;
-    --ink-3: #5b6478;
-    --accent: #00d9a7;
-    --warn: #ffb020;
-    --err: #ff5c5c;
-    --pink: #ff79c6;
+    --bg: #0b0d12; --bg-2: #14171f; --line: #1e2330;
+    --ink: #e6e8ee; --ink-2: #9aa3b5; --ink-3: #5b6478;
+    --accent: #00d9a7; --warn: #ffb020; --err: #ff5c5c;
+    --pink: #ff79c6; --blue: #8be9fd; --green: #50fa7b; --orange: #ffb86c; --purple: #bd93f9;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: "JetBrains Mono", "Courier New", monospace; font-size: 12px; overflow: hidden; }
-  #root { display: grid; grid-template-columns: 1fr 320px; height: 100vh; }
+  #root { display: grid; grid-template-columns: 1fr 340px; height: 100vh; }
   #stage { position: relative; background: var(--bg-2); overflow: hidden; }
   #stage canvas { image-rendering: pixelated; image-rendering: crisp-edges; display: block; width: 100%; height: 100%; }
-  #hud-top { position: absolute; top: 10px; left: 12px; right: 12px; display: flex; justify-content: space-between; gap: 12px; font-size: 11px; color: var(--ink-2); letter-spacing: 0.1em; text-transform: uppercase; pointer-events: none; }
+  #hud-top { position: absolute; top: 10px; left: 12px; right: 12px; display: flex; justify-content: space-between; gap: 12px; font-size: 11px; color: var(--ink-2); letter-spacing: 0.1em; text-transform: uppercase; pointer-events: none; z-index: 3; }
   #hud-top .brand { color: var(--ink); font-weight: 600; }
   #hud-top .tick { color: var(--accent); }
+  #hud-bottom { position: absolute; bottom: 10px; left: 12px; right: 12px; display: flex; justify-content: space-between; gap: 12px; font-size: 10px; color: var(--ink-3); pointer-events: none; z-index: 3; }
   #sidebar { background: var(--bg-2); border-left: 1px solid var(--line); display: flex; flex-direction: column; overflow: hidden; }
   .panel { border-bottom: 1px solid var(--line); padding: 12px 14px; }
   .panel h3 { margin: 0 0 8px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
@@ -33,126 +28,149 @@
   .kpi .v-ok { color: var(--accent); }
   .kpi .v-warn { color: var(--warn); }
   .kpi .v-err { color: var(--err); }
-  #feed { flex: 1; overflow-y: auto; padding: 8px 14px; font-size: 11px; line-height: 1.5; }
+  .kpi .v-muted { color: var(--ink-3); }
+  #feed { flex: 1; overflow-y: auto; padding: 8px 14px; font-size: 10.5px; line-height: 1.45; }
+  #feed::-webkit-scrollbar { width: 6px; }
+  #feed::-webkit-scrollbar-thumb { background: var(--line); }
   #feed .log { padding: 4px 0; border-bottom: 1px dotted var(--line); }
-  #feed .log .who { color: var(--pink); }
-  #feed .log .act { color: var(--accent); }
-  #feed .log .t { color: var(--ink-3); font-size: 10px; }
+  #feed .log .who { color: var(--pink); font-weight: 600; }
+  #feed .log .who.island { color: var(--green); }
+  #feed .log .who.council { color: var(--orange); }
+  #feed .log .who.political { color: var(--blue); }
+  #feed .log .act { color: var(--ink); }
+  #feed .log .t { color: var(--ink-3); font-size: 9.5px; margin-right: 4px; }
   #legend { font-size: 10px; color: var(--ink-3); padding: 8px 14px; border-top: 1px solid var(--line); }
   #legend .chip { display: inline-block; width: 9px; height: 9px; margin-right: 4px; vertical-align: middle; }
   .bubble {
-    position: absolute;
-    max-width: 180px;
-    padding: 6px 8px;
-    background: rgba(20,23,31,0.95);
-    border: 1px solid var(--line);
-    color: var(--ink);
-    font-size: 10px;
-    line-height: 1.35;
-    pointer-events: none;
-    transform: translate(-50%, -100%);
-    margin-top: -6px;
-    white-space: normal;
-    word-break: break-word;
+    position: absolute; max-width: 200px; padding: 5px 7px;
+    background: rgba(11,13,18,0.94); border: 1px solid var(--line);
+    color: var(--ink); font-size: 9.5px; line-height: 1.3;
+    pointer-events: none; transform: translate(-50%, -100%);
+    margin-top: -10px; white-space: normal; word-break: break-word;
+    z-index: 2; border-radius: 2px;
   }
-  .bubble::after {
-    content: ""; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
-    border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid var(--line);
-  }
-  .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--ink-3); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .bubble .b-top { color: var(--ink-3); font-size: 9px; margin-bottom: 1px; letter-spacing: 0.08em; }
+  .bubble .b-roi.up { color: var(--accent); }
+  .bubble .b-roi.down { color: var(--err); }
+  .bubble::after { content: ""; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid var(--line); }
+  .badge { display: inline-block; padding: 0 4px; margin-left: 3px; background: var(--bg-2); border: 1px solid var(--line); color: var(--warn); font-size: 8.5px; border-radius: 2px; }
+  .badge.sac { color: var(--pink); border-color: var(--pink); }
+  .badge.pact { color: var(--accent); border-color: var(--accent); }
+  .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--ink-3); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; z-index: 4; }
 </style>
 </head>
 <body>
 <div id="root">
   <div id="stage">
     <div id="hud-top">
-      <div><span class="brand">NOMOS42 · PIXEL WORLD</span> · crash-test staging · v0.1</div>
+      <div><span class="brand">NOMOS42 · PIXEL WORLD</span> · live experiments · v0.3</div>
       <div><span class="tick" id="hud-tick">· booting</span></div>
     </div>
     <canvas id="cv"></canvas>
     <div id="bubbles"></div>
+    <div id="hud-bottom">
+      <div id="hud-day">—</div>
+      <div id="hud-rep">—</div>
+    </div>
     <div class="loader" id="loader">loading sprites…</div>
   </div>
   <div id="sidebar">
     <div class="panel">
-      <h3>Fleet</h3>
-      <div class="kpi"><span>NBA traders (live)</span><span id="k-nba" class="v-warn">—</span></div>
+      <h3>Experiments Online</h3>
+      <div class="kpi"><span>NBA traders</span><span id="k-nba" class="v-warn">—</span></div>
       <div class="kpi"><span>Political traders</span><span id="k-pol" class="v-warn">—</span></div>
       <div class="kpi"><span>Evolution islands</span><span id="k-evo" class="v-warn">—</span></div>
-      <div class="kpi"><span>Dept councils</span><span id="k-dep" class="v-warn">—</span></div>
-      <div class="kpi"><span>Last refresh</span><span id="k-last" class="v-ok">—</span></div>
+      <div class="kpi"><span>Dept councils</span><span id="k-dep" class="v-muted">baked</span></div>
+      <div class="kpi"><span>Refresh</span><span id="k-last" class="v-ok">—</span></div>
+    </div>
+    <div class="panel">
+      <h3>NBA Leaderboard</h3>
+      <div id="lb-nba" style="font-size:10.5px; line-height:1.5;"></div>
     </div>
     <div class="panel">
       <h3>Thought Feed</h3>
     </div>
     <div id="feed"></div>
     <div id="legend">
-      <span class="chip" style="background:#ff79c6"></span>NBA trader
+      <span class="chip" style="background:#ff79c6"></span>NBA
       <span class="chip" style="background:#8be9fd; margin-left:8px"></span>Political
       <span class="chip" style="background:#50fa7b; margin-left:8px"></span>Island
       <span class="chip" style="background:#ffb86c; margin-left:8px"></span>Council
+      <span style="margin-left:8px; color:var(--warn)">⚔ sacrificial</span>
+      <span style="margin-left:8px; color:var(--accent)">◉ pact</span>
     </div>
   </div>
 </div>
 
 <script type="module">
-// ── NOMOS42 PIXEL WORLD ─────────────────────────────────────────────────────
-// Single-file Canvas 2D render loop. 38 agent sprites on a zoned office grid.
-// Live thinking fetched from real HF Space /api/status endpoints.
-// Sprites adapted from pablodelucca/pixel-agents (MIT).
+// ═══════════════════════════════════════════════════════════════════════════
+// NOMOS42 PIXEL WORLD v0.3 — live experiments + 3x sprites
+// Canvas 2D + real /api/status keys (agents dict, reputation, strategies,
+// sacrificials) + Axelrod coop pathfinding + rich per-agent bubbles.
+// Sprites © pablodelucca/pixel-agents (MIT). See assets/LICENSE-*.txt.
+// ═══════════════════════════════════════════════════════════════════════════
 
-const TILE = 32;                     // logical tile px (scales with canvas)
-const GRID_W = 48;                   // tiles wide
-const GRID_H = 28;                   // tiles tall
-const CHAR_COUNT = 6;                // char_0..char_5
+const TILE = 40, GRID_W = 36, GRID_H = 22, CHAR_COUNT = 6;
+const CHAR_SCALE = 3.2; // sprite size multiplier — v0.3 (user: agents almost invisible)
 
 const ZONES = {
-  // Top-left: NBA trading floor (12 traders)
-  nba: { x: 2, y: 2, w: 14, h: 10, floor: 3, label: "NBA FLOOR" },
-  // Top-right: Political trading floor (10 traders)
-  political: { x: 32, y: 2, w: 14, h: 10, floor: 5, label: "POLITICAL FLOOR" },
-  // Bottom-left: Evolution islands (8 nodes)
-  evolution: { x: 2, y: 16, w: 14, h: 10, floor: 6, label: "EVOLUTION LAB" },
-  // Bottom-right: Department councils (9 rooms)
-  councils: { x: 32, y: 16, w: 14, h: 10, floor: 1, label: "COUNCIL CHAMBERS" },
-  // Center corridor = floor_0
-  corridor: { x: 18, y: 2, w: 12, h: 24, floor: 0, label: "CORRIDOR" },
+  nba:       { x: 1,  y: 1,  w: 12, h: 9,  floor: 3, label: "NBA TRADING FLOOR" },
+  political: { x: 23, y: 1,  w: 12, h: 9,  floor: 5, label: "POLITICAL FLOOR" },
+  evolution: { x: 1,  y: 12, w: 12, h: 9,  floor: 6, label: "EVOLUTION LAB" },
+  councils:  { x: 23, y: 12, w: 12, h: 9,  floor: 1, label: "COUNCIL CHAMBERS" },
+  corridor:  { x: 14, y: 1,  w: 8,  h: 20, floor: 0, label: "CORRIDOR" },
 };
 
+// Real 15-trader roster (matches /api/status agent_ids exactly)
+const NBA_TRADERS = [
+  "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
+  "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral",
+  "nemotron-120b","gemma4-selfhost","qwen25-micro","llama32-micro","gemma2-micro"
+];
+const POL_TRADERS = [...NBA_TRADERS]; // political mirrors nba roster
+
+const COUNCIL_DEPTS = [
+  ["D1", "Research",   "scan → propose → measure"],
+  ["D2", "Engineering","code → test → keep/revert"],
+  ["D3", "Evolution",  "mutate → eval → select"],
+  ["D4", "Product",    "build → ship → measure"],
+  ["D5", "Business",   "price → convert → optimize"],
+  ["D6", "Evaluation", "audit → identify → verify"],
+  ["D7", "Infra",      "check → detect → fix"],
+  ["D8", "Finance",    "track → reconcile → forecast"],
+  ["D9", "Cross-Repo", "sync → audit → parity"],
+];
+
+const ISLANDS = [
+  ["S10","https://nomos42-nba-quant.hf.space/api/status"],
+  ["S11","https://nomos42-nba-quant-2.hf.space/api/status"],
+  ["S12","https://nomos42-nba-evo-3.hf.space/api/status"],
+  ["S13","https://nomos42-nba-evo-4.hf.space/api/status"],
+  ["S14","https://nomos42-nba-evo-5.hf.space/api/status"],
+  ["S15","https://nomos42-nba-evo-6.hf.space/api/status"],
+  ["S16","https://lbjlincoln26-nba-evo-s16.hf.space/api/status"],
+  ["S17","https://lbjlincoln26-nba-evo-s17.hf.space/api/status"],
+];
+
 const AGENTS = [
-  // NBA traders (12) — T1..T12 from CLAUDE.md
-  ...[
-    ["t1-qwen-quant", "qwen-quant", "cerebras"],
-    ["t2-qwen-arb", "qwen-arb", "cerebras"],
-    ["t3-llama-contra", "llama-contra", "cerebras"],
-    ["t4-gemini-anl", "gemini-anl", "google"],
-    ["t5-gemini-tact", "gemini-tact", "google"],
-    ["t6-mistral-large", "mistral-lg", "mistral"],
-    ["t7-mistral-medium", "mistral-md", "mistral"],
-    ["t8-mistral-small", "mistral-sm", "mistral"],
-    ["t9-mistral-nemo", "mistral-nemo", "mistral"],
-    ["t10-mistral-ministral", "mistral-min", "mistral"],
-    ["t11-nemotron-120b", "nemotron-120b", "openrouter"],
-    ["t12-gemma4-selfhost", "gemma4-self", "selfhost"],
-  ].map(([id, label, prov], i) => ({ id, label, kind: "nba", prov, zone: "nba", idx: i, char: i % CHAR_COUNT })),
-  // Political traders (10) — subset T1..T10
-  ...[
-    "qwen-quant", "qwen-arb", "llama-contra", "gemini-anl", "gemini-tact",
-    "mistral-lg", "mistral-md", "mistral-sm", "mistral-nemo", "mistral-min",
-  ].map((label, i) => ({ id: `p-${label}`, label, kind: "political", zone: "political", idx: i, char: (i + 2) % CHAR_COUNT })),
-  // Evolution islands (8 NBA: S10..S17; S18-S22 omitted from viz for space)
-  ...["S10", "S11", "S12", "S13", "S14", "S15", "S16", "S17"].map((label, i) => (
-    { id: `island-${label.toLowerCase()}`, label, kind: "island", zone: "evolution", idx: i, char: i % CHAR_COUNT }
-  )),
-  // Dept councils (9)
-  ...["D1-Research", "D2-Eng", "D3-Evol", "D4-Prod", "D5-Biz", "D6-Eval", "D7-Infra", "D8-Fin", "D9-XRepo"].map((label, i) => (
-    { id: `dept-${label.split("-")[0].toLowerCase()}`, label, kind: "council", zone: "councils", idx: i, char: (i + 3) % CHAR_COUNT }
-  )),
+  ...NBA_TRADERS.map((id, i) => ({
+    id, label: id.replace(/-/g, "-").slice(0, 12), kind: "nba", zone: "nba", idx: i, char: i % CHAR_COUNT,
+  })),
+  ...POL_TRADERS.map((id, i) => ({
+    id: `p-${id}`, key: id, label: id.slice(0, 12), kind: "political", zone: "political", idx: i, char: (i + 2) % CHAR_COUNT,
+  })),
+  ...ISLANDS.map(([label], i) => ({
+    id: `island-${label.toLowerCase()}`, label, kind: "island", zone: "evolution", idx: i, char: i % CHAR_COUNT,
+  })),
+  ...COUNCIL_DEPTS.map(([code, name, mission], i) => ({
+    id: `dept-${code.toLowerCase()}`, label: `${code} ${name}`, kind: "council", zone: "councils", idx: i, char: (i + 3) % CHAR_COUNT,
+    staticMission: mission,
+  })),
 ];
 
 const KIND_COLORS = { nba: "#ff79c6", political: "#8be9fd", island: "#50fa7b", council: "#ffb86c" };
 
-// Place agents in a grid within their zone
+// ── LAYOUT ──────────────────────────────────────────────────────────────────
 function layoutAgents() {
   const grouped = {};
   for (const a of AGENTS) (grouped[a.zone] ??= []).push(a);
@@ -160,24 +178,28 @@ function layoutAgents() {
     const z = ZONES[zoneId];
     const cols = Math.ceil(Math.sqrt(list.length));
     const rows = Math.ceil(list.length / cols);
-    const colGap = Math.floor(z.w / (cols + 1));
-    const rowGap = Math.floor(z.h / (rows + 1));
+    const colGap = z.w / (cols + 1);
+    const rowGap = z.h / (rows + 1);
     list.forEach((a, i) => {
       const c = i % cols, r = Math.floor(i / cols);
       a.deskX = z.x + colGap * (c + 1);
       a.deskY = z.y + rowGap * (r + 1);
-      a.x = a.deskX + (Math.random() - 0.5) * 2;
-      a.y = a.deskY + (Math.random() - 0.5) * 2;
+      a.x = a.deskX; a.y = a.deskY;
       a.vx = 0; a.vy = 0;
-      a.thought = null;
-      a.lastMoveAt = 0;
-      a.state = "idle";
+      a.thought = null; a.data = null;
+      a.state = "idle"; a.lastMoveAt = 0;
+      a.pactPartner = null; a.sacrificial = null; a.strategy = null;
     });
   }
 }
 layoutAgents();
 
-// ── ASSET LOADER ────────────────────────────────────────────────────────────
+// Coffee-table meeting spots (corridor) for pact rendezvous
+const MEETING_SPOTS = [
+  { x: 24, y: 14 }, { x: 24, y: 16 }, { x: 24, y: 18 }, { x: 22, y: 15 }, { x: 26, y: 15 },
+];
+
+// ── ASSETS ──────────────────────────────────────────────────────────────────
 const sprites = { chars: [], floors: [], furniture: {} };
 function loadImg(src) {
   return new Promise((resolve, reject) => {
@@ -187,16 +209,11 @@ function loadImg(src) {
 async function loadAll() {
   for (let i = 0; i < CHAR_COUNT; i++) sprites.chars.push(await loadImg(`assets/characters/char_${i}.png`));
   for (let i = 0; i < 9; i++) sprites.floors.push(await loadImg(`assets/floors/floor_${i}.png`));
-  // A few key furniture pieces for ambience
   const furn = [
-    ["DESK", "DESK_FRONT.png"],
-    ["PC", "PC.png"],
-    ["PLANT", "PLANT.png"],
-    ["PLANT_2", "PLANT_2.png"],
-    ["CACTUS", "CACTUS.png"],
-    ["BOOKSHELF", "BOOKSHELF.png"],
-    ["CLOCK", "CLOCK.png"],
-    ["COFFEE", "COFFEE.png"],
+    ["DESK","DESK_FRONT.png"], ["PC","PC_FRONT_ON_1.png"],
+    ["PLANT","PLANT.png"], ["PLANT_2","PLANT_2.png"], ["CACTUS","CACTUS.png"],
+    ["BOOKSHELF","BOOKSHELF.png"], ["CLOCK","CLOCK.png"], ["COFFEE","COFFEE.png"],
+    ["WHITEBOARD","WHITEBOARD.png"],
   ];
   for (const [name, file] of furn) {
     try { sprites.furniture[name] = await loadImg(`assets/furniture/${name}/${file}`); } catch {}
@@ -230,8 +247,8 @@ function worldToScreen(tx, ty) {
 function draw() {
   ctx.fillStyle = "#0b0d12"; ctx.fillRect(0, 0, W, H);
 
-  // Floor tiles per zone
-  for (const [id, z] of Object.entries(ZONES)) {
+  // Floor per zone
+  for (const z of Object.values(ZONES)) {
     const floor = sprites.floors[z.floor] || sprites.floors[0];
     if (!floor) continue;
     for (let ty = z.y; ty < z.y + z.h; ty++) {
@@ -243,26 +260,28 @@ function draw() {
   }
 
   // Zone labels
-  ctx.fillStyle = "rgba(90,100,120,0.7)";
-  ctx.font = `${Math.round(10 * SCALE)}px JetBrains Mono, monospace`;
+  ctx.fillStyle = "rgba(154,163,181,0.55)";
+  ctx.font = `${Math.round(9 * SCALE)}px JetBrains Mono, monospace`;
   ctx.textAlign = "left";
   for (const [id, z] of Object.entries(ZONES)) {
     if (id === "corridor") continue;
-    const [sx, sy] = worldToScreen(z.x, z.y);
-    ctx.fillText(z.label, sx + 4, sy + 14 * SCALE);
+    const [sx, sy] = worldToScreen(z.x + 0.2, z.y + 0.3);
+    ctx.fillText(z.label, sx, sy + 10 * SCALE);
   }
 
-  // Furniture decor (desks, PCs, plants) scattered around edges
+  // Decor
   const decor = [
-    ["DESK", 3, 12], ["PC", 3, 11.2],
-    ["DESK", 33, 12], ["PC", 33, 11.2],
-    ["DESK", 3, 26], ["PC", 3, 25.2],
-    ["DESK", 33, 26], ["PC", 33, 25.2],
-    ["PLANT", 16, 4], ["PLANT_2", 16, 25],
-    ["CACTUS", 31, 4], ["CACTUS", 31, 25],
-    ["BOOKSHELF", 22, 2], ["BOOKSHELF", 26, 2],
+    ["DESK", 4, 11], ["PC", 4, 10],
+    ["DESK", 13, 11], ["PC", 13, 10],
+    ["DESK", 34, 11], ["PC", 34, 10],
+    ["DESK", 43, 11], ["PC", 43, 10],
+    ["WHITEBOARD", 8, 2.2], ["WHITEBOARD", 38, 2.2],
+    ["BOOKSHELF", 4, 17], ["BOOKSHELF", 13, 17], ["BOOKSHELF", 34, 17], ["BOOKSHELF", 43, 17],
+    ["PLANT", 16, 3], ["PLANT_2", 16, 25],
+    ["CACTUS", 31, 3], ["CACTUS", 31, 25],
     ["CLOCK", 24, 2.2],
-    ["COFFEE", 24, 14], ["COFFEE", 24, 16],
+    ["COFFEE", 23, 15], ["COFFEE", 25, 15],
+    ["COFFEE", 23, 17], ["COFFEE", 25, 17],
   ];
   for (const [name, tx, ty] of decor) {
     const img = sprites.furniture[name]; if (!img) continue;
@@ -270,40 +289,114 @@ function draw() {
     ctx.drawImage(img, sx, sy, TILE * SCALE, TILE * SCALE);
   }
 
-  // Agents
-  const charW = TILE * SCALE * 1.2;
-  const charH = TILE * SCALE * 1.6;
+  // Pact lines (coop visualization)
+  ctx.strokeStyle = "rgba(0,217,167,0.35)";
+  ctx.lineWidth = 1.5 * SCALE;
+  ctx.setLineDash([4 * SCALE, 3 * SCALE]);
+  for (const a of AGENTS) {
+    if (!a.pactPartner) continue;
+    const p = AGENTS.find(x => x.id === a.pactPartner);
+    if (!p) continue;
+    const [sx1, sy1] = worldToScreen(a.x, a.y);
+    const [sx2, sy2] = worldToScreen(p.x, p.y);
+    ctx.beginPath();
+    ctx.moveTo(sx1 + TILE * SCALE / 2, sy1 + TILE * SCALE / 2);
+    ctx.lineTo(sx2 + TILE * SCALE / 2, sy2 + TILE * SCALE / 2);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  // Agents — v0.3 much bigger sprites (user: "almost not visible")
+  const charW = TILE * SCALE * CHAR_SCALE * 0.75;
+  const charH = TILE * SCALE * CHAR_SCALE;
   for (const a of AGENTS) {
     const [sx, sy] = worldToScreen(a.x, a.y);
+    const cx = sx + TILE * SCALE / 2;
+    const cy = sy + TILE * SCALE / 2;
+    // Glow halo colored by kind/state
+    const glow = a.state === "profit" ? "rgba(0,217,167,0.22)"
+               : a.state === "loss"   ? "rgba(255,92,92,0.22)"
+               : a.state === "error"  ? "rgba(255,92,92,0.16)"
+               : KIND_COLORS[a.kind] + "33";
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, charW * 0.9);
+    grad.addColorStop(0, glow);
+    grad.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(cx, cy, charW * 0.9, 0, Math.PI * 2); ctx.fill();
+    // Drop shadow ellipse at feet
+    ctx.fillStyle = "rgba(0,0,0,0.45)";
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + charH * 0.5, charW * 0.35, charH * 0.08, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Sprite
     const img = sprites.chars[a.char];
-    if (img) ctx.drawImage(img, sx - charW / 2 + TILE * SCALE / 2, sy - charH + TILE * SCALE, charW, charH);
-    // State dot
-    ctx.fillStyle = a.state === "thinking" ? "#ffb020" : a.state === "error" ? "#ff5c5c" : KIND_COLORS[a.kind];
-    ctx.beginPath(); ctx.arc(sx + TILE * SCALE / 2, sy + TILE * SCALE, 3 * SCALE, 0, Math.PI * 2); ctx.fill();
-    // Label
-    ctx.fillStyle = "rgba(230,232,238,0.75)";
-    ctx.font = `${Math.round(8 * SCALE)}px JetBrains Mono, monospace`;
+    if (img) ctx.drawImage(img, cx - charW / 2, cy - charH * 0.7, charW, charH);
+    // Kind-color status ring around sprite
+    ctx.strokeStyle = a.state === "profit" ? "#00d9a7"
+                    : a.state === "loss"   ? "#ff5c5c"
+                    : a.state === "error"  ? "#ff5c5c"
+                    : KIND_COLORS[a.kind];
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(cx, cy + charH * 0.5, charW * 0.32, 0, Math.PI * 2); ctx.stroke();
+    // Pulsing activity dot if thinking
+    if (a.state === "thinking" || a.state === "profit" || a.state === "loss") {
+      const pulse = (Math.sin(performance.now() / 400 + a.idx) + 1) / 2;
+      ctx.fillStyle = KIND_COLORS[a.kind];
+      ctx.globalAlpha = 0.4 + 0.6 * pulse;
+      ctx.beginPath(); ctx.arc(cx + charW * 0.28, cy - charH * 0.45, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+    // Sacrificial badge
+    if (a.sacrificial) {
+      ctx.fillStyle = "#ff79c6";
+      ctx.font = `bold ${Math.round(16)}px JetBrains Mono, monospace`;
+      ctx.textAlign = "center";
+      ctx.fillText("⚔", cx - charW * 0.3, cy - charH * 0.4);
+    }
+    // Name plate (framed)
+    const plateW = Math.max(charW * 0.9, 72);
+    const plateH = 14;
+    const plateY = cy + charH * 0.62;
+    ctx.fillStyle = "rgba(11,13,18,0.88)";
+    ctx.fillRect(cx - plateW / 2, plateY, plateW, plateH);
+    ctx.strokeStyle = KIND_COLORS[a.kind] + "aa";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cx - plateW / 2, plateY, plateW, plateH);
+    ctx.fillStyle = "#e6e8ee";
+    ctx.font = `600 10px JetBrains Mono, monospace`;
     ctx.textAlign = "center";
-    ctx.fillText(a.label, sx + TILE * SCALE / 2, sy + TILE * SCALE + 12 * SCALE);
+    ctx.textBaseline = "middle";
+    ctx.fillText(a.label.slice(0, 14), cx, plateY + plateH / 2);
+    ctx.textBaseline = "alphabetic";
   }
 }
 
-// Idle wandering near desk
+// ── MOVEMENT ────────────────────────────────────────────────────────────────
 function tick(dt) {
   const now = performance.now();
   for (const a of AGENTS) {
-    if (now - a.lastMoveAt > 1500 + Math.random() * 3000) {
-      const dx = (a.deskX - a.x) * 0.4 + (Math.random() - 0.5) * 0.8;
-      const dy = (a.deskY - a.y) * 0.4 + (Math.random() - 0.5) * 0.8;
-      a.vx = dx * 0.02; a.vy = dy * 0.02;
-      a.lastMoveAt = now;
+    // If in pact, walk toward a shared meeting spot halfway between both desks
+    let targetX = a.deskX, targetY = a.deskY;
+    if (a.pactPartner) {
+      const p = AGENTS.find(x => x.id === a.pactPartner);
+      if (p) {
+        const mid = MEETING_SPOTS[(a.idx + p.idx) % MEETING_SPOTS.length];
+        targetX = mid.x; targetY = mid.y;
+      }
+    }
+    // Smooth drift toward target
+    const dx = targetX - a.x, dy = targetY - a.y;
+    a.vx = a.vx * 0.85 + dx * 0.003;
+    a.vy = a.vy * 0.85 + dy * 0.003;
+    // Small idle jitter when at rest
+    if (Math.abs(dx) < 0.2 && Math.abs(dy) < 0.2 && Math.random() < 0.008) {
+      a.vx += (Math.random() - 0.5) * 0.04;
+      a.vy += (Math.random() - 0.5) * 0.04;
     }
     a.x += a.vx; a.y += a.vy;
-    a.vx *= 0.92; a.vy *= 0.92;
   }
 }
 
-// Thought bubbles (DOM overlay — easier text wrap than canvas)
 function renderBubbles() {
   bubbles.innerHTML = "";
   for (const a of AGENTS) {
@@ -313,50 +406,31 @@ function renderBubbles() {
     el.className = "bubble";
     el.style.left = (sx + TILE * SCALE / 2) + "px";
     el.style.top = sy + "px";
-    el.textContent = a.thought;
+    el.innerHTML = a.thought;
     bubbles.appendChild(el);
   }
 }
 
 // ── LIVE DATA ──────────────────────────────────────────────────────────────
 const ENDPOINTS = {
-  nba: "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
-  political: "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status",
-  islands: [
-    ["S10", "https://nomos42-nba-quant.hf.space/api/status"],
-    ["S11", "https://nomos42-nba-quant-2.hf.space/api/status"],
-    ["S12", "https://nomos42-nba-evo-3.hf.space/api/status"],
-    ["S13", "https://nomos42-nba-evo-4.hf.space/api/status"],
-    ["S14", "https://nomos42-nba-evo-5.hf.space/api/status"],
-    ["S15", "https://nomos42-nba-evo-6.hf.space/api/status"],
-    ["S16", "https://lbjlincoln26-nba-evo-s16.hf.space/api/status"],
-    ["S17", "https://lbjlincoln26-nba-evo-s17.hf.space/api/status"],
-  ],
-  councils: [
-    ["D1", "https://testforge42-nomos-dept-d1-research.hf.space/api/status"],
-    ["D2", "https://testforge42-nomos-dept-d2-engineering.hf.space/api/status"],
-    ["D3", "https://testforge42-nomos-dept-d3-evolution.hf.space/api/status"],
-    ["D4", "https://testforge42-nomos-dept-d4-product.hf.space/api/status"],
-    ["D5", "https://testforge42-nomos-dept-d5-business.hf.space/api/status"],
-    ["D6", "https://testforge42-nomos-dept-d6-evaluation.hf.space/api/status"],
-    ["D7", "https://testforge42-nomos-dept-d7-infra.hf.space/api/status"],
-    ["D8", "https://testforge42-nomos-dept-d8-finance.hf.space/api/status"],
-    ["D9", "https://testforge42-nomos-dept-d9-cross-repo.hf.space/api/status"],
-  ],
+  nba:         "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
+  nbaLB:       "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
+  nbaDays:     "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/day-decisions",
+  political:   "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status",
+  politicalLB: "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/leaderboard",
 };
 
 const feed = document.getElementById("feed");
-const MAX_FEED = 60;
+const MAX_FEED = 80;
 function logFeed(who, kind, action) {
-  const el = document.createElement("div");
-  el.className = "log";
+  const el = document.createElement("div"); el.className = "log";
   const t = new Date().toISOString().slice(11, 19);
-  el.innerHTML = `<span class="t">${t}</span> <span class="who">${who}</span> <span class="act">${action}</span>`;
+  el.innerHTML = `<span class="t">${t}</span> <span class="who ${kind}">${who}</span> <span class="act">${action}</span>`;
   feed.prepend(el);
   while (feed.childElementCount > MAX_FEED) feed.removeChild(feed.lastChild);
 }
 
-async function fetchJSON(url, timeoutMs = 4500) {
+async function fetchJSON(url, timeoutMs = 5000) {
   try {
     const ctl = new AbortController();
     const t = setTimeout(() => ctl.abort(), timeoutMs);
@@ -368,84 +442,148 @@ async function fetchJSON(url, timeoutMs = 4500) {
 }
 
 function setKPI(id, n, total) {
-  const el = document.getElementById(id);
+  const el = document.getElementById(id); if (!el) return;
   const cls = n === 0 ? "v-err" : n < total ? "v-warn" : "v-ok";
   el.className = cls;
   el.textContent = `${n}/${total}`;
 }
 
+function pctColor(roi) { return roi > 0 ? "up" : "down"; }
+
+function buildTraderBubble(data, strategy, sacrificial, pacts) {
+  const { bankroll, wins, losses, total_bets, llm_ok, llm_calls } = data;
+  const roi = +(((bankroll || 100) - 100)).toFixed(2);
+  const roiCls = pctColor(roi);
+  const wl = `${wins || 0}W · ${losses || 0}L`;
+  const llm = llm_calls ? `${llm_ok}/${llm_calls}` : "0/0";
+  let badges = "";
+  if (sacrificial) badges += `<span class="badge sac">⚔ ${sacrificial}</span>`;
+  if (pacts) badges += `<span class="badge pact">◉ pact</span>`;
+  return `<div class="b-top">${strategy || "—"}${badges}</div>
+          <div><span class="b-roi ${roiCls}">$${(bankroll || 0).toFixed(2)}</span> · ${wl}</div>
+          <div style="color:var(--ink-3); font-size:9px">bets ${total_bets || 0} · llm ${llm}</div>`;
+}
+
+function buildIslandBubble(d) {
+  const gen = d.generation ?? "?";
+  const brier = typeof d.best_brier === "number" ? d.best_brier.toFixed(5) : "?";
+  const model = d.best_model_type || "?";
+  const stag = d.stagnation ?? 0;
+  const roi = typeof d.best_roi === "number" ? (d.best_roi * 100).toFixed(1) + "%" : "?";
+  return `<div class="b-top">gen ${gen} · ${model}</div>
+          <div><span class="b-roi up">${brier}</span> · ROI ${roi}</div>
+          <div style="color:var(--ink-3); font-size:9px">stag ${stag} · pop ${d.pop_size || "?"}</div>`;
+}
+
+function buildCouncilBubble(a) {
+  return `<div class="b-top">${a.label}</div>
+          <div style="color:var(--ink-2)">${a.staticMission}</div>`;
+}
+
+function updateLeaderboard(lb) {
+  if (!Array.isArray(lb)) return;
+  const el = document.getElementById("lb-nba");
+  el.innerHTML = lb.slice(0, 5).map((e, i) => {
+    const roi = (e.roi_pct || 0);
+    const cls = roi > 0 ? "v-ok" : roi < 0 ? "v-err" : "v-muted";
+    return `<div class="kpi"><span>${i+1}. ${e.trader_id}</span><span class="${cls}">$${(e.bankroll||0).toFixed(1)}</span></div>`;
+  }).join("");
+}
+
 async function refresh() {
   document.getElementById("hud-tick").textContent = "· fetching";
-  let nbaOK = 0, polOK = 0, evoOK = 0, depOK = 0;
+  let nbaOK = 0, polOK = 0, evoOK = 0;
+  let totalPacts = 0, totalRepEntries = 0;
 
   // NBA TF
   const nba = await fetchJSON(ENDPOINTS.nba);
   if (nba) {
-    nbaOK = 12;
-    const traders = (nba.traders || nba.agents || []);
-    const lookup = Object.fromEntries(traders.map(t => [t.trader_id || t.id, t]));
+    const agents = nba.agents || {};
+    const strategies = nba.axelrod_strategies || {};
+    const sacrificials = nba.sacrificial_assignments || {};
+    const reputation = nba.reputation || {};
+    totalPacts += nba.cooperation_pacts_count || 0;
+    totalRepEntries += Object.keys(reputation).length;
+    // Assign pact partners from reputation keys (pair adjacent ones as coop partners visually)
+    const repKeys = Object.keys(reputation);
+    for (let i = 0; i < repKeys.length - 1; i += 2) {
+      const a = AGENTS.find(x => x.kind === "nba" && x.id === repKeys[i]);
+      const b = AGENTS.find(x => x.kind === "nba" && x.id === repKeys[i+1]);
+      if (a && b) { a.pactPartner = b.id; b.pactPartner = a.id; }
+    }
     for (const a of AGENTS.filter(x => x.kind === "nba")) {
-      const t = lookup[a.label] || lookup[a.id.replace(/^t\d+-/, "")];
-      if (t) {
-        a.state = t.status === "active" ? "thinking" : "idle";
-        const last = t.last_decision || t.last_reasoning || t.thought;
-        if (last) {
-          a.thought = String(last).slice(0, 120);
-          logFeed(a.label, a.kind, a.thought.slice(0, 48));
-        }
-      }
+      const d = agents[a.id];
+      if (!d) continue;
+      nbaOK++;
+      a.data = d; a.strategy = strategies[a.id]; a.sacrificial = sacrificials[a.id];
+      const roi = (d.bankroll || 100) - 100;
+      a.state = d.llm_ok < d.llm_calls ? "error" : roi > 2 ? "profit" : roi < -2 ? "loss" : "thinking";
+      a.thought = buildTraderBubble(d, a.strategy, a.sacrificial, reputation[a.id]);
+    }
+    document.getElementById("hud-day").textContent = `NBA · day ${nba.days_processed || 0}/${nba.days_total || 175} · games ${nba.games_processed || 0}/${nba.games_total || 1247}`;
+  }
+
+  // NBA leaderboard
+  const lb = await fetchJSON(ENDPOINTS.nbaLB);
+  if (lb && lb.leaderboard) {
+    updateLeaderboard(lb.leaderboard);
+    for (const e of lb.leaderboard.slice(0, 3)) {
+      logFeed(e.trader_id, "nba", `rank-up $${e.bankroll.toFixed(2)} (${e.wins}W·${e.losses}L)`);
     }
   }
+
+  // NBA days
+  const days = await fetchJSON(ENDPOINTS.nbaDays);
+  if (days && days.days && days.days.length) {
+    const last = days.days[days.days.length - 1];
+    logFeed("tf-nba", "nba", `day ${last.date}: ${last.total_allocations} bets · ${(last.avg_cash_pct*100).toFixed(0)}% cash`);
+  }
+
   // Political TF
   const pol = await fetchJSON(ENDPOINTS.political);
   if (pol) {
-    polOK = 10;
-    const traders = (pol.traders || pol.agents || []);
-    const lookup = Object.fromEntries(traders.map(t => [t.trader_id || t.id, t]));
+    const agents = pol.agents || {};
+    const strategies = pol.axelrod_strategies || {};
+    const sacrificials = pol.sacrificial_assignments || {};
+    const reputation = pol.reputation || {};
+    totalPacts += pol.cooperation_pacts_count || 0;
+    totalRepEntries += Object.keys(reputation).length;
     for (const a of AGENTS.filter(x => x.kind === "political")) {
-      const t = lookup[a.label] || lookup[`p-${a.label}`];
-      if (t) {
-        a.state = t.status === "active" ? "thinking" : "idle";
-        const last = t.last_decision || t.last_reasoning || t.thought;
-        if (last) { a.thought = String(last).slice(0, 120); logFeed(`pol·${a.label}`, a.kind, a.thought.slice(0, 48)); }
-      }
+      const d = agents[a.key];
+      if (!d) continue;
+      polOK++;
+      a.data = d; a.strategy = strategies[a.key]; a.sacrificial = sacrificials[a.key];
+      const roi = (d.bankroll || 100) - 100;
+      a.state = d.llm_ok < d.llm_calls ? "error" : roi > 2 ? "profit" : roi < -2 ? "loss" : "thinking";
+      a.thought = buildTraderBubble(d, a.strategy, a.sacrificial, reputation[a.key]);
     }
   }
-  // Islands
-  const isles = await Promise.all(ENDPOINTS.islands.map(([lbl, u]) => fetchJSON(u).then(d => [lbl, d])));
-  for (const [lbl, data] of isles) {
+
+  // Islands (parallel)
+  const islandResults = await Promise.all(ISLANDS.map(([lbl, u]) => fetchJSON(u).then(d => [lbl, d])));
+  for (const [lbl, data] of islandResults) {
     const a = AGENTS.find(x => x.kind === "island" && x.label === lbl);
     if (!a) continue;
     if (data) {
       evoOK++;
-      a.state = "thinking";
-      const gen = data.generation ?? data.gen ?? "?";
-      const brier = data.best_brier ?? data.brier ?? "?";
-      a.thought = `gen ${gen} · brier ${typeof brier === "number" ? brier.toFixed(5) : brier}`;
+      a.state = data.stagnation > 5 ? "error" : "thinking";
+      a.thought = buildIslandBubble(data);
     } else {
-      a.state = "error"; a.thought = "offline";
-    }
-  }
-  // Councils
-  const deps = await Promise.all(ENDPOINTS.councils.map(([lbl, u]) => fetchJSON(u).then(d => [lbl, d])));
-  for (const [lbl, data] of deps) {
-    const a = AGENTS.find(x => x.kind === "council" && x.label.startsWith(lbl));
-    if (!a) continue;
-    if (data) {
-      depOK++;
-      a.state = "thinking";
-      a.thought = (data.last_proposal || data.mission || data.dept_name || "scanning").slice(0, 120);
-      logFeed(a.label, "council", a.thought.slice(0, 48));
-    } else {
-      a.state = "error"; a.thought = "offline";
+      a.state = "error"; a.thought = `<div class="b-top">${lbl}</div><div style="color:var(--err)">offline</div>`;
     }
   }
 
-  setKPI("k-nba", nbaOK, 12);
-  setKPI("k-pol", polOK, 10);
+  // Councils (baked-in static — no public API on Gradio Spaces)
+  for (const a of AGENTS.filter(x => x.kind === "council")) {
+    a.state = "thinking";
+    a.thought = buildCouncilBubble(a);
+  }
+
+  setKPI("k-nba", nbaOK, 15);
+  setKPI("k-pol", polOK, 15);
   setKPI("k-evo", evoOK, 8);
-  setKPI("k-dep", depOK, 9);
   document.getElementById("k-last").textContent = new Date().toISOString().slice(11, 19);
+  document.getElementById("hud-rep").textContent = `pacts ${totalPacts} · reputation entries ${totalRepEntries}`;
   document.getElementById("hud-tick").textContent = "· live";
 }
 
