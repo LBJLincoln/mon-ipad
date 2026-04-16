@@ -1,33 +1,33 @@
 # What Works — Empirically Validated
 
-> Auto-generated from experiment data on 2026-04-16 14:25 UTC
+> Auto-generated from experiment data on 2026-04-16 16:23 UTC
 > Only includes findings backed by measured improvement
 
 ## NBA — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_min_samples_leaf | 7 | 0 | 0% | +0.00671 |
-| change_max_features_ratio | 2 | 0 | 0% | +0.00543 |
-| add_features | 4 | 0 | 0% | +0.00387 |
-| change_max_depth | 5 | 0 | 0% | +0.00748 |
-| change_model | 25 | 0 | 0% | +0.33516 |
-| swap_features | 1 | 0 | 0% | +0.00772 |
-| change_n_estimators | 3 | 0 | 0% | +0.00781 |
-| remove_features | 3 | 0 | 0% | +0.00819 |
+| change_min_samples_leaf | 3 | 0 | 0% | +0.00922 |
+| swap_features | 3 | 0 | 0% | +0.00914 |
+| add_features | 7 | 0 | 0% | +0.00950 |
+| change_model | 23 | 0 | 0% | +0.29364 |
+| change_max_depth | 2 | 0 | 0% | +0.00958 |
+| change_n_estimators | 5 | 0 | 0% | +0.00810 |
+| change_max_features_ratio | 4 | 0 | 0% | +0.00784 |
+| remove_features | 3 | 0 | 0% | +0.00764 |
 
 ## POLITICAL — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_n_estimators | 13 | 0 | 0% | +0.00832 |
-| change_min_samples_leaf | 7 | 0 | 0% | +0.01023 |
-| swap_features | 3 | 0 | 0% | +0.03263 |
-| remove_features | 6 | 0 | 0% | +0.02542 |
-| change_max_features_ratio | 8 | 0 | 0% | +0.02592 |
-| change_model | 9 | 0 | 0% | +0.05377 |
-| add_features | 2 | 0 | 0% | +0.02253 |
-| change_max_depth | 2 | 0 | 0% | +0.01002 |
+| add_features | 8 | 0 | 0% | +0.01650 |
+| change_min_samples_leaf | 4 | 0 | 0% | +0.01677 |
+| swap_features | 7 | 0 | 0% | +0.02703 |
+| remove_features | 6 | 0 | 0% | +0.02538 |
+| change_model | 5 | 0 | 0% | +0.03962 |
+| change_max_features_ratio | 7 | 0 | 0% | +0.02265 |
+| change_max_depth | 6 | 0 | 0% | +0.01859 |
+| change_n_estimators | 7 | 0 | 0% | +0.01167 |
 
 ## Arena — Proven Insights
 
