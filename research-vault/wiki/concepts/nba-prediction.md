@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 187 raw sources on 2026-04-16
+> Auto-compiled from 186 raw sources on 2026-04-16
 
 ## Overview
 
-This topic covers 187 research files spanning nba prediction & ml models.
+This topic covers 186 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -156,7 +156,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Multi-Agent Workflow Scan (April 2026)** (230 words) -- `raw/agent-memory/repo-scout_project_multiagent_workflow_apr2026.md`
 - **Research Scan: arxiv-scan-2026-04-16** (228 words) -- `raw/research/arxiv-scan-2026-04-16.md`
 - **Polyrepo Tooling Scan (April 2026)** (227 words) -- `raw/agent-memory/repo-scout_project_polyrepo_tooling_apr2026.md`
-- **Research Scan: arxiv-scan-2026-04-15** (225 words) -- `raw/research/arxiv-scan-2026-04-15.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/agent-memory/feature-engineer_project_gpu_evolution_v2.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/feature-engineer/project_gpu_evolution_v2.md`
 - **Historical odds dataset 2025-26** (190 words) -- `raw/agent-memory/market-analyst_project_historical_odds.md`

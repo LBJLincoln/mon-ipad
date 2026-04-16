@@ -78,7 +78,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **project_scan_history** (235 words) -- `raw/agent-memory/repo-scout_project_scan_history.md`
 - **project_scan_history** (235 words) -- `raw/repo-scout/project_scan_history.md`
 - **Research Scan: arxiv-scan-2026-04-16** (228 words) -- `raw/research/arxiv-scan-2026-04-16.md`
-- **Research Scan: arxiv-scan-2026-04-15** (225 words) -- `raw/research/arxiv-scan-2026-04-15.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-16** (221 words) -- `raw/research/arxiv-calibration-scan-2026-04-16.md`
 - **Historical odds dataset 2025-26** (190 words) -- `raw/agent-memory/market-analyst_project_historical_odds.md`
 - **Historical odds dataset 2025-26** (190 words) -- `raw/market-analyst/project_historical_odds.md`
@@ -95,6 +94,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-scan-2026-04-12** (13 words) -- `raw/research/arxiv-scan-2026-04-12.md`
 - **Research Scan: arxiv-scan-2026-04-13** (13 words) -- `raw/research/arxiv-scan-2026-04-13.md`
 - **Research Scan: arxiv-scan-2026-04-14** (13 words) -- `raw/research/arxiv-scan-2026-04-14.md`
+- **Research Scan: arxiv-scan-2026-04-15** (13 words) -- `raw/research/arxiv-scan-2026-04-15.md`
 - **Research Scan: github-scan-2026-04-08** (13 words) -- `raw/research/github-scan-2026-04-08.md`
 - **Research Scan: github-scan-2026-04-09** (13 words) -- `raw/research/github-scan-2026-04-09.md`
 - **Research Scan: github-scan-2026-04-10** (13 words) -- `raw/research/github-scan-2026-04-10.md`
