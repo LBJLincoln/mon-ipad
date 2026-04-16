@@ -2,10 +2,7 @@ FROM langfuse/langfuse:2
 
 ENV PORT=7860
 ENV HOSTNAME=0.0.0.0
-ENV DATABASE_URL=placeholder
 ENV NEXTAUTH_URL=https://nomos42-langfuse.hf.space
-ENV NEXTAUTH_SECRET=placeholder
-ENV SALT=placeholder
 ENV TELEMETRY_ENABLED=false
 ENV LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true
 
