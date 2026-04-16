@@ -57,7 +57,11 @@ def _run_tabpfn_inference(X_train, y_train, X_test):
 
 def main():
     """Local stub: prints intent + records dispatch attempt.
-    Real H200 work happens inside the ZeroGPU Space (Nomos42/tabpfn-burst)."""
+    Real H200 work happens inside the ZeroGPU Space (Nomos42/tabpfn-burst).
+
+    Always exits 0 so the GH workflow's `||` fallback to legacy doesn't
+    swallow our specialized output path. Failure is encoded inside the
+    record (`dispatch_failed=True`) for D7 to surface."""
     space_url = os.environ.get(
         "TABPFN_SPACE_URL",
         "https://nomos42-tabpfn-burst.hf.space",
@@ -69,7 +73,6 @@ def main():
         "atr_baseline": ATR_BRIER,
         "specialty": "TabPFN VRAM-bound — only H200 runs this in our fleet",
     }
-    # Dispatch — POST to Space's /api/run-tabpfn (it owns the GPU decorator).
     try:
         import requests
         r = requests.post(f"{space_url}/api/run-tabpfn", timeout=300)
@@ -82,14 +85,19 @@ def main():
             record["beats_atr"] = (d.get("brier") or 1) < ATR_BRIER
         else:
             record["error"] = r.text[:200]
+            record["dispatch_failed"] = True
     except Exception as e:
         record["error"] = str(e)[:200]
         record["dispatch_failed"] = True
 
-    LATEST.write_text(json.dumps(record, indent=2))
-    with HIST.open("a") as f:
-        f.write(json.dumps(record) + "\n")
+    try:
+        LATEST.write_text(json.dumps(record, indent=2))
+        with HIST.open("a") as f:
+            f.write(json.dumps(record) + "\n")
+    except Exception as e:
+        print(f"[zerogpu-tabpfn] write failed: {e}", file=sys.stderr)
     print(json.dumps(record, indent=2))
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

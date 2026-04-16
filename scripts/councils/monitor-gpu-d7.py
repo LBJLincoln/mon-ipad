@@ -27,16 +27,24 @@ OUT_DIR = ROOT / "data" / "councils" / "d7"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 PLATFORMS = [
-    {"name": "zerogpu-h200", "latest": "data/gpu-burst/zerogpu-tabpfn-latest.json",
+    {"name": "zerogpu-h200",
+     "latest": "data/gpu-burst/zerogpu-tabpfn-latest.json",
+     "fallback": "data/gpu-burst/latest-zerogpu-result.json",  # legacy zerogpu-burst.py
      "history": "data/gpu-burst/tabpfn-history.jsonl",
      "workflow": "gpu-cron-launcher.yml", "stale_h": 12},
-    {"name": "modal-a10g", "latest": "data/gpu-burst/modal-cpcv-latest.json",
+    {"name": "modal-a10g",
+     "latest": "data/gpu-burst/modal-cpcv-latest.json",
+     "fallback": "data/gpu-burst/latest-modal-result.json",  # legacy modal-burst.py
      "history": "data/gpu-burst/cpcv-history.jsonl",
      "workflow": "modal-burst.yml", "stale_h": 8},
-    {"name": "lightning-t4", "latest": "data/lightning/latest.json",
+    {"name": "lightning-t4",
+     "latest": "data/lightning/latest.json",
+     "fallback": None,
      "history": "data/lightning/history.jsonl",
      "workflow": "lightning-burst.yml", "stale_h": 24},
-    {"name": "kaggle-p100", "latest": "data/kaggle/latest.json",
+    {"name": "kaggle-p100",
+     "latest": "data/kaggle/latest.json",
+     "fallback": None,
      "history": "data/kaggle/history.jsonl",
      "workflow": None, "stale_h": 168},  # weekly manual today
 ]
@@ -99,19 +107,28 @@ def main():
     }
     for plat in PLATFORMS:
         latest = _read_latest(plat["latest"])
-        ts = latest.get("ts") if latest else None
+        source = "specialized"
+        if not latest and plat.get("fallback"):
+            latest = _read_latest(plat["fallback"])
+            source = "legacy_fallback" if latest else "missing"
+        ts = (latest.get("ts") or latest.get("timestamp")) if latest else None
         stale_h = _staleness_hours(ts)
         errs = _recent_errors(plat["history"])
+        # Legacy zerogpu-burst.py uses best_brier_found instead of brier
+        brier = None
+        if latest:
+            brier = latest.get("brier") or latest.get("best_brier_found")
         record = {
             "name": plat["name"],
+            "source": source,
             "last_run": ts,
             "stale_hours": round(stale_h, 1) if stale_h is not None else None,
             "stale_threshold_h": plat["stale_h"],
             "stale_alert": (stale_h is not None and stale_h > plat["stale_h"]),
             "recent_errors_in_last_5": errs,
-            "latest_brier": latest.get("brier") if latest else None,
+            "latest_brier": brier,
             "latest_dsr": latest.get("dsr") if latest else None,
-            "beats_atr": latest.get("beats_atr") if latest else None,
+            "beats_atr": (brier is not None and brier < 0.21570),
         }
         if record["stale_alert"]:
             record["restart"] = _maybe_restart(plat, stale_h)
