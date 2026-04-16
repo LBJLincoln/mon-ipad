@@ -109,6 +109,89 @@ AXELROD_CANON = (
 # Axelrod Mech D — cooperation ledger (political)
 _cooperation_pacts: Dict[str, dict] = {}
 _reputation: Dict[str, Dict[str, int]] = defaultdict(lambda: {"pact_honored": 0, "pact_broken": 0})
+
+# --- Axelrod-Python real-library engine (Mech D+, political parity) ----------
+try:
+    import axelrod as axl
+    _AXELROD_OK = True
+except Exception:
+    axl = None
+    _AXELROD_OK = False
+
+AXELROD_STRATEGIES = {
+    "qwen-quant":        "TitForTat",
+    "qwen-arb":          "Grudger",
+    "llama-contra":      "SuspiciousTitForTat",
+    "gemini-anl":        "TitFor2Tats",
+    "gemini-tact":       "TwoTitsForTat",
+    "mistral-large":     "WinStayLoseShift",
+    "mistral-medium":    "GenerousTitForTat",
+    "mistral-small":     "Cooperator",
+    "mistral-nemo":      "Defector",
+    "mistral-ministral": "FirmButFair",
+}
+_axelrod_agents: Dict[str, object] = {}
+
+def _axelrod_make(tid: str):
+    if not _AXELROD_OK:
+        return None
+    if tid in _axelrod_agents:
+        return _axelrod_agents[tid]
+    name = AXELROD_STRATEGIES.get(tid, "TitForTat")
+    cls = getattr(axl, name.replace(" ", ""), None) or getattr(axl, name, None) or axl.TitForTat
+    try:
+        obj = cls()
+        _axelrod_agents[tid] = obj
+        return obj
+    except Exception:
+        return None
+
+def _axelrod_advice(tid: str, peer_tid: str) -> Dict[str, str]:
+    if not _AXELROD_OK:
+        return {"move": "C", "strategy": "unavailable", "reason": "axelrod-python not installed"}
+    self_agent = _axelrod_make(tid)
+    peer_agent = _axelrod_make(peer_tid)
+    if self_agent is None or peer_agent is None:
+        return {"move": "C", "strategy": AXELROD_STRATEGIES.get(tid, "TitForTat"), "reason": "init failed"}
+    try:
+        self_agent.reset()
+        peer_agent.reset()
+        pair_keys = [k for k in _cooperation_pacts.keys()
+                     if k.startswith(f"{tid}|{peer_tid}|") or k.startswith(f"{peer_tid}|{tid}|")]
+        pair_keys.sort()
+        for k in pair_keys[-50:]:
+            move = axl.Action.C if _cooperation_pacts[k].get("honored", False) else axl.Action.D
+            self_agent.history.append(move)
+            peer_agent.history.append(move)
+        next_move = self_agent.strategy(peer_agent)
+        return {
+            "move": "C" if next_move == axl.Action.C else "D",
+            "strategy": AXELROD_STRATEGIES.get(tid, "TitForTat"),
+            "reason": f"{len(pair_keys)} prior pacts with {peer_tid}",
+        }
+    except Exception as e:
+        return {"move": "C", "strategy": AXELROD_STRATEGIES.get(tid, "TitForTat"),
+                "reason": f"strategy error: {str(e)[:60]}"}
+
+def _axelrod_advice_block(tid: str, active_peers: list) -> str:
+    if not _AXELROD_OK or not active_peers:
+        return ""
+    peers = list(active_peers)[:3]
+    lines = []
+    for peer in peers:
+        a = _axelrod_advice(tid, peer)
+        lines.append(f"  - vs {peer}: strategy={a['strategy']} → suggests {a['move']} ({a['reason']})")
+    if not lines:
+        return ""
+    return (
+        "\n=== AXELROD MECH D — CANON STRATEGY ADVICE (axelrod-python library, ~240 strategies) ===\n"
+        f"Your assigned canon strategy: {AXELROD_STRATEGIES.get(tid, 'TitForTat')}\n"
+        "Today's advice against 3 peers (based on real pact history):\n"
+        + "\n".join(lines) +
+        "\nHonor the C (cooperate) suggestions as PACT proposals; decline D (defect) peers.\n"
+        "=== END AXELROD ADVICE ===\n"
+    )
+
 GATEWAY_URL = os.environ.get("GATEWAY_URL", "").rstrip("/")
 
 # DMAD (ICLR 2025, OpenReview t6QHYUOQL7) — structurally distinct reasoning per agent (political flavor).
@@ -1337,6 +1420,11 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 system_prompt = system_prompt + build_challenge_block(tid, _challenge_assignments[tid], len(TRADERS))
             # Axelrod Canon + Mech D cooperation rules
             system_prompt = AXELROD_CANON + "\n" + system_prompt
+            # Axelrod-Python real-library advice (per-peer C/D from canon strategy)
+            _active_peers = [p for p in TRADERS if p != tid and state[p].get("bankroll", 0) > 5.0]
+            _axl_block = _axelrod_advice_block(tid, _active_peers)
+            if _axl_block:
+                system_prompt = system_prompt + _axl_block
             user_prompt = build_day_prompt(
                 day_date, day_events, sector_trends, ts,
                 strategies=strategies,
@@ -1803,6 +1891,8 @@ async def api_status():
     state["reputation"] = {tid: dict(r) for tid, r in _reputation.items()}
     state["cooperation_pacts_count"] = len(_cooperation_pacts)
     state["axelrod_canon_active"] = True
+    state["axelrod_library_active"] = _AXELROD_OK
+    state["axelrod_strategies"] = dict(AXELROD_STRATEGIES)
     return JSONResponse(state)
 
 @api.post("/api/run")

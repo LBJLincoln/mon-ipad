@@ -286,20 +286,42 @@ def _call_llm(prompt: str, max_tokens: int = 500, temperature: float = 0.3) -> t
 # -- Scan: read public HF Space status ----------------------------------------
 
 def _scan_spaces() -> dict:
-    """Fetch status from the 6 NBA evolution islands (public API, no auth)."""
-    islands = {
+    """Fetch live status from ALL running experiments: 13 NBA islands + 8 political
+    islands + 2 LLM trading floors. Councils now audit every real experiment, not
+    just the first 6 (was a real gap flagged 2026-04-16)."""
+    endpoints = {
+        # NBA evolution islands (13 total: S10–S22)
         "S10": "https://nomos42-nba-quant.hf.space/api/status",
         "S11": "https://nomos42-nba-quant-2.hf.space/api/status",
         "S12": "https://nomos42-nba-evo-3.hf.space/api/status",
         "S13": "https://nomos42-nba-evo-4.hf.space/api/status",
         "S14": "https://nomos42-nba-evo-5.hf.space/api/status",
         "S15": "https://nomos42-nba-evo-6.hf.space/api/status",
+        "S16": "https://lbjlincoln26-nba-evo-s16.hf.space/api/status",
+        "S17": "https://lbjlincoln26-nba-evo-s17.hf.space/api/status",
+        "S18": "https://testforge42-nba-evo-s18.hf.space/api/status",
+        "S19": "https://testforge42-nba-evo-s19.hf.space/api/status",
+        "S20": "https://lbjlincoln26-nba-evo-s20.hf.space/api/status",
+        "S21": "https://lbjlincoln26-nba-evo-s21.hf.space/api/status",
+        "S22": "https://testforge42-nba-evo-s22.hf.space/api/status",
+        # Political evolution islands (8 total: P1–P8)
+        "P1": "https://nomos42-political-alpha.hf.space/api/status",
+        "P2": "https://nomos42-political-alpha-2.hf.space/api/status",
+        "P3": "https://lbjlincoln-political-alpha-3.hf.space/api/status",
+        "P4": "https://lbjlincoln-political-alpha-4.hf.space/api/status",
+        "P5": "https://lbjlincoln-political-alpha-5.hf.space/api/status",
+        "P6": "https://lbjlincoln-political-alpha-6.hf.space/api/status",
+        "P7": "https://lbjlincoln-political-alpha-7.hf.space/api/status",
+        "P8": "https://lbjlincoln-political-alpha-8.hf.space/api/status",
+        # LLM Trading Floors (the meta-experiments — 12 NBA / 10 political agents)
+        "TF-NBA": "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
+        "TF-POL": "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status",
     }
     results = {}
-    for name, url in islands.items():
+    for name, url in endpoints.items():
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "Nomos42Council/1.0"})
-            with urllib.request.urlopen(req, timeout=10, context=_ssl_ctx()) as resp:
+            with urllib.request.urlopen(req, timeout=8, context=_ssl_ctx()) as resp:
                 results[name] = json.loads(resp.read())
         except Exception as e:
             results[name] = {"error": str(e)[:100]}

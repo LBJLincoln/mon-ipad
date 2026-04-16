@@ -113,6 +113,129 @@ AXELROD_CANON = (
 _cooperation_pacts: Dict[str, dict] = {}
 # _reputation[tid] = {"pact_honored": int, "pact_broken": int}
 _reputation: Dict[str, Dict[str, int]] = defaultdict(lambda: {"pact_honored": 0, "pact_broken": 0})
+
+# --- Axelrod-Python real-library engine (Mech D+) -----------------------------
+# axelrod-python ships ~240 canonical strategies from the 1980 Axelrod tournament
+# through modern evolution. We assign each trader one canon strategy and consult
+# it each day: it consumes the pact history vs each peer and returns C (cooperate)
+# or D (defect) as a hard bias injected into the LLM prompt. The LLM can override
+# for bet sizing but must honor the cooperate/defect signal on PACT decisions.
+try:
+    import axelrod as axl
+    _AXELROD_OK = True
+except Exception:
+    axl = None
+    _AXELROD_OK = False
+
+# Per-trader canonical strategy (matched to trader personality — NICE/RETALIATORY/
+# FORGIVING/CLEAR strategies go to cooperative personalities; harsher go to contrarian).
+AXELROD_STRATEGIES = {
+    "qwen-quant":        "TitForTat",           # nice, retaliatory, forgiving (Rapoport 1980)
+    "qwen-arb":          "Grudger",             # grim-trigger (punishes once forever)
+    "llama-contra":      "SuspiciousTitForTat", # defects first, then TFT (contrarian)
+    "gemini-anl":        "TitFor2Tats",         # forgives one defection (analytical/patient)
+    "gemini-tact":       "TwoTitsForTat",       # doubles retaliation (tactical/aggressive)
+    "mistral-large":     "WinStayLoseShift",    # Pavlov (Nowak-Sigmund 1993)
+    "mistral-medium":    "GenerousTitForTat",   # ~10% forgiveness (escape noise spirals)
+    "mistral-small":     "Cooperator",          # always cooperate (risk-averse)
+    "mistral-nemo":      "Defector",            # always defect (aggressive)
+    "mistral-ministral": "FirmButFair",         # cooperate unless suckered (theoretical)
+    "nemotron-120b":     "Adaptive",            # long-run learner (chainthought)
+    "gemma4-selfhost":   "Tullock",             # probabilistic nice (disciplined)
+    "qwen25-micro":      "Random",              # pattern-match baseline
+    "llama32-micro":     "Cycler CCD",          # 3-cycle (anchor+adjust)
+    "gemma2-micro":      "HardGoByMajority",    # copies majority move (minimalist)
+}
+# Per-trader instantiated strategy object (populated on first call)
+_axelrod_agents: Dict[str, object] = {}
+
+def _axelrod_make(tid: str):
+    """Return an instantiated axelrod strategy object for trader `tid`.
+    Caches in _axelrod_agents. Returns None if axelrod-python unavailable or
+    strategy name is invalid."""
+    if not _AXELROD_OK:
+        return None
+    if tid in _axelrod_agents:
+        return _axelrod_agents[tid]
+    name = AXELROD_STRATEGIES.get(tid, "TitForTat")
+    # Resolve class by name (handles "Cycler CCD" → "CyclerCCD" etc.)
+    cls_name = name.replace(" ", "")
+    cls = getattr(axl, cls_name, None) or getattr(axl, name, None) or axl.TitForTat
+    try:
+        obj = cls()
+        _axelrod_agents[tid] = obj
+        return obj
+    except Exception:
+        return None
+
+def _axelrod_advice(tid: str, peer_tid: str) -> Dict[str, str]:
+    """Consult trader `tid`'s axelrod strategy on whether to COOPERATE/DEFECT
+    against `peer_tid` today. Reads the shared _cooperation_pacts ledger as
+    the move history (pact honored = C, pact broken = D), re-runs the strategy
+    from the start (stateless per-peer — cheap, ~200 games worth of history).
+    Returns {"move": "C"|"D", "strategy": "TitForTat", "reason": "..."}."""
+    if not _AXELROD_OK:
+        return {"move": "C", "strategy": "unavailable",
+                "reason": "axelrod-python not installed"}
+    self_agent = _axelrod_make(tid)
+    peer_agent = _axelrod_make(peer_tid)
+    if self_agent is None or peer_agent is None:
+        return {"move": "C", "strategy": AXELROD_STRATEGIES.get(tid, "TitForTat"),
+                "reason": "strategy init failed"}
+    # Reset and replay history up through yesterday from _cooperation_pacts
+    try:
+        self_agent.reset()
+        peer_agent.reset()
+        # Extract ordered (self_move, peer_move) history from pacts ledger
+        pair_keys = [
+            k for k in _cooperation_pacts.keys()
+            if (k.startswith(f"{tid}|{peer_tid}|") or k.startswith(f"{peer_tid}|{tid}|"))
+        ]
+        pair_keys.sort()  # date-ordered (keys include YYYY-MM-DD suffix)
+        for k in pair_keys[-50:]:  # cap at last 50 interactions
+            pact = _cooperation_pacts[k]
+            honored = pact.get("honored", False)
+            move = axl.Action.C if honored else axl.Action.D
+            # Replay both agents' view of the history
+            self_agent.history.append(move)
+            peer_agent.history.append(move)
+        # Strategy picks next move conditioned on history
+        next_move = self_agent.strategy(peer_agent)
+        move_str = "C" if next_move == axl.Action.C else "D"
+        return {
+            "move": move_str,
+            "strategy": AXELROD_STRATEGIES.get(tid, "TitForTat"),
+            "reason": f"{len(pair_keys)} prior pacts with {peer_tid}",
+        }
+    except Exception as e:
+        return {"move": "C", "strategy": AXELROD_STRATEGIES.get(tid, "TitForTat"),
+                "reason": f"strategy error: {str(e)[:60]}"}
+
+def _axelrod_advice_block(tid: str, active_peers: List[str]) -> str:
+    """Build a prompt suffix telling trader `tid` what each of ~3 randomly
+    sampled peers' axelrod strategies suggest today. This is the 'hard bias'
+    the LLM must factor into PACT propose/honor decisions."""
+    if not _AXELROD_OK or not active_peers:
+        return ""
+    # Sample up to 3 peers for prompt length
+    peers = list(active_peers)[:3]
+    advice_lines = []
+    for peer in peers:
+        a = _axelrod_advice(tid, peer)
+        advice_lines.append(
+            f"  - vs {peer}: strategy={a['strategy']} → suggests {a['move']} ({a['reason']})"
+        )
+    if not advice_lines:
+        return ""
+    return (
+        "\n=== AXELROD MECH D — CANON STRATEGY ADVICE (from axelrod-python library, ~240 strategies) ===\n"
+        f"Your assigned canon strategy: {AXELROD_STRATEGIES.get(tid, 'TitForTat')}\n"
+        "Today's advice against 3 peers (based on real pact history):\n"
+        + "\n".join(advice_lines) +
+        "\nHonor the C (cooperate) suggestions as PACT proposals; decline D (defect) peers."
+        "\n=== END AXELROD ADVICE ===\n"
+    )
+
 GATEWAY_URL = os.environ.get("GATEWAY_URL", "").rstrip("/")
 
 # DMAD (ICLR 2025, OpenReview t6QHYUOQL7) — structurally distinct reasoning templates per agent.
@@ -1807,6 +1930,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 system_prompt = system_prompt + build_challenge_block(tid, _challenge_assignments[tid], len(TRADERS))
             # Axelrod Canon + Mech D cooperation rules (prepended so base role still reads last)
             system_prompt = AXELROD_CANON + "\n" + system_prompt
+            # Axelrod-Python real-library advice (Mech D+): per-peer C/D recommendation
+            # from the trader's assigned canon strategy (TitForTat/Pavlov/Grudger/etc.)
+            _active_peers = [p for p in TRADERS if p != tid and state[p]["bankroll"] > 5.0]
+            _axl_block = _axelrod_advice_block(tid, _active_peers)
+            if _axl_block:
+                system_prompt = system_prompt + _axl_block
             user_prompt = build_day_prompt(
                 day_date, day_games, day_odds_list, day_stand_list, day_form_list,
                 ts, rosters=rosters, team_advanced=team_advanced,
@@ -2287,6 +2416,8 @@ async def api_status():
     state["reputation"] = {tid: dict(r) for tid, r in _reputation.items()}
     state["cooperation_pacts_count"] = len(_cooperation_pacts)
     state["axelrod_canon_active"] = True
+    state["axelrod_library_active"] = _AXELROD_OK
+    state["axelrod_strategies"] = dict(AXELROD_STRATEGIES)
     return JSONResponse(state)
 
 @api.post("/api/run")
