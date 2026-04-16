@@ -142,12 +142,23 @@
     {
       "id": "tf-axelrod-verify-tune-3",
       "priority": 10,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-04-16T06:30:00Z",
+      "commit_hash": "0c7696fd5f28057dc5210d7d5a7d9f8c1b7a12b3",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod verify+tune fire 3 — push Python files + end-to-end dry-run validation",
-      "scope": "PRIORITY: Push correct Python app.py content for both NBA and Political TF (current HEAD has placeholder strings from bad push). Content available at /tmp/nba_content.txt and /tmp/pol_content.txt. md5 checksums: NBA=8d61446d6289b82ef23f4cb86297f245, POL=d7a0a50083d8de3b8ed9e076f031774b. After fixing, validate all three tiers fire correctly in day loop.",
+      "scope": "Pushed correct Python app.py content for both NBA and Political TF (replacing placeholder strings from bad push 8076f3c). Ran 5-check dry-run validation of Mech B three-tier logic.",
       "depends_on": "tf-axelrod-verify-tune-2",
-      "suggested_test": "After pushing Python files, verify: assign_challenge_tiers + build_challenge_block present, py_compile PASS, _challenge_assignments non-empty after day 1 mock run."
+      "do_not_push_hf_space_yet": true,
+      "checks_passed": [
+        "CHECK 1 PASS: _challenge_assignments non-empty after day 1",
+        "CHECK 2 PASS: no overlap between _sacrificial_assignments and _challenge_assignments",
+        "CHECK 3 PASS: top-3 agents not in either tier map",
+        "CHECK 4 PASS: all 12 agents covered exactly once (mutual exclusion)",
+        "CHECK 5 PASS: build_challenge_block contains CHALLENGE_RESPONSE: directive"
+      ],
+      "recovery_note": "Used git merge + local repo push via proxy (127.0.0.1:22602) instead of MCP create_or_update_file — files too large (111K/90K chars) for inline MCP push. Local mon-ipad repo was at /home/user/mon-ipad.",
+      "commit_message": "feat(tf): Axelrod Mech B CHALLENGE[D] mid-tier block — both NBA+Political TF apps\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
     }
   ],
   "recovery_protocol": {
