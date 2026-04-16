@@ -46,6 +46,35 @@ from datetime import datetime, timezone
 from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
+import math
+
+def benjamini_hochberg(edges: List[Tuple[str, float]], alpha: float = 0.05) -> set:
+    """Return set of category tags that survive BH FDR correction.
+    Treats |edge| as a test statistic under H0: edge=0. With ~91 categories
+    derived from Normal CDF, the SE of each derived edge is ~0.03-0.05.
+    We use SE=0.04 as conservative estimate for all categories."""
+    SE = 0.04
+    n = len(edges)
+    if n == 0:
+        return set()
+    pvals = []
+    for tag, edge_val in edges:
+        z = abs(edge_val) / SE
+        p = 2 * (1 - _norm_cdf(z))
+        pvals.append((p, tag))
+    pvals.sort()
+    passing = set()
+    for rank, (p, tag) in enumerate(pvals, 1):
+        threshold = alpha * rank / n
+        if p <= threshold:
+            passing.add(tag)
+        else:
+            break
+    return passing
+
+def _norm_cdf(x: float) -> float:
+    return 0.5 * (1 + math.erf(x / math.sqrt(2)))
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -1043,18 +1072,20 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
             lines.append(f"  AI MODEL: ML {pred.get('consensus_ml_direction','?')} (agree {pred.get('ml_agreement_pct',0):.0f}%) | pred_margin={core.get('predicted_margin',0):+.1f} | pred_total={core.get('predicted_total',0):.0f} | P(home)={core.get('predicted_p_home',0):.0%}")
         else:
             lines.append(f"  AI MODEL: ML {pred.get('consensus_ml_direction','?')} (agree {pred.get('ml_agreement_pct',0):.0f}%)")
-        # Top edges vs market
+        # Top edges vs market — BH FDR-corrected (91 categories → multiple testing)
         per_cat = pred.get("per_category", {})
         if per_cat:
+            all_edges = [(tag, info.get("edge", 0)) for tag, info in per_cat.items() if info.get("edge") is not None]
+            fdr_pass = benjamini_hochberg(all_edges, alpha=0.05)
             top_edges = []
             for tag, info in per_cat.items():
                 e = info.get("edge")
-                if e is not None and abs(e) >= 0.04:
+                if e is not None and abs(e) >= 0.03 and tag in fdr_pass:
                     top_edges.append((abs(e), tag, info))
             top_edges.sort(reverse=True)
             if top_edges:
-                edge_strs = [f"{tag}(p={info.get('prob',0):.2f}, edge{info.get('edge',0):+.1%})" for _, tag, info in top_edges[:5]]
-                lines.append(f"  MODEL EDGES: {' | '.join(edge_strs)}")
+                edge_strs = [f"{tag}(p={info.get('prob',0):.2f}, edge{info.get('edge',0):+.1%}, FDR✓)" for _, tag, info in top_edges[:5]]
+                lines.append(f"  MODEL EDGES [BH-FDR α=0.05, {len(fdr_pass)}/{len(all_edges)} pass]: {' | '.join(edge_strs)}")
 
     # Full-odds categories
     fo_raw = (full_odds or {}).get(game_key, {})
@@ -2044,6 +2075,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 # because the same $15 stake wiped out a $10 bankroll.
                 MAX_PCT_PER_BET = 0.05  # half-Kelly cap
                 MIN_EDGE = 0.03         # only bet meaningful edges
+                BASE_CATS = {"ml_home","ml_away","spread_home","spread_away","total_over","total_under"}
                 for alloc in parsed["allocations"]:
                     gidx = alloc["game_idx"] - 1  # 1-indexed in prompt
                     if gidx < 0 or gidx >= len(day_games):
@@ -2054,6 +2086,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
 
                     edge_val = alloc.get("edge", 0.0) or 0.0
                     if edge_val < MIN_EDGE:
+                        continue
+                    # FDR gate: non-base categories require higher edge (multiple testing)
+                    if cat not in BASE_CATS and edge_val < 0.05:
                         continue
                     capped_pct = min(alloc["pct"], MAX_PCT_PER_BET)
                     stake = round(ts["bankroll"] * capped_pct, 2)
@@ -2678,6 +2713,16 @@ async def api_axelrod_log(day: int = None, since: int = None):
         return JSONResponse({"n_days": len(index), "index": index})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@api.get("/paper")
+async def serve_paper():
+    """Serve the Axelrod-LLM research paper inline (not as download)."""
+    from fastapi.responses import HTMLResponse
+    paper_path = Path(__file__).parent / "paper.html"
+    if paper_path.exists():
+        return HTMLResponse(content=paper_path.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>Paper not yet generated</h1><p>Run md_to_html.py to build paper.html</p>", status_code=404)
 
 
 # Mount FastAPI alongside Gradio
