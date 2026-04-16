@@ -445,14 +445,26 @@ function makeAgentContainer(a) {
   c.addChild(pip);
   c._pip = pip;
 
-  // Character sprite — BIG
-  const tex = TEX.chars[a.char];
-  if (tex) {
-    const spr = new PIXI.Sprite(tex);
-    spr.anchor.set(0.5, 1); spr.y = 0;
-    spr.width = CHAR_W; spr.height = CHAR_H;
-    c.addChild(spr);
-    c._spr = spr;
+  if (a._isInfra) {
+    // Render as a data-center tower: stacked rack blocks, roof antenna,
+    // indicator LEDs. Tower height grows with generation; crown glows on
+    // fleet-best. Drawn procedurally so it updates live in refresh().
+    const tower = new PIXI.Graphics();
+    c.addChild(tower); c._tower = tower;
+    // seed draw (empty) — real fill happens in updateInfraTower(a) each refresh
+    tower.rect(-CHAR_W*0.22, -CHAR_H*0.72, CHAR_W*0.44, CHAR_H*0.72)
+         .fill({ color:0x1a1f2a, alpha:0.96 })
+         .stroke({ width:2, color:KIND_COLORS[a.kind], alpha:0.85 });
+  } else {
+    // Character sprite — BIG
+    const tex = TEX.chars[a.char];
+    if (tex) {
+      const spr = new PIXI.Sprite(tex);
+      spr.anchor.set(0.5, 1); spr.y = 0;
+      spr.width = CHAR_W; spr.height = CHAR_H;
+      c.addChild(spr);
+      c._spr = spr;
+    }
   }
 
   // Kind glyph above head (emoji badge — always on, small)
@@ -706,7 +718,7 @@ function showHoverCard(a) {
       }
       if (dd.cash_held_pct > 0 && dd.cash_rationale) note += `<div style="margin-top:5px; color:var(--ink-3); font-size:9.5px;">cash ${(dd.cash_held_pct*100).toFixed(0)}%: ${escapeHtml(dd.cash_rationale.slice(0,80))}</div>`;
     } else if (a.recent) note = `Last: ${a.recent}`;
-  } else if (a.data && a.kind === "island") {
+  } else if (a.data && a._isInfra) {
     const d = a.data;
     rows += `<div class="h-row"><span class="l">Best Brier</span><span class="v up">${(d.best_brier||0).toFixed(5)}</span></div>`;
     rows += `<div class="h-row"><span class="l">Generation</span><span class="v">${d.generation||0}</span></div>`;
@@ -750,6 +762,59 @@ function logTrade(kind, agent, msg, roi) {
   tradesCount.textContent = tradesCounter;
 }
 
+// Redraw an infrastructure tower sprite from live island data.
+// Height ramps with log(generation). Color hue by best_brier. Crown on
+// fleet-best. Stagnation (>100 gens) dims the body.
+let _fleetBestBrier = 1.0;
+function updateInfraTower(a) {
+  if (!a._isInfra || !a._cnt || !a._cnt._tower) return;
+  const g = a._cnt._tower;
+  const d = a.data || {};
+  const gen = d.generation || d.gen || d.current_gen || 0;
+  const brier = d.best_brier || d.brier || 1.0;
+  const stag = d.stagnation || 0;
+  const tint = KIND_COLORS[a.kind] || 0x50fa7b;
+  // Height: 0.3..1.0 of CHAR_H based on log10(gen+1)/4 clamped.
+  const hFrac = Math.min(1.0, Math.max(0.32, Math.log10(gen + 1) / 4));
+  const H = CHAR_H * hFrac;
+  const W = CHAR_W * 0.46;
+  const nRacks = Math.min(8, Math.max(2, Math.floor(hFrac * 9)));
+  const rackH = H / nRacks;
+  const dim = stag > 100 ? 0.55 : 1.0;
+  g.clear();
+  // Base shadow plinth
+  g.rect(-W/2 - 2, -2, W + 4, 5).fill({ color:0x000000, alpha:0.35 });
+  // Rack stack (bottom up)
+  for (let i = 0; i < nRacks; i++) {
+    const yTop = -rackH * (i + 1);
+    const alpha = 0.72 + (i / nRacks) * 0.24;
+    g.rect(-W/2, yTop, W, rackH - 1.5)
+     .fill({ color:0x1a1f2a, alpha:0.96 * dim })
+     .stroke({ width:1, color:tint, alpha: alpha * dim });
+    // LEDs: 2 per rack, blink when activeUntil recent
+    const ledCol = (performance.now() - (a.activeUntil - 4000)) < 4000 && a.activeUntil > performance.now()
+      ? 0x50fa7b : (stag > 100 ? 0xff5c5c : tint);
+    g.rect(-W/2 + 4, yTop + rackH/2 - 1.5, 3, 2).fill({ color: ledCol, alpha:0.9 * dim });
+    g.rect(-W/2 + 9, yTop + rackH/2 - 1.5, 3, 2).fill({ color: ledCol, alpha:0.5 * dim });
+  }
+  // Roof
+  g.rect(-W/2 - 3, -H - 4, W + 6, 4).fill({ color: tint, alpha:0.9 * dim });
+  // Antenna
+  g.rect(-1, -H - 14, 2, 10).fill({ color: tint, alpha:0.85 * dim });
+  g.circle(0, -H - 16, 2.5).fill({ color: 0xffd700, alpha: 0.9 });
+  // Crown if fleet best
+  if (brier > 0 && brier <= _fleetBestBrier + 0.00001) {
+    g.moveTo(-W/2 + 3, -H - 6)
+     .lineTo(-W/4, -H - 14)
+     .lineTo(0, -H - 8)
+     .lineTo(W/4, -H - 14)
+     .lineTo(W/2 - 3, -H - 6)
+     .lineTo(W/2 - 3, -H - 3)
+     .lineTo(-W/2 + 3, -H - 3)
+     .closePath().fill({ color:0xffd700, alpha:0.95 });
+  }
+}
+
 function renderCategories(cats) {
   const el = document.getElementById("panel-cats"); el.innerHTML = "";
   const entries = Object.entries(cats).sort((a,b) => b[1] - a[1]).slice(0, 12);
@@ -763,7 +828,7 @@ function renderCategories(cats) {
 }
 function renderEvolution() {
   const el = document.getElementById("panel-evo"); el.innerHTML = "";
-  const islands = AGENTS.filter(a => a.kind === "island" && a.data).sort((a,b) => (a.data.best_brier||1) - (b.data.best_brier||1));
+  const islands = AGENTS.filter(a => a._isInfra && a.data).sort((a,b) => (a.data.best_brier||1) - (b.data.best_brier||1));
   const cEl = document.getElementById("panel-evo-count");
   if (cEl) cEl.textContent = `${islands.length} / ${AGENTS.filter(a => a.kind==="island").length}`;
   if (!islands.length) { el.innerHTML = `<span style="color:var(--ink-3); font-size:10px;">waiting for islands…</span>`; return; }
@@ -900,7 +965,7 @@ async function refresh() {
   // Islands
   const islandResults = await Promise.all(ISLANDS.map(([lbl,u]) => fetchJSON(u).then(d => [lbl,d])));
   for (const [lbl, data] of islandResults) {
-    const a = AGENTS.find(x => x.kind==="island" && x.key===lbl);
+    const a = AGENTS.find(x => x._isInfra && x.key===lbl);
     if (!a) continue;
     if (data) {
       evoOK++;
@@ -914,6 +979,12 @@ async function refresh() {
     }
     a.bubble = buildIslandBubble(a);
   }
+  // Compute current fleet-best across infra-with-data, then redraw all towers.
+  const infras = AGENTS.filter(x => x._isInfra && x.data && x.data.best_brier);
+  _fleetBestBrier = infras.length
+    ? Math.min(...infras.map(x => x.data.best_brier))
+    : 1.0;
+  for (const a of AGENTS.filter(x => x._isInfra)) updateInfraTower(a);
   renderEvolution();
   renderLeaderboard();
 
@@ -924,8 +995,8 @@ async function refresh() {
   document.getElementById("k-nba").className = nbaOK === 15 ? "v-ok" : "v-warn";
   document.getElementById("k-pol").textContent = `${polOK}/15`;
   document.getElementById("k-pol").className = polOK === 15 ? "v-ok" : "v-warn";
-  document.getElementById("k-evo").textContent = `${evoOK}/8`;
-  document.getElementById("k-evo").className = evoOK === 8 ? "v-ok" : "v-warn";
+  document.getElementById("k-evo").textContent = `${evoOK}/21`;
+  document.getElementById("k-evo").className = evoOK >= 20 ? "v-ok" : "v-warn";
   document.getElementById("k-pacts").textContent = pacts;
   document.getElementById("k-last").textContent = new Date().toISOString().slice(11,19);
   document.getElementById("hud-rep").textContent = `pacts ${pacts} · rep ${repEntries}`;
@@ -952,7 +1023,7 @@ async function refresh() {
   }
   setTx("bt-pacts", String(pacts));
   setTx("bt-calls", String(sumCalls(nba && nba.agents) + sumCalls(pol && pol.agents)));
-  const best = AGENTS.filter(x => x.kind === "island" && x.data && x.data.best_brier)
+  const best = AGENTS.filter(x => x._isInfra && x.data && x.data.best_brier)
                      .sort((a,b) => a.data.best_brier - b.data.best_brier)[0];
   if (best) setTx("bt-fleet", `${best.label} ${best.data.best_brier.toFixed(5)}`, "star");
 }
