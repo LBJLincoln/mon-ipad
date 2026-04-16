@@ -1098,8 +1098,11 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
             parts = []
             for a in allocs[:3]:  # cap at 3 to control token budget
                 outcome = "W" if a["won"] else "L"
+                rat = (a.get("thesis") or a.get("rationale") or "")[:55]
                 parts.append(
-                    f"{a['ticker']} {a['direction']} {a.get('event_type','?')}→{outcome}"
+                    f"{a['ticker']} {a['direction']} {a.get('event_type','?')}"
+                    f" stake=${a.get('stake', 0):.1f}→{outcome}"
+                    + (f" [{rat}]" if rat else "")
                 )
             suffix = f" +{len(allocs)-3}more" if len(allocs) > 3 else ""
             lines.append(f"  #{rank} {name}: {' | '.join(parts)}{suffix}")
@@ -1147,8 +1150,8 @@ def compute_trailing_delta(tid: str, state: Dict, agent_logs: Dict, trailing_day
     recent = logs[-trailing_days:]
     if not recent:
         return 0.0
-    start_b = recent[0].get("bankroll_before", 100000.0)
-    current = state.get(tid, {}).get("bankroll", 100000.0)
+    start_b = recent[0].get("bankroll_before", 100.0)
+    current = state.get(tid, {}).get("bankroll", 100.0)
     return float(current - start_b)
 
 

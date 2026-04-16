@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-16T06:00:00Z",
+  "updated_at": "2026-04-16T12:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -159,6 +159,32 @@
       ],
       "recovery_note": "Used git merge + local repo push via proxy (127.0.0.1:22602) instead of MCP create_or_update_file — files too large (111K/90K chars) for inline MCP push. Local mon-ipad repo was at /home/user/mon-ipad.",
       "commit_message": "feat(tf): Axelrod Mech B CHALLENGE[D] mid-tier block — both NBA+Political TF apps\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+    },
+    {
+      "id": "tf-axelrod-verify-tune-4",
+      "priority": 11,
+      "status": "done",
+      "completed_at": "2026-04-16T12:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod verify+tune fire 4 — Mech A CK spec completeness + Political trailing-delta parity fix",
+      "depends_on": "tf-axelrod-verify-tune-3",
+      "do_not_push_hf_space_yet": true,
+      "bugs_fixed": [
+        "PARITY BUG: Political compute_trailing_delta had default bankroll 100000.0 instead of 100.0 — sacrificial tier rank was subtly wrong when bankroll_before key absent",
+        "SPEC GAP: Mechanism A CK block lacked 'stake' and 'edge_rationale' fields from AXELROD-2026 spec {trader_id, game/event, pick, stake, edge_rationale}. Both NBA and Political CK peer-bet lines now include stake=$X.X and rationale/thesis snippet (≤55 chars)"
+      ],
+      "files": [
+        "scripts/arena/hf-llm-trading-floor/app.py",
+        "scripts/arena/hf-political-trading-floor/app.py",
+        "data/work-queue.json"
+      ],
+      "checks_passed": [
+        "py_compile PASS: both apps",
+        "Political compute_trailing_delta default corrected 100000.0→100.0",
+        "NBA CK block: stake=${stake:.1f} + rationale[:55] appended per alloc line",
+        "Political CK block: stake=${stake:.1f} + thesis/rationale[:55] appended per alloc line (domain-parity)"
+      ],
+      "commit_message": "fix(tf): Axelrod verify+tune 4 — CK stake+rationale spec + Political trailing-delta default\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
     }
   ],
   "recovery_protocol": {

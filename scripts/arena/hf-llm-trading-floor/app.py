@@ -1552,8 +1552,11 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
             parts = []
             for a in allocs[:3]:  # cap at 3 to control token budget
                 outcome = "W" if a["won"] else "L"
+                rat = (a.get("rationale") or "")[:55]
                 parts.append(
-                    f"{a['game']} {a['category']} edge={a['edge']:.3f}→{outcome}"
+                    f"{a['game']} {a['category']} stake=${a.get('stake', 0):.1f}"
+                    f" edge={a['edge']:.3f}→{outcome}"
+                    + (f" [{rat}]" if rat else "")
                 )
             suffix = f" +{len(allocs)-3}more" if len(allocs) > 3 else ""
             lines.append(f"  #{rank} {name}: {' | '.join(parts)}{suffix}")
