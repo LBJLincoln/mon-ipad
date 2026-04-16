@@ -4,7 +4,7 @@
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.21514 (Colab TabICL, 186f, iter 129) | Fleet best: 0.22085 (S17, gen 524) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.21514 (Colab TabICL, 186f, iter 129) | Fleet best: 0.22085 (S17 ensemble, gen 1142, checkpointed 2026-04-16) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
 **NBA TF v3 (day-bucket, Apr 15 fresh run, 12 agents):** Stake-fix DEPLOYED (half-Kelly 5% cap + min edge 0.03 + current bankroll). Gemini parser FIXED (thinkingBudget=0, max_tokens 4096, all-parts join — gemini-anl/gemini-tact were 0 bets across 27 days, now betting on day 2). +1 NVIDIA Nemotron-120B agent (4 providers: Cerebras / Google / Mistral / OpenRouter). HF sha `9dca67ed`. Mutation actuator unblocked (gap_threshold 0.20→0.12).
 **Political TF (Apr 14 snapshot):** 50 days / 834 events processed, 0 trades by 10 agents (parser bug). Prior claim "llama-contra +223.5%" was from mid-run, now stale.
@@ -42,10 +42,10 @@ HF EVOLUTION ISLANDS (13 NBA + 8 Political = 21 active, S20/S21/S22 deployed 202
     ├── S11 Nomos42/nba-quant-2:      exploration   gen=141   brier=0.24572  → nomos42-nba-quant-2.hf.space
     ├── S12 Nomos42/nba-evo-3:        extra_trees   gen=160   brier=0.23252  → nomos42-nba-evo-3.hf.space
     ├── S13 Nomos42/nba-evo-4:        catboost      gen=130   brier=0.22749  → nomos42-nba-evo-4.hf.space
-    ├── S14 Nomos42/nba-evo-5:        lightgbm      gen=108   brier=0.22251  → nomos42-nba-evo-5.hf.space  ★ FLEET BEST
+    ├── S14 Nomos42/nba-evo-5:        lightgbm      gen=554   brier=0.22186  → nomos42-nba-evo-5.hf.space
     ├── S15 Nomos42/nba-evo-6:        wide search   gen=127   brier=0.22418  → nomos42-nba-evo-6.hf.space
     ├── S16 LBJLincoln26/nba-evo-s16: gradient_boost gen=86   brier=0.22573  → lbjlincoln26-nba-evo-s16.hf.space
-    ├── S17 LBJLincoln26/nba-evo-s17: ensemble      gen=139   brier=0.22493  → lbjlincoln26-nba-evo-s17.hf.space
+    ├── S17 LBJLincoln26/nba-evo-s17: ensemble      gen=1142  brier=0.22085  → lbjlincoln26-nba-evo-s17.hf.space  ★ FLEET BEST
     ├── S18 TESTforge42/nba-evo-s18:  catboost_spec gen=1030  brier=0.22114  → testforge42-nba-evo-s18.hf.space  (promoted 2026-04-15)
     ├── S19 TESTforge42/nba-evo-s19:  wide_search   gen=849   brier=0.22257  → testforge42-nba-evo-s19.hf.space  (promoted 2026-04-15)
     ├── S20 LBJLincoln26/nba-evo-s20: isotonic_cpcv gen=0    brier=—         → lbjlincoln26-nba-evo-s20.hf.space  (NEW 2026-04-15 — Prediction Arena 2604.07355)
