@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nomos42 Pixel World — 38 agents, live thinking</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-2: #14171f;
+    --line: #1e2330;
+    --ink: #e6e8ee;
+    --ink-2: #9aa3b5;
+    --ink-3: #5b6478;
+    --accent: #00d9a7;
+    --warn: #ffb020;
+    --err: #ff5c5c;
+    --pink: #ff79c6;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: "JetBrains Mono", "Courier New", monospace; font-size: 12px; overflow: hidden; }
+  #root { display: grid; grid-template-columns: 1fr 320px; height: 100vh; }
+  #stage { position: relative; background: var(--bg-2); overflow: hidden; }
+  #stage canvas { image-rendering: pixelated; image-rendering: crisp-edges; display: block; width: 100%; height: 100%; }
+  #hud-top { position: absolute; top: 10px; left: 12px; right: 12px; display: flex; justify-content: space-between; gap: 12px; font-size: 11px; color: var(--ink-2); letter-spacing: 0.1em; text-transform: uppercase; pointer-events: none; }
+  #hud-top .brand { color: var(--ink); font-weight: 600; }
+  #hud-top .tick { color: var(--accent); }
+  #sidebar { background: var(--bg-2); border-left: 1px solid var(--line); display: flex; flex-direction: column; overflow: hidden; }
+  .panel { border-bottom: 1px solid var(--line); padding: 12px 14px; }
+  .panel h3 { margin: 0 0 8px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
+  .kpi { display: flex; justify-content: space-between; font-size: 11px; padding: 2px 0; }
+  .kpi span:first-child { color: var(--ink-2); }
+  .kpi .v-ok { color: var(--accent); }
+  .kpi .v-warn { color: var(--warn); }
+  .kpi .v-err { color: var(--err); }
+  #feed { flex: 1; overflow-y: auto; padding: 8px 14px; font-size: 11px; line-height: 1.5; }
+  #feed .log { padding: 4px 0; border-bottom: 1px dotted var(--line); }
+  #feed .log .who { color: var(--pink); }
+  #feed .log .act { color: var(--accent); }
+  #feed .log .t { color: var(--ink-3); font-size: 10px; }
+  #legend { font-size: 10px; color: var(--ink-3); padding: 8px 14px; border-top: 1px solid var(--line); }
+  #legend .chip { display: inline-block; width: 9px; height: 9px; margin-right: 4px; vertical-align: middle; }
+  .bubble {
+    position: absolute;
+    max-width: 180px;
+    padding: 6px 8px;
+    background: rgba(20,23,31,0.95);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 10px;
+    line-height: 1.35;
+    pointer-events: none;
+    transform: translate(-50%, -100%);
+    margin-top: -6px;
+    white-space: normal;
+    word-break: break-word;
+  }
+  .bubble::after {
+    content: ""; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
+    border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid var(--line);
+  }
+  .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--ink-3); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div id="root">
+  <div id="stage">
+    <div id="hud-top">
+      <div><span class="brand">NOMOS42 · PIXEL WORLD</span> · crash-test staging · v0.1</div>
+      <div><span class="tick" id="hud-tick">· booting</span></div>
+    </div>
+    <canvas id="cv"></canvas>
+    <div id="bubbles"></div>
+    <div class="loader" id="loader">loading sprites…</div>
+  </div>
+  <div id="sidebar">
+    <div class="panel">
+      <h3>Fleet</h3>
+      <div class="kpi"><span>NBA traders (live)</span><span id="k-nba" class="v-warn">—</span></div>
+      <div class="kpi"><span>Political traders</span><span id="k-pol" class="v-warn">—</span></div>
+      <div class="kpi"><span>Evolution islands</span><span id="k-evo" class="v-warn">—</span></div>
+      <div class="kpi"><span>Dept councils</span><span id="k-dep" class="v-warn">—</span></div>
+      <div class="kpi"><span>Last refresh</span><span id="k-last" class="v-ok">—</span></div>
+    </div>
+    <div class="panel">
+      <h3>Thought Feed</h3>
+    </div>
+    <div id="feed"></div>
+    <div id="legend">
+      <span class="chip" style="background:#ff79c6"></span>NBA trader
+      <span class="chip" style="background:#8be9fd; margin-left:8px"></span>Political
+      <span class="chip" style="background:#50fa7b; margin-left:8px"></span>Island
+      <span class="chip" style="background:#ffb86c; margin-left:8px"></span>Council
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// ── NOMOS42 PIXEL WORLD ─────────────────────────────────────────────────────
+// Single-file Canvas 2D render loop. 38 agent sprites on a zoned office grid.
+// Live thinking fetched from real HF Space /api/status endpoints.
+// Sprites adapted from pablodelucca/pixel-agents (MIT).
+
+const TILE = 32;                     // logical tile px (scales with canvas)
+const GRID_W = 48;                   // tiles wide
+const GRID_H = 28;                   // tiles tall
+const CHAR_COUNT = 6;                // char_0..char_5
+
+const ZONES = {
+  // Top-left: NBA trading floor (12 traders)
+  nba: { x: 2, y: 2, w: 14, h: 10, floor: 3, label: "NBA FLOOR" },
+  // Top-right: Political trading floor (10 traders)
+  political: { x: 32, y: 2, w: 14, h: 10, floor: 5, label: "POLITICAL FLOOR" },
+  // Bottom-left: Evolution islands (8 nodes)
+  evolution: { x: 2, y: 16, w: 14, h: 10, floor: 6, label: "EVOLUTION LAB" },
+  // Bottom-right: Department councils (9 rooms)
+  councils: { x: 32, y: 16, w: 14, h: 10, floor: 1, label: "COUNCIL CHAMBERS" },
+  // Center corridor = floor_0
+  corridor: { x: 18, y: 2, w: 12, h: 24, floor: 0, label: "CORRIDOR" },
+};
+
+const AGENTS = [
+  // NBA traders (12) — T1..T12 from CLAUDE.md
+  ...[
+    ["t1-qwen-quant", "qwen-quant", "cerebras"],
+    ["t2-qwen-arb", "qwen-arb", "cerebras"],
+    ["t3-llama-contra", "llama-contra", "cerebras"],
+    ["t4-gemini-anl", "gemini-anl", "google"],
+    ["t5-gemini-tact", "gemini-tact", "google"],
+    ["t6-mistral-large", "mistral-lg", "mistral"],
+    ["t7-mistral-medium", "mistral-md", "mistral"],
+    ["t8-mistral-small", "mistral-sm", "mistral"],
+    ["t9-mistral-nemo", "mistral-nemo", "mistral"],
+    ["t10-mistral-ministral", "mistral-min", "mistral"],
+    ["t11-nemotron-120b", "nemotron-120b", "openrouter"],
+    ["t12-gemma4-selfhost", "gemma4-self", "selfhost"],
+  ].map(([id, label, prov], i) => ({ id, label, kind: "nba", prov, zone: "nba", idx: i, char: i % CHAR_COUNT })),
+  // Political traders (10) — subset T1..T10
+  ...[
+    "qwen-quant", "qwen-arb", "llama-contra", "gemini-anl", "gemini-tact",
+    "mistral-lg", "mistral-md", "mistral-sm", "mistral-nemo", "mistral-min",
+  ].map((label, i) => ({ id: `p-${label}`, label, kind: "political", zone: "political", idx: i, char: (i + 2) % CHAR_COUNT })),
+  // Evolution islands (8 NBA: S10..S17; S18-S22 omitted from viz for space)
+  ...["S10", "S11", "S12", "S13", "S14", "S15", "S16", "S17"].map((label, i) => (
+    { id: `island-${label.toLowerCase()}`, label, kind: "island", zone: "evolution", idx: i, char: i % CHAR_COUNT }
+  )),
+  // Dept councils (9)
+  ...["D1-Research", "D2-Eng", "D3-Evol", "D4-Prod", "D5-Biz", "D6-Eval", "D7-Infra", "D8-Fin", "D9-XRepo"].map((label, i) => (
+    { id: `dept-${label.split("-")[0].toLowerCase()}`, label, kind: "council", zone: "councils", idx: i, char: (i + 3) % CHAR_COUNT }
+  )),
+];
+
+const KIND_COLORS = { nba: "#ff79c6", political: "#8be9fd", island: "#50fa7b", council: "#ffb86c" };
+
+// Place agents in a grid within their zone
+function layoutAgents() {
+  const grouped = {};
+  for (const a of AGENTS) (grouped[a.zone] ??= []).push(a);
+  for (const [zoneId, list] of Object.entries(grouped)) {
+    const z = ZONES[zoneId];
+    const cols = Math.ceil(Math.sqrt(list.length));
+    const rows = Math.ceil(list.length / cols);
+    const colGap = Math.floor(z.w / (cols + 1));
+    const rowGap = Math.floor(z.h / (rows + 1));
+    list.forEach((a, i) => {
+      const c = i % cols, r = Math.floor(i / cols);
+      a.deskX = z.x + colGap * (c + 1);
+      a.deskY = z.y + rowGap * (r + 1);
+      a.x = a.deskX + (Math.random() - 0.5) * 2;
+      a.y = a.deskY + (Math.random() - 0.5) * 2;
+      a.vx = 0; a.vy = 0;
+      a.thought = null;
+      a.lastMoveAt = 0;
+      a.state = "idle";
+    });
+  }
+}
+layoutAgents();
+
+// ── ASSET LOADER ────────────────────────────────────────────────────────────
+const sprites = { chars: [], floors: [], furniture: {} };
+function loadImg(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = src;
+  });
+}
+async function loadAll() {
+  for (let i = 0; i < CHAR_COUNT; i++) sprites.chars.push(await loadImg(`assets/characters/char_${i}.png`));
+  for (let i = 0; i < 9; i++) sprites.floors.push(await loadImg(`assets/floors/floor_${i}.png`));
+  // A few key furniture pieces for ambience
+  const furn = [
+    ["DESK", "DESK_FRONT.png"],
+    ["PC", "PC.png"],
+    ["PLANT", "PLANT.png"],
+    ["PLANT_2", "PLANT_2.png"],
+    ["CACTUS", "CACTUS.png"],
+    ["BOOKSHELF", "BOOKSHELF.png"],
+    ["CLOCK", "CLOCK.png"],
+    ["COFFEE", "COFFEE.png"],
+  ];
+  for (const [name, file] of furn) {
+    try { sprites.furniture[name] = await loadImg(`assets/furniture/${name}/${file}`); } catch {}
+  }
+}
+
+// ── RENDER ──────────────────────────────────────────────────────────────────
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+const bubbles = document.getElementById("bubbles");
+let W = 0, H = 0, SCALE = 1;
+
+function resize() {
+  const rect = cv.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  W = rect.width; H = rect.height;
+  cv.width = W * dpr; cv.height = H * dpr;
+  cv.style.width = W + "px"; cv.style.height = H + "px";
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+  SCALE = Math.min(W / (GRID_W * TILE), H / (GRID_H * TILE));
+}
+window.addEventListener("resize", resize);
+
+function worldToScreen(tx, ty) {
+  const ox = (W - GRID_W * TILE * SCALE) / 2;
+  const oy = (H - GRID_H * TILE * SCALE) / 2;
+  return [ox + tx * TILE * SCALE, oy + ty * TILE * SCALE];
+}
+
+function draw() {
+  ctx.fillStyle = "#0b0d12"; ctx.fillRect(0, 0, W, H);
+
+  // Floor tiles per zone
+  for (const [id, z] of Object.entries(ZONES)) {
+    const floor = sprites.floors[z.floor] || sprites.floors[0];
+    if (!floor) continue;
+    for (let ty = z.y; ty < z.y + z.h; ty++) {
+      for (let tx = z.x; tx < z.x + z.w; tx++) {
+        const [sx, sy] = worldToScreen(tx, ty);
+        ctx.drawImage(floor, sx, sy, TILE * SCALE, TILE * SCALE);
+      }
+    }
+  }
+
+  // Zone labels
+  ctx.fillStyle = "rgba(90,100,120,0.7)";
+  ctx.font = `${Math.round(10 * SCALE)}px JetBrains Mono, monospace`;
+  ctx.textAlign = "left";
+  for (const [id, z] of Object.entries(ZONES)) {
+    if (id === "corridor") continue;
+    const [sx, sy] = worldToScreen(z.x, z.y);
+    ctx.fillText(z.label, sx + 4, sy + 14 * SCALE);
+  }
+
+  // Furniture decor (desks, PCs, plants) scattered around edges
+  const decor = [
+    ["DESK", 3, 12], ["PC", 3, 11.2],
+    ["DESK", 33, 12], ["PC", 33, 11.2],
+    ["DESK", 3, 26], ["PC", 3, 25.2],
+    ["DESK", 33, 26], ["PC", 33, 25.2],
+    ["PLANT", 16, 4], ["PLANT_2", 16, 25],
+    ["CACTUS", 31, 4], ["CACTUS", 31, 25],
+    ["BOOKSHELF", 22, 2], ["BOOKSHELF", 26, 2],
+    ["CLOCK", 24, 2.2],
+    ["COFFEE", 24, 14], ["COFFEE", 24, 16],
+  ];
+  for (const [name, tx, ty] of decor) {
+    const img = sprites.furniture[name]; if (!img) continue;
+    const [sx, sy] = worldToScreen(tx, ty);
+    ctx.drawImage(img, sx, sy, TILE * SCALE, TILE * SCALE);
+  }
+
+  // Agents
+  const charW = TILE * SCALE * 1.2;
+  const charH = TILE * SCALE * 1.6;
+  for (const a of AGENTS) {
+    const [sx, sy] = worldToScreen(a.x, a.y);
+    const img = sprites.chars[a.char];
+    if (img) ctx.drawImage(img, sx - charW / 2 + TILE * SCALE / 2, sy - charH + TILE * SCALE, charW, charH);
+    // State dot
+    ctx.fillStyle = a.state === "thinking" ? "#ffb020" : a.state === "error" ? "#ff5c5c" : KIND_COLORS[a.kind];
+    ctx.beginPath(); ctx.arc(sx + TILE * SCALE / 2, sy + TILE * SCALE, 3 * SCALE, 0, Math.PI * 2); ctx.fill();
+    // Label
+    ctx.fillStyle = "rgba(230,232,238,0.75)";
+    ctx.font = `${Math.round(8 * SCALE)}px JetBrains Mono, monospace`;
+    ctx.textAlign = "center";
+    ctx.fillText(a.label, sx + TILE * SCALE / 2, sy + TILE * SCALE + 12 * SCALE);
+  }
+}
+
+// Idle wandering near desk
+function tick(dt) {
+  const now = performance.now();
+  for (const a of AGENTS) {
+    if (now - a.lastMoveAt > 1500 + Math.random() * 3000) {
+      const dx = (a.deskX - a.x) * 0.4 + (Math.random() - 0.5) * 0.8;
+      const dy = (a.deskY - a.y) * 0.4 + (Math.random() - 0.5) * 0.8;
+      a.vx = dx * 0.02; a.vy = dy * 0.02;
+      a.lastMoveAt = now;
+    }
+    a.x += a.vx; a.y += a.vy;
+    a.vx *= 0.92; a.vy *= 0.92;
+  }
+}
+
+// Thought bubbles (DOM overlay — easier text wrap than canvas)
+function renderBubbles() {
+  bubbles.innerHTML = "";
+  for (const a of AGENTS) {
+    if (!a.thought) continue;
+    const [sx, sy] = worldToScreen(a.x, a.y);
+    const el = document.createElement("div");
+    el.className = "bubble";
+    el.style.left = (sx + TILE * SCALE / 2) + "px";
+    el.style.top = sy + "px";
+    el.textContent = a.thought;
+    bubbles.appendChild(el);
+  }
+}
+
+// ── LIVE DATA ──────────────────────────────────────────────────────────────
+const ENDPOINTS = {
+  nba: "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
+  political: "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status",
+  islands: [
+    ["S10", "https://nomos42-nba-quant.hf.space/api/status"],
+    ["S11", "https://nomos42-nba-quant-2.hf.space/api/status"],
+    ["S12", "https://nomos42-nba-evo-3.hf.space/api/status"],
+    ["S13", "https://nomos42-nba-evo-4.hf.space/api/status"],
+    ["S14", "https://nomos42-nba-evo-5.hf.space/api/status"],
+    ["S15", "https://nomos42-nba-evo-6.hf.space/api/status"],
+    ["S16", "https://lbjlincoln26-nba-evo-s16.hf.space/api/status"],
+    ["S17", "https://lbjlincoln26-nba-evo-s17.hf.space/api/status"],
+  ],
+  councils: [
+    ["D1", "https://testforge42-nomos-dept-d1-research.hf.space/api/status"],
+    ["D2", "https://testforge42-nomos-dept-d2-engineering.hf.space/api/status"],
+    ["D3", "https://testforge42-nomos-dept-d3-evolution.hf.space/api/status"],
+    ["D4", "https://testforge42-nomos-dept-d4-product.hf.space/api/status"],
+    ["D5", "https://testforge42-nomos-dept-d5-business.hf.space/api/status"],
+    ["D6", "https://testforge42-nomos-dept-d6-evaluation.hf.space/api/status"],
+    ["D7", "https://testforge42-nomos-dept-d7-infra.hf.space/api/status"],
+    ["D8", "https://testforge42-nomos-dept-d8-finance.hf.space/api/status"],
+    ["D9", "https://testforge42-nomos-dept-d9-cross-repo.hf.space/api/status"],
+  ],
+};
+
+const feed = document.getElementById("feed");
+const MAX_FEED = 60;
+function logFeed(who, kind, action) {
+  const el = document.createElement("div");
+  el.className = "log";
+  const t = new Date().toISOString().slice(11, 19);
+  el.innerHTML = `<span class="t">${t}</span> <span class="who">${who}</span> <span class="act">${action}</span>`;
+  feed.prepend(el);
+  while (feed.childElementCount > MAX_FEED) feed.removeChild(feed.lastChild);
+}
+
+async function fetchJSON(url, timeoutMs = 4500) {
+  try {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), timeoutMs);
+    const r = await fetch(url, { signal: ctl.signal, mode: "cors" });
+    clearTimeout(t);
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
+}
+
+function setKPI(id, n, total) {
+  const el = document.getElementById(id);
+  const cls = n === 0 ? "v-err" : n < total ? "v-warn" : "v-ok";
+  el.className = cls;
+  el.textContent = `${n}/${total}`;
+}
+
+async function refresh() {
+  document.getElementById("hud-tick").textContent = "· fetching";
+  let nbaOK = 0, polOK = 0, evoOK = 0, depOK = 0;
+
+  // NBA TF
+  const nba = await fetchJSON(ENDPOINTS.nba);
+  if (nba) {
+    nbaOK = 12;
+    const traders = (nba.traders || nba.agents || []);
+    const lookup = Object.fromEntries(traders.map(t => [t.trader_id || t.id, t]));
+    for (const a of AGENTS.filter(x => x.kind === "nba")) {
+      const t = lookup[a.label] || lookup[a.id.replace(/^t\d+-/, "")];
+      if (t) {
+        a.state = t.status === "active" ? "thinking" : "idle";
+        const last = t.last_decision || t.last_reasoning || t.thought;
+        if (last) {
+          a.thought = String(last).slice(0, 120);
+          logFeed(a.label, a.kind, a.thought.slice(0, 48));
+        }
+      }
+    }
+  }
+  // Political TF
+  const pol = await fetchJSON(ENDPOINTS.political);
+  if (pol) {
+    polOK = 10;
+    const traders = (pol.traders || pol.agents || []);
+    const lookup = Object.fromEntries(traders.map(t => [t.trader_id || t.id, t]));
+    for (const a of AGENTS.filter(x => x.kind === "political")) {
+      const t = lookup[a.label] || lookup[`p-${a.label}`];
+      if (t) {
+        a.state = t.status === "active" ? "thinking" : "idle";
+        const last = t.last_decision || t.last_reasoning || t.thought;
+        if (last) { a.thought = String(last).slice(0, 120); logFeed(`pol·${a.label}`, a.kind, a.thought.slice(0, 48)); }
+      }
+    }
+  }
+  // Islands
+  const isles = await Promise.all(ENDPOINTS.islands.map(([lbl, u]) => fetchJSON(u).then(d => [lbl, d])));
+  for (const [lbl, data] of isles) {
+    const a = AGENTS.find(x => x.kind === "island" && x.label === lbl);
+    if (!a) continue;
+    if (data) {
+      evoOK++;
+      a.state = "thinking";
+      const gen = data.generation ?? data.gen ?? "?";
+      const brier = data.best_brier ?? data.brier ?? "?";
+      a.thought = `gen ${gen} · brier ${typeof brier === "number" ? brier.toFixed(5) : brier}`;
+    } else {
+      a.state = "error"; a.thought = "offline";
+    }
+  }
+  // Councils
+  const deps = await Promise.all(ENDPOINTS.councils.map(([lbl, u]) => fetchJSON(u).then(d => [lbl, d])));
+  for (const [lbl, data] of deps) {
+    const a = AGENTS.find(x => x.kind === "council" && x.label.startsWith(lbl));
+    if (!a) continue;
+    if (data) {
+      depOK++;
+      a.state = "thinking";
+      a.thought = (data.last_proposal || data.mission || data.dept_name || "scanning").slice(0, 120);
+      logFeed(a.label, "council", a.thought.slice(0, 48));
+    } else {
+      a.state = "error"; a.thought = "offline";
+    }
+  }
+
+  setKPI("k-nba", nbaOK, 12);
+  setKPI("k-pol", polOK, 10);
+  setKPI("k-evo", evoOK, 8);
+  setKPI("k-dep", depOK, 9);
+  document.getElementById("k-last").textContent = new Date().toISOString().slice(11, 19);
+  document.getElementById("hud-tick").textContent = "· live";
+}
+
+// ── BOOT ────────────────────────────────────────────────────────────────────
+(async () => {
+  resize();
+  try { await loadAll(); } catch (e) { console.error("asset load failed", e); }
+  document.getElementById("loader").remove();
+  let last = performance.now();
+  function loop(now) {
+    tick(now - last); last = now;
+    draw(); renderBubbles();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  refresh();
+  setInterval(refresh, 30_000);
+})();
+</script>
+</body>
+</html>
