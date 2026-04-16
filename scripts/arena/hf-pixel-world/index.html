@@ -3,7 +3,7 @@
 <head><script>window.huggingface={variables:{"SPACE_CREATOR_USER_ID":"698653c38d72821326e9e4fe"}};</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nomos42 Pixel World — v0.7 · Bloomberg Terminal</title>
+<title>Nomos42 Pixel World — v0.8 · Bloomberg Terminal</title>
 <style>
   :root {
     --bg:#0b0d12; --bg-2:#14171f; --bg-3:#1a1f2a; --line:#1e2330;
@@ -121,7 +121,7 @@
 <div id="root">
   <div id="stage">
     <div id="hud-top">
-      <div><span class="brand">NOMOS42 · PIXEL WORLD</span> · v0.7 · PixiJS · live · bloomberg-term</div>
+      <div><span class="brand">NOMOS42 · PIXEL WORLD</span> · v0.8 · PixiJS · live · bloomberg-term</div>
       <div id="room-tabs">
         <button data-room="world" class="active">WORLD</button>
         <button data-room="nba">NBA 🏀</button>
@@ -154,7 +154,11 @@
       <div id="panel-cats" style="margin-top:2px;"></div>
     </div>
     <div class="panel">
-      <h3>Evolution · 8 islands</h3>
+      <h3><span>Top Traders</span><span class="c" id="panel-lb-count">—</span></h3>
+      <div id="panel-lb"></div>
+    </div>
+    <div class="panel">
+      <h3><span>Evolution</span><span class="c" id="panel-evo-count">—</span></h3>
       <div id="panel-evo"></div>
     </div>
     <div class="panel" id="panel-trades">
@@ -167,7 +171,7 @@
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-// NOMOS42 PIXEL WORLD v0.7 — Bloomberg terminal strip + pulsing pacts + rooms
+// NOMOS42 PIXEL WORLD v0.8 — Bloomberg terminal strip + pulsing pacts + rooms
 // ═══════════════════════════════════════════════════════════════════════════
 (async () => {
 const TILE = 28;
@@ -212,6 +216,19 @@ const ISLANDS = [
   ["S15","https://nomos42-nba-evo-6.hf.space/api/status"],
   ["S16","https://lbjlincoln26-nba-evo-s16.hf.space/api/status"],
   ["S17","https://lbjlincoln26-nba-evo-s17.hf.space/api/status"],
+  ["S18","https://testforge42-nba-evo-s18.hf.space/api/status"],
+  ["S19","https://testforge42-nba-evo-s19.hf.space/api/status"],
+  ["S20","https://lbjlincoln26-nba-evo-s20.hf.space/api/status"],
+  ["S21","https://lbjlincoln26-nba-evo-s21.hf.space/api/status"],
+  ["S22","https://testforge42-nba-evo-s22.hf.space/api/status"],
+  ["P1","https://nomos42-political-alpha.hf.space/api/status"],
+  ["P2","https://nomos42-political-alpha-2.hf.space/api/status"],
+  ["P3","https://lbjlincoln-political-alpha-3.hf.space/api/status"],
+  ["P4","https://lbjlincoln-political-alpha-4.hf.space/api/status"],
+  ["P5","https://lbjlincoln-political-alpha-5.hf.space/api/status"],
+  ["P6","https://lbjlincoln-political-alpha-6.hf.space/api/status"],
+  ["P7","https://lbjlincoln-political-alpha-7.hf.space/api/status"],
+  ["P8","https://lbjlincoln-political-alpha-8.hf.space/api/status"],
 ];
 const COUNCIL_DEPTS = [
   ["D1","Research","scan → propose → measure"],
@@ -734,13 +751,37 @@ function renderCategories(cats) {
 function renderEvolution() {
   const el = document.getElementById("panel-evo"); el.innerHTML = "";
   const islands = AGENTS.filter(a => a.kind === "island" && a.data).sort((a,b) => (a.data.best_brier||1) - (b.data.best_brier||1));
+  const cEl = document.getElementById("panel-evo-count");
+  if (cEl) cEl.textContent = `${islands.length} / ${AGENTS.filter(a => a.kind==="island").length}`;
   if (!islands.length) { el.innerHTML = `<span style="color:var(--ink-3); font-size:10px;">waiting for islands…</span>`; return; }
-  for (const a of islands) {
+  for (const [rank, a] of islands.entries()) {
     const d = a.data;
     const b = (d.best_brier || 0).toFixed(5);
     const deltaCls = d.stagnation > 50 ? "down" : "up";
     const row = document.createElement("div"); row.className = "row";
-    row.innerHTML = `<span class="l">${a.label} · ${(d.best_model_type||"?").slice(0,10)}</span><span class="v ${deltaCls}">${b} · g${d.generation||0}</span>`;
+    const medal = rank === 0 ? "★ " : rank < 3 ? "· " : "";
+    row.innerHTML = `<span class="l">${medal}${a.label} · ${(d.best_model_type||"?").slice(0,10)}</span><span class="v ${deltaCls}">${b} · g${d.generation||0}</span>`;
+    el.appendChild(row);
+  }
+}
+
+function renderLeaderboard() {
+  const el = document.getElementById("panel-lb"); if (!el) return;
+  el.innerHTML = "";
+  const traders = AGENTS.filter(a => (a.kind === "nba" || a.kind === "political") && a.data && typeof a.data.bankroll === "number");
+  traders.sort((a,b) => (b.data.bankroll||0) - (a.data.bankroll||0));
+  const cEl = document.getElementById("panel-lb-count");
+  if (cEl) cEl.textContent = `${traders.length} live`;
+  if (!traders.length) { el.innerHTML = `<span style="color:var(--ink-3); font-size:10px;">waiting for trading floors…</span>`; return; }
+  for (const [rank, a] of traders.slice(0, 14).entries()) {
+    const d = a.data;
+    const br = (d.bankroll || 0);
+    const roi = br - 100;
+    const roiCls = roi >= 0 ? "up" : "down";
+    const kindCls = a.kind === "nba" ? "a nba" : "a political";
+    const medal = rank === 0 ? "🏆" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : `#${rank+1}`;
+    const row = document.createElement("div"); row.className = "row";
+    row.innerHTML = `<span class="l"><span style="display:inline-block;width:24px;color:var(--ink-3);font-size:9.5px;">${medal}</span><span class="${kindCls}">${a.label}</span></span><span class="v ${roiCls}">$${br.toFixed(0)} · ${roi>=0?"+":""}${roi.toFixed(1)}%</span>`;
     el.appendChild(row);
   }
 }
@@ -861,6 +902,7 @@ async function refresh() {
     a.bubble = buildIslandBubble(a);
   }
   renderEvolution();
+  renderLeaderboard();
 
   // Councils — baked
   for (const a of AGENTS.filter(x => x.kind === "council")) a.bubble = buildCouncilBubble(a);
@@ -912,7 +954,7 @@ setInterval(() => {
   const el = document.getElementById("bt-utc");
   if (el) el.textContent = new Date().toISOString().slice(11,19);
 }, 1000);
-logTrade("council", "pixel-world", "v0.7 boot · 38 agents · bloomberg-term · pulsing pacts");
+logTrade("council", "pixel-world", "v0.8 boot · 51 agents · 21 islands · full leaderboard · bloomberg-term · pulsing pacts");
 
 })();
 </script>
