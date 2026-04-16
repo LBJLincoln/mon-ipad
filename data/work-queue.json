@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-16T12:00:00Z",
+  "updated_at": "2026-04-16T18:30:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -109,7 +109,7 @@
         "RESUME BUG: prev_day_ck now restored from saved state on Space restart",
         "PARITY GAP: Political write_axelrod_log now includes wins_today field"
       ],
-      "commit_message": "fix(tf): Axelrod verify+tune — resume CK restore + Political wins_today parity\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+      "commit_message": "fix(tf): Axelrod verify+tune — resume CK restore + Political wins_today parity"
     },
     {
       "id": "tf-axelrod-verify-tune-2",
@@ -118,26 +118,9 @@
       "completed_at": "2026-04-16T06:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod verify+tune fire 2 — Mech B CHALLENGE[D] mid-tier block (both TF apps)",
-      "scope": "Found spec gap: Mech B requires CHALLENGE[D] block for mid-tier agents. Was not coded in either app. Implemented parity patch to both NBA + Political.",
-      "files": [
-        "scripts/arena/hf-llm-trading-floor/app.py",
-        "scripts/arena/hf-political-trading-floor/app.py",
-        "data/work-queue.json"
-      ],
       "do_not_push_hf_space_yet": true,
-      "gap_found": "Mech B spec: Middle agents receive CHALLENGE[D] block — was documented but not coded in either file.",
-      "new_functions": [
-        "assign_challenge_tiers(state, sacrificial_map, top_n=3) -> Dict[str, int]",
-        "build_challenge_block(tid, rank, n_agents) -> str"
-      ],
-      "new_globals": [
-        "_challenge_assignments: Dict[str, int] — mid-tier tid -> leaderboard rank"
-      ],
-      "tier_logic": "Top-3 by bankroll: no block. Sacrificed (bottom-3 by trailing delta): archetype forced. Mid-tier (all others): CHALLENGE[D] injected via elif — mutually exclusive.",
-      "domain_parity": "NBA: decision/category/bet language. Political: trade/sector language. Functionally identical.",
-      "py_compile": "PASS both apps",
-      "push_incident": "IMPORTANT: Initial push commit 8076f3c used placeholder content strings instead of real file content. Python files (app.py) still require correct content push — see /tmp/nba_content.txt and /tmp/pol_content.txt on cloud trigger container. Content verified: md5(NBA)=8d61446d6289b82ef23f4cb86297f245, md5(POL)=d7a0a50083d8de3b8ed9e076f031774b.",
-      "commit_message": "feat(tf): Axelrod Mech B CHALLENGE[D] mid-tier block — both NBA+Political TF apps\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+      "gap_found": "Mech B spec: Middle agents receive CHALLENGE[D] block — was documented but not coded.",
+      "py_compile": "PASS both apps"
     },
     {
       "id": "tf-axelrod-verify-tune-3",
@@ -147,18 +130,7 @@
       "commit_hash": "0c7696fd5f28057dc5210d7d5a7d9f8c1b7a12b3",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod verify+tune fire 3 — push Python files + end-to-end dry-run validation",
-      "scope": "Pushed correct Python app.py content for both NBA and Political TF (replacing placeholder strings from bad push 8076f3c). Ran 5-check dry-run validation of Mech B three-tier logic.",
-      "depends_on": "tf-axelrod-verify-tune-2",
-      "do_not_push_hf_space_yet": true,
-      "checks_passed": [
-        "CHECK 1 PASS: _challenge_assignments non-empty after day 1",
-        "CHECK 2 PASS: no overlap between _sacrificial_assignments and _challenge_assignments",
-        "CHECK 3 PASS: top-3 agents not in either tier map",
-        "CHECK 4 PASS: all 12 agents covered exactly once (mutual exclusion)",
-        "CHECK 5 PASS: build_challenge_block contains CHALLENGE_RESPONSE: directive"
-      ],
-      "recovery_note": "Used git merge + local repo push via proxy (127.0.0.1:22602) instead of MCP create_or_update_file — files too large (111K/90K chars) for inline MCP push. Local mon-ipad repo was at /home/user/mon-ipad.",
-      "commit_message": "feat(tf): Axelrod Mech B CHALLENGE[D] mid-tier block — both NBA+Political TF apps\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+      "recovery_note": "Used git merge + local repo push via proxy (127.0.0.1:22602) instead of MCP create_or_update_file — files too large (111K/90K chars) for inline MCP push."
     },
     {
       "id": "tf-axelrod-verify-tune-4",
@@ -167,24 +139,12 @@
       "completed_at": "2026-04-16T12:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod verify+tune fire 4 — Mech A CK spec completeness + Political trailing-delta parity fix",
-      "depends_on": "tf-axelrod-verify-tune-3",
       "do_not_push_hf_space_yet": true,
       "bugs_fixed": [
-        "PARITY BUG: Political compute_trailing_delta had default bankroll 100000.0 instead of 100.0 — sacrificial tier rank was subtly wrong when bankroll_before key absent",
-        "SPEC GAP: Mechanism A CK block lacked 'stake' and 'edge_rationale' fields from AXELROD-2026 spec {trader_id, game/event, pick, stake, edge_rationale}. Both NBA and Political CK peer-bet lines now include stake=$X.X and rationale/thesis snippet (\u226455 chars)"
+        "PARITY BUG: Political compute_trailing_delta had default bankroll 100000.0 instead of 100.0",
+        "SPEC GAP: Mechanism A CK block lacked stake and edge_rationale fields. Both apps now show stake=$X.X and rationale snippet."
       ],
-      "files": [
-        "scripts/arena/hf-llm-trading-floor/app.py",
-        "scripts/arena/hf-political-trading-floor/app.py",
-        "data/work-queue.json"
-      ],
-      "checks_passed": [
-        "py_compile PASS: both apps",
-        "Political compute_trailing_delta default corrected 100000.0\u2192100.0",
-        "NBA CK block: stake=${stake:.1f} + rationale[:55] appended per alloc line",
-        "Political CK block: stake=${stake:.1f} + thesis/rationale[:55] appended per alloc line (domain-parity)"
-      ],
-      "commit_message": "fix(tf): Axelrod verify+tune 4 — CK stake+rationale spec + Political trailing-delta default\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+      "py_compile": "PASS both apps"
     },
     {
       "id": "tf-axelrod-verify-tune-5",
@@ -196,27 +156,44 @@
       "depends_on": "tf-axelrod-verify-tune-4",
       "do_not_push_hf_space_yet": true,
       "audit_results": {
-        "mech_a": "FULLY CORRECT — build_common_knowledge_block() leaderboard, peer bets (stake+rationale), DMAD mandate, CK injected as prev_day_ck in run_experiment, restored on resume from last_ck_block",
-        "mech_b_sacrificial": "CORRECT — assign_sacrificial_archetypes() uses trailing-7-day bankroll delta, bottom-3, archetype from unused pool. GAP FIXED this fire: was per-agent, now society-wide",
-        "mech_b_challenge": "CORRECT — assign_challenge_tiers() + build_challenge_block() injected for mid-tier (neither top-3 bankroll nor sacrificed). Mutual exclusion verified.",
-        "mech_c": "CORRECT — write_axelrod_log() writes day-N.jsonl with trader_id, rank, bankroll, archetype_assigned, was_sacrificed, wins_today, peer_consensus_distance (L1/2 proxy), day_strategy_prefix. Both apps have parity.",
-        "resume_ck": "CORRECT — prev_day_ck = saved.get('last_ck_block') on Space restart. Both apps.",
-        "parity": "CORRECT — 15 traders in both NBA and Political TRADERS dicts. Same functions, domain-appropriate text (bet/game vs trade/sector)."
+        "mech_a": "FULLY CORRECT — build_common_knowledge_block() leaderboard+peer bets (stake+rationale)+DMAD mandate+CK injected+restored on resume",
+        "mech_b_sacrificial": "CORRECT — assign_sacrificial_archetypes() trailing-7-day delta. GAP FIXED this fire (was per-agent, now society-wide in patched content)",
+        "mech_b_challenge": "CORRECT — assign_challenge_tiers() + build_challenge_block() for mid-tier. Mutual exclusion verified.",
+        "mech_c": "CORRECT — write_axelrod_log() day-N.jsonl with all required fields. Parity NBA↔Political.",
+        "resume_ck": "CORRECT — prev_day_ck = saved.get('last_ck_block') on Space restart.",
+        "parity": "CORRECT — 15 traders in both NBA and Political TRADERS dicts."
       },
-      "spec_gap_found": "Mech B _used_archetypes was per-agent (tid \u2192 set). Spec requires 'NEVER USED in prior 7 days by anyone'. Fixed: new global _society_archetypes_by_day tracks society-wide used archetypes with trailing 7-day window cutoff. Per-agent tracking kept for reference.",
-      "new_globals": [
-        "_society_archetypes_by_day: Dict[str, set] = defaultdict(set)  # day_date \u2192 archetypes used society-wide"
+      "spec_gap_found": "Mech B _used_archetypes was per-agent. Spec: 'NEVER USED in prior 7 days by anyone'. Fixed via _society_archetypes_by_day global with trailing 7-day window.",
+      "axelrod_log_sync": "Added /api/axelrod-log sync step to both NBA and Political jobs in trading-floor.yml. Runs every 4h, commits day-N.jsonl to data/arena/axelrod-log/ and data/arena/axelrod-log-political/.",
+      "push_incident": "CRITICAL: NBA app.py at commits 4da0c93 and 2c96dec9 contain PLACEHOLDER content instead of real Python. HF Space is UNAFFECTED (runs its own snapshot, do_not_push_hf_space_yet). Repo file is broken. Fire 6 MUST restore correct content via local git proxy. md5(NBA patched)=4f76ec86ce335e1051e4b0cd1de17b3f, md5(POL patched)=b98acc72f84a138cf2af468c007ca858. Patched files at /tmp/nba_app_fire5.py and /tmp/pol_app_fire5.py on cloud trigger container.",
+      "files_correctly_pushed": [
+        ".github/workflows/trading-floor.yml (commit 5545e247)",
+        "data/work-queue.json (commit f338c630)"
       ],
-      "logic_change": "assign_sacrificial_archetypes now computes cutoff = day_date - 7 days, collects society_used = union of _society_archetypes_by_day[d] for d >= cutoff, filters AXELROD_ARCHETYPES against society_used. Falls back to full pool if all 20 exhausted. Records assignments into _society_archetypes_by_day[day_date] after each call.",
-      "axelrod_log_sync": "Added axelrod-log-sync step to .github/workflows/trading-floor.yml — calls /api/axelrod-log on both NBA and Political HF Spaces every 4h, commits pulled JSONL files to data/arena/axelrod-log/ (NBA) and data/arena/axelrod-log-political/ (Political) in mon-ipad. This makes the Mech C paper dataset version-controlled.",
-      "files": [
-        "scripts/arena/hf-llm-trading-floor/app.py",
-        "scripts/arena/hf-political-trading-floor/app.py",
-        "data/work-queue.json",
-        ".github/workflows/trading-floor.yml"
+      "files_needing_git_proxy": [
+        "scripts/arena/hf-llm-trading-floor/app.py (NBA, 121926 chars, too large for MCP)",
+        "scripts/arena/hf-political-trading-floor/app.py (POL, 98216 chars, too large for MCP)"
       ],
-      "py_compile": "PASS both apps",
-      "commit_message": "fix(tf): Axelrod verify+tune 5 — society-wide archetype dedup (Mech B) + axelrod-log GH sync\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+      "py_compile": "PASS both patched files"
+    },
+    {
+      "id": "tf-axelrod-verify-tune-6",
+      "priority": 13,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod verify+tune fire 6 — restore NBA app.py + push Political app.py (git proxy required)",
+      "depends_on": "tf-axelrod-verify-tune-5",
+      "scope": "NBA app.py at HEAD is broken (placeholder content from fire 5 MCP push failures). Must use git proxy (127.0.0.1:22602 or local mon-ipad clone) to push correct patched content for BOTH NBA and Political.",
+      "action_required": "git clone or pull mon-ipad locally, copy /tmp/nba_app_fire5.py -> scripts/arena/hf-llm-trading-floor/app.py and /tmp/pol_app_fire5.py -> scripts/arena/hf-political-trading-floor/app.py, then git commit + push.",
+      "verification": [
+        "md5(NBA) = 4f76ec86ce335e1051e4b0cd1de17b3f",
+        "md5(POL) = b98acc72f84a138cf2af468c007ca858",
+        "python -m py_compile PASS both files",
+        "_society_archetypes_by_day in both files",
+        "_society_archetypes_by_day.clear() in run_experiment of both files"
+      ],
+      "do_not_push_hf_space_yet": true,
+      "commit_message": "fix(tf): Axelrod Mech B society-wide archetype dedup — both NBA+Political TF apps (fire 5 patch)\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
     }
   ],
   "recovery_protocol": {
