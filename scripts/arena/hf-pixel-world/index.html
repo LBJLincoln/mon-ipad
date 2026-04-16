@@ -3,7 +3,7 @@
 <head><script>window.huggingface={variables:{"SPACE_CREATOR_USER_ID":"698653c38d72821326e9e4fe"}};</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nomos42 Pixel World — v2.0 · Bloomberg Terminal</title>
+<title>Nomos42 Pixel World — v2.3 · Bloomberg Terminal</title>
 <style>
   :root {
     --bg:#0b0d12; --bg-2:#14171f; --bg-3:#1a1f2a; --line:#1e2330;
@@ -160,7 +160,7 @@
   <div id="stage">
     <div id="hud-top">
       <div>
-        <span class="brand">NOMOS42 · PIXEL WORLD</span> · v2.0 · PixiJS · live · bloomberg-term
+        <span class="brand">NOMOS42 · PIXEL WORLD</span> · v2.3 · PixiJS · live · bloomberg-term
         <span class="ext-btns">
           <a href="https://lbjlincoln26-nba-llm-trading-floor.hf.space/paper" target="_blank" rel="noopener" title="Whitepaper PDF">📄 PAPER</a>
           <a href="https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status" target="_blank" rel="noopener" title="NBA TF live status JSON">📊 LIVE STATUS</a>
@@ -181,11 +181,11 @@
       <div class="tscroll"><div class="tstream" id="bt-stream">awaiting day-decisions…</div></div>
     </div>
     <div id="boot-log">
-      <div class="bl-head">◉ NOMOS42 PIXEL WORLD v2.2 — BOOT</div>
+      <div class="bl-head">◉ NOMOS42 PIXEL WORLD v2.3 — BOOT</div>
       <div class="bl-line">[ok] PixiJS 8 loaded · 56×32 grid · 52 real agents</div>
-      <div class="bl-line">[ok] palette=30 letter-badges=12 halos=axelrod</div>
-      <div class="bl-line">[ok] ticker=/api/day-decisions · minimap=live · a*-home=on</div>
-      <div class="bl-line">[ok] paper-link=/paper (FastAPI HTMLResponse) · status=/api/status</div>
+      <div class="bl-line">[ok] palette=30 · badges=12 · breathing=on · emotes=state</div>
+      <div class="bl-line">[ok] particles=ambient · nameplates=perf-gradient · halos=axelrod</div>
+      <div class="bl-line">[ok] ticker=/api/day-decisions · minimap=live · paper=/paper</div>
     </div>
     <div id="scanlines"></div>
     <div id="vignette"></div>
@@ -227,8 +227,8 @@
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-// NOMOS42 PIXEL WORLD v2.2 — distinct trader sprites + halos + live-bet ticker
-//                         + paper/status buttons + mini-map + home-island A*
+// NOMOS42 PIXEL WORLD v2.3 — breathing + emotes + perf-nameplates + particles
+//                         + live-bet ticker + mini-map + home-island A*
 // ═══════════════════════════════════════════════════════════════════════════
 (async () => {
 const TILE = 20;
@@ -408,11 +408,42 @@ app.stage.addChild(world);
 
 const floorLayer = new PIXI.Container();
 const decorLayer = new PIXI.Container();
+const particleLayer = new PIXI.Container();
 const pactLayer  = new PIXI.Graphics();
 const agentLayer = new PIXI.Container();
 agentLayer.sortableChildren = true;
 const labelLayer = new PIXI.Container();
-world.addChild(floorLayer, decorLayer, pactLayer, agentLayer, labelLayer);
+world.addChild(floorLayer, decorLayer, particleLayer, pactLayer, agentLayer, labelLayer);
+
+// v2.3: Ambient floating particles — data-flow visualization between zones
+const PARTICLES = [];
+const PARTICLE_COUNT = 35;
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  const p = new PIXI.Graphics();
+  const size = 1.5 + Math.random() * 2;
+  const colors = [0x00d9a7, 0x8be9fd, 0xff79c6, 0xffd700, 0x50fa7b, 0xbd93f9];
+  const col = colors[Math.floor(Math.random() * colors.length)];
+  p.circle(0, 0, size).fill({ color: col, alpha: 0.4 + Math.random() * 0.3 });
+  p.x = Math.random() * WORLD_W;
+  p.y = Math.random() * WORLD_H;
+  p._vx = (Math.random() - 0.5) * 0.3;
+  p._vy = (Math.random() - 0.5) * 0.2;
+  p._drift = Math.random() * Math.PI * 2;
+  p._speed = 0.3 + Math.random() * 0.4;
+  particleLayer.addChild(p);
+  PARTICLES.push(p);
+}
+
+// v2.3: Bet-placement pulse rings — expand from agent on new bet
+const PULSE_RINGS = [];
+function spawnPulseRing(x, y, color) {
+  const ring = new PIXI.Graphics();
+  ring._cx = x; ring._cy = y; ring._r = 5; ring._maxR = 40;
+  ring._color = color; ring._alpha = 0.7;
+  particleLayer.addChild(ring);
+  PULSE_RINGS.push(ring);
+}
+
 
 // Room camera — target scale + center computed from active room
 let activeRoom = "world";
@@ -487,12 +518,33 @@ for (const [zoneId, z] of Object.entries(ZONES)) {
       floorLayer.addChild(spr);
     }
   }
+  // v2.3: Subtle checkerboard overlay on zone floors
+  const chk = new PIXI.Graphics();
+  for (let ty=z.y; ty<z.y+z.h; ty++) {
+    for (let tx=z.x; tx<z.x+z.w; tx++) {
+      if ((tx + ty) % 2 === 0) {
+        chk.rect(tx*TILE, ty*TILE, TILE, TILE).fill({ color: 0xffffff, alpha: 0.025 });
+      }
+    }
+  }
+  floorLayer.addChild(chk);
   const tint = new PIXI.Graphics();
   tint.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).fill({ color: KIND_COLORS[zoneIdToKind(zoneId)], alpha: 0.10 });
   floorLayer.addChild(tint);
+  // v2.3: Double-stroke zone border with glow
   const border = new PIXI.Graphics();
-  border.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).stroke({ width:2, color: KIND_COLORS[zoneIdToKind(zoneId)], alpha:0.6 });
+  border.rect(z.x*TILE-1, z.y*TILE-1, z.w*TILE+2, z.h*TILE+2).stroke({ width:3, color: KIND_COLORS[zoneIdToKind(zoneId)], alpha:0.18 });
+  border.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).stroke({ width:2, color: KIND_COLORS[zoneIdToKind(zoneId)], alpha:0.65 });
   floorLayer.addChild(border);
+  // v2.3: Corner brackets (pixel art flourish)
+  const bk = new PIXI.Graphics();
+  const bkLen = 12, bkX = z.x*TILE, bkY = z.y*TILE, bkW = z.w*TILE, bkH = z.h*TILE;
+  const bkCol = KIND_COLORS[zoneIdToKind(zoneId)];
+  for (const [cx,cy,dx,dy] of [[bkX,bkY,1,1],[bkX+bkW,bkY,-1,1],[bkX,bkY+bkH,1,-1],[bkX+bkW,bkY+bkH,-1,-1]]) {
+    bk.moveTo(cx, cy+dy*bkLen).lineTo(cx, cy).lineTo(cx+dx*bkLen, cy);
+  }
+  bk.stroke({ width:2, color:bkCol, alpha:0.8 });
+  floorLayer.addChild(bk);
   const txt = new PIXI.Text({ text: z.label, style:{
     fontFamily:"JetBrains Mono, monospace", fontSize:14, fontWeight:"700",
     fill: KIND_COLORS[zoneIdToKind(zoneId)], letterSpacing:2,
@@ -500,6 +552,20 @@ for (const [zoneId, z] of Object.entries(ZONES)) {
   txt.x = z.x*TILE + 8; txt.y = z.y*TILE + 6; txt.alpha = 0.75;
   labelLayer.addChild(txt);
 }
+
+// v2.3: Data-flow cables between zones (corridor decorations)
+const cables = new PIXI.Graphics();
+cables.moveTo(22*TILE, 13*TILE).lineTo(28*TILE, 13*TILE).lineTo(34*TILE, 13*TILE);
+cables.moveTo(28*TILE, 13*TILE).lineTo(28*TILE, 15*TILE);
+cables.moveTo(14*TILE, 13*TILE).lineTo(14*TILE, 15*TILE);
+cables.moveTo(42*TILE, 13*TILE).lineTo(42*TILE, 15*TILE);
+cables.moveTo(28*TILE, 22*TILE).lineTo(28*TILE, 24*TILE);
+cables.stroke({ width:1, color:0x3a2600, alpha:0.5 });
+const cableDots = new PIXI.Graphics();
+for (const [cx,cy] of [[22,13],[28,13],[34,13],[28,15],[14,15],[42,15],[28,22],[28,24]]) {
+  cableDots.circle(cx*TILE, cy*TILE, 3).fill({ color:0xffa500, alpha:0.6 });
+}
+decorLayer.addChild(cables, cableDots);
 
 // Furniture: small + tasteful (TILE*0.9, canonical 16px-ish relative)
 const FURN_SIZE = Math.round(TILE * 0.9);
@@ -594,11 +660,11 @@ function makeAgentContainer(a) {
     }
   }
 
-  // Kind glyph above head (emoji badge — always on, small)
+  // State emote above head — changes with agent state (replaces static kind glyph)
   const glyph = new PIXI.Text({ text: KIND_GLYPHS[a.kind], style:{ fontSize:14 }});
   glyph.anchor.set(0.5, 1);
   glyph.y = -CHAR_H*1.02;
-  c.addChild(glyph);
+  c.addChild(glyph); c._glyph = glyph;
 
   // Speech bubble — ALWAYS ON. Content = current action + strategy.
   const bubble = new PIXI.Container();
@@ -708,6 +774,20 @@ function tickRender(ms) {
     if (activeRoom !== "world" && a.zone !== activeRoom) { a._cnt.alpha = 0.22; }
     else { a._cnt.alpha = 1.0; }
 
+    // v2.3: Breathing idle animation — subtle Y-scale oscillation
+    if (!a._isInfra && a._cnt._spr) {
+      const breathe = 1.0 + Math.sin(ms / 800 + a.phase * 3) * 0.025;
+      a._cnt._spr.scale.y = breathe;
+    }
+
+    // v2.3: State emote — dynamic icon above head based on agent state
+    if (a._cnt._glyph && !a._isInfra) {
+      const EMOTES = { profit:"💰", loss:"📉", error:"⚠️", thinking:"🤔", idle:"💤" };
+      const em = EMOTES[a.state] || EMOTES.idle;
+      if (a._cnt._glyph.text !== em) a._cnt._glyph.text = em;
+      a._cnt._glyph.y = -CHAR_H*1.02 + Math.sin(ms / 600 + a.idx) * 2;
+    }
+
     // Speech bubble — always visible, draw background to fit text
     const bubble = a._cnt._bubble;
     if (bubble && a.bubble) {
@@ -724,11 +804,18 @@ function tickRender(ms) {
       bubble.visible = false;
     }
 
-    // Nameplate (always visible — research shows they always show names)
+    // v2.3: Performance-gradient nameplate — border color shifts green→red with P&L
     const tw = a._cnt._plate._text.width + 14;
+    let plateColor = KIND_COLORS[a.kind];
+    let plateBorderW = 1;
+    if (a.data && typeof a.data.bankroll === "number" && !a._isInfra) {
+      const roi = a.data.bankroll - 100;
+      plateColor = roi > 10 ? 0x00d9a7 : roi > 0 ? 0x50fa7b : roi > -10 ? 0xffb020 : 0xff5c5c;
+      plateBorderW = roi > 20 || roi < -20 ? 2 : 1;
+    }
     a._cnt._plate._bg.clear()
       .rect(-tw/2, -8, tw, 16).fill({ color:0x0b0d12, alpha:0.92 })
-      .rect(-tw/2, -8, tw, 16).stroke({ width:1, color:KIND_COLORS[a.kind], alpha:0.85 });
+      .rect(-tw/2, -8, tw, 16).stroke({ width:plateBorderW, color:plateColor, alpha:0.85 });
 
     // Strategy badge
     if (a.strategy) {
@@ -798,34 +885,51 @@ function tickRender(ms) {
   pactLayer.stroke({ width:1.5, color:0x50fa7b, alpha:0.55 + 0.35 * _pactPulse });
 }
 
-app.ticker.add(() => { tickMotion(performance.now()); tickRender(performance.now()); });
+app.ticker.add(() => {
+  const now = performance.now();
+  tickMotion(now); tickRender(now);
+  // v2.3: Animate ambient particles
+  for (const p of PARTICLES) {
+    p.x += p._vx + Math.sin(now / 2000 + p._drift) * 0.15 * p._speed;
+    p.y += p._vy + Math.cos(now / 2500 + p._drift) * 0.1 * p._speed;
+    if (p.x < 0) p.x = WORLD_W; if (p.x > WORLD_W) p.x = 0;
+    if (p.y < 0) p.y = WORLD_H; if (p.y > WORLD_H) p.y = 0;
+    p.alpha = 0.25 + 0.25 * Math.sin(now / 1200 + p._drift);
+  }
+  // v2.3: Animate pulse rings
+  for (let i = PULSE_RINGS.length - 1; i >= 0; i--) {
+    const ring = PULSE_RINGS[i];
+    ring._r += 1.2; ring._alpha -= 0.018;
+    ring.clear().circle(ring._cx, ring._cy, ring._r)
+      .stroke({ width: 2, color: ring._color, alpha: Math.max(0, ring._alpha) });
+    if (ring._alpha <= 0 || ring._r > ring._maxR) {
+      particleLayer.removeChild(ring); ring.destroy();
+      PULSE_RINGS.splice(i, 1);
+    }
+  }
+});
 
 // ── BUBBLE TEXT BUILDERS ────────────────────────────────────────────────────
 function buildTraderBubble(a) {
   const d = a.data;
-  const stratShort = a.strategy ? `[${a.strategy.slice(0,12)}]` : "";
-  if (!d) return `${stratShort}\nwaiting…`;
+  const stratShort = a.strategy ? `[${a.strategy.slice(0,10)}]` : "";
+  if (!d) return `${a.label}\nwaiting…`;
   const br = (d.bankroll || 0).toFixed(0);
   const roi = (d.bankroll || 100) - 100;
-  if (d.llm_ok < d.llm_calls) return `${stratShort}\n⚠ LLM err · $${br}`;
-  // Pull actual LLM reasoning from last day-decision
+  const roiTxt = roi >= 0 ? `+$${roi.toFixed(0)}` : `-$${(-roi).toFixed(0)}`;
+  if (d.llm_ok < d.llm_calls) return `${stratShort} ⚠ err\n$${br}`;
   const dd = a.dayDecision;
   if (dd && dd.day_strategy) {
-    // Strip DMAD prefixes (ARCHETYPE[], CHALLENGE_RESPONSE:) for readability
     let think = dd.day_strategy.replace(/^(ARCHETYPE\[[^\]]+\]:|CHALLENGE_RESPONSE:)\s*/, "").trim();
-    if (think.length > 95) think = think.slice(0, 92) + "…";
+    if (think.length > 60) think = think.slice(0, 57) + "…";
     const allocs = dd.allocations || [];
-    const top = allocs.length ? ` · ${allocs.length} bet${allocs.length>1?"s":""}` : " · pass";
-    const wl = `${d.wins||0}W·${d.losses||0}L`;
-    const roiTxt = roi >= 0 ? `+$${roi.toFixed(0)}` : `-$${(-roi).toFixed(0)}`;
-    return `${stratShort}\n"${think}"\n${wl}${top} · $${br} (${roiTxt})`;
+    const nBets = allocs.length ? `${allocs.length}bet` : "pass";
+    return `${stratShort} ${nBets}\n"${think}"\n$${br} (${roiTxt})`;
   }
-  const bets = d.total_bets || 0, wins = d.wins || 0, losses = d.losses || 0;
-  if (bets === 0) return `${stratShort}\nobserving…\n$${br}`;
-  const recent = a.recent ? `\n${a.recent}` : "";
-  const wl = `${wins}W·${losses}L`;
-  const roiTxt = roi >= 0 ? `+$${roi.toFixed(0)}` : `-$${(-roi).toFixed(0)}`;
-  return `${stratShort}\n${bets} bets · ${wl}${recent}\n$${br} (${roiTxt})`;
+  const bets = d.total_bets || 0;
+  if (bets === 0) return `${stratShort}\nobserving… $${br}`;
+  const wl = `${d.wins||0}W·${d.losses||0}L`;
+  return `${stratShort} ${wl}\n$${br} (${roiTxt})`;
 }
 function buildIslandBubble(a) {
   const d = a.data;
@@ -1063,6 +1167,7 @@ async function refresh() {
         a.recent = deltaW > 0 ? "✓ W" : (d.losses > prev.losses) ? "✗ L" : "bet";
         a.activeUntil = performance.now() + 4000;
         logTrade("nba", a.label, `bet #${d.total_bets}`, d.bankroll - prev.bankroll);
+        spawnPulseRing(a.x * TILE, a.y * TILE, deltaW > 0 ? 0x00d9a7 : 0xff5c5c);
       }
       a.bubble = buildTraderBubble(a);
     }
@@ -1088,6 +1193,7 @@ async function refresh() {
         a.recent = deltaW > 0 ? "✓ W" : (d.losses > prev.losses) ? "✗ L" : "bet";
         a.activeUntil = performance.now() + 4000;
         logTrade("political", a.label, `trade #${d.total_bets}`, d.bankroll - prev.bankroll);
+        spawnPulseRing(a.x * TILE, a.y * TILE, deltaW > 0 ? 0x00d9a7 : 0xff5c5c);
       }
       a.bubble = buildTraderBubble(a);
     }
@@ -1148,10 +1254,10 @@ async function refresh() {
   // Councils — baked
   for (const a of AGENTS.filter(x => x.kind === "council")) a.bubble = buildCouncilBubble(a);
 
-  document.getElementById("k-nba").textContent = `${nbaOK}/15`;
-  document.getElementById("k-nba").className = nbaOK === 15 ? "v-ok" : "v-warn";
-  document.getElementById("k-pol").textContent = `${polOK}/15`;
-  document.getElementById("k-pol").className = polOK === 15 ? "v-ok" : "v-warn";
+  document.getElementById("k-nba").textContent = `${nbaOK}/${NBA_TRADERS.length}`;
+  document.getElementById("k-nba").className = nbaOK === NBA_TRADERS.length ? "v-ok" : "v-warn";
+  document.getElementById("k-pol").textContent = `${polOK}/${POL_TRADERS.length}`;
+  document.getElementById("k-pol").className = polOK === POL_TRADERS.length ? "v-ok" : "v-warn";
   document.getElementById("k-evo").textContent = `${evoOK}/21`;
   document.getElementById("k-evo").className = evoOK >= 20 ? "v-ok" : "v-warn";
   document.getElementById("k-pacts").textContent = pacts;
@@ -1276,7 +1382,7 @@ setInterval(() => {
   const el = document.getElementById("bt-utc");
   if (el) el.textContent = new Date().toISOString().slice(11,19);
 }, 1000);
-logTrade("council", "pixel-world", "v2.0 boot · 30 distinct traders · 21 racked islands · live-bet ticker · mini-map · reputation halos · paper-link");
+logTrade("council", "pixel-world", "v2.3 boot · 22 traders (12 NBA + 10 POL) · 21 islands · 9 depts · breathing · emotes · particles");
 
 })();
 </script>
