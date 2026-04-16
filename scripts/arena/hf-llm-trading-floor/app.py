@@ -1,1 +1,1 @@
-PLACEHOLDER_NBA
+See /tmp/nba_content.txt

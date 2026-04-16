@@ -1,1 +1,1 @@
-PLACEHOLDER_POL
+See /tmp/pol_content.txt
