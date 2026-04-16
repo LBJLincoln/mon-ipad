@@ -48,6 +48,21 @@ from typing import Dict, List, Optional, Tuple
 from pathlib import Path
 import math
 
+# ── LANGFUSE OBSERVABILITY ──────────────────────────────────────────────────
+_langfuse = None
+try:
+    from langfuse import Langfuse
+    _lf_pub = os.environ.get("LANGFUSE_PUBLIC_KEY", "")
+    _lf_sec = os.environ.get("LANGFUSE_SECRET_KEY", "")
+    _lf_host = os.environ.get("LANGFUSE_HOST", "https://nomos42-langfuse.hf.space")
+    if _lf_pub and _lf_sec:
+        _langfuse = Langfuse(public_key=_lf_pub, secret_key=_lf_sec, host=_lf_host)
+        print(f"  LANGFUSE: connected → {_lf_host}")
+    else:
+        print("  LANGFUSE: keys not set (observability disabled)")
+except ImportError:
+    print("  LANGFUSE: SDK not installed (pip install langfuse)")
+
 def benjamini_hochberg(edges: List[Tuple[str, float]], alpha: float = 0.05) -> set:
     """Return set of category tags that survive BH FDR correction.
     Treats |edge| as a test statistic under H0: edge=0. With ~91 categories
@@ -798,11 +813,14 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
 
 
 def _call_llm(provider: str, system_prompt: str, user_prompt: str,
-              timeout: float = 20.0) -> Optional[str]:
+              timeout: float = 20.0, trace_name: str = "tf-llm-call",
+              trace_metadata: dict = None) -> Optional[str]:
     """Transport-layer entry. Routes through llm-gateway if GATEWAY_URL is set,
-    else calls the provider directly. Preserves existing failure counters."""
+    else calls the provider directly. Preserves existing failure counters.
+    Traces via Langfuse if connected."""
     global _llm_calls, _llm_failures, _gateway_routed, _gateway_fallback
     _llm_calls += 1
+    _t0 = time.time()
 
     cfg = PROVIDERS.get(provider)
     if not cfg:
@@ -827,18 +845,51 @@ def _call_llm(provider: str, system_prompt: str, user_prompt: str,
         timeout=max(timeout, 30.0),
     )
 
+    _latency = time.time() - _t0
+    _text = None
+    _status = "error"
+
     if result["routed_via"] == "gateway":
         _gateway_routed += 1
-        return result["text"]
-    if result["routed_via"] == "direct":
+        _text = result["text"]
+        _status = "success"
+    elif result["routed_via"] == "direct":
         _gateway_fallback += 1
-        return result["text"]
+        _text = result["text"]
+        _status = "success"
+    else:
+        _llm_failures += 1
+        if len(_llm_errors) < 100:
+            _llm_errors.append(f"{provider}: {result.get('error')}")
 
-    # failed
-    _llm_failures += 1
-    if len(_llm_errors) < 100:
-        _llm_errors.append(f"{provider}: {result.get('error')}")
-    return None
+    # Langfuse trace
+    if _langfuse:
+        try:
+            trace = _langfuse.trace(
+                name=trace_name,
+                metadata={
+                    "provider": provider,
+                    "model": cfg.get("model", "unknown"),
+                    "routed_via": result.get("routed_via", "none"),
+                    "latency_s": round(_latency, 2),
+                    "status": _status,
+                    "sys_prompt_len": len(system_prompt),
+                    "usr_prompt_len": len(user_prompt),
+                    "response_len": len(_text) if _text else 0,
+                    **(trace_metadata or {}),
+                },
+            )
+            trace.generation(
+                name=f"{provider}/{cfg.get('model','?')}",
+                model=cfg.get("model", "unknown"),
+                input={"system": system_prompt[:200], "user": user_prompt[:200]},
+                output=_text[:500] if _text else None,
+                usage={"total_tokens": len(system_prompt)//4 + len(user_prompt)//4 + (len(_text)//4 if _text else 0)},
+            )
+        except Exception:
+            pass
+
+    return _text
 
 
 # ── PROMPT BUILDER ──────────────────────────────────────────────────────────
@@ -2068,7 +2119,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 common_knowledge_block=prev_day_ck,
             )
             try:
-                raw = _call_llm(provider, system_prompt, user_prompt, timeout=30.0)
+                raw = _call_llm(provider, system_prompt, user_prompt, timeout=30.0,
+                               trace_name=f"nba-tf-day-{day_idx}",
+                               trace_metadata={"trader_id": tid, "day": day_date, "bankroll": ts["bankroll"]})
             except Exception:
                 raw = None
             return tid, raw
