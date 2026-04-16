@@ -1,2332 +1,1046 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Nomos42 Pixel World — Live Trading Floor</title>
+<head><script>window.huggingface={variables:{"SPACE_CREATOR_USER_ID":"698653c38d72821326e9e4fe"}};</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nomos42 Pixel World — v0.9 · Bloomberg Terminal</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
   :root {
-    --bg: #0a0a1a;
-    --panel-bg: #0e0e24;
-    --panel-border: #1a1a40;
-    --gold: #ffd700;
-    --gold-dim: #b8960c;
-    --blue: #4fc3f7;
-    --green: #66bb6a;
-    --purple: #ce93d8;
-    --red: #ef5350;
-    --text: #e0e0e0;
-    --text-dim: #888;
-    --ticker-bg: #050510;
-    --hud-bg: rgba(10,10,30,0.92);
-    --font-pixel: 'Courier New', Courier, monospace;
-    --font-ui: 'Segoe UI', system-ui, sans-serif;
+    --bg:#0b0d12; --bg-2:#14171f; --bg-3:#1a1f2a; --line:#1e2330;
+    --ink:#e6e8ee; --ink-2:#9aa3b5; --ink-3:#5b6478;
+    --ok:#00d9a7; --warn:#ffb020; --err:#ff5c5c;
+    --pink:#ff79c6; --blue:#8be9fd; --green:#50fa7b; --orange:#ffb86c; --purple:#bd93f9;
   }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-pixel);
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-    user-select: none;
-  }
-
-  /* ─── LAYOUT ─── */
-  #app {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-    position: relative;
-  }
-
-  /* ─── HEADER BAR ─── */
-  #header {
-    height: 44px;
-    background: var(--panel-bg);
-    border-bottom: 2px solid var(--gold-dim);
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    gap: 16px;
-    z-index: 100;
-    flex-shrink: 0;
-  }
-
-  #header-title {
-    font-size: 15px;
-    font-weight: bold;
-    color: var(--gold);
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px rgba(255,215,0,0.6);
-    white-space: nowrap;
-  }
-
-  #header-title span {
-    color: #fff;
-    font-size: 11px;
-    letter-spacing: 1px;
-    margin-left: 6px;
-    opacity: 0.7;
-  }
-
-  .header-stat {
-    font-size: 11px;
-    padding: 3px 8px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 3px;
-    white-space: nowrap;
-  }
-
-  .header-stat .label { color: var(--text-dim); margin-right: 4px; }
-  .header-stat .val { color: var(--gold); font-weight: bold; }
-  .header-stat .val.green { color: var(--green); }
-  .header-stat .val.red { color: var(--red); }
-  .header-stat .val.blue { color: var(--blue); }
-
-  #header-spacer { flex: 1; }
-
-  .header-btn {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: var(--text);
-    padding: 4px 10px;
-    font-size: 11px;
-    cursor: pointer;
-    border-radius: 3px;
-    font-family: var(--font-pixel);
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .header-btn:hover { background: rgba(255,255,255,0.12); color: var(--gold); border-color: var(--gold-dim); }
-  .header-btn.active { background: rgba(255,215,0,0.15); border-color: var(--gold); color: var(--gold); }
-
-  /* ─── MAIN AREA ─── */
-  #main {
-    flex: 1;
-    display: flex;
-    min-height: 0;
-    position: relative;
-  }
-
-  /* ─── LEFT PANEL ─── */
-  #panel-left {
-    width: 200px;
-    flex-shrink: 0;
-    background: var(--panel-bg);
-    border-right: 1px solid var(--panel-border);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    z-index: 50;
-  }
-
-  /* ─── CENTER CANVAS ─── */
-  #canvas-wrapper {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-    background: #060618;
-  }
-
-  #pixiCanvas {
-    display: block;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-  }
-
-  /* ─── RIGHT PANEL ─── */
-  #panel-right {
-    width: 200px;
-    flex-shrink: 0;
-    background: var(--panel-bg);
-    border-left: 1px solid var(--panel-border);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    z-index: 50;
-  }
-
-  /* ─── PANEL SECTIONS ─── */
-  .panel-section {
-    border-bottom: 1px solid var(--panel-border);
-    padding: 8px;
-    flex-shrink: 0;
-  }
-
-  .panel-title {
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .panel-title::before {
-    content: '';
-    display: inline-block;
-    width: 3px;
-    height: 10px;
-    background: var(--gold);
-  }
-
-  /* ─── LEADERBOARD ─── */
-  #leaderboard-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 6px;
-  }
-
-  #leaderboard-list::-webkit-scrollbar { width: 4px; }
-  #leaderboard-list::-webkit-scrollbar-track { background: transparent; }
-  #leaderboard-list::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-
-  .lb-entry {
-    display: flex;
-    align-items: center;
-    padding: 4px 5px;
-    margin-bottom: 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: all 0.15s;
-    font-size: 10px;
-    gap: 5px;
-  }
-
-  .lb-entry:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
-
-  .lb-rank {
-    font-size: 9px;
-    color: var(--text-dim);
-    width: 14px;
-    text-align: right;
-    flex-shrink: 0;
-  }
-
-  .lb-rank.r1 { color: var(--gold); font-size: 11px; }
-  .lb-rank.r2 { color: #c0c0c0; }
-  .lb-rank.r3 { color: #cd7f32; }
-
-  .lb-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 1px;
-    flex-shrink: 0;
-  }
-
-  .lb-name {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: var(--text);
-  }
-
-  .lb-val {
-    font-size: 9px;
-    color: var(--green);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .lb-val.neg { color: var(--red); }
-
-  /* ─── SPACE STATUS ─── */
-  .space-row {
-    display: flex;
-    align-items: center;
-    font-size: 10px;
-    padding: 3px 0;
-    gap: 5px;
-  }
-
-  .space-led {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    animation: pulse-led 2s infinite;
-  }
-
-  .space-led.up { background: var(--green); box-shadow: 0 0 4px var(--green); }
-  .space-led.down { background: var(--red); box-shadow: 0 0 4px var(--red); animation: none; }
-
-  @keyframes pulse-led {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  .space-name { color: var(--blue); flex: 1; }
-  .space-brier { color: var(--text-dim); font-size: 9px; }
-  .space-gen { color: var(--gold); font-size: 9px; }
-
-  /* ─── DEPT STATUS ─── */
-  .dept-row {
-    display: flex;
-    align-items: center;
-    font-size: 10px;
-    padding: 2px 0;
-    gap: 5px;
-    cursor: default;
-  }
-
-  .dept-badge {
-    font-size: 8px;
-    padding: 1px 4px;
-    border-radius: 2px;
-    font-weight: bold;
-    width: 24px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-  .dept-badge.active { background: rgba(102,187,106,0.2); color: var(--green); border: 1px solid rgba(102,187,106,0.3); }
-  .dept-badge.idle { background: rgba(79,195,247,0.1); color: var(--blue); border: 1px solid rgba(79,195,247,0.2); }
-  .dept-badge.warn { background: rgba(239,83,80,0.15); color: var(--red); border: 1px solid rgba(239,83,80,0.3); }
-
-  .dept-name { flex: 1; color: var(--text); font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .dept-metric { font-size: 9px; color: var(--text-dim); white-space: nowrap; }
-
-  /* ─── PREDICTIONS ─── */
-  .pred-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 4px;
-    padding: 6px;
-    margin-bottom: 5px;
-    font-size: 10px;
-  }
-
-  .pred-teams {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 3px;
-    font-size: 10px;
-  }
-
-  .pred-home { color: var(--blue); }
-  .pred-away { color: var(--text-dim); }
-  .pred-vs { color: var(--text-dim); font-size: 9px; }
-
-  .pred-bars {
-    display: flex;
-    gap: 2px;
-    height: 8px;
-    margin: 4px 0;
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .pred-bar-home { background: var(--blue); height: 100%; transition: width 0.5s; }
-  .pred-bar-away { background: rgba(255,255,255,0.15); flex: 1; height: 100%; }
-
-  .pred-prob { font-size: 9px; color: var(--text-dim); display: flex; justify-content: space-between; }
-  .pred-prob .conf { color: var(--gold); }
-
-  /* ─── TICKER ─── */
-  #ticker {
-    height: 28px;
-    background: var(--ticker-bg);
-    border-top: 1px solid var(--panel-border);
-    overflow: hidden;
-    position: relative;
-    flex-shrink: 0;
-  }
-
-  #ticker-track {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-    will-change: transform;
-  }
-
-  .ticker-item {
-    display: inline-flex;
-    align-items: center;
-    font-size: 11px;
-    padding: 0 18px;
-    gap: 6px;
-    border-right: 1px solid rgba(255,255,255,0.07);
-    height: 100%;
-  }
-
-  .ticker-label { color: var(--text-dim); font-size: 10px; }
-  .ticker-team { color: var(--text); }
-  .ticker-prob { font-weight: bold; }
-  .ticker-prob.high { color: var(--green); }
-  .ticker-prob.med { color: var(--gold); }
-  .ticker-prob.low { color: var(--red); }
-  .ticker-sep { color: var(--text-dim); margin: 0 3px; }
-  .ticker-brier { color: var(--blue); font-size: 9px; }
-  .ticker-agent { color: var(--purple); font-size: 9px; }
-  .ticker-win { color: var(--green); font-size: 9px; }
-  .ticker-loss { color: var(--red); font-size: 9px; }
-
-  /* ─── AGENT POPUP ─── */
-  #agent-popup {
-    position: absolute;
-    background: var(--hud-bg);
-    border: 1px solid var(--gold-dim);
-    border-radius: 6px;
-    padding: 12px 14px;
-    min-width: 220px;
-    z-index: 1000;
-    pointer-events: none;
-    opacity: 0;
-    transform: translateY(-4px);
-    transition: opacity 0.15s, transform 0.15s;
-    backdrop-filter: blur(12px);
-    font-size: 11px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 20px rgba(255,215,0,0.08);
-  }
-
-  #agent-popup.visible {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-
-  .popup-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .popup-sprite {
-    width: 32px;
-    height: 32px;
-    image-rendering: pixelated;
-    flex-shrink: 0;
-  }
-
-  .popup-name {
-    font-size: 13px;
-    font-weight: bold;
-    color: var(--gold);
-    line-height: 1.2;
-  }
-
-  .popup-tier {
-    font-size: 9px;
-    padding: 1px 6px;
-    border-radius: 10px;
-    margin-top: 2px;
-    display: inline-block;
-  }
-
-  .popup-tier.PREMIUM { background: rgba(255,215,0,0.15); color: var(--gold); border: 1px solid rgba(255,215,0,0.3); }
-  .popup-tier.FREE_POWER { background: rgba(79,195,247,0.15); color: var(--blue); border: 1px solid rgba(79,195,247,0.3); }
-  .popup-tier.SPECIALIST { background: rgba(102,187,106,0.15); color: var(--green); border: 1px solid rgba(102,187,106,0.3); }
-  .popup-tier.META { background: rgba(206,147,216,0.15); color: var(--purple); border: 1px solid rgba(206,147,216,0.3); }
-
-  .popup-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px 10px;
-  }
-
-  .popup-stat {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .popup-stat-label { font-size: 9px; color: var(--text-dim); margin-bottom: 1px; }
-  .popup-stat-val { font-size: 12px; color: var(--text); font-weight: bold; }
-  .popup-stat-val.green { color: var(--green); }
-  .popup-stat-val.red { color: var(--red); }
-  .popup-stat-val.gold { color: var(--gold); }
-  .popup-stat-val.blue { color: var(--blue); }
-
-  .popup-strategy {
-    margin-top: 8px;
-    padding: 5px 8px;
-    background: rgba(255,255,255,0.04);
-    border-radius: 3px;
-    font-size: 9px;
-  }
-
-  .popup-strategy-label { color: var(--text-dim); margin-bottom: 2px; }
-  .popup-strategy-val { color: var(--blue); }
-
-  .popup-speech {
-    margin-top: 8px;
-    padding: 6px 8px;
-    background: rgba(79,195,247,0.07);
-    border-left: 2px solid var(--blue);
-    border-radius: 0 4px 4px 0;
-    font-size: 10px;
-    color: var(--text);
-    font-style: italic;
-    line-height: 1.4;
-  }
-
-  .popup-close {
-    position: absolute;
-    top: 8px;
-    right: 10px;
-    cursor: pointer;
-    color: var(--text-dim);
-    font-size: 14px;
-    pointer-events: auto;
-    transition: color 0.15s;
-  }
-  .popup-close:hover { color: var(--gold); }
-
-  /* ─── NIGHT OVERLAY ─── */
-  #night-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,30,0);
-    pointer-events: none;
-    z-index: 5;
-    transition: background 3s;
-  }
-
-  /* ─── PARTICLE CANVAS ─── */
-  #particle-canvas {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  /* ─── LOADING SCREEN ─── */
-  #loading {
-    position: absolute;
-    inset: 0;
-    background: var(--bg);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    gap: 16px;
-    transition: opacity 0.5s;
-  }
-
-  #loading.fade-out { opacity: 0; pointer-events: none; }
-
-  .loading-title {
-    font-size: 22px;
-    font-weight: bold;
-    color: var(--gold);
-    letter-spacing: 4px;
-    text-shadow: 0 0 20px rgba(255,215,0,0.5);
-    animation: flicker 2s infinite;
-  }
-
-  @keyframes flicker {
-    0%, 100% { opacity: 1; }
-    92% { opacity: 1; }
-    93% { opacity: 0.6; }
-    94% { opacity: 1; }
-  }
-
-  .loading-sub {
-    font-size: 11px;
-    color: var(--text-dim);
-    letter-spacing: 2px;
-  }
-
-  .loading-bar-wrap {
-    width: 240px;
-    height: 8px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.12);
-  }
-
-  .loading-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
-    border-radius: 4px;
-    width: 0%;
-    transition: width 0.3s;
-    box-shadow: 0 0 8px rgba(255,215,0,0.4);
-  }
-
-  .loading-status {
-    font-size: 10px;
-    color: var(--text-dim);
-    min-height: 14px;
-  }
-
-  /* ─── MINI MAP ─── */
-  #minimap-canvas {
-    position: absolute;
-    bottom: 40px;
-    right: 8px;
-    width: 100px;
-    height: 70px;
-    background: rgba(10,10,30,0.9);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 3px;
-    overflow: hidden;
-    z-index: 50;
-    display: block;
-  }
-
-  /* ─── CONTROLS ─── */
-  #controls-hint {
-    position: absolute;
-    bottom: 40px;
-    left: 8px;
-    font-size: 9px;
-    color: rgba(255,255,255,0.25);
-    z-index: 50;
-    line-height: 1.6;
-    pointer-events: none;
-  }
-
-  /* ─── SPEECH BUBBLES (CSS, for pixi overlay) ─── */
-  .speech-bubble-css {
-    position: absolute;
-    background: rgba(10,10,30,0.92);
-    border: 1px solid rgba(79,195,247,0.4);
-    border-radius: 6px;
-    padding: 4px 7px;
-    font-size: 9px;
-    color: var(--text);
-    pointer-events: none;
-    z-index: 30;
-    white-space: nowrap;
-    max-width: 140px;
-    white-space: normal;
-    transform: translateX(-50%);
-    animation: bubble-pop 0.2s ease-out;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  }
-
-  .speech-bubble-css::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 8px;
-    height: 5px;
-    background: rgba(10,10,30,0.92);
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
-    border-left: 1px solid rgba(79,195,247,0.4);
-    border-right: 1px solid rgba(79,195,247,0.4);
-  }
-
-  @keyframes bubble-pop {
-    from { transform: translateX(-50%) scale(0.8); opacity: 0; }
-    to { transform: translateX(-50%) scale(1); opacity: 1; }
-  }
-
-  /* ─── RESPONSIVE ─── */
-  @media (max-width: 768px) {
-    #panel-left, #panel-right { width: 0; overflow: hidden; display: none; }
-    #header { padding: 0 8px; gap: 8px; }
-    #header-title span { display: none; }
-    .header-stat { padding: 2px 5px; font-size: 10px; }
-  }
-
-  @media (max-width: 480px) {
-    #header { height: 38px; }
-    .header-stat:nth-child(n+4) { display: none; }
-  }
-
-  /* ─── SCANLINES ─── */
-  #scanlines {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 2;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 3px,
-      rgba(0,0,0,0.04) 3px,
-      rgba(0,0,0,0.04) 4px
-    );
-    opacity: 0.4;
-  }
-
-  /* ─── CRT VIGNETTE ─── */
-  #vignette {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 3;
-    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.45) 100%);
-  }
-
-  /* ─── FLOOR ZONES LABELS ─── */
-  .zone-label {
-    position: absolute;
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.12);
-    pointer-events: none;
-    z-index: 4;
-  }
-
+  * { box-sizing:border-box; }
+  html,body { margin:0; padding:0; height:100%; background:var(--bg); color:var(--ink);
+    font-family:"JetBrains Mono","Courier New",monospace; font-size:12px; overflow:hidden; }
+  /* ═══ Bloomberg terminal strip — amber-on-black, IBM Plex Mono feel ═══ */
+  #bloomberg-ticker { position:fixed; top:0; left:0; right:0; height:26px; z-index:100;
+    background:#000; color:#ffa500;
+    font-family:"IBM Plex Mono","VT323","Consolas","Courier New",monospace; font-size:12px;
+    letter-spacing:0.06em; text-transform:uppercase;
+    border-bottom:1px solid #3a2600;
+    padding:0 12px; display:flex; align-items:center;
+    box-shadow:0 2px 18px rgba(255,165,0,0.18), inset 0 -1px 0 #1a1000;
+    overflow:hidden; }
+  #bloomberg-ticker .seg { padding:0 13px; border-right:1px solid #3a2600; display:flex; gap:6px; align-items:center; white-space:nowrap; }
+  #bloomberg-ticker .seg:first-child { padding-left:0; }
+  #bloomberg-ticker .seg:last-child { border-right:0; }
+  #bloomberg-ticker .lbl { color:#805300; font-weight:600; }
+  #bloomberg-ticker .val { color:#ffa500; font-weight:700; }
+  #bloomberg-ticker .val.up { color:#00ff88; }
+  #bloomberg-ticker .val.down { color:#ff3b3b; }
+  #bloomberg-ticker .val.star { color:#ffd700; }
+  #bloomberg-ticker .cursor { color:#00ff88; animation:blk 1.1s steps(2) infinite; margin-left:auto; padding-left:14px; font-weight:700; }
+  @keyframes blk { 50% { opacity:0; } }
+  #root { display:grid; grid-template-columns:1fr 360px; height:calc(100vh - 26px); margin-top:26px; }
+  #stage { position:relative; background:var(--bg-2); overflow:hidden; }
+  #stage canvas { image-rendering:pixelated; display:block; }
+  #scanlines { position:absolute; inset:0; pointer-events:none; z-index:5;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0) 4px);
+    mix-blend-mode:multiply; }
+  #vignette { position:absolute; inset:0; pointer-events:none; z-index:6;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.45) 100%); }
+  #hud-top { position:absolute; top:10px; left:12px; right:12px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    font-size:11px; color:var(--ink-2); letter-spacing:0.1em; text-transform:uppercase; z-index:7; }
+  #hud-top .brand { color:var(--ink); font-weight:600; pointer-events:none; }
+  #hud-top .tick { color:var(--ok); }
+  #room-tabs { display:flex; gap:6px; pointer-events:auto; }
+  #room-tabs button { background:rgba(11,13,18,0.85); border:1px solid var(--line); color:var(--ink-2);
+    font-family:inherit; font-size:10px; letter-spacing:0.12em; padding:6px 10px; cursor:pointer; text-transform:uppercase; border-radius:2px; }
+  #room-tabs button.active { color:var(--ink); background:rgba(0,217,167,0.15); border-color:var(--ok); }
+  #room-tabs button:hover { border-color:var(--ink-2); }
+  #hud-bot { position:absolute; bottom:10px; left:12px; right:12px; display:flex; justify-content:space-between;
+    font-size:10px; color:var(--ink-3); pointer-events:none; z-index:7; }
+  #hover { position:absolute; max-width:300px; padding:10px 12px; background:rgba(11,13,18,0.97);
+    border:1px solid var(--line); z-index:8; pointer-events:none; display:none; border-radius:2px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.6); }
+  #hover .h-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+  #hover .h-dot { width:10px; height:10px; }
+  #hover .h-title { font-weight:700; color:var(--ink); letter-spacing:0.06em; }
+  #hover .h-sub { color:var(--ink-3); font-size:9.5px; margin-left:auto; text-transform:uppercase; letter-spacing:0.12em; }
+  #hover .h-row { display:flex; justify-content:space-between; padding:2px 0; font-size:10.5px; }
+  #hover .h-row .l { color:var(--ink-2); }
+  #hover .h-row .v { color:var(--ink); }
+  #hover .h-row .v.up { color:var(--ok); }
+  #hover .h-row .v.down { color:var(--err); }
+  #hover .h-tag { display:inline-block; padding:1px 6px; margin:3px 3px 0 0; font-size:9px; background:var(--bg-2);
+    border:1px solid var(--line); border-radius:2px; color:var(--warn); letter-spacing:0.08em; text-transform:uppercase; }
+  #hover .h-tag.sac { color:var(--pink); border-color:var(--pink); }
+  #hover .h-tag.pact { color:var(--ok); border-color:var(--ok); }
+  #hover .h-note { margin-top:6px; padding-top:6px; border-top:1px dotted var(--line); color:var(--ink-3); font-size:9.5px; line-height:1.45; }
+  #event-toast { position:absolute; bottom:40px; right:14px; z-index:9; display:flex; flex-direction:column; gap:5px; max-width:280px; }
+  #event-toast .t { padding:6px 10px; background:rgba(11,13,18,0.95); border:1px solid var(--line);
+    font-size:10.5px; animation:toast-in 0.3s ease-out, toast-out 0.4s ease-in 4.5s forwards; }
+  #event-toast .t .k { font-weight:700; margin-right:6px; }
+  #event-toast .t .k.nba { color:var(--pink); }
+  #event-toast .t .k.island { color:var(--green); }
+  #event-toast .t .k.political { color:var(--blue); }
+  #event-toast .t .k.council { color:var(--orange); }
+  @keyframes toast-in { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes toast-out { to { opacity:0; transform:translateX(20px); } }
+  #sidebar { background:var(--bg-2); border-left:1px solid var(--line); display:flex; flex-direction:column; overflow:hidden; }
+  .panel { border-bottom:1px solid var(--line); padding:10px 14px; overflow:hidden; }
+  .panel h3 { margin:0 0 8px; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-3); font-weight:500; display:flex; justify-content:space-between; }
+  .panel h3 .c { color:var(--ok); font-weight:700; letter-spacing:0.1em; }
+  .kpi { display:flex; justify-content:space-between; font-size:11px; padding:2px 0; }
+  .kpi .l { color:var(--ink-2); }
+  .kpi .v-ok { color:var(--ok); } .kpi .v-warn { color:var(--warn); } .kpi .v-err { color:var(--err); } .kpi .v-muted { color:var(--ink-3); }
+  .row { display:flex; justify-content:space-between; padding:3px 0; font-size:10.5px; border-bottom:1px dotted rgba(255,255,255,0.05); }
+  .row:last-child { border-bottom:0; }
+  .row .l { color:var(--ink-2); }
+  .row .v { color:var(--ink); }
+  .row .v.up { color:var(--ok); } .row .v.down { color:var(--err); }
+  .pill { display:inline-block; padding:2px 7px; margin:2px 3px 0 0; font-size:9.5px; background:var(--bg-3);
+    border:1px solid var(--line); border-radius:2px; color:var(--ink); letter-spacing:0.04em; }
+  .pill .n { color:var(--ok); margin-left:4px; }
+  #panel-trades { flex:1 1 auto; display:flex; flex-direction:column; min-height:0; }
+  #panel-trades-list { flex:1; overflow-y:auto; font-size:10.5px; padding-right:2px; margin-top:4px; }
+  #panel-trades-list::-webkit-scrollbar { width:6px; } #panel-trades-list::-webkit-scrollbar-thumb { background:var(--line); }
+  #panel-trades-list .r { display:grid; grid-template-columns:60px 1fr 70px; gap:4px; padding:3px 0; border-bottom:1px dotted rgba(255,255,255,0.05); }
+  #panel-trades-list .r .t { color:var(--ink-3); font-size:9.5px; }
+  #panel-trades-list .r .a { color:var(--ink); }
+  #panel-trades-list .r .a.nba { color:var(--pink); } .r .a.political { color:var(--blue); } .r .a.island { color:var(--green); } .r .a.council { color:var(--orange); }
+  #panel-trades-list .r .m { color:var(--ink-2); font-size:10px; text-align:right; }
+  #panel-trades-list .r .m.up { color:var(--ok); } #panel-trades-list .r .m.down { color:var(--err); }
+  .loader { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:var(--ink-3);
+    font-size:11px; letter-spacing:0.1em; text-transform:uppercase; z-index:4; }
 </style>
 </head>
 <body>
-<div id="app">
-
-  <!-- HEADER -->
-  <div id="header">
-    <div id="header-title">NOMOS42<span>TRADING FLOOR v5</span></div>
-    <div class="header-stat"><span class="label">AGENTS</span><span class="val blue" id="hdr-agents">207</span></div>
-    <div class="header-stat"><span class="label">BRIER</span><span class="val green" id="hdr-brier">0.22159</span></div>
-    <div class="header-stat"><span class="label">GEN</span><span class="val" id="hdr-gen">1826</span></div>
-    <div class="header-stat"><span class="label">BANKROLL</span><span class="val" id="hdr-bankroll">$91.29</span></div>
-    <div class="header-stat"><span class="label">ROI</span><span class="val red" id="hdr-roi">-8.71%</span></div>
-    <div id="header-spacer"></div>
-    <button class="header-btn" id="btn-zoom-out">-</button>
-    <button class="header-btn" id="btn-zoom-in">+</button>
-    <button class="header-btn active" id="btn-sound" title="Toggle sound">SFX</button>
-    <button class="header-btn" id="btn-speed">1x</button>
-    <button class="header-btn" id="btn-follow">FOLLOW</button>
-    <div class="header-stat" id="hdr-time" style="min-width:60px;text-align:center;">
-      <span class="val blue" id="clock">00:00</span>
+<div id="bloomberg-ticker">
+  <div class="seg"><span class="lbl">NOMOS42</span><span class="val star">TERMINAL</span></div>
+  <div class="seg"><span class="lbl">UTC</span><span class="val" id="bt-utc">—</span></div>
+  <div class="seg"><span class="lbl">NBA TF</span><span class="val" id="bt-nba-day">—</span><span class="val" id="bt-nba-pnl">—</span></div>
+  <div class="seg"><span class="lbl">POL TF</span><span class="val" id="bt-pol-day">—</span><span class="val" id="bt-pol-pnl">—</span></div>
+  <div class="seg"><span class="lbl">FLEET BEST</span><span class="val star" id="bt-fleet">—</span></div>
+  <div class="seg"><span class="lbl">PACTS</span><span class="val" id="bt-pacts">0</span></div>
+  <div class="seg"><span class="lbl">LLM CALLS</span><span class="val" id="bt-calls">0</span></div>
+  <div class="cursor">█</div>
+</div>
+<div id="root">
+  <div id="stage">
+    <div id="hud-top">
+      <div><span class="brand">NOMOS42 · PIXEL WORLD</span> · v0.9 · PixiJS · live · bloomberg-term</div>
+      <div id="room-tabs">
+        <button data-room="world" class="active">WORLD</button>
+        <button data-room="nba">NBA 🏀</button>
+        <button data-room="political">POLITICAL 🗳</button>
+        <button data-room="evolution">EVOLUTION 🧬</button>
+        <button data-room="councils">COUNCILS ⚖</button>
+      </div>
+      <div><span class="tick" id="hud-tick">· booting</span></div>
+    </div>
+    <div id="scanlines"></div>
+    <div id="vignette"></div>
+    <div id="hud-bot">
+      <div id="hud-day">—</div>
+      <div id="hud-rep">—</div>
+    </div>
+    <div id="hover"></div>
+    <div id="event-toast"></div>
+    <div class="loader" id="loader">booting pixi…</div>
+  </div>
+  <div id="sidebar">
+    <div class="panel">
+      <h3><span>Experiments</span><span class="c" id="k-last">—</span></h3>
+      <div class="kpi"><span class="l">NBA traders</span><span id="k-nba" class="v-warn">—</span></div>
+      <div class="kpi"><span class="l">Political traders</span><span id="k-pol" class="v-warn">—</span></div>
+      <div class="kpi"><span class="l">Evolution islands</span><span id="k-evo" class="v-warn">—</span></div>
+      <div class="kpi"><span class="l">Cooperation pacts</span><span id="k-pacts" class="v-ok">—</span></div>
+    </div>
+    <div class="panel">
+      <h3>Top Bet Categories</h3>
+      <div id="panel-cats" style="margin-top:2px;"></div>
+    </div>
+    <div class="panel">
+      <h3><span>Top Traders</span><span class="c" id="panel-lb-count">—</span></h3>
+      <div id="panel-lb"></div>
+    </div>
+    <div class="panel">
+      <h3><span>Evolution</span><span class="c" id="panel-evo-count">—</span></h3>
+      <div id="panel-evo"></div>
+    </div>
+    <div class="panel" id="panel-trades">
+      <h3><span>Live Events</span><span class="c" id="panel-trades-count">0</span></h3>
+      <div id="panel-trades-list"></div>
     </div>
   </div>
-
-  <!-- MAIN -->
-  <div id="main">
-
-    <!-- LEFT PANEL -->
-    <div id="panel-left">
-      <div class="panel-section">
-        <div class="panel-title">Leaderboard</div>
-      </div>
-      <div id="leaderboard-list"></div>
-
-      <div class="panel-section" style="margin-top:auto;">
-        <div class="panel-title">Dept Status</div>
-        <div id="dept-list"></div>
-      </div>
-    </div>
-
-    <!-- CENTER -->
-    <div id="canvas-wrapper">
-      <canvas id="pixiCanvas"></canvas>
-      <canvas id="particle-canvas"></canvas>
-      <div id="scanlines"></div>
-      <div id="vignette"></div>
-      <div id="night-overlay"></div>
-      <canvas id="minimap-canvas"></canvas>
-
-      <div id="controls-hint">
-        WASD / drag: pan<br>
-        scroll: zoom<br>
-        click: select agent
-      </div>
-
-      <!-- Agent Popup -->
-      <div id="agent-popup">
-        <span class="popup-close" id="popup-close">✕</span>
-        <div class="popup-header">
-          <canvas class="popup-sprite" id="popup-sprite" width="32" height="32"></canvas>
-          <div>
-            <div class="popup-name" id="popup-name">—</div>
-            <div class="popup-tier" id="popup-tier">PREMIUM</div>
-          </div>
-        </div>
-        <div class="popup-stats">
-          <div class="popup-stat">
-            <div class="popup-stat-label">BANKROLL</div>
-            <div class="popup-stat-val gold" id="popup-bankroll">$10,000</div>
-          </div>
-          <div class="popup-stat">
-            <div class="popup-stat-label">ROI</div>
-            <div class="popup-stat-val" id="popup-roi">0.00%</div>
-          </div>
-          <div class="popup-stat">
-            <div class="popup-stat-label">WIN RATE</div>
-            <div class="popup-stat-val" id="popup-winrate">0%</div>
-          </div>
-          <div class="popup-stat">
-            <div class="popup-stat-label">TOTAL BETS</div>
-            <div class="popup-stat-val" id="popup-bets">0</div>
-          </div>
-        </div>
-        <div class="popup-strategy">
-          <div class="popup-strategy-label">Strategy</div>
-          <div class="popup-strategy-val" id="popup-strategy">—</div>
-        </div>
-        <div class="popup-speech" id="popup-speech">"Analyzing the floor…"</div>
-      </div>
-    </div>
-
-    <!-- RIGHT PANEL -->
-    <div id="panel-right">
-      <div class="panel-section">
-        <div class="panel-title">Today's Games</div>
-        <div id="predictions-list"></div>
-      </div>
-
-      <div class="panel-section">
-        <div class="panel-title">Spaces</div>
-        <div id="spaces-list"></div>
-      </div>
-
-      <div class="panel-section">
-        <div class="panel-title">Bankroll</div>
-        <div id="bankroll-stats" style="font-size:10px;"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- TICKER -->
-  <div id="ticker">
-    <div id="ticker-track"></div>
-  </div>
-
 </div>
 
-<!-- LOADING -->
-<div id="loading">
-  <div class="loading-title">NOMOS42</div>
-  <div class="loading-sub">PIXEL WORLD v5</div>
-  <div class="loading-bar-wrap"><div class="loading-bar" id="loading-bar"></div></div>
-  <div class="loading-status" id="loading-status">Initializing…</div>
-</div>
-
-<!-- PIXI CDN -->
-<script src="https://cdn.jsdelivr.net/npm/pixi.js@8/dist/pixi.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js"></script>
 <script>
-// ═══════════════════════════════════════════════════════════════
-//  NOMOS42 PIXEL WORLD — Main Application
-//  Architecture: PixiJS 8 + WebGL2 + Static Data JSON
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+// NOMOS42 PIXEL WORLD v0.9 — Bloomberg terminal strip + pulsing pacts + rooms
+// ═══════════════════════════════════════════════════════════════════════════
+(async () => {
+const TILE = 28;
+const GRID_W = 56, GRID_H = 32;
+const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
+// Characters dominate furniture (research: canonical ratio is char=16×24, furniture=16×16..32×32)
+const CHAR_W = 88, CHAR_H = 132;   // at TILE=28 → char = 3.1 tiles wide × 4.7 tall
 
-'use strict';
+const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c };
+const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", island:"#50fa7b", infra:"#50fa7b", pol_infra:"#8be9fd", council:"#ffb86c" };
+const KIND_GLYPHS = { nba:"🏀", political:"🗳", island:"🧬", infra:"🗼", pol_infra:"🗼", council:"⚖" };
 
-// ─── CONSTANTS ─────────────────────────────────────────────────
-const WORLD_W = 2400;
-const WORLD_H = 1600;
-const TILE = 32;
-const AGENT_SIZE = 16;
-const FPS_TARGET = 60;
-const DATA_REFRESH_MS = 30000;
-const TICKER_SPEED = 0.6;
+// Axelrod strategy families → colors (cooperators green, defectors red, random purple, complex amber)
+const STRATEGY_FAMILIES = {
+  Cooperator:"coop", TitForTat:"coop", TitFor2Tats:"coop", SuspiciousTitForTat:"coop",
+  WinStayLoseShift:"coop", Pavlov:"coop",
+  AllD:"def", Defector:"def", Grudger:"def", Bully:"def",
+  Random:"rand", Probabilistic:"rand",
+  Adaptive:"complex", HardTitForTat:"complex", Forgiver:"complex", SoftGrudger:"complex",
+};
+const FAMILY_COLORS = { coop:0x50fa7b, def:0xff5c5c, rand:0xbd93f9, complex:0xffb020, unknown:0x5b6478 };
 
-const TIER_COLORS = {
-  PREMIUM:    0xFFD700,
-  FREE_POWER: 0x4FC3F7,
-  SPECIALIST: 0x66BB6A,
-  META:       0xCE93D8,
+const ZONES = {
+  nba:       { x:2,  y:2,  w:20, h:11, floor:3, label:"NBA TRADING FLOOR" },
+  political: { x:34, y:2,  w:20, h:11, floor:5, label:"POLITICAL FLOOR" },
+  "nba-infra":  { x:2,  y:15, w:26, h:7, floor:6, label:"NBA EVOLUTION · 13 ISLANDS" },
+  "pol-infra":  { x:30, y:15, w:24, h:7, floor:6, label:"POLITICAL EVOLUTION · 8 ISLANDS" },
+  councils:  { x:2,  y:24, w:52, h:6, floor:1, label:"COUNCIL CHAMBERS" },
 };
 
-const TIER_COLORS_HEX = {
-  PREMIUM:    '#ffd700',
-  FREE_POWER: '#4fc3f7',
-  SPECIALIST: '#66bb6a',
-  META:       '#ce93d8',
+const NBA_TRADERS = [
+  "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
+  "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral",
+  "nemotron-120b","gemma4-selfhost","qwen25-micro","llama32-micro","gemma2-micro"
+];
+const POL_TRADERS = [...NBA_TRADERS];
+const ISLANDS = [
+  ["S10","https://nomos42-nba-quant.hf.space/api/status"],
+  ["S11","https://nomos42-nba-quant-2.hf.space/api/status"],
+  ["S12","https://nomos42-nba-evo-3.hf.space/api/status"],
+  ["S13","https://nomos42-nba-evo-4.hf.space/api/status"],
+  ["S14","https://nomos42-nba-evo-5.hf.space/api/status"],
+  ["S15","https://nomos42-nba-evo-6.hf.space/api/status"],
+  ["S16","https://lbjlincoln26-nba-evo-s16.hf.space/api/status"],
+  ["S17","https://lbjlincoln26-nba-evo-s17.hf.space/api/status"],
+  ["S18","https://testforge42-nba-evo-s18.hf.space/api/status"],
+  ["S19","https://testforge42-nba-evo-s19.hf.space/api/status"],
+  ["S20","https://lbjlincoln26-nba-evo-s20.hf.space/api/status"],
+  ["S21","https://lbjlincoln26-nba-evo-s21.hf.space/api/status"],
+  ["S22","https://testforge42-nba-evo-s22.hf.space/api/status"],
+  ["P1","https://nomos42-political-alpha.hf.space/api/status"],
+  ["P2","https://nomos42-political-alpha-2.hf.space/api/status"],
+  ["P3","https://lbjlincoln-political-alpha-3.hf.space/api/status"],
+  ["P4","https://lbjlincoln-political-alpha-4.hf.space/api/status"],
+  ["P5","https://lbjlincoln-political-alpha-5.hf.space/api/status"],
+  ["P6","https://lbjlincoln-political-alpha-6.hf.space/api/status"],
+  ["P7","https://lbjlincoln-political-alpha-7.hf.space/api/status"],
+  ["P8","https://lbjlincoln-political-alpha-8.hf.space/api/status"],
+];
+const COUNCIL_DEPTS = [
+  ["D1","Research","scan → propose → measure"],
+  ["D2","Engineering","code → test → keep/revert"],
+  ["D3","Evolution","mutate → eval → select"],
+  ["D4","Product","build → ship → measure"],
+  ["D5","Business","price → convert → optimize"],
+  ["D6","Evaluation","audit → identify → verify"],
+  ["D7","Infra","check → detect → fix"],
+  ["D8","Finance","track → reconcile → forecast"],
+  ["D9","Cross-Repo","sync → audit → parity"],
+];
+const ENDPOINTS = {
+  nba:         "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
+  nbaLB:       "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
+  nbaDays:     "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/day-decisions",
+  political:   "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status",
+  politicalLB: "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/leaderboard",
+  politicalDays:"https://lbjlincoln26-political-llm-trading-floor.hf.space/api/day-decisions",
 };
 
-const ZONE_RECTS = {
-  pit:       { x: 700,  y: 500,  w: 1000, h: 600  },
-  research:  { x: 60,   y: 80,   w: 380,  h: 420  },
-  evolution: { x: 60,   y: 580,  w: 380,  h: 420  },
-  engineering:{ x: 1960,y: 80,   w: 380,  h: 420  },
-  infra:     { x: 1960, y: 580,  w: 380,  h: 420  },
-  leaderboard:{ x: 700, y: 60,   w: 1000, h: 340  },
-  lounge:    { x: 700,  y: 1200, w: 1000, h: 340  },
-};
-
-// Speech lines per strategy
-const SPEECHES = {
-  value_hunter:         ["Edge found! +4.2%", "This line is wrong", "Sharp money here", "Market inefficiency spotted"],
-  half_kelly:           ["Half Kelly, safe play", "Risk managed", "Variance reduction", "0.5x Kelly → placing"],
-  value_hunter_half_kelly: ["Best of both worlds", "Value + discipline", "Edge × 0.5 = optimal"],
-  proportional_edge:    ["Scaling by edge", "Proportional position", "No overbet today"],
-  confidence_scaled:    ["High conf → full size", "CI tight, going in", "Model agreement: 87%"],
-  flat_2pct:            ["Flat 2% → consistent", "Steady bankroll play", "No FOMO bets today"],
-  quarter_kelly:        ["Conservative sizing", "Quarter Kelly: safe", "Preserving capital"],
-  underdog_specialist:  ["Dogs have value today", "Market overvalues fav", "Contrarian edge: +7%"],
-  default:              ["Analyzing…", "Computing edge…", "Watching the floor", "Reading the tape…"],
-};
-
-// Dept data
-const DEPTS = [
-  { id:'D1', name:'Research',    status:'active', metric:'4 papers/wk' },
-  { id:'D2', name:'Engineering', status:'active', metric:'Δ Brier -0.003' },
-  { id:'D3', name:'Evolution',   status:'active', metric:'Gen 1826' },
-  { id:'D4', name:'Product',     status:'idle',   metric:'2 shipped' },
-  { id:'D5', name:'Business',    status:'idle',   metric:'MRR $0' },
-  { id:'D6', name:'Evaluation',  status:'active', metric:'Cal: 0.89' },
-  { id:'D7', name:'Infra',       status:'active', metric:'6/6 UP' },
-  { id:'D8', name:'Finance',     status:'idle',   metric:'$91.29 live' },
-  { id:'D9', name:'Cross-Repo',  status:'active', metric:'Parity 94%' },
+const AGENTS = [
+  ...NBA_TRADERS.map((id,i)=>({ id, key:id, label:id, kind:"nba", zone:"nba", idx:i, char:i%6 })),
+  ...POL_TRADERS.map((id,i)=>({ id:`p-${id}`, key:id, label:id, kind:"political", zone:"political", idx:i, char:(i+2)%6 })),
+  ...ISLANDS.map(([lbl,url],i)=>({
+    id:`island-${lbl.toLowerCase()}`, key:lbl, label:lbl,
+    kind: lbl.startsWith("P") ? "pol_infra" : "infra",
+    zone: lbl.startsWith("P") ? "pol-infra" : "nba-infra",
+    idx:i, char:0, url, _isInfra:true,
+  })),
+  ...COUNCIL_DEPTS.map(([c,n,m],i)=>({ id:`dept-${c.toLowerCase()}`, key:c, label:`${c} ${n}`, kind:"council", zone:"councils", idx:i, char:(i+3)%6, mission:m })),
 ];
 
-// ─── STATE ─────────────────────────────────────────────────────
-const STATE = {
-  agents: {},
-  predictions: [],
-  bankroll: {},
-  health: {},
-  agentList: [],
-  viewX: WORLD_W / 2,
-  viewY: WORLD_H / 2,
-  zoom: 1.2,
-  dragging: false,
-  dragStart: { x:0, y:0 },
-  dragViewStart: { x:0, y:0 },
-  soundEnabled: true,
-  speed: 1,
-  followAgent: null,
-  selectedAgent: null,
-  tickerOffset: 0,
-  tickerWidth: 0,
-  lastUpdate: 0,
-  particles: [],
-  speechBubbles: [],
-};
-
-// ─── AUDIO CONTEXT ─────────────────────────────────────────────
-let audioCtx = null;
-
-function getAudio() {
-  if (!audioCtx) {
-    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+// ── SEATING ─────────────────────────────────────────────────────────────────
+function assignSeats() {
+  for (const [zoneId, z] of Object.entries(ZONES)) {
+    const list = AGENTS.filter(a => a.zone === zoneId);
+    if (!list.length) continue;
+    const isInfraZone = zoneId === "nba-infra" || zoneId === "pol-infra";
+    // Infra: single-row lineup of towers, tight spacing, no wander.
+    // Agents: classic 5-col seat grid with Brownian wander.
+    const cols = isInfraZone ? list.length : Math.min(5, list.length);
+    const rows = Math.ceil(list.length / cols);
+    const padX = (z.w - cols * (isInfraZone ? 1.7 : 3)) / (cols + 1);
+    const padY = (z.h - rows * (isInfraZone ? 3 : 4)) / (rows + 1);
+    list.forEach((a, i) => {
+      const c = i % cols, r = Math.floor(i / cols);
+      a.seat = {
+        x: z.x + padX * (c + 1) + c * (isInfraZone ? 1.7 : 3) + (isInfraZone ? 0.85 : 1.5),
+        y: z.y + padY * (r + 1) + r * (isInfraZone ? 3 : 4) + (isInfraZone ? 2.0 : 2.5),
+      };
+      a.home = { ...a.seat };
+      a.phase = Math.random() * Math.PI * 2;
+      a.freq  = isInfraZone ? 0 : 0.35 + Math.random() * 0.55;
+      a.wamp  = isInfraZone ? 0 : 0.12 + Math.random() * 0.12;
+      a.speed = isInfraZone ? 0 : 0.9 + Math.random() * 0.5;
+      a.x = a.seat.x; a.y = a.seat.y;
+      a.vx = 0; a.vy = 0;
+      a.state = "idle"; a.data = null; a.bubble = ""; a.activeUntil = 0;
+      a.pactPartner = null; a.sacrificial = null; a.strategy = null; a.recent = "";
+    });
   }
-  return audioCtx;
 }
+assignSeats();
 
-function playTone(freq, dur, type='square', vol=0.08) {
-  if (!STATE.soundEnabled) return;
-  try {
-    const ctx = getAudio();
-    if (!ctx) return;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(vol, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + dur);
-  } catch(e) {}
-}
+const MEETING_SPOTS = [
+  { x:28, y:8  }, { x:28, y:12 }, { x:28, y:16 }, { x:28, y:20 }, { x:28, y:24 },
+];
 
-function playCoin() { playTone(880, 0.08, 'square', 0.06); setTimeout(()=>playTone(1320,0.12,'square',0.05),80); }
-function playWin()  {
-  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,0.15,'square',0.06),i*80));
-}
-function playLoss() { playTone(220, 0.25, 'sawtooth', 0.05); }
-function playSelect() { playTone(660, 0.05, 'square', 0.04); }
-function playTick() { playTone(440, 0.03, 'square', 0.02); }
+// ── PIXI INIT ───────────────────────────────────────────────────────────────
+const stageEl = document.getElementById("stage");
+const app = new PIXI.Application();
+await app.init({
+  resizeTo: stageEl, background: 0x0b0d12, antialias: false,
+  autoDensity: true, resolution: window.devicePixelRatio || 1,
+});
+stageEl.appendChild(app.canvas);
+app.canvas.style.imageRendering = "pixelated";
 
-// ─── SPRITE GENERATOR ──────────────────────────────────────────
-// Generates 16×16 pixel sprites for each tier using Canvas 2D
-function makeSpriteCanvas(tier, id, size=16) {
-  const c = document.createElement('canvas');
-  c.width = size; c.height = size;
-  const ctx = c.getContext('2d');
-  ctx.imageSmoothingEnabled = false;
+const world = new PIXI.Container();
+app.stage.addChild(world);
 
-  const palettes = {
-    PREMIUM:    ['#ffd700','#ffec6e','#b8960c','#fff8dc','#8b6914'],
-    FREE_POWER: ['#4fc3f7','#81d4fa','#0288d1','#e1f5fe','#01579b'],
-    SPECIALIST: ['#66bb6a','#a5d6a7','#2e7d32','#e8f5e9','#1b5e20'],
-    META:       ['#ce93d8','#e1bee7','#7b1fa2','#f3e5f5','#4a148c'],
-  };
+const floorLayer = new PIXI.Container();
+const decorLayer = new PIXI.Container();
+const pactLayer  = new PIXI.Graphics();
+const agentLayer = new PIXI.Container();
+agentLayer.sortableChildren = true;
+const labelLayer = new PIXI.Container();
+world.addChild(floorLayer, decorLayer, pactLayer, agentLayer, labelLayer);
 
-  const pal = palettes[tier] || palettes.SPECIALIST;
-  const s = size / 16; // scale factor
+// Room camera — target scale + center computed from active room
+let activeRoom = "world";
+let camTargetScale = 1, camTargetX = 0, camTargetY = 0;
+let camScale = 1, camX = 0, camY = 0;
 
-  // Helper for drawing pixel blocks
-  const px = (x,y,c,w=1,h=1)=>{
-    ctx.fillStyle = c;
-    ctx.fillRect(x*s, y*s, w*s, h*s);
-  };
-
-  // Different sprites based on ID hash
-  const hash = (id || '').split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-  const variant = hash % 4;
-
-  if (tier === 'PREMIUM') {
-    // Gold elite sprite — slightly larger, more detail
-    px(6,1,pal[1],4,1); // head top
-    px(5,2,pal[0],6,4); // head
-    px(5,2,pal[2],1,4); // shadow
-    px(5,4,pal[3],1,1); // eye left
-    px(9,4,pal[3],1,1); // eye right
-    px(6,6,pal[2],4,1); // mouth
-    px(4,6,pal[2],8,1); // shoulders
-    px(4,7,pal[0],8,5); // body
-    px(3,7,pal[2],1,5); // arm L
-    px(12,7,pal[2],1,5); // arm R
-    px(5,12,pal[2],3,4); // leg L
-    px(8,12,pal[2],3,4); // leg R
-    px(7,0,pal[1],2,1); // crown hint
-    px(6,0,pal[4],1,1); px(9,0,pal[4],1,1);
-  } else if (tier === 'FREE_POWER') {
-    // Blue agent
-    px(6,2,pal[1],4,1);
-    px(5,3,pal[0],6,4);
-    px(5,5,pal[3],1,1); // eye L
-    px(9,5,pal[3],1,1); // eye R
-    px(6,7,pal[2],4,1); // mouth
-    px(4,7,pal[2],8,1); // shoulders
-    px(4,8,pal[0],8,4); // body
-    px(3,8,pal[2],1,4); // arm L
-    px(12,8,pal[2],1,4); // arm R
-    px(5,12,pal[2],3,4); // leg L
-    px(8,12,pal[2],3,4); // leg R
-    if (variant===0) { px(6,1,pal[1],4,2); } // hat
-  } else if (tier === 'META') {
-    // Purple oracle — robed
-    px(6,1,pal[0],4,1);
-    px(5,2,pal[1],6,4);
-    px(5,4,pal[3],2,1); // eye L (bigger)
-    px(9,4,pal[3],2,1); // eye R
-    px(6,6,pal[4],4,1); // mystical mouth
-    px(3,7,pal[0],10,9); // wide robe
-    px(4,7,pal[2],1,8); // robe shadow L
-    px(11,7,pal[2],1,8); // robe shadow R
-    px(6,0,pal[4],1,2); px(9,0,pal[4],1,2); // antennae
+function computeCamera() {
+  const W = stageEl.clientWidth, H = stageEl.clientHeight;
+  if (activeRoom === "world") {
+    const s = Math.min(W / WORLD_W, H / WORLD_H);
+    camTargetScale = s;
+    camTargetX = (W - WORLD_W*s) / 2;
+    camTargetY = (H - WORLD_H*s) / 2;
   } else {
-    // Green specialist — simple worker
-    const bodies = [
-      ()=>{ px(6,2,pal[0],4,4); px(5,4,pal[3],1,1); px(9,4,pal[3],1,1); px(4,6,pal[2],8,1); px(4,7,pal[1],8,4); px(3,7,pal[2],1,4); px(12,7,pal[2],1,4); px(5,11,pal[2],3,5); px(8,11,pal[2],3,5); },
-      ()=>{ px(7,2,pal[0],2,1); px(6,3,pal[0],4,4); px(5,5,pal[3],1,1); px(9,5,pal[3],1,1); px(5,7,pal[2],6,1); px(4,8,pal[1],8,4); px(3,8,pal[2],1,4); px(12,8,pal[2],1,4); px(5,12,pal[2],3,4); px(8,12,pal[2],3,4); },
-    ];
-    (bodies[variant%bodies.length] || bodies[0])();
+    const z = ZONES[activeRoom];
+    const zw = z.w * TILE, zh = z.h * TILE;
+    const pad = 80;
+    const s = Math.min((W - pad*2) / zw, (H - pad*2) / zh);
+    camTargetScale = s;
+    camTargetX = pad - z.x*TILE*s + ((W - pad*2) - zw*s) / 2;
+    camTargetY = pad - z.y*TILE*s + ((H - pad*2) - zh*s) / 2;
+  }
+}
+window.addEventListener("resize", computeCamera);
+
+// Room tabs
+for (const btn of document.querySelectorAll("#room-tabs button")) {
+  btn.addEventListener("click", () => {
+    activeRoom = btn.dataset.room;
+    for (const b of document.querySelectorAll("#room-tabs button")) b.classList.toggle("active", b === btn);
+    computeCamera();
+  });
+}
+
+// ── ASSET LOAD ──────────────────────────────────────────────────────────────
+async function loadTex(url) {
+  try {
+    const tex = await PIXI.Assets.load(url);
+    if (tex && tex.source) tex.source.scaleMode = "nearest";
+    return tex;
+  } catch(e) { return null; }
+}
+const TEX = { chars:[], floors:[], furn:{} };
+for (let i=0;i<6;i++) TEX.chars.push(await loadTex(`assets/characters/char_${i}.png`));
+for (let i=0;i<9;i++) TEX.floors.push(await loadTex(`assets/floors/floor_${i}.png`));
+const FURN_FILES = {
+  DESK:"DESK/DESK_FRONT.png", PC:"PC/PC_FRONT_ON_1.png",
+  PLANT:"PLANT/PLANT.png", PLANT_2:"PLANT_2/PLANT_2.png", CACTUS:"CACTUS/CACTUS.png",
+  BOOKSHELF:"BOOKSHELF/BOOKSHELF.png", COFFEE:"COFFEE/COFFEE.png",
+  WHITEBOARD:"WHITEBOARD/WHITEBOARD.png", CLOCK:"CLOCK/CLOCK.png",
+  SOFA:"SOFA/SOFA.png", COFFEE_TABLE:"COFFEE_TABLE/COFFEE_TABLE.png",
+};
+for (const [k,f] of Object.entries(FURN_FILES)) TEX.furn[k] = await loadTex(`assets/furniture/${f}`);
+document.getElementById("loader").style.display = "none";
+
+// ── WORLD BUILD ─────────────────────────────────────────────────────────────
+function zoneIdToKind(zoneId) {
+  if (zoneId === "nba") return "nba";
+  if (zoneId === "political") return "political";
+  if (zoneId === "nba-infra") return "infra";
+  if (zoneId === "pol-infra") return "pol_infra";
+  return "council";
+}
+
+for (const [zoneId, z] of Object.entries(ZONES)) {
+  const floorTex = TEX.floors[z.floor] || TEX.floors[0];
+  for (let ty=z.y; ty<z.y+z.h; ty++) {
+    for (let tx=z.x; tx<z.x+z.w; tx++) {
+      if (!floorTex) continue;
+      const spr = new PIXI.Sprite(floorTex);
+      spr.x = tx*TILE; spr.y = ty*TILE; spr.width = TILE; spr.height = TILE;
+      floorLayer.addChild(spr);
+    }
+  }
+  const tint = new PIXI.Graphics();
+  tint.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).fill({ color: KIND_COLORS[zoneIdToKind(zoneId)], alpha: 0.10 });
+  floorLayer.addChild(tint);
+  const border = new PIXI.Graphics();
+  border.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).stroke({ width:2, color: KIND_COLORS[zoneIdToKind(zoneId)], alpha:0.6 });
+  floorLayer.addChild(border);
+  const txt = new PIXI.Text({ text: z.label, style:{
+    fontFamily:"JetBrains Mono, monospace", fontSize:14, fontWeight:"700",
+    fill: KIND_COLORS[zoneIdToKind(zoneId)], letterSpacing:2,
+  }});
+  txt.x = z.x*TILE + 8; txt.y = z.y*TILE + 6; txt.alpha = 0.75;
+  labelLayer.addChild(txt);
+}
+
+// Furniture: small + tasteful (TILE*0.9, canonical 16px-ish relative)
+const FURN_SIZE = Math.round(TILE * 0.9);
+const decorList = [];
+for (const [zoneId, z] of Object.entries(ZONES)) {
+  decorList.push(["WHITEBOARD", z.x + z.w/2 - 0.5, z.y + 0.2, FURN_SIZE*1.8, FURN_SIZE]);
+  decorList.push(["CLOCK",      z.x + 0.6,          z.y + 0.4, FURN_SIZE, FURN_SIZE]);
+  decorList.push(["PLANT",      z.x + 0.4,          z.y + z.h - 1.3, FURN_SIZE, FURN_SIZE]);
+  decorList.push(["CACTUS",     z.x + z.w - 1.3,    z.y + z.h - 1.3, FURN_SIZE, FURN_SIZE]);
+  decorList.push(["BOOKSHELF",  z.x + z.w - 1.3,    z.y + 0.4, FURN_SIZE, FURN_SIZE*1.3]);
+}
+decorList.push(["COFFEE_TABLE", 27, 14, FURN_SIZE*1.3, FURN_SIZE]);
+decorList.push(["COFFEE",       27, 13, FURN_SIZE*0.8, FURN_SIZE*0.8]);
+decorList.push(["SOFA",         25.2, 15, FURN_SIZE*1.3, FURN_SIZE]);
+decorList.push(["SOFA",         29,   15, FURN_SIZE*1.3, FURN_SIZE]);
+
+for (const [k, tx, ty, w, h] of decorList) {
+  const tex = TEX.furn[k]; if (!tex) continue;
+  const spr = new PIXI.Sprite(tex);
+  spr.x = tx*TILE; spr.y = ty*TILE; spr.width = w; spr.height = h;
+  decorLayer.addChild(spr);
+}
+
+// ── AGENT SPRITES (bigger + always-on bubble + permanent strategy badge) ───
+function makeAgentContainer(a) {
+  const c = new PIXI.Container();
+  c.eventMode = "static"; c.cursor = "pointer";
+
+  // Drop shadow
+  const shadow = new PIXI.Graphics();
+  shadow.ellipse(0, CHAR_H*0.05, CHAR_W*0.3, 6).fill({ color:0x000000, alpha:0.45 });
+  c.addChild(shadow);
+
+  // Kind pip at feet
+  const pip = new PIXI.Graphics();
+  pip.circle(0, CHAR_H*0.05, 5).fill(KIND_COLORS[a.kind]);
+  c.addChild(pip);
+  c._pip = pip;
+
+  if (a._isInfra) {
+    // Render as a data-center tower: stacked rack blocks, roof antenna,
+    // indicator LEDs. Tower height grows with generation; crown glows on
+    // fleet-best. Drawn procedurally so it updates live in refresh().
+    const tower = new PIXI.Graphics();
+    c.addChild(tower); c._tower = tower;
+    // seed draw (empty) — real fill happens in updateInfraTower(a) each refresh
+    tower.rect(-CHAR_W*0.22, -CHAR_H*0.72, CHAR_W*0.44, CHAR_H*0.72)
+         .fill({ color:0x1a1f2a, alpha:0.96 })
+         .stroke({ width:2, color:KIND_COLORS[a.kind], alpha:0.85 });
+  } else {
+    // Character sprite — BIG
+    const tex = TEX.chars[a.char];
+    if (tex) {
+      const spr = new PIXI.Sprite(tex);
+      spr.anchor.set(0.5, 1); spr.y = 0;
+      spr.width = CHAR_W; spr.height = CHAR_H;
+      c.addChild(spr);
+      c._spr = spr;
+    }
   }
 
+  // Kind glyph above head (emoji badge — always on, small)
+  const glyph = new PIXI.Text({ text: KIND_GLYPHS[a.kind], style:{ fontSize:14 }});
+  glyph.anchor.set(0.5, 1);
+  glyph.y = -CHAR_H*1.02;
+  c.addChild(glyph);
+
+  // Speech bubble — ALWAYS ON. Content = current action + strategy.
+  const bubble = new PIXI.Container();
+  bubble.y = -CHAR_H*1.18;
+  const bubbleBg = new PIXI.Graphics();
+  bubble.addChild(bubbleBg); bubble._bg = bubbleBg;
+  const bubbleText = new PIXI.Text({ text:"…", style:{
+    fontFamily:"JetBrains Mono, monospace", fontSize:10, fill:0xe6e8ee,
+    wordWrap:true, wordWrapWidth:170, align:"center", lineHeight:12,
+  }});
+  bubbleText.anchor.set(0.5, 1);
+  bubble.addChild(bubbleText); bubble._text = bubbleText;
+  c.addChild(bubble); c._bubble = bubble;
+
+  // Nameplate
+  const plate = new PIXI.Container();
+  plate.y = CHAR_H*0.14;
+  const plateBg = new PIXI.Graphics();
+  plate.addChild(plateBg); plate._bg = plateBg;
+  const plateText = new PIXI.Text({ text:a.label.slice(0,16), style:{
+    fontFamily:"JetBrains Mono, monospace", fontSize:10, fill:0xe6e8ee, fontWeight:"600",
+  }});
+  plateText.anchor.set(0.5, 0.5);
+  plate.addChild(plateText); plate._text = plateText;
+  c.addChild(plate); c._plate = plate;
+
+  // Strategy badge (permanent — below nameplate, color-coded by family)
+  const badge = new PIXI.Container();
+  badge.y = CHAR_H*0.14 + 16;
+  const badgeBg = new PIXI.Graphics();
+  badge.addChild(badgeBg); badge._bg = badgeBg;
+  const badgeText = new PIXI.Text({ text:"", style:{
+    fontFamily:"JetBrains Mono, monospace", fontSize:9, fill:0xe6e8ee, fontWeight:"600", letterSpacing:0.5,
+  }});
+  badgeText.anchor.set(0.5, 0.5);
+  badge.addChild(badgeText); badge._text = badgeText;
+  badge.visible = false;
+  c.addChild(badge); c._badge = badge;
+
+  // Activity pulse dot (profit/loss)
+  const dot = new PIXI.Graphics(); dot.visible = false;
+  c.addChild(dot); c._dot = dot;
+
+  c.on("pointerover", () => { a._hover = true; showHoverCard(a); });
+  c.on("pointerout",  () => { a._hover = false; hideHoverCard(); });
+  c.on("pointertap",  () => { a.activeUntil = performance.now() + 5000; });
+
+  a._cnt = c;
+  agentLayer.addChild(c);
   return c;
 }
+for (const a of AGENTS) makeAgentContainer(a);
 
-// Generate walking frames (offset pixels slightly)
-function makeWalkFrames(tier, id, size=16) {
-  return [0,1,2,1].map(frame => {
-    const c = makeSpriteCanvas(tier, id, size);
-    if (frame === 1 || frame === 3) {
-      // Slight leg shift for walking illusion
-      const tmp = document.createElement('canvas');
-      tmp.width = size; tmp.height = size;
-      const tctx = tmp.getContext('2d');
-      tctx.imageSmoothingEnabled = false;
-      tctx.drawImage(c, 0, 0);
-      return tmp;
+// ── MOTION ──────────────────────────────────────────────────────────────────
+const SEP_RADIUS = 2.2, SEP_WEIGHT = 0.032;
+function tickMotion(ms) {
+  const t = ms / 1000;
+  for (const a of AGENTS) {
+    let tx = a.home.x, ty = a.home.y;
+    if (a.pactPartner) {
+      const p = AGENTS.find(x => x.id === a.pactPartner);
+      if (p) { const m = MEETING_SPOTS[(a.idx + p.idx) % MEETING_SPOTS.length]; tx = m.x; ty = m.y; }
     }
-    return c;
-  });
-}
-
-// ─── WORLD MAP ─────────────────────────────────────────────────
-// Generates the floor texture using Canvas 2D
-function buildWorldTexture(app) {
-  const c = document.createElement('canvas');
-  c.width = WORLD_W;
-  c.height = WORLD_H;
-  const ctx = c.getContext('2d');
-  ctx.imageSmoothingEnabled = false;
-
-  // Background — dark floor tiles
-  for (let tx = 0; tx < WORLD_W; tx += TILE) {
-    for (let ty = 0; ty < WORLD_H; ty += TILE) {
-      const even = ((tx/TILE + ty/TILE) % 2 === 0);
-      ctx.fillStyle = even ? '#080818' : '#090920';
-      ctx.fillRect(tx, ty, TILE, TILE);
-    }
-  }
-
-  // Grid lines
-  ctx.strokeStyle = 'rgba(255,255,255,0.025)';
-  ctx.lineWidth = 0.5;
-  for (let tx = 0; tx < WORLD_W; tx += TILE) {
-    ctx.beginPath(); ctx.moveTo(tx, 0); ctx.lineTo(tx, WORLD_H); ctx.stroke();
-  }
-  for (let ty = 0; ty < WORLD_H; ty += TILE) {
-    ctx.beginPath(); ctx.moveTo(0, ty); ctx.lineTo(WORLD_W, ty); ctx.stroke();
-  }
-
-  // Draw zones
-  function drawZone(zone, label, color, alpha=0.08) {
-    const r = ZONE_RECTS[zone];
-    if (!r) return;
-    ctx.fillStyle = `rgba(${hexToRgb(color)},${alpha})`;
-    ctx.fillRect(r.x, r.y, r.w, r.h);
-    // Border
-    ctx.strokeStyle = `rgba(${hexToRgb(color)},0.25)`;
-    ctx.lineWidth = 2;
-    ctx.strokeRect(r.x+1, r.y+1, r.w-2, r.h-2);
-    // Inner glow border
-    ctx.strokeStyle = `rgba(${hexToRgb(color)},0.1)`;
-    ctx.lineWidth = 8;
-    ctx.strokeRect(r.x+4, r.y+4, r.w-8, r.h-8);
-    // Label
-    ctx.fillStyle = `rgba(${hexToRgb(color)},0.18)`;
-    ctx.font = 'bold 28px monospace';
-    ctx.letterSpacing = '8px';
-    ctx.textAlign = 'center';
-    ctx.fillText(label.toUpperCase(), r.x + r.w/2, r.y + r.h/2 + 10);
-  }
-
-  function hexToRgb(hex) {
-    const r = parseInt(hex.slice(1,3),16);
-    const g = parseInt(hex.slice(3,5),16);
-    const b = parseInt(hex.slice(5,7),16);
-    return `${r},${g},${b}`;
-  }
-
-  drawZone('pit',       'TRADING PIT',   '#ffd700', 0.06);
-  drawZone('research',  'RESEARCH',      '#4fc3f7', 0.09);
-  drawZone('evolution', 'EVOLUTION',     '#66bb6a', 0.09);
-  drawZone('engineering','ENGINEERING',  '#ce93d8', 0.09);
-  drawZone('infra',     'INFRA',         '#ef5350', 0.09);
-  drawZone('leaderboard','LEADERBOARD',  '#ffd700', 0.04);
-  drawZone('lounge',    'LOUNGE',        '#4fc3f7', 0.04);
-
-  // Bloomberg terminals (desk sprites)
-  drawTerminals(ctx);
-
-  // Decorative circuit traces
-  drawCircuitTraces(ctx);
-
-  return PIXI.Texture.from(c);
-}
-
-function drawTerminals(ctx) {
-  // Scattered terminal desks in the Trading Pit
-  const pit = ZONE_RECTS.pit;
-  const positions = [];
-  for (let i = 0; i < 24; i++) {
-    positions.push({
-      x: pit.x + 80 + (i % 6) * 145,
-      y: pit.y + 80 + Math.floor(i / 6) * 130,
-    });
-  }
-  positions.forEach(({x, y}) => {
-    // Desk
-    ctx.fillStyle = '#12122a';
-    ctx.fillRect(x - 24, y - 16, 48, 32);
-    ctx.strokeStyle = '#1a1a40';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x - 24, y - 16, 48, 32);
-    // Screen
-    ctx.fillStyle = '#0d2040';
-    ctx.fillRect(x - 16, y - 12, 32, 20);
-    // Screen glow
-    ctx.fillStyle = `rgba(79,195,247,${0.05 + Math.random() * 0.08})`;
-    ctx.fillRect(x - 15, y - 11, 30, 18);
-    // Scanline on screen
-    ctx.fillStyle = 'rgba(79,195,247,0.15)';
-    for (let sl = 0; sl < 4; sl++) {
-      ctx.fillRect(x - 15, y - 11 + sl * 4, 30, 1);
-    }
-  });
-}
-
-function drawCircuitTraces(ctx) {
-  ctx.strokeStyle = 'rgba(79,195,247,0.04)';
-  ctx.lineWidth = 1;
-  // Horizontal traces
-  for (let i = 0; i < 18; i++) {
-    const y = 100 + i * 85;
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(WORLD_W, y);
-    ctx.stroke();
-  }
-  // Nodes
-  ctx.fillStyle = 'rgba(79,195,247,0.08)';
-  for (let i = 0; i < 40; i++) {
-    const x = Math.random() * WORLD_W;
-    const y = Math.random() * WORLD_H;
-    ctx.beginPath();
-    ctx.arc(x, y, 3, 0, Math.PI*2);
-    ctx.fill();
-  }
-}
-
-// ─── PIXI APP ──────────────────────────────────────────────────
-let pixiApp = null;
-let worldContainer = null;
-let agentContainer = null;
-let uiContainer = null;
-let worldSprite = null;
-const agentSprites = new Map();
-const speechBubblePool = [];
-
-async function initPixi() {
-  const wrapper = document.getElementById('canvas-wrapper');
-  const W = wrapper.clientWidth;
-  const H = wrapper.clientHeight;
-
-  pixiApp = new PIXI.Application();
-  await pixiApp.init({
-    canvas: document.getElementById('pixiCanvas'),
-    width: W,
-    height: H,
-    backgroundColor: 0x060618,
-    antialias: false,
-    resolution: Math.min(window.devicePixelRatio || 1, 2),
-    autoDensity: true,
-  });
-
-  // World container (panned/zoomed)
-  worldContainer = new PIXI.Container();
-  pixiApp.stage.addChild(worldContainer);
-
-  // World sprite
-  setLoadStatus('Generating world…', 40);
-  const worldTex = buildWorldTexture(pixiApp);
-  worldSprite = new PIXI.Sprite(worldTex);
-  worldSprite.x = 0;
-  worldSprite.y = 0;
-  worldContainer.addChild(worldSprite);
-
-  // Agent container
-  agentContainer = new PIXI.Container();
-  worldContainer.addChild(agentContainer);
-
-  // UI overlay container (screen-space)
-  uiContainer = new PIXI.Container();
-  pixiApp.stage.addChild(uiContainer);
-
-  // Center view
-  setViewCenter(STATE.viewX, STATE.viewY);
-
-  // Interaction
-  setupInteraction();
-
-  // Resize handler
-  window.addEventListener('resize', onResize);
-  onResize();
-}
-
-function onResize() {
-  const wrapper = document.getElementById('canvas-wrapper');
-  if (pixiApp && wrapper) {
-    pixiApp.renderer.resize(wrapper.clientWidth, wrapper.clientHeight);
-    setViewCenter(STATE.viewX, STATE.viewY);
-  }
-}
-
-// ─── VIEW TRANSFORM ────────────────────────────────────────────
-function setViewCenter(wx, wy) {
-  STATE.viewX = wx;
-  STATE.viewY = wy;
-  const W = pixiApp.screen.width;
-  const H = pixiApp.screen.height;
-  const z = STATE.zoom;
-  worldContainer.x = W/2 - wx * z;
-  worldContainer.y = H/2 - wy * z;
-  worldContainer.scale.set(z);
-}
-
-function clampView() {
-  const W = pixiApp.screen.width;
-  const H = pixiApp.screen.height;
-  const z = STATE.zoom;
-  const margin = 200;
-  STATE.viewX = Math.max(-margin/z, Math.min(WORLD_W + margin/z, STATE.viewX));
-  STATE.viewY = Math.max(-margin/z, Math.min(WORLD_H + margin/z, STATE.viewY));
-}
-
-// ─── INTERACTION ───────────────────────────────────────────────
-function setupInteraction() {
-  const canvas = document.getElementById('pixiCanvas');
-
-  // Drag to pan
-  canvas.addEventListener('pointerdown', e => {
-    if (e.button !== 0) return;
-    STATE.dragging = true;
-    STATE.dragStart = { x: e.clientX, y: e.clientY };
-    STATE.dragViewStart = { x: STATE.viewX, y: STATE.viewY };
-    canvas.style.cursor = 'grabbing';
-    e.preventDefault();
-  });
-
-  window.addEventListener('pointermove', e => {
-    if (!STATE.dragging) return;
-    const dx = (e.clientX - STATE.dragStart.x) / STATE.zoom;
-    const dy = (e.clientY - STATE.dragStart.y) / STATE.zoom;
-    STATE.viewX = STATE.dragViewStart.x - dx;
-    STATE.viewY = STATE.dragViewStart.y - dy;
-    clampView();
-    setViewCenter(STATE.viewX, STATE.viewY);
-  });
-
-  window.addEventListener('pointerup', e => {
-    if (STATE.dragging) {
-      STATE.dragging = false;
-      canvas.style.cursor = 'default';
-    }
-  });
-
-  // Scroll to zoom
-  canvas.addEventListener('wheel', e => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    STATE.zoom = Math.max(0.4, Math.min(3.5, STATE.zoom + delta));
-    setViewCenter(STATE.viewX, STATE.viewY);
-  }, { passive: false });
-
-  // WASD keys
-  const keysDown = new Set();
-  window.addEventListener('keydown', e => keysDown.add(e.key.toLowerCase()));
-  window.addEventListener('keyup',   e => keysDown.delete(e.key.toLowerCase()));
-
-  pixiApp.ticker.add(() => {
-    if (STATE.dragging) return;
-    const speed = 8 / STATE.zoom;
-    let moved = false;
-    if (keysDown.has('w') || keysDown.has('arrowup'))    { STATE.viewY -= speed; moved=true; }
-    if (keysDown.has('s') || keysDown.has('arrowdown'))  { STATE.viewY += speed; moved=true; }
-    if (keysDown.has('a') || keysDown.has('arrowleft'))  { STATE.viewX -= speed; moved=true; }
-    if (keysDown.has('d') || keysDown.has('arrowright')) { STATE.viewX += speed; moved=true; }
-    if (moved) { clampView(); setViewCenter(STATE.viewX, STATE.viewY); }
-  });
-
-  // Popup close
-  document.getElementById('popup-close').addEventListener('click', () => {
-    closePopup();
-  });
-
-  // Header buttons
-  document.getElementById('btn-zoom-in').addEventListener('click', () => {
-    STATE.zoom = Math.min(3.5, STATE.zoom + 0.2);
-    setViewCenter(STATE.viewX, STATE.viewY);
-    playSelect();
-  });
-  document.getElementById('btn-zoom-out').addEventListener('click', () => {
-    STATE.zoom = Math.max(0.4, STATE.zoom - 0.2);
-    setViewCenter(STATE.viewX, STATE.viewY);
-    playSelect();
-  });
-
-  const soundBtn = document.getElementById('btn-sound');
-  soundBtn.addEventListener('click', () => {
-    STATE.soundEnabled = !STATE.soundEnabled;
-    soundBtn.classList.toggle('active', STATE.soundEnabled);
-    soundBtn.textContent = STATE.soundEnabled ? 'SFX' : 'MUTE';
-    // Unlock AudioContext
-    if (STATE.soundEnabled) { getAudio(); playTick(); }
-  });
-
-  const speedBtn = document.getElementById('btn-speed');
-  const speeds = [1, 2, 4];
-  let speedIdx = 0;
-  speedBtn.addEventListener('click', () => {
-    speedIdx = (speedIdx + 1) % speeds.length;
-    STATE.speed = speeds[speedIdx];
-    speedBtn.textContent = `${STATE.speed}x`;
-    playSelect();
-  });
-
-  const followBtn = document.getElementById('btn-follow');
-  followBtn.addEventListener('click', () => {
-    if (STATE.followAgent) {
-      STATE.followAgent = null;
-      followBtn.classList.remove('active');
-      followBtn.textContent = 'FOLLOW';
-    } else if (STATE.selectedAgent) {
-      STATE.followAgent = STATE.selectedAgent;
-      followBtn.classList.add('active');
-      followBtn.textContent = 'UNFOLLOW';
-      playSelect();
-    }
-  });
-}
-
-// ─── AGENTS ────────────────────────────────────────────────────
-class Agent {
-  constructor(data) {
-    this.id = data.id;
-    this.name = data.name || data.id;
-    this.tier = data.tier || 'SPECIALIST';
-    this.strategy = data.strategy || 'default';
-    this.bankroll = data.bankroll || 10000;
-    this.roi = data.roi || 0;
-    this.win_rate = data.win_rate || 0;
-    this.total_bets = data.total_bets || 0;
-    this.total_wins = data.total_wins || 0;
-    this.total_pnl = data.total_pnl || 0;
-    this.model = data.model || '';
-    this.provider = data.provider || '';
-
-    // World position (random start in tier zone)
-    const zone = this._homeZone();
-    this.x = zone.x + Math.random() * zone.w;
-    this.y = zone.y + Math.random() * zone.h;
-
-    // Movement
-    this.targetX = this.x;
-    this.targetY = this.y;
-    this.speed = 0.6 + Math.random() * 0.8;
-    this.moveTimer = 0;
-    this.moveCooldown = 120 + Math.random() * 300;
-    this.walkFrame = 0;
-    this.walkTimer = 0;
-    this.facingRight = Math.random() > 0.5;
-
-    // Sit at desk
-    this.sittingTimer = 0;
-    this.isSitting = false;
-
-    // Speech
-    this.speechText = null;
-    this.speechTimer = 0;
-
-    // Sprite
-    this.sprite = null;
-    this.spriteCanvas = makeSpriteCanvas(this.tier, this.id, AGENT_SIZE);
-    this.sparkTimer = 0;
-  }
-
-  _homeZone() {
-    if (this.tier === 'PREMIUM') return ZONE_RECTS.leaderboard;
-    if (this.tier === 'META')    return ZONE_RECTS.evolution;
-    if (this.tier === 'FREE_POWER') return ZONE_RECTS.research;
-    // Specialists spread across pit
-    return ZONE_RECTS.pit;
-  }
-
-  _randomTarget() {
-    // Premium agents prefer leaderboard
-    // Others wander pit and adjacent zones
-    const zones = this.tier === 'PREMIUM'
-      ? [ZONE_RECTS.leaderboard, ZONE_RECTS.pit]
-      : this.tier === 'META'
-      ? [ZONE_RECTS.evolution, ZONE_RECTS.pit]
-      : this.tier === 'FREE_POWER'
-      ? [ZONE_RECTS.research, ZONE_RECTS.pit, ZONE_RECTS.lounge]
-      : [ZONE_RECTS.pit, ZONE_RECTS.lounge, ZONE_RECTS.engineering];
-
-    const zone = zones[Math.floor(Math.random() * zones.length)];
-    return {
-      x: zone.x + 20 + Math.random() * (zone.w - 40),
-      y: zone.y + 20 + Math.random() * (zone.h - 40),
-    };
-  }
-
-  update(dt) {
-    const spd = this.speed * STATE.speed * dt;
-
-    // Sitting at desk
-    if (this.isSitting) {
-      this.sittingTimer -= dt;
-      if (this.sittingTimer <= 0) {
-        this.isSitting = false;
-        const t = this._randomTarget();
-        this.targetX = t.x;
-        this.targetY = t.y;
+    const wx = Math.cos(t*a.freq + a.phase) * a.wamp;
+    const wy = Math.sin(t*a.freq*0.8 + a.phase*1.3) * a.wamp;
+    let fx = (tx + wx - a.x) * 0.035 * a.speed;
+    let fy = (ty + wy - a.y) * 0.035 * a.speed;
+    for (const b of AGENTS) {
+      if (b === a) continue;
+      const dx = a.x - b.x, dy = a.y - b.y;
+      const d2 = dx*dx + dy*dy;
+      if (d2 < SEP_RADIUS*SEP_RADIUS && d2 > 0.0001) {
+        const d = Math.sqrt(d2);
+        const push = (SEP_RADIUS - d) / SEP_RADIUS;
+        fx += (dx/d) * push * SEP_WEIGHT;
+        fy += (dy/d) * push * SEP_WEIGHT;
       }
-      return;
+    }
+    a.vx = a.vx * 0.82 + fx; a.vy = a.vy * 0.82 + fy;
+    a.x += a.vx; a.y += a.vy;
+    if (a._cnt && a._cnt._spr && Math.abs(a.vx) > 0.004) {
+      a._cnt._spr.scale.x = (a.vx < 0 ? -1 : 1) * Math.abs(a._cnt._spr.scale.x || 1);
+    }
+  }
+}
+
+function tickRender(ms) {
+  // Camera ease
+  camScale += (camTargetScale - camScale) * 0.12;
+  camX     += (camTargetX - camX) * 0.12;
+  camY     += (camTargetY - camY) * 0.12;
+  world.scale.set(camScale);
+  world.x = camX; world.y = camY;
+
+  for (const a of AGENTS) {
+    if (!a._cnt) continue;
+    a._cnt.x = a.x * TILE; a._cnt.y = a.y * TILE;
+    a._cnt.zIndex = a.y * 1000;
+    // Dim agents not in active room (highlight current room)
+    if (activeRoom !== "world" && a.zone !== activeRoom) { a._cnt.alpha = 0.22; }
+    else { a._cnt.alpha = 1.0; }
+
+    // Speech bubble — always visible, draw background to fit text
+    const bubble = a._cnt._bubble;
+    if (bubble && a.bubble) {
+      bubble._text.text = a.bubble;
+      const tw = Math.min(bubble._text.width + 14, 190);
+      const th = bubble._text.height + 10;
+      bubble._bg.clear()
+        .roundRect(-tw/2, -th, tw, th, 3).fill({ color: 0x0b0d12, alpha: 0.95 })
+        .roundRect(-tw/2, -th, tw, th, 3).stroke({ width:1, color: KIND_COLORS[a.kind], alpha: 0.7 })
+        // tail
+        .moveTo(-4, 0).lineTo(4, 0).lineTo(0, 5).closePath().fill({ color: 0x0b0d12, alpha: 0.95 });
+      bubble.visible = true;
+    } else if (bubble) {
+      bubble.visible = false;
     }
 
-    this.moveTimer -= dt;
+    // Nameplate (always visible — research shows they always show names)
+    const tw = a._cnt._plate._text.width + 14;
+    a._cnt._plate._bg.clear()
+      .rect(-tw/2, -8, tw, 16).fill({ color:0x0b0d12, alpha:0.92 })
+      .rect(-tw/2, -8, tw, 16).stroke({ width:1, color:KIND_COLORS[a.kind], alpha:0.85 });
 
-    const dx = this.targetX - this.x;
-    const dy = this.targetY - this.y;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-
-    if (dist < 3 || this.moveTimer <= 0) {
-      // Reached target or timed out
-      // Chance to sit at a desk
-      if (Math.random() < 0.15) {
-        this.isSitting = true;
-        this.sittingTimer = 60 + Math.random() * 180;
-        this.speechText = this._speech();
-        this.speechTimer = 120 + Math.random() * 60;
-        if (STATE.soundEnabled && Math.random() < 0.01) playTick();
-      }
-      const t = this._randomTarget();
-      this.targetX = t.x;
-      this.targetY = t.y;
-      this.moveTimer = this.moveCooldown * (0.5 + Math.random());
+    // Strategy badge
+    if (a.strategy) {
+      const fam = STRATEGY_FAMILIES[a.strategy] || "unknown";
+      const col = FAMILY_COLORS[fam];
+      a._cnt._badge._text.text = a.strategy.length > 14 ? a.strategy.slice(0,14) : a.strategy;
+      const bw = a._cnt._badge._text.width + 10;
+      a._cnt._badge._bg.clear()
+        .rect(-bw/2, -6, bw, 12).fill({ color: col, alpha: 0.2 })
+        .rect(-bw/2, -6, bw, 12).stroke({ width: 1, color: col, alpha: 0.9 });
+      a._cnt._badge.visible = true;
     } else {
-      // Move toward target
-      const speed = spd * (dist < 20 ? dist/20 : 1);
-      this.x += (dx / dist) * speed;
-      this.y += (dy / dist) * speed;
-      this.facingRight = dx > 0;
+      a._cnt._badge.visible = false;
     }
 
-    // Walk animation
-    this.walkTimer += dt;
-    if (this.walkTimer > 8) {
-      this.walkTimer = 0;
-      this.walkFrame = (this.walkFrame + 1) % 4;
+    // Pip state color
+    const pipCol = a.state === "profit" ? 0x00d9a7 : a.state === "loss" ? 0xff5c5c : a.state === "error" ? 0xff5c5c : KIND_COLORS[a.kind];
+    a._cnt._pip.clear().circle(0, CHAR_H*0.05, 5).fill(pipCol);
+
+    // Pulse dot
+    if (a.state === "profit" || a.state === "loss") {
+      const pulse = (Math.sin(ms/350 + a.idx) + 1) / 2;
+      a._cnt._dot.visible = true;
+      a._cnt._dot.clear().circle(CHAR_W*0.3, -CHAR_H*0.7, 4).fill({ color:pipCol, alpha:0.45+0.55*pulse });
+    } else { a._cnt._dot.visible = false; }
+  }
+  pactLayer.clear();
+  // Outer glow pass — wide & dim, pulses with time
+  const _pactPulse = 0.5 + 0.4 * Math.sin(performance.now() / 520);
+  for (const a of AGENTS) {
+    if (!a.pactPartner) continue;
+    const p = AGENTS.find(x => x.id === a.pactPartner);
+    if (!p || a.id > p.id) continue;
+    pactLayer.moveTo(a.x*TILE, a.y*TILE).lineTo(p.x*TILE, p.y*TILE);
+  }
+  pactLayer.stroke({ width:6, color:0x00d9a7, alpha:0.14 * _pactPulse });
+  // Inner bright pass — crisp coalition wire
+  for (const a of AGENTS) {
+    if (!a.pactPartner) continue;
+    const p = AGENTS.find(x => x.id === a.pactPartner);
+    if (!p || a.id > p.id) continue;
+    pactLayer.moveTo(a.x*TILE, a.y*TILE).lineTo(p.x*TILE, p.y*TILE);
+  }
+  pactLayer.stroke({ width:1.5, color:0x50fa7b, alpha:0.55 + 0.35 * _pactPulse });
+}
+
+app.ticker.add(() => { tickMotion(performance.now()); tickRender(performance.now()); });
+
+// ── BUBBLE TEXT BUILDERS ────────────────────────────────────────────────────
+function buildTraderBubble(a) {
+  const d = a.data;
+  const stratShort = a.strategy ? `[${a.strategy.slice(0,12)}]` : "";
+  if (!d) return `${stratShort}\nwaiting…`;
+  const br = (d.bankroll || 0).toFixed(0);
+  const roi = (d.bankroll || 100) - 100;
+  if (d.llm_ok < d.llm_calls) return `${stratShort}\n⚠ LLM err · $${br}`;
+  // Pull actual LLM reasoning from last day-decision
+  const dd = a.dayDecision;
+  if (dd && dd.day_strategy) {
+    // Strip DMAD prefixes (ARCHETYPE[], CHALLENGE_RESPONSE:) for readability
+    let think = dd.day_strategy.replace(/^(ARCHETYPE\[[^\]]+\]:|CHALLENGE_RESPONSE:)\s*/, "").trim();
+    if (think.length > 95) think = think.slice(0, 92) + "…";
+    const allocs = dd.allocations || [];
+    const top = allocs.length ? ` · ${allocs.length} bet${allocs.length>1?"s":""}` : " · pass";
+    const wl = `${d.wins||0}W·${d.losses||0}L`;
+    const roiTxt = roi >= 0 ? `+$${roi.toFixed(0)}` : `-$${(-roi).toFixed(0)}`;
+    return `${stratShort}\n"${think}"\n${wl}${top} · $${br} (${roiTxt})`;
+  }
+  const bets = d.total_bets || 0, wins = d.wins || 0, losses = d.losses || 0;
+  if (bets === 0) return `${stratShort}\nobserving…\n$${br}`;
+  const recent = a.recent ? `\n${a.recent}` : "";
+  const wl = `${wins}W·${losses}L`;
+  const roiTxt = roi >= 0 ? `+$${roi.toFixed(0)}` : `-$${(-roi).toFixed(0)}`;
+  return `${stratShort}\n${bets} bets · ${wl}${recent}\n$${br} (${roiTxt})`;
+}
+function buildIslandBubble(a) {
+  const d = a.data;
+  if (!d) return `${a.label}\nwaiting…`;
+  const b = (d.best_brier || 0).toFixed(5);
+  return `${a.label} · ${d.best_model_type || "?"}\ngen ${d.generation||0} · Brier ${b}\npop ${d.pop_size||"?"} · stag ${d.stagnation||0}`;
+}
+function buildCouncilBubble(a) {
+  return `${a.label}\n${a.mission}`;
+}
+
+// ── HOVER CARD ──────────────────────────────────────────────────────────────
+const hoverEl = document.getElementById("hover");
+function showHoverCard(a) {
+  const pt = a._cnt.getGlobalPosition();
+  const kcol = KIND_COLORS_HEX[a.kind];
+  let rows = "", tags = "", note = "";
+  if (a.data && (a.kind === "nba" || a.kind === "political")) {
+    const d = a.data;
+    const roi = +(((d.bankroll || 100) - 100)).toFixed(2);
+    const roiCls = roi >= 0 ? "up" : "down";
+    rows += `<div class="h-row"><span class="l">Bankroll</span><span class="v ${roiCls}">$${(d.bankroll||0).toFixed(2)}</span></div>`;
+    rows += `<div class="h-row"><span class="l">Record</span><span class="v">${d.wins||0}W · ${d.losses||0}L · ${d.total_bets||0} bets</span></div>`;
+    rows += `<div class="h-row"><span class="l">LLM health</span><span class="v">${d.llm_ok||0}/${d.llm_calls||0}</span></div>`;
+    if (d.max_drawdown != null) rows += `<div class="h-row"><span class="l">Max DD</span><span class="v">${(d.max_drawdown||0).toFixed(1)}%</span></div>`;
+    if (d.days_traded != null) rows += `<div class="h-row"><span class="l">Days traded</span><span class="v">${d.days_traded}</span></div>`;
+    if (a.strategy) tags += `<span class="h-tag">${a.strategy}</span>`;
+    if (a.sacrificial) tags += `<span class="h-tag sac">⚔ ${a.sacrificial}</span>`;
+    if (a.pactPartner) {
+      const p = AGENTS.find(x => x.id === a.pactPartner);
+      tags += `<span class="h-tag pact">◉ pact with ${p ? p.label : "?"}</span>`;
     }
-
-    // Speech timer
-    if (this.speechTimer > 0) {
-      this.speechTimer -= dt;
-      if (this.speechTimer <= 0) this.speechText = null;
-    }
-
-    // Spark timer for big wins
-    if (this.sparkTimer > 0) this.sparkTimer -= dt;
-  }
-
-  _speech() {
-    const lines = SPEECHES[this.strategy] || SPEECHES.default;
-    return lines[Math.floor(Math.random() * lines.length)];
-  }
-
-  celebrate() {
-    this.sparkTimer = 120;
-    this.speechText = '🎉 WIN! +' + (Math.random()*200+50).toFixed(0);
-    this.speechTimer = 180;
-    playWin();
-  }
-
-  getSpriteColor() {
-    return TIER_COLORS[this.tier] || TIER_COLORS.SPECIALIST;
-  }
-}
-
-// ─── RENDER AGENTS ─────────────────────────────────────────────
-// Selection ring graphics (single, reused)
-let selectionRing = null;
-
-function createAgentSprites() {
-  agentContainer.removeChildren();
-
-  // Selection ring
-  selectionRing = new PIXI.Graphics();
-  selectionRing.visible = false;
-  agentContainer.addChild(selectionRing);
-
-  STATE.agentList.forEach(agent => {
-    // Create sprite from canvas
-    try {
-      const tex = PIXI.Texture.from(agent.spriteCanvas);
-      const spr = new PIXI.Sprite(tex);
-      spr.width = AGENT_SIZE;
-      spr.height = AGENT_SIZE;
-      spr.anchor.set(0.5, 1.0);
-      spr.eventMode = 'static';
-      spr.cursor = 'pointer';
-      spr.on('pointerdown', () => selectAgent(agent));
-      agentContainer.addChild(spr);
-      agent.sprite = spr;
-    } catch(e) {
-      // Fallback: colored rectangle
-      const g2 = new PIXI.Graphics();
-      g2.rect(-6, -12, 12, 12).fill({ color: agent.getSpriteColor() });
-      g2.eventMode = 'static';
-      g2.cursor = 'pointer';
-      g2.on('pointerdown', () => selectAgent(agent));
-      agentContainer.addChild(g2);
-      agent.spriteGfx = g2;
-    }
-  });
-}
-
-function updateAgentPositions() {
-  STATE.agentList.forEach(agent => {
-    if (agent.sprite) {
-      agent.sprite.x = agent.x;
-      agent.sprite.y = agent.isSitting ? agent.y + 4 : agent.y + 2;
-
-      // Scale by bankroll (richer = bigger)
-      const scale = 0.85 + Math.min(agent.bankroll / 10000, 1.5) * 0.3;
-      agent.sprite.scale.y = scale;
-      agent.sprite.scale.x = agent.facingRight ? scale : -scale;
-    } else if (agent.spriteGfx) {
-      agent.spriteGfx.x = agent.x;
-      agent.spriteGfx.y = agent.y;
-    }
-  });
-
-  // Selection ring around selected agent
-  if (selectionRing) {
-    if (STATE.selectedAgent) {
-      const a = STATE.selectedAgent;
-      selectionRing.visible = true;
-      selectionRing.clear();
-      const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 200);
-      const ringColor = TIER_COLORS[a.tier] || 0xFFFFFF;
-      selectionRing.circle(0, 0, AGENT_SIZE * 0.8).stroke({ color: ringColor, alpha: 0.6 + 0.4 * pulse, width: 1.5 });
-      selectionRing.circle(0, 0, AGENT_SIZE * 1.1).stroke({ color: ringColor, alpha: 0.2 + 0.2 * pulse, width: 1 });
-      selectionRing.x = a.x;
-      selectionRing.y = a.y - AGENT_SIZE * 0.5;
-    } else {
-      selectionRing.visible = false;
-    }
-  }
-}
-
-// ─── SELECTION ─────────────────────────────────────────────────
-function selectAgent(agent) {
-  STATE.selectedAgent = agent;
-  playSelect();
-  showPopup(agent);
-}
-
-function showPopup(agent) {
-  const popup = document.getElementById('agent-popup');
-  const wrapper = document.getElementById('canvas-wrapper');
-
-  // Fill popup
-  document.getElementById('popup-name').textContent = agent.name;
-
-  const tierEl = document.getElementById('popup-tier');
-  tierEl.textContent = agent.tier.replace('_', ' ');
-  tierEl.className = 'popup-tier ' + agent.tier;
-
-  const bankroll = document.getElementById('popup-bankroll');
-  bankroll.textContent = '$' + agent.bankroll.toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2});
-
-  const roi = document.getElementById('popup-roi');
-  roi.textContent = (agent.roi >= 0 ? '+' : '') + agent.roi.toFixed(2) + '%';
-  roi.className = 'popup-stat-val ' + (agent.roi >= 0 ? 'green' : 'red');
-
-  document.getElementById('popup-winrate').textContent =
-    (agent.win_rate * 100).toFixed(1) + '%';
-  document.getElementById('popup-bets').textContent = agent.total_bets;
-  document.getElementById('popup-strategy').textContent =
-    agent.strategy.replace(/_/g,' ');
-  document.getElementById('popup-speech').textContent =
-    '"' + (agent.speechText || agent._speech()) + '"';
-
-  // Draw sprite in popup
-  const spriteCanvas = document.getElementById('popup-sprite');
-  const sctx = spriteCanvas.getContext('2d');
-  sctx.clearRect(0, 0, 32, 32);
-  sctx.imageSmoothingEnabled = false;
-  const bigSprite = makeSpriteCanvas(agent.tier, agent.id, 32);
-  sctx.drawImage(bigSprite, 0, 0, 32, 32);
-
-  // Position popup near agent (world→screen)
-  const W = wrapper.clientWidth;
-  const H = wrapper.clientHeight;
-  const z = STATE.zoom;
-  const screenX = (agent.x - STATE.viewX) * z + W/2;
-  const screenY = (agent.y - STATE.viewY) * z + H/2;
-
-  const popW = 240, popH = 220;
-  let px = screenX + 20;
-  let py = screenY - popH - 20;
-  if (px + popW > W) px = screenX - popW - 20;
-  if (py < 0) py = screenY + 20;
-
-  popup.style.left = px + 'px';
-  popup.style.top = py + 'px';
-  popup.classList.add('visible');
-}
-
-function closePopup() {
-  document.getElementById('agent-popup').classList.remove('visible');
-  STATE.selectedAgent = null;
-}
-
-// ─── PARTICLES ─────────────────────────────────────────────────
-const particleCanvas = document.getElementById('particle-canvas');
-const pCtx = particleCanvas.getContext('2d');
-
-function resizeParticleCanvas() {
-  const wrapper = document.getElementById('canvas-wrapper');
-  particleCanvas.width = wrapper.clientWidth;
-  particleCanvas.height = wrapper.clientHeight;
-}
-
-function spawnParticles(worldX, worldY, color='#ffd700', count=12) {
-  const wrapper = document.getElementById('canvas-wrapper');
-  const W = wrapper.clientWidth;
-  const H = wrapper.clientHeight;
-  const z = STATE.zoom;
-  const sx = (worldX - STATE.viewX) * z + W/2;
-  const sy = (worldY - STATE.viewY) * z + H/2;
-
-  for (let i = 0; i < count; i++) {
-    const angle = (Math.PI * 2 / count) * i + Math.random() * 0.3;
-    const speed = 1.5 + Math.random() * 3;
-    STATE.particles.push({
-      x: sx, y: sy,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed - 2,
-      life: 1.0,
-      decay: 0.02 + Math.random() * 0.02,
-      size: 2 + Math.random() * 3,
-      color,
-    });
-  }
-}
-
-function updateParticles() {
-  pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-  STATE.particles = STATE.particles.filter(p => p.life > 0);
-  STATE.particles.forEach(p => {
-    p.x += p.vx * STATE.speed;
-    p.y += p.vy * STATE.speed;
-    p.vy += 0.08;
-    p.life -= p.decay * STATE.speed;
-
-    pCtx.globalAlpha = Math.max(0, p.life);
-    pCtx.fillStyle = p.color;
-    pCtx.beginPath();
-    pCtx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-    pCtx.fill();
-  });
-  pCtx.globalAlpha = 1;
-}
-
-// ─── SPEECH BUBBLES (DOM-based) ─────────────────────────────────
-const bubbleContainer = document.getElementById('canvas-wrapper');
-const activeBubbles = new Map();
-
-function updateSpeechBubbles() {
-  const wrapper = document.getElementById('canvas-wrapper');
-  const W = wrapper.clientWidth;
-  const H = wrapper.clientHeight;
-  const z = STATE.zoom;
-
-  STATE.agentList.forEach(agent => {
-    if (!agent.speechText) {
-      if (activeBubbles.has(agent.id)) {
-        const el = activeBubbles.get(agent.id);
-        el.remove();
-        activeBubbles.delete(agent.id);
+    // Rich reasoning block from /api/day-decisions
+    const dd = a.dayDecision;
+    if (dd) {
+      let strat = (dd.day_strategy || "").replace(/^(ARCHETYPE\[[^\]]+\]:|CHALLENGE_RESPONSE:)\s*/, "");
+      note = `<b style="color:var(--ink)">Today (${dd.date||""}):</b><br/>${escapeHtml(strat)}`;
+      const allocs = (dd.allocations || []).slice(0, 3);
+      if (allocs.length) {
+        note += `<div style="margin-top:5px; padding-top:5px; border-top:1px dotted var(--line);">`;
+        for (const al of allocs) {
+          const wcls = al.won === true ? "up" : al.won === false ? "down" : "";
+          const sign = al.profit == null ? "" : (al.profit >= 0 ? `+$${al.profit.toFixed(2)}` : `-$${(-al.profit).toFixed(2)}`);
+          note += `<div style="font-size:9.5px; margin:2px 0;"><span style="color:var(--warn)">${escapeHtml(al.game||"")}</span> · <span style="color:var(--ink)">${escapeHtml(al.category||"")}</span> · <span class="${wcls}" style="font-weight:600">${sign}</span><br/><span style="color:var(--ink-3)">${escapeHtml((al.rationale||"").slice(0,110))}</span></div>`;
+        }
+        note += `</div>`;
       }
-      return;
-    }
-
-    const sx = (agent.x - STATE.viewX) * z + W/2;
-    const sy = (agent.y - STATE.viewY) * z + H/2;
-
-    // Cull offscreen
-    if (sx < -100 || sx > W+100 || sy < -100 || sy > H+100) {
-      if (activeBubbles.has(agent.id)) {
-        activeBubbles.get(agent.id).style.display = 'none';
-      }
-      return;
-    }
-
-    let el = activeBubbles.get(agent.id);
-    if (!el) {
-      el = document.createElement('div');
-      el.className = 'speech-bubble-css';
-      wrapper.appendChild(el);
-      activeBubbles.set(agent.id, el);
-    }
-    el.style.display = 'block';
-    el.style.left = sx + 'px';
-    el.style.top = (sy - AGENT_SIZE * z - 28) + 'px';
-    el.textContent = agent.speechText;
-  });
-}
-
-// ─── TICKER ────────────────────────────────────────────────────
-function buildTickerContent() {
-  const items = [];
-
-  // Predictions
-  STATE.predictions.forEach(pred => {
-    const ml = pred.predictions?.moneyline;
-    const prob = ml?.home_win_prob ?? 0.5;
-    const probCls = prob > 0.65 ? 'high' : prob > 0.52 ? 'med' : 'low';
-    items.push(`
-      <div class="ticker-item">
-        <span class="ticker-label">ML</span>
-        <span class="ticker-team">${pred.home_team || '?'}</span>
-        <span class="ticker-sep">vs</span>
-        <span class="ticker-team">${pred.away_team || '?'}</span>
-        <span class="ticker-prob ${probCls}">${(prob*100).toFixed(1)}%</span>
-        <span class="ticker-brier">Brier ${pred.quality?.avg_brier?.toFixed(5) ?? '—'}</span>
-      </div>`);
-  });
-
-  // Space health
-  const spaces = STATE.health?.projects?.nba?.spaces || {};
-  Object.entries(spaces).forEach(([id, s]) => {
-    items.push(`
-      <div class="ticker-item">
-        <span class="ticker-label">${id}</span>
-        <span class="ticker-team">${s.model || '—'}</span>
-        <span class="ticker-brier">Brier ${(s.brier||0).toFixed(5)}</span>
-        <span class="ticker-agent">Gen ${s.generation||0}</span>
-      </div>`);
-  });
-
-  // Agent highlights
-  const topAgents = STATE.agentList
-    .filter(a => a.bankroll > 0)
-    .sort((a,b) => b.bankroll - a.bankroll)
-    .slice(0, 10);
-
-  topAgents.forEach(a => {
-    const pnlStr = a.total_pnl >= 0
-      ? `<span class="ticker-win">+$${a.total_pnl.toFixed(2)}</span>`
-      : `<span class="ticker-loss">-$${Math.abs(a.total_pnl).toFixed(2)}</span>`;
-    items.push(`
-      <div class="ticker-item">
-        <span class="ticker-agent">${a.name}</span>
-        <span class="ticker-label">BK</span>
-        <span class="ticker-team">$${a.bankroll.toLocaleString()}</span>
-        ${pnlStr}
-      </div>`);
-  });
-
-  // System messages
-  items.push(`<div class="ticker-item"><span class="ticker-label">SYS</span><span class="ticker-team">NOMOS42 TRADING FLOOR v5</span><span class="ticker-brier">207 AGENTS ACTIVE</span></div>`);
-  items.push(`<div class="ticker-item"><span class="ticker-label">ATR</span><span class="ticker-brier">BEST BRIER: 0.21570</span><span class="ticker-agent">TARGET: &lt; 0.20</span></div>`);
-
-  // Duplicate for seamless loop
-  const content = items.join('') + items.join('');
-  const track = document.getElementById('ticker-track');
-  track.innerHTML = content;
-  STATE.tickerWidth = track.scrollWidth / 2;
-}
-
-function animateTicker() {
-  const track = document.getElementById('ticker-track');
-  STATE.tickerOffset += TICKER_SPEED * STATE.speed;
-  if (STATE.tickerWidth > 0 && STATE.tickerOffset >= STATE.tickerWidth) {
-    STATE.tickerOffset -= STATE.tickerWidth;
+      if (dd.cash_held_pct > 0 && dd.cash_rationale) note += `<div style="margin-top:5px; color:var(--ink-3); font-size:9.5px;">cash ${(dd.cash_held_pct*100).toFixed(0)}%: ${escapeHtml(dd.cash_rationale.slice(0,80))}</div>`;
+    } else if (a.recent) note = `Last: ${a.recent}`;
+  } else if (a.data && a._isInfra) {
+    const d = a.data;
+    rows += `<div class="h-row"><span class="l">Best Brier</span><span class="v up">${(d.best_brier||0).toFixed(5)}</span></div>`;
+    rows += `<div class="h-row"><span class="l">Generation</span><span class="v">${d.generation||0}</span></div>`;
+    rows += `<div class="h-row"><span class="l">Model</span><span class="v">${d.best_model_type || "—"}</span></div>`;
+    rows += `<div class="h-row"><span class="l">Population</span><span class="v">${d.pop_size||0}</span></div>`;
+    if (d.stagnation != null) rows += `<div class="h-row"><span class="l">Stagnation</span><span class="v">${d.stagnation} gens</span></div>`;
+    if (d.mutation_rate != null) rows += `<div class="h-row"><span class="l">Mutation</span><span class="v">${(d.mutation_rate*100).toFixed(1)}%</span></div>`;
+  } else if (a.kind === "council") {
+    note = a.mission || ""; rows += `<div class="h-row"><span class="l">Mode</span><span class="v">Karpathy loop · 30min</span></div>`;
+  } else {
+    rows += `<div class="h-row"><span class="l">Status</span><span class="v">waiting for live data…</span></div>`;
   }
-  track.style.transform = `translateX(-${STATE.tickerOffset}px)`;
+  hoverEl.innerHTML = `
+    <div class="h-head">
+      <span class="h-dot" style="background:${kcol}"></span>
+      <span class="h-title">${a.label}</span>
+      <span class="h-sub">${a.kind}</span>
+    </div>${rows}
+    ${tags ? `<div style="margin-top:6px">${tags}</div>` : ""}
+    ${note ? `<div class="h-note">${note}</div>` : ""}`;
+  hoverEl.style.display = "block";
+  hoverEl.style.left = Math.min(pt.x + 20, stageEl.clientWidth - 320) + "px";
+  hoverEl.style.top  = Math.max(pt.y - 40, 20) + "px";
+}
+function hideHoverCard() { hoverEl.style.display = "none"; }
+
+// ── SIDEBAR HELPERS ─────────────────────────────────────────────────────────
+const tradesList = document.getElementById("panel-trades-list");
+const tradesCount = document.getElementById("panel-trades-count");
+let tradesCounter = 0;
+function logTrade(kind, agent, msg, roi) {
+  const now = new Date().toISOString().slice(11,19);
+  const el = document.createElement("div");
+  el.className = "r";
+  const cls = roi == null ? "" : (roi >= 0 ? "up" : "down");
+  const roiStr = roi == null ? "" : (roi >= 0 ? `+$${roi.toFixed(1)}` : `-$${(-roi).toFixed(1)}`);
+  el.innerHTML = `<span class="t">${now}</span><span class="a ${kind}">${agent}</span><span class="m ${cls}">${msg}${roiStr ? " "+roiStr : ""}</span>`;
+  tradesList.insertBefore(el, tradesList.firstChild);
+  while (tradesList.children.length > 60) tradesList.removeChild(tradesList.lastChild);
+  tradesCounter++;
+  tradesCount.textContent = tradesCounter;
 }
 
-// ─── MINIMAP ───────────────────────────────────────────────────
-const minimapEl = document.getElementById('minimap-canvas');
-const mmCtx = minimapEl.getContext('2d');
-const MM_W = 100, MM_H = 70;
-minimapEl.width = MM_W;
-minimapEl.height = MM_H;
+// Redraw an infrastructure tower sprite from live island data.
+// Height ramps with log(generation). Color hue by best_brier. Crown on
+// fleet-best. Stagnation (>100 gens) dims the body.
+let _fleetBestBrier = 1.0;
+function updateInfraTower(a) {
+  if (!a._isInfra || !a._cnt || !a._cnt._tower) return;
+  const g = a._cnt._tower;
+  const d = a.data || {};
+  const gen = d.generation || d.gen || d.current_gen || 0;
+  const brier = d.best_brier || d.brier || 1.0;
+  const stag = d.stagnation || 0;
+  const tint = KIND_COLORS[a.kind] || 0x50fa7b;
+  // Height: 0.3..1.0 of CHAR_H based on log10(gen+1)/4 clamped.
+  const hFrac = Math.min(1.0, Math.max(0.32, Math.log10(gen + 1) / 4));
+  const H = CHAR_H * hFrac;
+  const W = CHAR_W * 0.46;
+  const nRacks = Math.min(8, Math.max(2, Math.floor(hFrac * 9)));
+  const rackH = H / nRacks;
+  const dim = stag > 100 ? 0.55 : 1.0;
+  g.clear();
+  // Base shadow plinth
+  g.rect(-W/2 - 2, -2, W + 4, 5).fill({ color:0x000000, alpha:0.35 });
+  // Rack stack (bottom up)
+  for (let i = 0; i < nRacks; i++) {
+    const yTop = -rackH * (i + 1);
+    const alpha = 0.72 + (i / nRacks) * 0.24;
+    g.rect(-W/2, yTop, W, rackH - 1.5)
+     .fill({ color:0x1a1f2a, alpha:0.96 * dim })
+     .stroke({ width:1, color:tint, alpha: alpha * dim });
+    // LEDs: 2 per rack, blink when activeUntil recent
+    const ledCol = (performance.now() - (a.activeUntil - 4000)) < 4000 && a.activeUntil > performance.now()
+      ? 0x50fa7b : (stag > 100 ? 0xff5c5c : tint);
+    g.rect(-W/2 + 4, yTop + rackH/2 - 1.5, 3, 2).fill({ color: ledCol, alpha:0.9 * dim });
+    g.rect(-W/2 + 9, yTop + rackH/2 - 1.5, 3, 2).fill({ color: ledCol, alpha:0.5 * dim });
+  }
+  // Roof
+  g.rect(-W/2 - 3, -H - 4, W + 6, 4).fill({ color: tint, alpha:0.9 * dim });
+  // Antenna
+  g.rect(-1, -H - 14, 2, 10).fill({ color: tint, alpha:0.85 * dim });
+  g.circle(0, -H - 16, 2.5).fill({ color: 0xffd700, alpha: 0.9 });
+  // Crown if fleet best
+  if (brier > 0 && brier <= _fleetBestBrier + 0.00001) {
+    g.moveTo(-W/2 + 3, -H - 6)
+     .lineTo(-W/4, -H - 14)
+     .lineTo(0, -H - 8)
+     .lineTo(W/4, -H - 14)
+     .lineTo(W/2 - 3, -H - 6)
+     .lineTo(W/2 - 3, -H - 3)
+     .lineTo(-W/2 + 3, -H - 3)
+     .closePath().fill({ color:0xffd700, alpha:0.95 });
+  }
+}
 
-function drawMinimap() {
-  mmCtx.clearRect(0, 0, MM_W, MM_H);
+function renderCategories(cats) {
+  const el = document.getElementById("panel-cats"); el.innerHTML = "";
+  const entries = Object.entries(cats).sort((a,b) => b[1] - a[1]).slice(0, 12);
+  if (!entries.length) { el.innerHTML = `<span style="color:var(--ink-3); font-size:10px;">no day-decisions yet</span>`; return; }
+  for (const [cat, n] of entries) {
+    const p = document.createElement("span");
+    p.className = "pill";
+    p.innerHTML = `${cat}<span class="n">×${n}</span>`;
+    el.appendChild(p);
+  }
+}
+function renderEvolution() {
+  const el = document.getElementById("panel-evo"); el.innerHTML = "";
+  const islands = AGENTS.filter(a => a._isInfra && a.data).sort((a,b) => (a.data.best_brier||1) - (b.data.best_brier||1));
+  const cEl = document.getElementById("panel-evo-count");
+  if (cEl) cEl.textContent = `${islands.length} / ${AGENTS.filter(a => a.kind==="island").length}`;
+  if (!islands.length) { el.innerHTML = `<span style="color:var(--ink-3); font-size:10px;">waiting for islands…</span>`; return; }
+  for (const [rank, a] of islands.entries()) {
+    const d = a.data;
+    const b = (d.best_brier || 0).toFixed(5);
+    const deltaCls = d.stagnation > 50 ? "down" : "up";
+    const row = document.createElement("div"); row.className = "row";
+    const medal = rank === 0 ? "★ " : rank < 3 ? "· " : "";
+    row.innerHTML = `<span class="l">${medal}${a.label} · ${(d.best_model_type||"?").slice(0,10)}</span><span class="v ${deltaCls}">${b} · g${d.generation||0}</span>`;
+    el.appendChild(row);
+  }
+}
 
-  // Background
-  mmCtx.fillStyle = '#060618';
-  mmCtx.fillRect(0, 0, MM_W, MM_H);
+function renderLeaderboard() {
+  const el = document.getElementById("panel-lb"); if (!el) return;
+  el.innerHTML = "";
+  const traders = AGENTS.filter(a => (a.kind === "nba" || a.kind === "political") && a.data && typeof a.data.bankroll === "number");
+  traders.sort((a,b) => (b.data.bankroll||0) - (a.data.bankroll||0));
+  const cEl = document.getElementById("panel-lb-count");
+  if (cEl) cEl.textContent = `${traders.length} live`;
+  if (!traders.length) { el.innerHTML = `<span style="color:var(--ink-3); font-size:10px;">waiting for trading floors…</span>`; return; }
+  for (const [rank, a] of traders.slice(0, 14).entries()) {
+    const d = a.data;
+    const br = (d.bankroll || 0);
+    const roi = br - 100;
+    const roiCls = roi >= 0 ? "up" : "down";
+    const kindCls = a.kind === "nba" ? "a nba" : "a political";
+    const medal = rank === 0 ? "🏆" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : `#${rank+1}`;
+    const row = document.createElement("div"); row.className = "row";
+    row.innerHTML = `<span class="l"><span style="display:inline-block;width:24px;color:var(--ink-3);font-size:9.5px;">${medal}</span><span class="${kindCls}">${a.label}</span></span><span class="v ${roiCls}">$${br.toFixed(0)} · ${roi>=0?"+":""}${roi.toFixed(1)}%</span>`;
+    el.appendChild(row);
+  }
+}
 
-  // Zones
-  const sx = MM_W / WORLD_W;
-  const sy = MM_H / WORLD_H;
+// ── LIVE DATA FETCHER ───────────────────────────────────────────────────────
+async function fetchJSON(url) {
+  try { const r = await fetch(url, { cache:"no-store" }); if (!r.ok) return null; return await r.json(); }
+  catch(e) { return null; }
+}
 
-  const zoneColors = {
-    pit: 'rgba(255,215,0,0.15)',
-    research: 'rgba(79,195,247,0.2)',
-    evolution: 'rgba(102,187,106,0.2)',
-    engineering: 'rgba(206,147,216,0.2)',
-    infra: 'rgba(239,83,80,0.15)',
+function escapeHtml(s) { return String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+const categoryCounter = {};  // rolling count across both TFs
+
+async function refresh() {
+  document.getElementById("hud-tick").textContent = "· fetching…";
+  let nbaOK = 0, polOK = 0, evoOK = 0, pacts = 0, repEntries = 0;
+  for (const a of AGENTS) a.pactPartner = null;
+
+  // NBA TF
+  const nba = await fetchJSON(ENDPOINTS.nba);
+  if (nba) {
+    const agents = nba.agents || {};
+    const strategies = nba.axelrod_strategies || {};
+    const sacrificials = nba.sacrificial_assignments || {};
+    const reputation = nba.reputation || {};
+    pacts += nba.cooperation_pacts_count || 0;
+    repEntries += Object.keys(reputation).length;
+    const repKeys = Object.keys(reputation);
+    for (let i=0; i<repKeys.length-1; i+=2) {
+      const a = AGENTS.find(x => x.kind==="nba" && x.id===repKeys[i]);
+      const b = AGENTS.find(x => x.kind==="nba" && x.id===repKeys[i+1]);
+      if (a && b) { a.pactPartner = b.id; b.pactPartner = a.id; }
+    }
+    for (const a of AGENTS.filter(x => x.kind==="nba")) {
+      const d = agents[a.id]; if (!d) continue;
+      nbaOK++;
+      const prev = a.data;
+      a.data = d; a.strategy = strategies[a.id]; a.sacrificial = sacrificials[a.id];
+      const roi = (d.bankroll || 100) - 100;
+      a.state = d.llm_ok < d.llm_calls ? "error" : roi > 2 ? "profit" : roi < -2 ? "loss" : "thinking";
+      if (prev && prev.total_bets != null && d.total_bets > prev.total_bets) {
+        const deltaW = (d.wins || 0) - (prev.wins || 0);
+        a.recent = deltaW > 0 ? "✓ W" : (d.losses > prev.losses) ? "✗ L" : "bet";
+        a.activeUntil = performance.now() + 4000;
+        logTrade("nba", a.label, `bet #${d.total_bets}`, d.bankroll - prev.bankroll);
+      }
+      a.bubble = buildTraderBubble(a);
+    }
+    document.getElementById("hud-day").textContent = `NBA day ${nba.days_processed||0}/${nba.days_total||175} · games ${nba.games_processed||0}/${nba.games_total||1247}`;
+  }
+
+  // Political TF
+  const pol = await fetchJSON(ENDPOINTS.political);
+  if (pol) {
+    const agents = pol.agents || {};
+    const strategies = pol.axelrod_strategies || {};
+    const sacrificials = pol.sacrificial_assignments || {};
+    pacts += pol.cooperation_pacts_count || 0;
+    for (const a of AGENTS.filter(x => x.kind==="political")) {
+      const d = agents[a.key]; if (!d) continue;
+      polOK++;
+      const prev = a.data;
+      a.data = d; a.strategy = strategies[a.key]; a.sacrificial = sacrificials[a.key];
+      const roi = (d.bankroll || 100) - 100;
+      a.state = d.llm_ok < d.llm_calls ? "error" : roi > 2 ? "profit" : roi < -2 ? "loss" : "thinking";
+      if (prev && prev.total_bets != null && d.total_bets > prev.total_bets) {
+        const deltaW = (d.wins || 0) - (prev.wins || 0);
+        a.recent = deltaW > 0 ? "✓ W" : (d.losses > prev.losses) ? "✗ L" : "bet";
+        a.activeUntil = performance.now() + 4000;
+        logTrade("political", a.label, `trade #${d.total_bets}`, d.bankroll - prev.bankroll);
+      }
+      a.bubble = buildTraderBubble(a);
+    }
+  }
+
+  // Day-decisions → per-agent LLM reasoning + categories aggregation
+  async function wireDayDecisions(summaryUrl, detailUrl, kind) {
+    const summary = await fetchJSON(summaryUrl);
+    if (!summary || !summary.days || !summary.days.length) return;
+    const latest = summary.days[summary.days.length - 1];
+    if (!latest || !latest.date) return;
+    const detail = await fetchJSON(`${detailUrl}?date=${latest.date}`);
+    if (!detail || !detail.agents) return;
+    for (const a of AGENTS.filter(x => x.kind === kind)) {
+      const lookupKey = kind === "nba" ? a.id : a.key;
+      const dd = detail.agents[lookupKey];
+      if (!dd) continue;
+      a.dayDecision = dd;
+      if (Array.isArray(dd.allocations)) {
+        for (const al of dd.allocations) {
+          if (al.category) categoryCounter[al.category] = (categoryCounter[al.category] || 0) + 1;
+        }
+      }
+      a.bubble = buildTraderBubble(a);
+    }
+    logTrade(kind, "fleet", `day ${latest.date}: ${latest.total_allocations||0} bets · ${((latest.avg_cash_pct||0)*100).toFixed(0)}% cash`);
+  }
+  await wireDayDecisions(ENDPOINTS.nbaDays, ENDPOINTS.nbaDays, "nba");
+  await wireDayDecisions(ENDPOINTS.politicalDays, ENDPOINTS.politicalDays, "political");
+  renderCategories(categoryCounter);
+
+  // Islands
+  const islandResults = await Promise.all(ISLANDS.map(([lbl,u]) => fetchJSON(u).then(d => [lbl,d])));
+  for (const [lbl, data] of islandResults) {
+    const a = AGENTS.find(x => x._isInfra && x.key===lbl);
+    if (!a) continue;
+    if (data) {
+      evoOK++;
+      const prev = a.data;
+      a.data = data;
+      a.state = (data.stagnation||0) > 100 ? "error" : "profit";
+      if (prev && prev.best_brier && data.best_brier < prev.best_brier - 0.00005) {
+        a.activeUntil = performance.now() + 4000;
+        logTrade("island", lbl, `Brier ↓ ${data.best_brier.toFixed(5)}`);
+      }
+    }
+    a.bubble = buildIslandBubble(a);
+  }
+  // Compute current fleet-best across infra-with-data, then redraw all towers.
+  const infras = AGENTS.filter(x => x._isInfra && x.data && x.data.best_brier);
+  _fleetBestBrier = infras.length
+    ? Math.min(...infras.map(x => x.data.best_brier))
+    : 1.0;
+  for (const a of AGENTS.filter(x => x._isInfra)) updateInfraTower(a);
+  renderEvolution();
+  renderLeaderboard();
+
+  // Councils — baked
+  for (const a of AGENTS.filter(x => x.kind === "council")) a.bubble = buildCouncilBubble(a);
+
+  document.getElementById("k-nba").textContent = `${nbaOK}/15`;
+  document.getElementById("k-nba").className = nbaOK === 15 ? "v-ok" : "v-warn";
+  document.getElementById("k-pol").textContent = `${polOK}/15`;
+  document.getElementById("k-pol").className = polOK === 15 ? "v-ok" : "v-warn";
+  document.getElementById("k-evo").textContent = `${evoOK}/21`;
+  document.getElementById("k-evo").className = evoOK >= 20 ? "v-ok" : "v-warn";
+  document.getElementById("k-pacts").textContent = pacts;
+  document.getElementById("k-last").textContent = new Date().toISOString().slice(11,19);
+  document.getElementById("hud-rep").textContent = `pacts ${pacts} · rep ${repEntries}`;
+  document.getElementById("hud-tick").textContent = "· live";
+
+  // ═══ Bloomberg ticker update ═══
+  const setTx = (id, t, cls) => {
+    const el = document.getElementById(id); if (!el) return;
+    el.textContent = t;
+    el.className = "val" + (cls ? " " + cls : "");
   };
-
-  Object.entries(ZONE_RECTS).forEach(([name, r]) => {
-    mmCtx.fillStyle = zoneColors[name] || 'rgba(255,255,255,0.05)';
-    mmCtx.fillRect(r.x*sx, r.y*sy, r.w*sx, r.h*sy);
-  });
-
-  // Agent dots (sample every Nth)
-  const step = Math.max(1, Math.floor(STATE.agentList.length / 80));
-  STATE.agentList.forEach((a, i) => {
-    if (i % step !== 0) return;
-    mmCtx.fillStyle = TIER_COLORS_HEX[a.tier] || '#66bb6a';
-    mmCtx.globalAlpha = 0.7;
-    mmCtx.fillRect(a.x*sx - 0.5, a.y*sy - 0.5, 1.5, 1.5);
-  });
-  mmCtx.globalAlpha = 1;
-
-  // Viewport rect
-  const vpW = (pixiApp?.screen.width || 800) / STATE.zoom * sx;
-  const vpH = (pixiApp?.screen.height || 600) / STATE.zoom * sy;
-  const vpX = (STATE.viewX - (pixiApp?.screen.width||800)/(2*STATE.zoom)) * sx;
-  const vpY = (STATE.viewY - (pixiApp?.screen.height||600)/(2*STATE.zoom)) * sy;
-  mmCtx.strokeStyle = 'rgba(255,215,0,0.6)';
-  mmCtx.lineWidth = 1;
-  mmCtx.strokeRect(vpX, vpY, vpW, vpH);
-
-  // Selected agent
-  if (STATE.selectedAgent) {
-    const a = STATE.selectedAgent;
-    mmCtx.fillStyle = '#fff';
-    mmCtx.fillRect(a.x*sx - 2, a.y*sy - 2, 4, 4);
-  }
-}
-
-// ─── PANELS ────────────────────────────────────────────────────
-function updateLeaderboard() {
-  const sorted = [...STATE.agentList]
-    .sort((a,b) => b.bankroll - a.bankroll)
-    .slice(0, 20);
-
-  const el = document.getElementById('leaderboard-list');
-  el.innerHTML = sorted.map((a, i) => {
-    const color = TIER_COLORS_HEX[a.tier] || '#66bb6a';
-    const rank = i + 1;
-    const rankCls = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
-    const bk = '$' + (a.bankroll/1000).toFixed(1) + 'k';
-    const pnlVal = a.total_pnl >= 0 ? `+${a.total_pnl.toFixed(0)}` : a.total_pnl.toFixed(0);
-    const pnlCls = a.total_pnl >= 0 ? '' : 'neg';
-    return `<div class="lb-entry" data-id="${a.id}">
-      <span class="lb-rank ${rankCls}">${rank}</span>
-      <span class="lb-dot" style="background:${color}"></span>
-      <span class="lb-name">${a.name}</span>
-      <span class="lb-val ${pnlCls}">${bk}</span>
-    </div>`;
-  }).join('');
-
-  // Click to select
-  el.querySelectorAll('.lb-entry').forEach(row => {
-    row.addEventListener('click', () => {
-      const a = STATE.agentList.find(a => a.id === row.dataset.id);
-      if (a) { selectAgent(a); STATE.viewX = a.x; STATE.viewY = a.y; setViewCenter(a.x, a.y); }
-    });
-  });
-}
-
-function updateSpacesList() {
-  const spaces = STATE.health?.projects?.nba?.spaces || {};
-  const el = document.getElementById('spaces-list');
-  el.innerHTML = Object.entries(spaces).map(([id, s]) => `
-    <div class="space-row">
-      <div class="space-led ${s.status === 'UP' ? 'up' : 'down'}"></div>
-      <span class="space-name">${id}</span>
-      <span class="space-brier">${(s.brier||0).toFixed(5)}</span>
-      <span class="space-gen">G${s.generation||0}</span>
-    </div>
-  `).join('');
-}
-
-function updateDeptList() {
-  const el = document.getElementById('dept-list');
-  el.innerHTML = DEPTS.map(d => `
-    <div class="dept-row">
-      <span class="dept-badge ${d.status}">${d.id}</span>
-      <span class="dept-name">${d.name}</span>
-      <span class="dept-metric">${d.metric}</span>
-    </div>
-  `).join('');
-}
-
-function updatePredictions() {
-  const el = document.getElementById('predictions-list');
-  if (!STATE.predictions.length) {
-    el.innerHTML = '<div style="font-size:10px;color:#666;padding:4px;">No games today</div>';
-    return;
-  }
-  el.innerHTML = STATE.predictions.map(pred => {
-    const ml = pred.predictions?.moneyline;
-    const prob = ml?.home_win_prob ?? 0.5;
-    const homeW = (prob * 100).toFixed(1);
-    const awayW = ((1 - prob) * 100).toFixed(1);
-    const brier = pred.quality?.avg_brier?.toFixed(5) ?? '—';
-    const conf = pred.quality?.confidence ?? '—';
-    return `<div class="pred-card">
-      <div class="pred-teams">
-        <span class="pred-home">${shortenTeam(pred.home_team)}</span>
-        <span class="pred-vs">vs</span>
-        <span class="pred-away">${shortenTeam(pred.away_team)}</span>
-      </div>
-      <div class="pred-bars">
-        <div class="pred-bar-home" style="width:${homeW}%"></div>
-        <div class="pred-bar-away"></div>
-      </div>
-      <div class="pred-prob">
-        <span>${homeW}%</span>
-        <span class="conf">${conf}</span>
-        <span>${awayW}%</span>
-      </div>
-      <div style="font-size:9px;color:#555;margin-top:3px;">Brier ${brier}</div>
-    </div>`;
-  }).join('');
-}
-
-function updateBankrollStats() {
-  const b = STATE.bankroll;
-  const el = document.getElementById('bankroll-stats');
-  if (!b || !b.balance) { el.textContent = 'No data'; return; }
-  const roiCls = b.roi_pct >= 0 ? 'color:var(--green)' : 'color:var(--red)';
-  el.innerHTML = `
-    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <span style="color:#888;">Balance</span>
-      <span style="color:var(--gold)">$${b.balance?.toFixed(2)}</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <span style="color:#888;">ROI</span>
-      <span style="${roiCls}">${b.roi_pct?.toFixed(2)}%</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <span style="color:#888;">Win Rate</span>
-      <span style="color:var(--text)">${b.win_rate_pct?.toFixed(1)}%</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <span style="color:#888;">Bets</span>
-      <span style="color:var(--text)">${b.total_bets}</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;">
-      <span style="color:#888;">Sharpe</span>
-      <span style="color:var(--blue)">${b.sharpe_ratio?.toFixed(2)}</span>
-    </div>
-  `;
-}
-
-function updateHeaderStats() {
-  const spaces = STATE.health?.projects?.nba?.spaces || {};
-  const briers = Object.values(spaces).map(s => s.brier).filter(Boolean);
-  const bestBrier = briers.length ? Math.min(...briers) : 0;
-  const maxGen = Object.values(spaces).map(s => s.generation || 0).reduce((a,b)=>Math.max(a,b), 0);
-
-  if (bestBrier) document.getElementById('hdr-brier').textContent = bestBrier.toFixed(5);
-  if (maxGen) document.getElementById('hdr-gen').textContent = maxGen.toLocaleString();
-
-  const b = STATE.bankroll;
-  if (b?.balance) {
-    document.getElementById('hdr-bankroll').textContent = '$' + b.balance.toFixed(2);
-    const roiEl = document.getElementById('hdr-roi');
-    roiEl.textContent = (b.roi_pct >= 0 ? '+' : '') + b.roi_pct.toFixed(2) + '%';
-    roiEl.className = 'val ' + (b.roi_pct >= 0 ? 'green' : 'red');
-  }
-}
-
-function shortenTeam(name) {
-  if (!name) return '?';
-  const abbrevs = {
-    'Miami Heat': 'MIA', 'Washington Wizards': 'WSH',
-    'Golden State Warriors': 'GSW', 'New York Knicks': 'NYK',
-    'Los Angeles Lakers': 'LAL', 'Los Angeles Clippers': 'LAC',
-    'Boston Celtics': 'BOS', 'Milwaukee Bucks': 'MIL',
-    'Denver Nuggets': 'DEN', 'Phoenix Suns': 'PHX',
-    'Dallas Mavericks': 'DAL', 'Memphis Grizzlies': 'MEM',
-    'Oklahoma City Thunder': 'OKC', 'New Orleans Pelicans': 'NOP',
-    'Sacramento Kings': 'SAC', 'Utah Jazz': 'UTA',
+  const avg = (o) => {
+    const vals = Object.values(o || {}); if (!vals.length) return null;
+    return vals.reduce((s,a) => s + (a.bankroll || 100), 0) / vals.length - 100;
   };
-  return abbrevs[name] || name.split(' ').pop().slice(0,6).toUpperCase();
-}
-
-// ─── DAY/NIGHT CYCLE ───────────────────────────────────────────
-function updateDayNight() {
-  const now = new Date();
-  const utcH = now.getUTCHours() + now.getUTCMinutes()/60;
-  // Night: 0-6 UTC (evening in USA)
-  // Day: 6-20 UTC
-  let nightAlpha = 0;
-  if (utcH < 6) nightAlpha = 0.22;
-  else if (utcH < 8) nightAlpha = 0.22 * (1 - (utcH-6)/2);
-  else if (utcH > 20) nightAlpha = 0.22 * (utcH-20)/4;
-
-  document.getElementById('night-overlay').style.background =
-    `rgba(0,0,30,${nightAlpha})`;
-}
-
-// ─── CLOCK ────────────────────────────────────────────────────
-function updateClock() {
-  const now = new Date();
-  const h = now.getUTCHours().toString().padStart(2,'0');
-  const m = now.getUTCMinutes().toString().padStart(2,'0');
-  document.getElementById('clock').textContent = `${h}:${m}Z`;
-}
-
-// ─── RANDOM CELEBRATION ────────────────────────────────────────
-function maybeRandomWin() {
-  if (Math.random() > 0.003 * STATE.speed) return;
-  const agent = STATE.agentList[Math.floor(Math.random() * STATE.agentList.length)];
-  if (!agent) return;
-  agent.celebrate();
-  spawnParticles(agent.x, agent.y, TIER_COLORS_HEX[agent.tier] || '#ffd700', 15);
-}
-
-// ─── DATA LOADING ──────────────────────────────────────────────
-async function loadData() {
-  setLoadStatus('Loading agent states…', 55);
-
-  // Try Bloomberg API first, fall back to static files
-  const base = window.location.hostname === 'localhost'
-    ? 'http://localhost:8080'
-    : ''; // Relative paths for HF Space
-
-  try {
-    // Agent states
-    const agentResp = await fetch(`${base}/data/arena/agent-states-v5.json`);
-    if (agentResp.ok) {
-      const agentData = await agentResp.json();
-      STATE.agents = agentData.agents || {};
-    }
-  } catch(e) { console.warn('Agent data fetch failed:', e.message); }
-
-  try {
-    // Predictions
-    const predResp = await fetch(`${base}/data/arena/model-predictions-latest.json`);
-    if (predResp.ok) {
-      const predData = await predResp.json();
-      STATE.predictions = predData.predictions || [];
-    }
-  } catch(e) { console.warn('Predictions fetch failed:', e.message); }
-
-  try {
-    // Health / spaces
-    const healthResp = await fetch(`${base}/data/agent-health.json`);
-    if (healthResp.ok) {
-      STATE.health = await healthResp.json();
-    }
-  } catch(e) { console.warn('Health fetch failed:', e.message); }
-
-  try {
-    // Bankroll
-    const brResp = await fetch(`${base}/data/nba-agent/bankroll-state.json`);
-    if (brResp.ok) {
-      STATE.bankroll = await brResp.json();
-    }
-  } catch(e) { console.warn('Bankroll fetch failed:', e.message); }
-
-  // Use embedded fallback data if nothing loaded
-  if (!Object.keys(STATE.agents).length) {
-    STATE.agents = FALLBACK_AGENTS;
+  const sumCalls = (o) => Object.values(o || {}).reduce((s,a) => s + (a.llm_calls || 0), 0);
+  if (nba) {
+    setTx("bt-nba-day", `D${nba.days_processed || 0}/${nba.days_total || 175}`);
+    const p = avg(nba.agents); if (p != null) setTx("bt-nba-pnl", `${p>=0?"+":""}${p.toFixed(2)}%`, p>=0?"up":"down");
   }
-  if (!STATE.predictions.length) {
-    STATE.predictions = FALLBACK_PREDICTIONS;
+  if (pol) {
+    setTx("bt-pol-day", `D${pol.days_processed || 0}/${pol.days_total || 175}`);
+    const p = avg(pol.agents); if (p != null) setTx("bt-pol-pnl", `${p>=0?"+":""}${p.toFixed(2)}%`, p>=0?"up":"down");
   }
-  if (!STATE.health?.projects) {
-    STATE.health = FALLBACK_HEALTH;
-  }
-  if (!STATE.bankroll?.balance) {
-    STATE.bankroll = FALLBACK_BANKROLL;
-  }
+  setTx("bt-pacts", String(pacts));
+  setTx("bt-calls", String(sumCalls(nba && nba.agents) + sumCalls(pol && pol.agents)));
+  const best = AGENTS.filter(x => x._isInfra && x.data && x.data.best_brier)
+                     .sort((a,b) => a.data.best_brier - b.data.best_brier)[0];
+  if (best) setTx("bt-fleet", `${best.label} ${best.data.best_brier.toFixed(5)}`, "star");
 }
 
-// ─── FALLBACK EMBEDDED DATA ────────────────────────────────────
-const FALLBACK_AGENTS = {
-  "t1_claude": { id:"t1_claude", name:"Claude Prime", tier:"PREMIUM", strategy:"value_hunter_half_kelly", bankroll:10000, roi:0, win_rate:0, total_bets:0, total_pnl:0 },
-  "t1_gpt4o": { id:"t1_gpt4o", name:"GPT-4o Strategist", tier:"PREMIUM", strategy:"proportional_edge", bankroll:10000, roi:0, win_rate:0, total_bets:0, total_pnl:0 },
-  "t1_grok": { id:"t1_grok", name:"Grok Contrarian", tier:"PREMIUM", strategy:"underdog_specialist", bankroll:10000, roi:0, win_rate:0, total_bets:0, total_pnl:0 },
-  "t1_gemini": { id:"t1_gemini", name:"Gemini Analyst", tier:"PREMIUM", strategy:"confidence_scaled", bankroll:10000, roi:0, win_rate:0, total_bets:0, total_pnl:0 },
-};
+// ── BOOT ────────────────────────────────────────────────────────────────────
+computeCamera();
+camScale = camTargetScale; camX = camTargetX; camY = camTargetY;  // snap on boot
+await refresh();
+setInterval(refresh, 30000);
+// Bloomberg UTC clock — tick every second independent of data refresh
+setInterval(() => {
+  const el = document.getElementById("bt-utc");
+  if (el) el.textContent = new Date().toISOString().slice(11,19);
+}, 1000);
+logTrade("council", "pixel-world", "v0.9 boot · 51 agents · 21 islands · full leaderboard · infra-towers · 21 islands as server racks");
 
-const FALLBACK_PREDICTIONS = [
-  { game_id:"g1", home_team:"Miami Heat", away_team:"Washington Wizards", predictions:{ moneyline:{ home_win_prob:0.47 }}, quality:{ avg_brier:0.22448, confidence:"high" }},
-  { game_id:"g2", home_team:"New York Knicks", away_team:"Golden State Warriors", predictions:{ moneyline:{ home_win_prob:0.62 }}, quality:{ avg_brier:0.22159, confidence:"high" }},
-];
-
-const FALLBACK_HEALTH = {
-  projects: { nba: { spaces: {
-    S10:{ status:'UP', brier:0.22454, generation:708,  model:'xgboost_brier' },
-    S11:{ status:'UP', brier:0.22273, generation:1405, model:'xgboost' },
-    S12:{ status:'UP', brier:0.22506, generation:1336, model:'catboost' },
-    S13:{ status:'UP', brier:0.22455, generation:1018, model:'extra_trees' },
-    S14:{ status:'UP', brier:0.22666, generation:1070, model:'xgboost_brier' },
-    S15:{ status:'UP', brier:0.22159, generation:1826, model:'random_forest' },
-  }}}};
-
-const FALLBACK_BANKROLL = {
-  balance: 91.29, roi_pct: -8.71, win_rate_pct: 38.64,
-  total_bets: 44, sharpe_ratio: -3.11,
-};
-
-// ─── GENERATE AGENT LIST ───────────────────────────────────────
-function buildAgentList() {
-  const agents = Object.values(STATE.agents);
-
-  // If we only have the 4 premium agents from static data, generate the rest
-  const needed = Math.max(0, 207 - agents.length);
-
-  const tiers = ['FREE_POWER','FREE_POWER','FREE_POWER','FREE_POWER',
-                 'SPECIALIST','SPECIALIST','SPECIALIST','SPECIALIST','SPECIALIST','SPECIALIST',
-                 'SPECIALIST','SPECIALIST','SPECIALIST','META'];
-
-  const strategies = Object.keys(SPEECHES);
-  const names = [
-    'Alpha Bot','Beta Scout','Gamma Quant','Delta Sharp','Epsilon Edge',
-    'Zeta Prop','Eta Value','Theta Kelly','Iota Fade','Kappa Hedge',
-    'Lambda Grid','Mu Arb','Nu Spread','Xi Total','Omicron Line',
-    'Pi Corner','Rho Juice','Sigma Dog','Tau Chalk','Upsilon Whale',
-    'Phi Fish','Chi Limit','Psi Steam','Omega Closer',
-  ];
-
-  for (let i = 0; i < needed; i++) {
-    const tier = tiers[i % tiers.length];
-    const id = `auto_${i}`;
-    const bankroll = 9000 + Math.random() * 2500;
-    agents.push({
-      id,
-      name: names[i % names.length] + ` ${Math.floor(i/names.length)+1}`,
-      tier,
-      strategy: strategies[i % strategies.length],
-      bankroll,
-      roi: (Math.random() - 0.5) * 20,
-      win_rate: 0.3 + Math.random() * 0.35,
-      total_bets: Math.floor(Math.random() * 80),
-      total_wins: Math.floor(Math.random() * 40),
-      total_pnl: (Math.random() - 0.5) * 1000,
-      model: 'synthetic',
-      provider: 'local',
-    });
-  }
-
-  STATE.agentList = agents.map(d => new Agent(d));
-}
-
-// ─── LOADING UTILS ─────────────────────────────────────────────
-function setLoadStatus(msg, pct) {
-  document.getElementById('loading-status').textContent = msg;
-  document.getElementById('loading-bar').style.width = pct + '%';
-}
-
-function hideLoading() {
-  const el = document.getElementById('loading');
-  el.classList.add('fade-out');
-  setTimeout(() => el.style.display = 'none', 600);
-}
-
-// ─── MAIN LOOP ─────────────────────────────────────────────────
-let lastTime = 0;
-
-function mainLoop(ts) {
-  const dt = Math.min((ts - lastTime) / (1000/60), 4); // delta in frames, max 4
-  lastTime = ts;
-
-  if (!pixiApp) return;
-
-  // Update agents
-  STATE.agentList.forEach(a => a.update(dt));
-
-  // Update agent positions in PixiJS
-  updateAgentPositions();
-
-  // Follow selected agent
-  if (STATE.followAgent) {
-    const a = STATE.followAgent;
-    STATE.viewX += (a.x - STATE.viewX) * 0.05;
-    STATE.viewY += (a.y - STATE.viewY) * 0.05;
-    setViewCenter(STATE.viewX, STATE.viewY);
-  }
-
-  // Speech bubbles (throttle)
-  if (Math.floor(ts/100) % 2 === 0) updateSpeechBubbles();
-
-  // Particles
-  updateParticles();
-
-  // Random win event
-  maybeRandomWin();
-
-  // Ticker
-  animateTicker();
-
-  // Minimap (every 3rd frame)
-  if (Math.floor(ts/33) % 3 === 0) drawMinimap();
-
-  // Periodic updates (every 30s)
-  if (ts - STATE.lastUpdate > DATA_REFRESH_MS) {
-    STATE.lastUpdate = ts;
-    refreshData();
-  }
-
-  requestAnimationFrame(mainLoop);
-}
-
-// ─── PERIODIC REFRESH ─────────────────────────────────────────
-async function refreshData() {
-  // Re-fetch data silently
-  try {
-    const r = await fetch('/data/agent-health.json');
-    if (r.ok) {
-      STATE.health = await r.json();
-      updateSpacesList();
-      updateHeaderStats();
-    }
-  } catch(e) {}
-
-  try {
-    const r = await fetch('/data/arena/model-predictions-latest.json');
-    if (r.ok) {
-      const d = await r.json();
-      STATE.predictions = d.predictions || STATE.predictions;
-      updatePredictions();
-      buildTickerContent();
-    }
-  } catch(e) {}
-
-  updateLeaderboard();
-  updateDeptList();
-  updateClock();
-  updateDayNight();
-}
-
-// Clock updater
-setInterval(updateClock, 10000);
-setInterval(updateDayNight, 60000);
-
-// ─── BOOT ──────────────────────────────────────────────────────
-async function boot() {
-  setLoadStatus('Loading data…', 20);
-  await loadData();
-
-  setLoadStatus('Building agents…', 45);
-  buildAgentList();
-
-  setLoadStatus('Initializing renderer…', 60);
-  await initPixi();
-
-  setLoadStatus('Spawning sprites…', 75);
-  createAgentSprites();
-
-  setLoadStatus('Building world…', 85);
-  resizeParticleCanvas();
-  window.addEventListener('resize', resizeParticleCanvas);
-
-  setLoadStatus('Populating panels…', 90);
-  updateLeaderboard();
-  updateSpacesList();
-  updateDeptList();
-  updatePredictions();
-  updateBankrollStats();
-  updateHeaderStats();
-  buildTickerContent();
-  updateClock();
-  updateDayNight();
-  drawMinimap();
-
-  setLoadStatus('Launching floor…', 100);
-  setTimeout(() => {
-    hideLoading();
-    // Center on trading pit
-    STATE.viewX = ZONE_RECTS.pit.x + ZONE_RECTS.pit.w / 2;
-    STATE.viewY = ZONE_RECTS.pit.y + ZONE_RECTS.pit.h / 2;
-    STATE.zoom = 1.0;
-    setViewCenter(STATE.viewX, STATE.viewY);
-
-    requestAnimationFrame(ts => {
-      lastTime = ts;
-      requestAnimationFrame(mainLoop);
-    });
-
-    // Welcome sound
-    setTimeout(() => {
-      if (STATE.soundEnabled) {
-        playTone(440, 0.1); setTimeout(()=>playTone(550,0.1),100);
-        setTimeout(()=>playTone(660,0.15),200); setTimeout(()=>playTone(880,0.2),300);
-      }
-    }, 800);
-  }, 300);
-}
-
-// Start when PixiJS is ready
-if (typeof PIXI !== 'undefined') {
-  boot().catch(console.error);
-} else {
-  document.getElementById('loading-status').textContent = 'Waiting for PixiJS…';
-  window.addEventListener('load', () => boot().catch(console.error));
-}
-
+})();
 </script>
 </body>
 </html>
