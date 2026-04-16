@@ -53,24 +53,34 @@ def cpcv_burst():
     if not GH_TOKEN:
         return {"error": "GITHUB_TOKEN missing"}
 
-    # Pull canonical hold-out from raw GitHub (NOT pickled — keeps Modal lean).
-    raw = "https://raw.githubusercontent.com/LBJLincoln/mon-ipad/main/data/full-season-backtest.json"
+    # Pull canonical bet-level record from raw GitHub. Repo is private so
+    # GITHUB_TOKEN is required; raw.githubusercontent.com honors bearer auth.
+    raw = "https://raw.githubusercontent.com/LBJLincoln/mon-ipad/main/data/arena/trading-floor-v5-latest.json"
     req = urllib.request.Request(raw, headers={"Authorization": f"Bearer {GH_TOKEN}"})
-    data = json.loads(urllib.request.urlopen(req, timeout=30).read())
+    try:
+        data = json.loads(urllib.request.urlopen(req, timeout=30).read())
+    except Exception as e:
+        return {"error": f"fetch failed: {e}"}
 
-    games = data.get("games") or data.get("predictions") or []
-    if len(games) < 200:
-        return {"error": f"only {len(games)} games in hold-out, need 200+"}
+    bets = data.get("bets") or data.get("trades") or data.get("predictions") or []
+    if len(bets) < 200:
+        return {"error": f"only {len(bets)} bets in hold-out, need 200+"}
 
-    # Synthetic feature matrix from prediction rows (production engine does
-    # this from raw box scores; here we're CPCV-gating the model outputs).
+    # Feature matrix from real bet rows. Fields vary across sources; we
+    # accept (prob, edge, odds, stake) as a robust superset.
+    def _f(b, k, default=0.5):
+        v = b.get(k, default)
+        try: return float(v)
+        except (TypeError, ValueError): return default
     X = np.array([[
-        g.get("model_prob", 0.5),
-        g.get("market_prob", 0.5),
-        g.get("home_form", 0.5),
-        g.get("away_form", 0.5),
-    ] for g in games])
-    y = np.array([1 if g.get("home_won") else 0 for g in games])
+        _f(b, "prob", 0.5),
+        _f(b, "edge", 0.0),
+        _f(b, "odds", 2.0),
+        _f(b, "stake", 1.0),
+    ] for b in bets])
+    y = np.array([1 if (b.get("won") or b.get("home_won") or (b.get("pnl", 0) > 0)) else 0 for b in bets])
+    if y.sum() == 0 or y.sum() == len(y):
+        return {"error": f"degenerate y: all {y[0]} across {len(y)} rows"}
 
     cpcv = CombinatorialPurgedKFold(n_folds=10, n_test_folds=2, purged_size=5, embargo_size=5)
     briers = []
