@@ -3,7 +3,7 @@
 <head><script>window.huggingface={variables:{"SPACE_CREATOR_USER_ID":"698653c38d72821326e9e4fe"}};</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nomos42 Pixel World — v2.3 · Bloomberg Terminal</title>
+<title>Nomos42 Pixel World — v2.5 · Bloomberg Terminal</title>
 <style>
   :root {
     --bg:#0b0d12; --bg-2:#14171f; --bg-3:#1a1f2a; --line:#1e2330;
@@ -227,14 +227,14 @@
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-// NOMOS42 PIXEL WORLD v2.3 — breathing + emotes + perf-nameplates + particles
-//                         + live-bet ticker + mini-map + home-island A*
+// NOMOS42 PIXEL WORLD v2.5 — big centered agents + proper sprite frames
+//                         + breathing + emotes + perf-nameplates + particles
 // ═══════════════════════════════════════════════════════════════════════════
 (async () => {
-const TILE = 20;
-const GRID_W = 56, GRID_H = 32;
+const TILE = 32;
+const GRID_W = 40, GRID_H = 26;
 const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
-const CHAR_W = 42, CHAR_H = 36;   // 1.5× native 28×24 frame — proper aspect ratio
+const CHAR_W = 56, CHAR_H = 48;   // 2× native 28×24 — big, crisp, proper aspect
 
 const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c };
 const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", island:"#50fa7b", infra:"#50fa7b", pol_infra:"#8be9fd", council:"#ffb86c" };
@@ -281,14 +281,14 @@ function homeIslandFor(id) {
   return null;
 }
 // Match floor center (in tile coords) — agents pilgrimage here when betting
-const MATCH_FLOOR = { x: 28, y: 14 };
+const MATCH_FLOOR = { x: 20, y: 7 };
 
 const ZONES = {
-  nba:       { x:2,  y:2,  w:20, h:11, floor:3, label:"NBA TRADING FLOOR" },
-  political: { x:34, y:2,  w:20, h:11, floor:5, label:"POLITICAL FLOOR" },
-  "nba-infra":  { x:2,  y:15, w:26, h:7, floor:6, label:"NBA EVOLUTION · 13 ISLANDS" },
-  "pol-infra":  { x:30, y:15, w:24, h:7, floor:6, label:"POLITICAL EVOLUTION · 8 ISLANDS" },
-  councils:  { x:2,  y:24, w:52, h:6, floor:1, label:"COUNCIL CHAMBERS" },
+  nba:       { x:1,  y:1,  w:18, h:12, floor:3, label:"NBA TRADING FLOOR" },
+  political: { x:21, y:1,  w:18, h:12, floor:5, label:"POLITICAL FLOOR" },
+  "nba-infra":  { x:1,  y:14, w:18, h:5, floor:6, label:"NBA EVOLUTION · 13 ISLANDS" },
+  "pol-infra":  { x:21, y:14, w:18, h:5, floor:6, label:"POLITICAL EVOLUTION · 8 ISLANDS" },
+  councils:  { x:1,  y:20, w:38, h:5, floor:1, label:"COUNCIL CHAMBERS · 9 DEPARTMENTS" },
 };
 
 const NBA_TRADERS = [
@@ -364,17 +364,18 @@ function assignSeats() {
     const list = AGENTS.filter(a => a.zone === zoneId);
     if (!list.length) continue;
     const isInfraZone = zoneId === "nba-infra" || zoneId === "pol-infra";
-    // Infra: single-row lineup of towers, tight spacing, no wander.
-    // Agents: classic 5-col seat grid with Brownian wander.
-    const cols = isInfraZone ? list.length : Math.min(5, list.length);
+    const isCouncil = zoneId === "councils";
+    const cols = isInfraZone ? Math.min(list.length, Math.ceil(list.length/2)) : isCouncil ? list.length : Math.min(4, list.length);
     const rows = Math.ceil(list.length / cols);
-    const padX = (z.w - cols * (isInfraZone ? 1.7 : 3)) / (cols + 1);
-    const padY = (z.h - rows * (isInfraZone ? 3 : 4)) / (rows + 1);
+    const cellW = isInfraZone ? 2.2 : isCouncil ? 3.5 : 4;
+    const cellH = isInfraZone ? 2.5 : isCouncil ? 3 : 5;
+    const padX = (z.w - cols * cellW) / (cols + 1);
+    const padY = (z.h - rows * cellH) / (rows + 1);
     list.forEach((a, i) => {
       const c = i % cols, r = Math.floor(i / cols);
       a.seat = {
-        x: z.x + padX * (c + 1) + c * (isInfraZone ? 1.7 : 3) + (isInfraZone ? 0.85 : 1.5),
-        y: z.y + padY * (r + 1) + r * (isInfraZone ? 3 : 4) + (isInfraZone ? 2.0 : 2.5),
+        x: z.x + padX * (c + 1) + c * cellW + cellW / 2,
+        y: z.y + padY * (r + 1) + r * cellH + cellH / 2,
       };
       a.home = { ...a.seat };
       a.phase = Math.random() * Math.PI * 2;
@@ -391,7 +392,7 @@ function assignSeats() {
 assignSeats();
 
 const MEETING_SPOTS = [
-  { x:28, y:8  }, { x:28, y:12 }, { x:28, y:16 }, { x:28, y:20 }, { x:28, y:24 },
+  { x:20, y:5  }, { x:20, y:8  }, { x:20, y:11 }, { x:20, y:16 }, { x:20, y:22 },
 ];
 
 // ── PIXI INIT ───────────────────────────────────────────────────────────────
@@ -557,41 +558,41 @@ for (const [zoneId, z] of Object.entries(ZONES)) {
   bk.stroke({ width:2, color:bkCol, alpha:0.8 });
   floorLayer.addChild(bk);
   const txt = new PIXI.Text({ text: z.label, style:{
-    fontFamily:"JetBrains Mono, monospace", fontSize:14, fontWeight:"700",
-    fill: KIND_COLORS[zoneIdToKind(zoneId)], letterSpacing:2,
+    fontFamily:"JetBrains Mono, monospace", fontSize:16, fontWeight:"700",
+    fill: KIND_COLORS[zoneIdToKind(zoneId)], letterSpacing:2.5,
   }});
-  txt.x = z.x*TILE + 8; txt.y = z.y*TILE + 6; txt.alpha = 0.75;
+  txt.x = z.x*TILE + 10; txt.y = z.y*TILE + 8; txt.alpha = 0.80;
   labelLayer.addChild(txt);
 }
 
-// v2.3: Data-flow cables between zones (corridor decorations)
+// v2.5: Data-flow cables between zones (corridor decorations)
 const cables = new PIXI.Graphics();
-cables.moveTo(22*TILE, 13*TILE).lineTo(28*TILE, 13*TILE).lineTo(34*TILE, 13*TILE);
-cables.moveTo(28*TILE, 13*TILE).lineTo(28*TILE, 15*TILE);
-cables.moveTo(14*TILE, 13*TILE).lineTo(14*TILE, 15*TILE);
-cables.moveTo(42*TILE, 13*TILE).lineTo(42*TILE, 15*TILE);
-cables.moveTo(28*TILE, 22*TILE).lineTo(28*TILE, 24*TILE);
+cables.moveTo(10*TILE, 13*TILE).lineTo(20*TILE, 13*TILE).lineTo(30*TILE, 13*TILE);
+cables.moveTo(20*TILE, 13*TILE).lineTo(20*TILE, 14*TILE);
+cables.moveTo(10*TILE, 19*TILE).lineTo(10*TILE, 20*TILE);
+cables.moveTo(30*TILE, 19*TILE).lineTo(30*TILE, 20*TILE);
 cables.stroke({ width:1, color:0x3a2600, alpha:0.5 });
 const cableDots = new PIXI.Graphics();
-for (const [cx,cy] of [[22,13],[28,13],[34,13],[28,15],[14,15],[42,15],[28,22],[28,24]]) {
-  cableDots.circle(cx*TILE, cy*TILE, 3).fill({ color:0xffa500, alpha:0.6 });
+for (const [cx,cy] of [[10,13],[20,13],[30,13],[20,14],[10,19],[30,19]]) {
+  cableDots.circle(cx*TILE, cy*TILE, 4).fill({ color:0xffa500, alpha:0.6 });
 }
 decorLayer.addChild(cables, cableDots);
 
-// Furniture: small + tasteful (TILE*0.9, canonical 16px-ish relative)
-const FURN_SIZE = Math.round(TILE * 0.9);
+// Furniture: scaled to TILE (canonical pixel-art decor)
+const FURN_SIZE = Math.round(TILE * 0.85);
 const decorList = [];
 for (const [zoneId, z] of Object.entries(ZONES)) {
-  decorList.push(["WHITEBOARD", z.x + z.w/2 - 0.5, z.y + 0.2, FURN_SIZE*1.8, FURN_SIZE]);
-  decorList.push(["CLOCK",      z.x + 0.6,          z.y + 0.4, FURN_SIZE, FURN_SIZE]);
-  decorList.push(["PLANT",      z.x + 0.4,          z.y + z.h - 1.3, FURN_SIZE, FURN_SIZE]);
-  decorList.push(["CACTUS",     z.x + z.w - 1.3,    z.y + z.h - 1.3, FURN_SIZE, FURN_SIZE]);
-  decorList.push(["BOOKSHELF",  z.x + z.w - 1.3,    z.y + 0.4, FURN_SIZE, FURN_SIZE*1.3]);
+  if (zoneId === "nba-infra" || zoneId === "pol-infra") continue;
+  decorList.push(["WHITEBOARD", z.x + z.w/2 - 0.5, z.y + 0.2, FURN_SIZE*2, FURN_SIZE*1.2]);
+  decorList.push(["CLOCK",      z.x + 0.5,          z.y + 0.3, FURN_SIZE, FURN_SIZE]);
+  decorList.push(["PLANT",      z.x + 0.3,          z.y + z.h - 1.5, FURN_SIZE*1.1, FURN_SIZE*1.1]);
+  decorList.push(["CACTUS",     z.x + z.w - 1.5,    z.y + z.h - 1.5, FURN_SIZE, FURN_SIZE]);
+  decorList.push(["BOOKSHELF",  z.x + z.w - 1.5,    z.y + 0.3, FURN_SIZE, FURN_SIZE*1.4]);
 }
-decorList.push(["COFFEE_TABLE", 27, 14, FURN_SIZE*1.3, FURN_SIZE]);
-decorList.push(["COFFEE",       27, 13, FURN_SIZE*0.8, FURN_SIZE*0.8]);
-decorList.push(["SOFA",         25.2, 15, FURN_SIZE*1.3, FURN_SIZE]);
-decorList.push(["SOFA",         29,   15, FURN_SIZE*1.3, FURN_SIZE]);
+decorList.push(["COFFEE_TABLE", 19, 13.2, FURN_SIZE*1.5, FURN_SIZE]);
+decorList.push(["COFFEE",       19.3, 12.5, FURN_SIZE*0.9, FURN_SIZE*0.9]);
+decorList.push(["SOFA",         18, 13.8, FURN_SIZE*1.5, FURN_SIZE]);
+decorList.push(["SOFA",         21, 13.8, FURN_SIZE*1.5, FURN_SIZE]);
 
 for (const [k, tx, ty, w, h] of decorList) {
   const tex = TEX.furn[k]; if (!tex) continue;
@@ -632,16 +633,16 @@ function makeAgentContainer(a) {
          .stroke({ width:2, color:KIND_COLORS[a.kind], alpha:0.85 });
     // v2.0: Sxx/Pxx label + current Brier under the rack
     const iLbl = new PIXI.Text({ text: a.label, style:{
-      fontFamily:"IBM Plex Mono, monospace", fontSize:9, fontWeight:"700",
-      fill: 0xffd700, letterSpacing:0.5,
+      fontFamily:"IBM Plex Mono, monospace", fontSize:11, fontWeight:"700",
+      fill: 0xffd700, letterSpacing:0.8,
     }});
     iLbl.anchor.set(0.5, 0); iLbl.y = CHAR_H*0.08;
     c.addChild(iLbl); c._iLbl = iLbl;
     const iBr = new PIXI.Text({ text: "—", style:{
-      fontFamily:"IBM Plex Mono, monospace", fontSize:8,
+      fontFamily:"IBM Plex Mono, monospace", fontSize:10,
       fill: 0x00d9a7,
     }});
-    iBr.anchor.set(0.5, 0); iBr.y = CHAR_H*0.08 + 11;
+    iBr.anchor.set(0.5, 0); iBr.y = CHAR_H*0.08 + 14;
     c.addChild(iBr); c._iBr = iBr;
   } else {
     // Character sprite — BIG, with v2.0 per-trader tint
@@ -657,22 +658,22 @@ function makeAgentContainer(a) {
     // v2.0: 6x6 letter badge overlay (model family: Q/M/G/L/N/P/E/D/…)
     if (a.badge) {
       const bg = new PIXI.Graphics();
-      bg.roundRect(-9, -CHAR_H*0.78, 18, 18, 3)
+      bg.roundRect(-12, -CHAR_H*0.78, 24, 24, 4)
         .fill({ color: a.tint || 0xffa500, alpha: 0.95 })
-        .stroke({ width: 1, color: 0x000000, alpha: 0.85 });
+        .stroke({ width: 1.5, color: 0x000000, alpha: 0.85 });
       c.addChild(bg);
       const bTxt = new PIXI.Text({ text: a.badge, style:{
-        fontFamily:"IBM Plex Mono, monospace", fontSize:12, fontWeight:"900",
+        fontFamily:"IBM Plex Mono, monospace", fontSize:15, fontWeight:"900",
         fill:0x0b0d12, align:"center",
       }});
       bTxt.anchor.set(0.5, 0.5);
-      bTxt.x = 0; bTxt.y = -CHAR_H*0.78 + 9;
+      bTxt.x = 0; bTxt.y = -CHAR_H*0.78 + 12;
       c.addChild(bTxt);
     }
   }
 
   // State emote above head — changes with agent state (replaces static kind glyph)
-  const glyph = new PIXI.Text({ text: KIND_GLYPHS[a.kind], style:{ fontSize:14 }});
+  const glyph = new PIXI.Text({ text: KIND_GLYPHS[a.kind], style:{ fontSize:18 }});
   glyph.anchor.set(0.5, 1);
   glyph.y = -CHAR_H*1.02;
   c.addChild(glyph); c._glyph = glyph;
@@ -683,8 +684,8 @@ function makeAgentContainer(a) {
   const bubbleBg = new PIXI.Graphics();
   bubble.addChild(bubbleBg); bubble._bg = bubbleBg;
   const bubbleText = new PIXI.Text({ text:"…", style:{
-    fontFamily:"JetBrains Mono, monospace", fontSize:10, fill:0xe6e8ee,
-    wordWrap:true, wordWrapWidth:170, align:"center", lineHeight:12,
+    fontFamily:"JetBrains Mono, monospace", fontSize:11, fill:0xe6e8ee,
+    wordWrap:true, wordWrapWidth:200, align:"center", lineHeight:14,
   }});
   bubbleText.anchor.set(0.5, 1);
   bubble.addChild(bubbleText); bubble._text = bubbleText;
@@ -696,7 +697,7 @@ function makeAgentContainer(a) {
   const plateBg = new PIXI.Graphics();
   plate.addChild(plateBg); plate._bg = plateBg;
   const plateText = new PIXI.Text({ text:a.label.slice(0,16), style:{
-    fontFamily:"JetBrains Mono, monospace", fontSize:10, fill:0xe6e8ee, fontWeight:"600",
+    fontFamily:"JetBrains Mono, monospace", fontSize:11, fill:0xe6e8ee, fontWeight:"600",
   }});
   plateText.anchor.set(0.5, 0.5);
   plate.addChild(plateText); plate._text = plateText;
@@ -704,11 +705,11 @@ function makeAgentContainer(a) {
 
   // Strategy badge (permanent — below nameplate, color-coded by family)
   const badge = new PIXI.Container();
-  badge.y = CHAR_H*0.14 + 16;
+  badge.y = CHAR_H*0.14 + 18;
   const badgeBg = new PIXI.Graphics();
   badge.addChild(badgeBg); badge._bg = badgeBg;
   const badgeText = new PIXI.Text({ text:"", style:{
-    fontFamily:"JetBrains Mono, monospace", fontSize:9, fill:0xe6e8ee, fontWeight:"600", letterSpacing:0.5,
+    fontFamily:"JetBrains Mono, monospace", fontSize:10, fill:0xe6e8ee, fontWeight:"600", letterSpacing:0.5,
   }});
   badgeText.anchor.set(0.5, 0.5);
   badge.addChild(badgeText); badge._text = badgeText;
