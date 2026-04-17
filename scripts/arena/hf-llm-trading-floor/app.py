@@ -524,14 +524,14 @@ PROVIDERS = {
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "qwen-3-235b-a22b-instruct-2507",
         "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 500,
         "rpm": 30,
     },
     "cerebras:llama3.1-8b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "llama3.1-8b",
         "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 500,
         "rpm": 30,
     },
     # Google Gemini 3 Flash (key 2) — thinking model, needs big token budget +
@@ -540,7 +540,7 @@ PROVIDERS = {
         "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent",
         "model": "gemini-3-flash-preview",
         "key_env": "GOOGLE_API_KEY_2",
-        "max_tokens": 4096,
+        "max_tokens": 800,
         "rpm": 14,
     },
     # Mistral la Plateforme (free tier — added 2026-04-14)
@@ -548,35 +548,35 @@ PROVIDERS = {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "mistral-large-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 500,
         "rpm": 20,
     },
     "mistral:medium": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "mistral-medium-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 500,
         "rpm": 20,
     },
     "mistral:small": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "mistral-small-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 500,
         "rpm": 20,
     },
     "mistral:nemo": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "open-mistral-nemo",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 500,
         "rpm": 20,
     },
     "mistral:ministral-8b": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "ministral-8b-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 500,
         "rpm": 20,
     },
     # OpenRouter free models — diversify away from Mistral rate limits
@@ -584,14 +584,14 @@ PROVIDERS = {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "google/gemma-4-31b-it:free",
         "key_env": "OPENROUTER_KEY_BARTOLI",
-        "max_tokens": 1500,
+        "max_tokens": 500,
         "rpm": 12,
     },
     "openrouter:gpt-oss-120b": {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "openai/gpt-oss-120b:free",
         "key_env": "OPENROUTER_KEY_BARTOLI",
-        "max_tokens": 1500,
+        "max_tokens": 500,
         "rpm": 12,
     },
     # OpenRouter Nemotron 120B free — only free-tier model that reliably responds
@@ -600,7 +600,7 @@ PROVIDERS = {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "nvidia/nemotron-3-super-120b-a12b:free",
         "key_env": "OPENROUTER_KEY_BARTOLI",
-        "max_tokens": 1500,
+        "max_tokens": 500,
         "rpm": 12,
     },
     # Self-hosted CPU LLM on Nomos42 HF Space — no auth, no quota.
@@ -640,7 +640,7 @@ PROVIDERS = {
         "max_tokens": 400,
         "rpm": 60,
     },
-    "selfhost:dolphin3-3b": {
+    "selfhost:dolphin3-l32-3b": {
         "url": "https://nomos42-llama32-1b-cpu.hf.space/v1/chat/completions",
         "model": "dolphin3-llama3.2-3b",
         "key_env": "SELFHOST_NOOP",
@@ -651,28 +651,28 @@ PROVIDERS = {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "minimaxai/minimax-m2.7",
         "key_env": "NVIDIA_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 500,
         "rpm": 40,
     },
     "nvidia:minimax-m2.7-alt": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "minimaxai/minimax-m2.7",
         "key_env": "NVIDIA_API_KEY_2",
-        "max_tokens": 1200,
+        "max_tokens": 500,
         "rpm": 40,
     },
     "nvidia:llama-3.3-70b": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "meta/llama-3.3-70b-instruct",
         "key_env": "NVIDIA_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 500,
         "rpm": 40,
     },
     "nvidia:nemotron-70b": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
         "key_env": "NVIDIA_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 500,
         "rpm": 40,
     },
 }
@@ -719,7 +719,7 @@ TRADERS = {
                          "fallback_provider": "selfhost:qwen3-4b"},
     "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "selfhost:qwen3-0.6b",  "personality": "conservative","risk_tolerance": 0.30,
                          "fallback_provider": "selfhost:qwen3-4b"},
-    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "selfhost:dolphin3-3b", "personality": "uncensored",  "risk_tolerance": 0.60,
+    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "selfhost:dolphin3-l32-3b", "personality": "uncensored",  "risk_tolerance": 0.60,
                          "fallback_provider": "selfhost:qwen3-4b"},
 }
 
@@ -1006,6 +1006,10 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
                     "max_tokens": cfg["max_tokens"],
                     "temperature": 0.3,
                 }
+                # JSON-schema output: force structured response on providers that support it.
+                # Skip selfhost (llama.cpp OpenAI shim often 400s on response_format).
+                if not is_selfhost and any(p in provider for p in ("cerebras", "mistral", "openrouter", "nvidia")):
+                    payload["response_format"] = {"type": "json_object"}
                 # Selfhost quantized CPUs are slow — extend timeout (gemma2 cold ~2min).
                 effective_timeout = max(timeout, 180.0) if is_selfhost else timeout
                 resp = requests.post(cfg["url"], json=payload, headers=headers, timeout=effective_timeout)
