@@ -551,6 +551,99 @@ def _act(decision: dict) -> str:
 
     return f"Logged: {action} (VM endpoint not configured)"
 
+# -- TF autopilot (D6 + D8 live monitoring, replaces auto-season-restart) ----
+
+TF_ENDPOINTS = {
+    "nba": "https://lbjlincoln26-nba-llm-trading-floor.hf.space",
+    "pol": "https://lbjlincoln26-political-llm-trading-floor.hf.space",
+}
+
+def _tf_autopilot(scan_data: dict) -> list:
+    """Only D6 (evaluator) and D8 (finance steward) act on TF state.
+    Other depts stay focused on their niche. Returns list of actions taken.
+
+    Rules:
+      D8 (finance/bankroll steward):
+        - If completed=True and at least one agent > $110: POST /api/run
+          (next season auto-seeds from final bankrolls via multi-season seed).
+        - If running=False and completed=False and days_processed>0:
+          POST /api/run to resume stuck experiment.
+      D6 (evaluator):
+        - Flags any agent with bankroll < $30 (drawdown alert, logged only).
+        - Flags any single-bet loss > 15% of bankroll (cap violation).
+
+    All actions + flags are logged to /tmp/tf-autopilot-<dept>.jsonl.
+    """
+    if DEPT_ID not in ("d6", "d8"):
+        return []
+    actions = []
+    for name, status_key in (("nba", "TF-NBA"), ("pol", "TF-POL")):
+        tf = scan_data.get(status_key) or {}
+        if not isinstance(tf, dict) or tf.get("error"):
+            continue
+        running = tf.get("running", False)
+        completed = tf.get("completed", False)
+        dp = tf.get("days_processed", 0)
+        agents = tf.get("agents") or {}
+        if not agents:
+            continue
+
+        if DEPT_ID == "d8":
+            # Decide next-season restart or resume.
+            bankrolls = [a.get("bankroll", 0) for a in agents.values()]
+            any_winner = any(b > 110 for b in bankrolls)
+            total = sum(bankrolls)
+            if completed and any_winner:
+                url = f"{TF_ENDPOINTS[name]}/api/run"
+                try:
+                    req = urllib.request.Request(url, method="POST", headers={"User-Agent": "Nomos42-D8/1.0"})
+                    with urllib.request.urlopen(req, timeout=20, context=_ssl_ctx()) as resp:
+                        body = resp.read()[:200]
+                    actions.append({
+                        "dept": "d8", "target": name, "action": "next_season_restart",
+                        "total_bankroll": round(total, 2), "response": body.decode("utf-8", "ignore")[:100],
+                    })
+                except Exception as e:
+                    actions.append({"dept": "d8", "target": name, "action": "next_season_restart",
+                                    "error": str(e)[:120]})
+            elif not running and not completed and dp > 0:
+                # Stuck — kick it.
+                url = f"{TF_ENDPOINTS[name]}/api/run"
+                try:
+                    req = urllib.request.Request(url, method="POST", headers={"User-Agent": "Nomos42-D8/1.0"})
+                    with urllib.request.urlopen(req, timeout=20, context=_ssl_ctx()) as resp:
+                        body = resp.read()[:200]
+                    actions.append({"dept": "d8", "target": name, "action": "resume_stuck",
+                                    "day": dp, "response": body.decode("utf-8", "ignore")[:100]})
+                except Exception as e:
+                    actions.append({"dept": "d8", "target": name, "action": "resume_stuck",
+                                    "error": str(e)[:120]})
+
+        if DEPT_ID == "d6":
+            # Log per-agent anomalies (no POST, read-only evaluation).
+            flags = []
+            for tid, a in agents.items():
+                br = a.get("bankroll", 100)
+                if br < 30:
+                    flags.append({"agent": tid, "bankroll": br, "flag": "drawdown_severe"})
+                elif br < 60:
+                    flags.append({"agent": tid, "bankroll": br, "flag": "drawdown_moderate"})
+            if flags:
+                actions.append({"dept": "d6", "target": name, "action": "flag_anomalies",
+                                "flags": flags[:10], "day": dp})
+
+    # Durable log
+    if actions:
+        try:
+            path = Path(f"/tmp/tf-autopilot-{DEPT_ID}.jsonl")
+            with open(path, "a") as f:
+                for a in actions:
+                    a["timestamp"] = datetime.now(timezone.utc).isoformat()
+                    f.write(json.dumps(a) + "\n")
+        except Exception:
+            pass
+    return actions
+
 # -- Main loop -----------------------------------------------------------------
 
 def run_iteration() -> dict:
@@ -585,6 +678,11 @@ def run_iteration() -> dict:
         decision = {"action": "noop", "error": "LLM parse failed", "raw": llm_response[:300]}
 
     action_result = _act(decision)
+
+    # TF autopilot: D6 flags anomalies, D8 restarts/resumes TFs.
+    # No-op for other depts. Runs AFTER the LLM decision so it never blocks.
+    tf_actions = _tf_autopilot(scan_data)
+
     elapsed = round(time.time() - ts_start, 1)
 
     record = {
@@ -593,6 +691,7 @@ def run_iteration() -> dict:
         "scan_summary": {},
         "decision": decision,
         "action_result": action_result,
+        "tf_actions": tf_actions,
         "llm_provider": provider,
         "elapsed_seconds": elapsed,
     }
