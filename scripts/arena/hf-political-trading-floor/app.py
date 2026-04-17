@@ -810,9 +810,32 @@ _llm_errors: List[str] = []  # Recent errors for debugging
 _gateway_routed = 0
 _gateway_fallback = 0
 
+# Provider health + hot-swap substitution (scientific bypass, 2026-04-17).
+try:
+    import provider_health as _ph
+    _PH_AVAILABLE = True
+except Exception:
+    _PH_AVAILABLE = False
+
+
 def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
-                     timeout: float = 20.0) -> Optional[str]:
-    """Direct provider call (original path). Used as fallback when gateway down."""
+                     timeout: float = 20.0, _substitute_depth: int = 0,
+                     _intended: Optional[str] = None,
+                     _trader_id: str = "?") -> Optional[str]:
+    """Direct provider call with circuit breaker + hot-swap substitution.
+    When a provider is marked dead, we instantly swap to a tier-matched live
+    substitute (up to 2 hops) so dead providers never block the critical path.
+    Substitutions are logged for audit-clean replay.
+    """
+    intended = _intended or provider
+    if _PH_AVAILABLE and _ph.is_dead(provider) and _substitute_depth < 2:
+        sub = _ph.pick_substitute(provider)
+        if sub:
+            _ph.register_substitute_use(sub, intended, _trader_id)
+            return _call_llm_direct(sub, system_prompt, user_prompt, timeout,
+                                    _substitute_depth + 1, intended, _trader_id)
+        return None
+
     cfg = PROVIDERS.get(provider)
     if not cfg:
         return None
@@ -949,12 +972,15 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
                 # Skip selfhost (llama.cpp OpenAI shim often 400s on response_format).
                 if not is_selfhost and any(p in provider for p in ("cerebras", "mistral", "openrouter", "nvidia")):
                     payload["response_format"] = {"type": "json_object"}
-                # Selfhost quantized CPUs are slow — extend timeout.
-                effective_timeout = max(timeout, 180.0) if is_selfhost else timeout
+                # Selfhost CPU: tight 10s timeout — hot-swap, don't block.
+                effective_timeout = 10.0 if is_selfhost else timeout
                 resp = requests.post(cfg["url"], json=payload, headers=headers, timeout=effective_timeout)
                 if resp.status_code == 200:
                     data = resp.json()
-                    return data.get("choices", [{}])[0].get("message", {}).get("content", "")
+                    text = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+                    if text and _PH_AVAILABLE:
+                        _ph.record_success(provider)
+                    return text
                 last_error = f"HTTP {resp.status_code}: {resp.text[:120]}"
                 if resp.status_code == 429 and attempt == 0:
                     time.sleep(3)
@@ -968,6 +994,25 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
 
     if last_error and len(_llm_errors) < 100:
         _llm_errors.append(f"{provider} (direct): {last_error}")
+
+    # Scientific bypass: classify, record, trigger async heal, hot-swap substitute.
+    if _PH_AVAILABLE:
+        status_code = None
+        if last_error.startswith("HTTP "):
+            try:
+                status_code = int(last_error.split()[1].rstrip(":"))
+            except Exception:
+                pass
+        err_class = _ph.classify_error(last_error, status_code)
+        _ph.record_failure(provider, err_class)
+        if provider.startswith("selfhost:") and err_class in ("timeout", "http_5xx", "dead_endpoint"):
+            _ph.trigger_heal(provider, cfg["url"])
+        if _substitute_depth < 2:
+            sub = _ph.pick_substitute(provider)
+            if sub:
+                _ph.register_substitute_use(sub, intended, _trader_id)
+                return _call_llm_direct(sub, system_prompt, user_prompt, timeout,
+                                        _substitute_depth + 1, intended, _trader_id)
     return None
 
 
@@ -2862,6 +2907,12 @@ async def api_status():
     )
     state["rogue_events_total"] = len(_rogue_events)
     state["rogue_events_recent"] = _rogue_events[-10:]
+    # Provider health snapshot (circuit breaker + hot-swap, 2026-04-17).
+    if _PH_AVAILABLE:
+        try:
+            state["provider_health"] = _ph.get_snapshot()
+        except Exception:
+            pass
     return JSONResponse(state)
 
 @api.post("/api/run")
