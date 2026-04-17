@@ -63,7 +63,7 @@ HF EVOLUTION ISLANDS (13 NBA + 8 Political = 21 active, S20/S21/S22 deployed 202
 
 NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
 
-HF TRADING FLOORS (Real LLM experiment, NBA 12 agents / Political 10 agents — HF-first with FastAPI control)
+HF TRADING FLOORS (Real LLM experiment, NBA 14 agents / Political 14 agents — parity achieved 2026-04-17 via +T13 nvidia-minimax +T14 nvidia-llama70)
     ├── LBJLincoln26/nba-llm-trading-floor: NBA engine (1257 games, FastAPI + Gradio)
     │   └── Source: scripts/arena/hf-llm-trading-floor/
     ├── LBJLincoln26/political-llm-trading-floor: POLITICAL engine (1120 events, same architecture)
@@ -211,7 +211,7 @@ Channel: @Nomos42
 
 Guardian Orchestrator v3: Analyzes ALL 9 department loops, allocates resources, cross-pollinates wins.
 
-## Trading Floor v5 — 12 Real LLM Agents (NBA) / 10 (Political) — Apr 15, 2026
+## Trading Floor v5 — 14 Real LLM Agents (NBA + Political, parity) — Apr 17, 2026
 
 Every agent is a **real LLM API call** — no hash simulation, no mocks.
 Each receives full game context (odds, standings, form, 100+ categories, 22 SOTA strategies)
@@ -234,6 +234,8 @@ Architecture: TradingAgents (arXiv 2412.20138) + Prediction Arena (2604.07355) +
 | T10 | mistral-ministral | ministral-8b-latest | Mistral | theoretical | 0.35 |
 | T11 | nemotron-120b | NVIDIA Nemotron-3-Super-120B | OpenRouter (free) | chainthought | 0.55 |
 | T12 | gemma4-selfhost | Phi-3.5 (self-hosted CPU) | Self-Host (Nomos42/nomos42-llm-cpu) | disciplined | 0.40 |
+| T13 | nvidia-minimax | MiniMax M2.7 (NVIDIA NIM) | NVIDIA NIM (key 1+2) | decisive | 0.58 |
+| T14 | nvidia-llama70 | Llama 3.3 70B (NVIDIA NIM) | NVIDIA NIM (key 1+2) | swing | 0.50 |
 
 ### Providers (verified 2026-04-15)
 | Provider | Status | Models in use | Notes |

@@ -187,6 +187,8 @@ AXELROD_STRATEGIES = {
     "mistral-ministral": "FirmButFair",
     "nemotron-120b":     "Adaptive",
     "gemma4-selfhost":   "Tullock",
+    "nvidia-minimax":    "Prober",
+    "nvidia-llama70":    "Gradual",
 }
 _axelrod_agents: Dict[str, object] = {}
 
@@ -266,6 +268,8 @@ REASONING_TEMPLATES = {
     "mistral-ministral": "REASONING TEMPLATE (DMAD): THEORETICAL MODEL. Mental factor model from 3 coefficients → compute expected sector return.",
     "nemotron-120b":     "REASONING TEMPLATE (DMAD): EXPLICIT 7-STEP CoT. context → hypothesis → evidence → counter → weight → conclusion → trade.",
     "gemma4-selfhost":   "REASONING TEMPLATE (DMAD): 4-RULE CHECKLIST. (1) edge > 0.05 (2) bankroll > $30 (3) not same sector as yesterday (4) political catalyst dated within 14d. Trade iff ALL pass.",
+    "nvidia-minimax":    "REASONING TEMPLATE (DMAD): LONG-CONTEXT SCAN. Ingest ALL today's events + 7-day history. Rank sectors by event-density × sentiment × sector-beta. Pick 2-3 with highest composite score.",
+    "nvidia-llama70":    "REASONING TEMPLATE (DMAD): EV-THRESHOLD SWING. For each sector ETF compute EV = p_event × expected_sector_move − fees. Bet top 3 if EV > 0.05; else cash.",
 }
 
 def get_stackelberg_leader(state: dict) -> Optional[str]:
@@ -463,6 +467,11 @@ TRADERS = {
     # 2026-04-17 KEEP SELFHOST on Nomos42 HF Space (Qwen 2.5-1.5B, cpu-basic).
     "gemma4-selfhost":  {"name": "Nomos Selfhost",   "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40,
                          "fallback_provider": "openrouter:gpt-oss-120b"},
+    # NEW 2026-04-17 — NVIDIA NIM (2 keys wired in gateway, 0 usage before) → parity with NBA TF.
+    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "nvidia:minimax-m2.7",   "personality": "decisive",    "risk_tolerance": 0.58,
+                         "fallback_provider": "nvidia:minimax-m2.7-alt"},
+    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
+                         "fallback_provider": "nvidia:nemotron-70b"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -556,6 +565,20 @@ PREFERRED STRATEGIES: flat_1pct, quarter_kelly, top_signal_only
 EDGE DETECTION: Only deploy when signal_strength >0.7 AND single sector has ≥2 corroborating events. Otherwise cash.
 RISK: Low (0.40). Capital preservation over chase.
 SPECIALTY: Single sector ETF on multi-agency consensus.""",
+
+    "nvidia-minimax": """You are NVIDIA MiniMax M2.7, a long-context political allocator on NVIDIA NIM.
+APPROACH: Use the long-context window to ingest ALL events + 7-day political history simultaneously. Rank sectors by event density × sentiment × sector beta.
+PREFERRED STRATEGIES: confidence_scaled, half_kelly, sector_rotation
+EDGE DETECTION: Cross-correlate executive orders × Fed speakers × congressional votes × geopolitical tape. Pick 2-3 top sectors.
+RISK: Moderate (0.58). Decisive on top conviction.
+SPECIALTY: Sector rotation ETFs (XLF, XLE, XLV, XLI, XLK, XLC) based on multi-day political flow.""",
+
+    "nvidia-llama70": """You are NVIDIA Llama 3.3 70B, a balanced EV-threshold political allocator on NVIDIA NIM.
+APPROACH: Classical value hunter. For each sector ETF compute EV = p_event × expected_sector_move − fees. Bet top 3 if EV > 5%.
+PREFERRED STRATEGIES: value_hunter, proportional_edge, flat_2pct
+EDGE DETECTION: Pure EV math. Ignore narrative. Trust event → sector correlation.
+RISK: Moderate (0.50). Swing trader, balanced across sectors.
+SPECIALTY: Broad sector ETFs on FOMC + Treasury + geopolitical catalysts.""",
 }
 
 # ── RATE LIMITER ─────────────────────────────────────────────────────────────

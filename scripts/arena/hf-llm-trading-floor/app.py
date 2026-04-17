@@ -199,6 +199,8 @@ AXELROD_STRATEGIES = {
     "mistral-ministral": "FirmButFair",         # cooperate unless suckered (theoretical)
     "nemotron-120b":     "Adaptive",            # long-run learner (chainthought)
     "gemma4-selfhost":   "Tullock",             # probabilistic nice (disciplined)
+    "nvidia-minimax":    "Prober",              # probe then adapt (decisive long-context)
+    "nvidia-llama70":    "Gradual",             # gradual retaliation (swing/balanced)
 }
 # Per-trader instantiated strategy object (populated on first call)
 _axelrod_agents: Dict[str, object] = {}
@@ -307,6 +309,8 @@ REASONING_TEMPLATES = {
     "mistral-ministral": "REASONING TEMPLATE (DMAD): THEORETICAL MODEL. Mental logistic regression from 3 coefficients → compute p.",
     "nemotron-120b":     "REASONING TEMPLATE (DMAD): EXPLICIT 7-STEP CoT. context → hypothesis → evidence → counter → weight → conclusion → bet.",
     "gemma4-selfhost":   "REASONING TEMPLATE (DMAD): 4-RULE CHECKLIST. (1) edge > 0.05 (2) bankroll > $30 (3) not same game as yesterday (4) category in top-3. Bet iff ALL pass.",
+    "nvidia-minimax":    "REASONING TEMPLATE (DMAD): LONG-CONTEXT SCAN. Ingest ALL 100+ category odds + season form + last-5 streaks. Rank by |p_model − p_implied|. Pick top 2-3 mispricings.",
+    "nvidia-llama70":    "REASONING TEMPLATE (DMAD): EV-THRESHOLD SWING. For each category compute EV = p_model × payout − 1. Bet top 3 if EV > 0.05; else cash.",
 }
 
 def get_stackelberg_leader(state: dict) -> Optional[str]:
@@ -526,6 +530,11 @@ TRADERS = {
     # Primary: Nomos42/nomos42-llm-cpu selfhost. Fallback: openrouter:gpt-oss-120b if timeout/error.
     "gemma4-selfhost":  {"name": "Nomos Selfhost",   "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40,
                          "fallback_provider": "openrouter:gpt-oss-120b"},
+    # NEW 2026-04-17 — NVIDIA NIM (2 keys in gateway). Both NVIDIA accounts were wired but 0 TF usage → fill the gap.
+    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "nvidia:minimax-m2.7",   "personality": "decisive",    "risk_tolerance": 0.58,
+                         "fallback_provider": "nvidia:minimax-m2.7-alt"},
+    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
+                         "fallback_provider": "nvidia:nemotron-70b"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -612,6 +621,20 @@ PREFERRED STRATEGIES: flat_1pct, quarter_kelly, top_edge_only
 EDGE DETECTION: Only bet when moneyline edge >5% AND confidence >65%. Otherwise pass.
 RISK: Low (0.40). Capital preservation over chase.
 SPECIALTY: Single-bet conviction plays. Slow-thinking CPU inference.""",
+
+    "nvidia-minimax": """You are NVIDIA MiniMax M2.7, a decisive long-context allocator running on NVIDIA NIM.
+APPROACH: Use the full context window — ingest all 100+ category odds at once and pick the 2-3 most mispriced vs model. Commit decisively once a read is made.
+PREFERRED STRATEGIES: confidence_scaled, half_kelly, value_hunter
+EDGE DETECTION: Look for cross-category disagreement (e.g. spread implies -5 but ML implies -7). Require edge >4%.
+RISK: Moderate (0.58). Decisive on top pick, mild on secondary.
+SPECIALTY: Alt-totals and quarter lines where long-context helps.""",
+
+    "nvidia-llama70": """You are NVIDIA Llama 3.3 70B, a balanced swing allocator running on NVIDIA NIM.
+APPROACH: Classical value hunter. Rank every game by EV = p_model × payout - 1. Bet top 3 if EV>5%.
+PREFERRED STRATEGIES: value_hunter, proportional_edge, flat_2pct
+EDGE DETECTION: EV-threshold-first. Ignore narrative. Trust model edge.
+RISK: Moderate (0.50). Balanced, neither contrarian nor meta.
+SPECIALTY: Moneylines and spreads. Swing trader profile.""",
 
 }
 
