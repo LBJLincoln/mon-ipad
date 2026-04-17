@@ -1,0 +1,73 @@
+{
+  "proposal_id": "sota-calibration-2026-04-17",
+  "created_at": "2026-04-17T16:30:00Z",
+  "created_by": "cloud-brain-cycle-9",
+  "title": "Auto-Calibration Selection + AutoGluon Ensemble for Brier < 0.22",
+  "priority": "HIGH",
+  "target_metric": "brier < 0.21500",
+  "sota_sources": [
+    {"title": "Uncertainty-Aware Machine Learning for NBA Forecasting", "url": "https://www.mdpi.com/2078-2489/17/1/56"},
+    {"title": "Stacked ensemble model for NBA game outcome prediction", "url": "https://www.nature.com/articles/s41598-025-13657-1"},
+    {"title": "XGBoost and SHAP for NBA prediction - PMC", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/"},
+    {"title": "Comparative Evaluation of ML Models for NBA", "url": "https://www.scirp.org/journal/paperinformation?paperid=147163"}
+  ],
+  "findings": {
+    "best_reported_brier": 0.199,
+    "method": "Logistic regression with calibration on tabular NBA features",
+    "cnn_brier": 0.221,
+    "autogluon_accuracy": 0.7738,
+    "svm_accuracy": 0.7749,
+    "calibration_insight": "Auto-select best calibration method (sigmoid/isotonic/none) per model using held-out Brier score",
+    "uncertainty_insight": "LSTM + Monte Carlo dropout at inference provides calibrated probability estimates",
+    "ensemble_insight": "Stacked ensembles (Naive Bayes + AdaBoost + MLP + KNN + XGBoost + DT + LR) with meta-learner achieves best accuracy"
+  },
+  "proposals": [
+    {
+      "id": "P1",
+      "name": "brier-scored-calibration-selector",
+      "description": "After each GA generation, run held-out Brier score to select best calibration (sigmoid/isotonic/none) per model. Currently we use fixed calibration. Auto-selection per model type expected to improve Brier by ~0.002-0.004.",
+      "effort": "medium",
+      "target_island": "S17 (extra_trees fleet best) + S18",
+      "expected_gain": "0.002-0.004 Brier improvement",
+      "impl_notes": "In features/engine.py: after model.fit(), try CalibratedClassifierCV(cv='prefit') with both methods + uncalibrated, keep lowest val_brier"
+    },
+    {
+      "id": "P2",
+      "name": "extra-trees-sweep-political",
+      "description": "S17 winning config: extra_trees, 74 features, gen289, achieves ROI=32.19% Sharpe=7.74 Brier=0.22031. Port this exact feature count range (60-90) to political islands P3/P4 which are sleeping and may benefit from diversification.",
+      "effort": "low",
+      "target_island": "P3, P4 (sleeping political islands)",
+      "expected_gain": "Political Brier improvement toward 0.248"
+    },
+    {
+      "id": "P3",
+      "name": "autogluon-gpu-burst-evaluation",
+      "description": "AutoGluon achieves 0.7738 accuracy (vs our 0.7749 SVM-equivalent). Run AutoGluon on GPU burst (Modal A10G / Lightning T4) to auto-search model stack. Use as ensemble member in existing GA.",
+      "effort": "high",
+      "target_island": "GPU burst (Modal A10G)",
+      "expected_gain": "Potential Brier < 0.215 if AutoGluon stack beats tabular baseline"
+    },
+    {
+      "id": "P4",
+      "name": "shap-feature-importance-pruning",
+      "description": "Use SHAP values to identify top-N features rather than random/GA selection. S17 converged to 74 features organically. SHAP-guided init could reach that faster and find better 74-feature subsets.",
+      "effort": "medium",
+      "target_island": "S14 (LightGBM), S18 (catboost_spec)",
+      "expected_gain": "Faster convergence, expected 5-10 gen reduction to best Brier"
+    }
+  ],
+  "immediate_action": "Implement P1 (brier-scored-calibration-selector) in features/engine.py on next engineering cycle. Low risk, high reward.",
+  "s17_winning_config": {
+    "model_type": "extra_trees",
+    "n_features": 74,
+    "generation": 289,
+    "cycle": 97,
+    "brier": 0.22031,
+    "roi": 0.3219,
+    "sharpe": 7.7425,
+    "mutation_rate": 0.0674,
+    "population_size": 60,
+    "islands": 5,
+    "pareto_front_size": 19
+  }
+}
