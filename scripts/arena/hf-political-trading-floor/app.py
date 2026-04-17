@@ -482,6 +482,13 @@ PROVIDERS = {
         "max_tokens": 400,
         "rpm": 60,
     },
+    "selfhost:fin-r1": {
+        "url": "https://nomos42-fin-r1-7b-cpu.hf.space/v1/chat/completions",
+        "model": "fin-r1-7b",
+        "key_env": "SELFHOST_NOOP",
+        "max_tokens": 800,
+        "rpm": 30,
+    },
     "nvidia:minimax-m2.7": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "minimaxai/minimax-m2.7",
@@ -548,8 +555,8 @@ TRADERS = {
     "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
                          "fallback_provider": "nvidia:nemotron-70b"},
     # NEW 2026-04-17 — 2 additional selfhost traders → full 16-agent parity with NBA TF.
-    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "selfhost:gemma-3-4b",  "personality": "analytical",  "risk_tolerance": 0.45,
-                         "fallback_provider": "selfhost:qwen3-4b"},
+    "selfhost-gemma3":  {"name": "Fin-R1-7B (Finance-CoT)","provider": "selfhost:fin-r1",  "personality": "finance-reasoning",  "risk_tolerance": 0.50,
+                         "fallback_provider": "selfhost:gemma-3-4b"},
     "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "selfhost:qwen3-0.6b",  "personality": "conservative","risk_tolerance": 0.30,
                          "fallback_provider": "selfhost:qwen3-4b"},
 }
