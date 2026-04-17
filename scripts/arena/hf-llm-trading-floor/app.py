@@ -2638,6 +2638,25 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 ts["llm_ok"] += 1
             parsed = parse_day_allocation(raw_response, len(day_games)) if raw_response else None
 
+            # COLLECTIVE_MISSION fallback: if LLM failed or returned zero allocations,
+            # inject a default 3-leg spread at 25% each on the first 3 games' ml_home
+            # with edge=0.03. Guarantees >=3 allocations + 75% deploy EVERY day even
+            # when the LLM is silent. Fidelity note: logs flag source="fallback-injection".
+            if (not parsed or not parsed.get("allocations")) and len(day_games) >= 3:
+                parsed = {
+                    "day_strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 3 games (ml_home)",
+                    "cash_held_pct": 0.25,
+                    "cash_rationale": "fallback-injection (LLM returned no actionable allocations)",
+                    "allocations": [
+                        {"game_idx": i + 1, "category": "ml_home", "pct": 0.25,
+                         "confidence": 0.40, "edge": 0.03, "rationale": "fallback",
+                         "source": "fallback-injection"}
+                        for i in range(3)
+                    ],
+                    "parlays": [],
+                    "coalition_proposal": None,
+                }
+
             day_log = {
                 "day_idx": day_idx,
                 "date": day_date,

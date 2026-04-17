@@ -2023,6 +2023,23 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 ts["llm_ok"] += 1
             parsed = parse_day_allocation(raw_response, len(day_events)) if raw_response else None
 
+            # COLLECTIVE_MISSION fallback: if LLM failed or returned zero allocations,
+            # inject 3 default trades at 25% each on first 3 events, direction=long,
+            # ticker=SPY (broad). Guarantees >=3 trades + 75% deploy EVERY day.
+            if (not parsed or not parsed.get("allocations")) and len(day_events) >= 3:
+                parsed = {
+                    "day_strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 3 events (SPY long)",
+                    "cash_held_pct": 0.25,
+                    "cash_rationale": "fallback-injection (LLM returned no actionable allocations)",
+                    "allocations": [
+                        {"event_idx": i + 1, "ticker": "SPY", "direction": "long",
+                         "pct": 0.25, "confidence": 0.40,
+                         "thesis": "fallback", "source": "fallback-injection"}
+                        for i in range(3)
+                    ],
+                    "coalition_proposal": None,
+                }
+
             day_log = {
                 "day_idx": day_idx,
                 "date": day_date,
