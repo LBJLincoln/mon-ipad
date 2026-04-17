@@ -1,0 +1,46 @@
+name: repo-inventory
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout mon-ipad
+        uses: actions/checkout@v4
+        with:
+          path: mon-ipad
+
+      - name: Checkout sibling repos (best-effort, may be private)
+        run: |
+          for repo in nomos-dashboard nomos-nba-agent nomos-political-alpha nomos-picks nomos-pierre rgwa; do
+            git clone --depth 50 "https://x-access-token:${{ secrets.GH_TOKEN_CROSS_REPO }}@github.com/LBJLincoln/${repo}.git" "${repo}" 2>/dev/null \
+              || git clone --depth 50 "https://x-access-token:${{ secrets.GH_TOKEN_CROSS_REPO }}@github.com/Nomos42/${repo}.git" "${repo}" 2>/dev/null \
+              || echo "skip ${repo}"
+          done
+        continue-on-error: true
+
+      - name: Stage repos next to mon-ipad like the VM layout
+        run: |
+          cd "${GITHUB_WORKSPACE}"
+          mkdir -p home
+          for d in mon-ipad nomos-dashboard nomos-nba-agent nomos-political-alpha nomos-picks nomos-pierre rgwa; do
+            [ -d "$d" ] && mv "$d" "home/$d" || true
+          done
+
+      - name: Run inventory
+        run: |
+          cd "${GITHUB_WORKSPACE}/home/mon-ipad"
+          HOME="${GITHUB_WORKSPACE}/home" python3 scripts/inventory/repo-inventory.py
+
+      - name: Commit inventory
+        run: |
+          cd "${GITHUB_WORKSPACE}/home/mon-ipad"
+          git config user.name "nomos-inventory-bot"
+          git config user.email "bot@nomos42.com"
+          git add data/repo-inventory.json
+          git diff --cached --quiet || git commit -m "chore(inventory): daily repo snapshot"
+          git push origin HEAD:main || true
