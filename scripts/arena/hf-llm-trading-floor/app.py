@@ -1499,7 +1499,8 @@ STRICT RULES:
 - Max 10 allocations + 3 parlays
 - Each allocation pct: 0.01–0.40 | Each parlay pct: 0.01–0.10 (combined odds amplify risk)
 - Parlays: 2–4 legs, each leg = distinct game_idx, all legs must win for payout
-- cash_held_pct: 0.0–1.0
+- cash_held_pct: 0.00–0.25 MAX (aggressive-deploy policy, $1M collective goal — idle bankroll cannot compound)
+- TARGET: ≥75% of bankroll deployed every day. If the slate is weak, expand to lower-edge picks rather than holding cash.
 - Rationale MUST cite a specific stat/metric (not "I think they'll win")
 - Edge must be computed from model vs implied odds, NOT hardcoded
 - coalition_proposal is OPTIONAL (null or omit if you are not pacting today).
@@ -1619,6 +1620,25 @@ def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
         for p in parlays_clean:
             p["pct"] = p["pct"] * scale
         cash = cash * scale
+
+    # ── MIN_DEPLOY_PCT = 0.75 — $1M collective goal requires aggressive deploy
+    # If LLM holds >25% cash, force-scale allocations+parlays up to consume excess.
+    # Policy: bankroll sitting idle cannot compound. Cap cash at 25%.
+    MIN_DEPLOY_PCT = 0.75
+    deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
+    if deployed > 0 and deployed < MIN_DEPLOY_PCT:
+        # Scale up deployed capital to hit 0.75 floor, cap cash at 0.25
+        scale_up = MIN_DEPLOY_PCT / deployed
+        for a in clean:
+            a["pct"] = min(0.40, a["pct"] * scale_up)
+        for p in parlays_clean:
+            p["pct"] = min(0.10, p["pct"] * scale_up)
+        # Recompute after per-allocation caps clipped
+        new_deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
+        cash = max(0.0, 1.0 - new_deployed)
+    elif deployed == 0:
+        # LLM refused to bet at all — keep as-is (min edge gate will protect)
+        cash = 1.0
 
     # Mech D — coalition_proposal extraction (optional, single peer per day)
     coalition = None

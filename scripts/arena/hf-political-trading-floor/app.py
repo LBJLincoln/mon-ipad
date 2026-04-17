@@ -1228,7 +1228,8 @@ STRICT RULES:
 - direction must be "long" or "short" (no "cash" in allocations)
 - Max 10 allocations, no duplicate event_idx
 - Each allocation pct: 0.01–0.40
-- cash_held_pct: 0.0–1.0
+- cash_held_pct: 0.00–0.25 MAX (aggressive-deploy policy, $1M collective goal — idle capital cannot compound)
+- TARGET: ≥75% deployed every day. If no obvious plays, spread across low-conviction sector ETFs rather than hold cash.
 - Thesis MUST cite a specific signal/agency (not just "I think it will go up")
 - Ticker should be the sector ETF from SECTOR_ETF_MAP (XLE, XLV, XLF, etc.) or the event's ticker
 - coalition_proposal is OPTIONAL (null or omit if no pact today). If present, you MUST
@@ -1300,6 +1301,19 @@ def parse_day_allocation(raw: str, n_events: int) -> Optional[Dict]:
         for a in clean:
             a["pct"] = a["pct"] * scale
         cash = cash * scale
+
+    # ── MIN_DEPLOY_PCT = 0.75 — $1M collective goal, aggressive deploy
+    # If LLM holds >25% cash, force-scale allocations to consume excess.
+    MIN_DEPLOY_PCT = 0.75
+    deployed = sum(a["pct"] for a in clean)
+    if deployed > 0 and deployed < MIN_DEPLOY_PCT:
+        scale_up = MIN_DEPLOY_PCT / deployed
+        for a in clean:
+            a["pct"] = min(0.40, a["pct"] * scale_up)
+        new_deployed = sum(a["pct"] for a in clean)
+        cash = max(0.0, 1.0 - new_deployed)
+    elif deployed == 0:
+        cash = 1.0
 
     # Mech D — coalition_proposal extraction (optional, single peer per day)
     coalition = None
