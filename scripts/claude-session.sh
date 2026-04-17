@@ -11,8 +11,9 @@
 # Complete status across ALL platforms:
 #   HF Spaces (4 accounts, 24+ spaces), Kaggle (7 kernels + 1 dataset),
 #   Modal, Colab, Lightning.ai, 2x Supabase, 2x Neo4j, 2x Pinecone,
-#   Upstash Redis, 5 repos, 25 agents, 5 bots, 11+ crons, 5 Vercel sites,
-#   9 Department Forge councils, Trading Floor v5.
+#   Upstash Redis, 5 repos, 5 bots, crons, 5 Vercel sites,
+#   4 Tracks (SCIENCE · PLATFORM · MARKET · CAPITAL), 2 live HF Trading Floors,
+#   Fleet-matrix slot scoreboard (GPU/CPU specialization).
 
 set -uo pipefail
 
@@ -99,14 +100,14 @@ count_fail() { FAIL_COUNT=$((FAIL_COUNT+1)); fail "$@"; }
 echo ""
 echo -e "${W}╔════════════════════════════════════════════════════════════════════╗${N}"
 echo -e "${W}║              NOMOS42 — Full Ecosystem Dashboard                    ║${N}"
-printf  "${W}║              %-53s ║${N}\n" "$(date -u '+%Y-%m-%d %H:%M UTC')  (v20 · 9 depts)"
+printf  "${W}║              %-53s ║${N}\n" "$(date -u '+%Y-%m-%d %H:%M UTC')  (v21 · 4 tracks)"
 echo -e "${W}╚════════════════════════════════════════════════════════════════════╝${N}"
 
 # ══════════════════════════════════════════════════════════════════
 # 1. HF SPACES — ALL ACCOUNTS (parallel curl)
 # ══════════════════════════════════════════════════════════════════
 
-# NBA evo islands (8) + political (2) + infra (2) + RGWA (1) + political legacy (1) = 14 live targets
+# NBA evo islands (8) + political (2) + infra (1) + 2 trading floors + RGWA (1) + pol legacy (1) = 15 live targets
 declare -A ACTIVE_SPACES=(
   # NBA Islands (Nomos42)
   ["S10"]="nomos42-nba-quant"
@@ -123,7 +124,10 @@ declare -A ACTIVE_SPACES=(
   ["P2"]="nomos42-political-alpha-2"
   # Infra/Other (Nomos42)
   ["INFRA"]="nomos42-nomos42-infra-brain"
-  ["CLIP"]="nomos42-nomos42-paperclip"
+  # Live Trading Floors (LBJLincoln26) — HF-first, ground-truth engines
+  ["NBA_TF"]="lbjlincoln26-nba-llm-trading-floor"
+  ["POL_TF"]="lbjlincoln26-political-llm-trading-floor"
+  ["GATEWAY"]="lbjlincoln26-llm-gateway"
   # RGWA (LBJLincoln)
   ["RGWA"]="lbjlincoln-nomos-rgwa"
   # Political (LBJLincoln26)
@@ -200,12 +204,9 @@ if show hf; then
     fi
   done
 
-  echo -e "  ${C}Other (2):${N}"
-  for TAG in INFRA CLIP; do
-    LABEL=""
-    case $TAG in
-      INFRA) LABEL="nomos42-infra-brain" ;; CLIP) LABEL="nomos42-paperclip" ;;
-    esac
+  echo -e "  ${C}Other (1):${N}"
+  for TAG in INFRA; do
+    LABEL="nomos42-infra-brain"
     if [ -f "$TMPDIR/$TAG" ]; then
       IFS='|' read -r STATUS BRIER GEN MODEL < "$TMPDIR/$TAG"
       [ "$STATUS" = "UP" ] && count_ok "$LABEL" "RUNNING" || count_fail "$LABEL" "DOWN"
@@ -213,6 +214,44 @@ if show hf; then
       count_warn "$LABEL" "no response"
     fi
   done
+
+  echo -e "  ${C}Trading Floors (HF-first — ground truth):${N}"
+  for TAG in NBA_TF POL_TF; do
+    SLUG="${ACTIVE_SPACES[$TAG]}"
+    LABEL=""
+    case $TAG in
+      NBA_TF) LABEL="nba-llm-trading-floor" ;;
+      POL_TF) LABEL="political-llm-trading-floor" ;;
+    esac
+    TF_RESP=$(curl -s --max-time 8 "https://${SLUG}.hf.space/api/status" 2>/dev/null)
+    if [ -n "$TF_RESP" ] && echo "$TF_RESP" | python3 -c "import sys,json; json.load(sys.stdin)" 2>/dev/null; then
+      TF_LINE=$(echo "$TF_RESP" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+run  = d.get('running', False)
+stop = d.get('stopped', False)
+done = d.get('completed', False)
+dp   = d.get('days_processed', d.get('days_completed', '?'))
+dt   = d.get('days_total', '?')
+agents = d.get('agents', {}) or {}
+calls = sum(a.get('llm_calls', 0) for a in agents.values()) if agents else d.get('llm_calls', 0)
+okn   = sum(a.get('llm_ok', 0)    for a in agents.values()) if agents else d.get('llm_ok', 0)
+bets  = sum(a.get('total_bets',0) for a in agents.values()) if agents else d.get('total_bets', 0)
+state = 'done' if done else ('running' if run else ('stopped' if stop else 'idle'))
+ratio = f'{okn}/{calls}' if calls else 'na'
+print(f'{state} days={dp}/{dt} llm_ok={ratio} bets={bets}')
+" 2>/dev/null || echo "parse-err")
+      count_ok "$LABEL" "$TF_LINE"
+    else
+      count_fail "$LABEL" "DOWN or not ready"
+    fi
+  done
+
+  # LLM Gateway probe
+  if [ -f "$TMPDIR/GATEWAY" ]; then
+    IFS='|' read -r STATUS BRIER GEN MODEL < "$TMPDIR/GATEWAY"
+    [ "$STATUS" = "UP" ] && count_ok "llm-gateway" "UP (11 models)" || count_fail "llm-gateway" "DOWN"
+  fi
 
   # ── Display: LBJLincoln account (3 spaces) ──
   header "HF: LBJLincoln (3 spaces) — Legacy/RGWA"
@@ -554,17 +593,29 @@ except: print('?')
 fi
 
 # ══════════════════════════════════════════════════════════════════
-# 10. DEPARTMENT FORGE — 9 councils (D1-D9)
+# 10. 4-TRACK CONSOLIDATION (T1-T4) — v21 replacement for 9 depts
 # ══════════════════════════════════════════════════════════════════
 if show forge; then
-  header "Department Forge v19 — 9 Councils"
+  header "4-Track Consolidation (v21) — Opus-orchestrator every 8h"
 
-  DEPT_DIR="${ROOT}/data/departments"
-  for DEPT in research engineering evolution product business evaluation infra finance cross-repo; do
-    LATEST="${DEPT_DIR}/council-${DEPT}-latest.json"
+  TRACKS_DIR="${ROOT}/data/tracks"
+  declare -A TRACK_MAP=(
+    ["T1"]="SCIENCE   (D1+D3+D6) — Brier · calibration · mutation · research"
+    ["T2"]="PLATFORM  (D2+D7+D9) — code parity · deploys · uptime"
+    ["T3"]="MARKET    (D4+D5)    — dashboard · telegram · subs · paywall"
+    ["T4"]="CAPITAL   (D8+TFs)   — bankroll · \$1M goal"
+  )
+
+  if [ -f "${TRACKS_DIR}/TRACKS.md" ]; then
+    ok "TRACKS spec" "data/tracks/TRACKS.md present"
+  else
+    count_warn "TRACKS spec" "TRACKS.md missing"
+  fi
+
+  for T in T1 T2 T3 T4; do
+    LATEST="${TRACKS_DIR}/$(echo $T | tr 'A-Z' 'a-z')-latest.json"
+    DESC="${TRACK_MAP[$T]}"
     if [ -f "$LATEST" ]; then
-      TS=$(python3 -c "import json; d=json.load(open('$LATEST')); print(d.get('timestamp', d.get('last_run', '?')))" 2>/dev/null || echo "?")
-      # Age in seconds from now
       AGE_SEC=$(python3 -c "
 import json, datetime as dt
 try:
@@ -576,41 +627,76 @@ try:
 except: print(-1)
 " 2>/dev/null || echo -1)
       if [ "$AGE_SEC" -lt 0 ]; then
-        info "D-${DEPT}" "$TS"
-      elif [ "$AGE_SEC" -lt 21600 ]; then  # <6h
-        count_ok "D-${DEPT}" "fresh ($((AGE_SEC/60))min)"
-      elif [ "$AGE_SEC" -lt 86400 ]; then  # <24h
-        count_warn "D-${DEPT}" "stale ($((AGE_SEC/3600))h)"
+        info "$T $DESC" "no timestamp"
+      elif [ "$AGE_SEC" -lt 28800 ]; then  # <8h
+        count_ok "$T $DESC" "fresh ($((AGE_SEC/60))min)"
+      elif [ "$AGE_SEC" -lt 86400 ]; then
+        count_warn "$T $DESC" "stale ($((AGE_SEC/3600))h)"
       else
-        count_fail "D-${DEPT}" "OLD ($((AGE_SEC/86400))d)"
+        count_fail "$T $DESC" "OLD ($((AGE_SEC/86400))d)"
       fi
     else
-      count_fail "D-${DEPT}" "no council JSON"
+      info "$T $DESC" "scaffolded · orchestrator not wired yet"
     fi
   done
 fi
 
 # ══════════════════════════════════════════════════════════════════
-# 11. TRADING FLOOR v5 + TESTS
+# 11. FLEET-MATRIX SCOREBOARD + SEASON BACKTEST + CPCV
 # ══════════════════════════════════════════════════════════════════
 if show forge; then
-  header "Trading Floor v5 + Backtest"
+  header "Fleet-Matrix (GPU/CPU slot scoreboard)"
 
-  TF_STATE="${ROOT}/data/arena/agent-states-v5.json"
-  if [ -f "$TF_STATE" ]; then
-    TF_LINE=$(python3 -c "
+  FM="${ROOT}/data/fleet-matrix/scoreboard.json"
+  if [ -f "$FM" ]; then
+    FM_LINE=$(python3 -c "
 import json
 try:
-    d=json.load(open('$TF_STATE'))
-    n=d.get('active_count', d.get('agent_count','?'))
-    ts=d.get('last_backtest_sync', d.get('last_feedback_sync','?'))
-    print(f'{n} agents  sync={ts}')
+    d=json.load(open('$FM'))
+    gb=d.get('global_best') or {}
+    best=gb.get('best_brier','?')
+    slot=gb.get('slot','?')
+    hyp=gb.get('hypothesis','?')
+    nm=d.get('n_slots_measured',0)
+    nt=d.get('n_slots_tracked',0)
+    print(f'best={best} [{slot}/{hyp}]  measured={nm}/{nt}')
 except Exception as e: print(f'err {e}')
 " 2>/dev/null || echo "?")
-    count_ok "TF v5 state" "$TF_LINE"
+    count_ok "scoreboard" "$FM_LINE"
+
+    # Per-slot brief listing (top 6 slots by best_brier)
+    python3 -c "
+import json
+try:
+    d=json.load(open('$FM'))
+    rows=[(s,v) for s,v in d.get('slots',{}).items() if v.get('best_brier') is not None]
+    rows.sort(key=lambda r: r[1]['best_brier'])
+    for sid,v in rows[:6]:
+        br=v.get('best_brier','?')
+        h=v.get('hypothesis','?')[:28]
+        p=v.get('platform','?')[:12]
+        print(f'     {sid:<6} {p:<12} {h:<28} br={br}')
+except: pass
+" 2>/dev/null || true
   else
-    count_warn "TF v5 state" "missing"
+    count_warn "scoreboard" "data/fleet-matrix/scoreboard.json missing — run scripts/fleet-matrix/aggregate.py"
   fi
+
+  # Open hypotheses the fleet can still claim
+  REG="${ROOT}/data/fleet-matrix/hypothesis-registry.json"
+  if [ -f "$REG" ]; then
+    OPEN_N=$(python3 -c "
+import json
+try:
+    d=json.load(open('$REG'))
+    o=d.get('open_hypotheses', d.get('open', []))
+    print(len(o) if isinstance(o, list) else 0)
+except: print(0)
+" 2>/dev/null || echo 0)
+    info "open hypotheses" "$OPEN_N pending (new GPU accounts should claim from this list)"
+  fi
+
+  header "Season Backtest + CPCV"
 
   BT="${ROOT}/data/nba-agent/full-season-backtest.json"
   if [ -f "$BT" ]; then
@@ -630,21 +716,12 @@ except Exception as e: print(f'parse-error: {e}')
     count_warn "Season backtest" "missing"
   fi
 
-  POL_STATE="${ROOT}/data/arena/political-trading-floor-iteration.json"
-  if [ -f "$POL_STATE" ]; then
-    count_ok "Political TF" "state present"
-  else
-    info "Political TF" "no state"
-  fi
-
   CPCV="${ROOT}/data/arena/cpcv-watcher-state.json"
   if [ -f "$CPCV" ]; then
     count_ok "CPCV watcher" "state present"
   else
     info "CPCV watcher" "no state"
   fi
-
-  info "Scripts" "arena/trading-floor-v5.py  arena/trading-floor-v5-real.py  arena/political-trading-floor.py"
 fi
 
 # ══════════════════════════════════════════════════════════════════
@@ -684,12 +761,13 @@ HEALTH_COLOR="$G"
 
 echo ""
 echo -e "${W}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${N}"
-echo -e "  ${C}HF Spaces:${N}  24+ total (4 credentials) — 8 NBA evo + 2 pol + infra + RGWA"
+echo -e "  ${C}HF Spaces:${N}  13 NBA evo + 8 political + infra + 2 TF + gateway + RGWA"
 echo -e "  ${C}Kaggle:${N}     7 kernels + 1 dataset (alexismoret6)"
-echo -e "  ${C}GPU:${N}        Modal + Colab + Lightning.ai + Kaggle + Codespaces"
+echo -e "  ${C}GPU:${N}        Modal + Colab + Lightning.ai + Kaggle + Codespaces + ZeroGPU + Paperspace"
 echo -e "  ${C}Databases:${N}  2x Supabase + 2x Neo4j + 2x Pinecone + Upstash Redis"
-echo -e "  ${C}Agents:${N}     25 (9 depts — D1 Research · D2 Eng · D3 Evo · D4 Product · D5 Business · D6 Eval · D7 Infra · D8 Finance · D9 Cross-Repo)"
-echo -e "  ${C}Forge:${N}      Karpathy loop per dept + Trading Floor v5 + CPCV gate"
+echo -e "  ${C}Tracks:${N}     4 (T1 SCIENCE · T2 PLATFORM · T3 MARKET · T4 CAPITAL) — Opus orchestrator /8h"
+echo -e "  ${C}Capital:${N}    2 live TF (NBA 12 · POL 10) · MIN_DEPLOY_PCT=0.75 · \$1M goal"
+echo -e "  ${C}Fleet:${N}      12 GPU/CPU slots + 8 open hypotheses (data/fleet-matrix/scoreboard.json)"
 CRON_COUNT=$(crontab -l 2>/dev/null | grep -v '^#' | grep -cv '^\s*$' || echo 0)
 echo -e "  ${C}Repos:${N} 5  ${C}Bots:${N} 5  ${C}Crons:${N} ${CRON_COUNT}  ${C}Vercel:${N} 5"
 echo -e "  ${C}Health:${N}    ${HEALTH_COLOR}${HEALTH}%${N}  (${G}OK:${OK_COUNT}${N} ${Y}WARN:${WARN_COUNT}${N} ${R}FAIL:${FAIL_COUNT}${N})"
