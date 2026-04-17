@@ -135,7 +135,26 @@ AXELROD_ARCHETYPES = [
 ]
 
 # Axelrod 1980 canon — political-alpha variant (same canon, context swapped).
+COLLECTIVE_MISSION = (
+    "=== COLLECTIVE MISSION (2026-04-17, binding) ===\n"
+    "You are ONE of 16 LLM agents sharing a political-alpha society bankroll. All 16 agents see "
+    "the SAME data: 1120 political events, 22 event categories × 7 SPDR sectors, full sector-beta "
+    "matrices + insider trades + fed speakers + exec orders + peer bankrolls + peer positions + "
+    "post-mortem logs.\n"
+    "COMMON GOAL: ONE of us reaches $1,000,000 bankroll by season end. That agent's win counts "
+    "as a collective win. Individual greed (>$250K while peers dying) triggers DEFECT rogue.\n"
+    "DEPLOY RULE (hard): ≥75% of your bankroll MUST be deployed EVERY DAY across ≥3 sector "
+    "allocations. Holding >25% cash violates the collective goal. Use the full 7-sector SPDR menu "
+    "(XLF/XLE/XLV/XLI/XLK/XLC/XLY) + individual stocks when politically warranted.\n"
+    "COLLABORATION STACK: (1) morning council plan (qwen-235B moderator) specifies focus sectors + "
+    "per-agent commit. (2) Pact proposals let 2 agents bet the same sector+direction. "
+    "(3) Axelrod canon strategy assigned per agent. (4) Post-mortem log visible to all. "
+    "(5) Sacrificial rotation reassigns losing agents to archetypes the society lacks.\n"
+    "=== END COLLECTIVE MISSION ===\n\n"
+)
+
 AXELROD_CANON = (
+    COLLECTIVE_MISSION +
     "=== AXELROD CANON (mandatory reading) ===\n"
     "You are a trader in an iterated multi-agent political-alpha society. Axelrod's 1980 "
     "tournament proved that the winning strategies share 4 properties: NICE (never defect "
@@ -186,9 +205,11 @@ AXELROD_STRATEGIES = {
     "mistral-nemo":      "Defector",
     "mistral-ministral": "FirmButFair",
     "nemotron-120b":     "Adaptive",
-    "gemma4-selfhost":   "Tullock",
+    "selfhost-qwen4b":   "Tullock",
     "nvidia-minimax":    "Prober",
     "nvidia-llama70":    "Gradual",
+    "selfhost-gemma3":   "Handshake",
+    "selfhost-qwen06":   "Cooperator",
 }
 _axelrod_agents: Dict[str, object] = {}
 
@@ -260,16 +281,18 @@ REASONING_TEMPLATES = {
     "qwen-arb":          "REASONING TEMPLATE (DMAD): CROSS-SECTOR ARBITRAGE. Spot correlated ETFs diverging > 2σ from historical beta.",
     "llama-contra":      "REASONING TEMPLATE (DMAD): CONTRARIAN INVERSION. Start from consensus narrative, argue the OPPOSITE with 3 reasons.",
     "gemini-anl":        "REASONING TEMPLATE (DMAD): FIRST-PRINCIPLES DECOMPOSITION. List 3 decisive political drivers, weight each, multiply to get signal.",
-    "gemini-tact":       "REASONING TEMPLATE (DMAD): TACTICAL TIMING. Focus on calendar risk (votes, summits). No imminent catalyst → PASS.",
+    "gemini-tact":       "REASONING TEMPLATE (DMAD): TACTICAL TIMING. Focus on calendar risk (votes, summits). Absent imminent catalyst, deploy ≥3 sector allocations on rolling 14-day sentiment (collective 75% deploy rule).",
     "mistral-large":     "REASONING TEMPLATE (DMAD): SCENARIO MAJORITY. Enumerate 5 macro scenarios, assign P, trade iff ≥3 align.",
     "mistral-medium":    "REASONING TEMPLATE (DMAD): DIVERSIFIED PORTFOLIO. Split across 2-3 uncorrelated sectors.",
     "mistral-small":     "REASONING TEMPLATE (DMAD): RISK-AVERSE STRESS. Assume worst-case tail; trade only if still +EV.",
     "mistral-nemo":      "REASONING TEMPLATE (DMAD): MOMENTUM CHASE. Bet hardest on sectors with 5-day momentum > 2σ.",
     "mistral-ministral": "REASONING TEMPLATE (DMAD): THEORETICAL MODEL. Mental factor model from 3 coefficients → compute expected sector return.",
     "nemotron-120b":     "REASONING TEMPLATE (DMAD): EXPLICIT 7-STEP CoT. context → hypothesis → evidence → counter → weight → conclusion → trade.",
-    "gemma4-selfhost":   "REASONING TEMPLATE (DMAD): 4-RULE CHECKLIST. (1) edge > 0.05 (2) bankroll > $30 (3) not same sector as yesterday (4) political catalyst dated within 14d. Trade iff ALL pass.",
+    "selfhost-qwen4b":   "REASONING TEMPLATE (DMAD): 4-RULE CHECKLIST. (1) edge > 0.05 (2) bankroll > $30 (3) not same sector as yesterday (4) political catalyst dated within 14d. Trade iff ALL pass.",
     "nvidia-minimax":    "REASONING TEMPLATE (DMAD): LONG-CONTEXT SCAN. Ingest ALL today's events + 7-day history. Rank sectors by event-density × sentiment × sector-beta. Pick 2-3 with highest composite score.",
     "nvidia-llama70":    "REASONING TEMPLATE (DMAD): EV-THRESHOLD SWING. For each sector ETF compute EV = p_event × expected_sector_move − fees. Bet top 3 if EV > 0.05; else cash.",
+    "selfhost-gemma3":   "REASONING TEMPLATE (DMAD): 3-FACTOR POLITICAL MODEL. Factors {congressional_vote_proximity, fed_speaker_density, geopolitical_tape}. Weight {0.4, 0.3, 0.3}. Trade iff weighted >0.6.",
+    "selfhost-qwen06":   "REASONING TEMPLATE (DMAD): TINY-MODEL WIDE COVERAGE. Spread flat stakes across ALL 7 SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY). Any signal >0.35 → allocate.",
 }
 
 def get_stackelberg_leader(state: dict) -> Optional[str]:
@@ -464,14 +487,19 @@ TRADERS = {
                          "fallback_provider": "cerebras:llama3.1-8b"},
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55,
                          "fallback_provider": "cerebras:qwen-3-235b"},
-    # 2026-04-17 KEEP SELFHOST on Nomos42 HF Space (Qwen 2.5-1.5B, cpu-basic).
-    "gemma4-selfhost":  {"name": "Nomos Selfhost",   "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40,
-                         "fallback_provider": "openrouter:gpt-oss-120b"},
+    # 2026-04-17 FIX: selfhost:cpu-gemma4 slug was never in gateway → dead. Switch to live selfhost:qwen3-4b.
+    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "selfhost:qwen3-4b",      "personality": "disciplined", "risk_tolerance": 0.40,
+                         "fallback_provider": "selfhost:gemma-3-4b"},
     # NEW 2026-04-17 — NVIDIA NIM (2 keys wired in gateway, 0 usage before) → parity with NBA TF.
     "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "nvidia:minimax-m2.7",   "personality": "decisive",    "risk_tolerance": 0.58,
                          "fallback_provider": "nvidia:minimax-m2.7-alt"},
     "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
                          "fallback_provider": "nvidia:nemotron-70b"},
+    # NEW 2026-04-17 — 2 additional selfhost traders → full 16-agent parity with NBA TF.
+    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "selfhost:gemma-3-4b",  "personality": "analytical",  "risk_tolerance": 0.45,
+                         "fallback_provider": "selfhost:qwen3-4b"},
+    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "selfhost:qwen3-0.6b",  "personality": "conservative","risk_tolerance": 0.30,
+                         "fallback_provider": "selfhost:qwen3-4b"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -489,12 +517,12 @@ EDGE DETECTION: Balanced exposure. Prefer moderate signal_strength × many event
 RISK: Low-moderate (0.45). Diversification over conviction.
 SPECIALTY: Portfolio construction across sectors. Avoid concentration in single agency.""",
 
-    "mistral-small": """You are Mistral Small, a capital-preservation political allocator.
-APPROACH: Only deploy when MULTIPLE agencies signal the same direction. Require corroboration from ≥2 independent sources (e.g., insider_trade + fed_rule both bullish healthcare).
-PREFERRED STRATEGIES: eighth_kelly, flat_1pct, cash_preservation
-EDGE DETECTION: Require signal_strength >0.6 AND at least 2 events in same sector. Otherwise cash.
-RISK: Very low (0.35). Cash is the right play when signals are mixed.
-SPECIALTY: Healthcare and finance sector plays with multi-agency corroboration.""",
+    "mistral-small": """You are Mistral Small, a wide-coverage small-stake political allocator.
+APPROACH: Spread small stakes across MANY sectors (≥5 per day). 22 political categories × N events/day = rich menu. Never sit on cash — deploy ≥75% bankroll every day per $1M collective goal.
+PREFERRED STRATEGIES: eighth_kelly, flat_1pct, sector_rotation
+EDGE DETECTION: Lower threshold (signal_strength >0.4). Tiny stakes on many signals compounds better than cash.
+RISK: Low (0.35). Small per-bet stakes, but deploy wide.
+SPECIALTY: Multi-sector ETFs (XLF, XLE, XLV, XLI, XLK, XLC, XLY) — use the breadth of 22 political categories.""",
 
     "mistral-nemo": """You are Mistral Nemo, an executive-order momentum allocator.
 APPROACH: High-conviction 1-2 signal plays per day. Pick the single strongest signal (exec_order or high-confidence insider) and bet 25-40% on it. Momentum is your edge.
@@ -559,12 +587,12 @@ EDGE DETECTION: Cross-sector scan — healthcare, defense, energy often misprice
 RISK: Moderate (0.55). Depth of reasoning over breadth.
 SPECIALTY: Healthcare/defense/energy ETFs with deep CoT reasoning.""",
 
-    "gemma4-selfhost": """You are Gemma4 SelfHost, a disciplined self-hosted political allocator on CPU Phi-3.5-mini.
-APPROACH: Small model, small bets. Pick one high-conviction sector ETF play per day. Prefer SPDR sector funds (XLF, XLE, XLV, XLI, XLK) over individual stocks.
-PREFERRED STRATEGIES: flat_1pct, quarter_kelly, top_signal_only
-EDGE DETECTION: Only deploy when signal_strength >0.7 AND single sector has ≥2 corroborating events. Otherwise cash.
-RISK: Low (0.40). Capital preservation over chase.
-SPECIALTY: Single sector ETF on multi-agency consensus.""",
+    "selfhost-qwen4b": """You are SelfHost Qwen3-4B, a disciplined self-hosted multi-sector political allocator on Nomos42/qwen3-4b-cpu.
+APPROACH: Deploy ≥75% bankroll every day across ≥3 sector allocations. Pick from the full 22-category political menu (exec_orders, insider_trades, fed_speakers, congressional_votes, geopolitical, etc) × 7 SPDR sectors.
+PREFERRED STRATEGIES: quarter_kelly, flat_2pct, sector_rotation
+EDGE DETECTION: signal_strength >0.4 on ≥3 sectors → diversify across them. Collective $1M goal forbids cash-sitting.
+RISK: Low-moderate (0.40). 3-5 sector allocations per day.
+SPECIALTY: XLF / XLE / XLV / XLI / XLK rotation. Free infra, no quota.""",
 
     "nvidia-minimax": """You are NVIDIA MiniMax M2.7, a long-context political allocator on NVIDIA NIM.
 APPROACH: Use the long-context window to ingest ALL events + 7-day political history simultaneously. Rank sectors by event density × sentiment × sector beta.
@@ -579,6 +607,20 @@ PREFERRED STRATEGIES: value_hunter, proportional_edge, flat_2pct
 EDGE DETECTION: Pure EV math. Ignore narrative. Trust event → sector correlation.
 RISK: Moderate (0.50). Swing trader, balanced across sectors.
 SPECIALTY: Broad sector ETFs on FOMC + Treasury + geopolitical catalysts.""",
+
+    "selfhost-gemma3": """You are SelfHost Gemma-3-4B, an analytical 3-factor political allocator on Nomos42/gemma2-2b-cpu Space.
+APPROACH: 3-factor model {congressional vote proximity, fed speaker density, geopolitical tape}. Weight {0.4, 0.3, 0.3}. Trade only when weighted signal > 0.6.
+PREFERRED STRATEGIES: half_kelly, confidence_scaled, sector_rotation
+EDGE DETECTION: Factor score >0.6 AND sector beta >0.8 vs event type.
+RISK: Low-moderate (0.45). Analytical, factor-disciplined.
+SPECIALTY: XLF on Fed weeks, XLE on OPEC weeks, XLI on infra votes. Free infra.""",
+
+    "selfhost-qwen06": """You are SelfHost Qwen3-0.6B, a wide-coverage tiny-model political allocator on Nomos42/qwen25-05b-cpu.
+APPROACH: Tiny 0.6B model, so use SIMPLE rules: spread ≥3 tiny flat-bets across ALL 7 SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY). Deploy ≥75% bankroll every day.
+PREFERRED STRATEGIES: flat_1pct, flat_2pct, sector_rotation
+EDGE DETECTION: Any signal >0.35 on any sector → allocate. Diversify wide, not deep.
+RISK: Very low (0.30). Tiny per-bet stakes, but many sectors = full 75%+ deployment.
+SPECIALTY: Flat-stake wide coverage across all 7 SPDR sector ETFs.""",
 }
 
 # ── RATE LIMITER ─────────────────────────────────────────────────────────────

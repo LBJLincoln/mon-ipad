@@ -63,7 +63,7 @@ HF EVOLUTION ISLANDS (13 NBA + 8 Political = 21 active, S20/S21/S22 deployed 202
 
 NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
 
-HF TRADING FLOORS (Real LLM experiment, NBA 14 agents / Political 14 agents — parity achieved 2026-04-17 via +T13 nvidia-minimax +T14 nvidia-llama70)
+HF TRADING FLOORS (Real LLM experiment, NBA 16 agents / Political 16 agents — parity 2026-04-17 via +T13 nvidia-minimax +T14 nvidia-llama70 +T15 selfhost-gemma3 +T16 selfhost-qwen06, T12 renamed selfhost-qwen4b. COLLECTIVE_MISSION $1M preamble on every agent + unrestricted prompts: ≥3 allocations + MIN_DEPLOY_PCT=0.75 hard floor.)
     ├── LBJLincoln26/nba-llm-trading-floor: NBA engine (1257 games, FastAPI + Gradio)
     │   └── Source: scripts/arena/hf-llm-trading-floor/
     ├── LBJLincoln26/political-llm-trading-floor: POLITICAL engine (1120 events, same architecture)
@@ -211,15 +211,20 @@ Channel: @Nomos42
 
 Guardian Orchestrator v3: Analyzes ALL 9 department loops, allocates resources, cross-pollinates wins.
 
-## Trading Floor v5 — 14 Real LLM Agents (NBA + Political, parity) — Apr 17, 2026
+## Trading Floor v5 — 16 Real LLM Agents (NBA + Political, parity) — Apr 17, 2026
 
 Every agent is a **real LLM API call** — no hash simulation, no mocks.
 Each receives full game context (odds, standings, form, 100+ categories, 22 SOTA strategies)
 and REASONS about what to bet. Full 2025-26 season (1257 games).
 
+**COLLECTIVE_MISSION**: every system_prompt is prefixed with the collective preamble —
+ONE of 16 LLM agents, SAME data seen by all, $1M season goal, ≥75% deploy / ≥3 allocations
+EVERY day, full collab stack (morning council moderated by qwen-235B, Axelrod canon, pacts,
+post-mortem log, sacrificial rotation, rogue triggers at <$25 or peer >$250K).
+
 Architecture: TradingAgents (arXiv 2412.20138) + Prediction Arena (2604.07355) + DMAD anti-groupthink
 
-### NBA Traders (12 AI Agents — all real LLM calls, day-bucket-v3, verified live 2026-04-15)
+### NBA Traders (16 AI Agents — all real LLM calls, parity with POL, verified live 2026-04-17)
 | # | trader_id | Model | Provider | Personality | Risk |
 |---|-----------|-------|----------|-------------|------|
 | T1 | qwen-quant | Qwen 3 235B-A22B | Cerebras | quantitative | 0.55 |
@@ -229,13 +234,15 @@ Architecture: TradingAgents (arXiv 2412.20138) + Prediction Arena (2604.07355) +
 | T5 | gemini-tact | Gemini 3 Flash Preview | Google (key 2) | tactical | 0.60 |
 | T6 | mistral-large | mistral-large-latest | Mistral | ensemble | 0.50 |
 | T7 | mistral-medium | mistral-medium-latest | Mistral | diversified | 0.45 |
-| T8 | mistral-small | mistral-small-latest | Mistral | conservative | 0.35 |
+| T8 | mistral-small | mistral-small-latest | Mistral | wide-coverage | 0.35 |
 | T9 | mistral-nemo | open-mistral-nemo | Mistral | aggressive | 0.70 |
 | T10 | mistral-ministral | ministral-8b-latest | Mistral | theoretical | 0.35 |
 | T11 | nemotron-120b | NVIDIA Nemotron-3-Super-120B | OpenRouter (free) | chainthought | 0.55 |
-| T12 | gemma4-selfhost | Phi-3.5 (self-hosted CPU) | Self-Host (Nomos42/nomos42-llm-cpu) | disciplined | 0.40 |
+| T12 | selfhost-qwen4b | Qwen3-4B (self-hosted CPU) | selfhost:qwen3-4b | disciplined | 0.40 |
 | T13 | nvidia-minimax | MiniMax M2.7 (NVIDIA NIM) | NVIDIA NIM (key 1+2) | decisive | 0.58 |
 | T14 | nvidia-llama70 | Llama 3.3 70B (NVIDIA NIM) | NVIDIA NIM (key 1+2) | swing | 0.50 |
+| T15 | selfhost-gemma3 | Gemma-3-4B (self-hosted CPU) | selfhost:gemma-3-4b | analytical | 0.45 |
+| T16 | selfhost-qwen06 | Qwen3-0.6B (self-hosted CPU) | selfhost:qwen3-0.6b | conservative | 0.30 |
 
 ### Providers (verified 2026-04-15)
 | Provider | Status | Models in use | Notes |

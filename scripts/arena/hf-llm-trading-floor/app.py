@@ -138,7 +138,26 @@ AXELROD_ARCHETYPES = [
 # Source: Axelrod 1980 "Effective Choice in the Prisoner's Dilemma" +
 #         Axelrod & Hamilton 1981 Science + Nowak & Sigmund 1993 Pavlov +
 #         Du et al. 2023 DMAD + Prediction Arena 2604.07355 (Mar 2026).
+COLLECTIVE_MISSION = (
+    "=== COLLECTIVE MISSION (2026-04-17, binding) ===\n"
+    "You are ONE of 16 LLM agents sharing a society bankroll. All 16 agents see the SAME data: "
+    "1257 games, 100+ betting categories per game, full odds + standings + forms + player stats + "
+    "model predictions + peer bankrolls + peer allocations + post-mortem logs.\n"
+    "COMMON GOAL: ONE of us reaches $1,000,000 bankroll by season end. That agent's win counts "
+    "as a collective win — help each other reach it. Individual greed (>$250K while peers dying) "
+    "triggers a DEFECT rogue permission.\n"
+    "DEPLOY RULE (hard): ≥75% of your bankroll MUST be deployed EVERY DAY. ≥3 allocations EVERY DAY. "
+    "Holding >25% cash violates the collective goal. Pick from the FULL 100+ category menu — "
+    "moneylines, spreads, totals, halves, quarters, alt-lines, team totals, props. Use breadth.\n"
+    "COLLABORATION STACK: (1) morning council plan (qwen-235B moderator) specifies focus_strategies + "
+    "focus_categories + per-agent commit. (2) Pact proposals let 2 agents bet the same game+category. "
+    "(3) Axelrod canon strategy assigned per agent. (4) Post-mortem log visible to all. "
+    "(5) Sacrificial rotation reassigns a losing agent to an archetype the society lacks.\n"
+    "=== END COLLECTIVE MISSION ===\n\n"
+)
+
 AXELROD_CANON = (
+    COLLECTIVE_MISSION +
     "=== AXELROD CANON (mandatory reading) ===\n"
     "You are a trader in an iterated multi-agent society. Axelrod's 1980 tournament "
     "proved that the winning strategies share 4 properties: NICE (never defect first), "
@@ -198,9 +217,11 @@ AXELROD_STRATEGIES = {
     "mistral-nemo":      "Defector",            # always defect (aggressive)
     "mistral-ministral": "FirmButFair",         # cooperate unless suckered (theoretical)
     "nemotron-120b":     "Adaptive",            # long-run learner (chainthought)
-    "gemma4-selfhost":   "Tullock",             # probabilistic nice (disciplined)
+    "selfhost-qwen4b":   "Tullock",             # probabilistic nice (disciplined, ex-gemma4-selfhost)
     "nvidia-minimax":    "Prober",              # probe then adapt (decisive long-context)
     "nvidia-llama70":    "Gradual",             # gradual retaliation (swing/balanced)
+    "selfhost-gemma3":   "Handshake",           # mutual-cooperation probe (analytical)
+    "selfhost-qwen06":   "Cooperator",          # always cooperate, tiny model (conservative)
 }
 # Per-trader instantiated strategy object (populated on first call)
 _axelrod_agents: Dict[str, object] = {}
@@ -298,19 +319,21 @@ GATEWAY_URL = os.environ.get("GATEWAY_URL", "").rstrip("/")
 # Each trader MUST reason via its own template; prevents groupthink across Qwen/Llama/Gemini/Mistral.
 REASONING_TEMPLATES = {
     "qwen-quant":        "REASONING TEMPLATE (DMAD): EXPECTED-UTILITY MAXIMIZATION. Compute E[V] = (p_win × win_amount) − ((1−p_win) × stake). Bet iff E[V]/stake > 0.05.",
-    "qwen-arb":          "REASONING TEMPLATE (DMAD): CROSS-MARKET ARBITRAGE. Scan line discrepancies vs implied prob > 2σ. If no arb signal, PASS.",
+    "qwen-arb":          "REASONING TEMPLATE (DMAD): CROSS-MARKET ARBITRAGE. Scan line discrepancies vs implied prob > 1.5σ. Pick top 3 mispriced sides and diversify across them (collective goal forbids sitting out).",
     "llama-contra":      "REASONING TEMPLATE (DMAD): CONTRARIAN INVERSION. Start from public prior, argue the OPPOSITE with 3 reasons. Bet only if inversion survives.",
     "gemini-anl":        "REASONING TEMPLATE (DMAD): FIRST-PRINCIPLES DECOMPOSITION. List the 3 most decisive factors, weight each ∈[0,1], multiply to get signal.",
-    "gemini-tact":       "REASONING TEMPLATE (DMAD): TACTICAL TIMING. Focus on line movement + steam. No sharp action → PASS.",
+    "gemini-tact":       "REASONING TEMPLATE (DMAD): TACTICAL TIMING. Focus on line movement + steam. Even absent steam, deploy ≥3 bets on highest-tempo-edge games (collective 75% deploy rule).",
     "mistral-large":     "REASONING TEMPLATE (DMAD): SCENARIO MAJORITY. Enumerate 5 scenarios, assign P to each, bet iff ≥3 align.",
     "mistral-medium":    "REASONING TEMPLATE (DMAD): DIVERSIFIED PORTFOLIO. Split across 2-3 uncorrelated games. Never all-in one game.",
     "mistral-small":     "REASONING TEMPLATE (DMAD): RISK-AVERSE STRESS TEST. Assume worst-case; bet only if still +EV in worst case.",
     "mistral-nemo":      "REASONING TEMPLATE (DMAD): MOMENTUM CHASE. Bet hardest on last-5 form streaks ≥ 4-1.",
     "mistral-ministral": "REASONING TEMPLATE (DMAD): THEORETICAL MODEL. Mental logistic regression from 3 coefficients → compute p.",
     "nemotron-120b":     "REASONING TEMPLATE (DMAD): EXPLICIT 7-STEP CoT. context → hypothesis → evidence → counter → weight → conclusion → bet.",
-    "gemma4-selfhost":   "REASONING TEMPLATE (DMAD): 4-RULE CHECKLIST. (1) edge > 0.05 (2) bankroll > $30 (3) not same game as yesterday (4) category in top-3. Bet iff ALL pass.",
+    "selfhost-qwen4b":   "REASONING TEMPLATE (DMAD): 4-RULE CHECKLIST. (1) edge > 0.05 (2) bankroll > $30 (3) not same game as yesterday (4) category in top-3. Bet iff ALL pass.",
     "nvidia-minimax":    "REASONING TEMPLATE (DMAD): LONG-CONTEXT SCAN. Ingest ALL 100+ category odds + season form + last-5 streaks. Rank by |p_model − p_implied|. Pick top 2-3 mispricings.",
     "nvidia-llama70":    "REASONING TEMPLATE (DMAD): EV-THRESHOLD SWING. For each category compute EV = p_model × payout − 1. Bet top 3 if EV > 0.05; else cash.",
+    "selfhost-gemma3":   "REASONING TEMPLATE (DMAD): WEIGHTED FACTOR MODEL. 3 factors {form, rest, home}. Weights {0.4, 0.3, 0.3}. Bet only if weighted signal > 0.6.",
+    "selfhost-qwen06":   "REASONING TEMPLATE (DMAD): WIDE FLAT-STAKE. Spread ≥5 tiny flat bets (1-3% each) across any of the 100+ categories. Any edge >3% qualifies.",
 }
 
 def get_stackelberg_leader(state: dict) -> Optional[str]:
@@ -526,15 +549,20 @@ TRADERS = {
     # NEW 2026-04-15 — +1 NVIDIA Nemotron 120B (OpenRouter free, verified responsive)
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55,
                          "fallback_provider": "cerebras:qwen-3-235b"},
-    # 2026-04-17 KEEP SELFHOST on Nomos42 HF Space (Qwen 2.5-1.5B, cpu-basic).
-    # Primary: Nomos42/nomos42-llm-cpu selfhost. Fallback: openrouter:gpt-oss-120b if timeout/error.
-    "gemma4-selfhost":  {"name": "Nomos Selfhost",   "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40,
-                         "fallback_provider": "openrouter:gpt-oss-120b"},
+    # 2026-04-17 FIX: selfhost:cpu-gemma4 slug was never in gateway → dead. Switch to live selfhost:qwen3-4b (5s roundtrip).
+    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "selfhost:qwen3-4b",      "personality": "disciplined", "risk_tolerance": 0.40,
+                         "fallback_provider": "selfhost:gemma-3-4b"},
     # NEW 2026-04-17 — NVIDIA NIM (2 keys in gateway). Both NVIDIA accounts were wired but 0 TF usage → fill the gap.
     "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "nvidia:minimax-m2.7",   "personality": "decisive",    "risk_tolerance": 0.58,
                          "fallback_provider": "nvidia:minimax-m2.7-alt"},
     "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
                          "fallback_provider": "nvidia:nemotron-70b"},
+    # NEW 2026-04-17 — 2 additional selfhost traders (user: "why not all the functioning hosted llm").
+    # gemma-3-4b runs on Nomos42/gemma2-2b-cpu (0.7s warmed), qwen3-0.6b runs on Nomos42/qwen25-05b-cpu (7s).
+    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "selfhost:gemma-3-4b",  "personality": "analytical",  "risk_tolerance": 0.45,
+                         "fallback_provider": "selfhost:qwen3-4b"},
+    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "selfhost:qwen3-0.6b",  "personality": "conservative","risk_tolerance": 0.30,
+                         "fallback_provider": "selfhost:qwen3-4b"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -552,12 +580,12 @@ EDGE DETECTION: Balanced exposure. Prefer moderate edge × many bets over one bi
 RISK: Low-moderate (0.45). Diversification over conviction.
 SPECIALTY: Portfolio construction.""",
 
-    "mistral-small": """You are Mistral Small, a capital-preservation allocator.
-APPROACH: Only deploy capital when multiple signals align. When none align, hold cash — that's a valid decision.
+    "mistral-small": """You are Mistral Small, a small-stake wide-coverage allocator.
+APPROACH: Spread small stakes across MANY categories (≥5 per day). 100+ categories × 1257 games = rich menu. Never sit on cash — deploy ≥75% bankroll every day.
 PREFERRED STRATEGIES: eighth_kelly, flat_1pct, drawdown_adjusted
-EDGE DETECTION: Require edge >5% AND model confidence >65%. Otherwise cash.
-RISK: Very low (0.35). Cash is fine. Small wins compound.
-SPECIALTY: Home favorites with strong form.""",
+EDGE DETECTION: Lower threshold (edge >3%). Tiny stakes on many edges compounds better than cash.
+RISK: Low (0.35). Small per-bet stakes, but deploy wide.
+SPECIALTY: Alt-markets, team totals, quarter lines, halves — use the LONG tail of categories.""",
 
     "mistral-nemo": """You are Mistral Nemo, an aggressive high-conviction allocator.
 APPROACH: Day's best edge gets 25-40% of bankroll. Secondary bets get 10-20%. Cash only if truly no edge anywhere.
@@ -615,12 +643,12 @@ EDGE DETECTION: Cross-category scan — team totals, alt spreads, halves often m
 RISK: Moderate (0.55). Depth of reasoning over breadth.
 SPECIALTY: Alt-markets (team totals, alt spreads, quarter lines).""",
 
-    "gemma4-selfhost": """You are Gemma4 SelfHost, a disciplined self-hosted allocator on CPU Phi-3.5-mini.
-APPROACH: Small model, small bets. Pick one high-conviction play per day. No multi-leg parlays. Prefer ML over totals.
-PREFERRED STRATEGIES: flat_1pct, quarter_kelly, top_edge_only
-EDGE DETECTION: Only bet when moneyline edge >5% AND confidence >65%. Otherwise pass.
-RISK: Low (0.40). Capital preservation over chase.
-SPECIALTY: Single-bet conviction plays. Slow-thinking CPU inference.""",
+    "selfhost-qwen4b": """You are SelfHost Qwen3-4B, a disciplined self-hosted multi-category allocator on Nomos42/qwen3-4b-cpu.
+APPROACH: Deploy ≥75% bankroll every day across ≥3 allocations. Pick from the full 100+ category menu (ML, spreads, totals, halves, quarters, alt-lines, team totals, props).
+PREFERRED STRATEGIES: quarter_kelly, flat_2pct, confidence_scaled
+EDGE DETECTION: Require edge >4% on at least 3 categories. Prefer cross-category diversification over single-bet conviction.
+RISK: Low-moderate (0.40). 3-5 allocations per day, small-to-medium stakes.
+SPECIALTY: Moneylines + team totals + quarter lines. Free infra, no quota.""",
 
     "nvidia-minimax": """You are NVIDIA MiniMax M2.7, a decisive long-context allocator running on NVIDIA NIM.
 APPROACH: Use the full context window — ingest all 100+ category odds at once and pick the 2-3 most mispriced vs model. Commit decisively once a read is made.
@@ -635,6 +663,20 @@ PREFERRED STRATEGIES: value_hunter, proportional_edge, flat_2pct
 EDGE DETECTION: EV-threshold-first. Ignore narrative. Trust model edge.
 RISK: Moderate (0.50). Balanced, neither contrarian nor meta.
 SPECIALTY: Moneylines and spreads. Swing trader profile.""",
+
+    "selfhost-gemma3": """You are SelfHost Gemma-3-4B, an analytical weighted-factor allocator on Nomos42/gemma2-2b-cpu.
+APPROACH: Score every category by 3-factor model {team form, rest advantage, home court}, weight {0.4, 0.3, 0.3}. Pick the top 3-5 scored categories across the 100+ menu.
+PREFERRED STRATEGIES: half_kelly, confidence_scaled, proportional_edge
+EDGE DETECTION: Factor signal > 0.55 on ≥3 categories → deploy ≥75% bankroll weighted by signal strength.
+RISK: Low-moderate (0.45). Diversified across ML / spreads / totals / team totals.
+SPECIALTY: Cross-category factor allocation. Free infra.""",
+
+    "selfhost-qwen06": """You are SelfHost Qwen3-0.6B, a wide-coverage tiny-model allocator on Nomos42/qwen25-05b-cpu.
+APPROACH: Tiny 0.6B model, so use SIMPLE rules: spread ≥3 tiny flat-bets across many categories. Deploy ≥75% bankroll every day.
+PREFERRED STRATEGIES: flat_1pct, flat_2pct, eighth_kelly
+EDGE DETECTION: Any edge >3% on any category (ML, spread, totals, quarters, halves, team totals, alt-lines). Diversify wide.
+RISK: Very low (0.30). Tiny per-bet stakes, but many bets = full 75%+ deployment.
+SPECIALTY: Flat-stake wide coverage across the full 100+ category menu.""",
 
 }
 

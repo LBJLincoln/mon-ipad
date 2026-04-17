@@ -75,6 +75,34 @@ MODELS = {
         "rpm": 60,
         "tier": "medium",
     },
+    # ── SELF-HOST (Apr 17 2026) — live-probed, all 3 respond via /v1/chat/completions ──
+    "selfhost:gemma-3-4b": {
+        "url": "https://nomos42-gemma2-2b-cpu.hf.space/v1/chat/completions",
+        "model": "gemma-3-4b-it",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "fast",
+    },
+    "selfhost:qwen3-0.6b": {
+        "url": "https://nomos42-qwen25-05b-cpu.hf.space/v1/chat/completions",
+        "model": "qwen3-0.6b-instruct",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "fast",
+    },
+    "selfhost:dolphin3-l32-3b": {
+        "url": "https://nomos42-llama32-1b-cpu.hf.space/v1/chat/completions",
+        "model": "dolphin3-llama3.2-3b",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "slow",
+    },
     # ── CEREBRAS (free, ultra-fast ~2000 tok/s, 30 RPM) ──
     "cerebras:qwen-3-235b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
@@ -271,7 +299,10 @@ FALLBACK_CHAINS = {
     # Self-host tier (2 live Spaces: phi-4-mini on nomos42-llm-cpu, qwen3-4b on nomos42-qwen3-4b-cpu).
     # Dead refs pruned 2026-04-16: qwen3-0.6b, dolphin3-llama-3.2-3b, gemma-4-e2b, smollm3-3b.
     "selfhost:phi-4-mini":               ["cerebras:llama3.1-8b", "google:gemini-2.5-flash", "openrouter:gemma-4-26b:free", "selfhost:qwen3-4b"],
-    "selfhost:qwen3-4b":                 ["selfhost:phi-4-mini", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
+    "selfhost:qwen3-4b":                 ["selfhost:gemma-3-4b", "selfhost:qwen3-0.6b", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
+    "selfhost:gemma-3-4b":               ["selfhost:qwen3-4b", "selfhost:qwen3-0.6b", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
+    "selfhost:qwen3-0.6b":               ["selfhost:gemma-3-4b", "selfhost:qwen3-4b", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
+    "selfhost:dolphin3-l32-3b":          ["selfhost:qwen3-4b", "selfhost:gemma-3-4b", "cerebras:llama3.1-8b"],
     "cerebras:qwen-3-235b":              ["cerebras:llama3.1-8b", "openrouter:qwen3-80b:free", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
     "cerebras:llama3.1-8b":              ["cerebras:qwen-3-235b", "google:gemini-2.5-flash", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
     "openrouter:glm-4.5-air:free":       ["cerebras:llama3.1-8b", "openrouter:gpt-oss-20b:free", "google:gemini-3-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
