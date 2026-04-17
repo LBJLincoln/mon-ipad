@@ -496,13 +496,17 @@ TRADERS = {
     "mistral-large":    {"name": "Mistral Large",    "provider": "mistral:large",        "personality": "ensemble",     "risk_tolerance": 0.50},
     "mistral-medium":   {"name": "Mistral Medium",   "provider": "mistral:medium",       "personality": "diversified",  "risk_tolerance": 0.45},
     "mistral-small":    {"name": "Mistral Small",    "provider": "mistral:small",        "personality": "conservative", "risk_tolerance": 0.35},
-    "mistral-nemo":     {"name": "Mistral Nemo",     "provider": "openrouter:gemma-4-31b","personality": "aggressive",   "risk_tolerance": 0.70},
-    "mistral-ministral":{"name": "Ministral 8B",     "provider": "openrouter:gpt-oss-120b","personality": "theoretical",  "risk_tolerance": 0.35},
+    # 2026-04-17 SWAP: gemma-4-31b rate-limited 429 upstream → cerebras:llama3.1-8b (aggressive momentum)
+    "mistral-nemo":     {"name": "Momentum Hunter",   "provider": "cerebras:llama3.1-8b",  "personality": "aggressive",   "risk_tolerance": 0.70,
+                         "fallback_provider": "openrouter:gpt-oss-120b"},
+    "mistral-ministral":{"name": "Ministral 8B",     "provider": "openrouter:gpt-oss-120b","personality": "theoretical",  "risk_tolerance": 0.35,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
     # NEW 2026-04-15 — +1 NVIDIA Nemotron 120B (OpenRouter free, verified responsive)
-    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55},
-    # NEW 2026-04-15 T12 — self-hosted CPU Phi-3.5 on HF Space (no quota, slow ~8s/call)
-    "gemma4-selfhost":  {"name": "Gemma4 SelfHost",  "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40,
-                         "fallback_provider": "openrouter:gemma-4-31b"},
+    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55,
+                         "fallback_provider": "cerebras:qwen-3-235b"},
+    # 2026-04-17 SWAP: selfhost CPU too slow (0.17 tok/s = 60min/call) → openrouter:gpt-oss-120b (disciplined 4-rule)
+    "gemma4-selfhost":  {"name": "Disciplined Scout", "provider": "openrouter:gpt-oss-120b", "personality": "disciplined", "risk_tolerance": 0.40,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -1020,35 +1024,66 @@ Rules:
 
 def parse_llm_decision(raw: str) -> Optional[Dict]:
     """Extract JSON decision from LLM response. Handles thinking tags, markdown fences,
-    and common LLM wrapping patterns."""
+    channel tokens (Nemotron), dangling closers, nested braces, and LLM wrapping patterns."""
     if not raw:
         return None
     text = raw.strip()
     import re
-    # Strip thinking/reasoning tags (DeepSeek-R1, Qwen3, etc.)
+    # 1. Strip thinking/reasoning tags (DeepSeek-R1, Qwen3, Nemotron-120B)
     text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
     text = re.sub(r'<reasoning>.*?</reasoning>', '', text, flags=re.DOTALL)
+    text = re.sub(r'<thinking>.*?</thinking>', '', text, flags=re.DOTALL)
+    # Nemotron and OpenAI OSS models use channel tokens — strip everything up to the final channel
+    text = re.sub(r'<\|.*?\|>', '', text, flags=re.DOTALL)
+    # Dangling close tags (response truncated pre-open)
+    text = re.sub(r'^.*?</think>\s*', '', text, flags=re.DOTALL)
+    text = re.sub(r'^.*?</reasoning>\s*', '', text, flags=re.DOTALL)
     text = text.strip()
+    # 2. Markdown fence extraction
     if "```json" in text:
-        text = text.split("```json")[1].split("```")[0].strip()
+        text = text.split("```json", 1)[1].split("```", 1)[0].strip()
     elif "```" in text:
         parts = text.split("```")
         if len(parts) >= 3:
-            text = parts[1].strip()
+            # Prefer block that starts with {
+            for p in parts[1::2]:
+                if p.strip().startswith("{"):
+                    text = p.strip()
+                    break
+            else:
+                text = parts[1].strip()
+    # 3. Candidate scan — try last-brace, then greedy, then line-by-line
+    candidates = []
     start = text.find("{")
     end = text.rfind("}")
     if start >= 0 and end > start:
-        candidate = text[start:end + 1]
-        try:
-            return json.loads(candidate)
-        except json.JSONDecodeError:
-            # Try fixing common issues: trailing commas, single quotes
-            fixed = re.sub(r',\s*}', '}', candidate)
-            fixed = re.sub(r',\s*]', ']', fixed)
+        candidates.append(text[start:end + 1])
+    # Also try balanced-brace scan from last opening brace
+    last_open = text.rfind("{")
+    if last_open >= 0 and last_open != start:
+        candidates.append(text[last_open:] + ("}" if not text.rstrip().endswith("}") else ""))
+    for candidate in candidates:
+        for attempt in (candidate, re.sub(r',\s*([}\]])', r'\1', candidate),
+                        re.sub(r"'([^']*)':", r'"\1":', candidate)):
             try:
-                return json.loads(fixed)
-            except json.JSONDecodeError:
-                pass
+                parsed = json.loads(attempt)
+                if isinstance(parsed, dict):
+                    return parsed
+            except (json.JSONDecodeError, TypeError):
+                continue
+    # 4. Last resort — regex pluck of "decision" / "bet" / "edge" / "stake" fields
+    dec_match = re.search(r'"decision"\s*:\s*"([^"]+)"', text)
+    if dec_match:
+        result = {"decision": dec_match.group(1)}
+        for key in ("bet", "edge", "stake_pct", "confidence", "reason", "category"):
+            m = re.search(r'"' + key + r'"\s*:\s*(?:"([^"]+)"|([\d.]+))', text)
+            if m:
+                val = m.group(1) if m.group(1) is not None else m.group(2)
+                try:
+                    result[key] = float(val)
+                except (ValueError, TypeError):
+                    result[key] = val
+        return result
     return None
 
 
