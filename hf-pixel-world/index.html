@@ -184,7 +184,7 @@
         <button data-room="evolution">EVOLUTION 🧬</button>
         <button data-room="councils">COUNCILS ⚖</button>
       </div>
-      <div><span class="tick" id="hud-tick">· booting</span> <span style="opacity:0.4;font-size:9px;margin-left:6px">v2.11</span></div>
+      <div><span class="tick" id="hud-tick">· booting</span> <span style="opacity:0.4;font-size:9px;margin-left:6px">v2.12</span></div>
     </div>
     <div id="minimap"><span class="mm-lbl">MAP</span><canvas id="mm-canvas" width="120" height="80"></canvas></div>
     <div id="bet-ticker">
@@ -210,6 +210,7 @@
       <div class="r"><span class="l">NBA</span><span id="k-nba" class="v warn">—</span></div>
       <div class="r"><span class="l">Political</span><span id="k-pol" class="v warn">—</span></div>
       <div class="r"><span class="l">Islands</span><span id="k-evo" class="v warn">—</span></div>
+      <div class="r"><span class="l">Councils</span><span id="k-councils" class="v warn">—</span></div>
       <div class="r"><span class="l">Pacts</span><span id="k-pacts" class="v">—</span></div>
       <div class="r"><span class="l">Last sync</span><span id="k-last" class="v">—</span></div>
     </div>
@@ -368,6 +369,18 @@ const ENDPOINTS = {
   political:   "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status",
   politicalLB: "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/leaderboard",
   politicalDays:"https://lbjlincoln26-political-llm-trading-floor.hf.space/api/day-decisions",
+};
+// v2.12: Councils persist iteration count to Hub repo (no FastAPI). Poll state.json directly.
+const COUNCIL_STATE_URLS = {
+  D1: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d1-research/resolve/main/data/runtime/state.json",
+  D2: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d2-engineering/resolve/main/data/runtime/state.json",
+  D3: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d3-evolution/resolve/main/data/runtime/state.json",
+  D4: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d4-product/resolve/main/data/runtime/state.json",
+  D5: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d5-business/resolve/main/data/runtime/state.json",
+  D6: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d6-evaluation/resolve/main/data/runtime/state.json",
+  D7: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d7-infra/resolve/main/data/runtime/state.json",
+  D8: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d8-finance/resolve/main/data/runtime/state.json",
+  D9: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d9-cross-repo/resolve/main/data/runtime/state.json",
 };
 
 const AGENTS = [
@@ -639,21 +652,27 @@ makeDiegeticPanel({ x:24, y:24, w:280, h:130, title:"◆ ODDS BOARD — live-odd
 makeDiegeticPanel({ x:976, y:24, w:280, h:130, title:"▣ BANKROLL TOTEM — TFs live",
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
   render:(d) => {
-    if (!d || d.best_bankroll == null) return { state:"no_signal" };
-    const best = d.best_bankroll || 0, leader = d.leader || "-", calls = d.total_llm_calls || d.llm_calls || 0;
+    if (!d) return { state:"no_signal" };
+    // v2.12 field-name fix: API returns fleet_best_bankroll / fleet_leader / llm_calls
+    const best = d.fleet_best_bankroll ?? d.best_bankroll ?? 0;
+    const leader = d.fleet_leader ?? d.leader ?? "-";
+    const calls = d.llm_calls ?? d.total_llm_calls ?? 0;
+    const dayIdx = d.current_day_idx ?? d.days_processed ?? "—";
     const running = d.running ? "● RUNNING" : "○ idle";
-    const text = `${running}\nday_idx: ${d.current_day_idx ?? "—"}\nbest: $${best.toFixed(0)}  (${leader})\ncalls: ${calls}\nfailures: ${d.llm_failures ?? 0}\npacts: ${d.cooperation_pacts_count ?? 0}`;
-    const state = (best === 0 && calls < 5) ? "stale" : "live";
+    const text = `${running}\nday_idx: ${dayIdx}\nbest: $${Number(best).toFixed(0)}  (${leader})\ncalls: ${calls}\nfailures: ${d.llm_failures ?? 0}\npacts: ${d.cooperation_pacts_count ?? 0}`;
+    const state = (calls < 5) ? "stale" : "live";
     return { text, state };
   }});
 makeDiegeticPanel({ x:24, y:168, w:280, h:130, title:"◈ PROMPT CORE — mission",
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
   render:(d) => {
     if (!d) return { state:"no_signal" };
-    const mission = d.collective_mission_active ? "$1M SHARED GOAL" : "(no mission)";
+    // Infer collective mission from side-effects the API DOES expose
+    const missionActive = d.collective_mission_active ?? (d.season_target != null || d.axelrod_canon_active);
+    const mission = missionActive ? "$1M SHARED GOAL" : "(no mission)";
     const canon = d.axelrod_canon_active ? "AXELROD CANON on" : "canon off";
     const text = `COLLECTIVE: ${mission}\n${canon}\nmin deploy: ≥75%\nmin allocs: ≥3/day\nrogue <$25 / peer >$250K\nsacrificial rotation active`;
-    return { text, state: d.collective_mission_active ? "live" : "fake" };
+    return { text, state: missionActive ? "live" : "fake" };
   }});
 makeDiegeticPanel({ x:976, y:168, w:280, h:130, title:"▲ EDGE MATRIX — model vs market",
   dataUrl:"/api/nba/calibration",
@@ -681,7 +700,7 @@ makeDiegeticPanel({ x:672, y:24, w:280, h:130, title:"◉ LLM API RACK — 5 pro
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
   render:(d) => {
     if (!d) return { state:"no_signal" };
-    const calls = d.total_llm_calls || d.llm_calls || 0;
+    const calls = d.llm_calls ?? d.total_llm_calls ?? 0;
     const fails = d.llm_failures || 0;
     const rate = calls > 0 ? (1 - fails/calls) : 0;
     const providers = [
@@ -814,11 +833,13 @@ makeDiegeticPanel({ x:448, y:628, w:408, h:130, title:"▣ POLITICAL TF — 16 a
   dataUrl:"https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status",
   render:(d) => {
     if (!d) return { state:"no_signal" };
-    const best = d.best_bankroll || 0;
-    const calls = d.total_llm_calls || d.llm_calls || 0;
+    const best = d.fleet_best_bankroll ?? d.best_bankroll ?? 0;
+    const calls = d.llm_calls ?? d.total_llm_calls ?? 0;
+    const leader = d.fleet_leader ?? d.leader ?? "-";
+    const dayIdx = d.current_day_idx ?? d.days_processed ?? "—";
     const run = d.running ? "● RUNNING" : "○ idle";
-    const text = `${run}\nday_idx:  ${d.current_day_idx ?? "—"}\nbest:     $${best.toFixed(0)}\nleader:   ${d.leader||"-"}\ncalls:    ${calls}  fails: ${d.llm_failures||0}\npacts:    ${d.cooperation_pacts_count||0}`;
-    return { text, state: calls > 10 && best === 0 ? "stale" : "live" };
+    const text = `${run}\nday_idx:  ${dayIdx}\nbest:     $${Number(best).toFixed(0)}\nleader:   ${leader}\ncalls:    ${calls}  fails: ${d.llm_failures||0}\npacts:    ${d.cooperation_pacts_count||0}`;
+    return { text, state: calls < 5 ? "stale" : "live" };
   }});
 makeDiegeticPanel({ x:872, y:628, w:384, h:130, title:"◇ COLLECTIVE GOAL — $1M/season",
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
@@ -1927,8 +1948,21 @@ async function refresh() {
       const b = AGENTS.find(x => x.kind==="nba" && x.id===repKeys[i+1]);
       if (a && b) { a.pactPartner = b.id; b.pactPartner = a.id; }
     }
+    // v2.12: mid-day fallback. Agents dict is empty until day 1 completes, but llm_calls ticks
+    // up every prompt. Without this, all 16 trader sprites show "awaiting live data…" for hours.
+    const midDay = nba.running && nba.llm_calls > 0 && !Object.keys(agents).length;
     for (const a of AGENTS.filter(x => x.kind==="nba")) {
-      const d = agents[a.id]; if (!d) continue;
+      let d = agents[a.id];
+      if (!d && midDay) {
+        d = { bankroll: 100, total_bets: 0, wins: 0, losses: 0, llm_calls: 0, llm_ok: 0, _synth: true };
+        a.state = "thinking";
+        a.bubble = `${a.label}\nday 1 in progress · llm ${nba.llm_calls}/∞`;
+        a.bubbleUntil = performance.now() + 20000;
+        a.data = d;
+        nbaOK++;
+        continue;
+      }
+      if (!d) continue;
       nbaOK++;
       const prev = a.data;
       a.data = d; a.strategy = strategies[a.id]; a.sacrificial = sacrificials[a.id];
@@ -1958,8 +1992,19 @@ async function refresh() {
     const strategies = pol.axelrod_strategies || {};
     const sacrificials = pol.sacrificial_assignments || {};
     pacts += pol.cooperation_pacts_count || 0;
+    const midDayP = pol.running && pol.llm_calls > 0 && !Object.keys(agents).length;
     for (const a of AGENTS.filter(x => x.kind==="political")) {
-      const d = agents[a.key]; if (!d) continue;
+      let d = agents[a.key];
+      if (!d && midDayP) {
+        d = { bankroll: 100, total_bets: 0, wins: 0, losses: 0, llm_calls: 0, llm_ok: 0, _synth: true };
+        a.state = "thinking";
+        a.bubble = `${a.label}\nday 1 in progress · llm ${pol.llm_calls}/∞`;
+        a.bubbleUntil = performance.now() + 20000;
+        a.data = d;
+        polOK++;
+        continue;
+      }
+      if (!d) continue;
       polOK++;
       const prev = a.data;
       a.data = d; a.strategy = strategies[a.key]; a.sacrificial = sacrificials[a.key];
@@ -2033,8 +2078,41 @@ async function refresh() {
   renderEvolution();
   renderLeaderboard();
 
-  // Councils — top row, no persistent bubble. Click/hover reveals mission.
-  for (const a of AGENTS.filter(x => x.kind === "council")) a.bubble = "";
+  // Councils — poll Hub-persisted state.json for iteration count + last-seen activity (v2.12).
+  // Councils are Gradio-only (no /api/status), so we read the file we ship via HfApi.upload_file.
+  let councilOK = 0;
+  await Promise.all(AGENTS.filter(x => x.kind === "council").map(async (a) => {
+    const url = COUNCIL_STATE_URLS[a.key];
+    if (!url) { a.bubble = ""; return; }
+    const s = await fetchJSON(url);
+    if (!s) {
+      a.state = "error";
+      a.bubble = `${a.key}·${a.label.replace(a.key+" ","")}\nstate.json not yet pushed`;
+      a.bubbleUntil = performance.now() + 20000;
+      return;
+    }
+    councilOK++;
+    const prev = a.data;
+    a.data = s;
+    const iter = s.iteration_count ?? s.total_iterations ?? 0;
+    const last = s.last_iteration_at || s.updated_at || "";
+    // age in minutes (if parseable)
+    let ageMin = null;
+    if (last) {
+      const t = Date.parse(last);
+      if (!isNaN(t)) ageMin = Math.floor((Date.now() - t) / 60000);
+    }
+    a.state = ageMin != null && ageMin > 90 ? "stale" : "profit";
+    if (prev && prev.iteration_count != null && iter > prev.iteration_count) {
+      a.activeUntil = performance.now() + 4000;
+      logTrade("council", a.label, `iter ${iter}`);
+      spawnPulseRing(a.x * TILE, a.y * TILE, 0xffb86c);
+    }
+    a.bubble = `${a.key}·iter ${iter}${ageMin!=null?` · ${ageMin}m ago`:""}`;
+    a.bubbleUntil = performance.now() + 20000;
+  }));
+  const kCouncil = document.getElementById("k-councils");
+  if (kCouncil) { kCouncil.textContent = `${councilOK}/9`; kCouncil.className = councilOK === 9 ? "v-ok" : "v-warn"; }
 
   document.getElementById("k-nba").textContent = `${nbaOK}/${NBA_TRADERS.length}`;
   document.getElementById("k-nba").className = nbaOK === NBA_TRADERS.length ? "v-ok" : "v-warn";
