@@ -236,7 +236,7 @@ MODELS = {
     },
     "nvidia:nemotron-70b": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
-        "model": "nvidia/llama-3.1-nemotron-70b-instruct",
+        "model": "nvidia/llama-3.3-nemotron-super-49b-v1.5",  # was: nvidia/llama-3.1-nemotron-70b-instruct (404 — deprecated)
         "key_env": "NVIDIA_API_KEY",
         "provider": "nvidia",
         "max_tokens": 400,
