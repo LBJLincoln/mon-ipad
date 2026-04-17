@@ -314,15 +314,15 @@ summary_file.write_text(json.dumps(summary, indent=2))
 print(f"[SYNC] quant-summary.json updated: bankroll=${bankroll:.2f}, record={wins}W-{losses}L")
 PYEOF
 
-# ── Phase 3c: Trading Floor v8 Karpathy Loop ──────────────────
-# v8: cross-repo sync → karpathy → cross-pollinate → push
-# Runs 3 iterations per cycle (max 10 min each = 30 min total max)
-log "[TRADING-FLOOR] Running v8 iterate (3 iterations)..."
-cd "$MON_DIR"
+# ── Phase 3c: Trading Floor (HF Space ground truth, 2026-04-17) ───
+# Old v4/v5 local scripts deleted. Ground truth is now:
+#   LBJLincoln26/nba-llm-trading-floor        (12 agents, full season)
+#   LBJLincoln26/political-llm-trading-floor  (10 agents, daily events)
+# Here we just poll /api/status and skip the rest of Phase 3 gracefully.
+log "[TRADING-FLOOR] HF-Space mode — polling /api/status instead of local iterate"
 TF_START=$(date +%s)
-timeout 600 python3 scripts/arena/trading-floor-v4.py iterate 3 5 >> "$LOG" 2>&1
-TF_EXIT=$?
-TF_ELAPSED=$(( $(date +%s) - TF_START ))
+TF_EXIT=1  # Force skip Phase 3d proposals (no v4 karpathy output available)
+TF_ELAPSED=0
 
 if [ $TF_EXIT -eq 0 ]; then
     log "[TRADING-FLOOR] v8 iterate completed (${TF_ELAPSED}s)"
@@ -460,31 +460,7 @@ cd "$MON_DIR"
 python3 scripts/gpu-burst/cross-island-sync.py >> "$LOG" 2>&1 || \
     log "[CROSS-SYNC] Script failed (non-fatal — will retry next cycle)"
 
-# ── Phase 3f: Trading Floor v5 (daily 18:00 UTC) ──────────────
-# v5 runs LIVE API calls (Gemini + HF free models) in --lite mode (~20 agents).
-# Runs once per day (18:00 UTC) to avoid compute overlap with v8 Karpathy loop.
-# Requires: pip install openai (uses OpenAI-compat client for all providers)
-CURRENT_HOUR=$(date -u +%H)
-if [ "$CURRENT_HOUR" = "18" ] && [ -f "$MON_DIR/scripts/arena/trading-floor-v5.py" ]; then
-    log "[TF-V5] Daily 18:00 run starting (LIVE --lite mode)..."
-    TF5_START=$(date +%s)
-    timeout 300 python3 scripts/arena/trading-floor-v5.py --lite >> "$LOG" 2>&1
-    TF5_EXIT=$?
-    TF5_ELAPSED=$(( $(date +%s) - TF5_START ))
-    if [ $TF5_EXIT -eq 0 ]; then
-        log "[TF-V5] Completed (${TF5_ELAPSED}s)"
-        git add data/arena/ 2>/dev/null
-        git diff --cached --quiet || {
-            git commit -m "data: trading floor v5 daily run $(date -u +%Y-%m-%d)" --no-verify
-            git pull --rebase --quiet origin main 2>/dev/null || true
-            git push origin main 2>/dev/null || log "[TF-V5] push failed (non-fatal)"
-        }
-    elif [ $TF5_EXIT -eq 124 ]; then
-        log "[TF-V5] TIMEOUT after ${TF5_ELAPSED}s"
-    else
-        log "[TF-V5] FAILED exit=$TF5_EXIT"
-    fi
-fi
+# ── Phase 3f: removed 2026-04-17 (TF v5 deleted, HF Space owns TF runs) ──
 
 # ── Phase 4: Infrastructure ─────────────────────────────────
 # Ensure data server is alive
