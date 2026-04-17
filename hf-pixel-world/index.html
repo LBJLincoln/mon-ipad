@@ -769,57 +769,6 @@ makeDiegeticPanel({ x:872, y:628, w:384, h:130, title:"◇ COLLECTIVE GOAL — $
     const text = `pool total:  $${total.toFixed(0)}\ntarget:      $1,000,000\n${bar}\nprogress:    ${pct.toFixed(2)}%\nagents:      ${d.leaderboard.length}`;
     return { text, state: total < 1600 ? "stale" : "live" };
   }});
-// ═══ v0.3 panels (2026-04-17) — complete diegetic spec per pixel-world-diegetic-panels-apr17.md ═══
-// P08 EVOLUTION PROGRESS WALL — 13 NBA islands as bar-chart cityscape
-makeDiegeticPanel({ x:24, y:780, w:408, h:130, glyph:"▓", title:"▓ EVOLUTION WALL — 13 islands × gen height",
-  dataUrl:"/data/nba-fleet-status.json",
-  render:(d) => {
-    if (!d || !d.islands) return { state:"no_signal" };
-    const isles = [...d.islands].sort((a,b) => (a.name||a.id||"").localeCompare(b.name||b.id||""));
-    const maxGen = Math.max(1, ...isles.map(s => s.generation||0));
-    const lines = isles.slice(0,13).map(s => {
-      const g = s.generation||0;
-      const barL = Math.max(1, Math.floor((g/maxGen)*20));
-      const bar = "█".repeat(barL) + "░".repeat(20-barL);
-      const stagnant = s.last_gen_at ? ((Date.now()/1000 - new Date(s.last_gen_at).getTime()/1000) > 7200) : false;
-      const mark = stagnant ? " !" : "  ";
-      return `${(s.name||s.id||"?").padEnd(6)}${mark}${bar} g${g}`;
-    });
-    const anyStagnant = isles.some(s => s.last_gen_at && (Date.now()/1000 - new Date(s.last_gen_at).getTime()/1000) > 7200);
-    return { text: lines.join("\n") || "(no islands)", state: anyStagnant ? "stale" : "live" };
-  }});
-// P09 CALIBRATION DIAL — ECE needle
-makeDiegeticPanel({ x:448, y:780, w:240, h:130, glyph:"◐", title:"◐ CALIBRATION DIAL — ECE sharp↔overfit",
-  dataUrl:"/data/monitoring/drift-calibration.json",
-  render:(d) => {
-    if (!d) return { state:"no_signal" };
-    const ece = d.ece ?? d.expected_calibration_error ?? d.calibration_error;
-    if (ece == null) return { state:"no_signal" };
-    // needle: 0 = center, -0.05 = pinned SHARP, +0.05 = pinned OVERFIT
-    const pos = Math.max(-1, Math.min(1, ece / 0.05));
-    const needleIdx = Math.round((pos+1) * 10); // 0..20
-    const track = "─".repeat(21).split("");
-    track[needleIdx] = "▼";
-    const dial = "SHARP " + track.join("") + " OVERFIT";
-    const text = `ECE:       ${ece.toFixed(5)}\n${dial}\nbrier_0:   ${(d.brier_baseline ?? 0).toFixed(4)}\nbrier_now: ${(d.brier_current ?? 0).toFixed(4)}\nupdated:   ${(d.timestamp || d.last_updated || "—").slice(0,16)}`;
-    const state = (ece === 0 || Math.abs(ece) > 0.05) ? "fake" : "live";
-    return { text, state };
-  }});
-// P14 PACT BOARD — Axelrod cooperation pacts + reputation
-makeDiegeticPanel({ x:704, y:780, w:280, h:130, glyph:"⚑", title:"⚑ PACT BOARD — Axelrod cooperation graph",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
-  render:(d) => {
-    if (!d) return { state:"no_signal" };
-    const pacts = d.cooperation_pacts_count ?? 0;
-    const rep = d.reputation || {};
-    const repEntries = Object.entries(rep).sort((a,b)=>(b[1]||0)-(a[1]||0)).slice(0,5);
-    const canon = d.axelrod_canon_active ? "canon ON" : "canon OFF";
-    const head = `pacts:      ${pacts}\nstrategies: ${Object.keys(d.axelrod_strategies||{}).length}\n${canon}\n─ reputation top 5 ─`;
-    const repLines = repEntries.length ? repEntries.map(([k,v]) => `${String(k).padEnd(16)} ${Number(v).toFixed(2)}`) : ["(no reputation yet)"];
-    // state: fake if canon off, stale if 0 pacts AND calls>200 (should have formed by now), else live
-    const state = !d.axelrod_canon_active ? "fake" : (pacts === 0 && (d.llm_calls||0) > 200) ? "stale" : "live";
-    return { text: `${head}\n${repLines.join("\n")}`, state };
-  }});
 refreshDiegeticPanels();
 setInterval(refreshDiegeticPanels, 15000);
 
