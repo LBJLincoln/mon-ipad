@@ -1,1 +1,1 @@
-$(cat /tmp/push_ready/pol.py)
+PLACEHOLDER_POL

@@ -1,1 +1,1 @@
-$(cat /tmp/push_ready/nba.py)
+PLACEHOLDER_NBA
