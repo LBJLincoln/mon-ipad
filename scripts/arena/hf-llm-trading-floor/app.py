@@ -109,6 +109,18 @@ STATE_PATH = Path("/tmp/tf-state.json")   # Persists across restarts on HF Space
 LOGS_PATH = Path("/tmp/tf-agent-logs.json")
 AXELROD_LOG_DIR = Path("/tmp/axelrod-log")  # Axelrod Mech C: per-day post-mortem dataset
 
+# ── COLLECTIVE EXPERIMENT (2026-04-17) ─────────────────────────────────────
+# Common goal: one agent hits $1M by season end. Shared plan each day via
+# LLM moderator; agents only defect if their bankroll crashes or a peer
+# gets greedy (>$250K). Exposed on /api/status.
+SEASON_TARGET = 1_000_000.0          # common goal — any agent reaching this wins the season
+STARTING_CAPITAL = 100.0             # per-agent seed (pre multi-season compound)
+ROGUE_DRAWDOWN_THRESHOLD = 0.25      # bankroll < 0.25 × starting → drawdown rogue
+ROGUE_GREED_THRESHOLD = 250_000.0    # any peer > $250K → greed rogue
+COUNCIL_MIN_COMMIT_PER_AGENT = 0.50  # each agent commits ≥50% of bankroll daily
+_council_plans: Dict[str, dict] = {} # day_date → plan dict (strategies, categories, per-agent %, summary)
+_rogue_events: List[Dict] = []       # append-only audit: {day, tid, reason, detail}
+
 # Axelrod Mech B — archetype pool for sacrificial role reallocation
 AXELROD_ARCHETYPES = [
     "pure_momentum", "mean_reversion", "news_event_driven",
@@ -1166,21 +1178,242 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
     return "\n".join(lines)
 
 
+# ── PHASE 3 (2026-04-17) — ROGUE STATE ─────────────────────────────────────
+def compute_rogue_state(state: Dict) -> Dict[str, dict]:
+    """For each trader, compute whether they are allowed to defect from the
+    council plan today. Two legal triggers:
+      1) drawdown_rogue — own bankroll < 0.25 × STARTING_CAPITAL
+      2) greed_rogue    — any peer's bankroll > ROGUE_GREED_THRESHOLD ($250K)
+    Returns {tid: {"is_rogue": bool, "reasons": [...], "peer_leader": str, "peer_bankroll": float}}
+    """
+    out: Dict[str, dict] = {}
+    peer_bank = {tid: state[tid]["bankroll"] for tid in state}
+    for tid, ts in state.items():
+        reasons = []
+        if ts["bankroll"] < STARTING_CAPITAL * ROGUE_DRAWDOWN_THRESHOLD:
+            reasons.append("drawdown")
+        # Greed rogue: a PEER (not self) > $250K
+        others = {p: b for p, b in peer_bank.items() if p != tid}
+        leader = max(others, key=others.get) if others else None
+        leader_br = others.get(leader, 0.0) if leader else 0.0
+        if leader_br > ROGUE_GREED_THRESHOLD:
+            reasons.append("greed")
+        out[tid] = {
+            "is_rogue": bool(reasons),
+            "reasons": reasons,
+            "peer_leader": leader,
+            "peer_bankroll": round(leader_br, 2),
+        }
+    return out
+
+
+def build_rogue_block(rogue_info: dict) -> str:
+    """Inject into system_prompt when agent has a legal defection trigger."""
+    if not rogue_info.get("is_rogue"):
+        return ""
+    reasons = rogue_info.get("reasons", [])
+    lines = ["\n\n=== ROGUE PERMISSION (rare) ==="]
+    if "drawdown" in reasons:
+        lines.append(
+            f"Your bankroll is below ${STARTING_CAPITAL * ROGUE_DRAWDOWN_THRESHOLD:.0f} "
+            f"(the group's drawdown floor). You are permitted to DEFECT from the council "
+            "plan today and take higher-variance shots that might recover. State explicitly "
+            "in day_strategy 'DEFECT: drawdown'."
+        )
+    if "greed" in reasons:
+        leader = rogue_info.get("peer_leader", "?")
+        lb = rogue_info.get("peer_bankroll", 0.0)
+        lines.append(
+            f"Peer {leader} is at ${lb:,.0f} — past the ${ROGUE_GREED_THRESHOLD:,.0f} greed "
+            "line. You are permitted to DEFECT from the council plan and pursue independent "
+            "high-EV bets instead of supporting the collective. State 'DEFECT: greed' in day_strategy."
+        )
+    lines.append("Defection is LEGAL under these triggers. Normal days you must follow council.")
+    return "\n".join(lines)
+
+
+# ── PHASE 1 (2026-04-17) — MORNING COUNCIL ─────────────────────────────────
+def run_morning_council(day_idx: int, day_date: str, day_games: List[Dict],
+                        day_odds: List[Dict], state: Dict, strategies: Optional[Dict],
+                        fleet_best_bankroll: float, model_preds: Optional[Dict] = None) -> dict:
+    """One LLM call at the start of the day: the fleet's Stackelberg leader
+    proposes a COUNCIL PLAN. Agents see the plan in their per-agent prompt.
+
+    Output schema:
+      {
+        "council_summary": str,
+        "focus_strategies": [str, ...],
+        "focus_categories": [str, ...],
+        "per_agent_commit_pct": {tid: float >= 0.5},
+        "shared_notes": str,
+        "raw": str (debug),
+      }
+    Deterministic fallback if LLM fails: each agent gets 0.55 commit,
+    no strategy/category bias, neutral summary.
+    """
+    n_games = len(day_games)
+    n_agents = len(state)
+    leader = max(state, key=lambda t: state[t]["bankroll"])
+    leader_br = state[leader]["bankroll"]
+    fleet_total = sum(state[t]["bankroll"] for t in state)
+    progress_pct = (fleet_best_bankroll / SEASON_TARGET) * 100.0
+
+    # Build council-only prompt — compact summary of all 10 agents
+    roster_lines = []
+    for tid, ts in sorted(state.items(), key=lambda x: -x[1]["bankroll"]):
+        wr = (ts["wins"] / max(1, ts["wins"] + ts["losses"])) * 100.0
+        roster_lines.append(
+            f"  - {tid}: ${ts['bankroll']:,.2f} | {ts['wins']}W-{ts['losses']}L ({wr:.0f}%) | dd {ts['max_drawdown']*100:.1f}%"
+        )
+    games_brief = []
+    for i, g in enumerate(day_games[:18], 1):  # cap at 18 games for prompt budget
+        o = day_odds[i-1] if i-1 < len(day_odds) else {}
+        games_brief.append(
+            f"  {i}. {g['away']}@{g['home']} | ML {o.get('ml_home_dec',2.0):.2f}/{o.get('ml_away_dec',2.0):.2f} | spread {o.get('spread_home',0):+.1f}"
+        )
+
+    sys_prompt = (
+        "You are the COUNCIL MODERATOR for a 10-agent NBA trading floor. "
+        "Your job is to coordinate all agents into a unified allocation plan for today. "
+        "Common goal: one agent must reach $1,000,000 by season end. Coordination beats "
+        "independent betting because parlays compound and capital-commitment diversifies risk. "
+        "You are NOT placing bets yourself — you are writing the plan the 10 agents will follow."
+    )
+    usr_prompt = f"""COUNCIL SESSION · DAY {day_idx+1} · {day_date}
+
+FLEET STATE ({n_agents} agents):
+  Leader: {leader} @ ${leader_br:,.2f}
+  Fleet total: ${fleet_total:,.2f}
+  Season progress toward $1M: {progress_pct:.2f}%
+  Season target: ${SEASON_TARGET:,.0f}
+
+AGENT ROSTER (sorted by bankroll):
+{chr(10).join(roster_lines)}
+
+TODAY'S GAMES ({n_games} total, first 18 shown):
+{chr(10).join(games_brief)}
+
+AVAILABLE STRATEGIES: proportional_edge, confidence_scaled, half_kelly, quarter_kelly,
+  parlay_2leg, parlay_3leg, value_hunter, consensus_follow, contrarian_fade, mean_revert
+
+AVAILABLE CATEGORIES (90+): ml_home, ml_away, spread_home, spread_away, total_over,
+  total_under, alt_spread_*, alt_total_*, team_total_*, h1_*, q1_*, prop_*
+
+TASK: Output a COUNCIL PLAN as JSON. All 10 agents will see and follow it unless
+their bankroll crashes (below ${STARTING_CAPITAL * ROGUE_DRAWDOWN_THRESHOLD:.0f}) or
+a peer exceeds ${ROGUE_GREED_THRESHOLD:,.0f} (greed rogue).
+
+RULES:
+- Every agent must commit at least {int(COUNCIL_MIN_COMMIT_PER_AGENT*100)}% of their bankroll today.
+  Weaker agents get higher % (they need to catch up); leader gets moderate % (protect progress).
+- Distribute strategies + categories so agents don't all bet the same thing (diversification).
+- Name 2-4 focus_strategies and 3-6 focus_categories for today.
+- If a game has parlay potential (e.g. two strong favorites), call it out in shared_notes.
+- Keep the plan COMPACT — 1 summary line, 4 strategies max, 6 categories max.
+
+SCHEMA:
+{{
+  "council_summary": "1 sentence: today's theme",
+  "focus_strategies": ["proportional_edge", "parlay_2leg"],
+  "focus_categories": ["ml_home", "spread_away", "total_over"],
+  "per_agent_commit_pct": {{"qwen-quant": 0.55, "llama-contra": 0.65, ...}},
+  "shared_notes": "1-3 sentences: correlations, games to focus on, parlay suggestions"
+}}
+
+RESPOND WITH RAW JSON ONLY. First char {{, last char }}. All 10 agent ids required in per_agent_commit_pct.
+Values must be >= {COUNCIL_MIN_COMMIT_PER_AGENT} and <= 0.85."""
+
+    fallback = {
+        "council_summary": "no LLM council; default equal commitment",
+        "focus_strategies": ["proportional_edge", "half_kelly"],
+        "focus_categories": ["ml_home", "ml_away", "spread_home", "spread_away"],
+        "per_agent_commit_pct": {tid: 0.55 for tid in state},
+        "shared_notes": "Deterministic fallback plan — moderator LLM failed or skipped.",
+        "raw": "",
+    }
+
+    try:
+        raw = _call_llm(
+            "cerebras:qwen-3-235b",  # qwen-235B: fast + big context
+            sys_prompt, usr_prompt, timeout=45.0,
+            trace_name=f"nba-tf-council-{day_idx}",
+            trace_metadata={"day": day_date, "n_games": n_games, "n_agents": n_agents, "fleet_total": fleet_total},
+        )
+    except Exception:
+        raw = None
+    if not raw:
+        return fallback
+
+    plan = parse_llm_decision(raw)
+    if not isinstance(plan, dict):
+        return fallback
+
+    focus_strats = plan.get("focus_strategies") or []
+    if not isinstance(focus_strats, list):
+        focus_strats = []
+    focus_cats = plan.get("focus_categories") or []
+    if not isinstance(focus_cats, list):
+        focus_cats = []
+    commits = plan.get("per_agent_commit_pct") or {}
+    if not isinstance(commits, dict):
+        commits = {}
+    # Enforce ≥50% per agent; fill missing with 0.55
+    clean_commits = {}
+    for tid in state:
+        try:
+            v = float(commits.get(tid, 0.55) or 0.55)
+        except (TypeError, ValueError):
+            v = 0.55
+        clean_commits[tid] = max(COUNCIL_MIN_COMMIT_PER_AGENT, min(0.85, v))
+
+    return {
+        "council_summary": str(plan.get("council_summary", ""))[:300],
+        "focus_strategies": [str(s)[:40] for s in focus_strats[:4]],
+        "focus_categories": [str(c)[:40] for c in focus_cats[:6]],
+        "per_agent_commit_pct": clean_commits,
+        "shared_notes": str(plan.get("shared_notes", ""))[:500],
+        "raw": raw[:400],
+    }
+
+
+def build_council_block(plan: dict, tid: str, fleet_best_bankroll: float) -> str:
+    """Format council plan as a system-prompt block for each agent."""
+    if not plan:
+        return ""
+    my_commit = plan.get("per_agent_commit_pct", {}).get(tid, COUNCIL_MIN_COMMIT_PER_AGENT)
+    progress = (fleet_best_bankroll / SEASON_TARGET) * 100.0
+    lines = [
+        "\n\n=== MORNING COUNCIL PLAN (follow unless rogue) ===",
+        f"Fleet best bankroll: ${fleet_best_bankroll:,.2f} ({progress:.2f}% of $1M common goal)",
+        f"Council summary: {plan.get('council_summary','(none)')}",
+        f"Focus strategies: {', '.join(plan.get('focus_strategies',[]) or ['(none)'])}",
+        f"Focus categories: {', '.join(plan.get('focus_categories',[]) or ['(none)'])}",
+        f"YOUR council commit: at least {my_commit*100:.0f}% of your bankroll must be deployed today.",
+        f"Shared notes: {plan.get('shared_notes','(none)')}",
+        "Non-rogue agents: bias your allocations toward focus_strategies + focus_categories.",
+        "Common goal: ONE agent reaches $1M by season end. Your bankroll is a shared resource.",
+    ]
+    return "\n".join(lines)
+
+
 def build_day_prompt(day_date: str, day_games: List[Dict], day_odds: List[Dict],
                      day_standings: List[Dict], day_forms: List[Dict],
                      trader_state: Dict, rosters=None, team_advanced=None,
                      player_stats=None, full_odds=None, model_preds=None,
                      strategies=None, recent_decisions: List[Dict] = None,
-                     common_knowledge_block: Optional[str] = None) -> str:
+                     common_knowledge_block: Optional[str] = None,
+                     fleet_best_bankroll: float = 100.0) -> str:
     """Build comprehensive day-level prompt. Agent sees ALL games of the day."""
     bankroll = trader_state.get("bankroll", 100.0)
     total_allocs = trader_state.get("total_bets", 0)
     wins = trader_state.get("wins", 0)
     losses = trader_state.get("losses", 0)
     roi = ((bankroll - 100.0) / 100.0) * 100
+    progress_pct = (fleet_best_bankroll / SEASON_TARGET) * 100.0
 
     lines = [f"=== TRADING DAY: {day_date} | {len(day_games)} GAMES ===",
              f"",
+             f"COMMON GOAL: one agent reaches ${SEASON_TARGET:,.0f}. Fleet best now ${fleet_best_bankroll:,.2f} ({progress_pct:.2f}%).",
              f"YOUR STATE: ${bankroll:.2f} | {total_allocs} total allocations | {wins}W-{losses}L | ROI {roi:+.1f}%"]
 
     if recent_decisions:
@@ -1238,6 +1471,18 @@ Schema:
       "rationale": "1 sentence: which stat/metric drove this and why it beats market price"
     }
   ],
+  "parlays": [
+    {
+      "legs": [
+        {"game_idx": 1, "category": "ml_home"},
+        {"game_idx": 3, "category": "spread_away"}
+      ],
+      "pct": 0.04,
+      "confidence": 0.45,
+      "edge": 0.06,
+      "rationale": "1 sentence: why these legs compound favorably"
+    }
+  ],
   "cash_held_pct": 0.25,
   "cash_rationale": "1 sentence if cash > 0",
   "coalition_proposal": {
@@ -1249,10 +1494,11 @@ Schema:
 }
 
 STRICT RULES:
-- Sum of all allocation pct + cash_held_pct = 1.00 (±0.01)
-- Max 1 allocation per game_idx (no hedging same game both sides)
-- Max 10 allocations
-- Each allocation pct: 0.01–0.40
+- Sum of allocation pct + parlay pct + cash_held_pct = 1.00 (±0.01)
+- Max 1 allocation per game_idx in allocations[] (no hedging same game both sides)
+- Max 10 allocations + 3 parlays
+- Each allocation pct: 0.01–0.40 | Each parlay pct: 0.01–0.10 (combined odds amplify risk)
+- Parlays: 2–4 legs, each leg = distinct game_idx, all legs must win for payout
 - cash_held_pct: 0.0–1.0
 - Rationale MUST cite a specific stat/metric (not "I think they'll win")
 - Edge must be computed from model vs implied odds, NOT hardcoded
@@ -1312,7 +1558,57 @@ def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
             "rationale": (a.get("rationale") or "")[:300],
         })
 
-    total = sum(a["pct"] for a in clean) + max(0.0, min(1.0, cash))
+    # PARLAY parsing (2026-04-17) — combined-odds bets across same-day legs.
+    # Each parlay settles only if ALL legs win. Kelly sizing is stricter
+    # because combined variance >> single leg.
+    parlays_raw = parsed.get("parlays") or []
+    parlays_clean: List[Dict] = []
+    if isinstance(parlays_raw, list):
+        for p in parlays_raw[:3]:
+            if not isinstance(p, dict):
+                continue
+            legs_raw = p.get("legs") or []
+            if not isinstance(legs_raw, list) or len(legs_raw) < 2 or len(legs_raw) > 4:
+                continue
+            legs_clean = []
+            seen_leg_games = set()
+            bad = False
+            for leg in legs_raw:
+                if not isinstance(leg, dict):
+                    bad = True
+                    break
+                lgidx = leg.get("game_idx")
+                lcat = (leg.get("category") or "").lower().strip()
+                if not lcat or not isinstance(lgidx, int):
+                    bad = True
+                    break
+                if lgidx < 1 or lgidx > n_games:
+                    bad = True
+                    break
+                if lgidx in seen_leg_games:
+                    bad = True
+                    break
+                seen_leg_games.add(lgidx)
+                legs_clean.append({"game_idx": lgidx, "category": lcat})
+            if bad or len(legs_clean) < 2:
+                continue
+            try:
+                ppct = float(p.get("pct", 0) or 0)
+                pconf = float(p.get("confidence", 0.4) or 0.4)
+                pedge = float(p.get("edge", 0) or 0)
+            except (TypeError, ValueError):
+                continue
+            if ppct <= 0 or pedge <= 0:
+                continue
+            parlays_clean.append({
+                "legs": legs_clean,
+                "pct": max(0.01, min(0.10, ppct)),
+                "confidence": max(0.0, min(1.0, pconf)),
+                "edge": max(0.0, pedge),
+                "rationale": (p.get("rationale") or "")[:300],
+            })
+
+    total = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean) + max(0.0, min(1.0, cash))
     if total <= 0:
         return None
     # Normalize to sum exactly 1.0 (soft tolerance — agent gave proportions)
@@ -1320,6 +1616,8 @@ def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
         scale = 1.0 / total
         for a in clean:
             a["pct"] = a["pct"] * scale
+        for p in parlays_clean:
+            p["pct"] = p["pct"] * scale
         cash = cash * scale
 
     # Mech D — coalition_proposal extraction (optional, single peer per day)
@@ -1340,6 +1638,7 @@ def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
     return {
         "day_strategy": (parsed.get("day_strategy") or parsed.get("reasoning") or "")[:500],
         "allocations": clean,
+        "parlays": parlays_clean,
         "cash_held_pct": round(max(0.0, min(1.0, cash)), 4),
         "cash_rationale": (parsed.get("cash_rationale") or "")[:300],
         "raw_sum": round(total, 4),
@@ -2111,6 +2410,29 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         # Stackelberg leader for the day (arXiv 2507.09407): yesterday's top bankroll.
         _stackelberg_leader = get_stackelberg_leader(state)
 
+        # ── PHASE 1 (morning council) + PHASE 3 (rogue triggers) + PHASE 4 ($1M goal) ──
+        fleet_best_bankroll = max((state[t]["bankroll"] for t in state), default=STARTING_CAPITAL)
+        day_council_plan = run_morning_council(
+            day_idx, day_date, day_games, day_odds_list,
+            state, strategies, fleet_best_bankroll, model_preds=model_preds,
+        )
+        _council_plans[day_date] = day_council_plan
+        day_rogue_state = compute_rogue_state(state)
+        for _tid, _rs in day_rogue_state.items():
+            if _rs["is_rogue"]:
+                _rogue_events.append({
+                    "day": day_date, "tid": _tid,
+                    "reasons": _rs["reasons"],
+                    "peer_leader": _rs.get("peer_leader"),
+                    "peer_bankroll": _rs.get("peer_bankroll"),
+                })
+        log_lines.append(
+            f"[day {day_idx+1}] COUNCIL: {day_council_plan.get('council_summary','(none)')[:120]}"
+        )
+        _n_rogues = sum(1 for r in day_rogue_state.values() if r["is_rogue"])
+        if _n_rogues:
+            log_lines.append(f"[day {day_idx+1}] ROGUES: {_n_rogues}/{len(state)} agents eligible to defect")
+
         # PHASE 1 — parallel LLM calls (all agents for this day fire concurrently).
         # Intra-day parallelism only; days remain sequential because CK broadcast
         # on day N+1 depends on day N resolution (Mech A).
@@ -2134,6 +2456,14 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             _axl_block = _axelrod_advice_block(tid, _active_peers)
             if _axl_block:
                 system_prompt = system_prompt + _axl_block
+            # PHASE 1 — council plan block (all agents)
+            _council_block = build_council_block(day_council_plan, tid, fleet_best_bankroll)
+            if _council_block:
+                system_prompt = system_prompt + _council_block
+            # PHASE 3 — rogue permission (only emitted when a legal trigger fires)
+            _rogue_block = build_rogue_block(day_rogue_state.get(tid, {}))
+            if _rogue_block:
+                system_prompt = system_prompt + _rogue_block
             # Rescue protocol: agents under $50 get risk-on mandate
             if ts["bankroll"] < 50.0 and ts["bankroll"] > 5.0:
                 system_prompt += (
@@ -2150,6 +2480,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 model_preds=model_preds, strategies=strategies,
                 recent_decisions=ts.get("recent_decisions", []),
                 common_knowledge_block=prev_day_ck,
+                fleet_best_bankroll=fleet_best_bankroll,
             )
             try:
                 raw = _call_llm(provider, system_prompt, user_prompt, timeout=30.0,
@@ -2199,6 +2530,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "cash_held_pct": 1.0,
                 "cash_rationale": "no LLM response" if not raw_response else "unparseable response",
                 "allocations": [],  # resolved outcomes
+                "parlays": [],      # parlay outcomes (2026-04-17)
+                "rogue": day_rogue_state.get(tid, {"is_rogue": False}),
+                "council_commit_target": day_council_plan.get("per_agent_commit_pct", {}).get(tid, 0.55),
                 "raw_preview": (raw_response or "")[:400],
             }
 
@@ -2278,14 +2612,83 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     })
                     # Mech D — record actual (game_idx, category) pairs for coalition resolution
                     day_actual_bets.setdefault(tid, set()).add((alloc["game_idx"], cat))
+
+                # ── PARLAY RESOLUTION (2026-04-17) ──
+                # Each parlay: all legs must win for payout. Combined odds =
+                # product of leg decimal odds. Stake capped at MAX_PCT_PER_BET.
+                day_log["parlays"] = []
+                for parlay in parsed.get("parlays", []) or []:
+                    pedge = parlay.get("edge", 0.0) or 0.0
+                    if pedge < MIN_EDGE:
+                        continue
+                    capped_pct = min(parlay["pct"], MAX_PCT_PER_BET)
+                    remaining_day = max(0.0, MAX_PCT_PER_DAY - day_exposure_pct)
+                    capped_pct = min(capped_pct, remaining_day)
+                    if capped_pct <= 0:
+                        continue
+                    p_stake = round(ts["bankroll"] * capped_pct, 2)
+                    if p_stake < 0.50 or p_stake > ts["bankroll"]:
+                        continue
+
+                    leg_details = []
+                    combined_odds = 1.0
+                    all_won = True
+                    bad_leg = False
+                    for leg in parlay["legs"]:
+                        lgidx = leg["game_idx"] - 1  # 1-indexed
+                        if lgidx < 0 or lgidx >= len(day_games):
+                            bad_leg = True
+                            break
+                        lg = day_games[lgidx]
+                        lodds = day_odds_list[lgidx]
+                        lcat = leg["category"]
+                        leg_won = resolve_bet(lcat, lodds, lg["home_score"], lg["away_score"], lg["home_won"])
+                        leg_odds_dec = get_odds_dec(lcat, lodds)
+                        combined_odds *= leg_odds_dec
+                        if not leg_won:
+                            all_won = False
+                        leg_details.append({
+                            "game": f"{lg['away']}@{lg['home']}",
+                            "category": lcat,
+                            "odds": round(leg_odds_dec, 3),
+                            "won": leg_won,
+                        })
+                    if bad_leg:
+                        continue
+
+                    day_exposure_pct += capped_pct
+                    if all_won:
+                        profit = p_stake * (combined_odds - 1)
+                        ts["bankroll"] += profit
+                        ts["wins"] += 1
+                    else:
+                        profit = -p_stake
+                        ts["bankroll"] -= p_stake
+                        ts["losses"] += 1
+                    ts["total_bets"] += 1
+                    ts["bankroll"] = round(ts["bankroll"], 2)
+
+                    day_log["parlays"].append({
+                        "legs": leg_details,
+                        "n_legs": len(leg_details),
+                        "pct": round(parlay["pct"], 4),
+                        "stake": p_stake,
+                        "combined_odds": round(combined_odds, 3),
+                        "confidence": parlay["confidence"],
+                        "edge": round(parlay["edge"], 4),
+                        "rationale": parlay["rationale"],
+                        "won": all_won,
+                        "profit": round(profit, 2),
+                    })
             else:
                 ts["passes"] += 1  # full-cash day
 
             # Track recent decisions for next-day prompt
-            n_bets = len(day_log["allocations"])
-            n_wins = sum(1 for a in day_log["allocations"] if a["won"])
+            n_bets = len(day_log["allocations"]) + len(day_log["parlays"])
+            n_wins = sum(1 for a in day_log["allocations"] if a["won"]) + sum(1 for p in day_log["parlays"] if p["won"])
+            n_parlays = len(day_log["parlays"])
             day_pnl = ts["bankroll"] - bankroll
-            summary = f"{n_bets} bets, {n_wins}W, pnl {day_pnl:+.2f}"
+            summary = f"{n_bets} bets ({n_parlays}p), {n_wins}W, pnl {day_pnl:+.2f}"
             ts["recent_decisions"] = (ts.get("recent_decisions", []) + [{
                 "date": day_date, "summary": summary,
             }])[-5:]
@@ -2353,6 +2756,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         )
 
         # Update live state
+        _fleet_best_live = max(state[t]["bankroll"] for t in state)
+        _leader_live = max(state, key=lambda t: state[t]["bankroll"])
         with _state_lock:
             _experiment_state = {
                 "days_processed": day_idx + 1,
@@ -2365,6 +2770,13 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                            for tid, ts in state.items()},
                 "updated": datetime.now(timezone.utc).isoformat(),
                 "last_ck_block": prev_day_ck,  # Axelrod Mech A: persist for resume
+                # Collective experiment (2026-04-17)
+                "season_target": SEASON_TARGET,
+                "fleet_best_bankroll": round(_fleet_best_live, 2),
+                "fleet_leader": _leader_live,
+                "season_progress_pct": round((_fleet_best_live / SEASON_TARGET) * 100.0, 4),
+                "council_plan": day_council_plan,
+                "rogue_this_day": {t: r for t, r in day_rogue_state.items() if r["is_rogue"]},
             }
         if (day_idx + 1) % 5 == 0 or day_idx == n_days - 1:
             _save_state_to_disk(_experiment_state)
@@ -2674,6 +3086,25 @@ async def api_status():
     state["axelrod_canon_active"] = True
     state["axelrod_library_active"] = _AXELROD_OK
     state["axelrod_strategies"] = dict(AXELROD_STRATEGIES)
+    # ── Collective experiment (2026-04-17) ──
+    with _state_lock:
+        _agents = _experiment_state.get("agents", {}) if _experiment_state else {}
+    if _agents:
+        _fleet_best = max(a.get("bankroll", 0.0) for a in _agents.values())
+        _leader = max(_agents, key=lambda t: _agents[t].get("bankroll", 0.0))
+    else:
+        _fleet_best = STARTING_CAPITAL
+        _leader = None
+    state["season_target"] = SEASON_TARGET
+    state["fleet_best_bankroll"] = round(_fleet_best, 2)
+    state["fleet_leader"] = _leader
+    state["season_progress_pct"] = round((_fleet_best / SEASON_TARGET) * 100.0, 4)
+    state["council_plan_count"] = len(_council_plans)
+    state["latest_council_summary"] = (
+        list(_council_plans.values())[-1].get("council_summary", "") if _council_plans else ""
+    )
+    state["rogue_events_total"] = len(_rogue_events)
+    state["rogue_events_recent"] = _rogue_events[-10:]
     return JSONResponse(state)
 
 @api.post("/api/run")

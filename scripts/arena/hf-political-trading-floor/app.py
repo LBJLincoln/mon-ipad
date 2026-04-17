@@ -50,6 +50,21 @@ from typing import Dict, List, Optional, Tuple
 from pathlib import Path
 import math
 
+# ── LANGFUSE OBSERVABILITY (non-blocking — never delays TF startup) ────────
+_langfuse = None
+try:
+    from langfuse import Langfuse
+    _lf_pub = os.environ.get("LANGFUSE_PUBLIC_KEY", "")
+    _lf_sec = os.environ.get("LANGFUSE_SECRET_KEY", "")
+    _lf_host = os.environ.get("LANGFUSE_HOST", "")
+    if _lf_pub and _lf_sec and _lf_host:
+        _langfuse = Langfuse(public_key=_lf_pub, secret_key=_lf_sec, host=_lf_host, enabled=True, timeout=5)
+        print(f"  LANGFUSE: initialized → {_lf_host}")
+    else:
+        print("  LANGFUSE: keys/host not set (observability disabled)")
+except Exception as e:
+    print(f"  LANGFUSE: init failed ({e}) — continuing without observability")
+
 def benjamini_hochberg(edges: List[Tuple[str, float]], alpha: float = 0.05) -> set:
     """Return set of category tags that survive BH FDR correction.
     Treats |edge| as a test statistic under H0: edge=0. With ~22 political
@@ -95,6 +110,17 @@ _challenge_assignments: Dict[str, int] = {}  # Axelrod Mech B: mid-tier tid → 
 STATE_PATH = Path("/tmp/ptf-state.json")   # Persists across restarts on HF Spaces
 LOGS_PATH = Path("/tmp/ptf-agent-logs.json")
 AXELROD_LOG_DIR = Path("/tmp/axelrod-log-political")  # Axelrod Mech C
+
+# ── COLLECTIVE EXPERIMENT (2026-04-17) ─────────────────────────────────────
+# Mirrors NBA TF. Common goal: one agent hits $1M by season end. Council plan
+# daily; rogue defection allowed on bankroll crash or peer > $250K.
+SEASON_TARGET = 1_000_000.0
+STARTING_CAPITAL = 100.0
+ROGUE_DRAWDOWN_THRESHOLD = 0.25
+ROGUE_GREED_THRESHOLD = 250_000.0
+COUNCIL_MIN_COMMIT_PER_AGENT = 0.50
+_council_plans: Dict[str, dict] = {}
+_rogue_events: List[Dict] = []
 
 # Axelrod Mech B — archetype pool tuned for political/macro alpha traders
 AXELROD_ARCHETYPES = [
@@ -686,7 +712,8 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
 
 
 def _call_llm(provider: str, system_prompt: str, user_prompt: str,
-              timeout: float = 20.0) -> Optional[str]:
+              timeout: float = 20.0, trace_name: str = "pol-tf-llm-call",
+              trace_metadata: Optional[Dict] = None) -> Optional[str]:
     """Transport-layer entry. Routes through llm-gateway if GATEWAY_URL is set,
     else calls the provider directly. Preserves existing failure counters."""
     global _llm_calls, _llm_failures, _gateway_routed, _gateway_fallback
@@ -708,24 +735,57 @@ def _call_llm(provider: str, system_prompt: str, user_prompt: str,
         return _call_llm_direct(provider, _sys, _usr, timeout=timeout)
 
     max_tokens = cfg.get("max_tokens", 1200)
+    _t0 = time.time()
     result = _gateway_call(
         provider, messages,
         temperature=0.3, max_tokens=max_tokens,
         fallback_direct=True, direct_fn=_direct,
         timeout=max(timeout, 30.0),
     )
+    _latency = time.time() - _t0
 
     if result["routed_via"] == "gateway":
         _gateway_routed += 1
-        return result["text"]
-    if result["routed_via"] == "direct":
+        _text = result["text"]
+        _status = "success"
+    elif result["routed_via"] == "direct":
         _gateway_fallback += 1
-        return result["text"]
+        _text = result["text"]
+        _status = "success"
+    else:
+        _text = None
+        _status = "failure"
+        _llm_failures += 1
+        if len(_llm_errors) < 100:
+            _llm_errors.append(f"{provider}: {result.get('error')}")
 
-    _llm_failures += 1
-    if len(_llm_errors) < 100:
-        _llm_errors.append(f"{provider}: {result.get('error')}")
-    return None
+    if _langfuse:
+        try:
+            trace = _langfuse.trace(
+                name=trace_name,
+                metadata={
+                    "provider": provider,
+                    "model": cfg.get("model", "unknown"),
+                    "routed_via": result.get("routed_via", "none"),
+                    "latency_s": round(_latency, 2),
+                    "status": _status,
+                    "sys_prompt_len": len(system_prompt),
+                    "usr_prompt_len": len(user_prompt),
+                    "response_len": len(_text) if _text else 0,
+                    **(trace_metadata or {}),
+                },
+            )
+            trace.generation(
+                name=f"{provider}/{cfg.get('model','?')}",
+                model=cfg.get("model", "unknown"),
+                input={"system": system_prompt[:200], "user": user_prompt[:200]},
+                output=_text[:500] if _text else None,
+                usage={"total_tokens": len(system_prompt)//4 + len(user_prompt)//4 + (len(_text)//4 if _text else 0)},
+            )
+        except Exception:
+            pass
+
+    return _text
 
 
 # ── PROMPT BUILDERS ──────────────────────────────────────────────────────────
@@ -865,10 +925,203 @@ def compute_sector_trends(events: List[Dict], up_to_date: str, window_days: int 
     return out
 
 
+# ── PHASE 3 (2026-04-17) — ROGUE STATE ─────────────────────────────────────
+def compute_rogue_state(state: Dict) -> Dict[str, dict]:
+    """Per-agent defection permission. Triggers: own bankroll below
+    drawdown floor, or any peer > greed threshold."""
+    out: Dict[str, dict] = {}
+    peer_bank = {tid: state[tid]["bankroll"] for tid in state}
+    for tid, ts in state.items():
+        reasons = []
+        if ts["bankroll"] < STARTING_CAPITAL * ROGUE_DRAWDOWN_THRESHOLD:
+            reasons.append("drawdown")
+        others = {p: b for p, b in peer_bank.items() if p != tid}
+        leader = max(others, key=others.get) if others else None
+        leader_br = others.get(leader, 0.0) if leader else 0.0
+        if leader_br > ROGUE_GREED_THRESHOLD:
+            reasons.append("greed")
+        out[tid] = {
+            "is_rogue": bool(reasons),
+            "reasons": reasons,
+            "peer_leader": leader,
+            "peer_bankroll": round(leader_br, 2),
+        }
+    return out
+
+
+def build_rogue_block(rogue_info: dict) -> str:
+    if not rogue_info.get("is_rogue"):
+        return ""
+    reasons = rogue_info.get("reasons", [])
+    lines = ["\n\n=== ROGUE PERMISSION (rare) ==="]
+    if "drawdown" in reasons:
+        lines.append(
+            f"Your bankroll is below ${STARTING_CAPITAL * ROGUE_DRAWDOWN_THRESHOLD:.0f} "
+            "(drawdown floor). You may DEFECT from today's council plan for higher-variance "
+            "macro/event trades. State 'DEFECT: drawdown' in day_strategy."
+        )
+    if "greed" in reasons:
+        leader = rogue_info.get("peer_leader", "?")
+        lb = rogue_info.get("peer_bankroll", 0.0)
+        lines.append(
+            f"Peer {leader} is at ${lb:,.0f} — past the ${ROGUE_GREED_THRESHOLD:,.0f} greed "
+            "line. You may DEFECT and pursue independent high-EV trades. "
+            "State 'DEFECT: greed' in day_strategy."
+        )
+    lines.append("Defection is LEGAL under these triggers. Otherwise follow council.")
+    return "\n".join(lines)
+
+
+# ── PHASE 1 (2026-04-17) — MORNING COUNCIL ─────────────────────────────────
+def run_morning_council(day_idx: int, day_date: str, day_events: List[Dict],
+                        sector_trends: Dict, state: Dict,
+                        fleet_best_bankroll: float) -> dict:
+    """One LLM call per day: moderator proposes shared plan for 10 political agents."""
+    n_events = len(day_events)
+    n_agents = len(state)
+    leader = max(state, key=lambda t: state[t]["bankroll"])
+    leader_br = state[leader]["bankroll"]
+    fleet_total = sum(state[t]["bankroll"] for t in state)
+    progress_pct = (fleet_best_bankroll / SEASON_TARGET) * 100.0
+
+    roster_lines = []
+    for tid, ts in sorted(state.items(), key=lambda x: -x[1]["bankroll"]):
+        wr = (ts["wins"] / max(1, ts["wins"] + ts["losses"])) * 100.0
+        roster_lines.append(
+            f"  - {tid}: ${ts['bankroll']:,.2f} | {ts['wins']}W-{ts['losses']}L ({wr:.0f}%) | dd {ts['max_drawdown']*100:.1f}%"
+        )
+    events_brief = []
+    for i, ev in enumerate(day_events[:15], 1):
+        events_brief.append(
+            f"  {i}. {ev.get('event_type','?')} · {ev.get('ticker','?')} · sig={ev.get('signal_strength','?')}"
+        )
+    trend_brief = ", ".join(
+        f"{s}:{d.get('avg_ret',0):+.3f}" for s, d in sorted(
+            (sector_trends or {}).items(), key=lambda x: -abs(x[1].get('avg_ret', 0))
+        )[:6]
+    )
+
+    sys_prompt = (
+        "You are the COUNCIL MODERATOR for a 10-agent POLITICAL trading floor. "
+        "You coordinate all agents into a unified sector-ETF allocation plan for today. "
+        "Common goal: one agent reaches $1,000,000 by season end. You are NOT trading — "
+        "you are writing the plan."
+    )
+    usr_prompt = f"""COUNCIL SESSION · DAY {day_idx+1} · {day_date}
+
+FLEET STATE ({n_agents} agents):
+  Leader: {leader} @ ${leader_br:,.2f}
+  Fleet total: ${fleet_total:,.2f}
+  Season progress toward $1M: {progress_pct:.2f}%
+
+AGENTS:
+{chr(10).join(roster_lines)}
+
+SECTOR TRENDS: {trend_brief}
+TODAY'S EVENTS ({n_events} total, first 15):
+{chr(10).join(events_brief)}
+
+STRATEGIES: insider_tracking, regulatory_arb, macro_narrative, congressional_calendar,
+  political_sentiment, foreign_sovereign_flow, trump_volatility, fed_watcher
+
+CATEGORIES (sector ETFs): XLE, XLF, XLV, XLI, XLY, XLP, XLB, XLK, XLU, XLRE, ITA, XBI
+
+TASK: Output COUNCIL PLAN. All 10 agents follow unless rogue.
+
+RULES:
+- Each agent commits ≥ {int(COUNCIL_MIN_COMMIT_PER_AGENT*100)}% of bankroll today.
+- Bias weaker agents toward higher commit (catch-up).
+- 2-4 focus_strategies, 3-6 focus_categories.
+- Keep plan COMPACT.
+
+SCHEMA:
+{{
+  "council_summary": "1 sentence",
+  "focus_strategies": ["insider_tracking", "regulatory_arb"],
+  "focus_categories": ["XLE", "XLF", "ITA"],
+  "per_agent_commit_pct": {{"qwen-quant": 0.55, ...}},
+  "shared_notes": "1-3 sentences"
+}}
+
+RESPOND WITH RAW JSON ONLY. All 10 agent ids in per_agent_commit_pct.
+Values >= {COUNCIL_MIN_COMMIT_PER_AGENT} and <= 0.85."""
+
+    fallback = {
+        "council_summary": "no LLM council; default equal commitment",
+        "focus_strategies": ["insider_tracking", "macro_narrative"],
+        "focus_categories": ["XLE", "XLF", "ITA"],
+        "per_agent_commit_pct": {tid: 0.55 for tid in state},
+        "shared_notes": "Deterministic fallback plan.",
+        "raw": "",
+    }
+
+    try:
+        raw = _call_llm(
+            "cerebras:qwen-3-235b",
+            sys_prompt, usr_prompt, timeout=45.0,
+            trace_name=f"pol-tf-council-{day_idx}",
+            trace_metadata={"day": day_date, "n_events": n_events, "n_agents": n_agents, "fleet_total": fleet_total},
+        )
+    except Exception:
+        raw = None
+    if not raw:
+        return fallback
+
+    plan = parse_llm_decision(raw)
+    if not isinstance(plan, dict):
+        return fallback
+
+    focus_strats = plan.get("focus_strategies") or []
+    if not isinstance(focus_strats, list):
+        focus_strats = []
+    focus_cats = plan.get("focus_categories") or []
+    if not isinstance(focus_cats, list):
+        focus_cats = []
+    commits = plan.get("per_agent_commit_pct") or {}
+    if not isinstance(commits, dict):
+        commits = {}
+    clean_commits = {}
+    for tid in state:
+        try:
+            v = float(commits.get(tid, 0.55) or 0.55)
+        except (TypeError, ValueError):
+            v = 0.55
+        clean_commits[tid] = max(COUNCIL_MIN_COMMIT_PER_AGENT, min(0.85, v))
+
+    return {
+        "council_summary": str(plan.get("council_summary", ""))[:300],
+        "focus_strategies": [str(s)[:40] for s in focus_strats[:4]],
+        "focus_categories": [str(c)[:40] for c in focus_cats[:6]],
+        "per_agent_commit_pct": clean_commits,
+        "shared_notes": str(plan.get("shared_notes", ""))[:500],
+        "raw": raw[:400],
+    }
+
+
+def build_council_block(plan: dict, tid: str, fleet_best_bankroll: float) -> str:
+    if not plan:
+        return ""
+    my_commit = plan.get("per_agent_commit_pct", {}).get(tid, COUNCIL_MIN_COMMIT_PER_AGENT)
+    progress = (fleet_best_bankroll / SEASON_TARGET) * 100.0
+    lines = [
+        "\n\n=== MORNING COUNCIL PLAN (follow unless rogue) ===",
+        f"Fleet best bankroll: ${fleet_best_bankroll:,.2f} ({progress:.2f}% of $1M common goal)",
+        f"Council summary: {plan.get('council_summary','(none)')}",
+        f"Focus strategies: {', '.join(plan.get('focus_strategies',[]) or ['(none)'])}",
+        f"Focus categories/ETFs: {', '.join(plan.get('focus_categories',[]) or ['(none)'])}",
+        f"YOUR council commit: at least {my_commit*100:.0f}% of your bankroll deployed today.",
+        f"Shared notes: {plan.get('shared_notes','(none)')}",
+        "Bias allocations toward focus_strategies + focus_categories unless rogue.",
+        "Common goal: ONE agent reaches $1M by season end.",
+    ]
+    return "\n".join(lines)
+
+
 def build_day_prompt(day_date: str, day_events: List[Dict], sector_trends: Dict,
                      trader_state: Dict, strategies=None,
                      recent_decisions: List[Dict] = None,
-                     common_knowledge_block: Optional[str] = None) -> str:
+                     common_knowledge_block: Optional[str] = None,
+                     fleet_best_bankroll: float = 100.0) -> str:
     """Build comprehensive day-level prompt. Agent sees ALL political events of the day."""
     bankroll = trader_state.get("bankroll", 100.0)
     total_allocs = trader_state.get("total_bets", 0)
@@ -876,8 +1129,10 @@ def build_day_prompt(day_date: str, day_events: List[Dict], sector_trends: Dict,
     losses = trader_state.get("losses", 0)
     roi = ((bankroll - 100.0) / 100.0) * 100
 
+    progress_pct = (fleet_best_bankroll / SEASON_TARGET) * 100.0
     lines = [f"=== TRADING DAY: {day_date} | {len(day_events)} POLITICAL EVENTS ===",
              f"",
+             f"COMMON GOAL: one agent reaches ${SEASON_TARGET:,.0f}. Fleet best now ${fleet_best_bankroll:,.2f} ({progress_pct:.2f}%).",
              f"YOUR STATE: ${bankroll:.2f} | {total_allocs} total allocations | {wins}W-{losses}L | ROI {roi:+.1f}%"]
 
     if recent_decisions:
@@ -1504,6 +1759,28 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         # Stackelberg leader for the day (arXiv 2507.09407)
         _stackelberg_leader = get_stackelberg_leader(state)
 
+        # ── PHASE 1/3/4 (2026-04-17) — morning council + rogue + $1M goal ──
+        fleet_best_bankroll = max((state[t]["bankroll"] for t in state), default=STARTING_CAPITAL)
+        day_council_plan = run_morning_council(
+            day_idx, day_date, day_events, sector_trends, state, fleet_best_bankroll,
+        )
+        _council_plans[day_date] = day_council_plan
+        day_rogue_state = compute_rogue_state(state)
+        for _tid, _rs in day_rogue_state.items():
+            if _rs["is_rogue"]:
+                _rogue_events.append({
+                    "day": day_date, "tid": _tid,
+                    "reasons": _rs["reasons"],
+                    "peer_leader": _rs.get("peer_leader"),
+                    "peer_bankroll": _rs.get("peer_bankroll"),
+                })
+        log_lines.append(
+            f"[day {day_idx+1}] COUNCIL: {day_council_plan.get('council_summary','(none)')[:120]}"
+        )
+        _n_rogues = sum(1 for r in day_rogue_state.values() if r["is_rogue"])
+        if _n_rogues:
+            log_lines.append(f"[day {day_idx+1}] ROGUES: {_n_rogues}/{len(state)} eligible to defect")
+
         # PHASE 1 — parallel LLM calls (intra-day only; days remain sequential
         # because Mech A common-knowledge broadcast on day N+1 reads day N).
         def _agent_llm_worker(tid_cfg):
@@ -1526,6 +1803,14 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             _axl_block = _axelrod_advice_block(tid, _active_peers)
             if _axl_block:
                 system_prompt = system_prompt + _axl_block
+            # PHASE 1 — council plan
+            _council_block = build_council_block(day_council_plan, tid, fleet_best_bankroll)
+            if _council_block:
+                system_prompt = system_prompt + _council_block
+            # PHASE 3 — rogue permission
+            _rogue_block = build_rogue_block(day_rogue_state.get(tid, {}))
+            if _rogue_block:
+                system_prompt = system_prompt + _rogue_block
             # Rescue protocol: agents under $50 get risk-on mandate
             if ts["bankroll"] < 50.0 and ts["bankroll"] > 5.0:
                 system_prompt += (
@@ -1540,14 +1825,19 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 strategies=strategies,
                 recent_decisions=ts.get("recent_decisions", []),
                 common_knowledge_block=prev_day_ck,
+                fleet_best_bankroll=fleet_best_bankroll,
             )
             try:
-                raw = _call_llm(provider, system_prompt, user_prompt, timeout=30.0)
+                raw = _call_llm(provider, system_prompt, user_prompt, timeout=30.0,
+                               trace_name=f"pol-tf-day-{day_idx}",
+                               trace_metadata={"trader_id": tid, "day": day_date, "bankroll": ts["bankroll"]})
             except Exception:
                 raw = None
             if not raw and cfg.get("fallback_provider"):
                 try:
-                    raw = _call_llm(cfg["fallback_provider"], system_prompt, user_prompt, timeout=30.0)
+                    raw = _call_llm(cfg["fallback_provider"], system_prompt, user_prompt, timeout=30.0,
+                                   trace_name=f"pol-tf-day-{day_idx}-fallback",
+                                   trace_metadata={"trader_id": tid, "day": day_date, "fallback": True})
                 except Exception:
                     pass
             return tid, raw
@@ -1721,6 +2011,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         )
 
         # Update live state
+        _fleet_best_live = max(state[t]["bankroll"] for t in state)
+        _leader_live = max(state, key=lambda t: state[t]["bankroll"])
         with _state_lock:
             _experiment_state = {
                 "days_processed": day_idx + 1,
@@ -1733,6 +2025,13 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                            for tid, ts in state.items()},
                 "updated": datetime.now(timezone.utc).isoformat(),
                 "last_ck_block": prev_day_ck,  # Axelrod Mech A: persist for resume
+                # Collective experiment (2026-04-17)
+                "season_target": SEASON_TARGET,
+                "fleet_best_bankroll": round(_fleet_best_live, 2),
+                "fleet_leader": _leader_live,
+                "season_progress_pct": round((_fleet_best_live / SEASON_TARGET) * 100.0, 4),
+                "council_plan": day_council_plan,
+                "rogue_this_day": {t: r for t, r in day_rogue_state.items() if r["is_rogue"]},
             }
         if (day_idx + 1) % 5 == 0 or day_idx == n_days - 1:
             _save_state_to_disk(_experiment_state)
@@ -2041,6 +2340,25 @@ async def api_status():
     state["axelrod_canon_active"] = True
     state["axelrod_library_active"] = _AXELROD_OK
     state["axelrod_strategies"] = dict(AXELROD_STRATEGIES)
+    # ── Collective experiment (2026-04-17) ──
+    with _state_lock:
+        _agents = _experiment_state.get("agents", {}) if _experiment_state else {}
+    if _agents:
+        _fleet_best = max(a.get("bankroll", 0.0) for a in _agents.values())
+        _leader = max(_agents, key=lambda t: _agents[t].get("bankroll", 0.0))
+    else:
+        _fleet_best = STARTING_CAPITAL
+        _leader = None
+    state["season_target"] = SEASON_TARGET
+    state["fleet_best_bankroll"] = round(_fleet_best, 2)
+    state["fleet_leader"] = _leader
+    state["season_progress_pct"] = round((_fleet_best / SEASON_TARGET) * 100.0, 4)
+    state["council_plan_count"] = len(_council_plans)
+    state["latest_council_summary"] = (
+        list(_council_plans.values())[-1].get("council_summary", "") if _council_plans else ""
+    )
+    state["rogue_events_total"] = len(_rogue_events)
+    state["rogue_events_recent"] = _rogue_events[-10:]
     return JSONResponse(state)
 
 @api.post("/api/run")
