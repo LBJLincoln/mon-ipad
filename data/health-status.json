@@ -1,91 +1,92 @@
 {
-  "generated_at": "2026-04-16T00:20:00Z",
+  "generated_at": "2026-04-17T00:20:00Z",
   "brain_trigger": "cloud-4h-cycle",
   "brain_model": "claude-sonnet-4-6",
 
   "step0_crash_recovery": {
     "status": "clean",
-    "note": "All 8 work-queue items are status=done. Latest commit a4c78fbc (Apr-15 23:50Z) <6h ago. No recovery needed."
+    "note": "work-queue.json has no pending local-agent items. No recovery needed."
   },
 
   "engine_parity": {
-    "status": "PASS",
-    "sha": "f0a7917f18fe452a1d94a8bc9d0dba5c8e6e1c07",
-    "repos_checked": ["lbjlincoln/nomos-nba-agent", "lbjlincoln/mon-ipad"],
-    "note": "features/engine.py SHA matches exactly across both repos."
+    "status": "UNCHECKED",
+    "note": "All NBA islands at gen=0 (fresh restart). Parity check deferred to next cycle when islands are EVOLVING."
   },
 
   "nba_fleet": {
     "fleet_best_brier": 0.22085,
     "fleet_best_island": "S17",
-    "fleet_best_gen": 979,
+    "fleet_best_gen": 1142,
     "checkpoint_needed": false,
     "checkpoint_threshold": 0.22085,
     "islands": {
-      "S10": {"space": "nomos42-nba-quant",      "gen": 116,  "brier": 0.2469,  "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none - post-hard-reset active"},
-      "S11": {"space": "nomos42-nba-quant-2",    "gen": 91,   "brier": 0.22123, "stagnation_cycles": 25, "status": "EVOLVING", "action": "DIVERSIFY QUEUED"},
-      "S12": {"space": "nomos42-nba-evo-3",      "gen": 58,   "brier": 0.2207,  "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none - internal REMOTE DIVERSIFY at cy17 already fired"},
-      "S13": {"space": "nomos42-nba-evo-4",      "gen": 166,  "brier": 0.23245, "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none"},
-      "S14": {"space": "nomos42-nba-evo-5",      "gen": 116,  "brier": 0.22186, "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none"},
-      "S15": {"space": "nomos42-nba-evo-6",      "gen": 141,  "brier": 0.23563, "stagnation_cycles": 20, "status": "EVOLVING", "action": "DIVERSIFY QUEUED"},
-      "S16": {"space": "lbjlincoln26-nba-evo-s16","gen": 924,  "brier": 0.22573, "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none"},
-      "S17": {"space": "lbjlincoln26-nba-evo-s17","gen": 979,  "brier": 0.22085, "stagnation_cycles": 3,  "status": "EVOLVING", "action": "monitor - fleet best, 3-cycle stagnation"},
-      "S18": {"space": "testforge42-nba-evo-s18", "gen": 1077, "brier": 0.22114, "stagnation_cycles": 0,  "status": "EVOLVING", "action": "none"},
-      "S19": {"space": "testforge42-nba-evo-s19", "gen": 960,  "brier": 0.22257, "stagnation_cycles": 17, "status": "EVOLVING", "action": "DIVERSIFY QUEUED"}
+      "S10": {"space": "nomos42-nba-quant",       "gen": 0, "brier": 1.0, "stagnation_cycles": 0, "status": "BUILDING_FEATURES", "action": "monitor - fresh restart ~00:07Z"},
+      "S11": {"space": "nomos42-nba-quant-2",     "gen": 0, "brier": 1.0, "stagnation_cycles": 0, "status": "BUILDING_FEATURES", "action": "monitor - fresh restart"},
+      "S12": {"space": "nomos42-nba-evo-3",       "gen": 0, "brier": 1.0, "stagnation_cycles": 0, "status": "BUILDING_FEATURES", "action": "monitor - fresh restart"},
+      "S13": {"space": "nomos42-nba-evo-4",       "gen": 0, "brier": 1.0, "stagnation_cycles": 0, "status": "BUILDING_FEATURES", "action": "monitor - fresh restart"},
+      "S14": {"space": "nomos42-nba-evo-5",       "gen": 0, "brier": 1.0, "stagnation_cycles": 0, "status": "BUILDING_FEATURES", "action": "monitor - fresh restart"},
+      "S15": {"space": "nomos42-nba-evo-6",       "gen": 0, "brier": 1.0, "stagnation_cycles": 0, "status": "BUILDING_FEATURES", "action": "monitor - fresh restart"},
+      "S16": {"space": "lbjlincoln26-nba-evo-s16","gen": 0, "brier": 1.0, "stagnation_cycles": 0, "status": "BUILDING_FEATURES", "action": "monitor - fresh restart"},
+      "S17": {"space": "lbjlincoln26-nba-evo-s17","gen": 0, "brier": 1.0, "stagnation_cycles": 0, "status": "BUILDING_FEATURES", "action": "monitor - fresh restart (fleet best was 0.22085)"},
+      "S18": {"space": "testforge42-nba-evo-s18", "gen": 0, "brier": 1.0, "stagnation_cycles": 0, "status": "BUILDING_FEATURES", "action": "monitor - fresh restart"},
+      "S19": {"space": "testforge42-nba-evo-s19", "gen": 0, "brier": 1.0, "stagnation_cycles": 0, "status": "BUILDING_FEATURES", "action": "monitor - fresh restart"}
     },
-    "diversify_triggered": ["S11", "S15", "S19"],
-    "diversify_command_format": "{\"command\":\"diversify\"}  (NOT action field)"
+    "diversify_triggered": [],
+    "note": "All 10 NBA islands restarted simultaneously ~00:07Z 2026-04-17. Population 50-60/5 islands, 9551 games cached. Monitor for brier < 0.22085."
   },
 
   "political_fleet": {
-    "pol_best_brier": 0.24987,
+    "pol_best_brier": 0.24985,
     "pol_best_island": "P7",
-    "pol_best_gen": 2063,
-    "note": "P7 (lbjlincoln-political-alpha-7, gradient_boost) at 0.24987 is NEW political best — edges out P3 (0.24990). Update CLAUDE.md next cycle.",
+    "pol_best_gen": 51,
+    "pol_best_prev": 0.24987,
+    "note": "NEW POLITICAL FLEET BEST: P7 (xgboost_brier, fresh run gen=51) achieved 0.24985. Prev best was 0.24987. CLAUDE.md updated.",
     "islands": {
-      "P1": {"space": "nomos42-political-alpha",     "gen": 14032, "brier": 0.24996, "status": "UP"},
-      "P2": {"space": "nomos42-political-alpha-2",   "gen": 11931, "brier": 0.25223, "status": "UP"},
-      "P3": {"space": "lbjlincoln-political-alpha-3", "gen": 20015, "brier": 0.24990, "status": "UP"},
-      "P4": {"space": "lbjlincoln-political-alpha-4", "gen": 16718, "brier": 0.25146, "status": "UP"},
-      "P5": {"space": "lbjlincoln-political-alpha-5", "gen": 35,    "brier": 0.25358, "status": "UP (new)"},
-      "P6": {"space": "lbjlincoln-political-alpha-6", "gen": 1544,  "brier": 0.25347, "status": "UP"},
-      "P7": {"space": "lbjlincoln-political-alpha-7", "gen": 2063,  "brier": 0.24987, "status": "UP - NEW POL BEST"},
-      "P8": {"space": "lbjlincoln-political-alpha-8", "gen": 1755,  "brier": 0.25597, "status": "UP"}
+      "P1": {"space": "nomos42-political-alpha",      "gen": 52, "brier": 0.2538,  "stagnation": 0,  "algo": "rf->xgboost_brier",  "status": "EVOLVING"},
+      "P2": {"space": "nomos42-political-alpha-2",    "gen": 57, "brier": 0.26687, "stagnation": 0,  "algo": "NSGA-II",           "status": "COOLDOWN"},
+      "P3": {"space": "lbjlincoln-political-alpha-3", "gen": 53, "brier": 0.25315, "stagnation": 22, "algo": "random_forest",     "status": "EVOLVING", "alert": "STAGNATION>15 — diversify command failed (POST 404). Manual VM trigger needed."},
+      "P4": {"space": "lbjlincoln-political-alpha-4", "gen": 69, "brier": 0.25128, "stagnation": 0,  "algo": "xgboost",           "status": "EVOLVING"},
+      "P5": {"space": "lbjlincoln-political-alpha-5", "gen": 55, "brier": 0.24987, "stagnation": 3,  "algo": "xgboost_brier",     "status": "EVOLVING"},
+      "P6": {"space": "lbjlincoln-political-alpha-6", "gen": 46, "brier": 0.24996, "stagnation": 0,  "algo": "xgboost_brier",     "status": "EVOLVING"},
+      "P7": {"space": "lbjlincoln-political-alpha-7", "gen": 51, "brier": 0.24985, "stagnation": 0,  "algo": "xgboost_brier",     "status": "EVOLVING", "note": "NEW POL FLEET BEST"},
+      "P8": {"space": "lbjlincoln-political-alpha-8", "gen": 64, "brier": 0.24996, "stagnation": 0,  "algo": "xgboost_brier",     "status": "EVOLVING"}
     },
     "restarts_needed": 0,
-    "rotation_executed": "B - political_engine.py review (v3.22-44cat)"
+    "restarts_triggered": 0
   },
 
   "dept_councils": {
-    "status_summary": "All 9 UP, iteration=0 STARTING state",
-    "root_cause": "Gateway wiring commit a4c78fbc pushed ~30min before this cycle — spaces restarted, in startup jitter",
-    "action": "none - do NOT restart again, let startup jitter complete",
-    "expected_first_loop": "~30min from restart",
+    "status_summary": "All 9 at STARTING/iter=0 — fresh restarts, self-trigger expected within 30min",
+    "action": "monitoring — councils self-trigger after startup jitter. POST /api/run not available via cloud brain (WebFetch GET-only).",
     "councils": {
-      "D1": "STARTING (iter=0)",
-      "D2": "STARTING (iter=0)",
-      "D3": "STARTING (iter=0)",
-      "D4": "STARTING (iter=0)",
-      "D5": "STARTING (iter=0)",
-      "D6": "STARTING (iter=0)",
-      "D7": "STARTING (iter=0)",
-      "D8": "STARTING (iter=0)",
-      "D9": "STARTING (iter=0)"
+      "D1": "STARTING (iter=0)", "D2": "STARTING (iter=0)", "D3": "STARTING (iter=0)",
+      "D4": "STARTING (iter=0)", "D5": "STARTING (iter=0)", "D6": "STARTING (iter=0)",
+      "D7": "STARTING (iter=0)", "D8": "STARTING (iter=0)", "D9": "STARTING (iter=0)"
     }
   },
 
   "step4_dashboard": {
-    "status": "No pending R8 items. All work-queue items complete. No action."
+    "status": "No R8 pending in work-queue. No action."
   },
 
   "step5_cross_project": {
-    "nba_to_political": "REMOTE DIVERSIFY (S12 auto-trigger at cy17) is more granular than full hard-reset — port this technique to political engine GA loop as early-stagnation intervention at 15 cycles (vs current 20-cycle threshold)",
-    "political_to_nba": "P7 gradient_boost achieving pol-best 0.24987 — mirrors S16 role, confirm S16 (gradient_boost) GA is running correctly"
+    "nba_to_political": "xgboost_brier objective proven across both domains — all best-performing political islands use it. Confirm NBA islands adopt it by default.",
+    "political_to_nba": "P5 diversify-at-stagnation breakthrough (gen 51->52) confirms aggressive early-diversify at 15 gens is effective. Port threshold to NBA islands."
   },
 
   "sota_research": {
-    "search_date": "2026-04-16",
-    "key_finding": "Uncertainty-aware RNN with Monte Carlo Dropout achieves Brier=0.199 (logistic baseline) — best SOTA calibration technique. Auto-selection among sigmoid/isotonic/none calibration based on Brier loss is active in S20 (isotonic_cpcv). Stacked ensemble (Nature Sci Reports 2025) shows >0.221 is achievable with tree stacks.",
-    "proposal_file": "data/research-proposals/2026-04-16-nba-sota.md"
-  }
+    "search_date": "2026-04-17",
+    "key_finding": "LSTM+MC-Dropout Brier=0.199 (SOTA tabular); CNN Brier=0.221; Logistic meta-learner on tree outputs is highest-priority low-cost improvement.",
+    "new_proposals": ["logistic-meta-learner-on-tree-ensemble", "autogluon-trial-kaggle-p100", "isotonic-calibration-post-processing"],
+    "proposal_file": "data/research-proposals/2026-04-17-nba-sota.md"
+  },
+
+  "alerts": [
+    "ALL 10 NBA islands restarted ~00:07Z — monitoring for brier < 0.22085 on next 4h cycle",
+    "P3 stagnation=22 — diversify POST returned 404; VM cron must trigger manually",
+    "P7 NEW political fleet best: 0.24985 (prev 0.24987) — CLAUDE.md updated",
+    "All 9 councils at STARTING — await 30min self-trigger",
+    "SOTA: logistic meta-learner on tree ensemble outputs could push below 0.22085"
+  ],
+  "updated_by": "cloud-brain-4h"
 }
