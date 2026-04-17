@@ -89,3 +89,39 @@ data/arena/council-log-v5/council-log-*.jsonl
 # Raw predictions dumps (one file per day, ~1-2MB each) — regenerable via
 # scripts/arena/backfill-v5-season.py, not committed.
 data/arena/predictions-v5/predictions-*.json
+
+# ── Runtime cron telemetry (regenerated every cycle) ─────────────────────────
+# These files used to noise up every `git status`. Source of truth = HF Spaces
+# /api/status and the VM data server. Dashboard fetches live, not from git.
+.claude/scheduled_tasks.lock
+.claude/agent-memory/
+.claude/plugins/cache/
+hf-brain/
+data/arena/axelrod-log/
+data/arena/cpcv-watcher-state.json
+data/coord/
+data/councils/d*/latest.json
+data/councils/d*/tf-monitor-*.json
+data/councils/d*/gpu-monitor-*.json
+data/cross-pollination/report-*.json
+data/departments/cross-repo/engine-parity.json
+data/.last-engine-hash
+data/health-status.json
+data/infra-status.json
+data/llm-fleet-status.json
+data/nba-fleet-status.json
+data/political-fleet-status.json
+data/monetization/
+data/monitoring/drift-*.json
+data/monitoring/history/
+data/monitoring/metrics.csv
+data/nba-agent/odds-history/
+data/nba-agent/odds-latest.json
+data/nba-agent/live-odds.json
+data/nba-agent/market-data.json
+data/nba-agent/tf-llm-health*.json
+data/orchestrator-log.jsonl
+data/research/arxiv-*-scan-*.json
+data/research/github-*-scan-*.json
+scripts/arena/hf-llm-trading-floor/data/full-odds-2025-26.json
+scripts/arena/hf-llm-trading-floor/data/model-predictions-2025-26.json
