@@ -1,0 +1,74 @@
+{
+  "generated_at": "2026-04-16T00:26:13.150069Z",
+  "spaces": {
+    "llm-gateway": {
+      "owner": "LBJLincoln26",
+      "stage": "RUNNING",
+      "up": true,
+      "restarted": false,
+      "notes": "RUNNING, /api/status 200, gateway_enabled=True"
+    },
+    "nba-llm-trading-floor": {
+      "owner": "LBJLincoln26",
+      "stage": "RUNNING",
+      "up": true,
+      "restarted": false,
+      "notes": "RUNNING but not in active loop (running=False, 0 day-decisions). No active experiment."
+    },
+    "political-llm-trading-floor": {
+      "owner": "LBJLincoln26",
+      "stage": "RUNNING",
+      "up": true,
+      "restarted": false,
+      "notes": "RUNNING but not in active loop (running=False). No active experiment."
+    },
+    "pixel-world": {
+      "owner": "Nomos42",
+      "stage": "RUNNING",
+      "up": true,
+      "restarted": false,
+      "notes": "RUNNING, static space"
+    },
+    "gemma4-chat": {
+      "owner": "Nomos42",
+      "stage": "RUNTIME_ERROR",
+      "up": false,
+      "restarted": false,
+      "notes": "GATED MODEL ERROR: google/gemma-3-1b-it requires HF_TOKEN secret with model access in Space settings. Soft restart attempted but 403 (token auth expired). Manual fix required: add valid HF_TOKEN to Space secrets."
+    },
+    "qwen35-chat": {
+      "owner": "Nomos42",
+      "stage": "SLEEPING",
+      "up": true,
+      "restarted": false,
+      "notes": "SLEEPING (normal idle behavior for cpu-basic, gc_timeout=172800). Will wake on request."
+    },
+    "nomos42-llm-cpu": {
+      "owner": "Nomos42",
+      "stage": "RUNNING",
+      "up": true,
+      "restarted": false,
+      "notes": "RUNNING (self-hosted Qwen3-1.7B GGUF, used by T12 gemma4-selfhost trader)"
+    },
+    "langfuse": {
+      "owner": "Nomos42",
+      "stage": "NOT_DEPLOYED",
+      "up": false,
+      "restarted": false,
+      "notes": "Space does not exist on any account (Nomos42/LBJLincoln26/LBJLincoln). Queued as Ship #4 per observability plan \u2014 not yet deployed."
+    }
+  },
+  "tf_advancing": {
+    "nba": false,
+    "political": false,
+    "note": "Both TFs running=False, 0 day-decisions. No active experiment in progress \u2014 expected idle state."
+  },
+  "token_health": {
+    "HF_TOKEN_LLM": "EXPIRED (401 on whoami)",
+    "HF_TOKEN_NBA": "EXPIRED (401 on whoami)",
+    "HF_TOKEN_POL": "EXPIRED (401 on whoami)",
+    "HF_TOKEN_COUNCILS": "NOT_TESTED",
+    "note": "All tokens return 401 on /api/whoami. Public space metadata still readable. Restart API (POST) requires valid write token \u2014 BLOCKED until tokens refreshed."
+  },
+  "summary": "Nomos42 fleet: 6/8 up (7 if SLEEPING counts). Restarted: []. TF advancing: no (idle, no active run). Action needed: (1) gemma4-chat RUNTIME_ERROR \u2014 gated model, needs HF_TOKEN secret in Space. (2) HF tokens expired \u2014 refresh for restart capability."
+}

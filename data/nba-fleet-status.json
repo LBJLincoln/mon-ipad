@@ -1,0 +1,103 @@
+{
+  "_meta": {
+    "updated_at": "2026-04-15T04:10:00Z",
+    "agent": "nba-fleet-ops",
+    "cycle": "4h :10",
+    "model": "claude-sonnet-4-6"
+  },
+  "fleet_best_brier": 0.22070,
+  "fleet_best_island": "S12",
+  "fleet_best_note": "S12 gen=61 brier=0.2207 — new cycle best, checkpointed. S17 historical best 0.22085 now surpassed.",
+  "islands": {
+    "S10": {
+      "url": "nomos42-nba-quant.hf.space",
+      "role": "exploitation",
+      "status": "UP",
+      "generation": 120,
+      "best_brier": 0.2469,
+      "stagnation": 0,
+      "alert": "REGRESSION — Brier 0.2271 → 0.2469. Mutation bumped to 0.18 to force diversity.",
+      "action_taken": "config: mutation_rate=0.18"
+    },
+    "S11": {
+      "url": "nomos42-nba-quant-2.hf.space",
+      "role": "exploration",
+      "status": "UP",
+      "generation": 95,
+      "best_brier": 0.22123,
+      "stagnation": 0,
+      "alert": null,
+      "action_taken": null
+    },
+    "S12": {
+      "url": "nomos42-nba-evo-3.hf.space",
+      "role": "extra_trees",
+      "status": "UP",
+      "generation": 61,
+      "best_brier": 0.22070,
+      "stagnation": 0,
+      "alert": "NEW FLEET BEST — brier=0.2207 surpasses S17 historical 0.22085",
+      "action_taken": "checkpoint: brier=0.2207 gen=61"
+    },
+    "S13": {
+      "url": "nomos42-nba-evo-4.hf.space",
+      "role": "catboost",
+      "status": "UP",
+      "generation": 171,
+      "best_brier": 0.23245,
+      "stagnation": 0,
+      "alert": null,
+      "action_taken": null
+    },
+    "S14": {
+      "url": "nomos42-nba-evo-5.hf.space",
+      "role": "lightgbm",
+      "status": "UP",
+      "generation": 119,
+      "best_brier": 0.22186,
+      "stagnation": 0,
+      "alert": null,
+      "action_taken": null
+    },
+    "S15": {
+      "url": "nomos42-nba-evo-6.hf.space",
+      "role": "wide_search",
+      "status": "UP",
+      "generation": 145,
+      "best_brier": 0.23563,
+      "stagnation": 0,
+      "alert": null,
+      "action_taken": null
+    },
+    "S16": {
+      "url": "lbjlincoln26-nba-evo-s16.hf.space",
+      "role": "gradient_boost",
+      "status": "UP",
+      "generation": 925,
+      "best_brier": 0.22573,
+      "stagnation": 0,
+      "alert": null,
+      "action_taken": null
+    },
+    "S17": {
+      "url": "lbjlincoln26-nba-evo-s17.hf.space",
+      "role": "ensemble",
+      "status": "UP",
+      "generation": 981,
+      "best_brier": 0.22085,
+      "stagnation": 0,
+      "alert": null,
+      "action_taken": null
+    }
+  },
+  "summary": {
+    "islands_up": 8,
+    "islands_down": 0,
+    "stagnation_flags": 0,
+    "actions_taken": 2,
+    "cycle_actions": [
+      "S10: mutation_rate bumped 0.14 → 0.18 (Brier regression 0.2271→0.2469)",
+      "S12: checkpoint saved (brier=0.2207, new fleet best)"
+    ]
+  }
+}

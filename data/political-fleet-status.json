@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-04-16T00:15:00Z",
+  "brain_cycle": "4H",
+  "fleet_best_brier": 0.24987,
+  "fleet_best_island": "P7",
+  "fleet_best_model": "gradient_boost",
+  "target_brier": 0.22,
+  "gap_to_target": 0.02987,
+  "uptime": "8/8",
+  "islands": {
+    "P1": { "status": "EVOLVING", "gen": 20032, "brier": 0.2499,  "stag": 0, "model": "xgboost_brier" },
+    "P2": { "status": "EVOLVING", "gen": 11953, "brier": 0.25223, "stag": 0, "model": "lightgbm" },
+    "P3": { "status": "EVOLVING", "gen": 14043, "brier": 0.24996, "stag": 0, "model": "xgboost_brier" },
+    "P4": { "status": "EVOLVING", "gen": 16728, "brier": 0.25146, "stag": 0, "model": "logistic_regression" },
+    "P5": { "status": "EVOLVING", "gen": 1567,  "brier": 0.25347, "stag": 0, "model": "catboost" },
+    "P6": { "status": "STAGNATING", "gen": 40,   "brier": 0.25358, "stag": 13, "model": "extra_trees", "action": "diversify_sent" },
+    "P7": { "status": "EVOLVING", "gen": 2098,  "brier": 0.24987, "stag": 0, "model": "gradient_boost", "fleet_best": true },
+    "P8": { "status": "EVOLVING", "gen": 1786,  "brier": 0.25597, "stag": 0, "model": "ensemble" }
+  },
+  "actions": ["P6: diversify sent (stagnation=13 at gen 40)"],
+  "alerts": [
+    "P6 early-phase extra_trees stagnation — diversify queued",
+    "P7 new fleet best 0.24987 (gradient_boost) — edges out P3 at 0.24990",
+    "P5-P8 all live and evolving — 8-island parity with NBA confirmed"
+  ]
+}
