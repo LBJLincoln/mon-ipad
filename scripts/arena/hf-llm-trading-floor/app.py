@@ -2827,7 +2827,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # but all got stripped by MIN_EDGE/FDR filters. Force-execute 5×15% ml_home
             # so the agent still deploys 75% on day. Directly resolve + update bankroll.
             total_bets_executed = len(day_log["allocations"]) + len(day_log.get("parlays", []))
-            if total_bets_executed < 3 and len(day_games) >= 3:
+            total_deployed_pct = sum(a.get("pct", 0) for a in day_log["allocations"]) + sum(p.get("pct", 0) for p in day_log.get("parlays", []))
+            if (total_bets_executed < 3 or total_deployed_pct < 0.70) and len(day_games) >= 3:
                 n_fb = min(5, len(day_games))
                 per_pct = 0.75 / n_fb
                 for i in range(n_fb):

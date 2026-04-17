@@ -2123,7 +2123,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # but all got stripped by downstream filters. Force-execute 5×15% SPY long
             # so the agent still deploys 75% on day. Directly resolve + update bankroll.
             total_bets_executed = len(day_log["allocations"])
-            if total_bets_executed < 3 and len(day_events) >= 3:
+            total_deployed_pct = sum(a.get("pct", 0) for a in day_log["allocations"])
+            if (total_bets_executed < 3 or total_deployed_pct < 0.70) and len(day_events) >= 3:
                 n_fb = min(5, len(day_events))
                 per_pct = 0.75 / n_fb
                 for i in range(n_fb):

@@ -433,7 +433,96 @@ const pactLayer  = new PIXI.Graphics();
 const agentLayer = new PIXI.Container();
 agentLayer.sortableChildren = true;
 const labelLayer = new PIXI.Container();
-world.addChild(floorLayer, decorLayer, particleLayer, pactLayer, agentLayer, labelLayer);
+const panelLayer = new PIXI.Container();
+world.addChild(floorLayer, decorLayer, particleLayer, pactLayer, panelLayer, agentLayer, labelLayer);
+
+// ═══ Diegetic Panel System v0.1 (2026-04-17, spec: data/research/pixel-world-diegetic-panels-apr17.md) ═══
+// Each panel is a PixiJS container anchored in world coords. Trader sprites walk between them.
+// States: live (green border) | stale (amber) | no_signal (red) | fake (red + SUSPECT overlay)
+const DIEGETIC_PANELS = [];
+function makeDiegeticPanel({ x, y, w, h, title, dataUrl, render, staleSec=600 }) {
+  const c = new PIXI.Container(); c.x = x; c.y = y;
+  const bg = new PIXI.Graphics();
+  bg.rect(0, 0, w, h).fill({ color:0x0b0d12, alpha:0.92 });
+  bg.rect(0, 0, w, 14).fill({ color:0x14171f });
+  bg.rect(0, 0, w, h).stroke({ width:2, color:0x00d9a7, alpha:0.85 });
+  c.addChild(bg);
+  const titleTxt = new PIXI.Text({ text:title, style:{ fontFamily:"monospace", fontSize:9, fill:0xffa500, fontWeight:"bold" }});
+  titleTxt.x = 4; titleTxt.y = 3; c.addChild(titleTxt);
+  const body = new PIXI.Text({ text:"…", style:{ fontFamily:"monospace", fontSize:9, fill:0xe6e8ee, lineHeight:11, wordWrap:true, wordWrapWidth:w-8 }});
+  body.x = 4; body.y = 18; c.addChild(body);
+  const stateTxt = new PIXI.Text({ text:"", style:{ fontFamily:"monospace", fontSize:8, fill:0xff5c5c, fontWeight:"bold" }});
+  stateTxt.anchor.set(1,0); stateTxt.x = w-4; stateTxt.y = 3; c.addChild(stateTxt);
+  panelLayer.addChild(c);
+  const p = { c, bg, titleTxt, body, stateTxt, title, dataUrl, render, staleSec, w, h,
+    setState(s) {
+      if (s === "live") { bg.clear(); bg.rect(0,0,w,h).fill({color:0x0b0d12,alpha:0.92}).rect(0,0,w,14).fill({color:0x14171f}).rect(0,0,w,h).stroke({width:2,color:0x00d9a7,alpha:0.85}); stateTxt.text=""; }
+      else if (s === "stale") { bg.clear(); bg.rect(0,0,w,h).fill({color:0x1a1000,alpha:0.92}).rect(0,0,w,14).fill({color:0x3a2600}).rect(0,0,w,h).stroke({width:2,color:0xffa500,alpha:0.95}); stateTxt.text="STALE"; stateTxt.style.fill=0xffa500; }
+      else if (s === "no_signal") { bg.clear(); bg.rect(0,0,w,h).fill({color:0x1a0000,alpha:0.92}).rect(0,0,w,14).fill({color:0x3a0000}).rect(0,0,w,h).stroke({width:2,color:0xff5c5c,alpha:0.95}); stateTxt.text="NO SIGNAL"; stateTxt.style.fill=0xff5c5c; body.text="— — — — —"; }
+      else if (s === "fake") { bg.clear(); bg.rect(0,0,w,h).fill({color:0x1a0000,alpha:0.92}).rect(0,0,w,14).fill({color:0x3a0000}).rect(0,0,w,h).stroke({width:2,color:0xff5c5c,alpha:0.95}); stateTxt.text="SUSPECT"; stateTxt.style.fill=0xff5c5c; }
+    }
+  };
+  DIEGETIC_PANELS.push(p);
+  return p;
+}
+async function refreshDiegeticPanels() {
+  for (const p of DIEGETIC_PANELS) {
+    try {
+      const r = await fetch(p.dataUrl, { cache:"no-store" });
+      if (!r.ok) { p.setState("no_signal"); continue; }
+      const data = await r.json();
+      const out = p.render(data);  // {text, state?}
+      if (!out || out.state === "no_signal") { p.setState("no_signal"); continue; }
+      p.body.text = out.text || "";
+      p.setState(out.state || "live");
+    } catch(e) { p.setState("no_signal"); }
+  }
+}
+// Anchor positions — top row across world, doesn't overlap agents (they walk below y=200)
+makeDiegeticPanel({ x:24, y:24, w:280, h:130, title:"◆ ODDS BOARD — live-odds.json",
+  dataUrl:"/api/nba/odds",
+  render:(d) => {
+    const games = (d && d.games) || [];
+    if (!games.length) return { state:"no_signal" };
+    const fetched = d.fetched_at || d.timestamp || 0;
+    const ageSec = fetched ? (Date.now()/1000 - new Date(fetched).getTime()/1000) : 0;
+    const state = ageSec > 600 ? "stale" : "live";
+    const lines = games.slice(0,6).map(g => {
+      const h = g.home_team || g.home || "?", a = g.away_team || g.away || "?";
+      const ml = g.moneyline_home || g.home_ml || "?";
+      return `${a.slice(0,3)}@${h.slice(0,3)}  ${ml}`;
+    });
+    return { text: lines.join("\n") || "— no games today —", state };
+  }});
+makeDiegeticPanel({ x:976, y:24, w:280, h:130, title:"▣ BANKROLL TOTEM — TFs live",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
+  render:(d) => {
+    if (!d || d.best_bankroll == null) return { state:"no_signal" };
+    const best = d.best_bankroll || 0, leader = d.leader || "-", calls = d.total_llm_calls || d.llm_calls || 0;
+    const running = d.running ? "● RUNNING" : "○ idle";
+    const text = `${running}\nday_idx: ${d.current_day_idx ?? "—"}\nbest: $${best.toFixed(0)}  (${leader})\ncalls: ${calls}\nfailures: ${d.llm_failures ?? 0}\npacts: ${d.cooperation_pacts_count ?? 0}`;
+    const state = (best === 0 && calls < 5) ? "stale" : "live";
+    return { text, state };
+  }});
+makeDiegeticPanel({ x:24, y:168, w:280, h:130, title:"◈ PROMPT CORE — mission",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
+  render:(d) => {
+    if (!d) return { state:"no_signal" };
+    const mission = d.collective_mission_active ? "$1M SHARED GOAL" : "(no mission)";
+    const canon = d.axelrod_canon_active ? "AXELROD CANON on" : "canon off";
+    const text = `COLLECTIVE: ${mission}\n${canon}\nmin deploy: ≥75%\nmin allocs: ≥3/day\nrogue <$25 / peer >$250K\nsacrificial rotation active`;
+    return { text, state: d.collective_mission_active ? "live" : "fake" };
+  }});
+makeDiegeticPanel({ x:976, y:168, w:280, h:130, title:"▲ EDGE MATRIX — model vs market",
+  dataUrl:"/api/nba/calibration",
+  render:(d) => {
+    if (!d || !d.points) return { state:"no_signal" };
+    const pts = d.points.slice(-5);
+    const lines = pts.map(p => `bin ${(p.predicted*100).toFixed(0)}%  actual ${(p.actual*100).toFixed(0)}%  n=${p.count}`);
+    return { text: lines.join("\n") || "no calibration data", state:"live" };
+  }});
+refreshDiegeticPanels();
+setInterval(refreshDiegeticPanels, 15000);
 
 // v2.3: Ambient floating particles — data-flow visualization between zones
 const PARTICLES = [];
