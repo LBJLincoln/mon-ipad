@@ -2672,9 +2672,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 # works. 60% cap vs 100% protects against correlated down days.
                 # Previous v1 (0.05/0.25) was too conservative — only ~25% of
                 # bankroll working per day, compound rate capped.
-                MAX_PCT_PER_BET = 0.10      # full Kelly cap per single bet
-                MAX_PCT_PER_DAY = 0.60      # daily diversified exposure (6 × 10% bets)
-                MIN_EDGE = 0.03             # only bet meaningful edges
+                MAX_PCT_PER_BET = 0.15      # raised from 0.10 so 6 bets can reach 75%
+                MAX_PCT_PER_DAY = 0.85      # raised from 0.60 to align with 0.75 deploy floor (+0.10 buffer for parlays)
+                MIN_EDGE = 0.02             # loosened from 0.03 so >=3 allocations pass filter per day
                 BASE_CATS = {"ml_home","ml_away","spread_home","spread_away","total_over","total_under"}
                 day_exposure_pct = 0.0
                 for alloc in parsed["allocations"]:

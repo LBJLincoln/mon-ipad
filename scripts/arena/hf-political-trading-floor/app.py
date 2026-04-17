@@ -2048,8 +2048,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 # 2026-04-17 v2 risk caps (parity with NBA TF):
                 # Traders may split across ALL events of the day (diversified
                 # Kelly). No single bet > 10%, daily cumulative ≤ 60%.
-                MAX_PCT_PER_BET = 0.10   # Kelly cap per individual trade
-                MAX_PCT_PER_DAY = 0.60   # diversified daily exposure (6 × 10%)
+                MAX_PCT_PER_BET = 0.15   # raised from 0.10 so 6 bets can reach 75%
+                MAX_PCT_PER_DAY = 0.85   # raised from 0.60 to align with 0.75 deploy floor
                 starting_bankroll = bankroll
                 day_exposure_pct = 0.0
                 for alloc in parsed["allocations"]:
