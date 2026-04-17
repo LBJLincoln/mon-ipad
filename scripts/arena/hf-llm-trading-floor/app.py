@@ -467,16 +467,17 @@ PROVIDERS = {
         "max_tokens": 1500,
         "rpm": 12,
     },
-    # Self-hosted CPU LLM on HF Space Nomos42/nomos-cpu-gemma4 — no auth, no quota.
-    # Space requested gemma-4-E4B-it-GGUF but that file 404s on HF, so falls back to
-    # bartowski/Phi-3.5-mini-instruct-GGUF (Q4_K_M). OK for tactical 1-shot bets.
+    # Self-hosted CPU LLM on Nomos42 HF Space — no auth, no quota.
+    # 2026-04-17 ROUTE: Nomos42/nomos-cpu-gemma4 had 14 errors / 0 successes (gemma-4 GGUF load failed)
+    # → switched to Nomos42/nomos42-llm-cpu (Qwen 2.5-1.5B, verified ready + responding)
+    # cpu-basic throughput ~0.5-1 tok/s on small prompts → reduce max_tokens to 250 for ~3-5min/call
     # Endpoint is NOT OpenAI-compat: POST /api/decide {system, user, max_tokens} -> {text}.
     "selfhost:cpu-gemma4": {
-        "url": "https://nomos42-nomos-cpu-gemma4.hf.space/api/decide",
-        "model": "phi-3.5-mini-instruct-q4_k_m",
+        "url": "https://nomos42-nomos42-llm-cpu.hf.space/api/decide",
+        "model": "qwen2.5-1.5b-instruct-q4_k_m",
         "key_env": "SELFHOST_NOOP",  # sentinel — no auth needed
-        "max_tokens": 800,
-        "rpm": 6,  # slow CPU, ~5-12s/call
+        "max_tokens": 250,  # tight budget — selfhost CPU is slow, need concise bet JSON only
+        "rpm": 6,
     },
 }
 
@@ -504,9 +505,10 @@ TRADERS = {
     # NEW 2026-04-15 — +1 NVIDIA Nemotron 120B (OpenRouter free, verified responsive)
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55,
                          "fallback_provider": "cerebras:qwen-3-235b"},
-    # 2026-04-17 SWAP: selfhost CPU too slow (0.17 tok/s = 60min/call) → openrouter:gpt-oss-120b (disciplined 4-rule)
-    "gemma4-selfhost":  {"name": "Disciplined Scout", "provider": "openrouter:gpt-oss-120b", "personality": "disciplined", "risk_tolerance": 0.40,
-                         "fallback_provider": "cerebras:llama3.1-8b"},
+    # 2026-04-17 KEEP SELFHOST on Nomos42 HF Space (Qwen 2.5-1.5B, cpu-basic).
+    # Primary: Nomos42/nomos42-llm-cpu selfhost. Fallback: openrouter:gpt-oss-120b if timeout/error.
+    "gemma4-selfhost":  {"name": "Nomos Selfhost",   "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40,
+                         "fallback_provider": "openrouter:gpt-oss-120b"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
