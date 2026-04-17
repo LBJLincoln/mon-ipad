@@ -1400,6 +1400,7 @@ function renderMinimap() {
 
 // ── LIVE RESEARCH (papers.json static — refreshed by daily cron) ──────────
 const TAG_COLOR = {
+  "nomos-karpathy":"#ffd866", "nomos-digest":"#ff7ab6",
   "scan":"#ffa500", "calibration-scan":"#50fa7b", "axelrod-scan":"#ff79c6",
   "multiagent-trading-scan":"#8be9fd", "github-scan":"#bd93f9",
 };
@@ -1422,7 +1423,9 @@ async function loadPapers() {
     // Modal: full list
     const modal = document.getElementById("paper-modal-list");
     const meta = document.getElementById("paper-modal-meta");
-    meta.textContent = `${papers.length} unique papers · ${data.sources.length} arXiv sources · fetched ${data.fetched}`;
+    const internal = papers.filter(p => p.source === "nomos42-internal").length;
+    const external = papers.length - internal;
+    meta.textContent = `${internal} Nomos42 proposals · ${external} arXiv papers · ${data.sources.length} sources · fetched ${data.fetched}`;
     modal.innerHTML = papers.map(p => {
       const col = TAG_COLOR[p.tag] || "#ffa500";
       return `<div style="margin-bottom:14px; padding:10px; border:1px solid #1a1f2a; border-radius:3px; background:#0d1018;">
