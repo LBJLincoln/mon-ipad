@@ -1029,6 +1029,46 @@ function makeAgentContainer(a) {
       if (a.tint) spr.tint = a.tint;
       c.addChild(spr);
       c._spr = spr;
+    } else {
+      // v2.6 (2026-04-17): procedural pixel-person body when asset missing.
+      // Shape: head + torso (agent tint) + arms + legs + shoes, flat-shaded w/ outline.
+      const body = new PIXI.Graphics();
+      const tint = a.tint || KIND_COLORS[a.kind] || 0xffa500;
+      const hair = 0x3a2b20;                 // dark brown hair
+      const skin = 0xf4c49a;                 // neutral skin
+      const pants = 0x1a1f2a;                // dark navy pants
+      const shoes = 0x0b0d12;                // black shoes
+      const outline = 0x0b0d12;
+      const W = CHAR_W, H = CHAR_H;
+      // Legs
+      body.rect(-W*0.22, -H*0.30, W*0.17, H*0.26).fill({ color: pants }).stroke({ width: 1, color: outline });
+      body.rect( W*0.05, -H*0.30, W*0.17, H*0.26).fill({ color: pants }).stroke({ width: 1, color: outline });
+      // Shoes
+      body.rect(-W*0.23, -H*0.06, W*0.18, H*0.06).fill({ color: shoes });
+      body.rect( W*0.05, -H*0.06, W*0.18, H*0.06).fill({ color: shoes });
+      // Arms (tint = torso color)
+      body.rect(-W*0.40, -H*0.58, W*0.12, H*0.26).fill({ color: tint }).stroke({ width: 1, color: outline });
+      body.rect( W*0.28, -H*0.58, W*0.12, H*0.26).fill({ color: tint }).stroke({ width: 1, color: outline });
+      // Hands
+      body.circle(-W*0.34, -H*0.30, W*0.07).fill({ color: skin }).stroke({ width: 1, color: outline });
+      body.circle( W*0.34, -H*0.30, W*0.07).fill({ color: skin }).stroke({ width: 1, color: outline });
+      // Torso (agent tint)
+      body.rect(-W*0.28, -H*0.62, W*0.56, H*0.34).fill({ color: tint }).stroke({ width: 1.5, color: outline });
+      // Neck
+      body.rect(-W*0.06, -H*0.65, W*0.12, H*0.05).fill({ color: skin });
+      // Head
+      body.circle(0, -H*0.80, W*0.20).fill({ color: skin }).stroke({ width: 1.5, color: outline });
+      // Hair (top swoosh)
+      body.rect(-W*0.20, -H*0.98, W*0.40, H*0.12).fill({ color: hair });
+      body.circle(-W*0.15, -H*0.86, W*0.05).fill({ color: hair });
+      body.circle( W*0.15, -H*0.86, W*0.05).fill({ color: hair });
+      // Eyes
+      body.circle(-W*0.08, -H*0.80, 1.6).fill({ color: outline });
+      body.circle( W*0.08, -H*0.80, 1.6).fill({ color: outline });
+      // Tiny smile
+      body.rect(-W*0.05, -H*0.72, W*0.10, 1.2).fill({ color: outline });
+      c.addChild(body);
+      c._spr = body;  // expose as _spr so breathing/flip animations still work
     }
     // v2.0: 6x6 letter badge overlay (model family: Q/M/G/L/N/P/E/D/…)
     if (a.badge) {
