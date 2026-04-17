@@ -89,6 +89,33 @@ ping_or_restart "TF-NBA"        https://lbjlincoln26-nba-llm-trading-floor.hf.sp
 ping_or_restart "TF-Political"  https://lbjlincoln26-political-llm-trading-floor.hf.space/   "LBJLincoln26/political-llm-trading-floor"
 ping_or_restart "GW (gateway)"  https://lbjlincoln26-llm-gateway.hf.space/                   "LBJLincoln26/llm-gateway"
 
+# ── v2.9 (Apr 17): TF experiment auto-resume ──────────────────────────────
+# Space may return 200 (UI alive) but experiment loop `running=false` (crashed, completed,
+# or never started post-restart). Ping /api/status — if running=false, POST /api/run.
+# Tracks the autonomous-improvements intent: no more manual kicks required.
+ping_or_resume_experiment() {
+    local label="$1"
+    local base_url="$2"
+    local status_json
+    status_json=$(curl -s --max-time 10 "${base_url}/api/status" 2>/dev/null)
+    [ -z "$status_json" ] && { echo "$label exp-status: no response"; return; }
+    # Extract running value — handle {"running":true,...} or {"running": false,...}
+    local running
+    running=$(echo "$status_json" | grep -oE '"running"[[:space:]]*:[[:space:]]*(true|false)' | head -1 | grep -oE 'true|false')
+    [ -z "$running" ] && running="unknown"
+    local calls
+    calls=$(echo "$status_json" | grep -oE '"(total_llm_calls|llm_calls)"[[:space:]]*:[[:space:]]*[0-9]+' | head -1 | grep -oE '[0-9]+$')
+    echo "  $label experiment: running=$running calls=${calls:-0}"
+    if [ "$running" = "false" ]; then
+        echo "  [RESUME] $label experiment stopped — POSTing /api/run..."
+        resume_code=$(curl -s -o /dev/null -w "%{http_code}" -X POST --max-time 15 \
+            -H "Content-Type: application/json" -d '{}' "${base_url}/api/run" 2>/dev/null)
+        echo "  [RESUME] $label /api/run → $resume_code"
+    fi
+}
+ping_or_resume_experiment "TF-NBA"       "https://lbjlincoln26-nba-llm-trading-floor.hf.space"
+ping_or_resume_experiment "TF-Political" "https://lbjlincoln26-political-llm-trading-floor.hf.space"
+
 # CPU LLM backends (Nomos42 account) — 7 slots, 2026 SOTA fleet (Apr 16 2026 refresh).
 # Gemma-3-4B removed (superseded by Gemma-4-E4B + Qwen3-4B, fleet 8→7).
 # URLs unchanged — weights inside each Space refreshed. See llm-spaces/ Dockerfiles.
