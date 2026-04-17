@@ -36,10 +36,11 @@
   @keyframes panel-pulse { 0%,100% { box-shadow: 0 0 0 0 currentColor; } 50% { box-shadow: 0 0 0 3px currentColor; opacity:0.7; } }
   /* Right sidebar collapsible drawer */
   #root.sidebar-collapsed { grid-template-columns: 1fr 32px !important; }
-  #sidebar-toggle { position:absolute; top:10px; left:-26px; width:26px; height:40px;
+  #sidebar-toggle { position:absolute; top:10px; left:-28px; width:26px; height:40px;
     background:#0b0d12; border:1px solid #1e2330; border-right:none; color:#00d9a7;
     cursor:pointer; font-size:14px; font-family:inherit; border-radius:4px 0 0 4px;
-    display:flex; align-items:center; justify-content:center; z-index:20; }
+    display:flex; align-items:center; justify-content:center; z-index:999;
+    box-shadow: -2px 2px 6px rgba(0,0,0,0.4); }
   #sidebar-toggle:hover { background:#14171f; color:#ffa500; }
   #sidebar.collapsed > *:not(#sidebar-toggle) { display:none !important; }
   #sidebar { position:relative; transition: all 0.2s ease; }
@@ -89,7 +90,9 @@
   #event-toast .t .k.council { color:var(--orange); }
   @keyframes toast-in { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
   @keyframes toast-out { to { opacity:0; transform:translateX(20px); } }
-  #sidebar { background:var(--bg-2); border-left:1px solid var(--line); display:flex; flex-direction:column; overflow:hidden; }
+  #sidebar { background:var(--bg-2); border-left:1px solid var(--line); display:flex; flex-direction:column; overflow:visible; }
+  #sidebar > .panel, #sidebar > h3 { overflow-x:hidden; }
+  #sidebar-content { flex:1; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; }
   .panel { border-bottom:1px solid var(--line); padding:10px 14px; overflow:hidden; }
   .panel h3 { margin:0 0 8px; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-3); font-weight:500; display:flex; justify-content:space-between; }
   .panel h3 .c { color:var(--ok); font-weight:700; letter-spacing:0.1em; }
@@ -457,18 +460,19 @@ function ensurePanelDom() {
   _panelRail = document.createElement("div");
   _panelRail.id = "panel-rail";
   Object.assign(_panelRail.style, {
-    position:"absolute", left:"8px", top:"50%", transform:"translateY(-50%)",
-    display:"grid", gridTemplateColumns:"repeat(2, 38px)", gridAutoRows:"38px", gap:"4px",
-    padding:"6px", background:"rgba(11,13,18,0.85)", border:"1px solid #1e2330",
-    borderRadius:"4px", zIndex:"12", boxShadow:"0 4px 12px rgba(0,0,0,0.5)",
+    position:"absolute", left:"8px", bottom:"8px", right:"8px", height:"44px",
+    display:"flex", flexDirection:"row", gap:"4px", overflowX:"auto", overflowY:"hidden",
+    padding:"4px 6px", background:"rgba(11,13,18,0.9)", border:"1px solid #1e2330",
+    borderRadius:"4px", zIndex:"12", boxShadow:"0 -2px 12px rgba(0,0,0,0.5)",
+    alignItems:"center",
   });
   stageEl.appendChild(_panelRail);
 
   _panelModal = document.createElement("div");
   _panelModal.id = "panel-modal";
   Object.assign(_panelModal.style, {
-    position:"absolute", left:"96px", top:"50%", transform:"translateY(-50%)",
-    width:"340px", maxHeight:"70vh", overflow:"auto", background:"rgba(11,13,18,0.96)",
+    position:"absolute", right:"12px", bottom:"60px",
+    width:"360px", maxHeight:"60vh", overflow:"auto", background:"rgba(11,13,18,0.96)",
     border:"2px solid #00d9a7", borderRadius:"4px", zIndex:"13", display:"none",
     fontFamily:"'JetBrains Mono',monospace", fontSize:"11px", color:"#e6e8ee",
     boxShadow:"0 8px 32px rgba(0,0,0,0.7)",
@@ -517,10 +521,11 @@ function makeDiegeticPanel({ x, y, w, h, title, dataUrl, render, staleSec=600, g
   const g = glyph || (title.split(" ")[0] || "◆").slice(0,1);
   btn.textContent = g;
   Object.assign(btn.style, {
-    width:"38px", height:"38px", background:"#0b0d12", border:"1px solid #1e2330",
-    color:"#00d9a7", fontSize:"16px", cursor:"pointer", borderRadius:"3px",
+    minWidth:"34px", width:"34px", height:"34px", flex:"0 0 auto",
+    background:"#0b0d12", border:"1px solid #1e2330",
+    color:"#00d9a7", fontSize:"15px", cursor:"pointer", borderRadius:"3px",
     display:"flex", alignItems:"center", justifyContent:"center",
-    fontFamily:"monospace", transition:"all 0.15s",
+    fontFamily:"monospace", transition:"all 0.15s", padding:"0",
   });
   btn.onmouseenter = () => { btn.style.background = "#14171f"; };
   btn.onmouseleave = () => { btn.style.background = "#0b0d12"; };
@@ -1101,7 +1106,7 @@ function makeAgentContainer(a) {
 for (const a of AGENTS) makeAgentContainer(a);
 
 // ── MOTION ──────────────────────────────────────────────────────────────────
-const SEP_RADIUS = 2.2, SEP_WEIGHT = 0.032;
+const SEP_RADIUS = 2.6, SEP_WEIGHT = 0.09;
 function tickMotion(ms) {
   const t = ms / 1000;
   for (const a of AGENTS) {

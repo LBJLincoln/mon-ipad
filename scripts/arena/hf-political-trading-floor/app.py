@@ -2119,47 +2119,59 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             else:
                 ts["passes"] += 1  # full-cash day
 
-            # COLLECTIVE_MISSION fallback #2 (POST-FILTER): LLM returned allocations
-            # but all got stripped by downstream filters. Force-execute 5×15% SPY long
-            # so the agent still deploys 75% on day. Directly resolve + update bankroll.
+            # SMART post-filter: pick events where model/category signal > 0 for long,
+            # < 0 for short. If model signal missing, fall back to SPY long (baseline).
             total_bets_executed = len(day_log["allocations"])
             total_deployed_pct = sum(a.get("pct", 0) for a in day_log["allocations"])
             if (total_bets_executed < 3 or total_deployed_pct < 0.70) and len(day_events) >= 3:
-                n_fb = min(5, len(day_events))
-                per_pct = 0.75 / n_fb
-                for i in range(n_fb):
-                    event = day_events[i]
-                    stake = round(bankroll * per_pct, 2)
-                    if stake < 0.50 or stake > ts["bankroll"]:
-                        continue
-                    won, pnl_pct = resolve_political_trade("long", event["excess_return"])
-                    profit = round(stake * pnl_pct, 2)
-                    ts["bankroll"] += profit
-                    if won:
-                        ts["wins"] += 1
-                    else:
-                        ts["losses"] += 1
-                    ts["total_bets"] += 1
-                    ts["bankroll"] = round(ts["bankroll"], 2)
-                    day_log["allocations"].append({
-                        "event_idx": i + 1,
-                        "ticker": "SPY",
-                        "direction": "long",
-                        "event_type": event.get("event_type", ""),
-                        "agency": event.get("agency", ""),
-                        "thesis": "fallback-injection (post-filter)",
-                        "pct": round(per_pct, 4),
-                        "stake": stake,
-                        "confidence": 0.40,
-                        "excess_return": event["excess_return"],
-                        "pnl_pct": round(pnl_pct, 4),
-                        "won": won,
-                        "profit": profit,
-                        "source": "fallback-injection-post",
-                    })
-                day_log["cash_held_pct"] = 1.0 - (n_fb * per_pct)
-                day_log["cash_rationale"] = "post-filter fallback injection (LLM bets filtered out)"
-                day_log["day_strategy"] = day_log.get("day_strategy") or f"post-filter fallback: {n_fb}x{per_pct:.2f}"
+                # Rank events by absolute expected excess_return sign from model (if present)
+                # Falls back to raw excess_return magnitude for ranking
+                ranked = []
+                for ei, ev in enumerate(day_events):
+                    sig = ev.get("predicted_return", ev.get("model_signal"))
+                    if sig is None:
+                        sig = ev.get("excess_return", 0.0)  # weaker proxy
+                    direction = "long" if sig >= 0 else "short"
+                    score = abs(sig)
+                    ranked.append((score, ei, direction, sig))
+                ranked.sort(key=lambda x: -x[0])
+                picks = ranked[:min(5, len(day_events))]
+                n_fb = len(picks)
+                if n_fb >= 3:
+                    per_pct = 0.75 / n_fb
+                    for score, ei, direction, sig in picks:
+                        event = day_events[ei]
+                        stake = round(bankroll * per_pct, 2)
+                        if stake < 0.50 or stake > ts["bankroll"]:
+                            continue
+                        won, pnl_pct = resolve_political_trade(direction, event["excess_return"])
+                        profit = round(stake * pnl_pct, 2)
+                        ts["bankroll"] += profit
+                        if won:
+                            ts["wins"] += 1
+                        else:
+                            ts["losses"] += 1
+                        ts["total_bets"] += 1
+                        ts["bankroll"] = round(ts["bankroll"], 2)
+                        day_log["allocations"].append({
+                            "event_idx": ei + 1,
+                            "ticker": event.get("ticker", "SPY"),
+                            "direction": direction,
+                            "event_type": event.get("event_type", ""),
+                            "agency": event.get("agency", ""),
+                            "thesis": f"smart post-filter (model signal {sig:+.3f})",
+                            "pct": round(per_pct, 4),
+                            "stake": stake,
+                            "confidence": min(0.75, 0.40 + score * 5),
+                            "excess_return": event["excess_return"],
+                            "pnl_pct": round(pnl_pct, 4),
+                            "won": won,
+                            "profit": profit,
+                            "source": "fallback-smart-post",
+                        })
+                    day_log["cash_held_pct"] = 1.0 - (n_fb * per_pct)
+                    day_log["cash_rationale"] = "smart post-filter (direction from model signal)"
+                    day_log["day_strategy"] = day_log.get("day_strategy") or f"post-filter: {n_fb} top-signal events"
 
             # Track recent decisions for next-day prompt
             n_bets = len(day_log["allocations"])

@@ -2823,48 +2823,83 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             else:
                 ts["passes"] += 1  # full-cash day
 
-            # COLLECTIVE_MISSION fallback #2 (POST-FILTER): LLM returned allocations
-            # but all got stripped by MIN_EDGE/FDR filters. Force-execute 5×15% ml_home
-            # so the agent still deploys 75% on day. Directly resolve + update bankroll.
+            # COLLECTIVE_MISSION fallback #2 (POST-FILTER): LLM returned few/no allocations.
+            # SMART fallback — pick top +edge categories from model_preds (Brier=0.217 fleet
+            # consensus), one bet per game for diversification. Falls back to ml_home only
+            # as last resort when no +edge categories exist at all.
             total_bets_executed = len(day_log["allocations"]) + len(day_log.get("parlays", []))
             total_deployed_pct = sum(a.get("pct", 0) for a in day_log["allocations"]) + sum(p.get("pct", 0) for p in day_log.get("parlays", []))
             if (total_bets_executed < 3 or total_deployed_pct < 0.70) and len(day_games) >= 3:
-                n_fb = min(5, len(day_games))
-                per_pct = 0.75 / n_fb
-                for i in range(n_fb):
-                    g = day_games[i]
-                    odds = day_odds_list[i]
-                    stake = round(bankroll * per_pct, 2)
-                    if stake < 0.50 or stake > ts["bankroll"]:
-                        continue
-                    won = resolve_bet("ml_home", odds, g["home_score"], g["away_score"], g["home_won"])
-                    odds_dec = get_odds_dec("ml_home", odds)
-                    if won:
-                        profit = stake * (odds_dec - 1)
-                        ts["bankroll"] += profit
-                        ts["wins"] += 1
-                    else:
-                        profit = -stake
-                        ts["bankroll"] -= stake
-                        ts["losses"] += 1
-                    ts["total_bets"] += 1
-                    ts["bankroll"] = round(ts["bankroll"], 2)
-                    day_log["allocations"].append({
-                        "game": f"{g['away']}@{g['home']}",
-                        "category": "ml_home",
-                        "pct": round(per_pct, 4),
-                        "stake": stake,
-                        "confidence": 0.40,
-                        "edge": 0.03,
-                        "rationale": "fallback-injection (post-filter)",
-                        "won": won,
-                        "odds": round(odds_dec, 3),
-                        "profit": round(profit, 2),
-                        "source": "fallback-injection-post",
-                    })
-                day_log["cash_held_pct"] = 1.0 - (n_fb * per_pct)
-                day_log["cash_rationale"] = "post-filter fallback injection (LLM bets filtered out)"
-                day_log["day_strategy"] = day_log.get("day_strategy") or f"post-filter fallback: {n_fb}x{per_pct:.2f}"
+                # Build +edge candidate list from our own model predictions
+                candidates = []  # (edge, game_idx, category, prob)
+                for gi, g in enumerate(day_games):
+                    gk = f"{day_date}_{g.get('away')}@{g.get('home')}"
+                    pred = (model_preds or {}).get(gk, {})
+                    per_cat = pred.get("per_category", {}) if pred else {}
+                    for tag, info in per_cat.items():
+                        if not isinstance(info, dict): continue
+                        edge = info.get("edge")
+                        prob = info.get("prob", 0.5)
+                        if edge is None: continue
+                        if edge >= 0.03:
+                            candidates.append((edge, gi, tag, prob))
+                # Rank by edge, max 1 bet/game for diversification
+                candidates.sort(key=lambda x: -x[0])
+                seen_games = set()
+                picks = []
+                for c in candidates:
+                    if c[1] in seen_games: continue
+                    picks.append(c); seen_games.add(c[1])
+                    if len(picks) >= 5: break
+                # Pad with ml_home on remaining games if <3 +edge found (last resort)
+                if len(picks) < min(5, len(day_games)):
+                    for gi in range(len(day_games)):
+                        if gi in seen_games: continue
+                        picks.append((0.0, gi, "ml_home", 0.5))
+                        seen_games.add(gi)
+                        if len(picks) >= min(5, len(day_games)): break
+
+                n_fb = len(picks)
+                if n_fb >= 3:
+                    per_pct = 0.75 / n_fb
+                    for edge, gi, tag, prob in picks:
+                        g = day_games[gi]
+                        odds = day_odds_list[gi]
+                        stake = round(bankroll * per_pct, 2)
+                        if stake < 0.50 or stake > ts["bankroll"]:
+                            continue
+                        try:
+                            won = resolve_bet(tag, odds, g["home_score"], g["away_score"], g["home_won"])
+                            odds_dec = get_odds_dec(tag, odds)
+                        except Exception:
+                            continue
+                        if won:
+                            profit = stake * (odds_dec - 1)
+                            ts["bankroll"] += profit
+                            ts["wins"] += 1
+                        else:
+                            profit = -stake
+                            ts["bankroll"] -= stake
+                            ts["losses"] += 1
+                        ts["total_bets"] += 1
+                        ts["bankroll"] = round(ts["bankroll"], 2)
+                        src = "fallback-edge-post" if edge >= 0.03 else "fallback-home-post"
+                        day_log["allocations"].append({
+                            "game": f"{g['away']}@{g['home']}",
+                            "category": tag,
+                            "pct": round(per_pct, 4),
+                            "stake": stake,
+                            "confidence": min(0.75, 0.40 + edge * 5),
+                            "edge": round(edge, 4),
+                            "rationale": f"post-filter smart fallback (edge {edge:+.1%}, model_prob {prob:.2f})",
+                            "won": won,
+                            "odds": round(odds_dec, 3),
+                            "profit": round(profit, 2),
+                            "source": src,
+                        })
+                    day_log["cash_held_pct"] = 1.0 - (n_fb * per_pct)
+                    day_log["cash_rationale"] = "smart post-filter fallback (top-edge picks from Nomos42 model)"
+                    day_log["day_strategy"] = day_log.get("day_strategy") or f"post-filter: {n_fb} picks (max edge {picks[0][0]:+.1%})"
 
             # Track recent decisions for next-day prompt
             n_bets = len(day_log["allocations"]) + len(day_log["parlays"])
