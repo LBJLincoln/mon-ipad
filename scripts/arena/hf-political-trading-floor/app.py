@@ -376,9 +376,23 @@ PROVIDERS = {
     },
     "openrouter:nemotron-120b": {
         "url": "https://openrouter.ai/api/v1/chat/completions",
-        "model": "nvidia/nemotron-3-super-120b:free",
+        "model": "nvidia/nemotron-3-super-120b-a12b:free",
         "key_env": "OPENROUTER_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 1500,
+        "rpm": 12,
+    },
+    "openrouter:gemma-4-31b": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "google/gemma-4-31b-it:free",
+        "key_env": "OPENROUTER_API_KEY",
+        "max_tokens": 1500,
+        "rpm": 12,
+    },
+    "openrouter:gpt-oss-120b": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "openai/gpt-oss-120b:free",
+        "key_env": "OPENROUTER_API_KEY",
+        "max_tokens": 1500,
         "rpm": 12,
     },
     "selfhost:cpu-gemma4": {
@@ -406,10 +420,11 @@ TRADERS = {
     "mistral-large":    {"name": "Mistral Large",    "provider": "mistral:large",        "personality": "ensemble",     "risk_tolerance": 0.50},
     "mistral-medium":   {"name": "Mistral Medium",   "provider": "mistral:medium",       "personality": "diversified",  "risk_tolerance": 0.45},
     "mistral-small":    {"name": "Mistral Small",    "provider": "mistral:small",        "personality": "conservative", "risk_tolerance": 0.35},
-    "mistral-nemo":     {"name": "Mistral Nemo",     "provider": "mistral:nemo",         "personality": "aggressive",   "risk_tolerance": 0.70},
-    "mistral-ministral":{"name": "Ministral 8B",     "provider": "mistral:ministral-8b", "personality": "theoretical",  "risk_tolerance": 0.35},
+    "mistral-nemo":     {"name": "Mistral Nemo",     "provider": "openrouter:gemma-4-31b","personality": "aggressive",   "risk_tolerance": 0.70},
+    "mistral-ministral":{"name": "Ministral 8B",     "provider": "openrouter:gpt-oss-120b","personality": "theoretical",  "risk_tolerance": 0.35},
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55},
-    "gemma4-selfhost":  {"name": "Gemma4 SelfHost",  "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40},
+    "gemma4-selfhost":  {"name": "Gemma4 SelfHost",  "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40,
+                         "fallback_provider": "openrouter:gemma-4-31b"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -708,10 +723,15 @@ def _call_llm(provider: str, system_prompt: str, user_prompt: str,
 # ── PROMPT BUILDERS ──────────────────────────────────────────────────────────
 
 def parse_llm_decision(raw: str) -> Optional[Dict]:
-    """Extract JSON decision from LLM response."""
+    """Extract JSON decision from LLM response. Handles thinking tags, markdown fences,
+    and common LLM wrapping patterns."""
     if not raw:
         return None
     text = raw.strip()
+    import re
+    text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+    text = re.sub(r'<reasoning>.*?</reasoning>', '', text, flags=re.DOTALL)
+    text = text.strip()
     if "```json" in text:
         text = text.split("```json")[1].split("```")[0].strip()
     elif "```" in text:
@@ -721,10 +741,16 @@ def parse_llm_decision(raw: str) -> Optional[Dict]:
     start = text.find("{")
     end = text.rfind("}")
     if start >= 0 and end > start:
+        candidate = text[start:end + 1]
         try:
-            return json.loads(text[start:end + 1])
+            return json.loads(candidate)
         except json.JSONDecodeError:
-            pass
+            fixed = re.sub(r',\s*}', '}', candidate)
+            fixed = re.sub(r',\s*]', ']', fixed)
+            try:
+                return json.loads(fixed)
+            except json.JSONDecodeError:
+                pass
     return None
 
 
@@ -839,9 +865,10 @@ def build_day_prompt(day_date: str, day_events: List[Dict], sector_trends: Dict,
 
     lines.append("""
 === YOUR TASK ===
-Allocate 100% of your bankroll across today's political events.
+Allocate your bankroll across today's political events.
 Each allocation = one sector ETF trade on one event. Total allocations + cash_held must sum to 1.00.
-Holding cash is allowed BUT you must justify it (no edge found is a valid reason).
+MANDATORY: You MUST place at least 1 trade. Zero-trade days are NOT allowed.
+Even if edges are small, pick your BEST signal and allocate 5-15%. Cash-only is forbidden.
 
 DIRECTIONS: long (bet ticker goes up), short (bet ticker goes down)
 Each allocation references one event_idx from the list above.
@@ -849,7 +876,7 @@ Each allocation references one event_idx from the list above.
 LEAKAGE RULE: You NEVER see excess_return or y. Reason from signal_type, signal_strength, agency, donor_info, and sector_trends only.
 Your thesis MUST cite which signal/agency drove the decision, not just the ticker.
 
-RESPOND WITH RAW JSON ONLY. No ```json fences. No preamble. First character must be {, last must be }.
+RESPOND WITH RAW JSON ONLY. No markdown fences. No explanation before or after. First character MUST be {, last MUST be }. Do NOT wrap in ```json blocks.
 
 Schema:
 {
@@ -1468,6 +1495,11 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 raw = _call_llm(provider, system_prompt, user_prompt, timeout=30.0)
             except Exception:
                 raw = None
+            if not raw and cfg.get("fallback_provider"):
+                try:
+                    raw = _call_llm(cfg["fallback_provider"], system_prompt, user_prompt, timeout=30.0)
+                except Exception:
+                    pass
             return tid, raw
 
         _max_workers = min(len(TRADERS), 16)

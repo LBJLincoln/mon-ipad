@@ -443,6 +443,21 @@ PROVIDERS = {
         "max_tokens": 1200,
         "rpm": 20,
     },
+    # OpenRouter free models — diversify away from Mistral rate limits
+    "openrouter:gemma-4-31b": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "google/gemma-4-31b-it:free",
+        "key_env": "OPENROUTER_KEY_BARTOLI",
+        "max_tokens": 1500,
+        "rpm": 12,
+    },
+    "openrouter:gpt-oss-120b": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "openai/gpt-oss-120b:free",
+        "key_env": "OPENROUTER_KEY_BARTOLI",
+        "max_tokens": 1500,
+        "rpm": 12,
+    },
     # OpenRouter Nemotron 120B free — only free-tier model that reliably responds
     # (verified 2026-04-15: qwen3-80b / glm-4.5-air / llama-3.3-70b all 429 across 3 keys).
     "openrouter:nemotron-120b": {
@@ -481,12 +496,13 @@ TRADERS = {
     "mistral-large":    {"name": "Mistral Large",    "provider": "mistral:large",        "personality": "ensemble",     "risk_tolerance": 0.50},
     "mistral-medium":   {"name": "Mistral Medium",   "provider": "mistral:medium",       "personality": "diversified",  "risk_tolerance": 0.45},
     "mistral-small":    {"name": "Mistral Small",    "provider": "mistral:small",        "personality": "conservative", "risk_tolerance": 0.35},
-    "mistral-nemo":     {"name": "Mistral Nemo",     "provider": "mistral:nemo",         "personality": "aggressive",   "risk_tolerance": 0.70},
-    "mistral-ministral":{"name": "Ministral 8B",     "provider": "mistral:ministral-8b", "personality": "theoretical",  "risk_tolerance": 0.35},
+    "mistral-nemo":     {"name": "Mistral Nemo",     "provider": "openrouter:gemma-4-31b","personality": "aggressive",   "risk_tolerance": 0.70},
+    "mistral-ministral":{"name": "Ministral 8B",     "provider": "openrouter:gpt-oss-120b","personality": "theoretical",  "risk_tolerance": 0.35},
     # NEW 2026-04-15 — +1 NVIDIA Nemotron 120B (OpenRouter free, verified responsive)
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55},
     # NEW 2026-04-15 T12 — self-hosted CPU Phi-3.5 on HF Space (no quota, slow ~8s/call)
-    "gemma4-selfhost":  {"name": "Gemma4 SelfHost",  "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40},
+    "gemma4-selfhost":  {"name": "Gemma4 SelfHost",  "provider": "selfhost:cpu-gemma4",     "personality": "disciplined", "risk_tolerance": 0.40,
+                         "fallback_provider": "openrouter:gemma-4-31b"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -1003,10 +1019,16 @@ Rules:
 
 
 def parse_llm_decision(raw: str) -> Optional[Dict]:
-    """Extract JSON decision from LLM response."""
+    """Extract JSON decision from LLM response. Handles thinking tags, markdown fences,
+    and common LLM wrapping patterns."""
     if not raw:
         return None
     text = raw.strip()
+    import re
+    # Strip thinking/reasoning tags (DeepSeek-R1, Qwen3, etc.)
+    text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+    text = re.sub(r'<reasoning>.*?</reasoning>', '', text, flags=re.DOTALL)
+    text = text.strip()
     if "```json" in text:
         text = text.split("```json")[1].split("```")[0].strip()
     elif "```" in text:
@@ -1016,10 +1038,17 @@ def parse_llm_decision(raw: str) -> Optional[Dict]:
     start = text.find("{")
     end = text.rfind("}")
     if start >= 0 and end > start:
+        candidate = text[start:end + 1]
         try:
-            return json.loads(text[start:end + 1])
+            return json.loads(candidate)
         except json.JSONDecodeError:
-            pass
+            # Try fixing common issues: trailing commas, single quotes
+            fixed = re.sub(r',\s*}', '}', candidate)
+            fixed = re.sub(r',\s*]', ']', fixed)
+            try:
+                return json.loads(fixed)
+            except json.JSONDecodeError:
+                pass
     return None
 
 
@@ -1139,9 +1168,10 @@ def build_day_prompt(day_date: str, day_games: List[Dict], day_odds: List[Dict],
 
     lines.append("""
 === YOUR TASK ===
-Allocate 100% of your bankroll across today's games.
+Allocate your bankroll across today's games.
 Each allocation = one bet on one game/category. Total allocations + cash_held must sum to 1.00.
-Holding cash is allowed BUT you must justify it (no edge found is a valid reason).
+MANDATORY: You MUST place at least 1 bet. Zero-bet days are NOT allowed.
+Even if edges are small, pick your BEST edge and bet 5-15% on it. Cash-only is forbidden.
 
 AVAILABLE BET CATEGORIES (~90 per game — pick from MODEL EDGES block first):
   BASE:   ml_home, ml_away, spread_home, spread_away, total_over, total_under
@@ -1154,7 +1184,7 @@ AVAILABLE BET CATEGORIES (~90 per game — pick from MODEL EDGES block first):
 
 Each category in MODEL EDGES above comes with a model_prob and edge vs market — use those for bet sizing.
 
-RESPOND WITH RAW JSON ONLY. No ```json fences. No preamble. First character must be {, last must be }.
+RESPOND WITH RAW JSON ONLY. No markdown fences. No explanation before or after. First character MUST be {, last MUST be }. Do NOT wrap in ```json blocks.
 
 Schema:
 {
@@ -2071,6 +2101,14 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                                trace_metadata={"trader_id": tid, "day": day_date, "bankroll": ts["bankroll"]})
             except Exception:
                 raw = None
+            # Fallback provider if primary fails
+            if not raw and cfg.get("fallback_provider"):
+                try:
+                    raw = _call_llm(cfg["fallback_provider"], system_prompt, user_prompt, timeout=30.0,
+                                   trace_name=f"nba-tf-day-{day_idx}-fallback",
+                                   trace_metadata={"trader_id": tid, "day": day_date, "fallback": True})
+                except Exception:
+                    pass
             return tid, raw
 
         _max_workers = min(len(TRADERS), 16)
