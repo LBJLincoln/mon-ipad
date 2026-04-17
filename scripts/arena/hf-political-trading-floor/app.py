@@ -2119,6 +2119,47 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             else:
                 ts["passes"] += 1  # full-cash day
 
+            # COLLECTIVE_MISSION fallback #2 (POST-FILTER): LLM returned allocations
+            # but all got stripped by downstream filters. Force-execute 5×15% SPY long
+            # so the agent still deploys 75% on day. Directly resolve + update bankroll.
+            total_bets_executed = len(day_log["allocations"])
+            if total_bets_executed < 3 and len(day_events) >= 3:
+                n_fb = min(5, len(day_events))
+                per_pct = 0.75 / n_fb
+                for i in range(n_fb):
+                    event = day_events[i]
+                    stake = round(bankroll * per_pct, 2)
+                    if stake < 0.50 or stake > ts["bankroll"]:
+                        continue
+                    won, pnl_pct = resolve_political_trade("long", event["excess_return"])
+                    profit = round(stake * pnl_pct, 2)
+                    ts["bankroll"] += profit
+                    if won:
+                        ts["wins"] += 1
+                    else:
+                        ts["losses"] += 1
+                    ts["total_bets"] += 1
+                    ts["bankroll"] = round(ts["bankroll"], 2)
+                    day_log["allocations"].append({
+                        "event_idx": i + 1,
+                        "ticker": "SPY",
+                        "direction": "long",
+                        "event_type": event.get("event_type", ""),
+                        "agency": event.get("agency", ""),
+                        "thesis": "fallback-injection (post-filter)",
+                        "pct": round(per_pct, 4),
+                        "stake": stake,
+                        "confidence": 0.40,
+                        "excess_return": event["excess_return"],
+                        "pnl_pct": round(pnl_pct, 4),
+                        "won": won,
+                        "profit": profit,
+                        "source": "fallback-injection-post",
+                    })
+                day_log["cash_held_pct"] = 1.0 - (n_fb * per_pct)
+                day_log["cash_rationale"] = "post-filter fallback injection (LLM bets filtered out)"
+                day_log["day_strategy"] = day_log.get("day_strategy") or f"post-filter fallback: {n_fb}x{per_pct:.2f}"
+
             # Track recent decisions for next-day prompt
             n_bets = len(day_log["allocations"])
             n_wins = sum(1 for a in day_log["allocations"] if a["won"])

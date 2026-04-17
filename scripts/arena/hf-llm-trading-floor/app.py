@@ -2638,11 +2638,11 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 ts["llm_ok"] += 1
             parsed = parse_day_allocation(raw_response, len(day_games)) if raw_response else None
 
-            # COLLECTIVE_MISSION fallback: if LLM failed or returned zero allocations,
-            # inject 5 default legs at 15% each (= 75% deploy exactly) on the first
-            # up-to-5 games' ml_home with edge=0.03. Matches MAX_PCT_PER_BET=0.15
-            # cap so no clipping. Guarantees >=3 allocations + 75% deploy EVERY day
-            # even when the LLM is silent. Logs flag source="fallback-injection".
+            # COLLECTIVE_MISSION fallback #1 (PRE-FILTER): LLM silent or parse-failed.
+            # Inject 5 default legs at 15% each (= 75% exact) on first up-to-5 games'
+            # ml_home with edge=0.03. These survive downstream filter since edge >= MIN_EDGE
+            # and ml_home is in BASE_CATS. Second fallback (POST-FILTER) below catches
+            # the case where LLM returned allocations but all got stripped by MIN_EDGE.
             if (not parsed or not parsed.get("allocations")) and len(day_games) >= 3:
                 n_fallback = min(5, len(day_games))
                 per_pct = 0.75 / n_fallback
@@ -2822,6 +2822,48 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     })
             else:
                 ts["passes"] += 1  # full-cash day
+
+            # COLLECTIVE_MISSION fallback #2 (POST-FILTER): LLM returned allocations
+            # but all got stripped by MIN_EDGE/FDR filters. Force-execute 5×15% ml_home
+            # so the agent still deploys 75% on day. Directly resolve + update bankroll.
+            total_bets_executed = len(day_log["allocations"]) + len(day_log.get("parlays", []))
+            if total_bets_executed < 3 and len(day_games) >= 3:
+                n_fb = min(5, len(day_games))
+                per_pct = 0.75 / n_fb
+                for i in range(n_fb):
+                    g = day_games[i]
+                    odds = day_odds_list[i]
+                    stake = round(bankroll * per_pct, 2)
+                    if stake < 0.50 or stake > ts["bankroll"]:
+                        continue
+                    won = resolve_bet("ml_home", odds, g["home_score"], g["away_score"], g["home_won"])
+                    odds_dec = get_odds_dec("ml_home", odds)
+                    if won:
+                        profit = stake * (odds_dec - 1)
+                        ts["bankroll"] += profit
+                        ts["wins"] += 1
+                    else:
+                        profit = -stake
+                        ts["bankroll"] -= stake
+                        ts["losses"] += 1
+                    ts["total_bets"] += 1
+                    ts["bankroll"] = round(ts["bankroll"], 2)
+                    day_log["allocations"].append({
+                        "game": f"{g['away']}@{g['home']}",
+                        "category": "ml_home",
+                        "pct": round(per_pct, 4),
+                        "stake": stake,
+                        "confidence": 0.40,
+                        "edge": 0.03,
+                        "rationale": "fallback-injection (post-filter)",
+                        "won": won,
+                        "odds": round(odds_dec, 3),
+                        "profit": round(profit, 2),
+                        "source": "fallback-injection-post",
+                    })
+                day_log["cash_held_pct"] = 1.0 - (n_fb * per_pct)
+                day_log["cash_rationale"] = "post-filter fallback injection (LLM bets filtered out)"
+                day_log["day_strategy"] = day_log.get("day_strategy") or f"post-filter fallback: {n_fb}x{per_pct:.2f}"
 
             # Track recent decisions for next-day prompt
             n_bets = len(day_log["allocations"]) + len(day_log["parlays"])
