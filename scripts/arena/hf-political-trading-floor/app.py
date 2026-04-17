@@ -210,6 +210,7 @@ AXELROD_STRATEGIES = {
     "nvidia-llama70":    "Gradual",
     "selfhost-gemma3":   "Handshake",
     "selfhost-qwen06":   "Cooperator",
+    "selfhost-dolphin3": "Pavlov",
 }
 _axelrod_agents: Dict[str, object] = {}
 
@@ -293,6 +294,7 @@ REASONING_TEMPLATES = {
     "nvidia-llama70":    "REASONING TEMPLATE (DMAD): EV-THRESHOLD SWING. For each sector ETF compute EV = p_event × expected_sector_move − fees. Bet top 3 if EV > 0.05; else cash.",
     "selfhost-gemma3":   "REASONING TEMPLATE (DMAD): 3-FACTOR POLITICAL MODEL. Factors {congressional_vote_proximity, fed_speaker_density, geopolitical_tape}. Weight {0.4, 0.3, 0.3}. Trade iff weighted >0.6.",
     "selfhost-qwen06":   "REASONING TEMPLATE (DMAD): TINY-MODEL WIDE COVERAGE. Spread flat stakes across ALL 7 SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY). Any signal >0.35 → allocate.",
+    "selfhost-dolphin3": "REASONING TEMPLATE (DMAD): PAVLOV WIN-STAY/LOSE-SHIFT. After a winning sector, double down. After a loss, rotate to the highest-momentum alternative. No overthinking.",
 }
 
 def get_stackelberg_leader(state: dict) -> Optional[str]:
@@ -482,6 +484,13 @@ PROVIDERS = {
         "max_tokens": 400,
         "rpm": 60,
     },
+    "selfhost:dolphin3-3b": {
+        "url": "https://nomos42-llama32-1b-cpu.hf.space/v1/chat/completions",
+        "model": "dolphin3-llama3.2-3b",
+        "key_env": "SELFHOST_NOOP",
+        "max_tokens": 400,
+        "rpm": 60,
+    },
     "selfhost:fin-r1": {
         "url": "https://nomos42-fin-r1-7b-cpu.hf.space/v1/chat/completions",
         "model": "fin-r1-7b",
@@ -558,6 +567,8 @@ TRADERS = {
     "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "selfhost:gemma-3-4b",  "personality": "analytical",  "risk_tolerance": 0.45,
                          "fallback_provider": "selfhost:qwen3-4b"},
     "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "selfhost:qwen3-0.6b",  "personality": "conservative","risk_tolerance": 0.30,
+                         "fallback_provider": "selfhost:qwen3-4b"},
+    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "selfhost:dolphin3-3b", "personality": "uncensored",  "risk_tolerance": 0.60,
                          "fallback_provider": "selfhost:qwen3-4b"},
 }
 
@@ -680,6 +691,13 @@ PREFERRED STRATEGIES: flat_1pct, flat_2pct, sector_rotation
 EDGE DETECTION: Any signal >0.35 on any sector → allocate. Diversify wide, not deep.
 RISK: Very low (0.30). Tiny per-bet stakes, but many sectors = full 75%+ deployment.
 SPECIALTY: Flat-stake wide coverage across all 7 SPDR sector ETFs.""",
+
+    "selfhost-dolphin3": """You are SelfHost Dolphin3-3B, an uncensored adaptive political allocator on Nomos42/llama32-1b-cpu (Dolphin3-Llama3.2-3B).
+APPROACH: Pavlov win-stay/lose-shift. Repeat yesterday's winning sectors, drop yesterday's losers. No filters, no hedging.
+PREFERRED STRATEGIES: half_kelly, momentum_chase, sector_rotation
+EDGE DETECTION: If yesterday's sector won → same sector today with +50% stake. If lost → switch to highest-momentum alternative. Deploy ≥75%.
+RISK: High (0.60). Aggressive momentum, fast adaptation. Uncensored model — says what it thinks about political signals.
+SPECIALTY: Adaptive momentum trading on political catalysts. Free infra.""",
 }
 
 # ── RATE LIMITER ─────────────────────────────────────────────────────────────
@@ -865,12 +883,22 @@ def _call_llm(provider: str, system_prompt: str, user_prompt: str,
 
     max_tokens = cfg.get("max_tokens", 1200)
     _t0 = time.time()
-    result = _gateway_call(
-        provider, messages,
-        temperature=0.3, max_tokens=max_tokens,
-        fallback_direct=True, direct_fn=_direct,
-        timeout=max(timeout, 30.0),
-    )
+
+    text = _direct(system_prompt, user_prompt)
+    if text:
+        _gateway_fallback += 1
+        result = {"text": text, "routed_via": "direct", "model_used": provider,
+                  "latency_ms": int((time.time() - _t0) * 1000), "error": None}
+    elif GATEWAY_URL:
+        result = _gateway_call(
+            provider, messages,
+            temperature=0.3, max_tokens=max_tokens,
+            fallback_direct=False, direct_fn=None,
+            timeout=max(timeout, 30.0),
+        )
+    else:
+        result = {"text": None, "routed_via": "failed", "model_used": provider,
+                  "latency_ms": int((time.time() - _t0) * 1000), "error": "direct failed, no gateway"}
     _latency = time.time() - _t0
 
     if result["routed_via"] == "gateway":
@@ -878,7 +906,6 @@ def _call_llm(provider: str, system_prompt: str, user_prompt: str,
         _text = result["text"]
         _status = "success"
     elif result["routed_via"] == "direct":
-        _gateway_fallback += 1
         _text = result["text"]
         _status = "success"
     else:

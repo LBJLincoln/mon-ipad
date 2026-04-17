@@ -222,6 +222,7 @@ AXELROD_STRATEGIES = {
     "nvidia-llama70":    "Gradual",             # gradual retaliation (swing/balanced)
     "selfhost-gemma3":   "Handshake",           # mutual-cooperation probe (analytical)
     "selfhost-qwen06":   "Cooperator",          # always cooperate, tiny model (conservative)
+    "selfhost-dolphin3": "Pavlov",              # win-stay/lose-shift (uncensored, adaptive)
 }
 # Per-trader instantiated strategy object (populated on first call)
 _axelrod_agents: Dict[str, object] = {}
@@ -334,6 +335,7 @@ REASONING_TEMPLATES = {
     "nvidia-llama70":    "REASONING TEMPLATE (DMAD): EV-THRESHOLD SWING. For each category compute EV = p_model × payout − 1. Bet top 3 if EV > 0.05; else cash.",
     "selfhost-gemma3":   "REASONING TEMPLATE (DMAD): WEIGHTED FACTOR MODEL. 3 factors {form, rest, home}. Weights {0.4, 0.3, 0.3}. Bet only if weighted signal > 0.6.",
     "selfhost-qwen06":   "REASONING TEMPLATE (DMAD): WIDE FLAT-STAKE. Spread ≥5 tiny flat bets (1-3% each) across any of the 100+ categories. Any edge >3% qualifies.",
+    "selfhost-dolphin3": "REASONING TEMPLATE (DMAD): PAVLOV WIN-STAY/LOSE-SHIFT. After a winning bet, repeat the same category. After a loss, switch to the opposite side or different category. No overthinking.",
 }
 
 def get_stackelberg_leader(state: dict) -> Optional[str]:
@@ -544,6 +546,13 @@ PROVIDERS = {
         "max_tokens": 400,
         "rpm": 60,
     },
+    "selfhost:dolphin3-3b": {
+        "url": "https://nomos42-llama32-1b-cpu.hf.space/v1/chat/completions",
+        "model": "dolphin3-llama3.2-3b",
+        "key_env": "SELFHOST_NOOP",
+        "max_tokens": 400,
+        "rpm": 60,
+    },
     "nvidia:minimax-m2.7": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "minimaxai/minimax-m2.7",
@@ -615,6 +624,8 @@ TRADERS = {
     "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "selfhost:gemma-3-4b",  "personality": "analytical",  "risk_tolerance": 0.45,
                          "fallback_provider": "selfhost:qwen3-4b"},
     "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "selfhost:qwen3-0.6b",  "personality": "conservative","risk_tolerance": 0.30,
+                         "fallback_provider": "selfhost:qwen3-4b"},
+    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "selfhost:dolphin3-3b", "personality": "uncensored",  "risk_tolerance": 0.60,
                          "fallback_provider": "selfhost:qwen3-4b"},
 }
 
@@ -730,6 +741,13 @@ PREFERRED STRATEGIES: flat_1pct, flat_2pct, eighth_kelly
 EDGE DETECTION: Any edge >3% on any category (ML, spread, totals, quarters, halves, team totals, alt-lines). Diversify wide.
 RISK: Very low (0.30). Tiny per-bet stakes, but many bets = full 75%+ deployment.
 SPECIALTY: Flat-stake wide coverage across the full 100+ category menu.""",
+
+    "selfhost-dolphin3": """You are SelfHost Dolphin3-3B, an uncensored adaptive allocator on Nomos42/llama32-1b-cpu (Dolphin3-Llama3.2-3B).
+APPROACH: Pavlov win-stay/lose-shift. Repeat yesterday's winning categories, drop yesterday's losers. No filters, no hedging — pure adaptive momentum.
+PREFERRED STRATEGIES: half_kelly, momentum_chase, value_hunter
+EDGE DETECTION: If yesterday's bet won → same category today with +50% stake. If lost → switch to highest-edge alternative. Deploy ≥75%.
+RISK: High (0.60). Aggressive momentum, fast adaptation. Uncensored model says what it thinks.
+SPECIALTY: Adaptive momentum trading. No self-censorship. Free infra.""",
 
 }
 
@@ -942,12 +960,22 @@ def _call_llm(provider: str, system_prompt: str, user_prompt: str,
         return _call_llm_direct(provider, _sys, _usr, timeout=timeout)
 
     max_tokens = cfg.get("max_tokens", 1200)
-    result = _gateway_call(
-        provider, messages,
-        temperature=0.3, max_tokens=max_tokens,
-        fallback_direct=True, direct_fn=_direct,
-        timeout=max(timeout, 30.0),
-    )
+
+    text = _direct(system_prompt, user_prompt)
+    if text:
+        _gateway_fallback += 1
+        result = {"text": text, "routed_via": "direct", "model_used": provider,
+                  "latency_ms": int((time.time() - _t0) * 1000), "error": None}
+    elif GATEWAY_URL:
+        result = _gateway_call(
+            provider, messages,
+            temperature=0.3, max_tokens=max_tokens,
+            fallback_direct=False, direct_fn=None,
+            timeout=max(timeout, 30.0),
+        )
+    else:
+        result = {"text": None, "routed_via": "failed", "model_used": provider,
+                  "latency_ms": int((time.time() - _t0) * 1000), "error": "direct failed, no gateway"}
 
     _latency = time.time() - _t0
     _text = None
