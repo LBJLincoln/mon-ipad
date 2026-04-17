@@ -239,6 +239,19 @@
       <h3><span>Live Research</span><span class="c" id="panel-papers-count">—</span></h3>
       <div id="panel-papers-list" style="font-size:10.5px; max-height:220px; overflow-y:auto; padding-right:2px;"></div>
     </div>
+    <div class="panel" id="inspect-panel" style="display:none; border-color:#ffd700;">
+      <h3><span id="inspect-name">—</span><span class="c" id="inspect-close" style="cursor:pointer; color:#ff5c5c;">✕</span></h3>
+      <div class="kpi"><span class="l">Model</span><span id="inspect-model" class="v-ok">—</span></div>
+      <div class="kpi"><span class="l">Provider</span><span id="inspect-provider" class="v-warn">—</span></div>
+      <div class="kpi"><span class="l">Bankroll</span><span id="inspect-bankroll" class="v-ok">—</span></div>
+      <div class="kpi"><span class="l">ROI</span><span id="inspect-roi" class="v-ok">—</span></div>
+      <div class="kpi"><span class="l">Win Rate</span><span id="inspect-wr" class="v-ok">—</span></div>
+      <div class="kpi"><span class="l">Strategy</span><span id="inspect-strat" class="v-warn">—</span></div>
+      <div class="kpi"><span class="l">State</span><span id="inspect-state" class="v-ok">—</span></div>
+      <div class="kpi"><span class="l">Brier</span><span id="inspect-brier" class="v-ok">—</span></div>
+      <div class="kpi"><span class="l">Generation</span><span id="inspect-gen" class="v-warn">—</span></div>
+      <div id="inspect-extra" style="margin-top:6px; font-size:10px; color:#5b6478; border-top:1px solid #1e2330; padding-top:6px;"></div>
+    </div>
   </div>
 </div>
 <div id="paper-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:1000; padding:40px; overflow-y:auto;">
@@ -1137,7 +1150,7 @@ function makeAgentContainer(a) {
 
   c.on("pointerover", () => { a._hover = true; showHoverCard(a); });
   c.on("pointerout",  () => { a._hover = false; hideHoverCard(); });
-  c.on("pointertap",  () => { a.activeUntil = performance.now() + 5000; });
+  c.on("pointertap",  () => { a.activeUntil = performance.now() + 5000; showInspectPanel(a); });
 
   a._cnt = c;
   agentLayer.addChild(c);
@@ -1216,10 +1229,26 @@ function tickRender(ms) {
     if (activeRoom !== "world" && a.zone !== activeRoom) { a._cnt.alpha = 0.22; }
     else { a._cnt.alpha = 1.0; }
 
-    // v2.3: Breathing idle animation — subtle Y-scale oscillation
-    if (!a._isInfra && a._cnt._spr) {
-      const breathe = 1.0 + Math.sin(ms / 800 + a.phase * 3) * 0.025;
-      a._cnt._spr.scale.y = breathe;
+    // v2.7: Walking animation — bob, tilt, and step when moving
+    if (!a._isInfra) {
+      const speed = Math.sqrt((a.vx||0)**2 + (a.vy||0)**2);
+      const isWalking = speed > 0.008;
+      const spr = a._cnt._spr || a._cnt._body;
+      if (spr) {
+        if (isWalking) {
+          const stepFreq = 220;
+          const bob = Math.sin(ms / stepFreq + a.phase * 5) * 2.5;
+          const tilt = Math.sin(ms / stepFreq + a.phase * 5) * 0.06;
+          spr.y = bob;
+          spr.rotation = tilt;
+          spr.scale.y = 1.0 + Math.abs(Math.sin(ms / stepFreq + a.phase * 5)) * 0.04;
+        } else {
+          const breathe = 1.0 + Math.sin(ms / 800 + a.phase * 3) * 0.025;
+          spr.y = spr.y * 0.9;
+          spr.rotation = spr.rotation * 0.85;
+          spr.scale.y = breathe;
+        }
+      }
     }
 
     // v2.3: State emote — dynamic icon above head based on agent state
@@ -1304,12 +1333,29 @@ function tickRender(ms) {
       a._cnt._iBr.style.fill = isBest ? 0xffd700 : (a.data.stagnation > 100 ? 0xff5c5c : 0x00d9a7);
     }
 
-    // Pulse dot
+    // Pulse dot + floating particles
     if (a.state === "profit" || a.state === "loss") {
       const pulse = (Math.sin(ms/350 + a.idx) + 1) / 2;
       a._cnt._dot.visible = true;
       a._cnt._dot.clear().circle(CHAR_W*0.3, -CHAR_H*0.7, 4).fill({ color:pipCol, alpha:0.45+0.55*pulse });
-    } else { a._cnt._dot.visible = false; }
+      if (!a._particles) a._particles = [];
+      if (a._particles.length < 4 && Math.random() < 0.03) {
+        const pc = new PIXI.Graphics();
+        const col = a.state === "profit" ? 0x00d9a7 : 0xff5c5c;
+        pc.circle(0, 0, 2).fill({ color: col, alpha: 0.9 });
+        pc.x = (Math.random()-0.5) * CHAR_W; pc.y = -CHAR_H*0.5;
+        pc._life = 60; pc._vy = -0.8 - Math.random()*0.5;
+        a._cnt.addChild(pc); a._particles.push(pc);
+      }
+      for (let i = a._particles.length - 1; i >= 0; i--) {
+        const pc = a._particles[i]; pc.y += pc._vy; pc._life--;
+        pc.alpha = pc._life / 60;
+        if (pc._life <= 0) { a._cnt.removeChild(pc); a._particles.splice(i, 1); }
+      }
+    } else {
+      a._cnt._dot.visible = false;
+      if (a._particles) { a._particles.forEach(pc => a._cnt.removeChild(pc)); a._particles = []; }
+    }
   }
   pactLayer.clear();
   // Outer glow pass — wide & dim, pulses with time
@@ -1451,6 +1497,36 @@ function showHoverCard(a) {
   hoverEl.style.top  = Math.max(pt.y - 40, 20) + "px";
 }
 function hideHoverCard() { hoverEl.style.display = "none"; }
+
+// ── INSPECT PANEL (click-to-inspect) ────────────────────────────────────────
+const inspectPanel = document.getElementById("inspect-panel");
+document.getElementById("inspect-close").addEventListener("click", () => { inspectPanel.style.display = "none"; });
+function showInspectPanel(a) {
+  inspectPanel.style.display = "block";
+  const d = a.data || {};
+  document.getElementById("inspect-name").textContent = a.label || a.id;
+  document.getElementById("inspect-model").textContent = a.model || d.model || "—";
+  document.getElementById("inspect-provider").textContent = a.provider || d.provider || "—";
+  const bankroll = d.bankroll != null ? `$${Number(d.bankroll).toFixed(2)}` : "—";
+  const roi = d.bankroll != null ? `${((d.bankroll - 100) / 100 * 100).toFixed(1)}%` : "—";
+  document.getElementById("inspect-bankroll").textContent = bankroll;
+  document.getElementById("inspect-bankroll").className = d.bankroll > 100 ? "v-ok" : d.bankroll != null ? "v-err" : "v-warn";
+  document.getElementById("inspect-roi").textContent = roi;
+  document.getElementById("inspect-roi").className = d.bankroll > 100 ? "v-ok" : d.bankroll != null ? "v-err" : "v-warn";
+  document.getElementById("inspect-wr").textContent = d.win_rate != null ? `${(d.win_rate * 100).toFixed(0)}%` : d.wins != null ? `${d.wins}W/${d.losses||0}L` : "—";
+  document.getElementById("inspect-strat").textContent = a.strategy || "—";
+  document.getElementById("inspect-state").textContent = a.state || "idle";
+  document.getElementById("inspect-brier").textContent = d.best_brier != null ? d.best_brier.toFixed(5) : "—";
+  document.getElementById("inspect-gen").textContent = d.generation != null ? `Gen ${d.generation}` : "—";
+  const extra = [];
+  if (d.total_bets) extra.push(`${d.total_bets} bets`);
+  if (d.last_bet) extra.push(`Last: ${d.last_bet}`);
+  if (a.pactPartner) extra.push(`Pact: ${a.pactPartner}`);
+  if (d.stagnation) extra.push(`Stagnation: ${d.stagnation}`);
+  if (a.kind) extra.push(`Type: ${a.kind}`);
+  document.getElementById("inspect-extra").textContent = extra.join(" · ") || "No additional data";
+  inspectPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
 
 // ── SIDEBAR HELPERS ─────────────────────────────────────────────────────────
 const tradesList = document.getElementById("panel-trades-list");
