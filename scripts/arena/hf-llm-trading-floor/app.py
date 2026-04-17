@@ -1704,6 +1704,14 @@ RESPOND WITH RAW JSON ONLY. No markdown fences. No explanation before or after. 
 Schema:
 {
   "day_strategy": "1-2 sentences on today's overall approach",
+  "council_alignment": {
+    "stance": "followed|deviated|partial",
+    "reason": "1 sentence — why you followed/deviated/partial vs council_commit_target"
+  },
+  "games_considered": [
+    {"game_idx": 1, "decision": "bet|skip", "reason": "1 sentence — if skip: why (low edge / bad matchup / model disagrees / already exposed)"},
+    {"game_idx": 2, "decision": "skip", "reason": "model edge 1.2% < 3% min"}
+  ],
   "allocations": [
     {
       "game_idx": 1,
@@ -1713,7 +1721,8 @@ Schema:
       "confidence": 0.65,
       "edge": 0.04,
       "strategy": "half_kelly",
-      "rationale": "1 sentence: which stat/metric drove this and why it beats market price"
+      "rationale": "1 sentence: which stat/metric drove this and why it beats market price",
+      "category_reason": "1 sentence — why ml_home vs spread_home vs alt_spread (what made this category beat siblings)"
     }
   ],
   "parlays": [
@@ -1737,6 +1746,17 @@ Schema:
     "rationale": "optional 1 sentence — why you want to pact with this peer"
   }
 }
+
+NEW AUDIT FIELDS (MANDATORY — councils use these to score decision quality):
+- council_alignment: ONE of {followed|deviated|partial} + reason. Council assigned you
+  a commit_pct target today (see COUNCIL_PLAN block); if you deployed close to it say
+  "followed", if you went much higher/lower say "deviated" and explain, say "partial"
+  if you respected direction but magnitude differs.
+- games_considered: ONE entry per game on today's slate (include EVERY game_idx you saw,
+  not just the ones you bet). For skipped games give the specific reason —
+  "low edge 1.1%", "injury report", "market already efficient", "bankroll exposure cap", etc.
+- category_reason on each allocation: say why this CATEGORY beat the others for this game
+  (e.g. "total_over line 225.5 is 2pts softer than my 227.8 model — softest edge today").
 
 STRICT RULES:
 - Sum of allocation pct + parlay pct + cash_held_pct = 1.00 (±0.01)
@@ -1804,6 +1824,7 @@ def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
             "edge": max(0.0, edge),
             "strategy": (a.get("strategy") or "half_kelly")[:30],
             "rationale": (a.get("rationale") or "")[:300],
+            "category_reason": (a.get("category_reason") or "")[:300],
         })
 
     # PARLAY parsing (2026-04-17) — combined-odds bets across same-day legs.
@@ -1902,6 +1923,37 @@ def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
                 "rationale": (cp.get("rationale") or "")[:200],
             }
 
+    # Phase B — council_alignment + games_considered audit fields
+    ca = parsed.get("council_alignment") or {}
+    council_alignment = None
+    if isinstance(ca, dict):
+        stance = (ca.get("stance") or "").lower().strip()
+        if stance in ("followed", "deviated", "partial"):
+            council_alignment = {
+                "stance": stance,
+                "reason": (ca.get("reason") or "")[:300],
+            }
+
+    gc = parsed.get("games_considered") or []
+    games_considered: List[Dict] = []
+    if isinstance(gc, list):
+        seen_gc = set()
+        for item in gc[:30]:
+            if not isinstance(item, dict):
+                continue
+            gi = item.get("game_idx")
+            if not isinstance(gi, int) or gi < 1 or gi > n_games or gi in seen_gc:
+                continue
+            seen_gc.add(gi)
+            decision = (item.get("decision") or "").lower().strip()
+            if decision not in ("bet", "skip"):
+                decision = "bet" if gi in seen_games else "skip"
+            games_considered.append({
+                "game_idx": gi,
+                "decision": decision,
+                "reason": (item.get("reason") or "")[:300],
+            })
+
     return {
         "day_strategy": (parsed.get("day_strategy") or parsed.get("reasoning") or "")[:500],
         "allocations": clean,
@@ -1910,6 +1962,8 @@ def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
         "cash_rationale": (parsed.get("cash_rationale") or "")[:300],
         "raw_sum": round(total, 4),
         "coalition_proposal": coalition,
+        "council_alignment": council_alignment,
+        "games_considered": games_considered,
     }
 
 
@@ -2848,6 +2902,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "parlays": [],      # parlay outcomes (2026-04-17)
                 "rogue": day_rogue_state.get(tid, {"is_rogue": False}),
                 "council_commit_target": day_council_plan.get("per_agent_commit_pct", {}).get(tid, 0.55),
+                "council_alignment": (parsed or {}).get("council_alignment"),
+                "games_considered": (parsed or {}).get("games_considered") or [],
                 "raw_preview": (raw_response or "")[:400],
             }
 

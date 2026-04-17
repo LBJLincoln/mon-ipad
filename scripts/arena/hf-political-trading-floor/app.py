@@ -1445,6 +1445,14 @@ RESPOND WITH RAW JSON ONLY. No markdown fences. No explanation before or after. 
 Schema:
 {
   "day_strategy": "1-2 sentences on today's overall approach",
+  "council_alignment": {
+    "stance": "followed|deviated|partial",
+    "reason": "1 sentence — why you followed/deviated/partial vs council_commit_target"
+  },
+  "events_considered": [
+    {"event_idx": 1, "decision": "bet|skip", "reason": "1 sentence — if skip: why (signal weak / agency unclear / already exposed / low conviction)"},
+    {"event_idx": 2, "decision": "skip", "reason": "signal ambiguous, no clear sector read"}
+  ],
   "allocations": [
     {
       "event_idx": 1,
@@ -1452,7 +1460,8 @@ Schema:
       "ticker": "XLE",
       "pct": 0.15,
       "confidence": 0.65,
-      "thesis": "1-2 sentences citing signal/agency"
+      "thesis": "1-2 sentences citing signal/agency",
+      "ticker_reason": "1 sentence — why this ticker vs other sector ETFs"
     }
   ],
   "cash_held_pct": 0.25,
@@ -1464,6 +1473,17 @@ Schema:
     "rationale": "optional 1 sentence — why you want to pact with this peer"
   }
 }
+
+NEW AUDIT FIELDS (MANDATORY — councils use these to score decision quality):
+- council_alignment: ONE of {followed|deviated|partial} + reason. Council assigned you
+  a commit_pct target today (see COUNCIL_PLAN block); if you deployed close to it say
+  "followed", if you went much higher/lower say "deviated" and explain, say "partial"
+  if you respected direction but magnitude differs.
+- events_considered: ONE entry per event on today's slate (include EVERY event_idx, not
+  just the ones you bet). For skipped events give the specific reason — "signal weak",
+  "sector already maxed", "conflicting agencies", "no clear ticker map", etc.
+- ticker_reason on each allocation: say why this TICKER beat other sector ETFs
+  (e.g. "XLE over XLB because the signal is oil-specific, not broad commodities").
 
 STRICT RULES:
 - Sum of all allocation pct + cash_held_pct = 1.00 (±0.01)
@@ -1534,6 +1554,7 @@ def parse_day_allocation(raw: str, n_events: int) -> Optional[Dict]:
             "confidence": max(0.0, min(1.0, conf)),
             "thesis": (a.get("thesis") or a.get("rationale") or "")[:300],
             "strategy": (a.get("strategy") or direction)[:30],
+            "ticker_reason": (a.get("ticker_reason") or "")[:300],
         })
 
     total = sum(a["pct"] for a in clean) + max(0.0, min(1.0, cash))
@@ -1574,6 +1595,37 @@ def parse_day_allocation(raw: str, n_events: int) -> Optional[Dict]:
                 "rationale": (cp.get("rationale") or "")[:200],
             }
 
+    # Phase B — council_alignment + events_considered audit fields
+    ca = parsed.get("council_alignment") or {}
+    council_alignment = None
+    if isinstance(ca, dict):
+        stance = (ca.get("stance") or "").lower().strip()
+        if stance in ("followed", "deviated", "partial"):
+            council_alignment = {
+                "stance": stance,
+                "reason": (ca.get("reason") or "")[:300],
+            }
+
+    ec = parsed.get("events_considered") or []
+    events_considered: List[Dict] = []
+    if isinstance(ec, list):
+        seen_ec = set()
+        for item in ec[:30]:
+            if not isinstance(item, dict):
+                continue
+            ei = item.get("event_idx")
+            if not isinstance(ei, int) or ei < 1 or ei > n_events or ei in seen_ec:
+                continue
+            seen_ec.add(ei)
+            decision = (item.get("decision") or "").lower().strip()
+            if decision not in ("bet", "skip"):
+                decision = "bet" if ei in seen_events else "skip"
+            events_considered.append({
+                "event_idx": ei,
+                "decision": decision,
+                "reason": (item.get("reason") or "")[:300],
+            })
+
     return {
         "day_strategy": (parsed.get("day_strategy") or parsed.get("reasoning") or "")[:500],
         "allocations": clean,
@@ -1581,6 +1633,8 @@ def parse_day_allocation(raw: str, n_events: int) -> Optional[Dict]:
         "cash_rationale": (parsed.get("cash_rationale") or "")[:300],
         "raw_sum": round(total, 4),
         "coalition_proposal": coalition,
+        "council_alignment": council_alignment,
+        "events_considered": events_considered,
     }
 
 
@@ -2225,6 +2279,10 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "cash_held_pct": 1.0,
                 "cash_rationale": "no LLM response" if not raw_response else "unparseable response",
                 "allocations": [],  # resolved outcomes
+                "rogue": day_rogue_state.get(tid, {"is_rogue": False}) if day_rogue_state else {"is_rogue": False},
+                "council_commit_target": (day_council_plan or {}).get("per_agent_commit_pct", {}).get(tid, 0.55),
+                "council_alignment": (parsed or {}).get("council_alignment"),
+                "events_considered": (parsed or {}).get("events_considered") or [],
                 "raw_preview": (raw_response or "")[:400],
             }
 
