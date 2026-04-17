@@ -2024,18 +2024,21 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             parsed = parse_day_allocation(raw_response, len(day_events)) if raw_response else None
 
             # COLLECTIVE_MISSION fallback: if LLM failed or returned zero allocations,
-            # inject 3 default trades at 25% each on first 3 events, direction=long,
-            # ticker=SPY (broad). Guarantees >=3 trades + 75% deploy EVERY day.
+            # inject 5 default trades at 15% each (= 75% deploy exactly) on first
+            # up-to-5 events, direction=long, ticker=SPY. Matches MAX_PCT_PER_BET=0.15
+            # so no clipping. Guarantees >=3 trades + 75% deploy EVERY day.
             if (not parsed or not parsed.get("allocations")) and len(day_events) >= 3:
+                n_fallback = min(5, len(day_events))
+                per_pct = 0.75 / n_fallback
                 parsed = {
-                    "day_strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 3 events (SPY long)",
+                    "day_strategy": f"fallback-injection: LLM silent, forcing 75% deploy on first {n_fallback} events (SPY long)",
                     "cash_held_pct": 0.25,
                     "cash_rationale": "fallback-injection (LLM returned no actionable allocations)",
                     "allocations": [
                         {"event_idx": i + 1, "ticker": "SPY", "direction": "long",
-                         "pct": 0.25, "confidence": 0.40,
+                         "pct": per_pct, "confidence": 0.40,
                          "thesis": "fallback", "source": "fallback-injection"}
-                        for i in range(3)
+                        for i in range(n_fallback)
                     ],
                     "coalition_proposal": None,
                 }
