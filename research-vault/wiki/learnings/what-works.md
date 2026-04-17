@@ -1,33 +1,33 @@
 # What Works — Empirically Validated
 
-> Auto-generated from experiment data on 2026-04-17 08:23 UTC
+> Auto-generated from experiment data on 2026-04-17 10:25 UTC
 > Only includes findings backed by measured improvement
 
 ## NBA — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_max_features_ratio | 4 | 0 | 0% | +0.00861 |
-| change_max_depth | 3 | 0 | 0% | +0.00931 |
-| change_n_estimators | 7 | 0 | 0% | +0.00844 |
-| remove_features | 9 | 0 | 0% | +0.00840 |
-| change_min_samples_leaf | 3 | 0 | 0% | +0.00792 |
-| change_model | 22 | 0 | 0% | +0.37310 |
-| swap_features | 1 | 0 | 0% | +0.01180 |
-| add_features | 1 | 0 | 0% | +0.00742 |
+| remove_features | 9 | 0 | 0% | +0.01034 |
+| change_min_samples_leaf | 4 | 0 | 0% | +0.00997 |
+| change_max_depth | 2 | 0 | 0% | +0.00804 |
+| add_features | 7 | 0 | 0% | +0.01149 |
+| change_n_estimators | 3 | 0 | 0% | +0.00975 |
+| change_model | 20 | 0 | 0% | +0.25652 |
+| swap_features | 4 | 0 | 0% | +0.01236 |
+| change_max_features_ratio | 1 | 0 | 0% | +0.01196 |
 
 ## POLITICAL — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_min_samples_leaf | 10 | 0 | 0% | +0.01108 |
-| change_max_depth | 8 | 0 | 0% | +0.01362 |
-| add_features | 7 | 0 | 0% | +0.02614 |
-| remove_features | 10 | 0 | 0% | +0.03079 |
-| change_model | 6 | 0 | 0% | +0.04371 |
-| change_n_estimators | 6 | 0 | 0% | +0.00991 |
-| change_max_features_ratio | 2 | 0 | 0% | +0.02496 |
-| swap_features | 1 | 0 | 0% | +0.05610 |
+| change_max_depth | 6 | 0 | 0% | +0.01799 |
+| change_model | 8 | 0 | 0% | +0.04788 |
+| change_min_samples_leaf | 6 | 0 | 0% | +0.00616 |
+| add_features | 6 | 0 | 0% | +0.01123 |
+| swap_features | 5 | 0 | 0% | +0.03425 |
+| change_max_features_ratio | 9 | 0 | 0% | +0.02156 |
+| change_n_estimators | 7 | 0 | 0% | +0.00533 |
+| remove_features | 3 | 0 | 0% | +0.02158 |
 
 ## Arena — Proven Insights
 
