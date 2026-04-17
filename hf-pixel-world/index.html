@@ -254,11 +254,110 @@ const TILE = 32;
 // v2.10: widen to 16:10 so the world fills desktop screens without dead side margins.
 const GRID_W = 52, GRID_H = 32;
 const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
-const CHAR_W = 56, CHAR_H = 48;   // 2× native 28×24 — big, crisp, proper aspect
+// v2.14 (2026-04-17): sized up 56→72 / 48→64 (+28% footprint, 4:3 kept).
+const CHAR_W = 72, CHAR_H = 64;
 
 const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c, control:0xffd700 };
 const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", island:"#50fa7b", infra:"#50fa7b", pol_infra:"#8be9fd", council:"#ffb86c", control:"#ffd700" };
 const KIND_GLYPHS = { nba:"🏀", political:"🗳", island:"🧬", infra:"🗼", pol_infra:"🗼", council:"⚖" };
+
+// v2.14: per-trader role accessory — drawn on top of base procedural body so
+// each persona reads at-a-glance. Lookup by agent.id (strips "p-" POL prefix).
+// b = PIXI.Graphics, W/H = CHAR_W/CHAR_H, outline = 0x0b0d12.
+const ROLE_ACCESSORIES = {
+  "qwen-quant": (b, W, H) => {
+    b.rect(-W*0.17, -H*0.84, W*0.13, W*0.09).stroke({ width:1.4, color:0x0b0d12 });
+    b.rect( W*0.04, -H*0.84, W*0.13, W*0.09).stroke({ width:1.4, color:0x0b0d12 });
+    b.moveTo(-W*0.04, -H*0.81).lineTo(W*0.04, -H*0.81).stroke({ width:1.2, color:0x0b0d12 });
+  },
+  "qwen-arb": (b, W, H) => {
+    b.rect(W*0.30, -H*0.42, W*0.20, H*0.16).fill({ color:0x8b4513 }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(W*0.36, -H*0.44, W*0.08, H*0.03).fill({ color:0xffd700 });
+    b.rect(W*0.38, -H*0.26, W*0.04, H*0.03).fill({ color:0xffd700 });
+  },
+  "llama-contra": (b, W, H) => {
+    b.rect(-W*0.24, -H*1.02, W*0.48, H*0.09).fill({ color:0xcc0000 }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.34, -H*0.98, W*0.14, H*0.04).fill({ color:0xcc0000 }).stroke({ width:1, color:0x0b0d12 });
+  },
+  "gemini-anl": (b, W, H) => {
+    b.rect(-W*0.32, -H*0.62, W*0.64, H*0.32).fill({ color:0xffffff, alpha:0.88 }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.02, -H*0.60, W*0.04, H*0.30).fill({ color:0xe0e0e0 });
+    b.rect(-W*0.52, -H*0.36, W*0.14, H*0.20).fill({ color:0xd4a574 }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.50, -H*0.34, W*0.10, H*0.01).fill({ color:0x0b0d12 });
+    b.rect(-W*0.50, -H*0.30, W*0.10, H*0.01).fill({ color:0x0b0d12 });
+  },
+  "gemini-tact": (b, W, H) => {
+    b.rect(-W*0.28, -H*1.00, W*0.56, H*0.11).fill({ color:0x2d4a2d }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.34, -H*0.95, W*0.68, H*0.04).fill({ color:0x2d4a2d });
+    b.circle(0, -H*1.03, W*0.06).fill({ color:0xffd700 }).stroke({ width:1, color:0x0b0d12 });
+  },
+  "mistral-large": (b, W, H) => {
+    b.rect(-W*0.17, -H*1.16, W*0.34, H*0.20).fill({ color:0x0b0d12 }).stroke({ width:1, color:0x333 });
+    b.rect(-W*0.24, -H*1.00, W*0.48, H*0.04).fill({ color:0x0b0d12 });
+    b.rect(-W*0.17, -H*1.08, W*0.34, H*0.02).fill({ color:0xdd0000 });
+  },
+  "mistral-medium": (b, W, H) => {
+    b.rect(-W*0.32, -H*0.62, W*0.64, H*0.06).fill({ color:0xff79c6 }).stroke({ width:0.6, color:0x0b0d12 });
+    b.rect(-W*0.27, -H*0.58, W*0.54, H*0.04).fill({ color:0x50fa7b });
+    b.rect(-W*0.30, -H*0.45, W*0.06, H*0.08).fill({ color:0xff79c6 });
+  },
+  "mistral-small": (b, W, H) => {
+    b.rect(W*0.28, -H*0.66, W*0.16, H*0.28).fill({ color:0x2a5f8f }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(W*0.30, -H*0.56, W*0.12, H*0.02).fill({ color:0xffd700 });
+    b.rect(W*0.32, -H*0.46, W*0.08, H*0.03).fill({ color:0x1a3f6f });
+  },
+  "mistral-nemo": (b, W, H) => {
+    b.rect(-W*0.32, -H*0.62, W*0.64, H*0.34).fill({ color:0x2a1a0a }).stroke({ width:1.5, color:0x0b0d12 });
+    b.rect(-W*0.02, -H*0.60, W*0.04, H*0.30).fill({ color:0xffd700 });
+    b.circle(-W*0.36, -H*0.90, W*0.09).fill({ color:0xf4c49a }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.40, -H*0.98, W*0.08, W*0.05).fill({ color:0x0b0d12 });
+  },
+  "mistral-ministral": (b, W, H) => {
+    b.moveTo(-W*0.14, -H*0.96).lineTo(0, -H*1.22).lineTo(W*0.14, -H*0.96).closePath()
+     .fill({ color:0x4a0080 }).stroke({ width:1, color:0x0b0d12 });
+    b.circle(0, -H*1.20, W*0.04).fill({ color:0xffd700 });
+    b.rect(-W*0.50, -H*0.36, W*0.16, H*0.18).fill({ color:0x8b0000 }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.48, -H*0.32, W*0.12, H*0.01).fill({ color:0xffd700 });
+    b.rect(-W*0.48, -H*0.28, W*0.12, H*0.01).fill({ color:0xffd700 });
+  },
+  "nemotron-120b": (b, W, H) => {
+    for (let i = -3; i <= 3; i++) {
+      b.circle(i*W*0.055, -H*0.56, W*0.025).stroke({ width:1, color:0xffd700 });
+    }
+    b.circle(0, -H*0.50, W*0.04).fill({ color:0xffd700 }).stroke({ width:1, color:0x0b0d12 });
+  },
+  "selfhost-qwen4b": (b, W, H) => {
+    b.rect(-W*0.035, -H*0.60, W*0.07, H*0.05).fill({ color:0x1a4d80 });
+    b.moveTo(-W*0.04, -H*0.55).lineTo(0, -H*0.30).lineTo(W*0.04, -H*0.55).closePath()
+     .fill({ color:0x1a4d80 }).stroke({ width:0.6, color:0x0b0d12 });
+    b.moveTo(0, -H*0.40).lineTo(-W*0.02, -H*0.36).lineTo(W*0.02, -H*0.36).closePath().fill({ color:0xffd700 });
+  },
+  "nvidia-minimax": (b, W, H) => {
+    b.moveTo(-W*0.10, -H*0.50).lineTo(W*0.10, -H*0.45).lineTo(-W*0.10, -H*0.40).closePath()
+     .fill({ color:0xffd700 }).stroke({ width:1, color:0x0b0d12 });
+  },
+  "nvidia-llama70": (b, W, H) => {
+    b.moveTo(0, -H*0.56).lineTo(0, -H*0.38).stroke({ width:1, color:0x888888 });
+    b.circle(0, -H*0.36, W*0.06).fill({ color:0xc0c0c0 }).stroke({ width:1, color:0x0b0d12 });
+    b.circle(-W*0.04, -H*0.38, W*0.01).fill({ color:0xffffff });
+  },
+  "selfhost-gemma3": (b, W, H) => {
+    b.circle(W*0.08, -H*0.80, W*0.09).stroke({ width:1.4, color:0xffd700 });
+    b.moveTo(W*0.17, -H*0.80).lineTo(W*0.28, -H*0.58).stroke({ width:1.2, color:0xffd700 });
+  },
+  "selfhost-qwen06": (b, W, H) => {
+    b.moveTo(-W*0.11, -H*0.58).lineTo(0, -H*0.56).lineTo(-W*0.11, -H*0.52).closePath().fill({ color:0x1a1f2a }).stroke({ width:0.6, color:0x0b0d12 });
+    b.moveTo( W*0.11, -H*0.58).lineTo(0, -H*0.56).lineTo( W*0.11, -H*0.52).closePath().fill({ color:0x1a1f2a }).stroke({ width:0.6, color:0x0b0d12 });
+    b.circle(0, -H*0.55, W*0.028).fill({ color:0x1a1f2a });
+  },
+  "selfhost-dolphin3": (b, W, H) => {
+    for (let i = -2; i <= 2; i++) {
+      const x = i * W*0.09;
+      b.moveTo(x, -H*0.94).lineTo(x + W*0.025, -H*1.14).lineTo(x + W*0.06, -H*0.94).closePath()
+       .fill({ color:0x3a2b20 }).stroke({ width:0.6, color:0x0b0d12 });
+    }
+  },
+};
 
 // Axelrod strategy families → colors (cooperators green, defectors red, random purple, complex amber)
 const STRATEGY_FAMILIES = {
@@ -1016,6 +1115,54 @@ for (const [zoneId, z] of Object.entries(ZONES)) {
   }});
   txt.x = z.x*TILE + 10; txt.y = z.y*TILE + 8; txt.alpha = 0.80;
   labelLayer.addChild(txt);
+
+  // v2.14: zone-specific iconic decor — one big silhouette per zone, drawn faintly
+  // in decorLayer so it reads as "environmental flavor" without stealing attention
+  // from agents. Placed toward zone upper-right so it doesn't collide with label
+  // (top-left) or active agent area (center-bottom).
+  const dec = new PIXI.Graphics();
+  const dx = (z.x + z.w - 5) * TILE;
+  const dy = (z.y + 2) * TILE;
+  const dcol = KIND_COLORS[zoneIdToKind(zoneId)];
+  const dalpha = 0.16;
+  if (zoneId === "nba") {
+    // basketball hoop: backboard + rim + net
+    dec.rect(dx, dy - 4, 48, 4).fill({ color: 0xffffff, alpha: dalpha * 1.2 });
+    dec.circle(dx + 24, dy + 12, 10).stroke({ width: 2, color: 0xff6600, alpha: dalpha * 2 });
+    for (let i = 0; i < 5; i++) {
+      dec.moveTo(dx + 14 + i*5, dy + 14).lineTo(dx + 18 + i*5, dy + 28).stroke({ width: 1, color: 0xffffff, alpha: dalpha });
+    }
+  } else if (zoneId === "political") {
+    // capitol dome: dome + pillars
+    dec.circle(dx + 24, dy + 12, 18).fill({ color: dcol, alpha: dalpha });
+    dec.rect(dx, dy + 12, 48, 4).fill({ color: dcol, alpha: dalpha * 1.5 });
+    for (let i = 0; i < 5; i++) {
+      dec.rect(dx + 4 + i*10, dy + 16, 4, 20).fill({ color: dcol, alpha: dalpha });
+    }
+    dec.moveTo(dx + 24, dy - 6).lineTo(dx + 24, dy + 4).stroke({ width: 2, color: dcol, alpha: dalpha * 2 });
+  } else if (zoneId === "nba-infra" || zoneId === "pol-infra") {
+    // server rack grid: 3×4 rack units
+    for (let rr = 0; rr < 4; rr++) {
+      for (let cc = 0; cc < 3; cc++) {
+        dec.rect(dx + cc*14, dy + rr*10, 12, 8).stroke({ width: 1, color: dcol, alpha: dalpha * 2 });
+        dec.circle(dx + cc*14 + 10, dy + rr*10 + 4, 1).fill({ color: 0x00d9a7, alpha: dalpha * 3 });
+      }
+    }
+  } else if (zoneId === "councils") {
+    // round table
+    dec.circle(dx + 24, dy + 12, 20).stroke({ width: 2, color: dcol, alpha: dalpha * 2 });
+    dec.circle(dx + 24, dy + 12, 20).fill({ color: dcol, alpha: dalpha * 0.6 });
+    for (let i = 0; i < 6; i++) {
+      const ang = (i / 6) * Math.PI * 2;
+      dec.circle(dx + 24 + Math.cos(ang)*14, dy + 12 + Math.sin(ang)*14, 2).fill({ color: dcol, alpha: dalpha * 3 });
+    }
+  } else if (zoneId === "control-room") {
+    // control panel: oscilloscope box
+    dec.rect(dx, dy, 48, 28).stroke({ width: 1.5, color: dcol, alpha: dalpha * 2 });
+    dec.moveTo(dx + 4, dy + 14).lineTo(dx + 12, dy + 8).lineTo(dx + 20, dy + 18).lineTo(dx + 28, dy + 6)
+       .lineTo(dx + 36, dy + 20).lineTo(dx + 44, dy + 14).stroke({ width: 1, color: 0x00d9a7, alpha: dalpha * 3 });
+  }
+  decorLayer.addChild(dec);
 }
 
 // v2.5: Data-flow cables — top infra feeds councils, councils feed traders below
@@ -1309,6 +1456,17 @@ function makeAgentContainer(a) {
       body.circle( W*0.08, -H*0.80, 1.6).fill({ color: outline });
       // Tiny smile
       body.rect(-W*0.05, -H*0.72, W*0.10, 1.2).fill({ color: outline });
+      // v2.14: per-role accessory (glasses, cap, briefcase, etc). POL prefix stripped.
+      const roleKey = (a.id || "").replace(/^p-/, "");
+      const accessory = ROLE_ACCESSORIES[roleKey];
+      if (accessory) {
+        try { accessory(body, W, H); } catch (_) { /* accessory draw failed — base body still valid */ }
+      }
+      // v2.14: POL agents get a blue sash across the torso to separate from NBA at a glance.
+      if (a.kind === "political") {
+        body.moveTo(-W*0.28, -H*0.45).lineTo(W*0.28, -H*0.55).lineTo(W*0.30, -H*0.50).lineTo(-W*0.26, -H*0.40).closePath()
+            .fill({ color:0x8be9fd, alpha:0.92 }).stroke({ width:0.8, color:0x0b0d12 });
+      }
       c.addChild(body);
       c._spr = body;  // expose as _spr so breathing/flip animations still work
     }
