@@ -1,6 +1,6 @@
 # Political Alpha & Prediction Markets
 
-> Auto-compiled from 69 raw sources on 2026-04-16
+> Auto-compiled from 69 raw sources on 2026-04-17
 
 ## Overview
 
