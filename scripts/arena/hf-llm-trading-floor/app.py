@@ -499,10 +499,14 @@ PROVIDERS = {
 # system prompt = DMAD-style distinct reasoning (Prediction Arena 2604.07355).
 TRADERS = {
     # Cerebras Qwen 3 235B — heaviest reasoning model, 2 personas
-    "qwen-quant":  {"name": "Qwen Quant 235B",   "provider": "cerebras:qwen-3-235b",  "personality": "quantitative", "risk_tolerance": 0.55},
-    "qwen-arb":    {"name": "Qwen Arb 235B",     "provider": "cerebras:qwen-3-235b",  "personality": "arbitrage",    "risk_tolerance": 0.65},
+    # 2026-04-17 FIX: Cerebras free tier returns 429 "queue_exceeded" under TF load → add fallbacks
+    "qwen-quant":  {"name": "Qwen Quant 235B",   "provider": "cerebras:qwen-3-235b",  "personality": "quantitative", "risk_tolerance": 0.55,
+                    "fallback_provider": "mistral:large"},
+    "qwen-arb":    {"name": "Qwen Arb 235B",     "provider": "cerebras:qwen-3-235b",  "personality": "arbitrage",    "risk_tolerance": 0.65,
+                    "fallback_provider": "openrouter:gpt-oss-120b"},
     # Cerebras Llama 3.1 8B — small/fast, 1 persona
-    "llama-contra":{"name": "Llama Contrarian",  "provider": "cerebras:llama3.1-8b",  "personality": "contrarian",   "risk_tolerance": 0.55},
+    "llama-contra":{"name": "Llama Contrarian",  "provider": "cerebras:llama3.1-8b",  "personality": "contrarian",   "risk_tolerance": 0.55,
+                    "fallback_provider": "mistral:medium"},
     # Google Gemini 3 Flash — 2 personas
     "gemini-anl":  {"name": "Gemini Analytical", "provider": "google:gemini-3-flash", "personality": "analytical",   "risk_tolerance": 0.55},
     "gemini-tact": {"name": "Gemini Tactical",   "provider": "google:gemini-3-flash", "personality": "tactical",     "risk_tolerance": 0.60},
