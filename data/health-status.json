@@ -1,84 +1,68 @@
 {
-  "generated_at": "2026-04-17T16:30:00Z",
-  "brain_cycle": "fire-9-brain-2026-04-17",
-  "cycle_notes": "S17 new fleet best 0.22031 (extra_trees 74f gen289 cycle97 ROI=32.19% Sharpe=7.74); P8 improved 0.25597→0.24996; P1 stagnation recovered 24→7; D2/D3/D5/D7/D9 councils STARTING",
+  "generated_at": "2026-04-17T20:40:00Z",
+  "brain_cycle": "fire-10-brain-2026-04-17",
+  "cycle_notes": "All spaces restarted fresh today ~16:35Z. NBA 9/10 UP (S11 down). Political 5/8 UP (P4/P5/P8 down). Councils 3/9 active: D1/D2/D7 STARTING (D3/D4/D5/D6/D8/D9 down 503). S18 xgboost_brier collapse since gen4 (0.27482) — boost_mutation queued. P1 diversify queued (stagnation=9).",
   "nba_islands": {
-    "S10": {"url": "nomos42-nba-quant.hf.space", "status": "503_sleeping", "last_known": {"gen": 86, "brier": 0.22825}},
-    "S11": {"url": "nomos42-nba-quant-2.hf.space", "status": "503_sleeping", "last_known": {"gen": 141, "brier": 0.24572}},
-    "S12": {"url": "nomos42-nba-evo-3.hf.space", "status": "503_sleeping", "last_known": {"gen": 160, "brier": 0.23252}},
-    "S13": {"url": "nomos42-nba-evo-4.hf.space", "status": "503_sleeping", "last_known": {"gen": 130, "brier": 0.22749}},
-    "S14": {"url": "nomos42-nba-evo-5.hf.space", "status": "503_sleeping", "last_known": {"gen": 554, "brier": 0.22186}},
-    "S15": {"url": "nomos42-nba-evo-6.hf.space", "status": "503_sleeping", "last_known": {"gen": 127, "brier": 0.22418}},
-    "S16": {"url": "lbjlincoln26-nba-evo-s16.hf.space", "status": "503_sleeping", "last_known": {"gen": 113, "brier": 0.2231, "stagnation": 18, "action_needed": "diversify_on_wake"}},
-    "S17": {
-      "url": "lbjlincoln26-nba-evo-s17.hf.space",
-      "status": "EVOLVING",
-      "cycle": 97,
-      "generation": 289,
-      "best_brier": 0.22031,
-      "best_roi": 0.3219,
-      "best_sharpe": 7.7425,
-      "best_model_type": "extra_trees",
-      "best_features": 74,
-      "stagnation": 0,
-      "fleet_best": true,
-      "checkpoint_needed": true,
-      "last_update": "2026-04-17T16:17:57Z"
-    },
-    "S18": {"url": "testforge42-nba-evo-s18.hf.space", "status": "503_sleeping", "last_known": {"gen": 1030, "brier": 0.22114}},
-    "S19": {"url": "testforge42-nba-evo-s19.hf.space", "status": "503_sleeping", "last_known": {"gen": 231, "brier": 0.22728}},
-    "S20": {"url": "lbjlincoln26-nba-evo-s20.hf.space", "status": "503_sleeping"},
-    "S21": {"url": "lbjlincoln26-nba-evo-s21.hf.space", "status": "503_sleeping"},
-    "S22": {"url": "testforge42-nba-evo-s22.hf.space", "status": "503_sleeping"}
+    "S10": {"url": "nomos42-nba-quant.hf.space", "status": "EVOLVING", "cycle": 28, "generation": 82, "best_brier": 0.22098, "best_roi": 0.3136, "best_sharpe": 7.1443, "best_model_type": "random_forest", "best_features": 53, "stagnation": 0, "note": "session best — compact 53f beats MAX=200"},
+    "S11": {"url": "nomos42-nba-quant-2.hf.space", "status": "503_down", "last_known": {"gen": 141, "brier": 0.24572}, "note": "needs restart — VM keepalive cron should handle"},
+    "S12": {"url": "nomos42-nba-evo-3.hf.space", "status": "EVOLVING", "cycle": 35, "generation": 103, "best_brier": 0.22155, "best_roi": 0.3077, "best_sharpe": 7.4907, "best_model_type": "random_forest", "best_features": 61, "stagnation": 0},
+    "S13": {"url": "nomos42-nba-evo-4.hf.space", "status": "EVOLVING", "cycle": 35, "generation": 103, "best_brier": 0.22132, "best_roi": 0.3097, "best_sharpe": 7.497, "best_model_type": "random_forest", "best_features": 74, "stagnation": 0},
+    "S14": {"url": "nomos42-nba-evo-5.hf.space", "status": "EVOLVING", "cycle": 30, "generation": 89, "best_brier": 0.22547, "best_roi": 0.2635, "best_sharpe": 6.4668, "best_model_type": "lightgbm", "best_features": 35, "stagnation": 0},
+    "S15": {"url": "nomos42-nba-evo-6.hf.space", "status": "EVOLVING", "cycle": 32, "generation": 95, "best_brier": 0.22236, "best_roi": 0.2993, "best_sharpe": 8.1348, "best_model_type": "xgboost", "best_features": 60, "stagnation": 0},
+    "S16": {"url": "lbjlincoln26-nba-evo-s16.hf.space", "status": "EVOLVING", "cycle": 40, "generation": 118, "best_brier": 0.22685, "best_roi": 0.2467, "best_sharpe": 12.7301, "best_model_type": "xgboost", "best_features": 59, "stagnation": 0},
+    "S17": {"url": "lbjlincoln26-nba-evo-s17.hf.space", "status": "EVOLVING", "cycle": 31, "generation": 93, "best_brier": 0.22214, "best_roi": 0.301, "best_sharpe": 8.0205, "best_model_type": "random_forest", "best_features": 66, "stagnation": 0, "historical_fleet_best": 0.22031},
+    "S18": {"url": "testforge42-nba-evo-s18.hf.space", "status": "EVOLVING_STUCK", "cycle": 23, "generation": 69, "best_brier": 0.24757, "stagnation": 0, "note": "xgboost_brier collapse at 0.27482 since gen4; prior diversify @cy17 failed; boost_mutation queued this cycle"},
+    "S19": {"url": "testforge42-nba-evo-s19.hf.space", "status": "EVOLVING", "cycle": 36, "generation": 107, "best_brier": 0.22494, "best_roi": 0.2724, "best_sharpe": 6.9816, "best_model_type": "extra_trees", "best_features": 69, "stagnation": 0}
   },
   "political_islands": {
-    "P1": {"url": "nomos42-political-alpha.hf.space", "status": "EVOLVING", "generation": 4243, "best_brier": 0.25091, "stagnation": 7, "note": "recovered from stagnation=24"},
-    "P2": {"url": "nomos42-political-alpha-2.hf.space", "status": "EVOLVING", "generation": 4524, "best_brier": 0.26687, "stagnation": 0, "note": "regressed from 0.25223 — likely diversify reset, monitoring"},
-    "P3": {"url": "lbjlincoln-political-alpha-3.hf.space", "status": "503_sleeping", "last_known": {"gen": 14043, "brier": 0.24996}},
-    "P4": {"url": "lbjlincoln-political-alpha-4.hf.space", "status": "503_sleeping", "last_known": {"gen": 16728, "brier": 0.25146}},
-    "P5": {"url": "lbjlincoln-political-alpha-5.hf.space", "status": "503_sleeping", "last_known": {"gen": 2838, "brier": 0.25134}},
-    "P6": {"url": "lbjlincoln-political-alpha-6.hf.space", "status": "503_sleeping", "last_known": {"gen": 40, "brier": 0.25358}},
-    "P7": {"url": "lbjlincoln-political-alpha-7.hf.space", "status": "EVOLVING", "generation": 3950, "best_brier": 0.24985, "stagnation": 0, "fleet_best": true},
-    "P8": {"url": "lbjlincoln-political-alpha-8.hf.space", "status": "EVOLVING", "generation": 3594, "best_brier": 0.24996, "stagnation": 0, "note": "improved from 0.25597 — new personal best"}
+    "P1": {"url": "nomos42-political-alpha.hf.space", "status": "EVOLVING", "cycle": 229, "generation": 686, "best_brier": 0.25362, "stagnation": 9, "action": "diversify_queued"},
+    "P2": {"url": "nomos42-political-alpha-2.hf.space", "status": "EVOLVING", "cycle": 292, "generation": 876, "best_brier": 0.25341, "stagnation": 0},
+    "P3": {"url": "lbjlincoln-political-alpha-3.hf.space", "status": "EVOLVING", "cycle": 384, "generation": 1151, "best_brier": 0.24994, "stagnation": 0, "fleet_best": true},
+    "P4": {"url": "lbjlincoln-political-alpha-4.hf.space", "status": "503_down", "last_known": {"gen": 16728, "brier": 0.25146}},
+    "P5": {"url": "lbjlincoln-political-alpha-5.hf.space", "status": "503_down", "last_known": {"gen": 2838, "brier": 0.25134}},
+    "P6": {"url": "lbjlincoln-political-alpha-6.hf.space", "status": "EVOLVING", "cycle": 304, "generation": 910, "best_brier": 0.25338, "stagnation": 0},
+    "P7": {"url": "lbjlincoln-political-alpha-7.hf.space", "status": "EVOLVING", "cycle": 369, "generation": 1107, "best_brier": 0.25323, "stagnation": 0},
+    "P8": {"url": "lbjlincoln-political-alpha-8.hf.space", "status": "503_down", "last_known": {"gen": 3594, "brier": 0.24996}}
   },
   "councils": {
-    "D1": {"status": "503_sleeping"},
-    "D2": {"status": "STARTING", "karpathy_active": false, "last_run": "never", "note": "loop will auto-fire after jitter"},
-    "D3": {"status": "STARTING", "karpathy_active": false, "last_run": "never", "note": "loop will auto-fire after jitter"},
-    "D4": {"status": "503_sleeping"},
-    "D5": {"status": "STARTING", "karpathy_active": false, "last_run": "never", "note": "loop will auto-fire after jitter"},
-    "D6": {"status": "503_sleeping"},
-    "D7": {"status": "STARTING", "karpathy_active": false, "last_run": "never", "note": "loop will auto-fire after jitter"},
-    "D8": {"status": "503_sleeping"},
-    "D9": {"status": "STARTING", "karpathy_active": false, "last_run": "never", "note": "loop will auto-fire after jitter"}
+    "D1": {"status": "STARTING", "iter": 0, "note": "karpathy loop auto-fires after startup jitter"},
+    "D2": {"status": "STARTING", "iter": 0, "note": "karpathy loop auto-fires after startup jitter"},
+    "D3": {"status": "503_down", "note": "needs restart"},
+    "D4": {"status": "503_down", "note": "needs restart"},
+    "D5": {"status": "503_down", "note": "needs restart"},
+    "D6": {"status": "503_down", "note": "needs restart"},
+    "D7": {"status": "STARTING", "iter": 0, "note": "karpathy loop auto-fires after startup jitter"},
+    "D8": {"status": "503_down", "note": "needs restart"},
+    "D9": {"status": "503_down", "note": "needs restart"}
   },
   "fleet_best": {
     "nba": {
       "brier": 0.22031,
       "island": "S17",
       "gen": 289,
-      "cycle": 97,
       "model": "extra_trees",
       "features": 74,
       "roi": 0.3219,
       "sharpe": 7.7425,
-      "updated": "2026-04-17T16:17:57Z",
-      "prev_best": 0.22085
+      "source": "fire-9 brain 2026-04-17T16:30Z (S17 first fresh run today before second restart)",
+      "current_session_best": {"island": "S10", "brier": 0.22098, "gen": 82, "model": "random_forest", "features": 53}
     },
     "political": {
-      "brier": 0.24985,
-      "island": "P7",
-      "gen": 3950
+      "brier": 0.24994,
+      "island": "P3",
+      "gen": 1151,
+      "stagnation": 0
     }
   },
   "alerts": [
-    "FLEET BEST: S17 brier=0.22031 (was 0.22085) — extra_trees 74f gen289 ROI=32.19% Sharpe=7.74 — CLAUDE.md updated",
-    "P8 improved: 0.25597 -> 0.24996 (new personal best, XGBoost gen3594)",
-    "P2 regression: 0.25223 -> 0.26687 (diversify reset, monitoring for recovery)",
-    "P1 stagnation recovered: 24 -> 7 (no action needed this cycle)",
-    "D2/D3/D5/D7/D9 councils STARTING — karpathy auto-fires after startup jitter (30min)",
-    "S16 needs diversify on next wake (stagnation was 18 > 15 threshold)",
-    "VM cron: POST lbjlincoln26-nba-evo-s17.hf.space/api/command {action:checkpoint}",
-    "SOTA proposal: auto-calibration selection can push Brier toward 0.199 (see research-proposals/sota-calibration-2026-04-17.json)"
-  ]
+    "S11 DOWN (503) — VM keepalive cron should restart",
+    "P4/P5/P8 DOWN (503) — 3 political islands offline",
+    "D3/D4/D5/D6/D8/D9 DOWN (503) — 6 of 9 councils offline; D1/D2/D7 STARTING",
+    "S18 STUCK: xgboost_brier collapse 0.27482 since gen4 (65+ gens); boost_mutation queued",
+    "P1 stagnation=9: diversify queued",
+    "HF_TOKEN empty in cloud brain — cannot HF-restart; rely on VM keepalive",
+    "SOTA research: auto-calibration + compact ensemble (53-74f) can approach 0.20 Brier — see research-proposals/",
+    "CLAUDE.md fleet best corrected: 0.22085→0.22031 (fire-9 confirmed, was not committed)"
+  ],
+  "down_spaces": ["S11", "P4", "P5", "P8", "D3", "D4", "D5", "D6", "D8", "D9"]
 }
