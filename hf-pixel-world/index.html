@@ -3,7 +3,7 @@
 <head><script>window.huggingface={variables:{"SPACE_CREATOR_USER_ID":"698653c38d72821326e9e4fe"}};</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nomos42 Pixel World — v2.5 · Bloomberg Terminal</title>
+<title>Nomos42 Pixel World — Bloomberg Terminal</title>
 <style>
   :root {
     --bg:#0b0d12; --bg-2:#14171f; --bg-3:#1a1f2a; --line:#1e2330;
@@ -160,7 +160,7 @@
   <div id="stage">
     <div id="hud-top">
       <div>
-        <span class="brand">NOMOS42 · PIXEL WORLD</span> · v2.3 · PixiJS · live · bloomberg-term
+        <span class="brand">NOMOS42 · PIXEL WORLD</span> · <span id="build-tag">build: …</span> · PixiJS · live · bloomberg-term
         <span class="ext-btns">
           <a href="#" id="btn-papers" title="Live arXiv research vault">📄 PAPERS</a>
           <a href="https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status" target="_blank" rel="noopener" title="NBA TF live status JSON">📊 LIVE STATUS</a>
@@ -181,7 +181,7 @@
       <div class="tscroll"><div class="tstream" id="bt-stream">awaiting day-decisions…</div></div>
     </div>
     <div id="boot-log">
-      <div class="bl-head">◉ NOMOS42 PIXEL WORLD v2.3 — BOOT</div>
+      <div class="bl-head">◉ NOMOS42 PIXEL WORLD — BOOT</div>
       <div class="bl-line">[ok] PixiJS 8 loaded · 56×32 grid · 54 real agents</div>
       <div class="bl-line">[ok] palette=30 · badges=12 · breathing=on · emotes=state</div>
       <div class="bl-line">[ok] particles=ambient · nameplates=perf-gradient · halos=axelrod</div>
@@ -1484,16 +1484,31 @@ document.getElementById("paper-modal").addEventListener("click", (ev) => {
 // ── BOOT ────────────────────────────────────────────────────────────────────
 computeCamera();
 camScale = camTargetScale; camX = camTargetX; camY = camTargetY;  // snap on boot
+// Pull build sha (kills hardcoded v2.x) + live trader counts from TF APIs
+try {
+  const [bRaw, nbaRaw, polRaw] = await Promise.all([
+    fetch("data/build.json?t=" + Date.now(), {cache:"no-store"}).then(r => r.ok ? r.json() : null).catch(() => null),
+    fetchJSON(ENDPOINTS.nba),
+    fetchJSON(ENDPOINTS.political),
+  ]);
+  const sha = (bRaw && bRaw.commit) ? bRaw.commit : "live";
+  const bt = document.getElementById("build-tag");
+  if (bt) bt.textContent = "build: " + sha;
+  const nNba = nbaRaw && nbaRaw.axelrod_strategies ? Object.keys(nbaRaw.axelrod_strategies).length : 12;
+  const nPol = polRaw && polRaw.axelrod_strategies ? Object.keys(polRaw.axelrod_strategies).length : 10;
+  logTrade("council", "pixel-world", `boot · sha=${sha} · ${nNba} NBA traders · ${nPol} POL traders · live /api/status (no hardcoded enum)`);
+} catch (e) {
+  logTrade("council", "pixel-world", "boot · sha=unknown · falling back to static trader list");
+}
 await refresh();
 await loadPapers();
 setInterval(loadPapers, 5 * 60 * 1000); // reload papers every 5 min
-setInterval(refresh, 15000); // v2.0: 15s poll (was 30s) — safe under HF rate-limit
+setInterval(refresh, 15000); // 15s poll — safe under HF rate-limit
 // Bloomberg UTC clock — tick every second independent of data refresh
 setInterval(() => {
   const el = document.getElementById("bt-utc");
   if (el) el.textContent = new Date().toISOString().slice(11,19);
 }, 1000);
-logTrade("council", "pixel-world", "v2.3 boot · 24 traders (12 NBA + 12 POL) · 21 islands · 9 depts · breathing · emotes · particles");
 
 })();
 </script>

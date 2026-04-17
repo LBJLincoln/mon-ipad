@@ -207,6 +207,15 @@ MODELS = {
         "rpm": 20,
         "tier": "medium",
     },
+    "nvidia:minimax-m2.7": {
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "model": "minimaxai/minimax-m2.7",
+        "key_env": "NVIDIA_API_KEY",
+        "provider": "nvidia",
+        "max_tokens": 400,
+        "rpm": 40,
+        "tier": "large",
+    },
     "openrouter:qwen3-80b:free": {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "qwen/qwen3-next-80b-a3b-instruct:free",
@@ -244,7 +253,8 @@ FALLBACK_CHAINS = {
     "google:gemini-3-flash":             ["google:gemini-2.5-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
     "openrouter:gemma-4-26b:free":       ["openrouter:llama-3.3-70b:free", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
     "openrouter:nemotron-120b:free":     ["openrouter:qwen3-80b:free", "cerebras:qwen-3-235b", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "openrouter:minimax-m2.5:free":      ["openrouter:gpt-oss-20b:free", "openrouter:glm-4.5-air:free", "cerebras:llama3.1-8b", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "openrouter:minimax-m2.5:free":      ["nvidia:minimax-m2.7", "openrouter:gpt-oss-20b:free", "openrouter:glm-4.5-air:free", "cerebras:llama3.1-8b", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "nvidia:minimax-m2.7":               ["openrouter:minimax-m2.5:free", "cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:qwen3-80b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
     "openrouter:qwen3-80b:free":         ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
     "openrouter:llama-3.3-70b:free":     ["cerebras:llama3.1-8b", "openrouter:nemotron-120b:free", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
     "mistral:large":                     ["mistral:medium", "mistral:small", "cerebras:qwen-3-235b", "google:gemini-3-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
@@ -428,12 +438,36 @@ def _call_mistral(model_cfg: dict, messages: list, max_tokens: int) -> str:
     raise ValueError(f"Mistral unexpected response: {json.dumps(data)[:200]}")
 
 
+def _call_nvidia(model_cfg: dict, messages: list, max_tokens: int) -> str:
+    """NVIDIA build.nvidia.com / NIM — OpenAI-compatible /v1/chat/completions.
+    Free eval tier via build.nvidia.com (API key from ngc.nvidia.com).
+    Primary use: MiniMax M2.7 (230B MoE / 10B active, 200K ctx, agentic tool-calling)."""
+    key = os.environ.get(model_cfg["key_env"], "")
+    if not key:
+        raise ValueError(f"Missing key: {model_cfg['key_env']}")
+    resp = requests.post(
+        model_cfg["url"],
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "Accept": "application/json"},
+        json={"model": model_cfg["model"], "messages": messages,
+              "max_tokens": max_tokens, "temperature": 0.7, "stream": False},
+        timeout=45,
+    )
+    if resp.status_code == 429:
+        raise ValueError("Rate limited (429)")
+    resp.raise_for_status()
+    data = resp.json()
+    if "choices" in data and data["choices"]:
+        return data["choices"][0]["message"]["content"]
+    raise ValueError(f"NVIDIA unexpected response: {json.dumps(data)[:200]}")
+
+
 PROVIDER_CALLERS = {
     "cerebras": _call_cerebras,
     "google": _call_google,
     "openrouter": _call_openrouter,
     "selfhost": _call_selfhost,
     "mistral": _call_mistral,
+    "nvidia": _call_nvidia,
 }
 
 
