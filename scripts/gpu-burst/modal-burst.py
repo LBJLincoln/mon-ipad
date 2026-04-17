@@ -712,4 +712,24 @@ def main(
     print(f"Improvement: {result.get('improvement', '?')}")
     print(f"Beat ATR: {result.get('beat_atr', '?')}")
 
+    # Log to fleet-matrix scoreboard (G6 = modal_user Karpathy ensemble slot)
+    try:
+        import sys
+        sys.path.insert(0, str(Path(__file__).parent))
+        from _fleet_slots import log_slot_result, update_registry_brier  # type: ignore
+        slot_id = os.environ.get("FLEET_SLOT", "G6")
+        brier = float(result.get("best_brier", 1.0))
+        log_slot_result(
+            slot_id=slot_id,
+            brier=brier,
+            gen=result.get("iterations"),
+            walltime_s=result.get("total_time_sec"),
+            hypothesis=result.get("model_type"),
+            extra={"n_features": result.get("n_features"), "platform": "modal_a10g"},
+        )
+        update_registry_brier(slot_id, brier)
+        print(f"[fleet-matrix] logged {slot_id} brier={brier:.5f}")
+    except Exception as e:  # noqa: BLE001
+        print(f"[fleet-matrix] log failed (non-fatal): {e}")
+
     return result

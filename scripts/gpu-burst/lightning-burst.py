@@ -719,6 +719,26 @@ def run_burst():
             f"Best: {display_best:.5f}"
         )
 
+    # Log to fleet-matrix scoreboard (G4 NBA Venn-Abers / P-G1 Political)
+    try:
+        import sys as _sys
+        _sys.path.insert(0, str(Path(__file__).parent))
+        from _fleet_slots import log_slot_result, update_registry_brier  # type: ignore
+        default_slot = "G4" if MODE == "nba" else "P-G1"
+        slot_id = os.environ.get("FLEET_SLOT", default_slot)
+        log_slot_result(
+            slot_id=slot_id,
+            brier=float(best_ever),
+            gen=iteration,
+            walltime_s=total_time,
+            hypothesis=best_ind["model_type"],
+            extra={"mode": MODE, "n_features": len(best_features), "platform": "lightning"},
+        )
+        update_registry_brier(slot_id, float(best_ever))
+        print(f"[fleet-matrix] logged {slot_id} brier={best_ever:.5f}")
+    except Exception as e:  # noqa: BLE001
+        print(f"[fleet-matrix] log failed (non-fatal): {e}")
+
     return result
 
 

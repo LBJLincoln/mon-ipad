@@ -1327,4 +1327,22 @@ if confrontation:
 print(f"  Avg Model Brier: {avg_brier:.5f}")
 print(f"  Weeks: {n_weeks} | Strategies tested: {len(STRATEGIES)}")
 print(f"{'='*60}")
+
+# Log to fleet-matrix (G1 = Kaggle TabICL 186f walk-forward). Runs on Kaggle
+# with no repo path so this block is best-effort — failure is non-fatal.
+try:
+    import sys as _sys
+    _mon = os.path.expanduser("~/mon-ipad")
+    if os.path.isdir(os.path.join(_mon, "scripts/gpu-burst")):
+        _sys.path.insert(0, os.path.join(_mon, "scripts/gpu-burst"))
+        from _fleet_slots import log_slot_result, update_registry_brier  # type: ignore
+        slot_id = os.environ.get("FLEET_SLOT", "G1")
+        log_slot_result(slot_id=slot_id, brier=float(avg_brier),
+                        hypothesis="tabicl_186f_iter129",
+                        extra={"platform": "kaggle_p100", "weeks": n_weeks})
+        update_registry_brier(slot_id, float(avg_brier))
+        print(f"[fleet-matrix] logged {slot_id} brier={avg_brier:.5f}")
+except Exception as _e:
+    print(f"[fleet-matrix] log skipped: {_e}")
+
 print("Done.")
