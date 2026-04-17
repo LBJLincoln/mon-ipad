@@ -82,6 +82,25 @@ OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 # Optional: VM endpoint to push actions to
 VM_API_URL = os.environ.get("VM_API_URL", "")
 
+# -- Hub persistence (Apr 17 2026) --------------------------------------------
+# Per-iteration audit trail so councils survive /tmp wipe on restart and the
+# TF/depts can cross-analyze council decisions. Writes
+# data/iterations/iter-NNN.json + data/runtime/state.json to this Space repo.
+HF_WRITE_TOKEN = (
+    os.environ.get("HF_WRITE_TOKEN")
+    or os.environ.get("NOMOS_HF_TOKEN")
+    or os.environ.get("HF_TOKEN")
+    or os.environ.get("HF_TOKEN_3")
+)
+HF_SPACE_ID = os.environ.get("SPACE_ID") or f"TESTforge42/nomos-dept-{DEPT_ID}-{DEPT_NAME}"
+
+try:
+    from huggingface_hub import HfApi, hf_hub_download
+    _hub_api = HfApi(token=HF_WRITE_TOKEN) if HF_WRITE_TOKEN else None
+except Exception:
+    _hub_api = None
+    hf_hub_download = None
+
 # -- State ---------------------------------------------------------------------
 
 state = {
@@ -720,8 +739,88 @@ def run_iteration() -> dict:
 
 COUNCIL_LOG_PATH = Path("/tmp/council-iterations.jsonl")
 
+def _push_iteration_to_hub(record: dict):
+    """Push one iteration audit record to data/iterations/iter-NNN.json on the Space repo.
+    Permanent audit trail so /tmp wipe doesn't lose reasoning."""
+    if not _hub_api:
+        return
+    try:
+        iter_n = record["iteration"]
+        payload = {
+            "dept_id": DEPT_ID,
+            "dept_name": DEPT_NAME,
+            "iteration": iter_n,
+            "timestamp": record["timestamp"],
+            "llm_provider": record["llm_provider"],
+            "decision": record.get("decision", {}),
+            "action_result": record.get("action_result", ""),
+            "tf_actions": record.get("tf_actions", []),
+            "scan_summary": record.get("scan_summary", {}),
+            "elapsed_seconds": record.get("elapsed_seconds", 0),
+        }
+        import tempfile
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(payload, f, indent=2)
+            tmp = f.name
+        _hub_api.upload_file(
+            path_or_fileobj=tmp,
+            path_in_repo=f"data/iterations/iter-{iter_n:04d}.json",
+            repo_id=HF_SPACE_ID,
+            repo_type="space",
+            commit_message=f"{DEPT_ID}: iter {iter_n} — {payload['decision'].get('action','?')[:40]}",
+        )
+        os.unlink(tmp)
+    except Exception as e:
+        print(f"[{DEPT_ID.upper()}] hub-push iter failed: {e}")
+
+
+def _push_state_to_hub():
+    """Overwrite data/runtime/state.json on the Space repo with current state snapshot."""
+    if not _hub_api:
+        return
+    try:
+        with _lock:
+            s = dict(state)
+        s["history"] = s["history"][:10]
+        import tempfile
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(s, f, indent=2)
+            tmp = f.name
+        _hub_api.upload_file(
+            path_or_fileobj=tmp,
+            path_in_repo="data/runtime/state.json",
+            repo_id=HF_SPACE_ID,
+            repo_type="space",
+            commit_message=f"{DEPT_ID}: state snapshot iter {s.get('iteration', '?')}",
+        )
+        os.unlink(tmp)
+    except Exception as e:
+        print(f"[{DEPT_ID.upper()}] hub-push state failed: {e}")
+
+
+def _resume_iteration_count_from_hub() -> int:
+    """On startup, read data/runtime/state.json from Hub to resume counter."""
+    if not _hub_api or not hf_hub_download:
+        return 0
+    try:
+        p = hf_hub_download(
+            repo_id=HF_SPACE_ID,
+            filename="data/runtime/state.json",
+            repo_type="space",
+            token=HF_WRITE_TOKEN,
+        )
+        with open(p) as f:
+            prev = json.load(f)
+        n = int(prev.get("iteration", 0))
+        print(f"[{DEPT_ID.upper()}] resumed iteration counter from Hub: {n}")
+        return n
+    except Exception as e:
+        print(f"[{DEPT_ID.upper()}] no prior state on Hub ({e}) — starting iter 0")
+        return 0
+
+
 def _append_iteration_log(record: dict):
-    """Append iteration record to JSONL for retrospective analysis."""
+    """Append iteration record to JSONL for retrospective analysis + push to Hub."""
     log_entry = {
         "timestamp": record["timestamp"],
         "dept_id": DEPT_ID,
@@ -739,6 +838,8 @@ def _append_iteration_log(record: dict):
             f.write(json.dumps(log_entry) + "\n")
     except Exception:
         pass
+    _push_iteration_to_hub(record)
+    _push_state_to_hub()
 
 def _loop_worker():
     """Background thread: run iterations on schedule with startup jitter."""
@@ -889,6 +990,14 @@ with gr.Blocks(
 # -- Startup -------------------------------------------------------------------
 
 if __name__ == "__main__":
+    # Resume iteration counter from Hub so restarts don't zero the audit trail
+    try:
+        resumed = _resume_iteration_count_from_hub()
+        if resumed > 0:
+            with _lock:
+                state["iteration"] = resumed
+    except Exception as _e:
+        print(f"[{DEPT_ID.upper()}] resume failed: {_e}")
     thread = threading.Thread(target=_loop_worker, daemon=True)
     thread.start()
     print(f"[{DEPT_ID.upper()}] Council space starting. Mission: {DEPT_MISSION}")
