@@ -186,7 +186,7 @@
       </div>
       <div><span class="tick" id="hud-tick">· booting</span> <span style="opacity:0.4;font-size:9px;margin-left:6px">v2.12</span></div>
     </div>
-    <div id="minimap"><span class="mm-lbl">MAP</span><canvas id="mm-canvas" width="120" height="80"></canvas></div>
+<!-- v2.12: minimap deleted — took 120×80 of valuable HUD real-estate, agents are already visible in world view -->
     <div id="bet-ticker">
       <span class="tlbl">◉ LIVE BETS</span>
       <div class="tscroll"><div class="tstream" id="bt-stream">awaiting day-decisions…</div></div>
@@ -304,17 +304,17 @@ function homeIslandFor(id) {
 const MATCH_FLOOR = { x: 20, y: 17 };
 
 // Layout: infra + councils at TOP (click-only, no bubbles), traders in the MIDDLE (moving, ephemeral bubbles)
-// v2.10 layout — 52×32, zones edge-to-edge, taller control room for proper board grid.
-// y=1..4    NBA evo | POL evo    (4 rows)
-// y=5..8    councils              (4 rows)
-// y=9..19   NBA TF  | POL TF      (11 rows — matches typical screen aspect)
-// y=20..30  CONTROL ROOM         (11 rows — 2×6 grid of panels, plenty of room)
+// v2.12 unified layout — 52×32, ZERO dead columns. NBA and POL zones now touch at x=26.
+// y=1..4    NBA evo (x 1..25) | POL evo (x 26..50)  — halves share the center wall
+// y=5..8    councils (x 1..50)                       — single wide chamber
+// y=9..19   NBA TF (x 1..25)  | POL TF (x 26..50)   — halves share the center wall
+// y=20..30  CONTROL ROOM (x 1..50)                   — 2×6 panel grid, full width
 const ZONES = {
-  "nba-infra":  { x:1,  y:1,  w:24, h:4,  floor:6, label:"NBA EVOLUTION · 13 ISLANDS" },
-  "pol-infra":  { x:27, y:1,  w:24, h:4,  floor:6, label:"POLITICAL EVOLUTION · 8 ISLANDS" },
+  "nba-infra":  { x:1,  y:1,  w:25, h:4,  floor:6, label:"NBA EVOLUTION · 13 ISLANDS" },
+  "pol-infra":  { x:26, y:1,  w:25, h:4,  floor:6, label:"POLITICAL EVOLUTION · 8 ISLANDS" },
   councils:     { x:1,  y:5,  w:50, h:4,  floor:1, label:"COUNCIL CHAMBERS · 9 DEPARTMENTS" },
-  nba:          { x:1,  y:9,  w:24, h:11, floor:3, label:"NBA TRADING FLOOR" },
-  political:    { x:27, y:9,  w:24, h:11, floor:5, label:"POLITICAL FLOOR" },
+  nba:          { x:1,  y:9,  w:25, h:11, floor:3, label:"NBA TRADING FLOOR" },
+  political:    { x:26, y:9,  w:25, h:11, floor:5, label:"POLITICAL FLOOR" },
   "control-room":{x:1,  y:20, w:50, h:11, floor:8, label:"CONTROL ROOM · LIVE LLM DATA FEEDS" },
 };
 
@@ -634,20 +634,15 @@ async function refreshDiegeticPanels() {
   }
 }
 // Anchor positions — top row across world, doesn't overlap agents (they walk below y=200)
-makeDiegeticPanel({ x:24, y:24, w:280, h:130, title:"◆ ODDS BOARD — live-odds.json",
-  dataUrl:"/api/nba/odds",
+// v2.12: /api/nba/odds is 404 on static Space. Replaced with live COUNCIL SUMMARY from NBA TF.
+makeDiegeticPanel({ x:24, y:24, w:280, h:130, title:"◎ MORNING COUNCIL — qwen-235B",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
   render:(d) => {
-    const games = (d && d.games) || [];
-    if (!games.length) return { state:"no_signal" };
-    const fetched = d.fetched_at || d.timestamp || 0;
-    const ageSec = fetched ? (Date.now()/1000 - new Date(fetched).getTime()/1000) : 0;
-    const state = ageSec > 600 ? "stale" : "live";
-    const lines = games.slice(0,6).map(g => {
-      const h = g.home_team || g.home || "?", a = g.away_team || g.away || "?";
-      const ml = g.moneyline_home || g.home_ml || "?";
-      return `${a.slice(0,3)}@${h.slice(0,3)}  ${ml}`;
-    });
-    return { text: lines.join("\n") || "— no games today —", state };
+    if (!d) return { state:"no_signal" };
+    const summary = (d.latest_council_summary || "").trim();
+    if (!summary) return { text: "council hasn't convened yet\n(fires at day-1 open)\nmoderator: qwen-235B\ncanon: axelrod active", state:"stale" };
+    const chunk = summary.slice(0, 280);
+    return { text: chunk, state:"live" };
   }});
 makeDiegeticPanel({ x:976, y:24, w:280, h:130, title:"▣ BANKROLL TOTEM — TFs live",
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
@@ -675,26 +670,28 @@ makeDiegeticPanel({ x:24, y:168, w:280, h:130, title:"◈ PROMPT CORE — missio
     return { text, state: missionActive ? "live" : "fake" };
   }});
 makeDiegeticPanel({ x:976, y:168, w:280, h:130, title:"▲ EDGE MATRIX — model vs market",
-  dataUrl:"/api/nba/calibration",
+  dataUrl:"https://nomosdashboard.vercel.app/api/nba/calibration",
   render:(d) => {
     if (!d || !d.points) return { state:"no_signal" };
     const pts = d.points.slice(-5);
     const lines = pts.map(p => `bin ${(p.predicted*100).toFixed(0)}%  actual ${(p.actual*100).toFixed(0)}%  n=${p.count}`);
     return { text: lines.join("\n") || "no calibration data", state:"live" };
   }});
-// Zone A — 2 more market panels
-makeDiegeticPanel({ x:320, y:24, w:336, h:40, title:"◂ MARKET TICKER — line movement",
-  dataUrl:"/api/nba/odds",
+// v2.12: /api/nba/odds panel replaced with live MODEL ROSTER (one line per agent with its LLM).
+makeDiegeticPanel({ x:320, y:24, w:336, h:130, title:"▸ MODEL ROSTER — 16 agents × LLM",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
   render:(d) => {
-    const games = (d && d.games) || [];
-    if (!games.length) return { state:"no_signal" };
-    const ticks = games.slice(0,4).map(g => {
-      const h = (g.home_team || g.home || "?").slice(0,3);
-      const a = (g.away_team || g.away || "?").slice(0,3);
-      const ml = g.moneyline_home || g.home_ml || "—";
-      return `${a}@${h} ${ml}`;
+    if (!d) return { state:"no_signal" };
+    const strats = d.axelrod_strategies || {};
+    const sacs = d.sacrificial_assignments || {};
+    const names = Object.keys(strats);
+    if (!names.length) return { text: "model roster not yet published\n(agents boot during day 1)", state:"stale" };
+    const lines = names.slice(0, 8).map(n => {
+      const s = strats[n] || "?";
+      const isSac = sacs[n] ? "†" : " ";
+      return `${isSac} ${n.slice(0,14).padEnd(14)} · ${s.slice(0,16)}`;
     });
-    return { text: "▸ " + ticks.join("  ▸ "), state:"live" };
+    return { text: lines.join("\n"), state: names.length >= 10 ? "live" : "stale" };
   }});
 makeDiegeticPanel({ x:672, y:24, w:280, h:130, title:"◉ LLM API RACK — 5 providers",
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
@@ -736,7 +733,7 @@ makeDiegeticPanel({ x:648, y:168, w:320, h:130, title:"▣ ENGINE TERMINAL — p
 makeDiegeticPanel({ x:24, y:320, w:280, h:130, title:"◉ DECISION LOG — bet feed",
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
   render:(d) => {
-    if (!d || !d.leaderboard) return { state:"no_signal" };
+    if (!d || !d.leaderboard) return { text: "leaderboard empty\n(day 1 in progress,\n awaiting first commit)", state:"stale" };
     const lb = d.leaderboard.slice(0,5);
     const lines = lb.map((t,i) => `${(t.name||t.trader_id||"?").padEnd(14)} $${(t.bankroll||0).toFixed(0)} ${(t.wins||0)}W/${(t.losses||0)}L`);
     return { text: lines.join("\n") || "no trades yet", state: lb[0] && lb[0].bankroll > 0 ? "live" : "stale" };
@@ -745,9 +742,11 @@ makeDiegeticPanel({ x:976, y:320, w:280, h:130, title:"◈ REASONING WINDOW — 
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
   render:(d) => {
     if (!d) return { state:"no_signal" };
-    const pr = d.current_phase || d.phase || "scan";
-    const text = `phase: ${pr}\nmoderator: qwen-235B\npacts: ${d.cooperation_pacts_count||0}\nrogue: ${d.rogue_trigger_count||0}\ncanon: ${d.axelrod_canon_active ? "active" : "off"}\nsacrifice: ${JSON.stringify(d.sacrificial_assignments||{}).length > 2 ? "assigned" : "—"}`;
-    return { text, state: "live" };
+    // v2.12: status doesn't expose "phase". Derive from running + llm_calls.
+    const phase = d.running ? (d.llm_calls > 0 ? "reasoning" : "boot") : "idle";
+    const sac = Object.keys(d.sacrificial_assignments||{}).length;
+    const text = `phase: ${phase}\nmoderator: qwen-235B\ncalls: ${d.llm_calls||0} (fail ${d.llm_failures||0})\npacts: ${d.cooperation_pacts_count||0}\nrogue: ${d.rogue_events_total||0}\ncanon: ${d.axelrod_canon_active ? "active" : "off"}\nsacrifice: ${sac} assigned`;
+    return { text, state: d.running ? "live" : "stale" };
   }});
 // Zone D — cooperation/council
 makeDiegeticPanel({ x:320, y:320, w:320, h:130, title:"⚖ COUNCIL TABLE — morning moderator",
@@ -762,7 +761,7 @@ makeDiegeticPanel({ x:320, y:320, w:320, h:130, title:"⚖ COUNCIL TABLE — mor
 makeDiegeticPanel({ x:648, y:320, w:320, h:130, title:"▼ ROGUE TRIGGER — drawdown guard",
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
   render:(d) => {
-    if (!d || !d.leaderboard) return { state:"no_signal" };
+    if (!d || !d.leaderboard) return { text: "rogue guard armed\nall 16 agents at $100\n(no triggers until day 1 commits)", state:"stale" };
     const lb = d.leaderboard;
     const lowest = lb.reduce((m,t) => (t.bankroll||Infinity) < (m.bankroll||Infinity) ? t : m, {bankroll:Infinity});
     const highest = lb.reduce((m,t) => (t.bankroll||0) > (m.bankroll||0) ? t : m, {bankroll:0});
@@ -775,7 +774,7 @@ makeDiegeticPanel({ x:648, y:320, w:320, h:130, title:"▼ ROGUE TRIGGER — dra
 makeDiegeticPanel({ x:24, y:480, w:408, h:130, title:"◁ SEASON P&L — 16 agents",
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
   render:(d) => {
-    if (!d || !d.leaderboard) return { state:"no_signal" };
+    if (!d || !d.leaderboard) return { text: "season P&L empty\n(leaderboard populates after\n first day completes)", state:"stale" };
     const lb = d.leaderboard.slice(0,6);
     const lines = lb.map(t => {
       const b = t.bankroll || 0;
@@ -788,7 +787,8 @@ makeDiegeticPanel({ x:24, y:480, w:408, h:130, title:"◁ SEASON P&L — 16 agen
 makeDiegeticPanel({ x:448, y:480, w:408, h:130, title:"◆ POST-MORTEM — yesterday's L",
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/day-decisions",
   render:(d) => {
-    if (!d || !d.days || !d.days.length) return { state:"no_signal" };
+    if (!d || !d.days || !d.days.length)
+      return { text: "no day-decisions yet\nday 1 writes on completion\n(≈10-15 min)", state:"stale" };
     const last = d.days[d.days.length-1];
     const date = last.date || "?";
     const allocs = last.total_allocations || 0;
@@ -806,7 +806,8 @@ makeDiegeticPanel({ x:448, y:480, w:408, h:130, title:"◆ POST-MORTEM — yeste
 makeDiegeticPanel({ x:872, y:480, w:384, h:130, title:"▶ RESOLVE WALL — outcomes",
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/day-decisions",
   render:(d) => {
-    if (!d || !d.days) return { state:"no_signal" };
+    if (!d || !d.days || !d.days.length)
+      return { text: "no resolved days yet\nday 1 still in flight\nagents posting allocations now", state:"stale" };
     const n = d.days.length;
     const totalAllocs = d.days.reduce((s,day) => s + (day.total_allocations||0), 0);
     const totalDeploy = d.days.reduce((s,day) => s + (1 - (day.avg_cash_pct||1)), 0);
@@ -844,7 +845,7 @@ makeDiegeticPanel({ x:448, y:628, w:408, h:130, title:"▣ POLITICAL TF — 16 a
 makeDiegeticPanel({ x:872, y:628, w:384, h:130, title:"◇ COLLECTIVE GOAL — $1M/season",
   dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
   render:(d) => {
-    if (!d || !d.leaderboard) return { state:"no_signal" };
+    if (!d || !d.leaderboard) return { text: "collective pool: $1,600\n(16 agents × $100)\ntarget: $1,000,000\n[day 1 in flight — no P&L yet]", state:"stale" };
     const total = d.leaderboard.reduce((s,t) => s + (t.bankroll||0), 0);
     const target = 1_000_000;
     const pct = (total / target) * 100;
@@ -2094,8 +2095,8 @@ async function refresh() {
     councilOK++;
     const prev = a.data;
     a.data = s;
-    const iter = s.iteration_count ?? s.total_iterations ?? 0;
-    const last = s.last_iteration_at || s.updated_at || "";
+    const iter = s.iteration ?? s.iteration_count ?? s.total_iterations ?? 0;
+    const last = s.last_run || s.last_iteration_at || s.updated_at || "";
     // age in minutes (if parseable)
     let ageMin = null;
     if (last) {
@@ -2103,9 +2104,10 @@ async function refresh() {
       if (!isNaN(t)) ageMin = Math.floor((Date.now() - t) / 60000);
     }
     a.state = ageMin != null && ageMin > 90 ? "stale" : "profit";
-    if (prev && prev.iteration_count != null && iter > prev.iteration_count) {
+    const prevIter = prev ? (prev.iteration ?? prev.iteration_count ?? 0) : null;
+    if (prevIter != null && iter > prevIter) {
       a.activeUntil = performance.now() + 4000;
-      logTrade("council", a.label, `iter ${iter}`);
+      logTrade("council", a.label, `iter ${iter} · ${s.last_decision||"—"}`);
       spawnPulseRing(a.x * TILE, a.y * TILE, 0xffb86c);
     }
     a.bubble = `${a.key}·iter ${iter}${ageMin!=null?` · ${ageMin}m ago`:""}`;
@@ -2152,8 +2154,7 @@ async function refresh() {
 
   // ═══ v2.0: Live bet ticker — scroll last 20 allocations from both TFs ═══
   renderBetTicker();
-  // ═══ v2.0: Mini-map ═══
-  renderMinimap();
+  // v2.12: minimap removed
   // Fade boot-log after first refresh
   const bl = document.getElementById("boot-log");
   if (bl && !bl._faded) {
@@ -2197,40 +2198,7 @@ function renderBetTicker() {
 }
 
 // ═══ v2.0: Mini-map (top-right, 120x80) ═══════════════════════════════════
-function renderMinimap() {
-  const cvs = document.getElementById("mm-canvas"); if (!cvs) return;
-  const ctx = cvs.getContext("2d");
-  const W = 120, H = 80;
-  ctx.fillStyle = "#0b0d12"; ctx.fillRect(0,0,W,H);
-  // Zone outlines
-  const sx = W / (GRID_W * TILE), sy = H / (GRID_H * TILE);
-  for (const [zid, z] of Object.entries(ZONES)) {
-    ctx.strokeStyle = KIND_COLORS_HEX[zoneIdToKind(zid)] || "#333";
-    ctx.globalAlpha = 0.55;
-    ctx.strokeRect(z.x*TILE*sx, z.y*TILE*sy, z.w*TILE*sx, z.h*TILE*sy);
-  }
-  // Agent density heatmap (2x2 cells)
-  ctx.globalAlpha = 1.0;
-  const cellW = 4, cellH = 4;
-  const heat = {};
-  for (const a of AGENTS) {
-    const cx = Math.floor(a.x*TILE*sx / cellW);
-    const cy = Math.floor(a.y*TILE*sy / cellH);
-    const k = `${cx},${cy}`;
-    heat[k] = (heat[k] || 0) + 1;
-  }
-  for (const [k, n] of Object.entries(heat)) {
-    const [cx,cy] = k.split(",").map(Number);
-    const alpha = Math.min(0.85, 0.2 + n * 0.14);
-    ctx.fillStyle = `rgba(255,165,0,${alpha})`;
-    ctx.fillRect(cx*cellW, cy*cellH, cellW, cellH);
-  }
-  // Islands as bright dots
-  for (const a of AGENTS.filter(x => x._isInfra)) {
-    ctx.fillStyle = a.kind === "pol_infra" ? "#8be9fd" : "#50fa7b";
-    ctx.fillRect(a.x*TILE*sx - 1, a.y*TILE*sy - 1, 3, 3);
-  }
-}
+// v2.12: renderMinimap() removed (minimap HUD deleted)
 
 // ── LIVE RESEARCH (papers.json static — refreshed by daily cron) ──────────
 const TAG_COLOR = {
