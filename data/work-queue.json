@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-17T00:00:00Z",
+  "updated_at": "2026-04-17T04:09:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {"id": "R7", "priority": 2, "status": "done", "completed_at": "2026-04-15T19:00:00Z", "commit_hash": "61c4b61394e2381ab0e1702f0581c292055b235c", "owner": "local-agent-a63b2bad", "subject": "Deploy S20/S21/S22 NBA islands"},
@@ -35,11 +35,30 @@
     {
       "id": "tf-axelrod-verify-tune-7",
       "priority": 14,
+      "status": "done",
+      "completed_at": "2026-04-17T04:09:00Z",
+      "commit_hash": "35474e80d4c0ac277eeaf4c808e06f98279afbfd",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 7 — confirm GH Actions ran + re-trigger with fix",
+      "findings": [
+        "axelrod-fire6-patch.yml STILL PRESENT — workflow did not self-delete (did not run or failed at push step)",
+        "NBA app.py intact: 129,032 chars, NOT broken, NOT placeholder",
+        "Political app.py intact: 100,042 chars, NOT broken",
+        "_society_archetypes_by_day NOT present in either app.py — patch was not applied",
+        "ALL patterns verified to MATCH: OLD_GLOBAL, NBA_OLD_BODY, POL_OLD_BODY, OLD_CLEAR all confirmed via Python grep on file content",
+        "Root cause: likely git push race condition — original workflow had no pull-rebase before push"
+      ],
+      "action_taken": "Updated workflow to v2: added 'git pull --rebase origin main' before git push + improved MISS diagnostics. Re-triggered via push to workflow file path. GH Actions runner will apply society-wide archetype dedup to both app.py and self-delete.",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-8",
+      "priority": 15,
       "status": "pending",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 7 — confirm GH Actions ran + full spec audit",
-      "depends_on": "tf-axelrod-verify-tune-6",
-      "scope": "1. Confirm .github/workflows/axelrod-fire6-patch.yml is GONE (self-deleted). 2. Confirm _society_archetypes_by_day in both app.py HEAD files (5 occurrences each). 3. py_compile both. 4. If workflow did NOT run, trigger via workflow_dispatch. 5. Full Axelrod spec audit (Mech A/B/C correctness). 6. Assess readiness for HF Space push (user review required).",
+      "subject": "verify+tune fire 8 — confirm fire-6-v2 GH Actions ran + full spec audit + HF push readiness",
+      "depends_on": "tf-axelrod-verify-tune-7",
+      "scope": "1. Confirm .github/workflows/axelrod-fire6-patch.yml is GONE (self-deleted by v2 workflow). 2. If NOT gone: check GH Actions run log for errors and fix; trigger workflow_dispatch manually. 3. Confirm _society_archetypes_by_day in both app.py HEAD (5 occurrences each). 4. py_compile both. 5. Full Axelrod spec audit: Mech A (CHALLENGE/DEFEND blocks), Mech B (society-wide dedup correct), Mech C (correctness). 6. Assess readiness for HF Space push — note do_not_push_hf_space_yet=true, user must review before deploying to live Spaces.",
       "do_not_push_hf_space_yet": true
     }
   ],

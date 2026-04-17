@@ -1,4 +1,4 @@
-name: Axelrod fire-6 — society-wide archetype dedup (self-deleting)
+name: Axelrod fire-6 v2 — society-wide archetype dedup (self-deleting)
 on:
   push:
     paths:
@@ -110,6 +110,7 @@ for path, old_body in [(NBA, NBA_OLD_BODY), (POL, POL_OLD_BODY)]:
         continue
 
     changed = 0
+    misses = []
     for old, new, label in [(OLD_GLOBAL, NEW_GLOBAL, 'global'),
                              (old_body, NEW_BODY, 'body'),
                              (OLD_CLEAR, NEW_CLEAR, 'clear')]:
@@ -118,8 +119,18 @@ for path, old_body in [(NBA, NBA_OLD_BODY), (POL, POL_OLD_BODY)]:
             changed += 1
             print(f'  {path}: OK {label}')
         else:
-            print(f'  {path}: MISS {label}', file=sys.stderr)
+            print(f'  {path}: MISS {label} -- first 80 chars: {repr(old[:80])}', file=sys.stderr)
+            misses.append(label)
             errors += 1
+
+    if misses:
+        # Dump surrounding context to aid diagnosis
+        for old, label in [(OLD_GLOBAL, 'global'), (NBA_OLD_BODY if 'nba' in path else POL_OLD_BODY, 'body'), (OLD_CLEAR, 'clear')]:
+            if label in misses:
+                key = old[:30]
+                idx = text.find(key[:20])
+                print(f'  CONTEXT for {label} (idx={idx}): {repr(text[max(0,idx-20):idx+100])}', file=sys.stderr)
+        continue  # Don't write broken file
 
     with open(path, 'w') as f:
         f.write(text)
@@ -144,5 +155,13 @@ PYEOF
           git add scripts/arena/hf-political-trading-floor/app.py
           git rm --force .github/workflows/axelrod-fire6-patch.yml
           git diff --cached --stat
-          git commit -m "fix(tf): Axelrod Mech B society-wide archetype dedup -- both NBA+Political TF apps\n\n_used_archetypes was per-agent. Spec: NEVER USED in prior 7 days by ANYONE.\nAdded _society_archetypes_by_day global keyed by day_date (trailing-7-day window).\nassign_sacrificial_archetypes now builds society_used = union of trailing days,\npicks from full AXELROD_ARCHETYPES minus society_used. Falls back to per-agent only\nwhen 20-archetype pool is exhausted. py_compile PASS both apps.\nNBA: 5 occurrences, POL: 5 occurrences. Self-deletes this workflow on success.\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+          git commit -m "fix(tf): Axelrod Mech B society-wide archetype dedup -- both NBA+Political TF apps
+
+_used_archetypes was per-agent. Spec: NEVER USED in prior 7 days by ANYONE.
+Added _society_archetypes_by_day global keyed by day_date (trailing-7-day window).
+assign_sacrificial_archetypes now builds society_used = union of trailing days,
+picks from full AXELROD_ARCHETYPES minus society_used. Falls back to per-agent only
+when 20-archetype pool is exhausted. py_compile PASS both apps.
+NBA: 5 occurrences, POL: 5 occurrences. Self-deletes workflow on success."
+          git pull --rebase origin main
           git push
