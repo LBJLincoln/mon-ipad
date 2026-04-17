@@ -162,7 +162,7 @@
       <div>
         <span class="brand">NOMOS42 · PIXEL WORLD</span> · v2.3 · PixiJS · live · bloomberg-term
         <span class="ext-btns">
-          <a href="https://lbjlincoln26-nba-llm-trading-floor.hf.space/paper" target="_blank" rel="noopener" title="Whitepaper PDF">📄 PAPER</a>
+          <a href="#" id="btn-papers" title="Live arXiv research vault">📄 PAPERS</a>
           <a href="https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status" target="_blank" rel="noopener" title="NBA TF live status JSON">📊 LIVE STATUS</a>
         </span>
       </div>
@@ -221,6 +221,20 @@
       <h3><span>Live Events</span><span class="c" id="panel-trades-count">0</span></h3>
       <div id="panel-trades-list"></div>
     </div>
+    <div class="panel" id="panel-papers">
+      <h3><span>Live Research</span><span class="c" id="panel-papers-count">—</span></h3>
+      <div id="panel-papers-list" style="font-size:10.5px; max-height:220px; overflow-y:auto; padding-right:2px;"></div>
+    </div>
+  </div>
+</div>
+<div id="paper-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:1000; padding:40px; overflow-y:auto;">
+  <div style="max-width:900px; margin:0 auto; background:#0a0d14; border:1px solid #3a2600; border-radius:4px; padding:24px; font-family:'IBM Plex Mono',monospace; color:#eee;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div style="color:#ffa500; font-size:13px; letter-spacing:0.14em;">◉ NOMOS42 RESEARCH VAULT — LIVE ARXIV</div>
+      <button id="paper-modal-close" style="background:#000; border:1px solid #3a2600; color:#ffa500; padding:6px 12px; font-family:inherit; cursor:pointer; border-radius:2px;">CLOSE ✕</button>
+    </div>
+    <div id="paper-modal-meta" style="color:#8899aa; font-size:10px; margin-bottom:12px;">loading…</div>
+    <div id="paper-modal-list"></div>
   </div>
 </div>
 
@@ -1384,10 +1398,62 @@ function renderMinimap() {
   }
 }
 
+// ── LIVE RESEARCH (papers.json static — refreshed by daily cron) ──────────
+const TAG_COLOR = {
+  "scan":"#ffa500", "calibration-scan":"#50fa7b", "axelrod-scan":"#ff79c6",
+  "multiagent-trading-scan":"#8be9fd", "github-scan":"#bd93f9",
+};
+async function loadPapers() {
+  try {
+    const r = await fetch("data/papers.json?t=" + Date.now(), {cache:"no-store"});
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    const papers = data.papers || [];
+    // Sidebar: top 5
+    const side = document.getElementById("panel-papers-list");
+    document.getElementById("panel-papers-count").textContent = papers.length;
+    side.innerHTML = papers.slice(0,5).map(p => {
+      const col = TAG_COLOR[p.tag] || "#ffa500";
+      return `<div style="padding:4px 0; border-bottom:1px dotted rgba(255,255,255,0.06);">
+        <div style="color:${col}; font-size:9px; letter-spacing:0.12em; text-transform:uppercase;">${p.tag} · ${p.published || "—"}</div>
+        <a href="${p.url}" target="_blank" rel="noopener" style="color:#e6e7ea; text-decoration:none; display:block; margin:2px 0;">${p.title.slice(0,110)}</a>
+      </div>`;
+    }).join("") || `<span style="color:#5b6478; font-size:10px;">no scans loaded</span>`;
+    // Modal: full list
+    const modal = document.getElementById("paper-modal-list");
+    const meta = document.getElementById("paper-modal-meta");
+    meta.textContent = `${papers.length} unique papers · ${data.sources.length} arXiv sources · fetched ${data.fetched}`;
+    modal.innerHTML = papers.map(p => {
+      const col = TAG_COLOR[p.tag] || "#ffa500";
+      return `<div style="margin-bottom:14px; padding:10px; border:1px solid #1a1f2a; border-radius:3px; background:#0d1018;">
+        <div style="color:${col}; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:4px;">${p.tag} · ${p.published || "—"}</div>
+        <a href="${p.url}" target="_blank" rel="noopener" style="color:#eee; text-decoration:none; font-size:12px; font-weight:600; display:block; margin-bottom:6px;">${p.title}</a>
+        <div style="color:#8899aa; font-size:10px; line-height:1.45;">${p.summary || ""}</div>
+        <div style="color:#5b6478; font-size:9px; margin-top:4px; font-family:monospace;">${p.url}</div>
+      </div>`;
+    }).join("");
+  } catch(e) {
+    document.getElementById("panel-papers-list").innerHTML =
+      `<span style="color:#ff5c5c; font-size:10px;">papers.json load failed: ${e.message}</span>`;
+  }
+}
+document.getElementById("btn-papers").addEventListener("click", (ev) => {
+  ev.preventDefault();
+  document.getElementById("paper-modal").style.display = "block";
+});
+document.getElementById("paper-modal-close").addEventListener("click", () => {
+  document.getElementById("paper-modal").style.display = "none";
+});
+document.getElementById("paper-modal").addEventListener("click", (ev) => {
+  if (ev.target.id === "paper-modal") ev.target.style.display = "none";
+});
+
 // ── BOOT ────────────────────────────────────────────────────────────────────
 computeCamera();
 camScale = camTargetScale; camX = camTargetX; camY = camTargetY;  // snap on boot
 await refresh();
+await loadPapers();
+setInterval(loadPapers, 5 * 60 * 1000); // reload papers every 5 min
 setInterval(refresh, 15000); // v2.0: 15s poll (was 30s) — safe under HF rate-limit
 // Bloomberg UTC clock — tick every second independent of data refresh
 setInterval(() => {
