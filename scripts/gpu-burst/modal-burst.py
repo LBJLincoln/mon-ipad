@@ -187,9 +187,12 @@ def build_feature_cache() -> dict:
     X, y, feature_names = engine.build(games)
     X = np.nan_to_num(np.array(X, dtype=np.float64))
     y = np.array(y, dtype=np.int32)
+    y_margin = getattr(engine, 'y_margin', np.zeros(len(y), dtype=np.int32))
+    y_total = getattr(engine, 'y_total', np.full(len(y), 225, dtype=np.int32))
 
     cache_path.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(str(cache_path), X=X, y=y, feature_names=np.array(feature_names))
+    np.savez_compressed(str(cache_path), X=X, y=y, feature_names=np.array(feature_names),
+                        y_margin=y_margin, y_total=y_total)
     vol.commit()
 
     elapsed = time.time() - t0

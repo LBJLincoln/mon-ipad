@@ -153,8 +153,10 @@ def build_features():
         print(f"[FEATURES] Loading cached {MODE} features...")
         data = np.load(str(FEATURE_CACHE), allow_pickle=True)
         X, y, feature_names = data["X"], data["y"], list(data["feature_names"])
+        y_margin = data["y_margin"] if "y_margin" in data else np.zeros(len(y), dtype=np.int32)
+        y_total = data["y_total"] if "y_total" in data else np.full(len(y), 225, dtype=np.int32)
         print(f"[FEATURES] Loaded: {X.shape}")
-        return X, y, feature_names
+        return X, y, feature_names, y_margin, y_total
 
     print(f"[FEATURES] Building {MODE} features...")
     t0 = time.time()
@@ -194,6 +196,8 @@ def build_features():
             games.sort(key=lambda g: g.get("game_date", g.get("date", "")))
             engine = NBAFeatureEngine()
             X, y, feature_names = engine.build(games)
+            y_margin = getattr(engine, 'y_margin', np.zeros(len(y), dtype=np.int32))
+            y_total = getattr(engine, 'y_total', np.full(len(y), 225, dtype=np.int32))
 
         elif MODE == "political":
             # Political mode: load from political alpha feature engine if available
@@ -222,9 +226,18 @@ def build_features():
         X = np.nan_to_num(np.array(X, dtype=np.float64))
         y = np.array(y, dtype=np.int32)
 
-        np.savez_compressed(str(FEATURE_CACHE), X=X, y=y, feature_names=np.array(feature_names))
+        try:
+            y_margin
+        except NameError:
+            y_margin = np.zeros(len(y), dtype=np.int32)
+        try:
+            y_total
+        except NameError:
+            y_total = np.full(len(y), 225, dtype=np.int32)
+        np.savez_compressed(str(FEATURE_CACHE), X=X, y=y, feature_names=np.array(feature_names),
+                            y_margin=y_margin, y_total=y_total)
         print(f"[FEATURES] Built & cached: {X.shape} in {time.time()-t0:.0f}s")
-        return X, y, feature_names
+        return X, y, feature_names, y_margin, y_total
 
     except Exception as e:
         print(f"[FEATURES] Build failed: {e}")
@@ -509,12 +522,14 @@ def run_burst():
 
     # Step 1: Setup
     setup()
-    X, y, feature_names = build_features()
+    X, y, feature_names, y_margin, y_total = build_features()
     n_features = X.shape[1]
 
     if X.shape[0] > cfg["subsample"]:
         X = X[-cfg["subsample"]:]
         y = y[-cfg["subsample"]:]
+        y_margin = y_margin[-cfg["subsample"]:]
+        y_total = y_total[-cfg["subsample"]:]
     print(f"[BURST] {MODE.upper()} mode | Data: {X.shape}")
 
     # Step 2: Seed population

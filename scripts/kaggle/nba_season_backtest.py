@@ -165,9 +165,12 @@ else:
     X_all, y_all, feature_names = engine.build(games)
     X_all = np.nan_to_num(np.array(X_all, dtype=np.float64))
     y_all = np.array(y_all, dtype=np.int32)
+    y_margin = getattr(engine, 'y_margin', np.zeros(len(y_all), dtype=np.int32))
+    y_total = getattr(engine, 'y_total', np.full(len(y_all), 225, dtype=np.int32))
 
     np.savez_compressed(FEATURE_CACHE, X=X_all, y=y_all,
-                        feature_names=np.array(feature_names))
+                        feature_names=np.array(feature_names),
+                        y_margin=y_margin, y_total=y_total)
     with open(GAMES_CACHE, 'w') as f:
         json.dump(games, f)
     print(f"Built & cached: {X_all.shape}")
