@@ -33,6 +33,16 @@
   #bloomberg-ticker .val.star { color:#ffd700; }
   #bloomberg-ticker .cursor { color:#00ff88; animation:blk 1.1s steps(2) infinite; margin-left:auto; padding-left:14px; font-weight:700; }
   @keyframes blk { 50% { opacity:0; } }
+  @keyframes panel-pulse { 0%,100% { box-shadow: 0 0 0 0 currentColor; } 50% { box-shadow: 0 0 0 3px currentColor; opacity:0.7; } }
+  /* Right sidebar collapsible drawer */
+  #root.sidebar-collapsed { grid-template-columns: 1fr 32px !important; }
+  #sidebar-toggle { position:absolute; top:10px; left:-26px; width:26px; height:40px;
+    background:#0b0d12; border:1px solid #1e2330; border-right:none; color:#00d9a7;
+    cursor:pointer; font-size:14px; font-family:inherit; border-radius:4px 0 0 4px;
+    display:flex; align-items:center; justify-content:center; z-index:20; }
+  #sidebar-toggle:hover { background:#14171f; color:#ffa500; }
+  #sidebar.collapsed > *:not(#sidebar-toggle) { display:none !important; }
+  #sidebar { position:relative; transition: all 0.2s ease; }
   #root { display:grid; grid-template-columns:1fr 360px; height:calc(100vh - 26px); margin-top:26px; }
   #stage { position:relative; background:var(--bg-2); overflow:hidden; }
   #stage canvas { image-rendering:pixelated; display:block; }
@@ -198,6 +208,7 @@
     <div class="loader" id="loader">booting pixi…</div>
   </div>
   <div id="sidebar">
+    <button id="sidebar-toggle" title="Collapse / expand dashboard">▶</button>
     <div class="panel">
       <h3><span>Experiments</span><span class="c" id="k-last">—</span></h3>
       <div class="kpi"><span class="l">NBA traders</span><span id="k-nba" class="v-warn">—</span></div>
@@ -433,35 +444,98 @@ const pactLayer  = new PIXI.Graphics();
 const agentLayer = new PIXI.Container();
 agentLayer.sortableChildren = true;
 const labelLayer = new PIXI.Container();
-const panelLayer = new PIXI.Container();
-world.addChild(floorLayer, decorLayer, particleLayer, pactLayer, panelLayer, agentLayer, labelLayer);
+world.addChild(floorLayer, decorLayer, particleLayer, pactLayer, agentLayer, labelLayer);
 
-// ═══ Diegetic Panel System v0.1 (2026-04-17, spec: data/research/pixel-world-diegetic-panels-apr17.md) ═══
-// Each panel is a PixiJS container anchored in world coords. Trader sprites walk between them.
-// States: live (green border) | stale (amber) | no_signal (red) | fake (red + SUSPECT overlay)
+// ═══ Diegetic Panel System v0.2 (2026-04-17, DOM icon rail + click-to-expand modal) ═══
+// Each data source = compact icon button on a left rail. Click → modal opens with full data.
+// States: live (green) | stale (amber) | no_signal (red) | fake (red flashing)
 const DIEGETIC_PANELS = [];
-function makeDiegeticPanel({ x, y, w, h, title, dataUrl, render, staleSec=600 }) {
-  const c = new PIXI.Container(); c.x = x; c.y = y;
-  const bg = new PIXI.Graphics();
-  bg.rect(0, 0, w, h).fill({ color:0x0b0d12, alpha:0.92 });
-  bg.rect(0, 0, w, 14).fill({ color:0x14171f });
-  bg.rect(0, 0, w, h).stroke({ width:2, color:0x00d9a7, alpha:0.85 });
-  c.addChild(bg);
-  const titleTxt = new PIXI.Text({ text:title, style:{ fontFamily:"monospace", fontSize:9, fill:0xffa500, fontWeight:"bold" }});
-  titleTxt.x = 4; titleTxt.y = 3; c.addChild(titleTxt);
-  const body = new PIXI.Text({ text:"…", style:{ fontFamily:"monospace", fontSize:9, fill:0xe6e8ee, lineHeight:11, wordWrap:true, wordWrapWidth:w-8 }});
-  body.x = 4; body.y = 18; c.addChild(body);
-  const stateTxt = new PIXI.Text({ text:"", style:{ fontFamily:"monospace", fontSize:8, fill:0xff5c5c, fontWeight:"bold" }});
-  stateTxt.anchor.set(1,0); stateTxt.x = w-4; stateTxt.y = 3; c.addChild(stateTxt);
-  panelLayer.addChild(c);
-  const p = { c, bg, titleTxt, body, stateTxt, title, dataUrl, render, staleSec, w, h,
+// Lazy-create rail + modal DOM once
+let _panelRail = null, _panelModal = null, _panelModalTitle = null, _panelModalBody = null, _panelModalState = null;
+function ensurePanelDom() {
+  if (_panelRail) return;
+  _panelRail = document.createElement("div");
+  _panelRail.id = "panel-rail";
+  Object.assign(_panelRail.style, {
+    position:"absolute", left:"8px", top:"50%", transform:"translateY(-50%)",
+    display:"grid", gridTemplateColumns:"repeat(2, 38px)", gridAutoRows:"38px", gap:"4px",
+    padding:"6px", background:"rgba(11,13,18,0.85)", border:"1px solid #1e2330",
+    borderRadius:"4px", zIndex:"12", boxShadow:"0 4px 12px rgba(0,0,0,0.5)",
+  });
+  stageEl.appendChild(_panelRail);
+
+  _panelModal = document.createElement("div");
+  _panelModal.id = "panel-modal";
+  Object.assign(_panelModal.style, {
+    position:"absolute", left:"96px", top:"50%", transform:"translateY(-50%)",
+    width:"340px", maxHeight:"70vh", overflow:"auto", background:"rgba(11,13,18,0.96)",
+    border:"2px solid #00d9a7", borderRadius:"4px", zIndex:"13", display:"none",
+    fontFamily:"'JetBrains Mono',monospace", fontSize:"11px", color:"#e6e8ee",
+    boxShadow:"0 8px 32px rgba(0,0,0,0.7)",
+  });
+  const header = document.createElement("div");
+  Object.assign(header.style, {
+    display:"flex", justifyContent:"space-between", alignItems:"center",
+    padding:"8px 12px", background:"#14171f", borderBottom:"1px solid #1e2330",
+  });
+  _panelModalTitle = document.createElement("div");
+  Object.assign(_panelModalTitle.style, { color:"#ffa500", fontWeight:"700", letterSpacing:"0.05em", fontSize:"10.5px" });
+  _panelModalState = document.createElement("div");
+  Object.assign(_panelModalState.style, { fontSize:"9px", fontWeight:"700", letterSpacing:"0.1em" });
+  const close = document.createElement("button");
+  close.textContent = "✕"; close.title = "close";
+  Object.assign(close.style, { background:"none", border:"none", color:"#9aa3b5", cursor:"pointer", fontSize:"14px", marginLeft:"8px" });
+  close.onclick = () => { _panelModal.style.display = "none"; };
+  const rightWrap = document.createElement("div");
+  Object.assign(rightWrap.style, { display:"flex", alignItems:"center", gap:"6px" });
+  rightWrap.appendChild(_panelModalState); rightWrap.appendChild(close);
+  header.appendChild(_panelModalTitle); header.appendChild(rightWrap);
+  _panelModalBody = document.createElement("pre");
+  Object.assign(_panelModalBody.style, {
+    margin:"0", padding:"12px", whiteSpace:"pre-wrap", wordBreak:"break-word",
+    fontFamily:"inherit", fontSize:"11px", lineHeight:"1.4", color:"#e6e8ee",
+  });
+  _panelModal.appendChild(header); _panelModal.appendChild(_panelModalBody);
+  stageEl.appendChild(_panelModal);
+}
+function openPanelModal(p) {
+  ensurePanelDom();
+  _panelModalTitle.textContent = p.title;
+  _panelModalBody.textContent = p._lastText || "loading…";
+  const col = { live:"#00d9a7", stale:"#ffa500", no_signal:"#ff5c5c", fake:"#ff5c5c" };
+  _panelModalState.textContent = ({ live:"● LIVE", stale:"▲ STALE", no_signal:"✗ NO SIGNAL", fake:"⚠ SUSPECT" })[p._state] || "";
+  _panelModalState.style.color = col[p._state] || "#9aa3b5";
+  _panelModal.style.borderColor = col[p._state] || "#00d9a7";
+  _panelModal.style.display = "block";
+  // Highlight active button
+  for (const q of DIEGETIC_PANELS) q._btn && (q._btn.style.boxShadow = q === p ? "0 0 0 2px #ffa500" : "");
+}
+function makeDiegeticPanel({ x, y, w, h, title, dataUrl, render, staleSec=600, glyph }) {
+  ensurePanelDom();
+  const btn = document.createElement("button");
+  btn.title = title;
+  const g = glyph || (title.split(" ")[0] || "◆").slice(0,1);
+  btn.textContent = g;
+  Object.assign(btn.style, {
+    width:"38px", height:"38px", background:"#0b0d12", border:"1px solid #1e2330",
+    color:"#00d9a7", fontSize:"16px", cursor:"pointer", borderRadius:"3px",
+    display:"flex", alignItems:"center", justifyContent:"center",
+    fontFamily:"monospace", transition:"all 0.15s",
+  });
+  btn.onmouseenter = () => { btn.style.background = "#14171f"; };
+  btn.onmouseleave = () => { btn.style.background = "#0b0d12"; };
+  _panelRail.appendChild(btn);
+  const p = { _btn:btn, title, dataUrl, render, staleSec, _state:"live", _lastText:"",
     setState(s) {
-      if (s === "live") { bg.clear(); bg.rect(0,0,w,h).fill({color:0x0b0d12,alpha:0.92}).rect(0,0,w,14).fill({color:0x14171f}).rect(0,0,w,h).stroke({width:2,color:0x00d9a7,alpha:0.85}); stateTxt.text=""; }
-      else if (s === "stale") { bg.clear(); bg.rect(0,0,w,h).fill({color:0x1a1000,alpha:0.92}).rect(0,0,w,14).fill({color:0x3a2600}).rect(0,0,w,h).stroke({width:2,color:0xffa500,alpha:0.95}); stateTxt.text="STALE"; stateTxt.style.fill=0xffa500; }
-      else if (s === "no_signal") { bg.clear(); bg.rect(0,0,w,h).fill({color:0x1a0000,alpha:0.92}).rect(0,0,w,14).fill({color:0x3a0000}).rect(0,0,w,h).stroke({width:2,color:0xff5c5c,alpha:0.95}); stateTxt.text="NO SIGNAL"; stateTxt.style.fill=0xff5c5c; body.text="— — — — —"; }
-      else if (s === "fake") { bg.clear(); bg.rect(0,0,w,h).fill({color:0x1a0000,alpha:0.92}).rect(0,0,w,14).fill({color:0x3a0000}).rect(0,0,w,h).stroke({width:2,color:0xff5c5c,alpha:0.95}); stateTxt.text="SUSPECT"; stateTxt.style.fill=0xff5c5c; }
+      this._state = s;
+      const col = { live:"#00d9a7", stale:"#ffa500", no_signal:"#ff5c5c", fake:"#ff5c5c" }[s] || "#9aa3b5";
+      btn.style.color = col;
+      btn.style.borderColor = col;
+      if (s === "no_signal" || s === "fake") btn.style.animation = "panel-pulse 1.2s ease-in-out infinite";
+      else btn.style.animation = "";
     }
   };
+  btn.onclick = () => openPanelModal(p);
   DIEGETIC_PANELS.push(p);
   return p;
 }
@@ -521,8 +595,193 @@ makeDiegeticPanel({ x:976, y:168, w:280, h:130, title:"▲ EDGE MATRIX — model
     const lines = pts.map(p => `bin ${(p.predicted*100).toFixed(0)}%  actual ${(p.actual*100).toFixed(0)}%  n=${p.count}`);
     return { text: lines.join("\n") || "no calibration data", state:"live" };
   }});
+// Zone A — 2 more market panels
+makeDiegeticPanel({ x:320, y:24, w:336, h:40, title:"◂ MARKET TICKER — line movement",
+  dataUrl:"/api/nba/odds",
+  render:(d) => {
+    const games = (d && d.games) || [];
+    if (!games.length) return { state:"no_signal" };
+    const ticks = games.slice(0,4).map(g => {
+      const h = (g.home_team || g.home || "?").slice(0,3);
+      const a = (g.away_team || g.away || "?").slice(0,3);
+      const ml = g.moneyline_home || g.home_ml || "—";
+      return `${a}@${h} ${ml}`;
+    });
+    return { text: "▸ " + ticks.join("  ▸ "), state:"live" };
+  }});
+makeDiegeticPanel({ x:672, y:24, w:280, h:130, title:"◉ LLM API RACK — 5 providers",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
+  render:(d) => {
+    if (!d) return { state:"no_signal" };
+    const calls = d.total_llm_calls || d.llm_calls || 0;
+    const fails = d.llm_failures || 0;
+    const rate = calls > 0 ? (1 - fails/calls) : 0;
+    const providers = [
+      `cerebras:  ${calls > 0 ? "● live" : "○ idle"}`,
+      `google:    ${calls > 0 ? "● live" : "○ idle"}`,
+      `mistral:   ${calls > 0 ? "● live" : "○ idle"}`,
+      `openrouter:${calls > 0 ? "● live" : "○ idle"}`,
+      `selfhost:  ${calls > 0 ? "● live" : "○ idle"}`,
+      `—`,
+      `calls: ${calls}  ok_rate: ${(rate*100).toFixed(0)}%`,
+    ];
+    return { text: providers.join("\n"), state: rate < 0.3 && calls > 10 ? "stale" : "live" };
+  }});
+// Zone B — model intelligence (center-left back wall)
+makeDiegeticPanel({ x:320, y:168, w:320, h:130, title:"◆ BRIER LEADERBOARD — 13 NBA islands",
+  dataUrl:"/data/nba-fleet-status.json",
+  render:(d) => {
+    if (!d || !d.islands) return { state:"no_signal" };
+    const sorted = [...d.islands].sort((a,b) => (a.brier||1) - (b.brier||1)).slice(0,6);
+    const lines = sorted.map((s,i) => `${["★","☆","▸","·","·","·"][i]} ${(s.name||s.id||"?").padEnd(8)} ${(s.brier||0).toFixed(5)} g=${s.generation||0}`);
+    return { text: lines.join("\n") || "no islands", state: "live" };
+  }});
+makeDiegeticPanel({ x:648, y:168, w:320, h:130, title:"▣ ENGINE TERMINAL — parity",
+  dataUrl:"/data/departments/cross-repo/engine-parity.json",
+  render:(d) => {
+    if (!d) return { state:"no_signal" };
+    const sha = d.nba_sha || d.nba_hash || "?";
+    const match = d.match || d.parity || false;
+    const text = `nba sha:  ${String(sha).slice(0,10)}\npol sha:  ${String(d.pol_sha || d.pol_hash || "?").slice(0,10)}\nparity:   ${match ? "✓ OK" : "✗ BROKEN"}\ncheck:    ${d.timestamp || d.last_check || "—"}`;
+    return { text, state: match ? "live" : "fake" };
+  }});
+// Zone C — agent internals (center)
+makeDiegeticPanel({ x:24, y:320, w:280, h:130, title:"◉ DECISION LOG — bet feed",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
+  render:(d) => {
+    if (!d || !d.leaderboard) return { state:"no_signal" };
+    const lb = d.leaderboard.slice(0,5);
+    const lines = lb.map((t,i) => `${(t.name||t.trader_id||"?").padEnd(14)} $${(t.bankroll||0).toFixed(0)} ${(t.wins||0)}W/${(t.losses||0)}L`);
+    return { text: lines.join("\n") || "no trades yet", state: lb[0] && lb[0].bankroll > 0 ? "live" : "stale" };
+  }});
+makeDiegeticPanel({ x:976, y:320, w:280, h:130, title:"◈ REASONING WINDOW — qwen-235B",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
+  render:(d) => {
+    if (!d) return { state:"no_signal" };
+    const pr = d.current_phase || d.phase || "scan";
+    const text = `phase: ${pr}\nmoderator: qwen-235B\npacts: ${d.cooperation_pacts_count||0}\nrogue: ${d.rogue_trigger_count||0}\ncanon: ${d.axelrod_canon_active ? "active" : "off"}\nsacrifice: ${JSON.stringify(d.sacrificial_assignments||{}).length > 2 ? "assigned" : "—"}`;
+    return { text, state: "live" };
+  }});
+// Zone D — cooperation/council
+makeDiegeticPanel({ x:320, y:320, w:320, h:130, title:"⚖ COUNCIL TABLE — morning moderator",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
+  render:(d) => {
+    if (!d) return { state:"no_signal" };
+    const strats = d.axelrod_strategies || {};
+    const n = Object.keys(strats).length;
+    const text = `moderator: qwen-235B\nagents@table: ${n}\naxelrod canon: ${d.axelrod_canon_active?"✓":"✗"}\nlib active: ${d.axelrod_library_active?"✓":"✗"}\npacts count: ${d.cooperation_pacts_count||0}\nrep_entries: ${Object.keys(d.reputation||{}).length}`;
+    return { text, state: n >= 16 ? "live" : "stale" };
+  }});
+makeDiegeticPanel({ x:648, y:320, w:320, h:130, title:"▼ ROGUE TRIGGER — drawdown guard",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
+  render:(d) => {
+    if (!d || !d.leaderboard) return { state:"no_signal" };
+    const lb = d.leaderboard;
+    const lowest = lb.reduce((m,t) => (t.bankroll||Infinity) < (m.bankroll||Infinity) ? t : m, {bankroll:Infinity});
+    const highest = lb.reduce((m,t) => (t.bankroll||0) > (m.bankroll||0) ? t : m, {bankroll:0});
+    const dd = lowest.bankroll || 0, pk = highest.bankroll || 0;
+    const rogue = dd < 25 || pk > 250000;
+    const text = `min bankroll: $${dd.toFixed(0)} (${lowest.name||"?"})\nmax bankroll: $${pk.toFixed(0)} (${highest.name||"?"})\n—\ntrigger: ${rogue ? "▲ ACTIVE" : "○ idle"}\nthreshold_lo: $25\nthreshold_hi: $250K`;
+    return { text, state: rogue ? "fake" : "live" };
+  }});
+// Zone E — history (bottom band)
+makeDiegeticPanel({ x:24, y:480, w:408, h:130, title:"◁ SEASON P&L — 16 agents",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
+  render:(d) => {
+    if (!d || !d.leaderboard) return { state:"no_signal" };
+    const lb = d.leaderboard.slice(0,6);
+    const lines = lb.map(t => {
+      const b = t.bankroll || 0;
+      const barL = Math.min(20, Math.max(0, Math.floor(b/200)));
+      const bar = "█".repeat(barL) + "░".repeat(20-barL);
+      return `${(t.name||t.trader_id||"?").slice(0,10).padEnd(10)} ${bar} $${b.toFixed(0)}`;
+    });
+    return { text: lines.join("\n") || "no agents", state: lb[0]?.bankroll > 100 ? "live" : "stale" };
+  }});
+makeDiegeticPanel({ x:448, y:480, w:408, h:130, title:"◆ POST-MORTEM — yesterday's L",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/day-decisions",
+  render:(d) => {
+    if (!d || !d.days || !d.days.length) return { state:"no_signal" };
+    const last = d.days[d.days.length-1];
+    const date = last.date || "?";
+    const allocs = last.total_allocations || 0;
+    const cash = last.avg_cash_pct || 0;
+    const deploy = (1 - cash) * 100;
+    const lines = [
+      `last day: ${date}`,
+      `allocs:   ${allocs}`,
+      `deploy:   ${deploy.toFixed(0)}% (target ≥75%)`,
+      `cash:     ${(cash*100).toFixed(0)}%`,
+      deploy < 70 ? "▲ POST-FILTER FALLBACK ENGAGED" : "○ normal deploy",
+    ];
+    return { text: lines.join("\n"), state: deploy < 50 ? "fake" : "live" };
+  }});
+makeDiegeticPanel({ x:872, y:480, w:384, h:130, title:"▶ RESOLVE WALL — outcomes",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/day-decisions",
+  render:(d) => {
+    if (!d || !d.days) return { state:"no_signal" };
+    const n = d.days.length;
+    const totalAllocs = d.days.reduce((s,day) => s + (day.total_allocations||0), 0);
+    const totalDeploy = d.days.reduce((s,day) => s + (1 - (day.avg_cash_pct||1)), 0);
+    const avgDeploy = n > 0 ? totalDeploy / n : 0;
+    const lines = [
+      `days resolved: ${n}`,
+      `total allocs:  ${totalAllocs}`,
+      `avg deploy:    ${(avgDeploy*100).toFixed(1)}%`,
+      `target:        ≥75%`,
+      avgDeploy >= 0.7 ? "✓ ON TARGET" : "▲ UNDER FLOOR",
+    ];
+    return { text: lines.join("\n"), state: n === 0 ? "no_signal" : (avgDeploy >= 0.7 ? "live" : "stale") };
+  }});
+// Zone F — political feed (extra bottom right)
+makeDiegeticPanel({ x:24, y:628, w:408, h:130, title:"◆ POLITICAL FEED — P1-P8 islands",
+  dataUrl:"/data/political-fleet-status.json",
+  render:(d) => {
+    if (!d || !d.islands) return { state:"no_signal" };
+    const sorted = [...d.islands].sort((a,b) => (a.brier||1) - (b.brier||1)).slice(0,5);
+    const lines = sorted.map((s,i) => `${["★","☆","▸","·","·"][i]} ${(s.name||s.id||"?").padEnd(8)} ${(s.brier||0).toFixed(5)} g=${s.generation||0}`);
+    return { text: lines.join("\n"), state: "live" };
+  }});
+makeDiegeticPanel({ x:448, y:628, w:408, h:130, title:"▣ POLITICAL TF — 16 agents",
+  dataUrl:"https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status",
+  render:(d) => {
+    if (!d) return { state:"no_signal" };
+    const best = d.best_bankroll || 0;
+    const calls = d.total_llm_calls || d.llm_calls || 0;
+    const run = d.running ? "● RUNNING" : "○ idle";
+    const text = `${run}\nday_idx:  ${d.current_day_idx ?? "—"}\nbest:     $${best.toFixed(0)}\nleader:   ${d.leader||"-"}\ncalls:    ${calls}  fails: ${d.llm_failures||0}\npacts:    ${d.cooperation_pacts_count||0}`;
+    return { text, state: calls > 10 && best === 0 ? "stale" : "live" };
+  }});
+makeDiegeticPanel({ x:872, y:628, w:384, h:130, title:"◇ COLLECTIVE GOAL — $1M/season",
+  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
+  render:(d) => {
+    if (!d || !d.leaderboard) return { state:"no_signal" };
+    const total = d.leaderboard.reduce((s,t) => s + (t.bankroll||0), 0);
+    const target = 1_000_000;
+    const pct = (total / target) * 100;
+    const barL = Math.min(24, Math.max(0, Math.floor(pct * 24 / 100)));
+    const bar = "█".repeat(barL) + "░".repeat(24-barL);
+    const text = `pool total:  $${total.toFixed(0)}\ntarget:      $1,000,000\n${bar}\nprogress:    ${pct.toFixed(2)}%\nagents:      ${d.leaderboard.length}`;
+    return { text, state: total < 1600 ? "stale" : "live" };
+  }});
 refreshDiegeticPanels();
 setInterval(refreshDiegeticPanels, 15000);
+
+// ═══ Sidebar collapse toggle ═══
+(function wireSidebarToggle() {
+  const tog = document.getElementById("sidebar-toggle");
+  const sb = document.getElementById("sidebar");
+  const root = document.getElementById("root");
+  if (!tog || !sb || !root) return;
+  let collapsed = false;
+  tog.onclick = () => {
+    collapsed = !collapsed;
+    sb.classList.toggle("collapsed", collapsed);
+    root.classList.toggle("sidebar-collapsed", collapsed);
+    tog.textContent = collapsed ? "◀" : "▶";
+    tog.title = collapsed ? "Expand dashboard" : "Collapse dashboard";
+  };
+})();
 
 // v2.3: Ambient floating particles — data-flow visualization between zones
 const PARTICLES = [];
