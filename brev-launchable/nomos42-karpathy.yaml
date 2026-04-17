@@ -1,0 +1,41 @@
+apiVersion: brev.dev/v1
+kind: Launchable
+metadata:
+  name: nomos42-karpathy
+  description: Karpathy autoresearch loop on NBA fleet consensus (TabPFN + XGB + LGBM)
+
+spec:
+  instanceType: a10g.xlarge    # 1x A10G, 24GB VRAM — fits on free tier
+  # Upgrade to h100.xlarge for full TabPFN-2.5 186-feature run
+  image: pytorch/pytorch:2.4.0-cuda12.1-cudnn9-runtime
+  storage:
+    size: 20Gi                 # mon-ipad repo + HF cache
+  workdir: /workspace
+
+  env:
+    - name: WORKDIR
+      value: /workspace/mon-ipad
+    - name: GITHUB_REPO
+      value: LBJLincoln/mon-ipad
+    - name: KARPATHY_BUDGET_MIN
+      value: "60"              # 1-hour burst per launchable session
+
+  secrets:
+    - name: HF_TOKEN_3
+    - name: GITHUB_TOKEN
+
+  setup: |
+    git clone https://oauth2:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git /workspace/mon-ipad
+    cd /workspace/mon-ipad
+    pip install --quiet xgboost lightgbm catboost scikit-learn tabpfn pandas numpy huggingface_hub
+
+  launch: |
+    cd /workspace/mon-ipad
+    python scripts/kaggle/nba_karpathy_loop.py \
+      --budget-min ${KARPATHY_BUDGET_MIN:-60} \
+      --push-results
+
+  shutdown: |
+    cd /workspace/mon-ipad
+    git add data/karpathy-log/ && git commit -m "brev karpathy checkpoint" || true
+    git push || true
