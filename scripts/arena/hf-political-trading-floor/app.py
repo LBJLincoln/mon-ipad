@@ -458,6 +458,58 @@ PROVIDERS = {
         "max_tokens": 120,
         "rpm": 6,
     },
+    # 2026-04-17 FIX: 5 providers referenced by TRADERS but absent from PROVIDERS
+    # caused "unknown provider" → 100% fail rate on 5 agents. Direct fallback now
+    # works even if gateway SSE times out.
+    "selfhost:qwen3-4b": {
+        "url": "https://nomos42-qwen3-4b-cpu.hf.space/v1/chat/completions",
+        "model": "qwen3-4b-instruct",
+        "key_env": "SELFHOST_NOOP",
+        "max_tokens": 400,
+        "rpm": 60,
+    },
+    "selfhost:gemma-3-4b": {
+        "url": "https://nomos42-gemma2-2b-cpu.hf.space/v1/chat/completions",
+        "model": "gemma-3-4b-it",
+        "key_env": "SELFHOST_NOOP",
+        "max_tokens": 400,
+        "rpm": 60,
+    },
+    "selfhost:qwen3-0.6b": {
+        "url": "https://nomos42-qwen25-05b-cpu.hf.space/v1/chat/completions",
+        "model": "qwen3-0.6b-instruct",
+        "key_env": "SELFHOST_NOOP",
+        "max_tokens": 400,
+        "rpm": 60,
+    },
+    "nvidia:minimax-m2.7": {
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "model": "minimaxai/minimax-m2.7",
+        "key_env": "NVIDIA_API_KEY",
+        "max_tokens": 1200,
+        "rpm": 40,
+    },
+    "nvidia:minimax-m2.7-alt": {
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "model": "minimaxai/minimax-m2.7",
+        "key_env": "NVIDIA_API_KEY_2",
+        "max_tokens": 1200,
+        "rpm": 40,
+    },
+    "nvidia:llama-3.3-70b": {
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "model": "meta/llama-3.3-70b-instruct",
+        "key_env": "NVIDIA_API_KEY",
+        "max_tokens": 1200,
+        "rpm": 40,
+    },
+    "nvidia:nemotron-70b": {
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "model": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+        "key_env": "NVIDIA_API_KEY",
+        "max_tokens": 1200,
+        "rpm": 40,
+    },
 }
 
 # ── AGENT DEFINITIONS (v3 — 10 personas across 3 providers, 2026-04-14) ──────
