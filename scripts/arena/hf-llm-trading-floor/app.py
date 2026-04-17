@@ -2011,6 +2011,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     # ── Resume support (day-indexed) ──
     saved = _load_state_from_disk()
     start_from_day = 0
+    multi_season_seed = False
     if saved and not saved.get("completed") and saved.get("days_processed", 0) > 0:
         saved_agents = saved.get("agents", {})
         for tid in TRADERS:
@@ -2019,6 +2020,21 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 state[tid].update({k: v for k, v in saved_agents[tid].items() if k in state[tid]})
         start_from_day = saved.get("days_processed", 0)
         print(f"RESUMING from day {start_from_day}/{n_days}")
+    elif saved and saved.get("completed") and saved.get("agents"):
+        # 2026-04-17: multi-season compounding. Previous season finished —
+        # carry the final bankrolls forward but reset per-season counters.
+        # Without this, every /api/run resets to $100 and compound is capped
+        # at one season. With it, $100 → $570 → $3,250 → ... across seasons.
+        saved_agents = saved["agents"]
+        for tid in TRADERS:
+            if tid in saved_agents:
+                final_br = float(saved_agents[tid].get("bankroll", 100.0))
+                state[tid]["bankroll"] = final_br
+                state[tid]["history"] = [final_br]
+                state[tid]["best_bankroll"] = final_br
+                state[tid]["worst_bankroll"] = final_br
+        multi_season_seed = True
+        print(f"MULTI-SEASON SEED: carrying final bankrolls from prior completed season")
 
     start_time = time.time()
     odds_matched = 0
@@ -2032,6 +2048,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     log_lines.append(f"Design: 1 LLM call per agent per day. 100% bankroll deployed (cash allowed with rationale).")
     if start_from_day > 0:
         log_lines.append(f"RESUMED from day {start_from_day}")
+    if multi_season_seed:
+        seed_total = sum(state[tid]["bankroll"] for tid in state)
+        log_lines.append(f"MULTI-SEASON COMPOUND: seeded ${seed_total:,.2f} from prior season")
     log_lines.append(f"Start: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
     log_lines.append("=" * 50)
 
@@ -2192,14 +2211,20 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 day_log["cash_held_pct"] = parsed["cash_held_pct"]
                 day_log["cash_rationale"] = parsed["cash_rationale"]
 
-                # Stake-sizing fix (2026-04-14): use CURRENT bankroll, not fixed
-                # starting_bankroll, and cap LLM-chosen pct at 5% (half-Kelly equivalent)
-                # plus require edge > 0.03 to skip unprofitable bets.
-                # Without these caps, agents with 60-65% WR drained their bankroll to $0
-                # because the same $15 stake wiped out a $10 bankroll.
-                MAX_PCT_PER_BET = 0.05  # half-Kelly cap
-                MIN_EDGE = 0.03         # only bet meaningful edges
+                # Stake-sizing (2026-04-17 v2): traders can SPLIT bankroll across
+                # all games of the day (diversified Kelly), but no single bet may
+                # exceed 10%. Daily cap at 60% keeps 40% reserve for drawdown.
+                # Rationale: multi-Kelly says if bets are ~independent with +EV,
+                # you can size near individual Kelly fractions simultaneously.
+                # NBA games within a day are mostly independent → diversification
+                # works. 60% cap vs 100% protects against correlated down days.
+                # Previous v1 (0.05/0.25) was too conservative — only ~25% of
+                # bankroll working per day, compound rate capped.
+                MAX_PCT_PER_BET = 0.10      # full Kelly cap per single bet
+                MAX_PCT_PER_DAY = 0.60      # daily diversified exposure (6 × 10% bets)
+                MIN_EDGE = 0.03             # only bet meaningful edges
                 BASE_CATS = {"ml_home","ml_away","spread_home","spread_away","total_over","total_under"}
+                day_exposure_pct = 0.0
                 for alloc in parsed["allocations"]:
                     gidx = alloc["game_idx"] - 1  # 1-indexed in prompt
                     if gidx < 0 or gidx >= len(day_games):
@@ -2215,9 +2240,16 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     if cat not in BASE_CATS and edge_val < 0.05:
                         continue
                     capped_pct = min(alloc["pct"], MAX_PCT_PER_BET)
+                    # Daily cumulative guard: shrink this bet if the day's total
+                    # exposure would exceed MAX_PCT_PER_DAY.
+                    remaining_day = max(0.0, MAX_PCT_PER_DAY - day_exposure_pct)
+                    capped_pct = min(capped_pct, remaining_day)
+                    if capped_pct <= 0:
+                        continue
                     stake = round(ts["bankroll"] * capped_pct, 2)
                     if stake < 0.50 or stake > ts["bankroll"]:
                         continue
+                    day_exposure_pct += capped_pct
 
                     won = resolve_bet(cat, odds, g["home_score"], g["away_score"], g["home_won"])
                     odds_dec = get_odds_dec(cat, odds)

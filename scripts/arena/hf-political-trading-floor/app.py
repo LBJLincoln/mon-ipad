@@ -1445,6 +1445,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     # ── Resume support (day-indexed) ──
     saved = _load_state_from_disk()
     start_from_day = 0
+    multi_season_seed = False
     if saved and not saved.get("completed") and saved.get("days_processed", 0) > 0:
         saved_agents = saved.get("agents", {})
         for tid in TRADERS:
@@ -1452,6 +1453,18 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 state[tid].update({k: v for k, v in saved_agents[tid].items() if k in state[tid]})
         start_from_day = saved.get("days_processed", 0)
         print(f"RESUMING from day {start_from_day}/{n_days}")
+    elif saved and saved.get("completed") and saved.get("agents"):
+        # 2026-04-17: multi-season compounding — carry final bankrolls forward.
+        saved_agents = saved["agents"]
+        for tid in TRADERS:
+            if tid in saved_agents:
+                final_br = float(saved_agents[tid].get("bankroll", 100.0))
+                state[tid]["bankroll"] = final_br
+                state[tid]["history"] = [final_br]
+                state[tid]["best_bankroll"] = final_br
+                state[tid]["worst_bankroll"] = final_br
+        multi_season_seed = True
+        print(f"MULTI-SEASON SEED: carrying final bankrolls from prior completed season")
 
     start_time = time.time()
     log_lines = []
@@ -1582,7 +1595,13 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 day_log["cash_held_pct"] = parsed["cash_held_pct"]
                 day_log["cash_rationale"] = parsed["cash_rationale"]
 
+                # 2026-04-17 v2 risk caps (parity with NBA TF):
+                # Traders may split across ALL events of the day (diversified
+                # Kelly). No single bet > 10%, daily cumulative ≤ 60%.
+                MAX_PCT_PER_BET = 0.10   # Kelly cap per individual trade
+                MAX_PCT_PER_DAY = 0.60   # diversified daily exposure (6 × 10%)
                 starting_bankroll = bankroll
+                day_exposure_pct = 0.0
                 for alloc in parsed["allocations"]:
                     eidx = alloc["event_idx"] - 1  # 1-indexed in prompt
                     if eidx < 0 or eidx >= len(day_events):
@@ -1590,9 +1609,15 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     event = day_events[eidx]
                     direction = alloc["direction"]
 
-                    stake = round(starting_bankroll * alloc["pct"], 2)
+                    capped_pct = min(alloc["pct"], MAX_PCT_PER_BET)
+                    remaining_day = max(0.0, MAX_PCT_PER_DAY - day_exposure_pct)
+                    capped_pct = min(capped_pct, remaining_day)
+                    if capped_pct <= 0:
+                        continue
+                    stake = round(starting_bankroll * capped_pct, 2)
                     if stake < 0.50:
                         continue
+                    day_exposure_pct += capped_pct
 
                     won, pnl_pct = resolve_political_trade(direction, event["excess_return"])
                     profit = round(stake * pnl_pct, 2)
@@ -1611,7 +1636,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         "event_type": event.get("event_type", ""),
                         "agency": event.get("agency", ""),
                         "thesis": alloc["thesis"],
-                        "pct": round(alloc["pct"], 4),
+                        "pct": round(capped_pct, 4),
                         "stake": stake,
                         "confidence": alloc["confidence"],
                         "excess_return": event["excess_return"],  # visible post-resolution
