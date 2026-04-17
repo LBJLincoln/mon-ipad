@@ -106,9 +106,24 @@ _sacrificial_assignments: Dict[str, str] = {}  # Axelrod Mech B: tid → archety
 _used_archetypes: Dict[str, set] = defaultdict(set)  # Axelrod Mech B: tid → set of archetypes tried (per-agent fallback)
 _society_archetypes_by_day: Dict[str, set] = {}  # Axelrod Mech B: day_date → society-wide archetypes assigned that day
 _challenge_assignments: Dict[str, int] = {}  # Axelrod Mech B: mid-tier tid → leaderboard rank
-STATE_PATH = Path("/tmp/tf-state.json")   # Persists across restarts on HF Spaces
+STATE_PATH = Path("/tmp/tf-state.json")   # Local (ephemeral /tmp) — cheap quick-save
 LOGS_PATH = Path("/tmp/tf-agent-logs.json")
 AXELROD_LOG_DIR = Path("/tmp/axelrod-log")  # Axelrod Mech C: per-day post-mortem dataset
+
+# ── HUB PERSISTENCE (2026-04-17) ────────────────────────────────────────────
+# HF Space /tmp is wiped on every restart → we lose all decisions + bankrolls.
+# Fix: every N days, push a runtime snapshot (state + agent_logs + council
+# plans) to the Space's OWN repo under data/runtime/. On startup, if /tmp is
+# empty, download that snapshot. That survives all restarts for free.
+HF_REPO_ID = os.environ.get("SPACE_ID") or "LBJLincoln26/nba-llm-trading-floor"
+HF_HUB_TOKEN = os.environ.get("HF_WRITE_TOKEN") or os.environ.get("NOMOS_HF_TOKEN") or os.environ.get("HF_TOKEN")
+HUB_SNAPSHOT_EVERY_DAYS = 3  # commit snapshot every 3 days (balances git noise vs recovery granularity)
+try:
+    from huggingface_hub import HfApi, hf_hub_download
+    _hub_api = HfApi(token=HF_HUB_TOKEN) if HF_HUB_TOKEN else None
+except Exception:
+    _hub_api = None
+    hf_hub_download = None
 
 # ── COLLECTIVE EXPERIMENT (2026-04-17) ─────────────────────────────────────
 # Common goal: one agent hits $1M by season end. Shared plan each day via
@@ -361,19 +376,98 @@ def build_stackelberg_role_block(tid: str, leader_tid: Optional[str]) -> str:
             "Best-respond to the leader's move; do not blindly follow.\n")
 
 def _save_state_to_disk(state: dict):
-    """Persist experiment state to disk (survives Space restarts)."""
+    """Persist to /tmp (fast, ephemeral) + HF Hub state.json (every day, for
+    resume). Per-day decision files are pushed separately by
+    _push_day_decisions_to_hub() after each day completes."""
     try:
         STATE_PATH.write_text(json.dumps(state, default=str))
     except Exception:
         pass
+    # Always push state.json so resume sees latest bankrolls/day_idx.
+    if _hub_api and int(state.get("days_processed", 0)) > 0:
+        _push_state_to_hub(state)
+
+def _push_state_to_hub(state: dict):
+    """Lightweight state snapshot (for resume). One file, overwritten daily."""
+    try:
+        days = int(state.get("days_processed", 0))
+        total = int(state.get("days_total", 0))
+        _hub_api.upload_file(
+            path_or_fileobj=json.dumps(state, default=str, indent=2).encode("utf-8"),
+            path_in_repo="data/runtime/state.json",
+            repo_id=HF_REPO_ID, repo_type="space",
+            commit_message=f"runtime: day {days}/{total} state",
+        )
+    except Exception as e:
+        print(f"[hub-persist] state push failed: {e}")
+
+def _push_day_decisions_to_hub(day_idx: int, day_date: str, n_games: int,
+                                day_logs_by_agent: Dict[str, dict],
+                                day_council_plan: Optional[dict] = None,
+                                day_rogue_state: Optional[dict] = None):
+    """Commit one file per experiment-day: data/decisions/day-XXX.json.
+    Contains full per-agent decision trail (rationale per game, category,
+    bankroll sizing, council alignment) + day's council plan. Councils/depts
+    read these back to aggregate & analyze."""
+    if not _hub_api:
+        return
+    try:
+        payload = {
+            "day_idx": day_idx,
+            "date": day_date,
+            "n_games": n_games,
+            "n_agents": len(day_logs_by_agent),
+            "council_plan": day_council_plan,
+            "rogue_state": day_rogue_state,
+            "agents": day_logs_by_agent,  # tid -> day_log with allocations + rationale
+            "written_at": datetime.now(timezone.utc).isoformat(),
+        }
+        _hub_api.upload_file(
+            path_or_fileobj=json.dumps(payload, default=str, indent=2).encode("utf-8"),
+            path_in_repo=f"data/decisions/day-{day_idx:03d}.json",
+            repo_id=HF_REPO_ID, repo_type="space",
+            commit_message=f"decisions: day {day_idx} ({day_date}) — {len(day_logs_by_agent)} agents",
+        )
+    except Exception as e:
+        print(f"[hub-persist] day-{day_idx} push failed: {e}")
 
 def _load_state_from_disk() -> Optional[dict]:
-    """Load persisted state if available."""
+    """Load persisted state. Prefers local /tmp (fastest), falls back to the
+    last Hub snapshot (survives Space restarts)."""
     try:
         if STATE_PATH.exists():
             return json.loads(STATE_PATH.read_text())
     except Exception:
         pass
+    # /tmp empty → try Hub. Happens on every fresh container start.
+    if hf_hub_download and HF_HUB_TOKEN:
+        try:
+            p = hf_hub_download(
+                repo_id=HF_REPO_ID, filename="data/runtime/state.json",
+                repo_type="space", token=HF_HUB_TOKEN,
+            )
+            state = json.loads(Path(p).read_text())
+            print(f"[hub-persist] restored state from hub: day {state.get('days_processed',0)}/{state.get('days_total',0)}")
+            # Also restore agent logs + council plans (best-effort)
+            for fname, target in [("agent_logs.json", _agent_logs), ("council_plans.json", _council_plans)]:
+                try:
+                    p2 = hf_hub_download(
+                        repo_id=HF_REPO_ID, filename=f"data/runtime/{fname}",
+                        repo_type="space", token=HF_HUB_TOKEN,
+                    )
+                    data = json.loads(Path(p2).read_text())
+                    if isinstance(target, dict):
+                        target.clear(); target.update(data)
+                    else:  # defaultdict list
+                        target.clear()
+                        for k, v in data.items():
+                            target[k] = v if isinstance(v, list) else []
+                    print(f"[hub-persist] restored {fname}")
+                except Exception as e:
+                    print(f"[hub-persist] {fname} not yet in hub: {e}")
+            return state
+        except Exception as e:
+            print(f"[hub-persist] no hub snapshot yet: {e}")
     return None
 
 def _save_logs_to_disk():
@@ -3077,9 +3171,25 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "council_plan": day_council_plan,
                 "rogue_this_day": {t: r for t, r in day_rogue_state.items() if r["is_rogue"]},
             }
-        if (day_idx + 1) % 5 == 0 or day_idx == n_days - 1:
-            _save_state_to_disk(_experiment_state)
-            _save_logs_to_disk()
+        # Persist EVERY day so councils/analysis can read decision trail even
+        # if a Space restart wipes /tmp mid-run. state.json = latest resume
+        # point; data/decisions/day-XXX.json = per-day per-agent full rationale.
+        _save_state_to_disk(_experiment_state)
+        _save_logs_to_disk()
+        # Per-day audit file pushed to data/decisions/day-XXX.json on the Space
+        # repo — councils/depts fetch via HF API to aggregate across agents.
+        _day_logs_for_hub = {
+            tid: _agent_logs[tid][-1]
+            for tid in TRADERS if _agent_logs.get(tid) and _agent_logs[tid]
+            and _agent_logs[tid][-1].get("date") == day_date
+        }
+        if _day_logs_for_hub:
+            _push_day_decisions_to_hub(
+                day_idx=day_idx, day_date=day_date, n_games=len(day_games),
+                day_logs_by_agent=_day_logs_for_hub,
+                day_council_plan=day_council_plan,
+                day_rogue_state=day_rogue_state,
+            )
 
         if (day_idx + 1) % 1 == 0:  # Yield every day (slower pace than games)
             elapsed = time.time() - start_time
