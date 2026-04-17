@@ -1497,11 +1497,13 @@ Schema:
 STRICT RULES:
 - Sum of allocation pct + parlay pct + cash_held_pct = 1.00 (±0.01)
 - Max 1 allocation per game_idx in allocations[] (no hedging same game both sides)
+- allocations[]: MUST contain ≥3 entries every day. Empty allocations[] is FORBIDDEN.
+  If the slate is weak, pick the 3 highest-edge categories anyway — never return [].
 - Max 10 allocations + 3 parlays
 - Each allocation pct: 0.01–0.40 | Each parlay pct: 0.01–0.10 (combined odds amplify risk)
 - Parlays: 2–4 legs, each leg = distinct game_idx, all legs must win for payout
 - cash_held_pct: 0.00–0.25 MAX (aggressive-deploy policy, $1M collective goal — idle bankroll cannot compound)
-- TARGET: ≥75% of bankroll deployed every day. If the slate is weak, expand to lower-edge picks rather than holding cash.
+- MANDATORY: ≥75% of bankroll deployed every day. Holding >25% cash violates the collective goal.
 - Rationale MUST cite a specific stat/metric (not "I think they'll win")
 - Edge must be computed from model vs implied odds, NOT hardcoded
 - coalition_proposal is OPTIONAL (null or omit if you are not pacting today).

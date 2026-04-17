@@ -469,37 +469,42 @@ fi
 # 6. BOTS
 # ══════════════════════════════════════════════════════════════════
 if show bots; then
-  header "Telegram Bots (5)"
+  header "Telegram Monetization (cron-driven)"
 
-  declare -A BOT_CHECKS=(
-    ["@Nomos42Bot"]="nomos42_brain.py:Brain (admin/research)"
-    ["@Forge42Bot"]="forge_bot.py:Forge Factory (fleet/SaaS)"
-    ["@NomosNBABot"]="nomos_nba_bot.py:NBA SaaS (scout/edge/whale)"
-    ["@StupidPoliticalBot"]="stupid_political_bot.py:Political SaaS (signals/trades)"
-  )
-
-  ANY_DOWN=false
-  for BOT_NAME in "@Nomos42Bot" "@Forge42Bot" "@NomosNBABot" "@StupidPoliticalBot"; do
-    IFS=':' read -r PROC_MATCH BOT_DESC <<< "${BOT_CHECKS[$BOT_NAME]}"
-    if pgrep -f "$PROC_MATCH" > /dev/null 2>&1; then
-      count_ok "$BOT_NAME" "RUNNING — $BOT_DESC"
+  # Live pipeline: daily_picks.py posts to @Nomos42Picks at 18:00 UTC
+  # sync_subscribers.py reconciles Stripe/Whop/LS at 09:00 UTC
+  DAILY="${ROOT}/scripts/telegram/daily_picks.py"
+  if [ -f "$DAILY" ]; then
+    if crontab -l 2>/dev/null | grep -q "daily_picks.py"; then
+      count_ok "daily_picks.py" "scheduled (cron)"
     else
-      count_fail "$BOT_NAME" "DOWN — $BOT_DESC"
-      ANY_DOWN=true
+      count_warn "daily_picks.py" "file exists but NOT in crontab"
     fi
-  done
-
-  if [ "$ANY_DOWN" = true ] && [ -z "$NO_LAUNCH" ]; then
-    info "" "Auto-starting mon-ipad bots..."
-    cd "${ROOT}" && bash scripts/telegram/start_bots.sh start 2>/dev/null || true
-  fi
-
-  if pgrep -f "rgwa_bot.py" > /dev/null 2>&1; then
-    count_ok "@RGWAbot" "RUNNING — AI Art Terminal"
   else
-    count_fail "@RGWAbot" "DOWN — AI Art Terminal"
-    [ -z "$NO_LAUNCH" ] && { cd "${ROOT}/../rgwa" && bash scripts/telegram/start_bot.sh start 2>/dev/null || true; }
+    count_fail "daily_picks.py" "missing"
   fi
+
+  SYNC="${ROOT}/scripts/telegram/sync_subscribers.py"
+  if [ -f "$SYNC" ]; then
+    if crontab -l 2>/dev/null | grep -q "sync_subscribers.py"; then
+      count_ok "sync_subscribers.py" "scheduled (cron)"
+    else
+      count_warn "sync_subscribers.py" "file exists but NOT in crontab"
+    fi
+  else
+    count_fail "sync_subscribers.py" "missing"
+  fi
+
+  # Last-run artifacts
+  LAST_PICKS="${ROOT}/data/telegram/daily-picks-latest.json"
+  if [ -f "$LAST_PICKS" ]; then
+    TS=$(python3 -c "import json; d=json.load(open('$LAST_PICKS')); print(d.get('timestamp', d.get('date','?')))" 2>/dev/null || echo "?")
+    info "last picks post" "$TS"
+  else
+    info "last picks post" "no artifact yet"
+  fi
+
+  info "legacy bots" "@Nomos42Bot/@Forge42Bot/@RGWAbot archived — see git log 2026-04"
 fi
 
 # ══════════════════════════════════════════════════════════════════

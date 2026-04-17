@@ -1227,10 +1227,12 @@ Schema:
 STRICT RULES:
 - Sum of all allocation pct + cash_held_pct = 1.00 (±0.01)
 - direction must be "long" or "short" (no "cash" in allocations)
+- allocations[]: MUST contain ≥3 entries every day. Empty allocations[] is FORBIDDEN.
+  If no event has obvious edge, spread across 3 sector ETFs (XLE/XLV/XLF/XLK/XLF) anyway.
 - Max 10 allocations, no duplicate event_idx
 - Each allocation pct: 0.01–0.40
 - cash_held_pct: 0.00–0.25 MAX (aggressive-deploy policy, $1M collective goal — idle capital cannot compound)
-- TARGET: ≥75% deployed every day. If no obvious plays, spread across low-conviction sector ETFs rather than hold cash.
+- MANDATORY: ≥75% deployed every day. Holding >25% cash violates the collective goal.
 - Thesis MUST cite a specific signal/agency (not just "I think it will go up")
 - Ticker should be the sector ETF from SECTOR_ETF_MAP (XLE, XLV, XLF, etc.) or the event's ticker
 - coalition_proposal is OPTIONAL (null or omit if no pact today). If present, you MUST
