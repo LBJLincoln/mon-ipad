@@ -212,8 +212,8 @@ def build_category_predictions(core: dict) -> dict:
     cats["total_under"] = {"prob": round(1 - over_prob, 4), "line": mkt_total,
                            "edge": round((1 - over_prob) - 0.5238, 4)}
 
-    # ── Alt spreads (trimmed: -10..+10 @ 1.0 step = ~20 lines) ──
-    for line_int in range(-10, 11):
+    # ── Alt spreads (full: -20..+20 @ 1.0 step = ~80 cats) ──
+    for line_int in range(-20, 21):
         line = float(line_int)
         if abs(line - mkt_spread) < 0.5:
             continue  # skip near base
@@ -223,8 +223,8 @@ def build_category_predictions(core: dict) -> dict:
         cats[tag_h] = {"prob": round(h_cover, 3), "line": line}
         cats[tag_a] = {"prob": round(1 - h_cover, 3), "line": -line}
 
-    # ── Alt totals (trimmed: -10..+10 @ 2.0 step = ~10 lines) ──
-    for delta in range(-10, 11, 2):
+    # ── Alt totals (full: -20..+20 @ 1.0 step = ~80 cats) ──
+    for delta in range(-20, 21):
         if delta == 0:
             continue
         line = mkt_total + delta
@@ -234,9 +234,9 @@ def build_category_predictions(core: dict) -> dict:
         cats[tag_o] = {"prob": round(op, 3), "line": line}
         cats[tag_u] = {"prob": round(1 - op, 3), "line": line}
 
-    # ── Team totals (3 lines per team, half-point) ──
+    # ── Team totals (7 lines per team, half-point = 28 cats) ──
     for team_label, team_mean in [("home", home_pts_mean), ("away", away_pts_mean)]:
-        for delta in [-4, 0, 4]:
+        for delta in [-8, -5, -2, 0, 2, 5, 8]:
             line = round(team_mean + delta + 0.5, 1)
             op = 1 - normal_cdf(line, mu=team_mean, sigma=SIGMA_TEAM_PTS)
             cats[f"team_total_{team_label}_over_{line:g}"] = {
@@ -265,18 +265,35 @@ def build_category_predictions(core: dict) -> dict:
     cats["h1_total_over"] = {"prob": round(h1_over, 4), "line": h1_total_line, "edge": None}
     cats["h1_total_under"] = {"prob": round(1 - h1_over, 4), "line": h1_total_line, "edge": None}
 
-    # ── Quarter 1 ──
-    q1_margin_mu = margin * 0.25
-    q1_total_mu = total_pts * Q1_SHARE
-    q1_sigma_m = SIGMA_MARGIN_FULL * 0.5
-    q1_sigma_t = SIGMA_TOTAL_FULL * 0.5
-    q1_home_wins = 1 - normal_cdf(0, mu=q1_margin_mu, sigma=q1_sigma_m)
-    cats["q1_ml_home"] = {"prob": round(q1_home_wins, 4), "edge": None}
-    cats["q1_ml_away"] = {"prob": round(1 - q1_home_wins, 4), "edge": None}
-    q1_total_line = round(q1_total_mu * 2) / 2
-    q1_over = 1 - normal_cdf(q1_total_line, mu=q1_total_mu, sigma=q1_sigma_t)
-    cats["q1_total_over"] = {"prob": round(q1_over, 4), "line": q1_total_line, "edge": None}
-    cats["q1_total_under"] = {"prob": round(1 - q1_over, 4), "line": q1_total_line, "edge": None}
+    # ── Second half (h2) ──
+    h2_margin_mu = margin * 0.5
+    h2_total_mu = total_pts * (1 - H1_SHARE)
+    h2_home_wins = 1 - normal_cdf(0, mu=h2_margin_mu, sigma=h1_sigma_m)
+    cats["h2_ml_home"] = {"prob": round(h2_home_wins, 4), "edge": None}
+    cats["h2_ml_away"] = {"prob": round(1 - h2_home_wins, 4), "edge": None}
+    h2_spread_line = round(mkt_spread / 2.0 * 2) / 2
+    h2_sp_cover = 1 - normal_cdf(-h2_spread_line, mu=h2_margin_mu, sigma=h1_sigma_m)
+    cats["h2_spread_home"] = {"prob": round(h2_sp_cover, 4), "line": h2_spread_line, "edge": None}
+    cats["h2_spread_away"] = {"prob": round(1 - h2_sp_cover, 4), "line": -h2_spread_line, "edge": None}
+    h2_total_line = round(h2_total_mu * 2) / 2
+    h2_over = 1 - normal_cdf(h2_total_line, mu=h2_total_mu, sigma=h1_sigma_t)
+    cats["h2_total_over"] = {"prob": round(h2_over, 4), "line": h2_total_line, "edge": None}
+    cats["h2_total_under"] = {"prob": round(1 - h2_over, 4), "line": h2_total_line, "edge": None}
+
+    # ── Quarters 1-4 (ml + total per quarter = 16 cats) ──
+    quarter_shares = {"q1": 0.253, "q2": 0.249, "q3": 0.251, "q4": 0.247}
+    for qtag, qshare in quarter_shares.items():
+        q_margin_mu = margin * 0.25
+        q_total_mu = total_pts * qshare
+        q_sigma_m = SIGMA_MARGIN_FULL * 0.5
+        q_sigma_t = SIGMA_TOTAL_FULL * 0.5
+        q_home_wins = 1 - normal_cdf(0, mu=q_margin_mu, sigma=q_sigma_m)
+        cats[f"{qtag}_ml_home"] = {"prob": round(q_home_wins, 4), "edge": None}
+        cats[f"{qtag}_ml_away"] = {"prob": round(1 - q_home_wins, 4), "edge": None}
+        q_total_line = round(q_total_mu * 2) / 2
+        q_over = 1 - normal_cdf(q_total_line, mu=q_total_mu, sigma=q_sigma_t)
+        cats[f"{qtag}_total_over"] = {"prob": round(q_over, 4), "line": q_total_line, "edge": None}
+        cats[f"{qtag}_total_under"] = {"prob": round(1 - q_over, 4), "line": q_total_line, "edge": None}
 
     # ── Props ──
     # Overtime: P(|margin| < 1) approx
