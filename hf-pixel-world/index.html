@@ -46,20 +46,41 @@
   #hud-kpi .r .l { color:var(--ink-3); text-transform:uppercase; letter-spacing:0.12em; font-size:9.5px; }
   #hud-kpi .r .v { color:var(--ok); font-weight:600; }
   #hud-kpi .r .v.warn { color:var(--warn); }
-  /* Inspect floating card — follows agent, positioned by JS */
-  #inspect-card { position:absolute; display:none; z-index:12; width:260px;
-    background:rgba(11,13,18,0.96); border:1px solid #ffd700; padding:10px 12px;
-    font-size:10.5px; color:var(--ink); border-radius:3px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.7), 0 0 16px rgba(255,215,0,0.15); }
-  #inspect-card .h { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;
-    padding-bottom:6px; border-bottom:1px solid var(--line); }
-  #inspect-card .h .t { color:#ffd700; font-weight:700; letter-spacing:0.08em; }
-  #inspect-card .h .x { color:var(--err); cursor:pointer; font-weight:700; padding:0 4px; }
-  #inspect-card .r { display:flex; justify-content:space-between; padding:2px 0; font-size:10px; }
-  #inspect-card .r .l { color:var(--ink-3); text-transform:uppercase; letter-spacing:0.08em; font-size:9.5px; }
-  #inspect-card .r .v { color:var(--ink); }
-  #inspect-card .r .v.ok { color:var(--ok); }
-  #inspect-card .r .v.warn { color:var(--warn); }
+  /* ═══ v2.15 POKÉMON TRAINER ID CARD ═══ Gen4 trainer-ID aesthetic.
+     Red plastic outer shell (thick black border) + inset yellow-gradient card face. */
+  #inspect-card { position:absolute; display:none; z-index:12; width:280px;
+    background: #e83028;
+    border:3px solid #181820;
+    border-radius:12px;
+    padding:6px;
+    font-size:10.5px; color:#101820;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.75), inset 0 2px 0 rgba(255,255,255,0.25), inset 0 -3px 0 rgba(0,0,0,0.3);
+    font-family:"JetBrains Mono", monospace; }
+  #inspect-card .h { display:flex; justify-content:space-between; align-items:center;
+    background:linear-gradient(180deg,#283040 0%,#181820 100%);
+    color:#fff8c0; padding:6px 10px; border-radius:6px 6px 0 0;
+    font-size:10px; letter-spacing:0.14em; text-transform:uppercase; font-weight:700;
+    border:2px solid #101820; border-bottom:none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18); }
+  #inspect-card .h .t { color:#fff8c0; text-shadow:1px 1px 0 #000; }
+  #inspect-card .h .x { color:#ffb0b0; cursor:pointer; font-weight:700; padding:0 4px; }
+  #inspect-card .h .x:hover { color:#fff; }
+  /* Card face — sits below header, yellow gradient like a pokédex ID card */
+  #inspect-card .r, #inspect-card #inspect-extra {
+    background:linear-gradient(180deg,#fff8c0 0%,#ffe070 100%);
+    border-left:2px solid #101820; border-right:2px solid #101820;
+    padding:3px 10px; margin:0;
+    color:#101820; font-size:10.5px; }
+  #inspect-card .r { display:flex; justify-content:space-between;
+    border-bottom:1px dotted rgba(16,24,32,0.25); }
+  #inspect-card .r:first-of-type { border-top:2px solid #f8c040; }
+  #inspect-card .r:last-of-type, #inspect-card #inspect-extra {
+    border-bottom:2px solid #101820; border-radius:0 0 6px 6px; padding-bottom:6px; }
+  #inspect-card .r .l { color:#584020; text-transform:uppercase; letter-spacing:0.1em; font-size:9px; font-weight:700; padding-top:1px; }
+  #inspect-card .r .v { color:#101820; font-weight:700; }
+  #inspect-card .r .v.ok { color:#107828; }
+  #inspect-card .r .v.warn { color:#a84818; }
+  #inspect-card #inspect-extra { color:#483820; font-size:9.5px; border-top:1px dotted rgba(16,24,32,0.35); }
   #stage { position:relative; background:var(--bg-2); overflow:hidden; }
   #stage canvas { image-rendering:pixelated; display:block; }
   #scanlines { position:absolute; inset:0; pointer-events:none; z-index:5;
@@ -124,22 +145,30 @@
     letter-spacing:0.12em; padding:5px 10px; text-decoration:none; border-radius:2px;
     text-transform:uppercase; transition:all 0.15s; }
   #hud-top .ext-btns a:hover { background:#1a1000; border-color:#ffa500; box-shadow:0 0 8px rgba(255,165,0,0.4); }
-  #bet-ticker { position:absolute; bottom:26px; left:12px; right:12px; height:22px; z-index:7;
-    background:rgba(0,0,0,0.88); border:1px solid #3a2600; border-radius:2px;
-    overflow:hidden; display:flex; align-items:center;
-    font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:#ffa500;
-    box-shadow:0 0 12px rgba(255,165,0,0.14); }
-  #bet-ticker .tlbl { padding:0 10px; color:#805300; font-weight:700; letter-spacing:0.14em;
-    border-right:1px solid #3a2600; flex-shrink:0; }
-  #bet-ticker .tscroll { flex:1; overflow:hidden; white-space:nowrap; position:relative; }
-  #bet-ticker .tscroll .tstream { display:inline-block; padding-left:100%; animation:tmarq 60s linear infinite; }
-  #bet-ticker .titem { display:inline-block; margin:0 18px; }
-  #bet-ticker .titem .a { color:#ff79c6; font-weight:700; } /* nba default */
-  #bet-ticker .titem.pol .a { color:#8be9fd; }
-  #bet-ticker .titem .c { color:#ffd700; }
-  #bet-ticker .titem .e { color:#00ff88; }
-  #bet-ticker .titem .e.neg { color:#ff5c5c; }
-  @keyframes tmarq { from { transform:translateX(0); } to { transform:translateX(-100%); } }
+  /* ═══ v2.15 POKÉMON B/W DIALOGUE BOX ═══ Replaces marquee bet-ticker.
+     Double-border (outer black + inner white) + inset shadow, typewriter feed. */
+  #poke-dialog { position:absolute; bottom:14px; left:12px; right:12px; height:92px; z-index:7;
+    background:#f8f8f8; color:#181818;
+    border:4px solid #101820;
+    border-radius:8px;
+    box-shadow: inset 0 0 0 2px #f8f8f8, inset 0 0 0 4px #4060b0, 0 4px 14px rgba(0,0,0,0.55);
+    font-family:"Press Start 2P","VT323","IBM Plex Mono",monospace; font-size:13px;
+    padding:12px 22px 10px 22px; display:flex; flex-direction:column; gap:4px;
+    line-height:1.4; letter-spacing:0.02em; }
+  #poke-dialog .pd-head { display:flex; justify-content:space-between; font-size:9.5px;
+    color:#4060b0; text-transform:uppercase; letter-spacing:0.2em; font-weight:700;
+    border-bottom:2px dotted #b0b8c4; padding-bottom:3px; margin-bottom:2px;
+    font-family:"JetBrains Mono",monospace; }
+  #poke-dialog .pd-body { flex:1; overflow:hidden; color:#181820;
+    font-family:"Press Start 2P","VT323",monospace; font-size:12px; line-height:1.5; }
+  #poke-dialog .pd-body .trn { color:#c03030; font-weight:700; }
+  #poke-dialog .pd-body .trn.pol { color:#3068b8; }
+  #poke-dialog .pd-body .amt { color:#1a1a1a; font-weight:700; }
+  #poke-dialog .pd-body .cat { color:#a05820; font-weight:700; }
+  #poke-dialog .pd-body .win { color:#207838; font-weight:700; }
+  #poke-dialog .pd-body .lose { color:#b82030; font-weight:700; }
+  #poke-dialog .pd-body .cursor { display:inline-block; color:#4060b0; animation:pdblk 0.6s steps(2) infinite; font-weight:700; }
+  @keyframes pdblk { 50% { opacity:0; } }
   #minimap { position:absolute; top:42px; right:12px; z-index:7;
     width:120px; height:80px; background:rgba(11,13,18,0.92);
     border:1px solid var(--line); border-radius:2px; overflow:hidden;
@@ -184,12 +213,15 @@
         <button data-room="evolution">EVOLUTION 🧬</button>
         <button data-room="councils">COUNCILS ⚖</button>
       </div>
-      <div><span class="tick" id="hud-tick">· booting</span> <span style="opacity:0.4;font-size:9px;margin-left:6px">v2.12</span></div>
+      <div><span class="tick" id="hud-tick">· booting</span> <span style="opacity:0.4;font-size:9px;margin-left:6px">v2.15 · pokémon B/W</span></div>
     </div>
-<!-- v2.12: minimap deleted — took 120×80 of valuable HUD real-estate, agents are already visible in world view -->
-    <div id="bet-ticker">
-      <span class="tlbl">◉ LIVE BETS</span>
-      <div class="tscroll"><div class="tstream" id="bt-stream">awaiting day-decisions…</div></div>
+<!-- v2.12: minimap deleted · v2.15: bet-ticker → Pokémon B/W dialogue box -->
+    <div id="poke-dialog">
+      <div class="pd-head">
+        <span>◉ POKÉMON TRAINER BATTLE LOG · LIVE BETS</span>
+        <span id="pd-status">■ NBA · POL</span>
+      </div>
+      <div class="pd-body" id="pd-body">awaiting day-decisions<span class="cursor">▼</span></div>
     </div>
     <div id="boot-log">
       <div class="bl-head">◉ NOMOS42 PIXEL WORLD — BOOT</div>
@@ -1089,9 +1121,67 @@ for (const [zoneId, z] of Object.entries(ZONES)) {
     }
   }
   floorLayer.addChild(chk);
+  // ═══ v2.15: Pokémon B/W tilemap motif ═══ per-zone 16×16 pattern overlay.
+  // Gen5 floor-tile feel: wood strips (NBA), marble (POL), circuit (infra), carpet (councils), grid (control).
+  const tilemap = new PIXI.Graphics();
+  const TM = 16;   // 16px sub-tile (half of TILE=32)
+  const zx0 = z.x*TILE, zy0 = z.y*TILE, zxw = z.w*TILE, zyh = z.h*TILE;
+  if (zoneId === "nba") {
+    // Hardwood basketball court — vertical plank lines + crossgrain dots
+    for (let px = zx0; px < zx0 + zxw; px += TILE) {
+      tilemap.rect(px, zy0, 1, zyh).fill({ color: 0x4a2810, alpha: 0.35 });
+    }
+    for (let py = zy0 + 16; py < zy0 + zyh; py += 32) {
+      for (let px = zx0 + 8; px < zx0 + zxw; px += 32) {
+        tilemap.rect(px, py, 2, 1).fill({ color: 0x3a1810, alpha: 0.4 });
+      }
+    }
+  } else if (zoneId === "political") {
+    // Marble capitol floor — diamond grid + specks
+    for (let py = zy0; py < zy0 + zyh; py += TM) {
+      for (let px = zx0; px < zx0 + zxw; px += TM) {
+        const odd = ((px/TM + py/TM) % 2 === 0);
+        if (odd) tilemap.rect(px + 6, py + 6, 4, 4).fill({ color: 0xc0d8f0, alpha: 0.12 });
+        else tilemap.rect(px + 7, py + 7, 2, 2).fill({ color: 0x8ba6c8, alpha: 0.22 });
+      }
+    }
+  } else if (zoneId === "nba-infra" || zoneId === "pol-infra") {
+    // Circuit board — green traces + solder pads
+    const trace = zoneId === "nba-infra" ? 0x50fa7b : 0x8be9fd;
+    for (let py = zy0; py < zy0 + zyh; py += TILE) {
+      tilemap.rect(zx0, py + 15, zxw, 1).fill({ color: trace, alpha: 0.20 });
+    }
+    for (let py = zy0 + 8; py < zy0 + zyh; py += TILE) {
+      for (let px = zx0 + 8; px < zx0 + zxw; px += TILE) {
+        tilemap.circle(px, py, 1.5).fill({ color: trace, alpha: 0.35 });
+      }
+    }
+  } else if (zoneId === "councils") {
+    // Red carpet with gold trim — diagonal weave + edge stripes
+    for (let py = zy0 + 4; py < zy0 + zyh - 4; py += 6) {
+      tilemap.rect(zx0 + 4, py, zxw - 8, 1).fill({ color: 0xd04040, alpha: 0.18 });
+    }
+    // Gold trim at top + bottom
+    tilemap.rect(zx0 + 4, zy0 + 2, zxw - 8, 2).fill({ color: 0xffc830, alpha: 0.4 });
+    tilemap.rect(zx0 + 4, zy0 + zyh - 4, zxw - 8, 2).fill({ color: 0xffc830, alpha: 0.4 });
+  } else if (zoneId === "control-room") {
+    // Dark tech grid — thin cyan crosshatch with diode dots
+    for (let py = zy0; py <= zy0 + zyh; py += TILE) {
+      tilemap.rect(zx0, py, zxw, 1).fill({ color: 0x00d9a7, alpha: 0.10 });
+    }
+    for (let px = zx0; px <= zx0 + zxw; px += TILE) {
+      tilemap.rect(px, zy0, 1, zyh).fill({ color: 0x00d9a7, alpha: 0.10 });
+    }
+    for (let py = zy0 + 8; py < zy0 + zyh; py += 64) {
+      for (let px = zx0 + 8; px < zx0 + zxw; px += 64) {
+        tilemap.circle(px, py, 1.2).fill({ color: 0xffd700, alpha: 0.45 });
+      }
+    }
+  }
+  floorLayer.addChild(tilemap);
   // v2.9: brighter zone tints — 0.10 → 0.18, more distinct separations
   const tint = new PIXI.Graphics();
-  tint.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).fill({ color: KIND_COLORS[zoneIdToKind(zoneId)], alpha: 0.18 });
+  tint.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).fill({ color: KIND_COLORS[zoneIdToKind(zoneId)], alpha: 0.12 });
   floorLayer.addChild(tint);
   // v2.9: Triple-stroke zone border: outer glow + neon tube + inner highlight
   const border = new PIXI.Graphics();
@@ -1518,6 +1608,39 @@ function makeAgentContainer(a) {
   plate.addChild(plateText); plate._text = plateText;
   c.addChild(plate); c._plate = plate;
 
+  // ═══ v2.15: Pokémon HP bar + persistent bet tag (above nameplate, below sprite) ═══
+  // HP bar: Gen5-style 3-segment bar, green→yellow→red as bankroll % of $100 start falls.
+  // Bet tag: persistent chip showing latest active bet "MIN@NYK ml_home 15%" — visible ALWAYS.
+  if (!a._isInfra) {
+    const hp = new PIXI.Container();
+    hp.y = -CHAR_H*0.08;
+    const hpBg = new PIXI.Graphics();
+    hp.addChild(hpBg); hp._bg = hpBg;
+    const hpFill = new PIXI.Graphics();
+    hp.addChild(hpFill); hp._fill = hpFill;
+    const hpLbl = new PIXI.Text({ text: "$100", style: {
+      fontFamily: "Press Start 2P, VT323, monospace", fontSize: 10, fontWeight: "700",
+      fill: 0xffffff, stroke: { color: 0x101820, width: 2 },
+    }});
+    hpLbl.anchor.set(0.5, 0.5);
+    hp.addChild(hpLbl); hp._lbl = hpLbl;
+    c.addChild(hp); c._hp = hp;
+
+    // Persistent bet tag — below nameplate, pokémon-blue chip, shows latest active bet
+    const bet = new PIXI.Container();
+    bet.y = CHAR_H*0.14 + 32;
+    const betBg = new PIXI.Graphics();
+    bet.addChild(betBg); bet._bg = betBg;
+    const betTxt = new PIXI.Text({ text: "", style: {
+      fontFamily: "JetBrains Mono, monospace", fontSize: 9.5, fontWeight: "700",
+      fill: 0xfff8c0, letterSpacing: 0.3,
+    }});
+    betTxt.anchor.set(0.5, 0.5);
+    bet.addChild(betTxt); bet._text = betTxt;
+    bet.visible = false;
+    c.addChild(bet); c._betTag = bet;
+  }
+
   // Strategy badge (permanent — below nameplate, color-coded by family)
   const badge = new PIXI.Container();
   badge.y = CHAR_H*0.14 + 18;
@@ -1725,6 +1848,50 @@ function tickRender(ms) {
     const pipCol = a.state === "profit" ? 0x00d9a7 : a.state === "loss" ? 0xff5c5c : a.state === "error" ? 0xff5c5c : KIND_COLORS[a.kind];
     a._cnt._pip.clear().circle(0, CHAR_H*0.05, 5).fill(pipCol);
 
+    // ═══ v2.15: Pokémon HP bar + persistent bet tag ═══
+    if (a._cnt._hp && a.data && typeof a.data.bankroll === "number") {
+      const HP_W = CHAR_W * 0.95, HP_H = 8;
+      const bankroll = a.data.bankroll || 0;
+      const maxRef = Math.max(200, bankroll);        // scale to current-max so winners still show growth room
+      const pct = Math.max(0.02, Math.min(1, bankroll / maxRef));
+      // Pokémon HP color thresholds: >50% green, 20-50% yellow, <20% red
+      const hpPct = Math.min(1, bankroll / 100);
+      const hpCol = hpPct > 1 ? 0x1aa030 : hpPct > 0.5 ? 0x30c030 : hpPct > 0.2 ? 0xf0c010 : 0xd02020;
+      a._cnt._hp._bg.clear()
+        .rect(-HP_W/2 - 1, -HP_H/2 - 1, HP_W + 2, HP_H + 2).fill({ color: 0x101820 })
+        .rect(-HP_W/2, -HP_H/2, HP_W, HP_H).fill({ color: 0x404850 });
+      a._cnt._hp._fill.clear()
+        .rect(-HP_W/2, -HP_H/2, HP_W * pct, HP_H).fill({ color: hpCol })
+        .rect(-HP_W/2, -HP_H/2, HP_W * pct, 2).fill({ color: 0xffffff, alpha: 0.4 });   // top highlight
+      a._cnt._hp._lbl.text = bankroll >= 1000 ? `$${(bankroll/1000).toFixed(2)}K` : `$${bankroll.toFixed(0)}`;
+      a._cnt._hp._lbl.y = -HP_H - 6;
+      a._cnt._hp.visible = true;
+    } else if (a._cnt._hp) {
+      a._cnt._hp.visible = false;
+    }
+
+    // Persistent bet tag — top allocation from latest day-decision (never fades)
+    if (a._cnt._betTag && a.dayDecision && Array.isArray(a.dayDecision.allocations) && a.dayDecision.allocations.length) {
+      // Biggest stake of the day
+      const al = a.dayDecision.allocations.reduce((m, x) =>
+        ((x.stake || x.stake_amount || 0) > (m.stake || m.stake_amount || 0)) ? x : m, a.dayDecision.allocations[0]);
+      const pct = Math.round((al.pct || 0) * 100);
+      const game = (al.game || "").slice(0, 10);
+      const cat = (al.category || "").slice(0, 9);
+      const won = al.won === true ? "✓" : al.won === false ? "✗" : "·";
+      const txt = `${won} ${game} ${cat} ${pct}%`.trim();
+      a._cnt._betTag._text.text = txt;
+      const tw = Math.min(a._cnt._betTag._text.width + 12, 180);
+      const betCol = al.won === true ? 0x207838 : al.won === false ? 0xb82030 : 0x4060b0;
+      a._cnt._betTag._bg.clear()
+        .roundRect(-tw/2 - 1, -7 - 1, tw + 2, 16, 4).fill({ color: 0x101820 })
+        .roundRect(-tw/2, -7, tw, 14, 4).fill({ color: betCol })
+        .roundRect(-tw/2, -7, tw, 5, 4).fill({ color: 0xffffff, alpha: 0.18 });
+      a._cnt._betTag.visible = true;
+    } else if (a._cnt._betTag) {
+      a._cnt._betTag.visible = false;
+    }
+
     // v2.0 reputation halo — 3px ring underfoot, color = axelrod family,
     // pulses when a bet was just placed (activeUntil in future)
     if (a._cnt._halo && !a._isInfra) {
@@ -1794,7 +1961,7 @@ function tickRender(ms) {
 
 app.ticker.add(() => {
   const now = performance.now();
-  tickMotion(now); tickRender(now);
+  tickMotion(now); tickRender(now); tickPokeDialog(now);
   // v2.3: Animate ambient particles
   for (const p of PARTICLES) {
     p.x += p._vx + Math.sin(now / 2000 + p._drift) * 0.15 * p._speed;
@@ -2329,9 +2496,17 @@ async function refresh() {
   }
 }
 
-// ═══ v2.0: Live bet ticker ═══════════════════════════════════════════════
+// ═══ v2.15: Pokémon B/W dialogue box — typewriter bet log ═══
+// Pulls latest allocations from both TFs, queues as Pokémon-style one-line events
+// ("mistral-ministral used ML_HOME! Super effective! +$432"). Typewriter-reveals each
+// char, then auto-advances after 3s. Player can read at their pace.
+const POKE_QUEUE = [];
+let _pokeIdx = 0, _pokeLastMs = 0, _pokeCurEvent = null, _pokeCharIdx = 0;
+const POKE_TYPE_MS = 22;   // ms per character
+const POKE_HOLD_MS = 3200; // ms to hold after reveal before advancing
+
 function renderBetTicker() {
-  const stream = document.getElementById("bt-stream"); if (!stream) return;
+  // Rebuild queue from latest allocations (keep newest 40, oldest-first so typewriter tells a story)
   const bets = [];
   for (const a of AGENTS) {
     if (!a.dayDecision || !Array.isArray(a.dayDecision.allocations)) continue;
@@ -2340,27 +2515,95 @@ function renderBetTicker() {
       const amt = al.stake_amount != null ? al.stake_amount
                 : al.stake != null ? al.stake
                 : al.amount != null ? al.amount : 0;
-      const edge = al.edge != null ? al.edge
-                : al.ev != null ? al.ev
-                : al.expected_value != null ? al.expected_value : null;
       bets.push({
         agent: a.label, kind: a.kind, cat: al.category,
-        amt: +amt || 0, edge: edge == null ? null : +edge,
+        amt: +amt || 0,
+        won: al.won === true ? true : al.won === false ? false : null,
         profit: al.profit == null ? null : +al.profit,
+        game: al.game || "",
+        pct: (al.pct || 0) * 100,
       });
     }
   }
-  // Keep last 20, freshest first
-  const last = bets.slice(-20).reverse();
-  if (!last.length) { stream.textContent = "awaiting day-decisions…"; return; }
-  stream.innerHTML = last.map(b => {
-    const klass = b.kind === "political" ? "titem pol" : "titem";
-    const edgeStr = b.edge == null ? "" :
-      ` (edge ${b.edge >= 0 ? "+" : ""}${(b.edge*100).toFixed(1)}%)`;
-    const edgeCls = b.edge != null && b.edge < 0 ? "e neg" : "e";
-    const amt = b.amt > 0 ? `$${b.amt.toFixed(0)}` : "pass";
-    return `<span class="${klass}">» <span class="a">${escapeHtml(b.agent)}</span> ${amt} on <span class="c">${escapeHtml(b.cat)}</span><span class="${edgeCls}">${edgeStr}</span></span>`;
-  }).join("");
+  // Keep last 40 (chronological) — Pokémon dialog plays them in order
+  POKE_QUEUE.length = 0;
+  POKE_QUEUE.push(...bets.slice(-40));
+  if (_pokeIdx >= POKE_QUEUE.length) _pokeIdx = 0;
+}
+
+function _pokeFormat(b) {
+  // Agent uses CATEGORY! — Pokémon move-style readout.
+  const trn = (b.kind === "political" ? "pol" : "nba");
+  const a = b.agent.replace(/^(NBA|POL)·/, "");
+  const cat = (b.cat || "?").toUpperCase().replace(/_/g, " ");
+  const verb = b.kind === "political" ? "positioned" : "bet";
+  const pct = b.pct > 0 ? `${b.pct.toFixed(0)}%` : "";
+  const stake = b.amt > 0 ? `$${b.amt.toFixed(0)}` : "pass";
+  let outcome;
+  if (b.won === true) {
+    const prof = b.profit != null ? ` +$${b.profit.toFixed(0)}` : "";
+    outcome = `<span class="win">it's super effective!${prof}</span>`;
+  } else if (b.won === false) {
+    const prof = b.profit != null ? ` ${b.profit.toFixed(0)}` : "";
+    outcome = `<span class="lose">it missed${prof}</span>`;
+  } else outcome = "<span>awaiting result…</span>";
+  return `<span class="trn ${trn}">${escapeHtml(a)}</span> ${verb} ${stake} on <span class="cat">${escapeHtml(cat)}</span> ${pct} — ${outcome}`;
+}
+
+function tickPokeDialog(ms) {
+  const body = document.getElementById("pd-body");
+  if (!body || !POKE_QUEUE.length) return;
+  if (!_pokeCurEvent) {
+    _pokeCurEvent = POKE_QUEUE[_pokeIdx];
+    _pokeCharIdx = 0;
+    _pokeLastMs = ms;
+  }
+  // _pokeCurEvent captured; render the formatted HTML up to _pokeCharIdx plain-text chars.
+  // Trick: format the FULL html, then slice the text-only portion for typewriter effect by
+  // walking the chars ignoring tags (use a pre-formatted plain string for indexing).
+  if (!_pokeCurEvent._html) {
+    _pokeCurEvent._html = _pokeFormat(_pokeCurEvent);
+    _pokeCurEvent._plain = _pokeCurEvent._html.replace(/<[^>]+>/g, "");
+  }
+  const plainLen = _pokeCurEvent._plain.length;
+  if (_pokeCharIdx < plainLen) {
+    const dt = ms - _pokeLastMs;
+    const nChars = Math.max(1, Math.floor(dt / POKE_TYPE_MS));
+    _pokeCharIdx = Math.min(plainLen, _pokeCharIdx + nChars);
+    _pokeLastMs = ms;
+    // Rebuild the visible HTML up to _pokeCharIdx plain chars
+    body.innerHTML = _pokeBuildPartial(_pokeCurEvent._html, _pokeCharIdx) +
+      (_pokeCharIdx < plainLen ? '<span class="cursor">▌</span>' : '<span class="cursor">▼</span>');
+  } else {
+    // Fully revealed — hold, then advance
+    if (ms - _pokeLastMs > POKE_HOLD_MS) {
+      _pokeIdx = (_pokeIdx + 1) % POKE_QUEUE.length;
+      _pokeCurEvent = null;
+    }
+  }
+}
+function _pokeBuildPartial(html, nPlain) {
+  // Emit HTML char-by-char, consuming tags without counting them against nPlain.
+  let out = "", i = 0, shown = 0;
+  while (i < html.length && shown < nPlain) {
+    if (html[i] === "<") {
+      const end = html.indexOf(">", i);
+      out += html.slice(i, end + 1);
+      i = end + 1;
+    } else {
+      out += html[i];
+      i++;
+      shown++;
+    }
+  }
+  // Close any open tags cleanly by emitting the rest that are within the current span scope
+  // (for this case, spans are short-lived — easier to just append closing from html after this point up to nearest </span>).
+  while (i < html.length && html[i] !== "<") i++;   // advance to next tag
+  // Append closing spans from remaining HTML (cheap approach: scan for closing tags)
+  const remaining = html.slice(i);
+  const unclosed = (out.match(/<span[^>]*>/g) || []).length - (out.match(/<\/span>/g) || []).length;
+  for (let k = 0; k < unclosed; k++) out += "</span>";
+  return out;
 }
 
 // ═══ v2.0: Mini-map (top-right, 120x80) ═══════════════════════════════════
