@@ -470,13 +470,13 @@ PROVIDERS = {
     # Self-hosted CPU LLM on Nomos42 HF Space — no auth, no quota.
     # 2026-04-17 ROUTE: Nomos42/nomos-cpu-gemma4 had 14 errors / 0 successes (gemma-4 GGUF load failed)
     # → switched to Nomos42/nomos42-llm-cpu (Qwen 2.5-1.5B, verified ready + responding)
-    # cpu-basic throughput ~0.5-1 tok/s on small prompts → reduce max_tokens to 250 for ~3-5min/call
+    # cpu-basic throughput measured ~3 tok/s (57s for 18 tokens). 120 tokens ≈ 40s → fits 180s budget.
     # Endpoint is NOT OpenAI-compat: POST /api/decide {system, user, max_tokens} -> {text}.
     "selfhost:cpu-gemma4": {
         "url": "https://nomos42-nomos42-llm-cpu.hf.space/api/decide",
         "model": "qwen2.5-1.5b-instruct-q4_k_m",
         "key_env": "SELFHOST_NOOP",  # sentinel — no auth needed
-        "max_tokens": 250,  # tight budget — selfhost CPU is slow, need concise bet JSON only
+        "max_tokens": 120,  # tight budget so call finishes before fallback fires
         "rpm": 6,
     },
 }
@@ -727,7 +727,7 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
                     "temperature": 0.3,
                     "json_only": True,
                 }
-                resp = requests.post(cfg["url"], json=payload, timeout=max(timeout, 45))
+                resp = requests.post(cfg["url"], json=payload, timeout=max(timeout, 180))
                 if resp.status_code == 200:
                     data = resp.json()
                     if isinstance(data, dict) and data.get("error"):

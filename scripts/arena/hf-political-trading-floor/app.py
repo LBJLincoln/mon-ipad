@@ -395,12 +395,13 @@ PROVIDERS = {
         "max_tokens": 1500,
         "rpm": 12,
     },
-    # 2026-04-17 ROUTE: broken nomos-cpu-gemma4 (14 errors) → working nomos42-llm-cpu (Qwen 2.5-1.5B)
+    # 2026-04-17 ROUTE: broken nomos-cpu-gemma4 → nomos42-llm-cpu (Qwen 2.5-1.5B cpu-basic, ~3 tok/s)
+    # Keep max_tokens small so calls finish under timeout (~2-3 min budget).
     "selfhost:cpu-gemma4": {
         "url": "https://nomos42-nomos42-llm-cpu.hf.space/api/decide",
         "model": "qwen2.5-1.5b-instruct-q4_k_m",
         "key_env": "SELFHOST_NOOP",
-        "max_tokens": 250,
+        "max_tokens": 120,
         "rpm": 6,
     },
 }
@@ -622,6 +623,7 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
                     continue
             elif is_selfhost and cfg["url"].endswith("/api/decide"):
                 # Legacy self-hosted HF Space (T12 cpu-gemma4) — non-OpenAI shape.
+                # cpu-basic GGUF is ~3 tok/s; 120 tokens = ~40s. Give 180s budget.
                 payload = {
                     "system": system_prompt,
                     "user": user_prompt,
@@ -629,7 +631,7 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
                     "temperature": 0.3,
                     "json_only": True,
                 }
-                resp = requests.post(cfg["url"], json=payload, timeout=max(timeout, 45))
+                resp = requests.post(cfg["url"], json=payload, timeout=max(timeout, 180))
                 if resp.status_code == 200:
                     data = resp.json()
                     if isinstance(data, dict) and data.get("error"):

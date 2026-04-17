@@ -37,15 +37,18 @@ PREFERRED_MODEL = os.environ.get("PREFERRED_MODEL", "")
 GATEWAY_URL = os.environ.get("GATEWAY_URL", "https://lbjlincoln26-llm-gateway.hf.space").rstrip("/")
 
 DEPT_GATEWAY_MAP = {
-    "d1": "cerebras:qwen-3-235b",     # Research — best reasoning, 235B params
+    # 2026-04-17 reconciliation: only models present in gateway MODELS dict.
+    # Gateway selfhost inventory: phi-4-mini (nomos42-llm-cpu), qwen3-4b (qwen3-4b-cpu).
+    # Other Nomos42 CPU Spaces exist but are not wired into the gateway yet.
+    "d1": "cerebras:qwen-3-235b",     # Research — 235B for deep literature work
     "d2": "cerebras:llama3.1-8b",     # Engineering — fast code
     "d3": "cerebras:qwen-3-235b",     # Evolution — analytical
-    "d4": "mistral:medium",           # Product — ensemble, balanced
-    "d5": "selfhost:gemma-4-e2b",     # Business — local CPU (Gemma-4 native JSON, Apr 2026)
-    "d6": "cerebras:qwen-3-235b",     # Evaluation — best reasoning (stays cloud)
+    "d4": "mistral:medium",           # Product — balanced ensemble
+    "d5": "mistral:large",            # Business — deep strategic (selfhost:gemma-4-e2b not in gateway)
+    "d6": "cerebras:qwen-3-235b",     # Evaluation — best reasoning
     "d7": "cerebras:llama3.1-8b",     # Infra — fast + reliable
-    "d8": "selfhost:qwen3-4b",        # Finance — local CPU (Qwen3-4B reasoning, no quota)
-    "d9": "selfhost:phi-4-mini",      # Cross-repo — local CPU (Phi-4-mini 128K ctx, MIT)
+    "d8": "selfhost:qwen3-4b",        # Finance — local CPU (Qwen3-4B, no quota)
+    "d9": "selfhost:phi-4-mini",      # Cross-repo — local CPU (128K ctx)
 }
 
 # Legacy HF-Router map kept only as fallback if the gateway is fully down.
