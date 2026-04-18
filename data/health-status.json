@@ -1,76 +1,57 @@
 {
-  "generated_at": "2026-04-18T16:15:00Z",
-  "brain_cycle": "cycle-13-brain-2026-04-18",
-  "cycle_notes": "S15 stagnation=17 → DIVERSIFY required (cloud brain cannot POST — local CLI must run: curl -X POST https://nomos42-nba-evo-6.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'). P7 new POL BEST 0.24937 (beats CLAUDE.md 0.24987). No new NBA fleet best (S13 leads at 0.22132, threshold 0.22085 not beaten). All 9 councils STARTING iter=0 (startup jitter, stalled=false). SOTA proposal written.",
-  "nba_islands": {
-    "S10": {"url": "nomos42-nba-quant.hf.space", "status": "EVOLVING", "gen": 676, "best_brier": 0.22098, "stagnation_cycles": 0, "model": "random_forest", "features": 53},
-    "S11": {"url": "nomos42-nba-quant-2.hf.space", "status": "EVOLVING", "gen": 578, "best_brier": 0.22681, "stagnation_cycles": 0, "model": "extra_trees", "features": 30},
-    "S12": {"url": "nomos42-nba-evo-3.hf.space", "status": "EVOLVING", "gen": 606, "best_brier": 0.22155, "stagnation_cycles": 0, "model": "random_forest", "features": 61},
-    "S13": {"url": "nomos42-nba-evo-4.hf.space", "status": "EVOLVING", "gen": 699, "best_brier": 0.22132, "stagnation_cycles": 0, "model": "random_forest", "features": 74},
-    "S14": {"url": "nomos42-nba-evo-5.hf.space", "status": "EVOLVING", "gen": 571, "best_brier": 0.22547, "stagnation_cycles": 0, "model": "lightgbm", "features": 35},
-    "S15": {"url": "nomos42-nba-evo-6.hf.space", "status": "COOLDOWN", "gen": 870, "best_brier": 0.22687, "stagnation_cycles": 17, "model": "xgboost_brier", "features": 59, "action": "DIVERSIFY_REQUIRED", "note": "stagnation 17 > threshold 15; local CLI must POST /api/command action:diversify"},
-    "S16": {"url": "lbjlincoln26-nba-evo-s16.hf.space", "status": "EVOLVING", "gen": 785, "best_brier": 0.22222, "stagnation_cycles": 10, "model": "catboost", "features": 74, "note": "watch: 10/15 threshold"},
-    "S17": {"url": "lbjlincoln26-nba-evo-s17.hf.space", "status": "EVOLVING", "gen": 603, "best_brier": 0.22415, "stagnation_cycles": 0, "model": "lightgbm", "features": 67, "note": "fleet best 0.22085 (gen1142) checkpointed 2026-04-16; space likely restarted"},
-    "S18": {"url": "testforge42-nba-evo-s18.hf.space", "status": "EVOLVING", "gen": 701, "best_brier": 0.22251, "stagnation_cycles": 0, "model": "xgboost_brier", "features": 63},
-    "S19": {"url": "testforge42-nba-evo-s19.hf.space", "status": "EVOLVING", "gen": 701, "best_brier": 0.22251, "stagnation_cycles": 0, "model": "xgboost_brier", "features": 63}
+  "generated_at": "2026-04-18T20:15:00Z",
+  "brain_cycle": "4h-cloud-brain",
+  "overall": "HEALTHY",
+  "fleet_best_brier": 0.22006,
+  "fleet_best_island": "S22",
+  "fleet_best_new_record": true,
+  "fleet_best_previous": 0.22085,
+  "fleet_best_delta": -0.00079,
+  "nba_summary": {
+    "total": 13,
+    "up": 13,
+    "down": 0,
+    "stagnation_at_threshold": ["S11 (gen=651, brier=0.22681, stagnation=15)", "S16 (gen=1016, brier=0.22687, stagnation=15)"],
+    "stagnation_approaching": ["S19 (gen=814, brier=0.22640, stagnation=12)"]
   },
-  "political_islands": {
-    "P1": {"url": "nomos42-political-alpha.hf.space", "status": "EVOLVING", "gen": 5727, "best_brier": 0.24999, "stagnation_cycles": 0, "model": "xgboost_brier", "features": 65},
-    "P2": {"url": "nomos42-political-alpha-2.hf.space", "status": "EVOLVING", "gen": 3824, "best_brier": 0.24949, "stagnation_cycles": 0, "model": "logistic_regression", "features": 74},
-    "P3": {"url": "lbjlincoln-political-alpha-3.hf.space", "status": "EVOLVING", "gen": 6475, "best_brier": 0.24993, "stagnation_cycles": 0, "model": "xgboost_brier", "features": 83},
-    "P4": {"url": "lbjlincoln-political-alpha-4.hf.space", "status": "EVOLVING", "gen": 6397, "best_brier": 0.24956, "stagnation_cycles": 0, "model": "lightgbm", "features": 70},
-    "P5": {"url": "lbjlincoln-political-alpha-5.hf.space", "status": "EVOLVING", "gen": 5593, "best_brier": 0.25265, "stagnation_cycles": 0, "model": "random_forest", "features": 53},
-    "P6": {"url": "lbjlincoln-political-alpha-6.hf.space", "status": "EVOLVING", "gen": 5587, "best_brier": 0.25128, "stagnation_cycles": 0, "model": "random_forest", "features": 44},
-    "P7": {"url": "lbjlincoln-political-alpha-7.hf.space", "status": "EVOLVING", "gen": 6869, "best_brier": 0.24937, "stagnation_cycles": 0, "model": "lightgbm", "features": 84, "fleet_best": true, "note": "NEW POL BEST — beats CLAUDE.md 0.24987. CLAUDE.md update required: P7 lightgbm gen=6869 brier=0.24937"},
-    "P8": {"url": "lbjlincoln-political-alpha-8.hf.space", "status": "EVOLVING", "gen": 5971, "best_brier": 0.25241, "stagnation_cycles": 0, "model": "random_forest", "features": 80}
-  },
-  "councils": {
-    "D1": {"status": "STARTING", "iter": 0, "stalled": false},
-    "D2": {"status": "STARTING", "iter": 0, "stalled": false},
-    "D3": {"status": "STARTING", "iter": 0, "stalled": false},
-    "D4": {"status": "STARTING", "iter": 0, "stalled": false},
-    "D5": {"status": "STARTING", "iter": 0, "stalled": false},
-    "D6": {"status": "STARTING", "iter": 0, "stalled": false},
-    "D7": {"status": "STARTING", "iter": 0, "stalled": false},
-    "D8": {"status": "STARTING", "iter": 0, "stalled": false},
-    "D9": {"status": "STARTING", "iter": 0, "stalled": false}
-  },
-  "engine_parity": {
-    "status": "DEFERRED",
-    "note": "features/engine.py is 452K chars — too large for cloud brain inline comparison. Deferred to local CLI. Last known SHA: f0a7917f18fe452a1d94a8bc9d0dba5c8e6e1c07"
-  },
-  "fleet_best": {
-    "nba": {
-      "brier": 0.22085,
-      "island": "S17",
-      "gen": 1142,
-      "date": "2026-04-16",
-      "note": "Checkpointed. S17 likely restarted (current gen=603). S13 leads this cycle at 0.22132."
-    },
-    "political": {
-      "brier": 0.24937,
-      "island": "P7",
-      "gen": 6869,
-      "model": "lightgbm",
-      "features": 84,
-      "date": "2026-04-18",
-      "note": "NEW FLEET BEST this cycle. CLAUDE.md update pending.",
-      "prev_best": {"brier": 0.24987, "island": "P7", "gen": 2098, "date": "2026-04-15"}
-    }
-  },
-  "actions_this_cycle": [
-    "S15 DIVERSIFY required (stagnation=17): local CLI must POST /api/command",
-    "P7 NEW POL BEST 0.24937 — CLAUDE.md P7 line update needed",
-    "SOTA proposal written: data/research-proposals/2026-04-18-uncertainty-aware-nba.md",
-    "S16 watch: stagnation=10, diversify trigger in 5 cycles if no improvement"
+  "islands": [
+    {"id": "S10", "space": "nomos42-nba-quant",        "gen": 792,  "brier": 0.22098, "stagnation": 0,  "status": "UP"},
+    {"id": "S11", "space": "nomos42-nba-quant-2",      "gen": 651,  "brier": 0.22681, "stagnation": 15, "status": "UP", "alert": "STAGNATION_THRESHOLD"},
+    {"id": "S12", "space": "nomos42-nba-evo-3",        "gen": 732,  "brier": 0.22155, "stagnation": 0,  "status": "UP"},
+    {"id": "S13", "space": "nomos42-nba-evo-4",        "gen": 775,  "brier": 0.22132, "stagnation": 0,  "status": "UP"},
+    {"id": "S14", "space": "nomos42-nba-evo-5",        "gen": 664,  "brier": 0.22547, "stagnation": 0,  "status": "UP"},
+    {"id": "S15", "space": "nomos42-nba-evo-6",        "gen": 823,  "brier": 0.22236, "stagnation": 0,  "status": "UP"},
+    {"id": "S16", "space": "lbjlincoln26-nba-evo-s16", "gen": 1016, "brier": 0.22687, "stagnation": 15, "status": "UP", "alert": "STAGNATION_THRESHOLD"},
+    {"id": "S17", "space": "lbjlincoln26-nba-evo-s17", "gen": 928,  "brier": 0.22222, "stagnation": 0,  "status": "UP"},
+    {"id": "S18", "space": "testforge42-nba-evo-s18",  "gen": 704,  "brier": 0.22564, "stagnation": 0,  "status": "UP"},
+    {"id": "S19", "space": "testforge42-nba-evo-s19",  "gen": 814,  "brier": 0.22640, "stagnation": 12, "status": "UP", "alert": "STAGNATION_APPROACHING"},
+    {"id": "S20", "space": "lbjlincoln26-nba-evo-s20", "gen": 4,    "brier": 0.22216, "stagnation": 0,  "status": "UP", "note": "new isotonic_cpcv"},
+    {"id": "S21", "space": "lbjlincoln26-nba-evo-s21", "gen": 528,  "brier": 0.22604, "stagnation": 0,  "status": "UP"},
+    {"id": "S22", "space": "testforge42-nba-evo-s22",  "gen": 491,  "brier": 0.22006, "stagnation": 0,  "status": "UP", "alert": "FLEET_BEST_NEW_RECORD", "note": "venn_abers_fusion — beat 0.22085 by 0.00079"}
   ],
-  "alerts": [
-    "ACTION REQUIRED: S15 diversify (stagnation=17) — curl -X POST https://nomos42-nba-evo-6.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'",
-    "CLAUDE.md UPDATE NEEDED: P7 lightgbm gen=6869 brier=0.24937 (was gradient_boost gen=2098 brier=0.24987)",
-    "S16 approaching threshold: stagnation=10/15",
-    "All 9 councils STARTING iter=0 — normal HF free-tier restart jitter",
-    "tf-axelrod-verify-tune-11 PENDING — blocked on user HF push approval",
-    "S17 restart detected: gen 603 vs checkpointed gen 1142 — fleet best preserved"
-  ],
-  "down_spaces": []
+  "political_summary": {
+    "total": 8,
+    "up": 8,
+    "down": 0,
+    "pol_best_brier": 0.24937,
+    "pol_best_island": "P7"
+  },
+  "dept_councils": {
+    "total": 9,
+    "up": 9,
+    "down": 0,
+    "all_at_iteration_zero": true,
+    "note": "All 9 councils UP in STARTING state (post-restart startup jitter). /api/run returns 404 — endpoint not in council app. Will auto-run on schedule."
+  },
+  "step0_work_queue": {
+    "tf_axelrod_fix_ck_hardcoded": "DISPATCHED — GH workflow axelrod-ck-fix-v1.yml commit 908222bc, awaiting Actions execution",
+    "tf_axelrod_verify_tune_12": "BLOCKED — awaiting explicit user HF Space deploy gate"
+  },
+  "action_required": [
+    "CHECKPOINT S22: POST /api/command {action:'checkpoint'} to testforge42-nba-evo-s22.hf.space (new fleet best brier=0.22006)",
+    "DIVERSIFY S11: stagnation=15 — POST /api/command {action:'diversify'} to nomos42-nba-quant-2.hf.space",
+    "DIVERSIFY S16: stagnation=15 — POST /api/command {action:'diversify'} to lbjlincoln26-nba-evo-s16.hf.space",
+    "HF DEPLOY GATE: User approval required before pushing Trading Floor app.py to HF Spaces",
+    "COUNCIL /api/run: Check if endpoint exists; trigger D1-D9 once startup jitter clears"
+  ]
 }
