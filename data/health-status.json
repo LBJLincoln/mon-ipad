@@ -1,84 +1,76 @@
 {
-  "generated_at": "2026-04-18T12:00:00Z",
-  "brain_cycle": "cycle-12-brain-2026-04-18",
-  "cycle_notes": "NEW FLEET BEST: S14 (nba-evo-5) achieves 0.22041 — beats 0.22085 checkpoint threshold. Diversify queued (command format confirmed): S10(stag=24), S12(stag=18), S17(stag=16), P3(stag=17). NEW POL BEST: P2 achieves 0.24949 (beats P4 0.24956). All 10 NBA + 8 Political islands UP. All 9 councils STARTING/iter=0 (free-tier restart auto-start after 30min jitter). SOTA research: LSTM+Brier loss achieves 0.1589 — proposal written.",
+  "generated_at": "2026-04-18T16:15:00Z",
+  "brain_cycle": "cycle-13-brain-2026-04-18",
+  "cycle_notes": "S15 stagnation=17 → DIVERSIFY required (cloud brain cannot POST — local CLI must run: curl -X POST https://nomos42-nba-evo-6.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'). P7 new POL BEST 0.24937 (beats CLAUDE.md 0.24987). No new NBA fleet best (S13 leads at 0.22132, threshold 0.22085 not beaten). All 9 councils STARTING iter=0 (startup jitter, stalled=false). SOTA proposal written.",
   "nba_islands": {
-    "S10": {"url": "nomos42-nba-quant.hf.space", "status": "EVOLVING", "gen": 601, "best_brier": 0.22098, "stagnation_cycles": 24, "action": "diversify_queued"},
-    "S11": {"url": "nomos42-nba-quant-2.hf.space", "status": "EVOLVING", "gen": 500, "best_brier": 0.22681, "stagnation_cycles": 9},
-    "S12": {"url": "nomos42-nba-evo-3.hf.space", "status": "EVOLVING", "gen": 507, "best_brier": 0.22155, "stagnation_cycles": 18, "action": "diversify_queued"},
-    "S13": {"url": "nomos42-nba-evo-4.hf.space", "status": "EVOLVING", "gen": 629, "best_brier": 0.22132, "stagnation_cycles": 8},
-    "S14": {"url": "nomos42-nba-evo-5.hf.space", "status": "EVOLVING", "gen": 514, "best_brier": 0.22041, "stagnation_cycles": 0, "fleet_best": true, "note": "NEW FLEET BEST — beats 0.22085 threshold; CatBoost 200f, stagnation=0"},
-    "S15": {"url": "nomos42-nba-evo-6.hf.space", "status": "EVOLVING", "gen": 454, "best_brier": 0.22164, "stagnation_cycles": 0},
-    "S16": {"url": "lbjlincoln26-nba-evo-s16.hf.space", "status": "EVOLVING", "gen": 728, "best_brier": 0.22687, "stagnation_cycles": 0},
-    "S17": {"url": "lbjlincoln26-nba-evo-s17.hf.space", "status": "EVOLVING", "gen": 652, "best_brier": 0.22214, "stagnation_cycles": 16, "action": "diversify_queued", "note": "prev fleet best 0.22085"},
-    "S18": {"url": "testforge42-nba-evo-s18.hf.space", "status": "EVOLVING", "gen": 492, "best_brier": 0.22415, "stagnation_cycles": 11},
-    "S19": {"url": "testforge42-nba-evo-s19.hf.space", "status": "EVOLVING", "gen": 583, "best_brier": 0.22251, "stagnation_cycles": 9}
+    "S10": {"url": "nomos42-nba-quant.hf.space", "status": "EVOLVING", "gen": 676, "best_brier": 0.22098, "stagnation_cycles": 0, "model": "random_forest", "features": 53},
+    "S11": {"url": "nomos42-nba-quant-2.hf.space", "status": "EVOLVING", "gen": 578, "best_brier": 0.22681, "stagnation_cycles": 0, "model": "extra_trees", "features": 30},
+    "S12": {"url": "nomos42-nba-evo-3.hf.space", "status": "EVOLVING", "gen": 606, "best_brier": 0.22155, "stagnation_cycles": 0, "model": "random_forest", "features": 61},
+    "S13": {"url": "nomos42-nba-evo-4.hf.space", "status": "EVOLVING", "gen": 699, "best_brier": 0.22132, "stagnation_cycles": 0, "model": "random_forest", "features": 74},
+    "S14": {"url": "nomos42-nba-evo-5.hf.space", "status": "EVOLVING", "gen": 571, "best_brier": 0.22547, "stagnation_cycles": 0, "model": "lightgbm", "features": 35},
+    "S15": {"url": "nomos42-nba-evo-6.hf.space", "status": "COOLDOWN", "gen": 870, "best_brier": 0.22687, "stagnation_cycles": 17, "model": "xgboost_brier", "features": 59, "action": "DIVERSIFY_REQUIRED", "note": "stagnation 17 > threshold 15; local CLI must POST /api/command action:diversify"},
+    "S16": {"url": "lbjlincoln26-nba-evo-s16.hf.space", "status": "EVOLVING", "gen": 785, "best_brier": 0.22222, "stagnation_cycles": 10, "model": "catboost", "features": 74, "note": "watch: 10/15 threshold"},
+    "S17": {"url": "lbjlincoln26-nba-evo-s17.hf.space", "status": "EVOLVING", "gen": 603, "best_brier": 0.22415, "stagnation_cycles": 0, "model": "lightgbm", "features": 67, "note": "fleet best 0.22085 (gen1142) checkpointed 2026-04-16; space likely restarted"},
+    "S18": {"url": "testforge42-nba-evo-s18.hf.space", "status": "EVOLVING", "gen": 701, "best_brier": 0.22251, "stagnation_cycles": 0, "model": "xgboost_brier", "features": 63},
+    "S19": {"url": "testforge42-nba-evo-s19.hf.space", "status": "EVOLVING", "gen": 701, "best_brier": 0.22251, "stagnation_cycles": 0, "model": "xgboost_brier", "features": 63}
   },
   "political_islands": {
-    "P1": {"url": "nomos42-political-alpha.hf.space", "status": "EVOLVING", "gen": 4527, "best_brier": 0.24999, "stagnation_cycles": 0},
-    "P2": {"url": "nomos42-political-alpha-2.hf.space", "status": "EVOLVING", "gen": 2588, "best_brier": 0.24949, "stagnation_cycles": 4, "fleet_best": true, "note": "NEW POL BEST — beats P4 0.24956; logistic regression 74f"},
-    "P3": {"url": "lbjlincoln-political-alpha-3.hf.space", "status": "EVOLVING", "gen": 5201, "best_brier": 0.25341, "stagnation_cycles": 17, "action": "diversify_queued"},
-    "P4": {"url": "lbjlincoln-political-alpha-4.hf.space", "status": "EVOLVING", "gen": 5224, "best_brier": 0.24956, "stagnation_cycles": 0},
-    "P5": {"url": "lbjlincoln-political-alpha-5.hf.space", "status": "COOLDOWN", "gen": 4656, "best_brier": 0.25265, "stagnation_cycles": 0},
-    "P6": {"url": "lbjlincoln-political-alpha-6.hf.space", "status": "EVOLVING", "gen": 4694, "best_brier": 0.25128, "stagnation_cycles": 9},
-    "P7": {"url": "lbjlincoln-political-alpha-7.hf.space", "status": "EVOLVING", "gen": 5671, "best_brier": 0.25185, "stagnation_cycles": 0, "note": "improved from 0.25471 last cycle"},
-    "P8": {"url": "lbjlincoln-political-alpha-8.hf.space", "status": "COOLDOWN", "gen": 4941, "best_brier": 0.25241, "stagnation_cycles": 0}
+    "P1": {"url": "nomos42-political-alpha.hf.space", "status": "EVOLVING", "gen": 5727, "best_brier": 0.24999, "stagnation_cycles": 0, "model": "xgboost_brier", "features": 65},
+    "P2": {"url": "nomos42-political-alpha-2.hf.space", "status": "EVOLVING", "gen": 3824, "best_brier": 0.24949, "stagnation_cycles": 0, "model": "logistic_regression", "features": 74},
+    "P3": {"url": "lbjlincoln-political-alpha-3.hf.space", "status": "EVOLVING", "gen": 6475, "best_brier": 0.24993, "stagnation_cycles": 0, "model": "xgboost_brier", "features": 83},
+    "P4": {"url": "lbjlincoln-political-alpha-4.hf.space", "status": "EVOLVING", "gen": 6397, "best_brier": 0.24956, "stagnation_cycles": 0, "model": "lightgbm", "features": 70},
+    "P5": {"url": "lbjlincoln-political-alpha-5.hf.space", "status": "EVOLVING", "gen": 5593, "best_brier": 0.25265, "stagnation_cycles": 0, "model": "random_forest", "features": 53},
+    "P6": {"url": "lbjlincoln-political-alpha-6.hf.space", "status": "EVOLVING", "gen": 5587, "best_brier": 0.25128, "stagnation_cycles": 0, "model": "random_forest", "features": 44},
+    "P7": {"url": "lbjlincoln-political-alpha-7.hf.space", "status": "EVOLVING", "gen": 6869, "best_brier": 0.24937, "stagnation_cycles": 0, "model": "lightgbm", "features": 84, "fleet_best": true, "note": "NEW POL BEST — beats CLAUDE.md 0.24987. CLAUDE.md update required: P7 lightgbm gen=6869 brier=0.24937"},
+    "P8": {"url": "lbjlincoln-political-alpha-8.hf.space", "status": "EVOLVING", "gen": 5971, "best_brier": 0.25241, "stagnation_cycles": 0, "model": "random_forest", "features": 80}
   },
   "councils": {
-    "D1": {"status": "STARTING", "iter": 0, "note": "free-tier restart, auto-starts after jitter"},
-    "D2": {"status": "STARTING", "iter": 0},
-    "D3": {"status": "STARTING", "iter": 0},
-    "D4": {"status": "STARTING", "iter": 0},
-    "D5": {"status": "STARTING", "iter": 0},
-    "D6": {"status": "STARTING", "iter": 0},
-    "D7": {"status": "STARTING", "iter": 0, "note": "only HF Router available"},
-    "D8": {"status": "STARTING", "iter": 0},
-    "D9": {"status": "STARTING", "iter": 0}
+    "D1": {"status": "STARTING", "iter": 0, "stalled": false},
+    "D2": {"status": "STARTING", "iter": 0, "stalled": false},
+    "D3": {"status": "STARTING", "iter": 0, "stalled": false},
+    "D4": {"status": "STARTING", "iter": 0, "stalled": false},
+    "D5": {"status": "STARTING", "iter": 0, "stalled": false},
+    "D6": {"status": "STARTING", "iter": 0, "stalled": false},
+    "D7": {"status": "STARTING", "iter": 0, "stalled": false},
+    "D8": {"status": "STARTING", "iter": 0, "stalled": false},
+    "D9": {"status": "STARTING", "iter": 0, "stalled": false}
   },
   "engine_parity": {
-    "nomos_nba_agent_features_engine_sha": "f0a7917f18fe452a1d94a8bc9d0dba5c8e6e1c07",
-    "political_engine_status": "TRUNCATED (known issue since 2026-04-14, 6909 bytes, original 187997 bytes SHA ced8fb4c)",
-    "hf_space_parity": "pending_verification"
+    "status": "DEFERRED",
+    "note": "features/engine.py is 452K chars — too large for cloud brain inline comparison. Deferred to local CLI. Last known SHA: f0a7917f18fe452a1d94a8bc9d0dba5c8e6e1c07"
   },
   "fleet_best": {
     "nba": {
-      "brier": 0.22041,
-      "island": "S14",
-      "gen": 514,
-      "model": "lightgbm_catboost_xgboost",
-      "features": 200,
-      "stagnation": 0,
-      "date": "2026-04-18",
-      "prev_best": {"brier": 0.22085, "island": "S17", "gen": 1142, "date": "2026-04-16"}
+      "brier": 0.22085,
+      "island": "S17",
+      "gen": 1142,
+      "date": "2026-04-16",
+      "note": "Checkpointed. S17 likely restarted (current gen=603). S13 leads this cycle at 0.22132."
     },
     "political": {
-      "brier": 0.24949,
-      "island": "P2",
-      "gen": 2588,
-      "model": "logistic_regression",
-      "features": 74,
+      "brier": 0.24937,
+      "island": "P7",
+      "gen": 6869,
+      "model": "lightgbm",
+      "features": 84,
       "date": "2026-04-18",
-      "prev_best": {"brier": 0.24956, "island": "P4", "gen": 5224, "date": "2026-04-18"}
+      "note": "NEW FLEET BEST this cycle. CLAUDE.md update pending.",
+      "prev_best": {"brier": 0.24987, "island": "P7", "gen": 2098, "date": "2026-04-15"}
     }
   },
   "actions_this_cycle": [
-    "S14 NEW FLEET BEST 0.22041 — checkpoint + CLAUDE.md update",
-    "P2 NEW POL BEST 0.24949 — CLAUDE.md update",
-    "Diversify queued (format: {command:diversify}): S10(24), S12(18), S17(16), P3(17)",
-    "Councils /api/run triggered (all 9 STARTING)",
-    "Research proposal written: 2026-04-18-lstm-brier-sota.md"
+    "S15 DIVERSIFY required (stagnation=17): local CLI must POST /api/command",
+    "P7 NEW POL BEST 0.24937 — CLAUDE.md P7 line update needed",
+    "SOTA proposal written: data/research-proposals/2026-04-18-uncertainty-aware-nba.md",
+    "S16 watch: stagnation=10, diversify trigger in 5 cycles if no improvement"
   ],
   "alerts": [
-    "NEW FLEET BEST: S14 0.22041 (CatBoost 200f, stag=0) — beats 0.22085 threshold",
-    "NEW POL BEST: P2 0.24949 (logistic 74f, stag=4) — beats P4 0.24956",
-    "S10 stagnation 24 cycles — diversify queued",
-    "S12 stagnation 18 cycles — diversify queued",
-    "S17 stagnation 16 cycles — diversify queued",
-    "P3 stagnation 17 cycles — diversify queued",
-    "All 9 councils STARTING iter=0 — auto-start after jitter",
-    "political_engine.py STILL TRUNCATED — fix required before fresh HF deploy",
-    "tf-axelrod-verify-tune-11 BLOCKED on user approval",
-    "SOTA: LSTM+Brier 0.1589 gap vs our 0.22041 — see research-proposals/2026-04-18-lstm-brier-sota.md"
+    "ACTION REQUIRED: S15 diversify (stagnation=17) — curl -X POST https://nomos42-nba-evo-6.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'",
+    "CLAUDE.md UPDATE NEEDED: P7 lightgbm gen=6869 brier=0.24937 (was gradient_boost gen=2098 brier=0.24987)",
+    "S16 approaching threshold: stagnation=10/15",
+    "All 9 councils STARTING iter=0 — normal HF free-tier restart jitter",
+    "tf-axelrod-verify-tune-11 PENDING — blocked on user HF push approval",
+    "S17 restart detected: gen 603 vs checkpointed gen 1142 — fleet best preserved"
   ],
   "down_spaces": []
 }
