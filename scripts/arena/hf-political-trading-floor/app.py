@@ -143,6 +143,29 @@ COUNCIL_MIN_COMMIT_PER_AGENT = 0.50
 _council_plans: Dict[str, dict] = {}
 _rogue_events: List[Dict] = []
 
+
+def _tiered_risk(bankroll: float) -> dict:
+    """Bankroll-tier aggression (gambler's ruin doctrine, 2026-04-18 parity with NBA).
+    Low bankrolls deploy HARDER (higher Kelly, higher per-bet floor) to compound
+    out of the hole. High bankrolls diversify across more sectors/directions.
+    Returns: {deploy_floor, bet_floor, bet_cap, min_edge, kelly_mult,
+              min_allocs, min_cats, min_events}."""
+    if bankroll < 25.0:
+        return {"deploy_floor": 0.90, "bet_floor": 0.08, "bet_cap": 0.40,
+                "min_edge": 0.02, "kelly_mult": 1.5,
+                "min_allocs": 20, "min_cats": 6, "min_events": 5}
+    if bankroll < 50.0:
+        return {"deploy_floor": 0.80, "bet_floor": 0.05, "bet_cap": 0.30,
+                "min_edge": 0.02, "kelly_mult": 1.2,
+                "min_allocs": 16, "min_cats": 5, "min_events": 4}
+    if bankroll < 100.0:
+        return {"deploy_floor": 0.70, "bet_floor": 0.03, "bet_cap": 0.25,
+                "min_edge": 0.02, "kelly_mult": 1.0,
+                "min_allocs": 14, "min_cats": 5, "min_events": 4}
+    return {"deploy_floor": 0.60, "bet_floor": 0.02, "bet_cap": 0.20,
+            "min_edge": 0.02, "kelly_mult": 1.0,
+            "min_allocs": 12, "min_cats": 4, "min_events": 3}
+
 # Axelrod Mech B — archetype pool tuned for political/macro alpha traders
 AXELROD_ARCHETYPES = [
     "political_sentiment", "insider_tracking", "trump_volatility",
@@ -2417,16 +2440,15 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 day_log["cash_held_pct"] = parsed["cash_held_pct"]
                 day_log["cash_rationale"] = parsed["cash_rationale"]
 
-                # 2026-04-17 v2 risk caps (parity with NBA TF):
-                # Traders may split across ALL events of the day (diversified
-                # Kelly). No single bet > 10%, daily cumulative ≤ 60%.
-                MAX_PCT_PER_BET = 0.15   # raised from 0.10 so 6 bets can reach 75%
-                MAX_PCT_PER_DAY = 0.85   # raised from 0.60 to align with 0.75 deploy floor
-                # 2026-04-18 v2 — preservation ONLY at survival floor (<$20). Above that,
-                # aggressive-compound doctrine runs free (user mandate: $1M collective goal).
-                if ts["bankroll"] < 20.0:
-                    MAX_PCT_PER_BET = PRESERVATION_MAX_BET_PCT
-                    MAX_PCT_PER_DAY = PRESERVATION_MAX_DEPLOY
+                # 2026-04-18 TIERED AGGRESSION (gambler's ruin doctrine).
+                # Low bankrolls go MORE all-in to compound out of the hole.
+                # Per-bet FLOOR (not cap) + Kelly multiplier tiered by bankroll.
+                tier = _tiered_risk(ts["bankroll"])
+                MAX_PCT_PER_BET = tier["bet_cap"]
+                MIN_BET_PCT = tier["bet_floor"]
+                MAX_PCT_PER_DAY = 0.98
+                MIN_EDGE = tier["min_edge"]
+                KELLY_MULT = tier["kelly_mult"]
                 starting_bankroll = bankroll
                 day_exposure_pct = 0.0
                 for alloc in parsed["allocations"]:
@@ -2436,14 +2458,17 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     event = day_events[eidx]
                     direction = alloc["direction"]
 
-                    capped_pct = min(alloc["pct"], MAX_PCT_PER_BET)
+                    sized_pct = (alloc["pct"] or 0.0) * KELLY_MULT
+                    capped_pct = max(MIN_BET_PCT, min(sized_pct, MAX_PCT_PER_BET))
                     remaining_day = max(0.0, MAX_PCT_PER_DAY - day_exposure_pct)
                     capped_pct = min(capped_pct, remaining_day)
                     if capped_pct <= 0:
                         continue
                     stake = round(starting_bankroll * capped_pct, 2)
-                    if stake < 0.50:
+                    if stake < 0.10:
                         continue
+                    if stake > ts["bankroll"]:
+                        stake = round(ts["bankroll"] * 0.99, 2)
                     day_exposure_pct += capped_pct
 
                     won, pnl_pct = resolve_political_trade(direction, event["excess_return"])
@@ -2476,31 +2501,64 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             else:
                 ts["passes"] += 1  # full-cash day
 
-            # SMART post-filter: pick events where model/category signal > 0 for long,
-            # < 0 for short. If model signal missing, fall back to SPY long (baseline).
+            # TIERED DIVERSITY POST-FILTER (2026-04-18 v3 parity with NBA):
+            # Pad to tier min_allocs / min_cats / min_events / deploy_floor using
+            # top-signal events. Low bankrolls pad aggressively to compound out.
+            tier_pf = _tiered_risk(ts["bankroll"])
             total_bets_executed = len(day_log["allocations"])
             total_deployed_pct = sum(a.get("pct", 0) for a in day_log["allocations"])
-            if (total_bets_executed < 3 or total_deployed_pct < 0.70) and len(day_events) >= 3:
-                # Rank events by absolute expected excess_return sign from model (if present)
-                # Falls back to raw excess_return magnitude for ranking
+            cats_used = {a.get("event_type", "") for a in day_log["allocations"]}
+            events_used = {a.get("event_idx") for a in day_log["allocations"]}
+            need_pad = (total_bets_executed < tier_pf["min_allocs"] or
+                        len(cats_used) < tier_pf["min_cats"] or
+                        len(events_used) < tier_pf["min_events"] or
+                        total_deployed_pct < tier_pf["deploy_floor"])
+            if need_pad and len(day_events) >= 3:
+                # Rank events by absolute model signal; direction from signal sign.
                 ranked = []
                 for ei, ev in enumerate(day_events):
                     sig = ev.get("predicted_return", ev.get("model_signal"))
                     if sig is None:
-                        sig = ev.get("excess_return", 0.0)  # weaker proxy
+                        sig = ev.get("excess_return", 0.0)
                     direction = "long" if sig >= 0 else "short"
                     score = abs(sig)
+                    if score < tier_pf["min_edge"]:
+                        continue
                     ranked.append((score, ei, direction, sig))
                 ranked.sort(key=lambda x: -x[0])
-                picks = ranked[:min(5, len(day_events))]
+                existing_keys = {(a.get("event_idx"), a.get("direction")) for a in day_log["allocations"]}
+                picks = []
+                cats_picked = set(cats_used)
+                events_picked = set(events_used)
+                target_allocs = max(tier_pf["min_allocs"] - total_bets_executed, 0)
+                for score, ei, direction, sig in ranked:
+                    event = day_events[ei]
+                    ev_idx = ei + 1
+                    if (ev_idx, direction) in existing_keys:
+                        continue
+                    picks.append((score, ei, direction, sig))
+                    existing_keys.add((ev_idx, direction))
+                    cats_picked.add(event.get("event_type", ""))
+                    events_picked.add(ev_idx)
+                    if (len(picks) >= target_allocs and
+                        len(cats_picked) >= tier_pf["min_cats"] and
+                        len(events_picked) >= tier_pf["min_events"]):
+                        break
                 n_fb = len(picks)
-                if n_fb >= 3:
-                    per_pct = 0.75 / n_fb
+                if n_fb > 0:
+                    pad_deploy = max(tier_pf["deploy_floor"] - total_deployed_pct, 0.0)
+                    per_pct = max(tier_pf["bet_floor"], pad_deploy / n_fb if n_fb else tier_pf["bet_floor"])
+                    per_pct = min(per_pct, tier_pf["bet_cap"])
+                    added = 0
                     for score, ei, direction, sig in picks:
                         event = day_events[ei]
                         stake = round(bankroll * per_pct, 2)
-                        if stake < 0.50 or stake > ts["bankroll"]:
+                        if stake < 0.10:
                             continue
+                        if stake > ts["bankroll"]:
+                            stake = round(ts["bankroll"] * 0.99, 2)
+                            if stake < 0.10:
+                                continue
                         won, pnl_pct = resolve_political_trade(direction, event["excess_return"])
                         profit = round(stake * pnl_pct, 2)
                         ts["bankroll"] += profit
@@ -2516,7 +2574,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                             "direction": direction,
                             "event_type": event.get("event_type", ""),
                             "agency": event.get("agency", ""),
-                            "thesis": f"smart post-filter (model signal {sig:+.3f})",
+                            "thesis": f"tiered post-filter (signal {sig:+.3f}, tier=${ts['bankroll']:.0f})",
                             "pct": round(per_pct, 4),
                             "stake": stake,
                             "confidence": min(0.75, 0.40 + score * 5),
@@ -2524,11 +2582,13 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                             "pnl_pct": round(pnl_pct, 4),
                             "won": won,
                             "profit": profit,
-                            "source": "fallback-smart-post",
+                            "source": "tiered-post-filter",
                         })
-                    day_log["cash_held_pct"] = 1.0 - (n_fb * per_pct)
-                    day_log["cash_rationale"] = "smart post-filter (direction from model signal)"
-                    day_log["day_strategy"] = day_log.get("day_strategy") or f"post-filter: {n_fb} top-signal events"
+                        added += 1
+                    if added > 0:
+                        day_log["cash_held_pct"] = max(0.0, 1.0 - (total_deployed_pct + added * per_pct))
+                        day_log["cash_rationale"] = f"tiered post-filter (tier bankroll ${ts['bankroll']:.0f}, pad={added})"
+                        day_log["day_strategy"] = day_log.get("day_strategy") or f"tier-pad: {added} events"
 
             # Track recent decisions for next-day prompt
             n_bets = len(day_log["allocations"])

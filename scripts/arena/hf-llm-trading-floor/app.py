@@ -142,6 +142,29 @@ COUNCIL_MIN_COMMIT_PER_AGENT = 0.50  # each agent commits ≥50% of bankroll dai
 PEAK_DRAWDOWN_GUARD = 0.70           # ≥30% off peak → preservation mode
 PRESERVATION_MAX_DEPLOY = 0.50       # cap daily deploy at 50% while preserving
 PRESERVATION_MAX_BET_PCT = 0.05      # cap any single bet at 5% bankroll
+
+def _tiered_risk(bankroll: float) -> dict:
+    """Bankroll-tier aggression (gambler's ruin doctrine, 2026-04-18).
+    Low bankrolls deploy HARDER (higher Kelly, higher per-bet floor) to compound
+    out of the hole. High bankrolls diversify across more categories to harvest
+    small edges. No per-bet CAP below Kelly — cap is set ABOVE Kelly at tier cap.
+    Targets picked to saturate NBA's ~100+ bet categories across ~10 games/day."""
+    if bankroll < 25.0:
+        return {"deploy_floor": 0.90, "bet_floor": 0.08, "bet_cap": 0.40,
+                "min_edge": 0.02, "kelly_mult": 1.5,
+                "min_allocs": 35, "min_cats": 15, "min_games": 8}
+    if bankroll < 50.0:
+        return {"deploy_floor": 0.80, "bet_floor": 0.05, "bet_cap": 0.30,
+                "min_edge": 0.02, "kelly_mult": 1.2,
+                "min_allocs": 30, "min_cats": 12, "min_games": 7}
+    if bankroll < 100.0:
+        return {"deploy_floor": 0.70, "bet_floor": 0.03, "bet_cap": 0.25,
+                "min_edge": 0.02, "kelly_mult": 1.0,
+                "min_allocs": 25, "min_cats": 10, "min_games": 6}
+    return {"deploy_floor": 0.60, "bet_floor": 0.02, "bet_cap": 0.20,
+            "min_edge": 0.02, "kelly_mult": 1.0,
+            "min_allocs": 20, "min_cats": 8, "min_games": 5}
+
 _council_plans: Dict[str, dict] = {} # day_date → plan dict (strategies, categories, per-agent %, summary)
 _rogue_events: List[Dict] = []       # append-only audit: {day, tid, reason, detail}
 
@@ -3034,19 +3057,16 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 # works. 60% cap vs 100% protects against correlated down days.
                 # Previous v1 (0.05/0.25) was too conservative — only ~25% of
                 # bankroll working per day, compound rate capped.
-                MAX_PCT_PER_BET = 0.15      # raised from 0.10 so 6 bets can reach 75%
-                MAX_PCT_PER_DAY = 0.85      # raised from 0.60 to align with 0.75 deploy floor (+0.10 buffer for parlays)
-                MIN_EDGE = 0.02             # loosened from 0.03 so >=3 allocations pass filter per day
-                # 2026-04-18 v2 — preservation ONLY at real survival floor.
-                # v1 clamped at <70% of peak, which killed upside (mistral-ministral
-                # hit $10K then would have been forced to 5% bets at $7K, no recovery
-                # path to $1M). User mandate: preserve aggressive-compound doctrine.
-                # New trigger: absolute survival only. Bankroll < $20 → tight caps to
-                # avoid bankruptcy. Everyone else compounds freely.
-                if ts["bankroll"] < 20.0:
-                    MAX_PCT_PER_BET = PRESERVATION_MAX_BET_PCT
-                    MAX_PCT_PER_DAY = PRESERVATION_MAX_DEPLOY
-                    MIN_EDGE = 0.04
+                # 2026-04-18 v3 — TIERED AGGRESSION (gambler's ruin doctrine).
+                # Floors + Kelly aggression scaled by bankroll tier. No per-bet
+                # cap below Kelly. Low bankrolls compound out; high bankrolls
+                # diversify. Post-filter pads to min_allocs/min_cats/min_games.
+                tier = _tiered_risk(ts["bankroll"])
+                MAX_PCT_PER_BET = tier["bet_cap"]
+                MIN_BET_PCT = tier["bet_floor"]
+                MAX_PCT_PER_DAY = 0.98       # near-all-in ceiling (1.0 would break bankrupt-check)
+                MIN_EDGE = tier["min_edge"]
+                KELLY_MULT = tier["kelly_mult"]
                 BASE_CATS = {"ml_home","ml_away","spread_home","spread_away","total_over","total_under"}
                 day_exposure_pct = 0.0
                 for alloc in parsed["allocations"]:
@@ -3063,15 +3083,18 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     # FDR gate: non-base categories require higher edge (multiple testing)
                     if cat not in BASE_CATS and edge_val < 0.05:
                         continue
-                    capped_pct = min(alloc["pct"], MAX_PCT_PER_BET)
-                    # Daily cumulative guard: shrink this bet if the day's total
-                    # exposure would exceed MAX_PCT_PER_DAY.
+                    # Tiered sizing: Kelly aggression × LLM pct, floor at bet_floor, cap at bet_cap.
+                    sized_pct = (alloc["pct"] or 0.0) * KELLY_MULT
+                    capped_pct = max(MIN_BET_PCT, min(sized_pct, MAX_PCT_PER_BET))
+                    # Daily cumulative guard: shrink if day exposure would exceed 98%.
                     remaining_day = max(0.0, MAX_PCT_PER_DAY - day_exposure_pct)
                     capped_pct = min(capped_pct, remaining_day)
                     if capped_pct <= 0:
                         continue
                     stake = round(ts["bankroll"] * capped_pct, 2)
-                    if stake < 0.50 or stake > ts["bankroll"]:
+                    if stake > ts["bankroll"]:
+                        stake = round(ts["bankroll"] * 0.99, 2)
+                    if stake < 0.10:
                         continue
                     day_exposure_pct += capped_pct
 
@@ -3173,13 +3196,19 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             else:
                 ts["passes"] += 1  # full-cash day
 
-            # COLLECTIVE_MISSION fallback #2 (POST-FILTER): LLM returned few/no allocations.
-            # SMART fallback — pick top +edge categories from model_preds (Brier=0.217 fleet
-            # consensus), one bet per game for diversification. Falls back to ml_home only
-            # as last resort when no +edge categories exist at all.
+            # TIERED DIVERSITY POST-FILTER (2026-04-18 v3): enforce min_allocs,
+            # min_cats, min_games, deploy_floor — all bankroll-tier-scaled.
+            # Pads from Nomos42 top-edge model predictions (Brier=0.217 fleet consensus),
+            # allowing MULTIPLE categories per game to saturate the 100+ bet space.
             total_bets_executed = len(day_log["allocations"]) + len(day_log.get("parlays", []))
             total_deployed_pct = sum(a.get("pct", 0) for a in day_log["allocations"]) + sum(p.get("pct", 0) for p in day_log.get("parlays", []))
-            if (total_bets_executed < 3 or total_deployed_pct < 0.70) and len(day_games) >= 3:
+            cats_used = {a["category"] for a in day_log["allocations"]}
+            games_used = {a["game"] for a in day_log["allocations"]}
+            need_pad = (total_bets_executed < tier["min_allocs"] or
+                        len(cats_used) < tier["min_cats"] or
+                        len(games_used) < tier["min_games"] or
+                        total_deployed_pct < tier["deploy_floor"])
+            if need_pad and len(day_games) >= 3:
                 # Build +edge candidate list from our own model predictions
                 candidates = []  # (edge, game_idx, category, prob)
                 for gi, g in enumerate(day_games):
@@ -3191,32 +3220,43 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         edge = info.get("edge")
                         prob = info.get("prob", 0.5)
                         if edge is None: continue
-                        if edge >= 0.03:
+                        if edge >= tier["min_edge"]:
                             candidates.append((edge, gi, tag, prob))
-                # Rank by edge, max 1 bet/game for diversification
+                # Rank by edge; allow MULTIPLE categories per game (saturate cat space);
+                # avoid duplicating what the LLM already picked.
                 candidates.sort(key=lambda x: -x[0])
-                seen_games = set()
+                existing_keys = {(a["game"], a["category"]) for a in day_log["allocations"]}
                 picks = []
-                for c in candidates:
-                    if c[1] in seen_games: continue
-                    picks.append(c); seen_games.add(c[1])
-                    if len(picks) >= 5: break
-                # Pad with ml_home on remaining games if <3 +edge found (last resort)
-                if len(picks) < min(5, len(day_games)):
-                    for gi in range(len(day_games)):
-                        if gi in seen_games: continue
-                        picks.append((0.0, gi, "ml_home", 0.5))
-                        seen_games.add(gi)
-                        if len(picks) >= min(5, len(day_games)): break
+                cats_picked = set(cats_used)
+                games_picked = set(games_used)
+                target_allocs = max(tier["min_allocs"] - total_bets_executed, 0)
+                for edge, gi, tag, prob in candidates:
+                    g = day_games[gi]
+                    gname = f"{g['away']}@{g['home']}"
+                    if (gname, tag) in existing_keys:
+                        continue
+                    picks.append((edge, gi, tag, prob))
+                    existing_keys.add((gname, tag))
+                    cats_picked.add(tag)
+                    games_picked.add(gname)
+                    if (len(picks) >= target_allocs and
+                        len(cats_picked) >= tier["min_cats"] and
+                        len(games_picked) >= tier["min_games"]):
+                        break
 
                 n_fb = len(picks)
-                if n_fb >= 3:
-                    per_pct = 0.75 / n_fb
+                if n_fb >= 1:
+                    # Size pad picks to reach deploy_floor; floor at tier bet_floor.
+                    pad_deploy = max(0.0, tier["deploy_floor"] - total_deployed_pct)
+                    per_pct = max(tier["bet_floor"], pad_deploy / n_fb if n_fb > 0 else tier["bet_floor"])
+                    per_pct = min(per_pct, tier["bet_cap"])
                     for edge, gi, tag, prob in picks:
                         g = day_games[gi]
                         odds = day_odds_list[gi]
                         stake = round(bankroll * per_pct, 2)
-                        if stake < 0.50 or stake > ts["bankroll"]:
+                        if stake > ts["bankroll"]:
+                            stake = round(ts["bankroll"] * 0.99, 2)
+                        if stake < 0.10:
                             continue
                         try:
                             won = resolve_bet(tag, odds, g["home_score"], g["away_score"], g["home_won"])
