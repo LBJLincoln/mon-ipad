@@ -708,21 +708,22 @@ TRADERS = {
                          "fallback_provider": "cerebras:llama3.1-8b"},
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55,
                          "fallback_provider": "cerebras:qwen-3-235b"},
-    # 2026-04-17 FIX: selfhost:cpu-gemma4 slug was never in gateway → dead. Switch to live selfhost:qwen3-4b.
-    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "selfhost:qwen3-4b",      "personality": "disciplined", "risk_tolerance": 0.40,
-                         "fallback_provider": "selfhost:gemma-3-4b"},
+    # 2026-04-18 FIX: HF CPU basic = ~3 tok/s → 2+ min/call. Swap selfhost→GitHub Models (free, ~2s).
+    # Persona + strategy + prompt + Axelrod class all PRESERVED. Only backend flipped.
+    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "github:gpt-4o-mini",     "personality": "disciplined", "risk_tolerance": 0.40,
+                         "fallback_provider": "mistral:small"},
     # NEW 2026-04-17 — NVIDIA NIM (2 keys wired in gateway, 0 usage before) → parity with NBA TF.
     "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "nvidia:minimax-m2.7",   "personality": "decisive",    "risk_tolerance": 0.58,
                          "fallback_provider": "nvidia:minimax-m2.7-alt"},
     "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
                          "fallback_provider": "nvidia:nemotron-70b"},
-    # NEW 2026-04-17 — 2 additional selfhost traders → full 16-agent parity with NBA TF.
-    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "selfhost:gemma-3-4b",  "personality": "analytical",  "risk_tolerance": 0.45,
-                         "fallback_provider": "selfhost:qwen3-4b"},
-    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "selfhost:qwen3-0.6b",  "personality": "conservative","risk_tolerance": 0.30,
-                         "fallback_provider": "selfhost:qwen3-4b"},
-    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "selfhost:dolphin3-l32-3b", "personality": "uncensored",  "risk_tolerance": 0.60,
-                         "fallback_provider": "selfhost:qwen3-4b"},
+    # 2026-04-18 — was selfhost, now GitHub Models. Persona+strategy+Axelrod class unchanged.
+    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "github:llama-3.1-8b",  "personality": "analytical",  "risk_tolerance": 0.45,
+                         "fallback_provider": "github:gpt-4o-mini"},
+    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "github:gpt-4o-mini",   "personality": "conservative","risk_tolerance": 0.30,
+                         "fallback_provider": "mistral:ministral-8b"},
+    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "github:llama-3.1-8b", "personality": "uncensored",  "risk_tolerance": 0.60,
+                         "fallback_provider": "mistral:nemo"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -2176,14 +2177,17 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     _gateway_routed = 0
     _gateway_fallback = 0
 
-    # Pre-ping: wake self-hosted LLM Spaces before experiment starts
+    # Async pre-ping (non-blocking): wake any selfhost Spaces still in substitution pool.
+    # 2026-04-18: primary selfhost agents swapped to GitHub Models, so this runs background-only.
     import concurrent.futures as _cf
-    _selfhost_urls = [v["url"].rsplit("/", 1)[0] for k, v in PROVIDERS.items() if k.startswith("selfhost:")]
-    def _wake(u):
-        try: requests.get(u + "/", timeout=30)
-        except: pass
-    with _cf.ThreadPoolExecutor(max_workers=8) as _ex:
-        list(_ex.map(_wake, _selfhost_urls))
+    def _wake_selfhosts_async():
+        urls = [v["url"].rsplit("/", 1)[0] for k, v in PROVIDERS.items() if k.startswith("selfhost:")]
+        def _wake(u):
+            try: requests.get(u + "/", timeout=15)
+            except: pass
+        with _cf.ThreadPoolExecutor(max_workers=8) as _ex:
+            list(_ex.map(_wake, urls))
+    threading.Thread(target=_wake_selfhosts_async, daemon=True).start()
 
     # Load data
     all_events = load_events()
@@ -2382,13 +2386,13 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     pass
             return tid, raw
 
-        _max_workers = min(len(TRADERS), 16)
+        _max_workers = min(len(TRADERS), 4)
         _responses = {}
         _pool = ThreadPoolExecutor(max_workers=_max_workers)
         _futures = {_pool.submit(_agent_llm_worker, item): item[0]
                     for item in list(TRADERS.items())}
         try:
-            for _fut in as_completed(_futures, timeout=45.0):
+            for _fut in as_completed(_futures, timeout=120.0):
                 try:
                     _tid, _raw = _fut.result(timeout=1.0)
                     _responses[_tid] = _raw
