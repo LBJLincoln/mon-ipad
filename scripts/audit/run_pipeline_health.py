@@ -85,14 +85,29 @@ def _hf_token() -> str | None:
 # 1. Odds ingestion
 # ─────────────────────────────────────────────────────────────────────────────
 def check_odds() -> dict[str, Any]:
-    odds_csv = REPO / "data" / "odds" / "nba-odds.csv"
-    age = _age_hours(odds_csv)
-    if age is None:
-        return {"status": "broken", "note": "file missing", "sla_hours": 12, "age_hours": None}
+    # Live odds land at data/nba-agent/odds-latest.json (fetch_free_odds.py every 30min).
+    # Historical rolling CSV is optional (data/odds/nba-odds.csv if present).
+    candidates = [
+        REPO / "data" / "nba-agent" / "odds-latest.json",
+        REPO / "data" / "nba-agent" / "live-odds.json",
+        REPO / "data" / "odds" / "nba-odds.csv",
+    ]
+    best: tuple[Path, float] | None = None
+    for c in candidates:
+        age = _age_hours(c)
+        if age is not None and (best is None or age < best[1]):
+            best = (c, age)
+    if best is None:
+        return {
+            "status": "broken",
+            "note": "no odds file in any known location",
+            "searched": [str(c.relative_to(REPO)) for c in candidates],
+        }
+    path, age = best
     sla = 12
     status = "ok" if age < sla else ("stale" if age < sla * 2 else "sla-breach")
     try:
-        size = odds_csv.stat().st_size
+        size = path.stat().st_size
     except OSError:
         size = -1
     return {
@@ -100,7 +115,7 @@ def check_odds() -> dict[str, Any]:
         "age_hours": round(age, 2),
         "sla_hours": sla,
         "size_bytes": size,
-        "path": str(odds_csv.relative_to(REPO)),
+        "path": str(path.relative_to(REPO)),
     }
 
 
@@ -108,24 +123,48 @@ def check_odds() -> dict[str, Any]:
 # 2. Predictions (today's file exists)
 # ─────────────────────────────────────────────────────────────────────────────
 def check_predictions() -> dict[str, Any]:
-    # Two possible locations (mon-ipad OR sibling repo nomos-nba-agent).
-    candidates = [
+    """
+    Active pipeline writes data/nba-agent/latest-picks.json (autonomous-cycle.sh).
+    Legacy pipeline writes predictions-<date>.json (evaluator.py — largely dead).
+    Accept either, but prefer latest-picks.json.
+    """
+    picks = REPO / "data" / "nba-agent" / "latest-picks.json"
+    if picks.exists():
+        age = _age_hours(picks) or 999.0
+        try:
+            d = json.loads(picks.read_text())
+        except Exception as e:
+            return {"status": "broken", "note": f"invalid json: {e}", "path": str(picks.relative_to(REPO))}
+        games = d.get("games", []) if isinstance(d, dict) else d
+        date = d.get("date") if isinstance(d, dict) else None
+        # Fresh if today's date AND <6h old
+        today_match = date == TODAY
+        fresh = age < 6
+        status = "ok" if (today_match and fresh) else ("stale" if age < 48 else "sla-breach")
+        return {
+            "status": status,
+            "games": len(games),
+            "date": date,
+            "today_match": today_match,
+            "age_hours": round(age, 2),
+            "path": str(picks.relative_to(REPO)),
+        }
+    # Legacy fallback
+    legacy = [
         REPO / "data" / "results" / f"predictions-{TODAY}.json",
         REPO.parent / "nomos-nba-agent" / "data" / "results" / f"predictions-{TODAY}.json",
     ]
-    for c in candidates:
+    for c in legacy:
         if c.exists():
             try:
                 data = json.loads(c.read_text())
                 n = len(data) if isinstance(data, list) else len(data.get("games", []) or [])
             except Exception as e:
                 return {"status": "broken", "note": f"invalid json: {e}", "path": str(c)}
-            return {"status": "ok", "games": n, "path": str(c)}
-    # No file for today — is it a no-game day?
+            return {"status": "ok", "games": n, "path": str(c), "legacy": True}
     return {
         "status": "missing",
-        "note": "no predictions-<today>.json (may be a no-game day)",
-        "searched": [str(c) for c in candidates],
+        "note": "no latest-picks.json or legacy predictions-<today>.json",
     }
 
 
@@ -253,20 +292,55 @@ def check_tf_state() -> dict[str, Any]:
 # 6. CSV integrity
 # ─────────────────────────────────────────────────────────────────────────────
 def check_csv_integrity() -> dict[str, Any]:
-    odds_csv = REPO / "data" / "odds" / "nba-odds.csv"
-    if not odds_csv.exists():
-        return {"status": "broken", "note": "nba-odds.csv missing"}
+    """Integrity of the odds data — accepts JSON or CSV source."""
+    json_path = REPO / "data" / "nba-agent" / "odds-latest.json"
+    if json_path.exists():
+        try:
+            data = json.loads(json_path.read_text())
+        except Exception as e:
+            return {"status": "broken", "note": f"json parse failed: {e}", "path": str(json_path.relative_to(REPO))}
+        games = data if isinstance(data, list) else (data.get("games") or [])
+        if not games:
+            return {"status": "broken", "note": "zero games in odds-latest.json"}
+        # Count NaN-ish prices
+        bad = 0
+        priced = 0
+        for g in games:
+            for side_key in ("home_odds", "away_odds", "price_home", "price_away",
+                             "ml_home", "ml_away", "decimal_home", "decimal_away"):
+                v = g.get(side_key)
+                if v is None:
+                    continue
+                priced += 1
+                try:
+                    fv = float(v)
+                    if fv != fv or fv <= 1.0:  # NaN or invalid decimal odds
+                        bad += 1
+                except (TypeError, ValueError):
+                    bad += 1
+        nan_pct = (bad / max(priced, 1)) * 100
+        status = "ok" if nan_pct < 10 else ("degraded" if nan_pct < 25 else "broken")
+        return {
+            "status": status,
+            "games": len(games),
+            "price_cells": priced,
+            "bad_cells": bad,
+            "nan_pct": round(nan_pct, 2),
+            "path": str(json_path.relative_to(REPO)),
+        }
+
+    csv_path = REPO / "data" / "odds" / "nba-odds.csv"
+    if not csv_path.exists():
+        return {"status": "unknown", "note": "no odds-latest.json or odds csv"}
     try:
-        lines = odds_csv.read_text(errors="replace").splitlines()
+        lines = csv_path.read_text(errors="replace").splitlines()
     except Exception as e:
         return {"status": "broken", "note": f"read failed: {e}"}
     if len(lines) < 2:
         return {"status": "broken", "note": "csv has no data rows"}
     header = lines[0].split(",")
     ncols = len(header)
-    truncated = 0
-    nan_count = 0
-    scanned = 0
+    truncated = nan_count = scanned = 0
     for row in lines[1:]:
         if not row.strip():
             continue
@@ -275,10 +349,8 @@ def check_csv_integrity() -> dict[str, Any]:
         if len(cells) != ncols:
             truncated += 1
         for c in cells:
-            cl = c.strip().lower()
-            if cl in ("nan", "none", "null", ""):
+            if c.strip().lower() in ("nan", "none", "null", ""):
                 nan_count += 1
-    # >10% NaN or >1% truncated rows = broken
     nan_pct = (nan_count / max(scanned * ncols, 1)) * 100
     trunc_pct = (truncated / max(scanned, 1)) * 100
     status = "ok"
@@ -287,11 +359,8 @@ def check_csv_integrity() -> dict[str, Any]:
     elif nan_pct > 5.0:
         status = "degraded"
     return {
-        "status": status,
-        "rows": scanned,
-        "cols": ncols,
-        "nan_pct": round(nan_pct, 3),
-        "truncated_rows": truncated,
+        "status": status, "rows": scanned, "cols": ncols,
+        "nan_pct": round(nan_pct, 3), "truncated_rows": truncated,
         "trunc_pct": round(trunc_pct, 3),
     }
 
