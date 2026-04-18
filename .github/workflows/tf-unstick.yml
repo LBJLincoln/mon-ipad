@@ -1,4 +1,4 @@
-name: TF Unstick (factory reboot on demand)
+name: TF Unstick (factory reboot + full clean restart)
 
 on:
   workflow_dispatch:
@@ -7,51 +7,91 @@ on:
         description: 'Comma-sep: nba,pol,pqtf (default all)'
         required: false
         default: 'nba,pol,pqtf'
-      factory:
-        description: 'factory_reboot=true clears /data cache'
+      mode:
+        description: 'reboot_only | clean_restart (reset+fresh run from day 0)'
         required: false
-        default: 'true'
+        default: 'clean_restart'
 
 permissions:
   contents: read
 
 jobs:
   unstick:
-    name: Factory reboot selected TFs
+    name: Unstick TFs
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Install huggingface_hub
         run: pip install -q huggingface_hub
 
-      - name: Factory reboot
+      - name: Factory reboot + optional clean restart
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN_2 }}
           TARGETS: ${{ inputs.targets }}
-          FACTORY: ${{ inputs.factory }}
+          MODE: ${{ inputs.mode }}
         run: |
           python3 <<'PY'
-          import os
+          import os, time, json, urllib.request
           from huggingface_hub import HfApi
 
           api = HfApi(token=os.environ['HF_TOKEN'])
-          factory = os.environ.get('FACTORY','true').lower() == 'true'
+          mode = os.environ.get('MODE', 'clean_restart').strip()
           targets = [t.strip() for t in os.environ.get('TARGETS','nba,pol,pqtf').split(',') if t.strip()]
 
           repos = {
-              'nba':  'LBJLincoln26/nba-llm-trading-floor',
-              'pol':  'LBJLincoln26/political-llm-trading-floor',
-              'pqtf': 'LBJLincoln26/political-quant-trading-floor',
+              'nba':  ('LBJLincoln26/nba-llm-trading-floor',         'https://lbjlincoln26-nba-llm-trading-floor.hf.space'),
+              'pol':  ('LBJLincoln26/political-llm-trading-floor',   'https://lbjlincoln26-political-llm-trading-floor.hf.space'),
+              'pqtf': ('LBJLincoln26/political-quant-trading-floor', 'https://lbjlincoln26-political-quant-trading-floor.hf.space'),
           }
 
-          for t in targets:
-              repo = repos.get(t)
-              if not repo:
-                  print(f"[unstick] unknown target: {t}")
-                  continue
+          def post(url, body=None, timeout=15):
+              data = json.dumps(body).encode() if body is not None else None
+              req = urllib.request.Request(url, data=data, method='POST',
+                  headers={'Content-Type': 'application/json'})
               try:
-                  api.restart_space(repo, factory_reboot=factory)
-                  print(f"[unstick] {t} → {repo} factory={factory} OK")
+                  with urllib.request.urlopen(req, timeout=timeout) as r:
+                      return r.status, r.read().decode()[:200]
               except Exception as e:
-                  print(f"[unstick] {t} → {repo} FAILED: {type(e).__name__}: {e}")
+                  return 0, f"{type(e).__name__}: {str(e)[:150]}"
+
+          def get_status(url, timeout=8):
+              try:
+                  with urllib.request.urlopen(f"{url}/api/status", timeout=timeout) as r:
+                      return json.loads(r.read())
+              except Exception as e:
+                  return {"_err": f"{type(e).__name__}: {str(e)[:100]}"}
+
+          for t in targets:
+              if t not in repos:
+                  print(f"[unstick] unknown target: {t}"); continue
+              repo, url = repos[t]
+              try:
+                  api.restart_space(repo, factory_reboot=True)
+                  print(f"[unstick] {t} factory_reboot OK")
+              except Exception as e:
+                  print(f"[unstick] {t} factory_reboot FAILED: {type(e).__name__}: {e}")
+                  continue
+              if mode != 'clean_restart':
+                  continue
+              came_up = False
+              for i in range(30):
+                  time.sleep(10)
+                  s = get_status(url)
+                  if '_err' not in s:
+                      came_up = True
+                      print(f"[unstick] {t} back up at t={10*(i+1)}s running={s.get('running')}")
+                      break
+              if not came_up:
+                  print(f"[unstick] {t} did NOT come back up within 5min — skipping reset")
+                  continue
+              time.sleep(3)
+              code, body = post(f"{url}/api/reset")
+              print(f"[unstick] {t} /api/reset → {code} {body[:80]}")
+              time.sleep(2)
+              code, body = post(f"{url}/api/run", {"resume": False})
+              print(f"[unstick] {t} /api/run resume=false → {code} {body[:80]}")
+              time.sleep(4)
+              s = get_status(url)
+              dp = s.get('days_processed') or s.get('current_day')
+              print(f"[unstick] {t} verify: day={dp} running={s.get('running')}")
           PY

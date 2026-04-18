@@ -317,6 +317,21 @@ def api_stop():
     _stop_event.set()
     return JSONResponse({"stopping": True})
 
+@app.post("/api/reset")
+def api_reset():
+    """Wipe persisted state and start fresh on next /api/run.
+    Parity with NBA + POL TFs. Requires not running."""
+    global _state
+    if _running:
+        return JSONResponse({"status": "error", "message": "Cannot reset while running. Stop first."}, status_code=409)
+    with _lock:
+        _state = {}
+    try:
+        STATE_PATH.unlink(missing_ok=True)
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": f"unlink failed: {e}"}, status_code=500)
+    return JSONResponse({"status": "reset_ok"})
+
 @app.get("/api/leaderboard")
 def api_leaderboard():
     with _lock:
