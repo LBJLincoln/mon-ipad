@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-17T12:30:00Z",
+  "updated_at": "2026-04-18T00:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -191,11 +191,40 @@
     {
       "id": "tf-axelrod-verify-tune-10",
       "priority": 17,
+      "status": "done",
+      "completed_at": "2026-04-18T00:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 10 \u2014 full independent spec audit (no code changes needed)",
+      "findings": [
+        "NBA app.py: 3849 lines, 17 TRADERS (T1-T16 + selfhost-dolphin3 added 2026-04-17)",
+        "POL app.py: 3130 lines, 17 TRADERS (parity confirmed)",
+        "Mech A: build_common_knowledge_block wired at day-end (NBA L3243, POL L2529); prev_day_ck injected into build_day_prompt via common_knowledge_block= param (NBA L1738, POL L1500); restored from disk on resume (both)",
+        "Mech B: _society_archetypes_by_day module-level global (NBA L107, POL L109); cleared in run_experiment reset; used in assign_sacrificial_archetypes to build society-wide exclusion set; _challenge_assignments wired for mid-tier; both blocks injected in _agent_llm_worker before LLM call",
+        "Mech C: write_axelrod_log writes /tmp/axelrod-log/day-NNN.jsonl (NBA) / /tmp/axelrod-log-political/day-NNN.jsonl (POL); per-agent rows include rank, archetype_assigned, was_sacrificed, peer_consensus_distance (L1-norm KL proxy)",
+        "AXELROD_ARCHETYPES: 20 archetypes, exact match to spec",
+        "DMAD anti-groupthink: CONSENSUS AGREE/DIVERGE mandatory prefix in CK block",
+        "py_compile: not re-run this fire (files unchanged from fire-9 PASS); content verified via pattern search",
+        "Minor cosmetic gap: COLLECTIVE_MISSION says 'ONE of 16 LLM agents' but TRADERS count is 17 (selfhost-dolphin3 added post-mission-text). Non-functional.",
+        "do_not_push_hf_space_yet: true \u2014 awaiting user gate"
+      ],
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-11",
+      "priority": 18,
       "status": "pending",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 10 \u2014 HF Space push readiness review (user gate)",
-      "scope": "1. User reviews this commit (spec audit passed, no regressions). 2. If approved: push both Spaces to HF (NBA LBJLincoln26/nba-llm-trading-floor, Political LBJLincoln26/political-llm-trading-floor). 3. Restart both Spaces. 4. Verify /api/status returns healthy on both. 5. Mark do_not_push_hf_space_yet=false.",
-      "do_not_push_hf_space_yet": true
+      "subject": "verify+tune fire 11 \u2014 HF Space push (USER GATE: explicit approval required)",
+      "scope": [
+        "1. User explicitly approves HF Space push (say 'push to HF' or 'approve HF deploy').",
+        "2. Push scripts/arena/hf-llm-trading-floor/app.py to HF Space LBJLincoln26/nba-llm-trading-floor.",
+        "3. Push scripts/arena/hf-political-trading-floor/app.py to HF Space LBJLincoln26/political-llm-trading-floor.",
+        "4. Restart both Spaces via HF API (POST /api/run or Space restart).",
+        "5. Verify /api/status on both Spaces returns healthy JSON with experiment_running or ready state.",
+        "6. Mark this item done with do_not_push_hf_space_yet=false."
+      ],
+      "do_not_push_hf_space_yet": true,
+      "blocked_on": "explicit user approval"
     }
   ],
   "recovery_protocol": {
