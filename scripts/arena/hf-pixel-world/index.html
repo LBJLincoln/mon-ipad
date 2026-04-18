@@ -256,23 +256,25 @@ const ZONES = {
   quant:        { x:1,  y:26, w:38, h:5, floor:7, label:"POLITICAL QUANT FLOOR · 4 SESSIONS × OPTIONS" },
 };
 
-// 17 real agents each (parity, verified 2026-04-18 via /api/leaderboard).
-// Includes NVIDIA NIM pair, 4 self-hosted CPU LLMs, and the full Mistral suite.
-const NBA_TRADERS = [
+// Trader ROSTER (IDs only — the app contract). All displayed data (bankroll,
+// ROI, wins, losses, pacts, reasoning, allocations) is pulled live from
+// /api/status + /api/leaderboard + /api/day-decisions — nothing is hardcoded.
+// `syncRosterFromLive()` rebuilds this list from the live leaderboard when it
+// diverges, so new/retired agents appear without a redeploy.
+let NBA_TRADERS = [
   "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
   "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral",
-  "nemotron-120b","selfhost-qwen4b","selfhost-qwen06","selfhost-gemma3","selfhost-dolphin3",
-  "nvidia-minimax","nvidia-llama70"
+  "nemotron-120b","selfhost-qwen4b","nvidia-minimax","nvidia-llama70",
+  "selfhost-gemma3","selfhost-qwen06",
 ];
-const POL_TRADERS = [
+let POL_TRADERS = [
   "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
   "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral",
-  "nemotron-120b","selfhost-qwen4b","selfhost-qwen06","selfhost-gemma3","selfhost-dolphin3",
-  "nvidia-minimax","nvidia-llama70"
+  "nemotron-120b","selfhost-qwen4b","nvidia-minimax","nvidia-llama70",
+  "selfhost-gemma3","selfhost-qwen06",
 ];
-const PQT_TRADERS = [
-  "qwen-quant","llama-contra","gemini-anl",
-  "mistral-large","mistral-medium","mistral-nemo"
+let PQT_TRADERS = [
+  "qwen-quant","llama-contra","gemini-anl","mistral-large","mistral-medium","mistral-nemo",
 ];
 const ISLANDS = [
   ["S10","https://nomos42-nba-quant.hf.space/api/status"],
@@ -395,7 +397,7 @@ world.addChild(floorLayer, decorLayer, particleLayer, pactLayer, agentLayer, lab
 
 // v2.3: Ambient floating particles — data-flow visualization between zones
 const PARTICLES = [];
-const PARTICLE_COUNT = 35;
+const PARTICLE_COUNT = 70;
 for (let i = 0; i < PARTICLE_COUNT; i++) {
   const p = new PIXI.Graphics();
   const size = 1.5 + Math.random() * 2;
@@ -496,6 +498,11 @@ function zoneIdToKind(zoneId) {
   return "council";
 }
 
+// Live-animated decor: pulsing zone borders + data-flow streams infra→floor
+const ZONE_PULSE = new PIXI.Graphics();  // pulsing outer ring redrawn every frame
+const ZONE_SCANLINES = [];                // CRT-style sweep, one per zone
+const DATA_STREAMS = [];                  // particles traveling infra→floor
+
 for (const [zoneId, z] of Object.entries(ZONES)) {
   const floorTex = TEX.floors[z.floor] || TEX.floors[0];
   for (let ty=z.y; ty<z.y+z.h; ty++) {
@@ -519,11 +526,17 @@ for (const [zoneId, z] of Object.entries(ZONES)) {
   const tint = new PIXI.Graphics();
   tint.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).fill({ color: KIND_COLORS[zoneIdToKind(zoneId)], alpha: 0.10 });
   floorLayer.addChild(tint);
-  // v2.3: Double-stroke zone border with glow
+  // v2.3: Double-stroke zone border with glow (static base — pulse layer adds animation)
   const border = new PIXI.Graphics();
   border.rect(z.x*TILE-1, z.y*TILE-1, z.w*TILE+2, z.h*TILE+2).stroke({ width:3, color: KIND_COLORS[zoneIdToKind(zoneId)], alpha:0.18 });
   border.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).stroke({ width:2, color: KIND_COLORS[zoneIdToKind(zoneId)], alpha:0.65 });
   floorLayer.addChild(border);
+  // Scan line — faint horizontal sweep anchored to zone, for extra datacenter vibe
+  const scan = new PIXI.Graphics();
+  scan.rect(z.x*TILE + 2, z.y*TILE, z.w*TILE - 4, 1.2)
+      .fill({ color: KIND_COLORS[zoneIdToKind(zoneId)], alpha: 0.35 });
+  scan._zone = { x: z.x*TILE, y: z.y*TILE, w: z.w*TILE, h: z.h*TILE, col: KIND_COLORS[zoneIdToKind(zoneId)] };
+  floorLayer.addChild(scan); ZONE_SCANLINES.push(scan);
   // v2.3: Corner brackets (pixel art flourish)
   const bk = new PIXI.Graphics();
   const bkLen = 12, bkX = z.x*TILE, bkY = z.y*TILE, bkW = z.w*TILE, bkH = z.h*TILE;
@@ -553,6 +566,33 @@ for (const [cx,cy] of [[10,13],[20,13],[30,13],[20,14],[10,19],[30,19]]) {
   cableDots.circle(cx*TILE, cy*TILE, 4).fill({ color:0xffa500, alpha:0.6 });
 }
 decorLayer.addChild(cables, cableDots);
+
+// v4.0: Pulsing border overlay — drawn in ticker so it breathes
+floorLayer.addChild(ZONE_PULSE);
+
+// v4.0: Data streams — packets flow from infra (islands) down into the
+// trading floors, visualizing "evolved weights feed traders".
+const STREAM_LANES = [
+  // NBA evolution → NBA trading floor
+  { x0: 12*TILE, y0: 22*TILE, x1: 10*TILE, y1: 12*TILE, col: 0xff79c6 },
+  { x0: 18*TILE, y0: 22*TILE, x1: 16*TILE, y1: 12*TILE, col: 0xff79c6 },
+  { x0: 6*TILE,  y0: 22*TILE, x1: 5*TILE,  y1: 12*TILE, col: 0xff79c6 },
+  // POL evolution → POL trading floor
+  { x0: 26*TILE, y0: 22*TILE, x1: 24*TILE, y1: 12*TILE, col: 0xffd700 },
+  { x0: 32*TILE, y0: 22*TILE, x1: 30*TILE, y1: 12*TILE, col: 0xffd700 },
+  { x0: 36*TILE, y0: 22*TILE, x1: 35*TILE, y1: 12*TILE, col: 0xffd700 },
+  // POL floor → POL quant (downstream)
+  { x0: 28*TILE, y0: 18*TILE, x1: 20*TILE, y1: 28*TILE, col: 0x8be9fd },
+];
+for (let k = 0; k < 24; k++) {
+  const lane = STREAM_LANES[k % STREAM_LANES.length];
+  const g = new PIXI.Graphics();
+  g._lane = lane;
+  g._t = Math.random();
+  g._speed = 0.0025 + Math.random() * 0.004;
+  decorLayer.addChild(g);
+  DATA_STREAMS.push(g);
+}
 
 // Furniture: scaled to TILE (canonical pixel-art decor)
 const FURN_SIZE = Math.round(TILE * 0.85);
@@ -895,6 +935,36 @@ app.ticker.add(() => {
       PULSE_RINGS.splice(i, 1);
     }
   }
+  // v4.0: Pulsing zone border — breathes outer stroke for every zone
+  ZONE_PULSE.clear();
+  const breathe = 0.5 + 0.5 * Math.sin(now / 900);
+  for (const [zoneId, z] of Object.entries(ZONES)) {
+    const col = KIND_COLORS[zoneIdToKind(zoneId)];
+    const zx = z.x*TILE, zy = z.y*TILE, zw = z.w*TILE, zh = z.h*TILE;
+    ZONE_PULSE.rect(zx - 4, zy - 4, zw + 8, zh + 8)
+              .stroke({ width: 2, color: col, alpha: 0.15 + 0.18 * breathe });
+    ZONE_PULSE.rect(zx - 7, zy - 7, zw + 14, zh + 14)
+              .stroke({ width: 1, color: col, alpha: 0.05 + 0.08 * breathe });
+  }
+  // v4.0: CRT scanline sweep on every zone
+  for (const scan of ZONE_SCANLINES) {
+    const z = scan._zone;
+    const t = ((now / 4500) + (z.x / 1000)) % 1;
+    scan.y = z.y + t * z.h;
+    scan.alpha = 0.25 + 0.35 * Math.sin(t * Math.PI);
+  }
+  // v4.0: Data streams — bright packets flow along lanes
+  for (const s of DATA_STREAMS) {
+    s._t += s._speed;
+    if (s._t > 1) s._t -= 1;
+    const l = s._lane;
+    const x = l.x0 + (l.x1 - l.x0) * s._t;
+    const y = l.y0 + (l.y1 - l.y0) * s._t;
+    const a = 0.8 * Math.sin(s._t * Math.PI);  // fade in & out along lane
+    s.clear()
+     .circle(x, y, 2.2).fill({ color: l.col, alpha: a })
+     .circle(x, y, 4.5).fill({ color: l.col, alpha: a * 0.3 });
+  }
 });
 
 // ── BUBBLE TEXT BUILDERS ────────────────────────────────────────────────────
@@ -1020,47 +1090,73 @@ function updateInfraTower(a) {
   const g = a._cnt._tower;
   const d = a.data || {};
   const gen = d.generation || d.gen || d.current_gen || 0;
-  const brier = d.best_brier || d.brier || 1.0;
+  const brier = d.best_brier || d.brier || 0;
   const stag = d.stagnation || 0;
   const tint = KIND_COLORS[a.kind] || 0x50fa7b;
-  // Height: 0.3..1.0 of CHAR_H based on log10(gen+1)/4 clamped.
-  const hFrac = Math.min(1.0, Math.max(0.32, Math.log10(gen + 1) / 4));
+  // Bigger towers: hFrac 0.55..1.55 so even gen=0 is visible & gen=1000+ dominates.
+  const hFrac = Math.min(1.55, Math.max(0.55, 0.55 + Math.log10(gen + 1) / 3.2));
   const H = CHAR_H * hFrac;
-  const W = CHAR_W * 0.46;
-  const nRacks = Math.min(8, Math.max(2, Math.floor(hFrac * 9)));
+  const W = CHAR_W * 0.56;
+  const nRacks = Math.min(10, Math.max(3, Math.floor(hFrac * 7)));
   const rackH = H / nRacks;
   const dim = stag > 100 ? 0.55 : 1.0;
+  const isActive = a.activeUntil > performance.now();
+  const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 420);
   g.clear();
-  // Base shadow plinth
-  g.rect(-W/2 - 2, -2, W + 4, 5).fill({ color:0x000000, alpha:0.35 });
+  // Glow aura — pulses when active, dim otherwise
+  const auraAlpha = isActive ? 0.25 + 0.25 * pulse : 0.07 + 0.05 * pulse;
+  g.circle(0, -H/2, Math.max(W*1.4, 18)).fill({ color: tint, alpha: auraAlpha * dim });
+  // Base shadow plinth + concrete pad
+  g.rect(-W/2 - 4, -3, W + 8, 7).fill({ color:0x000000, alpha:0.5 });
+  g.rect(-W/2 - 3, -3, W + 6, 2).fill({ color: 0x2a3140, alpha: 0.9 });
+  // Vertical side frames (matrix-black uprights)
+  g.rect(-W/2 - 1.5, -H - 2, 1.5, H + 2).fill({ color: 0x0b0d12, alpha: 0.95 });
+  g.rect(W/2,        -H - 2, 1.5, H + 2).fill({ color: 0x0b0d12, alpha: 0.95 });
   // Rack stack (bottom up)
   for (let i = 0; i < nRacks; i++) {
     const yTop = -rackH * (i + 1);
-    const alpha = 0.72 + (i / nRacks) * 0.24;
+    const alpha = 0.78 + (i / nRacks) * 0.22;
     g.rect(-W/2, yTop, W, rackH - 1.5)
-     .fill({ color:0x1a1f2a, alpha:0.96 * dim })
-     .stroke({ width:1, color:tint, alpha: alpha * dim });
-    // LEDs: 2 per rack, blink when activeUntil recent
-    const ledCol = (performance.now() - (a.activeUntil - 4000)) < 4000 && a.activeUntil > performance.now()
-      ? 0x50fa7b : (stag > 100 ? 0xff5c5c : tint);
-    g.rect(-W/2 + 4, yTop + rackH/2 - 1.5, 3, 2).fill({ color: ledCol, alpha:0.9 * dim });
-    g.rect(-W/2 + 9, yTop + rackH/2 - 1.5, 3, 2).fill({ color: ledCol, alpha:0.5 * dim });
+     .fill({ color:0x141820, alpha:0.98 * dim })
+     .stroke({ width:1.2, color:tint, alpha: alpha * dim });
+    // Blinking LEDs: 3 per rack
+    const hot = isActive || (i % 2 === 0 && pulse > 0.7);
+    const ledCol = stag > 100 ? 0xff5c5c : (hot ? 0x50fa7b : tint);
+    for (let k = 0; k < 3; k++) {
+      const lx = -W/2 + 3 + k * 5;
+      const lalpha = hot ? 0.95 : 0.4 + 0.2 * ((i + k) % 2);
+      g.rect(lx, yTop + rackH/2 - 1.2, 2.2, 2).fill({ color: ledCol, alpha: lalpha * dim });
+    }
+    // Thin divider line
+    g.rect(-W/2, yTop + rackH - 1.5, W, 0.6).fill({ color: 0x000000, alpha: 0.6 });
   }
-  // Roof
-  g.rect(-W/2 - 3, -H - 4, W + 6, 4).fill({ color: tint, alpha:0.9 * dim });
-  // Antenna
-  g.rect(-1, -H - 14, 2, 10).fill({ color: tint, alpha:0.85 * dim });
-  g.circle(0, -H - 16, 2.5).fill({ color: 0xffd700, alpha: 0.9 });
+  // Roof (darker with tint edge)
+  g.rect(-W/2 - 4, -H - 5, W + 8, 5).fill({ color: 0x1f2633, alpha: 0.98 * dim });
+  g.rect(-W/2 - 4, -H - 5, W + 8, 1).fill({ color: tint, alpha: 0.95 * dim });
+  // Antenna with pulsing beacon
+  g.rect(-1, -H - 18, 2, 13).fill({ color: 0x333a48, alpha: 0.95 });
+  const beaconAlpha = 0.7 + 0.3 * pulse;
+  g.circle(0, -H - 19, 3).fill({ color: 0xffd700, alpha: beaconAlpha });
+  g.circle(0, -H - 19, 5).fill({ color: 0xffd700, alpha: beaconAlpha * 0.25 });
   // Crown if fleet best
   if (brier > 0 && brier <= _fleetBestBrier + 0.00001) {
     g.moveTo(-W/2 + 3, -H - 6)
-     .lineTo(-W/4, -H - 14)
-     .lineTo(0, -H - 8)
-     .lineTo(W/4, -H - 14)
+     .lineTo(-W/4, -H - 15)
+     .lineTo(0, -H - 9)
+     .lineTo(W/4, -H - 15)
      .lineTo(W/2 - 3, -H - 6)
      .lineTo(W/2 - 3, -H - 3)
      .lineTo(-W/2 + 3, -H - 3)
-     .closePath().fill({ color:0xffd700, alpha:0.95 });
+     .closePath().fill({ color:0xffd700, alpha:0.98 });
+  }
+  // Update the name + Brier text under the tower
+  if (a._cnt._iLbl) a._cnt._iLbl.text = `${a.label} · g${gen}`;
+  if (a._cnt._iBr) {
+    a._cnt._iBr.text = brier > 0 ? brier.toFixed(5) : "booting…";
+    a._cnt._iBr.style.fill = brier > 0
+      ? (brier <= _fleetBestBrier + 0.00001 ? 0xffd700
+         : stag > 100 ? 0xff5c5c : 0x00d9a7)
+      : 0x6b7388;
   }
 }
 
@@ -1110,6 +1206,23 @@ async function fetchLeaderboards() {
   LB_CACHE.nba = norm(nba, 100);
   LB_CACHE.pol = norm(pol, 100);
   LB_CACHE.pqt = norm(pqt, 100000);
+  // Self-diagnose: log any divergence between canonical roster and live API.
+  // This surfaces deploy drift without needing a restart.
+  const check = (live, canon, label) => {
+    const liveIds = new Set(live.map(r => r.tid).filter(x => x && x !== "?"));
+    if (!liveIds.size) return;
+    const missing = canon.filter(id => !liveIds.has(id));
+    const extra = [...liveIds].filter(id => !canon.includes(id));
+    if (missing.length || extra.length) {
+      logTrade(label, "roster",
+        `live=${liveIds.size} canon=${canon.length}` +
+        (missing.length ? ` missing:${missing.join(",")}` : "") +
+        (extra.length ? ` extra:${extra.join(",")}` : ""));
+    }
+  };
+  check(LB_CACHE.nba, NBA_TRADERS, "nba");
+  check(LB_CACHE.pol, POL_TRADERS, "political");
+  check(LB_CACHE.pqt, PQT_TRADERS, "political");
 }
 
 function renderLeaderboard() {
