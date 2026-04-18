@@ -2972,24 +2972,23 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 ts["llm_ok"] += 1
             parsed = parse_day_allocation(raw_response, len(day_games)) if raw_response else None
 
-            # COLLECTIVE_MISSION fallback #1 (PRE-FILTER): LLM silent or parse-failed.
-            # Inject 5 default legs at 15% each (= 75% exact) on first up-to-5 games'
-            # ml_home with edge=0.03. These survive downstream filter since edge >= MIN_EDGE
-            # and ml_home is in BASE_CATS. Second fallback (POST-FILTER) below catches
-            # the case where LLM returned allocations but all got stripped by MIN_EDGE.
-            if (not parsed or not parsed.get("allocations")) and len(day_games) >= 3:
-                n_fallback = min(5, len(day_games))
-                per_pct = 0.75 / n_fallback
+            # 2026-04-18 — PRE-FILTER ml_home fallback REMOVED.
+            # Post-mortem showed 16/16 agents silent on day 44 all injected identical
+            # 75% ml_home bets, reproducing the exact groupthink-ruin vector this file
+            # claims to fix. Fabricated bets with synthetic edge=0.03 bypass the
+            # scientific integrity of the experiment: LLM silence is a REAL signal
+            # (rate limit, provider down) and must NOT be papered over.
+            #
+            # Behavior now: LLM silent → parsed stays None → no allocations built →
+            # POST-FILTER smart fallback (line 3162+) takes over, using real
+            # model_preds (fleet 0.217 Brier) to pick actual +edge categories.
+            # If NO +edge categories exist anywhere, agent stays 100% cash that day.
+            if not parsed or not parsed.get("allocations"):
                 parsed = {
-                    "day_strategy": f"fallback-injection: LLM silent, forcing 75% deploy on first {n_fallback} games (ml_home)",
-                    "cash_held_pct": 0.25,
-                    "cash_rationale": "fallback-injection (LLM returned no actionable allocations)",
-                    "allocations": [
-                        {"game_idx": i + 1, "category": "ml_home", "pct": per_pct,
-                         "confidence": 0.40, "edge": 0.03, "rationale": "fallback",
-                         "source": "fallback-injection"}
-                        for i in range(n_fallback)
-                    ],
+                    "day_strategy": "LLM_SILENT_PASS: no synthetic bets; POST-FILTER will attempt model-edge fallback.",
+                    "cash_held_pct": 1.0,
+                    "cash_rationale": "LLM silent — no fabricated deployment (scientific-integrity fix 2026-04-18)",
+                    "allocations": [],
                     "parlays": [],
                     "coalition_proposal": None,
                 }
@@ -3033,6 +3032,15 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 MAX_PCT_PER_BET = 0.15      # raised from 0.10 so 6 bets can reach 75%
                 MAX_PCT_PER_DAY = 0.85      # raised from 0.60 to align with 0.75 deploy floor (+0.10 buffer for parlays)
                 MIN_EDGE = 0.02             # loosened from 0.03 so >=3 allocations pass filter per day
+                # 2026-04-18 MECHANICAL enforcement of preservation mode. Prompt text
+                # can be ignored by the LLM; these caps cannot. Trigger = bankroll<$50
+                # OR bankroll < PEAK_DRAWDOWN_GUARD × best_bankroll.
+                _peak = float(ts.get("best_bankroll") or ts.get("bankroll") or 100.0)
+                _preserve = (ts["bankroll"] < 50.0) or (_peak > 100.0 and ts["bankroll"] < PEAK_DRAWDOWN_GUARD * _peak)
+                if _preserve:
+                    MAX_PCT_PER_BET = PRESERVATION_MAX_BET_PCT
+                    MAX_PCT_PER_DAY = PRESERVATION_MAX_DEPLOY
+                    MIN_EDGE = 0.04
                 BASE_CATS = {"ml_home","ml_away","spread_home","spread_away","total_over","total_under"}
                 day_exposure_pct = 0.0
                 for alloc in parsed["allocations"]:

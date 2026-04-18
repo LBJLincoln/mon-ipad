@@ -2370,23 +2370,21 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 ts["llm_ok"] += 1
             parsed = parse_day_allocation(raw_response, len(day_events)) if raw_response else None
 
-            # COLLECTIVE_MISSION fallback: if LLM failed or returned zero allocations,
-            # inject 5 default trades at 15% each (= 75% deploy exactly) on first
-            # up-to-5 events, direction=long, ticker=SPY. Matches MAX_PCT_PER_BET=0.15
-            # so no clipping. Guarantees >=3 trades + 75% deploy EVERY day.
-            if (not parsed or not parsed.get("allocations")) and len(day_events) >= 3:
-                n_fallback = min(5, len(day_events))
-                per_pct = 0.75 / n_fallback
+            # 2026-04-18 — PRE-FILTER SPY-long fallback REMOVED.
+            # Post-mortem showed 14/17 POL agents converged to identical $93.92 bankroll;
+            # root cause = every silent-LLM day injected the SAME fake SPY-long bet.
+            # That wasn't groupthink by the agents — it was code fabricating identical
+            # trades. LLM silence is a REAL signal and must not be papered over.
+            #
+            # Behavior now: LLM silent → parsed stays None → POST-FILTER smart fallback
+            # (line 2473+) picks events by real model signal (event_preds walk-forward).
+            # If no signal exists, agent stays 100% cash that day.
+            if not parsed or not parsed.get("allocations"):
                 parsed = {
-                    "day_strategy": f"fallback-injection: LLM silent, forcing 75% deploy on first {n_fallback} events (SPY long)",
-                    "cash_held_pct": 0.25,
-                    "cash_rationale": "fallback-injection (LLM returned no actionable allocations)",
-                    "allocations": [
-                        {"event_idx": i + 1, "ticker": "SPY", "direction": "long",
-                         "pct": per_pct, "confidence": 0.40,
-                         "thesis": "fallback", "source": "fallback-injection"}
-                        for i in range(n_fallback)
-                    ],
+                    "day_strategy": "LLM_SILENT_PASS: no synthetic bets; POST-FILTER will attempt model-signal fallback.",
+                    "cash_held_pct": 1.0,
+                    "cash_rationale": "LLM silent — no fabricated deployment (scientific-integrity fix 2026-04-18)",
+                    "allocations": [],
                     "coalition_proposal": None,
                 }
 
@@ -2421,6 +2419,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 # Kelly). No single bet > 10%, daily cumulative ≤ 60%.
                 MAX_PCT_PER_BET = 0.15   # raised from 0.10 so 6 bets can reach 75%
                 MAX_PCT_PER_DAY = 0.85   # raised from 0.60 to align with 0.75 deploy floor
+                # 2026-04-18 MECHANICAL enforcement of preservation mode (parity w/ NBA).
+                _peak = float(ts.get("best_bankroll") or ts.get("bankroll") or 100.0)
+                _preserve = (ts["bankroll"] < 50.0) or (_peak > 100.0 and ts["bankroll"] < PEAK_DRAWDOWN_GUARD * _peak)
+                if _preserve:
+                    MAX_PCT_PER_BET = PRESERVATION_MAX_BET_PCT
+                    MAX_PCT_PER_DAY = PRESERVATION_MAX_DEPLOY
                 starting_bankroll = bankroll
                 day_exposure_pct = 0.0
                 for alloc in parsed["allocations"]:
