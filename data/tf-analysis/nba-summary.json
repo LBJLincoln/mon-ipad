@@ -1,0 +1,1030 @@
+{
+  "fleet": "nba",
+  "space": "LBJLincoln26/nba-llm-trading-floor",
+  "n_days_analyzed": 44,
+  "n_agents": 17,
+  "agents_by_final_bankroll": [
+    [
+      "mistral-ministral",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 2149.9,
+        "bankroll_peak": 10098.22,
+        "roi_final_pct": 2049.9,
+        "roi_peak_pct": 9998.2,
+        "drawdown_from_peak_pct": 78.7,
+        "peak_day": 12,
+        "peak_rationales": [
+          {
+            "day": 12,
+            "bankroll": 10098.22,
+            "strategy": "Deploy high\u2011edge moneylines aggressively while keeping cash low to meet the 75% deployment rule."
+          },
+          {
+            "day": 13,
+            "bankroll": 8741.24,
+            "strategy": "Focus on high\u2011edge away moneylines where model win probability exceeds market implied odds, using half\u2011Kelly sizing and a small parlay to boost ROI."
+          },
+          {
+            "day": 11,
+            "bankroll": 7517.41,
+            "strategy": "Focus on high\u2011edge away moneylines where model probability exceeds market odds, using half\u2011Kelly sizing and a small parlay for extra upside."
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-qwen4b",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 148.03,
+        "bankroll_peak": 588.98,
+        "roi_final_pct": 48.0,
+        "roi_peak_pct": 489.0,
+        "drawdown_from_peak_pct": 74.9,
+        "peak_day": 17,
+        "peak_rationales": [
+          {
+            "day": 17,
+            "bankroll": 588.98,
+            "strategy": "Focus on high\u2011edge moneyline on IND (away) and diversify with a modest spread on GSW and a team\u2011total prop on OKC to meet deployment targets."
+          },
+          {
+            "day": 16,
+            "bankroll": 493.56,
+            "strategy": "Deploy high\u2011edge moneylines across diverse games, focusing on model\u2011probability advantage while keeping cash low."
+          },
+          {
+            "day": 13,
+            "bankroll": 376.76,
+            "strategy": "Deploy 80% of bankroll across 5 allocations with half_kelly sizing, prioritizing model edges >4% on moneylines and team totals. Avoid consensus duplicates; leverage model disagreement on NOP@ORL and POR@UTA where market overrates home favorites."
+          }
+        ]
+      }
+    ],
+    [
+      "qwen-arb",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 107.33,
+        "bankroll_peak": 285.4,
+        "roi_final_pct": 7.3,
+        "roi_peak_pct": 185.4,
+        "drawdown_from_peak_pct": 62.4,
+        "peak_day": 24,
+        "peak_rationales": [
+          {
+            "day": 24,
+            "bankroll": 285.4,
+            "strategy": "{\"\":0}"
+          },
+          {
+            "day": 9,
+            "bankroll": 265.92,
+            "strategy": "Target undervalued total over bets where model predicts higher scoring than the market total, and combine two legs into a modest parlay for extra edge."
+          },
+          {
+            "day": 7,
+            "bankroll": 251.57,
+            "strategy": "Focus on the strongest positive edge (POR home ML) and supplement with value totals and a modest two\u2011leg parlay to boost ROI while meeting deployment targets."
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-qwen06",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 56.53,
+        "bankroll_peak": 263.43,
+        "roi_final_pct": -43.5,
+        "roi_peak_pct": 163.4,
+        "drawdown_from_peak_pct": 78.5,
+        "peak_day": 24,
+        "peak_rationales": [
+          {
+            "day": 24,
+            "bankroll": 263.43,
+            "strategy": "Deploy 85% of bankroll across 5+ tiny flat bets on high-edge categories (ml_home/away, spreads, halves) with at least one parlay to compound edge. Prioritize games with model edge >3% and avoid consensus moneylines where market already efficient."
+          },
+          {
+            "day": 23,
+            "bankroll": 211.95,
+            "strategy": "Wide flat-stake coverage with \u22655 tiny bets across high-edge categories. Prioritize parlays on DEN/NOP (-11.5) and MIN/LAL (-7.5) where model edges exceed 10%. Use eighth_kelly sizing to deploy \u226575% bankroll while maintaining low variance."
+          },
+          {
+            "day": 22,
+            "bankroll": 194.13,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 games (ml_home)"
+          }
+        ]
+      }
+    ],
+    [
+      "llama-contra",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 35.02,
+        "bankroll_peak": 100.95,
+        "roi_final_pct": -65.0,
+        "roi_peak_pct": 1.0,
+        "drawdown_from_peak_pct": 65.3,
+        "peak_day": 7,
+        "peak_rationales": [
+          {
+            "day": 7,
+            "bankroll": 100.95,
+            "strategy": "Fade public consensus on overvalued favorites, targeting underdogs with points in games where media narrative and odds imply overreaction. Deploy majority of bankroll on spread_away and ml_away bets with contrarian edge."
+          },
+          {
+            "day": 0,
+            "bankroll": 100.0,
+            "strategy": ""
+          },
+          {
+            "day": 24,
+            "bankroll": 93.11,
+            "strategy": "CONSENSUS DIVERGE: Focusing on underdog value and contrarian plays where public sentiment is heavily skewed."
+          }
+        ]
+      }
+    ],
+    [
+      "nemotron-120b",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 35.02,
+        "bankroll_peak": 100.95,
+        "roi_final_pct": -65.0,
+        "roi_peak_pct": 1.0,
+        "drawdown_from_peak_pct": 65.3,
+        "peak_day": 7,
+        "peak_rationales": [
+          {
+            "day": 7,
+            "bankroll": 100.95,
+            "strategy": "Focus on value hunting with half-Kelly sizing on the top mispricings, prioritizing alt-markets and team totals where edges exceed 4%. Deploy at least 75% of bankroll across 3+ allocations."
+          },
+          {
+            "day": 0,
+            "bankroll": 100.0,
+            "strategy": ""
+          },
+          {
+            "day": 24,
+            "bankroll": 93.11,
+            "strategy": "{\"\":[]}"
+          }
+        ]
+      }
+    ],
+    [
+      "nvidia-minimax",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 35.02,
+        "bankroll_peak": 100.95,
+        "roi_final_pct": -65.0,
+        "roi_peak_pct": 1.0,
+        "drawdown_from_peak_pct": 65.3,
+        "peak_day": 7,
+        "peak_rationales": [
+          {
+            "day": 7,
+            "bankroll": 100.95,
+            "strategy": "<think>Let me analyze this carefully. I'm NVIDIA MiniMax M2.7 with $87.52 bankroll, -12.5% ROI, 19 total allocations, 12W-7L. I need to deploy at least 75% today (so max 25% cash held).\n\nLooking at th"
+          },
+          {
+            "day": 0,
+            "bankroll": 100.0,
+            "strategy": ""
+          },
+          {
+            "day": 24,
+            "bankroll": 93.11,
+            "strategy": "<think>Let me analyze today's games and make allocation decisions.\n\nMy state: $74.91 bankroll, 90 total allocations, 54W-36L, ROI -25.1%\nCouncil commit: \u226555% deployed today\n\nLooking at the 4 games:\n\n*"
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-small",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 30.66,
+        "bankroll_peak": 100.0,
+        "roi_final_pct": -69.3,
+        "roi_peak_pct": 0.0,
+        "drawdown_from_peak_pct": 69.3,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 100.0,
+            "strategy": ""
+          },
+          {
+            "day": 7,
+            "bankroll": 88.43,
+            "strategy": "Deploy 80% of bankroll across 5+ high-edge categories with half_kelly sizing, prioritizing alt-markets and halves where model edges exceed 4%. Use parlays sparingly to compound low-risk edges without overexposure."
+          },
+          {
+            "day": 24,
+            "bankroll": 81.49,
+            "strategy": "Deploy 85% of bankroll across 5+ high-edge alt-markets and halves to exploit model softness in niche categories, while reserving 15% for a high-confidence parlay to chase compounding ROI. Focus on games where model probability diverges sharply from market odds (edge >4%) and prioritize categories wi"
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-gemma3",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 29.06,
+        "bankroll_peak": 139.54,
+        "roi_final_pct": -70.9,
+        "roi_peak_pct": 39.5,
+        "drawdown_from_peak_pct": 79.2,
+        "peak_day": 6,
+        "peak_rationales": [
+          {
+            "day": 6,
+            "bankroll": 139.54,
+            "strategy": "Deploy majority of bankroll on high\u2011edge home moneylines and a complementary spread, with a small parlay to boost upside while keeping cash minimal."
+          },
+          {
+            "day": 7,
+            "bankroll": 132.16,
+            "strategy": "Focus on the strongest positive edge (POR home moneyline) and complement with total over bets where the model predicts higher scoring than the market."
+          },
+          {
+            "day": 9,
+            "bankroll": 105.46,
+            "strategy": "Deploy majority to high\u2011edge moneylines, use a small parlay to boost upside while keeping cash low."
+          }
+        ]
+      }
+    ],
+    [
+      "gemini-tact",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 24.94,
+        "bankroll_peak": 76.5,
+        "roi_final_pct": -75.1,
+        "roi_peak_pct": -23.5,
+        "drawdown_from_peak_pct": 67.4,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 76.5,
+            "strategy": "Aggressive deployment focusing on first-half edges and schedule-based pace advantages to meet the 75% deployment mandate."
+          },
+          {
+            "day": 7,
+            "bankroll": 72.02,
+            "strategy": "CONSENSUS DIVERGE [Ministral 8B]: While the leader favors home moneylines, I am targeting first-half edges and schedule-based fatigue in back-to-back scenarios to maximize ROI from a lower bankroll position."
+          },
+          {
+            "day": 24,
+            "bankroll": 66.39,
+            "strategy": "CONSENSUS DIVERGE [Ministral 8B]: While the leader favors home MLs, I am targeting first-half edges and schedule-based fatigue in the GSW/MIL and MIA/SAS matchups to maximize ROI in rescue mode."
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-large",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 23.18,
+        "bankroll_peak": 66.81,
+        "roi_final_pct": -76.8,
+        "roi_peak_pct": -33.2,
+        "drawdown_from_peak_pct": 65.3,
+        "peak_day": 7,
+        "peak_rationales": [
+          {
+            "day": 7,
+            "bankroll": 66.81,
+            "strategy": "Deploy capital on consensus edges in focus categories (ml_home, spread_away, total_over) with diversified parlays to maximize compounding. Prioritize games where model, odds, and matchup align, while avoiding over-exposure to single outcomes."
+          },
+          {
+            "day": 0,
+            "bankroll": 66.23,
+            "strategy": "Deploy capital on consensus edges in PHX ML and NOP spread_away, with a 2-leg parlay to amplify edge. Use quarter_kelly sizing to balance risk and reward while adhering to council focus strategies."
+          },
+          {
+            "day": 24,
+            "bankroll": 61.62,
+            "strategy": "CONSENSUS DIVERGE Ministral 8B: Focus on high-variance alt spreads and props to recover bankroll, targeting 5%+ edge in underutilized categories. Avoid base moneylines/spreads where market is efficient and peers are crowded."
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-medium",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 23.18,
+        "bankroll_peak": 66.81,
+        "roi_final_pct": -76.8,
+        "roi_peak_pct": -33.2,
+        "drawdown_from_peak_pct": 65.3,
+        "peak_day": 7,
+        "peak_rationales": [
+          {
+            "day": 7,
+            "bankroll": 66.81,
+            "strategy": "Diversified portfolio approach with a focus on moderate edges across multiple games and categories."
+          },
+          {
+            "day": 0,
+            "bankroll": 66.23,
+            "strategy": "Diversified flat allocations across uncorrelated categories in both games, prioritizing moderate edges in ml_home and total_over where model probabilities exceed market implied odds by \u22653%. Avoiding over-exposure to any single game or category type."
+          },
+          {
+            "day": 24,
+            "bankroll": 61.62,
+            "strategy": "Diversified portfolio with higher-variance bets to recover bankroll, focusing on moderate edges across different categories."
+          }
+        ]
+      }
+    ],
+    [
+      "qwen-quant",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 21.96,
+        "bankroll_peak": 66.83,
+        "roi_final_pct": -78.0,
+        "roi_peak_pct": -33.2,
+        "drawdown_from_peak_pct": 67.1,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 66.83,
+            "strategy": "Deploy 75% of bankroll on high-edge totals and moneylines, leveraging model-predicted pace advantages. Use half_kelly sizing for primary edges and quarter_kelly for secondary edges to balance risk."
+          },
+          {
+            "day": 7,
+            "bankroll": 63.44,
+            "strategy": "Focus on proportional_edge and half_kelly strategies for moneyline and spread bets where model edge exceeds 3%, avoiding low-edge games. Prioritize games with clear model-market discrepancies."
+          },
+          {
+            "day": 24,
+            "bankroll": 58.47,
+            "strategy": "RESCUE MODE: Target high-variance alt spreads and quarter totals with minimum 5% edge. Prioritize games with model-market divergence in pace and defensive metrics. Deploy 75-85% of bankroll across 3+ allocations to recover position."
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-nemo",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 19.03,
+        "bankroll_peak": 62.28,
+        "roi_final_pct": -81.0,
+        "roi_peak_pct": -37.7,
+        "drawdown_from_peak_pct": 69.4,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 62.28,
+            "strategy": "Aggressive high-conviction allocator, focusing on split exposure between favorites and contrarian spreads with selective 2-leg parlays to amplify edge."
+          },
+          {
+            "day": 7,
+            "bankroll": 54.96,
+            "strategy": "Focus on high-edge opportunities with significant bankroll allocation to maximize returns."
+          },
+          {
+            "day": 24,
+            "bankroll": 50.59,
+            "strategy": "CONSENSUS DIVERGE Ministral 8B: Target high-variance alt spreads and player props in OKC and SAS games to exploit soft lines and leverage my specialty in player-influenced totals. Rescue mode demands aggressive swings on edges >5%."
+          }
+        ]
+      }
+    ],
+    [
+      "nvidia-llama70",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 18.94,
+        "bankroll_peak": 65.68,
+        "roi_final_pct": -81.1,
+        "roi_peak_pct": -34.3,
+        "drawdown_from_peak_pct": 71.2,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 65.68,
+            "strategy": "Focus on value hunting with a moderate risk approach, prioritizing model edges in moneylines and spreads, while considering selective 2-leg parlays to amplify edge."
+          },
+          {
+            "day": 7,
+            "bankroll": 54.49,
+            "strategy": "Focus on high-edge moneylines and spreads with moderate risk, while considering the council's plan to capitalize on spread and moneyline edges in early season with diversified parlay integration."
+          },
+          {
+            "day": 24,
+            "bankroll": 50.22,
+            "strategy": "I will focus on high-edge moneyline home bets and alternative spreads with a higher variance to recover my bankroll, considering the rescue mode I am in."
+          }
+        ]
+      }
+    ],
+    [
+      "gemini-anl",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 17.22,
+        "bankroll_peak": 65.02,
+        "roi_final_pct": -82.8,
+        "roi_peak_pct": -35.0,
+        "drawdown_from_peak_pct": 73.5,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 65.02,
+            "strategy": "Leveraging model-market divergence on totals and home-court moneyline edges while adhering to the 75% deployment mandate for collective compounding."
+          },
+          {
+            "day": 7,
+            "bankroll": 49.66,
+            "strategy": "CONSENSUS DIVERGE [Ministral 8B]: While the leader favors home moneylines, my RESCUE MODE status requires targeting high-variance alt-spreads and totals where model-to-market divergence exceeds 5%."
+          },
+          {
+            "day": 24,
+            "bankroll": 45.79,
+            "strategy": "CONSENSUS DIVERGE [ministral-8b]: While the leader favors home MLs, my rescue mode mandate requires high-variance alt-spreads where model win-probs for underdogs are undervalued by >5%."
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-dolphin3",
+      {
+        "n_days": 41,
+        "bankroll_start": 100.0,
+        "bankroll_final": 4.57,
+        "bankroll_peak": 100.0,
+        "roi_final_pct": -95.4,
+        "roi_peak_pct": 0.0,
+        "drawdown_from_peak_pct": 95.4,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 100.0,
+            "strategy": ""
+          },
+          {
+            "day": 3,
+            "bankroll": 87.76,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 games (ml_home)"
+          },
+          {
+            "day": 4,
+            "bankroll": 87.76,
+            "strategy": ""
+          }
+        ]
+      }
+    ]
+  ],
+  "agents_by_peak_bankroll": [
+    [
+      "mistral-ministral",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 2149.9,
+        "bankroll_peak": 10098.22,
+        "roi_final_pct": 2049.9,
+        "roi_peak_pct": 9998.2,
+        "drawdown_from_peak_pct": 78.7,
+        "peak_day": 12,
+        "peak_rationales": [
+          {
+            "day": 12,
+            "bankroll": 10098.22,
+            "strategy": "Deploy high\u2011edge moneylines aggressively while keeping cash low to meet the 75% deployment rule."
+          },
+          {
+            "day": 13,
+            "bankroll": 8741.24,
+            "strategy": "Focus on high\u2011edge away moneylines where model win probability exceeds market implied odds, using half\u2011Kelly sizing and a small parlay to boost ROI."
+          },
+          {
+            "day": 11,
+            "bankroll": 7517.41,
+            "strategy": "Focus on high\u2011edge away moneylines where model probability exceeds market odds, using half\u2011Kelly sizing and a small parlay for extra upside."
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-qwen4b",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 148.03,
+        "bankroll_peak": 588.98,
+        "roi_final_pct": 48.0,
+        "roi_peak_pct": 489.0,
+        "drawdown_from_peak_pct": 74.9,
+        "peak_day": 17,
+        "peak_rationales": [
+          {
+            "day": 17,
+            "bankroll": 588.98,
+            "strategy": "Focus on high\u2011edge moneyline on IND (away) and diversify with a modest spread on GSW and a team\u2011total prop on OKC to meet deployment targets."
+          },
+          {
+            "day": 16,
+            "bankroll": 493.56,
+            "strategy": "Deploy high\u2011edge moneylines across diverse games, focusing on model\u2011probability advantage while keeping cash low."
+          },
+          {
+            "day": 13,
+            "bankroll": 376.76,
+            "strategy": "Deploy 80% of bankroll across 5 allocations with half_kelly sizing, prioritizing model edges >4% on moneylines and team totals. Avoid consensus duplicates; leverage model disagreement on NOP@ORL and POR@UTA where market overrates home favorites."
+          }
+        ]
+      }
+    ],
+    [
+      "qwen-arb",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 107.33,
+        "bankroll_peak": 285.4,
+        "roi_final_pct": 7.3,
+        "roi_peak_pct": 185.4,
+        "drawdown_from_peak_pct": 62.4,
+        "peak_day": 24,
+        "peak_rationales": [
+          {
+            "day": 24,
+            "bankroll": 285.4,
+            "strategy": "{\"\":0}"
+          },
+          {
+            "day": 9,
+            "bankroll": 265.92,
+            "strategy": "Target undervalued total over bets where model predicts higher scoring than the market total, and combine two legs into a modest parlay for extra edge."
+          },
+          {
+            "day": 7,
+            "bankroll": 251.57,
+            "strategy": "Focus on the strongest positive edge (POR home ML) and supplement with value totals and a modest two\u2011leg parlay to boost ROI while meeting deployment targets."
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-qwen06",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 56.53,
+        "bankroll_peak": 263.43,
+        "roi_final_pct": -43.5,
+        "roi_peak_pct": 163.4,
+        "drawdown_from_peak_pct": 78.5,
+        "peak_day": 24,
+        "peak_rationales": [
+          {
+            "day": 24,
+            "bankroll": 263.43,
+            "strategy": "Deploy 85% of bankroll across 5+ tiny flat bets on high-edge categories (ml_home/away, spreads, halves) with at least one parlay to compound edge. Prioritize games with model edge >3% and avoid consensus moneylines where market already efficient."
+          },
+          {
+            "day": 23,
+            "bankroll": 211.95,
+            "strategy": "Wide flat-stake coverage with \u22655 tiny bets across high-edge categories. Prioritize parlays on DEN/NOP (-11.5) and MIN/LAL (-7.5) where model edges exceed 10%. Use eighth_kelly sizing to deploy \u226575% bankroll while maintaining low variance."
+          },
+          {
+            "day": 22,
+            "bankroll": 194.13,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 games (ml_home)"
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-gemma3",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 29.06,
+        "bankroll_peak": 139.54,
+        "roi_final_pct": -70.9,
+        "roi_peak_pct": 39.5,
+        "drawdown_from_peak_pct": 79.2,
+        "peak_day": 6,
+        "peak_rationales": [
+          {
+            "day": 6,
+            "bankroll": 139.54,
+            "strategy": "Deploy majority of bankroll on high\u2011edge home moneylines and a complementary spread, with a small parlay to boost upside while keeping cash minimal."
+          },
+          {
+            "day": 7,
+            "bankroll": 132.16,
+            "strategy": "Focus on the strongest positive edge (POR home moneyline) and complement with total over bets where the model predicts higher scoring than the market."
+          },
+          {
+            "day": 9,
+            "bankroll": 105.46,
+            "strategy": "Deploy majority to high\u2011edge moneylines, use a small parlay to boost upside while keeping cash low."
+          }
+        ]
+      }
+    ],
+    [
+      "llama-contra",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 35.02,
+        "bankroll_peak": 100.95,
+        "roi_final_pct": -65.0,
+        "roi_peak_pct": 1.0,
+        "drawdown_from_peak_pct": 65.3,
+        "peak_day": 7,
+        "peak_rationales": [
+          {
+            "day": 7,
+            "bankroll": 100.95,
+            "strategy": "Fade public consensus on overvalued favorites, targeting underdogs with points in games where media narrative and odds imply overreaction. Deploy majority of bankroll on spread_away and ml_away bets with contrarian edge."
+          },
+          {
+            "day": 0,
+            "bankroll": 100.0,
+            "strategy": ""
+          },
+          {
+            "day": 24,
+            "bankroll": 93.11,
+            "strategy": "CONSENSUS DIVERGE: Focusing on underdog value and contrarian plays where public sentiment is heavily skewed."
+          }
+        ]
+      }
+    ],
+    [
+      "nemotron-120b",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 35.02,
+        "bankroll_peak": 100.95,
+        "roi_final_pct": -65.0,
+        "roi_peak_pct": 1.0,
+        "drawdown_from_peak_pct": 65.3,
+        "peak_day": 7,
+        "peak_rationales": [
+          {
+            "day": 7,
+            "bankroll": 100.95,
+            "strategy": "Focus on value hunting with half-Kelly sizing on the top mispricings, prioritizing alt-markets and team totals where edges exceed 4%. Deploy at least 75% of bankroll across 3+ allocations."
+          },
+          {
+            "day": 0,
+            "bankroll": 100.0,
+            "strategy": ""
+          },
+          {
+            "day": 24,
+            "bankroll": 93.11,
+            "strategy": "{\"\":[]}"
+          }
+        ]
+      }
+    ],
+    [
+      "nvidia-minimax",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 35.02,
+        "bankroll_peak": 100.95,
+        "roi_final_pct": -65.0,
+        "roi_peak_pct": 1.0,
+        "drawdown_from_peak_pct": 65.3,
+        "peak_day": 7,
+        "peak_rationales": [
+          {
+            "day": 7,
+            "bankroll": 100.95,
+            "strategy": "<think>Let me analyze this carefully. I'm NVIDIA MiniMax M2.7 with $87.52 bankroll, -12.5% ROI, 19 total allocations, 12W-7L. I need to deploy at least 75% today (so max 25% cash held).\n\nLooking at th"
+          },
+          {
+            "day": 0,
+            "bankroll": 100.0,
+            "strategy": ""
+          },
+          {
+            "day": 24,
+            "bankroll": 93.11,
+            "strategy": "<think>Let me analyze today's games and make allocation decisions.\n\nMy state: $74.91 bankroll, 90 total allocations, 54W-36L, ROI -25.1%\nCouncil commit: \u226555% deployed today\n\nLooking at the 4 games:\n\n*"
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-small",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 30.66,
+        "bankroll_peak": 100.0,
+        "roi_final_pct": -69.3,
+        "roi_peak_pct": 0.0,
+        "drawdown_from_peak_pct": 69.3,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 100.0,
+            "strategy": ""
+          },
+          {
+            "day": 7,
+            "bankroll": 88.43,
+            "strategy": "Deploy 80% of bankroll across 5+ high-edge categories with half_kelly sizing, prioritizing alt-markets and halves where model edges exceed 4%. Use parlays sparingly to compound low-risk edges without overexposure."
+          },
+          {
+            "day": 24,
+            "bankroll": 81.49,
+            "strategy": "Deploy 85% of bankroll across 5+ high-edge alt-markets and halves to exploit model softness in niche categories, while reserving 15% for a high-confidence parlay to chase compounding ROI. Focus on games where model probability diverges sharply from market odds (edge >4%) and prioritize categories wi"
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-dolphin3",
+      {
+        "n_days": 41,
+        "bankroll_start": 100.0,
+        "bankroll_final": 4.57,
+        "bankroll_peak": 100.0,
+        "roi_final_pct": -95.4,
+        "roi_peak_pct": 0.0,
+        "drawdown_from_peak_pct": 95.4,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 100.0,
+            "strategy": ""
+          },
+          {
+            "day": 3,
+            "bankroll": 87.76,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 games (ml_home)"
+          },
+          {
+            "day": 4,
+            "bankroll": 87.76,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "gemini-tact",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 24.94,
+        "bankroll_peak": 76.5,
+        "roi_final_pct": -75.1,
+        "roi_peak_pct": -23.5,
+        "drawdown_from_peak_pct": 67.4,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 76.5,
+            "strategy": "Aggressive deployment focusing on first-half edges and schedule-based pace advantages to meet the 75% deployment mandate."
+          },
+          {
+            "day": 7,
+            "bankroll": 72.02,
+            "strategy": "CONSENSUS DIVERGE [Ministral 8B]: While the leader favors home moneylines, I am targeting first-half edges and schedule-based fatigue in back-to-back scenarios to maximize ROI from a lower bankroll position."
+          },
+          {
+            "day": 24,
+            "bankroll": 66.39,
+            "strategy": "CONSENSUS DIVERGE [Ministral 8B]: While the leader favors home MLs, I am targeting first-half edges and schedule-based fatigue in the GSW/MIL and MIA/SAS matchups to maximize ROI in rescue mode."
+          }
+        ]
+      }
+    ],
+    [
+      "qwen-quant",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 21.96,
+        "bankroll_peak": 66.83,
+        "roi_final_pct": -78.0,
+        "roi_peak_pct": -33.2,
+        "drawdown_from_peak_pct": 67.1,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 66.83,
+            "strategy": "Deploy 75% of bankroll on high-edge totals and moneylines, leveraging model-predicted pace advantages. Use half_kelly sizing for primary edges and quarter_kelly for secondary edges to balance risk."
+          },
+          {
+            "day": 7,
+            "bankroll": 63.44,
+            "strategy": "Focus on proportional_edge and half_kelly strategies for moneyline and spread bets where model edge exceeds 3%, avoiding low-edge games. Prioritize games with clear model-market discrepancies."
+          },
+          {
+            "day": 24,
+            "bankroll": 58.47,
+            "strategy": "RESCUE MODE: Target high-variance alt spreads and quarter totals with minimum 5% edge. Prioritize games with model-market divergence in pace and defensive metrics. Deploy 75-85% of bankroll across 3+ allocations to recover position."
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-large",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 23.18,
+        "bankroll_peak": 66.81,
+        "roi_final_pct": -76.8,
+        "roi_peak_pct": -33.2,
+        "drawdown_from_peak_pct": 65.3,
+        "peak_day": 7,
+        "peak_rationales": [
+          {
+            "day": 7,
+            "bankroll": 66.81,
+            "strategy": "Deploy capital on consensus edges in focus categories (ml_home, spread_away, total_over) with diversified parlays to maximize compounding. Prioritize games where model, odds, and matchup align, while avoiding over-exposure to single outcomes."
+          },
+          {
+            "day": 0,
+            "bankroll": 66.23,
+            "strategy": "Deploy capital on consensus edges in PHX ML and NOP spread_away, with a 2-leg parlay to amplify edge. Use quarter_kelly sizing to balance risk and reward while adhering to council focus strategies."
+          },
+          {
+            "day": 24,
+            "bankroll": 61.62,
+            "strategy": "CONSENSUS DIVERGE Ministral 8B: Focus on high-variance alt spreads and props to recover bankroll, targeting 5%+ edge in underutilized categories. Avoid base moneylines/spreads where market is efficient and peers are crowded."
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-medium",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 23.18,
+        "bankroll_peak": 66.81,
+        "roi_final_pct": -76.8,
+        "roi_peak_pct": -33.2,
+        "drawdown_from_peak_pct": 65.3,
+        "peak_day": 7,
+        "peak_rationales": [
+          {
+            "day": 7,
+            "bankroll": 66.81,
+            "strategy": "Diversified portfolio approach with a focus on moderate edges across multiple games and categories."
+          },
+          {
+            "day": 0,
+            "bankroll": 66.23,
+            "strategy": "Diversified flat allocations across uncorrelated categories in both games, prioritizing moderate edges in ml_home and total_over where model probabilities exceed market implied odds by \u22653%. Avoiding over-exposure to any single game or category type."
+          },
+          {
+            "day": 24,
+            "bankroll": 61.62,
+            "strategy": "Diversified portfolio with higher-variance bets to recover bankroll, focusing on moderate edges across different categories."
+          }
+        ]
+      }
+    ],
+    [
+      "nvidia-llama70",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 18.94,
+        "bankroll_peak": 65.68,
+        "roi_final_pct": -81.1,
+        "roi_peak_pct": -34.3,
+        "drawdown_from_peak_pct": 71.2,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 65.68,
+            "strategy": "Focus on value hunting with a moderate risk approach, prioritizing model edges in moneylines and spreads, while considering selective 2-leg parlays to amplify edge."
+          },
+          {
+            "day": 7,
+            "bankroll": 54.49,
+            "strategy": "Focus on high-edge moneylines and spreads with moderate risk, while considering the council's plan to capitalize on spread and moneyline edges in early season with diversified parlay integration."
+          },
+          {
+            "day": 24,
+            "bankroll": 50.22,
+            "strategy": "I will focus on high-edge moneyline home bets and alternative spreads with a higher variance to recover my bankroll, considering the rescue mode I am in."
+          }
+        ]
+      }
+    ],
+    [
+      "gemini-anl",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 17.22,
+        "bankroll_peak": 65.02,
+        "roi_final_pct": -82.8,
+        "roi_peak_pct": -35.0,
+        "drawdown_from_peak_pct": 73.5,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 65.02,
+            "strategy": "Leveraging model-market divergence on totals and home-court moneyline edges while adhering to the 75% deployment mandate for collective compounding."
+          },
+          {
+            "day": 7,
+            "bankroll": 49.66,
+            "strategy": "CONSENSUS DIVERGE [Ministral 8B]: While the leader favors home moneylines, my RESCUE MODE status requires targeting high-variance alt-spreads and totals where model-to-market divergence exceeds 5%."
+          },
+          {
+            "day": 24,
+            "bankroll": 45.79,
+            "strategy": "CONSENSUS DIVERGE [ministral-8b]: While the leader favors home MLs, my rescue mode mandate requires high-variance alt-spreads where model win-probs for underdogs are undervalued by >5%."
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-nemo",
+      {
+        "n_days": 44,
+        "bankroll_start": 100.0,
+        "bankroll_final": 19.03,
+        "bankroll_peak": 62.28,
+        "roi_final_pct": -81.0,
+        "roi_peak_pct": -37.7,
+        "drawdown_from_peak_pct": 69.4,
+        "peak_day": 0,
+        "peak_rationales": [
+          {
+            "day": 0,
+            "bankroll": 62.28,
+            "strategy": "Aggressive high-conviction allocator, focusing on split exposure between favorites and contrarian spreads with selective 2-leg parlays to amplify edge."
+          },
+          {
+            "day": 7,
+            "bankroll": 54.96,
+            "strategy": "Focus on high-edge opportunities with significant bankroll allocation to maximize returns."
+          },
+          {
+            "day": 24,
+            "bankroll": 50.59,
+            "strategy": "CONSENSUS DIVERGE Ministral 8B: Target high-variance alt spreads and player props in OKC and SAS games to exploit soft lines and leverage my specialty in player-influenced totals. Rescue mode demands aggressive swings on edges >5%."
+          }
+        ]
+      }
+    ]
+  ]
+}

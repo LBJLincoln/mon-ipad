@@ -1,0 +1,1030 @@
+{
+  "fleet": "pol",
+  "space": "LBJLincoln26/political-llm-trading-floor",
+  "n_days_analyzed": 32,
+  "n_agents": 17,
+  "agents_by_final_bankroll": [
+    [
+      "nvidia-llama70",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 95.19,
+        "bankroll_peak": 162.09,
+        "roi_final_pct": -4.8,
+        "roi_peak_pct": 62.1,
+        "drawdown_from_peak_pct": 41.3,
+        "peak_day": 19,
+        "peak_rationales": [
+          {
+            "day": 19,
+            "bankroll": 162.09,
+            "strategy": "Focusing on top 3 events with strongest signal strengths and clear sector mappings, prioritizing tech and energy sectors based on recent trends and insider trades."
+          },
+          {
+            "day": 22,
+            "bankroll": 161.84,
+            "strategy": "Diversified sector approach focusing on energy, finance, and healthcare with a long bias, driven by insider trades and regulatory arbitrage signals."
+          },
+          {
+            "day": 20,
+            "bankroll": 161.49,
+            "strategy": "Focus on healthcare and energy sectors with insider signals in tech-adjacent sectors, prioritizing XLV and XLE for stability."
+          }
+        ]
+      }
+    ],
+    [
+      "llama-contra",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 94.83,
+        "bankroll_peak": 161.25,
+        "roi_final_pct": -5.2,
+        "roi_peak_pct": 61.3,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 161.25,
+            "strategy": "Fade the crowded insider-trade signals in tech and finance while overweighting energy and healthcare based on strong insider alignment and sector trends. Deploy as a consensus diverge against peers likely piling into tech (AMZN) and finance (COIN) longs."
+          },
+          {
+            "day": 19,
+            "bankroll": 160.9,
+            "strategy": "Fade the crowded tech insider trades (META/MSFT) with short positions in XLK, while capitalizing on the underdog consumer discretionary signal (UBER) via XLY long. Align with council's healthcare focus (XLV) for stability."
+          },
+          {
+            "day": 20,
+            "bankroll": 160.9,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "qwen-quant",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "Focus on high-conviction insider trades in finance and healthcare sectors, leveraging regulatory-delta quantification and sector-beta matrices to maximize expected value. Deviate from tech due to weak signal strength and low edge."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "CONSENSUS DIVERGE NVIDIA Llama 3.3-70B: Prioritize healthcare (XLV) and energy (XLE) over tech insider trades due to stronger sector trends and regulatory clarity, while shorting tech (XLK) on weak historical performance and negative insider signal direction."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "qwen-arb",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 events (SPY long)"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 3 events (SPY long)"
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "gemini-anl",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "CONSENSUS AGREE [nvidia-llama70]: Prioritizing high-confidence insider signals in Energy and Finance while utilizing UNH healthcare strength to meet deployment mandates."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "CONSENSUS DIVERGE [nvidia-llama70]: While the leader favors tech longs, NOMOS42 models show p(long_wins) < 34% for META/MSFT insider trades with high signal_fade edge (76%); I will short tech and consumer discretion based on negative sector win rates and high Z-score deviations."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "gemini-tact",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "CONSENSUS AGREE [nvidia-llama70]: Following the leader's pivot toward high-conviction insider clusters in Finance and Energy while utilizing healthcare as a calendar-stable hedge."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "CONSENSUS AGREE [nvidia-llama70]: Leveraging high-conviction short signals on tech and consumer discretionary insider trades where NOMOS42 model shows >75% signal_fade edge."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-large",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "Focus on high-conviction insider trades with strong multi-agency corroboration, particularly in energy and healthcare sectors, while avoiding overcrowded tech signals."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "CONSENSUS DIVERGE NVIDIA Llama 3.3-70B: Prioritize short positions on META and MSFT due to strong insider trade signals indicating congressional short bias, while avoiding UBER due to weak sector trends in consumer discretionary. Rotate into XLE for macro tailwinds in energy."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-small",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "Focus on high-conviction insider trades with strong sector signals, prioritizing energy and healthcare where models show high win rates and low variance. Spread small stakes across multiple events to compound tiny edges while avoiding overconcentration in any single sector."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "Leverage congressional insider signals in tech via sector ETFs while avoiding overcrowded trades. Prioritize energy (XLE) for macro stability and healthcare (XLV) for defensive rotation, using insider trades in META/MSFT as secondary signals."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-ministral",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 events (SPY long)"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 3 events (SPY long)"
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "nemotron-120b",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 events (SPY long)"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 3 events (SPY long)"
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-qwen4b",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 events (SPY long)"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "Leverage insider signals in tech (META/MSFT) via sector ETFs while avoiding overcrowded trades. Rotate into healthcare (XLV) for stability and energy (XLE) for macro tailwinds, diversifying away from yesterday's consensus on SPY/COIN/META/AAPL."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "nvidia-minimax",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "<think>Let me analyze today's political events carefully. I need to:\n\n1. Ingest ALL 47 events + 7-day history\n2. Rank sectors by event density \u00d7 sentiment \u00d7 sector beta\n3. Pick 2-3 with highest compos"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "We are given the current state and the task for the day.\n Our bankroll: $148.60 (which is the same as the leaderboard shows for us, rank #12)\n We must allocate at least 75% of our bankroll (so at leas"
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-gemma3",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "Focus on high-conviction insider trades with strong model edges, prioritizing sectors with favorable recent trends (energy, healthcare) while avoiding overcrowded tech signals. Leverage congressional insider trades for regulatory arbitrage opportunities."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "Leverage congressional insider signals in energy (XLE) and healthcare (XLV) while avoiding crowded tech shorts. Use Handshake canon to propose a coalition with qwen-quant on META short for diversified sector exposure."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-qwen06",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "Prioritize insider-driven regulatory arbitrage in finance and healthcare sectors, leveraging strong Form 4 signals with 100% win probability models. Spread remaining capital across energy and tech for sector diversification while avoiding overconcentration in consumer-facing sectors with weak moment"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 3 events (SPY long)"
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-dolphin3",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 92.25,
+        "bankroll_peak": 156.9,
+        "roi_final_pct": -7.8,
+        "roi_peak_pct": 56.9,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 156.9,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 events (SPY long)"
+          },
+          {
+            "day": 19,
+            "bankroll": 156.55,
+            "strategy": "Leverage insider trade signals in tech while rotating into energy ETFs for momentum; prioritize XLE and XLV as high-conviction sector plays with clear agency signals."
+          },
+          {
+            "day": 20,
+            "bankroll": 156.55,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-medium",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 91.38,
+        "bankroll_peak": 155.39,
+        "roi_final_pct": -8.6,
+        "roi_peak_pct": 55.4,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 155.39,
+            "strategy": "Diversified portfolio approach focusing on sectors with strong momentum and insider trading signals."
+          },
+          {
+            "day": 21,
+            "bankroll": 155.04,
+            "strategy": "Diversified portfolio approach focusing on sectors with strong momentum and insider signals."
+          },
+          {
+            "day": 19,
+            "bankroll": 153.9,
+            "strategy": "Diversified portfolio approach focusing on healthcare and energy sectors with moderate allocations."
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-nemo",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 90.25,
+        "bankroll_peak": 153.45,
+        "roi_final_pct": -9.8,
+        "roi_peak_pct": 53.4,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 153.45,
+            "strategy": "Focus on high-signal insider trades and sectors with strong momentum, particularly in energy and healthcare."
+          },
+          {
+            "day": 19,
+            "bankroll": 153.1,
+            "strategy": "Focus on high-signal insider trades in the tech sector while also considering the strong momentum in the energy sector."
+          },
+          {
+            "day": 20,
+            "bankroll": 153.1,
+            "strategy": ""
+          }
+        ]
+      }
+    ]
+  ],
+  "agents_by_peak_bankroll": [
+    [
+      "nvidia-llama70",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 95.19,
+        "bankroll_peak": 162.09,
+        "roi_final_pct": -4.8,
+        "roi_peak_pct": 62.1,
+        "drawdown_from_peak_pct": 41.3,
+        "peak_day": 19,
+        "peak_rationales": [
+          {
+            "day": 19,
+            "bankroll": 162.09,
+            "strategy": "Focusing on top 3 events with strongest signal strengths and clear sector mappings, prioritizing tech and energy sectors based on recent trends and insider trades."
+          },
+          {
+            "day": 22,
+            "bankroll": 161.84,
+            "strategy": "Diversified sector approach focusing on energy, finance, and healthcare with a long bias, driven by insider trades and regulatory arbitrage signals."
+          },
+          {
+            "day": 20,
+            "bankroll": 161.49,
+            "strategy": "Focus on healthcare and energy sectors with insider signals in tech-adjacent sectors, prioritizing XLV and XLE for stability."
+          }
+        ]
+      }
+    ],
+    [
+      "llama-contra",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 94.83,
+        "bankroll_peak": 161.25,
+        "roi_final_pct": -5.2,
+        "roi_peak_pct": 61.3,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 161.25,
+            "strategy": "Fade the crowded insider-trade signals in tech and finance while overweighting energy and healthcare based on strong insider alignment and sector trends. Deploy as a consensus diverge against peers likely piling into tech (AMZN) and finance (COIN) longs."
+          },
+          {
+            "day": 19,
+            "bankroll": 160.9,
+            "strategy": "Fade the crowded tech insider trades (META/MSFT) with short positions in XLK, while capitalizing on the underdog consumer discretionary signal (UBER) via XLY long. Align with council's healthcare focus (XLV) for stability."
+          },
+          {
+            "day": 20,
+            "bankroll": 160.9,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "qwen-quant",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "Focus on high-conviction insider trades in finance and healthcare sectors, leveraging regulatory-delta quantification and sector-beta matrices to maximize expected value. Deviate from tech due to weak signal strength and low edge."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "CONSENSUS DIVERGE NVIDIA Llama 3.3-70B: Prioritize healthcare (XLV) and energy (XLE) over tech insider trades due to stronger sector trends and regulatory clarity, while shorting tech (XLK) on weak historical performance and negative insider signal direction."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "qwen-arb",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 events (SPY long)"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 3 events (SPY long)"
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "gemini-anl",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "CONSENSUS AGREE [nvidia-llama70]: Prioritizing high-confidence insider signals in Energy and Finance while utilizing UNH healthcare strength to meet deployment mandates."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "CONSENSUS DIVERGE [nvidia-llama70]: While the leader favors tech longs, NOMOS42 models show p(long_wins) < 34% for META/MSFT insider trades with high signal_fade edge (76%); I will short tech and consumer discretion based on negative sector win rates and high Z-score deviations."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "gemini-tact",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "CONSENSUS AGREE [nvidia-llama70]: Following the leader's pivot toward high-conviction insider clusters in Finance and Energy while utilizing healthcare as a calendar-stable hedge."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "CONSENSUS AGREE [nvidia-llama70]: Leveraging high-conviction short signals on tech and consumer discretionary insider trades where NOMOS42 model shows >75% signal_fade edge."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-large",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "Focus on high-conviction insider trades with strong multi-agency corroboration, particularly in energy and healthcare sectors, while avoiding overcrowded tech signals."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "CONSENSUS DIVERGE NVIDIA Llama 3.3-70B: Prioritize short positions on META and MSFT due to strong insider trade signals indicating congressional short bias, while avoiding UBER due to weak sector trends in consumer discretionary. Rotate into XLE for macro tailwinds in energy."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-small",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "Focus on high-conviction insider trades with strong sector signals, prioritizing energy and healthcare where models show high win rates and low variance. Spread small stakes across multiple events to compound tiny edges while avoiding overconcentration in any single sector."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "Leverage congressional insider signals in tech via sector ETFs while avoiding overcrowded trades. Prioritize energy (XLE) for macro stability and healthcare (XLV) for defensive rotation, using insider trades in META/MSFT as secondary signals."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-ministral",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 events (SPY long)"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 3 events (SPY long)"
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "nemotron-120b",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 events (SPY long)"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 3 events (SPY long)"
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-qwen4b",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 events (SPY long)"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "Leverage insider signals in tech (META/MSFT) via sector ETFs while avoiding overcrowded trades. Rotate into healthcare (XLV) for stability and energy (XLE) for macro tailwinds, diversifying away from yesterday's consensus on SPY/COIN/META/AAPL."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "nvidia-minimax",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "<think>Let me analyze today's political events carefully. I need to:\n\n1. Ingest ALL 47 events + 7-day history\n2. Rank sectors by event density \u00d7 sentiment \u00d7 sector beta\n3. Pick 2-3 with highest compos"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "We are given the current state and the task for the day.\n Our bankroll: $148.60 (which is the same as the leaderboard shows for us, rank #12)\n We must allocate at least 75% of our bankroll (so at leas"
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-gemma3",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "Focus on high-conviction insider trades with strong model edges, prioritizing sectors with favorable recent trends (energy, healthcare) while avoiding overcrowded tech signals. Leverage congressional insider trades for regulatory arbitrage opportunities."
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "Leverage congressional insider signals in energy (XLE) and healthcare (XLV) while avoiding crowded tech shorts. Use Handshake canon to propose a coalition with qwen-quant on META short for diversified sector exposure."
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-qwen06",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 93.92,
+        "bankroll_peak": 159.68,
+        "roi_final_pct": -6.1,
+        "roi_peak_pct": 59.7,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 159.68,
+            "strategy": "Prioritize insider-driven regulatory arbitrage in finance and healthcare sectors, leveraging strong Form 4 signals with 100% win probability models. Spread remaining capital across energy and tech for sector diversification while avoiding overconcentration in consumer-facing sectors with weak moment"
+          },
+          {
+            "day": 19,
+            "bankroll": 159.33,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 3 events (SPY long)"
+          },
+          {
+            "day": 20,
+            "bankroll": 159.33,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "selfhost-dolphin3",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 92.25,
+        "bankroll_peak": 156.9,
+        "roi_final_pct": -7.8,
+        "roi_peak_pct": 56.9,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 156.9,
+            "strategy": "fallback-injection: LLM silent, forcing 75% deploy on first 5 events (SPY long)"
+          },
+          {
+            "day": 19,
+            "bankroll": 156.55,
+            "strategy": "Leverage insider trade signals in tech while rotating into energy ETFs for momentum; prioritize XLE and XLV as high-conviction sector plays with clear agency signals."
+          },
+          {
+            "day": 20,
+            "bankroll": 156.55,
+            "strategy": ""
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-medium",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 91.38,
+        "bankroll_peak": 155.39,
+        "roi_final_pct": -8.6,
+        "roi_peak_pct": 55.4,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 155.39,
+            "strategy": "Diversified portfolio approach focusing on sectors with strong momentum and insider trading signals."
+          },
+          {
+            "day": 21,
+            "bankroll": 155.04,
+            "strategy": "Diversified portfolio approach focusing on sectors with strong momentum and insider signals."
+          },
+          {
+            "day": 19,
+            "bankroll": 153.9,
+            "strategy": "Diversified portfolio approach focusing on healthcare and energy sectors with moderate allocations."
+          }
+        ]
+      }
+    ],
+    [
+      "mistral-nemo",
+      {
+        "n_days": 32,
+        "bankroll_start": 100.0,
+        "bankroll_final": 90.25,
+        "bankroll_peak": 153.45,
+        "roi_final_pct": -9.8,
+        "roi_peak_pct": 53.4,
+        "drawdown_from_peak_pct": 41.2,
+        "peak_day": 22,
+        "peak_rationales": [
+          {
+            "day": 22,
+            "bankroll": 153.45,
+            "strategy": "Focus on high-signal insider trades and sectors with strong momentum, particularly in energy and healthcare."
+          },
+          {
+            "day": 19,
+            "bankroll": 153.1,
+            "strategy": "Focus on high-signal insider trades in the tech sector while also considering the strong momentum in the energy sector."
+          },
+          {
+            "day": 20,
+            "bankroll": 153.1,
+            "strategy": ""
+          }
+        ]
+      }
+    ]
+  ]
+}
