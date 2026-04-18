@@ -1,0 +1,57 @@
+name: TF Unstick (factory reboot on demand)
+
+on:
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: 'Comma-sep: nba,pol,pqtf (default all)'
+        required: false
+        default: 'nba,pol,pqtf'
+      factory:
+        description: 'factory_reboot=true clears /data cache'
+        required: false
+        default: 'true'
+
+permissions:
+  contents: read
+
+jobs:
+  unstick:
+    name: Factory reboot selected TFs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Install huggingface_hub
+        run: pip install -q huggingface_hub
+
+      - name: Factory reboot
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN_2 }}
+          TARGETS: ${{ inputs.targets }}
+          FACTORY: ${{ inputs.factory }}
+        run: |
+          python3 <<'PY'
+          import os
+          from huggingface_hub import HfApi
+
+          api = HfApi(token=os.environ['HF_TOKEN'])
+          factory = os.environ.get('FACTORY','true').lower() == 'true'
+          targets = [t.strip() for t in os.environ.get('TARGETS','nba,pol,pqtf').split(',') if t.strip()]
+
+          repos = {
+              'nba':  'LBJLincoln26/nba-llm-trading-floor',
+              'pol':  'LBJLincoln26/political-llm-trading-floor',
+              'pqtf': 'LBJLincoln26/political-quant-trading-floor',
+          }
+
+          for t in targets:
+              repo = repos.get(t)
+              if not repo:
+                  print(f"[unstick] unknown target: {t}")
+                  continue
+              try:
+                  api.restart_space(repo, factory_reboot=factory)
+                  print(f"[unstick] {t} → {repo} factory={factory} OK")
+              except Exception as e:
+                  print(f"[unstick] {t} → {repo} FAILED: {type(e).__name__}: {e}")
+          PY
