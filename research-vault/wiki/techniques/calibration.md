@@ -1,15 +1,16 @@
 # Calibration & Probability Scoring
 
-> Auto-compiled from 43 raw sources on 2026-04-17
+> Auto-compiled from 44 raw sources on 2026-04-18
 
 ## Overview
 
-This topic covers 43 research files spanning calibration & probability scoring.
+This topic covers 44 research files spanning calibration & probability scoring.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
 
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
+- **Diegetic Data Panels for Pixel-Art Multi-Agent Trading Floors** (3304 words) -- `raw/research/pixel-world-diegetic-panels-apr17.md`
 - **Dashboard Libraries & Agent Studio UI Patterns — April 2026 SOTA** (3295 words) -- `raw/research/dashboard-libraries-apr14-2026.md`
 - **Autonomous AI Organization Benchmark — April 14, 2026** (3224 words) -- `raw/research/autonomous-org-benchmark-apr14-2026.md`
 - **NBA Scientific Experiment Report** (2599 words) -- `raw/experiments/nba-experiment-2026-04-12.md`

@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 191 raw sources on 2026-04-17
+> Auto-compiled from 193 raw sources on 2026-04-18
 
 ## Overview
 
-This topic covers 191 research files spanning nba prediction & ml models.
+This topic covers 193 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -17,12 +17,14 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **2025-26 NBA Season — Agent PHI THEORIST** (9075 words) -- `raw/arena-docs/phi-season-2025-26.md`
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **Dashboard Redesign Research — Apr 14 2026** (3866 words) -- `raw/research/dashboard-redesign-apr14-2026.md`
+- **Diegetic Data Panels for Pixel-Art Multi-Agent Trading Floors** (3304 words) -- `raw/research/pixel-world-diegetic-panels-apr17.md`
 - **Dashboard Libraries & Agent Studio UI Patterns — April 2026 SOTA** (3295 words) -- `raw/research/dashboard-libraries-apr14-2026.md`
 - **Autonomous AI Organization Benchmark — April 14, 2026** (3224 words) -- `raw/research/autonomous-org-benchmark-apr14-2026.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
 - **NBA Scientific Experiment Report** (2599 words) -- `raw/experiments/nba-experiment-2026-04-12.md`
 - **NBA Scientific Experiment Report** (2594 words) -- `raw/experiments/nba-experiment-2026-04-11.md`
+- **SOTA Game-Like Dashboards + Pixel Agent Visualization — April 17, 2026** (2566 words) -- `raw/research/dashboard-pixel-sota-apr17.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
 - **Nomos42 Dashboard Overhaul — Ship Plan (Apr 16 2026)** (2074 words) -- `raw/research/dashboard-overhaul-plan-apr16.md`
@@ -146,6 +148,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Portfolio Optimization Deep Sweep — March 2026 Cycle 5** (299 words) -- `raw/research-analyst/research_march2026_cycle5_portfolio.md`
 - **project_hf_spaces_inventory** (297 words) -- `raw/agent-memory/repo-scout_project_hf_spaces_inventory.md`
 - **project_hf_spaces_inventory** (297 words) -- `raw/repo-scout/project_hf_spaces_inventory.md`
+- **dashboard-pixel-sota-research-apr17** (290 words) -- `raw/agent-memory/nomos-scout_project_dashboard_pixel_research_apr17.md`
 - **Nomos42 Weekly Research Digest** (277 words) -- `raw/data-research/weekly-digest-2026-03-31.md`
 - **Nomos42 Weekly Research Digest** (277 words) -- `raw/research/weekly-digest-2026-03-31.md`
 - **Political Trading Season 2025-26 -- Agent MIXTRAL ENSEMBLE** (276 words) -- `raw/arena-docs/political-mixtral-season-2025-26.md`
@@ -192,7 +195,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-14** (145 words) -- `raw/research/github-betting-scan-2026-04-14.md`
 - **Research Scan: github-betting-scan-2026-04-15** (145 words) -- `raw/research/github-betting-scan-2026-04-15.md`
 - **Research Scan: github-betting-scan-2026-04-16** (145 words) -- `raw/research/github-betting-scan-2026-04-16.md`
-- **Research Scan: github-scan-2026-04-17** (141 words) -- `raw/research/github-scan-2026-04-17.md`
 - **Research Scan: github-scan-2026-04-15** (140 words) -- `raw/research/github-scan-2026-04-15.md`
 - **Research Scan: github-scan-2026-04-16** (140 words) -- `raw/research/github-scan-2026-04-16.md`
 - **Research Scan: github-betting-scan-2026-04-17** (136 words) -- `raw/research/github-betting-scan-2026-04-17.md`

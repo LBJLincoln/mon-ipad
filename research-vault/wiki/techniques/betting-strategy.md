@@ -1,10 +1,10 @@
 # Betting Strategy & Bankroll
 
-> Auto-compiled from 141 raw sources on 2026-04-17
+> Auto-compiled from 142 raw sources on 2026-04-18
 
 ## Overview
 
-This topic covers 141 research files spanning betting strategy & bankroll.
+This topic covers 142 research files spanning betting strategy & bankroll.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -20,6 +20,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **2025-26 NBA Season — Agent PHI THEORIST** (9075 words) -- `raw/arena-docs/phi-season-2025-26.md`
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **Dashboard Redesign Research — Apr 14 2026** (3866 words) -- `raw/research/dashboard-redesign-apr14-2026.md`
+- **Diegetic Data Panels for Pixel-Art Multi-Agent Trading Floors** (3304 words) -- `raw/research/pixel-world-diegetic-panels-apr17.md`
 - **Dashboard Libraries & Agent Studio UI Patterns — April 2026 SOTA** (3295 words) -- `raw/research/dashboard-libraries-apr14-2026.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`

@@ -1,17 +1,19 @@
 # Genetic Algorithm & Evolution
 
-> Auto-compiled from 80 raw sources on 2026-04-17
+> Auto-compiled from 82 raw sources on 2026-04-18
 
 ## Overview
 
-This topic covers 80 research files spanning genetic algorithm & evolution.
+This topic covers 82 research files spanning genetic algorithm & evolution.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
 
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **Dashboard Redesign Research — Apr 14 2026** (3866 words) -- `raw/research/dashboard-redesign-apr14-2026.md`
+- **Diegetic Data Panels for Pixel-Art Multi-Agent Trading Floors** (3304 words) -- `raw/research/pixel-world-diegetic-panels-apr17.md`
 - **Autonomous AI Organization Benchmark — April 14, 2026** (3224 words) -- `raw/research/autonomous-org-benchmark-apr14-2026.md`
+- **SOTA Game-Like Dashboards + Pixel Agent Visualization — April 17, 2026** (2566 words) -- `raw/research/dashboard-pixel-sota-apr17.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
 - **Nomos42 Dashboard Overhaul — Ship Plan (Apr 16 2026)** (2074 words) -- `raw/research/dashboard-overhaul-plan-apr16.md`

@@ -1,16 +1,17 @@
 # Political Alpha & Prediction Markets
 
-> Auto-compiled from 71 raw sources on 2026-04-17
+> Auto-compiled from 72 raw sources on 2026-04-18
 
 ## Overview
 
-This topic covers 71 research files spanning political alpha & prediction markets.
+This topic covers 72 research files spanning political alpha & prediction markets.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Mutation Operators, Platt Scaling, Political Alpha.
 
 ## Sources
 
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
 - **Dashboard Redesign Research — Apr 14 2026** (3866 words) -- `raw/research/dashboard-redesign-apr14-2026.md`
+- **Diegetic Data Panels for Pixel-Art Multi-Agent Trading Floors** (3304 words) -- `raw/research/pixel-world-diegetic-panels-apr17.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
 - **Nomos42 Dashboard Overhaul — Ship Plan (Apr 16 2026)** (2074 words) -- `raw/research/dashboard-overhaul-plan-apr16.md`

@@ -1,10 +1,10 @@
 # Infrastructure & Compute
 
-> Auto-compiled from 103 raw sources on 2026-04-17
+> Auto-compiled from 104 raw sources on 2026-04-18
 
 ## Overview
 
-This topic covers 103 research files spanning infrastructure & compute.
+This topic covers 104 research files spanning infrastructure & compute.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -13,6 +13,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Dashboard Redesign Research — Apr 14 2026** (3866 words) -- `raw/research/dashboard-redesign-apr14-2026.md`
 - **Dashboard Libraries & Agent Studio UI Patterns — April 2026 SOTA** (3295 words) -- `raw/research/dashboard-libraries-apr14-2026.md`
 - **Autonomous AI Organization Benchmark — April 14, 2026** (3224 words) -- `raw/research/autonomous-org-benchmark-apr14-2026.md`
+- **SOTA Game-Like Dashboards + Pixel Agent Visualization — April 17, 2026** (2566 words) -- `raw/research/dashboard-pixel-sota-apr17.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
 - **Nomos42 Dashboard Overhaul — Ship Plan (Apr 16 2026)** (2074 words) -- `raw/research/dashboard-overhaul-plan-apr16.md`

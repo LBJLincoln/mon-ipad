@@ -1,15 +1,16 @@
 # Data Sources & APIs
 
-> Auto-compiled from 94 raw sources on 2026-04-17
+> Auto-compiled from 91 raw sources on 2026-04-18
 
 ## Overview
 
-This topic covers 94 research files spanning data sources & apis.
+This topic covers 91 research files spanning data sources & apis.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
 
 - **2026 SOTA Trading Floor Research** (5344 words) -- `raw/research/2026-sota-trading-floor.md`
+- **Diegetic Data Panels for Pixel-Art Multi-Agent Trading Floors** (3304 words) -- `raw/research/pixel-world-diegetic-panels-apr17.md`
 - **Autonomous AI Organization Benchmark — April 14, 2026** (3224 words) -- `raw/research/autonomous-org-benchmark-apr14-2026.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
@@ -92,17 +93,13 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-scan-2026-04-04** (13 words) -- `raw/research/arxiv-scan-2026-04-04.md`
 - **Research Scan: arxiv-scan-2026-04-05** (13 words) -- `raw/research/arxiv-scan-2026-04-05.md`
 - **Research Scan: arxiv-scan-2026-04-06** (13 words) -- `raw/research/arxiv-scan-2026-04-06.md`
-- **Research Scan: arxiv-scan-2026-04-09** (13 words) -- `raw/research/arxiv-scan-2026-04-09.md`
-- **Research Scan: arxiv-scan-2026-04-10** (13 words) -- `raw/research/arxiv-scan-2026-04-10.md`
 - **Research Scan: arxiv-scan-2026-04-11** (13 words) -- `raw/research/arxiv-scan-2026-04-11.md`
 - **Research Scan: arxiv-scan-2026-04-12** (13 words) -- `raw/research/arxiv-scan-2026-04-12.md`
 - **Research Scan: arxiv-scan-2026-04-13** (13 words) -- `raw/research/arxiv-scan-2026-04-13.md`
 - **Research Scan: arxiv-scan-2026-04-14** (13 words) -- `raw/research/arxiv-scan-2026-04-14.md`
 - **Research Scan: arxiv-scan-2026-04-15** (13 words) -- `raw/research/arxiv-scan-2026-04-15.md`
-- **Research Scan: github-scan-2026-04-08** (13 words) -- `raw/research/github-scan-2026-04-08.md`
-- **Research Scan: github-scan-2026-04-09** (13 words) -- `raw/research/github-scan-2026-04-09.md`
-- **Research Scan: github-scan-2026-04-10** (13 words) -- `raw/research/github-scan-2026-04-10.md`
 - **Research Scan: github-scan-2026-04-12** (13 words) -- `raw/research/github-scan-2026-04-12.md`
+- **Research Scan: github-scan-2026-04-17** (13 words) -- `raw/research/github-scan-2026-04-17.md`
 
 ## Key Findings
 
