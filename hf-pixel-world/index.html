@@ -276,7 +276,7 @@
         <button data-room="evolution">EVOLUTION 🧬</button>
         <button data-room="councils">COUNCILS ⚖</button>
       </div>
-      <div><span class="tick" id="hud-tick">· booting</span> <span style="font-family:'Press Start 2P',monospace;color:var(--pk-yellow);text-shadow:1px 1px 0 var(--pk-ink);font-size:8px;margin-left:6px;letter-spacing:0.14em">v2.16 · pokémon unified</span></div>
+      <div><span class="tick" id="hud-tick">· booting</span> <span style="font-family:'Press Start 2P',monospace;color:var(--pk-yellow);text-shadow:1px 1px 0 var(--pk-ink);font-size:8px;margin-left:6px;letter-spacing:0.14em">v2.17 · pqtf fleet</span></div>
     </div>
 <!-- v2.12: minimap deleted · v2.15: bet-ticker → Pokémon B/W dialogue box -->
     <div id="poke-dialog">
@@ -2304,14 +2304,36 @@ function renderEvolution() {
 function renderLeaderboard() {
   const board = DIEGETIC.leaderboard; if (!board) return;
   _clearLines(board);
+
+  // PQTF banner: $100K×6 derivatives fleet ($600K start, target 10× by Nov 3).
+  let startIdx = 0;
+  if (LATEST_PQTF && LATEST_PQTF.agents) {
+    const ag = LATEST_PQTF.agents;
+    const total = Object.values(ag).reduce((s,a) => s + (a.bankroll || 0), 0);
+    const best = Object.entries(ag).sort((a,b) => (b[1].bankroll||0) - (a[1].bankroll||0))[0];
+    const bestName = best ? best[0].slice(0,10) : "—";
+    const bestBr = best ? (best[1].bankroll || 0) : 0;
+    const fleetRoi = ((total - 600000) / 600000) * 100;
+    const d = LATEST_PQTF.days_processed || 0, dt = LATEST_PQTF.days_total || 50;
+    if (board.lines[0]) {
+      board.lines[0].text = `💼 PQTF d${d}/${dt} · fleet $${(total/1000).toFixed(0)}K ${fleetRoi>=0?"+":""}${fleetRoi.toFixed(0)}% · top ${bestName} $${(bestBr/1000).toFixed(0)}K`;
+      board.lines[0].style.fill = 0xffd700;
+      startIdx = 1;
+    }
+  }
+
   const traders = AGENTS.filter(a => (a.kind === "nba" || a.kind === "political") && a.data && typeof a.data.bankroll === "number");
   traders.sort((a,b) => (b.data.bankroll||0) - (a.data.bankroll||0));
-  if (!traders.length) { board.lines[0].text = "— waiting for trading floors —"; board.lines[0].style.fill = 0x5b6478; return; }
-  for (let i = 0; i < Math.min(traders.length, board.lines.length); i++) {
+  if (!traders.length && startIdx === 0) {
+    board.lines[0].text = "— waiting for trading floors —";
+    board.lines[0].style.fill = 0x5b6478;
+    return;
+  }
+  for (let i = 0; i < Math.min(traders.length, board.lines.length - startIdx); i++) {
     const a = traders[i]; const br = a.data.bankroll || 0; const roi = br - 100;
     const medal = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i+1}`;
     const tag = a.kind === "nba" ? "N" : "P";
-    const line = board.lines[i];
+    const line = board.lines[i + startIdx];
     line.text = `${medal} [${tag}] ${a.label.slice(0,11).padEnd(11," ")} $${br.toFixed(0).padStart(5," ")} ${roi>=0?"+":""}${roi.toFixed(1)}%`;
     line.style.fill = i === 0 ? 0xffd700 : (roi >= 0 ? 0x50fa7b : 0xff5c5c);
   }
@@ -2328,7 +2350,7 @@ function escapeHtml(s) { return String(s==null?"":s).replace(/[&<>"']/g, c => ({
 const categoryCounter = {};  // rolling count across both TFs
 // v2.16: remember latest TF status so the warming-up fallback (no day-decisions yet)
 // can still fill the dialogue box with live signals (fleet_leader, council_plan, llm_calls).
-let LATEST_NBA = null, LATEST_POL = null;
+let LATEST_NBA = null, LATEST_POL = null, LATEST_PQTF = null;
 
 async function refresh() {
   document.getElementById("hud-tick").textContent = "· fetching…";
@@ -2428,6 +2450,10 @@ async function refresh() {
       }
     }
   }
+
+  // PQTF (derivatives day-trading fleet) — fleet-level banner only; agents render via leaderboard
+  const pqtf = await fetchJSON(ENDPOINTS.pqtf);
+  LATEST_PQTF = pqtf;
 
   // Day-decisions → per-agent LLM reasoning + categories aggregation
   async function wireDayDecisions(summaryUrl, detailUrl, kind) {
