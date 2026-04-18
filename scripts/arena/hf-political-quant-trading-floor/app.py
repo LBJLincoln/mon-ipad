@@ -75,7 +75,62 @@ except Exception:
     _hub = None
 
 
-def run_experiment(max_days: Optional[int] = None):
+def _resume_from_hub():
+    """Pull persisted day-NNN.json from the Space repo and replay into agents_state.
+    Returns (agents_state, days_done, last_date, resumed_count) or (None, 0, '', 0) if nothing to resume.
+    """
+    if not _hub:
+        return None, 0, "", 0
+    try:
+        files = _hub.list_repo_files(repo_id=HF_REPO_ID, repo_type="space")
+    except Exception as e:
+        print(f"[resume] list_repo_files failed: {e}")
+        return None, 0, "", 0
+
+    day_files = sorted(f for f in files if f.startswith("data/decisions/day-") and f.endswith(".json"))
+    if not day_files:
+        return None, 0, "", 0
+
+    agents_state = {a["tid"]: {"bankroll": STARTING_BANKROLL, "wins": 0, "losses": 0}
+                    for a in AGENTS}
+    last_date = ""
+    resumed = 0
+    for rel_path in day_files:
+        try:
+            local = _hub.hf_hub_download(repo_id=HF_REPO_ID, repo_type="space",
+                                         filename=rel_path, token=HF_TOKEN)
+            daylog = json.loads(Path(local).read_text())
+        except Exception as e:
+            print(f"[resume] skip {rel_path}: {e}")
+            continue
+
+        for sess in daylog.get("sessions", []):
+            for pos in sess.get("positions", []):
+                tid = pos.get("tid")
+                if tid not in agents_state:
+                    continue
+                pnl = float(pos.get("pnl", 0) or 0)
+                agents_state[tid]["bankroll"] += pnl
+                if pnl > 0:
+                    agents_state[tid]["wins"] += 1
+                elif pnl < 0:
+                    agents_state[tid]["losses"] += 1
+
+        local_copy = DECISIONS_DIR / Path(rel_path).name
+        try:
+            local_copy.write_text(Path(local).read_text())
+        except Exception:
+            pass
+
+        last_date = daylog.get("date", last_date)
+        resumed += 1
+
+    days_done = int(day_files[-1].split("day-")[1].split(".")[0]) + 1
+    print(f"[resume] restored {resumed} day-logs, days_done={days_done}, last_date={last_date}")
+    return agents_state, days_done, last_date, resumed
+
+
+def run_experiment(max_days: Optional[int] = None, resume: bool = True):
     global _running
     _running = True
     _stop_event.clear()
@@ -86,14 +141,34 @@ def run_experiment(max_days: Optional[int] = None):
         if max_days:
             date_list = date_list[:max_days]
 
-        agents_state = {a["tid"]: {"bankroll": STARTING_BANKROLL, "wins": 0, "losses": 0}
-                        for a in AGENTS}
+        resumed_state, days_done, last_date, resumed_n = (None, 0, "", 0)
+        if resume:
+            resumed_state, days_done, last_date, resumed_n = _resume_from_hub()
+
+        if resumed_state is not None and days_done >= len(date_list):
+            print(f"[exp] already complete ({days_done}/{len(date_list)} days on hub) — nothing to do")
+            _state["agents"] = resumed_state
+            _state["total_days"] = len(date_list)
+            _state["days_done"] = days_done
+            _state["last_date"] = last_date
+            _state["completed_at"] = datetime.now(timezone.utc).isoformat()
+            return
+
+        if resumed_state is not None:
+            agents_state = resumed_state
+            _state["resumed_from_day"] = days_done
+        else:
+            agents_state = {a["tid"]: {"bankroll": STARTING_BANKROLL, "wins": 0, "losses": 0}
+                            for a in AGENTS}
+
         _state["agents"] = agents_state
         _state["started_at"] = datetime.now(timezone.utc).isoformat()
         _state["total_days"] = len(date_list)
-        _state["days_done"] = 0
+        _state["days_done"] = days_done
+        _state["last_date"] = last_date
 
-        for d_idx, date in enumerate(date_list):
+        for d_idx in range(days_done, len(date_list)):
+            date = date_list[d_idx]
             if _stop_event.is_set():
                 print(f"[exp] stop at day {d_idx}")
                 break
@@ -115,7 +190,7 @@ def run_experiment(max_days: Optional[int] = None):
                 day_path.write_text(json.dumps(day_log, indent=2, default=str))
                 STATE_PATH.write_text(json.dumps(_state, indent=2, default=str))
 
-            if _hub and (d_idx + 1) % 5 == 0:
+            if _hub:
                 try:
                     _hub.upload_file(path_or_fileobj=str(day_path),
                                      path_in_repo=f"data/decisions/day-{d_idx:03d}.json",
@@ -135,6 +210,27 @@ def run_experiment(max_days: Optional[int] = None):
     finally:
         _running = False
         STATE_PATH.write_text(json.dumps(_state, indent=2, default=str))
+
+
+def _auto_resume_boot():
+    """Called on module import: if AUTO_RESUME=1 and hub has a partial run, resume it."""
+    if _running:
+        print("[boot] experiment already running — skip auto-resume")
+        return
+    if os.environ.get("AUTO_RESUME", "1") not in ("1", "true", "True"):
+        print("[boot] AUTO_RESUME disabled — idle")
+        return
+    try:
+        events = load_events("data/political_events.json")
+        total = len(all_days(events))
+    except Exception as e:
+        print(f"[boot] cannot load events: {e}")
+        return
+    target = int(os.environ.get("AUTO_RESUME_MAX_DAYS", str(total)))
+    print(f"[boot] auto-resume dispatched target={target} days (AUTO_RESUME=1)")
+    threading.Thread(target=run_experiment,
+                     kwargs={"max_days": target, "resume": True},
+                     daemon=True).start()
 
 
 # FastAPI
@@ -210,8 +306,11 @@ async def api_run(request: Request):
     except Exception:
         body = {}
     max_days = body.get("max_days")
-    threading.Thread(target=run_experiment, kwargs={"max_days": max_days}, daemon=True).start()
-    return JSONResponse({"started": True, "max_days": max_days})
+    resume = bool(body.get("resume", True))
+    threading.Thread(target=run_experiment,
+                     kwargs={"max_days": max_days, "resume": resume},
+                     daemon=True).start()
+    return JSONResponse({"started": True, "max_days": max_days, "resume": resume})
 
 @app.post("/api/stop")
 def api_stop():
@@ -281,6 +380,14 @@ with gr.Blocks(title="Nomos42 Political Quant TF") as demo:
     demo.load(ui_status, [], [status_out])
 
 app = gr.mount_gradio_app(app, demo, path="/")
+
+# Fire auto-resume after FastAPI+Gradio are mounted. Idempotent: if _running is
+# already true (rare double-import), the thread early-returns via the `if _running` guard
+# inside run_experiment's start path — actually we rely on external caller check.
+try:
+    _auto_resume_boot()
+except Exception as e:
+    print(f"[boot] auto-resume dispatch failed: {e}")
 
 if __name__ == "__main__":
     import uvicorn
