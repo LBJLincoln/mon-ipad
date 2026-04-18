@@ -50,6 +50,7 @@ import math
 
 # ── LANGFUSE OBSERVABILITY (non-blocking — never delays TF startup) ────────
 _langfuse = None
+_langfuse_errors: List[str] = []
 try:
     from langfuse import Langfuse
     _lf_pub = os.environ.get("LANGFUSE_PUBLIC_KEY", "")
@@ -553,14 +554,14 @@ PROVIDERS = {
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "qwen-3-235b-a22b-instruct-2507",
         "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 30,
     },
     "cerebras:llama3.1-8b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "llama3.1-8b",
         "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 30,
     },
     # Google Gemini 3 Flash (key 2) — thinking model, needs big token budget +
@@ -569,7 +570,7 @@ PROVIDERS = {
         "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent",
         "model": "gemini-3-flash-preview",
         "key_env": "GOOGLE_API_KEY_2",
-        "max_tokens": 1500,
+        "max_tokens": 2500,
         "rpm": 14,
     },
     # Mistral la Plateforme (free tier — added 2026-04-14)
@@ -577,35 +578,35 @@ PROVIDERS = {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "mistral-large-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 20,
     },
     "mistral:medium": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "mistral-medium-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 20,
     },
     "mistral:small": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "mistral-small-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 20,
     },
     "mistral:nemo": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "open-mistral-nemo",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 20,
     },
     "mistral:ministral-8b": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "ministral-8b-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 20,
     },
     # OpenRouter free models — diversify away from Mistral rate limits
@@ -613,14 +614,14 @@ PROVIDERS = {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "google/gemma-4-31b-it:free",
         "key_env": "OPENROUTER_KEY_BARTOLI",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 12,
     },
     "openrouter:gpt-oss-120b": {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "openai/gpt-oss-120b:free",
         "key_env": "OPENROUTER_KEY_BARTOLI",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 12,
     },
     # OpenRouter Nemotron 120B free — only free-tier model that reliably responds
@@ -629,7 +630,7 @@ PROVIDERS = {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "nvidia/nemotron-3-super-120b-a12b:free",
         "key_env": "OPENROUTER_KEY_BARTOLI",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 12,
     },
     # Self-hosted CPU LLM on Nomos42 HF Space — no auth, no quota.
@@ -680,28 +681,28 @@ PROVIDERS = {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "minimaxai/minimax-m2.7",
         "key_env": "NVIDIA_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 40,
     },
     "nvidia:minimax-m2.7-alt": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "minimaxai/minimax-m2.7",
         "key_env": "NVIDIA_API_KEY_2",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 40,
     },
     "nvidia:llama-3.3-70b": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "meta/llama-3.3-70b-instruct",
         "key_env": "NVIDIA_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 40,
     },
     "nvidia:nemotron-70b": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
         "key_env": "NVIDIA_API_KEY",
-        "max_tokens": 1200,
+        "max_tokens": 2000,
         "rpm": 40,
     },
 }
@@ -1198,8 +1199,9 @@ def _call_llm(provider: str, system_prompt: str, user_prompt: str,
                 output=_text[:500] if _text else None,
                 usage={"total_tokens": len(system_prompt)//4 + len(user_prompt)//4 + (len(_text)//4 if _text else 0)},
             )
-        except Exception:
-            pass
+        except Exception as _lf_err:
+            if len(_langfuse_errors) < 20:
+                _langfuse_errors.append(f"{provider}: {type(_lf_err).__name__}: {str(_lf_err)[:200]}")
 
     return _text
 
@@ -1707,7 +1709,7 @@ Values must be >= {COUNCIL_MIN_COMMIT_PER_AGENT} and <= 0.85."""
         "focus_categories": [str(c)[:40] for c in focus_cats[:6]],
         "per_agent_commit_pct": clean_commits,
         "shared_notes": str(plan.get("shared_notes", ""))[:500],
-        "raw": raw[:400],
+        "raw": raw[:3000],
     }
 
 
@@ -2947,6 +2949,13 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         with ThreadPoolExecutor(max_workers=_max_workers) as _pool:
             _responses = dict(_pool.map(_agent_llm_worker, list(TRADERS.items())))
 
+        # Flush Langfuse batch so traces land before the day takes minutes more.
+        if _langfuse:
+            try:
+                _langfuse.flush()
+            except Exception:
+                pass
+
         # PHASE 2 — sequential resolution (shared state mutations stay ordered).
         for tid, cfg in TRADERS.items():
             provider = cfg["provider"]
@@ -3001,12 +3010,15 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "council_commit_target": day_council_plan.get("per_agent_commit_pct", {}).get(tid, 0.55),
                 "council_alignment": (parsed or {}).get("council_alignment"),
                 "games_considered": (parsed or {}).get("games_considered") or [],
-                "raw_preview": (raw_response or "")[:400],
+                "raw_preview": (raw_response or "")[:3000],
             }
 
-            # Mech D — stash coalition proposal even if allocations are empty
+            # Mech D — stash coalition proposal even if allocations are empty.
+            # Also propagate to day_log for scientific observability (was missing
+            # pre-2026-04-18 → coalition_proposal always None in day-XXX.json).
             if parsed and parsed.get("coalition_proposal"):
                 day_proposals[tid] = parsed["coalition_proposal"]
+                day_log["coalition_proposal"] = parsed["coalition_proposal"]
 
             if parsed and parsed.get("allocations"):
                 day_log["day_strategy"] = parsed["day_strategy"]
