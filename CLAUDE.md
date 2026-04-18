@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v20 — Department Forge (9 depts) + Trading Floor v3 (12 real LLM agents) + 21 Evolution Islands (13 NBA + 8 Political) | Updated: 2026-04-15
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-04-18
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -278,14 +278,27 @@ Starting capital: $100,000 virtual | Daily rebalancing
 | Batch execution, search | Sonnet 4.6 | Agent(model: "sonnet") |
 | Codebase exploration | Haiku 4.5 | Agent(model: "haiku") |
 
-
-## Forge v19 — 3 Layers × 9 Departments (2026-04-04T08:00:00Z)
+## The Trading Floor Crew — 14 Agents × 9 Departments (v3, 2026-04-18)
 
 ```
 L1 STRATEGIC:  Claude Code CLI + User (vision, milestones, decisions)
-L2 APPLICATION: D1 Research | D2 Engineering | D3 Evolution | D4 Product | D5 Business | D6 Evaluation | D9 Cross-Repo
-L3 LOGISTICS:   D7 Infra | D8 Finance
+    └── THE BOSS (orchestrator, dispatches all 13 agents)
+
+L2 APPLICATION:
+    D1 Research:    HAWKEYE (daily recon) + DR FRANKENSTEIN (engine impl)
+    D2 Engineering: THE BLACKSMITH (council Karpathy loops)
+    D3 Evolution:   SWISH (NBA S10-S22) + LOBBYIST (Political P1-P8)
+    D4 Product:     THE HERALD (Telegram publisher) + PIXEL (visual QA)
+    D5 Business:    THE ACCOUNTANT (Stripe/Whop/LS revenue)
+    D6 Evaluation:  INTERNAL AFFAIRS (scientific integrity audit)
+    D9 Cross-Repo:  LAUNCHPAD (CI/CD + deploy orchestration)
+
+L3 LOGISTICS:
+    D7 Infra:       SWITCHBOARD (LLM gateway keepalive) + THE PLUMBER (data pipelines)
+    D8 Finance:     THE TICKER (live odds, CLV, steam moves)
 ```
+
+Agent roster: `.claude/agents/ROSTER.md` (v3 — full mapping with cron schedule)
 
 Each department runs a Karpathy autoresearch loop:
 - SCAN → PROPOSE → EXECUTE (5-min) → EVALUATE → KEEP/REVERT

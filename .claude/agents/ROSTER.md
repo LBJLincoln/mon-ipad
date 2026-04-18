@@ -1,64 +1,94 @@
-# Nomos42 Sub-agent Roster — v2 (2026-04-15)
+# Nomos42 Agent Roster — v3 "The Trading Floor Crew" (2026-04-18)
 
 **Principle:** one agent, one domain, one repo, one cred set, one cron slot.
-No overlap. Every agent knows exactly which HF account / API key to use and
-which repo it can write to. Orchestrator dispatches — never duplicates.
+No overlap. Every agent knows exactly which HF account / API key to use.
+THE BOSS dispatches — never duplicates.
+
+## The Crew — 14 Agents × 9 Departments × 4 Tracks
+
+| # | Codename | Old Name | Dept | Track | What they do |
+|---|----------|----------|------|-------|-------------|
+| 1 | **THE BOSS** | nomos-brain | ALL | ALL | Floor manager — dispatches all 13 agents |
+| 2 | **SWISH** | nomos-hoops | D3 Evolution | T1 SCIENCE | NBA islands S10-S22 |
+| 3 | **LOBBYIST** | nomos-alpha | D3 Evolution | T1 SCIENCE | Political islands P1-P8 |
+| 4 | **HAWKEYE** | nomos-scout | D1 Research | T1 SCIENCE | Daily arXiv/GitHub/web recon |
+| 5 | **DR FRANKENSTEIN** | nomos-lab | D1 Research | T1 SCIENCE | Implement research → engine.py |
+| 6 | **THE BLACKSMITH** | nomos-forge | D2 Engineering | T2 PLATFORM | Department council Karpathy loops |
+| 7 | **SWITCHBOARD** | nomos-llm | D7 Infra | T2 PLATFORM | LLM gateway + TF + pixel keepalive |
+| 8 | **INTERNAL AFFAIRS** | nomos-audit | D6 Evaluation | T1 SCIENCE | Scientific integrity watchdog |
+| 9 | **THE TICKER** | nomos-tape | D8 Finance | T4 CAPITAL | Live odds scanner, CLV, steam moves |
+| 10 | **THE HERALD** | nomos-wire | D4 Product | T3 MARKET | Telegram publisher + paywall |
+| 11 | **THE ACCOUNTANT** | nomos-pay | D5 Business | T3 MARKET | Stripe/Whop/LS revenue pipeline |
+| 12 | **PIXEL** | — (new) | D4 Product | T3 MARKET | Dashboard + /world visual QA |
+| 13 | **THE PLUMBER** | — (new) | D7 Infra | T2 PLATFORM | Data pipeline + ETL health |
+| 14 | **LAUNCHPAD** | — (new) | D9 Cross-repo | T2 PLATFORM | CI/CD + deploy orchestration |
+
+## Department → Agent Mapping
+
+| Dept | Name | Agents | Mission |
+|------|------|--------|---------|
+| D1 | RESEARCH | HAWKEYE, DR FRANKENSTEIN | Find + implement SOTA techniques |
+| D2 | ENGINEERING | THE BLACKSMITH | Karpathy loops on 8 councils |
+| D3 | EVOLUTION | SWISH, LOBBYIST | NBA + Political island management |
+| D4 | PRODUCT | THE HERALD, PIXEL | Publish picks + visual QA |
+| D5 | BUSINESS | THE ACCOUNTANT | Revenue pipeline + May 1 deadline |
+| D6 | EVALUATION | INTERNAL AFFAIRS | Scientific integrity, audit |
+| D7 | INFRA | SWITCHBOARD, THE PLUMBER | LLM keepalive + data pipeline health |
+| D8 | FINANCE | THE TICKER | Live odds, CLV, steam detection |
+| D9 | CROSS-REPO | LAUNCHPAD | CI/CD, deploy sync, cross-repo parity |
+
+## Track → Agent Mapping
+
+| Track | Agents | Focus |
+|-------|--------|-------|
+| T1 SCIENCE | SWISH, LOBBYIST, HAWKEYE, DR FRANKENSTEIN, INTERNAL AFFAIRS | Brier floor, calibration, mutation, research |
+| T2 PLATFORM | THE BLACKSMITH, SWITCHBOARD, THE PLUMBER, LAUNCHPAD | Code parity, deploys, uptime, data pipelines |
+| T3 MARKET | THE HERALD, THE ACCOUNTANT, PIXEL | Dashboard, Telegram, subs, pricing, visual QA |
+| T4 CAPITAL | THE TICKER | Odds, CLV, TF bankrolls, Kelly sizing |
 
 ## Account Layout (4 HF accounts × ≤8 Spaces = 32 slots)
 
-| Account | Token env | Role | Spaces |
-|---|---|---|---|
-| **LBJLincoln26** | `HF_TOKEN_NBA` | 🏀 NBA evolution | S10 S11 S12 S13 S14 S15 S16 S17 |
-| **LBJLincoln** | `HF_TOKEN` | 🗳 Political evolution | P1 P2 P3 P4 P5 P6 P7 P8 |
-| **Nomos42** | `HF_TOKEN_LLM` | 🧠 LLM + TFs + pixel | llm-gateway, gemma4-chat, qwen35-chat, cpu-gemma4, nba-TF, political-TF, pixel-world, langfuse |
-| **TESTforge42** | `HF_TOKEN_COUNCILS` | ⚙️ Councils + evo overflow | D1 D2 D3 D4 D5 D6 D7 D8 (D9 → GH Action) |
+| Account | Token env | Agent(s) | Spaces |
+|---------|-----------|----------|--------|
+| **LBJLincoln26** | `HF_TOKEN_NBA` | SWISH | S16 S17 S20 S21 + nba-llm-trading-floor |
+| **LBJLincoln** | `HF_TOKEN` | LOBBYIST | P1 P2 P3 P4 P5 P6 P7 P8 |
+| **Nomos42** | `HF_TOKEN_LLM` | SWITCHBOARD, PIXEL | llm-gateway, gemma4-chat, qwen35-chat, cpu-gemma4, pixel-world, langfuse |
+| **TESTforge42** | `HF_TOKEN_COUNCILS` | THE BLACKSMITH | D1 D2 D3 D4 D5 D6 D7 D8, S18 S19 S22 |
 
-## New agent roster (10 agents)
-
-| # | Agent | Replaces | Repo | Cred env | Cadence |
-|---|---|---|---|---|---|
-| 1 | **nomos-brain** | `nba-brain` | mon-ipad | all HF tokens (read-only) | `:00` every 4h |
-| 2 | **nomos-hoops** | — (split from `evolution-optimizer`) | mon-ipad | `HF_TOKEN_NBA` | `:10` every 4h |
-| 3 | **nomos-alpha** | — (new) | nomos-political-alpha | `HF_TOKEN` | `:15` every 4h |
-| 4 | **nomos-llm** | — (new) | mon-ipad | `HF_TOKEN_LLM` | `:20` every 6h |
-| 5 | **nomos-forge** | — (split from `nba-brain`) | mon-ipad | `HF_TOKEN_COUNCILS` | `:25` every 4h |
-| 6 | **nomos-tape** | `market-analyst` | nomos-nba-agent | `ODDS_API_KEY` | every 30 min |
-| 7 | **nomos-wire** | — (new) | nomos-nba-agent | `BOT_TOKEN_NBA`, `STRIPE_SECRET_KEY` | daily 18:00 UTC |
-| 8 | **nomos-scout** | merges `karpathy-researcher` + `research-analyst` + `repo-scout` | mon-ipad | `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`, `EXA_API_KEY` | daily 06:00 UTC |
-| 9 | **nomos-lab** | merges `feature-engineer` + `karpathy-feature-eng` | mon-ipad | `MISTRAL_API_KEY`, `GOOGLE_API_KEY` | every 12h |
-| 10 | **nomos-pay** | — (new, deadline-critical) | nomos-dashboard | `STRIPE_SECRET_KEY`, `WHOP_API_KEY`, `LEMON_SQUEEZY_API_KEY` | daily 09:00 UTC |
-
-## Cron schedule (aggregated)
+## Cron Schedule (v3)
 
 ```
-*/30  nomos-tape               (every 30 min)
-0 */4 nomos-brain           (:00 every 4h)
-10 */4 nomos-hoops               (:10 every 4h)
-15 */4 nomos-alpha         (:15 every 4h)
-20 */6 nomos-llm               (:20 every 6h)
-25 */4 nomos-forge                (:25 every 4h)
-0 */12 nomos-lab                 (00:00 and 12:00 UTC)
-0 6 * nomos-scout               (06:00 UTC daily)
-0 9 * nomos-pay             (09:00 UTC daily)
-0 18 * nomos-wire             (18:00 UTC daily)
+*/30      THE TICKER           (every 30 min — game windows)
+:00 */4h  THE BOSS             (dispatcher)
+:10 */4h  SWISH                (NBA islands)
+:15 */4h  LOBBYIST             (Political islands)
+:25 */4h  THE BLACKSMITH       (council loops)
+:35 */4h  THE PLUMBER          (data pipeline health)
+:40 */4h  INTERNAL AFFAIRS     (TF audit)
+:20 */6h  SWITCHBOARD          (LLM/TF keepalive)
+:45 */6h  LAUNCHPAD            (CI/CD health)
+:00 */12h DR FRANKENSTEIN      (engine feature impl)
+06:00     HAWKEYE              (daily recon)
+09:00     THE ACCOUNTANT       (revenue sync)
+18:00     THE HERALD           (publish picks)
+on-demand PIXEL                (visual QA after deploys)
 ```
 
-## Session-start bootstrap
+## Retired agents (migrated 2026-04-18)
 
-Every Claude Code session: nomos-brain runs once via
-`.claude/settings.json` SessionStart hook to emit a health snapshot
-(which agents last ran / last failed / what's stale).
-
-## Retired agents (migrate + delete)
-
-- `nba-brain` → split into `nomos-brain` + `nomos-hoops` + `nomos-forge`
-- `evolution-optimizer` → absorbed into `nomos-hoops` + `nomos-alpha`
-- `karpathy-researcher`, `research-analyst`, `repo-scout` → merged into `nomos-scout`
-- `feature-engineer`, `karpathy-feature-eng` → merged into `nomos-lab`
-- `market-analyst` → renamed `nomos-tape`
-
-## Cred mapping per agent
-
-Each agent's YAML frontmatter lists `env:` with the exact keys it needs.
-Never more, never fewer. If an agent tries to read a cred it doesn't
-declare, the wrapper script rejects it.
+| Old Name | → New Codename | Notes |
+|----------|---------------|-------|
+| nomos-brain | THE BOSS | Same role, expanded crew list |
+| nomos-hoops | SWISH | Same scope |
+| nomos-alpha | LOBBYIST | Same scope |
+| nomos-scout | HAWKEYE | Same scope |
+| nomos-lab | DR FRANKENSTEIN | Same scope |
+| nomos-forge | THE BLACKSMITH | Same scope |
+| nomos-llm | SWITCHBOARD | Same scope |
+| nomos-audit | INTERNAL AFFAIRS | Same scope |
+| nomos-tape | THE TICKER | Same scope |
+| nomos-wire | THE HERALD | Same scope |
+| nomos-pay | THE ACCOUNTANT | Same scope |
+| — | PIXEL | NEW — visual QA |
+| — | THE PLUMBER | NEW — data pipelines |
+| — | LAUNCHPAD | NEW — CI/CD |
