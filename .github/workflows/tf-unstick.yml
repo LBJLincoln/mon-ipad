@@ -84,14 +84,32 @@ jobs:
               if not came_up:
                   print(f"[unstick] {t} did NOT come back up within 5min — skipping reset")
                   continue
+              # RACE FIX: HF Space auto-resume thread starts running immediately.
+              # Must /api/stop first so reset succeeds + memory state doesn't
+              # overwrite disk reset on next save.
               time.sleep(3)
+              code, body = post(f"{url}/api/stop")
+              print(f"[unstick] {t} /api/stop → {code} {body[:80]}")
+              # Wait for running=False (auto-resume may race and still be running)
+              stopped = False
+              for i in range(18):  # up to 3 min
+                  time.sleep(10)
+                  s = get_status(url)
+                  if s.get('running') is False:
+                      stopped = True
+                      print(f"[unstick] {t} stopped at t={10*(i+1)}s")
+                      break
+              if not stopped:
+                  print(f"[unstick] {t} did NOT stop in 3min — forcing reset anyway")
+              time.sleep(2)
               code, body = post(f"{url}/api/reset")
               print(f"[unstick] {t} /api/reset → {code} {body[:80]}")
               time.sleep(2)
               code, body = post(f"{url}/api/run", {"resume": False})
               print(f"[unstick] {t} /api/run resume=false → {code} {body[:80]}")
-              time.sleep(4)
+              time.sleep(6)
               s = get_status(url)
-              dp = s.get('days_processed') or s.get('current_day')
-              print(f"[unstick] {t} verify: day={dp} running={s.get('running')}")
+              dp = s.get('days_processed') if s.get('days_processed') is not None else s.get('current_day')
+              resumed = s.get('resumed')
+              print(f"[unstick] {t} verify: day={dp} running={s.get('running')} resumed={resumed}")
           PY
