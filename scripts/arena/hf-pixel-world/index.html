@@ -33,7 +33,8 @@
   #bloomberg-ticker .val.star { color:#ffd700; }
   #bloomberg-ticker .cursor { color:#00ff88; animation:blk 1.1s steps(2) infinite; margin-left:auto; padding-left:14px; font-weight:700; }
   @keyframes blk { 50% { opacity:0; } }
-  #root { display:grid; grid-template-columns:1fr 360px; height:calc(100vh - 26px); margin-top:26px; }
+  #root { display:block; height:calc(100vh - 26px); margin-top:26px; }
+  #stage { width:100%; height:100%; }
   #stage { position:relative; background:var(--bg-2); overflow:hidden; }
   #stage canvas { image-rendering:pixelated; display:block; }
   #scanlines { position:absolute; inset:0; pointer-events:none; z-index:5;
@@ -100,7 +101,7 @@
   #panel-trades-list .r { display:grid; grid-template-columns:60px 1fr 70px; gap:4px; padding:3px 0; border-bottom:1px dotted rgba(255,255,255,0.05); }
   #panel-trades-list .r .t { color:var(--ink-3); font-size:9.5px; }
   #panel-trades-list .r .a { color:var(--ink); }
-  #panel-trades-list .r .a.nba { color:var(--pink); } .r .a.political { color:var(--blue); } .r .a.island { color:var(--green); } .r .a.council { color:var(--orange); }
+  #panel-trades-list .r .a.nba { color:var(--pink); } .r .a.political { color:var(--blue); } .r .a.island { color:var(--green); } .r .a.council { color:var(--orange); } .r .a.quant { color:var(--warn); }
   #panel-trades-list .r .m { color:var(--ink-2); font-size:10px; text-align:right; }
   #panel-trades-list .r .m.up { color:var(--ok); } #panel-trades-list .r .m.down { color:var(--err); }
   .loader { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:var(--ink-3);
@@ -162,12 +163,6 @@
       <div>
         <span class="brand">NOMOS42 · PIXEL WORLD</span> · v2.3 · PixiJS · live · bloomberg-term
       </div>
-      <div id="room-tabs">
-        <button data-room="world" class="active">WORLD</button>
-        <button data-room="nba">NBA 🏀</button>
-        <button data-room="political">POLITICAL 🗳</button>
-        <button data-room="evolution">EVOLUTION 🧬</button>
-      </div>
       <div><span class="tick" id="hud-tick">· booting</span></div>
     </div>
     <div id="minimap"><span class="mm-lbl">MAP</span><canvas id="mm-canvas" width="120" height="80"></canvas></div>
@@ -191,31 +186,6 @@
     <div id="hover"></div>
     <div id="event-toast"></div>
     <div class="loader" id="loader">booting pixi…</div>
-  </div>
-  <div id="sidebar">
-    <div class="panel">
-      <h3><span>Experiments</span><span class="c" id="k-last">—</span></h3>
-      <div class="kpi"><span class="l">NBA traders</span><span id="k-nba" class="v-warn">—</span></div>
-      <div class="kpi"><span class="l">Political traders</span><span id="k-pol" class="v-warn">—</span></div>
-      <div class="kpi"><span class="l">Evolution islands</span><span id="k-evo" class="v-warn">—</span></div>
-      <div class="kpi"><span class="l">Cooperation pacts</span><span id="k-pacts" class="v-ok">—</span></div>
-    </div>
-    <div class="panel">
-      <h3>Top Bet Categories</h3>
-      <div id="panel-cats" style="margin-top:2px;"></div>
-    </div>
-    <div class="panel">
-      <h3><span>Top Traders</span><span class="c" id="panel-lb-count">—</span></h3>
-      <div id="panel-lb"></div>
-    </div>
-    <div class="panel">
-      <h3><span>Evolution</span><span class="c" id="panel-evo-count">—</span></h3>
-      <div id="panel-evo"></div>
-    </div>
-    <div class="panel" id="panel-trades">
-      <h3><span>Live Events</span><span class="c" id="panel-trades-count">0</span></h3>
-      <div id="panel-trades-list"></div>
-    </div>
   </div>
 </div>
 
@@ -286,15 +256,19 @@ const ZONES = {
   quant:        { x:1,  y:26, w:38, h:5, floor:7, label:"POLITICAL QUANT FLOOR · 4 SESSIONS × OPTIONS" },
 };
 
+// 17 real agents each (parity, verified 2026-04-18 via /api/leaderboard).
+// Includes NVIDIA NIM pair, 4 self-hosted CPU LLMs, and the full Mistral suite.
 const NBA_TRADERS = [
   "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
   "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral",
-  "nemotron-120b","gemma4-selfhost"
+  "nemotron-120b","selfhost-qwen4b","selfhost-qwen06","selfhost-gemma3","selfhost-dolphin3",
+  "nvidia-minimax","nvidia-llama70"
 ];
 const POL_TRADERS = [
   "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
   "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral",
-  "nemotron-120b","gemma4-selfhost"
+  "nemotron-120b","selfhost-qwen4b","selfhost-qwen06","selfhost-gemma3","selfhost-dolphin3",
+  "nvidia-minimax","nvidia-llama70"
 ];
 const PQT_TRADERS = [
   "qwen-quant","llama-contra","gemini-anl",
@@ -1118,23 +1092,47 @@ function renderEvolution() {
   }
 }
 
+// Merged live leaderboard (all 3 TFs normalized). Full list, sorted by ROI %.
+const LB_CACHE = { nba: [], pol: [], pqt: [] };
+async function fetchLeaderboards() {
+  const norm = (j, start) => {
+    const raw = (j && (j.leaderboard || j.agents)) || [];
+    return raw.map(a => {
+      const tid = a.trader_id || a.tid || "?";
+      const br = a.bankroll != null ? +a.bankroll : 0;
+      const roi = a.roi_pct != null ? +a.roi_pct : (start ? (br / start - 1) * 100 : 0);
+      return { tid, br, roi, w: +a.wins || 0, l: +a.losses || 0, bets: +a.total_bets || ((+a.wins || 0) + (+a.losses || 0)) };
+    });
+  };
+  const [nba, pol, pqt] = await Promise.all([
+    fetchJSON(ENDPOINTS.nbaLB), fetchJSON(ENDPOINTS.politicalLB), fetchJSON(ENDPOINTS.quantLB),
+  ]);
+  LB_CACHE.nba = norm(nba, 100);
+  LB_CACHE.pol = norm(pol, 100);
+  LB_CACHE.pqt = norm(pqt, 100000);
+}
+
 function renderLeaderboard() {
   const el = document.getElementById("panel-lb"); if (!el) return;
   el.innerHTML = "";
-  const traders = AGENTS.filter(a => (a.kind === "nba" || a.kind === "political") && a.data && typeof a.data.bankroll === "number");
-  traders.sort((a,b) => (b.data.bankroll||0) - (a.data.bankroll||0));
+  const rows = [
+    ...LB_CACHE.nba.map(r => ({ ...r, kind: "nba"  })),
+    ...LB_CACHE.pol.map(r => ({ ...r, kind: "political" })),
+    ...LB_CACHE.pqt.map(r => ({ ...r, kind: "quant" })),
+  ];
+  rows.sort((a, b) => b.roi - a.roi);
   const cEl = document.getElementById("panel-lb-count");
-  if (cEl) cEl.textContent = `${traders.length} live`;
-  if (!traders.length) { el.innerHTML = `<span style="color:var(--ink-3); font-size:10px;">waiting for trading floors…</span>`; return; }
-  for (const [rank, a] of traders.slice(0, 14).entries()) {
-    const d = a.data;
-    const br = (d.bankroll || 0);
-    const roi = br - 100;
-    const roiCls = roi >= 0 ? "up" : "down";
-    const kindCls = a.kind === "nba" ? "a nba" : "a political";
-    const medal = rank === 0 ? "🏆" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : `#${rank+1}`;
+  if (cEl) cEl.textContent = `${rows.length} live`;
+  if (!rows.length) { el.innerHTML = `<span style="color:var(--ink-3); font-size:10px;">waiting for trading floors…</span>`; return; }
+  for (const [rank, r] of rows.entries()) {
+    const roiCls = r.roi >= 0 ? "up" : "down";
+    const kindCls = r.kind === "nba" ? "a nba" : r.kind === "political" ? "a political" : "a quant";
+    const medal = rank === 0 ? "🏆" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : `#${rank + 1}`;
+    const bankroll = r.kind === "quant"
+      ? `$${(r.br / 1000).toFixed(1)}k`
+      : `$${r.br.toFixed(0)}`;
     const row = document.createElement("div"); row.className = "row";
-    row.innerHTML = `<span class="l"><span style="display:inline-block;width:24px;color:var(--ink-3);font-size:9.5px;">${medal}</span><span class="${kindCls}">${a.label}</span></span><span class="v ${roiCls}">$${br.toFixed(0)} · ${roi>=0?"+":""}${roi.toFixed(1)}%</span>`;
+    row.innerHTML = `<span class="l"><span style="display:inline-block;width:24px;color:var(--ink-3);font-size:9.5px;">${medal}</span><span class="${kindCls}">${r.tid}</span></span><span class="v ${roiCls}">${bankroll} · ${r.roi >= 0 ? "+" : ""}${r.roi.toFixed(1)}%</span>`;
     el.appendChild(row);
   }
 }
@@ -1289,21 +1287,20 @@ async function refresh() {
     : 1.0;
   for (const a of AGENTS.filter(x => x._isInfra)) updateInfraTower(a);
   renderEvolution();
+  await fetchLeaderboards();
   renderLeaderboard();
 
   // Councils — baked
   for (const a of AGENTS.filter(x => x.kind === "council")) a.bubble = buildCouncilBubble(a);
 
-  document.getElementById("k-nba").textContent = `${nbaOK}/${NBA_TRADERS.length}`;
-  document.getElementById("k-nba").className = nbaOK === NBA_TRADERS.length ? "v-ok" : "v-warn";
-  document.getElementById("k-pol").textContent = `${polOK}/${POL_TRADERS.length}`;
-  document.getElementById("k-pol").className = polOK === POL_TRADERS.length ? "v-ok" : "v-warn";
-  document.getElementById("k-evo").textContent = `${evoOK}/21`;
-  document.getElementById("k-evo").className = evoOK >= 20 ? "v-ok" : "v-warn";
-  document.getElementById("k-pacts").textContent = pacts;
-  document.getElementById("k-last").textContent = new Date().toISOString().slice(11,19);
-  document.getElementById("hud-rep").textContent = `pacts ${pacts} · rep ${repEntries}`;
-  document.getElementById("hud-tick").textContent = "· live";
+  const _set = (id, txt, cls) => { const el = document.getElementById(id); if (!el) return; el.textContent = txt; if (cls) el.className = cls; };
+  _set("k-nba",   `${nbaOK}/${NBA_TRADERS.length}`, nbaOK === NBA_TRADERS.length ? "v-ok" : "v-warn");
+  _set("k-pol",   `${polOK}/${POL_TRADERS.length}`, polOK === POL_TRADERS.length ? "v-ok" : "v-warn");
+  _set("k-evo",   `${evoOK}/21`,                    evoOK >= 20 ? "v-ok" : "v-warn");
+  _set("k-pacts", String(pacts));
+  _set("k-last",  new Date().toISOString().slice(11,19));
+  _set("hud-rep", `pacts ${pacts} · rep ${repEntries}`);
+  _set("hud-tick","· live");
 
   // ═══ Bloomberg ticker update ═══
   const setTx = (id, t, cls) => {
