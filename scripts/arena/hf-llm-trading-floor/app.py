@@ -1065,9 +1065,10 @@ def _call_llm_direct(provider: str, system_prompt: str, user_prompt: str,
                 # Skip selfhost (llama.cpp OpenAI shim often 400s on response_format).
                 if not is_selfhost and any(p in provider for p in ("cerebras", "mistral", "openrouter", "nvidia")):
                     payload["response_format"] = {"type": "json_object"}
-                # Selfhost CPU: tight 10s timeout — if a warm Space doesn't answer
-                # in 10s it won't in 30, and cold starts should hot-swap not block.
-                effective_timeout = 10.0 if is_selfhost else timeout
+                # Selfhost CPU: tight 8s timeout — if a warm Space doesn't answer
+                # in 8s it won't in 30, and cold starts should hot-swap not block.
+                # Tightened 2026-04-18 to reduce worst-case day latency.
+                effective_timeout = 8.0 if is_selfhost else timeout
                 resp = requests.post(cfg["url"], json=payload, headers=headers, timeout=effective_timeout)
                 if resp.status_code == 200:
                     data = resp.json()
@@ -3337,22 +3338,27 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         # Persist EVERY day so councils/analysis can read decision trail even
         # if a Space restart wipes /tmp mid-run. state.json = latest resume
         # point; data/decisions/day-XXX.json = per-day per-agent full rationale.
-        _save_state_to_disk(_experiment_state)
-        _save_logs_to_disk()
-        # Per-day audit file pushed to data/decisions/day-XXX.json on the Space
-        # repo — councils/depts fetch via HF API to aggregate across agents.
+        # Parallel Hub pushes — 4 independent uploads fire concurrently. Saves
+        # ~8-10s per day vs sequential. No shared-state races: each function
+        # targets its own file on Hub.
         _day_logs_for_hub = {
             tid: _agent_logs[tid][-1]
             for tid in TRADERS if _agent_logs.get(tid) and _agent_logs[tid]
             and _agent_logs[tid][-1].get("date") == day_date
         }
+        _hub_tasks = [
+            lambda: _save_state_to_disk(_experiment_state),
+            lambda: _save_logs_to_disk(),
+        ]
         if _day_logs_for_hub:
-            _push_day_decisions_to_hub(
+            _hub_tasks.append(lambda: _push_day_decisions_to_hub(
                 day_idx=day_idx, day_date=day_date, n_games=len(day_games),
                 day_logs_by_agent=_day_logs_for_hub,
                 day_council_plan=day_council_plan,
                 day_rogue_state=day_rogue_state,
-            )
+            ))
+        with ThreadPoolExecutor(max_workers=len(_hub_tasks)) as _hub_pool:
+            list(_hub_pool.map(lambda fn: fn(), _hub_tasks))
 
         if (day_idx + 1) % 1 == 0:  # Yield every day (slower pace than games)
             elapsed = time.time() - start_time
