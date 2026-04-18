@@ -3288,8 +3288,17 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         len(games_used) < tier["min_games"] or
                         total_deployed_pct < tier["deploy_floor"])
             if need_pad and len(day_games) >= 1:
-                # Build +edge candidate list from our own model predictions
-                candidates = []  # (edge, game_idx, category, prob)
+                # 2026-04-18 LOCKSTEP FIX: per-agent deterministic jitter. Previously
+                # all 17 agents sorted identical candidates → 3-day mean Jaccard 0.625
+                # with max 1.0. Amp 0.30 rotates mid-edge picks while preserving top.
+                import hashlib as _hl
+                def _jitter(_tid, _k, _amp=0.30):
+                    h = _hl.blake2b(f"{_tid}|{_k}".encode(), digest_size=4).hexdigest()
+                    u = int(h, 16) / 0xFFFFFFFF
+                    return 1.0 + (u - 0.5) * 2.0 * _amp
+                # Build +edge candidate list from our own model predictions.
+                # Candidate tuple: (effective_edge, game_idx, category, prob, raw_edge)
+                candidates = []
                 for gi, g in enumerate(day_games):
                     gk = f"{day_date}_{g.get('away')}@{g.get('home')}"
                     pred = (model_preds or {}).get(gk, {})
@@ -3300,21 +3309,21 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         prob = info.get("prob", 0.5)
                         if edge is None: continue
                         if edge >= tier["min_edge"]:
-                            candidates.append((edge, gi, tag, prob))
-                # Rank by edge; allow MULTIPLE categories per game (saturate cat space);
-                # avoid duplicating what the LLM already picked.
+                            eff = edge * _jitter(tid, f"{gk}|{tag}")
+                            candidates.append((eff, gi, tag, prob, edge))
+                # Rank by jittered edge; preserves top-tier picks but diverges mid-tier.
                 candidates.sort(key=lambda x: -x[0])
                 existing_keys = {(a["game"], a["category"]) for a in day_log["allocations"]}
                 picks = []
                 cats_picked = set(cats_used)
                 games_picked = set(games_used)
                 target_allocs = max(tier["min_allocs"] - total_bets_executed, 0)
-                for edge, gi, tag, prob in candidates:
+                for eff, gi, tag, prob, raw_edge in candidates:
                     g = day_games[gi]
                     gname = f"{g['away']}@{g['home']}"
                     if (gname, tag) in existing_keys:
                         continue
-                    picks.append((edge, gi, tag, prob))
+                    picks.append((eff, gi, tag, prob, raw_edge))
                     existing_keys.add((gname, tag))
                     cats_picked.add(tag)
                     games_picked.add(gname)
@@ -3329,7 +3338,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     pad_deploy = max(0.0, tier["deploy_floor"] - total_deployed_pct)
                     per_pct = max(tier["bet_floor"], pad_deploy / n_fb if n_fb > 0 else tier["bet_floor"])
                     per_pct = min(per_pct, tier["bet_cap"])
-                    for edge, gi, tag, prob in picks:
+                    for eff, gi, tag, prob, raw_edge in picks:
+                        edge = raw_edge  # use raw edge for sizing/reporting, not jittered
                         g = day_games[gi]
                         odds = day_odds_list[gi]
                         stake = round(bankroll * per_pct, 2)
@@ -3368,7 +3378,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         })
                     day_log["cash_held_pct"] = 1.0 - (n_fb * per_pct)
                     day_log["cash_rationale"] = "smart post-filter fallback (top-edge picks from Nomos42 model)"
-                    day_log["day_strategy"] = day_log.get("day_strategy") or f"post-filter: {n_fb} picks (max edge {picks[0][0]:+.1%})"
+                    day_log["day_strategy"] = day_log.get("day_strategy") or f"post-filter: {n_fb} picks (max edge {picks[0][4]:+.1%})"
 
             # Track recent decisions for next-day prompt
             n_bets = len(day_log["allocations"]) + len(day_log["parlays"])

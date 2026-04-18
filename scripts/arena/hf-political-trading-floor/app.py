@@ -2582,6 +2582,17 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 # 2026-04-18 LEAKAGE FIX: NEVER fall back to excess_return (that's
                 # the future outcome). If the walk-forward model has no prediction,
                 # skip the event — stay cash is always legal.
+                # 2026-04-18 LOCKSTEP FIX: per-agent deterministic jitter so each
+                # trader ranks the same candidate set slightly differently. Previously
+                # all 17 agents sorted identical `ranked` list → identical picks →
+                # pairwise Jaccard 0.976 (catastrophic DMAD failure). Jitter amp 0.30
+                # means top signals still win for most agents but mid-tier events
+                # rotate across the fleet. Target: Jaccard < 0.5.
+                import hashlib as _hl
+                def _jitter(_tid, _evkey, _amp=0.30):
+                    h = _hl.blake2b(f"{_tid}|{_evkey}".encode(), digest_size=4).hexdigest()
+                    u = int(h, 16) / 0xFFFFFFFF  # 0..1 uniform
+                    return 1.0 + (u - 0.5) * 2.0 * _amp
                 ranked = []
                 for ei, ev in enumerate(day_events):
                     sig = ev.get("predicted_return", ev.get("model_signal"))
@@ -2598,19 +2609,22 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     score = abs(sig)
                     if score < tier_pf["min_edge"]:
                         continue
-                    ranked.append((score, ei, direction, sig))
+                    # Apply per-agent deterministic jitter for diversification.
+                    ev_key = f"{ev.get('date','')}_{ev.get('ticker','?')}_{ev.get('event_type','?')}_{ei}"
+                    effective = score * _jitter(tid, ev_key)
+                    ranked.append((effective, ei, direction, sig, score))
                 ranked.sort(key=lambda x: -x[0])
                 existing_keys = {(a.get("event_idx"), a.get("direction")) for a in day_log["allocations"]}
                 picks = []
                 cats_picked = set(cats_used)
                 events_picked = set(events_used)
                 target_allocs = max(tier_pf["min_allocs"] - total_bets_executed, 0)
-                for score, ei, direction, sig in ranked:
+                for effective, ei, direction, sig, raw_score in ranked:
                     event = day_events[ei]
                     ev_idx = ei + 1
                     if (ev_idx, direction) in existing_keys:
                         continue
-                    picks.append((score, ei, direction, sig))
+                    picks.append((effective, ei, direction, sig, raw_score))
                     existing_keys.add((ev_idx, direction))
                     cats_picked.add(event.get("event_type", ""))
                     events_picked.add(ev_idx)
@@ -2624,7 +2638,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     per_pct = max(tier_pf["bet_floor"], pad_deploy / n_fb if n_fb else tier_pf["bet_floor"])
                     per_pct = min(per_pct, tier_pf["bet_cap"])
                     added = 0
-                    for score, ei, direction, sig in picks:
+                    for effective, ei, direction, sig, raw_score in picks:
                         event = day_events[ei]
                         stake = round(bankroll * per_pct, 2)
                         if stake < 0.10:
@@ -2651,7 +2665,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                             "thesis": f"tiered post-filter (signal {sig:+.3f}, tier=${ts['bankroll']:.0f})",
                             "pct": round(per_pct, 4),
                             "stake": stake,
-                            "confidence": min(0.75, 0.40 + score * 5),
+                            "confidence": min(0.75, 0.40 + raw_score * 5),
                             "excess_return": event["excess_return"],
                             "pnl_pct": round(pnl_pct, 4),
                             "won": won,

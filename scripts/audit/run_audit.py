@@ -20,6 +20,7 @@ AUDIT_DIR.mkdir(parents=True, exist_ok=True)
 
 NBA_SPACE = "LBJLincoln26/nba-llm-trading-floor"
 POL_SPACE = "LBJLincoln26/political-llm-trading-floor"
+PQTF_SPACE = "LBJLincoln26/political-quant-trading-floor"
 
 FORBIDDEN_SOURCES = {"ml_home-synth", "SPY-long-synth", "synthetic-fallback"}
 ALLOWED_SOURCES = {"direct", "fallback-edge-post", "tiered-post-filter", "post-filter-edge"}
@@ -213,16 +214,83 @@ def true_deploy_stats(days):
             "n": len(deploys)}
 
 
+# ── PQTF-specific checks (schema: sessions[].positions[] w/ etf+option_type+strike)
+
+def check_pqtf_lockstep(days):
+    """Jaccard on (etf, option_type, round(strike,0), tte_days) across agents.
+
+    Target: <0.50. >0.70 warn, >0.85 critical. PQTF agents trade single-leg +
+    multi-leg option structures; positions on the same ETF/strike/type/tte are
+    effectively the same bet."""
+    all_jaccs = []
+    per_day = []
+    for rf, d in days:
+        picks_by_agent = defaultdict(set)
+        for s in d.get("sessions") or []:
+            for pos in s.get("positions") or []:
+                tid = pos.get("tid")
+                if not tid: continue
+                key = (pos.get("etf"), pos.get("option_type"),
+                       round((pos.get("strike") or 0), 0), pos.get("tte_days"))
+                picks_by_agent[tid].add(key)
+        keys = list(picks_by_agent.keys())
+        js = []
+        for i in range(len(keys)):
+            for j in range(i + 1, len(keys)):
+                a, b = picks_by_agent[keys[i]], picks_by_agent[keys[j]]
+                if not a or not b: continue
+                inter = len(a & b); union = len(a | b)
+                if union: js.append(inter / union)
+        if js:
+            per_day.append({"day": rf, "n_agents": len(keys),
+                            "mean": round(sum(js) / len(js), 3),
+                            "max": round(max(js), 3)})
+            all_jaccs.extend(js)
+    if not all_jaccs:
+        return "ok", {"note": "no-positions"}
+    mean = sum(all_jaccs) / len(all_jaccs)
+    mx = max(all_jaccs)
+    sev = "critical" if mean > 0.85 else ("warn" if mean > 0.70 else "ok")
+    return sev, {"mean": round(mean, 3), "max": round(mx, 3), "per_day": per_day}
+
+
+def check_pqtf_risk(days):
+    """VaR utilization + multi-leg ratio + stops-triggered rate."""
+    vars_95 = []
+    n_multi = 0
+    n_single = 0
+    n_stops = 0
+    for _, d in days:
+        for s in d.get("sessions") or []:
+            r = s.get("risk") or {}
+            if r.get("var_95_1d") is not None:
+                vars_95.append(r["var_95_1d"])
+            n_multi += r.get("n_multi_leg", 0) or 0
+            n_single += r.get("n_single_leg", 0) or 0
+            n_stops += r.get("stops_triggered", 0) or 0
+    total = n_multi + n_single
+    multi_ratio = n_multi / total if total else 0
+    detail = {"sessions": sum(len(d.get("sessions") or []) for _, d in days),
+              "avg_var_95": round(sum(vars_95) / len(vars_95), 2) if vars_95 else None,
+              "max_var_95": round(max(vars_95), 2) if vars_95 else None,
+              "multi_leg_ratio": round(multi_ratio, 3),
+              "stops_triggered": n_stops}
+    # PQTF with 0 multi-leg is broken (Phase 2 shipped spreads)
+    if total > 0 and multi_ratio < 0.05:
+        return "warn", {**detail, "note": "multi-leg spreads barely used — Phase 2 regression"}
+    return "ok", detail
+
+
 def run_audit():
     token = hf_token()
     if not token:
         print("[audit] NO HF_TOKEN_2 available", file=sys.stderr)
         sys.exit(1)
     now = datetime.datetime.utcnow()
-    result = {"ts": now.isoformat() + "Z", "nba": {}, "pol": {}, "alerts": []}
+    result = {"ts": now.isoformat() + "Z", "nba": {}, "pol": {}, "pqtf": {}, "alerts": []}
 
     for key, space, idx_key, dir_key in [
-        ("nba", NBA_SPACE, "game_idx", "category"),
+        ("nba", NBA_SPACE, "game", "category"),   # NBA uses "game" not "game_idx"
         ("pol", POL_SPACE, "event_idx", "direction"),
     ]:
         try:
@@ -265,6 +333,32 @@ def run_audit():
             if sev in ("warn", "critical"):
                 result["alerts"].append({"severity": sev, "floor": key, "check": chk,
                                          "detail": result[key]["details"].get(chk)})
+
+    # ── PQTF audit (session-based schema, different shape from NBA/POL) ─────
+    try:
+        pq_days = fetch_days(PQTF_SPACE, n=3, token=token)
+    except Exception as e:
+        result["pqtf"] = {"error": str(e)}
+    else:
+        pq_checks = {}
+        pq_checks["lockstep"], pq_ls = check_pqtf_lockstep(pq_days)
+        pq_checks["risk"], pq_rk = check_pqtf_risk(pq_days)
+        # fleet_range = agents_end map
+        ends = {}
+        for _, d in pq_days:
+            ends.update(d.get("agents_end") or {})
+        banks = sorted(ends.values()) if ends else []
+        result["pqtf"] = {
+            "space": PQTF_SPACE,
+            "days_checked": [rf.split("/")[-1].replace(".json", "") for rf, _ in pq_days],
+            "fleet_range": [banks[0], banks[-1]] if banks else None,
+            "checks": pq_checks,
+            "details": {"lockstep": pq_ls, "risk": pq_rk},
+        }
+        for chk, sev in pq_checks.items():
+            if sev in ("warn", "critical"):
+                result["alerts"].append({"severity": sev, "floor": "pqtf", "check": chk,
+                                         "detail": result["pqtf"]["details"].get(chk)})
 
     stamp = now.strftime("%Y-%m-%dT%H%M")
     out_path = AUDIT_DIR / f"{stamp}.json"

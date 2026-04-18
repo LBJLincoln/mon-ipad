@@ -110,17 +110,7 @@
     text-shadow: 2px 2px 0 var(--pk-ink), -1px -1px 0 var(--pk-ink), 1px -1px 0 var(--pk-ink), -1px 1px 0 var(--pk-ink); }
   #hud-top .tick { color:var(--pk-green); font-family:"VT323",monospace; font-size:13px;
     text-shadow: 1px 1px 0 var(--pk-ink); }
-  /* v2.16 — Pokémon DS menu buttons: navy face + white border + yellow active. */
-  #room-tabs { display:flex; gap:5px; pointer-events:auto; }
-  #room-tabs button { background:var(--pk-box); border:2px solid var(--pk-ink); color:var(--pk-ink);
-    font-family:"Press Start 2P",monospace; font-size:9px; letter-spacing:0.12em;
-    padding:6px 10px; cursor:pointer; text-transform:uppercase; border-radius:5px;
-    box-shadow: inset 0 0 0 1.5px var(--pk-box), inset 0 0 0 3px var(--pk-navy),
-                2px 2px 0 var(--pk-ink); }
-  #room-tabs button.active { color:var(--pk-ink); background:var(--pk-yellow);
-    box-shadow: inset 0 0 0 1.5px var(--pk-yellow), inset 0 0 0 3px var(--pk-red),
-                2px 2px 0 var(--pk-ink); }
-  #room-tabs button:hover { background:var(--pk-yellow-2); }
+  /* v2.18 — room-tabs + ext-btns removed (single world view). */
   #hud-bot { position:absolute; bottom:120px; left:12px; right:12px; display:flex; justify-content:space-between;
     font-size:10px; color:var(--pk-box); pointer-events:none; z-index:7;
     font-family:"Press Start 2P",monospace; letter-spacing:0.14em;
@@ -183,18 +173,65 @@
   .row .v.up { color:var(--ok); } .row .v.down { color:var(--err); }
   .loader { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:var(--ink-3);
     font-size:11px; letter-spacing:0.1em; text-transform:uppercase; z-index:4; }
-  /* v2.16 — Paper/Status buttons match DS menu chip style. */
-  #hud-top .ext-btns { display:flex; gap:6px; margin-left:10px; pointer-events:auto; }
-  #hud-top .ext-btns a { display:inline-flex; align-items:center; gap:4px;
-    background:var(--pk-box); border:2px solid var(--pk-ink); color:var(--pk-ink);
-    font-family:"Press Start 2P",monospace; font-size:8.5px;
-    letter-spacing:0.12em; padding:5px 10px; text-decoration:none; border-radius:4px;
-    text-transform:uppercase; transition:all 0.15s;
-    box-shadow: inset 0 0 0 1.5px var(--pk-box), inset 0 0 0 3px var(--pk-red),
-                2px 2px 0 var(--pk-ink); }
-  #hud-top .ext-btns a:hover { background:var(--pk-yellow); color:var(--pk-ink);
-    box-shadow: inset 0 0 0 1.5px var(--pk-yellow), inset 0 0 0 3px var(--pk-red),
-                2px 2px 0 var(--pk-ink); }
+  /* v2.18 — ext-btns (PAPERS/LIVE STATUS) removed. */
+
+  /* ═══ v2.18 THREE-FLOOR LEADERBOARD ═══ Fixed right-side panel.
+     Three vertical sections (NBA / POL / PQTF) — every trader ranked by bankroll,
+     persona visible, click a row → inspect card with model + provider + stats. */
+  #three-floor-lb { position:fixed; top:40px; right:8px; bottom:14px; width:278px; z-index:9;
+    background:var(--pk-box); border:4px solid var(--pk-ink); border-radius:8px;
+    box-shadow: inset 0 0 0 2px var(--pk-box), inset 0 0 0 4px var(--pk-navy),
+                0 6px 20px rgba(0,0,0,0.6);
+    font-family:"JetBrains Mono",monospace; color:var(--pk-ink);
+    display:flex; flex-direction:column; overflow:hidden; }
+  #three-floor-lb .hdr { padding:7px 10px; background:var(--pk-navy); color:#fff;
+    font-family:"Press Start 2P",monospace; font-size:9px; letter-spacing:0.15em;
+    border-bottom:2px solid var(--pk-ink); display:flex; justify-content:space-between; align-items:center; }
+  #three-floor-lb .hdr .ttl { color:var(--pk-yellow); text-shadow:1px 1px 0 #000; }
+  #three-floor-lb .hdr .tm  { color:#c0d8ff; font-size:8px; letter-spacing:0.1em; font-family:"JetBrains Mono",monospace; font-weight:700; }
+  #three-floor-lb .body { flex:1; overflow-y:auto; padding:0; scrollbar-width:thin;
+    scrollbar-color: var(--pk-navy) var(--pk-box); }
+  #three-floor-lb .body::-webkit-scrollbar { width:8px; }
+  #three-floor-lb .body::-webkit-scrollbar-track { background: var(--pk-box); }
+  #three-floor-lb .body::-webkit-scrollbar-thumb { background: var(--pk-navy); border-radius:3px; }
+  #three-floor-lb .sec { padding:6px 8px 10px; border-bottom:2px solid var(--pk-ink); }
+  #three-floor-lb .sec:last-child { border-bottom:0; }
+  #three-floor-lb .sec .sh { display:flex; justify-content:space-between; align-items:baseline;
+    padding:4px 4px 6px; border-bottom:1px dotted rgba(16,24,32,0.4); margin-bottom:4px; }
+  #three-floor-lb .sec .sh .kind { font-family:"Press Start 2P",monospace; font-size:9px;
+    letter-spacing:0.12em; text-shadow:1px 1px 0 rgba(255,255,255,0.6); }
+  #three-floor-lb .sec .sh .kind.nba { color:#c03030; }
+  #three-floor-lb .sec .sh .kind.pol { color:#3068b8; }
+  #three-floor-lb .sec .sh .kind.pqtf { color:#7038a0; }
+  #three-floor-lb .sec .sh .day { font-size:9px; color:var(--pk-navy); font-weight:700; letter-spacing:0.04em; }
+  #three-floor-lb .sec .sh .flt { font-size:9px; color:var(--pk-ink); font-weight:700; margin-left:6px; }
+  #three-floor-lb .sec .sh .flt.up { color:var(--pk-green); }
+  #three-floor-lb .sec .sh .flt.down { color:var(--pk-red); }
+  #three-floor-lb .r {
+    display:grid; grid-template-columns: 18px 1fr 62px 48px; gap:4px;
+    padding:3px 4px; font-size:10px; cursor:pointer; border-radius:3px;
+    transition: background 0.12s; align-items:center; }
+  #three-floor-lb .r:hover { background: rgba(255, 203, 5, 0.28); }
+  #three-floor-lb .r .rk { font-family:"Press Start 2P",monospace; font-size:7.5px;
+    color:var(--pk-navy); text-align:right; padding-right:2px; }
+  #three-floor-lb .r .rk.top { color:#a05820; }
+  #three-floor-lb .r .nm { color:var(--pk-ink); font-weight:700; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis; letter-spacing:0.02em; }
+  #three-floor-lb .r .br { color:var(--pk-ink); text-align:right; font-family:"VT323",monospace; font-size:12px; }
+  #three-floor-lb .r .dl { text-align:right; font-family:"VT323",monospace; font-size:11px; font-weight:700; }
+  #three-floor-lb .r .dl.up { color:var(--pk-green); }
+  #three-floor-lb .r .dl.down { color:var(--pk-red); }
+  #three-floor-lb .r .dl.flat { color:var(--pk-navy); opacity:0.6; }
+  #three-floor-lb .r.hot { background: linear-gradient(90deg, rgba(255,203,5,0.14) 0%, transparent 100%); }
+  #three-floor-lb .empty { padding:10px 6px; font-size:9.5px; color:var(--pk-navy); opacity:0.7;
+    font-style:italic; text-align:center; }
+
+  /* Shrink pixel stage slightly so leaderboard doesn't overlap the world */
+  @media (min-width: 900px) {
+    #root { margin-right: 290px; }
+    #poke-dialog { right: 302px !important; }
+    #bloomberg-ticker { right: 290px !important; }
+  }
   /* ═══ v2.15 POKÉMON B/W DIALOGUE BOX ═══ Replaces marquee bet-ticker.
      Double-border (outer black + inner white) + inset shadow, typewriter feed. */
   #poke-dialog { position:absolute; bottom:14px; left:12px; right:12px; height:92px; z-index:7;
@@ -264,19 +301,8 @@
     <div id="hud-top">
       <div>
         <span class="brand">NOMOS42 · PIXEL WORLD</span> · <span id="build-tag">build: …</span> · PixiJS · live · trainer-net
-        <span class="ext-btns">
-          <a href="#" id="btn-papers" title="Live arXiv research vault">📄 PAPERS</a>
-          <a href="https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status" target="_blank" rel="noopener" title="NBA TF live status JSON">📊 LIVE STATUS</a>
-        </span>
       </div>
-      <div id="room-tabs">
-        <button data-room="world" class="active">WORLD</button>
-        <button data-room="nba">NBA 🏀</button>
-        <button data-room="political">POLITICAL 🗳</button>
-        <button data-room="evolution">EVOLUTION 🧬</button>
-        <button data-room="councils">COUNCILS ⚖</button>
-      </div>
-      <div><span class="tick" id="hud-tick">· booting</span> <span style="font-family:'Press Start 2P',monospace;color:var(--pk-yellow);text-shadow:1px 1px 0 var(--pk-ink);font-size:8px;margin-left:6px;letter-spacing:0.14em">v2.17 · pqtf fleet</span></div>
+      <div><span class="tick" id="hud-tick">· booting</span> <span style="font-family:'Press Start 2P',monospace;color:var(--pk-yellow);text-shadow:1px 1px 0 var(--pk-ink);font-size:8px;margin-left:6px;letter-spacing:0.14em">v2.18.1 · cover-fit + slim leaderboard</span></div>
     </div>
 <!-- v2.12: minimap deleted · v2.15: bet-ticker → Pokémon B/W dialogue box -->
     <div id="poke-dialog">
@@ -325,17 +351,16 @@
     <div class="loader" id="loader">booting pixi…</div>
   </div>
 </div>
-<div id="paper-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:1000; padding:40px; overflow-y:auto;">
-  <div style="max-width:900px; margin:0 auto; background:#0a0d14; border:1px solid #3a2600; border-radius:4px; padding:24px; font-family:'IBM Plex Mono',monospace; color:#eee;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-      <div style="color:#ffa500; font-size:13px; letter-spacing:0.14em;">◉ NOMOS42 RESEARCH VAULT — LIVE ARXIV</div>
-      <button id="paper-modal-close" style="background:#000; border:1px solid #3a2600; color:#ffa500; padding:6px 12px; font-family:inherit; cursor:pointer; border-radius:2px;">CLOSE ✕</button>
-    </div>
-    <div id="paper-modal-meta" style="color:#8899aa; font-size:10px; margin-bottom:12px;">loading…</div>
-    <div id="paper-modal-list"></div>
+<!-- v2.18 — three-floor leaderboard (NBA TF / POL TF / PQTF), every trader per day -->
+<div id="three-floor-lb">
+  <div class="hdr">
+    <span class="ttl">◆ LEADERBOARD · ALL TRADERS</span>
+    <span class="tm" id="tfl-clock">—</span>
+  </div>
+  <div class="body" id="tfl-body">
+    <div class="empty">connecting to trading floors…</div>
   </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
@@ -494,6 +519,34 @@ function homeIslandFor(id) {
   for (const [k, s] of MODEL_HOME) if (lo.includes(k)) return s;
   return null;
 }
+
+// v2.18 (2026-04-18): TRADER PERSONAS — each trader_id gets a human-readable name.
+// Technical model/provider info is hidden on the world but surfaced in the inspect card.
+const TRADER_PERSONAS = {
+  "qwen-quant":        { persona: "The Oracle",       model: "Qwen 3 235B-A22B",     provider: "Cerebras",       risk: 0.55, style: "quantitative" },
+  "qwen-arb":          { persona: "The Gatekeeper",   model: "Qwen 3 235B-A22B",     provider: "Cerebras",       risk: 0.65, style: "arbitrage" },
+  "llama-contra":      { persona: "The Contrarian",   model: "Llama 3.1 8B",         provider: "Cerebras",       risk: 0.55, style: "contrarian" },
+  "gemini-anl":        { persona: "The Analyst",      model: "Gemini 3 Flash",       provider: "Google",         risk: 0.55, style: "analytical" },
+  "gemini-tact":       { persona: "The Tactician",    model: "Gemini 3 Flash",       provider: "Google",         risk: 0.60, style: "tactical" },
+  "mistral-large":     { persona: "The General",      model: "mistral-large-latest", provider: "Mistral",        risk: 0.50, style: "ensemble" },
+  "mistral-medium":    { persona: "The Diplomat",     model: "mistral-medium-latest",provider: "Mistral",        risk: 0.45, style: "diversified" },
+  "mistral-small":     { persona: "The Scout",        model: "mistral-small-latest", provider: "Mistral",        risk: 0.35, style: "wide-coverage" },
+  "mistral-nemo":      { persona: "The Wildcard",     model: "open-mistral-nemo",    provider: "Mistral",        risk: 0.70, style: "aggressive" },
+  "mistral-ministral": { persona: "The Professor",    model: "ministral-8b-latest",  provider: "Mistral",        risk: 0.35, style: "theoretical" },
+  "nemotron-120b":     { persona: "The Architect",    model: "Nemotron-3-Super 120B",provider: "OpenRouter",     risk: 0.55, style: "chainthought" },
+  "selfhost-qwen4b":   { persona: "The Monk",         model: "Qwen3-4B (GGUF)",      provider: "SelfHost CPU",   risk: 0.40, style: "disciplined" },
+  "nvidia-minimax":    { persona: "The Decider",      model: "MiniMax M2.7",         provider: "NVIDIA NIM",     risk: 0.58, style: "decisive" },
+  "nvidia-llama70":    { persona: "The Swingman",     model: "Llama 3.3 70B",        provider: "NVIDIA NIM",     risk: 0.50, style: "swing" },
+  "selfhost-gemma3":   { persona: "The Apprentice",   model: "Gemma-3-4B (GGUF)",    provider: "SelfHost CPU",   risk: 0.45, style: "analytical" },
+  "selfhost-qwen06":   { persona: "The Featherweight",model: "Qwen3-0.6B (GGUF)",    provider: "SelfHost CPU",   risk: 0.30, style: "conservative" },
+  "selfhost-dolphin3": { persona: "The Rebel",        model: "Dolphin3-Llama-3.2-3B",provider: "SelfHost CPU",   risk: 0.55, style: "uncensored" },
+};
+function personaFor(id) {
+  const p = TRADER_PERSONAS[id];
+  if (p) return p;
+  return { persona: id, model: id, provider: "—", risk: 0, style: "—" };
+}
+
 // Match floor center (in tile coords) — agents pilgrimage here when betting
 const MATCH_FLOOR = { x: 20, y: 17 };
 
@@ -584,10 +637,14 @@ const COUNCIL_STATE_URLS = {
 };
 
 const AGENTS = [
-  ...NBA_TRADERS.map((id,i)=>({ id, key:id, label:`NBA·${id}`, kind:"nba", zone:"nba", idx:i, char:i%6,
-    tint: TRADER_PALETTE[i % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) })),
-  ...POL_TRADERS.map((id,i)=>({ id:`p-${id}`, key:id, label:`POL·${id}`, kind:"political", zone:"political", idx:i, char:(i+2)%6,
-    tint: TRADER_PALETTE[(i + 15) % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) })),
+  ...NBA_TRADERS.map((id,i)=>{ const p = personaFor(id); return {
+    id, key:id, label: p.persona, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+    kind:"nba", zone:"nba", idx:i, char:i%6,
+    tint: TRADER_PALETTE[i % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) }; }),
+  ...POL_TRADERS.map((id,i)=>{ const p = personaFor(id); return {
+    id:`p-${id}`, key:id, label: p.persona, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+    kind:"political", zone:"political", idx:i, char:(i+2)%6,
+    tint: TRADER_PALETTE[(i + 15) % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) }; }),
   ...ISLANDS.map(([lbl,url],i)=>({
     id:`island-${lbl.toLowerCase()}`, key:lbl, label:lbl,
     kind: lbl.startsWith("P") ? "pol_infra" : "infra",
@@ -836,229 +893,9 @@ async function refreshDiegeticPanels() {
     } catch (e) { p.setState("no_signal"); p.setText(""); }
   }
 }
-// Anchor positions — top row across world, doesn't overlap agents (they walk below y=200)
-// v2.12: /api/nba/odds is 404 on static Space. Replaced with live COUNCIL SUMMARY from NBA TF.
-makeDiegeticPanel({ x:24, y:24, w:280, h:130, title:"◎ MORNING COUNCIL — qwen-235B",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
-  render:(d) => {
-    if (!d) return { state:"no_signal" };
-    const summary = (d.latest_council_summary || "").trim();
-    if (!summary) return { text: "council hasn't convened yet\n(fires at day-1 open)\nmoderator: qwen-235B\ncanon: axelrod active", state:"stale" };
-    const chunk = summary.slice(0, 280);
-    return { text: chunk, state:"live" };
-  }});
-makeDiegeticPanel({ x:976, y:24, w:280, h:130, title:"▣ BANKROLL TOTEM — TFs live",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
-  render:(d) => {
-    if (!d) return { state:"no_signal" };
-    // v2.12 field-name fix: API returns fleet_best_bankroll / fleet_leader / llm_calls
-    const best = d.fleet_best_bankroll ?? d.best_bankroll ?? 0;
-    const leader = d.fleet_leader ?? d.leader ?? "-";
-    const calls = d.llm_calls ?? d.total_llm_calls ?? 0;
-    const dayIdx = d.current_day_idx ?? d.days_processed ?? "—";
-    const running = d.running ? "● RUNNING" : "○ idle";
-    const text = `${running}\nday_idx: ${dayIdx}\nbest: $${Number(best).toFixed(0)}  (${leader})\ncalls: ${calls}\nfailures: ${d.llm_failures ?? 0}\npacts: ${d.cooperation_pacts_count ?? 0}`;
-    const state = (calls < 5) ? "stale" : "live";
-    return { text, state };
-  }});
-makeDiegeticPanel({ x:24, y:168, w:280, h:130, title:"◈ PROMPT CORE — mission",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
-  render:(d) => {
-    if (!d) return { state:"no_signal" };
-    // Infer collective mission from side-effects the API DOES expose
-    const missionActive = d.collective_mission_active ?? (d.season_target != null || d.axelrod_canon_active);
-    const mission = missionActive ? "$1M SHARED GOAL" : "(no mission)";
-    const canon = d.axelrod_canon_active ? "AXELROD CANON on" : "canon off";
-    const text = `COLLECTIVE: ${mission}\n${canon}\nmin deploy: ≥75%\nmin allocs: ≥3/day\nrogue <$25 / peer >$250K\nsacrificial rotation active`;
-    return { text, state: missionActive ? "live" : "fake" };
-  }});
-makeDiegeticPanel({ x:976, y:168, w:280, h:130, title:"▲ EDGE MATRIX — model vs market",
-  dataUrl:"https://nomosdashboard.vercel.app/api/nba/calibration",
-  render:(d) => {
-    if (!d || !d.points) return { state:"no_signal" };
-    const pts = d.points.slice(-5);
-    const lines = pts.map(p => `bin ${(p.predicted*100).toFixed(0)}%  actual ${(p.actual*100).toFixed(0)}%  n=${p.count}`);
-    return { text: lines.join("\n") || "no calibration data", state:"live" };
-  }});
-// v2.12: /api/nba/odds panel replaced with live MODEL ROSTER (one line per agent with its LLM).
-makeDiegeticPanel({ x:320, y:24, w:336, h:130, title:"▸ MODEL ROSTER — 16 agents × LLM",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
-  render:(d) => {
-    if (!d) return { state:"no_signal" };
-    const strats = d.axelrod_strategies || {};
-    const sacs = d.sacrificial_assignments || {};
-    const names = Object.keys(strats);
-    if (!names.length) return { text: "model roster not yet published\n(agents boot during day 1)", state:"stale" };
-    const lines = names.slice(0, 8).map(n => {
-      const s = strats[n] || "?";
-      const isSac = sacs[n] ? "†" : " ";
-      return `${isSac} ${n.slice(0,14).padEnd(14)} · ${s.slice(0,16)}`;
-    });
-    return { text: lines.join("\n"), state: names.length >= 10 ? "live" : "stale" };
-  }});
-makeDiegeticPanel({ x:672, y:24, w:280, h:130, title:"◉ LLM API RACK — 5 providers",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
-  render:(d) => {
-    if (!d) return { state:"no_signal" };
-    const calls = d.llm_calls ?? d.total_llm_calls ?? 0;
-    const fails = d.llm_failures || 0;
-    const rate = calls > 0 ? (1 - fails/calls) : 0;
-    const providers = [
-      `cerebras:  ${calls > 0 ? "● live" : "○ idle"}`,
-      `google:    ${calls > 0 ? "● live" : "○ idle"}`,
-      `mistral:   ${calls > 0 ? "● live" : "○ idle"}`,
-      `openrouter:${calls > 0 ? "● live" : "○ idle"}`,
-      `selfhost:  ${calls > 0 ? "● live" : "○ idle"}`,
-      `—`,
-      `calls: ${calls}  ok_rate: ${(rate*100).toFixed(0)}%`,
-    ];
-    return { text: providers.join("\n"), state: rate < 0.3 && calls > 10 ? "stale" : "live" };
-  }});
-// Zone B — model intelligence (center-left back wall)
-makeDiegeticPanel({ x:320, y:168, w:320, h:130, title:"◆ BRIER LEADERBOARD — 13 NBA islands",
-  dataUrl:"/data/nba-fleet-status.json",
-  render:(d) => {
-    if (!d || !d.islands) return { state:"no_signal" };
-    const sorted = [...d.islands].sort((a,b) => (a.brier||1) - (b.brier||1)).slice(0,6);
-    const lines = sorted.map((s,i) => `${["★","☆","▸","·","·","·"][i]} ${(s.name||s.id||"?").padEnd(8)} ${(s.brier||0).toFixed(5)} g=${s.generation||0}`);
-    return { text: lines.join("\n") || "no islands", state: "live" };
-  }});
-makeDiegeticPanel({ x:648, y:168, w:320, h:130, title:"▣ ENGINE TERMINAL — parity",
-  dataUrl:"/data/departments/cross-repo/engine-parity.json",
-  render:(d) => {
-    if (!d) return { state:"no_signal" };
-    const sha = d.nba_sha || d.nba_hash || "?";
-    const match = d.match || d.parity || false;
-    const text = `nba sha:  ${String(sha).slice(0,10)}\npol sha:  ${String(d.pol_sha || d.pol_hash || "?").slice(0,10)}\nparity:   ${match ? "✓ OK" : "✗ BROKEN"}\ncheck:    ${d.timestamp || d.last_check || "—"}`;
-    return { text, state: match ? "live" : "fake" };
-  }});
-// Zone C — agent internals (center)
-makeDiegeticPanel({ x:24, y:320, w:280, h:130, title:"◉ DECISION LOG — bet feed",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
-  render:(d) => {
-    if (!d || !d.leaderboard) return { text: "leaderboard empty\n(day 1 in progress,\n awaiting first commit)", state:"stale" };
-    const lb = d.leaderboard.slice(0,5);
-    const lines = lb.map((t,i) => `${(t.name||t.trader_id||"?").padEnd(14)} $${(t.bankroll||0).toFixed(0)} ${(t.wins||0)}W/${(t.losses||0)}L`);
-    return { text: lines.join("\n") || "no trades yet", state: lb[0] && lb[0].bankroll > 0 ? "live" : "stale" };
-  }});
-makeDiegeticPanel({ x:976, y:320, w:280, h:130, title:"◈ REASONING WINDOW — qwen-235B",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
-  render:(d) => {
-    if (!d) return { state:"no_signal" };
-    // v2.12: status doesn't expose "phase". Derive from running + llm_calls.
-    const phase = d.running ? (d.llm_calls > 0 ? "reasoning" : "boot") : "idle";
-    const sac = Object.keys(d.sacrificial_assignments||{}).length;
-    const text = `phase: ${phase}\nmoderator: qwen-235B\ncalls: ${d.llm_calls||0} (fail ${d.llm_failures||0})\npacts: ${d.cooperation_pacts_count||0}\nrogue: ${d.rogue_events_total||0}\ncanon: ${d.axelrod_canon_active ? "active" : "off"}\nsacrifice: ${sac} assigned`;
-    return { text, state: d.running ? "live" : "stale" };
-  }});
-// Zone D — cooperation/council
-makeDiegeticPanel({ x:320, y:320, w:320, h:130, title:"⚖ COUNCIL TABLE — morning moderator",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
-  render:(d) => {
-    if (!d) return { state:"no_signal" };
-    const strats = d.axelrod_strategies || {};
-    const n = Object.keys(strats).length;
-    const text = `moderator: qwen-235B\nagents@table: ${n}\naxelrod canon: ${d.axelrod_canon_active?"✓":"✗"}\nlib active: ${d.axelrod_library_active?"✓":"✗"}\npacts count: ${d.cooperation_pacts_count||0}\nrep_entries: ${Object.keys(d.reputation||{}).length}`;
-    return { text, state: n >= 16 ? "live" : "stale" };
-  }});
-makeDiegeticPanel({ x:648, y:320, w:320, h:130, title:"▼ ROGUE TRIGGER — drawdown guard",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
-  render:(d) => {
-    if (!d || !d.leaderboard) return { text: "rogue guard armed\nall 16 agents at $100\n(no triggers until day 1 commits)", state:"stale" };
-    const lb = d.leaderboard;
-    const lowest = lb.reduce((m,t) => (t.bankroll||Infinity) < (m.bankroll||Infinity) ? t : m, {bankroll:Infinity});
-    const highest = lb.reduce((m,t) => (t.bankroll||0) > (m.bankroll||0) ? t : m, {bankroll:0});
-    const dd = lowest.bankroll || 0, pk = highest.bankroll || 0;
-    const rogue = dd < 25 || pk > 250000;
-    const text = `min bankroll: $${dd.toFixed(0)} (${lowest.name||"?"})\nmax bankroll: $${pk.toFixed(0)} (${highest.name||"?"})\n—\ntrigger: ${rogue ? "▲ ACTIVE" : "○ idle"}\nthreshold_lo: $25\nthreshold_hi: $250K`;
-    return { text, state: rogue ? "fake" : "live" };
-  }});
-// Zone E — history (bottom band)
-makeDiegeticPanel({ x:24, y:480, w:408, h:130, title:"◁ SEASON P&L — 16 agents",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
-  render:(d) => {
-    if (!d || !d.leaderboard) return { text: "season P&L empty\n(leaderboard populates after\n first day completes)", state:"stale" };
-    const lb = d.leaderboard.slice(0,6);
-    const lines = lb.map(t => {
-      const b = t.bankroll || 0;
-      const barL = Math.min(20, Math.max(0, Math.floor(b/200)));
-      const bar = "█".repeat(barL) + "░".repeat(20-barL);
-      return `${(t.name||t.trader_id||"?").slice(0,10).padEnd(10)} ${bar} $${b.toFixed(0)}`;
-    });
-    return { text: lines.join("\n") || "no agents", state: lb[0]?.bankroll > 100 ? "live" : "stale" };
-  }});
-makeDiegeticPanel({ x:448, y:480, w:408, h:130, title:"◆ POST-MORTEM — yesterday's L",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/day-decisions",
-  render:(d) => {
-    if (!d || !d.days || !d.days.length)
-      return { text: "no day-decisions yet\nday 1 writes on completion\n(≈10-15 min)", state:"stale" };
-    const last = d.days[d.days.length-1];
-    const date = last.date || "?";
-    const allocs = last.total_allocations || 0;
-    const cash = last.avg_cash_pct || 0;
-    const deploy = (1 - cash) * 100;
-    const lines = [
-      `last day: ${date}`,
-      `allocs:   ${allocs}`,
-      `deploy:   ${deploy.toFixed(0)}% (target ≥75%)`,
-      `cash:     ${(cash*100).toFixed(0)}%`,
-      deploy < 70 ? "▲ POST-FILTER FALLBACK ENGAGED" : "○ normal deploy",
-    ];
-    return { text: lines.join("\n"), state: deploy < 50 ? "fake" : "live" };
-  }});
-makeDiegeticPanel({ x:872, y:480, w:384, h:130, title:"▶ RESOLVE WALL — outcomes",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/day-decisions",
-  render:(d) => {
-    if (!d || !d.days || !d.days.length)
-      return { text: "no resolved days yet\nday 1 still in flight\nagents posting allocations now", state:"stale" };
-    const n = d.days.length;
-    const totalAllocs = d.days.reduce((s,day) => s + (day.total_allocations||0), 0);
-    const totalDeploy = d.days.reduce((s,day) => s + (1 - (day.avg_cash_pct||1)), 0);
-    const avgDeploy = n > 0 ? totalDeploy / n : 0;
-    const lines = [
-      `days resolved: ${n}`,
-      `total allocs:  ${totalAllocs}`,
-      `avg deploy:    ${(avgDeploy*100).toFixed(1)}%`,
-      `target:        ≥75%`,
-      avgDeploy >= 0.7 ? "✓ ON TARGET" : "▲ UNDER FLOOR",
-    ];
-    return { text: lines.join("\n"), state: n === 0 ? "no_signal" : (avgDeploy >= 0.7 ? "live" : "stale") };
-  }});
-// Zone F — political feed (extra bottom right)
-makeDiegeticPanel({ x:24, y:628, w:408, h:130, title:"◆ POLITICAL FEED — P1-P8 islands",
-  dataUrl:"/data/political-fleet-status.json",
-  render:(d) => {
-    if (!d || !d.islands) return { state:"no_signal" };
-    const sorted = [...d.islands].sort((a,b) => (a.brier||1) - (b.brier||1)).slice(0,5);
-    const lines = sorted.map((s,i) => `${["★","☆","▸","·","·"][i]} ${(s.name||s.id||"?").padEnd(8)} ${(s.brier||0).toFixed(5)} g=${s.generation||0}`);
-    return { text: lines.join("\n"), state: "live" };
-  }});
-makeDiegeticPanel({ x:448, y:628, w:408, h:130, title:"▣ POLITICAL TF — 16 agents",
-  dataUrl:"https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status",
-  render:(d) => {
-    if (!d) return { state:"no_signal" };
-    const best = d.fleet_best_bankroll ?? d.best_bankroll ?? 0;
-    const calls = d.llm_calls ?? d.total_llm_calls ?? 0;
-    const leader = d.fleet_leader ?? d.leader ?? "-";
-    const dayIdx = d.current_day_idx ?? d.days_processed ?? "—";
-    const run = d.running ? "● RUNNING" : "○ idle";
-    const text = `${run}\nday_idx:  ${dayIdx}\nbest:     $${Number(best).toFixed(0)}\nleader:   ${leader}\ncalls:    ${calls}  fails: ${d.llm_failures||0}\npacts:    ${d.cooperation_pacts_count||0}`;
-    return { text, state: calls < 5 ? "stale" : "live" };
-  }});
-makeDiegeticPanel({ x:872, y:628, w:384, h:130, title:"◇ COLLECTIVE GOAL — $1M/season",
-  dataUrl:"https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard",
-  render:(d) => {
-    if (!d || !d.leaderboard) return { text: "collective pool: $1,600\n(16 agents × $100)\ntarget: $1,000,000\n[day 1 in flight — no P&L yet]", state:"stale" };
-    const total = d.leaderboard.reduce((s,t) => s + (t.bankroll||0), 0);
-    const target = 1_000_000;
-    const pct = (total / target) * 100;
-    const barL = Math.min(24, Math.max(0, Math.floor(pct * 24 / 100)));
-    const bar = "█".repeat(barL) + "░".repeat(24-barL);
-    const text = `pool total:  $${total.toFixed(0)}\ntarget:      $1,000,000\n${bar}\nprogress:    ${pct.toFixed(2)}%\nagents:      ${d.leaderboard.length}`;
-    return { text, state: total < 1600 ? "stale" : "live" };
-  }});
-refreshDiegeticPanels();
-setInterval(refreshDiegeticPanels, 15000);
+// v2.18 (2026-04-18): 18 CONTROL ROOM panels deleted — duplicated info already
+// shown in HUD/ticker/leaderboard. Replaced by a single clear 3-floor leaderboard
+// DOM overlay (see #three-floor-lb below).
 
 // Sidebar removed in v2.8 — all panels are now diegetic (in-world PIXI signs).
 
@@ -1100,7 +937,9 @@ let camScale = 1, camX = 0, camY = 0;
 function computeCamera() {
   const W = stageEl.clientWidth, H = stageEl.clientHeight;
   if (activeRoom === "world") {
-    const s = Math.min(W / WORLD_W, H / WORLD_H);
+    // v2.18: cover-fit (was contain-fit) — fills stage, small edge crop instead of
+    // letterbox. Agents live in inner 80% of WORLD so no critical content clipped.
+    const s = Math.max(W / WORLD_W, H / WORLD_H);
     camTargetScale = s;
     camTargetX = (W - WORLD_W*s) / 2;
     camTargetY = (H - WORLD_H*s) / 2;
@@ -1116,14 +955,7 @@ function computeCamera() {
 }
 window.addEventListener("resize", computeCamera);
 
-// Room tabs
-for (const btn of document.querySelectorAll("#room-tabs button")) {
-  btn.addEventListener("click", () => {
-    activeRoom = btn.dataset.room;
-    for (const b of document.querySelectorAll("#room-tabs button")) b.classList.toggle("active", b === btn);
-    computeCamera();
-  });
-}
+// Room tabs removed in v2.18 — the world view is the only view.
 
 // ── ASSET LOAD ──────────────────────────────────────────────────────────────
 async function loadTex(url) {
@@ -2339,6 +2171,143 @@ function renderLeaderboard() {
   }
 }
 
+// ── v2.18: THREE-FLOOR LEADERBOARD (DOM right-side panel) ────────────────────
+// Tracks previous bankroll snapshot per (floor, trader_id) so each refresh shows
+// today's delta. All three floors (NBA / POL / PQTF) rendered stacked — every
+// trader ranked, persona visible, click a row → inspect card with full model info.
+const _PREV_BANKROLL = {};   // { "nba:qwen-quant": 100.0, ... }
+function _deltaFor(floorKey, id, curr) {
+  const k = `${floorKey}:${id}`;
+  const prev = _PREV_BANKROLL[k];
+  _PREV_BANKROLL[k] = curr;
+  if (prev == null || curr == null) return null;
+  return curr - prev;
+}
+
+function _floorSection(kindLabel, kindClass, day, dayTotal, traders, startCap, fleetLeader) {
+  // traders: [{ id, persona, model, provider, risk, style, bankroll, wins, losses, total_bets, pctDelta? }]
+  // Sorted by bankroll desc.
+  const total = traders.reduce((s,t) => s + (t.bankroll||0), 0);
+  const fleetRoi = startCap > 0 ? ((total - startCap) / startCap) * 100 : 0;
+  const fltCls = fleetRoi > 0 ? "up" : fleetRoi < 0 ? "down" : "flat";
+  const fltTxt = `${fleetRoi>=0?"+":""}${fleetRoi.toFixed(1)}%`;
+  const dayStr = dayTotal ? `day ${day||0}/${dayTotal}` : (day ? `day ${day}` : "—");
+  const rows = traders.map((t,i) => {
+    const br = t.bankroll || 0;
+    const dl = t.delta;
+    const dlCls = dl == null ? "flat" : dl > 0.01 ? "up" : dl < -0.01 ? "down" : "flat";
+    const dlTxt = dl == null ? "—" : (dl > 0 ? "+" : "") + (Math.abs(dl) >= 1000 ? (dl/1000).toFixed(1)+"K" : dl.toFixed(0));
+    const rkClass = i < 3 ? "rk top" : "rk";
+    const rkTxt = i === 0 ? "★" : i === 1 ? "2" : i === 2 ? "3" : String(i+1);
+    const brTxt = br >= 1000 ? `$${(br/1000).toFixed(1)}K` : `$${br.toFixed(0)}`;
+    const hot = fleetLeader && t.id === fleetLeader ? " hot" : "";
+    return `<div class="r${hot}" data-floor="${kindClass}" data-trader="${escapeHtml(t.id)}">
+      <span class="${rkClass}">${rkTxt}</span>
+      <span class="nm" title="${escapeHtml(t.model)} · ${escapeHtml(t.provider)}">${escapeHtml(t.persona)}</span>
+      <span class="br">${brTxt}</span>
+      <span class="dl ${dlCls}">${dlTxt}</span>
+    </div>`;
+  }).join("");
+  return `<div class="sec">
+    <div class="sh">
+      <span class="kind ${kindClass}">${kindLabel}</span>
+      <span><span class="day">${dayStr}</span><span class="flt ${fltCls}">${fltTxt}</span></span>
+    </div>
+    ${rows || '<div class="empty">no traders yet</div>'}
+  </div>`;
+}
+
+function renderThreeFloorLB() {
+  const body = document.getElementById("tfl-body");
+  if (!body) return;
+  const sections = [];
+
+  // NBA TF
+  {
+    const d = LATEST_NBA;
+    const agents = (d && d.agents) || {};
+    const list = Object.entries(agents).map(([id, v]) => {
+      const p = personaFor(id);
+      const br = (v && typeof v.bankroll === "number") ? v.bankroll : null;
+      return { id, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+               bankroll: br, wins: v.wins, losses: v.losses, total_bets: v.total_bets,
+               delta: br == null ? null : _deltaFor("nba", id, br) };
+    }).filter(t => t.bankroll != null);
+    list.sort((a,b) => b.bankroll - a.bankroll);
+    const day = d && (d.days_processed ?? 0);
+    const dayT = d && (d.days_total ?? 175);
+    const startCap = 100 * list.length;
+    sections.push(_floorSection("NBA TF · 17 agents", "nba", day, dayT, list, startCap, d && d.fleet_leader));
+  }
+
+  // POL TF
+  {
+    const d = LATEST_POL;
+    const agents = (d && d.agents) || {};
+    const list = Object.entries(agents).map(([id, v]) => {
+      const p = personaFor(id);
+      const br = (v && typeof v.bankroll === "number") ? v.bankroll : null;
+      return { id, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+               bankroll: br, wins: v.wins, losses: v.losses, total_bets: v.total_bets,
+               delta: br == null ? null : _deltaFor("pol", id, br) };
+    }).filter(t => t.bankroll != null);
+    list.sort((a,b) => b.bankroll - a.bankroll);
+    const day = d && (d.days_processed ?? 0);
+    const dayT = d && (d.days_total ?? 50);
+    const startCap = 100 * list.length;
+    sections.push(_floorSection("POLITICAL TF · 17 agents", "pol", day, dayT, list, startCap, d && d.fleet_leader));
+  }
+
+  // PQTF (derivatives day-traders — 6 agents, $100K start each)
+  {
+    const d = LATEST_PQTF;
+    const agents = (d && d.agents) || {};
+    const list = Object.entries(agents).map(([id, v]) => {
+      const p = personaFor(id);
+      const br = (v && typeof v.bankroll === "number") ? v.bankroll : null;
+      return { id, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+               bankroll: br, wins: v.wins, losses: v.losses, total_bets: v.total_bets,
+               delta: br == null ? null : _deltaFor("pqtf", id, br) };
+    }).filter(t => t.bankroll != null);
+    list.sort((a,b) => b.bankroll - a.bankroll);
+    const day = d && (d.days_processed ?? 0);
+    const dayT = d && (d.days_total ?? 50);
+    const startCap = 100000 * list.length;
+    sections.push(_floorSection("PQTF · 6 derivatives", "pqtf", day, dayT, list, startCap, d && d.fleet_leader));
+  }
+
+  body.innerHTML = sections.join("");
+
+  // Clock
+  const clk = document.getElementById("tfl-clock");
+  if (clk) clk.textContent = new Date().toISOString().slice(11,19) + " UTC";
+
+  // Row click → open inspect card (synthesize agent if PQTF / fallback)
+  for (const el of body.querySelectorAll(".r")) {
+    el.addEventListener("click", () => {
+      const floor = el.dataset.floor;   // nba / pol / pqtf
+      const id = el.dataset.trader;
+      let a = null;
+      if (floor === "nba") a = AGENTS.find(x => x.kind === "nba" && x.id === id);
+      else if (floor === "pol") a = AGENTS.find(x => x.kind === "political" && x.key === id);
+      if (!a) {
+        // PQTF or unknown — synthesize an inspect-only agent
+        const p = personaFor(id);
+        const src = (floor === "pqtf" ? LATEST_PQTF : floor === "pol" ? LATEST_POL : LATEST_NBA) || {};
+        const vv = (src.agents || {})[id] || {};
+        a = {
+          id, key: id, label: p.persona, persona: p.persona,
+          model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+          kind: floor, state: src.running ? "thinking" : "idle",
+          strategy: p.style, data: vv, _synth: true,
+          x: WORLD_W / (2*TILE), y: WORLD_H / (2*TILE),
+        };
+      }
+      showInspectPanel(a);
+    });
+  }
+}
+
 // ── LIVE DATA FETCHER ───────────────────────────────────────────────────────
 async function fetchJSON(url) {
   try { const r = await fetch(url, { cache:"no-store" }); if (!r.ok) return null; return await r.json(); }
@@ -2507,6 +2476,7 @@ async function refresh() {
   for (const a of AGENTS.filter(x => x._isInfra)) updateInfraTower(a);
   renderEvolution();
   renderLeaderboard();
+  renderThreeFloorLB();
 
   // Councils — poll Hub-persisted state.json for iteration count + last-seen activity (v2.12).
   // Councils are Gradio-only (no /api/status), so we read the file we ship via HfApi.upload_file.
@@ -2760,21 +2730,6 @@ async function loadPapers() {
         line.style.fill = parseInt(hex.replace("#",""), 16);
       }
     }
-    // Modal: full list
-    const modal = document.getElementById("paper-modal-list");
-    const meta = document.getElementById("paper-modal-meta");
-    const internal = papers.filter(p => p.source === "nomos42-internal").length;
-    const external = papers.length - internal;
-    meta.textContent = `${internal} Nomos42 proposals · ${external} arXiv papers · ${data.sources.length} sources · fetched ${data.fetched}`;
-    modal.innerHTML = papers.map(p => {
-      const col = TAG_COLOR[p.tag] || "#ffa500";
-      return `<div style="margin-bottom:14px; padding:10px; border:1px solid #1a1f2a; border-radius:3px; background:#0d1018;">
-        <div style="color:${col}; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:4px;">${p.tag} · ${p.published || "—"}</div>
-        <a href="${p.url}" target="_blank" rel="noopener" style="color:#eee; text-decoration:none; font-size:12px; font-weight:600; display:block; margin-bottom:6px;">${p.title}</a>
-        <div style="color:#8899aa; font-size:10px; line-height:1.45;">${p.summary || ""}</div>
-        <div style="color:#5b6478; font-size:9px; margin-top:4px; font-family:monospace;">${p.url}</div>
-      </div>`;
-    }).join("");
   } catch(e) {
     const rboard = DIEGETIC.research;
     if (rboard && rboard.lines[0]) {
@@ -2784,16 +2739,6 @@ async function loadPapers() {
     console.warn("papers load error:", e);
   }
 }
-document.getElementById("btn-papers").addEventListener("click", (ev) => {
-  ev.preventDefault();
-  document.getElementById("paper-modal").style.display = "block";
-});
-document.getElementById("paper-modal-close").addEventListener("click", () => {
-  document.getElementById("paper-modal").style.display = "none";
-});
-document.getElementById("paper-modal").addEventListener("click", (ev) => {
-  if (ev.target.id === "paper-modal") ev.target.style.display = "none";
-});
 
 // ── BOOT ────────────────────────────────────────────────────────────────────
 computeCamera();
