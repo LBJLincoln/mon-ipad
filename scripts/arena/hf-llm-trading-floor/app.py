@@ -471,11 +471,33 @@ def _load_state_from_disk() -> Optional[dict]:
     return None
 
 def _save_logs_to_disk():
-    """Persist agent logs."""
+    """Persist agent logs (local /tmp + HF Hub so /api/day-decisions survives
+    container preempt — bug fix 2026-04-18)."""
     try:
-        LOGS_PATH.write_text(json.dumps(dict(_agent_logs), default=str))
+        payload = json.dumps(dict(_agent_logs), default=str)
+        LOGS_PATH.write_text(payload)
     except Exception:
-        pass
+        return
+    if _hub_api:
+        try:
+            _hub_api.upload_file(
+                path_or_fileobj=payload.encode("utf-8"),
+                path_in_repo="data/runtime/agent_logs.json",
+                repo_id=HF_REPO_ID, repo_type="space",
+                commit_message="runtime: agent_logs snapshot",
+            )
+        except Exception as e:
+            print(f"[hub-persist] agent_logs push failed: {e}")
+        try:
+            cp_payload = json.dumps(dict(_council_plans), default=str).encode("utf-8")
+            _hub_api.upload_file(
+                path_or_fileobj=cp_payload,
+                path_in_repo="data/runtime/council_plans.json",
+                repo_id=HF_REPO_ID, repo_type="space",
+                commit_message="runtime: council_plans snapshot",
+            )
+        except Exception as e:
+            print(f"[hub-persist] council_plans push failed: {e}")
 
 def _load_logs_from_disk():
     """Load persisted logs."""
