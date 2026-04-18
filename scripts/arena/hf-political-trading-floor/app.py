@@ -132,6 +132,12 @@ SEASON_TARGET = 1_000_000.0
 STARTING_CAPITAL = 100.0
 ROGUE_DRAWDOWN_THRESHOLD = 0.25
 ROGUE_GREED_THRESHOLD = 250_000.0
+# 2026-04-18 drawdown-guardrails (post-mortem parity with NBA app)
+# Post-mortem found 14/17 POL agents converged to identical ruin ($93.92) by
+# defecting to higher-variance plays on drawdown. Preservation > chase.
+PEAK_DRAWDOWN_GUARD = 0.70        # ≥30% off peak → preservation mode
+PRESERVATION_MAX_DEPLOY = 0.50    # cap daily deploy at 50%
+PRESERVATION_MAX_BET_PCT = 0.05   # cap any single bet at 5% bankroll
 COUNCIL_MIN_COMMIT_PER_AGENT = 0.50
 _council_plans: Dict[str, dict] = {}
 _rogue_events: List[Dict] = []
@@ -1322,8 +1328,13 @@ def build_rogue_block(rogue_info: dict) -> str:
     if "drawdown" in reasons:
         lines.append(
             f"Your bankroll is below ${STARTING_CAPITAL * ROGUE_DRAWDOWN_THRESHOLD:.0f} "
-            "(drawdown floor). You may DEFECT from today's council plan for higher-variance "
-            "macro/event trades. State 'DEFECT: drawdown' in day_strategy."
+            "(drawdown floor). Post-mortem (2026-04-18) showed defect-to-variance "
+            "destroys survivors — 14/17 POL agents converged to identical ruin. "
+            "You MUST enter preservation mode: max single bet at "
+            f"{int(PRESERVATION_MAX_BET_PCT*100)}%, total deploy ≤"
+            f"{int(PRESERVATION_MAX_DEPLOY*100)}%, sector-ETF moneylines only, "
+            "NO leveraged ETFs, NO event-driven flyers. "
+            "State 'PRESERVE: drawdown' in day_strategy. Do NOT chase."
         )
     if "greed" in reasons:
         leader = rogue_info.get("peer_leader", "?")
@@ -1914,23 +1925,28 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
             "    \"my_adjustment\": \"what I will change about my own strategy\"\n"
             "  }\n"
             "Review the 3-day history above. Identify what's working and what isn't.\n"
-            "Agents in RESCUE MODE should take higher-variance positions.\n"
+            "Agents in PRESERVATION MODE should lock in capital (5% per bet cap).\n"
             "TOP-3 agents should protect capital and mentor via coalition proposals.\n"
         )
 
     lines.append(
         "\nCOLLABORATION RULES:\n"
-        "- You see ALL traders' allocations from last 3 days. Learn from winners.\n"
-        "- AVOID duplicating the exact same sector/direction as a peer (diversify coverage).\n"
-        "- If your bankroll is in RESCUE MODE (<$50), take higher-variance positions\n"
-        "  (indirect beneficiary plays, cross-sector arb, high-beta sectors) — the group needs you swinging.\n"
+        "- You see ALL traders' allocations from last 3 days. Learn, do not copy.\n"
+        "- MANDATORY: do NOT duplicate the exact sector/direction picked by >2 peers yesterday.\n"
+        "- If your bankroll is in PRESERVATION MODE (<$50), max 5% per position,\n"
+        "  sector ETFs only, NO leveraged plays, NO event-flyers. Survive, do not chase.\n"
         "- TOP-3 traders: protect capital, use corroborated multi-agency signals.\n"
-        "- Propose coalitions with traders whose strategies complement yours.\n"
+        "- Propose coalitions with traders whose REASONING TEMPLATE differs from yours.\n"
         "\n"
-        "ANTI-GROUPTHINK (DMAD — MANDATORY):\n"
-        "Your day_strategy MUST begin with one of:\n"
-        "  CONSENSUS AGREE [peer_name]: <reason your strategy supports same sector/direction>\n"
-        "  CONSENSUS DIVERGE [peer_name]: <specific signal/agency counter-argument>\n"
+        "ANTI-GROUPTHINK (DMAD — MANDATORY, enforced 2026-04-18):\n"
+        "Post-mortem found 14/17 POL agents converged to identical $93.92/$159.68 bankrolls.\n"
+        "To break this, your day_strategy MUST begin with EXACTLY ONE of:\n"
+        "  STRUCTURAL DIVERGE [peer_name]: <how your REASONING TEMPLATE produces a different\n"
+        "    sector pick than peer's, cite your template>\n"
+        "  STRUCTURAL COMPLEMENT [peer_name]: <how your pick fills a sector the peer ignored,\n"
+        "    cite both templates>\n"
+        "CONSENSUS AGREE is FORBIDDEN — if your template converges with a peer, you must\n"
+        "explicitly pick the second-best sector from your template instead.\n"
     )
     return "\n".join(lines)
 
@@ -2290,14 +2306,25 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             _rogue_block = build_rogue_block(day_rogue_state.get(tid, {}))
             if _rogue_block:
                 system_prompt = system_prompt + _rogue_block
-            # Rescue protocol: agents under $50 get risk-on mandate
+            # Preservation protocol: agents under $50 must preserve capital, not chase
             if ts["bankroll"] < 50.0 and ts["bankroll"] > 5.0:
                 system_prompt += (
-                    "\n\n[RESCUE MODE ACTIVE] Your bankroll is critically low. "
-                    "The group needs you to take HIGHER-VARIANCE positions: "
-                    "indirect beneficiary plays, high-beta sectors, cross-sector arb. "
-                    "Minimum edge 5%. Allocate 15-40% per position. "
-                    "Conservative corroborated-only plays won't recover your position."
+                    "\n\n[PRESERVATION MODE ACTIVE] Your bankroll is low. "
+                    "Post-mortem shows 14/17 POL agents converge to ruin when they "
+                    "chase variance on drawdown. Mandate: max 50% total deploy, "
+                    "max 5% per single position, minimum edge 4%, sector-ETF moneylines "
+                    "only. NO leveraged ETFs, NO event-driven flyers. "
+                    "Survive 5 days of flat then reassess."
+                )
+            # Peak-drawdown guard: ≥30% below personal peak → force preservation
+            peak = float(ts.get("best_bankroll") or ts.get("bankroll") or 100.0)
+            if peak > 100.0 and ts["bankroll"] < PEAK_DRAWDOWN_GUARD * peak:
+                system_prompt += (
+                    f"\n\n[PEAK-DRAWDOWN GUARD] You peaked at ${peak:,.2f} and are now "
+                    f"${ts['bankroll']:,.2f} (below {int(PEAK_DRAWDOWN_GUARD*100)}% of peak). "
+                    f"Mandatory capital preservation: max {int(PRESERVATION_MAX_DEPLOY*100)}% deploy, "
+                    f"max {int(PRESERVATION_MAX_BET_PCT*100)}% per position, edge ≥4%, "
+                    "sector ETFs only. Lock in what you have before chasing more."
                 )
             user_prompt = build_day_prompt(
                 day_date, day_events, sector_trends, ts,

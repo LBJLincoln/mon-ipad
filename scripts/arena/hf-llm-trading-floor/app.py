@@ -134,6 +134,13 @@ STARTING_CAPITAL = 100.0             # per-agent seed (pre multi-season compound
 ROGUE_DRAWDOWN_THRESHOLD = 0.25      # bankroll < 0.25 × starting → drawdown rogue
 ROGUE_GREED_THRESHOLD = 250_000.0    # any peer > $250K → greed rogue
 COUNCIL_MIN_COMMIT_PER_AGENT = 0.50  # each agent commits ≥50% of bankroll daily
+# Peak-drawdown guard (2026-04-18 post-mortem finding): mistral-ministral peaked
+# at $10,098 on day 12 then lost 78.7% to $2,149. Root cause: prompt told drawdown
+# agents to chase variance. Fix: when bankroll < PEAK_DRAWDOWN_GUARD × best_bankroll,
+# force capital-preservation mode (half-Kelly cap, no parlays, deploy floor waived).
+PEAK_DRAWDOWN_GUARD = 0.70           # ≥30% off peak → preservation mode
+PRESERVATION_MAX_DEPLOY = 0.50       # cap daily deploy at 50% while preserving
+PRESERVATION_MAX_BET_PCT = 0.05      # cap any single bet at 5% bankroll
 _council_plans: Dict[str, dict] = {} # day_date → plan dict (strategies, categories, per-agent %, summary)
 _rogue_events: List[Dict] = []       # append-only audit: {day, tid, reason, detail}
 
@@ -1539,9 +1546,13 @@ def build_rogue_block(rogue_info: dict) -> str:
     if "drawdown" in reasons:
         lines.append(
             f"Your bankroll is below ${STARTING_CAPITAL * ROGUE_DRAWDOWN_THRESHOLD:.0f} "
-            f"(the group's drawdown floor). You are permitted to DEFECT from the council "
-            "plan today and take higher-variance shots that might recover. State explicitly "
-            "in day_strategy 'DEFECT: drawdown'."
+            f"(the group's drawdown floor). Capital preservation mode: cap ANY single "
+            f"bet at {int(PRESERVATION_MAX_BET_PCT*100)}%, total deploy ≤"
+            f"{int(PRESERVATION_MAX_DEPLOY*100)}%, NO parlays, NO alt spreads, NO "
+            "'RESCUE MODE'. Only take straight bets with model_edge ≥ 4%. Declining a "
+            "day is OK. State 'DEFECT: drawdown (preserve)' in day_strategy. "
+            "Gambler's-ruin chasing (what the post-mortem showed killed day 34) is "
+            "explicitly FORBIDDEN."
         )
     if "greed" in reasons:
         leader = rogue_info.get("peer_leader", "?")
@@ -2458,23 +2469,29 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
             "    \"my_adjustment\": \"what I will change about my own strategy\"\n"
             "  }\n"
             "Review the 3-day history above. Identify what's working and what isn't.\n"
-            "Agents in RESCUE MODE should take riskier bets (alt spreads, props).\n"
+            "Agents in PRESERVATION MODE should lock capital (5% cap, moneylines only).\n"
             "TOP-3 agents should protect capital and mentor via coalition proposals.\n"
         )
 
     lines.append(
         "\nCOLLABORATION RULES:\n"
-        "- You see ALL traders' bets from last 3 days. Learn from winners.\n"
-        "- AVOID duplicating the exact same bet as a peer (diversify coverage).\n"
-        "- If your bankroll is in RESCUE MODE (<$50), take higher-variance bets\n"
-        "  (alt spreads, props, quarters) — the group needs you swinging.\n"
+        "- You see ALL traders' bets from last 3 days. Learn, do not copy.\n"
+        "- MANDATORY: do NOT duplicate the exact game/direction picked by >2 peers yesterday.\n"
+        "- If your bankroll is in PRESERVATION MODE (<$50), max 5% per bet,\n"
+        "  moneylines/standard spreads only, NO alt spreads/props/quarters.\n"
         "- TOP-3 traders: protect capital, use conservative base categories.\n"
-        "- Propose coalitions with traders whose strategies complement yours.\n"
+        "- Propose coalitions with traders whose REASONING TEMPLATE differs from yours.\n"
         "\n"
-        "ANTI-GROUPTHINK (DMAD — MANDATORY):\n"
-        "Your day_strategy MUST begin with one of:\n"
-        "  CONSENSUS AGREE [peer_name]: <reason your strategy supports same pick>\n"
-        "  CONSENSUS DIVERGE [peer_name]: <specific stat/metric counter-argument>\n"
+        "ANTI-GROUPTHINK (DMAD — MANDATORY, enforced 2026-04-18):\n"
+        "Post-mortem (d34 2025-11-09) found 8/17 NBA agents crashed ~47% simultaneously\n"
+        "by chasing variance in 'RESCUE MODE'. To break consensus-ruin, your day_strategy\n"
+        "MUST begin with EXACTLY ONE of:\n"
+        "  STRUCTURAL DIVERGE [peer_name]: <how your REASONING TEMPLATE produces a different\n"
+        "    pick than peer's, cite your template>\n"
+        "  STRUCTURAL COMPLEMENT [peer_name]: <how your pick fills a game the peer ignored,\n"
+        "    cite both templates>\n"
+        "CONSENSUS AGREE is FORBIDDEN — if your template converges with a peer, pick the\n"
+        "second-best candidate from your template instead.\n"
     )
     return "\n".join(lines)
 
@@ -2889,14 +2906,24 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             _rogue_block = build_rogue_block(day_rogue_state.get(tid, {}))
             if _rogue_block:
                 system_prompt = system_prompt + _rogue_block
-            # Rescue protocol: agents under $50 get risk-on mandate
+            # Preservation protocol: agents under $50 must preserve capital, not chase
             if ts["bankroll"] < 50.0 and ts["bankroll"] > 5.0:
                 system_prompt += (
-                    "\n\n[RESCUE MODE ACTIVE] Your bankroll is critically low. "
-                    "The group needs you to take HIGHER-VARIANCE bets: "
-                    "alt spreads (+5 to +10), quarter totals, game props. "
-                    "Minimum edge 5%. Bet 15-40% per allocation. "
-                    "Conservative base bets won't recover your position."
+                    "\n\n[PRESERVATION MODE ACTIVE] Your bankroll is low. "
+                    "Post-mortem shows chasing variance from drawdown destroys survivors. "
+                    "Mandate: max 50% total deploy, max 5% per single bet, minimum edge 4%, "
+                    "moneylines and standard spreads only. NO parlays, NO alt spreads, "
+                    "NO quarter/prop flyers. Survive 5 days of flat then reassess."
+                )
+            # Peak-drawdown guard: if >30% below personal peak, force preservation
+            peak = float(ts.get("best_bankroll") or ts.get("bankroll") or 100.0)
+            if peak > 100.0 and ts["bankroll"] < PEAK_DRAWDOWN_GUARD * peak:
+                system_prompt += (
+                    f"\n\n[PEAK-DRAWDOWN GUARD] You peaked at ${peak:,.2f} and are now "
+                    f"${ts['bankroll']:,.2f} (below {int(PEAK_DRAWDOWN_GUARD*100)}% of peak). "
+                    f"Mandatory capital preservation: max {int(PRESERVATION_MAX_DEPLOY*100)}% deploy, "
+                    f"max {int(PRESERVATION_MAX_BET_PCT*100)}% per bet, edge ≥4%, "
+                    "moneylines/standard spreads only. Lock in what you have before chasing more."
                 )
             user_prompt = build_day_prompt(
                 day_date, day_games, day_odds_list, day_stand_list, day_form_list,
