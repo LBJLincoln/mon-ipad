@@ -20,16 +20,20 @@ from intraday_paths import (
     gbm_path, jump_path, scale_iv_for_event, EVENT_IV_SCALE,
 )
 from session_data import load_events, all_days, enrich_event_for_quant
+from spreads import (
+    vertical_spread, iron_condor, straddle, butterfly,
+    mark_position, portfolio_var, check_stop_loss,
+)
 
 # ── Config ─────────────────────────────────────────────────────────────────
 
 AGENTS = [
-    {"tid": "qwen-quant",   "model": "cerebras:qwen-3-235b-a22b-instruct-2507", "personality": "quantitative", "risk": 0.55},
-    {"tid": "llama-contra", "model": "cerebras:llama3.1-8b",                    "personality": "contrarian",    "risk": 0.55},
-    {"tid": "gemini-anl",   "model": "gemini:gemini-3-flash-preview",           "personality": "analytical",    "risk": 0.55},
-    {"tid": "mistral-large","model": "mistral:mistral-large-latest",            "personality": "ensemble",      "risk": 0.50},
-    {"tid": "mistral-medium","model":"mistral:mistral-medium-latest",           "personality": "diversified",   "risk": 0.45},
-    {"tid": "mistral-nemo", "model": "mistral:open-mistral-nemo",               "personality": "aggressive",    "risk": 0.70},
+    {"tid": "qwen-quant",    "model": "cerebras:qwen-3-235b",   "personality": "quantitative", "risk": 0.55},
+    {"tid": "llama-contra",  "model": "cerebras:llama3.1-8b",   "personality": "contrarian",   "risk": 0.55},
+    {"tid": "gemini-anl",    "model": "google:gemini-3-flash",  "personality": "analytical",   "risk": 0.55},
+    {"tid": "mistral-large", "model": "mistral:large",          "personality": "ensemble",     "risk": 0.50},
+    {"tid": "mistral-medium","model": "mistral:medium",         "personality": "diversified",  "risk": 0.45},
+    {"tid": "mistral-nemo",  "model": "mistral:nemo",           "personality": "aggressive",   "risk": 0.70},
 ]
 
 STARTING_BANKROLL = 100_000.0
@@ -88,12 +92,33 @@ SESSION EVENTS:
 ETF SPOTS: {spots_str}
 
 YOUR TASK — return a JSON object with keys:
-  "thesis": <string, 1-2 sentences, your reasoning template>
-  "reasoning_template": <one of: mean-reversion | momentum | vol-expansion | sector-rotation | macro-hedge>
+  "thesis": <string, 1-2 sentences>
+  "reasoning_template": <mean-reversion | momentum | vol-expansion | sector-rotation | macro-hedge>
   "allocations": [
+    # SINGLE-LEG:
     {{"event_idx": <int>, "etf": <ticker>, "option_type": "call"|"put",
-      "strike_pct": <float>, "tte_days": <int 1-5>, "qty": <int 1-10>,
-      "rationale": <string>}} ... max {MAX_POSITIONS_PER_SESSION}
+      "strike_pct": <float 0.9-1.1>, "tte_days": <int 1-5>, "qty": <int 1-10>,
+      "rationale": <str>}}
+    # OR MULTI-LEG (Phase 2 spreads — use for vol plays + defined risk):
+    # vertical: bull call / bear put (defined risk, defined reward)
+    {{"event_idx": <int>, "etf": <ticker>, "strategy": "vertical",
+      "option_type": "call"|"put",
+      "strike_low_pct": <float 0.95-1.0>, "strike_high_pct": <float 1.0-1.08>,
+      "tte_days": <int 2-10>, "qty": <int 1-5>, "rationale": <str>}}
+    # iron_condor: net-credit, bet on range
+    {{"event_idx": <int>, "etf": <ticker>, "strategy": "iron_condor",
+      "put_long_pct": 0.93, "put_short_pct": 0.96, "call_short_pct": 1.04, "call_long_pct": 1.07,
+      "tte_days": <int 3-14>, "qty": <int 1-3>, "rationale": <str>}}
+    # straddle: long or short vol
+    {{"event_idx": <int>, "etf": <ticker>, "strategy": "straddle",
+      "side": "long"|"short", "strike_pct": 1.0,
+      "tte_days": <int 2-7>, "qty": <int 1-3>, "rationale": <str>}}
+    # butterfly: pin play at strike
+    {{"event_idx": <int>, "etf": <ticker>, "strategy": "butterfly",
+      "option_type": "call"|"put",
+      "strike_low_pct": 0.97, "strike_mid_pct": 1.0, "strike_high_pct": 1.03,
+      "tte_days": <int 3-10>, "qty": <int 1-3>, "rationale": <str>}}
+    # ...max {MAX_POSITIONS_PER_SESSION} allocations
   ]
   "coalition_proposal": {{"peer": <tid or null>, "event_idx": <int>, "etf": <ticker>, "option_type": "call|put"}}
 
@@ -128,20 +153,28 @@ _call_llm_impl = None
 def default_call_llm(agent: Dict, prompt: str) -> Optional[Dict]:
     try:
         from gateway_client import gateway_call
-    except Exception:
+    except Exception as e:
+        print(f"[llm] import fail: {e}")
         return None
     try:
         t0 = time.time()
         resp = gateway_call(
-            model=agent["model"],
+            model_key=agent["model"],
             messages=[{"role": "user", "content": prompt}],
             max_tokens=2000, temperature=0.6, timeout=40,
         )
         dt = time.time() - t0
-        text = (resp or {}).get("content") or (resp or {}).get("text") or ""
+        text = (resp or {}).get("text") or (resp or {}).get("content") or ""
+        routed = (resp or {}).get("routed_via", "?")
+        if not text:
+            print(f"[llm] {agent['tid']} empty text (routed={routed}, err={(resp or {}).get('error')})")
+            return None
         parsed = parse_llm_response(text)
-        if parsed is not None:
-            parsed["_llm_seconds"] = round(dt, 2)
+        if parsed is None:
+            print(f"[llm] {agent['tid']} parse fail (routed={routed}, text_head={text[:120]!r})")
+            return None
+        parsed["_llm_seconds"] = round(dt, 2)
+        parsed["_routed_via"] = routed
         return parsed
     except Exception as e:
         print(f"[llm] {agent['tid']} failed: {type(e).__name__}: {e}")
@@ -224,39 +257,108 @@ def run_session(agents_state: Dict, date: str, session_id: int,
                 if etf not in etf_spot_open:
                     etf = "SPY"
                 spot = etf_spot_open[etf]
-                opt_type = alloc.get("option_type", "call")
-                if opt_type not in ("call", "put"):
-                    continue
-                strike_pct = float(alloc.get("strike_pct", 1.0))
-                if defensive:
-                    strike_pct = 1.0
-                strike_pct = max(0.90, min(1.10, strike_pct))
-                strike = spot * strike_pct
-                tte_days = max(1, min(5, int(alloc.get("tte_days", 2))))
-                tte_years = tte_days / 252.0
-                qty = max(1, min(5 if defensive else 10, int(alloc.get("qty", 1))))
-
                 iv = etf_iv.get(etf, ETF_BASE_IV)
-                entry_price = bs_price(spot, strike, tte_years, iv, opt_type, r=RISK_FREE_RATE)
-                if entry_price < 0.05:
-                    continue
-                cost = entry_price * qty * OPTION_MULT
-                max_cost = bankroll * (0.05 if defensive else 0.15)
-                if cost > max_cost:
-                    qty = max(1, int(max_cost / (entry_price * OPTION_MULT)))
-                    cost = entry_price * qty * OPTION_MULT
-                if cost < 50 or cost > bankroll * MAX_DEPLOY_PCT_PER_SESSION:
-                    continue
+                tte_days = max(1, min(14, int(alloc.get("tte_days", 2))))
+                tte_years = tte_days / 252.0
+                strategy_kind = (alloc.get("strategy") or "").strip().lower()
 
-                positions.append({
-                    "tid": tid, "etf": etf, "spot_open": spot, "strike": strike,
-                    "option_type": opt_type, "tte_days": tte_days, "qty": qty,
-                    "iv_open": iv, "entry_price": entry_price, "cost": cost,
-                    "event_idx": alloc.get("event_idx"),
-                    "rationale": str(alloc.get("rationale", ""))[:200],
-                    "reasoning_template": prop.get("reasoning_template", ""),
-                })
-                state["bankroll"] -= cost
+                if strategy_kind in ("vertical", "iron_condor", "straddle", "butterfly"):
+                    # ── Multi-leg (Phase 2) ───────────────────────────
+                    qty = max(1, min(3 if defensive else 5, int(alloc.get("qty", 1))))
+                    if strategy_kind == "vertical":
+                        opt_type = alloc.get("option_type", "call")
+                        if opt_type not in ("call", "put"):
+                            continue
+                        lo_pct = max(0.90, min(1.05, float(alloc.get("strike_low_pct", 0.98))))
+                        hi_pct = max(0.95, min(1.10, float(alloc.get("strike_high_pct", 1.03))))
+                        if lo_pct >= hi_pct:
+                            continue
+                        strat = vertical_spread(spot, spot*lo_pct, spot*hi_pct,
+                                                tte_years, iv, opt_type, r=RISK_FREE_RATE)
+                    elif strategy_kind == "iron_condor":
+                        pl = float(alloc.get("put_long_pct",  0.93))
+                        ps = float(alloc.get("put_short_pct", 0.96))
+                        cs = float(alloc.get("call_short_pct",1.04))
+                        cl = float(alloc.get("call_long_pct", 1.07))
+                        if not (pl < ps < 1.0 < cs < cl):
+                            continue
+                        strat = iron_condor(spot, spot*ps, spot*pl, spot*cs, spot*cl,
+                                            tte_years, iv, r=RISK_FREE_RATE)
+                    elif strategy_kind == "straddle":
+                        side = alloc.get("side", "long")
+                        if side not in ("long", "short"):
+                            continue
+                        if defensive and side == "short":
+                            continue  # no naked shorts when small
+                        k_pct = max(0.95, min(1.05, float(alloc.get("strike_pct", 1.0))))
+                        strat = straddle(spot, spot*k_pct, tte_years, iv, r=RISK_FREE_RATE, side=side)
+                    else:  # butterfly
+                        opt_type = alloc.get("option_type", "call")
+                        lo = float(alloc.get("strike_low_pct", 0.97))
+                        mid = float(alloc.get("strike_mid_pct", 1.00))
+                        hi = float(alloc.get("strike_high_pct", 1.03))
+                        if not (lo < mid < hi):
+                            continue
+                        strat = butterfly(spot, spot*lo, spot*mid, spot*hi,
+                                          tte_years, iv, opt_type, r=RISK_FREE_RATE)
+
+                    strat_cost = float(strat.get("cost") or -strat.get("net_credit", 0))
+                    # Net credit strategies (iron_condor) have cost<0, flip sign for margin
+                    max_loss = float(strat.get("max_loss", abs(strat_cost)))
+                    position_cost = max(abs(strat_cost), max_loss) * qty * OPTION_MULT
+                    max_cost = bankroll * (0.05 if defensive else 0.15)
+                    if position_cost > max_cost:
+                        qty = max(1, int(max_cost / max(1, max_loss * OPTION_MULT)))
+                        position_cost = max(abs(strat_cost), max_loss) * qty * OPTION_MULT
+                    if position_cost < 50 or position_cost > bankroll * MAX_DEPLOY_PCT_PER_SESSION:
+                        continue
+
+                    positions.append({
+                        "tid": tid, "etf": etf, "spot_open": spot,
+                        "strategy": strategy_kind, "multi_leg": True,
+                        "legs_spec": strat,  # full strat payload (legs + cost + max_loss + etc)
+                        "tte_days": tte_days, "qty": qty,
+                        "iv_open": iv, "entry_cost_per_contract": strat_cost,
+                        "cost": position_cost,
+                        "event_idx": alloc.get("event_idx"),
+                        "rationale": str(alloc.get("rationale", ""))[:200],
+                        "reasoning_template": prop.get("reasoning_template", ""),
+                    })
+                    state["bankroll"] -= position_cost
+                else:
+                    # ── Single-leg (existing) ───────────────────────────
+                    opt_type = alloc.get("option_type", "call")
+                    if opt_type not in ("call", "put"):
+                        continue
+                    strike_pct = float(alloc.get("strike_pct", 1.0))
+                    if defensive:
+                        strike_pct = 1.0
+                    strike_pct = max(0.90, min(1.10, strike_pct))
+                    strike = spot * strike_pct
+                    tte_days = max(1, min(5, tte_days))
+                    qty = max(1, min(5 if defensive else 10, int(alloc.get("qty", 1))))
+
+                    entry_price = bs_price(spot, strike, tte_years, iv, opt_type, r=RISK_FREE_RATE)
+                    if entry_price < 0.05:
+                        continue
+                    cost = entry_price * qty * OPTION_MULT
+                    max_cost = bankroll * (0.05 if defensive else 0.15)
+                    if cost > max_cost:
+                        qty = max(1, int(max_cost / (entry_price * OPTION_MULT)))
+                        cost = entry_price * qty * OPTION_MULT
+                    if cost < 50 or cost > bankroll * MAX_DEPLOY_PCT_PER_SESSION:
+                        continue
+
+                    positions.append({
+                        "tid": tid, "etf": etf, "spot_open": spot, "strike": strike,
+                        "option_type": opt_type, "tte_days": tte_days, "qty": qty,
+                        "iv_open": iv, "entry_price": entry_price, "cost": cost,
+                        "multi_leg": False,
+                        "event_idx": alloc.get("event_idx"),
+                        "rationale": str(alloc.get("rationale", ""))[:200],
+                        "reasoning_template": prop.get("reasoning_template", ""),
+                    })
+                    state["bankroll"] -= cost
             except Exception as e:
                 print(f"[open] {tid} alloc rejected: {e}")
 
@@ -279,16 +381,50 @@ def run_session(agents_state: Dict, date: str, session_id: int,
             path = gbm_path(etf_spot_open[etf], iv, session_minutes, seed=seed)
         etf_spot_close[etf] = path[-1]
 
+    stops_triggered = 0
     for pos in positions:
         spot_close = etf_spot_close.get(pos["etf"], pos["spot_open"])
         tte_remaining = max(0.0, (pos["tte_days"] - 0.25) / 252.0)
-        mark = bs_price(spot_close, pos["strike"], tte_remaining, pos["iv_open"],
-                        pos["option_type"], r=RISK_FREE_RATE)
-        pnl = option_pnl(pos["entry_price"], mark, pos["qty"], OPTION_MULT, side="long")
-        pos["spot_close"] = spot_close
-        pos["mark"] = mark
-        pos["pnl"] = pnl
+
+        if pos.get("multi_leg"):
+            mk = mark_position(pos["legs_spec"], spot_close, tte_remaining,
+                               pos["iv_open"], r=RISK_FREE_RATE, multiplier=OPTION_MULT)
+            # mk.pnl is per contract over multiplier; scale by qty
+            pnl = mk["pnl"] * pos["qty"]
+            if check_stop_loss(pos["entry_cost_per_contract"], mk["pnl"], pct_threshold=-0.5):
+                stops_triggered += 1
+                pos["stopped_out"] = True
+            pos["spot_close"] = spot_close
+            pos["mark"] = mk["mark_per_share"]
+            pos["pnl"] = pnl
+            pos["net_greeks"] = mk["net_greeks"]
+        else:
+            mark = bs_price(spot_close, pos["strike"], tte_remaining, pos["iv_open"],
+                            pos["option_type"], r=RISK_FREE_RATE)
+            pnl = option_pnl(pos["entry_price"], mark, pos["qty"], OPTION_MULT, side="long")
+            pos["spot_close"] = spot_close
+            pos["mark"] = mark
+            pos["pnl"] = pnl
         agents_state[pos["tid"]]["bankroll"] += pos["cost"] + pnl
+
+    # Portfolio VaR across open positions for this session
+    var_input = []
+    for pos in positions:
+        if pos.get("multi_leg") and pos.get("net_greeks"):
+            var_input.append({
+                "spot": pos.get("spot_close", pos["spot_open"]),
+                "iv":   pos.get("iv_open", ETF_BASE_IV),
+                "net_greeks": pos["net_greeks"],
+            })
+        elif not pos.get("multi_leg"):
+            # rough single-leg delta proxy (use 0.5 for ATM; refinable)
+            d_sign = 1 if pos.get("option_type") == "call" else -1
+            var_input.append({
+                "spot": pos.get("spot_close", pos["spot_open"]),
+                "iv":   pos.get("iv_open", ETF_BASE_IV),
+                "net_greeks": {"delta": 0.5 * d_sign * pos.get("qty", 1)},
+            })
+    session_var95 = portfolio_var(var_input, 0.95) if var_input else 0.0
 
     return {
         "date": date, "session_id": session_id,
@@ -296,6 +432,12 @@ def run_session(agents_state: Dict, date: str, session_id: int,
         "etf_spot_open": etf_spot_open, "etf_spot_close": etf_spot_close, "etf_iv": etf_iv,
         "positions": positions,
         "pacts": [{"pair": list(k), **v} for k, v in pacts.items()],
+        "risk": {
+            "var_95_1d": round(session_var95, 2),
+            "stops_triggered": stops_triggered,
+            "n_multi_leg": sum(1 for p in positions if p.get("multi_leg")),
+            "n_single_leg": sum(1 for p in positions if not p.get("multi_leg")),
+        },
     }
 
 
@@ -341,14 +483,32 @@ if __name__ == "__main__":
             "gemini-anl": "vol-expansion", "mistral-large": "sector-rotation",
             "mistral-medium": "macro-hedge", "mistral-nemo": "momentum",
         }
+        # Exercise Phase 2 strategies — one per agent to test all code paths
+        strat_by_tid = {
+            "qwen-quant":     {"event_idx": 0, "etf": "XLF", "strategy": "vertical",
+                               "option_type": "call", "strike_low_pct": 0.98, "strike_high_pct": 1.03,
+                               "tte_days": 5, "qty": 3, "rationale": "bull call"},
+            "llama-contra":   {"event_idx": 0, "etf": "XLF", "option_type": "put",
+                               "strike_pct": 0.99, "tte_days": 3, "qty": 5, "rationale": "single put"},
+            "gemini-anl":     {"event_idx": 0, "etf": "XLF", "strategy": "straddle",
+                               "side": "long", "strike_pct": 1.0, "tte_days": 5, "qty": 2,
+                               "rationale": "long vol"},
+            "mistral-large":  {"event_idx": 0, "etf": "XLF", "strategy": "iron_condor",
+                               "put_long_pct": 0.92, "put_short_pct": 0.97,
+                               "call_short_pct": 1.03, "call_long_pct": 1.08,
+                               "tte_days": 7, "qty": 2, "rationale": "range-bound"},
+            "mistral-medium": {"event_idx": 0, "etf": "XLF", "strategy": "butterfly",
+                               "option_type": "call", "strike_low_pct": 0.97,
+                               "strike_mid_pct": 1.0, "strike_high_pct": 1.03,
+                               "tte_days": 5, "qty": 2, "rationale": "pin play"},
+            "mistral-nemo":   {"event_idx": 0, "etf": "XLF", "option_type": "call",
+                               "strike_pct": 1.01, "tte_days": 4, "qty": 10,
+                               "rationale": "single call"},
+        }
         return {
             "thesis": f"fake thesis for {agent['tid']}",
             "reasoning_template": personalities[agent["tid"]],
-            "allocations": [
-                {"event_idx": 0, "etf": "XLF", "option_type": "call",
-                 "strike_pct": 1.01, "tte_days": 4, "qty": 10,
-                 "rationale": "test trade"}
-            ],
+            "allocations": [strat_by_tid[agent["tid"]]],
             "coalition_proposal": {"peer": "llama-contra" if agent["tid"] == "qwen-quant" else None,
                                     "event_idx": 0, "etf": "XLF", "option_type": "call"},
         }

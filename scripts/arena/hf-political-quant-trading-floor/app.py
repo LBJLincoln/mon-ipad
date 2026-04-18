@@ -155,6 +155,28 @@ def api_status():
                 "llm_calls": w + l,  # placeholder — every bet = one LLM call
                 "llm_ok": w + l,
             }
+        # Derived strategy mix from latest day log (if persisted)
+        strat_mix = {"vertical": 0, "iron_condor": 0, "straddle": 0, "butterfly": 0, "single_leg": 0}
+        last_var = 0.0
+        last_stops = 0
+        try:
+            latest_day = _state.get("days_done", 0) - 1
+            if latest_day >= 0:
+                day_path = DECISIONS_DIR / f"day-{latest_day:03d}.json"
+                if day_path.exists():
+                    daylog = json.loads(day_path.read_text())
+                    for sess in daylog.get("sessions", []):
+                        for p in sess.get("positions", []):
+                            if p.get("multi_leg"):
+                                strat_mix[p.get("strategy", "vertical")] = strat_mix.get(p.get("strategy", "vertical"), 0) + 1
+                            else:
+                                strat_mix["single_leg"] += 1
+                        risk = sess.get("risk") or {}
+                        last_var = max(last_var, float(risk.get("var_95_1d", 0)))
+                        last_stops += int(risk.get("stops_triggered", 0))
+        except Exception:
+            pass
+
         return JSONResponse({
             "running": _running,
             "days_processed": _state.get("days_done", 0),
@@ -165,6 +187,9 @@ def api_status():
             "starting_bankroll": STARTING_BANKROLL,
             "session_structure": {"s1": "09:30-12:00", "s2": "12:00-14:30",
                                   "s3": "14:30-16:00", "s4": "16:00-20:00"},
+            "strategy_mix_last_day": strat_mix,
+            "risk_var_95_1d_last_day": round(last_var, 2),
+            "stops_triggered_last_day": last_stops,
             "cooperation_pacts_count": 0,  # tallied per-session, not surfaced here yet
             "axelrod_strategies": {},
             "sacrificial_assignments": {},
