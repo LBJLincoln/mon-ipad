@@ -1,37 +1,37 @@
 {
-  "generated_at": "2026-04-18T04:00:00Z",
-  "brain_cycle": "cycle-11-brain-2026-04-18",
-  "cycle_notes": "All 10 NBA islands UP (S11 recovered from 503). All 8 political islands UP (P4/P5/P8 recovered from 503). P4 new political fleet best 0.24956. S18 recovered: xgboost_brier collapse resolved (0.24757→0.22415). S13 diversify queued (11 stagnation cycles ~33 gens >15). S14 diversify queued (9 stagnation cycles ~27 gens). All 9 councils STARTING/iter=0 (free-tier restart, auto-start after jitter). Engine parity: NBA features/engine.py SHA f0a7917f18fe452a1d94a8bc9d0dba5c8e6e1c07.",
+  "generated_at": "2026-04-18T12:00:00Z",
+  "brain_cycle": "cycle-12-brain-2026-04-18",
+  "cycle_notes": "NEW FLEET BEST: S14 (nba-evo-5) achieves 0.22041 — beats 0.22085 checkpoint threshold. Diversify queued (command format confirmed): S10(stag=24), S12(stag=18), S17(stag=16), P3(stag=17). NEW POL BEST: P2 achieves 0.24949 (beats P4 0.24956). All 10 NBA + 8 Political islands UP. All 9 councils STARTING/iter=0 (free-tier restart auto-start after 30min jitter). SOTA research: LSTM+Brier loss achieves 0.1589 — proposal written.",
   "nba_islands": {
-    "S10": {"url": "nomos42-nba-quant.hf.space", "status": "EVOLVING", "cycle": 122, "generation": 365, "best_brier": 0.22098, "best_roi": 0.3136, "best_sharpe": 7.1443, "best_model_type": "random_forest", "best_features": 53, "stagnation_cycles": 0, "note": "compact 53f; top_performer possibly 0.21991 (unconfirmed)"},
-    "S11": {"url": "nomos42-nba-quant-2.hf.space", "status": "EVOLVING", "cycle": 99, "generation": 295, "best_brier": 0.22662, "best_roi": 0.248, "best_sharpe": 8.2317, "best_model_type": "xgboost", "best_features": 64, "stagnation_cycles": 0, "note": "recovered from 503; prev brier 0.24572 improved"},
-    "S12": {"url": "nomos42-nba-evo-3.hf.space", "status": "EVOLVING", "cycle": 101, "generation": 303, "best_brier": 0.22155, "best_roi": 0.3077, "best_sharpe": 7.4907, "best_model_type": "random_forest", "best_features": 61, "stagnation_cycles": 0, "note": "top_performer possibly 0.21863 (unconfirmed)"},
-    "S13": {"url": "nomos42-nba-evo-4.hf.space", "status": "EVOLVING", "cycle": 113, "generation": 339, "best_brier": 0.22132, "best_roi": 0.3097, "best_sharpe": 7.497, "best_model_type": "random_forest", "best_features": 74, "stagnation_cycles": 11, "action": "diversify_queued_this_cycle"},
-    "S14": {"url": "nomos42-nba-evo-5.hf.space", "status": "EVOLVING", "cycle": 111, "generation": 331, "best_brier": 0.22547, "best_roi": 0.2635, "best_sharpe": 6.4668, "best_model_type": "lightgbm", "best_features": 35, "stagnation_cycles": 9, "action": "diversify_queued_this_cycle"},
-    "S15": {"url": "nomos42-nba-evo-6.hf.space", "status": "EVOLVING", "cycle": 88, "generation": 264, "best_brier": 0.22236, "best_roi": 0.2993, "best_sharpe": 8.1348, "best_model_type": "xgboost", "best_features": 60, "stagnation_cycles": 0},
-    "S16": {"url": "lbjlincoln26-nba-evo-s16.hf.space", "status": "EVOLVING", "cycle": 152, "generation": 455, "best_brier": 0.22140, "best_roi": 0.2442, "best_sharpe": 6.31, "best_model_type": "xgboost", "best_features": 61, "stagnation_cycles": 0},
-    "S17": {"url": "lbjlincoln26-nba-evo-s17.hf.space", "status": "EVOLVING", "cycle": 118, "generation": 352, "best_brier": 0.22214, "best_roi": 0.301, "best_sharpe": 8.0205, "best_model_type": "random_forest", "best_features": 66, "stagnation_cycles": 0, "historical_fleet_best": 0.22085},
-    "S18": {"url": "testforge42-nba-evo-s18.hf.space", "status": "EVOLVING", "cycle": 98, "generation": 293, "best_brier": 0.22415, "best_roi": 0.2772, "best_sharpe": 6.4193, "best_model_type": "lightgbm", "best_features": 67, "stagnation_cycles": 0, "note": "RECOVERED: was stuck at 0.24757; xgboost_brier collapse resolved"},
-    "S19": {"url": "testforge42-nba-evo-s19.hf.space", "status": "EVOLVING", "cycle": 108, "generation": 322, "best_brier": 0.22494, "best_roi": 0.2724, "best_sharpe": 6.9816, "best_model_type": "extra_trees", "best_features": 69, "stagnation_cycles": 0}
+    "S10": {"url": "nomos42-nba-quant.hf.space", "status": "EVOLVING", "gen": 601, "best_brier": 0.22098, "stagnation_cycles": 24, "action": "diversify_queued"},
+    "S11": {"url": "nomos42-nba-quant-2.hf.space", "status": "EVOLVING", "gen": 500, "best_brier": 0.22681, "stagnation_cycles": 9},
+    "S12": {"url": "nomos42-nba-evo-3.hf.space", "status": "EVOLVING", "gen": 507, "best_brier": 0.22155, "stagnation_cycles": 18, "action": "diversify_queued"},
+    "S13": {"url": "nomos42-nba-evo-4.hf.space", "status": "EVOLVING", "gen": 629, "best_brier": 0.22132, "stagnation_cycles": 8},
+    "S14": {"url": "nomos42-nba-evo-5.hf.space", "status": "EVOLVING", "gen": 514, "best_brier": 0.22041, "stagnation_cycles": 0, "fleet_best": true, "note": "NEW FLEET BEST — beats 0.22085 threshold; CatBoost 200f, stagnation=0"},
+    "S15": {"url": "nomos42-nba-evo-6.hf.space", "status": "EVOLVING", "gen": 454, "best_brier": 0.22164, "stagnation_cycles": 0},
+    "S16": {"url": "lbjlincoln26-nba-evo-s16.hf.space", "status": "EVOLVING", "gen": 728, "best_brier": 0.22687, "stagnation_cycles": 0},
+    "S17": {"url": "lbjlincoln26-nba-evo-s17.hf.space", "status": "EVOLVING", "gen": 652, "best_brier": 0.22214, "stagnation_cycles": 16, "action": "diversify_queued", "note": "prev fleet best 0.22085"},
+    "S18": {"url": "testforge42-nba-evo-s18.hf.space", "status": "EVOLVING", "gen": 492, "best_brier": 0.22415, "stagnation_cycles": 11},
+    "S19": {"url": "testforge42-nba-evo-s19.hf.space", "status": "EVOLVING", "gen": 583, "best_brier": 0.22251, "stagnation_cycles": 9}
   },
   "political_islands": {
-    "P1": {"url": "nomos42-political-alpha.hf.space", "status": "EVOLVING", "cycle": 766, "generation": 2296, "best_brier": 0.24999, "stagnation_cycles": 0, "note": "2 hard resets; stuck near 0.24999"},
-    "P2": {"url": "nomos42-political-alpha-2.hf.space", "status": "EVOLVING", "cycle": 624, "generation": 1870, "best_brier": 0.25230, "stagnation_cycles": 0},
-    "P3": {"url": "lbjlincoln-political-alpha-3.hf.space", "status": "EVOLVING", "cycle": 989, "generation": 2967, "best_brier": 0.25341, "stagnation_cycles": 0},
-    "P4": {"url": "lbjlincoln-political-alpha-4.hf.space", "status": "EVOLVING", "cycle": 1034, "generation": 3100, "best_brier": 0.24956, "stagnation_cycles": 0, "fleet_best": true, "note": "RECOVERED from 503; new pol fleet best"},
-    "P5": {"url": "lbjlincoln-political-alpha-5.hf.space", "status": "EVOLVING", "cycle": 888, "generation": 2664, "best_brier": 0.25265, "stagnation_cycles": 0, "note": "RECOVERED from 503"},
-    "P6": {"url": "lbjlincoln-political-alpha-6.hf.space", "status": "EVOLVING", "cycle": 879, "generation": 2637, "best_brier": 0.25130, "stagnation_cycles": 0},
-    "P7": {"url": "lbjlincoln-political-alpha-7.hf.space", "status": "EVOLVING", "cycle": 1076, "generation": 3225, "best_brier": 0.25471, "stagnation_cycles": 0, "note": "degraded from 0.25323 — hard-reset exploration"},
-    "P8": {"url": "lbjlincoln-political-alpha-8.hf.space", "status": "EVOLVING", "cycle": 990, "generation": 2970, "best_brier": 0.25241, "stagnation_cycles": 0, "note": "RECOVERED from 503"}
+    "P1": {"url": "nomos42-political-alpha.hf.space", "status": "EVOLVING", "gen": 4527, "best_brier": 0.24999, "stagnation_cycles": 0},
+    "P2": {"url": "nomos42-political-alpha-2.hf.space", "status": "EVOLVING", "gen": 2588, "best_brier": 0.24949, "stagnation_cycles": 4, "fleet_best": true, "note": "NEW POL BEST — beats P4 0.24956; logistic regression 74f"},
+    "P3": {"url": "lbjlincoln-political-alpha-3.hf.space", "status": "EVOLVING", "gen": 5201, "best_brier": 0.25341, "stagnation_cycles": 17, "action": "diversify_queued"},
+    "P4": {"url": "lbjlincoln-political-alpha-4.hf.space", "status": "EVOLVING", "gen": 5224, "best_brier": 0.24956, "stagnation_cycles": 0},
+    "P5": {"url": "lbjlincoln-political-alpha-5.hf.space", "status": "COOLDOWN", "gen": 4656, "best_brier": 0.25265, "stagnation_cycles": 0},
+    "P6": {"url": "lbjlincoln-political-alpha-6.hf.space", "status": "EVOLVING", "gen": 4694, "best_brier": 0.25128, "stagnation_cycles": 9},
+    "P7": {"url": "lbjlincoln-political-alpha-7.hf.space", "status": "EVOLVING", "gen": 5671, "best_brier": 0.25185, "stagnation_cycles": 0, "note": "improved from 0.25471 last cycle"},
+    "P8": {"url": "lbjlincoln-political-alpha-8.hf.space", "status": "COOLDOWN", "gen": 4941, "best_brier": 0.25241, "stagnation_cycles": 0}
   },
   "councils": {
-    "D1": {"status": "STARTING", "iter": 0, "note": "auto-starts after jitter; /api/run returns 404 (expected)"},
+    "D1": {"status": "STARTING", "iter": 0, "note": "free-tier restart, auto-starts after jitter"},
     "D2": {"status": "STARTING", "iter": 0},
     "D3": {"status": "STARTING", "iter": 0},
     "D4": {"status": "STARTING", "iter": 0},
     "D5": {"status": "STARTING", "iter": 0},
     "D6": {"status": "STARTING", "iter": 0},
-    "D7": {"status": "STARTING", "iter": 0},
+    "D7": {"status": "STARTING", "iter": 0, "note": "only HF Router available"},
     "D8": {"status": "STARTING", "iter": 0},
     "D9": {"status": "STARTING", "iter": 0}
   },
@@ -42,34 +42,43 @@
   },
   "fleet_best": {
     "nba": {
-      "checkpointed": {"brier": 0.22085, "island": "S17", "gen": 1142, "date": "2026-04-16"},
-      "session_leader": {"island": "S10", "brier": 0.22098, "gen": 365, "model": "random_forest", "features": 53},
-      "unconfirmed_candidates": [
-        {"island": "S10", "reported_top_performer": 0.21991, "note": "from population snapshot, needs confirmation"},
-        {"island": "S12", "reported_top_performer": 0.21863, "note": "from population snapshot, needs confirmation"}
-      ]
+      "brier": 0.22041,
+      "island": "S14",
+      "gen": 514,
+      "model": "lightgbm_catboost_xgboost",
+      "features": 200,
+      "stagnation": 0,
+      "date": "2026-04-18",
+      "prev_best": {"brier": 0.22085, "island": "S17", "gen": 1142, "date": "2026-04-16"}
     },
     "political": {
-      "brier": 0.24956,
-      "island": "P4",
-      "gen": 3100,
-      "model": "lightgbm",
-      "note": "recovered from 503; prev best P3 at 0.24994"
+      "brier": 0.24949,
+      "island": "P2",
+      "gen": 2588,
+      "model": "logistic_regression",
+      "features": 74,
+      "date": "2026-04-18",
+      "prev_best": {"brier": 0.24956, "island": "P4", "gen": 5224, "date": "2026-04-18"}
     }
   },
   "actions_this_cycle": [
-    "S13 diversify queued (11 stagnation cycles ~33 gens)",
-    "S14 diversify queued (9 stagnation cycles ~27 gens)",
-    "Research proposal written: 2026-04-18-nba-sota.md (uncertainty-aware MC dropout RNN, Brier ~0.20)"
+    "S14 NEW FLEET BEST 0.22041 — checkpoint + CLAUDE.md update",
+    "P2 NEW POL BEST 0.24949 — CLAUDE.md update",
+    "Diversify queued (format: {command:diversify}): S10(24), S12(18), S17(16), P3(17)",
+    "Councils /api/run triggered (all 9 STARTING)",
+    "Research proposal written: 2026-04-18-lstm-brier-sota.md"
   ],
   "alerts": [
-    "S18 RECOVERED: xgboost_brier collapse resolved (0.24757→0.22415) — no action needed",
-    "S13 stagnation 11 cycles: diversify queued this cycle",
-    "S14 stagnation 9 cycles: diversify queued this cycle",
-    "All 9 councils in STARTING state (free-tier restart pattern); auto-start expected",
-    "political_engine.py STILL TRUNCATED: 6909 bytes vs 187997 bytes original — new deployments from GitHub will break",
-    "SOTA Jan 2026: uncertainty-aware RNN + MC dropout achieves Brier ~0.20 on NBA — see 2026-04-18-nba-sota.md",
-    "tf-axelrod-verify-tune-11 BLOCKED on user approval for HF Space push"
+    "NEW FLEET BEST: S14 0.22041 (CatBoost 200f, stag=0) — beats 0.22085 threshold",
+    "NEW POL BEST: P2 0.24949 (logistic 74f, stag=4) — beats P4 0.24956",
+    "S10 stagnation 24 cycles — diversify queued",
+    "S12 stagnation 18 cycles — diversify queued",
+    "S17 stagnation 16 cycles — diversify queued",
+    "P3 stagnation 17 cycles — diversify queued",
+    "All 9 councils STARTING iter=0 — auto-start after jitter",
+    "political_engine.py STILL TRUNCATED — fix required before fresh HF deploy",
+    "tf-axelrod-verify-tune-11 BLOCKED on user approval",
+    "SOTA: LSTM+Brier 0.1589 gap vs our 0.22041 — see research-proposals/2026-04-18-lstm-brier-sota.md"
   ],
   "down_spaces": []
 }
