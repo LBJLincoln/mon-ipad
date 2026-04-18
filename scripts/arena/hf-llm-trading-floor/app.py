@@ -1524,8 +1524,9 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
         if per_cat:
             all_edges = [(tag, info.get("edge", 0)) for tag, info in per_cat.items() if info.get("edge") is not None]
             fdr_pass = benjamini_hochberg(all_edges, alpha=0.05)
-            # FULL FREEDOM 2026-04-18 — show ALL categories sorted by |edge|, top-50.
-            # LLMs need to see the long tail to bet on it. FDR ✓ is annotated but not gating.
+            # 2026-04-18 v2 — narrowed top-50 → top-20 to cut prompt bloat
+            # (was slowing selfhost CPU LLMs to 15-30s per call, NBA stuck at day 7 for 5h).
+            # Post-filter still scans all 227 categories; only the prompt view is capped.
             top_edges = []
             for tag, info in per_cat.items():
                 e = info.get("edge")
@@ -1536,9 +1537,9 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
                 edge_strs = [
                     f"{tag}(p={info.get('prob',0):.2f}, edge{info.get('edge',0):+.1%}"
                     f"{',FDR✓' if tag in fdr_pass else ''})"
-                    for _, tag, info in top_edges[:50]
+                    for _, tag, info in top_edges[:20]
                 ]
-                lines.append(f"  MODEL EDGES [top-50 by |edge|, BH-FDR pass marked, {len(fdr_pass)}/{len(all_edges)}]: {' | '.join(edge_strs)}")
+                lines.append(f"  MODEL EDGES [top-20 by |edge|, BH-FDR pass marked, {len(fdr_pass)}/{len(all_edges)}]: {' | '.join(edge_strs)}")
 
     # Full-odds categories
     fo_raw = (full_odds or {}).get(game_key, {})
