@@ -1601,10 +1601,13 @@ STRICT RULES:
 - MANDATORY: ≥75% deployed every day. Holding >25% cash violates the collective goal.
 - Thesis MUST cite a specific signal/agency (not just "I think it will go up")
 - Ticker should be the sector ETF from SECTOR_ETF_MAP (XLE, XLV, XLF, etc.) or the event's ticker
-- coalition_proposal is OPTIONAL (null or omit if no pact today). If present, you MUST
-  also place a matching allocation for that event_idx+direction, or your reputation is
-  marked pact_broken. Peer only sees your proposal via COMMON_KNOWLEDGE the next day —
-  mutual pacts emerge from independent proposals.
+- coalition_proposal is MANDATORY (must be present). Set it to a peer you want to pact
+  with AND match with a bet on that event_idx+direction, or set peer="none" with a
+  reason why no pact today. Empty/missing field = invalid response.
+  COLLECTIVE-HELP RULE: if ANY peer bankroll < $50, a top-3 agent must propose a
+  pact with that peer on their own highest-edge sector — the struggling peer sees it
+  via COMMON_KNOWLEDGE and can mirror. This is how the collective lifts survivors.
+  Pact honored IFF both you and peer place the same (event_idx, direction) bet.
 """)
     return "\n".join(lines)
 
@@ -1685,14 +1688,14 @@ def parse_day_allocation(raw: str, n_events: int) -> Optional[Dict]:
     elif deployed == 0:
         cash = 1.0
 
-    # Mech D — coalition_proposal extraction (optional, single peer per day)
+    # Mech D — coalition_proposal extraction (MANDATORY field; peer="none" => no pact today)
     coalition = None
     cp = parsed.get("coalition_proposal")
     if isinstance(cp, dict):
         peer = (cp.get("peer") or "").strip()
         cp_eidx = cp.get("event_idx")
         cp_dir = (cp.get("direction") or "").lower().strip()
-        if peer and isinstance(cp_eidx, int) and 1 <= cp_eidx <= n_events and cp_dir in {"long", "short"}:
+        if peer and peer.lower() != "none" and isinstance(cp_eidx, int) and 1 <= cp_eidx <= n_events and cp_dir in {"long", "short"}:
             coalition = {
                 "peer": peer[:40],
                 "event_idx": cp_eidx,
@@ -2306,25 +2309,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             _rogue_block = build_rogue_block(day_rogue_state.get(tid, {}))
             if _rogue_block:
                 system_prompt = system_prompt + _rogue_block
-            # Preservation protocol: agents under $50 must preserve capital, not chase
-            if ts["bankroll"] < 50.0 and ts["bankroll"] > 5.0:
+            # Survival floor only: <$20 absolute. Aggressive-compound preserved above.
+            if ts["bankroll"] < 20.0:
                 system_prompt += (
-                    "\n\n[PRESERVATION MODE ACTIVE] Your bankroll is low. "
-                    "Post-mortem shows 14/17 POL agents converge to ruin when they "
-                    "chase variance on drawdown. Mandate: max 50% total deploy, "
-                    "max 5% per single position, minimum edge 4%, sector-ETF moneylines "
-                    "only. NO leveraged ETFs, NO event-driven flyers. "
-                    "Survive 5 days of flat then reassess."
-                )
-            # Peak-drawdown guard: ≥30% below personal peak → force preservation
-            peak = float(ts.get("best_bankroll") or ts.get("bankroll") or 100.0)
-            if peak > 100.0 and ts["bankroll"] < PEAK_DRAWDOWN_GUARD * peak:
-                system_prompt += (
-                    f"\n\n[PEAK-DRAWDOWN GUARD] You peaked at ${peak:,.2f} and are now "
-                    f"${ts['bankroll']:,.2f} (below {int(PEAK_DRAWDOWN_GUARD*100)}% of peak). "
-                    f"Mandatory capital preservation: max {int(PRESERVATION_MAX_DEPLOY*100)}% deploy, "
-                    f"max {int(PRESERVATION_MAX_BET_PCT*100)}% per position, edge ≥4%, "
-                    "sector ETFs only. Lock in what you have before chasing more."
+                    "\n\n[SURVIVAL FLOOR] Bankroll below $20 — one bad day from $0. "
+                    "Tight caps auto-enforced (5%/bet, 50%/day, edge≥4%). Find ONE "
+                    "high-confidence pick to survive and rebuild."
                 )
             user_prompt = build_day_prompt(
                 day_date, day_events, sector_trends, ts,
@@ -2419,10 +2409,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 # Kelly). No single bet > 10%, daily cumulative ≤ 60%.
                 MAX_PCT_PER_BET = 0.15   # raised from 0.10 so 6 bets can reach 75%
                 MAX_PCT_PER_DAY = 0.85   # raised from 0.60 to align with 0.75 deploy floor
-                # 2026-04-18 MECHANICAL enforcement of preservation mode (parity w/ NBA).
-                _peak = float(ts.get("best_bankroll") or ts.get("bankroll") or 100.0)
-                _preserve = (ts["bankroll"] < 50.0) or (_peak > 100.0 and ts["bankroll"] < PEAK_DRAWDOWN_GUARD * _peak)
-                if _preserve:
+                # 2026-04-18 v2 — preservation ONLY at survival floor (<$20). Above that,
+                # aggressive-compound doctrine runs free (user mandate: $1M collective goal).
+                if ts["bankroll"] < 20.0:
                     MAX_PCT_PER_BET = PRESERVATION_MAX_BET_PCT
                     MAX_PCT_PER_DAY = PRESERVATION_MAX_DEPLOY
                 starting_bankroll = bankroll
