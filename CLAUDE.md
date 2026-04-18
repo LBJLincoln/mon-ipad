@@ -6,8 +6,10 @@
 Build the best NBA prediction AI in the world.
 **Best:** Brier 0.21514 (Colab TabICL, 186f, iter 129) | Fleet best: 0.22085 (S17 ensemble, gen 1142, checkpointed 2026-04-16) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
-**NBA TF v3 (day-bucket, Apr 15 fresh run, 12 agents):** Stake-fix DEPLOYED (half-Kelly 5% cap + min edge 0.03 + current bankroll). Gemini parser FIXED (thinkingBudget=0, max_tokens 4096, all-parts join — gemini-anl/gemini-tact were 0 bets across 27 days, now betting on day 2). +1 NVIDIA Nemotron-120B agent (4 providers: Cerebras / Google / Mistral / OpenRouter). HF sha `9dca67ed`. Mutation actuator unblocked (gap_threshold 0.20→0.12).
-**Political TF (Apr 14 snapshot):** 50 days / 834 events processed, 0 trades by 10 agents (parser bug). Prior claim "llama-contra +223.5%" was from mid-run, now stale.
+**NBA TF v4 (Apr 18, 17 agents, FULL FREEDOM):** BASE_CATS FDR gate DELETED — agents now free across all 227 categories per game. Edge threshold 0.03→0.01. Top-5 edges → top-50 exposed to LLM prompt. MIN_DEPLOY_PCT=0.75 floor + tiered Kelly cap (2%/5%/10%). Live day 7/175, 17 agents bidding.
+**Political TF (Apr 18):** 17 agents, day 25/50. $13K leakage bug fixed (excess_return fallback removed 2026-04-18 commit 1a7a02b48). State wiped clean.
+**PQTF v2 (Apr 18, 6 derivatives day-traders):** Multi-leg options (vertical/iron_condor/straddle/butterfly). $600K fleet start → target 10× by Nov 3. Live day 47/50.
+**Top-tier 14-agent Crew (Apr 18):** THE BOSS / SWISH / LOBBYIST / HAWKEYE / DR FRANKENSTEIN / THE BLACKSMITH / SWITCHBOARD / INTERNAL AFFAIRS / THE TICKER / THE HERALD / THE ACCOUNTANT / PIXEL / THE PLUMBER / LAUNCHPAD — L1/L2/L3 layered, mental-model personas, refusal rules, niche-expert bars. Live scientific snapshot via `data/pipeline-health.json` (PLUMBER :35 every 4h) + `data/audit/` (INTERNAL AFFAIRS :40 every 4h).
 
 ## Nomos42 Ecosystem
 
@@ -140,8 +142,8 @@ SYSTEM CRONS (28 active on VM, all lightweight)
 2. **Feature engine parity** — `features/engine.py` = `hf-space/features/engine.py` always
 3. **1 fix per iteration** — never multiple simultaneous changes
 4. **All experiments tagged** with `feature_engine_version` in Supabase
-5. **Feature engine** — v3.1-65cat = 65 categories, 6434 raw features
-6. **MAX_FEATURES=200** — hard cap enforced in init/mutate/crossover on all spaces
+5. **Feature engine** — v3.1 = 54 categories, ~7213 raw feature candidates (verified 2026-04-18 from features/engine.py header)
+6. **MAX_FEATURES=200** — hard cap enforced in init/mutate/crossover on all spaces (target 50-100 selected per island via GA)
 7. **Mutation cap** — adaptive mutation capped at 0.15 (deployed S10/S11/S12/S15)
 8. **CPU-only islands** — no neural models on CPU (tree-based only), stacking removed
 9. **Supabase** — primary (ayqviq) paused (402), using pooler connection (xivvnr)
