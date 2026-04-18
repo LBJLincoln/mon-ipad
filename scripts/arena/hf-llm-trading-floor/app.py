@@ -3700,6 +3700,10 @@ async def api_status():
             state["provider_health"] = _ph.get_snapshot()
         except Exception:
             pass
+    # Langfuse trace-send errors (first 20, captured 2026-04-18)
+    state["langfuse_errors"] = list(_langfuse_errors[:20])
+    state["langfuse_errors_count"] = len(_langfuse_errors)
+    state["langfuse_enabled"] = bool(_langfuse)
     return JSONResponse(state)
 
 @api.post("/api/run")
