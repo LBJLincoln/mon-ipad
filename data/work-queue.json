@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-18T00:00:00Z",
+  "updated_at": "2026-04-18T06:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -212,19 +212,58 @@
     {
       "id": "tf-axelrod-verify-tune-11",
       "priority": 18,
+      "status": "done",
+      "completed_at": "2026-04-18T06:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 11 \u2014 deep parity audit, NBA CK hardcoded-count bug found",
+      "findings": [
+        "Both app.py files confirmed at HEAD SHA: NBA=f5f71cce, POL=e2e4a6f6",
+        "17 TRADERS in both apps (parity confirmed via TRADERS dict scan)",
+        "Mech A/B/C all present and wired correctly (per fire-10 line refs, unchanged)",
+        "PARITY GAP FOUND (functional): NBA build_common_knowledge_block has hardcoded '12' / '$1,200' / '1200.0' (e.g. L2419-2420, L2434). Political version correctly uses n_traders=len(TRADERS) dynamically.",
+        "Impact: NBA LLM agents shown wrong group ROI (numerator correct, denominator 1200 instead of 1700); told '12 traders' when there are 17.",
+        "COLLECTIVE_MISSION says 'ONE of 16 LLM agents' in both apps (cosmetic, non-functional; agents receive correct TRADERS count from state).",
+        "Push approach: app.py files are 156K/122K chars. push_files corrupts large files (fires 5,8). create_or_update_file has 111K+ limit. Deferring to tf-axelrod-fix-ck-hardcoded below.",
+        "do_not_push_hf_space_yet: true \u2014 awaiting user gate"
+      ],
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-fix-ck-hardcoded",
+      "priority": 19,
       "status": "pending",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 11 \u2014 HF Space push (USER GATE: explicit approval required)",
+      "subject": "Fix NBA CK block hardcoded agent-count (12\u219217, $1200\u2192dynamic)",
+      "scope": [
+        "In NBA scripts/arena/hf-llm-trading-floor/app.py, function build_common_knowledge_block:",
+        "1. Before `lines = [...]`, add: `n_traders = len(TRADERS)` and `total_start = n_traders * 100.0`",
+        "2. Replace hardcoded `target $1,200 ($100\u00d712 start)` with f-string using n_traders/total_start",
+        "3. Replace `You are ONE of 12 traders` with f`You are ONE of {n_traders} traders`",
+        "4. Replace `started $1,200` with f`started ${total_start:.0f}`",
+        "5. Replace `(total_bankroll / 1200.0)` with `(total_bankroll / total_start)`",
+        "6. Also fix COLLECTIVE_MISSION 'ONE of 16 LLM agents' \u2192 'ONE of 17 LLM agents' in both apps (cosmetic)",
+        "PUSH STRATEGY: use GH workflow (small script ~2KB) that applies sed patches inline \u2014 avoids push_files size limit. Self-delete workflow after apply.",
+        "py_compile MUST pass before committing."
+      ],
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-12",
+      "priority": 20,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 12 \u2014 HF Space push (USER GATE: explicit approval required)",
       "scope": [
         "1. User explicitly approves HF Space push (say 'push to HF' or 'approve HF deploy').",
-        "2. Push scripts/arena/hf-llm-trading-floor/app.py to HF Space LBJLincoln26/nba-llm-trading-floor.",
-        "3. Push scripts/arena/hf-political-trading-floor/app.py to HF Space LBJLincoln26/political-llm-trading-floor.",
-        "4. Restart both Spaces via HF API (POST /api/run or Space restart).",
-        "5. Verify /api/status on both Spaces returns healthy JSON with experiment_running or ready state.",
-        "6. Mark this item done with do_not_push_hf_space_yet=false."
+        "2. Confirm tf-axelrod-fix-ck-hardcoded is done first (or bundle both in same deploy).",
+        "3. Push scripts/arena/hf-llm-trading-floor/app.py to HF Space LBJLincoln26/nba-llm-trading-floor.",
+        "4. Push scripts/arena/hf-political-trading-floor/app.py to HF Space LBJLincoln26/political-llm-trading-floor.",
+        "5. Restart both Spaces via HF API (POST /api/run or Space restart).",
+        "6. Verify /api/status on both Spaces returns healthy JSON with experiment_running or ready state.",
+        "7. Mark this item done with do_not_push_hf_space_yet=false."
       ],
       "do_not_push_hf_space_yet": true,
-      "blocked_on": "explicit user approval"
+      "blocked_on": "explicit user approval + tf-axelrod-fix-ck-hardcoded"
     }
   ],
   "recovery_protocol": {
