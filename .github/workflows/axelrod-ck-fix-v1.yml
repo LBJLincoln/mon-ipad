@@ -1,0 +1,199 @@
+name: axelrod-ck-fix-v1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/axelrod-ck-fix-v1.yml'
+
+jobs:
+  patch-ck-block:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Patch NBA app.py - CK block dynamic n_traders
+        run: |
+          cat > /tmp/patch_nba.py << 'PYEOF'
+          import re, sys, tempfile, os
+          import py_compile
+
+          path = "scripts/arena/hf-llm-trading-floor/app.py"
+          with open(path, 'r') as f:
+              content = f.read()
+
+          original_len = len(content)
+          patches = []
+          misses = []
+
+          # Patch 1: COLLECTIVE_MISSION agent count (cosmetic, both strings present)
+          for old, new in [
+              ("ONE of 16 LLM agents", "ONE of 17 LLM agents"),
+          ]:
+              if old in content:
+                  count = content.count(old)
+                  content = content.replace(old, new)
+                  patches.append(f"COLLECTIVE_MISSION {count}x: '{old}' -> '{new}'")
+              else:
+                  misses.append(f"MISS(cosmetic): '{old}'")
+
+          # Patch 2: Insert n_traders/total_start before 'lines = [' in build_common_knowledge_block
+          fn_sig = "def build_common_knowledge_block("
+          if fn_sig in content:
+              fn_start = content.index(fn_sig)
+              lines_marker = "    lines = ["
+              marker_pos = content.find(lines_marker, fn_start)
+              if marker_pos != -1:
+                  check_window = content[fn_start:marker_pos]
+                  if "n_traders = len(TRADERS)" not in check_window:
+                      insert = "    n_traders = len(TRADERS)\n    total_start = n_traders * 100.0\n"
+                      content = content[:marker_pos] + insert + content[marker_pos:]
+                      patches.append("inserted n_traders/total_start before lines = [")
+                  else:
+                      patches.append("n_traders already present (idempotent)")
+              else:
+                  misses.append(f"MISS: '{lines_marker}' after {fn_sig}")
+          else:
+              misses.append(f"MISS: function {fn_sig}")
+
+          # Patch 3: Replace hardcoded 1200.0 divisor (CONFIRMED by GH search)
+          old = "(total_bankroll / 1200.0)"
+          new = "(total_bankroll / total_start)"
+          if old in content:
+              count = content.count(old)
+              content = content.replace(old, new)
+              patches.append(f"divisor {count}x: 1200.0 -> total_start")
+          else:
+              misses.append(f"MISS: '{old}'")
+
+          # Patch 4: Replace hardcoded "12 traders" in f-strings (graceful)
+          # Handle both f"..." and plain "..." by converting to f-string
+          for old_num_ctx, new_ctx in [
+              ("ONE of 12 traders", "ONE of {n_traders} traders"),
+          ]:
+              # Replace in f-strings: f"...12 traders..." -> f"...{n_traders} traders..."
+              pat_f = re.compile(r'(f["\'])([^"\']*?)' + re.escape(old_num_ctx))
+              result, n = re.subn(pat_f, lambda m: m.group(1) + m.group(2) + new_ctx, content)
+              if n > 0:
+                  content = result
+                  patches.append(f"f-string {n}x: '{old_num_ctx}' -> dynamic")
+              else:
+                  # Try plain string -> convert to f-string
+                  pat_plain = re.compile(r'(["\'])([^"\']*?)' + re.escape(old_num_ctx) + r'([^"\']*?)\1')
+                  result2, n2 = re.subn(
+                      pat_plain,
+                      lambda m: 'f' + m.group(1) + m.group(2) + new_ctx + m.group(3) + m.group(1),
+                      content
+                  )
+                  if n2 > 0:
+                      content = result2
+                      patches.append(f"plain->f-string {n2}x: '{old_num_ctx}' -> dynamic")
+                  else:
+                      misses.append(f"MISS(graceful): '{old_num_ctx}'")
+
+          # Patch 5: Replace "$1,200" hardcoded amounts (graceful)
+          for old_text, new_text in [
+              ("target $1,200 ($100x12 start)", "target ${total_start:.0f} ($100x{n_traders} start)"),
+              ("target $1,200 ($100\u00d712 start)", "target ${total_start:.0f} ($100\u00d7{n_traders} start)"),
+              ("started $1,200", "started ${total_start:.0f}"),
+              ("$1,200 ($100 x 12", "${total_start:.0f} ($100 x {n_traders}"),
+          ]:
+              if old_text in content:
+                  # These should be in f-strings already; just replace text
+                  count = content.count(old_text)
+                  content = content.replace(old_text, new_text)
+                  patches.append(f"amount {count}x: '{old_text}' -> dynamic")
+
+          print(f"\nNBA patches applied: {len(patches)}")
+          for p in patches:
+              print(f"  [OK] {p}")
+          if misses:
+              print(f"NBA misses (non-fatal): {len(misses)}")
+              for m in misses:
+                  print(f"  [WARN] {m}")
+
+          if not patches:
+              print("ERROR: zero patches applied")
+              sys.exit(1)
+
+          # py_compile
+          with tempfile.NamedTemporaryFile(suffix='.py', delete=False, mode='w') as tmp:
+              tmp.write(content)
+              tmpname = tmp.name
+          try:
+              py_compile.compile(tmpname, doraise=True)
+              print(f"py_compile PASS ({len(content)} chars, was {original_len})")
+          except Exception as e:
+              print(f"py_compile FAIL: {e}")
+              os.unlink(tmpname)
+              sys.exit(1)
+          os.unlink(tmpname)
+
+          with open(path, 'w') as f:
+              f.write(content)
+          print("NBA: wrote successfully")
+          PYEOF
+          python3 /tmp/patch_nba.py
+
+      - name: Patch Political app.py - COLLECTIVE_MISSION cosmetic fix
+        run: |
+          cat > /tmp/patch_pol.py << 'PYEOF'
+          import sys, tempfile, os, py_compile
+          path = "scripts/arena/hf-political-trading-floor/app.py"
+          with open(path, 'r') as f:
+              content = f.read()
+          patches = []
+          old = "ONE of 16 LLM agents"
+          new = "ONE of 17 LLM agents"
+          if old in content:
+              count = content.count(old)
+              content = content.replace(old, new)
+              patches.append(f"COLLECTIVE_MISSION {count}x patched")
+          else:
+              print(f"POL MISS: '{old}'")
+          with tempfile.NamedTemporaryFile(suffix='.py', delete=False, mode='w') as tmp:
+              tmp.write(content)
+              tmpname = tmp.name
+          try:
+              py_compile.compile(tmpname, doraise=True)
+              print(f"POL py_compile PASS ({len(content)} chars)")
+          except Exception as e:
+              print(f"POL py_compile FAIL: {e}")
+              os.unlink(tmpname)
+              sys.exit(1)
+          os.unlink(tmpname)
+          with open(path, 'w') as f:
+              f.write(content)
+          print(f"POL: {patches}")
+          PYEOF
+          python3 /tmp/patch_pol.py
+
+      - name: Verify patterns applied
+        run: |
+          echo "=== NBA CK block check ==="
+          grep -n "n_traders = len(TRADERS)" scripts/arena/hf-llm-trading-floor/app.py || echo "MISS: n_traders"
+          grep -n "total_start" scripts/arena/hf-llm-trading-floor/app.py | head -5
+          grep -n "ONE of 17 LLM agents" scripts/arena/hf-llm-trading-floor/app.py | head -3
+          echo "=== POL check ==="
+          grep -n "ONE of 17 LLM agents" scripts/arena/hf-political-trading-floor/app.py | head -3
+
+      - name: Commit patches
+        run: |
+          git config user.email "brain@nomos42.ai"
+          git config user.name "Nomos42 Brain"
+          git add scripts/arena/hf-llm-trading-floor/app.py
+          git add scripts/arena/hf-political-trading-floor/app.py
+          git status
+          if git diff --cached --quiet; then
+            echo "No changes to commit (all patches already applied)"
+          else
+            git commit -m "fix: NBA CK block dynamic n_traders/total_start (fire-12)
+
+- add n_traders=len(TRADERS) + total_start=n_traders*100.0 before lines=[]
+- replace (total_bankroll / 1200.0) with (total_bankroll / total_start)
+- fix ONE of 12/16 -> dynamic/17 in both apps
+- do_not_push_hf_space_yet=true (awaiting user HF deploy gate)"
+            git pull --rebase origin main
+            git push origin main
+          fi
