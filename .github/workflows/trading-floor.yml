@@ -48,23 +48,49 @@ jobs:
           echo "  running=$RUNNING | llm_calls=$CALLS | best=\$$BEST | leader=$LEADER"
           echo "  providers: $OK ok / $DEAD dead"
 
-          # WATCHDOG: restart if not running
-          if [ "$RUNNING" = "False" ] || [ "$RUNNING" = "error" ]; then
-            echo "  ⚠️  NBA TF NOT RUNNING — restarting via /api/run"
-            RESTART=$(curl -s --max-time 20 -X POST "$NBA_URL/api/run" || echo '{"error":"failed"}')
-            echo "  restart response: $RESTART"
+          # STALE HEARTBEAT check: running=True but 'updated' > 10min old = hung
+          STALE=$(echo "$STATUS" | python3 -c "
+          import sys, json
+          from datetime import datetime, timezone
+          try:
+              d = json.load(sys.stdin)
+              u = d.get('updated')
+              if not u or not d.get('running'): print('no'); sys.exit(0)
+              dt = datetime.fromisoformat(u.replace('Z','+00:00'))
+              age = (datetime.now(timezone.utc) - dt).total_seconds()
+              print('yes' if age > 600 else 'no', int(age))
+          except Exception as e:
+              print('no')
+          " 2>/dev/null || echo "no")
 
-            # If Space itself is down (error=unreachable), try HF API restart
-            if [ "$RUNNING" = "error" ]; then
-              echo "  ⚠️  Space unreachable — attempting HF Space restart"
+          # WATCHDOG: restart if not running OR hung (stale heartbeat)
+          if [ "$RUNNING" = "False" ] || [ "$RUNNING" = "error" ] || [[ "$STALE" == yes* ]]; then
+            if [[ "$STALE" == yes* ]]; then
+              echo "  ⚠️  NBA TF HUNG (stale heartbeat: $STALE) — FACTORY REBOOT"
               pip install -q huggingface_hub 2>/dev/null
               python3 -c "
+          from huggingface_hub import HfApi
+          import os
+          api = HfApi(token=os.environ['HF_TOKEN'])
+          api.restart_space('LBJLincoln26/nba-llm-trading-floor', factory_reboot=True)
+          print('  NBA factory_reboot triggered')
+          " 2>&1 || echo "  HF factory reboot failed"
+            else
+              echo "  ⚠️  NBA TF NOT RUNNING — restarting via /api/run"
+              RESTART=$(curl -s --max-time 20 -X POST "$NBA_URL/api/run" || echo '{"error":"failed"}')
+              echo "  restart response: $RESTART"
+
+              if [ "$RUNNING" = "error" ]; then
+                echo "  ⚠️  Space unreachable — attempting HF Space restart"
+                pip install -q huggingface_hub 2>/dev/null
+                python3 -c "
           from huggingface_hub import HfApi
           import os
           api = HfApi(token=os.environ['HF_TOKEN'])
           api.restart_space('LBJLincoln26/nba-llm-trading-floor')
           print('  HF Space restart triggered')
           " 2>&1 || echo "  HF restart failed"
+              fi
             fi
           else
             echo "  ✓ NBA TF running normally"
@@ -91,21 +117,47 @@ jobs:
           echo "  running=$RUNNING | llm_calls=$CALLS | best=\$$BEST | leader=$LEADER"
           echo "  providers: $OK ok / $DEAD dead"
 
-          if [ "$RUNNING" = "False" ] || [ "$RUNNING" = "error" ]; then
-            echo "  ⚠️  POL TF NOT RUNNING — restarting via /api/run"
-            RESTART=$(curl -s --max-time 20 -X POST "$POL_URL/api/run" || echo '{"error":"failed"}')
-            echo "  restart response: $RESTART"
+          STALE=$(echo "$STATUS" | python3 -c "
+          import sys, json
+          from datetime import datetime, timezone
+          try:
+              d = json.load(sys.stdin)
+              u = d.get('updated')
+              if not u or not d.get('running'): print('no'); sys.exit(0)
+              dt = datetime.fromisoformat(u.replace('Z','+00:00'))
+              age = (datetime.now(timezone.utc) - dt).total_seconds()
+              print('yes' if age > 600 else 'no', int(age))
+          except Exception:
+              print('no')
+          " 2>/dev/null || echo "no")
 
-            if [ "$RUNNING" = "error" ]; then
-              echo "  ⚠️  Space unreachable — attempting HF Space restart"
+          if [ "$RUNNING" = "False" ] || [ "$RUNNING" = "error" ] || [[ "$STALE" == yes* ]]; then
+            if [[ "$STALE" == yes* ]]; then
+              echo "  ⚠️  POL TF HUNG (stale heartbeat: $STALE) — FACTORY REBOOT"
               pip install -q huggingface_hub 2>/dev/null
               python3 -c "
+          from huggingface_hub import HfApi
+          import os
+          api = HfApi(token=os.environ['HF_TOKEN'])
+          api.restart_space('LBJLincoln26/political-llm-trading-floor', factory_reboot=True)
+          print('  POL factory_reboot triggered')
+          " 2>&1 || echo "  HF factory reboot failed"
+            else
+              echo "  ⚠️  POL TF NOT RUNNING — restarting via /api/run"
+              RESTART=$(curl -s --max-time 20 -X POST "$POL_URL/api/run" || echo '{"error":"failed"}')
+              echo "  restart response: $RESTART"
+
+              if [ "$RUNNING" = "error" ]; then
+                echo "  ⚠️  Space unreachable — attempting HF Space restart"
+                pip install -q huggingface_hub 2>/dev/null
+                python3 -c "
           from huggingface_hub import HfApi
           import os
           api = HfApi(token=os.environ['HF_TOKEN'])
           api.restart_space('LBJLincoln26/political-llm-trading-floor')
           print('  HF Space restart triggered')
           " 2>&1 || echo "  HF restart failed"
+              fi
             fi
           else
             echo "  ✓ POL TF running normally"
