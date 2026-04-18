@@ -1524,15 +1524,21 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
         if per_cat:
             all_edges = [(tag, info.get("edge", 0)) for tag, info in per_cat.items() if info.get("edge") is not None]
             fdr_pass = benjamini_hochberg(all_edges, alpha=0.05)
+            # FULL FREEDOM 2026-04-18 — show ALL categories sorted by |edge|, top-50.
+            # LLMs need to see the long tail to bet on it. FDR ✓ is annotated but not gating.
             top_edges = []
             for tag, info in per_cat.items():
                 e = info.get("edge")
-                if e is not None and abs(e) >= 0.03 and tag in fdr_pass:
+                if e is not None and abs(e) >= 0.01:
                     top_edges.append((abs(e), tag, info))
             top_edges.sort(reverse=True)
             if top_edges:
-                edge_strs = [f"{tag}(p={info.get('prob',0):.2f}, edge{info.get('edge',0):+.1%}, FDR✓)" for _, tag, info in top_edges[:5]]
-                lines.append(f"  MODEL EDGES [BH-FDR α=0.05, {len(fdr_pass)}/{len(all_edges)} pass]: {' | '.join(edge_strs)}")
+                edge_strs = [
+                    f"{tag}(p={info.get('prob',0):.2f}, edge{info.get('edge',0):+.1%}"
+                    f"{',FDR✓' if tag in fdr_pass else ''})"
+                    for _, tag, info in top_edges[:50]
+                ]
+                lines.append(f"  MODEL EDGES [top-50 by |edge|, BH-FDR pass marked, {len(fdr_pass)}/{len(all_edges)}]: {' | '.join(edge_strs)}")
 
     # Full-odds categories
     fo_raw = (full_odds or {}).get(game_key, {})
@@ -3149,10 +3155,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     cat = alloc["category"]
 
                     edge_val = alloc.get("edge", 0.0) or 0.0
+                    # FULL FREEDOM 2026-04-18 — user directive: agents are absolutely free
+                    # to bet on any of 227 categories with whatever edge they claim.
+                    # Only safety: MIN_EDGE (0.02, near-zero) to block explicit -EV claims.
+                    # Removed BASE_CATS FDR gate entirely — LLMs now access the full tail.
+                    # Bankroll compound rule (_tiered_risk) still enforces sizing discipline.
                     if edge_val < MIN_EDGE:
-                        continue
-                    # FDR gate: non-base categories require higher edge (multiple testing)
-                    if cat not in BASE_CATS and edge_val < 0.05:
                         continue
                     # Tiered sizing: Kelly aggression × LLM pct, floor at bet_floor, cap at bet_cap.
                     sized_pct = (alloc["pct"] or 0.0) * KELLY_MULT
@@ -3925,28 +3933,57 @@ async def api_day_decisions(date: str = None, agent: str = None, limit: int = 20
 
 
 @api.get("/api/leaderboard")
-async def api_leaderboard():
-    """Current leaderboard as JSON."""
+async def api_leaderboard(mode: str = "cumulative"):
+    """Current leaderboard as JSON.
+
+    ?mode=cumulative (default) — sort by bankroll (season-long ROI)
+    ?mode=per_day              — sort by daily ROI (roi_pct / days_traded), rewards
+                                 consistent per-day performance over big-bet outliers
+    ?mode=consistency          — sort by (wins / total_bets) with min 10 bets
+    """
     with _state_lock:
         agents = _experiment_state.get("agents", {})
     if not agents:
         return JSONResponse({"status": "no_data", "message": "No experiment data yet"})
     lb = []
-    for tid, ts in sorted(agents.items(), key=lambda x: -x[1].get("bankroll", 0)):
+    for tid, ts in agents.items():
         cfg = TRADERS.get(tid, {})
         bankroll = ts.get("bankroll", 100)
         roi = ((bankroll - 100) / 100) * 100
+        days_traded = max(1, ts.get("days_traded", 1))
+        total_bets = ts.get("total_bets", 0)
+        wins = ts.get("wins", 0)
+        per_day_roi = roi / days_traded
+        win_rate = wins / total_bets if total_bets > 0 else 0.0
         lb.append({
             "trader_id": tid,
             "name": cfg.get("name", tid),
             "provider": cfg.get("provider", "?"),
             "bankroll": round(bankroll, 2),
             "roi_pct": round(roi, 2),
-            "total_bets": ts.get("total_bets", 0),
-            "wins": ts.get("wins", 0),
+            "per_day_roi_pct": round(per_day_roi, 3),
+            "days_traded": ts.get("days_traded", 0),
+            "total_bets": total_bets,
+            "wins": wins,
             "losses": ts.get("losses", 0),
+            "win_rate": round(win_rate, 3),
+            "max_drawdown": round(ts.get("max_drawdown", 0.0), 4),
+            "best_bankroll": round(ts.get("best_bankroll", bankroll), 2),
         })
-    return JSONResponse({"leaderboard": lb, "games_processed": _experiment_state.get("games_processed", 0)})
+    # Sort per mode
+    if mode == "per_day":
+        lb.sort(key=lambda x: -x["per_day_roi_pct"])
+    elif mode == "consistency":
+        lb = [x for x in lb if x["total_bets"] >= 10]
+        lb.sort(key=lambda x: -x["win_rate"])
+    else:  # cumulative
+        lb.sort(key=lambda x: -x["bankroll"])
+    return JSONResponse({
+        "leaderboard": lb,
+        "mode": mode,
+        "games_processed": _experiment_state.get("games_processed", 0),
+        "days_processed": _experiment_state.get("days_processed", 0),
+    })
 
 
 @api.get("/api/axelrod-log")
