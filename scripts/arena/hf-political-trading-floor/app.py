@@ -2579,11 +2579,21 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         total_deployed_pct < tier_pf["deploy_floor"])
             if need_pad and len(day_events) >= 1:
                 # Rank events by absolute model signal; direction from signal sign.
+                # 2026-04-18 LEAKAGE FIX: NEVER fall back to excess_return (that's
+                # the future outcome). If the walk-forward model has no prediction,
+                # skip the event — stay cash is always legal.
                 ranked = []
                 for ei, ev in enumerate(day_events):
                     sig = ev.get("predicted_return", ev.get("model_signal"))
                     if sig is None:
-                        sig = ev.get("excess_return", 0.0)
+                        # Try the keyed walk-forward file via event_preds
+                        if event_preds is not None:
+                            ev_key = f"{ev.get('date','')}_{ev.get('ticker','?')}_{ev.get('event_type','?')}"
+                            pred = event_preds.get(ev_key) or {}
+                            core = pred.get("derived_core", {}) if isinstance(pred, dict) else {}
+                            sig = core.get("predicted_excess_return")
+                    if sig is None:
+                        continue  # LEAKAGE GUARD: no walk-forward signal → skip event
                     direction = "long" if sig >= 0 else "short"
                     score = abs(sig)
                     if score < tier_pf["min_edge"]:
