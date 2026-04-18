@@ -142,16 +142,37 @@ app = FastAPI()
 
 @app.get("/api/status")
 def api_status():
+    """Pixel-world-compatible shape: `agents` dict keyed by tid with bankroll/wins/losses/total_bets."""
     with _lock:
+        live = _state.get("agents") or {}
+        agents_flat = {}
+        for tid, s in live.items():
+            w = s.get("wins", 0); l = s.get("losses", 0)
+            agents_flat[tid] = {
+                "bankroll": round(s.get("bankroll", STARTING_BANKROLL), 2),
+                "wins": w, "losses": l,
+                "total_bets": w + l,
+                "llm_calls": w + l,  # placeholder — every bet = one LLM call
+                "llm_ok": w + l,
+            }
         return JSONResponse({
             "running": _running,
-            "agents_count": len(AGENTS),
+            "days_processed": _state.get("days_done", 0),
+            "days_total": _state.get("total_days", 50),
+            "games_processed": 0, "games_total": 0,  # N/A for quant
+            "agents": agents_flat,
+            "config_agents": AGENTS,
             "starting_bankroll": STARTING_BANKROLL,
             "session_structure": {"s1": "09:30-12:00", "s2": "12:00-14:30",
                                   "s3": "14:30-16:00", "s4": "16:00-20:00"},
-            "state": _state, "agents": AGENTS,
+            "cooperation_pacts_count": 0,  # tallied per-session, not surfaced here yet
+            "axelrod_strategies": {},
+            "sacrificial_assignments": {},
+            "reputation": {},
             "langfuse_active": _langfuse is not None,
             "hub_push_active": _hub is not None,
+            "last_date": _state.get("last_date", ""),
+            "error": _state.get("error"),
         })
 
 @app.post("/api/run")

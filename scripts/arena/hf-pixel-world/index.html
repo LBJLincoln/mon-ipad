@@ -161,17 +161,12 @@
     <div id="hud-top">
       <div>
         <span class="brand">NOMOS42 · PIXEL WORLD</span> · v2.3 · PixiJS · live · bloomberg-term
-        <span class="ext-btns">
-          <a href="https://lbjlincoln26-nba-llm-trading-floor.hf.space/paper" target="_blank" rel="noopener" title="Whitepaper PDF">📄 PAPER</a>
-          <a href="https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status" target="_blank" rel="noopener" title="NBA TF live status JSON">📊 LIVE STATUS</a>
-        </span>
       </div>
       <div id="room-tabs">
         <button data-room="world" class="active">WORLD</button>
         <button data-room="nba">NBA 🏀</button>
         <button data-room="political">POLITICAL 🗳</button>
         <button data-room="evolution">EVOLUTION 🧬</button>
-        <button data-room="councils">COUNCILS ⚖</button>
       </div>
       <div><span class="tick" id="hud-tick">· booting</span></div>
     </div>
@@ -232,7 +227,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 (async () => {
 const TILE = 32;
-const GRID_W = 40, GRID_H = 26;
+const GRID_W = 40, GRID_H = 32;
 const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
 const CHAR_W = 56, CHAR_H = 48;   // 2× native 28×24 — big, crisp, proper aspect
 
@@ -284,11 +279,11 @@ function homeIslandFor(id) {
 const MATCH_FLOOR = { x: 20, y: 7 };
 
 const ZONES = {
-  nba:       { x:1,  y:1,  w:18, h:12, floor:3, label:"NBA TRADING FLOOR" },
-  political: { x:21, y:1,  w:18, h:12, floor:5, label:"POLITICAL FLOOR" },
-  "nba-infra":  { x:1,  y:14, w:18, h:5, floor:6, label:"NBA EVOLUTION · 13 ISLANDS" },
-  "pol-infra":  { x:21, y:14, w:18, h:5, floor:6, label:"POLITICAL EVOLUTION · 8 ISLANDS" },
-  councils:  { x:1,  y:20, w:38, h:5, floor:1, label:"COUNCIL CHAMBERS · 9 DEPARTMENTS" },
+  nba:       { x:1,  y:1,  w:18, h:17, floor:3, label:"NBA TRADING FLOOR" },
+  political: { x:21, y:1,  w:18, h:17, floor:5, label:"POLITICAL FLOOR" },
+  "nba-infra":  { x:1,  y:19, w:18, h:6, floor:6, label:"NBA EVOLUTION · 13 ISLANDS" },
+  "pol-infra":  { x:21, y:19, w:18, h:6, floor:6, label:"POLITICAL EVOLUTION · 8 ISLANDS" },
+  quant:        { x:1,  y:26, w:38, h:5, floor:7, label:"POLITICAL QUANT FLOOR · 4 SESSIONS × OPTIONS" },
 };
 
 const NBA_TRADERS = [
@@ -300,6 +295,10 @@ const POL_TRADERS = [
   "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
   "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral",
   "nemotron-120b","gemma4-selfhost"
+];
+const PQT_TRADERS = [
+  "qwen-quant","llama-contra","gemini-anl",
+  "mistral-large","mistral-medium","mistral-nemo"
 ];
 const ISLANDS = [
   ["S10","https://nomos42-nba-quant.hf.space/api/status"],
@@ -342,6 +341,8 @@ const ENDPOINTS = {
   political:   "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status",
   politicalLB: "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/leaderboard",
   politicalDays:"https://lbjlincoln26-political-llm-trading-floor.hf.space/api/day-decisions",
+  quant:       "https://lbjlincoln26-political-quant-trading-floor.hf.space/api/status",
+  quantLB:     "https://lbjlincoln26-political-quant-trading-floor.hf.space/api/leaderboard",
 };
 
 const AGENTS = [
@@ -349,13 +350,14 @@ const AGENTS = [
     tint: TRADER_PALETTE[i % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) })),
   ...POL_TRADERS.map((id,i)=>({ id:`p-${id}`, key:id, label:id, kind:"political", zone:"political", idx:i, char:(i+2)%6,
     tint: TRADER_PALETTE[(i + 15) % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) })),
+  ...PQT_TRADERS.map((id,i)=>({ id:`q-${id}`, key:id, label:`Q·${id}`, kind:"quant", zone:"quant", idx:i, char:(i+4)%6,
+    tint: 0xffd166, badge: traderBadge(id), homeIsland: homeIslandFor(id) })),
   ...ISLANDS.map(([lbl,url],i)=>({
     id:`island-${lbl.toLowerCase()}`, key:lbl, label:lbl,
     kind: lbl.startsWith("P") ? "pol_infra" : "infra",
     zone: lbl.startsWith("P") ? "pol-infra" : "nba-infra",
     idx:i, char:0, url, _isInfra:true,
   })),
-  ...COUNCIL_DEPTS.map(([c,n,m],i)=>({ id:`dept-${c.toLowerCase()}`, key:c, label:`${c} ${n}`, kind:"council", zone:"councils", idx:i, char:(i+3)%6, mission:m })),
 ];
 
 // ── SEATING ─────────────────────────────────────────────────────────────────
@@ -1211,6 +1213,32 @@ async function refresh() {
     }
   }
 
+  // Political QUANT TF (pqtf — intraday options)
+  const pqt = await fetchJSON(ENDPOINTS.quant);
+  if (pqt) {
+    const agents = pqt.agents || {};
+    for (const a of AGENTS.filter(x => x.kind === "quant")) {
+      const d = agents[a.key]; if (!d) continue;
+      polOK++;
+      const prev = a.data;
+      a.data = d;
+      const roi = (d.bankroll || 100000) / 100000 - 1;
+      a.state = roi > 0.02 ? "profit" : roi < -0.02 ? "loss" : "thinking";
+      if (prev && prev.total_bets != null && d.total_bets > prev.total_bets) {
+        const deltaW = (d.wins || 0) - (prev.wins || 0);
+        a.recent = deltaW > 0 ? "✓ W" : (d.losses > prev.losses) ? "✗ L" : "opt";
+        a.activeUntil = performance.now() + 4000;
+        logTrade("political", a.label, `opt #${d.total_bets}`, d.bankroll - prev.bankroll);
+        spawnPulseRing(a.x * TILE, a.y * TILE, deltaW > 0 ? 0x00d9a7 : 0xff5c5c);
+      }
+      a.bubble = buildTraderBubble(a);
+    }
+    if (pqt.days_processed != null) {
+      const prevEl = document.getElementById("hud-day");
+      if (prevEl) prevEl.textContent += ` · PQT day ${pqt.days_processed}/${pqt.days_total||50}`;
+    }
+  }
+
   // Day-decisions → per-agent LLM reasoning + categories aggregation
   async function wireDayDecisions(summaryUrl, detailUrl, kind) {
     const summary = await fetchJSON(summaryUrl);
@@ -1394,7 +1422,7 @@ setInterval(() => {
   const el = document.getElementById("bt-utc");
   if (el) el.textContent = new Date().toISOString().slice(11,19);
 }, 1000);
-logTrade("council", "pixel-world", "v2.3 boot · 24 traders (12 NBA + 12 POL) · 21 islands · 9 depts · breathing · emotes · particles");
+logTrade("council", "pixel-world", "v2.4 boot · 24 traders (12 NBA + 12 POL) · 21 islands · focus=traders · breathing · emotes · particles");
 
 })();
 </script>
