@@ -728,6 +728,21 @@ PROVIDERS = {
         "max_tokens": 2000,
         "rpm": 40,
     },
+    # GitHub Models (free, reliable, Azure-backed — nuclear fallback)
+    "github:gpt-4o-mini": {
+        "url": "https://models.inference.ai.azure.com/chat/completions",
+        "model": "gpt-4o-mini",
+        "key_env": "GH_TOKEN",
+        "max_tokens": 2000,
+        "rpm": 30,
+    },
+    "github:llama-3.1-8b": {
+        "url": "https://models.inference.ai.azure.com/chat/completions",
+        "model": "meta-llama-3.1-8b-instruct",
+        "key_env": "GH_TOKEN",
+        "max_tokens": 2000,
+        "rpm": 30,
+    },
 }
 
 # ── AGENT DEFINITIONS (v3 — 10 personas across 3 providers, 2026-04-14) ──────
@@ -1695,7 +1710,7 @@ Values must be >= {COUNCIL_MIN_COMMIT_PER_AGENT} and <= 0.85."""
     try:
         raw = _call_llm(
             "cerebras:qwen-3-235b",  # qwen-235B: fast + big context
-            sys_prompt, usr_prompt, timeout=45.0,
+            sys_prompt, usr_prompt, timeout=15.0,
             trace_name=f"nba-tf-council-{day_idx}",
             trace_metadata={"day": day_date, "n_games": n_games, "n_agents": n_agents, "fleet_total": fleet_total},
         )
@@ -2720,6 +2735,15 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     _gateway_routed = 0
     _gateway_fallback = 0
 
+    # Pre-ping: wake self-hosted LLM Spaces before experiment starts
+    import concurrent.futures as _cf
+    _selfhost_urls = [v["url"].rsplit("/", 1)[0] for k, v in PROVIDERS.items() if k.startswith("selfhost:")]
+    def _wake(u):
+        try: requests.get(u + "/", timeout=30)
+        except: pass
+    with _cf.ThreadPoolExecutor(max_workers=8) as _ex:
+        list(_ex.map(_wake, _selfhost_urls))
+
     # Load data
     all_games = load_games()
     odds_dict = load_odds()
@@ -2953,7 +2977,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 fleet_best_bankroll=fleet_best_bankroll,
             )
             try:
-                raw = _call_llm(provider, system_prompt, user_prompt, timeout=30.0,
+                raw = _call_llm(provider, system_prompt, user_prompt, timeout=12.0,
                                trace_name=f"nba-tf-day-{day_idx}",
                                trace_metadata={"trader_id": tid, "day": day_date, "bankroll": ts["bankroll"]})
             except Exception:
@@ -2961,7 +2985,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # Fallback provider if primary fails
             if not raw and cfg.get("fallback_provider"):
                 try:
-                    raw = _call_llm(cfg["fallback_provider"], system_prompt, user_prompt, timeout=30.0,
+                    raw = _call_llm(cfg["fallback_provider"], system_prompt, user_prompt, timeout=12.0,
                                    trace_name=f"nba-tf-day-{day_idx}-fallback",
                                    trace_metadata={"trader_id": tid, "day": day_date, "fallback": True})
                 except Exception:
@@ -2969,8 +2993,25 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             return tid, raw
 
         _max_workers = min(len(TRADERS), 16)
-        with ThreadPoolExecutor(max_workers=_max_workers) as _pool:
-            _responses = dict(_pool.map(_agent_llm_worker, list(TRADERS.items())))
+        _responses = {}
+        _pool = ThreadPoolExecutor(max_workers=_max_workers)
+        _futures = {_pool.submit(_agent_llm_worker, item): item[0]
+                    for item in list(TRADERS.items())}
+        try:
+            for _fut in as_completed(_futures, timeout=45.0):
+                try:
+                    _tid, _raw = _fut.result(timeout=1.0)
+                    _responses[_tid] = _raw
+                except Exception:
+                    _responses[_futures[_fut]] = None
+        except Exception:
+            pass
+        # Fill unfinished slots with None and drop the pool WITHOUT waiting.
+        for _fut, _tid in _futures.items():
+            if _tid not in _responses:
+                _fut.cancel()
+                _responses[_tid] = None
+        _pool.shutdown(wait=False, cancel_futures=True)
 
         # Flush Langfuse batch so traces land before the day takes minutes more.
         if _langfuse:
@@ -3208,7 +3249,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         len(cats_used) < tier["min_cats"] or
                         len(games_used) < tier["min_games"] or
                         total_deployed_pct < tier["deploy_floor"])
-            if need_pad and len(day_games) >= 3:
+            if need_pad and len(day_games) >= 1:
                 # Build +edge candidate list from our own model predictions
                 candidates = []  # (edge, game_idx, category, prob)
                 for gi, g in enumerate(day_games):
@@ -3417,8 +3458,11 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             rate = days_done / (elapsed / 60) if elapsed > 0 else 0
             eta_min = (n_days - days_done) / rate if rate > 0 else 0
 
-            progress(days_done / n_days,
-                     desc=f"Day {days_done}/{n_days} | {rate:.2f} days/min | ETA {eta_min:.0f}min")
+            try:
+                progress(days_done / n_days,
+                         desc=f"Day {days_done}/{n_days} | {rate:.2f} days/min | ETA {eta_min:.0f}min")
+            except Exception:
+                pass
 
             # Build leaderboard
             lb_data = []
@@ -3753,13 +3797,16 @@ async def api_run(request: Request):
     _stop_event.clear()
     if _experiment_running:
         return JSONResponse({"status": "resumed", "games_processed": _experiment_state.get("games_processed", 0), "message": "Stop flag cleared, experiment continues."})
-    import threading
+    import threading, traceback as _tb
     def _bg():
-        try:
-            for _ in run_experiment():
-                pass
-        except Exception as e:
-            print(f"[api_run bg] {e}")
+        for _attempt in range(5):
+            try:
+                for _ in run_experiment():
+                    pass
+                break
+            except Exception as e:
+                print(f"[api_run bg] attempt {_attempt+1} crashed: {e}\n{_tb.format_exc()}")
+                import time as _t; _t.sleep(10)
     threading.Thread(target=_bg, daemon=True, name="api_run_bg").start()
     return JSONResponse({"status": "started", "message": "Experiment launched in background thread."})
 
@@ -3954,6 +4001,24 @@ async def serve_paper():
 
 # Mount FastAPI alongside Gradio
 app = gr.mount_gradio_app(api, demo, path="/")
+
+# Auto-start experiment on Space boot (survives rebuilds)
+def _auto_start():
+    import time as _t, traceback as _tb
+    _t.sleep(10)
+    for _attempt in range(5):
+        if _experiment_running:
+            return
+        print(f"[auto-start] attempt {_attempt+1} — launching experiment on boot")
+        try:
+            for _ in run_experiment():
+                pass
+            return
+        except Exception as e:
+            print(f"[auto-start] attempt {_attempt+1} crashed: {e}\n{_tb.format_exc()}")
+            _t.sleep(15)
+
+threading.Thread(target=_auto_start, daemon=True, name="auto_start").start()
 
 if __name__ == "__main__":
     import uvicorn

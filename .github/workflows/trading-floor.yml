@@ -1,4 +1,4 @@
-name: Trading Floor Monitor
+name: Trading Floor Monitor + Watchdog
 
 on:
   workflow_dispatch:
@@ -8,185 +8,163 @@ on:
         required: false
         default: 'status'
   schedule:
-    # Every 4 hours at :45 (slot D — staggered from backtest :25)
-    - cron: '45 2,6,10,14,18,22 * * *'
+    # Every 2 hours (was 4h — tighter monitoring after repeated TF deaths)
+    - cron: '45 */2 * * *'
 
 permissions:
   contents: write
 
+env:
+  NBA_URL: https://lbjlincoln26-nba-llm-trading-floor.hf.space
+  POL_URL: https://lbjlincoln26-political-llm-trading-floor.hf.space
+  GW_URL: https://lbjlincoln26-llm-gateway.hf.space
+
 jobs:
-  # ── NBA TRADING FLOOR: HF Space is primary, GH Action just monitors ──
-  nba-trading-monitor:
-    name: NBA Trading Floor Monitor
+  watchdog:
+    name: TF Watchdog (NBA + Political)
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Check HF Trading Floor Space status
+      - name: NBA — check + restart if dead
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN_2 }}
         run: |
-          echo "=== Nomos42 Trading Floor Status ==="
-          # Get status from HF Space API
-          STATUS=$(curl -s --max-time 15 \
-            "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status" || echo '{"error":"unreachable"}')
-          echo "$STATUS" | python3 -c "
-          import sys, json
-          try:
-              d = json.load(sys.stdin)
-              print(f\"Running: {d.get('running', '?')}\")
-              print(f\"Games: {d.get('games_processed', '?')}/{d.get('games_total', '?')}\")
-              print(f\"LLM calls: {d.get('llm_calls', '?')} (fails: {d.get('llm_failures', '?')})\")
-              if d.get('agents'):
-                  for tid, ts in sorted(d['agents'].items(), key=lambda x: -x[1].get('bankroll', 0)):
-                      print(f\"  {tid:12s} \${ts.get('bankroll',100):>8.2f}  bets={ts.get('total_bets',0)}\")
-          except:
-              print(f'Raw: {d}' if 'd' in dir() else 'Failed to parse')
-          "
+          echo "=== NBA Trading Floor ==="
+          STATUS=$(curl -s --max-time 20 "$NBA_URL/api/status" || echo '{"error":"unreachable"}')
 
-          # Get leaderboard
-          echo ""
-          echo "=== Leaderboard ==="
-          curl -s --max-time 15 \
-            "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard" \
-            | python3 -m json.tool 2>/dev/null | head -40 || echo "Leaderboard unavailable"
+          # Parse status
+          RUNNING=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('running','error'))" 2>/dev/null || echo "error")
+          CALLS=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('llm_calls',0))" 2>/dev/null || echo "0")
+          BEST=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('fleet_best_bankroll',0))" 2>/dev/null || echo "0")
+          LEADER=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('fleet_leader','none'))" 2>/dev/null || echo "none")
+          DEAD=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('provider_health',{}).get('providers_dead',{})))" 2>/dev/null || echo "?")
+          OK=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('provider_health',{}).get('providers_ok',[])))" 2>/dev/null || echo "?")
 
-          # Save status to file for commit
+          echo "  running=$RUNNING | llm_calls=$CALLS | best=\$$BEST | leader=$LEADER"
+          echo "  providers: $OK ok / $DEAD dead"
+
+          # WATCHDOG: restart if not running
+          if [ "$RUNNING" = "False" ] || [ "$RUNNING" = "error" ]; then
+            echo "  ⚠️  NBA TF NOT RUNNING — restarting via /api/run"
+            RESTART=$(curl -s --max-time 20 -X POST "$NBA_URL/api/run" || echo '{"error":"failed"}')
+            echo "  restart response: $RESTART"
+
+            # If Space itself is down (error=unreachable), try HF API restart
+            if [ "$RUNNING" = "error" ]; then
+              echo "  ⚠️  Space unreachable — attempting HF Space restart"
+              pip install -q huggingface_hub 2>/dev/null
+              python3 -c "
+          from huggingface_hub import HfApi
+          import os
+          api = HfApi(token=os.environ['HF_TOKEN'])
+          api.restart_space('LBJLincoln26/nba-llm-trading-floor')
+          print('  HF Space restart triggered')
+          " 2>&1 || echo "  HF restart failed"
+            fi
+          else
+            echo "  ✓ NBA TF running normally"
+          fi
+
+          # Save status
           mkdir -p data/arena
           echo "$STATUS" > data/arena/trading-floor-status.json
 
-      - name: Sync Axelrod post-mortem logs (Mech C paper dataset)
+      - name: Political — check + restart if dead
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN_2 }}
         run: |
-          # Pull day-N.jsonl files from HF Space /api/axelrod-log and commit to repo
-          # These are the primary dataset for the Axelrod-2026 LLM agent society paper.
-          mkdir -p data/arena/axelrod-log
-          AXELROD=$(curl -s --max-time 20 \
-            "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/axelrod-log" \
-            || echo '{"error":"unreachable"}')
-          if echo "$AXELROD" | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if 'files' in d else 1)" 2>/dev/null; then
-            echo "$AXELROD" | python3 -c "
-          import sys, json, os
-          d = json.load(sys.stdin)
-          written = 0
-          for fname, lines in d.get('files', {}).items():
-              path = f'data/arena/axelrod-log/{fname}'
-              with open(path, 'w') as f:
-                  f.write(lines)
-              written += 1
-          print(f'Axelrod log: wrote {written} day files to data/arena/axelrod-log/')
-          "
+          echo "=== Political Trading Floor ==="
+          STATUS=$(curl -s --max-time 20 "$POL_URL/api/status" || echo '{"error":"unreachable"}')
+
+          RUNNING=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('running','error'))" 2>/dev/null || echo "error")
+          CALLS=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('llm_calls',0))" 2>/dev/null || echo "0")
+          BEST=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('fleet_best_bankroll',0))" 2>/dev/null || echo "0")
+          LEADER=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('fleet_leader','none'))" 2>/dev/null || echo "none")
+          DEAD=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('provider_health',{}).get('providers_dead',{})))" 2>/dev/null || echo "?")
+          OK=$(echo "$STATUS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('provider_health',{}).get('providers_ok',[])))" 2>/dev/null || echo "?")
+
+          echo "  running=$RUNNING | llm_calls=$CALLS | best=\$$BEST | leader=$LEADER"
+          echo "  providers: $OK ok / $DEAD dead"
+
+          if [ "$RUNNING" = "False" ] || [ "$RUNNING" = "error" ]; then
+            echo "  ⚠️  POL TF NOT RUNNING — restarting via /api/run"
+            RESTART=$(curl -s --max-time 20 -X POST "$POL_URL/api/run" || echo '{"error":"failed"}')
+            echo "  restart response: $RESTART"
+
+            if [ "$RUNNING" = "error" ]; then
+              echo "  ⚠️  Space unreachable — attempting HF Space restart"
+              pip install -q huggingface_hub 2>/dev/null
+              python3 -c "
+          from huggingface_hub import HfApi
+          import os
+          api = HfApi(token=os.environ['HF_TOKEN'])
+          api.restart_space('LBJLincoln26/political-llm-trading-floor')
+          print('  HF Space restart triggered')
+          " 2>&1 || echo "  HF restart failed"
+            fi
           else
-            echo "Axelrod log: Space not running or no data yet — skipping"
+            echo "  ✓ POL TF running normally"
           fi
-
-      - name: Check LLM Gateway health
-        run: |
-          echo "=== LLM Gateway Status ==="
-          curl -s --max-time 10 \
-            "https://lbjlincoln26-llm-gateway.hf.space/gradio_api/call/list_models" \
-            -X POST -H "Content-Type: application/json" -d '{"data": []}' \
-            | python3 -c "import sys,json; print(json.load(sys.stdin).get('event_id','no event'))" 2>/dev/null \
-            && echo "Gateway: RESPONDING" || echo "Gateway: DOWN"
-
-      - name: Commit status snapshot
-        run: |
-          git config user.name "Trading Floor Bot"
-          git config user.email "trading@nomos42.ai"
-          git add data/arena/trading-floor-status.json 2>/dev/null || true
-          git add data/arena/axelrod-log/ 2>/dev/null || true
-          if ! git diff --cached --quiet 2>/dev/null; then
-            git stash --include-untracked
-            git pull --rebase origin main
-            git stash pop || true
-            git add data/arena/trading-floor-status.json 2>/dev/null || true
-            git add data/arena/axelrod-log/ 2>/dev/null || true
-            git commit -m "data: trading floor status + axelrod log $(date -u +%Y-%m-%dT%H:%MZ)"
-            for attempt in 1 2 3; do
-              git pull --rebase || true
-              git push && break
-              echo "Push attempt $attempt failed, retrying..."
-              git pull --rebase origin main || true
-            done
-          else
-            echo "No status changes to commit"
-          fi
-
-  # ── POLITICAL TRADING FLOOR: HF Space is primary, GH Action just monitors ──
-  political-trading-monitor:
-    name: Political Trading Floor Monitor
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Check Political HF Space status
-        run: |
-          echo "=== Nomos42 Political Trading Floor Status ==="
-          STATUS=$(curl -s --max-time 15 \
-            "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status" || echo '{"error":"unreachable"}')
-          echo "$STATUS" | python3 -c "
-          import sys, json
-          try:
-              d = json.load(sys.stdin)
-              print(f\"Running: {d.get('running', '?')}\")
-              print(f\"Events: {d.get('events_processed', '?')}/{d.get('events_total', '?')}\")
-              print(f\"Days: {d.get('days_processed', '?')}/{d.get('days_total', '?')}\")
-              print(f\"LLM calls: {d.get('llm_calls', '?')} (fails: {d.get('llm_failures', '?')})\")
-              if d.get('agents'):
-                  for tid, ts in sorted(d['agents'].items(), key=lambda x: -x[1].get('bankroll', 0)):
-                      print(f\"  {tid:14s} \${ts.get('bankroll',100):>8.2f}  bets={ts.get('total_bets',0)}\")
-          except Exception as e:
-              print(f'Parse failed: {e}')
-          "
-          echo ""
-          echo "=== Political Leaderboard ==="
-          curl -s --max-time 15 \
-            "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/leaderboard" \
-            | python3 -m json.tool 2>/dev/null | head -40 || echo "Leaderboard unavailable"
 
           mkdir -p data/arena/political
           echo "$STATUS" > data/arena/political/political-trading-floor-status.json
 
-      - name: Sync Political Axelrod post-mortem logs (Mech C paper dataset)
+      - name: Gateway health check
         run: |
-          mkdir -p data/arena/axelrod-log-political
-          AXELROD=$(curl -s --max-time 20 \
-            "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/axelrod-log" \
-            || echo '{"error":"unreachable"}')
-          if echo "$AXELROD" | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if 'files' in d else 1)" 2>/dev/null; then
-            echo "$AXELROD" | python3 -c "
+          echo "=== LLM Gateway ==="
+          GW_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$GW_URL/api/status" || echo "000")
+          if [ "$GW_CODE" = "200" ]; then
+            echo "  ✓ Gateway alive (HTTP $GW_CODE)"
+          else
+            echo "  ⚠️  Gateway down (HTTP $GW_CODE)"
+          fi
+
+      - name: Sync Axelrod logs (NBA + Political)
+        run: |
+          # NBA axelrod logs
+          mkdir -p data/arena/axelrod-log
+          AXELROD=$(curl -s --max-time 20 "$NBA_URL/api/axelrod-log" || echo '{}')
+          echo "$AXELROD" | python3 -c "
           import sys, json
           d = json.load(sys.stdin)
           written = 0
           for fname, lines in d.get('files', {}).items():
-              path = f'data/arena/axelrod-log-political/{fname}'
-              with open(path, 'w') as f:
+              with open(f'data/arena/axelrod-log/{fname}', 'w') as f:
                   f.write(lines)
               written += 1
-          print(f'Political axelrod log: wrote {written} day files to data/arena/axelrod-log-political/')
-          "
-          else
-            echo "Political axelrod log: Space not running or no data yet — skipping"
-          fi
+          print(f'NBA axelrod: {written} day files')
+          " 2>/dev/null || echo "NBA axelrod: no data"
 
-      - name: Commit political status snapshot
+          # Political axelrod logs
+          mkdir -p data/arena/axelrod-log-political
+          AXELROD_POL=$(curl -s --max-time 20 "$POL_URL/api/axelrod-log" || echo '{}')
+          echo "$AXELROD_POL" | python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)
+          written = 0
+          for fname, lines in d.get('files', {}).items():
+              with open(f'data/arena/axelrod-log-political/{fname}', 'w') as f:
+                  f.write(lines)
+              written += 1
+          print(f'POL axelrod: {written} day files')
+          " 2>/dev/null || echo "POL axelrod: no data"
+
+      - name: Commit snapshots
         run: |
           git config user.name "Trading Floor Bot"
           git config user.email "trading@nomos42.ai"
-          git add data/arena/political/political-trading-floor-status.json 2>/dev/null || true
-          git add data/arena/axelrod-log-political/ 2>/dev/null || true
+          git add data/arena/ 2>/dev/null || true
           if ! git diff --cached --quiet 2>/dev/null; then
             git stash --include-untracked
             git pull --rebase origin main
             git stash pop || true
-            git add data/arena/political/political-trading-floor-status.json 2>/dev/null || true
-            git add data/arena/axelrod-log-political/ 2>/dev/null || true
-            git commit -m "data: political TF status + axelrod log $(date -u +%Y-%m-%dT%H:%MZ)"
+            git add data/arena/ 2>/dev/null || true
+            git commit -m "data: TF watchdog $(date -u +%Y-%m-%dT%H:%MZ) [auto-restart if dead]"
             for attempt in 1 2 3; do
               git pull --rebase || true
               git push && break
@@ -194,5 +172,5 @@ jobs:
               git pull --rebase origin main || true
             done
           else
-            echo "No political status changes to commit"
+            echo "No changes to commit"
           fi

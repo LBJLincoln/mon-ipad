@@ -26,9 +26,9 @@ import requests
 
 # Tier-tagged emergency pool (verified alive cloud providers, 2026-04-17).
 EMERGENCY_POOL = {
-    "L": ["cerebras:qwen-3-235b", "openrouter:nemotron-120b", "nvidia:llama-3.3-70b"],
-    "M": ["cerebras:llama3.1-8b", "mistral:large", "mistral:medium", "nvidia:minimax-m2.7"],
-    "S": ["mistral:small", "mistral:ministral-8b", "mistral:nemo", "openrouter:gpt-oss-120b"],
+    "L": ["cerebras:qwen-3-235b", "openrouter:nemotron-120b", "nvidia:llama-3.3-70b", "github:gpt-4o-mini"],
+    "M": ["cerebras:llama3.1-8b", "mistral:large", "mistral:medium", "nvidia:minimax-m2.7", "github:gpt-4o-mini", "github:llama-3.1-8b"],
+    "S": ["mistral:small", "mistral:ministral-8b", "mistral:nemo", "openrouter:gpt-oss-120b", "github:llama-3.1-8b", "selfhost:qwen3-4b", "selfhost:dolphin3-l32-3b"],
 }
 
 PROVIDER_TIER: Dict[str, str] = {
@@ -52,6 +52,8 @@ PROVIDER_TIER: Dict[str, str] = {
     "selfhost:qwen3-0.6b": "S",
     "selfhost:dolphin3-l32-3b": "S",
     "selfhost:cpu-gemma4": "S",
+    "github:gpt-4o-mini": "M",
+    "github:llama-3.1-8b": "S",
 }
 
 CIRCUIT_THRESHOLD = 3
