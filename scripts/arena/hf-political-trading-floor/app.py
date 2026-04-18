@@ -490,14 +490,14 @@ PROVIDERS = {
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "qwen-3-235b-a22b-instruct-2507",
         "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 30,
     },
     "cerebras:llama3.1-8b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "llama3.1-8b",
         "key_env": "CEREBRAS_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 30,
     },
     # Google Gemini 3 Flash (key 2)
@@ -505,7 +505,7 @@ PROVIDERS = {
         "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent",
         "model": "gemini-3-flash-preview",
         "key_env": "GOOGLE_API_KEY_2",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 14,
     },
     # Mistral la Plateforme (free tier — added 2026-04-14)
@@ -513,56 +513,56 @@ PROVIDERS = {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "mistral-large-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 20,
     },
     "mistral:medium": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "mistral-medium-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 20,
     },
     "mistral:small": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "mistral-small-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 20,
     },
     "mistral:nemo": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "open-mistral-nemo",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 20,
     },
     "mistral:ministral-8b": {
         "url": "https://api.mistral.ai/v1/chat/completions",
         "model": "ministral-8b-latest",
         "key_env": "MISTRAL_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 20,
     },
     "openrouter:nemotron-120b": {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "nvidia/nemotron-3-super-120b-a12b:free",
         "key_env": "OPENROUTER_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 12,
     },
     "openrouter:gemma-4-31b": {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "google/gemma-4-31b-it:free",
         "key_env": "OPENROUTER_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 12,
     },
     "openrouter:gpt-oss-120b": {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "openai/gpt-oss-120b:free",
         "key_env": "OPENROUTER_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 12,
     },
     # 2026-04-17 ROUTE: broken nomos-cpu-gemma4 → nomos42-llm-cpu (Qwen 2.5-1.5B cpu-basic, ~3 tok/s)
@@ -609,35 +609,35 @@ PROVIDERS = {
         "url": "https://nomos42-fin-r1-7b-cpu.hf.space/v1/chat/completions",
         "model": "fin-r1-7b",
         "key_env": "SELFHOST_NOOP",
-        "max_tokens": 800,
+        "max_tokens": 1500,
         "rpm": 30,
     },
     "nvidia:minimax-m2.7": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "minimaxai/minimax-m2.7",
         "key_env": "NVIDIA_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 40,
     },
     "nvidia:minimax-m2.7-alt": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "minimaxai/minimax-m2.7",
         "key_env": "NVIDIA_API_KEY_2",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 40,
     },
     "nvidia:llama-3.3-70b": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "meta/llama-3.3-70b-instruct",
         "key_env": "NVIDIA_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 40,
     },
     "nvidia:nemotron-70b": {
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "model": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
         "key_env": "NVIDIA_API_KEY",
-        "max_tokens": 500,
+        "max_tokens": 1200,
         "rpm": 40,
     },
 }
@@ -1548,17 +1548,19 @@ Your thesis MUST cite which signal/agency drove the decision, not just the ticke
 
 RESPOND WITH RAW JSON ONLY. No markdown fences. No explanation before or after. First character MUST be {, last MUST be }. Do NOT wrap in ```json blocks.
 
-Schema:
+Schema (FILL EVERY FIELD — top-of-JSON fields get priority under token pressure):
 {
-  "day_strategy": "1-2 sentences on today's overall approach",
+  "day_strategy": "MUST start with STRUCTURAL DIVERGE [peer] or STRUCTURAL COMPLEMENT [peer] citing your REASONING TEMPLATE — then 1-2 sentences on approach",
+  "coalition_proposal": {
+    "peer": "qwen-quant (or \"none\" if no pact today)",
+    "event_idx": 1,
+    "direction": "long",
+    "rationale": "1 sentence — why this peer / why no pact today"
+  },
   "council_alignment": {
     "stance": "followed|deviated|partial",
     "reason": "1 sentence — why you followed/deviated/partial vs council_commit_target"
   },
-  "events_considered": [
-    {"event_idx": 1, "decision": "bet|skip", "reason": "1 sentence — if skip: why (signal weak / agency unclear / already exposed / low conviction)"},
-    {"event_idx": 2, "decision": "skip", "reason": "signal ambiguous, no clear sector read"}
-  ],
   "allocations": [
     {
       "event_idx": 1,
@@ -1572,12 +1574,10 @@ Schema:
   ],
   "cash_held_pct": 0.25,
   "cash_rationale": "1 sentence if cash > 0",
-  "coalition_proposal": {
-    "peer": "qwen-quant",
-    "event_idx": 1,
-    "direction": "long",
-    "rationale": "optional 1 sentence — why you want to pact with this peer"
-  }
+  "events_considered": [
+    {"event_idx": 1, "decision": "bet|skip", "reason": "1 sentence — if skip: why (signal weak / agency unclear / already exposed / low conviction)"},
+    {"event_idx": 2, "decision": "skip", "reason": "signal ambiguous, no clear sector read"}
+  ]
 }
 
 NEW AUDIT FIELDS (MANDATORY — councils use these to score decision quality):
