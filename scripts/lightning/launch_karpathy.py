@@ -105,6 +105,17 @@ def main() -> int:
     print(f"[launch_karpathy] Done. {metric_label}="
           f"{result.get('best_score', result.get('best_brier', '?'))} "
           f"iterations={result.get('iterations', '?')}")
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from gpu.dept_log import record as _dept_record
+        score = result.get('best_brier') if args.project == 'nba' else result.get('best_score')
+        _dept_record("lightning", f"karpathy_tree_{args.project}",
+                     brier=float(score) if score is not None else None,
+                     project=args.project,
+                     iterations=result.get('iterations'),
+                     duration_s=args.duration)
+    except Exception as _e:
+        print(f"[dept-log] lightning record failed: {_e}")
     return 0
 
 

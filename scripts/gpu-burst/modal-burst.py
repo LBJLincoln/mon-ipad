@@ -732,4 +732,16 @@ def main(
     except Exception as e:  # noqa: BLE001
         print(f"[fleet-matrix] log failed (non-fatal): {e}")
 
+    try:
+        import sys as _sys
+        _sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from gpu.dept_log import record as _dept_record
+        _dept_record("modal", "cpcv_dsr_walkforward",
+                     brier=float(result.get("best_brier", 1.0)),
+                     improvement=result.get("improvement"),
+                     beat_atr=result.get("beat_atr"),
+                     iterations=result.get("iterations"))
+    except Exception as _e:
+        print(f"[dept-log] modal record failed: {_e}")
+
     return result

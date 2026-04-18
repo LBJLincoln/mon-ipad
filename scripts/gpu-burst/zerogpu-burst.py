@@ -788,6 +788,14 @@ def main():
             sys.exit(1)
 
     improved_count = sum(1 for r in results if r.get("status") == "improved")
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from gpu.dept_log import record as _dept_record
+        best = min((r.get("best_brier", 1.0) for r in results), default=1.0)
+        _dept_record("zerogpu", "tabicl_serverless_island_seed",
+                     brier=best, improved=improved_count, n_accounts=len(results))
+    except Exception as _e:
+        print(f"[dept-log] zerogpu record failed: {_e}")
     sys.exit(0 if improved_count >= 0 else 1)  # Always exit 0 — improvement is a bonus
 
 

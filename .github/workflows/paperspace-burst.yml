@@ -1,0 +1,46 @@
+name: Paperspace Gradient Burst (Darwinian + Venn-Abers)
+
+# Runs the Darwinian weights + Venn-Abers fusion burst on Paperspace Gradient.
+# Pulls per-island Brier from S17/S18/S21/S22, computes PnL-weighted fusion,
+# emits result to D2 Engineering council feed + Supabase if configured.
+#
+# Specialization: NO OTHER GPU platform runs this strategy (see PLATFORM_MATRIX.md).
+# Paperspace offers free GPU tier + unlimited restarts.
+#
+# This runs on GH runner (not Paperspace directly) because the burst is a
+# lightweight HTTP fan-out — no GPU-bound code. For GPU-bound work, launch a
+# Paperspace notebook manually and `python scripts/paperspace/launch_karpathy.py`.
+
+on:
+  schedule:
+    - cron: '35 */8 * * *'  # every 8h at :35 (offset from modal :15, zerogpu :50, analytics :45)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  paperspace-burst:
+    name: Paperspace Darwinian+Venn-Abers
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Darwinian + Venn-Abers fusion
+        run: python scripts/paperspace/launch_karpathy.py
+
+      - name: Commit results
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/gpu/paperspace/ data/departments/gpu-results-engineering.jsonl || true
+          git diff --cached --quiet || git commit -m "paperspace: Darwinian+Venn-Abers burst $(date -u +%Y%m%dT%H%MZ)"
+          git push || true
