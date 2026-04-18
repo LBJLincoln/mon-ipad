@@ -2832,6 +2832,33 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         multi_season_seed = True
         print(f"MULTI-SEASON SEED: carrying final bankrolls from prior completed season")
 
+    # 2026-04-18 FIX: seed _experiment_state NOW so /api/status returns real
+    # bankrolls during resume-load (previously showed $100 until day N+1 finished).
+    if saved and saved.get("agents"):
+        try:
+            _fb = max(state[t]["bankroll"] for t in state)
+            _ld = max(state, key=lambda t: state[t]["bankroll"])
+            with _state_lock:
+                _experiment_state = {
+                    "days_processed": int(saved.get("days_processed", 0)),
+                    "days_total": n_days,
+                    "games_processed": 0,
+                    "games_total": n_games,
+                    "completed": False,
+                    "design": "day-bucket-v3",
+                    "agents": {tid: {k: v for k, v in ts.items() if k not in ("history", "recent_decisions")}
+                               for tid, ts in state.items()},
+                    "updated": datetime.now(timezone.utc).isoformat(),
+                    "season_target": SEASON_TARGET,
+                    "fleet_best_bankroll": round(_fb, 2),
+                    "fleet_leader": _ld,
+                    "season_progress_pct": round((_fb / SEASON_TARGET) * 100.0, 4),
+                    "resumed": True,
+                }
+            print(f"[resume-seed] fleet_best=${_fb:.2f} leader={_ld}")
+        except Exception as _e:
+            print(f"[resume-seed] failed: {_e}")
+
     start_time = time.time()
     odds_matched = 0
     odds_synthetic = 0
