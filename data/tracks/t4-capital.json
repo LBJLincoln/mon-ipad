@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-19T11:35:57.971934Z",
+  "timestamp": "2026-04-19T11:45:13.298961Z",
   "track": "T4 CAPITAL",
   "absorbs": [
     "D8 finance",
@@ -23,7 +23,54 @@
     "target_collective_usd": 1000000,
     "min_deploy_pct": 0.75
   },
-  "last_action": "Ticker 30-min scan 2026-04-19T11:34 UTC: 8 playoff games, no steam, lines stable",
+  "last_action": "ticker-tf: NBA COLLAPSE 96.98%dd (mistral-small $4.22), PQTF COLLAPSE 99.45%dd (gemini-anl $17K outlier), POL healthy 13%dd",
   "next_proposal": "Monitor live odds for steam moves in next 30min window. Check predictions when available.",
-  "blocked_on": null
+  "blocked_on": null,
+  "tfs": {
+    "nba": {
+      "days": "9/175",
+      "bets": 185,
+      "fleet_best": 139.9,
+      "fleet_worst": 4.22,
+      "bets_per_day": 20.56,
+      "drawdown": 0.9698,
+      "llm_error_rate": 0.1176,
+      "status": "ALERT",
+      "flags": [
+        "COLLAPSE",
+        "ROGUE_ZONE(1)",
+        "SILENT(5)"
+      ],
+      "timestamp": "2026-04-19T11:45:13.298961Z"
+    },
+    "pol": {
+      "days": "6/50",
+      "bets": 83,
+      "fleet_best": 115.06,
+      "fleet_worst": 100.0,
+      "bets_per_day": 13.83,
+      "drawdown": 0.1309,
+      "llm_error_rate": 0.0,
+      "status": "OK",
+      "flags": [
+        "SILENT(2)"
+      ],
+      "timestamp": "2026-04-19T11:45:13.298961Z"
+    },
+    "pqtf": {
+      "days": "10/50",
+      "bets": 193,
+      "fleet_best": 17219.09,
+      "fleet_worst": 95.31,
+      "bets_per_day": 19.3,
+      "drawdown": 0.9945,
+      "llm_error_rate": 0.0,
+      "status": "ALERT",
+      "flags": [
+        "COLLAPSE",
+        "SILENT(1)"
+      ],
+      "timestamp": "2026-04-19T11:45:13.298961Z"
+    }
+  }
 }
