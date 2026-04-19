@@ -23,5 +23,101 @@
     "overall": "healthy",
     "alerts": [],
     "note": "social=absent (not a failure); odds/political/lineage all healthy <3.5h stale"
+  },
+  "switchboard": {
+    "last_tick": "2026-04-19T13:00:03Z",
+    "tick_count": 1,
+    "spaces": {
+      "llm-gateway": {
+        "status": "up",
+        "http": 200,
+        "hf_stage": "RUNNING",
+        "note": "root 200, /api/status ok but ok=false (0 alive)",
+        "last_check_iso": "2026-04-19T13:00:03Z"
+      },
+      "nba-llm-trading-floor": {
+        "status": "up",
+        "http": 200,
+        "hf_stage": "RUNNING_APP_STARTING",
+        "note": "days_processed=26, running=True, leaderboard 17 agents",
+        "last_check_iso": "2026-04-19T13:00:03Z"
+      },
+      "political-llm-trading-floor": {
+        "status": "up",
+        "http": 200,
+        "hf_stage": "RUNNING",
+        "note": "days_processed=18, running=True, leaderboard 17 agents",
+        "last_check_iso": "2026-04-19T13:00:03Z"
+      },
+      "political-quant-trading-floor": {
+        "status": "up",
+        "http": 200,
+        "hf_stage": "RUNNING_APP_STARTING",
+        "note": "days_processed=30/50, running=True",
+        "last_check_iso": "2026-04-19T13:00:03Z"
+      },
+      "langfuse": {
+        "status": "up",
+        "http": 200,
+        "hf_stage": "RUNNING",
+        "note": "Nomos42/langfuse (not LBJLincoln26) \u2014 root+health 200",
+        "account": "Nomos42",
+        "last_check_iso": "2026-04-19T13:00:03Z"
+      },
+      "gemma4-chat": {
+        "status": "down",
+        "http": 503,
+        "hf_stage": "RUNTIME_ERROR",
+        "note": "OSError: gated repo google/gemma-3-1b-it requires auth. Restart attempted \u2014 quota exhausted on Nomos42 account.",
+        "restart_attempted": true,
+        "restart_blocked": "quota_exhausted",
+        "last_check_iso": "2026-04-19T13:00:03Z"
+      },
+      "qwen35-chat": {
+        "status": "down",
+        "http": 412,
+        "hf_stage": "SLEEPING",
+        "note": "Space sleeping. Restart attempted \u2014 quota exhausted on Nomos42 account.",
+        "restart_attempted": true,
+        "restart_blocked": "quota_exhausted",
+        "last_check_iso": "2026-04-19T13:00:03Z"
+      },
+      "cpu-gemma4": {
+        "status": "up",
+        "http": 200,
+        "hf_stage": "RUNNING",
+        "note": "nomos-cpu-gemma4 root 200 (docker space)",
+        "last_check_iso": "2026-04-19T13:00:03Z"
+      },
+      "pixel-world": {
+        "status": "up",
+        "http": 200,
+        "hf_stage": "RUNNING",
+        "note": "static.hf.space 302->200 index.html",
+        "last_check_iso": "2026-04-19T13:00:03Z"
+      }
+    },
+    "spaces_up": 7,
+    "spaces_total": 9,
+    "restarts_this_tick": 0,
+    "restarts_blocked": 2,
+    "restart_block_reason": "Nomos42 account CPU quota exhausted (gemma4-chat RUNTIME_ERROR + qwen35-chat SLEEPING)",
+    "tf_advancing": {
+      "nba_tf": {
+        "days_processed": 26,
+        "running": true,
+        "leaderboard_entries": 17
+      },
+      "pol_tf": {
+        "days_processed": 18,
+        "running": true,
+        "leaderboard_entries": 17
+      },
+      "pqtf": {
+        "days_processed": 30,
+        "running": true
+      }
+    },
+    "alert": "gemma4-chat gated model 401 (google/gemma-3-1b-it needs HF token in Space secrets); qwen35-chat sleeping; Nomos42 CPU quota exhausted \u2014 cannot restart via API"
   }
 }
