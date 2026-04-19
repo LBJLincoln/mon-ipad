@@ -8,9 +8,9 @@ on:
         required: false
         default: 'nba,pol,pqtf'
       mode:
-        description: 'reboot_only | clean_restart (reset+fresh run from day 0)'
+        description: 'reboot_only | clean_restart | hard_purge (delete Hub state → fresh day 0)'
         required: false
-        default: 'clean_restart'
+        default: 'hard_purge'
 
 permissions:
   contents: read
@@ -44,6 +44,36 @@ jobs:
               'pqtf': ('LBJLincoln26/political-quant-trading-floor', 'https://lbjlincoln26-political-quant-trading-floor.hf.space'),
           }
 
+          STATE_FILES = {
+              'nba':  ['data/runtime/state.json','data/runtime/agent_logs.json','data/runtime/council_plans.json'],
+              'pol':  ['data/runtime/state.json','data/runtime/agent_logs.json','data/runtime/council_plans.json'],
+              'pqtf': [],  # pqtf keeps state only in day-*.json
+          }
+
+          def purge_hub_state(t, repo):
+              deleted = 0
+              for f in STATE_FILES.get(t, []):
+                  try:
+                      api.delete_file(path_in_repo=f, repo_id=repo, repo_type='space',
+                                      commit_message=f'hard-purge: {f}')
+                      deleted += 1
+                      print(f"[purge-{t}] deleted {f}")
+                  except Exception as e:
+                      print(f"[purge-{t}] skip {f}: {type(e).__name__}")
+              try:
+                  files = api.list_repo_files(repo_id=repo, repo_type='space')
+                  day_files = [f for f in files if f.startswith('data/decisions/day-') and f.endswith('.json')]
+                  for f in day_files:
+                      try:
+                          api.delete_file(path_in_repo=f, repo_id=repo, repo_type='space',
+                                          commit_message=f'hard-purge: {f}')
+                          deleted += 1
+                      except Exception as e:
+                          print(f"[purge-{t}] skip {f}: {type(e).__name__}")
+                  print(f"[purge-{t}] total deleted={deleted} day_files_found={len(day_files)}")
+              except Exception as e:
+                  print(f"[purge-{t}] list_repo_files FAILED: {e}")
+
           def post(url, body=None, timeout=15):
               data = json.dumps(body).encode() if body is not None else None
               req = urllib.request.Request(url, data=data, method='POST',
@@ -65,6 +95,45 @@ jobs:
               if t not in repos:
                   print(f"[unstick] unknown target: {t}"); continue
               repo, url = repos[t]
+
+              # hard_purge: stop → purge Hub state → factory_reboot → /api/run
+              if mode == 'hard_purge':
+                  # Best-effort stop first so no writer is racing the delete.
+                  code, body = post(f"{url}/api/stop")
+                  print(f"[unstick] {t} /api/stop → {code} {body[:80]}")
+                  for i in range(6):
+                      time.sleep(10)
+                      s = get_status(url)
+                      if s.get('running') is False or '_err' in s:
+                          print(f"[unstick] {t} stopped at t={10*(i+1)}s (or unreachable)")
+                          break
+                  purge_hub_state(t, repo)
+                  try:
+                      api.restart_space(repo, factory_reboot=True)
+                      print(f"[unstick] {t} factory_reboot OK")
+                  except Exception as e:
+                      print(f"[unstick] {t} factory_reboot FAILED: {type(e).__name__}: {e}")
+                      continue
+                  came_up = False
+                  for i in range(30):
+                      time.sleep(10)
+                      s = get_status(url)
+                      if '_err' not in s:
+                          came_up = True
+                          print(f"[unstick] {t} up at t={10*(i+1)}s running={s.get('running')} day={s.get('days_processed')}")
+                          break
+                  if not came_up:
+                      print(f"[unstick] {t} did NOT come back up in 5min"); continue
+                  if not s.get('running'):
+                      time.sleep(3)
+                      code, body = post(f"{url}/api/run", {"resume": False})
+                      print(f"[unstick] {t} /api/run → {code} {body[:80]}")
+                      time.sleep(8)
+                  s = get_status(url)
+                  dp = s.get('days_processed') if s.get('days_processed') is not None else s.get('current_day')
+                  print(f"[unstick] {t} FINAL: day={dp} running={s.get('running')} resumed={s.get('resumed')}")
+                  continue
+
               try:
                   api.restart_space(repo, factory_reboot=True)
                   print(f"[unstick] {t} factory_reboot OK")
