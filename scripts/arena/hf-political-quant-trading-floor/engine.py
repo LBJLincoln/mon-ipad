@@ -43,6 +43,11 @@ MAX_DEPLOY_PCT_PER_SESSION = 0.30
 KELLY_MULT = 0.25
 RISK_FREE_RATE = 0.045
 OPTION_MULT = 100
+# Scale position-cost floor with bankroll. $50 was sensible at $100K, prohibitive at $100.
+# 50 bps of starting bankroll, capped at $0.50 min so we still reject dust.
+MIN_POSITION_COST = max(0.5, STARTING_BANKROLL * 0.005)
+# Defensive-mode threshold: 20% of starting bankroll (was absolute $20K for $100K).
+DEFENSIVE_BANKROLL_FLOOR = STARTING_BANKROLL * 0.20
 
 ETF_BASE_SPOT = {
     "SPY": 520.0, "XLF": 50.0, "XLK": 240.0, "XLE": 95.0,
@@ -55,11 +60,11 @@ COLLECTIVE_MISSION = """You are ONE of 6 LLM agents running a QUANT political-tr
 You trade OPTIONS on sector ETFs (XLF, XLK, XLE, etc.) across 4 intraday sessions per day.
 Every agent sees the SAME data; you are distinguished by personality + reasoning style.
 
-SHARED GOAL: grow the $600K fleet bankroll to $6M by Nov 3 2026 (10×).
+SHARED GOAL: grow the fleet bankroll 10× by Nov 3 2026 (6 agents starting at $100 each = $600 fleet → $6,000).
 RULES (hard):
   - Every session, you must propose 0-3 option trades (call or put, sector ETF, OTM/ATM/ITM strike).
   - You may coalition with ≤1 peer on a trade (structural DMAD: proposer + peer run DIFFERENT reasoning templates).
-  - Peak-drawdown guard: if your bankroll < $20K, go defensive (ATM options only, ≤5% per trade).
+  - Peak-drawdown guard: if your bankroll drops below 20% of starting ($20 on a $100 base), go defensive (ATM options only, ≤5% per trade).
 """
 
 
@@ -247,7 +252,7 @@ def run_session(agents_state: Dict, date: str, session_id: int,
             continue
         allocs = allocs[:MAX_POSITIONS_PER_SESSION]
         bankroll = state["bankroll"]
-        defensive = bankroll < 20_000
+        defensive = bankroll < DEFENSIVE_BANKROLL_FLOOR
 
         for alloc in allocs:
             if not isinstance(alloc, dict):
@@ -310,7 +315,7 @@ def run_session(agents_state: Dict, date: str, session_id: int,
                     if position_cost > max_cost:
                         qty = max(1, int(max_cost / max(1, max_loss * OPTION_MULT)))
                         position_cost = max(abs(strat_cost), max_loss) * qty * OPTION_MULT
-                    if position_cost < 50 or position_cost > bankroll * MAX_DEPLOY_PCT_PER_SESSION:
+                    if position_cost < MIN_POSITION_COST or position_cost > bankroll * MAX_DEPLOY_PCT_PER_SESSION:
                         continue
 
                     positions.append({
@@ -346,7 +351,7 @@ def run_session(agents_state: Dict, date: str, session_id: int,
                     if cost > max_cost:
                         qty = max(1, int(max_cost / (entry_price * OPTION_MULT)))
                         cost = entry_price * qty * OPTION_MULT
-                    if cost < 50 or cost > bankroll * MAX_DEPLOY_PCT_PER_SESSION:
+                    if cost < MIN_POSITION_COST or cost > bankroll * MAX_DEPLOY_PCT_PER_SESSION:
                         continue
 
                     positions.append({
