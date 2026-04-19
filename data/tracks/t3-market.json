@@ -1,18 +1,35 @@
 {
-  "timestamp": "2026-04-17T17:17:02.072146+00:00",
+  "timestamp": "2026-04-19T09:00:00Z",
   "track": "T3 MARKET",
   "absorbs": [
     "D4 product",
     "D5 business"
   ],
-  "status": "behind",
+  "status": "CRITICAL",
   "last_metric": {
     "telegram_subs": 0,
     "paying_subs": 0,
     "mrr_usd": 0,
-    "target_may1": 95
+    "target_may1": 95,
+    "days_to_shutdown": 12,
+    "days_to_cli_expiry": 19,
+    "arpu_usd": null,
+    "churn_rate": null
   },
-  "last_action": "@Nomos42Picks channel + Stripe paywall scaffolded",
-  "next_proposal": "Publish first daily-picks pilot to warm the channel",
-  "blocked_on": "Need \u22655 subs by May 8 to pay Claude Code CLI"
+  "provider_live_status": {
+    "stripe": "0 subs / 0 customers / 0 checkouts — API confirmed",
+    "whop": "0 memberships — API confirmed",
+    "lemonsqueezy": "0 revenue all-time — stores API confirmed, $0 30d"
+  },
+  "last_action": "@Nomos42Picks channel + Stripe paywall scaffolded. 10 payment links live. No conversions in 2 days.",
+  "next_proposal": "First daily-picks pilot post to warm @Nomos42Picks channel. Direct DM push to target audience. Need 5 subs x $19 by May 8.",
+  "blocked_on": "CRITICAL — 12 days to May 1 shutdown. 0/5 subs. MRR $0/$95. No conversions since account creation.",
+  "alert": {
+    "level": "CRITICAL",
+    "code": "ZERO_MRR_12D_TO_SHUTDOWN",
+    "triggered": true,
+    "days_remaining": 12
+  },
+  "reconcile_file": "data/monetization/daily-reconcile-2026-04-19.json",
+  "kpi_file": "data/monetization/kpi-2026-04-19.json"
 }
