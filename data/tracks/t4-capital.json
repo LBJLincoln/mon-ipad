@@ -1,64 +1,38 @@
 {
-  "timestamp": "2026-04-19T15:50:34Z",
+  "timestamp": "2026-04-19T16:17:01.158290+00:00",
   "track": "T4 CAPITAL",
   "absorbs": [
     "D8 finance",
     "NBA TF",
     "POL TF"
   ],
-  "status": "unblocking",
+  "status": "ok",
   "last_metric": {
-    "nba_tf_total_bankroll": 1002.99,
-    "pol_tf_total_bankroll": 1729.61,
-    "pqtf_total_bankroll": 602353.97,
-    "nba_tf_agents": 17,
-    "pol_tf_agents": 17,
-    "pqtf_agents": 6,
+    "nba_tf_total_bankroll": null,
+    "pol_tf_total_bankroll": null,
+    "nba_tf_agents": 14,
+    "pol_tf_agents": 14,
     "target_collective_usd": 1000000,
     "min_deploy_pct": 0.75
   },
-  "last_action": "3 $1M-road blockers patched and deployed (commits efdddd5e1 + 77a01a839): Cerebras circuit breaker, MIN_DEPLOY uniform-fallback emitter, coalition_proposal storage-drop fix. NBA TF resumed day 69/175, POL latent.",
-  "next_proposal": "Wait 24h for fix-effect data, then re-run audit to verify (a) provider_status.fallback_uniform rate, (b) coalitions stored per day, (c) NBA + POL agent bankroll trajectory.",
-  "blocked_on": "POL TF not running (needs /api/run trigger); Cerebras quota still exhausted (cosmetic — circuit breaker now routes around it).",
+  "last_action": "T13 nvidia-minimax + T14 nvidia-llama70 deployed to both TFs 2026-04-17",
+  "next_proposal": "Monitor NVIDIA agent performance 24h; add parlay sizing if NBA conviction high",
+  "blocked_on": null,
   "ticker": {
-    "tick_number": 32,
-    "scan_time": "2026-04-19T15:50:34Z",
+    "tick_number": 33,
+    "scan_time": "2026-04-19T16:20:00Z",
     "cadence_min": 30,
     "games_today": 3,
-    "games_total_window": 8,
     "games_tipped": 0,
     "steam_moves_detected": 0,
     "clv_games_scored": 0,
     "sharp_square_divergence": 0,
     "spread_snapshot": {
-      "PHI@BOS": {"mean": -12.83, "range": [-13.0, -12.5], "books": 9, "tip": "2026-04-19T17:10Z"},
-      "PHX@OKC": {"mean": -14.89, "range": [-15.0, -14.5], "books": 9},
-      "ORL@DET": {"mean": -8.78, "range": [-9.0, -8.5], "books": 9}
+      "PHI@BOS": {"mean": -12.67, "vs_15_50": "+0.16pt", "tip": "2026-04-19T17:10Z"},
+      "PHX@OKC": {"mean": -14.94, "vs_15_50": "-0.05pt"},
+      "ORL@DET": {"mean": -8.83, "vs_15_50": "-0.05pt"}
     },
-    "vs_15_00_baseline": "no_movement_50min_window",
     "predictions_available": false,
-    "notes": "Tight intra-book spreads (range <=0.5pt over 9 books each) — sharp consensus, no steam. CLV gated on missing predictions file. PHI@BOS tips in 80min."
-  },
-  "accountant": {
-    "1m_road": {
-      "fleet_total": 605086.57,
-      "fleet_wide_start": 4000.0,
-      "progress_pct": 60.5087,
-      "verdict": "unblocking",
-      "nba_roi_per_day_pct": -0.6406,
-      "pol_roi_per_day_pct": 0.06967,
-      "pqtf_roi_pct_total": 100292.3,
-      "pqtf_status": "COMPLETED_PRESERVED",
-      "blockers_resolved_apr19": [
-        "Cerebras failover: time-windowed circuit breaker live, mistral-large promoted in EMERGENCY_POOL[L]",
-        "MIN_DEPLOY 0.75 floor: uniform-fallback emitter (top-3 highest-edge @ 25% each, tid-hash rotation) on raw_response=None infra failure",
-        "Coalition pacts: parse_day_allocation no longer drops on total<=0; silent-pass scaffold preserves coalition_proposal across overwrite"
-      ],
-      "blockers_remaining": [
-        "POL TF not currently running (latent fix awaits /api/run)",
-        "qwen35-chat sleeping on Nomos42 account (CPU quota — needs HF Pro or evo island pause)"
-      ],
-      "generated_at": "2026-04-19T15:50:34Z"
-    }
+    "notes": "30min window vs tick #32 — all 3 games <0.2pt drift, pure noise. Sharp consensus holds. CLV gated on missing predictions file (PLUMBER should investigate)."
   }
 }
