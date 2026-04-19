@@ -147,6 +147,7 @@ SYSTEM CRONS (28 active on VM, all lightweight)
 7. **Mutation cap** — adaptive mutation capped at 0.15 (deployed S10/S11/S12/S15)
 8. **CPU-only islands** — no neural models on CPU (tree-based only), stacking removed
 9. **Supabase** — primary (ayqviq) paused (402), using pooler connection (xivvnr)
+10. **Git mutex** — every autonomous agent commit MUST shell through `scripts/lib/safe_commit.sh <CODENAME> "<msg>" [paths...]` (flock on `/tmp/nomos-git.lock`, pull --rebase --autostash, 3× push retry, `[AGENT]` prefix). Raw `git push` from agents is banned — with 14 crew on staggered crons the race-reject rate was unacceptable.
 
 ## New Tools (Apr 4)
 

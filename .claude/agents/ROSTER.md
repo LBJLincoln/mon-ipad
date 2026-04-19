@@ -4,6 +4,12 @@
 No overlap. Every agent knows exactly which HF account / API key to use.
 THE BOSS dispatches — never duplicates.
 
+**Commit protocol (MANDATORY for every crew member):**
+All autonomous commits MUST shell through `scripts/lib/safe_commit.sh <CODENAME> "<msg>" [paths...]`
+(flock on `/tmp/nomos-git.lock`, pull --rebase --autostash, 3× push retry, `[AGENT]` prefix).
+Naked `git add / commit / push` is banned — with 14 agents on staggered crons the race-reject
+rate was unacceptable. See `project_git_mutex_apr19` memory + `scripts/lib/safe_commit.sh`.
+
 ## The Crew — 14 Agents × 9 Departments × 4 Tracks
 
 | # | Codename | Old Name | Dept | Track | What they do |
