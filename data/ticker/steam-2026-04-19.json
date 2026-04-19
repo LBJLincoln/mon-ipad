@@ -76,3 +76,23 @@
   "divergences": 0,
   "notes": "8 games pre-game (all status=null). Spreads stable vs tick #30 (15:00 UTC, 20min window). No CLV—predictions file not yet available (expected post-16:00 UTC). Bovada unavailable. Single-book Odds API, insufficient for divergence detection. First game tips PHI@BOS at 17:10 UTC."
 }
+
+{
+  "tick_number": 32,
+  "timestamp": "2026-04-19T15:50:34Z",
+  "odds_api_status": "working",
+  "games_today": 3,
+  "games_total_window": 8,
+  "games_tipped": 0,
+  "steam_moves_detected": 0,
+  "clv_games_scored": 0,
+  "divergences": 0,
+  "spread_snapshot": {
+    "PHI@BOS": {"mean": -12.83, "range": [-13.0, -12.5], "books": 9, "tip": "2026-04-19T17:10Z"},
+    "PHX@OKC": {"mean": -14.89, "range": [-15.0, -14.5], "books": 9},
+    "ORL@DET": {"mean": -8.78, "range": [-9.0, -8.5], "books": 9}
+  },
+  "vs_15_00_baseline": "no_movement (50min window, intra-book range <=0.5pt — well below 5pt steam threshold)",
+  "predictions_available": false,
+  "notes": "Tick #32 (15:50 UTC): 3 NBA games today, all pre-game. Spreads tight (range <=0.5pt across 9 books each — sharp consensus). No steam moves. odds_movement_tracker.py crashes on snapshot append (TypeError list indices) — separate bug, not blocking. CLV calc still gated on predictions file (last expected ~16:00 UTC). PHI@BOS tips 80min from now."
+}

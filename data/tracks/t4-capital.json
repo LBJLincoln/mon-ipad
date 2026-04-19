@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-04-19T15:24:07Z",
+  "timestamp": "2026-04-19T15:50:34Z",
   "track": "T4 CAPITAL",
   "absorbs": [
     "D8 finance",
     "NBA TF",
     "POL TF"
   ],
-  "status": "off_track",
+  "status": "unblocking",
   "last_metric": {
     "nba_tf_total_bankroll": 1002.99,
     "pol_tf_total_bankroll": 1729.61,
@@ -17,25 +17,48 @@
     "target_collective_usd": 1000000,
     "min_deploy_pct": 0.75
   },
-  "last_action": "T13 nvidia-minimax + T14 nvidia-llama70 deployed to both TFs 2026-04-17",
-  "next_proposal": "Monitor NVIDIA agent performance 24h; add parlay sizing if NBA conviction high",
-  "blocked_on": "Cerebras qwen-3-235b dead fleet-wide; MIN_DEPLOY floor not enforced; 0 coalition pacts across all TFs",
+  "last_action": "3 $1M-road blockers patched and deployed (commits efdddd5e1 + 77a01a839): Cerebras circuit breaker, MIN_DEPLOY uniform-fallback emitter, coalition_proposal storage-drop fix. NBA TF resumed day 69/175, POL latent.",
+  "next_proposal": "Wait 24h for fix-effect data, then re-run audit to verify (a) provider_status.fallback_uniform rate, (b) coalitions stored per day, (c) NBA + POL agent bankroll trajectory.",
+  "blocked_on": "POL TF not running (needs /api/run trigger); Cerebras quota still exhausted (cosmetic — circuit breaker now routes around it).",
+  "ticker": {
+    "tick_number": 32,
+    "scan_time": "2026-04-19T15:50:34Z",
+    "cadence_min": 30,
+    "games_today": 3,
+    "games_total_window": 8,
+    "games_tipped": 0,
+    "steam_moves_detected": 0,
+    "clv_games_scored": 0,
+    "sharp_square_divergence": 0,
+    "spread_snapshot": {
+      "PHI@BOS": {"mean": -12.83, "range": [-13.0, -12.5], "books": 9, "tip": "2026-04-19T17:10Z"},
+      "PHX@OKC": {"mean": -14.89, "range": [-15.0, -14.5], "books": 9},
+      "ORL@DET": {"mean": -8.78, "range": [-9.0, -8.5], "books": 9}
+    },
+    "vs_15_00_baseline": "no_movement_50min_window",
+    "predictions_available": false,
+    "notes": "Tight intra-book spreads (range <=0.5pt over 9 books each) — sharp consensus, no steam. CLV gated on missing predictions file. PHI@BOS tips in 80min."
+  },
   "accountant": {
     "1m_road": {
       "fleet_total": 605086.57,
       "fleet_wide_start": 4000.0,
       "progress_pct": 60.5087,
-      "verdict": "off_track",
+      "verdict": "unblocking",
       "nba_roi_per_day_pct": -0.6406,
       "pol_roi_per_day_pct": 0.06967,
       "pqtf_roi_pct_total": 100292.3,
-      "pqtf_status": "COMPLETED",
-      "top_blockers": [
-        "CEREBRAS + PROVIDER MASS FAILURE: qwen-3-235b dead on NBA (196 fails) and POL (203 fails)",
-        "MIN_DEPLOY COLLAPSE: 14/17 NBA agents + 17/17 POL agents below 3 allocs/day",
-        "ZERO COOPERATION PACTS: 0 pacts across NBA+POL+PQTF despite 6+ rogue agents"
+      "pqtf_status": "COMPLETED_PRESERVED",
+      "blockers_resolved_apr19": [
+        "Cerebras failover: time-windowed circuit breaker live, mistral-large promoted in EMERGENCY_POOL[L]",
+        "MIN_DEPLOY 0.75 floor: uniform-fallback emitter (top-3 highest-edge @ 25% each, tid-hash rotation) on raw_response=None infra failure",
+        "Coalition pacts: parse_day_allocation no longer drops on total<=0; silent-pass scaffold preserves coalition_proposal across overwrite"
       ],
-      "generated_at": "2026-04-19T15:24:07Z"
+      "blockers_remaining": [
+        "POL TF not currently running (latent fix awaits /api/run)",
+        "qwen35-chat sleeping on Nomos42 account (CPU quota — needs HF Pro or evo island pause)"
+      ],
+      "generated_at": "2026-04-19T15:50:34Z"
     }
   }
 }
