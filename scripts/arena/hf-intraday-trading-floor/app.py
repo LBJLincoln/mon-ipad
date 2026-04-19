@@ -72,14 +72,21 @@ Respond with ONE of:
   { "action": "pass", "reason": "..." }
 OR:
   { "action": "trade",
-    "ticker": "SPY"|"QQQ"|"IWM"|"DIA"|"XLE"|"XLF"|"XLK"|"XLV"|"XLI"|"XLB"|"XLY"|"XLP"|"XLRE"|"XLU"|"XLC"|"GLD"|"TLT",
+    "ticker": one of:
+      EQUITIES: "SPY","QQQ","IWM","DIA","XLE","XLF","XLK","XLV","XLI","XLB","XLY","XLP","XLRE","XLU","XLC","GLD","TLT","SLV","USO","UUP"
+      STOCKS:   "AAPL","MSFT","NVDA","GOOGL","AMZN","META","TSLA","AMD","AVGO","COST"
+      CRYPTO:   "BTC/USD","ETH/USD","SOL/USD","AVAX/USD","LINK/USD","DOGE/USD"  (24/7 tradeable)
     "side": "long"|"short",
     "stake_usd": 500-3000,
-    "stop_pct": 0.002-0.01,
-    "take_profit_pct": 0.005-0.025,
+    "stop_pct": 0.002-0.02,
+    "take_profit_pct": 0.005-0.05,
     "thesis": "1-2 sentence reason citing quote/edge/signal"
   }
 Return JSON ONLY. No markdown fences, no prose.
+
+RULE: Crypto tickers (BTC/USD, ETH/USD, SOL/USD, AVAX/USD, LINK/USD, DOGE/USD) trade 24/7.
+When US equity market is closed, you MAY still emit crypto trades — NEVER emit equity trades
+outside extended hours (equities gate in executor will reject).
 """.strip()
 
 
@@ -235,11 +242,32 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     return results
 
 
-def _is_market_hours(now_utc: datetime) -> bool:
-    """Weekdays 13:00-20:00 UTC (09:00-16:00 ET ~ US cash session)."""
+def _is_equity_hours(now_utc: datetime) -> bool:
+    """US equities extended hours: weekdays 08:00-24:00 UTC (04:00 ET pre-market - 20:00 ET after-hours)."""
     if now_utc.weekday() >= 5:
         return False
-    return 13 <= now_utc.hour < 20
+    return 8 <= now_utc.hour < 24
+
+
+def _is_tradeable_now(asset_class: str, now_utc: datetime) -> bool:
+    """Crypto is 24/7. Equities are extended-hours only."""
+    if asset_class == "crypto":
+        return True
+    return _is_equity_hours(now_utc)
+
+
+def _is_market_hours(now_utc: datetime) -> bool:
+    """Back-compat alias — tick_loop uses this to decide whether to skip.
+    Returns True if ANY asset class is currently tradeable (crypto is 24/7 → always True
+    for Alpaca-live mode, equity-hours fallback otherwise)."""
+    if live_mode_any_crypto():
+        return True
+    return _is_equity_hours(now_utc)
+
+
+def live_mode_any_crypto() -> bool:
+    """True when Alpaca crypto is reachable — crypto is always tradeable."""
+    return bool(os.environ.get("ALPACA_PAPER_KEY") and os.environ.get("ALPACA_PAPER_SECRET"))
 
 
 def tick_loop(interval_sec: int = int(os.environ.get("ITF_TICK_SEC", "300"))) -> None:

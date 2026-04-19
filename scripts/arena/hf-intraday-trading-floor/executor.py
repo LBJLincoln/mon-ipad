@@ -58,22 +58,42 @@ def _append_order_log(entry: Dict[str, Any]) -> None:
         fh.write(json.dumps(entry, default=str) + "\n")
 
 
+def _asset_class(ticker: str) -> str:
+    if "/" in ticker:
+        return "crypto"
+    return "equity"
+
+
 def _alpaca_place_bracket(ticker: str, qty: float, side: str,
                           stop_price: float, tp_price: float) -> Dict[str, Any]:
-    """Place an Alpaca paper bracket order. Returns Alpaca order payload."""
+    """Place an Alpaca paper order. Equities get bracket; crypto gets plain market GTC
+    (Alpaca rejects bracket+stop_loss for crypto — only simple market/limit allowed)."""
     import requests
     key = os.environ["ALPACA_PAPER_KEY"]
     secret = os.environ["ALPACA_PAPER_SECRET"]
-    payload = {
-        "symbol": ticker,
-        "qty": qty,
-        "side": side,  # buy | sell
-        "type": "market",
-        "time_in_force": "day",
-        "order_class": "bracket",
-        "stop_loss": {"stop_price": round(stop_price, 2)},
-        "take_profit": {"limit_price": round(tp_price, 2)},
-    }
+
+    asset = _asset_class(ticker)
+    if asset == "crypto":
+        # Crypto: market GTC, no bracket. Stop/TP tracked client-side via close_expired.
+        payload = {
+            "symbol": ticker,
+            "qty": qty,
+            "side": side,
+            "type": "market",
+            "time_in_force": "gtc",
+        }
+    else:
+        payload = {
+            "symbol": ticker,
+            "qty": qty,
+            "side": side,
+            "type": "market",
+            "time_in_force": "day",
+            "order_class": "bracket",
+            "extended_hours": False,  # bracket orders cannot be extended_hours on Alpaca
+            "stop_loss": {"stop_price": round(stop_price, 2)},
+            "take_profit": {"limit_price": round(tp_price, 2)},
+        }
     r = requests.post(
         "https://paper-api.alpaca.markets/v2/orders",
         headers={"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret},

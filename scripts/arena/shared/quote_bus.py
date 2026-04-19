@@ -31,12 +31,26 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-DEFAULT_TICKERS: List[str] = [
+DEFAULT_EQUITIES: List[str] = [
     "SPY", "QQQ", "IWM", "DIA",
     "XLE", "XLF", "XLK", "XLV", "XLI", "XLB", "XLY", "XLP", "XLRE", "XLU", "XLC",
-    "GLD", "TLT",
-    "^VIX",  # yfinance symbol for VIX
+    "GLD", "TLT", "SLV", "USO", "UUP",
+    # MAG7 + high-liquid single names
+    "AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "TSLA", "AMD", "AVGO", "COST",
 ]
+DEFAULT_CRYPTO: List[str] = [
+    "BTC/USD", "ETH/USD", "SOL/USD", "AVAX/USD", "LINK/USD", "DOGE/USD",
+]
+DEFAULT_TICKERS: List[str] = DEFAULT_EQUITIES + DEFAULT_CRYPTO + ["^VIX"]
+
+
+def ticker_asset_class(t: str) -> str:
+    """Return 'crypto' | 'equity' | 'index'."""
+    if "/" in t:
+        return "crypto"
+    if t.startswith("^"):
+        return "index"
+    return "equity"
 
 REPO = Path(__file__).resolve().parents[3]
 OUT_DIR = REPO / "data" / "intraday" / "quotes"
@@ -108,32 +122,54 @@ def _fetch_alpaca(tickers: List[str]) -> Dict[str, Dict[str, Any]]:
     if not key or not secret:
         return {}
     headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
-    # VIX not on Alpaca; strip it before calling.
-    eq_tickers = [t for t in tickers if not t.startswith("^")]
-    try:
-        r = requests.get(
-            "https://data.alpaca.markets/v2/stocks/quotes/latest",
-            params={"symbols": ",".join(eq_tickers)},
-            headers=headers,
-            timeout=8,
-        )
-        if r.status_code != 200:
-            return {}
-        body = r.json().get("quotes", {})
-    except Exception:
-        return {}
+    eq_tickers = [t for t in tickers if ticker_asset_class(t) == "equity"]
+    cr_tickers = [t for t in tickers if ticker_asset_class(t) == "crypto"]
+
     out: Dict[str, Dict[str, Any]] = {}
-    for t, q in body.items():
-        bid = float(q.get("bp") or 0)
-        ask = float(q.get("ap") or 0)
-        last = (bid + ask) / 2 if (bid and ask) else (bid or ask)
-        out[t] = {
-            "last": round(last, 4),
-            "change_pct": 0.0,  # Alpaca quote endpoint doesn't provide daily change — ITF agents can derive
-            "volume": 0,
-            "5m_high": round(max(bid, ask), 4),
-            "5m_low": round(min(bid, ask) if (bid and ask) else (bid or ask), 4),
-        }
+    # ── Equities
+    if eq_tickers:
+        try:
+            r = requests.get(
+                "https://data.alpaca.markets/v2/stocks/quotes/latest",
+                params={"symbols": ",".join(eq_tickers)},
+                headers=headers, timeout=8,
+            )
+            if r.status_code == 200:
+                for t, q in r.json().get("quotes", {}).items():
+                    bid = float(q.get("bp") or 0); ask = float(q.get("ap") or 0)
+                    last = (bid + ask) / 2 if (bid and ask) else (bid or ask)
+                    out[t] = {
+                        "last": round(last, 4),
+                        "change_pct": 0.0,
+                        "volume": 0,
+                        "5m_high": round(max(bid, ask), 4),
+                        "5m_low": round(min(bid, ask) if (bid and ask) else (bid or ask), 4),
+                        "asset_class": "equity",
+                    }
+        except Exception:
+            pass
+    # ── Crypto (24/7)
+    if cr_tickers:
+        try:
+            r = requests.get(
+                "https://data.alpaca.markets/v1beta3/crypto/us/latest/quotes",
+                params={"symbols": ",".join(cr_tickers)},
+                headers=headers, timeout=8,
+            )
+            if r.status_code == 200:
+                for t, q in r.json().get("quotes", {}).items():
+                    bid = float(q.get("bp") or 0); ask = float(q.get("ap") or 0)
+                    last = (bid + ask) / 2 if (bid and ask) else (bid or ask)
+                    out[t] = {
+                        "last": round(last, 4),
+                        "change_pct": 0.0,
+                        "volume": 0,
+                        "5m_high": round(max(bid, ask), 4),
+                        "5m_low": round(min(bid, ask) if (bid and ask) else (bid or ask), 4),
+                        "asset_class": "crypto",
+                    }
+        except Exception:
+            pass
     return out
 
 
