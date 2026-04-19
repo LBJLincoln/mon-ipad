@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-19T08:45:20Z",
+  "last_updated": "2026-04-19T12:00:00Z",
   "ledger": [
     {
       "cycle": "swish-4h-2026-04-19T08:45Z",
@@ -7,9 +7,22 @@
       "agent": "nomos-hoops (SWISH)",
       "project": "NBA",
       "technique": "Fleet diagnosis + checkpoint fleet-best + mass diversify",
-      "islands_acted_on": ["S19", "S16", "S10", "S11", "S12", "S13", "S15", "S17", "S18", "S20", "S21", "S22"],
+      "islands_acted_on": [
+        "S19",
+        "S16",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S15",
+        "S17",
+        "S18",
+        "S20",
+        "S21",
+        "S22"
+      ],
       "actions": {
-        "checkpoint": "S19 (brier=0.21949, gen=168) — new fleet best; S16 (brier=0.21983, gen=160)",
+        "checkpoint": "S19 (brier=0.21949, gen=168) \u2014 new fleet best; S16 (brier=0.21983, gen=160)",
         "diversify": "11 islands with stagnation >= 112 gens computed",
         "none": "S14 (gen=2 restart)"
       },
@@ -18,8 +31,8 @@
       "fleet_best_delta": -0.00124,
       "critical_findings": [
         "S20 Brier exploded to 0.28 (from best 0.22407 at gen=1, stag=327)",
-        "S18 stag=396 with best at gen=1 — structural failure candidate",
-        "S17 stag=304 with best at gen=3 — structural failure candidate",
+        "S18 stag=396 with best at gen=1 \u2014 structural failure candidate",
+        "S17 stag=304 with best at gen=3 \u2014 structural failure candidate",
         "API best_brier field unreliable: shows first-gen value not true minimum. Use min(history[].brier).",
         "API stagnation_count field unreliable: returns 0 for islands with 200+ gens since improvement"
       ],
@@ -109,6 +122,46 @@
       "delta": null,
       "verdict": "pending",
       "notes": "Out-of-fold stacking ensemble proposal from cycle 89. Not yet implemented."
+    },
+    {
+      "date": "2026-04-19T12:00:00Z",
+      "agent": "FRANKENSTEIN",
+      "action": "implement",
+      "proposal_id": "cycle99-pace-norm-per100-cat66",
+      "proposal_title": "Pace-Normalized Per-100 Box-Score Differentials (Cat66)",
+      "source_report": "data/research-proposals/2026-04-13-cycle99-pace-norm-ev-filter.md (Key Finding #1)",
+      "target_files": [
+        "nomos-nba-agent/features/engine.py",
+        "nomos-nba-agent/hf-space/features/engine.py"
+      ],
+      "sha256": {
+        "nomos-nba-agent/features/engine.py": "25d59790bf7c83288d15caf6aaf33b3a4e59923b46ba4512a3ee8c22c193c224",
+        "nomos-nba-agent/hf-space/features/engine.py": "25d59790bf7c83288d15caf6aaf33b3a4e59923b46ba4512a3ee8c22c193c224"
+      },
+      "parity": "OK",
+      "engine_version_before": "v3.1-65cat",
+      "engine_version_after": "v3.1-66cat",
+      "features_added": 12,
+      "feature_names": [
+        "p100_66_h_pts",
+        "p100_66_a_pts",
+        "p100_66_diff_pts",
+        "p100_66_h_ast",
+        "p100_66_a_ast",
+        "p100_66_diff_ast",
+        "p100_66_h_tov",
+        "p100_66_a_tov",
+        "p100_66_diff_tov",
+        "p100_66_h_reb",
+        "p100_66_a_reb",
+        "p100_66_diff_reb"
+      ],
+      "brier_before": 0.21949,
+      "brier_after": null,
+      "status_before": "pending",
+      "status_after": "implemented",
+      "verdict": "pending",
+      "notes": "Cat66 adds pace-normalized per-100 box-score differentials (pts/ast/tov/reb). From MDPI Jan 2026 paper showing all stats should be normalized per 100 possessions. Pure arithmetic, no new data deps, zero lookahead risk. Islands will pick up on next HF restart cycle (nomos-hoops deploys)."
     }
   ],
   "unimplemented_proposals": [
