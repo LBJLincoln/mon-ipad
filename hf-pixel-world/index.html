@@ -291,6 +291,7 @@
   <div class="seg"><span class="lbl">UTC</span><span class="val" id="bt-utc">—</span></div>
   <div class="seg"><span class="lbl">NBA TF</span><span class="val" id="bt-nba-day">—</span><span class="val" id="bt-nba-pnl">—</span></div>
   <div class="seg"><span class="lbl">POL TF</span><span class="val" id="bt-pol-day">—</span><span class="val" id="bt-pol-pnl">—</span></div>
+  <div class="seg"><span class="lbl">ITF</span><span class="val" id="bt-itf-trades">—</span><span class="val" id="bt-itf-open">—</span></div>
   <div class="seg"><span class="lbl">FLEET BEST</span><span class="val star" id="bt-fleet">—</span></div>
   <div class="seg"><span class="lbl">PACTS</span><span class="val" id="bt-pacts">0</span></div>
   <div class="seg"><span class="lbl">LLM CALLS</span><span class="val" id="bt-calls">0</span></div>
@@ -330,6 +331,7 @@
     <div id="hud-kpi">
       <div class="r"><span class="l">NBA</span><span id="k-nba" class="v warn">—</span></div>
       <div class="r"><span class="l">Political</span><span id="k-pol" class="v warn">—</span></div>
+      <div class="r"><span class="l">Intraday</span><span id="k-itf" class="v warn">—</span></div>
       <div class="r"><span class="l">Islands</span><span id="k-evo" class="v warn">—</span></div>
       <div class="r"><span class="l">Councils</span><span id="k-councils" class="v warn">—</span></div>
       <div class="r"><span class="l">Pacts</span><span id="k-pacts" class="v">—</span></div>
@@ -377,9 +379,10 @@ const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
 // v2.14 (2026-04-17): sized up 56→72 / 48→64 (+28% footprint, 4:3 kept).
 const CHAR_W = 72, CHAR_H = 64;
 
-const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c, control:0xffd700 };
-const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", island:"#50fa7b", infra:"#50fa7b", pol_infra:"#8be9fd", council:"#ffb86c", control:"#ffd700" };
-const KIND_GLYPHS = { nba:"🏀", political:"🗳", island:"🧬", infra:"🗼", pol_infra:"🗼", council:"⚖" };
+// v2.17: +itf (amber-orange, reads as "live tape" — distinct from NBA pink + POL cyan).
+const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, itf:0xffa94d, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c, control:0xffd700 };
+const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", itf:"#ffa94d", island:"#50fa7b", infra:"#50fa7b", pol_infra:"#8be9fd", council:"#ffb86c", control:"#ffd700" };
+const KIND_GLYPHS = { nba:"🏀", political:"🗳", itf:"📈", island:"🧬", infra:"🗼", pol_infra:"🗼", council:"⚖" };
 
 // v2.14: per-trader role accessory — drawn on top of base procedural body so
 // each persona reads at-a-glance. Lookup by agent.id (strips "p-" POL prefix).
@@ -540,6 +543,15 @@ const TRADER_PERSONAS = {
   "selfhost-gemma3":   { persona: "The Apprentice",   model: "Gemma-3-4B (GGUF)",    provider: "SelfHost CPU",   risk: 0.45, style: "analytical" },
   "selfhost-qwen06":   { persona: "The Featherweight",model: "Qwen3-0.6B (GGUF)",    provider: "SelfHost CPU",   risk: 0.30, style: "conservative" },
   "selfhost-dolphin3": { persona: "The Rebel",        model: "Dolphin3-Llama-3.2-3B",provider: "SelfHost CPU",   risk: 0.55, style: "uncensored" },
+  // v2.17: ITF personas — each trader is a distinct intraday style. Models are
+  // the winner-routed choices from `config_agents` (see /api/status on ITF).
+  "scalper-1":         { persona: "The Scalper",      model: "Gemini 3 Flash",       provider: "Google",         risk: 0.45, style: "sub-hour micro-edges" },
+  "momentum-1":        { persona: "The Momentum",     model: "mistral-large-latest", provider: "Mistral",        risk: 0.55, style: "sector trend-follow" },
+  "mean-rev-1":        { persona: "The Mean-Reverter",model: "open-mistral-nemo",    provider: "Mistral",        risk: 0.40, style: "fade-extremes" },
+  "breakout-1":        { persona: "The Breakout",     model: "mistral-medium-latest",provider: "Mistral",        risk: 0.50, style: "range-break continuation" },
+  "pairs-1":           { persona: "The Pairs",        model: "Gemini 2.5 Flash",     provider: "Google",         risk: 0.40, style: "market-neutral spread" },
+  "vol-1":             { persona: "The Vol-Regime",   model: "Qwen 3 235B-A22B",     provider: "Cerebras",       risk: 0.50, style: "VIX-aware position sizing" },
+  "options-1":         { persona: "The Options Desk", model: "mistral-large-latest", provider: "Mistral",        risk: 0.50, style: "crypto-perp + equity leverage" },
 };
 function personaFor(id) {
   const p = TRADER_PERSONAS[id];
@@ -556,13 +568,17 @@ const MATCH_FLOOR = { x: 20, y: 17 };
 // y=5..8    councils (x 1..50)                       — single wide chamber
 // y=9..19   NBA TF (x 1..25)  | POL TF (x 26..50)   — halves share the center wall
 // y=20..30  CONTROL ROOM (x 1..50)                   — 2×6 panel grid, full width
+// v2.17 (2026-04-19): +ITF zone (Intraday Trading Floor · 7 agents, live at
+// lbjlincoln26-intraday-trading-floor.hf.space). Inserted between the trading
+// floors and the control room by shrinking control-room from h=11 → h=7.
 const ZONES = {
-  "nba-infra":  { x:1,  y:1,  w:25, h:4,  floor:6, label:"NBA EVOLUTION · 13 ISLANDS" },
-  "pol-infra":  { x:26, y:1,  w:25, h:4,  floor:6, label:"POLITICAL EVOLUTION · 8 ISLANDS" },
+  "nba-infra":  { x:1,  y:1,  w:25, h:4,  floor:6, label:"NBA EVOLUTION · 6 SURVIVOR ISLANDS" },
+  "pol-infra":  { x:26, y:1,  w:25, h:4,  floor:6, label:"POLITICAL EVOLUTION · 5 SURVIVOR ISLANDS" },
   councils:     { x:1,  y:5,  w:50, h:4,  floor:1, label:"COUNCIL CHAMBERS · 9 DEPARTMENTS" },
   nba:          { x:1,  y:9,  w:25, h:11, floor:3, label:"NBA TRADING FLOOR" },
   political:    { x:26, y:9,  w:25, h:11, floor:5, label:"POLITICAL FLOOR" },
-  "control-room":{x:1,  y:20, w:50, h:11, floor:8, label:"CONTROL ROOM · LIVE LLM DATA FEEDS" },
+  itf:          { x:1,  y:20, w:50, h:4,  floor:2, label:"INTRADAY TRADING FLOOR · 7 AGENTS (24/7 CRYPTO + EQUITIES)" },
+  "control-room":{x:1,  y:24, w:50, h:7,  floor:8, label:"CONTROL ROOM · LIVE LLM DATA FEEDS" },
 };
 
 // v2.13 (2026-04-17): roster parity with live TF — 17 NBA + 17 POL.
@@ -579,28 +595,28 @@ const POL_TRADERS = [
   "nemotron-120b","selfhost-qwen4b","nvidia-minimax","nvidia-llama70",
   "selfhost-gemma3","selfhost-qwen06","selfhost-dolphin3"
 ];
+// v2.17 (2026-04-19): ITF traders — 7 intraday strategies, live status from
+// lbjlincoln26-intraday-trading-floor.hf.space/api/leaderboard. Schema is
+// different from NBA/POL (no bankroll — emits decisions/trades/passes/open_positions)
+// so the refresh path uses its own wiring.
+const ITF_TRADERS = [
+  "scalper-1","momentum-1","mean-rev-1","breakout-1","pairs-1","vol-1","options-1"
+];
+// v2.17: ISLANDS trimmed to 11 SURVIVORS (was 21). 10 "nul" islands
+// eliminated on 2026-04-17 to free HF concurrency for selfhost LLMs.
+// Never re-introduce S10/S11/S12/S16/S19/S20/S21/P3/P6/P8 — per MEMORY.
 const ISLANDS = [
-  ["S10","https://nomos42-nba-quant.hf.space/api/status"],
-  ["S11","https://nomos42-nba-quant-2.hf.space/api/status"],
-  ["S12","https://nomos42-nba-evo-3.hf.space/api/status"],
   ["S13","https://nomos42-nba-evo-4.hf.space/api/status"],
   ["S14","https://nomos42-nba-evo-5.hf.space/api/status"],
   ["S15","https://nomos42-nba-evo-6.hf.space/api/status"],
-  ["S16","https://lbjlincoln26-nba-evo-s16.hf.space/api/status"],
   ["S17","https://lbjlincoln26-nba-evo-s17.hf.space/api/status"],
   ["S18","https://testforge42-nba-evo-s18.hf.space/api/status"],
-  ["S19","https://testforge42-nba-evo-s19.hf.space/api/status"],
-  ["S20","https://lbjlincoln26-nba-evo-s20.hf.space/api/status"],
-  ["S21","https://lbjlincoln26-nba-evo-s21.hf.space/api/status"],
   ["S22","https://testforge42-nba-evo-s22.hf.space/api/status"],
   ["P1","https://nomos42-political-alpha.hf.space/api/status"],
   ["P2","https://nomos42-political-alpha-2.hf.space/api/status"],
-  ["P3","https://lbjlincoln-political-alpha-3.hf.space/api/status"],
   ["P4","https://lbjlincoln-political-alpha-4.hf.space/api/status"],
   ["P5","https://lbjlincoln-political-alpha-5.hf.space/api/status"],
-  ["P6","https://lbjlincoln-political-alpha-6.hf.space/api/status"],
   ["P7","https://lbjlincoln-political-alpha-7.hf.space/api/status"],
-  ["P8","https://lbjlincoln-political-alpha-8.hf.space/api/status"],
 ];
 const COUNCIL_DEPTS = [
   ["D1","Research","scan → propose → measure"],
@@ -622,6 +638,10 @@ const ENDPOINTS = {
   politicalDays:"https://lbjlincoln26-political-llm-trading-floor.hf.space/api/day-decisions",
   pqtf:        "https://lbjlincoln26-political-quant-trading-floor.hf.space/api/status",
   pqtfLB:      "https://lbjlincoln26-political-quant-trading-floor.hf.space/api/leaderboard",
+  // v2.17: ITF — 7-agent intraday crypto+equities fleet (24/7). Status returns
+  // {agents: {tid: {decisions, trades, passes}}}, leaderboard adds tier/name/open_positions.
+  itf:         "https://lbjlincoln26-intraday-trading-floor.hf.space/api/status",
+  itfLB:       "https://lbjlincoln26-intraday-trading-floor.hf.space/api/leaderboard",
 };
 // v2.12: Councils persist iteration count to Hub repo (no FastAPI). Poll state.json directly.
 const COUNCIL_STATE_URLS = {
@@ -645,6 +665,12 @@ const AGENTS = [
     id:`p-${id}`, key:id, label: p.persona, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
     kind:"political", zone:"political", idx:i, char:(i+2)%6,
     tint: TRADER_PALETTE[(i + 15) % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) }; }),
+  // v2.17: ITF agents — id prefix `itf-` so per-agent lookup doesn't collide
+  // with the NBA/POL namespaces, key = raw tid so we match the leaderboard payload.
+  ...ITF_TRADERS.map((id,i)=>{ const p = personaFor(id); return {
+    id:`itf-${id}`, key:id, label: p.persona, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+    kind:"itf", zone:"itf", idx:i, char:(i+4)%6,
+    tint: TRADER_PALETTE[(i + 24) % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: null }; }),
   ...ISLANDS.map(([lbl,url],i)=>({
     id:`island-${lbl.toLowerCase()}`, key:lbl, label:lbl,
     kind: lbl.startsWith("P") ? "pol_infra" : "infra",
@@ -992,6 +1018,7 @@ document.getElementById("loader").style.display = "none";
 function zoneIdToKind(zoneId) {
   if (zoneId === "nba") return "nba";
   if (zoneId === "political") return "political";
+  if (zoneId === "itf") return "itf";
   if (zoneId === "nba-infra") return "infra";
   if (zoneId === "pol-infra") return "pol_infra";
   if (zoneId === "control-room") return "control";
@@ -1074,6 +1101,22 @@ for (const [zoneId, z] of Object.entries(ZONES)) {
         tilemap.circle(px, py, 1.2).fill({ color: 0xffd700, alpha: 0.45 });
       }
     }
+  } else if (zoneId === "itf") {
+    // v2.17 ITF — ticker tape: horizontal scan lines + candlestick silhouettes.
+    // Reads instantly as a trading floor without needing animation.
+    for (let py = zy0; py < zy0 + zyh; py += 4) {
+      tilemap.rect(zx0, py, zxw, 1).fill({ color: 0xffa94d, alpha: 0.07 });
+    }
+    // Candles spaced every 32px — alternating green/red wicks
+    for (let px = zx0 + 16, i = 0; px < zx0 + zxw - 8; px += 24, i++) {
+      const bull = (i * 7 + 3) % 5 < 3;
+      const col = bull ? 0x50fa7b : 0xff5c5c;
+      const h = 8 + ((i * 13) % 14);
+      const cy = zy0 + zyh/2 - h/2;
+      tilemap.rect(px, cy, 3, h).fill({ color: col, alpha: 0.22 });
+      tilemap.rect(px + 1, cy - 4, 1, 4).fill({ color: col, alpha: 0.22 });      // upper wick
+      tilemap.rect(px + 1, cy + h, 1, 4).fill({ color: col, alpha: 0.22 });      // lower wick
+    }
   }
   floorLayer.addChild(tilemap);
   // v2.9: brighter zone tints — 0.10 → 0.18, more distinct separations
@@ -1148,6 +1191,17 @@ for (const [zoneId, z] of Object.entries(ZONES)) {
     dec.rect(dx, dy, 48, 28).stroke({ width: 1.5, color: dcol, alpha: dalpha * 2 });
     dec.moveTo(dx + 4, dy + 14).lineTo(dx + 12, dy + 8).lineTo(dx + 20, dy + 18).lineTo(dx + 28, dy + 6)
        .lineTo(dx + 36, dy + 20).lineTo(dx + 44, dy + 14).stroke({ width: 1, color: 0x00d9a7, alpha: dalpha * 3 });
+  } else if (zoneId === "itf") {
+    // v2.17 ITF silhouette: stock ticker board + bull/bear pair
+    dec.rect(dx, dy, 48, 20).stroke({ width: 1.5, color: dcol, alpha: dalpha * 2 });
+    dec.rect(dx + 2, dy + 2, 44, 16).fill({ color: 0x000000, alpha: dalpha });
+    // scrolling ticker dots
+    for (let i = 0; i < 7; i++) {
+      dec.rect(dx + 4 + i*6, dy + 8, 4, 2).fill({ color: (i%2)?0x50fa7b:0xffa94d, alpha: dalpha * 3 });
+    }
+    // bull + bear horns
+    dec.circle(dx + 8, dy + 30, 3).fill({ color: 0x50fa7b, alpha: dalpha * 2 });
+    dec.circle(dx + 40, dy + 30, 3).fill({ color: 0xff5c5c, alpha: dalpha * 2 });
   }
   decorLayer.addChild(dec);
 }
@@ -1173,12 +1227,20 @@ decorLayer.addChild(cables, cableDots);
 const FURN_SIZE = Math.round(TILE * 0.85);
 const decorList = [];
 for (const [zoneId, z] of Object.entries(ZONES)) {
-  if (zoneId === "nba-infra" || zoneId === "pol-infra" || zoneId === "control-room") continue;
+  // v2.17: itf is a thin 4-tall full-width strip — standard furniture
+  // template would stack objects on top of agents. Handle separately below.
+  if (zoneId === "nba-infra" || zoneId === "pol-infra" || zoneId === "control-room" || zoneId === "itf") continue;
   decorList.push(["WHITEBOARD", z.x + z.w/2 - 0.5, z.y + 0.2, FURN_SIZE*2, FURN_SIZE*1.2]);
   decorList.push(["CLOCK",      z.x + 0.5,          z.y + 0.3, FURN_SIZE, FURN_SIZE]);
   decorList.push(["PLANT",      z.x + 0.3,          z.y + z.h - 1.5, FURN_SIZE*1.1, FURN_SIZE*1.1]);
   decorList.push(["CACTUS",     z.x + z.w - 1.5,    z.y + z.h - 1.5, FURN_SIZE, FURN_SIZE]);
   decorList.push(["BOOKSHELF",  z.x + z.w - 1.5,    z.y + 0.3, FURN_SIZE, FURN_SIZE*1.4]);
+}
+// v2.17: ITF decor — single clock for "market-hours" cue + corner plants
+{
+  const z = ZONES.itf;
+  decorList.push(["CLOCK",   z.x + 0.4,          z.y + 0.4, FURN_SIZE*0.9, FURN_SIZE*0.9]);
+  decorList.push(["PLANT",   z.x + z.w - 1.5,    z.y + 0.2, FURN_SIZE*0.9, FURN_SIZE*0.9]);
 }
 // v2.9: CONTROL ROOM decor — operator chairs along bottom, plants at corners
 decorList.push(["PLANT",      1.3,  30,   FURN_SIZE*1.1, FURN_SIZE*1.1]);
@@ -2026,6 +2088,14 @@ function showInspectPanel(a) {
   const extra = [];
   if (d.total_bets) extra.push(`${d.total_bets} bets`);
   if (d.last_bet) extra.push(`Last: ${d.last_bet}`);
+  // v2.17 ITF-specific extras — no bankroll, so show trades/decisions/passes/open positions.
+  if (a.kind === "itf") {
+    if (d.trades != null) extra.push(`${d.trades} trades`);
+    if (d.passes != null) extra.push(`${d.passes} passes`);
+    if (d.open_positions != null) extra.push(`${d.open_positions} open`);
+    if (d.tier) extra.push(`tier ${d.tier}`);
+    if (d.decisions != null) extra.push(`${d.decisions} decisions`);
+  }
   if (a.pactPartner) extra.push(`Pact: ${a.pactPartner}`);
   if (d.stagnation) extra.push(`Stag: ${d.stagnation}`);
   if (a.kind) extra.push(a.kind);
@@ -2319,7 +2389,7 @@ function escapeHtml(s) { return String(s==null?"":s).replace(/[&<>"']/g, c => ({
 const categoryCounter = {};  // rolling count across both TFs
 // v2.16: remember latest TF status so the warming-up fallback (no day-decisions yet)
 // can still fill the dialogue box with live signals (fleet_leader, council_plan, llm_calls).
-let LATEST_NBA = null, LATEST_POL = null, LATEST_PQTF = null;
+let LATEST_NBA = null, LATEST_POL = null, LATEST_PQTF = null, LATEST_ITF = null;
 
 async function refresh() {
   document.getElementById("hud-tick").textContent = "· fetching…";
@@ -2417,6 +2487,41 @@ async function refresh() {
         a.bubble = `${a.label}\n$${(d.bankroll||100).toFixed(0)} · ${d.total_bets||0} trades`;
         a.bubbleUntil = performance.now() + 20000;
       }
+    }
+  }
+
+  // v2.17 ITF — 7 intraday agents. Status schema:
+  //   { agents: { tid: { decisions, trades, passes } }, config_agents: [...] }
+  // Leaderboard adds { tier, name, open_positions }.
+  // No bankroll field — state derives from (trades, open_positions, passes) ratios.
+  let itfOK = 0;
+  const itfLB = await fetchJSON(ENDPOINTS.itfLB);
+  const itfStatus = await fetchJSON(ENDPOINTS.itf);
+  LATEST_ITF = itfStatus;
+  if (itfLB && Array.isArray(itfLB.agents)) {
+    for (const entry of itfLB.agents) {
+      const a = AGENTS.find(x => x.kind === "itf" && x.key === entry.tid);
+      if (!a) continue;
+      const prev = a.data;
+      a.data = entry;
+      itfOK++;
+      const trades = entry.trades || 0;
+      const passes = entry.passes || 0;
+      const openPos = entry.open_positions || 0;
+      // state: open position → profit (reads as "in the tape"), all-passes → idle,
+      // never-traded → thinking, traded-and-closed → neutral/thinking
+      if (openPos > 0) a.state = "profit";
+      else if (passes > 0 && trades === 0) a.state = "thinking";
+      else if (trades > 0) a.state = (entry.tier === "S") ? "profit" : "thinking";
+      else a.state = "thinking";
+      if (prev && prev.trades != null && trades > prev.trades) {
+        a.recent = "● trade";
+        a.activeUntil = performance.now() + 4000;
+        logTrade("itf", a.label, `trade #${trades} (${entry.tier})`, 0);
+        spawnPulseRing(a.x * TILE, a.y * TILE, 0xffa94d);
+      }
+      a.bubble = `${a.label}\n${trades} trade${trades===1?"":"s"} · ${passes} pass · ${openPos} open`;
+      a.bubbleUntil = performance.now() + 20000;
     }
   }
 
@@ -2519,8 +2624,11 @@ async function refresh() {
   document.getElementById("k-nba").className = nbaOK === NBA_TRADERS.length ? "v-ok" : "v-warn";
   document.getElementById("k-pol").textContent = `${polOK}/${POL_TRADERS.length}`;
   document.getElementById("k-pol").className = polOK === POL_TRADERS.length ? "v-ok" : "v-warn";
-  document.getElementById("k-evo").textContent = `${evoOK}/21`;
-  document.getElementById("k-evo").className = evoOK >= 20 ? "v-ok" : "v-warn";
+  // v2.17: +ITF row, fleet target = ITF_TRADERS.length (7 live). Islands counted vs ISLANDS.length (11 survivors).
+  const kItf = document.getElementById("k-itf");
+  if (kItf) { kItf.textContent = `${itfOK}/${ITF_TRADERS.length}`; kItf.className = itfOK === ITF_TRADERS.length ? "v-ok" : "v-warn"; }
+  document.getElementById("k-evo").textContent = `${evoOK}/${ISLANDS.length}`;
+  document.getElementById("k-evo").className = evoOK >= ISLANDS.length ? "v-ok" : "v-warn";
   document.getElementById("k-pacts").textContent = pacts;
   document.getElementById("k-last").textContent = new Date().toISOString().slice(11,19);
   document.getElementById("hud-rep").textContent = `pacts ${pacts} · rep ${repEntries}`;
@@ -2544,6 +2652,13 @@ async function refresh() {
   if (pol) {
     setTx("bt-pol-day", `D${pol.days_processed || 0}/${pol.days_total || 175}`);
     const p = avg(pol.agents); if (p != null) setTx("bt-pol-pnl", `${p>=0?"+":""}${p.toFixed(2)}%`, p>=0?"up":"down");
+  }
+  // v2.17 ITF ticker: total trades across fleet + sum open positions (tape-green when trades>0).
+  if (itfLB && Array.isArray(itfLB.agents)) {
+    const totTrades = itfLB.agents.reduce((s,a)=>s+(a.trades||0),0);
+    const totOpen   = itfLB.agents.reduce((s,a)=>s+(a.open_positions||0),0);
+    setTx("bt-itf-trades", `${totTrades} trd`, totTrades > 0 ? "up" : "");
+    setTx("bt-itf-open",   `${totOpen} open`, totOpen > 0 ? "up" : "");
   }
   setTx("bt-pacts", String(pacts));
   setTx("bt-calls", String(sumCalls(nba && nba.agents) + sumCalls(pol && pol.agents)));
