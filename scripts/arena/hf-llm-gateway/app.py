@@ -62,22 +62,24 @@ MODELS = {
     # to TESTforge42 llama32-1b so dependents keep working; shape changed from
     # /api/decide to OpenAI-compatible /v1/chat/completions.
     "selfhost:phi-4-mini": {
-        "url": "https://testforge42-llama32-1b-cpu.hf.space/v1/chat/completions",
-        "model": "llama-3.2-1b-instruct",
+        "url": "https://lbjlincoln-phi35-mini-cpu.hf.space/v1/chat/completions",
+        "model": "phi-3.5-mini-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
         "rpm": 60,
         "tier": "fast",
     },
-    # 2026-04-19 cross-account rebalance: Nomos42 selfhost LLMs PAUSED (account
-    # quota full). Three LLMs duplicated to TESTforge42 and live there. Aliases
-    # preserved (selfhost:qwen3-4b / gemma-3-4b / qwen3-0.6b / dolphin3-l32-3b)
-    # but URLs repointed to whichever Space actually responds today.
-    # Only TESTforge42/qwen3-4b-cpu + TESTforge42/llama32-1b-cpu verified live.
+    # 2026-04-19 (evening) HTTP-reachability audit: while HF `stage=RUNNING` for all
+    # Spaces, only the 3 LBJLincoln containers (qwen25-05b / gemma2-2b / phi35-mini)
+    # actually accept requests. TESTforge42/qwen3-4b-cpu, TESTforge42/llama32-1b-cpu
+    # and LBJLincoln26/gemma3-4b-cpu stall on /v1/models probes >60s (Docker app
+    # crashed inside RUNNING container). Aliases preserved for dependent callers;
+    # URLs repointed to the 3 live Spaces, matching tier as closely as possible.
+    # When a dead Space is factory_reboot'd and comes back, flip its URL back.
     "selfhost:qwen3-4b": {
-        "url": "https://testforge42-qwen3-4b-cpu.hf.space/v1/chat/completions",
-        "model": "qwen3-4b-instruct",
+        "url": "https://lbjlincoln-phi35-mini-cpu.hf.space/v1/chat/completions",
+        "model": "phi-3.5-mini-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
@@ -85,10 +87,8 @@ MODELS = {
         "tier": "medium",
     },
     "selfhost:gemma-3-4b": {
-        # Real Gemma3-4B restored 2026-04-19 by duplicating Nomos42/gemma3-4b-cpu
-        # to LBJLincoln26's free slot.
-        "url": "https://lbjlincoln26-gemma3-4b-cpu.hf.space/v1/chat/completions",
-        "model": "gemma-3-4b-it",
+        "url": "https://lbjlincoln-gemma2-2b-cpu.hf.space/v1/chat/completions",
+        "model": "gemma-2-2b-it",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
@@ -96,9 +96,8 @@ MODELS = {
         "tier": "medium",
     },
     "selfhost:qwen3-0.6b": {
-        # alias routes to llama-3.2-1b (smallest live model) to preserve scalper tier.
-        "url": "https://testforge42-llama32-1b-cpu.hf.space/v1/chat/completions",
-        "model": "llama-3.2-1b-instruct",
+        "url": "https://lbjlincoln-qwen25-05b-cpu.hf.space/v1/chat/completions",
+        "model": "qwen2.5-0.5b-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
@@ -106,8 +105,8 @@ MODELS = {
         "tier": "fast",
     },
     "selfhost:dolphin3-l32-3b": {
-        "url": "https://testforge42-llama32-1b-cpu.hf.space/v1/chat/completions",
-        "model": "llama-3.2-1b-instruct",
+        "url": "https://lbjlincoln-phi35-mini-cpu.hf.space/v1/chat/completions",
+        "model": "phi-3.5-mini-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,

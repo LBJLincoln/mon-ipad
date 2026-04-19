@@ -1,29 +1,21 @@
-"""ITF personas — 6 intraday LLM agents, ALL self-hosted.
+"""ITF personas — 6 intraday LLM agents.
 
-Directive (2026-04-19): intraday agents MUST run on self-hosted Spaces only.
-ITF runs every 15 min during market hours × 6 agents = ~168 calls/day; only
-selfhost can sustain that without starving NBA TF / POL TF cloud quota.
+Routing (2026-04-19 evening audit):
+  HTTP-reachable cross-account selfhost LLMs today = 3, all on LBJLincoln:
+    LBJLincoln/qwen25-05b-cpu   (qwen2.5-0.5b-instruct) — fast
+    LBJLincoln/gemma2-2b-cpu    (gemma-2-2b-it)         — medium
+    LBJLincoln/phi35-mini-cpu   (phi-3.5-mini-instruct) — medium/analytical
 
-Audit (2026-04-18 gateway probe):
-  HEALTHY  selfhost:qwen3-4b       (Nomos42/qwen3-4b-cpu)
-  HEALTHY  selfhost:gemma-3-4b     (Nomos42/gemma2-2b-cpu)
-  HEALTHY  selfhost:qwen3-0.6b     (Nomos42/qwen25-05b-cpu)
-  HEALTHY  selfhost:dolphin3-l32-3b(Nomos42/llama32-1b-cpu)
-  BROKEN   selfhost:phi-4-mini     (Nomos42/nomos42-llm-cpu — RUNTIME_ERROR, segfault)
-  BROKEN   selfhost:smollm3-3b     (llama-cpp-python 0.3.9 cannot load GGUF)
+  Stage=RUNNING but HTTP-dead (pending factory_reboot):
+    TESTforge42/qwen3-4b-cpu
+    TESTforge42/llama32-1b-cpu
+    LBJLincoln26/gemma3-4b-cpu
 
-Concretely we have 4 healthy self-hosted models today. To get to 6 we MUST
-provision 2 new selfhost Spaces on LBJLincoln + TESTforge42 (see
-docs/INTRADAY-ROUTING-MATRIX.md). Until then, scalper+momentum share
-qwen3-0.6b / gemma-3-4b with distinct system prompts and distinct fallbacks.
-
-Account distribution target (from routing matrix):
-  scalper-1   Nomos42/qwen25-05b-cpu
-  momentum-1  LBJLincoln/gemma2-2b-cpu-lbj       ← TO PROVISION
-  mean-rev-1  LBJLincoln26/qwen3-4b-cpu-lbj26    ← TO PROVISION
-  breakout-1  TESTforge42/llama32-1b-cpu-tf42    ← TO PROVISION
-  pairs-1     Nomos42/qwen3-4b-cpu (reuse, longest ctx of healthy set)
-  vol-1       TESTforge42/gemma2-2b-cpu-tf42     ← TO PROVISION
+To give all 6 personas a live primary every tick, we use the 3 LBJLincoln
+selfhost Spaces as primaries for 3 personas, and cloud models (cerebras /
+mistral / google) as primaries for the other 3. Gateway fallback chains
+still cover the selfhost-dead case. No Nomos42/* URLs used anywhere (that
+account is saturated by islands + TF + pixel + langfuse).
 
 COLLECTIVE_MISSION + AXELROD_CANON prepended at call time by app.py.
 """
@@ -35,9 +27,9 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "scalper-1",
         "name": "Scalper",
-        "model_primary": "selfhost:qwen3-0.6b",
-        "model_fallback": "selfhost:gemma-3-4b",
-        "hf_account_target": "Nomos42",
+        "model_primary": "selfhost:qwen3-0.6b",          # → LBJLincoln/qwen25-05b-cpu
+        "model_fallback": "cerebras:llama3.1-8b",
+        "hf_account_target": "LBJLincoln",
         "hf_space_target": "qwen25-05b-cpu",
         "tier": "S",
         "risk": 0.45,
@@ -52,10 +44,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "momentum-1",
         "name": "Momentum",
-        "model_primary": "selfhost:gemma-3-4b",
-        "model_fallback": "selfhost:qwen3-4b",
+        "model_primary": "selfhost:gemma-3-4b",          # → LBJLincoln/gemma2-2b-cpu
+        "model_fallback": "google:gemini-3-flash",
         "hf_account_target": "LBJLincoln",
-        "hf_space_target": "gemma2-2b-cpu-lbj",
+        "hf_space_target": "gemma2-2b-cpu",
         "tier": "M",
         "risk": 0.55,
         "max_hold_min": 120,
@@ -69,10 +61,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "mean-rev-1",
         "name": "MeanReversion",
-        "model_primary": "selfhost:qwen3-4b",
-        "model_fallback": "selfhost:gemma-3-4b",
-        "hf_account_target": "LBJLincoln26",
-        "hf_space_target": "qwen3-4b-cpu-lbj26",
+        "model_primary": "selfhost:phi-3.5-mini",         # → LBJLincoln/phi35-mini-cpu
+        "model_fallback": "mistral:small",
+        "hf_account_target": "LBJLincoln",
+        "hf_space_target": "phi35-mini-cpu",
         "tier": "L",
         "risk": 0.40,
         "max_hold_min": 90,
@@ -86,10 +78,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "breakout-1",
         "name": "Breakout",
-        "model_primary": "selfhost:dolphin3-l32-3b",
-        "model_fallback": "selfhost:qwen3-4b",
-        "hf_account_target": "TESTforge42",
-        "hf_space_target": "llama32-1b-cpu-tf42",
+        "model_primary": "cerebras:qwen-3-235b",
+        "model_fallback": "cerebras:llama3.1-8b",
+        "hf_account_target": "cerebras",
+        "hf_space_target": "qwen-3-235b",
         "tier": "M",
         "risk": 0.55,
         "max_hold_min": 180,
@@ -102,10 +94,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "pairs-1",
         "name": "Pairs",
-        "model_primary": "selfhost:qwen3-4b",
-        "model_fallback": "selfhost:dolphin3-l32-3b",
-        "hf_account_target": "Nomos42",
-        "hf_space_target": "qwen3-4b-cpu",
+        "model_primary": "mistral:medium",
+        "model_fallback": "google:gemini-3-flash",
+        "hf_account_target": "mistral",
+        "hf_space_target": "medium",
         "tier": "M",
         "risk": 0.50,
         "max_hold_min": 240,
@@ -119,10 +111,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "vol-1",
         "name": "VolRegime",
-        "model_primary": "selfhost:gemma-3-4b",
-        "model_fallback": "selfhost:qwen3-0.6b",
-        "hf_account_target": "TESTforge42",
-        "hf_space_target": "gemma2-2b-cpu-tf42",
+        "model_primary": "google:gemini-3-flash",
+        "model_fallback": "mistral:small",
+        "hf_account_target": "google",
+        "hf_space_target": "gemini-3-flash",
         "tier": "M",
         "risk": 0.45,
         "max_hold_min": 120,
