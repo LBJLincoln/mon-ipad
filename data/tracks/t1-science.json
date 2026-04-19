@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-19T09:17:02.478925+00:00",
+  "timestamp": "2026-04-19T12:17:01.772213+00:00",
   "track": "T1 SCIENCE",
   "absorbs": [
     "D1 research",
@@ -8,100 +8,156 @@
   ],
   "status": "ok",
   "last_metric": {
-    "fleet_best_brier": 0.22447,
+    "fleet_best_brier": 0.22107,
+    "fleet_best_island": "S15",
     "target_brier": 0.2,
     "calibration_mce": null,
     "calibration_ece": null,
     "drift_alarms": 0
   },
-  "last_action": "21 evolution islands running, fleet-matrix scoreboard fresh every 30min",
+  "last_action": "21 evolution islands running; fleet best S15 0.22107; checkpointed S10/S13/S15; diversified S10/S11/S12/S16/S19",
   "next_proposal": "If fleet_best stagnates >24h, trigger diversify on worst 2 islands",
   "blocked_on": null,
-  "SWISH": {
-    "timestamp": "2026-04-19T08:45:20Z",
+  "swish": {
+    "last_tick": "2026-04-19T12:45:00Z",
+    "tick_count": 1,
+    "fleet_best": {
+      "island": "S15",
+      "brier": 0.22107,
+      "gen": 268,
+      "algo": "wide_search",
+      "sha": null
+    },
     "actions": [
-      "checkpoint S19 (fleet_best 0.21949, gen=168)",
-      "checkpoint S16 (pareto_best 0.21983, gen=160)",
-      "diversify S10 (stag=177)",
-      "diversify S11 (stag=206)",
-      "diversify S12 (stag=194)",
-      "diversify S13 (stag=112)",
-      "diversify S15 (stag=206, regressed to 0.24738)",
-      "diversify S17 (stag=304 extreme)",
-      "diversify S18 (stag=396 extreme)",
-      "diversify S19 (post-checkpoint, stag=147)",
-      "diversify S20 (stag=327, Brier=0.28 explosion)",
-      "diversify S21 (stag=203)",
-      "diversify S22 (stag=266, regressed to 0.23988)",
-      "no_action S14 (gen=2, just restarted)"
+      "checkpointed S10 brier=0.22128 gen=385 (improved from CLAUDE.md 0.22825)",
+      "checkpointed S13 brier=0.22126 gen=336 (improved from CLAUDE.md 0.22749)",
+      "checkpointed S15 brier=0.22107 gen=268 fleet_best (improved from CLAUDE.md 0.22418)",
+      "diversified S10 (stag=18 cycles, brier=0.22128)",
+      "diversified S11 (stag=21 cycles, brier=0.22213)",
+      "diversified S12 (stag=14 cycles, brier=0.24577 poor)",
+      "diversified S16 (stag=16 cycles, brier=0.23465 poor)",
+      "diversified S19 (stag=18 cycles, brier=0.22328)",
+      "S22 self-hard-reset at cycle 25 (already handled by island engine)"
     ],
-    "fleet_best_brier": 0.21949,
-    "fleet_best_island": "S19 (wide_search gen=168)",
-    "fleet_best_delta": -0.00124,
-    "islands_up": 13,
-    "islands_down": 0,
-    "mutation_violations": 0,
-    "critical_alerts": ["S20 Brier=0.28 explosion", "S18 stag=396", "S17 stag=304"],
-    "next_tick_eta": "2026-04-19T12:10:00Z"
-  },
-  "INTERNAL_AFFAIRS": {
-    "timestamp": "2026-04-19T09:15:48Z",
-    "agent": "INTERNAL AFFAIRS",
-    "audit_file": "data/audit/2026-04-19T0915.json",
-    "alerts_count": 2,
-    "findings": {
-      "nba": {
-        "days_checked": ["day-023", "day-024", "day-025"],
-        "bets": 32,
-        "leakage": "ok (corr=0.115, 597 pairs)",
-        "source": "ok (100% direct)",
-        "wr": "ok",
-        "lockstep": "ok (worst_share=0)",
-        "walkforward": "ok",
-        "drawdown_root_cause": "4 agents absent from day-024+ (gemini-anl $4.60, gemini-tact $4.71, llama-contra $4.49, mistral-large $3.45) — NOT a preservation-mode trigger. State has peak=N/A, preservation_mode=False, drawdown_guard_active=False. Agents crashed below $20 threshold but survival doctrine is NOT wired to state.json peak tracking — the coalition_mandatory_apr18 guard exists only in prompt text, not enforced in code. cash_rationale='no LLM response' confirms provider failure, not guard trip. ROOT CAUSE: these agents fell silent (provider outage/timeout) days ago, kept being skipped, bankrolls stuck at last-known crashed value."
+    "islands": {
+      "S10": {
+        "gen": 385,
+        "best_brier": 0.22128,
+        "stag_cycles": 18,
+        "mutation_rate": 0.1088,
+        "algo": "extra_trees",
+        "status": "EVOLVING",
+        "action_this_tick": "diversify+checkpoint"
       },
-      "pol": {
-        "days_checked": ["day-047", "day-048", "day-049"],
-        "bets": 613,
-        "leakage": "ok (corr=0.115)",
-        "source": "WARN — direct_ratio=9.5% (tiered-post-filter 555 vs direct 58)",
-        "wr": "ok",
-        "lockstep": "CRITICAL — day-049: 100% lockstep (493/493 bets all tiered-post-filter, all 17 agents identical picks)",
-        "walkforward": "ok (0% fallback keys)",
-        "pacts_gap": "0 coalition_proposals across ALL 17 agents on day-048 and day-049. The coalition_mandatory prompt fix (commit 412fc6a19) added MANDATORY to the prompt but the field 'coalition_proposals' in the day-XXX.json schema is never populated. Root cause: the response parser extracts allocations but does NOT parse coalition_proposals from LLM output — they exist in prompt instructions but are silently discarded on output. DMAD jitter is also fully bypassed on day-049 because 100% tiered-post-filter bets skip LLM entirely."
+      "S11": {
+        "gen": 411,
+        "best_brier": 0.22213,
+        "stag_cycles": 21,
+        "mutation_rate": 0.1126,
+        "algo": "exploration",
+        "status": "EVOLVING",
+        "action_this_tick": "diversify"
       },
-      "pqtf": {
-        "days_checked": ["day-047", "day-048", "day-049"],
-        "lockstep": "ok (no positions in HF cache)",
-        "risk": "ok (avg_var_95=0.0 — stale cached data, live data on PQTF space)"
+      "S12": {
+        "gen": 345,
+        "best_brier": 0.24577,
+        "stag_cycles": 14,
+        "mutation_rate": 0.1379,
+        "algo": "extra_trees",
+        "status": "COOLDOWN",
+        "action_this_tick": "diversify (poor brier, needs reset)"
+      },
+      "S13": {
+        "gen": 336,
+        "best_brier": 0.22126,
+        "stag_cycles": 10,
+        "mutation_rate": 0.1407,
+        "algo": "catboost",
+        "status": "EVOLVING",
+        "action_this_tick": "checkpoint"
+      },
+      "S14": {
+        "gen": 43,
+        "best_brier": 0.23016,
+        "stag_cycles": 13,
+        "mutation_rate": 0.1387,
+        "algo": "lightgbm",
+        "status": "EVOLVING",
+        "action_this_tick": "monitor (young island, stag expected)"
+      },
+      "S15": {
+        "gen": 268,
+        "best_brier": 0.22107,
+        "stag_cycles": 13,
+        "mutation_rate": 0.1443,
+        "algo": "wide_search",
+        "status": "EVOLVING",
+        "action_this_tick": "checkpoint (fleet_best)",
+        "fleet_best": true
+      },
+      "S16": {
+        "gen": 428,
+        "best_brier": 0.23465,
+        "stag_cycles": 16,
+        "mutation_rate": 0.1428,
+        "algo": "gradient_boost",
+        "status": "EVOLVING",
+        "action_this_tick": "diversify (poor brier+stag)"
+      },
+      "S17": {
+        "gen": 463,
+        "best_brier": 0.22358,
+        "stag_cycles": 3,
+        "mutation_rate": 0.1487,
+        "algo": "ensemble",
+        "status": "EVOLVING",
+        "action_this_tick": "monitor (recently reset, rebuilding)"
+      },
+      "S18": {
+        "gen": 477,
+        "best_brier": 0.22154,
+        "stag_cycles": 7,
+        "mutation_rate": 0.1432,
+        "algo": "catboost_spec",
+        "status": "EVOLVING",
+        "action_this_tick": "monitor"
+      },
+      "S19": {
+        "gen": 403,
+        "best_brier": 0.22328,
+        "stag_cycles": 18,
+        "mutation_rate": 0.1421,
+        "algo": "wide_search",
+        "status": "COOLDOWN",
+        "action_this_tick": "diversify"
+      },
+      "S20": {
+        "gen": 428,
+        "best_brier": 0.22407,
+        "stag_cycles": 16,
+        "mutation_rate": 0.136,
+        "algo": "isotonic_cpcv",
+        "status": "EVOLVING",
+        "action_this_tick": "monitor (new island gen=428, still settling)"
+      },
+      "S21": {
+        "gen": 405,
+        "best_brier": 0.2265,
+        "stag_cycles": 12,
+        "mutation_rate": 0.139,
+        "algo": "darwinian_weights",
+        "status": "EVOLVING",
+        "action_this_tick": "monitor"
+      },
+      "S22": {
+        "gen": 381,
+        "best_brier": 0.22358,
+        "stag_cycles": 0,
+        "mutation_rate": 0.15,
+        "algo": "venn_abers_fusion",
+        "status": "EVOLVING",
+        "action_this_tick": "monitor (engine self-hard-reset at cycle 25, already diversified)"
       }
-    },
-    "proposals_generated": 10,
-    "proposals_file": "data/research/tf-proposals-2026-04-19.json",
-    "next_tick_eta": "2026-04-19T13:40:00Z"
-  },
-  "LOBBYIST": {
-    "timestamp": "2026-04-19T12:15:00Z",
-    "actions": [
-      "checkpoint P5 (new fleet_best 0.24923, gen=10158, lightgbm — beats prev P7 0.24987)",
-      "no_diversify P1-P8 (all stag=0, healthy)"
-    ],
-    "fleet_best_brier": 0.24923,
-    "fleet_best_island": "P5 (catboost/lightgbm gen=10158)",
-    "fleet_best_delta": -0.00064,
-    "islands_up": 8,
-    "islands_down": 0,
-    "p5_p8_deployment_status": "ALL 8 DEPLOYED AND EVOLVING — P4/P5/P8 recovered from 503 since 2026-04-17",
-    "fleet_summary": {
-      "P1": {"gen": 10738, "brier": 0.24999, "stag": 0},
-      "P2": {"gen": 8082, "brier": 0.24949, "stag": 0},
-      "P3": {"gen": 10524, "brier": 0.25121, "stag": 0},
-      "P4": {"gen": 11490, "brier": 0.24956, "stag": 0},
-      "P5": {"gen": 10158, "brier": 0.24923, "stag": 0, "fleet_best": true},
-      "P6": {"gen": 10826, "brier": 0.25349, "stag": 0},
-      "P7": {"gen": 11439, "brier": 0.24937, "stag": 0},
-      "P8": {"gen": 10536, "brier": 0.25241, "stag": 0}
-    },
-    "next_tick_eta": "2026-04-19T16:15:00Z"
+    }
   }
 }
