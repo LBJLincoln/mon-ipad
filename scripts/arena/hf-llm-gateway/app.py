@@ -314,6 +314,128 @@ MODELS = {
         "rpm": 40,
         "tier": "large",
     },
+    # ── GITHUB MODELS (https://models.github.ai) ──
+    # Verified 2026-04-19: 14/19 probed models live on the main GITHUB_TOKEN.
+    # Three tokens available for rotation (GITHUB_TOKEN, GITHUB_MODELS_API_KEY,
+    # GITHUB_MODELS_TOKEN), so each alias gets its own key slot; call_llm will
+    # failover between them via FALLBACK_CHAINS when one hits per-hour quota.
+    "github:gpt-4.1": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "openai/gpt-4.1",
+        "key_env": "GITHUB_TOKEN",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 15,
+        "tier": "large",
+    },
+    "github:gpt-4.1-mini": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "openai/gpt-4.1-mini",
+        "key_env": "GITHUB_MODELS_API_KEY",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 30,
+        "tier": "medium",
+    },
+    "github:gpt-4.1-nano": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "openai/gpt-4.1-nano",
+        "key_env": "GITHUB_MODELS_TOKEN",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 30,
+        "tier": "fast",
+    },
+    "github:gpt-4o-mini": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "openai/gpt-4o-mini",
+        "key_env": "GITHUB_TOKEN",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 30,
+        "tier": "fast",
+    },
+    "github:llama-3.3-70b": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "meta/llama-3.3-70b-instruct",
+        "key_env": "GITHUB_MODELS_API_KEY",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 15,
+        "tier": "large",
+    },
+    "github:llama-4-scout": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "meta/llama-4-scout-17b-16e-instruct",
+        "key_env": "GITHUB_MODELS_TOKEN",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 20,
+        "tier": "large",
+    },
+    "github:deepseek-v3": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "deepseek/deepseek-v3-0324",
+        "key_env": "GITHUB_TOKEN",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 15,
+        "tier": "large",
+    },
+    "github:deepseek-r1": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "deepseek/deepseek-r1-0528",
+        "key_env": "GITHUB_MODELS_API_KEY",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 10,
+        "tier": "large",
+    },
+    "github:mistral-medium": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "mistral-ai/mistral-medium-2505",
+        "key_env": "GITHUB_MODELS_TOKEN",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 20,
+        "tier": "medium",
+    },
+    "github:grok-3": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "xai/grok-3",
+        "key_env": "GITHUB_TOKEN",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 15,
+        "tier": "large",
+    },
+    "github:grok-3-mini": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "xai/grok-3-mini",
+        "key_env": "GITHUB_MODELS_API_KEY",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 30,
+        "tier": "fast",
+    },
+    "github:phi-4-mini": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "microsoft/phi-4-mini-instruct",
+        "key_env": "GITHUB_MODELS_TOKEN",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 30,
+        "tier": "fast",
+    },
+    "github:cohere-r-plus": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "model": "cohere/cohere-command-r-plus-08-2024",
+        "key_env": "GITHUB_TOKEN",
+        "provider": "github",
+        "max_tokens": 400,
+        "rpm": 15,
+        "tier": "large",
+    },
     "openrouter:qwen3-80b:free": {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "qwen/qwen3-next-80b-a3b-instruct:free",
@@ -603,6 +725,33 @@ def _call_nvidia(model_cfg: dict, messages: list, max_tokens: int) -> str:
     raise ValueError(f"NVIDIA unexpected response: {json.dumps(data)[:200]}")
 
 
+def _call_github(model_cfg: dict, messages: list, max_tokens: int) -> str:
+    """GitHub Models — OpenAI-compatible, free with any GITHUB_TOKEN.
+    Catalog: GPT-4.1/4o, Llama 3.3/4, DeepSeek R1/V3, Grok-3, Mistral, Phi-4, Cohere R+.
+    Rate limit is per-token, so 3 tokens (GITHUB_TOKEN/GITHUB_MODELS_API_KEY/
+    GITHUB_MODELS_TOKEN) give us a rotation pool.
+    """
+    key = os.environ.get(model_cfg["key_env"], "")
+    if not key:
+        raise ValueError(f"Missing key: {model_cfg['key_env']}")
+    resp = requests.post(
+        model_cfg["url"],
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+        json={"model": model_cfg["model"], "messages": messages,
+              "max_tokens": max_tokens, "temperature": 0.7},
+        timeout=30,
+    )
+    if resp.status_code == 429:
+        raise ValueError("Rate limited (429)")
+    if resp.status_code == 424:
+        raise ValueError("Upstream failure (424 — retry different model)")
+    resp.raise_for_status()
+    data = resp.json()
+    if "choices" in data and data["choices"]:
+        return data["choices"][0]["message"]["content"]
+    raise ValueError(f"GitHub Models unexpected response: {json.dumps(data)[:200]}")
+
+
 PROVIDER_CALLERS = {
     "cerebras": _call_cerebras,
     "google": _call_google,
@@ -611,6 +760,7 @@ PROVIDER_CALLERS = {
     "selfhost_decide": _call_selfhost_decide,
     "mistral": _call_mistral,
     "nvidia": _call_nvidia,
+    "github": _call_github,
 }
 
 
