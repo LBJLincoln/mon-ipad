@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import os
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -167,6 +167,157 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
         # Dry run — simulate the fill and set sim_close_at for EOD flatten
         entry["sim_filled_at"] = last
         entry["sim_pnl_usd"] = 0.0  # filled flat, realized on close
+
+    positions.setdefault(agent_tid, []).append(entry)
+    _save_positions(positions)
+    _append_order_log(entry)
+    return entry
+
+
+def _occ_symbol(underlying: str, expiry: datetime, option_type: str, strike: float) -> str:
+    """OCC-standard option symbol: <UND><YYMMDD><C|P><strike*1000 zero-padded to 8>.
+    Example: SPY251220C00480000 = SPY call, strike $480, expiring 2025-12-20.
+    """
+    exp = expiry.strftime("%y%m%d")
+    cp = "C" if option_type.lower().startswith("c") else "P"
+    strike_int = int(round(strike * 1000))
+    return f"{underlying.upper()}{exp}{cp}{strike_int:08d}"
+
+
+def _next_expiry(dte: int, now_utc: datetime) -> datetime:
+    """Return the nearest US market expiry that is `dte` trading days ahead.
+    SPY/QQQ/IWM have daily expiries (0/1/2 DTE) during the week; we approximate
+    by skipping weekends only (holidays treated as weekdays for dry-run intent)."""
+    d = now_utc
+    added = 0
+    while added < max(0, dte):
+        d = d + timedelta(days=1)
+        if d.weekday() < 5:
+            added += 1
+    return d
+
+
+def submit_option(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str, Any]:
+    """Submit an intraday option order. Shape:
+       {underlying, option_type, strategy, dte, strike_offset_pct, wing_width_pct, stake_usd, max_loss_pct, thesis}
+
+    Strategy handling:
+      - "long":              1-leg long call/put
+      - "vertical_debit":    2-leg debit spread (buy ATM, sell ATM+wing)
+      - "vertical_credit":   2-leg credit spread (sell ATM, buy ATM+wing)
+      - "iron_condor":       4-leg (call spread above, put spread below)
+      - "straddle":          2-leg long call + long put at same strike
+
+    Dry-run logs the structured intent with computed OCC symbols.
+    Live mode routes to Alpaca /v2/options/orders (minimal wrapper; paper-only).
+    """
+    positions = _load_positions()
+    open_for_agent = [p for p in positions.get(agent_tid, []) if p.get("status") == "open"]
+    if len(open_for_agent) >= MAX_OPEN_PER_AGENT:
+        reject = {
+            "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "agent_tid": agent_tid, "status": "rejected",
+            "reason": f"max {MAX_OPEN_PER_AGENT} open positions already",
+            "order": order,
+        }
+        _append_order_log(reject)
+        return reject
+
+    now = datetime.now(timezone.utc)
+    underlying = order["underlying"]
+    option_type = order.get("option_type", "call")
+    strategy   = order.get("strategy", "long")
+    dte = int(order.get("dte", 0) or 0)
+    offset_pct = float(order.get("strike_offset_pct", 0.0) or 0.0)
+    wing_pct   = float(order.get("wing_width_pct", 0.01) or 0.01)
+    stake      = float(order.get("stake_usd", 500))
+    last       = float(last_quote or 0) or 1.0
+    expiry     = _next_expiry(dte, now)
+
+    # Compute strikes (rounded to $1 — broker will snap to chain)
+    atm = round(last * (1 + offset_pct))
+    wing_up = round(last * (1 + offset_pct + wing_pct))
+    wing_dn = round(last * (1 + offset_pct - wing_pct))
+
+    legs: List[Dict[str, Any]] = []
+    if strategy == "long":
+        legs = [{"side": "buy", "symbol": _occ_symbol(underlying, expiry, option_type, atm), "qty": 1}]
+    elif strategy == "vertical_debit":
+        outer = wing_up if option_type == "call" else wing_dn
+        legs = [
+            {"side": "buy",  "symbol": _occ_symbol(underlying, expiry, option_type, atm),   "qty": 1},
+            {"side": "sell", "symbol": _occ_symbol(underlying, expiry, option_type, outer), "qty": 1},
+        ]
+    elif strategy == "vertical_credit":
+        outer = wing_up if option_type == "call" else wing_dn
+        legs = [
+            {"side": "sell", "symbol": _occ_symbol(underlying, expiry, option_type, atm),   "qty": 1},
+            {"side": "buy",  "symbol": _occ_symbol(underlying, expiry, option_type, outer), "qty": 1},
+        ]
+    elif strategy == "iron_condor":
+        legs = [
+            # call spread above
+            {"side": "sell", "symbol": _occ_symbol(underlying, expiry, "call", wing_up),                "qty": 1},
+            {"side": "buy",  "symbol": _occ_symbol(underlying, expiry, "call", round(last*(1+offset_pct+2*wing_pct))), "qty": 1},
+            # put spread below
+            {"side": "sell", "symbol": _occ_symbol(underlying, expiry, "put",  wing_dn),                "qty": 1},
+            {"side": "buy",  "symbol": _occ_symbol(underlying, expiry, "put",  round(last*(1+offset_pct-2*wing_pct))), "qty": 1},
+        ]
+    elif strategy == "straddle":
+        legs = [
+            {"side": "buy", "symbol": _occ_symbol(underlying, expiry, "call", atm), "qty": 1},
+            {"side": "buy", "symbol": _occ_symbol(underlying, expiry, "put",  atm), "qty": 1},
+        ]
+    else:
+        legs = [{"side": "buy", "symbol": _occ_symbol(underlying, expiry, option_type, atm), "qty": 1}]
+
+    entry = {
+        "ts": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "agent_tid": agent_tid,
+        "instrument_type": "option",
+        "underlying": underlying,
+        "option_type": option_type,
+        "strategy": strategy,
+        "dte": dte,
+        "expiry": expiry.strftime("%Y-%m-%d"),
+        "atm_strike": atm,
+        "legs": legs,
+        "stake_usd": round(stake, 2),
+        "max_loss_pct": float(order.get("max_loss_pct", 0.02)),
+        "last_quote_underlying": round(last, 4),
+        "thesis": order.get("thesis", "")[:500],
+        "status": "open",
+        "mode": "live" if live_mode() else "dry_run",
+    }
+
+    if live_mode() and os.environ.get("ITF_OPTIONS_LIVE", "").lower() in ("1","true","yes"):
+        # Alpaca options paper — minimal per-leg POST
+        try:
+            import requests
+            key = os.environ["ALPACA_PAPER_KEY"]
+            secret = os.environ["ALPACA_PAPER_SECRET"]
+            broker_ids = []
+            for leg in legs:
+                payload = {
+                    "symbol": leg["symbol"],
+                    "qty": leg["qty"],
+                    "side": leg["side"],
+                    "type": "market",
+                    "time_in_force": "day",
+                }
+                r = requests.post(
+                    "https://paper-api.alpaca.markets/v2/orders",
+                    headers={"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret},
+                    json=payload, timeout=10,
+                )
+                r.raise_for_status()
+                broker_ids.append(r.json().get("id"))
+            entry["broker_order_ids"] = broker_ids
+        except Exception as e:
+            entry["status"] = "broker_error"
+            entry["error"] = str(e)[:200]
+    else:
+        entry["sim_opened_at_underlying"] = last
 
     positions.setdefault(agent_tid, []).append(entry)
     _save_positions(positions)

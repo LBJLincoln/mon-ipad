@@ -32,14 +32,23 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 DEFAULT_EQUITIES: List[str] = [
+    # Broad + sector ETFs (20)
     "SPY", "QQQ", "IWM", "DIA",
     "XLE", "XLF", "XLK", "XLV", "XLI", "XLB", "XLY", "XLP", "XLRE", "XLU", "XLC",
     "GLD", "TLT", "SLV", "USO", "UUP",
-    # MAG7 + high-liquid single names
+    # Leveraged ETFs (8)
+    "TQQQ", "SQQQ", "SPXL", "SPXS", "SOXL", "SOXS", "TNA", "TZA",
+    # Volatility products (4)
+    "VXX", "UVXY", "SVXY", "VIXY",
+    # International (8)
+    "EEM", "FXI", "EWZ", "EWJ", "EWT", "EWW", "VGK", "INDA",
+    # MAG7 + extended single-name (20)
     "AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "TSLA", "AMD", "AVGO", "COST",
+    "NFLX", "ORCL", "CRM", "ADBE", "PYPL", "SMCI", "UBER", "SHOP", "DIS", "BA",
 ]
 DEFAULT_CRYPTO: List[str] = [
     "BTC/USD", "ETH/USD", "SOL/USD", "AVAX/USD", "LINK/USD", "DOGE/USD",
+    "DOT/USD", "MATIC/USD", "LTC/USD", "UNI/USD",
 ]
 DEFAULT_TICKERS: List[str] = DEFAULT_EQUITIES + DEFAULT_CRYPTO + ["^VIX"]
 

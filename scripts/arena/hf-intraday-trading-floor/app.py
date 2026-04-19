@@ -70,23 +70,39 @@ AXELROD CANON (cooperation doctrine):
 DECISION_SCHEMA = """
 Respond with ONE of:
   { "action": "pass", "reason": "..." }
-OR:
+OR a standard equity/crypto trade:
   { "action": "trade",
     "ticker": one of:
-      EQUITIES: "SPY","QQQ","IWM","DIA","XLE","XLF","XLK","XLV","XLI","XLB","XLY","XLP","XLRE","XLU","XLC","GLD","TLT","SLV","USO","UUP"
-      STOCKS:   "AAPL","MSFT","NVDA","GOOGL","AMZN","META","TSLA","AMD","AVGO","COST"
-      CRYPTO:   "BTC/USD","ETH/USD","SOL/USD","AVAX/USD","LINK/USD","DOGE/USD"  (24/7 tradeable)
+      SECTOR_ETF:    "SPY","QQQ","IWM","DIA","XLE","XLF","XLK","XLV","XLI","XLB","XLY","XLP","XLRE","XLU","XLC","GLD","TLT","SLV","USO","UUP"
+      LEVERAGED:     "TQQQ","SQQQ","SPXL","SPXS","SOXL","SOXS","TNA","TZA"
+      VOLATILITY:    "VXX","UVXY","SVXY","VIXY"
+      INTERNATIONAL: "EEM","FXI","EWZ","EWJ","EWT","EWW","VGK","INDA"
+      STOCKS:        "AAPL","MSFT","NVDA","GOOGL","AMZN","META","TSLA","AMD","AVGO","COST","NFLX","ORCL","CRM","ADBE","PYPL","SMCI","UBER","SHOP","DIS","BA"
+      CRYPTO:        "BTC/USD","ETH/USD","SOL/USD","AVAX/USD","LINK/USD","DOGE/USD","DOT/USD","MATIC/USD","LTC/USD","UNI/USD"  (24/7 tradeable)
     "side": "long"|"short",
     "stake_usd": 500-3000,
     "stop_pct": 0.002-0.02,
     "take_profit_pct": 0.005-0.05,
     "thesis": "1-2 sentence reason citing quote/edge/signal"
   }
+OR an intraday options derivative (dry-run logged; live options routing via executor.submit_option):
+  { "action": "option_trade",
+    "underlying": "SPY"|"QQQ"|"IWM"|"XLE"|"XLK"|"XLF"|"NVDA"|"TSLA",
+    "option_type": "call"|"put",
+    "strategy": "long"|"vertical_debit"|"vertical_credit"|"iron_condor"|"straddle",
+    "dte": 0|1|2|5,
+    "strike_offset_pct": -0.02 to 0.02,
+    "wing_width_pct": 0.005-0.02,   # for verticals / condors
+    "stake_usd": 200-1500,
+    "max_loss_pct": 0.01-0.05,
+    "thesis": "1-2 sentence reason — cite IV rank, realized vol, gamma, or skew"
+  }
+
 Return JSON ONLY. No markdown fences, no prose.
 
-RULE: Crypto tickers (BTC/USD, ETH/USD, SOL/USD, AVAX/USD, LINK/USD, DOGE/USD) trade 24/7.
-When US equity market is closed, you MAY still emit crypto trades — NEVER emit equity trades
-outside extended hours (equities gate in executor will reject).
+RULE: Crypto tickers trade 24/7. Equities (incl. leveraged/vol/intl/stocks) and options
+trade only during extended hours (08:00-24:00 UTC weekdays). When markets are closed,
+emit crypto trades OR pass — NEVER emit equity/option trades outside hours.
 """.strip()
 
 
@@ -212,7 +228,8 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
             "decision": decision,
         }
         STATE["agents"][persona["tid"]]["decisions"] += 1
-        if decision.get("action") == "trade" and decision.get("ticker") in (ctx.get("quotes") or {}):
+        action = decision.get("action")
+        if action == "trade" and decision.get("ticker") in (ctx.get("quotes") or {}):
             last_quote = (ctx["quotes"][decision["ticker"]] or {}).get("last") or 0
             order = {
                 "ticker": decision["ticker"],
@@ -223,6 +240,22 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                 "thesis": decision.get("thesis", ""),
             }
             entry = executor.submit(persona["tid"], order, last_quote)
+            result["execution"] = entry
+            STATE["agents"][persona["tid"]]["trades"] += 1
+        elif action == "option_trade" and decision.get("underlying") in (ctx.get("quotes") or {}):
+            last_quote = (ctx["quotes"][decision["underlying"]] or {}).get("last") or 0
+            option_order = {
+                "underlying": decision["underlying"],
+                "option_type": decision.get("option_type", "call"),
+                "strategy":    decision.get("strategy", "long"),
+                "dte":         int(decision.get("dte", 0) or 0),
+                "strike_offset_pct": float(decision.get("strike_offset_pct", 0.0) or 0.0),
+                "wing_width_pct":    float(decision.get("wing_width_pct", 0.01) or 0.01),
+                "stake_usd":   min(1500, max(200, float(decision.get("stake_usd", 500) or 500))),
+                "max_loss_pct":min(0.05, max(0.005, float(decision.get("max_loss_pct", 0.02) or 0.02))),
+                "thesis":      decision.get("thesis", ""),
+            }
+            entry = executor.submit_option(persona["tid"], option_order, last_quote)
             result["execution"] = entry
             STATE["agents"][persona["tid"]]["trades"] += 1
         else:
