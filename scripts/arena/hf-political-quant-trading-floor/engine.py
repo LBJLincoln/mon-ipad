@@ -36,7 +36,7 @@ AGENTS = [
     {"tid": "mistral-nemo",  "model": "mistral:nemo",           "personality": "aggressive",   "risk": 0.70},
 ]
 
-STARTING_BANKROLL = 100_000.0
+STARTING_BANKROLL = 100.0  # parity with NBA/POL TF (was $100K — 2026-04-19)
 MAX_POSITIONS_PER_SESSION = 3
 MIN_DEPLOY_PCT_PER_SESSION = 0.10
 MAX_DEPLOY_PCT_PER_SESSION = 0.30
