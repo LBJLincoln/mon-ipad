@@ -206,11 +206,14 @@ def run_session(agents_state: Dict, date: str, session_id: int,
     proposals: Dict[str, Optional[Dict]] = {}
 
     # Parallel LLM calls
+    # Survival floor: skip LLM if bankroll below DEFENSIVE_BANKROLL_FLOOR (= $20 for $100 start).
+    # 2026-04-19: prior floor hardcoded to <1000 from the $100K era — never fired under the
+    # new $100 STARTING_BANKROLL, silencing every agent for entire 50-day run (PQTF reset bug).
     with ThreadPoolExecutor(max_workers=len(AGENTS)) as ex:
         futs = {}
         for a in AGENTS:
             tid = a["tid"]
-            if agents_state[tid]["bankroll"] < 1000:
+            if agents_state[tid]["bankroll"] < DEFENSIVE_BANKROLL_FLOOR:
                 proposals[tid] = None
                 continue
             prompt = build_prompt(a, date, session_id, session_events,
