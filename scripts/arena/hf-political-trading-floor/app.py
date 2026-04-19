@@ -139,6 +139,8 @@ ROGUE_GREED_THRESHOLD = 250_000.0
 PEAK_DRAWDOWN_GUARD = 0.70        # ≥30% off peak → preservation mode
 PRESERVATION_MAX_DEPLOY = 0.50    # cap daily deploy at 50%
 PRESERVATION_MAX_BET_PCT = 0.05   # cap any single bet at 5% bankroll
+SINGLE_DAY_WIPEOUT_THRESHOLD = 0.40  # >40% single-day loss → forced cash next day
+COLLISION_MAX_AGENTS = 3          # max agents sharing same event+direction in one day
 COUNCIL_MIN_COMMIT_PER_AGENT = 0.50
 _council_plans: Dict[str, dict] = {}
 _rogue_events: List[Dict] = []
@@ -150,20 +152,24 @@ def _tiered_risk(bankroll: float) -> dict:
     out of the hole. High bankrolls diversify across more sectors/directions.
     Returns: {deploy_floor, bet_floor, bet_cap, min_edge, kelly_mult,
               min_allocs, min_cats, min_events}."""
+    # Post-mortem 2026-04-19 (NBA parity): winners used flat-stake wide coverage
+    # with strict EV threshold and half-Kelly. New doctrine: tighter MIN_EDGE
+    # (0.04 blocks marginal DIVERGE bets), capped KELLY_MULT (0.5× max),
+    # lower per-bet caps to prevent single-day wipeouts.
     if bankroll < 25.0:
-        return {"deploy_floor": 0.90, "bet_floor": 0.08, "bet_cap": 0.40,
-                "min_edge": 0.02, "kelly_mult": 1.5,
+        return {"deploy_floor": 0.90, "bet_floor": 0.04, "bet_cap": 0.20,
+                "min_edge": 0.04, "kelly_mult": 0.5,
                 "min_allocs": 20, "min_cats": 6, "min_events": 5}
     if bankroll < 50.0:
-        return {"deploy_floor": 0.80, "bet_floor": 0.05, "bet_cap": 0.30,
-                "min_edge": 0.02, "kelly_mult": 1.2,
+        return {"deploy_floor": 0.80, "bet_floor": 0.03, "bet_cap": 0.15,
+                "min_edge": 0.04, "kelly_mult": 0.5,
                 "min_allocs": 16, "min_cats": 5, "min_events": 4}
     if bankroll < 100.0:
-        return {"deploy_floor": 0.70, "bet_floor": 0.03, "bet_cap": 0.25,
-                "min_edge": 0.02, "kelly_mult": 1.0,
+        return {"deploy_floor": 0.70, "bet_floor": 0.02, "bet_cap": 0.12,
+                "min_edge": 0.04, "kelly_mult": 0.5,
                 "min_allocs": 14, "min_cats": 5, "min_events": 4}
-    return {"deploy_floor": 0.60, "bet_floor": 0.02, "bet_cap": 0.20,
-            "min_edge": 0.02, "kelly_mult": 1.0,
+    return {"deploy_floor": 0.60, "bet_floor": 0.015, "bet_cap": 0.10,
+            "min_edge": 0.04, "kelly_mult": 0.5,
             "min_allocs": 12, "min_cats": 4, "min_events": 3}
 
 # Axelrod Mech B — archetype pool tuned for political/macro alpha traders
@@ -1979,12 +1985,19 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
         "ANTI-GROUPTHINK (DMAD — MANDATORY, enforced 2026-04-18):\n"
         "Post-mortem found 14/17 POL agents converged to identical $93.92/$159.68 bankrolls.\n"
         "To break this, your day_strategy MUST begin with EXACTLY ONE of:\n"
-        "  STRUCTURAL DIVERGE [peer_name]: <how your REASONING TEMPLATE produces a different\n"
-        "    sector pick than peer's, cite your template>\n"
-        "  STRUCTURAL COMPLEMENT [peer_name]: <how your pick fills a sector the peer ignored,\n"
-        "    cite both templates>\n"
+        "  STRUCTURAL DIVERGE [peer_name] (edge=XX.X%): <how your REASONING TEMPLATE\n"
+        "    produces a different sector pick than peer's, cite your template>. MUST include\n"
+        "    numerical edge citation ≥5.0% (e.g. 'edge=6.3%') or bet is rejected.\n"
+        "  STRUCTURAL COMPLEMENT [peer_name] (edge=XX.X%): <how your pick fills a sector\n"
+        "    the peer ignored, cite both templates>. MUST include numerical edge ≥5.0%.\n"
         "CONSENSUS AGREE is FORBIDDEN — if your template converges with a peer, you must\n"
         "explicitly pick the second-best sector from your template instead.\n"
+        "POST-MORTEM DOCTRINE (2026-04-19, NBA parity):\n"
+        "Winners used FLAT-STAKE WIDE COVERAGE with strict EV threshold (≥6% edge, half-Kelly).\n"
+        "Losers used HIGH-CONVICTION SINGLE PLAYS citing DIVERGE rhetoric without numerical edge.\n"
+        "NEW RULE: any bet WITHOUT a numerical edge ≥4% in the rationale is REJECTED by the\n"
+        "post-filter. Kelly capped at 0.5× all tiers. Per-bet cap: T1 20%, T2 15%, T3 12%,\n"
+        "T4 10%. Single-day loss >40% → forced 100% cash next day (circuit breaker).\n"
     )
     return "\n".join(lines)
 
@@ -2231,6 +2244,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             "max_drawdown": 0.0,
             "days_traded": 0,
             "recent_decisions": [],  # last 3 for memory
+            "force_cash_today": False,  # 2026-04-19 circuit breaker (prev day > 40% loss)
         }
 
     global _experiment_running, _experiment_state, _common_knowledge, _society_archetypes_by_day
@@ -2441,6 +2455,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 pass
 
         # PHASE 2 — sequential resolution.
+        # 2026-04-19 collision tracker: (event_idx, direction) → count of agents
+        # sharing the same political pick today. Blocks >COLLISION_MAX_AGENTS.
+        day_collisions: Dict[tuple, int] = {}
         for tid, cfg in TRADERS.items():
             provider = cfg["provider"]
             ts = state[tid]
@@ -2449,6 +2466,25 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             if bankroll <= 5.0:
                 ts["passes"] += 1
                 ts["history"].append(bankroll)
+                continue
+
+            # 2026-04-19 — single-day circuit breaker (NBA parity). If previous
+            # day's loss exceeded SINGLE_DAY_WIPEOUT_THRESHOLD (40%), force
+            # 100% cash today and reset the flag.
+            if ts.get("force_cash_today"):
+                ts["passes"] += 1
+                ts["history"].append(bankroll)
+                ts["force_cash_today"] = False
+                _agent_logs[tid].append({
+                    "day_idx": day_idx, "date": day_date, "n_events": len(day_events),
+                    "bankroll_before": round(bankroll, 2),
+                    "bankroll_after": round(bankroll, 2),
+                    "day_strategy": "CIRCUIT_BREAKER: >40% loss yesterday → forced 100% cash today",
+                    "cash_held_pct": 1.0,
+                    "cash_rationale": "single-day wipeout guard (2026-04-19 doctrine)",
+                    "allocations": [], "parlays": [],
+                    "raw_preview": "",
+                })
                 continue
 
             raw_response = _responses.get(tid)
@@ -2522,6 +2558,13 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     event = day_events[eidx]
                     direction = alloc["direction"]
 
+                    # 2026-04-19 collision limiter (NBA parity): if
+                    # >=COLLISION_MAX_AGENTS agents already took this exact
+                    # (event_idx, direction) today, skip to force divergence.
+                    coll_key = (alloc["event_idx"], direction)
+                    if day_collisions.get(coll_key, 0) >= COLLISION_MAX_AGENTS:
+                        continue
+
                     sized_pct = (alloc["pct"] or 0.0) * KELLY_MULT
                     capped_pct = max(MIN_BET_PCT, min(sized_pct, MAX_PCT_PER_BET))
                     remaining_day = max(0.0, MAX_PCT_PER_DAY - day_exposure_pct)
@@ -2534,6 +2577,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     if stake > ts["bankroll"]:
                         stake = round(ts["bankroll"] * 0.99, 2)
                     day_exposure_pct += capped_pct
+                    day_collisions[coll_key] = day_collisions.get(coll_key, 0) + 1
 
                     won, pnl_pct = resolve_political_trade(direction, event["excess_return"])
                     profit = round(stake * pnl_pct, 2)
@@ -2574,6 +2618,10 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             n_bets = len(day_log["allocations"])
             n_wins = sum(1 for a in day_log["allocations"] if a["won"])
             day_pnl = ts["bankroll"] - bankroll
+            # 2026-04-19 circuit breaker (NBA parity): flag next day 100% cash
+            # if today's loss exceeded SINGLE_DAY_WIPEOUT_THRESHOLD of bankroll.
+            if bankroll > 0 and (day_pnl / bankroll) < -SINGLE_DAY_WIPEOUT_THRESHOLD:
+                ts["force_cash_today"] = True
             summary = f"{n_bets} trades, {n_wins}W, pnl {day_pnl:+.2f}"
             ts["recent_decisions"] = (ts.get("recent_decisions", []) + [{
                 "date": day_date, "summary": summary,
