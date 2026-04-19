@@ -159,5 +159,91 @@
         "action_this_tick": "monitor (engine self-hard-reset at cycle 25, already diversified)"
       }
     }
+  },
+  "lobbyist": {
+    "last_tick": "2026-04-19T13:00:00Z",
+    "tick_count": 1,
+    "fleet_best": {
+      "island": "P5",
+      "brier": 0.24923,
+      "gen": 11311,
+      "algo": "catboost"
+    },
+    "actions": [
+      "checkpointed P2 brier=0.24949 gen=8960 (improved from baseline 0.25223, delta=0.00274)",
+      "checkpointed P4 brier=0.24956 gen=12646 (improved from baseline 0.25146, delta=0.00190)",
+      "checkpointed P5 brier=0.24923 gen=11311 fleet_best (improved from baseline 0.25347, delta=0.00424)",
+      "checkpointed P7 brier=0.24937 gen=12383 (improved from baseline 0.24987, delta=0.00050)",
+      "checkpointed P8 brier=0.25241 gen=11405 (improved from baseline 0.25597, delta=0.00356)",
+      "no diversify needed: all 8 islands stag=0",
+      "no restarts needed: all 8 islands EVOLVING"
+    ],
+    "islands": {
+      "P1": {
+        "gen": 11766,
+        "best_brier": 0.24999,
+        "stag": 0,
+        "algo": "xgboost",
+        "status": "UP",
+        "action_this_tick": "monitor (flat vs baseline 0.24996)"
+      },
+      "P2": {
+        "gen": 8960,
+        "best_brier": 0.24949,
+        "stag": 0,
+        "algo": "lightgbm",
+        "status": "UP",
+        "action_this_tick": "checkpoint (improved 0.25223->0.24949)"
+      },
+      "P3": {
+        "gen": 11251,
+        "best_brier": 0.25121,
+        "stag": 0,
+        "algo": "xgboost",
+        "status": "UP",
+        "action_this_tick": "monitor (regressed vs baseline 0.24996)"
+      },
+      "P4": {
+        "gen": 12646,
+        "best_brier": 0.24956,
+        "stag": 0,
+        "algo": "lightgbm",
+        "status": "UP",
+        "action_this_tick": "checkpoint (improved 0.25146->0.24956)"
+      },
+      "P5": {
+        "gen": 11311,
+        "best_brier": 0.24923,
+        "stag": 0,
+        "algo": "catboost",
+        "status": "UP",
+        "action_this_tick": "checkpoint (fleet_best, improved 0.25347->0.24923)",
+        "fleet_best": true
+      },
+      "P6": {
+        "gen": 11713,
+        "best_brier": 0.25349,
+        "stag": 0,
+        "algo": "extra_trees",
+        "status": "UP",
+        "action_this_tick": "monitor (flat vs baseline 0.25358, diversify sent 2026-04-16 still taking effect)"
+      },
+      "P7": {
+        "gen": 12383,
+        "best_brier": 0.24937,
+        "stag": 0,
+        "algo": "gradient_boost",
+        "status": "UP",
+        "action_this_tick": "checkpoint (improved 0.24987->0.24937)"
+      },
+      "P8": {
+        "gen": 11405,
+        "best_brier": 0.25241,
+        "stag": 0,
+        "algo": "random_forest",
+        "status": "UP",
+        "action_this_tick": "checkpoint (improved 0.25597->0.25241)"
+      }
+    }
   }
 }

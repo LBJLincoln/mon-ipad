@@ -1,97 +1,86 @@
 {
-  "generated_at": "2026-04-19T09:13:17.719770+00:00",
+  "updated_at": "2026-04-19T12:48:22.027494+00:00",
   "agent": "LOBBYIST",
-  "brain_cycle": "lobbyist-2026-04-19-1215",
+  "tick": 1,
   "fleet_best": {
-    "brier": 0.24923,
     "island": "P5",
-    "gen": 10158,
-    "model": "lightgbm",
-    "delta_from_prev": -0.00064,
-    "prev_best": "P7 0.24987"
+    "brier": 0.24923,
+    "algo": "catboost",
+    "gen": 11311
   },
+  "target_brier": 0.25,
   "islands": {
     "P1": {
-      "url": "nomos42-political-alpha.hf.space",
-      "account": "Nomos42",
-      "algo": "xgboost",
-      "status": "EVOLVING",
-      "gen": 10738,
+      "gen": 11766,
       "brier": 0.24999,
-      "stag": 0
+      "stag": 0,
+      "algo": "xgboost",
+      "status": "UP",
+      "account": "Nomos42"
     },
     "P2": {
-      "url": "nomos42-political-alpha-2.hf.space",
-      "account": "Nomos42",
-      "algo": "lightgbm",
-      "status": "EVOLVING",
-      "gen": 8082,
+      "gen": 8960,
       "brier": 0.24949,
-      "stag": 0
+      "stag": 0,
+      "algo": "lightgbm",
+      "status": "UP",
+      "account": "Nomos42",
+      "checkpointed": true
     },
     "P3": {
-      "url": "lbjlincoln-political-alpha-3.hf.space",
-      "account": "LBJLincoln",
-      "algo": "xgboost",
-      "status": "EVOLVING",
-      "gen": 10524,
+      "gen": 11251,
       "brier": 0.25121,
-      "stag": 0
+      "stag": 0,
+      "algo": "xgboost",
+      "status": "UP",
+      "account": "LBJLincoln"
     },
     "P4": {
-      "url": "lbjlincoln-political-alpha-4.hf.space",
-      "account": "LBJLincoln",
-      "algo": "logistic",
-      "status": "EVOLVING",
-      "gen": 11490,
+      "gen": 12646,
       "brier": 0.24956,
-      "stag": 0
+      "stag": 0,
+      "algo": "lightgbm",
+      "status": "UP",
+      "account": "LBJLincoln",
+      "checkpointed": true
     },
     "P5": {
-      "url": "lbjlincoln-political-alpha-5.hf.space",
-      "account": "LBJLincoln",
-      "algo": "catboost",
-      "status": "EVOLVING",
-      "gen": 10158,
+      "gen": 11311,
       "brier": 0.24923,
       "stag": 0,
+      "algo": "catboost",
+      "status": "UP",
+      "account": "LBJLincoln",
+      "checkpointed": true,
       "fleet_best": true
     },
     "P6": {
-      "url": "lbjlincoln-political-alpha-6.hf.space",
-      "account": "LBJLincoln",
-      "algo": "extra_trees",
-      "status": "EVOLVING",
-      "gen": 10826,
+      "gen": 11713,
       "brier": 0.25349,
-      "stag": 0
+      "stag": 0,
+      "algo": "extra_trees",
+      "status": "UP",
+      "account": "LBJLincoln"
     },
     "P7": {
-      "url": "lbjlincoln-political-alpha-7.hf.space",
-      "account": "LBJLincoln",
-      "algo": "gradient_boost",
-      "status": "EVOLVING",
-      "gen": 11439,
+      "gen": 12383,
       "brier": 0.24937,
-      "stag": 0
+      "stag": 0,
+      "algo": "gradient_boost",
+      "status": "UP",
+      "account": "LBJLincoln",
+      "checkpointed": true
     },
     "P8": {
-      "url": "lbjlincoln-political-alpha-8.hf.space",
-      "account": "LBJLincoln",
-      "algo": "ensemble",
-      "status": "EVOLVING",
-      "gen": 10536,
+      "gen": 11405,
       "brier": 0.25241,
-      "stag": 0
+      "stag": 0,
+      "algo": "random_forest",
+      "status": "UP",
+      "account": "LBJLincoln",
+      "checkpointed": true
     }
   },
-  "active_islands": 8,
-  "sleeping_islands": 0,
-  "p5_p8_deployment_gap": "RESOLVED \u2014 all 8 live and evolving",
-  "alerts": [
-    "P5 new fleet best 0.24923 (delta -0.00064 vs prev P7 0.24987)"
-  ],
-  "actions_this_tick": [
-    "checkpoint_P5_fleet_best"
-  ]
+  "summary": "8/8 UP, 0 dead, 0 stagnated, 5 checkpointed",
+  "actions_count": 5
 }
