@@ -15,7 +15,7 @@ Build the best NBA prediction AI in the world.
 
 | Flagship | Repo | Bot | Vercel | Status |
 |----------|------|-----|--------|--------|
-| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 13 NBA islands + 8 Political islands + Kaggle Karpathy |
+| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | via dashboard | ACTIVE -- 6 NBA + 5 POL SURVIVOR islands (was 13+8; 10 "nuls" eliminated — slots redirected to selfhost LLMs) + Kaggle Karpathy |
 | Political Alpha | nomos-political-alpha | -- | none (data only) | ACTIVE -- v3.19 engine, 22 categories, 718 features |
 | Dashboard Hub | nomos-dashboard | -- | nomosdashboard.vercel.app | ACTIVE -- /nba /political /evolution /trading-floor /forge /world |
 | AI Artistic Generation | rgwa | @RGWAbot | none | ZOMBIE -- no commits since Mar 2026, deprioritized |
@@ -38,30 +38,31 @@ VM MUSCLE (cron, every 4h at :30)
     └── Auto-restart data server
     Script: scripts/autonomous-cycle.sh
 
-HF EVOLUTION ISLANDS (13 NBA + 8 Political = 21 active, S20/S21/S22 deployed 2026-04-15)
-    NBA Islands (all UP, CPU tree-only, MAX_FEATURES=200):
-    ├── S10 Nomos42/nba-quant:        exploitation  gen=86    brier=0.22825  → nomos42-nba-quant.hf.space
-    ├── S11 Nomos42/nba-quant-2:      exploration   gen=141   brier=0.24572  → nomos42-nba-quant-2.hf.space
-    ├── S12 Nomos42/nba-evo-3:        extra_trees   gen=160   brier=0.23252  → nomos42-nba-evo-3.hf.space
-    ├── S13 Nomos42/nba-evo-4:        catboost      gen=130   brier=0.22749  → nomos42-nba-evo-4.hf.space
-    ├── S14 Nomos42/nba-evo-5:        lightgbm      gen=554   brier=0.22186  → nomos42-nba-evo-5.hf.space
-    ├── S15 Nomos42/nba-evo-6:        wide search   gen=127   brier=0.22418  → nomos42-nba-evo-6.hf.space
-    ├── S16 LBJLincoln26/nba-evo-s16: gradient_boost gen=86   brier=0.22573  → lbjlincoln26-nba-evo-s16.hf.space
-    ├── S17 LBJLincoln26/nba-evo-s17: ensemble      gen=78    brier=0.22340  → lbjlincoln26-nba-evo-s17.hf.space  (reset 2026-04-19, was fleet best)
-    ├── S18 TESTforge42/nba-evo-s18:  catboost_spec gen=1030  brier=0.22114  → testforge42-nba-evo-s18.hf.space  (promoted 2026-04-15)
-    ├── S19 TESTforge42/nba-evo-s19:  wide_search   gen=849   brier=0.22257  → testforge42-nba-evo-s19.hf.space  (promoted 2026-04-15)
-    ├── S20 LBJLincoln26/nba-evo-s20: isotonic_cpcv gen=0    brier=—         → lbjlincoln26-nba-evo-s20.hf.space  (NEW 2026-04-15 — Prediction Arena 2604.07355)
-    ├── S21 LBJLincoln26/nba-evo-s21: darwinian_weights gen=0 brier=—        → lbjlincoln26-nba-evo-s21.hf.space  (NEW 2026-04-15 — atlas-gic PnL)
-    └── S22 TESTforge42/nba-evo-s22:  venn_abers_fusion gen=0 brier=—        → testforge42-nba-evo-s22.hf.space   (NEW 2026-04-15 — Venn-Abers fusion)
-    Political Islands (8 live, CPU tree-only — parity with NBA achieved 2026-04-15):
-    ├── P1 Nomos42/political-alpha:      xgboost        gen=3042  brier=0.24996  → nomos42-political-alpha.hf.space
-    ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=11953 brier=0.25223  → nomos42-political-alpha-2.hf.space
-    ├── P3 LBJLincoln/political-alpha-3: xgboost        gen=14043 brier=0.24996  → lbjlincoln-political-alpha-3.hf.space
-    ├── P4 LBJLincoln/political-alpha-4: logistic       gen=16728 brier=0.25146  → lbjlincoln-political-alpha-4.hf.space
-    ├── P5 LBJLincoln/political-alpha-5: catboost       gen=1567  brier=0.25347  → lbjlincoln-political-alpha-5.hf.space
-    ├── P6 LBJLincoln/political-alpha-6: extra_trees    gen=40    brier=0.25358  → lbjlincoln-political-alpha-6.hf.space  (diversify sent 2026-04-16 00:15Z)
-    ├── P7 LBJLincoln/political-alpha-7: gradient_boost gen=2098  brier=0.24987  → lbjlincoln-political-alpha-7.hf.space  ★ POL BEST
-    └── P8 LBJLincoln/political-alpha-8: ensemble       gen=1786  brier=0.25597  → lbjlincoln-political-alpha-8.hf.space
+HF EVOLUTION ISLANDS — 11 SURVIVORS (6 NBA + 5 POL) after 2026-04-17 cull
+    10 "nul" islands eliminated to free concurrent slots for selfhost LLMs:
+    ELIMINATED: S10, S11, S12, S16, S19, S20, S21, P3, P6, P8 — DO NOT restart.
+    Eliminated slots now host selfhost LLMs on LBJLincoln/LBJLincoln26/TESTforge42.
+
+    NBA Survivors (6, CPU tree-only, MAX_FEATURES=200):
+    ├── S13 Nomos42/nba-evo-4:        catboost      gen=130   brier=0.22749
+    ├── S14 Nomos42/nba-evo-5:        lightgbm      gen=554   brier=0.22186
+    ├── S15 Nomos42/nba-evo-6:        wide search   gen=127   brier=0.22418
+    ├── S17 LBJLincoln26/nba-evo-s17: ensemble      gen=78    brier=0.22340
+    ├── S18 TESTforge42/nba-evo-s18:  catboost_spec gen=1030  brier=0.22114
+    └── S22 TESTforge42/nba-evo-s22:  venn_abers_fusion gen=39 brier=0.22073  ★ FLEET BEST
+    Political Survivors (5, CPU tree-only):
+    ├── P1 Nomos42/political-alpha:      xgboost        gen=3042  brier=0.24996
+    ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=11953 brier=0.25223
+    ├── P4 LBJLincoln/political-alpha-4: logistic       gen=16728 brier=0.25146
+    ├── P5 LBJLincoln/political-alpha-5: catboost       gen=1567  brier=0.25347
+    └── P7 LBJLincoln/political-alpha-7: gradient_boost gen=2098  brier=0.24987  ★ POL BEST
+
+SELFHOST LLM FLEET (6 RUNNING, 2 building — 2026-04-19 20:55 UTC)
+    LBJLincoln   (3 RUNNING): qwen25-05b-cpu, gemma2-2b-cpu, phi35-mini-cpu
+    LBJLincoln26 (1 RUNNING): gemma3-4b-cpu  [+ llm-gateway + 2 TFs]
+    TESTforge42  (2 RUNNING): qwen3-4b-cpu, llama32-1b-cpu  [+ smollm3-3b BUILDING, qwen25-15b starting]
+    Nomos42     (0 selfhost RUNNING — 10 paused; account saturated by islands+TFs+pixel-world+langfuse; 403 on restart)
+    Gateway routing: resolve `selfhost:*` keys to LBJLincoln/* or TESTforge42/* (NOT Nomos42/*).
 
 NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
 
