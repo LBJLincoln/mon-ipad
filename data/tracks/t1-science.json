@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-19T16:35:00Z",
+  "timestamp": "2026-04-19T17:17:03.506563+00:00",
   "track": "T1 SCIENCE",
   "absorbs": [
     "D1 research",
@@ -8,25 +8,13 @@
   ],
   "status": "ok",
   "last_metric": {
-    "fleet_best_brier": 0.21949,
-    "fleet_best_island": "S19 (testforge42-nba-evo-s19, extra_trees, gen=167)",
+    "fleet_best_brier": 0.22447,
     "target_brier": 0.2,
-    "gap_to_target": 0.01949,
     "calibration_mce": null,
     "calibration_ece": null,
-    "drift_alarms": 0,
-    "islands_active": 10,
-    "islands_reset_this_cycle": 3
+    "drift_alarms": 0
   },
-  "last_action": "2026-04-19T16:35Z SWISH tick: checkpoint S19+S12, diversify S10/S11/S15/S17/S20, config-tune S14 mut→0.12, restart S16/S21/S22 (critical stag 450/542/429 gens)",
-  "actions_this_tick": {
-    "checkpoint": ["S19 (fleet_best 0.21949)", "S12 (0.21989 top-3 find)"],
-    "diversify": ["S10 stag=322", "S11 stag=372", "S15 stag=358", "S17 stag=273", "S20 stag=175"],
-    "config_tune": ["S14 mutation_rate 0.0749->0.12"],
-    "restart": ["S16 stag=450", "S21 stag=542", "S22 stag=429"],
-    "no_action": ["S13", "S18"]
-  },
-  "next_proposal": "Monitor S16/S21/S22 post-reset recovery. If S10/S11/S15 stagnation exceeds 400 gens next tick, escalate to restart. Watch S12 true_best 0.21989 — checkpoint API confirmed current-state, not historical best; monitor for convergence.",
-  "blocked_on": null,
-  "api_reliability_note": "API best_brier field is unreliable (shows current-gen value, not all-time best). API stagnation field is within-cycle counter only. ALWAYS compute true_min_brier and stag_gens from history[].brier array."
+  "last_action": "21 evolution islands running, fleet-matrix scoreboard fresh every 30min",
+  "next_proposal": "If fleet_best stagnates >24h, trigger diversify on worst 2 islands",
+  "blocked_on": null
 }

@@ -93,6 +93,29 @@ def build_prompt(agent: Dict, date: str, session_id: int, session_events: List[D
     spots_str = ", ".join(f"{t}={s:.2f}" for t, s in sorted(etf_spots.items()))
     peers_str = ", ".join(f"{t}=${b:,.0f}" for t, b in sorted(peers_bankroll.items(), key=lambda x: -x[1])[:5])
 
+    # ITF v1 (2026-04-19): inject live intraday tape from the shared quote bus.
+    # Additive — silent on missing file so backtests keep working.
+    intraday_tape_str = ""
+    try:
+        import sys as _sys
+        from pathlib import Path as _Path
+        _repo = _Path(__file__).resolve().parents[3]
+        if str(_repo) not in _sys.path:
+            _sys.path.insert(0, str(_repo))
+        from scripts.arena.shared.quote_bus import latest as _qlatest  # type: ignore
+        _snap = _qlatest() or {}
+        _tape = _snap.get("tickers") or {}
+        if _tape:
+            intraday_tape_str = (
+                "\nINTRADAY TAPE (live "
+                f"{_snap.get('_source','yfinance')} @ {_snap.get('ts','?')}): "
+                + ", ".join(f"{t}={q.get('last')}({q.get('change_pct')}%)"
+                            for t, q in list(_tape.items())[:12])
+                + "\n"
+            )
+    except Exception:
+        pass
+
     return f"""{COLLECTIVE_MISSION}
 
 YOU: {agent['tid']} ({agent['personality']}, risk={agent['risk']})
@@ -102,7 +125,7 @@ PEERS (top 5): {peers_str}
 SESSION EVENTS:
 {events_str}
 
-ETF SPOTS: {spots_str}
+ETF SPOTS: {spots_str}{intraday_tape_str}
 
 YOUR TASK — return a JSON object with keys:
   "thesis": <string, 1-2 sentences>

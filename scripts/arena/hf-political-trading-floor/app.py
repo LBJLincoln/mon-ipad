@@ -1563,6 +1563,30 @@ def build_day_prompt(day_date: str, day_events: List[Dict], sector_trends: Dict,
         for sector, stats in sorted(sector_trends.items(), key=lambda x: -abs(x[1].get("avg_ret", 0))):
             lines.append(f"  {sector:<20} avg_ret={stats['avg_ret']:+.4f}  win_rate={stats['win_rate']:.0%}  n={stats['n']}")
 
+    # ITF v1 (2026-04-19): pull shared intraday tape (sector-ETF moves).
+    # Additive, silent-on-missing, HF Spaces can't import monorepo so we only
+    # add when a latest.json shim is mounted or env IFT_SNAPSHOT is set.
+    try:
+        import json as _json, os as _os
+        from pathlib import Path as _Path
+        _snap_env = _os.environ.get("ITF_SNAPSHOT_PATH")
+        _cands = ([_Path(_snap_env)] if _snap_env else []) + [
+            _Path("/data/intraday/quotes/latest.json"),
+            _Path(__file__).resolve().parents[3] / "data" / "intraday" / "quotes" / "latest.json",
+        ]
+        for _p in _cands:
+            if _p.exists():
+                _snap = _json.loads(_p.read_text())
+                _tape = _snap.get("tickers") or {}
+                if _tape:
+                    lines.append("\nINTRADAY TAPE (sector-ETF moves, live " +
+                                 f"{_snap.get('_source', 'yf')} @ {_snap.get('ts', '?')}):")
+                    for _t, _q in list(_tape.items())[:14]:
+                        lines.append(f"  {_t:<6} last={_q.get('last')} Δ={_q.get('change_pct')}%")
+                break
+    except Exception:
+        pass
+
     lines.append("\nPOLITICAL EVENTS (leakage-safe — outcome/excess_return hidden):")
     for i, ev in enumerate(day_events, 1):
         lines.append(_format_event_block(i, ev, event_preds))
