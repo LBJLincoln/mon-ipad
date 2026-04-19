@@ -4096,8 +4096,12 @@ async def serve_paper():
 app = gr.mount_gradio_app(api, demo, path="/")
 
 # Auto-start experiment on Space boot (survives rebuilds)
+# Set SKIP_AUTO_START=1 env var to boot idle (for purge workflows).
 def _auto_start():
     import time as _t, traceback as _tb
+    if os.environ.get("SKIP_AUTO_START") == "1":
+        print("[auto-start] SKIP_AUTO_START=1 set, boot-idle mode")
+        return
     _t.sleep(10)
     for _attempt in range(5):
         if _experiment_running:

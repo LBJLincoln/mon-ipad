@@ -96,50 +96,45 @@ jobs:
                   print(f"[unstick] unknown target: {t}"); continue
               repo, url = repos[t]
 
-              # hard_purge: factory_reboot (kill writer) → wait DOWN → purge → wait UP → /api/run
+              # hard_purge: set SKIP_AUTO_START → reboot (boots idle) → purge → unset → reboot → /api/run
               if mode == 'hard_purge':
-                  # Kill old container first so no writer races our delete loop.
+                  # 1. Set SKIP_AUTO_START=1 so next boot stays idle.
+                  try:
+                      api.add_space_variable(repo_id=repo, key="SKIP_AUTO_START", value="1")
+                      print(f"[unstick] {t} SKIP_AUTO_START=1 set")
+                  except Exception as e:
+                      print(f"[unstick] {t} add_space_variable FAILED: {e}")
+                  # 2. Factory_reboot — kill old writer, next container boots idle.
                   try:
                       api.restart_space(repo, factory_reboot=True)
-                      print(f"[unstick] {t} factory_reboot#1 (kill old) OK")
+                      print(f"[unstick] {t} factory_reboot#1 (boot-idle) OK")
                   except Exception as e:
                       print(f"[unstick] {t} factory_reboot#1 FAILED: {type(e).__name__}: {e}")
                       continue
-                  # Wait for the old container to be torn down (status endpoint 5xx/err).
-                  for i in range(12):
-                      time.sleep(5)
-                      s = get_status(url, timeout=4)
-                      if '_err' in s:
-                          print(f"[unstick] {t} old container DOWN at t={5*(i+1)}s")
-                          break
-                  # Purge while no writer is alive. Do it TWICE — HF's build may
-                  # start racing us partway through.
-                  purge_hub_state(t, repo)
-                  time.sleep(4)
-                  purge_hub_state(t, repo)
-                  # Factory_reboot again to drop any half-built image that may
-                  # have downloaded stale state before our purge.
-                  try:
-                      api.restart_space(repo, factory_reboot=True)
-                      print(f"[unstick] {t} factory_reboot#2 (post-purge) OK")
-                  except Exception as e:
-                      print(f"[unstick] {t} factory_reboot#2 FAILED: {type(e).__name__}: {e}")
-                      continue
-                  came_up = False
+                  # 3. Wait for Space to come UP but NOT running (idle mode).
+                  idle = False
                   for i in range(36):
                       time.sleep(10)
-                      s = get_status(url)
-                      if '_err' not in s:
-                          came_up = True
-                          print(f"[unstick] {t} up at t={10*(i+1)}s running={s.get('running')} day={s.get('days_processed')}")
+                      s = get_status(url, timeout=4)
+                      if '_err' not in s and s.get('running') is False:
+                          idle = True
+                          print(f"[unstick] {t} up idle at t={10*(i+1)}s")
                           break
-                  if not came_up:
-                      print(f"[unstick] {t} did NOT come back up in 6min"); continue
-                  if not s.get('running'):
-                      time.sleep(3)
-                      code, body = post(f"{url}/api/run", {"resume": False})
-                      print(f"[unstick] {t} /api/run → {code} {body[:80]}")
-                      time.sleep(8)
+                  if not idle:
+                      print(f"[unstick] {t} never reached idle state (still running/unreachable)"); continue
+                  # 4. Purge Hub state — no writer alive, safe.
+                  purge_hub_state(t, repo)
+                  # 5. Unset SKIP_AUTO_START so future reboots resume normally.
+                  try:
+                      api.delete_space_variable(repo_id=repo, key="SKIP_AUTO_START")
+                      print(f"[unstick] {t} SKIP_AUTO_START unset")
+                  except Exception as e:
+                      print(f"[unstick] {t} delete_space_variable FAILED: {e}")
+                  # 6. /api/run resume=false — fresh day 0.
+                  time.sleep(3)
+                  code, body = post(f"{url}/api/run", {"resume": False})
+                  print(f"[unstick] {t} /api/run → {code} {body[:80]}")
+                  time.sleep(8)
                   s = get_status(url)
                   dp = s.get('days_processed') if s.get('days_processed') is not None else s.get('current_day')
                   print(f"[unstick] {t} FINAL: day={dp} running={s.get('running')} resumed={s.get('resumed')}")
