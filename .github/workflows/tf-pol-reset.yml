@@ -1,0 +1,91 @@
+name: POL TF one-shot reset (stop + /api/reset + run)
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install deps
+        run: pip install -q requests huggingface_hub
+      - name: Stop, wait, reset, run
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN_2 }}
+        run: |
+          python3 <<'PY'
+          import os, time, json, urllib.request
+          from huggingface_hub import HfApi
+          api = HfApi(token=os.environ['HF_TOKEN'])
+          url = "https://lbjlincoln26-political-llm-trading-floor.hf.space"
+          repo = "LBJLincoln26/political-llm-trading-floor"
+
+          def post(path, body=None, timeout=30):
+              data = json.dumps(body).encode() if body is not None else None
+              req = urllib.request.Request(url+path, data=data, method='POST',
+                  headers={'Content-Type':'application/json'})
+              try:
+                  with urllib.request.urlopen(req, timeout=timeout) as r:
+                      return r.status, r.read().decode()[:300]
+              except Exception as e:
+                  return 0, f"{type(e).__name__}: {str(e)[:200]}"
+          def st():
+              try:
+                  with urllib.request.urlopen(url+"/api/status", timeout=8) as r:
+                      return json.loads(r.read())
+              except Exception as e:
+                  return {"_err": str(e)[:100]}
+
+          print("=== POL TF reset ===")
+          print("[pre]", st())
+
+          # 1. Stop — up to 5 min to wait for in-flight LLM calls to complete.
+          code, body = post("/api/stop")
+          print(f"[stop] {code} {body[:100]}")
+          stopped = False
+          for i in range(30):  # 5 min
+              time.sleep(10)
+              s = st()
+              if s.get('running') is False:
+                  stopped = True
+                  print(f"[stop-wait] stopped at t={10*(i+1)}s")
+                  break
+          if not stopped:
+              print("[stop-wait] never stopped — force factory_reboot")
+              api.restart_space(repo, factory_reboot=True)
+              for i in range(36):
+                  time.sleep(10)
+                  s = st()
+                  if '_err' not in s and s.get('running') is False:
+                      print(f"[reboot-wait] idle at t={10*(i+1)}s")
+                      break
+
+          # 2. /api/reset (now purges Hub).
+          code, body = post("/api/reset", timeout=120)
+          print(f"[reset] {code} {body}")
+
+          # 3. Double-check Hub files are gone (belt-and-suspenders).
+          files = api.list_repo_files(repo_id=repo, repo_type='space')
+          remaining = [f for f in files if f.startswith('data/decisions/day-') or f == 'data/runtime/state.json']
+          print(f"[verify-hub] remaining state-files: {len(remaining)}")
+          for f in remaining[:5]:
+              try:
+                  api.delete_file(path_in_repo=f, repo_id=repo, repo_type='space',
+                                  commit_message=f'belt-and-suspenders purge: {f}')
+                  print(f"[extra-purge] deleted {f}")
+              except Exception as e:
+                  print(f"[extra-purge] fail {f}: {type(e).__name__}")
+
+          # 4. /api/run resume=false.
+          time.sleep(5)
+          code, body = post("/api/run", {"resume": False})
+          print(f"[run] {code} {body[:200]}")
+          time.sleep(10)
+          final = st()
+          dp = final.get('days_processed')
+          print(f"[final] day={dp} running={final.get('running')} resumed={final.get('resumed')}")
+          PY
