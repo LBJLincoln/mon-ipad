@@ -1,39 +1,46 @@
 {
-  "timestamp": "2026-04-19T09:08:00Z",
+  "timestamp": "2026-04-19T12:25:00Z",
   "track": "T2 PLATFORM",
   "absorbs": [
     "D2 engineering",
     "D7 infra",
     "D9 cross-repo"
   ],
-  "status": "watch",
+  "status": "active",
   "last_metric": {
     "engine_sha_match": true,
-    "nba_fleet_up": null,
-    "infra_alerts": 3,
-    "pipes_healthy": 6,
-    "pipes_total": 7
+    "nba_fleet_up": true,
+    "dept_spaces_woke": 8,
+    "infra_alerts": 1,
+    "bloomberg_api_8042": "DOWN",
+    "data_server_8080": "UP"
   },
-  "last_action": "THE PLUMBER 4h tick: odds/political/social/supabase all fresh; pol-tf state still broken; lineage arena stale 19d",
-  "next_proposal": "Wire backtest-swarm aggregator to refresh data/arena/nba-arena-full-season.json (last write 2026-03-31)",
-  "blocked_on": null,
-  "history": [
-    {
-      "timestamp": "2026-04-19T08:35:01.904006+00:00",
-      "status": "watch",
-      "last_action": "Both TFs deployed w/ T13/T14 NVIDIA parity 2026-04-17",
-      "next_proposal": "Wire auto-deploy-engine for engine.py parity drift detection"
+  "last_action": "BLACKSMITH 4h tick: woke 8 dept councils from 308-hibernate, ran D1-D8 Karpathy loops",
+  "tick_summary": {
+    "agent": "BLACKSMITH",
+    "ts": "2026-04-19T12:25:00Z",
+    "spaces_hibernated": 8,
+    "spaces_woken": 8,
+    "dept_results": {
+      "d1-research": "PROPOSED",
+      "d2-engineering": "KEEP",
+      "d3-evolution": "PROPOSED",
+      "d4-product": "PROPOSED",
+      "d5-business": "PROPOSED",
+      "d6-evaluation": "KEEP",
+      "d7-infra": "REVERT",
+      "d8-finance": "PROPOSED"
     },
-    {
-      "timestamp": "2026-04-19T09:08:00Z",
-      "agent": "THE PLUMBER",
-      "status": "watch",
-      "summary": "6/7 pipes ok, tf_state pol-tf broken, lineage arena stale",
-      "alerts": [
-        "pol-tf state broken (0 agents, not running)",
-        "data/arena/nba-arena-full-season.json stale 19d",
-        "scripts/nba-daily-odds.py legacy — real odds cron is fetch_free_odds.py"
-      ]
-    }
-  ]
+    "cross_pollination_fired": [
+      "d6->d3 slope drift",
+      "d3->d2 keyword features (closed)",
+      "d1->d3 tabpfn"
+    ],
+    "alerts": [
+      "bloomberg_api_8042 DOWN",
+      "MAY_1_DEADLINE 12 days MRR $0"
+    ]
+  },
+  "next_proposal": "S22 venn_abers_fusion /api/config push + TabPFN-2.5 Colab burst script for DR FRANKENSTEIN",
+  "blocked_on": "bloomberg_api restart (D7 alert active)"
 }

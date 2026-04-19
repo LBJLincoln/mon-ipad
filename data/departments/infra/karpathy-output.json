@@ -1,42 +1,38 @@
 {
-  "status": "no_op",
-  "iteration": 79,
-  "timestamp": "2026-04-12T06:30:00Z",
-  "reason_if_no_op": "all_vm_infra_healthy_hf_platform_issue_unrecoverable",
-  "uptime_pct": 55.0,
-  "spaces_up": 4,
-  "spaces_down": 9,
-  "ports_up": ["8080", "8042"],
-  "ports_down": [],
-  "auto_fixed": [],
-  "escalated": ["S10-S17 (17 iterations, 503)", "P1 (NEW, timeout/000)"],
-  "crons_healthy": true,
-  "files_changed": ["data/infra-status.json", "data/departments/infra/karpathy-output.json"],
-  "git_diff_stat": " 2 files changed, 4 insertions(+), 5 deletions(-)",
-  "commit_sha": null,
-  "vm_status": "all_healthy",
-  "nba_fleet": {
-    "S10": "down (503, iter 17)",
-    "S11": "down (503, iter 17)",
-    "S12": "down (503, iter 17)",
-    "S13": "down (503, iter 17)",
-    "S14": "down (503, iter 17)",
-    "S15": "down (503, iter 17)",
-    "S16": "down (503, iter 17)",
-    "S17": "down (503, iter 17)",
-    "S18": "up (200, gen=774)",
-    "S19": "up (200, gen=137)"
+  "timestamp": "2026-04-19T12:25:00Z",
+  "dept": "d7-infra",
+  "dept_id": "d7",
+  "iteration": 3,
+  "scan": {
+    "dept_spaces_status": "all 8 woke from 308 to 200 after root-URL GET",
+    "bloomberg_api_8042": "DOWN",
+    "data_server_8080": "UP",
+    "last_stall_streak": 2,
+    "last_action": "bloomberg_api_restart (2026-04-12, hallucinated)"
   },
-  "political_fleet": {
-    "P1": "down (000, NEW)",
-    "P2": "up (200, gen=623)",
-    "P3": "up (200, gen=4985)",
-    "P4": "up (200, gen=1720)"
+  "proposal": {
+    "id": "d7-p3-port-healthcheck",
+    "title": "Port healthcheck: bloomberg_api=DOWN triggers restart alert",
+    "rationale": "Bloomberg API (8042) not responding \u2014 cron should auto-restart. Data server (8080) status checked.",
+    "effort_minutes": 1,
+    "risk": "zero \u2014 read-only check",
+    "bloomberg_api_status": "DOWN",
+    "data_server_status": "UP",
+    "action": "alert: bloomberg-api.py should be restarted by keepalive cron"
   },
-  "data_server": "8080 — UP (200, http.server PID 3872)",
-  "bloomberg_api": "8042 — UP (200, bloomberg-api.py PID 245283, restarted 00:35 UTC)",
-  "keepalive_cron": "active (*/30), last run detected 06:19 UTC",
-  "diagnosis": "ITERATION 79: VM-level infra fully healthy. (1) Data server 8080 responding 200. (2) Bloomberg API 8042 responding 200 (recovered in iter 78). (3) Keepalive cron running every 30 min and actively attempting HF Space restarts. (4) S10-S17 remain at HTTP 503 despite 17 consecutive restart API calls returning 200/204 — indicates HF platform or app-level crash (broken config, missing deps, OOM, corrupted state). (5) P1 newly degraded to timeout/000 — may be related to same HF issue or transient hiccup. (6) Council spaces still down (not checked this iteration but expected degraded). NO VM-LEVEL FIX available.",
-  "escalation_status": "ACTIVE — tier 77+ (spreading to P1)",
-  "next_action": "Continue monitoring via keepalive every 30 min. No VM action. Awaiting HF manual investigation or space recreation from clean state."
+  "execute": "EXECUTED \u2014 port checks confirmed",
+  "evaluate": "bloomberg_8042=DOWN, data_server_8080=UP",
+  "verdict": "REVERT",
+  "metric_before": {
+    "uptime_pct": null,
+    "bloomberg_up": null
+  },
+  "metric_after": {
+    "bloomberg_api_8042_up": false,
+    "data_server_8080_up": true
+  },
+  "space_status": "woke_from_hibernate_308_to_200",
+  "alerts": [
+    "BLOOMBERG_API_DOWN: port 8042 not responding, restart via cron"
+  ]
 }

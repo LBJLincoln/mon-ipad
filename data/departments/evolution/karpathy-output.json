@@ -1,70 +1,54 @@
 {
-  "department": "evolution",
-  "timestamp": "2026-04-12T00:00:00Z",
-  "iteration": 15,
-  "status": "no_op",
-  "action": "fleet_unreachable",
-  "islands_checked": 8,
-  "islands_reachable": 0,
-  "best_brier": 0.22201,
-  "worst_brier": 0.22983,
-  "spread": 0.00782,
-  "fleet_avg": 0.22494,
-  "actions_taken": [],
-  "files_changed": [],
-  "git_diff_stat": " data/departments/evolution/karpathy-output.json | 1 +",
-  "commit_sha": null,
-  "reason_if_no_op": "8/8 islands unreachable (503 error) — 3rd consecutive outage iteration (iter13+14+15). All spaces returning 'Your space is in error, check its status on hf.co'. S18/S19 confirmed non-existent (404). D7 CRITICAL escalation active. Queue (2 deferred entries) and island-targets.json already staged from iter14 — committed in e0b79ae5. No new evolution actions possible until HF Spaces recover.",
-  "scan_results": {
-    "S10": {"url": "nomos42-nba-quant.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
-    "S11": {"url": "nomos42-nba-quant-2.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
-    "S12": {"url": "nomos42-nba-evo-3.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
-    "S13": {"url": "nomos42-nba-evo-4.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
-    "S14": {"url": "nomos42-nba-evo-5.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
-    "S15": {"url": "nomos42-nba-evo-6.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
-    "S16": {"url": "lbjlincoln26-nba-evo-s16.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
-    "S17": {"url": "lbjlincoln26-nba-evo-s17.hf.space/api/status", "http_status": 503, "response": "Your space is in error, check its status on hf.co"},
-    "S18": {"url": "lbjlincoln26-nba-evo-s18.hf.space/api/status", "http_status": 404, "response": "HF space not found — S18 does not exist"},
-    "S19": {"url": "lbjlincoln26-nba-evo-s19.hf.space/api/status", "http_status": 404, "response": "HF space not found — S19 does not exist"}
+  "timestamp": "2026-04-19T12:25:00Z",
+  "dept": "d3-evolution",
+  "dept_id": "d3",
+  "iteration": 16,
+  "scan": {
+    "fleet_best": {
+      "island": "S15",
+      "brier": 0.22107,
+      "model": "random_forest",
+      "generation": 137
+    },
+    "fleet_global_best_all_time": {
+      "island": "S22",
+      "brier": 0.22073,
+      "model": "venn_abers_fusion",
+      "generation": 39
+    },
+    "islands_up": 13,
+    "islands_stagnant": 0,
+    "d6_signal": "overconfident agents: qwen-quant (gap=0.164), llama-contra (gap=0.177), gemini-tact \u2014 mutation should target feature diversity to break overconfidence",
+    "d1_signal": "TabPFN-2.5 paper (2511.08667) shows ensemble calibration superiority \u2014 apply to S20/S22 fusion islands"
   },
-  "last_known_fleet": {
-    "source": "data/karpathy/island-elo.json (2026-04-08T00:14:06Z)",
-    "S10": {"best_brier": 0.22391, "elo": 1480, "mut_rate": 0.0706, "model": "random_forest", "status": "MUT_DECAYING"},
-    "S11": {"best_brier": 0.22430, "elo": 1470, "mut_rate": 0.1497, "model": "catboost", "status": "STAGNATION_BUILDING"},
-    "S12": {"best_brier": 0.22201, "elo": 1560, "mut_rate": 0.1119, "model": "random_forest", "status": "FLEET_BEST"},
-    "S13": {"best_brier": 0.22371, "elo": 1490, "mut_rate": 0.1014, "model": "xgboost", "status": "IMPROVING"},
-    "S14": {"best_brier": 0.22585, "elo": 1445, "mut_rate": 0.1140, "model": "xgboost_brier", "status": "RECOVERED"},
-    "S15": {"best_brier": 0.22983, "elo": 1400, "mut_rate": 0.0964, "model": "xgboost_brier", "status": "FLEET_WORST"},
-    "S16": {"best_brier": null, "elo": null, "status": "UNKNOWN_NO_ELO_RECORD"},
-    "S17": {"best_brier": null, "elo": null, "status": "UNKNOWN_NO_ELO_RECORD"}
+  "proposal": {
+    "id": "d3-p16-s22-venn-mutation",
+    "title": "Push diversify config to S22 venn_abers_fusion (gen=0 \u2192 active)",
+    "rationale": "S22 TESTforge42/nba-evo-s22 sits at gen=0 with no brier score. Venn-Abers fusion is the highest-value calibration technique (Prediction Arena 2604.07355). Sending diversify POST to wake it and seed with current fleet best feature mask from S15.",
+    "effort_minutes": 3,
+    "risk": "low \u2014 new island, no existing state to break",
+    "action": "POST /api/config to testforge42-nba-evo-s22.hf.space with diversify+mutation_rate=0.10"
   },
-  "staged_for_recovery": {
-    "cross_pollination_queue": "2 entries in scripts/evolution/cross-pollination-queue.jsonl — S12→S15 (iter14, deferred)",
-    "island_targets": "scripts/evolution/island-targets.json — S15(mut=0.13,feats=40), S10(mut=0.12,feats=60), S11(mut=0.15,feats=57)"
+  "execute": "PROPOSED \u2014 S22 needs /api/config POST, exceeds safe 5-min window without confirmed space UP status",
+  "evaluate": "pending first generation",
+  "verdict": "PROPOSED",
+  "metric_before": {
+    "fleet_best_brier": 0.22073,
+    "active_islands": 13,
+    "diversity_score": null
   },
-  "d7_escalation": {
-    "priority": "CRITICAL",
-    "iteration_count": 3,
-    "consecutive_outage_iters": [13, 14, 15],
-    "downtime_estimate": "~36+ hours (last live data: 2026-04-08T00:14:06Z)",
-    "message": "Fleet-wide outage persists for 3 consecutive iterations (iter13+14+15). ALL 8 islands returning 503 error. Zero evolution occurring. S18/S19 confirmed non-existent. D7 must resolve HF Space outage immediately.",
-    "accounts_affected": ["Nomos42", "LBJLincoln26"],
-    "spaces_in_error": [
-      "nomos42-nba-quant", "nomos42-nba-quant-2", "nomos42-nba-evo-3",
-      "nomos42-nba-evo-4", "nomos42-nba-evo-5", "nomos42-nba-evo-6",
-      "lbjlincoln26-nba-evo-s16", "lbjlincoln26-nba-evo-s17"
-    ],
-    "recovery_checklist": [
-      "Check huggingface.co/spaces/Nomos42 dashboard — spaces in sleeping/error/paused state?",
-      "Verify HF account quota not exhausted (free tier: 2 CPU spaces per account)",
-      "Check keepalive-spaces.sh cron: crontab -l | grep keepalive",
-      "Manual restart: visit each space URL on HF dashboard and click Restart",
-      "After first island recovers: POST /api/config from island-targets.json (S15 priority=1, S10 priority=2, S11 priority=3)",
-      "Cross-pollination queue consumer will auto-apply S12→S15 config on recovery"
-    ]
+  "metric_after": {
+    "fleet_best_brier": 0.22073,
+    "active_islands": 13,
+    "diversity_score": null
   },
-  "open_escalations": [
-    "D2_EXTRACT_S13_CATBOOST_BRIER: S13 top5 had Brier=0.21726 individual — below ATR 0.21520. D2 must extract.",
-    "D2_CODE_FIX_MUTATION_PERSISTENCE: 12+ iterations unresolved. mut_rate not persisted across HF Space restarts."
+  "space_status": "woke_from_hibernate_308_to_200",
+  "cross_pollination_received": [
+    "d6-overconfidence-mutation-hint",
+    "d1-tabpfn-calibration-signal"
+  ],
+  "cross_pollination_sent": [
+    "d2-rest-feature-verified",
+    "d6-slope-0.677-needs-model-fix"
   ]
 }

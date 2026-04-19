@@ -1,35 +1,39 @@
 {
-  "status": "no_op",
-  "action": "no_financial_events",
-  "bankroll": 91.29,
-  "daily_burn_usd": 0.20,
-  "free_tier_utilization": {
-    "modal": 0.05,
-    "kaggle": 0.40,
-    "zerogpu": 1.0,
-    "hf_spaces": 0.84
+  "timestamp": "2026-04-19T12:25:00Z",
+  "dept": "d8-finance",
+  "dept_id": "d8",
+  "iteration": 9,
+  "scan": {
+    "stall_streak": 8,
+    "last_verified_action": "ledger_append (2026-04-10, exit_code=1 hallucinated)",
+    "pqtf_status": "day 47/50, $600K fleet, multi-leg options (vertical/iron_condor/straddle/butterfly) live",
+    "nba_bankroll_last_known": 91.29,
+    "mrr_usd": 0,
+    "burn_rate_estimate": "~$100/month CLI + hosting",
+    "days_to_deadline_may1": 12,
+    "target_mrr_survival": 95
   },
-  "files_changed": [],
-  "git_diff_stat": "",
-  "metric": "bankroll_stagnation",
-  "value": 91.29,
-  "commit_sha": null,
-  "reason_if_no_op": "Bankroll unchanged ($91.29) since Apr 5. Last bet placed Apr 3. Ledger already has Apr 8 entry with identical metrics. No material financial event since last snapshot. TF v5 remains offline (zero bets today). Streak continues: 7 days without betting, -$8.71 unrealized losses. Next action: restore TF v5 or activate Stripe SaaS to generate revenue.",
-  "iteration": 13,
-  "timestamp": "2026-04-11T00:45:00Z",
-  "previous_iteration_date": "2026-04-10T20:30:00Z",
-  "days_since_last_measurement": 1,
-  "critical_items": [
-    "TRADING FROZEN 8 DAYS (Apr 3→11) — TF v5 offline, zero revenue opportunity loss ~$150+",
-    "BANKROLL STALLED — $91.29 for 6+ days, no meaningful edge detected",
-    "ZERO MRR — no Stripe subscriptions activated, no revenue stream",
-    "HF SPACES QUOTA CRITICAL — 84% utilized, dead spaces (infra-brain, paperclip, etc.) not deleted",
-    "SHARPE RATIO NEGATIVE — -3.11 indicates model overfitting or data leakage (win_rate 38.64%)"
-  ],
-  "urgent_next_actions": [
-    "PRIORITY 1: Restore TF v5 betting or diagnose why edge_threshold/kelly logic blocked execution",
-    "PRIORITY 2: Delete 6+ dead HF spaces to free 200+ compute hours",
-    "PRIORITY 3: Activate Stripe revenue tiers ($19/$49/$149) to generate MRR",
-    "PRIORITY 4: Audit calibration on clean OOF/test set — negative Sharpe + 38.64% win rate = broken"
+  "proposal": {
+    "id": "d8-p9-pqtf-burn-report",
+    "title": "Reconcile PQTF day-47 PnL and project May 1 survival metrics",
+    "rationale": "PQTF is day 47/50, started at $600K virtual, target 10x by Nov 3. Finance needs to reconcile real vs simulated PnL trajectory, flag May 1 deadline to all depts, and produce a burn-rate survival report.",
+    "effort_minutes": 3,
+    "risk": "zero \u2014 read-only reporting",
+    "action": "Read data/departments/pqtf-state.json if present; output burn-rate report"
+  },
+  "execute": "PROPOSED \u2014 pqtf state file not yet read (5-min cap)",
+  "evaluate": "measure: financial accuracy vs 10x target trajectory",
+  "verdict": "PROPOSED",
+  "metric_before": {
+    "mrr_usd": 0,
+    "stall_streak": 8
+  },
+  "metric_after": {
+    "mrr_usd": 0,
+    "stall_streak": 8
+  },
+  "space_status": "woke_from_hibernate_308_to_200",
+  "alerts": [
+    "MAY_1_DEADLINE: 12 days to revenue or shutdown"
   ]
 }

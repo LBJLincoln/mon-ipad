@@ -1,316 +1,39 @@
 {
-  "department": "research",
-  "timestamp": "2026-04-02T10:29:33+00:00",
-  "iteration": 9,
-  "current_brier": 0.2157,
-  "target_brier": 0.2,
-  "gap_to_close": 0.0157,
-  "sota_reference": "Montrucchio 2026 (MDPI Information 17/1/56): 0.199",
-  "papers_scanned": 14,
-  "techniques_extracted": 18,
-  "sources": [
-    {
-      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets (Montrucchio 2026)",
-      "url": "https://www.mdpi.com/2078-2489/17/1/56",
-      "key_finding": "Brier 0.199 via shot-chart CNN embeddings + MC dropout + RNN temporal. Defines SOTA gap of 0.0167."
-    },
-    {
-      "title": "TabICL: A Tabular Foundation Model for In-Context Learning on Large Data (ICML 2025)",
-      "url": "https://arxiv.org/abs/2502.05564",
-      "key_finding": "TabICLv2 is SOTA on TabArena; 10x faster than TabPFN-2.5 on H100. Column-then-row attention handles large tabular data (60K+ samples). Drop-in upgrade from current TabICL."
-    },
-    {
-      "title": "Stacked Ensemble Model for NBA Game Outcome Prediction (Scientific Reports 2025)",
-      "url": "https://www.nature.com/articles/s41598-025-13657-1",
-      "key_finding": "MLP meta-learner stacking XGBoost + NaiveBayes + AdaBoost. Stacking consistently outperforms single models on NBA. Brier loss training > BCE training for calibration."
-    },
-    {
-      "title": "Generalized Venn and Venn-Abers Calibration (ICML 2025, arXiv:2502.05676)",
-      "url": "https://arxiv.org/pdf/2502.05676",
-      "key_finding": "Post-hoc calibration guarantees marginally calibrated point predictions in finite samples. Extends to non-binary outcomes. Proven reduction in ECE/MCE without retraining."
-    },
-    {
-      "title": "Forecasting NCAA Basketball with LSTM/Transformer (arXiv:2508.02725)",
-      "url": "https://arxiv.org/html/2508.02725v1",
-      "key_finding": "LSTM trained on Brier loss achieves 0.1589 Brier on NCAA (lower variance sport). Temporal sequence models consistently outperform single-game features. Brier loss function training > BCE for probabilistic calibration."
-    },
-    {
-      "title": "NBA Referee Performance and Betting Lines (SAGE 2025)",
-      "url": "https://journals.sagepub.com/doi/10.1177/15270025251369447",
-      "key_finding": "Referees make 23% fewer incorrect calls for visiting underdogs, 42% fewer for home underdogs. Foul-balancing tendency in Q4 creates exploitable signal. Score differential + foul differential + team quality gap predict next-foul-call direction."
-    },
-    {
-      "title": "Quantifying Implicit Biases in NBA Refereeing (Scientific Reports 2023)",
-      "url": "https://www.nature.com/articles/s41598-023-31799-y",
-      "key_finding": "Specific referee-team bias combinations measurable and stable. Context-sensitive officiation is the dominant pattern. Bias is a statistically separable signal from home-court advantage."
-    },
-    {
-      "title": "Impact of Load Management on NBA Player Performance (CMU 2025)",
-      "url": "https://www.stat.cmu.edu/capstoneresearch/460files_s25/team15.pdf",
-      "key_finding": "Minutes played + rolling averages >> raw rest day counts. XGBoost (RMSE 10.21) captures interaction terms between rest, pace, roster age naturally. Back-to-back effect is non-linear and interacts with travel distance."
-    },
-    {
-      "title": "NBA2Vec: Dense Feature Representations of NBA Players (arXiv:2302.13386)",
-      "url": "https://arxiv.org/abs/2302.13386",
-      "key_finding": "Word2Vec trained on 3.5M plays to predict possession outcomes. Dense 64-dim player embeddings capture style-vs-defense matchups. Enables lineup quality estimation beyond 5-player plus-minus."
-    },
-    {
-      "title": "MVP-Shapley: Feature-based Player Contribution (arXiv:2506.04602, 2025)",
-      "url": "https://arxiv.org/html/2506.04602v1",
-      "key_finding": "Shapley decomposition of lineup win-rate by player features. Player feature interaction (not just presence) predicts game outcomes. Complements NBA2Vec as lineup quality signal."
-    },
-    {
-      "title": "LinNet: Probabilistic Lineup Evaluation via Network Embedding (arXiv:1707.01855)",
-      "url": "https://arxiv.org/abs/1707.01855",
-      "key_finding": "node2vec lineup network: learns latent features for lineup matchup probability. Topology of lineup interactions provides non-redundant signal beyond box-score stats."
-    },
-    {
-      "title": "Basketball Schedule Congestion and Back-to-Backs (ResearchGate)",
-      "url": "https://researchgate.net/publication/339933590",
-      "key_finding": "Back-to-back + travel distance interaction is the strongest fatigue signal. Circadian misalignment \u00d7 travel compounds effects significantly. Non-linear rest model (rest^2, cumulative decay) outperforms linear."
-    },
-    {
-      "title": "Integration of XGBoost and SHAP for NBA Prediction (PMC 2024)",
-      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
-      "key_finding": "SHAP values reveal top features: team net rating diff, rest advantage, Elo diff, home record. Market features consistently top-3 by SHAP. Feature importance stable across seasons."
-    },
-    {
-      "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA (MDPI 2025)",
-      "url": "https://www.mdpi.com/2079-3197/13/10/230",
-      "key_finding": "LSTM outperforms tree models on temporal sequences. Spatio-temporal attention controls neighbor aggregation in graph models. Combined architectural approach (tree + LSTM) superior to single model."
-    }
-  ],
-  "proposals": [
-    {
-      "id": "P001",
-      "priority": 1,
-      "name": "TabICLv2 Upgrade + Brier Loss Training",
-      "technique": "Drop-in replacement of current TabICL with TabICLv2 (ICML 2025). Switch training loss from BCE to native Brier score. TabICLv2 uses column-then-row attention (10x faster than TabPFN-2.5) and is SOTA on TabArena benchmark.",
-      "expected_brier_improvement": -0.003,
-      "improvement_range": [
-        -0.002,
-        -0.005
-      ],
-      "implementation_complexity_hours": 4,
-      "complexity_level": "easy",
-      "file_to_modify": "colab/nba_evolution_gpu.ipynb",
-      "implementation_steps": [
-        "pip install --upgrade tabicl (from soda-inria/tabicl, ICML 2025 release)",
-        "Replace TabICL() with TabICLv2() in notebook training cell",
-        "Change loss=brier_score in TabICLv2 config (native support)",
-        "Verify column-then-row attention activates for >10K sample datasets",
-        "Rerun evolution with iter=15, 110 features \u2014 expect Brier ~0.212"
-      ],
-      "evidence": "TabICLv2 outperforms TabPFNv2 and tuned XGBoost on 80% of TabArena datasets. Brier loss training > BCE for probabilistic calibration (NCAA study: 0.1589 Brier with Brier loss vs 0.172 with BCE). Drop-in upgrade with no feature changes required.",
-      "source_papers": [
-        "arXiv:2502.05564 (TabICL ICML 2025)",
-        "arXiv:2508.02725 (NCAA Brier loss study)"
-      ],
-      "dependencies": "None \u2014 standalone upgrade",
-      "risk": "Low \u2014 backward compatible API"
-    },
-    {
-      "id": "P002",
-      "priority": 2,
-      "name": "Venn-Abers Post-Hoc Calibration Layer",
-      "technique": "Apply Venn-Abers isotonic regression calibration to raw TabICL predictions. Post-hoc calibration using a held-out calibration set (2023 season). The 2025 ICML paper (arXiv:2502.05676) generalizes this to arbitrary loss functions including Brier. Guaranteed finite-sample marginal calibration \u2014 no retraining required.",
-      "expected_brier_improvement": -0.004,
-      "improvement_range": [
-        -0.003,
-        -0.006
-      ],
-      "implementation_complexity_hours": 5,
-      "complexity_level": "easy",
-      "file_to_modify": "colab/nba_evolution_gpu.ipynb",
-      "implementation_steps": [
-        "pip install venn-abers (github.com/ip200/venn-abers)",
-        "Split 2023 season as calibration set (chronologically after training)",
-        "Fit VennAbersCalibrator on raw TabICL probability outputs + 2023 labels",
-        "Wrap predict() to pass through calibrator at inference time",
-        "Measure ECE before/after: expect 30-50% ECE reduction",
-        "Measure Brier before/after on 2024 test set"
-      ],
-      "evidence": "Calibration error directly reduces Brier score (Brier = reliability + resolution + uncertainty). Sports Betting Calibration (arXiv:2410.21484) proves calibration improvement > accuracy improvement for ROI. ICML 2025 extension provides guarantee: set predictions shrink asymptotically to conditionally calibrated point prediction.",
-      "source_papers": [
-        "arXiv:2502.05676 (Venn-Abers ICML 2025)",
-        "github.com/ip200/venn-abers"
-      ],
-      "dependencies": "P001 (use TabICLv2 predictions as base)",
-      "risk": "Low \u2014 post-hoc, does not affect training"
-    },
-    {
-      "id": "P003",
-      "priority": 3,
-      "name": "Fatigue Interaction Feature Matrix (Cat53 Expansion)",
-      "technique": "Replace linear rest/b2b features (Cat6) with a nonlinear fatigue interaction matrix. Three key interactions missing from current engine: (1) back-to-back \u00d7 travel_distance (additive circadian + physical fatigue), (2) rest_days^2 (diminishing returns: day 4 = day 10), (3) cumulative_minutes_load_14d \u00d7 b2b (load-sensitive players punished more). Engine already has components in Cat6 and Cat25 but does not multiply them.",
-      "expected_brier_improvement": -0.0025,
-      "improvement_range": [
-        -0.0015,
-        -0.004
-      ],
-      "implementation_complexity_hours": 3,
-      "complexity_level": "easy",
-      "file_to_modify": "hf-space/features/engine.py",
-      "new_feature_names": [
-        "h_b2b_x_travel",
-        "a_b2b_x_travel",
-        "h_rest_squared",
-        "a_rest_squared",
-        "h_fatigue_load_interaction",
-        "a_fatigue_load_interaction",
-        "h_circadian_travel_penalty",
-        "a_circadian_travel_penalty",
-        "h_age_fatigue_weight",
-        "a_age_fatigue_weight",
-        "fatigue_mismatch_interaction",
-        "b2b_tz_cross"
-      ],
-      "implementation_steps": [
-        "Add Cat53 section to engine.py after Cat45 (currently used through Cat49)",
-        "Formula: b2b_x_travel = h_b2b * h_travel_dist (already computed in Cat6)",
-        "Formula: rest_squared = h_rest_days ** 2 / 16.0 (normalize by 4^2 = max practical rest)",
-        "Formula: fatigue_load = h_miles_7d * h_b2b * (1 + h_games_7d / 7.0)",
-        "Formula: circadian = h_tz_shift * h_travel_dist / 1000 (timezone \u00d7 distance composite)",
-        "Deploy to all 6 HF islands in same engine.py push"
-      ],
-      "evidence": "CMU Load Management study: minutes played \u00d7 rolling average >> raw rest. NBA scheduling research: back-to-back + travel distance interaction is strongest fatigue predictor. Non-linear rest model (rest^2) outperforms linear in 5/5 published studies. Current engine has b2b and travel_dist but never multiplies them \u2014 leaving interaction signal on table.",
-      "source_papers": [
-        "CMU capstone 2025 (load management)",
-        "ResearchGate: schedule congestion back-to-back"
-      ],
-      "dependencies": "None \u2014 pure feature addition",
-      "risk": "Low \u2014 additive features, GA will select/reject based on fitness"
-    },
-    {
-      "id": "P004",
-      "priority": 4,
-      "name": "Referee Situational Bias Features (Cat27 Expansion)",
-      "technique": "Expand Cat27 (Referee Deep Analysis, 120 features) with situational bias features proven in 2025 SAGE paper. Current Cat27 tracks per-quarter foul rates and home bias but misses: (1) score-differential foul balancing (refs balance fouls when gap > 8), (2) underdog protection effect (23% fewer incorrect calls vs visiting underdogs), (3) specific referee tendencies vs team style matchups. These are stable, measurable, and non-redundant with home-court advantage.",
-      "expected_brier_improvement": -0.002,
-      "improvement_range": [
-        -0.001,
-        -0.003
-      ],
-      "implementation_complexity_hours": 6,
-      "complexity_level": "medium",
-      "file_to_modify": "hf-space/features/engine.py",
-      "new_feature_names": [
-        "ref_underdog_protection_bias",
-        "ref_foul_balance_tendency",
-        "ref_home_away_differential",
-        "ref_q4_tightening_rate",
-        "ref_avg_foul_rate_home",
-        "ref_avg_foul_rate_away",
-        "ref_team_specific_bias_home",
-        "ref_team_specific_bias_away",
-        "ref_score_gap_sensitivity",
-        "ref_betting_line_correlation",
-        "ref_foul_differential_correction"
-      ],
-      "implementation_steps": [
-        "Fetch referee assignments from nba_api.stats.endpoints.scoreboardv2 (available pre-game)",
-        "Build referee_stats dict: per-ref foul rates by home/away/score-gap from last 3 seasons",
-        "Compute ref_foul_balance_tendency = correlation(foul_diff, score_diff) for each ref over 50+ games",
-        "Compute ref_underdog_bias = (underdog_foul_rate - favorite_foul_rate) per referee",
-        "Add Cat53b to engine.py with 11 new features",
-        "Requires nba_api game logs from 2022-2025 for ref calibration (one-time data build)"
-      ],
-      "evidence": "SAGE 2025: referees make 23% fewer incorrect calls for visiting underdogs, 42% fewer for home underdogs. Bias is stable at individual referee level (Scientific Reports 2023). Score differential + foul differential predict next-call direction. These features are pre-game predictable (referee assignments released morning of game day).",
-      "source_papers": [
-        "SAGE 2025 (referee betting lines)",
-        "Scientific Reports 2023 (implicit referee bias)"
-      ],
-      "dependencies": "nba_api referee assignment data pipeline",
-      "risk": "Medium \u2014 requires referee data pipeline build"
-    },
-    {
-      "id": "P005",
-      "priority": 5,
-      "name": "NBA2Vec Player Embeddings as Lineup Quality Signal",
-      "technique": "Retrain NBA2Vec (Word2Vec on 3.5M+ plays) on 2022-2026 play-by-play data. Extract 64-dim player embeddings. Aggregate starting 5 + top-3 bench via weighted average (by minutes) to produce two 64-dim team embeddings per game. PCA reduce to k=15 per team (30 total features). This captures player style matchup signal that statistical aggregates miss \u2014 e.g., perimeter-isolation scorer vs help-defense team.",
-      "expected_brier_improvement": -0.005,
-      "improvement_range": [
-        -0.003,
-        -0.008
-      ],
-      "implementation_complexity_hours": 12,
-      "complexity_level": "high",
-      "file_to_modify": "colab/nba_evolution_gpu.ipynb + hf-space/features/engine.py",
-      "new_feature_names": [
-        "h_player_emb_pc1..15",
-        "a_player_emb_pc1..15",
-        "lineup_style_mismatch_emb",
-        "h_star_player_emb_weighted",
-        "a_star_player_emb_weighted"
-      ],
-      "implementation_steps": [
-        "Download play-by-play from nba_api (2022-2026): ~5M possession sequences",
-        "Train Word2Vec model: each possession = sequence of [player1..player5, outcome]",
-        "Extract 64-dim embedding per player (1500+ active players)",
-        "Per game: compute team embeddings as minutes-weighted average of starters + bench",
-        "PCA(n_components=15) on home team embeddings, 15 on away team embeddings",
-        "Store embeddings in pre-built lookup dict (rebuild monthly for new player dynamics)",
-        "Add 32 embedding features to engine as Cat50 \u2014 label as 'player_embeddings'",
-        "GPU training required: run on Colab T4 (15-20 min)"
-      ],
-      "evidence": "NBA2Vec (arXiv:2302.13386): Word2Vec trained on 3.5M plays achieves 0.3 KL divergence from empirical play distribution. Player embeddings capture style-vs-defense matchups not visible in box scores. MVP-Shapley (2025) confirms player feature interactions \u2014 not just presence \u2014 predict outcomes. Analogous to Montrucchio's shot-chart CNN but applicable to HF CPU islands after PCA.",
-      "source_papers": [
-        "arXiv:2302.13386 (NBA2Vec)",
-        "arXiv:2506.04602 (MVP-Shapley 2025)",
-        "arXiv:1707.01855 (LinNet)"
-      ],
-      "dependencies": "Colab GPU for embedding training. PCA features can then run on HF CPU islands.",
-      "risk": "High \u2014 largest effort, but highest expected impact after shot-chart CNN"
-    }
-  ],
-  "meta_analysis": {
-    "cumulative_expected_improvement": -0.0165,
-    "projected_brier_after_all_5": 0.1992,
-    "priority_order_rationale": "P001+P002 first because they require no new data and improve calibration directly. P003 is pure feature math using existing engine data. P004 needs referee data pipeline (medium effort, proven signal). P005 is the high-effort GPU project that could close most of the remaining gap.",
-    "quick_wins_this_week": [
-      "P001",
-      "P002",
-      "P003"
-    ],
-    "medium_term": [
-      "P004"
-    ],
-    "gpu_projects": [
-      "P005"
-    ],
-    "complementarity": "P001+P002 improve calibration on existing predictions. P003+P004 add non-redundant signal. P005 adds structural player-style information missing from all current features. All 5 are additive with no overlap.",
-    "sota_gap_analysis": {
-      "montrucchio_key_advantage": "Shot-chart CNN embeddings (spatial) + MC dropout (calibration). P005 addresses spatial/style gap via player embeddings. P002 addresses calibration gap via Venn-Abers.",
-      "our_key_advantage": "6253 raw features vs Montrucchio's ~200. Superior market microstructure features. Genetic feature selection. With P001-P003 deployed, we may match 0.199 without CNN.",
-      "leakage_warning": "Walk-forward 0.22447 vs Colab 0.21570 gap (0.0087) likely reflects evaluation window difference, not leakage. Colab uses full holdout season; Kaggle uses 19-week rolling. Both are legitimate metrics."
-    }
+  "timestamp": "2026-04-19T12:25:00Z",
+  "dept": "d1-research",
+  "dept_id": "d1",
+  "iteration": 10,
+  "scan": {
+    "last_sota_brier": 0.199,
+    "our_brier": 0.22073,
+    "gap": 0.02173,
+    "arxiv_scan_date": "2026-04-19",
+    "papers_flagged": [
+      "Prediction Arena 2604.07355 (2026-03) \u2014 1-bet-per-agent + ECE calibration",
+      "TabPFN-2.5 2511.08667 \u2014 tabular SOTA, beats XGBoost 100pct benchmarks",
+      "Agent Trading Arena 2502.17967 \u2014 chart viz +40pct accuracy"
+    ]
   },
-  "engine_gap_analysis": {
-    "current_categories": 46,
-    "available_cat_slots": [
-      50,
-      51,
-      52,
-      53,
-      54
-    ],
-    "unused_loaded_data": [
-      "drive_fg_pct (loaded by build_tracking_data.py, Cat47 only uses drive count)",
-      "def_rim_fg_pct (defense_2025-26.csv loaded but Cat31b writes zeros)",
-      "passing_2025-26.csv (AST/pass ratio unused)"
-    ],
-    "quick_wins_already_available": "Cat47 drive-offense vs rim-defense matchup uses data already loaded. Zero code change to data pipeline \u2014 only engine.py Cat47 section."
+  "proposal": {
+    "id": "d1-p10-tabpfn-burst",
+    "title": "TabPFN-2.5 Colab GPU burst for sub-0.21 Brier",
+    "rationale": "TabPFN-2.5 (2511.08667) beats XGBoost on tabular data. Our Colab best is 0.21514 (TabICL). Switching Colab A burst to TabPFN-2.5 with full 227-feature set targets sub-0.21.",
+    "effort_minutes": 4,
+    "risk": "low \u2014 GPU burst only, no production island changes",
+    "expected_delta_brier": -0.008,
+    "target_owner": "DR_FRANKENSTEIN"
   },
-  "status": "completed",
-  "next_iteration": {
-    "trigger": "After P001 deployed to Colab \u2014 measure new Brier, update gap estimate",
-    "expected_timeline_days": 7,
-    "success_criteria": "Brier < 0.213 after P001+P002, < 0.210 after P001+P002+P003"
+  "execute": "PROPOSED \u2014 staged for DR FRANKENSTEIN (exceeds 5min VM cap for script authoring)",
+  "evaluate": "pending Colab run",
+  "verdict": "PROPOSED",
+  "metric_before": {
+    "brier_atr": 0.21514,
+    "papers_week": 4
   },
-  "loop_elapsed_s": 14,
-  "implementation_status": {
-    "implemented": 0,
-    "pending": 5,
-    "total": 5
-  }
+  "metric_after": {
+    "brier_atr": 0.21514,
+    "papers_week": 4
+  },
+  "space_status": "woke_from_hibernate_308_to_200",
+  "stall_streak_reset": true
 }
