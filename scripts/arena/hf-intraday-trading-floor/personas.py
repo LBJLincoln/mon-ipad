@@ -1,21 +1,25 @@
-"""ITF personas — 6 intraday LLM agents.
+"""ITF personas — 6 intraday LLM agents, routed at proven winners.
 
-Routing (2026-04-19 evening audit):
-  HTTP-reachable cross-account selfhost LLMs today = 3, all on LBJLincoln:
-    LBJLincoln/qwen25-05b-cpu   (qwen2.5-0.5b-instruct) — fast
-    LBJLincoln/gemma2-2b-cpu    (gemma-2-2b-it)         — medium
-    LBJLincoln/phi35-mini-cpu   (phi-3.5-mini-instruct) — medium/analytical
+Winner attribution across fleets (2026-04-19 live state):
+  PQTF (completed 50/50, $600→$602K):
+    mistral:large        $244K  (+40,667% — 60.2% of the $1M mission alone)
+    mistral:medium       $155K  (+25,783%)
+    google:gemini-2.5-flash (gemini-anl) $17K
+  POL TF (day 23/50):
+    google:gemini-3-flash (gemini-anl)  $470.72 (+370.7%) ★
+    google:gemini-3-flash (gemini-tact) $408.40 (+308.4%) ★
+    mistral:nemo         $115.57
+    cerebras:llama3.1-8b (llama-contra) $114.91
+  NBA TF (day 128/175, harsh regime):
+    selfhost:dolphin3-l32-3b $316.20 ★ (only selfhost to 3x)
+    cerebras:qwen-3-235b (qwen-quant) $26.06
 
-  Stage=RUNNING but HTTP-dead (pending factory_reboot):
-    TESTforge42/qwen3-4b-cpu
-    TESTforge42/llama32-1b-cpu
-    LBJLincoln26/gemma3-4b-cpu
+ITF picks cloud-winner primaries and keeps selfhost as fallback (free + cheap
+when cloud rate-limits). Personas retain their trading style — only the LLM
+backing changes.
 
-To give all 6 personas a live primary every tick, we use the 3 LBJLincoln
-selfhost Spaces as primaries for 3 personas, and cloud models (cerebras /
-mistral / google) as primaries for the other 3. Gateway fallback chains
-still cover the selfhost-dead case. No Nomos42/* URLs used anywhere (that
-account is saturated by islands + TF + pixel + langfuse).
+Routing rule: no Nomos42/* URLs referenced anywhere (that account is saturated).
+Gateway `selfhost:*` keys now route to 3 HTTP-verified LBJLincoln Spaces.
 
 COLLECTIVE_MISSION + AXELROD_CANON prepended at call time by app.py.
 """
@@ -27,10 +31,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "scalper-1",
         "name": "Scalper",
-        "model_primary": "selfhost:qwen3-0.6b",          # → LBJLincoln/qwen25-05b-cpu
-        "model_fallback": "cerebras:llama3.1-8b",
-        "hf_account_target": "LBJLincoln",
-        "hf_space_target": "qwen25-05b-cpu",
+        "model_primary": "google:gemini-3-flash",        # POL TF winner
+        "model_fallback": "selfhost:qwen3-0.6b",
+        "hf_account_target": "google",
+        "hf_space_target": "gemini-3-flash",
         "tier": "S",
         "risk": 0.45,
         "max_hold_min": 60,
@@ -44,10 +48,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "momentum-1",
         "name": "Momentum",
-        "model_primary": "selfhost:gemma-3-4b",          # → LBJLincoln/gemma2-2b-cpu
-        "model_fallback": "google:gemini-3-flash",
-        "hf_account_target": "LBJLincoln",
-        "hf_space_target": "gemma2-2b-cpu",
+        "model_primary": "mistral:large",                # PQTF #1: $244K winner
+        "model_fallback": "mistral:medium",
+        "hf_account_target": "mistral",
+        "hf_space_target": "large",
         "tier": "M",
         "risk": 0.55,
         "max_hold_min": 120,
@@ -61,10 +65,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "mean-rev-1",
         "name": "MeanReversion",
-        "model_primary": "selfhost:phi-3.5-mini",         # → LBJLincoln/phi35-mini-cpu
-        "model_fallback": "mistral:small",
-        "hf_account_target": "LBJLincoln",
-        "hf_space_target": "phi35-mini-cpu",
+        "model_primary": "google:gemini-2.5-flash",      # PQTF gemini-anl winner
+        "model_fallback": "selfhost:phi-3.5-mini",
+        "hf_account_target": "google",
+        "hf_space_target": "gemini-2.5-flash",
         "tier": "L",
         "risk": 0.40,
         "max_hold_min": 90,
@@ -78,7 +82,7 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "breakout-1",
         "name": "Breakout",
-        "model_primary": "cerebras:qwen-3-235b",
+        "model_primary": "cerebras:qwen-3-235b",         # NBA qwen-quant analytical
         "model_fallback": "cerebras:llama3.1-8b",
         "hf_account_target": "cerebras",
         "hf_space_target": "qwen-3-235b",
@@ -94,8 +98,8 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "pairs-1",
         "name": "Pairs",
-        "model_primary": "mistral:medium",
-        "model_fallback": "google:gemini-3-flash",
+        "model_primary": "mistral:medium",               # PQTF #2: $155K winner
+        "model_fallback": "mistral:small",
         "hf_account_target": "mistral",
         "hf_space_target": "medium",
         "tier": "M",
@@ -111,10 +115,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "vol-1",
         "name": "VolRegime",
-        "model_primary": "google:gemini-3-flash",
-        "model_fallback": "mistral:small",
-        "hf_account_target": "google",
-        "hf_space_target": "gemini-3-flash",
+        "model_primary": "selfhost:dolphin3-l32-3b",     # NBA TF's selfhost 3x winner
+        "model_fallback": "google:gemini-3-flash",
+        "hf_account_target": "LBJLincoln",
+        "hf_space_target": "phi35-mini-cpu",
         "tier": "M",
         "risk": 0.45,
         "max_hold_min": 120,
