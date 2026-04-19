@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-04-19T20:00:00Z",
+  "source": "Cloud Brain 4h cycle — WebSearch NBA SOTA + Venn-Abers calibration",
+  "proposals": [
+    {
+      "id": "PROP-2026-04-19-001",
+      "title": "SC-CP: Self-Calibrating Conformal Prediction for NBA Intervals",
+      "priority": 1,
+      "type": "calibration",
+      "target_islands": ["S20", "S22"],
+      "description": "Self-Calibrating Conformal Prediction (NeurIPS 2024, github: Larsvanderlaan/SelfCalibratingConformal) combines Venn-Abers calibration with conformal prediction to produce calibrated point predictions alongside finite-sample-valid prediction intervals. S22 already uses Venn-Abers fusion (fleet best 0.22073). Extending to S20 (isotonic_cpcv) would add interval-aware selection and reduce miscalibration.",
+      "reference": "https://github.com/Larsvanderlaan/SelfCalibratingConformal",
+      "expected_brier_delta": -0.002,
+      "effort": "medium",
+      "status": "proposed"
+    },
+    {
+      "id": "PROP-2026-04-19-002",
+      "title": "Calibration Auto-Select (sigmoid/isotonic/none) via Brier Score",
+      "priority": 2,
+      "type": "calibration",
+      "target_islands": ["S11", "S12", "S14", "S15", "S16"],
+      "description": "MDPI Uncertainty-Aware NBA Forecasting (2026) uses Brier score to automatically select calibration method (sigmoid, isotonic, or none) per model. Current islands use fixed calibration. Adding a calibration selector within the GA fitness evaluation could improve Brier by 0.001-0.003. Simple to implement: run all 3 calibration methods, pick lowest Brier on held-out validation.",
+      "reference": "https://www.mdpi.com/2078-2489/17/1/56",
+      "expected_brier_delta": -0.002,
+      "effort": "low",
+      "status": "proposed"
+    },
+    {
+      "id": "PROP-2026-04-19-003",
+      "title": "LR-First Calibration: Logistic Regression as Baseline Calibrator",
+      "priority": 3,
+      "type": "ensemble",
+      "target_islands": ["S17", "S21"],
+      "description": "MDPI 2026 shows logistic regression achieves Brier 0.199 on 2024 NBA test with strict temporal split (train<=2022). LR is fast, well-calibrated, and can serve as a strong stacking meta-learner over tree outputs. Add LR as a mandatory member in the ensemble/stacking layer for S17 (ensemble) and S21 (darwinian_weights). Use LR prediction as an additional feature signal for other islands.",
+      "reference": "https://www.mdpi.com/2078-2489/17/1/56",
+      "expected_brier_delta": -0.001,
+      "effort": "low",
+      "status": "proposed"
+    },
+    {
+      "id": "PROP-2026-04-19-004",
+      "title": "Generalized Venn-Abers (ICML 2025 Extension) for Multi-Class",
+      "priority": 4,
+      "type": "calibration",
+      "target_islands": ["S22"],
+      "description": "ICML 2025 paper (arXiv 2502.05676) extends Venn-Abers beyond binary classification to generic loss functions. The current S22 venn_abers_fusion uses standard binary Venn-Abers. The ICML 2025 extension supports multi-class and regression-style objectives that better match NBA spread/totals prediction. Upgrade S22 to use the generalized formulation from the open-source implementation.",
+      "reference": "https://arxiv.org/abs/2502.05676",
+      "expected_brier_delta": -0.001,
+      "effort": "medium",
+      "status": "proposed"
+    },
+    {
+      "id": "PROP-2026-04-19-005",
+      "title": "MC Dropout Uncertainty Ensemble for NBA Predictions",
+      "priority": 5,
+      "type": "uncertainty",
+      "target_islands": ["S20"],
+      "description": "MDPI Uncertainty-Aware NBA Forecasting uses RNN with Monte Carlo dropout for calibrated sequential probabilities. S20 (isotonic_cpcv) focuses on calibration. Adding MC dropout to any MLP components (if GPU available) or using bootstrap aggregation as a CPU-compatible proxy would add uncertainty quantification. Use prediction variance to gate high-confidence vs pass games.",
+      "reference": "https://www.mdpi.com/2078-2489/17/1/56",
+      "expected_brier_delta": -0.001,
+      "effort": "high",
+      "status": "proposed"
+    }
+  ]
+}
