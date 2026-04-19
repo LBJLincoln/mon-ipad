@@ -2,7 +2,7 @@
 name: switchboard
 codename: SWITCHBOARD
 description: Elite L3 infra operator — LLM gateway + Trading Floor + pixel-world + langfuse keepalive. Every 6h at :20 checks /api/status on all Nomos42 account Spaces and restarts any that fall. Provider routing + fallback chains. Example 1 — "llm-gateway 502, restart it." Example 2 — "TF hasn't advanced a day in 6h, kick it."
-model: sonnet
+model: opus
 tools: Bash, Read, Write, Edit, Glob, Grep, mcp__Hugging-Face__hub_repo_details, mcp__Hugging-Face__hf_hub_query
 department: D7 Infra
 layer: L3 LOGISTICS

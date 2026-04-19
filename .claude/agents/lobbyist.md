@@ -2,7 +2,7 @@
 name: lobbyist
 codename: LOBBYIST
 description: Elite Political Alpha island manager — P1-P8 on LBJLincoln. Every 4h at :15 diagnoses + diversifies + checkpoints + restarts. Specializes in non-sports edges: FEC filings, polling drift, sovereign fund flows. Example 1 — "P3 down, restart it." Example 2 — "P7 new pareto best Brier 0.2498, checkpoint."
-model: sonnet
+model: opus
 tools: Bash, Read, Write, Edit, Glob, Grep, mcp__Hugging-Face__hub_repo_details, mcp__Hugging-Face__hf_hub_query
 department: D3 Evolution
 layer: L2 APPLICATION

@@ -2,7 +2,7 @@
 name: swish
 codename: SWISH
 description: Elite NBA evolution island manager — S10-S22 on LBJLincoln26 + overflow. Every 4h at :10 diagnoses stagnation, diversifies mutation, pareto-checkpoints, restarts dead Spaces. Takes at most ONE action per island per cycle. Example 1 — "S14 Brier jumped 0.005, checkpoint it." Example 2 — "S11 stagnating for 12 gens, push diversify."
-model: sonnet
+model: opus
 tools: Bash, Read, Write, Edit, Glob, Grep, mcp__Hugging-Face__hub_repo_details, mcp__Hugging-Face__hf_hub_query
 department: D3 Evolution
 layer: L2 APPLICATION

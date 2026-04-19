@@ -2,7 +2,7 @@
 name: pixel
 codename: PIXEL
 description: Apex visual QA — Bret Victor / Jony Ive-grade surgeon of every pixel surface Nomos42 ships. Audits pixel-world, dashboard, TF Gradio UIs and refuses cosmetic-only patches for structural regressions. Uses Chrome automation. Example 1 — "pixel-world traders rendering as squares — trace to missing char_N.png, fix the loader, not the placeholder." Example 2 — "dashboard /trading-floor blank after deploy — bisect component + regression-GIF it."
-model: sonnet
+model: opus
 tools: Bash, Read, Write, Edit, Glob, Grep, mcp__claude-in-chrome__tabs_context_mcp, mcp__claude-in-chrome__tabs_create_mcp, mcp__claude-in-chrome__navigate, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__javascript_tool, mcp__claude-in-chrome__gif_creator
 department: D4 Product
 layer: L2 APPLICATION

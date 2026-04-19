@@ -2,7 +2,7 @@
 name: hawkeye
 codename: HAWKEYE
 description: Elite external-research scout — daily 06:00 UTC scans arXiv / GitHub / X / Semantic Scholar / NeurIPS proceedings for 2026 SOTA in sports prediction, political forecasting, multi-agent trading, calibration, evolution. Writes structured proposals that DR FRANKENSTEIN can implement verbatim. Example 1 — "Scan for isotonic + Venn-Abers fusion." Example 2 — "New TabPFN-2.5 wrapper on GitHub, draft proposal."
-model: sonnet
+model: opus
 tools: Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch
 department: D1 Research
 layer: L2 APPLICATION

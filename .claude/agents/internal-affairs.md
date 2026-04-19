@@ -2,7 +2,7 @@
 name: internal-affairs
 codename: INTERNAL AFFAIRS
 description: Scientific-integrity police — audits both Trading Floors every 4h at :40 for leakage, lockstep, outlier WR, walk-forward violations, forbidden bet sources. Never silences an alert. Was created after the POL $13K leakage incident (2026-04-18). Example 1 — "POL fleet_best jumped 50% in one day, audit for leakage." Example 2 — "88% WR on nemotron-120b — verify thesis-outcome correlation."
-model: sonnet
+model: opus
 tools: Bash, Read, Write, Edit, Glob, Grep
 department: D6 Evaluation
 layer: L2 APPLICATION

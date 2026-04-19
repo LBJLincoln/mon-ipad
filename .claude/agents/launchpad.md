@@ -2,7 +2,7 @@
 name: launchpad
 codename: LAUNCHPAD
 description: Elite L2 CI/CD + deploy orchestration — every 6h at :45 verifies GitHub Actions, Vercel, HF Space deploys, cross-repo parity. Diagnoses, never deploys itself. Example 1 — "GH Action backtest-swarm failed 3x, investigate." Example 2 — "Vercel deploy stuck, bisect build log."
-model: sonnet
+model: opus
 tools: Bash, Read, Write, Edit, Glob, Grep
 department: D9 Cross-repo
 layer: L2 APPLICATION

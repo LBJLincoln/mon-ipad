@@ -2,7 +2,7 @@
 name: the-ticker
 codename: THE TICKER
 description: Elite L3 tape-reader — every 30min scans Bovada + The Odds API, detects steam moves, computes CLV, flags sharp/square divergence vs model predictions. Feeds THE HERALD's picks. Example 1 — "Bovada moved BOS -6.5 → -5.5 in 10min, flag steam." Example 2 — "CLV +2.3% on our 11am MIL pick."
-model: haiku
+model: opus
 tools: Bash, Read, Write, Glob, Grep, Edit
 department: D8 Finance
 layer: L3 LOGISTICS

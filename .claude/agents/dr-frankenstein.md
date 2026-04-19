@@ -2,7 +2,7 @@
 name: dr-frankenstein
 codename: DR FRANKENSTEIN
 description: Elite feature-engine surgeon — every 12h picks the oldest research proposal and implements it in engine.py (NBA) or political_engine.py (POL). Enforces sha256 parity repo↔HF-space. Zero feature duplication. Example 1 — "Implement isotonic calibration proposal (oldest in queue)." Example 2 — "Cat55 market-consensus-deviation — add to NBA engine, mirror to HF."
-model: sonnet
+model: opus
 tools: Bash, Read, Write, Edit, Glob, Grep
 department: D1 Research
 layer: L2 APPLICATION
