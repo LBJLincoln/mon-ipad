@@ -1441,7 +1441,7 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
 
     # ── DECISION FORMAT ──
     lines.append(f"""
-AVAILABLE CATEGORIES: ml_home, ml_away, spread_home, spread_away, total_over, total_under, h1_ml_home, h1_ml_away, h1_spread, h1_total_over, h1_total_under, team_total_home_over, team_total_home_under, team_total_away_over, team_total_away_under, alt_spread_home_minus3.5, alt_spread_home_minus5.5, alt_total_over_plus3, alt_total_under_minus3, q1_ml_home, q1_ml_away, prop_both_100, prop_overtime
+AVAILABLE CATEGORIES: ml_home, ml_away, spread_home, spread_away, total_over, total_under, h1_ml_home, h1_ml_away, h1_spread, h1_total_over, h1_total_under, team_total_home_over, team_total_home_under, team_total_away_over, team_total_away_under, alt_spread_home_minus3.5, alt_spread_home_minus5.5, alt_total_over_plus3, alt_total_under_minus3, q1_ml_home, q1_ml_away, prop_both_100, prop_overtime, pp_points_star1_home, pp_points_star1_away, pp_points_star2_home, pp_points_star2_away, pp_points_star3_home, pp_points_star3_away, pp_rebounds_star1_home, pp_rebounds_star1_away, pp_rebounds_star2_home, pp_rebounds_star2_away, pp_assists_star1_home, pp_assists_star1_away, pp_assists_star2_home, pp_assists_star2_away, pp_threes_star1_home, pp_threes_star1_away, pp_threes_star2_home, pp_threes_star2_away, pp_steals_star1_home, pp_steals_star1_away, pp_blocks_star1_home, pp_blocks_star1_away
 
 RESPOND WITH RAW JSON ONLY. NO ```json fences. NO preamble. NO "Let me analyze". NO thinking out loud.
 FIRST CHARACTER MUST BE {{ — last character MUST be }}.
@@ -1747,8 +1747,11 @@ TODAY'S GAMES ({n_games} total, first 18 shown):
 AVAILABLE STRATEGIES: proportional_edge, confidence_scaled, half_kelly, quarter_kelly,
   parlay_2leg, parlay_3leg, value_hunter, consensus_follow, contrarian_fade, mean_revert
 
-AVAILABLE CATEGORIES (90+): ml_home, ml_away, spread_home, spread_away, total_over,
-  total_under, alt_spread_*, alt_total_*, team_total_*, h1_*, q1_*, prop_*
+AVAILABLE CATEGORIES (253): ml_home, ml_away, spread_home, spread_away, total_over,
+  total_under, alt_spread_*, alt_total_*, team_total_*, h1_*, q1_*, prop_*,
+  pp_<stat>_<tier>_<side> where stat ∈ {points,rebounds,assists,threes,steals,blocks}
+  and tier ∈ {star1,star2,star3,role1,role2} and side ∈ {home,away}
+  (30 per side × 2 = 60 player-props per game available)
 
 TASK: Output a COUNCIL PLAN as JSON. All 10 agents will see and follow it unless
 their bankroll crashes (below ${STARTING_CAPITAL * ROGUE_DRAWDOWN_THRESHOLD:.0f}) or
