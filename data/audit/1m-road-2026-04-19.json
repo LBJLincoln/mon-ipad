@@ -1,0 +1,100 @@
+{
+  "generated_at": "2026-04-19T15:24:07Z",
+  "target_1m": 1000000,
+  "tfs": {
+    "nba": {
+      "fleet_total": 1002.99,
+      "fleet_start": 1700.0,
+      "days_elapsed": 64,
+      "days_total": 175,
+      "roi_pct_total": -41.0,
+      "roi_per_day_pct": -0.6406,
+      "days_to_1m_at_current_rate": "inf (fleet declining)",
+      "will_hit_target": false,
+      "silent_agents": ["nemotron-120b"],
+      "rogue_agents": ["llama-contra", "gemini-tact", "mistral-large", "mistral-small", "mistral-ministral", "nvidia-minimax"],
+      "min_deploy_violators_pct": 0.824,
+      "min_deploy_violators": ["qwen-quant", "qwen-arb", "llama-contra", "mistral-large", "mistral-medium", "mistral-nemo", "mistral-ministral", "nemotron-120b", "selfhost-qwen4b", "nvidia-minimax", "nvidia-llama70", "selfhost-gemma3", "selfhost-qwen06", "selfhost-dolphin3"],
+      "cooperation_pacts_count": 0,
+      "peer_trigger_fired": false,
+      "provider_dead_cerebras_qwen3": 196,
+      "fleet_leader": "selfhost-gemma3",
+      "fleet_best_bankroll": 174.84,
+      "blockers": [
+        "FLEET DECAY: -41% ROI across 64 days — 6 agents in rogue zone (<$25), fleet has no upward trajectory",
+        "SILENT / LOW-DEPLOY: nemotron-120b 0 bets in 64 days; 14/17 agents <3 allocs/day avg — MIN_DEPLOY 0.75 effectively bypassed",
+        "CEREBRAS DEAD: qwen-3-235b 196 failures — qwen-quant (strongest analyst) hitting fallback models, degrading signal quality"
+      ]
+    },
+    "pol": {
+      "fleet_total": 1729.61,
+      "fleet_start": 1700.0,
+      "days_elapsed": 25,
+      "days_total": 50,
+      "roi_pct_total": 1.7418,
+      "roi_per_day_pct": 0.06967,
+      "days_to_1m_at_current_rate": 9132,
+      "will_hit_target": false,
+      "silent_agents": ["nvidia-llama70", "selfhost-qwen06"],
+      "rogue_agents": [],
+      "min_deploy_violators_pct": 1.0,
+      "min_deploy_violators": ["qwen-quant", "qwen-arb", "llama-contra", "gemini-anl", "gemini-tact", "mistral-large", "mistral-medium", "mistral-small", "mistral-nemo", "mistral-ministral", "nemotron-120b", "selfhost-qwen4b", "nvidia-minimax", "nvidia-llama70", "selfhost-gemma3", "selfhost-qwen06", "selfhost-dolphin3"],
+      "cooperation_pacts_count": 0,
+      "peer_trigger_fired": false,
+      "provider_dead_count": 6,
+      "providers_dead": ["cerebras:qwen-3-235b", "openrouter:nemotron-120b", "cerebras:llama3.1-8b", "mistral:large", "nvidia:llama-3.3-70b", "nvidia:minimax-m2.7"],
+      "providers_ok": ["github:gpt-4o-mini", "github:llama-3.1-8b", "mistral:small"],
+      "fleet_leader": "gemini-tact",
+      "fleet_best_bankroll": 130.93,
+      "blockers": [
+        "MASS PROVIDER FAILURE: 6/9 providers dead (cerebras/openrouter/mistral-large/nvidia all down) — only github:gpt-4o-mini + mistral:small trading; council says 'no LLM council; default equal commitment'",
+        "TIMID BETS: 17/17 agents averaging <3 bets/day; mistral-ministral=1 total bet, nvidia-minimax=1, nemotron=1 — 100% MIN_DEPLOY violation",
+        "ZERO COALITION: 0 cooperation pacts across 25 days — MANDATORY coalition_proposal rule is not firing, agents acting solo"
+      ]
+    },
+    "pqtf": {
+      "fleet_total": 602353.97,
+      "fleet_start": 600.0,
+      "days_elapsed": 50,
+      "days_total": 50,
+      "roi_pct_total": 100292.3,
+      "roi_per_day_pct": 2005.85,
+      "days_to_1m_at_current_rate": 0.2,
+      "will_hit_target": true,
+      "status": "COMPLETED",
+      "progress_toward_1m_pct": 60.24,
+      "silent_agents": ["qwen-quant", "llama-contra"],
+      "rogue_agents": [],
+      "peer_trigger_agents_over_250k": [],
+      "multi_leg_ratio_last_day": 0.389,
+      "cooperation_pacts_count": 0,
+      "bimodal_split": {
+        "high_performers": {
+          "mistral-large": 244049.55,
+          "mistral-medium": 154566.17,
+          "mistral-nemo": 120298.39,
+          "gemini-anl": 83207.88
+        },
+        "failed": {
+          "qwen-quant": 138.28,
+          "llama-contra": 93.7
+        }
+      },
+      "blockers": [
+        "BIMODAL FAILURE: qwen-quant ($138) and llama-contra ($94) contributed near-zero — cerebras provider dead, only 4+2 bets vs 505 for mistral-large",
+        "MULTI-LEG UNDERUSED: last day 39% multi-leg vs design intent — butterfly=0, iron_condor=2 only; single_leg dominated (22/36 positions)",
+        "ZERO COALITION SCALING: 0 pacts despite mistral-large >$244K — peer trigger (>$250K) narrowly missed firing, no redistribution occurred"
+      ]
+    }
+  },
+  "fleet_wide_total": 605086.57,
+  "fleet_wide_start": 4000.0,
+  "fleet_wide_progress_pct": 60.5087,
+  "overall_verdict": "off_track",
+  "overall_verdict_reason": "PQTF produced 60% of $1M target (completed, $602K) but NBA is in -41% decay and POL needs 9132 days at current rate. Fleet-wide $1M unreachable this season without structural intervention.",
+  "top_blockers": [
+    "CEREBRAS + PROVIDER MASS FAILURE: qwen-3-235b dead on NBA (196 fails) and POL (203 fails) — the intended primary reasoning engine is offline fleet-wide",
+    "MIN_DEPLOY COLLAPSE: 14/17 NBA agents + 17/17 POL agents below 3 allocs/day — floor not enforced; most agents are functionally passing every day",
+    "ZERO COOPERATION PACTS (3 TFs, 0 pacts): MANDATORY coalition_proposal rule not generating any pacts across NBA+POL+PQTF despite 6+ agents in rogue zone"
+  ]
+}

@@ -1,31 +1,41 @@
 {
-  "timestamp": "2026-04-19T14:17:04.070022+00:00",
+  "timestamp": "2026-04-19T15:24:07Z",
   "track": "T4 CAPITAL",
   "absorbs": [
     "D8 finance",
     "NBA TF",
     "POL TF"
   ],
-  "status": "ok",
+  "status": "off_track",
   "last_metric": {
-    "nba_tf_total_bankroll": null,
-    "pol_tf_total_bankroll": null,
-    "nba_tf_agents": 14,
-    "pol_tf_agents": 14,
+    "nba_tf_total_bankroll": 1002.99,
+    "pol_tf_total_bankroll": 1729.61,
+    "pqtf_total_bankroll": 602353.97,
+    "nba_tf_agents": 17,
+    "pol_tf_agents": 17,
+    "pqtf_agents": 6,
     "target_collective_usd": 1000000,
     "min_deploy_pct": 0.75
   },
   "last_action": "T13 nvidia-minimax + T14 nvidia-llama70 deployed to both TFs 2026-04-17",
   "next_proposal": "Monitor NVIDIA agent performance 24h; add parlay sizing if NBA conviction high",
-  "blocked_on": null,
-  "ticker": {
-    "last_tick": "2026-04-19T15:00:00Z",
-    "tick_count": 30,
-    "odds_api_status": "working",
-    "games_scanned": 8,
-    "steam_moves": 0,
-    "clv_opportunities": 0,
-    "sharp_square_divergence": 0,
-    "env_diagnose_note": "Tick #29 MISSING_KEY was bash subshell scoping bug (`. .env.local` not executed in prior script context). Key is valid 32-char string, http 200 confirmed. Predictions file absent (not yet generated)."
+  "blocked_on": "Cerebras qwen-3-235b dead fleet-wide; MIN_DEPLOY floor not enforced; 0 coalition pacts across all TFs",
+  "accountant": {
+    "1m_road": {
+      "fleet_total": 605086.57,
+      "fleet_wide_start": 4000.0,
+      "progress_pct": 60.5087,
+      "verdict": "off_track",
+      "nba_roi_per_day_pct": -0.6406,
+      "pol_roi_per_day_pct": 0.06967,
+      "pqtf_roi_pct_total": 100292.3,
+      "pqtf_status": "COMPLETED",
+      "top_blockers": [
+        "CEREBRAS + PROVIDER MASS FAILURE: qwen-3-235b dead on NBA (196 fails) and POL (203 fails)",
+        "MIN_DEPLOY COLLAPSE: 14/17 NBA agents + 17/17 POL agents below 3 allocs/day",
+        "ZERO COOPERATION PACTS: 0 pacts across NBA+POL+PQTF despite 6+ rogue agents"
+      ],
+      "generated_at": "2026-04-19T15:24:07Z"
+    }
   }
 }
