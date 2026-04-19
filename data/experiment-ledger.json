@@ -1,6 +1,31 @@
 {
-  "last_updated": "2026-04-10T17:00:00Z",
+  "last_updated": "2026-04-19T08:45:20Z",
   "ledger": [
+    {
+      "cycle": "swish-4h-2026-04-19T08:45Z",
+      "date": "2026-04-19",
+      "agent": "nomos-hoops (SWISH)",
+      "project": "NBA",
+      "technique": "Fleet diagnosis + checkpoint fleet-best + mass diversify",
+      "islands_acted_on": ["S19", "S16", "S10", "S11", "S12", "S13", "S15", "S17", "S18", "S20", "S21", "S22"],
+      "actions": {
+        "checkpoint": "S19 (brier=0.21949, gen=168) — new fleet best; S16 (brier=0.21983, gen=160)",
+        "diversify": "11 islands with stagnation >= 112 gens computed",
+        "none": "S14 (gen=2 restart)"
+      },
+      "fleet_best_brier_before": 0.22073,
+      "fleet_best_brier_after": 0.21949,
+      "fleet_best_delta": -0.00124,
+      "critical_findings": [
+        "S20 Brier exploded to 0.28 (from best 0.22407 at gen=1, stag=327)",
+        "S18 stag=396 with best at gen=1 — structural failure candidate",
+        "S17 stag=304 with best at gen=3 — structural failure candidate",
+        "API best_brier field unreliable: shows first-gen value not true minimum. Use min(history[].brier).",
+        "API stagnation_count field unreliable: returns 0 for islands with 200+ gens since improvement"
+      ],
+      "verdict": "fleet_best_updated",
+      "notes": "True fleet best is S19 0.21949 at gen=168 (computed from history). Previous reported best 0.22073 was S22 but S22 now regressed to 0.23988."
+    },
     {
       "cycle": 79,
       "date": "2026-04-07",

@@ -1,103 +1,146 @@
 {
   "_meta": {
-    "updated_at": "2026-04-15T04:10:00Z",
-    "agent": "nba-fleet-ops",
+    "updated_at": "2026-04-19T08:45:20Z",
+    "agent": "nomos-hoops (SWISH)",
     "cycle": "4h :10",
     "model": "claude-sonnet-4-6"
   },
-  "fleet_best_brier": 0.22070,
-  "fleet_best_island": "S12",
-  "fleet_best_note": "S12 gen=61 brier=0.2207 — new cycle best, checkpointed. S17 historical best 0.22085 now surpassed.",
+  "fleet_best_brier": 0.21949,
+  "fleet_best_island": "S19 (testforge42-nba-evo-s19, wide_search, gen=168)",
+  "fleet_best_previous": 0.22073,
+  "fleet_best_delta": -0.00124,
+  "fleet_best_note": "S19 min_hist=0.21949 at gen=168 — new all-time fleet best. Checkpointed. Also notable: S16=0.21983 checkpointed, S12=0.21996, S10=0.22006, S11=0.22056.",
   "islands": {
     "S10": {
-      "url": "nomos42-nba-quant.hf.space",
-      "role": "exploitation",
-      "status": "UP",
-      "generation": 120,
-      "best_brier": 0.2469,
-      "stagnation": 0,
-      "alert": "REGRESSION — Brier 0.2271 → 0.2469. Mutation bumped to 0.18 to force diversity.",
-      "action_taken": "config: mutation_rate=0.18"
+      "url": "nomos42-nba-quant.hf.space", "account": "Nomos42",
+      "role": "exploitation", "status": "UP",
+      "generation": 296, "best_brier": 0.22006, "best_at_gen": 118,
+      "stagnation_computed": 177, "mutation_rate": 0.1161,
+      "current_working_brier": 0.22213,
+      "action_taken": "diversify (stag=177)"
     },
     "S11": {
-      "url": "nomos42-nba-quant-2.hf.space",
-      "role": "exploration",
-      "status": "UP",
-      "generation": 95,
-      "best_brier": 0.22123,
-      "stagnation": 0,
-      "alert": null,
-      "action_taken": null
+      "url": "nomos42-nba-quant-2.hf.space", "account": "Nomos42",
+      "role": "exploration", "status": "UP",
+      "generation": 292, "best_brier": 0.22056, "best_at_gen": 85,
+      "stagnation_computed": 206, "mutation_rate": 0.12,
+      "current_working_brier": 0.22167,
+      "action_taken": "diversify (stag=206)"
     },
     "S12": {
-      "url": "nomos42-nba-evo-3.hf.space",
-      "role": "extra_trees",
-      "status": "UP",
-      "generation": 61,
-      "best_brier": 0.22070,
-      "stagnation": 0,
-      "alert": "NEW FLEET BEST — brier=0.2207 surpasses S17 historical 0.22085",
-      "action_taken": "checkpoint: brier=0.2207 gen=61"
+      "url": "nomos42-nba-evo-3.hf.space", "account": "Nomos42",
+      "role": "extra_trees", "status": "UP",
+      "generation": 238, "best_brier": 0.21996, "best_at_gen": 43,
+      "stagnation_computed": 194, "mutation_rate": 0.1491,
+      "current_working_brier": 0.22012,
+      "action_taken": "diversify (stag=194, best at gen=43)"
     },
     "S13": {
-      "url": "nomos42-nba-evo-4.hf.space",
-      "role": "catboost",
-      "status": "UP",
-      "generation": 171,
-      "best_brier": 0.23245,
-      "stagnation": 0,
-      "alert": null,
-      "action_taken": null
+      "url": "nomos42-nba-evo-4.hf.space", "account": "Nomos42",
+      "role": "catboost", "status": "UP",
+      "generation": 243, "best_brier": 0.2204, "best_at_gen": 130,
+      "stagnation_computed": 112, "mutation_rate": 0.1459,
+      "current_working_brier": 0.22213,
+      "action_taken": "diversify (stag=112)"
     },
     "S14": {
-      "url": "nomos42-nba-evo-5.hf.space",
-      "role": "lightgbm",
-      "status": "UP",
-      "generation": 119,
-      "best_brier": 0.22186,
-      "stagnation": 0,
-      "alert": null,
-      "action_taken": null
+      "url": "nomos42-nba-evo-5.hf.space", "account": "Nomos42",
+      "role": "lightgbm", "status": "UP",
+      "generation": 2, "best_brier": 0.23016, "best_at_gen": 1,
+      "stagnation_computed": 1, "mutation_rate": 0.0798,
+      "current_working_brier": 0.23016,
+      "action_taken": "none (gen=2, just restarted)"
     },
     "S15": {
-      "url": "nomos42-nba-evo-6.hf.space",
-      "role": "wide_search",
-      "status": "UP",
-      "generation": 145,
-      "best_brier": 0.23563,
-      "stagnation": 0,
-      "alert": null,
-      "action_taken": null
+      "url": "nomos42-nba-evo-6.hf.space", "account": "Nomos42",
+      "role": "wide_search", "status": "REGRESSED",
+      "generation": 208, "best_brier": 0.22107, "best_at_gen": 1,
+      "stagnation_computed": 206, "mutation_rate": 0.1421,
+      "current_working_brier": 0.24738,
+      "action_taken": "diversify (stag=206, Brier regressed 0.22107->0.24738)"
     },
     "S16": {
-      "url": "lbjlincoln26-nba-evo-s16.hf.space",
-      "role": "gradient_boost",
-      "status": "UP",
-      "generation": 925,
-      "best_brier": 0.22573,
-      "stagnation": 0,
-      "alert": null,
-      "action_taken": null
+      "url": "lbjlincoln26-nba-evo-s16.hf.space", "account": "LBJLincoln26",
+      "role": "gradient_boost", "status": "UP",
+      "generation": 287, "best_brier": 0.21983, "best_at_gen": 160,
+      "stagnation_computed": 126, "mutation_rate": 0.149,
+      "current_working_brier": 0.21983,
+      "action_taken": "checkpoint (pareto_best 0.21983 — second-best fleet score)"
     },
     "S17": {
-      "url": "lbjlincoln26-nba-evo-s17.hf.space",
-      "role": "ensemble",
-      "status": "UP",
-      "generation": 981,
-      "best_brier": 0.22085,
-      "stagnation": 0,
-      "alert": null,
-      "action_taken": null
+      "url": "lbjlincoln26-nba-evo-s17.hf.space", "account": "LBJLincoln26",
+      "role": "ensemble", "status": "UP",
+      "generation": 308, "best_brier": 0.22034, "best_at_gen": 3,
+      "stagnation_computed": 304, "mutation_rate": 0.12,
+      "current_working_brier": 0.22073,
+      "action_taken": "diversify (stag=304 extreme)"
+    },
+    "S18": {
+      "url": "testforge42-nba-evo-s18.hf.space", "account": "TESTforge42",
+      "role": "catboost_spec", "status": "STAGNANT",
+      "generation": 398, "best_brier": 0.22154, "best_at_gen": 1,
+      "stagnation_computed": 396, "mutation_rate": 0.1444,
+      "current_working_brier": 0.22269,
+      "action_taken": "diversify (stag=396 extreme, best was gen=1)"
+    },
+    "S19": {
+      "url": "testforge42-nba-evo-s19.hf.space", "account": "TESTforge42",
+      "role": "wide_search", "status": "UP",
+      "generation": 316, "best_brier": 0.21949, "best_at_gen": 168,
+      "stagnation_computed": 147, "mutation_rate": 0.1438,
+      "current_working_brier": 0.22738,
+      "action_taken": "checkpoint (fleet_best 0.21949) + diversify (stag=147)",
+      "alert": "NEW_FLEET_BEST"
+    },
+    "S20": {
+      "url": "lbjlincoln26-nba-evo-s20.hf.space", "account": "LBJLincoln26",
+      "role": "isotonic_cpcv", "status": "CRITICAL_REGRESSION",
+      "generation": 329, "best_brier": 0.22407, "best_at_gen": 1,
+      "stagnation_computed": 327, "mutation_rate": 0.1427,
+      "current_working_brier": 0.28,
+      "action_taken": "diversify (stag=327 + Brier=0.28 explosion)",
+      "alert": "BRIER_EXPLOSION_0.28"
+    },
+    "S21": {
+      "url": "lbjlincoln26-nba-evo-s21.hf.space", "account": "LBJLincoln26",
+      "role": "darwinian_weights", "status": "UP",
+      "generation": 256, "best_brier": 0.22161, "best_at_gen": 52,
+      "stagnation_computed": 203, "mutation_rate": 0.1387,
+      "current_working_brier": 0.22762,
+      "action_taken": "diversify (stag=203)"
+    },
+    "S22": {
+      "url": "testforge42-nba-evo-s22.hf.space", "account": "TESTforge42",
+      "role": "venn_abers_fusion", "status": "REGRESSED",
+      "generation": 268, "best_brier": 0.22358, "best_at_gen": 1,
+      "stagnation_computed": 266, "mutation_rate": 0.1387,
+      "current_working_brier": 0.23988,
+      "action_taken": "diversify (stag=266 extreme, Brier regressed)"
     }
   },
+  "mutation_rate_audit": {
+    "cap_rule": 0.15,
+    "violations": [],
+    "note": "All 13 islands within 0.15 cap. Max: S12=0.1491, S16=0.149. S14 low at 0.0798 (just started — expected)."
+  },
   "summary": {
-    "islands_up": 8,
+    "islands_up": 13,
     "islands_down": 0,
-    "stagnation_flags": 0,
-    "actions_taken": 2,
-    "cycle_actions": [
-      "S10: mutation_rate bumped 0.14 → 0.18 (Brier regression 0.2271→0.2469)",
-      "S12: checkpoint saved (brier=0.2207, new fleet best)"
-    ]
-  }
+    "stagnation_critical": ["S17 (304)", "S18 (396)", "S20 (327)", "S22 (266)"],
+    "stagnation_severe": ["S10 (177)", "S11 (206)", "S12 (194)", "S15 (206)", "S21 (203)"],
+    "stagnation_moderate": ["S13 (112)", "S16 (126)", "S19 (147)"],
+    "actions_taken": {
+      "checkpoint": ["S19 (fleet_best 0.21949)", "S16 (pareto_best 0.21983)"],
+      "diversify": ["S10", "S11", "S12", "S13", "S15", "S17", "S18", "S19", "S20", "S21", "S22"],
+      "none": ["S14"]
+    }
+  },
+  "attention_next_tick": [
+    "S20: Brier=0.28 explosion — if still >0.27 after diversify, consider restart",
+    "S18: stag=396 with best at gen=1 — restart candidate if diversify ineffective",
+    "S22: same pattern as S18 — restart candidate if still >0.235 next tick",
+    "S17: stag=304 with best at gen=3 — oldest gen reset candidate",
+    "S14: gen=2 — verify reaches gen~10+ by next tick",
+    "CLAUDE.md update needed: new fleet best 0.21949 (S19)"
+  ]
 }
