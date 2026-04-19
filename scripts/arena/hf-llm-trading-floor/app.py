@@ -3878,7 +3878,22 @@ async def api_reset():
         LOGS_PATH.unlink(missing_ok=True)
     except Exception:
         pass
-    return JSONResponse({"status": "reset", "message": "State cleared. Next run starts fresh."})
+    # Also purge Hub-persisted state — otherwise auto-resume downloads
+    # data/runtime/state.json on next boot and we silently resume.
+    hub_deleted = []
+    if _hub_api:
+        for fname in ("data/runtime/state.json",
+                      "data/runtime/agent_logs.json",
+                      "data/runtime/council_plans.json"):
+            try:
+                _hub_api.delete_file(path_in_repo=fname, repo_id=HF_REPO_ID,
+                                     repo_type="space",
+                                     commit_message=f"reset: purge {fname}")
+                hub_deleted.append(fname)
+            except Exception as e:
+                print(f"[reset] hub delete {fname} failed: {e}")
+    return JSONResponse({"status": "reset", "message": "State cleared. Next run starts fresh.",
+                         "hub_deleted": hub_deleted})
 
 @api.post("/api/mutate")
 async def api_mutate(request: Request):

@@ -1,0 +1,79 @@
+name: Deploy TFs to HF Spaces (NBA + POL + PQTF)
+
+on:
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: 'Comma-sep: nba,pol,pqtf (default all)'
+        required: false
+        default: 'nba,pol,pqtf'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/arena/hf-llm-trading-floor/**'
+      - 'scripts/arena/hf-political-trading-floor/**'
+      - 'scripts/arena/hf-political-quant-trading-floor/**'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install huggingface_hub
+        run: pip install -q huggingface_hub
+      - name: Upload per-TF files
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN_2 }}
+          TARGETS: ${{ inputs.targets || 'nba,pol,pqtf' }}
+        run: |
+          python3 <<'PY'
+          import os, pathlib
+          from huggingface_hub import HfApi
+          api = HfApi(token=os.environ['HF_TOKEN'])
+          targets = [t.strip() for t in os.environ.get('TARGETS','nba,pol,pqtf').split(',') if t.strip()]
+
+          TFS = {
+              'nba': {
+                  'repo': 'LBJLincoln26/nba-llm-trading-floor',
+                  'src':  'scripts/arena/hf-llm-trading-floor',
+                  'files': ['app.py','gateway_client.py','provider_health.py',
+                            'requirements.txt','README.md',
+                            'extend_predictions_all_categories.py','prepare_data.py'],
+              },
+              'pol': {
+                  'repo': 'LBJLincoln26/political-llm-trading-floor',
+                  'src':  'scripts/arena/hf-political-trading-floor',
+                  'files': ['app.py','gateway_client.py','provider_health.py',
+                            'requirements.txt','README.md',
+                            'extend_predictions_all_categories.py','build_full_dataset.py'],
+              },
+              'pqtf': {
+                  'repo': 'LBJLincoln26/political-quant-trading-floor',
+                  'src':  'scripts/arena/hf-political-quant-trading-floor',
+                  'files': ['app.py','engine.py','requirements.txt','README.md',
+                            'gateway_client.py','intraday_paths.py','options.py',
+                            'provider_health.py','session_data.py','spreads.py'],
+              },
+          }
+
+          for t in targets:
+              if t not in TFS:
+                  print(f"[deploy] unknown: {t}"); continue
+              cfg = TFS[t]
+              src = pathlib.Path(cfg['src'])
+              for f in cfg['files']:
+                  p = src / f
+                  if not p.exists():
+                      print(f"[deploy-{t}] skip missing: {f}"); continue
+                  try:
+                      api.upload_file(path_or_fileobj=str(p), path_in_repo=f,
+                                      repo_id=cfg['repo'], repo_type='space',
+                                      commit_message=f'deploy: {f}')
+                      print(f"[deploy-{t}] uploaded: {f}")
+                  except Exception as e:
+                      print(f"[deploy-{t}] FAILED {f}: {type(e).__name__}: {e}")
+          PY

@@ -320,7 +320,9 @@ def api_stop():
 @app.post("/api/reset")
 def api_reset():
     """Wipe persisted state and start fresh on next /api/run.
-    Parity with NBA + POL TFs. Requires not running."""
+    Parity with NBA + POL TFs. Requires not running.
+    Also purges Hub-persisted data/decisions/day-*.json — PQTF's auto-resume
+    rebuilds state from these day files, so they must go or restart = no-op."""
     global _state
     if _running:
         return JSONResponse({"status": "error", "message": "Cannot reset while running. Stop first."}, status_code=409)
@@ -330,7 +332,22 @@ def api_reset():
         STATE_PATH.unlink(missing_ok=True)
     except Exception as e:
         return JSONResponse({"status": "error", "message": f"unlink failed: {e}"}, status_code=500)
-    return JSONResponse({"status": "reset_ok"})
+    hub_deleted = 0
+    if _hub:
+        try:
+            files = _hub.list_repo_files(repo_id=HF_REPO_ID, repo_type="space")
+            for f in files:
+                if f.startswith("data/decisions/day-") and f.endswith(".json"):
+                    try:
+                        _hub.delete_file(path_in_repo=f, repo_id=HF_REPO_ID,
+                                         repo_type="space",
+                                         commit_message=f"reset: purge {f}")
+                        hub_deleted += 1
+                    except Exception as e:
+                        print(f"[reset] hub delete {f} failed: {e}")
+        except Exception as e:
+            print(f"[reset] list_repo_files failed: {e}")
+    return JSONResponse({"status": "reset_ok", "hub_day_files_deleted": hub_deleted})
 
 @app.get("/api/leaderboard")
 def api_leaderboard():
