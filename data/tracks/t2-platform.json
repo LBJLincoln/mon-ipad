@@ -119,5 +119,71 @@
       }
     },
     "alert": "gemma4-chat gated model 401 (google/gemma-3-1b-it needs HF token in Space secrets); qwen35-chat sleeping; Nomos42 CPU quota exhausted \u2014 cannot restart via API"
+  },
+  "blacksmith": {
+    "last_tick": "2026-04-19T13:05:36Z",
+    "tick_count": 1,
+    "councils": {
+      "d1": {
+        "status": "up",
+        "hf_stage": "RUNNING",
+        "last_loop_iso": "2026-04-19T12:25:00Z",
+        "last_verdict": "PROPOSED",
+        "action_this_tick": "cross_pollinate_inbox: d2-rest_advantage win appended"
+      },
+      "d2": {
+        "status": "up",
+        "hf_stage": "RUNNING",
+        "last_loop_iso": "2026-04-19T12:25:00Z",
+        "last_verdict": "KEEP",
+        "action_this_tick": "win broadcast to d1+d3 (rest_advantage confirmed)"
+      },
+      "d3": {
+        "status": "up",
+        "hf_stage": "RUNNING",
+        "last_loop_iso": "2026-04-19T12:25:00Z",
+        "last_verdict": "PROPOSED",
+        "action_this_tick": "cross_pollinate_inbox: d6-calibration + d2-rest_advantage wins appended"
+      },
+      "d4": {
+        "status": "up",
+        "hf_stage": "RUNNING",
+        "last_loop_iso": "2026-04-19T12:25:00Z",
+        "last_verdict": "PROPOSED",
+        "action_this_tick": "no_action (no win to broadcast)"
+      },
+      "d5": {
+        "status": "up",
+        "hf_stage": "RUNNING",
+        "last_loop_iso": "2026-04-19T12:25:00Z",
+        "last_verdict": "PROPOSED",
+        "action_this_tick": "no_action (no win to broadcast)"
+      },
+      "d6": {
+        "status": "up",
+        "hf_stage": "RUNNING",
+        "last_loop_iso": "2026-04-19T12:25:00Z",
+        "last_verdict": "KEEP",
+        "action_this_tick": "win broadcast to d3+d8 (calibration ECE=0.062 slope=0.677)"
+      },
+      "d7": {
+        "status": "up",
+        "hf_stage": "RUNNING",
+        "last_loop_iso": "2026-04-19T12:25:00Z",
+        "last_verdict": "REVERT",
+        "action_this_tick": "no_action (REVERT verdict, bloomberg-api-down-alert)"
+      },
+      "d8": {
+        "status": "up",
+        "hf_stage": "RUNNING",
+        "last_loop_iso": "2026-04-19T12:25:00Z",
+        "last_verdict": "PROPOSED",
+        "action_this_tick": "cross_pollinate_inbox: d6-calibration Kelly-sizing note appended"
+      }
+    },
+    "wins_pollinated": 4,
+    "restarts_this_tick": 0,
+    "restarts_blocked": 0,
+    "note": "all 8 spaces RUNNING (HF API confirmed); /api/status returns 308->root (no JSON endpoint on councils); loop state read from local council JSONs; last_loop 0.8h ago (12:25Z), within 6h window \u2014 no wake needed"
   }
 }
