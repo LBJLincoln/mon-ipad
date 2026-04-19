@@ -16,6 +16,13 @@ And adds:
 - No 30s dead-provider timeouts on the critical path.
 - Async self-heal of dead HF Spaces (restart_space + poll /health).
 - Auditable substitution trail.
+- Time-windowed circuit breaker (2026-04-19): if a provider ≥ WINDOW_THRESHOLD
+  failures inside WINDOW_SECONDS, open for WINDOW_COOLDOWN (longer than the
+  per-call CIRCUIT_COOLDOWN). This catches quota exhaustion (e.g. Cerebras
+  returning 429 across 100+ calls) that the consecutive-failure counter misses
+  because each call succeeds the retry loop then hits a fresh 429.
+  For cerebras:qwen-3-235b specifically WINDOW_COOLDOWN=3600 (1h) since their
+  free-tier quota is hourly. Fallback chain for T1/T2 lands on mistral:large.
 """
 import time
 import threading
@@ -25,8 +32,10 @@ from typing import Optional, Dict, List
 import requests
 
 # Tier-tagged emergency pool (verified alive cloud providers, 2026-04-17).
+# 2026-04-19: mistral:large promoted to head of L-tier so T1/T2 (qwen-quant,
+# qwen-arb) land on mistral-large-latest when cerebras:qwen-3-235b is tripped.
 EMERGENCY_POOL = {
-    "L": ["cerebras:qwen-3-235b", "openrouter:nemotron-120b", "nvidia:llama-3.3-70b", "github:gpt-4o-mini"],
+    "L": ["mistral:large", "cerebras:qwen-3-235b", "openrouter:nemotron-120b", "nvidia:llama-3.3-70b", "github:gpt-4o-mini"],
     "M": ["cerebras:llama3.1-8b", "mistral:large", "mistral:medium", "nvidia:minimax-m2.7", "github:gpt-4o-mini", "github:llama-3.1-8b"],
     "S": ["mistral:small", "mistral:ministral-8b", "mistral:nemo", "openrouter:gpt-oss-120b", "github:llama-3.1-8b", "selfhost:qwen3-4b", "selfhost:dolphin3-l32-3b"],
 }
@@ -56,8 +65,24 @@ PROVIDER_TIER: Dict[str, str] = {
     "github:llama-3.1-8b": "S",
 }
 
-CIRCUIT_THRESHOLD = 3
-CIRCUIT_COOLDOWN = 300
+# --- Consecutive-failure circuit breaker (original, unchanged) ---------------
+CIRCUIT_THRESHOLD = 3       # consecutive failures before opening
+CIRCUIT_COOLDOWN  = 300     # 5 min cooldown (per-call granularity)
+
+# --- Time-windowed circuit breaker (2026-04-19) ------------------------------
+# Fires when a provider accumulates >= WINDOW_THRESHOLD failures within any
+# rolling WINDOW_SECONDS window. Designed to catch Cerebras quota exhaustion
+# (50-200 failures per hour) that slip through the consecutive counter.
+WINDOW_SECONDS   = 1800     # 30-minute rolling window
+WINDOW_THRESHOLD = 3        # 3 failures inside that window opens the breaker
+WINDOW_COOLDOWN  = 300      # default 5 min for most providers
+
+# Per-provider override: Cerebras quota resets hourly, so we hold it open 1h.
+PROVIDER_WINDOW_COOLDOWN: Dict[str, int] = {
+    "cerebras:qwen-3-235b":  3600,  # 1h — hourly free-tier quota
+    "cerebras:llama3.1-8b":  3600,  # same quota bucket
+}
+
 HEAL_POLL_INTERVAL = 30
 HEAL_DEADLINE = 1800
 
@@ -67,6 +92,30 @@ _substitutions_in_use: Dict[str, int] = {}
 _substitutions_log: List[dict] = []
 _healing_threads: Dict[str, threading.Thread] = {}
 
+# Per-provider rolling failure timestamp list (for time-windowed breaker).
+_failure_ts: Dict[str, List[float]] = {}
+
+
+def _apply_window_breaker(provider: str) -> None:
+    """Trim the rolling window and open the circuit if threshold is exceeded.
+
+    Must be called inside _lock.
+    """
+    now = time.time()
+    ts_list = _failure_ts.setdefault(provider, [])
+    # Drop timestamps older than the window.
+    _failure_ts[provider] = [t for t in ts_list if now - t <= WINDOW_SECONDS]
+    _failure_ts[provider].append(now)
+
+    if len(_failure_ts[provider]) >= WINDOW_THRESHOLD:
+        cooldown = PROVIDER_WINDOW_COOLDOWN.get(provider, WINDOW_COOLDOWN)
+        h = _health.setdefault(provider, {"consecutive_failures": 0, "skip_until": 0, "last_error": None, "last_success": 0})
+        new_skip_until = now + cooldown
+        if new_skip_until > h.get("skip_until", 0):
+            h["skip_until"] = new_skip_until
+            h["window_breaker_opened_at"] = now
+            h["window_breaker_cooldown"] = cooldown
+
 
 def record_success(provider: str) -> None:
     with _lock:
@@ -74,6 +123,9 @@ def record_success(provider: str) -> None:
         h["consecutive_failures"] = 0
         h["last_success"] = time.time()
         h["skip_until"] = 0
+        # Clear the rolling window on success so a transient spike doesn't
+        # permanently poison the breaker after quota resets.
+        _failure_ts.pop(provider, None)
 
 
 def record_failure(provider: str, error_class: str = "unknown") -> None:
@@ -81,8 +133,11 @@ def record_failure(provider: str, error_class: str = "unknown") -> None:
         h = _health.setdefault(provider, {"consecutive_failures": 0, "skip_until": 0, "last_error": None, "last_success": 0})
         h["consecutive_failures"] += 1
         h["last_error"] = error_class
+        # Original consecutive-failure breaker (short cooldown, per-call).
         if h["consecutive_failures"] >= CIRCUIT_THRESHOLD:
-            h["skip_until"] = time.time() + CIRCUIT_COOLDOWN
+            h["skip_until"] = max(h.get("skip_until", 0), time.time() + CIRCUIT_COOLDOWN)
+        # New time-windowed breaker (longer cooldown, quota-exhaustion aware).
+        _apply_window_breaker(provider)
 
 
 def is_dead(provider: str) -> bool:
@@ -179,4 +234,13 @@ def get_snapshot() -> dict:
             "substitutions_in_use": dict(_substitutions_in_use),
             "recent_substitutions": _substitutions_log[-20:],
             "healing_active": [p for p, t in _healing_threads.items() if t.is_alive()],
+            # 2026-04-19: expose window-breaker state for audit
+            "window_breaker": {
+                p: {
+                    "failures_in_window": len([t for t in _failure_ts.get(p, []) if now - t <= WINDOW_SECONDS]),
+                    "skip_until": max(0, int(_health.get(p, {}).get("skip_until", 0) - now)),
+                    "cooldown_configured": PROVIDER_WINDOW_COOLDOWN.get(p, WINDOW_COOLDOWN),
+                }
+                for p in PROVIDER_WINDOW_COOLDOWN
+            },
         }
