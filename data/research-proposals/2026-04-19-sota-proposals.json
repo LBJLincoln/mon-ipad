@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-04-19T00:20:00Z",
+  "source": "cloud-brain WebSearch cycle",
+  "target_metric": "Brier score < 0.20 (current fleet best 0.22085)",
+  "proposals": [
+    {
+      "rank": 1,
+      "title": "Isotonic Calibration via PurgedKFold",
+      "source": "sklearn calibration docs + MetaTrader 5 ML Blueprint (2025)",
+      "technique": "Fit isotonic regression on OOF predictions using purged cross-validation to respect NBA temporal ordering. CalibratedClassifierCV(method='isotonic') with PurgedKFold splitter.",
+      "est_brier_range": [0.205, 0.210],
+      "est_improvement_pct": 2.5,
+      "gpu_required": false,
+      "implementation": "Wrap XGBoost/CatBoost ensemble with CalibratedClassifierCV(method='isotonic') using PurgedKFold from mlfinlab. Critical: avoid random hold-out calibration which leaks info in sports data.",
+      "why": "Current 0.22085 likely has systematic miscalibration. Isotonic is non-parametric and captures model's actual probability distortion without assuming shape.",
+      "applicable_to": ["NBA islands S10-S22", "political islands P1-P8"]
+    },
+    {
+      "rank": 2,
+      "title": "Calibration-First Model Selection (direct Brier optimization in CV)",
+      "source": "arXiv 2303.06021 (Walsh & Joshi 2023); systematic review 2410.21484 (Oct 2024)",
+      "technique": "Optimize ensemble weights to minimize Brier score directly on calibrated probabilities rather than accuracy/AUC during cross-validation.",
+      "est_brier_range": [0.210, 0.215],
+      "est_improvement_pct": 1.5,
+      "gpu_required": false,
+      "implementation": "In GA mutate/crossover: change fitness function from accuracy to sklearn.metrics.brier_score_loss(). Weight XGBoost/CatBoost/LightGBM blend to minimize Brier on each CPCV split.",
+      "why": "Study shows calibration-optimized models generate 69.86% higher returns than accuracy-optimized in sports betting.",
+      "applicable_to": ["all GA islands", "features/engine.py fitness function"]
+    },
+    {
+      "rank": 3,
+      "title": "Evolutionary Ensemble Weighting via Differential Evolution",
+      "source": "2025 LLM-FE preprint; scipy differential_evolution",
+      "technique": "Use differential evolution to find optimal [w_xgb, w_cat, w_light, w_extra] blending weights that minimize Brier on validation fold. Repeat per CPCV split.",
+      "est_brier_range": [0.208, 0.212],
+      "est_improvement_pct": 1.8,
+      "gpu_required": false,
+      "implementation": "scipy.optimize.differential_evolution(brier_loss_fn, bounds=[(0,1)]*4, maxiter=100). Run once per generation in GA loop.",
+      "why": "4 models have different calibration profiles; evolution finds non-linear combinations humans miss.",
+      "applicable_to": ["S17 ensemble island (ideal test bed)", "S22 venn_abers_fusion"]
+    },
+    {
+      "rank": 4,
+      "title": "Cross-Validated Purged Calibration (CPCV)",
+      "source": "Purged CV methodology; combinatorial purged CV for financial ML",
+      "technique": "Combinatorial purged cross-validation with embargo windows specific to NBA temporal structure. Calibrate isotonic map per fold on OOF predictions. Average maps across folds.",
+      "est_brier_range": [0.209, 0.214],
+      "est_improvement_pct": 1.6,
+      "gpu_required": false,
+      "implementation": "Implement PurgedKFold with embargo=7days (one week NBA gap). Fit isotonic calibration within each fold. Ensemble calibrated predictions.",
+      "why": "NBA games have overlapping features (team stats, rest days); standard CV inflates reported Brier by not purging look-ahead bias.",
+      "applicable_to": ["features/engine.py validation split", "Kaggle P100 karpathy loop"]
+    },
+    {
+      "rank": 5,
+      "title": "Brier Score Decomposition Audit (misconceptions paper)",
+      "source": "arXiv 2504.04906v3 (April 2025)",
+      "technique": "Audit current Brier computation for common pitfalls: division by 2 for binary, class balance handling, calibration vs discrimination decomposition.",
+      "est_brier_range": [0.206, 0.212],
+      "est_improvement_pct": 2.0,
+      "gpu_required": false,
+      "implementation": "Review features/engine.py Brier computation. Verify: (1) using brier_score_loss not manual MSE, (2) correct handling of class imbalance, (3) separating reliability from resolution components.",
+      "why": "If systematic bias exists in Brier computation (e.g., base rate shifts across seasons), fixing foundation before tuning is highest-ROI move.",
+      "applicable_to": ["features/engine.py (all islands)", "Supabase experiments table"]
+    }
+  ],
+  "recommended_order": "Implement #1 (Isotonic CPCV) first — quickest 2-3% win. Then #2 (direct Brier in GA fitness). Then #3 (differential evolution weights).",
+  "deployment_note": "All proposals are CPU-compatible (no GPU needed). Target S17 ensemble island as primary test bed (fleet best candidate)."
+}
