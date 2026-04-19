@@ -1,0 +1,56 @@
+name: ITF — Intraday Trading Floor tick
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every 15 min, 13:00-20:00 UTC, Mon-Fri (US market hours window).
+    # Market open = 13:30 UTC, close = 20:00 UTC. We warm up at 13:00.
+    - cron: '*/15 13-20 * * 1-5'
+
+permissions:
+  contents: write
+
+jobs:
+  itf-tick:
+    name: ITF tick
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      GATEWAY_URL: https://lbjlincoln26-llm-gateway.hf.space
+      CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+      LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+      LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+      LANGFUSE_HOST: https://nomos42-langfuse.hf.space
+      ALPACA_PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
+      ALPACA_PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
+      ALPACA_PAPER_TRADE: 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install deps
+        run: |
+          pip install --quiet yfinance requests langfuse
+
+      - name: ITF single tick
+        run: |
+          cd scripts/arena/hf-intraday-trading-floor
+          python3 app.py --once 2>&1 | tee /tmp/itf-tick.log
+        continue-on-error: true
+
+      - name: Commit tick results
+        run: |
+          git config user.name  "itf-bot"
+          git config user.email "itf-bot@nomos42"
+          bash scripts/lib/safe_commit.sh ITF "itf(tick): $(date -u +%Y-%m-%dT%H:%M)" data/intraday/ data/arena/itf-state.json 2>&1 || echo "no changes"

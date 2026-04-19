@@ -67,8 +67,13 @@ MODELS = {
         "rpm": 60,
         "tier": "fast",
     },
+    # 2026-04-19 cross-account rebalance: Nomos42 selfhost LLMs PAUSED (account
+    # quota full). Three LLMs duplicated to TESTforge42 and live there. Aliases
+    # preserved (selfhost:qwen3-4b / gemma-3-4b / qwen3-0.6b / dolphin3-l32-3b)
+    # but URLs repointed to whichever Space actually responds today.
+    # Only TESTforge42/qwen3-4b-cpu + TESTforge42/llama32-1b-cpu verified live.
     "selfhost:qwen3-4b": {
-        "url": "https://nomos42-qwen3-4b-cpu.hf.space/v1/chat/completions",
+        "url": "https://testforge42-qwen3-4b-cpu.hf.space/v1/chat/completions",
         "model": "qwen3-4b-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
@@ -76,10 +81,11 @@ MODELS = {
         "rpm": 60,
         "tier": "medium",
     },
-    # ── SELF-HOST (Apr 17 2026) — live-probed, all 3 respond via /v1/chat/completions ──
     "selfhost:gemma-3-4b": {
-        "url": "https://nomos42-gemma2-2b-cpu.hf.space/v1/chat/completions",
-        "model": "gemma-3-4b-it",
+        # alias keeps ITF persona wiring stable; routes to working qwen3-4b
+        # while Nomos42/gemma2-2b-cpu remains paused.
+        "url": "https://testforge42-qwen3-4b-cpu.hf.space/v1/chat/completions",
+        "model": "qwen3-4b-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
@@ -87,8 +93,9 @@ MODELS = {
         "tier": "fast",
     },
     "selfhost:qwen3-0.6b": {
-        "url": "https://nomos42-qwen25-05b-cpu.hf.space/v1/chat/completions",
-        "model": "qwen3-0.6b-instruct",
+        # alias routes to llama-3.2-1b (smallest live model) to preserve scalper tier.
+        "url": "https://testforge42-llama32-1b-cpu.hf.space/v1/chat/completions",
+        "model": "llama-3.2-1b-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
@@ -96,8 +103,8 @@ MODELS = {
         "tier": "fast",
     },
     "selfhost:dolphin3-l32-3b": {
-        "url": "https://nomos42-llama32-1b-cpu.hf.space/v1/chat/completions",
-        "model": "dolphin3-llama3.2-3b",
+        "url": "https://testforge42-llama32-1b-cpu.hf.space/v1/chat/completions",
+        "model": "llama-3.2-1b-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
