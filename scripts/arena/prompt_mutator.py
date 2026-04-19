@@ -198,9 +198,48 @@ def mutate(dry_run: bool = False) -> Dict[str, Any]:
     return {"status": "ok", "touched": touched, "pfile": str(pfile)}
 
 
+def deploy_hf() -> Dict[str, Any]:
+    """Upload overrides.json to all 3 TF Spaces so running containers pick it up.
+    Uses HF_TOKEN_NBA for LBJLincoln26 account (hosts NBA+POL+PQTF TFs).
+    """
+    if not OVERRIDES_PATH.exists():
+        return {"status": "no-overrides", "path": str(OVERRIDES_PATH)}
+    try:
+        from huggingface_hub import HfApi  # type: ignore
+    except ImportError:
+        return {"status": "hfapi-missing"}
+    token = os.environ.get("HF_TOKEN_NBA") or os.environ.get("HF_TOKEN_2") or os.environ.get("HF_TOKEN")
+    if not token:
+        return {"status": "no-token"}
+    api = HfApi(token=token)
+    targets = [
+        ("LBJLincoln26/nba-llm-trading-floor",       "data/prompts/overrides.json"),
+        ("LBJLincoln26/political-llm-trading-floor", "data/prompts/overrides.json"),
+        ("LBJLincoln26/political-quant-trading-floor", "data/prompts/overrides.json"),
+    ]
+    out = []
+    for repo, dest in targets:
+        try:
+            api.upload_file(
+                path_or_fileobj=str(OVERRIDES_PATH),
+                path_in_repo=dest,
+                repo_id=repo,
+                repo_type="space",
+                commit_message="prompt_mutator: auto-deploy overrides",
+            )
+            out.append({"repo": repo, "ok": True})
+        except Exception as e:
+            out.append({"repo": repo, "ok": False, "err": str(e)[:200]})
+    return {"status": "deployed", "targets": out}
+
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--deploy-hf", action="store_true",
+                   help="After mutation, upload overrides.json to all 3 TF Spaces")
     args = p.parse_args()
     result = mutate(dry_run=args.dry_run)
+    if args.deploy_hf and not args.dry_run:
+        result["deploy_hf"] = deploy_hf()
     print(json.dumps(result, indent=2))

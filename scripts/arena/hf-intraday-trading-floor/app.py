@@ -190,6 +190,10 @@ DECISIONS_DIR.mkdir(parents=True, exist_ok=True)
 
 def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     """Run one tick: refresh quotes, build context, call all 6 agents, execute."""
+    with _lock:
+        STATE["tick_count"] += 1
+        STATE["last_tick_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    print(f"[itf] tick #{STATE['tick_count']} starting", file=sys.stderr, flush=True)
     quote_refresh()  # persist snapshot
     ctx = build_intraday_context()
     results: List[Dict[str, Any]] = []
@@ -228,9 +232,7 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
             print(json.dumps(result, indent=2, default=str))
             print("-" * 72)
 
-    with _lock:
-        STATE["last_tick_at"] = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-        STATE["tick_count"] += 1
+    print(f"[itf] tick #{STATE['tick_count']} done — {len(results)} decisions", file=sys.stderr, flush=True)
 
     # Persist day log
     day = now.strftime("%Y-%m-%d")
@@ -279,7 +281,11 @@ def tick_loop(interval_sec: int = int(os.environ.get("ITF_TICK_SEC", "300"))) ->
             try:
                 tick_once()
             except Exception as e:
-                print(f"[itf] tick failed: {e}", file=sys.stderr)
+                import traceback
+                print(f"[itf] tick failed: {e}", file=sys.stderr, flush=True)
+                traceback.print_exc(file=sys.stderr)
+        else:
+            print(f"[itf] market closed at {now.isoformat()} — skipping tick", file=sys.stderr, flush=True)
         time.sleep(interval_sec)
     STATE["running"] = False
 
