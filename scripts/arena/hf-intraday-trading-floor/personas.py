@@ -65,10 +65,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "mean-rev-1",
         "name": "MeanReversion",
-        "model_primary": "google:gemini-2.5-flash",      # PQTF gemini-anl winner
-        "model_fallback": "selfhost:phi-3.5-mini",
-        "hf_account_target": "google",
-        "hf_space_target": "gemini-2.5-flash",
+        "model_primary": "mistral:nemo",                 # top fast-tier winner (cross-TF attribution)
+        "model_fallback": "google:gemini-3-flash",
+        "hf_account_target": "mistral",
+        "hf_space_target": "nemo",
         "tier": "L",
         "risk": 0.40,
         "max_hold_min": 90,
