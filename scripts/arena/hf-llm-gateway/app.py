@@ -58,11 +58,14 @@ MODELS = {
     #    nomos42-llm-cpu runs Qwen2.5-1.5B via /api/decide (NOT /v1/chat/completions, different shape);
     #    smollm3-3b-cpu BROKEN (llama-cpp-python 0.3.9 can't load SmolLM3 GGUF).
     #    phi-4-mini repointed to selfhost_decide provider to match /api/decide shape.) ──
+    # Nomos42/nomos42-llm-cpu PAUSED 2026-04-19 (account slot budget). Alias repointed
+    # to TESTforge42 llama32-1b so dependents keep working; shape changed from
+    # /api/decide to OpenAI-compatible /v1/chat/completions.
     "selfhost:phi-4-mini": {
-        "url": "https://nomos42-nomos42-llm-cpu.hf.space/api/decide",
-        "model": "qwen2.5-1.5b-instruct",
+        "url": "https://testforge42-llama32-1b-cpu.hf.space/v1/chat/completions",
+        "model": "llama-3.2-1b-instruct",
         "key_env": "NOMOS_HF_TOKEN",
-        "provider": "selfhost_decide",
+        "provider": "selfhost",
         "max_tokens": 400,
         "rpm": 60,
         "tier": "fast",
@@ -110,6 +113,18 @@ MODELS = {
         "max_tokens": 400,
         "rpm": 60,
         "tier": "slow",
+    },
+    # TESTforge42/smollm3-3b-cpu — deps bumped to llama-cpp-python>=0.3.12 to add
+    # SmolLM3 arch support (0.3.9 load_failed). Alive once build completes; until
+    # then gateway marks it down via its normal health sweep.
+    "selfhost:smollm3-3b": {
+        "url": "https://testforge42-smollm3-3b-cpu.hf.space/v1/chat/completions",
+        "model": "smollm3-3b",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "medium",
     },
     # ── CEREBRAS (free, ultra-fast ~2000 tok/s, 30 RPM) ──
     "cerebras:qwen-3-235b": {
@@ -469,7 +484,7 @@ def _call_openrouter(model_cfg: dict, messages: list, max_tokens: int) -> str:
 
 
 def _call_selfhost(model_cfg: dict, messages: list, max_tokens: int) -> str:
-    """T12 self-host (Nomos42/nomos42-llm-cpu). No quota, ~5-8s/call on CPU."""
+    """Self-host CPU LLMs. qwen3-4b at 400-token output needs up to 180s on 2 vCPU."""
     key = os.environ.get(model_cfg["key_env"], "")
     headers = {"Content-Type": "application/json"}
     if key:
@@ -478,7 +493,7 @@ def _call_selfhost(model_cfg: dict, messages: list, max_tokens: int) -> str:
         model_cfg["url"],
         headers=headers,
         json={"model": model_cfg["model"], "messages": messages, "max_tokens": max_tokens, "temperature": 0.7},
-        timeout=60,
+        timeout=200,
     )
     resp.raise_for_status()
     data = resp.json()
