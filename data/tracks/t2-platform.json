@@ -1,120 +1,64 @@
 {
-  "timestamp": "2026-04-19T13:22:30+00:00",
+  "timestamp": "2026-04-19T14:42:00.000000+00:00",
   "track": "T2 PLATFORM",
   "absorbs": [
     "D2 engineering",
     "D7 infra",
     "D9 cross-repo"
   ],
-  "status": "watch",
+  "status": "partial",
   "last_metric": {
-    "engine_sha_match": true,
-    "nba_fleet_up": null,
+    "engine_sha_match": null,
+    "nba_fleet_up": 12,
     "infra_alerts": 1
   },
-  "last_action": "LAUNCHPAD 13:22Z tick: POL reset 24629968042 success; NBA engine SHA parity verified; 9x axelrod-* manual workflow failures flagged",
-  "next_proposal": "Disable or fix the 3 axelrod-* manual workflows (9 consecutive failures in 15 min)",
-  "blocked_on": null,
-  "launchpad": {
-    "last_tick": "2026-04-19T13:22:30Z",
-    "tick_count": 1,
-    "ci_health": {
-      "mon_ipad": {
-        "pass": 0,
-        "fail": 9,
-        "in_progress": 1,
-        "window": "last 10 runs"
-      },
-      "nomos_dashboard": {
-        "pass": 7,
-        "fail": 3,
-        "in_progress": 0,
-        "window": "last 10 runs"
-      },
-      "nomos_political_alpha": {
-        "pass": 0,
-        "fail": 0,
-        "in_progress": 0,
-        "window": "no runs found (no Actions enabled or repo dormant)"
-      }
-    },
-    "failures": [
-      {
-        "repo": "mon-ipad",
-        "workflow": "axelrod-ck-fix-v1.yml",
-        "runs_failed": 3,
-        "branch": "main",
-        "trigger": "workflow_dispatch",
-        "age_min": 8,
-        "note": "manual patch workflow, 3x consecutive fail in 15 min (12:00 / 13:05 / 13:14Z)"
-      },
-      {
-        "repo": "mon-ipad",
-        "workflow": "axelrod-fire8-fix.yml",
-        "runs_failed": 3,
-        "branch": "main",
-        "trigger": "workflow_dispatch",
-        "age_min": 8,
-        "note": "manual patch workflow, 3x consecutive fail"
-      },
-      {
-        "repo": "mon-ipad",
-        "workflow": "axelrod-society-patch.yml",
-        "runs_failed": 3,
-        "branch": "main",
-        "trigger": "workflow_dispatch",
-        "age_min": 8,
-        "note": "manual patch workflow, 3x consecutive fail"
-      },
-      {
-        "repo": "nomos-dashboard",
-        "workflow": "Dashboard Checks",
-        "runs_failed": 1,
-        "branch": "main",
-        "age_hours": 45,
-        "error": "src/app/page.tsx(146,13) TS1355: const-assertion misuse",
-        "note": "TS error blocking dashboard CI since 2026-04-17 16:09Z"
-      }
+  "last_action": "switchboard LLM healing 2026-04-19T14:42Z — nomos42-llm-cpu RUNTIME_ERROR fixed, gemma4-chat gated-model fixed (switched to Qwen2.5-1.5B-Instruct), 8 idle CPU council spaces paused to free quota",
+  "next_proposal": "Wire auto-deploy-engine for engine.py parity drift detection",
+  "blocked_on": "qwen35-chat SLEEPING: Nomos42 free plan quota exhausted (12/10 running spaces). Requires USER ACTION: upgrade Nomos42 to PRO or accept qwen35-chat stays sleeping.",
+  "switchboard": {
+    "resolved_this_tick": [
+      "paused Nomos42/fin-r1-7b-cpu (batch-only, not in routing)",
+      "paused Nomos42/smollm3-3b-cpu (D4 Product council)",
+      "paused Nomos42/llama32-1b-cpu (D2 Engineering council)",
+      "paused Nomos42/qwen25-05b-cpu (D5 Business council)",
+      "paused Nomos42/gemma2-2b-cpu (D3 Evolution council)",
+      "paused Nomos42/qwen3-4b-cpu (D1 Research council)",
+      "paused Nomos42/nomos-cpu-gemma4 (D6 Evaluation council)",
+      "paused Nomos42/gemma3-4b-cpu (sleeping, gateway fallback only)",
+      "restarted Nomos42/nomos42-llm-cpu (was RUNTIME_ERROR, now RUNNING — serves selfhost:phi-4-mini/qwen2.5 gateway)",
+      "patched Nomos42/gemma4-chat app.py: switched default model from gated google/gemma-3-1b-it to Qwen/Qwen2.5-1.5B-Instruct (commit 3e53f18c52e5ed1b51b5d620f82203ce244932a6), restarted, now RUNNING"
     ],
-    "pol_reset_status": {
-      "run_id": 24629968042,
-      "workflow": "POL TF one-shot reset (stop + /api/reset + run)",
-      "conclusion": "success",
-      "duration_sec": 53,
-      "started": "2026-04-19T13:14:46Z",
-      "completed": "2026-04-19T13:15:39Z"
-    },
-    "workflow_inventory": {
-      "total_workflows": 20,
-      "scheduled_workflows": 11,
-      "manual_only": 9,
-      "deploy_tfs_present": true,
-      "tf_reset_set": [
-        "tf-nba-reset.yml",
-        "tf-pol-reset.yml",
-        "tf-pqtf-reset.yml"
-      ],
-      "hf_token_secret": "HF_TOKEN_2 (uniform across deploy-tfs + 3 tf resets)",
-      "parity_note": "All 4 TF workflows reference secrets.HF_TOKEN_2 \u2014 parity OK",
-      "overdue_crons": [],
-      "cron_overlap_check": "modal :15 / karpathy :05 / paperspace :35 / zerogpu :50 / analytics :45 \u2014 well-staggered, no overlaps"
-    },
-    "parity_check": {
-      "nba_engine_sha": "25d59790bf7c83288d15caf6aaf33b3a4e59923b46ba4512a3ee8c22c193c224",
-      "nba_mirror_sha": "25d59790bf7c83288d15caf6aaf33b3a4e59923b46ba4512a3ee8c22c193c224",
-      "nba_identical": true,
-      "pol_engine_sha": "d26747bf4e34a19a9db064af0a68ced44960fe6f3363eda9f9f2d40a1251f0c9",
-      "pol_engine_path": "/home/termius/nomos-political-alpha/features/political_engine.py",
-      "nba_pol_identical": false,
-      "nba_pol_note": "Expected divergence \u2014 NBA and POL are different engines; only shared blocks need parity (Rule 2 satisfied for NBA mirror)"
-    },
-    "alerts": [
-      "RED: 9 consecutive axelrod-* workflow failures in 15min (manual dispatch loop) \u2014 someone/something re-firing broken patches",
-      "AMBER: nomos-dashboard 'Dashboard Checks' has TS1355 at page.tsx:146 since 2026-04-17 (45h old, 3 failures since)",
-      "GREEN: POL TF reset 24629968042 succeeded in 53s; HF_TOKEN_2 propagated to /api/reset",
-      "GREEN: NBA engine.py byte-identical between source and hf-space mirror (Rule 2 OK)",
-      "INFO: nomos-political-alpha repo has 0 GH Actions runs in window \u2014 dormant or Actions disabled",
-      "WARN: t2-platform.json was reset to skeleton between 12:17Z and 13:17Z by external writer \u2014 plumber/switchboard/blacksmith blocks lost; will re-populate on their next ticks"
-    ]
+    "blocked": [
+      "Nomos42/qwen35-chat SLEEPING: Nomos42 free plan caps at ~10 simultaneously running spaces. 6 NBA + 2 POL + pixel-world + langfuse + nomos42-llm-cpu + gemma4-chat = 12 running, 2 over limit. Cannot restart without pausing a core space. USER must upgrade Nomos42 to PRO or the space wakes organically on next user visit."
+    ],
+    "nba_tf_provider_error_source": "cerebras:qwen-3-235b — 280 substitutions accumulated (circuit breaker fired), hot-swap routed to openrouter:nemotron-120b / nvidia:llama-3.3-70b / cerebras:llama3.1-8b. Current llm_failures=0 (hot-swap working). Cloud API key issue — NOT fixable autonomously. Flag for user: check Cerebras dashboard for rate-limit / quota exhaustion.",
+    "spaces_up": [
+      "Nomos42/nba-evo-3 RUNNING",
+      "Nomos42/nba-evo-4 RUNNING",
+      "Nomos42/nba-evo-5 RUNNING",
+      "Nomos42/nba-evo-6 RUNNING",
+      "Nomos42/nba-quant RUNNING",
+      "Nomos42/nba-quant-2 RUNNING",
+      "Nomos42/political-alpha RUNNING",
+      "Nomos42/political-alpha-2 RUNNING",
+      "Nomos42/pixel-world RUNNING",
+      "Nomos42/langfuse RUNNING (status OK v2.95.11)",
+      "Nomos42/nomos42-llm-cpu RUNNING (fixed this tick)",
+      "Nomos42/gemma4-chat RUNNING (fixed this tick — new model: Qwen2.5-1.5B-Instruct)"
+    ],
+    "spaces_down": [
+      "Nomos42/qwen35-chat SLEEPING (quota limit — user action required)"
+    ],
+    "spaces_paused_this_tick": [
+      "Nomos42/fin-r1-7b-cpu",
+      "Nomos42/smollm3-3b-cpu",
+      "Nomos42/llama32-1b-cpu",
+      "Nomos42/qwen25-05b-cpu",
+      "Nomos42/gemma2-2b-cpu",
+      "Nomos42/qwen3-4b-cpu",
+      "Nomos42/nomos-cpu-gemma4",
+      "Nomos42/gemma3-4b-cpu"
+    ],
+    "tick_timestamp": "2026-04-19T14:42:00.000000+00:00"
   }
 }
