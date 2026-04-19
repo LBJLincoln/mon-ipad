@@ -139,6 +139,30 @@ COUNCIL_MIN_COMMIT_PER_AGENT = 0.50  # each agent commits ≥50% of bankroll dai
 # at $10,098 on day 12 then lost 78.7% to $2,149. Root cause: prompt told drawdown
 # agents to chase variance. Fix: when bankroll < PEAK_DRAWDOWN_GUARD × best_bankroll,
 # force capital-preservation mode (half-Kelly cap, no parlays, deploy floor waived).
+# Prompt-mutator overrides (2026-04-19) — scripts/arena/prompt_mutator.py writes
+# data/prompts/overrides.json from priority-1 post-mortem proposals. Space Dockerfile
+# copies overrides.json to /app/data/prompts/overrides.json; repo layout falls back.
+def _load_prompt_override(fleet: str = "nba") -> str:
+    import os as _os, json as _json
+    candidates = [
+        "/app/data/prompts/overrides.json",
+        "/home/user/app/data/prompts/overrides.json",
+        _os.path.join(_os.path.dirname(__file__), "..", "..", "..", "data", "prompts", "overrides.json"),
+    ]
+    for p in candidates:
+        try:
+            if not _os.path.exists(p):
+                continue
+            with open(p) as fh:
+                ov = _json.load(fh)
+            rule = (ov.get(fleet) or {}).get("current_text") or ""
+            if rule:
+                v = (ov.get(fleet) or {}).get("current_version") or "?"
+                return f"\n=== PROMPT MUTATOR OVERRIDE ({v}) ===\n{rule}\n=== END OVERRIDE ===\n"
+        except Exception:
+            continue
+    return ""
+
 PEAK_DRAWDOWN_GUARD = 0.70           # ≥30% off peak → preservation mode
 PRESERVATION_MAX_DEPLOY = 0.50       # cap daily deploy at 50% while preserving
 PRESERVATION_MAX_BET_PCT = 0.05      # cap any single bet at 5% bankroll
@@ -3122,7 +3146,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 system_prompt = system_prompt + build_sacrificial_system_suffix(_sacrificial_assignments[tid])
             elif tid in _challenge_assignments:
                 system_prompt = system_prompt + build_challenge_block(tid, _challenge_assignments[tid], len(TRADERS))
-            system_prompt = AXELROD_CANON + "\n" + system_prompt
+            _pm_override = _load_prompt_override("nba")
+            system_prompt = AXELROD_CANON + _pm_override + "\n" + system_prompt
             _active_peers = [p for p in TRADERS if p != tid and state[p]["bankroll"] > 5.0]
             _axl_block = _axelrod_advice_block(tid, _active_peers)
             if _axl_block:

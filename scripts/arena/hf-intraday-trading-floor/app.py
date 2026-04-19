@@ -242,7 +242,7 @@ def _is_market_hours(now_utc: datetime) -> bool:
     return 13 <= now_utc.hour < 20
 
 
-def tick_loop(interval_sec: int = 900) -> None:
+def tick_loop(interval_sec: int = int(os.environ.get("ITF_TICK_SEC", "300"))) -> None:
     STATE["running"] = True
     _stop.clear()
     while not _stop.is_set():

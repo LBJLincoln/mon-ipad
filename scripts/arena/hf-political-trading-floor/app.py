@@ -136,6 +136,28 @@ ROGUE_GREED_THRESHOLD = 250_000.0
 # 2026-04-18 drawdown-guardrails (post-mortem parity with NBA app)
 # Post-mortem found 14/17 POL agents converged to identical ruin ($93.92) by
 # defecting to higher-variance plays on drawdown. Preservation > chase.
+# Prompt-mutator overrides (2026-04-19) — same mechanic as NBA TF, fleet="pol".
+def _load_prompt_override(fleet: str = "pol") -> str:
+    import os as _os, json as _json
+    candidates = [
+        "/app/data/prompts/overrides.json",
+        "/home/user/app/data/prompts/overrides.json",
+        _os.path.join(_os.path.dirname(__file__), "..", "..", "..", "data", "prompts", "overrides.json"),
+    ]
+    for p in candidates:
+        try:
+            if not _os.path.exists(p):
+                continue
+            with open(p) as fh:
+                ov = _json.load(fh)
+            rule = (ov.get(fleet) or {}).get("current_text") or ""
+            if rule:
+                v = (ov.get(fleet) or {}).get("current_version") or "?"
+                return f"\n=== PROMPT MUTATOR OVERRIDE ({v}) ===\n{rule}\n=== END OVERRIDE ===\n"
+        except Exception:
+            continue
+    return ""
+
 PEAK_DRAWDOWN_GUARD = 0.70        # ≥30% off peak → preservation mode
 PRESERVATION_MAX_DEPLOY = 0.50    # cap daily deploy at 50%
 PRESERVATION_MAX_BET_PCT = 0.05   # cap any single bet at 5% bankroll
@@ -2508,7 +2530,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 system_prompt = system_prompt + build_sacrificial_system_suffix(_sacrificial_assignments[tid])
             elif tid in _challenge_assignments:
                 system_prompt = system_prompt + build_challenge_block(tid, _challenge_assignments[tid], len(TRADERS))
-            system_prompt = AXELROD_CANON + "\n" + system_prompt
+            _pm_override = _load_prompt_override("pol")
+            system_prompt = AXELROD_CANON + _pm_override + "\n" + system_prompt
             _active_peers = [p for p in TRADERS if p != tid and state[p].get("bankroll", 0) > 5.0]
             _axl_block = _axelrod_advice_block(tid, _active_peers)
             if _axl_block:
