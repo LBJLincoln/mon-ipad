@@ -192,7 +192,7 @@ AXELROD_ARCHETYPES = [
 #         Du et al. 2023 DMAD + Prediction Arena 2604.07355 (Mar 2026).
 COLLECTIVE_MISSION = (
     "=== COLLECTIVE MISSION (2026-04-17, binding) ===\n"
-    "You are ONE of 16 LLM agents sharing a society bankroll. All 16 agents see the SAME data: "
+    "You are ONE of 17 LLM agents sharing a society bankroll. All 17 agents see the SAME data: "
     "1257 games, 100+ betting categories per game, full odds + standings + forms + player stats + "
     "model predictions + peer bankrolls + peer allocations + post-mortem logs.\n"
     "COMMON GOAL: ONE of us reaches $1,000,000 bankroll by season end. That agent's win counts "
@@ -2509,10 +2509,12 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
     All agents see ALL other agents' bets, results, strategies, and bankrolls
     from the last 3 days, enabling true collective optimization.
     """
+    n_traders = len(TRADERS)
+    total_start = n_traders * 100.0
     lines = [
         f"=== COMMON KNOWLEDGE — Day {day_date} (full transparency) ===",
-        f"COLLECTIVE GOAL: maximize TOTAL GROUP bankroll → target $1,200 ($100×12 start).",
-        f"You are ONE of 12 traders. Every bet you make affects the group.",
+        f"COLLECTIVE GOAL: maximize TOTAL GROUP bankroll → target ${total_start:,.0f} ($100×{n_traders} start).",
+        f"You are ONE of {n_traders} traders. Every bet you make affects the group.",
         "",
     ]
 
@@ -2521,8 +2523,8 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
     total_bankroll = sum(ts["bankroll"] for _, ts in ranked)
     total_bets = sum(ts["total_bets"] for _, ts in ranked)
     total_wins = sum(ts["wins"] for _, ts in ranked)
-    lines.append(f"GROUP TOTAL: ${total_bankroll:.2f} (started $1,200) | "
-                 f"ROI {((total_bankroll / 1200.0) - 1) * 100:+.1f}% | "
+    lines.append(f"GROUP TOTAL: ${total_bankroll:.2f} (started ${total_start:,.0f}) | "
+                 f"ROI {((total_bankroll / total_start) - 1) * 100:+.1f}% | "
                  f"{total_bets} bets | {total_wins}W")
     lines.append("")
     lines.append("LEADERBOARD:")
