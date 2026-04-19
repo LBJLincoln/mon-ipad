@@ -294,6 +294,26 @@ MODELS = {
         "rpm": 40,
         "tier": "large",
     },
+    # Verified 2026-04-19 via both NVIDIA_API_KEY + NVIDIA_API_KEY_2 (sub-500ms).
+    # Replaces rate-limited openrouter:qwen3-80b:free when Cerebras qwen-235b is 429'd.
+    "nvidia:qwen3-80b-thinking": {
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "model": "qwen/qwen3-next-80b-a3b-thinking",
+        "key_env": "NVIDIA_API_KEY",
+        "provider": "nvidia",
+        "max_tokens": 400,
+        "rpm": 40,
+        "tier": "large",
+    },
+    "nvidia:qwen3-80b-thinking-alt": {
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "model": "qwen/qwen3-next-80b-a3b-thinking",
+        "key_env": "NVIDIA_API_KEY_2",
+        "provider": "nvidia",
+        "max_tokens": 400,
+        "rpm": 40,
+        "tier": "large",
+    },
     "openrouter:qwen3-80b:free": {
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "qwen/qwen3-next-80b-a3b-instruct:free",
