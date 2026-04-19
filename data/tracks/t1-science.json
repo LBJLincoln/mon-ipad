@@ -245,5 +245,23 @@
         "action_this_tick": "checkpoint (improved 0.25597->0.25241)"
       }
     }
+  },
+  "internal_affairs": {
+    "last_tick": "2026-04-19T13:13:53Z",
+    "tick_count": 1,
+    "findings": {
+      "leakage": 0,
+      "lockstep": 1,
+      "deploy_outlier": 0,
+      "walk_forward": 0,
+      "suspicious_wr": 0
+    },
+    "overall": "critical",
+    "alerts": [
+      "POL day-049: 493/493 bets 100% tiered-post-filter lockstep (17/17 agents identical) \u2014 run completed pre-tier-pad-removal",
+      "POL source: direct_ratio=9.5% (<10% threshold) \u2014 tier-pad dominated entire 50-day run",
+      "NOTE: tier-pad removal fix (62a51c395, 07:33 Apr 19) deployed AFTER POL completed. NBA post-fix: 100% direct (RESOLVED)"
+    ],
+    "context": "POL TF completed its 50-day run before tier-pad removal landed. Day-052/053/054 NBA shows fix working (100% direct). POL needs a new run to validate."
   }
 }
