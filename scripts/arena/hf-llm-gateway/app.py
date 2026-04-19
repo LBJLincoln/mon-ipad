@@ -85,15 +85,15 @@ MODELS = {
         "tier": "medium",
     },
     "selfhost:gemma-3-4b": {
-        # alias keeps ITF persona wiring stable; routes to working qwen3-4b
-        # while Nomos42/gemma2-2b-cpu remains paused.
-        "url": "https://testforge42-qwen3-4b-cpu.hf.space/v1/chat/completions",
-        "model": "qwen3-4b-instruct",
+        # Real Gemma3-4B restored 2026-04-19 by duplicating Nomos42/gemma3-4b-cpu
+        # to LBJLincoln26's free slot.
+        "url": "https://lbjlincoln26-gemma3-4b-cpu.hf.space/v1/chat/completions",
+        "model": "gemma-3-4b-it",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
         "rpm": 60,
-        "tier": "fast",
+        "tier": "medium",
     },
     "selfhost:qwen3-0.6b": {
         # alias routes to llama-3.2-1b (smallest live model) to preserve scalper tier.
