@@ -126,6 +126,44 @@ MODELS = {
         "rpm": 60,
         "tier": "medium",
     },
+    # ── NEW 2026-04-19: 4 selfhost LLMs deployed to freed LBJLincoln + TESTforge42
+    # slots (paused P3/P6/P8/S19). OpenAI-compatible, prebuilt CPU wheel pattern. ──
+    "selfhost:qwen2.5-0.5b": {
+        "url": "https://lbjlincoln-qwen25-05b-cpu.hf.space/v1/chat/completions",
+        "model": "qwen2.5-0.5b-instruct",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "fast",
+    },
+    "selfhost:gemma-2-2b": {
+        "url": "https://lbjlincoln-gemma2-2b-cpu.hf.space/v1/chat/completions",
+        "model": "gemma-2-2b-it",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "medium",
+    },
+    "selfhost:phi-3.5-mini": {
+        "url": "https://lbjlincoln-phi35-mini-cpu.hf.space/v1/chat/completions",
+        "model": "phi-3.5-mini-instruct",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "medium",
+    },
+    "selfhost:qwen2.5-1.5b": {
+        "url": "https://testforge42-qwen25-15b-cpu.hf.space/v1/chat/completions",
+        "model": "qwen2.5-1.5b-instruct",
+        "key_env": "NOMOS_HF_TOKEN",
+        "provider": "selfhost",
+        "max_tokens": 400,
+        "rpm": 60,
+        "tier": "fast",
+    },
     # ── CEREBRAS (free, ultra-fast ~2000 tok/s, 30 RPM) ──
     "cerebras:qwen-3-235b": {
         "url": "https://api.cerebras.ai/v1/chat/completions",
@@ -491,6 +529,11 @@ FALLBACK_CHAINS = {
     "mistral:small":                     ["mistral:ministral-8b", "mistral:nemo", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:qwen3-4b"],
     "mistral:nemo":                      ["mistral:small", "mistral:ministral-8b", "cerebras:llama3.1-8b", "openrouter:llama-3.3-70b:free", "selfhost:qwen3-4b"],
     "mistral:ministral-8b":              ["mistral:nemo", "mistral:small", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:qwen3-4b"],
+    # 2026-04-19: 4 new selfhost fallbacks (deployed to LBJLincoln + TESTforge42 freed slots)
+    "selfhost:qwen2.5-0.5b":             ["selfhost:qwen3-0.6b", "selfhost:qwen2.5-1.5b", "selfhost:qwen3-4b", "cerebras:llama3.1-8b"],
+    "selfhost:gemma-2-2b":               ["selfhost:gemma-3-4b", "selfhost:qwen3-4b", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
+    "selfhost:phi-3.5-mini":             ["selfhost:qwen3-4b", "selfhost:gemma-3-4b", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
+    "selfhost:qwen2.5-1.5b":             ["selfhost:qwen2.5-0.5b", "selfhost:qwen3-4b", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
 }
 
 # ── HEALTH TRACKER ──────────────────────────────────────────────────────────

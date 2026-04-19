@@ -146,11 +146,17 @@ SINGLE_DAY_WIPEOUT_THRESHOLD = 0.40  # >40% single-day loss → forced cash next
 COLLISION_MAX_AGENTS = 3             # max agents sharing same game+category in one day
 
 def _tiered_risk(bankroll: float) -> dict:
-    """Bankroll-tier aggression (gambler's ruin doctrine, 2026-04-18).
+    """Bankroll-tier aggression (gambler's ruin doctrine, 2026-04-18 → 2026-04-19 $1M push).
     Low bankrolls deploy HARDER (higher Kelly, higher per-bet floor) to compound
     out of the hole. High bankrolls diversify across more categories to harvest
     small edges. No per-bet CAP below Kelly — cap is set ABOVE Kelly at tier cap.
-    Targets picked to saturate NBA's ~100+ bet categories across ~10 games/day."""
+    Targets picked to saturate NBA's ~100+ bet categories across ~10 games/day.
+
+    2026-04-19 extension: added CHAMPION/MOONSHOT/PROVEN tiers above $500, $2K, $10K.
+    PQTF run hit $244K on mistral-large via proven-edge compounding; NBA TF needs the
+    same ceiling to actually reach the $1M collective goal. Winners above 5× starting
+    get bet_cap raised 0.10 → 0.15-0.25 and kelly_mult 0.5 → 0.65-0.85. min_allocs
+    also relaxed at top tiers so agents can concentrate into their best picks."""
     # Post-mortem 2026-04-19 (51-day NBA TF): winners used flat-stake wide coverage
     # with strict EV threshold and half-Kelly. Losers used high-conviction single plays
     # that wiped 60-70% in a single day. New doctrine: tighter MIN_EDGE (0.04 blocks
@@ -167,9 +173,24 @@ def _tiered_risk(bankroll: float) -> dict:
         return {"deploy_floor": 0.70, "bet_floor": 0.02, "bet_cap": 0.12,
                 "min_edge": 0.04, "kelly_mult": 0.5,
                 "min_allocs": 25, "min_cats": 10, "min_games": 6}
-    return {"deploy_floor": 0.60, "bet_floor": 0.015, "bet_cap": 0.10,
-            "min_edge": 0.04, "kelly_mult": 0.5,
-            "min_allocs": 20, "min_cats": 8, "min_games": 5}
+    if bankroll < 500.0:
+        return {"deploy_floor": 0.60, "bet_floor": 0.015, "bet_cap": 0.10,
+                "min_edge": 0.04, "kelly_mult": 0.5,
+                "min_allocs": 20, "min_cats": 8, "min_games": 5}
+    # PROVEN tier: 5-20× starting, press edges harder
+    if bankroll < 2000.0:
+        return {"deploy_floor": 0.65, "bet_floor": 0.02, "bet_cap": 0.15,
+                "min_edge": 0.04, "kelly_mult": 0.65,
+                "min_allocs": 18, "min_cats": 8, "min_games": 5}
+    # MOONSHOT tier: 20-100× starting, real edge demonstrated
+    if bankroll < 10000.0:
+        return {"deploy_floor": 0.65, "bet_floor": 0.025, "bet_cap": 0.20,
+                "min_edge": 0.05, "kelly_mult": 0.75,
+                "min_allocs": 15, "min_cats": 6, "min_games": 4}
+    # CHAMPION tier: 100×+ starting — on the path to $1M
+    return {"deploy_floor": 0.65, "bet_floor": 0.03, "bet_cap": 0.25,
+            "min_edge": 0.05, "kelly_mult": 0.85,
+            "min_allocs": 12, "min_cats": 5, "min_games": 3}
 
 _council_plans: Dict[str, dict] = {} # day_date → plan dict (strategies, categories, per-agent %, summary)
 _rogue_events: List[Dict] = []       # append-only audit: {day, tid, reason, detail}
@@ -1483,8 +1504,16 @@ def parse_llm_decision(raw: str) -> Optional[Dict]:
 def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
                        away_std: Dict, home_form: Dict, away_form: Dict,
                        team_advanced: Dict, player_stats: Dict,
-                       full_odds: Dict, model_preds: Dict) -> str:
-    """Compact single-game block for day-level prompts."""
+                       full_odds: Dict, model_preds: Dict,
+                       tid: str = "") -> str:
+    """Compact single-game block for day-level prompts.
+
+    tid: when provided, each agent sees a DIFFERENT top-20 edge list — the scores
+    are jittered with blake2b(tid|tag) amp=0.35. Top-tier edges still dominate
+    (a 10%-edge jittered ±3.5% still beats a 4%-edge jittered ±1.4%), but
+    mid-tier picks rotate per agent, breaking the Jaccard 1.00 lockstep that
+    emerged after the tier-pad post-filter removal on 2026-04-18.
+    """
     home, away, date = game["home"], game["away"], game["date"]
     ml_h = odds.get("ml_home_dec", 2.0)
     ml_a = odds.get("ml_away_dec", 2.0)
@@ -1533,11 +1562,21 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
             # 2026-04-18 v2 — narrowed top-50 → top-20 to cut prompt bloat
             # (was slowing selfhost CPU LLMs to 15-30s per call, NBA stuck at day 7 for 5h).
             # Post-filter still scans all 227 categories; only the prompt view is capped.
+            # Per-agent jitter on |edge| rank (amp=0.35) — breaks Jaccard 1.00 lockstep.
+            # Deterministic per (tid,game_key,tag), so a given agent sees stable rankings.
+            import hashlib as _hl
+            def _edge_jitter(_tid, _key, _amp=0.35):
+                if not _tid:
+                    return 1.0
+                h = _hl.blake2b(f"{_tid}|{_key}".encode(), digest_size=4).hexdigest()
+                u = int(h, 16) / 0xFFFFFFFF
+                return 1.0 + (u - 0.5) * 2.0 * _amp
             top_edges = []
             for tag, info in per_cat.items():
                 e = info.get("edge")
                 if e is not None and abs(e) >= 0.01:
-                    top_edges.append((abs(e), tag, info))
+                    eff = abs(e) * _edge_jitter(tid, f"{game_key}|{tag}")
+                    top_edges.append((eff, tag, info))
             top_edges.sort(reverse=True)
             if top_edges:
                 edge_strs = [
@@ -1790,7 +1829,8 @@ def build_day_prompt(day_date: str, day_games: List[Dict], day_odds: List[Dict],
                      player_stats=None, full_odds=None, model_preds=None,
                      strategies=None, recent_decisions: List[Dict] = None,
                      common_knowledge_block: Optional[str] = None,
-                     fleet_best_bankroll: float = 100.0) -> str:
+                     fleet_best_bankroll: float = 100.0,
+                     tid: str = "") -> str:
     """Build comprehensive day-level prompt. Agent sees ALL games of the day."""
     bankroll = trader_state.get("bankroll", 100.0)
     total_allocs = trader_state.get("total_bets", 0)
@@ -1815,7 +1855,8 @@ def build_day_prompt(day_date: str, day_games: List[Dict], day_odds: List[Dict],
         lines.append(_format_game_block(
             i, g, day_odds[idx], day_standings[idx][0], day_standings[idx][1],
             day_forms[idx][0], day_forms[idx][1],
-            team_advanced, player_stats, full_odds, model_preds
+            team_advanced, player_stats, full_odds, model_preds,
+            tid=tid,
         ))
 
     if strategies:
@@ -3111,6 +3152,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 recent_decisions=ts.get("recent_decisions", []),
                 common_knowledge_block=prev_day_ck,
                 fleet_best_bankroll=fleet_best_bankroll,
+                tid=tid,
             )
             try:
                 raw = _call_llm(provider, system_prompt, user_prompt, timeout=12.0,

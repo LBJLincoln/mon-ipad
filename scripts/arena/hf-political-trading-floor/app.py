@@ -168,9 +168,24 @@ def _tiered_risk(bankroll: float) -> dict:
         return {"deploy_floor": 0.70, "bet_floor": 0.02, "bet_cap": 0.12,
                 "min_edge": 0.04, "kelly_mult": 0.5,
                 "min_allocs": 14, "min_cats": 5, "min_events": 4}
-    return {"deploy_floor": 0.60, "bet_floor": 0.015, "bet_cap": 0.10,
-            "min_edge": 0.04, "kelly_mult": 0.5,
-            "min_allocs": 12, "min_cats": 4, "min_events": 3}
+    if bankroll < 500.0:
+        return {"deploy_floor": 0.60, "bet_floor": 0.015, "bet_cap": 0.10,
+                "min_edge": 0.04, "kelly_mult": 0.5,
+                "min_allocs": 12, "min_cats": 4, "min_events": 3}
+    # PROVEN 5-20x starting ($500-$2000) — NBA parity, $1M push tiers (2026-04-19)
+    if bankroll < 2000.0:
+        return {"deploy_floor": 0.65, "bet_floor": 0.02, "bet_cap": 0.15,
+                "min_edge": 0.04, "kelly_mult": 0.65,
+                "min_allocs": 10, "min_cats": 4, "min_events": 3}
+    # MOONSHOT 20-100x ($2000-$10000)
+    if bankroll < 10000.0:
+        return {"deploy_floor": 0.65, "bet_floor": 0.025, "bet_cap": 0.20,
+                "min_edge": 0.05, "kelly_mult": 0.75,
+                "min_allocs": 8, "min_cats": 3, "min_events": 3}
+    # CHAMPION 100x+ ($10000+) — compounding toward $1M
+    return {"deploy_floor": 0.65, "bet_floor": 0.03, "bet_cap": 0.25,
+            "min_edge": 0.05, "kelly_mult": 0.85,
+            "min_allocs": 6, "min_cats": 3, "min_events": 2}
 
 # Axelrod Mech B — archetype pool tuned for political/macro alpha traders
 AXELROD_ARCHETYPES = [
@@ -1234,7 +1249,8 @@ def parse_llm_decision(raw: str) -> Optional[Dict]:
     return None
 
 
-def _format_event_block(idx: int, event: Dict, event_preds: Optional[Dict] = None) -> str:
+def _format_event_block(idx: int, event: Dict, event_preds: Optional[Dict] = None,
+                        tid: str = "") -> str:
     """Compact single-event block for day-level prompts.
 
     Agent sees: idx, ticker, event_type, agency, signal_type, signal_sector,
@@ -1242,6 +1258,10 @@ def _format_event_block(idx: int, event: Dict, event_preds: Optional[Dict] = Non
     If walk-forward per-event predictions are available, agent also sees
     derived_core + top-8 category edges (matches NBA TF per-category pattern).
     Agent NEVER sees: excess_return, y, outcome.
+
+    tid: per-agent blake2b jitter (amp=0.35) on the top-8 edge ranking so each
+    of the 17 agents gets a different ordering — restores the post-tier-pad
+    lockstep fix (Jaccard was 1.00 on day-049).
     """
     ticker = event.get("ticker", "?")
     event_type = event.get("event_type", "unknown")
@@ -1282,14 +1302,25 @@ def _format_event_block(idx: int, event: Dict, event_preds: Optional[Dict] = Non
             n_prior = core.get("prior_n", 0)
             lines.append(f"  NOMOS42 MODEL: mu={mu:+.4f} sigma={sigma:.4f} p(long_wins)={p_long:.2%} (n_prior={n_prior})")
             if cats:
-                # Top-8 cats by |edge|
+                # Per-agent blake2b jitter (amp=0.35) breaks Jaccard 1.00 lockstep.
+                import hashlib as _hl
+                def _edge_jitter(_tid, _key, _amp=0.35):
+                    if not _tid:
+                        return 1.0
+                    h = _hl.blake2b(f"{_tid}|{_key}".encode(), digest_size=4).hexdigest()
+                    u = int(h, 16) / 0xFFFFFFFF
+                    return 1.0 + (u - 0.5) * 2.0 * _amp
+                # Top-8 cats by jittered |edge|
                 ranked = sorted(
-                    [(t, c) for t, c in cats.items() if c.get("edge") is not None],
-                    key=lambda x: -abs(x[1].get("edge", 0)),
+                    [
+                        (t, c, abs(c.get("edge", 0)) * _edge_jitter(tid, f"{ev_key}|{t}"))
+                        for t, c in cats.items() if c.get("edge") is not None
+                    ],
+                    key=lambda x: -x[2],
                 )[:8]
                 if ranked:
                     strong = []
-                    for t, c in ranked:
+                    for t, c, _ in ranked:
                         e = c.get("edge", 0)
                         p = c.get("prob", 0)
                         sign = "+" if e > 0 else ""
@@ -1539,7 +1570,8 @@ def build_day_prompt(day_date: str, day_events: List[Dict], sector_trends: Dict,
                      recent_decisions: List[Dict] = None,
                      common_knowledge_block: Optional[str] = None,
                      fleet_best_bankroll: float = 100.0,
-                     event_preds: Optional[Dict] = None) -> str:
+                     event_preds: Optional[Dict] = None,
+                     tid: str = "") -> str:
     """Build comprehensive day-level prompt. Agent sees ALL political events of the day."""
     bankroll = trader_state.get("bankroll", 100.0)
     total_allocs = trader_state.get("total_bets", 0)
@@ -1589,7 +1621,7 @@ def build_day_prompt(day_date: str, day_events: List[Dict], sector_trends: Dict,
 
     lines.append("\nPOLITICAL EVENTS (leakage-safe — outcome/excess_return hidden):")
     for i, ev in enumerate(day_events, 1):
-        lines.append(_format_event_block(i, ev, event_preds))
+        lines.append(_format_event_block(i, ev, event_preds, tid=tid))
 
     if strategies:
         lines.append(f"\nSTRATEGIES ({len(strategies)}): {', '.join(list(strategies.keys())[:12])}...")
@@ -2503,6 +2535,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 common_knowledge_block=prev_day_ck,
                 fleet_best_bankroll=fleet_best_bankroll,
                 event_preds=event_preds,
+                tid=tid,
             )
             try:
                 raw = _call_llm(provider, system_prompt, user_prompt, timeout=12.0,
