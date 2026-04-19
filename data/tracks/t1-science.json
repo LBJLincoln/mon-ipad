@@ -44,6 +44,42 @@
     "critical_alerts": ["S20 Brier=0.28 explosion", "S18 stag=396", "S17 stag=304"],
     "next_tick_eta": "2026-04-19T12:10:00Z"
   },
+  "INTERNAL_AFFAIRS": {
+    "timestamp": "2026-04-19T09:15:48Z",
+    "agent": "INTERNAL AFFAIRS",
+    "audit_file": "data/audit/2026-04-19T0915.json",
+    "alerts_count": 2,
+    "findings": {
+      "nba": {
+        "days_checked": ["day-023", "day-024", "day-025"],
+        "bets": 32,
+        "leakage": "ok (corr=0.115, 597 pairs)",
+        "source": "ok (100% direct)",
+        "wr": "ok",
+        "lockstep": "ok (worst_share=0)",
+        "walkforward": "ok",
+        "drawdown_root_cause": "4 agents absent from day-024+ (gemini-anl $4.60, gemini-tact $4.71, llama-contra $4.49, mistral-large $3.45) — NOT a preservation-mode trigger. State has peak=N/A, preservation_mode=False, drawdown_guard_active=False. Agents crashed below $20 threshold but survival doctrine is NOT wired to state.json peak tracking — the coalition_mandatory_apr18 guard exists only in prompt text, not enforced in code. cash_rationale='no LLM response' confirms provider failure, not guard trip. ROOT CAUSE: these agents fell silent (provider outage/timeout) days ago, kept being skipped, bankrolls stuck at last-known crashed value."
+      },
+      "pol": {
+        "days_checked": ["day-047", "day-048", "day-049"],
+        "bets": 613,
+        "leakage": "ok (corr=0.115)",
+        "source": "WARN — direct_ratio=9.5% (tiered-post-filter 555 vs direct 58)",
+        "wr": "ok",
+        "lockstep": "CRITICAL — day-049: 100% lockstep (493/493 bets all tiered-post-filter, all 17 agents identical picks)",
+        "walkforward": "ok (0% fallback keys)",
+        "pacts_gap": "0 coalition_proposals across ALL 17 agents on day-048 and day-049. The coalition_mandatory prompt fix (commit 412fc6a19) added MANDATORY to the prompt but the field 'coalition_proposals' in the day-XXX.json schema is never populated. Root cause: the response parser extracts allocations but does NOT parse coalition_proposals from LLM output — they exist in prompt instructions but are silently discarded on output. DMAD jitter is also fully bypassed on day-049 because 100% tiered-post-filter bets skip LLM entirely."
+      },
+      "pqtf": {
+        "days_checked": ["day-047", "day-048", "day-049"],
+        "lockstep": "ok (no positions in HF cache)",
+        "risk": "ok (avg_var_95=0.0 — stale cached data, live data on PQTF space)"
+      }
+    },
+    "proposals_generated": 10,
+    "proposals_file": "data/research/tf-proposals-2026-04-19.json",
+    "next_tick_eta": "2026-04-19T13:40:00Z"
+  },
   "LOBBYIST": {
     "timestamp": "2026-04-19T12:15:00Z",
     "actions": [
