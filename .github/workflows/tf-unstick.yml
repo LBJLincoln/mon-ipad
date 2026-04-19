@@ -96,26 +96,37 @@ jobs:
                   print(f"[unstick] unknown target: {t}"); continue
               repo, url = repos[t]
 
-              # hard_purge: stop → purge Hub state → factory_reboot → /api/run
+              # hard_purge: factory_reboot (kill writer) → wait DOWN → purge → wait UP → /api/run
               if mode == 'hard_purge':
-                  # Best-effort stop first so no writer is racing the delete.
-                  code, body = post(f"{url}/api/stop")
-                  print(f"[unstick] {t} /api/stop → {code} {body[:80]}")
-                  for i in range(6):
-                      time.sleep(10)
-                      s = get_status(url)
-                      if s.get('running') is False or '_err' in s:
-                          print(f"[unstick] {t} stopped at t={10*(i+1)}s (or unreachable)")
-                          break
-                  purge_hub_state(t, repo)
+                  # Kill old container first so no writer races our delete loop.
                   try:
                       api.restart_space(repo, factory_reboot=True)
-                      print(f"[unstick] {t} factory_reboot OK")
+                      print(f"[unstick] {t} factory_reboot#1 (kill old) OK")
                   except Exception as e:
-                      print(f"[unstick] {t} factory_reboot FAILED: {type(e).__name__}: {e}")
+                      print(f"[unstick] {t} factory_reboot#1 FAILED: {type(e).__name__}: {e}")
+                      continue
+                  # Wait for the old container to be torn down (status endpoint 5xx/err).
+                  for i in range(12):
+                      time.sleep(5)
+                      s = get_status(url, timeout=4)
+                      if '_err' in s:
+                          print(f"[unstick] {t} old container DOWN at t={5*(i+1)}s")
+                          break
+                  # Purge while no writer is alive. Do it TWICE — HF's build may
+                  # start racing us partway through.
+                  purge_hub_state(t, repo)
+                  time.sleep(4)
+                  purge_hub_state(t, repo)
+                  # Factory_reboot again to drop any half-built image that may
+                  # have downloaded stale state before our purge.
+                  try:
+                      api.restart_space(repo, factory_reboot=True)
+                      print(f"[unstick] {t} factory_reboot#2 (post-purge) OK")
+                  except Exception as e:
+                      print(f"[unstick] {t} factory_reboot#2 FAILED: {type(e).__name__}: {e}")
                       continue
                   came_up = False
-                  for i in range(30):
+                  for i in range(36):
                       time.sleep(10)
                       s = get_status(url)
                       if '_err' not in s:
@@ -123,7 +134,7 @@ jobs:
                           print(f"[unstick] {t} up at t={10*(i+1)}s running={s.get('running')} day={s.get('days_processed')}")
                           break
                   if not came_up:
-                      print(f"[unstick] {t} did NOT come back up in 5min"); continue
+                      print(f"[unstick] {t} did NOT come back up in 6min"); continue
                   if not s.get('running'):
                       time.sleep(3)
                       code, body = post(f"{url}/api/run", {"resume": False})
