@@ -54,14 +54,15 @@ except Exception as _lf_exc:
 # ── MODEL REGISTRY ──────────────────────────────────────────────────────────
 # Every model we can route to, organized by provider
 MODELS = {
-    # ── SELF-HOST (only Spaces with ready=true kept. Pruned 2026-04-16:
-    #    qwen25-05b-cpu (404), llama32-1b-cpu (404), gemma2-2b-cpu (download_failed),
-    #    smollm3-3b-cpu (download_failed). Phi-4-mini URL fixed to /v1/chat/completions.) ──
+    # ── SELF-HOST (live-probed 2026-04-18. Status audit: qwen3-4b-cpu restarted & healthy;
+    #    nomos42-llm-cpu runs Qwen2.5-1.5B via /api/decide (NOT /v1/chat/completions, different shape);
+    #    smollm3-3b-cpu BROKEN (llama-cpp-python 0.3.9 can't load SmolLM3 GGUF).
+    #    phi-4-mini repointed to selfhost_decide provider to match /api/decide shape.) ──
     "selfhost:phi-4-mini": {
-        "url": "https://nomos42-nomos42-llm-cpu.hf.space/v1/chat/completions",
-        "model": "phi-4-mini-instruct",
+        "url": "https://nomos42-nomos42-llm-cpu.hf.space/api/decide",
+        "model": "qwen2.5-1.5b-instruct",
         "key_env": "NOMOS_HF_TOKEN",
-        "provider": "selfhost",
+        "provider": "selfhost_decide",
         "max_tokens": 400,
         "rpm": 60,
         "tier": "fast",
@@ -296,33 +297,36 @@ MODELS = {
 # If primary model fails, try these in order. T12 self-host appended as last
 # resort on every chain (no quota, no rate limit — slow but never fails).
 FALLBACK_CHAINS = {
-    # Self-host tier (2 live Spaces: phi-4-mini on nomos42-llm-cpu, qwen3-4b on nomos42-qwen3-4b-cpu).
-    # Dead refs pruned 2026-04-16: qwen3-0.6b, dolphin3-llama-3.2-3b, gemma-4-e2b, smollm3-3b.
+    # Self-host tier (live Spaces: qwen3-4b, gemma-3-4b, qwen3-0.6b, dolphin3-l32-3b).
+    # 2026-04-18: selfhost:phi-4-mini purged from ALL fallback chains — backing Space
+    # nomos42-llm-cpu in RUNTIME_ERROR (segfault exit=139), Nomos42 account hit quota
+    # limit blocking restart. The MODELS entry is kept so direct callers can still
+    # try it (will auto-fallback to cerebras), but NO chain ends on it.
     "selfhost:phi-4-mini":               ["cerebras:llama3.1-8b", "google:gemini-2.5-flash", "openrouter:gemma-4-26b:free", "selfhost:qwen3-4b"],
     "selfhost:qwen3-4b":                 ["selfhost:gemma-3-4b", "selfhost:qwen3-0.6b", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
     "selfhost:gemma-3-4b":               ["selfhost:qwen3-4b", "selfhost:qwen3-0.6b", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
     "selfhost:qwen3-0.6b":               ["selfhost:gemma-3-4b", "selfhost:qwen3-4b", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
     "selfhost:dolphin3-l32-3b":          ["selfhost:qwen3-4b", "selfhost:gemma-3-4b", "cerebras:llama3.1-8b"],
-    "cerebras:qwen-3-235b":              ["cerebras:llama3.1-8b", "openrouter:qwen3-80b:free", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "cerebras:llama3.1-8b":              ["cerebras:qwen-3-235b", "google:gemini-2.5-flash", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "openrouter:glm-4.5-air:free":       ["cerebras:llama3.1-8b", "openrouter:gpt-oss-20b:free", "google:gemini-3-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "openrouter:gpt-oss-20b:free":       ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "cerebras:llama3.1-8b", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "google:gemini-2.5-flash":           ["google:gemini-3-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "google:gemini-3-flash":             ["google:gemini-2.5-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "openrouter:gemma-4-26b:free":       ["openrouter:llama-3.3-70b:free", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "openrouter:nemotron-120b:free":     ["openrouter:qwen3-80b:free", "cerebras:qwen-3-235b", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "openrouter:minimax-m2.5:free":      ["nvidia:minimax-m2.7", "nvidia:minimax-m2.7-alt", "openrouter:gpt-oss-20b:free", "openrouter:glm-4.5-air:free", "cerebras:llama3.1-8b", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "nvidia:minimax-m2.7":               ["nvidia:minimax-m2.7-alt", "openrouter:minimax-m2.5:free", "cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:qwen3-80b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "nvidia:minimax-m2.7-alt":           ["nvidia:minimax-m2.7", "openrouter:minimax-m2.5:free", "cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:qwen3-80b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "nvidia:llama-3.3-70b":              ["openrouter:llama-3.3-70b:free", "cerebras:llama3.1-8b", "nvidia:nemotron-70b", "nvidia:minimax-m2.7", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "nvidia:nemotron-70b":               ["nvidia:llama-3.3-70b", "openrouter:nemotron-120b:free", "cerebras:qwen-3-235b", "nvidia:minimax-m2.7", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "openrouter:qwen3-80b:free":         ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "openrouter:llama-3.3-70b:free":     ["cerebras:llama3.1-8b", "openrouter:nemotron-120b:free", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "mistral:large":                     ["mistral:medium", "mistral:small", "cerebras:qwen-3-235b", "google:gemini-3-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "mistral:medium":                    ["mistral:small", "mistral:large", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "mistral:small":                     ["mistral:ministral-8b", "mistral:nemo", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "mistral:nemo":                      ["mistral:small", "mistral:ministral-8b", "cerebras:llama3.1-8b", "openrouter:llama-3.3-70b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
-    "mistral:ministral-8b":              ["mistral:nemo", "mistral:small", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:phi-4-mini", "selfhost:qwen3-4b"],
+    "cerebras:qwen-3-235b":              ["cerebras:llama3.1-8b", "openrouter:qwen3-80b:free", "google:gemini-2.5-flash", "selfhost:qwen3-4b"],
+    "cerebras:llama3.1-8b":              ["cerebras:qwen-3-235b", "google:gemini-2.5-flash", "openrouter:llama-3.3-70b:free", "selfhost:qwen3-4b"],
+    "openrouter:glm-4.5-air:free":       ["cerebras:llama3.1-8b", "openrouter:gpt-oss-20b:free", "google:gemini-3-flash", "selfhost:qwen3-4b"],
+    "openrouter:gpt-oss-20b:free":       ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "cerebras:llama3.1-8b", "selfhost:qwen3-4b"],
+    "google:gemini-2.5-flash":           ["google:gemini-3-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:qwen3-4b"],
+    "google:gemini-3-flash":             ["google:gemini-2.5-flash", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:qwen3-4b"],
+    "openrouter:gemma-4-26b:free":       ["openrouter:llama-3.3-70b:free", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:qwen3-4b"],
+    "openrouter:nemotron-120b:free":     ["openrouter:qwen3-80b:free", "cerebras:qwen-3-235b", "openrouter:llama-3.3-70b:free", "selfhost:qwen3-4b"],
+    "openrouter:minimax-m2.5:free":      ["nvidia:minimax-m2.7", "nvidia:minimax-m2.7-alt", "openrouter:gpt-oss-20b:free", "openrouter:glm-4.5-air:free", "cerebras:llama3.1-8b", "selfhost:qwen3-4b"],
+    "nvidia:minimax-m2.7":               ["nvidia:minimax-m2.7-alt", "openrouter:minimax-m2.5:free", "cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:qwen3-80b:free", "selfhost:qwen3-4b"],
+    "nvidia:minimax-m2.7-alt":           ["nvidia:minimax-m2.7", "openrouter:minimax-m2.5:free", "cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:qwen3-80b:free", "selfhost:qwen3-4b"],
+    "nvidia:llama-3.3-70b":              ["openrouter:llama-3.3-70b:free", "cerebras:llama3.1-8b", "nvidia:nemotron-70b", "nvidia:minimax-m2.7", "selfhost:qwen3-4b"],
+    "nvidia:nemotron-70b":               ["nvidia:llama-3.3-70b", "openrouter:nemotron-120b:free", "cerebras:qwen-3-235b", "nvidia:minimax-m2.7", "selfhost:qwen3-4b"],
+    "openrouter:qwen3-80b:free":         ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:llama-3.3-70b:free", "selfhost:qwen3-4b"],
+    "openrouter:llama-3.3-70b:free":     ["cerebras:llama3.1-8b", "openrouter:nemotron-120b:free", "google:gemini-2.5-flash", "selfhost:qwen3-4b"],
+    "mistral:large":                     ["mistral:medium", "mistral:small", "cerebras:qwen-3-235b", "google:gemini-3-flash", "selfhost:qwen3-4b"],
+    "mistral:medium":                    ["mistral:small", "mistral:large", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:qwen3-4b"],
+    "mistral:small":                     ["mistral:ministral-8b", "mistral:nemo", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:qwen3-4b"],
+    "mistral:nemo":                      ["mistral:small", "mistral:ministral-8b", "cerebras:llama3.1-8b", "openrouter:llama-3.3-70b:free", "selfhost:qwen3-4b"],
+    "mistral:ministral-8b":              ["mistral:nemo", "mistral:small", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:qwen3-4b"],
 }
 
 # ── HEALTH TRACKER ──────────────────────────────────────────────────────────
@@ -478,6 +482,41 @@ def _call_selfhost(model_cfg: dict, messages: list, max_tokens: int) -> str:
     raise ValueError(f"Self-host unexpected response: {json.dumps(data)[:200]}")
 
 
+def _call_selfhost_decide(model_cfg: dict, messages: list, max_tokens: int) -> str:
+    """Self-host /api/decide shape (nomos42-llm-cpu, nomos-cpu-gemma4).
+    Request:  {system, user, max_tokens, temperature, json_only}
+    Response: {text, elapsed_s, tokens_out, model}
+    """
+    # Flatten OpenAI-style messages -> system + user.
+    sys_parts, usr_parts = [], []
+    for m in messages:
+        role = m.get("role", "user")
+        content = m.get("content", "")
+        if role == "system":
+            sys_parts.append(content)
+        else:
+            usr_parts.append(content)
+    headers = {"Content-Type": "application/json"}
+    resp = requests.post(
+        model_cfg["url"],
+        headers=headers,
+        json={
+            "system": "\n\n".join(sys_parts),
+            "user": "\n\n".join(usr_parts),
+            "max_tokens": max_tokens,
+            "temperature": 0.7,
+        },
+        timeout=60,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    if data.get("error"):
+        raise ValueError(f"selfhost_decide error: {str(data['error'])[:200]}")
+    if "text" in data and data["text"]:
+        return data["text"]
+    raise ValueError(f"selfhost_decide unexpected response: {json.dumps(data)[:200]}")
+
+
 def _call_mistral(model_cfg: dict, messages: list, max_tokens: int) -> str:
     """Mistral API — OpenAI-compatible /v1/chat/completions, 20 RPM free tier."""
     key = os.environ.get(model_cfg["key_env"], "")
@@ -527,6 +566,7 @@ PROVIDER_CALLERS = {
     "google": _call_google,
     "openrouter": _call_openrouter,
     "selfhost": _call_selfhost,
+    "selfhost_decide": _call_selfhost_decide,
     "mistral": _call_mistral,
     "nvidia": _call_nvidia,
 }

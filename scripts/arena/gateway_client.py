@@ -54,33 +54,24 @@ def _messages_to_prompts(messages: List[Dict[str, str]]) -> tuple[str, str]:
 
 def _gateway_post(model_key: str, system: str, user: str, max_tokens: int,
                   timeout: float) -> Optional[Dict[str, Any]]:
-    """Two-step Gradio API call. Returns parsed gateway result dict or None."""
+    """Fast FastAPI call via /api/chat (2026-04-18: was /gradio_api 45-60s stream, now ~2s JSON)."""
     resolved = _resolve(model_key)
+    messages = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    if user:
+        messages.append({"role": "user", "content": user})
     resp = requests.post(
-        f"{GATEWAY_URL}/gradio_api/call/call_model",
-        json={"data": [resolved, system, user, int(max_tokens)]},
-        timeout=min(timeout, 15),
+        f"{GATEWAY_URL}/api/chat",
+        json={"model": resolved, "messages": messages, "max_tokens": int(max_tokens)},
+        timeout=timeout,
     )
     if resp.status_code >= 500 or resp.status_code in (502, 503, 504):
         return None
     resp.raise_for_status()
-    event_id = resp.json().get("event_id")
-    if not event_id:
-        return None
-
-    resp2 = requests.get(
-        f"{GATEWAY_URL}/gradio_api/call/call_model/{event_id}",
-        timeout=timeout,
-        stream=True,
-    )
-    if resp2.status_code >= 500:
-        return None
-    resp2.raise_for_status()
-    for line in resp2.iter_lines(decode_unicode=True):
-        if line and line.startswith("data: "):
-            payload = json.loads(line[6:])
-            if isinstance(payload, list) and payload:
-                return json.loads(payload[0])
+    payload = resp.json()
+    if payload.get("content"):
+        return payload
     return None
 
 
@@ -114,7 +105,7 @@ def gateway_call(model_key: str, messages: List[Dict[str, str]],
                     "latency_ms": int((time.time() - t0) * 1000),
                     "error": None,
                 }
-            gw_err = (result or {}).get("error") if isinstance(result, dict) else "empty response"
+            gw_err = ((result or {}).get("errors") or (result or {}).get("error") or "empty response") if isinstance(result, dict) else "empty response"
         except Exception as e:
             gw_err = f"{type(e).__name__}: {str(e)[:120]}"
     else:

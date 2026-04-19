@@ -1,57 +1,61 @@
-# NBA TF Post-Mortem — 44 days analyzed
+# NBA TF Post-Mortem — 55 days analyzed
 Space: `LBJLincoln26/nba-llm-trading-floor`
 
 ## Leaderboard (by final bankroll)
 | rank | trader | final | peak | drawdown | peak_day |
 |------|--------|-------|------|----------|----------|
-| 1 | `mistral-ministral` | $2,149.90 | $10,098.22 | 78.7% | 12 |
-| 2 | `selfhost-qwen4b` | $148.03 | $588.98 | 74.9% | 17 |
-| 3 | `qwen-arb` | $107.33 | $285.40 | 62.4% | 24 |
-| 4 | `selfhost-qwen06` | $56.53 | $263.43 | 78.5% | 24 |
-| 5 | `llama-contra` | $35.02 | $100.95 | 65.3% | 7 |
-| 6 | `nemotron-120b` | $35.02 | $100.95 | 65.3% | 7 |
-| 7 | `nvidia-minimax` | $35.02 | $100.95 | 65.3% | 7 |
-| 8 | `mistral-small` | $30.66 | $100.00 | 69.3% | 0 |
-| 9 | `selfhost-gemma3` | $29.06 | $139.54 | 79.2% | 6 |
-| 10 | `gemini-tact` | $24.94 | $76.50 | 67.4% | 0 |
-| 11 | `mistral-large` | $23.18 | $66.81 | 65.3% | 7 |
-| 12 | `mistral-medium` | $23.18 | $66.81 | 65.3% | 7 |
-| 13 | `qwen-quant` | $21.96 | $66.83 | 67.1% | 0 |
-| 14 | `mistral-nemo` | $19.03 | $62.28 | 69.4% | 0 |
-| 15 | `nvidia-llama70` | $18.94 | $65.68 | 71.2% | 0 |
-| 16 | `gemini-anl` | $17.22 | $65.02 | 73.5% | 0 |
-| 17 | `selfhost-dolphin3` | $4.57 | $100.00 | 95.4% | 0 |
+| 1 | `nvidia-llama70` | $166.12 | $166.12 | 0.0% | 41 |
+| 2 | `selfhost-qwen06` | $113.79 | $113.79 | 0.0% | 31 |
+| 3 | `nemotron-120b` | $100.00 | $100.00 | 0.0% | 0 |
+| 4 | `selfhost-dolphin3` | $100.00 | $100.00 | 0.0% | 0 |
+| 5 | `qwen-quant` | $97.99 | $164.64 | 40.5% | 40 |
+| 6 | `selfhost-gemma3` | $64.53 | $224.16 | 71.2% | 51 |
+| 7 | `mistral-large` | $46.13 | $85.10 | 45.8% | 0 |
+| 8 | `mistral-nemo` | $26.66 | $106.27 | 74.9% | 7 |
+| 9 | `gemini-tact` | $18.97 | $72.00 | 73.7% | 0 |
+| 10 | `llama-contra` | $18.34 | $85.69 | 78.6% | 0 |
+| 11 | `qwen-arb` | $16.08 | $117.24 | 86.3% | 7 |
+| 12 | `mistral-ministral` | $10.66 | $100.44 | 89.4% | 7 |
+| 13 | `mistral-small` | $4.63 | $580.07 | 99.2% | 7 |
+| 14 | `gemini-anl` | $4.60 | $74.55 | 93.8% | 0 |
+| 15 | `nvidia-minimax` | $3.18 | $100.00 | 96.8% | 0 |
+| 16 | `selfhost-qwen4b` | $3.03 | $88.47 | 96.6% | 7 |
+| 17 | `mistral-medium` | $2.81 | $149.46 | 98.1% | 3 |
 
 ## Top peak-rationales (what winners thought at their best day)
 
-### mistral-ministral — peak $10,098.22 on day 12
-- d12 ($10,098.22): Deploy high‑edge moneylines aggressively while keeping cash low to meet the 75% deployment rule.
-- d13 ($8,741.24): Focus on high‑edge away moneylines where model win probability exceeds market implied odds, using half‑Kelly sizing and a small parlay to boost ROI.
+### nvidia-llama70 — peak $166.12 on day 41
+- d41 ($166.12): STRUCTURAL DIVERGE [qwen-quant]: My EV-threshold-first approach prioritizes ml_home in game 1 (LAC @ BOS) due to a 6.2% edge, while qwen-quant may focus on other categories. Today, I will allocate on high-edge moneylines and spreads.
+- d42 ($166.12): 
 
-### selfhost-qwen4b — peak $588.98 on day 17
-- d17 ($588.98): Focus on high‑edge moneyline on IND (away) and diversify with a modest spread on GSW and a team‑total prop on OKC to meet deployment targets.
-- d16 ($493.56): Deploy high‑edge moneylines across diverse games, focusing on model‑probability advantage while keeping cash low.
+### selfhost-qwen06 — peak $113.79 on day 31
+- d31 ($113.79): STRUCTURAL DIVERGE [SelfHost Gemma-3-4B]: My approach focuses on wide flat-stake coverage across many categories, while Gemma-3-4B uses high-conviction bets. I will spread tiny flat bets across multiple categories to diversify risk.
+- d32 ($113.79): 
 
-### qwen-arb — peak $285.40 on day 24
-- d24 ($285.40): {"":0}
-- d9 ($265.92): Target undervalued total over bets where model predicts higher scoring than the market total, and combine two legs into a modest parlay for extra edge.
+### nemotron-120b — peak $100.00 on day 0
+- d0 ($100.00): 
+- d1 ($100.00): 
 
-## Top 8 gainers (single-day jumps ≥+10%)
-- `mistral-ministral` d4 2025-10-07: $96.63→$1386.15 (+1334.49%) — Focus on high edge away ML in IND@MIN and complementary spread/total bets on CHI@CLE, using modest parlay combos to boost ROI while meeting deployment
-- `selfhost-qwen06` d11 2025-10-14: $53.79→$134.41 (+149.88%) — Focus on high‑edge away moneylines where the model shows a strong probability advantage over market odds, using half‑Kelly sizing and a small parlay f
-- `mistral-ministral` d11 2025-10-14: $3164.05→$7517.41 (+137.59%) — Focus on high‑edge away moneylines where model probability exceeds market odds, using half‑Kelly sizing and a small parlay for extra upside.
-- `selfhost-qwen4b` d11 2025-10-14: $150.93→$291.52 (+93.15%) — Focus on clear positive edge moneylines and a total over where model predicts higher scoring than market, using half‑Kelly sizing.
-- `selfhost-qwen4b` d4 2025-10-07: $140.25→$260.38 (+85.65%) — Focus on modest positive edges in moneylines and spreads, using half‑kelly sizing and a small correlated parlay to boost edge while keeping cash low.
-- `mistral-ministral` d2 2025-10-05: $65.89→$117.28 (+77.99%) — Focus on positive model edges in moneylines and totals, using a modest parlay to boost expected return while keeping cash low.
-- `selfhost-gemma3` d6 2025-10-09: $81.74→$139.54 (+70.71%) — Deploy majority of bankroll on high‑edge home moneylines and a complementary spread, with a small parlay to boost upside while keeping cash minimal.
-- `selfhost-gemma3` d29 2025-11-04: $26.86→$45.37 (+68.91%) — Aggressive rescue-mode allocation targeting high-variance alt spreads and quarters in games with model edges >5%. Prioritize alt_spread_away_plus5-10 
+## Top 10 gainers (single-day jumps ≥+10%)
+- `mistral-ministral` d38 2025-11-13: $6.95→$13.68 (+96.83%) — STRUCTURAL DIVERGE [Momentum Hunter]: my KL‑divergence edge detector flags game2 ml_home and game3 ml_away as high‑conviction despite their modest mar
+- `mistral-nemo` d45 2025-11-20: $29.13→$53.65 (+84.17%) — STRUCTURAL DIVERGE [SelfHost Gemma-3-4B]: My approach focuses on high-conviction allocations based on momentum and player matchups, diverging from the
+- `mistral-ministral` d45 2025-11-20: $29.43→$51.90 (+76.35%) — STRUCTURAL DIVERGE [Qwen Quant]: my KL‑divergence edge detector flags games where the model probability exceeds market implied odds, producing picks t
+- `mistral-nemo` d43 2025-11-18: $20.39→$35.85 (+75.82%) — STRUCTURAL DIVERGE [SelfHost Gemma-3-4B]: My approach focuses on high-conviction bets with significant edges, particularly in player-influenced totals
+- `nvidia-minimax` d43 2025-11-18: $13.73→$24.01 (+74.87%) — STRUCTURAL DIVERGE [qwen-quant]: My long-context scan prioritizes alt-spreads and half-kelly sizing, diverging from qwen-quant's EV-threshold-first ap
+- `mistral-ministral` d24 2025-10-30: $48.99→$84.51 (+72.5%) — STRUCTURAL DIVERGE [qwen-quant]: my KL-divergence edge model flags high probability ml_away for ORL@CHA whereas qwen-quant focuses on spreads, so I pi
+- `mistral-ministral` d43 2025-11-18: $16.76→$27.53 (+64.26%) — STRUCTURAL DIVERGE [Qwen Quant]: my KL-divergence edge detector flags game2 ml_away and game5 ml_home as high‑edge picks unlike Qwen Quant who focused
+- `selfhost-gemma3` d51 2025-11-26: $140.13→$224.16 (+59.97%) — STRUCTURAL DIVERGE [nvidia-llama70]: My weighted-factor model (0.4 form, 0.3 rest, 0.3 home) prioritizes ml_away on underdogs with strong rest advanta
+- `mistral-ministral` d41 2025-11-16: $12.05→$17.50 (+45.23%) — STRUCTURAL DIVERGE [Momentum Hunter]: my KL-divergence edge detector flags game2 ml_home as high edge while Momentum Hunter focuses on spreads, giving
+- `mistral-small` d0 2025-10-03: $100.00→$139.71 (+39.71%) — STRUCTURAL DIVERGE [qwen-quant] — Today’s council plan focuses on correlated parlays, but I prioritize single-leg edges with higher confidence and low
 
-## Top 8 crashes (single-day drops ≤−20%)
-- `selfhost-dolphin3` d34 2025-11-09: $16.12→$8.50 (-47.27%) — DEFECT: drawdown. Pavlov momentum on highest-edge alt spreads and quarters after yesterday's ml_home losses. Chase high-variance props to recover posi
-- `gemini-tact` d34 2025-11-09: $51.04→$26.92 (-47.26%) — CONSENSUS AGREE [mistral-ministral]: Leveraging schedule-based edges on high-tempo favorites while utilizing first-half markets to mitigate late-game 
-- `mistral-nemo` d34 2025-11-09: $38.87→$20.50 (-47.26%) — RESCUE MODE: Target high-variance alt spreads and underdog moneylines with strong player matchups and rest advantages. Deploy ≥85% of bankroll on 3+ h
-- `qwen-quant` d34 2025-11-09: $44.91→$23.69 (-47.25%) — {"":0}
-- `llama-contra` d34 2025-11-09: $71.52→$37.73 (-47.25%) — Focus on contrarian spreads and underdog values where public sentiment is heavily skewed.
-- `nemotron-120b` d34 2025-11-09: $71.52→$37.73 (-47.25%) — {"":[]}
-- `nvidia-minimax` d34 2025-11-09: $71.52→$37.73 (-47.25%) — <think>Let me analyze this carefully. I'm NVIDIA MiniMax M2.7 with $71.52 bankroll, at -28.5% ROI. I need to deploy at least 75% of my bankroll today 
-- `selfhost-qwen06` d34 2025-11-09: $136.64→$72.08 (-47.25%) — fallback-injection: LLM silent, forcing 75% deploy on first 5 games (ml_home)
+## Top 10 crashes (single-day drops ≤−20%)
+- `gemini-anl` d23 2025-10-29: $15.32→$4.60 (-69.97%) — STRUCTURAL COMPLEMENT [mistral-small]: While the leader targets high-volume favorites, my FIRST-PRINCIPLES DECOMPOSITION focuses on mispriced moneylin
+- `mistral-medium` d29 2025-11-04: $9.34→$2.81 (-69.91%) — STRUCTURAL DIVERGE [Mistral Small]: My diversified portfolio approach focuses on spreading risk across multiple games and categories, avoiding high co
+- `selfhost-qwen4b` d37 2025-11-12: $10.03→$3.03 (-69.79%) — STRUCTURAL DIVERGE [qwen-quant]: My eighth_kelly KL-divergence template flags high-conviction edges in team totals and halves, where market inefficien
+- `mistral-medium` d26 2025-11-01: $27.56→$8.86 (-67.85%) — STRUCTURAL DIVERGE [Mistral Small]: My diversified portfolio approach focuses on spreading risk across multiple games and categories, avoiding high-ri
+- `mistral-small` d28 2025-11-03: $14.11→$4.63 (-67.19%) — STRUCTURAL DIVERGE [qwen-quant]: My eighth_kelly + drawdown_adjusted template targets alt-markets and halves where model edges are softest, avoiding c
+- `mistral-small` d3 2025-10-06: $15.90→$5.28 (-66.79%) — STRUCTURAL DIVERGE [mistral-medium]: Today’s council plan targets home moneyline favorites, but my Cooperator template prioritizes alt-markets and tea
+- `mistral-small` d27 2025-11-02: $38.75→$14.11 (-63.59%) — STRUCTURAL DIVERGE [qwen-quant]: My eighth_kelly + drawdown_adjusted template targets high-conviction edges in alt-markets (team totals, halves) where
+- `mistral-nemo` d29 2025-11-04: $37.61→$14.45 (-61.58%) — STRUCTURAL DIVERGE [SelfHost Gemma-3-4B]: My approach focuses on high-conviction allocations based on player matchups and form streaks, diverging from
+- `mistral-ministral` d35 2025-11-10: $14.50→$6.03 (-58.41%) — STRUCTURAL DIVERGE [qwen-quant]: I use a flat_1pct sizing based on KL‑divergence rather than eighth_kelly, leading me to pick the next‑best high‑edge 
+- `nvidia-minimax` d38 2025-11-13: $71.14→$31.00 (-56.42%) — STRUCTURAL DIVERGE [qwen-quant]: My long-context scan prioritizes alt-spreads and team totals where qwen-quant’s flat_1pct template underweights cross

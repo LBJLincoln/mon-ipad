@@ -1,57 +1,61 @@
-# POL TF Post-Mortem — 32 days analyzed
+# POL TF Post-Mortem — 50 days analyzed
 Space: `LBJLincoln26/political-llm-trading-floor`
 
 ## Leaderboard (by final bankroll)
 | rank | trader | final | peak | drawdown | peak_day |
 |------|--------|-------|------|----------|----------|
-| 1 | `nvidia-llama70` | $95.19 | $162.09 | 41.3% | 19 |
-| 2 | `llama-contra` | $94.83 | $161.25 | 41.2% | 22 |
-| 3 | `qwen-quant` | $93.92 | $159.68 | 41.2% | 22 |
-| 4 | `qwen-arb` | $93.92 | $159.68 | 41.2% | 22 |
-| 5 | `gemini-anl` | $93.92 | $159.68 | 41.2% | 22 |
-| 6 | `gemini-tact` | $93.92 | $159.68 | 41.2% | 22 |
-| 7 | `mistral-large` | $93.92 | $159.68 | 41.2% | 22 |
-| 8 | `mistral-small` | $93.92 | $159.68 | 41.2% | 22 |
-| 9 | `mistral-ministral` | $93.92 | $159.68 | 41.2% | 22 |
-| 10 | `nemotron-120b` | $93.92 | $159.68 | 41.2% | 22 |
-| 11 | `selfhost-qwen4b` | $93.92 | $159.68 | 41.2% | 22 |
-| 12 | `nvidia-minimax` | $93.92 | $159.68 | 41.2% | 22 |
-| 13 | `selfhost-gemma3` | $93.92 | $159.68 | 41.2% | 22 |
-| 14 | `selfhost-qwen06` | $93.92 | $159.68 | 41.2% | 22 |
-| 15 | `selfhost-dolphin3` | $92.25 | $156.90 | 41.2% | 22 |
-| 16 | `mistral-medium` | $91.38 | $155.39 | 41.2% | 22 |
-| 17 | `mistral-nemo` | $90.25 | $153.45 | 41.2% | 22 |
+| 1 | `gemini-tact` | $531.42 | $2,686.83 | 80.2% | 43 |
+| 2 | `gemini-anl` | $454.21 | $2,233.46 | 79.7% | 43 |
+| 3 | `llama-contra` | $421.04 | $1,119.90 | 62.4% | 33 |
+| 4 | `selfhost-gemma3` | $355.60 | $919.98 | 61.3% | 33 |
+| 5 | `mistral-small` | $354.15 | $998.83 | 64.5% | 34 |
+| 6 | `mistral-nemo` | $353.42 | $849.49 | 58.4% | 33 |
+| 7 | `mistral-medium` | $328.53 | $1,006.46 | 67.4% | 34 |
+| 8 | `nvidia-minimax` | $324.56 | $839.55 | 61.3% | 33 |
+| 9 | `qwen-quant` | $311.58 | $956.71 | 67.4% | 33 |
+| 10 | `qwen-arb` | $308.32 | $651.48 | 52.7% | 42 |
+| 11 | `selfhost-dolphin3` | $300.11 | $735.61 | 59.2% | 33 |
+| 12 | `mistral-large` | $296.43 | $933.58 | 68.2% | 34 |
+| 13 | `nvidia-llama70` | $275.49 | $749.76 | 63.3% | 33 |
+| 14 | `selfhost-qwen06` | $272.71 | $742.80 | 63.3% | 33 |
+| 15 | `mistral-ministral` | $272.45 | $721.68 | 62.2% | 33 |
+| 16 | `nemotron-120b` | $251.82 | $685.40 | 63.3% | 33 |
+| 17 | `selfhost-qwen4b` | $245.62 | $650.47 | 62.2% | 33 |
 
 ## Top peak-rationales (what winners thought at their best day)
 
-### nvidia-llama70 — peak $162.09 on day 19
-- d19 ($162.09): Focusing on top 3 events with strongest signal strengths and clear sector mappings, prioritizing tech and energy sectors based on recent trends and insider trades.
-- d22 ($161.84): Diversified sector approach focusing on energy, finance, and healthcare with a long bias, driven by insider trades and regulatory arbitrage signals.
+### gemini-tact — peak $2,686.83 on day 43
+- d43 ($2,686.83): STRUCTURAL COMPLEMENT [Llama Contrarian]: TACTICAL TIMING focuses on the high-frequency cluster of insider trades in MSTR and HOOD as a volatility signal for the finance sector (XLF) while Llama focuses on contrarian inversions.
+- d42 ($2,246.43): STRUCTURAL COMPLEMENT [Llama Contrarian]: TACTICAL TIMING identifies a cluster of finance insider trades (FOUR, HOOD) that Llama Contrarian often fades; I will capture the sector-wide momentum in XLF and XLP while they focus on individual stock inversions.
 
-### llama-contra — peak $161.25 on day 22
-- d22 ($161.25): Fade the crowded insider-trade signals in tech and finance while overweighting energy and healthcare based on strong insider alignment and sector trends. Deploy as a consensus diverge against peers likely piling into tech (AMZN) and finance (COIN) longs.
-- d19 ($160.90): Fade the crowded tech insider trades (META/MSFT) with short positions in XLK, while capitalizing on the underdog consumer discretionary signal (UBER) via XLY long. Align with council's healthcare focus (XLV) for stability.
+### gemini-anl — peak $2,233.46 on day 43
+- d43 ($2,233.46): STRUCTURAL COMPLEMENT [Gemini Tactical]: While the leader targets high-volatility tech/crypto proxies, I apply a baseline_deviation approach to the Fed regulatory signals in the 'other' category to capture mean-reversion in macro-sensitive sectors.
+- d42 ($1,919.64): STRUCTURAL COMPLEMENT [Gemini Tactical]: While the leader targets high-volatility momentum, my REASONING TEMPLATE (Fed/SEC statistics-first) prioritizes the 30-day sector win-rate baselines for consumer staples and tech mean-reversion.
 
-### qwen-quant — peak $159.68 on day 22
-- d22 ($159.68): Focus on high-conviction insider trades in finance and healthcare sectors, leveraging regulatory-delta quantification and sector-beta matrices to maximize expected value. Deviate from tech due to weak signal strength and low edge.
-- d19 ($159.33): CONSENSUS DIVERGE NVIDIA Llama 3.3-70B: Prioritize healthcare (XLV) and energy (XLE) over tech insider trades due to stronger sector trends and regulatory clarity, while shorting tech (XLK) on weak historical performance and negative insider signal direction.
+### llama-contra — peak $1,119.90 on day 33
+- d33 ($1,119.90): tier-pad: 10 events
+- d34 ($1,066.62): tier-pad: 5 events
 
-## Top 8 gainers (single-day jumps ≥+10%)
-- `qwen-quant` d10 2026-02-02: $91.18→$117.25 (+28.59%) — Leverage strong insider trade signals in energy (XOM) and counter-consensus short positions in tech (AAPL, MSFT) based on regulatory delta and sector-
-- `qwen-arb` d10 2026-02-02: $91.18→$117.25 (+28.59%) — fallback-injection: LLM silent, forcing 75% deploy on first 4 events (SPY long)
-- `llama-contra` d10 2026-02-02: $91.18→$117.25 (+28.59%) — Fade the crowded tech insider trades (AAPL/MSFT) due to high signal strength and consensus fade edge. Allocate residual capital to energy (XOM) as a h
-- `gemini-anl` d10 2026-02-02: $91.18→$117.25 (+28.59%) — CONSENSUS AGREE [Mistral Medium]: Prioritizing energy and tech insider signals while applying TitFor2Tats cooperation to stabilize group reputation. L
-- `gemini-tact` d10 2026-02-02: $91.18→$117.25 (+28.59%) — CONSENSUS AGREE [mistral-medium]: Prioritizing energy momentum and tech fade based on NOMOS42 model edges and calendar-based insider trade patterns.
-- `mistral-large` d10 2026-02-02: $91.18→$117.25 (+28.59%) — CONSENSUS DIVERGE Mistral Medium: Prioritize high-conviction insider trade signals in energy (XOM) and avoid tech (AAPL/MSFT) due to weak sector trend
-- `mistral-small` d10 2026-02-02: $91.18→$117.25 (+28.59%) — Leverage insider trade signals in energy (XOM) and tech (AAPL/MSFT) while avoiding overcrowded SPY allocations. Focus on high-confidence energy sector
-- `mistral-nemo` d10 2026-02-02: $91.18→$117.25 (+28.59%) — Focus on high-signal insider trades in energy and tech sectors, leveraging momentum and strong sector trends.
+## Top 10 gainers (single-day jumps ≥+10%)
+- `qwen-quant` d22 2026-02-24: $342.59→$523.07 (+52.68%) — STRUCTURAL DIVERGE [Gemini Tactical]: My REASONING TEMPLATE (EXPECTED-UTILITY MAXIMIZATION) prioritizes insider trades with high signal strength and f
+- `mistral-medium` d32 2026-03-10: $685.42→$915.54 (+33.57%) — STRUCTURAL COMPLEMENT [Gemini Tactical]: My diversified portfolio approach focuses on balancing exposure across uncorrelated sectors (healthcare, ener
+- `gemini-tact` d32 2026-03-10: $1232.69→$1646.04 (+33.53%) — STRUCTURAL COMPLEMENT [Llama Contrarian]: TACTICAL TIMING identifies a high-density insider cluster in private prisons (GEO) and energy (OKLO) which t
+- `gemini-anl` d32 2026-03-10: $1070.39→$1425.56 (+33.18%) — STRUCTURAL COMPLEMENT [Gemini Tactical]: While the leader focuses on tactical timing of high-volatility finance trades, I apply a baseline_deviation a
+- `qwen-arb` d22 2026-02-24: $187.32→$248.71 (+32.77%) — tier-pad: 37 events
+- `selfhost-qwen06` d22 2026-02-24: $293.29→$389.32 (+32.74%) — tier-pad: 37 events
+- `mistral-small` d22 2026-02-24: $369.95→$490.84 (+32.68%) — tier-pad: 37 events
+- `nemotron-120b` d22 2026-02-24: $270.81→$359.32 (+32.68%) — tier-pad: 37 events
+- `gemini-anl` d22 2026-02-24: $598.85→$794.52 (+32.67%) — tier-pad: 37 events
+- `gemini-tact` d22 2026-02-24: $725.95→$963.10 (+32.67%) — tier-pad: 37 events
 
-## Top 8 crashes (single-day drops ≤−20%)
-- `qwen-quant` d9 2026-01-30: $118.24→$91.18 (-22.89%) — Focus on regulatory arbitrage and insider tracking in finance and tech sectors, with a tilt toward short positions in tech due to consistent negative 
-- `qwen-arb` d9 2026-01-30: $118.24→$91.18 (-22.89%) — fallback-injection: LLM silent, forcing 75% deploy on first 5 events (SPY long)
-- `llama-contra` d9 2026-01-30: $118.24→$91.18 (-22.89%) — Fade the crowded tech insider trade narrative; tech sector has seen 5 consecutive bullish congressional trades with negative expected returns. Target 
-- `gemini-anl` d9 2026-01-30: $118.24→$91.18 (-22.89%) — CONSENSUS AGREE [Mistral Medium]: Prioritizing sector-specific insider signals with high signal_fade probability in tech while following council's foc
-- `gemini-tact` d9 2026-01-30: $118.24→$91.18 (-22.89%) — CONSENSUS DIVERGE [Mistral Medium]: While the leader favored broad SPY, I am fading tech congressional trades based on the NOMOS42 signal_fade edge (0
-- `mistral-large` d9 2026-01-30: $118.24→$91.18 (-22.89%) — Focus on insider tracking and regulatory arbitrage, prioritizing finance and tech sectors with strong multi-agency signals. Deviate from tech short co
-- `mistral-medium` d9 2026-01-30: $120.31→$92.77 (-22.89%) — Diversified portfolio approach focusing on insider tracking and regulatory arbitrage with a balanced exposure across multiple sectors.
-- `mistral-small` d9 2026-01-30: $118.24→$91.18 (-22.89%) — Leverage multi-agency insider signals with sector ETFs, prioritizing finance and energy where congressional trades show positive momentum. Spread smal
+## Top 10 crashes (single-day drops ≤−20%)
+- `qwen-quant` d40 2026-03-20: $865.61→$605.93 (-30.0%) — tier-pad: 4 events
+- `llama-contra` d40 2026-03-20: $1013.19→$709.23 (-30.0%) — tier-pad: 4 events
+- `mistral-large` d40 2026-03-20: $857.44→$600.20 (-30.0%) — tier-pad: 4 events
+- `mistral-medium` d40 2026-03-20: $913.15→$639.23 (-30.0%) — tier-pad: 4 events
+- `mistral-small` d40 2026-03-20: $943.20→$660.24 (-30.0%) — tier-pad: 4 events
+- `mistral-nemo` d40 2026-03-20: $768.52→$537.96 (-30.0%) — tier-pad: 4 events
+- `mistral-ministral` d40 2026-03-20: $653.02→$457.10 (-30.0%) — tier-pad: 4 events
+- `nemotron-120b` d40 2026-03-20: $620.21→$434.13 (-30.0%) — tier-pad: 4 events
+- `selfhost-qwen4b` d40 2026-03-20: $588.53→$411.97 (-30.0%) — tier-pad: 4 events
+- `nvidia-minimax` d40 2026-03-20: $759.68→$531.76 (-30.0%) — tier-pad: 4 events

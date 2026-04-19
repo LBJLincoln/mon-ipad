@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-19T12:17:01.772213+00:00",
+  "timestamp": "2026-04-19T16:35:00Z",
   "track": "T1 SCIENCE",
   "absorbs": [
     "D1 research",
@@ -8,260 +8,25 @@
   ],
   "status": "ok",
   "last_metric": {
-    "fleet_best_brier": 0.22107,
-    "fleet_best_island": "S15",
+    "fleet_best_brier": 0.21949,
+    "fleet_best_island": "S19 (testforge42-nba-evo-s19, extra_trees, gen=167)",
     "target_brier": 0.2,
+    "gap_to_target": 0.01949,
     "calibration_mce": null,
     "calibration_ece": null,
-    "drift_alarms": 0
+    "drift_alarms": 0,
+    "islands_active": 10,
+    "islands_reset_this_cycle": 3
   },
-  "last_action": "21 evolution islands running; fleet best S15 0.22107; checkpointed S10/S13/S15; diversified S10/S11/S12/S16/S19",
-  "next_proposal": "If fleet_best stagnates >24h, trigger diversify on worst 2 islands",
+  "last_action": "2026-04-19T16:35Z SWISH tick: checkpoint S19+S12, diversify S10/S11/S15/S17/S20, config-tune S14 mut→0.12, restart S16/S21/S22 (critical stag 450/542/429 gens)",
+  "actions_this_tick": {
+    "checkpoint": ["S19 (fleet_best 0.21949)", "S12 (0.21989 top-3 find)"],
+    "diversify": ["S10 stag=322", "S11 stag=372", "S15 stag=358", "S17 stag=273", "S20 stag=175"],
+    "config_tune": ["S14 mutation_rate 0.0749->0.12"],
+    "restart": ["S16 stag=450", "S21 stag=542", "S22 stag=429"],
+    "no_action": ["S13", "S18"]
+  },
+  "next_proposal": "Monitor S16/S21/S22 post-reset recovery. If S10/S11/S15 stagnation exceeds 400 gens next tick, escalate to restart. Watch S12 true_best 0.21989 — checkpoint API confirmed current-state, not historical best; monitor for convergence.",
   "blocked_on": null,
-  "swish": {
-    "last_tick": "2026-04-19T12:45:00Z",
-    "tick_count": 1,
-    "fleet_best": {
-      "island": "S15",
-      "brier": 0.22107,
-      "gen": 268,
-      "algo": "wide_search",
-      "sha": null
-    },
-    "actions": [
-      "checkpointed S10 brier=0.22128 gen=385 (improved from CLAUDE.md 0.22825)",
-      "checkpointed S13 brier=0.22126 gen=336 (improved from CLAUDE.md 0.22749)",
-      "checkpointed S15 brier=0.22107 gen=268 fleet_best (improved from CLAUDE.md 0.22418)",
-      "diversified S10 (stag=18 cycles, brier=0.22128)",
-      "diversified S11 (stag=21 cycles, brier=0.22213)",
-      "diversified S12 (stag=14 cycles, brier=0.24577 poor)",
-      "diversified S16 (stag=16 cycles, brier=0.23465 poor)",
-      "diversified S19 (stag=18 cycles, brier=0.22328)",
-      "S22 self-hard-reset at cycle 25 (already handled by island engine)"
-    ],
-    "islands": {
-      "S10": {
-        "gen": 385,
-        "best_brier": 0.22128,
-        "stag_cycles": 18,
-        "mutation_rate": 0.1088,
-        "algo": "extra_trees",
-        "status": "EVOLVING",
-        "action_this_tick": "diversify+checkpoint"
-      },
-      "S11": {
-        "gen": 411,
-        "best_brier": 0.22213,
-        "stag_cycles": 21,
-        "mutation_rate": 0.1126,
-        "algo": "exploration",
-        "status": "EVOLVING",
-        "action_this_tick": "diversify"
-      },
-      "S12": {
-        "gen": 345,
-        "best_brier": 0.24577,
-        "stag_cycles": 14,
-        "mutation_rate": 0.1379,
-        "algo": "extra_trees",
-        "status": "COOLDOWN",
-        "action_this_tick": "diversify (poor brier, needs reset)"
-      },
-      "S13": {
-        "gen": 336,
-        "best_brier": 0.22126,
-        "stag_cycles": 10,
-        "mutation_rate": 0.1407,
-        "algo": "catboost",
-        "status": "EVOLVING",
-        "action_this_tick": "checkpoint"
-      },
-      "S14": {
-        "gen": 43,
-        "best_brier": 0.23016,
-        "stag_cycles": 13,
-        "mutation_rate": 0.1387,
-        "algo": "lightgbm",
-        "status": "EVOLVING",
-        "action_this_tick": "monitor (young island, stag expected)"
-      },
-      "S15": {
-        "gen": 268,
-        "best_brier": 0.22107,
-        "stag_cycles": 13,
-        "mutation_rate": 0.1443,
-        "algo": "wide_search",
-        "status": "EVOLVING",
-        "action_this_tick": "checkpoint (fleet_best)",
-        "fleet_best": true
-      },
-      "S16": {
-        "gen": 428,
-        "best_brier": 0.23465,
-        "stag_cycles": 16,
-        "mutation_rate": 0.1428,
-        "algo": "gradient_boost",
-        "status": "EVOLVING",
-        "action_this_tick": "diversify (poor brier+stag)"
-      },
-      "S17": {
-        "gen": 463,
-        "best_brier": 0.22358,
-        "stag_cycles": 3,
-        "mutation_rate": 0.1487,
-        "algo": "ensemble",
-        "status": "EVOLVING",
-        "action_this_tick": "monitor (recently reset, rebuilding)"
-      },
-      "S18": {
-        "gen": 477,
-        "best_brier": 0.22154,
-        "stag_cycles": 7,
-        "mutation_rate": 0.1432,
-        "algo": "catboost_spec",
-        "status": "EVOLVING",
-        "action_this_tick": "monitor"
-      },
-      "S19": {
-        "gen": 403,
-        "best_brier": 0.22328,
-        "stag_cycles": 18,
-        "mutation_rate": 0.1421,
-        "algo": "wide_search",
-        "status": "COOLDOWN",
-        "action_this_tick": "diversify"
-      },
-      "S20": {
-        "gen": 428,
-        "best_brier": 0.22407,
-        "stag_cycles": 16,
-        "mutation_rate": 0.136,
-        "algo": "isotonic_cpcv",
-        "status": "EVOLVING",
-        "action_this_tick": "monitor (new island gen=428, still settling)"
-      },
-      "S21": {
-        "gen": 405,
-        "best_brier": 0.2265,
-        "stag_cycles": 12,
-        "mutation_rate": 0.139,
-        "algo": "darwinian_weights",
-        "status": "EVOLVING",
-        "action_this_tick": "monitor"
-      },
-      "S22": {
-        "gen": 381,
-        "best_brier": 0.22358,
-        "stag_cycles": 0,
-        "mutation_rate": 0.15,
-        "algo": "venn_abers_fusion",
-        "status": "EVOLVING",
-        "action_this_tick": "monitor (engine self-hard-reset at cycle 25, already diversified)"
-      }
-    }
-  },
-  "lobbyist": {
-    "last_tick": "2026-04-19T13:00:00Z",
-    "tick_count": 1,
-    "fleet_best": {
-      "island": "P5",
-      "brier": 0.24923,
-      "gen": 11311,
-      "algo": "catboost"
-    },
-    "actions": [
-      "checkpointed P2 brier=0.24949 gen=8960 (improved from baseline 0.25223, delta=0.00274)",
-      "checkpointed P4 brier=0.24956 gen=12646 (improved from baseline 0.25146, delta=0.00190)",
-      "checkpointed P5 brier=0.24923 gen=11311 fleet_best (improved from baseline 0.25347, delta=0.00424)",
-      "checkpointed P7 brier=0.24937 gen=12383 (improved from baseline 0.24987, delta=0.00050)",
-      "checkpointed P8 brier=0.25241 gen=11405 (improved from baseline 0.25597, delta=0.00356)",
-      "no diversify needed: all 8 islands stag=0",
-      "no restarts needed: all 8 islands EVOLVING"
-    ],
-    "islands": {
-      "P1": {
-        "gen": 11766,
-        "best_brier": 0.24999,
-        "stag": 0,
-        "algo": "xgboost",
-        "status": "UP",
-        "action_this_tick": "monitor (flat vs baseline 0.24996)"
-      },
-      "P2": {
-        "gen": 8960,
-        "best_brier": 0.24949,
-        "stag": 0,
-        "algo": "lightgbm",
-        "status": "UP",
-        "action_this_tick": "checkpoint (improved 0.25223->0.24949)"
-      },
-      "P3": {
-        "gen": 11251,
-        "best_brier": 0.25121,
-        "stag": 0,
-        "algo": "xgboost",
-        "status": "UP",
-        "action_this_tick": "monitor (regressed vs baseline 0.24996)"
-      },
-      "P4": {
-        "gen": 12646,
-        "best_brier": 0.24956,
-        "stag": 0,
-        "algo": "lightgbm",
-        "status": "UP",
-        "action_this_tick": "checkpoint (improved 0.25146->0.24956)"
-      },
-      "P5": {
-        "gen": 11311,
-        "best_brier": 0.24923,
-        "stag": 0,
-        "algo": "catboost",
-        "status": "UP",
-        "action_this_tick": "checkpoint (fleet_best, improved 0.25347->0.24923)",
-        "fleet_best": true
-      },
-      "P6": {
-        "gen": 11713,
-        "best_brier": 0.25349,
-        "stag": 0,
-        "algo": "extra_trees",
-        "status": "UP",
-        "action_this_tick": "monitor (flat vs baseline 0.25358, diversify sent 2026-04-16 still taking effect)"
-      },
-      "P7": {
-        "gen": 12383,
-        "best_brier": 0.24937,
-        "stag": 0,
-        "algo": "gradient_boost",
-        "status": "UP",
-        "action_this_tick": "checkpoint (improved 0.24987->0.24937)"
-      },
-      "P8": {
-        "gen": 11405,
-        "best_brier": 0.25241,
-        "stag": 0,
-        "algo": "random_forest",
-        "status": "UP",
-        "action_this_tick": "checkpoint (improved 0.25597->0.25241)"
-      }
-    }
-  },
-  "internal_affairs": {
-    "last_tick": "2026-04-19T13:13:53Z",
-    "tick_count": 1,
-    "findings": {
-      "leakage": 0,
-      "lockstep": 1,
-      "deploy_outlier": 0,
-      "walk_forward": 0,
-      "suspicious_wr": 0
-    },
-    "overall": "critical",
-    "alerts": [
-      "POL day-049: 493/493 bets 100% tiered-post-filter lockstep (17/17 agents identical) \u2014 run completed pre-tier-pad-removal",
-      "POL source: direct_ratio=9.5% (<10% threshold) \u2014 tier-pad dominated entire 50-day run",
-      "NOTE: tier-pad removal fix (62a51c395, 07:33 Apr 19) deployed AFTER POL completed. NBA post-fix: 100% direct (RESOLVED)"
-    ],
-    "context": "POL TF completed its 50-day run before tier-pad removal landed. Day-052/053/054 NBA shows fix working (100% direct). POL needs a new run to validate."
-  }
+  "api_reliability_note": "API best_brier field is unreliable (shows current-gen value, not all-time best). API stagnation field is within-cycle counter only. ALWAYS compute true_min_brier and stag_gens from history[].brier array."
 }

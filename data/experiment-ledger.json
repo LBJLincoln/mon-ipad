@@ -1,6 +1,34 @@
 {
-  "last_updated": "2026-04-19T12:00:00Z",
+  "last_updated": "2026-04-19T16:35:00Z",
   "ledger": [
+    {
+      "cycle": "swish-4h-2026-04-19T16:35Z",
+      "date": "2026-04-19",
+      "agent": "nomos-hoops (SWISH)",
+      "project": "NBA",
+      "technique": "Full 13-island sweep: 2 checkpoints + 5 diversify + 1 config-tune + 3 restart",
+      "islands_acted_on": ["S10","S11","S12","S14","S15","S16","S17","S19","S20","S21","S22"],
+      "actions": {
+        "checkpoint": "S19 (fleet_best 0.21949 gen=167); S12 (top-3 0.21989 gen=279)",
+        "diversify": "S10 (stag=322), S11 (stag=372), S15 (stag=358), S17 (stag=273), S20 (stag=175)",
+        "config_tune": "S14 mutation_rate 0.0749->0.12 (plateau escape)",
+        "restart": "S16 (stag=450), S21 (stag=542), S22 (stag=429 — best at gen=0)",
+        "no_action": "S13 (MOD stag, brier competitive), S18 (MOD stag, recent best gen=436)"
+      },
+      "fleet_best_brier_before": 0.21949,
+      "fleet_best_brier_after": 0.21949,
+      "fleet_best_delta": 0.0,
+      "fleet_best_island": "S19",
+      "critical_findings": [
+        "S22 regressed from prev fleet best 0.22073 to stagnant at gen=0 (0.22358) — reset correct",
+        "S16 CRITICAL: 450 gens stagnant since gen=105 best 0.21983 — reset correct",
+        "S21 CRITICAL: 542 gens stagnant since gen=5 — reset correct",
+        "S12 discovered: true_min_brier 0.21989 despite API reporting 0.24577 (history diverged)",
+        "API best_brier and stagnation fields unreliable — must compute from history[]"
+      ],
+      "verdict": "fleet_best_confirmed_S19_0.21949",
+      "notes": "S12/S19 checkpointed as preservation. S14 mutation too low (0.0749) — boosted. 3 critical stagnation resets (450/542/429 gens)."
+    },
     {
       "cycle": "swish-4h-2026-04-19T08:45Z",
       "date": "2026-04-19",

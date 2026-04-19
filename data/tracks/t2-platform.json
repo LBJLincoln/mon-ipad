@@ -1,64 +1,18 @@
 {
-  "timestamp": "2026-04-19T14:42:00.000000+00:00",
+  "timestamp": "2026-04-19T16:35:03.745050+00:00",
   "track": "T2 PLATFORM",
   "absorbs": [
     "D2 engineering",
     "D7 infra",
     "D9 cross-repo"
   ],
-  "status": "partial",
+  "status": "watch",
   "last_metric": {
     "engine_sha_match": null,
-    "nba_fleet_up": 12,
-    "infra_alerts": 1
+    "nba_fleet_up": null,
+    "infra_alerts": 0
   },
-  "last_action": "switchboard LLM healing 2026-04-19T14:42Z — nomos42-llm-cpu RUNTIME_ERROR fixed, gemma4-chat gated-model fixed (switched to Qwen2.5-1.5B-Instruct), 8 idle CPU council spaces paused to free quota",
+  "last_action": "Both TFs deployed w/ T13/T14 NVIDIA parity 2026-04-17",
   "next_proposal": "Wire auto-deploy-engine for engine.py parity drift detection",
-  "blocked_on": "qwen35-chat SLEEPING: Nomos42 free plan quota exhausted (12/10 running spaces). Requires USER ACTION: upgrade Nomos42 to PRO or accept qwen35-chat stays sleeping.",
-  "switchboard": {
-    "resolved_this_tick": [
-      "paused Nomos42/fin-r1-7b-cpu (batch-only, not in routing)",
-      "paused Nomos42/smollm3-3b-cpu (D4 Product council)",
-      "paused Nomos42/llama32-1b-cpu (D2 Engineering council)",
-      "paused Nomos42/qwen25-05b-cpu (D5 Business council)",
-      "paused Nomos42/gemma2-2b-cpu (D3 Evolution council)",
-      "paused Nomos42/qwen3-4b-cpu (D1 Research council)",
-      "paused Nomos42/nomos-cpu-gemma4 (D6 Evaluation council)",
-      "paused Nomos42/gemma3-4b-cpu (sleeping, gateway fallback only)",
-      "restarted Nomos42/nomos42-llm-cpu (was RUNTIME_ERROR, now RUNNING — serves selfhost:phi-4-mini/qwen2.5 gateway)",
-      "patched Nomos42/gemma4-chat app.py: switched default model from gated google/gemma-3-1b-it to Qwen/Qwen2.5-1.5B-Instruct (commit 3e53f18c52e5ed1b51b5d620f82203ce244932a6), restarted, now RUNNING"
-    ],
-    "blocked": [
-      "Nomos42/qwen35-chat SLEEPING: Nomos42 free plan caps at ~10 simultaneously running spaces. 6 NBA + 2 POL + pixel-world + langfuse + nomos42-llm-cpu + gemma4-chat = 12 running, 2 over limit. Cannot restart without pausing a core space. USER must upgrade Nomos42 to PRO or the space wakes organically on next user visit."
-    ],
-    "nba_tf_provider_error_source": "cerebras:qwen-3-235b — 280 substitutions accumulated (circuit breaker fired), hot-swap routed to openrouter:nemotron-120b / nvidia:llama-3.3-70b / cerebras:llama3.1-8b. Current llm_failures=0 (hot-swap working). Cloud API key issue — NOT fixable autonomously. Flag for user: check Cerebras dashboard for rate-limit / quota exhaustion.",
-    "spaces_up": [
-      "Nomos42/nba-evo-3 RUNNING",
-      "Nomos42/nba-evo-4 RUNNING",
-      "Nomos42/nba-evo-5 RUNNING",
-      "Nomos42/nba-evo-6 RUNNING",
-      "Nomos42/nba-quant RUNNING",
-      "Nomos42/nba-quant-2 RUNNING",
-      "Nomos42/political-alpha RUNNING",
-      "Nomos42/political-alpha-2 RUNNING",
-      "Nomos42/pixel-world RUNNING",
-      "Nomos42/langfuse RUNNING (status OK v2.95.11)",
-      "Nomos42/nomos42-llm-cpu RUNNING (fixed this tick)",
-      "Nomos42/gemma4-chat RUNNING (fixed this tick — new model: Qwen2.5-1.5B-Instruct)"
-    ],
-    "spaces_down": [
-      "Nomos42/qwen35-chat SLEEPING (quota limit — user action required)"
-    ],
-    "spaces_paused_this_tick": [
-      "Nomos42/fin-r1-7b-cpu",
-      "Nomos42/smollm3-3b-cpu",
-      "Nomos42/llama32-1b-cpu",
-      "Nomos42/qwen25-05b-cpu",
-      "Nomos42/gemma2-2b-cpu",
-      "Nomos42/qwen3-4b-cpu",
-      "Nomos42/nomos-cpu-gemma4",
-      "Nomos42/gemma3-4b-cpu"
-    ],
-    "tick_timestamp": "2026-04-19T14:42:00.000000+00:00"
-  }
+  "blocked_on": null
 }
