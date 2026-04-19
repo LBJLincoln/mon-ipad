@@ -1,39 +1,39 @@
 # Fleet Health Snapshot
 
-> Captured at 2026-04-18T04:15:25Z
+> Captured at 2026-04-19T04:15:25Z
 
 ## NBA Islands
 
 | Island | Brier | Gen | Status |
 |--------|-------|-----|--------|
-| S10_nba | 0.22098 | 367 | running |
-| S11_nba | 0.22662 | 297 | running |
-| S12_nba | 0.22155 | 306 | running |
-| S13_nba | 0.22132 | 341 | running |
-| S14_nba | 0.22547 | 332 | running |
-| S15_nba | 0.22236 | 266 | running |
-| S16_nba | 0.2244 | 463 | running |
-| S17_nba | 0.22214 | 355 | running |
-| S18_nba | 0.22415 | 296 | running |
-| S19_nba | 0.22494 | 325 | running |
-| S20_nba | 0.22633 | 357 | running |
-| S21_nba | 0.22604 | 221 | running |
-| S22_nba | 0.22006 | 167 | running |
+| S10_nba | 0.2228 | 177 | running |
+| S11_nba | 0.25201 | 194 | running |
+| S12_nba | 0.24577 | 104 | running |
+| S13_nba | 0.22126 | 128 | running |
+| S14_nba | 1.0 | 0 | running |
+| S15_nba | 0.22107 | 141 | running |
+| S16_nba | 0.23465 | 158 | running |
+| S17_nba | 0.22336 | 208 | running |
+| S18_nba | 0.22154 | 254 | running |
+| S19_nba | 0.22328 | 214 | running |
+| S20_nba | 0.22407 | 187 | running |
+| S21_nba | 0.2265 | 145 | running |
+| S22_nba | 0.22358 | 170 | running |
 
-- Fleet best: 0.22006
-- Fleet avg: 0.22357
-- Fleet worst: 0.22662
-- Fleet spread: 0.00656
+- Fleet best: 0.22107
+- Fleet avg: 0.28768
+- Fleet worst: 1.00000
+- Fleet spread: 0.77893
 
 ## Political Islands
 
 | Island | Brier | Gen | Status |
 |--------|-------|-----|--------|
-| P1_pol | 0.24999 | 2315 | running |
-| P2_pol | 0.2523 | 1876 | running |
-| P3_pol | 0.25341 | 2990 | running |
-| P4_pol | 0.24956 | 3115 | running |
-| P5_pol | 0.25265 | 2687 | running |
-| P6_pol | 0.2513 | 2653 | running |
-| P7_pol | 0.25471 | 3246 | running |
-| P8_pol | 0.25241 | 2991 | running |
+| P1_pol | 0.24999 | 9337 | running |
+| P2_pol | 0.24949 | 6952 | running |
+| P3_pol | 0.25121 | 9682 | running |
+| P4_pol | 0.24956 | 9702 | running |
+| P5_pol | 0.24923 | 8632 | running |
+| P6_pol | 0.25349 | 9658 | running |
+| P7_pol | 0.24937 | 10167 | running |
+| P8_pol | 0.25241 | 9138 | running |
