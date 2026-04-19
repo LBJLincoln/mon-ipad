@@ -133,7 +133,15 @@ YOUR TASK — return a JSON object with keys:
       "tte_days": <int 3-10>, "qty": <int 1-3>, "rationale": <str>}}
     # ...max {MAX_POSITIONS_PER_SESSION} allocations
   ]
-  "coalition_proposal": {{"peer": <tid or null>, "event_idx": <int>, "etf": <ticker>, "option_type": "call|put"}}
+  "coalition_proposal": {{"peer": <tid or "none">, "event_idx": <int>, "etf": <ticker>, "option_type": "call|put"}}
+
+RULES (collective dynamics):
+- coalition_proposal is MANDATORY (must be present on every response). Set "peer" to a
+  different agent tid you want to pact with AND match with an allocation on that
+  event_idx+etf, or set "peer": "none" with a rationale for no pact this session.
+  Empty/missing field = invalid response.
+- COLLECTIVE-HELP: if any peer bankroll < $50, a top-3 agent must propose a carry-pact
+  (structural DMAD: you two must run DIFFERENT reasoning_templates).
 
 Respond ONLY with valid JSON, no markdown fences.
 """
@@ -235,12 +243,19 @@ def run_session(agents_state: Dict, date: str, session_id: int,
                 proposals[tid] = None
 
     # Coalition pacts (structural DMAD — reasoning_template must differ)
+    # 2026-04-19 BUGFIX #3 — accept MANDATORY prompt's "none" sentinel + allow
+    # dict-shaped coalition_proposal only. Previously null was silently skipped;
+    # now explicit "none" is also skipped so the mandatory prompt round-trips.
     pacts = {}
     for tid, prop in proposals.items():
         if not prop or not isinstance(prop, dict):
             continue
-        cp = prop.get("coalition_proposal") or {}
+        cp = prop.get("coalition_proposal")
+        if not isinstance(cp, dict):
+            cp = {}
         peer_tid = cp.get("peer")
+        if isinstance(peer_tid, str) and peer_tid.strip().lower() == "none":
+            peer_tid = None
         if not peer_tid or peer_tid == tid or peer_tid not in proposals:
             continue
         peer_prop = proposals.get(peer_tid)

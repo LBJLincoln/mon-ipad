@@ -1707,8 +1707,11 @@ def parse_day_allocation(raw: str, n_events: int) -> Optional[Dict]:
         })
 
     total = sum(a["pct"] for a in clean) + max(0.0, min(1.0, cash))
+    # 2026-04-19 BUGFIX #3 — coalition-preservation. Previously `if total<=0: return None`
+    # threw away valid coalition_proposal when LLM said "no bets today". Mirror of NBA fix.
     if total <= 0:
-        return None
+        cash = 1.0
+        total = 1.0
     # Normalize to sum exactly 1.0 (soft tolerance — agent gave proportions)
     if abs(total - 1.0) > 0.02:
         scale = 1.0 / total
@@ -1784,6 +1787,71 @@ def parse_day_allocation(raw: str, n_events: int) -> Optional[Dict]:
         "coalition_proposal": coalition,
         "council_alignment": council_alignment,
         "events_considered": events_considered,
+    }
+
+
+# ── UNIFORM-FALLBACK ALLOCATION (2026-04-19) ────────────────────────────────
+# When primary + hot-swap LLM BOTH fail (raw_response is None), emit a
+# uniform-fallback allocation so the agent never violates MIN_DEPLOY_PCT=0.75.
+# Scientific integrity: tagged provider_status="fallback_uniform" on each
+# allocation + fallback_used=True on the day_log so audit + post-mortem can
+# exclude these rows when evaluating agent skill.
+#
+# Spec: spread 75% across 3 broad-ETF proxies (SPY / QQQ / IWM), even split,
+# long-only. Resolution requires real event excess_return, so we pick the
+# top-3 events of the day by signal_strength, direction=long (matches the
+# broad-long-ETF spirit) and label each alloc with the intended ETF proxy.
+# Returns a parse-compatible dict (drop-in for `parsed`).
+_FALLBACK_ETF_LABELS = ["SPY", "QQQ", "IWM"]
+
+def build_uniform_fallback_political(day_date: str, day_events: List[Dict],
+                                     tid: str = "") -> Optional[Dict]:
+    if not day_events:
+        return None
+    scored = []
+    for i, ev in enumerate(day_events):
+        sig = float(ev.get("signal_strength", 0.0) or 0.0)
+        scored.append((sig, i, ev))
+    scored.sort(key=lambda t: t[0], reverse=True)
+    # Per-agent rotation (NBA parity): shift into the top pool by tid hash so
+    # not all 17 agents pile on the exact same 3 events on LLM-outage day.
+    # COLLISION_MAX_AGENTS=3 would otherwise reject 14/17 agents here.
+    if tid and len(scored) > 3:
+        import hashlib as _hl
+        _shift_range = max(1, min(6, len(scored) - 3))
+        _shift = int(_hl.sha1(tid.encode()).hexdigest()[:4], 16) % _shift_range
+        scored = scored[_shift:] + scored[:_shift]
+    top = scored[:3]
+    if not top:
+        return None
+    per_alloc_pct = 0.75 / len(top)
+    allocations = []
+    for rank, (sig, i, ev) in enumerate(top):
+        etf_label = _FALLBACK_ETF_LABELS[rank] if rank < len(_FALLBACK_ETF_LABELS) else f"ETF_{rank}"
+        allocations.append({
+            "event_idx": i + 1,  # 1-indexed in prompt space
+            "ticker": etf_label,
+            "direction": "long",
+            "pct": per_alloc_pct,
+            "confidence": 0.50,
+            "thesis": f"UNIFORM_FALLBACK: LLM (primary+hot-swap) failed; "
+                      f"long broad-ETF proxy ({etf_label}) on top-{rank+1} signal "
+                      f"event (underlying {ev.get('ticker','?')}, "
+                      f"strength={sig:.2f}) per $1M doctrine.",
+            "strategy": "fallback_uniform_long",
+            "provider_status": "fallback_uniform",
+            "fallback_etf_label": etf_label,  # user-spec broad-ETF tag
+            "underlying_ticker": ev.get("ticker", ""),
+        })
+    return {
+        "day_strategy": "FALLBACK_UNIFORM: LLM infrastructure failure — broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75% deploy floor).",
+        "cash_held_pct": round(1.0 - per_alloc_pct * len(top), 4),
+        "cash_rationale": "25% reserve; 75% deployed per MIN_DEPLOY_PCT doctrine when LLM dead.",
+        "allocations": allocations,
+        "coalition_proposal": None,
+        "council_alignment": None,
+        "events_considered": [],
+        "fallback_used": True,
     }
 
 
@@ -2499,17 +2567,34 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # That wasn't groupthink by the agents — it was code fabricating identical
             # trades. LLM silence is a REAL signal and must not be papered over.
             #
-            # Behavior now: LLM silent → parsed stays None → POST-FILTER smart fallback
-            # (line 2473+) picks events by real model signal (event_preds walk-forward).
-            # If no signal exists, agent stays 100% cash that day.
+            # 2026-04-19 — UNIFORM FALLBACK REINSTATED under strict conditions (NBA parity).
+            # Distinction:
+            #   (a) raw_response is None  → LLM infrastructure failure
+            #       (primary + hot-swap BOTH dead). Agents can't reason.
+            #       $1M COLLECTIVE_MISSION mandates ≥75% deploy EVERY day →
+            #       emit uniform fallback (top-3 signals, long broad-ETF proxy).
+            #       Tagged provider_status="fallback_uniform" + fallback_used=True
+            #       so audit/post-mortem can exclude these from skill metrics.
+            #   (b) raw_response is non-None but parse empty → informed LLM pass.
+            #       Scientific integrity: preserve the silence (no fabrication).
+            _day_fallback_used = False
+            # 2026-04-19 BUGFIX #3 — preserve coalition_proposal across uniform-fallback
+            # and silent-pass overwrites. Mirror of NBA fix.
+            _preserved_coalition = (parsed or {}).get("coalition_proposal")
             if not parsed or not parsed.get("allocations"):
-                parsed = {
-                    "day_strategy": "LLM_SILENT_PASS: no synthetic bets; POST-FILTER will attempt model-signal fallback.",
-                    "cash_held_pct": 1.0,
-                    "cash_rationale": "LLM silent — no fabricated deployment (scientific-integrity fix 2026-04-18)",
-                    "allocations": [],
-                    "coalition_proposal": None,
-                }
+                if raw_response is None:
+                    _fb = build_uniform_fallback_political(day_date, day_events, tid=tid)
+                    if _fb and _fb.get("allocations"):
+                        parsed = _fb
+                        _day_fallback_used = True
+                if not parsed or not parsed.get("allocations"):
+                    parsed = {
+                        "day_strategy": "LLM_SILENT_PASS: no synthetic bets; POST-FILTER will attempt model-signal fallback.",
+                        "cash_held_pct": 1.0,
+                        "cash_rationale": "LLM silent — no fabricated deployment (scientific-integrity fix 2026-04-18)",
+                        "allocations": [],
+                        "coalition_proposal": _preserved_coalition,
+                    }
 
             day_log = {
                 "day_idx": day_idx,
@@ -2526,6 +2611,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "council_alignment": (parsed or {}).get("council_alignment"),
                 "events_considered": (parsed or {}).get("events_considered") or [],
                 "raw_preview": (raw_response or "")[:3000],
+                "fallback_used": _day_fallback_used,  # 2026-04-19 uniform-fallback tag
+                "provider_status": "fallback_uniform" if _day_fallback_used else "llm_ok",
             }
 
             # Mech D — stash coalition proposal even if allocations are empty.
@@ -2603,6 +2690,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         "pnl_pct": round(pnl_pct, 4),
                         "won": won,
                         "profit": profit,
+                        "provider_status": alloc.get("provider_status", "llm_ok"),  # 2026-04-19 fallback tag
+                        "fallback_etf_label": alloc.get("fallback_etf_label"),
+                        "underlying_ticker": alloc.get("underlying_ticker"),
                     })
                     # Mech D — record actual (event_idx, direction) pairs
                     day_actual_bets.setdefault(tid, set()).add((alloc["event_idx"], direction))

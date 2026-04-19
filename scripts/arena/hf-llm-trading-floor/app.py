@@ -2023,8 +2023,14 @@ def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
             })
 
     total = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean) + max(0.0, min(1.0, cash))
+    # 2026-04-19 BUGFIX #3 — coalition-preservation. Previously `if total<=0: return None`
+    # threw away valid coalition_proposal when LLM said "no bets today". That killed
+    # every pact emission in silent-allocation days (audit Apr 19: 4-5 silent_cp per
+    # sample day in NBA, 30+ day zero-pact count). We now allow total==0 to proceed
+    # (cash will be set to 1.0 below) so coalition extraction still runs.
     if total <= 0:
-        return None
+        cash = 1.0
+        total = 1.0
     # Normalize to sum exactly 1.0 (soft tolerance — agent gave proportions)
     if abs(total - 1.0) > 0.02:
         scale = 1.0 / total
@@ -2109,6 +2115,82 @@ def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
         "coalition_proposal": coalition,
         "council_alignment": council_alignment,
         "games_considered": games_considered,
+    }
+
+
+# ── UNIFORM-FALLBACK ALLOCATION (2026-04-19) ────────────────────────────────
+# When primary + hot-swap LLM BOTH fail (raw_response is None), emit a
+# uniform-fallback allocation so the agent never violates MIN_DEPLOY_PCT=0.75.
+# Scientific integrity: tagged provider_status="fallback_uniform" on each
+# allocation + fallback_used=True on the day_log so audit + post-mortem can
+# exclude these rows when evaluating agent skill.
+#
+# Picks top-3 highest-edge moneyline bets from model_preds (consensus_ml_edge,
+# fleet Brier 0.217) for today's games. Even split 25% each → 75% deploy floor.
+# Long-only (home or away ML, whichever direction the consensus points). No
+# parlays. Returns a parse-compatible dict (drop-in for `parsed`).
+def build_uniform_fallback_nba(day_date: str, day_games: List[Dict],
+                               day_odds_list: List[Dict],
+                               model_preds: Dict,
+                               tid: str = "") -> Optional[Dict]:
+    if not day_games:
+        return None
+    candidates = []
+    for i, g in enumerate(day_games):
+        gk = f"{day_date}_{g['away']}@{g['home']}"
+        pred = (model_preds or {}).get(gk, {})
+        ml_dir = (pred.get("consensus_ml_direction") or "").lower().strip()
+        ml_edge = float(pred.get("consensus_ml_edge") or 0.0)
+        ml_conf = float(pred.get("consensus_ml_confidence") or 0.5)
+        if ml_dir not in ("home", "away") or ml_edge <= 0:
+            continue
+        cat = "ml_home" if ml_dir == "home" else "ml_away"
+        candidates.append({
+            "game_idx": i + 1,  # 1-indexed in prompt space
+            "category": cat,
+            "edge": ml_edge,
+            "confidence": ml_conf,
+            "matchup": f"{g['away']}@{g['home']}",
+        })
+    if not candidates:
+        return None
+    candidates.sort(key=lambda c: c["edge"], reverse=True)
+    # Per-agent rotation: shift into the top pool by tid hash so not all 17
+    # agents pile on the exact same 3 picks on a global LLM-outage day.
+    # COLLISION_MAX_AGENTS=3 would otherwise reject 14/17 agents here.
+    if tid and len(candidates) > 3:
+        import hashlib as _hl
+        _shift_range = max(1, min(6, len(candidates) - 3))
+        _shift = int(_hl.sha1(tid.encode()).hexdigest()[:4], 16) % _shift_range
+        candidates = candidates[_shift:] + candidates[:_shift]
+    top = candidates[:3]
+    if not top:
+        return None
+    # Even-split whatever the top-N size is, aiming at 75% total deploy.
+    per_alloc_pct = 0.75 / len(top)
+    allocations = []
+    for c in top:
+        allocations.append({
+            "game_idx": c["game_idx"],
+            "category": c["category"],
+            "pct": per_alloc_pct,
+            "confidence": c["confidence"],
+            "edge": c["edge"],
+            "rationale": "UNIFORM_FALLBACK: LLM (primary+hot-swap) failed; "
+                         "betting top-3 model-edge moneylines per $1M doctrine "
+                         "(provider_status=fallback_uniform)",
+            "provider_status": "fallback_uniform",
+        })
+    return {
+        "day_strategy": "FALLBACK_UNIFORM: LLM infrastructure failure — top-3 ML edges, even split 25% (75% deploy floor).",
+        "cash_held_pct": round(1.0 - per_alloc_pct * len(top), 4),
+        "cash_rationale": "25% reserve; 75% deployed per MIN_DEPLOY_PCT doctrine when LLM dead.",
+        "allocations": allocations,
+        "parlays": [],
+        "coalition_proposal": None,
+        "council_alignment": None,
+        "games_considered": [],
+        "fallback_used": True,
     }
 
 
@@ -3121,19 +3203,39 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # scientific integrity of the experiment: LLM silence is a REAL signal
             # (rate limit, provider down) and must NOT be papered over.
             #
-            # Behavior now: LLM silent → parsed stays None → no allocations built →
-            # POST-FILTER smart fallback (line 3162+) takes over, using real
-            # model_preds (fleet 0.217 Brier) to pick actual +edge categories.
-            # If NO +edge categories exist anywhere, agent stays 100% cash that day.
+            # 2026-04-19 — UNIFORM FALLBACK REINSTATED under strict conditions.
+            # Distinction:
+            #   (a) raw_response is None  → LLM infrastructure failure
+            #       (primary + hot-swap BOTH dead). Agents can't reason.
+            #       $1M COLLECTIVE_MISSION mandates ≥75% deploy EVERY day →
+            #       emit uniform fallback (top-3 model-edge ML, even split).
+            #       Tagged provider_status="fallback_uniform" + fallback_used=True
+            #       so audit/post-mortem can exclude these from skill metrics.
+            #   (b) raw_response is non-None but parse empty → informed LLM pass.
+            #       Scientific integrity: preserve the silence (no fabrication).
+            _day_fallback_used = False
+            # 2026-04-19 BUGFIX #3 — remember coalition_proposal emitted by the LLM
+            # BEFORE either the uniform-fallback or silent-pass overwrites `parsed`.
+            # Previously pacts were silently dropped in ~25% of days (audit evidence:
+            # 4-5 silent_cp per sample day in NBA) because the overwrite always set
+            # coalition_proposal=None. Coalition is metadata about intent and does
+            # not depend on allocations existing — it must survive.
+            _preserved_coalition = (parsed or {}).get("coalition_proposal")
             if not parsed or not parsed.get("allocations"):
-                parsed = {
-                    "day_strategy": "LLM_SILENT_PASS: no synthetic bets; POST-FILTER will attempt model-edge fallback.",
-                    "cash_held_pct": 1.0,
-                    "cash_rationale": "LLM silent — no fabricated deployment (scientific-integrity fix 2026-04-18)",
-                    "allocations": [],
-                    "parlays": [],
-                    "coalition_proposal": None,
-                }
+                if raw_response is None:
+                    _fb = build_uniform_fallback_nba(day_date, day_games, day_odds_list, model_preds, tid=tid)
+                    if _fb and _fb.get("allocations"):
+                        parsed = _fb
+                        _day_fallback_used = True
+                if not parsed or not parsed.get("allocations"):
+                    parsed = {
+                        "day_strategy": "LLM_SILENT_PASS: no synthetic bets; POST-FILTER will attempt model-edge fallback.",
+                        "cash_held_pct": 1.0,
+                        "cash_rationale": "LLM silent — no fabricated deployment (scientific-integrity fix 2026-04-18)",
+                        "allocations": [],
+                        "parlays": [],
+                        "coalition_proposal": _preserved_coalition,
+                    }
 
             day_log = {
                 "day_idx": day_idx,
@@ -3151,6 +3253,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "council_alignment": (parsed or {}).get("council_alignment"),
                 "games_considered": (parsed or {}).get("games_considered") or [],
                 "raw_preview": (raw_response or "")[:3000],
+                "fallback_used": _day_fallback_used,  # 2026-04-19 uniform-fallback tag
+                "provider_status": "fallback_uniform" if _day_fallback_used else "llm_ok",
             }
 
             # Mech D — stash coalition proposal even if allocations are empty.
@@ -3248,6 +3352,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         "won": won,
                         "odds": round(odds_dec, 3),
                         "profit": round(profit, 2),
+                        "provider_status": alloc.get("provider_status", "llm_ok"),  # 2026-04-19 fallback tag
                     })
                     # Mech D — record actual (game_idx, category) pairs for coalition resolution
                     day_actual_bets.setdefault(tid, set()).add((alloc["game_idx"], cat))
