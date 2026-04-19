@@ -325,10 +325,67 @@ def submit_option(agent_tid: str, order: Dict[str, Any], last_quote: float) -> D
     return entry
 
 
-def close_expired(now_utc: datetime) -> List[Dict[str, Any]]:
-    """Walk positions and close any that passed persona.max_hold or hit EOD flatten."""
+def _mark_to_market(p: Dict[str, Any], quote_fn) -> Dict[str, Any]:
+    """Compute realized P&L on close. Mutates `p` with realized_pnl_usd + exit_price + return_pct.
+
+    For equities: P&L = qty * (exit - entry) for long, qty * (entry - exit) for short.
+    For options (dry-run): approximate intrinsic value delta via underlying quote — coarse
+    but gives a direction/magnitude signal. Live options P&L pulled from broker fill feed.
+    For broker_error / rejected entries: leave P&L at 0.0.
+    """
+    if p.get("status") in ("broker_error", "rejected"):
+        p["realized_pnl_usd"] = 0.0
+        return p
+
+    if p.get("instrument_type") == "option":
+        # Dry-run option P&L: Δ(underlying) × stake × direction sign. Not real Greeks,
+        # but enough to produce non-zero leaderboard numbers and catch obviously
+        # losing theses. Live mode will overwrite via broker fills.
+        underlying_entry = float(p.get("last_quote_underlying") or 0) or 0.0
+        exit_q = quote_fn(p.get("underlying", "")) or underlying_entry
+        if underlying_entry > 0:
+            delta_pct = (exit_q - underlying_entry) / underlying_entry
+        else:
+            delta_pct = 0.0
+        direction = 1 if p.get("option_type", "call") == "call" else -1
+        if p.get("strategy") in ("vertical_credit",):
+            direction *= -1  # credit: we profit on small moves, lose on large in direction
+        stake = float(p.get("stake_usd") or 0)
+        pnl = stake * delta_pct * direction
+        # Cap loss at stake (long premium) — no naked unlimited here by design.
+        pnl = max(pnl, -stake)
+        p["realized_pnl_usd"] = round(pnl, 2)
+        p["exit_underlying"] = round(exit_q, 4)
+        p["return_pct"] = round(delta_pct * direction, 5)
+        return p
+
+    entry_px = float(p.get("entry_price") or 0) or 0.0
+    qty = float(p.get("qty") or 0) or 0.0
+    ticker = p.get("ticker", "")
+    exit_px = quote_fn(ticker) or entry_px
+    if p.get("side") == "short":
+        gross = qty * (entry_px - exit_px)
+    else:
+        gross = qty * (exit_px - entry_px)
+    p["realized_pnl_usd"] = round(gross, 2)
+    p["exit_price"] = round(exit_px, 4)
+    if entry_px > 0:
+        p["return_pct"] = round((exit_px - entry_px) / entry_px, 5)
+    else:
+        p["return_pct"] = 0.0
+    return p
+
+
+def close_expired(now_utc: datetime, quote_fn=None) -> List[Dict[str, Any]]:
+    """Walk positions and close any that passed persona.max_hold or hit EOD flatten.
+
+    `quote_fn(ticker) -> last_price` is injected from app.py so we can stay
+    decoupled from the quote_bus import. If None, we fall back to entry_price
+    (zero P&L) but still mark status=closed_expired.
+    """
     closed: List[Dict[str, Any]] = []
     positions = _load_positions()
+    qf = quote_fn or (lambda _t: None)
     for agent_tid, rows in positions.items():
         for p in rows:
             if p.get("status") != "open":
@@ -344,9 +401,76 @@ def close_expired(now_utc: datetime) -> List[Dict[str, Any]]:
             if age_min > 240 or eod:
                 p["status"] = "closed_expired"
                 p["closed_at"] = now_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+                _mark_to_market(p, qf)
                 closed.append(p)
     _save_positions(positions)
     return closed
+
+
+def pnl_snapshot(quote_fn=None) -> Dict[str, Any]:
+    """Per-agent P&L aggregate. Realized = sum(realized_pnl_usd) on closed rows.
+    Unrealized = mark-to-market on still-open rows. Total = realized + unrealized.
+
+    Uses `quote_fn(ticker)` for the open-position mark. If quote missing, mark is 0.
+    """
+    positions = _load_positions()
+    qf = quote_fn or (lambda _t: None)
+    per_agent: Dict[str, Dict[str, float]] = {}
+    for agent_tid, rows in positions.items():
+        realized = 0.0
+        unrealized = 0.0
+        wins = 0
+        losses = 0
+        trades_closed = 0
+        trades_open = 0
+        for p in rows:
+            if p.get("status") == "open":
+                trades_open += 1
+                # Shadow-copy to mark-to-market without persisting.
+                tmp = dict(p)
+                _mark_to_market(tmp, qf)
+                unrealized += float(tmp.get("realized_pnl_usd") or 0)
+            elif p.get("status", "").startswith("closed"):
+                trades_closed += 1
+                r = float(p.get("realized_pnl_usd") or 0)
+                realized += r
+                if r > 0: wins += 1
+                elif r < 0: losses += 1
+        per_agent[agent_tid] = {
+            "realized_pnl_usd": round(realized, 2),
+            "unrealized_pnl_usd": round(unrealized, 2),
+            "total_pnl_usd": round(realized + unrealized, 2),
+            "trades_closed": trades_closed,
+            "trades_open": trades_open,
+            "wins": wins,
+            "losses": losses,
+            "win_rate": round(wins / trades_closed, 4) if trades_closed else 0.0,
+        }
+    total_realized = sum(a["realized_pnl_usd"] for a in per_agent.values())
+    total_unrealized = sum(a["unrealized_pnl_usd"] for a in per_agent.values())
+    return {
+        "per_agent": per_agent,
+        "fleet_realized_pnl_usd": round(total_realized, 2),
+        "fleet_unrealized_pnl_usd": round(total_unrealized, 2),
+        "fleet_total_pnl_usd": round(total_realized + total_unrealized, 2),
+    }
+
+
+def read_trades(limit: int = 200) -> List[Dict[str, Any]]:
+    """Tail the dry_run_orders.jsonl log. Shape: every submit() call (fill or reject)."""
+    if not ORDERS_JSONL.exists():
+        return []
+    rows: List[Dict[str, Any]] = []
+    try:
+        lines = ORDERS_JSONL.read_text().splitlines()
+    except Exception:
+        return []
+    for line in lines[-limit:]:
+        try:
+            rows.append(json.loads(line))
+        except Exception:
+            continue
+    return rows
 
 
 def list_open() -> List[Dict[str, Any]]:

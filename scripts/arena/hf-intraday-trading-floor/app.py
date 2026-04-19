@@ -215,8 +215,11 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     results: List[Dict[str, Any]] = []
     now = datetime.now(timezone.utc)
 
-    # EOD flatten before new entries
-    executor.close_expired(now)
+    # EOD flatten before new entries — mark-to-market using current quote bus.
+    def _q(ticker: str):
+        q = (ctx.get("quotes") or {}).get(ticker) or {}
+        return q.get("last")
+    executor.close_expired(now, quote_fn=_q)
 
     for persona in PERSONAS:
         decision = _call_agent(persona, ctx)
@@ -375,18 +378,52 @@ def _build_app():
     @app.get("/api/leaderboard")
     def api_leaderboard():
         opens = executor.list_open()
-        # Very simple leaderboard: count open positions per agent + total decisions.
+        # Mark-to-market via the most recent quote snapshot (no LLM call here).
+        snap = quote_latest() or {}
+        quotes = snap.get("quotes") or {}
+        def _q(ticker: str):
+            return (quotes.get(ticker) or {}).get("last")
+        pnl = executor.pnl_snapshot(quote_fn=_q)
+        per_agent = pnl.get("per_agent", {})
         board = []
         for p in PERSONAS:
             tid = p["tid"]
             agent_open = [o for o in opens if o.get("agent_tid") == tid]
             s = STATE["agents"][tid]
+            ag = per_agent.get(tid, {})
             board.append({
                 "tid": tid, "name": p["name"], "tier": p["tier"],
                 "decisions": s["decisions"], "trades": s["trades"], "passes": s["passes"],
                 "open_positions": len(agent_open),
+                "realized_pnl_usd": ag.get("realized_pnl_usd", 0.0),
+                "unrealized_pnl_usd": ag.get("unrealized_pnl_usd", 0.0),
+                "total_pnl_usd": ag.get("total_pnl_usd", 0.0),
+                "trades_closed": ag.get("trades_closed", 0),
+                "win_rate": ag.get("win_rate", 0.0),
             })
-        return JSONResponse({"agents": board})
+        # Sort by total_pnl_usd desc
+        board.sort(key=lambda r: r["total_pnl_usd"], reverse=True)
+        for i, r in enumerate(board, 1):
+            r["rank"] = i
+        return JSONResponse({
+            "agents": board,
+            "fleet_realized_pnl_usd": pnl.get("fleet_realized_pnl_usd", 0.0),
+            "fleet_unrealized_pnl_usd": pnl.get("fleet_unrealized_pnl_usd", 0.0),
+            "fleet_total_pnl_usd": pnl.get("fleet_total_pnl_usd", 0.0),
+        })
+
+    @app.get("/api/pnl")
+    def api_pnl():
+        snap = quote_latest() or {}
+        quotes = snap.get("quotes") or {}
+        def _q(ticker: str):
+            return (quotes.get(ticker) or {}).get("last")
+        return JSONResponse(executor.pnl_snapshot(quote_fn=_q))
+
+    @app.get("/api/trades")
+    def api_trades(limit: int = 200):
+        trades = executor.read_trades(limit=limit)
+        return JSONResponse({"count": len(trades), "trades": trades})
 
     return app
 
