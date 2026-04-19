@@ -1,62 +1,82 @@
 {
-  "generated_at": "2026-04-19T00:22:00Z",
-  "brain_cycle": "4h-cloud-brain",
-  "overall": "HEALTHY",
-  "fleet_best_brier": 0.22073,
-  "fleet_best_island": "S22 (testforge42-nba-evo-s22, venn_abers_fusion, gen=39)",
-  "fleet_best_new_record": true,
-  "fleet_best_previous": 0.22085,
-  "fleet_best_delta": -0.00012,
-  "fleet_best_note": "Beats S17 checkpoint 0.22085 by 0.00012. S22 at gen=39 (was reset between cycles from gen=491). Checkpointing in CLAUDE.md this cycle.",
-  "nba_summary": {
-    "total_checked": 13,
-    "up": 13,
-    "down": 0,
-    "diversify_sent": ["S6 (nomos42-nba-evo-6, 19 cycles stagnant)", "S16 (lbjlincoln26-nba-evo-s16, ~16 cycles stagnant)"],
-    "diversify_command_format": "POST /api/command {\"command\":\"diversify\"} (NOT \"action\")",
-    "note": "S17 reset between cycles (gen 1142→78). S22 achieved new fleet best 0.22073 (gen 39). S20 at 0.22146 (gen 50) also competitive."
+  "generated_at": "2026-04-19T16:30:00Z",
+  "generated_by": "cloud-brain-cycle",
+  "nba_fleet": {
+    "fleet_best_brier": 0.22073,
+    "fleet_best_island": "S22",
+    "fleet_best_note": "S22 DOWN (503) but gen-39 checkpoint preserved. Running best: S15 0.22107",
+    "fleet_running_best_brier": 0.22107,
+    "fleet_running_best_island": "S15",
+    "target_brier": 0.22085,
+    "target_met": false,
+    "islands": {
+      "S10": {"status": "UP", "gen": 429, "brier": 0.22128, "stagnation": 0, "model": "extra_trees"},
+      "S11": {"status": "DOWN", "gen": null, "brier": null, "error": "503", "note": "recently diversified by SWISH"},
+      "S12": {"status": "UP", "gen": 437, "brier": 0.24577, "stagnation": 0, "note": "underperforming_diversified"},
+      "S13": {"status": "UP", "gen": 426, "brier": 0.22126, "stagnation": 0},
+      "S14": {"status": "UP", "gen": 91, "brier": 0.22115, "stagnation": 0, "note": "reset or low-gen"},
+      "S15": {"status": "UP", "gen": 331, "brier": 0.22107, "stagnation": 0, "fleet_running_best": true},
+      "S16": {"status": "UP", "gen": 540, "brier": 0.23465, "stagnation": 0, "note": "underperforming_diversified"},
+      "S17": {"status": "UP", "gen": 617, "brier": 0.22358, "stagnation": 4},
+      "S18": {"status": "UP", "gen": 577, "brier": 0.22154, "stagnation": 0},
+      "S19": {"status": "UP", "gen": 470, "brier": 0.22328, "stagnation": 0},
+      "S20": {"status": "UP", "gen": 533, "brier": 0.22407, "stagnation": 0, "type": "isotonic_cpcv"},
+      "S21": {"status": "UP", "gen": 528, "brier": 0.22650, "stagnation": 4, "type": "darwinian_weights"},
+      "S22": {"status": "DOWN", "gen": null, "error": "503", "note": "fleet_best_ever_0.22073_gen39_checkpointed", "type": "venn_abers_fusion"}
+    },
+    "actions_taken_this_cycle": [
+      "SWISH diversified S10/S11/S12/S16/S19 at 12:45Z (stag 14-21 cycles)",
+      "S11 and S22 DOWN — keepalive/cron will restart",
+      "FRANKENSTEIN impl cycle99-pace-norm-per100-cat66"
+    ]
   },
-  "islands_s10_s19": [
-    {"id": "S10", "space": "nomos42-nba-quant",        "gen": 49,  "cycle": 17, "brier": 0.2228, "stagnation": 0,  "status": "EVOLVING"},
-    {"id": "S11", "space": "nomos42-nba-quant-2",      "gen": 55,  "cycle": 19, "brier": 0.2520, "stagnation": 13, "status": "EVOLVING", "alert": "STAGNATION_APPROACHING"},
-    {"id": "S12", "space": "nomos42-nba-evo-3",        "gen": 37,  "cycle": 13, "brier": 0.2458, "stagnation": 12, "status": "EVOLVING"},
-    {"id": "S13", "space": "nomos42-nba-evo-4",        "gen": 38,  "cycle": 13, "brier": 0.2213, "stagnation": 11, "status": "EVOLVING"},
-    {"id": "S14", "space": "nomos42-nba-evo-5",        "gen": 16,  "cycle": 6,  "brier": 0.2372, "stagnation": 6,  "status": "EVOLVING"},
-    {"id": "S15", "space": "nomos42-nba-evo-6",        "gen": 61,  "cycle": 21, "brier": 0.2211, "stagnation": 19, "status": "EVOLVING", "alert": "DIVERSIFY_SENT"},
-    {"id": "S16", "space": "lbjlincoln26-nba-evo-s16", "gen": 52,  "cycle": 18, "brier": 0.2347, "stagnation": 16, "status": "EVOLVING", "alert": "DIVERSIFY_SENT"},
-    {"id": "S17", "space": "lbjlincoln26-nba-evo-s17", "gen": 78,  "cycle": 0,  "brier": 0.2234, "stagnation": 25, "status": "COOLDOWN", "note": "RESET — was gen=1142 fleet best, now recovering"},
-    {"id": "S18", "space": "testforge42-nba-evo-s18",  "gen": 57,  "cycle": 19, "brier": 0.2215, "stagnation": 0,  "status": "EVOLVING"},
-    {"id": "S19", "space": "testforge42-nba-evo-s19",  "gen": 73,  "cycle": 25, "brier": 0.2515, "stagnation": 12, "status": "EVOLVING"}
-  ],
-  "islands_s20_s22": [
-    {"id": "S20", "space": "lbjlincoln26-nba-evo-s20", "gen": 50, "brier": 0.22146, "status": "EVOLVING", "type": "isotonic_cpcv", "pareto_front_size": 14},
-    {"id": "S21", "space": "lbjlincoln26-nba-evo-s21", "gen": 25, "brier": 0.22831, "status": "EVOLVING", "type": "darwinian_weights", "pareto_front_size": 11},
-    {"id": "S22", "space": "testforge42-nba-evo-s22",  "gen": 39, "brier": 0.22073, "status": "EVOLVING", "type": "venn_abers_fusion", "pareto_front_size": 8, "alert": "FLEET_BEST"}
-  ],
-  "political_summary": {
-    "total": 8,
-    "up": 8,
-    "down": 0,
-    "pol_best_brier": 0.2492,
-    "pol_best_island": "P3 (lbjlincoln-political-alpha-3, gen=8843)"
+  "political_fleet": {
+    "fleet_best_brier": 0.24923,
+    "fleet_best_island": "P5",
+    "fleet_best_model": "lightgbm",
+    "fleet_best_gen": 12501,
+    "prev_best_brier": 0.24987,
+    "improvement": true,
+    "all_8_up": true,
+    "islands": {
+      "P1": {"status": "UP", "gen": 12889, "brier": 0.24999, "stagnation": 0, "model": "xgboost"},
+      "P2": {"status": "UP", "gen": 9856, "brier": 0.24949, "stagnation": 0, "model": "lightgbm"},
+      "P3": {"status": "COOLDOWN", "gen": 12543, "brier": 0.25121, "stagnation": 0, "model": "xgboost"},
+      "P4": {"status": "UP", "gen": 13780, "brier": 0.24956, "stagnation": 0, "model": "logistic"},
+      "P5": {"status": "COOLDOWN", "gen": 12501, "brier": 0.24923, "stagnation": 0, "model": "lightgbm", "fleet_best": true},
+      "P6": {"status": "UP", "gen": 12399, "brier": 0.25349, "stagnation": 0, "model": "xgboost"},
+      "P7": {"status": "COOLDOWN", "gen": 13281, "brier": 0.24937, "stagnation": 0, "model": "lightgbm"},
+      "P8": {"status": "UP", "gen": 12324, "brier": 0.25241, "stagnation": 0, "model": "random_forest"}
+    }
   },
-  "dept_councils": {
-    "total": 9,
-    "triggered": 9,
-    "trigger_method": "POST /gradio_api/call/trigger {\"data\":[]} — HTTP 200 on all 9",
-    "note": "/api/run returns 404 (endpoint not in council app). Gradio trigger endpoint works.",
-    "status": "STARTING — first run triggered this cycle"
+  "councils": {
+    "note": "All 9 in STARTING state — SWITCHBOARD paused 8 for quota at 14:36Z, now cold-starting. First iteration pending jitter.",
+    "D1": "STARTING", "D2": "STARTING", "D3": "STARTING", "D4": "STARTING",
+    "D5": "STARTING", "D6": "STARTING", "D7": "STARTING", "D8": "STARTING", "D9": "STARTING"
   },
-  "step0_work_queue": {
-    "R19_tf_axelrod_fix_ck_hardcoded": "DONE — GH workflow fix-ck-hardcoded.yml dispatched (commit 93a131452a), awaiting Actions execution. Patches NBA build_common_knowledge_block (12→n_traders dynamic) + both apps COLLECTIVE_MISSION (16→17).",
-    "R20_tf_axelrod_verify_tune_12": "BLOCKED — awaiting explicit user HF Space deploy gate"
+  "trading_floor": {
+    "nba_day": 7,
+    "political_day": 25,
+    "pqtf_day": 47,
+    "crew_fleet_total_usd": 605000,
+    "crew_progress_pct": 60.5,
+    "status": "active",
+    "fix_ck_hardcoded": "v2_workflow_pushed_this_cycle_retrigger_sent",
+    "axelrod_hf_push": "blocked_on_user_gate_R19",
+    "providers": {
+      "cerebras": "circuit_breaker_active_3fail_30min_opens_1h_cooldown",
+      "mistral": "promoted_to_L_tier_head",
+      "google_gemini": "working",
+      "self_host": "working"
+    }
   },
-  "research_proposals_saved": "data/research-proposals/2026-04-19-sota-proposals.json (5 proposals: isotonic CPCV, calibration-first CV, evolutionary ensemble weights, CPCV, Brier audit)",
-  "action_required": [
-    "CLAUDE.md update: fleet best 0.22073 (S22) — GH workflow update-claude-md-fleet-best.yml dispatched this cycle",
-    "MONITOR S11/S19: stagnation 12-13 cycles, diversify threshold at 15",
-    "MONITOR S17 recovery: was fleet best, now reset to gen=78. Do NOT diversify during COOLDOWN.",
-    "PORT: Apply isotonic CPCV from research proposal #1 to S17/S20 ensemble islands next cycle",
-    "COUNCILS: D1-D9 triggered via Gradio API — verify iteration>0 next cycle"
+  "alerts": [
+    "WARN: S11 DOWN (503) — keepalive restart expected",
+    "WARN: S22 DOWN (503) — fleet_best_ever island, keepalive restart expected",
+    "WARN: fix-ck-hardcoded.yml workflow FAILED prev cycle (race condition) — v2 retrigger sent this cycle",
+    "WARN: 9 axelrod-* GH Actions workflow failures logged by LAUNCHPAD 13:18Z",
+    "INFO: S12 brier=0.24577 and S16 brier=0.23465 severely underperforming (SWISH diversified)",
+    "INFO: Political fleet best improved P7->P5 (0.24987->0.24923)",
+    "INFO: NBA SOTA research — logistic regression 0.199 Brier (MDPI 2026), proposal written"
   ]
 }

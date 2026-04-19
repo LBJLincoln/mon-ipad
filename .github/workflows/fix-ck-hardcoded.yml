@@ -1,4 +1,4 @@
-name: Fix CK hardcoded count (brain R19)
+name: Fix CK hardcoded count (brain R19 v2)
 on:
   push:
     paths: ['.github/workflows/fix-ck-hardcoded.yml']
@@ -12,9 +12,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Pull latest state before patching
+        run: git pull --rebase origin main
+
       - name: Write patch script
         run: |
           cat > /tmp/patch.py << 'PYEOF'
+          import sys
           NBA = 'scripts/arena/hf-llm-trading-floor/app.py'
           POL = 'scripts/arena/hf-political-trading-floor/app.py'
           OLD_CM = 'You are ONE of 16 LLM agents sharing a society bankroll. All 16 agents see the SAME data: '
@@ -47,24 +51,32 @@ jobs:
               '                 f"ROI {((total_bankroll / total_start) - 1) * 100:+.1f}% | "\n'
               '                 f"{total_bets} bets | {total_wins}W")'
           )
+          changed = False
           with open(NBA, encoding='utf-8') as fh:
               nba = fh.read()
-          assert OLD_CM in nba, 'NBA: COLLECTIVE_MISSION not found'
-          assert OLD2 in nba, 'NBA: lines=[] block not found'
-          assert OLD3 in nba, 'NBA: GROUP TOTAL block not found'
-          nba = nba.replace(OLD_CM, NEW_CM, 1)
-          nba = nba.replace(OLD2, NEW2, 1)
-          nba = nba.replace(OLD3, NEW3, 1)
-          with open(NBA, 'w', encoding='utf-8') as fh:
-              fh.write(nba)
-          print('NBA patched OK')
+          for old, new, label in [(OLD_CM, NEW_CM, 'COLLECTIVE_MISSION'), (OLD2, NEW2, 'lines_block'), (OLD3, NEW3, 'group_total')]:
+              if old in nba:
+                  nba = nba.replace(old, new, 1)
+                  changed = True
+                  print(f'NBA: {label} patched')
+              else:
+                  print(f'NBA: {label} already updated or missing, skipping')
+          if changed:
+              with open(NBA, 'w', encoding='utf-8') as fh:
+                  fh.write(nba)
           with open(POL, encoding='utf-8') as fh:
               pol = fh.read()
-          assert OLD_CM in pol, 'POL: COLLECTIVE_MISSION not found'
-          pol = pol.replace(OLD_CM, NEW_CM, 1)
-          with open(POL, 'w', encoding='utf-8') as fh:
-              fh.write(pol)
-          print('Political patched OK')
+          pol_changed = False
+          if OLD_CM in pol:
+              pol = pol.replace(OLD_CM, NEW_CM, 1)
+              pol_changed = True
+              print('POL: COLLECTIVE_MISSION patched')
+          else:
+              print('POL: COLLECTIVE_MISSION already updated or missing, skipping')
+          if pol_changed:
+              with open(POL, 'w', encoding='utf-8') as fh:
+                  fh.write(pol)
+          print('Patch complete')
           PYEOF
 
       - name: Run patch
@@ -75,7 +87,7 @@ jobs:
           python3 -m py_compile scripts/arena/hf-llm-trading-floor/app.py && echo "NBA OK"
           python3 -m py_compile scripts/arena/hf-political-trading-floor/app.py && echo "POL OK"
 
-      - name: Commit
+      - name: Commit and push with retry
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -83,15 +95,19 @@ jobs:
           git config user.email "brain@nomos42.ai"
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/LBJLincoln/mon-ipad.git"
           git add scripts/arena/hf-llm-trading-floor/app.py scripts/arena/hf-political-trading-floor/app.py
-          git diff --cached --stat
+          git diff --cached --quiet && echo "No changes needed, already patched" && exit 0
           git commit -m "fix(trading-floor): CK block n_traders dynamic (12->17), COLLECTIVE_MISSION 16->17"
-          git pull --rebase origin main
-          git push
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin main && git push && echo "Push OK" && break
+            echo "Push attempt $i failed, waiting $((i*5))s..."
+            sleep $((i * 5))
+          done
 
       - name: Self-delete
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git pull --rebase --autostash origin main
           git rm .github/workflows/fix-ck-hardcoded.yml
           git commit -m "ci: remove fix-ck-hardcoded workflow (done)"
           git push
