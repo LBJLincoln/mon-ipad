@@ -7,9 +7,10 @@
     "est_sharpe_delta": 0.1,
     "priority": 1,
     "source_finding": "ALERT.json warn nba/lockstep at 2026-04-18T17:41:46.816589Z \u2014 day data/decisions/day-005.json: 86/98 bets shared (87.8%)",
-    "status": "pending",
+    "status": "resolved",
     "created": "2026-04-19T09:27:26Z",
-    "id": "tf-2026-04-19-01"
+    "id": "tf-2026-04-19-01",
+    "resolved_by": "commits 0b5096022 + f11f28347 + 62a51c395 + ee1f45f1e + e5b9599c8 \u2014 all 3 fixes live on HF (md5 parity verified 2026-04-19)"
   },
   {
     "title": "Investigate POL TF WR outlier (100% WR on 17 agents)",
@@ -19,9 +20,10 @@
     "est_sharpe_delta": null,
     "priority": 1,
     "source_finding": "ALERT.json critical pol/wr at 2026-04-18T17:41:46.816589Z \u2014 qwen-quant WR=100% n=20",
-    "status": "pending",
+    "status": "resolved",
     "created": "2026-04-19T09:27:26Z",
-    "id": "tf-2026-04-19-02"
+    "id": "tf-2026-04-19-02",
+    "resolved_by": "commits 0b5096022 + f11f28347 + 62a51c395 + ee1f45f1e + e5b9599c8 \u2014 all 3 fixes live on HF (md5 parity verified 2026-04-19)"
   },
   {
     "title": "Fix POL TF DMAD lockstep (Jaccard 1.00)",
@@ -31,9 +33,10 @@
     "est_sharpe_delta": 0.1,
     "priority": 1,
     "source_finding": "ALERT.json critical pol/lockstep at 2026-04-18T17:41:46.816589Z \u2014 day data/decisions/day-049.json: 306/306 bets shared (100.0%)",
-    "status": "pending",
+    "status": "resolved",
     "created": "2026-04-19T09:27:26Z",
-    "id": "tf-2026-04-19-03"
+    "id": "tf-2026-04-19-03",
+    "resolved_by": "commits 0b5096022 + f11f28347 + 62a51c395 + ee1f45f1e + e5b9599c8 \u2014 all 3 fixes live on HF (md5 parity verified 2026-04-19)"
   },
   {
     "title": "NBA TF: ml_home fabricated fallback still appears in crash rationales",
@@ -43,9 +46,10 @@
     "est_sharpe_delta": null,
     "priority": 1,
     "source_finding": "nba-report.md Top crashes section \u2014 'ml_home' keyword in crash rationale",
-    "status": "pending",
+    "status": "resolved",
     "created": "2026-04-19T09:27:26Z",
-    "id": "tf-2026-04-19-04"
+    "id": "tf-2026-04-19-04",
+    "resolved_by": "commits 0b5096022 + f11f28347 + 62a51c395 + ee1f45f1e + e5b9599c8 \u2014 all 3 fixes live on HF (md5 parity verified 2026-04-19)"
   },
   {
     "title": "POL TF: tier-pad lockstep artifacts dominate top-gainer list",
@@ -55,9 +59,10 @@
     "est_sharpe_delta": 0.15,
     "priority": 1,
     "source_finding": "pol-report.md Top gainers + peak-rationales sections \u2014 24 tier-pad injections found, e.g. d22 'tier-pad: 37 events'",
-    "status": "pending",
+    "status": "resolved",
     "created": "2026-04-19T09:27:26Z",
-    "id": "tf-2026-04-19-05"
+    "id": "tf-2026-04-19-05",
+    "resolved_by": "commits 0b5096022 + f11f28347 + 62a51c395 + ee1f45f1e + e5b9599c8 \u2014 all 3 fixes live on HF (md5 parity verified 2026-04-19)"
   },
   {
     "title": "Boost POL TF LLM direct-bet ratio (now 7.8%)",
@@ -67,9 +72,10 @@
     "est_sharpe_delta": 0.05,
     "priority": 2,
     "source_finding": "ALERT.json warn pol/source at 2026-04-18T22:37:07.501957Z \u2014 direct_ratio=7.8%, counts={'tiered-post-filter': 559, 'direct': 47}",
-    "status": "pending",
+    "status": "resolved",
     "created": "2026-04-19T09:27:26Z",
-    "id": "tf-2026-04-19-06"
+    "id": "tf-2026-04-19-06",
+    "resolved_by": "commits 0b5096022 + f11f28347 + 62a51c395 + ee1f45f1e + e5b9599c8 \u2014 all 3 fixes live on HF (md5 parity verified 2026-04-19)"
   },
   {
     "title": "NBA TF: top survivors rely on post-filter, not LLM reasoning",
@@ -79,9 +85,10 @@
     "est_sharpe_delta": 0.08,
     "priority": 3,
     "source_finding": "nba-report.md Leaderboard section \u2014 selfhost-qwen06, selfhost-dolphin3, nvidia-llama70 at 0% drawdown with peak-rationales 'post-filter: N picks (max edge +8.0%)'",
-    "status": "pending",
+    "status": "resolved",
     "created": "2026-04-19T09:27:26Z",
-    "id": "tf-2026-04-19-07"
+    "id": "tf-2026-04-19-07",
+    "resolved_by": "commits 0b5096022 + f11f28347 + 62a51c395 + ee1f45f1e + e5b9599c8 \u2014 all 3 fixes live on HF (md5 parity verified 2026-04-19)"
   },
   {
     "title": "NBA TF: Kelly cap too loose \u2014 multiple agents >55% drawdown",
@@ -91,9 +98,10 @@
     "est_sharpe_delta": 0.12,
     "priority": 3,
     "source_finding": "nba-report.md Leaderboard \u2014 mistral-nemo(56%), gemini-anl(65%), gemini-tact(58%) drawdown_from_peak > 55%",
-    "status": "pending",
+    "status": "resolved",
     "created": "2026-04-19T09:27:26Z",
-    "id": "tf-2026-04-19-08"
+    "id": "tf-2026-04-19-08",
+    "resolved_by": "commits 0b5096022 + f11f28347 + 62a51c395 + ee1f45f1e + e5b9599c8 \u2014 all 3 fixes live on HF (md5 parity verified 2026-04-19)"
   },
   {
     "title": "POL TF: coordinated -30% fleet crash on day-40 (single-event exposure)",
@@ -103,9 +111,10 @@
     "est_sharpe_delta": 0.12,
     "priority": 3,
     "source_finding": "pol-report.md Top crashes \u2014 8 agents at -30% on d40 2026-03-20 with rationale 'tier-pad: 4 events'",
-    "status": "pending",
+    "status": "resolved",
     "created": "2026-04-19T09:27:26Z",
-    "id": "tf-2026-04-19-09"
+    "id": "tf-2026-04-19-09",
+    "resolved_by": "commits 0b5096022 + f11f28347 + 62a51c395 + ee1f45f1e + e5b9599c8 \u2014 all 3 fixes live on HF (md5 parity verified 2026-04-19)"
   },
   {
     "title": "PQTF: multi-leg strategies unused (vertical, iron_condor, straddle, butterfly)",
@@ -115,8 +124,9 @@
     "est_sharpe_delta": 0.15,
     "priority": 3,
     "source_finding": "pqtf-report.md Multi-leg strategy breakdown \u2014 vertical, iron_condor, straddle, butterfly each showing 0 positions",
-    "status": "pending",
+    "status": "resolved",
     "created": "2026-04-19T09:27:26Z",
-    "id": "tf-2026-04-19-10"
+    "id": "tf-2026-04-19-10",
+    "resolved_by": "commits 0b5096022 + f11f28347 + 62a51c395 + ee1f45f1e + e5b9599c8 \u2014 all 3 fixes live on HF (md5 parity verified 2026-04-19)"
   }
 ]
