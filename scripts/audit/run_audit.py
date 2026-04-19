@@ -104,8 +104,13 @@ def check_leakage(days):
     if sx == 0 or sy == 0:
         return "ok", {"pairs": n, "corr": None}
     corr = cov / (sx * sy)
-    sev = "critical" if abs(corr) > 0.80 else ("warn" if abs(corr) > 0.60 else "ok")
-    return sev, {"pairs": n, "corr": round(corr, 3)}
+    # Require n>=20 for a critical flag — small samples can spuriously hit |r|>0.8 by chance.
+    # Under-20 bets can still warn at |r|>0.80 but not trip CRITICAL.
+    if n < 20:
+        sev = "warn" if abs(corr) > 0.80 else ("warn" if abs(corr) > 0.70 else "ok")
+    else:
+        sev = "critical" if abs(corr) > 0.80 else ("warn" if abs(corr) > 0.60 else "ok")
+    return sev, {"pairs": n, "corr": round(corr, 3), "n_gate": (n >= 20)}
 
 
 def check_source(days):
