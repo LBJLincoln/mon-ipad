@@ -16,9 +16,17 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from options import bs_price, option_pnl
-from intraday_paths import (
-    gbm_path, jump_path, scale_iv_for_event, EVENT_IV_SCALE,
-)
+# 2026-04-19 real-data migration: switch paths backend via USE_REAL_PATHS env.
+# real_paths falls back to simulator when cache is missing, so this is safe
+# to flip on before the cache exists.
+if os.environ.get("USE_REAL_PATHS") == "1":
+    from real_paths import (
+        gbm_path, jump_path, scale_iv_for_event, EVENT_IV_SCALE,
+    )
+else:
+    from intraday_paths import (
+        gbm_path, jump_path, scale_iv_for_event, EVENT_IV_SCALE,
+    )
 from session_data import load_events, all_days, enrich_event_for_quant
 from spreads import (
     vertical_spread, iron_condor, straddle, butterfly,
