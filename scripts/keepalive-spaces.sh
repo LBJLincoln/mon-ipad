@@ -42,10 +42,12 @@ ping_or_restart() {
 
     if [ "$should_restart" = "1" ] && [ -n "$space_id" ]; then
         echo "  [RESTART] $label returned $code — triggering HF restart..."
+        # 2026-04-19: PAUSED Spaces reject plain ?factory_reboot=false with 403.
+        # Try factory_reboot=true first (handles both SLEEPING and PAUSED stages).
         for tok in "${HF_TOKEN_LLM:-}" "${HF_TOKEN:-}" "${HF_TOKEN_NBA:-}" "${HF_TOKEN_COUNCILS:-}"; do
             [ -z "$tok" ] && continue
             restart_resp=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-                "https://huggingface.co/api/spaces/${space_id}/restart" \
+                "https://huggingface.co/api/spaces/${space_id}/restart?factory=true" \
                 -H "Authorization: Bearer ${tok}" \
                 --max-time 15 2>/dev/null)
             echo "  [RESTART] $label restart API → $restart_resp (tok: ${tok:0:10}...)"
