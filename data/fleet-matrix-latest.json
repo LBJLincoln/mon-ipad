@@ -1,14 +1,15 @@
 {
-  "generated_at": "2026-04-19T09:13:17.719770+00:00",
+  "generated_at": "2026-04-19T09:12:03.733375+00:00",
   "agent": "LOBBYIST",
-  "brain_cycle": "lobbyist-2026-04-19-1215",
   "fleet_best": {
     "brier": 0.24923,
     "island": "P5",
     "gen": 10158,
     "model": "lightgbm",
-    "delta_from_prev": -0.00064,
-    "prev_best": "P7 0.24987"
+    "prev_best_brier": 0.24987,
+    "prev_best_island": "P7",
+    "delta": -0.00064,
+    "note": "P5 new fleet best (prev leader P7 at 0.24987 from CLAUDE.md, P3 at 0.24994 from brain-status 2026-04-17)"
   },
   "islands": {
     "P1": {
@@ -85,13 +86,9 @@
       "stag": 0
     }
   },
-  "active_islands": 8,
-  "sleeping_islands": 0,
-  "p5_p8_deployment_gap": "RESOLVED \u2014 all 8 live and evolving",
-  "alerts": [
-    "P5 new fleet best 0.24923 (delta -0.00064 vs prev P7 0.24987)"
-  ],
+  "p5_p8_deployment_status": "ALL DEPLOYED AND EVOLVING (P4/P5/P8 were 503 on 2026-04-17, now recovered)",
   "actions_this_tick": [
-    "checkpoint_P5_fleet_best"
-  ]
+    "checkpoint_P5_fleet_best_0.24923"
+  ],
+  "alerts": []
 }
