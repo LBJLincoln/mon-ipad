@@ -1,9 +1,14 @@
-name: axelrod-ck-fix-v1
+name: axelrod-ck-fix-v2
+# v2 2026-04-19: workflow_dispatch + permissions + work-queue update
 
 on:
   push:
     paths:
       - '.github/workflows/axelrod-ck-fix-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   patch-ck-block:
@@ -11,7 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Patch NBA app.py - CK block dynamic n_traders
         run: |
@@ -27,7 +33,7 @@ jobs:
           patches = []
           misses = []
 
-          # Patch 1: COLLECTIVE_MISSION agent count (cosmetic, both strings present)
+          # Patch 1: COLLECTIVE_MISSION agent count (cosmetic)
           for old, new in [
               ("ONE of 16 LLM agents", "ONE of 17 LLM agents"),
           ]:
@@ -57,7 +63,7 @@ jobs:
           else:
               misses.append(f"MISS: function {fn_sig}")
 
-          # Patch 3: Replace hardcoded 1200.0 divisor (CONFIRMED by GH search)
+          # Patch 3: Replace hardcoded 1200.0 divisor
           old = "(total_bankroll / 1200.0)"
           new = "(total_bankroll / total_start)"
           if old in content:
@@ -67,32 +73,28 @@ jobs:
           else:
               misses.append(f"MISS: '{old}'")
 
-          # Patch 4: Replace hardcoded "12 traders" in f-strings (graceful)
-          # Handle both f"..." and plain "..." by converting to f-string
-          for old_num_ctx, new_ctx in [
-              ("ONE of 12 traders", "ONE of {n_traders} traders"),
-          ]:
-              # Replace in f-strings: f"...12 traders..." -> f"...{n_traders} traders..."
-              pat_f = re.compile(r'(f["\'])([^"\']*?)' + re.escape(old_num_ctx))
-              result, n = re.subn(pat_f, lambda m: m.group(1) + m.group(2) + new_ctx, content)
-              if n > 0:
-                  content = result
-                  patches.append(f"f-string {n}x: '{old_num_ctx}' -> dynamic")
+          # Patch 4: Replace 'ONE of 12 traders' in f-strings or plain strings
+          old_num_ctx = "ONE of 12 traders"
+          new_ctx = "ONE of {n_traders} traders"
+          pat_f = re.compile(r'(f["\'])([^"\']*)' + re.escape(old_num_ctx))
+          result, n = re.subn(pat_f, lambda m: m.group(1) + m.group(2) + new_ctx, content)
+          if n > 0:
+              content = result
+              patches.append(f"f-string {n}x: '{old_num_ctx}' -> dynamic")
+          else:
+              pat_plain = re.compile(r'(["\'])([^"\']*)' + re.escape(old_num_ctx) + r'([^"\']*)\1')
+              result2, n2 = re.subn(
+                  pat_plain,
+                  lambda m: 'f' + m.group(1) + m.group(2) + new_ctx + m.group(3) + m.group(1),
+                  content
+              )
+              if n2 > 0:
+                  content = result2
+                  patches.append(f"plain->f-string {n2}x: '{old_num_ctx}' -> dynamic")
               else:
-                  # Try plain string -> convert to f-string
-                  pat_plain = re.compile(r'(["\'])([^"\']*?)' + re.escape(old_num_ctx) + r'([^"\']*?)\1')
-                  result2, n2 = re.subn(
-                      pat_plain,
-                      lambda m: 'f' + m.group(1) + m.group(2) + new_ctx + m.group(3) + m.group(1),
-                      content
-                  )
-                  if n2 > 0:
-                      content = result2
-                      patches.append(f"plain->f-string {n2}x: '{old_num_ctx}' -> dynamic")
-                  else:
-                      misses.append(f"MISS(graceful): '{old_num_ctx}'")
+                  misses.append(f"MISS(graceful): '{old_num_ctx}'")
 
-          # Patch 5: Replace "$1,200" hardcoded amounts (graceful)
+          # Patch 5: Replace '$1,200' hardcoded amounts
           for old_text, new_text in [
               ("target $1,200 ($100x12 start)", "target ${total_start:.0f} ($100x{n_traders} start)"),
               ("target $1,200 ($100\u00d712 start)", "target ${total_start:.0f} ($100\u00d7{n_traders} start)"),
@@ -100,7 +102,6 @@ jobs:
               ("$1,200 ($100 x 12", "${total_start:.0f} ($100 x {n_traders}"),
           ]:
               if old_text in content:
-                  # These should be in f-strings already; just replace text
                   count = content.count(old_text)
                   content = content.replace(old_text, new_text)
                   patches.append(f"amount {count}x: '{old_text}' -> dynamic")
@@ -117,7 +118,7 @@ jobs:
               print("ERROR: zero patches applied")
               sys.exit(1)
 
-          # py_compile
+          # py_compile check
           with tempfile.NamedTemporaryFile(suffix='.py', delete=False, mode='w') as tmp:
               tmp.write(content)
               tmpname = tmp.name
@@ -178,22 +179,56 @@ jobs:
           echo "=== POL check ==="
           grep -n "ONE of 17 LLM agents" scripts/arena/hf-political-trading-floor/app.py | head -3
 
-      - name: Commit patches
+      - name: Update work-queue.json
+        run: |
+          cat > /tmp/patch_wq.py << 'PYEOF'
+          import json, datetime, sys
+          path = 'data/work-queue.json'
+          with open(path, 'r') as f:
+              wq = json.load(f)
+          now = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+          changed = False
+          for item in wq.get('items', []):
+              if item.get('id') == 'tf-axelrod-fix-ck-hardcoded' and item.get('status') == 'pending':
+                  item['status'] = 'done'
+                  item['completed_at'] = now
+                  item['owner'] = 'cloud-trigger-axelrod-2026'
+                  item['findings'] = [
+                      'n_traders=len(TRADERS) + total_start=n_traders*100.0 added to build_common_knowledge_block',
+                      '(total_bankroll / 1200.0) -> (total_bankroll / total_start): society ROI correct for 17 agents',
+                      'ONE of 12/16 -> {n_traders}/17 in COLLECTIVE_MISSION (both apps)',
+                      'py_compile PASS both apps'
+                  ]
+                  item['do_not_push_hf_space_yet'] = True
+                  changed = True
+          wq['updated_at'] = now
+          with open(path, 'w') as f:
+              json.dump(wq, f, indent=2)
+          print(f'work-queue.json: changed={changed}, items updated')
+          PYEOF
+          python3 /tmp/patch_wq.py
+
+      - name: Commit and push patches
         run: |
           git config user.email "brain@nomos42.ai"
           git config user.name "Nomos42 Brain"
           git add scripts/arena/hf-llm-trading-floor/app.py
           git add scripts/arena/hf-political-trading-floor/app.py
+          git add data/work-queue.json
           git status
           if git diff --cached --quiet; then
-            echo "No changes to commit (all patches already applied)"
+            echo "No changes to commit (all patches already applied — idempotent)"
           else
-            git commit -m "fix: NBA CK block dynamic n_traders/total_start (fire-12)
+            git commit -m "fix(tf): NBA CK block dynamic n_traders/total_start + COLLECTIVE_MISSION 17 agents
 
-- add n_traders=len(TRADERS) + total_start=n_traders*100.0 before lines=[]
-- replace (total_bankroll / 1200.0) with (total_bankroll / total_start)
-- fix ONE of 12/16 -> dynamic/17 in both apps
-- do_not_push_hf_space_yet=true (awaiting user HF deploy gate)"
+AXELROD-2026 fire-12 verify+tune (tf-axelrod-fix-ck-hardcoded):
+- build_common_knowledge_block: n_traders=len(TRADERS) + total_start=n_traders*100.0
+- (total_bankroll / 1200.0) -> (total_bankroll / total_start) [17-agent ROI was wrong]
+- ONE of 12 traders -> ONE of {n_traders} traders in CK block preamble
+- COLLECTIVE_MISSION: ONE of 16 -> ONE of 17 LLM agents (both NBA+Political)
+- py_compile PASS both apps | do_not_push_hf_space_yet=true
+
+Co-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
             git pull --rebase origin main
             git push origin main
           fi
