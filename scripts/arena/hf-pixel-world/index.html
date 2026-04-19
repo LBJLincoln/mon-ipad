@@ -3,38 +3,99 @@
 <head><script>window.huggingface={variables:{"SPACE_CREATOR_USER_ID":"698653c38d72821326e9e4fe"}};</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nomos42 Pixel World — v2.5 · Bloomberg Terminal</title>
+<title>Nomos42 Pixel World — Pokémon Trainer Network</title>
 <style>
   :root {
+    /* v2.16 — unified Pokémon B/W (Gen5 DS) palette. */
     --bg:#0b0d12; --bg-2:#14171f; --bg-3:#1a1f2a; --line:#1e2330;
     --ink:#e6e8ee; --ink-2:#9aa3b5; --ink-3:#5b6478;
-    --ok:#00d9a7; --warn:#ffb020; --err:#ff5c5c;
-    --pink:#ff79c6; --blue:#8be9fd; --green:#50fa7b; --orange:#ffb86c; --purple:#bd93f9;
+    /* Semantic colors — remapped to Pokémon set so all chrome reads as one game. */
+    --ok:#207838; --warn:#d8a020; --err:#c03030;
+    --pink:#c03068; --blue:#4060b0; --green:#207838; --orange:#a05820; --purple:#5040a0;
+    /* Pokémon box primitives (reused by every chrome surface). */
+    --pk-box:#f8f8f8; --pk-ink:#101820; --pk-navy:#4060b0; --pk-red:#c03030;
+    --pk-yellow:#ffd840; --pk-yellow-2:#fff8c0; --pk-green:#207838;
+    --pk-steel:#283040; --pk-mute:#808898;
   }
   * { box-sizing:border-box; }
   html,body { margin:0; padding:0; height:100%; background:var(--bg); color:var(--ink);
     font-family:"JetBrains Mono","Courier New",monospace; font-size:12px; overflow:hidden; }
-  /* ═══ Bloomberg terminal strip — amber-on-black, IBM Plex Mono feel ═══ */
-  #bloomberg-ticker { position:fixed; top:0; left:0; right:0; height:26px; z-index:100;
-    background:#000; color:#ffa500;
-    font-family:"IBM Plex Mono","VT323","Consolas","Courier New",monospace; font-size:12px;
-    letter-spacing:0.06em; text-transform:uppercase;
-    border-bottom:1px solid #3a2600;
-    padding:0 12px; display:flex; align-items:center;
-    box-shadow:0 2px 18px rgba(255,165,0,0.18), inset 0 -1px 0 #1a1000;
+  /* ═══ v2.16 Pokémon B/W status strip — replaces Bloomberg amber (id kept for backward-compat). ═══
+     Navy outer + off-white inner + yellow values, matching the #poke-dialog and trainer-card chrome. */
+  #bloomberg-ticker { position:fixed; top:0; left:0; right:0; height:30px; z-index:100;
+    background:#f8f8f8; color:#101820;
+    font-family:"Press Start 2P","VT323","IBM Plex Mono",monospace; font-size:10px;
+    letter-spacing:0.08em; text-transform:uppercase;
+    border-bottom:3px solid var(--pk-ink);
+    box-shadow: inset 0 0 0 2px #f8f8f8, inset 0 0 0 4px var(--pk-navy),
+                0 3px 10px rgba(0,0,0,0.55);
+    padding:0 18px; display:flex; align-items:center;
     overflow:hidden; }
-  #bloomberg-ticker .seg { padding:0 13px; border-right:1px solid #3a2600; display:flex; gap:6px; align-items:center; white-space:nowrap; }
-  #bloomberg-ticker .seg:first-child { padding-left:0; }
+  #bloomberg-ticker .seg { padding:0 14px; border-right:2px dotted #b0b8c4;
+    display:flex; gap:6px; align-items:center; white-space:nowrap; }
+  #bloomberg-ticker .seg:first-child { padding-left:6px; }
   #bloomberg-ticker .seg:last-child { border-right:0; }
-  #bloomberg-ticker .lbl { color:#805300; font-weight:600; }
-  #bloomberg-ticker .val { color:#ffa500; font-weight:700; }
-  #bloomberg-ticker .val.up { color:#00ff88; }
-  #bloomberg-ticker .val.down { color:#ff3b3b; }
-  #bloomberg-ticker .val.star { color:#ffd700; }
-  #bloomberg-ticker .cursor { color:#00ff88; animation:blk 1.1s steps(2) infinite; margin-left:auto; padding-left:14px; font-weight:700; }
+  #bloomberg-ticker .lbl { color:var(--pk-navy); font-weight:700; letter-spacing:0.16em; }
+  #bloomberg-ticker .val { color:var(--pk-ink); font-weight:700; font-family:"VT323","JetBrains Mono",monospace; font-size:13px; letter-spacing:0.02em; }
+  #bloomberg-ticker .val.up { color:var(--pk-green); }
+  #bloomberg-ticker .val.down { color:var(--pk-red); }
+  #bloomberg-ticker .val.star { color:#a05820; background:var(--pk-yellow); padding:1px 6px; border:1px solid var(--pk-ink); border-radius:3px; }
+  #bloomberg-ticker .cursor { color:var(--pk-navy); animation:blk 0.6s steps(2) infinite; margin-left:auto; padding-left:14px; font-weight:700; font-size:14px; }
   @keyframes blk { 50% { opacity:0; } }
-  #root { display:block; height:calc(100vh - 26px); margin-top:26px; }
-  #stage { width:100%; height:100%; }
+  @keyframes panel-pulse { 0%,100% { box-shadow: 0 0 0 0 currentColor; } 50% { box-shadow: 0 0 0 3px currentColor; opacity:0.7; } }
+  /* v2.8 2026-04-17: sidebar removed — all panels are now diegetic (in-world PIXI).
+     Minimal floating HUDs live on top of #stage as absolute overlays. */
+  #root { display:grid; grid-template-columns:1fr; height:calc(100vh - 26px); margin-top:26px; }
+  /* v2.16 — Pokémon summary box (party-menu / Pokédex entry). Off-white double-border + navy rules. */
+  #hud-kpi { position:absolute; top:48px; left:14px; z-index:7;
+    background:var(--pk-box); color:var(--pk-ink);
+    border:3px solid var(--pk-ink); border-radius:8px;
+    box-shadow: inset 0 0 0 2px var(--pk-box), inset 0 0 0 4px var(--pk-navy),
+                0 4px 14px rgba(0,0,0,0.55);
+    padding:10px 14px; font-family:"JetBrains Mono",monospace; font-size:10.5px;
+    display:flex; flex-direction:column; gap:3px; min-width:180px; }
+  #hud-kpi::before { content:"◉ STATUS"; display:block; font-family:"Press Start 2P",monospace;
+    font-size:8px; color:var(--pk-navy); letter-spacing:0.18em; margin-bottom:4px;
+    padding-bottom:4px; border-bottom:2px dotted #b0b8c4; }
+  #hud-kpi .r { display:flex; justify-content:space-between; gap:12px; padding:1px 0; }
+  #hud-kpi .r .l { color:var(--pk-navy); text-transform:uppercase; letter-spacing:0.14em; font-size:9px; font-weight:700; font-family:"Press Start 2P",monospace; }
+  #hud-kpi .r .v { color:var(--pk-ink); font-weight:700; font-family:"VT323","JetBrains Mono",monospace; font-size:13px; }
+  #hud-kpi .r .v.warn { color:#a05820; }
+  /* ═══ v2.15 POKÉMON TRAINER ID CARD ═══ Gen4 trainer-ID aesthetic.
+     Red plastic outer shell (thick black border) + inset yellow-gradient card face. */
+  #inspect-card { position:absolute; display:none; z-index:12; width:280px;
+    background: #e83028;
+    border:3px solid #181820;
+    border-radius:12px;
+    padding:6px;
+    font-size:10.5px; color:#101820;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.75), inset 0 2px 0 rgba(255,255,255,0.25), inset 0 -3px 0 rgba(0,0,0,0.3);
+    font-family:"JetBrains Mono", monospace; }
+  #inspect-card .h { display:flex; justify-content:space-between; align-items:center;
+    background:linear-gradient(180deg,#283040 0%,#181820 100%);
+    color:#fff8c0; padding:6px 10px; border-radius:6px 6px 0 0;
+    font-size:10px; letter-spacing:0.14em; text-transform:uppercase; font-weight:700;
+    border:2px solid #101820; border-bottom:none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18); }
+  #inspect-card .h .t { color:#fff8c0; text-shadow:1px 1px 0 #000; }
+  #inspect-card .h .x { color:#ffb0b0; cursor:pointer; font-weight:700; padding:0 4px; }
+  #inspect-card .h .x:hover { color:#fff; }
+  /* Card face — sits below header, yellow gradient like a pokédex ID card */
+  #inspect-card .r, #inspect-card #inspect-extra {
+    background:linear-gradient(180deg,#fff8c0 0%,#ffe070 100%);
+    border-left:2px solid #101820; border-right:2px solid #101820;
+    padding:3px 10px; margin:0;
+    color:#101820; font-size:10.5px; }
+  #inspect-card .r { display:flex; justify-content:space-between;
+    border-bottom:1px dotted rgba(16,24,32,0.25); }
+  #inspect-card .r:first-of-type { border-top:2px solid #f8c040; }
+  #inspect-card .r:last-of-type, #inspect-card #inspect-extra {
+    border-bottom:2px solid #101820; border-radius:0 0 6px 6px; padding-bottom:6px; }
+  #inspect-card .r .l { color:#584020; text-transform:uppercase; letter-spacing:0.1em; font-size:9px; font-weight:700; padding-top:1px; }
+  #inspect-card .r .v { color:#101820; font-weight:700; }
+  #inspect-card .r .v.ok { color:#107828; }
+  #inspect-card .r .v.warn { color:#a84818; }
+  #inspect-card #inspect-extra { color:#483820; font-size:9.5px; border-top:1px dotted rgba(16,24,32,0.35); }
   #stage { position:relative; background:var(--bg-2); overflow:hidden; }
   #stage canvas { image-rendering:pixelated; display:block; }
   #scanlines { position:absolute; inset:0; pointer-events:none; z-index:5;
@@ -42,48 +103,66 @@
     mix-blend-mode:multiply; }
   #vignette { position:absolute; inset:0; pointer-events:none; z-index:6;
     background:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.45) 100%); }
-  #hud-top { position:absolute; top:10px; left:12px; right:12px; display:flex; align-items:center; justify-content:space-between; gap:12px;
-    font-size:11px; color:var(--ink-2); letter-spacing:0.1em; text-transform:uppercase; z-index:7; }
-  #hud-top .brand { color:var(--ink); font-weight:600; pointer-events:none; }
-  #hud-top .tick { color:var(--ok); }
-  #room-tabs { display:flex; gap:6px; pointer-events:auto; }
-  #room-tabs button { background:rgba(11,13,18,0.85); border:1px solid var(--line); color:var(--ink-2);
-    font-family:inherit; font-size:10px; letter-spacing:0.12em; padding:6px 10px; cursor:pointer; text-transform:uppercase; border-radius:2px; }
-  #room-tabs button.active { color:var(--ink); background:rgba(0,217,167,0.15); border-color:var(--ok); }
-  #room-tabs button:hover { border-color:var(--ink-2); }
-  #hud-bot { position:absolute; bottom:10px; left:12px; right:12px; display:flex; justify-content:space-between;
-    font-size:10px; color:var(--ink-3); pointer-events:none; z-index:7; }
-  #hover { position:absolute; max-width:300px; padding:10px 12px; background:rgba(11,13,18,0.97);
-    border:1px solid var(--line); z-index:8; pointer-events:none; display:none; border-radius:2px;
-    box-shadow:0 8px 24px rgba(0,0,0,0.6); }
-  #hover .h-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid var(--line); }
-  #hover .h-dot { width:10px; height:10px; }
-  #hover .h-title { font-weight:700; color:var(--ink); letter-spacing:0.06em; }
-  #hover .h-sub { color:var(--ink-3); font-size:9.5px; margin-left:auto; text-transform:uppercase; letter-spacing:0.12em; }
-  #hover .h-row { display:flex; justify-content:space-between; padding:2px 0; font-size:10.5px; }
-  #hover .h-row .l { color:var(--ink-2); }
-  #hover .h-row .v { color:var(--ink); }
-  #hover .h-row .v.up { color:var(--ok); }
-  #hover .h-row .v.down { color:var(--err); }
-  #hover .h-tag { display:inline-block; padding:1px 6px; margin:3px 3px 0 0; font-size:9px; background:var(--bg-2);
-    border:1px solid var(--line); border-radius:2px; color:var(--warn); letter-spacing:0.08em; text-transform:uppercase; }
-  #hover .h-tag.sac { color:var(--pink); border-color:var(--pink); }
-  #hover .h-tag.pact { color:var(--ok); border-color:var(--ok); }
-  #hover .h-note { margin-top:6px; padding-top:6px; border-top:1px dotted var(--line); color:var(--ink-3); font-size:9.5px; line-height:1.45; }
-  #event-toast { position:absolute; bottom:40px; right:14px; z-index:9; display:flex; flex-direction:column; gap:5px; max-width:280px; }
-  #event-toast .t { padding:6px 10px; background:rgba(11,13,18,0.95); border:1px solid var(--line);
-    font-size:10.5px; animation:toast-in 0.3s ease-out, toast-out 0.4s ease-in 4.5s forwards; }
-  #event-toast .t .k { font-weight:700; margin-right:6px; }
-  #event-toast .t .k.nba { color:var(--pink); }
-  #event-toast .t .k.island { color:var(--green); }
-  #event-toast .t .k.political { color:var(--blue); }
-  #event-toast .t .k.council { color:var(--orange); }
+  #hud-top { position:absolute; top:12px; left:12px; right:12px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    font-size:11px; color:var(--pk-ink); letter-spacing:0.1em; text-transform:uppercase; z-index:7; }
+  #hud-top .brand { color:var(--pk-box); font-weight:700; pointer-events:none;
+    font-family:"Press Start 2P",monospace; font-size:11px; letter-spacing:0.16em;
+    text-shadow: 2px 2px 0 var(--pk-ink), -1px -1px 0 var(--pk-ink), 1px -1px 0 var(--pk-ink), -1px 1px 0 var(--pk-ink); }
+  #hud-top .tick { color:var(--pk-green); font-family:"VT323",monospace; font-size:13px;
+    text-shadow: 1px 1px 0 var(--pk-ink); }
+  /* v2.18 — room-tabs + ext-btns removed (single world view). */
+  #hud-bot { position:absolute; bottom:120px; left:12px; right:12px; display:flex; justify-content:space-between;
+    font-size:10px; color:var(--pk-box); pointer-events:none; z-index:7;
+    font-family:"Press Start 2P",monospace; letter-spacing:0.14em;
+    text-shadow: 1px 1px 0 var(--pk-ink); }
+  /* v2.16 — Pokémon trainer-card style tooltip (double-border white + navy accents). */
+  #hover { position:absolute; max-width:300px; padding:10px 14px;
+    background:var(--pk-box); color:var(--pk-ink);
+    border:3px solid var(--pk-ink); border-radius:8px;
+    box-shadow: inset 0 0 0 2px var(--pk-box), inset 0 0 0 4px var(--pk-navy),
+                0 8px 24px rgba(0,0,0,0.6);
+    z-index:8; pointer-events:none; display:none;
+    font-family:"JetBrains Mono",monospace; }
+  #hover .h-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; padding-bottom:6px; border-bottom:2px dotted #b0b8c4; }
+  #hover .h-dot { width:10px; height:10px; border:1px solid var(--pk-ink); }
+  #hover .h-title { font-weight:700; color:var(--pk-ink); letter-spacing:0.06em; font-family:"Press Start 2P",monospace; font-size:10px; }
+  #hover .h-sub { color:var(--pk-navy); font-size:8.5px; margin-left:auto; text-transform:uppercase;
+    letter-spacing:0.14em; font-family:"Press Start 2P",monospace; font-weight:700; }
+  #hover .h-row { display:flex; justify-content:space-between; padding:2px 0; font-size:11px; }
+  #hover .h-row .l { color:var(--pk-navy); font-weight:700; font-family:"Press Start 2P",monospace; font-size:8.5px; letter-spacing:0.1em; padding-top:2px; }
+  #hover .h-row .v { color:var(--pk-ink); font-weight:700; font-family:"VT323","JetBrains Mono",monospace; font-size:13px; }
+  #hover .h-row .v.up { color:var(--pk-green); }
+  #hover .h-row .v.down { color:var(--pk-red); }
+  #hover .h-tag { display:inline-block; padding:2px 7px; margin:3px 3px 0 0;
+    font-size:8.5px; font-family:"Press Start 2P",monospace; letter-spacing:0.1em;
+    background:var(--pk-yellow-2); color:#a05820; border:2px solid var(--pk-ink);
+    border-radius:4px; text-transform:uppercase;
+    box-shadow: 1px 1px 0 var(--pk-ink); }
+  #hover .h-tag.sac { color:var(--pk-red); background:#ffe0e0; }
+  #hover .h-tag.pact { color:var(--pk-green); background:#e0f8e0; }
+  #hover .h-note { margin-top:6px; padding-top:6px; border-top:2px dotted #b0b8c4;
+    color:#3a4858; font-size:10px; line-height:1.5; font-family:"JetBrains Mono",monospace; }
+  /* v2.16 — battle toast: Pokémon DS notification card (red ribbon + white face). */
+  #event-toast { position:absolute; bottom:120px; right:14px; z-index:9;
+    display:flex; flex-direction:column; gap:6px; max-width:290px; }
+  #event-toast .t { padding:7px 11px 7px 14px; background:var(--pk-box); color:var(--pk-ink);
+    border:3px solid var(--pk-ink); border-radius:6px;
+    box-shadow: inset 0 0 0 2px var(--pk-box), inset 0 0 0 4px var(--pk-navy),
+                0 4px 10px rgba(0,0,0,0.5);
+    font-family:"JetBrains Mono",monospace; font-size:10.5px;
+    animation:toast-in 0.3s ease-out, toast-out 0.4s ease-in 4.5s forwards;
+    position:relative; }
+  #event-toast .t::before { content:""; position:absolute; left:-3px; top:-3px; bottom:-3px; width:6px;
+    background:var(--pk-red); border:1px solid var(--pk-ink); border-right:none;
+    border-radius:6px 0 0 6px; }
+  #event-toast .t .k { font-weight:700; margin-right:6px; font-family:"Press Start 2P",monospace; font-size:8.5px; letter-spacing:0.12em; }
+  #event-toast .t .k.nba { color:var(--pk-red); }
+  #event-toast .t .k.island { color:var(--pk-green); }
+  #event-toast .t .k.political { color:var(--pk-navy); }
+  #event-toast .t .k.council { color:#a05820; }
   @keyframes toast-in { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
   @keyframes toast-out { to { opacity:0; transform:translateX(20px); } }
-  #sidebar { background:var(--bg-2); border-left:1px solid var(--line); display:flex; flex-direction:column; overflow:hidden; }
-  .panel { border-bottom:1px solid var(--line); padding:10px 14px; overflow:hidden; }
-  .panel h3 { margin:0 0 8px; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-3); font-weight:500; display:flex; justify-content:space-between; }
-  .panel h3 .c { color:var(--ok); font-weight:700; letter-spacing:0.1em; }
+  /* v2.8 2026-04-17: .panel .kpi .row .pill classes retained — used by paper modal only */
   .kpi { display:flex; justify-content:space-between; font-size:11px; padding:2px 0; }
   .kpi .l { color:var(--ink-2); }
   .kpi .v-ok { color:var(--ok); } .kpi .v-warn { color:var(--warn); } .kpi .v-err { color:var(--err); } .kpi .v-muted { color:var(--ink-3); }
@@ -92,58 +171,118 @@
   .row .l { color:var(--ink-2); }
   .row .v { color:var(--ink); }
   .row .v.up { color:var(--ok); } .row .v.down { color:var(--err); }
-  .pill { display:inline-block; padding:2px 7px; margin:2px 3px 0 0; font-size:9.5px; background:var(--bg-3);
-    border:1px solid var(--line); border-radius:2px; color:var(--ink); letter-spacing:0.04em; }
-  .pill .n { color:var(--ok); margin-left:4px; }
-  #panel-trades { flex:1 1 auto; display:flex; flex-direction:column; min-height:0; }
-  #panel-trades-list { flex:1; overflow-y:auto; font-size:10.5px; padding-right:2px; margin-top:4px; }
-  #panel-trades-list::-webkit-scrollbar { width:6px; } #panel-trades-list::-webkit-scrollbar-thumb { background:var(--line); }
-  #panel-trades-list .r { display:grid; grid-template-columns:60px 1fr 70px; gap:4px; padding:3px 0; border-bottom:1px dotted rgba(255,255,255,0.05); }
-  #panel-trades-list .r .t { color:var(--ink-3); font-size:9.5px; }
-  #panel-trades-list .r .a { color:var(--ink); }
-  #panel-trades-list .r .a.nba { color:var(--pink); } .r .a.political { color:var(--blue); } .r .a.island { color:var(--green); } .r .a.council { color:var(--orange); } .r .a.quant { color:var(--warn); }
-  #panel-trades-list .r .m { color:var(--ink-2); font-size:10px; text-align:right; }
-  #panel-trades-list .r .m.up { color:var(--ok); } #panel-trades-list .r .m.down { color:var(--err); }
   .loader { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:var(--ink-3);
     font-size:11px; letter-spacing:0.1em; text-transform:uppercase; z-index:4; }
-  /* ═══ v2.0 ═══ Paper/Status buttons, live bet ticker, mini-map, boot log */
-  #hud-top .ext-btns { display:flex; gap:6px; margin-left:8px; pointer-events:auto; }
-  #hud-top .ext-btns a { display:inline-flex; align-items:center; gap:4px;
-    background:#000; border:1px solid #3a2600; color:#ffa500;
-    font-family:"IBM Plex Mono","JetBrains Mono",monospace; font-size:10px;
-    letter-spacing:0.12em; padding:5px 10px; text-decoration:none; border-radius:2px;
-    text-transform:uppercase; transition:all 0.15s; }
-  #hud-top .ext-btns a:hover { background:#1a1000; border-color:#ffa500; box-shadow:0 0 8px rgba(255,165,0,0.4); }
-  #bet-ticker { position:absolute; bottom:26px; left:12px; right:12px; height:22px; z-index:7;
-    background:rgba(0,0,0,0.88); border:1px solid #3a2600; border-radius:2px;
-    overflow:hidden; display:flex; align-items:center;
-    font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:#ffa500;
-    box-shadow:0 0 12px rgba(255,165,0,0.14); }
-  #bet-ticker .tlbl { padding:0 10px; color:#805300; font-weight:700; letter-spacing:0.14em;
-    border-right:1px solid #3a2600; flex-shrink:0; }
-  #bet-ticker .tscroll { flex:1; overflow:hidden; white-space:nowrap; position:relative; }
-  #bet-ticker .tscroll .tstream { display:inline-block; padding-left:100%; animation:tmarq 60s linear infinite; }
-  #bet-ticker .titem { display:inline-block; margin:0 18px; }
-  #bet-ticker .titem .a { color:#ff79c6; font-weight:700; } /* nba default */
-  #bet-ticker .titem.pol .a { color:#8be9fd; }
-  #bet-ticker .titem .c { color:#ffd700; }
-  #bet-ticker .titem .e { color:#00ff88; }
-  #bet-ticker .titem .e.neg { color:#ff5c5c; }
-  @keyframes tmarq { from { transform:translateX(0); } to { transform:translateX(-100%); } }
-  #minimap { position:absolute; top:42px; right:12px; z-index:7;
-    width:120px; height:80px; background:rgba(11,13,18,0.92);
-    border:1px solid var(--line); border-radius:2px; overflow:hidden;
-    box-shadow:0 4px 12px rgba(0,0,0,0.45); }
-  #minimap canvas { display:block; width:120px; height:80px; image-rendering:pixelated; }
-  #minimap .mm-lbl { position:absolute; top:2px; left:4px; font-size:8px;
-    letter-spacing:0.14em; color:var(--ink-3); text-transform:uppercase; pointer-events:none; }
-  #boot-log { position:absolute; bottom:56px; left:12px; z-index:8;
-    background:rgba(0,0,0,0.92); border:1px solid #3a2600; padding:8px 12px;
-    font-family:"IBM Plex Mono",monospace; font-size:10px; color:#ffa500;
-    max-width:360px; border-radius:2px; transition:opacity 0.5s;
-    box-shadow:0 0 14px rgba(255,165,0,0.2); pointer-events:none; }
-  #boot-log .bl-line { color:#00ff88; margin:1px 0; }
-  #boot-log .bl-head { color:#ffd700; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:4px; }
+  /* v2.18 — ext-btns (PAPERS/LIVE STATUS) removed. */
+
+  /* ═══ v2.18 THREE-FLOOR LEADERBOARD ═══ Fixed right-side panel.
+     Three vertical sections (NBA / POL / PQTF) — every trader ranked by bankroll,
+     persona visible, click a row → inspect card with model + provider + stats. */
+  #three-floor-lb { position:fixed; top:40px; right:8px; bottom:14px; width:278px; z-index:9;
+    background:var(--pk-box); border:4px solid var(--pk-ink); border-radius:8px;
+    box-shadow: inset 0 0 0 2px var(--pk-box), inset 0 0 0 4px var(--pk-navy),
+                0 6px 20px rgba(0,0,0,0.6);
+    font-family:"JetBrains Mono",monospace; color:var(--pk-ink);
+    display:flex; flex-direction:column; overflow:hidden; }
+  #three-floor-lb .hdr { padding:7px 10px; background:var(--pk-navy); color:#fff;
+    font-family:"Press Start 2P",monospace; font-size:9px; letter-spacing:0.15em;
+    border-bottom:2px solid var(--pk-ink); display:flex; justify-content:space-between; align-items:center; }
+  #three-floor-lb .hdr .ttl { color:var(--pk-yellow); text-shadow:1px 1px 0 #000; }
+  #three-floor-lb .hdr .tm  { color:#c0d8ff; font-size:8px; letter-spacing:0.1em; font-family:"JetBrains Mono",monospace; font-weight:700; }
+  #three-floor-lb .body { flex:1; overflow-y:auto; padding:0; scrollbar-width:thin;
+    scrollbar-color: var(--pk-navy) var(--pk-box); }
+  #three-floor-lb .body::-webkit-scrollbar { width:8px; }
+  #three-floor-lb .body::-webkit-scrollbar-track { background: var(--pk-box); }
+  #three-floor-lb .body::-webkit-scrollbar-thumb { background: var(--pk-navy); border-radius:3px; }
+  #three-floor-lb .sec { padding:6px 8px 10px; border-bottom:2px solid var(--pk-ink); }
+  #three-floor-lb .sec:last-child { border-bottom:0; }
+  #three-floor-lb .sec .sh { display:flex; justify-content:space-between; align-items:baseline;
+    padding:4px 4px 6px; border-bottom:1px dotted rgba(16,24,32,0.4); margin-bottom:4px; }
+  #three-floor-lb .sec .sh .kind { font-family:"Press Start 2P",monospace; font-size:9px;
+    letter-spacing:0.12em; text-shadow:1px 1px 0 rgba(255,255,255,0.6); }
+  #three-floor-lb .sec .sh .kind.nba { color:#c03030; }
+  #three-floor-lb .sec .sh .kind.pol { color:#3068b8; }
+  #three-floor-lb .sec .sh .kind.pqtf { color:#7038a0; }
+  #three-floor-lb .sec .sh .day { font-size:9px; color:var(--pk-navy); font-weight:700; letter-spacing:0.04em; }
+  #three-floor-lb .sec .sh .flt { font-size:9px; color:var(--pk-ink); font-weight:700; margin-left:6px; }
+  #three-floor-lb .sec .sh .flt.up { color:var(--pk-green); }
+  #three-floor-lb .sec .sh .flt.down { color:var(--pk-red); }
+  #three-floor-lb .r {
+    display:grid; grid-template-columns: 18px 1fr 62px 48px; gap:4px;
+    padding:3px 4px; font-size:10px; cursor:pointer; border-radius:3px;
+    transition: background 0.12s; align-items:center; }
+  #three-floor-lb .r:hover { background: rgba(255, 203, 5, 0.28); }
+  #three-floor-lb .r .rk { font-family:"Press Start 2P",monospace; font-size:7.5px;
+    color:var(--pk-navy); text-align:right; padding-right:2px; }
+  #three-floor-lb .r .rk.top { color:#a05820; }
+  #three-floor-lb .r .nm { color:var(--pk-ink); font-weight:700; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis; letter-spacing:0.02em; }
+  #three-floor-lb .r .br { color:var(--pk-ink); text-align:right; font-family:"VT323",monospace; font-size:12px; }
+  #three-floor-lb .r .dl { text-align:right; font-family:"VT323",monospace; font-size:11px; font-weight:700; }
+  #three-floor-lb .r .dl.up { color:var(--pk-green); }
+  #three-floor-lb .r .dl.down { color:var(--pk-red); }
+  #three-floor-lb .r .dl.flat { color:var(--pk-navy); opacity:0.6; }
+  #three-floor-lb .r.hot { background: linear-gradient(90deg, rgba(255,203,5,0.14) 0%, transparent 100%); }
+  #three-floor-lb .empty { padding:10px 6px; font-size:9.5px; color:var(--pk-navy); opacity:0.7;
+    font-style:italic; text-align:center; }
+
+  /* Shrink pixel stage slightly so leaderboard doesn't overlap the world */
+  @media (min-width: 900px) {
+    #root { margin-right: 290px; }
+    #poke-dialog { right: 302px !important; }
+    #bloomberg-ticker { right: 290px !important; }
+  }
+  /* ═══ v2.15 POKÉMON B/W DIALOGUE BOX ═══ Replaces marquee bet-ticker.
+     Double-border (outer black + inner white) + inset shadow, typewriter feed. */
+  #poke-dialog { position:absolute; bottom:14px; left:12px; right:12px; height:92px; z-index:7;
+    background:#f8f8f8; color:#181818;
+    border:4px solid #101820;
+    border-radius:8px;
+    box-shadow: inset 0 0 0 2px #f8f8f8, inset 0 0 0 4px #4060b0, 0 4px 14px rgba(0,0,0,0.55);
+    font-family:"Press Start 2P","VT323","IBM Plex Mono",monospace; font-size:13px;
+    padding:12px 22px 10px 22px; display:flex; flex-direction:column; gap:4px;
+    line-height:1.4; letter-spacing:0.02em; }
+  #poke-dialog .pd-head { display:flex; justify-content:space-between; font-size:9.5px;
+    color:#4060b0; text-transform:uppercase; letter-spacing:0.2em; font-weight:700;
+    border-bottom:2px dotted #b0b8c4; padding-bottom:3px; margin-bottom:2px;
+    font-family:"JetBrains Mono",monospace; }
+  #poke-dialog .pd-body { flex:1; overflow:hidden; color:#181820;
+    font-family:"Press Start 2P","VT323",monospace; font-size:12px; line-height:1.5; }
+  #poke-dialog .pd-body .trn { color:#c03030; font-weight:700; }
+  #poke-dialog .pd-body .trn.pol { color:#3068b8; }
+  #poke-dialog .pd-body .amt { color:#1a1a1a; font-weight:700; }
+  #poke-dialog .pd-body .cat { color:#a05820; font-weight:700; }
+  #poke-dialog .pd-body .win { color:#207838; font-weight:700; }
+  #poke-dialog .pd-body .lose { color:#b82030; font-weight:700; }
+  #poke-dialog .pd-body .cursor { display:inline-block; color:#4060b0; animation:pdblk 0.6s steps(2) infinite; font-weight:700; }
+  @keyframes pdblk { 50% { opacity:0; } }
+  /* v2.16 — Pokédex map frame (red plastic shell + yellow inner face). */
+  #minimap { position:absolute; top:48px; right:14px; z-index:7;
+    width:132px; height:92px; padding:4px;
+    background:var(--pk-red); border:3px solid var(--pk-ink); border-radius:8px;
+    box-shadow: inset 0 2px 0 rgba(255,255,255,0.22), inset 0 -3px 0 rgba(0,0,0,0.28),
+                0 6px 14px rgba(0,0,0,0.5);
+    overflow:hidden; }
+  #minimap canvas { display:block; width:124px; height:84px; image-rendering:pixelated;
+    border:2px solid var(--pk-ink); background:var(--pk-yellow-2); }
+  #minimap .mm-lbl { position:absolute; top:-1px; left:6px; font-size:7.5px;
+    letter-spacing:0.16em; color:var(--pk-yellow); text-transform:uppercase;
+    font-family:"Press Start 2P",monospace; text-shadow:1px 1px 0 var(--pk-ink); pointer-events:none; }
+  /* v2.16 — Boot log → Pokémon menu text box (white face + navy inner border). */
+  #boot-log { position:absolute; bottom:128px; left:14px; z-index:8;
+    background:var(--pk-box); color:var(--pk-ink);
+    border:3px solid var(--pk-ink); border-radius:8px;
+    box-shadow: inset 0 0 0 2px var(--pk-box), inset 0 0 0 4px var(--pk-navy),
+                0 6px 14px rgba(0,0,0,0.5);
+    padding:10px 14px;
+    font-family:"JetBrains Mono",monospace; font-size:10.5px;
+    max-width:380px; transition:opacity 0.5s; pointer-events:none; }
+  #boot-log .bl-line { color:var(--pk-ink); margin:2px 0; letter-spacing:0.02em; }
+  #boot-log .bl-line::before { content:"▸ "; color:var(--pk-green); font-weight:700; }
+  #boot-log .bl-head { color:var(--pk-navy); font-weight:700; letter-spacing:0.14em;
+    text-transform:uppercase; margin-bottom:5px; padding-bottom:4px;
+    border-bottom:2px dotted #b0b8c4;
+    font-family:"Press Start 2P",monospace; font-size:9.5px; }
 </style>
 </head>
 <body>
@@ -161,17 +300,20 @@
   <div id="stage">
     <div id="hud-top">
       <div>
-        <span class="brand">NOMOS42 · PIXEL WORLD</span> · v2.3 · PixiJS · live · bloomberg-term
+        <span class="brand">NOMOS42 · PIXEL WORLD</span> · <span id="build-tag">build: …</span> · PixiJS · live · trainer-net
       </div>
-      <div><span class="tick" id="hud-tick">· booting</span></div>
+      <div><span class="tick" id="hud-tick">· booting</span> <span style="font-family:'Press Start 2P',monospace;color:var(--pk-yellow);text-shadow:1px 1px 0 var(--pk-ink);font-size:8px;margin-left:6px;letter-spacing:0.14em">v2.18.1 · cover-fit + slim leaderboard</span></div>
     </div>
-    <div id="minimap"><span class="mm-lbl">MAP</span><canvas id="mm-canvas" width="120" height="80"></canvas></div>
-    <div id="bet-ticker">
-      <span class="tlbl">◉ LIVE BETS</span>
-      <div class="tscroll"><div class="tstream" id="bt-stream">awaiting day-decisions…</div></div>
+<!-- v2.12: minimap deleted · v2.15: bet-ticker → Pokémon B/W dialogue box -->
+    <div id="poke-dialog">
+      <div class="pd-head">
+        <span>◉ POKÉMON TRAINER BATTLE LOG · LIVE BETS</span>
+        <span id="pd-status">■ NBA · POL</span>
+      </div>
+      <div class="pd-body" id="pd-body">connecting to trading floors…<span class="cursor">▼</span></div>
     </div>
     <div id="boot-log">
-      <div class="bl-head">◉ NOMOS42 PIXEL WORLD v2.3 — BOOT</div>
+      <div class="bl-head">◉ NOMOS42 PIXEL WORLD — BOOT</div>
       <div class="bl-line">[ok] PixiJS 8 loaded · 56×32 grid · 54 real agents</div>
       <div class="bl-line">[ok] palette=30 · badges=12 · breathing=on · emotes=state</div>
       <div class="bl-line">[ok] particles=ambient · nameplates=perf-gradient · halos=axelrod</div>
@@ -185,25 +327,157 @@
     </div>
     <div id="hover"></div>
     <div id="event-toast"></div>
+    <div id="hud-kpi">
+      <div class="r"><span class="l">NBA</span><span id="k-nba" class="v warn">—</span></div>
+      <div class="r"><span class="l">Political</span><span id="k-pol" class="v warn">—</span></div>
+      <div class="r"><span class="l">Islands</span><span id="k-evo" class="v warn">—</span></div>
+      <div class="r"><span class="l">Councils</span><span id="k-councils" class="v warn">—</span></div>
+      <div class="r"><span class="l">Pacts</span><span id="k-pacts" class="v">—</span></div>
+      <div class="r"><span class="l">Last sync</span><span id="k-last" class="v">—</span></div>
+    </div>
+    <div id="inspect-card">
+      <div class="h"><span class="t" id="inspect-name">—</span><span class="x" id="inspect-close">✕</span></div>
+      <div class="r"><span class="l">Model</span><span class="v ok" id="inspect-model">—</span></div>
+      <div class="r"><span class="l">Provider</span><span class="v warn" id="inspect-provider">—</span></div>
+      <div class="r"><span class="l">Bankroll</span><span class="v ok" id="inspect-bankroll">—</span></div>
+      <div class="r"><span class="l">ROI</span><span class="v ok" id="inspect-roi">—</span></div>
+      <div class="r"><span class="l">Win Rate</span><span class="v" id="inspect-wr">—</span></div>
+      <div class="r"><span class="l">Strategy</span><span class="v warn" id="inspect-strat">—</span></div>
+      <div class="r"><span class="l">State</span><span class="v" id="inspect-state">—</span></div>
+      <div class="r"><span class="l">Brier</span><span class="v" id="inspect-brier">—</span></div>
+      <div class="r"><span class="l">Generation</span><span class="v warn" id="inspect-gen">—</span></div>
+      <div id="inspect-extra"></div>
+    </div>
     <div class="loader" id="loader">booting pixi…</div>
   </div>
 </div>
-
+<!-- v2.18 — three-floor leaderboard (NBA TF / POL TF / PQTF), every trader per day -->
+<div id="three-floor-lb">
+  <div class="hdr">
+    <span class="ttl">◆ LEADERBOARD · ALL TRADERS</span>
+    <span class="tm" id="tfl-clock">—</span>
+  </div>
+  <div class="body" id="tfl-body">
+    <div class="empty">connecting to trading floors…</div>
+  </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-// NOMOS42 PIXEL WORLD v2.5 — big centered agents + proper sprite frames
-//                         + breathing + emotes + perf-nameplates + particles
+// NOMOS42 PIXEL WORLD v2.8 — diegetic in-world panels (leaderboard wall,
+//                         categories chalkboard, evolution board, research shelf),
+//                         scrolling ticker tape, parallax stars + drifting clouds,
+//                         floating inspect card (no more right sidebar).
 // ═══════════════════════════════════════════════════════════════════════════
 (async () => {
 const TILE = 32;
-const GRID_W = 40, GRID_H = 32;
+// v2.10: widen to 16:10 so the world fills desktop screens without dead side margins.
+const GRID_W = 52, GRID_H = 32;
 const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
-const CHAR_W = 56, CHAR_H = 48;   // 2× native 28×24 — big, crisp, proper aspect
+// v2.14 (2026-04-17): sized up 56→72 / 48→64 (+28% footprint, 4:3 kept).
+const CHAR_W = 72, CHAR_H = 64;
 
-const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c };
-const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", island:"#50fa7b", infra:"#50fa7b", pol_infra:"#8be9fd", council:"#ffb86c" };
+const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c, control:0xffd700 };
+const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", island:"#50fa7b", infra:"#50fa7b", pol_infra:"#8be9fd", council:"#ffb86c", control:"#ffd700" };
 const KIND_GLYPHS = { nba:"🏀", political:"🗳", island:"🧬", infra:"🗼", pol_infra:"🗼", council:"⚖" };
+
+// v2.14: per-trader role accessory — drawn on top of base procedural body so
+// each persona reads at-a-glance. Lookup by agent.id (strips "p-" POL prefix).
+// b = PIXI.Graphics, W/H = CHAR_W/CHAR_H, outline = 0x0b0d12.
+const ROLE_ACCESSORIES = {
+  "qwen-quant": (b, W, H) => {
+    b.rect(-W*0.17, -H*0.84, W*0.13, W*0.09).stroke({ width:1.4, color:0x0b0d12 });
+    b.rect( W*0.04, -H*0.84, W*0.13, W*0.09).stroke({ width:1.4, color:0x0b0d12 });
+    b.moveTo(-W*0.04, -H*0.81).lineTo(W*0.04, -H*0.81).stroke({ width:1.2, color:0x0b0d12 });
+  },
+  "qwen-arb": (b, W, H) => {
+    b.rect(W*0.30, -H*0.42, W*0.20, H*0.16).fill({ color:0x8b4513 }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(W*0.36, -H*0.44, W*0.08, H*0.03).fill({ color:0xffd700 });
+    b.rect(W*0.38, -H*0.26, W*0.04, H*0.03).fill({ color:0xffd700 });
+  },
+  "llama-contra": (b, W, H) => {
+    b.rect(-W*0.24, -H*1.02, W*0.48, H*0.09).fill({ color:0xcc0000 }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.34, -H*0.98, W*0.14, H*0.04).fill({ color:0xcc0000 }).stroke({ width:1, color:0x0b0d12 });
+  },
+  "gemini-anl": (b, W, H) => {
+    b.rect(-W*0.32, -H*0.62, W*0.64, H*0.32).fill({ color:0xffffff, alpha:0.88 }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.02, -H*0.60, W*0.04, H*0.30).fill({ color:0xe0e0e0 });
+    b.rect(-W*0.52, -H*0.36, W*0.14, H*0.20).fill({ color:0xd4a574 }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.50, -H*0.34, W*0.10, H*0.01).fill({ color:0x0b0d12 });
+    b.rect(-W*0.50, -H*0.30, W*0.10, H*0.01).fill({ color:0x0b0d12 });
+  },
+  "gemini-tact": (b, W, H) => {
+    b.rect(-W*0.28, -H*1.00, W*0.56, H*0.11).fill({ color:0x2d4a2d }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.34, -H*0.95, W*0.68, H*0.04).fill({ color:0x2d4a2d });
+    b.circle(0, -H*1.03, W*0.06).fill({ color:0xffd700 }).stroke({ width:1, color:0x0b0d12 });
+  },
+  "mistral-large": (b, W, H) => {
+    b.rect(-W*0.17, -H*1.16, W*0.34, H*0.20).fill({ color:0x0b0d12 }).stroke({ width:1, color:0x333 });
+    b.rect(-W*0.24, -H*1.00, W*0.48, H*0.04).fill({ color:0x0b0d12 });
+    b.rect(-W*0.17, -H*1.08, W*0.34, H*0.02).fill({ color:0xdd0000 });
+  },
+  "mistral-medium": (b, W, H) => {
+    b.rect(-W*0.32, -H*0.62, W*0.64, H*0.06).fill({ color:0xff79c6 }).stroke({ width:0.6, color:0x0b0d12 });
+    b.rect(-W*0.27, -H*0.58, W*0.54, H*0.04).fill({ color:0x50fa7b });
+    b.rect(-W*0.30, -H*0.45, W*0.06, H*0.08).fill({ color:0xff79c6 });
+  },
+  "mistral-small": (b, W, H) => {
+    b.rect(W*0.28, -H*0.66, W*0.16, H*0.28).fill({ color:0x2a5f8f }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(W*0.30, -H*0.56, W*0.12, H*0.02).fill({ color:0xffd700 });
+    b.rect(W*0.32, -H*0.46, W*0.08, H*0.03).fill({ color:0x1a3f6f });
+  },
+  "mistral-nemo": (b, W, H) => {
+    b.rect(-W*0.32, -H*0.62, W*0.64, H*0.34).fill({ color:0x2a1a0a }).stroke({ width:1.5, color:0x0b0d12 });
+    b.rect(-W*0.02, -H*0.60, W*0.04, H*0.30).fill({ color:0xffd700 });
+    b.circle(-W*0.36, -H*0.90, W*0.09).fill({ color:0xf4c49a }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.40, -H*0.98, W*0.08, W*0.05).fill({ color:0x0b0d12 });
+  },
+  "mistral-ministral": (b, W, H) => {
+    b.moveTo(-W*0.14, -H*0.96).lineTo(0, -H*1.22).lineTo(W*0.14, -H*0.96).closePath()
+     .fill({ color:0x4a0080 }).stroke({ width:1, color:0x0b0d12 });
+    b.circle(0, -H*1.20, W*0.04).fill({ color:0xffd700 });
+    b.rect(-W*0.50, -H*0.36, W*0.16, H*0.18).fill({ color:0x8b0000 }).stroke({ width:1, color:0x0b0d12 });
+    b.rect(-W*0.48, -H*0.32, W*0.12, H*0.01).fill({ color:0xffd700 });
+    b.rect(-W*0.48, -H*0.28, W*0.12, H*0.01).fill({ color:0xffd700 });
+  },
+  "nemotron-120b": (b, W, H) => {
+    for (let i = -3; i <= 3; i++) {
+      b.circle(i*W*0.055, -H*0.56, W*0.025).stroke({ width:1, color:0xffd700 });
+    }
+    b.circle(0, -H*0.50, W*0.04).fill({ color:0xffd700 }).stroke({ width:1, color:0x0b0d12 });
+  },
+  "selfhost-qwen4b": (b, W, H) => {
+    b.rect(-W*0.035, -H*0.60, W*0.07, H*0.05).fill({ color:0x1a4d80 });
+    b.moveTo(-W*0.04, -H*0.55).lineTo(0, -H*0.30).lineTo(W*0.04, -H*0.55).closePath()
+     .fill({ color:0x1a4d80 }).stroke({ width:0.6, color:0x0b0d12 });
+    b.moveTo(0, -H*0.40).lineTo(-W*0.02, -H*0.36).lineTo(W*0.02, -H*0.36).closePath().fill({ color:0xffd700 });
+  },
+  "nvidia-minimax": (b, W, H) => {
+    b.moveTo(-W*0.10, -H*0.50).lineTo(W*0.10, -H*0.45).lineTo(-W*0.10, -H*0.40).closePath()
+     .fill({ color:0xffd700 }).stroke({ width:1, color:0x0b0d12 });
+  },
+  "nvidia-llama70": (b, W, H) => {
+    b.moveTo(0, -H*0.56).lineTo(0, -H*0.38).stroke({ width:1, color:0x888888 });
+    b.circle(0, -H*0.36, W*0.06).fill({ color:0xc0c0c0 }).stroke({ width:1, color:0x0b0d12 });
+    b.circle(-W*0.04, -H*0.38, W*0.01).fill({ color:0xffffff });
+  },
+  "selfhost-gemma3": (b, W, H) => {
+    b.circle(W*0.08, -H*0.80, W*0.09).stroke({ width:1.4, color:0xffd700 });
+    b.moveTo(W*0.17, -H*0.80).lineTo(W*0.28, -H*0.58).stroke({ width:1.2, color:0xffd700 });
+  },
+  "selfhost-qwen06": (b, W, H) => {
+    b.moveTo(-W*0.11, -H*0.58).lineTo(0, -H*0.56).lineTo(-W*0.11, -H*0.52).closePath().fill({ color:0x1a1f2a }).stroke({ width:0.6, color:0x0b0d12 });
+    b.moveTo( W*0.11, -H*0.58).lineTo(0, -H*0.56).lineTo( W*0.11, -H*0.52).closePath().fill({ color:0x1a1f2a }).stroke({ width:0.6, color:0x0b0d12 });
+    b.circle(0, -H*0.55, W*0.028).fill({ color:0x1a1f2a });
+  },
+  "selfhost-dolphin3": (b, W, H) => {
+    for (let i = -2; i <= 2; i++) {
+      const x = i * W*0.09;
+      b.moveTo(x, -H*0.94).lineTo(x + W*0.025, -H*1.14).lineTo(x + W*0.06, -H*0.94).closePath()
+       .fill({ color:0x3a2b20 }).stroke({ width:0.6, color:0x0b0d12 });
+    }
+  },
+};
 
 // Axelrod strategy families → colors (cooperators green, defectors red, random purple, complex amber)
 const STRATEGY_FAMILIES = {
@@ -245,36 +519,65 @@ function homeIslandFor(id) {
   for (const [k, s] of MODEL_HOME) if (lo.includes(k)) return s;
   return null;
 }
-// Match floor center (in tile coords) — agents pilgrimage here when betting
-const MATCH_FLOOR = { x: 20, y: 7 };
 
+// v2.18 (2026-04-18): TRADER PERSONAS — each trader_id gets a human-readable name.
+// Technical model/provider info is hidden on the world but surfaced in the inspect card.
+const TRADER_PERSONAS = {
+  "qwen-quant":        { persona: "The Oracle",       model: "Qwen 3 235B-A22B",     provider: "Cerebras",       risk: 0.55, style: "quantitative" },
+  "qwen-arb":          { persona: "The Gatekeeper",   model: "Qwen 3 235B-A22B",     provider: "Cerebras",       risk: 0.65, style: "arbitrage" },
+  "llama-contra":      { persona: "The Contrarian",   model: "Llama 3.1 8B",         provider: "Cerebras",       risk: 0.55, style: "contrarian" },
+  "gemini-anl":        { persona: "The Analyst",      model: "Gemini 3 Flash",       provider: "Google",         risk: 0.55, style: "analytical" },
+  "gemini-tact":       { persona: "The Tactician",    model: "Gemini 3 Flash",       provider: "Google",         risk: 0.60, style: "tactical" },
+  "mistral-large":     { persona: "The General",      model: "mistral-large-latest", provider: "Mistral",        risk: 0.50, style: "ensemble" },
+  "mistral-medium":    { persona: "The Diplomat",     model: "mistral-medium-latest",provider: "Mistral",        risk: 0.45, style: "diversified" },
+  "mistral-small":     { persona: "The Scout",        model: "mistral-small-latest", provider: "Mistral",        risk: 0.35, style: "wide-coverage" },
+  "mistral-nemo":      { persona: "The Wildcard",     model: "open-mistral-nemo",    provider: "Mistral",        risk: 0.70, style: "aggressive" },
+  "mistral-ministral": { persona: "The Professor",    model: "ministral-8b-latest",  provider: "Mistral",        risk: 0.35, style: "theoretical" },
+  "nemotron-120b":     { persona: "The Architect",    model: "Nemotron-3-Super 120B",provider: "OpenRouter",     risk: 0.55, style: "chainthought" },
+  "selfhost-qwen4b":   { persona: "The Monk",         model: "Qwen3-4B (GGUF)",      provider: "SelfHost CPU",   risk: 0.40, style: "disciplined" },
+  "nvidia-minimax":    { persona: "The Decider",      model: "MiniMax M2.7",         provider: "NVIDIA NIM",     risk: 0.58, style: "decisive" },
+  "nvidia-llama70":    { persona: "The Swingman",     model: "Llama 3.3 70B",        provider: "NVIDIA NIM",     risk: 0.50, style: "swing" },
+  "selfhost-gemma3":   { persona: "The Apprentice",   model: "Gemma-3-4B (GGUF)",    provider: "SelfHost CPU",   risk: 0.45, style: "analytical" },
+  "selfhost-qwen06":   { persona: "The Featherweight",model: "Qwen3-0.6B (GGUF)",    provider: "SelfHost CPU",   risk: 0.30, style: "conservative" },
+  "selfhost-dolphin3": { persona: "The Rebel",        model: "Dolphin3-Llama-3.2-3B",provider: "SelfHost CPU",   risk: 0.55, style: "uncensored" },
+};
+function personaFor(id) {
+  const p = TRADER_PERSONAS[id];
+  if (p) return p;
+  return { persona: id, model: id, provider: "—", risk: 0, style: "—" };
+}
+
+// Match floor center (in tile coords) — agents pilgrimage here when betting
+const MATCH_FLOOR = { x: 20, y: 17 };
+
+// Layout: infra + councils at TOP (click-only, no bubbles), traders in the MIDDLE (moving, ephemeral bubbles)
+// v2.12 unified layout — 52×32, ZERO dead columns. NBA and POL zones now touch at x=26.
+// y=1..4    NBA evo (x 1..25) | POL evo (x 26..50)  — halves share the center wall
+// y=5..8    councils (x 1..50)                       — single wide chamber
+// y=9..19   NBA TF (x 1..25)  | POL TF (x 26..50)   — halves share the center wall
+// y=20..30  CONTROL ROOM (x 1..50)                   — 2×6 panel grid, full width
 const ZONES = {
-  nba:       { x:1,  y:1,  w:18, h:17, floor:3, label:"NBA TRADING FLOOR" },
-  political: { x:21, y:1,  w:18, h:17, floor:5, label:"POLITICAL FLOOR" },
-  "nba-infra":  { x:1,  y:19, w:18, h:6, floor:6, label:"NBA EVOLUTION · 13 ISLANDS" },
-  "pol-infra":  { x:21, y:19, w:18, h:6, floor:6, label:"POLITICAL EVOLUTION · 8 ISLANDS" },
-  quant:        { x:1,  y:26, w:38, h:5, floor:7, label:"POLITICAL QUANT FLOOR · 4 SESSIONS × OPTIONS" },
+  "nba-infra":  { x:1,  y:1,  w:25, h:4,  floor:6, label:"NBA EVOLUTION · 13 ISLANDS" },
+  "pol-infra":  { x:26, y:1,  w:25, h:4,  floor:6, label:"POLITICAL EVOLUTION · 8 ISLANDS" },
+  councils:     { x:1,  y:5,  w:50, h:4,  floor:1, label:"COUNCIL CHAMBERS · 9 DEPARTMENTS" },
+  nba:          { x:1,  y:9,  w:25, h:11, floor:3, label:"NBA TRADING FLOOR" },
+  political:    { x:26, y:9,  w:25, h:11, floor:5, label:"POLITICAL FLOOR" },
+  "control-room":{x:1,  y:20, w:50, h:11, floor:8, label:"CONTROL ROOM · LIVE LLM DATA FEEDS" },
 };
 
-// Trader ROSTER (IDs only — the app contract). All displayed data (bankroll,
-// ROI, wins, losses, pacts, reasoning, allocations) is pulled live from
-// /api/status + /api/leaderboard + /api/day-decisions — nothing is hardcoded.
-// `syncRosterFromLive()` rebuilds this list from the live leaderboard when it
-// diverges, so new/retired agents appear without a redeploy.
-let NBA_TRADERS = [
+// v2.13 (2026-04-17): roster parity with live TF — 17 NBA + 17 POL.
+// Was stale at 12 NBA / 10 POL missing T13-T17 + renamed gemma4-selfhost→selfhost-qwen4b.
+const NBA_TRADERS = [
   "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
   "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral",
   "nemotron-120b","selfhost-qwen4b","nvidia-minimax","nvidia-llama70",
-  "selfhost-gemma3","selfhost-qwen06",
+  "selfhost-gemma3","selfhost-qwen06","selfhost-dolphin3"
 ];
-let POL_TRADERS = [
+const POL_TRADERS = [
   "qwen-quant","qwen-arb","llama-contra","gemini-anl","gemini-tact",
   "mistral-large","mistral-medium","mistral-small","mistral-nemo","mistral-ministral",
   "nemotron-120b","selfhost-qwen4b","nvidia-minimax","nvidia-llama70",
-  "selfhost-gemma3","selfhost-qwen06",
-];
-let PQT_TRADERS = [
-  "qwen-quant","llama-contra","gemini-anl","mistral-large","mistral-medium","mistral-nemo",
+  "selfhost-gemma3","selfhost-qwen06","selfhost-dolphin3"
 ];
 const ISLANDS = [
   ["S10","https://nomos42-nba-quant.hf.space/api/status"],
@@ -317,23 +620,38 @@ const ENDPOINTS = {
   political:   "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/status",
   politicalLB: "https://lbjlincoln26-political-llm-trading-floor.hf.space/api/leaderboard",
   politicalDays:"https://lbjlincoln26-political-llm-trading-floor.hf.space/api/day-decisions",
-  quant:       "https://lbjlincoln26-political-quant-trading-floor.hf.space/api/status",
-  quantLB:     "https://lbjlincoln26-political-quant-trading-floor.hf.space/api/leaderboard",
+  pqtf:        "https://lbjlincoln26-political-quant-trading-floor.hf.space/api/status",
+  pqtfLB:      "https://lbjlincoln26-political-quant-trading-floor.hf.space/api/leaderboard",
+};
+// v2.12: Councils persist iteration count to Hub repo (no FastAPI). Poll state.json directly.
+const COUNCIL_STATE_URLS = {
+  D1: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d1-research/resolve/main/data/runtime/state.json",
+  D2: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d2-engineering/resolve/main/data/runtime/state.json",
+  D3: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d3-evolution/resolve/main/data/runtime/state.json",
+  D4: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d4-product/resolve/main/data/runtime/state.json",
+  D5: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d5-business/resolve/main/data/runtime/state.json",
+  D6: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d6-evaluation/resolve/main/data/runtime/state.json",
+  D7: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d7-infra/resolve/main/data/runtime/state.json",
+  D8: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d8-finance/resolve/main/data/runtime/state.json",
+  D9: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d9-cross-repo/resolve/main/data/runtime/state.json",
 };
 
 const AGENTS = [
-  ...NBA_TRADERS.map((id,i)=>({ id, key:id, label:id, kind:"nba", zone:"nba", idx:i, char:i%6,
-    tint: TRADER_PALETTE[i % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) })),
-  ...POL_TRADERS.map((id,i)=>({ id:`p-${id}`, key:id, label:id, kind:"political", zone:"political", idx:i, char:(i+2)%6,
-    tint: TRADER_PALETTE[(i + 15) % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) })),
-  ...PQT_TRADERS.map((id,i)=>({ id:`q-${id}`, key:id, label:`Q·${id}`, kind:"quant", zone:"quant", idx:i, char:(i+4)%6,
-    tint: 0xffd166, badge: traderBadge(id), homeIsland: homeIslandFor(id) })),
+  ...NBA_TRADERS.map((id,i)=>{ const p = personaFor(id); return {
+    id, key:id, label: p.persona, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+    kind:"nba", zone:"nba", idx:i, char:i%6,
+    tint: TRADER_PALETTE[i % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) }; }),
+  ...POL_TRADERS.map((id,i)=>{ const p = personaFor(id); return {
+    id:`p-${id}`, key:id, label: p.persona, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+    kind:"political", zone:"political", idx:i, char:(i+2)%6,
+    tint: TRADER_PALETTE[(i + 15) % TRADER_PALETTE.length], badge: traderBadge(id), homeIsland: homeIslandFor(id) }; }),
   ...ISLANDS.map(([lbl,url],i)=>({
     id:`island-${lbl.toLowerCase()}`, key:lbl, label:lbl,
     kind: lbl.startsWith("P") ? "pol_infra" : "infra",
     zone: lbl.startsWith("P") ? "pol-infra" : "nba-infra",
     idx:i, char:0, url, _isInfra:true,
   })),
+  ...COUNCIL_DEPTS.map(([c,n,m],i)=>({ id:`dept-${c.toLowerCase()}`, key:c, label:`${c} ${n}`, kind:"council", zone:"councils", idx:i, char:(i+3)%6, mission:m })),
 ];
 
 // ── SEATING ─────────────────────────────────────────────────────────────────
@@ -343,23 +661,39 @@ function assignSeats() {
     if (!list.length) continue;
     const isInfraZone = zoneId === "nba-infra" || zoneId === "pol-infra";
     const isCouncil = zoneId === "councils";
-    const cols = isInfraZone ? Math.min(list.length, Math.ceil(list.length/2)) : isCouncil ? list.length : Math.min(4, list.length);
-    const rows = Math.ceil(list.length / cols);
-    const cellW = isInfraZone ? 2.2 : isCouncil ? 3.5 : 4;
-    const cellH = isInfraZone ? 2.5 : isCouncil ? 3 : 5;
-    const padX = (z.w - cols * cellW) / (cols + 1);
-    const padY = (z.h - rows * cellH) / (rows + 1);
+    // v2.11 (2026-04-17): cols chosen by zone aspect ratio so rows always fit inside z.h.
+    // Previous logic hardcoded cols=4/cellH=5 for trader floors → 16 agents × 4 rows × 5t
+    // = 20 tiles vertical, zone only 11t tall → negative padY, agents stacked on top of each
+    // other and visually "doubled" (user report 2026-04-17).
+    let cols, rows;
+    if (isCouncil) {
+      cols = list.length; rows = 1;
+    } else if (isInfraZone) {
+      cols = Math.min(list.length, Math.ceil(list.length / 2));
+      rows = Math.ceil(list.length / cols);
+    } else {
+      cols = Math.max(1, Math.ceil(Math.sqrt(list.length * z.w / z.h)));
+      rows = Math.ceil(list.length / cols);
+    }
+    const cellW = z.w / cols;
+    const cellH = z.h / rows;
     list.forEach((a, i) => {
       const c = i % cols, r = Math.floor(i / cols);
       a.seat = {
-        x: z.x + padX * (c + 1) + c * cellW + cellW / 2,
-        y: z.y + padY * (r + 1) + r * cellH + cellH / 2,
+        x: z.x + cellW * (c + 0.5),
+        y: z.y + cellH * (r + 0.5),
       };
       a.home = { ...a.seat };
       a.phase = Math.random() * Math.PI * 2;
-      a.freq  = isInfraZone ? 0 : 0.35 + Math.random() * 0.55;
-      a.wamp  = isInfraZone ? 0 : 0.12 + Math.random() * 0.12;
-      a.speed = isInfraZone ? 0 : 0.9 + Math.random() * 0.5;
+      // v2.13 (2026-04-17): calmer still. User report "erratic and too fast".
+      // freq 0.15-0.40 → 0.06-0.14 (slower bob cycle)
+      // wamp 0.10-0.28 → 0.04-0.10 (smaller wobble)
+      // speed 0.9-1.4 → 0.30-0.50 (3× slower linear convergence)
+      a.freq  = isInfraZone ? 0 : 0.06 + Math.random() * 0.08;
+      a.wamp  = isInfraZone ? 0 : 0.04 + Math.random() * 0.06;
+      a.speed = isInfraZone ? 0 : 0.30 + Math.random() * 0.20;
+      // Occasional longer-range wander target (every 8-15s a trader picks a new point in its floor)
+      a.wanderNext = 0;
       a.x = a.seat.x; a.y = a.seat.y;
       a.vx = 0; a.vy = 0;
       a.state = "idle"; a.data = null; a.bubble = `${a.label}\nbooting…`; a.activeUntil = 0;
@@ -370,7 +704,7 @@ function assignSeats() {
 assignSeats();
 
 const MEETING_SPOTS = [
-  { x:20, y:5  }, { x:20, y:8  }, { x:20, y:11 }, { x:20, y:16 }, { x:20, y:22 },
+  { x:20, y:14 }, { x:20, y:17 }, { x:20, y:20 }, { x:10, y:17 }, { x:30, y:17 },
 ];
 
 // ── PIXI INIT ───────────────────────────────────────────────────────────────
@@ -386,18 +720,188 @@ app.canvas.style.imageRendering = "pixelated";
 const world = new PIXI.Container();
 app.stage.addChild(world);
 
+// v2.8 2026-04-17: bgLayer (stars+clouds) below floor, boardLayer (diegetic signs) above decor, tickerLayer (top scroll) above world.
+const bgLayer    = new PIXI.Container();
 const floorLayer = new PIXI.Container();
 const decorLayer = new PIXI.Container();
+const boardLayer = new PIXI.Container();    // in-world diegetic signs (leaderboard/categories)
 const particleLayer = new PIXI.Container();
 const pactLayer  = new PIXI.Graphics();
 const agentLayer = new PIXI.Container();
 agentLayer.sortableChildren = true;
 const labelLayer = new PIXI.Container();
-world.addChild(floorLayer, decorLayer, particleLayer, pactLayer, agentLayer, labelLayer);
+const tickerLayer = new PIXI.Container();   // scrolling ticker over top of world
+world.addChild(bgLayer, floorLayer, decorLayer, boardLayer, particleLayer, pactLayer, agentLayer, labelLayer, tickerLayer);
+
+// ═══ v2.10 Diegetic Panel System — FULLY PIXI, inside CONTROL ROOM (no DOM rail) ═══
+// 12 data panels arrange in a 2×6 grid on the CONTROL ROOM wall.
+// Each panel: Bloomberg-style — colored header bar, provider tag, live value, data lines, status LED.
+// States: live (green) | stale (amber) | no_signal (red) | fake (red)
+const DIEGETIC_PANELS = [];
+const _PANEL_SLOT = { row: 0, col: 0 };   // autoincrement slot allocator
+const _PANEL_COLS = 6;
+const _PANEL_MAX_ROWS = 2;
+// Panel grid pinned to CONTROL ROOM: zone (x=1, y=20, w=50, h=11)
+const _CTRL_X0 = 1 * TILE + 8;            // 40 px
+const _CTRL_Y0 = 20 * TILE + 36;          // 676 px (below zone label)
+const _CTRL_W = 50 * TILE - 16;           // 1584 px inner
+const _CTRL_H = 11 * TILE - 44;           // 308 px inner
+const _PANEL_GAP = 8;
+const _PANEL_W = Math.floor((_CTRL_W - _PANEL_GAP * (_PANEL_COLS - 1)) / _PANEL_COLS);  // ≈258
+const _PANEL_H = Math.floor((_CTRL_H - _PANEL_GAP * (_PANEL_MAX_ROWS - 1)) / _PANEL_MAX_ROWS);  // ≈150
+
+function _panelStatusColor(s) {
+  return { live: 0x00d9a7, stale: 0xffa500, no_signal: 0xff5c5c, fake: 0xff5c5c }[s] || 0x9aa3b5;
+}
+
+// Each panel is a PIXI.Container with a Bloomberg-terminal look.
+// Title-bar: colored bevel stripe, glyph badge, title text, status LED.
+// Body:      8 rows of monospace text, colored on LED state.
+function makeDiegeticPanel({ title, dataUrl, render, staleSec = 600, glyph }) {
+  if (_PANEL_SLOT.row >= _PANEL_MAX_ROWS) {
+    console.warn("panel grid full, skipping", title);
+    return null;
+  }
+  const col = _PANEL_SLOT.col, row = _PANEL_SLOT.row;
+  const x = _CTRL_X0 + col * (_PANEL_W + _PANEL_GAP);
+  const y = _CTRL_Y0 + row * (_PANEL_H + _PANEL_GAP);
+  _PANEL_SLOT.col++;
+  if (_PANEL_SLOT.col >= _PANEL_COLS) { _PANEL_SLOT.col = 0; _PANEL_SLOT.row++; }
+
+  const w = _PANEL_W, h = _PANEL_H;
+  const accent = 0x00d9a7;   // recolored on state change
+  const g = glyph || (title.split(" ")[0] || "◆").slice(0, 1);
+
+  const c = new PIXI.Container();
+  c.x = x; c.y = y;
+  c.eventMode = "static"; c.cursor = "pointer";
+
+  // Drop shadow (pixel style)
+  const shadow = new PIXI.Graphics();
+  shadow.rect(3, 3, w, h).fill({ color: 0x000000, alpha: 0.55 });
+  c.addChild(shadow);
+
+  // Body with bevel
+  const body = new PIXI.Graphics();
+  body.rect(0, 0, w, h).fill({ color: 0x0d1118, alpha: 0.97 });
+  body.rect(0, 0, w, 1).fill({ color: 0xffffff, alpha: 0.22 });      // top bevel
+  body.rect(0, h - 1, w, 1).fill({ color: 0x000000, alpha: 0.7 });
+  body.rect(0, 0, 1, h).fill({ color: 0xffffff, alpha: 0.12 });
+  body.rect(w - 1, 0, 1, h).fill({ color: 0x000000, alpha: 0.55 });
+  c.addChild(body);
+
+  // Titlebar — colored stripe
+  const tb = new PIXI.Graphics();
+  tb.rect(0, 0, w, 22).fill({ color: accent, alpha: 0.20 });
+  tb.rect(0, 21, w, 1).fill({ color: accent, alpha: 0.95 });        // neon underline
+  tb.rect(0, 22, w, 1).fill({ color: 0x000000, alpha: 0.5 });
+  // Glyph badge square
+  tb.rect(5, 5, 14, 12).fill({ color: accent, alpha: 0.85 }).stroke({ width: 1, color: 0x000000, alpha: 0.55 });
+  c.addChild(tb); c._tb = tb;
+
+  const badgeTxt = new PIXI.Text({ text: g, style: {
+    fontFamily: "JetBrains Mono, monospace", fontSize: 10, fontWeight: "700", fill: 0x11151e,
+  }});
+  badgeTxt.x = 8; badgeTxt.y = 5;
+  c.addChild(badgeTxt);
+
+  const cleanTitle = title.replace(/^[◆◈▲▼◁◂◉⚖▶◇▣◦≡✦◇■●○]+\s*/, "").toUpperCase();
+  const titleTxt = new PIXI.Text({ text: cleanTitle.slice(0, 32), style: {
+    fontFamily: "JetBrains Mono, monospace", fontSize: 9.5, fontWeight: "700",
+    fill: accent, letterSpacing: 1.5,
+  }});
+  titleTxt.x = 25; titleTxt.y = 6;
+  c.addChild(titleTxt); c._titleTxt = titleTxt;
+
+  // Status LED (right side of titlebar)
+  const led = new PIXI.Graphics();
+  led.circle(w - 10, 11, 3).fill({ color: 0x00d9a7 });
+  led.circle(w - 10, 11, 5).fill({ color: 0x00d9a7, alpha: 0.35 });
+  c.addChild(led); c._led = led;
+
+  // State tag text (LIVE / STALE / NO SIGNAL)
+  const stateTag = new PIXI.Text({ text: "LIVE", style: {
+    fontFamily: "JetBrains Mono, monospace", fontSize: 8, fontWeight: "700",
+    fill: 0x00d9a7, letterSpacing: 1,
+  }});
+  stateTag.anchor.set(1, 0);
+  stateTag.x = w - 20; stateTag.y = 7;
+  c.addChild(stateTag); c._stateTag = stateTag;
+
+  // Content area — 8 lines of data
+  const MAX_LINES = 8;
+  const lineTexts = [];
+  for (let i = 0; i < MAX_LINES; i++) {
+    const t = new PIXI.Text({ text: "", style: {
+      fontFamily: "JetBrains Mono, monospace", fontSize: 10, fill: 0xe6e8ee,
+    }});
+    t.x = 8; t.y = 28 + i * 13;
+    c.addChild(t); lineTexts.push(t);
+  }
+  // Hint strip at bottom
+  const hint = new PIXI.Graphics();
+  hint.rect(0, h - 12, w, 12).fill({ color: 0x000000, alpha: 0.45 });
+  c.addChild(hint);
+  const hintTxt = new PIXI.Text({ text: `◦ ${dataUrl.replace(/^https?:\/\//,"").slice(0,36)}`, style: {
+    fontFamily: "JetBrains Mono, monospace", fontSize: 8, fill: 0x5b6478,
+  }});
+  hintTxt.x = 6; hintTxt.y = h - 11;
+  c.addChild(hintTxt);
+
+  boardLayer.addChild(c);
+
+  const p = {
+    _ctr: c, _led: led, _tb: tb, _titleTxt: titleTxt, _stateTag: stateTag, _lineTexts: lineTexts,
+    title, dataUrl, render, staleSec, _state: "live", _lastText: "",
+    setState(s) {
+      this._state = s;
+      const col = _panelStatusColor(s);
+      led.clear();
+      led.circle(w - 10, 11, 3).fill({ color: col });
+      led.circle(w - 10, 11, 5).fill({ color: col, alpha: 0.4 });
+      tb.clear();
+      tb.rect(0, 0, w, 22).fill({ color: col, alpha: 0.20 });
+      tb.rect(0, 21, w, 1).fill({ color: col, alpha: 0.95 });
+      tb.rect(0, 22, w, 1).fill({ color: 0x000000, alpha: 0.5 });
+      tb.rect(5, 5, 14, 12).fill({ color: col, alpha: 0.85 }).stroke({ width: 1, color: 0x000000, alpha: 0.55 });
+      titleTxt.style.fill = col;
+      stateTag.style.fill = col;
+      stateTag.text = ({ live: "● LIVE", stale: "▲ STALE", no_signal: "✗ NO DATA", fake: "⚠ SUSPECT" })[s] || s.toUpperCase();
+    },
+    setText(txt) {
+      this._lastText = txt || "";
+      const lines = (txt || "").split("\n").slice(0, MAX_LINES);
+      for (let i = 0; i < MAX_LINES; i++) {
+        this._lineTexts[i].text = lines[i] || "";
+      }
+    },
+  };
+  DIEGETIC_PANELS.push(p);
+  return p;
+}
+
+async function refreshDiegeticPanels() {
+  for (const p of DIEGETIC_PANELS) {
+    try {
+      const r = await fetch(p.dataUrl, { cache: "no-store" });
+      if (!r.ok) { p.setState("no_signal"); p.setText(""); continue; }
+      const data = await r.json();
+      const out = p.render(data);
+      if (!out || out.state === "no_signal") { p.setState("no_signal"); p.setText(""); continue; }
+      p.setText(out.text || "");
+      p.setState(out.state || "live");
+    } catch (e) { p.setState("no_signal"); p.setText(""); }
+  }
+}
+// v2.18 (2026-04-18): 18 CONTROL ROOM panels deleted — duplicated info already
+// shown in HUD/ticker/leaderboard. Replaced by a single clear 3-floor leaderboard
+// DOM overlay (see #three-floor-lb below).
+
+// Sidebar removed in v2.8 — all panels are now diegetic (in-world PIXI signs).
 
 // v2.3: Ambient floating particles — data-flow visualization between zones
 const PARTICLES = [];
-const PARTICLE_COUNT = 70;
+const PARTICLE_COUNT = 35;
 for (let i = 0; i < PARTICLE_COUNT; i++) {
   const p = new PIXI.Graphics();
   const size = 1.5 + Math.random() * 2;
@@ -433,7 +937,9 @@ let camScale = 1, camX = 0, camY = 0;
 function computeCamera() {
   const W = stageEl.clientWidth, H = stageEl.clientHeight;
   if (activeRoom === "world") {
-    const s = Math.min(W / WORLD_W, H / WORLD_H);
+    // v2.18: cover-fit (was contain-fit) — fills stage, small edge crop instead of
+    // letterbox. Agents live in inner 80% of WORLD so no critical content clipped.
+    const s = Math.max(W / WORLD_W, H / WORLD_H);
     camTargetScale = s;
     camTargetX = (W - WORLD_W*s) / 2;
     camTargetY = (H - WORLD_H*s) / 2;
@@ -449,14 +955,7 @@ function computeCamera() {
 }
 window.addEventListener("resize", computeCamera);
 
-// Room tabs
-for (const btn of document.querySelectorAll("#room-tabs button")) {
-  btn.addEventListener("click", () => {
-    activeRoom = btn.dataset.room;
-    for (const b of document.querySelectorAll("#room-tabs button")) b.classList.toggle("active", b === btn);
-    computeCamera();
-  });
-}
+// Room tabs removed in v2.18 — the world view is the only view.
 
 // ── ASSET LOAD ──────────────────────────────────────────────────────────────
 async function loadTex(url) {
@@ -495,13 +994,9 @@ function zoneIdToKind(zoneId) {
   if (zoneId === "political") return "political";
   if (zoneId === "nba-infra") return "infra";
   if (zoneId === "pol-infra") return "pol_infra";
+  if (zoneId === "control-room") return "control";
   return "council";
 }
-
-// Live-animated decor: pulsing zone borders + data-flow streams infra→floor
-const ZONE_PULSE = new PIXI.Graphics();  // pulsing outer ring redrawn every frame
-const ZONE_SCANLINES = [];                // CRT-style sweep, one per zone
-const DATA_STREAMS = [];                  // particles traveling infra→floor
 
 for (const [zoneId, z] of Object.entries(ZONES)) {
   const floorTex = TEX.floors[z.floor] || TEX.floors[0];
@@ -523,20 +1018,75 @@ for (const [zoneId, z] of Object.entries(ZONES)) {
     }
   }
   floorLayer.addChild(chk);
+  // ═══ v2.15: Pokémon B/W tilemap motif ═══ per-zone 16×16 pattern overlay.
+  // Gen5 floor-tile feel: wood strips (NBA), marble (POL), circuit (infra), carpet (councils), grid (control).
+  const tilemap = new PIXI.Graphics();
+  const TM = 16;   // 16px sub-tile (half of TILE=32)
+  const zx0 = z.x*TILE, zy0 = z.y*TILE, zxw = z.w*TILE, zyh = z.h*TILE;
+  if (zoneId === "nba") {
+    // Hardwood basketball court — vertical plank lines + crossgrain dots
+    for (let px = zx0; px < zx0 + zxw; px += TILE) {
+      tilemap.rect(px, zy0, 1, zyh).fill({ color: 0x4a2810, alpha: 0.35 });
+    }
+    for (let py = zy0 + 16; py < zy0 + zyh; py += 32) {
+      for (let px = zx0 + 8; px < zx0 + zxw; px += 32) {
+        tilemap.rect(px, py, 2, 1).fill({ color: 0x3a1810, alpha: 0.4 });
+      }
+    }
+  } else if (zoneId === "political") {
+    // Marble capitol floor — diamond grid + specks
+    for (let py = zy0; py < zy0 + zyh; py += TM) {
+      for (let px = zx0; px < zx0 + zxw; px += TM) {
+        const odd = ((px/TM + py/TM) % 2 === 0);
+        if (odd) tilemap.rect(px + 6, py + 6, 4, 4).fill({ color: 0xc0d8f0, alpha: 0.12 });
+        else tilemap.rect(px + 7, py + 7, 2, 2).fill({ color: 0x8ba6c8, alpha: 0.22 });
+      }
+    }
+  } else if (zoneId === "nba-infra" || zoneId === "pol-infra") {
+    // Circuit board — green traces + solder pads
+    const trace = zoneId === "nba-infra" ? 0x50fa7b : 0x8be9fd;
+    for (let py = zy0; py < zy0 + zyh; py += TILE) {
+      tilemap.rect(zx0, py + 15, zxw, 1).fill({ color: trace, alpha: 0.20 });
+    }
+    for (let py = zy0 + 8; py < zy0 + zyh; py += TILE) {
+      for (let px = zx0 + 8; px < zx0 + zxw; px += TILE) {
+        tilemap.circle(px, py, 1.5).fill({ color: trace, alpha: 0.35 });
+      }
+    }
+  } else if (zoneId === "councils") {
+    // Red carpet with gold trim — diagonal weave + edge stripes
+    for (let py = zy0 + 4; py < zy0 + zyh - 4; py += 6) {
+      tilemap.rect(zx0 + 4, py, zxw - 8, 1).fill({ color: 0xd04040, alpha: 0.18 });
+    }
+    // Gold trim at top + bottom
+    tilemap.rect(zx0 + 4, zy0 + 2, zxw - 8, 2).fill({ color: 0xffc830, alpha: 0.4 });
+    tilemap.rect(zx0 + 4, zy0 + zyh - 4, zxw - 8, 2).fill({ color: 0xffc830, alpha: 0.4 });
+  } else if (zoneId === "control-room") {
+    // Dark tech grid — thin cyan crosshatch with diode dots
+    for (let py = zy0; py <= zy0 + zyh; py += TILE) {
+      tilemap.rect(zx0, py, zxw, 1).fill({ color: 0x00d9a7, alpha: 0.10 });
+    }
+    for (let px = zx0; px <= zx0 + zxw; px += TILE) {
+      tilemap.rect(px, zy0, 1, zyh).fill({ color: 0x00d9a7, alpha: 0.10 });
+    }
+    for (let py = zy0 + 8; py < zy0 + zyh; py += 64) {
+      for (let px = zx0 + 8; px < zx0 + zxw; px += 64) {
+        tilemap.circle(px, py, 1.2).fill({ color: 0xffd700, alpha: 0.45 });
+      }
+    }
+  }
+  floorLayer.addChild(tilemap);
+  // v2.9: brighter zone tints — 0.10 → 0.18, more distinct separations
   const tint = new PIXI.Graphics();
-  tint.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).fill({ color: KIND_COLORS[zoneIdToKind(zoneId)], alpha: 0.10 });
+  tint.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).fill({ color: KIND_COLORS[zoneIdToKind(zoneId)], alpha: 0.12 });
   floorLayer.addChild(tint);
-  // v2.3: Double-stroke zone border with glow (static base — pulse layer adds animation)
+  // v2.9: Triple-stroke zone border: outer glow + neon tube + inner highlight
   const border = new PIXI.Graphics();
-  border.rect(z.x*TILE-1, z.y*TILE-1, z.w*TILE+2, z.h*TILE+2).stroke({ width:3, color: KIND_COLORS[zoneIdToKind(zoneId)], alpha:0.18 });
-  border.rect(z.x*TILE, z.y*TILE, z.w*TILE, z.h*TILE).stroke({ width:2, color: KIND_COLORS[zoneIdToKind(zoneId)], alpha:0.65 });
+  const zkCol = KIND_COLORS[zoneIdToKind(zoneId)];
+  border.rect(z.x*TILE-3, z.y*TILE-3, z.w*TILE+6, z.h*TILE+6).stroke({ width:5, color: zkCol, alpha:0.14 });   // outer glow
+  border.rect(z.x*TILE-1, z.y*TILE-1, z.w*TILE+2, z.h*TILE+2).stroke({ width:3, color: zkCol, alpha:0.85 });   // neon tube
+  border.rect(z.x*TILE+1, z.y*TILE+1, z.w*TILE-2, z.h*TILE-2).stroke({ width:1, color: 0xffffff, alpha:0.25 }); // inner highlight
   floorLayer.addChild(border);
-  // Scan line — faint horizontal sweep anchored to zone, for extra datacenter vibe
-  const scan = new PIXI.Graphics();
-  scan.rect(z.x*TILE + 2, z.y*TILE, z.w*TILE - 4, 1.2)
-      .fill({ color: KIND_COLORS[zoneIdToKind(zoneId)], alpha: 0.35 });
-  scan._zone = { x: z.x*TILE, y: z.y*TILE, w: z.w*TILE, h: z.h*TILE, col: KIND_COLORS[zoneIdToKind(zoneId)] };
-  floorLayer.addChild(scan); ZONE_SCANLINES.push(scan);
   // v2.3: Corner brackets (pixel art flourish)
   const bk = new PIXI.Graphics();
   const bkLen = 12, bkX = z.x*TILE, bkY = z.y*TILE, bkW = z.w*TILE, bkH = z.h*TILE;
@@ -552,59 +1102,90 @@ for (const [zoneId, z] of Object.entries(ZONES)) {
   }});
   txt.x = z.x*TILE + 10; txt.y = z.y*TILE + 8; txt.alpha = 0.80;
   labelLayer.addChild(txt);
+
+  // v2.14: zone-specific iconic decor — one big silhouette per zone, drawn faintly
+  // in decorLayer so it reads as "environmental flavor" without stealing attention
+  // from agents. Placed toward zone upper-right so it doesn't collide with label
+  // (top-left) or active agent area (center-bottom).
+  const dec = new PIXI.Graphics();
+  const dx = (z.x + z.w - 5) * TILE;
+  const dy = (z.y + 2) * TILE;
+  const dcol = KIND_COLORS[zoneIdToKind(zoneId)];
+  const dalpha = 0.16;
+  if (zoneId === "nba") {
+    // basketball hoop: backboard + rim + net
+    dec.rect(dx, dy - 4, 48, 4).fill({ color: 0xffffff, alpha: dalpha * 1.2 });
+    dec.circle(dx + 24, dy + 12, 10).stroke({ width: 2, color: 0xff6600, alpha: dalpha * 2 });
+    for (let i = 0; i < 5; i++) {
+      dec.moveTo(dx + 14 + i*5, dy + 14).lineTo(dx + 18 + i*5, dy + 28).stroke({ width: 1, color: 0xffffff, alpha: dalpha });
+    }
+  } else if (zoneId === "political") {
+    // capitol dome: dome + pillars
+    dec.circle(dx + 24, dy + 12, 18).fill({ color: dcol, alpha: dalpha });
+    dec.rect(dx, dy + 12, 48, 4).fill({ color: dcol, alpha: dalpha * 1.5 });
+    for (let i = 0; i < 5; i++) {
+      dec.rect(dx + 4 + i*10, dy + 16, 4, 20).fill({ color: dcol, alpha: dalpha });
+    }
+    dec.moveTo(dx + 24, dy - 6).lineTo(dx + 24, dy + 4).stroke({ width: 2, color: dcol, alpha: dalpha * 2 });
+  } else if (zoneId === "nba-infra" || zoneId === "pol-infra") {
+    // server rack grid: 3×4 rack units
+    for (let rr = 0; rr < 4; rr++) {
+      for (let cc = 0; cc < 3; cc++) {
+        dec.rect(dx + cc*14, dy + rr*10, 12, 8).stroke({ width: 1, color: dcol, alpha: dalpha * 2 });
+        dec.circle(dx + cc*14 + 10, dy + rr*10 + 4, 1).fill({ color: 0x00d9a7, alpha: dalpha * 3 });
+      }
+    }
+  } else if (zoneId === "councils") {
+    // round table
+    dec.circle(dx + 24, dy + 12, 20).stroke({ width: 2, color: dcol, alpha: dalpha * 2 });
+    dec.circle(dx + 24, dy + 12, 20).fill({ color: dcol, alpha: dalpha * 0.6 });
+    for (let i = 0; i < 6; i++) {
+      const ang = (i / 6) * Math.PI * 2;
+      dec.circle(dx + 24 + Math.cos(ang)*14, dy + 12 + Math.sin(ang)*14, 2).fill({ color: dcol, alpha: dalpha * 3 });
+    }
+  } else if (zoneId === "control-room") {
+    // control panel: oscilloscope box
+    dec.rect(dx, dy, 48, 28).stroke({ width: 1.5, color: dcol, alpha: dalpha * 2 });
+    dec.moveTo(dx + 4, dy + 14).lineTo(dx + 12, dy + 8).lineTo(dx + 20, dy + 18).lineTo(dx + 28, dy + 6)
+       .lineTo(dx + 36, dy + 20).lineTo(dx + 44, dy + 14).stroke({ width: 1, color: 0x00d9a7, alpha: dalpha * 3 });
+  }
+  decorLayer.addChild(dec);
 }
 
-// v2.5: Data-flow cables between zones (corridor decorations)
+// v2.5: Data-flow cables — top infra feeds councils, councils feed traders below
 const cables = new PIXI.Graphics();
-cables.moveTo(10*TILE, 13*TILE).lineTo(20*TILE, 13*TILE).lineTo(30*TILE, 13*TILE);
-cables.moveTo(20*TILE, 13*TILE).lineTo(20*TILE, 14*TILE);
-cables.moveTo(10*TILE, 19*TILE).lineTo(10*TILE, 20*TILE);
-cables.moveTo(30*TILE, 19*TILE).lineTo(30*TILE, 20*TILE);
+// infra row → council row (vertical drops)
+cables.moveTo(10*TILE, 5*TILE).lineTo(10*TILE, 6*TILE);
+cables.moveTo(30*TILE, 5*TILE).lineTo(30*TILE, 6*TILE);
+// council row horizontal bus
+cables.moveTo(1*TILE, 10*TILE).lineTo(38*TILE, 10*TILE);
+// council → trading floors (vertical drops)
+cables.moveTo(10*TILE, 10*TILE).lineTo(10*TILE, 11*TILE);
+cables.moveTo(30*TILE, 10*TILE).lineTo(30*TILE, 11*TILE);
 cables.stroke({ width:1, color:0x3a2600, alpha:0.5 });
 const cableDots = new PIXI.Graphics();
-for (const [cx,cy] of [[10,13],[20,13],[30,13],[20,14],[10,19],[30,19]]) {
+for (const [cx,cy] of [[10,5],[30,5],[10,10],[30,10],[1,10],[38,10]]) {
   cableDots.circle(cx*TILE, cy*TILE, 4).fill({ color:0xffa500, alpha:0.6 });
 }
 decorLayer.addChild(cables, cableDots);
-
-// v4.0: Pulsing border overlay — drawn in ticker so it breathes
-floorLayer.addChild(ZONE_PULSE);
-
-// v4.0: Data streams — packets flow from infra (islands) down into the
-// trading floors, visualizing "evolved weights feed traders".
-const STREAM_LANES = [
-  // NBA evolution → NBA trading floor
-  { x0: 12*TILE, y0: 22*TILE, x1: 10*TILE, y1: 12*TILE, col: 0xff79c6 },
-  { x0: 18*TILE, y0: 22*TILE, x1: 16*TILE, y1: 12*TILE, col: 0xff79c6 },
-  { x0: 6*TILE,  y0: 22*TILE, x1: 5*TILE,  y1: 12*TILE, col: 0xff79c6 },
-  // POL evolution → POL trading floor
-  { x0: 26*TILE, y0: 22*TILE, x1: 24*TILE, y1: 12*TILE, col: 0xffd700 },
-  { x0: 32*TILE, y0: 22*TILE, x1: 30*TILE, y1: 12*TILE, col: 0xffd700 },
-  { x0: 36*TILE, y0: 22*TILE, x1: 35*TILE, y1: 12*TILE, col: 0xffd700 },
-  // POL floor → POL quant (downstream)
-  { x0: 28*TILE, y0: 18*TILE, x1: 20*TILE, y1: 28*TILE, col: 0x8be9fd },
-];
-for (let k = 0; k < 24; k++) {
-  const lane = STREAM_LANES[k % STREAM_LANES.length];
-  const g = new PIXI.Graphics();
-  g._lane = lane;
-  g._t = Math.random();
-  g._speed = 0.0025 + Math.random() * 0.004;
-  decorLayer.addChild(g);
-  DATA_STREAMS.push(g);
-}
 
 // Furniture: scaled to TILE (canonical pixel-art decor)
 const FURN_SIZE = Math.round(TILE * 0.85);
 const decorList = [];
 for (const [zoneId, z] of Object.entries(ZONES)) {
-  if (zoneId === "nba-infra" || zoneId === "pol-infra") continue;
+  if (zoneId === "nba-infra" || zoneId === "pol-infra" || zoneId === "control-room") continue;
   decorList.push(["WHITEBOARD", z.x + z.w/2 - 0.5, z.y + 0.2, FURN_SIZE*2, FURN_SIZE*1.2]);
   decorList.push(["CLOCK",      z.x + 0.5,          z.y + 0.3, FURN_SIZE, FURN_SIZE]);
   decorList.push(["PLANT",      z.x + 0.3,          z.y + z.h - 1.5, FURN_SIZE*1.1, FURN_SIZE*1.1]);
   decorList.push(["CACTUS",     z.x + z.w - 1.5,    z.y + z.h - 1.5, FURN_SIZE, FURN_SIZE]);
   decorList.push(["BOOKSHELF",  z.x + z.w - 1.5,    z.y + 0.3, FURN_SIZE, FURN_SIZE*1.4]);
 }
+// v2.9: CONTROL ROOM decor — operator chairs along bottom, plants at corners
+decorList.push(["PLANT",      1.3,  30,   FURN_SIZE*1.1, FURN_SIZE*1.1]);
+decorList.push(["PLANT",      37.0, 30,   FURN_SIZE*1.1, FURN_SIZE*1.1]);
+decorList.push(["SOFA",       6,    30.2, FURN_SIZE*1.3, FURN_SIZE*0.9]);
+decorList.push(["SOFA",       18,   30.2, FURN_SIZE*1.3, FURN_SIZE*0.9]);
+decorList.push(["SOFA",       30,   30.2, FURN_SIZE*1.3, FURN_SIZE*0.9]);
 decorList.push(["COFFEE_TABLE", 19, 13.2, FURN_SIZE*1.5, FURN_SIZE]);
 decorList.push(["COFFEE",       19.3, 12.5, FURN_SIZE*0.9, FURN_SIZE*0.9]);
 decorList.push(["SOFA",         18, 13.8, FURN_SIZE*1.5, FURN_SIZE]);
@@ -615,6 +1196,160 @@ for (const [k, tx, ty, w, h] of decorList) {
   const spr = new PIXI.Sprite(tex);
   spr.x = tx*TILE; spr.y = ty*TILE; spr.width = w; spr.height = h;
   decorLayer.addChild(spr);
+}
+
+// ═══ v2.8 BACKGROUND: twilight gradient + parallax stars + drifting clouds ═══
+{
+  const W = WORLD_W, H = WORLD_H;
+  // Night sky gradient (top 40% of world)
+  const sky = new PIXI.Graphics();
+  const bands = 14;
+  for (let i = 0; i < bands; i++) {
+    const t = i / (bands - 1);
+    const r = Math.round(0x0b + (0x1a - 0x0b) * t);
+    const g = Math.round(0x0d + (0x0f - 0x0d) * t);
+    const b = Math.round(0x12 + (0x2a - 0x12) * t);
+    const color = (r << 16) | (g << 8) | b;
+    sky.rect(0, (H * 0.42) * (i / bands), W, (H * 0.42) / bands).fill({ color, alpha: 0.55 });
+  }
+  bgLayer.addChild(sky);
+
+  // Stars — small white dots with twinkle (stored so tickRender can pulse them)
+  const stars = [];
+  const starGfx = new PIXI.Graphics();
+  bgLayer.addChild(starGfx);
+  for (let i = 0; i < 120; i++) {
+    stars.push({
+      x: Math.random() * W,
+      y: Math.random() * H * 0.36,
+      r: Math.random() * 1.4 + 0.4,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.002 + Math.random() * 0.004,
+    });
+  }
+  window._starField = { stars, gfx: starGfx };
+
+  // Clouds — 3 layers at different parallax speeds, each a fuzzy blob
+  const clouds = [];
+  const cloudGfx = new PIXI.Graphics();
+  bgLayer.addChild(cloudGfx);
+  for (let i = 0; i < 8; i++) {
+    clouds.push({
+      x: Math.random() * W,
+      y: 30 + Math.random() * (H * 0.30),
+      w: 80 + Math.random() * 140,
+      h: 18 + Math.random() * 12,
+      vx: 0.08 + Math.random() * 0.22,
+      alpha: 0.06 + Math.random() * 0.08,
+    });
+  }
+  window._cloudField = { clouds, gfx: cloudGfx };
+
+  // v2.9: dropped the dark floor vignette — world was too dark. Add warm floor glow band above control room.
+  const floorGlow = new PIXI.Graphics();
+  floorGlow.rect(0, (25 * TILE) - 4, W, 8).fill({ color: 0xffd700, alpha: 0.12 });
+  bgLayer.addChild(floorGlow);
+}
+
+// ═══ v2.8 DIEGETIC SIGNS: leaderboard wall + categories chalkboard + evolution board ═══
+// Three large in-world panels that replace the old sidebar. Each is a PIXI.Container
+// with a background frame + PIXI.Text lines, positioned on empty floor/wall space.
+// Updated each refresh() via renderDiegetic*.
+const DIEGETIC = {};
+// v2.9: proper pixel-art UI — titlebar stripe, 2-tone bevel, inner gradient, status LED.
+function makeDiegeticBoard(opts) {
+  const { x, y, w, h, title, titleColor, maxLines, bg = 0x11151e, glyph = "▣" } = opts;
+  const c = new PIXI.Container(); c.x = x; c.y = y;
+
+  // Outer glow (neon halo)
+  const glow = new PIXI.Graphics();
+  glow.rect(-2, -2, w + 4, h + 4).stroke({ width: 3, color: titleColor, alpha: 0.18 });
+  c.addChild(glow);
+
+  // Shadow under board (drop-shadow pixel-style)
+  const shadow = new PIXI.Graphics();
+  shadow.rect(3, 3, w, h).fill({ color: 0x000000, alpha: 0.55 });
+  c.addChild(shadow);
+
+  // Body: top bevel (lighter), bottom bevel (darker)
+  const body = new PIXI.Graphics();
+  body.rect(0, 0, w, h).fill({ color: bg, alpha: 0.96 });
+  body.rect(0, 0, w, 1).fill({ color: 0xffffff, alpha: 0.28 });          // top bevel
+  body.rect(0, h - 1, w, 1).fill({ color: 0x000000, alpha: 0.65 });      // bottom bevel
+  body.rect(0, 0, 1, h).fill({ color: 0xffffff, alpha: 0.15 });          // left bevel
+  body.rect(w - 1, 0, 1, h).fill({ color: 0x000000, alpha: 0.55 });      // right bevel
+  c.addChild(body);
+
+  // Titlebar: colored stripe with glyph badge + label
+  const tb = new PIXI.Graphics();
+  tb.rect(0, 0, w, 20).fill({ color: titleColor, alpha: 0.22 });
+  tb.rect(0, 20, w, 1).fill({ color: titleColor, alpha: 0.9 });          // neon underline
+  tb.rect(0, 19, w, 1).fill({ color: 0x000000, alpha: 0.4 });            // shadow under
+  // Badge (glyph square, left)
+  tb.rect(4, 4, 14, 12).fill({ color: titleColor, alpha: 0.85 }).stroke({ width: 1, color: 0x000000, alpha: 0.5 });
+  c.addChild(tb);
+
+  const badge = new PIXI.Text({ text: glyph, style: {
+    fontFamily: "JetBrains Mono, monospace", fontSize: 10, fontWeight: "700", fill: 0x11151e,
+  }});
+  badge.x = 7; badge.y = 4;
+  c.addChild(badge);
+
+  const titleTxt = new PIXI.Text({ text: title, style: {
+    fontFamily: "JetBrains Mono, monospace", fontSize: 10, fontWeight: "700",
+    fill: titleColor, letterSpacing: 2,
+  }});
+  titleTxt.x = 24; titleTxt.y = 5;
+  c.addChild(titleTxt);
+
+  // Status LED (top right, pulses via tickRender)
+  const led = new PIXI.Graphics();
+  led.circle(w - 10, 10, 3).fill({ color: 0x00d9a7 });
+  led.circle(w - 10, 10, 5).fill({ color: 0x00d9a7, alpha: 0.35 });
+  c.addChild(led); c._led = led;
+
+  // Content area with subtle top fade
+  const content = new PIXI.Graphics();
+  content.rect(2, 22, w - 4, 6).fill({ color: 0x000000, alpha: 0.35 });  // darker cap below titlebar
+  c.addChild(content);
+
+  const lines = [];
+  for (let i = 0; i < maxLines; i++) {
+    const t = new PIXI.Text({ text: "", style: {
+      fontFamily: "JetBrains Mono, monospace", fontSize: 10, fill: 0xe6e8ee,
+    }});
+    t.x = 8; t.y = 30 + i * 13;
+    c.addChild(t); lines.push(t);
+  }
+  boardLayer.addChild(c);
+  return { container: c, lines, w, h };
+}
+
+// v2.10: 4 big boards removed — data now flows through the 12 Control-Room panels below.
+// (Old renderers check `if (!board) return`, so they silently no-op.)
+// Keeping DIEGETIC object for compatibility with renderers.
+
+// ═══ v2.8 TICKER TAPE: scrolling live events across top of world ═══
+// The ticker is world-space (moves with camera) but visually anchored to y=0.
+const TICKER = { text: null, raw: "", speed: 0.8, x: 0 };
+{
+  const bar = new PIXI.Graphics();
+  bar.rect(0, 0, WORLD_W, 24).fill({ color: 0x000000, alpha: 0.82 });
+  bar.rect(0, 23, WORLD_W, 1).fill({ color: 0xffa500, alpha: 0.6 });
+  tickerLayer.addChild(bar);
+  const label = new PIXI.Text({ text: "LIVE ▸", style: {
+    fontFamily: "JetBrains Mono, monospace", fontSize: 11, fontWeight: "700",
+    fill: 0xff3b3b, letterSpacing: 2,
+  }});
+  label.x = 8; label.y = 5;
+  tickerLayer.addChild(label);
+  const txt = new PIXI.Text({ text: "", style: {
+    fontFamily: "JetBrains Mono, monospace", fontSize: 11, fill: 0xe6e8ee,
+  }});
+  txt.x = WORLD_W; txt.y = 5;
+  tickerLayer.addChild(txt);
+  TICKER.text = txt;
+  TICKER.x = WORLD_W;
 }
 
 // ── AGENT SPRITES (bigger + always-on bubble + permanent strategy badge) ───
@@ -670,6 +1405,57 @@ function makeAgentContainer(a) {
       if (a.tint) spr.tint = a.tint;
       c.addChild(spr);
       c._spr = spr;
+    } else {
+      // v2.6 (2026-04-17): procedural pixel-person body when asset missing.
+      // Shape: head + torso (agent tint) + arms + legs + shoes, flat-shaded w/ outline.
+      const body = new PIXI.Graphics();
+      const tint = a.tint || KIND_COLORS[a.kind] || 0xffa500;
+      const hair = 0x3a2b20;                 // dark brown hair
+      const skin = 0xf4c49a;                 // neutral skin
+      const pants = 0x1a1f2a;                // dark navy pants
+      const shoes = 0x0b0d12;                // black shoes
+      const outline = 0x0b0d12;
+      const W = CHAR_W, H = CHAR_H;
+      // Legs
+      body.rect(-W*0.22, -H*0.30, W*0.17, H*0.26).fill({ color: pants }).stroke({ width: 1, color: outline });
+      body.rect( W*0.05, -H*0.30, W*0.17, H*0.26).fill({ color: pants }).stroke({ width: 1, color: outline });
+      // Shoes
+      body.rect(-W*0.23, -H*0.06, W*0.18, H*0.06).fill({ color: shoes });
+      body.rect( W*0.05, -H*0.06, W*0.18, H*0.06).fill({ color: shoes });
+      // Arms (tint = torso color)
+      body.rect(-W*0.40, -H*0.58, W*0.12, H*0.26).fill({ color: tint }).stroke({ width: 1, color: outline });
+      body.rect( W*0.28, -H*0.58, W*0.12, H*0.26).fill({ color: tint }).stroke({ width: 1, color: outline });
+      // Hands
+      body.circle(-W*0.34, -H*0.30, W*0.07).fill({ color: skin }).stroke({ width: 1, color: outline });
+      body.circle( W*0.34, -H*0.30, W*0.07).fill({ color: skin }).stroke({ width: 1, color: outline });
+      // Torso (agent tint)
+      body.rect(-W*0.28, -H*0.62, W*0.56, H*0.34).fill({ color: tint }).stroke({ width: 1.5, color: outline });
+      // Neck
+      body.rect(-W*0.06, -H*0.65, W*0.12, H*0.05).fill({ color: skin });
+      // Head
+      body.circle(0, -H*0.80, W*0.20).fill({ color: skin }).stroke({ width: 1.5, color: outline });
+      // Hair (top swoosh)
+      body.rect(-W*0.20, -H*0.98, W*0.40, H*0.12).fill({ color: hair });
+      body.circle(-W*0.15, -H*0.86, W*0.05).fill({ color: hair });
+      body.circle( W*0.15, -H*0.86, W*0.05).fill({ color: hair });
+      // Eyes
+      body.circle(-W*0.08, -H*0.80, 1.6).fill({ color: outline });
+      body.circle( W*0.08, -H*0.80, 1.6).fill({ color: outline });
+      // Tiny smile
+      body.rect(-W*0.05, -H*0.72, W*0.10, 1.2).fill({ color: outline });
+      // v2.14: per-role accessory (glasses, cap, briefcase, etc). POL prefix stripped.
+      const roleKey = (a.id || "").replace(/^p-/, "");
+      const accessory = ROLE_ACCESSORIES[roleKey];
+      if (accessory) {
+        try { accessory(body, W, H); } catch (_) { /* accessory draw failed — base body still valid */ }
+      }
+      // v2.14: POL agents get a blue sash across the torso to separate from NBA at a glance.
+      if (a.kind === "political") {
+        body.moveTo(-W*0.28, -H*0.45).lineTo(W*0.28, -H*0.55).lineTo(W*0.30, -H*0.50).lineTo(-W*0.26, -H*0.40).closePath()
+            .fill({ color:0x8be9fd, alpha:0.92 }).stroke({ width:0.8, color:0x0b0d12 });
+      }
+      c.addChild(body);
+      c._spr = body;  // expose as _spr so breathing/flip animations still work
     }
     // v2.0: 6x6 letter badge overlay (model family: Q/M/G/L/N/P/E/D/…)
     if (a.badge) {
@@ -719,6 +1505,39 @@ function makeAgentContainer(a) {
   plate.addChild(plateText); plate._text = plateText;
   c.addChild(plate); c._plate = plate;
 
+  // ═══ v2.15: Pokémon HP bar + persistent bet tag (above nameplate, below sprite) ═══
+  // HP bar: Gen5-style 3-segment bar, green→yellow→red as bankroll % of $100 start falls.
+  // Bet tag: persistent chip showing latest active bet "MIN@NYK ml_home 15%" — visible ALWAYS.
+  if (!a._isInfra) {
+    const hp = new PIXI.Container();
+    hp.y = -CHAR_H*0.08;
+    const hpBg = new PIXI.Graphics();
+    hp.addChild(hpBg); hp._bg = hpBg;
+    const hpFill = new PIXI.Graphics();
+    hp.addChild(hpFill); hp._fill = hpFill;
+    const hpLbl = new PIXI.Text({ text: "$100", style: {
+      fontFamily: "Press Start 2P, VT323, monospace", fontSize: 10, fontWeight: "700",
+      fill: 0xffffff, stroke: { color: 0x101820, width: 2 },
+    }});
+    hpLbl.anchor.set(0.5, 0.5);
+    hp.addChild(hpLbl); hp._lbl = hpLbl;
+    c.addChild(hp); c._hp = hp;
+
+    // Persistent bet tag — below nameplate, pokémon-blue chip, shows latest active bet
+    const bet = new PIXI.Container();
+    bet.y = CHAR_H*0.14 + 32;
+    const betBg = new PIXI.Graphics();
+    bet.addChild(betBg); bet._bg = betBg;
+    const betTxt = new PIXI.Text({ text: "", style: {
+      fontFamily: "JetBrains Mono, monospace", fontSize: 9.5, fontWeight: "700",
+      fill: 0xfff8c0, letterSpacing: 0.3,
+    }});
+    betTxt.anchor.set(0.5, 0.5);
+    bet.addChild(betTxt); bet._text = betTxt;
+    bet.visible = false;
+    c.addChild(bet); c._betTag = bet;
+  }
+
   // Strategy badge (permanent — below nameplate, color-coded by family)
   const badge = new PIXI.Container();
   badge.y = CHAR_H*0.14 + 18;
@@ -738,7 +1557,7 @@ function makeAgentContainer(a) {
 
   c.on("pointerover", () => { a._hover = true; showHoverCard(a); });
   c.on("pointerout",  () => { a._hover = false; hideHoverCard(); });
-  c.on("pointertap",  () => { a.activeUntil = performance.now() + 5000; });
+  c.on("pointertap",  () => { a.activeUntil = performance.now() + 5000; showInspectPanel(a); });
 
   a._cnt = c;
   agentLayer.addChild(c);
@@ -747,14 +1566,29 @@ function makeAgentContainer(a) {
 for (const a of AGENTS) makeAgentContainer(a);
 
 // ── MOTION ──────────────────────────────────────────────────────────────────
-const SEP_RADIUS = 2.2, SEP_WEIGHT = 0.032;
+const SEP_RADIUS = 2.6, SEP_WEIGHT = 0.09;
 function tickMotion(ms) {
   const t = ms / 1000;
   for (const a of AGENTS) {
     let tx = a.home.x, ty = a.home.y;
-    // v2.0 gameplay: if trader just placed a bet, walk toward MATCH_FLOOR
-    // (center of map). After bet pulse expires, return home. Cheap greedy
-    // path-seek (no true A*, but tile grid + separation already handles it).
+    // Wander only when agent is ALIVE (has live data + is actively thinking/profit/loss).
+    // Idle/booting agents stay at their seat. Councils wander only if state !== idle.
+    const isAlive = !a._isInfra && a.data && a.state && a.state !== "idle";
+    if (isAlive && a.zone && ZONES[a.zone]) {
+      if (!a.wanderTarget || (a.wanderNext || 0) < ms) {
+        const z = ZONES[a.zone];
+        a.wanderTarget = {
+          x: z.x + 1.5 + Math.random() * (z.w - 3),
+          y: z.y + 1.5 + Math.random() * (z.h - 3),
+        };
+        a.wanderNext = ms + 12000 + Math.random() * 10000;  // 12-22s (was 8-15s) — less frantic
+      }
+      tx = a.wanderTarget.x; ty = a.wanderTarget.y;
+    } else if (!a._isInfra) {
+      // Idle: clear any leftover wander target so agent eases back to seat.
+      a.wanderTarget = null;
+    }
+    // If trader just placed a bet, override with MATCH_FLOOR for a huddle.
     if (!a._isInfra && a.activeUntil > ms) {
       tx = MATCH_FLOOR.x + ((a.idx % 5) - 2) * 0.7;
       ty = MATCH_FLOOR.y + (Math.floor(a.idx / 5) - 1) * 0.7;
@@ -778,7 +1612,8 @@ function tickMotion(ms) {
         fy += (dy/d) * push * SEP_WEIGHT;
       }
     }
-    a.vx = a.vx * 0.82 + fx; a.vy = a.vy * 0.82 + fy;
+    // v2.13: tighter damping 0.82 → 0.92 (smoother decel, less oscillation).
+    a.vx = a.vx * 0.92 + fx; a.vy = a.vy * 0.92 + fy;
     a.x += a.vx; a.y += a.vy;
     if (a._cnt && a._cnt._spr && Math.abs(a.vx) > 0.004) {
       a._cnt._spr.scale.x = (a.vx < 0 ? -1 : 1) * Math.abs(a._cnt._spr.scale.x || 1);
@@ -794,6 +1629,33 @@ function tickRender(ms) {
   world.scale.set(camScale);
   world.x = camX; world.y = camY;
 
+  // v2.8: twinkle stars
+  if (window._starField) {
+    const { stars, gfx } = window._starField;
+    gfx.clear();
+    for (const s of stars) {
+      const a = 0.4 + Math.sin(ms * s.speed + s.phase) * 0.45;
+      gfx.circle(s.x, s.y, s.r).fill({ color: 0xffffff, alpha: a });
+    }
+  }
+  // v2.8: drift clouds
+  if (window._cloudField) {
+    const { clouds, gfx } = window._cloudField;
+    gfx.clear();
+    for (const c of clouds) {
+      c.x += c.vx;
+      if (c.x > WORLD_W + c.w) c.x = -c.w;
+      gfx.ellipse(c.x, c.y, c.w * 0.6, c.h).fill({ color: 0xe6e8ee, alpha: c.alpha });
+      gfx.ellipse(c.x + c.w * 0.2, c.y - c.h * 0.3, c.w * 0.45, c.h * 0.9).fill({ color: 0xe6e8ee, alpha: c.alpha });
+    }
+  }
+  // v2.8: scroll ticker
+  if (TICKER.text && TICKER.raw) {
+    TICKER.x -= TICKER.speed;
+    TICKER.text.x = TICKER.x;
+    if (TICKER.x + TICKER.text.width < 60) TICKER.x = WORLD_W;
+  }
+
   for (const a of AGENTS) {
     if (!a._cnt) continue;
     a._cnt.x = a.x * TILE; a._cnt.y = a.y * TILE;
@@ -802,10 +1664,26 @@ function tickRender(ms) {
     if (activeRoom !== "world" && a.zone !== activeRoom) { a._cnt.alpha = 0.22; }
     else { a._cnt.alpha = 1.0; }
 
-    // v2.3: Breathing idle animation — subtle Y-scale oscillation
-    if (!a._isInfra && a._cnt._spr) {
-      const breathe = 1.0 + Math.sin(ms / 800 + a.phase * 3) * 0.025;
-      a._cnt._spr.scale.y = breathe;
+    // v2.7: Walking animation — bob, tilt, and step when moving
+    if (!a._isInfra) {
+      const speed = Math.sqrt((a.vx||0)**2 + (a.vy||0)**2);
+      const isWalking = speed > 0.008;
+      const spr = a._cnt._spr || a._cnt._body;
+      if (spr) {
+        if (isWalking) {
+          const stepFreq = 220;
+          const bob = Math.sin(ms / stepFreq + a.phase * 5) * 2.5;
+          const tilt = Math.sin(ms / stepFreq + a.phase * 5) * 0.06;
+          spr.y = bob;
+          spr.rotation = tilt;
+          spr.scale.y = 1.0 + Math.abs(Math.sin(ms / stepFreq + a.phase * 5)) * 0.04;
+        } else {
+          const breathe = 1.0 + Math.sin(ms / 800 + a.phase * 3) * 0.025;
+          spr.y = spr.y * 0.9;
+          spr.rotation = spr.rotation * 0.85;
+          spr.scale.y = breathe;
+        }
+      }
     }
 
     // v2.3: State emote — dynamic icon above head based on agent state
@@ -816,17 +1694,21 @@ function tickRender(ms) {
       a._cnt._glyph.y = -CHAR_H*1.02 + Math.sin(ms / 600 + a.idx) * 2;
     }
 
-    // Speech bubble — always visible, draw background to fit text
+    // Speech bubble — ephemeral: only visible while bubbleUntil > now (≈4.5s after a bet).
+    // Infra/councils never set a.bubble so bubbles never persist on top row.
     const bubble = a._cnt._bubble;
-    if (bubble && a.bubble) {
+    const showBubble = bubble && a.bubble && (a.bubbleUntil || 0) > ms;
+    if (showBubble) {
       bubble._text.text = a.bubble;
       const tw = Math.min(bubble._text.width + 14, 190);
       const th = bubble._text.height + 10;
+      // Fade out in last 500ms
+      const fade = Math.min(1, ((a.bubbleUntil || 0) - ms) / 500);
       bubble._bg.clear()
-        .roundRect(-tw/2, -th, tw, th, 3).fill({ color: 0x0b0d12, alpha: 0.95 })
-        .roundRect(-tw/2, -th, tw, th, 3).stroke({ width:1, color: KIND_COLORS[a.kind], alpha: 0.7 })
-        // tail
-        .moveTo(-4, 0).lineTo(4, 0).lineTo(0, 5).closePath().fill({ color: 0x0b0d12, alpha: 0.95 });
+        .roundRect(-tw/2, -th, tw, th, 3).fill({ color: 0x0b0d12, alpha: 0.95 * fade })
+        .roundRect(-tw/2, -th, tw, th, 3).stroke({ width:1, color: KIND_COLORS[a.kind], alpha: 0.7 * fade })
+        .moveTo(-4, 0).lineTo(4, 0).lineTo(0, 5).closePath().fill({ color: 0x0b0d12, alpha: 0.95 * fade });
+      bubble._text.alpha = fade;
       bubble.visible = true;
     } else if (bubble) {
       bubble.visible = false;
@@ -863,6 +1745,50 @@ function tickRender(ms) {
     const pipCol = a.state === "profit" ? 0x00d9a7 : a.state === "loss" ? 0xff5c5c : a.state === "error" ? 0xff5c5c : KIND_COLORS[a.kind];
     a._cnt._pip.clear().circle(0, CHAR_H*0.05, 5).fill(pipCol);
 
+    // ═══ v2.15: Pokémon HP bar + persistent bet tag ═══
+    if (a._cnt._hp && a.data && typeof a.data.bankroll === "number") {
+      const HP_W = CHAR_W * 0.95, HP_H = 8;
+      const bankroll = a.data.bankroll || 0;
+      const maxRef = Math.max(200, bankroll);        // scale to current-max so winners still show growth room
+      const pct = Math.max(0.02, Math.min(1, bankroll / maxRef));
+      // Pokémon HP color thresholds: >50% green, 20-50% yellow, <20% red
+      const hpPct = Math.min(1, bankroll / 100);
+      const hpCol = hpPct > 1 ? 0x1aa030 : hpPct > 0.5 ? 0x30c030 : hpPct > 0.2 ? 0xf0c010 : 0xd02020;
+      a._cnt._hp._bg.clear()
+        .rect(-HP_W/2 - 1, -HP_H/2 - 1, HP_W + 2, HP_H + 2).fill({ color: 0x101820 })
+        .rect(-HP_W/2, -HP_H/2, HP_W, HP_H).fill({ color: 0x404850 });
+      a._cnt._hp._fill.clear()
+        .rect(-HP_W/2, -HP_H/2, HP_W * pct, HP_H).fill({ color: hpCol })
+        .rect(-HP_W/2, -HP_H/2, HP_W * pct, 2).fill({ color: 0xffffff, alpha: 0.4 });   // top highlight
+      a._cnt._hp._lbl.text = bankroll >= 1000 ? `$${(bankroll/1000).toFixed(2)}K` : `$${bankroll.toFixed(0)}`;
+      a._cnt._hp._lbl.y = -HP_H - 6;
+      a._cnt._hp.visible = true;
+    } else if (a._cnt._hp) {
+      a._cnt._hp.visible = false;
+    }
+
+    // Persistent bet tag — top allocation from latest day-decision (never fades)
+    if (a._cnt._betTag && a.dayDecision && Array.isArray(a.dayDecision.allocations) && a.dayDecision.allocations.length) {
+      // Biggest stake of the day
+      const al = a.dayDecision.allocations.reduce((m, x) =>
+        ((x.stake || x.stake_amount || 0) > (m.stake || m.stake_amount || 0)) ? x : m, a.dayDecision.allocations[0]);
+      const pct = Math.round((al.pct || 0) * 100);
+      const game = (al.game || "").slice(0, 10);
+      const cat = (al.category || "").slice(0, 9);
+      const won = al.won === true ? "✓" : al.won === false ? "✗" : "·";
+      const txt = `${won} ${game} ${cat} ${pct}%`.trim();
+      a._cnt._betTag._text.text = txt;
+      const tw = Math.min(a._cnt._betTag._text.width + 12, 180);
+      const betCol = al.won === true ? 0x207838 : al.won === false ? 0xb82030 : 0x4060b0;
+      a._cnt._betTag._bg.clear()
+        .roundRect(-tw/2 - 1, -7 - 1, tw + 2, 16, 4).fill({ color: 0x101820 })
+        .roundRect(-tw/2, -7, tw, 14, 4).fill({ color: betCol })
+        .roundRect(-tw/2, -7, tw, 5, 4).fill({ color: 0xffffff, alpha: 0.18 });
+      a._cnt._betTag.visible = true;
+    } else if (a._cnt._betTag) {
+      a._cnt._betTag.visible = false;
+    }
+
     // v2.0 reputation halo — 3px ring underfoot, color = axelrod family,
     // pulses when a bet was just placed (activeUntil in future)
     if (a._cnt._halo && !a._isInfra) {
@@ -886,12 +1812,29 @@ function tickRender(ms) {
       a._cnt._iBr.style.fill = isBest ? 0xffd700 : (a.data.stagnation > 100 ? 0xff5c5c : 0x00d9a7);
     }
 
-    // Pulse dot
+    // Pulse dot + floating particles
     if (a.state === "profit" || a.state === "loss") {
       const pulse = (Math.sin(ms/350 + a.idx) + 1) / 2;
       a._cnt._dot.visible = true;
       a._cnt._dot.clear().circle(CHAR_W*0.3, -CHAR_H*0.7, 4).fill({ color:pipCol, alpha:0.45+0.55*pulse });
-    } else { a._cnt._dot.visible = false; }
+      if (!a._particles) a._particles = [];
+      if (a._particles.length < 4 && Math.random() < 0.03) {
+        const pc = new PIXI.Graphics();
+        const col = a.state === "profit" ? 0x00d9a7 : 0xff5c5c;
+        pc.circle(0, 0, 2).fill({ color: col, alpha: 0.9 });
+        pc.x = (Math.random()-0.5) * CHAR_W; pc.y = -CHAR_H*0.5;
+        pc._life = 60; pc._vy = -0.8 - Math.random()*0.5;
+        a._cnt.addChild(pc); a._particles.push(pc);
+      }
+      for (let i = a._particles.length - 1; i >= 0; i--) {
+        const pc = a._particles[i]; pc.y += pc._vy; pc._life--;
+        pc.alpha = pc._life / 60;
+        if (pc._life <= 0) { a._cnt.removeChild(pc); a._particles.splice(i, 1); }
+      }
+    } else {
+      a._cnt._dot.visible = false;
+      if (a._particles) { a._particles.forEach(pc => a._cnt.removeChild(pc)); a._particles = []; }
+    }
   }
   pactLayer.clear();
   // Outer glow pass — wide & dim, pulses with time
@@ -915,7 +1858,7 @@ function tickRender(ms) {
 
 app.ticker.add(() => {
   const now = performance.now();
-  tickMotion(now); tickRender(now);
+  tickMotion(now); tickRender(now); tickPokeDialog(now);
   // v2.3: Animate ambient particles
   for (const p of PARTICLES) {
     p.x += p._vx + Math.sin(now / 2000 + p._drift) * 0.15 * p._speed;
@@ -934,36 +1877,6 @@ app.ticker.add(() => {
       particleLayer.removeChild(ring); ring.destroy();
       PULSE_RINGS.splice(i, 1);
     }
-  }
-  // v4.0: Pulsing zone border — breathes outer stroke for every zone
-  ZONE_PULSE.clear();
-  const breathe = 0.5 + 0.5 * Math.sin(now / 900);
-  for (const [zoneId, z] of Object.entries(ZONES)) {
-    const col = KIND_COLORS[zoneIdToKind(zoneId)];
-    const zx = z.x*TILE, zy = z.y*TILE, zw = z.w*TILE, zh = z.h*TILE;
-    ZONE_PULSE.rect(zx - 4, zy - 4, zw + 8, zh + 8)
-              .stroke({ width: 2, color: col, alpha: 0.15 + 0.18 * breathe });
-    ZONE_PULSE.rect(zx - 7, zy - 7, zw + 14, zh + 14)
-              .stroke({ width: 1, color: col, alpha: 0.05 + 0.08 * breathe });
-  }
-  // v4.0: CRT scanline sweep on every zone
-  for (const scan of ZONE_SCANLINES) {
-    const z = scan._zone;
-    const t = ((now / 4500) + (z.x / 1000)) % 1;
-    scan.y = z.y + t * z.h;
-    scan.alpha = 0.25 + 0.35 * Math.sin(t * Math.PI);
-  }
-  // v4.0: Data streams — bright packets flow along lanes
-  for (const s of DATA_STREAMS) {
-    s._t += s._speed;
-    if (s._t > 1) s._t -= 1;
-    const l = s._lane;
-    const x = l.x0 + (l.x1 - l.x0) * s._t;
-    const y = l.y0 + (l.y1 - l.y0) * s._t;
-    const a = 0.8 * Math.sin(s._t * Math.PI);  // fade in & out along lane
-    s.clear()
-     .circle(x, y, 2.2).fill({ color: l.col, alpha: a })
-     .circle(x, y, 4.5).fill({ color: l.col, alpha: a * 0.3 });
   }
 });
 
@@ -1064,21 +1977,76 @@ function showHoverCard(a) {
 }
 function hideHoverCard() { hoverEl.style.display = "none"; }
 
-// ── SIDEBAR HELPERS ─────────────────────────────────────────────────────────
-const tradesList = document.getElementById("panel-trades-list");
-const tradesCount = document.getElementById("panel-trades-count");
+// ── INSPECT CARD (v2.8: floating overlay, positioned next to the clicked agent) ──
+const inspectCard = document.getElementById("inspect-card");
+let _inspectAgent = null;
+document.getElementById("inspect-close").addEventListener("click", () => {
+  inspectCard.style.display = "none"; _inspectAgent = null;
+});
+function positionInspectCard() {
+  if (!_inspectAgent || inspectCard.style.display === "none") return;
+  const a = _inspectAgent;
+  // World → screen: account for world pan + scale, and #stage offset
+  const sx = a.x * TILE * camScale + camX;
+  const sy = a.y * TILE * camScale + camY;
+  const stageEl = document.getElementById("stage");
+  const rect = stageEl.getBoundingClientRect();
+  const cardW = 260;
+  let left = sx + 40;                  // to the right of sprite
+  if (left + cardW > rect.width - 12) left = sx - cardW - 40;
+  if (left < 12) left = 12;
+  let top = sy - 60;
+  if (top < 60) top = 60;
+  if (top + 250 > rect.height - 20) top = rect.height - 260;
+  inspectCard.style.left = left + "px";
+  inspectCard.style.top = top + "px";
+}
+function showInspectPanel(a) {
+  _inspectAgent = a;
+  inspectCard.style.display = "block";
+  const d = a.data || {};
+  const setv = (id, text, cls) => {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    if (cls) el.className = "v " + cls;
+  };
+  setv("inspect-name", a.label || a.id);
+  setv("inspect-model", a.model || d.model || "—", "ok");
+  setv("inspect-provider", a.provider || d.provider || "—", "warn");
+  const bankroll = d.bankroll != null ? `$${Number(d.bankroll).toFixed(2)}` : "—";
+  const roi = d.bankroll != null ? `${((d.bankroll - 100) / 100 * 100).toFixed(1)}%` : "—";
+  const cls = d.bankroll > 100 ? "ok" : d.bankroll != null ? "warn" : "";
+  setv("inspect-bankroll", bankroll, cls);
+  setv("inspect-roi", roi, cls);
+  setv("inspect-wr", d.win_rate != null ? `${(d.win_rate * 100).toFixed(0)}%` : d.wins != null ? `${d.wins}W/${d.losses||0}L` : "—");
+  setv("inspect-strat", a.strategy || "—", "warn");
+  setv("inspect-state", a.state || "idle");
+  setv("inspect-brier", d.best_brier != null ? d.best_brier.toFixed(5) : "—");
+  setv("inspect-gen", d.generation != null ? `Gen ${d.generation}` : "—", "warn");
+  const extra = [];
+  if (d.total_bets) extra.push(`${d.total_bets} bets`);
+  if (d.last_bet) extra.push(`Last: ${d.last_bet}`);
+  if (a.pactPartner) extra.push(`Pact: ${a.pactPartner}`);
+  if (d.stagnation) extra.push(`Stag: ${d.stagnation}`);
+  if (a.kind) extra.push(a.kind);
+  document.getElementById("inspect-extra").textContent = extra.join(" · ") || "No additional data";
+  positionInspectCard();
+}
+// Keep the card anchored to the agent as the camera moves
+app.ticker.add(positionInspectCard);
+
+// ── DIEGETIC PANEL HELPERS (v2.8: feed in-world PIXI signs, not DOM) ─────────
+// Rolling ticker queue — last 40 events, composed into a single scrolling string
+const TICKER_EVENTS = [];
 let tradesCounter = 0;
 function logTrade(kind, agent, msg, roi) {
-  const now = new Date().toISOString().slice(11,19);
-  const el = document.createElement("div");
-  el.className = "r";
-  const cls = roi == null ? "" : (roi >= 0 ? "up" : "down");
-  const roiStr = roi == null ? "" : (roi >= 0 ? `+$${roi.toFixed(1)}` : `-$${(-roi).toFixed(1)}`);
-  el.innerHTML = `<span class="t">${now}</span><span class="a ${kind}">${agent}</span><span class="m ${cls}">${msg}${roiStr ? " "+roiStr : ""}</span>`;
-  tradesList.insertBefore(el, tradesList.firstChild);
-  while (tradesList.children.length > 60) tradesList.removeChild(tradesList.lastChild);
+  const t = new Date().toISOString().slice(11, 19);
+  const roiStr = roi == null ? "" : (roi >= 0 ? ` +$${roi.toFixed(1)}` : ` -$${(-roi).toFixed(1)}`);
+  TICKER_EVENTS.unshift(`${t} · ${agent} · ${msg}${roiStr}`);
+  if (TICKER_EVENTS.length > 40) TICKER_EVENTS.pop();
+  TICKER.raw = "  ◆  " + TICKER_EVENTS.join("   ◆   ") + "   ◆  ";
+  if (TICKER.text) TICKER.text.text = TICKER.raw;
   tradesCounter++;
-  tradesCount.textContent = tradesCounter;
 }
 
 // Redraw an infrastructure tower sprite from live island data.
@@ -1090,163 +2058,253 @@ function updateInfraTower(a) {
   const g = a._cnt._tower;
   const d = a.data || {};
   const gen = d.generation || d.gen || d.current_gen || 0;
-  const brier = d.best_brier || d.brier || 0;
+  const brier = d.best_brier || d.brier || 1.0;
   const stag = d.stagnation || 0;
   const tint = KIND_COLORS[a.kind] || 0x50fa7b;
-  // Bigger towers: hFrac 0.55..1.55 so even gen=0 is visible & gen=1000+ dominates.
-  const hFrac = Math.min(1.55, Math.max(0.55, 0.55 + Math.log10(gen + 1) / 3.2));
+  // Height: 0.3..1.0 of CHAR_H based on log10(gen+1)/4 clamped.
+  const hFrac = Math.min(1.0, Math.max(0.32, Math.log10(gen + 1) / 4));
   const H = CHAR_H * hFrac;
-  const W = CHAR_W * 0.56;
-  const nRacks = Math.min(10, Math.max(3, Math.floor(hFrac * 7)));
+  const W = CHAR_W * 0.46;
+  const nRacks = Math.min(8, Math.max(2, Math.floor(hFrac * 9)));
   const rackH = H / nRacks;
   const dim = stag > 100 ? 0.55 : 1.0;
-  const isActive = a.activeUntil > performance.now();
-  const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 420);
   g.clear();
-  // Glow aura — pulses when active, dim otherwise
-  const auraAlpha = isActive ? 0.25 + 0.25 * pulse : 0.07 + 0.05 * pulse;
-  g.circle(0, -H/2, Math.max(W*1.4, 18)).fill({ color: tint, alpha: auraAlpha * dim });
-  // Base shadow plinth + concrete pad
-  g.rect(-W/2 - 4, -3, W + 8, 7).fill({ color:0x000000, alpha:0.5 });
-  g.rect(-W/2 - 3, -3, W + 6, 2).fill({ color: 0x2a3140, alpha: 0.9 });
-  // Vertical side frames (matrix-black uprights)
-  g.rect(-W/2 - 1.5, -H - 2, 1.5, H + 2).fill({ color: 0x0b0d12, alpha: 0.95 });
-  g.rect(W/2,        -H - 2, 1.5, H + 2).fill({ color: 0x0b0d12, alpha: 0.95 });
+  // Base shadow plinth
+  g.rect(-W/2 - 2, -2, W + 4, 5).fill({ color:0x000000, alpha:0.35 });
   // Rack stack (bottom up)
   for (let i = 0; i < nRacks; i++) {
     const yTop = -rackH * (i + 1);
-    const alpha = 0.78 + (i / nRacks) * 0.22;
+    const alpha = 0.72 + (i / nRacks) * 0.24;
     g.rect(-W/2, yTop, W, rackH - 1.5)
-     .fill({ color:0x141820, alpha:0.98 * dim })
-     .stroke({ width:1.2, color:tint, alpha: alpha * dim });
-    // Blinking LEDs: 3 per rack
-    const hot = isActive || (i % 2 === 0 && pulse > 0.7);
-    const ledCol = stag > 100 ? 0xff5c5c : (hot ? 0x50fa7b : tint);
-    for (let k = 0; k < 3; k++) {
-      const lx = -W/2 + 3 + k * 5;
-      const lalpha = hot ? 0.95 : 0.4 + 0.2 * ((i + k) % 2);
-      g.rect(lx, yTop + rackH/2 - 1.2, 2.2, 2).fill({ color: ledCol, alpha: lalpha * dim });
-    }
-    // Thin divider line
-    g.rect(-W/2, yTop + rackH - 1.5, W, 0.6).fill({ color: 0x000000, alpha: 0.6 });
+     .fill({ color:0x1a1f2a, alpha:0.96 * dim })
+     .stroke({ width:1, color:tint, alpha: alpha * dim });
+    // LEDs: 2 per rack, blink when activeUntil recent
+    const ledCol = (performance.now() - (a.activeUntil - 4000)) < 4000 && a.activeUntil > performance.now()
+      ? 0x50fa7b : (stag > 100 ? 0xff5c5c : tint);
+    g.rect(-W/2 + 4, yTop + rackH/2 - 1.5, 3, 2).fill({ color: ledCol, alpha:0.9 * dim });
+    g.rect(-W/2 + 9, yTop + rackH/2 - 1.5, 3, 2).fill({ color: ledCol, alpha:0.5 * dim });
   }
-  // Roof (darker with tint edge)
-  g.rect(-W/2 - 4, -H - 5, W + 8, 5).fill({ color: 0x1f2633, alpha: 0.98 * dim });
-  g.rect(-W/2 - 4, -H - 5, W + 8, 1).fill({ color: tint, alpha: 0.95 * dim });
-  // Antenna with pulsing beacon
-  g.rect(-1, -H - 18, 2, 13).fill({ color: 0x333a48, alpha: 0.95 });
-  const beaconAlpha = 0.7 + 0.3 * pulse;
-  g.circle(0, -H - 19, 3).fill({ color: 0xffd700, alpha: beaconAlpha });
-  g.circle(0, -H - 19, 5).fill({ color: 0xffd700, alpha: beaconAlpha * 0.25 });
+  // Roof
+  g.rect(-W/2 - 3, -H - 4, W + 6, 4).fill({ color: tint, alpha:0.9 * dim });
+  // Antenna
+  g.rect(-1, -H - 14, 2, 10).fill({ color: tint, alpha:0.85 * dim });
+  g.circle(0, -H - 16, 2.5).fill({ color: 0xffd700, alpha: 0.9 });
   // Crown if fleet best
   if (brier > 0 && brier <= _fleetBestBrier + 0.00001) {
     g.moveTo(-W/2 + 3, -H - 6)
-     .lineTo(-W/4, -H - 15)
-     .lineTo(0, -H - 9)
-     .lineTo(W/4, -H - 15)
+     .lineTo(-W/4, -H - 14)
+     .lineTo(0, -H - 8)
+     .lineTo(W/4, -H - 14)
      .lineTo(W/2 - 3, -H - 6)
      .lineTo(W/2 - 3, -H - 3)
      .lineTo(-W/2 + 3, -H - 3)
-     .closePath().fill({ color:0xffd700, alpha:0.98 });
-  }
-  // Update the name + Brier text under the tower
-  if (a._cnt._iLbl) a._cnt._iLbl.text = `${a.label} · g${gen}`;
-  if (a._cnt._iBr) {
-    a._cnt._iBr.text = brier > 0 ? brier.toFixed(5) : "booting…";
-    a._cnt._iBr.style.fill = brier > 0
-      ? (brier <= _fleetBestBrier + 0.00001 ? 0xffd700
-         : stag > 100 ? 0xff5c5c : 0x00d9a7)
-      : 0x6b7388;
+     .closePath().fill({ color:0xffd700, alpha:0.95 });
   }
 }
+
+function _clearLines(board) { for (const ln of board.lines) ln.text = ""; }
 
 function renderCategories(cats) {
-  const el = document.getElementById("panel-cats"); el.innerHTML = "";
-  const entries = Object.entries(cats).sort((a,b) => b[1] - a[1]).slice(0, 12);
-  if (!entries.length) { el.innerHTML = `<span style="color:var(--ink-3); font-size:10px;">no day-decisions yet</span>`; return; }
-  for (const [cat, n] of entries) {
-    const p = document.createElement("span");
-    p.className = "pill";
-    p.innerHTML = `${cat}<span class="n">×${n}</span>`;
-    el.appendChild(p);
-  }
-}
-function renderEvolution() {
-  const el = document.getElementById("panel-evo"); el.innerHTML = "";
-  const islands = AGENTS.filter(a => a._isInfra && a.data).sort((a,b) => (a.data.best_brier||1) - (b.data.best_brier||1));
-  const cEl = document.getElementById("panel-evo-count");
-  if (cEl) cEl.textContent = `${islands.length} / ${AGENTS.filter(a => a.kind==="island").length}`;
-  if (!islands.length) { el.innerHTML = `<span style="color:var(--ink-3); font-size:10px;">waiting for islands…</span>`; return; }
-  for (const [rank, a] of islands.entries()) {
-    const d = a.data;
-    const b = (d.best_brier || 0).toFixed(5);
-    const deltaCls = d.stagnation > 50 ? "down" : "up";
-    const row = document.createElement("div"); row.className = "row";
-    const medal = rank === 0 ? "★ " : rank < 3 ? "· " : "";
-    row.innerHTML = `<span class="l">${medal}${a.label} · ${(d.best_model_type||"?").slice(0,10)}</span><span class="v ${deltaCls}">${b} · g${d.generation||0}</span>`;
-    el.appendChild(row);
+  const board = DIEGETIC.categories; if (!board) return;
+  _clearLines(board);
+  const entries = Object.entries(cats).sort((a,b) => b[1] - a[1]).slice(0, board.lines.length);
+  if (!entries.length) { board.lines[0].text = "— no day-decisions yet —"; board.lines[0].style.fill = 0x5b6478; return; }
+  for (let i = 0; i < entries.length; i++) {
+    const [cat, n] = entries[i];
+    const line = board.lines[i];
+    line.text = `${String(i+1).padStart(2,"0")} · ${cat.slice(0,20).padEnd(20," ")} ×${n}`;
+    line.style.fill = i === 0 ? 0xff79c6 : (i < 3 ? 0xffd700 : 0xe6e8ee);
   }
 }
 
-// Merged live leaderboard (all 3 TFs normalized). Full list, sorted by ROI %.
-const LB_CACHE = { nba: [], pol: [], pqt: [] };
-async function fetchLeaderboards() {
-  const norm = (j, start) => {
-    const raw = (j && (j.leaderboard || j.agents)) || [];
-    return raw.map(a => {
-      const tid = a.trader_id || a.tid || "?";
-      const br = a.bankroll != null ? +a.bankroll : 0;
-      const roi = a.roi_pct != null ? +a.roi_pct : (start ? (br / start - 1) * 100 : 0);
-      return { tid, br, roi, w: +a.wins || 0, l: +a.losses || 0, bets: +a.total_bets || ((+a.wins || 0) + (+a.losses || 0)) };
-    });
-  };
-  const [nba, pol, pqt] = await Promise.all([
-    fetchJSON(ENDPOINTS.nbaLB), fetchJSON(ENDPOINTS.politicalLB), fetchJSON(ENDPOINTS.quantLB),
-  ]);
-  LB_CACHE.nba = norm(nba, 100);
-  LB_CACHE.pol = norm(pol, 100);
-  LB_CACHE.pqt = norm(pqt, 100000);
-  // Self-diagnose: log any divergence between canonical roster and live API.
-  // This surfaces deploy drift without needing a restart.
-  const check = (live, canon, label) => {
-    const liveIds = new Set(live.map(r => r.tid).filter(x => x && x !== "?"));
-    if (!liveIds.size) return;
-    const missing = canon.filter(id => !liveIds.has(id));
-    const extra = [...liveIds].filter(id => !canon.includes(id));
-    if (missing.length || extra.length) {
-      logTrade(label, "roster",
-        `live=${liveIds.size} canon=${canon.length}` +
-        (missing.length ? ` missing:${missing.join(",")}` : "") +
-        (extra.length ? ` extra:${extra.join(",")}` : ""));
-    }
-  };
-  check(LB_CACHE.nba, NBA_TRADERS, "nba");
-  check(LB_CACHE.pol, POL_TRADERS, "political");
-  check(LB_CACHE.pqt, PQT_TRADERS, "political");
+function renderEvolution() {
+  const board = DIEGETIC.evolution; if (!board) return;
+  _clearLines(board);
+  const islands = AGENTS.filter(a => a._isInfra && a.data).sort((a,b) => (a.data.best_brier||1) - (b.data.best_brier||1));
+  if (!islands.length) { board.lines[0].text = "— waiting for islands —"; board.lines[0].style.fill = 0x5b6478; return; }
+  for (let i = 0; i < Math.min(islands.length, board.lines.length); i++) {
+    const a = islands[i]; const d = a.data;
+    const b = (d.best_brier || 0).toFixed(5);
+    const stag = d.stagnation > 50;
+    const medal = i === 0 ? "★" : (i < 3 ? "·" : " ");
+    const line = board.lines[i];
+    line.text = `${medal} ${a.label.padEnd(5," ")} ${(d.best_model_type||"?").slice(0,9).padEnd(9," ")} ${b} g${d.generation||0}`;
+    line.style.fill = i === 0 ? 0xffd700 : (stag ? 0xff5c5c : 0x50fa7b);
+  }
 }
 
 function renderLeaderboard() {
-  const el = document.getElementById("panel-lb"); if (!el) return;
-  el.innerHTML = "";
-  const rows = [
-    ...LB_CACHE.nba.map(r => ({ ...r, kind: "nba"  })),
-    ...LB_CACHE.pol.map(r => ({ ...r, kind: "political" })),
-    ...LB_CACHE.pqt.map(r => ({ ...r, kind: "quant" })),
-  ];
-  rows.sort((a, b) => b.roi - a.roi);
-  const cEl = document.getElementById("panel-lb-count");
-  if (cEl) cEl.textContent = `${rows.length} live`;
-  if (!rows.length) { el.innerHTML = `<span style="color:var(--ink-3); font-size:10px;">waiting for trading floors…</span>`; return; }
-  for (const [rank, r] of rows.entries()) {
-    const roiCls = r.roi >= 0 ? "up" : "down";
-    const kindCls = r.kind === "nba" ? "a nba" : r.kind === "political" ? "a political" : "a quant";
-    const medal = rank === 0 ? "🏆" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : `#${rank + 1}`;
-    const bankroll = r.kind === "quant"
-      ? `$${(r.br / 1000).toFixed(1)}k`
-      : `$${r.br.toFixed(0)}`;
-    const row = document.createElement("div"); row.className = "row";
-    row.innerHTML = `<span class="l"><span style="display:inline-block;width:24px;color:var(--ink-3);font-size:9.5px;">${medal}</span><span class="${kindCls}">${r.tid}</span></span><span class="v ${roiCls}">${bankroll} · ${r.roi >= 0 ? "+" : ""}${r.roi.toFixed(1)}%</span>`;
-    el.appendChild(row);
+  const board = DIEGETIC.leaderboard; if (!board) return;
+  _clearLines(board);
+
+  // PQTF banner: $100K×6 derivatives fleet ($600K start, target 10× by Nov 3).
+  let startIdx = 0;
+  if (LATEST_PQTF && LATEST_PQTF.agents) {
+    const ag = LATEST_PQTF.agents;
+    const total = Object.values(ag).reduce((s,a) => s + (a.bankroll || 0), 0);
+    const best = Object.entries(ag).sort((a,b) => (b[1].bankroll||0) - (a[1].bankroll||0))[0];
+    const bestName = best ? best[0].slice(0,10) : "—";
+    const bestBr = best ? (best[1].bankroll || 0) : 0;
+    const fleetRoi = ((total - 600000) / 600000) * 100;
+    const d = LATEST_PQTF.days_processed || 0, dt = LATEST_PQTF.days_total || 50;
+    if (board.lines[0]) {
+      board.lines[0].text = `💼 PQTF d${d}/${dt} · fleet $${(total/1000).toFixed(0)}K ${fleetRoi>=0?"+":""}${fleetRoi.toFixed(0)}% · top ${bestName} $${(bestBr/1000).toFixed(0)}K`;
+      board.lines[0].style.fill = 0xffd700;
+      startIdx = 1;
+    }
+  }
+
+  const traders = AGENTS.filter(a => (a.kind === "nba" || a.kind === "political") && a.data && typeof a.data.bankroll === "number");
+  traders.sort((a,b) => (b.data.bankroll||0) - (a.data.bankroll||0));
+  if (!traders.length && startIdx === 0) {
+    board.lines[0].text = "— waiting for trading floors —";
+    board.lines[0].style.fill = 0x5b6478;
+    return;
+  }
+  for (let i = 0; i < Math.min(traders.length, board.lines.length - startIdx); i++) {
+    const a = traders[i]; const br = a.data.bankroll || 0; const roi = br - 100;
+    const medal = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i+1}`;
+    const tag = a.kind === "nba" ? "N" : "P";
+    const line = board.lines[i + startIdx];
+    line.text = `${medal} [${tag}] ${a.label.slice(0,11).padEnd(11," ")} $${br.toFixed(0).padStart(5," ")} ${roi>=0?"+":""}${roi.toFixed(1)}%`;
+    line.style.fill = i === 0 ? 0xffd700 : (roi >= 0 ? 0x50fa7b : 0xff5c5c);
+  }
+}
+
+// ── v2.18: THREE-FLOOR LEADERBOARD (DOM right-side panel) ────────────────────
+// Tracks previous bankroll snapshot per (floor, trader_id) so each refresh shows
+// today's delta. All three floors (NBA / POL / PQTF) rendered stacked — every
+// trader ranked, persona visible, click a row → inspect card with full model info.
+const _PREV_BANKROLL = {};   // { "nba:qwen-quant": 100.0, ... }
+function _deltaFor(floorKey, id, curr) {
+  const k = `${floorKey}:${id}`;
+  const prev = _PREV_BANKROLL[k];
+  _PREV_BANKROLL[k] = curr;
+  if (prev == null || curr == null) return null;
+  return curr - prev;
+}
+
+function _floorSection(kindLabel, kindClass, day, dayTotal, traders, startCap, fleetLeader) {
+  // traders: [{ id, persona, model, provider, risk, style, bankroll, wins, losses, total_bets, pctDelta? }]
+  // Sorted by bankroll desc.
+  const total = traders.reduce((s,t) => s + (t.bankroll||0), 0);
+  const fleetRoi = startCap > 0 ? ((total - startCap) / startCap) * 100 : 0;
+  const fltCls = fleetRoi > 0 ? "up" : fleetRoi < 0 ? "down" : "flat";
+  const fltTxt = `${fleetRoi>=0?"+":""}${fleetRoi.toFixed(1)}%`;
+  const dayStr = dayTotal ? `day ${day||0}/${dayTotal}` : (day ? `day ${day}` : "—");
+  const rows = traders.map((t,i) => {
+    const br = t.bankroll || 0;
+    const dl = t.delta;
+    const dlCls = dl == null ? "flat" : dl > 0.01 ? "up" : dl < -0.01 ? "down" : "flat";
+    const dlTxt = dl == null ? "—" : (dl > 0 ? "+" : "") + (Math.abs(dl) >= 1000 ? (dl/1000).toFixed(1)+"K" : dl.toFixed(0));
+    const rkClass = i < 3 ? "rk top" : "rk";
+    const rkTxt = i === 0 ? "★" : i === 1 ? "2" : i === 2 ? "3" : String(i+1);
+    const brTxt = br >= 1000 ? `$${(br/1000).toFixed(1)}K` : `$${br.toFixed(0)}`;
+    const hot = fleetLeader && t.id === fleetLeader ? " hot" : "";
+    return `<div class="r${hot}" data-floor="${kindClass}" data-trader="${escapeHtml(t.id)}">
+      <span class="${rkClass}">${rkTxt}</span>
+      <span class="nm" title="${escapeHtml(t.model)} · ${escapeHtml(t.provider)}">${escapeHtml(t.persona)}</span>
+      <span class="br">${brTxt}</span>
+      <span class="dl ${dlCls}">${dlTxt}</span>
+    </div>`;
+  }).join("");
+  return `<div class="sec">
+    <div class="sh">
+      <span class="kind ${kindClass}">${kindLabel}</span>
+      <span><span class="day">${dayStr}</span><span class="flt ${fltCls}">${fltTxt}</span></span>
+    </div>
+    ${rows || '<div class="empty">no traders yet</div>'}
+  </div>`;
+}
+
+function renderThreeFloorLB() {
+  const body = document.getElementById("tfl-body");
+  if (!body) return;
+  const sections = [];
+
+  // NBA TF
+  {
+    const d = LATEST_NBA;
+    const agents = (d && d.agents) || {};
+    const list = Object.entries(agents).map(([id, v]) => {
+      const p = personaFor(id);
+      const br = (v && typeof v.bankroll === "number") ? v.bankroll : null;
+      return { id, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+               bankroll: br, wins: v.wins, losses: v.losses, total_bets: v.total_bets,
+               delta: br == null ? null : _deltaFor("nba", id, br) };
+    }).filter(t => t.bankroll != null);
+    list.sort((a,b) => b.bankroll - a.bankroll);
+    const day = d && (d.days_processed ?? 0);
+    const dayT = d && (d.days_total ?? 175);
+    const startCap = 100 * list.length;
+    sections.push(_floorSection("NBA TF · 17 agents", "nba", day, dayT, list, startCap, d && d.fleet_leader));
+  }
+
+  // POL TF
+  {
+    const d = LATEST_POL;
+    const agents = (d && d.agents) || {};
+    const list = Object.entries(agents).map(([id, v]) => {
+      const p = personaFor(id);
+      const br = (v && typeof v.bankroll === "number") ? v.bankroll : null;
+      return { id, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+               bankroll: br, wins: v.wins, losses: v.losses, total_bets: v.total_bets,
+               delta: br == null ? null : _deltaFor("pol", id, br) };
+    }).filter(t => t.bankroll != null);
+    list.sort((a,b) => b.bankroll - a.bankroll);
+    const day = d && (d.days_processed ?? 0);
+    const dayT = d && (d.days_total ?? 50);
+    const startCap = 100 * list.length;
+    sections.push(_floorSection("POLITICAL TF · 17 agents", "pol", day, dayT, list, startCap, d && d.fleet_leader));
+  }
+
+  // PQTF (derivatives day-traders — 6 agents, $100K start each)
+  {
+    const d = LATEST_PQTF;
+    const agents = (d && d.agents) || {};
+    const list = Object.entries(agents).map(([id, v]) => {
+      const p = personaFor(id);
+      const br = (v && typeof v.bankroll === "number") ? v.bankroll : null;
+      return { id, persona: p.persona, model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+               bankroll: br, wins: v.wins, losses: v.losses, total_bets: v.total_bets,
+               delta: br == null ? null : _deltaFor("pqtf", id, br) };
+    }).filter(t => t.bankroll != null);
+    list.sort((a,b) => b.bankroll - a.bankroll);
+    const day = d && (d.days_processed ?? 0);
+    const dayT = d && (d.days_total ?? 50);
+    const startCap = 100000 * list.length;
+    sections.push(_floorSection("PQTF · 6 derivatives", "pqtf", day, dayT, list, startCap, d && d.fleet_leader));
+  }
+
+  body.innerHTML = sections.join("");
+
+  // Clock
+  const clk = document.getElementById("tfl-clock");
+  if (clk) clk.textContent = new Date().toISOString().slice(11,19) + " UTC";
+
+  // Row click → open inspect card (synthesize agent if PQTF / fallback)
+  for (const el of body.querySelectorAll(".r")) {
+    el.addEventListener("click", () => {
+      const floor = el.dataset.floor;   // nba / pol / pqtf
+      const id = el.dataset.trader;
+      let a = null;
+      if (floor === "nba") a = AGENTS.find(x => x.kind === "nba" && x.id === id);
+      else if (floor === "pol") a = AGENTS.find(x => x.kind === "political" && x.key === id);
+      if (!a) {
+        // PQTF or unknown — synthesize an inspect-only agent
+        const p = personaFor(id);
+        const src = (floor === "pqtf" ? LATEST_PQTF : floor === "pol" ? LATEST_POL : LATEST_NBA) || {};
+        const vv = (src.agents || {})[id] || {};
+        a = {
+          id, key: id, label: p.persona, persona: p.persona,
+          model: p.model, provider: p.provider, risk: p.risk, style: p.style,
+          kind: floor, state: src.running ? "thinking" : "idle",
+          strategy: p.style, data: vv, _synth: true,
+          x: WORLD_W / (2*TILE), y: WORLD_H / (2*TILE),
+        };
+      }
+      showInspectPanel(a);
+    });
   }
 }
 
@@ -1259,6 +2317,9 @@ async function fetchJSON(url) {
 function escapeHtml(s) { return String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
 const categoryCounter = {};  // rolling count across both TFs
+// v2.16: remember latest TF status so the warming-up fallback (no day-decisions yet)
+// can still fill the dialogue box with live signals (fleet_leader, council_plan, llm_calls).
+let LATEST_NBA = null, LATEST_POL = null, LATEST_PQTF = null;
 
 async function refresh() {
   document.getElementById("hud-tick").textContent = "· fetching…";
@@ -1267,6 +2328,7 @@ async function refresh() {
 
   // NBA TF
   const nba = await fetchJSON(ENDPOINTS.nba);
+  LATEST_NBA = nba;
   if (nba) {
     const agents = nba.agents || {};
     const strategies = nba.axelrod_strategies || {};
@@ -1280,8 +2342,21 @@ async function refresh() {
       const b = AGENTS.find(x => x.kind==="nba" && x.id===repKeys[i+1]);
       if (a && b) { a.pactPartner = b.id; b.pactPartner = a.id; }
     }
+    // v2.12: mid-day fallback. Agents dict is empty until day 1 completes, but llm_calls ticks
+    // up every prompt. Without this, all 16 trader sprites show "awaiting live data…" for hours.
+    const midDay = nba.running && nba.llm_calls > 0 && !Object.keys(agents).length;
     for (const a of AGENTS.filter(x => x.kind==="nba")) {
-      const d = agents[a.id]; if (!d) continue;
+      let d = agents[a.id];
+      if (!d && midDay) {
+        d = { bankroll: 100, total_bets: 0, wins: 0, losses: 0, llm_calls: 0, llm_ok: 0, _synth: true };
+        a.state = "thinking";
+        a.bubble = `${a.label}\nday 1 in progress · llm ${nba.llm_calls}/∞`;
+        a.bubbleUntil = performance.now() + 20000;
+        a.data = d;
+        nbaOK++;
+        continue;
+      }
+      if (!d) continue;
       nbaOK++;
       const prev = a.data;
       a.data = d; a.strategy = strategies[a.id]; a.sacrificial = sacrificials[a.id];
@@ -1293,21 +2368,38 @@ async function refresh() {
         a.activeUntil = performance.now() + 4000;
         logTrade("nba", a.label, `bet #${d.total_bets}`, d.bankroll - prev.bankroll);
         spawnPulseRing(a.x * TILE, a.y * TILE, deltaW > 0 ? 0x00d9a7 : 0xff5c5c);
+        a.bubble = buildTraderBubble(a);
+        a.bubbleUntil = performance.now() + 4500;
+      } else {
+        // Persistent live nameplate: show label + bankroll so user can watch numbers tick.
+        a.bubble = `${a.label}\n$${(d.bankroll||100).toFixed(0)} · ${d.total_bets||0} bets`;
+        a.bubbleUntil = performance.now() + 20000;  // overrides on next refresh (15s poll)
       }
-      a.bubble = buildTraderBubble(a);
     }
     document.getElementById("hud-day").textContent = `NBA day ${nba.days_processed||0}/${nba.days_total||175} · games ${nba.games_processed||0}/${nba.games_total||1247}`;
   }
 
   // Political TF
   const pol = await fetchJSON(ENDPOINTS.political);
+  LATEST_POL = pol;
   if (pol) {
     const agents = pol.agents || {};
     const strategies = pol.axelrod_strategies || {};
     const sacrificials = pol.sacrificial_assignments || {};
     pacts += pol.cooperation_pacts_count || 0;
+    const midDayP = pol.running && pol.llm_calls > 0 && !Object.keys(agents).length;
     for (const a of AGENTS.filter(x => x.kind==="political")) {
-      const d = agents[a.key]; if (!d) continue;
+      let d = agents[a.key];
+      if (!d && midDayP) {
+        d = { bankroll: 100, total_bets: 0, wins: 0, losses: 0, llm_calls: 0, llm_ok: 0, _synth: true };
+        a.state = "thinking";
+        a.bubble = `${a.label}\nday 1 in progress · llm ${pol.llm_calls}/∞`;
+        a.bubbleUntil = performance.now() + 20000;
+        a.data = d;
+        polOK++;
+        continue;
+      }
+      if (!d) continue;
       polOK++;
       const prev = a.data;
       a.data = d; a.strategy = strategies[a.key]; a.sacrificial = sacrificials[a.key];
@@ -1319,36 +2411,18 @@ async function refresh() {
         a.activeUntil = performance.now() + 4000;
         logTrade("political", a.label, `trade #${d.total_bets}`, d.bankroll - prev.bankroll);
         spawnPulseRing(a.x * TILE, a.y * TILE, deltaW > 0 ? 0x00d9a7 : 0xff5c5c);
+        a.bubble = buildTraderBubble(a);
+        a.bubbleUntil = performance.now() + 4500;
+      } else {
+        a.bubble = `${a.label}\n$${(d.bankroll||100).toFixed(0)} · ${d.total_bets||0} trades`;
+        a.bubbleUntil = performance.now() + 20000;
       }
-      a.bubble = buildTraderBubble(a);
     }
   }
 
-  // Political QUANT TF (pqtf — intraday options)
-  const pqt = await fetchJSON(ENDPOINTS.quant);
-  if (pqt) {
-    const agents = pqt.agents || {};
-    for (const a of AGENTS.filter(x => x.kind === "quant")) {
-      const d = agents[a.key]; if (!d) continue;
-      polOK++;
-      const prev = a.data;
-      a.data = d;
-      const roi = (d.bankroll || 100000) / 100000 - 1;
-      a.state = roi > 0.02 ? "profit" : roi < -0.02 ? "loss" : "thinking";
-      if (prev && prev.total_bets != null && d.total_bets > prev.total_bets) {
-        const deltaW = (d.wins || 0) - (prev.wins || 0);
-        a.recent = deltaW > 0 ? "✓ W" : (d.losses > prev.losses) ? "✗ L" : "opt";
-        a.activeUntil = performance.now() + 4000;
-        logTrade("political", a.label, `opt #${d.total_bets}`, d.bankroll - prev.bankroll);
-        spawnPulseRing(a.x * TILE, a.y * TILE, deltaW > 0 ? 0x00d9a7 : 0xff5c5c);
-      }
-      a.bubble = buildTraderBubble(a);
-    }
-    if (pqt.days_processed != null) {
-      const prevEl = document.getElementById("hud-day");
-      if (prevEl) prevEl.textContent += ` · PQT day ${pqt.days_processed}/${pqt.days_total||50}`;
-    }
-  }
+  // PQTF (derivatives day-trading fleet) — fleet-level banner only; agents render via leaderboard
+  const pqtf = await fetchJSON(ENDPOINTS.pqtf);
+  LATEST_PQTF = pqtf;
 
   // Day-decisions → per-agent LLM reasoning + categories aggregation
   async function wireDayDecisions(summaryUrl, detailUrl, kind) {
@@ -1391,7 +2465,8 @@ async function refresh() {
         logTrade("island", lbl, `Brier ↓ ${data.best_brier.toFixed(5)}`);
       }
     }
-    a.bubble = buildIslandBubble(a);
+    // Infra buildings at top: no persistent bubble. Hover card / click reveals info.
+    a.bubble = "";
   }
   // Compute current fleet-best across infra-with-data, then redraw all towers.
   const infras = AGENTS.filter(x => x._isInfra && x.data && x.data.best_brier);
@@ -1400,20 +2475,56 @@ async function refresh() {
     : 1.0;
   for (const a of AGENTS.filter(x => x._isInfra)) updateInfraTower(a);
   renderEvolution();
-  await fetchLeaderboards();
   renderLeaderboard();
+  renderThreeFloorLB();
 
-  // Councils — baked
-  for (const a of AGENTS.filter(x => x.kind === "council")) a.bubble = buildCouncilBubble(a);
+  // Councils — poll Hub-persisted state.json for iteration count + last-seen activity (v2.12).
+  // Councils are Gradio-only (no /api/status), so we read the file we ship via HfApi.upload_file.
+  let councilOK = 0;
+  await Promise.all(AGENTS.filter(x => x.kind === "council").map(async (a) => {
+    const url = COUNCIL_STATE_URLS[a.key];
+    if (!url) { a.bubble = ""; return; }
+    const s = await fetchJSON(url);
+    if (!s) {
+      a.state = "error";
+      a.bubble = `${a.key}·${a.label.replace(a.key+" ","")}\nstate.json not yet pushed`;
+      a.bubbleUntil = performance.now() + 20000;
+      return;
+    }
+    councilOK++;
+    const prev = a.data;
+    a.data = s;
+    const iter = s.iteration ?? s.iteration_count ?? s.total_iterations ?? 0;
+    const last = s.last_run || s.last_iteration_at || s.updated_at || "";
+    // age in minutes (if parseable)
+    let ageMin = null;
+    if (last) {
+      const t = Date.parse(last);
+      if (!isNaN(t)) ageMin = Math.floor((Date.now() - t) / 60000);
+    }
+    a.state = ageMin != null && ageMin > 90 ? "stale" : "profit";
+    const prevIter = prev ? (prev.iteration ?? prev.iteration_count ?? 0) : null;
+    if (prevIter != null && iter > prevIter) {
+      a.activeUntil = performance.now() + 4000;
+      logTrade("council", a.label, `iter ${iter} · ${s.last_decision||"—"}`);
+      spawnPulseRing(a.x * TILE, a.y * TILE, 0xffb86c);
+    }
+    a.bubble = `${a.key}·iter ${iter}${ageMin!=null?` · ${ageMin}m ago`:""}`;
+    a.bubbleUntil = performance.now() + 20000;
+  }));
+  const kCouncil = document.getElementById("k-councils");
+  if (kCouncil) { kCouncil.textContent = `${councilOK}/9`; kCouncil.className = councilOK === 9 ? "v-ok" : "v-warn"; }
 
-  const _set = (id, txt, cls) => { const el = document.getElementById(id); if (!el) return; el.textContent = txt; if (cls) el.className = cls; };
-  _set("k-nba",   `${nbaOK}/${NBA_TRADERS.length}`, nbaOK === NBA_TRADERS.length ? "v-ok" : "v-warn");
-  _set("k-pol",   `${polOK}/${POL_TRADERS.length}`, polOK === POL_TRADERS.length ? "v-ok" : "v-warn");
-  _set("k-evo",   `${evoOK}/21`,                    evoOK >= 20 ? "v-ok" : "v-warn");
-  _set("k-pacts", String(pacts));
-  _set("k-last",  new Date().toISOString().slice(11,19));
-  _set("hud-rep", `pacts ${pacts} · rep ${repEntries}`);
-  _set("hud-tick","· live");
+  document.getElementById("k-nba").textContent = `${nbaOK}/${NBA_TRADERS.length}`;
+  document.getElementById("k-nba").className = nbaOK === NBA_TRADERS.length ? "v-ok" : "v-warn";
+  document.getElementById("k-pol").textContent = `${polOK}/${POL_TRADERS.length}`;
+  document.getElementById("k-pol").className = polOK === POL_TRADERS.length ? "v-ok" : "v-warn";
+  document.getElementById("k-evo").textContent = `${evoOK}/21`;
+  document.getElementById("k-evo").className = evoOK >= 20 ? "v-ok" : "v-warn";
+  document.getElementById("k-pacts").textContent = pacts;
+  document.getElementById("k-last").textContent = new Date().toISOString().slice(11,19);
+  document.getElementById("hud-rep").textContent = `pacts ${pacts} · rep ${repEntries}`;
+  document.getElementById("hud-tick").textContent = "· live";
 
   // ═══ Bloomberg ticker update ═══
   const setTx = (id, t, cls) => {
@@ -1442,8 +2553,7 @@ async function refresh() {
 
   // ═══ v2.0: Live bet ticker — scroll last 20 allocations from both TFs ═══
   renderBetTicker();
-  // ═══ v2.0: Mini-map ═══
-  renderMinimap();
+  // v2.12: minimap removed
   // Fade boot-log after first refresh
   const bl = document.getElementById("boot-log");
   if (bl && !bl._faded) {
@@ -1452,9 +2562,17 @@ async function refresh() {
   }
 }
 
-// ═══ v2.0: Live bet ticker ═══════════════════════════════════════════════
+// ═══ v2.15: Pokémon B/W dialogue box — typewriter bet log ═══
+// Pulls latest allocations from both TFs, queues as Pokémon-style one-line events
+// ("mistral-ministral used ML_HOME! Super effective! +$432"). Typewriter-reveals each
+// char, then auto-advances after 3s. Player can read at their pace.
+const POKE_QUEUE = [];
+let _pokeIdx = 0, _pokeLastMs = 0, _pokeCurEvent = null, _pokeCharIdx = 0;
+const POKE_TYPE_MS = 22;   // ms per character
+const POKE_HOLD_MS = 3200; // ms to hold after reveal before advancing
+
 function renderBetTicker() {
-  const stream = document.getElementById("bt-stream"); if (!stream) return;
+  // Rebuild queue from latest allocations (keep newest 40, oldest-first so typewriter tells a story)
   const bets = [];
   for (const a of AGENTS) {
     if (!a.dayDecision || !Array.isArray(a.dayDecision.allocations)) continue;
@@ -1463,76 +2581,193 @@ function renderBetTicker() {
       const amt = al.stake_amount != null ? al.stake_amount
                 : al.stake != null ? al.stake
                 : al.amount != null ? al.amount : 0;
-      const edge = al.edge != null ? al.edge
-                : al.ev != null ? al.ev
-                : al.expected_value != null ? al.expected_value : null;
       bets.push({
         agent: a.label, kind: a.kind, cat: al.category,
-        amt: +amt || 0, edge: edge == null ? null : +edge,
+        amt: +amt || 0,
+        won: al.won === true ? true : al.won === false ? false : null,
         profit: al.profit == null ? null : +al.profit,
+        game: al.game || "",
+        pct: (al.pct || 0) * 100,
       });
     }
   }
-  // Keep last 20, freshest first
-  const last = bets.slice(-20).reverse();
-  if (!last.length) { stream.textContent = "awaiting day-decisions…"; return; }
-  stream.innerHTML = last.map(b => {
-    const klass = b.kind === "political" ? "titem pol" : "titem";
-    const edgeStr = b.edge == null ? "" :
-      ` (edge ${b.edge >= 0 ? "+" : ""}${(b.edge*100).toFixed(1)}%)`;
-    const edgeCls = b.edge != null && b.edge < 0 ? "e neg" : "e";
-    const amt = b.amt > 0 ? `$${b.amt.toFixed(0)}` : "pass";
-    return `<span class="${klass}">» <span class="a">${escapeHtml(b.agent)}</span> ${amt} on <span class="c">${escapeHtml(b.cat)}</span><span class="${edgeCls}">${edgeStr}</span></span>`;
-  }).join("");
+  // Keep last 40 (chronological) — Pokémon dialog plays them in order
+  POKE_QUEUE.length = 0;
+  POKE_QUEUE.push(...bets.slice(-40));
+  // v2.16 — fallback: when day-decisions is empty (TF restarted / warming up), synthesize
+  // a live-signal queue from /api/status so the dialogue box never gets stuck on
+  // "awaiting day-decisions" for hours. Each TF contributes council summary + fleet leader
+  // + LLM-call count as Pokémon-style system messages.
+  if (!POKE_QUEUE.length) {
+    const synth = [];
+    const pushWarming = (tag, s) => {
+      if (!s || !s.running) return;
+      const leader = s.fleet_leader || "—";
+      const best = s.fleet_best_bankroll != null ? `$${(s.fleet_best_bankroll).toFixed(0)}` : "$100";
+      const calls = s.llm_calls || 0;
+      const councils = s.council_plan_count || 0;
+      const summary = (s.latest_council_summary || "").slice(0, 120);
+      synth.push({ _synth: true, kind: tag, text:
+        `<span class="trn ${tag === "political" ? "pol" : "nba"}">${tag.toUpperCase()} TF</span> council ${councils} · ${calls} llm-calls · leader <span class="cat">${escapeHtml(leader)}</span> ${best}` });
+      if (summary) synth.push({ _synth: true, kind: tag, text:
+        `<span class="trn ${tag === "political" ? "pol" : "nba"}">${tag.toUpperCase()} PLAN</span> — ${escapeHtml(summary)}` });
+      synth.push({ _synth: true, kind: tag, text:
+        `<span class="win">warming councils…</span> first bets commit after day 1 (~20 llm-calls/agent)` });
+    };
+    pushWarming("nba", LATEST_NBA);
+    pushWarming("political", LATEST_POL);
+    if (!synth.length) synth.push({ _synth: true, kind: "nba", text:
+      `<span class="lose">both TFs offline</span> — watchdog will restart within 2 min` });
+    POKE_QUEUE.push(...synth);
+  }
+  if (_pokeIdx >= POKE_QUEUE.length) _pokeIdx = 0;
+}
+
+function _pokeFormat(b) {
+  // v2.16 — synthetic warming-up events carry pre-formatted HTML.
+  if (b._synth) return b.text || "";
+  // Agent uses CATEGORY! — Pokémon move-style readout.
+  const trn = (b.kind === "political" ? "pol" : "nba");
+  const a = b.agent.replace(/^(NBA|POL)·/, "");
+  const cat = (b.cat || "?").toUpperCase().replace(/_/g, " ");
+  const verb = b.kind === "political" ? "positioned" : "bet";
+  const pct = b.pct > 0 ? `${b.pct.toFixed(0)}%` : "";
+  const stake = b.amt > 0 ? `$${b.amt.toFixed(0)}` : "pass";
+  let outcome;
+  if (b.won === true) {
+    const prof = b.profit != null ? ` +$${b.profit.toFixed(0)}` : "";
+    outcome = `<span class="win">it's super effective!${prof}</span>`;
+  } else if (b.won === false) {
+    const prof = b.profit != null ? ` ${b.profit.toFixed(0)}` : "";
+    outcome = `<span class="lose">it missed${prof}</span>`;
+  } else outcome = "<span>awaiting result…</span>";
+  return `<span class="trn ${trn}">${escapeHtml(a)}</span> ${verb} ${stake} on <span class="cat">${escapeHtml(cat)}</span> ${pct} — ${outcome}`;
+}
+
+function tickPokeDialog(ms) {
+  const body = document.getElementById("pd-body");
+  if (!body || !POKE_QUEUE.length) return;
+  if (!_pokeCurEvent) {
+    _pokeCurEvent = POKE_QUEUE[_pokeIdx];
+    _pokeCharIdx = 0;
+    _pokeLastMs = ms;
+  }
+  // _pokeCurEvent captured; render the formatted HTML up to _pokeCharIdx plain-text chars.
+  // Trick: format the FULL html, then slice the text-only portion for typewriter effect by
+  // walking the chars ignoring tags (use a pre-formatted plain string for indexing).
+  if (!_pokeCurEvent._html) {
+    _pokeCurEvent._html = _pokeFormat(_pokeCurEvent);
+    _pokeCurEvent._plain = _pokeCurEvent._html.replace(/<[^>]+>/g, "");
+  }
+  const plainLen = _pokeCurEvent._plain.length;
+  if (_pokeCharIdx < plainLen) {
+    const dt = ms - _pokeLastMs;
+    const nChars = Math.max(1, Math.floor(dt / POKE_TYPE_MS));
+    _pokeCharIdx = Math.min(plainLen, _pokeCharIdx + nChars);
+    _pokeLastMs = ms;
+    // Rebuild the visible HTML up to _pokeCharIdx plain chars
+    body.innerHTML = _pokeBuildPartial(_pokeCurEvent._html, _pokeCharIdx) +
+      (_pokeCharIdx < plainLen ? '<span class="cursor">▌</span>' : '<span class="cursor">▼</span>');
+  } else {
+    // Fully revealed — hold, then advance
+    if (ms - _pokeLastMs > POKE_HOLD_MS) {
+      _pokeIdx = (_pokeIdx + 1) % POKE_QUEUE.length;
+      _pokeCurEvent = null;
+    }
+  }
+}
+function _pokeBuildPartial(html, nPlain) {
+  // Emit HTML char-by-char, consuming tags without counting them against nPlain.
+  let out = "", i = 0, shown = 0;
+  while (i < html.length && shown < nPlain) {
+    if (html[i] === "<") {
+      const end = html.indexOf(">", i);
+      out += html.slice(i, end + 1);
+      i = end + 1;
+    } else {
+      out += html[i];
+      i++;
+      shown++;
+    }
+  }
+  // Close any open tags cleanly by emitting the rest that are within the current span scope
+  // (for this case, spans are short-lived — easier to just append closing from html after this point up to nearest </span>).
+  while (i < html.length && html[i] !== "<") i++;   // advance to next tag
+  // Append closing spans from remaining HTML (cheap approach: scan for closing tags)
+  const remaining = html.slice(i);
+  const unclosed = (out.match(/<span[^>]*>/g) || []).length - (out.match(/<\/span>/g) || []).length;
+  for (let k = 0; k < unclosed; k++) out += "</span>";
+  return out;
 }
 
 // ═══ v2.0: Mini-map (top-right, 120x80) ═══════════════════════════════════
-function renderMinimap() {
-  const cvs = document.getElementById("mm-canvas"); if (!cvs) return;
-  const ctx = cvs.getContext("2d");
-  const W = 120, H = 80;
-  ctx.fillStyle = "#0b0d12"; ctx.fillRect(0,0,W,H);
-  // Zone outlines
-  const sx = W / (GRID_W * TILE), sy = H / (GRID_H * TILE);
-  for (const [zid, z] of Object.entries(ZONES)) {
-    ctx.strokeStyle = KIND_COLORS_HEX[zoneIdToKind(zid)] || "#333";
-    ctx.globalAlpha = 0.55;
-    ctx.strokeRect(z.x*TILE*sx, z.y*TILE*sy, z.w*TILE*sx, z.h*TILE*sy);
-  }
-  // Agent density heatmap (2x2 cells)
-  ctx.globalAlpha = 1.0;
-  const cellW = 4, cellH = 4;
-  const heat = {};
-  for (const a of AGENTS) {
-    const cx = Math.floor(a.x*TILE*sx / cellW);
-    const cy = Math.floor(a.y*TILE*sy / cellH);
-    const k = `${cx},${cy}`;
-    heat[k] = (heat[k] || 0) + 1;
-  }
-  for (const [k, n] of Object.entries(heat)) {
-    const [cx,cy] = k.split(",").map(Number);
-    const alpha = Math.min(0.85, 0.2 + n * 0.14);
-    ctx.fillStyle = `rgba(255,165,0,${alpha})`;
-    ctx.fillRect(cx*cellW, cy*cellH, cellW, cellH);
-  }
-  // Islands as bright dots
-  for (const a of AGENTS.filter(x => x._isInfra)) {
-    ctx.fillStyle = a.kind === "pol_infra" ? "#8be9fd" : "#50fa7b";
-    ctx.fillRect(a.x*TILE*sx - 1, a.y*TILE*sy - 1, 3, 3);
+// v2.12: renderMinimap() removed (minimap HUD deleted)
+
+// ── LIVE RESEARCH (papers.json static — refreshed by daily cron) ──────────
+const TAG_COLOR = {
+  "nomos-karpathy":"#ffd866", "nomos-digest":"#ff7ab6",
+  "scan":"#ffa500", "calibration-scan":"#50fa7b", "axelrod-scan":"#ff79c6",
+  "multiagent-trading-scan":"#8be9fd", "github-scan":"#bd93f9",
+};
+async function loadPapers() {
+  try {
+    const r = await fetch("data/papers.json?t=" + Date.now(), {cache:"no-store"});
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    const papers = data.papers || [];
+    // v2.8: render to in-world research board (DIEGETIC.research) instead of sidebar DOM
+    const rboard = DIEGETIC.research;
+    if (rboard) {
+      _clearLines(rboard);
+      if (!papers.length) { rboard.lines[0].text = "— no scans loaded —"; rboard.lines[0].style.fill = 0x5b6478; }
+      else for (let i = 0; i < Math.min(papers.length, rboard.lines.length); i++) {
+        const p = papers[i];
+        const tag = (p.tag || "?").slice(0, 6).toUpperCase();
+        const title = (p.title || "").slice(0, 34);
+        const hex = TAG_COLOR[p.tag] || "#ffa500";
+        const line = rboard.lines[i];
+        line.text = `[${tag.padEnd(6," ")}] ${title}`;
+        line.style.fill = parseInt(hex.replace("#",""), 16);
+      }
+    }
+  } catch(e) {
+    const rboard = DIEGETIC.research;
+    if (rboard && rboard.lines[0]) {
+      rboard.lines[0].text = `papers.json load failed`;
+      rboard.lines[0].style.fill = 0xff5c5c;
+    }
+    console.warn("papers load error:", e);
   }
 }
 
 // ── BOOT ────────────────────────────────────────────────────────────────────
 computeCamera();
 camScale = camTargetScale; camX = camTargetX; camY = camTargetY;  // snap on boot
+// Pull build sha (kills hardcoded v2.x) + live trader counts from TF APIs
+try {
+  const [bRaw, nbaRaw, polRaw] = await Promise.all([
+    fetch("data/build.json?t=" + Date.now(), {cache:"no-store"}).then(r => r.ok ? r.json() : null).catch(() => null),
+    fetchJSON(ENDPOINTS.nba),
+    fetchJSON(ENDPOINTS.political),
+  ]);
+  const sha = (bRaw && bRaw.commit) ? bRaw.commit : "live";
+  const bt = document.getElementById("build-tag");
+  if (bt) bt.textContent = "build: " + sha;
+  const nNba = nbaRaw && nbaRaw.axelrod_strategies ? Object.keys(nbaRaw.axelrod_strategies).length : 12;
+  const nPol = polRaw && polRaw.axelrod_strategies ? Object.keys(polRaw.axelrod_strategies).length : 10;
+  logTrade("council", "pixel-world", `boot · sha=${sha} · ${nNba} NBA traders · ${nPol} POL traders · live /api/status (no hardcoded enum)`);
+} catch (e) {
+  logTrade("council", "pixel-world", "boot · sha=unknown · falling back to static trader list");
+}
 await refresh();
-setInterval(refresh, 15000); // v2.0: 15s poll (was 30s) — safe under HF rate-limit
+await loadPapers();
+setInterval(loadPapers, 5 * 60 * 1000); // reload papers every 5 min
+setInterval(refresh, 15000); // 15s poll — safe under HF rate-limit
 // Bloomberg UTC clock — tick every second independent of data refresh
 setInterval(() => {
   const el = document.getElementById("bt-utc");
   if (el) el.textContent = new Date().toISOString().slice(11,19);
 }, 1000);
-logTrade("council", "pixel-world", "v2.4 boot · 24 traders (12 NBA + 12 POL) · 21 islands · focus=traders · breathing · emotes · particles");
 
 })();
 </script>
