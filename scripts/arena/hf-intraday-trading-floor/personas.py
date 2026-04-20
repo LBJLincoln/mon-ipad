@@ -247,10 +247,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "earnings-gap-1",
         "name": "EarningsGap",
-        # nvidia:minimax-m2.7 → decisive, big-context. Used successfully on BREAKOUT.
-        # openrouter:nemotron-120b:free gives free deep-reasoning fallback.
-        "model_primary": "nvidia:minimax-m2.7",
-        "model_fallback": "openrouter:nemotron-120b:free",
+        # 2026-04-20: rerouted from nvidia:minimax-m2.7 + nemotron-free (both 429-throttled)
+        # to cerebras:qwen-3-235b (NBA winner + 2000 tok/s) and mistral:medium (PQTF $155K).
+        "model_primary": "cerebras:qwen-3-235b",
+        "model_fallback": "mistral:medium",
         "hf_account_target": "nvidia",
         "hf_space_target": "minimax-m2.7",
         "tier": "L",
@@ -310,10 +310,10 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "leveraged-momentum-1",
         "name": "LeveragedMomentum",
-        # openrouter:nemotron-120b:free → NBA T11 chainthought trader, verified free.
-        # cerebras:qwen-3-235b fallback keeps 2000 tok/s hotpath.
-        "model_primary": "openrouter:nemotron-120b:free",
-        "model_fallback": "cerebras:qwen-3-235b",
+        # 2026-04-20: nemotron-free hit rate-limits → swap to mistral:medium primary
+        # (PQTF $155K winner) + google:gemini-3-flash fallback (POL $470 winner).
+        "model_primary": "mistral:medium",
+        "model_fallback": "google:gemini-3-flash",
         "hf_account_target": "openrouter",
         "hf_space_target": "nemotron-120b",
         "tier": "M",

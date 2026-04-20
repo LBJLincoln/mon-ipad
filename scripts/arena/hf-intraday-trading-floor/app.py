@@ -703,8 +703,43 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         return q.get("last")
     executor.close_expired(now, quote_fn=_q)
 
-    for persona in PERSONAS:
+    # 2026-04-20 ANTI-LOCKSTEP guardrail — cap agents per (ticker,side) at MAX_CONCURRENT_PER_KEY.
+    # Fair-order randomization so early-called personas don't monopolize the edge.
+    # When the cap is hit, later agents' trade on that key is post-filtered to pass.
+    import random as _random
+    MAX_CONCURRENT_PER_KEY = 3
+    _tick_counts: Dict[Tuple[str, str], int] = {}
+    _personas_this_tick = list(PERSONAS)
+    _random.shuffle(_personas_this_tick)
+
+    for persona in _personas_this_tick:
         decision = _call_agent(persona, ctx)
+        action = decision.get("action")
+        # Anti-lockstep post-filter
+        if action == "trade":
+            _key = (decision.get("ticker", "?"), decision.get("side", "?"))
+            if _tick_counts.get(_key, 0) >= MAX_CONCURRENT_PER_KEY:
+                decision = {
+                    "action": "pass",
+                    "reason": f"anti_lockstep: {_key[0]} {_key[1]} already has {MAX_CONCURRENT_PER_KEY}+ peers this tick — DMAD forced divergence",
+                    "_original_ticker": _key[0],
+                    "_original_side": _key[1],
+                }
+                action = "pass"
+            else:
+                _tick_counts[_key] = _tick_counts.get(_key, 0) + 1
+        elif action == "option_trade":
+            _key = (decision.get("underlying", "?"), decision.get("option_type", "?"))
+            if _tick_counts.get(_key, 0) >= MAX_CONCURRENT_PER_KEY:
+                decision = {
+                    "action": "pass",
+                    "reason": f"anti_lockstep: {_key[0]} {_key[1]}-options already has {MAX_CONCURRENT_PER_KEY}+ peers",
+                    "_original_underlying": _key[0],
+                }
+                action = "pass"
+            else:
+                _tick_counts[_key] = _tick_counts.get(_key, 0) + 1
+
         result = {
             "ts": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "agent_tid": persona["tid"],
@@ -713,7 +748,6 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
             "decision": decision,
         }
         STATE["agents"][persona["tid"]]["decisions"] += 1
-        action = decision.get("action")
         if action == "trade" and decision.get("ticker") in (ctx.get("quotes") or {}):
             last_quote = (ctx["quotes"][decision["ticker"]] or {}).get("last") or 0
             # 2026-04-20 AGGRESSIVE-MODE: $100 floor (was $500), removed $3000 hard cap.
