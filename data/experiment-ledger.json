@@ -305,6 +305,17 @@
       "deploy_commit": "ecebdbb2d033bd816a8492bac1be50e8b46cb063",
       "checkpoint": "/home/termius/mon-ipad/data/nba-tf/checkpoints/pre-bankrupt-fix-20260420T220422Z.json",
       "confounds": "None \u2014 single patch, no simultaneous prompt/config change. prompt_mutator nba rules left intact (pp_unlock + no-fabricate) \u2014 they were NOT the gag."
+    },
+    {
+      "ts": "2026-04-20T23:14:00Z",
+      "agent": "SWISH",
+      "target": "LBJLincoln26/nba-llm-trading-floor",
+      "action": "raise_min_edge_and_prompt_floor",
+      "detail": "MIN_EDGE tier(<$500) 0.04->0.06; prompt-display floor 0.01->0.03. RCA: 128d bleed, qwen-quant 16% WR, uniform-fallback beat LLMs. Fleet-best Brier 0.22073 vs random 0.25 = 0.029 noise envelope; old 0.04 floor was INSIDE envelope.",
+      "reason": "agents staked on sub-noise edges; uniform-fallback outperformed LLMs over 128d",
+      "kill_criterion": "after 20 NBA TF days post-reboot: if fleet_total_bets < 0.3x pre-change rate AND fleet_avg < $95, revert MIN_EDGE back to 0.04 (checkpoint data/nba-tf/checkpoints/pre-minedge-raise-20260420T231039Z.json).",
+      "deploy_sha": "6ea565ea4f13",
+      "checkpoint": "data/nba-tf/checkpoints/pre-minedge-raise-20260420T231039Z.json"
     }
   ]
 }

@@ -192,21 +192,29 @@ def _tiered_risk(bankroll: float) -> dict:
     # with strict EV threshold and half-Kelly. Losers used high-conviction single plays
     # that wiped 60-70% in a single day. New doctrine: tighter MIN_EDGE (0.04 blocks
     # marginal DIVERGE bets), capped KELLY_MULT (0.5× max), lower per-bet caps.
+    # 2026-04-20 SWISH: RAISED min_edge 0.04 → 0.06 on all survival tiers.
+    # Post-mortem: 128 days, qwen-quant 7W/37L = 16% WR, every agent crashed to $3-7,
+    # uniform-fallback (selfhost-gemma3, llm_ok=0) outperformed every LLM agent.
+    # RCA: fleet-best Brier 0.22073 vs random 0.25 = 0.029 Brier-signal envelope.
+    # Old MIN_EDGE=0.04 sat INSIDE that noise envelope. Agents were forced to stake
+    # on "edges" smaller than the model's own calibration error. At 0.06 every
+    # claimed edge must be >2× the model's demonstrable information gain — forces
+    # agents to PASS when only noise is visible, rather than parrot the floor.
     if bankroll < 25.0:
         return {"deploy_floor": 0.90, "bet_floor": 0.04, "bet_cap": 0.20,
-                "min_edge": 0.04, "kelly_mult": 0.5,
+                "min_edge": 0.06, "kelly_mult": 0.5,
                 "min_allocs": 35, "min_cats": 15, "min_games": 8}
     if bankroll < 50.0:
         return {"deploy_floor": 0.80, "bet_floor": 0.03, "bet_cap": 0.15,
-                "min_edge": 0.04, "kelly_mult": 0.5,
+                "min_edge": 0.06, "kelly_mult": 0.5,
                 "min_allocs": 30, "min_cats": 12, "min_games": 7}
     if bankroll < 100.0:
         return {"deploy_floor": 0.70, "bet_floor": 0.02, "bet_cap": 0.12,
-                "min_edge": 0.04, "kelly_mult": 0.5,
+                "min_edge": 0.06, "kelly_mult": 0.5,
                 "min_allocs": 25, "min_cats": 10, "min_games": 6}
     if bankroll < 500.0:
         return {"deploy_floor": 0.60, "bet_floor": 0.015, "bet_cap": 0.10,
-                "min_edge": 0.04, "kelly_mult": 0.5,
+                "min_edge": 0.06, "kelly_mult": 0.5,
                 "min_allocs": 20, "min_cats": 8, "min_games": 5}
     # PROVEN tier: 5-20× starting, press edges harder
     if bankroll < 2000.0:
@@ -1613,9 +1621,16 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
                 u = int(h, 16) / 0xFFFFFFFF
                 return 1.0 + (u - 0.5) * 2.0 * _amp
             top_edges = []
+            # 2026-04-20 SWISH: prompt-display floor raised 0.01 → 0.03.
+            # Old floor showed edges INSIDE the 0.029 Brier noise envelope
+            # (fleet-best S22 Brier 0.22073 vs random 0.25). Agents were
+            # pattern-matching on noise they could see but shouldn't trust.
+            # Post-filter still gates at tier.min_edge=0.06 — this is just
+            # what the LLM EYES before reasoning. Keeps top-20 slot budget
+            # for real-signal edges.
             for tag, info in per_cat.items():
                 e = info.get("edge")
-                if e is not None and abs(e) >= 0.01:
+                if e is not None and abs(e) >= 0.03:
                     eff = abs(e) * _edge_jitter(tid, f"{game_key}|{tag}")
                     top_edges.append((eff, tag, info))
             top_edges.sort(reverse=True)
