@@ -1,74 +1,44 @@
 {
-  "generated_at": "2026-04-16T00:26:13.150069Z",
-  "spaces": {
-    "llm-gateway": {
-      "owner": "LBJLincoln26",
-      "stage": "RUNNING",
-      "up": true,
-      "restarted": false,
-      "notes": "RUNNING, /api/status 200, gateway_enabled=True"
-    },
-    "nba-llm-trading-floor": {
-      "owner": "LBJLincoln26",
-      "stage": "RUNNING",
-      "up": true,
-      "restarted": false,
-      "notes": "RUNNING but not in active loop (running=False, 0 day-decisions). No active experiment."
-    },
-    "political-llm-trading-floor": {
-      "owner": "LBJLincoln26",
-      "stage": "RUNNING",
-      "up": true,
-      "restarted": false,
-      "notes": "RUNNING but not in active loop (running=False). No active experiment."
-    },
-    "pixel-world": {
-      "owner": "Nomos42",
-      "stage": "RUNNING",
-      "up": true,
-      "restarted": false,
-      "notes": "RUNNING, static space"
-    },
-    "gemma4-chat": {
-      "owner": "Nomos42",
-      "stage": "RUNTIME_ERROR",
-      "up": false,
-      "restarted": false,
-      "notes": "GATED MODEL ERROR: google/gemma-3-1b-it requires HF_TOKEN secret with model access in Space settings. Soft restart attempted but 403 (token auth expired). Manual fix required: add valid HF_TOKEN to Space secrets."
-    },
-    "qwen35-chat": {
-      "owner": "Nomos42",
-      "stage": "SLEEPING",
-      "up": true,
-      "restarted": false,
-      "notes": "SLEEPING (normal idle behavior for cpu-basic, gc_timeout=172800). Will wake on request."
-    },
-    "nomos42-llm-cpu": {
-      "owner": "Nomos42",
-      "stage": "RUNNING",
-      "up": true,
-      "restarted": false,
-      "notes": "RUNNING (self-hosted Qwen3-1.7B GGUF, used by T12 gemma4-selfhost trader)"
-    },
-    "langfuse": {
-      "owner": "Nomos42",
-      "stage": "NOT_DEPLOYED",
-      "up": false,
-      "restarted": false,
-      "notes": "Space does not exist on any account (Nomos42/LBJLincoln26/LBJLincoln). Queued as Ship #4 per observability plan \u2014 not yet deployed."
-    }
+  "timestamp": "2026-04-20T14:40:00Z",
+  "agent": "SWITCHBOARD",
+  "gateway": "https://lbjlincoln26-llm-gateway.hf.space",
+  "gateway_up": true,
+  "gateway_registry_models": 45,
+  "gateway_api_status_broken": "returns alive=0/degraded=0/down=0 — internal health cache not populated, but /api/chat itself works",
+  "providers_alive_fast": [
+    "cerebras:qwen-3-235b",
+    "cerebras:llama3.1-8b",
+    "mistral:large", "mistral:medium", "mistral:small",
+    "google:gemini-3-flash", "google:gemini-2.5-flash",
+    "nvidia:llama-3.3-70b",
+    "github:gpt-4.1-mini", "github:gpt-4.1-nano", "github:llama-3.3-70b",
+    "github:mistral-medium", "github:phi-4-mini"
+  ],
+  "providers_dead_or_slow": [
+    "openrouter:gpt-oss-120b (not in registry)",
+    "github:gpt-4o-mini (429)",
+    "github:llama-3.1-8b (not in registry)",
+    "nvidia:minimax-m2.7 (>20s timeout)",
+    "nvidia:minimax-m2.7-alt (>20s)",
+    "openrouter:nemotron-120b:free (>12s, 55/99 llm_ok observed)",
+    "selfhost:* (all selfhost: keys >20s via gateway — see project_selfhost_fleet_reality_apr20)"
+  ],
+  "reroutes_applied": {
+    "mistral-ministral": "openrouter:gpt-oss-120b -> github:gpt-4.1-mini",
+    "mistral-nemo_fallback": "openrouter:gpt-oss-120b -> mistral:medium",
+    "selfhost-qwen4b": "github:gpt-4o-mini -> github:phi-4-mini",
+    "nvidia-minimax": "nvidia:minimax-m2.7 -> github:llama-3.3-70b",
+    "nvidia-llama70_fallback": "nvidia:nemotron-70b -> github:llama-3.3-70b",
+    "selfhost-gemma3": "github:llama-3.1-8b -> github:mistral-medium",
+    "selfhost-qwen06": "github:gpt-4o-mini -> github:gpt-4.1-nano",
+    "selfhost-dolphin3": "github:llama-3.1-8b -> github:gpt-4.1-mini",
+    "nemotron-120b (POL only)": "openrouter:nemotron-120b:free -> cerebras:qwen-3-235b"
   },
-  "tf_advancing": {
-    "nba": false,
-    "political": false,
-    "note": "Both TFs running=False, 0 day-decisions. No active experiment in progress \u2014 expected idle state."
-  },
-  "token_health": {
-    "HF_TOKEN_LLM": "EXPIRED (401 on whoami)",
-    "HF_TOKEN_NBA": "EXPIRED (401 on whoami)",
-    "HF_TOKEN_POL": "EXPIRED (401 on whoami)",
-    "HF_TOKEN_COUNCILS": "NOT_TESTED",
-    "note": "All tokens return 401 on /api/whoami. Public space metadata still readable. Restart API (POST) requires valid write token \u2014 BLOCKED until tokens refreshed."
-  },
-  "summary": "Nomos42 fleet: 6/8 up (7 if SLEEPING counts). Restarted: []. TF advancing: no (idle, no active run). Action needed: (1) gemma4-chat RUNTIME_ERROR \u2014 gated model, needs HF_TOKEN secret in Space. (2) HF tokens expired \u2014 refresh for restart capability."
+  "spaces_deployed": [
+    "LBJLincoln26/nba-llm-trading-floor",
+    "LBJLincoln26/political-llm-trading-floor"
+  ],
+  "deploy_method": "HfApi.upload_file + restart_space(factory_reboot=True) with HF_TOKEN_2 (LBJLincoln26 creds)",
+  "itf_avax_concentration": "separate issue — persona off-hours crypto-pivot clause fires uniformly on same ticker. Out of scope for routing fix, flag for LAUNCHPAD/PLUMBER.",
+  "tf_advancing": "yes (POL 99 -> 105 within 90s post-reboot; NBA reset day 9 games_processed to 0 replaying)"
 }

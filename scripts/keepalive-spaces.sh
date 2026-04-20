@@ -132,14 +132,4 @@ ping_or_restart "LLM-CpuGemma4"    https://nomos42-nomos-cpu-gemma4.hf.space/   
 # Observability (Langfuse on Nomos42)
 ping_or_restart "Langfuse"          https://nomos42-langfuse.hf.space/           "Nomos42/langfuse"
 
-# Department Council Spaces (9) — all consolidated on TESTforge42 (2026-04-15 Option B migration)
-# TESTforge42: D1, D2, D3, D4, D5, D6, D7, D8, D9
-ping_or_restart "D1 (research)"     https://testforge42-nomos-dept-d1-research.hf.space/     "TESTforge42/nomos-dept-d1-research"
-ping_or_restart "D2 (engineering)"  https://testforge42-nomos-dept-d2-engineering.hf.space/   "TESTforge42/nomos-dept-d2-engineering"
-ping_or_restart "D3 (evolution)"    https://testforge42-nomos-dept-d3-evolution.hf.space/   "TESTforge42/nomos-dept-d3-evolution"
-ping_or_restart "D4 (product)"      https://testforge42-nomos-dept-d4-product.hf.space/     "TESTforge42/nomos-dept-d4-product"
-ping_or_restart "D5 (business)"     https://testforge42-nomos-dept-d5-business.hf.space/         "TESTforge42/nomos-dept-d5-business"
-ping_or_restart "D6 (evaluation)"   https://testforge42-nomos-dept-d6-evaluation.hf.space/       "TESTforge42/nomos-dept-d6-evaluation"
-ping_or_restart "D7 (infra)"        https://testforge42-nomos-dept-d7-infra.hf.space/        "TESTforge42/nomos-dept-d7-infra"
-ping_or_restart "D8 (finance)"      https://testforge42-nomos-dept-d8-finance.hf.space/      "TESTforge42/nomos-dept-d8-finance"
-ping_or_restart "D9 (cross-repo)"   https://testforge42-nomos-dept-d9-cross-repo.hf.space/   "TESTforge42/nomos-dept-d9-cross-repo"
+# Dept Councils (D1-D9) — DECOMMISSIONED 2026-04-20, Spaces deleted. Keepalive removed.

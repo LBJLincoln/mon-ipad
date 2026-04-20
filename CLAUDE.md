@@ -74,28 +74,11 @@ HF TRADING FLOORS (Real LLM experiment, NBA 16 agents / Political 16 agents — 
     ├── Both expose: /api/status /run /stop /reset /mutate /logs /day-decisions /leaderboard
     └── LBJLincoln26/llm-gateway: Centralized LLM proxy (11 models, fallback chains)
 
-HF DEPT COUNCILS (9 Spaces, all on TESTforge42 — consolidated 2026-04-15 Option B migration)
-    ├── D1 TESTforge42/nomos-dept-d1-research     → testforge42-nomos-dept-d1-research.hf.space
-    ├── D2 TESTforge42/nomos-dept-d2-engineering  → testforge42-nomos-dept-d2-engineering.hf.space
-    ├── D3 TESTforge42/nomos-dept-d3-evolution    → testforge42-nomos-dept-d3-evolution.hf.space
-    ├── D4 TESTforge42/nomos-dept-d4-product      → testforge42-nomos-dept-d4-product.hf.space
-    ├── D5 TESTforge42/nomos-dept-d5-business     → testforge42-nomos-dept-d5-business.hf.space
-    ├── D6 TESTforge42/nomos-dept-d6-evaluation   → testforge42-nomos-dept-d6-evaluation.hf.space
-    ├── D7 TESTforge42/nomos-dept-d7-infra        → testforge42-nomos-dept-d7-infra.hf.space
-    ├── D8 TESTforge42/nomos-dept-d8-finance      → testforge42-nomos-dept-d8-finance.hf.space
-    └── D9 TESTforge42/nomos-dept-d9-cross-repo   → testforge42-nomos-dept-d9-cross-repo.hf.space
-    Secrets per council: NOMOS_HF_TOKEN, CEREBRAS_API_KEY, OPENROUTER_API_KEY, MISTRAL_API_KEY, GOOGLE_API_KEY, GATEWAY_URL
-    Vars per council:    DEPT_ID, DEPT_NAME, DEPT_MISSION, LOOP_INTERVAL_MINUTES=30
-    LLM routing (2026-04-16, selfhost-first via gateway, 7 CPU Spaces cover 7 depts + 2 cloud):
-      D1 Research    → selfhost:qwen3-4b             (Qwen3-4B,          Nomos42/qwen3-4b-cpu)
-      D2 Engineering → selfhost:dolphin3-llama-3.2-3b(Dolphin3-L3.2-3B,  Nomos42/llama32-1b-cpu)
-      D3 Evolution   → selfhost:gemma-4-e2b          (Gemma-3-4B,        Nomos42/gemma2-2b-cpu)
-      D4 Product     → selfhost:smollm3-3b           (SmolLM3-3B,        Nomos42/smollm3-3b-cpu)
-      D5 Business    → selfhost:qwen3-0.6b           (Qwen3-0.6B,        Nomos42/qwen25-05b-cpu)
-      D6 Evaluation  → selfhost:cpu-gemma4           (Phi-3.5-mini,      Nomos42/nomos-cpu-gemma4)
-      D7 Infra       → selfhost:phi-4-mini           (Qwen2.5-1.5B,      Nomos42/nomos42-llm-cpu)
-      D8 Finance     → mistral:large                 (cloud — deep analytical)
-      D9 Cross-repo  → cerebras:qwen-3-235b          (cloud — 235B big-context)
+HF DEPT COUNCILS — DECOMMISSIONED 2026-04-20
+    All 9 TESTforge42/nomos-dept-d*-* Spaces DELETED (stage was PAUSED — zombie on /api/status).
+    Focus narrowed to: islands + selfhost LLMs + 3 TFs + Langfuse. Council Karpathy loops
+    retired; THE BLACKSMITH agent is now no-op. Don't recreate — if structural-review is
+    needed, spin a single review job, not a 9-Space fleet.
 
 HF OTHER SPACES (across 3 accounts, post-cleanup 2026-04-15)
     ├── Free LLM Chat: gemma4-chat, qwen35-chat

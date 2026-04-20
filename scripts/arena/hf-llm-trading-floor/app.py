@@ -819,9 +819,11 @@ TRADERS = {
     "mistral-medium":   {"name": "Mistral Medium",   "provider": "mistral:medium",       "personality": "diversified",  "risk_tolerance": 0.45},
     "mistral-small":    {"name": "Mistral Small",    "provider": "mistral:small",        "personality": "conservative", "risk_tolerance": 0.35},
     # 2026-04-17 SWAP: gemma-4-31b rate-limited 429 upstream → cerebras:llama3.1-8b (aggressive momentum)
+    # 2026-04-20 SWITCHBOARD: openrouter:gpt-oss-120b is NOT in gateway registry ("Model not in registry") → swap fallback to mistral:medium.
     "mistral-nemo":     {"name": "Momentum Hunter",   "provider": "cerebras:llama3.1-8b",  "personality": "aggressive",   "risk_tolerance": 0.70,
-                         "fallback_provider": "openrouter:gpt-oss-120b"},
-    "mistral-ministral":{"name": "Ministral 8B",     "provider": "openrouter:gpt-oss-120b","personality": "theoretical",  "risk_tolerance": 0.35,
+                         "fallback_provider": "mistral:medium"},
+    # 2026-04-20 SWITCHBOARD: primary openrouter:gpt-oss-120b dead (not in registry). Reroute → github:gpt-4.1-mini (verified live, 820ms), keep cerebras:llama3.1-8b fallback.
+    "mistral-ministral":{"name": "Ministral 8B",     "provider": "github:gpt-4.1-mini","personality": "theoretical",  "risk_tolerance": 0.35,
                          "fallback_provider": "cerebras:llama3.1-8b"},
     # NEW 2026-04-15 — +1 NVIDIA Nemotron 120B (OpenRouter free, verified responsive)
     # 2026-04-20 SWITCHBOARD: openrouter:nemotron-120b:free + cerebras:qwen-3-235b
@@ -830,22 +832,23 @@ TRADERS = {
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "mistral:large",         "personality": "chainthought","risk_tolerance": 0.55,
                          "fallback_provider": "mistral:medium"},
     # 2026-04-18 FIX: HF CPU basic = ~3 tok/s → 2+ min/call, blocking fleet. Swap selfhost→GitHub Models (free, ~2s).
-    # Persona + strategy + prompt + Axelrod class all PRESERVED. Only backend flipped.
-    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "github:gpt-4o-mini",     "personality": "disciplined", "risk_tolerance": 0.40,
+    # 2026-04-20 SWITCHBOARD: github:gpt-4o-mini hitting 429 RateLimit → swap to github:phi-4-mini (verified live 834ms).
+    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "github:phi-4-mini",     "personality": "disciplined", "risk_tolerance": 0.40,
                          "fallback_provider": "mistral:small"},
     # NEW 2026-04-17 — NVIDIA NIM (2 keys in gateway). Both NVIDIA accounts were wired but 0 TF usage → fill the gap.
-    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "nvidia:minimax-m2.7",   "personality": "decisive",    "risk_tolerance": 0.58,
-                         "fallback_provider": "nvidia:minimax-m2.7-alt"},
+    # 2026-04-20 SWITCHBOARD: nvidia:minimax-m2.7 + alt both >20s timeout (observed 9/9 llm_ok=0 on NBA). Reroute → github:llama-3.3-70b (live 1.3s), fallback nvidia:llama-3.3-70b.
+    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "github:llama-3.3-70b",  "personality": "decisive",    "risk_tolerance": 0.58,
+                         "fallback_provider": "nvidia:llama-3.3-70b"},
     "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
-                         "fallback_provider": "nvidia:nemotron-70b"},
+                         "fallback_provider": "github:llama-3.3-70b"},
     # 2026-04-18 — was selfhost, now GitHub Models. Persona+strategy+Axelrod class unchanged.
-    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "github:llama-3.1-8b",  "personality": "analytical",  "risk_tolerance": 0.45,
-                         "fallback_provider": "github:gpt-4o-mini"},
-    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "github:gpt-4o-mini",   "personality": "conservative","risk_tolerance": 0.30,
-                         "fallback_provider": "mistral:ministral-8b"},
-    # 2026-04-20 SWITCHBOARD: mistral:nemo on llm-deadlist (broken). NBA dolphin3
-    # is the $316 winner (don't break primary). Just swap dead fallback → mistral:large.
-    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "github:llama-3.1-8b", "personality": "uncensored",  "risk_tolerance": 0.60,
+    # 2026-04-20 SWITCHBOARD: github:llama-3.1-8b not in registry → github:mistral-medium (live 1.3s); github:gpt-4o-mini 429 → github:gpt-4.1-nano.
+    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "github:mistral-medium",  "personality": "analytical",  "risk_tolerance": 0.45,
+                         "fallback_provider": "github:gpt-4.1-nano"},
+    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "github:gpt-4.1-nano",   "personality": "conservative","risk_tolerance": 0.30,
+                         "fallback_provider": "mistral:small"},
+    # 2026-04-20 SWITCHBOARD: github:llama-3.1-8b dead → github:gpt-4.1-mini (verified live). Keep mistral:large fallback.
+    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "github:gpt-4.1-mini", "personality": "uncensored",  "risk_tolerance": 0.60,
                          "fallback_provider": "mistral:large"},
 }
 
