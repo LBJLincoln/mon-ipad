@@ -108,12 +108,43 @@ emit crypto trades OR pass — NEVER emit equity/option trades outside hours.
 
 def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
     # Compact context to stay under token caps (~1500 tokens).
-    quotes_summary = []
-    for t, q in (ctx.get("quotes") or {}).items():
-        quotes_summary.append(
-            f"{t}: last={q.get('last')} Δ={q.get('change_pct')}% vol={q.get('volume')}"
-        )
-    quotes_block = "\n".join(quotes_summary[:22])
+    # CRITICAL: previous version `quotes_summary[:22]` truncated everything after
+    # the first 22 equity tickers, so crypto (24/7) was never shown — every agent
+    # passed at night citing "vol=0 / market closed" when in fact BTC/ETH/SOL etc.
+    # were actively moving. We now group by asset class + show VIX + equity probes.
+    quotes = ctx.get("quotes") or {}
+
+    def _fmt(t: str, q: Dict[str, Any]) -> str:
+        last = q.get("last")
+        chg = q.get("change_pct")
+        vol = q.get("volume")
+        return f"{t}: last={last} Δ={chg}% vol={vol}"
+
+    now_utc = datetime.now(timezone.utc)
+    equity_hours = now_utc.weekday() < 5 and 8 <= now_utc.hour < 24
+
+    crypto_tickers  = [t for t in quotes if "/" in t]
+    index_tickers   = [t for t in quotes if t.startswith("^")]
+    equity_tickers  = [t for t in quotes if t not in crypto_tickers and t not in index_tickers]
+    # Equity probes we always want visible if present.
+    priority_eq = [t for t in ["SPY", "QQQ", "IWM", "DIA", "XLK", "XLE", "XLF", "TQQQ", "SQQQ",
+                                "UVXY", "VXX", "NVDA", "TSLA", "AAPL", "META"] if t in quotes]
+    # Remaining equities (leveraged, sector, stocks we haven't already shown), capped.
+    remaining_eq = [t for t in equity_tickers if t not in priority_eq][:6]
+
+    lines: List[str] = []
+    if index_tickers:
+        lines.append("--- VIX / Indices ---")
+        for t in index_tickers:
+            lines.append(_fmt(t, quotes[t] or {}))
+    if crypto_tickers:
+        lines.append(f"--- Crypto (24/7, tradeable NOW) ---")
+        for t in crypto_tickers:
+            lines.append(_fmt(t, quotes[t] or {}))
+    lines.append(f"--- Equities ({'OPEN' if equity_hours else 'CLOSED — do not emit equity/option trades'}) ---")
+    for t in priority_eq + remaining_eq:
+        lines.append(_fmt(t, quotes[t] or {}))
+    quotes_block = "\n".join(lines)
 
     nba_edges = ctx.get("nba_top_edges") or []
     nba_block = "; ".join(

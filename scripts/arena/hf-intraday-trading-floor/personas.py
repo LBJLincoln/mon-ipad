@@ -27,14 +27,28 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+# Appended to every persona.style at prompt build time so every agent knows it
+# has a crypto lane when equities are closed. Before this clause, 04-20 logs
+# showed 84% pass rate dominated by "market closed, vol=0" reasons — personas
+# were ignoring the 10 crypto pairs the schema explicitly whitelisted.
+CRYPTO_PIVOT_CLAUSE = (
+    " OFF-HOURS RULE: when equities are closed (weekend/night), pivot your "
+    "style to BTC/USD, ETH/USD, SOL/USD, AVAX/USD, LINK/USD, DOGE/USD — "
+    "they trade 24/7 on Alpaca. You MUST emit a crypto trade if at least ONE "
+    "of {BTC, ETH, SOL} shows |change_pct| > 0.3% in the tape. Passing every "
+    "tick because 'equities closed' is cowardice — the leaderboard punishes it."
+)
+
 PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "scalper-1",
         "name": "Scalper",
-        "model_primary": "google:gemini-3-flash",        # POL TF winner
-        "model_fallback": "selfhost:qwen3-0.6b",
-        "hf_account_target": "google",
-        "hf_space_target": "gemini-3-flash",
+        # gemini-3-flash was 100% llm_failed_both on ITF (thinking-budget bug in gateway);
+        # selfhost:qwen3-0.6b fallback also unreachable. Route at mistral:medium (PQTF #2).
+        "model_primary": "mistral:medium",
+        "model_fallback": "cerebras:llama3.1-8b",
+        "hf_account_target": "mistral",
+        "hf_space_target": "medium",
         "tier": "S",
         "risk": 0.45,
         "max_hold_min": 60,
@@ -115,10 +129,12 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "vol-1",
         "name": "VolRegime",
-        "model_primary": "selfhost:dolphin3-l32-3b",     # NBA TF's selfhost 3x winner
-        "model_fallback": "google:gemini-3-flash",
-        "hf_account_target": "LBJLincoln",
-        "hf_space_target": "phi35-mini-cpu",
+        # dolphin3-l32-3b is NBA TF's 3× winner but its selfhost endpoint 45s-timeouts
+        # on ITF. Reroute to cerebras:qwen-3-235b (NBA qwen-quant) + mistral:medium.
+        "model_primary": "cerebras:qwen-3-235b",
+        "model_fallback": "mistral:medium",
+        "hf_account_target": "cerebras",
+        "hf_space_target": "qwen-3-235b",
         "tier": "M",
         "risk": 0.45,
         "max_hold_min": 120,
@@ -159,3 +175,10 @@ def get(tid: str) -> Dict[str, Any]:
         if p["tid"] == tid:
             return p
     raise KeyError(tid)
+
+
+# Append the off-hours crypto pivot to every persona at import time so every
+# prompt downstream gets it automatically.
+for _p in PERSONAS:
+    if CRYPTO_PIVOT_CLAUSE not in _p["style"]:
+        _p["style"] = _p["style"] + CRYPTO_PIVOT_CLAUSE
