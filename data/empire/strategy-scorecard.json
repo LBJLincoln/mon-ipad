@@ -1,0 +1,121 @@
+{
+  "winners": [
+    {
+      "strat": "PQTF multi-agent multi-leg derivatives",
+      "impact": "PROVEN: $600 \u2192 $602,354 (100,292% ROI) across 50 days",
+      "winners": "mistral:large $244K + mistral:medium $155K + gemini-anl $17K",
+      "status": "ARCHIVED \u2014 preserved as $1M validation proof",
+      "lesson": "Real LLM agents + multi-leg options + $100 survival floor + stacking = path to $1M",
+      "score": 10
+    },
+    {
+      "strat": "Prompt mutator closed-loop (post-mortem \u2192 overrides.json \u2192 HF deploy)",
+      "impact": "Enables next-day prompt evolution; 6 rules across 4 TFs as of 2026-04-20",
+      "winners": "prompt_mutator.py + _load_prompt_override on NBA/POL/PQTF/ITF",
+      "status": "LIVE in production on all 3 TF Spaces",
+      "lesson": "Close the scientific feedback loop \u2014 if you can't mutate the prompt daily, you're not iterating",
+      "score": 9
+    },
+    {
+      "strat": "Cerebras time-windowed circuit breaker + uniform-fallback emitter",
+      "impact": "Silent-pass storage drops were dominant failure mode, not parser regex",
+      "winners": "commit efdddd5e1 + 77a01a839 \u2014 all 3 TFs",
+      "status": "LIVE",
+      "lesson": "Silent failures compound \u2014 every fallback path must emit a traceable bet, not silence",
+      "score": 9
+    },
+    {
+      "strat": "Player-props ingestion (17,592 pp_* lines across 802 games)",
+      "impact": "Unlocked NBA TF to bet on 42 previously-empty pp_ categories",
+      "winners": "fetch_player_props.py (Bovada+DK) + prepare_data.py merge + synth backfill",
+      "status": "DEPLOYED 2026-04-20 f0a9e0a21",
+      "lesson": "If the prompt advertises a menu, the data MUST back it \u2014 or agents fabricate",
+      "score": 8
+    },
+    {
+      "strat": "Selfhost LLM fleet distribution (11 Spaces, 4 accounts)",
+      "impact": "Cost-zero inference; 6/11 live with OpenAI-compatible /v1/models",
+      "winners": "LBJLincoln (3/3), LBJLincoln26 (1/1), TESTforge42 (2/4)",
+      "status": "PARTIAL \u2014 Nomos42 account 403-saturated (0/3); gateway has 10 selfhost: routes, 6 resolve live",
+      "lesson": "Free-tier concurrent-Space caps are the real bottleneck; spread across accounts",
+      "score": 7
+    },
+    {
+      "strat": "4-track orchestrator (Science / Platform / Market / Capital)",
+      "impact": "Consolidated 9 depts \u2192 4 tracks; MIN_DEPLOY 75% floor; saved 338MB + 10.5k LOC",
+      "winners": "data/tracks/TRACKS.md",
+      "status": "SPEC'D \u2014 orchestrator not yet auto-wired (every-8h Opus dispatch pending)",
+      "lesson": "Less is more \u2014 9 overlapping dept loops produced churn, 4 parallel tracks produce throughput",
+      "score": 7
+    },
+    {
+      "strat": "Axelrod canon (CK + sacrificial rotation + post-mortem log + coalitions)",
+      "impact": "All TF agents pre-pended with COLLECTIVE_MISSION + Axelrod canon",
+      "winners": "Commit 412fc6a19 \u2014 coalition_proposal made MANDATORY",
+      "status": "LIVE on NBA + POL",
+      "lesson": "Game-theoretic cooperation > isolated utility max \u2014 lockstep is preventable via structural divergence rule",
+      "score": 7
+    },
+    {
+      "strat": "Per-agent per-TF intelligent monitor + auto-dispatcher (3-min cadence)",
+      "impact": "Replaces LLM-testing cron with targeted 'what's broken' signal + brief generation",
+      "winners": "scripts/ops/tf_intel_monitor.py + tf_intel_dispatcher.py",
+      "status": "LIVE \u2014 runs every 3 min + 4-per-hour dispatcher",
+      "lesson": "Monitor what matters (agents, bets, silences, lockstep), not what's easy (LLM pings)",
+      "score": 8
+    },
+    {
+      "strat": "ITF 71-instrument + options derivatives + 7 personas",
+      "impact": "36 \u2192 71 instruments (MAG7 + leveraged + vol + crypto + options)",
+      "winners": "GammaOptions at mistral:large (PQTF $244K winner)",
+      "status": "LIVE (dry-run default, ITF_OPTIONS_LIVE=1 gates broker)",
+      "lesson": "Port the winning architecture (PQTF multi-leg) to ITF directly \u2014 don't re-invent",
+      "score": 7
+    },
+    {
+      "strat": "Hub-state-persistence clean-reset recipe",
+      "impact": "factory_reboot alone doesn't reset \u2014 /api/reset now purges Hub state",
+      "winners": "tf-pol-reset.yml + tf_clean_reset.py",
+      "status": "LIVE (ran successfully on POL/NBA/ITF 2026-04-20)",
+      "lesson": "HF Spaces have 3 state layers: local, persistent_storage, Hub. Reset all three.",
+      "score": 6
+    }
+  ],
+  "failures_and_pending": [
+    {
+      "strat": "POL TF excess_return leakage (FIXED)",
+      "impact": "88% WR nemotron-120b \u2192 $13K fabricated bankroll from future outcome signal",
+      "status": "FIXED 2026-04-18 1a7a02b48 \u2014 state wiped clean",
+      "lesson": "Never use outcome as fallback signal in post-filter; cross-check with walk-forward before celebrating",
+      "score": 0
+    },
+    {
+      "strat": "NBA TF lockstep (ONGOING)",
+      "impact": "3/17 agents silent last 3 days; 0.97 Jaccard on POL \u2014 DMAD groupthink failure",
+      "status": "MITIGATED by prompt_v3 (forbidden fallback + pp_ unlock rule) \u2014 waiting for measurement",
+      "lesson": "Structural divergence must be enforced by rule, not advised",
+      "score": 2
+    },
+    {
+      "strat": "PQTF zombie rows (ONGOING)",
+      "impact": "14/36 PQTF rows had type=null or strike=0 \u2014 fabrication leaking through",
+      "status": "Prompt_v1 rule deployed; engine-level validation pending",
+      "lesson": "Contract validation belongs in the engine, not the prompt",
+      "score": 3
+    },
+    {
+      "strat": "ITF 84% crypto-pass (investigated)",
+      "impact": "10 orders, 0 crypto \u2014 `_build_prompt` sliced quotes[:22], 48 equities filled slot, crypto invisible",
+      "status": "RCA: CRYPTO_PIVOT_CLAUSE deployed + asset-class grouping",
+      "lesson": "Truncation bugs are stealthy \u2014 always validate menu visibility in the prompt bytes",
+      "score": 4
+    },
+    {
+      "strat": "POL category_collapse (ONGOING)",
+      "impact": "POL fleet collapsed to single category (insider_trade) for days",
+      "status": "Prompt_v4 (category_collapse) deployed \u2014 TF in fresh reset day 0",
+      "lesson": "Monoculture = fragility; force \u22652 distinct categories by rule",
+      "score": 3
+    }
+  ]
+}

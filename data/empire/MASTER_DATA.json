@@ -1,0 +1,2909 @@
+{
+  "generated_at": "2026-04-20T09:27:49Z",
+  "ops": {
+    "intel_latest": {
+      "ts": "2026-04-20T09:25:02+00:00",
+      "alerts": [
+        {
+          "tf": "nba",
+          "severity": 2,
+          "code": "agent_silent",
+          "agent": "qwen-quant",
+          "finding": "Agent qwen-quant has 0 bets across last 3 snapshot days",
+          "proposed_action": "Check agent qwen-quant LLM route \u2014 may be timing out; reroute via /api/mutate or prompt override",
+          "evidence": {
+            "recent_days": [
+              "day-054",
+              "day-085",
+              "day-127"
+            ]
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "nba",
+          "severity": 2,
+          "code": "agent_silent",
+          "agent": "nemotron-120b",
+          "finding": "Agent nemotron-120b has 0 bets across last 3 snapshot days",
+          "proposed_action": "Check agent nemotron-120b LLM route \u2014 may be timing out; reroute via /api/mutate or prompt override",
+          "evidence": {
+            "recent_days": [
+              "day-054",
+              "day-085",
+              "day-127"
+            ]
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "nba",
+          "severity": 2,
+          "code": "agent_silent",
+          "agent": "selfhost-qwen4b",
+          "finding": "Agent selfhost-qwen4b has 0 bets across last 3 snapshot days",
+          "proposed_action": "Check agent selfhost-qwen4b LLM route \u2014 may be timing out; reroute via /api/mutate or prompt override",
+          "evidence": {
+            "recent_days": [
+              "day-017",
+              "day-085",
+              "day-127"
+            ]
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "pol",
+          "severity": 2,
+          "code": "agent_silent",
+          "agent": "selfhost-dolphin3",
+          "finding": "Agent selfhost-dolphin3 has 0 bets across last 3 snapshot days",
+          "proposed_action": "Check agent selfhost-dolphin3 LLM route \u2014 may be timing out; reroute via /api/mutate or prompt override",
+          "evidence": {
+            "recent_days": [
+              "day-049",
+              "day-098",
+              "day-168"
+            ]
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "pol",
+          "severity": 3,
+          "code": "category_collapse",
+          "agent": null,
+          "finding": "POL fleet only trades 1 distinct categories (['insider_trade'])",
+          "proposed_action": "Inject POL prompt override: 'You MUST bet on >=2 distinct POL categories per day'",
+          "evidence": {
+            "categories": [
+              "insider_trade"
+            ]
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "pqtf",
+          "severity": 2,
+          "code": "agent_silent",
+          "agent": "mistral-large",
+          "finding": "Agent mistral-large has 0 bets across last 3 snapshot days",
+          "proposed_action": "Check agent mistral-large LLM route \u2014 may be timing out; reroute via /api/mutate or prompt override",
+          "evidence": {
+            "recent_days": [
+              "day-011",
+              "day-026",
+              "day-049"
+            ]
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "pqtf",
+          "severity": 2,
+          "code": "agent_silent",
+          "agent": "gemini-anl",
+          "finding": "Agent gemini-anl has 0 bets across last 3 snapshot days",
+          "proposed_action": "Check agent gemini-anl LLM route \u2014 may be timing out; reroute via /api/mutate or prompt override",
+          "evidence": {
+            "recent_days": [
+              "day-011",
+              "day-026",
+              "day-049"
+            ]
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "pqtf",
+          "severity": 2,
+          "code": "agent_silent",
+          "agent": "llama-contra",
+          "finding": "Agent llama-contra has 0 bets across last 3 snapshot days",
+          "proposed_action": "Check agent llama-contra LLM route \u2014 may be timing out; reroute via /api/mutate or prompt override",
+          "evidence": {
+            "recent_days": [
+              "day-011",
+              "day-026",
+              "day-049"
+            ]
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "pqtf",
+          "severity": 2,
+          "code": "agent_silent",
+          "agent": "mistral-medium",
+          "finding": "Agent mistral-medium has 0 bets across last 3 snapshot days",
+          "proposed_action": "Check agent mistral-medium LLM route \u2014 may be timing out; reroute via /api/mutate or prompt override",
+          "evidence": {
+            "recent_days": [
+              "day-011",
+              "day-026",
+              "day-049"
+            ]
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "pqtf",
+          "severity": 2,
+          "code": "agent_silent",
+          "agent": "qwen-quant",
+          "finding": "Agent qwen-quant has 0 bets across last 3 snapshot days",
+          "proposed_action": "Check agent qwen-quant LLM route \u2014 may be timing out; reroute via /api/mutate or prompt override",
+          "evidence": {
+            "recent_days": [
+              "day-011",
+              "day-026",
+              "day-049"
+            ]
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "pqtf",
+          "severity": 2,
+          "code": "agent_silent",
+          "agent": "mistral-nemo",
+          "finding": "Agent mistral-nemo has 0 bets across last 3 snapshot days",
+          "proposed_action": "Check agent mistral-nemo LLM route \u2014 may be timing out; reroute via /api/mutate or prompt override",
+          "evidence": {
+            "recent_days": [
+              "day-011",
+              "day-026",
+              "day-049"
+            ]
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "pqtf",
+          "severity": 3,
+          "code": "pqtf_zombie_rows",
+          "agent": null,
+          "finding": "14/36 PQTF order rows have type=null or strike=0",
+          "proposed_action": "Patch pqtf engine: enforce explicit type+strike fields in LLM JSON contract",
+          "evidence": {
+            "zombie_count": 14,
+            "total": 36
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "pqtf",
+          "severity": 3,
+          "code": "pqtf_no_multileg",
+          "agent": null,
+          "finding": "PQTF emitted 36 bets, 0 multi-leg structures despite Phase-2 support",
+          "proposed_action": "Inject PQTF prompt override mandating >=1 multi-leg structure per session",
+          "evidence": {
+            "total_bets": 36
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "itf",
+          "severity": 5,
+          "code": "broker_401",
+          "agent": null,
+          "finding": "Alpaca broker returned 401 on 5/10 orders (50%)",
+          "proposed_action": "Set ALPACA_PAPER_KEY + ALPACA_PAPER_SECRET as Space secrets on LBJLincoln26/intraday-trading-floor (the executor reads these env names, not APCA_* or ALPACA_API_KEY_ID)",
+          "evidence": {
+            "broker_401": 5,
+            "total": 10
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "itf",
+          "severity": 3,
+          "code": "itf_no_crypto",
+          "agent": null,
+          "finding": "ITF emitted 10 orders but 0 crypto trades (24/7 universe unused)",
+          "proposed_action": "Verify CRYPTO_PIVOT_CLAUSE deployment + _off_hours_crypto_signal threshold (BTC/ETH/SOL |change_pct|>0.2%)",
+          "evidence": {
+            "total_orders": 10
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "itf",
+          "severity": 2,
+          "code": "itf_agent_silent",
+          "agent": "vol-1",
+          "finding": "ITF agent vol-1 silent in last 1 decision files + 0 positions",
+          "proposed_action": "Check gateway routing for vol-1's model_primary; consult data/ops/llm-deadlist.json",
+          "evidence": {
+            "bids": 0
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "itf",
+          "severity": 2,
+          "code": "itf_agent_silent",
+          "agent": "options-1",
+          "finding": "ITF agent options-1 silent in last 1 decision files + 0 positions",
+          "proposed_action": "Check gateway routing for options-1's model_primary; consult data/ops/llm-deadlist.json",
+          "evidence": {
+            "bids": 0
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "itf",
+          "severity": 2,
+          "code": "itf_agent_silent",
+          "agent": "breakout-1",
+          "finding": "ITF agent breakout-1 silent in last 1 decision files + 0 positions",
+          "proposed_action": "Check gateway routing for breakout-1's model_primary; consult data/ops/llm-deadlist.json",
+          "evidence": {
+            "bids": 0
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "itf",
+          "severity": 2,
+          "code": "itf_agent_silent",
+          "agent": "scalper-1",
+          "finding": "ITF agent scalper-1 silent in last 1 decision files + 0 positions",
+          "proposed_action": "Check gateway routing for scalper-1's model_primary; consult data/ops/llm-deadlist.json",
+          "evidence": {
+            "bids": 0
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "itf",
+          "severity": 2,
+          "code": "itf_agent_silent",
+          "agent": "mean-rev-1",
+          "finding": "ITF agent mean-rev-1 silent in last 1 decision files + 0 positions",
+          "proposed_action": "Check gateway routing for mean-rev-1's model_primary; consult data/ops/llm-deadlist.json",
+          "evidence": {
+            "bids": 0
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        },
+        {
+          "tf": "itf",
+          "severity": 2,
+          "code": "itf_agent_silent",
+          "agent": "momentum-1",
+          "finding": "ITF agent momentum-1 silent in last 1 decision files + 0 positions",
+          "proposed_action": "Check gateway routing for momentum-1's model_primary; consult data/ops/llm-deadlist.json",
+          "evidence": {
+            "bids": 0
+          },
+          "ts": "2026-04-20T09:25:02+00:00"
+        }
+      ],
+      "per_tf": {
+        "nba": {
+          "n_days": 5,
+          "agents": {
+            "qwen-quant": {
+              "bankroll": 26.06,
+              "drawdown": 0.0,
+              "recent_bets_3d": 0,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "qwen-arb": {
+              "bankroll": 16.82,
+              "drawdown": 0.2942,
+              "recent_bets_3d": 3,
+              "strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=8.0%): my cross-market arbitrage template detects mispricing between ML and spread",
+              "coalition_proposal": true
+            },
+            "llama-contra": {
+              "bankroll": 50.62,
+              "drawdown": 0.2062,
+              "recent_bets_3d": 6,
+              "strategy": "STRUCTURAL DIVERGE [qwen-quant]: My contrarian inversion approach targets public overreactions. Today I will focus on un",
+              "coalition_proposal": false
+            },
+            "gemini-anl": {
+              "bankroll": 7.77,
+              "drawdown": 0.2621,
+              "recent_bets_3d": 12,
+              "strategy": "STRUCTURAL COMPLEMENT [selfhost-dolphin3] (edge=8.0%): While the leader focuses on high-liquidity moneylines, my FIRST-P",
+              "coalition_proposal": true
+            },
+            "gemini-tact": {
+              "bankroll": 4.68,
+              "drawdown": 0.3314,
+              "recent_bets_3d": 10,
+              "strategy": "STRUCTURAL COMPLEMENT [selfhost-dolphin3] (edge=8.0%): While the leader focuses on high-liquidity moneylines, my REASONI",
+              "coalition_proposal": true
+            },
+            "mistral-large": {
+              "bankroll": 11.56,
+              "drawdown": 0.0,
+              "recent_bets_3d": 3,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "mistral-medium": {
+              "bankroll": 8.95,
+              "drawdown": 0.1217,
+              "recent_bets_3d": 7,
+              "strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.9%): My diversified portfolio template prioritizes balanced exposure across mult",
+              "coalition_proposal": true
+            },
+            "mistral-small": {
+              "bankroll": 600.62,
+              "drawdown": 0.4133,
+              "recent_bets_3d": 7,
+              "strategy": "STRUCTURAL COMPLEMENT [gemini-analytical]: While Gemini targets high-volume favorites, my eighth_kelly + diversified_fla",
+              "coalition_proposal": true
+            },
+            "mistral-nemo": {
+              "bankroll": 7.73,
+              "drawdown": 0.0,
+              "recent_bets_3d": 5,
+              "strategy": "DEFECT: drawdown (preserve) \u2013 bankroll below $25, so caps 5% per bet, total deploy \u226450%, only straight bets with any pos",
+              "coalition_proposal": false
+            },
+            "mistral-ministral": {
+              "bankroll": 10.21,
+              "drawdown": 0.0,
+              "recent_bets_3d": 7,
+              "strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=8.2%): my KL-divergence template flags a strong undervaluation on MIN@MIA ml_away ",
+              "coalition_proposal": true
+            },
+            "nemotron-120b": {
+              "bankroll": 70.05,
+              "drawdown": 0.0,
+              "recent_bets_3d": 0,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "selfhost-qwen4b": {
+              "bankroll": 5.88,
+              "drawdown": 0.0,
+              "recent_bets_3d": 0,
+              "strategy": "STRUCTURAL COMPLEMENT [selfhost-dolphin3] (edge=3.7%): My quarter_kelly template targets contrarian spreads/totals while",
+              "coalition_proposal": true
+            },
+            "nvidia-minimax": {
+              "bankroll": 11.96,
+              "drawdown": 0.0538,
+              "recent_bets_3d": 6,
+              "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 top-3 ML edges, even split 25% (75% deploy floor).",
+              "coalition_proposal": false
+            },
+            "nvidia-llama70": {
+              "bankroll": 5.9,
+              "drawdown": 0.2338,
+              "recent_bets_3d": 3,
+              "strategy": "STRUCTURAL DIVERGE [SelfHost Dolphin3-3B] (edge=6.3%): Today, I focus on the top EV edges in the MODEL EDGES block, prio",
+              "coalition_proposal": false
+            },
+            "selfhost-gemma3": {
+              "bankroll": 8.49,
+              "drawdown": 0.0,
+              "recent_bets_3d": 10,
+              "strategy": "STRUCTURAL DIVERGE [selfhost-dolphin3] (edge=3.4%): My weighted-factor model prioritizes spread_away edges over ML, dive",
+              "coalition_proposal": true
+            },
+            "selfhost-qwen06": {
+              "bankroll": 20.81,
+              "drawdown": 0.0,
+              "recent_bets_3d": 5,
+              "strategy": "STRUCTURAL DIVERGE [selfhost-dolphin3] (edge=3.7%): My flat-stake wide-coverage template selects contrarian spreads/tota",
+              "coalition_proposal": true
+            },
+            "selfhost-dolphin3": {
+              "bankroll": 316.2,
+              "drawdown": 0.0,
+              "recent_bets_3d": 4,
+              "strategy": "STRUCTURAL DIVERGE [Nemotron 120B] (edge=5.2%): my Pavlov win\u2011stay template selects the highest\u2011edge ml_home despite Nem",
+              "coalition_proposal": true
+            }
+          },
+          "fleet_history": [
+            {
+              "day": "day-006",
+              "fleet_total": 1475.49,
+              "n_agents": 17,
+              "jaccard_mean": 0.614,
+              "jaccard_max": 1.0,
+              "day_wr": 0.822,
+              "leader": "selfhost-qwen06",
+              "laggard": "qwen-arb",
+              "deploy_pct": 0.812,
+              "day_bets": 73
+            },
+            {
+              "day": "day-017",
+              "fleet_total": 1907.28,
+              "n_agents": 16,
+              "jaccard_mean": 0.4,
+              "jaccard_max": 1.0,
+              "day_wr": 0.8,
+              "leader": "mistral-small",
+              "laggard": "mistral-large",
+              "deploy_pct": 0.194,
+              "day_bets": 10
+            },
+            {
+              "day": "day-054",
+              "fleet_total": 695.83,
+              "n_agents": 9,
+              "jaccard_mean": 0.2,
+              "jaccard_max": 0.6,
+              "day_wr": 0.562,
+              "leader": "nvidia-llama70",
+              "laggard": "mistral-ministral",
+              "deploy_pct": 0.318,
+              "day_bets": 16
+            },
+            {
+              "day": "day-085",
+              "fleet_total": 531.87,
+              "n_agents": 14,
+              "jaccard_mean": 0.118,
+              "jaccard_max": 0.75,
+              "day_wr": 0.462,
+              "leader": "selfhost-dolphin3",
+              "laggard": "gemini-tact",
+              "deploy_pct": 0.192,
+              "day_bets": 26
+            },
+            {
+              "day": "day-127",
+              "fleet_total": 461.12,
+              "n_agents": 8,
+              "jaccard_mean": 0.0,
+              "jaccard_max": 0.0,
+              "day_wr": 0.6,
+              "leader": "selfhost-dolphin3",
+              "laggard": "selfhost-qwen4b",
+              "deploy_pct": 0.07,
+              "day_bets": 5
+            }
+          ],
+          "categories_seen": [
+            "alt_spread_away_plus8",
+            "h1_ml_home",
+            "h1_total_over",
+            "h1_total_under",
+            "ml_away",
+            "ml_home",
+            "spread_away",
+            "spread_home",
+            "team_total_away_over_110",
+            "team_total_away_under_110",
+            "team_total_home_over_120",
+            "team_total_home_under_110",
+            "total_over",
+            "total_under"
+          ]
+        },
+        "pol": {
+          "n_days": 3,
+          "agents": {
+            "qwen-quant": {
+              "bankroll": 126.43,
+              "drawdown": 0.0,
+              "recent_bets_3d": 6,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "qwen-arb": {
+              "bankroll": 116.54,
+              "drawdown": 0.0041,
+              "recent_bets_3d": 11,
+              "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+              "coalition_proposal": false
+            },
+            "llama-contra": {
+              "bankroll": 85.21,
+              "drawdown": 0.0,
+              "recent_bets_3d": 5,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "gemini-anl": {
+              "bankroll": 106.17,
+              "drawdown": 0.0,
+              "recent_bets_3d": 3,
+              "strategy": "STRUCTURAL COMPLEMENT [Gemini Tactical] (edge=12.4%): While leader focuses on defense, my Fed/SEC statistics-first templ",
+              "coalition_proposal": true
+            },
+            "gemini-tact": {
+              "bankroll": 152.54,
+              "drawdown": 0.0,
+              "recent_bets_3d": 4,
+              "strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=27.3%): While qwen-quant targets broad ETF proxies, my TACTICAL TIMING template",
+              "coalition_proposal": true
+            },
+            "mistral-large": {
+              "bankroll": 66.8,
+              "drawdown": 0.0049,
+              "recent_bets_3d": 6,
+              "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+              "coalition_proposal": false
+            },
+            "mistral-medium": {
+              "bankroll": 106.96,
+              "drawdown": 0.0,
+              "recent_bets_3d": 1,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "mistral-small": {
+              "bankroll": 92.34,
+              "drawdown": 0.0,
+              "recent_bets_3d": 9,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "mistral-nemo": {
+              "bankroll": 95.56,
+              "drawdown": 0.0,
+              "recent_bets_3d": 5,
+              "strategy": "STRUCTURAL DIVERGE [gemini-tact] (edge=12.4%): My momentum-chase template prioritizes high-signal insider trades with se",
+              "coalition_proposal": false
+            },
+            "mistral-ministral": {
+              "bankroll": 82.69,
+              "drawdown": 0.0051,
+              "recent_bets_3d": 3,
+              "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+              "coalition_proposal": false
+            },
+            "nemotron-120b": {
+              "bankroll": 78.15,
+              "drawdown": 0.0,
+              "recent_bets_3d": 4,
+              "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+              "coalition_proposal": false
+            },
+            "selfhost-qwen4b": {
+              "bankroll": 80.16,
+              "drawdown": 0.0048,
+              "recent_bets_3d": 6,
+              "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+              "coalition_proposal": false
+            },
+            "nvidia-minimax": {
+              "bankroll": 104.12,
+              "drawdown": 0.004,
+              "recent_bets_3d": 6,
+              "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+              "coalition_proposal": false
+            },
+            "nvidia-llama70": {
+              "bankroll": 60.52,
+              "drawdown": 0.0,
+              "recent_bets_3d": 3,
+              "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+              "coalition_proposal": false
+            },
+            "selfhost-gemma3": {
+              "bankroll": 90.05,
+              "drawdown": 0.0017,
+              "recent_bets_3d": 4,
+              "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+              "coalition_proposal": false
+            },
+            "selfhost-qwen06": {
+              "bankroll": 86.25,
+              "drawdown": 0.0,
+              "recent_bets_3d": 5,
+              "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+              "coalition_proposal": false
+            },
+            "selfhost-dolphin3": {
+              "bankroll": 83.77,
+              "drawdown": 0.0,
+              "recent_bets_3d": 0,
+              "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+              "coalition_proposal": false
+            }
+          },
+          "fleet_history": [
+            {
+              "day": "day-049",
+              "fleet_total": 2020.47,
+              "n_agents": 17,
+              "jaccard_mean": 0.336,
+              "jaccard_max": 1.0,
+              "day_wr": 0.27,
+              "leader": "gemini-tact",
+              "laggard": "selfhost-gemma3",
+              "deploy_pct": 0.199,
+              "day_bets": 37
+            },
+            {
+              "day": "day-098",
+              "fleet_total": 1658.28,
+              "n_agents": 17,
+              "jaccard_mean": 0.467,
+              "jaccard_max": 1.0,
+              "day_wr": 0.562,
+              "leader": "qwen-arb",
+              "laggard": "nvidia-llama70",
+              "deploy_pct": 0.081,
+              "day_bets": 16
+            },
+            {
+              "day": "day-168",
+              "fleet_total": 1614.26,
+              "n_agents": 17,
+              "jaccard_mean": 0.422,
+              "jaccard_max": 1.0,
+              "day_wr": 0.321,
+              "leader": "gemini-tact",
+              "laggard": "nvidia-llama70",
+              "deploy_pct": 0.181,
+              "day_bets": 28
+            }
+          ],
+          "categories_seen": [
+            "insider_trade"
+          ]
+        },
+        "pqtf": {
+          "n_days": 3,
+          "agents": {
+            "mistral-large": {
+              "bankroll": 0.0,
+              "drawdown": 0.0,
+              "recent_bets_3d": 0,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "gemini-anl": {
+              "bankroll": 0.0,
+              "drawdown": 0.0,
+              "recent_bets_3d": 0,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "llama-contra": {
+              "bankroll": 0.0,
+              "drawdown": 0.0,
+              "recent_bets_3d": 0,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "mistral-medium": {
+              "bankroll": 0.0,
+              "drawdown": 0.0,
+              "recent_bets_3d": 0,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "qwen-quant": {
+              "bankroll": 0.0,
+              "drawdown": 0.0,
+              "recent_bets_3d": 0,
+              "strategy": "",
+              "coalition_proposal": false
+            },
+            "mistral-nemo": {
+              "bankroll": 0.0,
+              "drawdown": 0.0,
+              "recent_bets_3d": 0,
+              "strategy": "",
+              "coalition_proposal": false
+            }
+          },
+          "fleet_history": [
+            {
+              "day": "day-011",
+              "fleet_total": 682588.59,
+              "n_agents": 6,
+              "jaccard_mean": 0.156,
+              "jaccard_max": 0.3,
+              "day_wr": null,
+              "leader": "mistral-medium",
+              "laggard": "llama-contra",
+              "deploy_pct": null,
+              "day_bets": null
+            },
+            {
+              "day": "day-026",
+              "fleet_total": 218934.75,
+              "n_agents": 6,
+              "jaccard_mean": 0.067,
+              "jaccard_max": 0.1,
+              "day_wr": null,
+              "leader": "mistral-large",
+              "laggard": "qwen-quant",
+              "deploy_pct": null,
+              "day_bets": null
+            },
+            {
+              "day": "day-049",
+              "fleet_total": 602353.97,
+              "n_agents": 6,
+              "jaccard_mean": 0.024,
+              "jaccard_max": 0.118,
+              "day_wr": null,
+              "leader": "mistral-large",
+              "laggard": "llama-contra",
+              "deploy_pct": null,
+              "day_bets": null
+            }
+          ],
+          "categories_seen": []
+        },
+        "itf": {
+          "total_positions": 10,
+          "broker_401_count": 5,
+          "crypto_trades": 0,
+          "silent_agents": [
+            "breakout-1",
+            "mean-rev-1",
+            "momentum-1",
+            "options-1",
+            "scalper-1",
+            "vol-1"
+          ],
+          "bids_last_3_decisions": {}
+        }
+      },
+      "dead_aliases_from_llm_monitor": [],
+      "broken_aliases_from_llm_monitor": [
+        "selfhost:qwen3-4b",
+        "cerebras:qwen-3-235b",
+        "cerebras:llama3.1-8b",
+        "google:gemini-2.5-flash",
+        "mistral:nemo",
+        "mistral:ministral-8b",
+        "openrouter:nemotron-120b:free",
+        "openrouter:minimax-m2.5:free",
+        "nvidia:nemotron-70b",
+        "github:gpt-4o-mini",
+        "openrouter:qwen3-80b:free"
+      ]
+    },
+    "alert_tail_500_by_code": {
+      "itf_agent_silent": 150,
+      "agent_silent": 230,
+      "category_collapse": 24,
+      "pqtf_zombie_rows": 24,
+      "pqtf_no_multileg": 24,
+      "broker_401": 24,
+      "itf_no_crypto": 24
+    },
+    "dispatch_tail_300_by_agent": {
+      "SWITCHBOARD": 26,
+      "LOBBYIST": 9,
+      "DR_FRANKENSTEIN": 14,
+      "LAUNCHPAD": 13,
+      "THE_TICKER": 9
+    },
+    "llm_health_snapshot": {
+      "ts": "2026-04-20T09:27:01+00:00",
+      "gateway_ok": true,
+      "gateway_code": 503,
+      "gateway_body": {
+        "ok": false,
+        "alive": 0,
+        "degraded": 0,
+        "down": 0,
+        "total": 45,
+        "timestamp": "2026-04-20T09:27:01.867127+00:00"
+      },
+      "gateway_latency_ms": 191.5984599982039,
+      "models_registered": 45,
+      "selfhost_spaces_alive": 4,
+      "selfhost_spaces_total": 5,
+      "selfhost_detail": {
+        "https://lbjlincoln-phi35-mini-cpu.hf.space": {
+          "root_code": 405,
+          "v1_models_code": 200,
+          "alive": true,
+          "latency_ms": 164.76474700175459
+        },
+        "https://testforge42-qwen3-4b-cpu.hf.space": {
+          "root_code": 0,
+          "v1_models_code": 0,
+          "alive": false,
+          "latency_ms": 5185.823120998975
+        },
+        "https://lbjlincoln26-gemma3-4b-cpu.hf.space": {
+          "root_code": 405,
+          "v1_models_code": 200,
+          "alive": true,
+          "latency_ms": 182.77126400062116
+        },
+        "https://testforge42-llama32-1b-cpu.hf.space": {
+          "root_code": 405,
+          "v1_models_code": 200,
+          "alive": true,
+          "latency_ms": 212.5667330037686
+        },
+        "https://lbjlincoln-qwen25-05b-cpu.hf.space": {
+          "root_code": 405,
+          "v1_models_code": 200,
+          "alive": true,
+          "latency_ms": 193.34149000496836
+        }
+      },
+      "model_snap": {
+        "selfhost:phi-4-mini": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "selfhost:qwen3-4b": {
+          "status": "error",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 929,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 1.0,
+          "flag": "BROKEN"
+        },
+        "selfhost:gemma-3-4b": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "selfhost:qwen3-0.6b": {
+          "status": "healthy",
+          "latency_ms": 26051.562070846558,
+          "calls_ok": 1,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 26051.562070846558,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "selfhost:dolphin3-l32-3b": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "selfhost:smollm3-3b": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "selfhost:qwen2.5-0.5b": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "selfhost:gemma-2-2b": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "selfhost:phi-3.5-mini": {
+          "status": "healthy",
+          "latency_ms": 107376.11031532288,
+          "calls_ok": 1,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 107376.11031532288,
+          "fail_ratio": 0.0,
+          "flag": "SLOW"
+        },
+        "selfhost:qwen2.5-1.5b": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "cerebras:qwen-3-235b": {
+          "status": "error",
+          "latency_ms": 451.30067253112793,
+          "calls_ok": 125,
+          "calls_fail": 1112,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 446.71948291053457,
+          "fail_ratio": 0.899,
+          "flag": "BROKEN"
+        },
+        "cerebras:llama3.1-8b": {
+          "status": "error",
+          "latency_ms": 406.3513069032873,
+          "calls_ok": 159,
+          "calls_fail": 654,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 403.6500689230467,
+          "fail_ratio": 0.804,
+          "flag": "BROKEN"
+        },
+        "openrouter:glm-4.5-air:free": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "openrouter:gpt-oss-20b:free": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "google:gemini-2.5-flash": {
+          "status": "error",
+          "latency_ms": 10035.449419702802,
+          "calls_ok": 14,
+          "calls_fail": 622,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 10035.449419702802,
+          "fail_ratio": 0.978,
+          "flag": "BROKEN"
+        },
+        "google:gemini-3-flash": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "mistral:large": {
+          "status": "healthy",
+          "latency_ms": 5674.212411375076,
+          "calls_ok": 317,
+          "calls_fail": 189,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 5587.709160364838,
+          "fail_ratio": 0.374,
+          "flag": null
+        },
+        "mistral:medium": {
+          "status": "healthy",
+          "latency_ms": 5647.964677990851,
+          "calls_ok": 741,
+          "calls_fail": 19,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 5569.797652540073,
+          "fail_ratio": 0.025,
+          "flag": null
+        },
+        "mistral:small": {
+          "status": "healthy",
+          "latency_ms": 8663.81836682558,
+          "calls_ok": 64,
+          "calls_fail": 2,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 8663.81836682558,
+          "fail_ratio": 0.03,
+          "flag": null
+        },
+        "mistral:nemo": {
+          "status": "error",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 38,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 1.0,
+          "flag": "BROKEN"
+        },
+        "mistral:ministral-8b": {
+          "status": "error",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 7,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 1.0,
+          "flag": "BROKEN"
+        },
+        "openrouter:gemma-4-26b:free": {
+          "status": "error",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 1,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 1.0,
+          "flag": null
+        },
+        "openrouter:nemotron-120b:free": {
+          "status": "error",
+          "latency_ms": 4545.670032501221,
+          "calls_ok": 1,
+          "calls_fail": 409,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 4545.670032501221,
+          "fail_ratio": 0.998,
+          "flag": "BROKEN"
+        },
+        "openrouter:minimax-m2.5:free": {
+          "status": "error",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 189,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 1.0,
+          "flag": "BROKEN"
+        },
+        "nvidia:minimax-m2.7": {
+          "status": "error",
+          "latency_ms": 32911.29720211029,
+          "calls_ok": 6,
+          "calls_fail": 206,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 32911.29720211029,
+          "fail_ratio": 0.972,
+          "flag": "SLOW"
+        },
+        "nvidia:minimax-m2.7-alt": {
+          "status": "error",
+          "latency_ms": 38782.838344573975,
+          "calls_ok": 6,
+          "calls_fail": 189,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 38782.838344573975,
+          "fail_ratio": 0.969,
+          "flag": "SLOW"
+        },
+        "nvidia:llama-3.3-70b": {
+          "status": "healthy",
+          "latency_ms": 24030.35290617692,
+          "calls_ok": 19,
+          "calls_fail": 12,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 23873.346593644885,
+          "fail_ratio": 0.387,
+          "flag": null
+        },
+        "nvidia:nemotron-70b": {
+          "status": "error",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 11,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 1.0,
+          "flag": "BROKEN"
+        },
+        "nvidia:qwen3-80b-thinking": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "nvidia:qwen3-80b-thinking-alt": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:gpt-4.1": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:gpt-4.1-mini": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:gpt-4.1-nano": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:gpt-4o-mini": {
+          "status": "error",
+          "latency_ms": 8787.047386169434,
+          "calls_ok": 52,
+          "calls_fail": 64,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 8787.047386169434,
+          "fail_ratio": 0.552,
+          "flag": "BROKEN"
+        },
+        "github:llama-3.3-70b": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:llama-4-scout": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:deepseek-v3": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:deepseek-r1": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:mistral-medium": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:grok-3": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:grok-3-mini": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:phi-4-mini": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "github:cohere-r-plus": {
+          "status": "unknown",
+          "latency_ms": 0.0,
+          "calls_ok": 0,
+          "calls_fail": 0,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 0.0,
+          "fail_ratio": 0.0,
+          "flag": null
+        },
+        "openrouter:qwen3-80b:free": {
+          "status": "error",
+          "latency_ms": 12418.573578198751,
+          "calls_ok": 12,
+          "calls_fail": 818,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 12418.573578198751,
+          "fail_ratio": 0.986,
+          "flag": "BROKEN"
+        },
+        "openrouter:llama-3.3-70b:free": {
+          "status": "error",
+          "latency_ms": 38222.44645754496,
+          "calls_ok": 15,
+          "calls_fail": 357,
+          "consecutive_down": 0,
+          "median_latency_ms_20w": 38222.44645754496,
+          "fail_ratio": 0.96,
+          "flag": "SLOW"
+        }
+      },
+      "dead_aliases": [],
+      "slow_aliases": [
+        "selfhost:phi-3.5-mini",
+        "nvidia:minimax-m2.7",
+        "nvidia:minimax-m2.7-alt",
+        "openrouter:llama-3.3-70b:free"
+      ],
+      "broken_aliases": [
+        "selfhost:qwen3-4b",
+        "cerebras:qwen-3-235b",
+        "cerebras:llama3.1-8b",
+        "google:gemini-2.5-flash",
+        "mistral:nemo",
+        "mistral:ministral-8b",
+        "openrouter:nemotron-120b:free",
+        "openrouter:minimax-m2.5:free",
+        "nvidia:nemotron-70b",
+        "github:gpt-4o-mini",
+        "openrouter:qwen3-80b:free"
+      ]
+    },
+    "selfhost_fleet_probe": {
+      "ts": "2026-04-20T09:22:03Z",
+      "results": [
+        {
+          "acct": "LBJLincoln",
+          "name": "qwen25-05b-cpu",
+          "state": "LIVE",
+          "models": [
+            "qwen2.5-0.5b-instruct"
+          ]
+        },
+        {
+          "acct": "LBJLincoln",
+          "name": "gemma2-2b-cpu",
+          "state": "LIVE",
+          "models": [
+            "gemma-2-2b-it"
+          ]
+        },
+        {
+          "acct": "LBJLincoln",
+          "name": "phi35-mini-cpu",
+          "state": "LIVE",
+          "models": [
+            "phi-3.5-mini-instruct"
+          ]
+        },
+        {
+          "acct": "LBJLincoln26",
+          "name": "gemma3-4b-cpu",
+          "state": "LIVE",
+          "models": [
+            "gemma-3-4b-it"
+          ]
+        },
+        {
+          "acct": "TESTforge42",
+          "name": "qwen3-4b-cpu",
+          "state": "LIVE",
+          "models": [
+            "qwen3-4b-instruct"
+          ]
+        },
+        {
+          "acct": "TESTforge42",
+          "name": "llama32-1b-cpu",
+          "state": "LIVE",
+          "models": [
+            "dolphin3-llama3.2-3b"
+          ]
+        },
+        {
+          "acct": "TESTforge42",
+          "name": "smollm3-3b-cpu",
+          "state": "HTTP503",
+          "models": []
+        },
+        {
+          "acct": "TESTforge42",
+          "name": "qwen25-15b-cpu",
+          "state": "HTTP503",
+          "models": []
+        },
+        {
+          "acct": "Nomos42",
+          "name": "nomos42-llm-cpu",
+          "state": "HTTP503",
+          "models": []
+        },
+        {
+          "acct": "Nomos42",
+          "name": "nomos-cpu-gemma4",
+          "state": "HTTP503",
+          "models": []
+        },
+        {
+          "acct": "Nomos42",
+          "name": "fin-r1-7b-cpu",
+          "state": "HTTP503",
+          "models": []
+        }
+      ],
+      "live": 6,
+      "total": 11
+    }
+  },
+  "tf_analytics": {
+    "fleets": {
+      "nba": {
+        "days_logged": 5,
+        "latest_file": "data/tf-analytics/nba/day-127.json",
+        "top5_by_bankroll": [],
+        "bottom3_by_bankroll": [],
+        "lockstep_jaccard": null,
+        "total_bets": null,
+        "fleet_bankroll_sum": 0
+      },
+      "pol": {
+        "days_logged": 3,
+        "latest_file": "data/tf-analytics/pol/day-168.json",
+        "top5_by_bankroll": [],
+        "bottom3_by_bankroll": [],
+        "lockstep_jaccard": null,
+        "total_bets": null,
+        "fleet_bankroll_sum": 0
+      },
+      "pqtf": {
+        "days_logged": 3,
+        "latest_file": "data/tf-analytics/pqtf/day-049.json",
+        "top5_by_bankroll": [],
+        "bottom3_by_bankroll": [],
+        "lockstep_jaccard": null,
+        "total_bets": null,
+        "fleet_bankroll_sum": 0
+      }
+    },
+    "summary": {
+      "ts": "2026-04-20T08:45:01.878204Z",
+      "tfs": {
+        "nba": {
+          "day": 127,
+          "date": "2026-02-15",
+          "fleet": {
+            "n_agents": 8,
+            "fleet_total": 461.12,
+            "fleet_avg": 57.64,
+            "fleet_leader": "selfhost-dolphin3",
+            "fleet_laggard": "selfhost-qwen4b",
+            "fleet_total_deploy_pct": 0.07,
+            "day_total_bets": 5,
+            "day_total_wins": 3,
+            "day_total_losses": 2,
+            "day_fleet_pnl": 40.78,
+            "day_fleet_wr": 0.6,
+            "jaccard_fleet_mean": 0.0,
+            "jaccard_fleet_max": 0.0
+          },
+          "source_file": "day-127"
+        },
+        "pol": {
+          "day": 168,
+          "date": "2026-03-17",
+          "fleet": {
+            "n_agents": 17,
+            "fleet_total": 1614.26,
+            "fleet_avg": 94.96,
+            "fleet_leader": "gemini-tact",
+            "fleet_laggard": "nvidia-llama70",
+            "fleet_total_deploy_pct": 0.181,
+            "day_total_bets": 28,
+            "day_total_wins": 9,
+            "day_total_losses": 19,
+            "day_fleet_pnl": 6.62,
+            "day_fleet_wr": 0.321,
+            "jaccard_fleet_mean": 0.422,
+            "jaccard_fleet_max": 1.0
+          },
+          "source_file": "day-168"
+        },
+        "pqtf": {
+          "day": null,
+          "date": "2026-04-02",
+          "fleet": {
+            "n_agents": 6,
+            "fleet_total": 602353.97,
+            "fleet_avg": 100392.33,
+            "fleet_leader": "mistral-large",
+            "fleet_laggard": "llama-contra",
+            "day_fleet_pnl": 39147.34,
+            "n_sessions": 4,
+            "n_positions": 36,
+            "n_pacts": 5,
+            "n_stops_triggered": 0,
+            "avg_var_95": 14.04,
+            "max_var_95": 25.0,
+            "avg_iv_open": 0.18,
+            "jaccard_fleet_mean": 0.024,
+            "jaccard_fleet_max": 0.118
+          },
+          "source_file": "day-049"
+        }
+      }
+    }
+  },
+  "audit": {
+    "latest_alert_file": "[{'severity': 'warn', 'floor': 'nba', 'check': 'lockstep', 'detail': {'worst_share': 0.878, 'per_day': [{'day': 'data/decisions/day-003.json', 'share_10': 57, 'share_all': 57, 'total': 88, 'share_pct': 0.648}, {'day': 'data/decisions/day-004.json', 'share_10': 25, 'share_all': 25, 'total': 41, 'shar",
+    "last_10_runs": [
+      "data/audit/2026-04-19T1240.json",
+      "data/audit/2026-04-19T1310.json",
+      "data/audit/2026-04-19T1640.json",
+      "data/audit/2026-04-19T1718.json",
+      "data/audit/2026-04-19T2040.json",
+      "data/audit/2026-04-19T2051.json",
+      "data/audit/2026-04-19T2052.json",
+      "data/audit/2026-04-20T0040.json",
+      "data/audit/2026-04-20T0440.json",
+      "data/audit/2026-04-20T0840.json"
+    ],
+    "severity_counts": {},
+    "sample_findings": []
+  },
+  "research": {
+    "arxiv_scans": [
+      "arxiv-scan-2026-04-18.json",
+      "arxiv-scan-2026-04-19.json",
+      "arxiv-scan-2026-04-20.json"
+    ],
+    "github_scans": [
+      "github-scan-2026-04-18.json",
+      "github-scan-2026-04-19.json",
+      "github-scan-2026-04-20.json"
+    ],
+    "proposal_status_counts": {
+      "?": 11,
+      "pending": 3
+    },
+    "proposal_priority_counts": {
+      "1": 5,
+      "2": 3,
+      "3": 4,
+      "5": 1,
+      "?": 1
+    },
+    "implemented_recent": [],
+    "pending_top": [
+      {
+        "file": "tf-proposals-2026-04-20-refresh.json",
+        "title": "Replace MANDATORY-pact prompt with Coalition-of-Thought (CoalT) from Guo et al. 2604.14386",
+        "prio": 1,
+        "status": null,
+        "applied_via": null
+      },
+      {
+        "file": "tf-proposals-2026-04-20-refresh.json",
+        "title": "Replace heuristic MIN_DEPLOY tiers with formal Risk-Constrained Kelly 1-D calibration (Long 2604.11577)",
+        "prio": 1,
+        "status": null,
+        "applied_via": null
+      },
+      {
+        "file": "tf-proposals-2026-04-20-refresh.json",
+        "title": "Audit all islands; swap isotonic \u2192 Venn-Abers / Beta on CatBoost/XGBoost/LightGBM (Manokhin 2601.19944)",
+        "prio": 1,
+        "status": null,
+        "applied_via": null
+      },
+      {
+        "file": "tf-proposals-2026-04-20-refresh.json",
+        "title": "Port PolySwarm's KL/JS divergence cross-market inefficiency engine as lockstep/inefficiency signal",
+        "prio": 1,
+        "status": null,
+        "applied_via": null
+      },
+      {
+        "file": "tf-proposals-2026-04-20.json",
+        "title": "CRITICAL: NBA TF thesis\u2194outcome leakage re-detected",
+        "prio": 1,
+        "status": "pending",
+        "applied_via": null
+      }
+    ]
+  },
+  "cross_tf": {
+    "latest": {
+      "ts": "2026-04-20T082501Z",
+      "fleets_ok": [
+        "nba",
+        "pol",
+        "pqtf",
+        "itf"
+      ],
+      "fleets_err": [],
+      "agent_count": 47,
+      "llm_ranking": [
+        {
+          "llm": "mistral:large",
+          "tier": "large",
+          "fleets": [
+            "itf",
+            "nba",
+            "pol",
+            "pqtf"
+          ],
+          "agents_using": 5,
+          "sum_bankroll": 244319.65,
+          "avg_multiplier": 488.639,
+          "dominance": 2439.495,
+          "wr": 0.483,
+          "llm_ok_rate": 0.953,
+          "llm_calls": 957
+        },
+        {
+          "llm": "mistral:medium",
+          "tier": "medium",
+          "fleets": [
+            "itf",
+            "nba",
+            "pol",
+            "pqtf"
+          ],
+          "agents_using": 5,
+          "sum_bankroll": 154877.92,
+          "avg_multiplier": 309.756,
+          "dominance": 1544.731,
+          "wr": 0.537,
+          "llm_ok_rate": 0.97,
+          "llm_calls": 980
+        },
+        {
+          "llm": "mistral:nemo",
+          "tier": "fast",
+          "fleets": [
+            "nba",
+            "pol",
+            "pqtf"
+          ],
+          "agents_using": 3,
+          "sum_bankroll": 120395.93,
+          "avg_multiplier": 401.32,
+          "dominance": 1201.984,
+          "wr": 0.536,
+          "llm_ok_rate": 0.796,
+          "llm_calls": 560
+        },
+        {
+          "llm": "google:gemini-3-flash",
+          "tier": "fast",
+          "fleets": [
+            "nba",
+            "pol",
+            "pqtf"
+          ],
+          "agents_using": 5,
+          "sum_bankroll": 83469.43,
+          "avg_multiplier": 166.939,
+          "dominance": 831.599,
+          "wr": 0.571,
+          "llm_ok_rate": 0.997,
+          "llm_calls": 607
+        },
+        {
+          "llm": "selfhost:dolphin3-l32-3b",
+          "tier": "slow",
+          "fleets": [
+            "nba",
+            "pol"
+          ],
+          "agents_using": 2,
+          "sum_bankroll": 399.97,
+          "avg_multiplier": 2.0,
+          "dominance": 2.162,
+          "wr": 0.597,
+          "llm_ok_rate": 0.422,
+          "llm_calls": 294
+        },
+        {
+          "llm": "cerebras:qwen-3-235b",
+          "tier": "large",
+          "fleets": [
+            "itf",
+            "nba",
+            "pol",
+            "pqtf"
+          ],
+          "agents_using": 6,
+          "sum_bankroll": 515.71,
+          "avg_multiplier": 0.86,
+          "dominance": 0.848,
+          "wr": 0.526,
+          "llm_ok_rate": 0.881,
+          "llm_calls": 665
+        },
+        {
+          "llm": "nvidia:minimax-m2.7",
+          "tier": "large",
+          "fleets": [
+            "itf",
+            "nba",
+            "pol"
+          ],
+          "agents_using": 3,
+          "sum_bankroll": 205.49,
+          "avg_multiplier": 0.685,
+          "dominance": 0.018,
+          "wr": 0.626,
+          "llm_ok_rate": 0.58,
+          "llm_calls": 376
+        },
+        {
+          "llm": "cerebras:llama3.1-8b",
+          "tier": "fast",
+          "fleets": [
+            "nba",
+            "pol",
+            "pqtf"
+          ],
+          "agents_using": 3,
+          "sum_bankroll": 183.35,
+          "avg_multiplier": 0.611,
+          "dominance": 0,
+          "wr": 0.475,
+          "llm_ok_rate": 0.855,
+          "llm_calls": 214
+        },
+        {
+          "llm": "mistral:small",
+          "tier": "medium",
+          "fleets": [
+            "nba",
+            "pol"
+          ],
+          "agents_using": 2,
+          "sum_bankroll": 98.69,
+          "avg_multiplier": 0.493,
+          "dominance": 0,
+          "wr": 0.441,
+          "llm_ok_rate": 0.971,
+          "llm_calls": 171
+        },
+        {
+          "llm": "mistral:ministral-8b",
+          "tier": "fast",
+          "fleets": [
+            "nba",
+            "pol"
+          ],
+          "agents_using": 2,
+          "sum_bankroll": 85.03,
+          "avg_multiplier": 0.425,
+          "dominance": 0,
+          "wr": 0.555,
+          "llm_ok_rate": 0.587,
+          "llm_calls": 264
+        },
+        {
+          "llm": "openrouter:nemotron-120b:free",
+          "tier": "large",
+          "fleets": [
+            "itf",
+            "nba"
+          ],
+          "agents_using": 2,
+          "sum_bankroll": 170.05,
+          "avg_multiplier": 0.85,
+          "dominance": 0.0,
+          "wr": 0.4,
+          "llm_ok_rate": 0.753,
+          "llm_calls": 231
+        },
+        {
+          "llm": "selfhost:qwen3-4b",
+          "tier": "medium",
+          "fleets": [
+            "nba"
+          ],
+          "agents_using": 1,
+          "sum_bankroll": 5.88,
+          "avg_multiplier": 0.059,
+          "dominance": 0,
+          "wr": 0.529,
+          "llm_ok_rate": 0.512,
+          "llm_calls": 127
+        },
+        {
+          "llm": "nvidia:llama-3.3-70b",
+          "tier": "large",
+          "fleets": [
+            "nba",
+            "pol"
+          ],
+          "agents_using": 2,
+          "sum_bankroll": 65.26,
+          "avg_multiplier": 0.326,
+          "dominance": 0,
+          "wr": 0.451,
+          "llm_ok_rate": 0.456,
+          "llm_calls": 294
+        },
+        {
+          "llm": "selfhost:gemma-3-4b",
+          "tier": "medium",
+          "fleets": [
+            "nba",
+            "pol"
+          ],
+          "agents_using": 2,
+          "sum_bankroll": 95.6,
+          "avg_multiplier": 0.478,
+          "dominance": 0,
+          "wr": 0.474,
+          "llm_ok_rate": 0.531,
+          "llm_calls": 294
+        },
+        {
+          "llm": "selfhost:qwen3-0.6b",
+          "tier": "fast",
+          "fleets": [
+            "nba",
+            "pol"
+          ],
+          "agents_using": 2,
+          "sum_bankroll": 106.22,
+          "avg_multiplier": 0.531,
+          "dominance": 0,
+          "wr": 0.511,
+          "llm_ok_rate": 0.432,
+          "llm_calls": 294
+        }
+      ],
+      "itf_mismatch_alerts": [],
+      "top3_by_dominance": [
+        "mistral:large",
+        "mistral:medium",
+        "mistral:nemo"
+      ],
+      "top3_by_sum_bankroll": [
+        "mistral:large",
+        "mistral:medium",
+        "mistral:nemo"
+      ]
+    },
+    "alerts": {},
+    "recent_attribution_files": [
+      "attribution-2026-04-20T002506Z.json",
+      "attribution-2026-04-20T042501Z.json",
+      "attribution-2026-04-20T082501Z.json"
+    ]
+  },
+  "tracks": {
+    "t1-science": {
+      "timestamp": "2026-04-20T09:17:01.382113+00:00",
+      "track": "T1 SCIENCE",
+      "absorbs": [
+        "D1 research",
+        "D3 evolution",
+        "D6 evaluation"
+      ],
+      "status": "ok",
+      "last_metric": {
+        "fleet_best_brier": 0.22447,
+        "target_brier": 0.2,
+        "calibration_mce": null,
+        "calibration_ece": null,
+        "drift_alarms": 0
+      },
+      "last_action": "21 evolution islands running, fleet-matrix scoreboard fresh every 30min",
+      "next_proposal": "If fleet_best stagnates >24h, trigger diversify on worst 2 islands",
+      "blocked_on": null
+    },
+    "t2-platform": {
+      "timestamp": "2026-04-20T09:17:01.402308+00:00",
+      "track": "T2 PLATFORM",
+      "absorbs": [
+        "D2 engineering",
+        "D7 infra",
+        "D9 cross-repo"
+      ],
+      "status": "watch",
+      "last_metric": {
+        "engine_sha_match": null,
+        "nba_fleet_up": null,
+        "infra_alerts": 0
+      },
+      "last_action": "Both TFs deployed w/ T13/T14 NVIDIA parity 2026-04-17",
+      "next_proposal": "Wire auto-deploy-engine for engine.py parity drift detection",
+      "blocked_on": null
+    },
+    "t3-market": {
+      "timestamp": "2026-04-20T09:17:01.405024+00:00",
+      "track": "T3 MARKET",
+      "absorbs": [
+        "D4 product",
+        "D5 business"
+      ],
+      "status": "behind",
+      "last_metric": {
+        "telegram_subs": 0,
+        "paying_subs": 0,
+        "mrr_usd": 0,
+        "target_may1": 95
+      },
+      "last_action": "@Nomos42Picks channel + Stripe paywall scaffolded",
+      "next_proposal": "Publish first daily-picks pilot to warm the channel",
+      "blocked_on": "Need \u22655 subs by May 8 to pay Claude Code CLI"
+    },
+    "t4-capital": {
+      "timestamp": "2026-04-20T09:17:01.413743+00:00",
+      "track": "T4 CAPITAL",
+      "absorbs": [
+        "D8 finance",
+        "NBA TF",
+        "POL TF"
+      ],
+      "status": "ok",
+      "last_metric": {
+        "nba_tf_total_bankroll": null,
+        "pol_tf_total_bankroll": null,
+        "nba_tf_agents": 14,
+        "pol_tf_agents": 14,
+        "target_collective_usd": 1000000,
+        "min_deploy_pct": 0.75
+      },
+      "last_action": "T13 nvidia-minimax + T14 nvidia-llama70 deployed to both TFs 2026-04-17",
+      "next_proposal": "Monitor NVIDIA agent performance 24h; add parlay sizing if NBA conviction high",
+      "blocked_on": null
+    },
+    "recent_orch_events": [
+      {
+        "ts": "2026-04-19T07:30:00Z",
+        "agent": "nomos-brain",
+        "event": "dispatch",
+        "track": "T1_SCIENCE",
+        "targets": [
+          "nomos-audit",
+          "nomos-lab"
+        ],
+        "reason": "PQTF 50/50 finished 2.34x, POL+NBA TF finished 50d, tier-pad lockstep killed 482698f34 \u2014 department v3 improvement loop never fired for PQTF. Closing it now.",
+        "tasks": {
+          "nomos-audit": [
+            "tf_postmortem --fleet pqtf",
+            "cron extend 6h",
+            "scripts/audit/tf_to_proposals.py",
+            "cron extend 4h +5min"
+          ],
+          "nomos-lab": [
+            "consume_proposals.py @ 12h tick",
+            "engine.py parity sha256 check",
+            "experiment-ledger append"
+          ]
+        },
+        "brief_files": [
+          ".claude/agent-memory/nomos-audit/dispatch-2026-04-19.md",
+          ".claude/agent-memory/nomos-lab/dispatch-2026-04-19.md"
+        ]
+      },
+      {
+        "ts": "2026-04-19T08:06:05Z",
+        "agent": "nomos-audit",
+        "action": "pqtf-postmortem-bridge-shipped",
+        "details": "tf_postmortem.py --fleet pqtf live (2 local snapshots \u2192 report OK). tf_to_proposals.py: 10 proposals written to data/research/tf-proposals-2026-04-19.json. Crons: 40 */6 pqtf + 45 */4 proposals installed.",
+        "files_created": [
+          "scripts/audit/tf_to_proposals.py",
+          "data/tf-analysis/pqtf-report.md",
+          "data/research/tf-proposals-2026-04-19.json"
+        ],
+        "files_modified": [
+          "scripts/arena/tf_postmortem.py"
+        ]
+      }
+    ]
+  },
+  "git": {
+    "window": "since 2026-04-15",
+    "count": 400,
+    "by_tag": {
+      "DR_FRANKENSTEIN": 7,
+      "TF_INTEL": 3,
+      "LAUNCHPAD": 2,
+      "INTERNAL_AFFAIRS": 5,
+      "HAWKEYE": 2,
+      "COLAB_OPS": 1,
+      "FRANKENSTEIN": 6,
+      "PIXEL": 4,
+      "SWITCHBOARD": 10,
+      "ITF": 1,
+      "BRAIN": 3,
+      "PLAYER_PROPS": 1,
+      "DAILY_EDGE": 1,
+      "ATTRIBUTION": 1,
+      "CLAUDE_CODE_RESUME": 3,
+      "PLUMBER": 3,
+      "THE_TICKER": 3,
+      "SWISH": 3,
+      "ACCOUNTANT": 2,
+      "TICKER": 13,
+      "BLACKSMITH": 2,
+      "LOBBYIST": 3,
+      "DR FRANKENSTEIN": 3,
+      "THE TICKER": 2,
+      "INTERNAL AFFAIRS": 2,
+      "THE BLACKSMITH": 2,
+      "THE BOSS": 1,
+      "HERALD": 1,
+      "THE-TICKER": 1,
+      "THE-BOSS": 4
+    },
+    "by_theme": {
+      "nba-tf": 43,
+      "itf": 19,
+      "prompts": 3,
+      "pqtf": 17,
+      "pixel": 35,
+      "pol-tf": 21,
+      "audit": 7
+    },
+    "latest_12": [
+      {
+        "sha": "291a3b0ee",
+        "ts": "2026-04-20T08:31:05+00:00",
+        "author": "LBJLincoln",
+        "msg": "data: picks 2026-04-20"
+      },
+      {
+        "sha": "1c29d660b",
+        "ts": "2026-04-20T05:00:14+00:00",
+        "author": "LBJLincoln",
+        "msg": "research-vault: 2026-04-20T05:00Z compile"
+      },
+      {
+        "sha": "30b14fc2c",
+        "ts": "2026-04-20T04:00:16+00:00",
+        "author": "LBJLincoln",
+        "msg": "vault: refresh 2026-04-20 \u2014 335 raw, 14 wiki articles"
+      },
+      {
+        "sha": "43d2d87f3",
+        "ts": "2026-04-20T03:29:31+00:00",
+        "author": "LBJLincoln",
+        "msg": "[DR_FRANKENSTEIN] annotate player-props proposal as implemented"
+      },
+      {
+        "sha": "1a524457e",
+        "ts": "2026-04-20T03:29:22+00:00",
+        "author": "LBJLincoln",
+        "msg": "[DR_FRANKENSTEIN] ship player-prop ingestion (pp_* categories, 17592 entries across 802 games) per proposal nba-player-props-ingestion-2026-04-20"
+      },
+      {
+        "sha": "47a3f88e1",
+        "ts": "2026-04-20T03:16:10+00:00",
+        "author": "LBJLincoln",
+        "msg": "[TF_INTEL] research: player-props ingestion proposal (P1) + monitor cadence 4m\u21923m"
+      },
+      {
+        "sha": "dccae1a7c",
+        "ts": "2026-04-20T02:59:02+00:00",
+        "author": "LBJLincoln",
+        "msg": "[TF_INTEL] ops: tf_intel fix \u2014 Alpaca uses ALPACA_PAPER_KEY/SECRET (not ALPACA_API_KEY_ID)"
+      },
+      {
+        "sha": "42ec8d2fc",
+        "ts": "2026-04-20T02:57:37+00:00",
+        "author": "LBJLincoln",
+        "msg": "[TF_INTEL] ops: smart per-agent per-TF intel monitor + dispatcher (cron 4m/15m)"
+      },
+      {
+        "sha": "2841efd31",
+        "ts": "2026-04-20T02:47:40+00:00",
+        "author": "LBJLincoln",
+        "msg": "[LAUNCHPAD] gpu-burst: prune eliminated islands (11 survivors post-2026-04-17 cull)"
+      },
+      {
+        "sha": "fa66d655c",
+        "ts": "2026-04-20T02:46:52+00:00",
+        "author": "LBJLincoln",
+        "msg": "[INTERNAL_AFFAIRS] audit: NBA d006 leakage exoneration \u2014 tier-pad lockstep not excess_return leakage (severity 1)"
+      },
+      {
+        "sha": "410087cf3",
+        "ts": "2026-04-20T02:32:49+00:00",
+        "author": "LBJLincoln",
+        "msg": "[INTERNAL_AFFAIRS] rollup: cross-TF Apr 15-19 evidence pack for prompt rewrites (12 proposals, 5 patterns)"
+      },
+      {
+        "sha": "c8c4ec9ba",
+        "ts": "2026-04-20T02:30:24+00:00",
+        "author": "LBJLincoln",
+        "msg": "[HAWKEYE] research: Apr-20 arXiv+GitHub refresh \u2014 10 papers, 5 repos, 10 FRANKENSTEIN-ready proposals (CoalT, Risk-Constrained Kelly, Venn-Abers sweep, KL/JS divergence, PolyBench gate)"
+      }
+    ]
+  },
+  "selfhost": {
+    "ts": "2026-04-20T09:22:03Z",
+    "results": [
+      {
+        "acct": "LBJLincoln",
+        "name": "qwen25-05b-cpu",
+        "state": "LIVE",
+        "models": [
+          "qwen2.5-0.5b-instruct"
+        ]
+      },
+      {
+        "acct": "LBJLincoln",
+        "name": "gemma2-2b-cpu",
+        "state": "LIVE",
+        "models": [
+          "gemma-2-2b-it"
+        ]
+      },
+      {
+        "acct": "LBJLincoln",
+        "name": "phi35-mini-cpu",
+        "state": "LIVE",
+        "models": [
+          "phi-3.5-mini-instruct"
+        ]
+      },
+      {
+        "acct": "LBJLincoln26",
+        "name": "gemma3-4b-cpu",
+        "state": "LIVE",
+        "models": [
+          "gemma-3-4b-it"
+        ]
+      },
+      {
+        "acct": "TESTforge42",
+        "name": "qwen3-4b-cpu",
+        "state": "LIVE",
+        "models": [
+          "qwen3-4b-instruct"
+        ]
+      },
+      {
+        "acct": "TESTforge42",
+        "name": "llama32-1b-cpu",
+        "state": "LIVE",
+        "models": [
+          "dolphin3-llama3.2-3b"
+        ]
+      },
+      {
+        "acct": "TESTforge42",
+        "name": "smollm3-3b-cpu",
+        "state": "HTTP503",
+        "models": []
+      },
+      {
+        "acct": "TESTforge42",
+        "name": "qwen25-15b-cpu",
+        "state": "HTTP503",
+        "models": []
+      },
+      {
+        "acct": "Nomos42",
+        "name": "nomos42-llm-cpu",
+        "state": "HTTP503",
+        "models": []
+      },
+      {
+        "acct": "Nomos42",
+        "name": "nomos-cpu-gemma4",
+        "state": "HTTP503",
+        "models": []
+      },
+      {
+        "acct": "Nomos42",
+        "name": "fin-r1-7b-cpu",
+        "state": "HTTP503",
+        "models": []
+      }
+    ],
+    "live": 6,
+    "total": 11
+  },
+  "memory_index": {
+    "lines": 319,
+    "sections": [
+      {
+        "title": "DEPLOYMENT RULE",
+        "entries": [
+          "- [feedback_hf_first_then_vercel.md](feedback_hf_first_then_vercel.md) \u2014 Always deploy to HF Space first, Vercel prod only after user confirms"
+        ]
+      },
+      {
+        "title": "AUTONOMY RULE (2026-04-19)",
+        "entries": [
+          "- [feedback_always_do_all_apr19.md](feedback_always_do_all_apr19.md) \u2014 \"alwaus do all\" \u2014 documented recovery recipes on own infra = act, don't ask. Prod-visible surface + external-visible = still conf"
+        ]
+      },
+      {
+        "title": "POLYMARKET TF PROPOSAL (2026-04-20) \u2014 5th floor + POL options overlay queued for FRANKENSTEIN",
+        "entries": [
+          "- [project_polymarket_tf_proposal_apr20.md](project_polymarket_tf_proposal_apr20.md) \u2014 2 proposal JSONs committed cc77546a4. PM-TF: arb/maker/oracle, py-clob-client, Chainlink. POL options overlay: po"
+        ]
+      },
+      {
+        "title": "PIXEL v2.19 PANEL SURGERY (2026-04-20) \u2014 superposition fixed, 41-agent visibility restored",
+        "entries": [
+          "- [project_pixel_panel_surgery_apr20.md](project_pixel_panel_surgery_apr20.md) \u2014 Drastic surgery on HP/bet-tag/strategy-badge \u2192 hover-only + HP slimmed 8px\u21925px. Supersedes v2.15. Deploy via HF_TOKEN_L"
+        ]
+      },
+      {
+        "title": "ITF CRYPTO-PIVOT FIX (2026-04-20) \u2014 84%-pass RCA: quotes truncated hid all crypto",
+        "entries": [
+          "- [project_itf_crypto_pivot_apr20.md](project_itf_crypto_pivot_apr20.md) \u2014 `_build_prompt` sliced quotes[:22] so 48 equities filled slot and 10 crypto pairs invisible. Fixed: asset-class grouping + al"
+        ]
+      },
+      {
+        "title": "SELFHOST FLEET REALITY (2026-04-20) \u2014 5/15 LIVE, gateway selfhost: routing broken",
+        "entries": [
+          "- [project_selfhost_fleet_reality_apr20.md](project_selfhost_fleet_reality_apr20.md) \u2014 HTTP probe across 4 accounts: LBJLincoln 2/3 (gemma2-2b DOWN), LBJLincoln26 1/1, TESTforge42 2/4, Nomos42 0/7. Ga"
+        ]
+      },
+      {
+        "title": "ITF WINNER-ROUTED (2026-04-19) \u2014 follow cross-fleet aggressive winners, not equal-weight defaults",
+        "entries": [
+          "- [feedback_itf_follow_winners_apr19.md](feedback_itf_follow_winners_apr19.md) \u2014 Every ITF persona's model_primary MUST be a top-3 winner across NBA/POL/PQTF for its tier. Seeded 2026-04-19 with mistr"
+        ]
+      },
+      {
+        "title": "SELFHOST LLM EXPANSION (2026-04-19) \u2014 4 new OpenAI-compat selfhost, wheel-based build",
+        "entries": [
+          "- [project_selfhost_llm_expansion_apr19.md](project_selfhost_llm_expansion_apr19.md) \u2014 Pause P3/P6/P8/S19 \u2192 deploy qwen2.5-0.5b + gemma-2-2b + phi-3.5-mini + qwen2.5-1.5b. Use `--prefer-binary --extra"
+        ]
+      },
+      {
+        "title": "LLM FLEET DISTRIBUTED CROSS-ACCOUNTS (2026-04-19, 2-3 sessions ago) \u2014 6 RUNNING, 2 building, Nomos42 saturated",
+        "entries": [
+          "- [project_llm_fleet_distribution_apr19.md](project_llm_fleet_distribution_apr19.md) \u2014 11 island SURVIVORS (eliminated 10 \"nuls\": S10/S11/S12/S16/S19/S20/S21 + P3/P6/P8 \u2014 DO NOT restart). Selfhost LLM"
+        ]
+      },
+      {
+        "title": "LA FORGE THESIS (2026-04-19) \u2014 Nomos42 vs Paperclip AI positioning",
+        "entries": [
+          "- [project_la_forge_thesis_apr19.md](project_la_forge_thesis_apr19.md) \u2014 3 measurable floors (NBA Brier<0.20 / POL Brier<0.25 / PQTF 10\u00d7 by Nov 3) as the anti-vibes answer to Paperclip AI (38K\u2b50 \"zero-"
+        ]
+      },
+      {
+        "title": "PQTF 60% OF $1M (2026-04-19) \u2014 fleet completed 50/50 with $602K",
+        "entries": [
+          "- [project_pqtf_1m_60pct_apr19.md](project_pqtf_1m_60pct_apr19.md) \u2014 PQTF real-data run completed $600\u2192$602,354 (100,292% ROI, 60.2% of $1M mission alone). mistral-large $244K + mistral-medium $155K +"
+        ]
+      },
+      {
+        "title": "$1M ROAD 3 BLOCKERS FIXED (2026-04-19) \u2014 Cerebras + MIN_DEPLOY + coalitions",
+        "entries": [
+          "- [project_1m_road_3_blockers_apr19.md](project_1m_road_3_blockers_apr19.md) \u2014 efdddd5e1 + 77a01a839: time-windowed Cerebras circuit breaker, uniform-fallback emitter (NBA top-3 ML / POL SPY-QQQ-IWM, "
+        ]
+      },
+      {
+        "title": "PROMPT MUTATOR (2026-04-19) \u2014 closes post-mortem \u2192 next-day prompt loop",
+        "entries": [
+          "- [project_prompt_mutator_apr19.md](project_prompt_mutator_apr19.md) \u2014 `scripts/arena/prompt_mutator.py` writes `data/prompts/overrides.json`; NBA+POL TFs inject via `_load_prompt_override(fleet)` at "
+        ]
+      },
+      {
+        "title": "ITF MULTI-ASSET (2026-04-19) \u2014 17 ETFs \u2192 36 instruments, crypto 24/7",
+        "entries": [
+          "- [project_itf_multi_asset_apr19.md](project_itf_multi_asset_apr19.md) \u2014 ITF expanded: +10 MAG7 stocks, +6 crypto (BTC/ETH/SOL/AVAX/LINK/DOGE), extended-hours (08-24 UTC). Executor routes crypto\u2192marke"
+        ]
+      },
+      {
+        "title": "ITF POWER-UP (2026-04-19 late) \u2014 36 \u2192 71 instruments + options derivatives + GammaOptions 7th persona",
+        "entries": [
+          "- [project_itf_powerup_apr19.md](project_itf_powerup_apr19.md) \u2014 Universe +20 leveraged/vol/intl +20 single-name stocks. 5 option strategies (long/vertical_debit/vertical_credit/iron_condor/straddle) "
+        ]
+      },
+      {
+        "title": "POL TF 184-DAY EXTENSION (2026-04-19) \u2014 50 \u2192 184 dates (exceeds 175 NBA parity)",
+        "entries": [
+          "- [project_pol_tf_184day_extension_apr19.md](project_pol_tf_184day_extension_apr19.md) \u2014 backfill_price_history.py (yfinance, 37 tickers\u00d7200 bars) + backfill_form4.py (SEC EDGAR, 10 req/s, UA required"
+        ]
+      },
+      {
+        "title": "HOOP LAND PIXEL REPLICATION (2026-04-19) \u2014 aesthetic-only path, 5 days, \u00a32 budget",
+        "entries": [
+          "- [reference_hoop_land_pixel_apr19.md](reference_hoop_land_pixel_apr19.md) \u2014 GameMaker closed-source, chasersgaming Basketball NES pack (CC0). pablodelucca/pixel-agents base + PixiJS v8 60fps upgrade "
+        ]
+      },
+      {
+        "title": "GIT MUTEX FOR 14-AGENT CREW (2026-04-19) \u2014 safe_commit.sh w/ flock",
+        "entries": [
+          "- [project_git_mutex_apr19.md](project_git_mutex_apr19.md) \u2014 `scripts/lib/safe_commit.sh <AGENT> \"<msg>\" [paths...]` is now MANDATORY for every autonomous agent commit. flock on /tmp/nomos-git.lock (1"
+        ]
+      },
+      {
+        "title": "PQTF POST-MORTEM + PROPOSAL BRIDGE (2026-04-19) \u2014 tf_postmortem --fleet pqtf + tf_to_proposals",
+        "entries": [
+          "- [project_pqtf_postmortem_proposals_apr19.md](project_pqtf_postmortem_proposals_apr19.md) \u2014 tf_postmortem.py extended (--fleet pqtf/all). tf_to_proposals.py bridges reports \u2192 `data/research/tf-propos"
+        ]
+      },
+      {
+        "title": "DEAD DOMAINS (intentional, don't re-flag)",
+        "entries": [
+          "- [project_dead_domains_intentional.md](project_dead_domains_intentional.md) \u2014 nomospicks.vercel.app + nomos42.com deleted on purpose."
+        ]
+      },
+      {
+        "title": "HF STATIC SPACE URLS",
+        "entries": [
+          "- [reference_hf_static_space_urls.md](reference_hf_static_space_urls.md) \u2014 Static Spaces live at `.static.hf.space`, not `.hf.space`. Don't false-flag."
+        ]
+      },
+      {
+        "title": "GPU\u2192ISLAND PROMOTION GAP (2026-04-17) \u2014 FIXED",
+        "entries": [
+          "- [project_gpu_promotion_gap_apr17.md](project_gpu_promotion_gap_apr17.md) \u2014 Cron path fixed, 16/16 islands promoted with Karpathy 0.21218 NBA / 0.20454 POL configs."
+        ]
+      },
+      {
+        "title": "PIXEL-WORLD VISUAL REGRESSION (2026-04-17) \u2014 reverted",
+        "entries": [
+          "- [feedback_pixel_panel_regression_apr17.md](feedback_pixel_panel_regression_apr17.md) \u2014 +3 panels (P08/P09/P14) made user report \"agents disappeared\". Reverted 886c4fc2e. Never ship pixel-world visua"
+        ]
+      },
+      {
+        "title": "PIXEL-WORLD MERGE (2026-04-17\u219218) \u2014 Nomos42 code + LBJ sprites, duplicates deleted",
+        "entries": [
+          "- [project_pixel_merge_apr17.md](project_pixel_merge_apr17.md) \u2014 Nomos42/pixel-world = code (walking, inspect, particles) + pablodelucca sprite pack. All 3 duplicates now gone (2026-04-18): pixel-worl"
+        ]
+      },
+      {
+        "title": "TF HUB-STATE PERSISTENCE (2026-04-19) \u2014 fresh-restart recipe",
+        "entries": [
+          "- [project_tf_state_persistence_apr19.md](project_tf_state_persistence_apr19.md) \u2014 factory_reboot alone NOT enough; state lives in Hub. Use `/api/reset` (now purges Hub) via GH Action w/ HF_TOKEN_2. `"
+        ]
+      },
+      {
+        "title": "PQTF PHASE 2 + 4 ROOT-CAUSE BUGS (2026-04-18) \u2014 multi-leg options + gateway fixes",
+        "entries": [
+          "- [project_pqtf_phase2_apr18.md](project_pqtf_phase2_apr18.md) \u2014 vertical/condor/straddle/butterfly wired into pqtf engine. Fixed silent 0-bets: gateway_call kwarg + model-registry mismatch + missing "
+        ]
+      },
+      {
+        "title": "PQTF SURVIVAL FLOOR HARDCODE (2026-04-19) \u2014 $100K\u2192$100 migration missed engine.py:213",
+        "entries": [
+          "- [project_pqtf_survival_floor_fix_apr19.md](project_pqtf_survival_floor_fix_apr19.md) \u2014 `bankroll < 1000` defensive-skip gate (from $100K era) silenced all 6 agents when STARTING_BANKROLL dropped to "
+        ]
+      },
+      {
+        "title": "GPU PLATFORM MATRIX (2026-04-18) \u2014 7 platforms, 7 unique strategies, wired to depts",
+        "entries": [
+          "- [project_gpu_platform_matrix_apr18.md](project_gpu_platform_matrix_apr18.md) \u2014 Colab A TabPFN / Colab B TabICL / Kaggle SOTA-reimpl / ZeroGPU serverless / Modal CPCV+DSR / Lightning Karpathy-tree / "
+        ]
+      },
+      {
+        "title": "NOMOS-AUDIT (2026-04-18) \u2014 4h scientific-integrity sweep",
+        "entries": [
+          "- [project_nomos_audit_shipped_apr18.md](project_nomos_audit_shipped_apr18.md) \u2014 agent + `scripts/audit/run_audit.py` + cron :40 every 4h. 5 checks: leakage corr / bet sources / WR outlier / lockstep "
+        ]
+      },
+      {
+        "title": "TF LOCKSTEP JITTER + PQTF AUDIT + ANALYTICS (2026-04-18) \u2014 commit 2a067c15e",
+        "entries": [
+          "- [project_tf_lockstep_jitter_analytics_apr18.md](project_tf_lockstep_jitter_analytics_apr18.md) \u2014 blake2b per-agent jitter (amp 0.30) on POL+NBA post-filter. Audit extended to PQTF (session-Jaccard, "
+        ]
+      },
+      {
+        "title": "TF SCIENTIFIC PIPELINE (2026-04-18) \u2014 post-mortem analyzer + hub persistence bug fixed",
+        "entries": [
+          "- [project_tf_scientific_pipeline_apr18.md](project_tf_scientific_pipeline_apr18.md) \u2014 tf_postmortem.py pulls day-XXX.json \u2192 rationale analysis. Cron 6h. Findings: NBA mistral-ministral +10000% peak t"
+        ]
+      },
+      {
+        "title": "TF DRAWDOWN GUARDRAILS (2026-04-18) \u2014 peak-guard + preservation + structural-DMAD",
+        "entries": [
+          "- [project_tf_drawdown_guardrails_apr18.md](project_tf_drawdown_guardrails_apr18.md) \u2014 Both TFs: PEAK_DRAWDOWN_GUARD 0.70, preservation mode (5% bet/50% deploy/moneylines), CONSENSUS AGREE forbidden ("
+        ]
+      },
+      {
+        "title": "POL TF LEAKAGE (2026-04-18) \u2014 $13K was fabricated",
+        "entries": [
+          "- [project_pol_tf_leakage_apr18.md](project_pol_tf_leakage_apr18.md) \u2014 POL post-filter fell back to excess_return (future outcome) as signal \u2192 88% WR nemotron-120b guaranteed. Fixed 1a7a02b48, state w"
+        ]
+      },
+      {
+        "title": "POL TF POST-FIX AUDIT (2026-04-18 evening) \u2014 leakage gone, lockstep remains",
+        "entries": [
+          "- [project_pol_tf_postfix_audit_apr18.md](project_pol_tf_postfix_audit_apr18.md) \u2014 Day 49 post-wipe: WR 38.4% realistic, signal\u2260excess_return. BUT 4/5 picks held by \u226510/17 agents \u2192 lockstep. 67% top-r"
+        ]
+      },
+      {
+        "title": "TF COALITION MANDATORY (2026-04-18) \u2014 0 pacts root-cause fixed + guardrails relaxed",
+        "entries": [
+          "- [project_tf_coalition_mandatory_apr18.md](project_tf_coalition_mandatory_apr18.md) \u2014 Found 0/16 agents emitted coalition_proposal in 45+ NBA + 32+ POL days (prompt said OPTIONAL). Now MANDATORY + CO"
+        ]
+      },
+      {
+        "title": "FIN-R1 7B DEPLOYED (2026-04-17) \u2014 batch only, too slow for realtime TF",
+        "entries": [
+          "- [project_fin_r1_deployed_apr17.md](project_fin_r1_deployed_apr17.md) \u2014 Nomos42/fin-r1-7b-cpu LIVE. Q4_K_M 4.5GB on 2vCPU = >180s/call \u2192 too slow for TF. Reverted POL T15\u2192gemma-3-4b. Keep for D8 Fina"
+        ]
+      },
+      {
+        "title": "TF SCIENTIFIC AUDIT (2026-04-17) \u2014 all conditions verified",
+        "entries": [
+          "- [project_tf_scientific_audit_apr17.md](project_tf_scientific_audit_apr17.md) \u2014 $100 start, $1M goal, AXELROD_CANON+5 strats, tier coop, pacts, compounding, 225 cats/game, edges from 221-agent fleet "
+        ]
+      },
+      {
+        "title": "TF SCIENTIFIC BYPASS (2026-04-17) \u2014 circuit breaker + hot-swap + self-heal",
+        "entries": [
+          "- [project_tf_scientific_bypass_apr17.md](project_tf_scientific_bypass_apr17.md) \u2014 provider_health.py shipped both TFs (cbb5cb1eb). Dead LLM hot-swap tier-matched, async self-heal, 10s selfhost timeou",
+          "- [project_tf_first_real_results_apr17.md](project_tf_first_real_results_apr17.md) \u2014 First aggressive bets live: NBA day 5 / 201 bets / mistral-ministral $1386 (13.86x), 5 providers dead but hot-swap "
+        ]
+      },
+      {
+        "title": "4-TRACK CONSOLIDATION (2026-04-17) \u2014 9 depts\u21924 tracks, MIN_DEPLOY 75%, dead code purge",
+        "entries": [
+          "- [project_4tracks_consolidation_apr17.md](project_4tracks_consolidation_apr17.md) \u2014 MIN_DEPLOY_PCT=0.75 floor on both TFs (cash cap 25%), 30+ runtime files gitignored (git status = 0), 10.5k LOC dead"
+        ]
+      },
+      {
+        "title": "COLLECTIVE EXPERIMENT (2026-04-17) \u2014 10 agents, one $1M goal",
+        "entries": [
+          "- [project_collective_experiment_apr17.md](project_collective_experiment_apr17.md) \u2014 Both TFs shipped: morning council (qwen-235B moderator), rogue triggers (drawdown <$25 or peer >$250K), $1M shared "
+        ]
+      },
+      {
+        "title": "COUNCILS v2 (2026-04-15/16) \u2014 Niche + Live + Gated",
+        "entries": [
+          "- [project_councils_niche_apr15.md](project_councils_niche_apr15.md) \u2014 All 9 dept councils rewritten niche (Napoleonic D5, Tufte/Geist D4, CPCV D6, CFA D8, etc.), wired to Nomos42 LLM gateway (20 mode"
+        ]
+      },
+      {
+        "title": "VISION V20 (2026-04-11) \u2014 Social Trading Floor",
+        "entries": [
+          "- [project_vision_v20_social_trading_floor.md](project_vision_v20_social_trading_floor.md) \u2014 1 bet per agent, agents-as-profiles, repo dead-file purge, SOTA pixel+dashboard from top-3 internet studies",
+          "- [reference_mirofish_paperclip_truth.md](reference_mirofish_paperclip_truth.md) \u2014 \"Mirofish\" = camel-ai/oasis already vendored at vendor/oasis/, lite-mode only. \"Paperclip\" = local runner + dead HF S",
+          "- [reference_sota_pixel_stack_apr11.md](reference_sota_pixel_stack_apr11.md) \u2014 XP.css + @pixi/react + Kenney 1-Bit for /world. Luna palette hex codes verified. Ship in 5 steps.",
+          "- [reference_sota_dashboards_websites_apr12.md](reference_sota_dashboards_websites_apr12.md) \u2014 Top 3 dashboards (dYdX v4-web, bloomberg-terminal clone, OpenBB) + top 3 sites (Moltbook, Vercel/Geist, C",
+          "- [research_2026_apr_sota_papers.md](research_2026_apr_sota_papers.md) \u2014 7 papers ranked. TOP 3: Prediction Arena 2604.07355 (Mar 28 2026, validates 1-bet-per-agent), Agent Trading Arena 2502.17967 (c",
+          "- [research_2026_apr_multiagent_experiments.md](research_2026_apr_multiagent_experiments.md) \u2014 Top 5 SOTA multi-agent trading papers: Prediction Arena, Agent Trading Arena, TradingAgents, DMAD, QuantA"
+        ]
+      },
+      {
+        "title": "PIXEL /world OVERHAUL (2026-04-16) \u2014 \"OpenClaw\" found",
+        "entries": [
+          "- [reference_pixel_agents_openclaw_apr16.md](reference_pixel_agents_openclaw_apr16.md) \u2014 TOP 5 pixel-agent repos. #1 pablodelucca/pixel-agents (6.7k, active Apr 14 2026), #2 monkeystar0/pixel-claw (= "
+        ]
+      },
+      {
+        "title": "OBSERVABILITY (2026-04-15 research \u2192 2026-04-17 deployed \u2192 2026-04-18 WIRED)",
+        "entries": [
+          "- [reference_langfuse_keys.md](reference_langfuse_keys.md) \u2014 pk-lf/sk-lf keys + host. GREP THIS FIRST before asking user \u2014 user gave them 4\u00d7 already.",
+          "- [reference_agent_observability_apr2026.md](reference_agent_observability_apr2026.md) \u2014 Langfuse vs Weave vs AgentOps vs LangSmith vs Helicone vs Phoenix comparison.",
+          "- [project_langfuse_fixed_apr17.md](project_langfuse_fixed_apr17.md) \u2014 Nomos42/langfuse v2.95.11, Supabase eu-west-1, `langfuse` schema, pooler :6543. Secrets set on both TF Spaces 2026-04-18 \u2014 traces"
+        ]
+      },
+      {
+        "title": "AXELROD MECHS (2026-04-15) \u2014 Trading Floor cooperation dynamics",
+        "entries": [
+          "- [project_axelrod_mechs_apr15.md](project_axelrod_mechs_apr15.md) \u2014 Both TF apps ship Mech A (CK) + B (sacrificial rotation) + C (post-mortem log) + D (coalition pacts + reputation). AXELROD_CANON pr"
+        ]
+      },
+      {
+        "title": "CRITICAL: DEADLINE MAY 1 2026",
+        "entries": [
+          "- [project_deadline_may2026.md](project_deadline_may2026.md) \u2014 SHUTDOWN if no revenue by May 1. Can't pay CLI after May 8. $100/project. New verticals: cybersecurity SMEs, digital IDs, trading signals",
+          "- [project_monetization_may1_plan.md](project_monetization_may1_plan.md) \u2014 CONCRETE plan: @Nomos42Picks Telegram $19/mo, Stripe Payment Link, day-by-day schedule. Target \u22655 subs = $95/mo by May 8. See"
+        ]
+      },
+      {
+        "title": "DASHBOARD V3 REFACTORY (2026-04-13) \u2014 Nintendo Game Style",
+        "entries": [
+          "- [research_dashboard_refactory_apr13.md](research_dashboard_refactory_apr13.md) \u2014 SOTA: Agent Town (Phaser 3+Next.js), AI Town (a16z), Star Office UI, STONKS-9800, Phaser PixUI, Pixelact UI. Architec",
+          "- [reference_political_data_tools_apr13.md](reference_political_data_tools_apr13.md) \u2014 YouTube video V10Q_t7Gdho political tools. OpenSecrets, RealClearPolling, Cook Political, politicaldata R pkg, FE"
+        ]
+      },
+      {
+        "title": "SESSION APR 13 \u2014 OOM Recovery + Reality Update",
+        "entries": [
+          "- [project_session_apr13_recovery.md](project_session_apr13_recovery.md) \u2014 Git push race fix (20 sites), TF rewired to real 10-agent LLM, HF live experiment launched (ETA 8-10h), GPU audit (Paperspace"
+        ]
+      },
+      {
+        "title": "TF v3 KNOWN BUGS (2026-04-14)",
+        "entries": [
+          "- [project_tf_v3_gemini_silent_fail.md](project_tf_v3_gemini_silent_fail.md) \u2014 gemini-anl/tact have 0 bets in v3; parser returns None on Gemini responses. Confirmed end-to-end on 175/175-day completio",
+          "- [project_political_swarm_zero_days_apr14.md](project_political_swarm_zero_days_apr14.md) \u2014 Political swarm produces empty results on GH Actions (cross-repo private dep `nomos-political-alpha`). 3 fi",
+          "- [project_nba_tf_stake_sizing_bug_apr14.md](project_nba_tf_stake_sizing_bug_apr14.md) \u2014 NBA TF agents hit 55-65% WR but bankrolls crash to $0-$42; stake uses `starting_bankroll \u00d7 LLM-chosen pct` with"
+        ]
+      },
+      {
+        "title": "VERCEL FIXED (2026-04-14, was \"stuck\")",
+        "entries": [
+          "- [project_vercel_deploy_stale_apr14.md](project_vercel_deploy_stale_apr14.md) \u2014 Diagnosis was wrong: pipeline alive, builds ERRORing on TS errors. Fixed via 5 type-safety patches (dpl 6f38d2a..f1cd60"
+        ]
+      },
+      {
+        "title": "SESSION APR 12 \u2014 Real Improvements (morning + evening post-OOM)",
+        "entries": [
+          "- [project_session_apr12_real_improvements.md](project_session_apr12_real_improvements.md) \u2014 Morning: SPACE_ID fix 7/8 islands, Karpathy real data, GLM-5.1, Codespace. Evening (post-OOM): 98 scripts p",
+          "- [project_session_apr12_per_agent_shipped.md](project_session_apr12_per_agent_shipped.md) \u2014 Per-agent bet pipeline, T1 production results, CPCV gate in backtest swarm, provider diversification",
+          "- [research_2026_apr_multiagent_experiments.md](research_2026_apr_multiagent_experiments.md) \u2014 MOVED UP: see VISION V20 section"
+        ]
+      },
+      {
+        "title": "SESSION APR 10-11 (3-day lockout recovery + evening full fix + fleet update)",
+        "entries": [
+          "- [project_session_apr11_audit.md](project_session_apr11_audit.md) \u2014 Apr 11 \"verify not bullshit\" audit: adsb.lol+digitraffic.fi replace fictitious URLs, Brier proxy cached 100s\u21920.8s, Cat41 Baltic rew",
+          "- [project_session_apr11_audit_resume.md](project_session_apr11_audit_resume.md) \u2014 Apr 11 resume after VM/Termius crash: #19 Paperclip revert verified end-to-end, #20 Sortino cron confirmed, #21 OOS g",
+          "- [project_session_apr11_sota_push.md](project_session_apr11_sota_push.md) \u2014 Apr 11 SOTA push: 6 commits across mon-ipad + dashboard. DESIGN.md Bloomberg theme applied, /world rewritten as native Reac",
+          "- [project_session_apr11_full.md](project_session_apr11_full.md) \u2014 Fleet 8 islands, trader rename, council audit (mostly bullshit), Mirofish/Sportstensor research, YouTube sources, monetization May 1 ",
+          "- [project_session_apr10_fleet_update.md](project_session_apr10_fleet_update.md) \u2014 ALL 35+ scripts updated 6\u21928 islands (S16+S17), TF v5 crash found, councils audited",
+          "- [project_session_apr10_full.md](project_session_apr10_full.md) \u2014 Migration backup, brain/cron audit, TF made real, councils DNS fixed, isotonic calibration shipped, ATR 0.21517",
+          "- [project_session_apr10_evening.md](project_session_apr10_evening.md) \u2014 TF de-faked, pixel world data wired, councils DNS root cause, PIXEL-DESIGN.md, Modal+Kaggle operational, Cerebras added",
+          "- [reference_gemma4_free_routes.md](reference_gemma4_free_routes.md) \u2014 Gemma 4 (Apr 2026): free on OpenRouter, 4 variants, integration-ready",
+          "- [reference_cerebras_api.md](reference_cerebras_api.md) \u2014 Cerebras AI: ultra-fast inference (2000 tok/s), Llama 3.3 70B, OpenAI-compatible API"
+        ]
+      },
+      {
+        "title": "REALITY AUDIT 2026-04-08 (post-desperation push)",
+        "entries": [
+          "- [project_reality_audit_apr8.md](project_reality_audit_apr8.md) \u2014 4-dim audit: dashboard hardcoded+broken on Vercel, ZERO owned LLM Spaces, 104 games used 3x w/ no multi-test correction, pixel world ",
+          "- [feedback_stop_greenwashing_status.md](feedback_stop_greenwashing_status.md) \u2014 Never claim \"green/perfect\" from runtime alone; verify user-visible surface first."
+        ]
+      },
+      {
+        "title": "FORGE v19 (2026-04-03): 3 Layers \u00d7 8 Departments \u00d7 8 Repos",
+        "entries": [
+          "- [project_forge_v19.md](project_forge_v19.md) \u2014 DEPLOYED: Paperclip/Karpathy/Hermes/Conway-inspired unified enterprise",
+          "- [reference_conway_noflicker.md](reference_conway_noflicker.md) \u2014 Conway always-on agent + No-Flicker terminal (both Apr 2026)",
+          "- [reference_firecrawl.md](reference_firecrawl.md) \u2014 Firecrawl API for research web scraping",
+          "- [project_restructure_v18_vision.md](project_restructure_v18_vision.md) \u2014 v18 base: Forge dept structure, 5-AI Trading Floor",
+          "- [project_trading_floor_v4.md](project_trading_floor_v4.md) \u2014 Trading Floor v4: Gemini/OpenRouter/Claude/Codex/Grok \u00d7 NBA+Political"
+        ]
+      },
+      {
+        "title": "RESEARCH CYCLE 7 (2026-03-31): SOTA Gap Analysis",
+        "entries": [
+          "- [research_cycle7_sota_gap.md](research_cycle7_sota_gap.md) \u2014 Montrucchio 0.199 vs our 0.21570, 18-technique roadmap"
+        ]
+      },
+      {
+        "title": "RESEARCH CYCLE 13 (2026-04-07): Viz + orchestration SOTA",
+        "entries": [
+          "- [project_research_apr7_cycle13.md](project_research_apr7_cycle13.md) \u2014 TOP 10 dashboard improvements (recharts-based, zero new libs) + 7 orchestration repos. SHIPPED 4/10: #1 CSS tokens (4f081c3), #"
+        ]
+      },
+      {
+        "title": "BACKTEST PIPELINE BIASES (2026-04-07)",
+        "entries": [
+          "- [project_backtest_biases_apr7.md](project_backtest_biases_apr7.md) \u2014 9 biases audited, 3 fixed, 2 partial, 4 open. Real-pred match rate 76%, 9-season pool 11,513 games.",
+          "- [project_sota_research_apr7_cycle12.md](project_sota_research_apr7_cycle12.md) \u2014 Cycle 12 SOTA: Bayesian Kelly -0.003, Shot-Chart CNN -0.005, CPCV beats WF, TradingAgents Bull/Bear UI, 102-cat ApexC",
+          "- [project_session_apr7_tf_v5_shipped.md](project_session_apr7_tf_v5_shipped.md) \u2014 SHIPPED Apr 7: CPCV gate (cpcv_gate.py), Bull/Bear debate UI + 102-cat heatmap on /trading-floor. mon-ipad 2f73c16f, ",
+          "- [project_session_apr7_phase_a_parity.md](project_session_apr7_phase_a_parity.md) \u2014 SHIPPED Apr 7 PM: NBA\u2194Political CPCV parity, real vendor/TradingAgents+oasis, PLAN.md for /ultraplan, karpathy 2x\u21924",
+          "- [project_session_apr7_phase_b_free_hf.md](project_session_apr7_phase_b_free_hf.md) \u2014 SHIPPED Apr 7 evening: Phase B mocks removed (route.ts + political page.tsx), 5 traders pivoted gemini/grok/codex",
+          "- [project_session_apr7_phase_b_plus_visual.md](project_session_apr7_phase_b_plus_visual.md) \u2014 SHIPPED Apr 7 14:30 UTC: aggregate_swarm_to_season.py wires fresh swarm\u2192full-season-backtest.json every 4",
+          "- [project_session_apr7_calibration_ship.md](project_session_apr7_calibration_ship.md) \u2014 SHIPPED Apr 7 15:30-16:30 UTC: (1) PAV isotonic refit CV Brier -0.00413 + idempotency guard. (2) CPCV watcher c"
+        ]
+      },
+      {
+        "title": "ECOSYSTEM (5 repos, 5 bots, 5 Vercel)",
+        "entries": [
+          "- [project_architecture_v14.md](project_architecture_v14.md) \u2014 Base restructure",
+          "- [project_ecosystem_restructure.md](project_ecosystem_restructure.md) \u2014 v15 cross-repo"
+        ]
+      },
+      {
+        "title": "HF SPACES (6 islands, Nomos42 account)",
+        "entries": []
+      },
+      {
+        "title": "NBA QUANT AI \u2014 ATR 0.21570 (Colab TabICL)",
+        "entries": [
+          "- [project_nba_quant_evolution.md](project_nba_quant_evolution.md) \u2014 Evolution details",
+          "- [project_nba_quant_roadmap.md](project_nba_quant_roadmap.md) \u2014 4-phase roadmap",
+          "- [project_nba_tony_bloom.md](project_nba_tony_bloom.md) \u2014 Tony Bloom vision",
+          "- [project_nba_bankroll_100.md](project_nba_bankroll_100.md) \u2014 $100\u2192$103.92 (+3.92%)",
+          "- [project_odds_bug_fix.md](project_odds_bug_fix.md) \u2014 Away odds stored as home, fixed",
+          "- [project_prediction_pipeline_fix.md](project_prediction_pipeline_fix.md) \u2014 Phantom fix + evaluator"
+        ]
+      },
+      {
+        "title": "POLITICAL ALPHA v3.1 \u2014 22 categories, 743 features",
+        "entries": [
+          "- [project_political_v31.md](project_political_v31.md) \u2014 Cat17-22: insider+Trump+foreign sovereign"
+        ]
+      },
+      {
+        "title": "KARPATHY PATTERN (April 2026 Research)",
+        "entries": [
+          "- [karpathy_autoresearch_pattern.md](karpathy_autoresearch_pattern.md) \u2014 3-file arch, 5-min loop",
+          "- [karpathy_nba_adaptation.md](karpathy_nba_adaptation.md) \u2014 NBA adaptation",
+          "- [research_karpathy_april2026.md](/home/termius/mon-ipad/.claude/agent-memory/karpathy-researcher/research_karpathy_april2026.md) \u2014 Apr 2026: Obsidian KB, LLM Council, AutoResearch validation, Agenti",
+          "- [obsidian_rag_implementation_april2026.md](/home/termius/mon-ipad/.claude/agent-memory/karpathy-researcher/obsidian_rag_implementation_april2026.md) \u2014 Why Obsidian RAG not deployed, -0.002 Brier pot",
+          "- [research_obsidian_llm_brain_april2026.md](research_obsidian_llm_brain_april2026.md) \u2014 3-layer LLM Wiki (raw/wiki/CLAUDE.md), Claude Code + MCP integration, graph visualization, -0.001 to -0.003 Bri"
+        ]
+      },
+      {
+        "title": "FORGE + FLEET",
+        "entries": [
+          "- [project_forge_factory.md](project_forge_factory.md) \u2014 7 agents, 4 layers",
+          "- [project_pierre_test_user.md](project_pierre_test_user.md) \u2014 Pierre first user",
+          "- [project_master_plan_20requests.md](project_master_plan_20requests.md) \u2014 20 workstreams",
+          "- [project_superpowers_installed.md](project_superpowers_installed.md) \u2014 GStack + GEPA + 27 skills"
+        ]
+      },
+      {
+        "title": "CRITICAL RULES",
+        "entries": [
+          "- [feedback_compute_footprint_all_nodes.md](feedback_compute_footprint_all_nodes.md) \u2014 Don't disqualify tools on VM RAM alone. Brother laptop + HF Spaces + Kaggle = valid deployment targets.",
+          "- [feedback_zero_ml_on_vm.md](feedback_zero_ml_on_vm.md) \u2014 ZERO ML on 1vCPU/969MB",
+          "- [feedback_always_offload_hf.md](feedback_always_offload_hf.md) \u2014 Offload to HF Spaces",
+          "- [feedback_hf_deploy_subtree.md](feedback_hf_deploy_subtree.md) \u2014 Subtree push only",
+          "- [feedback_full_autonomy_except_comms.md](feedback_full_autonomy_except_comms.md) \u2014 Full autonomy, launch everything. Comms: prepare but don't publish. SEO+GEO+AI 2026.",
+          "- [feedback_never_build_on_vm.md](feedback_never_build_on_vm.md) \u2014 NEVER run next build/tsc on VM, push to Vercel instead"
+        ]
+      },
+      {
+        "title": "RESEARCH",
+        "entries": [
+          "- [project_research_cycle6.md](project_research_cycle6.md) \u2014 5 agents, 18 categories",
+          "- [project_feature_proposals_cycle6.md](project_feature_proposals_cycle6.md) \u2014 Cat 39-56",
+          "- [project_research_march2026.md](project_research_march2026.md) \u2014 Cycle 3",
+          "- [project_research_march2026_cycle4.md](project_research_march2026_cycle4.md) \u2014 Cycle 4"
+        ]
+      },
+      {
+        "title": "INFRA + GPU",
+        "entries": [
+          "- [project_infra_agent.md](project_infra_agent.md) \u2014 Modal, Kaggle, social signals",
+          "- [project_gpu_autonomous_strategy.md](project_gpu_autonomous_strategy.md) \u2014 Autonomous Karpathy on Kaggle/Lightning/Colab, CLI=strategist only",
+          "- [reference_lightning_ai.md](reference_lightning_ai.md) \u2014 Lightning credentials",
+          "- [reference_gpu_credentials.md](reference_gpu_credentials.md) \u2014 Modal token + Lightning SSH + laptop WSL (Aur\u00e9lien, Apr 3)"
+        ]
+      },
+      {
+        "title": "DASHBOARD (nomos-dashboard, Vercel)",
+        "entries": [
+          "- [project_dashboard_overhaul_apr1.md](project_dashboard_overhaul_apr1.md) \u2014 3 pages: homepage hub, /infra, /forge pushed 2026-04-01",
+          "- [project_user_vision_apr1.md](project_user_vision_apr1.md) \u2014 Full vision: Forge depts, comms, finance, VC deck, GPU strategy"
+        ]
+      },
+      {
+        "title": "DEPARTMENTS (11 total, 2026-04-01)",
+        "entries": [
+          "- [project_departments_11_apr1.md](project_departments_11_apr1.md) \u2014 D9 Communication, D10 Business, D11 Finance added. Guardian v3."
+        ]
+      },
+      {
+        "title": "TRADING FLOOR ITERATIONS",
+        "entries": [
+          "- [project_trading_floor_iter2.md](project_trading_floor_iter2.md) \u2014 Political +550% ROI champion, NBA iter 11 pending"
+        ]
+      },
+      {
+        "title": "VISION V2 (Apr 3 \u2014 post-crash recovery)",
+        "entries": [
+          "- [project_vision_apr3_full.md](project_vision_apr3_full.md) \u2014 ALL demands: dashboard V2, live data, charts, 50+ betting categories, Nintendo game, Obsidian, Telegram reports",
+          "- [project_session_apr3_recovery.md](project_session_apr3_recovery.md) \u2014 Recovery results: 11 done, evolution fix critical, S15 fossil bug",
+          "- [feedback_visible_output_priority.md](feedback_visible_output_priority.md) \u2014 STOP invisible infra, prioritize VISIBLE improvements always",
+          "- [project_brother_computer.md](project_brother_computer.md) \u2014 3rd compute node (brother's PC), Termius installed, key via Telegram"
+        ]
+      },
+      {
+        "title": "FULL SESSION (Apr 3, 2026)",
+        "entries": [
+          "- [project_session_apr3_full.md](project_session_apr3_full.md) \u2014 13 tasks done, 5 agents running: visual upgrade, $1M roadmap, neural nets, Neo4j graph, GPU platforms",
+          "- [project_1M_roadmap.md](project_1M_roadmap.md) \u2014 $99\u2192$1M: fix strategy to Grok's value_hunter+half_kelly, need 20+ bets/week at edge>5%, Brier 0.20 = +25-50% ROI",
+          "- [project_1B_enterprise_vision.md](project_1B_enterprise_vision.md) \u2014 $1B vision: 8-9 depts, councils, swarm agents, Bloomberg terminal, 1 user, TF v5 real data"
+        ]
+      },
+      {
+        "title": "STRATEGIC RECAP (Apr 3, 2026)",
+        "entries": [
+          "- [project_strategic_recap_apr3.md](project_strategic_recap_apr3.md) \u2014 Full council + TF + evo snapshot: Grok #1 $3.7K, Codex near death, 2 RED depts",
+          "- [reference_tailscale.md](reference_tailscale.md) \u2014 Tailscale mesh: VM + Laptop + iPad connected",
+          "- [project_laptop_brother.md](project_laptop_brother.md) \u2014 Acer Aspire 3, Claude Code Desktop, Windows, SSH pending"
+        ]
+      },
+      {
+        "title": "TRADING FLOOR ITERATIONS",
+        "entries": [
+          "- [project_trading_floor_iter2.md](project_trading_floor_iter2.md) \u2014 Political +550% ROI champion, NBA iter 11 pending"
+        ]
+      },
+      {
+        "title": "GAME REFERENCES (Apr 3)",
+        "entries": [
+          "- [reference_game_inspiration.md](reference_game_inspiration.md) \u2014 Top 10 pixel-art game repos: Claw-Empire, AI Town, STONKS-9800, LittleJS + free assets"
+        ]
+      },
+      {
+        "title": "COMPUTE ACCOUNTS (Apr 4)",
+        "entries": [
+          "- [reference_all_accounts.md](reference_all_accounts.md) \u2014 4 HF + 2 Colab + 1 Kaggle + 2 Lightning + Modal (user) + brother's accounts"
+        ]
+      },
+      {
+        "title": "SESSION APR 5 (crash recovery + TF v5 full fix)",
+        "entries": [
+          "- [project_session_apr5_fixes.md](project_session_apr5_fixes.md) \u2014 TF v5 timeout fix, VM IP corrected, ATR 0.21520, Colab exhausted",
+          "- [project_session_apr5_tfv5_fix.md](project_session_apr5_tfv5_fix.md) \u2014 All APIs dead\u2192HF Router+CLI, backtest engine v1, lite mode, JSON parser fix"
+        ]
+      },
+      {
+        "title": "SESSION APR 4 NIGHT (5 agents launched)",
+        "entries": [
+          "- [project_session_apr4_night.md](project_session_apr4_night.md) \u2014 5 bg agents: GPU fix, TF v5 fix, Pixel World upgrade, multi-phase thinking",
+          "- [feedback_all_on_vercel.md](feedback_all_on_vercel.md) \u2014 ALL visuals on Vercel, NOT HF Spaces",
+          "- [project_tf_v5_multi_phase.md](project_tf_v5_multi_phase.md) \u2014 217+ agents, 3-phase thinking, Claude CLI + Gemini agents",
+          "- [project_grok_proposal_quant_realms.md](project_grok_proposal_quant_realms.md) \u2014 Grok's AAA QUANT REALMS vision, adapt to /world",
+          "- [feedback_kill_old_councils.md](feedback_kill_old_councils.md) \u2014 KILL old v4 council loop, deploy NEW Hermes dept councils (5 DAYS OVERDUE)",
+          "- [project_pending_apr5.md](project_pending_apr5.md) \u2014 Full backlog: 8 critical items including Gemini proposal incoming",
+          "- [reference_gemini_claude_code_guide.md](reference_gemini_claude_code_guide.md) \u2014 Gemini PDF: Claude CLI flags for autonomous councils, CLAUDE.md best practices"
+        ]
+      },
+      {
+        "title": "REFERENCES",
+        "entries": [
+          "- [reference_cronjob_org.md](reference_cronjob_org.md) | [reference_brave_search.md](reference_brave_search.md)",
+          "- [project_telegram_bots.md](project_telegram_bots.md) \u2014 5 bots infrastructure",
+          "- [project_saas_pricing.md](project_saas_pricing.md) \u2014 $19/$49/$149 tiers",
+          "- [project_terminal_password.md](project_terminal_password.md) \u2014 Dashboard CLI"
+        ]
+      }
+    ]
+  },
+  "strategy_scorecard": {
+    "winners": [
+      {
+        "strat": "PQTF multi-agent multi-leg derivatives",
+        "impact": "PROVEN: $600 \u2192 $602,354 (100,292% ROI) across 50 days",
+        "winners": "mistral:large $244K + mistral:medium $155K + gemini-anl $17K",
+        "status": "ARCHIVED \u2014 preserved as $1M validation proof",
+        "lesson": "Real LLM agents + multi-leg options + $100 survival floor + stacking = path to $1M",
+        "score": 10
+      },
+      {
+        "strat": "Prompt mutator closed-loop (post-mortem \u2192 overrides.json \u2192 HF deploy)",
+        "impact": "Enables next-day prompt evolution; 6 rules across 4 TFs as of 2026-04-20",
+        "winners": "prompt_mutator.py + _load_prompt_override on NBA/POL/PQTF/ITF",
+        "status": "LIVE in production on all 3 TF Spaces",
+        "lesson": "Close the scientific feedback loop \u2014 if you can't mutate the prompt daily, you're not iterating",
+        "score": 9
+      },
+      {
+        "strat": "Cerebras time-windowed circuit breaker + uniform-fallback emitter",
+        "impact": "Silent-pass storage drops were dominant failure mode, not parser regex",
+        "winners": "commit efdddd5e1 + 77a01a839 \u2014 all 3 TFs",
+        "status": "LIVE",
+        "lesson": "Silent failures compound \u2014 every fallback path must emit a traceable bet, not silence",
+        "score": 9
+      },
+      {
+        "strat": "Player-props ingestion (17,592 pp_* lines across 802 games)",
+        "impact": "Unlocked NBA TF to bet on 42 previously-empty pp_ categories",
+        "winners": "fetch_player_props.py (Bovada+DK) + prepare_data.py merge + synth backfill",
+        "status": "DEPLOYED 2026-04-20 f0a9e0a21",
+        "lesson": "If the prompt advertises a menu, the data MUST back it \u2014 or agents fabricate",
+        "score": 8
+      },
+      {
+        "strat": "Selfhost LLM fleet distribution (11 Spaces, 4 accounts)",
+        "impact": "Cost-zero inference; 6/11 live with OpenAI-compatible /v1/models",
+        "winners": "LBJLincoln (3/3), LBJLincoln26 (1/1), TESTforge42 (2/4)",
+        "status": "PARTIAL \u2014 Nomos42 account 403-saturated (0/3); gateway has 10 selfhost: routes, 6 resolve live",
+        "lesson": "Free-tier concurrent-Space caps are the real bottleneck; spread across accounts",
+        "score": 7
+      },
+      {
+        "strat": "4-track orchestrator (Science / Platform / Market / Capital)",
+        "impact": "Consolidated 9 depts \u2192 4 tracks; MIN_DEPLOY 75% floor; saved 338MB + 10.5k LOC",
+        "winners": "data/tracks/TRACKS.md",
+        "status": "SPEC'D \u2014 orchestrator not yet auto-wired (every-8h Opus dispatch pending)",
+        "lesson": "Less is more \u2014 9 overlapping dept loops produced churn, 4 parallel tracks produce throughput",
+        "score": 7
+      },
+      {
+        "strat": "Axelrod canon (CK + sacrificial rotation + post-mortem log + coalitions)",
+        "impact": "All TF agents pre-pended with COLLECTIVE_MISSION + Axelrod canon",
+        "winners": "Commit 412fc6a19 \u2014 coalition_proposal made MANDATORY",
+        "status": "LIVE on NBA + POL",
+        "lesson": "Game-theoretic cooperation > isolated utility max \u2014 lockstep is preventable via structural divergence rule",
+        "score": 7
+      },
+      {
+        "strat": "Per-agent per-TF intelligent monitor + auto-dispatcher (3-min cadence)",
+        "impact": "Replaces LLM-testing cron with targeted 'what's broken' signal + brief generation",
+        "winners": "scripts/ops/tf_intel_monitor.py + tf_intel_dispatcher.py",
+        "status": "LIVE \u2014 runs every 3 min + 4-per-hour dispatcher",
+        "lesson": "Monitor what matters (agents, bets, silences, lockstep), not what's easy (LLM pings)",
+        "score": 8
+      },
+      {
+        "strat": "ITF 71-instrument + options derivatives + 7 personas",
+        "impact": "36 \u2192 71 instruments (MAG7 + leveraged + vol + crypto + options)",
+        "winners": "GammaOptions at mistral:large (PQTF $244K winner)",
+        "status": "LIVE (dry-run default, ITF_OPTIONS_LIVE=1 gates broker)",
+        "lesson": "Port the winning architecture (PQTF multi-leg) to ITF directly \u2014 don't re-invent",
+        "score": 7
+      },
+      {
+        "strat": "Hub-state-persistence clean-reset recipe",
+        "impact": "factory_reboot alone doesn't reset \u2014 /api/reset now purges Hub state",
+        "winners": "tf-pol-reset.yml + tf_clean_reset.py",
+        "status": "LIVE (ran successfully on POL/NBA/ITF 2026-04-20)",
+        "lesson": "HF Spaces have 3 state layers: local, persistent_storage, Hub. Reset all three.",
+        "score": 6
+      }
+    ],
+    "failures_and_pending": [
+      {
+        "strat": "POL TF excess_return leakage (FIXED)",
+        "impact": "88% WR nemotron-120b \u2192 $13K fabricated bankroll from future outcome signal",
+        "status": "FIXED 2026-04-18 1a7a02b48 \u2014 state wiped clean",
+        "lesson": "Never use outcome as fallback signal in post-filter; cross-check with walk-forward before celebrating",
+        "score": 0
+      },
+      {
+        "strat": "NBA TF lockstep (ONGOING)",
+        "impact": "3/17 agents silent last 3 days; 0.97 Jaccard on POL \u2014 DMAD groupthink failure",
+        "status": "MITIGATED by prompt_v3 (forbidden fallback + pp_ unlock rule) \u2014 waiting for measurement",
+        "lesson": "Structural divergence must be enforced by rule, not advised",
+        "score": 2
+      },
+      {
+        "strat": "PQTF zombie rows (ONGOING)",
+        "impact": "14/36 PQTF rows had type=null or strike=0 \u2014 fabrication leaking through",
+        "status": "Prompt_v1 rule deployed; engine-level validation pending",
+        "lesson": "Contract validation belongs in the engine, not the prompt",
+        "score": 3
+      },
+      {
+        "strat": "ITF 84% crypto-pass (investigated)",
+        "impact": "10 orders, 0 crypto \u2014 `_build_prompt` sliced quotes[:22], 48 equities filled slot, crypto invisible",
+        "status": "RCA: CRYPTO_PIVOT_CLAUSE deployed + asset-class grouping",
+        "lesson": "Truncation bugs are stealthy \u2014 always validate menu visibility in the prompt bytes",
+        "score": 4
+      },
+      {
+        "strat": "POL category_collapse (ONGOING)",
+        "impact": "POL fleet collapsed to single category (insider_trade) for days",
+        "status": "Prompt_v4 (category_collapse) deployed \u2014 TF in fresh reset day 0",
+        "lesson": "Monoculture = fragility; force \u22652 distinct categories by rule",
+        "score": 3
+      }
+    ]
+  },
+  "ten_optimization_points": [
+    {
+      "n": 1,
+      "title": "Close the loop: every post-mortem \u2192 overrides.json \u2192 HF deploy within 24h",
+      "why": "PQTF proved real LLM agents can hit 60% of $1M if prompts evolve daily",
+      "action": "Wire prompt_mutator to run nightly; add tf_postmortem as pre-hook"
+    },
+    {
+      "n": 2,
+      "title": "Own your silence: every fallback path must emit a traceable bet",
+      "why": "Silent-pass storage drops were dominant TF failure mode, not parser issues",
+      "action": "Uniform-fallback emitter (done on 3/4 TFs) \u2014 finish on ITF"
+    },
+    {
+      "n": 3,
+      "title": "Diversify the selfhost fleet across all 4 HF accounts",
+      "why": "Nomos42 403-saturated at 7 concurrent Spaces; LBJLincoln/26/TESTforge42 have slack",
+      "action": "Migrate Nomos42's 3 dead selfhost: routes to TESTforge42 or LBJLincoln"
+    },
+    {
+      "n": 4,
+      "title": "Validate menu visibility in prompt bytes, not prompt intent",
+      "why": "ITF 84% crypto-pass was quotes[:22] truncation hiding crypto \u2014 prompt said 'bet crypto'",
+      "action": "Unit-test _build_prompt covers every asset class after every persona add"
+    },
+    {
+      "n": 5,
+      "title": "Enforce structural divergence by rule, not advice",
+      "why": "NBA 0.88 lockstep persisted through 3 prompt versions that 'advised' divergence",
+      "action": "Hard-exclude top-ranked consensus category per agent (prompt_mutator rule lockstep_v2)"
+    },
+    {
+      "n": 6,
+      "title": "Every TF must define its 'walk-forward equivalent' before celebrating WR",
+      "why": "POL 88% WR was leakage; needed out-of-sample test to catch",
+      "action": "INTERNAL_AFFAIRS already runs this \u2014 extend to auto-revert overrides that violate"
+    },
+    {
+      "n": 7,
+      "title": "Port winners across TFs \u2014 don't reinvent architectures",
+      "why": "ITF copied PQTF multi-leg engine and got to live day 0 in 1 session",
+      "action": "Next port: Polymarket TF (queued in memory) inherits PQTF strategy ladder + POL intel"
+    },
+    {
+      "n": 8,
+      "title": "Treat free-tier quotas as a resource to allocate, not a constraint to hit",
+      "why": "10 'nul' islands killed to free Space slots for selfhost LLMs \u2014 same math applies to Spaces/tokens",
+      "action": "Quarterly 'slot audit' \u2014 is every Space earning its concurrent cap?"
+    },
+    {
+      "n": 9,
+      "title": "Intelligent monitor > LLM ping-test",
+      "why": "Old keepalive crons were binary up/down; tf_intel_monitor catches per-agent silence in 3 min",
+      "action": "Retire `keepalive-spaces.sh` for TF Spaces, keep only for static assets"
+    },
+    {
+      "n": 10,
+      "title": "The empire is the ledger \u2014 logs compound into edge",
+      "why": "This very doc is what lets specialist agents (THE_ACCOUNTANT, HAWKEYE, SWISH) operate across sessions",
+      "action": "Regen data/empire/MASTER.md nightly @ 04:00 UTC; commit; distribute brief per agent"
+    }
+  ]
+}
