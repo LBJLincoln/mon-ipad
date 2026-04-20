@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "generated_at": "2026-04-20T02:00:00Z",
+    "source": "CLAUDE-CODE session — Polymarket TF scaffold (user request 2026-04-20)",
+    "inspired_by": [
+      "mkorovkin2/claude-for-polymarket-bots (YouTube 1a5KNXO0BVg)",
+      "finbold: $2K→$12K overnight claim (unverified)",
+      "Prediction Arena arXiv 2604.07355"
+    ],
+    "strategic_fit": "4th LLM trading floor. Complements NBA(sports) / POL(political equities) / PQTF(derivatives) / ITF(intraday equities+crypto). Polymarket = binary event contracts, UMA-settled, on-chain — new asset class orthogonal to the others.",
+    "status": "proposal — awaiting DR FRANKENSTEIN implementation",
+    "owner_agent": "FRANKENSTEIN",
+    "priority": 2,
+    "eta_hours": 18
+  },
+  "space_target": {
+    "account": "LBJLincoln26",
+    "repo": "polymarket-trading-floor",
+    "source_dir": "scripts/arena/hf-polymarket-trading-floor/",
+    "runtime": "fastapi+gradio, cpu-basic, free tier",
+    "cadence_minutes": 10,
+    "starting_bankroll_usd_per_agent": 200,
+    "fleet_target_usd": 10000,
+    "season_target_usd": 100000,
+    "season_days": 50
+  },
+  "universe": {
+    "primary_markets": [
+      "BTC 5-min up/down",
+      "ETH 5-min up/down",
+      "BTC hourly close >= $X",
+      "ETH hourly close >= $X",
+      "SOL daily close",
+      "S&P daily close direction",
+      "Fed rate decision binary",
+      "presidential-approval weekly tick"
+    ],
+    "universe_size": 60,
+    "fee_model": "Polymarket 15-min crypto taker ~3% — MUST bake into expected-value gate",
+    "oracle_signals": [
+      "Chainlink BTC/USD latestAnswer (price feed 0x3134f...)",
+      "Chainlink ETH/USD latestAnswer",
+      "Pyth BTC/USD (fallback)",
+      "yfinance ^GSPC (SPX spot for S&P markets)",
+      "FRED DFEDTAR (Fed rate decision context)"
+    ]
+  },
+  "personas": [
+    {
+      "tid": "arb-1",
+      "name": "ArbHunter",
+      "model_primary": "mistral:large",
+      "model_fallback": "cerebras:qwen-3-235b",
+      "tier": "L",
+      "risk": 0.35,
+      "max_hold_min": 15,
+      "style": "You are ARB-HUNTER. You scan all live Polymarket binary contracts and flag any YES+NO pricing that does not sum to $1.00 (allowing for fees ~3%). When you find mispricing > 0.02 net of fees, you fire BOTH sides for guaranteed payout. You IGNORE directional opinions — this is pure arb. Max 10% bankroll per opportunity. Skip if liquidity < $500 on either side."
+    },
+    {
+      "tid": "maker-1",
+      "name": "MarketMaker",
+      "model_primary": "mistral:medium",
+      "model_fallback": "mistral:small",
+      "tier": "M",
+      "risk": 0.40,
+      "max_hold_min": 30,
+      "style": "You are MARKET-MAKER. You place two-sided limit quotes around the mid-price on 5-min BTC/ETH up-down markets. Target spread capture ~1.5¢ net of taker fees. You size each side to 2-4% of bankroll. You CANCEL immediately on: (1) price drift > 3¢ from your mid, (2) one side fills and the other doesn't within 60s (go-flat rule). No directional thesis needed — thesis = 'provide liquidity'."
+    },
+    {
+      "tid": "oracle-1",
+      "name": "OracleCrossCheck",
+      "model_primary": "openrouter:nemotron-120b:free",
+      "model_fallback": "nvidia:minimax-m2.7",
+      "tier": "L",
+      "risk": 0.45,
+      "max_hold_min": 15,
+      "style": "You are ORACLE-CROSSCHECK. Every tick you compare Polymarket's implied probability for each BTC/ETH up/down market against: (a) Chainlink oracle spot, (b) current vol from options surface (30-day realized), (c) time-to-resolution. You buy YES only when contract price < (true implied prob - 0.05) AND > $0.85 (i.e. near-certain event mispriced). You buy NO when contract price > (true implied prob + 0.05) AND < $0.15. Never touch markets between $0.30–$0.70 (too much uncertainty, arb-1 + maker-1 handle those)."
+    }
+  ],
+  "execution": {
+    "sdk": "py-clob-client (Polymarket official Python SDK, pip install py-clob-client)",
+    "wallets": "2 paper-wallet mode initially, gated LIVE via POLYMARKET_LIVE=1 env",
+    "signing": "EIP-712 via private key in POLYMARKET_PK secret (must be set on Space)",
+    "dry_run_default": true,
+    "paper_mode": "track orders in data/polymarket/paper-orders.jsonl, simulate fill at mid ± half-spread"
+  },
+  "gating": {
+    "expected_value_gate": "abs(implied_edge) > 2.0 × fee_roundtrip (skip if |edge| <= 6¢)",
+    "liquidity_gate": "order_book.bids[0].size >= $500 AND order_book.asks[0].size >= $500",
+    "drawdown_kill_switch": "session drawdown > 20% of bankroll → switch to paper-only for 24h",
+    "oracle_staleness_gate": "reject Chainlink price > 300s old"
+  },
+  "observability": {
+    "langfuse_project": "polymarket-tf",
+    "metrics_jsonl": "data/tf-analytics/polymarket/day-XXX.json",
+    "api_endpoints": ["/api/status", "/api/run", "/api/stop", "/api/reset", "/api/trades", "/api/pnl", "/api/leaderboard", "/api/logs"]
+  },
+  "integration": {
+    "gateway_url": "https://lbjlincoln26-llm-gateway.hf.space",
+    "axelrod_canon_prepended": true,
+    "collective_mission_prepended": true,
+    "safe_commit_mandatory": true,
+    "pixel_world_zone": "add new 5th zone 'prediction-market' to hf-pixel-world/index.html (v2.21)"
+  },
+  "acceptance_criteria": [
+    "Space live + /api/status returns running=true",
+    "At least 5 paper trades per agent in first 24h",
+    "Langfuse traces recording every LLM call",
+    "Deployed via safe_commit.sh (no raw git push)",
+    "Dashboard gains /trading-floors panel showing PM-TF alongside NBA/POL/PQTF/ITF"
+  ],
+  "risks_and_mitigations": [
+    {"risk": "Polymarket fees eat arb edges", "mitigation": "hardcode fee model into EV gate, reject < 2× fee threshold"},
+    {"risk": "Chainlink oracle stale during volatility", "mitigation": "300s staleness gate + Pyth fallback"},
+    {"risk": "Low-liquidity markets get wide bid-ask", "mitigation": "liquidity_gate filters < $500 per side"},
+    {"risk": "LLM hallucinates non-existent market id", "mitigation": "whitelist of market_ids fetched fresh each tick"},
+    {"risk": "Live-wallet loss before proven", "mitigation": "paper_mode default; POLYMARKET_LIVE=1 required for real on-chain"}
+  ],
+  "knowledge_transfer": {
+    "from_pqtf": "multi-leg thinking — an arb trade IS a 2-leg (YES+NO) structure; reuse PQTF's leg-correlation logic",
+    "from_itf": "quote_bus.py pattern — new shared/polymarket_bus.py pulls order-books + Chainlink + timestamps, caches latest.json",
+    "from_nba_tf": "AXELROD_CANON + cooperation pacts — 3 personas too few for pact dynamics but peer-visibility (other agents' P&L) still useful",
+    "from_pol_tf": "post-mortem analyzer + prompt mutator — same pipeline reads polymarket day-XXX.json"
+  }
+}

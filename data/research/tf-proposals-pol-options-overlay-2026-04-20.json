@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "generated_at": "2026-04-20T02:00:00Z",
+    "source": "CLAUDE-CODE session — POL TF options overlay (user request 2026-04-20)",
+    "strategic_fit": "Political events ARE volatility events (FOMC, CPI, election cycles, poll releases). PQTF proved multi-leg options = 60% of $1M ($602K from mistral-large + mistral-medium). Transfer that edge into POL TF.",
+    "status": "proposal — awaiting DR FRANKENSTEIN implementation",
+    "owner_agent": "FRANKENSTEIN",
+    "priority": 3,
+    "eta_hours": 12
+  },
+  "problem": "POL TF currently trades ETFs (SPY/TLT/GLD/XL*) directional only. Around volatility events (FOMC, CPI, jobs report, election nights) spot moves underprice the vol risk → options overlay captures both direction AND vol term-structure move.",
+  "solution": "Add 2 new POL TF personas + catalyst calendar + options-execution path. Reuses PQTF's 5-strategy engine (long_call/vertical_debit/iron_condor/straddle/butterfly).",
+  "new_personas": [
+    {
+      "tid": "pol-vol-1",
+      "name": "PoliticalVolArb",
+      "model_primary": "mistral:large",
+      "model_fallback": "cerebras:qwen-3-235b",
+      "tier": "L",
+      "risk": 0.45,
+      "holding_days": 5,
+      "style": "You are POLITICAL-VOL-ARB. Every tick you cross-check the catalyst calendar (FOMC dates, CPI releases, jobs report, election days, presidential-address dates) against current SPY/TLT/GLD 30-day IV. When IV rank < 30th percentile AND a catalyst is within 5 trading days → BUY STRADDLE on SPY or TLT (whichever asset the catalyst most directly moves). When IV rank > 70th percentile AND no catalyst within 10 days → SELL IRON CONDOR. Emit action='option_trade' with strategy + strikes + expiry. Max $2000/ticket, skip if SPY options IV > 35%."
+    },
+    {
+      "tid": "pol-macro-1",
+      "name": "MacroDirectional",
+      "model_primary": "openrouter:nemotron-120b:free",
+      "model_fallback": "mistral:medium",
+      "tier": "M",
+      "risk": 0.50,
+      "holding_days": 10,
+      "style": "You are MACRO-DIRECTIONAL. Your thesis is political → macro → asset. When the political signal predicts higher spending/deficit → BUY TLT puts or vertical_debit put spreads. When predicts tighter regulation on banks → BUY XLF puts. When predicts energy deregulation → BUY XLE calls. Always tie to a SPECIFIC political outcome (cite the political_events row). Max hold 10 trading days. Never trade without citing a political_events row_id."
+    }
+  ],
+  "catalyst_calendar": {
+    "data_source": "scripts/arena/shared/catalyst_calendar.py — NEW FILE",
+    "feeds": [
+      "FRED Fed funds meeting calendar (FOMC_MEETINGS series)",
+      "BLS CPI release schedule (monthly)",
+      "BLS non-farm payrolls (first Friday monthly)",
+      "presidentialaddresses.gov + WhiteHouse.gov RSS",
+      "Fec.gov election calendar",
+      "Congress.gov recess/session calendar"
+    ],
+    "cache_path": "data/political/catalyst-calendar.json",
+    "refresh_cron": "0 6 * * * (daily 06:00 UTC)",
+    "schema_per_event": {
+      "date": "YYYY-MM-DD",
+      "type": "fomc|cpi|jobs|election|address|congress",
+      "severity_1to5": 4,
+      "expected_iv_impact_pct": 12.3,
+      "relevant_tickers": ["SPY", "TLT", "XLF"]
+    }
+  },
+  "options_execution": {
+    "reuse_from_pqtf": "scripts/arena/hf-pqtf-trading-floor/engine.py — port the 5-strategy option-chain simulator + IV-rank + greeks",
+    "broker": "Alpaca paper options (same keys as ITF)",
+    "dry_run_default": true,
+    "live_gate": "POL_OPTIONS_LIVE=1 env var",
+    "max_stake_per_ticket_usd": 2000,
+    "max_net_vega_per_agent": 500,
+    "max_net_theta_per_agent": -200
+  },
+  "prompt_additions": {
+    "axelrod_canon": "unchanged — options personas still participate in Axelrod + collective mission",
+    "new_clauses": [
+      "POLITICAL-CATALYST RULE: if a high-severity (>=4) catalyst is within 5 trading days, your style MUST bias toward vol-long structures (straddle/strangle/long_call/long_put). Vol-short structures (iron_condor/vertical_credit) during this window are forbidden.",
+      "CITATION RULE: every option trade thesis MUST cite (a) the political_events row, (b) the IV rank, (c) whether you are vol-long or vol-short."
+    ]
+  },
+  "gating": {
+    "expected_vega_bleed_limit": "|net_vega_fleet| < 3000 across all 19 POL agents (17 current + 2 new)",
+    "concentration_limit": "no single ticker > 30% of fleet's option exposure",
+    "drawdown_kill_switch": "per-agent drawdown > 50% → force-close all options + 24h cooldown"
+  },
+  "acceptance_criteria": [
+    "POL TF status returns 19 agents (not 17)",
+    "catalyst_calendar.json refreshed daily with >= 30 forward events",
+    "At least 3 option trades by pol-vol-1 in first 5 trading days",
+    "Langfuse traces tagged fleet=pol-options",
+    "Dashboard /political gains 'Options Overlay' section"
+  ],
+  "risks_and_mitigations": [
+    {"risk": "Adding 2 personas = prompt-length balloon", "mitigation": "new personas are options-only; don't bloat existing 17 equity prompts"},
+    {"risk": "Catalyst calendar stale → trade wrong day", "mitigation": "staleness_gate: reject if catalyst-cache > 36h old"},
+    {"risk": "Vega bleed across fleet", "mitigation": "fleet-level vega cap $3K + per-agent cap $500"},
+    {"risk": "Alpaca paper options fill fidelity poor", "mitigation": "first 30 days paper-only; compare fill-vs-mid in post-mortem before LIVE gate"}
+  ],
+  "knowledge_transfer": {
+    "from_pqtf": "5-strategy engine, IV rank computation, skew modeling — wholesale port",
+    "from_itf": "GammaOptions persona template — reuse prompt skeleton for pol-vol-1",
+    "from_nba_tf": "none — sports outcomes are discrete, not vol surfaces",
+    "to_pm_tf": "catalyst calendar also feeds Polymarket TF (event-contract markets are calendar-driven)"
+  },
+  "phased_rollout": [
+    {"phase": 1, "days": "1-3", "action": "build catalyst_calendar.py + unit tests"},
+    {"phase": 2, "days": "4-7", "action": "add 2 personas in paper mode, no live Alpaca calls"},
+    {"phase": 3, "days": "8-14", "action": "enable paper option orders, track fill-vs-mid"},
+    {"phase": 4, "days": "15+", "action": "LIVE gate via POL_OPTIONS_LIVE=1 after user approval"}
+  ]
+}
