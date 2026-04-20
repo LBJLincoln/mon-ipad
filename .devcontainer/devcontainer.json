@@ -5,7 +5,7 @@
     "ghcr.io/devcontainers/features/node:1": { "version": "20" },
     "ghcr.io/devcontainers/features/sshd:1": { "version": "latest" }
   },
-  "postCreateCommand": "pip install scikit-learn xgboost lightgbm catboost pandas numpy httpx kaggle huggingface-hub && npm install -g @anthropic-ai/claude-code",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -30,9 +30,14 @@
     "ODDS_API_KEY": { "description": "The Odds API key (NBA live odds)" },
     "GATEWAY_URL": { "description": "LLM gateway base URL (HF Space proxy)" },
     "KAGGLE_USERNAME": { "description": "Kaggle username" },
-    "KAGGLE_KEY": { "description": "Kaggle API key" }
+    "KAGGLE_KEY": { "description": "Kaggle API key" },
+    "NOUS_API_KEY": { "description": "Nous Research portal key (Hermes primary provider, free community tier)" },
+    "BROWSERUSE_API_KEY": { "description": "browser-use ChatBrowserUse proprietary key (optional, fastest path)" },
+    "BROWSER_NBA_URL": { "description": "Override URL for LBJLincoln/nomos-browser-nba Space (NBA line scraper)" },
+    "BROWSER_QA_URL": { "description": "Override URL for TESTforge42/nomos-browser-qa Space (pixel/dashboard QA)" },
+    "HERMES_AGENT_URL": { "description": "Override URL for LBJLincoln26/nomos-hermes-agent Space" }
   },
-  "forwardPorts": [8080, 8081],
+  "forwardPorts": [7860, 8080, 8081],
   "remoteEnv": {
     "PYTHONPATH": "/workspaces/mon-ipad"
   },

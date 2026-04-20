@@ -268,6 +268,15 @@ Owned by DR FRANKENSTEIN. Proposal: `data/research/hermes-browser-agents-2026-04
 
 Secrets set: `GOOGLE_API_KEY` (all 3). Pending user add: `ANTHROPIC_API_KEY`, `BROWSERUSE_API_KEY`, `NOUS_API_KEY`, `OPENROUTER_API_KEY`. Source: `scripts/arena/hf-browser-nba/`, `hf-browser-qa/`, `hf-hermes-agent/`. Deploy: `HfApi.upload_folder` + `restart_space(factory_reboot=True)`. Nomos42 account NOT touched (saturated).
 
+### Codespaces + local install (FRANKENSTEIN-2)
+
+- **Codespaces/devcontainer**: `.devcontainer/post-create.sh` installs `browser-use==0.12.6`, `uv`, chromium, and Hermes upstream on every new codespace. Wired via `"postCreateCommand": "bash .devcontainer/post-create.sh"` in `devcontainer.json`. Port 7860 forwarded for local RPC testing. New secrets declared: `NOUS_API_KEY`, `BROWSERUSE_API_KEY`, plus `BROWSER_NBA_URL` / `BROWSER_QA_URL` / `HERMES_AGENT_URL` overrides.
+- **VM local install**: `scripts/setup/install-browser-hermes.sh` — idempotent, passes `--break-system-packages`, detects existing `~/.local/bin/hermes`, timeouts the NousResearch installer at 15 min (its playwright step can hang on apt-lock). Use `--no-chromium` to skip the ~600MB chromium fetch on lean boxes.
+- **Cross-repo clients**:
+  - `scripts/agents/dashboard_qa_client.py` + `.github/workflows/dashboard-qa.yml` ping `TESTforge42/nomos-browser-qa` `/api/qa-dashboard` against `nomosdashboard.vercel.app` on push + daily 07:17 UTC. Mirror workflow `browser-qa.yml` lives in the `nomos-dashboard` repo for direct push-to-main gating.
+  - `nomos-political-alpha/scripts/scrape_fec_edgar.py` — stub that probes `LBJLincoln/nomos-browser-nba` for `/api/scrape-fec`; exits 0 with `ENDPOINT_NOT_YET_DEPLOYED` until the endpoint is added, then emits `data/fec/YYYY-MM-DD.json`.
+- **Client index + cron recipes**: `scripts/agents/README.md`.
+
 ## Delegation
 
 | Task | Model | Mechanism |

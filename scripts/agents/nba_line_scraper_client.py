@@ -6,6 +6,10 @@ LBJLincoln/nomos-browser-nba HF Space.
 Usage:
     python scripts/agents/nba_line_scraper_client.py [YYYY-MM-DD]
 
+Cron: 0 */2 * * * python3 scripts/agents/nba_line_scraper_client.py
+    (every 2h, picks up today's date by default — matches closing-line
+    scrape cadence requested in data/research/hermes-browser-agents-2026-04-20.md)
+
 Env:
     BROWSER_NBA_URL   override base URL (default: LBJLincoln/nomos-browser-nba)
     BROWSER_NBA_SOURCES  comma-separated sources (default: espn,bbref,vegasinsider)
