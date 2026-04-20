@@ -287,5 +287,59 @@
     "regroup_groups": 1,
     "keep_groups": 13
   },
-  "execution_log": []
+  "execution_log": [
+    {
+      "repo": "mon-ipad",
+      "commit": "b4decbebb",
+      "mechanism": "safe_commit.sh LAUNCHPAD",
+      "note": "Staged deletions (PLAN.md, PIXEL-DESIGN.md, ROUTINES-MANIFEST.md, .codex/instructions.md, data/repo-cleanup-audit.md, docs/obsidian/*, docs/executive/*, forge-users/*, data/arena/docs/*, data/research-proposals/archive/*.md, data/research-reports/KARPATHY_APRIL_2026_FINDINGS.md, data/research/research-cycle-2026-03-26.md, data/research/self-improvement-harness-*, data/research/weekly-digest-2026-03-31.md — 219 files total) were absorbed during pull --rebase --autostash into upstream commit b84842122 which had picked up the same stash. Net effect: all 219 target files deleted in HEAD as of b4decbebb. This commit captures the audit JSON + code-comment updates on the 4 scripts that historically cited PLAN.md."
+    },
+    {
+      "repo": "nomos-nba-agent",
+      "commit": "072c7b6",
+      "mechanism": "git commit + pull --rebase + push",
+      "deleted": ["PIERRE_COMPARISON_REPORT.md"]
+    },
+    {
+      "repo": "nomos-political-alpha",
+      "commit": "091c3d9",
+      "mechanism": "git commit + pull --rebase + push",
+      "deleted": [
+        "data/political_engine_fix_needed.md",
+        "data/proposals/feature-pipeline-fix-2026-03-28.md",
+        "data/scientific-results/political-experiment-2026-04-06.md",
+        "hf-space/DEPLOY_PATCHES.md"
+      ]
+    },
+    {
+      "repo": "nomos-dashboard",
+      "commit": "053fdd3",
+      "mechanism": "git commit + pull --rebase + push",
+      "deleted": ["PIXEL-DESIGN.md"],
+      "regrouped": [
+        {
+          "path": "DESIGN.md",
+          "action": "replaced with 7-line pointer stub referencing canonical mon-ipad/DESIGN.md"
+        }
+      ]
+    },
+    {
+      "repo": "rgwa",
+      "commit": null,
+      "mechanism": "no-op",
+      "note": "No candidates (only CLAUDE.md and .claude/ content, both exempt)."
+    }
+  ],
+  "summary_post_exec": {
+    "files_deleted": 225,
+    "files_regrouped": 1,
+    "files_kept": "all others documented as KEEP in candidates array",
+    "commits": ["b4decbebb (mon-ipad)", "072c7b6 (nomos-nba-agent)", "091c3d9 (nomos-political-alpha)", "053fdd3 (nomos-dashboard)"],
+    "failures": [],
+    "notes": [
+      "mon-ipad deletions got absorbed into upstream b84842122 during autostash — benign, all 219 files are gone from HEAD as intended.",
+      "4 scripts had their PLAN.md citations updated to indicate the doc was deleted 2026-04-20 (historical reference kept for traceability): scripts/arena/game_context_v2.py, scripts/arena/aggregate_swarm_to_season.py, scripts/arena/oasis_t3_swarm.py, scripts/arena/cpcv_watcher.py, scripts/vendor/clone-vendor.sh.",
+      "research-vault/raw/ mirrors of deleted files will persist until next 2h ingest run, which is additive-only — they'll become stale-but-harmless. On next manual cleanup pass, consider making ingest.py purge raw/ entries whose sources disappeared."
+    ]
+  }
 }
