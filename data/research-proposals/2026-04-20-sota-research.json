@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-04-20T10:00:00Z",
+  "cycle": "brain-4h-2026-04-20",
+  "source": "WebSearch — NBA prediction SOTA 2026",
+  "current_fleet_best": 0.22073,
+  "target_brier": 0.20,
+  "proposals": [
+    {
+      "id": "brier-loss-objective",
+      "title": "Train directly on Brier loss (custom objective for GBMs)",
+      "source": "arXiv 2508.02725 — LSTM/Transformer NCAA basketball (2026)",
+      "description": "Training with squared-error-on-probabilities (Brier loss) instead of log-loss produced best calibrated probabilities (0.1589 Brier on NCAA holdout). CatBoost and XGBoost both support custom loss natively. Apply to meta-learner in GBM ensemble.",
+      "implementation": "Verify S14 xgboost_brier already uses Brier loss. If not, set XGBoost objective to squared-error on calibrated probability outputs. Also test on S22 meta-layer.",
+      "priority": "HIGH",
+      "estimated_delta_brier": -0.003,
+      "island_target": "S14, S22"
+    },
+    {
+      "id": "shap-filtered-stacking",
+      "title": "SHAP-filtered feature pruning before meta-stacking",
+      "source": "Scientific Reports 2025 — Stacked ensemble NBA (Nature/PMC)",
+      "description": "SHAP to prune features before meta-stacking reduces calibration noise. With 200-feature cap, aggressive SHAP-based selection directly targets Brier improvement. Low-risk, no new dependencies.",
+      "implementation": "In evolution island mutate(), compute SHAP values on held-out val set and zero out features with |mean SHAP| < 0.001 threshold before GA selection phase. Combine with existing MAX_FEATURES=200 cap.",
+      "priority": "HIGH",
+      "estimated_delta_brier": -0.002,
+      "island_target": "S13, S22"
+    },
+    {
+      "id": "uncertainty-aware-rnn-meta",
+      "title": "MC Dropout RNN as uncertainty-aware meta-learner",
+      "source": "MDPI Information 2026 — Uncertainty-Aware ML for NBA Forecasting in Digital Betting Markets",
+      "description": "RNN + Monte Carlo Dropout as stacking layer over existing GBM predictions. Absorbs temporal/sequential signal (rolling form, shot embeddings) that tree models miss. Produces calibrated uncertainty per prediction.",
+      "implementation": "Add 1-layer GRU meta-learner with MC Dropout (n=20 passes) on top of S13/S22 base probability outputs. Requires GPU — target Colab T4 or Modal A10G burst. Not compatible with CPU-only islands.",
+      "priority": "MEDIUM",
+      "estimated_delta_brier": -0.005,
+      "island_target": "GPU burst (Colab/Modal)"
+    }
+  ],
+  "recommended_next_action": "Verify S14 xgboost_brier uses true Brier loss objective (HIGH priority, zero infra cost). Then add SHAP gate to S13 mutation cycle."
+}

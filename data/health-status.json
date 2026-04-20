@@ -1,73 +1,50 @@
 {
-  "cycle_at": "2026-04-20T12:00:00Z",
-  "brain_trigger": "cloud-brain-sonnet-4.6",
-  "cycle_number": "12:00 UTC (cycle 3 today)",
-  "nba_fleet_best_brier_live": 0.22136,
-  "nba_fleet_best_island_live": "S13 (nomos42-nba-evo-4)",
-  "nba_fleet_best_brier_alltime": 0.22073,
-  "nba_fleet_best_alltime": "S22 venn_abers_fusion gen=39 (checkpointed 2026-04-19)",
-  "nba_checkpoint_threshold": 0.22085,
-  "nba_checkpoint_triggered": false,
+  "generated_at": "2026-04-20T10:00:00Z",
+  "brain_cycle": "cloud-brain-4h",
   "nba_islands": {
-    "S13_nomos42_nba_evo_4":        {"gen": 151,  "brier": 0.22136, "model": "extra_trees",   "stagnation_cycles": 24, "health": "STAGNANT",         "fleet_best_live": true, "action": "diversify QUEUED"},
-    "S14_nomos42_nba_evo_5":        {"gen": 220,  "brier": 0.23493, "model": "extra_trees",   "stagnation_cycles": 22, "health": "STAGNANT_WORST",                             "action": "diversify QUEUED"},
-    "S15_nomos42_nba_evo_6":        {"gen": 144,  "brier": 0.22374, "model": "random_forest", "stagnation_cycles": 15, "health": "AT_THRESHOLD"},
-    "S17_lbjlincoln26_nba_evo_s17": {"gen": 1108, "brier": 0.22358, "model": "xgboost",       "stagnation_cycles": 18, "health": "STAGNANT",                                     "action": "diversify QUEUED (DNS retry)"},
-    "S18_testforge42_nba_evo_s18":  {"gen": 836,  "brier": 0.22154, "model": "random_forest", "stagnation_cycles": 0,  "health": "OK_IMPROVING"},
-    "S22_testforge42_nba_evo_s22":  {"gen": 735,  "brier": 0.22358, "model": "extra_trees",   "stagnation_cycles": 18, "health": "STAGNANT_DEGRADED", "note": "was venn_abers_fusion 0.22073; model drifted", "action": "diversify QUEUED"}
+    "S13": {"space": "nomos42/nba-evo-4", "status": "UP", "gen": 291, "best_brier": 0.22136, "roi": 30.04, "sharpe": 6.99, "stagnation_cycles": 0, "model": "extra_trees"},
+    "S14": {"space": "nomos42/nba-evo-5", "status": "UP", "gen": 343, "best_brier": 0.23493, "roi": 15.74, "sharpe": 12.56, "stagnation_cycles": 0, "model": "xgboost_brier"},
+    "S15": {"space": "nomos42/nba-evo-6", "status": "UP", "gen": 258, "best_brier": 0.22374, "roi": 28.24, "sharpe": 11.59, "stagnation_cycles": 9, "model": "random_forest", "action_taken": "diversify_queued"},
+    "S17": {"space": "lbjlincoln26/nba-evo-s17", "status": "UP", "gen": 1225, "best_brier": 0.22358, "roi": 28.27, "sharpe": 8.59, "stagnation_cycles": 0, "model": "xgboost"},
+    "S18": {"space": "testforge42/nba-evo-s18", "status": "DOWN", "error": "HTTP 503", "wake_attempted": true},
+    "S22": {"space": "testforge42/nba-evo-s22", "status": "UP", "gen": 870, "best_brier": 0.22184, "roi": 30.39, "sharpe": 7.60, "stagnation_cycles": 0, "model": "logistic_regression"}
   },
+  "fleet_best_brier": 0.22073,
+  "fleet_best_source": "S22 venn_abers_fusion gen=39 (checkpointed 2026-04-19)",
+  "checkpoint_threshold": 0.22085,
+  "new_checkpoint": false,
+  "live_best_brier": 0.22136,
+  "live_best_source": "S13 extra_trees gen=291",
   "political_islands": {
-    "P1_nomos42_political_alpha":      {"gen": 18342,     "brier": 0.24999, "model": "xgboost_brier", "status": "EVOLVING", "health": "OK", "note": "confirmed via curl — WebFetch was false-503"},
-    "P2_nomos42_political_alpha_2":    {"gen": "unknown", "brier": "unknown",                        "status": "DNS_OVERFLOW", "health": "UNKNOWN"},
-    "P4_lbjlincoln_political_alpha_4": {"gen": 16965,     "brier": 0.24923, "model": "lightgbm",     "status": "EVOLVING", "health": "OK", "fleet_best_candidate": true},
-    "P5_lbjlincoln_political_alpha_5": {"gen": "unknown", "brier": "unknown",                        "status": "DNS_OVERFLOW", "health": "UNKNOWN", "note": "prev fleet best 0.24923"},
-    "P7_lbjlincoln_political_alpha_7": {"gen": 17626,     "brier": 0.24937, "model": "lightgbm",     "status": "EVOLVING", "health": "OK"}
+    "P1": {"space": "nomos42/political-alpha", "status": "DOWN", "error": "HTTP 503", "last_known_gen": 3042, "last_known_brier": 0.24996, "wake_attempted": true},
+    "P2": {"space": "nomos42/political-alpha-2", "status": "DOWN", "error": "HTTP 503", "last_known_gen": 11953, "last_known_brier": 0.25223, "wake_attempted": true},
+    "P4": {"space": "lbjlincoln/political-alpha-4", "status": "DOWN", "error": "HTTP 503", "last_known_gen": 16728, "last_known_brier": 0.25146, "wake_attempted": true},
+    "P5": {"space": "lbjlincoln/political-alpha-5", "status": "WAKING", "wake_response": "HTTP 200", "last_known_gen": 1567, "last_known_brier": 0.25347},
+    "P7": {"space": "lbjlincoln/political-alpha-7", "status": "DOWN", "error": "HTTP 503", "last_known_gen": 2098, "last_known_brier": 0.24987, "wake_attempted": true, "note": "POL FLEET BEST"}
   },
   "dept_councils": {
-    "overall": "ALL_PAUSED",
-    "first_detected": "2026-04-20T04:00:00Z",
-    "hf_response": "The space is paused, ask a maintainer to restart it",
-    "affected": ["D1","D2","D3","D4","D5","D6","D7","D8","D9"],
-    "root_cause": "TESTforge42 account quota exhausted or manual pause — NOT sleeping, NOT recoverable by VM keepalive",
-    "urgency": "CRITICAL",
-    "fix": "Login to TESTforge42 HF account and restart all 9 spaces, OR increase compute quota"
-  },
-  "axelrod_status": {
-    "ck_fix_confirmed": true,
-    "all_3_mechanisms_spec_complete": true,
-    "hf_deploy_status": "PENDING EXPLICIT USER APPROVAL (work-queue tf-axelrod-verify-tune-12)"
-  },
-  "sota_research_12utc": {
-    "source": "MDPI 2026 — Uncertainty-Aware ML for NBA Forecasting in Digital Betting Markets",
-    "url": "https://www.mdpi.com/2078-2489/17/1/56",
-    "best_published_brier": 0.199,
-    "method": "L1-sparse logistic regression + rolling-form velocity + shot-chart spatial embeddings",
-    "our_gap_to_sota": 0.02173,
-    "proposal_saved": "data/research-proposals/2026-04-20-sota-logistic-0199.json"
+    "D1": {"status": "DOWN", "wake_attempted": true},
+    "D2": {"status": "DOWN", "wake_attempted": true},
+    "D3": {"status": "DOWN", "wake_attempted": true},
+    "D4": {"status": "DOWN", "wake_attempted": true},
+    "D5": {"status": "DOWN", "wake_attempted": true},
+    "D6": {"status": "DOWN", "wake_attempted": true},
+    "D7": {"status": "DOWN", "wake_attempted": true},
+    "D8": {"status": "DOWN", "wake_attempted": true},
+    "D9": {"status": "DOWN", "wake_attempted": true}
   },
   "actions_taken": [
-    "S13 diversify queued (24-cycle stagnation)",
-    "S14 diversify queued (22-cycle stagnation)",
-    "S17 diversify queued (18-cycle stagnation, after DNS retry)",
-    "S22 diversify queued (18-cycle stagnation)",
-    "P1/P4/P7 confirmed RUNNING — WebFetch false-503s corrected by curl",
-    "D1-D9 diagnosed PAUSED — requires TESTforge42 maintainer action",
-    "SOTA research saved: L1-logistic 0.199 target proposal",
-    "health-status.json updated (12:00 cycle)",
-    "brain-status.json updated",
-    "research-proposals/2026-04-20-sota-logistic-0199.json written"
+    "S15: diversify command queued (stagnation=9 cycles)",
+    "S18: GET wake ping sent (HTTP 503 persists)",
+    "P1-P5: GET wake pings sent (P5 responded 200)",
+    "D1-D9: GET wake pings sent (all 503 — VM keepalive cron may need verification)"
   ],
   "alerts": [
-    "[CRITICAL] D1-D9 ALL PAUSED >8h — TESTforge42 compute quota; maintainer restart required",
-    "[HIGH] S22 regressed: venn_abers_fusion 0.22073 -> extra_trees 0.22358; git checkpoint preserved",
-    "[HIGH] S14 worst island: brier=0.23493; diversify queued",
-    "[MED] P2/P5 status unconfirmed (DNS overflow in brain env)",
-    "[INFO] tf-axelrod-verify-tune-12 pending user approval"
+    "CRITICAL: All 9 dept councils DOWN — VM keepalive-spaces.sh may be failing",
+    "CRITICAL: 4/5 political islands DOWN (P5 waking)",
+    "WARNING: S18 DOWN (HTTP 503)",
+    "WARNING: S15 stagnating 9 cycles — diversify queued"
   ],
-  "next_cycle_watch": [
-    "D1-D9 recovery post-maintainer restart",
-    "S13/S14/S17/S22 brier post-diversify (expect improvement within 5-10 cycles)",
-    "P2/P5 status confirmation at 16:00 UTC",
-    "S18 momentum tracking (0.22154, stagnation=0)"
-  ]
+  "sota_research": "data/research-proposals/2026-04-20-sota-research.json",
+  "work_queue_pending": ["tf-axelrod-verify-tune-12 (USER GATE: explicit approval needed for HF Space push)"]
 }
