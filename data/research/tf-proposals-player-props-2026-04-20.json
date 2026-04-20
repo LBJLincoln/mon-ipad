@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-04-20T03:10:00Z",
+  "source": "tf_intel_monitor_gap_analysis",
+  "priority": 1,
+  "tf_targets": ["nba"],
+  "proposals": [
+    {
+      "id": "nba-player-props-ingestion-2026-04-20",
+      "title": "Ship player-prop odds ingestion so NBA TF can actually bet on the 42 pp_* categories already advertised in the prompt",
+      "rationale": "NBA TF app.py line 1444 advertises 42 pp_<stat>_<tier>_<side> categories to every agent. Agents are told they can bet on pp_points_star1_home etc. But data/full-odds-2025-26.json has 0 pp_* entries across all 1257 games. Agents either avoid the menu (silent — 3/16 NBA agents silent last 3 days) or fabricate edges (shown as tier-pad post-filter artifacts in cross-TF rollup). Known gap since 2026-04-03 vision docs — never wired.",
+      "target_file": "scripts/fetch_player_props.py (NEW) + scripts/arena/hf-llm-trading-floor/prepare_data.py (merge)",
+      "implementation": [
+        "1. New scripts/fetch_player_props.py: pulls live player-prop odds from Bovada (https://www.bovada.lv/services/sports/event/...) + DraftKings Nash mobile API. Markets: points, rebounds, assists, threes, steals, blocks. Over/Under lines + decimal odds.",
+        "2. Map each player → {star1, star2, star3, role1, role2} tier via player_stats_2025-26.json (sort by min_per_game or usage). Star1 = leading scorer, star2/3 = 2nd/3rd, role1/2 = 4th/5th most-used.",
+        "3. Emit pp_<stat>_<tier>_<side> keys into full-odds-2025-26.json under `categories` dict with shape {odds: decimal, line: over_under, prob_fair: no-vig}.",
+        "4. prepare_data.py: auto-merge player-props-live.json into full-odds before writing the TF data snapshot.",
+        "5. Add cron entry: `0 18,22 * * * python3 scripts/fetch_player_props.py` — twice daily (before afternoon + evening games).",
+        "6. Backfill: for historical games (Oct 2025 → Apr 2026), synthesize from player_stats season averages (mean ± 1.2σ as over/under line, -110/-110 vig)."
+      ],
+      "acceptance_criteria": [
+        "data/nba-agent/player-props-live.json exists with ≥30 player entries per today's slate",
+        "full-odds-2025-26.json has ≥6 pp_* keys per game for ≥1000/1257 games",
+        "NBA TF post-restart: ≥2/16 agents bet on pp_* categories in ≥1 of first 5 days",
+        "No regression: existing ml/spread/total bets unchanged"
+      ],
+      "estimated_effort_hours": 3,
+      "assigned_agent": "dr-frankenstein",
+      "blocks": [],
+      "blocked_by": []
+    }
+  ]
+}
