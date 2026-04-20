@@ -1,0 +1,104 @@
+{
+  "_meta": {
+    "auditor": "INTERNAL_AFFAIRS",
+    "audited_at": "2026-04-20T02:44:00Z",
+    "target_analytics": "data/tf-analytics/nba/day-006.json",
+    "target_code": "scripts/arena/hf-llm-trading-floor/app.py",
+    "trigger": "cross-TF rollup 2026-04-15-to-19 IP12 flagged d006 WR=0.822 + Jaccard=0.614 as matching POL $13K leakage fingerprint",
+    "checks_run": [
+      "leakage_signal_input (excess_return/outcome used as LLM input)",
+      "leakage_signal_input (excess_return/outcome used in post-filter stake sizing)",
+      "forbidden bet sources (ml_home-synth/SPY-long-synth/synthetic-fallback)",
+      "commit history since 2026-04-18 on NBA TF app.py"
+    ]
+  },
+  "confirmed": false,
+  "verdict": "CLEAN",
+  "severity_1to5": 1,
+
+  "why_initial_flag": {
+    "day_fleet_wr": 0.822,
+    "jaccard_fleet_mean": 0.614,
+    "ml_home_category_wr": 1.0,
+    "ml_home_category_n": 52,
+    "fingerprint_similarity_to_pol_13k": "Surface-level match on WR>0.80 + Jaccard>0.60 + category dominance (1 category = 52/73 bets)",
+    "cross_tf_rollup_proposal": "IP12 — regenerate NBA state from day 1 with leakage audit"
+  },
+
+  "benign_explanation": {
+    "primary_cause": "tier-pad post-filter lockstep (different bug class, already fixed 2026-04-19)",
+    "evidence": {
+      "1_source_distribution_of_73_bets": {
+        "direct (LLM-reasoned)": 25,
+        "fallback-edge-post (tier-pad)": 48,
+        "interpretation": "66% of day-006 bets came from the deterministic tier-pad post-filter that was REMOVED in commit 62a51c395 on 2026-04-19T07:33:52Z. Day-006 analytics were written 2026-04-18T22:41:16Z — 9 hours BEFORE the fix."
+      },
+      "2_tier_pad_signal_pipeline_is_clean": {
+        "code_ref": "scripts/arena/hf-llm-trading-floor/app.py (pre-62a51c395 HEAD)",
+        "signal_source": "model_preds[game_key]['per_category'][tag]['edge'] and ['prob'] — pre-game predictions from Nomos42 tree fleet (Brier=0.217)",
+        "outcome_usage": "resolve_bet(tag, odds, home_score, away_score, home_won) — used ONLY for win/loss accounting AFTER the pick is made, not as signal input",
+        "leakage_class": "none — no excess_return, no result, no pnl fed into stake sizing or candidate selection"
+      },
+      "3_excess_return_grep_nba_app": {
+        "matches": 0,
+        "note": "NBA TF app.py has ZERO occurrences of 'excess_return'. The POL $13K bug class (post-filter fallback to excess_return as signal) is ARCHITECTURALLY IMPOSSIBLE in NBA because the field does not exist in NBA data model."
+      },
+      "4_wr_explained_by_odds_structure": {
+        "ml_home_picks_day_006": [
+          {"game": "CLE@CHI", "odds": 1.198, "implied_p": 0.835},
+          {"game": "CHA@OKC", "odds": 1.869, "implied_p": 0.535},
+          {"game": "GUA@LAC", "odds": 1.869, "implied_p": 0.535}
+        ],
+        "expected_wr_if_fair": 0.635,
+        "observed_wr": 1.0,
+        "delta": "+0.365 (within 1-2 sigma for 3-game sweep on favorites; not statistically anomalous for a single day)"
+      },
+      "5_jaccard_explained_by_tier_pad_determinism": {
+        "mechanism": "All 17 agents ran the SAME blake2b-jittered top-edge sort over the SAME model_preds candidate set. Amp=0.30 jitter preserves top-tier picks → convergence on ml_home CLE@CHI/CHA@OKC/GUA@LAC.",
+        "commit_fix": "62a51c395 removed tier-pad entirely on 2026-04-19; empty LLM output = full-cash day. Superseded by 2026-04-19 uniform-fallback (build_uniform_fallback_nba) which tags provider_status='fallback_uniform' for audit exclusion.",
+        "verification": "Later NBA snapshots (d054, d085, d127) show Jaccard decay 0.20 → 0.118 → 0.00, confirming the fix propagated."
+      },
+      "6_commit_history_since_2026_04_18": [
+        "609dc3340 cross-TF improvements + dynamic MIN_DEPLOY",
+        "48686eef4 player props wired into prompt",
+        "1ebe8c1b9 prompt_mutator scientific feedback loop",
+        "1b0e5b4bd blake2b edge jitter + tiered Kelly caps",
+        "cb3fdd2b1 CK block n_traders 12→17",
+        "77a01a839 coalition pacts survive silent-pass overwrite",
+        "83280b1ae 6-point post-mortem doctrine",
+        "62a51c395 REMOVE tier-pad post-filter fallback ← the root cause of d006 lockstep",
+        "66db9b850 SKIP_AUTO_START + boot-idle purge",
+        "7a9be9201 purge Hub-persisted state so /api/reset is clean",
+        "710325bc6 narrow prompt edges top-50 → top-20"
+      ],
+      "verdict_on_regressions": "None of these 11 commits reintroduces excess_return or any future-outcome field as signal input. The trajectory is strictly integrity-hardening."
+    }
+  },
+
+  "distinction_from_pol_13k_incident": {
+    "pol_13k_root_cause": "Post-filter fallback used event['excess_return'] (future outcome field) to rank candidates, guaranteeing 88% WR for nemotron-120b. Fixed commit 1a7a02b48.",
+    "nba_d006_root_cause": "Tier-pad post-filter used event['predicted_margin'] / per_category['edge'] / per_category['prob'] (pre-game model predictions, Brier 0.217). No outcome field in candidate selection. The 'leakage-fingerprint' surface pattern (high WR + high Jaccard) is explained by the pad's deterministic ranking collapsing all 17 agents onto the same top-edge ml_home favorites — a lockstep bug, not a leakage bug.",
+    "why_they_look_similar": "Both produced abnormally-high-WR days. But mechanism differs: POL was arithmetically guaranteed 88% WR by using outcome as signal; NBA day-006 got 82.2% WR because the tier-pad fabricated 139 agreement-picks on 3 strong ML favorites whose actual outcomes happened to confirm the (clean) pre-game edges."
+  },
+
+  "recommendations": [
+    {
+      "to": "THE_BOSS",
+      "action": "Close IP12 as resolved — no NBA state regeneration needed. The d006 anomaly is tier-pad-lockstep (already fixed by 62a51c395), not a leakage bug."
+    },
+    {
+      "to": "DR_FRANKENSTEIN",
+      "action": "NO CODE CHANGE REQUESTED. The excess_return hazard does not exist in NBA app.py. Continue prompt-level work (IP1, IP2, IP11) as planned."
+    },
+    {
+      "to": "INTERNAL_AFFAIRS_FUTURE_SELF",
+      "action": "Add a structural check to run_audit.py: when WR>0.85 AND n>=10, FIRST check fallback-edge-post / fallback_uniform ratio in source distribution. If >60%, downgrade leakage-suspicion to tier-pad-lockstep (benign post-fix) before escalating. This prevents future false positives on pre-2026-04-19 snapshot data."
+    }
+  ],
+
+  "scientific_integrity_sign_off": {
+    "signed_by": "INTERNAL_AFFAIRS",
+    "timestamp": "2026-04-20T02:44:00Z",
+    "bar": "Leakage fingerprint was surface-similar to POL $13K, but mechanism differs. NBA signal pipeline does NOT use any future-outcome field as input to LLM reasoning, post-filter candidate selection, or stake sizing. The high WR on day-006 is an artifact of the now-removed tier-pad post-filter concentrating 17 agents on 3 strong ML favorites whose clean pre-game edges happened to confirm — a lockstep bug that was explicitly documented and fixed in commit 62a51c395 on 2026-04-19. No new code changes required; no escalation beyond THE BOSS."
+  }
+}
