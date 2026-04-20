@@ -182,7 +182,14 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
             entry["broker_class"] = resp.get("order_class") or ("notional" if resp.get("notional") else "bracket")
         except Exception as e:
             entry["status"] = "broker_error"
-            entry["error"] = str(e)[:200]
+            # Capture Alpaca body text when available (RequestException.response) so we can
+            # diagnose broker_errors beyond the generic "422 Unprocessable Entity" prefix.
+            body = ""
+            try:
+                body = " | body=" + getattr(e, "response", None).text[:400]  # type: ignore
+            except Exception:
+                pass
+            entry["error"] = (str(e) + body)[:600]
     else:
         # Dry run — simulate the fill and set sim_close_at for EOD flatten
         entry["sim_filled_at"] = last
@@ -361,7 +368,14 @@ def submit_option(agent_tid: str, order: Dict[str, Any], last_quote: float) -> D
                 entry["broker_legs_count"] = len(mleg_legs)
         except Exception as e:
             entry["status"] = "broker_error"
-            entry["error"] = str(e)[:200]
+            # Capture Alpaca body text when available (RequestException.response) so we can
+            # diagnose broker_errors beyond the generic "422 Unprocessable Entity" prefix.
+            body = ""
+            try:
+                body = " | body=" + getattr(e, "response", None).text[:400]  # type: ignore
+            except Exception:
+                pass
+            entry["error"] = (str(e) + body)[:600]
     else:
         entry["sim_opened_at_underlying"] = last
 
