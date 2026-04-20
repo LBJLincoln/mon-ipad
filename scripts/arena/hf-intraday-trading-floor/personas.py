@@ -79,14 +79,14 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "mean-rev-1",
         "name": "MeanReversion",
-        # 2026-04-20: user asked for nemotron + minimax to actually be used.
-        # openrouter:nemotron-120b:free is FREE-tier and was the NBA T11 chainthought
-        # trader; perfect fit for mean-reversion "fade the extreme" reasoning.
-        # mistral:medium fallback keeps us solvent if openrouter rate-limits.
-        "model_primary": "openrouter:nemotron-120b:free",
+        # 2026-04-20 SWITCHBOARD reroute: openrouter:nemotron-120b:free is on
+        # llm-deadlist (broken). Silent agent — 0 positions across last decision.
+        # Reroute to mistral:large (PQTF #1 $244K winner) which is L-tier and
+        # in feedback_itf_follow_winners_apr19. mistral:medium stays as fallback.
+        "model_primary": "mistral:large",
         "model_fallback": "mistral:medium",
-        "hf_account_target": "openrouter",
-        "hf_space_target": "nemotron-120b",
+        "hf_account_target": "mistral",
+        "hf_space_target": "large",
         "tier": "L",
         "risk": 0.40,
         "max_hold_min": 90,
@@ -100,13 +100,14 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "breakout-1",
         "name": "Breakout",
-        # 2026-04-20: user asked minimax m2.7 be used — it's the NVIDIA NIM free
-        # lane (T13 NBA "decisive" trader). Breakouts reward decisiveness, so
-        # this is a fit. cerebras:qwen-3-235b fallback keeps analytical backup.
-        "model_primary": "nvidia:minimax-m2.7",
-        "model_fallback": "cerebras:qwen-3-235b",
-        "hf_account_target": "nvidia",
-        "hf_space_target": "minimax-m2.7",
+        # 2026-04-20 SWITCHBOARD reroute: nvidia:minimax-m2.7 on llm-deadlist
+        # (slow/broken), cerebras:qwen-3-235b also broken. Silent agent.
+        # Reroute to google:gemini-3-flash (POL #1 winner $470, 14 RPM, fast)
+        # with mistral:medium fallback (PQTF #2 winner).
+        "model_primary": "google:gemini-3-flash",
+        "model_fallback": "mistral:medium",
+        "hf_account_target": "google",
+        "hf_space_target": "gemini-3-flash",
         "tier": "M",
         "risk": 0.55,
         "max_hold_min": 180,
@@ -136,12 +137,13 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "vol-1",
         "name": "VolRegime",
-        # dolphin3-l32-3b is NBA TF's 3× winner but its selfhost endpoint 45s-timeouts
-        # on ITF. Reroute to cerebras:qwen-3-235b (NBA qwen-quant) + mistral:medium.
-        "model_primary": "cerebras:qwen-3-235b",
+        # 2026-04-20 SWITCHBOARD reroute: cerebras:qwen-3-235b on llm-deadlist.
+        # Silent agent. Reroute to mistral:large (PQTF #1 winner) + medium fallback.
+        # Mistral handles VIX-aware reasoning fine; PQTF proved $244K trajectory.
+        "model_primary": "mistral:large",
         "model_fallback": "mistral:medium",
-        "hf_account_target": "cerebras",
-        "hf_space_target": "qwen-3-235b",
+        "hf_account_target": "mistral",
+        "hf_space_target": "large",
         "tier": "M",
         "risk": 0.45,
         "max_hold_min": 120,

@@ -802,8 +802,10 @@ PROVIDERS = {
 TRADERS = {
     # Cerebras Qwen 3 235B — heaviest reasoning model, 2 personas
     # 2026-04-17 FIX: Cerebras free tier returns 429 "queue_exceeded" under TF load → add fallbacks
-    "qwen-quant":  {"name": "Qwen Quant 235B",   "provider": "cerebras:qwen-3-235b",  "personality": "quantitative", "risk_tolerance": 0.55,
-                    "fallback_provider": "mistral:large"},
+    # 2026-04-20 SWITCHBOARD: cerebras:qwen-3-235b on llm-deadlist (broken).
+    # qwen-quant silent 0/3d → promote mistral:large (PQTF #1 $244K) to primary.
+    "qwen-quant":  {"name": "Qwen Quant 235B",   "provider": "mistral:large",         "personality": "quantitative", "risk_tolerance": 0.55,
+                    "fallback_provider": "mistral:medium"},
     "qwen-arb":    {"name": "Qwen Arb 235B",     "provider": "cerebras:qwen-3-235b",  "personality": "arbitrage",    "risk_tolerance": 0.65,
                     "fallback_provider": "openrouter:gpt-oss-120b"},
     # Cerebras Llama 3.1 8B — small/fast, 1 persona
@@ -822,8 +824,11 @@ TRADERS = {
     "mistral-ministral":{"name": "Ministral 8B",     "provider": "openrouter:gpt-oss-120b","personality": "theoretical",  "risk_tolerance": 0.35,
                          "fallback_provider": "cerebras:llama3.1-8b"},
     # NEW 2026-04-15 — +1 NVIDIA Nemotron 120B (OpenRouter free, verified responsive)
-    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55,
-                         "fallback_provider": "cerebras:qwen-3-235b"},
+    # 2026-04-20 SWITCHBOARD: openrouter:nemotron-120b:free + cerebras:qwen-3-235b
+    # both on llm-deadlist. Silent 0/3d. Reroute primary→mistral:large, fallback→mistral:medium.
+    # Persona+strategy+Axelrod class (Adaptive) preserved; only backend swapped.
+    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "mistral:large",         "personality": "chainthought","risk_tolerance": 0.55,
+                         "fallback_provider": "mistral:medium"},
     # 2026-04-18 FIX: HF CPU basic = ~3 tok/s → 2+ min/call, blocking fleet. Swap selfhost→GitHub Models (free, ~2s).
     # Persona + strategy + prompt + Axelrod class all PRESERVED. Only backend flipped.
     "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "github:gpt-4o-mini",     "personality": "disciplined", "risk_tolerance": 0.40,
@@ -838,8 +843,10 @@ TRADERS = {
                          "fallback_provider": "github:gpt-4o-mini"},
     "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "github:gpt-4o-mini",   "personality": "conservative","risk_tolerance": 0.30,
                          "fallback_provider": "mistral:ministral-8b"},
+    # 2026-04-20 SWITCHBOARD: mistral:nemo on llm-deadlist (broken). NBA dolphin3
+    # is the $316 winner (don't break primary). Just swap dead fallback → mistral:large.
     "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "github:llama-3.1-8b", "personality": "uncensored",  "risk_tolerance": 0.60,
-                         "fallback_provider": "mistral:nemo"},
+                         "fallback_provider": "mistral:large"},
 }
 
 AGENT_SYSTEM_PROMPTS = {

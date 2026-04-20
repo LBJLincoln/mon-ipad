@@ -765,8 +765,10 @@ TRADERS = {
                          "fallback_provider": "github:gpt-4o-mini"},
     "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "github:gpt-4o-mini",   "personality": "conservative","risk_tolerance": 0.30,
                          "fallback_provider": "mistral:ministral-8b"},
+    # 2026-04-20 SWITCHBOARD: mistral:nemo on llm-deadlist (broken). selfhost-dolphin3
+    # silent 0/3d POL → if github:llama-3.1-8b fails, fallback was dead too. Swap to mistral:large.
     "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "github:llama-3.1-8b", "personality": "uncensored",  "risk_tolerance": 0.60,
-                         "fallback_provider": "mistral:nemo"},
+                         "fallback_provider": "mistral:large"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
