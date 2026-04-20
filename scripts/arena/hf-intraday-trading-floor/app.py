@@ -704,11 +704,24 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     executor.close_expired(now, quote_fn=_q)
 
     # 2026-04-20 ANTI-LOCKSTEP guardrail — cap agents per (ticker,side) at MAX_CONCURRENT_PER_KEY.
+    # GLOBAL (not per-tick): seed from executor's existing open positions so cross-tick
+    # accumulation also caps out. Without this, 2 ticks of 2 AVAX-longs each = 4 AVAX-longs.
     # Fair-order randomization so early-called personas don't monopolize the edge.
-    # When the cap is hit, later agents' trade on that key is post-filtered to pass.
     import random as _random
     MAX_CONCURRENT_PER_KEY = 3
     _tick_counts: Dict[Tuple[str, str], int] = {}
+    try:
+        _existing_positions = executor._load_positions()
+        for _agent_id, _plist in (_existing_positions or {}).items():
+            for _p in (_plist or []):
+                if _p.get("status") != "open":
+                    continue
+                _t = _p.get("ticker") or _p.get("underlying")
+                _s = _p.get("side") or _p.get("option_type")
+                if _t and _s:
+                    _tick_counts[(_t, _s)] = _tick_counts.get((_t, _s), 0) + 1
+    except Exception as _e:
+        print(f"[itf] anti-lockstep seed failed (non-fatal): {_e}", file=sys.stderr, flush=True)
     _personas_this_tick = list(PERSONAS)
     _random.shuffle(_personas_this_tick)
 
