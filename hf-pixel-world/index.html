@@ -20,32 +20,52 @@
   * { box-sizing:border-box; }
   html,body { margin:0; padding:0; height:100%; background:var(--bg); color:var(--ink);
     font-family:"JetBrains Mono","Courier New",monospace; font-size:12px; overflow:hidden; }
-  /* ═══ v2.16 Pokémon B/W status strip — replaces Bloomberg amber (id kept for backward-compat). ═══
-     Navy outer + off-white inner + yellow values, matching the #poke-dialog and trainer-card chrome. */
-  #bloomberg-ticker { position:fixed; top:0; left:0; right:0; height:30px; z-index:100;
+  /* ═══ v2.22 Wall Street marquee ticker — replaces segmented row. ═══
+     User ask 2026-04-20: "comme à wall street avec all important data qui défilent".
+     Full-width horizontal scroll; content duplicated for seamless loop. Pointer-events
+     disabled on the track so clicks pass through to the world. */
+  #bloomberg-ticker { position:fixed; top:0; left:0; right:0; height:34px; z-index:100;
     background:#f8f8f8; color:#101820;
-    font-family:"Press Start 2P","VT323","IBM Plex Mono",monospace; font-size:10px;
+    font-family:"Press Start 2P","VT323","IBM Plex Mono",monospace; font-size:11px;
     letter-spacing:0.08em; text-transform:uppercase;
     border-bottom:3px solid var(--pk-ink);
     box-shadow: inset 0 0 0 2px #f8f8f8, inset 0 0 0 4px var(--pk-navy),
                 0 3px 10px rgba(0,0,0,0.55);
-    padding:0 18px; display:flex; align-items:center;
-    overflow:hidden; }
-  #bloomberg-ticker .seg { padding:0 14px; border-right:2px dotted #b0b8c4;
-    display:flex; gap:6px; align-items:center; white-space:nowrap; }
-  #bloomberg-ticker .seg:first-child { padding-left:6px; }
-  #bloomberg-ticker .seg:last-child { border-right:0; }
-  #bloomberg-ticker .lbl { color:var(--pk-navy); font-weight:700; letter-spacing:0.16em; }
-  #bloomberg-ticker .val { color:var(--pk-ink); font-weight:700; font-family:"VT323","JetBrains Mono",monospace; font-size:13px; letter-spacing:0.02em; }
+    display:flex; align-items:center; overflow:hidden; padding:0; }
+  #bloomberg-ticker .brand { flex:0 0 auto; padding:0 14px; height:100%;
+    background:var(--pk-navy); color:var(--pk-yellow);
+    display:flex; align-items:center; gap:8px;
+    border-right:3px solid var(--pk-ink); z-index:2;
+    font-family:"Press Start 2P",monospace; font-size:10px; letter-spacing:0.18em;
+    text-shadow:1px 1px 0 #000; white-space:nowrap; }
+  #bloomberg-ticker .brand .dot { width:8px; height:8px; background:var(--pk-red);
+    border:1px solid #000; animation:blk 0.9s steps(2) infinite; }
+  #ticker-viewport { flex:1; height:100%; overflow:hidden; position:relative;
+    pointer-events:none; }
+  #ticker-track { position:absolute; top:0; left:0; height:100%;
+    display:flex; align-items:center; gap:0; white-space:nowrap;
+    animation: tk-scroll 62s linear infinite;
+    will-change: transform; }
+  #ticker-track:hover { animation-play-state: paused; }
+  @keyframes tk-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  #bloomberg-ticker .seg { padding:0 18px; display:inline-flex; gap:7px;
+    align-items:center; white-space:nowrap; border-right:2px dotted #b0b8c4; height:100%; }
+  #bloomberg-ticker .lbl { color:var(--pk-navy); font-weight:700; letter-spacing:0.16em;
+    font-family:"Press Start 2P",monospace; font-size:9px; }
+  #bloomberg-ticker .val { color:var(--pk-ink); font-weight:700; font-family:"VT323","JetBrains Mono",monospace; font-size:14px; letter-spacing:0.02em; }
   #bloomberg-ticker .val.up { color:var(--pk-green); }
   #bloomberg-ticker .val.down { color:var(--pk-red); }
   #bloomberg-ticker .val.star { color:#a05820; background:var(--pk-yellow); padding:1px 6px; border:1px solid var(--pk-ink); border-radius:3px; }
-  #bloomberg-ticker .cursor { color:var(--pk-navy); animation:blk 0.6s steps(2) infinite; margin-left:auto; padding-left:14px; font-weight:700; font-size:14px; }
+  #bloomberg-ticker .val.flash { animation: tk-flash 0.6s ease-out; }
+  @keyframes tk-flash { 0% { background:var(--pk-yellow); } 100% { background:transparent; } }
+  #bloomberg-ticker .arrow { display:inline-block; color:var(--pk-navy); font-weight:900; }
+  #bloomberg-ticker .arrow.up { color:var(--pk-green); }
+  #bloomberg-ticker .arrow.down { color:var(--pk-red); }
   @keyframes blk { 50% { opacity:0; } }
   @keyframes panel-pulse { 0%,100% { box-shadow: 0 0 0 0 currentColor; } 50% { box-shadow: 0 0 0 3px currentColor; opacity:0.7; } }
   /* v2.8 2026-04-17: sidebar removed — all panels are now diegetic (in-world PIXI).
      Minimal floating HUDs live on top of #stage as absolute overlays. */
-  #root { display:grid; grid-template-columns:1fr; height:calc(100vh - 26px); margin-top:26px; }
+  #root { display:grid; grid-template-columns:1fr; height:calc(100vh - 34px); margin-top:34px; }
   /* v2.16 — Pokémon summary box (party-menu / Pokédex entry). Off-white double-border + navy rules. */
   /* v2.20 2026-04-20: user asked to remove the STATUS panel from the world —
      "not useful for pixel world on pixel world". Hidden via display:none so the
@@ -114,6 +134,9 @@
     text-shadow: 2px 2px 0 var(--pk-ink), -1px -1px 0 var(--pk-ink), 1px -1px 0 var(--pk-ink), -1px 1px 0 var(--pk-ink); }
   #hud-top .tick { color:var(--pk-green); font-family:"VT323",monospace; font-size:13px;
     text-shadow: 1px 1px 0 var(--pk-ink); }
+  /* v2.22: #hud-top shrinks (marquee replaces the old Bloomberg strip). */
+  #hud-top { top: 6px !important; font-size: 9px; }
+  #hud-top .brand { font-size: 9px; }
   /* v2.18 — room-tabs + ext-btns removed (single world view). */
   #hud-bot { position:absolute; bottom:120px; left:12px; right:12px; display:flex; justify-content:space-between;
     font-size:10px; color:var(--pk-box); pointer-events:none; z-index:7;
@@ -230,12 +253,15 @@
   #three-floor-lb .empty { padding:10px 6px; font-size:9.5px; color:var(--pk-navy); opacity:0.7;
     font-style:italic; text-align:center; }
 
-  /* Shrink pixel stage slightly so leaderboard doesn't overlap the world */
-  @media (min-width: 900px) {
-    #root { margin-right: 290px; }
-    #poke-dialog { right: 302px !important; }
-    #bloomberg-ticker { right: 290px !important; }
-  }
+  /* v2.22 2026-04-20: leaderboard + dialog hidden to give agents the full canvas.
+     User ask: "delete the panel with live bets and keep only the tardeboard (ticker) at top".
+     All data is on the top marquee now. */
+  #three-floor-lb { display:none !important; }
+  #poke-dialog { display:none !important; }
+  #boot-log { display:none !important; }
+  #hud-bot { display:none !important; }
+  #minimap { display:none !important; }
+  #root { margin-right: 0 !important; }
   /* ═══ v2.15 POKÉMON B/W DIALOGUE BOX ═══ Replaces marquee bet-ticker.
      Double-border (outer black + inner white) + inset shadow, typewriter feed. */
   #poke-dialog { position:absolute; bottom:14px; left:12px; right:12px; height:92px; z-index:7;
@@ -291,15 +317,30 @@
 </head>
 <body>
 <div id="bloomberg-ticker">
-  <div class="seg"><span class="lbl">NOMOS42</span><span class="val star">TERMINAL</span></div>
-  <div class="seg"><span class="lbl">UTC</span><span class="val" id="bt-utc">—</span></div>
-  <div class="seg"><span class="lbl">NBA TF</span><span class="val" id="bt-nba-day">—</span><span class="val" id="bt-nba-pnl">—</span></div>
-  <div class="seg"><span class="lbl">POL TF</span><span class="val" id="bt-pol-day">—</span><span class="val" id="bt-pol-pnl">—</span></div>
-  <div class="seg"><span class="lbl">ITF</span><span class="val" id="bt-itf-trades">—</span><span class="val" id="bt-itf-open">—</span></div>
-  <div class="seg"><span class="lbl">FLEET BEST</span><span class="val star" id="bt-fleet">—</span></div>
-  <div class="seg"><span class="lbl">PACTS</span><span class="val" id="bt-pacts">0</span></div>
-  <div class="seg"><span class="lbl">LLM CALLS</span><span class="val" id="bt-calls">0</span></div>
-  <div class="cursor">█</div>
+  <div class="brand"><span class="dot"></span>NOMOS42 · LIVE</div>
+  <div id="ticker-viewport">
+    <div id="ticker-track">
+      <!-- PRIMARY SEGMENTS (ids populated by JS; keep exactly one copy of each id) -->
+      <div class="seg"><span class="lbl">UTC</span><span class="val" id="bt-utc">—</span></div>
+      <div class="seg"><span class="lbl">NBA TF</span><span class="val" id="bt-nba-day">—</span><span class="val" id="bt-nba-pnl">—</span></div>
+      <div class="seg"><span class="lbl">POL TF</span><span class="val" id="bt-pol-day">—</span><span class="val" id="bt-pol-pnl">—</span></div>
+      <div class="seg"><span class="lbl">ITF</span><span class="val" id="bt-itf-trades">—</span><span class="val" id="bt-itf-open">—</span></div>
+      <div class="seg"><span class="lbl">FLEET BEST</span><span class="val star" id="bt-fleet">—</span></div>
+      <div class="seg"><span class="lbl">PACTS</span><span class="val" id="bt-pacts">0</span></div>
+      <div class="seg"><span class="lbl">LLM CALLS</span><span class="val" id="bt-calls">0</span></div>
+      <!-- Dynamic event feed (last bets, steam moves, Brier ticks) — filled by JS -->
+      <span id="tk-feed-primary"></span>
+      <!-- DUPLICATE (id-less clones; kept in sync by JS so loop is seamless) -->
+      <div class="seg"><span class="lbl">UTC</span><span class="val" data-mirror="bt-utc">—</span></div>
+      <div class="seg"><span class="lbl">NBA TF</span><span class="val" data-mirror="bt-nba-day">—</span><span class="val" data-mirror="bt-nba-pnl">—</span></div>
+      <div class="seg"><span class="lbl">POL TF</span><span class="val" data-mirror="bt-pol-day">—</span><span class="val" data-mirror="bt-pol-pnl">—</span></div>
+      <div class="seg"><span class="lbl">ITF</span><span class="val" data-mirror="bt-itf-trades">—</span><span class="val" data-mirror="bt-itf-open">—</span></div>
+      <div class="seg"><span class="lbl">FLEET BEST</span><span class="val star" data-mirror="bt-fleet">—</span></div>
+      <div class="seg"><span class="lbl">PACTS</span><span class="val" data-mirror="bt-pacts">0</span></div>
+      <div class="seg"><span class="lbl">LLM CALLS</span><span class="val" data-mirror="bt-calls">0</span></div>
+      <span id="tk-feed-mirror"></span>
+    </div>
+  </div>
 </div>
 <div id="root">
   <div id="stage">
@@ -307,7 +348,7 @@
       <div>
         <span class="brand">NOMOS42 · PIXEL WORLD</span> · <span id="build-tag">build: …</span> · PixiJS · live · trainer-net
       </div>
-      <div><span class="tick" id="hud-tick">· booting</span> <span style="font-family:'Press Start 2P',monospace;color:var(--pk-yellow);text-shadow:1px 1px 0 var(--pk-ink);font-size:8px;margin-left:6px;letter-spacing:0.14em">v2.18.1 · cover-fit + slim leaderboard</span></div>
+      <div><span class="tick" id="hud-tick">· booting</span> <span style="font-family:'Press Start 2P',monospace;color:var(--pk-yellow);text-shadow:1px 1px 0 var(--pk-ink);font-size:8px;margin-left:6px;letter-spacing:0.14em">v2.22 · marquee + bigger agents + click-to-talk</span></div>
     </div>
 <!-- v2.12: minimap deleted · v2.15: bet-ticker → Pokémon B/W dialogue box -->
     <div id="poke-dialog">
@@ -380,8 +421,11 @@ const TILE = 32;
 // v2.10: widen to 16:10 so the world fills desktop screens without dead side margins.
 const GRID_W = 52, GRID_H = 32;
 const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
-// v2.14 (2026-04-17): sized up 56→72 / 48→64 (+28% footprint, 4:3 kept).
-const CHAR_W = 72, CHAR_H = 64;
+// v2.22 2026-04-20: size up 72→128 / 64→112 (+78%). User ask: "qu'ils soient bien
+// plus grands". Separation radius bumped in tickMotion so 41 big sprites don't
+// clump. Sprite is still pixel-snapped (image-rendering:pixelated) so it stays
+// crisp at 2× scale.
+const CHAR_W = 128, CHAR_H = 112;
 
 // v2.17: +itf (amber-orange, reads as "live tape" — distinct from NBA pink + POL cyan).
 const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, itf:0xffa94d, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c, control:0xffd700 };
@@ -579,14 +623,24 @@ const MATCH_FLOOR = { x: 20, y: 17 };
 // heights (4-11 tiles) bottled 41 agents into narrow bands; user reported "agents
 // dont move accross all the space". Horizontal zones now ~18 tiles tall each so
 // a trader's wanderTarget spans vastly more of the available canvas.
+// v2.22 2026-04-20: regroup buildings into dense bands at the top + bottom of the
+// world, leaving a LARGE central courtyard (y=8..26 = 18 tiles tall × 52 wide)
+// where traders roam. User ask: "il faut laisser bien plus de place aux agents
+// en regroupant bien mieux les buildings infras". Prior layout had NBA/POL floors
+// eating 16 tiles of vertical space — now 18 tiles are pure free-roam canvas.
 const ZONES = {
-  "nba-infra":  { x:1,  y:1,  w:25, h:10, floor:6, label:"NBA EVOLUTION · 6 SURVIVOR ISLANDS" },
-  "pol-infra":  { x:26, y:1,  w:25, h:10, floor:6, label:"POLITICAL EVOLUTION · 5 SURVIVOR ISLANDS" },
-  councils:     { x:1,  y:11, w:50, h:6,  floor:1, label:"COUNCIL CHAMBERS · 9 DEPARTMENTS" },
-  nba:          { x:1,  y:11, w:25, h:16, floor:3, label:"NBA TRADING FLOOR" },
-  political:    { x:26, y:11, w:25, h:16, floor:5, label:"POLITICAL FLOOR" },
-  itf:          { x:1,  y:22, w:50, h:8,  floor:2, label:"INTRADAY TRADING FLOOR · 7 AGENTS (24/7 CRYPTO + EQUITIES)" },
-  "control-room":{x:1,  y:26, w:50, h:5,  floor:8, label:"CONTROL ROOM · LIVE LLM DATA FEEDS" },
+  // TOP BAND (y=1..6, 5 tiles) — infra towers, tight grid, no wander
+  "nba-infra":  { x:1,  y:1,  w:22, h:5,  floor:6, label:"NBA EVO · 6 ISLANDS" },
+  "pol-infra":  { x:30, y:1,  w:21, h:5,  floor:6, label:"POL EVO · 5 ISLANDS" },
+  councils:     { x:23, y:1,  w:7,  h:5,  floor:1, label:"COUNCILS · 9" },
+  // CENTRAL COURTYARD (y=7..25, 18 tiles tall × 52 wide) — all traders roam here.
+  // NBA + POL share left/right halves for coloring, but actual wanderTarget spans
+  // the full courtyard so traders cross between floors freely.
+  nba:          { x:1,  y:7,  w:25, h:19, floor:3, label:"NBA TRADING FLOOR" },
+  political:    { x:26, y:7,  w:25, h:19, floor:5, label:"POLITICAL FLOOR" },
+  // BOTTOM BAND (y=26..31, 6 tiles) — ITF + control room, stacked tight.
+  itf:          { x:1,  y:26, w:50, h:3,  floor:2, label:"INTRADAY · 7 AGENTS 24/7" },
+  "control-room":{x:1,  y:29, w:50, h:3,  floor:8, label:"CONTROL ROOM" },
 };
 
 // v2.13 (2026-04-17): roster parity with live TF — 17 NBA + 17 POL.
@@ -774,15 +828,16 @@ world.addChild(bgLayer, floorLayer, decorLayer, boardLayer, particleLayer, pactL
 const DIEGETIC_PANELS = [];
 const _PANEL_SLOT = { row: 0, col: 0 };   // autoincrement slot allocator
 const _PANEL_COLS = 6;
-const _PANEL_MAX_ROWS = 2;
-// Panel grid pinned to CONTROL ROOM: zone (x=1, y=20, w=50, h=11)
+const _PANEL_MAX_ROWS = 1;
+// v2.22 Panel grid pinned to CONTROL ROOM: zone (x=1, y=29, w=50, h=3) — thinner band.
+// Grid collapses to 1 row × 6 cols so panels stay readable inside 3 tiles.
 const _CTRL_X0 = 1 * TILE + 8;            // 40 px
-const _CTRL_Y0 = 20 * TILE + 36;          // 676 px (below zone label)
+const _CTRL_Y0 = 29 * TILE + 4;           // 932 px (just inside zone)
 const _CTRL_W = 50 * TILE - 16;           // 1584 px inner
-const _CTRL_H = 11 * TILE - 44;           // 308 px inner
-const _PANEL_GAP = 8;
+const _CTRL_H = 3 * TILE - 8;             // 88 px inner (single row)
+const _PANEL_GAP = 6;
 const _PANEL_W = Math.floor((_CTRL_W - _PANEL_GAP * (_PANEL_COLS - 1)) / _PANEL_COLS);  // ≈258
-const _PANEL_H = Math.floor((_CTRL_H - _PANEL_GAP * (_PANEL_MAX_ROWS - 1)) / _PANEL_MAX_ROWS);  // ≈150
+const _PANEL_H = Math.floor((_CTRL_H - _PANEL_GAP * (_PANEL_MAX_ROWS - 1)) / _PANEL_MAX_ROWS);  // ≈40
 
 function _panelStatusColor(s) {
   return { live: 0x00d9a7, stale: 0xffa500, no_signal: 0xff5c5c, fake: 0xff5c5c }[s] || 0x9aa3b5;
@@ -1689,9 +1744,20 @@ function makeAgentContainer(a) {
   const dot = new PIXI.Graphics(); dot.visible = false;
   c.addChild(dot); c._dot = dot;
 
-  c.on("pointerover", () => { a._hover = true; showHoverCard(a); });
+  c.on("pointerover", () => { a._hover = true; if (!a._clicked) showHoverCard(a); });
   c.on("pointerout",  () => { a._hover = false; hideHoverCard(); });
-  c.on("pointertap",  () => { a.activeUntil = performance.now() + 5000; showInspectPanel(a); });
+  // v2.22 click handler: Pokémon-style interaction — stop agent, open speech
+  // bubble with current thought, anchor right info panel to this agent.
+  c.on("pointertap",  () => {
+    // Unclick any previously-clicked agent
+    for (const other of AGENTS) if (other !== a) other._clicked = false;
+    a._clicked = true;
+    a.activeUntil = performance.now() + 60000;  // keep "active" visuals alive while frozen
+    a.bubbleUntil = performance.now() + 60000;  // persistent bubble while clicked
+    a.bubble = buildClickBubble(a);
+    showInspectPanel(a);
+    hideHoverCard();
+  });
 
   a._cnt = c;
   agentLayer.addChild(c);
@@ -1700,10 +1766,15 @@ function makeAgentContainer(a) {
 for (const a of AGENTS) makeAgentContainer(a);
 
 // ── MOTION ──────────────────────────────────────────────────────────────────
-const SEP_RADIUS = 2.6, SEP_WEIGHT = 0.09;
+// v2.22: bigger sprites need more elbow room — SEP_RADIUS 2.6→4.0.
+const SEP_RADIUS = 4.0, SEP_WEIGHT = 0.11;
 function tickMotion(ms) {
   const t = ms / 1000;
   for (const a of AGENTS) {
+    // v2.22: clicked agent = Pokémon-style STOP. User ask: "que l'agent s'arrête".
+    // Zero velocity, zero wander, zero wobble — the inspect card + speech bubble
+    // take over until the user clicks Close or clicks another agent.
+    if (a._clicked) { a.vx = 0; a.vy = 0; continue; }
     let tx = a.home.x, ty = a.home.y;
     // v2.20 2026-04-20: user reported "agents dont move accross all the space"
     // — previously isAlive gating meant every idle trader sat frozen at home,
@@ -1753,8 +1824,12 @@ function tickMotion(ms) {
         fy += (dy/d) * push * SEP_WEIGHT;
       }
     }
-    // v2.13: tighter damping 0.82 → 0.92 (smoother decel, less oscillation).
-    a.vx = a.vx * 0.92 + fx; a.vy = a.vy * 0.92 + fy;
+    // v2.22: even tighter damping 0.92 → 0.955 (kills "nanosecond jumps" on throttled RAF).
+    a.vx = a.vx * 0.955 + fx; a.vy = a.vy * 0.955 + fy;
+    // Clamp per-tick displacement so a single long RAF-delta can't teleport the agent.
+    const maxStep = 0.18;
+    if (a.vx >  maxStep) a.vx =  maxStep; else if (a.vx < -maxStep) a.vx = -maxStep;
+    if (a.vy >  maxStep) a.vy =  maxStep; else if (a.vy < -maxStep) a.vy = -maxStep;
     a.x += a.vx; a.y += a.vy;
     if (a._cnt && a._cnt._spr && Math.abs(a.vx) > 0.004) {
       a._cnt._spr.scale.x = (a.vx < 0 ? -1 : 1) * Math.abs(a._cnt._spr.scale.x || 1);
@@ -1799,8 +1874,16 @@ function tickRender(ms) {
 
   for (const a of AGENTS) {
     if (!a._cnt) continue;
-    a._cnt.x = a.x * TILE; a._cnt.y = a.y * TILE;
-    a._cnt.zIndex = a.y * 1000;
+    // v2.22 render-side easing: decouple visual position from sim position so
+    // irregular RAF deltas (or a spike after a background-tab resume) never
+    // produce a visible "nanosecond jump". _renderX/Y catch up to a.x/y at a
+    // fixed rate every frame, yielding buttery motion regardless of sim jitter.
+    if (a._renderX == null) { a._renderX = a.x; a._renderY = a.y; }
+    const easeK = a._clicked ? 0.0 : 0.18;   // clicked agents are fully frozen
+    a._renderX += (a.x - a._renderX) * easeK;
+    a._renderY += (a.y - a._renderY) * easeK;
+    a._cnt.x = a._renderX * TILE; a._cnt.y = a._renderY * TILE;
+    a._cnt.zIndex = a._renderY * 1000;
     // Dim agents not in active room (highlight current room)
     if (activeRoom !== "world" && a.zone !== activeRoom) { a._cnt.alpha = 0.22; }
     else { a._cnt.alpha = 1.0; }
@@ -1835,38 +1918,58 @@ function tickRender(ms) {
       a._cnt._glyph.y = -CHAR_H*1.02 + Math.sin(ms / 600 + a.idx) * 2;
     }
 
-    // Speech bubble — ephemeral: only visible while bubbleUntil > now (≈4.5s after a bet).
-    // Infra/councils never set a.bubble so bubbles never persist on top row.
+    // Speech bubble — ephemeral by default (~4.5s after a bet) OR persistent when
+    // the user has CLICKED the agent (v2.22 Pokémon-interaction mode).
     const bubble = a._cnt._bubble;
-    const showBubble = bubble && a.bubble && (a.bubbleUntil || 0) > ms;
+    const isClicked = !!a._clicked;
+    if (isClicked) {
+      // Rebuild rich thought bubble every frame so it stays fresh as data updates.
+      a.bubble = buildClickBubble(a);
+    }
+    const showBubble = bubble && a.bubble && (isClicked || (a.bubbleUntil || 0) > ms);
     if (showBubble) {
       bubble._text.text = a.bubble;
-      const tw = Math.min(bubble._text.width + 14, 190);
-      const th = bubble._text.height + 10;
-      // Fade out in last 500ms
-      const fade = Math.min(1, ((a.bubbleUntil || 0) - ms) / 500);
+      // v2.22: widen bubble for clicked mode (more text, better readability).
+      bubble._text.style.wordWrapWidth = isClicked ? 280 : 200;
+      bubble._text.style.fontSize = isClicked ? 12 : 11;
+      const tw = Math.min(bubble._text.width + 18, isClicked ? 300 : 200);
+      const th = bubble._text.height + 14;
+      const fade = isClicked ? 1.0 : Math.min(1, ((a.bubbleUntil || 0) - ms) / 500);
+      const brdW = isClicked ? 2.5 : 1;
       bubble._bg.clear()
-        .roundRect(-tw/2, -th, tw, th, 3).fill({ color: 0x0b0d12, alpha: 0.95 * fade })
-        .roundRect(-tw/2, -th, tw, th, 3).stroke({ width:1, color: KIND_COLORS[a.kind], alpha: 0.7 * fade })
-        .moveTo(-4, 0).lineTo(4, 0).lineTo(0, 5).closePath().fill({ color: 0x0b0d12, alpha: 0.95 * fade });
+        .roundRect(-tw/2, -th, tw, th, 6).fill({ color: 0xf8f8f8, alpha: 0.98 * fade })
+        .roundRect(-tw/2, -th, tw, th, 6).stroke({ width:brdW, color: 0x101820, alpha: fade })
+        // Pokémon tail — triangle pointing down to sprite
+        .moveTo(-6, 0).lineTo(6, 0).lineTo(0, 8).closePath().fill({ color: 0xf8f8f8, alpha: 0.98 * fade })
+        .moveTo(-6, 0).lineTo(0, 8).lineTo(6, 0).stroke({ width:brdW, color: 0x101820, alpha: fade });
+      // Dark text on light bubble (Pokémon dialogue box style).
+      bubble._text.style.fill = 0x101820;
       bubble._text.alpha = fade;
       bubble.visible = true;
     } else if (bubble) {
       bubble.visible = false;
     }
 
-    // v2.3: Performance-gradient nameplate — border color shifts green→red with P&L
-    const tw = a._cnt._plate._text.width + 14;
-    let plateColor = KIND_COLORS[a.kind];
-    let plateBorderW = 1;
-    if (a.data && typeof a.data.bankroll === "number" && !a._isInfra) {
-      const roi = a.data.bankroll - 100;
-      plateColor = roi > 10 ? 0x00d9a7 : roi > 0 ? 0x50fa7b : roi > -10 ? 0xffb020 : 0xff5c5c;
-      plateBorderW = roi > 20 || roi < -20 ? 2 : 1;
+    // v2.22: Names HIDDEN by default — only shown when the agent is clicked
+    // (or infra, which always needs its Sxx/Pxx label, handled separately).
+    // User ask: "avec leur nom seulement affiché quand je clique dessus".
+    if (a._cnt._plate && !a._isInfra) {
+      const showPlate = !!a._clicked;
+      a._cnt._plate.visible = showPlate;
+      if (showPlate) {
+        const tw = a._cnt._plate._text.width + 14;
+        let plateColor = KIND_COLORS[a.kind];
+        let plateBorderW = 2;
+        if (a.data && typeof a.data.bankroll === "number") {
+          const roi = a.data.bankroll - 100;
+          plateColor = roi > 10 ? 0x00d9a7 : roi > 0 ? 0x50fa7b : roi > -10 ? 0xffb020 : 0xff5c5c;
+          plateBorderW = roi > 20 || roi < -20 ? 3 : 2;
+        }
+        a._cnt._plate._bg.clear()
+          .rect(-tw/2, -9, tw, 18).fill({ color:0x0b0d12, alpha:0.96 })
+          .rect(-tw/2, -9, tw, 18).stroke({ width:plateBorderW, color:plateColor, alpha:0.95 });
+      }
     }
-    a._cnt._plate._bg.clear()
-      .rect(-tw/2, -8, tw, 16).fill({ color:0x0b0d12, alpha:0.92 })
-      .rect(-tw/2, -8, tw, 16).stroke({ width:plateBorderW, color:plateColor, alpha:0.85 });
 
     // v2.19 (2026-04-20): DRASTIC panel surgery — strategy badge hidden by default
     // to declutter the world. User reported agent bubbles invisible behind panel
@@ -2039,6 +2142,38 @@ app.ticker.add(() => {
 });
 
 // ── BUBBLE TEXT BUILDERS ────────────────────────────────────────────────────
+// v2.22: Pokémon-style dialogue bubble shown when user CLICKS an agent.
+// Rich multi-line thought — persona intro + current thesis + last allocation.
+function buildClickBubble(a) {
+  const lines = [];
+  lines.push(`${a.label}`);
+  if (a.model) lines.push(`(${a.model})`);
+  const d = a.data;
+  const dd = a.dayDecision;
+  if (dd && dd.day_strategy) {
+    let s = dd.day_strategy.replace(/^(ARCHETYPE\[[^\]]+\]:|CHALLENGE_RESPONSE:)\s*/, "").trim();
+    if (s.length > 130) s = s.slice(0, 127) + "…";
+    lines.push(`"${s}"`);
+    const al = (dd.allocations || [])[0];
+    if (al) {
+      const pct = Math.round((al.pct || 0) * 100);
+      lines.push(`→ ${al.category || "?"} ${pct}% on ${al.game || "?"}`);
+    }
+  } else if (d && typeof d.bankroll === "number") {
+    const roi = d.bankroll - 100;
+    const sign = roi >= 0 ? `+$${roi.toFixed(0)}` : `-$${(-roi).toFixed(0)}`;
+    lines.push(`$${d.bankroll.toFixed(0)} (${sign})`);
+    if (a.strategy) lines.push(`[${a.strategy}]`);
+  } else if (a._isInfra && d) {
+    lines.push(`Brier ${(d.best_brier||0).toFixed(5)}`);
+    lines.push(`gen ${d.generation||0} · ${d.best_model_type||"?"}`);
+  } else if (a.kind === "council") {
+    lines.push(a.mission || "Karpathy loop");
+  } else {
+    lines.push("awaiting live data…");
+  }
+  return lines.join("\n");
+}
 function buildTraderBubble(a) {
   const d = a.data;
   const stratShort = a.strategy ? `[${a.strategy.slice(0,10)}]` : "";
@@ -2139,7 +2274,20 @@ function hideHoverCard() { hoverEl.style.display = "none"; }
 const inspectCard = document.getElementById("inspect-card");
 let _inspectAgent = null;
 document.getElementById("inspect-close").addEventListener("click", () => {
-  inspectCard.style.display = "none"; _inspectAgent = null;
+  inspectCard.style.display = "none";
+  if (_inspectAgent) _inspectAgent._clicked = false;
+  _inspectAgent = null;
+});
+// v2.22: clicking empty stage background = unclick any frozen agent.
+// PIXI captures clicks that land on a sprite (pointertap fires first); any click
+// on the raw canvas without hitting a sprite lands here.
+app.canvas.addEventListener("click", (ev) => {
+  // Only treat as background click if no hit tested — simplest heuristic is to
+  // check event target === canvas (PIXI stops propagation on sprite hits).
+  if (ev.target !== app.canvas) return;
+  for (const a of AGENTS) a._clicked = false;
+  inspectCard.style.display = "none";
+  _inspectAgent = null;
 });
 function positionInspectCard() {
   if (!_inspectAgent || inspectCard.style.display === "none") return;
@@ -2733,8 +2881,20 @@ async function refresh() {
   // ═══ Bloomberg ticker update ═══
   const setTx = (id, t, cls) => {
     const el = document.getElementById(id); if (!el) return;
+    const prev = el.textContent;
     el.textContent = t;
     el.className = "val" + (cls ? " " + cls : "");
+    // v2.22 marquee-mirror: keep the duplicate segments in sync so the track
+    // loop reads the same data on both halves (seamless scroll).
+    for (const m of document.querySelectorAll(`[data-mirror="${id}"]`)) {
+      m.textContent = t;
+      m.className = "val" + (cls ? " " + cls : "");
+    }
+    // Flash when value changes — draws the eye to fresh ticks
+    if (prev !== t && prev !== "—" && prev !== "") {
+      el.classList.add("flash");
+      setTimeout(() => el.classList.remove("flash"), 600);
+    }
   };
   const avg = (o) => {
     const vals = Object.values(o || {}); if (!vals.length) return null;
@@ -2976,9 +3136,31 @@ setInterval(loadPapers, 5 * 60 * 1000); // reload papers every 5 min
 setInterval(refresh, 15000); // 15s poll — safe under HF rate-limit
 // Bloomberg UTC clock — tick every second independent of data refresh
 setInterval(() => {
+  const t = new Date().toISOString().slice(11,19);
   const el = document.getElementById("bt-utc");
-  if (el) el.textContent = new Date().toISOString().slice(11,19);
+  if (el) el.textContent = t;
+  // v2.22: keep marquee duplicate in sync every second
+  for (const m of document.querySelectorAll('[data-mirror="bt-utc"]')) m.textContent = t;
 }, 1000);
+
+// v2.22: inject latest trade events into the scrolling marquee as a rolling feed.
+// Pulls from logTrade's TICKER_EVENTS (already maintained). Rebuilds the inner
+// HTML of #tk-feed-primary + #tk-feed-mirror every refresh so new bets surface.
+function renderTickerFeed() {
+  const ev = (typeof TICKER_EVENTS !== "undefined" && TICKER_EVENTS) ? TICKER_EVENTS.slice(0, 12) : [];
+  const segs = ev.map(line => {
+    const arrow = /↓|-\$|LOSS|missed/i.test(line) ? '<span class="arrow down">▼</span>'
+                : /↑|\+\$|WIN|effective|Brier/i.test(line) ? '<span class="arrow up">▲</span>'
+                : '<span class="arrow">◆</span>';
+    return `<span class="seg">${arrow}<span class="val">${line.replace(/</g,"&lt;")}</span></span>`;
+  }).join("");
+  const a = document.getElementById("tk-feed-primary");
+  const b = document.getElementById("tk-feed-mirror");
+  if (a) a.innerHTML = segs;
+  if (b) b.innerHTML = segs;
+}
+setInterval(renderTickerFeed, 4000);
+renderTickerFeed();
 
 })();
 </script>
