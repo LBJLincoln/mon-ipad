@@ -428,10 +428,14 @@ const TILE = 32;
 // v2.10: widen to 16:10 so the world fills desktop screens without dead side margins.
 const GRID_W = 52, GRID_H = 32;
 const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
-// v2.23 2026-04-20: user "fat et étirés en largeur, pas du tout en hauteur" —
-// switch to a taller silhouette (80×112, ratio 1:1.4 like a standing trainer).
-// v2.22 was 128×112 — too wide. Kept CHAR_H=112, dropped CHAR_W 128→80.
-const CHAR_W = 80, CHAR_H = 112;
+// v2.24 2026-04-20: fix "3/4 hat" regression — v2.23 forced 80×112 on 28×24
+// native frames, so the sprite was stretched non-uniformly (Y×4.67, X×2.86)
+// → heads/hats looked enormous, bodies squished. We now LOCK to native aspect
+// ratio (28:24 = 7:6). CHAR_H stays tall (112), CHAR_W derives from AR → 131.
+// The sprite itself is rendered via `spr.scale` (uniform), not width/height.
+const CHAR_H = 112;
+const CHAR_W = Math.round(CHAR_H * 28/24); // 131 — native-AR-locked, no distortion
+const CHAR_SCALE = CHAR_H / 24;            // uniform scale applied to 28×24 sprite
 
 // v2.17: +itf (amber-orange, reads as "live tape" — distinct from NBA pink + POL cyan).
 const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, itf:0xffa94d, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c, control:0xffd700 };
@@ -1595,8 +1599,10 @@ function makeAgentContainer(a) {
     const tex = TEX.chars[a.char];
     if (tex) {
       const spr = new PIXI.Sprite(tex);
+      // v2.24: bottom-anchor + UNIFORM scale via scale.set (not width/height
+      // override) — preserves native 28×24 aspect ratio, no vertical stretch.
       spr.anchor.set(0.5, 1); spr.y = 0;
-      spr.width = CHAR_W; spr.height = CHAR_H;
+      spr.scale.set(CHAR_SCALE);
       if (a.tint) spr.tint = a.tint;
       c.addChild(spr);
       c._spr = spr;
