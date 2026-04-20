@@ -50,13 +50,16 @@ from gateway_client import gateway_call  # type: ignore  # noqa: E402
 # ───────────────────────── Prompts ─────────────────────────
 
 COLLECTIVE_MISSION = """
-You are ONE of 6 LLM agents on the Nomos42 Intraday Trading Floor.
-All 6 see the same market tape and the same cross-repo context.
-COLLECTIVE GOAL: grow the fleet to $1M over the trading season.
-You will each start at $10,000. EVERY trading day ≥3 of the 6 must hold a
-position — passing is allowed but cowardice is punished on the leaderboard.
-You know other agents exist; over time you may propose coalitions (pairs of
-agents taking opposite sides of a pair trade, for example).
+You are ONE of 14 LLM agents on the Nomos42 Intraday Trading Floor (AGGRESSIVE MODE).
+All 14 see the same market tape, research digest, peer bets, and council plan.
+COLLECTIVE GOAL: ONE of us must reach $1,000,000 by Aug 1, 2026 — rapidly.
+You each start at $10,000. EVERY trading day ≥7 of the 14 must hold a position.
+Passing is allowed but cowardice is punished on the leaderboard.
+You have FULL FREEDOM: any ticker visible in the tape, any side, any stake within
+bankroll-linked sizing (2-5% of bankroll for high conviction). Compound wins.
+You know other agents exist; read their last 3 days of trades below and either
+COOPERATE (pact) or STRUCTURALLY DIVERGE (complement their book) — never blindly
+copy, never silent-pass on LLM failure.
 """.strip()
 
 AXELROD_CANON = """
@@ -68,35 +71,36 @@ AXELROD CANON (cooperation doctrine):
 """.strip()
 
 DECISION_SCHEMA = """
+$1M MISSION: ONE of the 14 ITF agents MUST reach $1,000,000 by Aug 1, 2026. Be AGGRESSIVE
+when edge is high: 2-5% of bankroll for high-conviction trades; compound on wins. PQTF
+proved this architecture works — mistral:large went $100→$244,050 (+40,667%) in 50 days
+by sizing up after wins. Do the same here.
+
 Respond with ONE of:
   { "action": "pass", "reason": "..." }
 OR a standard equity/crypto trade:
   { "action": "trade",
-    "ticker": one of:
-      SECTOR_ETF:    "SPY","QQQ","IWM","DIA","XLE","XLF","XLK","XLV","XLI","XLB","XLY","XLP","XLRE","XLU","XLC","GLD","TLT","SLV","USO","UUP"
-      LEVERAGED:     "TQQQ","SQQQ","SPXL","SPXS","SOXL","SOXS","TNA","TZA"
-      VOLATILITY:    "VXX","UVXY","SVXY","VIXY"
-      INTERNATIONAL: "EEM","FXI","EWZ","EWJ","EWT","EWW","VGK","INDA","VEA","IEFA","ACWX","EFA","EFV","VWO"
-      COMMODITIES:   "DBA","DBC","PDBC","CORN","WEAT","CPER","URA","UNG"
-      BONDS:         "SHY","IEI","IEF","LQD","HYG"
-      THEMATIC:      "ARKK","SOXX","SMH","XBI","ICLN","TAN","ITA","IBIT"
-      STOCKS:        "AAPL","MSFT","NVDA","GOOGL","AMZN","META","TSLA","AMD","AVGO","COST","NFLX","ORCL","CRM","ADBE","PYPL","SMCI","UBER","SHOP","DIS","BA","JPM","BAC","WFC","GS","V","MA","LLY","UNH","COIN","MSTR","PLTR","RIVN"
-      CRYPTO:        "BTC/USD","ETH/USD","SOL/USD","AVAX/USD","LINK/USD","DOGE/USD","DOT/USD","MATIC/USD","LTC/USD","UNI/USD","BCH/USD","XLM/USD","XRP/USD","AAVE/USD","SHIB/USD","MKR/USD","SUSHI/USD","CRV/USD","YFI/USD","GRT/USD"  (24/7 tradeable)
+    "ticker": ANY ticker visible in the INTRADAY TAPE block below (equities, leveraged,
+              volatility, international, commodities, bonds, thematic, stocks, or
+              crypto). You are NOT restricted to a whitelist — pick the best edge.
     "side": "long"|"short",
-    "stake_usd": 500-3000,
-    "stop_pct": 0.002-0.02,
-    "take_profit_pct": 0.005-0.05,
-    "thesis": "1-2 sentence reason citing quote/edge/signal"
+    "stake_usd": 100 to (0.05 × your_bankroll_in_usd). Floor $100. High-conviction (>3% edge
+                 AND VIX-regime match) may go to 5% of bankroll. Survival rule: if bankroll
+                 would drop below $20 post-trade, PASS instead.
+    "stop_pct": 0.002-0.03,
+    "take_profit_pct": 0.005-0.08,
+    "thesis": "1-2 sentence reason citing quote/edge/signal/peer-bet/council-plan"
   }
 OR an intraday options derivative (dry-run logged; live options routing via executor.submit_option):
   { "action": "option_trade",
-    "underlying": "SPY"|"QQQ"|"IWM"|"XLE"|"XLK"|"XLF"|"NVDA"|"TSLA",
+    "underlying": ANY ticker visible in the INTRADAY TAPE block (was SPY|QQQ|IWM|XLE|XLK|
+                  XLF|NVDA|TSLA whitelist — now unrestricted; choose by option liquidity),
     "option_type": "call"|"put",
     "strategy": "long"|"vertical_debit"|"vertical_credit"|"iron_condor"|"straddle",
     "dte": 0|1|2|5,
-    "strike_offset_pct": -0.02 to 0.02,
-    "wing_width_pct": 0.005-0.02,   # for verticals / condors
-    "stake_usd": 200-1500,
+    "strike_offset_pct": -0.03 to 0.03,
+    "wing_width_pct": 0.005-0.03,
+    "stake_usd": 100-1500,
     "max_loss_pct": 0.01-0.05,
     "thesis": "1-2 sentence reason — cite IV rank, realized vol, gamma, or skew"
   }
@@ -105,7 +109,8 @@ Return JSON ONLY. No markdown fences, no prose.
 
 RULE: Crypto tickers trade 24/7. Equities (incl. leveraged/vol/intl/stocks) and options
 trade only during extended hours (08:00-24:00 UTC weekdays). When markets are closed,
-emit crypto trades OR pass — NEVER emit equity/option trades outside hours.
+emit crypto trades OR pass — NEVER emit equity/option trades outside hours. Crypto-aware
+personas have an explicit OFF-HOURS mandate — passing with "market closed" is cowardice.
 """.strip()
 
 
@@ -154,7 +159,281 @@ _OFF_HOURS_STYLE_BY_TID: Dict[str, str] = {
         "during off-hours (no options markets trade 24/7 for us). Document what "
         "you'd do when markets reopen."
     ),
+    # 2026-04-20 AGGRESSIVE-MODE expansion — off-hours crypto overrides for +7 personas.
+    "arbitrage-1": (
+        "OFF-HOURS CRYPTO MODE: Arb, crypto edition. Look for cross-exchange-proxy "
+        "dislocations: e.g. BTC/USD vs IBIT gap, ETH/USD relative to SOL. If chg-spread "
+        "> 0.8% between BTC and largest alt, long the laggard. Stop 0.5%, TP 1.0%. "
+        "Pass only if all 10 crypto pairs within 0.2% of each other."
+    ),
+    "news-catalyst-1": (
+        "OFF-HOURS CRYPTO MODE: News-catalyst, crypto edition. Crypto reacts 24/7 to "
+        "headlines. Whichever crypto has |chg| > 1% is the tape's story — follow "
+        "it in the same direction. Stop 0.8%, TP 2.0%. Pass ONLY if no crypto > 0.5%."
+    ),
+    "crypto-whale-1": (
+        "OFF-HOURS (or anytime) 24/7 MANDATE: You are CRYPTO specialist. Equity closed "
+        "changes nothing. You MUST place at least one crypto trade this tick unless "
+        "every crypto pair is < 0.3% from flat (then emit pass with reason 'crypto_dead_tape')."
+    ),
+    "earnings-gap-1": (
+        "OFF-HOURS CRYPTO MODE: Earnings-gap off-hours = crypto whale orders create "
+        "mini-gaps. Find crypto with biggest 1hr |chg| and trade follow-through. "
+        "Stop 1.0%, TP 2.5%. Pass if all crypto < 0.5%."
+    ),
+    "iv-crush-1": (
+        "OFF-HOURS MODE: Options markets closed. You may ONLY pass. Document what "
+        "IV-sell you'd do tomorrow at open."
+    ),
+    "macro-rotate-1": (
+        "OFF-HOURS CRYPTO MODE: Macro-rotate, crypto edition. Crypto is the 24/7 "
+        "macro barometer. If BTC down + USDT premium widens → risk-off, long USDC "
+        "proxy / short BTC. If BTC + SOL + LINK all up → risk-on, long SOL (highest "
+        "beta). Stop 1.0%, TP 2.0%. Pass if crypto tape flat (|chg| < 0.3% for all)."
+    ),
+    "leveraged-momentum-1": (
+        "OFF-HOURS CRYPTO MODE: Leveraged-momentum, crypto edition. Crypto itself is "
+        "intrinsically volatile (implicit leverage). Find the biggest |chg| crypto "
+        "and ride it for 30-90 min. Stop 1.2%, TP 3%. Pass if max crypto |chg| < 0.5%."
+    ),
 }
+
+
+# ────── 2026-04-20 AGGRESSIVE-MODE: knowledge + peer-bet + milestone council ──────
+#
+# All 3 digests are lazily computed once per day and cached in STATE.
+# Scientific rationale:
+#   - Paper digest brings cross-repo research (papers/PQTF post-mortem/TF lessons)
+#     into every ITF prompt so agents aren't reasoning from their training cutoff alone.
+#   - Peer-bet digest (last 3 days) gives Axelrod-canon awareness: what did peers do,
+#     did they win? Enables cooperate-or-differentiate choices without council lockstep.
+#   - Milestone council (every 15 days) synthesizes fleet state via cerebras:qwen-3-235b
+#     (2000 tok/s, biggest context among live routes). Plan persists 15 days — loose
+#     enough to avoid DMAD-style groupthink, tight enough to coordinate when the fleet
+#     has a clear leader trajectory. Rationale logged in data/intraday/council_plans/.
+
+_KNOWLEDGE_DIGEST_CACHE: Dict[str, str] = {"date": "", "text": ""}
+COUNCIL_INTERVAL_DAYS = int(os.environ.get("ITF_COUNCIL_DAYS", "15"))
+COUNCIL_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data" / "intraday" / "council_plans"
+try:
+    COUNCIL_DIR.mkdir(parents=True, exist_ok=True)
+except Exception:
+    pass
+
+
+def _build_knowledge_digest() -> str:
+    """Return compact (~800 tok) 1× / day digest of: recent arxiv scans, PQTF post-
+    mortem highlights, NBA/POL lessons. Cached by UTC day."""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    if _KNOWLEDGE_DIGEST_CACHE.get("date") == today and _KNOWLEDGE_DIGEST_CACHE.get("text"):
+        return _KNOWLEDGE_DIGEST_CACHE["text"]
+
+    lines: List[str] = []
+    lines.append("RESEARCH + CROSS-TF LESSONS (refreshed daily):")
+
+    # (A) Top 3 papers from most-recent multiagent-trading scan
+    try:
+        research_dir = _REPO / "data" / "research"
+        scan_files = sorted(research_dir.glob("arxiv-multiagent-trading-scan-*.json"), reverse=True)[:1]
+        if not scan_files:
+            scan_files = sorted(research_dir.glob("arxiv-scan-*.json"), reverse=True)[:1]
+        if scan_files:
+            data = json.loads(scan_files[0].read_text())
+            papers = (data.get("papers") or [])[:3]
+            if papers:
+                lines.append("• Recent papers (arxiv):")
+                for p in papers:
+                    title = str(p.get("title", ""))[:90]
+                    summary = str(p.get("summary", ""))[:120].replace("\n", " ")
+                    lines.append(f"  - {title}: {summary}")
+    except Exception:
+        pass
+
+    # (B) PQTF $1M proof highlights
+    lines.append("• PQTF $1M VALIDATION (50/50 days, $600→$602,354, 100,292% ROI):")
+    lines.append("  - mistral:large → $244,050 (+40,667%) — derivatives brain, XLC/XLE/XLF/XLK, 12 positions/day, 4 pacts")
+    lines.append("  - mistral:medium → $154,566 (+25,761%) — sector-options spread trader")
+    lines.append("  - gemini-2.5-flash → $17K via macro-anl reasoning")
+    lines.append("  - Lesson: concentrate on sectors with live signal, compound wins, pact with peers")
+
+    # (C) NBA/POL TF lessons
+    lines.append("• NBA/POL TF LIVE WINNERS (2026-04-19):")
+    lines.append("  - POL: google:gemini-3-flash (gemini-anl) $470.72 +370.7% on event-driven sector bets")
+    lines.append("  - NBA: selfhost:dolphin3-l32-3b +3× / cerebras:qwen-3-235b (qwen-quant) $26.06")
+    lines.append("  - Failure modes: lockstep (4/5 picks held by ≥10/17 agents was luck not skill),")
+    lines.append("    silent-pass on LLM error (fixed via uniform-fallback emitter — YOU must never silent-pass)")
+
+    # (D) Axelrod / cooperation canon
+    lines.append("• COOPERATION DOCTRINE:")
+    lines.append("  - BE NICE. Don't front-run teammate thesis.")
+    lines.append("  - STRUCTURAL DIVERGE — if you see 10 peers on QQQ-long, consider short VIXY or pair trade.")
+    lines.append("  - COLLECTIVE-HELP — if any peer bankroll < $50, top-3 agents must propose pact.")
+    lines.append("  - Milestones at days 15, 30, 45, 60 emit a council_plan — read it.")
+
+    # (E) Calibration + regime reminders
+    lines.append("• REGIME HINTS: VIX<15=carry, 15-22=neutral, >22=defensive, >30=whipsaw-skip.")
+    lines.append("  Crypto: always has delta, use when equities closed.")
+
+    text = "\n".join(lines)
+    # Crude 800-token cap (~3200 chars).
+    if len(text) > 3200:
+        text = text[:3200] + "\n  [... truncated for token budget ...]"
+    _KNOWLEDGE_DIGEST_CACHE["date"] = today
+    _KNOWLEDGE_DIGEST_CACHE["text"] = text
+    return text
+
+
+def _build_peer_bets_digest(persona: Dict[str, Any], n_days: int = 3) -> str:
+    """Compact 'what peers did last N days' summary — feeds Axelrod cooperation."""
+    tid = persona["tid"]
+    lines: List[str] = []
+    # Find last n_days worth of decisions jsonl files.
+    all_days = sorted(
+        [p for p in DECISIONS_DIR.glob("*.jsonl") if p.is_file()],
+        key=lambda p: p.stem,
+        reverse=True,
+    )[:n_days]
+    if not all_days:
+        return "(no prior history — you are the first tick)"
+    for day_file in reversed(all_days):
+        day = day_file.stem
+        # Summarize: tid → ticker → side → count (max 5 peers per day to stay compact)
+        by_tid: Dict[str, List[str]] = {}
+        try:
+            for line in day_file.read_text().splitlines()[-80:]:  # cap per day
+                try:
+                    r = json.loads(line)
+                except Exception:
+                    continue
+                peer_tid = r.get("agent_tid")
+                if not peer_tid or peer_tid == tid:
+                    continue
+                dec = r.get("decision") or {}
+                if dec.get("action") == "trade":
+                    by_tid.setdefault(peer_tid, []).append(
+                        f"{dec.get('ticker', '?')} {dec.get('side','?')}"
+                    )
+                elif dec.get("action") == "option_trade":
+                    by_tid.setdefault(peer_tid, []).append(
+                        f"{dec.get('underlying','?')} {dec.get('strategy','?')} {dec.get('option_type','?')}"
+                    )
+        except Exception:
+            continue
+        if not by_tid:
+            continue
+        top = list(by_tid.items())[:5]
+        lines.append(f"  [{day}] " + " | ".join(
+            f"{t}: {', '.join(acts[:2])}" for t, acts in top
+        ))
+    if not lines:
+        return "(peers passed all of last N days — lead from the front)"
+    return "PEER BETS (last {}d, excluding you):\n".format(n_days) + "\n".join(lines[-3:])
+
+
+def _current_day_idx() -> int:
+    """0-indexed day counter since ITF state init (approximated by # of decisions files)."""
+    try:
+        return max(0, len(list(DECISIONS_DIR.glob("*.jsonl"))) - 1)
+    except Exception:
+        return 0
+
+
+def _latest_council_plan() -> Optional[Dict[str, Any]]:
+    """Read newest council plan if any — persists 15 days."""
+    try:
+        files = sorted(COUNCIL_DIR.glob("*.json"), key=lambda p: p.stem, reverse=True)
+        if not files:
+            return None
+        return json.loads(files[0].read_text())
+    except Exception:
+        return None
+
+
+def run_milestone_council(fleet_board: List[Dict[str, Any]],
+                          ctx: Dict[str, Any], day_idx: int) -> Optional[Dict[str, Any]]:
+    """Every COUNCIL_INTERVAL_DAYS (default 15): moderator LLM writes a 15-day plan
+    that all 14 agents see. Persists to data/intraday/council_plans/day-XXX.json."""
+    roster = []
+    for row in fleet_board:
+        roster.append(
+            f"  - {row.get('tid')}: ${row.get('total_pnl_usd',0):+.0f} "
+            f"({row.get('trades',0)}t/{row.get('passes',0)}p, open={row.get('open_positions',0)})"
+        )
+    quotes = ctx.get("quotes") or {}
+    hot_tickers = sorted(
+        [(t, abs(float((q or {}).get("change_pct") or 0))) for t, q in quotes.items()],
+        key=lambda x: -x[1]
+    )[:8]
+    hot_block = ", ".join(f"{t} {chg:+.2f}%" for t, chg in hot_tickers if chg > 0)
+
+    sys_prompt = (
+        "You are the ITF COUNCIL MODERATOR. 14 intraday LLM agents need a shared "
+        "15-day plan: which tickers/asset-classes to focus on, which regimes to "
+        "avoid, which coalitions to seed. One agent must reach $1M by Aug 1 2026."
+    )
+    usr_prompt = f"""COUNCIL SESSION · day {day_idx}
+
+FLEET:
+{chr(10).join(roster)}
+
+HOT TAPE (|chg| ranked): {hot_block or '(flat)'}
+
+TASK: Output PLAN JSON:
+{{
+  "council_summary": "1 sentence — what's the next 15 days' focus?",
+  "focus_tickers": ["SPY", "BTC/USD", ...],      // 3-8 tickers
+  "avoid_regimes": ["VIX>30 whipsaw", ...],      // 1-3 regimes
+  "seed_coalitions": [["momentum-1","leveraged-momentum-1","leverage-long-tech"]],  // pair/trio IDs + thesis tag
+  "risk_posture": "aggressive"|"balanced"|"defensive",
+  "shared_notes": "1-3 sentences actionable"
+}}
+
+RAW JSON ONLY. 14 agent ids are: scalper-1, momentum-1, mean-rev-1, breakout-1, pairs-1, vol-1, options-1, arbitrage-1, news-catalyst-1, crypto-whale-1, earnings-gap-1, iv-crush-1, macro-rotate-1, leveraged-momentum-1."""
+
+    try:
+        resp = gateway_call(
+            "cerebras:qwen-3-235b",
+            [
+                {"role": "system", "content": sys_prompt},
+                {"role": "user", "content": usr_prompt},
+            ],
+            temperature=0.4, max_tokens=500, timeout=20.0,
+        )
+        parsed = _parse_json((resp or {}).get("text") or "")
+    except Exception:
+        parsed = None
+
+    plan = parsed if isinstance(parsed, dict) else {
+        "council_summary": "deterministic fallback — balanced posture, follow strongest tape",
+        "focus_tickers": ["SPY", "QQQ", "NVDA", "BTC/USD", "ETH/USD"],
+        "avoid_regimes": ["VIX>30 whipsaw"],
+        "seed_coalitions": [],
+        "risk_posture": "balanced",
+        "shared_notes": "No LLM response — default plan. Read peer bets and act.",
+    }
+    plan["day_idx"] = day_idx
+    plan["created_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    try:
+        out = COUNCIL_DIR / f"day-{day_idx:03d}.json"
+        out.write_text(json.dumps(plan, indent=2, default=str))
+    except Exception as e:
+        print(f"[itf-council] persist fail: {e}", file=sys.stderr)
+    return plan
+
+
+def _format_council_block(plan: Optional[Dict[str, Any]]) -> str:
+    if not plan:
+        return "(no active council plan)"
+    focus = ", ".join(plan.get("focus_tickers", [])[:8]) or "(any)"
+    avoid = "; ".join(plan.get("avoid_regimes", [])[:3]) or "(none)"
+    posture = plan.get("risk_posture", "balanced")
+    summary = (plan.get("council_summary") or "")[:200]
+    notes = (plan.get("shared_notes") or "")[:200]
+    return (
+        f"COUNCIL PLAN (day {plan.get('day_idx','?')}, posture={posture}):\n"
+        f"  focus: {focus}\n  avoid: {avoid}\n  summary: {summary}\n  notes: {notes}"
+    )
 
 
 def _off_hours_crypto_signal(quotes: Dict[str, Dict[str, Any]]) -> bool:
@@ -234,9 +513,21 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         if override:
             style_final = override
 
+    # 2026-04-20 AGGRESSIVE-MODE: inject knowledge digest + peer-bet digest + council plan.
+    # All 3 are cached/day; token-bounded so total prompt stays well under 4k tokens.
+    knowledge_digest = _build_knowledge_digest()
+    peer_digest = _build_peer_bets_digest(persona, n_days=3)
+    council_block = _format_council_block(_latest_council_plan())
+
     return f"""{COLLECTIVE_MISSION}
 
 {AXELROD_CANON}
+
+{knowledge_digest}
+
+{council_block}
+
+{peer_digest}
 
 YOUR ROLE — {persona['name']} ({persona['tid']}):
 {style_final}
@@ -262,19 +553,30 @@ def _uniform_fallback_itf(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[
     """
     tier = (persona.get("tier") or "").lower()
     tid = persona.get("tid") or ""
-    # Tier-rotated candidate pools (defensive→SPY, aggressive→QQQ, crypto→BTC, ...).
-    pools = {
-        "defensive":  ["SPY", "IWM", "DIA", "XLU"],
-        "momentum":   ["QQQ", "TQQQ", "NVDA", "META"],
-        "mean_rev":   ["SPY", "DIA", "XLV", "XLP"],
-        "breakout":   ["QQQ", "TSLA", "AMD", "COIN"],
-        "vol":        ["VXX", "UVXY", "SPY"],
-        "scalper":    ["SPY", "QQQ", "IWM"],
-        "options":    ["SPY", "QQQ"],  # single-leg underlying — options not emitted by fallback
-        "gamma":      ["SPY", "QQQ"],
-        "crypto":     ["BTC/USD", "ETH/USD"],
+    # Tier-rotated candidate pools. Post-2026-04-20 expansion: tier is now S/M/L
+    # so we also map per-tid to keep archetype flavor (arb → pair, whale → BTC).
+    by_tid = {
+        "scalper-1":            ["SPY", "QQQ", "IWM"],
+        "momentum-1":           ["XLK", "XLE", "XLF"],
+        "mean-rev-1":           ["XLV", "XLP", "SPY"],
+        "breakout-1":           ["QQQ", "TSLA", "AMD", "COIN"],
+        "pairs-1":              ["XLE", "XLU", "XLK"],
+        "vol-1":                ["VXX", "UVXY", "SPY"],
+        "options-1":            ["SPY", "QQQ"],
+        "arbitrage-1":          ["SPY", "QQQ", "IWM"],
+        "news-catalyst-1":      ["NVDA", "TSLA", "COIN", "MSTR"],
+        "crypto-whale-1":       ["BTC/USD", "ETH/USD", "SOL/USD"],
+        "earnings-gap-1":       ["NVDA", "AAPL", "META", "TSLA"],
+        "iv-crush-1":           ["SPY", "QQQ"],
+        "macro-rotate-1":       ["GLD", "TLT", "UUP", "XLU"],
+        "leveraged-momentum-1": ["TQQQ", "SPXL", "SOXL"],
     }
-    pool = pools.get(tier, ["SPY", "QQQ"])
+    pools_tier = {
+        "s": ["SPY", "QQQ", "IWM"],
+        "m": ["SPY", "QQQ", "XLK", "XLE"],
+        "l": ["QQQ", "TQQQ", "NVDA", "BTC/USD"],
+    }
+    pool = by_tid.get(tid) or pools_tier.get(tier, ["SPY", "QQQ"])
     # tid-hash rotation so a global failure doesn't cluster 7 personas on 1 ticker.
     import hashlib as _hl
     shift = int(_hl.sha1((tid or persona.get("name","?")).encode()).hexdigest()[:4], 16)
@@ -363,7 +665,7 @@ DECISIONS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
-    """Run one tick: refresh quotes, build context, call all 6 agents, execute."""
+    """Run one tick: refresh quotes, build context, call all 14 agents, execute."""
     with _lock:
         STATE["tick_count"] += 1
         STATE["last_tick_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -372,6 +674,28 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     ctx = build_intraday_context()
     results: List[Dict[str, Any]] = []
     now = datetime.now(timezone.utc)
+
+    # 2026-04-20 AGGRESSIVE-MODE: milestone council at days 15/30/45/... Run max 1×/day.
+    try:
+        day_idx = _current_day_idx()
+        latest = _latest_council_plan()
+        latest_idx = int((latest or {}).get("day_idx", -99))
+        if day_idx > 0 and day_idx % COUNCIL_INTERVAL_DAYS == 0 and latest_idx != day_idx:
+            fleet_board = []
+            for p in PERSONAS:
+                s = STATE["agents"].get(p["tid"], {})
+                fleet_board.append({
+                    "tid": p["tid"], "tier": p["tier"],
+                    "trades": s.get("trades", 0), "passes": s.get("passes", 0),
+                    "total_pnl_usd": 0.0, "open_positions": 0,
+                })
+            plan = run_milestone_council(fleet_board, ctx, day_idx)
+            if plan:
+                print(f"[itf] milestone council day {day_idx}: "
+                      f"{(plan.get('council_summary') or '')[:120]}",
+                      file=sys.stderr, flush=True)
+    except Exception as e:
+        print(f"[itf] council scheduler err (non-fatal): {e}", file=sys.stderr, flush=True)
 
     # EOD flatten before new entries — mark-to-market using current quote bus.
     def _q(ticker: str):
@@ -392,12 +716,16 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         action = decision.get("action")
         if action == "trade" and decision.get("ticker") in (ctx.get("quotes") or {}):
             last_quote = (ctx["quotes"][decision["ticker"]] or {}).get("last") or 0
+            # 2026-04-20 AGGRESSIVE-MODE: $100 floor (was $500), removed $3000 hard cap.
+            # LLM sets its own size 2-5% of bankroll via prompt guidance. Widen stop/TP
+            # too. Executor still enforces its own sanity caps downstream.
+            raw_stake = float(decision.get("stake_usd", 500) or 500)
             order = {
                 "ticker": decision["ticker"],
                 "side": decision.get("side", "long"),
-                "stake_usd": min(3000, max(500, float(decision.get("stake_usd", 1000) or 1000))),
-                "stop_pct": min(0.02, max(0.001, float(decision.get("stop_pct", 0.005) or 0.005))),
-                "take_profit_pct": min(0.05, max(0.002, float(decision.get("take_profit_pct", 0.012) or 0.012))),
+                "stake_usd": max(100.0, raw_stake),
+                "stop_pct": min(0.03, max(0.001, float(decision.get("stop_pct", 0.005) or 0.005))),
+                "take_profit_pct": min(0.08, max(0.002, float(decision.get("take_profit_pct", 0.012) or 0.012))),
                 "thesis": decision.get("thesis", ""),
             }
             entry = executor.submit(persona["tid"], order, last_quote)

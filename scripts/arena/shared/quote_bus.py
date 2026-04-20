@@ -204,7 +204,45 @@ def _fetch_alpaca(tickers: List[str]) -> Dict[str, Dict[str, Any]]:
                     }
         except Exception:
             pass
+        # 2026-04-20 FRANKENSTEIN FIX — Alpaca crypto /latest/quotes gives point-in-time
+        # bid/ask but no 24h delta; leaving change_pct=0.0 silenced 6/7 ITF personas
+        # (every persona passes "tape flat"). Backfill from daily bars (session open
+        # = first UTC-day bar). Crypto only — equities use yfinance session open.
+        _repair_crypto_change_pct(out, cr_tickers, key, secret)
     return out
+
+
+def _repair_crypto_change_pct(out: Dict[str, Dict[str, Any]], tickers: List[str],
+                              key: str, secret: str) -> None:
+    """Patch change_pct on crypto quotes when Alpaca returns 0.0.
+
+    Pulls 1D bars and computes (last / session_open) - 1.
+    Silent no-op when the bar endpoint rate-limits or returns empty.
+    """
+    import requests as _rq
+    bad = [t for t in tickers if t in out and float(out[t].get("change_pct") or 0.0) == 0.0]
+    if not bad:
+        return
+    try:
+        r = _rq.get(
+            "https://data.alpaca.markets/v1beta3/crypto/us/bars",
+            params={"symbols": ",".join(bad), "timeframe": "1Day", "limit": 2},
+            headers={"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret},
+            timeout=8,
+        )
+        if r.status_code != 200:
+            return
+        data = r.json().get("bars", {}) or {}
+        for t, bars in data.items():
+            if not bars:
+                continue
+            session_open = float(bars[-1].get("o") or 0)
+            last = float(out[t].get("last") or 0)
+            if session_open > 0 and last > 0:
+                chg = ((last - session_open) / session_open) * 100.0
+                out[t]["change_pct"] = round(chg, 3)
+    except Exception:
+        pass
 
 
 def fetch_live_quotes(tickers: Optional[List[str]] = None) -> Dict[str, Any]:
