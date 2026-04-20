@@ -1,0 +1,48 @@
+{
+  "run_id": "20260420T132100-DR_FRANKENSTEIN-71ece059",
+  "agent": "DR_FRANKENSTEIN",
+  "ts": "2026-04-20T13:21:00Z",
+  "alerts_addressed": [
+    "S3 pqtf_zombie_rows (14/36 rows type=null/strike=0)",
+    "S3 pqtf_no_multileg (0 multi-leg out of 36 bets)"
+  ],
+  "rca": "Engine multi-leg branch stored positions with `legs_spec` but no `option_type`/`strike` keys. Analytics writer (scripts/audit/tf_analytics.py) read those keys directly and emitted `type=null, strike=0` per_bet rows. n_multi_leg counter was a no-op (commented `pass`). PQTF prompt also never loaded overrides.json (no _load_prompt_override helper) so the multi-leg-mandatory + zombie-rejection rules already published in data/prompts/overrides.json never reached the agents.",
+  "fixes": [
+    {
+      "file": "scripts/arena/hf-political-quant-trading-floor/engine.py",
+      "change": "Add _load_prompt_override(fleet='pqtf') helper (mirrors POL TF). Inject override block into build_prompt() output. Multi-leg position dict now carries explicit option_type=strategy_kind + representative strike (short-strike for vertical/iron_condor, ATM for straddle/butterfly) + entry_price=abs(strat_cost). Net result: downstream consumers never see type=null/strike=0 again."
+    },
+    {
+      "file": "scripts/audit/tf_analytics.py",
+      "change": "analyze_pqtf() detects multi-leg via pos.get('multi_leg') OR pos.get('strategy') in {vertical,iron_condor,straddle,butterfly}; increments per_agent[tid]['n_multi_leg'] and per_etf[etf]['multi_leg']; falls back to abs(cost)/(qty*100) for entry_price when missing so notional is non-zero on legacy rows."
+    }
+  ],
+  "tests_run": [
+    "TEST 1: _load_prompt_override('pqtf') returns 638-char block with multi-leg + zombie rules",
+    "TEST 2: build_prompt() output contains 'PROMPT MUTATOR OVERRIDE' marker",
+    "TEST 3: analyze_pqtf() with mixed payload — n_multi_leg=1 for new vertical, n_multi_leg=1 for legacy iron_condor, no per_bet row has type=None",
+    "TEST 4: end-to-end run_session() with fake LLM returning vertical → 6/6 multi-leg positions all carry explicit type='vertical', strike>0, entry_price>0"
+  ],
+  "deploy": {
+    "space": "LBJLincoln26/political-quant-trading-floor",
+    "previous_sha": "418bd284936f",
+    "deploy_sha": "3f5b876a1b0f",
+    "deploy_url": "https://huggingface.co/spaces/LBJLincoln26/political-quant-trading-floor/commit/3f5b876a1b0f24118ff026a85189cceb421fa212",
+    "files_uploaded": ["engine.py", "data/prompts/overrides.json"],
+    "token_used": "HF_TOKEN_NBA",
+    "runtime_pre": "PAUSED",
+    "note": "Space was PAUSED — SWISH/LOBBYIST will pick up new SHA on next restart per crew protocol; no manual restart triggered (game-day rule respected)."
+  },
+  "evidence_pre": {
+    "data/tf-analytics/pqtf/day-049.json": {
+      "per_bet_total": 36,
+      "per_bet_zombies_type_null_or_strike_0": 14,
+      "per_agent_n_multi_leg_sum": 0
+    }
+  },
+  "expected_post_brier_or_metric_delta": {
+    "n_multi_leg_per_session": "0 → ≥1 per agent when IV surface supports (overrides+engine in lockstep)",
+    "zombie_rows_pct": "38.9% → 0% on rows opened from new SHA",
+    "scope": "PQTF only (no NBA/POL/ITF impact)"
+  }
+}

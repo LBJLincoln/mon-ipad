@@ -296,15 +296,32 @@ def analyze_pqtf(latest):
             tid = pos.get("tid")
             if tid not in per_agent: continue
             etf = pos.get("etf")
+            # 2026-04-20 zombie-row fix: multi-leg positions store strategy in
+            # `option_type` (e.g. "vertical", "iron_condor"). Fall back through
+            # explicit `strategy` field for legacy state files written before
+            # the engine fix landed.
+            is_multi_leg = bool(pos.get("multi_leg")) or (pos.get("strategy") in
+                                                          ("vertical", "iron_condor", "straddle", "butterfly"))
             opt = pos.get("option_type")
+            if is_multi_leg and (opt is None or opt in ("call", "put")):
+                # Engine-side fix sets opt=strategy_kind for new rows; legacy
+                # state may have opt=None or opt="call". Prefer explicit strategy.
+                opt = pos.get("strategy") or opt or "multi_leg"
             strike = pos.get("strike") or 0
             qty = pos.get("qty") or 0
             px = pos.get("entry_price") or 0
+            # For multi-leg positions, fall back to `cost`/qty as per-contract premium
+            # so notional reflects deployed capital instead of zero.
+            if is_multi_leg and not px:
+                _cost = pos.get("cost") or 0
+                if qty and _cost:
+                    px = abs(_cost) / (qty * 100)
             notional = abs(qty * px * 100)  # options contract = 100 shares
 
             per_agent[tid]["n_positions"] += 1
             if opt == "call": per_agent[tid]["n_calls"] += 1
             elif opt == "put": per_agent[tid]["n_puts"] += 1
+            if is_multi_leg: per_agent[tid]["n_multi_leg"] += 1
             per_agent[tid]["etfs_touched"].add(etf)
             per_agent[tid]["notional_gross"] += notional
             pick_sets[tid].add((etf, opt, round(strike, 0), pos.get("tte_days")))
@@ -314,6 +331,7 @@ def analyze_pqtf(latest):
             per_etf[etf]["agents"].add(tid)
             if opt == "call": per_etf[etf]["calls"] += 1
             elif opt == "put": per_etf[etf]["puts"] += 1
+            if is_multi_leg: per_etf[etf]["multi_leg"] += 1
 
             if pos.get("iv_open") is not None:
                 all_ivs.append(pos["iv_open"])

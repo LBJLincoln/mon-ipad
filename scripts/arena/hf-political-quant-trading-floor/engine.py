@@ -78,6 +78,33 @@ RULES (hard):
 
 # ── Prompt / LLM ───────────────────────────────────────────────────────────
 
+def _load_prompt_override(fleet: str = "pqtf") -> str:
+    """Load prompt-mutator override block from data/prompts/overrides.json.
+
+    Mirrors NBA/POL TF helper (scripts/arena/hf-political-trading-floor/app.py:140).
+    Silent on missing file so unit tests + offline runs keep working.
+    """
+    import os as _os, json as _json
+    candidates = [
+        "/app/data/prompts/overrides.json",
+        "/home/user/app/data/prompts/overrides.json",
+        _os.path.join(_os.path.dirname(__file__), "..", "..", "..", "data", "prompts", "overrides.json"),
+    ]
+    for p in candidates:
+        try:
+            if not _os.path.exists(p):
+                continue
+            with open(p) as fh:
+                ov = _json.load(fh)
+            rule = (ov.get(fleet) or {}).get("current_text") or ""
+            if rule:
+                v = (ov.get(fleet) or {}).get("current_version") or "?"
+                return f"\n=== PROMPT MUTATOR OVERRIDE ({v}) ===\n{rule}\n=== END OVERRIDE ===\n"
+        except Exception:
+            continue
+    return ""
+
+
 def build_prompt(agent: Dict, date: str, session_id: int, session_events: List[Dict],
                  bankroll: float, peers_bankroll: Dict[str, float],
                  etf_spots: Dict[str, float]) -> str:
@@ -116,7 +143,9 @@ def build_prompt(agent: Dict, date: str, session_id: int, session_events: List[D
     except Exception:
         pass
 
-    return f"""{COLLECTIVE_MISSION}
+    _pm_override = _load_prompt_override("pqtf")
+
+    return f"""{COLLECTIVE_MISSION}{_pm_override}
 
 YOU: {agent['tid']} ({agent['personality']}, risk={agent['risk']})
 DATE: {date}  SESSION: s{session_id}  YOUR BANKROLL: ${bankroll:,.0f}
@@ -367,12 +396,28 @@ def run_session(agents_state: Dict, date: str, session_id: int,
                     if position_cost < MIN_POSITION_COST or position_cost > bankroll * MAX_DEPLOY_PCT_PER_SESSION:
                         continue
 
+                    # Tag multi-leg with explicit option_type + representative strike
+                    # so downstream analytics/serialization don't see `type=null,
+                    # strike=0` (the "zombie row" bug 2026-04-20). Strategy kind is
+                    # the canonical type label; representative strike is the short
+                    # strike (vertical/iron_condor) or ATM (straddle/butterfly).
+                    if strategy_kind == "vertical":
+                        rep_strike = float(spot * hi_pct)  # short strike of debit spread
+                    elif strategy_kind == "iron_condor":
+                        rep_strike = float(spot * ps)      # put-short strike
+                    elif strategy_kind == "straddle":
+                        rep_strike = float(spot * k_pct)   # ATM
+                    else:  # butterfly
+                        rep_strike = float(spot * mid)     # body strike
                     positions.append({
                         "tid": tid, "etf": etf, "spot_open": spot,
                         "strategy": strategy_kind, "multi_leg": True,
+                        "option_type": strategy_kind,      # explicit type (was missing → null)
+                        "strike": rep_strike,              # explicit strike (was missing → 0)
                         "legs_spec": strat,  # full strat payload (legs + cost + max_loss + etc)
                         "tte_days": tte_days, "qty": qty,
                         "iv_open": iv, "entry_cost_per_contract": strat_cost,
+                        "entry_price": float(abs(strat_cost)),  # per-contract premium for analytics
                         "cost": position_cost,
                         "event_idx": alloc.get("event_idx"),
                         "rationale": str(alloc.get("rationale", ""))[:200],
