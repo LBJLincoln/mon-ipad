@@ -1,6 +1,6 @@
 # Season Backtest Performance
 
-> Generated 2026-04-14T20:22:30.414457+00:00
+> Generated 2026-04-19T09:31:08.718154+00:00
 
 ## Key Metrics
 

@@ -1,22 +1,21 @@
 # Department Council Summary
 
-> 9 departments reporting as of 2026-04-19 05:00 UTC
+> 9 departments reporting as of 2026-04-20 05:00 UTC
 
 | Department | Status | Stall Streak | Brier Delta | Duration |
 |------------|--------|-------------|-------------|----------|
-| business | no_op | 9 | +0.000000 | 235s |
+| business | ? | 0 | +0.000000 | 0s |
 | cross-repo | shipped | 0 | +0.000000 | 566s |
-| engineering | unknown | 13 | +0.000000 | 1399s |
-| ? | ? | 0 | +0.000000 | 0s |
-| ? | ? | 0 | +0.000000 | 0s |
-| finance | hallucinated | 8 | +0.000000 | 219s |
-| infra | hallucinated | 2 | +0.000000 | 1416s |
-| product | unknown | 10 | +0.000000 | 265s |
-| research | completed | 13 | +0.000000 | 85s |
+| engineering | ? | 0 | +0.000000 | 0s |
+| evaluation | ? | 0 | +0.000000 | 0s |
+| evolution | ? | 0 | +0.000000 | 0s |
+| finance | ? | 0 | +0.000000 | 0s |
+| infra | ? | 0 | +0.000000 | 0s |
+| product | ? | 0 | +0.000000 | 0s |
+| research | ? | 0 | +0.000000 | 0s |
 
 ## Analysis
 
 - Active departments: 9
-- Stalled (2+ streak): 6
+- Stalled (2+ streak): 0
 - Producing improvements: 0
-- Stalled depts: business, engineering, finance, infra, product, research

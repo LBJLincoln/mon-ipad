@@ -187,7 +187,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **political_fleet_apr19** (160 words) -- `raw/agent-memory/nomos-alpha_project_political_fleet_apr19.md`
 - **user_role** (153 words) -- `raw/agent-memory/research-analyst_user_role.md`
 - **user_role** (152 words) -- `raw/agent-memory/repo-scout_user_role.md`
-- **Department Council Summary** (150 words) -- `raw/councils/department-summary.md`
 - **Research Scan: github-scan-2026-04-03** (149 words) -- `raw/research/github-scan-2026-04-03.md`
 - **Research Scan: github-scan-2026-04-04** (149 words) -- `raw/research/github-scan-2026-04-04.md`
 - **Research Scan: github-scan-2026-04-05** (149 words) -- `raw/research/github-scan-2026-04-05.md`
@@ -208,6 +207,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-14** (145 words) -- `raw/research/github-betting-scan-2026-04-14.md`
 - **Research Scan: github-betting-scan-2026-04-15** (145 words) -- `raw/research/github-betting-scan-2026-04-15.md`
 - **Research Scan: github-betting-scan-2026-04-16** (145 words) -- `raw/research/github-betting-scan-2026-04-16.md`
+- **Department Council Summary** (141 words) -- `raw/councils/department-summary.md`
 - **Research Scan: github-scan-2026-04-18** (141 words) -- `raw/research/github-scan-2026-04-18.md`
 - **Research Scan: github-scan-2026-04-15** (140 words) -- `raw/research/github-scan-2026-04-15.md`
 - **Research Scan: github-scan-2026-04-16** (140 words) -- `raw/research/github-scan-2026-04-16.md`

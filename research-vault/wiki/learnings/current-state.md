@@ -1,6 +1,6 @@
 # Current State — System Snapshot
 
-> Auto-generated on 2026-04-19 05:00 UTC
+> Auto-generated on 2026-04-20 05:00 UTC
 
 ## Brier Scores
 
@@ -14,22 +14,22 @@
 
 | Island | Brier |
 |--------|-------|
-| S15_nba | 0.22107 |
-| S13_nba | 0.22126 |
+| S10_nba | 0.00000 |
+| S11_nba | 0.00000 |
+| S12_nba | 0.00000 |
+| S16_nba | 0.00000 |
+| S19_nba | 0.00000 |
+| S20_nba | 0.00000 |
+| S21_nba | 0.00000 |
+| S13_nba | 0.22136 |
 | S18_nba | 0.22154 |
-| S10_nba | 0.22280 |
-| S19_nba | 0.22328 |
-| S17_nba | 0.22336 |
+| S17_nba | 0.22358 |
 | S22_nba | 0.22358 |
-| S20_nba | 0.22407 |
-| S21_nba | 0.22650 |
-| S16_nba | 0.23465 |
-| S12_nba | 0.24577 |
-| S11_nba | 0.25201 |
-| S14_nba | 1.00000 |
+| S15_nba | 0.22526 |
+| S14_nba | 0.23493 |
 
-- Fleet champion: S15_nba (0.22107)
-- Fleet average: 0.28768
+- Fleet champion: S10_nba (0.00000)
+- Fleet average: 0.10387
 
 ## NBA Karpathy Loop
 
@@ -63,12 +63,12 @@
 
 ## Department Health
 
-- ?: ?
-- ?: ?
-- business: no_op [STALLED]
+- business: ?
 - cross-repo: shipped
-- engineering: unknown [STALLED]
-- finance: hallucinated [STALLED]
-- infra: hallucinated [STALLED]
-- product: unknown [STALLED]
-- research: completed [STALLED]
+- engineering: ?
+- evaluation: ?
+- evolution: ?
+- finance: ?
+- infra: ?
+- product: ?
+- research: ?

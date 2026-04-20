@@ -1,39 +1,39 @@
 # Fleet Health Snapshot
 
-> Captured at 2026-04-19T04:15:25Z
+> Captured at 2026-04-20T04:15:23Z
 
 ## NBA Islands
 
 | Island | Brier | Gen | Status |
 |--------|-------|-----|--------|
-| S10_nba | 0.2228 | 177 | running |
-| S11_nba | 0.25201 | 194 | running |
-| S12_nba | 0.24577 | 104 | running |
-| S13_nba | 0.22126 | 128 | running |
-| S14_nba | 1.0 | 0 | running |
-| S15_nba | 0.22107 | 141 | running |
-| S16_nba | 0.23465 | 158 | running |
-| S17_nba | 0.22336 | 208 | running |
-| S18_nba | 0.22154 | 254 | running |
-| S19_nba | 0.22328 | 214 | running |
-| S20_nba | 0.22407 | 187 | running |
-| S21_nba | 0.2265 | 145 | running |
-| S22_nba | 0.22358 | 170 | running |
+| S10_nba | ? | ? | down |
+| S11_nba | ? | ? | down |
+| S12_nba | ? | ? | down |
+| S13_nba | 0.22136 | 69 | running |
+| S14_nba | 0.23493 | 88 | running |
+| S15_nba | 0.22526 | 60 | running |
+| S16_nba | ? | ? | down |
+| S17_nba | 0.22358 | 999 | running |
+| S18_nba | 0.22154 | 774 | running |
+| S19_nba | ? | ? | down |
+| S20_nba | ? | ? | down |
+| S21_nba | ? | ? | down |
+| S22_nba | 0.22358 | 646 | running |
 
-- Fleet best: 0.22107
-- Fleet avg: 0.28768
-- Fleet worst: 1.00000
-- Fleet spread: 0.77893
+- Fleet best: 0.22136
+- Fleet avg: 0.22504
+- Fleet worst: 0.23493
+- Fleet spread: 0.01357
 
 ## Political Islands
 
 | Island | Brier | Gen | Status |
 |--------|-------|-----|--------|
-| P1_pol | 0.24999 | 9337 | running |
-| P2_pol | 0.24949 | 6952 | running |
-| P3_pol | 0.25121 | 9682 | running |
-| P4_pol | 0.24956 | 9702 | running |
-| P5_pol | 0.24923 | 8632 | running |
-| P6_pol | 0.25349 | 9658 | running |
-| P7_pol | 0.24937 | 10167 | running |
-| P8_pol | 0.25241 | 9138 | running |
+| P1_pol | 0.24999 | 16836 | running |
+| P2_pol | 0.24949 | 12511 | running |
+| P3_pol | ? | ? | down |
+| P4_pol | 0.24956 | 17805 | running |
+| P5_pol | 0.24923 | 15615 | running |
+| P6_pol | ? | ? | down |
+| P7_pol | 0.24937 | 16403 | running |
+| P8_pol | ? | ? | down |

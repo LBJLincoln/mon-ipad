@@ -1,33 +1,33 @@
 # What Works — Empirically Validated
 
-> Auto-generated from experiment data on 2026-04-19 05:00 UTC
+> Auto-generated from experiment data on 2026-04-20 05:00 UTC
 > Only includes findings backed by measured improvement
 
 ## NBA — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_max_depth | 6 | 0 | 0% | +0.01272 |
-| change_model | 22 | 0 | 0% | +0.23483 |
-| remove_features | 5 | 0 | 0% | +0.01079 |
-| change_max_features_ratio | 2 | 0 | 0% | +0.01135 |
-| swap_features | 3 | 0 | 0% | +0.01070 |
-| add_features | 3 | 0 | 0% | +0.01333 |
-| change_min_samples_leaf | 3 | 0 | 0% | +0.01386 |
-| change_n_estimators | 6 | 0 | 0% | +0.01400 |
+| change_max_depth | 4 | 0 | 0% | +0.01285 |
+| swap_features | 4 | 0 | 0% | +0.01174 |
+| change_n_estimators | 3 | 0 | 0% | +0.01198 |
+| change_min_samples_leaf | 3 | 0 | 0% | +0.01378 |
+| change_max_features_ratio | 2 | 0 | 0% | +0.01087 |
+| add_features | 9 | 0 | 0% | +0.01228 |
+| change_model | 23 | 0 | 0% | +0.29169 |
+| remove_features | 2 | 0 | 0% | +0.01158 |
 
 ## POLITICAL — Mutation Effectiveness
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_max_features_ratio | 8 | 0 | 0% | +0.02506 |
-| change_model | 12 | 0 | 0% | +0.04702 |
-| change_min_samples_leaf | 9 | 0 | 0% | +0.00590 |
-| change_max_depth | 3 | 0 | 0% | +0.01629 |
-| remove_features | 5 | 0 | 0% | +0.02949 |
-| add_features | 6 | 0 | 0% | +0.01996 |
-| swap_features | 4 | 0 | 0% | +0.02469 |
-| change_n_estimators | 3 | 0 | 0% | +0.00275 |
+| remove_features | 6 | 0 | 0% | +0.02038 |
+| change_max_depth | 10 | 0 | 0% | +0.01409 |
+| change_min_samples_leaf | 9 | 0 | 0% | +0.01207 |
+| change_n_estimators | 4 | 0 | 0% | +0.00363 |
+| add_features | 3 | 0 | 0% | +0.01239 |
+| change_max_features_ratio | 3 | 0 | 0% | +0.02573 |
+| change_model | 7 | 0 | 0% | +0.04914 |
+| swap_features | 8 | 0 | 0% | +0.03137 |
 
 ## Arena — Proven Insights
 
