@@ -47,7 +47,11 @@
      Minimal floating HUDs live on top of #stage as absolute overlays. */
   #root { display:grid; grid-template-columns:1fr; height:calc(100vh - 26px); margin-top:26px; }
   /* v2.16 — Pokémon summary box (party-menu / Pokédex entry). Off-white double-border + navy rules. */
-  #hud-kpi { position:absolute; top:48px; left:14px; z-index:7;
+  /* v2.20 2026-04-20: user asked to remove the STATUS panel from the world —
+     "not useful for pixel world on pixel world". Hidden via display:none so the
+     in-world diegetic panels become the primary data surface. Re-enable by
+     removing display:none if a future redesign needs the HUD back. */
+  #hud-kpi { display:none !important; position:absolute; top:48px; left:14px; z-index:7;
     background:var(--pk-box); color:var(--pk-ink);
     border:3px solid var(--pk-ink); border-radius:8px;
     box-shadow: inset 0 0 0 2px var(--pk-box), inset 0 0 0 4px var(--pk-navy),
@@ -571,14 +575,18 @@ const MATCH_FLOOR = { x: 20, y: 17 };
 // v2.17 (2026-04-19): +ITF zone (Intraday Trading Floor · 7 agents, live at
 // lbjlincoln26-intraday-trading-floor.hf.space). Inserted between the trading
 // floors and the control room by shrinking control-room from h=11 → h=7.
+// v2.20 2026-04-20: zones widened so agents roam the full 52×32 world. Previous
+// heights (4-11 tiles) bottled 41 agents into narrow bands; user reported "agents
+// dont move accross all the space". Horizontal zones now ~18 tiles tall each so
+// a trader's wanderTarget spans vastly more of the available canvas.
 const ZONES = {
-  "nba-infra":  { x:1,  y:1,  w:25, h:4,  floor:6, label:"NBA EVOLUTION · 6 SURVIVOR ISLANDS" },
-  "pol-infra":  { x:26, y:1,  w:25, h:4,  floor:6, label:"POLITICAL EVOLUTION · 5 SURVIVOR ISLANDS" },
-  councils:     { x:1,  y:5,  w:50, h:4,  floor:1, label:"COUNCIL CHAMBERS · 9 DEPARTMENTS" },
-  nba:          { x:1,  y:9,  w:25, h:11, floor:3, label:"NBA TRADING FLOOR" },
-  political:    { x:26, y:9,  w:25, h:11, floor:5, label:"POLITICAL FLOOR" },
-  itf:          { x:1,  y:20, w:50, h:4,  floor:2, label:"INTRADAY TRADING FLOOR · 7 AGENTS (24/7 CRYPTO + EQUITIES)" },
-  "control-room":{x:1,  y:24, w:50, h:7,  floor:8, label:"CONTROL ROOM · LIVE LLM DATA FEEDS" },
+  "nba-infra":  { x:1,  y:1,  w:25, h:10, floor:6, label:"NBA EVOLUTION · 6 SURVIVOR ISLANDS" },
+  "pol-infra":  { x:26, y:1,  w:25, h:10, floor:6, label:"POLITICAL EVOLUTION · 5 SURVIVOR ISLANDS" },
+  councils:     { x:1,  y:11, w:50, h:6,  floor:1, label:"COUNCIL CHAMBERS · 9 DEPARTMENTS" },
+  nba:          { x:1,  y:11, w:25, h:16, floor:3, label:"NBA TRADING FLOOR" },
+  political:    { x:26, y:11, w:25, h:16, floor:5, label:"POLITICAL FLOOR" },
+  itf:          { x:1,  y:22, w:50, h:8,  floor:2, label:"INTRADAY TRADING FLOOR · 7 AGENTS (24/7 CRYPTO + EQUITIES)" },
+  "control-room":{x:1,  y:26, w:50, h:5,  floor:8, label:"CONTROL ROOM · LIVE LLM DATA FEEDS" },
 };
 
 // v2.13 (2026-04-17): roster parity with live TF — 17 NBA + 17 POL.
@@ -1633,22 +1641,29 @@ function tickMotion(ms) {
   const t = ms / 1000;
   for (const a of AGENTS) {
     let tx = a.home.x, ty = a.home.y;
-    // Wander only when agent is ALIVE (has live data + is actively thinking/profit/loss).
-    // Idle/booting agents stay at their seat. Councils wander only if state !== idle.
-    const isAlive = !a._isInfra && a.data && a.state && a.state !== "idle";
-    if (isAlive && a.zone && ZONES[a.zone]) {
+    // v2.20 2026-04-20: user reported "agents dont move accross all the space"
+    // — previously isAlive gating meant every idle trader sat frozen at home,
+    // and a.zone truncated wanderTarget to a tiny band. New rule: every non-infra
+    // agent wanders its full zone continuously; idle agents use a gentler, slower
+    // drift so they still populate the canvas visually. Infra agents stay pinned.
+    if (!a._isInfra) {
+      const z = (a.zone && ZONES[a.zone]) ? ZONES[a.zone] : null;
       if (!a.wanderTarget || (a.wanderNext || 0) < ms) {
-        const z = ZONES[a.zone];
-        a.wanderTarget = {
-          x: z.x + 1.5 + Math.random() * (z.w - 3),
-          y: z.y + 1.5 + Math.random() * (z.h - 3),
-        };
-        a.wanderNext = ms + 12000 + Math.random() * 10000;  // 12-22s (was 8-15s) — less frantic
+        if (z) {
+          a.wanderTarget = {
+            x: z.x + 1.2 + Math.random() * Math.max(2, z.w - 2.4),
+            y: z.y + 1.2 + Math.random() * Math.max(2, z.h - 2.4),
+          };
+        } else {
+          a.wanderTarget = {
+            x: 2 + Math.random() * (GRID_W - 4),
+            y: 2 + Math.random() * (GRID_H - 4),
+          };
+        }
+        const idleMult = (a.state === "idle") ? 1.8 : 1.0;
+        a.wanderNext = ms + (8000 + Math.random() * 9000) * idleMult;  // 8-17s active, ~15-30s idle
       }
       tx = a.wanderTarget.x; ty = a.wanderTarget.y;
-    } else if (!a._isInfra) {
-      // Idle: clear any leftover wander target so agent eases back to seat.
-      a.wanderTarget = null;
     }
     // If trader just placed a bet, override with MATCH_FLOOR for a huddle.
     if (!a._isInfra && a.activeUntil > ms) {
