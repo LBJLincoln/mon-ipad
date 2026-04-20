@@ -1991,7 +1991,7 @@ STRICT RULES:
     return "\n".join(lines)
 
 
-def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
+def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0) -> Optional[Dict]:
     """Parse day allocation JSON. Validates sum=1.0 within tolerance.
 
     Returns dict with: day_strategy, allocations (normalized), cash_held_pct,
@@ -2108,10 +2108,15 @@ def parse_day_allocation(raw: str, n_games: int) -> Optional[Dict]:
             p["pct"] = p["pct"] * scale
         cash = cash * scale
 
-    # ── MIN_DEPLOY_PCT = 0.75 — $1M collective goal requires aggressive deploy
-    # If LLM holds >25% cash, force-scale allocations+parlays up to consume excess.
-    # Policy: bankroll sitting idle cannot compound. Cap cash at 25%.
-    MIN_DEPLOY_PCT = 0.75
+    # ── MIN_DEPLOY_PCT — $1M collective goal requires aggressive deploy
+    # 2026-04-20 DYNAMIC FLOOR: NBA TF day-128 post-mortem showed 14/17 agents
+    # at 90%+ drawdown. Root cause: 0.75 floor forces bets into losing hands.
+    # New: floor shrinks with drawdown. dd<0.5 → 0.75; dd=0.5 → 0.50; dd=0.8 →
+    # 0.35; dd>=0.9 → 0.25 (capital preservation kicks in automatically).
+    if drawdown < 0.5:
+        MIN_DEPLOY_PCT = 0.75
+    else:
+        MIN_DEPLOY_PCT = max(0.25, 0.75 - (drawdown - 0.5) * 1.0)
     deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
     if deployed > 0 and deployed < MIN_DEPLOY_PCT:
         # Scale up deployed capital to hit 0.75 floor, cap cash at 0.25
@@ -3266,7 +3271,10 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             ts["llm_calls"] += 1
             if raw_response:
                 ts["llm_ok"] += 1
-            parsed = parse_day_allocation(raw_response, len(day_games)) if raw_response else None
+            # 2026-04-20 — pass current drawdown so MIN_DEPLOY_PCT floor can shrink
+            # for ruined agents (dd>0.5 → floor drops, dd>0.9 → floor=0.25).
+            _ts_dd = float(ts.get("max_drawdown", 0.0) or 0.0)
+            parsed = parse_day_allocation(raw_response, len(day_games), drawdown=_ts_dd) if raw_response else None
 
             # 2026-04-18 — PRE-FILTER ml_home fallback REMOVED.
             # Post-mortem showed 16/16 agents silent on day 44 all injected identical

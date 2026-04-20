@@ -1731,7 +1731,7 @@ STRICT RULES:
     return "\n".join(lines)
 
 
-def parse_day_allocation(raw: str, n_events: int) -> Optional[Dict]:
+def parse_day_allocation(raw: str, n_events: int, drawdown: float = 0.0) -> Optional[Dict]:
     """Parse day allocation JSON for political events. Validates sum=1.0 within tolerance.
 
     Returns dict with: day_strategy, allocations (normalized), cash_held_pct,
@@ -1797,9 +1797,14 @@ def parse_day_allocation(raw: str, n_events: int) -> Optional[Dict]:
             a["pct"] = a["pct"] * scale
         cash = cash * scale
 
-    # ── MIN_DEPLOY_PCT = 0.75 — $1M collective goal, aggressive deploy
-    # If LLM holds >25% cash, force-scale allocations to consume excess.
-    MIN_DEPLOY_PCT = 0.75
+    # ── MIN_DEPLOY_PCT — $1M collective goal, aggressive deploy
+    # 2026-04-20 DYNAMIC FLOOR (ported from NBA fix): high-drawdown agents
+    # should de-risk not double-down. dd<0.5 → 0.75; dd=0.5 → 0.50; dd=0.8 →
+    # 0.35; dd>=0.9 → 0.25 (capital preservation).
+    if drawdown < 0.5:
+        MIN_DEPLOY_PCT = 0.75
+    else:
+        MIN_DEPLOY_PCT = max(0.25, 0.75 - (drawdown - 0.5) * 1.0)
     deployed = sum(a["pct"] for a in clean)
     if deployed > 0 and deployed < MIN_DEPLOY_PCT:
         scale_up = MIN_DEPLOY_PCT / deployed
@@ -2639,7 +2644,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             ts["llm_calls"] += 1
             if raw_response:
                 ts["llm_ok"] += 1
-            parsed = parse_day_allocation(raw_response, len(day_events)) if raw_response else None
+            _ts_dd = float(ts.get("max_drawdown", 0.0) or 0.0)
+            parsed = parse_day_allocation(raw_response, len(day_events), drawdown=_ts_dd) if raw_response else None
 
             # 2026-04-18 — PRE-FILTER SPY-long fallback REMOVED.
             # Post-mortem showed 14/17 POL agents converged to identical $93.92 bankroll;

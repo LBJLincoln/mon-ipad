@@ -1068,6 +1068,35 @@ for (const [zoneId, z] of Object.entries(ZONES)) {
         tilemap.rect(px, py, 2, 1).fill({ color: 0x3a1810, alpha: 0.4 });
       }
     }
+    // v2.21 HOOP-LAND — full basketball court markings (chasersgaming Basketball-NES
+    // inspiration, pure SVG/vector since the pack is paid; CC0 substitute).
+    // Midcourt line + center circle + 2 hoops (left+right end with rim+backboard+net).
+    const cyMid = zy0 + zyh / 2;
+    const cxMid = zx0 + zxw / 2;
+    // Midcourt line
+    tilemap.rect(cxMid, zy0 + 8, 1, zyh - 16).fill({ color: 0xe8d690, alpha: 0.55 });
+    // Center circle (outer + inner)
+    tilemap.circle(cxMid, cyMid, 36).stroke({ width: 1.5, color: 0xe8d690, alpha: 0.55 });
+    tilemap.circle(cxMid, cyMid, 4).fill({ color: 0xe8d690, alpha: 0.45 });
+    // 3-point arcs on each side (half-circles facing out)
+    tilemap.arc(zx0 + 40, cyMid, 60, -Math.PI/2, Math.PI/2).stroke({ width: 1.5, color: 0xe8d690, alpha: 0.5 });
+    tilemap.arc(zx0 + zxw - 40, cyMid, 60, Math.PI/2, -Math.PI/2).stroke({ width: 1.5, color: 0xe8d690, alpha: 0.5 });
+    // Free-throw key rectangles
+    tilemap.rect(zx0 + 4, cyMid - 22, 32, 44).stroke({ width: 1, color: 0xe8d690, alpha: 0.45 });
+    tilemap.rect(zx0 + zxw - 36, cyMid - 22, 32, 44).stroke({ width: 1, color: 0xe8d690, alpha: 0.45 });
+    // Free-throw circles
+    tilemap.circle(zx0 + 36, cyMid, 14).stroke({ width: 1, color: 0xe8d690, alpha: 0.45 });
+    tilemap.circle(zx0 + zxw - 36, cyMid, 14).stroke({ width: 1, color: 0xe8d690, alpha: 0.45 });
+    // LEFT HOOP — red backboard rect + orange rim circle + white net triangle
+    tilemap.rect(zx0 + 2, cyMid - 10, 2, 20).fill({ color: 0xd63030, alpha: 0.85 });        // backboard
+    tilemap.circle(zx0 + 10, cyMid, 4).stroke({ width: 1.5, color: 0xff8c2a, alpha: 0.95 }); // rim
+    tilemap.moveTo(zx0 + 6, cyMid + 4).lineTo(zx0 + 10, cyMid + 10).lineTo(zx0 + 14, cyMid + 4)
+           .stroke({ width: 0.8, color: 0xffffff, alpha: 0.6 });                             // net
+    // RIGHT HOOP — mirrored
+    tilemap.rect(zx0 + zxw - 4, cyMid - 10, 2, 20).fill({ color: 0xd63030, alpha: 0.85 });
+    tilemap.circle(zx0 + zxw - 10, cyMid, 4).stroke({ width: 1.5, color: 0xff8c2a, alpha: 0.95 });
+    tilemap.moveTo(zx0 + zxw - 6, cyMid + 4).lineTo(zx0 + zxw - 10, cyMid + 10).lineTo(zx0 + zxw - 14, cyMid + 4)
+           .stroke({ width: 0.8, color: 0xffffff, alpha: 0.6 });
   } else if (zoneId === "political") {
     // Marble capitol floor — diamond grid + specks
     for (let py = zy0; py < zy0 + zyh; py += TM) {
@@ -1230,6 +1259,41 @@ for (const [cx,cy] of [[10,5],[30,5],[10,10],[30,10],[1,10],[38,10]]) {
   cableDots.circle(cx*TILE, cy*TILE, 4).fill({ color:0xffa500, alpha:0.6 });
 }
 decorLayer.addChild(cables, cableDots);
+
+// v2.21 FACTORIO CONVEYOR OVERLAY — Factorio-style belt chevrons on top of the
+// existing cable mesh to read as "data conveyor with explicit direction". Data
+// flow: infra (y=1-10) → councils (y=10) → trading floors (y=11+). Each chevron
+// is a tiny arrow painted along the existing cable path, pointing downstream.
+const belts = new PIXI.Graphics();
+const BELT_COL_A = 0xffc830;  // gold (primary flow)
+const BELT_COL_B = 0xff8c2a;  // orange (alt flow)
+// Helper: draw chevron at (x,y) pointing in direction "down" or "right"
+function _chev(g, x, y, dir, col) {
+  if (dir === "down") {
+    g.moveTo(x - 4, y - 3).lineTo(x, y + 3).lineTo(x + 4, y - 3).stroke({ width: 1.2, color: col, alpha: 0.72 });
+  } else {
+    g.moveTo(x - 3, y - 4).lineTo(x + 3, y).lineTo(x - 3, y + 4).stroke({ width: 1.2, color: col, alpha: 0.72 });
+  }
+}
+// NBA infra → NBA floor (down the vertical spine at x=10*TILE, y=5*TILE→6*TILE)
+for (let cy = 5*TILE + 8; cy < 6*TILE; cy += 10) _chev(belts, 10*TILE, cy, "down", BELT_COL_A);
+// POL infra → POL floor (x=30*TILE, y=5→6)
+for (let cy = 5*TILE + 8; cy < 6*TILE; cy += 10) _chev(belts, 30*TILE, cy, "down", BELT_COL_A);
+// Council bus (horizontal, x=1*TILE → 38*TILE at y=10*TILE) — rightward flow
+for (let cx = 2*TILE; cx < 38*TILE; cx += 48) _chev(belts, cx, 10*TILE, "right", BELT_COL_B);
+// Council → trading floors drops (y=10→11 at x=10 and x=30)
+for (let cy = 10*TILE + 6; cy < 11*TILE; cy += 10) _chev(belts, 10*TILE, cy, "down", BELT_COL_A);
+for (let cy = 10*TILE + 6; cy < 11*TILE; cy += 10) _chev(belts, 30*TILE, cy, "down", BELT_COL_A);
+// ITF band (y=22) — horizontal conveyor the full width, shows 24/7 tape direction
+for (let cx = 2*TILE; cx < 49*TILE; cx += 40) _chev(belts, cx, 22*TILE - 4, "right", BELT_COL_B);
+// Inserter "nodes" at each junction — small factorio-style pulse dot
+const inserters = new PIXI.Graphics();
+for (const [ix, iy] of [[10,5],[30,5],[10,10],[30,10],[1,10],[38,10],[10,11],[30,11]]) {
+  inserters.rect(ix*TILE - 3, iy*TILE - 3, 6, 6).fill({ color: 0xffc830, alpha: 0.85 });
+  inserters.rect(ix*TILE - 2, iy*TILE - 2, 4, 4).fill({ color: 0x000000, alpha: 0.55 });
+  inserters.rect(ix*TILE - 1, iy*TILE - 1, 2, 2).fill({ color: 0xff8c2a, alpha: 1.0 });
+}
+decorLayer.addChild(belts, inserters);
 
 // Furniture: scaled to TILE (canonical pixel-art decor)
 const FURN_SIZE = Math.round(TILE * 0.85);

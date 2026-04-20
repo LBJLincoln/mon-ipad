@@ -109,6 +109,64 @@ emit crypto trades OR pass — NEVER emit equity/option trades outside hours.
 """.strip()
 
 
+# Hard off-hours override — CRYPTO_PIVOT_CLAUSE was additive but persona primary
+# narratives (e.g. scalper "favor SPY/QQQ", pairs "sector-ETF") still pushed
+# equities. When markets are closed AND crypto has moving signal, we REPLACE
+# the style wholesale with a crypto-only mandate so 5/7 silent agents trade.
+_OFF_HOURS_STYLE_BY_TID: Dict[str, str] = {
+    "scalper-1": (
+        "OFF-HOURS CRYPTO MODE: You are SCALPER, crypto edition. Equity markets "
+        "closed. You MUST trade BTC/USD, ETH/USD, SOL/USD, AVAX/USD, LINK/USD, "
+        "or DOGE/USD IF any has |change_pct| > 0.3%. Sub-hour micro-scalp. "
+        "Stop <= 0.4% from entry (crypto vol is higher), TP <= 1.0%. Pass ONLY "
+        "if ALL crypto |change_pct| < 0.2%."
+    ),
+    "momentum-1": (
+        "OFF-HOURS CRYPTO MODE: You are MOMENTUM, crypto edition. Equity markets "
+        "closed. Find the strongest trending crypto (largest |change_pct|) and "
+        "go with the trend. Enter long if chg > 0.5%, short if chg < -0.5%. "
+        "Stop 0.8%, TP 1.5-2.0%. Pass only if no crypto has |chg| > 0.4%."
+    ),
+    "mean-rev-1": (
+        "OFF-HOURS CRYPTO MODE: You are MEAN-REVERSION, crypto edition. Fade "
+        "extreme crypto moves. Enter if BTC OR ETH OR SOL has |change_pct| > 1.5% "
+        "(fade the move). Stop 1.0%, TP 1.0%. Pass if tape is quiet (< 1.0% max move)."
+    ),
+    "breakout-1": (
+        "OFF-HOURS CRYPTO MODE: You are BREAKOUT, crypto edition. Find the crypto "
+        "with BIGGEST recent |change_pct| and enter with the breakout direction. "
+        "Stop = 0.8% against entry. Target 2R. Works 24/7 on crypto."
+    ),
+    "pairs-1": (
+        "OFF-HOURS CRYPTO MODE: You are PAIRS, crypto edition. Trade the spread "
+        "between crypto pairs. Example: if BTC +1% and ETH flat, long ETH short BTC "
+        "(mean-reversion spread). Candidates: (BTC-ETH), (ETH-SOL), (SOL-AVAX). "
+        "Enter only when intraday chg spread > 0.8%. One pair max."
+    ),
+    "vol-1": (
+        "OFF-HOURS CRYPTO MODE: You are VOL-REGIME, crypto edition. Crypto has no "
+        "VIX but realized vol is high 24/7. If BTC |chg| > 1.0% → defensive (long "
+        "BTC as the 'safe' crypto carry, skip alts). If BTC flat and alts |chg| > "
+        "1.5% → fade alts (they always revert to BTC correlation). Stop 1.0%, TP 1.5%."
+    ),
+    "options-1": (
+        "OFF-HOURS MODE: Options markets are CLOSED. You may ONLY emit action='pass' "
+        "during off-hours (no options markets trade 24/7 for us). Document what "
+        "you'd do when markets reopen."
+    ),
+}
+
+
+def _off_hours_crypto_signal(quotes: Dict[str, Dict[str, Any]]) -> bool:
+    """True if any of BTC/ETH/SOL has |change_pct| > 0.2% — enough tape to trade."""
+    for pair in ("BTC/USD", "ETH/USD", "SOL/USD"):
+        q = quotes.get(pair) or {}
+        chg = q.get("change_pct")
+        if chg is not None and abs(float(chg)) > 0.2:
+            return True
+    return False
+
+
 def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
     # Compact context to stay under token caps (~1500 tokens).
     # CRITICAL: previous version `quotes_summary[:22]` truncated everything after
@@ -167,12 +225,21 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         f"open_positions={len(pqtf.get('open_positions') or [])}"
     )
 
+    # Hard off-hours crypto override — swap style wholesale so equity-tape-dependent
+    # personas (scalper/momentum/mean-rev/pairs/vol) trade crypto 24/7 instead of
+    # passing because "SPY tape flat, market closed".
+    style_final = persona["style"]
+    if not equity_hours and _off_hours_crypto_signal(quotes):
+        override = _OFF_HOURS_STYLE_BY_TID.get(persona["tid"])
+        if override:
+            style_final = override
+
     return f"""{COLLECTIVE_MISSION}
 
 {AXELROD_CANON}
 
 YOUR ROLE — {persona['name']} ({persona['tid']}):
-{persona['style']}
+{style_final}
 
 INTRADAY TAPE ({ctx.get('quotes_ts')} · {ctx.get('quotes_source')}):
 {quotes_block}
