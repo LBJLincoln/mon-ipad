@@ -1,57 +1,114 @@
 {
-  "itf": {
-    "history": []
-  },
   "nba": {
-    "applies_since": "2026-04-19T20:25:28Z",
-    "current_text": "RULE (prompt_mutator \u2014 forbidden fallback): NEVER emit the category string 'ml_home' as a default/placeholder. If model edges are empty for a game, PASS that game (no bet) \u2014 do not fabricate a baseline category.",
-    "current_version": "prompt_v2",
+    "applies_since": "2026-04-20T03:35:00Z",
+    "current_text": "RULE (prompt_mutator — forbidden fallback): NEVER emit the category string 'ml_home' as a default/placeholder. If model edges are empty for a game, PASS that game (no bet) — do not fabricate a baseline category.\n\nRULE (tf_intel 2026-04-20 — player-props unlocked): 17,592 pp_* lines (points/rebounds/assists/threes/steals/blocks × star1-3/role1-2 × home/away) are NOW in full-odds. Use them. If your top-3 edges are all ml/spread/total, at least ONE of your bets SHOULD be a pp_* category when a star player's pace/rest/opponent-DRtg supports it.",
+    "current_version": "prompt_v3",
     "history": [
       {
         "proposal_id": "tf-2026-04-19-01",
-        "rule": "RULE (prompt_mutator \u2014 lockstep=0.88 on nba): You MUST exclude from your bet list at least ONE category that the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim is DEFECT behavior.",
+        "rule": "RULE (prompt_mutator — lockstep=0.88 on nba): You MUST exclude from your bet list at least ONE category that the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim is DEFECT behavior.",
         "rule_hash": "fb73db879e0c",
         "ts": "2026-04-19T20:25:28Z",
         "version": "prompt_v1"
       },
       {
         "proposal_id": "tf-2026-04-19-04",
-        "rule": "RULE (prompt_mutator \u2014 forbidden fallback): NEVER emit the category string 'ml_home' as a default/placeholder. If model edges are empty for a game, PASS that game (no bet) \u2014 do not fabricate a baseline category.",
+        "rule": "RULE (prompt_mutator — forbidden fallback): NEVER emit the category string 'ml_home' as a default/placeholder. If model edges are empty for a game, PASS that game (no bet) — do not fabricate a baseline category.",
         "rule_hash": "1ad3bd127198",
         "ts": "2026-04-19T20:25:28Z",
         "version": "prompt_v2"
+      },
+      {
+        "proposal_id": "tf-intel-2026-04-20-player-props",
+        "rule": "RULE (tf_intel 2026-04-20 — player-props unlocked): 17,592 pp_* lines (points/rebounds/assists/threes/steals/blocks × star1-3/role1-2 × home/away) are NOW in full-odds. Use them. If your top-3 edges are all ml/spread/total, at least ONE of your bets SHOULD be a pp_* category when a star player's pace/rest/opponent-DRtg supports it.",
+        "rule_hash": "pp_unlock_2026-04-20",
+        "ts": "2026-04-20T03:35:00Z",
+        "version": "prompt_v3"
       }
     ]
   },
   "pol": {
-    "applies_since": "2026-04-19T20:25:28Z",
-    "current_text": "RULE (prompt_mutator \u2014 lockstep=0.88 on pol): You MUST exclude from your bet list at least ONE category that the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim is DEFECT behavior.",
-    "current_version": "prompt_v3",
+    "applies_since": "2026-04-20T13:00:00Z",
+    "current_text": "RULE (prompt_mutator — lockstep=0.88 on pol): You MUST exclude from your bet list at least ONE category that the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim is DEFECT behavior.\n\nRULE (LOBBYIST 2026-04-20T13:00 — category_collapse HARDENED): POL fleet has collapsed to a SINGLE category (insider_trade, ~97% of events). Each agent MUST emit bets spanning AT LEAST 3 distinct POL categories per day, drawn from this explicit catalog: {insider_trade, exec_order, fed_rule, polymarket, congressional_vote, fed_speaker, geopolitical_event, donor_flow, polling_shift, legislation_pass, fec_filing, sovereign_fund_flow, polymarket_odds_drift, sector_rotation_signal, treasury_auction, sanctions_update, trade_policy, scotus_ruling, regulatory_action, primary_result, debate_event, exec_appointment}. If the day's event feed contains only one category, you MUST still allocate across ≥3 SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY) with distinct theses citing different signal_types from the donor/macro fields. Single-category single-sector days will be scored as DEFECT and the agent emitting them loses tier coop privilege for the next 3 days.",
+    "current_version": "prompt_v5",
     "history": [
       {
         "proposal_id": "tf-2026-04-19-02",
-        "rule": "RULE (prompt_mutator \u2014 WR=1.00 n=20): If you find yourself above 80% WR across the last 10 bets, TAKE LESS EDGE. Halve your Kelly multiplier for the next 5 bets until WR settles below 70%. Above-80% streaks indicate leakage or outcome-peeking.",
+        "rule": "RULE (prompt_mutator — WR=1.00 n=20): If you find yourself above 80% WR across the last 10 bets, TAKE LESS EDGE. Halve your Kelly multiplier for the next 5 bets until WR settles below 70%. Above-80% streaks indicate leakage or outcome-peeking.",
         "rule_hash": "4cb9d45e2723",
         "ts": "2026-04-19T20:25:28Z",
         "version": "prompt_v1"
       },
       {
         "proposal_id": "tf-2026-04-19-03",
-        "rule": "RULE (prompt_mutator \u2014 lockstep=0.88 on pol): You MUST exclude from your bet list at least ONE category that the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim is DEFECT behavior.",
+        "rule": "RULE (prompt_mutator — lockstep=0.88 on pol): You MUST exclude from your bet list at least ONE category that the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim is DEFECT behavior.",
         "rule_hash": "f5ca87d1042b",
         "ts": "2026-04-19T20:25:28Z",
         "version": "prompt_v2"
       },
       {
         "proposal_id": "tf-2026-04-19-05",
-        "rule": "RULE (prompt_mutator \u2014 lockstep=0.88 on pol): You MUST exclude from your bet list at least ONE category that the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim is DEFECT behavior.",
+        "rule": "RULE (prompt_mutator — lockstep=0.88 on pol): You MUST exclude from your bet list at least ONE category that the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim is DEFECT behavior.",
         "rule_hash": "f5ca87d1042b",
         "ts": "2026-04-19T20:25:28Z",
         "version": "prompt_v3"
+      },
+      {
+        "proposal_id": "tf-intel-2026-04-20-pol-category-collapse",
+        "rule": "RULE (tf_intel 2026-04-20 — category_collapse): POL fleet has collapsed to a SINGLE category (insider_trade) for multiple days. Each agent MUST bet on at least TWO distinct POL categories per day from {insider_trade, poll_shift, legislation_pass, fec_filing, sovereign_fund_flow, polymarket_odds_drift, polling_drift}. Monotone single-category days will be scored as DEFECT.",
+        "rule_hash": "pol_cat_diversify_2026-04-20",
+        "ts": "2026-04-20T03:35:00Z",
+        "version": "prompt_v4"
+      },
+      {
+        "proposal_id": "lobbyist-2026-04-20-pol-cat-collapse-hardened",
+        "rule": "RULE (LOBBYIST 2026-04-20T13:00 — category_collapse HARDENED): POL fleet has collapsed to a SINGLE category (insider_trade, ~97% of events). Each agent MUST emit bets spanning AT LEAST 3 distinct POL categories per day, drawn from this explicit catalog: {insider_trade, exec_order, fed_rule, polymarket, congressional_vote, fed_speaker, geopolitical_event, donor_flow, polling_shift, legislation_pass, fec_filing, sovereign_fund_flow, polymarket_odds_drift, sector_rotation_signal, treasury_auction, sanctions_update, trade_policy, scotus_ruling, regulatory_action, primary_result, debate_event, exec_appointment}. If the day's event feed contains only one category, you MUST still allocate across >=3 SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY) with distinct theses citing different signal_types from the donor/macro fields. Single-category single-sector days will be scored as DEFECT and the agent emitting them loses tier coop privilege for the next 3 days.",
+        "rule_hash": "pol_cat_hardened_2026-04-20T13",
+        "ts": "2026-04-20T13:00:00Z",
+        "version": "prompt_v5"
       }
     ]
   },
   "pqtf": {
-    "history": []
+    "applies_since": "2026-04-20T03:35:00Z",
+    "current_text": "RULE (tf_intel 2026-04-20 — multi-leg mandatory): Phase-2 multi-leg derivatives (vertical/iron_condor/straddle/butterfly) are live in the engine. Over the last 36 recent bets ZERO were multi-leg. Each session you MUST emit ≥1 multi-leg structure (non-single-leg option) when IV surface supports it. Single-leg spam = DEFECT.\n\nRULE (tf_intel 2026-04-20 — no zombie rows): Every JSON bet MUST specify explicit `type` (long_call/short_put/vertical_debit/...) AND explicit `strike` (>0). Rows with type=null or strike=0 will be rejected and logged against you as fabrication.",
+    "current_version": "prompt_v1",
+    "history": [
+      {
+        "proposal_id": "tf-intel-2026-04-20-pqtf-multileg",
+        "rule": "RULE (tf_intel 2026-04-20 — multi-leg mandatory): Phase-2 multi-leg derivatives (vertical/iron_condor/straddle/butterfly) are live in the engine. Over the last 36 recent bets ZERO were multi-leg. Each session you MUST emit ≥1 multi-leg structure (non-single-leg option) when IV surface supports it. Single-leg spam = DEFECT.",
+        "rule_hash": "pqtf_multileg_2026-04-20",
+        "ts": "2026-04-20T03:35:00Z",
+        "version": "prompt_v1"
+      },
+      {
+        "proposal_id": "tf-intel-2026-04-20-pqtf-zombie-rows",
+        "rule": "RULE (tf_intel 2026-04-20 — no zombie rows): Every JSON bet MUST specify explicit `type` (long_call/short_put/vertical_debit/...) AND explicit `strike` (>0). Rows with type=null or strike=0 will be rejected and logged against you as fabrication.",
+        "rule_hash": "pqtf_zombie_2026-04-20",
+        "ts": "2026-04-20T03:35:00Z",
+        "version": "prompt_v1"
+      }
+    ]
+  },
+  "itf": {
+    "applies_since": "2026-04-20T03:35:00Z",
+    "current_text": "RULE (tf_intel 2026-04-20 — crypto universe unused): 6 crypto pairs (BTC/ETH/SOL/AVAX/LINK/DOGE) trade 24/7 and are in the ITF universe. Over the last 10 orders ZERO were crypto. During off-hours (equity market closed) or when |1h_change_pct| > 0.2% on BTC/ETH/SOL, at least ONE of your next 3 orders SHOULD be a crypto pair.\n\nRULE (tf_intel 2026-04-20 — Alpaca paper now live): Broker creds are confirmed on the Space (ALPACA_PAPER_KEY + SECRET set 2026-04-20). Bracket orders will actually execute — sizing matters. Respect max_hold_min. Stop-loss must be specified on every equity entry.",
+    "current_version": "prompt_v1",
+    "history": [
+      {
+        "proposal_id": "tf-intel-2026-04-20-itf-crypto-unused",
+        "rule": "RULE (tf_intel 2026-04-20 — crypto universe unused): 6 crypto pairs (BTC/ETH/SOL/AVAX/LINK/DOGE) trade 24/7 and are in the ITF universe. Over the last 10 orders ZERO were crypto. During off-hours (equity market closed) or when |1h_change_pct| > 0.2% on BTC/ETH/SOL, at least ONE of your next 3 orders SHOULD be a crypto pair.",
+        "rule_hash": "itf_crypto_2026-04-20",
+        "ts": "2026-04-20T03:35:00Z",
+        "version": "prompt_v1"
+      },
+      {
+        "proposal_id": "tf-intel-2026-04-20-itf-alpaca-live",
+        "rule": "RULE (tf_intel 2026-04-20 — Alpaca paper now live): Broker creds are confirmed on the Space (ALPACA_PAPER_KEY + SECRET set 2026-04-20). Bracket orders will actually execute — sizing matters. Respect max_hold_min. Stop-loss must be specified on every equity entry.",
+        "rule_hash": "itf_alpaca_live_2026-04-20",
+        "ts": "2026-04-20T03:35:00Z",
+        "version": "prompt_v1"
+      }
+    ]
   }
 }

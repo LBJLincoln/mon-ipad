@@ -1,0 +1,25 @@
+{
+  "run_id": "552e07ed4e60495b84760ed1b106e748",
+  "agent": "LOBBYIST",
+  "ts": "2026-04-20T13:03:00Z",
+  "alert": "S3 category_collapse — POL fleet trading only 1 distinct category (insider_trade)",
+  "action": "Injected POL prompt override prompt_v5 (HARDENED): mandates >=3 distinct categories per day from an explicit 22-category catalog; monotone days scored DEFECT + lose tier coop for 3 days. Fallback: if event feed contains only one category, force >=3 SPDR sector allocations with distinct theses.",
+  "file_changed": "data/prompts/overrides.json",
+  "pol_override_previous_version": "prompt_v4",
+  "pol_override_new_version": "prompt_v5",
+  "pol_override_rule_hash": "pol_cat_hardened_2026-04-20T13",
+  "hf_space": "LBJLincoln26/political-llm-trading-floor",
+  "hf_space_sha": "450e602680b8d6a930d4456da20dd1cbec5d14ea",
+  "hf_space_stage": "RUNNING_BUILDING",
+  "hf_token_used": "HF_TOKEN_NBA",
+  "root_cause_flag": {
+    "severity": "HIGH",
+    "escalate_to": ["DR FRANKENSTEIN", "THE PLUMBER"],
+    "finding": "political_events.json source data is 97% insider_trade (2096/2153 = insider_trade, 55 = fed_rule, 1 = exec_order, 1 = polymarket). Prompt override mandates diversification, but agents have almost no non-insider events to actually bet on. True fix requires expanding upstream event ingestion in scripts/arena/hf-political-trading-floor/data/political_events.json to include FEC filings, congressional_vote, polling_shift, fed_speaker, exec_order at realistic frequencies. Override is a symptom patch; data pipeline fix is the real lever."
+  },
+  "next_day_forecast": {
+    "will_resolve": "PARTIAL",
+    "explanation": "Agents will diversify across SPDR sectors via the fallback clause and emit >=3 bets per day, reducing lockstep score. True category diversity (>1 distinct event_type per agent) WILL NOT resolve until upstream political_events.json is expanded. The tf_intel monitor alert should downgrade from 'single category' to either 'single event_type with multi-sector thesis' or potentially a new 'source_data_monotone' alert.",
+    "monitor_recommendation": "Extend tf_intel_monitor.py to check sector diversity (SPDR allocation spread) in addition to category diversity, so the fallback-driven diversification is scored correctly."
+  }
+}
