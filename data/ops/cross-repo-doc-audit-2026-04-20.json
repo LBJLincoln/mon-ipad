@@ -1,0 +1,291 @@
+{
+  "audit_id": "cross-repo-doc-audit-2026-04-20",
+  "generated_at_utc": "2026-04-20T10:00:00Z",
+  "agent": "LAUNCHPAD",
+  "scope": {
+    "repos": ["mon-ipad", "nomos-nba-agent", "nomos-political-alpha", "nomos-dashboard", "rgwa"],
+    "include_globs": ["*.md"],
+    "exclude_globs": [
+      ".claude/**",
+      "node_modules/**",
+      "vendor/**",
+      "forge-users/pierre/.claude/**",
+      "README.md (any dir)",
+      "LICENSE.md (any dir)",
+      "CLAUDE.md (any dir)",
+      "MONETIZATION.md",
+      "AGENTS.md",
+      "ROSTER.md"
+    ]
+  },
+  "candidates": [
+    {
+      "repo": "mon-ipad",
+      "path": "PLAN.md",
+      "last_modified": "2026-04-14",
+      "lines": 719,
+      "topic": "TF v5 master plan — superseded by TF v4 (17 agents, day-bucket) per CLAUDE.md v21",
+      "classification": "DELETE",
+      "rationale": "Contradicts CLAUDE.md. Only referenced as historical citation in 2 script comments (game_context_v2.py line 4, aggregate_swarm_to_season.py W3 citations). Content enumerates pre-pivot TF v5 killed at game 1040/1247 which no longer reflects the live system."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "PIXEL-DESIGN.md",
+      "last_modified": "2026-04-10",
+      "lines": 718,
+      "topic": "Pixel world architecture — 207 agents, superseded by live hf-pixel-world v2.22 (41 agents, marquee + click-to-talk)",
+      "classification": "DELETE",
+      "rationale": "Design doc for a '207 AI agents' vision that never shipped. Live architecture is 41 agents per .claude/agent-memory/launchpad/..pixel_world_v222_marquee. Supersedes this doc."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "ROUTINES-MANIFEST.md",
+      "last_modified": "2026-04-16",
+      "lines": 94,
+      "topic": "Plan for migrating 8 cron loops to Anthropic Routines",
+      "classification": "DELETE",
+      "rationale": "Plan never executed. We're on VM crons per scripts/crontab-vm-lean.txt. Zero references in scripts/ or CLAUDE.md."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": ".codex/instructions.md",
+      "last_modified": "2026-04-04",
+      "lines": 64,
+      "topic": "Codex agent instructions — enumerates S10-S15 islands",
+      "classification": "DELETE",
+      "rationale": "S10/S11/S12 are ELIMINATED per CLAUDE.md. Document contradicts current survivor list (S13-S22 + S17/S18)."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "data/repo-cleanup-audit.md",
+      "last_modified": "2026-04-17",
+      "lines": 39,
+      "topic": "One-shot cleanup report from 2026-04-17 audit run",
+      "classification": "DELETE",
+      "rationale": "One-shot snapshot, findings already absorbed into agent memory. No code references."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "docs/obsidian/*.md",
+      "files": 28,
+      "last_modified": "2026-04-05",
+      "lines": 4727,
+      "topic": "Obsidian vault — Forge v19 / 9 depts / 46cat engine / TF v4 10-agent",
+      "classification": "DELETE",
+      "rationale": "Superseded by CLAUDE.md v21 / 14-agent crew / 54cat engine / TF v4 17-agent. research-vault/raw/obsidian-docs/ is the regenerated mirror. Source is zombie."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "docs/executive/*.md",
+      "files": 5,
+      "last_modified": "2026-04-04",
+      "lines": 468,
+      "topic": "Executive agent registry — '30 agents' matrix",
+      "classification": "DELETE",
+      "rationale": "CLAUDE.md states 14-agent crew. 30-agent matrix is obsolete Forge v19 era."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "forge-users/**/.claude/*.md + forge-users/**/CLAUDE.md",
+      "files": 62,
+      "last_modified": "2026-04-04",
+      "lines": 251,
+      "topic": "La Forge Factory staging — 7 agents × 5 users (dashboard/nba-agent/political-alpha/rgwa/pierre)",
+      "classification": "DELETE",
+      "rationale": "No commits since Apr 4. No cron references. Not in CLAUDE.md. Real crew lives under .claude/agents/ROSTER.md."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "data/arena/docs/*.md",
+      "files": 21,
+      "last_modified": "2026-04-13",
+      "lines": 9687,
+      "topic": "NBA/POLITICAL season-2025-26 agent season docs — 10-agent arena",
+      "classification": "DELETE",
+      "rationale": "10-agent arena results (claude/codex/cohere/gemini/...) — superseded by TF v4 17-agent architecture. Mirrored by research-vault/ingest.py; source delete leaves mirror stranded (acceptable — also obsolete)."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "data/research-proposals/archive/*.md",
+      "files": 19,
+      "last_modified": "2026-04-07",
+      "lines": 1779,
+      "topic": "Archived research proposals (March + early April 2026)",
+      "classification": "DELETE",
+      "rationale": "Explicitly marked 'archive'. Last activity Apr 7. Mirrored in research-vault/raw/data-proposals/ as ephemeral regen."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "data/research-reports/KARPATHY_APRIL_2026_FINDINGS.md",
+      "last_modified": "2026-04-05",
+      "lines": 300,
+      "topic": "One-shot Karpathy April findings report",
+      "classification": "DELETE",
+      "rationale": "One-shot doc from Apr 5, findings already acted on (auto-research loops live). No references."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "data/research/research-cycle-2026-03-26.md",
+      "last_modified": "2026-03-26",
+      "topic": "March 26 research cycle report",
+      "classification": "DELETE",
+      "rationale": "Dated snapshot, superseded by 2026-04-* cycles."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "data/research/self-improvement-harness-*.md + weekly-digest-2026-03*.md",
+      "files": 3,
+      "last_modified": "2026-03-31",
+      "topic": "March 31 self-improvement harness + weekly digest",
+      "classification": "DELETE",
+      "rationale": "Dated snapshots. Current weekly digest is data/research/weekly-digest-2026-04-13.md."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "data/research/dashboard-redesign-apr14-2026.md + dashboard-libraries-apr14-2026.md + dashboard-overhaul-plan-apr16.md + autonomous-org-benchmark-apr14-2026.md + pixel-world-rebuild-patterns-apr16.md",
+      "classification": "KEEP",
+      "rationale": "Referenced by recent commits + pixel-world v2.22 live. Still load-bearing."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "OPERATIONS.md",
+      "classification": "KEEP",
+      "rationale": "Actively updated by scripts/autonomous-cycle.sh (timestamp block + add commit at line 417-446)."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "DESIGN.md",
+      "classification": "KEEP",
+      "rationale": "Bloomberg dark-mode palette spec. Dashboard uses these hex codes. Canonical visual reference."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "ULTRAPLAN-COMMANDS.md",
+      "classification": "KEEP",
+      "rationale": "Copy-paste reference for cloud Claude runs. Utility doc, not stale state."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "data/empire/*.md",
+      "files": 15,
+      "classification": "KEEP",
+      "rationale": "Active — commits today (FRANKENSTEIN, CLAUDE, BOSS). Regenerated nightly per ffb37bc8b."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "data/tf-analysis/*.md",
+      "files": 3,
+      "classification": "KEEP",
+      "rationale": "Regenerated by scripts/arena/tf_postmortem.py on cron."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "data/ops/dispatch-briefs/*.md",
+      "files": 80,
+      "classification": "KEEP",
+      "rationale": "Active cron output from tf_intel_dispatcher.py, all timestamped today."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "data/gemma4-helper/*.md",
+      "files": 16,
+      "classification": "KEEP",
+      "rationale": "Daily cross-repo suggestions cron. Active cycle."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "research-vault/**/*.md",
+      "files": 335,
+      "classification": "KEEP",
+      "rationale": "Regenerated every 2h by scripts/research-vault/compile-cron.sh. Any deletion auto-restored. System-owned mirror — do NOT touch."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "docs/business/*.md + docs/social-media/*.md + docs/deck/*.md + docs/vc-deck-2026.md + docs/archive/ARCHIVE.md",
+      "files": 17,
+      "classification": "KEEP",
+      "rationale": "Business/go-to-market/vc deck content tied to MONETIZATION.md May 1 deadline. Speculative but still load-bearing until revenue plan concludes."
+    },
+    {
+      "repo": "mon-ipad",
+      "path": "docs/AGENT-ECOSYSTEM.md + docs/FORGE-FACTORY-ARCHITECTURE.md + docs/HISTORICAL-ODDS-SOURCES.md + docs/KAGGLE_SETUP.md + docs/KAGGLE_CLI_CHEATSHEET.md + docs/FREE-DATA-SOURCES.md + docs/INTRADAY-ROUTING-MATRIX.md + docs/KARPATHY_LLM_COUNCIL_IMPLEMENTATION.md + docs/MULTI-MARKET-BETTING-RESEARCH.md + docs/PAPER.md + docs/PIERRE-SETUP.md + docs/PILOT.md + docs/REPO-SCOUT-NBA-DATA.md + docs/RESEARCH_DELIVERY_INDEX.md",
+      "classification": "KEEP",
+      "rationale": "Topical references (odds sources, Kaggle setup, research pipeline) used on-demand. Not contradicting CLAUDE.md."
+    },
+    {
+      "repo": "nomos-nba-agent",
+      "path": "PIERRE_COMPARISON_REPORT.md",
+      "last_modified": "2026-03-27",
+      "topic": "Nomos42 vs Pierre V11 comparison from March 27",
+      "classification": "DELETE",
+      "rationale": "One-shot comparison report from Mar 27. No references. Pierre is an external user; audit outlived its purpose."
+    },
+    {
+      "repo": "nomos-political-alpha",
+      "path": "data/political_engine_fix_needed.md",
+      "last_modified": "2026-04-14",
+      "topic": "URGENT political_engine.py truncation fix alert from cycle 100",
+      "classification": "DELETE",
+      "rationale": "Fix is long since resolved. Engine runs in prod (POL P1-P7 live, 184-day backfill deployed per memory). Alert is stale."
+    },
+    {
+      "repo": "nomos-political-alpha",
+      "path": "data/scientific-results/political-experiment-2026-04-06.md",
+      "last_modified": "2026-04-06",
+      "topic": "April 6 experiment snapshot",
+      "classification": "DELETE",
+      "rationale": "Dated one-shot. POL TF now on day-049 per CLAUDE.md — April 6 snapshot irrelevant."
+    },
+    {
+      "repo": "nomos-political-alpha",
+      "path": "data/proposals/feature-pipeline-fix-2026-03-28.md",
+      "last_modified": "2026-03-28",
+      "topic": "March 28 feature pipeline fix proposal",
+      "classification": "DELETE",
+      "rationale": "Dated fix proposal, superseded by current proposals (2026-04-05+ live)."
+    },
+    {
+      "repo": "nomos-political-alpha",
+      "path": "hf-space/DEPLOY_PATCHES.md",
+      "last_modified": "2026-03-30",
+      "topic": "One-shot HF Space deploy patches",
+      "classification": "DELETE",
+      "rationale": "One-shot deploy patch doc from Mar 30. P1-P7 have been deployed many times since, rendering this obsolete."
+    },
+    {
+      "repo": "nomos-dashboard",
+      "path": "DESIGN.md",
+      "last_modified": "2026-04-10",
+      "topic": "Bloomberg dark-mode palette (duplicate of mon-ipad/DESIGN.md)",
+      "classification": "REGROUP",
+      "rationale": "Identical content to mon-ipad/DESIGN.md. Consolidate: keep mon-ipad as canonical, replace dashboard/DESIGN.md with a stub pointer."
+    },
+    {
+      "repo": "nomos-dashboard",
+      "path": "PIXEL-DESIGN.md",
+      "last_modified": "2026-04-10",
+      "topic": "Pixel design (duplicate of mon-ipad/PIXEL-DESIGN.md)",
+      "classification": "DELETE",
+      "rationale": "Duplicate of mon-ipad/PIXEL-DESIGN.md which is itself being deleted. Drop here too."
+    },
+    {
+      "repo": "nomos-dashboard",
+      "path": "public/assets/world/README.md + public/sprites/kenney-1bit/README.md",
+      "classification": "KEEP",
+      "rationale": "Readme stubs for asset dirs — explicitly exempted by user rules."
+    },
+    {
+      "repo": "rgwa",
+      "path": "(no docs candidates — only CLAUDE.md + .claude/)",
+      "classification": "KEEP",
+      "rationale": "Zombie repo but only tracked md is CLAUDE.md (exempt). Nothing to delete."
+    }
+  ],
+  "summary_pre_exec": {
+    "total_candidate_groups": 32,
+    "delete_groups": 18,
+    "regroup_groups": 1,
+    "keep_groups": 13
+  },
+  "execution_log": []
+}

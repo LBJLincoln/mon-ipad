@@ -5,7 +5,7 @@
 # Repos:
 #   - TauricResearch/TradingAgents — real LangGraph bull/bear debate engine
 #     used by scripts/arena/debate_round.py (currently a lightweight adapter,
-#     migration to real LangGraph runs is tracked in PLAN.md)
+#     migration to real LangGraph runs was tracked in PLAN.md — doc deleted 2026-04-20)
 #   - camel-ai/oasis — agent society / large-scale interaction simulator
 #     used as the upgrade path for the T3 Specialist tier (Task #10)
 

@@ -1,7 +1,7 @@
 """
 Game Context V2 — Enriched per-game context for the 224+ agent trading floor.
 
-Closes the 2026-04-11 audit gaps documented in PLAN.md §Audit:
+Closes the 2026-04-11 audit gaps (PLAN.md deleted 2026-04-20 as TF v5 plan; gaps below kept as historical record):
   ❌ Rest days / B2B        → ✅ computed from game history
   ❌ H2H season-to-date     → ✅ computed from game history
   ❌ ORtg / DRtg / Pace     → ✅ computed proxy from completed games

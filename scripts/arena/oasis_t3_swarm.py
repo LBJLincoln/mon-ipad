@@ -29,7 +29,7 @@ The lightweight call path runs on the 1vCPU/969MB VM; the heavyweight oasis
 runtime is opt-in via --use-oasis-runtime (off by default).
 
 Related:
-  - PLAN.md W2 — full integration plan
+  - PLAN.md W2 — full integration plan (PLAN.md removed 2026-04-20; citation historical)
   - vendor/oasis/oasis/social_agent/agent.py — upstream agent class
   - scripts/arena/agent_registry.py — where T1/T2 agents are registered
 """

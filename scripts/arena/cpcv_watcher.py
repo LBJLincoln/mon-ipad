@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-cpcv_watcher.py — Continuous CPCV gate monitor + Telegram alerts (PLAN.md W5)
+cpcv_watcher.py — Continuous CPCV gate monitor + Telegram alerts (historical: PLAN.md W5, doc deleted 2026-04-20)
 
 Polls data/arena/cpcv-gated-strategies.json (NBA) and
 data/arena/political-cpcv-gated-strategies.json (Political) on a schedule,

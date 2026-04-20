@@ -22,8 +22,9 @@ dashboard's "Walk-forward fractional Kelly (real, full-season)" label is
 honest because the strategy stats (ROI, Sharpe, Brier) are real swarm
 output — only the per-trade timestamps are synthesized for visualization.
 
-A future PR (PLAN.md W3 territory) should make backtest_engine.py log
-trade-by-trade so this synthesis step can be removed.
+A future PR (historically scoped under PLAN.md W3 before that doc was
+deleted 2026-04-20) should make backtest_engine.py log trade-by-trade
+so this synthesis step can be removed.
 
 Usage:
   python3 scripts/arena/aggregate_swarm_to_season.py
@@ -47,7 +48,7 @@ SWARM_DIR = ROOT / "data" / "arena" / "backtest-results"
 OUTPUT = ROOT / "data" / "nba-agent" / "full-season-backtest.json"
 GAMES_FILE = ROOT / "nba-quant-space" / "data" / "historical" / "games-2025-26.json"
 INITIAL_BANKROLL = 100.0
-# W3 bankroll parity (PLAN.md): NBA backtest is sized at $100, political is sized
+# W3 bankroll parity (historical PLAN.md spec): NBA backtest is sized at $100, political is sized
 # at $100K. To render side-by-side on the dashboard we expose a derived
 # `display_bankroll = bankroll * DISPLAY_SCALE` so both arenas show in the same
 # $100K units without distorting the underlying ROI / Sharpe / Brier math.
@@ -527,7 +528,7 @@ def build_payload(swarm_path: Path, swarm: dict) -> dict:
     return {
         "initial_bankroll": INITIAL_BANKROLL,
         "final_bankroll": round(final, 2),
-        # W3 parity fields (PLAN.md): NBA $100 scaled to $100K so dashboard can
+        # W3 parity fields (historical PLAN.md): NBA $100 scaled to $100K so dashboard can
         # render alongside political-arena-v2.json without unit confusion.
         "display_initial_bankroll": round(INITIAL_BANKROLL * DISPLAY_SCALE, 2),
         "display_final_bankroll": round(final * DISPLAY_SCALE, 2),
