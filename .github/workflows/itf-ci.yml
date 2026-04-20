@@ -1,0 +1,32 @@
+name: ITF — prompt-byte CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/arena/hf-intraday-trading-floor/**'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/arena/hf-intraday-trading-floor/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build-prompt-guard:
+    name: _build_prompt menu-visibility guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run ITF prompt-byte tests
+        run: |
+          python3 scripts/arena/hf-intraday-trading-floor/test_build_prompt.py
