@@ -1,0 +1,45 @@
+{
+  "id": "sota-2026-04-20-nba-calibration",
+  "created_at": "2026-04-20T04:00:00Z",
+  "source": "cloud-brain-cycle",
+  "title": "Uncertainty-Aware NBA Forecasting + Isotonic Calibration (Jan 2026 SOTA)",
+  "sota_benchmarks": {
+    "logistic_regression_brier": 0.199,
+    "xgboost_brier": 0.202,
+    "rnn_mc_dropout_brier": "~0.199",
+    "source": "MDPI Information 2026-01 — Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+    "url": "https://www.mdpi.com/2078-2489/17/1/56"
+  },
+  "fleet_current_best": 0.22107,
+  "gap_to_sota": 0.022,
+  "key_findings": [
+    "RNN with Monte Carlo dropout + team-level metrics + rolling-form indicators + spatial shot-chart embeddings achieves Brier ~0.199",
+    "CalibratedClassifierCV with isotonic regression improves calibration by ~0.001-0.003 over raw model probabilities",
+    "Shot-chart spatial embeddings (5-zone clustering of NBA.com data) identified as key missing feature vs our fleet",
+    "Rolling-form velocity features (last 5/10 game momentum) identified as high-value addition",
+    "Strict chronological partitioning (train≤2022, val 2023, test 2024) aligns with our walk-forward methodology",
+    "Stacked ensemble (Nature Sci Reports 2025) achieves accuracy 68-71% with XGBoost+RF+LR stack"
+  ],
+  "proposed_actions": [
+    {
+      "priority": 1,
+      "action": "Add isotonic calibration post-processing to S22 VennAbers output — test if it compounds or conflicts",
+      "estimated_brier_gain": 0.001
+    },
+    {
+      "priority": 2,
+      "action": "Add rolling-form velocity features to features/engine.py v3.2: last_5_win_rate, last_10_elo_delta, home_away_form_streak",
+      "estimated_brier_gain": 0.002
+    },
+    {
+      "priority": 3,
+      "action": "Explore spatial shot-chart zone features (5 zones): restricted_area%, midrange%, corner_3%, above_break_3%, long_midrange%",
+      "estimated_brier_gain": 0.003
+    }
+  ],
+  "references": [
+    "https://www.mdpi.com/2078-2489/17/1/56",
+    "https://www.nature.com/articles/s41598-025-13657-1",
+    "https://arxiv.org/pdf/2508.02725"
+  ]
+}

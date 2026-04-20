@@ -1,101 +1,54 @@
 {
-  "generated_at": "2026-04-19T20:00:00Z",
-  "brain_cycle": "4h-cloud-brain",
-  "cycle_number": 5,
-  "overall": "DEGRADED",
-  "degraded_reason": "7 NBA + 3 Political + 9 Council spaces returning 503 — likely PAUSED by HF or VM keepalive failed",
-  "fleet_best_brier": 0.22073,
-  "fleet_best_island": "S22 (testforge42-nba-evo-s22, venn_abers_fusion, gen=39, CHECKPOINTED 2026-04-19)",
-  "fleet_best_note": "S22 CHECKPOINTED but currently DOWN (503). Active leader: S12 at 0.22107.",
-  "active_best_brier": 0.22107,
-  "active_best_island": "S12 (nomos42-nba-evo-3, extra_trees, gen=442)",
-  "s11_breakthrough": {
-    "island": "S11 (nomos42-nba-quant-2)",
-    "prev_brier": 0.2520,
-    "curr_brier": 0.22115,
-    "prev_gen": 55,
-    "curr_gen": 204,
-    "delta_gen": 149,
-    "note": "Diversify from prev cycle broke stagnation (was 13 cycles). S11 went from 0.2520 to 0.22115 in one 4h window — massive improvement. Now competitive with fleet best."
+  "cycle_at": "2026-04-20T04:00:00Z",
+  "brain_trigger": "cloud-brain-sonnet-4.6",
+  "nba_fleet_best_brier": 0.22107,
+  "nba_fleet_best_island": "S15 (nomos42-nba-evo-6)",
+  "nba_checkpoint_threshold": 0.22085,
+  "nba_checkpoint_triggered": false,
+  "nba_islands": {
+    "S13_nomos42_nba_evo_4":     {"gen": 686,   "brier": 0.22126, "status": "EVOLVING",  "stagnation": 0, "health": "OK"},
+    "S14_nomos42_nba_evo_5":     {"gen": 389,   "brier": 0.22333, "status": "EVOLVING",  "stagnation": 0, "health": "OK"},
+    "S15_nomos42_nba_evo_6":     {"gen": 539,   "brier": 0.22107, "status": "EVOLVING",  "stagnation": 0, "health": "OK", "fleet_best": true},
+    "S17_lbjlincoln26_nba_evo_s17": {"gen": 877, "brier": 0.22358, "status": "EVOLVING", "stagnation": 0, "health": "OK"},
+    "S18_testforge42_nba_evo_s18":  {"gen": 710, "brier": 0.22154, "status": "EVOLVING", "stagnation": 0, "health": "OK"},
+    "S22_testforge42_nba_evo_s22":  {"gen": 569, "brier": 0.22358, "status": "EVOLVING", "stagnation": 0, "health": "OK",
+      "note": "regressed from checkpointed 0.22073 (gen=39); GA continuing"}
   },
-  "nba_summary": {
-    "total_islands": 13,
-    "up": 6,
-    "down": 7,
-    "down_list": ["S10", "S13", "S17", "S18", "S19", "S20", "S21", "S22"],
-    "down_cause": "503 Service Unavailable — VM keepalive-spaces.sh may have stopped or HF paused spaces",
-    "up_list": ["S11", "S12", "S14", "S15", "S16"]
+  "political_islands": {
+    "P1_nomos42_political_alpha":       {"health": "DOWN_503", "note": "Nomos42 account saturated — 403 on restart; manual intervention required"},
+    "P2_nomos42_political_alpha_2":     {"gen": 11777, "brier": 0.24949, "status": "EVOLVING",  "stagnation": 0, "health": "OK"},
+    "P4_lbjlincoln_political_alpha_4":  {"gen": 16575, "brier": 0.24956, "status": "COOLDOWN", "stagnation": 0, "health": "OK"},
+    "P5_lbjlincoln_political_alpha_5":  {"health": "DOWN_503", "note": "HF sleep; VM keepalive should recover in next 30min window"},
+    "P7_lbjlincoln_political_alpha_7":  {"gen": 15447, "brier": 0.24937, "status": "EVOLVING",  "stagnation": 0, "health": "OK",
+      "fleet_best": true, "note": "NEW POL FLEET BEST — improved from 0.24987"}
   },
-  "islands": [
-    {"id": "S10", "space": "nomos42-nba-quant",        "status": "DOWN",    "gen": null,  "brier": null,    "note": "503"},
-    {"id": "S11", "space": "nomos42-nba-quant-2",      "status": "UP",      "gen": 204,   "brier": 0.22115, "stagnation": 0,  "note": "BREAKTHROUGH — was 0.2520 last cycle. Diversify worked."},
-    {"id": "S12", "space": "nomos42-nba-evo-3",        "status": "UP",      "gen": 442,   "brier": 0.22107, "note": "ACTIVE LEADER"},
-    {"id": "S13", "space": "nomos42-nba-evo-4",        "status": "DOWN",    "gen": null,  "brier": null,    "note": "503"},
-    {"id": "S14", "space": "nomos42-nba-evo-5",        "status": "UP",      "gen": 744,   "brier": 0.22358, "note": "slight regression from prev 0.22186"},
-    {"id": "S15", "space": "nomos42-nba-evo-6",        "status": "UP",      "gen": 645,   "brier": 0.22154, "stagnation": 0,  "note": "improved from prev 0.22418"},
-    {"id": "S16", "space": "lbjlincoln26-nba-evo-s16", "status": "UP",      "gen": 479,   "brier": 0.22358, "stagnation": 0,  "note": "improved from prev 0.22573"},
-    {"id": "S17", "space": "lbjlincoln26-nba-evo-s17", "status": "DOWN",    "gen": null,  "brier": null,    "note": "503 — was in COOLDOWN after reset"},
-    {"id": "S18", "space": "testforge42-nba-evo-s18",  "status": "DOWN",    "gen": null,  "brier": null,    "note": "503"},
-    {"id": "S19", "space": "testforge42-nba-evo-s19",  "status": "DOWN",    "gen": null,  "brier": null,    "note": "503"},
-    {"id": "S20", "space": "lbjlincoln26-nba-evo-s20", "status": "DOWN",    "gen": null,  "brier": null,    "note": "503 — isotonic_cpcv island"},
-    {"id": "S21", "space": "lbjlincoln26-nba-evo-s21", "status": "DOWN",    "gen": null,  "brier": null,    "note": "503 — darwinian_weights island"},
-    {"id": "S22", "space": "testforge42-nba-evo-s22",  "status": "DOWN",    "gen": null,  "brier": null,    "note": "503 — FLEET BEST checkpointed at 0.22073. Needs restart."}
-  ],
-  "political_summary": {
-    "total": 8,
-    "up": 5,
-    "down": 3,
-    "down_list": ["P3", "P6", "P8"],
-    "down_cause": "503 — last updated Apr 17, likely sleeping/paused (>48h)",
-    "pol_best_brier": 0.24923,
-    "pol_best_island": "P5 (lbjlincoln-political-alpha-5, LightGBM, 96 features, gen=13672)",
-    "pol_best_note": "NEW RECORD — was P7 at 0.24987. P2 also strong at 0.24949."
-  },
-  "political_islands": [
-    {"id": "P1", "space": "nomos42-political-alpha",      "status": "UP",   "gen": 14265, "brier": 0.24999, "note": "COOLDOWN"},
-    {"id": "P2", "space": "nomos42-political-alpha-2",    "status": "UP",   "gen": 10844, "brier": 0.24949, "stagnation": 0, "note": "2nd best"},
-    {"id": "P3", "space": "lbjlincoln-political-alpha-3", "status": "DOWN", "gen": null,  "brier": null,    "note": "503 — was pol best 0.24996"},
-    {"id": "P4", "space": "lbjlincoln-political-alpha-4", "status": "UP",   "gen": 15139, "brier": 0.24956, "note": ""},
-    {"id": "P5", "space": "lbjlincoln-political-alpha-5", "status": "UP",   "gen": 13672, "brier": 0.24923, "note": "NEW POL BEST"},
-    {"id": "P6", "space": "lbjlincoln-political-alpha-6", "status": "DOWN", "gen": null,  "brier": null,    "note": "503 — was diversified prev cycle"},
-    {"id": "P7", "space": "lbjlincoln-political-alpha-7", "status": "UP",   "gen": 14342, "brier": 0.24937, "stagnation": 0, "note": "3rd best"},
-    {"id": "P8", "space": "lbjlincoln-political-alpha-8", "status": "DOWN", "gen": null,  "brier": null,    "note": "503"}
-  ],
   "dept_councils": {
-    "total": 9,
-    "up": 0,
-    "down": 9,
-    "down_list": ["D1","D2","D3","D4","D5","D6","D7","D8","D9"],
-    "down_cause": "All returning 503. Spaces show last_updated Apr 19 (today) so not old sleep — likely crash on startup or HF resource limit. Gradio trigger attempted last cycle worked; now all 503.",
-    "action": "VM keepalive-spaces.sh should handle — if not, manual HF restart required"
+    "overall": "ALL_503_SLEEP",
+    "note": "D1-D9 all returned 503; HF free-tier sleep; VM keepalive cron (*/30) should recover",
+    "councils": ["D1","D2","D3","D4","D5","D6","D7","D8","D9"]
   },
-  "axelrod_ck_fix": {
-    "status": "VERIFIED",
-    "evidence": "grep found 'n_traders' pattern in scripts/arena/hf-llm-trading-floor/app.py content",
-    "workflow": "axelrod-ck-fix-v1.yml (still present — no self-delete step, expected)",
-    "do_not_push_hf_space_yet": true,
-    "blocked_on": "Explicit user approval for HF Space deploy (tf-axelrod-verify-tune-12)"
+  "axelrod_ck_status": {
+    "patches_applied": true,
+    "confirmed_via": "direct file read — n_traders=len(TRADERS) at L2579, ONE of 17 at L239",
+    "workflow_self_deleted": false,
+    "workflow_file": "axelrod-ck-fix-v1.yml (still present, cosmetic — can be deleted)",
+    "hf_deploy_status": "PENDING USER APPROVAL (tf-axelrod-verify-tune-12)"
   },
-  "step0_work_queue": {
-    "pending": "tf-axelrod-verify-tune-12 — BLOCKED on user HF deploy approval",
-    "no_crash_recovery_needed": true
-  },
-  "sota_research": {
-    "proposals_saved": "data/research-proposals/2026-04-19-brain-sota.json",
-    "top_finding": "SC-CP (Self-Calibrating Conformal Prediction, arXiv NeurIPS 2024) combines Venn-Abers + conformal prediction → finite-sample valid intervals. Validates S22 approach. Port to S20 (isotonic_cpcv).",
-    "second_finding": "Logistic Regression achieved Brier 0.199 on 2024 NBA test with strict temporal split (MDPI 2026). Calibration method auto-selection (sigmoid/isotonic/none) via Brier score."
-  },
-  "action_required": [
-    "CRITICAL: 7 NBA + 3 Political + 9 Council spaces DOWN (503). Check VM keepalive-spaces.sh. Manual HF restart may be needed for S22 (fleet best).",
-    "CHECKPOINT: S12 at 0.22107 should be checkpointed as active best while S22 is down",
-    "PORT: S11 breakthrough (diversify technique) — apply to S13/S19 when they come back up",
-    "RESEARCH: Implement calibration auto-select (sigmoid/isotonic/none via Brier) in feature engine — validated by MDPI 2026",
-    "POLITICAL: P5 new best 0.24923 — update CLAUDE.md, diversify P8 when it recovers",
-    "USER ACTION NEEDED: Say 'push to HF' or 'approve HF deploy' to push Axelrod-fixed app.py to Trading Floor spaces"
-  ],
   "alerts": [
-    {"severity": "CRITICAL", "code": "MASS_503", "message": "7/13 NBA + 3/8 Political + 9/9 Council = 19 spaces down simultaneously. Possible HF account resource limit or VM keepalive failure."},
-    {"severity": "INFO",     "code": "S11_BREAKTHROUGH", "message": "S11 jumped from Brier 0.2520 to 0.22115 after diversify — biggest single-cycle improvement seen."},
-    {"severity": "INFO",     "code": "P5_NEW_POL_BEST", "message": "P5 (LightGBM, 96 features) at 0.24923 — new political best, beats old P7 0.24987 by 0.00064."}
+    "P1 DOWN: Nomos42 account saturated; 403 on restart — needs manual slot freeing",
+    "P5 DOWN: HF sleep (503); VM keepalive should recover",
+    "D1-D9 ALL 503: sleep state; VM keepalive (*/30) should recover",
+    "S22 regressed: 0.22073 (checkpoint gen=39) → 0.22358 (gen=569 now); new fleet best is S15=0.22107",
+    "axelrod-ck-fix-v1.yml not self-deleted: cosmetic — patches confirmed applied"
+  ],
+  "actions_taken": [
+    "NBA SOTA research: Jan 2026 paper — RNN+MC-dropout achieves Brier 0.199; isotonic calibration + rolling-form features identified as key gaps",
+    "research proposal saved: data/research-proposals/sota-2026-04-20-nba-calibration.json",
+    "work-queue: tf-axelrod-verify-tune-12.blocked_on updated — CK fix blocker cleared"
+  ],
+  "next_cycle_watch": [
+    "S15 approaching 0.22085 threshold — watch for checkpoint trigger",
+    "P1 manual restart when Nomos42 frees a slot",
+    "tf-axelrod-verify-tune-12 awaiting user gate for HF deploy"
   ]
 }
