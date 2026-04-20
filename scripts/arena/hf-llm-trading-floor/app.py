@@ -1749,8 +1749,8 @@ AVAILABLE STRATEGIES: proportional_edge, confidence_scaled, half_kelly, quarter_
 
 AVAILABLE CATEGORIES (253): ml_home, ml_away, spread_home, spread_away, total_over,
   total_under, alt_spread_*, alt_total_*, team_total_*, h1_*, q1_*, prop_*,
-  pp_<stat>_<tier>_<side> where stat ∈ {points,rebounds,assists,threes,steals,blocks}
-  and tier ∈ {star1,star2,star3,role1,role2} and side ∈ {home,away}
+  pp_<stat>_<tier>_<side> where stat ∈ {{points,rebounds,assists,threes,steals,blocks}}
+  and tier ∈ {{star1,star2,star3,role1,role2}} and side ∈ {{home,away}}
   (30 per side × 2 = 60 player-props per game available)
 
 TASK: Output a COUNCIL PLAN as JSON. All 10 agents will see and follow it unless

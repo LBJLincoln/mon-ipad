@@ -252,6 +252,63 @@ PQTF state: {pqtf_block}
 """
 
 
+def _uniform_fallback_itf(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
+    """When both LLMs fail, emit a tier-rotated, traceable trade instead of silence.
+
+    Rationale mirrors NBA/POL/PQTF uniform-fallback: silent-pass storage drops were
+    the dominant TF failure mode (commits efdddd5e1 + 77a01a839). ITF must follow.
+    Picks a liquid ticker keyed on persona tier + tid hash so 7 personas don't all
+    pile on the same instrument on a global LLM outage.
+    """
+    tier = (persona.get("tier") or "").lower()
+    tid = persona.get("tid") or ""
+    # Tier-rotated candidate pools (defensive→SPY, aggressive→QQQ, crypto→BTC, ...).
+    pools = {
+        "defensive":  ["SPY", "IWM", "DIA", "XLU"],
+        "momentum":   ["QQQ", "TQQQ", "NVDA", "META"],
+        "mean_rev":   ["SPY", "DIA", "XLV", "XLP"],
+        "breakout":   ["QQQ", "TSLA", "AMD", "COIN"],
+        "vol":        ["VXX", "UVXY", "SPY"],
+        "scalper":    ["SPY", "QQQ", "IWM"],
+        "options":    ["SPY", "QQQ"],  # single-leg underlying — options not emitted by fallback
+        "gamma":      ["SPY", "QQQ"],
+        "crypto":     ["BTC/USD", "ETH/USD"],
+    }
+    pool = pools.get(tier, ["SPY", "QQQ"])
+    # tid-hash rotation so a global failure doesn't cluster 7 personas on 1 ticker.
+    import hashlib as _hl
+    shift = int(_hl.sha1((tid or persona.get("name","?")).encode()).hexdigest()[:4], 16)
+    ticker = pool[shift % len(pool)]
+    # Only trade if the ticker is in the live quote bus (don't fabricate).
+    quotes = ctx.get("quotes") or {}
+    if ticker not in quotes:
+        # Fall through to SPY (always in universe) as last-resort
+        if "SPY" not in quotes:
+            return {"action": "pass", "reason": "uniform_fallback_no_quote_available",
+                    "provider_status": "fallback_uniform"}
+        ticker = "SPY"
+    last = (quotes.get(ticker) or {}).get("last") or 0
+    if not last:
+        return {"action": "pass", "reason": "uniform_fallback_stale_quote",
+                "provider_status": "fallback_uniform"}
+    # Conservative sizing: 0.5% of the $1k persona bankroll target, 120-min hold,
+    # stop 1% under entry, tp 1.5% above. Explicit tag so analytics segregate.
+    side = "buy"  # neutral long bias on fallback; vol tier could flip but keep simple
+    return {
+        "action": "trade",
+        "ticker": ticker,
+        "side": side,
+        "qty_usd": 5.0,
+        "max_hold_min": 120,
+        "stop_loss_pct": 0.01,
+        "take_profit_pct": 0.015,
+        "rationale": "UNIFORM_FALLBACK: LLM primary+fallback both failed; tier-rotated liquid ticker per $1M doctrine (silent-pass banned 2026-04-20).",
+        "provider_status": "fallback_uniform",
+        "_llm_model": persona.get("model_primary", "?"),
+        "_llm_routed_via": "fallback_uniform",
+    }
+
+
 def _call_agent(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
     prompt = _build_prompt(persona, ctx)
     messages = [
@@ -269,8 +326,8 @@ def _call_agent(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
             parsed["_llm_latency_ms"] = resp.get("latency_ms")
             parsed["_llm_routed_via"] = resp.get("routed_via")
             return parsed
-    return {"action": "pass", "reason": "llm_failed_both_models",
-            "_llm_model": persona["model_primary"], "_llm_routed_via": "failed"}
+    # 2026-04-20 point #2: ban silent-pass on LLM failure — emit uniform fallback.
+    return _uniform_fallback_itf(persona, ctx)
 
 
 def _parse_json(text: str) -> Optional[Dict[str, Any]]:
