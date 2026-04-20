@@ -64,17 +64,24 @@ def _asset_class(ticker: str) -> str:
     return "equity"
 
 
-def _alpaca_place_bracket(ticker: str, qty: float, side: str,
-                          stop_price: float, tp_price: float) -> Dict[str, Any]:
-    """Place an Alpaca paper order. Equities get bracket; crypto gets plain market GTC
-    (Alpaca rejects bracket+stop_loss for crypto — only simple market/limit allowed)."""
+def _alpaca_place_bracket(ticker: str, qty: float, stake: float, last: float,
+                          side: str, stop_price: float, tp_price: float) -> Dict[str, Any]:
+    """Place an Alpaca paper order.
+
+    Routing (canonical alpaca-py examples pattern):
+      * crypto (BTC/USD etc)    → market GTC, fractional qty ok, NO bracket
+      * equity qty >= 1 integer → bracket with integer qty + stop_loss + take_profit
+      * equity qty < 1 or frac  → notional-based market day, NO bracket
+        (Alpaca 422s on bracket+fractional; stop/TP tracked client-side in close_expired)
+    """
     import requests
     key = os.environ["ALPACA_PAPER_KEY"]
     secret = os.environ["ALPACA_PAPER_SECRET"]
 
     asset = _asset_class(ticker)
+    headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
+
     if asset == "crypto":
-        # Crypto: market GTC, no bracket. Stop/TP tracked client-side via close_expired.
         payload = {
             "symbol": ticker,
             "qty": qty,
@@ -83,20 +90,32 @@ def _alpaca_place_bracket(ticker: str, qty: float, side: str,
             "time_in_force": "gtc",
         }
     else:
-        payload = {
-            "symbol": ticker,
-            "qty": qty,
-            "side": side,
-            "type": "market",
-            "time_in_force": "day",
-            "order_class": "bracket",
-            "extended_hours": False,  # bracket orders cannot be extended_hours on Alpaca
-            "stop_loss": {"stop_price": round(stop_price, 2)},
-            "take_profit": {"limit_price": round(tp_price, 2)},
-        }
+        int_qty = int(qty)  # floor — Alpaca rejects bracket on fractional
+        if int_qty >= 1:
+            payload = {
+                "symbol": ticker,
+                "qty": int_qty,
+                "side": side,
+                "type": "market",
+                "time_in_force": "day",
+                "order_class": "bracket",
+                "extended_hours": False,
+                "stop_loss": {"stop_price": round(stop_price, 2)},
+                "take_profit": {"limit_price": round(tp_price, 2)},
+            }
+        else:
+            # Stake too small for 1 whole share → notional fractional, no bracket.
+            # close_expired() already tracks stop/TP client-side via age/EOD flatten.
+            payload = {
+                "symbol": ticker,
+                "notional": round(stake, 2),
+                "side": side,
+                "type": "market",
+                "time_in_force": "day",
+            }
     r = requests.post(
         "https://paper-api.alpaca.markets/v2/orders",
-        headers={"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret},
+        headers=headers,
         json=payload,
         timeout=10,
     )
@@ -157,9 +176,10 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
 
     if live_mode():
         try:
-            resp = _alpaca_place_bracket(ticker, qty, alp_side, stop_price, tp_price)
+            resp = _alpaca_place_bracket(ticker, qty, stake, last, alp_side, stop_price, tp_price)
             entry["broker_order_id"] = resp.get("id")
             entry["broker_status"] = resp.get("status")
+            entry["broker_class"] = resp.get("order_class") or ("notional" if resp.get("notional") else "bracket")
         except Exception as e:
             entry["status"] = "broker_error"
             entry["error"] = str(e)[:200]
@@ -291,13 +311,18 @@ def submit_option(agent_tid: str, order: Dict[str, Any], last_quote: float) -> D
     }
 
     if live_mode() and os.environ.get("ITF_OPTIONS_LIVE", "").lower() in ("1","true","yes"):
-        # Alpaca options paper — minimal per-leg POST
+        # Alpaca multi-leg options (order_class=mleg) — canonical alpaca-py pattern.
+        # Single atomic POST replaces the old per-leg loop which broke spread pricing
+        # AND left naked legs when one fill succeeded and another failed.
         try:
             import requests
             key = os.environ["ALPACA_PAPER_KEY"]
             secret = os.environ["ALPACA_PAPER_SECRET"]
-            broker_ids = []
-            for leg in legs:
+            headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
+
+            if len(legs) == 1:
+                # Single-leg: simple market order on OCC symbol (no mleg).
+                leg = legs[0]
                 payload = {
                     "symbol": leg["symbol"],
                     "qty": leg["qty"],
@@ -305,14 +330,35 @@ def submit_option(agent_tid: str, order: Dict[str, Any], last_quote: float) -> D
                     "type": "market",
                     "time_in_force": "day",
                 }
-                r = requests.post(
-                    "https://paper-api.alpaca.markets/v2/orders",
-                    headers={"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret},
-                    json=payload, timeout=10,
-                )
+                r = requests.post("https://paper-api.alpaca.markets/v2/orders",
+                                  headers=headers, json=payload, timeout=10)
                 r.raise_for_status()
-                broker_ids.append(r.json().get("id"))
-            entry["broker_order_ids"] = broker_ids
+                entry["broker_order_ids"] = [r.json().get("id")]
+            else:
+                # Multi-leg: one mleg order, 2-4 legs. ratio_qty defines leg proportions;
+                # position_intent declares open vs close so Alpaca can validate margin.
+                mleg_legs = []
+                for leg in legs:
+                    mleg_legs.append({
+                        "symbol": leg["symbol"],
+                        "side": leg["side"],
+                        "ratio_qty": str(leg["qty"]),
+                        "position_intent": "buy_to_open" if leg["side"] == "buy" else "sell_to_open",
+                    })
+                payload = {
+                    "order_class": "mleg",
+                    "qty": "1",
+                    "type": "market",
+                    "time_in_force": "day",
+                    "legs": mleg_legs,
+                }
+                r = requests.post("https://paper-api.alpaca.markets/v2/orders",
+                                  headers=headers, json=payload, timeout=10)
+                r.raise_for_status()
+                resp = r.json()
+                entry["broker_order_ids"] = [resp.get("id")]
+                entry["broker_class"] = "mleg"
+                entry["broker_legs_count"] = len(mleg_legs)
         except Exception as e:
             entry["status"] = "broker_error"
             entry["error"] = str(e)[:200]
