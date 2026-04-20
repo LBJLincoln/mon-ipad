@@ -266,7 +266,7 @@ def analyze_itf(alerts: list[dict[str, Any]]) -> dict[str, Any]:
         pct = broker_401 / max(total_orders, 1) * 100
         _emit(alerts, "itf", 5, "broker_401", None,
               f"Alpaca broker returned 401 on {broker_401}/{total_orders} orders ({pct:.0f}%)",
-              "Regenerate ALPACA_API_KEY_ID+SECRET, re-set as Space secrets on Nomos42/intraday-trading-floor, redeploy",
+              "Set ALPACA_PAPER_KEY + ALPACA_PAPER_SECRET as Space secrets on LBJLincoln26/intraday-trading-floor (the executor reads these env names, not APCA_* or ALPACA_API_KEY_ID)",
               {"broker_401": broker_401, "total": total_orders})
 
     if crypto_trades == 0 and total_orders > 0:
