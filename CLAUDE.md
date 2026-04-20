@@ -19,7 +19,7 @@ Build the best NBA prediction AI in the world.
 | Political Alpha | nomos-political-alpha | -- | none (data only) | ACTIVE -- v3.19 engine, 22 categories, 718 features |
 | Dashboard Hub | nomos-dashboard | -- | nomosdashboard.vercel.app | ACTIVE -- /nba /political /evolution /trading-floor /forge /world |
 | AI Artistic Generation | rgwa | @RGWAbot | none | ZOMBIE -- no commits since Mar 2026, deprioritized |
-| Factory / Complex RAGs | rag-website | -- | none | SHELVED |
+| Factory / Complex RAGs | rag-website | -- | none | DECOMMISSIONED 2026-04-20 — repo no longer on disk, removed from ecosystem |
 
 ## 24/7 Autonomous Architecture
 
