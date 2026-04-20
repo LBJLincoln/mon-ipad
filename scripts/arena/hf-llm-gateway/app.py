@@ -78,8 +78,10 @@ MODELS = {
     # URLs repointed to the 3 live Spaces, matching tier as closely as possible.
     # When a dead Space is factory_reboot'd and comes back, flip its URL back.
     "selfhost:qwen3-4b": {
-        "url": "https://lbjlincoln-phi35-mini-cpu.hf.space/v1/chat/completions",
-        "model": "phi-3.5-mini-instruct",
+        # 2026-04-20: repointed to the actual TESTforge42 qwen3-4b-cpu Space
+        # (HTTP-verified LIVE). Was pointing at phi35-mini as a temporary shim.
+        "url": "https://testforge42-qwen3-4b-cpu.hf.space/v1/chat/completions",
+        "model": "qwen3-4b-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
@@ -87,8 +89,10 @@ MODELS = {
         "tier": "medium",
     },
     "selfhost:gemma-3-4b": {
-        "url": "https://lbjlincoln-gemma2-2b-cpu.hf.space/v1/chat/completions",
-        "model": "gemma-2-2b-it",
+        # 2026-04-20: repointed to LBJLincoln26/gemma3-4b-cpu (HTTP-verified LIVE).
+        # Was pointing at LBJLincoln/gemma2-2b-cpu which went dead (conn refused).
+        "url": "https://lbjlincoln26-gemma3-4b-cpu.hf.space/v1/chat/completions",
+        "model": "gemma-3-4b-it",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
@@ -105,20 +109,24 @@ MODELS = {
         "tier": "fast",
     },
     "selfhost:dolphin3-l32-3b": {
-        "url": "https://lbjlincoln-phi35-mini-cpu.hf.space/v1/chat/completions",
-        "model": "phi-3.5-mini-instruct",
+        # 2026-04-20: repointed to TESTforge42/llama32-1b-cpu (HTTP-verified LIVE);
+        # closest fast-tier stand-in for the retired dolphin3-l32 backend.
+        "url": "https://testforge42-llama32-1b-cpu.hf.space/v1/chat/completions",
+        "model": "llama-3.2-1b-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
         "rpm": 60,
-        "tier": "slow",
+        "tier": "fast",
     },
     # TESTforge42/smollm3-3b-cpu — deps bumped to llama-cpp-python>=0.3.12 to add
     # SmolLM3 arch support (0.3.9 load_failed). Alive once build completes; until
     # then gateway marks it down via its normal health sweep.
     "selfhost:smollm3-3b": {
-        "url": "https://testforge42-smollm3-3b-cpu.hf.space/v1/chat/completions",
-        "model": "smollm3-3b",
+        # 2026-04-20: testforge42-smollm3-3b-cpu never finished build (404/503).
+        # Repointed to TESTforge42/qwen3-4b-cpu (LIVE) — closest tier.
+        "url": "https://testforge42-qwen3-4b-cpu.hf.space/v1/chat/completions",
+        "model": "qwen3-4b-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
@@ -137,8 +145,10 @@ MODELS = {
         "tier": "fast",
     },
     "selfhost:gemma-2-2b": {
-        "url": "https://lbjlincoln-gemma2-2b-cpu.hf.space/v1/chat/completions",
-        "model": "gemma-2-2b-it",
+        # 2026-04-20: lbjlincoln-gemma2-2b-cpu conn-refused (dead runtime). Repointed
+        # to LBJLincoln26/gemma3-4b-cpu (LIVE, slightly larger sibling).
+        "url": "https://lbjlincoln26-gemma3-4b-cpu.hf.space/v1/chat/completions",
+        "model": "gemma-3-4b-it",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
@@ -155,8 +165,10 @@ MODELS = {
         "tier": "medium",
     },
     "selfhost:qwen2.5-1.5b": {
-        "url": "https://testforge42-qwen25-15b-cpu.hf.space/v1/chat/completions",
-        "model": "qwen2.5-1.5b-instruct",
+        # 2026-04-20: testforge42-qwen25-15b-cpu 503 (never built). Repointed to
+        # TESTforge42/llama32-1b-cpu (LIVE, same fast tier).
+        "url": "https://testforge42-llama32-1b-cpu.hf.space/v1/chat/completions",
+        "model": "llama-3.2-1b-instruct",
         "key_env": "NOMOS_HF_TOKEN",
         "provider": "selfhost",
         "max_tokens": 400,
