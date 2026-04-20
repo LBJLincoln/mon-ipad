@@ -1,16 +1,24 @@
 {
   "ten_points_status_2026-04-20": {
-    "done": [1, 5, 10],
+    "done": [1, 2, 3, 5, 10],
     "dispatched": [
-      {"n": 2, "to": "DR_FRANKENSTEIN",  "dept": "D1 Research"},
-      {"n": 3, "to": "SWITCHBOARD",      "dept": "D7 Infra"},
       {"n": 4, "to": "THE_PLUMBER",      "dept": "D6 Evaluation"},
       {"n": 6, "to": "INTERNAL_AFFAIRS", "dept": "D6 Evaluation"},
       {"n": 7, "to": "DR_FRANKENSTEIN",  "dept": "D1 Research"},
       {"n": 8, "to": "THE_PLUMBER",      "dept": "D7 Infra"},
       {"n": 9, "to": "LAUNCHPAD",        "dept": "D9 Cross-Repo"}
     ],
-    "dispatched_ts": "2026-04-20T09:53:55Z"
+    "dispatched_ts": "2026-04-20T09:53:55Z",
+    "implemented_this_session": [
+      {"n": 2, "who": "claude_direct", "what": "_uniform_fallback_itf + silent-pass ban", "commit": "b1ff7159a"},
+      {"n": 3, "who": "claude_direct", "what": "verified gateway has 10 selfhost: routes all pointing to live Spaces (shim indirection); no repointing needed", "evidence": "/tmp/gateway/app.py lines 60-240"}
+    ],
+    "critical_fix_this_session": {
+      "n": "nba_boot",
+      "what": "f-string line 1752 had {points,rebounds,...} treated as tuple expr -> NameError on every boot; NBA had been crashing silently for hours",
+      "commit": "b1ff7159a",
+      "severity": 5
+    }
   },
   "winners": [
     {
