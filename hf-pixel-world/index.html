@@ -85,41 +85,47 @@
   #hud-kpi .r .l { color:var(--pk-navy); text-transform:uppercase; letter-spacing:0.14em; font-size:9px; font-weight:700; font-family:"Press Start 2P",monospace; }
   #hud-kpi .r .v { color:var(--pk-ink); font-weight:700; font-family:"VT323","JetBrains Mono",monospace; font-size:13px; }
   #hud-kpi .r .v.warn { color:#a05820; }
-  /* ═══ v2.15 POKÉMON TRAINER ID CARD ═══ Gen4 trainer-ID aesthetic.
-     Red plastic outer shell (thick black border) + inset yellow-gradient card face. */
-  #inspect-card { position:absolute; display:none; z-index:12; width:280px;
-    background: #e83028;
-    border:3px solid #181820;
-    border-radius:12px;
-    padding:6px;
-    font-size:10.5px; color:#101820;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.75), inset 0 2px 0 rgba(255,255,255,0.25), inset 0 -3px 0 rgba(0,0,0,0.3);
+  /* ═══ v2.23 BLOOMBERG-DARK INSPECT CARD (unified with bubble + hover) ═══
+     User 2026-04-20: "some yellow, some blanc" — unify to ONE palette.
+     Fixed top-right on desktop, bottom-sheet on narrow viewports. No PIXI anchor. */
+  #inspect-card { position:fixed; display:none; z-index:12;
+    top:70px; right:16px; width:320px; max-height:calc(100vh - 110px); overflow-y:auto;
+    background:#0a1520; color:#e6e8ee;
+    border:2px solid #5eead4;
+    border-radius:6px;
+    padding:0;
+    font-size:11px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(94,234,212,0.15);
     font-family:"JetBrains Mono", monospace; }
+  @media (max-width: 899px) {
+    #inspect-card { top:auto; right:12px; left:12px; bottom:12px; width:auto;
+      max-height:45vh; border-radius:8px 8px 0 0; }
+  }
   #inspect-card .h { display:flex; justify-content:space-between; align-items:center;
-    background:linear-gradient(180deg,#283040 0%,#181820 100%);
-    color:#fff8c0; padding:6px 10px; border-radius:6px 6px 0 0;
-    font-size:10px; letter-spacing:0.14em; text-transform:uppercase; font-weight:700;
-    border:2px solid #101820; border-bottom:none;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18); }
-  #inspect-card .h .t { color:#fff8c0; text-shadow:1px 1px 0 #000; }
-  #inspect-card .h .x { color:#ffb0b0; cursor:pointer; font-weight:700; padding:0 4px; }
-  #inspect-card .h .x:hover { color:#fff; }
-  /* Card face — sits below header, yellow gradient like a pokédex ID card */
+    background:#0e1c2a;
+    color:#5eead4; padding:8px 12px;
+    font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; font-weight:700;
+    border-bottom:1px solid #1e3040;
+    font-family:"JetBrains Mono", monospace; }
+  #inspect-card .h .t { color:#5eead4; }
+  #inspect-card .h .x { color:#9aa3b5; cursor:pointer; font-weight:700; padding:0 6px;
+    font-size:14px; line-height:1; }
+  #inspect-card .h .x:hover { color:#ff5c5c; }
   #inspect-card .r, #inspect-card #inspect-extra {
-    background:linear-gradient(180deg,#fff8c0 0%,#ffe070 100%);
-    border-left:2px solid #101820; border-right:2px solid #101820;
-    padding:3px 10px; margin:0;
-    color:#101820; font-size:10.5px; }
-  #inspect-card .r { display:flex; justify-content:space-between;
-    border-bottom:1px dotted rgba(16,24,32,0.25); }
-  #inspect-card .r:first-of-type { border-top:2px solid #f8c040; }
-  #inspect-card .r:last-of-type, #inspect-card #inspect-extra {
-    border-bottom:2px solid #101820; border-radius:0 0 6px 6px; padding-bottom:6px; }
-  #inspect-card .r .l { color:#584020; text-transform:uppercase; letter-spacing:0.1em; font-size:9px; font-weight:700; padding-top:1px; }
-  #inspect-card .r .v { color:#101820; font-weight:700; }
-  #inspect-card .r .v.ok { color:#107828; }
-  #inspect-card .r .v.warn { color:#a84818; }
-  #inspect-card #inspect-extra { color:#483820; font-size:9.5px; border-top:1px dotted rgba(16,24,32,0.35); }
+    background:#0a1520;
+    padding:5px 12px; margin:0;
+    color:#e6e8ee; font-size:11px;
+    font-family:"JetBrains Mono", monospace; }
+  #inspect-card .r { display:flex; justify-content:space-between; gap:12px;
+    border-bottom:1px solid rgba(94,234,212,0.08); }
+  #inspect-card .r:last-of-type { border-bottom:none; }
+  #inspect-card .r .l { color:#9aa3b5; text-transform:uppercase; letter-spacing:0.14em;
+    font-size:9.5px; font-weight:700; padding-top:1px; }
+  #inspect-card .r .v { color:#e6e8ee; font-weight:700; text-align:right; }
+  #inspect-card .r .v.ok { color:#34d399; }
+  #inspect-card .r .v.warn { color:#fbbf24; }
+  #inspect-card #inspect-extra { color:#9aa3b5; font-size:10px;
+    border-top:1px solid rgba(94,234,212,0.12); padding:7px 12px 10px 12px; line-height:1.5; }
   #stage { position:relative; background:var(--bg-2); overflow:hidden; }
   #stage canvas { image-rendering:pixelated; display:block; }
   #scanlines { position:absolute; inset:0; pointer-events:none; z-index:5;
@@ -142,33 +148,34 @@
     font-size:10px; color:var(--pk-box); pointer-events:none; z-index:7;
     font-family:"Press Start 2P",monospace; letter-spacing:0.14em;
     text-shadow: 1px 1px 0 var(--pk-ink); }
-  /* v2.16 — Pokémon trainer-card style tooltip (double-border white + navy accents). */
+  /* v2.23 — unified Bloomberg-dark tooltip (same palette as inspect-card + bubble). */
   #hover { position:absolute; max-width:300px; padding:10px 14px;
-    background:var(--pk-box); color:var(--pk-ink);
-    border:3px solid var(--pk-ink); border-radius:8px;
-    box-shadow: inset 0 0 0 2px var(--pk-box), inset 0 0 0 4px var(--pk-navy),
-                0 8px 24px rgba(0,0,0,0.6);
+    background:#0a1520; color:#e6e8ee;
+    border:2px solid #5eead4; border-radius:6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(94,234,212,0.15);
     z-index:8; pointer-events:none; display:none;
-    font-family:"JetBrains Mono",monospace; }
-  #hover .h-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; padding-bottom:6px; border-bottom:2px dotted #b0b8c4; }
-  #hover .h-dot { width:10px; height:10px; border:1px solid var(--pk-ink); }
-  #hover .h-title { font-weight:700; color:var(--pk-ink); letter-spacing:0.06em; font-family:"Press Start 2P",monospace; font-size:10px; }
-  #hover .h-sub { color:var(--pk-navy); font-size:8.5px; margin-left:auto; text-transform:uppercase;
-    letter-spacing:0.14em; font-family:"Press Start 2P",monospace; font-weight:700; }
-  #hover .h-row { display:flex; justify-content:space-between; padding:2px 0; font-size:11px; }
-  #hover .h-row .l { color:var(--pk-navy); font-weight:700; font-family:"Press Start 2P",monospace; font-size:8.5px; letter-spacing:0.1em; padding-top:2px; }
-  #hover .h-row .v { color:var(--pk-ink); font-weight:700; font-family:"VT323","JetBrains Mono",monospace; font-size:13px; }
-  #hover .h-row .v.up { color:var(--pk-green); }
-  #hover .h-row .v.down { color:var(--pk-red); }
+    font-family:"JetBrains Mono",monospace; font-size:11px; }
+  #hover .h-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; padding-bottom:6px;
+    border-bottom:1px solid rgba(94,234,212,0.25); }
+  #hover .h-dot { width:9px; height:9px; border:1px solid #5eead4; border-radius:50%; }
+  #hover .h-title { font-weight:700; color:#5eead4; letter-spacing:0.06em;
+    font-family:"JetBrains Mono",monospace; font-size:11px; text-transform:uppercase; }
+  #hover .h-sub { color:#9aa3b5; font-size:9px; margin-left:auto; text-transform:uppercase;
+    letter-spacing:0.14em; font-family:"JetBrains Mono",monospace; font-weight:700; }
+  #hover .h-row { display:flex; justify-content:space-between; gap:12px; padding:2px 0; font-size:11px; }
+  #hover .h-row .l { color:#9aa3b5; font-weight:700; font-family:"JetBrains Mono",monospace;
+    font-size:9.5px; letter-spacing:0.12em; padding-top:2px; text-transform:uppercase; }
+  #hover .h-row .v { color:#e6e8ee; font-weight:700; font-family:"JetBrains Mono",monospace; font-size:11px; }
+  #hover .h-row .v.up { color:#34d399; }
+  #hover .h-row .v.down { color:#ff5c5c; }
   #hover .h-tag { display:inline-block; padding:2px 7px; margin:3px 3px 0 0;
-    font-size:8.5px; font-family:"Press Start 2P",monospace; letter-spacing:0.1em;
-    background:var(--pk-yellow-2); color:#a05820; border:2px solid var(--pk-ink);
-    border-radius:4px; text-transform:uppercase;
-    box-shadow: 1px 1px 0 var(--pk-ink); }
-  #hover .h-tag.sac { color:var(--pk-red); background:#ffe0e0; }
-  #hover .h-tag.pact { color:var(--pk-green); background:#e0f8e0; }
-  #hover .h-note { margin-top:6px; padding-top:6px; border-top:2px dotted #b0b8c4;
-    color:#3a4858; font-size:10px; line-height:1.5; font-family:"JetBrains Mono",monospace; }
+    font-size:9px; font-family:"JetBrains Mono",monospace; letter-spacing:0.1em;
+    background:rgba(94,234,212,0.1); color:#5eead4; border:1px solid rgba(94,234,212,0.4);
+    border-radius:3px; text-transform:uppercase; }
+  #hover .h-tag.sac { color:#ff5c5c; background:rgba(255,92,92,0.1); border-color:rgba(255,92,92,0.4); }
+  #hover .h-tag.pact { color:#34d399; background:rgba(52,211,153,0.1); border-color:rgba(52,211,153,0.4); }
+  #hover .h-note { margin-top:6px; padding-top:6px; border-top:1px solid rgba(94,234,212,0.15);
+    color:#b8c0d0; font-size:10px; line-height:1.5; font-family:"JetBrains Mono",monospace; }
   /* v2.16 — battle toast: Pokémon DS notification card (red ribbon + white face). */
   #event-toast { position:absolute; bottom:120px; right:14px; z-index:9;
     display:flex; flex-direction:column; gap:6px; max-width:290px; }
@@ -421,11 +428,10 @@ const TILE = 32;
 // v2.10: widen to 16:10 so the world fills desktop screens without dead side margins.
 const GRID_W = 52, GRID_H = 32;
 const WORLD_W = GRID_W * TILE, WORLD_H = GRID_H * TILE;
-// v2.22 2026-04-20: size up 72→128 / 64→112 (+78%). User ask: "qu'ils soient bien
-// plus grands". Separation radius bumped in tickMotion so 41 big sprites don't
-// clump. Sprite is still pixel-snapped (image-rendering:pixelated) so it stays
-// crisp at 2× scale.
-const CHAR_W = 128, CHAR_H = 112;
+// v2.23 2026-04-20: user "fat et étirés en largeur, pas du tout en hauteur" —
+// switch to a taller silhouette (80×112, ratio 1:1.4 like a standing trainer).
+// v2.22 was 128×112 — too wide. Kept CHAR_H=112, dropped CHAR_W 128→80.
+const CHAR_W = 80, CHAR_H = 112;
 
 // v2.17: +itf (amber-orange, reads as "live tape" — distinct from NBA pink + POL cyan).
 const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, itf:0xffa94d, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c, control:0xffd700 };
@@ -1676,7 +1682,7 @@ function makeAgentContainer(a) {
   bubble.addChild(bubbleBg); bubble._bg = bubbleBg;
   const bubbleText = new PIXI.Text({ text:"…", style:{
     fontFamily:"JetBrains Mono, monospace", fontSize:11, fill:0xe6e8ee,
-    wordWrap:true, wordWrapWidth:200, align:"center", lineHeight:14,
+    wordWrap:true, wordWrapWidth:240, align:"left", lineHeight:14,
   }});
   bubbleText.anchor.set(0.5, 1);
   bubble.addChild(bubbleText); bubble._text = bubbleText;
@@ -1746,15 +1752,24 @@ function makeAgentContainer(a) {
 
   c.on("pointerover", () => { a._hover = true; if (!a._clicked) showHoverCard(a); });
   c.on("pointerout",  () => { a._hover = false; hideHoverCard(); });
-  // v2.22 click handler: Pokémon-style interaction — stop agent, open speech
-  // bubble with current thought, anchor right info panel to this agent.
+  // v2.23 click handler: Pokémon stop-and-talk with typewriter reveal + "!" ack.
   c.on("pointertap",  () => {
-    // Unclick any previously-clicked agent
-    for (const other of AGENTS) if (other !== a) other._clicked = false;
+    // Unclick and reset any previously-clicked agent — typewriter state cleared
+    for (const other of AGENTS) if (other !== a) {
+      other._clicked = false;
+      other._typeIdx = 0;
+      other._typeStart = 0;
+    }
     a._clicked = true;
-    a.activeUntil = performance.now() + 60000;  // keep "active" visuals alive while frozen
-    a.bubbleUntil = performance.now() + 60000;  // persistent bubble while clicked
+    a.vx = 0; a.vy = 0;                          // hard-zero velocity (v2.23)
+    a.activeUntil = performance.now() + 60000;
+    a.bubbleUntil = performance.now() + 60000;
     a.bubble = buildClickBubble(a);
+    // Typewriter: start revealing 0 chars at click time; tickRender increments.
+    a._typeIdx = 0;
+    a._typeStart = performance.now();
+    // "!" exclamation ack — Pokémon notice sprite above the head for 300ms.
+    a._noticeUntil = performance.now() + 300;
     showInspectPanel(a);
     hideHoverCard();
   });
@@ -1766,8 +1781,12 @@ function makeAgentContainer(a) {
 for (const a of AGENTS) makeAgentContainer(a);
 
 // ── MOTION ──────────────────────────────────────────────────────────────────
-// v2.22: bigger sprites need more elbow room — SEP_RADIUS 2.6→4.0.
-const SEP_RADIUS = 4.0, SEP_WEIGHT = 0.11;
+// v2.23: user reported agents "se rentrent tous dedans" — raised SEP_RADIUS 4.0→5.5
+// and added a HARD overlap resolution pass after velocity integration so sprites
+// physically cannot overlap by more than CHAR_W/2 in world units.
+const SEP_RADIUS = 5.5, SEP_WEIGHT = 0.14;
+// Hard-overlap min distance in tile units (CHAR_W is 80px / TILE 32 = 2.5 tiles).
+const HARD_MIN_DIST = 2.6;
 function tickMotion(ms) {
   const t = ms / 1000;
   for (const a of AGENTS) {
@@ -1833,6 +1852,27 @@ function tickMotion(ms) {
     a.x += a.vx; a.y += a.vy;
     if (a._cnt && a._cnt._spr && Math.abs(a.vx) > 0.004) {
       a._cnt._spr.scale.x = (a.vx < 0 ? -1 : 1) * Math.abs(a._cnt._spr.scale.x || 1);
+    }
+  }
+  // v2.23: HARD overlap pass — push any remaining overlapping pairs apart so
+  // two sprites can never visually occupy the same tile. One pass/tick is enough
+  // given the small population (≤60) and soft separation already reduced most
+  // contact. Skip clicked & infra agents (they are pinned).
+  for (let i = 0; i < AGENTS.length; i++) {
+    const a = AGENTS[i];
+    if (a._clicked || a._isInfra) continue;
+    for (let j = i + 1; j < AGENTS.length; j++) {
+      const b = AGENTS[j];
+      if (b._clicked || b._isInfra) continue;
+      const dx = a.x - b.x, dy = a.y - b.y;
+      const d2 = dx*dx + dy*dy;
+      if (d2 < HARD_MIN_DIST*HARD_MIN_DIST && d2 > 0.0001) {
+        const d = Math.sqrt(d2);
+        const push = (HARD_MIN_DIST - d) / 2;
+        const ux = dx / d, uy = dy / d;
+        a.x += ux * push; a.y += uy * push;
+        b.x -= ux * push; b.y -= uy * push;
+      }
     }
   }
 }
@@ -1918,36 +1958,70 @@ function tickRender(ms) {
       a._cnt._glyph.y = -CHAR_H*1.02 + Math.sin(ms / 600 + a.idx) * 2;
     }
 
-    // Speech bubble — ephemeral by default (~4.5s after a bet) OR persistent when
-    // the user has CLICKED the agent (v2.22 Pokémon-interaction mode).
+    // v2.23 Speech bubble — Bloomberg-dark fill, teal border, typewriter reveal
+    // when clicked. Palette matches #inspect-card and #hover exactly.
     const bubble = a._cnt._bubble;
     const isClicked = !!a._clicked;
     if (isClicked) {
-      // Rebuild rich thought bubble every frame so it stays fresh as data updates.
-      a.bubble = buildClickBubble(a);
+      a.bubble = buildClickBubble(a);  // keep fresh
     }
     const showBubble = bubble && a.bubble && (isClicked || (a.bubbleUntil || 0) > ms);
     if (showBubble) {
-      bubble._text.text = a.bubble;
-      // v2.22: widen bubble for clicked mode (more text, better readability).
-      bubble._text.style.wordWrapWidth = isClicked ? 280 : 200;
-      bubble._text.style.fontSize = isClicked ? 12 : 11;
-      const tw = Math.min(bubble._text.width + 18, isClicked ? 300 : 200);
+      // Typewriter char count — only applies while clicked; ephemeral post-bet
+      // shows full text immediately (it's already a quick flash).
+      let display = a.bubble;
+      let typingDone = true;
+      if (isClicked) {
+        const TYPE_MS = 40;
+        const n = Math.max(0, Math.floor((ms - (a._typeStart || ms)) / TYPE_MS));
+        const full = a.bubble;
+        typingDone = n >= full.length;
+        const shown = Math.min(n, full.length);
+        display = full.slice(0, shown);
+        a._typeIdx = shown;
+      }
+      // Blinking ▼ glyph once typing completes
+      const showCursor = isClicked && typingDone && Math.floor(ms / 500) % 2 === 0;
+      bubble._text.text = display + (showCursor ? "  ▼" : "");
+      bubble._text.style.wordWrapWidth = isClicked ? 240 : 180;
+      bubble._text.style.fontSize = 11;
+      bubble._text.style.align = "left";
+      const tw = Math.max(60, Math.min(bubble._text.width + 18, isClicked ? 260 : 200));
       const th = bubble._text.height + 14;
       const fade = isClicked ? 1.0 : Math.min(1, ((a.bubbleUntil || 0) - ms) / 500);
-      const brdW = isClicked ? 2.5 : 1;
+      const brdW = 2;
       bubble._bg.clear()
-        .roundRect(-tw/2, -th, tw, th, 6).fill({ color: 0xf8f8f8, alpha: 0.98 * fade })
-        .roundRect(-tw/2, -th, tw, th, 6).stroke({ width:brdW, color: 0x101820, alpha: fade })
-        // Pokémon tail — triangle pointing down to sprite
-        .moveTo(-6, 0).lineTo(6, 0).lineTo(0, 8).closePath().fill({ color: 0xf8f8f8, alpha: 0.98 * fade })
-        .moveTo(-6, 0).lineTo(0, 8).lineTo(6, 0).stroke({ width:brdW, color: 0x101820, alpha: fade });
-      // Dark text on light bubble (Pokémon dialogue box style).
-      bubble._text.style.fill = 0x101820;
+        .rect(-tw/2, -th, tw, th).fill({ color: 0x0a1520, alpha: 0.96 * fade })
+        .rect(-tw/2, -th, tw, th).stroke({ width:brdW, color: 0x5eead4, alpha: fade })
+        // Tail pointing DOWN toward sprite — crisp 8px triangle
+        .moveTo(-6, 0).lineTo(6, 0).lineTo(0, 8).closePath().fill({ color: 0x0a1520, alpha: 0.96 * fade })
+        .moveTo(-6, 0).lineTo(0, 8).lineTo(6, 0).stroke({ width:brdW, color: 0x5eead4, alpha: fade });
+      bubble._text.style.fill = 0xe6e8ee;
       bubble._text.alpha = fade;
       bubble.visible = true;
     } else if (bubble) {
       bubble.visible = false;
+    }
+
+    // v2.23 "!" tap-ack — brief exclamation mark above the head for 300ms after
+    // a click lands. Gives Pokémon-style feedback that the tap was registered.
+    if (a._noticeUntil && a._noticeUntil > ms) {
+      if (!a._cnt._notice) {
+        const notice = new PIXI.Text({ text: "!", style: {
+          fontFamily: "Press Start 2P, VT323, monospace", fontSize: 20,
+          fontWeight: "700", fill: 0xfbbf24, stroke: { color: 0x101820, width: 3 },
+        }});
+        notice.anchor.set(0.5, 1);
+        notice.y = -CHAR_H * 1.22;
+        a._cnt.addChild(notice);
+        a._cnt._notice = notice;
+      }
+      const nLeft = (a._noticeUntil - ms) / 300;
+      a._cnt._notice.alpha = nLeft;
+      a._cnt._notice.y = -CHAR_H * 1.22 - (1 - nLeft) * 12;
+      a._cnt._notice.visible = true;
+    } else if (a._cnt._notice) {
+      a._cnt._notice.visible = false;
     }
 
     // v2.22: Names HIDDEN by default — only shown when the agent is clicked
@@ -2142,37 +2216,50 @@ app.ticker.add(() => {
 });
 
 // ── BUBBLE TEXT BUILDERS ────────────────────────────────────────────────────
-// v2.22: Pokémon-style dialogue bubble shown when user CLICKS an agent.
-// Rich multi-line thought — persona intro + current thesis + last allocation.
+// v2.23: Human-formatted Pokémon-style dialogue bubble. No JSON dumps, no raw
+// archetype tags. Line 1 = "ClassName · tid", line 2 = action in plain English.
+// Previous version leaked "ARCHETYPE[scalp]:", category codes, and empty braces.
 function buildClickBubble(a) {
-  const lines = [];
-  lines.push(`${a.label}`);
-  if (a.model) lines.push(`(${a.model})`);
-  const d = a.data;
+  const d = a.data || {};
   const dd = a.dayDecision;
-  if (dd && dd.day_strategy) {
-    let s = dd.day_strategy.replace(/^(ARCHETYPE\[[^\]]+\]:|CHALLENGE_RESPONSE:)\s*/, "").trim();
-    if (s.length > 130) s = s.slice(0, 127) + "…";
-    lines.push(`"${s}"`);
-    const al = (dd.allocations || [])[0];
-    if (al) {
-      const pct = Math.round((al.pct || 0) * 100);
-      lines.push(`→ ${al.category || "?"} ${pct}% on ${al.game || "?"}`);
-    }
-  } else if (d && typeof d.bankroll === "number") {
+  // Line 1 — persona: "Scalper · scalper-1" or "Fundamentalist · qwen-quant"
+  const persona = a.persona || a.role || a.strategy || (a.kind === "nba" ? "NBA Trader" : a.kind === "political" ? "Political Trader" : a.kind === "itf" ? "Intraday Trader" : a.kind === "island" ? "Island" : a.kind === "council" ? "Council" : a._isInfra ? "Infrastructure" : "Agent");
+  const ln1 = `${persona} · ${a.id || a.label}`;
+
+  // Line 2 — current decision, human-formatted
+  let ln2 = "";
+  if (a.kind === "island" || a._isInfra) {
+    const brier = (d.best_brier || 0);
+    const gen = d.generation || 0;
+    const model = d.best_model_type || "?";
+    ln2 = brier > 0 ? `${model.toUpperCase()} · Brier ${brier.toFixed(5)} · gen ${gen}` : "booting…";
+  } else if (a.kind === "council") {
+    ln2 = (a.mission || "Karpathy loop").replace(/\s+/g, " ").slice(0, 70);
+  } else if (dd && dd.allocations && dd.allocations.length) {
+    // TF agent with a concrete decision today. Prefer top allocation.
+    const al = dd.allocations[0];
+    const ticker = (al.game || al.category || "?").toString().toUpperCase().slice(0, 12);
+    const side = (al.side || al.pick || "").toString().toUpperCase();
+    const pct = Math.round((al.pct || 0) * 100);
+    const entry = al.entry_price != null ? ` @ $${Number(al.entry_price).toFixed(2)}` : "";
+    const edge = al.edge != null ? ` · edge ${(al.edge*100).toFixed(1)}%` : "";
+    ln2 = `${side ? side + " " : ""}${ticker}${entry} · ${pct}% stake${edge}`;
+  } else if (dd && dd.action === "pass") {
+    ln2 = "STANDING DOWN — flat tape";
+  } else if (a.kind === "itf" && d.open_positions != null) {
+    const pos = d.open_positions | 0;
+    const tr = d.trades | 0;
+    ln2 = `${pos} open · ${tr} trades today`;
+  } else if (typeof d.bankroll === "number") {
     const roi = d.bankroll - 100;
     const sign = roi >= 0 ? `+$${roi.toFixed(0)}` : `-$${(-roi).toFixed(0)}`;
-    lines.push(`$${d.bankroll.toFixed(0)} (${sign})`);
-    if (a.strategy) lines.push(`[${a.strategy}]`);
-  } else if (a._isInfra && d) {
-    lines.push(`Brier ${(d.best_brier||0).toFixed(5)}`);
-    lines.push(`gen ${d.generation||0} · ${d.best_model_type||"?"}`);
-  } else if (a.kind === "council") {
-    lines.push(a.mission || "Karpathy loop");
+    const w = d.wins || 0, l = d.losses || 0;
+    ln2 = `$${d.bankroll.toFixed(0)} (${sign}) · ${w}W/${l}L`;
   } else {
-    lines.push("awaiting live data…");
+    ln2 = "THINKING…";
   }
-  return lines.join("\n");
+  // Trim to max 60 chars per line so bubble width is predictable.
+  return ln1.slice(0, 60) + "\n" + ln2.slice(0, 80);
 }
 function buildTraderBubble(a) {
   const d = a.data;
@@ -2278,34 +2365,29 @@ document.getElementById("inspect-close").addEventListener("click", () => {
   if (_inspectAgent) _inspectAgent._clicked = false;
   _inspectAgent = null;
 });
-// v2.22: clicking empty stage background = unclick any frozen agent.
-// PIXI captures clicks that land on a sprite (pointertap fires first); any click
-// on the raw canvas without hitting a sprite lands here.
+// v2.23: clicking empty canvas closes inspect + resumes motion on all agents.
+// Typewriter state cleared too so a re-click starts fresh.
 app.canvas.addEventListener("click", (ev) => {
-  // Only treat as background click if no hit tested — simplest heuristic is to
-  // check event target === canvas (PIXI stops propagation on sprite hits).
   if (ev.target !== app.canvas) return;
-  for (const a of AGENTS) a._clicked = false;
-  inspectCard.style.display = "none";
-  _inspectAgent = null;
+  // Defer to next tick so a sprite's pointertap (fires ~same frame) wins the race.
+  setTimeout(() => {
+    // Only clear if no agent actually got clicked this frame (sprite tap would
+    // have set exactly one a._clicked=true within the last few ms).
+    const anyRecentClick = AGENTS.some(x => x._clicked && (performance.now() - (x._typeStart || 0)) < 30);
+    if (anyRecentClick) return;
+    for (const a of AGENTS) {
+      a._clicked = false;
+      a._typeIdx = 0;
+      a._typeStart = 0;
+    }
+    inspectCard.style.display = "none";
+    _inspectAgent = null;
+  }, 0);
 });
 function positionInspectCard() {
-  if (!_inspectAgent || inspectCard.style.display === "none") return;
-  const a = _inspectAgent;
-  // World → screen: account for world pan + scale, and #stage offset
-  const sx = a.x * TILE * camScale + camX;
-  const sy = a.y * TILE * camScale + camY;
-  const stageEl = document.getElementById("stage");
-  const rect = stageEl.getBoundingClientRect();
-  const cardW = 260;
-  let left = sx + 40;                  // to the right of sprite
-  if (left + cardW > rect.width - 12) left = sx - cardW - 40;
-  if (left < 12) left = 12;
-  let top = sy - 60;
-  if (top < 60) top = 60;
-  if (top + 250 > rect.height - 20) top = rect.height - 260;
-  inspectCard.style.left = left + "px";
-  inspectCard.style.top = top + "px";
+  // v2.23: inspect-card is now FIXED top-right via CSS so it never overlaps the
+  // speech bubble or sprite. No per-frame positioning needed. Kept as a no-op to
+  // preserve the app.ticker.add() call below without a runtime error.
 }
 function showInspectPanel(a) {
   _inspectAgent = a;
