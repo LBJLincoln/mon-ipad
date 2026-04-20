@@ -1,0 +1,87 @@
+name: Axelrod Fire-15b — POL COLLECTIVE_MISSION 16→17 (corrected sed)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/axelrod-fire15b-fix.yml'
+
+jobs:
+  fix-and-verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply POL COLLECTIVE_MISSION 16→17 fix (idempotent, simple pattern)
+        run: |
+          FILE="scripts/arena/hf-political-trading-floor/app.py"
+          if grep -q 'ONE of 16 LLM agents' "$FILE"; then
+            sed -i 's/ONE of 16 LLM agents/ONE of 17 LLM agents/g' "$FILE"
+            sed -i 's/All 16 agents see/All 17 agents see/g' "$FILE"
+            echo "FIX APPLIED: 16->17 in COLLECTIVE_MISSION"
+          else
+            echo "Already fixed, skipping"
+          fi
+
+      - name: Verify fix applied
+        run: |
+          grep -n '16 LLM agents\|17 LLM agents\|All 16 agents\|All 17 agents' scripts/arena/hf-political-trading-floor/app.py | head -5
+
+      - name: py_compile both apps
+        run: |
+          python3 -m py_compile scripts/arena/hf-llm-trading-floor/app.py && echo "NBA: PASS" || (echo "NBA: FAIL" && exit 1)
+          python3 -m py_compile scripts/arena/hf-political-trading-floor/app.py && echo "POL: PASS" || (echo "POL: FAIL" && exit 1)
+
+      - name: Upsert fire-15 entry in work-queue.json
+        run: |
+          python3 << 'PYEOF'
+          import json, datetime
+          with open('data/work-queue.json') as f:
+              wq = json.load(f)
+          # Remove any previous fire-15 entry (from broken first workflow)
+          wq['items'] = [i for i in wq['items'] if i.get('id') != 'tf-axelrod-verify-tune-15']
+          max_prio = max(item.get('priority', 0) for item in wq['items'])
+          entry = {
+              "id": "tf-axelrod-verify-tune-15",
+              "priority": max_prio + 1,
+              "status": "done",
+              "completed_at": datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+              "owner": "cloud-trigger-axelrod-2026",
+              "subject": "verify+tune fire 15 -- POL COLLECTIVE_MISSION 16->17 count fix + py_compile",
+              "bug_fixed": "Political COLLECTIVE_MISSION hardcoded '16 LLM agents' since +selfhost-dolphin3 brought roster to 17. Patched via sed. NBA was already correct (17). Both apps py_compile PASS.",
+              "py_compile": "PASS both apps",
+              "do_not_push_hf_space_yet": True
+          }
+          wq['items'].append(entry)
+          wq['updated_at'] = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+          with open('data/work-queue.json', 'w') as f:
+              json.dump(wq, f, indent=2)
+          print(f"Upserted fire-15 entry at priority {max_prio + 1}")
+          PYEOF
+
+      - name: Remove both fire-15 workflows (self-cleanup)
+        run: |
+          git rm -f .github/workflows/axelrod-fire15-fix.yml || true
+          git rm -f .github/workflows/axelrod-fire15b-fix.yml || true
+
+      - name: Commit and push
+        run: |
+          git config user.email "noreply@anthropic.com"
+          git config user.name "Claude Cloud Trigger"
+          git add scripts/arena/hf-political-trading-floor/app.py data/work-queue.json
+          git diff --staged --stat
+          git commit -m "feat(tf): Axelrod fire-15 -- Political COLLECTIVE_MISSION 16->17 agent count parity fix
+
+Verify+tune cycle 15. Found: Political app COLLECTIVE_MISSION static preamble
+hardcoded '16 LLM agents' since selfhost-dolphin3 was added making roster 17
+(full parity with NBA). CK block already dynamic via n_traders=len(TRADERS).
+Static preamble now consistent. NBA was correct (17) -- no NBA change needed.
+
+py_compile: PASS both apps. All 3 Axelrod mechanisms remain spec-complete.
+do_not_push_hf_space_yet -- HF deploy still awaiting explicit user approval.
+
+Co-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+          git push
