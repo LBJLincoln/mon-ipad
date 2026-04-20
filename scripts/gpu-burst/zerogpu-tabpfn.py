@@ -62,6 +62,10 @@ def main():
     Always exits 0 so the GH workflow's `||` fallback to legacy doesn't
     swallow our specialized output path. Failure is encoded inside the
     record (`dispatch_failed=True`) for D7 to surface."""
+    # NOTE (2026-04-20 LAUNCHPAD audit): the default Space URL below 404s — the
+    # Space `Nomos42/tabpfn-burst` does not currently exist. Runs will record
+    # `dispatch_failed=True` until either the Space is created or TABPFN_SPACE_URL
+    # is set in the environment. Does NOT block pipeline (we always exit 0).
     space_url = os.environ.get(
         "TABPFN_SPACE_URL",
         "https://nomos42-tabpfn-burst.hf.space",

@@ -83,12 +83,13 @@ except ImportError:
 # LOAD GAME DATA + FEATURES
 ###############################################################################
 
-# Clone feature engine from HF Space
+# Clone feature engine from a surviving HF Space (post-2026-04-17 cull).
+# The old Nomos42/nba-quant Space (S10) was eliminated; pull from the wide-search survivor.
 REPO_DIR = os.path.join(WORK_DIR, 'nba-quant-space') if IS_KAGGLE else '/content/nba-quant-space'
 if not os.path.exists(REPO_DIR):
-    print("Cloning feature engine from HF Space...")
+    print("Cloning feature engine from HF Space (survivor: Nomos42/nba-evo-6)...")
     token_part = f"user:{HF_TOKEN}@" if HF_TOKEN else ""
-    os.system(f"git clone --depth 1 https://{token_part}huggingface.co/spaces/Nomos42/nba-quant {REPO_DIR}")
+    os.system(f"git clone --depth 1 https://{token_part}huggingface.co/spaces/Nomos42/nba-evo-6 {REPO_DIR}")
 sys.path.insert(0, REPO_DIR)
 
 FEATURE_CACHE = os.path.join(WORK_DIR, 'backtest_features_v43.npz')

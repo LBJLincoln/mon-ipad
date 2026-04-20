@@ -83,22 +83,21 @@ declare -A PLATFORM_LAST_BRIER
 declare -A PLATFORM_LAST_TIME
 declare -A PLATFORM_NEXT_RUN
 
-# ── 1. HF Spaces (8 CPU islands, always running) ──
+# ── 1. HF Spaces (6 NBA CPU survivors post-2026-04-17 cull) ──
+# Eliminated (DO NOT re-add): S10, S11, S12, S16, S19, S20, S21.
 check_hf_spaces() {
     local running=0
-    local total=8
+    local total=6
     local best_brier="?"
 
-    for island in S10 S11 S12 S13 S14 S15 S16 S17; do
+    for island in S13 S14 S15 S17 S18 S22; do
         case $island in
-            S10) url="https://nomos42-nba-quant.hf.space" ;;
-            S11) url="https://nomos42-nba-quant-2.hf.space" ;;
-            S12) url="https://nomos42-nba-evo-3.hf.space" ;;
             S13) url="https://nomos42-nba-evo-4.hf.space" ;;
             S14) url="https://nomos42-nba-evo-5.hf.space" ;;
             S15) url="https://nomos42-nba-evo-6.hf.space" ;;
-            S16) url="https://lbjlincoln26-nba-evo-s16.hf.space" ;;
             S17) url="https://lbjlincoln26-nba-evo-s17.hf.space" ;;
+            S18) url="https://testforge42-nba-evo-s18.hf.space" ;;
+            S22) url="https://testforge42-nba-evo-s22.hf.space" ;;
         esac
 
         if timeout 8 curl -s --connect-timeout 3 --max-time 6 "${url}/api/status" &>/dev/null; then

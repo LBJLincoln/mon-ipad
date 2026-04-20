@@ -1,5 +1,9 @@
 # Nomos42 GPU Fleet Matrix — 1 Account = 1 Hypothesis
 
+> Updated 2026-04-20. Evolution island fleet is 11 survivors (6 NBA + 5 POL)
+> after the 2026-04-17 cull. Eliminated islands (DO NOT re-reference as seeds or
+> sync targets): S10, S11, S12, S16, S19, S20, S21, P3, P6, P8.
+
 Stop burning the same experiment on every platform. Each row below is a **distinct
 scientific question** assigned to a specific account. Collated result lands in
 `data/fleet-matrix/<slot>/last.json` and competes for Pareto-best on the season board.
@@ -13,7 +17,7 @@ scientific question** assigned to a specific account. Collated result lands in
 | G3 | Colab #2 (user) | T4 ~3h/day | Darwinian weights (S21 canon) + atlas-gic PnL | 186f | manual .ipynb |
 | G4 | Lightning #1 | T4/A10G 22h/wk | Venn-Abers fusion (S22 canon) — NBA | 186f | `scripts/lightning/launch_karpathy.py --project nba` |
 | G5 | Lightning #2 | T4/A10G 22h/wk | CPCV + DSR gated walk-forward | 186f | `scripts/lightning/launch_karpathy.py --project political` |
-| G6 | Modal (user) | A10G PAYG | Karpathy ensemble mutation (S10-S17 diversify) | 186f | `modal run scripts/gpu-burst/modal-burst.py` |
+| G6 | Modal (user) | A10G PAYG | Karpathy ensemble mutation (S13/S14/S15/S17/S18/S22 diversify) | 186f | `modal run scripts/gpu-burst/modal-burst.py` |
 | G7 | Brev Launchable (NVIDIA free tier) | A10G free | Karpathy autoresearch 1h burst | 186f | `brev-launchable/nomos42-karpathy.yaml` |
 | G8 | Brev Launchable (NVIDIA Inception credits) | H100 | TabPFN-2.5 FULL 186f walk-forward | 186f | `brev-launchable/nomos42-tabpfn-train.yaml` |
 

@@ -48,15 +48,15 @@ TARGET_FEATURES = 63
 GITHUB_REPO = "LBJLincoln/mon-ipad"
 GITHUB_BRANCH = "main"
 
+# NBA evolution islands — 6 survivors post-2026-04-17 cull.
+# Eliminated (DO NOT restore): S10, S11, S12, S16, S19, S20, S21.
 HF_ISLANDS = {
-    "S10": "https://nomos42-nba-quant.hf.space",
-    "S11": "https://nomos42-nba-quant-2.hf.space",
-    "S12": "https://nomos42-nba-evo-3.hf.space",
-    "S13": "https://nomos42-nba-evo-4.hf.space",
-    "S14": "https://nomos42-nba-evo-5.hf.space",
-    "S15": "https://nomos42-nba-evo-6.hf.space",
-    "S16": "https://lbjlincoln26-nba-evo-s16.hf.space",
-    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space",
+    "S13": "https://nomos42-nba-evo-4.hf.space",        # catboost
+    "S14": "https://nomos42-nba-evo-5.hf.space",        # lightgbm
+    "S15": "https://nomos42-nba-evo-6.hf.space",        # wide_search
+    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space", # ensemble
+    "S18": "https://testforge42-nba-evo-s18.hf.space",  # catboost_spec
+    "S22": "https://testforge42-nba-evo-s22.hf.space",  # venn_abers_fusion (fleet best)
 }
 
 # Paths
@@ -66,12 +66,13 @@ RESULTS_DIR = REPO_ROOT / "data" / "gpu-burst"
 LOG_FILE = RESULTS_DIR / "zerogpu-log.jsonl"
 RESULT_FILE = RESULTS_DIR / "latest-zerogpu-result.json"
 
-# ZeroGPU-enabled spaces we can query for evaluation
+# ZeroGPU-enabled spaces we can query for evaluation.
+# Survivor repos only — the eliminated nba-quant / nba-quant-2 Spaces 404.
 # These must be HF Spaces with `sdk: gradio` and the `zero-gpu` hardware.
 # Inference endpoint pattern: POST /run/predict via the Gradio API.
 ZEROGPU_SPACES = [
-    "Nomos42/nba-quant",       # S10
-    "Nomos42/nba-quant-2",     # S11
+    "Nomos42/nba-evo-6",         # S15 wide-search
+    "Nomos42/nba-evo-5",         # S14 lightgbm
 ]
 
 # HF Inference API — serverless endpoints (TabICL / tabpfn / etc.)
@@ -538,7 +539,7 @@ def push_to_github(result: dict) -> bool:
 
 
 def update_island_config(result: dict) -> bool:
-    """Send new best config to S10 /api/config for immediate deployment."""
+    """Send new best config to the fleet-best survivor (S22) /api/config."""
     payload = {
         "best_brier": result["best_brier"],
         "features": result.get("feature_indices", []),
@@ -551,11 +552,11 @@ def update_island_config(result: dict) -> bool:
         "source": "zerogpu-burst",
         "timestamp": result.get("timestamp", ts()),
     }
-    resp = http_post(f"{HF_ISLANDS['S10']}/api/config", payload, timeout=20)
+    resp = http_post(f"{HF_ISLANDS['S22']}/api/config", payload, timeout=20)
     if resp:
-        log("Updated S10 island config with new best")
+        log("Updated S22 island config with new best")
         return True
-    log("Failed to update S10 config", "WARN")
+    log("Failed to update S22 config", "WARN")
     return False
 
 

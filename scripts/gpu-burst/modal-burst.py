@@ -70,15 +70,15 @@ ATR_BRIER = 0.21570
 GITHUB_REPO = "LBJLincoln/mon-ipad"
 GITHUB_BRANCH = "main"
 
+# NBA evolution islands — 6 survivors post-2026-04-17 cull.
+# Eliminated (DO NOT restore): S10, S11, S12, S16, S19, S20, S21.
 HF_ISLANDS = {
-    "S10": "https://nomos42-nba-quant.hf.space",
-    "S11": "https://nomos42-nba-quant-2.hf.space",
-    "S12": "https://nomos42-nba-evo-3.hf.space",
-    "S13": "https://nomos42-nba-evo-4.hf.space",
-    "S14": "https://nomos42-nba-evo-5.hf.space",
-    "S15": "https://nomos42-nba-evo-6.hf.space",
-    "S16": "https://lbjlincoln26-nba-evo-s16.hf.space",
-    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space",
+    "S13": "https://nomos42-nba-evo-4.hf.space",        # catboost
+    "S14": "https://nomos42-nba-evo-5.hf.space",        # lightgbm
+    "S15": "https://nomos42-nba-evo-6.hf.space",        # wide_search
+    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space", # ensemble
+    "S18": "https://testforge42-nba-evo-s18.hf.space",  # catboost_spec
+    "S22": "https://testforge42-nba-evo-s22.hf.space",  # venn_abers_fusion (fleet best)
 }
 
 POPULATION_SIZE = 24
@@ -137,17 +137,24 @@ def build_feature_cache() -> dict:
     repo_dir = Path("/tmp/nba-quant-space")
     if not repo_dir.exists():
         hf_token = os.environ.get("HF_TOKEN", "")
-        clone_url = f"https://user:{hf_token}@huggingface.co/spaces/Nomos42/nba-quant"
-        ret = subprocess.run(
-            ["git", "clone", "--depth", "1", clone_url, str(repo_dir)],
-            capture_output=True, text=True,
-        )
-        if ret.returncode != 0:
-            clone_url = f"https://user:{hf_token}@huggingface.co/spaces/Nomos42/nba-quant-2"
-            subprocess.run(
+        # Clone from a surviving island. Try fleet best first, fall back to siblings.
+        clone_candidates = [
+            "Nomos42/nba-evo-6",        # S15 wide-search
+            "Nomos42/nba-evo-5",        # S14 lightgbm
+            "Nomos42/nba-evo-4",        # S13 catboost
+        ]
+        cloned = False
+        for repo_slug in clone_candidates:
+            clone_url = f"https://user:{hf_token}@huggingface.co/spaces/{repo_slug}"
+            ret = subprocess.run(
                 ["git", "clone", "--depth", "1", clone_url, str(repo_dir)],
-                capture_output=True, text=True, check=True,
+                capture_output=True, text=True,
             )
+            if ret.returncode == 0:
+                cloned = True
+                break
+        if not cloned:
+            raise RuntimeError("Could not clone any surviving evolution island for feature engine.")
 
     sys.path.insert(0, str(repo_dir))
 
@@ -592,7 +599,7 @@ def run_burst(max_duration: int = MAX_DURATION_SECONDS) -> dict:
             except Exception as e:
                 print(f"[PUSH] Failed: {e}")
 
-        # Update HF Space S10 — nudge target_features toward GPU-found optimum
+        # Update fleet-best HF Space (S22) — nudge target_features toward GPU-found optimum
         # /api/config accepts: pop_size, mutation_rate, target_features, crossover_rate, etc.
         # We set target_features so the CPU island converges toward the winning feature count.
         try:
@@ -605,15 +612,15 @@ def run_burst(max_duration: int = MAX_DURATION_SECONDS) -> dict:
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
             req = urllib.request.Request(
-                f"{HF_ISLANDS['S10']}/api/config",
+                f"{HF_ISLANDS['S22']}/api/config",
                 data=payload, method="POST",
                 headers={"Content-Type": "application/json"},
             )
             with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
                 resp_data = json.loads(resp.read())
-            print(f"[HF] Updated S10 config: target_features={target_features} → {resp_data}")
+            print(f"[HF] Updated S22 config: target_features={target_features} → {resp_data}")
         except Exception as e:
-            print(f"[HF] S10 /api/config failed (space may be sleeping): {type(e).__name__}: {e}")
+            print(f"[HF] S22 /api/config failed (space may be sleeping): {type(e).__name__}: {e}")
 
     # Telegram alert
     try:

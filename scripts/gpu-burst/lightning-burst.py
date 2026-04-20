@@ -72,15 +72,15 @@ MODE_CONFIG = {
 GITHUB_REPO = "LBJLincoln/mon-ipad"
 GITHUB_BRANCH = "main"
 
+# NBA evolution islands — 6 survivors post-2026-04-17 cull.
+# Eliminated (DO NOT restore): S10, S11, S12, S16, S19, S20, S21.
 HF_ISLANDS = {
-    "S10": "https://nomos42-nba-quant.hf.space",
-    "S11": "https://nomos42-nba-quant-2.hf.space",
-    "S12": "https://nomos42-nba-evo-3.hf.space",
-    "S13": "https://nomos42-nba-evo-4.hf.space",
-    "S14": "https://nomos42-nba-evo-5.hf.space",
-    "S15": "https://nomos42-nba-evo-6.hf.space",
-    "S16": "https://lbjlincoln26-nba-evo-s16.hf.space",
-    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space",
+    "S13": "https://nomos42-nba-evo-4.hf.space",        # catboost
+    "S14": "https://nomos42-nba-evo-5.hf.space",        # lightgbm
+    "S15": "https://nomos42-nba-evo-6.hf.space",        # wide_search
+    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space", # ensemble
+    "S18": "https://testforge42-nba-evo-s18.hf.space",  # catboost_spec
+    "S22": "https://testforge42-nba-evo-s22.hf.space",  # venn_abers_fusion (fleet best)
 }
 
 # Evolution parameters (smaller for 10 min burst)
@@ -129,17 +129,24 @@ def setup():
         subprocess.run(["git", "-C", str(REPO_DIR), "pull", "--ff-only"], capture_output=True)
     else:
         print("[SETUP] Cloning from HF Space...")
-        clone_url = f"https://user:{hf_token}@huggingface.co/spaces/Nomos42/nba-quant"
-        ret = subprocess.run(
-            ["git", "clone", "--depth", "1", clone_url, str(REPO_DIR)],
-            capture_output=True, text=True,
-        )
-        if ret.returncode != 0:
-            clone_url = f"https://user:{hf_token}@huggingface.co/spaces/Nomos42/nba-quant-2"
-            subprocess.run(
+        # Clone from a surviving island. Try fleet wide-search first.
+        clone_candidates = [
+            "Nomos42/nba-evo-6",       # S15 wide-search
+            "Nomos42/nba-evo-5",       # S14 lightgbm
+            "Nomos42/nba-evo-4",       # S13 catboost
+        ]
+        cloned = False
+        for repo_slug in clone_candidates:
+            clone_url = f"https://user:{hf_token}@huggingface.co/spaces/{repo_slug}"
+            ret = subprocess.run(
                 ["git", "clone", "--depth", "1", clone_url, str(REPO_DIR)],
-                capture_output=True, text=True, check=True,
+                capture_output=True, text=True,
             )
+            if ret.returncode == 0:
+                cloned = True
+                break
+        if not cloned:
+            raise RuntimeError("Could not clone any surviving evolution island for feature engine.")
 
     sys.path.insert(0, str(REPO_DIR))
     print("[SETUP] Done.")
@@ -686,7 +693,7 @@ def run_burst():
         print("\n[RESULT] Improvement found -- pushing...")
         push_results(result)
         if MODE == "nba":
-            # Update S10 with new best
+            # Update fleet-best survivor (S22) with new best
             try:
                 payload = json.dumps({
                     "best_brier": best_ever,
@@ -699,7 +706,7 @@ def run_burst():
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE
                 req = urllib.request.Request(
-                    f"{HF_ISLANDS['S10']}/api/config",
+                    f"{HF_ISLANDS['S22']}/api/config",
                     data=payload, method="POST",
                     headers={"Content-Type": "application/json"},
                 )

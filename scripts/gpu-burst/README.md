@@ -3,12 +3,15 @@
 Short, intense GPU sessions following the Karpathy autoresearch pattern.
 Each script is self-contained and designed for a specific GPU platform.
 
+> Updated 2026-04-20 after the 2026-04-17 cull — 11 evolution islands remain
+> (6 NBA + 5 POL). Eliminated (DO NOT re-reference): S10, S11, S12, S16, S19, S20, S21, P3, P6, P8.
+
 ## Pattern
 
 Every burst script follows the same 7-step pattern:
 
-1. **Clone/Pull** -- Get latest code from HF Space (feature engine + data)
-2. **Seed** -- Load best configs from all 6 HF evolution islands (S10-S15)
+1. **Clone/Pull** -- Get latest code from a surviving HF Space (feature engine + data)
+2. **Seed** -- Load best configs from all 6 NBA survivor islands (S13/S14/S15/S17/S18/S22)
 3. **Evolve** -- Run genetic algorithm with GPU-accelerated tree models
 4. **Measure** -- Walk-forward Brier score (NBA) or signal accuracy (Political)
 5. **Push if improved** -- Commit result to GitHub + update HF Space config
@@ -80,18 +83,29 @@ modal run scripts/gpu-burst/modal-burst.py::check_status  # Check results
 | TELEGRAM_BOT_TOKEN | All (optional) | Send alerts on improvement |
 | ADMIN_TELEGRAM_ID | All (optional) | Telegram chat for alerts |
 
-## HF Evolution Islands
+## HF Evolution Islands — NBA Survivors (6, post-2026-04-17 cull)
 
-| Island | URL | Specialization |
-|--------|-----|---------------|
-| S10 | nomos42-nba-quant.hf.space | Exploitation (mut=0.09, cx=0.80) |
-| S11 | nomos42-nba-quant-2.hf.space | Exploration (mut=0.15) |
-| S12 | nomos42-nba-evo-3.hf.space | ExtraTrees specialist |
-| S13 | nomos42-nba-evo-4.hf.space | CatBoost specialist |
-| S14 | nomos42-nba-evo-5.hf.space | LightGBM specialist |
-| S15 | nomos42-nba-evo-6.hf.space | Wide search (pop=50) |
-| S16 | lbjlincoln26-nba-evo-s16.hf.space | Gradient boost (LBJLincoln26) |
-| S17 | lbjlincoln26-nba-evo-s17.hf.space | Ensemble (LBJLincoln26) |
+| Island | URL | Specialization | Best Brier |
+|--------|-----|----------------|------------|
+| S13 | nomos42-nba-evo-4.hf.space | CatBoost specialist | 0.22749 |
+| S14 | nomos42-nba-evo-5.hf.space | LightGBM specialist | 0.22186 |
+| S15 | nomos42-nba-evo-6.hf.space | Wide search (pop=50) | 0.22418 |
+| S17 | lbjlincoln26-nba-evo-s17.hf.space | Ensemble (LBJLincoln26) | 0.22340 |
+| S18 | testforge42-nba-evo-s18.hf.space | CatBoost spec (TESTforge42) | 0.22114 |
+| S22 | testforge42-nba-evo-s22.hf.space | Venn-Abers fusion — **FLEET BEST** | 0.22073 |
+
+## HF Evolution Islands — Political Survivors (5)
+
+| Island | URL | Specialization | Best Brier |
+|--------|-----|----------------|------------|
+| P1 | nomos42-political-alpha.hf.space | XGBoost | 0.24996 |
+| P2 | nomos42-political-alpha-2.hf.space | LightGBM | 0.25223 |
+| P4 | lbjlincoln-political-alpha-4.hf.space | Logistic | 0.25146 |
+| P5 | lbjlincoln-political-alpha-5.hf.space | CatBoost | 0.25347 |
+| P7 | lbjlincoln-political-alpha-7.hf.space | Gradient boost — **POL BEST** | 0.24987 |
+
+**Eliminated 2026-04-17 (DO NOT restart, slots repurposed for selfhost LLMs):**
+S10, S11, S12, S16, S19, S20, S21, P3, P6, P8.
 
 ## Evolution Engine
 
@@ -131,7 +145,7 @@ All scripts share the same core genetic algorithm:
 ## Flow
 
 ```
-HF Islands (S10-S15)
+HF Islands (6 NBA survivors: S13/S14/S15/S17/S18/S22)
     |
     v (seed best configs)
 GPU Burst Script

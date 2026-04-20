@@ -233,15 +233,15 @@ def get_fleet_status() -> List[dict]:
     import urllib.request
     import ssl
 
+    # NBA evolution islands — 6 survivors post-2026-04-17 cull.
+    # Eliminated (DO NOT restore): S10, S11, S12, S16, S19, S20, S21.
     islands = {
-        "S10": "https://nomos42-nba-quant.hf.space",
-        "S11": "https://nomos42-nba-quant-2.hf.space",
-        "S12": "https://nomos42-nba-evo-3.hf.space",
-        "S13": "https://nomos42-nba-evo-4.hf.space",
-        "S14": "https://nomos42-nba-evo-5.hf.space",
-        "S15": "https://nomos42-nba-evo-6.hf.space",
-        "S16": "https://lbjlincoln26-nba-evo-s16.hf.space",
-        "S17": "https://lbjlincoln26-nba-evo-s17.hf.space",
+        "S13": "https://nomos42-nba-evo-4.hf.space",        # catboost
+        "S14": "https://nomos42-nba-evo-5.hf.space",        # lightgbm
+        "S15": "https://nomos42-nba-evo-6.hf.space",        # wide_search
+        "S17": "https://lbjlincoln26-nba-evo-s17.hf.space", # ensemble
+        "S18": "https://testforge42-nba-evo-s18.hf.space",  # catboost_spec
+        "S22": "https://testforge42-nba-evo-s22.hf.space",  # venn_abers_fusion (fleet best)
     }
 
     ctx = ssl.create_default_context()

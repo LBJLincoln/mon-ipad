@@ -60,13 +60,15 @@ CACHE_META = CACHE_DIR / "cache-metadata.json"
 HF_DATASET_REPO = "LBJLincoln/nomos42-feature-cache"
 HF_DATASET_FILE = "nba-feature-matrix.pkl"
 
-# Islands to check for /api/feature_cache, in priority order
+# Islands to check for /api/feature_cache, in priority order.
+# Survivors only — post-2026-04-17 cull (eliminated: S10, S11, S12, S16, S19, S20, S21).
 HF_ISLANDS = {
-    "S15": "https://nomos42-nba-evo-6.hf.space",   # fleet best (0.22041)
-    "S11": "https://nomos42-nba-quant-2.hf.space",  # exploration
-    "S10": "https://nomos42-nba-quant.hf.space",    # exploitation
-    "S16": "https://lbjlincoln26-nba-evo-s16.hf.space",
-    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space",
+    "S22": "https://testforge42-nba-evo-s22.hf.space",  # fleet best (venn_abers_fusion 0.22073)
+    "S15": "https://nomos42-nba-evo-6.hf.space",         # wide_search 0.22418
+    "S18": "https://testforge42-nba-evo-s18.hf.space",  # catboost_spec 0.22114
+    "S14": "https://nomos42-nba-evo-5.hf.space",         # lightgbm 0.22186
+    "S13": "https://nomos42-nba-evo-4.hf.space",         # catboost 0.22749
+    "S17": "https://lbjlincoln26-nba-evo-s17.hf.space", # ensemble 0.22340
 }
 
 MAX_CACHE_AGE_HOURS = 24
