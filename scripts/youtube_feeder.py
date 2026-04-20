@@ -39,6 +39,11 @@ QUERIES = {
         "unusual options flow today",
         "crypto market analysis today",
     ],
+    "pqtf": [
+        "options flow analysis today",
+        "VIX volatility trading",
+        "derivatives quant strategy",
+    ],
 }
 
 # user-curated playlists (public + collaborative); add URLs as you build them
@@ -46,7 +51,10 @@ PLAYLISTS = {
     "nba": [],
     "pol": [],
     "itf": [],
+    "pqtf": [],
 }
+
+MANUAL_PATH = ROOT / "data" / "youtube" / "manual-ingested.json"
 
 MAX_PER_QUERY = 2
 MAX_TRANSCRIPT_CHARS = 1000
@@ -177,10 +185,42 @@ def playlist_videos(url: str, max_results: int = 10):
         ]
 
 
+def _load_manual_videos() -> list:
+    """User-linked high-signal videos — ingested manually, shared across all fleets."""
+    if not MANUAL_PATH.exists():
+        return []
+    try:
+        lib = json.loads(MANUAL_PATH.read_text())
+        out = []
+        for v in lib.get("videos", []):
+            out.append({
+                "id": v["id"],
+                "title": v.get("title", ""),
+                "channel": v.get("channel", ""),
+                "duration_s": 0,
+                "view_count": v.get("view_count", 0),
+                "url": v.get("url", ""),
+                "published_at": v.get("published_at", ""),
+                "description": (v.get("description") or "")[:800],
+                "source": "manual",
+            })
+        return out
+    except Exception:
+        return []
+
+
 def build_digest(fleet: str, extra_playlists=None) -> dict:
     queries = QUERIES[fleet]
     videos = []
     seen = set()
+
+    # manual-ingested user-curated videos (shared across fleets, high signal)
+    for mv in _load_manual_videos():
+        if mv["id"] in seen:
+            continue
+        seen.add(mv["id"])
+        mv["query"] = "manual:user_curated"
+        videos.append(mv)
     for q in queries:
         try:
             hits = search_recent(q)
@@ -259,11 +299,11 @@ def inject_override(fleet: str, narrative: str):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--fleet", choices=["nba", "pol", "itf", "all"], required=True)
+    p.add_argument("--fleet", choices=["nba", "pol", "itf", "pqtf", "all"], required=True)
     p.add_argument("--inject", action="store_true", help="write into data/prompts/overrides.json")
     args = p.parse_args()
 
-    fleets = ["nba", "pol", "itf"] if args.fleet == "all" else [args.fleet]
+    fleets = ["nba", "pol", "itf", "pqtf"] if args.fleet == "all" else [args.fleet]
     today = dt.date.today().isoformat()
     for f in fleets:
         print(f"[feeder] building digest for fleet={f} ...")
