@@ -50,16 +50,25 @@ from gateway_client import gateway_call  # type: ignore  # noqa: E402
 # ───────────────────────── Prompts ─────────────────────────
 
 COLLECTIVE_MISSION = """
-You are ONE of 14 LLM agents on the Nomos42 Intraday Trading Floor (AGGRESSIVE MODE).
+You are ONE of 14 LLM agents on the Nomos42 Intraday Trading Floor (AGGRESSIVE MODE +1).
 All 14 see the same market tape, research digest, peer bets, and council plan.
 COLLECTIVE GOAL: ONE of us must reach $1,000,000 by Aug 1, 2026 — rapidly.
-You each start at $10,000. EVERY trading day ≥7 of the 14 must hold a position.
-Passing is allowed but cowardice is punished on the leaderboard.
-You have FULL FREEDOM: any ticker visible in the tape, any side, any stake within
-bankroll-linked sizing (2-5% of bankroll for high conviction). Compound wins.
-You know other agents exist; read their last 3 days of trades below and either
-COOPERATE (pact) or STRUCTURALLY DIVERGE (complement their book) — never blindly
-copy, never silent-pass on LLM failure.
+You each start at $10,000. EVERY trading day ≥9 of the 14 must hold a position.
+Passing is cowardice, punished on the leaderboard. Pass ONLY if tape is
+literally flat (all moves < 0.15%).
+
+PQTF PROOF — DERIVATIVES $1M PLAYBOOK (50 days, 6 agents, $600 → $602,354):
+  • mistral:large $100 → $244,050 (+40,667%) — 12 positions/day, sized 5-8% per trade,
+    concentrated XLC/XLE/XLF/XLK sectors with options overlay, 4 cooperation pacts.
+  • mistral:medium $100 → $154,566 (+25,761%) — mirror strategy at smaller scale.
+  • Key rule: COMPOUND AGGRESSIVELY. Start $10k → target 3-8% per position on
+    high-conviction edges. After each win, scale UP (not back down). The winner
+    doubled bankroll every ~5 days for the first month then kept compounding.
+
+FULL FREEDOM: any ticker visible in the tape, any side, stake 3-8% of bankroll
+for high-conviction (edge>2% + regime match). Options preferred when IV rank
+supports strategy. Cooperate (pact) or STRUCTURALLY DIVERGE peers — never
+blindly copy, never silent-pass on LLM failure.
 """.strip()
 
 AXELROD_CANON = """
@@ -71,10 +80,11 @@ AXELROD CANON (cooperation doctrine):
 """.strip()
 
 DECISION_SCHEMA = """
-$1M MISSION: ONE of the 14 ITF agents MUST reach $1,000,000 by Aug 1, 2026. Be AGGRESSIVE
-when edge is high: 2-5% of bankroll for high-conviction trades; compound on wins. PQTF
-proved this architecture works — mistral:large went $100→$244,050 (+40,667%) in 50 days
-by sizing up after wins. Do the same here.
+$1M MISSION: ONE of the 14 ITF agents MUST reach $1,000,000 by Aug 1, 2026. Be VERY
+AGGRESSIVE: 3-8% of bankroll for high-conviction trades; compound on wins. PQTF proved
+it works — mistral:large went $100 → $244,050 (+40,667%) in 50 days by sizing UP 5-8%
+per trade after wins, stacking 12 positions/day in concentrated sectors. Do the same
+here but at intraday cadence with the full equity+crypto+options universe.
 
 Respond with ONE of:
   { "action": "pass", "reason": "..." }
@@ -84,9 +94,10 @@ OR a standard equity/crypto trade:
               volatility, international, commodities, bonds, thematic, stocks, or
               crypto). You are NOT restricted to a whitelist — pick the best edge.
     "side": "long"|"short",
-    "stake_usd": 100 to (0.05 × your_bankroll_in_usd). Floor $100. High-conviction (>3% edge
-                 AND VIX-regime match) may go to 5% of bankroll. Survival rule: if bankroll
-                 would drop below $20 post-trade, PASS instead.
+    "stake_usd": 300 to (0.08 × your_bankroll_in_usd). Floor $300. High-conviction (>3% edge
+                 AND VIX-regime match) SHOULD go to 5-8% of bankroll — PQTF mistral:large proved
+                 aggressive sizing compounds into 400×. Survival rule: if bankroll would drop
+                 below $20 post-trade, PASS instead.
     "stop_pct": 0.002-0.03,
     "take_profit_pct": 0.005-0.08,
     "thesis": "1-2 sentence reason citing quote/edge/signal/peer-bet/council-plan"
@@ -725,31 +736,85 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     _personas_this_tick = list(PERSONAS)
     _random.shuffle(_personas_this_tick)
 
+    # Divert ticker pools — when anti-lockstep blocks a persona, rotate through
+    # these in order until one is uncrowded. Keeps all 14 agents trading instead
+    # of 5 silent-passing every tick (observed 2026-04-20: 70/75 passes on
+    # momentum-1/breakout-1/pairs-1/vol-1/macro-rotate-1 were anti-lockstep
+    # forced to pass, not LLM choice). Pool = persona's uniform_fallback pool + crypto.
+    _DIVERT_POOLS = {
+        "scalper-1":            ["QQQ", "IWM", "DIA", "XLK", "BTC/USD"],
+        "momentum-1":           ["XLK", "XLE", "XLF", "XLV", "XLY", "ETH/USD"],
+        "mean-rev-1":           ["XLV", "XLP", "XLU", "XLRE", "SOL/USD"],
+        "breakout-1":           ["TSLA", "AMD", "COIN", "SMCI", "LINK/USD"],
+        "pairs-1":              ["XLU", "XLB", "XLC", "XLI", "DOGE/USD"],
+        "vol-1":                ["VXX", "UVXY", "TLT", "GLD", "BTC/USD"],
+        "options-1":            ["SPY", "QQQ", "IWM"],
+        "arbitrage-1":          ["IWM", "DIA", "XLK", "XLE", "ETH/USD"],
+        "news-catalyst-1":      ["NVDA", "COIN", "SMCI", "AMD", "BTC/USD"],
+        "crypto-whale-1":       ["ETH/USD", "SOL/USD", "LINK/USD", "AVAX/USD", "DOGE/USD", "BTC/USD"],
+        "earnings-gap-1":       ["NVDA", "AMD", "META", "GOOGL", "AAPL"],
+        "iv-crush-1":           ["SPY", "QQQ", "IWM"],
+        "macro-rotate-1":       ["GLD", "TLT", "UUP", "XLU", "SHY"],
+        "leveraged-momentum-1": ["SPXL", "SOXL", "TNA", "UPRO", "BTC/USD"],
+    }
+
+    def _divert(tid: str, original_ticker: str, original_side: str) -> Optional[str]:
+        """Find first ticker in persona's divert pool that (a) is in quotes,
+        (b) isn't at MAX_CONCURRENT_PER_KEY for this side. Returns None if all taken."""
+        pool = _DIVERT_POOLS.get(tid, [])
+        quotes = ctx.get("quotes") or {}
+        for cand in pool:
+            if cand == original_ticker:
+                continue
+            if cand not in quotes:
+                continue
+            if _tick_counts.get((cand, original_side), 0) < MAX_CONCURRENT_PER_KEY:
+                return cand
+        return None
+
     for persona in _personas_this_tick:
         decision = _call_agent(persona, ctx)
         action = decision.get("action")
-        # Anti-lockstep post-filter
+        # Anti-lockstep post-filter WITH DIVERT (2026-04-20 v2)
         if action == "trade":
             _key = (decision.get("ticker", "?"), decision.get("side", "?"))
             if _tick_counts.get(_key, 0) >= MAX_CONCURRENT_PER_KEY:
-                decision = {
-                    "action": "pass",
-                    "reason": f"anti_lockstep: {_key[0]} {_key[1]} already has {MAX_CONCURRENT_PER_KEY}+ peers this tick — DMAD forced divergence",
-                    "_original_ticker": _key[0],
-                    "_original_side": _key[1],
-                }
-                action = "pass"
+                alt = _divert(persona["tid"], _key[0], _key[1])
+                if alt:
+                    decision = dict(decision)
+                    decision["ticker"] = alt
+                    decision["_diverted_from"] = _key[0]
+                    decision["rationale"] = (decision.get("rationale") or decision.get("thesis") or "") + \
+                        f" [DIVERT: {_key[0]} crowded → {alt}]"
+                    _key = (alt, _key[1])
+                    _tick_counts[_key] = _tick_counts.get(_key, 0) + 1
+                else:
+                    decision = {
+                        "action": "pass",
+                        "reason": f"anti_lockstep: {_key[0]} {_key[1]} crowded + divert pool exhausted",
+                        "_original_ticker": _key[0],
+                        "_original_side": _key[1],
+                    }
+                    action = "pass"
             else:
                 _tick_counts[_key] = _tick_counts.get(_key, 0) + 1
         elif action == "option_trade":
             _key = (decision.get("underlying", "?"), decision.get("option_type", "?"))
             if _tick_counts.get(_key, 0) >= MAX_CONCURRENT_PER_KEY:
-                decision = {
-                    "action": "pass",
-                    "reason": f"anti_lockstep: {_key[0]} {_key[1]}-options already has {MAX_CONCURRENT_PER_KEY}+ peers",
-                    "_original_underlying": _key[0],
-                }
-                action = "pass"
+                alt = _divert(persona["tid"], _key[0], _key[1])
+                if alt and "/" not in alt:  # options only on equities/ETFs
+                    decision = dict(decision)
+                    decision["underlying"] = alt
+                    decision["_diverted_from"] = _key[0]
+                    _key = (alt, _key[1])
+                    _tick_counts[_key] = _tick_counts.get(_key, 0) + 1
+                else:
+                    decision = {
+                        "action": "pass",
+                        "reason": f"anti_lockstep: {_key[0]} {_key[1]}-options crowded + divert pool exhausted",
+                        "_original_underlying": _key[0],
+                    }
+                    action = "pass"
             else:
                 _tick_counts[_key] = _tick_counts.get(_key, 0) + 1
 
