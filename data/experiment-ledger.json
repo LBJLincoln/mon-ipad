@@ -291,5 +291,20 @@
     "pending": 4,
     "best_technique": "Venn-Abers calibration",
     "best_delta": -0.0054
-  }
+  },
+  "entries": [
+    {
+      "ts": "2026-04-20T22:09:45.954685Z",
+      "agent": "SWISH",
+      "island": "NBA-TF",
+      "target": "LBJLincoln26/nba-llm-trading-floor",
+      "action": "code_patch",
+      "change": "BANKRUPT_THRESHOLD 5.0 -> 0.50 (4 sites: Stackelberg peer filter, LLM-call gate, active-peer filter, bet-loop skip)",
+      "reason": "BOSS report -$70.75/24h + 7 starved. Diagnosed 16/17 agents below $5 post-council-wipe (fleet avg $4.50). Original $5 gate = 5% of $100 start; no longer proportional. Agents unable to call LLM or place any bet = permanent starvation. Same bug class as PQTF $20 survival-floor fix 2026-04-19.",
+      "kill_criterion": "If after 48h fleet avg still < $3 AND no agent recovered above $10, revert to $5 and raise on FRANKENSTEIN to redesign starvation ladder.",
+      "deploy_commit": "ecebdbb2d033bd816a8492bac1be50e8b46cb063",
+      "checkpoint": "/home/termius/mon-ipad/data/nba-tf/checkpoints/pre-bankrupt-fix-20260420T220422Z.json",
+      "confounds": "None \u2014 single patch, no simultaneous prompt/config change. prompt_mutator nba rules left intact (pp_unlock + no-fabricate) \u2014 they were NOT the gag."
+    }
+  ]
 }

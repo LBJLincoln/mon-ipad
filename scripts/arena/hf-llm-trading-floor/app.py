@@ -168,6 +168,13 @@ PRESERVATION_MAX_DEPLOY = 0.50       # cap daily deploy at 50% while preserving
 PRESERVATION_MAX_BET_PCT = 0.05      # cap any single bet at 5% bankroll
 SINGLE_DAY_WIPEOUT_THRESHOLD = 0.40  # >40% single-day loss → forced cash next day
 COLLISION_MAX_AGENTS = 3             # max agents sharing same game+category in one day
+# 2026-04-20 SWISH — fleet-wide post-council wipe dropped avg bankroll to ~$4.50.
+# Original $5 bankrupt gate (5% of $100 start) now silences 16/17 agents every tick
+# → death spiral: can't bet → can't recover → starves forever. Same bug class as
+# PQTF $20 survival floor hardcoded for $100K era (fixed 2026-04-19). Drop to
+# $0.50 (same 0.5% proportion to current fleet avg) so agents can trade the long
+# tail out of ruin. BOSS report: NBA -$70.75 / 24h, 7 starved. RC = this gate.
+BANKRUPT_THRESHOLD = 0.50            # below this = truly bust (was 5.0; proportional to post-wipe $4.50 fleet avg)
 
 def _tiered_risk(bankroll: float) -> dict:
     """Bankroll-tier aggression (gambler's ruin doctrine, 2026-04-18 → 2026-04-19 $1M push).
@@ -438,7 +445,7 @@ REASONING_TEMPLATES = {
 def get_stackelberg_leader(state: dict) -> Optional[str]:
     """Stackelberg (arXiv 2507.09407): yesterday's top-bankroll trader is today's leader."""
     active = [(tid, st.get("bankroll", 0)) for tid, st in state.items()
-              if isinstance(st, dict) and tid in TRADERS and st.get("bankroll", 0) > 5.0]
+              if isinstance(st, dict) and tid in TRADERS and st.get("bankroll", 0) > BANKRUPT_THRESHOLD]
     if not active:
         return None
     return max(active, key=lambda x: x[1])[0]
@@ -3153,7 +3160,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             tid, cfg = tid_cfg
             provider = cfg["provider"]
             ts = state[tid]
-            if ts["bankroll"] <= 5.0:
+            if ts["bankroll"] <= BANKRUPT_THRESHOLD:
                 return tid, None
             system_prompt = AGENT_SYSTEM_PROMPTS.get(tid, "You are an NBA betting allocator.")
             _template = REASONING_TEMPLATES.get(tid)
@@ -3166,7 +3173,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 system_prompt = system_prompt + build_challenge_block(tid, _challenge_assignments[tid], len(TRADERS))
             _pm_override = _load_prompt_override("nba")
             system_prompt = AXELROD_CANON + _pm_override + "\n" + system_prompt
-            _active_peers = [p for p in TRADERS if p != tid and state[p]["bankroll"] > 5.0]
+            _active_peers = [p for p in TRADERS if p != tid and state[p]["bankroll"] > BANKRUPT_THRESHOLD]
             _axl_block = _axelrod_advice_block(tid, _active_peers)
             if _axl_block:
                 system_prompt = system_prompt + _axl_block
@@ -3251,7 +3258,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             ts = state[tid]
             bankroll = ts["bankroll"]
 
-            if bankroll <= 5.0:
+            if bankroll <= BANKRUPT_THRESHOLD:
                 # Bankrupt — skip, record history
                 ts["passes"] += 1
                 ts["history"].append(bankroll)
