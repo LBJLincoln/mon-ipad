@@ -1,0 +1,90 @@
+{
+  "id": "2026-04-20-sota-uncertainty-calibration",
+  "generated_at": "2026-04-20T14:00:00Z",
+  "brain_cycle": "cloud-brain-4h",
+  "source": "WebSearch: NBA game prediction ML Brier SOTA 2026",
+  "title": "Uncertainty-Aware Calibration for NBA Prediction (Targeting Brier < 0.22)",
+  "papers": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "journal": "MDPI Information",
+      "volume": "17(1):56",
+      "date": "January 2026",
+      "key_finding": "RNN with Monte Carlo dropout achieves Brier ~0.20 with calibrated sequential probabilities",
+      "technique": "MC dropout for epistemic uncertainty quantification + team-level performance metrics + rolling-form indicators + spatial shot-chart embeddings",
+      "cpu_applicable": false,
+      "cpu_insight": "The calibration principle (uncertainty = ensemble spread) is applicable to CPU tree ensembles via prediction variance across bootstrap samples"
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "journal": "Scientific Reports",
+      "date": "2025",
+      "key_finding": "Stacked ensemble (NaiveBayes + AdaBoost + MLP + KNN + XGBoost + DecisionTree + LogisticRegression) outperforms individual models",
+      "technique": "Multi-base-learner stacking with meta-learner selection",
+      "cpu_applicable": true,
+      "cpu_insight": "Tree-only stacking already explored — key finding: heterogeneous base learners (not all boosted trees) reduce overfitting"
+    },
+    {
+      "title": "Integration of machine learning XGBoost and SHAP for NBA game outcome prediction",
+      "journal": "PMC / NCBI",
+      "date": "2024-2025",
+      "key_finding": "XGBoost + SHAP feature importance achieves ~0.68 accuracy and competitive Brier",
+      "technique": "SHAP-based feature pruning to select high-signal features",
+      "cpu_applicable": true,
+      "cpu_insight": "SHAP-based feature gate could replace/augment current GA feature selection — identify which of our 7213 candidates truly move Brier"
+    }
+  ],
+  "current_fleet_status": {
+    "fleet_best_brier": 0.22073,
+    "fleet_best_source": "S22 venn_abers_fusion gen=39 (checkpointed 2026-04-19)",
+    "live_best_brier": 0.22154,
+    "live_best_source": "S17 random_forest gen=999",
+    "sota_target": 0.20,
+    "gap_to_sota": 0.02073,
+    "gap_to_target": 0.02073,
+    "constraint": "CPU-only islands, no neural models, MAX_FEATURES=200"
+  },
+  "actionable_proposals": [
+    {
+      "rank": 1,
+      "technique": "Venn-Abers Fusion Extension to All Islands",
+      "rationale": "S22 venn_abers_fusion is fleet best (0.22073). Currently only S22 uses this calibration. Extending to S13/S14/S15/S17/S18 via GA mutation could replicate the gain.",
+      "implementation": "Add venn_abers_fusion as mutation option in each island's calibration parameter space. POST /api/config {mutation_add_calibration: 'venn_abers_fusion'} when islands wake.",
+      "priority": "HIGH",
+      "estimated_brier_delta": "-0.001 to -0.003",
+      "status": "QUEUED — pending S13/S18/S22 wake from gen=0 restart"
+    },
+    {
+      "rank": 2,
+      "technique": "EWMA Temporal Sample Weighting",
+      "rationale": "MC dropout paper's rolling-form insight: recent games matter more. CPU equivalent: EWMA decay weights in tree model fit(). sample_weight[i] = exp(-lambda * (N - i)) where i is game index sorted by date.",
+      "implementation": "Add sample_weight parameter to model.fit() calls in GA evaluation. Lambda = 0.01-0.05 (tune via GA). Already have game dates in feature pipeline.",
+      "priority": "HIGH",
+      "estimated_brier_delta": "-0.002 to -0.005",
+      "effort": "Medium — modify evaluation loop in island app.py"
+    },
+    {
+      "rank": 3,
+      "technique": "Isotonic Temporal Calibration (Extend Fleet-Wide)",
+      "rationale": "S14 top_performer uses isotonic_temporal calibration and achieves 0.22685 brier (best S14 individual, even though island best is 0.23493). This calibration reduces temporal drift in probability estimates.",
+      "implementation": "Set isotonic_temporal as default mutation target in all islands. Current S14 island level still at 0.23493 — the GA needs to explore calibration more aggressively.",
+      "priority": "MEDIUM",
+      "estimated_brier_delta": "-0.001 to -0.002"
+    },
+    {
+      "rank": 4,
+      "technique": "Heterogeneous Base Learner Stack (CPU)",
+      "rationale": "Stacked ensemble paper finds heterogeneous bases reduce overfitting vs homogeneous boosted trees. Current islands specialize in one model type. Mix: CatBoost + LogisticRegression + RandomForest with XGBoost meta-learner.",
+      "implementation": "New island type: heterogeneous_stack. Would require new app.py variant. High effort.",
+      "priority": "LOW",
+      "estimated_brier_delta": "-0.003 to -0.008",
+      "effort": "High — new island architecture"
+    }
+  ],
+  "cross_project_insight": {
+    "finding": "P2 (lightgbm, gen=20818) achieved new political fleet best 0.24956 — surpassing P7 gradient_boost at 0.24987 after ~20x more generations",
+    "implication": "LightGBM gains from very long evolution runs. S14 (xgboost_brier) stagnates at 0.23493 after only 466 gens. Could benefit from either: (a) explicit long-run budget, or (b) switching to lightgbm.",
+    "recommendation": "Consider POST /api/config to S14 with {model_override: 'lightgbm', run_budget_gens: 5000} once it responds. Cross-validate if lightgbm outperforms xgboost_brier on same feature set."
+  },
+  "recommended_immediate_action": "When S22 finishes waking: POST /api/config {inject_calibration: 'venn_abers_fusion'} to confirm the gen=39 checkpoint technique is preserved in the new run."
+}
