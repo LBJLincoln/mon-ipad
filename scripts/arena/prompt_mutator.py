@@ -65,9 +65,16 @@ def _latest_proposals_file() -> Optional[Path]:
 
 def _load_proposals(path: Path) -> List[Dict[str, Any]]:
     try:
-        return json.loads(path.read_text())
+        raw = json.loads(path.read_text())
     except Exception:
         return []
+    if isinstance(raw, list):
+        return raw
+    if isinstance(raw, dict):
+        inner = raw.get("proposals")
+        if isinstance(inner, list):
+            return inner
+    return []
 
 
 def _save_proposals(path: Path, proposals: List[Dict[str, Any]]) -> None:
@@ -199,8 +206,8 @@ def mutate(dry_run: bool = False) -> Dict[str, Any]:
 
 
 def deploy_hf() -> Dict[str, Any]:
-    """Upload overrides.json to all 3 TF Spaces so running containers pick it up.
-    Uses HF_TOKEN_NBA for LBJLincoln26 account (hosts NBA+POL+PQTF TFs).
+    """Upload overrides.json to all 4 TF Spaces so running containers pick it up.
+    Uses HF_TOKEN_NBA for LBJLincoln26 account (hosts NBA+POL+PQTF+ITF TFs).
     """
     if not OVERRIDES_PATH.exists():
         return {"status": "no-overrides", "path": str(OVERRIDES_PATH)}
@@ -213,9 +220,10 @@ def deploy_hf() -> Dict[str, Any]:
         return {"status": "no-token"}
     api = HfApi(token=token)
     targets = [
-        ("LBJLincoln26/nba-llm-trading-floor",       "data/prompts/overrides.json"),
-        ("LBJLincoln26/political-llm-trading-floor", "data/prompts/overrides.json"),
+        ("LBJLincoln26/nba-llm-trading-floor",         "data/prompts/overrides.json"),
+        ("LBJLincoln26/political-llm-trading-floor",   "data/prompts/overrides.json"),
         ("LBJLincoln26/political-quant-trading-floor", "data/prompts/overrides.json"),
+        ("LBJLincoln26/intraday-trading-floor",        "data/prompts/overrides.json"),
     ]
     out = []
     for repo, dest in targets:
@@ -237,7 +245,7 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--deploy-hf", action="store_true",
-                   help="After mutation, upload overrides.json to all 3 TF Spaces")
+                   help="After mutation, upload overrides.json to all 4 TF Spaces")
     args = p.parse_args()
     result = mutate(dry_run=args.dry_run)
     if args.deploy_hf and not args.dry_run:

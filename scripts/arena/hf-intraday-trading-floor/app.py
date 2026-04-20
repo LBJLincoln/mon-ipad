@@ -79,6 +79,31 @@ AXELROD CANON (cooperation doctrine):
 - BE CLEAR. Your JSON must be machine-parseable. No ambiguity.
 """.strip()
 
+
+# Prompt-mutator overrides (2026-04-20) — scripts/arena/prompt_mutator.py writes
+# data/prompts/overrides.json from priority-1 post-mortem proposals. Injected into
+# the per-persona prompt as PROMPT MUTATOR OVERRIDE block just after AXELROD_CANON.
+def _load_prompt_override(fleet: str = "itf") -> str:
+    import os as _os, json as _json
+    candidates = [
+        "/app/data/prompts/overrides.json",
+        "/home/user/app/data/prompts/overrides.json",
+        _os.path.join(_os.path.dirname(__file__), "..", "..", "..", "data", "prompts", "overrides.json"),
+    ]
+    for p in candidates:
+        try:
+            if not _os.path.exists(p):
+                continue
+            with open(p) as fh:
+                ov = _json.load(fh)
+            rule = (ov.get(fleet) or {}).get("current_text") or ""
+            if rule:
+                v = (ov.get(fleet) or {}).get("current_version") or "?"
+                return f"\n=== PROMPT MUTATOR OVERRIDE ({v}) ===\n{rule}\n=== END OVERRIDE ===\n"
+        except Exception:
+            continue
+    return ""
+
 DECISION_SCHEMA = """
 $1M MISSION: ONE of the 14 ITF agents MUST reach $1,000,000 by Aug 1, 2026. Be VERY
 AGGRESSIVE: 3-8% of bankroll for high-conviction trades; compound on wins. PQTF proved
@@ -509,6 +534,28 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         for s in pol_sigs
     ) or "(none today)"
 
+    # 2026-04-20 UPGRADE: live news + event markets as signal. Tight token budget —
+    # 10 headlines + 6 events max, each truncated so total stays <700 tok.
+    news_items = ctx.get("live_news") or []
+    news_lines: List[str] = []
+    for n in news_items[:10]:
+        syms = ",".join((n.get("symbols") or [])[:3]) or "—"
+        headline = (n.get("headline") or "")[:110]
+        created = (n.get("created_at") or "")[11:16]  # HH:MM
+        news_lines.append(f"  [{created}Z {syms}] {headline}")
+    news_block = "\n".join(news_lines) or "  (no fresh news)"
+
+    poly_items = ctx.get("polymarket_events") or []
+    poly_lines: List[str] = []
+    for m in poly_items[:6]:
+        q = (m.get("question") or "")[:100]
+        yes = m.get("yes_prob")
+        vol = m.get("volume_24h")
+        prob_str = f"YES={yes*100:.0f}%" if isinstance(yes, (int, float)) and yes else "?"
+        vol_str = f"${vol:,.0f}" if isinstance(vol, (int, float)) else "?"
+        poly_lines.append(f"  {prob_str} {vol_str}/24h — {q}")
+    poly_block = "\n".join(poly_lines) or "  (no active markets)"
+
     pqtf = ctx.get("pqtf_state") or {}
     pqtf_block = (
         f"last_day={pqtf.get('last_day', '?')} fleet=${pqtf.get('fleet_bankroll', '?')} "
@@ -530,9 +577,11 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
     peer_digest = _build_peer_bets_digest(persona, n_days=3)
     council_block = _format_council_block(_latest_council_plan())
 
+    _pm_override = _load_prompt_override("itf")
+
     return f"""{COLLECTIVE_MISSION}
 
-{AXELROD_CANON}
+{AXELROD_CANON}{_pm_override}
 
 {knowledge_digest}
 
@@ -545,6 +594,12 @@ YOUR ROLE — {persona['name']} ({persona['tid']}):
 
 INTRADAY TAPE ({ctx.get('quotes_ts')} · {ctx.get('quotes_source')}):
 {quotes_block}
+
+LIVE NEWS (Alpaca news feed, ticker-indexed, last hour):
+{news_block}
+
+EVENT MARKETS (Polymarket, top volume 24h):
+{poly_block}
 
 NBA TOP-5 EDGES today: {nba_block}
 POL TOP-5 SIGNALS today: {pol_block}
