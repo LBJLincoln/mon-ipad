@@ -209,8 +209,15 @@ def build_digest(fleet: str, extra_playlists=None) -> dict:
             videos.append(h)
 
     for v in videos:
-        v["transcript_excerpt"] = fetch_transcript(v["id"])
-        time.sleep(0.2)
+        tr = fetch_transcript(v["id"])
+        if tr.startswith("<transcript unavailable"):
+            # graceful fallback: use description (always available via API)
+            v["transcript_excerpt"] = (v.get("description") or "")[:MAX_TRANSCRIPT_CHARS]
+            v["transcript_source"] = "description_fallback"
+        else:
+            v["transcript_excerpt"] = tr
+            v["transcript_source"] = "transcript"
+        time.sleep(0.15)
 
     narrative = _summarize(videos)
     return {
@@ -225,16 +232,14 @@ def build_digest(fleet: str, extra_playlists=None) -> dict:
 
 
 def _summarize(videos: list) -> str:
-    """Crude narrative: titles + first 150 chars of each usable transcript."""
+    """Narrative: title + excerpt (from transcript or description fallback)."""
     lines = []
     for v in videos:
-        tr = v.get("transcript_excerpt") or ""
-        snippet = ""
-        if tr and not tr.startswith("<transcript unavailable"):
-            snippet = " " + tr[:150].strip().replace("\n", " ")
+        tr = (v.get("transcript_excerpt") or "").strip().replace("\n", " ")
+        snippet = " " + tr[:180] if tr else ""
         lines.append(f"- {v['channel']} «{v['title'][:90]}»{snippet}")
-    header = f"YouTube narrative digest ({len(videos)} videos, last 24h):"
-    return header + "\n" + "\n".join(lines[:8])  # cap at 8 lines
+    header = f"YouTube narrative digest ({len(videos)} videos):"
+    return header + "\n" + "\n".join(lines[:8])
 
 
 def inject_override(fleet: str, narrative: str):
