@@ -1,0 +1,41 @@
+name: pixel-qa
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/arena/hf-pixel-world/**"
+  workflow_dispatch:
+
+concurrency:
+  group: pixel-qa
+  cancel-in-progress: false
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install client deps
+        run: pip install httpx
+
+      - name: Run pixel QA
+        env:
+          BROWSER_QA_URL: https://testforge42-nomos-browser-qa.hf.space
+          PIXEL_WORLD_URL: https://nomos42-pixel-world.static.hf.space
+          QA_MIN_SPRITES: "40"
+        run: python scripts/agents/pixel_qa_client.py
+
+      - name: Upload QA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-qa-result
+          path: data/qa/pixel/*.json
+          if-no-files-found: ignore

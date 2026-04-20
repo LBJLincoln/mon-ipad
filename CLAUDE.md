@@ -256,6 +256,18 @@ Starting capital: $100,000 virtual | Daily rebalancing
 <!-- TODO(fleet): add T11 + T12 for parity with NBA -->
 **Political TF drift (2026-04-15):** `scripts/arena/hf-political-trading-floor/app.py` has 10 TRADERS (T1–T10 Cerebras/Google/Mistral). NBA has 12 (+T11 nemotron-120b, +T12 gemma4-selfhost). Parity requires patching political app.py and redeploying the Space.
 
+## Browser + Hermes Agents (2026-04-20)
+
+Owned by DR FRANKENSTEIN. Proposal: `data/research/hermes-browser-agents-2026-04-20.md`.
+
+| Space | Account | Purpose | Client |
+|-------|---------|---------|--------|
+| `LBJLincoln/nomos-browser-nba` | LBJLincoln | Scrape ESPN/bbref/VegasInsider NBA lines via `browser-use` 0.12.6 | `scripts/agents/nba_line_scraper_client.py` → `data/lines/YYYY-MM-DD.json` |
+| `TESTforge42/nomos-browser-qa` | TESTforge42 | Pixel-world + dashboard visual QA (Playwright DOM + screenshot) | `scripts/agents/pixel_qa_client.py`; GH Action `.github/workflows/pixel-qa.yml` on push to `scripts/arena/hf-pixel-world/**` |
+| `LBJLincoln26/nomos-hermes-agent` | LBJLincoln26 | `NousResearch/hermes-agent` CLI via FastAPI RPC (`/api/task`, `/api/skills`) | direct `POST /api/task` — binary shipped in image, 71 skills preloaded |
+
+Secrets set: `GOOGLE_API_KEY` (all 3). Pending user add: `ANTHROPIC_API_KEY`, `BROWSERUSE_API_KEY`, `NOUS_API_KEY`, `OPENROUTER_API_KEY`. Source: `scripts/arena/hf-browser-nba/`, `hf-browser-qa/`, `hf-hermes-agent/`. Deploy: `HfApi.upload_folder` + `restart_space(factory_reboot=True)`. Nomos42 account NOT touched (saturated).
+
 ## Delegation
 
 | Task | Model | Mechanism |
