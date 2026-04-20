@@ -1,68 +1,73 @@
 {
-  "cycle_at": "2026-04-20T08:00:00Z",
+  "cycle_at": "2026-04-20T12:00:00Z",
   "brain_trigger": "cloud-brain-sonnet-4.6",
-  "cycle_number": "08:00 UTC (cycle 2 today)",
+  "cycle_number": "12:00 UTC (cycle 3 today)",
   "nba_fleet_best_brier_live": 0.22136,
-  "nba_fleet_best_island_live": "S13 (nomos42-nba-evo-4) — STAGNANT 22 cycles, diversify pending",
+  "nba_fleet_best_island_live": "S13 (nomos42-nba-evo-4)",
   "nba_fleet_best_brier_alltime": 0.22073,
   "nba_fleet_best_alltime": "S22 venn_abers_fusion gen=39 (checkpointed 2026-04-19)",
   "nba_checkpoint_threshold": 0.22085,
   "nba_checkpoint_triggered": false,
   "nba_islands": {
-    "S13_nomos42_nba_evo_4":     {"gen": 70,  "brier": 0.22136, "model": "extra_trees", "status": "EVOLVING",  "stagnation_cycles": 22, "health": "STAGNANT", "fleet_best_live": true, "action_needed": "POST /api/command {action:diversify} — VM must execute"},
-    "S14_nomos42_nba_evo_5":     {"gen": 88,  "brier": 0.23493, "model": "extra_trees", "status": "EVOLVING",  "stagnation_cycles": 0,  "health": "RESET_DETECTED", "note": "gen dropped 389→88, brier 0.22333→0.23493; fresh restart, recovering"},
-    "S15_nomos42_nba_evo_6":     {"gen": 61,  "brier": 0.22526, "model": "extra_trees", "status": "EVOLVING",  "stagnation_cycles": 0,  "health": "RESET_DETECTED", "note": "gen dropped 539→61, brier 0.22107→0.22526; was fleet_best, now lost after reset"},
-    "S17_lbjlincoln26_nba_evo_s17": {"gen": 1000, "brier": 0.22358, "model": "xgboost",      "status": "EVOLVING",  "stagnation_cycles": 7,  "health": "OK"},
-    "S18_testforge42_nba_evo_s18":  {"gen": 774,  "brier": 0.22154, "model": "random_forest", "status": "EVOLVING",  "stagnation_cycles": 0,  "health": "OK"},
-    "S22_testforge42_nba_evo_s22":  {"gen": 646,  "brier": 0.22358, "model": "extra_trees",   "status": "EVOLVING",  "stagnation_cycles": 0,  "health": "DEGRADED",
-      "note": "Model changed from venn_abers_fusion → extra_trees; brier 0.22073(gen39)→0.22358(gen646). Checkpoint 0.22073 still valid in history."}
+    "S13_nomos42_nba_evo_4":        {"gen": 151,  "brier": 0.22136, "model": "extra_trees",   "stagnation_cycles": 24, "health": "STAGNANT",         "fleet_best_live": true, "action": "diversify QUEUED"},
+    "S14_nomos42_nba_evo_5":        {"gen": 220,  "brier": 0.23493, "model": "extra_trees",   "stagnation_cycles": 22, "health": "STAGNANT_WORST",                             "action": "diversify QUEUED"},
+    "S15_nomos42_nba_evo_6":        {"gen": 144,  "brier": 0.22374, "model": "random_forest", "stagnation_cycles": 15, "health": "AT_THRESHOLD"},
+    "S17_lbjlincoln26_nba_evo_s17": {"gen": 1108, "brier": 0.22358, "model": "xgboost",       "stagnation_cycles": 18, "health": "STAGNANT",                                     "action": "diversify QUEUED (DNS retry)"},
+    "S18_testforge42_nba_evo_s18":  {"gen": 836,  "brier": 0.22154, "model": "random_forest", "stagnation_cycles": 0,  "health": "OK_IMPROVING"},
+    "S22_testforge42_nba_evo_s22":  {"gen": 735,  "brier": 0.22358, "model": "extra_trees",   "stagnation_cycles": 18, "health": "STAGNANT_DEGRADED", "note": "was venn_abers_fusion 0.22073; model drifted", "action": "diversify QUEUED"}
   },
   "political_islands": {
-    "P1_nomos42_political_alpha":       {"gen": 16851, "brier": 0.24999, "model": "xgboost",    "status": "EVOLVING", "health": "OK", "note": "RECOVERED — was DOWN_503 at 04:00"},
-    "P2_nomos42_political_alpha_2":     {"gen": 12518, "brier": 0.24949, "model": "logistic",   "status": "EVOLVING", "health": "OK"},
-    "P4_lbjlincoln_political_alpha_4":  {"gen": 17818, "brier": 0.24956, "model": "lightgbm",   "status": "EVOLVING", "health": "OK"},
-    "P5_lbjlincoln_political_alpha_5":  {"gen": 15625, "brier": 0.24923, "model": "lightgbm",   "status": "EVOLVING", "health": "OK", "fleet_best": true, "note": "NEW POL FLEET BEST — was DOWN_503 at 04:00, recovered + improved (prev best P7=0.24937)"},
-    "P7_lbjlincoln_political_alpha_7":  {"gen": 16413, "brier": 0.24937, "model": "lightgbm",   "status": "EVOLVING", "health": "OK"}
+    "P1_nomos42_political_alpha":      {"gen": 18342,     "brier": 0.24999, "model": "xgboost_brier", "status": "EVOLVING", "health": "OK", "note": "confirmed via curl — WebFetch was false-503"},
+    "P2_nomos42_political_alpha_2":    {"gen": "unknown", "brier": "unknown",                        "status": "DNS_OVERFLOW", "health": "UNKNOWN"},
+    "P4_lbjlincoln_political_alpha_4": {"gen": 16965,     "brier": 0.24923, "model": "lightgbm",     "status": "EVOLVING", "health": "OK", "fleet_best_candidate": true},
+    "P5_lbjlincoln_political_alpha_5": {"gen": "unknown", "brier": "unknown",                        "status": "DNS_OVERFLOW", "health": "UNKNOWN", "note": "prev fleet best 0.24923"},
+    "P7_lbjlincoln_political_alpha_7": {"gen": 17626,     "brier": 0.24937, "model": "lightgbm",     "status": "EVOLVING", "health": "OK"}
   },
   "dept_councils": {
-    "overall": "ALL_503_PERSISTENT",
-    "since": "2026-04-20T04:00:00Z",
-    "note": "D1-D9 all 503 for 2+ brain cycles. VM keepalive (*/30) has NOT recovered them. Manual restart or TESTforge42 account issue. Brain cannot POST restart (no HF token in env).",
-    "councils": ["D1","D2","D3","D4","D5","D6","D7","D8","D9"],
-    "urgency": "HIGH — councils have been dark >4h"
+    "overall": "ALL_PAUSED",
+    "first_detected": "2026-04-20T04:00:00Z",
+    "hf_response": "The space is paused, ask a maintainer to restart it",
+    "affected": ["D1","D2","D3","D4","D5","D6","D7","D8","D9"],
+    "root_cause": "TESTforge42 account quota exhausted or manual pause — NOT sleeping, NOT recoverable by VM keepalive",
+    "urgency": "CRITICAL",
+    "fix": "Login to TESTforge42 HF account and restart all 9 spaces, OR increase compute quota"
   },
-  "axelrod_ck_status": {
-    "patches_applied": true,
-    "confirmed_via": "direct file read — n_traders=len(TRADERS) at L2579, ONE of 17 at L239",
+  "axelrod_status": {
+    "ck_fix_confirmed": true,
+    "all_3_mechanisms_spec_complete": true,
     "hf_deploy_status": "PENDING EXPLICIT USER APPROVAL (work-queue tf-axelrod-verify-tune-12)"
   },
-  "alerts": [
-    "[HIGH] D1-D9 ALL 503 PERSISTENT >4h — VM keepalive not recovering; manual TESTforge42 check needed",
-    "[MED] S13 stagnant 22 cycles — diversify command queued for VM (POST /api/command {action:diversify} to nomos42-nba-evo-4.hf.space)",
-    "[MED] S14 RESET: gen 389→88, brier 0.22333→0.23493 — recovering from fresh start",
-    "[MED] S15 RESET: gen 539→61, brier 0.22107→0.22526 — was fleet_best, lost after reset",
-    "[MED] S22 model drift: venn_abers_fusion(0.22073) → extra_trees(0.22358) — checkpoint preserved, live score degraded",
-    "[LOW] P5 recovered + new pol fleet best 0.24923 (positive)",
-    "[LOW] P1 recovered (positive)",
-    "[INFO] tf-axelrod-verify-tune-12 blocked on user gate for HF deploy"
-  ],
-  "vm_commands_pending": [
-    {
-      "target": "https://nomos42-nba-evo-4.hf.space/api/command",
-      "method": "POST",
-      "body": {"action": "diversify"},
-      "reason": "S13 stagnant 22 cycles (threshold 15)"
-    }
-  ],
+  "sota_research_12utc": {
+    "source": "MDPI 2026 — Uncertainty-Aware ML for NBA Forecasting in Digital Betting Markets",
+    "url": "https://www.mdpi.com/2078-2489/17/1/56",
+    "best_published_brier": 0.199,
+    "method": "L1-sparse logistic regression + rolling-form velocity + shot-chart spatial embeddings",
+    "our_gap_to_sota": 0.02173,
+    "proposal_saved": "data/research-proposals/2026-04-20-sota-logistic-0199.json"
+  },
   "actions_taken": [
-    "health-status.json updated with 08:00 cycle readings",
-    "SOTA research: stacked ensemble + hierarchical GNN + logistic-0.199 gap analysis — saved to research-proposals/",
-    "political brain-status.json updated with P5 new fleet best"
+    "S13 diversify queued (24-cycle stagnation)",
+    "S14 diversify queued (22-cycle stagnation)",
+    "S17 diversify queued (18-cycle stagnation, after DNS retry)",
+    "S22 diversify queued (18-cycle stagnation)",
+    "P1/P4/P7 confirmed RUNNING — WebFetch false-503s corrected by curl",
+    "D1-D9 diagnosed PAUSED — requires TESTforge42 maintainer action",
+    "SOTA research saved: L1-logistic 0.199 target proposal",
+    "health-status.json updated (12:00 cycle)",
+    "brain-status.json updated",
+    "research-proposals/2026-04-20-sota-logistic-0199.json written"
+  ],
+  "alerts": [
+    "[CRITICAL] D1-D9 ALL PAUSED >8h — TESTforge42 compute quota; maintainer restart required",
+    "[HIGH] S22 regressed: venn_abers_fusion 0.22073 -> extra_trees 0.22358; git checkpoint preserved",
+    "[HIGH] S14 worst island: brier=0.23493; diversify queued",
+    "[MED] P2/P5 status unconfirmed (DNS overflow in brain env)",
+    "[INFO] tf-axelrod-verify-tune-12 pending user approval"
   ],
   "next_cycle_watch": [
-    "D1-D9 recovery — if still 503 at 12:00, escalate to user",
-    "S14/S15 recovery from reset — should cross 0.225 within 2 cycles",
-    "S13 diversify — VM autonomous-cycle.sh at :30 should execute",
-    "tf-axelrod-verify-tune-12 awaiting user approval"
+    "D1-D9 recovery post-maintainer restart",
+    "S13/S14/S17/S22 brier post-diversify (expect improvement within 5-10 cycles)",
+    "P2/P5 status confirmation at 16:00 UTC",
+    "S18 momentum tracking (0.22154, stagnation=0)"
   ]
 }
