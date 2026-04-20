@@ -1789,31 +1789,40 @@ function tickRender(ms) {
       .rect(-tw/2, -8, tw, 16).fill({ color:0x0b0d12, alpha:0.92 })
       .rect(-tw/2, -8, tw, 16).stroke({ width:plateBorderW, color:plateColor, alpha:0.85 });
 
-    // Strategy badge
-    if (a.strategy) {
-      const fam = STRATEGY_FAMILIES[a.strategy] || "unknown";
-      const col = FAMILY_COLORS[fam];
-      a._cnt._badge._text.text = a.strategy.length > 14 ? a.strategy.slice(0,14) : a.strategy;
-      const bw = a._cnt._badge._text.width + 10;
-      a._cnt._badge._bg.clear()
-        .rect(-bw/2, -6, bw, 12).fill({ color: col, alpha: 0.2 })
-        .rect(-bw/2, -6, bw, 12).stroke({ width: 1, color: col, alpha: 0.9 });
-      a._cnt._badge.visible = true;
-    } else {
-      a._cnt._badge.visible = false;
+    // v2.19 (2026-04-20): DRASTIC panel surgery — strategy badge hidden by default
+    // to declutter the world. User reported agent bubbles invisible behind panel
+    // superposition. Badge is still visible on hover (via hover-card) and in the
+    // full inspect modal on click, so no information is lost.
+    if (a._cnt._badge) {
+      const isActive = (a.activeUntil || 0) > ms;
+      const showBadge = a.strategy && (a._hover || isActive);
+      if (showBadge) {
+        const fam = STRATEGY_FAMILIES[a.strategy] || "unknown";
+        const col = FAMILY_COLORS[fam];
+        a._cnt._badge._text.text = a.strategy.length > 14 ? a.strategy.slice(0,14) : a.strategy;
+        const bw = a._cnt._badge._text.width + 10;
+        a._cnt._badge._bg.clear()
+          .rect(-bw/2, -6, bw, 12).fill({ color: col, alpha: 0.2 })
+          .rect(-bw/2, -6, bw, 12).stroke({ width: 1, color: col, alpha: 0.9 });
+        a._cnt._badge.visible = true;
+      } else {
+        a._cnt._badge.visible = false;
+      }
     }
 
     // Pip state color
     const pipCol = a.state === "profit" ? 0x00d9a7 : a.state === "loss" ? 0xff5c5c : a.state === "error" ? 0xff5c5c : KIND_COLORS[a.kind];
     a._cnt._pip.clear().circle(0, CHAR_H*0.05, 5).fill(pipCol);
 
-    // ═══ v2.15: Pokémon HP bar + persistent bet tag ═══
-    if (a._cnt._hp && a.data && typeof a.data.bankroll === "number") {
-      const HP_W = CHAR_W * 0.95, HP_H = 8;
+    // ═══ v2.19 (2026-04-20): HP bar slimmed + hidden when idle ═══
+    // Was always-on for 41 agents simultaneously — created the superposition the
+    // user flagged. Now shows only when agent is alive (profit/loss/thinking) OR
+    // under hover, and is 60% shorter. Inspect modal still shows full bankroll.
+    if (a._cnt._hp && a.data && typeof a.data.bankroll === "number" && (a.state !== "idle" || a._hover || (a.activeUntil || 0) > ms)) {
+      const HP_W = CHAR_W * 0.7, HP_H = 5;
       const bankroll = a.data.bankroll || 0;
-      const maxRef = Math.max(200, bankroll);        // scale to current-max so winners still show growth room
+      const maxRef = Math.max(200, bankroll);
       const pct = Math.max(0.02, Math.min(1, bankroll / maxRef));
-      // Pokémon HP color thresholds: >50% green, 20-50% yellow, <20% red
       const hpPct = Math.min(1, bankroll / 100);
       const hpCol = hpPct > 1 ? 0x1aa030 : hpPct > 0.5 ? 0x30c030 : hpPct > 0.2 ? 0xf0c010 : 0xd02020;
       a._cnt._hp._bg.clear()
@@ -1821,17 +1830,25 @@ function tickRender(ms) {
         .rect(-HP_W/2, -HP_H/2, HP_W, HP_H).fill({ color: 0x404850 });
       a._cnt._hp._fill.clear()
         .rect(-HP_W/2, -HP_H/2, HP_W * pct, HP_H).fill({ color: hpCol })
-        .rect(-HP_W/2, -HP_H/2, HP_W * pct, 2).fill({ color: 0xffffff, alpha: 0.4 });   // top highlight
-      a._cnt._hp._lbl.text = bankroll >= 1000 ? `$${(bankroll/1000).toFixed(2)}K` : `$${bankroll.toFixed(0)}`;
-      a._cnt._hp._lbl.y = -HP_H - 6;
+        .rect(-HP_W/2, -HP_H/2, HP_W * pct, 2).fill({ color: 0xffffff, alpha: 0.4 });
+      // Hide the numeric label unless hovered — reduce text density
+      if (a._cnt._hp._lbl) {
+        a._cnt._hp._lbl.text = bankroll >= 1000 ? `$${(bankroll/1000).toFixed(2)}K` : `$${bankroll.toFixed(0)}`;
+        a._cnt._hp._lbl.y = -HP_H - 6;
+        a._cnt._hp._lbl.visible = !!a._hover;
+      }
       a._cnt._hp.visible = true;
     } else if (a._cnt._hp) {
       a._cnt._hp.visible = false;
     }
 
-    // Persistent bet tag — top allocation from latest day-decision (never fades)
-    if (a._cnt._betTag && a.dayDecision && Array.isArray(a.dayDecision.allocations) && a.dayDecision.allocations.length) {
-      // Biggest stake of the day
+    // ═══ v2.19: Persistent bet tag — hidden by default. The tag is
+    // redundant with the speech bubble (shows allocation when trade happens)
+    // and the inspect card (click = full allocation list). Now shows only on
+    // hover or while the bet is active (activeUntil window). Drastically reduces
+    // superposition in crowded zones.
+    if (a._cnt._betTag && a.dayDecision && Array.isArray(a.dayDecision.allocations) && a.dayDecision.allocations.length &&
+        (a._hover || (a.activeUntil || 0) > ms)) {
       const al = a.dayDecision.allocations.reduce((m, x) =>
         ((x.stake || x.stake_amount || 0) > (m.stake || m.stake_amount || 0)) ? x : m, a.dayDecision.allocations[0]);
       const pct = Math.round((al.pct || 0) * 100);
