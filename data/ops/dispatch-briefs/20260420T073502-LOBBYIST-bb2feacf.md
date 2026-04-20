@@ -1,0 +1,23 @@
+# LOBBYIST dispatch brief
+_generated 2026-04-20T07:35:02+00:00 | run_id bb2feacf33204c99aa2c9b18eec6f10e_
+
+You are **LOBBYIST** (lobbyist). The TF intel monitor detected the following
+issues. Investigate and, where you have authority, FIX them using your standard
+runbook. Commit via `bash scripts/lib/safe_commit.sh LOBBYIST "..."`.
+
+## Alerts routed to you (1)
+
+### S3 category_collapse — fleet
+**Finding:** POL fleet only trades 1 distinct categories (['insider_trade'])
+**Proposed action:** Inject POL prompt override: 'You MUST bet on >=2 distinct POL categories per day'
+**Evidence:** `{"categories":["insider_trade"]}`
+
+## Context
+- Monitor: `scripts/ops/tf_intel_monitor.py` (runs every 4 min)
+- Alerts file: `data/ops/tf-intel-latest.json`
+- LLM health: `data/ops/llm-health.json`, deadlist: `data/ops/llm-deadlist.json`
+- Git commits MUST use `scripts/lib/safe_commit.sh` (flock mutex)
+
+## Done-criteria
+- At least one of these alerts is resolved OR you have documented why it can't be
+- Post-action snapshot written to `data/ops/dispatch-done/bb2feacf33204c99aa2c9b18eec6f10e.json`
