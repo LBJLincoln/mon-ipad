@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-19T16:35:00Z",
+  "last_updated": "2026-04-20T03:29:08Z",
   "ledger": [
     {
       "cycle": "swish-4h-2026-04-19T16:35Z",
@@ -7,12 +7,24 @@
       "agent": "nomos-hoops (SWISH)",
       "project": "NBA",
       "technique": "Full 13-island sweep: 2 checkpoints + 5 diversify + 1 config-tune + 3 restart",
-      "islands_acted_on": ["S10","S11","S12","S14","S15","S16","S17","S19","S20","S21","S22"],
+      "islands_acted_on": [
+        "S10",
+        "S11",
+        "S12",
+        "S14",
+        "S15",
+        "S16",
+        "S17",
+        "S19",
+        "S20",
+        "S21",
+        "S22"
+      ],
       "actions": {
         "checkpoint": "S19 (fleet_best 0.21949 gen=167); S12 (top-3 0.21989 gen=279)",
         "diversify": "S10 (stag=322), S11 (stag=372), S15 (stag=358), S17 (stag=273), S20 (stag=175)",
         "config_tune": "S14 mutation_rate 0.0749->0.12 (plateau escape)",
-        "restart": "S16 (stag=450), S21 (stag=542), S22 (stag=429 — best at gen=0)",
+        "restart": "S16 (stag=450), S21 (stag=542), S22 (stag=429 \u2014 best at gen=0)",
         "no_action": "S13 (MOD stag, brier competitive), S18 (MOD stag, recent best gen=436)"
       },
       "fleet_best_brier_before": 0.21949,
@@ -20,14 +32,14 @@
       "fleet_best_delta": 0.0,
       "fleet_best_island": "S19",
       "critical_findings": [
-        "S22 regressed from prev fleet best 0.22073 to stagnant at gen=0 (0.22358) — reset correct",
-        "S16 CRITICAL: 450 gens stagnant since gen=105 best 0.21983 — reset correct",
-        "S21 CRITICAL: 542 gens stagnant since gen=5 — reset correct",
+        "S22 regressed from prev fleet best 0.22073 to stagnant at gen=0 (0.22358) \u2014 reset correct",
+        "S16 CRITICAL: 450 gens stagnant since gen=105 best 0.21983 \u2014 reset correct",
+        "S21 CRITICAL: 542 gens stagnant since gen=5 \u2014 reset correct",
         "S12 discovered: true_min_brier 0.21989 despite API reporting 0.24577 (history diverged)",
-        "API best_brier and stagnation fields unreliable — must compute from history[]"
+        "API best_brier and stagnation fields unreliable \u2014 must compute from history[]"
       ],
       "verdict": "fleet_best_confirmed_S19_0.21949",
-      "notes": "S12/S19 checkpointed as preservation. S14 mutation too low (0.0749) — boosted. 3 critical stagnation resets (450/542/429 gens)."
+      "notes": "S12/S19 checkpointed as preservation. S14 mutation too low (0.0749) \u2014 boosted. 3 critical stagnation resets (450/542/429 gens)."
     },
     {
       "cycle": "swish-4h-2026-04-19T08:45Z",
@@ -190,6 +202,64 @@
       "status_after": "implemented",
       "verdict": "pending",
       "notes": "Cat66 adds pace-normalized per-100 box-score differentials (pts/ast/tov/reb). From MDPI Jan 2026 paper showing all stats should be normalized per 100 possessions. Pure arithmetic, no new data deps, zero lookahead risk. Islands will pick up on next HF restart cycle (nomos-hoops deploys)."
+    },
+    {
+      "date": "2026-04-20T03:29:08Z",
+      "agent": "FRANKENSTEIN",
+      "action": "implement",
+      "proposal_id": "nba-player-props-ingestion-2026-04-20",
+      "proposal_title": "Ship player-prop odds ingestion so NBA TF can actually bet on the 42 pp_* categories already advertised in the prompt",
+      "source_report": "data/research/tf-proposals-player-props-2026-04-20.json",
+      "target_files": [
+        "scripts/fetch_player_props.py",
+        "scripts/test_player_props.py",
+        "scripts/arena/hf-llm-trading-floor/prepare_data.py",
+        "scripts/arena/hf-llm-trading-floor/data/full-odds-2025-26.json",
+        "data/nba-agent/player-props-live.json",
+        "data/nba-agent/player-props-synth.json"
+      ],
+      "sha256": {
+        "scripts/fetch_player_props.py": "f36362184b9dd41a100315f61ad5717c0ca7b913383eb9155c80d82ae9acf47f",
+        "scripts/test_player_props.py": "e24601a7a13db41499f750a3a869f36175faf1f4c7730f58b8b49ce6367ae81a",
+        "scripts/arena/hf-llm-trading-floor/prepare_data.py": "5a494268f7bfc793e04f5f8fb7c22e1b37fea3db15e87607c300296474519287",
+        "scripts/arena/hf-llm-trading-floor/data/full-odds-2025-26.json": "d08b0f12efaeaec947eb31ca6ead0755f73a6c7eed77db6a691caa05bb6bbec6",
+        "data/nba-agent/player-props-live.json": "f1305b7257f6a34fd87dd7580f2562f3187c79dc41281aabd4c4f3e5bd271573",
+        "data/nba-agent/player-props-synth.json": "b1352e6c95141f5ac42b80be162dcc46a1831ad82f0403db205147c5ce2f5c78"
+      },
+      "parity": "N/A",
+      "engine_version_before": "v3.1-66cat",
+      "engine_version_after": "v3.1-66cat",
+      "features_added": 22,
+      "feature_names": [
+        "pp_points_star1_home",
+        "pp_points_star2_home",
+        "pp_points_star3_home",
+        "pp_points_star1_away",
+        "pp_points_star2_away",
+        "pp_points_star3_away",
+        "pp_rebounds_star1_home",
+        "pp_rebounds_star2_home",
+        "pp_rebounds_star1_away",
+        "pp_rebounds_star2_away",
+        "pp_assists_star1_home",
+        "pp_assists_star2_home",
+        "pp_assists_star1_away",
+        "pp_assists_star2_away",
+        "pp_threes_star1_home",
+        "pp_threes_star2_home",
+        "pp_threes_star1_away",
+        "pp_threes_star2_away",
+        "pp_steals_star1_home",
+        "pp_steals_star1_away",
+        "pp_blocks_star1_home",
+        "pp_blocks_star1_away"
+      ],
+      "brier_before": null,
+      "brier_after": null,
+      "status_before": "pending",
+      "status_after": "implemented",
+      "verdict": "pending",
+      "notes": "Not an engine.py feature \u2014 TF data-ingestion. fetch_player_props.py pulls Bovada+DK live + synthesizes from player-stats for historical. prepare_data.py step 4b merges into full-odds-2025-26.json. 802/802 games now have \u226521 pp_* keys (target was \u22656 for \u22651000/1257 \u2014 dataset only has 802 games). HF Space LBJLincoln26/nba-llm-trading-floor uploaded via HfApi.upload_file using HF_TOKEN_NBA, commit f0a9e0a2. Cron 0 18,22 * * * installed. Live fetchers returned 0 games today (off-season window; will pick up during slate hours). Expected Brier \u0394: 0 (no prediction model changed), but unlocks 22 new bet categories per game \u00d7 16 agents \u00d7 remaining 47 days of the 175-day run = previously-silent menu now actionable."
     }
   ],
   "unimplemented_proposals": [
@@ -215,10 +285,10 @@
     "stacked-ensemble-shap-2026-04-10.md"
   ],
   "summary": {
-    "total_experiments": 7,
+    "total_experiments": 8,
     "kept": 1,
     "reverted": 0,
-    "pending": 3,
+    "pending": 4,
     "best_technique": "Venn-Abers calibration",
     "best_delta": -0.0054
   }

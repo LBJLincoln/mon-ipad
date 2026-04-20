@@ -964,6 +964,68 @@ def print_summary():
     print("=" * 60)
 
 
+def merge_player_props():
+    """Step 4b: merge player-prop odds into full-odds-2025-26.json.
+
+    Ships pp_<stat>_<tier>_<side> keys that NBA TF app.py line 1444 advertises.
+    Data is produced by /scripts/fetch_player_props.py which runs twice daily
+    via cron; we read the live file first (today's real odds) and fall back
+    to the synthetic season-avg file for every historical game.
+    """
+    print("\n[4b/6] Merging player-prop odds into full-odds...")
+    odds_path = DATA_DIR / "full-odds-2025-26.json"
+    if not odds_path.exists():
+        print(f"  SKIP: {odds_path} missing (run step 4 first)")
+        return
+    live_path = MONO_ROOT / "data" / "nba-agent" / "player-props-live.json"
+    synth_path = MONO_ROOT / "data" / "nba-agent" / "player-props-synth.json"
+
+    pp_live: dict = {}
+    pp_synth: dict = {}
+    if live_path.exists():
+        try:
+            pp_live = json.loads(live_path.read_text()).get("games", {})
+        except Exception as e:
+            print(f"  WARN live load failed: {e}")
+    if synth_path.exists():
+        try:
+            pp_synth = json.loads(synth_path.read_text()).get("games", {})
+        except Exception as e:
+            print(f"  WARN synth load failed: {e}")
+    if not pp_live and not pp_synth:
+        print("  SKIP: no player-props files found — "
+              "run `python3 scripts/fetch_player_props.py` first")
+        return
+
+    with open(odds_path) as f:
+        odds = json.load(f)
+
+    touched = pp_keys_added = 0
+    for gk, bundle in odds.items():
+        cats = bundle.setdefault("categories", {})
+        # Live takes priority, synth fills gaps
+        merged_props: dict = {}
+        merged_props.update(pp_synth.get(gk, {}))
+        merged_props.update(pp_live.get(gk, {}))
+        if not merged_props:
+            continue
+        before = sum(1 for k in cats if k.startswith("pp_"))
+        cats.update(merged_props)
+        after = sum(1 for k in cats if k.startswith("pp_"))
+        bundle["category_count"] = len(cats)
+        pp_keys_added += (after - before)
+        touched += 1
+
+    with open(odds_path, "w") as f:
+        json.dump(odds, f, indent=2)
+    games_with_six = sum(1 for b in odds.values()
+                         if sum(1 for k in b.get("categories", {})
+                                if k.startswith("pp_")) >= 6)
+    print(f"  Merged into {touched}/{len(odds)} games, "
+          f"{pp_keys_added} new pp_* keys. "
+          f"Games ≥6 pp keys: {games_with_six}")
+
+
 def main():
     print("=" * 60)
     print("NBA LLM Trading Floor — Data Preparation")
@@ -981,6 +1043,9 @@ def main():
 
     # Step 4: Full odds with 100+ categories (local CSV)
     compile_full_odds()
+
+    # Step 4b: Player-prop injection (pp_<stat>_<tier>_<side>)
+    merge_player_props()
 
     # Step 5: Model predictions consensus (local JSON files)
     compile_predictions()
