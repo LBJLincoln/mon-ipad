@@ -1,10 +1,10 @@
 # Betting Strategy & Bankroll
 
-> Auto-compiled from 143 raw sources on 2026-04-19
+> Auto-compiled from 146 raw sources on 2026-04-20
 
 ## Overview
 
-This topic covers 143 research files spanning betting strategy & bankroll.
+This topic covers 146 research files spanning betting strategy & bankroll.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -87,6 +87,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **March-April 2026 SOTA Sweep (Cycle 15)** (551 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle15_sota_sweep.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle6.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/research-analyst/research_march2026_cycle6.md`
+- **pixel-world v2.17 itf-zone shipped** (491 words) -- `raw/agent-memory/pixel_project_pixel_world_v217_itf_zone_apr19.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/agent-memory/research-analyst_project_backtest_audit_march2026.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/research-analyst/project_backtest_audit_march2026.md`
@@ -105,6 +106,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/agent-memory/repo-scout_project_historical_odds_sources.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/repo-scout/project_historical_odds_sources.md`
+- **Player-props ingestion shipped (pp_* categories, 2026-04-20)** (310 words) -- `raw/agent-memory/dr-frankenstein_project_player_props_ingestion_apr20.md`
 - **Market Analyst Data Sources** (306 words) -- `raw/agent-memory/market-analyst_reference_data_sources.md`
 - **Market Analyst Data Sources** (306 words) -- `raw/market-analyst/reference_data_sources.md`
 - **Research Scan: latest-improvements-2026-03-31** (300 words) -- `raw/research/latest-improvements-2026-03-31.md`
@@ -148,6 +150,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Payment provider status as of 2026-04-17** (137 words) -- `raw/agent-memory/nomos-pay_reference_provider_status_apr17.md`
 - **Research Scan: github-betting-scan-2026-04-17** (136 words) -- `raw/research/github-betting-scan-2026-04-17.md`
 - **Research Scan: github-betting-scan-2026-04-18** (136 words) -- `raw/research/github-betting-scan-2026-04-18.md`
+- **Research Scan: github-betting-scan-2026-04-19** (136 words) -- `raw/research/github-betting-scan-2026-04-19.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/agent-memory/market-analyst_feedback_model_game_mismatch.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/market-analyst/feedback_model_game_mismatch.md`
 - **Political Alpha Arena Results** (100 words) -- `raw/political/arena-results-summary.md`

@@ -1,10 +1,10 @@
 # Trading Floor & AI Competition
 
-> Auto-compiled from 58 raw sources on 2026-04-19
+> Auto-compiled from 63 raw sources on 2026-04-20
 
 ## Overview
 
-This topic covers 58 research files spanning trading floor & ai competition.
+This topic covers 63 research files spanning trading floor & ai competition.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -51,18 +51,23 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **13 -- Tools** (724 words) -- `raw/obsidian-docs/13-Tools.md`
 - **17 -- Political Alpha** (701 words) -- `raw/obsidian-docs/17-Political-Alpha.md`
 - **08 -- API Vision & Marketplace** (689 words) -- `raw/obsidian-docs/08-API-Vision.md`
+- **PQTF post-mortem + improvement-proposal bridge** (623 words) -- `raw/agent-memory/nomos-audit_dispatch-2026-04-19.md`
 - **research_april2026_cycle13_dashboard** (504 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle13_dashboard.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-15** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-15.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-16** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-16.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-17** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-17.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-18** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-18.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-19** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-19.md`
 - **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/agent-memory/repo-scout_project_pixel_dashboard_apr2026.md`
 - **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/repo-scout/project_pixel_dashboard_apr2026.md`
 - **25 -- ML Prediction System** (406 words) -- `raw/obsidian-docs/25-ML-Predictions.md`
 - **Trading Floor v4/v5 SOTA Audit — April 11 2026** (403 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle17_tf_sota.md`
+- **pixel-world architecture map** (371 words) -- `raw/agent-memory/pixel_reference_pixel_world_architecture.md`
 - **Political Alpha Scientific Experiment Report** (333 words) -- `raw/experiments/political-experiment-2026-04-06.md`
+- **Player-props ingestion shipped (pp_* categories, 2026-04-20)** (310 words) -- `raw/agent-memory/dr-frankenstein_project_player_props_ingestion_apr20.md`
 - **Autonomous Org Benchmark April 2026** (292 words) -- `raw/agent-memory/research-analyst_research_april2026_autonomous_org_benchmark.md`
+- **Cerebras quota exhaustion — window circuit breaker** (252 words) -- `raw/agent-memory/nomos-llm_project_cerebras_quota_circuit_breaker.md`
 - **HF Self-Host LLM Expansion — April 2026 Cycle 20** (248 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle20_hf_self_host.md`
 - **diegetic panels research Apr 17** (201 words) -- `raw/agent-memory/nomos-scout_project_diegetic_panels_apr17.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/agent-memory/nba-brain_project_strategy_confrontation.md`

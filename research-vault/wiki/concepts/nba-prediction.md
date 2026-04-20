@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 198 raw sources on 2026-04-19
+> Auto-compiled from 213 raw sources on 2026-04-20
 
 ## Overview
 
-This topic covers 198 research files spanning nba prediction & ml models.
+This topic covers 213 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -97,6 +97,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **14 -- Communication** (665 words) -- `raw/obsidian-docs/14-Communication.md`
 - **project_nba_research_state** (660 words) -- `raw/agent-memory/research-analyst_project_nba_research_state.md`
 - **project_nba_research_state** (660 words) -- `raw/research-analyst/project_nba_research_state.md`
+- **PQTF post-mortem + improvement-proposal bridge** (623 words) -- `raw/agent-memory/nomos-audit_dispatch-2026-04-19.md`
 - **April 2026 Cycle 18 — Competitor Audit + Council Honest Assessment** (604 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle18_competitor_audit.md`
 - **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/agent-memory/karpathy-researcher_research_bloomberg_opencode_pi.md`
 - **Browser Automation for HF Spaces — March 2026 Research** (601 words) -- `raw/agent-memory/research-analyst_research_browser_automation_march2026.md`
@@ -109,9 +110,11 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/research-analyst/research_april2026_cycle9_neural_architectures.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle6.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/research-analyst/research_march2026_cycle6.md`
+- **Research Scan: hoop-land-pixel-agents-2026-04-19** (530 words) -- `raw/research/hoop-land-pixel-agents-2026-04-19.md`
 - **NBA Feature Engine v3.0-43cat state** (507 words) -- `raw/agent-memory/feature-engineer_project_engine_v38cat.md`
 - **NBA Feature Engine v3.0-43cat state** (507 words) -- `raw/feature-engineer/project_engine_v38cat.md`
 - **research_april2026_cycle13_dashboard** (504 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle13_dashboard.md`
+- **pixel-world v2.17 itf-zone shipped** (491 words) -- `raw/agent-memory/pixel_project_pixel_world_v217_itf_zone_apr19.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/agent-memory/research-analyst_project_backtest_audit_march2026.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/research-analyst/project_backtest_audit_march2026.md`
@@ -119,6 +122,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-16** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-16.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-17** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-17.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-18** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-18.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-19** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-19.md`
 - **project_claude_code_ecosystem** (449 words) -- `raw/agent-memory/repo-scout_project_claude_code_ecosystem.md`
 - **project_claude_code_ecosystem** (449 words) -- `raw/repo-scout/project_claude_code_ecosystem.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`
@@ -156,15 +160,18 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **multi_target_trainer** (275 words) -- `raw/agent-memory/feature-engineer_project_multi_target_trainer.md`
 - **May 2026 Monetization Sprint** (245 words) -- `raw/agent-memory/market-analyst_project_monetization_sprint.md`
 - **Fleet Health Snapshot** (239 words) -- `raw/learnings/fleet-health-snapshot.md`
+- **Research Scan: arxiv-scan-2026-04-20** (237 words) -- `raw/research/arxiv-scan-2026-04-20.md`
 - **project_scan_history** (235 words) -- `raw/agent-memory/repo-scout_project_scan_history.md`
 - **project_scan_history** (235 words) -- `raw/repo-scout/project_scan_history.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-17** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-17.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-18** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-18.md`
+- **Research Scan: arxiv-calibration-scan-2026-04-19** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-19.md`
 - **Multi-Agent Workflow Scan (April 2026)** (230 words) -- `raw/agent-memory/repo-scout_project_multiagent_workflow_apr2026.md`
 - **Research Scan: arxiv-scan-2026-04-16** (228 words) -- `raw/research/arxiv-scan-2026-04-16.md`
 - **Polyrepo Tooling Scan (April 2026)** (227 words) -- `raw/agent-memory/repo-scout_project_polyrepo_tooling_apr2026.md`
 - **Research Scan: arxiv-scan-2026-04-17** (223 words) -- `raw/research/arxiv-scan-2026-04-17.md`
 - **Research Scan: arxiv-scan-2026-04-18** (223 words) -- `raw/research/arxiv-scan-2026-04-18.md`
+- **Research Scan: arxiv-scan-2026-04-19** (223 words) -- `raw/research/arxiv-scan-2026-04-19.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/agent-memory/feature-engineer_project_gpu_evolution_v2.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/feature-engineer/project_gpu_evolution_v2.md`
 - **Historical odds dataset 2025-26** (190 words) -- `raw/agent-memory/market-analyst_project_historical_odds.md`
@@ -174,8 +181,10 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Strategy Confrontation Backtest** (180 words) -- `raw/nba-brain/project_strategy_confrontation.md`
 - **Research Scan: github-scan-2026-04-01** (167 words) -- `raw/research/github-scan-2026-04-01.md`
 - **Research Scan: github-scan-2026-04-02** (167 words) -- `raw/research/github-scan-2026-04-02.md`
+- **Research Scan: tf-proposals-2026-04-20-refresh** (165 words) -- `raw/research/tf-proposals-2026-04-20-refresh.md`
 - **Enterprise Agent Matrix — 3-product 3-layer architecture** (161 words) -- `raw/agent-memory/nba-brain_project_enterprise_architecture.md`
 - **Enterprise Agent Matrix — 3-product 3-layer architecture** (161 words) -- `raw/nba-brain/project_enterprise_architecture.md`
+- **political_fleet_apr19** (160 words) -- `raw/agent-memory/nomos-alpha_project_political_fleet_apr19.md`
 - **user_role** (153 words) -- `raw/agent-memory/research-analyst_user_role.md`
 - **user_role** (152 words) -- `raw/agent-memory/repo-scout_user_role.md`
 - **Department Council Summary** (150 words) -- `raw/councils/department-summary.md`
@@ -184,6 +193,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-scan-2026-04-05** (149 words) -- `raw/research/github-scan-2026-04-05.md`
 - **Research Scan: github-scan-2026-04-06** (149 words) -- `raw/research/github-scan-2026-04-06.md`
 - **Research Scan: github-scan-2026-04-07** (149 words) -- `raw/research/github-scan-2026-04-07.md`
+- **Research Scan: github-scan-2026-04-19** (147 words) -- `raw/research/github-scan-2026-04-19.md`
 - **Research Scan: github-betting-scan-2026-03-31** (145 words) -- `raw/research/github-betting-scan-2026-03-31.md`
 - **Research Scan: github-betting-scan-2026-04-01** (145 words) -- `raw/research/github-betting-scan-2026-04-01.md`
 - **Research Scan: github-betting-scan-2026-04-02** (145 words) -- `raw/research/github-betting-scan-2026-04-02.md`
@@ -203,10 +213,15 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-scan-2026-04-16** (140 words) -- `raw/research/github-scan-2026-04-16.md`
 - **Research Scan: github-betting-scan-2026-04-17** (136 words) -- `raw/research/github-betting-scan-2026-04-17.md`
 - **Research Scan: github-betting-scan-2026-04-18** (136 words) -- `raw/research/github-betting-scan-2026-04-18.md`
+- **Research Scan: github-betting-scan-2026-04-19** (136 words) -- `raw/research/github-betting-scan-2026-04-19.md`
 - **Current Fleet State (iter 9, 2026-04-07 09:30 UTC)** (130 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`
 - **Research Scan: github-scan-2026-04-11** (123 words) -- `raw/research/github-scan-2026-04-11.md`
 - **Research Scan: github-scan-2026-04-13** (123 words) -- `raw/research/github-scan-2026-04-13.md`
 - **Research Scan: github-scan-2026-04-14** (123 words) -- `raw/research/github-scan-2026-04-14.md`
+- **Cat66 pace-normalized per-100 implemented 2026-04-19** (89 words) -- `raw/agent-memory/nomos-lab_project_cat66_implemented_apr19.md`
+- **Research Scan: cross-tf-rollup-2026-04-15-to-19** (77 words) -- `raw/research/cross-tf-rollup-2026-04-15-to-19.md`
+- **Research Scan: tf-proposals-polymarket-2026-04-20** (68 words) -- `raw/research/tf-proposals-polymarket-2026-04-20.md`
+- **Research Scan: tf-proposals-player-props-2026-04-20** (51 words) -- `raw/research/tf-proposals-player-props-2026-04-20.md`
 
 ## Key Findings
 

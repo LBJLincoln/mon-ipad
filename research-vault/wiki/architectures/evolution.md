@@ -1,10 +1,10 @@
 # Genetic Algorithm & Evolution
 
-> Auto-compiled from 83 raw sources on 2026-04-19
+> Auto-compiled from 84 raw sources on 2026-04-20
 
 ## Overview
 
-This topic covers 83 research files spanning genetic algorithm & evolution.
+This topic covers 84 research files spanning genetic algorithm & evolution.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -87,11 +87,12 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **multi_target_trainer** (275 words) -- `raw/agent-memory/feature-engineer_project_multi_target_trainer.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-17** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-17.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-18** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-18.md`
+- **Research Scan: arxiv-calibration-scan-2026-04-19** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-19.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/agent-memory/feature-engineer_project_gpu_evolution_v2.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/feature-engineer/project_gpu_evolution_v2.md`
 - **HF Department Council Spaces Architecture** (184 words) -- `raw/agent-memory/feature-engineer_project_hf_dept_council_spaces.md`
 - **user_role** (152 words) -- `raw/agent-memory/repo-scout_user_role.md`
-- **Council: council-evolution-latest** (15 words) -- `raw/councils/council-evolution-latest.md`
+- **Council: evolution** (15 words) -- `raw/councils/council-evolution-latest.md`
 
 ## Key Findings
 

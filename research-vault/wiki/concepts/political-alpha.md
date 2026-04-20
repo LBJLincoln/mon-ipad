@@ -1,10 +1,10 @@
 # Political Alpha & Prediction Markets
 
-> Auto-compiled from 74 raw sources on 2026-04-19
+> Auto-compiled from 80 raw sources on 2026-04-20
 
 ## Overview
 
-This topic covers 74 research files spanning political alpha & prediction markets.
+This topic covers 80 research files spanning political alpha & prediction markets.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Mutation Operators, Platt Scaling, Political Alpha.
 
 ## Sources
@@ -63,10 +63,13 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-16** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-16.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-17** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-17.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-18** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-18.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-19** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-19.md`
 - **Political Alpha Deployment** (363 words) -- `raw/agent-memory/feature-engineer_project_political_alpha_deploy.md`
 - **Political Alpha Deployment** (363 words) -- `raw/feature-engineer/project_political_alpha_deploy.md`
 - **Political Alpha Scientific Experiment Report** (333 words) -- `raw/experiments/political-experiment-2026-04-06.md`
 - **May 2026 Monetization Sprint** (245 words) -- `raw/agent-memory/market-analyst_project_monetization_sprint.md`
+- **Research Scan: arxiv-scan-2026-04-20** (237 words) -- `raw/research/arxiv-scan-2026-04-20.md`
+- **political_fleet_apr19** (160 words) -- `raw/agent-memory/nomos-alpha_project_political_fleet_apr19.md`
 - **Research Scan: github-betting-scan-2026-03-31** (145 words) -- `raw/research/github-betting-scan-2026-03-31.md`
 - **Research Scan: github-betting-scan-2026-04-01** (145 words) -- `raw/research/github-betting-scan-2026-04-01.md`
 - **Research Scan: github-betting-scan-2026-04-02** (145 words) -- `raw/research/github-betting-scan-2026-04-02.md`
@@ -83,6 +86,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: github-betting-scan-2026-04-16** (145 words) -- `raw/research/github-betting-scan-2026-04-16.md`
 - **Research Scan: github-betting-scan-2026-04-17** (136 words) -- `raw/research/github-betting-scan-2026-04-17.md`
 - **Research Scan: github-betting-scan-2026-04-18** (136 words) -- `raw/research/github-betting-scan-2026-04-18.md`
+- **Research Scan: github-betting-scan-2026-04-19** (136 words) -- `raw/research/github-betting-scan-2026-04-19.md`
+- **Research Scan: tf-proposals-pol-options-overlay-2026-04-20** (129 words) -- `raw/research/tf-proposals-pol-options-overlay-2026-04-20.md`
+- **Research Scan: github-scan-2026-04-20** (48 words) -- `raw/research/github-scan-2026-04-20.md`
 
 ## Key Findings
 

@@ -1,5 +1,5 @@
 # Council: research
-- Status: success
-- Timestamp: 2026-04-12T00:03:00Z
-- Model: claude-sonnet-4-6
-- Duration: 85s
+- Status: ?
+- Timestamp: 2026-04-19T12:25:00Z
+- Model: ?
+- Duration: ?s

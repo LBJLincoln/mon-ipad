@@ -1,10 +1,10 @@
 # Calibration & Probability Scoring
 
-> Auto-compiled from 44 raw sources on 2026-04-19
+> Auto-compiled from 46 raw sources on 2026-04-20
 
 ## Overview
 
-This topic covers 44 research files spanning calibration & probability scoring.
+This topic covers 46 research files spanning calibration & probability scoring.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -50,8 +50,10 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
 - **Research Scan: latest-improvements-2026-03-31** (300 words) -- `raw/research/latest-improvements-2026-03-31.md`
 - **research_april2026_cycle14_drift_monitoring** (289 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle14_drift_monitoring.md`
+- **Research Scan: arxiv-scan-2026-04-20** (237 words) -- `raw/research/arxiv-scan-2026-04-20.md`
 - **project_scan_history** (235 words) -- `raw/agent-memory/repo-scout_project_scan_history.md`
 - **project_scan_history** (235 words) -- `raw/repo-scout/project_scan_history.md`
+- **Research Scan: tf-proposals-2026-04-20-refresh** (165 words) -- `raw/research/tf-proposals-2026-04-20-refresh.md`
 - **Calibration & Drift Monitoring** (149 words) -- `raw/learnings/calibration-drift-status.md`
 
 ## Key Findings

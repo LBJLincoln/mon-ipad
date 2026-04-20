@@ -1,10 +1,10 @@
 # Infrastructure & Compute
 
-> Auto-compiled from 104 raw sources on 2026-04-19
+> Auto-compiled from 109 raw sources on 2026-04-20
 
 ## Overview
 
-This topic covers 104 research files spanning infrastructure & compute.
+This topic covers 109 research files spanning infrastructure & compute.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -85,6 +85,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Free Models Landscape April 2026** (663 words) -- `raw/research-analyst/research_april2026_free_models_scan.md`
 - **project_nba_research_state** (660 words) -- `raw/agent-memory/research-analyst_project_nba_research_state.md`
 - **project_nba_research_state** (660 words) -- `raw/research-analyst/project_nba_research_state.md`
+- **PQTF post-mortem + improvement-proposal bridge** (623 words) -- `raw/agent-memory/nomos-audit_dispatch-2026-04-19.md`
 - **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/agent-memory/karpathy-researcher_research_bloomberg_opencode_pi.md`
 - **Browser Automation for HF Spaces — March 2026 Research** (601 words) -- `raw/agent-memory/research-analyst_research_browser_automation_march2026.md`
 - **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/karpathy-researcher/research_bloomberg_opencode_pi.md`
@@ -94,10 +95,13 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/research-analyst/research_april2026_cycle9_neural_architectures.md`
 - **NBA Feature Engine v3.0-43cat state** (507 words) -- `raw/agent-memory/feature-engineer_project_engine_v38cat.md`
 - **NBA Feature Engine v3.0-43cat state** (507 words) -- `raw/feature-engineer/project_engine_v38cat.md`
+- **pixel-world v2.17 itf-zone shipped** (491 words) -- `raw/agent-memory/pixel_project_pixel_world_v217_itf_zone_apr19.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
+- **Consume tf-proposals-*.json at 12h tick** (475 words) -- `raw/agent-memory/nomos-lab_dispatch-2026-04-19.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/repo-scout/project_nba_data_sources.md`
 - **GLM-5.1 + Autonomous Agents Deep Dive (April 2026)** (392 words) -- `raw/agent-memory/repo-scout_project_glm5_agents_apr2026.md`
+- **pixel-world architecture map** (371 words) -- `raw/agent-memory/pixel_reference_pixel_world_architecture.md`
 - **Political Alpha Deployment** (363 words) -- `raw/agent-memory/feature-engineer_project_political_alpha_deploy.md`
 - **Political Alpha Deployment** (363 words) -- `raw/feature-engineer/project_political_alpha_deploy.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/agent-memory/repo-scout_project_historical_odds_sources.md`
@@ -109,6 +113,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Multi-Agent Workflow Scan (April 2026)** (230 words) -- `raw/agent-memory/repo-scout_project_multiagent_workflow_apr2026.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/agent-memory/feature-engineer_project_gpu_evolution_v2.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/feature-engineer/project_gpu_evolution_v2.md`
+- **PQTF post-mortem + proposal bridge (2026-04-19)** (181 words) -- `raw/agent-memory/nomos-audit_project_pqtf_postmortem_apr19.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/agent-memory/nba-brain_project_strategy_confrontation.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/nba-brain/project_strategy_confrontation.md`
 - **user_role** (153 words) -- `raw/agent-memory/research-analyst_user_role.md`
