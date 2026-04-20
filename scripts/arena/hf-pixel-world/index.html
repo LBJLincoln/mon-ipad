@@ -649,7 +649,7 @@ const ZONES = {
   nba:          { x:1,  y:7,  w:25, h:19, floor:3, label:"NBA TRADING FLOOR" },
   political:    { x:26, y:7,  w:25, h:19, floor:5, label:"POLITICAL FLOOR" },
   // BOTTOM BAND (y=26..31, 6 tiles) — ITF + control room, stacked tight.
-  itf:          { x:1,  y:26, w:50, h:3,  floor:2, label:"INTRADAY · 7 AGENTS 24/7" },
+  itf:          { x:1,  y:26, w:50, h:3,  floor:2, label:"INTRADAY · 14 AGENTS 24/7" },
   "control-room":{x:1,  y:29, w:50, h:3,  floor:8, label:"CONTROL ROOM" },
 };
 
@@ -671,8 +671,12 @@ const POL_TRADERS = [
 // lbjlincoln26-intraday-trading-floor.hf.space/api/leaderboard. Schema is
 // different from NBA/POL (no bankroll — emits decisions/trades/passes/open_positions)
 // so the refresh path uses its own wiring.
+// v2.25 (2026-04-20): ITF expanded 7 → 14 personas. New 7 are the aggressive
+// layer that makes ITF the most active TF (pass rate 84% → 7% after deploy).
 const ITF_TRADERS = [
-  "scalper-1","momentum-1","mean-rev-1","breakout-1","pairs-1","vol-1","options-1"
+  "scalper-1","momentum-1","mean-rev-1","breakout-1","pairs-1","vol-1","options-1",
+  "arbitrage-1","news-catalyst-1","crypto-whale-1","earnings-gap-1",
+  "iv-crush-1","macro-rotate-1","leveraged-momentum-1"
 ];
 // v2.17: ISLANDS trimmed to 11 SURVIVORS (was 21). 10 "nul" islands
 // eliminated on 2026-04-17 to free HF concurrency for selfhost LLMs.
