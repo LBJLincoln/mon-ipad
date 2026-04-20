@@ -76,9 +76,12 @@ OR a standard equity/crypto trade:
       SECTOR_ETF:    "SPY","QQQ","IWM","DIA","XLE","XLF","XLK","XLV","XLI","XLB","XLY","XLP","XLRE","XLU","XLC","GLD","TLT","SLV","USO","UUP"
       LEVERAGED:     "TQQQ","SQQQ","SPXL","SPXS","SOXL","SOXS","TNA","TZA"
       VOLATILITY:    "VXX","UVXY","SVXY","VIXY"
-      INTERNATIONAL: "EEM","FXI","EWZ","EWJ","EWT","EWW","VGK","INDA"
-      STOCKS:        "AAPL","MSFT","NVDA","GOOGL","AMZN","META","TSLA","AMD","AVGO","COST","NFLX","ORCL","CRM","ADBE","PYPL","SMCI","UBER","SHOP","DIS","BA"
-      CRYPTO:        "BTC/USD","ETH/USD","SOL/USD","AVAX/USD","LINK/USD","DOGE/USD","DOT/USD","MATIC/USD","LTC/USD","UNI/USD"  (24/7 tradeable)
+      INTERNATIONAL: "EEM","FXI","EWZ","EWJ","EWT","EWW","VGK","INDA","VEA","IEFA","ACWX","EFA","EFV","VWO"
+      COMMODITIES:   "DBA","DBC","PDBC","CORN","WEAT","CPER","URA","UNG"
+      BONDS:         "SHY","IEI","IEF","LQD","HYG"
+      THEMATIC:      "ARKK","SOXX","SMH","XBI","ICLN","TAN","ITA","IBIT"
+      STOCKS:        "AAPL","MSFT","NVDA","GOOGL","AMZN","META","TSLA","AMD","AVGO","COST","NFLX","ORCL","CRM","ADBE","PYPL","SMCI","UBER","SHOP","DIS","BA","JPM","BAC","WFC","GS","V","MA","LLY","UNH","COIN","MSTR","PLTR","RIVN"
+      CRYPTO:        "BTC/USD","ETH/USD","SOL/USD","AVAX/USD","LINK/USD","DOGE/USD","DOT/USD","MATIC/USD","LTC/USD","UNI/USD","BCH/USD","XLM/USD","XRP/USD","AAVE/USD","SHIB/USD","MKR/USD","SUSHI/USD","CRV/USD","YFI/USD","GRT/USD"  (24/7 tradeable)
     "side": "long"|"short",
     "stake_usd": 500-3000,
     "stop_pct": 0.002-0.02,

@@ -45,12 +45,37 @@ DEFAULT_EQUITIES: List[str] = [
     # MAG7 + extended single-name (20)
     "AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "TSLA", "AMD", "AVGO", "COST",
     "NFLX", "ORCL", "CRM", "ADBE", "PYPL", "SMCI", "UBER", "SHOP", "DIS", "BA",
+    # ── NEW 2026-04-20 expansion — more categories ──
+    # Commodity ETFs (8) — separate from precious-metals ETFs above
+    "DBA", "DBC", "PDBC", "CORN", "WEAT", "CPER", "URA", "UNG",
+    # Treasuries + curve (5) — different durations for macro plays
+    "SHY", "IEI", "IEF", "LQD", "HYG",
+    # Developed-markets + frontier (6)
+    "VEA", "IEFA", "ACWX", "EFA", "EFV", "VWO",
+    # Thematic / factor (8) — AI, biotech, clean energy, defense, real estate specifics, crypto-proxy
+    "ARKK", "SOXX", "SMH", "XBI", "ICLN", "TAN", "ITA", "IBIT",
+    # Single-name expansion (12) — financials, consumer, semis, biotech leaders
+    "JPM", "BAC", "WFC", "GS", "V", "MA", "LLY", "UNH",
+    "COIN", "MSTR", "PLTR", "RIVN",
 ]
 DEFAULT_CRYPTO: List[str] = [
+    # Original 10 (majors + large-caps)
     "BTC/USD", "ETH/USD", "SOL/USD", "AVAX/USD", "LINK/USD", "DOGE/USD",
     "DOT/USD", "MATIC/USD", "LTC/USD", "UNI/USD",
+    # ── NEW 2026-04-20 — 10 more crypto pairs for 24/7 opportunity surface ──
+    "BCH/USD", "XLM/USD", "XRP/USD", "AAVE/USD", "SHIB/USD",
+    "MKR/USD", "SUSHI/USD", "CRV/USD", "YFI/USD", "GRT/USD",
 ]
-DEFAULT_TICKERS: List[str] = DEFAULT_EQUITIES + DEFAULT_CRYPTO + ["^VIX"]
+# ── NEW 2026-04-20 — Indices we also track for macro context (not directly tradeable by ITF) ──
+DEFAULT_INDICES: List[str] = [
+    "^VIX",    # implied vol (equity)
+    "^VVIX",   # vol-of-vol
+    "^MOVE",   # bond MOVE index (treasury vol)
+    "^TNX",    # 10Y yield
+    "^DXY",    # dollar index
+    "^SKEW",   # tail-risk skew
+]
+DEFAULT_TICKERS: List[str] = DEFAULT_EQUITIES + DEFAULT_CRYPTO + DEFAULT_INDICES
 
 
 def ticker_asset_class(t: str) -> str:

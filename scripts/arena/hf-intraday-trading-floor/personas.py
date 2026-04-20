@@ -79,10 +79,14 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "mean-rev-1",
         "name": "MeanReversion",
-        "model_primary": "mistral:nemo",                 # top fast-tier winner (cross-TF attribution)
-        "model_fallback": "google:gemini-3-flash",
-        "hf_account_target": "mistral",
-        "hf_space_target": "nemo",
+        # 2026-04-20: user asked for nemotron + minimax to actually be used.
+        # openrouter:nemotron-120b:free is FREE-tier and was the NBA T11 chainthought
+        # trader; perfect fit for mean-reversion "fade the extreme" reasoning.
+        # mistral:medium fallback keeps us solvent if openrouter rate-limits.
+        "model_primary": "openrouter:nemotron-120b:free",
+        "model_fallback": "mistral:medium",
+        "hf_account_target": "openrouter",
+        "hf_space_target": "nemotron-120b",
         "tier": "L",
         "risk": 0.40,
         "max_hold_min": 90,
@@ -96,10 +100,13 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "breakout-1",
         "name": "Breakout",
-        "model_primary": "cerebras:qwen-3-235b",         # NBA qwen-quant analytical
-        "model_fallback": "cerebras:llama3.1-8b",
-        "hf_account_target": "cerebras",
-        "hf_space_target": "qwen-3-235b",
+        # 2026-04-20: user asked minimax m2.7 be used — it's the NVIDIA NIM free
+        # lane (T13 NBA "decisive" trader). Breakouts reward decisiveness, so
+        # this is a fit. cerebras:qwen-3-235b fallback keeps analytical backup.
+        "model_primary": "nvidia:minimax-m2.7",
+        "model_fallback": "cerebras:qwen-3-235b",
+        "hf_account_target": "nvidia",
+        "hf_space_target": "minimax-m2.7",
         "tier": "M",
         "risk": 0.55,
         "max_hold_min": 180,
