@@ -1,0 +1,62 @@
+name: Engine Parity Check (cross-repo sha256)
+
+on:
+  schedule:
+    - cron: "17 3 * * *"  # daily 03:17 UTC — after nomos-nba-agent's daily commits
+  workflow_dispatch:
+  push:
+    paths:
+      - "features/engine.py"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout mon-ipad
+        uses: actions/checkout@v4
+
+      - name: Checkout nomos-nba-agent
+        uses: actions/checkout@v4
+        with:
+          repository: LBJLincoln/nomos-nba-agent
+          token: ${{ secrets.GH_PAT_CROSS_REPO || secrets.GITHUB_TOKEN }}
+          path: nomos-nba-agent
+
+      - name: Compare sha256
+        run: |
+          set -euo pipefail
+          SELF=$(sha256sum features/engine.py | awk '{print $1}')
+          OTHER=$(sha256sum nomos-nba-agent/features/engine.py | awk '{print $1}')
+          echo "mon-ipad            = $SELF"
+          echo "nomos-nba-agent     = $OTHER"
+          if [ "$SELF" != "$OTHER" ]; then
+            echo "::error title=Engine drift::features/engine.py differs across repos (Rule #2)"
+            echo "SELF=$SELF"
+            echo "OTHER=$OTHER"
+            echo "::notice::Run dr-frankenstein to port missing changes, then safe_commit from whichever side is behind."
+            exit 1
+          fi
+          echo "::notice::engine.py parity verified — sha256 match"
+
+      - name: Write parity artifact
+        if: always()
+        run: |
+          mkdir -p data/ops
+          python3 - <<'PY'
+          import hashlib, json, datetime as dt, pathlib
+          def sha(p): return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          out = {
+            "ts": dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "mon-ipad": sha("features/engine.py"),
+            "nomos-nba-agent": sha("nomos-nba-agent/features/engine.py"),
+          }
+          out["match"] = out["mon-ipad"] == out["nomos-nba-agent"]
+          pathlib.Path("data/ops/engine-parity-latest.json").write_text(json.dumps(out, indent=1))
+          PY
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-parity
+          path: data/ops/engine-parity-latest.json
