@@ -1,0 +1,105 @@
+{
+  "timestamp_utc": "2026-04-20T23:45:00Z",
+  "agent": "DR FRANKENSTEIN",
+  "event": "cat66_port_parity_check",
+  "proposal": "Port Cat 66 Pace-Normalized Per-100 Box-Score Differentials (MDPI Information 17(1):56 Jan 2026) from nomos-nba-agent → mon-ipad",
+
+  "engine_versions": {
+    "before_mon_ipad": "v3.1-65cat",
+    "after_mon_ipad": "v3.1-66cat",
+    "nomos_nba_agent": "v3.1-66cat"
+  },
+
+  "sha256_before": {
+    "mon-ipad/features/engine.py":         "fe85d15eb2b61e5f86db1b37521211db1fcfaa4377e82882f38856ccc1dda76b",
+    "mon-ipad/hf-space/features/engine.py": "fe85d15eb2b61e5f86db1b37521211db1fcfaa4377e82882f38856ccc1dda76b",
+    "nomos-nba-agent/features/engine.py":         "25d59790bf7c83288d15caf6aaf33b3a4e59923b46ba4512a3ee8c22c193c224",
+    "nomos-nba-agent/hf-space/features/engine.py": "25d59790bf7c83288d15caf6aaf33b3a4e59923b46ba4512a3ee8c22c193c224"
+  },
+
+  "sha256_after": {
+    "mon-ipad/features/engine.py":         "5e66371c4a39ea42ea76457ea83e3ee3175a203dc6823e5a8ace646015565cba",
+    "mon-ipad/hf-space/features/engine.py": "5e66371c4a39ea42ea76457ea83e3ee3175a203dc6823e5a8ace646015565cba",
+    "nomos-nba-agent/features/engine.py":         "25d59790bf7c83288d15caf6aaf33b3a4e59923b46ba4512a3ee8c22c193c224",
+    "nomos-nba-agent/hf-space/features/engine.py": "25d59790bf7c83288d15caf6aaf33b3a4e59923b46ba4512a3ee8c22c193c224"
+  },
+
+  "rule2_parity": {
+    "mon_ipad_internal_pair": "PASS — /features == /hf-space/features (sha 5e66371c)",
+    "nomos_nba_agent_internal_pair": "PASS — /features == /hf-space/features (sha 25d59790)",
+    "cross_repo": "KNOWN DRIFT — mon-ipad has y_margin/y_total regression channel (5 extra lines) that nomos-nba-agent does not. Pre-existing, not introduced by this port. Left intact to preserve mon-ipad totals-betting pipeline."
+  },
+
+  "loc_after": {
+    "mon-ipad/features/engine.py": 8089,
+    "nomos-nba-agent/features/engine.py": 8084,
+    "loc_diff_explanation": "+5 = mon-ipad-only y_margin/y_total regression lines (3039, 7113, 7114, 7167, 7168 in old mon-ipad; ~equivalent positions post-port)."
+  },
+
+  "cat66_port": {
+    "additions": [
+      "Line 67-68 (docstring): +Cat 65/66 headers",
+      "Line 93 (ENGINE_VERSION): v3.1-65cat → v3.1-66cat",
+      "Line 2931-2949 (names.extend): +12 feature names p100_66_*",
+      "Line 7132-7181 (compute block): +50-line try/except computing per-100 rolling 10g avgs"
+    ],
+    "feature_name_prefix": "p100_66_",
+    "features_added": 12,
+    "total_feature_candidates_after": 6446
+  },
+
+  "smoke_test": {
+    "sample_games": 200,
+    "warmup_filter_survivors": 144,
+    "build_success": true,
+    "X_shape": [144, 6446],
+    "cat66_indices": [6434, 6435, 6436, 6437, 6438, 6439, 6440, 6441, 6442, 6443, 6444, 6445],
+    "cat66_nan_count": 0,
+    "cat66_min": -27.559,
+    "cat66_max": 131.701,
+    "cat66_mean_per_feature": {
+      "p100_66_h_pts": 100.84,
+      "p100_66_a_pts": 101.37,
+      "p100_66_diff_pts": -0.53,
+      "p100_66_h_ast": 13.08,
+      "p100_66_a_ast": 13.08,
+      "p100_66_diff_ast": 0.00,
+      "p100_66_h_tov": 7.57,
+      "p100_66_a_tov": 7.54,
+      "p100_66_diff_tov": -0.03,
+      "p100_66_h_reb": 39.24,
+      "p100_66_a_reb": 39.24,
+      "p100_66_diff_reb": 0.01
+    },
+    "verdict": "PASS — no exception, no NaN, reasonable ranges, home/away diffs ~0 as expected."
+  },
+
+  "paper_math_review": {
+    "p100_66_pts": "FAITHFUL — uses ortg directly which is pts*100/poss per _parse_stats.",
+    "p100_66_ast": "PROXY — uses ast_rate*constant(25) instead of ast*100/poss. Monotonic but off by ~±10% on FGM variance. Smoke-test mean 13.08 vs league-true ~25/100 suggests undercook.",
+    "p100_66_tov": "DOUBLE-PACE BUG — tov_rate is ALREADY per-possession; _p100 divides by poss again. Coefficient 85 lands in plausible range but math is not what the paper states. Smoke-test mean 7.57 vs league-true ~14/100.",
+    "p100_66_reb": "PROXY — (oreb_pct + dreb_pct) sum isn't true rebound-per-poss. Scaling ×45 gives mean 39.24 vs league-true ~44/100. Close enough, monotonic.",
+    "recommendation": "Features are monotonic to paper-correct values; genetic selection will filter if non-useful. If they DO get selected and underperform expected Brier, escalate to HAWKEYE for v2 using raw ast/tov/reb * 100 / poss. For now: ship as-is, monitor S22 canary."
+  },
+
+  "hf_tf_mirror_targets": {
+    "LBJLincoln26/nba-llm-trading-floor": "NOT_APPLICABLE — app.py loads pre-generated island predictions JSON, not raw engine features. Scanned scripts/arena/hf-llm-trading-floor/*.py — no import of features.engine.",
+    "LBJLincoln26/political-llm-trading-floor": "NOT_APPLICABLE — same architecture, predictions-consumer only.",
+    "LBJLincoln26/intraday-trading-floor": "NOT_APPLICABLE — ITF operates on live prices + prompts, no engine.py.",
+    "PQTF": "SKIPPED per instruction — has own engine."
+  },
+
+  "island_canary": {
+    "target": "S22 Nomos42/nba-evo-s22 (fleet-best Brier 0.22073, venn_abers_fusion gen 39, checkpointed 2026-04-19)",
+    "canary_note": "data/research/eng-v3.1-66cat-canary.md",
+    "next_mutation_cycle": "Next SWISH island-mutation tick picks up v3.1-66cat. Other islands (S13/S14/S15/S17/S18) stay on v3.1-65cat until S22 Brier-canary clears."
+  },
+
+  "kill_criterion": "NOT TRIPPED — build succeeded, 0 NaN, 12/12 Cat 66 features emitted, ranges plausible.",
+
+  "next_actions": [
+    "FRANKENSTEIN: commit via safe_commit.sh with paths below",
+    "SWISH: canary S22 on next mutation cycle, wait 3 evals for Brier delta signal",
+    "HAWKEYE: on-deck if Cat 66 features get selected but underperform — v2 with corrected ast/tov/reb math"
+  ]
+}

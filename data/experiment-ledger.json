@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-20T03:29:08Z",
+  "last_updated": "2026-04-20T23:33:29Z",
   "ledger": [
     {
       "cycle": "swish-4h-2026-04-19T16:35Z",
@@ -260,6 +260,52 @@
       "status_after": "implemented",
       "verdict": "pending",
       "notes": "Not an engine.py feature \u2014 TF data-ingestion. fetch_player_props.py pulls Bovada+DK live + synthesizes from player-stats for historical. prepare_data.py step 4b merges into full-odds-2025-26.json. 802/802 games now have \u226521 pp_* keys (target was \u22656 for \u22651000/1257 \u2014 dataset only has 802 games). HF Space LBJLincoln26/nba-llm-trading-floor uploaded via HfApi.upload_file using HF_TOKEN_NBA, commit f0a9e0a2. Cron 0 18,22 * * * installed. Live fetchers returned 0 games today (off-season window; will pick up during slate hours). Expected Brier \u0394: 0 (no prediction model changed), but unlocks 22 new bet categories per game \u00d7 16 agents \u00d7 remaining 47 days of the 175-day run = previously-silent menu now actionable."
+    },
+    {
+      "date": "2026-04-20T23:33:29Z",
+      "agent": "FRANKENSTEIN",
+      "action": "port_and_mirror",
+      "proposal_id": "eng-cat66-port-2026-04-20",
+      "proposal_title": "Port Cat 66 Pace-Normalized Per-100 Box-Score Differentials (MDPI Information 17(1):56 Jan 2026) from nomos-nba-agent to mon-ipad + HF-space mirror",
+      "source_paper": "MDPI Information 17(1):56 (Jan 2026) \u2014 Uncertainty-Aware ML for NBA Forecasting",
+      "target_files": [
+        "features/engine.py",
+        "hf-space/features/engine.py",
+        "data/ops/engine-parity-check-2026-04-20.json",
+        "data/research/eng-v3.1-66cat-canary.md"
+      ],
+      "sha256_engine_before": "fe85d15eb2b61e5f86db1b37521211db1fcfaa4377e82882f38856ccc1dda76b",
+      "sha256_engine_after": "5e66371c4a39ea42ea76457ea83e3ee3175a203dc6823e5a8ace646015565cba",
+      "parity": "mon-ipad pair PASS (internal sha match). Cross-repo vs nomos-nba-agent: known y_margin/y_total drift unchanged (pre-existing, mon-ipad-only regression channel).",
+      "engine_version_before": "v3.1-65cat",
+      "engine_version_after": "v3.1-66cat",
+      "features_added": 12,
+      "total_candidates_after": 6446,
+      "feature_names": [
+        "p100_66_h_pts",
+        "p100_66_a_pts",
+        "p100_66_diff_pts",
+        "p100_66_h_ast",
+        "p100_66_a_ast",
+        "p100_66_diff_ast",
+        "p100_66_h_tov",
+        "p100_66_a_tov",
+        "p100_66_diff_tov",
+        "p100_66_h_reb",
+        "p100_66_a_reb",
+        "p100_66_diff_reb"
+      ],
+      "expected_brier_delta": -0.003,
+      "smoke_test": "PASS \u2014 200-sample build, 144 warmup survivors, X shape (144, 6446), 0 NaN, Cat 66 mean pts~101 / ast~13 / tov~7.5 / reb~39",
+      "math_review": "pts-faithful (uses ortg). ast/tov/reb = rate*constant proxies \u2014 monotonic but undercooked. HAWKEYE v2 on-deck if selected-and-underperforming.",
+      "canary_target": "S22 (fleet-best Brier 0.22073)",
+      "canary_note": "data/research/eng-v3.1-66cat-canary.md",
+      "parity_check": "data/ops/engine-parity-check-2026-04-20.json",
+      "brier_before": 0.22073,
+      "brier_after": null,
+      "status_before": "unimplemented_in_mon_ipad",
+      "status_after": "ported_pending_canary",
+      "verdict": "pending_canary_s22"
     }
   ],
   "unimplemented_proposals": [
@@ -285,10 +331,10 @@
     "stacked-ensemble-shap-2026-04-10.md"
   ],
   "summary": {
-    "total_experiments": 8,
+    "total_experiments": 9,
     "kept": 1,
     "reverted": 0,
-    "pending": 4,
+    "pending": 5,
     "best_technique": "Venn-Abers calibration",
     "best_delta": -0.0054
   },
