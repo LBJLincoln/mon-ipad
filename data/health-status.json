@@ -1,50 +1,137 @@
 {
-  "generated_at": "2026-04-20T10:00:00Z",
+  "generated_at": "2026-04-20T14:00:00Z",
   "brain_cycle": "cloud-brain-4h",
   "nba_islands": {
-    "S13": {"space": "nomos42/nba-evo-4", "status": "UP", "gen": 291, "best_brier": 0.22136, "roi": 30.04, "sharpe": 6.99, "stagnation_cycles": 0, "model": "extra_trees"},
-    "S14": {"space": "nomos42/nba-evo-5", "status": "UP", "gen": 343, "best_brier": 0.23493, "roi": 15.74, "sharpe": 12.56, "stagnation_cycles": 0, "model": "xgboost_brier"},
-    "S15": {"space": "nomos42/nba-evo-6", "status": "UP", "gen": 258, "best_brier": 0.22374, "roi": 28.24, "sharpe": 11.59, "stagnation_cycles": 9, "model": "random_forest", "action_taken": "diversify_queued"},
-    "S17": {"space": "lbjlincoln26/nba-evo-s17", "status": "UP", "gen": 1225, "best_brier": 0.22358, "roi": 28.27, "sharpe": 8.59, "stagnation_cycles": 0, "model": "xgboost"},
-    "S18": {"space": "testforge42/nba-evo-s18", "status": "DOWN", "error": "HTTP 503", "wake_attempted": true},
-    "S22": {"space": "testforge42/nba-evo-s22", "status": "UP", "gen": 870, "best_brier": 0.22184, "roi": 30.39, "sharpe": 7.60, "stagnation_cycles": 0, "model": "logistic_regression"}
+    "S13": {
+      "space": "nomos42/nba-evo-4",
+      "status": "DOWN",
+      "error": "HTTP 503 — unresponsive after multiple wake pings",
+      "last_known_gen": 291,
+      "last_known_brier": 0.22136,
+      "wake_attempted": true,
+      "note": "Needs VM manual restart via keepalive-spaces.sh"
+    },
+    "S14": {
+      "space": "nomos42/nba-evo-5",
+      "status": "UP",
+      "gen": 466,
+      "best_brier": 0.23493,
+      "top_performer_brier": 0.22685,
+      "stagnation_gens": 4,
+      "roi": 0.1574,
+      "sharpe": 12.5562,
+      "model": "xgboost_brier",
+      "top_performer_model": "extra_trees",
+      "top_performer_calibration": "isotonic_temporal",
+      "note": "Stagnation 4 < 15 threshold. Top performer using isotonic_temporal calibration."
+    },
+    "S15": {
+      "space": "nomos42/nba-evo-6",
+      "status": "WAKING",
+      "gen": 0,
+      "last_known_gen": 258,
+      "last_known_brier": 0.22374,
+      "note": "Fresh restart after sleep — lost in-memory state from gen=258. Rebuilding."
+    },
+    "S17": {
+      "space": "lbjlincoln26/nba-evo-s17",
+      "status": "UP",
+      "gen": 999,
+      "best_brier": 0.22154,
+      "stagnation_gens": 7,
+      "roi": 0.3084,
+      "sharpe": 6.9655,
+      "model": "random_forest",
+      "note": "LIVE NBA FLEET BEST — stagnation 7 < 15 threshold, no diversify needed"
+    },
+    "S18": {
+      "space": "testforge42/nba-evo-s18",
+      "status": "WAKING",
+      "gen": 0,
+      "last_known_gen": 999,
+      "last_known_brier": 0.22114,
+      "note": "Fresh restart after sleep — lost in-memory state. Rebuilding."
+    },
+    "S22": {
+      "space": "testforge42/nba-evo-s22",
+      "status": "WAKING",
+      "gen": 0,
+      "last_known_gen": 870,
+      "last_known_brier": 0.22184,
+      "note": "Fresh restart after sleep — lost gen=870 state. /api/run returned 404 (endpoint missing)."
+    }
   },
   "fleet_best_brier": 0.22073,
   "fleet_best_source": "S22 venn_abers_fusion gen=39 (checkpointed 2026-04-19)",
   "checkpoint_threshold": 0.22085,
   "new_checkpoint": false,
-  "live_best_brier": 0.22136,
-  "live_best_source": "S13 extra_trees gen=291",
+  "live_best_brier": 0.22154,
+  "live_best_source": "S17 random_forest gen=999",
+  "stagnation_alerts": [],
   "political_islands": {
-    "P1": {"space": "nomos42/political-alpha", "status": "DOWN", "error": "HTTP 503", "last_known_gen": 3042, "last_known_brier": 0.24996, "wake_attempted": true},
-    "P2": {"space": "nomos42/political-alpha-2", "status": "DOWN", "error": "HTTP 503", "last_known_gen": 11953, "last_known_brier": 0.25223, "wake_attempted": true},
-    "P4": {"space": "lbjlincoln/political-alpha-4", "status": "DOWN", "error": "HTTP 503", "last_known_gen": 16728, "last_known_brier": 0.25146, "wake_attempted": true},
-    "P5": {"space": "lbjlincoln/political-alpha-5", "status": "WAKING", "wake_response": "HTTP 200", "last_known_gen": 1567, "last_known_brier": 0.25347},
-    "P7": {"space": "lbjlincoln/political-alpha-7", "status": "DOWN", "error": "HTTP 503", "last_known_gen": 2098, "last_known_brier": 0.24987, "wake_attempted": true, "note": "POL FLEET BEST"}
+    "P1": {
+      "space": "nomos42/political-alpha",
+      "status": "DOWN",
+      "error": "HTTP 503",
+      "last_known_gen": 3042,
+      "last_known_brier": 0.24996,
+      "model": "xgboost"
+    },
+    "P2": {
+      "space": "nomos42/political-alpha-2",
+      "status": "UP",
+      "gen": 20818,
+      "best_brier": 0.24956,
+      "stagnation_gens": 0,
+      "model": "lightgbm",
+      "note": "NEW POL FLEET BEST — beats previous P7 best of 0.24987. High gen count (20k+) confirms lightgbm benefits from long runs."
+    },
+    "P4": {
+      "space": "lbjlincoln/political-alpha-4",
+      "status": "WAKING",
+      "gen": 0,
+      "last_known_gen": 16728,
+      "last_known_brier": 0.25146,
+      "note": "Fresh restart — lost gen=16728 evolved state"
+    },
+    "P5": {
+      "space": "lbjlincoln/political-alpha-5",
+      "status": "DOWN",
+      "error": "HTTP 503",
+      "last_known_gen": 1567,
+      "last_known_brier": 0.25347
+    },
+    "P7": {
+      "space": "lbjlincoln/political-alpha-7",
+      "status": "WAKING",
+      "gen": 0,
+      "last_known_gen": 2098,
+      "last_known_brier": 0.24987,
+      "note": "Fresh restart — lost gen=2098 evolved state. Previous pol fleet best."
+    }
   },
-  "dept_councils": {
-    "D1": {"status": "DOWN", "wake_attempted": true},
-    "D2": {"status": "DOWN", "wake_attempted": true},
-    "D3": {"status": "DOWN", "wake_attempted": true},
-    "D4": {"status": "DOWN", "wake_attempted": true},
-    "D5": {"status": "DOWN", "wake_attempted": true},
-    "D6": {"status": "DOWN", "wake_attempted": true},
-    "D7": {"status": "DOWN", "wake_attempted": true},
-    "D8": {"status": "DOWN", "wake_attempted": true},
-    "D9": {"status": "DOWN", "wake_attempted": true}
-  },
+  "dept_councils": "DECOMMISSIONED 2026-04-20 — all 9 TESTforge42/nomos-dept-d*-* Spaces deleted per CLAUDE.md. Do not restart.",
   "actions_taken": [
-    "S15: diversify command queued (stagnation=9 cycles)",
-    "S18: GET wake ping sent (HTTP 503 persists)",
-    "P1-P5: GET wake pings sent (P5 responded 200)",
-    "D1-D9: GET wake pings sent (all 503 — VM keepalive cron may need verification)"
+    "S13: Multiple wake pings sent (GET root + /api/status) — still 503. Needs VM manual restart.",
+    "S14: Confirmed UP via /api/status — gen 466, brier 0.23493, stagnation 4 (<15 threshold, no diversify).",
+    "S17: Confirmed UP via /api/status — gen 999, brier 0.22154, stagnation 7 (<15 threshold). Live NBA fleet best.",
+    "S15/S18/S22: Wake pings succeeded — spaces rebuilt at gen=0 (lost memory state due to sleep restart).",
+    "P1/P5: Still 503 after wake pings — VM keepalive may be failing for Nomos42 account.",
+    "P2: Confirmed UP — new political fleet best at 0.24956 (beats P7 0.24987). Updated brain-status.json.",
+    "P4/P7: Wake pings succeeded — both waking at gen=0 (lost evolved state).",
+    "Rotation B (political_engine.py review): Created GH Actions workflow to restore 6-day-old truncation bug (nomos-political-alpha/.github/workflows/restore-political-engine.yml).",
+    "SOTA research: Uncertainty-aware calibration proposal written to data/research-proposals/2026-04-20-sota-uncertainty-calibration.json."
   ],
   "alerts": [
-    "CRITICAL: All 9 dept councils DOWN — VM keepalive-spaces.sh may be failing",
-    "CRITICAL: 4/5 political islands DOWN (P5 waking)",
-    "WARNING: S18 DOWN (HTTP 503)",
-    "WARNING: S15 stagnating 9 cycles — diversify queued"
+    "CRITICAL: Space sleep-restart cycle causing state loss (S15/S18/S22/P4/P7 all reset to gen=0). VM keepalive-spaces.sh needs verification — may be targeting deleted council spaces instead of survivors.",
+    "WARNING: S13 DOWN — multiple wake attempts failed. Needs VM manual restart.",
+    "WARNING: P1/P5 DOWN after wake attempts — Nomos42 account may have concurrent space limit issues.",
+    "INFO: P2 new political fleet best 0.24956 — CLAUDE.md update pending (P2 replaces P7 as POL BEST).",
+    "INFO: political_engine.py restore workflow triggered — verify it commits 3439-line file in nomos-political-alpha."
   ],
-  "sota_research": "data/research-proposals/2026-04-20-sota-research.json",
-  "work_queue_pending": ["tf-axelrod-verify-tune-12 (USER GATE: explicit approval needed for HF Space push)"]
+  "cross_project_insight": "P2 lightgbm at gen=20818 achieving pol fleet best confirms: lightgbm benefits from very long evolution runs (20k+ gens). NBA recommendation: extend S14 or introduce dedicated lightgbm island with long horizon.",
+  "sota_research": "data/research-proposals/2026-04-20-sota-uncertainty-calibration.json",
+  "work_queue_pending": [
+    "tf-axelrod-verify-tune-12 (USER GATE: explicit approval needed for HF Space push — all 3 mechanisms spec-complete)"
+  ]
 }
