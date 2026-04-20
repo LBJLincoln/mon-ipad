@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-20T06:11:00Z",
+  "updated_at": "2026-04-20T12:15:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -192,7 +192,7 @@
       "status": "done",
       "completed_at": "2026-04-19T00:16:11Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "Fix NBA CK block hardcoded agent-count (12\u219217, $1200\u2192dynamic)",
+      "subject": "Fix NBA CK block hardcoded agent-count (12→17, $1200→dynamic)",
       "brain_verification_2026-04-20": "CONFIRMED APPLIED — n_traders=len(TRADERS) at L2579, ONE of 17 at L239. axelrod-ck-fix-v1.yml ran but did not self-delete (cosmetic).",
       "do_not_push_hf_space_yet": true
     },
@@ -228,6 +228,19 @@
       ],
       "do_not_push_hf_space_yet": true,
       "blocked_on": "explicit user approval only (CK fix confirmed applied 2026-04-20, all 3 mechanisms spec-complete as of fire-13 audit)"
+    },
+    {
+      "id": "tf-axelrod-verify-tune-14",
+      "priority": 22,
+      "status": "done",
+      "completed_at": "2026-04-20T12:15:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 14 — py_compile re-check + spec confirmation (no code changes)",
+      "py_compile": "PASS both apps (NBA 4256 lines, Political 3500 lines)",
+      "audit_result": "All 3 mechanisms spec-complete. Both apps identical parity on CK block structure, leaderboard format, DMAD mandate, Mech B society-wide archetype dedup, Mech C AXELROD_LOG_DIR write. No regressions vs fire-13.",
+      "mech_a_confirmed": "NBA L3569-3575 + Political L2848-2853: prev_day_ck = build_common_knowledge_block(...) called at day-end, injected via common_knowledge_block= on next day's build_day_prompt. CK block: growth_factor leaderboard + 3-day rolling bets (stake/edge/outcome) + DMAD STRUCTURAL DIVERGE/COMPLEMENT mandate.",
+      "next_action": "Await user approval to push to HF Space (tf-axelrod-verify-tune-12).",
+      "do_not_push_hf_space_yet": true
     }
   ],
   "recovery_protocol": {
