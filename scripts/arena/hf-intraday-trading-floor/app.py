@@ -1213,7 +1213,13 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                 "decision": {"action": "pass", "reason": f"compute_cap_{SUBMITS_PER_TICK}_submits_reached"},
             })
             continue
-        decision = _call_agent(persona, ctx)
+        try:
+            decision = _call_agent(persona, ctx)
+        except Exception as _ce:
+            print(f"[itf] _call_agent raised for {persona['tid']}: {_ce} — "
+                  f"using uniform fallback so tick continues",
+                  file=sys.stderr, flush=True)
+            decision = _uniform_fallback_itf(persona, ctx)
         action = decision.get("action")
         # 2026-04-21 CLOSE ACTION — agent can free BP by closing one of its open
         # positions; bypasses anti-lockstep/BP checks (closing always fine).
