@@ -335,6 +335,23 @@ _OFF_HOURS_STYLE_BY_TID: Dict[str, str] = {
         "intrinsically volatile (implicit leverage). Find the biggest |chg| crypto "
         "and ride it for 30-90 min. Stop 1.2%, TP 3%. Pass if max crypto |chg| < 0.5%."
     ),
+    # 2026-04-21 v2.7 — last 3 personas wired so ALL 17 stay active 24/7.
+    "gap-fade-1": (
+        "OFF-HOURS CRYPTO MODE: Gap-fade, crypto edition. Crypto overnight gaps happen "
+        "nonstop. If any crypto |chg| > 1.2% in last hr, FADE it (short the move). "
+        "Stop 1.0%, TP 1.5%. Pass ONLY if all crypto |chg| < 0.5%."
+    ),
+    "carry-1": (
+        "OFF-HOURS CRYPTO MODE: Carry, crypto edition. Stablecoin carry + BTC/ETH "
+        "funding-proxy via spot premia. If BTC in up-trend (chg > 0.3%), long BTC as "
+        "positive-carry risk asset. If BTC flat + alts up, long highest-momentum alt. "
+        "Stop 1.0%, TP 2.0%. Pass if BTC chg < 0.2% AND alts < 0.4%."
+    ),
+    "breakdown-1": (
+        "OFF-HOURS CRYPTO MODE: Breakdown, crypto edition. Short weakness. If any "
+        "crypto pair has chg < -1.0% with momentum (last 1hr trending down), SHORT "
+        "it. Stop 1.0%, TP 2.0%. Pass if no crypto has chg < -0.3%."
+    ),
 }
 
 
