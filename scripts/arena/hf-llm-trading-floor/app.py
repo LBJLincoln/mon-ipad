@@ -132,7 +132,15 @@ except Exception:
 # gets greedy (>$250K). Exposed on /api/status.
 SEASON_TARGET = 1_000_000.0          # common goal — any agent reaching this wins the season
 STARTING_CAPITAL = 100.0             # per-agent seed (pre multi-season compound)
-ROGUE_DRAWDOWN_THRESHOLD = 0.25      # bankroll < 0.25 × starting → drawdown rogue
+# 2026-04-21 SWISH — PQTF-doctrine relaxation (project_tf_coalition_mandatory_apr18).
+# Old rogue-drawdown gate = 0.25×STARTING_CAPITAL → $25. With fleet avg ~$27 after the
+# $1475→$461 (-69%) bleed, ~70% of 17 agents were silenced into preservation mode
+# (MIN_DEPLOY 50%, moneylines only, 5% bet cap) every tick → could not recover →
+# frozen-gate death spiral. Same bug class as PQTF $20 hardcoded for $100K era
+# (fixed 2026-04-19, commit 87d12e2f3). Relaxing to ABSOLUTE $20 survival floor —
+# mistral-ministral's $10K→$1.3K→$14K swing proved agents DO recover when given room.
+ABS_SURVIVAL_FLOOR = 20.0            # $20 absolute — only gate, no peak-relative strangle
+ROGUE_DRAWDOWN_THRESHOLD = ABS_SURVIVAL_FLOOR / STARTING_CAPITAL  # = 0.20 for legacy callers
 ROGUE_GREED_THRESHOLD = 250_000.0    # any peer > $250K → greed rogue
 COUNCIL_MIN_COMMIT_PER_AGENT = 0.50  # each agent commits ≥50% of bankroll daily
 # Peak-drawdown guard (2026-04-18 post-mortem finding): mistral-ministral peaked
@@ -171,9 +179,12 @@ def _load_prompt_override(fleet: str = "nba") -> str:
             continue
     return ""
 
-PEAK_DRAWDOWN_GUARD = 0.70           # ≥30% off peak → preservation mode
-PRESERVATION_MAX_DEPLOY = 0.50       # cap daily deploy at 50% while preserving
-PRESERVATION_MAX_BET_PCT = 0.05      # cap any single bet at 5% bankroll
+# 2026-04-21 SWISH — RETIRED: peak-relative guard was the frozen-gate death spiral.
+# After $1475 peak → $461 (-69%), every agent was 69% off peak → silenced forever.
+# Removed from executable path. Kept as 0.0 so any legacy reference no-ops.
+PEAK_DRAWDOWN_GUARD = 0.0            # DISABLED — absolute ABS_SURVIVAL_FLOOR is the only gate
+PRESERVATION_MAX_DEPLOY = 0.50       # cap daily deploy at 50% while preserving (only if <$20)
+PRESERVATION_MAX_BET_PCT = 0.05      # cap any single bet at 5% bankroll (only if <$20)
 SINGLE_DAY_WIPEOUT_THRESHOLD = 0.40  # >40% single-day loss → forced cash next day
 COLLISION_MAX_AGENTS = 3             # max agents sharing same game+category in one day
 # 2026-04-20 SWISH — fleet-wide post-council wipe dropped avg bankroll to ~$4.50.
@@ -1677,7 +1688,9 @@ def compute_rogue_state(state: Dict) -> Dict[str, dict]:
     peer_bank = {tid: state[tid]["bankroll"] for tid in state}
     for tid, ts in state.items():
         reasons = []
-        if ts["bankroll"] < STARTING_CAPITAL * ROGUE_DRAWDOWN_THRESHOLD:
+        # 2026-04-21 SWISH — absolute $20 floor (PQTF doctrine). Old relative
+        # $25 gate silenced 70%+ of fleet into preservation during the $1475→$461 bleed.
+        if ts["bankroll"] < ABS_SURVIVAL_FLOOR:
             reasons.append("drawdown")
         # Greed rogue: a PEER (not self) > $250K
         others = {p: b for p, b in peer_bank.items() if p != tid}
