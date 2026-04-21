@@ -29,9 +29,8 @@ image = (
         "lightgbm>=4.5",
         "xgboost>=2.1",
         "catboost>=1.2",
-        "cvxpy<1.6",  # skfolio.typing writes `cp.trace` as a type alias; cvxpy 1.6 made trace a function → `| function` TypeError at import
-        "skfolio>=0.4.0",  # ships CombinatorialPurgedKFold
         "requests",
+        # CPCV implemented inline below — skfolio/cvxpy dropped to avoid cp.trace import TypeError.
     )
 )
 
@@ -45,10 +44,27 @@ def cpcv_burst():
     """Run CPCV across the canonical hold-out window. Emit DSR gate verdict."""
     import json, os, urllib.request
     from datetime import datetime, timezone
+    from itertools import combinations
     import numpy as np
-    from skfolio.model_selection import CombinatorialPurgedKFold
     from sklearn.metrics import brier_score_loss
     import lightgbm as lgb
+
+    def combinatorial_purged_splits(n_samples, n_folds=10, n_test_folds=2,
+                                    embargo=5, purge=5):
+        """Inline CPCV (Lopez de Prado): enumerate all C(n_folds, n_test_folds)
+        test compositions, purge `purge` rows around each test block and embargo
+        `embargo` rows after. Yields (train_idx, test_idx)."""
+        bounds = np.array_split(np.arange(n_samples), n_folds)
+        for combo in combinations(range(n_folds), n_test_folds):
+            test = np.concatenate([bounds[i] for i in combo])
+            mask = np.ones(n_samples, dtype=bool)
+            for i in combo:
+                blk = bounds[i]
+                lo = max(0, blk[0] - purge)
+                hi = min(n_samples, blk[-1] + 1 + embargo)
+                mask[lo:hi] = False
+            train = np.where(mask)[0]
+            yield train, test
 
     GH_TOKEN = os.environ.get("GITHUB_TOKEN")
     if not GH_TOKEN:
@@ -83,9 +99,8 @@ def cpcv_burst():
     if y.sum() == 0 or y.sum() == len(y):
         return {"error": f"degenerate y: all {y[0]} across {len(y)} rows"}
 
-    cpcv = CombinatorialPurgedKFold(n_folds=10, n_test_folds=2, purged_size=5, embargo_size=5)
     briers = []
-    for train_idx, test_idx in cpcv.split(X, y):
+    for train_idx, test_idx in combinatorial_purged_splits(len(y), n_folds=10, n_test_folds=2, purge=5, embargo=5):
         if len(train_idx) < 50 or len(test_idx) < 20:
             continue
         m = lgb.LGBMClassifier(n_estimators=200, max_depth=4, verbose=-1)
