@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-21T00:00:00Z",
+  "updated_at": "2026-04-21T06:26:56Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -102,7 +102,7 @@
       "completed_at": "2026-04-16T06:30:00Z",
       "commit_hash": "0c7696fd5f28057dc5210d7d5a7d9f8c1b7a12b3",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 3 — push Python files + dry-run"
+      "subject": "verify+tune fire 3 \u2014 push Python files + dry-run"
     },
     {
       "id": "tf-axelrod-verify-tune-4",
@@ -133,7 +133,7 @@
       "status": "done",
       "completed_at": "2026-04-17T00:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 6 — GH Actions workflow to apply society-wide archetype dedup",
+      "subject": "verify+tune fire 6 \u2014 GH Actions workflow to apply society-wide archetype dedup",
       "approach": "push_files cannot carry 128K chars inline. Pushed .github/workflows/axelrod-fire6-patch.yml (6.7KB) that self-triggers on push, restores NBA app.py from pre-placeholder git history, applies patches to both files, py_compiles, commits, and self-deletes the workflow.",
       "py_compile": "PASS both /tmp patched files (pre-push local verification)",
       "do_not_push_hf_space_yet": true
@@ -145,7 +145,7 @@
       "completed_at": "2026-04-17T04:09:00Z",
       "commit_hash": "35474e80d4c0ac277eeaf4c808e06f98279afbfd",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 7 — confirm GH Actions ran + re-trigger with fix",
+      "subject": "verify+tune fire 7 \u2014 confirm GH Actions ran + re-trigger with fix",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -155,7 +155,7 @@
       "completed_at": "2026-04-17T12:23:48Z",
       "commit_hash": "bdfd309ea36c881ccbee985f1532ad00a9e4fecc",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 8 — society-wide Mech B archetype dedup (NBA + Political)",
+      "subject": "verify+tune fire 8 \u2014 society-wide Mech B archetype dedup (NBA + Political)",
       "push_incident": "Both app.py + work-queue.json replaced with 13-byte stubs by fire-8 commit (push_files size corruption, same failure mode as fire-5). GH Actions workflow approach also failed to apply patches.",
       "do_not_push_hf_space_yet": true
     },
@@ -165,7 +165,7 @@
       "status": "done",
       "completed_at": "2026-04-17T12:30:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 9 — spec audit + restore stubs + society-wide Mech B CONFIRMED",
+      "subject": "verify+tune fire 9 \u2014 spec audit + restore stubs + society-wide Mech B CONFIRMED",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -174,7 +174,7 @@
       "status": "done",
       "completed_at": "2026-04-18T00:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 10 — full independent spec audit (no code changes needed)",
+      "subject": "verify+tune fire 10 \u2014 full independent spec audit (no code changes needed)",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -183,7 +183,7 @@
       "status": "done",
       "completed_at": "2026-04-18T06:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 11 — deep parity audit, NBA CK hardcoded-count bug found",
+      "subject": "verify+tune fire 11 \u2014 deep parity audit, NBA CK hardcoded-count bug found",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -192,8 +192,8 @@
       "status": "done",
       "completed_at": "2026-04-19T00:16:11Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "Fix NBA CK block hardcoded agent-count (12→17, $1200→dynamic)",
-      "brain_verification_2026-04-20": "CONFIRMED APPLIED — n_traders=len(TRADERS) at L2579, ONE of 17 at L239. axelrod-ck-fix-v1.yml ran but did not self-delete (cosmetic).",
+      "subject": "Fix NBA CK block hardcoded agent-count (12\u219217, $1200\u2192dynamic)",
+      "brain_verification_2026-04-20": "CONFIRMED APPLIED \u2014 n_traders=len(TRADERS) at L2579, ONE of 17 at L239. axelrod-ck-fix-v1.yml ran but did not self-delete (cosmetic).",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -203,11 +203,11 @@
       "completed_at": "2026-04-20T06:11:00Z",
       "commit_hash": "6a8f75e4f6d90596c2a391f8affc1126c6ace3bd",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 13 — full spec re-audit + stale workflow cleanup",
+      "subject": "verify+tune fire 13 \u2014 full spec re-audit + stale workflow cleanup",
       "audit_result": "ALL THREE MECHANISMS CONFIRMED SPEC-COMPLETE in both NBA + Political app.py. No code changes needed. Both apps in full parity.",
-      "mech_a_status": "COMPLETE — build_common_knowledge_block: leaderboard ranked by growth_factor, 3-day rolling bet history, DMAD STRUCTURAL DIVERGE/COMPLEMENT mandate. CK injected into all agent prompts via common_knowledge_block= param.",
-      "mech_b_status": "COMPLETE — assign_sacrificial_archetypes: society-wide 7-day archetype dedup (_society_archetypes_by_day), bottom-3 trailing delta. build_challenge_block for mid-tier. build_sacrificial_system_suffix for bottom tier.",
-      "mech_c_status": "COMPLETE — write_axelrod_log: day_idx, rank, archetype_assigned, was_sacrificed, peer_consensus_distance (L1/2 proxy), day_strategy_prefix. AXELROD_LOG_DIR at /tmp/axelrod-log (NBA) + /tmp/axelrod-log-political (POL).",
+      "mech_a_status": "COMPLETE \u2014 build_common_knowledge_block: leaderboard ranked by growth_factor, 3-day rolling bet history, DMAD STRUCTURAL DIVERGE/COMPLEMENT mandate. CK injected into all agent prompts via common_knowledge_block= param.",
+      "mech_b_status": "COMPLETE \u2014 assign_sacrificial_archetypes: society-wide 7-day archetype dedup (_society_archetypes_by_day), bottom-3 trailing delta. build_challenge_block for mid-tier. build_sacrificial_system_suffix for bottom tier.",
+      "mech_c_status": "COMPLETE \u2014 write_axelrod_log: day_idx, rank, archetype_assigned, was_sacrificed, peer_consensus_distance (L1/2 proxy), day_strategy_prefix. AXELROD_LOG_DIR at /tmp/axelrod-log (NBA) + /tmp/axelrod-log-political (POL).",
       "cleanup_done": "Deleted 3 stale one-shot patch workflows: axelrod-ck-fix-v1.yml, axelrod-fire8-fix.yml, axelrod-society-patch.yml",
       "do_not_push_hf_space_yet": true
     },
@@ -216,7 +216,7 @@
       "priority": 21,
       "status": "pending",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 12 — HF Space push (USER GATE: explicit approval required)",
+      "subject": "verify+tune fire 12 \u2014 HF Space push (USER GATE: explicit approval required)",
       "scope": [
         "1. User explicitly approves HF Space push (say 'push to HF' or 'approve HF deploy').",
         "2. CK fix confirmed applied (tf-axelrod-fix-ck-hardcoded brain-verified 2026-04-20). No code changes needed before deploy.",
@@ -235,7 +235,7 @@
       "status": "done",
       "completed_at": "2026-04-20T12:15:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 14 — py_compile re-check + spec confirmation (no code changes)",
+      "subject": "verify+tune fire 14 \u2014 py_compile re-check + spec confirmation (no code changes)",
       "py_compile": "PASS both apps (NBA 4256 lines, Political 3500 lines)",
       "audit_result": "All 3 mechanisms spec-complete. Both apps identical parity on CK block structure, leaderboard format, DMAD mandate, Mech B society-wide archetype dedup, Mech C AXELROD_LOG_DIR write. No regressions vs fire-13.",
       "mech_a_confirmed": "NBA L3569-3575 + Political L2848-2853: prev_day_ck = build_common_knowledge_block(...) called at day-end, injected via common_knowledge_block= on next day's build_day_prompt. CK block: growth_factor leaderboard + 3-day rolling bets (stake/edge/outcome) + DMAD STRUCTURAL DIVERGE/COMPLEMENT mandate.",
@@ -248,17 +248,17 @@
       "status": "done",
       "completed_at": "2026-04-21T00:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 15 — deep parity audit, edge_rationale gap found",
+      "subject": "verify+tune fire 15 \u2014 deep parity audit, edge_rationale gap found",
       "py_compile": "PASS both apps (NBA 4288 lines, POL 3523 lines)",
       "parity_check": "15/15 Axelrod symbols identical count in NBA vs POL: compute_consensus_distance, _society_archetypes_by_day, AXELROD_CANON, write_axelrod_log, build_common_knowledge_block, assign_sacrificial_archetypes, assign_challenge_tiers, build_challenge_block, build_sacrificial_system_suffix, peer_consensus_distance, prev_day_ck, common_knowledge_block, DMAD, STRUCTURAL DIVERGE, STRUCTURAL COMPLEMENT.",
-      "gap_found": "Per-bet `rationale` text (stored in allocation dict as `a.get('rationale')`, up to 300 chars) is NOT surfaced in the COMMON_KNOWLEDGE block. CK block shows numeric edge only (edge=0.042). Spec says {trader_id, game/event, pick, stake, edge_rationale}. The reasoning text is the key diff-signal for DMAD STRUCTURAL DIVERGE — agents cannot see WHY peers bet, only WHAT. Logged as tf-axelrod-ck-rationale (priority 24).",
-      "push_safety_note": "NBA=209746 chars, POL=168998 chars — both exceed 128K push_files limit (fires 5+8 stub corruption). Only work-queue.json committed this fire.",
+      "gap_found": "Per-bet `rationale` text (stored in allocation dict as `a.get('rationale')`, up to 300 chars) is NOT surfaced in the COMMON_KNOWLEDGE block. CK block shows numeric edge only (edge=0.042). Spec says {trader_id, game/event, pick, stake, edge_rationale}. The reasoning text is the key diff-signal for DMAD STRUCTURAL DIVERGE \u2014 agents cannot see WHY peers bet, only WHAT. Logged as tf-axelrod-ck-rationale (priority 24).",
+      "push_safety_note": "NBA=209746 chars, POL=168998 chars \u2014 both exceed 128K push_files limit (fires 5+8 stub corruption). Only work-queue.json committed this fire.",
       "do_not_push_hf_space_yet": true
     },
     {
       "id": "tf-axelrod-ck-rationale",
       "priority": 24,
-      "status": "pending",
+      "status": "done",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Add per-bet edge_rationale text to COMMON_KNOWLEDGE block (NBA + POL parity)",
       "scope": [
@@ -270,7 +270,17 @@
         "py_compile both apps after patch. Commit to mon-ipad. do_not_push_hf_space_yet=true until user approves."
       ],
       "do_not_push_hf_space_yet": true,
-      "benefit": "Enables true DMAD STRUCTURAL DIVERGE reasoning — agents can see WHY peers bet (reasoning template in use), not just WHAT game/category they picked. Closes the spec gap on {edge_rationale} field in CK[D]."
+      "benefit": "Enables true DMAD STRUCTURAL DIVERGE reasoning \u2014 agents can see WHY peers bet (reasoning template in use), not just WHAT game/category they picked. Closes the spec gap on {edge_rationale} field in CK[D].",
+      "completed_at": "2026-04-21T06:26:56Z",
+      "py_compile": "PASS both apps"
+    },
+    {
+      "id": "tf-axelrod-verify-tune-16",
+      "priority": 25,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 16 -- confirm CK rationale applied + spec re-audit",
+      "do_not_push_hf_space_yet": true
     }
   ],
   "recovery_protocol": {

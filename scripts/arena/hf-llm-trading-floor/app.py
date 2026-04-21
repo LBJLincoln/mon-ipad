@@ -2671,10 +2671,12 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
             else:
                 for a in allocs:
                     outcome = "W" if a["won"] else "L"
+                    _rat = (a.get('rationale') or '')[:60]
+                    _rat_sfx = f' [{_rat}]' if _rat else ''
                     lines.append(
                         f"  {name}: {a['game']} {a['category']} "
-                        f"${a.get('stake', 0):.1f} edge={a['edge']:.3f}→{outcome} "
-                        f"pnl={a.get('profit', 0):+.1f}")
+                        f"${a.get('stake', 0):.1f} edge={a.get('edge', 0):.3f}→{outcome} "
+                        f"pnl={a.get('profit', 0):+.1f}{_rat_sfx}")
                 if strat:
                     lines.append(f"    Strategy: \"{strat}\"")
 
