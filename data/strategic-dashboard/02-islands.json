@@ -1,0 +1,133 @@
+{
+  "ts": "2026-04-21T10:42:50Z",
+  "targets": {
+    "nba_brier_lt": 0.2,
+    "pol_brier_lt": 0.25
+  },
+  "current_best": {
+    "nba_fleet": {
+      "island": "S22",
+      "brier": 0.22073,
+      "method": "venn_abers_fusion"
+    },
+    "nba_colab_one_shot": {
+      "brier": 0.21514,
+      "method": "TabICL 186f iter 129"
+    },
+    "pol_fleet": {
+      "island": "P5",
+      "brier": 0.24923,
+      "method": "catboost"
+    }
+  },
+  "walk_forward_avg": 0.22447,
+  "nba_survivors": {
+    "S13": {
+      "space": "Nomos42/nba-evo-4",
+      "model": "catboost",
+      "gen": 130,
+      "brier": 0.22749,
+      "account": "Nomos42"
+    },
+    "S14": {
+      "space": "Nomos42/nba-evo-5",
+      "model": "lightgbm",
+      "gen": 554,
+      "brier": 0.22186,
+      "account": "Nomos42"
+    },
+    "S15": {
+      "space": "Nomos42/nba-evo-6",
+      "model": "wide_search",
+      "gen": 127,
+      "brier": 0.22418,
+      "account": "Nomos42"
+    },
+    "S17": {
+      "space": "LBJLincoln26/nba-evo-s17",
+      "model": "ensemble",
+      "gen": 78,
+      "brier": 0.2234,
+      "account": "LBJLincoln26"
+    },
+    "S18": {
+      "space": "TESTforge42/nba-evo-s18",
+      "model": "catboost_spec",
+      "gen": 1030,
+      "brier": 0.22114,
+      "account": "TESTforge42"
+    },
+    "S22": {
+      "space": "TESTforge42/nba-evo-s22",
+      "model": "venn_abers_fusion",
+      "gen": 39,
+      "brier": 0.22073,
+      "account": "TESTforge42",
+      "fleet_best": true,
+      "checkpointed": "2026-04-19"
+    }
+  },
+  "pol_survivors": {
+    "P1": {
+      "space": "Nomos42/political-alpha",
+      "model": "xgboost",
+      "gen": 3042,
+      "brier": 0.24996,
+      "account": "Nomos42"
+    },
+    "P2": {
+      "space": "Nomos42/political-alpha-2",
+      "model": "lightgbm",
+      "gen": 11953,
+      "brier": 0.25223,
+      "account": "Nomos42"
+    },
+    "P4": {
+      "space": "LBJLincoln/political-alpha-4",
+      "model": "logistic",
+      "gen": 16728,
+      "brier": 0.25146,
+      "account": "LBJLincoln"
+    },
+    "P5": {
+      "space": "LBJLincoln/political-alpha-5",
+      "model": "catboost",
+      "gen": 21048,
+      "brier": 0.24923,
+      "account": "LBJLincoln",
+      "fleet_best": true,
+      "checkpointed": "2026-04-20"
+    },
+    "P7": {
+      "space": "LBJLincoln/political-alpha-7",
+      "model": "gradient_boost",
+      "gen": 2098,
+      "brier": 0.24987,
+      "account": "LBJLincoln"
+    }
+  },
+  "eliminated": [
+    "S10",
+    "S11",
+    "S12",
+    "S16",
+    "S19",
+    "S20",
+    "S21",
+    "P3",
+    "P6",
+    "P8"
+  ],
+  "do_not_restart": [
+    "S10",
+    "S11",
+    "S12",
+    "S16",
+    "S19",
+    "S20",
+    "S21",
+    "P3",
+    "P6",
+    "P8"
+  ]
+}
