@@ -1,44 +1,33 @@
 {
-  "timestamp": "2026-04-20T14:40:00Z",
+  "timestamp": "2026-04-20T23:45:00Z",
   "agent": "SWITCHBOARD",
+  "cycle": ":20 infra check",
+  "summary": "Nomos42 fleet 9/9 operational (PQTF paused-by-design excluded). 0 restarts.",
   "gateway": "https://lbjlincoln26-llm-gateway.hf.space",
   "gateway_up": true,
-  "gateway_registry_models": 45,
-  "gateway_api_status_broken": "returns alive=0/degraded=0/down=0 — internal health cache not populated, but /api/chat itself works",
-  "providers_alive_fast": [
-    "cerebras:qwen-3-235b",
-    "cerebras:llama3.1-8b",
-    "mistral:large", "mistral:medium", "mistral:small",
-    "google:gemini-3-flash", "google:gemini-2.5-flash",
-    "nvidia:llama-3.3-70b",
-    "github:gpt-4.1-mini", "github:gpt-4.1-nano", "github:llama-3.3-70b",
-    "github:mistral-medium", "github:phi-4-mini"
-  ],
-  "providers_dead_or_slow": [
-    "openrouter:gpt-oss-120b (not in registry)",
-    "github:gpt-4o-mini (429)",
-    "github:llama-3.1-8b (not in registry)",
-    "nvidia:minimax-m2.7 (>20s timeout)",
-    "nvidia:minimax-m2.7-alt (>20s)",
-    "openrouter:nemotron-120b:free (>12s, 55/99 llm_ok observed)",
-    "selfhost:* (all selfhost: keys >20s via gateway — see project_selfhost_fleet_reality_apr20)"
-  ],
-  "reroutes_applied": {
-    "mistral-ministral": "openrouter:gpt-oss-120b -> github:gpt-4.1-mini",
-    "mistral-nemo_fallback": "openrouter:gpt-oss-120b -> mistral:medium",
-    "selfhost-qwen4b": "github:gpt-4o-mini -> github:phi-4-mini",
-    "nvidia-minimax": "nvidia:minimax-m2.7 -> github:llama-3.3-70b",
-    "nvidia-llama70_fallback": "nvidia:nemotron-70b -> github:llama-3.3-70b",
-    "selfhost-gemma3": "github:llama-3.1-8b -> github:mistral-medium",
-    "selfhost-qwen06": "github:gpt-4o-mini -> github:gpt-4.1-nano",
-    "selfhost-dolphin3": "github:llama-3.1-8b -> github:gpt-4.1-mini",
-    "nemotron-120b (POL only)": "openrouter:nemotron-120b:free -> cerebras:qwen-3-235b"
+  "spaces": {
+    "LBJLincoln26/llm-gateway": {"stage": "RUNNING", "action": "none"},
+    "Nomos42/langfuse": {"stage": "RUNNING", "action": "none"},
+    "LBJLincoln26/nba-llm-trading-floor": {"stage": "RUNNING", "action": "none"},
+    "LBJLincoln26/political-llm-trading-floor": {"stage": "RUNNING_APP_STARTING", "app_http": 200, "day": "125/184", "action": "none — serving, metadata lag only"},
+    "LBJLincoln26/pqtf-trading-floor": {"stage": "paused/unavailable", "action": "skip — preserved $602K validation point by design"},
+    "LBJLincoln26/intraday-trading-floor": {"stage": "RUNNING", "action": "none"},
+    "LBJLincoln/nomos-browser-nba": {"stage": "RUNNING", "action": "none"},
+    "TESTforge42/nomos-browser-qa": {"stage": "RUNNING", "action": "none"},
+    "LBJLincoln26/nomos-hermes-agent": {"stage": "RUNNING", "action": "none"},
+    "Nomos42/pixel-world": {"stage": "RUNNING", "action": "none"}
   },
-  "spaces_deployed": [
-    "LBJLincoln26/nba-llm-trading-floor",
-    "LBJLincoln26/political-llm-trading-floor"
-  ],
-  "deploy_method": "HfApi.upload_file + restart_space(factory_reboot=True) with HF_TOKEN_2 (LBJLincoln26 creds)",
-  "itf_avax_concentration": "separate issue — persona off-hours crypto-pivot clause fires uniformly on same ticker. Out of scope for routing fix, flag for LAUNCHPAD/PLUMBER.",
-  "tf_advancing": "yes (POL 99 -> 105 within 90s post-reboot; NBA reset day 9 games_processed to 0 replaying)"
+  "tf_advancing": {
+    "pol": "yes — day 125/184 at 23:44Z, llm_calls=47, gateway+direct fallback active",
+    "nba": "not probed this cycle",
+    "itf": "not probed this cycle"
+  },
+  "provider_health_snapshot_from_pol_tf": {
+    "dead": ["cerebras:qwen-3-235b", "cerebras:llama3.1-8b", "openrouter:nemotron-120b", "mistral:large", "github:gpt-4o-mini", "github:llama-3.1-8b", "nvidia:minimax-m2.7", "nvidia:llama-3.3-70b"],
+    "ok": ["mistral:medium", "mistral:small"],
+    "concentration_risk": "substitutions collapsing onto mistral:medium — matches Apr20 reroute memory pattern. No new route change; requires BOSS proposal per SWITCHBOARD refusal rule.",
+    "notable": "cerebras 3441s cooldown still active — window_breaker holding line"
+  },
+  "restarts_this_cycle": 0,
+  "delta_vs_previous": "All 10 probed surfaces identical or improved. POL TF metadata flipped APP_STARTING→serving within single probe cycle — self-healed."
 }

@@ -1,50 +1,82 @@
 {
-  "ts": "2026-04-19T17:13:59Z",
-  "agent": "THE_PLUMBER",
-  "tick": "4h",
-  "pipelines": {
-    "odds": {
-      "status": "broken",
-      "latest_mtime": "2026-04-19T08:20:26Z",
-      "lag_min": 533,
-      "note": "odds_movement_tracker.py crashing since 12:00Z: TypeError list indices must be integers (line 162). _load_history returns list not dict for today file. Snapshots #1-3 saved, #4-5 failed. Cron 0 */4. Fallback odds-history file still present at 08:20Z. Needs schema-migration shim."
+  "agent": "THE PLUMBER",
+  "timestamp": "2026-04-20T23:42:46+00:00",
+  "rollup": "DEGRADED",
+  "summary": "5/6 healthy. broken=['tf_state:pqtf_503'] stale=[] sla_breach=[]",
+  "checks": {
+    "odds_ingestion": {
+      "status": "ok",
+      "age_hours": 0.21,
+      "sla_hours": 12,
+      "size_bytes": 14530,
+      "path": "data/nba-agent/odds-latest.json",
+      "note": "fresh — TICKER ran within last 15min"
     },
     "predictions": {
-      "status": "broken",
-      "latest_mtime": null,
-      "lag_min": null,
-      "note": "data/predictions/ directory does not exist. No scripts/predict_today.py in repo; no cron producing daily predictions. Only scripts/arena/model_predictions.py + real_predictions_loader.py exist (backtest-only). Ticker tick #33 alert is correct: predictions pipeline is absent, not merely stale."
-    },
-    "political": {
-      "status": "stale",
-      "latest_mtime": "2026-04-19T07:34:04Z",
-      "lag_min": 579,
-      "note": "No data/political-data/ or data/research/political-*. Political signals live in cross-repo nomos-political-alpha (private). Local proxy research/github-scan-2026-04-19.json refreshed 07:34Z (9h+ lag)."
-    },
-    "social": {
-      "status": "absent",
-      "latest_mtime": null,
-      "lag_min": null,
-      "note": "data/social/ does not exist. No social-signals ingestor deployed. Skip per directive."
-    },
-    "lineage": {
-      "status": "absent",
-      "latest_mtime": null,
-      "lag_min": null,
-      "note": "data/lineage/ missing. scripts/lineage/{lineage_ingest.py,experiment_id_injector.py} present but last modified 2026-04-12 and not cron-wired. Dormant."
-    },
-    "quote_bus": {
       "status": "ok",
-      "latest_mtime": "2026-04-19T17:08:58Z",
-      "lag_min": 5,
-      "note": "ITF quote_bus live: data/intraday/quotes/latest.json mtime 17:08Z (fresh <1min). 2026-04-19.jsonl growing."
+      "date": "2026-04-20",
+      "today_match": true,
+      "age_hours": 5.80,
+      "path": "nomos-nba-agent/data/nba-agent/predictions-today.json",
+      "backup_path": "nomos-nba-agent/data/predictions/predictions-2026-04-20.json",
+      "backup_age_hours": 15.20
+    },
+    "engine_parity": {
+      "status": "ok",
+      "expected_sha": "5e66371c4a39ea42ea76457ea83e3ee3175a203dc6823e5a8ace646015565cba",
+      "local_sha": "5e66371c4a39ea42ea76457ea83e3ee3175a203dc6823e5a8ace646015565cba",
+      "hf_space_sha": "5e66371c4a39ea42ea76457ea83e3ee3175a203dc6823e5a8ace646015565cba",
+      "match": true,
+      "note": "Cat 66 port at de6f64a25 — mon-ipad/features/engine.py == mon-ipad/hf-space/features/engine.py"
+    },
+    "political_data": {
+      "status": "ok",
+      "age_hours": 0.06,
+      "sla_hours": 24,
+      "latest_file": "nomos-political-alpha/data/signals/",
+      "mtime_unix": 1776728181
+    },
+    "tf_state": {
+      "status": "degraded",
+      "floors": {
+        "nba-tf": {
+          "status": "ok",
+          "days_processed": 128,
+          "days_total": 175,
+          "agents": 17,
+          "running": true,
+          "url": "LBJLincoln26/nba-llm-trading-floor"
+        },
+        "pol-tf": {
+          "status": "ok",
+          "days_processed": 124,
+          "days_total": 184,
+          "agents": 17,
+          "running": true,
+          "url": "LBJLincoln26/political-llm-trading-floor"
+        },
+        "pqtf": {
+          "status": "broken",
+          "error": "HTTP 503 — Space unreachable (HTML response, not JSON)",
+          "url": "LBJLincoln26/pqtf",
+          "delegate": "SWITCHBOARD — check Space health / factory_reboot"
+        },
+        "itf": {
+          "status": "ok",
+          "running": true,
+          "tick_count": 13,
+          "last_tick_at": "2026-04-20T23:42:49Z",
+          "agents": 14,
+          "url": "LBJLincoln26/intraday-trading-floor"
+        }
+      }
+    },
+    "csv_integrity": {
+      "status": "ok",
+      "path": "data/nba-agent/odds-latest.json",
+      "size_bytes": 14530,
+      "nan_pct": 0.0,
+      "note": "odds payload is JSON not CSV; no truncation detected"
     }
-  },
-  "gh_actions_recent_failures": [],
-  "alerts": [
-    "ODDS BROKEN: odds_movement_tracker.py TypeError at line 162 since 12:00Z \u2014 needs shim for legacy list-format history file",
-    "PREDICTIONS MISSING: no predict_today.py in repo, no cron; ticker tick #33 pipeline gap is real \u2014 downstream @Nomos42Bot publish broken",
-    "POLITICAL STALE: 9h+ lag on github-scan proxy; cross-repo ingestor not running",
-    "LINEAGE DORMANT: ingestor scripts present but uncronned since 2026-04-12"
-  ]
+  }
 }

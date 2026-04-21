@@ -42,7 +42,18 @@ def hf_token():
             if "=" not in line:
                 continue
             k, v = line.split("=", 1)
-            v = v.strip().strip('"').strip("'")
+            v = v.strip()
+            # strip inline comments outside of quotes (bash-compatible)
+            if v and v[0] in ('"', "'"):
+                q = v[0]
+                end = v.find(q, 1)
+                v = v[1:end] if end > 0 else v[1:]
+            else:
+                # unquoted: cut at first whitespace or '#'
+                for i, ch in enumerate(v):
+                    if ch in (" ", "\t", "#"):
+                        v = v[:i]
+                        break
             if v.startswith("$"):
                 v = vals.get(v[1:].strip("{}"), v)
             vals[k.strip()] = v

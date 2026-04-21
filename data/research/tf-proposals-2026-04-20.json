@@ -1,0 +1,38 @@
+[
+  {
+    "title": "CRITICAL: NBA TF thesis\u2194outcome leakage re-detected",
+    "rationale": "Leakage detected on nba. The thesis field contains a numeric value that correlates >0.80 with resolved excess_return/pnl_pct. This is the $13K bug class. Remove any field that embeds future-outcome data into the prompt or signal calculation.",
+    "target_file": "scripts/arena/hf-llm-trading-floor/app.py",
+    "est_brier_delta": null,
+    "est_sharpe_delta": null,
+    "priority": 1,
+    "source_finding": "ALERT.json critical nba/leakage at 2026-04-19T20:51:05.968903Z \u2014 {'pairs': 7, 'corr': -0.908}",
+    "status": "pending",
+    "created": "2026-04-20T20:45:01Z",
+    "id": "tf-2026-04-20-01"
+  },
+  {
+    "title": "PQTF: negative Sharpe agents (llama-contra(Sharpe=-11.225), qwen-quant(Sharpe=-21.319))",
+    "rationale": "PQTF agents llama-contra(Sharpe=-11.225), qwen-quant(Sharpe=-21.319) have negative Sharpe ratios, meaning risk-adjusted returns are below zero. Review their position sizing \u2014 they may be over-sizing IV-expansion bets near event dates. Introduce a per-agent VaR-based position cap (already tracked as avg_var_95) that reduces notional when Sharpe drops below 0 over a 10-day window.",
+    "target_file": "scripts/arena/hf-political-quant-trading-floor/engine.py",
+    "est_brier_delta": null,
+    "est_sharpe_delta": 0.2,
+    "priority": 3,
+    "source_finding": "pqtf-report.md Sharpe ranking \u2014 llama-contra(Sharpe=-11.225), qwen-quant(Sharpe=-21.319)",
+    "status": "pending",
+    "created": "2026-04-20T20:45:01Z",
+    "id": "tf-2026-04-20-02"
+  },
+  {
+    "title": "PQTF: near-zero session-Jaccard (agents too uncorrelated?)",
+    "rationale": "PQTF fleet Jaccard mean=0.024 is near zero. While low correlation is generally good, near-zero may indicate agents are ignoring each other's signals entirely (no coalition pacts). Review pact count: if <2 pacts/day fleet-wide, the mandatory coalition prompt may be broken.",
+    "target_file": "scripts/arena/hf-political-quant-trading-floor/engine.py",
+    "est_brier_delta": null,
+    "est_sharpe_delta": 0.05,
+    "priority": 5,
+    "source_finding": "tf-analytics/summary.json tfs.pqtf.fleet \u2014 jaccard_fleet_mean=0.024, jaccard_fleet_max=0.118",
+    "status": "pending",
+    "created": "2026-04-20T20:45:01Z",
+    "id": "tf-2026-04-20-03"
+  }
+]

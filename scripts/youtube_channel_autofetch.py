@@ -39,10 +39,40 @@ CHANNELS = {
     "UCN7D80fY9xMYu5mHhUhXEFw": "Moon Dev",
     "UCOHxDwCcOzBaLkeTazanwcw": "Bravos Research",
     "UCbekhhidkzkGryM7mi5Ys_w": "Tech Jarves",
+    # trading / quant / macro — add-here list below, any new id auto-flows into all 4 TFs
+    "UCRzYN32xtBf3Yxsx5BvJWJw": "Benjamin Cowen",   # crypto macro (verified live)
+    "UCbLhGKVY-bJPcawebgtNfbw": "Coin Bureau",       # crypto macro (verified live)
+    "UCZlDXzGoo7d44bwdNObFacg": "Sven Carlin",       # value / macro (verified live)
+    # Extension 2026-04-21 — institutional & signal-rich finance channels (all resolved via handle API)
+    "UCGXWKlq1Oxr3ddEtmKhAkPg": "Real Vision",            # macro interviews — Raoul Pal circle
+    "UCUyH4QfXX-5NOT0bULqG6lQ": "Wall Street Millennial", # equity-narrative teardowns
+    "UCpvyOqtEc86X8w8_Se0t4-w": "George Gammon",          # macro/fed liquidity
+    "UC4fg8o6oUkkZDLaC6eAZKwQ": "Heresy Financial",       # contrarian macro
+    "UCrXNkk4IESnqU-8GMad2vyA": "Eurodollar University",  # Jeff Snider plumbing
+    "UClgJyzwGs-GyaNxUHcLZrkg": "InvestAnswers",          # crypto+equity macro
+    "UCORi3Jj7kSHcdHdckrjhOsg": "TOMNASH",                # fintech/SaaS deep dives
+    "UCcnrfjcqqxoVdbasgeQc_6w": "Financial Source",       # institutional order-flow
+    "UCFCEuCsyWP0YkP3CZ3Mr01Q": "The Plain Bagel",        # valuation literacy
+    # Extension 2026-04-21 wave 2 — resolved via search.list fallback (handle API missed these)
+    "UCASM0cgfkJxQ1ICmRilfHLw": "Patrick Boyle",          # ex-hedge-fund quant commentary
+    "UC9ijza42jVR3T6b8bColgvg": "Kitco NEWS",             # commodities/gold macro
+    "UCIALMKvObZNtJ6AmdCLP7Lg": "Bloomberg Television",   # institutional news flow
+    "UC26OTzxt9ixdrr3qdUJrYBQ": "Lyn Alden Media",        # macro / bitcoin thesis
+    "UCsJxlgjWIOcuEbOJZ591V3Q": "Joseph Wang",            # ex-NY Fed, reserve mechanics
+    "UCCatR7nWbYrkVXdxXb4cGXw": "DataDash",               # crypto market structure
+    "UCkrwgzhIBKccuDsi_SvZtnQ": "Forward Guidance",       # Blockworks macro show
+    # Resolve + add more channels with:
+    #   python3 - <<'PY'
+    #   import os,json,urllib.parse,urllib.request
+    #   k=os.environ["YOUTUBE_API_KEY"]; h="@YourHandle"
+    #   print(json.load(urllib.request.urlopen(
+    #     f"https://www.googleapis.com/youtube/v3/channels?part=snippet&forHandle={urllib.parse.quote(h)}&key={k}"
+    #   )))
+    #   PY
 }
 
-MAX_PER_CHANNEL_DEFAULT = 5
-LOOKBACK_DAYS = 7  # ignore videos older than this (initial backfill uses all)
+MAX_PER_CHANNEL_DEFAULT = 10
+LOOKBACK_DAYS = 30  # ignore videos older than this (initial backfill uses all)
 
 
 def _api_key() -> str | None:

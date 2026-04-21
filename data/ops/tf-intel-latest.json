@@ -1,5 +1,5 @@
 {
-  "ts": "2026-04-20T02:56:01+00:00",
+  "ts": "2026-04-21T10:58:05+00:00",
   "alerts": [
     {
       "tf": "nba",
@@ -15,7 +15,7 @@
           "day-127"
         ]
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:05+00:00"
     },
     {
       "tf": "nba",
@@ -31,7 +31,7 @@
           "day-127"
         ]
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:05+00:00"
     },
     {
       "tf": "nba",
@@ -47,7 +47,23 @@
           "day-127"
         ]
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:05+00:00"
+    },
+    {
+      "tf": "pol",
+      "severity": 2,
+      "code": "agent_silent",
+      "agent": "selfhost-dolphin3",
+      "finding": "Agent selfhost-dolphin3 has 0 bets across last 3 snapshot days",
+      "proposed_action": "Check agent selfhost-dolphin3 LLM route \u2014 may be timing out; reroute via /api/mutate or prompt override",
+      "evidence": {
+        "recent_days": [
+          "day-049",
+          "day-098",
+          "day-168"
+        ]
+      },
+      "ts": "2026-04-21T10:58:05+00:00"
     },
     {
       "tf": "pol",
@@ -61,7 +77,7 @@
           "insider_trade"
         ]
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:05+00:00"
     },
     {
       "tf": "pqtf",
@@ -77,7 +93,7 @@
           "day-049"
         ]
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
     },
     {
       "tf": "pqtf",
@@ -93,7 +109,7 @@
           "day-049"
         ]
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
     },
     {
       "tf": "pqtf",
@@ -109,7 +125,7 @@
           "day-049"
         ]
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
     },
     {
       "tf": "pqtf",
@@ -125,7 +141,7 @@
           "day-049"
         ]
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
     },
     {
       "tf": "pqtf",
@@ -141,7 +157,7 @@
           "day-049"
         ]
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
     },
     {
       "tf": "pqtf",
@@ -157,7 +173,7 @@
           "day-049"
         ]
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
     },
     {
       "tf": "pqtf",
@@ -170,7 +186,7 @@
         "zombie_count": 14,
         "total": 36
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
     },
     {
       "tf": "pqtf",
@@ -182,7 +198,7 @@
       "evidence": {
         "total_bets": 36
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
     },
     {
       "tf": "itf",
@@ -190,12 +206,12 @@
       "code": "broker_401",
       "agent": null,
       "finding": "Alpaca broker returned 401 on 5/10 orders (50%)",
-      "proposed_action": "Regenerate ALPACA_API_KEY_ID+SECRET, re-set as Space secrets on Nomos42/intraday-trading-floor, redeploy",
+      "proposed_action": "Set ALPACA_PAPER_KEY + ALPACA_PAPER_SECRET as Space secrets on LBJLincoln26/intraday-trading-floor (the executor reads these env names, not APCA_* or ALPACA_API_KEY_ID)",
       "evidence": {
         "broker_401": 5,
         "total": 10
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
     },
     {
       "tf": "itf",
@@ -207,55 +223,7 @@
       "evidence": {
         "total_orders": 10
       },
-      "ts": "2026-04-20T02:56:01+00:00"
-    },
-    {
-      "tf": "itf",
-      "severity": 2,
-      "code": "itf_agent_silent",
-      "agent": "vol-1",
-      "finding": "ITF agent vol-1 silent in last 1 decision files + 0 positions",
-      "proposed_action": "Check gateway routing for vol-1's model_primary; consult data/ops/llm-deadlist.json",
-      "evidence": {
-        "bids": 0
-      },
-      "ts": "2026-04-20T02:56:01+00:00"
-    },
-    {
-      "tf": "itf",
-      "severity": 2,
-      "code": "itf_agent_silent",
-      "agent": "mean-rev-1",
-      "finding": "ITF agent mean-rev-1 silent in last 1 decision files + 0 positions",
-      "proposed_action": "Check gateway routing for mean-rev-1's model_primary; consult data/ops/llm-deadlist.json",
-      "evidence": {
-        "bids": 0
-      },
-      "ts": "2026-04-20T02:56:01+00:00"
-    },
-    {
-      "tf": "itf",
-      "severity": 2,
-      "code": "itf_agent_silent",
-      "agent": "momentum-1",
-      "finding": "ITF agent momentum-1 silent in last 1 decision files + 0 positions",
-      "proposed_action": "Check gateway routing for momentum-1's model_primary; consult data/ops/llm-deadlist.json",
-      "evidence": {
-        "bids": 0
-      },
-      "ts": "2026-04-20T02:56:01+00:00"
-    },
-    {
-      "tf": "itf",
-      "severity": 2,
-      "code": "itf_agent_silent",
-      "agent": "scalper-1",
-      "finding": "ITF agent scalper-1 silent in last 1 decision files + 0 positions",
-      "proposed_action": "Check gateway routing for scalper-1's model_primary; consult data/ops/llm-deadlist.json",
-      "evidence": {
-        "bids": 0
-      },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
     },
     {
       "tf": "itf",
@@ -267,7 +235,7 @@
       "evidence": {
         "bids": 0
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
     },
     {
       "tf": "itf",
@@ -279,7 +247,55 @@
       "evidence": {
         "bids": 0
       },
-      "ts": "2026-04-20T02:56:01+00:00"
+      "ts": "2026-04-21T10:58:06+00:00"
+    },
+    {
+      "tf": "itf",
+      "severity": 2,
+      "code": "itf_agent_silent",
+      "agent": "scalper-1",
+      "finding": "ITF agent scalper-1 silent in last 1 decision files + 0 positions",
+      "proposed_action": "Check gateway routing for scalper-1's model_primary; consult data/ops/llm-deadlist.json",
+      "evidence": {
+        "bids": 0
+      },
+      "ts": "2026-04-21T10:58:06+00:00"
+    },
+    {
+      "tf": "itf",
+      "severity": 2,
+      "code": "itf_agent_silent",
+      "agent": "momentum-1",
+      "finding": "ITF agent momentum-1 silent in last 1 decision files + 0 positions",
+      "proposed_action": "Check gateway routing for momentum-1's model_primary; consult data/ops/llm-deadlist.json",
+      "evidence": {
+        "bids": 0
+      },
+      "ts": "2026-04-21T10:58:06+00:00"
+    },
+    {
+      "tf": "itf",
+      "severity": 2,
+      "code": "itf_agent_silent",
+      "agent": "vol-1",
+      "finding": "ITF agent vol-1 silent in last 1 decision files + 0 positions",
+      "proposed_action": "Check gateway routing for vol-1's model_primary; consult data/ops/llm-deadlist.json",
+      "evidence": {
+        "bids": 0
+      },
+      "ts": "2026-04-21T10:58:06+00:00"
+    },
+    {
+      "tf": "itf",
+      "severity": 2,
+      "code": "itf_agent_silent",
+      "agent": "mean-rev-1",
+      "finding": "ITF agent mean-rev-1 silent in last 1 decision files + 0 positions",
+      "proposed_action": "Check gateway routing for mean-rev-1's model_primary; consult data/ops/llm-deadlist.json",
+      "evidence": {
+        "bids": 0
+      },
+      "ts": "2026-04-21T10:58:06+00:00"
     }
   ],
   "per_tf": {
@@ -486,122 +502,122 @@
       ]
     },
     "pol": {
-      "n_days": 1,
+      "n_days": 3,
       "agents": {
         "qwen-quant": {
-          "bankroll": 74.94,
+          "bankroll": 126.43,
           "drawdown": 0.0,
-          "recent_bets_3d": 3,
-          "strategy": "STRUCTURAL DIVERGE [Gemini Tactical] (edge=8.5%): My approach focuses on insider trades in the communications sector, sp",
+          "recent_bets_3d": 6,
+          "strategy": "",
           "coalition_proposal": false
         },
         "qwen-arb": {
-          "bankroll": 110.02,
-          "drawdown": 0.0136,
-          "recent_bets_3d": 5,
-          "strategy": "STRUCTURAL COMPLEMENT [gemini-tact] (edge=7.8%): While Tactical focuses on high-conviction insider trades in finance and",
+          "bankroll": 116.54,
+          "drawdown": 0.0041,
+          "recent_bets_3d": 11,
+          "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
           "coalition_proposal": false
         },
         "llama-contra": {
-          "bankroll": 126.84,
+          "bankroll": 85.21,
           "drawdown": 0.0,
-          "recent_bets_3d": 0,
+          "recent_bets_3d": 5,
           "strategy": "",
           "coalition_proposal": false
         },
         "gemini-anl": {
-          "bankroll": 347.12,
+          "bankroll": 106.17,
           "drawdown": 0.0,
-          "recent_bets_3d": 0,
-          "strategy": "",
-          "coalition_proposal": false
+          "recent_bets_3d": 3,
+          "strategy": "STRUCTURAL COMPLEMENT [Gemini Tactical] (edge=12.4%): While leader focuses on defense, my Fed/SEC statistics-first templ",
+          "coalition_proposal": true
         },
         "gemini-tact": {
-          "bankroll": 375.79,
+          "bankroll": 152.54,
           "drawdown": 0.0,
-          "recent_bets_3d": 0,
-          "strategy": "",
-          "coalition_proposal": false
+          "recent_bets_3d": 4,
+          "strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=27.3%): While qwen-quant targets broad ETF proxies, my TACTICAL TIMING template",
+          "coalition_proposal": true
         },
         "mistral-large": {
-          "bankroll": 92.26,
-          "drawdown": 0.095,
-          "recent_bets_3d": 3,
+          "bankroll": 66.8,
+          "drawdown": 0.0049,
+          "recent_bets_3d": 6,
           "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
           "coalition_proposal": false
         },
         "mistral-medium": {
-          "bankroll": 97.58,
+          "bankroll": 106.96,
           "drawdown": 0.0,
-          "recent_bets_3d": 0,
+          "recent_bets_3d": 1,
           "strategy": "",
           "coalition_proposal": false
         },
         "mistral-small": {
-          "bankroll": 79.34,
+          "bankroll": 92.34,
           "drawdown": 0.0,
           "recent_bets_3d": 9,
-          "strategy": "STRUCTURAL COMPLEMENT [gemini-tact] (edge=10.2%): While gemini-tact focuses on high-conviction insider trades in finance",
-          "coalition_proposal": false
-        },
-        "mistral-nemo": {
-          "bankroll": 107.64,
-          "drawdown": 0.0101,
-          "recent_bets_3d": 2,
-          "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
-          "coalition_proposal": false
-        },
-        "mistral-ministral": {
-          "bankroll": 54.89,
-          "drawdown": 0.0,
-          "recent_bets_3d": 0,
           "strategy": "",
           "coalition_proposal": false
         },
-        "nemotron-120b": {
-          "bankroll": 67.76,
+        "mistral-nemo": {
+          "bankroll": 95.56,
           "drawdown": 0.0,
-          "recent_bets_3d": 1,
-          "strategy": "STRUCTURAL DIVERGE [Gemini Tactical] (edge=10.2%): My value hunter approach prioritizes the consumer discretionary secto",
-          "coalition_proposal": true
+          "recent_bets_3d": 5,
+          "strategy": "STRUCTURAL DIVERGE [gemini-tact] (edge=12.4%): My momentum-chase template prioritizes high-signal insider trades with se",
+          "coalition_proposal": false
+        },
+        "mistral-ministral": {
+          "bankroll": 82.69,
+          "drawdown": 0.0051,
+          "recent_bets_3d": 3,
+          "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+          "coalition_proposal": false
+        },
+        "nemotron-120b": {
+          "bankroll": 78.15,
+          "drawdown": 0.0,
+          "recent_bets_3d": 4,
+          "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
+          "coalition_proposal": false
         },
         "selfhost-qwen4b": {
-          "bankroll": 80.61,
-          "drawdown": 0.1141,
-          "recent_bets_3d": 3,
+          "bankroll": 80.16,
+          "drawdown": 0.0048,
+          "recent_bets_3d": 6,
           "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
           "coalition_proposal": false
         },
         "nvidia-minimax": {
-          "bankroll": 57.41,
-          "drawdown": 0.0185,
-          "recent_bets_3d": 3,
+          "bankroll": 104.12,
+          "drawdown": 0.004,
+          "recent_bets_3d": 6,
           "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
           "coalition_proposal": false
         },
         "nvidia-llama70": {
-          "bankroll": 103.98,
-          "drawdown": 0.0153,
+          "bankroll": 60.52,
+          "drawdown": 0.0,
           "recent_bets_3d": 3,
           "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
           "coalition_proposal": false
         },
         "selfhost-gemma3": {
-          "bankroll": 43.27,
-          "drawdown": 0.1191,
-          "recent_bets_3d": 3,
+          "bankroll": 90.05,
+          "drawdown": 0.0017,
+          "recent_bets_3d": 4,
           "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
           "coalition_proposal": false
         },
         "selfhost-qwen06": {
-          "bankroll": 97.67,
-          "drawdown": 0.0121,
-          "recent_bets_3d": 2,
+          "bankroll": 86.25,
+          "drawdown": 0.0,
+          "recent_bets_3d": 5,
           "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
           "coalition_proposal": false
         },
         "selfhost-dolphin3": {
-          "bankroll": 103.35,
+          "bankroll": 83.77,
           "drawdown": 0.0,
           "recent_bets_3d": 0,
           "strategy": "FALLBACK_UNIFORM: LLM infrastructure failure \u2014 broad-ETF long (SPY/QQQ/IWM proxies on top-3 signals), even split 25% (75",
@@ -620,6 +636,30 @@
           "laggard": "selfhost-gemma3",
           "deploy_pct": 0.199,
           "day_bets": 37
+        },
+        {
+          "day": "day-098",
+          "fleet_total": 1658.28,
+          "n_agents": 17,
+          "jaccard_mean": 0.467,
+          "jaccard_max": 1.0,
+          "day_wr": 0.562,
+          "leader": "qwen-arb",
+          "laggard": "nvidia-llama70",
+          "deploy_pct": 0.081,
+          "day_bets": 16
+        },
+        {
+          "day": "day-168",
+          "fleet_total": 1614.26,
+          "n_agents": 17,
+          "jaccard_mean": 0.422,
+          "jaccard_max": 1.0,
+          "day_wr": 0.321,
+          "leader": "gemini-tact",
+          "laggard": "nvidia-llama70",
+          "deploy_pct": 0.181,
+          "day_bets": 28
         }
       ],
       "categories_seen": [
@@ -733,9 +773,9 @@
     "cerebras:qwen-3-235b",
     "cerebras:llama3.1-8b",
     "google:gemini-2.5-flash",
-    "mistral:nemo",
-    "openrouter:nemotron-120b:free",
-    "openrouter:minimax-m2.5:free",
+    "nvidia:minimax-m2.7",
+    "nvidia:llama-3.3-70b",
+    "github:mistral-medium",
     "openrouter:qwen3-80b:free"
   ]
 }

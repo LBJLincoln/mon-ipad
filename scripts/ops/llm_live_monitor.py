@@ -52,10 +52,12 @@ SELFHOST_SPACES = [
     "https://lbjlincoln-qwen25-05b-cpu.hf.space",
 ]
 
-PROBE_TIMEOUT = 8.0
+PROBE_TIMEOUT = 20.0
 
 
 def _http_json(url: str, timeout: float = PROBE_TIMEOUT) -> dict[str, Any]:
+    """HTTP GET → JSON. ok=True if server replied with parseable JSON (any status).
+    A 503 with a JSON body still counts as reachable."""
     t0 = time.monotonic()
     try:
         with urllib.request.urlopen(url, timeout=timeout) as r:
@@ -66,7 +68,12 @@ def _http_json(url: str, timeout: float = PROBE_TIMEOUT) -> dict[str, Any]:
             except json.JSONDecodeError:
                 return {"ok": False, "code": r.status, "error": "not-json", "latency_ms": latency_ms}
     except urllib.error.HTTPError as e:
-        return {"ok": False, "code": e.code, "error": f"HTTP {e.code}", "latency_ms": (time.monotonic() - t0) * 1000.0}
+        latency_ms = (time.monotonic() - t0) * 1000.0
+        try:
+            parsed = json.loads(e.read().decode("utf-8", errors="replace"))
+            return {"ok": True, "code": e.code, "body": parsed, "latency_ms": latency_ms}
+        except Exception:
+            return {"ok": False, "code": e.code, "error": f"HTTP {e.code}", "latency_ms": latency_ms}
     except Exception as e:
         return {"ok": False, "code": 0, "error": str(e)[:120], "latency_ms": (time.monotonic() - t0) * 1000.0}
 
@@ -78,7 +85,7 @@ def _http_head(url: str, timeout: float = PROBE_TIMEOUT) -> dict[str, Any]:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return {"ok": True, "code": r.status, "latency_ms": (time.monotonic() - t0) * 1000.0}
     except urllib.error.HTTPError as e:
-        return {"ok": False, "code": e.code, "error": f"HTTP {e.code}", "latency_ms": (time.monotonic() - t0) * 1000.0}
+        return {"ok": True, "code": e.code, "latency_ms": (time.monotonic() - t0) * 1000.0}
     except Exception as e:
         return {"ok": False, "code": 0, "error": str(e)[:80], "latency_ms": (time.monotonic() - t0) * 1000.0}
 

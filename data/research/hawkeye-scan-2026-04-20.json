@@ -1,0 +1,68 @@
+{
+  "scan_date": "2026-04-20",
+  "scan_window": "2026-04-06..2026-04-20",
+  "sources_scanned": [
+    "arxiv cs.LG (April 2026 listing)",
+    "arxiv stat.ML (April 2026 listing)",
+    "arxiv q-fin.TR (April 2026 listing)",
+    "github trending python (multi-agent trading topic)",
+    "semantic scholar via web search"
+  ],
+  "dedup_baseline": "data/research/tf-proposals-2026-04-19.json (11 open proposals, mostly TF-ops: lockstep, WR outliers, Kelly cap, multi-leg adoption, pp_* feature port). New proposals below are RESEARCH PORTS, not TF-ops overlaps.",
+  "current_best": {
+    "nba_brier_fleet": 0.22073,
+    "nba_brier_colab": 0.21514,
+    "pol_brier_fleet": 0.24987,
+    "walk_forward_avg": 0.22447
+  },
+  "proposals": [
+    {
+      "id": "hawkeye-2026-04-20-01",
+      "rank": 1,
+      "title": "Port PolySwarm 50-persona swarm + confidence-weighted Bayesian aggregation to POL-TF",
+      "paper": "arXiv:2604.03888v1 (Apr 4, 2026) - PolySwarm: A Multi-Agent LLM Framework for Prediction Market Trading and Latency Arbitrage",
+      "github": "no code released (abstract only)",
+      "hypothesis": "Our POL-TF has 16 agents + confidence flat-weighting; PolySwarm reports 'swarm aggregation consistently outperforms single-model baselines in probability calibration on Polymarket' using 50 personas + confidence-weighted Bayesian combine of swarm consensus with market-implied prior + KL/JS divergence for cross-market inefficiency detection. Key missing piece vs our POL-TF: (a) Bayesian shrinkage to market-implied prior (defends against overconfidence), (b) KL/JS divergence flag on negation-pair mispricings (free alpha on YES/NO sums != 1.0).",
+      "expected_brier_delta": "-0.003 to -0.008 on POL (0.24987 -> ~0.24)",
+      "expected_sharpe_delta": "+0.15 to +0.25",
+      "effort_days": 3,
+      "kill_criterion": "If 14-day paper-trade run on POL-TF shows Brier not improved by >=0.002 vs current aggregation, revert.",
+      "dup_check": "Not in tf-proposals-2026-04-19.json (those are ops/lockstep fixes, not aggregation rewrites)",
+      "caveat": "Abstract-only paper, no numeric Brier reported. Implementation risk: reconstructing 50-persona prompts from abstract alone. Mitigation: adapt our 16-agent POL-TF + add Bayesian shrinkage layer + negation-pair audit -- capturing 80% of the architectural value without 50 LLM keys."
+    },
+    {
+      "id": "hawkeye-2026-04-20-02",
+      "rank": 2,
+      "title": "Drop-in TabPFN-2.5 replacement for current tree ensemble on S22 venn_abers_fusion",
+      "paper": "arXiv:2511.08667 (TabPFN-2.5) -- referenced in Apr 2026 benchmark arXiv:2603.26611 (Conditional Density Estimation in Regression)",
+      "github": "https://github.com/PriorLabs/TabPFN",
+      "hypothesis": "TabPFN-2.5 handles up to 50K rows x 2K features (20x v2), 'substantially outperforms tuned tree-based models' on TabArena. Our S22 fleet-best uses tree ensemble + venn_abers_fusion. Swap the tree base learner for TabPFN-2.5 (frozen) on Colab A100/T4, keep Venn-Abers head for calibration. We already ported Colab TabICL 0.21514 -- TabPFN-2.5 is the architectural descendant with explicit calibration guarantees.",
+      "expected_brier_delta": "-0.002 to -0.006 on NBA (0.22073 -> ~0.215); matches or beats Colab TabICL 0.21514",
+      "expected_sharpe_delta": "+0.05 (walk-forward)",
+      "effort_days": 2,
+      "kill_criterion": "If TabPFN-2.5 walk-forward on NBA 19-week Kaggle backtest >= 0.220 Brier, revert (no improvement over tree fleet).",
+      "dup_check": "Distinct from MEMORY note [research_2026_apr_sota_papers.md] which cited TabPFN-2.5 generically; this is a concrete port target for S22, not research.",
+      "caveat": "TabPFN-2.5 is GPU-only at inference (pushes out of VM CPU budget). Run on Colab/Paperspace burst, nightly predict, commit cached probs to VM for game-day serving."
+    },
+    {
+      "id": "hawkeye-2026-04-20-03",
+      "rank": 3,
+      "title": "Adopt Generalized Venn-Abers multicalibration across subpopulations (home/away, rest, back-to-back)",
+      "paper": "arXiv:2502.05676v2 (Generalized Venn and Venn-Abers Calibration with Applications in Conformal Prediction) + cross-ref 2604 conformal family",
+      "github": "pending search (authors typically ship scikit-compat wrapper)",
+      "hypothesis": "Current S22 uses single-calibrator Venn-Abers on pooled predictions. Paper extends VA to 'multicalibration for finite-sample calibration across subpopulations'. Our NBA has obvious subpop heterogeneity: home-B2B (lose games on rest fatigue), away-rested, playoff vs regular season. Fitting per-subpop VA heads and Bayes-model-averaging them should close the 0.22073 -> 0.21514 Colab gap without GPU dependency.",
+      "expected_brier_delta": "-0.002 to -0.004 on NBA walk-forward",
+      "expected_sharpe_delta": "+0.05",
+      "effort_days": 2,
+      "kill_criterion": "If multicalibrated VA does not outperform single-VA by >=0.001 Brier on Kaggle 19-week holdout, revert.",
+      "dup_check": "Not in tf-proposals-2026-04-19.json; distinct from pp_* port (tf-2026-04-19-11) which is feature-side, this is calibration-head-side.",
+      "caveat": "Subpopulation definition is a hyperparameter -- wrong slicing could fragment the calibration sample. Start with 4 coarse bins (home-rested, home-B2B, away-rested, away-B2B), not 16."
+    }
+  ],
+  "not_advanced_rationale": {
+    "arxiv:2604.13253": "Bias-Corrected Adaptive Conformal Inference for Multi-Horizon Time Series -- not directly applicable (NBA is game-slate, not multi-horizon rolling).",
+    "arxiv:2604.14621": "Differentially Private Conformal Prediction -- not our threat model, DP is irrelevant for public odds.",
+    "arxiv:2604.08885": "CONFIDE Conformal for fine-tuned LM embeddings -- LLM-layer calibration, orthogonal to our game-outcome tree ensemble.",
+    "live-trade-bench": "Github ulab-uiuc/live-trade-bench covers Polymarket + stocks -- interesting as benchmark, but we already run our own TF; no new architecture to port."
+  }
+}

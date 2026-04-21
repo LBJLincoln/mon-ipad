@@ -1,0 +1,24 @@
+{
+  "ts": "2026-04-20T23:47:00Z",
+  "agent": "SWISH",
+  "cycle": "4h-2026-04-20T23:10Z",
+  "fleet_best_brier": 0.22073,
+  "fleet_best_island": "S22",
+  "mutation_rate_avg": 0.1436,
+  "islands": {
+    "S13": {"cycle": 168, "gen": 502, "brier": 0.22136, "mut": 0.1363, "model": "extra_trees", "feat": 77, "stag_cycles": 6, "action": "none", "reason": "brier competitive, stagnation below 12-gen threshold"},
+    "S14": {"cycle": 232, "gen": 696, "brier": 0.23493, "mut": 0.1450, "model": "xgboost_brier", "feat": 43, "stag_cycles": 20, "action": "none", "reason": "receiving karpathy elite promotes; deep stag handled externally"},
+    "S15": {"cycle": 187, "gen": 560, "brier": 0.22374, "mut": 0.1476, "model": "random_forest", "feat": 51, "stag_cycles": 20, "action": "none_held", "reason": "diversify candidate; held to keep clean S22 canary read"},
+    "S17": {"cycle": 478, "gen": 1432, "brier": 0.22358, "mut": 0.1496, "model": "xgboost", "feat": 68, "stag_cycles": 3, "action": "none", "reason": "below stagnation threshold"},
+    "S18": {"cycle": 370, "gen": 1109, "brier": 0.22154, "mut": 0.1344, "model": "random_forest", "feat": 76, "stag_cycles": 18, "action": "none_held", "reason": "diversify candidate; held (max 2 island actions this cycle, S22 took slot)"},
+    "S22": {"cycle": 405, "gen": 1214, "brier": 0.22184, "mut": 0.1488, "model": "logistic_regression", "feat": 40, "stag_cycles": 1, "action": "engine_refresh_v3.1-66cat", "reason": "canary target per eng-v3.1-66cat-canary.md; fleet-best island gets first Cat 66 exposure", "hf_commit": "2c2b5c14c7961b8c235d110b3a5978d1f0c8b1ef", "factory_reboot": true, "engine_sha256": "5e66371c4a39ea42ea76457ea83e3ee3175a203dc6823e5a8ace646015565cba"}
+  },
+  "canary": {
+    "engine_version_before": "v3.1-65cat",
+    "engine_version_after": "v3.1-66cat",
+    "n_features_added": 12,
+    "pass_criteria": "S22 Brier<=0.22073 AND >=1 Cat66 feat selected within 3 gens",
+    "kill_criteria": "Brier>0.22200 after 3 gens OR NaN/shape exception in build"
+  },
+  "next_cycle_focus": "check S22 Cat 66 canary at >=3 gens; if PASS roll to S18 next, if FAIL rollback + HAWKEYE escalation"
+}

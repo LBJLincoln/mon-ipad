@@ -96,10 +96,18 @@ def _load_prompt_override(fleet: str = "itf") -> str:
                 continue
             with open(p) as fh:
                 ov = _json.load(fh)
-            rule = (ov.get(fleet) or {}).get("current_text") or ""
+            section = (ov.get(fleet) or {})
+            rule = section.get("current_text") or ""
+            narrative = section.get("market_narrative") or ""
+            mvc = section.get("manual_videos_count") or 0
+            v = section.get("current_version") or "?"
+            out = ""
             if rule:
-                v = (ov.get(fleet) or {}).get("current_version") or "?"
-                return f"\n=== PROMPT MUTATOR OVERRIDE ({v}) ===\n{rule}\n=== END OVERRIDE ===\n"
+                out += f"\n=== PROMPT MUTATOR OVERRIDE ({v}) ===\n{rule}\n=== END OVERRIDE ===\n"
+            if narrative:
+                out += f"\n=== YOUTUBE MARKET NARRATIVE ({mvc} tracked videos, 22 channels) ===\n{narrative}\n=== END NARRATIVE ===\n"
+            if out:
+                return out
         except Exception:
             continue
     return ""

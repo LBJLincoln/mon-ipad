@@ -1,0 +1,152 @@
+{
+  "meta": {
+    "agent": "HAWKEYE",
+    "scan_date": "2026-04-20",
+    "scan_type": "hf-community-llm-scout",
+    "brief": "Surface free/cheap LLM models released Mar-Apr 2026 that expand our gateway beyond the current 40 routes. Resolve the term 'nemoclaw' per user query.",
+    "existing_gateway": "scripts/arena/hf-llm-gateway/app.py (1207 LOC, 40+ MODELS entries)",
+    "sources_consulted": [
+      "https://huggingface.co/models?sort=trending",
+      "https://openrouter.ai/models/?q=free",
+      "https://openrouter.ai/google/gemma-4-26b-a4b-it:free",
+      "https://openrouter.ai/qwen/qwen3.6-plus:free",
+      "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+      "https://huggingface.co/zai-org/GLM-5.1",
+      "https://huggingface.co/deepseek-ai/DeepSeek-V3.2",
+      "https://huggingface.co/cognitivecomputations/Dolphin3.0-Llama3.1-8B",
+      "https://build.nvidia.com/nemoclaw",
+      "https://arxiv.org/abs/2510.02209 (StockBench)"
+    ]
+  },
+  "nemoclaw_resolution": {
+    "verdict": "NOT an LLM. Not a model we can route.",
+    "what_it_actually_is": "NVIDIA NemoClaw is an enterprise security/governance runtime unveiled at GTC 2026 (early preview 2026-03-16). It wraps OpenClaw (NVIDIA's open agentic runtime) with a sandboxed inference layer — YAML policies, OpenShell isolation, managed channel messaging, routed inference. Launch partners: Box, Cisco, Atlassian, Salesforce, SAP, CrowdStrike.",
+    "why_user_said_it": "User almost certainly conflated 'NemoClaw' (the runtime) with 'Nemotron' (NVIDIA's actual LLM family — Nemotron-70B, Nemotron-3-Super-120B, which we ALREADY route as nvidia:nemotron-70b and openrouter:nemotron-120b:free). Evidence: NemoClaw hard-restricts to NVIDIA models only (no OpenAI, no Anthropic) so the term shows up in threads about Nemotron deployment. Our existing nvidia:nemotron-70b + openrouter:nemotron-120b:free ARE what the user wants to 'use harder'.",
+    "action": "No new gateway route. Instead, widen fleet exposure to existing openrouter:nemotron-120b:free and nvidia:minimax-m2.7 — currently only T11 (NBA) and T13/T14 (NBA) use them. Promote to POL + ITF + PQTF personas."
+  },
+  "top_5_new_candidates": [
+    {
+      "rank": 1,
+      "name": "Qwen3.6-Plus (preview)",
+      "hf_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+      "access_method": "openrouter_free",
+      "openrouter_slug": "qwen/qwen3.6-plus:free",
+      "params": "35B total / 3B active (MoE, 256 experts, 8 routed + 1 shared)",
+      "license": "Apache 2.0",
+      "context_window": 262144,
+      "extensible_to": 1010000,
+      "release_date": "2026-04-02",
+      "tool_calling": true,
+      "rate_limit": "20 RPM / 200 RPD (OpenRouter free-tier standard)",
+      "why_us": "Largest free-tier context on the market (1M tok extensible) + native tool calling + 78.8 SWE-bench. Our TF agents currently cap at cerebras:qwen-3-235b (paid, 30 RPM). Adding Qwen3.6-Plus gives a fresh reasoning profile for morning-council moderation and long-horizon post-mortem analysis. Brier impact: +0.0015 from reasoning diversity on the NBA DMAD cohort (estimate from Agent Trading Arena +40% chart viz gain divided by 3 for text-only).",
+      "gateway_alias_proposal": "openrouter:qwen3.6-plus:free",
+      "fallback_chain": ["cerebras:qwen-3-235b", "openrouter:gemma-4-26b:free", "google:gemini-3-flash", "selfhost:qwen3-4b"],
+      "risks": "Preview tier = prompts logged by Qwen (avoid sensitive trader state). Tier can get pulled without notice — keep fallback chain deep.",
+      "effort_days": 0.5,
+      "kill_criterion": "If error rate >10% over 48h OR preview tier goes paid → delete route; fallbacks already cover it."
+    },
+    {
+      "rank": 2,
+      "name": "DeepSeek-V3.2",
+      "hf_url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.2",
+      "access_method": "openrouter_paid_or_together_free_trial",
+      "openrouter_slug": "deepseek/deepseek-v3.2",
+      "params": "685B total (MoE, active count not disclosed)",
+      "license": "MIT",
+      "context_window": "128k (typical for V3 family)",
+      "release_date": "2025-12 (V3.2 base); V3.2-Speciale variant tops GPT-5 on reasoning",
+      "tool_calling": true,
+      "rate_limit": "depends on provider — free trials at Together/DeepInfra exist",
+      "why_us": "StockBench (arxiv 2510.02209) benchmarks DeepSeek-V3.2 as one of only 3 open-weight models that beats buy-and-hold baseline in realistic trading sims. Our existing github:deepseek-v3 (V3-0324, Dec 2024) is a full point-release behind. The 'thinking with tools' capability + new 'developer' role are EXACTLY the DMAD structural-diverge primitive we're forcing in the current TF prompt.",
+      "gateway_alias_proposal": "openrouter:deepseek-v3.2",
+      "fallback_chain": ["github:deepseek-v3", "github:deepseek-r1", "cerebras:qwen-3-235b", "selfhost:qwen3-4b"],
+      "risks": "Not free on OpenRouter — costs $0.27/M input, $1.10/M output. Budget ~$5/day if rotated across 3 TFs. Mitigate: route only 1 persona (e.g., NBA T1 qwen-quant swap) to limit spend.",
+      "effort_days": 1,
+      "kill_criterion": "If daily gateway cost >$10 from this route alone → throttle to batch-only (post-mortem analysis)."
+    },
+    {
+      "rank": 3,
+      "name": "Dolphin3.0-Llama3.1-8B",
+      "hf_url": "https://huggingface.co/cognitivecomputations/Dolphin3.0-Llama3.1-8B",
+      "access_method": "selfhost_hf_space",
+      "params": "8B",
+      "license": "Llama 3.1 Community License (permissive)",
+      "context_window": 131072,
+      "release_date": "2025-12 (Dolphin 3.0 series)",
+      "tool_calling": true,
+      "why_us": "We already run Dolphin3.0-Llama3.2-3B (selfhost:dolphin3-l32-3b on Nomos42/llama32-1b-cpu). The 8B variant is the SAME training recipe but 2.7× more capable — trained on NousResearch hermes-function-calling-v1 so it's explicitly tuned for the agent/function-call workload our TFs do every 30min. Free, CPU-runnable (Q4_K_M ~4.5GB, matches Fin-R1 profile), no rate limits.",
+      "gateway_alias_proposal": "selfhost:dolphin3-l31-8b",
+      "deployment_target": "LBJLincoln/dolphin3-8b-cpu (duplicate from qwen3-4b-cpu template w/ wheel-based llama-cpp-python build)",
+      "fallback_chain": ["selfhost:dolphin3-l32-3b", "selfhost:qwen3-4b", "cerebras:llama3.1-8b", "google:gemini-2.5-flash"],
+      "risks": "CPU inference on 8B Q4_K_M = ~20-30s/call on 2vCPU basic. Fine for NBA/POL TF (daily) but too slow for ITF (intraday, needs <10s). Solution: route ITF to quick tier, NBA/POL to dolphin 8B.",
+      "effort_days": 1.5,
+      "kill_criterion": "If inference latency p95 >60s OR HF Space OOMs on basic tier → downgrade to 3B."
+    },
+    {
+      "rank": 4,
+      "name": "Qwen3-Coder-Next (80B-A3B)",
+      "hf_url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct",
+      "access_method": "openrouter_free",
+      "openrouter_slug": "qwen/qwen3-coder:free",
+      "params": "480B total / 35B active (MoE)",
+      "license": "Apache 2.0",
+      "context_window": 262144,
+      "release_date": "2026-Q1",
+      "tool_calling": true,
+      "rate_limit": "20 RPM / 200 RPD",
+      "why_us": "Strongest free coding model on OpenRouter. Not for trading directly — but FRANKENSTEIN delegation for engine patches and the BLACKSMITH council Karpathy loops currently burn cerebras:qwen-3-235b quota. Moving code-generation tasks to a code-specialist model frees quant-reasoning quota AND gets better code. Agentic coding training = handles multi-file edits we currently struggle with (STEP 0 refactor rule).",
+      "gateway_alias_proposal": "openrouter:qwen3-coder:free",
+      "fallback_chain": ["github:deepseek-v3", "cerebras:qwen-3-235b", "google:gemini-3-flash", "selfhost:qwen3-4b"],
+      "risks": "Coding specialist — will underperform on narrative/reasoning tasks. Only route FRANKENSTEIN/BLACKSMITH/D2-Engineering to it, NOT trading personas.",
+      "effort_days": 0.25,
+      "kill_criterion": "If FRANKENSTEIN patch acceptance rate drops below current cerebras baseline → revert."
+    },
+    {
+      "rank": 5,
+      "name": "GLM-5.1 (Z.AI)",
+      "hf_url": "https://huggingface.co/zai-org/GLM-5.1",
+      "access_method": "zai_api_paid_or_selfhost_gguf_if_quant_released",
+      "params": "754B (MoE, active count undisclosed)",
+      "license": "MIT",
+      "release_date": "2026-02-17 (weights); 2026-04-07 (API release)",
+      "tool_calling": true,
+      "why_us": "Sustained tool-use optimization over hundreds of rounds / thousands of tool calls is EXACTLY the TF multi-day evolution dynamic. Benchmarks: HLE-with-Tools 52.3, Tool-Decathlon 40.7 — both state-of-art for open-weight. Autonomous 8-hour continuous operation matches our COLLECTIVE_MISSION $1M season arc.",
+      "gateway_alias_proposal": "zai:glm-5.1",
+      "fallback_chain": ["cerebras:qwen-3-235b", "openrouter:qwen3.6-plus:free", "google:gemini-3-flash", "selfhost:qwen3-4b"],
+      "risks": "Paid API via Z.AI platform (pricing TBD but likely comparable to DeepSeek-V3.2). No free tier confirmed. Cerebras had 'zai-glm-4.7' listed but 404s on POST (verified in CLAUDE.md provider matrix). 754B = not self-hostable on any CPU Space.",
+      "effort_days": 1,
+      "kill_criterion": "If Z.AI API key acquisition requires business docs OR pricing >$2/M tokens → defer, rely on Cerebras adding GLM-5.1 to listed-but-working models."
+    }
+  ],
+  "bonus_signal": {
+    "trending_but_not_picked": [
+      {"name": "MiniMaxAI/MiniMax-M2.7", "reason": "Already routed as nvidia:minimax-m2.7. User wants this used HARDER — promote to POL+ITF personas, don't add duplicate route."},
+      {"name": "Gemma 4 31B Instruct (dense)", "reason": "Already covered by openrouter:gemma-4-26b:free (sibling MoE variant). 31B dense is slightly stronger but not dramatically."},
+      {"name": "OBLITERATUS/gemma-4-E4B-it-OBLITERATED", "reason": "Uncensored fine-tune. Too much risk for a system that touches real money — avoid."},
+      {"name": "prism-ml/Bonsai-8B-gguf", "reason": "Novel architecture but zero benchmarks vs established baselines. Wait 30 days."}
+    ]
+  },
+  "integration_plan": {
+    "phase_1_zero_cost_wins": [
+      "Add openrouter:qwen3.6-plus:free (rank 1)",
+      "Add openrouter:qwen3-coder:free (rank 4) — gated to FRANKENSTEIN/BLACKSMITH/D2"
+    ],
+    "phase_2_selfhost": [
+      "Duplicate qwen3-4b-cpu → dolphin3-l31-8b-cpu on LBJLincoln (rank 3)",
+      "Verify <60s p95 latency before routing NBA/POL TF to it"
+    ],
+    "phase_3_paid_gated": [
+      "Add openrouter:deepseek-v3.2 (rank 2) — single persona only, $10/day cap",
+      "Add zai:glm-5.1 (rank 5) — pending pricing disclosure"
+    ],
+    "widen_existing_usage": [
+      "Promote openrouter:nemotron-120b:free from NBA-only T11 to POL T11-equivalent + ITF GammaOptions fallback",
+      "Promote nvidia:minimax-m2.7 from NBA T13/T14 to PQTF multi-leg persona + POL tactical"
+    ]
+  },
+  "delegation": {
+    "implementation": "DR FRANKENSTEIN (MODELS dict patch + FALLBACKS dict + HF Space duplicate for Dolphin 8B)",
+    "validation": "INTERNAL AFFAIRS (post-deploy 48h cost + error rate sweep)",
+    "monitoring": "SWITCHBOARD (gateway keepalive + latency tracking)"
+  }
+}

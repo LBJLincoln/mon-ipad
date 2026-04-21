@@ -1,0 +1,44 @@
+{
+  "run_id": "20260420T125002-THE_TICKER-0d5ab3d1",
+  "agent": "THE_TICKER",
+  "alert": "S3 itf_no_crypto",
+  "finished_at_utc": "2026-04-20T12:55:00Z",
+  "outcome": "false_alarm_stale",
+  "root_cause": "Alert appears stale/pre-pivot. Live ITF Space status+decisions show aggressive crypto trading, not silence.",
+  "evidence": {
+    "space": "https://lbjlincoln26-intraday-trading-floor.hf.space",
+    "last_tick_at": "2026-04-20T12:50:43Z",
+    "tick_count": 17,
+    "agent_count_observed": 14,
+    "brief_claimed_agent_count": 7,
+    "recent_decisions_sampled": 40,
+    "crypto_trades_in_sample": 31,
+    "equity_trades_in_sample": 7,
+    "option_trades_in_sample": 0,
+    "passes_in_sample": 2,
+    "dominant_crypto_ticker": "AVAX/USD",
+    "agents_trading_crypto": [
+      "scalper-1","momentum-1","mean-rev-1","breakout-1","pairs-1","vol-1","options-1",
+      "arbitrage-1","news-catalyst-1","crypto-whale-1","iv-crush-1","macro-rotate-1"
+    ]
+  },
+  "code_verification": {
+    "crypto_pivot_clause_present": true,
+    "crypto_pivot_clause_location": "scripts/arena/hf-intraday-trading-floor/personas.py:34 + injected at 342-343",
+    "off_hours_override_registry_present": true,
+    "off_hours_override_location": "scripts/arena/hf-intraday-trading-floor/app.py:121-199 (all 14 tids covered)",
+    "crypto_always_shown_in_prompt": true,
+    "crypto_always_shown_location": "scripts/arena/hf-intraday-trading-floor/app.py:480-483 (dedicated crypto block, no truncation)",
+    "off_hours_signal_threshold": "abs(change_pct) > 0.2% on any of BTC/ETH/SOL",
+    "equity_hours_check": "weekday and 8<=hour<24 UTC (app.py:464)",
+    "now_utc_at_check": "2026-04-20T12:50Z",
+    "equity_hours_flag": true,
+    "note_on_equity_hours": "equity_hours evaluates True right now, meaning off-hours override is NOT currently the driver. Crypto pivot is happening because CRYPTO_PIVOT_CLAUSE appended to all 14 persona styles AND crypto block always in prompt AND AVAX shows large |change_pct| that satisfies the per-persona crypto mandate."
+  },
+  "action_taken": "none (no regression to patch)",
+  "recommendation": {
+    "update_alert_source": "S3 itf_no_crypto trigger needs a wider sampling window — single-tick snapshots miss the pivot. Recommend sliding window of last 20 decisions with crypto_share < 0.1 as the threshold.",
+    "brief_drift": "Dispatch brief listed 7 personas. Space now runs 14 (added arbitrage, news-catalyst, crypto-whale, earnings-gap, iv-crush, macro-rotate, leveraged-momentum). Memory project_itf_powerup_apr19 is out of date on persona count — actual is 14 not 7.",
+    "no_code_change_needed": true
+  }
+}

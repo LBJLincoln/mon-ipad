@@ -535,8 +535,13 @@ FALLBACK_CHAINS = {
     "nvidia:nemotron-70b":               ["nvidia:llama-3.3-70b", "openrouter:nemotron-120b:free", "cerebras:qwen-3-235b", "nvidia:minimax-m2.7", "selfhost:qwen3-4b"],
     "openrouter:qwen3-80b:free":         ["cerebras:qwen-3-235b", "openrouter:nemotron-120b:free", "openrouter:llama-3.3-70b:free", "selfhost:qwen3-4b"],
     "openrouter:llama-3.3-70b:free":     ["cerebras:llama3.1-8b", "openrouter:nemotron-120b:free", "google:gemini-2.5-flash", "selfhost:qwen3-4b"],
-    "mistral:large":                     ["mistral:medium", "mistral:small", "cerebras:qwen-3-235b", "google:gemini-3-flash", "selfhost:qwen3-4b"],
-    "mistral:medium":                    ["mistral:small", "mistral:large", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:qwen3-4b"],
+    # 2026-04-20 SWITCHBOARD diversification: mistral:large was falling first to
+    # mistral:medium on every 429 → 30%+ mistral:medium substitution share. Rotate
+    # cerebras:qwen-3-235b to pos-1, github:mistral-medium (separate GitHub Models
+    # quota) to pos-2, then mistral:medium deeper. Also swap mistral:medium's own
+    # pos-1 from mistral:small (same-provider, shared 429) to cerebras:llama3.1-8b.
+    "mistral:large":                     ["cerebras:qwen-3-235b", "github:mistral-medium", "google:gemini-3-flash", "mistral:medium", "mistral:small", "selfhost:qwen3-4b"],
+    "mistral:medium":                    ["cerebras:llama3.1-8b", "github:mistral-medium", "google:gemini-2.5-flash", "mistral:small", "mistral:large", "selfhost:qwen3-4b"],
     "mistral:small":                     ["mistral:ministral-8b", "mistral:nemo", "cerebras:llama3.1-8b", "google:gemini-2.5-flash", "selfhost:qwen3-4b"],
     "mistral:nemo":                      ["mistral:small", "mistral:ministral-8b", "cerebras:llama3.1-8b", "openrouter:llama-3.3-70b:free", "selfhost:qwen3-4b"],
     "mistral:ministral-8b":              ["mistral:nemo", "mistral:small", "cerebras:llama3.1-8b", "openrouter:gemma-4-26b:free", "selfhost:qwen3-4b"],
