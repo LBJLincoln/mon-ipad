@@ -61,6 +61,21 @@ CHANNELS = {
     "UCsJxlgjWIOcuEbOJZ591V3Q": "Joseph Wang",            # ex-NY Fed, reserve mechanics
     "UCCatR7nWbYrkVXdxXb4cGXw": "DataDash",               # crypto market structure
     "UCkrwgzhIBKccuDsi_SvZtnQ": "Forward Guidance",       # Blockworks macro show
+    # Extension 2026-04-21 wave 3 — NBA corpus-gap remediation + POL breadth (FRANKENSTEIN)
+    # NBA channels (audit 2026-04-21 showed 11/223 NBA keyword hits — adding these to unblock Tier-3 NBA path)
+    "UCgDspuaEJxeNlfaPKTHCSJA": "HoopsHype",              # NBA news/rumors
+    "UCT83YP07yVuaH9J19YABhlw": "Ringer NBA",             # Bill Simmons' NBA analysis
+    "UCqQo7ewe87aYAe7ub5UqXMw": "House of Highlights",    # NBA viral highlights
+    "UCZkd1SsoIdSY-8FEvvwRyEw": "Locked On NBA",          # daily NBA podcast network
+    "UCWJ2lWNubArHWmf3FIHbfcQ": "NBA",                    # official NBA channel
+    "UC9-OpMMVoNP5o10_Iyq7Ndw": "Bleacher Report",        # NBA + multi-sport
+    "UCVSSpcmZD2PwPBqb8yKQKBA": "NBA on ESPN",            # ESPN NBA coverage (search-fallback, @ESPNNBA missed handle API)
+    # POL breadth — Axios/Vox/RealClearPolitics (handle API missed, resolved via search.list)
+    "UCq60_5Tu5wX6IfCrraqnmKg": "Axios HQ",               # Axios flagship (primary)
+    "UCfU4-ArXuSX0tpyApyklMAg": "Axios",                  # Axios main feed
+    "UCLXo7UDZvByw2ixzpQCufnA": "Vox",                    # explainer journalism
+    "UCgjtvMmHXbutALaw9XzRkAg": "POLITICO",               # official POLITICO channel
+    "UCIOrcA99BelTxfzVsBb38dw": "RealClearPolitics",      # top search result
     # Resolve + add more channels with:
     #   python3 - <<'PY'
     #   import os,json,urllib.parse,urllib.request
