@@ -2724,7 +2724,11 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # and silent-pass overwrites. Mirror of NBA fix.
             _preserved_coalition = (parsed or {}).get("coalition_proposal")
             if not parsed or not parsed.get("allocations"):
-                if raw_response is None:
+                # 2026-04-21 INTERNAL AFFAIRS RCA patch #1 — same gate as NBA.
+                # POL fallback = SPY/QQQ/IWM broad-ETF long on top-3 signals; ran
+                # qwen-arb to +438% via bull-tape luck (NOT skill) and produced
+                # 94% direct_fallback rate. Default off → cash silent-pass.
+                if raw_response is None and os.environ.get("UNIFORM_FALLBACK_ENABLED", "0") == "1":
                     _fb = build_uniform_fallback_political(day_date, day_events, tid=tid)
                     if _fb and _fb.get("allocations"):
                         parsed = _fb
@@ -2778,8 +2782,24 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 MAX_PCT_PER_DAY = 0.98
                 MIN_EDGE = tier["min_edge"]
                 KELLY_MULT = tier["kelly_mult"]
+                # 2026-04-21 INTERNAL AFFAIRS RCA patch #3 (NBA parity) — peak-equity
+                # drawdown clamp. <50% peak → 1% cap; <25% peak → force cash.
+                _pdd_on = os.environ.get("PEAK_DD_GUARD_V2", "1") == "1"
+                _pdd_force_cash = False
+                if _pdd_on:
+                    _pdd_peak = max(float(ts.get("best_bankroll") or 0.0), ts["bankroll"])
+                    _pdd_ratio = (ts["bankroll"] / _pdd_peak) if _pdd_peak > 0 else 1.0
+                    if _pdd_ratio < 0.25:
+                        _pdd_force_cash = True
+                    elif _pdd_ratio < 0.50:
+                        MAX_PCT_PER_BET = min(MAX_PCT_PER_BET, 0.01)
                 starting_bankroll = bankroll
                 day_exposure_pct = 0.0
+                if _pdd_force_cash:
+                    day_log["cash_rationale"] = f"PEAK_DD_GUARD_V2: bankroll/peak<0.25, force cash (bankroll=${ts['bankroll']:.2f})"
+                    parsed = {**parsed, "allocations": [],
+                              "cash_held_pct": 1.0,
+                              "peak_dd_guard": "force_cash"}
                 for alloc in parsed["allocations"]:
                     eidx = alloc["event_idx"] - 1  # 1-indexed in prompt
                     if eidx < 0 or eidx >= len(day_events):

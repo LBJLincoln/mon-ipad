@@ -3513,7 +3513,13 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # not depend on allocations existing — it must survive.
             _preserved_coalition = (parsed or {}).get("coalition_proposal")
             if not parsed or not parsed.get("allocations"):
-                if raw_response is None:
+                # 2026-04-21 INTERNAL AFFAIRS RCA patch #1 — UNIFORM_FALLBACK emits
+                # fabricated top-3 ML edges that produced the "fallback-identity
+                # cluster" (9 agents at WR 55-65%, bled to 97-99% drawdown). Gate
+                # behind UNIFORM_FALLBACK_ENABLED env (default "0"). When disabled
+                # (default), llm_failed_both → all-cash silent-pass (scientifically
+                # clean signal, no fabricated bets).
+                if raw_response is None and os.environ.get("UNIFORM_FALLBACK_ENABLED", "0") == "1":
                     _fb = build_uniform_fallback_nba(day_date, day_games, day_odds_list, model_preds, tid=tid)
                     if _fb and _fb.get("allocations"):
                         parsed = _fb
@@ -3579,8 +3585,31 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 MAX_PCT_PER_DAY = 0.98       # near-all-in ceiling (1.0 would break bankrupt-check)
                 MIN_EDGE = tier["min_edge"]
                 KELLY_MULT = tier["kelly_mult"]
+                # 2026-04-21 INTERNAL AFFAIRS RCA patch #3 — peak-equity drawdown clamp.
+                # gemini-anl peaked $170.79 day N then bled to $29.02 (-83% of peak)
+                # because stake size kept compounding on declining bankroll. Clamp:
+                # <50% of peak → stake cap 1% + forbid parlays; <25% of peak → force
+                # cash (ALL_PASS). Gated by PEAK_DD_GUARD_V2=1 (default on 2026-04-21).
+                _pdd_on = os.environ.get("PEAK_DD_GUARD_V2", "1") == "1"
+                _pdd_force_cash = False
+                _pdd_forbid_parlays = False
+                if _pdd_on:
+                    _pdd_peak = max(float(ts.get("best_bankroll") or 0.0), ts["bankroll"])
+                    _pdd_ratio = (ts["bankroll"] / _pdd_peak) if _pdd_peak > 0 else 1.0
+                    if _pdd_ratio < 0.25:
+                        _pdd_force_cash = True
+                    elif _pdd_ratio < 0.50:
+                        MAX_PCT_PER_BET = min(MAX_PCT_PER_BET, 0.01)
+                        _pdd_forbid_parlays = True
                 BASE_CATS = {"ml_home","ml_away","spread_home","spread_away","total_over","total_under"}
                 day_exposure_pct = 0.0
+                if _pdd_force_cash:
+                    # <25% of peak equity → survival mode. All-cash, skip allocs+parlays.
+                    # Tags cash_rationale for audit; allocations list stays empty.
+                    day_log["cash_rationale"] = f"PEAK_DD_GUARD_V2: bankroll/peak<0.25, force cash (bankroll=${ts['bankroll']:.2f})"
+                    parsed = {**parsed, "allocations": [], "parlays": [],
+                              "cash_held_pct": 1.0,
+                              "peak_dd_guard": "force_cash"}
                 for alloc in parsed["allocations"]:
                     gidx = alloc["game_idx"] - 1  # 1-indexed in prompt
                     if gidx < 0 or gidx >= len(day_games):
@@ -3673,7 +3702,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 # Each parlay: all legs must win for payout. Combined odds =
                 # product of leg decimal odds. Stake capped at MAX_PCT_PER_BET.
                 day_log["parlays"] = []
-                for parlay in parsed.get("parlays", []) or []:
+                _parlay_iter = [] if _pdd_forbid_parlays else (parsed.get("parlays", []) or [])
+                for parlay in _parlay_iter:
                     pedge = parlay.get("edge", 0.0) or 0.0
                     if pedge < MIN_EDGE:
                         continue
