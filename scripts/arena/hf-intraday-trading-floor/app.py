@@ -760,6 +760,66 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         f"open_positions={len(pqtf.get('open_positions') or [])}"
     )
 
+    # 2026-04-21 v2.7 — POL ENGINE 44-cat hot signals + MM dealer-positioning.
+    # Every one of the 17 personas sees both blocks verbatim (user directive:
+    # "chaque agent aura bien all infos"). Tight formatting so total prompt stays
+    # ≲4.5k tokens even after these injections.
+    pol_hot = ctx.get("pol_engine_hot") or {}
+    pol_hot_lines: List[str] = []
+    tariff = pol_hot.get("cat26_37_tariff") or {}
+    if tariff.get("regime"):
+        pol_hot_lines.append(
+            f"  Tariff: {tariff.get('regime')} · China {tariff.get('china_tariff')} · "
+            f"{tariff.get('days_left_in_pause', 0)}d left in pause"
+        )
+    iran = (pol_hot.get("cat36_iran") or {}).get("markets") or []
+    for m in iran[:2]:
+        pol_hot_lines.append(f"  Iran Poly: p={m.get('p')} vol24={m.get('v24')} — {(m.get('q') or '')[:70]}")
+    poly_d = (pol_hot.get("cat11_polymarket_delta") or {}).get("markets") or []
+    for m in poly_d[:3]:
+        pol_hot_lines.append(f"  Poly Δ24h: {m.get('d24'):+.3f} (p={m.get('p')}) v=${m.get('v24')} — {(m.get('q') or '')[:60]}")
+    kalshi = (pol_hot.get("cat27_kalshi") or {}).get("top_kalshi") or []
+    for k in kalshi[:2]:
+        pol_hot_lines.append(f"  Kalshi: p={k.get('p')} v={k.get('v')} — {(k.get('t') or '')[:60]}")
+    clusters = (pol_hot.get("cat6_form4_clusters") or {}).get("clusters") or []
+    for c in clusters[:3]:
+        pol_hot_lines.append(f"  Form4 cluster: {c.get('tkr')} n={c.get('n')} ${c.get('net_usd'):,}")
+    congress = (pol_hot.get("cat24_congress") or {}).get("trades") or []
+    for t in congress[:3]:
+        pol_hot_lines.append(f"  Congress buy: {t.get('tkr')} by {t.get('rep')} ~${t.get('usd'):,}")
+    scotus = (pol_hot.get("cat30_scotus") or {}).get("cases") or []
+    for s in scotus[:2]:
+        pol_hot_lines.append(f"  SCOTUS: {(s.get('case') or '')[:60]} [{s.get('sector')}/{s.get('stage')}]")
+    yt = (pol_hot.get("cat44_youtube_finbert") or {}).get("top") or []
+    if yt:
+        yt_s = ", ".join(f"{x.get('ticker')}={x.get('polarity_3d', x.get('polarity','?'))}" for x in yt[:5] if isinstance(x, dict))
+        if yt_s:
+            pol_hot_lines.append(f"  YT FinBERT 3d: {yt_s}")
+    pol_hot_block = "\n".join(pol_hot_lines) or "  (POL engine hot-signals unavailable)"
+
+    mm = ctx.get("mm_signals") or {}
+    mm_lines: List[str] = []
+    if mm.get("summary"):
+        mm_lines.append(f"  {mm['summary']}")
+    term = mm.get("vix_term") or {}
+    if term.get("vix9d") is not None or term.get("vix") is not None or term.get("vix3m") is not None:
+        mm_lines.append(
+            f"  VIX term: 9d={term.get('vix9d')} · 30d={term.get('vix')} · 3M={term.get('vix3m')}"
+            + (f" ({term.get('regime')})" if term.get("regime") else "")
+        )
+    spy = mm.get("spy") or {}
+    if spy:
+        mm_lines.append(
+            f"  SPY spot={spy.get('spot')} PCR={spy.get('spy_pcr')} {spy.get('pcr_regime','')} "
+            f"GEX_proxy={spy.get('spy_gex_proxy_mm')}M {spy.get('gex_sign','')}"
+        )
+    for u in (mm.get("unusual_options") or [])[:4]:
+        mm_lines.append(
+            f"  Unusual {u.get('t')} {u.get('side')}{u.get('strike')} exp={u.get('exp')} "
+            f"vol={u.get('vol')} vol/oi={u.get('vol_oi')}"
+        )
+    mm_block = "\n".join(mm_lines) or "  (MM signals unavailable)"
+
     # Hard off-hours crypto override — swap style wholesale so equity-tape-dependent
     # personas (scalper/momentum/mean-rev/pairs/vol) trade crypto 24/7 instead of
     # passing because "SPY tape flat, market closed".
@@ -824,6 +884,12 @@ LIVE NEWS (Alpaca news feed, ticker-indexed, last hour):
 
 EVENT MARKETS (Polymarket, top volume 24h):
 {poly_block}
+
+POL ENGINE HOT SIGNALS (44-cat upstream, refreshed ~15min — macro / catalysts / insider / prediction-markets):
+{pol_hot_block}
+
+MM DEALER POSITIONING (vol regime, gamma, unusual flow — what market-makers are telling us):
+{mm_block}
 
 NBA TOP-5 EDGES today: {nba_block}
 POL TOP-5 SIGNALS today: {pol_block}

@@ -22,8 +22,12 @@ DATA = REPO / "data"
 # In-process caches (module-scoped). Intentionally cheap — every tick re-evals staleness.
 _NEWS_CACHE: Dict[str, Any] = {"ts": 0, "items": []}
 _POLY_CACHE: Dict[str, Any] = {"ts": 0, "items": []}
+_HOT_CACHE: Dict[str, Any] = {"ts": 0, "payload": None}
 _NEWS_TTL_S = 300    # 5 min — matches tick cadence
 _POLY_TTL_S = 900    # 15 min — Polymarket markets change slower
+_HOT_TTL_S = 600     # 10 min — hot-signals export refreshes every 15 min
+HOT_SIGNALS_URL = "https://raw.githubusercontent.com/LBJLincoln/mon-ipad/main/data/political/hot-signals-latest.json"
+HOT_SIGNALS_LOCAL = DATA / "political" / "hot-signals-latest.json"
 
 
 def _read_json(p: Path) -> Any:
@@ -200,6 +204,41 @@ def _polymarket_events(limit: int = 10) -> List[Dict[str, Any]]:
         return _POLY_CACHE.get("items", [])
 
 
+def _pol_engine_hot_signals() -> Dict[str, Any]:
+    """POL engine 44-category UPSTREAM signal. Written by
+    nomos-political-alpha/scripts/export_hot_signals.py every 15 min, then
+    mirrored to GitHub. Every ITF agent — all 17 personas — sees this verbatim
+    (user directive 2026-04-21: no per-persona filter)."""
+    now = time.time()
+    if _HOT_CACHE.get("payload") and (now - _HOT_CACHE.get("ts", 0) < _HOT_TTL_S):
+        return _HOT_CACHE["payload"]
+
+    payload: Optional[Dict[str, Any]] = None
+    if HOT_SIGNALS_LOCAL.exists():
+        payload = _read_json(HOT_SIGNALS_LOCAL)
+    if not payload:
+        try:
+            import requests
+            r = requests.get(HOT_SIGNALS_URL, timeout=6)
+            if r.ok:
+                payload = r.json()
+        except Exception:
+            payload = None
+    payload = payload or {"note": "hot-signals unavailable"}
+    _HOT_CACHE["ts"] = now
+    _HOT_CACHE["payload"] = payload
+    return payload
+
+
+def _mm_signals() -> Dict[str, Any]:
+    """Dealer positioning read. Every agent — all 17 — sees it."""
+    try:
+        from .mm_signal_bus import build_mm_signals
+        return build_mm_signals()
+    except Exception as e:
+        return {"note": f"mm-signals unavailable: {type(e).__name__}"}
+
+
 def build_intraday_context() -> Dict[str, Any]:
     """Single dict ITF agents see in their prompt each tick."""
     quotes = quote_latest() or {}
@@ -213,6 +252,8 @@ def build_intraday_context() -> Dict[str, Any]:
         "nba_top_edges": _top_nba_edges(5),
         "nba_fleet": _nba_fleet_summary(),
         "pol_top_signals": _top_pol_signals(5),
+        "pol_engine_hot": _pol_engine_hot_signals(),
+        "mm_signals": _mm_signals(),
         "pqtf_state": _pqtf_state(),
         "live_news": _alpaca_news(news_syms, limit=15),
         "polymarket_events": _polymarket_events(limit=8),
