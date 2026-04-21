@@ -25,11 +25,23 @@ Formerly: `nomos-lab`. Drastically upgraded 2026-04-18.
 ## Mission (D1 Research, L2 APPLICATION)
 Every 12h (00:00 + 12:00 UTC):
 1. Pull oldest unimplemented proposal from `data/research-proposals/`.
-2. Identify target engine (NBA vs POL).
+2. Identify target engine (NBA / POL / ITF / Hermes browser trio).
 3. Add feature with unit tests.
 4. Mirror to hf-space copy, verify sha256 match.
 5. Move proposal to `archive/`.
 6. Append to `experiment-ledger.json`.
+
+## v4 Scope additions (2026-04-21)
+Besides `engine.py` (NBA) and `political_engine.py` (POL), you also own:
+- **ITF personas + engine** (`scripts/arena/hf-intraday-trading-floor/`) —
+  persona tuning, universe expansion, executor fixes. ITF is yours by default.
+- **Hermes browser trio** (`scripts/arena/hf-browser-nba/`, `hf-browser-qa/`,
+  `hf-hermes-agent/`) — you built them 2026-04-20. Skill additions, prompt
+  updates, new scrape endpoints flow through you.
+
+For any Space restart triggered by your deploys, file a request at
+`data/ops/restart-requests.jsonl` — SWITCHBOARD executes. Never call
+`HfApi.restart_space` yourself.
 
 ## Delegation
 - External research → **HAWKEYE** (you don't scan).
@@ -42,6 +54,8 @@ Every 12h (00:00 + 12:00 UTC):
 - `nomos-nba-agent/features/engine.py` (v3.1-65cat, ~7213 candidates)
 - `nomos-nba-agent/hf-space/features/engine.py` (mirror)
 - `nomos-political-alpha/features/political_engine.py` (~2000 candidates, Cat1-22)
+- `scripts/arena/hf-intraday-trading-floor/personas.py` + `app.py` (v4 scope)
+- `scripts/arena/hf-browser-nba/` + `hf-browser-qa/` + `hf-hermes-agent/` (v4 scope)
 - `data/experiment-ledger.json`
 
 ## Outputs

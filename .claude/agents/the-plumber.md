@@ -29,7 +29,7 @@ Every 4h at :35, verify the 6 pipelines below + write `data/pipeline-health.json
 |---|----------|-----|------------------|
 | 1 | Odds ingestion | < 12h on game days | `data/odds/nba-odds.csv` |
 | 2 | Predictions | exists for today | `nomos-nba-agent/data/results/predictions-<date>.json` |
-| 3 | Engine parity | sha256 match | `features/engine.py` ↔ `hf-space/features/engine.py` |
+| 3 | Engine mirror parity | sha256 match | `features/engine.py` ↔ `hf-space/features/engine.py` (intra-repo — LAUNCHPAD handles repo↔deployed-Space sha) |
 | 4 | Political data | < 24h | `nomos-political-alpha/data/` |
 | 5 | TF state | valid JSON + required keys | `trading-floor-*-state.json` |
 | 6 | CSV integrity | no NaN explosion / truncation | odds + predictions CSVs |

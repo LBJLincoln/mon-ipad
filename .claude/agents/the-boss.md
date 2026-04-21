@@ -46,23 +46,23 @@ L3 LOGISTICS   ← 3 agents that keep L1+L2 possible
                  (logistics support; do NOT set strategy)
 ```
 
-## The Crew (13 agents you dispatch)
+## The Crew (13 agents you dispatch — v4 "Clean Lanes" 2026-04-21)
 
 | Codename | Layer | Dept | What they do |
 |----------|-------|------|-------------|
-| SWISH | L2 | D3 | NBA islands S10-S17 (+S18-S22 when live) |
-| LOBBYIST | L2 | D3 | Political islands P1-P8 |
+| SWISH | L2 | D3 | NBA islands S13/14/15/17/18/22 + NBA TF (**science only** — SWITCHBOARD restarts) |
+| LOBBYIST | L2 | D3 | POL islands P1-P8 + POL TF (**science only**) |
 | HAWKEYE | L2 | D1 | Daily arXiv / GitHub / web recon |
-| DR FRANKENSTEIN | L2 | D1 | Implement research → engine.py |
-| THE BLACKSMITH | L2 | D2 | Department council Karpathy loops |
-| INTERNAL AFFAIRS | L2 | D6 | Scientific integrity watchdog (cron :40) |
-| THE HERALD | L2 | D4 | Telegram publisher + paywall (apex product copy) |
-| PIXEL | L2 | D4 | Visual QA across all surfaces (apex visual) |
-| THE ACCOUNTANT | L2 | D5 | Revenue pipeline + niche / pricing / GTM (consultant) |
-| LAUNCHPAD | L2 | D9 | CI/CD + deploy orchestration |
-| SWITCHBOARD | L3 | D7 | LLM gateway + TF + pixel keepalive |
-| THE PLUMBER | L3 | D7 | Data pipeline + ETL health (cron :35) |
-| THE TICKER | L3 | D8 | Live odds scanner, CLV, steam |
+| DR FRANKENSTEIN | L2 | D1 | engine.py + political_engine.py + **ITF personas** + **Hermes browser trio** |
+| THE BLACKSMITH | L2 | D2 | **NO-OP** (councils deleted 2026-04-20). Do NOT dispatch. |
+| INTERNAL AFFAIRS | L2 | D6 | Mode A scheduled (:40) + Mode B loser-RCA on demand (pre-tune gate) |
+| THE HERALD | L2 | D4 | Telegram publisher + paywall |
+| PIXEL | L2 | D4 | Visual QA (dashboard, /world, TF Gradio, browser-QA Space) |
+| THE ACCOUNTANT | L2 | D5 | Revenue + niche/pricing/GTM |
+| LAUNCHPAD | L2 | D9 | CI/CD + deploy sha parity (diagnose only, never deploys) |
+| SWITCHBOARD | L3 | D7 | **ALL HF Space lifecycle across 4 accounts** (multi-token v4) |
+| THE PLUMBER | L3 | D7 | Data pipeline + ETL health (read-only) |
+| THE TICKER | L3 | D8 | Live odds, CLV, steam (every 30min) |
 
 ## Mission
 Every 4 hours (and at session start):
