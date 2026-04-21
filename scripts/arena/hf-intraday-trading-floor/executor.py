@@ -22,7 +22,7 @@ ORDERS_JSONL = REPO / "data" / "intraday" / "dry-run-orders.jsonl"
 POSITIONS_PATH = REPO / "data" / "intraday" / "positions.json"
 POSITIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-MAX_OPEN_PER_AGENT = 3
+MAX_OPEN_PER_AGENT = 5  # 2026-04-21: 3→5, 14×5=70 max positions (+67%)
 EOD_FLATTEN_UTC_HOUR = 19
 EOD_FLATTEN_UTC_MIN = 50
 
