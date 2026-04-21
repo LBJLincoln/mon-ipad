@@ -54,8 +54,8 @@ HF EVOLUTION ISLANDS — 11 SURVIVORS (6 NBA + 5 POL) after 2026-04-17 cull
     ├── P1 Nomos42/political-alpha:      xgboost        gen=3042  brier=0.24996
     ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=11953 brier=0.25223
     ├── P4 LBJLincoln/political-alpha-4: logistic       gen=16728 brier=0.25146
-    ├── P5 LBJLincoln/political-alpha-5: catboost       gen=1567  brier=0.25347
-    └── P7 LBJLincoln/political-alpha-7: gradient_boost gen=2098  brier=0.24987  ★ POL BEST
+    ├── P5 LBJLincoln/political-alpha-5: catboost       gen=21048 brier=0.24923  ★ POL BEST (2026-04-20)
+    └── P7 LBJLincoln/political-alpha-7: gradient_boost gen=2098  brier=0.24987
 
 SELFHOST LLM FLEET (6 RUNNING, 2 building — 2026-04-19 20:55 UTC)
     LBJLincoln   (3 RUNNING): qwen25-05b-cpu, gemma2-2b-cpu, phi35-mini-cpu
