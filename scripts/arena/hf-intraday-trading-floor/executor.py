@@ -161,6 +161,82 @@ def _append_order_log(entry: Dict[str, Any]) -> None:
         fh.write(json.dumps(entry, default=str) + "\n")
 
 
+def refresh_broker_statuses() -> Dict[str, int]:
+    """Re-poll Alpaca for every position with a broker_order_id whose cached
+    broker_status is non-terminal. Updates positions.json in place.
+
+    Terminal statuses (skipped to save API calls): filled, canceled, expired,
+    rejected, replaced, closed_by_agent, sim_*, closed.
+
+    Returns a counter dict of what changed, e.g. {"polled": 23, "updated": 18,
+    "filled": 11, "canceled": 2}. Called once at the top of tick_once() so the
+    /api/status view never shows stale pending_new.
+    """
+    stats = {"polled": 0, "updated": 0, "filled": 0, "canceled": 0, "other": 0, "errors": 0}
+    if not live_mode():
+        return stats
+    key = os.environ.get("ALPACA_PAPER_KEY")
+    secret = os.environ.get("ALPACA_PAPER_SECRET")
+    if not (key and secret):
+        return stats
+
+    TERMINAL = {
+        "filled", "canceled", "cancelled", "expired", "rejected", "replaced",
+        "closed_by_agent", "closed", "done_for_day", "stopped", "suspended",
+    }
+    import requests
+    headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
+
+    positions = _load_positions()
+    changed = False
+    for agent_tid, lst in positions.items():
+        for p in lst:
+            oid = p.get("broker_order_id")
+            if not oid:
+                continue
+            cur = (p.get("broker_status") or "").lower()
+            if cur in TERMINAL:
+                continue
+            stats["polled"] += 1
+            try:
+                r = requests.get(
+                    f"https://paper-api.alpaca.markets/v2/orders/{oid}",
+                    headers=headers, timeout=6,
+                )
+                if r.status_code == 404:
+                    p["broker_status"] = "not_found"
+                    stats["updated"] += 1
+                    stats["other"] += 1
+                    changed = True
+                    continue
+                if not r.ok:
+                    stats["errors"] += 1
+                    continue
+                body = r.json()
+                new = (body.get("status") or "").lower()
+                if new and new != cur:
+                    p["broker_status"] = new
+                    if body.get("filled_avg_price"):
+                        p["filled_avg_price"] = float(body["filled_avg_price"])
+                    if body.get("filled_at"):
+                        p["filled_at"] = body["filled_at"]
+                    if body.get("filled_qty"):
+                        p["filled_qty"] = float(body["filled_qty"])
+                    stats["updated"] += 1
+                    if new == "filled":
+                        stats["filled"] += 1
+                    elif new in {"canceled", "cancelled"}:
+                        stats["canceled"] += 1
+                    else:
+                        stats["other"] += 1
+                    changed = True
+            except Exception:
+                stats["errors"] += 1
+    if changed:
+        _save_positions(positions)
+    return stats
+
+
 def _asset_class(ticker: str) -> str:
     if "/" in ticker:
         return "crypto"

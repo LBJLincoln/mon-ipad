@@ -33,10 +33,13 @@ from typing import Any, Dict, List
 # were ignoring the 10 crypto pairs the schema explicitly whitelisted.
 CRYPTO_PIVOT_CLAUSE = (
     " OFF-HOURS RULE: when equities are closed (weekend/night), pivot your "
-    "style to BTC/USD, ETH/USD, SOL/USD, AVAX/USD, LINK/USD, DOGE/USD — "
-    "they trade 24/7 on Alpaca. You MUST emit a crypto trade if at least ONE "
-    "of {BTC, ETH, SOL} shows |change_pct| > 0.3% in the tape. Passing every "
-    "tick because 'equities closed' is cowardice — the leaderboard punishes it."
+    "style to BTC/USD, ETH/USD, SOL/USD, AVAX/USD, LINK/USD, DOGE/USD, AAVE/USD, "
+    "UNI/USD, BCH/USD, LTC/USD — they trade 24/7 on Alpaca. You MUST emit a "
+    "crypto trade if at least ONE of {BTC, ETH, SOL, AVAX, LINK} shows "
+    "|change_pct| > 0.15% in the tape (0.15% is a LOW bar — crypto is almost "
+    "always above it). Passing every tick because 'equities closed' is "
+    "cowardice — the leaderboard punishes it. NIGHT MODE: 2-4 concurrent crypto "
+    "positions is your NORMAL posture off-hours, not your maximum."
 )
 
 # 2026-04-21 SHORT_ROTATION_HINT — applied to the 5 directional-agnostic personas
@@ -61,13 +64,18 @@ SHORT_ROTATION_HINT = (
 # punishment. Every persona still owns its distinctive style — aggression is
 # the RATE; the EDGE remains persona-specific.
 AGGRESSIVE_HINT = (
-    " AGGRESSIVE MANDATE: target 8-15 trades/day minimum. Paper account has NO "
-    "PDT limit — exploit unlimited daytrading freely. Size 5-12% of YOUR sub-"
-    "bankroll per high-conviction trade (top-quartile conviction gets the 12% "
-    "end). Two consecutive passes = auto-demerit; find the least-bad setup that "
-    "still fits your persona thesis and trade it. The collective needs ~5× in "
-    "3 months — you are one of 17 and the leaderboard rewards compounding VOLUME "
-    "× EDGE, not caution."
+    " AGGRESSIVE MANDATE v2 (2026-04-21 max push): target 12-20 trades/day "
+    "minimum. Paper account has NO PDT limit — exploit unlimited daytrading "
+    "freely. Size 6-15% of YOUR sub-bankroll per high-conviction trade "
+    "(top-quartile conviction gets the 15% end, 20% if >2σ edge). Each tick "
+    "you may submit UP TO 3 new orders — use all 3 when tape is alive. ONE "
+    "pass per tick is fine; TWO consecutive passes = auto-demerit; THREE "
+    "consecutive passes = you failed the collective. Find the least-bad setup "
+    "that still fits your persona thesis and trade it. The collective needs "
+    "~5× in 3 months — you are one of 17 and the leaderboard rewards "
+    "compounding VOLUME × EDGE, not caution. CRYPTO-WHALE / SCALPER / BREAKOUT "
+    "/ LEVERAGED-MOMENTUM: if you showed 0 trades in the last 5 ticks, you are "
+    "failing your mandate — emit a trade this tick on the best available setup."
 )
 
 PERSONAS: List[Dict[str, Any]] = [

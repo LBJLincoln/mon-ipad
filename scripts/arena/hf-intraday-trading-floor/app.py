@@ -968,6 +968,15 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         STATE["tick_count"] += 1
         STATE["last_tick_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"[itf] tick #{STATE['tick_count']} starting", file=sys.stderr, flush=True)
+    # 2026-04-21 — refresh stale broker statuses BEFORE anything else so
+    # /api/status + positions.json reflect real fills, not cached pending_new.
+    # Addresses user report: "ITF seems slow, orders not moving at all".
+    try:
+        _bs = executor.refresh_broker_statuses()
+        if _bs.get("polled", 0) > 0:
+            print(f"[itf] broker-status refresh: {_bs}", file=sys.stderr, flush=True)
+    except Exception as _brs:
+        print(f"[itf] broker-status refresh err (non-fatal): {_brs}", file=sys.stderr, flush=True)
     # v2.5 — ensure sub-bankrolls are seeded (idempotent) and sync each into STATE.
     try:
         executor.seed_bankrolls([p["tid"] for p in PERSONAS])
@@ -1050,8 +1059,8 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     # accumulation also caps out. Without this, 2 ticks of 2 AVAX-longs each = 4 AVAX-longs.
     # Fair-order randomization so early-called personas don't monopolize the edge.
     import random as _random
-    MAX_CONCURRENT_PER_KEY = 3
-    SUBMITS_PER_TICK = 2  # 2026-04-21 compute cap: each agent may submit at most N new orders per tick.
+    MAX_CONCURRENT_PER_KEY = 4  # 2026-04-21 aggression push: 3→4 concurrent agents per (ticker,side)
+    SUBMITS_PER_TICK = 3  # 2026-04-21 aggression push: 2→3 new orders per agent per tick (compute still OK — 17×3=51/tick)
     _submits_this_tick: Dict[str, int] = {}
     _tick_counts: Dict[Tuple[str, str], int] = {}
     try:

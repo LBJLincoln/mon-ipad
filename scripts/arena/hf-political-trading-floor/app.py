@@ -1852,13 +1852,13 @@ def parse_day_allocation(raw: str, n_events: int, drawdown: float = 0.0) -> Opti
         cash = cash * scale
 
     # ── MIN_DEPLOY_PCT — $1M collective goal, aggressive deploy
-    # 2026-04-20 DYNAMIC FLOOR (ported from NBA fix): high-drawdown agents
-    # should de-risk not double-down. dd<0.5 → 0.75; dd=0.5 → 0.50; dd=0.8 →
-    # 0.35; dd>=0.9 → 0.25 (capital preservation).
+    # 2026-04-21 MAX PUSH: 0.75 → 0.80 (cross-TF parity with NBA + ITF v2).
+    # Dynamic drawdown tapering preserved: dd<0.5 → 0.80; dd=0.5 → 0.55;
+    # dd=0.8 → 0.35; dd>=0.9 → 0.25 (capital preservation).
     if drawdown < 0.5:
-        MIN_DEPLOY_PCT = 0.75
+        MIN_DEPLOY_PCT = 0.80
     else:
-        MIN_DEPLOY_PCT = max(0.25, 0.75 - (drawdown - 0.5) * 1.0)
+        MIN_DEPLOY_PCT = max(0.25, 0.80 - (drawdown - 0.5) * 1.1)
     deployed = sum(a["pct"] for a in clean)
     if deployed > 0 and deployed < MIN_DEPLOY_PCT:
         scale_up = MIN_DEPLOY_PCT / deployed
