@@ -1,0 +1,48 @@
+{
+  "id": "2026-04-21-stacked-ensemble-calibration",
+  "generated_at": "2026-04-21T16:00:00Z",
+  "generated_by": "cloud-brain-4h (SOTA research cycle)",
+  "priority": "HIGH",
+  "title": "Stacked Ensemble + MC Dropout Calibration Head for NBA Evolution Islands",
+  "sources": [
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "journal": "Nature Scientific Reports",
+      "year": 2025,
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "key_finding": "Stacking NB+AdaBoost+MLP+KNN+XGBoost+DT+LR. CNN achieves lowest Brier ~0.221. MLP meta-learner on tree outputs outperforms any single model."
+    },
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "journal": "MDPI Information",
+      "year": 2026,
+      "month": "January",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "key_finding": "RNN + Monte Carlo dropout (100 stochastic forward passes) + rolling-form indicators + shot-chart embeddings. Brier ~0.20, better calibration than deterministic models. Calibration uncertainty enables optimal Kelly sizing."
+    }
+  ],
+  "current_fleet_best": {
+    "brier": 0.22073,
+    "source": "S22 venn_abers_fusion gen=39 (CPU tree + Venn-Abers calibration)",
+    "gap_to_sota": 0.0207
+  },
+  "proposed_technique": {
+    "name": "MC Dropout Calibration Head on Tree Leaf Embeddings",
+    "description": "Add a lightweight MLP (2 hidden layers, 64→32 neurons) with MC dropout (p=0.1) on top of tree leaf index embeddings. During inference: 50 stochastic forward passes → mean probability + epistemic uncertainty. Uncertainty used for: (1) confidence-weighted Kelly sizing, (2) abstain when uncertainty > threshold.",
+    "cpu_feasibility": "YES — MLP head is tiny. Tree leaf embeddings are fixed once tree is trained. No GPU needed. Inference: ~20ms per game on CPU (50 passes × tiny MLP).",
+    "implementation_steps": [
+      "1. In evolution island: after tree model fit, extract leaf indices (model.apply(X) for XGB/LGB, model.decision_path(X) for sklearn).",
+      "2. Fit lightweight MLP head (sklearn MLPClassifier, max_iter=500) with dropout via custom layer or MC approximation via noise injection at eval time.",
+      "3. At inference: predict_proba 50× with random noise → mean and std. Std > 0.15 → flag as high-uncertainty bet.",
+      "4. Kelly sizing: use mean_prob for edge calc but scale stake by (1 - uncertainty_std). Reduces over-betting on uncertain games.",
+      "5. Add to CALIBRATION_OPTIONS as 'mc_dropout_mlp'. GA can mutate to include/exclude.",
+      "6. Target island: S22 (venn_abers_fusion rebuild window — natural experiment slot)."
+    ],
+    "alternative_simple": "If MLP overhead is too high on CPU: use Venn-Abers calibrator (already shipped by FRANKENSTEIN today, 2026-04-21T16:03Z) with isotonic_temporal weighting as the calibration head. Simpler, already proven in S22."
+  },
+  "expected_brier_delta": "-0.005 to -0.015 (to reach ~0.205 target, closing half the gap to MDPI 2026 SOTA)",
+  "target_islands": ["S22 (natural experiment — rebuilding)", "S15 (Karpathy injection in progress — validate interaction)"],
+  "kill_criterion": "Brier improvement >= 0.002 over 3 consecutive generations vs control island",
+  "risk": "MLP head may overfit on small CPU training sets. Mitigate: strong L2 regularization (alpha=1.0) + max 2 hidden layers.",
+  "status": "PROPOSED — awaiting FRANKENSTEIN review and S22 rebuild completion"
+}
