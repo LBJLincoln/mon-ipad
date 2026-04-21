@@ -1,11 +1,11 @@
 # Betting Strategy & Bankroll
 
-> Auto-compiled from 146 raw sources on 2026-04-20
+> Auto-compiled from 129 raw sources on 2026-04-21
 
 ## Overview
 
-This topic covers 146 research files spanning betting strategy & bankroll.
-Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
+This topic covers 129 research files spanning betting strategy & bankroll.
+Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
 
@@ -32,28 +32,17 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/karpathy-researcher/research_cycle6_feature_proposals.md`
 - **Multi-Agent LLM Prediction Systems (April 2026 Landscape)** (1641 words) -- `raw/agent-memory/karpathy-researcher_research_multi_agent_llm_systems_apr2026.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
-- **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
 - **Pixel-Agent Rendering Patterns: Battle-Tested Findings** (1428 words) -- `raw/research/pixel-world-rebuild-patterns-apr16.md`
-- **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
-- **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
-- **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
 - **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
 - **NBA Scientific Experiment Report** (1082 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
-- **00 — Live Dashboard** (1076 words) -- `raw/obsidian-docs/00-Dashboard.md`
 - **NBA Scientific Experiment Report** (1063 words) -- `raw/experiments/nba-experiment-2026-04-10.md`
-- **07 -- Betting** (997 words) -- `raw/obsidian-docs/07-Betting.md`
-- **03 -- Trading Floor v4** (974 words) -- `raw/obsidian-docs/03-Trading-Floor.md`
 - **Dashboard Libraries & Agent Studio UI SOTA (April 2026)** (945 words) -- `raw/agent-memory/karpathy-researcher_research_dashboard_libraries_apr14_2026.md`
-- **15 -- Business Plan** (936 words) -- `raw/obsidian-docs/15-Business-Plan.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/agent-memory/research-analyst_research_march2026_agentic_ai.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/research-analyst/research_march2026_agentic_ai.md`
-- **06 -- Research** (901 words) -- `raw/obsidian-docs/06-Research.md`
-- **Nomos42 -- Knowledge Vault** (892 words) -- `raw/obsidian-docs/README.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (857 words) -- `raw/political/political-experiment-2026-04-12.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (857 words) -- `raw/scientific/political-experiment-2026-04-12.md`
-- **12 -- Agent Registry** (846 words) -- `raw/obsidian-docs/12-Agent-Registry.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-06.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-07.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-08.md`
@@ -66,15 +55,10 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-09.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-10.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-11.md`
-- **16 -- Karpathy Autoresearch Pattern** (800 words) -- `raw/obsidian-docs/16-Karpathy-Pattern.md`
 - **NBA Scientific Experiment Report** (777 words) -- `raw/experiments/nba-experiment-2026-04-08.md`
 - **NBA Scientific Experiment Report** (777 words) -- `raw/experiments/nba-experiment-2026-04-09.md`
 - **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
 - **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
-- **09 -- Legal & Finance** (759 words) -- `raw/obsidian-docs/09-Legal-Finance.md`
-- **13 -- Tools** (724 words) -- `raw/obsidian-docs/13-Tools.md`
-- **08 -- API Vision & Marketplace** (689 words) -- `raw/obsidian-docs/08-API-Vision.md`
-- **14 -- Communication** (665 words) -- `raw/obsidian-docs/14-Communication.md`
 - **project_nba_research_state** (660 words) -- `raw/agent-memory/research-analyst_project_nba_research_state.md`
 - **project_nba_research_state** (660 words) -- `raw/research-analyst/project_nba_research_state.md`
 - **April 2026 Cycle 18 — Competitor Audit + Council Honest Assessment** (604 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle18_competitor_audit.md`
@@ -94,7 +78,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/research-analyst/research_march2026_cycle8_data_sources.md`
 - **Backtesting & Multi-Agent Portfolio Research — April 2026 Cycle 11** (414 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle11_backtesting.md`
-- **25 -- ML Prediction System** (406 words) -- `raw/obsidian-docs/25-ML-Predictions.md`
 - **Trading Floor v4/v5 SOTA Audit — April 11 2026** (403 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle17_tf_sota.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/repo-scout/project_nba_data_sources.md`
@@ -102,7 +85,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Multi-Market NBA Betting Research March 2026** (377 words) -- `raw/research-analyst/research_march2026_multi_market.md`
 - **Arena Lessons Learned** (354 words) -- `raw/learnings/arena-lessons-learned.md`
 - **Political Alpha Scientific Experiment Report** (333 words) -- `raw/experiments/political-experiment-2026-04-06.md`
-- **Research Cycle — March 26, 2026** (331 words) -- `raw/data-research/research-cycle-2026-03-26.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/agent-memory/repo-scout_project_historical_odds_sources.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/repo-scout/project_historical_odds_sources.md`
@@ -151,6 +133,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-17** (136 words) -- `raw/research/github-betting-scan-2026-04-17.md`
 - **Research Scan: github-betting-scan-2026-04-18** (136 words) -- `raw/research/github-betting-scan-2026-04-18.md`
 - **Research Scan: github-betting-scan-2026-04-19** (136 words) -- `raw/research/github-betting-scan-2026-04-19.md`
+- **Research Scan: github-betting-scan-2026-04-20** (136 words) -- `raw/research/github-betting-scan-2026-04-20.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/agent-memory/market-analyst_feedback_model_game_mismatch.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/market-analyst/feedback_model_game_mismatch.md`
 - **Political Alpha Arena Results** (100 words) -- `raw/political/arena-results-summary.md`
@@ -206,7 +189,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - [[Isotonic Regression]]
 - [[Karpathy Loop]]
 - [[Kelly Criterion]]
-- [[LLM Council]]
 - [[Multi-Island Evolution]]
 - [[Mutation Operators]]
 - [[Platt Scaling]]

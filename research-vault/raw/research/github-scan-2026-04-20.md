@@ -5,23 +5,25 @@
 2026-04-20
 
 
-## scanned_by
-HAWKEYE
+## scan_time
+2026-04-20 18:00:07
 
 
-## window
-April 2026 trending / directly relevant to 4 TFs
+## query
+NBA prediction machine learning
 
 
 ## repos
 
-- **TauricResearch/TradingAgents**: 
-  - URL: https://github.com/TauricResearch/TradingAgents
-- **Polymarket/agents**: 
-  - URL: https://github.com/Polymarket/agents
-- **Open-Finance-Lab/AgenticTrading**: 
-  - URL: https://github.com/Open-Finance-Lab/AgenticTrading
-- **Polymarket/py-clob-client**: 
-  - URL: https://github.com/Polymarket/py-clob-client
-- **iAmGiG/gex-llm-patterns**: 
-  - URL: https://github.com/iAmGiG/gex-llm-patterns
+- **ilkealatas/nba-player-performance-prediction**: Machine learning pipeline to predict NBA Player Efficiency Rating (PER) using 2013-2014 season data.
+  - URL: https://github.com/ilkealatas/nba-player-performance-prediction
+- **teaghanjohnson/nba-match-predictor**: Machine learning NBA game predictor using a Ridge Classifier trained on historical box score data (2016-2025). Features a Streamlit dashboard with live prediction tracking.
+  - URL: https://github.com/teaghanjohnson/nba-match-predictor
+- **rscadrien/NBA_Playoff**: NBA Playoff Prediction is a machine learning project designed to predict how far an NBA team is likely to progress in the playoffs based on its regular season performance.
+  - URL: https://github.com/rscadrien/NBA_Playoff
+- **Jack-br505/NBA-Draft-Prediction-Model**: Using machine learning to predict which players will get drafted, Guided project through MSU AI club
+  - URL: https://github.com/Jack-br505/NBA-Draft-Prediction-Model
+- **tumbrelpeanuts/nba-injury-risk**: NBA player injury risk prediction using workload-focused feature engineering and machine learning
+  - URL: https://github.com/tumbrelpeanuts/nba-injury-risk
+
+## notable_repos

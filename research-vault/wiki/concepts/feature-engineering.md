@@ -1,11 +1,11 @@
 # Feature Engineering & Selection
 
-> Auto-compiled from 60 raw sources on 2026-04-20
+> Auto-compiled from 54 raw sources on 2026-04-21
 
 ## Overview
 
-This topic covers 60 research files spanning feature engineering & selection.
-Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
+This topic covers 54 research files spanning feature engineering & selection.
+Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
 
@@ -19,23 +19,18 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/agent-memory/karpathy-researcher_research_cycle6_feature_proposals.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/karpathy-researcher/research_cycle6_feature_proposals.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
-- **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/karpathy-researcher/karpathy_nba_adaptation.md`
 - **Claude Code Karpathy Skills & Autoresearch Ecosystem** (1407 words) -- `raw/agent-memory/karpathy-researcher_research_claude_code_karpathy_skills_apr2026.md`
 - **RGWA HuggingFace Models Survey March 2026** (1265 words) -- `raw/agent-memory/research-analyst_research_rgwa_hf_models_march2026.md`
 - **RGWA HuggingFace Models Survey March 2026** (1265 words) -- `raw/research-analyst/research_rgwa_hf_models_march2026.md`
-- **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/data-research/self-improvement-harness-sources-2026-03-31.md`
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/research/self-improvement-harness-sources-2026-03-31.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
 - **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
-- **03 -- Trading Floor v4** (974 words) -- `raw/obsidian-docs/03-Trading-Floor.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/agent-memory/research-analyst_research_march2026_agentic_ai.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/research-analyst/research_march2026_agentic_ai.md`
 - **Research Cycle 7 — Self-Improvement Harness (March 31 2026)** (925 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_self_improvement_harness.md`
 - **Research Cycle 7 — Self-Improvement Harness (March 31 2026)** (925 words) -- `raw/karpathy-researcher/research_cycle7_self_improvement_harness.md`
-- **06 -- Research** (901 words) -- `raw/obsidian-docs/06-Research.md`
-- **02 -- Evolution (6 HF Islands)** (894 words) -- `raw/obsidian-docs/02-Evolution.md`
 - **Claude Code Karpathy Plugins & Ecosystem (April 2026)** (776 words) -- `raw/agent-memory/karpathy-researcher_research_claude_code_plugins_apr2026.md`
 - **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
 - **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
@@ -43,7 +38,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **research_march2026_cycle4** (764 words) -- `raw/research-analyst/research_march2026_cycle4.md`
 - **hf_march2026_scan** (733 words) -- `raw/agent-memory/research-analyst_project_hf_march2026_scan.md`
 - **hf_march2026_scan** (733 words) -- `raw/research-analyst/project_hf_march2026_scan.md`
-- **17 -- Political Alpha** (701 words) -- `raw/obsidian-docs/17-Political-Alpha.md`
 - **Cycle 8 ONNX + ClearML Research (Apr 3, 2026)** (679 words) -- `raw/agent-memory/karpathy-researcher_research_cycle8_onnx_clearml.md`
 - **Cycle 8 ONNX + ClearML Research (Apr 3, 2026)** (679 words) -- `raw/karpathy-researcher/research_cycle8_onnx_clearml.md`
 - **project_nba_research_state** (660 words) -- `raw/agent-memory/research-analyst_project_nba_research_state.md`
@@ -61,11 +55,11 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/repo-scout/project_nba_data_sources.md`
 - **Political Alpha Scientific Experiment Report** (333 words) -- `raw/experiments/political-experiment-2026-04-06.md`
-- **Research Cycle — March 26, 2026** (331 words) -- `raw/data-research/research-cycle-2026-03-26.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
 - **Research Scan: latest-improvements-2026-03-31** (300 words) -- `raw/research/latest-improvements-2026-03-31.md`
 - **Multi-Agent Workflow Scan (April 2026)** (230 words) -- `raw/agent-memory/repo-scout_project_multiagent_workflow_apr2026.md`
 - **Research Scan: arxiv-scan-2026-04-16** (228 words) -- `raw/research/arxiv-scan-2026-04-16.md`
+- **S3 itf_no_crypto 2026-04-20 false alarm** (196 words) -- `raw/agent-memory/the-ticker_project_s3_itf_no_crypto_apr20_false.md`
 - **Research Scan: feature-proposals-2026-03-31** (171 words) -- `raw/research/feature-proposals-2026-03-31.md`
 - **Proposal queue status 2026-04-19** (124 words) -- `raw/agent-memory/nomos-lab_project_proposal_queue_status_apr19.md`
 - **Cat66 pace-normalized per-100 implemented 2026-04-19** (89 words) -- `raw/agent-memory/nomos-lab_project_cat66_implemented_apr19.md`
@@ -120,7 +114,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - [[Isotonic Regression]]
 - [[Karpathy Loop]]
 - [[Kelly Criterion]]
-- [[LLM Council]]
 - [[Multi-Island Evolution]]
 - [[Mutation Operators]]
 - [[Platt Scaling]]

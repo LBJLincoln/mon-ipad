@@ -1,11 +1,11 @@
 # Trading Floor & AI Competition
 
-> Auto-compiled from 63 raw sources on 2026-04-20
+> Auto-compiled from 48 raw sources on 2026-04-21
 
 ## Overview
 
-This topic covers 63 research files spanning trading floor & ai competition.
-Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators.
+This topic covers 48 research files spanning trading floor & ai competition.
+Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
 
@@ -21,18 +21,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
 - **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/agent-memory/research-analyst_research_april2026_free_inference_capacity.md`
 - **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/research-analyst/research_april2026_free_inference_capacity.md`
-- **Karpathy April 2026 Research Findings** (1597 words) -- `raw/data-reports/KARPATHY_APRIL_2026_FINDINGS.md`
-- **22 -- Compute Mesh Topology** (1406 words) -- `raw/obsidian-docs/22-Compute-Mesh.md`
-- **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
-- **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
-- **00 — Live Dashboard** (1076 words) -- `raw/obsidian-docs/00-Dashboard.md`
-- **07 -- Betting** (997 words) -- `raw/obsidian-docs/07-Betting.md`
-- **03 -- Trading Floor v4** (974 words) -- `raw/obsidian-docs/03-Trading-Floor.md`
 - **Dashboard Libraries & Agent Studio UI SOTA (April 2026)** (945 words) -- `raw/agent-memory/karpathy-researcher_research_dashboard_libraries_apr14_2026.md`
-- **Nomos42 -- Knowledge Vault** (892 words) -- `raw/obsidian-docs/README.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (857 words) -- `raw/political/political-experiment-2026-04-12.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (857 words) -- `raw/scientific/political-experiment-2026-04-12.md`
-- **12 -- Agent Registry** (846 words) -- `raw/obsidian-docs/12-Agent-Registry.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-06.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-07.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-08.md`
@@ -45,12 +36,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-09.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-10.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-11.md`
-- **20 -- Session Log** (804 words) -- `raw/obsidian-docs/20-Session-Log.md`
-- **21 -- Free Models & Inference Stack** (795 words) -- `raw/obsidian-docs/21-Free-Models.md`
-- **10 -- All Repos** (790 words) -- `raw/obsidian-docs/10-Repos.md`
-- **13 -- Tools** (724 words) -- `raw/obsidian-docs/13-Tools.md`
-- **17 -- Political Alpha** (701 words) -- `raw/obsidian-docs/17-Political-Alpha.md`
-- **08 -- API Vision & Marketplace** (689 words) -- `raw/obsidian-docs/08-API-Vision.md`
 - **PQTF post-mortem + improvement-proposal bridge** (623 words) -- `raw/agent-memory/nomos-audit_dispatch-2026-04-19.md`
 - **research_april2026_cycle13_dashboard** (504 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle13_dashboard.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
@@ -59,9 +44,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-17** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-17.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-18** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-18.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-19** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-19.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-20** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-20.md`
 - **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/agent-memory/repo-scout_project_pixel_dashboard_apr2026.md`
 - **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/repo-scout/project_pixel_dashboard_apr2026.md`
-- **25 -- ML Prediction System** (406 words) -- `raw/obsidian-docs/25-ML-Predictions.md`
 - **Trading Floor v4/v5 SOTA Audit — April 11 2026** (403 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle17_tf_sota.md`
 - **pixel-world architecture map** (371 words) -- `raw/agent-memory/pixel_reference_pixel_world_architecture.md`
 - **Political Alpha Scientific Experiment Report** (333 words) -- `raw/experiments/political-experiment-2026-04-06.md`
@@ -119,7 +104,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - [[Feature Selection]]
 - [[Genetic Algorithm]]
 - [[HF Spaces]]
-- [[Isotonic Regression]]
 - [[Karpathy Loop]]
 - [[Kelly Criterion]]
 - [[LLM Council]]
