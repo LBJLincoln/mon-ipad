@@ -38,7 +38,7 @@ image = (
     gpu="a10g",
     image=image,
     timeout=600,
-    secrets=[modal.Secret.from_name("nomos42-secrets")],
+    secrets=[modal.Secret.from_name("nomos42-secrets"), modal.Secret.from_name("nomos42-github")],
 )
 def cpcv_burst():
     """Run CPCV across the canonical hold-out window. Emit DSR gate verdict."""
@@ -72,7 +72,7 @@ def cpcv_burst():
 
     # Pull canonical bet-level record from raw GitHub. Repo is private so
     # GITHUB_TOKEN is required; raw.githubusercontent.com honors bearer auth.
-    raw = "https://raw.githubusercontent.com/LBJLincoln/mon-ipad/main/data/arena/trading-floor-v5-latest.json"
+    raw = "https://raw.githubusercontent.com/LBJLincoln/mon-ipad/main/data/nba-agent/trading-floor-v5-real.json"
     req = urllib.request.Request(raw, headers={"Authorization": f"Bearer {GH_TOKEN}"})
     try:
         data = json.loads(urllib.request.urlopen(req, timeout=30).read())
