@@ -437,6 +437,65 @@
         "rolling 3/7/14d windows correct on synthetic",
         "sim_cutoff hard-filters future videos"
       ]
+    },
+    {
+      "cycle": "frankenstein-2026-04-21T-deep-scan",
+      "date": "2026-04-21",
+      "agent": "DR FRANKENSTEIN",
+      "project": "NBA TF",
+      "technique": "Calibration-aware fractional Kelly (SOTA proposal #1)",
+      "source": "MDPI Information 17/1/56 (Jan 2026)",
+      "file": "scripts/arena/hf-llm-trading-floor/app.py",
+      "functions_added": [
+        "calibrated_kelly_fraction(raw_edge, ece, conf_width)",
+        "get_agent_ece(tid)",
+        "update_agent_calibration(tid, predicted_prob, outcome)",
+        "_conf_width_from_allocations(clean)"
+      ],
+      "store": "data/tf-analytics/nba/calibration-rolling.json (per-agent 50-bet window)",
+      "formula": "raw_edge * (1 - ece) * sqrt(conf_width), clamped to [0.01, 0.25]",
+      "sample_calc": "fake $100 agent, ECE=0.10, raw_edge=0.05, conf_width=0.20 -> frac=0.0201 -> $2.01 stake vs LLM-requested pct (haircut ~50-95% on miscalibrated agents)",
+      "expected_brier_delta": "Brier unchanged (this is a bet-sizing fix, not prediction); expected ROI/Sharpe impact: -70% bleed -> +5-15% recovery over 30d",
+      "wiring": "parse_day_allocation accepts tid kwarg; caller at line 3482 passes it"
+    },
+    {
+      "cycle": "frankenstein-2026-04-21T-deep-scan",
+      "date": "2026-04-21",
+      "agent": "DR FRANKENSTEIN",
+      "project": "ITF",
+      "technique": "No-trade regime gate (SOTA proposal #3)",
+      "source": "MDPI Mathematics 13/15/2382 + Amberdata vol framework",
+      "file": "scripts/arena/hf-intraday-trading-floor/app.py",
+      "functions_added": [
+        "_compute_crypto_regime(quotes)",
+        "DEAD_TAPE_CLAUSE (prompt injection)",
+        "REGIME_FLOOR_5M (env-override tunable)"
+      ],
+      "formula": "median((5m_high - 5m_low) / last) across crypto pairs; low_vol if < 0.003",
+      "waivers": "when low_vol_regime=True: (a) DEAD_TAPE_CLAUSE appended to persona style; (b) uniform_fallback returns explicit pass tagged provider_status=regime_pass",
+      "threshold_tune_note": "0.003 = 0.3% per 5min range = ~0.73% per 30min (scaled by sqrt(6)) — lines up with proposal's 0.3%/30min floor interpretation as 5-min-proxy. Env ITF_REGIME_FLOOR_5M for live-tune without redeploy. Expect to activate overnight Sun-Tue on crypto-only tape.",
+      "expected_brier_delta": "N/A (ITF doesn't use Brier); expected slippage reduction: -$50-150/week on dead-tape ticks"
+    },
+    {
+      "cycle": "frankenstein-2026-04-21T-deep-scan",
+      "date": "2026-04-21",
+      "agent": "DR FRANKENSTEIN",
+      "project": "NBA + POL (islands)",
+      "technique": "Generalized Venn-Abers probability calibration (SOTA proposal #4)",
+      "source": "arXiv:2502.05676 + github.com/ip200/venn-abers",
+      "file": "features/engine.py (mirrored to hf-space/features/engine.py)",
+      "engine_sha256_before": "b1be44c4a36ea6f0168c61dc96d97f08062fde1575be5c834df629f57074cd91",
+      "engine_sha256_after": "04084284a10544c859dd561bb867a099ea0ca271d2aa87bcbb27bde403c0d9b4",
+      "mirror_sha256_match": true,
+      "classes_added": [
+        "VennAbersProbabilityCalibrator(inductive=True).fit(p_cal_2col, y_cal).transform(p_test_2col)",
+        "calibrate_probs(p_train, y_train, p_test) (one-shot helper)"
+      ],
+      "feature_flag": "VENN_ABERS_CALIBRATION env (default '1' = on). Flag-off path = identity passthrough.",
+      "requirements": "venn-abers>=1.5 added to nba-quant-space/requirements.txt",
+      "brier_delta_synthetic": "0.0343 -> 0.0249 (-0.0094, -27.4%) on 500-cal + 300-test miscalibrated binary set",
+      "expected_brier_delta_real": "-0.005 to -0.012 on islands (ECE ~0.05 held-out); NBA 0.21570 -> 0.210; POL 0.24923 -> 0.243",
+      "additive_guarantee": "flag-off verified: returns input unchanged; no existing island breaks"
     }
   ]
 }
