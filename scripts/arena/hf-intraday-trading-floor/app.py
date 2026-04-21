@@ -41,6 +41,72 @@ if str(_REPO) not in sys.path:
 from scripts.arena.shared.quote_bus import refresh as quote_refresh, latest as quote_latest  # noqa: E402
 from scripts.arena.shared.context_bus import build_intraday_context  # noqa: E402
 
+
+# 2026-04-21 v2.6 — UNRESTRICTED UNIVERSE: on-demand fetch for any Alpaca-supported
+# ticker the agent emits that isn't in the ~110-deep quote bus. Returns a quote
+# dict in the same shape quote_bus produces, or None on failure.
+_ONDEMAND_CACHE: Dict[str, Dict[str, Any]] = {}
+_ONDEMAND_TS: Dict[str, float] = {}
+
+def _ondemand_quote(ticker: str) -> Optional[Dict[str, Any]]:
+    import time as _tm
+    now_ts = _tm.time()
+    # 30s cache
+    if ticker in _ONDEMAND_CACHE and now_ts - _ONDEMAND_TS.get(ticker, 0) < 30:
+        return _ONDEMAND_CACHE[ticker]
+    key = os.environ.get("ALPACA_PAPER_KEY", "")
+    secret = os.environ.get("ALPACA_PAPER_SECRET", "")
+    if not (key and secret):
+        return None
+    import requests as _rq
+    headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
+    try:
+        if "/" in ticker:
+            # Crypto latest bar
+            r = _rq.get(
+                "https://data.alpaca.markets/v1beta3/crypto/us/latest/bars",
+                headers=headers,
+                params={"symbols": ticker},
+                timeout=5,
+            )
+            if r.ok:
+                bars = (r.json() or {}).get("bars") or {}
+                bar = bars.get(ticker) or {}
+                if bar.get("c"):
+                    out = {
+                        "last": float(bar["c"]),
+                        "change_pct": 0.0,  # unknown without open
+                        "volume": float(bar.get("v") or 0),
+                        "5m_high": float(bar.get("h") or bar["c"]),
+                        "5m_low": float(bar.get("l") or bar["c"]),
+                    }
+                    _ONDEMAND_CACHE[ticker] = out
+                    _ONDEMAND_TS[ticker] = now_ts
+                    return out
+        else:
+            # Equity latest trade
+            r = _rq.get(
+                f"https://data.alpaca.markets/v2/stocks/{ticker}/trades/latest",
+                headers=headers,
+                timeout=5,
+            )
+            if r.ok:
+                trade = (r.json() or {}).get("trade") or {}
+                if trade.get("p"):
+                    out = {
+                        "last": float(trade["p"]),
+                        "change_pct": 0.0,
+                        "volume": float(trade.get("s") or 0),
+                        "5m_high": float(trade["p"]),
+                        "5m_low": float(trade["p"]),
+                    }
+                    _ONDEMAND_CACHE[ticker] = out
+                    _ONDEMAND_TS[ticker] = now_ts
+                    return out
+    except Exception:
+        pass
+    return None
+
 # Local (HF Space style) imports
 sys.path.insert(0, str(_HERE.parent))
 from personas import PERSONAS, get as get_persona  # type: ignore  # noqa: E402
@@ -155,10 +221,19 @@ OR an intraday options derivative (dry-run logged; live options routing via exec
 
 Return JSON ONLY. No markdown fences, no prose.
 
+UNRESTRICTED UNIVERSE: Alpaca paper supports 10,000+ US equities, 30+ crypto pairs,
+and every listed US option. The INTRADAY TAPE block below shows the most-liquid ~110
+for macro context — you are NOT restricted to it. If you have an edge on a ticker not
+on the tape (e.g. UAL for airlines-earnings, LCID for EV-rotation, BITO for BTC proxy,
+EWZ for Brazil, PDBC for commodities, FXI for China, LEU for nuclear), emit it. The
+executor will fetch its last quote on demand. Cover ALL asset classes: equities (10k+),
+ETFs (broad/sector/leveraged/inverse/international/bonds/commodities/thematic/currency),
+crypto (majors + large-caps + DeFi), and US-listed options.
+
 RULE: Crypto tickers trade 24/7. Equities (incl. leveraged/vol/intl/stocks) and options
-trade only during extended hours (08:00-24:00 UTC weekdays). When markets are closed,
-emit crypto trades OR pass — NEVER emit equity/option trades outside hours. Crypto-aware
-personas have an explicit OFF-HOURS mandate — passing with "market closed" is cowardice.
+trade only during RTH + extended hours (08:00-24:00 UTC weekdays). Off-hours: emit crypto
+OR queued-for-open equities. Passing with "market closed" is cowardice — crypto is ALWAYS
+live. 17 agents × 8-15 trades/day × 5-12% sizing compounds to $1M fast.
 """.strip()
 
 
@@ -976,6 +1051,18 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
             "decision": decision,
         }
         STATE["agents"][persona["tid"]]["decisions"] += 1
+        # 2026-04-21 v2.6 — UNRESTRICTED UNIVERSE: if agent emits a ticker not in
+        # the ~110-deep quote bus, fetch its last price from Alpaca on demand.
+        # This unlocks the full 10k+ US equity universe + 30+ crypto pairs + any
+        # listed option, per the UNRESTRICTED UNIVERSE clause in DECISION_SCHEMA.
+        if action == "trade" and decision.get("ticker") and decision["ticker"] not in (ctx.get("quotes") or {}):
+            try:
+                _odq = _ondemand_quote(decision["ticker"])
+                if _odq and _odq.get("last"):
+                    ctx.setdefault("quotes", {})[decision["ticker"]] = _odq
+                    print(f"[itf] ondemand_quote ok {decision['ticker']}=${_odq['last']}", file=sys.stderr, flush=True)
+            except Exception as _qe:
+                print(f"[itf] ondemand_quote err {decision['ticker']}: {_qe}", file=sys.stderr, flush=True)
         if action == "trade" and decision.get("ticker") in (ctx.get("quotes") or {}):
             last_quote = (ctx["quotes"][decision["ticker"]] or {}).get("last") or 0
             raw_stake = float(decision.get("stake_usd", 500) or 500)
