@@ -29,6 +29,7 @@ image = (
         "lightgbm>=4.5",
         "xgboost>=2.1",
         "catboost>=1.2",
+        "cvxpy<1.6",  # skfolio.typing writes `cp.trace` as a type alias; cvxpy 1.6 made trace a function → `| function` TypeError at import
         "skfolio>=0.4.0",  # ships CombinatorialPurgedKFold
         "requests",
     )
