@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-20T12:15:00Z",
+  "updated_at": "2026-04-21T00:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -241,6 +241,36 @@
       "mech_a_confirmed": "NBA L3569-3575 + Political L2848-2853: prev_day_ck = build_common_knowledge_block(...) called at day-end, injected via common_knowledge_block= on next day's build_day_prompt. CK block: growth_factor leaderboard + 3-day rolling bets (stake/edge/outcome) + DMAD STRUCTURAL DIVERGE/COMPLEMENT mandate.",
       "next_action": "Await user approval to push to HF Space (tf-axelrod-verify-tune-12).",
       "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-15",
+      "priority": 23,
+      "status": "done",
+      "completed_at": "2026-04-21T00:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 15 — deep parity audit, edge_rationale gap found",
+      "py_compile": "PASS both apps (NBA 4288 lines, POL 3523 lines)",
+      "parity_check": "15/15 Axelrod symbols identical count in NBA vs POL: compute_consensus_distance, _society_archetypes_by_day, AXELROD_CANON, write_axelrod_log, build_common_knowledge_block, assign_sacrificial_archetypes, assign_challenge_tiers, build_challenge_block, build_sacrificial_system_suffix, peer_consensus_distance, prev_day_ck, common_knowledge_block, DMAD, STRUCTURAL DIVERGE, STRUCTURAL COMPLEMENT.",
+      "gap_found": "Per-bet `rationale` text (stored in allocation dict as `a.get('rationale')`, up to 300 chars) is NOT surfaced in the COMMON_KNOWLEDGE block. CK block shows numeric edge only (edge=0.042). Spec says {trader_id, game/event, pick, stake, edge_rationale}. The reasoning text is the key diff-signal for DMAD STRUCTURAL DIVERGE — agents cannot see WHY peers bet, only WHAT. Logged as tf-axelrod-ck-rationale (priority 24).",
+      "push_safety_note": "NBA=209746 chars, POL=168998 chars — both exceed 128K push_files limit (fires 5+8 stub corruption). Only work-queue.json committed this fire.",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-ck-rationale",
+      "priority": 24,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Add per-bet edge_rationale text to COMMON_KNOWLEDGE block (NBA + POL parity)",
+      "scope": [
+        "In build_common_knowledge_block(), the per-bet loop currently outputs: game/ticker, category, stake, edge numeric, outcome, pnl.",
+        "Spec requires edge_rationale. The rationale string is stored in each allocation as a.get('rationale') (max 300 chars). It is NOT shown.",
+        "Fix: in the inner loop for each allocation, add: _rat = (a.get('rationale') or '')[:60]; append f' [{_rat}]' if _rat.",
+        "Apply identically to NBA (L2674-2677 in hf-llm-trading-floor/app.py) and POL (L2103-2106 in hf-political-trading-floor/app.py).",
+        "Use GH Actions workflow approach (push a .yml patch script < 10KB). Do NOT use push_files on the full app.py (size limit).",
+        "py_compile both apps after patch. Commit to mon-ipad. do_not_push_hf_space_yet=true until user approves."
+      ],
+      "do_not_push_hf_space_yet": true,
+      "benefit": "Enables true DMAD STRUCTURAL DIVERGE reasoning — agents can see WHY peers bet (reasoning template in use), not just WHAT game/category they picked. Closes the spec gap on {edge_rationale} field in CK[D]."
     }
   ],
   "recovery_protocol": {
