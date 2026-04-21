@@ -1,0 +1,69 @@
+name: youtube-sentiment
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'data/youtube/manual-ingested.json'
+      - 'scripts/youtube_sentiment_precompute.py'
+
+concurrency:
+  group: youtube-sentiment
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  finbert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: install deps
+        run: |
+          pip install --upgrade pip
+          pip install "transformers>=4.40,<5" "torch>=2.3,<3" "pandas>=2.2" "pyarrow>=15" "numpy<2"
+
+      - name: precompute
+        run: |
+          python3 scripts/youtube_sentiment_precompute.py
+
+      - name: stats
+        run: |
+          python3 -c "
+          import pandas as pd
+          from pathlib import Path
+          p = Path('data/youtube/sentiment.parquet')
+          if not p.exists():
+              print('no parquet'); raise SystemExit(0)
+          df = pd.read_parquet(p)
+          print('rows:', len(df))
+          print('channels:', df['channel'].nunique() if 'channel' in df.columns else 'n/a')
+          print('polarity mean:', round(df['polarity'].mean(), 4))
+          print('span:', df['published_at'].min(), '→', df['published_at'].max())
+          "
+
+      - name: commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/youtube/sentiment.parquet || true
+          if git diff --cached --quiet; then
+            echo "no sentiment changes"
+          else
+            git commit -m "[YT-SENTIMENT] FinBERT precompute refresh"
+            for i in 1 2 3; do
+              git pull --rebase --autostash origin main && git push origin main && break
+              sleep $((i*3))
+            done
+          fi
