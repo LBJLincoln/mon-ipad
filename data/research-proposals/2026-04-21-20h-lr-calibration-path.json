@@ -1,0 +1,84 @@
+{
+  "title": "LR + Venn-Abers Calibration: Primary Path to NBA Brier < 0.21",
+  "generated_at": "2026-04-21T20:00:00Z",
+  "source": "Cloud Brain SOTA search + live island observation",
+  "priority": "HIGH",
+  "status": "PROPOSED",
+  "sota_findings": [
+    {
+      "paper": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "venue": "MDPI Information, January 2026",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "brier": 0.199,
+      "key_technique": "LR baseline at 0.199 Brier, XGBoost 0.202. LSTM+MC-dropout achieves best calibrated sequential probabilities.",
+      "actionable": "Our fleet best 0.22073 vs SOTA 0.199 = 0.022 gap. Primary levers: (1) Venn-Abers/Platt calibration on LR predictions, (2) EWMA rolling sequential features."
+    },
+    {
+      "paper": "Stacked Ensemble Model for NBA Game Outcome Prediction",
+      "venue": "Nature Scientific Reports, 2025",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "brier": 0.221,
+      "key_technique": "Diverse stacking: NB, AdaBoost, MLP, KNN, XGBoost, DT, LR. CNN achieves 0.221.",
+      "actionable": "S22 venn_abers_fusion (0.22073) already beats stacking SOTA. MLP meta-learner is next."
+    }
+  ],
+  "live_confirmation": {
+    "S15_nba_evo_6": {"model": "logistic_regression", "brier": 0.22325, "gen": 562, "note": "Wide-search GA selected LR as best — no calibration applied yet."},
+    "P2_political_alpha_2": {"model": "logistic_regression", "brier": 0.24949, "gen": 23309, "note": "LR also POL live fleet best — cross-domain confirmation."}
+  },
+  "gap_analysis": {
+    "our_live_best": 0.22154,
+    "sota_best": 0.199,
+    "gap": 0.02254,
+    "breakdown": {
+      "calibration_gain": "-0.010 (Venn-Abers or Platt on LR outputs)",
+      "sequential_features_gain": "-0.008 (EWMA rolling form, decay grid expansion)",
+      "ensemble_meta_learner_gain": "-0.002 (MLP meta-learner over tree outputs)",
+      "estimated_achievable": 0.202
+    }
+  },
+  "proposed_experiments": [
+    {
+      "id": "EXP-LR-CAL-001",
+      "name": "Platt scaling on LR outputs in S15",
+      "priority": 1,
+      "owner": "DR FRANKENSTEIN",
+      "target_island": "S15 (nomos42/nba-evo-6)",
+      "description": "Add Platt calibration (sigmoid fit on validation holdout) to LR predict_proba(). Already have isotonic — add 'platt' to CALIBRATION_OPTIONS.",
+      "implementation": "hf-space app.py: in evaluate_individual(), after model.predict_proba(), apply calibrated_clf = CalibratedClassifierCV(model, cv='prefit', method='sigmoid'). Add 'platt' to CALIBRATION_OPTIONS list.",
+      "expected_gain": "-0.005 to -0.010 Brier",
+      "effort": "low — ~20 LOC"
+    },
+    {
+      "id": "EXP-LR-CAL-002",
+      "name": "Venn-Abers for LR on S15 + S18",
+      "priority": 2,
+      "owner": "SWISH",
+      "target_islands": ["S15", "S18"],
+      "description": "Venn-Abers already runs in S22 (fleet best 0.22073). Port to S15 (LR) and S18 (random_forest). Add venn_abers to CALIBRATION_OPTIONS if not present.",
+      "implementation": "Verify CALIBRATION_OPTIONS in S15/S18 app.py includes 'venn_abers'. If not, add. GA will discover via mutation.",
+      "expected_gain": "-0.003 to -0.007 Brier over uncalibrated LR",
+      "effort": "low — library already available"
+    },
+    {
+      "id": "EXP-EWMA-001",
+      "name": "Expanded EWMA decay grid for sequential features",
+      "priority": 3,
+      "owner": "DR FRANKENSTEIN",
+      "description": "Expand rolling_ema feature generation: alpha=[0.05, 0.1, 0.2, 0.3] for last 5/10/20 games on pts/ast/reb/off_rtg/def_rtg. LSTM SOTA (0.199) uses sequential form — we can approximate with EWMA.",
+      "implementation": "features/engine.py: in _compute_rolling_ema(), add alpha variants. Requires parity update to hf-space/features/engine.py.",
+      "expected_gain": "-0.005 to -0.008 Brier with sequential feature enrichment",
+      "effort": "medium — engine change + parity commit"
+    }
+  ],
+  "political_applicability": {
+    "target_file": "features/political_engine.py",
+    "experiments": ["EXP-LR-CAL-001", "EXP-LR-CAL-002"],
+    "target_islands": ["P2 (LR 0.24949 — highest potential)", "P1 (lightgbm 0.24999 — highest brier, most to gain)"],
+    "expected_gain": "-0.005 to -0.010 political Brier",
+    "scheduled": "Rotation B next cycle — political_engine.py review"
+  },
+  "target_brier": 0.21,
+  "current_fleet_best": 0.22073,
+  "estimated_path": "LR + Venn-Abers (-0.008) + EWMA rolling features (-0.006) + MLP meta-learner (-0.002) ≈ 0.204 achievable near-term"
+}

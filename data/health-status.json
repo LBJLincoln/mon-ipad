@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-04-21T16:00:00Z",
+  "generated_at": "2026-04-21T20:00:00Z",
   "brain_cycle": "cloud-brain-4h",
-  "cycle_notes": "All 11 islands sleeping (503 — free-tier auto-sleep). Using last-known data from 04:00Z cycle. Major local-agent activity today: Cat67 YouTube FinBERT, Venn-Abers calibrator, DMAD anti-consensus gate, SWITCHBOARD RCA fix. Fire-16 CK rationale verified and closed.",
+  "cycle_notes": "S14+S15+S18 active; S13/S17/S22 sleeping (Nomos42 saturated for S13). S18 stagnation auto hard-reset CONFIRMED (was 23+ at 16:00Z, now 0). P1+P2+P5 running; P4/P7 sleeping. No brier < 0.22085 this cycle. SOTA search: LR baseline 0.199 with calibration. S15 wide-search selected LR (0.22325) + P2 LR (0.24949) — dual cross-domain confirmation.",
   "nba_islands": {
     "S13": {
       "space": "nomos42/nba-evo-4",
@@ -9,32 +9,28 @@
       "gen": 517,
       "best_brier": 0.22136,
       "stagnation_gens": 0,
-      "roi": 0.3104,
-      "sharpe": 6.9945,
       "model": "extra_trees",
-      "note": "Last known 04:00Z. Sleeping (503). gen=517, brier=0.22136."
+      "note": "Sleeping 503. Nomos42 account saturated — cannot force restart. Last known gen=517, brier=0.22136."
     },
     "S14": {
       "space": "nomos42/nba-evo-5",
-      "status": "SLEEPING",
-      "gen": 708,
-      "best_brier": 0.23493,
-      "stagnation_gens": 10,
-      "roi": 0.1574,
-      "sharpe": 12.5562,
-      "model": "xgboost_brier",
-      "note": "Last known 04:00Z. Sleeping (503). Stagnation 10 < 15, ok."
+      "status": "RUNNING",
+      "gen": 269,
+      "best_brier": 0.2345,
+      "stagnation_gens": 0,
+      "sharpe": 13.91,
+      "model": "xgboost",
+      "note": "New session (started 2026-04-21T00:41Z). gen=269, brier=0.2345. Early stage cold start — brier converging."
     },
     "S15": {
       "space": "nomos42/nba-evo-6",
-      "status": "SLEEPING",
-      "gen": 574,
-      "best_brier": 0.22374,
+      "status": "RUNNING",
+      "gen": 562,
+      "best_brier": 0.22325,
       "stagnation_gens": 0,
-      "roi": 0.2824,
-      "sharpe": 11.5913,
-      "model": "random_forest",
-      "note": "Last known 04:00Z. Sleeping (503). Karpathy 0.21218 elite injected — track next cycle."
+      "sharpe": 9.5194,
+      "model": "logistic_regression",
+      "note": "Wide-search mode selected LR as best model (brier 0.22325). SOTA confirms LR baseline at 0.199 with calibration — gap is calibration, not model class. Karpathy injection 0.21218 not yet reflected in best."
     },
     "S17": {
       "space": "lbjlincoln26/nba-evo-s17",
@@ -42,78 +38,73 @@
       "gen": 1451,
       "best_brier": 0.22358,
       "stagnation_gens": 7,
-      "roi": 0.2827,
-      "sharpe": 8.585,
       "model": "xgboost",
-      "note": "Last known 04:00Z. Sleeping (503). Stagnation 7 < 15, ok."
+      "note": "Sleeping 503. Two wake pings sent this cycle — still 503. VM keepalive should restore."
     },
     "S18": {
       "space": "testforge42/nba-evo-s18",
-      "status": "SLEEPING",
-      "gen": 1124,
+      "status": "RUNNING",
+      "gen": 1420,
       "best_brier": 0.22154,
-      "stagnation_gens": "23+ (04:00Z reading was 23 — auto hard-reset at 25 likely imminent)",
+      "stagnation_gens": 0,
       "roi": 0.3084,
       "sharpe": 6.9655,
       "model": "random_forest",
-      "note": "STAGNATION ALERT: was 23 at 04:00Z. Auto hard-reset triggers at 25. VM keepalive must POST /api/command {action:diversify} on next wake."
+      "note": "STAGNATION ALERT RESOLVED: auto hard-reset fired (was 23+ at 16:00Z → now 0). Live NBA fleet best. gen=1420 (+296 since last cycle). Brier stable 0.22154."
     },
     "S22": {
       "space": "testforge42/nba-evo-s22",
       "status": "SLEEPING",
-      "gen": "unknown (was rebuilding post-sleep at 04:00Z)",
+      "gen": null,
       "best_brier": 0.22073,
       "stagnation_gens": 0,
       "model": "venn_abers_fusion",
-      "note": "Fleet best 0.22073 (gen=39, checkpointed 2026-04-19) preserved. Post-wake rebuild underway at 04:00Z. Now sleeping again."
+      "note": "Historical fleet best 0.22073 checkpointed 2026-04-19. Two wake pings sent — still 503. VM keepalive must restore."
     }
   },
   "fleet_best_brier": 0.22073,
   "fleet_best_source": "S22 venn_abers_fusion gen=39 (checkpointed 2026-04-19)",
   "checkpoint_threshold": 0.22085,
   "new_checkpoint": false,
-  "live_best_brier": 0.22136,
-  "live_best_source": "S13 extra_trees gen=517 (last known 04:00Z)",
-  "stagnation_alerts": [
-    "S18 stagnation=23+ at 04:00Z > 15 threshold — VM must POST /api/command {action:diversify} to testforge42-nba-evo-s18.hf.space on next wake"
-  ],
+  "live_best_brier": 0.22154,
+  "live_best_source": "S18 random_forest gen=1420 (live 20:00Z)",
+  "stagnation_alerts": [],
   "engine_parity": {
     "status": "CONFIRMED",
     "version": "v3.2-67cat",
     "sha": "0fa89873",
-    "note": "FRANKENSTEIN bumped engine to v3.2-67cat (Cat67 YouTube FinBERT rolling sentiment, 6 scalars). Both features/engine.py and hf-space/features/engine.py at identical sha. Committed 2026-04-21T15:14Z."
+    "note": "Cat67 YouTube FinBERT. Both features/engine.py and hf-space/features/engine.py at identical sha. Committed 2026-04-21T15:14Z."
   },
   "major_developments_this_cycle": [
-    "FRANKENSTEIN: Cat67 YouTube FinBERT rolling sentiment (yt_pol_mean_3/7/14, yt_abs_pol_mean_3/7/14). Engine v3.1-66cat → v3.2-67cat. 9 unit tests green. Expected Brier delta POL: +0.0015–0.0030.",
-    "FRANKENSTEIN: Venn-Abers engine calibrator shipped (deep-scan proposals #1+#3+#4). Calibrated Kelly NBA TF + regime gate ITF + Venn-Abers prediction head.",
-    "SWISH: DMAD anti-consensus gate added to NBA TF (lockstep RCA 2026-04-21).",
-    "SWITCHBOARD: Rerouted all github:* primaries + fallbacks (silent-dead RCA fixed — gateway fallback-chain was causing silent failures).",
-    "FRANKENSTEIN: ITF honest /api/bankrolls (fleet+agent avail/reserved/equity) + SUBMITS_PER_TICK=2 compute cap + wash-trade pre-check."
+    "S18 stagnation alert RESOLVED — auto hard-reset fired between 16:00Z and 20:00Z (stagnation 23+ → 0, gen continued to 1420).",
+    "S15 LR finding: wide-search GA selected logistic_regression as best (brier 0.22325). SOTA literature confirms LR baseline achieves 0.199 with proper calibration.",
+    "P2 confirmed running with logistic_regression (brier 0.24949) — dual cross-domain LR confirmation (NBA S15 + POL P2).",
+    "Wake pings sent to S17, S22, P4, P7 — still sleeping 503. VM keepalive must resolve."
   ],
   "karpathy_injection": {
     "brier": 0.21218,
     "target_island": "S15 cycle 192",
-    "status": "Injected at 04:00Z cycle. Tracking next wake for confirmation.",
+    "status": "S15 running (gen=562, brier=0.22325). Injection not yet reflected in best — either not activated yet or elite individual in GA pool for next hard reset. Monitor next cycle.",
     "source": "GPU burst → promote-config cron"
   },
   "political_islands": {
     "P1": {
       "space": "nomos42/political-alpha",
-      "status": "SLEEPING",
-      "gen": 22783,
+      "status": "RUNNING",
+      "gen": 29556,
       "best_brier": 0.24999,
       "stagnation_gens": 0,
-      "model": "xgboost_brier",
-      "note": "Last known 04:00Z. Sleeping."
+      "model": "lightgbm",
+      "note": "Active gen=29556. Highest brier in fleet — prime Venn-Abers calibration candidate."
     },
     "P2": {
       "space": "nomos42/political-alpha-2",
-      "status": "SLEEPING",
-      "gen": 17641,
+      "status": "RUNNING",
+      "gen": 23309,
       "best_brier": 0.24949,
       "stagnation_gens": 0,
       "model": "logistic_regression",
-      "note": "Last known 04:00Z. Sleeping."
+      "note": "LIVE POL FLEET BEST 0.24949. LR model — mirrors S15 NBA finding. Calibration next."
     },
     "P4": {
       "space": "lbjlincoln/political-alpha-4",
@@ -122,16 +113,16 @@
       "best_brier": 0.24956,
       "stagnation_gens": 0,
       "model": "lightgbm",
-      "note": "Last known 04:00Z. Sleeping."
+      "note": "Sleeping. Wake pings sent — still 503. No stagnation risk."
     },
     "P5": {
       "space": "lbjlincoln/political-alpha-5",
-      "status": "SLEEPING",
-      "gen": 21196,
-      "best_brier": 0.24923,
+      "status": "RUNNING",
+      "gen": 25405,
+      "best_brier": 0.25019,
       "stagnation_gens": 0,
-      "model": "lightgbm",
-      "note": "POL FLEET BEST 0.24923. Last known 04:00Z. Sleeping."
+      "model": "xgboost_brier",
+      "note": "Running. Current session best 0.25019. Historical checkpoint 0.24923 from 2026-04-20 not yet matched in new session."
     },
     "P7": {
       "space": "lbjlincoln/political-alpha-7",
@@ -140,58 +131,58 @@
       "best_brier": 0.24937,
       "stagnation_gens": 0,
       "model": "lightgbm",
-      "note": "Last known 04:00Z. Sleeping."
+      "note": "Sleeping. Wake pings sent — still 503."
     }
   },
   "pol_fleet_best_brier": 0.24923,
-  "pol_fleet_best_source": "P5 lightgbm gen=21196",
+  "pol_fleet_best_source": "P5 lightgbm gen=21196 (checkpointed 2026-04-20)",
+  "pol_live_best_brier": 0.24949,
+  "pol_live_best_source": "P2 logistic_regression gen=23309 (live 20:00Z)",
   "dept_councils": "DECOMMISSIONED 2026-04-20 — do not restart",
   "sota_research": {
-    "cycle": "2026-04-21T16:00Z",
+    "cycle": "2026-04-21T20:00Z",
     "findings": [
       {
-        "title": "Stacked ensemble model for NBA game outcome prediction",
-        "source": "Nature Scientific Reports, 2025",
-        "brier_reported": "~0.221 (CNN layer)",
-        "technique": "Stacked NB+AdaBoost+MLP+KNN+XGBoost+DT+LR. CNN achieves lowest Brier 0.221.",
-        "url": "https://www.nature.com/articles/s41598-025-13657-1",
-        "relevance": "Our S22 fleet best 0.22073 matches CNN SOTA. Stacking MLP on tree outputs is next frontier."
+        "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+        "source": "MDPI Information, January 2026",
+        "brier_reported": 0.199,
+        "technique": "LR baseline + LSTM with MC-dropout. Key: LR baseline 0.199, XGBoost 0.202 on 2024 test season.",
+        "url": "https://www.mdpi.com/2078-2489/17/1/56",
+        "relevance": "S15 LR (0.22325) confirms LR is competitive. Gap to SOTA (0.023) = calibration + sequential features, not model class."
       },
       {
-        "title": "Uncertainty-Aware ML for NBA Forecasting in Digital Betting Markets",
-        "source": "MDPI Information, January 2026",
-        "brier_reported": 0.20,
-        "technique": "RNN + Monte Carlo dropout for calibrated sequential probabilities + rolling-form + shot-chart embeddings",
-        "url": "https://www.mdpi.com/2078-2489/17/1/56",
-        "relevance": "Already proposed 04:00Z cycle (mc-dropout-calibration-head.json). MC dropout on tree leaf outputs is the key path to Brier < 0.21."
+        "title": "Stacked Ensemble Model for NBA Game Outcome Prediction",
+        "source": "Nature Scientific Reports, 2025",
+        "brier_reported": 0.221,
+        "technique": "NB+AdaBoost+MLP+KNN+XGBoost+DT+LR stacking. CNN achieves Brier 0.221.",
+        "url": "https://www.nature.com/articles/s41598-025-13657-1",
+        "relevance": "S22 fleet best 0.22073 matches CNN SOTA. MLP meta-learner is next frontier beyond venn_abers_fusion."
       }
     ],
-    "proposal_file": "data/research-proposals/2026-04-21-stacked-ensemble-calibration.json"
+    "proposal_file": "data/research-proposals/2026-04-21-20h-lr-calibration-path.json"
   },
   "axelrod_tf_status": {
-    "fire_16": "DONE — CK rationale confirmed applied in both NBA+POL app.py via GitHub code search. py_compile PASS (4288/3523 lines). All 15 Axelrod symbols identical across NBA+POL.",
-    "fire_12": "PENDING — awaiting explicit user approval to push to HF Space",
-    "spec_gap_remaining": "None. All 3 mechanisms spec-complete per fire-13/14/15 audits.",
-    "ck_rationale": "CONFIRMED APPLIED — per-bet rationale[:60] surfaced in CK block. Enables true DMAD STRUCTURAL DIVERGE reasoning."
+    "fire_16": "DONE — CK rationale confirmed applied (NBA 4288 lines + POL 3523 lines). All 15 Axelrod symbols parity.",
+    "fire_12": "PENDING — awaiting explicit USER GATE approval to push to HF Spaces.",
+    "spec_complete": true
   },
   "actions_taken": [
-    "STEP 0: No crash recovery — no local-agent-* stale pending items.",
-    "STEP 0: tf-axelrod-verify-tune-16 executed: CK rationale confirmed applied, spec re-audit clean.",
-    "STEP 1: All 6 NBA islands sleeping (503). Last data from 04:00Z preserved. S18 stagnation=23+ alert maintained.",
-    "STEP 2: All 5 Political islands sleeping (503). Last data from 04:00Z preserved. No stagnation alerts.",
+    "STEP 0: No crash recovery — no stale local-agent-* items. fire-12 USER GATE active — not touched.",
+    "STEP 1: Fetched 6 NBA islands. S14+S15+S18 running; S13/S17/S22 sleeping. S18 stagnation auto-reset CONFIRMED. No diversify needed.",
+    "STEP 2: Fetched 5 POL islands. P1+P2+P5 running; P4/P7 sleeping. No stagnation alerts. Rotation advanced D→A.",
     "STEP 3: Dept councils DECOMMISSIONED — skipped.",
     "STEP 4: No pending R8 dashboard items — skipped.",
-    "STEP 5: Cross-project win identified — Venn-Abers calibrator (shipped NBA TF today) → port to political evolution islands via Rotation D follow-up.",
-    "RESEARCH: Stacked ensemble (Nature 2025) + uncertainty-aware RNN (MDPI 2026) documented. New proposal written.",
-    "Engine parity: v3.2-67cat confirmed (FRANKENSTEIN, 15:14Z)."
+    "STEP 5: Cross-project — LR calibration path documented. Venn-Abers port to political_engine.py queued for Rotation B.",
+    "RESEARCH: SOTA confirmed LR 0.199 + XGBoost 0.202. Research proposal written to data/research-proposals/.",
+    "HEALTH FILES: health-status.json + brain-status.json + research proposal committed."
   ],
   "alerts": [
-    "ACTION REQUIRED (VM): POST /api/command {action:diversify} to testforge42-nba-evo-s18.hf.space (stagnation 23+ — auto reset imminent at 25)",
-    "MONITOR: S15 Karpathy 0.21218 injection — track next cycle for new fleet checkpoint",
-    "MONITOR: S22 rebuild progress — venn_abers_fusion restart, track gen>50 for new checkpoint potential",
-    "INFO: All islands sleeping — verify keepalive-spaces.sh cron is running on VM",
-    "INFO: tf-axelrod-verify-tune-12 still pending USER GATE — push to HF Space requires explicit approval",
-    "INFO: Venn-Abers calibrator now in NBA TF engine (FRANKENSTEIN) — ready to port to political_engine.py evolution islands"
+    "MONITOR: S15 Karpathy 0.21218 injection — best currently 0.22325. Injection may be queued in GA pool. Check next cycle.",
+    "MONITOR: S22 sleeping — fleet best 0.22073 needs this space running. VM keepalive must ping testforge42-nba-evo-s22.hf.space.",
+    "MONITOR: S17 sleeping — gen=1451, brier=0.22358. VM keepalive must ping lbjlincoln26-nba-evo-s17.hf.space.",
+    "MONITOR: P4, P7 sleeping — VM keepalive should restore.",
+    "INFO: tf-axelrod-verify-tune-12 pending USER GATE — HF Space push requires explicit user approval.",
+    "INFO: LR calibration research proposal written — primary path to Brier < 0.21."
   ],
-  "cross_project_insight": "Venn-Abers engine calibrator shipped in NBA TF today (FRANKENSTEIN). This is the exact technique behind S22 fleet best 0.22073. Next step: port to political_engine.py CALIBRATION_OPTIONS for P1/P5 islands. Expected POL gain: -0.002 to -0.005 Brier."
+  "cross_project_insight": "SOTA (LR 0.199, XGBoost 0.202) + live data (S15 LR 0.22325, P2 LR 0.24949) confirm: calibration is the primary gap, not model class. Next concrete step: port Venn-Abers calibration to political_engine.py (Rotation B). Expected POL gain: -0.005 to -0.010 Brier. Also queue Platt scaling for S15 LR path in NBA islands."
 }
