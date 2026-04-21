@@ -336,6 +336,18 @@ AXELROD_CANON = (
     "     COMMON_KNOWLEDGE the next day. Pavlov-style opponents will track your reputation.\n"
     "  4. Coalitions do NOT change stake math — only reputation. Edge must still justify the bet.\n"
     "=== END AXELROD CANON ===\n"
+    "\n=== DMAD ANTI-CONSENSUS GATE (2026-04-21, binding) ===\n"
+    "Cross-TF audit 2026-04-21 flagged NBA lockstep at 79–100% on days 62–63 (16/17 agents holding "
+    "identical picks). This collapses ensemble accuracy ~18% (DMAD, Du 2023) and defeats the 17-agent "
+    "point of this floor. HARD RULE (overrides breadth/deploy optimizations):\n"
+    "  - At least ONE of your top-3 allocations today MUST be a bet (game_idx+category+side tuple) "
+    "    that is NOT present in the peer_allocations block of COMMON_KNOWLEDGE from yesterday.\n"
+    "  - If every top-tier edge is already crowded (≥10/17 peers), you MUST dig deeper into the "
+    "    100+ category menu (halves, quarters, team totals, alt-lines, props) to find a non-crowded edge "
+    "    with ≥0.03 edge. Breadth is the anti-lockstep tool.\n"
+    "  - Annotate your non-consensus bet with tag 'DMAD_DIVERGE' in allocation.notes. Pure follow-the-herd "
+    "    picks with no DMAD_DIVERGE will be flagged in the post-mortem.\n"
+    "=== END DMAD ANTI-CONSENSUS GATE ===\n"
 )
 
 # Axelrod Mech D — cooperation ledger
