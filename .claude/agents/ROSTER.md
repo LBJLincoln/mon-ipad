@@ -10,6 +10,16 @@ All autonomous commits MUST shell through `scripts/lib/safe_commit.sh <CODENAME>
 Naked `git add / commit / push` is banned — with 14 agents on staggered crons the race-reject
 rate was unacceptable. See `project_git_mutex_apr19` memory + `scripts/lib/safe_commit.sh`.
 
+**RCA-first protocol (MANDATORY, 2026-04-21):**
+Before ANY TF-facing tune (config, prompt, risk cap, fallback, reroute) by
+SWISH / LOBBYIST / DR FRANKENSTEIN / THE BLACKSMITH / THE BOSS, the caller
+MUST first invoke **INTERNAL AFFAIRS Mode B (loser-RCA on demand)** and cite
+the resulting `data/audit/<tf>-losers-rca-YYYY-MM-DD.md` in the commit
+message. No audit → no tune. Infra restarts (dead Space → factory_reboot) and
+pure feature additions from HAWKEYE's research queue are exempt. See
+`feedback_always_rca_losers_first` memory + INTERNAL AFFAIRS Mode B section
+in `.claude/agents/internal-affairs.md`.
+
 ## The Crew — 14 Agents × 9 Departments × 4 Tracks
 
 | # | Codename | Old Name | Dept | Track | What they do |

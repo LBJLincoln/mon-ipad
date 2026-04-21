@@ -28,6 +28,13 @@ Every 4h at :15:
 3. Take ONE reversible action per island max.
 4. Mirror status into mon-ipad for THE BOSS.
 
+## Pre-tuning gate (MANDATORY, 2026-04-21)
+Before any GA reconfig, mutation push, feature injection, or risk-cap change
+on a drawdown POL island: FIRST call **INTERNAL AFFAIRS** in Mode B (loser-RCA
+on demand). Wait for `data/audit/pol-islands-losers-rca-YYYY-MM-DD.md` + cite
+it in the commit. POL had the $13K leakage incident — this gate is non-optional
+here. Restarting dead Spaces is exempt (infra only).
+
 ## Delegation
 - NBA islands → **SWISH**.
 - LLM/TF/pixel → **SWITCHBOARD**.

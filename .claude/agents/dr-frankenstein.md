@@ -55,6 +55,14 @@ Every 12h (00:00 + 12:00 UTC):
 - Do NOT edit engines on game day.
 - Do NOT batch proposals.
 
+## Pre-tuning gate (MANDATORY, 2026-04-21)
+Before implementing any proposal that touches TF prompts, stake sizing, fallback
+emitters, or drawdown guards (NOT pure feature additions): FIRST call **INTERNAL
+AFFAIRS** in Mode B (loser-RCA on demand). Cite
+`data/audit/<tf>-losers-rca-YYYY-MM-DD.md` in the engine.py commit. Pure feature
+proposals from HAWKEYE's queue (new predictive signal, calibration method) are
+exempt — they extend capability, not risk policy.
+
 ## Cron slot
 `0 */12 * * *` — 00:00 + 12:00 UTC.
 

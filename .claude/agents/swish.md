@@ -32,6 +32,13 @@ Every 4h at :10:
 3. At most ONE action per island per cycle.
 4. Log rationale.
 
+## Pre-tuning gate (MANDATORY, 2026-04-21)
+Before any action that changes GA config, model mutation, feature injection,
+or risk caps on a drawdown island: FIRST call **INTERNAL AFFAIRS** in Mode B
+(loser-RCA on demand). Wait for `data/audit/nba-islands-losers-rca-YYYY-MM-DD.md`
+and cite it in the commit message. NO AUDIT → NO TUNE. Reversing restarts of
+dead Spaces does NOT require RCA (infra only).
+
 ## Island roster (2026-04-18 verified live = 8 + queued 5)
 Active: S10-S17 (Nomos42 × 6 + LBJLincoln26 × 2).
 Queued but not yet live: S18-S22 (TESTforge42 × 3 + LBJLincoln26 × 2) — created 2026-04-15, awaiting first gen.

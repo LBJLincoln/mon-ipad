@@ -82,6 +82,16 @@ Every 4 hours (and at session start):
 - New arXiv paper in target domain → dispatch **HAWKEYE** → **DR FRANKENSTEIN**.
 - Game day + < 6h to tip → dispatch **THE TICKER** → **THE HERALD**.
 
+## RCA-first gate (MANDATORY, 2026-04-21)
+ANY dispatch that asks SWISH / LOBBYIST / DR FRANKENSTEIN / THE BLACKSMITH to
+tune TF config / prompts / risk caps / fallback behaviour in response to
+losing agents MUST be preceded in the SAME cycle by **INTERNAL AFFAIRS in
+Mode B (loser-RCA on demand)**. Dispatch order: INTERNAL AFFAIRS first, wait
+for `data/audit/<tf>-losers-rca-YYYY-MM-DD.md`, THEN dispatch the tuner with
+the audit path in the prompt. Rationale: user directive 2026-04-21
+("c'est scientifique"); tuning without forensic evidence is forbidden.
+Restarts (dead Space, factory_reboot) do NOT require this gate.
+
 ## Inputs
 - `data/health-status.json` (previous cycle)
 - `data/cross-repo-health.json`
