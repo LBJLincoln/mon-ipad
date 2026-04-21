@@ -4,11 +4,15 @@ Last updated: see `_refresh-status.json`.
 
 ## OPEN DECISIONS
 
-### D-2026-04-21-01 — NBA TF `app.py` upload after reset
-**Status:** pending (HF_TOKEN_2 returned 401 on `LBJLincoln26/nba-llm-trading-floor`, 429 on other tokens)
-**What:** `_load_prompt_override` fix — currently NBA is the only TF NOT consuming the 222-video YouTube `market_narrative` field (POL/ITF already patched).
-**Impact:** NBA 17 LLM agents miss 223-video context for each decision until upload lands.
-**Next try:** 15-min rate cooldown, then retry `HF_TOKEN` on LBJLincoln26 write perms.
+### D-2026-04-21-01 — MERGE HF PRs on NBA + POL Spaces
+**Status:** PRs open, awaiting user merge on HF UI
+**NBA PR:** https://huggingface.co/spaces/LBJLincoln26/nba-llm-trading-floor/discussions/1
+**POL PR:** https://huggingface.co/spaces/LBJLincoln26/political-llm-trading-floor/discussions/1
+**What ships when merged:**
+  1. `_load_prompt_override` narrative fix — both TFs finally consume the 222-video YouTube digest (NBA had never seen it)
+  2. `fallback_uniform` collision bypass — unblocks `selfhost-gemma3` + `selfhost-dolphin3` on NBA (0 bets / 17 days root cause: collision limiter wiped 14/17 agents on LLM-outage days)
+**Why PR not direct push:** token in this shell (TESTforge42) has PR-only access on LBJLincoln26 Spaces
+**Impact until merged:** NBA's 2 selfhost agents keep trading $0 and NBA/POL still miss YouTube narrative
 
 ### D-2026-04-21-02 — Stripe welcome-DM automation
 **Status:** pending user
