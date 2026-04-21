@@ -38,6 +38,25 @@ def _write_json(p: Path, data: dict) -> None:
     p.write_text(json.dumps(data, indent=2, ensure_ascii=False, default=str))
 
 # ── 01: TF health ────────────────────────────────────────────
+def _leaderboard(s: dict) -> list:
+    agents = s.get("agents") or s.get("fleet") or {}
+    if isinstance(agents, list):
+        agents = {a.get("trader_id") or a.get("id") or f"t{i}": a for i, a in enumerate(agents)}
+    if not isinstance(agents, dict):
+        return []
+    rows = []
+    for tid, a in agents.items():
+        if not isinstance(a, dict): continue
+        rows.append({
+            "trader_id": tid,
+            "bankroll": round(a.get("bankroll") or a.get("bankroll_now") or 0, 2),
+            "n_bets": a.get("n_bets") or a.get("bets") or a.get("total_bets") or 0,
+            "win_rate": a.get("win_rate") or a.get("wr") or 0,
+            "model": a.get("model") or a.get("model_primary"),
+        })
+    rows.sort(key=lambda r: -r["bankroll"])
+    return rows
+
 def build_01_tf_health() -> dict:
     spaces = {
         "nba":  "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
@@ -51,7 +70,10 @@ def build_01_tf_health() -> dict:
         if isinstance(s, dict) and "_error" in s:
             out["spaces"][k] = {"url": url, "reachable": False, "error": s["_error"]}
             continue
-        # Pull common fields, tolerant to schema drift across the 4 TFs
+        lb = _leaderboard(s)
+        llm_c = s.get("llm_calls") or s.get("llm_total") or 0
+        llm_f = s.get("llm_failures") or s.get("llm_fail") or 0
+        stuck = [a for a in lb if a["n_bets"] == 0]
         out["spaces"][k] = {
             "url": url,
             "reachable": True,
@@ -63,14 +85,18 @@ def build_01_tf_health() -> dict:
             "tick": s.get("tick"),
             "games_processed": s.get("games_processed"),
             "fleet_best_bankroll": s.get("fleet_best_bankroll"),
-            "fleet_best_agent": s.get("fleet_best_agent"),
-            "n_agents": s.get("n_agents") or len(s.get("agents",[]) or []) or None,
-            "llm_calls": s.get("llm_calls") or s.get("llm_total"),
-            "llm_failures": s.get("llm_failures") or s.get("llm_fail"),
+            "fleet_best_agent": lb[0]["trader_id"] if lb else None,
+            "n_agents": len(lb) or s.get("n_agents"),
+            "llm_calls": llm_c,
+            "llm_failures": llm_f,
+            "llm_fail_rate_pct": round(100 * llm_f / max(1, llm_c), 1) if llm_c else None,
             "gateway_routed": s.get("gateway_routed"),
             "coalition_pacts_count": s.get("coalition_pacts_count"),
             "axelrod_canon_active": s.get("axelrod_canon_active"),
             "langfuse_active": s.get("langfuse_active"),
+            "leaderboard": lb,
+            "n_agents_stuck_zero_bets": len(stuck),
+            "agents_stuck_zero_bets": [a["trader_id"] for a in stuck],
         }
     # Intentional: PQTF paused preserves $602K scientific validation
     if "pqtf" in out["spaces"]:
