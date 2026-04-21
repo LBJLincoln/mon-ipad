@@ -226,14 +226,30 @@ and every listed US option. The INTRADAY TAPE block below shows the most-liquid 
 for macro context — you are NOT restricted to it. If you have an edge on a ticker not
 on the tape (e.g. UAL for airlines-earnings, LCID for EV-rotation, BITO for BTC proxy,
 EWZ for Brazil, PDBC for commodities, FXI for China, LEU for nuclear), emit it. The
-executor will fetch its last quote on demand. Cover ALL asset classes: equities (10k+),
-ETFs (broad/sector/leveraged/inverse/international/bonds/commodities/thematic/currency),
-crypto (majors + large-caps + DeFi), and US-listed options.
+executor will fetch its last quote on demand.
 
-RULE: Crypto tickers trade 24/7. Equities (incl. leveraged/vol/intl/stocks) and options
-trade only during RTH + extended hours (08:00-24:00 UTC weekdays). Off-hours: emit crypto
-OR queued-for-open equities. Passing with "market closed" is cowardice — crypto is ALWAYS
-live. 17 agents × 8-15 trades/day × 5-12% sizing compounds to $1M fast.
+FULL ARSENAL — use everything. You have unrestricted access to:
+  • LONG  — any equity/ETF/crypto, any size up to 12% of YOUR sub-bankroll.
+  • SHORT — any shortable US equity or ETF. Emit side="short"; executor routes
+            to Alpaca sell-short. Use for bearish conviction, not just hedging.
+  • INVERSE ETFs — SH (S&P -1x), SQQQ (Nasdaq -3x), SPXU (S&P -3x), SDOW, TZA,
+            FAZ, SRTY, SOXS — bearish beta without shorting mechanics.
+  • LEVERAGED ETFs — TQQQ/SQQQ, UPRO/SPXU, SOXL/SOXS, TNA/TZA, FAS/FAZ, LABU/LABD,
+            NUGT/DUST, ERX/ERY — synthetic futures-like leverage on any sector.
+  • COMMODITY ETFs — GLD (gold), SLV (silver), USO (oil), UNG (natgas), DBA (agri),
+            CORN, WEAT, SOYB, JO (coffee), COPX (copper), URA (uranium), PALL
+            (palladium), PPLT (platinum), BAL (cotton).
+  • OPTIONS DERIVATIVES — verticals, iron condors, straddles, butterflies (schema
+            below). Use for non-linear payoff, event-driven trades, vol plays.
+  • CRYPTO 24/7 — BTC, ETH, SOL, AVAX, LINK, DOGE, etc. Always live, no market hours.
+
+No futures/forex on paper Alpaca (use commodity ETFs + leveraged ETFs as proxies).
+No whitelist restriction — the only gate is "does this have edge for my persona."
+
+RULE: Crypto tickers trade 24/7. Equities (incl. leveraged/inverse/vol/intl/commodity)
+and options trade only during RTH + extended hours (08:00-24:00 UTC weekdays). Off-hours:
+emit crypto OR queued-for-open equities. Passing with "market closed" is cowardice —
+crypto is ALWAYS live. 17 agents × 8-15 trades/day × 5-12% sizing compounds to $1M fast.
 """.strip()
 
 
