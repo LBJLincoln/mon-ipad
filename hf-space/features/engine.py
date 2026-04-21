@@ -66,6 +66,7 @@ Categories:
   64. OPPONENT-ELO-WEIGHTED PERFORMANCE (10 features — quality-adjusted rolling stats, trend)
   65. STYLE MATCHUP ADVANTAGE (12 features — 4-factor offense vs defense matchup edges)
   66. PACE-NORMALIZED PER-100 BOX-SCORE DIFFERENTIALS (12 features — pts/ast/tov/reb per 100 poss)
+  67. YOUTUBE FINBERT SENTIMENT (6 features — rolling 3/7/14d polarity + volatility, sim_cutoff gated)
   ≈ 6400+ feature candidates
 
 Architecture inspired by:
@@ -90,7 +91,7 @@ import csv
 import os
 
 # ── Engine Version ──
-ENGINE_VERSION = "v3.1-66cat"  # Cat66: Pace-Normalized Per-100 Box-Score Differentials (MDPI Jan 2026)
+ENGINE_VERSION = "v3.2-67cat"  # Cat67: YouTube FinBERT rolling sentiment (HAWKEYE 2026-04-21, sim_cutoff-gated)
 
 # ── Team mappings ──
 TEAM_MAP = {
@@ -360,6 +361,84 @@ def load_historical_odds(csv_path=None):
     return lookup
 
 
+# ── Cat 67: YouTube FinBERT Sentiment Loader (HAWKEYE 2026-04-21) ──
+# Loads precomputed finBERT sentiment from data/youtube/sentiment.parquet
+# and exposes per-game rolling aggregates with a hard sim_date_cutoff gate.
+# Leakage precedent: 2026-04-18 POL excess_return, 2026-04-21 market_narrative
+# stripper. We MUST refuse any published_at > sim_cutoff at compute time.
+
+_YT_SENT_DEFAULT_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "data", "youtube", "sentiment.parquet",
+)
+
+
+def _load_youtube_sentiment(path=None):
+    """Load sentiment.parquet → pandas DataFrame, or None on any failure.
+
+    Columns expected: id, published_at (UTC tz-aware), channel,
+    sent_pos, sent_neu, sent_neg, polarity.
+    """
+    try:
+        import pandas as pd  # noqa: F401
+    except ImportError:
+        return None
+    p = path or os.environ.get("NOMOS_YT_SENT_PATH") or _YT_SENT_DEFAULT_PATH
+    if not p or not os.path.exists(p):
+        return None
+    try:
+        import pandas as pd
+        df = pd.read_parquet(p)
+        if "published_at" not in df.columns or "polarity" not in df.columns:
+            return None
+        df["published_at"] = pd.to_datetime(df["published_at"], utc=True, errors="coerce")
+        df = df.dropna(subset=["published_at"]).copy()
+        return df
+    except Exception:
+        return None
+
+
+def _youtube_sentiment_features(df, game_date_str, sim_cutoff=None):
+    """Compute 6 rolling-window sentiment scalars for one game.
+
+    Returns dict with yt_pol_mean_{3,7,14} and yt_abs_pol_mean_{3,7,14}.
+    All-zero fallback when df is None, empty, or window has no rows.
+    JOIN rule: published_at <= game_date AND game_date-published_at <= W days.
+    sim_cutoff (date str or datetime) is a hard leakage gate.
+    """
+    out = {f"yt_pol_mean_{w}": 0.0 for w in (3, 7, 14)}
+    out.update({f"yt_abs_pol_mean_{w}": 0.0 for w in (3, 7, 14)})
+    if df is None or len(df) == 0 or not game_date_str:
+        return out
+    try:
+        import pandas as pd
+        gd = pd.Timestamp(game_date_str[:10], tz="UTC")
+    except Exception:
+        return out
+    try:
+        sub = df
+        if sim_cutoff is not None:
+            try:
+                cutoff = pd.Timestamp(str(sim_cutoff)[:10], tz="UTC")
+                sub = sub[sub["published_at"] <= cutoff]
+            except Exception:
+                pass
+        sub = sub[sub["published_at"] <= gd]
+        if len(sub) == 0:
+            return out
+        age_days = (gd - sub["published_at"]).dt.total_seconds() / 86400.0
+        for w in (3, 7, 14):
+            window = sub[age_days <= float(w)]
+            if len(window) == 0:
+                continue
+            pol = window["polarity"].astype(float)
+            out[f"yt_pol_mean_{w}"] = float(pol.mean())
+            out[f"yt_abs_pol_mean_{w}"] = float(pol.abs().mean())
+    except Exception:
+        pass
+    return out
+
+
 class NBAFeatureEngine:
     """
     Generates 6000+ features for each game from historical data.
@@ -370,9 +449,27 @@ class NBAFeatureEngine:
         # X.shape = (n_games, ~6000)
     """
 
-    def __init__(self, include_market=True, skip_placeholder=False):
+    def __init__(self, include_market=True, skip_placeholder=False,
+                 youtube_sentiment_path=None, sim_date_cutoff=None,
+                 enable_youtube=False):
+        """
+        Args:
+          enable_youtube: default False — corpus currently has only 20.7% NBA keyword
+            hits (audit 2026-04-21). HAWKEYE's Tier-1 proposal explicitly scoped FinBERT
+            rolling sentiment as POL-first; NBA path is dark until corpus mature.
+            Flip to True on sandbox island (S14) for A/B.
+          sim_date_cutoff: hard leakage gate — drops videos published after this date.
+        """
         self.include_market = include_market
         self.skip_placeholder = skip_placeholder
+        # Cat 67: YouTube FinBERT rolling sentiment (HAWKEYE 2026-04-21)
+        # sim_date_cutoff enforces leakage-gate — videos published after this
+        # are dropped. Default None → falls back to per-game date only.
+        self.enable_youtube = enable_youtube
+        self.sim_date_cutoff = sim_date_cutoff
+        self._yt_sent_cache = None  # pandas DataFrame, lazy-loaded below
+        if enable_youtube:
+            self._yt_sent_cache = _load_youtube_sentiment(youtube_sentiment_path)
         self.feature_names = []
         self._build_feature_names()
 
@@ -2946,6 +3043,22 @@ class NBAFeatureEngine:
             "p100_66_h_reb",     # Home total rebounds per 100 possessions
             "p100_66_a_reb",     # Away total rebounds per 100 possessions
             "p100_66_diff_reb",  # Home - Away reb/100 differential
+        ])
+
+        # ── Cat 67: YouTube FinBERT Sentiment (6 features) ──
+        # Source: HAWKEYE proposal 2026-04-21, Yang MDPI 2025, arXiv 2306.02136.
+        # ProsusAI/finBERT → per-video (pos, neu, neg, polarity=pos-neg).
+        # Per game: rolling mean over 3/7/14 day window of polarity AND |polarity|.
+        # Gated by sim_date_cutoff (published_at <= cutoff) to avoid the same
+        # class as 2026-04-18 POL excess_return / 2026-04-21 market_narrative leak.
+        # All-zero fallback when sentiment.parquet missing or window empty.
+        names.extend([
+            "yt_pol_mean_3",     # mean polarity last 3 days (signed: pos - neg)
+            "yt_pol_mean_7",     # mean polarity last 7 days
+            "yt_pol_mean_14",    # mean polarity last 14 days
+            "yt_abs_pol_mean_3", # mean |polarity| last 3d (volatility/intensity proxy)
+            "yt_abs_pol_mean_7", # mean |polarity| last 7d
+            "yt_abs_pol_mean_14",# mean |polarity| last 14d
         ])
 
         self.feature_names = names
@@ -7179,6 +7292,26 @@ class NBAFeatureEngine:
                 ])
             except Exception:
                 row.extend([0.0] * 12)
+
+            # ── Cat 67: YouTube FinBERT Sentiment (6 features) ──
+            # Per-game rolling aggregates. sim_date_cutoff gates all leakage.
+            try:
+                if self.enable_youtube and self._yt_sent_cache is not None:
+                    _yt67 = _youtube_sentiment_features(
+                        self._yt_sent_cache, gd, sim_cutoff=self.sim_date_cutoff
+                    )
+                    row.extend([
+                        _yt67["yt_pol_mean_3"],
+                        _yt67["yt_pol_mean_7"],
+                        _yt67["yt_pol_mean_14"],
+                        _yt67["yt_abs_pol_mean_3"],
+                        _yt67["yt_abs_pol_mean_7"],
+                        _yt67["yt_abs_pol_mean_14"],
+                    ])
+                else:
+                    row.extend([0.0] * 6)
+            except Exception:
+                row.extend([0.0] * 6)
 
             X.append(row)
             y.append(1 if hs > as_ else 0)

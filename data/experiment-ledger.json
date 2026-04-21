@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-20T23:47:00Z",
+  "last_updated": "2026-04-21T15:10:49Z",
   "ledger": [
     {
       "cycle": "swish-4h-2026-04-20T23:10Z",
@@ -7,15 +7,17 @@
       "agent": "SWISH",
       "project": "NBA",
       "technique": "Cat 66 canary engine refresh on fleet-best island",
-      "islands_acted_on": ["S22"],
+      "islands_acted_on": [
+        "S22"
+      ],
       "actions": {
         "engine_refresh": "S22: features/engine.py v3.1-65cat -> v3.1-66cat (sha256 5e66371c...), factory_reboot. Adds 12 pace-normalized per-100 box-score diff features (MDPI 2026-01).",
         "no_action_rationale": {
           "S13": "stag=6 cycles (~18 gens), Brier 0.22136 competitive, under diversify threshold",
           "S14": "stag=20c but receiving karpathy elite promotes already; no intervention needed",
-          "S15": "stag=20c candidate for diversify — HELD to preserve clean S22 canary read",
+          "S15": "stag=20c candidate for diversify \u2014 HELD to preserve clean S22 canary read",
           "S17": "stag=3c, below threshold",
-          "S18": "stag=18c candidate for diversify — HELD (charter: max 2 islands acted this cycle; S22 took slot)",
+          "S18": "stag=18c candidate for diversify \u2014 HELD (charter: max 2 islands acted this cycle; S22 took slot)",
           "S22_mutation_skipped": "engine refresh only, never combine mutation + feature injection (Brier confound rule)"
         }
       },
@@ -29,7 +31,7 @@
         "kill_criteria": "Brier > 0.22200 after 3 gens OR NaN/shape exception in feature build",
         "reversible_by": "upload prior features/engine.py + factory_reboot"
       },
-      "token_used": "HF_TOKEN_FORGE (TESTforge42 owner; S22 hosted on TESTforge42 account post-cull; HF_TOKEN_NBA denied 403). Charter note: roster credentials line predates post-cull account layout — NBA islands S18/S22 physically reside on TESTforge42."
+      "token_used": "HF_TOKEN_FORGE (TESTforge42 owner; S22 hosted on TESTforge42 account post-cull; HF_TOKEN_NBA denied 403). Charter note: roster credentials line predates post-cull account layout \u2014 NBA islands S18/S22 physically reside on TESTforge42."
     },
     {
       "cycle": "swish-4h-2026-04-19T16:35Z",
@@ -392,6 +394,49 @@
       "kill_criterion": "after 20 NBA TF days post-reboot: if fleet_total_bets < 0.3x pre-change rate AND fleet_avg < $95, revert MIN_EDGE back to 0.04 (checkpoint data/nba-tf/checkpoints/pre-minedge-raise-20260420T231039Z.json).",
       "deploy_sha": "6ea565ea4f13",
       "checkpoint": "data/nba-tf/checkpoints/pre-minedge-raise-20260420T231039Z.json"
+    },
+    {
+      "ts": "2026-04-21T15:10:49Z",
+      "agent": "FRANKENSTEIN",
+      "action": "add_cat67_youtube_finbert_sentiment_plus_w3_oauth",
+      "proposal_id": "yt-to-training-features-2026-04-21",
+      "proposal_title": "YouTube Corpus \u2192 Tabular Training Features (HAWKEYE 2026-04-21, Tier 1)",
+      "target_files": [
+        "features/engine.py",
+        "hf-space/features/engine.py",
+        "scripts/youtube_sentiment_precompute.py",
+        "scripts/youtube_oauth_subscriptions.py"
+      ],
+      "engine_version": "v3.1-66cat -> v3.2-67cat",
+      "sha256_parity_ok": true,
+      "sha256": "0fa89873f9a42e48a2ebc55b5d05bc48c5c10375c35ec1c9553ba90ab52fc8de",
+      "features_added": [
+        "yt_pol_mean_3",
+        "yt_pol_mean_7",
+        "yt_pol_mean_14",
+        "yt_abs_pol_mean_3",
+        "yt_abs_pol_mean_7",
+        "yt_abs_pol_mean_14"
+      ],
+      "total_feature_names": 6452,
+      "model": "ProsusAI/finBERT (3-class, CPU, 512 token truncation)",
+      "join_rule": "published_at <= game_date AND game_date - published_at <= W days, W in {3,7,14}",
+      "leakage_gate": "sim_date_cutoff kwarg (hard-refuse published_at > cutoff) \u2014 same pattern as 2026-04-21 market_narrative strip",
+      "fallback": "all-zero 6-tuple when sentiment.parquet missing or window empty",
+      "mirror_status": "nomos-political-alpha/features/political_engine.py NOT mirrored yet (different schema, 687 LOC \u2014 queued Tier 2)",
+      "expected_brier_delta": {
+        "NBA": "+0.0000 to +0.0005 (noise)",
+        "POL": "+0.0015 to +0.0030 (Yang 2025 anchor)"
+      },
+      "kill_criterion": "S14 A/B: 200 GA gens w/ enable_youtube=True vs baseline \u2014 if \u0394 < +0.0005 Brier, revert",
+      "w3_oauth_status": "OAuth script shipped, auth URL printed to user, awaiting --auth-code paste. Refresh token path gitignored. No fallback to guessed channels if subs=empty.",
+      "tests_passed": [
+        "AST parse + py_compile",
+        "Cat67 feature names registered (6 new, total 6452)",
+        "None-df zero fallback",
+        "rolling 3/7/14d windows correct on synthetic",
+        "sim_cutoff hard-filters future videos"
+      ]
     }
   ]
 }
