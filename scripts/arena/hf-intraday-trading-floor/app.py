@@ -121,6 +121,9 @@ here but at intraday cadence with the full equity+crypto+options universe.
 
 Respond with ONE of:
   { "action": "pass", "reason": "..." }
+OR close an existing open position to free buying power (USE THIS when your agent already has
+an open position that hit target thesis OR macro regime flipped — don't wait for the bracket):
+  { "action": "close", "ticker": "NVDA", "reason": "thesis played out, freeing BP for next setup" }
 OR a standard equity/crypto trade:
   { "action": "trade",
     "ticker": ANY ticker visible in the INTRADAY TAPE block below (equities, leveraged,
@@ -777,6 +780,28 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         return q.get("last")
     executor.close_expired(now, quote_fn=_q)
 
+    # 2026-04-21 BP GUARD — fetch free Alpaca buying power once per tick so bracket
+    # submits downsize or pass when margin is exhausted. Observed 2026-04-21: 53
+    # orders stuck in "new" status because BP=$238 after 57 daytrades. Guard caps
+    # new-open stakes to min(raw, $400) and forces pass when BP<$300. Safe fallback
+    # on API error so dry-run keeps working.
+    _free_bp = float("inf")
+    try:
+        if executor.live_mode():
+            import requests as _req
+            _k = os.environ.get("ALPACA_PAPER_KEY", "")
+            _s = os.environ.get("ALPACA_PAPER_SECRET", "")
+            if _k and _s:
+                _r = _req.get(
+                    "https://paper-api.alpaca.markets/v2/account",
+                    headers={"APCA-API-KEY-ID": _k, "APCA-API-SECRET-KEY": _s},
+                    timeout=5,
+                )
+                if _r.ok:
+                    _free_bp = float(_r.json().get("buying_power") or 0.0)
+    except Exception as _e:
+        print(f"[itf] BP fetch err (non-fatal, cap defaults to inf): {_e}", file=sys.stderr, flush=True)
+
     # 2026-04-20 ANTI-LOCKSTEP guardrail — cap agents per (ticker,side) at MAX_CONCURRENT_PER_KEY.
     # GLOBAL (not per-tick): seed from executor's existing open positions so cross-tick
     # accumulation also caps out. Without this, 2 ticks of 2 AVAX-longs each = 4 AVAX-longs.
@@ -838,6 +863,31 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     for persona in _personas_this_tick:
         decision = _call_agent(persona, ctx)
         action = decision.get("action")
+        # 2026-04-21 CLOSE ACTION — agent can free BP by closing one of its open
+        # positions; bypasses anti-lockstep/BP checks (closing always fine).
+        if action == "close":
+            close_ticker = decision.get("ticker")
+            if close_ticker:
+                try:
+                    close_entry = executor.close_position(persona["tid"], close_ticker)
+                    result = {
+                        "ts": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "agent_tid": persona["tid"],
+                        "agent_name": persona["name"],
+                        "tier": persona["tier"],
+                        "decision": decision,
+                        "execution": close_entry,
+                    }
+                    STATE["agents"][persona["tid"]]["decisions"] += 1
+                    STATE["agents"][persona["tid"]]["trades"] += 1
+                    results.append(result)
+                    continue
+                except Exception as _ce:
+                    print(f"[itf] close err {persona['tid']} {close_ticker}: {_ce}",
+                          file=sys.stderr, flush=True)
+                    # fall through to pass
+                    decision = {"action": "pass", "reason": f"close_failed: {_ce}"}
+                    action = "pass"
         # Anti-lockstep post-filter WITH DIVERT (2026-04-20 v2)
         if action == "trade":
             _key = (decision.get("ticker", "?"), decision.get("side", "?"))
@@ -891,10 +941,22 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         STATE["agents"][persona["tid"]]["decisions"] += 1
         if action == "trade" and decision.get("ticker") in (ctx.get("quotes") or {}):
             last_quote = (ctx["quotes"][decision["ticker"]] or {}).get("last") or 0
-            # 2026-04-20 AGGRESSIVE-MODE: $100 floor (was $500), removed $3000 hard cap.
-            # LLM sets its own size 2-5% of bankroll via prompt guidance. Widen stop/TP
-            # too. Executor still enforces its own sanity caps downstream.
             raw_stake = float(decision.get("stake_usd", 500) or 500)
+            _ticker_is_crypto = "/" in decision["ticker"]
+            # 2026-04-21 BP-AWARE CAP — equities: cap stake at min(raw, $400) and
+            # force pass if free BP<$300. Crypto untouched (uses cash, not margin).
+            if not _ticker_is_crypto and _free_bp != float("inf"):
+                if _free_bp < 300.0:
+                    decision = {"action": "pass", "reason": f"bp_guard_free_bp=${_free_bp:.0f}_lt_300",
+                                "_original_ticker": decision.get("ticker")}
+                    action = "pass"
+                    STATE["agents"][persona["tid"]]["decisions"] += 1
+                    STATE["agents"][persona["tid"]]["passes"] += 1
+                    result["decision"] = decision
+                    results.append(result)
+                    continue
+                else:
+                    raw_stake = min(raw_stake, 400.0)
             order = {
                 "ticker": decision["ticker"],
                 "side": decision.get("side", "long"),

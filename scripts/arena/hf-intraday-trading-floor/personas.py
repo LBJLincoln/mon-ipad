@@ -39,6 +39,21 @@ CRYPTO_PIVOT_CLAUSE = (
     "tick because 'equities closed' is cowardice — the leaderboard punishes it."
 )
 
+# 2026-04-21 SHORT_ROTATION_HINT — applied to the 5 directional-agnostic personas
+# (scalper-1, mean-rev-1, pairs-1, vol-1, arbitrage-1). Observed today: all 53
+# stuck Alpaca orders were BUY-only because personas default long even when prompt
+# permits short. This hint nudges LLM to consider side:"short" on fade/overshoot
+# setups AND flags the CLOSE action to free BP before opening a new position.
+SHORT_ROTATION_HINT = (
+    " SHORT-SIDE MANDATE: you are explicitly bi-directional. When a ticker is "
+    ">+1.5σ above peer median → emit side=\"short\" (fade extension). When "
+    "a lagging sector rotates strong → you may LONG the weak side and SHORT the "
+    "leader to capture convergence. Shortable: SPY/QQQ/IWM/XL*/TQQQ/SPXL/SOXL. "
+    "Also: if you already have ≥2 open positions at this ticker, prefer emitting "
+    "action=\"close\" on your weakest thesis BEFORE opening a new one — free BP "
+    "is worth more than the marginal trade."
+)
+
 PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "scalper-1",
@@ -344,3 +359,9 @@ def get(tid: str) -> Dict[str, Any]:
 for _p in PERSONAS:
     if CRYPTO_PIVOT_CLAUSE not in _p["style"]:
         _p["style"] = _p["style"] + CRYPTO_PIVOT_CLAUSE
+
+# 2026-04-21 — nudge 5 directional-agnostic personas toward short side + close action.
+_SHORT_ROTATION_TIDS = {"scalper-1", "mean-rev-1", "pairs-1", "vol-1", "arbitrage-1"}
+for _p in PERSONAS:
+    if _p["tid"] in _SHORT_ROTATION_TIDS and SHORT_ROTATION_HINT not in _p["style"]:
+        _p["style"] = _p["style"] + SHORT_ROTATION_HINT

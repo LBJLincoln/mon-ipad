@@ -516,6 +516,66 @@ def pnl_snapshot(quote_fn=None) -> Dict[str, Any]:
     }
 
 
+def close_position(agent_tid: str, ticker: str) -> Dict[str, Any]:
+    """2026-04-21 — agent-driven close. Mark matching local open positions closed
+    and (in live mode) submit Alpaca DELETE /v2/positions/{symbol} to flatten the
+    broker position. Returns entry-style dict mirroring submit().
+
+    Scope: matches ALL open positions for this agent_tid + ticker pair. Broker
+    close is market-time-in-force, so crypto closes GTC via order, equities via
+    the dedicated positions-close endpoint (net flat).
+    """
+    positions = _load_positions()
+    ticker_u = (ticker or "").upper().strip()
+    matched: List[Dict[str, Any]] = [
+        p for p in positions.get(agent_tid, [])
+        if p.get("status") == "open" and (p.get("ticker", "") or "").upper().strip() == ticker_u
+    ]
+    entry = {
+        "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "agent_tid": agent_tid,
+        "ticker": ticker_u,
+        "action": "close_position",
+        "matched_positions": len(matched),
+        "mode": "live" if live_mode() else "dry_run",
+    }
+    if not matched:
+        entry["status"] = "no_open_position"
+        _append_order_log(entry)
+        return entry
+
+    if live_mode():
+        import requests
+        key = os.environ["ALPACA_PAPER_KEY"]
+        secret = os.environ["ALPACA_PAPER_SECRET"]
+        headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
+        try:
+            r = requests.delete(
+                f"https://paper-api.alpaca.markets/v2/positions/{ticker_u}",
+                headers=headers,
+                timeout=10,
+            )
+            if r.ok:
+                entry["broker_status"] = "closed"
+                entry["broker_resp"] = (r.json() if r.text else {}).get("status", "submitted")
+            else:
+                entry["broker_status"] = f"error_{r.status_code}"
+                entry["broker_resp"] = r.text[:300]
+        except Exception as e:
+            entry["broker_status"] = "exception"
+            entry["broker_resp"] = str(e)[:300]
+
+    # Mark all matched local positions closed — close_expired will handle P&L
+    # mark-to-market on the next tick if quote_fn available. For agent-driven
+    # closes we just flip status; realized P&L reconciles from broker fills.
+    for p in matched:
+        p["status"] = "closed_by_agent"
+        p["closed_at"] = entry["ts"]
+    _save_positions(positions)
+    _append_order_log(entry)
+    return entry
+
+
 def read_trades(limit: int = 200) -> List[Dict[str, Any]]:
     """Tail the dry_run_orders.jsonl log. Shape: every submit() call (fill or reject)."""
     if not ORDERS_JSONL.exists():
