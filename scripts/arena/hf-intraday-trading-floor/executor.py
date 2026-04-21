@@ -195,6 +195,11 @@ def _alpaca_place_bracket(ticker: str, qty: float, stake: float, last: float,
     else:
         int_qty = int(qty)  # floor — Alpaca rejects bracket on fractional
         if int_qty >= 1:
+            # Defensive: bracket MUST have integer qty >= 1. If this assert ever fires,
+            # it means something bypassed the fractional routing — crash-log the call
+            # site so we can pin the regression fast.
+            assert int_qty >= 1 and float(int_qty).is_integer(), \
+                f"bracket qty must be integer>=1, got {qty!r} (ticker={ticker}, stake={stake})"
             payload = {
                 "symbol": ticker,
                 "qty": int_qty,
@@ -233,6 +238,21 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
     """
     positions = _load_positions()
     open_for_agent = [p for p in positions.get(agent_tid, []) if p.get("status") == "open"]
+    # 2026-04-21 wash-trade pre-check: if same agent has an OPEN opposite-side
+    # position on same ticker, skip. Alpaca rejects these as wash-trades anyway;
+    # pre-check gives a clean ledger event instead of a broker_error.
+    _inbound_side = order.get("side")
+    _inbound_ticker = order.get("ticker")
+    for _p in open_for_agent:
+        if _p.get("ticker") == _inbound_ticker and _p.get("side") and _inbound_side and _p.get("side") != _inbound_side:
+            wash = {
+                "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "agent_tid": agent_tid, "status": "wash_skip",
+                "reason": f"opposite-side {_p.get('side')} open on {_inbound_ticker}",
+                "order": order,
+            }
+            _append_order_log(wash)
+            return wash
     if len(open_for_agent) >= MAX_OPEN_PER_AGENT:
         reject = {
             "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),

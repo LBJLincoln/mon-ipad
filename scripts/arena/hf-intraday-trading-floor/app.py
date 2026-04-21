@@ -602,6 +602,77 @@ def _off_hours_crypto_signal(quotes: Dict[str, Dict[str, Any]]) -> bool:
     return False
 
 
+# ── NO-TRADE REGIME GATE (2026-04-21, proposal #3) ──────────────────────────
+# Source: MDPI Mathematics 13/15/2382 + Amberdata vol framework. Markov-
+# switching vol classifier. When the 30-min realized-vol floor is breached,
+# waive the "≥3 allocations" + "≥75% deploy" mandates and let agents pass.
+#
+# Implementation: proxy realized_vol as (5m_high − 5m_low) / last across the
+# crypto universe (20 pairs), median across pairs. No persistent rolling-30min
+# history available per-Space (quote_bus writes 5 ticks/day), so this is a
+# same-tick proxy. 5m range ≈ 30-min realized vol when scaled by sqrt(6).
+# Empirical tune: 0.3% per 5min = 0.3% × sqrt(6) ≈ 0.73% per 30min, which
+# lines up with the 0.3%-floor target in the proposal *if we interpret it as
+# 5-min floor*. We key the floor to the 5-min proxy directly: REGIME_FLOOR_5M=0.003.
+#
+# Env override: ITF_REGIME_FLOOR_5M (default 0.003 = 0.3%).
+REGIME_FLOOR_5M = float(os.environ.get("ITF_REGIME_FLOOR_5M", "0.003"))
+
+
+def _compute_crypto_regime(quotes: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    """Return {'median_realized_vol': float, 'low_vol_regime': bool, 'floor': float,
+    'sample_n': int, 'pairs_checked': list}. Median across crypto pairs only
+    (24/7 tradeable; we gate ITF on crypto regime since most personas crypto-pivot
+    off-hours and the equity universe is discontinuous overnight).
+    """
+    ranges: List[float] = []
+    pairs: List[str] = []
+    for t, q in (quotes or {}).items():
+        if "/" not in t:
+            continue
+        q = q or {}
+        last = q.get("last")
+        hi = q.get("5m_high")
+        lo = q.get("5m_low")
+        try:
+            last_f = float(last) if last is not None else None
+            hi_f = float(hi) if hi is not None else None
+            lo_f = float(lo) if lo is not None else None
+        except (TypeError, ValueError):
+            continue
+        if not last_f or hi_f is None or lo_f is None or last_f <= 0:
+            continue
+        rv = max(0.0, (hi_f - lo_f) / last_f)
+        ranges.append(rv)
+        pairs.append(t)
+    if not ranges:
+        return {"median_realized_vol": None, "low_vol_regime": False,
+                "floor": REGIME_FLOOR_5M, "sample_n": 0, "pairs_checked": []}
+    ranges_sorted = sorted(ranges)
+    mid = len(ranges_sorted) // 2
+    if len(ranges_sorted) % 2 == 1:
+        median = ranges_sorted[mid]
+    else:
+        median = (ranges_sorted[mid - 1] + ranges_sorted[mid]) / 2.0
+    return {
+        "median_realized_vol": round(median, 5),
+        "low_vol_regime": bool(median < REGIME_FLOOR_5M),
+        "floor": REGIME_FLOOR_5M,
+        "sample_n": len(ranges),
+        "pairs_checked": pairs[:10],
+    }
+
+
+DEAD_TAPE_CLAUSE = (
+    "REGIME OVERRIDE — DEAD TAPE: Median crypto 5m range is below the "
+    "0.3% floor (markov-switching vol classifier flags low-vol regime). "
+    "Market is in low-vol regime. Preserving capital is the winning move. "
+    "action='pass' is fully acceptable for this tick. The ≥3-trades / ≥75%-"
+    "deploy mandates are WAIVED until vol recovers. Trade ONLY if you see a "
+    "true asymmetric edge — otherwise pass and let the tape tell you when to strike."
+)
+
+
 def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
     # Compact context to stay under token caps (~1500 tokens).
     # CRITICAL: previous version `quotes_summary[:22]` truncated everything after
@@ -691,6 +762,13 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         if override:
             style_final = override
 
+    # 2026-04-21 proposal #3 — regime gate. If low-vol regime, append DEAD_TAPE
+    # clause so the LLM knows it can pass. Waiver of min-deploy is enforced
+    # downstream in the tick loop; we just feed the context here.
+    regime = ctx.get("regime") or _compute_crypto_regime(quotes)
+    if regime.get("low_vol_regime"):
+        style_final = f"{style_final}\n\n{DEAD_TAPE_CLAUSE}"
+
     # 2026-04-20 AGGRESSIVE-MODE: inject knowledge digest + peer-bet digest + council plan.
     # All 3 are cached/day; token-bounded so total prompt stays well under 4k tokens.
     knowledge_digest = _build_knowledge_digest()
@@ -756,6 +834,17 @@ def _uniform_fallback_itf(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[
     Picks a liquid ticker keyed on persona tier + tid hash so 7 personas don't all
     pile on the same instrument on a global LLM outage.
     """
+    # 2026-04-21 proposal #3 — regime gate: in low-vol regime, emit an explicit
+    # pass (waive the "silent-pass banned" rule). Tagged so analytics can split
+    # regime-passes from pure silent drops.
+    try:
+        regime = ctx.get("regime") or {}
+        if regime.get("low_vol_regime"):
+            return {"action": "pass",
+                    "reason": f"regime_gate_low_vol (median_5m_vol={regime.get('median_realized_vol')} < {regime.get('floor')})",
+                    "provider_status": "regime_pass"}
+    except Exception:
+        pass
     tier = (persona.get("tier") or "").lower()
     tid = persona.get("tid") or ""
     # Tier-rotated candidate pools. Post-2026-04-20 expansion: tier is now S/M/L
@@ -891,6 +980,18 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         print(f"[itf] bankroll sync err (non-fatal): {_se}", file=sys.stderr, flush=True)
     quote_refresh()  # persist snapshot
     ctx = build_intraday_context()
+    # 2026-04-21 proposal #3 — attach regime snapshot so prompt + downstream logic
+    # can waive ≥3-trade + MIN_DEPLOY when crypto tape is dead.
+    try:
+        ctx["regime"] = _compute_crypto_regime(ctx.get("quotes") or {})
+        if ctx["regime"].get("low_vol_regime"):
+            print(f"[itf] LOW-VOL REGIME active: median_5m_vol="
+                  f"{ctx['regime'].get('median_realized_vol')} < floor "
+                  f"{ctx['regime'].get('floor')} — ≥3/MIN_DEPLOY waived this tick",
+                  file=sys.stderr, flush=True)
+    except Exception as _re:
+        print(f"[itf] regime compute err (non-fatal): {_re}", file=sys.stderr, flush=True)
+        ctx["regime"] = {"low_vol_regime": False, "floor": REGIME_FLOOR_5M}
     results: List[Dict[str, Any]] = []
     now = datetime.now(timezone.utc)
 
@@ -950,6 +1051,8 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     # Fair-order randomization so early-called personas don't monopolize the edge.
     import random as _random
     MAX_CONCURRENT_PER_KEY = 3
+    SUBMITS_PER_TICK = 2  # 2026-04-21 compute cap: each agent may submit at most N new orders per tick.
+    _submits_this_tick: Dict[str, int] = {}
     _tick_counts: Dict[Tuple[str, str], int] = {}
     try:
         _existing_positions = executor._load_positions()
@@ -1006,6 +1109,28 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         return None
 
     for persona in _personas_this_tick:
+        # 2026-04-21 compute cap — if agent already submitted SUBMITS_PER_TICK
+        # orders in THIS tick, skip the LLM call entirely (saves $, prevents
+        # lockstep spamming). Ledger event for scientific audit.
+        if _submits_this_tick.get(persona["tid"], 0) >= SUBMITS_PER_TICK:
+            try:
+                executor._append_ledger({
+                    "tid": persona["tid"],
+                    "event": "skip_compute_cap",
+                    "tick": STATE.get("tick_count"),
+                    "cap": SUBMITS_PER_TICK,
+                })
+            except Exception:
+                pass
+            STATE["agents"][persona["tid"]]["passes"] += 1
+            results.append({
+                "ts": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "agent_tid": persona["tid"],
+                "agent_name": persona["name"],
+                "tier": persona["tier"],
+                "decision": {"action": "pass", "reason": f"compute_cap_{SUBMITS_PER_TICK}_submits_reached"},
+            })
+            continue
         decision = _call_agent(persona, ctx)
         action = decision.get("action")
         # 2026-04-21 CLOSE ACTION — agent can free BP by closing one of its open
@@ -1125,6 +1250,7 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
             entry = executor.submit(persona["tid"], order, last_quote)
             result["execution"] = entry
             STATE["agents"][persona["tid"]]["trades"] += 1
+            _submits_this_tick[persona["tid"]] = _submits_this_tick.get(persona["tid"], 0) + 1
         elif action == "option_trade" and decision.get("underlying") in (ctx.get("quotes") or {}):
             last_quote = (ctx["quotes"][decision["underlying"]] or {}).get("last") or 0
             option_order = {
@@ -1141,6 +1267,7 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
             entry = executor.submit_option(persona["tid"], option_order, last_quote)
             result["execution"] = entry
             STATE["agents"][persona["tid"]]["trades"] += 1
+            _submits_this_tick[persona["tid"]] = _submits_this_tick.get(persona["tid"], 0) + 1
         else:
             STATE["agents"][persona["tid"]]["passes"] += 1
         results.append(result)
@@ -1308,8 +1435,35 @@ def _build_app():
 
     @app.get("/api/bankrolls")
     def api_bankrolls():
+        """Honest accounting — per-agent + fleet:
+          available   = free cash in agent's sub-bankroll (after reserves)
+          reserved    = sum of stake_usd on that agent's OPEN positions
+          total_equity = available + reserved
+        Fleet rollups sum across all personas. stake_usd is the canonical
+        source of truth (reserved on submit, credited on close)."""
+        cash = executor.all_bankrolls()  # {tid: available_float}
+        positions = executor._load_positions()
+        reserved_by_tid: Dict[str, float] = {}
+        for tid, plist in (positions or {}).items():
+            for pos in (plist or []):
+                if pos.get("status") != "open":
+                    continue
+                reserved_by_tid[tid] = reserved_by_tid.get(tid, 0.0) + float(pos.get("stake_usd") or 0)
+        agents: Dict[str, Dict[str, float]] = {}
+        for tid, avail in cash.items():
+            reserved = round(reserved_by_tid.get(tid, 0.0), 2)
+            agents[tid] = {
+                "available": round(float(avail or 0.0), 2),
+                "reserved_open": reserved,
+                "total_equity": round(float(avail or 0.0) + reserved, 2),
+            }
+        fleet_available = round(sum(a["available"] for a in agents.values()), 2)
+        fleet_reserved = round(sum(a["reserved_open"] for a in agents.values()), 2)
         return JSONResponse({
-            "bankrolls": executor.all_bankrolls(),
+            "fleet_available": fleet_available,
+            "fleet_reserved": fleet_reserved,
+            "fleet_equity": round(fleet_available + fleet_reserved, 2),
+            "agents": agents,
             "meta": executor._load_bankrolls().get("_meta", {}),
         })
 
