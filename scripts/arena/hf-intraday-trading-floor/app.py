@@ -694,10 +694,17 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
     index_tickers   = [t for t in quotes if t.startswith("^")]
     equity_tickers  = [t for t in quotes if t not in crypto_tickers and t not in index_tickers]
     # Equity probes we always want visible if present.
-    priority_eq = [t for t in ["SPY", "QQQ", "IWM", "DIA", "XLK", "XLE", "XLF", "TQQQ", "SQQQ",
-                                "UVXY", "VXX", "NVDA", "TSLA", "AAPL", "META"] if t in quotes]
+    # 2026-04-21 expansion: surface more mega-caps + sector leaders in the tape so
+    # LLMs see a broader opportunity surface (user request). On-demand quotes still
+    # unlock the full 10k+ equity universe for any ticker an agent mentions.
+    priority_eq = [t for t in ["SPY", "QQQ", "IWM", "DIA",
+                                "XLK", "XLE", "XLF", "XLV", "SMH",
+                                "TQQQ", "SQQQ", "UVXY", "VXX",
+                                "NVDA", "TSLA", "AAPL", "META", "MSFT", "GOOGL", "AMD", "AMZN",
+                                "GLD", "TLT", "IBIT",
+                                "COIN", "MSTR", "CRWD", "PLTR"] if t in quotes]
     # Remaining equities (leveraged, sector, stocks we haven't already shown), capped.
-    remaining_eq = [t for t in equity_tickers if t not in priority_eq][:6]
+    remaining_eq = [t for t in equity_tickers if t not in priority_eq][:8]
 
     lines: List[str] = []
     if index_tickers:

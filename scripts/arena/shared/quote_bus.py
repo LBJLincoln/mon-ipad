@@ -57,6 +57,19 @@ DEFAULT_EQUITIES: List[str] = [
     # Single-name expansion (12) — financials, consumer, semis, biotech leaders
     "JPM", "BAC", "WFC", "GS", "V", "MA", "LLY", "UNH",
     "COIN", "MSTR", "PLTR", "RIVN",
+    # ── NEW 2026-04-21 expansion (user request: "plus d'ETFs/stocks pour ITF") ──
+    # Mega-cap consumer staples + discretionary (6) — high ADV, intraday edges
+    "WMT", "HD", "KO", "PEP", "MCD", "SBUX",
+    # Energy majors (2) — macro rotation plays
+    "XOM", "CVX",
+    # Healthcare megacaps (4) — defensive rotation when VIX spikes
+    "JNJ", "PFE", "MRK", "ABBV",
+    # Cloud/cybersec (5) — high-vol tech for momentum personas
+    "CRWD", "PANW", "NET", "DDOG", "SNOW",
+    # Semis extension (3) — rounds out SOXX/SMH pair plays
+    "INTC", "CSCO", "QCOM",
+    # Sector ETFs — extends XLE/XLF/XLK with targeted slices (5)
+    "VOO", "XME", "KRE", "XHB", "GDX",
 ]
 DEFAULT_CRYPTO: List[str] = [
     # Original 10 (majors + large-caps)

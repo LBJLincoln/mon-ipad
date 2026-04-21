@@ -329,9 +329,11 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "macro-rotate-1",
         "name": "MacroRotateMAX",
-        # google:gemini-2.5-flash → PQTF gemini-anl $17K winner on MACRO reasoning.
-        # mistral:medium fallback for numeric stability.
-        "model_primary": "google:gemini-2.5-flash",
+        # 2026-04-21 INTERNAL AFFAIRS RCA reroute: google:gemini-2.5-flash not on
+        # switchboard confirmed-alive list (project_tf_llm_reroute_apr20 memory).
+        # Swap to cerebras:qwen-3-235b — POL qwen-quant 71% WR real signal + proven
+        # alive in gateway routing. mistral:medium fallback unchanged.
+        "model_primary": "cerebras:qwen-3-235b",
         "model_fallback": "mistral:medium",
         "hf_account_target": "google",
         "hf_space_target": "gemini-2.5-flash",
@@ -351,9 +353,10 @@ PERSONAS: List[Dict[str, Any]] = [
         # 2026-04-21 v2.5 NEW — NBA/POL parity (17 total).
         "tid": "gap-fade-1",
         "name": "GapFadeMAX",
-        # mistral:small — untested in ITF; unlocks a new model-family datapoint for
-        # the scientific leaderboard. Fallback mistral:medium (proven PQTF #2 $155K).
-        "model_primary": "mistral:small",
+        # 2026-04-21 INTERNAL AFFAIRS RCA reroute: mistral:small was POL 14%WR laggard
+        # (inverted-pick pattern) and NBA 16%WR. Swap to cerebras:qwen-3-235b — POL
+        # qwen-quant produced 71% WR on 21 bets with live LLM reasoning = real signal.
+        "model_primary": "cerebras:qwen-3-235b",
         "model_fallback": "mistral:medium",
         "hf_account_target": "mistral",
         "hf_space_target": "small",
@@ -373,9 +376,10 @@ PERSONAS: List[Dict[str, Any]] = [
         # 2026-04-21 v2.5 NEW — low-vol regime carry specialist.
         "tid": "carry-1",
         "name": "Carry",
-        # nvidia:llama-3.3-70b — new provider for scientific diversity. NBA T14
-        # uses it too. cerebras:qwen-3-235b fallback (fast + working).
-        "model_primary": "nvidia:llama-3.3-70b",
+        # 2026-04-21 INTERNAL AFFAIRS RCA reroute: nvidia:llama-3.3-70b was POL 22%WR
+        # (298 dead-sec provider) + NBA fallback-cluster 62%. Swap to google:gemini-3-flash
+        # — POL gemini-anl 65% WR on 17 bets with consistent live LLM reasoning = real signal.
+        "model_primary": "google:gemini-3-flash",
         "model_fallback": "cerebras:qwen-3-235b",
         "hf_account_target": "nvidia",
         "hf_space_target": "llama-3.3-70b",
