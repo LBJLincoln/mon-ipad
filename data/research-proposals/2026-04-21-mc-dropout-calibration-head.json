@@ -1,0 +1,39 @@
+{
+  "id": "2026-04-21-mc-dropout-calibration-head",
+  "created_at": "2026-04-21T04:00:00Z",
+  "author": "cloud-brain-4h",
+  "title": "Monte Carlo Dropout Calibration Head on Tree Ensemble",
+  "priority": "HIGH",
+  "brier_potential": "~0.20 (MDPI 2026-01 uncertainty-aware NBA paper)",
+  "source_paper": {
+    "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+    "url": "https://www.mdpi.com/2078-2489/17/1/56",
+    "year": 2026,
+    "venue": "MDPI Information",
+    "key_result": "Brier ~0.20 with RNN + MC dropout + rolling-form + shot-chart embeddings"
+  },
+  "description": "Current best (S22 venn_abers_fusion 0.22073) uses tree ensembles with Venn-Abers calibration. MDPI 2026 achieves 0.20 via MC dropout on RNN. CPU-practical adaptation: train lightweight MLP head on tree leaf embeddings with dropout (p=0.3), run N=100 forward passes at inference for mean prediction + uncertainty. Use uncertainty to filter low-confidence bets and scale Kelly sizing.",
+  "implementation_plan": [
+    "1. Extract tree leaf embeddings: XGBoost apply() / LightGBM predict(pred_leaf=True) → N_trees-dim one-hot → compress to 64-dim via PCA",
+    "2. Train 2-layer MLP (64→32→1 sigmoid) with Dropout(0.3) on calibration split (same as Venn-Abers currently uses)",
+    "3. Inference: 100 forward passes with dropout active → mean = calibrated P(home_win), std = uncertainty",
+    "4. Kelly gate: if std > 0.12 (high uncertainty), skip bet or halve Kelly fraction",
+    "5. A/B test: S22 (venn_abers base, currently rebuilding — ideal insertion) vs S18 (no MC head)"
+  ],
+  "technical_notes": [
+    "numpy + sklearn only — no torch/keras, compatible with CPU HF spaces",
+    "MCDropout on leaf-embedding MLP is much lighter than RNN backbone (~2ms vs ~50ms)",
+    "Shot-chart embeddings skipped (not available in our data pipeline)",
+    "Rule #8: CPU-only islands, tree-based only — MLP head is post-hoc, does not violate rule"
+  ],
+  "risks": [
+    "100 MC passes adds ~20ms inference latency per game — acceptable",
+    "Leaf embedding dim can be high (N_trees × N_leaves) — PCA compression critical",
+    "Overfitting risk on calibration split if too small (<500 games)"
+  ],
+  "target_repo": "mon-ipad hf-space/ + nomos-nba-agent hf-space/",
+  "target_island": "S22 (rebuild phase — ideal insertion window), then S15",
+  "political_port": "After NBA validation, port to political_engine.py as third calibration option alongside venn_abers + isotonic_temporal (Rotation C)",
+  "status": "proposed",
+  "owner": "DR FRANKENSTEIN"
+}
