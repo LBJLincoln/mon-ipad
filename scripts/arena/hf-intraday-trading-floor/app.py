@@ -981,6 +981,13 @@ def _uniform_fallback_itf(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[
     }
 
 
+# 2026-04-21 user directive: "limite tlutes les 30 seocneds ? que tout soit bien
+# optimise pour ca ?" — 30s tick cadence requires per-model timeout ≪ tick length.
+# 45s was safe for 5min ticks; with 30s ticks we need ≤10s so a stuck provider
+# can't block the whole tick window. Env var for future tuning without redeploy.
+_CALL_AGENT_TIMEOUT = float(os.environ.get("ITF_LLM_TIMEOUT", "10.0"))
+
+
 def _call_agent(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
     prompt = _build_prompt(persona, ctx)
     messages = [
@@ -990,7 +997,7 @@ def _call_agent(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
     # Try primary then fallback
     for model_key in (persona["model_primary"], persona["model_fallback"]):
         resp = gateway_call(model_key, messages, temperature=0.6, max_tokens=400,
-                            fallback_direct=False, timeout=45.0)
+                            fallback_direct=False, timeout=_CALL_AGENT_TIMEOUT)
         text = (resp or {}).get("text") or ""
         parsed = _parse_json(text)
         if parsed:
@@ -1190,6 +1197,24 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                 return cand
         return None
 
+    # 2026-04-21 PARALLEL LLM CALLS — sequential 17× _call_agent at 10s each = 170s
+    # worst case, incompatible with 30s tick cadence. Fan out to ThreadPoolExecutor
+    # so all 17 personas call their gateway concurrently; wall-clock ≈ slowest call.
+    # Post-processing (anti-lockstep/broker) stays sequential to avoid broker races.
+    from concurrent.futures import ThreadPoolExecutor as _TPE, as_completed as _ac
+    _decisions_by_tid: Dict[str, Dict[str, Any]] = {}
+    _call_budget = float(os.environ.get("ITF_TICK_BUDGET_SEC", "25.0"))
+    with _TPE(max_workers=len(_personas_this_tick)) as _pool:
+        _futs = {_pool.submit(_call_agent, p, ctx): p for p in _personas_this_tick}
+        for _fut in _ac(_futs, timeout=_call_budget + 5):
+            _p = _futs[_fut]
+            try:
+                _decisions_by_tid[_p["tid"]] = _fut.result(timeout=_call_budget)
+            except Exception as _ce:
+                print(f"[itf] _call_agent raised for {_p['tid']}: {_ce} — "
+                      f"uniform fallback", file=sys.stderr, flush=True)
+                _decisions_by_tid[_p["tid"]] = _uniform_fallback_itf(_p, ctx)
+
     for persona in _personas_this_tick:
         # 2026-04-21 compute cap — if agent already submitted SUBMITS_PER_TICK
         # orders in THIS tick, skip the LLM call entirely (saves $, prevents
@@ -1213,13 +1238,8 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                 "decision": {"action": "pass", "reason": f"compute_cap_{SUBMITS_PER_TICK}_submits_reached"},
             })
             continue
-        try:
-            decision = _call_agent(persona, ctx)
-        except Exception as _ce:
-            print(f"[itf] _call_agent raised for {persona['tid']}: {_ce} — "
-                  f"using uniform fallback so tick continues",
-                  file=sys.stderr, flush=True)
-            decision = _uniform_fallback_itf(persona, ctx)
+        # LLM call already happened in parallel — just pick up the decision.
+        decision = _decisions_by_tid.get(persona["tid"]) or _uniform_fallback_itf(persona, ctx)
         action = decision.get("action")
         # 2026-04-21 CLOSE ACTION — agent can free BP by closing one of its open
         # positions; bypasses anti-lockstep/BP checks (closing always fine).

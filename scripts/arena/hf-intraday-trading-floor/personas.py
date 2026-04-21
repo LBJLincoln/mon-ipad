@@ -139,12 +139,11 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "breakout-1",
         "name": "BreakoutMAX",
-        # 2026-04-20 SWITCHBOARD reroute: nvidia:minimax-m2.7 on llm-deadlist
-        # (slow/broken), cerebras:qwen-3-235b also broken. Silent agent.
-        # Reroute to google:gemini-3-flash (POL #1 winner $470, 14 RPM, fast)
-        # with mistral:medium fallback (PQTF #2 winner).
-        "model_primary": "google:gemini-3-flash",
-        "model_fallback": "mistral:medium",
+        # 2026-04-21 30s-TICK REBALANCE: google:gemini-3-flash (14 RPM free) would
+        # 429 under 30s cadence — demoted to fallback. github:gpt-4.1-mini is fast
+        # (~800ms), underused, and handles breakout reasoning well.
+        "model_primary": "github:gpt-4.1-mini",
+        "model_fallback": "google:gemini-3-flash",
         "hf_account_target": "google",
         "hf_space_target": "gemini-3-flash",
         "tier": "M",
@@ -224,9 +223,9 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "arbitrage-1",
         "name": "ArbitrageMAX",
-        # google:gemini-3-flash → POL TF #1 winner ($470.72 / +370.7%). Fast, cheap,
-        # good at structured pair reasoning.
-        "model_primary": "google:gemini-3-flash",
+        # 2026-04-21 30s-TICK REBALANCE: github:gpt-4.1-nano (1.2s, plenty of
+        # headroom) handles arbitrage well and spreads load off gemini.
+        "model_primary": "github:gpt-4.1-nano",
         "model_fallback": "mistral:medium",
         "hf_account_target": "google",
         "hf_space_target": "gemini-3-flash",
@@ -376,10 +375,9 @@ PERSONAS: List[Dict[str, Any]] = [
         # 2026-04-21 v2.5 NEW — low-vol regime carry specialist.
         "tid": "carry-1",
         "name": "Carry",
-        # 2026-04-21 INTERNAL AFFAIRS RCA reroute: nvidia:llama-3.3-70b was POL 22%WR
-        # (298 dead-sec provider) + NBA fallback-cluster 62%. Swap to google:gemini-3-flash
-        # — POL gemini-anl 65% WR on 17 bets with consistent live LLM reasoning = real signal.
-        "model_primary": "google:gemini-3-flash",
+        # 2026-04-21 30s-TICK REBALANCE: github:llama-3.3-70b (770ms, 70B reasoning
+        # helps with multi-leg carry theses). Spreads load off gemini (14 RPM).
+        "model_primary": "github:llama-3.3-70b",
         "model_fallback": "cerebras:qwen-3-235b",
         "hf_account_target": "nvidia",
         "hf_space_target": "llama-3.3-70b",
@@ -399,8 +397,10 @@ PERSONAS: List[Dict[str, Any]] = [
         # 2026-04-21 v2.5 NEW — STRUCTURAL SHORT specialist (fixes long-bias lockstep).
         "tid": "breakdown-1",
         "name": "BreakdownMAX",
-        # google:gemini-3-flash — POL #1 winner ($470). mistral:medium fallback.
-        "model_primary": "google:gemini-3-flash",
+        # 2026-04-21 30s-TICK REBALANCE: github:mistral-medium is a distinct key
+        # from the direct mistral:medium quota — spreads Mistral pressure across
+        # two different rate-limit buckets.
+        "model_primary": "github:mistral-medium",
         "model_fallback": "mistral:medium",
         "hf_account_target": "google",
         "hf_space_target": "gemini-3-flash",
