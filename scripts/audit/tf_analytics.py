@@ -32,6 +32,12 @@ NBA_SPACE = "LBJLincoln26/nba-llm-trading-floor"
 POL_SPACE = "LBJLincoln26/political-llm-trading-floor"
 PQTF_SPACE = "LBJLincoln26/political-quant-trading-floor"
 
+ITF_BASE = "https://lbjlincoln26-intraday-trading-floor.hf.space"
+ITF_DECISIONS = f"{ITF_BASE}/api/decisions"
+ITF_TRADES = f"{ITF_BASE}/api/trades"
+ITF_STATUS = f"{ITF_BASE}/api/status"
+ITF_BANKROLLS = f"{ITF_BASE}/api/bankrolls"
+
 
 def hf_token():
     for k in ("HF_TOKEN_2", "HF_TOKEN_NBA", "HF_TOKEN_LLM", "HF_TOKEN_3", "HF_TOKEN"):
@@ -47,7 +53,19 @@ def hf_token():
             if line.startswith("export "): line = line[len("export "):]
             if "=" not in line: continue
             k, v = line.split("=", 1)
-            v = v.strip().strip('"').strip("'")
+            v = v.strip()
+            # Quoted value → stop at closing quote (strip trailing inline comments).
+            if v.startswith('"'):
+                end = v.find('"', 1)
+                v = v[1:end] if end > 0 else v[1:]
+            elif v.startswith("'"):
+                end = v.find("'", 1)
+                v = v[1:end] if end > 0 else v[1:]
+            else:
+                # Unquoted — stop at first whitespace-# (POSIX-style comment)
+                hash_pos = v.find(" #")
+                if hash_pos > 0: v = v[:hash_pos]
+                v = v.strip()
             if v.startswith("$"): v = vals.get(v[1:].strip("{}"), v)
             vals[k.strip()] = v
         for k in ("HF_TOKEN_2", "HF_TOKEN_NBA", "HF_TOKEN_LLM", "HF_TOKEN_3", "HF_TOKEN"):
@@ -66,7 +84,7 @@ def fetch_day(space, n_back=0, token=None):
     rf = files[-1 - n_back]
     p = hf_hub_download(space, rf, repo_type="space", token=token,
                         cache_dir="/tmp/nomos-tf-analytics", force_download=True)
-    return rf, json.loads(open(p).read())
+    return rf, json.loads(open(p, encoding="utf-8").read())
 
 
 def fetch_range(space, n=5, token=None):
@@ -80,7 +98,7 @@ def fetch_range(space, n=5, token=None):
         p = hf_hub_download(space, rf, repo_type="space", token=token,
                             cache_dir="/tmp/nomos-tf-analytics", force_download=True)
         try:
-            out.append((rf, json.loads(open(p).read())))
+            out.append((rf, json.loads(open(p, encoding="utf-8").read())))
         except Exception:
             continue
     return out
@@ -405,22 +423,238 @@ def analyze_pqtf(latest):
     }
 
 
+def fetch_itf_snapshot(timeout=10):
+    """ITF is always 'today' — pull decisions + trades + status + bankrolls."""
+    import urllib.request
+    def _get(url):
+        try:
+            with urllib.request.urlopen(url, timeout=timeout) as r:
+                return json.loads(r.read())
+        except Exception:
+            return None
+    return {
+        "decisions": _get(ITF_DECISIONS),
+        "trades": _get(ITF_TRADES),
+        "status": _get(ITF_STATUS),
+        "bankrolls": _get(ITF_BANKROLLS),
+    }
+
+
+def analyze_itf(snap):
+    """ITF has no day-XXX.json — single live snapshot.
+
+    Schema combines:
+      - /api/decisions — {date, decisions: [{ts, agent_tid, tier, decision:{action,reason,_llm_routed_via}}]}
+      - /api/trades — {count, trades: [{ts, agent_tid, ticker, side, qty, stake_usd, ...}]}
+      - /api/status — {agents: {tid: {decisions, trades, passes, bankroll}}}
+      - /api/bankrolls — {fleet_*, agents: {tid: {available, reserved_open, total_equity}}}
+    """
+    if not snap or not snap.get("status"):
+        return None
+    decisions = (snap.get("decisions") or {}).get("decisions") or []
+    date = (snap.get("decisions") or {}).get("date")
+    trades = (snap.get("trades") or {}).get("trades") or []
+    status_agents = (snap.get("status") or {}).get("agents") or {}
+    bankrolls_agents = (snap.get("bankrolls") or {}).get("agents") or {}
+
+    all_tids = set(status_agents.keys()) | set(bankrolls_agents.keys())
+
+    per_agent = {}
+    for tid in all_tids:
+        s = status_agents.get(tid, {}) or {}
+        br = bankrolls_agents.get(tid, {}) or {}
+        per_agent[tid] = {
+            "bankroll": round(br.get("total_equity") or s.get("bankroll") or 0, 2),
+            "bankroll_available": round(br.get("available") or 0, 2),
+            "bankroll_reserved": round(br.get("reserved_open") or 0, 2),
+            "n_decisions": s.get("decisions", 0),
+            "n_trades": s.get("trades", 0),
+            "n_passes": s.get("passes", 0),
+            "pass_rate": (round(s.get("passes", 0) / s["decisions"], 3)
+                          if s.get("decisions") else None),
+            "tickers_touched": set(),
+            "notional_gross": 0.0,
+            "llm_models": defaultdict(int),
+            "action_mix": defaultdict(int),
+        }
+
+    # Decisions — count action mix, LLM routing, tickers
+    for d in decisions:
+        tid = d.get("agent_tid")
+        if tid not in per_agent:
+            per_agent[tid] = {
+                "bankroll": 0, "bankroll_available": 0, "bankroll_reserved": 0,
+                "n_decisions": 0, "n_trades": 0, "n_passes": 0, "pass_rate": None,
+                "tickers_touched": set(), "notional_gross": 0.0,
+                "llm_models": defaultdict(int), "action_mix": defaultdict(int),
+            }
+        dec = d.get("decision") or {}
+        action = dec.get("action", "unknown")
+        per_agent[tid]["action_mix"][action] += 1
+        routed = dec.get("_llm_routed_via") or "unknown"
+        per_agent[tid]["llm_models"][routed] += 1
+
+    # Per-ticker + per-bet aggregation from trades
+    per_ticker = defaultdict(lambda: {"n_trades": 0, "notional": 0.0,
+                                        "agents": set(), "longs": 0, "shorts": 0})
+    per_bet = []
+    pick_sets = defaultdict(set)
+
+    for t in trades:
+        tid = t.get("agent_tid")
+        ticker = t.get("ticker")
+        side = t.get("side")
+        stake = float(t.get("stake_usd") or 0)
+        if tid in per_agent:
+            per_agent[tid]["tickers_touched"].add(ticker)
+            per_agent[tid]["notional_gross"] += stake
+            pick_sets[tid].add((ticker, side))
+        per_ticker[ticker]["n_trades"] += 1
+        per_ticker[ticker]["notional"] += stake
+        per_ticker[ticker]["agents"].add(tid)
+        if side == "long": per_ticker[ticker]["longs"] += 1
+        elif side == "short": per_ticker[ticker]["shorts"] += 1
+        per_bet.append({
+            "ts": t.get("ts"),
+            "tid": tid,
+            "ticker": ticker,
+            "side": side,
+            "qty": t.get("qty"),
+            "entry_price": t.get("entry_price"),
+            "stake_usd": round(stake, 2),
+            "stop_pct": t.get("stop_pct"),
+            "take_profit_pct": t.get("take_profit_pct"),
+            "status": t.get("status"),
+            "broker_class": t.get("broker_class"),
+        })
+
+    # Pairwise Jaccard across agents that traded
+    tids = list(pick_sets.keys())
+    fleet_j = []
+    for tid in tids:
+        js = []
+        for other in tids:
+            if other == tid: continue
+            v = _jaccard(pick_sets[tid], pick_sets[other])
+            if v is not None: js.append(v)
+        per_agent[tid]["jaccard_vs_fleet_mean"] = round(sum(js)/len(js), 3) if js else None
+        fleet_j.extend(js)
+    fleet_j = fleet_j[::2] if fleet_j else []
+
+    # Serialize
+    for tid, d in per_agent.items():
+        d["tickers_touched"] = sorted(d["tickers_touched"])
+        d["notional_gross"] = round(d["notional_gross"], 2)
+        d["llm_models"] = dict(d["llm_models"])
+        d["action_mix"] = dict(d["action_mix"])
+    for ticker, d in per_ticker.items():
+        d["agents_covered"] = len(d["agents"])
+        d["agents"] = sorted(d["agents"])
+        d["notional"] = round(d["notional"], 2)
+
+    equities = sum(a.get("bankroll", 0) for a in per_agent.values())
+    leader = max(per_agent.items(), key=lambda kv: kv[1].get("bankroll", 0))[0] if per_agent else None
+    laggard = min(per_agent.items(), key=lambda kv: kv[1].get("bankroll", 0))[0] if per_agent else None
+
+    fleet = {
+        "n_agents": len(per_agent),
+        "fleet_total": round(equities, 2),
+        "fleet_avg": round(equities / len(per_agent), 2) if per_agent else None,
+        "fleet_available": round(sum(a.get("bankroll_available", 0) for a in per_agent.values()), 2),
+        "fleet_reserved": round(sum(a.get("bankroll_reserved", 0) for a in per_agent.values()), 2),
+        "fleet_leader": leader,
+        "fleet_laggard": laggard,
+        "day_total_trades": len(trades),
+        "day_total_decisions": len(decisions),
+        "day_total_passes": sum(a.get("n_passes", 0) for a in per_agent.values()),
+        "fleet_pass_rate": (round(sum(a.get("n_passes", 0) for a in per_agent.values()) /
+                                   sum(a.get("n_decisions", 0) for a in per_agent.values()), 3)
+                            if sum(a.get("n_decisions", 0) for a in per_agent.values()) else None),
+        "n_unique_tickers": len(per_ticker),
+        "jaccard_fleet_mean": round(sum(fleet_j)/len(fleet_j), 3) if fleet_j else None,
+        "jaccard_fleet_max": round(max(fleet_j), 3) if fleet_j else None,
+    }
+
+    return {
+        "tf": "itf", "day_idx": None, "date": date,
+        "written_at": datetime.datetime.utcnow().isoformat() + "Z",
+        "fleet": fleet,
+        "per_agent": per_agent,
+        "per_ticker": dict(per_ticker),
+        "per_bet": per_bet,
+    }
+
+
+def _process_nba_pol(tf, space, token):
+    rf, d = fetch_day(space, token=token)
+    if not d: return None
+    out = analyze_nba_pol(tf, d, None, start_cap=100)
+    day_str = rf.split("/")[-1].replace(".json", "") if rf else f"day-{out['day_idx']:03d}"
+    out_dir = OUT_DIR / tf; out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / f"{day_str}.json").write_text(json.dumps(out, indent=2, default=str))
+    return out, day_str
+
+
+def _process_pqtf(token):
+    rf, d = fetch_day(PQTF_SPACE, token=token)
+    if not d: return None
+    out = analyze_pqtf(d)
+    day_str = rf.split("/")[-1].replace(".json", "") if rf else "day-unknown"
+    out_dir = OUT_DIR / "pqtf"; out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / f"{day_str}.json").write_text(json.dumps(out, indent=2, default=str))
+    return out, day_str
+
+
+def backfill(token, n_back):
+    """Pull the last N day-XXX.json files from each day-batched TF and analyze each.
+
+    Writes data/tf-analytics/<tf>/day-XXX.json for every recovered day.
+    ITF is skipped (it's always 'today' — nothing to backfill).
+    """
+    print(f"[tf_analytics] backfill last {n_back} days across NBA/POL/PQTF")
+    for space, tf, analyzer in [
+        (NBA_SPACE, "nba", lambda d: analyze_nba_pol("nba", d, None, start_cap=100)),
+        (POL_SPACE, "pol", lambda d: analyze_nba_pol("pol", d, None, start_cap=100)),
+        (PQTF_SPACE, "pqtf", analyze_pqtf),
+    ]:
+        out_dir = OUT_DIR / tf; out_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            rows = fetch_range(space, n=n_back, token=token)
+            for rf, d in rows:
+                try:
+                    out = analyzer(d)
+                    day_str = rf.split("/")[-1].replace(".json", "")
+                    (out_dir / f"{day_str}.json").write_text(json.dumps(out, indent=2, default=str))
+                    print(f"  {tf}/{day_str}: fleet_total={out['fleet'].get('fleet_total')}")
+                except Exception as e:
+                    print(f"  {tf}/{rf} FAIL: {e}", file=sys.stderr)
+        except Exception as e:
+            print(f"[tf_analytics] {tf} backfill aborted: {e}", file=sys.stderr)
+
+
 def run():
     token = hf_token()
     if not token:
         print("[tf_analytics] NO HF_TOKEN — abort", file=sys.stderr)
         sys.exit(1)
 
+    # --backfill=N runs a bulk backfill then exits (does not touch summary.json).
+    for arg in sys.argv[1:]:
+        if arg.startswith("--backfill="):
+            n = int(arg.split("=", 1)[1])
+            backfill(token, n)
+            return
+        if arg == "--backfill":
+            backfill(token, 50)
+            return
+
     summary = {"ts": datetime.datetime.utcnow().isoformat() + "Z", "tfs": {}}
 
     # NBA
     try:
-        rf, d = fetch_day(NBA_SPACE, token=token)
-        if d:
-            out = analyze_nba_pol("nba", d, None, start_cap=100)
-            day_str = rf.split("/")[-1].replace(".json", "") if rf else f"day-{out['day_idx']:03d}"
-            nba_dir = OUT_DIR / "nba"; nba_dir.mkdir(parents=True, exist_ok=True)
-            (nba_dir / f"{day_str}.json").write_text(json.dumps(out, indent=2, default=str))
+        res = _process_nba_pol("nba", NBA_SPACE, token)
+        if res:
+            out, day_str = res
             summary["tfs"]["nba"] = {
                 "day": out["day_idx"], "date": out["date"],
                 "fleet": out["fleet"], "source_file": day_str,
@@ -433,12 +667,9 @@ def run():
 
     # POL
     try:
-        rf, d = fetch_day(POL_SPACE, token=token)
-        if d:
-            out = analyze_nba_pol("pol", d, None, start_cap=100)
-            day_str = rf.split("/")[-1].replace(".json", "") if rf else f"day-{out['day_idx']:03d}"
-            pol_dir = OUT_DIR / "pol"; pol_dir.mkdir(parents=True, exist_ok=True)
-            (pol_dir / f"{day_str}.json").write_text(json.dumps(out, indent=2, default=str))
+        res = _process_nba_pol("pol", POL_SPACE, token)
+        if res:
+            out, day_str = res
             summary["tfs"]["pol"] = {
                 "day": out["day_idx"], "date": out["date"],
                 "fleet": out["fleet"], "source_file": day_str,
@@ -451,12 +682,9 @@ def run():
 
     # PQTF
     try:
-        rf, d = fetch_day(PQTF_SPACE, token=token)
-        if d:
-            out = analyze_pqtf(d)
-            day_str = rf.split("/")[-1].replace(".json", "") if rf else "day-unknown"
-            pq_dir = OUT_DIR / "pqtf"; pq_dir.mkdir(parents=True, exist_ok=True)
-            (pq_dir / f"{day_str}.json").write_text(json.dumps(out, indent=2, default=str))
+        res = _process_pqtf(token)
+        if res:
+            out, day_str = res
             summary["tfs"]["pqtf"] = {
                 "day": out["day_idx"], "date": out["date"],
                 "fleet": out["fleet"], "source_file": day_str,
@@ -466,6 +694,26 @@ def run():
     except Exception as e:
         summary["tfs"]["pqtf"] = {"error": str(e)}
         print(f"[tf_analytics] PQTF error: {e}", file=sys.stderr)
+
+    # ITF (no day-XXX.json — live HF endpoints)
+    try:
+        snap = fetch_itf_snapshot()
+        out = analyze_itf(snap)
+        if out:
+            day_str = f"day-{out['date']}" if out.get("date") else "day-unknown"
+            itf_dir = OUT_DIR / "itf"; itf_dir.mkdir(parents=True, exist_ok=True)
+            (itf_dir / f"{day_str}.json").write_text(json.dumps(out, indent=2, default=str))
+            summary["tfs"]["itf"] = {
+                "day": out["day_idx"], "date": out["date"],
+                "fleet": out["fleet"], "source_file": day_str,
+            }
+            print(f"[tf_analytics] ITF {day_str}: fleet=${out['fleet']['fleet_total']:.0f} "
+                  f"trades={out['fleet']['day_total_trades']} "
+                  f"tickers={out['fleet']['n_unique_tickers']} "
+                  f"Jaccard={out['fleet']['jaccard_fleet_mean']}")
+    except Exception as e:
+        summary["tfs"]["itf"] = {"error": str(e)}
+        print(f"[tf_analytics] ITF error: {e}", file=sys.stderr)
 
     (OUT_DIR / "summary.json").write_text(json.dumps(summary, indent=2, default=str))
     print(f"[tf_analytics] summary written to {OUT_DIR}/summary.json")

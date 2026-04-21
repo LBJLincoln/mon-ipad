@@ -1,0 +1,535 @@
+{
+  "tf": "pqtf",
+  "day_idx": null,
+  "date": "2026-02-12",
+  "written_at": "2026-04-21T20:26:18.102235Z",
+  "fleet": {
+    "n_agents": 6,
+    "fleet_total": 104612.48,
+    "fleet_avg": 17435.41,
+    "fleet_leader": "gemini-anl",
+    "fleet_laggard": "qwen-quant",
+    "day_fleet_pnl": 8136.24,
+    "n_sessions": 4,
+    "n_positions": 27,
+    "n_pacts": 5,
+    "n_stops_triggered": 1,
+    "avg_var_95": 13.52,
+    "max_var_95": 18.56,
+    "avg_iv_open": 0.18,
+    "jaccard_fleet_mean": 0.048,
+    "jaccard_fleet_max": 0.071
+  },
+  "per_agent": {
+    "llama-contra": {
+      "bankroll_start": 100.0,
+      "bankroll_end": 100.0,
+      "day_pnl": 0.0,
+      "day_return_pct": 0.0,
+      "n_positions": 0,
+      "n_calls": 0,
+      "n_puts": 0,
+      "n_multi_leg": 0,
+      "etfs_touched": [],
+      "notional_gross": 0.0,
+      "pacts": 1
+    },
+    "mistral-large": {
+      "bankroll_start": 19909.98,
+      "bankroll_end": 22138.69,
+      "day_pnl": 2228.71,
+      "day_return_pct": 11.194,
+      "n_positions": 9,
+      "n_calls": 2,
+      "n_puts": 1,
+      "n_multi_leg": 6,
+      "etfs_touched": [
+        "XLE",
+        "XLF",
+        "XLK",
+        "XLU"
+      ],
+      "notional_gross": 2638.21,
+      "pacts": 2,
+      "jaccard_vs_fleet_mean": 0.036
+    },
+    "mistral-medium": {
+      "bankroll_start": 21305.77,
+      "bankroll_end": 23882.76,
+      "day_pnl": 2576.99,
+      "day_return_pct": 12.095,
+      "n_positions": 11,
+      "n_calls": 6,
+      "n_puts": 2,
+      "n_multi_leg": 3,
+      "etfs_touched": [
+        "SPY",
+        "XLE",
+        "XLF",
+        "XLK",
+        "XLRE",
+        "XLU"
+      ],
+      "notional_gross": 5167.73,
+      "pacts": 2,
+      "jaccard_vs_fleet_mean": 0.0
+    },
+    "gemini-anl": {
+      "bankroll_start": 31405.51,
+      "bankroll_end": 31405.51,
+      "day_pnl": 0.0,
+      "day_return_pct": 0.0,
+      "n_positions": 0,
+      "n_calls": 0,
+      "n_puts": 0,
+      "n_multi_leg": 0,
+      "etfs_touched": [],
+      "notional_gross": 0.0,
+      "pacts": 0
+    },
+    "qwen-quant": {
+      "bankroll_start": 95.31,
+      "bankroll_end": 95.31,
+      "day_pnl": 0.0,
+      "day_return_pct": 0.0,
+      "n_positions": 0,
+      "n_calls": 0,
+      "n_puts": 0,
+      "n_multi_leg": 0,
+      "etfs_touched": [],
+      "notional_gross": 0.0,
+      "pacts": 0
+    },
+    "mistral-nemo": {
+      "bankroll_start": 23659.67,
+      "bankroll_end": 26990.21,
+      "day_pnl": 3330.54,
+      "day_return_pct": 14.077,
+      "n_positions": 7,
+      "n_calls": 7,
+      "n_puts": 0,
+      "n_multi_leg": 0,
+      "etfs_touched": [
+        "XLF",
+        "XLK",
+        "XLP",
+        "XLU"
+      ],
+      "notional_gross": 1344.88,
+      "pacts": 5,
+      "jaccard_vs_fleet_mean": 0.036
+    }
+  },
+  "per_etf": {
+    "XLF": {
+      "n_positions": 4,
+      "notional": 857.98,
+      "agents": [
+        "mistral-large",
+        "mistral-medium",
+        "mistral-nemo"
+      ],
+      "calls": 3,
+      "puts": 0,
+      "multi_leg": 1,
+      "agents_covered": 3
+    },
+    "XLK": {
+      "n_positions": 12,
+      "notional": 4700.73,
+      "agents": [
+        "mistral-large",
+        "mistral-medium",
+        "mistral-nemo"
+      ],
+      "calls": 8,
+      "puts": 1,
+      "multi_leg": 3,
+      "agents_covered": 3
+    },
+    "XLU": {
+      "n_positions": 5,
+      "notional": 812.28,
+      "agents": [
+        "mistral-large",
+        "mistral-medium",
+        "mistral-nemo"
+      ],
+      "calls": 2,
+      "puts": 1,
+      "multi_leg": 2,
+      "agents_covered": 3
+    },
+    "SPY": {
+      "n_positions": 1,
+      "notional": 1261.74,
+      "agents": [
+        "mistral-medium"
+      ],
+      "calls": 0,
+      "puts": 0,
+      "multi_leg": 1,
+      "agents_covered": 1
+    },
+    "XLP": {
+      "n_positions": 1,
+      "notional": 132.12,
+      "agents": [
+        "mistral-nemo"
+      ],
+      "calls": 1,
+      "puts": 0,
+      "multi_leg": 0,
+      "agents_covered": 1
+    },
+    "XLE": {
+      "n_positions": 3,
+      "notional": 1271.83,
+      "agents": [
+        "mistral-large",
+        "mistral-medium"
+      ],
+      "calls": 1,
+      "puts": 1,
+      "multi_leg": 1,
+      "agents_covered": 2
+    },
+    "XLRE": {
+      "n_positions": 1,
+      "notional": 114.14,
+      "agents": [
+        "mistral-medium"
+      ],
+      "calls": 0,
+      "puts": 0,
+      "multi_leg": 1,
+      "agents_covered": 1
+    }
+  },
+  "per_bet": [
+    {
+      "tid": "mistral-nemo",
+      "etf": "XLF",
+      "type": "call",
+      "strike": 48.56,
+      "qty": 5,
+      "entry_price": 1.5515,
+      "tte_days": 3,
+      "iv_open": 0.18,
+      "notional": 775.73,
+      "session": 1
+    },
+    {
+      "tid": "mistral-nemo",
+      "etf": "XLK",
+      "type": "call",
+      "strike": 241.49,
+      "qty": 3,
+      "entry_price": 0.605,
+      "tte_days": 4,
+      "iv_open": 0.18,
+      "notional": 181.51,
+      "session": 1
+    },
+    {
+      "tid": "mistral-large",
+      "etf": "XLK",
+      "type": "vertical",
+      "strike": 0,
+      "qty": 3,
+      "entry_price": 3.4954,
+      "tte_days": 5,
+      "iv_open": 0.18,
+      "notional": 1048.62,
+      "session": 1
+    },
+    {
+      "tid": "mistral-medium",
+      "etf": "XLK",
+      "type": "call",
+      "strike": 241.49,
+      "qty": 4,
+      "entry_price": 0.4055,
+      "tte_days": 3,
+      "iv_open": 0.18,
+      "notional": 162.19,
+      "session": 1
+    },
+    {
+      "tid": "mistral-medium",
+      "etf": "XLU",
+      "type": "call",
+      "strike": 75.4,
+      "qty": 3,
+      "entry_price": 0.4668,
+      "tte_days": 5,
+      "iv_open": 0.18,
+      "notional": 140.04,
+      "session": 1
+    },
+    {
+      "tid": "mistral-medium",
+      "etf": "SPY",
+      "type": "iron_condor",
+      "strike": 0,
+      "qty": 2,
+      "entry_price": 6.3087,
+      "tte_days": 4,
+      "iv_open": 0.18,
+      "notional": 1261.74,
+      "session": 1
+    },
+    {
+      "tid": "mistral-nemo",
+      "etf": "XLK",
+      "type": "call",
+      "strike": 237.64,
+      "qty": 4,
+      "entry_price": 0.399,
+      "tte_days": 3,
+      "iv_open": 0.18,
+      "notional": 159.61,
+      "session": 2
+    },
+    {
+      "tid": "mistral-nemo",
+      "etf": "XLK",
+      "type": "call",
+      "strike": 244.63,
+      "qty": 3,
+      "entry_price": 0.0688,
+      "tte_days": 5,
+      "iv_open": 0.18,
+      "notional": 20.64,
+      "session": 2
+    },
+    {
+      "tid": "mistral-nemo",
+      "etf": "XLF",
+      "type": "call",
+      "strike": 51.2,
+      "qty": 2,
+      "entry_price": 0.0552,
+      "tte_days": 4,
+      "iv_open": 0.18,
+      "notional": 11.05,
+      "session": 2
+    },
+    {
+      "tid": "mistral-medium",
+      "etf": "XLK",
+      "type": "call",
+      "strike": 239.97,
+      "qty": 6,
+      "entry_price": 0.1431,
+      "tte_days": 3,
+      "iv_open": 0.18,
+      "notional": 85.86,
+      "session": 2
+    },
+    {
+      "tid": "mistral-medium",
+      "etf": "XLF",
+      "type": "call",
+      "strike": 50.7,
+      "qty": 3,
+      "entry_price": 0.0851,
+      "tte_days": 3,
+      "iv_open": 0.18,
+      "notional": 25.54,
+      "session": 2
+    },
+    {
+      "tid": "mistral-medium",
+      "etf": "XLU",
+      "type": "put",
+      "strike": 73.38,
+      "qty": 1,
+      "entry_price": 0.0562,
+      "tte_days": 2,
+      "iv_open": 0.18,
+      "notional": 5.62,
+      "session": 2
+    },
+    {
+      "tid": "mistral-large",
+      "etf": "XLK",
+      "type": "vertical",
+      "strike": 0,
+      "qty": 3,
+      "entry_price": 1.285,
+      "tte_days": 5,
+      "iv_open": 0.18,
+      "notional": 385.5,
+      "session": 2
+    },
+    {
+      "tid": "mistral-large",
+      "etf": "XLF",
+      "type": "vertical",
+      "strike": 0,
+      "qty": 2,
+      "entry_price": 0.2283,
+      "tte_days": 5,
+      "iv_open": 0.18,
+      "notional": 45.66,
+      "session": 2
+    },
+    {
+      "tid": "mistral-large",
+      "etf": "XLK",
+      "type": "call",
+      "strike": 237.64,
+      "qty": 2,
+      "entry_price": 0.399,
+      "tte_days": 3,
+      "iv_open": 0.18,
+      "notional": 79.8,
+      "session": 2
+    },
+    {
+      "tid": "mistral-nemo",
+      "etf": "XLU",
+      "type": "call",
+      "strike": 76.5,
+      "qty": 5,
+      "entry_price": 0.1284,
+      "tte_days": 3,
+      "iv_open": 0.18,
+      "notional": 64.22,
+      "session": 3
+    },
+    {
+      "tid": "mistral-nemo",
+      "etf": "XLP",
+      "type": "call",
+      "strike": 82.78,
+      "qty": 4,
+      "entry_price": 0.3303,
+      "tte_days": 3,
+      "iv_open": 0.18,
+      "notional": 132.12,
+      "session": 3
+    },
+    {
+      "tid": "mistral-medium",
+      "etf": "XLK",
+      "type": "put",
+      "strike": 249.94,
+      "qty": 4,
+      "entry_price": 5.1866,
+      "tte_days": 3,
+      "iv_open": 0.18,
+      "notional": 2074.65,
+      "session": 3
+    },
+    {
+      "tid": "mistral-medium",
+      "etf": "XLE",
+      "type": "call",
+      "strike": 92.06,
+      "qty": 3,
+      "entry_price": 2.0646,
+      "tte_days": 3,
+      "iv_open": 0.18,
+      "notional": 619.37,
+      "session": 3
+    },
+    {
+      "tid": "mistral-medium",
+      "etf": "XLRE",
+      "type": "butterfly",
+      "strike": 0,
+      "qty": 2,
+      "entry_price": 0.5707,
+      "tte_days": 5,
+      "iv_open": 0.18,
+      "notional": 114.14,
+      "session": 3
+    },
+    {
+      "tid": "mistral-large",
+      "etf": "XLE",
+      "type": "vertical",
+      "strike": 0,
+      "qty": 3,
+      "entry_price": 1.9108,
+      "tte_days": 5,
+      "iv_open": 0.18,
+      "notional": 573.24,
+      "session": 3
+    },
+    {
+      "tid": "mistral-large",
+      "etf": "XLK",
+      "type": "butterfly",
+      "strike": 0,
+      "qty": 2,
+      "entry_price": 0.3224,
+      "tte_days": 7,
+      "iv_open": 0.18,
+      "notional": 64.48,
+      "session": 3
+    },
+    {
+      "tid": "mistral-medium",
+      "etf": "XLK",
+      "type": "call",
+      "strike": 249.12,
+      "qty": 4,
+      "entry_price": 0.6723,
+      "tte_days": 2,
+      "iv_open": 0.18,
+      "notional": 268.9,
+      "session": 4
+    },
+    {
+      "tid": "mistral-medium",
+      "etf": "XLU",
+      "type": "iron_condor",
+      "strike": 0,
+      "qty": 2,
+      "entry_price": 2.0484,
+      "tte_days": 5,
+      "iv_open": 0.18,
+      "notional": 409.68,
+      "session": 4
+    },
+    {
+      "tid": "mistral-large",
+      "etf": "XLK",
+      "type": "call",
+      "strike": 251.58,
+      "qty": 4,
+      "entry_price": 0.4224,
+      "tte_days": 3,
+      "iv_open": 0.18,
+      "notional": 168.97,
+      "session": 4
+    },
+    {
+      "tid": "mistral-large",
+      "etf": "XLE",
+      "type": "put",
+      "strike": 90.82,
+      "qty": 3,
+      "entry_price": 0.264,
+      "tte_days": 5,
+      "iv_open": 0.18,
+      "notional": 79.21,
+      "session": 4
+    },
+    {
+      "tid": "mistral-large",
+      "etf": "XLU",
+      "type": "straddle",
+      "strike": 0,
+      "qty": 2,
+      "entry_price": 0.9636,
+      "tte_days": 2,
+      "iv_open": 0.18,
+      "notional": 192.72,
+      "session": 4
+    }
+  ]
+}
