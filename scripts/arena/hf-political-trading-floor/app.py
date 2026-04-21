@@ -137,7 +137,16 @@ ROGUE_GREED_THRESHOLD = 250_000.0
 # Post-mortem found 14/17 POL agents converged to identical ruin ($93.92) by
 # defecting to higher-variance plays on drawdown. Preservation > chase.
 # Prompt-mutator overrides (2026-04-19) — same mechanic as NBA TF, fleet="pol".
-def _load_prompt_override(fleet: str = "pol") -> str:
+def _load_prompt_override(fleet: str = "pol", sim_date: str = None) -> str:
+    """Load prompt-mutator override + YouTube market narrative for this fleet.
+
+    sim_date (ISO "YYYY-MM-DD"): simulated trading day. When provided (POL+NBA are
+    sim-dated Jul 2025 - Apr 2026), the narrative is rebuilt from
+    `market_narrative_videos` filtered to `published_at <= sim_date`, preventing
+    lookahead leakage flagged 2026-04-21 by INTERNAL AFFAIRS. When None (ITF/PQTF
+    are live-dated) we fall back to the flat `market_narrative`. Section-level
+    `market_narrative_disabled` is an audit kill-switch.
+    """
     import os as _os, json as _json
     candidates = [
         "/app/data/prompts/overrides.json",
@@ -152,14 +161,27 @@ def _load_prompt_override(fleet: str = "pol") -> str:
                 ov = _json.load(fh)
             section = (ov.get(fleet) or {})
             rule = section.get("current_text") or ""
-            narrative = section.get("market_narrative") or ""
-            mvc = section.get("manual_videos_count") or 0
             v = section.get("current_version") or "?"
+
+            narrative_block = ""
+            if not section.get("market_narrative_disabled"):
+                struct = section.get("market_narrative_videos")
+                if sim_date and struct:
+                    cutoff = (sim_date or "")[:10]
+                    kept = [sv for sv in struct if (sv.get("published_at") or "")[:10] <= cutoff]
+                    if kept:
+                        header = f"YouTube narrative digest ({len(kept)} videos, sim_date={cutoff}):"
+                        body = "\n".join(sv.get("line", "") for sv in kept[:8])
+                        narrative_block = header + "\n" + body
+                elif not sim_date:
+                    narrative_block = section.get("market_narrative") or ""
+
+            mvc = section.get("manual_videos_count") or 0
             out = ""
             if rule:
                 out += f"\n=== PROMPT MUTATOR OVERRIDE ({v}) ===\n{rule}\n=== END OVERRIDE ===\n"
-            if narrative:
-                out += f"\n=== YOUTUBE MARKET NARRATIVE ({mvc} tracked videos, 22 channels) ===\n{narrative}\n=== END NARRATIVE ===\n"
+            if narrative_block:
+                out += f"\n=== YOUTUBE MARKET NARRATIVE ({mvc} tracked videos, 22 channels) ===\n{narrative_block}\n=== END NARRATIVE ===\n"
             if out:
                 return out
         except Exception:
@@ -2568,7 +2590,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 system_prompt = system_prompt + build_sacrificial_system_suffix(_sacrificial_assignments[tid])
             elif tid in _challenge_assignments:
                 system_prompt = system_prompt + build_challenge_block(tid, _challenge_assignments[tid], len(TRADERS))
-            _pm_override = _load_prompt_override("pol")
+            _pm_override = _load_prompt_override("pol", sim_date=day_date)
             system_prompt = AXELROD_CANON + _pm_override + "\n" + system_prompt
             _active_peers = [p for p in TRADERS if p != tid and state[p].get("bankroll", 0) > 5.0]
             _axl_block = _axelrod_advice_block(tid, _active_peers)

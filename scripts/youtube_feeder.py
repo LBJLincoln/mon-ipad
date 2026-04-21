@@ -271,18 +271,41 @@ def build_digest(fleet: str, extra_playlists=None) -> dict:
     }
 
 
+def _video_digest_line(v: dict) -> str:
+    tr = (v.get("transcript_excerpt") or "").strip().replace("\n", " ")
+    snippet = " " + tr[:180] if tr else ""
+    return f"- {v.get('channel','?')} \u00ab{(v.get('title') or '')[:90]}\u00bb{snippet}"
+
+
 def _summarize(videos: list) -> str:
     """Narrative: title + excerpt (from transcript or description fallback)."""
-    lines = []
-    for v in videos:
-        tr = (v.get("transcript_excerpt") or "").strip().replace("\n", " ")
-        snippet = " " + tr[:180] if tr else ""
-        lines.append(f"- {v['channel']} «{v['title'][:90]}»{snippet}")
+    lines = [_video_digest_line(v) for v in videos]
     header = f"YouTube narrative digest ({len(videos)} videos):"
     return header + "\n" + "\n".join(lines[:8])
 
 
-def inject_override(fleet: str, narrative: str):
+def _structured_videos(videos: list) -> list:
+    """Emit [{id, published_at, line}, ...] for sim-date-aware filtering downstream.
+
+    The consumer (`_load_prompt_override(fleet, sim_date)` on NBA/POL TFs) filters
+    this list by `published_at <= sim_date` and reassembles the digest in-line, so
+    no video published after a simulated game date ever reaches the LLM prompt.
+    ITF/PQTF are live-dated and use the flat `market_narrative` unchanged.
+    """
+    out = []
+    for v in videos:
+        pub = v.get("published_at") or ""
+        out.append({
+            "id": v.get("id") or "",
+            "title": (v.get("title") or "")[:90],
+            "channel": v.get("channel") or "",
+            "published_at": pub,
+            "line": _video_digest_line(v),
+        })
+    return out
+
+
+def inject_override(fleet: str, narrative: str, videos: list = None):
     overrides = {}
     if OVERRIDES_PATH.exists():
         try:
@@ -292,9 +315,15 @@ def inject_override(fleet: str, narrative: str):
     node = overrides.setdefault(fleet, {})
     node["market_narrative"] = narrative
     node["market_narrative_ts"] = dt.datetime.utcnow().isoformat() + "Z"
+    if videos is not None:
+        # structured form — required for sim-date filtering on NBA/POL.
+        node["market_narrative_videos"] = _structured_videos(videos)
     OVERRIDES_PATH.parent.mkdir(parents=True, exist_ok=True)
     OVERRIDES_PATH.write_text(json.dumps(overrides, indent=2, sort_keys=True))
-    print(f"[inject] updated {OVERRIDES_PATH} -> {fleet}.market_narrative ({len(narrative)} chars)")
+    print(
+        f"[inject] updated {OVERRIDES_PATH} -> {fleet}.market_narrative "
+        f"({len(narrative)} chars, {len(videos or [])} structured videos)"
+    )
 
 
 def main():
@@ -312,7 +341,7 @@ def main():
         out.write_text(json.dumps(digest, indent=2))
         print(f"[feeder] wrote {out}  (videos={digest['video_count']})")
         if args.inject:
-            inject_override(f, digest["narrative"])
+            inject_override(f, digest["narrative"], digest.get("videos"))
 
 
 if __name__ == "__main__":
