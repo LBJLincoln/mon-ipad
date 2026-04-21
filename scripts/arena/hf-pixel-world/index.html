@@ -438,7 +438,7 @@ const CHAR_W = Math.round(CHAR_H * 28/24); // 131 — native-AR-locked, no disto
 const CHAR_SCALE = CHAR_H / 24;            // uniform scale applied to 28×24 sprite
 
 // v2.17: +itf (amber-orange, reads as "live tape" — distinct from NBA pink + POL cyan).
-const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, itf:0xffa94d, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c, control:0xffd700 };
+const KIND_COLORS = { nba:0xff79c6, political:0x8be9fd, itf:0xffa94d, island:0x50fa7b, infra:0x50fa7b, pol_infra:0x8be9fd, council:0xffb86c, crew:0xffb86c, control:0xffd700 };
 const KIND_COLORS_HEX = { nba:"#ff79c6", political:"#8be9fd", itf:"#ffa94d", island:"#50fa7b", infra:"#50fa7b", pol_infra:"#8be9fd", council:"#ffb86c", control:"#ffd700" };
 const KIND_GLYPHS = { nba:"🏀", political:"🗳", itf:"📈", island:"🧬", infra:"🗼", pol_infra:"🗼", council:"⚖" };
 
@@ -642,7 +642,8 @@ const ZONES = {
   // TOP BAND (y=1..6, 5 tiles) — infra towers, tight grid, no wander
   "nba-infra":  { x:1,  y:1,  w:22, h:5,  floor:6, label:"NBA EVO · 6 ISLANDS" },
   "pol-infra":  { x:30, y:1,  w:21, h:5,  floor:6, label:"POL EVO · 5 ISLANDS" },
-  councils:     { x:23, y:1,  w:7,  h:5,  floor:1, label:"COUNCILS · 9" },
+  // v2.24: councils zone repurposed for the 14-agent Claude Code crew (councils deleted 2026-04-20).
+  councils:     { x:23, y:1,  w:7,  h:5,  floor:1, label:"CLAUDE CREW · 14" },
   // CENTRAL COURTYARD (y=7..25, 18 tiles tall × 52 wide) — all traders roam here.
   // NBA + POL share left/right halves for coloring, but actual wanderTarget spans
   // the full courtyard so traders cross between floors freely.
@@ -694,16 +695,27 @@ const ISLANDS = [
   ["P5","https://lbjlincoln-political-alpha-5.hf.space/api/status"],
   ["P7","https://lbjlincoln-political-alpha-7.hf.space/api/status"],
 ];
-const COUNCIL_DEPTS = [
-  ["D1","Research","scan → propose → measure"],
-  ["D2","Engineering","code → test → keep/revert"],
-  ["D3","Evolution","mutate → eval → select"],
-  ["D4","Product","build → ship → measure"],
-  ["D5","Business","price → convert → optimize"],
-  ["D6","Evaluation","audit → identify → verify"],
-  ["D7","Infra","check → detect → fix"],
-  ["D8","Finance","track → reconcile → forecast"],
-  ["D9","Cross-Repo","sync → audit → parity"],
+// v2.24 (2026-04-21): 9 dept councils were DELETED 2026-04-20 (dead HF Spaces).
+// Replaced by the 14-agent Claude Code crew — the non-trader subagents that
+// actually run research, infra, audits, deploys, revenue, QA. Data source
+// changes from dead `nomos-dept-d*` state.json → single dispatch-latest.json
+// fetched from GitHub main (public mirror via raw content / Contents API).
+const CLAUDE_CREW = [
+  // [codename, role, track]
+  ["THE BOSS","dispatches all 13","L1"],
+  ["SWISH","NBA islands S10-S22","T1"],
+  ["LOBBYIST","Political islands P1-P8","T1"],
+  ["HAWKEYE","daily arXiv/GitHub scout","T1"],
+  ["DR FRANKENSTEIN","impl research → engine.py","T1"],
+  ["INTERNAL AFFAIRS","scientific integrity audit","T1"],
+  ["THE BLACKSMITH","forge Karpathy loops","T2"],
+  ["SWITCHBOARD","LLM gateway + TF keepalive","T2"],
+  ["THE PLUMBER","data pipeline + ETL","T2"],
+  ["LAUNCHPAD","CI/CD + deploy orchestrator","T2"],
+  ["THE HERALD","Telegram publisher","T3"],
+  ["THE ACCOUNTANT","Stripe / Whop revenue","T3"],
+  ["PIXEL","dashboard + world visual QA","T3"],
+  ["THE TICKER","live odds + CLV + steam","T4"],
 ];
 const ENDPOINTS = {
   nba:         "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
@@ -719,18 +731,12 @@ const ENDPOINTS = {
   itf:         "https://lbjlincoln26-intraday-trading-floor.hf.space/api/status",
   itfLB:       "https://lbjlincoln26-intraday-trading-floor.hf.space/api/leaderboard",
 };
-// v2.12: Councils persist iteration count to Hub repo (no FastAPI). Poll state.json directly.
-const COUNCIL_STATE_URLS = {
-  D1: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d1-research/resolve/main/data/runtime/state.json",
-  D2: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d2-engineering/resolve/main/data/runtime/state.json",
-  D3: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d3-evolution/resolve/main/data/runtime/state.json",
-  D4: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d4-product/resolve/main/data/runtime/state.json",
-  D5: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d5-business/resolve/main/data/runtime/state.json",
-  D6: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d6-evaluation/resolve/main/data/runtime/state.json",
-  D7: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d7-infra/resolve/main/data/runtime/state.json",
-  D8: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d8-finance/resolve/main/data/runtime/state.json",
-  D9: "https://huggingface.co/spaces/TESTforge42/nomos-dept-d9-cross-repo/resolve/main/data/runtime/state.json",
-};
+// v2.24: dispatch-latest.json lives in the main repo; read the public HF
+// mirror (pixel-world is a static Space, so we can't reach VM-local files).
+// Nomos42/pixel-world serves a copy pushed on each deploy; THE BOSS cron also
+// posts a mirror to the static Space via HfApi.upload_file at :00 every 4h.
+const CREW_DISPATCH_URL =
+  "https://huggingface.co/spaces/Nomos42/pixel-world/resolve/main/data/ops/dispatch-latest.json";
 
 const AGENTS = [
   ...NBA_TRADERS.map((id,i)=>{ const p = personaFor(id); return {
@@ -753,7 +759,14 @@ const AGENTS = [
     zone: lbl.startsWith("P") ? "pol-infra" : "nba-infra",
     idx:i, char:0, url, _isInfra:true,
   })),
-  ...COUNCIL_DEPTS.map(([c,n,m],i)=>({ id:`dept-${c.toLowerCase()}`, key:c, label:`${c} ${n}`, kind:"council", zone:"councils", idx:i, char:(i+3)%6, mission:m })),
+  // v2.24 crew — 14 Claude Code subagents, rendered as buildings (no wander).
+  // Use _isInfra:true so they sit still + render via updateInfraTower path.
+  ...CLAUDE_CREW.map(([codename,role,track],i)=>({
+    id:`crew-${codename.toLowerCase().replace(/\s+/g,"-")}`,
+    key:codename, label:codename,
+    kind:"crew", zone:"councils", idx:i, char:(i+3)%6,
+    role, track, _isInfra:true, mission:role,
+  })),
 ];
 
 // ── SEATING ─────────────────────────────────────────────────────────────────
@@ -769,7 +782,9 @@ function assignSeats() {
     // other and visually "doubled" (user report 2026-04-17).
     let cols, rows;
     if (isCouncil) {
-      cols = list.length; rows = 1;
+      // v2.24: 14 crew agents in the 7×5 zone — 7 cols × 2 rows (was forced single row).
+      cols = Math.min(list.length, 7);
+      rows = Math.ceil(list.length / cols);
     } else if (isInfraZone) {
       cols = Math.min(list.length, Math.ceil(list.length / 2));
       rows = Math.ceil(list.length / cols);
@@ -791,9 +806,12 @@ function assignSeats() {
       // freq 0.15-0.40 → 0.06-0.14 (slower bob cycle)
       // wamp 0.10-0.28 → 0.04-0.10 (smaller wobble)
       // speed 0.9-1.4 → 0.30-0.50 (3× slower linear convergence)
-      a.freq  = isInfraZone ? 0 : 0.06 + Math.random() * 0.08;
-      a.wamp  = isInfraZone ? 0 : 0.04 + Math.random() * 0.06;
-      a.speed = isInfraZone ? 0 : 0.30 + Math.random() * 0.20;
+      // v2.24: councils are infrastructure too — they don't iterate, so stop
+      // wandering. Only the 3 live TFs (NBA / POL / ITF) move.
+      const isStatic = isInfraZone || isCouncil;
+      a.freq  = isStatic ? 0 : 0.06 + Math.random() * 0.08;
+      a.wamp  = isStatic ? 0 : 0.04 + Math.random() * 0.06;
+      a.speed = isStatic ? 0 : 0.30 + Math.random() * 0.20;
       // Occasional longer-range wander target (every 8-15s a trader picks a new point in its floor)
       a.wanderNext = 0;
       a.x = a.seat.x; a.y = a.seat.y;
@@ -1555,7 +1573,7 @@ const TICKER = { text: null, raw: "", speed: 0.8, x: 0 };
   TICKER.x = WORLD_W;
 }
 
-// ── AGENT SPRITES (bigger + always-on bubble + permanent strategy badge) ───
+// ── AGENT SPRITES (v2.24: bubble hover/click-only — no persistent overlay) ───
 function makeAgentContainer(a) {
   const c = new PIXI.Container();
   c.eventMode = "static"; c.cursor = "pointer";
@@ -1685,7 +1703,7 @@ function makeAgentContainer(a) {
   glyph.y = -CHAR_H*1.02;
   c.addChild(glyph); c._glyph = glyph;
 
-  // Speech bubble — ALWAYS ON. Content = current action + strategy.
+  // Speech bubble — v2.24: hover/click-only (was always-on, obscured sprites).
   const bubble = new PIXI.Container();
   bubble.y = -CHAR_H*1.18;
   const bubbleBg = new PIXI.Graphics();
@@ -2233,7 +2251,7 @@ function buildClickBubble(a) {
   const d = a.data || {};
   const dd = a.dayDecision;
   // Line 1 — persona: "Scalper · scalper-1" or "Fundamentalist · qwen-quant"
-  const persona = a.persona || a.role || a.strategy || (a.kind === "nba" ? "NBA Trader" : a.kind === "political" ? "Political Trader" : a.kind === "itf" ? "Intraday Trader" : a.kind === "island" ? "Island" : a.kind === "council" ? "Council" : a._isInfra ? "Infrastructure" : "Agent");
+  const persona = a.persona || a.role || a.strategy || (a.kind === "nba" ? "NBA Trader" : a.kind === "political" ? "Political Trader" : a.kind === "itf" ? "Intraday Trader" : a.kind === "island" ? "Island" : a.kind === "crew" ? "Claude Crew" : a.kind === "council" ? "Council" : a._isInfra ? "Infrastructure" : "Agent");
   const ln1 = `${persona} · ${a.id || a.label}`;
 
   // Line 2 — current decision, human-formatted
@@ -2243,6 +2261,9 @@ function buildClickBubble(a) {
     const gen = d.generation || 0;
     const model = d.best_model_type || "?";
     ln2 = brier > 0 ? `${model.toUpperCase()} · Brier ${brier.toFixed(5)} · gen ${gen}` : "booting…";
+  } else if (a.kind === "crew") {
+    const last = a._lastDispatch ? ` · dispatched ${a._lastDispatch}` : "";
+    ln2 = `${(a.role || "sub-agent").replace(/\s+/g, " ").slice(0, 60)}${last}`;
   } else if (a.kind === "council") {
     ln2 = (a.mission || "Karpathy loop").replace(/\s+/g, " ").slice(0, 70);
   } else if (dd && dd.allocations && dd.allocations.length) {
@@ -2348,6 +2369,13 @@ function showHoverCard(a) {
     rows += `<div class="h-row"><span class="l">Population</span><span class="v">${d.pop_size||0}</span></div>`;
     if (d.stagnation != null) rows += `<div class="h-row"><span class="l">Stagnation</span><span class="v">${d.stagnation} gens</span></div>`;
     if (d.mutation_rate != null) rows += `<div class="h-row"><span class="l">Mutation</span><span class="v">${(d.mutation_rate*100).toFixed(1)}%</span></div>`;
+  } else if (a.kind === "crew") {
+    rows += `<div class="h-row"><span class="l">Codename</span><span class="v">${escapeHtml(a.label||"")}</span></div>`;
+    rows += `<div class="h-row"><span class="l">Role</span><span class="v">${escapeHtml(a.role||"sub-agent")}</span></div>`;
+    rows += `<div class="h-row"><span class="l">Track</span><span class="v">${escapeHtml(a.track||"—")}</span></div>`;
+    rows += `<div class="h-row"><span class="l">Status</span><span class="v ${a.state==="running"?"up":""}">${a.state||"idle"}</span></div>`;
+    if (a._lastDispatch) rows += `<div class="h-row"><span class="l">Last dispatch</span><span class="v">${escapeHtml(a._lastDispatch)}</span></div>`;
+    note = a.mission || a.role || "";
   } else if (a.kind === "council") {
     note = a.mission || ""; rows += `<div class="h-row"><span class="l">Mode</span><span class="v">Karpathy loop · 30min</span></div>`;
   } else {
@@ -2757,7 +2785,7 @@ async function refresh() {
         d = { bankroll: 100, total_bets: 0, wins: 0, losses: 0, llm_calls: 0, llm_ok: 0, _synth: true };
         a.state = "thinking";
         a.bubble = `${a.label}\nday 1 in progress · llm ${nba.llm_calls}/∞`;
-        a.bubbleUntil = performance.now() + 20000;
+        // v2.24: no persistent bubble — content ready for hover/click only
         a.data = d;
         nbaOK++;
         continue;
@@ -2777,9 +2805,9 @@ async function refresh() {
         a.bubble = buildTraderBubble(a);
         a.bubbleUntil = performance.now() + 4500;
       } else {
-        // Persistent live nameplate: show label + bankroll so user can watch numbers tick.
+        // v2.24: bubble content kept fresh for hover/click, but NO auto-persistent
+        // display (was + 20000 → every agent always showed bubble, obscuring sprites).
         a.bubble = `${a.label}\n$${(d.bankroll||100).toFixed(0)} · ${d.total_bets||0} bets`;
-        a.bubbleUntil = performance.now() + 20000;  // overrides on next refresh (15s poll)
       }
     }
     document.getElementById("hud-day").textContent = `NBA day ${nba.days_processed||0}/${nba.days_total||175} · games ${nba.games_processed||0}/${nba.games_total||1247}`;
@@ -2800,7 +2828,7 @@ async function refresh() {
         d = { bankroll: 100, total_bets: 0, wins: 0, losses: 0, llm_calls: 0, llm_ok: 0, _synth: true };
         a.state = "thinking";
         a.bubble = `${a.label}\nday 1 in progress · llm ${pol.llm_calls}/∞`;
-        a.bubbleUntil = performance.now() + 20000;
+        // v2.24: bubble text only, no auto-persistence (hover/click to see)
         a.data = d;
         polOK++;
         continue;
@@ -2820,8 +2848,8 @@ async function refresh() {
         a.bubble = buildTraderBubble(a);
         a.bubbleUntil = performance.now() + 4500;
       } else {
+        // v2.24: no persistent bubble
         a.bubble = `${a.label}\n$${(d.bankroll||100).toFixed(0)} · ${d.total_bets||0} trades`;
-        a.bubbleUntil = performance.now() + 20000;
       }
     }
   }
@@ -2856,8 +2884,8 @@ async function refresh() {
         logTrade("itf", a.label, `trade #${trades} (${entry.tier})`, 0);
         spawnPulseRing(a.x * TILE, a.y * TILE, 0xffa94d);
       }
+      // v2.24: no persistent bubble — hover/click to see
       a.bubble = `${a.label}\n${trades} trade${trades===1?"":"s"} · ${passes} pass · ${openPos} open`;
-      a.bubbleUntil = performance.now() + 20000;
     }
   }
 
@@ -2919,42 +2947,51 @@ async function refresh() {
   renderLeaderboard();
   renderThreeFloorLB();
 
-  // Councils — poll Hub-persisted state.json for iteration count + last-seen activity (v2.12).
-  // Councils are Gradio-only (no /api/status), so we read the file we ship via HfApi.upload_file.
-  let councilOK = 0;
-  await Promise.all(AGENTS.filter(x => x.kind === "council").map(async (a) => {
-    const url = COUNCIL_STATE_URLS[a.key];
-    if (!url) { a.bubble = ""; return; }
-    const s = await fetchJSON(url);
-    if (!s) {
+  // v2.24 Claude Code crew — read dispatch-latest.json for fleet-wide dispatch
+  // count + per-agent flags (which of the 14 agents were dispatched this cycle).
+  // Source of truth: THE BOSS writes data/ops/dispatch-latest.json every 4h at :00.
+  let crewOK = 0;
+  const dispatch = await fetchJSON(CREW_DISPATCH_URL);
+  const prevCrewDispatch = AGENTS.filter(x => x.kind === "crew")[0]?._prevDispatchTs;
+  const dispatchTs = dispatch?.ts || null;
+  const dispatchedSet = new Set();
+  const recentSet = new Set();
+  if (dispatch && Array.isArray(dispatch.dispatched_agents)) {
+    for (const ag of dispatch.dispatched_agents) dispatchedSet.add(String(ag).toUpperCase().replace(/\s+/g,"_"));
+  }
+  if (dispatch && Array.isArray(dispatch.recently_active_4h)) {
+    for (const ag of dispatch.recently_active_4h) recentSet.add(String(ag).toUpperCase().replace(/\s+/g,"_"));
+  }
+  for (const a of AGENTS.filter(x => x.kind === "crew")) {
+    if (!dispatch) {
       a.state = "error";
-      a.bubble = `${a.key}·${a.label.replace(a.key+" ","")}\nstate.json not yet pushed`;
-      a.bubbleUntil = performance.now() + 20000;
-      return;
+      a.bubble = `${a.label}\n(no dispatch feed)`;
+      continue;
     }
-    councilOK++;
-    const prev = a.data;
-    a.data = s;
-    const iter = s.iteration ?? s.iteration_count ?? s.total_iterations ?? 0;
-    const last = s.last_run || s.last_iteration_at || s.updated_at || "";
-    // age in minutes (if parseable)
+    crewOK++;
+    // Dispatcher agent_id uses underscore form (INTERNAL_AFFAIRS) vs label ("INTERNAL AFFAIRS")
+    const key = a.key.toUpperCase().replace(/\s+/g, "_");
+    const wasDispatched = dispatchedSet.has(key);
+    const wasRecent = wasDispatched || recentSet.has(key);
     let ageMin = null;
-    if (last) {
-      const t = Date.parse(last);
+    if (dispatchTs) {
+      const t = Date.parse(dispatchTs);
       if (!isNaN(t)) ageMin = Math.floor((Date.now() - t) / 60000);
     }
-    a.state = ageMin != null && ageMin > 90 ? "stale" : "profit";
-    const prevIter = prev ? (prev.iteration ?? prev.iteration_count ?? 0) : null;
-    if (prevIter != null && iter > prevIter) {
+    a.state = wasDispatched ? "profit" : (wasRecent ? "thinking" : "idle");
+    a._lastDispatch = wasDispatched ? (dispatchTs ? dispatchTs.slice(11,16) + "Z" : "now") : (wasRecent ? "<4h" : null);
+    if (wasDispatched && dispatchTs !== a._prevDispatchTs) {
       a.activeUntil = performance.now() + 4000;
-      logTrade("council", a.label, `iter ${iter} · ${s.last_decision||"—"}`);
+      logTrade("crew", a.label, `dispatched · ${dispatchTs.slice(11,16)}Z`);
       spawnPulseRing(a.x * TILE, a.y * TILE, 0xffb86c);
     }
-    a.bubble = `${a.key}·iter ${iter}${ageMin!=null?` · ${ageMin}m ago`:""}`;
-    a.bubbleUntil = performance.now() + 20000;
-  }));
+    a._prevDispatchTs = dispatchTs;
+    a.data = { dispatched: wasDispatched, recent: wasRecent, ts: dispatchTs, role: a.role, track: a.track };
+    const tag = wasDispatched ? " · ACTIVE" : (wasRecent ? " · recent" : "");
+    a.bubble = `${a.label}\n${a.role}${tag}${ageMin != null ? ` · ${ageMin}m ago` : ""}`;
+  }
   const kCouncil = document.getElementById("k-councils");
-  if (kCouncil) { kCouncil.textContent = `${councilOK}/9`; kCouncil.className = councilOK === 9 ? "v-ok" : "v-warn"; }
+  if (kCouncil) { kCouncil.textContent = `${crewOK}/${CLAUDE_CREW.length}`; kCouncil.className = crewOK === CLAUDE_CREW.length ? "v-ok" : "v-warn"; }
 
   document.getElementById("k-nba").textContent = `${nbaOK}/${NBA_TRADERS.length}`;
   document.getElementById("k-nba").className = nbaOK === NBA_TRADERS.length ? "v-ok" : "v-warn";

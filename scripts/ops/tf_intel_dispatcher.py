@@ -207,6 +207,7 @@ def run_cycle(dry_run: bool = False) -> dict[str, Any]:
         buckets.setdefault(key, []).append(a)
 
     dispatched = 0
+    dispatched_agents: list[str] = []
     for (agent, code, subagent), bucket in buckets.items():
         bucket = bucket[:PER_RULE_MAX_PER_RUN + 3]  # cap brief size
         run_id = uuid.uuid4().hex
@@ -232,11 +233,30 @@ def run_cycle(dry_run: bool = False) -> dict[str, Any]:
         with LOG_PATH.open("a") as fh:
             fh.write(json.dumps(log_rec) + "\n")
         dispatched += 1
+        if agent not in dispatched_agents:
+            dispatched_agents.append(agent)
+
+    # Also surface the last 4h of activity so the pixel-world + dashboards can
+    # render "who ran recently" even when the current tick is a no-op.
+    recent_agents: list[str] = []
+    now_utc = datetime.now(timezone.utc)
+    for entry in recent:
+        try:
+            entry_ts = datetime.fromisoformat(entry["ts"].replace("Z", "+00:00"))
+            if now_utc - entry_ts > timedelta(hours=4):
+                continue
+            ag = entry.get("agent")
+            if ag and ag not in recent_agents:
+                recent_agents.append(ag)
+        except Exception:
+            continue
 
     summary = {
         "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "alerts_total": len(alerts),
         "dispatched": dispatched,
+        "dispatched_agents": dispatched_agents,
+        "recently_active_4h": recent_agents,
         "skipped_cooldown": skipped_cd,
         "no_rule": no_rule,
         "dry_run": dry_run,
