@@ -2767,8 +2767,14 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     # 2026-04-19 collision limiter (NBA parity): if
                     # >=COLLISION_MAX_AGENTS agents already took this exact
                     # (event_idx, direction) today, skip to force divergence.
+                    # 2026-04-21 exception (NBA parity): bypass for fallback_uniform
+                    # allocations — system-emitted, not LLM-chosen.
                     coll_key = (alloc["event_idx"], direction)
-                    if day_collisions.get(coll_key, 0) >= COLLISION_MAX_AGENTS:
+                    _is_fallback_alloc = (
+                        parsed.get("fallback_used") is True
+                        or alloc.get("provider_status") == "fallback_uniform"
+                    )
+                    if (not _is_fallback_alloc) and day_collisions.get(coll_key, 0) >= COLLISION_MAX_AGENTS:
                         continue
 
                     sized_pct = (alloc["pct"] or 0.0) * KELLY_MULT

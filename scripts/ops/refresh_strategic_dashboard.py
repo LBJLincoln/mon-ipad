@@ -57,6 +57,51 @@ def _leaderboard(s: dict) -> list:
     rows.sort(key=lambda r: -r["bankroll"])
     return rows
 
+def _alpaca_snapshot() -> dict:
+    """ITF runs on Alpaca paper. Pull equity/positions for live P&L."""
+    key = os.environ.get("ALPACA_PAPER_KEY")
+    sec = os.environ.get("ALPACA_PAPER_SECRET")
+    if not key or not sec:
+        return {"reachable": False, "error": "ALPACA_PAPER_KEY/SECRET not in env"}
+    base = "https://paper-api.alpaca.markets"
+    headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": sec}
+    out = {"reachable": True}
+    for ep, label in [("/v2/account","account"), ("/v2/positions","positions"), ("/v2/orders?status=all&limit=50","orders")]:
+        try:
+            req = Request(base + ep, headers=headers)
+            with urlopen(req, timeout=15) as r:
+                out[label] = json.loads(r.read().decode())
+        except Exception as e:
+            out[label] = {"_error": str(e)[:120]}
+    acc = out.get("account", {})
+    if isinstance(acc, dict) and "equity" in acc:
+        equity = float(acc.get("equity", 0))
+        out["equity"] = equity
+        out["cash"] = float(acc.get("cash", 0))
+        out["portfolio_value"] = float(acc.get("portfolio_value", 0))
+        out["buying_power"] = float(acc.get("buying_power", 0))
+        out["pnl_since_100k"] = round(equity - 100000, 2)
+        out["pnl_pct"] = round((equity - 100000) / 1000, 3)
+        out["status"] = acc.get("status")
+    positions = out.get("positions", [])
+    if isinstance(positions, list):
+        out["n_positions"] = len(positions)
+        out["positions_summary"] = [
+            {"symbol": p.get("symbol"), "qty": p.get("qty"), "side": p.get("side"),
+             "market_value": float(p.get("market_value", 0)),
+             "unrealized_pl": float(p.get("unrealized_pl", 0)),
+             "unrealized_plpc": float(p.get("unrealized_plpc", 0))}
+            for p in positions if isinstance(p, dict)
+        ]
+    orders = out.get("orders", [])
+    if isinstance(orders, list):
+        out["n_orders_last_50"] = len(orders)
+        fill_count = sum(1 for o in orders if isinstance(o,dict) and o.get("status") == "filled")
+        rej_count = sum(1 for o in orders if isinstance(o,dict) and o.get("status") in ("rejected","canceled"))
+        out["orders_filled"] = fill_count
+        out["orders_rejected_or_cancel"] = rej_count
+    return out
+
 def build_01_tf_health() -> dict:
     spaces = {
         "nba":  "https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/status",
@@ -106,6 +151,8 @@ def build_01_tf_health() -> dict:
             "preserved as scientific validation point per project_pqtf_1m_60pct_apr19. "
             "DO NOT restart."
         )
+    # ITF's /api/status doesn't expose portfolio — pull Alpaca paper account directly.
+    out["alpaca_paper"] = _alpaca_snapshot()
     return out
 
 # ── 02: evolution islands ────────────────────────────────────

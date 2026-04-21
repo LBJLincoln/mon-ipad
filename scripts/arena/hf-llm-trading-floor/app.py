@@ -3431,8 +3431,20 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     # 2026-04-19 collision limiter: if >=COLLISION_MAX_AGENTS
                     # already picked this (game_idx, category) today, skip.
                     # Forces structural divergence at the allocation level.
+                    # 2026-04-21 exception: fallback_uniform allocations are NOT
+                    # agent-chosen (LLM outage → system-emitted top-3 ML edges).
+                    # Collision gate would wipe 14/17 agents' allocations when the
+                    # whole fleet hits the fallback on a small-game-day (2-4 games),
+                    # which is exactly what happened to selfhost-gemma3/dolphin3
+                    # (0 bets in 17 days). Bypass the gate for fallback allocs so
+                    # every agent still trades — groupthink concern doesn't apply
+                    # when the LLM wasn't the decision-maker.
                     coll_key = (alloc["game_idx"], cat)
-                    if day_collisions.get(coll_key, 0) >= COLLISION_MAX_AGENTS:
+                    _is_fallback_alloc = (
+                        parsed.get("fallback_used") is True
+                        or alloc.get("provider_status") == "fallback_uniform"
+                    )
+                    if (not _is_fallback_alloc) and day_collisions.get(coll_key, 0) >= COLLISION_MAX_AGENTS:
                         continue
                     # Tiered sizing: Kelly aggression × LLM pct, floor at bet_floor, cap at bet_cap.
                     sized_pct = (alloc["pct"] or 0.0) * KELLY_MULT
