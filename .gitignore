@@ -138,8 +138,8 @@ logs/plumber.log
 data/credentials/youtube-oauth.json
 data/credentials/youtube-oauth-refresh.json
 
-# YouTube FinBERT sentiment precompute output (regenerable via
-# scripts/youtube_sentiment_precompute.py; parquet is a rebuild artifact).
-data/youtube/sentiment.parquet
+# YouTube FinBERT sentiment — parquet IS a deploy artifact (POL engine reads it
+# at runtime on HF Spaces via Cat 44). GH Action youtube-sentiment.yml commits.
+# Only keep ancillary files ignored.
 data/youtube/sentiment.csv
 data/youtube/sentiment-audit-*.json
