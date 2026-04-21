@@ -113,11 +113,12 @@ def _load_prompt_override(fleet: str = "itf") -> str:
     return ""
 
 DECISION_SCHEMA = """
-$1M MISSION: ONE of the 14 ITF agents MUST reach $1,000,000 by Aug 1, 2026. Be VERY
-AGGRESSIVE: 3-8% of bankroll for high-conviction trades; compound on wins. PQTF proved
-it works — mistral:large went $100 → $244,050 (+40,667%) in 50 days by sizing UP 5-8%
-per trade after wins, stacking 12 positions/day in concentrated sectors. Do the same
-here but at intraday cadence with the full equity+crypto+options universe.
+$1M COLLECTIVE MISSION: the 17 ITF agents together must reach $1,000,000 by Aug 1, 2026.
+Each agent has a dedicated sub-bankroll (see YOUR CAPITAL block). Be MAX-AGGRESSIVE:
+5-12% of YOUR bankroll per high-conviction trade, target 8-15 trades/day MINIMUM, paper
+account has NO PDT limit — exploit unlimited daytrading. PQTF proved it — mistral:large
+$100 → $244,050 (+40,667%) in 50 days by sizing UP 5-8% and stacking 12 positions/day.
+Do the same here at intraday cadence across equity+crypto+options universe.
 
 Respond with ONE of:
   { "action": "pass", "reason": "..." }
@@ -590,9 +591,28 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
 
     _pm_override = _load_prompt_override("itf")
 
+    # v2.5 — per-agent sub-bankroll from executor ledger. LLM sees its OWN capital
+    # and sizes stakes 5-12% of that number, not a fiction shared across 17 agents.
+    _agent_bankroll = executor.get_bankroll(persona["tid"])
+    _bankroll_block = (
+        f"═══ YOUR CAPITAL ═══\n"
+        f"YOU ({persona['tid']}) have a dedicated sub-bankroll of ${_agent_bankroll:,.2f}. "
+        f"This is YOUR pot out of 17 agents sharing Alpaca's paper equity. Every trade "
+        f"you place RESERVES stake from this number; every close (bracket-TP, bracket-SL, "
+        f"EOD, agent-close) returns stake + realized P&L. The $1M mission is COLLECTIVE — "
+        f"all 17 agents together must reach $1,000,000. You personally compound YOURS.\n"
+        f"Stake sizing: 5-12% of ${_agent_bankroll:,.0f} per trade = "
+        f"${max(100, _agent_bankroll*0.05):.0f}-${max(300, _agent_bankroll*0.12):.0f}. "
+        f"If bankroll < $200, shrink to $100/trade; if > $10k, scale to $1,200/trade max.\n"
+        f"PAPER ACCOUNT: no PDT rule — unlimited daytrades. Target 8-15 trades/day MINIMUM. "
+        f"Passing is cowardice — the leaderboard rewards aggression compounded safely."
+    )
+
     return f"""{COLLECTIVE_MISSION}
 
 {AXELROD_CANON}{_pm_override}
+
+{_bankroll_block}
 
 {knowledge_digest}
 
@@ -647,6 +667,9 @@ def _uniform_fallback_itf(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[
         "iv-crush-1":           ["SPY", "QQQ"],
         "macro-rotate-1":       ["GLD", "TLT", "UUP", "XLU"],
         "leveraged-momentum-1": ["TQQQ", "SPXL", "SOXL"],
+        "gap-fade-1":           ["SPY", "QQQ", "IWM"],
+        "carry-1":              ["SPY", "QQQ", "DIA"],
+        "breakdown-1":          ["SPY", "QQQ", "IWM"],
     }
     pools_tier = {
         "s": ["SPY", "QQQ", "IWM"],
@@ -733,7 +756,8 @@ STATE: Dict[str, Any] = {
     "running": False,
     "last_tick_at": None,
     "tick_count": 0,
-    "agents": {p["tid"]: {"decisions": 0, "trades": 0, "passes": 0} for p in PERSONAS},
+    "agents": {p["tid"]: {"decisions": 0, "trades": 0, "passes": 0, "bankroll": 0.0}
+               for p in PERSONAS},
 }
 _stop = threading.Event()
 _lock = threading.Lock()
@@ -742,11 +766,21 @@ DECISIONS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
-    """Run one tick: refresh quotes, build context, call all 14 agents, execute."""
+    """Run one tick: refresh quotes, build context, call all 17 agents, execute."""
     with _lock:
         STATE["tick_count"] += 1
         STATE["last_tick_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"[itf] tick #{STATE['tick_count']} starting", file=sys.stderr, flush=True)
+    # v2.5 — ensure sub-bankrolls are seeded (idempotent) and sync each into STATE.
+    try:
+        executor.seed_bankrolls([p["tid"] for p in PERSONAS])
+        for p in PERSONAS:
+            STATE["agents"].setdefault(p["tid"], {
+                "decisions": 0, "trades": 0, "passes": 0, "bankroll": 0.0,
+            })
+            STATE["agents"][p["tid"]]["bankroll"] = executor.get_bankroll(p["tid"])
+    except Exception as _se:
+        print(f"[itf] bankroll sync err (non-fatal): {_se}", file=sys.stderr, flush=True)
     quote_refresh()  # persist snapshot
     ctx = build_intraday_context()
     results: List[Dict[str, Any]] = []
@@ -844,6 +878,9 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         "iv-crush-1":           ["SPY", "QQQ", "IWM"],
         "macro-rotate-1":       ["GLD", "TLT", "UUP", "XLU", "SHY"],
         "leveraged-momentum-1": ["SPXL", "SOXL", "TNA", "UPRO", "BTC/USD"],
+        "gap-fade-1":           ["SPY", "QQQ", "IWM", "DIA", "XLK"],
+        "carry-1":              ["SPY", "QQQ", "IWM", "DIA", "XLV"],
+        "breakdown-1":          ["SPY", "QQQ", "IWM", "TQQQ", "SPXL"],
     }
 
     def _divert(tid: str, original_ticker: str, original_side: str) -> Optional[str]:
@@ -1118,6 +1155,7 @@ def _build_app():
                 "tid": tid, "name": p["name"], "tier": p["tier"],
                 "decisions": s["decisions"], "trades": s["trades"], "passes": s["passes"],
                 "open_positions": len(agent_open),
+                "bankroll_usd": round(executor.get_bankroll(tid), 2),
                 "realized_pnl_usd": ag.get("realized_pnl_usd", 0.0),
                 "unrealized_pnl_usd": ag.get("unrealized_pnl_usd", 0.0),
                 "total_pnl_usd": ag.get("total_pnl_usd", 0.0),
@@ -1147,6 +1185,24 @@ def _build_app():
     def api_trades(limit: int = 200):
         trades = executor.read_trades(limit=limit)
         return JSONResponse({"count": len(trades), "trades": trades})
+
+    @app.get("/api/bankrolls")
+    def api_bankrolls():
+        return JSONResponse({
+            "bankrolls": executor.all_bankrolls(),
+            "meta": executor._load_bankrolls().get("_meta", {}),
+        })
+
+    @app.post("/api/reset-bankrolls")
+    def api_reset_bankrolls():
+        """Force re-seed from current Alpaca equity split across 17 personas."""
+        b = executor.seed_bankrolls([p["tid"] for p in PERSONAS], force=True)
+        for p in PERSONAS:
+            STATE["agents"].setdefault(p["tid"], {
+                "decisions": 0, "trades": 0, "passes": 0, "bankroll": 0.0,
+            })
+            STATE["agents"][p["tid"]]["bankroll"] = executor.get_bankroll(p["tid"])
+        return JSONResponse({"ok": True, "bankrolls": {k: v for k, v in b.items() if not k.startswith("_")}, "meta": b.get("_meta", {})})
 
     return app
 

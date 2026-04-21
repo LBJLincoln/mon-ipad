@@ -20,11 +20,114 @@ from typing import Any, Dict, List, Optional
 REPO = Path(__file__).resolve().parents[3]
 ORDERS_JSONL = REPO / "data" / "intraday" / "dry-run-orders.jsonl"
 POSITIONS_PATH = REPO / "data" / "intraday" / "positions.json"
+BANKROLLS_PATH = REPO / "data" / "intraday" / "agent_bankrolls.json"
+LEDGER_JSONL = REPO / "data" / "intraday" / "agent_ledger.jsonl"
 POSITIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 MAX_OPEN_PER_AGENT = 5  # 2026-04-21: 3→5, 14×5=70 max positions (+67%)
 EOD_FLATTEN_UTC_HOUR = 19
 EOD_FLATTEN_UTC_MIN = 50
+
+
+# ───── 2026-04-21 v2.5 PER-AGENT SUB-BANKROLL ─────
+# Each of 14 personas gets an equal slice of current Alpaca equity at cold-start.
+# Every submit() reserves stake_usd from agent's bankroll; close_expired /
+# close_position credits stake + realized_pnl back. Enables a SCIENTIFIC
+# leaderboard (which persona is actually best) instead of a single blended pool.
+
+def _load_bankrolls() -> Dict[str, float]:
+    if not BANKROLLS_PATH.exists():
+        return {}
+    try:
+        return json.loads(BANKROLLS_PATH.read_text())
+    except Exception:
+        return {}
+
+
+def _save_bankrolls(b: Dict[str, float]) -> None:
+    BANKROLLS_PATH.write_text(json.dumps(b, indent=2, sort_keys=True))
+
+
+def _fetch_alpaca_equity() -> float:
+    """Pull live Alpaca paper equity. Fallback $100k if not live or API error."""
+    if not live_mode():
+        return 100_000.0
+    try:
+        import requests
+        r = requests.get(
+            "https://paper-api.alpaca.markets/v2/account",
+            headers={
+                "APCA-API-KEY-ID": os.environ.get("ALPACA_PAPER_KEY", ""),
+                "APCA-API-SECRET-KEY": os.environ.get("ALPACA_PAPER_SECRET", ""),
+            },
+            timeout=5,
+        )
+        if r.ok:
+            return float(r.json().get("equity") or 100_000.0)
+    except Exception:
+        pass
+    return 100_000.0
+
+
+def seed_bankrolls(tids: List[str], force: bool = False) -> Dict[str, float]:
+    """Seed each tid at equal share of current Alpaca equity. Idempotent unless
+    `force=True` (used by /api/reset)."""
+    existing = _load_bankrolls()
+    if existing and not force:
+        return existing
+    total = _fetch_alpaca_equity()
+    share = round(total / max(1, len(tids)), 2)
+    b = {tid: share for tid in tids}
+    b["_meta"] = {
+        "seeded_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "seed_equity_usd": round(total, 2),
+        "seed_share_usd": share,
+        "n_agents": len(tids),
+    }
+    _save_bankrolls(b)
+    return b
+
+
+def get_bankroll(tid: str) -> float:
+    b = _load_bankrolls()
+    return float(b.get(tid, 0.0) or 0.0)
+
+
+def _append_ledger(event: Dict[str, Any]) -> None:
+    """Append a per-agent bankroll event to agent_ledger.jsonl for scientific audit."""
+    LEDGER_JSONL.parent.mkdir(parents=True, exist_ok=True)
+    event["ts"] = event.get("ts") or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    with LEDGER_JSONL.open("a") as fh:
+        fh.write(json.dumps(event, default=str) + "\n")
+
+
+def reserve_bankroll(tid: str, amount: float, meta: Optional[Dict[str, Any]] = None) -> float:
+    """Deduct amount from tid's bankroll. Returns new balance (can go negative — caller checks)."""
+    b = _load_bankrolls()
+    before = float(b.get(tid, 0.0) or 0.0)
+    b[tid] = round(before - amount, 2)
+    _save_bankrolls(b)
+    _append_ledger({"tid": tid, "event": "reserve", "delta": -round(amount, 2),
+                    "balance_before": round(before, 2), "balance_after": b[tid],
+                    **(meta or {})})
+    return b[tid]
+
+
+def credit_bankroll(tid: str, amount: float, meta: Optional[Dict[str, Any]] = None) -> float:
+    b = _load_bankrolls()
+    before = float(b.get(tid, 0.0) or 0.0)
+    b[tid] = round(before + amount, 2)
+    _save_bankrolls(b)
+    _append_ledger({"tid": tid, "event": "credit", "delta": round(amount, 2),
+                    "balance_before": round(before, 2), "balance_after": b[tid],
+                    **(meta or {})})
+    return b[tid]
+
+
+def all_bankrolls() -> Dict[str, float]:
+    """Return copy without _meta for leaderboard rendering."""
+    b = _load_bankrolls()
+    return {k: v for k, v in b.items() if not k.startswith("_")}
 
 
 def live_mode() -> bool:
@@ -198,6 +301,14 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
     positions.setdefault(agent_tid, []).append(entry)
     _save_positions(positions)
     _append_order_log(entry)
+    # v2.5 — reserve stake from agent's sub-bankroll (do NOT reserve if broker rejected).
+    if entry.get("status") == "open":
+        new_bal = reserve_bankroll(agent_tid, stake, meta={
+            "ticker": ticker, "side": side, "stake": round(stake, 2),
+            "instrument": "equity_or_crypto",
+            "broker_order_id": entry.get("broker_order_id"),
+        })
+        entry["agent_bankroll_after_reserve"] = new_bal
     return entry
 
 
@@ -382,6 +493,13 @@ def submit_option(agent_tid: str, order: Dict[str, Any], last_quote: float) -> D
     positions.setdefault(agent_tid, []).append(entry)
     _save_positions(positions)
     _append_order_log(entry)
+    # v2.5 — reserve option stake from agent's sub-bankroll
+    if entry.get("status") == "open":
+        new_bal = reserve_bankroll(agent_tid, stake, meta={
+            "underlying": underlying, "strategy": strategy, "stake": round(stake, 2),
+            "instrument": "option",
+        })
+        entry["agent_bankroll_after_reserve"] = new_bal
     return entry
 
 
@@ -462,6 +580,15 @@ def close_expired(now_utc: datetime, quote_fn=None) -> List[Dict[str, Any]]:
                 p["status"] = "closed_expired"
                 p["closed_at"] = now_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
                 _mark_to_market(p, qf)
+                # v2.5 — credit stake + realized_pnl back to agent's sub-bankroll
+                _stake = float(p.get("stake_usd") or 0)
+                _pnl = float(p.get("realized_pnl_usd") or 0)
+                credit_bankroll(agent_tid, _stake + _pnl, meta={
+                    "ticker": p.get("ticker") or p.get("underlying"),
+                    "event_type": "eod_or_expired_close",
+                    "stake_returned": round(_stake, 2),
+                    "realized_pnl": round(_pnl, 2),
+                })
                 closed.append(p)
     _save_positions(positions)
     return closed
@@ -565,12 +692,23 @@ def close_position(agent_tid: str, ticker: str) -> Dict[str, Any]:
             entry["broker_status"] = "exception"
             entry["broker_resp"] = str(e)[:300]
 
-    # Mark all matched local positions closed — close_expired will handle P&L
-    # mark-to-market on the next tick if quote_fn available. For agent-driven
-    # closes we just flip status; realized P&L reconciles from broker fills.
+    # Mark all matched local positions closed + credit stake back to sub-bankroll.
+    # For agent-driven closes we don't have a live quote for exact P&L, so credit
+    # only the reserved stake (P&L reconciles from broker fills → next tick via
+    # a snapshot reconciliation). This is intentionally conservative: the stake
+    # returns, any unrealized gain is "free" on close until reconciled.
+    total_stake_returned = 0.0
     for p in matched:
         p["status"] = "closed_by_agent"
         p["closed_at"] = entry["ts"]
+        total_stake_returned += float(p.get("stake_usd") or 0)
+    if total_stake_returned > 0:
+        credit_bankroll(agent_tid, total_stake_returned, meta={
+            "ticker": ticker_u,
+            "event_type": "agent_close",
+            "stake_returned": round(total_stake_returned, 2),
+            "n_positions": len(matched),
+        })
     _save_positions(positions)
     _append_order_log(entry)
     return entry

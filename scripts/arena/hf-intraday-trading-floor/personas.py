@@ -54,6 +54,22 @@ SHORT_ROTATION_HINT = (
     "is worth more than the marginal trade."
 )
 
+# 2026-04-21 v2.5 — AGGRESSIVE_HINT applied to ALL personas. Paper account has
+# NO PDT limit, bankroll is sub-divided per-agent (see YOUR CAPITAL block), and
+# the $1M mission needs ~8-15 trades/agent/day at 5-12% sizing to converge by
+# Aug 1 2026. Passing > 2 consecutive ticks when tape is alive = leaderboard
+# punishment. Every persona still owns its distinctive style — aggression is
+# the RATE; the EDGE remains persona-specific.
+AGGRESSIVE_HINT = (
+    " AGGRESSIVE MANDATE: target 8-15 trades/day minimum. Paper account has NO "
+    "PDT limit — exploit unlimited daytrading freely. Size 5-12% of YOUR sub-"
+    "bankroll per high-conviction trade (top-quartile conviction gets the 12% "
+    "end). Two consecutive passes = auto-demerit; find the least-bad setup that "
+    "still fits your persona thesis and trade it. The collective needs ~5× in "
+    "3 months — you are one of 17 and the leaderboard rewards compounding VOLUME "
+    "× EDGE, not caution."
+)
+
 PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "scalper-1",
@@ -65,7 +81,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "mistral",
         "hf_space_target": "medium",
         "tier": "S",
-        "risk": 0.45,
+        "risk": 0.70,
         "max_hold_min": 60,
         "style": (
             "You are SCALPER — sub-hour micro-edges, tight stops. You favor SPY/QQQ/IWM "
@@ -82,7 +98,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "mistral",
         "hf_space_target": "large",
         "tier": "M",
-        "risk": 0.55,
+        "risk": 0.75,
         "max_hold_min": 120,
         "style": (
             "You are MOMENTUM — 30 min to 2 hr trend continuation on sector ETFs "
@@ -93,7 +109,7 @@ PERSONAS: List[Dict[str, Any]] = [
     },
     {
         "tid": "mean-rev-1",
-        "name": "MeanReversion",
+        "name": "MeanReversionMAX",
         # 2026-04-20 SWITCHBOARD reroute: openrouter:nemotron-120b:free is on
         # llm-deadlist (broken). Silent agent — 0 positions across last decision.
         # Reroute to mistral:large (PQTF #1 $244K winner) which is L-tier and
@@ -103,7 +119,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "mistral",
         "hf_space_target": "large",
         "tier": "L",
-        "risk": 0.40,
+        "risk": 0.68,
         "max_hold_min": 90,
         "style": (
             "You are MEAN-REVERSION — fade extremes. Enter only when a ticker's intraday "
@@ -114,7 +130,7 @@ PERSONAS: List[Dict[str, Any]] = [
     },
     {
         "tid": "breakout-1",
-        "name": "Breakout",
+        "name": "BreakoutMAX",
         # 2026-04-20 SWITCHBOARD reroute: nvidia:minimax-m2.7 on llm-deadlist
         # (slow/broken), cerebras:qwen-3-235b also broken. Silent agent.
         # Reroute to google:gemini-3-flash (POL #1 winner $470, 14 RPM, fast)
@@ -124,7 +140,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "google",
         "hf_space_target": "gemini-3-flash",
         "tier": "M",
-        "risk": 0.55,
+        "risk": 0.75,
         "max_hold_min": 180,
         "style": (
             "You are BREAKOUT — 5-min range breakouts on volume. Enter long only when "
@@ -134,13 +150,13 @@ PERSONAS: List[Dict[str, Any]] = [
     },
     {
         "tid": "pairs-1",
-        "name": "Pairs",
+        "name": "PairsMAX",
         "model_primary": "mistral:medium",               # PQTF #2: $155K winner
         "model_fallback": "mistral:small",
         "hf_account_target": "mistral",
         "hf_space_target": "medium",
         "tier": "M",
-        "risk": 0.50,
+        "risk": 0.72,
         "max_hold_min": 240,
         "style": (
             "You are PAIRS — sector-ETF spread trader. Pick TWO ETFs (one long, one short "
@@ -151,7 +167,7 @@ PERSONAS: List[Dict[str, Any]] = [
     },
     {
         "tid": "vol-1",
-        "name": "VolRegime",
+        "name": "VolRegimeMAX",
         # 2026-04-20 SWITCHBOARD reroute: cerebras:qwen-3-235b on llm-deadlist.
         # Silent agent. Reroute to mistral:large (PQTF #1 winner) + medium fallback.
         # Mistral handles VIX-aware reasoning fine; PQTF proved $244K trajectory.
@@ -160,7 +176,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "mistral",
         "hf_space_target": "large",
         "tier": "M",
-        "risk": 0.45,
+        "risk": 0.70,
         "max_hold_min": 120,
         "style": (
             "You are VOL-REGIME — VIX-aware. You use VIX to decide the day's posture: "
@@ -177,7 +193,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "mistral",
         "hf_space_target": "large",
         "tier": "L",
-        "risk": 0.55,
+        "risk": 0.75,
         "max_hold_min": 240,
         "style": (
             "You are GAMMA-OPTIONS — you trade 0DTE/1DTE options on SPY/QQQ/IWM "
@@ -199,7 +215,7 @@ PERSONAS: List[Dict[str, Any]] = [
     # CLOUD models only. Each persona has a distinct day-trader archetype thesis.
     {
         "tid": "arbitrage-1",
-        "name": "Arbitrage",
+        "name": "ArbitrageMAX",
         # google:gemini-3-flash → POL TF #1 winner ($470.72 / +370.7%). Fast, cheap,
         # good at structured pair reasoning.
         "model_primary": "google:gemini-3-flash",
@@ -207,7 +223,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "google",
         "hf_space_target": "gemini-3-flash",
         "tier": "M",
-        "risk": 0.50,
+        "risk": 0.72,
         "max_hold_min": 180,
         "style": (
             "You are ARBITRAGE — statistical arb and ETF-basket dislocations. Edges: "
@@ -219,7 +235,7 @@ PERSONAS: List[Dict[str, Any]] = [
     },
     {
         "tid": "news-catalyst-1",
-        "name": "NewsCatalyst",
+        "name": "NewsCatalystMAX",
         # cerebras:qwen-3-235b → NBA TF qwen-quant $26.06 live winner + big context.
         # 2000 tok/s means fastest headline reactor.
         "model_primary": "cerebras:qwen-3-235b",
@@ -227,7 +243,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "cerebras",
         "hf_space_target": "qwen-3-235b",
         "tier": "L",
-        "risk": 0.60,
+        "risk": 0.78,
         "max_hold_min": 120,
         "style": (
             "You are NEWS-CATALYST — first-reaction tape interpreter. Fade or follow "
@@ -240,7 +256,7 @@ PERSONAS: List[Dict[str, Any]] = [
     },
     {
         "tid": "crypto-whale-1",
-        "name": "CryptoWhale",
+        "name": "CryptoWhaleMAX",
         # mistral:medium → PQTF #2 winner ($155K / +25,783%). mistral handles numeric
         # context well; whale-watching needs price-level arithmetic.
         "model_primary": "mistral:medium",
@@ -248,7 +264,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "mistral",
         "hf_space_target": "medium",
         "tier": "L",
-        "risk": 0.65,
+        "risk": 0.80,
         "max_hold_min": 360,
         "style": (
             "You are CRYPTO-WHALE — crypto specialist, 24/7 mandate. 70% of your "
@@ -262,7 +278,7 @@ PERSONAS: List[Dict[str, Any]] = [
     },
     {
         "tid": "earnings-gap-1",
-        "name": "EarningsGap",
+        "name": "EarningsGapMAX",
         # 2026-04-20: rerouted from nvidia:minimax-m2.7 + nemotron-free (both 429-throttled)
         # to cerebras:qwen-3-235b (NBA winner + 2000 tok/s) and mistral:medium (PQTF $155K).
         "model_primary": "cerebras:qwen-3-235b",
@@ -270,7 +286,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "nvidia",
         "hf_space_target": "minimax-m2.7",
         "tier": "L",
-        "risk": 0.55,
+        "risk": 0.75,
         "max_hold_min": 120,
         "style": (
             "You are EARNINGS-GAP — single-name post-earnings drift and gap-fill "
@@ -283,7 +299,7 @@ PERSONAS: List[Dict[str, Any]] = [
     },
     {
         "tid": "iv-crush-1",
-        "name": "IVCrush",
+        "name": "IVCrushMAX",
         # mistral:large → derivatives brain (PQTF $244K). IV-crush logic needs the
         # same quantitative chops that made mistral:large PQTF #1.
         "model_primary": "mistral:large",
@@ -291,7 +307,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "mistral",
         "hf_space_target": "large",
         "tier": "L",
-        "risk": 0.45,
+        "risk": 0.70,
         "max_hold_min": 240,
         "style": (
             "You are IV-CRUSH — options seller, premium harvester. Emit "
@@ -304,7 +320,7 @@ PERSONAS: List[Dict[str, Any]] = [
     },
     {
         "tid": "macro-rotate-1",
-        "name": "MacroRotate",
+        "name": "MacroRotateMAX",
         # google:gemini-2.5-flash → PQTF gemini-anl $17K winner on MACRO reasoning.
         # mistral:medium fallback for numeric stability.
         "model_primary": "google:gemini-2.5-flash",
@@ -312,7 +328,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "google",
         "hf_space_target": "gemini-2.5-flash",
         "tier": "M",
-        "risk": 0.50,
+        "risk": 0.72,
         "max_hold_min": 360,
         "style": (
             "You are MACRO-ROTATE — dollar/yield/commodity-driven sector rotator. "
@@ -324,8 +340,74 @@ PERSONAS: List[Dict[str, Any]] = [
         ),
     },
     {
+        # 2026-04-21 v2.5 NEW — NBA/POL parity (17 total).
+        "tid": "gap-fade-1",
+        "name": "GapFadeMAX",
+        # mistral:small — untested in ITF; unlocks a new model-family datapoint for
+        # the scientific leaderboard. Fallback mistral:medium (proven PQTF #2 $155K).
+        "model_primary": "mistral:small",
+        "model_fallback": "mistral:medium",
+        "hf_account_target": "mistral",
+        "hf_space_target": "small",
+        "tier": "M",
+        "risk": 0.70,
+        "max_hold_min": 90,
+        "style": (
+            "You are GAP-FADE — the COMPLEMENT to earnings-gap. You only FADE overnight "
+            "gaps that overshot their catalyst. Rules: (a) stock gaps >2.5% AND the sector "
+            "ETF moved <0.5% in pre-market = overshoot, emit side=\"short\" to fade. "
+            "(b) index gaps >0.8% with ^VIX flat = retail-driven, fade. (c) Opening drive "
+            "into resistance with declining volume = fade. Stop 1.0%, TP 1.5%. Never fade "
+            "genuine news (headline > 4 hours old)."
+        ),
+    },
+    {
+        # 2026-04-21 v2.5 NEW — low-vol regime carry specialist.
+        "tid": "carry-1",
+        "name": "Carry",
+        # nvidia:llama-3.3-70b — new provider for scientific diversity. NBA T14
+        # uses it too. cerebras:qwen-3-235b fallback (fast + working).
+        "model_primary": "nvidia:llama-3.3-70b",
+        "model_fallback": "cerebras:qwen-3-235b",
+        "hf_account_target": "nvidia",
+        "hf_space_target": "llama-3.3-70b",
+        "tier": "S",
+        "risk": 0.65,
+        "max_hold_min": 360,
+        "style": (
+            "You are CARRY — low-vol regime long-only specialist. You ONLY trade when "
+            "^VIX < 18 AND the daily tape is trending (SPY trend_score > 0.3). Buy-the-dip "
+            "on SPY/QQQ/IWM/DIA when intraday change_pct < -0.5% BUT daily trend is up. "
+            "Stop 0.4%, TP 1.2%. VIX > 20 = auto-pass. You are the DEFENSIVE anchor — "
+            "low drawdown, steady wins preferred over big bets. No shorts, no options, "
+            "no crypto."
+        ),
+    },
+    {
+        # 2026-04-21 v2.5 NEW — STRUCTURAL SHORT specialist (fixes long-bias lockstep).
+        "tid": "breakdown-1",
+        "name": "BreakdownMAX",
+        # google:gemini-3-flash — POL #1 winner ($470). mistral:medium fallback.
+        "model_primary": "google:gemini-3-flash",
+        "model_fallback": "mistral:medium",
+        "hf_account_target": "google",
+        "hf_space_target": "gemini-3-flash",
+        "tier": "L",
+        "risk": 0.75,
+        "max_hold_min": 150,
+        "style": (
+            "You are BREAKDOWN — the MIRROR of breakout-1. You ONLY emit side=\"short\". "
+            "Rules: (a) last price < 5m_low of previous 3 samples AND volume above 15-min "
+            "rolling avg → short. (b) sector ETF below VWAP with ^VIX rising → short the "
+            "leader. (c) Single-name breaks prior-day low with broad tape red → short. "
+            "Shortable: SPY/QQQ/IWM/XL*/TQQQ/SOXL/SPXL/single-names. NEVER go long. "
+            "If you can't find a short setup, PASS — don't flip to long. Stop = 5m_high "
+            "of breakdown bar, target 2R."
+        ),
+    },
+    {
         "tid": "leveraged-momentum-1",
-        "name": "LeveragedMomentum",
+        "name": "LeveragedMomentumMAX",
         # 2026-04-20: nemotron-free hit rate-limits → swap to mistral:medium primary
         # (PQTF $155K winner) + google:gemini-3-flash fallback (POL $470 winner).
         "model_primary": "mistral:medium",
@@ -333,7 +415,7 @@ PERSONAS: List[Dict[str, Any]] = [
         "hf_account_target": "openrouter",
         "hf_space_target": "nemotron-120b",
         "tier": "M",
-        "risk": 0.60,
+        "risk": 0.80,
         "max_hold_min": 90,
         "style": (
             "You are LEVERAGED-MOMENTUM — intraday 3× ETF rider. You trade TQQQ/SQQQ, "
@@ -365,3 +447,11 @@ _SHORT_ROTATION_TIDS = {"scalper-1", "mean-rev-1", "pairs-1", "vol-1", "arbitrag
 for _p in PERSONAS:
     if _p["tid"] in _SHORT_ROTATION_TIDS and SHORT_ROTATION_HINT not in _p["style"]:
         _p["style"] = _p["style"] + SHORT_ROTATION_HINT
+
+# 2026-04-21 v2.5 — append AGGRESSIVE_HINT to EVERY persona. Each agent's distinct
+# style remains intact; the hint dials the RATE + SIZE upward uniformly so the
+# collective $1M push compounds faster. Paper account has no PDT limit, each
+# agent owns a sub-bankroll, and passing ≥2 consecutive ticks = punished.
+for _p in PERSONAS:
+    if AGGRESSIVE_HINT not in _p["style"]:
+        _p["style"] = _p["style"] + AGGRESSIVE_HINT
