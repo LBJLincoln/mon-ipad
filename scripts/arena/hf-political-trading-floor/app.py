@@ -782,31 +782,32 @@ TRADERS = {
     "mistral-medium":   {"name": "Mistral Medium",   "provider": "mistral:medium",       "personality": "diversified",  "risk_tolerance": 0.45,
                          "fallback_provider": "mistral:large"},
     "mistral-small":    {"name": "Mistral Small",    "provider": "mistral:small",        "personality": "conservative", "risk_tolerance": 0.35,
-                         "fallback_provider": "github:gpt-4.1-nano"},
+                         "fallback_provider": "cerebras:llama3.1-8b"},
     # 2026-04-17 SWAP: gemma-4-31b rate-limited 429 upstream → cerebras:llama3.1-8b (aggressive momentum)
     # 2026-04-20 SWITCHBOARD: openrouter:gpt-oss-120b NOT in gateway registry. Swap fallback → mistral:medium.
     "mistral-nemo":     {"name": "Momentum Hunter",   "provider": "cerebras:llama3.1-8b",  "personality": "aggressive",   "risk_tolerance": 0.70,
                          "fallback_provider": "mistral:medium"},
-    # 2026-04-20 SWITCHBOARD v2: gpt-4.1-mini was 41/71 llm_ok → swap to gpt-4.1-nano
-    # (faster, verified 826ms) with mistral:small fallback.
-    "mistral-ministral":{"name": "Ministral 8B",     "provider": "github:gpt-4.1-nano","personality": "theoretical",  "risk_tolerance": 0.35,
-                         "fallback_provider": "mistral:small"},
+    # 2026-04-21 SWITCHBOARD v3: github:gpt-4.1-nano has no gateway fallback chain →
+    # silent-dead. Promote mistral:small primary; cerebras:llama3.1-8b safety net.
+    "mistral-ministral":{"name": "Ministral 8B",     "provider": "mistral:small","personality": "theoretical",  "risk_tolerance": 0.35,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
     # 2026-04-20 SWITCHBOARD v2: nemotron-120b on cerebras:qwen-3-235b hit circuit
     # breaker repeatedly (shared key with 2 other personas) → demote to fallback,
     # promote mistral:large primary (decisive at chainthought).
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "mistral:large","personality": "chainthought","risk_tolerance": 0.55,
                          "fallback_provider": "cerebras:qwen-3-235b"},
     # 2026-04-18 FIX: HF CPU basic = ~3 tok/s → 2+ min/call. Swap selfhost→GitHub Models (free, ~2s).
-    # 2026-04-20 SWITCHBOARD: github:gpt-4o-mini 429 RateLimit → github:phi-4-mini.
-    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "github:phi-4-mini",     "personality": "disciplined", "risk_tolerance": 0.40,
-                         "fallback_provider": "mistral:small"},
+    # 2026-04-21 SWITCHBOARD v3: github:phi-4-mini no gateway chain → silent-dead.
+    # Route to mistral:small (95% ok) + cerebras:llama3.1-8b fallback.
+    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "mistral:small",        "personality": "disciplined", "risk_tolerance": 0.40,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
     # NEW 2026-04-17 — NVIDIA NIM (2 keys wired in gateway, 0 usage before) → parity with NBA TF.
-    # 2026-04-20 SWITCHBOARD v2: swap primary/fallback order — nvidia:llama-3.3-70b
-    # was faster (1.0s vs 1.4s) and stable; keep github as fallback.
+    # 2026-04-21 SWITCHBOARD v3: github:llama-3.3-70b no chain → dead. Both agents now
+    # on nvidia:llama-3.3-70b (primary) with cerebras fallback lanes.
     "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "nvidia:llama-3.3-70b",   "personality": "decisive",    "risk_tolerance": 0.58,
-                         "fallback_provider": "github:llama-3.3-70b"},
-    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "github:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
-                         "fallback_provider": "nvidia:llama-3.3-70b"},
+                         "fallback_provider": "cerebras:qwen-3-235b"},
+    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
     # 2026-04-20 SWITCHBOARD v2: selfhost-gemma3 had llm_ok=0/71 — github:mistral-medium
     # was silently failing. v3 (same day): mistral:medium still at 33% post-reroute.
     # Likely: Handshake Axelrod block + analytical 3-factor template bloats prompt
@@ -814,12 +815,12 @@ TRADERS = {
     # 9/9 on llama-contra, cheap context) with mistral:small as fallback.
     "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "cerebras:llama3.1-8b",  "personality": "analytical",  "risk_tolerance": 0.45,
                          "fallback_provider": "mistral:small"},
-    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "github:gpt-4.1-nano",   "personality": "conservative","risk_tolerance": 0.30,
-                         "fallback_provider": "mistral:small"},
-    # 2026-04-20 SWITCHBOARD v2: promote mistral:large primary (PQTF winner, proven
-    # aggressive-compound); github:gpt-4.1-mini demoted to fallback.
+    # 2026-04-21 SWITCHBOARD v3: github:gpt-4.1-nano dead (no chain).
+    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "mistral:small",       "personality": "conservative","risk_tolerance": 0.30,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
+    # 2026-04-21 SWITCHBOARD v3: github:gpt-4.1-mini fallback dead. Swap to cerebras:llama3.1-8b.
     "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "mistral:large", "personality": "uncensored",  "risk_tolerance": 0.60,
-                         "fallback_provider": "github:gpt-4.1-mini"},
+                         "fallback_provider": "cerebras:llama3.1-8b"},
 }
 
 AGENT_SYSTEM_PROMPTS = {

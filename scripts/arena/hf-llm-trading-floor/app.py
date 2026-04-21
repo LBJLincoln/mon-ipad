@@ -876,7 +876,7 @@ TRADERS = {
     "qwen-quant":  {"name": "Qwen Quant 235B",   "provider": "mistral:large",         "personality": "quantitative", "risk_tolerance": 0.55,
                     "fallback_provider": "mistral:medium"},
     "qwen-arb":    {"name": "Qwen Arb 235B",     "provider": "cerebras:qwen-3-235b",  "personality": "arbitrage",    "risk_tolerance": 0.65,
-                    "fallback_provider": "openrouter:gpt-oss-120b"},
+                    "fallback_provider": "mistral:large"},
     # Cerebras Llama 3.1 8B — small/fast, 1 persona
     "llama-contra":{"name": "Llama Contrarian",  "provider": "cerebras:llama3.1-8b",  "personality": "contrarian",   "risk_tolerance": 0.55,
                     "fallback_provider": "mistral:medium"},
@@ -891,34 +891,41 @@ TRADERS = {
     # 2026-04-20 SWITCHBOARD: openrouter:gpt-oss-120b is NOT in gateway registry ("Model not in registry") → swap fallback to mistral:medium.
     "mistral-nemo":     {"name": "Momentum Hunter",   "provider": "cerebras:llama3.1-8b",  "personality": "aggressive",   "risk_tolerance": 0.70,
                          "fallback_provider": "mistral:medium"},
-    # 2026-04-20 SWITCHBOARD: primary openrouter:gpt-oss-120b dead (not in registry). Reroute → github:gpt-4.1-mini (verified live, 820ms), keep cerebras:llama3.1-8b fallback.
-    "mistral-ministral":{"name": "Ministral 8B",     "provider": "github:gpt-4.1-mini","personality": "theoretical",  "risk_tolerance": 0.35,
+    # 2026-04-21 SWITCHBOARD v3 (NBA-bleed RCA): 6 github:* primaries were routing to
+    # dead lanes (gateway stats show calls_fail=0 AND calls_ok=0 i.e. NEVER called —
+    # github fallback chain is empty, so a single 429 returns None content).
+    # Drop every github:* primary. Concentrate on the 7 providers that actually have
+    # a fallback chain ending in cerebras: mistral:{large,medium,small}, cerebras:{qwen-235b,llama3.1-8b},
+    # google:gemini-3-flash, nvidia:llama-3.3-70b, openrouter:nemotron-120b:free.
+    # Load-spread 17 agents × 7 lanes ≈ 2.4 agents per lane (down from 6+ on cerebras).
+    "mistral-ministral":{"name": "Ministral 8B",     "provider": "mistral:small",         "personality": "theoretical",  "risk_tolerance": 0.35,
                          "fallback_provider": "cerebras:llama3.1-8b"},
     # NEW 2026-04-15 — +1 NVIDIA Nemotron 120B (OpenRouter free, verified responsive)
-    # 2026-04-20 SWITCHBOARD: openrouter:nemotron-120b:free + cerebras:qwen-3-235b
-    # both on llm-deadlist. Silent 0/3d. Reroute primary→mistral:large, fallback→mistral:medium.
-    # Persona+strategy+Axelrod class (Adaptive) preserved; only backend swapped.
-    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "mistral:large",         "personality": "chainthought","risk_tolerance": 0.55,
-                         "fallback_provider": "mistral:medium"},
-    # 2026-04-18 FIX: HF CPU basic = ~3 tok/s → 2+ min/call, blocking fleet. Swap selfhost→GitHub Models (free, ~2s).
-    # 2026-04-20 SWITCHBOARD: github:gpt-4o-mini hitting 429 RateLimit → swap to github:phi-4-mini (verified live 834ms).
-    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "github:phi-4-mini",     "personality": "disciplined", "risk_tolerance": 0.40,
-                         "fallback_provider": "mistral:small"},
-    # NEW 2026-04-17 — NVIDIA NIM (2 keys in gateway). Both NVIDIA accounts were wired but 0 TF usage → fill the gap.
-    # 2026-04-20 SWITCHBOARD: nvidia:minimax-m2.7 + alt both >20s timeout (observed 9/9 llm_ok=0 on NBA). Reroute → github:llama-3.3-70b (live 1.3s), fallback nvidia:llama-3.3-70b.
-    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "github:llama-3.3-70b",  "personality": "decisive",    "risk_tolerance": 0.58,
-                         "fallback_provider": "nvidia:llama-3.3-70b"},
-    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
-                         "fallback_provider": "github:llama-3.3-70b"},
-    # 2026-04-18 — was selfhost, now GitHub Models. Persona+strategy+Axelrod class unchanged.
-    # 2026-04-20 SWITCHBOARD: github:llama-3.1-8b not in registry → github:mistral-medium (live 1.3s); github:gpt-4o-mini 429 → github:gpt-4.1-nano.
-    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "github:mistral-medium",  "personality": "analytical",  "risk_tolerance": 0.45,
-                         "fallback_provider": "github:gpt-4.1-nano"},
-    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "github:gpt-4.1-nano",   "personality": "conservative","risk_tolerance": 0.30,
-                         "fallback_provider": "mistral:small"},
-    # 2026-04-20 SWITCHBOARD: github:llama-3.1-8b dead → github:gpt-4.1-mini (verified live). Keep mistral:large fallback.
-    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "github:gpt-4.1-mini", "personality": "uncensored",  "risk_tolerance": 0.60,
+    # 2026-04-21 SWITCHBOARD v3: promote openrouter:nemotron-120b:free as primary
+    # (has full fallback chain incl cerebras); keep mistral:large fallback.
+    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b:free","personality": "chainthought","risk_tolerance": 0.55,
                          "fallback_provider": "mistral:large"},
+    # 2026-04-21 SWITCHBOARD v3: github:phi-4-mini has no gateway fallback chain → dead.
+    # Route to mistral:small (95% lifetime ok) with cerebras:llama3.1-8b safety net.
+    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "mistral:small",        "personality": "disciplined", "risk_tolerance": 0.40,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
+    # NEW 2026-04-17 — NVIDIA NIM (2 keys in gateway). Both NVIDIA accounts were wired but 0 TF usage → fill the gap.
+    # 2026-04-21 SWITCHBOARD v3: github:llama-3.3-70b dead (no chain). Promote nvidia:llama-3.3-70b primary (41% ok lifetime, has chain).
+    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "nvidia:llama-3.3-70b",  "personality": "decisive",    "risk_tolerance": 0.58,
+                         "fallback_provider": "cerebras:qwen-3-235b"},
+    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
+    # 2026-04-18 — was selfhost, now GitHub Models. Persona+strategy+Axelrod class unchanged.
+    # 2026-04-21 SWITCHBOARD v3: github:mistral-medium + github:gpt-4.1-nano both dead.
+    # Route to mistral:medium (95% ok lifetime, highest reliability) + cerebras fallback.
+    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "mistral:medium",       "personality": "analytical",  "risk_tolerance": 0.45,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
+    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "mistral:small",        "personality": "conservative","risk_tolerance": 0.30,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
+    # 2026-04-21 SWITCHBOARD v3: github:gpt-4.1-mini dead (no chain). Promote cerebras:llama3.1-8b
+    # primary (adaptive/uncensored fits llama base); mistral:small fallback.
+    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "cerebras:llama3.1-8b","personality": "uncensored",  "risk_tolerance": 0.60,
+                         "fallback_provider": "mistral:small"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -2079,7 +2086,104 @@ STRICT RULES:
     return "\n".join(lines)
 
 
-def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0) -> Optional[Dict]:
+# ── CALIBRATION-AWARE FRACTIONAL KELLY (2026-04-21, proposal #1) ────────────
+# Source: MDPI Information 17/1/56 (Jan 2026) — NBA + MC-dropout + fractional
+# Kelly decision layer. SWISH RCA (nba-losing-streak-rca-2026-04-21) confirmed
+# NBA TF's −70% bleed was Kelly/calibration mismatch, NOT prediction-quality
+# miss. Over-betting a miscalibrated edge compounds to ruin.
+#
+# `calibrated_kelly_fraction(raw_edge, ece, conf_width)` returns a scalar in
+# [0.01, 0.25] that the post-filter multiplies into every allocation pct.
+# Agents still name their raw pct; we haircut it by this fraction so the
+# floor of a mis-calibrated 10% edge becomes ~2.5% pct instead of 40%.
+#
+# ece     : expected calibration error in last-50-bet rolling window per agent.
+#           Seed at 0.15 (conservative). Lower = more trusted.
+# conf_width : max(prob) - min(prob) across top-N picks. Wider = higher
+#              conviction spread = more aggressive Kelly.
+# Hard cap 0.25 = quarter-Kelly (industry safe harbor).
+_CALIB_DIR = Path("data/tf-analytics/nba")
+_CALIB_PATH = _CALIB_DIR / "calibration-rolling.json"
+_CALIB_WINDOW = 50
+_CALIB_SEED_ECE = 0.15
+_CALIB_CACHE: Dict[str, Dict] = {}
+
+
+def calibrated_kelly_fraction(raw_edge: float, ece: float, conf_width: float) -> float:
+    """Return fraction in [0.01, 0.25]. Formula: raw × (1 − ece) × sqrt(conf_width),
+    scaled so typical 10%-edge / 0.1 ECE / 0.2 conf_width ≈ 0.04 (20% of quarter-Kelly).
+    Hard-capped at 0.25.
+    """
+    try:
+        raw = max(0.0, float(raw_edge))
+        e = max(0.0, min(1.0, float(ece)))
+        cw = max(0.0, min(1.0, float(conf_width)))
+    except (TypeError, ValueError):
+        return 0.01
+    frac = raw * (1.0 - e) * math.sqrt(max(1e-6, cw))
+    # Clamp to [0.01, 0.25] — floor keeps the agent visible, cap = quarter-Kelly.
+    return max(0.01, min(0.25, frac))
+
+
+def _calib_load() -> Dict[str, Dict]:
+    if _CALIB_CACHE:
+        return _CALIB_CACHE
+    try:
+        if _CALIB_PATH.exists():
+            _CALIB_CACHE.update(json.loads(_CALIB_PATH.read_text()))
+    except Exception:
+        pass
+    return _CALIB_CACHE
+
+
+def get_agent_ece(tid: str) -> float:
+    """Return rolling ECE for agent tid (seeded at 0.15 if no history)."""
+    store = _calib_load()
+    rec = store.get(tid) or {}
+    ece = rec.get("ece")
+    return float(ece) if isinstance(ece, (int, float)) else _CALIB_SEED_ECE
+
+
+def update_agent_calibration(tid: str, predicted_prob: float, outcome: int) -> None:
+    """Append one (pred, outcome) sample to agent tid's rolling window and
+    recompute ECE as mean(|pred − outcome|) over last _CALIB_WINDOW entries.
+    Persists to data/tf-analytics/nba/calibration-rolling.json.
+    """
+    try:
+        pp = float(predicted_prob)
+        oc = int(outcome)
+    except (TypeError, ValueError):
+        return
+    if not (0.0 <= pp <= 1.0) or oc not in (0, 1):
+        return
+    store = _calib_load()
+    rec = store.setdefault(tid, {"window": [], "ece": _CALIB_SEED_ECE, "n": 0})
+    win = rec.get("window") or []
+    win.append([round(pp, 4), oc])
+    if len(win) > _CALIB_WINDOW:
+        win = win[-_CALIB_WINDOW:]
+    rec["window"] = win
+    rec["n"] = len(win)
+    # Simple mean-abs-error ECE proxy (robust for sparse bets per agent).
+    rec["ece"] = round(sum(abs(p - o) for p, o in win) / max(1, len(win)), 4)
+    try:
+        _CALIB_DIR.mkdir(parents=True, exist_ok=True)
+        _CALIB_PATH.write_text(json.dumps(store, indent=2, default=str))
+    except Exception as _e:
+        print(f"[calib] persist fail for {tid}: {_e}")
+
+
+def _conf_width_from_allocations(clean: List[Dict]) -> float:
+    """max(confidence) − min(confidence) across current allocations. Defaults
+    to 0.2 if <2 allocations (mid-range — doesn't overweight raw or underweight)."""
+    confs = [a.get("confidence", 0.5) for a in clean if isinstance(a.get("confidence"), (int, float))]
+    if len(confs) < 2:
+        return 0.2
+    return max(0.0, min(1.0, max(confs) - min(confs)))
+
+
+def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
+                          tid: str = "") -> Optional[Dict]:
     """Parse day allocation JSON. Validates sum=1.0 within tolerance.
 
     Returns dict with: day_strategy, allocations (normalized), cash_held_pct,
@@ -2177,6 +2281,24 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0) -> Optio
                 "edge": max(0.0, pedge),
                 "rationale": (p.get("rationale") or "")[:300],
             })
+
+    # ── CALIBRATED-KELLY HAIRCUT (2026-04-21, proposal #1) ─────────────────
+    # Scale each allocation pct by calibrated_kelly_fraction(edge, ece, conf_width).
+    # Agents over-bet miscalibrated edges; this collapses them to safe fractional
+    # Kelly. Cash absorbs the delta. Also tagged on each alloc for audit.
+    if tid:
+        _ece = get_agent_ece(tid)
+        _cw = _conf_width_from_allocations(clean)
+        for a in clean:
+            _raw_pct = a["pct"]
+            _frac = calibrated_kelly_fraction(a.get("edge", 0.0), _ece, _cw)
+            # Fraction bounds allocation pct to (0, _frac]; preserves LLM's relative
+            # conviction by keeping the smaller of declared pct and calibrated cap.
+            a["pct"] = round(min(_raw_pct, _frac), 4)
+            a["calibrated_kelly"] = round(_frac, 4)
+            a["raw_pct_pre_kelly"] = round(_raw_pct, 4)
+            a["ece_at_bet"] = round(_ece, 4)
+            a["conf_width_at_bet"] = round(_cw, 4)
 
     total = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean) + max(0.0, min(1.0, cash))
     # 2026-04-19 BUGFIX #3 — coalition-preservation. Previously `if total<=0: return None`
@@ -3364,7 +3486,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # 2026-04-20 — pass current drawdown so MIN_DEPLOY_PCT floor can shrink
             # for ruined agents (dd>0.5 → floor drops, dd>0.9 → floor=0.25).
             _ts_dd = float(ts.get("max_drawdown", 0.0) or 0.0)
-            parsed = parse_day_allocation(raw_response, len(day_games), drawdown=_ts_dd) if raw_response else None
+            parsed = parse_day_allocation(raw_response, len(day_games), drawdown=_ts_dd, tid=tid) if raw_response else None
 
             # 2026-04-18 — PRE-FILTER ml_home fallback REMOVED.
             # Post-mortem showed 16/16 agents silent on day 44 all injected identical
@@ -3522,6 +3644,15 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         ts["losses"] += 1
                     ts["total_bets"] += 1
                     ts["bankroll"] = round(ts["bankroll"], 2)
+
+                    # 2026-04-21 proposal #1 — feed resolved bet into rolling ECE
+                    # window. alloc["confidence"] is agent-stated P(win); `won` is
+                    # the realized outcome. Skip silently if update fails.
+                    try:
+                        update_agent_calibration(tid, alloc.get("confidence", 0.5),
+                                                 1 if won else 0)
+                    except Exception as _ce:
+                        print(f"[calib] update skipped for {tid}: {_ce}")
 
                     day_log["allocations"].append({
                         "game": f"{g['away']}@{g['home']}",
