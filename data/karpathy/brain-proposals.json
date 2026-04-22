@@ -1,120 +1,7 @@
 {
-  "last_updated": "2026-04-21T05:00:15.499452+00:00",
+  "last_updated": "2026-04-22T05:00:16.770068+00:00",
   "total_proposals": 50,
   "proposals": [
-    {
-      "timestamp": "2026-04-15T16:25:35.037925+00:00",
-      "domain": "nba",
-      "state_summary": {
-        "best_brier": 0.21218334576044304,
-        "model_type": "random_forest",
-        "n_features": 200,
-        "streak": 50,
-        "total_iterations": 50
-      },
-      "top_proposal": {
-        "mutation": "change_model",
-        "score": 95,
-        "detail": {
-          "target_model": "extra_trees",
-          "current_model": "random_forest"
-        },
-        "reasoning": "CRITICAL: 50 iterations without improvement. Current model random_forest is at a hard local minimum. Must switch model type entirely.",
-        "category": "escape_local_minimum"
-      },
-      "all_proposals": [
-        {
-          "mutation": "change_model",
-          "score": 95,
-          "detail": {
-            "target_model": "extra_trees",
-            "current_model": "random_forest"
-          },
-          "reasoning": "CRITICAL: 50 iterations without improvement. Current model random_forest is at a hard local minimum. Must switch model type entirely.",
-          "category": "escape_local_minimum"
-        },
-        {
-          "mutation": "swap_features",
-          "score": 90,
-          "detail": {
-            "swap_size": 20
-          },
-          "reasoning": "Large feature swap (20) for maximum diversity. Stuck for 50 iterations \u2014 small mutations won't escape.",
-          "category": "escape_local_minimum"
-        },
-        {
-          "mutation": "recalibrate",
-          "score": 70,
-          "detail": {
-            "rolling_ece": 0.14135,
-            "method": "isotonic"
-          },
-          "reasoning": "Drift monitor says recalibration needed (ECE=0.14135). Isotonic recalibration may reduce Brier by 0.001-0.003.",
-          "category": "calibration"
-        },
-        {
-          "mutation": "remove_features",
-          "score": 65,
-          "detail": {
-            "remove_size": 10
-          },
-          "reasoning": "Feature count 200 is high (>150). Noise reduction likely to help \u2014 remove 10 weakest.",
-          "category": "feature_optimization"
-        }
-      ]
-    },
-    {
-      "timestamp": "2026-04-15T16:25:36.272460+00:00",
-      "domain": "political",
-      "state_summary": {
-        "best_brier": 0.20454312075559716,
-        "model_type": "random_forest",
-        "n_features": 80,
-        "streak": 50,
-        "total_iterations": 50
-      },
-      "top_proposal": {
-        "mutation": "change_model",
-        "score": 95,
-        "detail": {
-          "target_model": "extra_trees",
-          "current_model": "random_forest"
-        },
-        "reasoning": "CRITICAL: 50 iterations without improvement. Current model random_forest is at a hard local minimum. Must switch model type entirely.",
-        "category": "escape_local_minimum"
-      },
-      "all_proposals": [
-        {
-          "mutation": "change_model",
-          "score": 95,
-          "detail": {
-            "target_model": "extra_trees",
-            "current_model": "random_forest"
-          },
-          "reasoning": "CRITICAL: 50 iterations without improvement. Current model random_forest is at a hard local minimum. Must switch model type entirely.",
-          "category": "escape_local_minimum"
-        },
-        {
-          "mutation": "swap_features",
-          "score": 90,
-          "detail": {
-            "swap_size": 20
-          },
-          "reasoning": "Large feature swap (20) for maximum diversity. Stuck for 50 iterations \u2014 small mutations won't escape.",
-          "category": "escape_local_minimum"
-        },
-        {
-          "mutation": "recalibrate",
-          "score": 70,
-          "detail": {
-            "rolling_ece": 0.14135,
-            "method": "isotonic"
-          },
-          "reasoning": "Drift monitor says recalibration needed (ECE=0.14135). Isotonic recalibration may reduce Brier by 0.001-0.003.",
-          "category": "calibration"
-        }
-      ]
-    },
     {
       "timestamp": "2026-04-15T18:26:00.890156+00:00",
       "domain": "nba",
@@ -2998,6 +2885,140 @@
             "swap_size": 20
           },
           "reasoning": "Large feature swap (20) for maximum diversity. Stuck for 50 iterations \u2014 small mutations won't escape.",
+          "category": "escape_local_minimum"
+        },
+        {
+          "mutation": "seed_from_fleet",
+          "score": 85,
+          "detail": {
+            "source_island": "S10_nba",
+            "source_brier": 0.0,
+            "current_brier": 0.20454312075559716
+          },
+          "reasoning": "Fleet champion S10_nba has Brier 0.00000 which is 0.20454 better than current config. Seed from fleet champion.",
+          "category": "fleet_seeding"
+        },
+        {
+          "mutation": "recalibrate",
+          "score": 70,
+          "detail": {
+            "rolling_ece": 0.14135,
+            "method": "isotonic"
+          },
+          "reasoning": "Drift monitor says recalibration needed (ECE=0.14135). Isotonic recalibration may reduce Brier by 0.001-0.003.",
+          "category": "calibration"
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-04-22T05:00:16.675965+00:00",
+      "domain": "nba",
+      "state_summary": {
+        "best_brier": 0.21218334576044304,
+        "model_type": "random_forest",
+        "n_features": 200,
+        "streak": 50,
+        "total_iterations": 50
+      },
+      "top_proposal": {
+        "mutation": "change_model",
+        "score": 95,
+        "detail": {
+          "target_model": "extra_trees",
+          "current_model": "random_forest"
+        },
+        "reasoning": "CRITICAL: 50 iterations without improvement. Current model random_forest is at a hard local minimum. Must switch model type entirely.",
+        "category": "escape_local_minimum"
+      },
+      "all_proposals": [
+        {
+          "mutation": "change_model",
+          "score": 95,
+          "detail": {
+            "target_model": "extra_trees",
+            "current_model": "random_forest"
+          },
+          "reasoning": "CRITICAL: 50 iterations without improvement. Current model random_forest is at a hard local minimum. Must switch model type entirely.",
+          "category": "escape_local_minimum"
+        },
+        {
+          "mutation": "swap_features",
+          "score": 90,
+          "detail": {
+            "swap_size": 20
+          },
+          "reasoning": "Large feature swap (20) for maximum diversity. Stuck for 50 iterations \u2014 small mutations won't escape.",
+          "category": "escape_local_minimum"
+        },
+        {
+          "mutation": "seed_from_fleet",
+          "score": 85,
+          "detail": {
+            "source_island": "S10_nba",
+            "source_brier": 0.0,
+            "current_brier": 0.21218334576044304
+          },
+          "reasoning": "Fleet champion S10_nba has Brier 0.00000 which is 0.21218 better than current config. Seed from fleet champion.",
+          "category": "fleet_seeding"
+        },
+        {
+          "mutation": "recalibrate",
+          "score": 70,
+          "detail": {
+            "rolling_ece": 0.14135,
+            "method": "isotonic"
+          },
+          "reasoning": "Drift monitor says recalibration needed (ECE=0.14135). Isotonic recalibration may reduce Brier by 0.001-0.003.",
+          "category": "calibration"
+        },
+        {
+          "mutation": "remove_features",
+          "score": 65,
+          "detail": {
+            "remove_size": 10
+          },
+          "reasoning": "Feature count 200 is high (>150). Noise reduction likely to help \u2014 remove 10 weakest.",
+          "category": "feature_optimization"
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-04-22T05:00:16.769988+00:00",
+      "domain": "political",
+      "state_summary": {
+        "best_brier": 0.20454312075559716,
+        "model_type": "random_forest",
+        "n_features": 80,
+        "streak": 50,
+        "total_iterations": 50
+      },
+      "top_proposal": {
+        "mutation": "swap_features",
+        "score": 110,
+        "detail": {
+          "swap_size": 20
+        },
+        "reasoning": "Large feature swap (20) for maximum diversity. Stuck for 50 iterations \u2014 small mutations won't escape. [BOOSTED: last 3 were hyperparam mutations, alternating]",
+        "category": "escape_local_minimum"
+      },
+      "all_proposals": [
+        {
+          "mutation": "swap_features",
+          "score": 110,
+          "detail": {
+            "swap_size": 20
+          },
+          "reasoning": "Large feature swap (20) for maximum diversity. Stuck for 50 iterations \u2014 small mutations won't escape. [BOOSTED: last 3 were hyperparam mutations, alternating]",
+          "category": "escape_local_minimum"
+        },
+        {
+          "mutation": "change_model",
+          "score": 95,
+          "detail": {
+            "target_model": "extra_trees",
+            "current_model": "random_forest"
+          },
+          "reasoning": "CRITICAL: 50 iterations without improvement. Current model random_forest is at a hard local minimum. Must switch model type entirely.",
           "category": "escape_local_minimum"
         },
         {

@@ -1,6 +1,6 @@
 # Current State — System Snapshot
 
-> Auto-generated on 2026-04-21 05:00 UTC
+> Auto-generated on 2026-04-22 05:00 UTC
 
 ## Brier Scores
 
@@ -22,14 +22,14 @@
 | S20_nba | 0.00000 |
 | S21_nba | 0.00000 |
 | S18_nba | 0.22154 |
-| S15_nba | 0.22254 |
-| S17_nba | 0.22358 |
-| S22_nba | 0.23133 |
+| S17_nba | 0.22289 |
+| S15_nba | 0.22325 |
+| S22_nba | 0.22360 |
 | S13_nba | 0.23173 |
 | S14_nba | 0.23450 |
 
 - Fleet champion: S10_nba (0.00000)
-- Fleet average: 0.10502
+- Fleet average: 0.10442
 
 ## NBA Karpathy Loop
 
@@ -60,15 +60,3 @@
 - Recalibration needed: YES
 - Rolling ECE: 0.14135
 - State: PARTIAL
-
-## Department Health
-
-- business: ?
-- cross-repo: shipped
-- engineering: ?
-- evaluation: ?
-- evolution: ?
-- finance: ?
-- infra: ?
-- product: ?
-- research: ?

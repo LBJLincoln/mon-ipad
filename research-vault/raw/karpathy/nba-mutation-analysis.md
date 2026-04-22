@@ -1,6 +1,6 @@
 # Karpathy NBA — Mutation Effectiveness Analysis
 
-> Auto-generated from 50 iterations on 2026-04-21 05:00 UTC
+> Auto-generated from 50 iterations on 2026-04-22 05:00 UTC
 > Best Brier: 0.21218334576044304
 > Current model: random_forest
 > Current features: 200
@@ -9,14 +9,14 @@
 
 | Mutation Type | Tried | Improved | Hit Rate | Avg Brier Delta |
 |---------------|-------|----------|----------|-----------------|
-| change_min_samples_leaf | 3 | 0 | 0% | +0.01207 |
-| change_max_features_ratio | 3 | 0 | 0% | +0.01317 |
-| swap_features | 4 | 0 | 0% | +0.01153 |
-| change_max_depth | 4 | 0 | 0% | +0.01307 |
-| change_model | 26 | 0 | 0% | +0.23260 |
-| change_n_estimators | 3 | 0 | 0% | +0.01115 |
-| add_features | 4 | 0 | 0% | +0.01137 |
-| remove_features | 3 | 0 | 0% | +0.01293 |
+| change_max_features_ratio | 6 | 0 | 0% | +0.00928 |
+| change_min_samples_leaf | 4 | 0 | 0% | +0.00943 |
+| remove_features | 3 | 0 | 0% | +0.00917 |
+| swap_features | 6 | 0 | 0% | +0.01049 |
+| change_model | 25 | 0 | 0% | +0.36355 |
+| change_max_depth | 3 | 0 | 0% | +0.00891 |
+| add_features | 1 | 0 | 0% | +0.00933 |
+| change_n_estimators | 2 | 0 | 0% | +0.00823 |
 
 ## Stagnation Analysis
 
@@ -30,24 +30,24 @@
 
 | Model | Tries | Best Brier | Avg Brier | Worst Brier |
 |-------|-------|------------|-----------|-------------|
-| catboost | 2 | 1.00000 | 1.00000 | 1.00000 |
-| extra_trees | 9 | 0.22118 | 0.22247 | 0.22389 |
-| gradient_boosting | 4 | 0.26557 | 0.27552 | 0.28707 |
-| lightgbm | 6 | 0.22997 | 0.24335 | 0.25992 |
-| random_forest | 24 | 0.22124 | 0.22434 | 0.22793 |
-| xgboost | 5 | 1.00000 | 1.00000 | 1.00000 |
+| catboost | 8 | 1.00000 | 1.00000 | 1.00000 |
+| extra_trees | 4 | 0.22379 | 0.22500 | 0.22702 |
+| gradient_boosting | 4 | 0.26579 | 0.26839 | 0.27226 |
+| lightgbm | 6 | 0.23142 | 0.23661 | 0.24019 |
+| random_forest | 25 | 0.21927 | 0.22164 | 0.22612 |
+| xgboost | 3 | 1.00000 | 1.00000 | 1.00000 |
 
 ## Feature Count vs Brier
 
 | Feature Range | Tries | Best Brier | Avg Brier |
 |---------------|-------|------------|-----------|
-| 190-199 | 3 | 0.22342 | 0.22511 |
-| 200-209 | 47 | 0.22118 | 0.34624 |
+| 190-199 | 3 | 0.22068 | 0.22135 |
+| 200-209 | 47 | 0.21927 | 0.41000 |
 
 ## Data-Driven Recommendations
 
-- BEST mutation type: **change_min_samples_leaf** (0/3 hit rate)
-- WORST mutation type: **change_min_samples_leaf** (0/3 hit rate) — avoid
+- BEST mutation type: **change_max_features_ratio** (0/6 hit rate)
+- WORST mutation type: **change_max_features_ratio** (0/6 hit rate) — avoid
 - STUCK: 50 iterations without improvement
 - ACTION: Try a diversity move (change_model or large swap_features)
-- Best model type: **extra_trees** (best Brier 0.22118)
+- Best model type: **random_forest** (best Brier 0.21927)
