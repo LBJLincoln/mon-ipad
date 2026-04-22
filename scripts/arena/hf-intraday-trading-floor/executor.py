@@ -30,6 +30,16 @@ MAX_OPEN_PER_AGENT = 5  # 2026-04-21: 3→5, 14×5=70 max positions (+67%)
 EOD_FLATTEN_UTC_HOUR = 19
 EOD_FLATTEN_UTC_MIN = 50
 
+# 2026-04-22 — HF Space /app is wiped on every factory_reboot, so the four
+# attribution files above evaporate. persist_ledgers_to_hub() uploads them
+# back to the repo at end-of-tick; restore_ledgers.py re-hydrates them on
+# boot. _LEDGER_DIRTY guards against no-op commits when a tick didn't mutate
+# anything. The ledger jsonl is append-only: we flip dirty on every append.
+_LEDGER_DIRTY: bool = False
+# Max bytes to keep uploading for the append-only ledger before we stop
+# shipping it every tick (still shipped on the tick that crosses the limit).
+_LEDGER_MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+
 
 # ───── 2026-04-21 v2.5 PER-AGENT SUB-BANKROLL ─────
 # Each of 14 personas gets an equal slice of current Alpaca equity at cold-start.
@@ -48,6 +58,8 @@ def _load_bankrolls() -> Dict[str, float]:
 
 def _save_bankrolls(b: Dict[str, float]) -> None:
     BANKROLLS_PATH.write_text(json.dumps(b, indent=2, sort_keys=True))
+    global _LEDGER_DIRTY
+    _LEDGER_DIRTY = True
 
 
 def _fetch_alpaca_equity() -> float:
@@ -101,6 +113,8 @@ def _append_ledger(event: Dict[str, Any]) -> None:
     event["ts"] = event.get("ts") or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     with LEDGER_JSONL.open("a") as fh:
         fh.write(json.dumps(event, default=str) + "\n")
+    global _LEDGER_DIRTY
+    _LEDGER_DIRTY = True
 
 
 def reserve_bankroll(tid: str, amount: float, meta: Optional[Dict[str, Any]] = None) -> float:
@@ -155,6 +169,8 @@ def _load_positions() -> Dict[str, List[Dict[str, Any]]]:
 
 def _save_positions(p: Dict[str, List[Dict[str, Any]]]) -> None:
     POSITIONS_PATH.write_text(json.dumps(p, indent=2, default=str))
+    global _LEDGER_DIRTY
+    _LEDGER_DIRTY = True
 
 
 def _append_order_log(entry: Dict[str, Any]) -> None:
@@ -791,6 +807,8 @@ def _save_recon_cursor(cur: Dict[str, Any]) -> None:
         cur["seen_ids"] = seen[-2000:]
     RECON_CURSOR_PATH.parent.mkdir(parents=True, exist_ok=True)
     RECON_CURSOR_PATH.write_text(json.dumps(cur, indent=2, default=str))
+    global _LEDGER_DIRTY
+    _LEDGER_DIRTY = True
 
 
 def _fetch_fill_activities(lookback_min: int) -> List[Dict[str, Any]]:
@@ -1189,4 +1207,108 @@ def list_open() -> List[Dict[str, Any]]:
         for p in rows:
             if p.get("status") == "open":
                 out.append(p)
+    return out
+
+
+# ───── 2026-04-22 — HF-persistence for the 4 ledger files ─────
+# HF Spaces wipe /app on every factory_reboot. positions.json, agent_bankrolls.json,
+# fill_reconciliation_cursor.json and agent_ledger.jsonl live under /app/data/intraday
+# → every restart = full attribution reset (IA confirmed "36 hours lost").
+# Solution: persist_ledgers_to_hub() uploads all four files to the ITF repo itself
+# (path_in_repo=data/intraday/*). restore_ledgers.py (shipped alongside app.py in
+# the Dockerfile) downloads them on boot before uvicorn starts.
+
+_ITF_REPO_ID = os.environ.get("SPACE_ID") or "LBJLincoln26/intraday-trading-floor"
+
+
+def _hf_token() -> Optional[str]:
+    """Prefer HF_TOKEN_2 (write token, what the memory index says to use), then
+    NBA token, then generic HF_TOKEN. Never raise — silent skip if absent."""
+    for k in ("HF_TOKEN_2", "HF_TOKEN_NBA", "HF_WRITE_TOKEN", "NOMOS_HF_TOKEN", "HF_TOKEN"):
+        v = os.environ.get(k)
+        if v:
+            return v
+    return None
+
+
+def persist_ledgers_to_hub(force: bool = False) -> Dict[str, Any]:
+    """Upload the 4 ledger files to the ITF HF repo so a factory_reboot can
+    re-hydrate them via restore_ledgers.py.
+
+    One commit per invocation (batched via `create_commit` with up to 4 ops)
+    so we don't spam the repo with tick-cadence commits. Called at the end of
+    every tick_once(); _LEDGER_DIRTY gates so ticks with no mutations skip
+    the Hub round-trip entirely.
+
+    Rules:
+      * missing file       → skipped (no error).
+      * agent_ledger.jsonl → skipped when size > 5 MB (append-only, would
+                             thrash the LFS-free 10 MB quota).
+      * no HF token        → returns early with {"skipped": "no-token"}.
+      * any exception      → caught, returned in `errors`, never raised.
+
+    Returns {"uploaded": [...], "skipped": "...", "errors": [...]}.
+    """
+    out: Dict[str, Any] = {"uploaded": [], "errors": []}
+
+    global _LEDGER_DIRTY
+    if not force and not _LEDGER_DIRTY:
+        out["skipped"] = "clean"
+        return out
+
+    tok = _hf_token()
+    if not tok:
+        out["skipped"] = "no-token"
+        return out
+
+    try:
+        from huggingface_hub import HfApi
+        from huggingface_hub import CommitOperationAdd
+    except Exception as e:
+        out["errors"].append(f"import_hfapi: {str(e)[:200]}")
+        return out
+
+    candidates = [
+        (POSITIONS_PATH, "data/intraday/positions.json", False),
+        (BANKROLLS_PATH, "data/intraday/agent_bankrolls.json", False),
+        (RECON_CURSOR_PATH, "data/intraday/fill_reconciliation_cursor.json", False),
+        (LEDGER_JSONL, "data/intraday/agent_ledger.jsonl", True),
+    ]
+    ops: List[Any] = []
+    for local, remote, is_ledger in candidates:
+        try:
+            if not local.exists():
+                continue
+            if is_ledger:
+                try:
+                    size = local.stat().st_size
+                except Exception:
+                    size = 0
+                if size > _LEDGER_MAX_UPLOAD_BYTES:
+                    out.setdefault("skipped_big", []).append(
+                        {"path": remote, "bytes": size}
+                    )
+                    continue
+            ops.append(CommitOperationAdd(path_in_repo=remote, path_or_fileobj=str(local)))
+        except Exception as e:
+            out["errors"].append(f"{remote}: {str(e)[:200]}")
+
+    if not ops:
+        out["skipped"] = "no-ops"
+        _LEDGER_DIRTY = False
+        return out
+
+    try:
+        api = HfApi(token=tok)
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        api.create_commit(
+            repo_id=_ITF_REPO_ID,
+            repo_type="space",
+            operations=ops,
+            commit_message=f"[ITF-LEDGER] tick snapshot {ts}",
+        )
+        out["uploaded"] = [op.path_in_repo for op in ops]
+        _LEDGER_DIRTY = False
+    except Exception as e:
+        out["errors"].append(f"commit: {str(e)[:300]}")
     return out

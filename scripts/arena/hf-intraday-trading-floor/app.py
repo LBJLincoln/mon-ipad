@@ -1636,6 +1636,22 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         for r in results:
             fh.write(json.dumps(r, default=str) + "\n")
 
+    # 2026-04-22 — HF-persist the 4 ledger files (positions, bankrolls, cursor,
+    # ledger jsonl) so a factory_reboot replays state. Gated by _LEDGER_DIRTY
+    # in executor: no Hub round-trip on a no-mutation tick. Silent on outage —
+    # never let Hub problems kill a live tick.
+    try:
+        _lp = executor.persist_ledgers_to_hub()
+        if _lp.get("uploaded"):
+            print(f"[itf] hub-persist uploaded={_lp['uploaded']}",
+                  file=sys.stderr, flush=True)
+        elif _lp.get("errors"):
+            print(f"[itf] hub-persist errors={_lp['errors']}",
+                  file=sys.stderr, flush=True)
+    except Exception as _lpe:
+        print(f"[itf] hub-persist err (non-fatal): {_lpe}",
+              file=sys.stderr, flush=True)
+
     return results
 
 
