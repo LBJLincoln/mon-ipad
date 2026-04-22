@@ -797,24 +797,22 @@ TRADERS = {
     # promote mistral:large primary (decisive at chainthought).
     "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "mistral:large","personality": "chainthought","risk_tolerance": 0.55,
                          "fallback_provider": "cerebras:qwen-3-235b"},
-    # 2026-04-22: selfhost backing Spaces restarted + verified alive at gateway (1.1s chat).
-    # Route selfhost-branded personas BACK to selfhost:* now that gateway routing works.
-    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "selfhost:phi-4-mini",  "personality": "disciplined", "risk_tolerance": 0.40,
+    # 2026-04-22 LOBBYIST v4: bottom-5 reroute after $7 bankroll @ day 129 diagnosis.
+    # selfhost-qwen4b had 80% llm_ok but persona/provider mismatch (phi-4-mini doing
+    # "qwen-disciplined" role) — route to cerebras:qwen-3-235b so name matches reasoning.
+    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "cerebras:qwen-3-235b",  "personality": "disciplined", "risk_tolerance": 0.40,
                          "fallback_provider": "mistral:small"},
-    # NEW 2026-04-17 — NVIDIA NIM (2 keys wired in gateway, 0 usage before) → parity with NBA TF.
-    # 2026-04-21 SWITCHBOARD v3: github:llama-3.3-70b no chain → dead. Both agents now
-    # on nvidia:llama-3.3-70b (primary) with cerebras fallback lanes.
-    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "nvidia:llama-3.3-70b",   "personality": "decisive",    "risk_tolerance": 0.58,
+    # NEW 2026-04-17 — NVIDIA NIM → 2026-04-22 LOBBYIST v4: both NVIDIA personas at
+    # 36-37% llm_ok (degraded). Split to diversify lanes.
+    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "mistral:medium",        "personality": "decisive",    "risk_tolerance": 0.58,
                          "fallback_provider": "cerebras:qwen-3-235b"},
-    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
+    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "github:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
                          "fallback_provider": "cerebras:llama3.1-8b"},
-    # 2026-04-20 SWITCHBOARD v2: selfhost-gemma3 had llm_ok=0/71 — github:mistral-medium
-    # was silently failing. v3 (same day): mistral:medium still at 33% post-reroute.
-    # Likely: Handshake Axelrod block + analytical 3-factor template bloats prompt
-    # past mistral context in Axelrod opener. Swap to cerebras:llama3.1-8b (proven
-    # 9/9 on llama-contra, cheap context) with mistral:small as fallback.
-    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "selfhost:gemma-3-4b", "personality": "analytical",  "risk_tolerance": 0.45,
-                         "fallback_provider": "cerebras:llama3.1-8b"},
+    # 2026-04-20 → 2026-04-22 LOBBYIST v4: selfhost-gemma3 at 47% llm_ok (selfhost:gemma-3-4b
+    # averages 23.6s response — timeouts). Promote cerebras:llama3.1-8b (previously fallback)
+    # to primary; push mistral:small to fallback.
+    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "cerebras:llama3.1-8b", "personality": "analytical",  "risk_tolerance": 0.45,
+                         "fallback_provider": "mistral:small"},
     "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "selfhost:qwen3-0.6b", "personality": "conservative","risk_tolerance": 0.30,
                          "fallback_provider": "mistral:small"},
     "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "selfhost:qwen2.5-1.5b","personality": "uncensored",  "risk_tolerance": 0.60,

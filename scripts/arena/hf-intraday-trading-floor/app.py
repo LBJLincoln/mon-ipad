@@ -68,7 +68,7 @@ POWER_AGENTS = {
     "momentum-1", "breakout-1", "leveraged-momentum-1",
     "news-catalyst-1", "crypto-whale-1", "scalper-1",
 }
-POWER_STAKE_FLOOR_PCT = 0.20  # 20% of agent sub-bankroll per trade
+POWER_STAKE_FLOOR_PCT = float(os.environ.get("ITF_STAKE_FLOOR_PCT", "0.20"))  # 20% default, bumpable via env for max-aggressive runs
 POWER_LIQUIDITY_FLOOR_USD = 50_000_000  # $50M daily dollar volume = liquid enough
                                           # to exit any single-agent stake in seconds
 
@@ -1234,8 +1234,14 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     # Addresses user report: "ITF seems slow, orders not moving at all".
     try:
         _bs = executor.refresh_broker_statuses()
-        if _bs.get("polled", 0) > 0:
+        if _bs.get("polled", 0) > 0 or _bs.get("budget_exceeded", 0) > 0:
             print(f"[itf] broker-status refresh: {_bs}", file=sys.stderr, flush=True)
+        if _bs.get("budget_exceeded", 0) > 0:
+            # 2026-04-22 — surface this so the tick stall RCA is visible. Means
+            # positions.json had more non-terminal orders than the Alpaca poll
+            # budget allowed. Continuing is SAFE: positions are retried next tick.
+            print("[itf] WARN broker-status budget exceeded — non-terminal orders "
+                  "carried to next tick", file=sys.stderr, flush=True)
     except Exception as _brs:
         print(f"[itf] broker-status refresh err (non-fatal): {_brs}", file=sys.stderr, flush=True)
     # v2.5 — ensure sub-bankrolls are seeded (idempotent) and sync each into STATE.

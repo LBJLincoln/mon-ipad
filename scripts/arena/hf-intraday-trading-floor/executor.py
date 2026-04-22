@@ -190,7 +190,8 @@ def refresh_broker_statuses() -> Dict[str, int]:
     "filled": 11, "canceled": 2}. Called once at the top of tick_once() so the
     /api/status view never shows stale pending_new.
     """
-    stats = {"polled": 0, "updated": 0, "filled": 0, "canceled": 0, "other": 0, "errors": 0}
+    stats = {"polled": 0, "updated": 0, "filled": 0, "canceled": 0, "other": 0,
+             "errors": 0, "budget_exceeded": 0}
     if not live_mode():
         return stats
     key = os.environ.get("ALPACA_PAPER_KEY")
@@ -201,14 +202,26 @@ def refresh_broker_statuses() -> Dict[str, int]:
     TERMINAL = {
         "filled", "canceled", "cancelled", "expired", "rejected", "replaced",
         "closed_by_agent", "closed", "done_for_day", "stopped", "suspended",
+        "not_found",
     }
     import requests
     headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
+
+    # 2026-04-22 — time-budget guard. Without this, a flaky Alpaca paper-api
+    # with N non-terminal orders × 6s per-call could block tick_once() for
+    # ~N*6s (observed: ~16 min stall at tick 1 after 232 daytrades piled up).
+    budget_sec = float(os.environ.get("ITF_REFRESH_BROKER_BUDGET_SEC", "20"))
+    deadline = time.monotonic() + budget_sec
 
     positions = _load_positions()
     changed = False
     for agent_tid, lst in positions.items():
         for p in lst:
+            if time.monotonic() >= deadline:
+                stats["budget_exceeded"] += 1
+                if changed:
+                    _save_positions(positions)
+                return stats
             oid = p.get("broker_order_id")
             if not oid:
                 continue
