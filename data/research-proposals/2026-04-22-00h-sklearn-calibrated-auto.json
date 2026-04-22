@@ -1,0 +1,49 @@
+{
+  "generated_at": "2026-04-22T00:00:00Z",
+  "cycle": "cloud-brain-4h-2026-04-22-00h",
+  "title": "CalibratedClassifierCV Auto-Selection + Fleet Wake-Up Priority",
+  "priority": "HIGH",
+  "source_search": "NBA game outcome prediction machine learning Brier score 2026 SOTA calibration isotonic Platt scaling",
+  "sota_findings": [
+    {
+      "ref": "MDPI Information Jan 2026 (0.199 LR)",
+      "reconfirmed": true,
+      "note": "LR baseline 0.199, XGBoost 0.202. CalibratedClassifierCV with Brier-based auto-selection of sigmoid vs isotonic mentioned as best practice."
+    },
+    {
+      "ref": "Nature Scientific Reports 2025 (CNN 0.221)",
+      "reconfirmed": true,
+      "note": "Stacked ensemble CNN achieves Brier 0.221. Our S22 fleet best 0.22073 already matches this. Next frontier is MLP meta-learner."
+    },
+    {
+      "title": "CalibratedClassifierCV Auto Method Selection",
+      "source": "scikit-learn best practices (confirmed via search 2026-04-22)",
+      "technique": "CalibratedClassifierCV with method='isotonic' vs method='sigmoid', evaluated on Brier loss on a held-out temporal split, winner selected automatically.",
+      "current_gap": "Political hf-space/app.py has both sigmoid and isotonic_temporal but selects via random GA mutation, not automatic Brier-based selection.",
+      "proposed_addition": "Add 'calibrated_auto' calibration method: fit model on train split, try both CalibratedClassifierCV(sigmoid) and IsotonicRegression on held-out temporal slice, pick lower Brier, use that for eval. 15-20 lines of code.",
+      "expected_gain": "-0.002 to -0.005 Brier vs random calibration selection",
+      "effort": "LOW — single method addition in hf-space/app.py eval loop"
+    }
+  ],
+  "fleet_alert": {
+    "severity": "HIGH",
+    "observation": "As of 2026-04-22T00:00Z only 1 of 11 islands running (S17 gen=2038 brier=0.22358). All Nomos42 saturated, TESTforge42/LBJLincoln sleeping.",
+    "action_required": "VM keepalive script must urgently ping S18, S22, P4, P5, P7. S22 fleet best 0.22073 has been sleeping since Apr 20."
+  },
+  "rotation_c_action_taken": {
+    "description": "Calibration weight boost in nomos-political-alpha/hf-space/app.py via GH Actions workflow",
+    "commit": "ab5b7b412ee85cafc1a53ecb9ac48dc3c4c60f4a",
+    "changes": {
+      "init_weights_old": {"none": 18, "sigmoid": 10, "venn_abers": 19, "beta": 19, "lr_meta": 11, "lr_platt": 12, "isotonic_temporal": 11},
+      "init_weights_new": {"none": 10, "sigmoid": 10, "venn_abers": 26, "beta": 12, "lr_meta": 12, "lr_platt": 16, "isotonic_temporal": 14},
+      "mutate_weights_old": {"none": 18, "sigmoid": 10, "venn_abers": 24, "beta": 20, "lr_meta": 9, "lr_platt": 10, "isotonic_temporal": 9},
+      "mutate_weights_new": {"none": 10, "sigmoid": 10, "venn_abers": 28, "beta": 12, "lr_meta": 10, "lr_platt": 15, "isotonic_temporal": 15}
+    },
+    "rationale": "S22 venn_abers fleet best 0.22073 → boost venn_abers. beta depends on optional betacal pkg → reduce. none reduced (calibration critical with 1180 events). lr_platt + isotonic_temporal boosted (stable, proven)."
+  },
+  "next_proposal": {
+    "title": "calibrated_auto method for political hf-space/app.py",
+    "schedule": "Next Rotation C cycle or Rotation D (data pipeline health first)",
+    "complexity": "LOW — 15-20 lines in eval loop"
+  }
+}
