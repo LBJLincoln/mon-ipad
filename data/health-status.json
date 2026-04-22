@@ -1,170 +1,46 @@
 {
-  "brain_cycle": "2026-04-22T12:00:00Z",
-  "updated_at": "2026-04-22T12:35:00Z",
-  "cycle_note": "12:00Z cycle — odd cycle. All 4 responding NBA islands (S13/14/15/18) show fresh restarts (gen<50) — spaces restarted between 08:00Z and 12:00Z. S13 stagnation=19 EXCEEDS 15-gen threshold → DIVERSIFY queued for VM :30 cron (cloud brain cannot POST). S18 stagnation=14, 1 gen from threshold → WATCH. S17/S22 persistent 503 after 2 attempts each. Political: P4 POL LIVE BEST 0.24996, P1/P2 plateau at 0.2527 (two hard resets each, 272 feat ceiling), P7 persistent 503.",
+  "cycle_ts": "2026-04-22T08:00:00Z",
+  "source": "cloud-brain-sonnet-4.6",
   "nba_islands": {
-    "S13_nba_evo_4": {
-      "space": "nomos42/nba-evo-4",
-      "status": "EVOLVING — STAGNATION_ALERT",
-      "generation": 20,
-      "best_brier": 0.22479,
-      "stagnation_cycles": 19,
-      "model": "extra_trees",
-      "note": "FRESH RESTART (gen 402→20 since 08:00Z). stagnation=19 EXCEEDS 15-gen threshold. VM :30 cron must POST /api/command {action:diversify}. Cloud brain cannot POST directly.",
-      "action": "DIVERSIFY — VM cron :30 handles"
-    },
-    "S14_nba_evo_5": {
-      "space": "nomos42/nba-evo-5",
-      "status": "EVOLVING",
-      "generation": 32,
-      "best_brier": 0.22431,
-      "stagnation_cycles": 0,
-      "model": "random_forest",
-      "note": "FRESH RESTART (gen 543→32 since 08:00Z). Active evolution, stagnation=0. brier=0.22431 at gen=32 is strong early. Pareto front top configs hitting 0.22 range.",
-      "action": "none"
-    },
-    "S15_nba_evo_6": {
-      "space": "nomos42/nba-evo-6",
-      "status": "EVOLVING",
-      "generation": 28,
-      "best_brier": 0.22361,
-      "stagnation_cycles": 0,
-      "model": "random_forest",
-      "note": "FRESH RESTART (gen 901→28 since 08:00Z). Active evolution, stagnation=0. brier=0.22361 with 56 features. Pareto front 6 solutions.",
-      "action": "none"
-    },
-    "S17_nba_evo_s17": {
-      "space": "lbjlincoln26/nba-evo-s17",
-      "status": "PERSISTENT_503",
-      "generation": 2146,
-      "best_brier": 0.22289,
-      "model": "ensemble",
-      "note": "503 on BOTH round-1 and round-2 fetch attempts. Persistent down — last confirmed 08:00Z (stagnation was 13 at that check).",
-      "action": "INVESTIGATE — persistent 503 after 2 attempts"
-    },
-    "S18_nba_evo_s18": {
-      "space": "testforge42/nba-evo-s18",
-      "status": "EVOLVING — NEAR_STAGNATION",
-      "generation": 45,
-      "best_brier": 0.22248,
-      "stagnation_cycles": 14,
-      "model": "extra_trees",
-      "note": "FRESH RESTART (gen 1540→45 since 08:00Z). NBA LIVE FLEET BEST 0.22248 among responding islands. stagnation=14 — ONE gen from 15-threshold. Best achieved at gen=1 (0.22228 needed to reset counter). Monitor.",
-      "action": "WATCH — diversify if stagnation hits 15 next cycle"
-    },
-    "S22_nba_evo_s22": {
-      "space": "testforge42/nba-evo-s22",
-      "status": "PERSISTENT_503",
-      "generation": 555,
-      "best_brier": 0.2236,
-      "model": "venn_abers_fusion",
-      "note": "503 on BOTH round-1 and round-2 fetch attempts. Historical best 0.22073 (FLEET BEST, checkpointed 2026-04-19). Persistent down.",
-      "action": "INVESTIGATE — persistent 503 after 2 attempts"
-    }
+    "S13_nba_evo_4": {"status": "online", "cycle": 27, "best_brier": 0.22523, "stagnation_cycles": 16, "action": "diversify_queued"},
+    "S14_nba_evo_5": {"status": "down_503", "note": "Nomos42 acct 403 on restart"},
+    "S15_nba_evo_6": {"status": "down_503", "note": "Nomos42 acct 403 on restart"},
+    "S17_nba_evo_s17": {"status": "down_503", "note": "LBJLincoln26 - keepalive should recover"},
+    "S18_nba_evo_s18": {"status": "online", "cycle": 40, "best_brier": 0.22248, "stagnation_cycles": 13, "model": "extra_trees", "note": "LIVE_BEST"},
+    "S22_nba_evo_s22": {"status": "down_503", "note": "TESTforge42 - keepalive should recover"}
+  },
+  "nba_summary": {
+    "live_best_brier": 0.22248,
+    "fleet_record_brier": 0.22073,
+    "checkpoint_threshold": 0.22085,
+    "new_checkpoint": false,
+    "islands_online": 2,
+    "islands_down": 4
   },
   "political_islands": {
-    "P1_political_alpha": {
-      "space": "nomos42/political-alpha",
-      "status": "EVOLVING",
-      "generation": 632,
-      "best_brier": 0.2527,
-      "stagnation_cycles": 0,
-      "model": "xgboost",
-      "note": "gen=632, brier=0.2527. Two hard resets at cycles 161/201 confirmed ineffective — 272 feature candidates is the hard ceiling. No stagnation alert (counter reset by hard resets).",
-      "action": "none"
-    },
-    "P2_political_alpha_2": {
-      "space": "nomos42/political-alpha-2",
-      "status": "EVOLVING",
-      "generation": 632,
-      "best_brier": 0.2527,
-      "stagnation_cycles": 0,
-      "model": "xgboost",
-      "note": "gen=632, brier=0.2527. Same plateau as P1 at identical gen and brier — both spaces running identical config. 272 feature candidates ceiling confirmed.",
-      "action": "none"
-    },
-    "P4_political_alpha_4": {
-      "space": "lbjlincoln/political-alpha-4",
-      "status": "EVOLVING",
-      "generation": 519,
-      "best_brier": 0.24996,
-      "stagnation_cycles": 0,
-      "model": "xgboost_brier",
-      "note": "POL LIVE BEST 0.24996. Plateau at 0.24996 for 494 consecutive gens (gen 25-519). Two hard resets didn't break plateau. xgboost_brier specialization is the edge vs plain xgboost (P1/P2). Recommendation: port xgboost_brier to P1/P2/P5.",
-      "action": "none"
-    },
-    "P5_political_alpha_5": {
-      "space": "lbjlincoln/political-alpha-5",
-      "status": "EVOLVING",
-      "generation": 726,
-      "best_brier": 0.25312,
-      "stagnation_cycles": 0,
-      "model": "catboost",
-      "note": "gen=726, brier=0.25312 — slightly worse than CLAUDE.md 0.25219 (space may have reset). Historical best 0.24923 checkpointed 2026-04-20 is POL HISTORICAL BEST.",
-      "action": "none"
-    },
-    "P7_political_alpha_7": {
-      "space": "lbjlincoln/political-alpha-7",
-      "status": "PERSISTENT_503",
-      "generation": 29231,
-      "best_brier": 0.24937,
-      "model": "gradient_boost",
-      "note": "503 on both fetch attempts. Was POL LIVE BEST 0.24937 — now replaced by P4 0.24996 as live best (P4 is better).",
-      "action": "INVESTIGATE — persistent 503"
-    }
+    "P1_political_alpha": {"status": "online", "gen": 1220, "best_brier": 0.25022, "stagnation_cycles": 30, "action": "diversify_queued"},
+    "P2_political_alpha_2": {"status": "down_503", "note": "Nomos42 acct 403 on restart"},
+    "P4_political_alpha_4": {"status": "online", "gen": 1220, "best_brier": 0.25022, "stagnation_cycles": 30, "action": "diversify_queued"},
+    "P5_political_alpha_5": {"status": "down_503", "note": "LBJLincoln - keepalive should recover"},
+    "P7_political_alpha_7": {"status": "online", "gen": 658, "best_brier": 0.24994, "stagnation_cycles": 0, "note": "POL_LIVE_BEST_improving"}
   },
-  "fleet_summary": {
-    "nba_live_fleet_best": 0.22248,
-    "nba_live_fleet_best_island": "S18 (extra_trees, gen=45, stagnation=14)",
-    "nba_historical_fleet_best": 0.22073,
-    "nba_historical_fleet_best_island": "S22 gen39 venn_abers_fusion (checkpointed 2026-04-19) — S22 currently PERSISTENT_503",
-    "nba_checkpoint_target": 0.22085,
-    "nba_checkpoint_triggered": false,
-    "nba_gap_to_checkpoint_target": 0.00163,
-    "nba_fresh_restart_note": "S13/S14/S15/S18 all gen<50 — mass fresh restarts between 08:00Z and 12:00Z. Fresh islands improve rapidly; S13 already has stagnation=19 at gen=20 (unusual — possibly sparse feature space at restart). Next cycle should see gen 50-100+ if spaces stay up.",
-    "pol_live_fleet_best": 0.24996,
-    "pol_live_fleet_best_island": "P4 (xgboost_brier, gen=519)",
-    "pol_historical_fleet_best": 0.24923,
-    "pol_historical_fleet_best_island": "P5 gen21048 catboost (checkpointed 2026-04-20)",
-    "pol_ceiling_note": "All 4 responding political islands plateaued at 0.249-0.252. Hard resets ineffective. Root cause: 272 feature candidates (vs NBA 3377). Political engine feature expansion is highest-leverage intervention.",
-    "islands_responding_nba": 4,
-    "islands_503_nba": 2,
-    "islands_responding_pol": 4,
-    "islands_503_pol": 1,
-    "stagnation_alerts": [
-      "S13 stagnation=19 → DIVERSIFY — VM cron :30 handles",
-      "S18 stagnation=14 → WATCH (1 from 15-threshold)"
-    ]
+  "political_summary": {
+    "live_best_brier": 0.24994,
+    "historical_best": 0.24923,
+    "islands_online": 3,
+    "islands_down": 2
   },
-  "engine_parity": {
-    "status": "ASSUMED OK — verified at 08:00Z, not re-checked this cycle",
-    "canonical_path": "mon-ipad/features/engine.py",
-    "note": "Fresh space restarts do not change engine.py. Parity assumed valid until next verification cycle."
-  },
-  "sota_research": {
-    "cycle": "odd — no new SOTA search (even-cycle 08:00Z proposals active)",
-    "new_proposal": "2026-04-22-12h-fatigue-elo-feature-audit.json",
-    "key_insight": "home_next + team_elo_5y = top-2 features per 3 independent 2025-2026 SOTA studies. Audit engine.py v3.1 54 categories for these. LR uncertainty-aware (0.199) and CNN (0.221) both use them — our gap to 0.22085 target is 0.00163, addressable via feature completeness."
-  },
-  "councils_status": "DECOMMISSIONED 2026-04-20 — all 9 TESTforge42 dept councils deleted. Do not recreate.",
-  "work_queue_status": {
-    "pending_count": 1,
-    "pending_items": ["tf-axelrod-verify-tune-12 (USER GATE only — awaiting explicit HF push approval)"],
-    "done_count": 26,
-    "crash_recovery": "No local-agent-* crashes detected this cycle. All pending items accounted for."
-  },
-  "actions_this_cycle": [
-    "STEP 0: No crashes — only pending item is fire-12 (user-gated, brain skips)",
-    "STEP 1: S13 DIVERSIFY flagged (stagnation=19>15) — VM :30 cron handles POST /api/command",
-    "STEP 1: S18 WATCH logged (stagnation=14, 1 from threshold)",
-    "STEP 1: S17/S22 persistent 503 logged",
-    "STEP 2: Political P4 confirmed POL LIVE BEST 0.24996. P7 503. Rotation B engine review complete.",
-    "STEP 3: Councils DECOMMISSIONED — skipped",
-    "STEP 4: R8 done — skipped",
-    "STEP 5: xgboost_brier advantage (P4) noted for cross-port to P1/P2/P5",
-    "OUTPUT: health-status.json updated",
-    "OUTPUT: research-proposals/2026-04-22-12h-fatigue-elo-feature-audit.json written",
-    "OUTPUT: nomos-political-alpha/data/brain-status.json updated (Rotation B)",
-    "OUTPUT: CLAUDE.md island table updated"
-  ]
+  "councils": "DECOMMISSIONED_2026-04-20",
+  "actions_taken": [
+    "diversify queued S13 (stagnation 16 cycles) — fixed key from action to command",
+    "diversify queued P1 (stagnation 30 cycles)",
+    "diversify queued P4 (stagnation 30 cycles)",
+    "pushed apply-pol-fire17-v2.yml: fire-18 patches finally applied via base64-encoded Python, no heredoc escaping"
+  ],
+  "open_issues": [
+    "4 NBA islands down (S14/S15 on Nomos42 403, S17/S22 need keepalive)",
+    "2 Political islands down (P2 on Nomos42 403, P5 needs keepalive)",
+    "tf-axelrod-verify-tune-12 PENDING USER GATE: approve HF Space push"
+  ],
+  "engine_parity": "not_checked_this_cycle"
 }
