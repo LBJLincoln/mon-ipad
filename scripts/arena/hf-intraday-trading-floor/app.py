@@ -41,6 +41,16 @@ if str(_REPO) not in sys.path:
 from scripts.arena.shared.quote_bus import refresh as quote_refresh, latest as quote_latest  # noqa: E402
 from scripts.arena.shared.context_bus import build_intraday_context  # noqa: E402
 
+# 2026-04-22 EVENT MARKETS — Kalshi + Polymarket paper-mode executor. Both venues
+# READ live (free public APIs, no auth). Fills are SIMULATED at midpoint +
+# slippage. Live execution is gated behind KALSHI_LIVE=1 / POLY_LIVE=1 (neither
+# on by default — Poly requires USDC+gas on Polygon, Kalshi needs signed creds).
+# Module lives beside app.py; on HF, /home/user/app is already sys.path[0], and
+# locally the script-dir is sys.path[0] too.
+if str(_HERE.parent) not in sys.path:
+    sys.path.insert(0, str(_HERE.parent))
+import event_executor as ev  # noqa: E402
+
 
 # ── 2026-04-22 POWER-DEPLOY WINDOW — force >50% fleet bankroll into liquid
 # positions during the first 2h of US market open (14:30-16:30 UTC weekdays).
@@ -292,6 +302,18 @@ OR an intraday options derivative (dry-run logged; live options routing via exec
     "max_loss_pct": 0.01-0.05,
     "thesis": "1-2 sentence reason — cite IV rank, realized vol, gamma, or skew"
   }
+OR a BINARY EVENT-MARKET bet (paper-mode, Kalshi + Polymarket — 24/7, not market-hours bound):
+  { "action": "event_trade",
+    "venue": "kalshi"|"polymarket",
+    "market_id": <market_id string from EVENT MARKETS — PAPER-TRADEABLE block above>,
+    "side": "yes"|"no",
+    "stake_usd": 5 to 1500,   // min $5, cap min($1500, 0.05 × your_bankroll)
+    "thesis": "1-2 sentence reason — cite NBA/POL/MM signal + price mispricing"
+  }
+  Payoff: YES resolves to $1.00, NO to $0.00 (or vice versa) at market close. Entry
+  at midpoint + 1¢ slippage. Paper-mode — position marks to current midpoint each
+  tick, realized at close_ts. Use for: election catalyst, Fed-rate, crypto-price,
+  sports-outcome, SCOTUS ruling. 24/7 compounding outside equity hours.
 
 Return JSON ONLY. No markdown fences, no prose.
 
@@ -828,6 +850,40 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         poly_lines.append(f"  {prob_str} {vol_str}/24h — {q}")
     poly_block = "\n".join(poly_lines) or "  (no active markets)"
 
+    # 2026-04-22 — live Kalshi + Polymarket order books (paper-tradeable). Each
+    # row is a fully-quoted binary market the agent can stake YES or NO on via
+    # {"action":"event_trade", ...}. Both venues use free public APIs (no auth
+    # needed for data). Cache TTL 60s inside event_executor.
+    _ev_lines: List[str] = []
+    try:
+        kalshi_rows = ev.list_markets("kalshi", limit=8) or []
+        for r in kalshi_rows:
+            mid = (r.get("market_id") or "")[:36]
+            q = (r.get("question") or "")[:85]
+            yp = r.get("yes_price"); np = r.get("no_price")
+            vol = r.get("volume_usd") or 0
+            _ev_lines.append(
+                f"  [KALSHI {mid}] YES={yp:.2f} NO={np:.2f} "
+                f"vol=${vol:,.0f} — {q}" if yp is not None and np is not None
+                else f"  [KALSHI {mid}] (no live midpoint) — {q}"
+            )
+    except Exception as _ke:
+        _ev_lines.append(f"  (kalshi feed err: {_ke})")
+    try:
+        poly_rows = ev.list_markets("polymarket", limit=8) or []
+        for r in poly_rows:
+            mid = (r.get("market_id") or "")[:36]
+            q = (r.get("question") or "")[:85]
+            yp = r.get("yes_price"); np = r.get("no_price")
+            vol = r.get("volume_usd") or 0
+            _ev_lines.append(
+                f"  [POLY {mid}] YES={yp:.2f} NO={np:.2f} "
+                f"vol=${vol:,.0f}/24h — {q}"
+            )
+    except Exception as _pe:
+        _ev_lines.append(f"  (polymarket feed err: {_pe})")
+    event_markets_block = "\n".join(_ev_lines) or "  (no live binary markets)"
+
     pqtf = ctx.get("pqtf_state") or {}
     pqtf_block = (
         f"last_day={pqtf.get('last_day', '?')} fleet=${pqtf.get('fleet_bankroll', '?')} "
@@ -989,8 +1045,11 @@ INTRADAY TAPE ({ctx.get('quotes_ts')} · {ctx.get('quotes_source')}):
 LIVE NEWS (Alpaca news feed, ticker-indexed, last hour):
 {news_block}
 
-EVENT MARKETS (Polymarket, top volume 24h):
+EVENT MARKETS — SIGNAL (Polymarket context, top volume 24h):
 {poly_block}
+
+EVENT MARKETS — PAPER-TRADEABLE (Kalshi + Polymarket, YES/NO binary at midpoint + 1¢ slippage):
+{event_markets_block}
 
 POL ENGINE HOT SIGNALS (44-cat upstream, refreshed ~15min — macro / catalysts / insider / prediction-markets):
 {pol_hot_block}
@@ -1218,6 +1277,15 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         q = (ctx.get("quotes") or {}).get(ticker) or {}
         return q.get("last")
     executor.close_expired(now, quote_fn=_q)
+
+    # 2026-04-22 — close any Kalshi/Poly position whose market close_ts has passed.
+    try:
+        _ev_closed = ev.expire_stale(now)
+        if _ev_closed:
+            print(f"[itf] event-markets expired {_ev_closed} stale positions",
+                  file=sys.stderr, flush=True)
+    except Exception as _ee:
+        print(f"[itf] event expire err: {_ee}", file=sys.stderr, flush=True)
 
     # 2026-04-21 BP GUARD — fetch free Alpaca buying power once per tick so bracket
     # submits downsize or pass when margin is exhausted. Observed 2026-04-21: 53
@@ -1510,6 +1578,33 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
             result["execution"] = entry
             STATE["agents"][persona["tid"]]["trades"] += 1
             _submits_this_tick[persona["tid"]] = _submits_this_tick.get(persona["tid"], 0) + 1
+        elif action == "event_trade":
+            # 2026-04-22 binary event-market paper-trade (Kalshi + Polymarket).
+            # 24/7 asset class — not gated by equity hours. Per-agent stake cap =
+            # min($1500, 5% of agent bankroll) so one pick can't blow the pot.
+            _venue = (decision.get("venue") or "").lower()
+            _mid = decision.get("market_id")
+            _side = (decision.get("side") or "").lower()
+            if _venue not in ("kalshi", "polymarket") or not _mid or _side not in ("yes", "no"):
+                STATE["agents"][persona["tid"]]["passes"] += 1
+                result["execution"] = {"status": "error",
+                                       "reason": f"bad event_trade: venue={_venue} mid={_mid} side={_side}"}
+            else:
+                _agent_bk = executor.get_bankroll(persona["tid"])
+                _raw_stake = float(decision.get("stake_usd", 25) or 25)
+                _cap = min(1500.0, _agent_bk * 0.05)
+                _stake = max(5.0, min(_raw_stake, _cap))
+                entry = ev.place_paper_order(
+                    agent_tid=persona["tid"],
+                    venue=_venue,
+                    market_id=_mid,
+                    side=_side,
+                    size_usd=_stake,
+                    thesis=decision.get("thesis", ""),
+                )
+                result["execution"] = entry
+                STATE["agents"][persona["tid"]]["trades"] += 1
+                _submits_this_tick[persona["tid"]] = _submits_this_tick.get(persona["tid"], 0) + 1
         else:
             STATE["agents"][persona["tid"]]["passes"] += 1
         results.append(result)
