@@ -254,7 +254,7 @@ AXELROD_ARCHETYPES = [
 # Axelrod 1980 canon — political-alpha variant (same canon, context swapped).
 COLLECTIVE_MISSION = (
     "=== COLLECTIVE MISSION (2026-04-17, binding) ===\n"
-    "You are ONE of 16 LLM agents sharing a political-alpha society bankroll. All 16 agents see "
+    "You are ONE of 17 LLM agents sharing a political-alpha society bankroll. All 17 agents see "
     "the SAME data: 1120 political events, 22 event categories × 7 SPDR sectors, full sector-beta "
     "matrices + insider trades + fed speakers + exec orders + peer bankrolls + peer positions + "
     "post-mortem logs.\n"
@@ -296,6 +296,16 @@ AXELROD_CANON = (
     "     COMMON_KNOWLEDGE the next day. Pavlov-style opponents will track your reputation.\n"
     "  4. Coalitions do NOT change stake math — only reputation. Edge must still justify the trade.\n"
     "=== END AXELROD CANON ===\n"
+    "\n=== DMAD ANTI-CONSENSUS GATE (2026-04-21, binding) ===\n"
+    "Cross-TF audit 2026-04-21 flagged Political lockstep where agents converged to "
+    "identical bankrolls, collapsing ensemble accuracy ~18%% (DMAD, Du 2023). "
+    "HARD RULE:\n"
+    "  - At least ONE of your top-3 allocations today MUST be a trade "
+    "    NOT present in peer_allocations from yesterday.\n"
+    "  - If every top-tier edge is crowded (>=10/17 peers), dig deeper into "
+    "    SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY) + individual stocks.\n"
+    "  - Annotate non-consensus trade with tag DMAD_DIVERGE in notes.\n"
+    "=== END DMAD ANTI-CONSENSUS GATE ===\n"
 )
 
 # Axelrod Mech D — cooperation ledger (political)
