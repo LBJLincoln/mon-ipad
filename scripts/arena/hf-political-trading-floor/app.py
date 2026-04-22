@@ -104,6 +104,7 @@ _experiment_running = False
 _experiment_state = {}  # Persisted to disk
 _agent_logs: Dict[str, List[dict]] = defaultdict(list)  # Per-agent decision log
 _state_lock = threading.Lock()
+_started_utc: Optional[str] = None  # 2026-04-22: set on first run_experiment entry, exposed via /api/status
 _common_knowledge: Dict[str, str] = {}  # Axelrod CK[D]: day_date → formatted block for day D+1
 _sacrificial_assignments: Dict[str, str] = {}  # Axelrod Mech B: tid → archetype for NEXT day
 _used_archetypes: Dict[str, set] = defaultdict(set)  # Axelrod Mech B: tid → set of archetypes tried (per-agent fallback)
@@ -2388,11 +2389,14 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     must allocate 100% of their bankroll (long/short sector ETFs) or hold cash.
     One LLM call per agent per day (not per event).
     """
-    global _llm_calls, _llm_failures, _gateway_routed, _gateway_fallback
-    _llm_calls = 0
-    _llm_failures = 0
-    _gateway_routed = 0
-    _gateway_fallback = 0
+    # 2026-04-22 PLUMBER RCA fix: do NOT reset _llm_calls/_llm_failures on every
+    # run_experiment entry — that was the root cause of the "soft-restart:
+    # calls=0" false-positive that PLUMBER traced and keepalive then re-kicked.
+    # Lifetime counters are now only zeroed in /api/reset. Per-season metrics
+    # live on the per-agent state (`state[tid]["llm_calls"]`).
+    global _llm_calls, _llm_failures, _gateway_routed, _gateway_fallback, _started_utc
+    if _started_utc is None:
+        _started_utc = datetime.now(timezone.utc).isoformat()
 
     # Async pre-ping (non-blocking): wake any selfhost Spaces still in substitution pool.
     # 2026-04-18: primary selfhost agents swapped to GitHub Models, so this runs background-only.
@@ -2452,7 +2456,10 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         }
 
     global _experiment_running, _experiment_state, _common_knowledge, _society_archetypes_by_day
-    _experiment_running = True
+    # 2026-04-22: claim atomically — /api/run gate already flipped this True under
+    # _state_lock before spawning _bg, but reaffirm here for direct Gradio entry.
+    with _state_lock:
+        _experiment_running = True
     _stop_event.clear()
     _common_knowledge = {}  # Reset per run; built day-by-day (Axelrod Mech A)
     _sacrificial_assignments.clear()  # Axelrod Mech B reset
@@ -3141,7 +3148,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
         }
         _save_state_to_disk(_experiment_state)
         _save_logs_to_disk()
-    _experiment_running = False
+    # 2026-04-22 PLUMBER RCA fix: do NOT flip _experiment_running=False here.
+    # The outer _bg/_auto_start wrapper uses `while not _stop_event.is_set()`
+    # to immediately loop back into run_experiment for multi-season compound.
+    # Flipping False created a ~0.5s race window where keepalive saw
+    # running=false and POSTed /api/run → second generator → reset false alert.
+    # The wrapper resets state on re-entry if the season completed.
 
     yield (status, lb_data, fig, log_text)
 
@@ -3276,6 +3288,7 @@ async def api_status():
         state = dict(_experiment_state) if _experiment_state else {}
     state["running"] = _experiment_running
     state["stopped"] = _stop_event.is_set()
+    state["started_utc"] = _started_utc  # 2026-04-22: set on first run_experiment entry, survives soft restarts
     state["llm_calls"] = _llm_calls
     state["llm_failures"] = _llm_failures
     state["gateway_url"] = GATEWAY_URL or None
@@ -3328,20 +3341,44 @@ async def api_status():
 @api.post("/api/run")
 async def api_run(request: Request):
     """Trigger experiment start (same as clicking the button).
-    For GH Actions / council triggers. Non-blocking — returns immediately."""
+    For GH Actions / council triggers. Non-blocking — returns immediately.
+
+    2026-04-22 PLUMBER RCA fix: atomic gate under _state_lock so keepalive +
+    auto_start cannot both enter run_experiment and clobber each other's
+    _llm_calls / state.
+    """
+    global _experiment_running
     _stop_event.clear()
-    if _experiment_running:
-        return JSONResponse({"status": "resumed", "events_processed": _experiment_state.get("events_processed", 0), "message": "Stop flag cleared, experiment continues."})
+    # Atomic claim — check+flip under _state_lock to kill the race window.
+    with _state_lock:
+        if _experiment_running:
+            return JSONResponse({
+                "status": "resumed",
+                "events_processed": _experiment_state.get("events_processed", 0),
+                "message": "Stop flag cleared, experiment continues.",
+            })
+        _experiment_running = True  # claim BEFORE spawning _bg — no second /api/run can enter
     import threading, traceback as _tb
     def _bg():
-        for _attempt in range(5):
-            try:
-                for _ in run_experiment():
-                    pass
-                break
-            except Exception as e:
-                print(f"[api_run bg] attempt {_attempt+1} crashed: {e}\n{_tb.format_exc()}")
-                import time as _t; _t.sleep(10)
+        global _experiment_running
+        try:
+            # 2026-04-22: while-not-stop loop. run_experiment no longer flips
+            # _experiment_running=False on season end, so we re-enter for the
+            # next season (multi-season compound). Only _stop_event exits.
+            while not _stop_event.is_set():
+                try:
+                    for _ in run_experiment():
+                        pass
+                except Exception as e:
+                    print(f"[api_run bg] run crashed: {e}\n{_tb.format_exc()}")
+                    import time as _t; _t.sleep(10)
+                    continue
+                # Clean completion — brief pause before next season to avoid tight loop.
+                import time as _t; _t.sleep(5)
+        finally:
+            # Only clear on explicit stop or permanent failure.
+            with _state_lock:
+                _experiment_running = False
     threading.Thread(target=_bg, daemon=True, name="api_run_bg").start()
     return JSONResponse({"status": "started", "message": "Experiment launched in background thread."})
 
@@ -3356,9 +3393,16 @@ async def api_reset():
     """Reset experiment state (delete saved state)."""
     if _experiment_running:
         return JSONResponse({"status": "error", "message": "Cannot reset while running. Stop first."}, status_code=409)
-    global _experiment_state, _agent_logs
+    global _experiment_state, _agent_logs, _llm_calls, _llm_failures, _gateway_routed, _gateway_fallback, _started_utc
     _experiment_state = {}
     _agent_logs = defaultdict(list)
+    # 2026-04-22 PLUMBER RCA fix: lifetime counters now ONLY zeroed here,
+    # not on every run_experiment entry (which triggered the race).
+    _llm_calls = 0
+    _llm_failures = 0
+    _gateway_routed = 0
+    _gateway_fallback = 0
+    _started_utc = None
     try:
         STATE_PATH.unlink(missing_ok=True)
         LOGS_PATH.unlink(missing_ok=True)
@@ -3551,25 +3595,56 @@ async def serve_paper():
 # Mount FastAPI alongside Gradio
 app = gr.mount_gradio_app(api, demo, path="/")
 
+# ── MODULE-LEVEL HUB PRE-SEED (2026-04-22 PLUMBER RCA fix) ─────────────────
+# Load Hub state synchronously at import time so /api/status never returns
+# fresh-init defaults ($100 for every agent) during the ~0.5s window between
+# uvicorn binding and the first run_experiment reaching its resume-seed block.
+try:
+    _preseed = _load_state_from_disk()
+    if _preseed and _preseed.get("agents"):
+        with _state_lock:
+            _experiment_state = dict(_preseed)
+            _experiment_state.setdefault("days_processed", int(_preseed.get("days_processed", 0)))
+            _experiment_state.setdefault("days_total", int(_preseed.get("days_total", 0)))
+            _experiment_state["_source"] = "hub_preseed"
+            _experiment_state["_preseeded_utc"] = datetime.now(timezone.utc).isoformat()
+        _pfb = max((a.get("bankroll", 100.0) for a in _preseed.get("agents", {}).values()), default=100.0)
+        print(f"[hub-preseed] loaded state.json — day {_preseed.get('days_processed',0)}, fleet_best ${_pfb:.2f}")
+    else:
+        print("[hub-preseed] no saved state (fresh install or Hub unavailable)")
+except Exception as _e:
+    print(f"[hub-preseed] failed: {_e}")
+
 # Auto-start experiment on Space boot (survives rebuilds)
 # Set SKIP_AUTO_START=1 env var to boot idle (for purge workflows).
 def _auto_start():
+    global _experiment_running
     import time as _t, traceback as _tb
     if os.environ.get("SKIP_AUTO_START") == "1":
         print("[auto-start] SKIP_AUTO_START=1 set, boot-idle mode")
         return
     _t.sleep(10)
-    for _attempt in range(5):
+    # 2026-04-22: atomic claim — lose the race silently if /api/run already started.
+    with _state_lock:
         if _experiment_running:
+            print("[auto-start] /api/run already claimed — standing down")
             return
-        print(f"[auto-start] attempt {_attempt+1} — launching experiment on boot")
-        try:
-            for _ in run_experiment():
-                pass
-            return
-        except Exception as e:
-            print(f"[auto-start] attempt {_attempt+1} crashed: {e}\n{_tb.format_exc()}")
-            _t.sleep(15)
+        _experiment_running = True
+    print("[auto-start] launching experiment on boot (while-not-stop loop)")
+    try:
+        while not _stop_event.is_set():
+            try:
+                for _ in run_experiment():
+                    pass
+            except Exception as e:
+                print(f"[auto-start] run crashed: {e}\n{_tb.format_exc()}")
+                _t.sleep(15)
+                continue
+            # Multi-season compound — brief pause before next season.
+            _t.sleep(5)
+    finally:
+        with _state_lock:
+            _experiment_running = False
 
 import threading as _th
 _th.Thread(target=_auto_start, daemon=True, name="auto_start").start()
