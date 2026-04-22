@@ -819,6 +819,18 @@ TRADERS = {
                          "fallback_provider": "cerebras:llama3.1-8b"},
 }
 
+# ── CHAMPION COMPOUND BOOST (LOBBYIST, 2026-04-22, day 147) ──────────────────
+# Per-agent Kelly/per-bet cap override. Applied on top of _tiered_risk["bet_cap"]
+# as the FINAL cap (replaces tier cap when present). Top-3 get 2× headroom to
+# compound the signal; llama-contra probation after 500 bets net -$48 (volume
+# drag). Rest of roster falls through to tier default.
+_AGENT_KELLY_OVERRIDE: Dict[str, float] = {
+    "qwen-arb":     0.20,   # CHAMPION $2023 (historical peak $3119), compound signal
+    "qwen-quant":   0.18,   # #2 $755
+    "gemini-anl":   0.15,   # #3 $425
+    "llama-contra": 0.03,   # PROBATION: 500 bets, $-48 net — volume-induced drawdown
+}
+
 # ── WINNER-AWARE PER-AGENT PROMPTS (LOBBYIST v2, 2026-04-22) ─────────────────
 # Rewritten after day-135 leaderboard read: qwen-arb $2143 (CHAMPION, 21.4× seed),
 # qwen-quant $758, gemini-anl $420 lead; llama-contra burning edge with 457 bets
@@ -2774,6 +2786,11 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 # Per-bet FLOOR (not cap) + Kelly multiplier tiered by bankroll.
                 tier = _tiered_risk(ts["bankroll"])
                 MAX_PCT_PER_BET = tier["bet_cap"]
+                # 2026-04-22 champion compound boost: per-agent override replaces
+                # tier cap (top-3 2×, llama-contra probation). No-op if tid absent.
+                _agent_cap = _AGENT_KELLY_OVERRIDE.get(tid)
+                if _agent_cap is not None:
+                    MAX_PCT_PER_BET = _agent_cap
                 MIN_BET_PCT = tier["bet_floor"]
                 MAX_PCT_PER_DAY = 0.98
                 MIN_EDGE = tier["min_edge"]
