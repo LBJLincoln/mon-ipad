@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-22T06:00:00Z",
+  "updated_at": "2026-04-22T18:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {"id":"R7","priority":2,"status":"done","completed_at":"2026-04-15T19:00:00Z","commit_hash":"61c4b61394e2381ab0e1702f0581c292055b235c","owner":"local-agent-a63b2bad","subject":"Deploy S20/S21/S22 NBA islands"},
@@ -22,9 +22,9 @@
     {"id":"tf-axelrod-verify-tune-9","priority":16,"status":"done","completed_at":"2026-04-17T12:30:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 9 — spec audit + restore stubs + society-wide Mech B CONFIRMED","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-10","priority":17,"status":"done","completed_at":"2026-04-18T00:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 10 — full independent spec audit (no code changes needed)","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-11","priority":18,"status":"done","completed_at":"2026-04-18T06:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 11 — deep parity audit, NBA CK hardcoded-count bug found","do_not_push_hf_space_yet":true},
+    {"id":"tf-axelrod-verify-tune-12","priority":21,"status":"pending","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 12 — HF Space push (USER GATE: explicit approval required)","scope":["1. User explicitly approves HF Space push (say 'push to HF' or 'approve HF deploy').","2. CK fix confirmed applied (tf-axelrod-fix-ck-hardcoded brain-verified 2026-04-20). No code changes needed before deploy.","3. Push scripts/arena/hf-llm-trading-floor/app.py to HF Space LBJLincoln26/nba-llm-trading-floor.","4. Push scripts/arena/hf-political-trading-floor/app.py to HF Space LBJLincoln26/political-llm-trading-floor.","5. Restart both Spaces via HF API (POST /api/run or Space restart).","6. Verify /api/status on both Spaces returns healthy JSON with experiment_running or ready state.","7. Mark this item done with do_not_push_hf_space_yet=false."],"do_not_push_hf_space_yet":true,"blocked_on":"explicit user approval only (CK fix + CK rationale both confirmed applied 2026-04-21, all 3 mechanisms spec-complete as of fire-13/15/16 audits)"},
     {"id":"tf-axelrod-fix-ck-hardcoded","priority":19,"status":"done","completed_at":"2026-04-19T00:16:11Z","owner":"cloud-trigger-axelrod-2026","subject":"Fix NBA CK block hardcoded agent-count (12→17, $1200→dynamic)","brain_verification_2026-04-20":"CONFIRMED APPLIED — n_traders=len(TRADERS) at L2579, ONE of 17 at L239. axelrod-ck-fix-v1.yml ran but did not self-delete (cosmetic).","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-13","priority":20,"status":"done","completed_at":"2026-04-20T06:11:00Z","commit_hash":"6a8f75e4f6d90596c2a391f8affc1126c6ace3bd","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 13 — full spec re-audit + stale workflow cleanup","audit_result":"ALL THREE MECHANISMS CONFIRMED SPEC-COMPLETE in both NBA + Political app.py. No code changes needed. Both apps in full parity.","do_not_push_hf_space_yet":true},
-    {"id":"tf-axelrod-verify-tune-12","priority":21,"status":"pending","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 12 — HF Space push (USER GATE: explicit approval required)","scope":["1. User explicitly approves HF Space push (say 'push to HF' or 'approve HF deploy').","2. CK fix confirmed applied (tf-axelrod-fix-ck-hardcoded brain-verified 2026-04-20). No code changes needed before deploy.","3. Push scripts/arena/hf-llm-trading-floor/app.py to HF Space LBJLincoln26/nba-llm-trading-floor.","4. Push scripts/arena/hf-political-trading-floor/app.py to HF Space LBJLincoln26/political-llm-trading-floor.","5. Restart both Spaces via HF API (POST /api/run or Space restart).","6. Verify /api/status on both Spaces returns healthy JSON with experiment_running or ready state.","7. Mark this item done with do_not_push_hf_space_yet=false."],"do_not_push_hf_space_yet":true,"blocked_on":"explicit user approval only (CK fix + CK rationale both confirmed applied 2026-04-21, all 3 mechanisms spec-complete as of fire-13/15/16 audits)"},
     {"id":"tf-axelrod-verify-tune-14","priority":22,"status":"done","completed_at":"2026-04-20T12:15:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 14 — py_compile re-check + spec confirmation (no code changes)","py_compile":"PASS both apps (NBA 4256 lines, Political 3500 lines)","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-15","priority":23,"status":"done","completed_at":"2026-04-21T00:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 15 — deep parity audit, edge_rationale gap found","py_compile":"PASS both apps (NBA 4288 lines, POL 3523 lines)","gap_found":"Per-bet rationale text not surfaced in CK block. Logged as tf-axelrod-ck-rationale (priority 24).","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-ck-rationale","priority":24,"status":"done","owner":"cloud-trigger-axelrod-2026","subject":"Add per-bet edge_rationale text to COMMON_KNOWLEDGE block (NBA + POL parity)","completed_at":"2026-04-21T06:26:56Z","py_compile":"PASS both apps","do_not_push_hf_space_yet":true},
@@ -65,6 +65,32 @@
       "py_compile": "PASS (verified locally: NBA 4625 lines, Political 3688 lines)",
       "do_not_push_hf_space_yet": true,
       "verification_note": "Confirmed by direct repo file read: fire-17 did not push changes to git"
+    },
+    {
+      "id": "tf-axelrod-verify-tune-19",
+      "priority": 28,
+      "status": "done",
+      "completed_at": "2026-04-22T18:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 19 — full spec re-audit, no code changes needed",
+      "audit_method": "GitHub code search across both app.py files + Explore agent deep-read of file contents",
+      "audit_result": "SPEC CLEAN — all 3 Axelrod mechanisms confirmed in both NBA + Political app.py. Fire-17 patches confirmed applied (commit 556d9f9f8e80443ec3a5afad869d709084cce0cc): '17 LLM agents' and 'anti-consensus' gate both present in both files via code search.",
+      "symbols_verified": [
+        "build_common_knowledge_block — NBA ✓, Political ✓",
+        "write_axelrod_log — NBA ✓, Political ✓",
+        "sacrificial — NBA ✓, Political ✓",
+        "AXELROD_CANON — NBA ✓, Political ✓",
+        "consensus_distance — NBA ✓, Political ✓",
+        "anti-consensus gate — NBA ✓, Political ✓",
+        "17 LLM agents — NBA ✓, Political ✓",
+        "_society_archetypes_by_day — NBA ✓, Political ✓ (society-wide archetype dedup confirmed)",
+        "_common_knowledge Dict — NBA ✓, Political ✓",
+        "_sacrificial_assignments Dict — NBA ✓, Political ✓"
+      ],
+      "bonus_finding": "NBA TRADERS dict in mon-ipad git already reflects Round-2 reroute (mistral:large, cerebras:qwen-3-235b, nvidia:llama-3.3-70b providers). Git source is current with live HF Space routing.",
+      "cosmetic_note": "Political run_morning_council docstring still says '10 political agents' (stale from pre-17-agent era) — no functional impact, not worth a fix fire.",
+      "do_not_push_hf_space_yet": true,
+      "next_action": "Only remaining pending item: tf-axelrod-verify-tune-12 (HF Space push, awaiting explicit user gate approval — say 'push to HF' or 'approve HF deploy')."
     }
   ],
   "recovery_protocol": {
