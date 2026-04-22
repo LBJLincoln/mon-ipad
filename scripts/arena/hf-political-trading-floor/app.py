@@ -1848,19 +1848,19 @@ def parse_day_allocation(raw: str, n_events: int, drawdown: float = 0.0) -> Opti
             a["pct"] = a["pct"] * scale
         cash = cash * scale
 
-    # ── MIN_DEPLOY_PCT — $1M collective goal, aggressive deploy
-    # 2026-04-21 MAX PUSH: 0.75 → 0.80 (cross-TF parity with NBA + ITF v2).
-    # Dynamic drawdown tapering preserved: dd<0.5 → 0.80; dd=0.5 → 0.55;
-    # dd=0.8 → 0.35; dd>=0.9 → 0.25 (capital preservation).
+    # ── MIN_DEPLOY_PCT — carte-blanche calibration (POL continuous returns)
+    # 2026-04-22 — 0.80 → 0.55. POL continues to work (fleet leader +606% at day
+    # 130) so we only soften, not collapse. Continuous returns compound both
+    # ways; forced 80% was overkill given agents already beat on their own.
     if drawdown < 0.5:
-        MIN_DEPLOY_PCT = 0.80
+        MIN_DEPLOY_PCT = 0.55
     else:
-        MIN_DEPLOY_PCT = max(0.25, 0.80 - (drawdown - 0.5) * 1.1)
+        MIN_DEPLOY_PCT = max(0.20, 0.55 - (drawdown - 0.5) * 0.8)
     deployed = sum(a["pct"] for a in clean)
     if deployed > 0 and deployed < MIN_DEPLOY_PCT:
         scale_up = MIN_DEPLOY_PCT / deployed
         for a in clean:
-            a["pct"] = min(0.40, a["pct"] * scale_up)
+            a["pct"] = min(0.25, a["pct"] * scale_up)
         new_deployed = sum(a["pct"] for a in clean)
         cash = max(0.0, 1.0 - new_deployed)
     elif deployed == 0:

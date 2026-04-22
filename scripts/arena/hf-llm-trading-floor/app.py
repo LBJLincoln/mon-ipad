@@ -1682,16 +1682,14 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
                 u = int(h, 16) / 0xFFFFFFFF
                 return 1.0 + (u - 0.5) * 2.0 * _amp
             top_edges = []
-            # 2026-04-20 SWISH: prompt-display floor raised 0.01 → 0.03.
-            # Old floor showed edges INSIDE the 0.029 Brier noise envelope
-            # (fleet-best S22 Brier 0.22073 vs random 0.25). Agents were
-            # pattern-matching on noise they could see but shouldn't trust.
-            # Post-filter still gates at tier.min_edge=0.06 — this is just
-            # what the LLM EYES before reasoning. Keeps top-20 slot budget
-            # for real-signal edges.
+            # 2026-04-22 — CARTE BLANCHE: 0.03 → 0.01 prompt floor, top-20 → top-60.
+            # NBA was -50% at day 73/175 under tight gate + MIN_DEPLOY 0.80.
+            # Agents have 227 categories of full freedom; forcing them through
+            # a 20-edge keyhole every day was the bottleneck. Post-filter still
+            # gates at tier.min_edge so noise can't leak into real stakes.
             for tag, info in per_cat.items():
                 e = info.get("edge")
-                if e is not None and abs(e) >= 0.03:
+                if e is not None and abs(e) >= 0.01:
                     eff = abs(e) * _edge_jitter(tid, f"{game_key}|{tag}")
                     top_edges.append((eff, tag, info))
             top_edges.sort(reverse=True)
@@ -1699,9 +1697,9 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
                 edge_strs = [
                     f"{tag}(p={info.get('prob',0):.2f}, edge{info.get('edge',0):+.1%}"
                     f"{',FDR✓' if tag in fdr_pass else ''})"
-                    for _, tag, info in top_edges[:20]
+                    for _, tag, info in top_edges[:60]
                 ]
-                lines.append(f"  MODEL EDGES [top-20 by |edge|, BH-FDR pass marked, {len(fdr_pass)}/{len(all_edges)}]: {' | '.join(edge_strs)}")
+                lines.append(f"  MODEL EDGES [top-60 by |edge|, BH-FDR pass marked, {len(fdr_pass)}/{len(all_edges)}]: {' | '.join(edge_strs)}")
 
     # Full-odds categories
     fo_raw = (full_odds or {}).get(game_key, {})
@@ -2318,22 +2316,23 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             p["pct"] = p["pct"] * scale
         cash = cash * scale
 
-    # ── MIN_DEPLOY_PCT — $1M collective goal requires aggressive deploy
-    # 2026-04-21 MAX PUSH: 0.75 → 0.80 (cross-TF parity with ITF aggression v2).
-    # Dynamic drawdown tapering preserved: dd<0.5 → 0.80; dd=0.5 → 0.55;
-    # dd=0.8 → 0.35; dd>=0.9 → 0.25 (capital preservation kicks in automatically).
+    # ── MIN_DEPLOY_PCT — carte-blanche calibration (NBA binary bets)
+    # 2026-04-22 — 0.80 → 0.35. Binary NBA bets pay -100% on a loss; forcing
+    # 80% daily deploy at ~45% WR compounded a -50% drawdown in 73 days.
+    # Lower floor lets agents size to their actual edge count per day. Per-bet
+    # cap tightened 0.40 → 0.18 to force diversification across 227 cats.
+    # Dynamic drawdown tapering preserved.
     if drawdown < 0.5:
-        MIN_DEPLOY_PCT = 0.80
+        MIN_DEPLOY_PCT = 0.35
     else:
-        MIN_DEPLOY_PCT = max(0.25, 0.80 - (drawdown - 0.5) * 1.1)
+        MIN_DEPLOY_PCT = max(0.15, 0.35 - (drawdown - 0.5) * 0.5)
     deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
     if deployed > 0 and deployed < MIN_DEPLOY_PCT:
-        # Scale up deployed capital to hit 0.75 floor, cap cash at 0.25
         scale_up = MIN_DEPLOY_PCT / deployed
         for a in clean:
-            a["pct"] = min(0.40, a["pct"] * scale_up)
+            a["pct"] = min(0.18, a["pct"] * scale_up)
         for p in parlays_clean:
-            p["pct"] = min(0.10, p["pct"] * scale_up)
+            p["pct"] = min(0.05, p["pct"] * scale_up)
         # Recompute after per-allocation caps clipped
         new_deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
         cash = max(0.0, 1.0 - new_deployed)
