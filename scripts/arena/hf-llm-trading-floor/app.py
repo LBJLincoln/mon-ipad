@@ -890,8 +890,9 @@ TRADERS = {
     "mistral-small":    {"name": "Mistral Small",    "provider": "mistral:small",        "personality": "conservative", "risk_tolerance": 0.35},
     # 2026-04-17 SWAP: gemma-4-31b rate-limited 429 upstream → cerebras:llama3.1-8b (aggressive momentum)
     # 2026-04-20 SWITCHBOARD: openrouter:gpt-oss-120b is NOT in gateway registry ("Model not in registry") → swap fallback to mistral:medium.
-    "mistral-nemo":     {"name": "Momentum Hunter",   "provider": "cerebras:llama3.1-8b",  "personality": "aggressive",   "risk_tolerance": 0.70,
-                         "fallback_provider": "mistral:medium"},
+    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 8/35 = 23% degraded): mistral:small primary, cerebras:llama3.1-8b fallback.
+    "mistral-nemo":     {"name": "Momentum Hunter",   "provider": "mistral:small",         "personality": "aggressive",   "risk_tolerance": 0.70,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
     # 2026-04-21 SWITCHBOARD v3 (NBA-bleed RCA): 6 github:* primaries were routing to
     # dead lanes (gateway stats show calls_fail=0 AND calls_ok=0 i.e. NEVER called —
     # github fallback chain is empty, so a single 429 returns None content).
@@ -904,29 +905,35 @@ TRADERS = {
     # NEW 2026-04-15 — +1 NVIDIA Nemotron 120B (OpenRouter free, verified responsive)
     # 2026-04-21 SWITCHBOARD v3: promote openrouter:nemotron-120b:free as primary
     # (has full fallback chain incl cerebras); keep mistral:large fallback.
-    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b:free","personality": "chainthought","risk_tolerance": 0.55,
-                         "fallback_provider": "mistral:large"},
+    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 4/35 = 11% DEAD): mistral:large primary (PQTF $244K winner), cerebras:qwen-3-235b fallback.
+    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "mistral:large",         "personality": "chainthought","risk_tolerance": 0.55,
+                         "fallback_provider": "cerebras:qwen-3-235b"},
     # 2026-04-22: selfhost backing Spaces restarted + verified alive (1.1s chat @ gateway).
     # Route selfhost-branded personas BACK to selfhost:* now that gateway routing works.
     "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "selfhost:phi-4-mini",  "personality": "disciplined", "risk_tolerance": 0.40,
                          "fallback_provider": "mistral:small"},
     # NEW 2026-04-17 — NVIDIA NIM (2 keys in gateway). Both NVIDIA accounts were wired but 0 TF usage → fill the gap.
     # 2026-04-21 SWITCHBOARD v3: github:llama-3.3-70b dead (no chain). Promote nvidia:llama-3.3-70b primary (41% ok lifetime, has chain).
-    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "nvidia:llama-3.3-70b",  "personality": "decisive",    "risk_tolerance": 0.58,
+    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 1/35 = 3% DEAD): mistral:medium primary, cerebras:qwen-3-235b fallback.
+    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "mistral:medium",       "personality": "decisive",    "risk_tolerance": 0.58,
                          "fallback_provider": "cerebras:qwen-3-235b"},
-    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b", "personality": "swing",       "risk_tolerance": 0.50,
+    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 3/35 = 9% DEAD): github:llama-3.3-70b primary, cerebras:llama3.1-8b fallback.
+    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "github:llama-3.3-70b","personality": "swing",       "risk_tolerance": 0.50,
                          "fallback_provider": "cerebras:llama3.1-8b"},
     # 2026-04-18 — was selfhost, now GitHub Models. Persona+strategy+Axelrod class unchanged.
     # 2026-04-21 SWITCHBOARD v3: github:mistral-medium + github:gpt-4.1-nano both dead.
     # Route to mistral:medium (95% ok lifetime, highest reliability) + cerebras fallback.
-    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "selfhost:gemma-3-4b", "personality": "analytical",  "risk_tolerance": 0.45,
-                         "fallback_provider": "mistral:medium"},
-    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "selfhost:qwen3-0.6b", "personality": "conservative","risk_tolerance": 0.30,
+    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 3/35 = 9% DEAD): cerebras:llama3.1-8b primary, mistral:small fallback.
+    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "cerebras:llama3.1-8b","personality": "analytical",  "risk_tolerance": 0.45,
                          "fallback_provider": "mistral:small"},
+    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 3/35 = 9% DEAD): github:phi-4-mini primary, github:gpt-4.1-nano fallback.
+    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "github:phi-4-mini",   "personality": "conservative","risk_tolerance": 0.30,
+                         "fallback_provider": "github:gpt-4.1-nano"},
     # dolphin3 at gateway is slow (69s cold-start via dolphin3-l32-3b key). Use qwen2.5-1.5b
     # which routes to the same llama-32-1b backing Space but the faster gateway path.
-    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "selfhost:qwen2.5-1.5b","personality": "uncensored",  "risk_tolerance": 0.60,
-                         "fallback_provider": "cerebras:llama3.1-8b"},
+    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 2/35 = 6% DEAD): cerebras:qwen-3-235b primary, mistral:small fallback.
+    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "cerebras:qwen-3-235b","personality": "uncensored",  "risk_tolerance": 0.60,
+                         "fallback_provider": "mistral:small"},
 }
 
 AGENT_SYSTEM_PROMPTS = {
