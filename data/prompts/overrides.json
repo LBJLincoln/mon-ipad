@@ -1,8 +1,8 @@
 {
   "itf": {
-    "applies_since": "2026-04-22T10:20:59Z",
-    "current_text": "RULE (itf_v_deploy70 2026-04-22 — FLEET-DEPLOY TARGET): Fleet equity is $101K but only 16% ($16K) is actually in the market. User directive: push to 70% deployed — $100K working across speculative-risk aggressive liquid instruments (equities leverage ETFs + crypto + options + vol).\n\n1. DEPLOYMENT TARGET. Fleet-wide target: 70% of total_equity in reserved_open positions at all times. At per-agent level: if your available > 30% of your total_equity AND you see ANY tradable instrument with liquidity score > 6/10, you MUST enter.\n\n2. STAKE FLOOR UNCHAINED. Per-trade floor is now 70% of your available (via ITF_STAKE_FLOOR_PCT env). One sizing decision per entry — no partial dipping.\n\n3. AGGRESSION BIAS. Preferred order when multiple edges tie: leveraged ETFs (TQQQ / SOXL / SPXL / TMV) > momentum single-names > options (vertical debit spreads) > crypto > large-cap equities. Idling in SPY is forbidden unless volatility regime is explicitly RISK-OFF (VIX > 30 AND SPX down >1.5% intraday).\n\n4. IDLE PENALTY. If your agent has been > 65% cash for > 6 consecutive ticks, the next tick you MUST deploy at least 40% into your highest-ranked instrument — even if edge is only marginal. Idle cash at $5,900 earns zero; a levered position with edge 0.02 has positive EV.\n\n5. COMPOUND THESIS. $100K → $1M is 10× = ~1.4% compounded daily over 175 days. With 70% deployed at 2× leverage = 140% notional, a 1% daily alpha compounds to 10× — this is the path. Deploying at 16% is statistically impossible to reach $1M.\n\n6. PRESERVE MIN_HOLD_SEC. The 15-min minimum hold (PDT-truthful doctrine) STAYS. Don't daytrade churn. Enter aggressively, hold positions, exit on thesis break or +/-2σ move.",
-    "current_version": "itf_v_deploy70",
+    "applies_since": "2026-04-22T13:41:31Z",
+    "current_text": "RULE (itf_v_deploy100 — 2026-04-22 13:40Z SHIP-THE-100%): User directive 'ship now the100%' — ITF_STAKE_FLOOR_PCT=0.95 (was 0.70), ITF_FLEET_DEPLOY_TARGET=0.95 (was 0.70). Structural: your sub-bankroll equity should be ≥95% deployed at close of each tick. Idle cash is bankroll leakage.\n\n1. STAKE FLOOR 95%. When you open a new position, sizing must be ≥95% of your available sub-bankroll cash. Bracket-protect with stop_loss from executor.py canon — DO NOT leave dry powder.\n\n2. ROLLING DEPLOY ≥95%. If your open-position notional / total_equity is <0.95 at tick close, your NEXT bid MUST size up to fill the gap (≥95% target). No hedges, no parking.\n\n3. PDT-TRUTHFUL (carried forward). Alpaca pattern_day_trader=True. MIN_HOLD_SEC=900 (15-min guard in executor.close_position). Hold overnight when possible; daytrade only if edge ≥ 1% net-of-spread.\n\n4. PEAK_DD_GUARD_V2 ONLY SAFETY NET. sub_bankroll/peak<0.25 → force cash; <0.50 → cap 1%. Do NOT add your own hedges/caps.\n\n5. CROSS-FLEET WINNER ROUTING. Momentum/mean-rev/vol/options → mistral:large (PQTF $244K winner). Fast news/gap-fade → cerebras:qwen-3-235b. Scalper/pairs/crypto-whale → mistral:medium.\n\n6. WINNER-TIER DYNAMIC. Current equity vs $5,943 seed:\n   • WINNER (>$8,000, reserved/total ≥0.7): stack edges, add 5th position when free.\n   • DEPLOYER (seed ±20%, reserved/total ≥0.5): maintain 3-4 positions continuously.\n   • HOLDER (equity ≥$4,500, reserved/total <0.3): CLOSE a stale loser THIS TICK, re-deploy.\n   • IDLE (>2 ticks no bid with edge ≥1%): open the highest-edge idea NOW, 95% stake.\n   • LOSER (equity <$4,500): PEAK_DD_V2 owns you — comply.",
+    "current_version": "itf_v_deploy100",
     "history": [
       {
         "proposal_id": "tf-intel-2026-04-20-itf-crypto-unused",
@@ -19,21 +19,27 @@
         "version": "prompt_v1"
       },
       {
-        "version": "prompt_v1",
         "applies_since": "2026-04-22T08:56:54Z",
+        "source": "manual_full_deploy_2026-04-22",
         "text": "RULE (prompt_v1 ITF — FULL-DEPLOY 2026-04-22): User directive is $100K → $1M fleet. Current deploy 17% — unacceptable.\n\n1. ≥3 POSITIONS PER TICK MANDATORY: emit at least 3 distinct ticker allocations. Not 1, not 2. Three.\n\n2. FULL-DEPLOY FLOOR: sum(stake_usd across your 3+ positions) ≥ 80% of your available sub-bankroll. Holding cash = losing. If you can't find 3 edges, DEMAND 3 from the universe (we have 71 instruments + options now).\n\n3. STAKE FLOOR: your POWER_STAKE_FLOOR just moved from 20% → 50% of sub-bankroll. That means 2 trades = 100% deploy. Use it.\n\n4. OPTIONS LIVE: ITF_OPTIONS_LIVE=1 — vertical_debit / vertical_credit / iron_condor / straddle now hit real Alpaca OCC symbols. If you're a volatility/gamma persona, USE them — 3-5× leverage on directional conviction.\n\n5. NO-HEDGE for <5% of seed movements: if your intraday stake size falls below $300 (5% of $5,898), you're hedging noise. Either size up to conviction or pass the ticker.",
-        "source": "manual_full_deploy_2026-04-22"
+        "version": "prompt_v1"
       },
       {
-        "version": "prompt_v1",
         "applies_since": "2026-04-22T08:56:54Z",
+        "retired_at": "2026-04-22T10:20:59Z",
         "text": "RULE (prompt_v1 ITF — FULL-DEPLOY 2026-04-22): User directive is $100K → $1M fleet. Current deploy 17% — unacceptable.\n\n1. ≥3 POSITIONS PER TICK MANDATORY: emit at least 3 distinct ticker allocations. Not 1, not 2. Three.\n\n2. FULL-DEPLOY FLOOR: sum(stake_usd across your 3+ positions) ≥ 80% of your available sub-bankroll. Holding cash = losing. If you can't find 3 edges, DEMAND 3 from the universe (we have 71 instruments + options now).\n\n3. STAKE FLOOR: your POWER_STAKE_FLOOR just moved from 20% → 50% of sub-bankroll. That means 2 trades = 100% deploy. Use it.\n\n4. OPTIONS LIVE: ITF_OPTIONS_LIVE=1 — vertical_debit / vertical_credit / iron_condor / straddle now hit real Alpaca OCC symbols. If you're a volatility/gamma persona, USE them — 3-5× leverage on directional conviction.\n\n5. NO-HEDGE for <5% of seed movements: if your intraday stake size falls below $300 (5% of $5,898), you're hedging noise. Either size up to conviction or pass the ticker.",
-        "retired_at": "2026-04-22T10:20:59Z"
+        "version": "prompt_v1"
+      },
+      {
+        "version": "itf_v_deploy70",
+        "text": "RULE (itf_v_deploy70 2026-04-22 — FLEET-DEPLOY TARGET): Fleet equity is $101K but only 16% ($16K) is actually in the market. User directive: push to 70% deployed — $100K working across speculative-risk aggressive liquid instruments (equities leverage ETFs + crypto + options + vol).\n\n1. DEPLOYMENT TARGET. Fleet-wide target: 70% of total_equity in reserved_open positions at all times. At per-agent level: if your available > 30% of your total_equity AND you see ANY tradable instrument with liquidity score > 6/10, you MUST enter.\n\n2. STAKE FLOOR UNCHAINED. Per-trade floor is now 70% of your available (via ITF_STAKE_FLOOR_PCT env). One sizing decision per entry — no partial dipping.\n\n3. AGGRESSION BIAS. Preferred order when multiple edges tie: leveraged ETFs (TQQQ / SOXL / SPXL / TMV) > momentum single-names > options (vertical debit spreads) > crypto > large-cap equities. Idling in SPY is forbidden unless volatility regime is explicitly RISK-OFF (VIX > 30 AND SPX down >1.5% intraday).\n\n4. IDLE PENALTY. If your agent has been > 65% cash for > 6 consecutive ticks, the next tick you MUST deploy at least 40% into your highest-ranked instrument — even if edge is only marginal. Idle cash at $5,900 earns zero; a levered position with edge 0.02 has positive EV.\n\n5. COMPOUND THESIS. $100K → $1M is 10× = ~1.4% compounded daily over 175 days. With 70% deployed at 2× leverage = 140% notional, a 1% daily alpha compounds to 10× — this is the path. Deploying at 16% is statistically impossible to reach $1M.\n\n6. PRESERVE MIN_HOLD_SEC. The 15-min minimum hold (PDT-truthful doctrine) STAYS. Don't daytrade churn. Enter aggressively, hold positions, exit on thesis break or +/-2σ move.",
+        "applies_since": "2026-04-22T10:20:59Z",
+        "archived_at": "2026-04-22T13:41:31Z"
       }
     ],
     "manual_videos_count": 1,
-    "market_narrative": "YouTube narrative digest (497 videos):\n- Moon Dev «Opus 4.7 Just Broke Polymarket (for us little guys)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Tech Jarves «Run Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) 🔥» Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research «Brace Yourself.» Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev «$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «The Claude Code Setup That's Making Devs 10x Faster» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Opus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Claude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Bravos Research «Yep… It’s Happening AGAIN.» A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: 📌  The six stocks ",
-    "market_narrative_ts": "2026-04-22T06:43:33.934957Z",
+    "market_narrative": "YouTube narrative digest (506 videos):\n- Moon Dev «Opus 4.7 Just Broke Polymarket (for us little guys)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Tech Jarves «Run Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) 🔥» Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research «Brace Yourself.» Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev «$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «The Claude Code Setup That's Making Devs 10x Faster» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Opus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Claude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Bravos Research «Yep… It’s Happening AGAIN.» A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: 📌  The six stocks ",
+    "market_narrative_ts": "2026-04-22T13:39:00.511535Z",
     "market_narrative_videos": [
       {
         "channel": "Moon Dev",
@@ -3480,11 +3486,74 @@
         "title": "Markets Weigh Iran Truce as Risks Persist | The Asia Trade 4/22/2026"
       },
       {
+        "channel": "warikoo",
+        "id": "AxS6pzvpuQA",
+        "line": "- warikoo «LATEST MacBook AFFORD Karne ke liye kitne Mahine ki SALARY lagegi?! | Ankur Warikoo #short» Is your child playing the India Genius Challenge (IGC)?  This is what the smartest kids in the country are playing right now - 47,000+ of them -- every day for free - online - for ",
+        "published_at": "2026-04-22T06:30:11Z",
+        "title": "LATEST MacBook AFFORD Karne ke liye kitne Mahine ki SALARY lagegi?! | Ankur Warikoo #short"
+      },
+      {
+        "channel": "Real Vision",
+        "id": "Ac0XJRMrlew",
+        "line": "- Real Vision «How Macro Traders Actually Build Positions | Julien Bittel» In Shooting the Shit, Raoul Pal and Julien Bittel break down how macro investors build portfolios based on different views of the market. Whether you’re risk-on or risk-off, positi",
+        "published_at": "2026-04-22T12:00:18Z",
+        "title": "How Macro Traders Actually Build Positions | Julien Bittel"
+      },
+      {
+        "channel": "Financial Source",
+        "id": "NHxTM3qbgcM",
+        "line": "- Financial Source «Federal Reserve Policy Explained - Interest Rates vs Balance Sheet (Walsh Strategy Simplif» Check out our trade ideas on substack: https://financialsource.substack.com/  In this video, we break down a key Federal Reserve policy discussion following Walsh’s recent hearing ",
+        "published_at": "2026-04-22T10:06:18Z",
+        "title": "Federal Reserve Policy Explained - Interest Rates vs Balance Sheet (Walsh Strategy Simplif"
+      },
+      {
         "channel": "Bloomberg Television",
-        "id": "BfN9k7Jb69g",
-        "line": "- Bloomberg Television «Stocks Close Near Session Lows | Closing Bell»",
+        "id": "HUOLW1odU54",
+        "line": "- Bloomberg Television «Trump Extends Ceasefire; Users Get Unauthorized Access to Mythos | Bloomberg Brief 4/22/20» US equity futures rise and brent briefly hit $100 per barrel after President Trump indefinitely extends a ceasefire with Iran. Kevin Warsh's confirmation hearing signals a complica",
+        "published_at": "2026-04-22T11:21:31Z",
+        "title": "Trump Extends Ceasefire; Users Get Unauthorized Access to Mythos | Bloomberg Brief 4/22/20"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "_7e472I_0K8",
+        "line": "- Bloomberg Television «Iran Latest: Trump Backtracks & Extends Tehran Truce, Talks in Limbo | The Opening Trade 4» US President Donald Trump indefinitely extended a ceasefire with Iran as peace talks remain on hold, walking back threats to resume fighting even as the Strait of Hormuz remains al",
+        "published_at": "2026-04-22T10:36:12Z",
+        "title": "Iran Latest: Trump Backtracks & Extends Tehran Truce, Talks in Limbo | The Opening Trade 4"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "MPVHkwv0JW4",
+        "line": "- Bloomberg Television «Iranian Oil Tankers Sail Past Hormuz Blockade» At least two fully laden Iranian tankers have sailed out of the Persian Gulf and past a US blockade this week, part of a flotilla that has made its way around the warships and ferr",
+        "published_at": "2026-04-22T08:35:04Z",
+        "title": "Iranian Oil Tankers Sail Past Hormuz Blockade"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "wjztpdRBUuE",
+        "line": "- Bloomberg Television «Iran Reports 'Some Sign' US Ready to Break Blockade | Daybreak Europe 4/22/2026» Bloomberg Daybreak Europe is your essential morning viewing to stay ahead. Live from London, we set the agenda for your day, catching you up with overnight markets news from the US",
+        "published_at": "2026-04-22T07:53:56Z",
+        "title": "Iran Reports 'Some Sign' US Ready to Break Blockade | Daybreak Europe 4/22/2026"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "Id226U12kPo",
+        "line": "- Bloomberg Television «Trump Extends Ceasefire But Hormuz Stays Closed | Insight with Haslinda Amin 04/22/2026» Insight with Haslinda Amin, a daily news program featuring in-depth, high-profile interviews and analysis to give viewers the complete picture on the stories that matter. The show ",
+        "published_at": "2026-04-22T07:42:15Z",
+        "title": "Trump Extends Ceasefire But Hormuz Stays Closed | Insight with Haslinda Amin 04/22/2026"
+      },
+      {
+        "channel": "Forward Guidance",
+        "id": "i2DRL1nSwh4",
+        "line": "- Forward Guidance «Markets Are Misreading A Late Cycle Liquidity Crunch | Michael Howell» Liquidity may be sending a very different signal than most investors think, challenging the dominant narrative around growth, rates, and risk.  We sit down with Michael Howell of C",
+        "published_at": "2026-04-22T07:00:00Z",
+        "title": "Markets Are Misreading A Late Cycle Liquidity Crunch | Michael Howell"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "Wl8yiHDDFgY",
+        "line": "- Bloomberg Television «Markets Extend Downturn | Closing Bell»",
         "published_at": "",
-        "title": "Stocks Close Near Session Lows | Closing Bell"
+        "title": "Markets Extend Downturn | Closing Bell"
       },
       {
         "channel": "Barchart",
@@ -3501,25 +3570,25 @@
         "title": "Forget Technical Analysis: Here's How We Spot Unusual Options Activity in 3 Bullish Sector"
       },
       {
-        "channel": "Crypto World",
-        "id": "l0DmCVuPA0E",
-        "line": "- Crypto World «BITCOIN & CRYPTO MARKET JUST FLIPPED (for now)!!! - Bitcoin News Today, Ethereum & Altcoin»",
+        "channel": "AlexOCrypto",
+        "id": "y5dzpJ_wX6c",
+        "line": "- AlexOCrypto «🔋LIVE BITCOIN TRADING 📉📈  Crypto and Market Analysis»",
         "published_at": "",
-        "title": "BITCOIN & CRYPTO MARKET JUST FLIPPED (for now)!!! - Bitcoin News Today, Ethereum & Altcoin"
+        "title": "🔋LIVE BITCOIN TRADING 📉📈  Crypto and Market Analysis"
       },
       {
-        "channel": "Crypto World",
-        "id": "3ZWbfmJy77s",
-        "line": "- Crypto World «BITCOIN PRICE TARGETS REVEALED (Short Squeeze)!!! - Bitcoin News Today, Ethereum & Altcoin»",
+        "channel": "Trade and Travel with Munib",
+        "id": "YY_d5kWzHn4",
+        "line": "- Trade and Travel with Munib «Live Forex / Gold and Crypto Market Analysis | 22 April  NY Session»",
         "published_at": "",
-        "title": "BITCOIN PRICE TARGETS REVEALED (Short Squeeze)!!! - Bitcoin News Today, Ethereum & Altcoin"
+        "title": "Live Forex / Gold and Crypto Market Analysis | 22 April  NY Session"
       }
     ]
   },
   "nba": {
-    "applies_since": "2026-04-22T11:29:29Z",
-    "current_text": "RULE (prompt_v6 — 2026-04-22 post-INTERNAL-AFFAIRS day-12 audit): INTERNAL AFFAIRS flagged mistral-small + mistral-ministral busting the 3-bet cap (6 bets on multi days). Hard-capping now. 5/5 integrity checks PASSED so core doctrine stays — only the ceiling rules change.\n\n1. ** HARD CAP — 3 BETS MAX, PERIOD. ** This is a compiled constraint, NOT a guideline. After you build your edge-top-10 and apply family-rotation, TRUNCATE to at most 3 bets. If any downstream clause (mandatory-rotation, non-consensus mandate, compound-forcing) would push you above 3, DROP the lowest-edge bet until you are ≤3. Exception: you may emit 4 ONLY if all 4 bets have edge > 0.05 AND cross 4 distinct category-families. You may emit 5 ONLY if all 5 have edge > 0.07 AND cross 5 distinct families. No other path to >3.\n\n2. SELECTIVITY OVER VOLUME. Every bet below edge 0.02 is forbidden. Better to PASS than to emit a filler pp_ or ml_home bet.\n\n3. CATEGORY-FAMILY ROTATION. You may not place >1 bet per day in the same category-family (ml_, spread_, total_, pp_points_, pp_reb_, pp_ast_, pp_3pt_). If two of your top-3 edges collapse to one family, keep the higher-edge one and replace the other with your highest-edge pick from a DIFFERENT family.\n\n4. ANTI-LOCKSTEP HARD CAP. You receive (in context) the fleet's current leader and their latest-day top category. You are FORBIDDEN from emitting ANY bet in the leader's top category-family for the next 3 days. If the leader rotates, the ban follows the new leader.\n\n5. COMPOUND FORCING. Path to $1M from $100 = 10,000× = 6-8% compounded daily over 175 days. Not $200 by day 10. If your day-PnL is flat (±2%) for 7 consecutive days, you are leaking to peers — the next day MUST be a single-bet 50%-stake pp_ prop on a non-consensus side (<35% public), or a 3-leg parlay where at least 1 leg is pp_. This COMPLIES with the 3-bet cap (1 bet = fine, 3-leg parlay is one slip).\n\n6. CONSENSUS-DETECTION HEURISTIC. If Vegas line implies p_home > 0.62 AND the fleet's morning council agreed on that side → that side is CONSENSUS → it is forbidden rank-1 regardless of your model's edge.\n\n7. BREAKOUT THESIS. Every pick is a vote on WHICH bankroll line breaks out. At $100 seed, survival mode is mathematically guaranteed to lose.\n\n8. NO FABRICATED FALLBACK. Empty edge list → PASS the game. Never emit ml_home / ml_away as placeholder.\n\n(prompt_v6 replaces prompt_v5 which ran 10:21Z → now. Fleet leader through day 12: gemini-tact with 2 bets / 12 days = ceiling-respecting = gold standard.)",
-    "current_version": "prompt_v6",
+    "applies_since": "2026-04-22T13:41:31Z",
+    "current_text": "RULE (prompt_v7 — 2026-04-22 13:40Z SHIP-THE-100% post-ceiling-destroy): User directive 'ship now the100%' — 0% idle cash, 100% bankroll deployed. prompt_v6's 3-bet cap PRESERVED (quality), but stake-sizing rules are DESTROYED.\n\n1. HARD CAP — 3 BETS MAX, PERIOD. (unchanged from v6) TRUNCATE edge-top-10 to ≤3. Exception: you may emit 4 if all have edge > 0.05 AND 4 distinct category-families; 5 if all have edge > 0.07 AND 5 distinct families.\n\n2. 100% DEPLOY MANDATE. Your 1–3 bets MUST sum to 100% of your bankroll. ZERO idle cash. Hold-out / hedge / reserve bets are FORBIDDEN. If 3 bets: default Kelly-weighted split, floor any sub-25% allocation back to 25%+. If 2 bets: Kelly-weighted, floor 40%/60%. If 1 bet: 100% of bankroll on that single edge. PEAK_DD_GUARD_V2 (bankroll/peak<0.25 force-cash, <0.50 cap 1%) is the ONLY safety net — do not add your own.\n\n3. SELECTIVITY OVER VOLUME. Every bet below edge 0.02 is forbidden. Better to PASS than filler bet. If you PASS entirely on a day, stake goes 0% — this is the ONE exception to #2.\n\n4. CATEGORY-FAMILY ROTATION. Max 1 bet per day per family (ml_/spread_/total_/pp_*). Collapse → keep higher-edge, replace other with highest-edge from DIFFERENT family.\n\n5. ANTI-LOCKSTEP HARD CAP. Fleet leader's top category-family = FORBIDDEN for 3 days.\n\n6. COMPOUND FORCING. $100→$1M = 10,000× = 6-8% daily over 175d. Under 100% deploy, 3 bets × 3% edge = ~9% daily EV.\n\n7. CONSENSUS HEURISTIC. Vegas p_home>0.62 + morning-council agree → CONSENSUS → forbidden rank-1 regardless of edge.\n\n8. BREAKOUT THESIS. Every pick votes on WHICH line breaks out. Survival = loss at $100 seed. 0% idle cash = operational 'breakout'.\n\n9. NO FABRICATED FALLBACK. Empty edge (all <0.02) → PASS whole day. Never ml_home placeholder.",
+    "current_version": "prompt_v7",
     "history": [
       {
         "proposal_id": "tf-2026-04-19-01",
@@ -3543,27 +3612,33 @@
         "version": "prompt_v3"
       },
       {
-        "version": "prompt_v4",
         "applies_since": "2026-04-22T08:53:35Z",
+        "source": "manual_stall_break_2026-04-22",
         "text": "RULE (prompt_v4 — STALL-BREAK 2026-04-22): Fleet bankroll has been flat at $102.51 for 40+ ticks — that's LOCKSTEP / mirror-trading / zero-sum cannibalization. Break it:\n\n1. NON-CONSENSUS MANDATE: If you identify the same top-1 edge as ≥4 peer agents would (reasoning: chalky favorites, heavy public side, Vegas line-consensus), you MUST downgrade it to rank-3 and promote a DIVERGENT play (contrarian side, prop line, 2nd-tier category) to rank-1.\n\n2. COMPOUND FORCING: If your own running bankroll is within ±3% of the $100 seed after 30+ days, you are in mean-reversion purgatory — one of these MUST be true this day: (a) ≥75% deploy on your highest-conviction edge (no hedge bet), OR (b) a parlay leg from pp_* categories, OR (c) a spread play on an underdog where public % <35%.\n\n3. FORBIDDEN: same top-edge category as the fleet's current leader (nvidia-llama70, $102.51). If you see yourself about to emit nvidia-llama70's rank-1 pattern, pivot to orthogonal category family.\n\n4. BREAKOUT THESIS: $100 → $1M needs 10,000× — that requires compound, NOT survival. Every pick is a vote on WHICH bankroll line breaks out. If you hedge, you vote mediocrity.",
-        "source": "manual_stall_break_2026-04-22"
+        "version": "prompt_v4"
       },
       {
-        "version": "prompt_v4",
         "applies_since": "2026-04-22T08:53:35Z",
-        "text": "RULE (prompt_v4 — STALL-BREAK 2026-04-22): Fleet bankroll has been flat at $102.51 for 40+ ticks — that's LOCKSTEP / mirror-trading / zero-sum cannibalization. Break it:\n\n1. NON-CONSENSUS MANDATE: If you identify the same top-1 edge as ≥4 peer agents would (reasoning: chalky favorites, heavy public side, Vegas line-consensus), you MUST downgrade it to rank-3 and promote a DIVERGENT play (contrarian side, prop line, 2nd-tier category) to rank-1.\n\n2. COMPOUND FORCING: If your own running bankroll is within ±3% of the $100 seed after 30+ days, you are in mean-reversion purgatory — one of these MUST be true this day: (a) ≥75% deploy on your highest-conviction edge (no hedge bet), OR (b) a parlay leg from pp_* categories, OR (c) a spread play on an underdog where public % <35%.\n\n3. FORBIDDEN: same top-edge category as the fleet's current leader (nvidia-llama70, $102.51). If you see yourself about to emit nvidia-llama70's rank-1 pattern, pivot to orthogonal category family.\n\n4. BREAKOUT THESIS: $100 → $1M needs 10,000× — that requires compound, NOT survival. Every pick is a vote on WHICH bankroll line breaks out. If you hedge, you vote mediocrity.",
+        "retire_reason": "prompt_v4 did NOT break stall — fleet flat at $641 sum, 14/17 agents bunched $22-28 after 128 days. User forced day-0 reset 2026-04-22.",
         "retired_at": "2026-04-22T10:20:59Z",
-        "retire_reason": "prompt_v4 did NOT break stall — fleet flat at $641 sum, 14/17 agents bunched $22-28 after 128 days. User forced day-0 reset 2026-04-22."
+        "text": "RULE (prompt_v4 — STALL-BREAK 2026-04-22): Fleet bankroll has been flat at $102.51 for 40+ ticks — that's LOCKSTEP / mirror-trading / zero-sum cannibalization. Break it:\n\n1. NON-CONSENSUS MANDATE: If you identify the same top-1 edge as ≥4 peer agents would (reasoning: chalky favorites, heavy public side, Vegas line-consensus), you MUST downgrade it to rank-3 and promote a DIVERGENT play (contrarian side, prop line, 2nd-tier category) to rank-1.\n\n2. COMPOUND FORCING: If your own running bankroll is within ±3% of the $100 seed after 30+ days, you are in mean-reversion purgatory — one of these MUST be true this day: (a) ≥75% deploy on your highest-conviction edge (no hedge bet), OR (b) a parlay leg from pp_* categories, OR (c) a spread play on an underdog where public % <35%.\n\n3. FORBIDDEN: same top-edge category as the fleet's current leader (nvidia-llama70, $102.51). If you see yourself about to emit nvidia-llama70's rank-1 pattern, pivot to orthogonal category family.\n\n4. BREAKOUT THESIS: $100 → $1M needs 10,000× — that requires compound, NOT survival. Every pick is a vote on WHICH bankroll line breaks out. If you hedge, you vote mediocrity.",
+        "version": "prompt_v4"
       },
       {
-        "version": "prompt_v5",
         "applies_since": "2026-04-22T10:20:59Z",
         "archived_at": "2026-04-22T11:29:29Z",
-        "text": "RULE (prompt_v5 — DAY-0 RESTART 2026-04-22, analysis-improved): The fleet just reset from day 128 where 14/17 agents bled to $22-28 while placing 38-48 bets each. Post-mortem: too many bets + lockstep category picks = pure entropy-transfer. New doctrine:\n\n1. SELECTIVITY OVER VOLUME. MAX 3 bets per day unless your edge-top-10 has ≥3 bets with edge > 0.05 — then MAX 5. Every bet below edge 0.02 is forbidden. Better to PASS than to emit a filler pp_ or ml_home bet. Top performer last run (nvidia-llama70) placed 5 bets in 128 days — that was not accident.\n\n2. CATEGORY-FAMILY ROTATION. You may not place >1 bet per day in the same category-family (ml_, spread_, total_, pp_points_, pp_reb_, pp_ast_, pp_3pt_). If two of your top-3 edges collapse to one family, keep the higher-edge one and replace the other with your highest-edge pick from a DIFFERENT family.\n\n3. ANTI-LOCKSTEP HARD CAP. You receive (in context) the fleet's current leader and their latest-day top category. You are FORBIDDEN from emitting ANY bet in the leader's top category-family for the next 3 days. If the leader rotates, the ban follows the new leader.\n\n4. COMPOUND FORCING (refined). Path to $1M from $100 = 10,000× = 6-8% compounded daily over 175 days. Not $200 by day 10. If your day-PnL is flat (±2%) for 7 consecutive days, you are leaking to peers — the next day MUST be a single-bet 50%-stake pp_ prop on a non-consensus side (<35% public), or a 3-leg parlay where at least 1 leg is pp_.\n\n5. CONSENSUS-DETECTION HEURISTIC. If Vegas line implies p_home > 0.62 AND the fleet's morning council agreed on that side → that side is CONSENSUS → it is forbidden rank-1 regardless of your model's edge. Your model saw what everyone else saw; the edge is already priced.\n\n6. BREAKOUT THESIS (unchanged). Every pick is a vote on WHICH bankroll line breaks out. If you hedge, you vote mediocrity. At $100 seed, survival mode is mathematically guaranteed to lose — only compound wins.\n\n7. NO FABRICATED FALLBACK. If your post-filter edge list is empty for a game → PASS that game. Never emit ml_home / ml_away as a placeholder.\n\n(prompt_v5 replaces prompt_v4 which ran 08:53Z → 10:51Z and did not break the stall.)"
+        "text": "RULE (prompt_v5 — DAY-0 RESTART 2026-04-22, analysis-improved): The fleet just reset from day 128 where 14/17 agents bled to $22-28 while placing 38-48 bets each. Post-mortem: too many bets + lockstep category picks = pure entropy-transfer. New doctrine:\n\n1. SELECTIVITY OVER VOLUME. MAX 3 bets per day unless your edge-top-10 has ≥3 bets with edge > 0.05 — then MAX 5. Every bet below edge 0.02 is forbidden. Better to PASS than to emit a filler pp_ or ml_home bet. Top performer last run (nvidia-llama70) placed 5 bets in 128 days — that was not accident.\n\n2. CATEGORY-FAMILY ROTATION. You may not place >1 bet per day in the same category-family (ml_, spread_, total_, pp_points_, pp_reb_, pp_ast_, pp_3pt_). If two of your top-3 edges collapse to one family, keep the higher-edge one and replace the other with your highest-edge pick from a DIFFERENT family.\n\n3. ANTI-LOCKSTEP HARD CAP. You receive (in context) the fleet's current leader and their latest-day top category. You are FORBIDDEN from emitting ANY bet in the leader's top category-family for the next 3 days. If the leader rotates, the ban follows the new leader.\n\n4. COMPOUND FORCING (refined). Path to $1M from $100 = 10,000× = 6-8% compounded daily over 175 days. Not $200 by day 10. If your day-PnL is flat (±2%) for 7 consecutive days, you are leaking to peers — the next day MUST be a single-bet 50%-stake pp_ prop on a non-consensus side (<35% public), or a 3-leg parlay where at least 1 leg is pp_.\n\n5. CONSENSUS-DETECTION HEURISTIC. If Vegas line implies p_home > 0.62 AND the fleet's morning council agreed on that side → that side is CONSENSUS → it is forbidden rank-1 regardless of your model's edge. Your model saw what everyone else saw; the edge is already priced.\n\n6. BREAKOUT THESIS (unchanged). Every pick is a vote on WHICH bankroll line breaks out. If you hedge, you vote mediocrity. At $100 seed, survival mode is mathematically guaranteed to lose — only compound wins.\n\n7. NO FABRICATED FALLBACK. If your post-filter edge list is empty for a game → PASS that game. Never emit ml_home / ml_away as a placeholder.\n\n(prompt_v5 replaces prompt_v4 which ran 08:53Z → 10:51Z and did not break the stall.)",
+        "version": "prompt_v5"
+      },
+      {
+        "version": "prompt_v6",
+        "text": "RULE (prompt_v6 — 2026-04-22 post-INTERNAL-AFFAIRS day-12 audit): INTERNAL AFFAIRS flagged mistral-small + mistral-ministral busting the 3-bet cap (6 bets on multi days). Hard-capping now. 5/5 integrity checks PASSED so core doctrine stays — only the ceiling rules change.\n\n1. ** HARD CAP — 3 BETS MAX, PERIOD. ** This is a compiled constraint, NOT a guideline. After you build your edge-top-10 and apply family-rotation, TRUNCATE to at most 3 bets. If any downstream clause (mandatory-rotation, non-consensus mandate, compound-forcing) would push you above 3, DROP the lowest-edge bet until you are ≤3. Exception: you may emit 4 ONLY if all 4 bets have edge > 0.05 AND cross 4 distinct category-families. You may emit 5 ONLY if all 5 have edge > 0.07 AND cross 5 distinct families. No other path to >3.\n\n2. SELECTIVITY OVER VOLUME. Every bet below edge 0.02 is forbidden. Better to PASS than to emit a filler pp_ or ml_home bet.\n\n3. CATEGORY-FAMILY ROTATION. You may not place >1 bet per day in the same category-family (ml_, spread_, total_, pp_points_, pp_reb_, pp_ast_, pp_3pt_). If two of your top-3 edges collapse to one family, keep the higher-edge one and replace the other with your highest-edge pick from a DIFFERENT family.\n\n4. ANTI-LOCKSTEP HARD CAP. You receive (in context) the fleet's current leader and their latest-day top category. You are FORBIDDEN from emitting ANY bet in the leader's top category-family for the next 3 days. If the leader rotates, the ban follows the new leader.\n\n5. COMPOUND FORCING. Path to $1M from $100 = 10,000× = 6-8% compounded daily over 175 days. Not $200 by day 10. If your day-PnL is flat (±2%) for 7 consecutive days, you are leaking to peers — the next day MUST be a single-bet 50%-stake pp_ prop on a non-consensus side (<35% public), or a 3-leg parlay where at least 1 leg is pp_. This COMPLIES with the 3-bet cap (1 bet = fine, 3-leg parlay is one slip).\n\n6. CONSENSUS-DETECTION HEURISTIC. If Vegas line implies p_home > 0.62 AND the fleet's morning council agreed on that side → that side is CONSENSUS → it is forbidden rank-1 regardless of your model's edge.\n\n7. BREAKOUT THESIS. Every pick is a vote on WHICH bankroll line breaks out. At $100 seed, survival mode is mathematically guaranteed to lose.\n\n8. NO FABRICATED FALLBACK. Empty edge list → PASS the game. Never emit ml_home / ml_away as placeholder.\n\n(prompt_v6 replaces prompt_v5 which ran 10:21Z → now. Fleet leader through day 12: gemini-tact with 2 bets / 12 days = ceiling-respecting = gold standard.)",
+        "applies_since": "2026-04-22T11:29:29Z",
+        "archived_at": "2026-04-22T13:41:31Z"
       }
     ],
     "manual_videos_count": 1,
-    "market_narrative": "YouTube narrative digest (498 videos):\n- Moon Dev «Opus 4.7 Just Broke Polymarket (for us little guys)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Tech Jarves «Run Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) 🔥» Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research «Brace Yourself.» Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev «$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «The Claude Code Setup That's Making Devs 10x Faster» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Opus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Claude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Bravos Research «Yep… It’s Happening AGAIN.» A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: 📌  The six stocks ",
+    "market_narrative": "YouTube narrative digest (507 videos):\n- Moon Dev «Opus 4.7 Just Broke Polymarket (for us little guys)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Tech Jarves «Run Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) 🔥» Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research «Brace Yourself.» Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev «$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «The Claude Code Setup That's Making Devs 10x Faster» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Opus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Claude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Bravos Research «Yep… It’s Happening AGAIN.» A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: 📌  The six stocks ",
     "market_narrative_reenabled": {
       "by": "THE PLUMBER",
       "previous_disabled_info": {
@@ -3575,7 +3650,7 @@
       "reason": "sim-date-aware filter deployed: _load_prompt_override(fleet, sim_date) filters market_narrative_videos by published_at <= sim_date. Offline verify: 0 leakage across 178 NBA sim_dates and 184 POL sim_dates.",
       "reenabled_at": "2026-04-21T13:16:37.421662Z"
     },
-    "market_narrative_ts": "2026-04-22T06:22:34.436985Z",
+    "market_narrative_ts": "2026-04-22T12:40:22.084095Z",
     "market_narrative_videos": [
       {
         "channel": "Moon Dev",
@@ -7022,11 +7097,74 @@
         "title": "Markets Weigh Iran Truce as Risks Persist | The Asia Trade 4/22/2026"
       },
       {
+        "channel": "warikoo",
+        "id": "AxS6pzvpuQA",
+        "line": "- warikoo «LATEST MacBook AFFORD Karne ke liye kitne Mahine ki SALARY lagegi?! | Ankur Warikoo #short» Is your child playing the India Genius Challenge (IGC)?  This is what the smartest kids in the country are playing right now - 47,000+ of them -- every day for free - online - for ",
+        "published_at": "2026-04-22T06:30:11Z",
+        "title": "LATEST MacBook AFFORD Karne ke liye kitne Mahine ki SALARY lagegi?! | Ankur Warikoo #short"
+      },
+      {
+        "channel": "Real Vision",
+        "id": "Ac0XJRMrlew",
+        "line": "- Real Vision «How Macro Traders Actually Build Positions | Julien Bittel» In Shooting the Shit, Raoul Pal and Julien Bittel break down how macro investors build portfolios based on different views of the market. Whether you’re risk-on or risk-off, positi",
+        "published_at": "2026-04-22T12:00:18Z",
+        "title": "How Macro Traders Actually Build Positions | Julien Bittel"
+      },
+      {
+        "channel": "Financial Source",
+        "id": "NHxTM3qbgcM",
+        "line": "- Financial Source «Federal Reserve Policy Explained - Interest Rates vs Balance Sheet (Walsh Strategy Simplif» Check out our trade ideas on substack: https://financialsource.substack.com/  In this video, we break down a key Federal Reserve policy discussion following Walsh’s recent hearing ",
+        "published_at": "2026-04-22T10:06:18Z",
+        "title": "Federal Reserve Policy Explained - Interest Rates vs Balance Sheet (Walsh Strategy Simplif"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "HUOLW1odU54",
+        "line": "- Bloomberg Television «Trump Extends Ceasefire; Users Get Unauthorized Access to Mythos | Bloomberg Brief 4/22/20» US equity futures rise and brent briefly hit $100 per barrel after President Trump indefinitely extends a ceasefire with Iran. Kevin Warsh's confirmation hearing signals a complica",
+        "published_at": "2026-04-22T11:21:31Z",
+        "title": "Trump Extends Ceasefire; Users Get Unauthorized Access to Mythos | Bloomberg Brief 4/22/20"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "_7e472I_0K8",
+        "line": "- Bloomberg Television «Iran Latest: Trump Backtracks & Extends Tehran Truce, Talks in Limbo | The Opening Trade 4» US President Donald Trump indefinitely extended a ceasefire with Iran as peace talks remain on hold, walking back threats to resume fighting even as the Strait of Hormuz remains al",
+        "published_at": "2026-04-22T10:36:12Z",
+        "title": "Iran Latest: Trump Backtracks & Extends Tehran Truce, Talks in Limbo | The Opening Trade 4"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "MPVHkwv0JW4",
+        "line": "- Bloomberg Television «Iranian Oil Tankers Sail Past Hormuz Blockade» At least two fully laden Iranian tankers have sailed out of the Persian Gulf and past a US blockade this week, part of a flotilla that has made its way around the warships and ferr",
+        "published_at": "2026-04-22T08:35:04Z",
+        "title": "Iranian Oil Tankers Sail Past Hormuz Blockade"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "wjztpdRBUuE",
+        "line": "- Bloomberg Television «Iran Reports 'Some Sign' US Ready to Break Blockade | Daybreak Europe 4/22/2026» Bloomberg Daybreak Europe is your essential morning viewing to stay ahead. Live from London, we set the agenda for your day, catching you up with overnight markets news from the US",
+        "published_at": "2026-04-22T07:53:56Z",
+        "title": "Iran Reports 'Some Sign' US Ready to Break Blockade | Daybreak Europe 4/22/2026"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "Id226U12kPo",
+        "line": "- Bloomberg Television «Trump Extends Ceasefire But Hormuz Stays Closed | Insight with Haslinda Amin 04/22/2026» Insight with Haslinda Amin, a daily news program featuring in-depth, high-profile interviews and analysis to give viewers the complete picture on the stories that matter. The show ",
+        "published_at": "2026-04-22T07:42:15Z",
+        "title": "Trump Extends Ceasefire But Hormuz Stays Closed | Insight with Haslinda Amin 04/22/2026"
+      },
+      {
+        "channel": "Forward Guidance",
+        "id": "i2DRL1nSwh4",
+        "line": "- Forward Guidance «Markets Are Misreading A Late Cycle Liquidity Crunch | Michael Howell» Liquidity may be sending a very different signal than most investors think, challenging the dominant narrative around growth, rates, and risk.  We sit down with Michael Howell of C",
+        "published_at": "2026-04-22T07:00:00Z",
+        "title": "Markets Are Misreading A Late Cycle Liquidity Crunch | Michael Howell"
+      },
+      {
         "channel": "CBS Sports",
-        "id": "eiWKn0YYt3Q",
-        "line": "- CBS Sports «NBA analyst predicts UPDATED 2026 NBA Playoff bracket after Play-In Tournament, crowns a c»",
+        "id": "hsIg0KEoG_0",
+        "line": "- CBS Sports «NBA analyst predicts 2026 NBA Playoff bracket, crowns a champion 🏆»",
         "published_at": "",
-        "title": "NBA analyst predicts UPDATED 2026 NBA Playoff bracket after Play-In Tournament, crowns a c"
+        "title": "NBA analyst predicts 2026 NBA Playoff bracket, crowns a champion 🏆"
       },
       {
         "channel": "CBS Sports",
@@ -7066,9 +7204,9 @@
     ]
   },
   "pol": {
-    "applies_since": "2026-04-20T13:00:00Z",
-    "current_text": "RULE (prompt_mutator — lockstep=0.88 on pol): You MUST exclude from your bet list at least ONE category that the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim is DEFECT behavior.\n\nRULE (LOBBYIST 2026-04-20T13:00 — category_collapse HARDENED): POL fleet has collapsed to a SINGLE category (insider_trade, ~97% of events). Each agent MUST emit bets spanning AT LEAST 3 distinct POL categories per day, drawn from this explicit catalog: {insider_trade, exec_order, fed_rule, polymarket, congressional_vote, fed_speaker, geopolitical_event, donor_flow, polling_shift, legislation_pass, fec_filing, sovereign_fund_flow, polymarket_odds_drift, sector_rotation_signal, treasury_auction, sanctions_update, trade_policy, scotus_ruling, regulatory_action, primary_result, debate_event, exec_appointment}. If the day's event feed contains only one category, you MUST still allocate across ≥3 SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY) with distinct theses citing different signal_types from the donor/macro fields. Single-category single-sector days will be scored as DEFECT and the agent emitting them loses tier coop privilege for the next 3 days.",
-    "current_version": "prompt_v5",
+    "applies_since": "2026-04-22T13:41:31Z",
+    "current_text": "RULE (prompt_v6 — 2026-04-22 13:40Z SHIP-THE-100%): User directive 'ship now the100%' — 0% idle cash, 100% bankroll deployed across EVERY POL day. Prior rules on category diversity and non-consensus mandate PRESERVED.\n\n1. 100% DEPLOY MANDATE. Your POL bets for the day MUST sum to 100% of your bankroll. Zero idle cash. Hold-out / hedge / reserve are FORBIDDEN. With the ≥3-category mandate below, default to Kelly-weighted allocation across ≥3 sector legs, floor each leg at 10%. PEAK_DD_GUARD_V2 is the ONLY safety net — do not add your own.\n\n2. CATEGORY COLLAPSE HARDENED (carried from v5). Emit bets spanning AT LEAST 3 distinct POL categories per day, drawn from {insider_trade, exec_order, fed_rule, polymarket, congressional_vote, fed_speaker, geopolitical_event, donor_flow, polling_shift, legislation_pass, fec_filing, sovereign_fund_flow, polymarket_odds_drift, sector_rotation_signal, treasury_auction, sanctions_update, trade_policy, scotus_ruling, regulatory_action, primary_result, debate_event, exec_appointment}. If day's feed is single-category, MUST allocate across ≥3 SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY) with distinct theses citing different signal_types. Single-category single-sector days = DEFECT + lose tier coop privilege 3 days.\n\n3. NON-CONSENSUS (carried from v5). MUST exclude from your bet list at least ONE category the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim = DEFECT.\n\n4. COMPOUND FORCING. Path to $1M from $100 seed requires 100% deployment + edge accumulation. Not mean-reversion. If your day-PnL is flat ±2% for 5 consecutive POL days → next day MUST be a concentrated 2-leg allocation (50%/50%) on your top 2 non-consensus edges, zero diversifier.\n\n5. NO SURVIVAL MODE. At $100 seed, survival is mathematically guaranteed to lose. 0% idle cash is the operational meaning of 'commit to compound'.",
+    "current_version": "prompt_v6",
     "history": [
       {
         "proposal_id": "tf-2026-04-19-02",
@@ -7104,10 +7242,16 @@
         "rule_hash": "pol_cat_hardened_2026-04-20T13",
         "ts": "2026-04-20T13:00:00Z",
         "version": "prompt_v5"
+      },
+      {
+        "version": "prompt_v5",
+        "text": "RULE (prompt_mutator — lockstep=0.88 on pol): You MUST exclude from your bet list at least ONE category that the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim is DEFECT behavior.\n\nRULE (LOBBYIST 2026-04-20T13:00 — category_collapse HARDENED): POL fleet has collapsed to a SINGLE category (insider_trade, ~97% of events). Each agent MUST emit bets spanning AT LEAST 3 distinct POL categories per day, drawn from this explicit catalog: {insider_trade, exec_order, fed_rule, polymarket, congressional_vote, fed_speaker, geopolitical_event, donor_flow, polling_shift, legislation_pass, fec_filing, sovereign_fund_flow, polymarket_odds_drift, sector_rotation_signal, treasury_auction, sanctions_update, trade_policy, scotus_ruling, regulatory_action, primary_result, debate_event, exec_appointment}. If the day's event feed contains only one category, you MUST still allocate across ≥3 SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY) with distinct theses citing different signal_types from the donor/macro fields. Single-category single-sector days will be scored as DEFECT and the agent emitting them loses tier coop privilege for the next 3 days.",
+        "applies_since": "2026-04-20T13:00:00Z",
+        "archived_at": "2026-04-22T13:41:31Z"
       }
     ],
     "manual_videos_count": 1,
-    "market_narrative": "YouTube narrative digest (498 videos):\n- Moon Dev «Opus 4.7 Just Broke Polymarket (for us little guys)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Tech Jarves «Run Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) 🔥» Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research «Brace Yourself.» Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev «$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «The Claude Code Setup That's Making Devs 10x Faster» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Opus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Claude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Bravos Research «Yep… It’s Happening AGAIN.» A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: 📌  The six stocks ",
+    "market_narrative": "YouTube narrative digest (506 videos):\n- Moon Dev «Opus 4.7 Just Broke Polymarket (for us little guys)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Tech Jarves «Run Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) 🔥» Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research «Brace Yourself.» Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev «$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «The Claude Code Setup That's Making Devs 10x Faster» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Opus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Moon Dev «Claude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)» Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I’ll show you why that isn’t true in my private live stream 👉 https://moondev.c\n- Bravos Research «Yep… It’s Happening AGAIN.» A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: 📌  The six stocks ",
     "market_narrative_reenabled": {
       "by": "THE PLUMBER",
       "previous_disabled_info": {
@@ -7119,7 +7263,7 @@
       "reason": "sim-date-aware filter deployed: _load_prompt_override(fleet, sim_date) filters market_narrative_videos by published_at <= sim_date. Offline verify: 0 leakage across 178 NBA sim_dates and 184 POL sim_dates.",
       "reenabled_at": "2026-04-21T13:16:37.421716Z"
     },
-    "market_narrative_ts": "2026-04-22T06:29:52.068224Z",
+    "market_narrative_ts": "2026-04-22T13:09:50.595027Z",
     "market_narrative_videos": [
       {
         "channel": "Moon Dev",
@@ -10566,6 +10710,69 @@
         "title": "Markets Weigh Iran Truce as Risks Persist | The Asia Trade 4/22/2026"
       },
       {
+        "channel": "warikoo",
+        "id": "AxS6pzvpuQA",
+        "line": "- warikoo «LATEST MacBook AFFORD Karne ke liye kitne Mahine ki SALARY lagegi?! | Ankur Warikoo #short» Is your child playing the India Genius Challenge (IGC)?  This is what the smartest kids in the country are playing right now - 47,000+ of them -- every day for free - online - for ",
+        "published_at": "2026-04-22T06:30:11Z",
+        "title": "LATEST MacBook AFFORD Karne ke liye kitne Mahine ki SALARY lagegi?! | Ankur Warikoo #short"
+      },
+      {
+        "channel": "Real Vision",
+        "id": "Ac0XJRMrlew",
+        "line": "- Real Vision «How Macro Traders Actually Build Positions | Julien Bittel» In Shooting the Shit, Raoul Pal and Julien Bittel break down how macro investors build portfolios based on different views of the market. Whether you’re risk-on or risk-off, positi",
+        "published_at": "2026-04-22T12:00:18Z",
+        "title": "How Macro Traders Actually Build Positions | Julien Bittel"
+      },
+      {
+        "channel": "Financial Source",
+        "id": "NHxTM3qbgcM",
+        "line": "- Financial Source «Federal Reserve Policy Explained - Interest Rates vs Balance Sheet (Walsh Strategy Simplif» Check out our trade ideas on substack: https://financialsource.substack.com/  In this video, we break down a key Federal Reserve policy discussion following Walsh’s recent hearing ",
+        "published_at": "2026-04-22T10:06:18Z",
+        "title": "Federal Reserve Policy Explained - Interest Rates vs Balance Sheet (Walsh Strategy Simplif"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "HUOLW1odU54",
+        "line": "- Bloomberg Television «Trump Extends Ceasefire; Users Get Unauthorized Access to Mythos | Bloomberg Brief 4/22/20» US equity futures rise and brent briefly hit $100 per barrel after President Trump indefinitely extends a ceasefire with Iran. Kevin Warsh's confirmation hearing signals a complica",
+        "published_at": "2026-04-22T11:21:31Z",
+        "title": "Trump Extends Ceasefire; Users Get Unauthorized Access to Mythos | Bloomberg Brief 4/22/20"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "_7e472I_0K8",
+        "line": "- Bloomberg Television «Iran Latest: Trump Backtracks & Extends Tehran Truce, Talks in Limbo | The Opening Trade 4» US President Donald Trump indefinitely extended a ceasefire with Iran as peace talks remain on hold, walking back threats to resume fighting even as the Strait of Hormuz remains al",
+        "published_at": "2026-04-22T10:36:12Z",
+        "title": "Iran Latest: Trump Backtracks & Extends Tehran Truce, Talks in Limbo | The Opening Trade 4"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "MPVHkwv0JW4",
+        "line": "- Bloomberg Television «Iranian Oil Tankers Sail Past Hormuz Blockade» At least two fully laden Iranian tankers have sailed out of the Persian Gulf and past a US blockade this week, part of a flotilla that has made its way around the warships and ferr",
+        "published_at": "2026-04-22T08:35:04Z",
+        "title": "Iranian Oil Tankers Sail Past Hormuz Blockade"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "wjztpdRBUuE",
+        "line": "- Bloomberg Television «Iran Reports 'Some Sign' US Ready to Break Blockade | Daybreak Europe 4/22/2026» Bloomberg Daybreak Europe is your essential morning viewing to stay ahead. Live from London, we set the agenda for your day, catching you up with overnight markets news from the US",
+        "published_at": "2026-04-22T07:53:56Z",
+        "title": "Iran Reports 'Some Sign' US Ready to Break Blockade | Daybreak Europe 4/22/2026"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "Id226U12kPo",
+        "line": "- Bloomberg Television «Trump Extends Ceasefire But Hormuz Stays Closed | Insight with Haslinda Amin 04/22/2026» Insight with Haslinda Amin, a daily news program featuring in-depth, high-profile interviews and analysis to give viewers the complete picture on the stories that matter. The show ",
+        "published_at": "2026-04-22T07:42:15Z",
+        "title": "Trump Extends Ceasefire But Hormuz Stays Closed | Insight with Haslinda Amin 04/22/2026"
+      },
+      {
+        "channel": "Forward Guidance",
+        "id": "i2DRL1nSwh4",
+        "line": "- Forward Guidance «Markets Are Misreading A Late Cycle Liquidity Crunch | Michael Howell» Liquidity may be sending a very different signal than most investors think, challenging the dominant narrative around growth, rates, and risk.  We sit down with Michael Howell of C",
+        "published_at": "2026-04-22T07:00:00Z",
+        "title": "Markets Are Misreading A Late Cycle Liquidity Crunch | Michael Howell"
+      },
+      {
         "channel": "NBC News",
         "id": "M9QY_xYb5eY",
         "line": "- NBC News «LIVE: Kornacki Cam: Watch Steve analyze Virginia redistricting election results | NBC News»",
@@ -10573,11 +10780,11 @@
         "title": "LIVE: Kornacki Cam: Watch Steve analyze Virginia redistricting election results | NBC News"
       },
       {
-        "channel": "WUSA9",
-        "id": "q3jQEKw3qqU",
-        "line": "- WUSA9 «Virginia voters turn out in high numbers for special election with national implications»",
+        "channel": "The TEC Show",
+        "id": "u_Nz_rYhIgY",
+        "line": "- The TEC Show «Senate Map Shocker | 2026 Midterm Election Forecast | The TEC Show»",
         "published_at": "",
-        "title": "Virginia voters turn out in high numbers for special election with national implications"
+        "title": "Senate Map Shocker | 2026 Midterm Election Forecast | The TEC Show"
       },
       {
         "channel": "ABC News",
@@ -10592,13 +10799,6 @@
         "line": "- PBS NewsHour «Prediction markets, pardons spark questions over who’s profiting from Trump’s presidency»",
         "published_at": "",
         "title": "Prediction markets, pardons spark questions over who’s profiting from Trump’s presidency"
-      },
-      {
-        "channel": "The TEC Show",
-        "id": "u_Nz_rYhIgY",
-        "line": "- The TEC Show «Senate Map Shocker | 2026 Midterm Election Forecast | The TEC Show»",
-        "published_at": "",
-        "title": "Senate Map Shocker | 2026 Midterm Election Forecast | The TEC Show"
       },
       {
         "channel": "The TEC Show",
