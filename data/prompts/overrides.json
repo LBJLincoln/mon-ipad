@@ -37,15 +37,15 @@
         "version": "itf_v_deploy70"
       },
       {
-        "version": "itf_v_deploy100",
-        "text": "RULE (itf_v_deploy100 \u2014 2026-04-22 13:40Z SHIP-THE-100%): User directive 'ship now the100%' \u2014 ITF_STAKE_FLOOR_PCT=0.95 (was 0.70), ITF_FLEET_DEPLOY_TARGET=0.95 (was 0.70). Structural: your sub-bankroll equity should be \u226595% deployed at close of each tick. Idle cash is bankroll leakage.\n\n1. STAKE FLOOR 95%. When you open a new position, sizing must be \u226595% of your available sub-bankroll cash. Bracket-protect with stop_loss from executor.py canon \u2014 DO NOT leave dry powder.\n\n2. ROLLING DEPLOY \u226595%. If your open-position notional / total_equity is <0.95 at tick close, your NEXT bid MUST size up to fill the gap (\u226595% target). No hedges, no parking.\n\n3. PDT-TRUTHFUL (carried forward). Alpaca pattern_day_trader=True. MIN_HOLD_SEC=900 (15-min guard in executor.close_position). Hold overnight when possible; daytrade only if edge \u2265 1% net-of-spread.\n\n4. PEAK_DD_GUARD_V2 ONLY SAFETY NET. sub_bankroll/peak<0.25 \u2192 force cash; <0.50 \u2192 cap 1%. Do NOT add your own hedges/caps.\n\n5. CROSS-FLEET WINNER ROUTING. Momentum/mean-rev/vol/options \u2192 mistral:large (PQTF $244K winner). Fast news/gap-fade \u2192 cerebras:qwen-3-235b. Scalper/pairs/crypto-whale \u2192 mistral:medium.\n\n6. WINNER-TIER DYNAMIC. Current equity vs $5,943 seed:\n   \u2022 WINNER (>$8,000, reserved/total \u22650.7): stack edges, add 5th position when free.\n   \u2022 DEPLOYER (seed \u00b120%, reserved/total \u22650.5): maintain 3-4 positions continuously.\n   \u2022 HOLDER (equity \u2265$4,500, reserved/total <0.3): CLOSE a stale loser THIS TICK, re-deploy.\n   \u2022 IDLE (>2 ticks no bid with edge \u22651%): open the highest-edge idea NOW, 95% stake.\n   \u2022 LOSER (equity <$4,500): PEAK_DD_V2 owns you \u2014 comply.",
         "applies_since": "2026-04-22T13:41:31Z",
-        "archived_at": "2026-04-22T14:37:43Z"
+        "archived_at": "2026-04-22T14:37:43Z",
+        "text": "RULE (itf_v_deploy100 \u2014 2026-04-22 13:40Z SHIP-THE-100%): User directive 'ship now the100%' \u2014 ITF_STAKE_FLOOR_PCT=0.95 (was 0.70), ITF_FLEET_DEPLOY_TARGET=0.95 (was 0.70). Structural: your sub-bankroll equity should be \u226595% deployed at close of each tick. Idle cash is bankroll leakage.\n\n1. STAKE FLOOR 95%. When you open a new position, sizing must be \u226595% of your available sub-bankroll cash. Bracket-protect with stop_loss from executor.py canon \u2014 DO NOT leave dry powder.\n\n2. ROLLING DEPLOY \u226595%. If your open-position notional / total_equity is <0.95 at tick close, your NEXT bid MUST size up to fill the gap (\u226595% target). No hedges, no parking.\n\n3. PDT-TRUTHFUL (carried forward). Alpaca pattern_day_trader=True. MIN_HOLD_SEC=900 (15-min guard in executor.close_position). Hold overnight when possible; daytrade only if edge \u2265 1% net-of-spread.\n\n4. PEAK_DD_GUARD_V2 ONLY SAFETY NET. sub_bankroll/peak<0.25 \u2192 force cash; <0.50 \u2192 cap 1%. Do NOT add your own hedges/caps.\n\n5. CROSS-FLEET WINNER ROUTING. Momentum/mean-rev/vol/options \u2192 mistral:large (PQTF $244K winner). Fast news/gap-fade \u2192 cerebras:qwen-3-235b. Scalper/pairs/crypto-whale \u2192 mistral:medium.\n\n6. WINNER-TIER DYNAMIC. Current equity vs $5,943 seed:\n   \u2022 WINNER (>$8,000, reserved/total \u22650.7): stack edges, add 5th position when free.\n   \u2022 DEPLOYER (seed \u00b120%, reserved/total \u22650.5): maintain 3-4 positions continuously.\n   \u2022 HOLDER (equity \u2265$4,500, reserved/total <0.3): CLOSE a stale loser THIS TICK, re-deploy.\n   \u2022 IDLE (>2 ticks no bid with edge \u22651%): open the highest-edge idea NOW, 95% stake.\n   \u2022 LOSER (equity <$4,500): PEAK_DD_V2 owns you \u2014 comply.",
+        "version": "itf_v_deploy100"
       }
     ],
     "manual_videos_count": 1,
-    "market_narrative": "YouTube narrative digest (506 videos):\n- Moon Dev \u00abOpus 4.7 Just Broke Polymarket (for us little guys)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Tech Jarves \u00abRun Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) \ud83d\udd25\u00bb Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research \u00abBrace Yourself.\u00bb Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev \u00ab$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abThe Claude Code Setup That's Making Devs 10x Faster\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abOpus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abClaude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Bravos Research \u00abYep\u2026 It\u2019s Happening AGAIN.\u00bb A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: \ud83d\udccc  The six stocks ",
-    "market_narrative_ts": "2026-04-22T13:39:00.511535Z",
+    "market_narrative": "YouTube narrative digest (516 videos):\n- Moon Dev \u00abOpus 4.7 Just Broke Polymarket (for us little guys)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Tech Jarves \u00abRun Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) \ud83d\udd25\u00bb Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research \u00abBrace Yourself.\u00bb Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev \u00ab$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abThe Claude Code Setup That's Making Devs 10x Faster\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abOpus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abClaude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Bravos Research \u00abYep\u2026 It\u2019s Happening AGAIN.\u00bb A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: \ud83d\udccc  The six stocks ",
+    "market_narrative_ts": "2026-04-22T18:56:18.567234Z",
     "market_narrative_videos": [
       {
         "channel": "Moon Dev",
@@ -3555,11 +3555,88 @@
         "title": "Markets Are Misreading A Late Cycle Liquidity Crunch | Michael Howell"
       },
       {
+        "channel": "Moon Dev",
+        "id": "ZmmYDSJ5jdE",
+        "line": "- Moon Dev \u00ab6x claude code Arbitrage Trading Bots\u00bb Join the zoom for chat and a replay: https://moondev.com/t/yt/stream  Because wall street is watching, we had to go private. Zoom is where HD quality is and where you can chat with",
+        "published_at": "2026-04-22T16:06:13Z",
+        "title": "6x claude code Arbitrage Trading Bots"
+      },
+      {
+        "channel": "Moon Dev",
+        "id": "_OX5GLsBkSA",
+        "line": "- Moon Dev \u00ab6x claude code Arbitrage Trading Bots\u00bb Join the zoom for chat and a replay: https://moondev.com/t/yt/stream  Because wall street is watching, we had to go private. Zoom is where HD quality is and where you can chat with",
+        "published_at": "2026-04-22T15:59:19Z",
+        "title": "6x claude code Arbitrage Trading Bots"
+      },
+      {
+        "channel": "warikoo",
+        "id": "_dAf1eafhn8",
+        "line": "- warikoo \u00abHow To Manage a \u20b920 Lakh Home Loan? | Money Matters Ep. 109 | Ankur Warikoo Hindi\u00bb Is your child playing the India Genius Challenge (IGC)?  This is what the smartest kids in the country are playing right now - 47,000+ of them -- every day for free - online - for ",
+        "published_at": "2026-04-22T14:30:33Z",
+        "title": "How To Manage a \u20b920 Lakh Home Loan? | Money Matters Ep. 109 | Ankur Warikoo Hindi"
+      },
+      {
+        "channel": "Altcoin Daily",
+        "id": "C0TmhcIbHOk",
+        "line": "- Altcoin Daily \u00abAre You Waiting To Buy The Dip? \ud83e\udd14 #crypto\u00bb \u2705 Bitunix (no kyc) - Claim $10k bonus: https://www.bitunix.com/register?vipCode=AltcoinDaily \ud83d\udfe0 BTC Conference 2026 - 'ALTCOINDAILY' for 10% off Ticket: https://fxo.co/JB36  \ud83d\udfe1\ud83c\udccf WEEX",
+        "published_at": "2026-04-22T18:02:15Z",
+        "title": "Are You Waiting To Buy The Dip? \ud83e\udd14 #crypto"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "vrzwkmXUuME",
+        "line": "- Bloomberg Television \u00abS&P 500 Set for Record High on Earnings | Open Interest 4/22/2026\u00bb Get a jump start on the US trading day with Matt Miller and Dani Burger on \"Bloomberg Open Interest.\" President Trump extends a ceasefire with Iran indefinitely, dialing back threa",
+        "published_at": "2026-04-22T17:48:51Z",
+        "title": "S&P 500 Set for Record High on Earnings | Open Interest 4/22/2026"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "5metfWG6PjA",
+        "line": "- Bloomberg Television \u00abBMW Says EV Demand Is Rising, Unveils the New Series 7\u00bb BMW is unveiling its bold new 7 Series,\u00a0 blending striking design with cutting-edge tech and multiple powertrain options\u2014including fully electric. BMW of North America CEO Sebastia",
+        "published_at": "2026-04-22T17:14:58Z",
+        "title": "BMW Says EV Demand Is Rising, Unveils the New Series 7"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "JGYKEHplUgU",
+        "line": "- Bloomberg Television \u00abTrump Signs Order Easing Restrictions on Psychedelic Drugs\u00bb President Donald Trump directed his administration to speed up reviews of certain psychedelic drugs, including ibogaine, which has serious safety risks.",
+        "published_at": "2026-04-22T17:00:21Z",
+        "title": "Trump Signs Order Easing Restrictions on Psychedelic Drugs"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "PiVJ8rXzvVk",
+        "line": "- Bloomberg Television \u00ab#Iran Tensions Flare Again: What\u2019s Next for Negotiations in Pakistan #politics\u00bb On today\u2019s Big Take podcast, Bloomberg\u2019s Stacey Vanek Smith and Kate Sullivan break down rising US-Iran tensions, why nuclear talks and the Strait of Hormuz remain deadlocked and w",
+        "published_at": "2026-04-22T16:00:49Z",
+        "title": "#Iran Tensions Flare Again: What\u2019s Next for Negotiations in Pakistan #politics"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "uWMmv3UOMNE",
+        "line": "- Bloomberg Television \u00abBessent Says Many US Allies in Gulf Have Requested Swap Lines\u00bb Treasury Secretary\u00a0Scott Bessent\u00a0says that many Persian Gulf allies along with a number of Asian nations have requested foreign exchange swap lines with the US. He speaks during te",
+        "published_at": "2026-04-22T15:23:40Z",
+        "title": "Bessent Says Many US Allies in Gulf Have Requested Swap Lines"
+      },
+      {
         "channel": "Bloomberg Television",
         "id": "Wl8yiHDDFgY",
         "line": "- Bloomberg Television \u00abMarkets Extend Downturn | Closing Bell\u00bb",
         "published_at": "",
         "title": "Markets Extend Downturn | Closing Bell"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "BfN9k7Jb69g",
+        "line": "- Bloomberg Television \u00abStocks Close Near Session Lows | Closing Bell\u00bb",
+        "published_at": "",
+        "title": "Stocks Close Near Session Lows | Closing Bell"
+      },
+      {
+        "channel": "Live Options Trading with JR",
+        "id": "SHrpgTm802U",
+        "line": "- Live Options Trading with JR \u00abALERT Unusual Options Activity on DNUT! How to Trade It!\u00bb",
+        "published_at": "",
+        "title": "ALERT Unusual Options Activity on DNUT! How to Trade It!"
       },
       {
         "channel": "Barchart",
@@ -3569,25 +3646,18 @@
         "title": "How I Beat the Market Using Unusual Options (Real Trades)"
       },
       {
-        "channel": "Live Options Trading with JR",
-        "id": "9fmYWWgG7pU",
-        "line": "- Live Options Trading with JR \u00abForget Technical Analysis: Here's How We Spot Unusual Options Activity in 3 Bullish Sector\u00bb",
+        "channel": "Crypto World",
+        "id": "l0DmCVuPA0E",
+        "line": "- Crypto World \u00abBITCOIN & CRYPTO MARKET JUST FLIPPED (for now)!!! - Bitcoin News Today, Ethereum & Altcoin\u00bb",
         "published_at": "",
-        "title": "Forget Technical Analysis: Here's How We Spot Unusual Options Activity in 3 Bullish Sector"
+        "title": "BITCOIN & CRYPTO MARKET JUST FLIPPED (for now)!!! - Bitcoin News Today, Ethereum & Altcoin"
       },
       {
-        "channel": "AlexOCrypto",
-        "id": "y5dzpJ_wX6c",
-        "line": "- AlexOCrypto \u00ab\ud83d\udd0bLIVE BITCOIN TRADING \ud83d\udcc9\ud83d\udcc8  Crypto and Market Analysis\u00bb",
+        "channel": "Crypto Jebb",
+        "id": "gK96iTR71C4",
+        "line": "- Crypto Jebb \u00abBITCOIN BEAR MARKET OVER? Our Honest Analysis - Bitcoin Price Prediction 2026\u00bb",
         "published_at": "",
-        "title": "\ud83d\udd0bLIVE BITCOIN TRADING \ud83d\udcc9\ud83d\udcc8  Crypto and Market Analysis"
-      },
-      {
-        "channel": "Trade and Travel with Munib",
-        "id": "YY_d5kWzHn4",
-        "line": "- Trade and Travel with Munib \u00abLive Forex / Gold and Crypto Market Analysis | 22 April  NY Session\u00bb",
-        "published_at": "",
-        "title": "Live Forex / Gold and Crypto Market Analysis | 22 April  NY Session"
+        "title": "BITCOIN BEAR MARKET OVER? Our Honest Analysis - Bitcoin Price Prediction 2026"
       }
     ]
   },
@@ -3644,7 +3714,7 @@
       }
     ],
     "manual_videos_count": 1,
-    "market_narrative": "YouTube narrative digest (507 videos):\n- Moon Dev \u00abOpus 4.7 Just Broke Polymarket (for us little guys)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Tech Jarves \u00abRun Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) \ud83d\udd25\u00bb Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research \u00abBrace Yourself.\u00bb Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev \u00ab$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abThe Claude Code Setup That's Making Devs 10x Faster\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abOpus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abClaude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Bravos Research \u00abYep\u2026 It\u2019s Happening AGAIN.\u00bb A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: \ud83d\udccc  The six stocks ",
+    "market_narrative": "YouTube narrative digest (516 videos):\n- Moon Dev \u00abOpus 4.7 Just Broke Polymarket (for us little guys)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Tech Jarves \u00abRun Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) \ud83d\udd25\u00bb Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research \u00abBrace Yourself.\u00bb Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev \u00ab$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abThe Claude Code Setup That's Making Devs 10x Faster\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abOpus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abClaude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Bravos Research \u00abYep\u2026 It\u2019s Happening AGAIN.\u00bb A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: \ud83d\udccc  The six stocks ",
     "market_narrative_reenabled": {
       "by": "THE PLUMBER",
       "previous_disabled_info": {
@@ -3656,7 +3726,7 @@
       "reason": "sim-date-aware filter deployed: _load_prompt_override(fleet, sim_date) filters market_narrative_videos by published_at <= sim_date. Offline verify: 0 leakage across 178 NBA sim_dates and 184 POL sim_dates.",
       "reenabled_at": "2026-04-21T13:16:37.421662Z"
     },
-    "market_narrative_ts": "2026-04-22T12:40:22.084095Z",
+    "market_narrative_ts": "2026-04-22T18:22:49.958670Z",
     "market_narrative_videos": [
       {
         "channel": "Moon Dev",
@@ -7166,8 +7236,71 @@
         "title": "Markets Are Misreading A Late Cycle Liquidity Crunch | Michael Howell"
       },
       {
+        "channel": "Moon Dev",
+        "id": "ZmmYDSJ5jdE",
+        "line": "- Moon Dev \u00ab6x claude code Arbitrage Trading Bots\u00bb Join the zoom for chat and a replay: https://moondev.com/t/yt/stream  Because wall street is watching, we had to go private. Zoom is where HD quality is and where you can chat with",
+        "published_at": "2026-04-22T16:06:13Z",
+        "title": "6x claude code Arbitrage Trading Bots"
+      },
+      {
+        "channel": "Moon Dev",
+        "id": "_OX5GLsBkSA",
+        "line": "- Moon Dev \u00ab6x claude code Arbitrage Trading Bots\u00bb Join the zoom for chat and a replay: https://moondev.com/t/yt/stream  Because wall street is watching, we had to go private. Zoom is where HD quality is and where you can chat with",
+        "published_at": "2026-04-22T15:59:19Z",
+        "title": "6x claude code Arbitrage Trading Bots"
+      },
+      {
+        "channel": "warikoo",
+        "id": "_dAf1eafhn8",
+        "line": "- warikoo \u00abHow To Manage a \u20b920 Lakh Home Loan? | Money Matters Ep. 109 | Ankur Warikoo Hindi\u00bb Is your child playing the India Genius Challenge (IGC)?  This is what the smartest kids in the country are playing right now - 47,000+ of them -- every day for free - online - for ",
+        "published_at": "2026-04-22T14:30:33Z",
+        "title": "How To Manage a \u20b920 Lakh Home Loan? | Money Matters Ep. 109 | Ankur Warikoo Hindi"
+      },
+      {
+        "channel": "Altcoin Daily",
+        "id": "C0TmhcIbHOk",
+        "line": "- Altcoin Daily \u00abAre You Waiting To Buy The Dip? \ud83e\udd14 #crypto\u00bb \u2705 Bitunix (no kyc) - Claim $10k bonus: https://www.bitunix.com/register?vipCode=AltcoinDaily \ud83d\udfe0 BTC Conference 2026 - 'ALTCOINDAILY' for 10% off Ticket: https://fxo.co/JB36  \ud83d\udfe1\ud83c\udccf WEEX",
+        "published_at": "2026-04-22T18:02:15Z",
+        "title": "Are You Waiting To Buy The Dip? \ud83e\udd14 #crypto"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "vrzwkmXUuME",
+        "line": "- Bloomberg Television \u00abS&P 500 Set for Record High on Earnings | Open Interest 4/22/2026\u00bb Get a jump start on the US trading day with Matt Miller and Dani Burger on \"Bloomberg Open Interest.\" President Trump extends a ceasefire with Iran indefinitely, dialing back threa",
+        "published_at": "2026-04-22T17:48:51Z",
+        "title": "S&P 500 Set for Record High on Earnings | Open Interest 4/22/2026"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "5metfWG6PjA",
+        "line": "- Bloomberg Television \u00abBMW Says EV Demand Is Rising, Unveils the New Series 7\u00bb BMW is unveiling its bold new 7 Series,\u00a0 blending striking design with cutting-edge tech and multiple powertrain options\u2014including fully electric. BMW of North America CEO Sebastia",
+        "published_at": "2026-04-22T17:14:58Z",
+        "title": "BMW Says EV Demand Is Rising, Unveils the New Series 7"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "JGYKEHplUgU",
+        "line": "- Bloomberg Television \u00abTrump Signs Order Easing Restrictions on Psychedelic Drugs\u00bb President Donald Trump directed his administration to speed up reviews of certain psychedelic drugs, including ibogaine, which has serious safety risks.",
+        "published_at": "2026-04-22T17:00:21Z",
+        "title": "Trump Signs Order Easing Restrictions on Psychedelic Drugs"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "PiVJ8rXzvVk",
+        "line": "- Bloomberg Television \u00ab#Iran Tensions Flare Again: What\u2019s Next for Negotiations in Pakistan #politics\u00bb On today\u2019s Big Take podcast, Bloomberg\u2019s Stacey Vanek Smith and Kate Sullivan break down rising US-Iran tensions, why nuclear talks and the Strait of Hormuz remain deadlocked and w",
+        "published_at": "2026-04-22T16:00:49Z",
+        "title": "#Iran Tensions Flare Again: What\u2019s Next for Negotiations in Pakistan #politics"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "uWMmv3UOMNE",
+        "line": "- Bloomberg Television \u00abBessent Says Many US Allies in Gulf Have Requested Swap Lines\u00bb Treasury Secretary\u00a0Scott Bessent\u00a0says that many Persian Gulf allies along with a number of Asian nations have requested foreign exchange swap lines with the US. He speaks during te",
+        "published_at": "2026-04-22T15:23:40Z",
+        "title": "Bessent Says Many US Allies in Gulf Have Requested Swap Lines"
+      },
+      {
         "channel": "CBS Sports",
-        "id": "hsIg0KEoG_0",
+        "id": "DGgynPaEdvA",
         "line": "- CBS Sports \u00abNBA analyst predicts 2026 NBA Playoff bracket, crowns a champion \ud83c\udfc6\u00bb",
         "published_at": "",
         "title": "NBA analyst predicts 2026 NBA Playoff bracket, crowns a champion \ud83c\udfc6"
@@ -7180,6 +7313,13 @@
         "title": "2026 NBA Playoffs: 5 teams that can win the NBA Finals \ud83c\udfc0"
       },
       {
+        "channel": "Stokastic DFS - Daily Fantasy Sports Advice",
+        "id": "v7mDtx_l6MU",
+        "line": "- Stokastic DFS - Daily Fantasy Sports Advice \u00abNBA DFS Strategy Wednesday 4/22/26 | DraftKings & FanDuel NBA Lineup Picks\u00bb",
+        "published_at": "",
+        "title": "NBA DFS Strategy Wednesday 4/22/26 | DraftKings & FanDuel NBA Lineup Picks"
+      },
+      {
         "channel": "Splash Play NBA & MLB with Chris Spags",
         "id": "CN20SocbHBo",
         "line": "- Splash Play NBA & MLB with Chris Spags \u00abNBA DFS Tuesday 4/21 (DraftKings NBA MUST PLAYS) | NBA DFS Picks + Bets\u00bb",
@@ -7187,11 +7327,11 @@
         "title": "NBA DFS Tuesday 4/21 (DraftKings NBA MUST PLAYS) | NBA DFS Picks + Bets"
       },
       {
-        "channel": "Stokastic DFS - Daily Fantasy Sports Advice",
-        "id": "w_lKFi1Fw6w",
-        "line": "- Stokastic DFS - Daily Fantasy Sports Advice \u00abNBA DFS Live Before Lock (Tuesday 4/21/26) | DraftKings & FanDuel NBA Lineups\u00bb",
+        "channel": "SportsLine",
+        "id": "Ub9DRSAmu6Q",
+        "line": "- SportsLine \u00abWEDNESDAY BETS: NBA Playoff Picks + MLB Bets | The Early Edge\u00bb",
         "published_at": "",
-        "title": "NBA DFS Live Before Lock (Tuesday 4/21/26) | DraftKings & FanDuel NBA Lineups"
+        "title": "WEDNESDAY BETS: NBA Playoff Picks + MLB Bets | The Early Edge"
       },
       {
         "channel": "SportsLine",
@@ -7199,13 +7339,6 @@
         "line": "- SportsLine \u00abTUESDAY BETS: NBA Playoff Picks + MLB Props  | The Early Edge\u00bb",
         "published_at": "",
         "title": "TUESDAY BETS: NBA Playoff Picks + MLB Props  | The Early Edge"
-      },
-      {
-        "channel": "WagerTalk TV: Sports Picks and Betting Tips",
-        "id": "mc3T-nfk6Sg",
-        "line": "- WagerTalk TV: Sports Picks and Betting Tips \u00abNBA Playoff Best Bets \ud83d\udd25 Picks, Props & Odds | Profit Picks LIVE 4/21\u00bb",
-        "published_at": "",
-        "title": "NBA Playoff Best Bets \ud83d\udd25 Picks, Props & Odds | Profit Picks LIVE 4/21"
       }
     ]
   },
@@ -7256,15 +7389,15 @@
         "version": "prompt_v5"
       },
       {
-        "version": "prompt_v6",
         "applies_since": "2026-04-22T13:41:31Z",
-        "archived_at": "2026-04-22T15:45:56Z",
         "archive_reason": "qwen-arb -39% drawdown ($5,686 peak \u2192 $3,472) within 1h of v6 100%-deploy mandate. Rolling back to v5 (non-consensus + \u22653 categories, NO 100% mandate).",
-        "text": "RULE (prompt_v6 \u2014 2026-04-22 13:40Z SHIP-THE-100%): User directive 'ship now the100%' \u2014 0% idle cash, 100% bankroll deployed across EVERY POL day. Prior rules on category diversity and non-consensus mandate PRESERVED.\n\n1. 100% DEPLOY MANDATE. Your POL bets for the day MUST sum to 100% of your bankroll. Zero idle cash. Hold-out / hedge / reserve are FORBIDDEN. With the \u22653-category mandate below, default to Kelly-weighted allocation across \u22653 sector legs, floor each leg at 10%. PEAK_DD_GUARD_V2 is the ONLY safety net \u2014 do not add your own.\n\n2. CATEGORY COLLAPSE HARDENED (carried from v5). Emit bets spanning AT LEAST 3 distinct POL categories per day, drawn from {insider_trade, exec_order, fed_rule, polymarket, congressional_vote, fed_speaker, geopolitical_event, donor_flow, polling_shift, legislation_pass, fec_filing, sovereign_fund_flow, polymarket_odds_drift, sector_rotation_signal, treasury_auction, sanctions_update, trade_policy, scotus_ruling, regulatory_action, primary_result, debate_event, exec_appointment}. If day's feed is single-category, MUST allocate across \u22653 SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY) with distinct theses citing different signal_types. Single-category single-sector days = DEFECT + lose tier coop privilege 3 days.\n\n3. NON-CONSENSUS (carried from v5). MUST exclude from your bet list at least ONE category the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim = DEFECT.\n\n4. COMPOUND FORCING. Path to $1M from $100 seed requires 100% deployment + edge accumulation. Not mean-reversion. If your day-PnL is flat \u00b12% for 5 consecutive POL days \u2192 next day MUST be a concentrated 2-leg allocation (50%/50%) on your top 2 non-consensus edges, zero diversifier.\n\n5. NO SURVIVAL MODE. At $100 seed, survival is mathematically guaranteed to lose. 0% idle cash is the operational meaning of 'commit to compound'."
+        "archived_at": "2026-04-22T15:45:56Z",
+        "text": "RULE (prompt_v6 \u2014 2026-04-22 13:40Z SHIP-THE-100%): User directive 'ship now the100%' \u2014 0% idle cash, 100% bankroll deployed across EVERY POL day. Prior rules on category diversity and non-consensus mandate PRESERVED.\n\n1. 100% DEPLOY MANDATE. Your POL bets for the day MUST sum to 100% of your bankroll. Zero idle cash. Hold-out / hedge / reserve are FORBIDDEN. With the \u22653-category mandate below, default to Kelly-weighted allocation across \u22653 sector legs, floor each leg at 10%. PEAK_DD_GUARD_V2 is the ONLY safety net \u2014 do not add your own.\n\n2. CATEGORY COLLAPSE HARDENED (carried from v5). Emit bets spanning AT LEAST 3 distinct POL categories per day, drawn from {insider_trade, exec_order, fed_rule, polymarket, congressional_vote, fed_speaker, geopolitical_event, donor_flow, polling_shift, legislation_pass, fec_filing, sovereign_fund_flow, polymarket_odds_drift, sector_rotation_signal, treasury_auction, sanctions_update, trade_policy, scotus_ruling, regulatory_action, primary_result, debate_event, exec_appointment}. If day's feed is single-category, MUST allocate across \u22653 SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY) with distinct theses citing different signal_types. Single-category single-sector days = DEFECT + lose tier coop privilege 3 days.\n\n3. NON-CONSENSUS (carried from v5). MUST exclude from your bet list at least ONE category the morning-council named as consensus. Pick the second- or third-ranked edge instead. Repeating peers verbatim = DEFECT.\n\n4. COMPOUND FORCING. Path to $1M from $100 seed requires 100% deployment + edge accumulation. Not mean-reversion. If your day-PnL is flat \u00b12% for 5 consecutive POL days \u2192 next day MUST be a concentrated 2-leg allocation (50%/50%) on your top 2 non-consensus edges, zero diversifier.\n\n5. NO SURVIVAL MODE. At $100 seed, survival is mathematically guaranteed to lose. 0% idle cash is the operational meaning of 'commit to compound'.",
+        "version": "prompt_v6"
       }
     ],
     "manual_videos_count": 1,
-    "market_narrative": "YouTube narrative digest (506 videos):\n- Moon Dev \u00abOpus 4.7 Just Broke Polymarket (for us little guys)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Tech Jarves \u00abRun Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) \ud83d\udd25\u00bb Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research \u00abBrace Yourself.\u00bb Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev \u00ab$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abThe Claude Code Setup That's Making Devs 10x Faster\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abOpus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abClaude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Bravos Research \u00abYep\u2026 It\u2019s Happening AGAIN.\u00bb A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: \ud83d\udccc  The six stocks ",
+    "market_narrative": "YouTube narrative digest (516 videos):\n- Moon Dev \u00abOpus 4.7 Just Broke Polymarket (for us little guys)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Tech Jarves \u00abRun Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) \ud83d\udd25\u00bb Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research \u00abBrace Yourself.\u00bb Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev \u00ab$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abThe Claude Code Setup That's Making Devs 10x Faster\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abOpus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abClaude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Bravos Research \u00abYep\u2026 It\u2019s Happening AGAIN.\u00bb A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: \ud83d\udccc  The six stocks ",
     "market_narrative_reenabled": {
       "by": "THE PLUMBER",
       "previous_disabled_info": {
@@ -7276,7 +7409,7 @@
       "reason": "sim-date-aware filter deployed: _load_prompt_override(fleet, sim_date) filters market_narrative_videos by published_at <= sim_date. Offline verify: 0 leakage across 178 NBA sim_dates and 184 POL sim_dates.",
       "reenabled_at": "2026-04-21T13:16:37.421716Z"
     },
-    "market_narrative_ts": "2026-04-22T13:09:50.595027Z",
+    "market_narrative_ts": "2026-04-22T18:39:52.574835Z",
     "market_narrative_videos": [
       {
         "channel": "Moon Dev",
@@ -10786,6 +10919,69 @@
         "title": "Markets Are Misreading A Late Cycle Liquidity Crunch | Michael Howell"
       },
       {
+        "channel": "Moon Dev",
+        "id": "ZmmYDSJ5jdE",
+        "line": "- Moon Dev \u00ab6x claude code Arbitrage Trading Bots\u00bb Join the zoom for chat and a replay: https://moondev.com/t/yt/stream  Because wall street is watching, we had to go private. Zoom is where HD quality is and where you can chat with",
+        "published_at": "2026-04-22T16:06:13Z",
+        "title": "6x claude code Arbitrage Trading Bots"
+      },
+      {
+        "channel": "Moon Dev",
+        "id": "_OX5GLsBkSA",
+        "line": "- Moon Dev \u00ab6x claude code Arbitrage Trading Bots\u00bb Join the zoom for chat and a replay: https://moondev.com/t/yt/stream  Because wall street is watching, we had to go private. Zoom is where HD quality is and where you can chat with",
+        "published_at": "2026-04-22T15:59:19Z",
+        "title": "6x claude code Arbitrage Trading Bots"
+      },
+      {
+        "channel": "warikoo",
+        "id": "_dAf1eafhn8",
+        "line": "- warikoo \u00abHow To Manage a \u20b920 Lakh Home Loan? | Money Matters Ep. 109 | Ankur Warikoo Hindi\u00bb Is your child playing the India Genius Challenge (IGC)?  This is what the smartest kids in the country are playing right now - 47,000+ of them -- every day for free - online - for ",
+        "published_at": "2026-04-22T14:30:33Z",
+        "title": "How To Manage a \u20b920 Lakh Home Loan? | Money Matters Ep. 109 | Ankur Warikoo Hindi"
+      },
+      {
+        "channel": "Altcoin Daily",
+        "id": "C0TmhcIbHOk",
+        "line": "- Altcoin Daily \u00abAre You Waiting To Buy The Dip? \ud83e\udd14 #crypto\u00bb \u2705 Bitunix (no kyc) - Claim $10k bonus: https://www.bitunix.com/register?vipCode=AltcoinDaily \ud83d\udfe0 BTC Conference 2026 - 'ALTCOINDAILY' for 10% off Ticket: https://fxo.co/JB36  \ud83d\udfe1\ud83c\udccf WEEX",
+        "published_at": "2026-04-22T18:02:15Z",
+        "title": "Are You Waiting To Buy The Dip? \ud83e\udd14 #crypto"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "vrzwkmXUuME",
+        "line": "- Bloomberg Television \u00abS&P 500 Set for Record High on Earnings | Open Interest 4/22/2026\u00bb Get a jump start on the US trading day with Matt Miller and Dani Burger on \"Bloomberg Open Interest.\" President Trump extends a ceasefire with Iran indefinitely, dialing back threa",
+        "published_at": "2026-04-22T17:48:51Z",
+        "title": "S&P 500 Set for Record High on Earnings | Open Interest 4/22/2026"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "5metfWG6PjA",
+        "line": "- Bloomberg Television \u00abBMW Says EV Demand Is Rising, Unveils the New Series 7\u00bb BMW is unveiling its bold new 7 Series,\u00a0 blending striking design with cutting-edge tech and multiple powertrain options\u2014including fully electric. BMW of North America CEO Sebastia",
+        "published_at": "2026-04-22T17:14:58Z",
+        "title": "BMW Says EV Demand Is Rising, Unveils the New Series 7"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "JGYKEHplUgU",
+        "line": "- Bloomberg Television \u00abTrump Signs Order Easing Restrictions on Psychedelic Drugs\u00bb President Donald Trump directed his administration to speed up reviews of certain psychedelic drugs, including ibogaine, which has serious safety risks.",
+        "published_at": "2026-04-22T17:00:21Z",
+        "title": "Trump Signs Order Easing Restrictions on Psychedelic Drugs"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "PiVJ8rXzvVk",
+        "line": "- Bloomberg Television \u00ab#Iran Tensions Flare Again: What\u2019s Next for Negotiations in Pakistan #politics\u00bb On today\u2019s Big Take podcast, Bloomberg\u2019s Stacey Vanek Smith and Kate Sullivan break down rising US-Iran tensions, why nuclear talks and the Strait of Hormuz remain deadlocked and w",
+        "published_at": "2026-04-22T16:00:49Z",
+        "title": "#Iran Tensions Flare Again: What\u2019s Next for Negotiations in Pakistan #politics"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "uWMmv3UOMNE",
+        "line": "- Bloomberg Television \u00abBessent Says Many US Allies in Gulf Have Requested Swap Lines\u00bb Treasury Secretary\u00a0Scott Bessent\u00a0says that many Persian Gulf allies along with a number of Asian nations have requested foreign exchange swap lines with the US. He speaks during te",
+        "published_at": "2026-04-22T15:23:40Z",
+        "title": "Bessent Says Many US Allies in Gulf Have Requested Swap Lines"
+      },
+      {
         "channel": "NBC News",
         "id": "M9QY_xYb5eY",
         "line": "- NBC News \u00abLIVE: Kornacki Cam: Watch Steve analyze Virginia redistricting election results | NBC News\u00bb",
@@ -10793,11 +10989,18 @@
         "title": "LIVE: Kornacki Cam: Watch Steve analyze Virginia redistricting election results | NBC News"
       },
       {
-        "channel": "The TEC Show",
-        "id": "u_Nz_rYhIgY",
-        "line": "- The TEC Show \u00abSenate Map Shocker | 2026 Midterm Election Forecast | The TEC Show\u00bb",
+        "channel": "India Today",
+        "id": "Q5q9Y6e8Yf8",
+        "line": "- India Today \u00abTamil Nadu Polls 2026 LIVE: Countdown To Tamil Nadu Elections| DMK | TVK | AIADMK |Who Has\u00bb",
         "published_at": "",
-        "title": "Senate Map Shocker | 2026 Midterm Election Forecast | The TEC Show"
+        "title": "Tamil Nadu Polls 2026 LIVE: Countdown To Tamil Nadu Elections| DMK | TVK | AIADMK |Who Has"
+      },
+      {
+        "channel": "PBS NewsHour",
+        "id": "Z6p8tkrQ_b0",
+        "line": "- PBS NewsHour \u00abPrediction markets, pardons spark questions over who\u2019s profiting from Trump\u2019s presidency\u00bb",
+        "published_at": "",
+        "title": "Prediction markets, pardons spark questions over who\u2019s profiting from Trump\u2019s presidency"
       },
       {
         "channel": "ABC News",
@@ -10807,11 +11010,11 @@
         "title": "Battle over regulating prediction markets"
       },
       {
-        "channel": "PBS NewsHour",
-        "id": "Z6p8tkrQ_b0",
-        "line": "- PBS NewsHour \u00abPrediction markets, pardons spark questions over who\u2019s profiting from Trump\u2019s presidency\u00bb",
+        "channel": "The TEC Show",
+        "id": "u_Nz_rYhIgY",
+        "line": "- The TEC Show \u00abSenate Map Shocker | 2026 Midterm Election Forecast | The TEC Show\u00bb",
         "published_at": "",
-        "title": "Prediction markets, pardons spark questions over who\u2019s profiting from Trump\u2019s presidency"
+        "title": "Senate Map Shocker | 2026 Midterm Election Forecast | The TEC Show"
       },
       {
         "channel": "The TEC Show",
@@ -10843,8 +11046,8 @@
       }
     ],
     "manual_videos_count": 1,
-    "market_narrative": "YouTube narrative digest (507 videos):\n- Moon Dev \u00abOpus 4.7 Just Broke Polymarket (for us little guys)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Tech Jarves \u00abRun Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) \ud83d\udd25\u00bb Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research \u00abBrace Yourself.\u00bb Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev \u00ab$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abThe Claude Code Setup That's Making Devs 10x Faster\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abOpus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abClaude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Bravos Research \u00abYep\u2026 It\u2019s Happening AGAIN.\u00bb A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: \ud83d\udccc  The six stocks ",
-    "market_narrative_ts": "2026-04-22T14:11:14.372647Z",
+    "market_narrative": "YouTube narrative digest (516 videos):\n- Moon Dev \u00abOpus 4.7 Just Broke Polymarket (for us little guys)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Tech Jarves \u00abRun Local Uncensored AI from USB - Windows, Mac & Linux (No Internet) \ud83d\udd25\u00bb Run uncensored AI from USB offline with no internet, no limits, and full privacy. Learn how to run AI on USB that works on Windows, Mac, and Linux. This support Gemma 4, Qwen,  Kim\n- Bravos Research \u00abBrace Yourself.\u00bb Macro/market-research video covering short-medium-long-term outlooks on the stock market, trade-idea framework, emergency updates on market opportunities. Published by Bravos Resea\n- Moon Dev \u00ab$15 Billion Hack, not $292m (N. Korea + Claude killed crypto)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abThe Claude Code Setup That's Making Devs 10x Faster\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abOpus 4.7 Found Me Every Millionaire on Polymarket (He Made $1.8M)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Moon Dev \u00abClaude Opus 4.7 Just Made Every Trader Obsolete (2,974% ROI)\u00bb Most people think trading bots are only for elite coders, hedge funds, or people with fancy degrees. I\u2019ll show you why that isn\u2019t true in my private live stream \ud83d\udc49 https://moondev.c\n- Bravos Research \u00abYep\u2026 It\u2019s Happening AGAIN.\u00bb A Special Invitation to our Macro Membership (Limited Time Offer): https://bravosresearch.com/checkout/?add-to-cart=480143  This will provide a 90 Day access to: \ud83d\udccc  The six stocks ",
+    "market_narrative_ts": "2026-04-22T19:13:21.421032Z",
     "market_narrative_videos": [
       {
         "channel": "Moon Dev",
@@ -14354,6 +14557,69 @@
         "title": "Markets Are Misreading A Late Cycle Liquidity Crunch | Michael Howell"
       },
       {
+        "channel": "Moon Dev",
+        "id": "ZmmYDSJ5jdE",
+        "line": "- Moon Dev \u00ab6x claude code Arbitrage Trading Bots\u00bb Join the zoom for chat and a replay: https://moondev.com/t/yt/stream  Because wall street is watching, we had to go private. Zoom is where HD quality is and where you can chat with",
+        "published_at": "2026-04-22T16:06:13Z",
+        "title": "6x claude code Arbitrage Trading Bots"
+      },
+      {
+        "channel": "Moon Dev",
+        "id": "_OX5GLsBkSA",
+        "line": "- Moon Dev \u00ab6x claude code Arbitrage Trading Bots\u00bb Join the zoom for chat and a replay: https://moondev.com/t/yt/stream  Because wall street is watching, we had to go private. Zoom is where HD quality is and where you can chat with",
+        "published_at": "2026-04-22T15:59:19Z",
+        "title": "6x claude code Arbitrage Trading Bots"
+      },
+      {
+        "channel": "warikoo",
+        "id": "_dAf1eafhn8",
+        "line": "- warikoo \u00abHow To Manage a \u20b920 Lakh Home Loan? | Money Matters Ep. 109 | Ankur Warikoo Hindi\u00bb Is your child playing the India Genius Challenge (IGC)?  This is what the smartest kids in the country are playing right now - 47,000+ of them -- every day for free - online - for ",
+        "published_at": "2026-04-22T14:30:33Z",
+        "title": "How To Manage a \u20b920 Lakh Home Loan? | Money Matters Ep. 109 | Ankur Warikoo Hindi"
+      },
+      {
+        "channel": "Altcoin Daily",
+        "id": "C0TmhcIbHOk",
+        "line": "- Altcoin Daily \u00abAre You Waiting To Buy The Dip? \ud83e\udd14 #crypto\u00bb \u2705 Bitunix (no kyc) - Claim $10k bonus: https://www.bitunix.com/register?vipCode=AltcoinDaily \ud83d\udfe0 BTC Conference 2026 - 'ALTCOINDAILY' for 10% off Ticket: https://fxo.co/JB36  \ud83d\udfe1\ud83c\udccf WEEX",
+        "published_at": "2026-04-22T18:02:15Z",
+        "title": "Are You Waiting To Buy The Dip? \ud83e\udd14 #crypto"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "vrzwkmXUuME",
+        "line": "- Bloomberg Television \u00abS&P 500 Set for Record High on Earnings | Open Interest 4/22/2026\u00bb Get a jump start on the US trading day with Matt Miller and Dani Burger on \"Bloomberg Open Interest.\" President Trump extends a ceasefire with Iran indefinitely, dialing back threa",
+        "published_at": "2026-04-22T17:48:51Z",
+        "title": "S&P 500 Set for Record High on Earnings | Open Interest 4/22/2026"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "5metfWG6PjA",
+        "line": "- Bloomberg Television \u00abBMW Says EV Demand Is Rising, Unveils the New Series 7\u00bb BMW is unveiling its bold new 7 Series,\u00a0 blending striking design with cutting-edge tech and multiple powertrain options\u2014including fully electric. BMW of North America CEO Sebastia",
+        "published_at": "2026-04-22T17:14:58Z",
+        "title": "BMW Says EV Demand Is Rising, Unveils the New Series 7"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "JGYKEHplUgU",
+        "line": "- Bloomberg Television \u00abTrump Signs Order Easing Restrictions on Psychedelic Drugs\u00bb President Donald Trump directed his administration to speed up reviews of certain psychedelic drugs, including ibogaine, which has serious safety risks.",
+        "published_at": "2026-04-22T17:00:21Z",
+        "title": "Trump Signs Order Easing Restrictions on Psychedelic Drugs"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "PiVJ8rXzvVk",
+        "line": "- Bloomberg Television \u00ab#Iran Tensions Flare Again: What\u2019s Next for Negotiations in Pakistan #politics\u00bb On today\u2019s Big Take podcast, Bloomberg\u2019s Stacey Vanek Smith and Kate Sullivan break down rising US-Iran tensions, why nuclear talks and the Strait of Hormuz remain deadlocked and w",
+        "published_at": "2026-04-22T16:00:49Z",
+        "title": "#Iran Tensions Flare Again: What\u2019s Next for Negotiations in Pakistan #politics"
+      },
+      {
+        "channel": "Bloomberg Television",
+        "id": "uWMmv3UOMNE",
+        "line": "- Bloomberg Television \u00abBessent Says Many US Allies in Gulf Have Requested Swap Lines\u00bb Treasury Secretary\u00a0Scott Bessent\u00a0says that many Persian Gulf allies along with a number of Asian nations have requested foreign exchange swap lines with the US. He speaks during te",
+        "published_at": "2026-04-22T15:23:40Z",
+        "title": "Bessent Says Many US Allies in Gulf Have Requested Swap Lines"
+      },
+      {
         "channel": "TC Trading",
         "id": "g0eN0_-sVis",
         "line": "- TC Trading \u00abHow To Follow Large Option Order Flow | Unusual Whales Options Flow Tutorial\u00bb",
@@ -14368,6 +14634,13 @@
         "title": "Trading with Options Flow | Beginner\u2019s Guide"
       },
       {
+        "channel": "The Wall Street Journal",
+        "id": "cHYeDy7AE5c",
+        "line": "- The Wall Street Journal \u00abVolatility Trading: The Market Tactic That\u2019s Driving Stocks Haywire | WSJ\u00bb",
+        "published_at": "",
+        "title": "Volatility Trading: The Market Tactic That\u2019s Driving Stocks Haywire | WSJ"
+      },
+      {
         "channel": "ClayTrader",
         "id": "oNVD0scicGw",
         "line": "- ClayTrader \u00abThe Volatility Index (VIX) Explained\u00bb",
@@ -14375,11 +14648,11 @@
         "title": "The Volatility Index (VIX) Explained"
       },
       {
-        "channel": "Charles Schwab",
-        "id": "GzuvRC623a0",
-        "line": "- Charles Schwab \u00abWhat Is the VIX\u00ae?\u00bb",
+        "channel": "The Rest Of Us",
+        "id": "LQrBzl0DMBA",
+        "line": "- The Rest Of Us \u00abDerivatives Trading Explained\u00bb",
         "published_at": "",
-        "title": "What Is the VIX\u00ae?"
+        "title": "Derivatives Trading Explained"
       },
       {
         "channel": "Benjamin",
@@ -14387,13 +14660,6 @@
         "line": "- Benjamin \u00abThe Barclays Trading Strategy that Outperforms the Market\u00bb",
         "published_at": "",
         "title": "The Barclays Trading Strategy that Outperforms the Market"
-      },
-      {
-        "channel": "The Rest Of Us",
-        "id": "LQrBzl0DMBA",
-        "line": "- The Rest Of Us \u00abDerivatives Trading Explained\u00bb",
-        "published_at": "",
-        "title": "Derivatives Trading Explained"
       }
     ]
   }
