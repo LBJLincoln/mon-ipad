@@ -243,34 +243,37 @@ def _tiered_risk(bankroll: float) -> dict:
     # on "edges" smaller than the model's own calibration error. At 0.06 every
     # claimed edge must be >2× the model's demonstrable information gain — forces
     # agents to PASS when only noise is visible, rather than parrot the floor.
+    # 2026-04-22 13:25Z — "ship 100% deploy" directive. All deploy_floors pushed to
+    # 0.95 across every tier. PEAK_DD_GUARD_V2 is the sole residual cash-holder
+    # (bankroll/peak<0.25 → force cash, <0.50 → bet cap 1%). Idle cash = 5% or less.
     if bankroll < 25.0:
-        return {"deploy_floor": 0.90, "bet_floor": 0.04, "bet_cap": 0.20,
+        return {"deploy_floor": 0.95, "bet_floor": 0.04, "bet_cap": 0.20,
                 "min_edge": 0.06, "kelly_mult": 0.5,
                 "min_allocs": 35, "min_cats": 15, "min_games": 8}
     if bankroll < 50.0:
-        return {"deploy_floor": 0.80, "bet_floor": 0.03, "bet_cap": 0.15,
+        return {"deploy_floor": 0.95, "bet_floor": 0.03, "bet_cap": 0.15,
                 "min_edge": 0.06, "kelly_mult": 0.5,
                 "min_allocs": 30, "min_cats": 12, "min_games": 7}
     if bankroll < 100.0:
-        return {"deploy_floor": 0.70, "bet_floor": 0.02, "bet_cap": 0.15,
+        return {"deploy_floor": 0.95, "bet_floor": 0.02, "bet_cap": 0.15,
                 "min_edge": 0.06, "kelly_mult": 0.6,
                 "min_allocs": 25, "min_cats": 10, "min_games": 6}
     if bankroll < 500.0:
-        return {"deploy_floor": 0.60, "bet_floor": 0.015, "bet_cap": 0.14,
+        return {"deploy_floor": 0.95, "bet_floor": 0.015, "bet_cap": 0.14,
                 "min_edge": 0.06, "kelly_mult": 0.6,
                 "min_allocs": 20, "min_cats": 8, "min_games": 5}
     # PROVEN tier: 5-20× starting, press edges harder (2026-04-22 ceiling-destroy)
     if bankroll < 2000.0:
-        return {"deploy_floor": 0.65, "bet_floor": 0.02, "bet_cap": 0.22,
+        return {"deploy_floor": 0.95, "bet_floor": 0.02, "bet_cap": 0.22,
                 "min_edge": 0.04, "kelly_mult": 0.80,
                 "min_allocs": 18, "min_cats": 8, "min_games": 5}
     # MOONSHOT tier: 20-100× starting, real edge demonstrated (2026-04-22 ceiling-destroy)
     if bankroll < 10000.0:
-        return {"deploy_floor": 0.65, "bet_floor": 0.025, "bet_cap": 0.30,
+        return {"deploy_floor": 0.95, "bet_floor": 0.025, "bet_cap": 0.30,
                 "min_edge": 0.05, "kelly_mult": 0.90,
                 "min_allocs": 15, "min_cats": 6, "min_games": 4}
     # CHAMPION tier: 100×+ starting — on the path to $1M (2026-04-22 ceiling-destroy)
-    return {"deploy_floor": 0.65, "bet_floor": 0.03, "bet_cap": 0.40,
+    return {"deploy_floor": 0.95, "bet_floor": 0.03, "bet_cap": 0.40,
             "min_edge": 0.05, "kelly_mult": 1.0,
             "min_allocs": 12, "min_cats": 5, "min_games": 3}
 
@@ -3449,8 +3452,14 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 fleet_best_bankroll=fleet_best_bankroll,
                 tid=tid,
             )
+            # 2026-04-22 SHIP-100%: timeout 12s → env-overridable, default 45s.
+            # Root cause of NBA dead-agent storm: mistral:large 3-5s, gemini-3-flash
+            # via fallback 8.7s, selfhost:qwen3-4b 30+s — 12s was cutting off even
+            # primary-alive providers during rate-limit queueing. POL on same
+            # providers works because POL single-LLM-per-day calls have more slack.
+            _nba_timeout = float(os.environ.get("NBA_TF_LLM_TIMEOUT_SEC", "45.0"))
             try:
-                raw = _call_llm(provider, system_prompt, user_prompt, timeout=12.0,
+                raw = _call_llm(provider, system_prompt, user_prompt, timeout=_nba_timeout,
                                trace_name=f"nba-tf-day-{day_idx}",
                                trace_metadata={"trader_id": tid, "day": day_date, "bankroll": ts["bankroll"]})
             except Exception:
@@ -3458,7 +3467,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # Fallback provider if primary fails
             if not raw and cfg.get("fallback_provider"):
                 try:
-                    raw = _call_llm(cfg["fallback_provider"], system_prompt, user_prompt, timeout=12.0,
+                    raw = _call_llm(cfg["fallback_provider"], system_prompt, user_prompt, timeout=_nba_timeout,
                                    trace_name=f"nba-tf-day-{day_idx}-fallback",
                                    trace_metadata={"trader_id": tid, "day": day_date, "fallback": True})
                 except Exception:
