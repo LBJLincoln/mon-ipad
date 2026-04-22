@@ -1,0 +1,67 @@
+{
+  "proposal_id": "2026-04-22-12h-fatigue-elo-feature-audit",
+  "created_at": "2026-04-22T12:35:00Z",
+  "author": "cloud-brain-12h",
+  "title": "Feature Audit: home_next (Fatigue/Rest) + team_elo_5y Variants — Top-2 Most Predictive Features per Multiple SOTA Studies",
+  "priority": "HIGH",
+  "basis": {
+    "sources": [
+      {"title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA (CNN Brier=0.221)", "url": "https://www.mdpi.com/2079-3197/13/10/230", "date": "Oct 2025"},
+      {"title": "Uncertainty-Aware ML for NBA Forecasting (LR Brier=0.199, XGB=0.202)", "url": "https://www.mdpi.com/2078-2489/17/1/56", "date": "Jan 2026"},
+      {"title": "Comparative Evaluation of ML Models for NBA Prediction", "url": "https://www.scirp.org/journal/paperinformation?paperid=147163", "date": "2025"}
+    ],
+    "finding": "'home_next', 'team_elo_5_y', and 'team_elo' consistently emerge as top-3 most influential features across ALL models and studies. home_next captures next-game schedule context (fatigue, back-to-back indicator). team_elo_5_y captures 5-year organizational trajectory drift not visible in single-season ELO.",
+    "our_best": "S18 0.22248 (live), fleet best 0.22073 (S22, hist). SOTA LR achieves 0.199 with these features.",
+    "gap": "0.022 Brier gap from SOTA LR 0.199. Feature completeness is a primary differentiator per literature."
+  },
+  "audit_target": "features/engine.py (v3.1, 54 categories, ~7213 raw feature candidates)",
+  "required_features": [
+    {
+      "feature_group": "Schedule_Rest (NEW if missing)",
+      "key_features": [
+        "days_rest_home", "days_rest_away",
+        "back_to_back_home", "back_to_back_away",
+        "home_next_game_days", "away_next_game_days",
+        "games_last_7_home", "games_last_7_away",
+        "travel_miles_home", "travel_miles_away"
+      ],
+      "audit_question": "Do these exist in the 54 categories? Search engine.py for 'rest', 'back_to_back', 'home_next'. If missing: add Schedule_Rest category.",
+      "expected_brier_delta": "-0.002 to -0.005 if missing"
+    },
+    {
+      "feature_group": "ELO_Extended (augment existing ELO category)",
+      "key_features": [
+        "team_elo", "team_elo_5y", "elo_diff", "elo_diff_5y",
+        "team_elo_season_start", "team_elo_momentum_30d"
+      ],
+      "audit_question": "Do we have multi-horizon ELO? Search for 'elo_5' or '5y'. The 5-year ELO variant captures organizational trajectory (rebuilds, dynasty runs) not visible in single-season.",
+      "expected_brier_delta": "-0.001 to -0.003 if 5-year variant missing"
+    },
+    {
+      "feature_group": "Rolling_Form (verify horizons)",
+      "key_features": [
+        "pts_rolling_5_home", "pts_rolling_10_home", "pts_rolling_15_home",
+        "win_pct_rolling_5_home", "net_rtg_rolling_10_home"
+      ],
+      "audit_question": "Confirm rolling windows exist for home AND away × 5/10/15 game horizons. MDPI 2026 uncertainty-aware paper uses rolling-form explicitly.",
+      "expected_brier_delta": "Likely already present — verify all 3 horizons covered for both home/away"
+    }
+  ],
+  "implementation_plan": [
+    "1. Read features/engine.py header — list all 54 category names.",
+    "2. Search for 'rest', 'back_to_back', 'home_next', 'elo_5', 'elo_5y' string patterns.",
+    "3. If Schedule_Rest missing: add category with 8-10 features listed above.",
+    "4. If elo_5y missing: add team_elo_5y and elo_diff_5y to existing ELO category.",
+    "5. Verify rolling windows: confirm 5/10/15 horizons for home+away.",
+    "6. Increment engine version → v3.2. Update header comment with new category count.",
+    "7. Sync updated features/engine.py to hf-space/features/engine.py (parity rule #2).",
+    "8. Notify SWISH + LOBBYIST agents to pick up new feature candidates."
+  ],
+  "cpu_compatible": true,
+  "effort": "LOW — read engine.py (1 file) + add 8-15 features if missing + version bump",
+  "estimated_sessions": 1,
+  "owner": "DR FRANKENSTEIN (D1 Research) or VM autonomous-cycle",
+  "cross_port_political": "If Schedule_Rest features added to NBA engine, analog political features are: days_since_last_event, events_per_month, campaign_travel_days — add to political_engine.py simultaneously.",
+  "status": "PROPOSED",
+  "not_already_proposed": "Previous proposals covered LR calibration (0.199 gap) and rolling-form generally. This proposal is specifically about the TOP-2 feature audit (home_next + team_elo_5y) identified as highest-leverage individual features."
+}
