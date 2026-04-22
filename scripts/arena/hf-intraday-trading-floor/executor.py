@@ -268,6 +268,159 @@ def refresh_broker_statuses() -> Dict[str, int]:
     return stats
 
 
+def close_stale_losers(max_age_sec: int = 14400, min_loss_pct: float = 0.02) -> Dict[str, Any]:
+    """Close equity positions older than max_age_sec with unrealized PnL <= -min_loss_pct.
+
+    2026-04-22 ROUND-2 BP UNLOCK — Alpaca paper `insufficient balance` + free_bp=$0
+    while total cash sits at $49K = open positions consumed all free BP. Nothing
+    in the fleet closes stale losers proactively (MIN_HOLD_SEC=900 only prevents
+    churn; EOD-flatten doesn't fire intra-day). This helper sweeps equity
+    positions that are both >max_age_sec old AND underwater >=min_loss_pct, so
+    the 70% deploy target can actually reserve BP.
+
+    Safety:
+      * Respects MIN_HOLD_SEC implicitly (default 4h >> 15min)
+      * Equities only — crypto (BTC/USD etc) use non-USD margin, no BP pressure
+      * Time-budgeted at ITF_CLOSE_STALE_BUDGET_SEC (default 10s) so a flaky
+        Alpaca API can't stall tick_once()
+      * Credits reserved stake back to agent sub-bankroll via credit_bankroll()
+        (conservative — realized PnL reconciles via reconcile_broker_fills next tick)
+
+    Returns: {closed, pnl_freed_usd, errors, skipped_too_young, skipped_winning,
+              skipped_crypto, budget_exceeded}.
+    """
+    budget_sec = float(os.environ.get("ITF_CLOSE_STALE_BUDGET_SEC", "10"))
+    deadline = time.monotonic() + budget_sec
+    stats = {
+        "closed": 0, "pnl_freed_usd": 0.0, "errors": 0,
+        "skipped_too_young": 0, "skipped_winning": 0, "skipped_crypto": 0,
+        "budget_exceeded": 0,
+    }
+    if not live_mode():
+        return stats
+    key = os.environ.get("ALPACA_PAPER_KEY")
+    secret = os.environ.get("ALPACA_PAPER_SECRET")
+    if not (key and secret):
+        return stats
+
+    import requests
+    headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
+    now_utc = datetime.now(timezone.utc)
+    positions = _load_positions()
+    dirty = False
+
+    try:
+        for agent_tid, lst in list(positions.items()):
+            for p in list(lst):
+                if time.monotonic() >= deadline:
+                    stats["budget_exceeded"] += 1
+                    if dirty:
+                        _save_positions(positions)
+                    return stats
+                try:
+                    if p.get("status") != "open":
+                        continue
+                    ticker = (p.get("ticker") or "").strip()
+                    if not ticker:
+                        continue
+                    # Skip crypto — settles in non-USD margin, no BP pressure.
+                    if _asset_class(ticker) == "crypto":
+                        stats["skipped_crypto"] += 1
+                        continue
+                    # Age check. Accept either `opened_at` or `ts`; both ISO-Z.
+                    opened_raw = p.get("opened_at") or p.get("ts") or ""
+                    try:
+                        opened_dt = datetime.fromisoformat(
+                            str(opened_raw).replace("Z", "+00:00")
+                        )
+                    except Exception:
+                        # unreadable timestamp → don't close (treat as young)
+                        stats["skipped_too_young"] += 1
+                        continue
+                    age_sec = (now_utc - opened_dt).total_seconds()
+                    if age_sec < max_age_sec:
+                        stats["skipped_too_young"] += 1
+                        continue
+                    # Fetch live position to get unrealized_plpc. If position not
+                    # found at broker, skip — fill reconciler will tidy it up.
+                    try:
+                        r = requests.get(
+                            f"https://paper-api.alpaca.markets/v2/positions/{ticker}",
+                            headers=headers, timeout=6,
+                        )
+                    except Exception:
+                        stats["errors"] += 1
+                        continue
+                    if r.status_code == 404:
+                        # Broker doesn't have it — nothing to close, our ledger
+                        # will self-heal via the reconciler.
+                        continue
+                    if not r.ok:
+                        stats["errors"] += 1
+                        continue
+                    try:
+                        live = r.json()
+                        upl = float(live.get("unrealized_plpc") or 0)
+                        mv = float(live.get("market_value") or 0)
+                    except Exception:
+                        stats["errors"] += 1
+                        continue
+                    if upl > -min_loss_pct:
+                        stats["skipped_winning"] += 1
+                        continue
+                    # Close via positions endpoint (net-flat, correct for bracket).
+                    try:
+                        rd = requests.delete(
+                            f"https://paper-api.alpaca.markets/v2/positions/{ticker}",
+                            headers=headers, timeout=10,
+                        )
+                        if not rd.ok:
+                            stats["errors"] += 1
+                            continue
+                    except Exception:
+                        stats["errors"] += 1
+                        continue
+                    # Mark local position closed + credit reserved stake back.
+                    p["status"] = "closed_stale_loser"
+                    p["closed_at"] = now_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    p["close_reason"] = f"stale_loser age={int(age_sec)}s upl={upl:.4f}"
+                    dirty = True
+                    stake_portion = float(p.get("stake_usd") or 0)
+                    if stake_portion > 0:
+                        try:
+                            credit_bankroll(agent_tid, stake_portion, meta={
+                                "ticker": ticker,
+                                "event_type": "stale_loser_close",
+                                "age_sec": int(age_sec),
+                                "unrealized_plpc": round(upl, 4),
+                                "market_value_usd": round(mv, 2),
+                            })
+                        except Exception:
+                            pass
+                    # Also log to order log for audit parity with close_position().
+                    try:
+                        _append_order_log({
+                            "ts": p["closed_at"],
+                            "agent_tid": agent_tid,
+                            "ticker": ticker,
+                            "action": "close_stale_loser",
+                            "age_sec": int(age_sec),
+                            "unrealized_plpc": round(upl, 4),
+                            "market_value_usd": round(mv, 2),
+                            "mode": "live",
+                        })
+                    except Exception:
+                        pass
+                    stats["closed"] += 1
+                    stats["pnl_freed_usd"] += mv
+                except Exception:
+                    stats["errors"] += 1
+    finally:
+        if dirty:
+            _save_positions(positions)
+    return stats
+
+
 def _asset_class(ticker: str) -> str:
     if "/" in ticker:
         return "crypto"

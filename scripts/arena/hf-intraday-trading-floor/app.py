@@ -1478,6 +1478,17 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                   "carried to next tick", file=sys.stderr, flush=True)
     except Exception as _brs:
         print(f"[itf] broker-status refresh err (non-fatal): {_brs}", file=sys.stderr, flush=True)
+    # 2026-04-22 ROUND-2 BP UNLOCK — every 5th tick, sweep stale-losing equity
+    # positions (>4h old AND <= -2% unrealized PnL) to free buying power. Without
+    # this, open positions pile up until free_bp=$0 and agents correctly pass via
+    # bp_guard_free_bp_<$300 even with $49K cash. Crypto skipped (no BP issue).
+    try:
+        if int(STATE.get("tick_count", 0)) % 5 == 0:
+            _sl = executor.close_stale_losers()
+            if _sl.get("closed", 0) > 0 or _sl.get("errors", 0) > 0 or _sl.get("budget_exceeded", 0) > 0:
+                print(f"[itf] stale-loser close: {_sl}", file=sys.stderr, flush=True)
+    except Exception as _sle:
+        print(f"[itf] stale-loser close FAIL: {_sle}", file=sys.stderr, flush=True)
     # v2.5 — ensure sub-bankrolls are seeded (idempotent) and sync each into STATE.
     try:
         executor.seed_bankrolls([p["tid"] for p in PERSONAS])
