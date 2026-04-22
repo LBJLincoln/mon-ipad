@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-21T15:10:49Z",
+  "last_updated": "2026-04-22T03:46:24Z",
   "ledger": [
     {
       "cycle": "swish-4h-2026-04-20T23:10Z",
@@ -338,6 +338,36 @@
       "status_before": "unimplemented_in_mon_ipad",
       "status_after": "ported_pending_canary",
       "verdict": "pending_canary_s22"
+    },
+    {
+      "cycle": "frankenstein-12h-2026-04-22T0346Z",
+      "date": "2026-04-22",
+      "agent": "FRANKENSTEIN",
+      "project": "NBA+POL (both TFs, parity)",
+      "technique": "TF auto-restart race-condition fix \u2014 atomic _state_lock gate on /api/run, module-level Hub pre-seed of _experiment_state at import time, while-not-stop season-loop wrap in _bg + _auto_start",
+      "source_rca": "data/audit/tf-autorestart-rca-2026-04-22.md (PLUMBER)",
+      "root_cause": "Two-way race between keepalive */30 /api/run and _auto_start's daemon thread: both entered run_experiment() simultaneously; _llm_calls=0 reset before _load_state_from_disk() repopulated _experiment_state \u2192 /api/status returned 'running=false, llm_calls=0, fleet_best=$100' for ~0.5s \u2192 keepalive re-kicked \u2192 cascade.",
+      "files_changed": [
+        "scripts/arena/hf-llm-trading-floor/app.py",
+        "scripts/arena/hf-political-trading-floor/app.py"
+      ],
+      "local_sha256": {
+        "nba": "31f82b67101d549dd721f492a00e282be147e2639b238225532338426aef78f2",
+        "pol": "1524ff915e98015c993960be2a177bc57fb6ac57edc4c1ab9f4cccfd3928a6f2"
+      },
+      "hf_commits": {
+        "nba": "c5de7d22410225117d3a6ac856246a728afa3f4b",
+        "pol": "6044fabe120ba6926fe2d0890124c81ed268eb7a"
+      },
+      "git_commit": "b3337cfce",
+      "parity_markers_per_file": 12,
+      "expected_impact": {
+        "false_positive_auto_restart_alerts": "eliminated (running=false window closed)",
+        "llm_calls_monotonic": "restored (no per-season reset)",
+        "status_continuity_across_rebuild": "restored (module pre-seed serves real bankrolls immediately on uvicorn boot)",
+        "brier_delta": "N/A \u2014 infra fix, no engine change"
+      },
+      "verification": "In-flight: polling /api/status every 30s for 10min post-deploy; success = running never false, llm_calls monotonic, fleet_best never \u2264$100 (PLUMBER RCA reproduction failure = verification)."
     }
   ],
   "unimplemented_proposals": [
@@ -473,7 +503,7 @@
       ],
       "formula": "median((5m_high - 5m_low) / last) across crypto pairs; low_vol if < 0.003",
       "waivers": "when low_vol_regime=True: (a) DEAD_TAPE_CLAUSE appended to persona style; (b) uniform_fallback returns explicit pass tagged provider_status=regime_pass",
-      "threshold_tune_note": "0.003 = 0.3% per 5min range = ~0.73% per 30min (scaled by sqrt(6)) — lines up with proposal's 0.3%/30min floor interpretation as 5-min-proxy. Env ITF_REGIME_FLOOR_5M for live-tune without redeploy. Expect to activate overnight Sun-Tue on crypto-only tape.",
+      "threshold_tune_note": "0.003 = 0.3% per 5min range = ~0.73% per 30min (scaled by sqrt(6)) \u2014 lines up with proposal's 0.3%/30min floor interpretation as 5-min-proxy. Env ITF_REGIME_FLOOR_5M for live-tune without redeploy. Expect to activate overnight Sun-Tue on crypto-only tape.",
       "expected_brier_delta": "N/A (ITF doesn't use Brier); expected slippage reduction: -$50-150/week on dead-tape ticks"
     },
     {
