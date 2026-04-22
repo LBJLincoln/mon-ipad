@@ -47,18 +47,20 @@ from scripts.arena.shared.context_bus import build_intraday_context  # noqa: E40
 # 6 liquid-specialist agents × 20% sub-bankroll stake floor × 90s tick cadence
 # = fleet cumulative deployed capital climbs past $50k (50% of $100k seed)
 # within the window, regardless of how cautious individual LLMs decide to be.
+#
+# Liberty: the liquid UNIVERSE is NOT hardcoded — any ticker the agent picks
+# qualifies if its runtime dollar-volume clears POWER_LIQUIDITY_FLOOR_USD.
+# Agents have full carte blanche over 10k+ equities + 30+ crypto + options;
+# the floor just ensures the stake sits in something actually exit-able.
 POWER_WINDOW_START = (14, 30)  # UTC
 POWER_WINDOW_END = (16, 30)
 POWER_AGENTS = {
     "momentum-1", "breakout-1", "leveraged-momentum-1",
     "news-catalyst-1", "crypto-whale-1", "scalper-1",
 }
-POWER_LIQUID_TICKERS = {
-    "SPY", "QQQ", "IWM", "DIA", "TSLA", "NVDA", "AAPL", "MSFT", "AMZN",
-    "META", "GOOGL", "AMD", "COIN", "TQQQ", "SPXL", "SOXL",
-    "BTC/USD", "ETH/USD", "SOL/USD",
-}
 POWER_STAKE_FLOOR_PCT = 0.20  # 20% of agent sub-bankroll per trade
+POWER_LIQUIDITY_FLOOR_USD = 50_000_000  # $50M daily dollar volume = liquid enough
+                                          # to exit any single-agent stake in seconds
 
 
 def _in_power_window(now: Optional[datetime] = None) -> bool:
@@ -70,6 +72,23 @@ def _in_power_window(now: Optional[datetime] = None) -> bool:
     start_min = POWER_WINDOW_START[0] * 60 + POWER_WINDOW_START[1]
     end_min = POWER_WINDOW_END[0] * 60 + POWER_WINDOW_END[1]
     return start_min <= cur_min <= end_min
+
+
+def _is_power_liquid(ticker: str, quote: Optional[Dict[str, Any]]) -> bool:
+    """Runtime liquidity test: dollar-volume (volume × last) ≥ $50M.
+    Crypto pairs always qualify (top-30 CEX pairs are deep 24/7)."""
+    if not ticker:
+        return False
+    if "/" in ticker:  # crypto pair — always deep enough on Alpaca
+        return True
+    if not quote:
+        return False
+    try:
+        last = float(quote.get("last") or 0)
+        vol = float(quote.get("volume") or 0)
+    except (TypeError, ValueError):
+        return False
+    return last > 0 and vol > 0 and (last * vol) >= POWER_LIQUIDITY_FLOOR_USD
 
 
 # 2026-04-21 v2.6 — UNRESTRICTED UNIVERSE: on-demand fetch for any Alpaca-supported
@@ -892,16 +911,19 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
     )
 
     # ── 2026-04-22 POWER-DEPLOY WINDOW — force liquid-specialist agents to
-    # deploy ≥20% sub-bankroll per trade on liquid tickers during 14:30-16:30 UTC.
+    # deploy ≥20% sub-bankroll per trade during 14:30-16:30 UTC. Ticker is
+    # the agent's choice — liquidity is tested at runtime ($50M daily $-vol),
+    # not restricted to a hardcoded list.
     if persona["tid"] in POWER_AGENTS and _in_power_window():
         _power_floor = _agent_bankroll * POWER_STAKE_FLOOR_PCT
-        _liquid_str = ", ".join(sorted(POWER_LIQUID_TICKERS))
         _bankroll_block += (
             f"\n\n⚡ POWER-DEPLOY WINDOW ACTIVE (14:30-16:30 UTC = first 2h US open).\n"
             f"YOU are a LIQUID-SPECIALIST agent. Your mandate this window:\n"
             f"  • stake_usd FLOOR = ${_power_floor:,.0f} ({POWER_STAKE_FLOOR_PCT*100:.0f}% "
-            f"of ${_agent_bankroll:,.0f}). The executor SCALES anything smaller up to this.\n"
-            f"  • Stay in liquid universe: {_liquid_str}.\n"
+            f"of ${_agent_bankroll:,.0f}). The executor SCALES any lower stake up to this.\n"
+            f"  • Pick ANY ticker you like — the floor applies IF daily dollar-volume "
+            f"≥ ${POWER_LIQUIDITY_FLOOR_USD/1e6:.0f}M (~all liquid US equities/ETFs + top-30 crypto). "
+            f"Illiquid pick? Stake stays at your 5-12% size — no penalty, no forced scale.\n"
             f"  • PASS means missed window. The power-hour is short — deploy or step aside.\n"
             f"  • Fleet target: ≥50% of $100k total bankroll deployed in 2h. Your stake "
             f"is part of that number."
@@ -1356,14 +1378,15 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                 _tick_counts[_key] = _tick_counts.get(_key, 0) + 1
 
         # ── 2026-04-22 POWER-DEPLOY FLOOR — enforce min 20% sub-bankroll
-        # stake for POWER_AGENTS on liquid tickers during the window. This is
-        # the server-side guarantee the prompt promised; LLM can ignore the
-        # block but the stake still gets scaled up here.
+        # stake for POWER_AGENTS during the window, on ANY ticker whose
+        # runtime dollar-volume ≥ $50M. Server-side guarantee of the prompt
+        # mandate; LLM can ignore the block but the stake gets scaled up.
         if (action == "trade"
                 and persona["tid"] in POWER_AGENTS
                 and _in_power_window(now)):
-            _tk = (decision.get("ticker") or "").upper()
-            if _tk in POWER_LIQUID_TICKERS:
+            _tk = decision.get("ticker") or ""
+            _quote = (ctx.get("quotes") or {}).get(_tk)
+            if _is_power_liquid(_tk, _quote):
                 _agent_bk = executor.get_bankroll(persona["tid"])
                 _power_floor = _agent_bk * POWER_STAKE_FLOOR_PCT
                 _cur_stake = float(decision.get("stake_usd") or 0)
