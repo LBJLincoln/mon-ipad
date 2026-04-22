@@ -907,52 +907,42 @@ TRADERS = {
     # Load-spread 17 agents × 7 lanes ≈ 2.4 agents per lane (down from 6+ on cerebras).
     "mistral-ministral":{"name": "Ministral 8B",     "provider": "mistral:small",         "personality": "theoretical",  "risk_tolerance": 0.35,
                          "fallback_provider": "cerebras:llama3.1-8b"},
-    # NEW 2026-04-15 — +1 NVIDIA Nemotron 120B (OpenRouter free, verified responsive)
-    # 2026-04-21 SWITCHBOARD v3: promote openrouter:nemotron-120b:free as primary
-    # (has full fallback chain incl cerebras); keep mistral:large fallback.
-    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 4/35 = 11% DEAD): mistral:large primary (PQTF $244K winner), cerebras:qwen-3-235b fallback.
-    # 2026-04-22 NBA-DEAD-RCA (day 46, 0/5 post-reroute): mistral:large DEAD (243 fails in provider_health).
-    # Route to openrouter:nemotron-120b (its ACTUAL model, providers_ok live) + mistral:small fallback.
-    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "openrouter:nemotron-120b","personality": "chainthought","risk_tolerance": 0.55,
+    # 2026-04-22 ROUND-2 REROUTE (post-SHIP-100%, 77d/175 live):
+    # Live probe via gateway /api/chat verified openrouter:nemotron-120b lane DEAD
+    # ("All models in fallback chain failed"). POL TF on SAME gateway achieves 85-100%
+    # llm_ok using DIRECT-alive lanes (cerebras:*, mistral:*, nvidia:llama-3.3-70b).
+    # Mirror POL's DIRECT-alive routing for every agent still < 20% ok.
+    # Verified DIRECT alive (probe 2026-04-22 13:58Z):
+    #   cerebras:qwen-3-235b / cerebras:llama3.1-8b (≈3.5-4.8s)
+    #   mistral:small / mistral:medium / mistral:large (≈3-6.5s)
+    #   nvidia:llama-3.3-70b (≈5.5s)
+    # DEAD via probe: openrouter:nemotron-120b (all-chain-fail), selfhost:qwen3-4b (30s timeout).
+    # Matches POL primary (mistral:large, 85% ok on POL). openrouter:nemotron-120b lane DEAD → swap.
+    "nemotron-120b":    {"name": "Nemotron 120B",    "provider": "mistral:large","personality": "chainthought","risk_tolerance": 0.55,
+                         "fallback_provider": "cerebras:qwen-3-235b"},
+    # Matches POL primary (cerebras:qwen-3-235b, 94% ok on POL). selfhost:qwen3-4b DEAD via probe (30s timeout).
+    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "cerebras:qwen-3-235b", "personality": "disciplined", "risk_tolerance": 0.40,
                          "fallback_provider": "mistral:small"},
-    # 2026-04-22: selfhost backing Spaces restarted + verified alive (1.1s chat @ gateway).
-    # Route selfhost-branded personas BACK to selfhost:* now that gateway routing works.
-    # 2026-04-22 NBA-DEAD-RCA (day 46): selfhost:phi-4-mini was a typo — NOT in PROVIDERS.
-    # Route to selfhost:qwen3-4b (registered) + mistral:small fallback.
-    "selfhost-qwen4b":  {"name": "SelfHost Qwen3-4B","provider": "selfhost:qwen3-4b",    "personality": "disciplined", "risk_tolerance": 0.40,
+    # Matches POL primary (mistral:medium, 94% ok on POL). openrouter:nemotron-120b lane DEAD.
+    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "mistral:medium","personality": "decisive","risk_tolerance": 0.58,
+                         "fallback_provider": "cerebras:qwen-3-235b"},
+    # nvidia:llama-3.3-70b probe DIRECT alive (5.5s). Persona name matches.
+    # POL routes this tid to github:llama-3.3-70b (79% ok) but we prefer DIRECT nvidia lane for load-diversification.
+    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "nvidia:llama-3.3-70b","personality": "swing",    "risk_tolerance": 0.50,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
+    # Matches POL primary (cerebras:llama3.1-8b, 91% ok on POL).
+    # mistral:ministral-8b falls through to mistral:small via fallback chain — slower and congested.
+    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "cerebras:llama3.1-8b","personality": "analytical",  "risk_tolerance": 0.45,
                          "fallback_provider": "mistral:small"},
-    # NEW 2026-04-17 — NVIDIA NIM (2 keys in gateway). Both NVIDIA accounts were wired but 0 TF usage → fill the gap.
-    # 2026-04-21 SWITCHBOARD v3: github:llama-3.3-70b dead (no chain). Promote nvidia:llama-3.3-70b primary (41% ok lifetime, has chain).
-    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 1/35 = 3% DEAD): mistral:medium primary, cerebras:qwen-3-235b fallback.
-    # 2026-04-22 NBA-DEAD-RCA (day 46, 0/5 post-reroute): mistral:medium DEAD (280 fails in provider_health).
-    # Route to openrouter:nemotron-120b (providers_ok alive, L-tier) + mistral:small fallback.
-    "nvidia-minimax":   {"name": "NVIDIA MiniMax M2.7","provider": "openrouter:nemotron-120b","personality": "decisive","risk_tolerance": 0.58,
+    # selfhost:qwen3-0.6b is POL's primary (88% ok) but NBA prompt size makes selfhost too slow.
+    # Route to cerebras:llama3.1-8b (DIRECT alive, smallest cerebras) with mistral:small fallback.
+    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "cerebras:llama3.1-8b","personality": "conservative","risk_tolerance": 0.30,
                          "fallback_provider": "mistral:small"},
-    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 3/35 = 9% DEAD): github:llama-3.3-70b primary, cerebras:llama3.1-8b fallback.
-    # 2026-04-22 NBA-DEAD-RCA (day 46, 0/5 post-reroute): github:llama-3.3-70b NOT in PROVIDERS + cerebras:llama3.1-8b DEAD (3501).
-    # Route to google:gemini-3-flash (registered, peer gemini-anl/tact working on it) + mistral:small fallback.
-    "nvidia-llama70":   {"name": "NVIDIA Llama 3.3-70B","provider": "google:gemini-3-flash","personality": "swing",    "risk_tolerance": 0.50,
-                         "fallback_provider": "mistral:small"},
-    # 2026-04-18 — was selfhost, now GitHub Models. Persona+strategy+Axelrod class unchanged.
-    # 2026-04-21 SWITCHBOARD v3: github:mistral-medium + github:gpt-4.1-nano both dead.
-    # Route to mistral:medium (95% ok lifetime, highest reliability) + cerebras fallback.
-    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 3/35 = 9% DEAD): cerebras:llama3.1-8b primary, mistral:small fallback.
-    # 2026-04-22 NBA-DEAD-RCA (day 46, 0/5 post-reroute): cerebras:llama3.1-8b DEAD (3501 fails).
-    # Route to mistral:ministral-8b (registered, S-tier, distinct from mistral:small load) + mistral:small fallback.
-    "selfhost-gemma3":  {"name": "SelfHost Gemma-3-4B","provider": "mistral:ministral-8b","personality": "analytical",  "risk_tolerance": 0.45,
-                         "fallback_provider": "mistral:small"},
-    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 3/35 = 9% DEAD): github:phi-4-mini primary, github:gpt-4.1-nano fallback.
-    # 2026-04-22 NBA-DEAD-RCA (day 46, 0/5 post-reroute): BOTH github:phi-4-mini AND github:gpt-4.1-nano NOT in PROVIDERS.
-    # Route to mistral:ministral-8b (registered, tiny conservative model, matches persona) + mistral:small fallback.
-    "selfhost-qwen06":  {"name": "SelfHost Qwen3-0.6B","provider": "mistral:ministral-8b","personality": "conservative","risk_tolerance": 0.30,
-                         "fallback_provider": "mistral:small"},
-    # dolphin3 at gateway is slow (69s cold-start via dolphin3-l32-3b key). Use qwen2.5-1.5b
-    # which routes to the same llama-32-1b backing Space but the faster gateway path.
-    # 2026-04-22 NBA-DEAD-REROUTE (day 35, llm_ok 2/35 = 6% DEAD): cerebras:qwen-3-235b primary, mistral:small fallback.
-    # 2026-04-22 NBA-DEAD-RCA (day 46, 0/5 post-reroute): cerebras:qwen-3-235b hourly-quota cooldown kills dolphin3 slot.
-    # Route to google:gemini-3-flash (registered, alive — gemini-anl/tact peer succeeding) + mistral:small fallback.
-    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "google:gemini-3-flash","personality": "uncensored","risk_tolerance": 0.60,
-                         "fallback_provider": "mistral:small"},
+    # POL routes dolphin3 to selfhost:qwen2.5-1.5b (85% ok) but NBA prompt size too large for selfhost.
+    # google:gemini-3-flash primary is currently 42-48% ok on NBA (fallback-chain dependent).
+    # Route to nvidia:llama-3.3-70b (DIRECT alive, 5.5s) to take load off cerebras/mistral.
+    "selfhost-dolphin3":{"name": "SelfHost Dolphin3-3B","provider": "nvidia:llama-3.3-70b","personality": "uncensored","risk_tolerance": 0.60,
+                         "fallback_provider": "cerebras:llama3.1-8b"},
 }
 
 # ── TOP-3 COMPOUND BOOST (NBA-KELLY, 2026-04-22, day 37) ──────────────────────
