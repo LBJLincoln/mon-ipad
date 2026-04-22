@@ -252,26 +252,26 @@ def _tiered_risk(bankroll: float) -> dict:
                 "min_edge": 0.06, "kelly_mult": 0.5,
                 "min_allocs": 30, "min_cats": 12, "min_games": 7}
     if bankroll < 100.0:
-        return {"deploy_floor": 0.70, "bet_floor": 0.02, "bet_cap": 0.12,
-                "min_edge": 0.06, "kelly_mult": 0.5,
+        return {"deploy_floor": 0.70, "bet_floor": 0.02, "bet_cap": 0.15,
+                "min_edge": 0.06, "kelly_mult": 0.6,
                 "min_allocs": 25, "min_cats": 10, "min_games": 6}
     if bankroll < 500.0:
-        return {"deploy_floor": 0.60, "bet_floor": 0.015, "bet_cap": 0.10,
-                "min_edge": 0.06, "kelly_mult": 0.5,
+        return {"deploy_floor": 0.60, "bet_floor": 0.015, "bet_cap": 0.14,
+                "min_edge": 0.06, "kelly_mult": 0.6,
                 "min_allocs": 20, "min_cats": 8, "min_games": 5}
-    # PROVEN tier: 5-20× starting, press edges harder
+    # PROVEN tier: 5-20× starting, press edges harder (2026-04-22 ceiling-destroy)
     if bankroll < 2000.0:
-        return {"deploy_floor": 0.65, "bet_floor": 0.02, "bet_cap": 0.15,
-                "min_edge": 0.04, "kelly_mult": 0.65,
+        return {"deploy_floor": 0.65, "bet_floor": 0.02, "bet_cap": 0.22,
+                "min_edge": 0.04, "kelly_mult": 0.80,
                 "min_allocs": 18, "min_cats": 8, "min_games": 5}
-    # MOONSHOT tier: 20-100× starting, real edge demonstrated
+    # MOONSHOT tier: 20-100× starting, real edge demonstrated (2026-04-22 ceiling-destroy)
     if bankroll < 10000.0:
-        return {"deploy_floor": 0.65, "bet_floor": 0.025, "bet_cap": 0.20,
-                "min_edge": 0.05, "kelly_mult": 0.75,
+        return {"deploy_floor": 0.65, "bet_floor": 0.025, "bet_cap": 0.30,
+                "min_edge": 0.05, "kelly_mult": 0.90,
                 "min_allocs": 15, "min_cats": 6, "min_games": 4}
-    # CHAMPION tier: 100×+ starting — on the path to $1M
-    return {"deploy_floor": 0.65, "bet_floor": 0.03, "bet_cap": 0.25,
-            "min_edge": 0.05, "kelly_mult": 0.85,
+    # CHAMPION tier: 100×+ starting — on the path to $1M (2026-04-22 ceiling-destroy)
+    return {"deploy_floor": 0.65, "bet_floor": 0.03, "bet_cap": 0.40,
+            "min_edge": 0.05, "kelly_mult": 1.0,
             "min_allocs": 12, "min_cats": 5, "min_games": 3}
 
 _council_plans: Dict[str, dict] = {} # day_date → plan dict (strategies, categories, per-agent %, summary)
@@ -959,12 +959,15 @@ TRADERS = {
 # drag. Rest of roster falls through to tier default. Mirrors POL 2026-04-22
 # champion-compound lever (commit fc1f62b65).
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    "llama-contra":      0.18,   # $123 top, 60% pass rate — bet bigger when conviction fires
-    "gemini-tact":       0.15,   # $103 #2, 79% pass rate
-    "gemini-anl":        0.15,   # $77 #3, 78% pass rate
-    "qwen-arb":          0.12,   # $95, 97% pass rate — ultra-selective
-    "mistral-small":     0.04,   # $22, 66 bets over-trader, PROBATION
-    "mistral-ministral": 0.04,   # $24, 54 bets over-trader, PROBATION
+    # 2026-04-22 13:20Z — "destroy the ceilings" ship. Bumped all top-3 caps ~45%
+    # above prior boost. PEAK_DD_GUARD_V2 still clamps at <50% of peak equity
+    # (→ 0.01 cap) and <25% (→ all-cash), so upside is raised but downside limited.
+    "llama-contra":      0.25,   # $63 (drawdown), was 0.18 — Kelly self-corrects via PEAK_DD_GUARD
+    "gemini-tact":       0.22,   # $103 current top, was 0.15
+    "gemini-anl":        0.22,   # $77 #3, was 0.15
+    "qwen-arb":          0.18,   # $95 97% pass rate, was 0.12 — reward ultra-selectivity with bigger stakes
+    "mistral-small":     0.04,   # over-trader PROBATION (unchanged)
+    "mistral-ministral": 0.04,   # over-trader PROBATION (unchanged)
 }
 
 AGENT_SYSTEM_PROMPTS = {
