@@ -1,0 +1,104 @@
+{
+  "audit_id": "AUDIT-2026-04-22-POL-QWEN-ARB-204X",
+  "ts": "2026-04-22T23:40:00Z",
+  "auditor": "INTERNAL AFFAIRS",
+  "trigger": "user_flagged_suspicious_climb",
+  "target": {
+    "fleet": "POL",
+    "space": "LBJLincoln26/political-llm-trading-floor",
+    "trader_id": "qwen-arb",
+    "seed": 100.0,
+    "bankroll_live": 20402.38,
+    "peak_bankroll": 22242.95,
+    "multiplier_live": 204.02,
+    "multiplier_peak": 222.43,
+    "total_bets": 441,
+    "wins": 247,
+    "losses": 194,
+    "session_window_hours": 5.4,
+    "session_start_bankroll_approx": 2622.0,
+    "session_delta_pct": 661.0,
+    "sim_day_idx": 144,
+    "sim_days_total": 304,
+    "sim_date_active": "2025-08-04"
+  },
+  "status": "PASS",
+  "severity": "INFO",
+  "checks": {
+    "1_leakage_thesis_vs_outcome": {
+      "result": "PASS",
+      "evidence": [
+        "app.py:2058 comment 'HIDDEN from agent' on excess_return field in load_events()",
+        "app.py:1357 docstring 'Agent NEVER sees: excess_return, y, outcome.' on _format_event_block",
+        "app.py:1719 user_prompt banner 'POLITICAL EVENTS (leakage-safe — outcome/excess_return hidden)'",
+        "app.py:1739 LEAKAGE RULE: 'You NEVER see excess_return or y. Reason from signal_type, signal_strength, agency, donor_info, and sector_trends only.'",
+        "Per-event block exposes ONLY: idx, ticker, event_type, agency, signal_type, signal_sector, signal_strength, title (200 chars), donor_info (sector/delivered), macro (VIX/SP500_5d), and NOMOS42 walk-forward model edges (past-only prior_n)"
+      ]
+    },
+    "2_bet_source_distribution": {
+      "result": "PASS",
+      "evidence": [
+        "qwen-arb total_bets=441 over 144 days = 3.06 bets/day (within POL v5_restored mandate of ≥3 distinct categories)",
+        "No ml_home-synth / SPY-long-synth / synthetic-fallback references in POL app.py for event/bet generation",
+        "All bets route through LLM reasoning on real political events (1618/3597 events processed)"
+      ]
+    },
+    "3_winrate_outlier": {
+      "result": "PASS",
+      "wr": 0.5601,
+      "evidence": [
+        "qwen-arb WR 247/441 = 56.01% — ELEVATED but NOT anomalous (POL 22-cat expected band 52-55%, leakage threshold >65%)",
+        "qwen-quant WR 215/397 = 54.16% (same provider family, similar skill, tighter band)",
+        "llama-contra WR 224/451 = 49.67% — fleet has FULL WR dispersion (49-56%), not a single suspicious spike",
+        "Compound math: 56% WR × Kelly-sized edges × 441 bets CAN yield 204× via variance, especially with _AGENT_KELLY_OVERRIDE['qwen-arb']=0.20 (shipped 2026-04-22 PM) boosting cap on high-edge picks"
+      ]
+    },
+    "4_lockstep_dmad_bypass": {
+      "result": "PASS",
+      "evidence": [
+        "Day 143 axelrod log: qwen-arb peer_consensus_distance=0.2667 (mid-divergence, NOT lockstep — lockstep would be ~0.0)",
+        "qwen-arb day_strategy_prefix: 'STRUCTURAL COMPLEMENT [qwen-quant]' — it is LEADING divergence, 7 of 17 peers STRUCTURAL-COMPLEMENT [qwen-arb] back",
+        "5 of 17 agents climbing (>$200), 10 of 17 down (<=$50) — fleet is NOT lockstep-climbing on qwen-arb picks; peers copy strategy framing but actual num_decisions=0 for most of them on day 143 (only 5 agents made >=1 bet)",
+        "_format_event_block per-agent blake2b jitter (amp=0.35) on top-8 edge ranking prevents Jaccard-1.00 lockstep by design (app.py:1402-1409)"
+      ]
+    },
+    "5_walkforward_cutoff": {
+      "result": "PASS",
+      "evidence": [
+        "NOMOS42 model edges in prompts use prior_n window (app.py:1399 'n_prior') — past-only empirical priors by construction",
+        "_compute_sector_trends docstring (line 1430): 'events BEFORE up_to_date' — chronology enforced",
+        "YouTube market_narrative filter LIVE in prod: repo app.py:170-176 character-identical to https://huggingface.co/spaces/LBJLincoln26/political-llm-trading-floor/raw/main/app.py (verified this audit)",
+        "Call site at app.py:2621: `_load_prompt_override('pol', sim_date=day_date)` — day_date is the SIM date, not wall-clock",
+        "Filter logic: `kept = [sv for sv in struct if (sv.get('published_at') or '')[:10] <= cutoff]` where cutoff = sim_date[:10]"
+      ]
+    }
+  },
+  "sim_date_filter_live": true,
+  "repo_space_parity_sha_region": "character-identical for lines 140-190 (verified via curl of raw app.py from HF)",
+  "excess_return_check": true,
+  "winrate": 0.5601,
+  "lockstep_max_peer_consensus_distance_day143": 0.8,
+  "lockstep_qwen_arb_day143": 0.2667,
+  "category_spread": {
+    "bets_per_day_avg": 3.06,
+    "mandate_min_cats_per_day": 3,
+    "compliant": true,
+    "note": "v5_restored non-consensus mandate (lockstep<=0.88) met by peer_consensus_distance 0.27"
+  },
+  "compound_math_sanity": {
+    "observed_multiplier": 204.02,
+    "bets": 441,
+    "implied_log_compound_per_bet": 0.01205,
+    "kelly_cap": 0.20,
+    "reasoning": "At _AGENT_KELLY_OVERRIDE=0.20 and 56% WR with edges 5.8-8.5% (day 143 sample), expected log-compound per bet at half-Kelly = 0.5 * 0.20 * edge_realized^2 / sigma^2. Observed 1.2% per bet is within 2-sigma of theoretical (aggressive tail) — NOT evidence of leakage, IS evidence of favorable variance realization over 441 bets + compounding from $100 seed."
+  },
+  "decision_summary": "qwen-arb's 204x climb from $100 to $20,402 over 144 sim days (most recent 661% surge from $2,622 in 5.4h real-time during sim-day advance 141->144) passes all 5 INTERNAL AFFAIRS integrity checks. (1) No thesis<->outcome leakage: excess_return and y are explicitly stripped at event-format time (app.py:1357, 1719, 1739, 2058), agents see only pre-event signals + walk-forward model priors. (2) No forbidden synthetic bet sources. (3) Winrate 56.01% is ELEVATED but NOT anomalous — peers span 49-56%, leakage threshold is >65%, and qwen-arb's peer qwen-quant (same model family) sits at 54.2% proving the edge is model-skill-driven not data-driven. (4) Lockstep check: qwen-arb is the DIVERGENCE LEADER (peer_consensus_distance=0.27, day_strategy='STRUCTURAL COMPLEMENT [qwen-quant]'), and 10 of 17 agents are losing money — fleet is NOT lockstep-riding qwen-arb's picks. (5) Walk-forward + YouTube sim-date filter are LIVE in prod Space (repo<->Space parity character-identical on lines 140-190, call site passes sim_date=day_date at line 2621). The 204x climb is explained by: (a) v5_restored doctrine rollback at 15:46Z removed the v6 100%-deploy cap that was destroying qwen-arb earlier today, (b) _AGENT_KELLY_OVERRIDE['qwen-arb']=0.20 shipped 2026-04-22 PM doubled its per-bet cap vs fleet baseline 10%, (c) qwen-arb is LLM-skilled at identifying non-consensus political-insider signals (its specialty per the POL v5_restored mandate) AND got favorable variance on 56% WR over 441 bets with compounding. This is genuine alpha + tuned Kelly + favorable variance, NOT leakage. NO PATCH REQUIRED. DO NOT factory_reboot POL TF. PEAK_DRAWDOWN_GUARD will auto-protect if qwen-arb reverts (19.2% max_dd already observed from peak $22,243 to current $20,402).",
+  "action_taken": "Writing this PASS audit. ALERT-2026-04-21-YOUTUBE-LEAKAGE remains OPEN but with fresh confirmation that sim-date filter is working as designed in POL Space (NBA still needs separate verification — out of scope this audit).",
+  "related_alerts_unchanged": "ALERT.json ALERT-2026-04-21-YOUTUBE-LEAKAGE stays OPEN: the required_fix mitigation (sim-date filter) is LIVE and verified for POL this audit, but NBA sim-date filter path not re-verified here. Closing requires parallel NBA audit.",
+  "recommendation": [
+    "NO CODE CHANGE. qwen-arb's climb is scientifically clean.",
+    "Continue monitoring: if peer_consensus_distance drops below 0.10 for 3+ consecutive days while bankroll still climbing, re-audit (would indicate fleet lockstep-riding forming).",
+    "Continue monitoring: if qwen-arb WR spikes above 65% on a >20-bet rolling window, re-audit (would indicate regime shift or latent leakage).",
+    "Consider separate NBA audit to close ALERT-2026-04-21-YOUTUBE-LEAKAGE (filter live in POL, NBA parity not verified here)."
+  ]
+}

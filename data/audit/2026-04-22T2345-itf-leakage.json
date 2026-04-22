@@ -1,0 +1,106 @@
+{
+  "audit_id": "AUDIT-2026-04-22-ITF-LEAKAGE",
+  "ts": "2026-04-22T23:45:00Z",
+  "auditor": "INTERNAL AFFAIRS",
+  "trigger": "user_parity_with_pol_audit",
+  "target": {
+    "fleet": "ITF",
+    "space": "LBJLincoln26/intraday-trading-floor",
+    "alpaca_account": "PA3N7MBUN20P",
+    "mode": "live_paper_wallclock",
+    "sim_dated": false,
+    "seed_reseed_at": "2026-04-22T14:52:44Z",
+    "seed_total": 101495.40,
+    "agents": 17
+  },
+  "status": "PASS",
+  "severity": "INFO",
+  "follow_up": {
+    "type": "INTEGRITY_NON_LEAKAGE",
+    "issue": "ledger-broker desync +$37,866 (ledger sum $139,024 vs Alpaca equity $101,158, both from same seed $101,495)",
+    "class": "accounting_over_credit_in_reconcile_broker_fills",
+    "leakage_implication": "NONE — no future information enters decisions; bug is in post-fill PnL crediting",
+    "owner": "DR FRANKENSTEIN (executor.reconcile_broker_fills close-credit logic)",
+    "escalation_severity": "MEDIUM"
+  },
+  "checks": {
+    "1_lookahead_build_intraday_context": {
+      "result": "PASS",
+      "evidence": [
+        "scripts/arena/shared/context_bus.py:242 build_intraday_context() composes: quotes_ts + tickers_map + _alpaca_news + _polymarket_events + _pol_engine_hot_signals + _mm_signals",
+        "No field named future_* / lookahead / next_day anywhere in app.py or context_bus.py (grep clean)",
+        "quote_latest() from quote_bus returns Alpaca snapshot latestTrade/latestQuote — wall-clock, not historical replay",
+        "ITF runs in live wall-clock (no sim_date variable threaded through prompts, unlike NBA/POL) — the NBA/POL sim-date leakage class is structurally impossible here"
+      ]
+    },
+    "2_news_time_bounding": {
+      "result": "PASS",
+      "evidence": [
+        "context_bus.py:138-147 _alpaca_news GET /v1beta1/news with params {symbols, limit, sort=desc} — no end/start params",
+        "Because ITF is live wall-clock, 'most recent' == current time; no future news can exist in the response",
+        "created_at captured but never compared against a sim-date (ITF has no sim-date), so no leakage path",
+        "_NEWS_CACHE TTL bounded; stale items only older, never newer-than-now"
+      ]
+    },
+    "3_polymarket_time_bounding": {
+      "result": "PASS",
+      "evidence": [
+        "context_bus.py:177-184 _polymarket_events GET gamma-api.polymarket.com/markets with {active=true, closed=false, order=volume24hr}",
+        "Alpaca filter guarantees tradable now — an active+not-closed market by definition has end_date > now",
+        "end_date is a DISPLAY field only, not a filter condition; probability is current yes_prob snapshot"
+      ]
+    },
+    "4_reconcile_broker_fills_timing": {
+      "result": "PASS",
+      "evidence": [
+        "executor.py:1272 reconcile_broker_fills(lookback_min=15) fetches HISTORICAL fill activities only (_fetch_fill_activities)",
+        "cursor.seen_ids dedup prevents re-applying prior fills — strictly past-only read",
+        "Called at TOP of each tick BEFORE prompt build (app.py:1462) — correct ordering, reflects closed state",
+        "No forward-looking fill materialization possible (Alpaca paper API does not return future fills)"
+      ]
+    },
+    "5_bet_source_distribution": {
+      "result": "PASS",
+      "evidence": [
+        "ITF does not emit NBA/POL-style bet-source tags; all trades are real Alpaca order submissions with broker_class tag",
+        "No synthetic-fallback or ml_home-synth paths reachable in executor.py submit_bracket / submit_notional / submit_multileg",
+        "Every order has a real client_order_id, fill_price from broker"
+      ]
+    },
+    "6_bankroll_outlier_wr": {
+      "result": "PASS",
+      "evidence": [
+        "/api/bankrolls mean=$8178, sd=$951; 17/17 agents within 3 SD; max options-1 at $11,001 (+84% vs seed, NOT alert-grade — threshold was 10x seed = $59,700)",
+        "No negative balances, no agents at zero",
+        "WR not meaningful: ITF is <10h since reseed 2026-04-22T14:52Z, insufficient closed trades per agent (<50) for WR leakage pattern"
+      ]
+    },
+    "7_lockstep_dmad_bypass": {
+      "result": "PASS",
+      "evidence": [
+        "Alpaca /v2/orders last 100 closed: zero clusters of >=3 same-(30s-bucket, symbol, side)",
+        "Top filled same-side-same-symbol max cluster size = 3 (AVAX/USD buy, AAVE/USD buy, DIA buy, MSTR buy, MSTR sell, IWM buy) — all within DMAD threshold of <80% overlap",
+        "17 personas show dispersed decisions across tick t=1 (options-1 $11K, macro-rotate-1 $6.5K — wide spread proves independent reasoning)"
+      ]
+    },
+    "8_integrity_ledger_vs_broker": {
+      "result": "INVESTIGATE_NON_LEAKAGE",
+      "evidence": [
+        "sum(/api/bankrolls) = $139,024 but Alpaca equity = $101,158 (same seed $101,495)",
+        "Ledger delta from seed: +$37,528. Broker delta from seed: -$337. Desync: $37,866.",
+        "reserved_open=0 on all 17 agents despite $92,659 long_market_value at broker — stakes are released in ledger but positions still open at broker",
+        "Class: executor.reconcile_broker_fills close-credit logic over-credits stake_portion on partial/closed fills, OR open-fill 'reserve release' fires without corresponding position close",
+        "This is ACCOUNTING, NOT LEAKAGE — no future information enters the decision stream",
+        "Recommended: DR FRANKENSTEIN audit executor.py:1272-1400 credit path; add invariant check sum(bankrolls)+reserved == alpaca.equity ± $500 per tick"
+      ]
+    }
+  },
+  "decision_summary": "ITF passes all 7 leakage checks. Because ITF operates in wall-clock live time (not a sim-date replay), the entire class of look-ahead contamination that affects NBA/POL YouTube narratives is structurally impossible here: news and Polymarket feeds are filtered to 'active now', quote snapshots are current-time, and reconcile_broker_fills is strictly past-read via cursor-tracked seen_ids. Lockstep is healthy (zero >=3 clusters in last 100 filled orders). Bet-source distribution is clean (all orders are real Alpaca broker submissions). Separate non-leakage finding: ledger sums to $139K while Alpaca equity is $101K (+$37K desync from same seed) — this is an accounting over-credit in reconcile_broker_fills close logic, NOT a scientific integrity issue, but is flagged for DR FRANKENSTEIN since it corrupts per-agent performance attribution. Alert YOUTUBE-LEAKAGE can close: POL passed, ITF passed, NBA's leakage path has been mitigated (market_narrative stripped from overrides.json 2026-04-21T12:35Z). No new alert opened.",
+  "follow_up_ticket": {
+    "owner": "DR FRANKENSTEIN",
+    "title": "ITF ledger over-credits vs broker equity ($37.8K desync on $101K account)",
+    "file": "scripts/arena/hf-intraday-trading-floor/executor.py:1272-1400",
+    "repro": "curl /api/bankrolls ; curl Alpaca /v2/account ; compare sum(agents.total_equity) vs equity",
+    "invariant_missing": "sum(bankrolls) + sum(reserved_open) ≈ alpaca.equity ± 1% per tick"
+  }
+}

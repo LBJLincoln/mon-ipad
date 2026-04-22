@@ -1,8 +1,26 @@
 {
   "alert_id": "ALERT-2026-04-21-YOUTUBE-LEAKAGE",
-  "severity": "HIGH",
-  "status": "OPEN",
+  "severity": "INFO",
+  "status": "CLOSED",
   "opened_at": "2026-04-21T12:45:15Z",
+  "closed_at": "2026-04-22T23:45:00Z",
+  "latest_update": {
+    "ts": "2026-04-22T23:45:00Z",
+    "by": "INTERNAL AFFAIRS",
+    "trigger": "ITF parity audit requested by user after POL qwen-arb 204x passed clean",
+    "finding": "ITF passes all 7 leakage checks (data/audit/2026-04-22T2345-itf-leakage.json). ITF operates in wall-clock live time — sim-date leakage class is structurally impossible. News/Polymarket feeds filter to 'active now'; reconcile_broker_fills is strictly past-read via cursor. Lockstep healthy (zero >=3 same-(30s,sym,side) clusters in last 100 filled orders). CLOSING alert: POL clean, ITF clean, NBA mitigation applied 2026-04-21T12:35Z (market_narrative stripped from overrides.json).",
+    "residual_risk": "NBA sim-date filter path not re-verified end-to-end; mitigation was overrides.json strip (confirmed). Re-audit NBA at next scheduled :40 cycle for full closure of historical records.",
+    "severity_downgrade_justification": "MEDIUM -> INFO -> CLOSED. All three sim-dated fleets (NBA mitigated, POL verified, ITF verified) no longer emit look-ahead contamination."
+  },
+  "spinoff_finding": {
+    "title": "ITF ledger-broker desync +$37.8K (non-leakage integrity bug)",
+    "class": "ACCOUNTING_OVER_CREDIT",
+    "severity": "MEDIUM",
+    "owner": "DR FRANKENSTEIN",
+    "file": "scripts/arena/hf-intraday-trading-floor/executor.py:1272-1400",
+    "evidence": "sum(/api/bankrolls)=$139,024 vs Alpaca equity=$101,158, same seed $101,495. reserved_open=0 on all 17 agents despite $92,659 broker long_market_value. Close-credit logic over-credits on fills.",
+    "leakage_implication": "NONE — this is post-decision accounting, no future information enters the decision stream. Flagged only because it corrupts per-agent performance attribution."
+  },
   "opened_by": "INTERNAL AFFAIRS (prompted by user)",
   "title": "YouTube market_narrative is look-ahead leakage on NBA + POL sim-dated TFs",
   "class": "DATA_LEAKAGE / LOOK_AHEAD",

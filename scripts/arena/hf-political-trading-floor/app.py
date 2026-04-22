@@ -835,9 +835,9 @@ TRADERS = {
 # compound the signal; llama-contra probation after 500 bets net -$48 (volume
 # drag). Rest of roster falls through to tier default.
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    "qwen-arb":     0.20,   # CHAMPION $2023 (historical peak $3119), compound signal
-    "qwen-quant":   0.18,   # #2 $755
-    "gemini-anl":   0.15,   # #3 $425
+    "qwen-arb":     0.25,   # CHAMPION $20,402 (199.6× seed), PASS leakage audit 2026-04-22T2340, Kelly+5pp aggressive ship
+    "qwen-quant":   0.22,   # #2 $4,833 (48× seed), aggressive boost on verified winner
+    "gemini-anl":   0.18,   # #3 $1,161 (11.6× seed), aggressive boost on verified winner
     "llama-contra": 0.03,   # PROBATION: 500 bets, $-48 net — volume-induced drawdown
     # ── TIER-2 EXTENSION (LOBBYIST, 2026-04-22, day 152) ─────────────────────
     # Round-1 override working (qwen-arb +$241 in 5d). Extend to tier-2

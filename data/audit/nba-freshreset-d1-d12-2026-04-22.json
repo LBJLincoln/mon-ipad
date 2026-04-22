@@ -1,0 +1,101 @@
+{
+  "ts": "2026-04-22T11:22:57.700084Z",
+  "mode": "scheduled-fresh-reset-window",
+  "target": "LBJLincoln26/nba-llm-trading-floor",
+  "window": "day-001..day-012 post-reset 2026-04-22T10:07Z",
+  "prompt": "prompt_v5 (selectivity, MAX 3/day, no fabricated fallback)",
+  "bets_total": 103,
+  "checks": {
+    "leakage": {
+      "severity": "ok",
+      "pairs": 0,
+      "note": "insufficient-bets-under-gate"
+    },
+    "source": {
+      "severity": "ok",
+      "direct_ratio": 1.0,
+      "forbidden_hits": 0,
+      "counts": {
+        "direct": 103
+      }
+    },
+    "wr_outlier": {
+      "severity": "ok",
+      "max_wr_at_n10+": 0.067,
+      "note": "gemini-tact 50% (n=2), all agents with n>=10 are BELOW 0.75"
+    },
+    "lockstep": {
+      "severity": "ok",
+      "jaccard_mean_d1_d2": [
+        0.057,
+        0.029
+      ],
+      "note": "max=1.0 pairs are small-N artifact (1 shared pick each)"
+    },
+    "walkforward": {
+      "severity": "ok",
+      "sim_date_chronology": "2025-10-04 -> 2025-10-15",
+      "written_at": "2026-04-22",
+      "violations": 0
+    }
+  },
+  "fabricated_fallback_hunt": {
+    "severity": "ok",
+    "forbidden_sources": 0,
+    "fallback_used_flag": 0,
+    "provider_status": "103/103 llm_ok",
+    "canned_rationale_hits": {
+      "moneyline": 1
+    },
+    "note": "prompt_v5 no-fallback rule holding. POL 2026-04-18 leakage class NOT present."
+  },
+  "max_3_bets_ceiling": {
+    "severity": "warn",
+    "violations": 6,
+    "worst": [
+      {
+        "day": "day-009",
+        "tid": "mistral-small",
+        "bets": 6
+      },
+      {
+        "day": "day-009",
+        "tid": "mistral-ministral",
+        "bets": 6
+      },
+      {
+        "day": "day-011",
+        "tid": "mistral-small",
+        "bets": 6
+      },
+      {
+        "day": "day-006",
+        "tid": "mistral-small",
+        "bets": 5
+      },
+      {
+        "day": "day-006",
+        "tid": "mistral-ministral",
+        "bets": 5
+      },
+      {
+        "day": "day-001",
+        "tid": "selfhost-gemma3",
+        "bets": 4
+      }
+    ],
+    "avg_per_day": {
+      "mistral-small": 2.5,
+      "mistral-ministral": 1.5,
+      "selfhost-gemma3": 0.5
+    },
+    "note": "prompt_v5 states MAX 3/day. mistral-small hit 6 on d9+d11, mistral-ministral 6 on d9. Two laggards spike above ceiling on high-game days. Others approaching but not violating."
+  },
+  "alerts": [
+    {
+      "severity": "warn",
+      "check": "max_3_bets_ceiling",
+      "detail": "mistral-small + mistral-ministral violating prompt_v5 MAX 3/day ceiling; 6 bets on day-009 and day-011"
+    }
+  ]
+}
