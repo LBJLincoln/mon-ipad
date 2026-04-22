@@ -328,12 +328,11 @@ PERSONAS: List[Dict[str, Any]] = [
     {
         "tid": "macro-rotate-1",
         "name": "MacroRotateMAX",
-        # 2026-04-21 INTERNAL AFFAIRS RCA reroute: google:gemini-2.5-flash not on
-        # switchboard confirmed-alive list (project_tf_llm_reroute_apr20 memory).
-        # Swap to cerebras:qwen-3-235b — POL qwen-quant 71% WR real signal + proven
-        # alive in gateway routing. mistral:medium fallback unchanged.
-        "model_primary": "cerebras:qwen-3-235b",
-        "model_fallback": "mistral:medium",
+        # 2026-04-22: 4th provider diversity — route to selfhost:phi-4-mini (1.1s at
+        # gateway, free, unlimited). Macro-rotate is low-frequency (max_hold 6h) so
+        # selfhost latency is a non-issue. Cerebras kept as fallback.
+        "model_primary": "selfhost:phi-4-mini",
+        "model_fallback": "cerebras:qwen-3-235b",
         "hf_account_target": "google",
         "hf_space_target": "gemini-2.5-flash",
         "tier": "M",
