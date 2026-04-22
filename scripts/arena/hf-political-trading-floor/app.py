@@ -829,6 +829,15 @@ _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
     "qwen-quant":   0.18,   # #2 $755
     "gemini-anl":   0.15,   # #3 $425
     "llama-contra": 0.03,   # PROBATION: 500 bets, $-48 net — volume-induced drawdown
+    # ── TIER-2 EXTENSION (LOBBYIST, 2026-04-22, day 152) ─────────────────────
+    # Round-1 override working (qwen-arb +$241 in 5d). Extend to tier-2
+    # profitables + add probation for tier-3 bleeders/low-activity.
+    "mistral-small":     0.13,  # #4 profitable $234, 194 bets — steady breadth
+    "gemini-tact":       0.13,  # #5 profitable $188, 198 bets — tactical lane
+    "mistral-medium":    0.12,  # tier-2 $101, 91 bets — smaller boost
+    "mistral-ministral": 0.04,  # PROBATION: bleeding $44 on 108 bets
+    "mistral-nemo":      0.05,  # PROBATION: low-activity $42 on 20 bets
+    "selfhost-dolphin3": 0.05,  # PROBATION: warming-up $41 on 7 bets / 147d
 }
 
 # ── WINNER-AWARE PER-AGENT PROMPTS (LOBBYIST v2, 2026-04-22) ─────────────────
