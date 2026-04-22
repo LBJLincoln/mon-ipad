@@ -42,6 +42,36 @@ from scripts.arena.shared.quote_bus import refresh as quote_refresh, latest as q
 from scripts.arena.shared.context_bus import build_intraday_context  # noqa: E402
 
 
+# ── 2026-04-22 POWER-DEPLOY WINDOW — force >50% fleet bankroll into liquid
+# positions during the first 2h of US market open (14:30-16:30 UTC weekdays).
+# 6 liquid-specialist agents × 20% sub-bankroll stake floor × 90s tick cadence
+# = fleet cumulative deployed capital climbs past $50k (50% of $100k seed)
+# within the window, regardless of how cautious individual LLMs decide to be.
+POWER_WINDOW_START = (14, 30)  # UTC
+POWER_WINDOW_END = (16, 30)
+POWER_AGENTS = {
+    "momentum-1", "breakout-1", "leveraged-momentum-1",
+    "news-catalyst-1", "crypto-whale-1", "scalper-1",
+}
+POWER_LIQUID_TICKERS = {
+    "SPY", "QQQ", "IWM", "DIA", "TSLA", "NVDA", "AAPL", "MSFT", "AMZN",
+    "META", "GOOGL", "AMD", "COIN", "TQQQ", "SPXL", "SOXL",
+    "BTC/USD", "ETH/USD", "SOL/USD",
+}
+POWER_STAKE_FLOOR_PCT = 0.20  # 20% of agent sub-bankroll per trade
+
+
+def _in_power_window(now: Optional[datetime] = None) -> bool:
+    """Return True if current UTC time is inside POWER-DEPLOY window (weekday)."""
+    now = now or datetime.now(timezone.utc)
+    if now.weekday() >= 5:
+        return False
+    cur_min = now.hour * 60 + now.minute
+    start_min = POWER_WINDOW_START[0] * 60 + POWER_WINDOW_START[1]
+    end_min = POWER_WINDOW_END[0] * 60 + POWER_WINDOW_END[1]
+    return start_min <= cur_min <= end_min
+
+
 # 2026-04-21 v2.6 — UNRESTRICTED UNIVERSE: on-demand fetch for any Alpaca-supported
 # ticker the agent emits that isn't in the ~110-deep quote bus. Returns a quote
 # dict in the same shape quote_bus produces, or None on failure.
@@ -861,6 +891,22 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         f"Passing is cowardice — the leaderboard rewards aggression compounded safely."
     )
 
+    # ── 2026-04-22 POWER-DEPLOY WINDOW — force liquid-specialist agents to
+    # deploy ≥20% sub-bankroll per trade on liquid tickers during 14:30-16:30 UTC.
+    if persona["tid"] in POWER_AGENTS and _in_power_window():
+        _power_floor = _agent_bankroll * POWER_STAKE_FLOOR_PCT
+        _liquid_str = ", ".join(sorted(POWER_LIQUID_TICKERS))
+        _bankroll_block += (
+            f"\n\n⚡ POWER-DEPLOY WINDOW ACTIVE (14:30-16:30 UTC = first 2h US open).\n"
+            f"YOU are a LIQUID-SPECIALIST agent. Your mandate this window:\n"
+            f"  • stake_usd FLOOR = ${_power_floor:,.0f} ({POWER_STAKE_FLOOR_PCT*100:.0f}% "
+            f"of ${_agent_bankroll:,.0f}). The executor SCALES anything smaller up to this.\n"
+            f"  • Stay in liquid universe: {_liquid_str}.\n"
+            f"  • PASS means missed window. The power-hour is short — deploy or step aside.\n"
+            f"  • Fleet target: ≥50% of $100k total bankroll deployed in 2h. Your stake "
+            f"is part of that number."
+        )
+
     return f"""{COLLECTIVE_MISSION}
 
 {AXELROD_CANON}{_pm_override}
@@ -1308,6 +1354,27 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                     action = "pass"
             else:
                 _tick_counts[_key] = _tick_counts.get(_key, 0) + 1
+
+        # ── 2026-04-22 POWER-DEPLOY FLOOR — enforce min 20% sub-bankroll
+        # stake for POWER_AGENTS on liquid tickers during the window. This is
+        # the server-side guarantee the prompt promised; LLM can ignore the
+        # block but the stake still gets scaled up here.
+        if (action == "trade"
+                and persona["tid"] in POWER_AGENTS
+                and _in_power_window(now)):
+            _tk = (decision.get("ticker") or "").upper()
+            if _tk in POWER_LIQUID_TICKERS:
+                _agent_bk = executor.get_bankroll(persona["tid"])
+                _power_floor = _agent_bk * POWER_STAKE_FLOOR_PCT
+                _cur_stake = float(decision.get("stake_usd") or 0)
+                if _cur_stake < _power_floor:
+                    decision = dict(decision)
+                    decision["stake_usd"] = round(_power_floor, 2)
+                    decision["_power_floor_applied"] = True
+                    decision["rationale"] = (
+                        (decision.get("rationale") or decision.get("thesis") or "")
+                        + f" [POWER-FLOOR: ${_cur_stake:.0f}→${_power_floor:.0f}]"
+                    )
 
         result = {
             "ts": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
