@@ -1,10 +1,10 @@
 # Infrastructure & Compute
 
-> Auto-compiled from 92 raw sources on 2026-04-21
+> Auto-compiled from 97 raw sources on 2026-04-22
 
 ## Overview
 
-This topic covers 92 research files spanning infrastructure & compute.
+This topic covers 97 research files spanning infrastructure & compute.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -20,6 +20,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`
 - **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/karpathy-researcher/kaggle_automation_research_march2026.md`
 - **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
+- **YouTube Corpus → Tabular Training Features** (1814 words) -- `raw/research/youtube-to-training-features-2026-04-21.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/agent-memory/karpathy-researcher_karpathy_autoresearch_pattern.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/karpathy-researcher/karpathy_autoresearch_pattern.md`
 - **Multi-Agent LLM Prediction Systems (April 2026 Landscape)** (1641 words) -- `raw/agent-memory/karpathy-researcher_research_multi_agent_llm_systems_apr2026.md`
@@ -79,6 +80,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/repo-scout/project_nba_data_sources.md`
 - **GLM-5.1 + Autonomous Agents Deep Dive (April 2026)** (392 words) -- `raw/agent-memory/repo-scout_project_glm5_agents_apr2026.md`
+- **YouTube FinBERT sentiment features shipped (Cat 67 NBA / Cat 44 POL) + OAuth sub** (385 words) -- `raw/agent-memory/dr-frankenstein_project_youtube_finbert_apr21.md`
 - **pixel-world architecture map** (371 words) -- `raw/agent-memory/pixel_reference_pixel_world_architecture.md`
 - **Political Alpha Deployment** (363 words) -- `raw/agent-memory/feature-engineer_project_political_alpha_deploy.md`
 - **Political Alpha Deployment** (363 words) -- `raw/feature-engineer/project_political_alpha_deploy.md`
@@ -89,9 +91,12 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **project_hf_spaces_inventory** (297 words) -- `raw/agent-memory/repo-scout_project_hf_spaces_inventory.md`
 - **project_hf_spaces_inventory** (297 words) -- `raw/repo-scout/project_hf_spaces_inventory.md`
 - **research_april2026_cycle14_drift_monitoring** (289 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle14_drift_monitoring.md`
+- **ITF ledger HF-persistence** (283 words) -- `raw/agent-memory/dr-frankenstein_project_itf_ledger_hf_persistence_apr22.md`
+- **ITF broker-fill reconciliation wired (compound gap closer)** (276 words) -- `raw/agent-memory/dr-frankenstein_project_itf_reconcile_apr22.md`
 - **Browser-use + Hermes devcontainer + cross-repo integration (2026-04-20)** (272 words) -- `raw/agent-memory/dr-frankenstein_project_browser_hermes_devcontainer_apr20.md`
 - **env-local parser must strip inline comments** (252 words) -- `raw/agent-memory/internal-affairs_feedback_env_parser_inline_comment.md`
 - **HF Self-Host LLM Expansion — April 2026 Cycle 20** (248 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle20_hf_self_host.md`
+- **GPU Fleet Monitor extension** (243 words) -- `raw/agent-memory/switchboard_project_gpu_fleet_monitor_apr21.md`
 - **Multi-Agent Workflow Scan (April 2026)** (230 words) -- `raw/agent-memory/repo-scout_project_multiagent_workflow_apr2026.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/agent-memory/feature-engineer_project_gpu_evolution_v2.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/feature-engineer/project_gpu_evolution_v2.md`

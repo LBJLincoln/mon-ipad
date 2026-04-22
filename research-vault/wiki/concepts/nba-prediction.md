@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 192 raw sources on 2026-04-21
+> Auto-compiled from 205 raw sources on 2026-04-22
 
 ## Overview
 
-This topic covers 192 research files spanning nba prediction & ml models.
+This topic covers 205 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -31,6 +31,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`
 - **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/karpathy-researcher/kaggle_automation_research_march2026.md`
 - **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
+- **YouTube Corpus → Tabular Training Features** (1814 words) -- `raw/research/youtube-to-training-features-2026-04-21.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/agent-memory/karpathy-researcher_research_cycle6_feature_proposals.md`
 - **Karpathy Cycle 6 — Unconventional Feature Proposals** (1776 words) -- `raw/karpathy-researcher/research_cycle6_feature_proposals.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/agent-memory/karpathy-researcher_karpathy_autoresearch_pattern.md`
@@ -43,6 +44,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/karpathy-researcher/karpathy_nba_adaptation.md`
 - **Claude Code Karpathy Skills & Autoresearch Ecosystem** (1407 words) -- `raw/agent-memory/karpathy-researcher_research_claude_code_karpathy_skills_apr2026.md`
+- **SOTA Deep Scan — 2026-04-21** (1393 words) -- `raw/research/sota-deep-scan-2026-04-21.md`
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/research/self-improvement-harness-sources-2026-03-31.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
@@ -93,6 +95,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Nomos42 Weekly Research Digest** (480 words) -- `raw/research/weekly-digest-2026-04-20.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/agent-memory/research-analyst_project_backtest_audit_march2026.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/research-analyst/project_backtest_audit_march2026.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-21** (456 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-21.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-15** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-15.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-16** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-16.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-17** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-17.md`
@@ -107,6 +110,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Trading Floor v4/v5 SOTA Audit — April 11 2026** (403 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle17_tf_sota.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/repo-scout/project_nba_data_sources.md`
+- **YouTube FinBERT sentiment features shipped (Cat 67 NBA / Cat 44 POL) + OAuth sub** (385 words) -- `raw/agent-memory/dr-frankenstein_project_youtube_finbert_apr21.md`
 - **Multi-Market NBA Betting Research March 2026** (377 words) -- `raw/agent-memory/research-analyst_research_march2026_multi_market.md`
 - **Multi-Market NBA Betting Research March 2026** (377 words) -- `raw/research-analyst/research_march2026_multi_market.md`
 - **Arena Lessons Learned** (354 words) -- `raw/learnings/arena-lessons-learned.md`
@@ -121,6 +125,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Historical NBA Odds Sources** (313 words) -- `raw/agent-memory/repo-scout_project_historical_odds_sources.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/repo-scout/project_historical_odds_sources.md`
 - **nba_tf_brier_noise_floor_apr20** (311 words) -- `raw/agent-memory/swish_project_nba_tf_brier_noise_floor_apr20.md`
+- **Deep-scan triple-ship Apr 21 2026 (#1 calibrated-Kelly NBA, #3 ITF regime-gate, ** (309 words) -- `raw/agent-memory/dr-frankenstein_project_deep_scan_triple_apr21.md`
 - **Market Analyst Data Sources** (306 words) -- `raw/agent-memory/market-analyst_reference_data_sources.md`
 - **Karpathy POLITICAL — Mutation Effectiveness Analysis** (306 words) -- `raw/karpathy/political-mutation-analysis.md`
 - **Market Analyst Data Sources** (306 words) -- `raw/market-analyst/reference_data_sources.md`
@@ -130,13 +135,18 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Portfolio Optimization Deep Sweep — March 2026 Cycle 5** (299 words) -- `raw/research-analyst/research_march2026_cycle5_portfolio.md`
 - **project_hf_spaces_inventory** (297 words) -- `raw/agent-memory/repo-scout_project_hf_spaces_inventory.md`
 - **project_hf_spaces_inventory** (297 words) -- `raw/repo-scout/project_hf_spaces_inventory.md`
+- **TF github:* silent-dead RCA + v3 reroute (2026-04-21)** (291 words) -- `raw/agent-memory/switchboard_project_tf_github_silentdead_apr21.md`
 - **dashboard-pixel-sota-research-apr17** (290 words) -- `raw/agent-memory/nomos-scout_project_dashboard_pixel_research_apr17.md`
 - **Nomos42 Weekly Research Digest** (277 words) -- `raw/research/weekly-digest-2026-03-31.md`
 - **Political Trading Season 2025-26 -- Agent MIXTRAL ENSEMBLE** (276 words) -- `raw/arena-docs/political-mixtral-season-2025-26.md`
 - **multi_target_trainer** (275 words) -- `raw/agent-memory/feature-engineer_project_multi_target_trainer.md`
+- **TF auto-restart race-condition fix** (271 words) -- `raw/agent-memory/dr-frankenstein_project_tf_autorestart_race_fix_apr22.md`
+- **YouTube narrative sim-date filter (2026-04-21)** (271 words) -- `raw/agent-memory/the-plumber_project_youtube_sim_date_filter_apr21.md`
 - **May 2026 Monetization Sprint** (245 words) -- `raw/agent-memory/market-analyst_project_monetization_sprint.md`
 - **Research Scan: arxiv-scan-2026-04-20** (244 words) -- `raw/research/arxiv-scan-2026-04-20.md`
+- **Cat67 YouTube FinBERT + W3 OAuth subscriptions (2026-04-21)** (242 words) -- `raw/agent-memory/dr-frankenstein_project_cat67_youtube_finbert_apr21.md`
 - **Fleet Health Snapshot** (239 words) -- `raw/learnings/fleet-health-snapshot.md`
+- **Research Scan: arxiv-scan-2026-04-21** (239 words) -- `raw/research/arxiv-scan-2026-04-21.md`
 - **project_scan_history** (235 words) -- `raw/agent-memory/repo-scout_project_scan_history.md`
 - **project_scan_history** (235 words) -- `raw/repo-scout/project_scan_history.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-17** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-17.md`
@@ -156,6 +166,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-scan-2026-03-31** (186 words) -- `raw/research/github-scan-2026-03-31.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/agent-memory/nba-brain_project_strategy_confrontation.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/nba-brain/project_strategy_confrontation.md`
+- **YouTube corpus composition reality-check (2026-04-21)** (175 words) -- `raw/agent-memory/hawkeye_project_youtube_corpus_reality_apr21.md`
 - **Research Scan: github-scan-2026-04-01** (167 words) -- `raw/research/github-scan-2026-04-01.md`
 - **Research Scan: github-scan-2026-04-02** (167 words) -- `raw/research/github-scan-2026-04-02.md`
 - **Research Scan: tf-proposals-2026-04-20-refresh** (165 words) -- `raw/research/tf-proposals-2026-04-20-refresh.md`
@@ -187,12 +198,14 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Department Council Summary** (141 words) -- `raw/councils/department-summary.md`
 - **Research Scan: github-scan-2026-04-18** (141 words) -- `raw/research/github-scan-2026-04-18.md`
 - **Research Scan: github-scan-2026-04-20** (141 words) -- `raw/research/github-scan-2026-04-20.md`
+- **Research Scan: github-scan-2026-04-21** (141 words) -- `raw/research/github-scan-2026-04-21.md`
 - **Research Scan: github-scan-2026-04-15** (140 words) -- `raw/research/github-scan-2026-04-15.md`
 - **Research Scan: github-scan-2026-04-16** (140 words) -- `raw/research/github-scan-2026-04-16.md`
 - **Research Scan: github-betting-scan-2026-04-17** (136 words) -- `raw/research/github-betting-scan-2026-04-17.md`
 - **Research Scan: github-betting-scan-2026-04-18** (136 words) -- `raw/research/github-betting-scan-2026-04-18.md`
 - **Research Scan: github-betting-scan-2026-04-19** (136 words) -- `raw/research/github-betting-scan-2026-04-19.md`
 - **Research Scan: github-betting-scan-2026-04-20** (136 words) -- `raw/research/github-betting-scan-2026-04-20.md`
+- **Research Scan: github-betting-scan-2026-04-21** (136 words) -- `raw/research/github-betting-scan-2026-04-21.md`
 - **Current Fleet State (iter 9, 2026-04-07 09:30 UTC)** (130 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`
 - **Research Scan: github-scan-2026-04-11** (123 words) -- `raw/research/github-scan-2026-04-11.md`
 - **Research Scan: github-scan-2026-04-13** (123 words) -- `raw/research/github-scan-2026-04-13.md`
