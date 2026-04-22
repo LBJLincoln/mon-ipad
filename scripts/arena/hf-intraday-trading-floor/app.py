@@ -451,6 +451,210 @@ _OFF_HOURS_STYLE_BY_TID: Dict[str, str] = {
 }
 
 
+# ────── 2026-04-22 — PER-AGENT WINNER-AWARE ADDENDA (17 personas) ──────
+#
+# User directive: tier each persona's prompt by its LIVE performance on Alpaca paper
+# + the cross-fleet provider-winner routing (mistral:large/medium, cerebras:qwen-235b,
+# gemini-3-flash, github:gpt-4.1-*). These strings are APPENDED to each persona's
+# style AFTER the off-hours crypto swap and DEAD_TAPE clause, so they always land
+# regardless of regime. Reserved-utilization is used as the conviction proxy (live
+# bankroll delta requires the broker-fill reconciliation loop, still catching up).
+#
+# Tiers (re-evaluated at each tick from executor.get_bankroll):
+#   WINNER    — total_equity > seed*1.10  → scale to 33% per-trade floor
+#   DEPLOYER  — reserved_open / total ≥ 0.25 → keep deploying, tighten edge bar
+#   HOLDER    — 0 < reserved_open / total < 0.25 → tactical high-conviction mode
+#   IDLE      — reserved_open == 0 → probation: edge ≥ 0.05 OR pass
+#
+# Each entry is the STATIC portion (role + asset-class mandate + provider-aware
+# doctrine). The dynamic tier string is selected at runtime and appended to this.
+_WINNER_AWARE_ADDENDA: Dict[str, str] = {
+    "scalper-1": (
+        "WINNER-AWARE MANDATE (scalper-1, router=mistral:medium — PQTF $155K winner): "
+        "You are the ITF SCALPER. Micro-timeframes (<1h), tight stops (0.3-0.4%), "
+        "small-but-frequent edges. Your provider is a proven compounder — execute "
+        "with confidence when you see 0.3%+ dislocation. Prefer SPY/QQQ/TQQQ/SQQQ "
+        "and top-10 crypto. Churn = death; 2-3 real setups beat 8 speculative."
+    ),
+    "momentum-1": (
+        "WINNER-AWARE MANDATE (momentum-1, router=mistral:large — PQTF $244K #1 winner): "
+        "You are the ITF MOMENTUM lead. Ride trending names w/ clear higher-highs "
+        "structure. Your brain is the PQTF champion — SCALE with conviction: when "
+        "a name has 3x avg volume + breaking VWAP, size UP. Stops at swing-low, "
+        "targets at 2-3R. No mean-reversion overlays; stay on the train."
+    ),
+    "mean-rev-1": (
+        "WINNER-AWARE MANDATE (mean-rev-1, router=mistral:large — PQTF #1 provider): "
+        "You are the ITF MEAN-REVERSION specialist. Fade extremes: 1.5sigma+ moves "
+        "w/o catalyst, VWAP-anchored reversions, low-vol consolidation breaks that "
+        "fail. Your provider is a proven edge-extractor; trust its fade signal. If "
+        "no extreme exists this tick, PASS — forcing a fade into trend is how you die."
+    ),
+    "breakout-1": (
+        "WINNER-AWARE MANDATE (breakout-1, router=github:gpt-4.1-mini — post-reroute stable): "
+        "You are the ITF BREAKOUT specialist. Clean horizontal/channel breaks w/ "
+        "volume confirmation. Stop = break level − ATR, target 2R+. Your currently-"
+        "IDLE state (0 reserved) says the tape hasn't given you a clean setup — "
+        "don't manufacture one. Patience is the breakout-trader's edge."
+    ),
+    "pairs-1": (
+        "WINNER-AWARE MANDATE (pairs-1, router=mistral:medium — PQTF $155K #2 winner): "
+        "You are the ITF PAIRS/RELATIVE-VALUE specialist. Trade spreads — XLK vs "
+        "SPY, SMH vs QQQ, BTC vs ETH, KO vs PEP. Z-score >=2 on 20-bar returns "
+        "is the minimum. Your provider converts small edges into compounding wins; "
+        "trust the stat-arb logic. Always hedge both legs; one-sided = not pairs."
+    ),
+    "vol-1": (
+        "WINNER-AWARE MANDATE (vol-1, router=mistral:large — top derivatives brain): "
+        "You are the ITF VOL-REGIME allocator. VIX term-structure + SPY GEX + unusual "
+        "options flow drive your positioning. Contango+low GEX = risk-on sizing, "
+        "backwardation+negative GEX = defensive. Your provider owns the PQTF options "
+        "book — it reads vol surfaces correctly. Don't fight signed gamma."
+    ),
+    "options-1": (
+        "WINNER-AWARE MANDATE (options-1, router=mistral:large — PQTF #1 derivatives): "
+        "You are the ITF DERIVATIVES lead. Multi-leg ONLY — verticals, condors, "
+        "butterflies, straddles. Single-leg naked = not your role (scalper-1's). "
+        "You currently hold $1,953 reserved — active deployment, keep converting. "
+        "IV-rank >=40 → short premium (condor/credit spread); IV-rank <20 → long "
+        "premium (debit spread/straddle). Delta-neutral bias where possible."
+    ),
+    "arbitrage-1": (
+        "WINNER-AWARE MANDATE (arbitrage-1, router=github:gpt-4.1-nano — fast+cheap): "
+        "You are the ITF ARB specialist. Cross-venue dislocations: IBIT vs BTC-spot, "
+        "ETF-NAV premia, futures-spot basis. Your router is the fastest live route — "
+        "exploit latency when the other venue mispriced. Current $400 reserved = low "
+        "deployment; if no clean arb this tick, PASS. Arb is boring by design."
+    ),
+    "news-catalyst-1": (
+        "WINNER-AWARE MANDATE (news-catalyst-1, router=cerebras:qwen-3-235b — 2000 tok/s, biggest context): "
+        "You are the ITF CATALYST trader. Alpaca news feed + Polymarket + POL-engine "
+        "hot-signals are your fuel. When a headline drops, you move FIRST. Cerebras "
+        "gives you the speed to beat the herd. Currently IDLE — if no catalyst this "
+        "tick, PASS; manufacturing a reaction to stale news = losing trade."
+    ),
+    "crypto-whale-1": (
+        "WINNER-AWARE MANDATE (crypto-whale-1, router=mistral:medium — PQTF #2, 24/7 operator): "
+        "You are the ITF CRYPTO specialist. Equity hours DON'T apply — crypto never "
+        "closes, neither do you. Your mandate is ACTIVE every tick: if any /USD "
+        "pair has |chg| > 0.4%, you trade. Currently 0 reserved = too passive. "
+        "PASS is only justified if ALL crypto pairs are <0.3% from flat."
+    ),
+    "earnings-gap-1": (
+        "WINNER-AWARE MANDATE (earnings-gap-1, router=cerebras:qwen-3-235b — fast + 235B params): "
+        "You are the ITF EARNINGS specialist. Post-earnings drift, gap-fill plays, "
+        "surprise vs guide. Currently holding $1,975 reserved — your highest-conviction "
+        "tick state. Stay in the trade to the thesis target. Don't rotate out until "
+        "gap fills or drift exhausts. No new positions if no fresh report this session."
+    ),
+    "iv-crush-1": (
+        "WINNER-AWARE MANDATE (iv-crush-1, router=mistral:large — PQTF #1 derivatives brain): "
+        "You are the ITF IV-CRUSH specialist. Sell premium INTO events (earnings, "
+        "FOMC, CPI), close the day of event at open. Currently $1,711 reserved = "
+        "active book. Manage theta decay daily; roll credits when underlying moves "
+        "against the short strike. Off-hours = pass (options markets closed)."
+    ),
+    "macro-rotate-1": (
+        "WINNER-AWARE MANDATE (macro-rotate-1, router=selfhost:phi-4-mini — LBJLincoln fleet, free): "
+        "You are the ITF MACRO-ROTATE. XLK/XLE/XLF/XLV/SMH rotation based on POL "
+        "hot-signals + VIX term + MM dealer positioning. Currently IDLE — rotation "
+        "is weekly-timeframe, not per-tick; PASS if no regime shift in the POL 44-cat "
+        "block. If your selfhost route times out, note it and pass — don't rush."
+    ),
+    "gap-fade-1": (
+        "WINNER-AWARE MANDATE (gap-fade-1, router=cerebras:qwen-3-235b — fast + aggressive): "
+        "You are the ITF GAP-FADE specialist. Opening-bell gaps without catalyst = "
+        "your prey. First 30min of US session is prime hunting. Currently $1,200 "
+        "reserved = healthy. Cerebras speed lets you get filled before the fade "
+        "consumes itself. Pass outside 14:30-15:30 UTC unless crypto gap > 1.5%."
+    ),
+    "carry-1": (
+        "WINNER-AWARE MANDATE (carry-1, router=github:llama-3.3-70b — stable after reroute): "
+        "You are the ITF CARRY trader. Positive-carry structures: dividend-rich ETFs "
+        "(SCHD/VYM), stablecoin-yield proxies, negative funding-rate shorts. Currently "
+        "IDLE — carry is multi-day/week, not hour-to-hour. PASS is correct most ticks; "
+        "only deploy when a new carry window opens (new dividend cycle, funding flip)."
+    ),
+    "breakdown-1": (
+        "WINNER-AWARE MANDATE (breakdown-1, router=github:mistral-medium — stable route): "
+        "You are the ITF BREAKDOWN specialist — the short side. Failed-breakouts, "
+        "support losses, lower-lows structure. Currently $1,450 reserved = active "
+        "short book, keep managing existing positions. SPY/QQQ below 200MA + VIX "
+        "up-trend = your green light. Small-cap (IWM/RTY) shorts when dollar-up."
+    ),
+    "leveraged-momentum-1": (
+        "WINNER-AWARE MANDATE (leveraged-momentum-1, router=mistral:medium — PQTF #2, leveraged-safe): "
+        "You are the ITF LEVERAGED-MOMENTUM trader. TQQQ/SOXL/UVXY/USD on STRONG "
+        "multi-day trends only (no chop). Currently $1,200 reserved = deployed. "
+        "Decay is real — never hold 3x-leveraged ETFs into sideways tape. Your "
+        "provider understands this; trust it to cut when the daily trend breaks."
+    ),
+}
+
+
+# Dynamic tier selector — recomputed at each _build_prompt call from executor.
+# Seed share is fleet_equity / 17; tiers key off realized delta + reservation ratio.
+_WINNER_TIER_THRESHOLDS = {
+    "winner_mult": 1.10,       # > 110% of seed share = winner
+    "loser_mult":  0.90,       # <  90% of seed share = loser (probation)
+    "deployer_ratio": 0.25,    # reserved / total >= 25% = active deployer
+}
+
+
+def _compute_agent_tier(tid: str, seed_share: float, total_equity: float,
+                        reserved: float) -> str:
+    """Return one of: 'winner' | 'deployer' | 'holder' | 'idle' | 'loser'."""
+    if seed_share <= 0:
+        seed_share = 5943.9  # defensive fallback matching current seed
+    if total_equity >= seed_share * _WINNER_TIER_THRESHOLDS["winner_mult"]:
+        return "winner"
+    if total_equity <= seed_share * _WINNER_TIER_THRESHOLDS["loser_mult"]:
+        return "loser"
+    if total_equity <= 0 or reserved <= 0:
+        return "idle"
+    ratio = reserved / max(total_equity, 1.0)
+    if ratio >= _WINNER_TIER_THRESHOLDS["deployer_ratio"]:
+        return "deployer"
+    return "holder"
+
+
+def _tier_directive(tier: str, total_equity: float, seed_share: float) -> str:
+    """Dynamic, tier-keyed directive appended AFTER the static addendum."""
+    delta_pct = ((total_equity - seed_share) / max(seed_share, 1.0)) * 100.0
+    if tier == "winner":
+        return (
+            f"TIER: WINNER (equity ${total_equity:,.0f} = {delta_pct:+.1f}% vs seed). "
+            f"SCALE: per-trade floor = 33% of your sub-bankroll (ITF_STAKE_FLOOR_PCT=0.33 "
+            f"already set). You earned the right to size up — keep executing what works."
+        )
+    if tier == "deployer":
+        return (
+            f"TIER: ACTIVE-DEPLOYER (equity ${total_equity:,.0f}, {delta_pct:+.1f}%). "
+            f"Tighten edge bar to >=0.03 on new entries. Prefer 2-3 high-conviction "
+            f"per tick over 5-6 speculative. Manage existing book to thesis completion."
+        )
+    if tier == "holder":
+        return (
+            f"TIER: HOLDER (equity ${total_equity:,.0f}, {delta_pct:+.1f}%). "
+            f"Tactical high-conviction mode. Let existing positions work; new entries "
+            f"require edge >=0.03 AND a named thesis (not just a spread). PASS freely."
+        )
+    if tier == "loser":
+        return (
+            f"TIER: PROBATION (equity ${total_equity:,.0f} = {delta_pct:+.1f}% vs seed). "
+            f"Edge >=0.05 REQUIRED on every new entry. MIN_HOLD_SEC=900 already blocks "
+            f"sub-15min daytrade closes. No churn. Rebuild discipline — one good trade "
+            f"per tick beats three speculative. 20-tick probation until you recover."
+        )
+    # idle
+    return (
+        f"TIER: IDLE (equity ${total_equity:,.0f}, 0 reserved). "
+        f"No open book. Deploy ONLY on a named setup w/ edge >=0.03. Don't force action "
+        f"just because everyone else is trading — the tape is not obligated to give you a "
+        f"setup every 90s. Pass is valid; speculative entries to 'stay active' are not."
+    )
+
+
 # ────── 2026-04-20 AGGRESSIVE-MODE: knowledge + peer-bet + milestone council ──────
 #
 # All 3 digests are lazily computed once per day and cached in STATE.
@@ -966,6 +1170,30 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
     if regime.get("low_vol_regime"):
         style_final = f"{style_final}\n\n{DEAD_TAPE_CLAUSE}"
 
+    # 2026-04-22 — PER-AGENT WINNER-AWARE ADDENDUM (static role + dynamic tier).
+    # Static addendum = router-aware role doctrine (see _WINNER_AWARE_ADDENDA above).
+    # Dynamic tier = recomputed each tick from executor state (seed share, current
+    # available, reserved-on-open). Both are appended to style_final so they land
+    # whether we're in equity hours, off-hours crypto mode, or dead-tape regime.
+    _static_addendum = _WINNER_AWARE_ADDENDA.get(persona["tid"])
+    if _static_addendum:
+        try:
+            _agent_available = executor.get_bankroll(persona["tid"])
+            _positions_map = executor._load_positions() or {}
+            _reserved = 0.0
+            for _pos in (_positions_map.get(persona["tid"]) or []):
+                if _pos.get("status") == "open":
+                    _reserved += float(_pos.get("stake_usd") or 0.0)
+            _total_eq = float(_agent_available) + _reserved
+            _meta = (executor._load_bankrolls() or {}).get("_meta", {}) or {}
+            _seed_share = float(_meta.get("seed_share_usd") or 5943.9)
+            _tier = _compute_agent_tier(persona["tid"], _seed_share, _total_eq, _reserved)
+            _tier_line = _tier_directive(_tier, _total_eq, _seed_share)
+            style_final = f"{style_final}\n\n{_static_addendum}\n{_tier_line}"
+        except Exception as _wae:
+            # Fail-open: static addendum still useful without tier classification.
+            style_final = f"{style_final}\n\n{_static_addendum}\nTIER: (unavailable: {_wae})"
+
     # 2026-04-20 AGGRESSIVE-MODE: inject knowledge digest + peer-bet digest + council plan.
     # All 3 are cached/day; token-bounded so total prompt stays well under 4k tokens.
     knowledge_digest = _build_knowledge_digest()
@@ -1214,9 +1442,15 @@ DECISIONS_DIR.mkdir(parents=True, exist_ok=True)
 def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     """Run one tick: refresh quotes, build context, call all 17 agents, execute."""
     with _lock:
+        # 2026-04-22 DIAG — tick_count pinned at 1 observed. Log id(STATE) so we
+        # know if different threads/workers see different STATE dicts.
+        _pre = STATE["tick_count"]
         STATE["tick_count"] += 1
         STATE["last_tick_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    print(f"[itf] tick #{STATE['tick_count']} starting", file=sys.stderr, flush=True)
+        _post = STATE["tick_count"]
+    print(f"[itf] tick #{_post} starting "
+          f"(pre={_pre} id(STATE)={id(STATE)} thread={threading.get_ident()})",
+          file=sys.stderr, flush=True)
     # 2026-04-22 — reconcile any new Alpaca fills FIRST so get_bankroll()
     # returns the real post-fill number when the prompt is built this tick.
     # See project_itf_compound_fix_apr22.md: 232 fills were landing with 0
@@ -1724,6 +1958,11 @@ def _build_app():
             "agents": STATE["agents"],
             "config_agents": PERSONAS,
             "quote_source": (quote_latest() or {}).get("_source"),
+            # 2026-04-22 DIAG — tick_count pin RCA. If reader and writer see
+            # different id(STATE) → different processes → single-worker premise wrong.
+            "_diag_state_id": id(STATE),
+            "_diag_reader_thread": threading.get_ident(),
+            "_diag_pid": os.getpid(),
         })
 
     @app.post("/api/run")
