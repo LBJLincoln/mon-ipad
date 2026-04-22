@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-21T16:00:00Z",
+  "updated_at": "2026-04-22T06:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {"id":"R7","priority":2,"status":"done","completed_at":"2026-04-15T19:00:00Z","commit_hash":"61c4b61394e2381ab0e1702f0581c292055b235c","owner":"local-agent-a63b2bad","subject":"Deploy S20/S21/S22 NBA islands"},
@@ -45,7 +45,26 @@
         "Political AXELROD_CANON: DMAD ANTI-CONSENSUS GATE (ticker+direction+event_type flavour) added after END AXELROD CANON"
       ],
       "py_compile": "PASS both apps (NBA 4593 lines, Political 3665 lines)",
-      "do_not_push_hf_space_yet": true
+      "do_not_push_hf_space_yet": true,
+      "push_incident": "Patches computed and py_compile verified on /tmp copies but commit to git was not made — fire-18 found and applied the missing changes."
+    },
+    {
+      "id": "tf-axelrod-verify-tune-18",
+      "priority": 27,
+      "status": "done",
+      "completed_at": "2026-04-22T06:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 18 — apply fire-17 patches actually missing from repo",
+      "gap_found": [
+        "fire-17 marked done but patches NOT committed: Political COLLECTIVE_MISSION still said 'ONE of 16'",
+        "Political AXELROD_CANON missing DMAD ANTI-CONSENSUS GATE block (NBA had it since 2026-04-21)"
+      ],
+      "approach": "GH Actions workflow axelrod-fire18-restore-patch.yml: restores Political app.py from pre-stub SHA 918cc67, applies both patches, py_compiles, commits and self-deletes",
+      "stub_incident": "create_or_update_file called with only first 17 lines (docstring) instead of full 179K file — created 794-byte stub at commit 42fac66. Workflow restores from 918cc67.",
+      "workflow_commit": "ed887643f6a672a39994bae00910d325b42583ab",
+      "py_compile": "PASS (verified locally: NBA 4625 lines, Political 3688 lines)",
+      "do_not_push_hf_space_yet": true,
+      "verification_note": "Confirmed by direct repo file read: fire-17 did not push changes to git"
     }
   ],
   "recovery_protocol": {
