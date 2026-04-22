@@ -936,6 +936,21 @@ TRADERS = {
                          "fallback_provider": "mistral:small"},
 }
 
+# ── TOP-3 COMPOUND BOOST (NBA-KELLY, 2026-04-22, day 37) ──────────────────────
+# Per-agent Kelly/per-bet cap override. Applied on top of _tiered_risk["bet_cap"]
+# as the FINAL cap (replaces tier cap when present). Top-3 survivors get bigger
+# headroom to compound conviction; over-traders on probation to kill volume
+# drag. Rest of roster falls through to tier default. Mirrors POL 2026-04-22
+# champion-compound lever (commit fc1f62b65).
+_AGENT_KELLY_OVERRIDE: Dict[str, float] = {
+    "llama-contra":      0.18,   # $123 top, 60% pass rate — bet bigger when conviction fires
+    "gemini-tact":       0.15,   # $103 #2, 79% pass rate
+    "gemini-anl":        0.15,   # $77 #3, 78% pass rate
+    "qwen-arb":          0.12,   # $95, 97% pass rate — ultra-selective
+    "mistral-small":     0.04,   # $22, 66 bets over-trader, PROBATION
+    "mistral-ministral": 0.04,   # $24, 54 bets over-trader, PROBATION
+}
+
 AGENT_SYSTEM_PROMPTS = {
     # ─── OVER-TRADERS (HARD LIMIT) ─────────────────────────────────────────
     # Day 27 check-in: you are bleeding from volume, not from picks. Cool off.
@@ -3598,6 +3613,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 # diversify. Post-filter pads to min_allocs/min_cats/min_games.
                 tier = _tiered_risk(ts["bankroll"])
                 MAX_PCT_PER_BET = tier["bet_cap"]
+                # 2026-04-22 NBA-KELLY top-3 compound boost: per-agent override
+                # replaces tier cap (top-3 2×, over-traders probation). No-op if
+                # tid absent from _AGENT_KELLY_OVERRIDE. Mirrors POL fc1f62b65.
+                _agent_cap = _AGENT_KELLY_OVERRIDE.get(tid)
+                if _agent_cap is not None:
+                    MAX_PCT_PER_BET = _agent_cap
                 MIN_BET_PCT = tier["bet_floor"]
                 MAX_PCT_PER_DAY = 0.98       # near-all-in ceiling (1.0 would break bankrupt-check)
                 MIN_EDGE = tier["min_edge"]
