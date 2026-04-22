@@ -1217,6 +1217,18 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         STATE["tick_count"] += 1
         STATE["last_tick_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"[itf] tick #{STATE['tick_count']} starting", file=sys.stderr, flush=True)
+    # 2026-04-22 — reconcile any new Alpaca fills FIRST so get_bankroll()
+    # returns the real post-fill number when the prompt is built this tick.
+    # See project_itf_compound_fix_apr22.md: 232 fills were landing with 0
+    # realized PnL credited because there was no broker→ledger path.
+    try:
+        _rc = executor.reconcile_broker_fills(
+            lookback_min=int(os.environ.get("ITF_RECON_LOOKBACK_MIN", "15"))
+        )
+        if _rc.get("fills_processed", 0) or _rc.get("closes_applied", 0):
+            print(f"[itf] fill-reconcile: {_rc}", file=sys.stderr, flush=True)
+    except Exception as _rce:
+        print(f"[itf] fill-reconcile err (non-fatal): {_rce}", file=sys.stderr, flush=True)
     # 2026-04-21 — refresh stale broker statuses BEFORE anything else so
     # /api/status + positions.json reflect real fills, not cached pending_new.
     # Addresses user report: "ITF seems slow, orders not moving at all".
@@ -1848,6 +1860,16 @@ def _build_app():
             "agents": agents,
             "meta": executor._load_bankrolls().get("_meta", {}),
         })
+
+    @app.get("/api/reconcile")
+    def api_reconcile(lookback_min: int = 60):
+        """On-demand broker-fill reconciliation. GET so it can be curled from
+        cron/dashboards. Default lookback 60 min (tick default is 15)."""
+        try:
+            stats = executor.reconcile_broker_fills(lookback_min=int(lookback_min))
+            return JSONResponse({"ok": True, **stats})
+        except Exception as e:
+            return JSONResponse({"ok": False, "error": str(e)[:400]}, status_code=500)
 
     @app.post("/api/reset-bankrolls")
     def api_reset_bankrolls():

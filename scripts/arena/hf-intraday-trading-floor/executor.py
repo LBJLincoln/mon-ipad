@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import os
 import time
+import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -22,6 +23,7 @@ ORDERS_JSONL = REPO / "data" / "intraday" / "dry-run-orders.jsonl"
 POSITIONS_PATH = REPO / "data" / "intraday" / "positions.json"
 BANKROLLS_PATH = REPO / "data" / "intraday" / "agent_bankrolls.json"
 LEDGER_JSONL = REPO / "data" / "intraday" / "agent_ledger.jsonl"
+RECON_CURSOR_PATH = REPO / "data" / "intraday" / "fill_reconciliation_cursor.json"
 POSITIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 MAX_OPEN_PER_AGENT = 5  # 2026-04-21: 3→5, 14×5=70 max positions (+67%)
@@ -243,8 +245,19 @@ def _asset_class(ticker: str) -> str:
     return "equity"
 
 
+def _make_client_order_id(agent_tid: str, ticker: str) -> str:
+    """2026-04-22 — every outbound order gets a deterministic client_order_id so
+    the reconciler can trace a broker fill back to the right agent even if the
+    local positions.json is wiped. Format: "<tid>:<TICKER>:<uuid-hex-8>".
+    Alpaca caps this at 128 chars; normalize ticker (no "/" etc) to be safe."""
+    safe_ticker = (ticker or "").replace("/", "-").replace(" ", "")[:16].upper()
+    safe_tid = (agent_tid or "anon").replace(":", "-")[:32]
+    return f"{safe_tid}:{safe_ticker}:{uuid.uuid4().hex[:8]}"
+
+
 def _alpaca_place_bracket(ticker: str, qty: float, stake: float, last: float,
-                          side: str, stop_price: float, tp_price: float) -> Dict[str, Any]:
+                          side: str, stop_price: float, tp_price: float,
+                          client_order_id: Optional[str] = None) -> Dict[str, Any]:
     """Place an Alpaca paper order.
 
     Routing (canonical alpaca-py examples pattern):
@@ -297,6 +310,8 @@ def _alpaca_place_bracket(ticker: str, qty: float, stake: float, last: float,
                 "type": "market",
                 "time_in_force": "day",
             }
+    if client_order_id:
+        payload["client_order_id"] = client_order_id
     r = requests.post(
         "https://paper-api.alpaca.markets/v2/orders",
         headers=headers,
@@ -356,6 +371,7 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
         tp_price = last * (1 - tp_pct)
         alp_side = "sell"
 
+    client_order_id = _make_client_order_id(agent_tid, ticker)
     entry = {
         "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "agent_tid": agent_tid,
@@ -371,11 +387,14 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
         "thesis": order.get("thesis", "")[:500],
         "status": "open",
         "mode": "live" if live_mode() else "dry_run",
+        "client_order_id": client_order_id,
     }
 
     if live_mode():
         try:
-            resp = _alpaca_place_bracket(ticker, qty, stake, last, alp_side, stop_price, tp_price)
+            resp = _alpaca_place_bracket(ticker, qty, stake, last, alp_side,
+                                         stop_price, tp_price,
+                                         client_order_id=client_order_id)
             entry["broker_order_id"] = resp.get("id")
             entry["broker_status"] = resp.get("status")
             entry["broker_class"] = resp.get("order_class") or ("notional" if resp.get("notional") else "bracket")
@@ -740,6 +759,308 @@ def pnl_snapshot(quote_fn=None) -> Dict[str, Any]:
 
 
 MIN_HOLD_SEC = int(os.environ.get("ITF_MIN_HOLD_SEC", "900"))  # 15 min default, kills daytrade churn that drained BP to $1.9K
+
+
+# ───── 2026-04-22 BROKER-FILL RECONCILIATION ─────
+# The submit path reserves stake from the agent's sub-bankroll, but until
+# 2026-04-22 no code path credited realized PnL back from Alpaca fills, so every
+# /api/bankrolls read still showed the cold-start seed. reconcile_broker_fills()
+# polls Alpaca /v2/account/activities/FILL, matches fills to local positions via
+# broker_order_id, and credits realized_pnl to the right agent on closing sides.
+# A cursor at data/intraday/fill_reconciliation_cursor.json prevents double-count.
+
+
+def _load_recon_cursor() -> Dict[str, Any]:
+    if not RECON_CURSOR_PATH.exists():
+        return {"seen_ids": [], "last_run_at": None}
+    try:
+        d = json.loads(RECON_CURSOR_PATH.read_text())
+        if not isinstance(d, dict):
+            return {"seen_ids": [], "last_run_at": None}
+        d.setdefault("seen_ids", [])
+        d.setdefault("last_run_at", None)
+        return d
+    except Exception:
+        return {"seen_ids": [], "last_run_at": None}
+
+
+def _save_recon_cursor(cur: Dict[str, Any]) -> None:
+    # Keep seen_ids bounded — 2k most-recent is plenty for a ~15min lookback.
+    seen = cur.get("seen_ids") or []
+    if len(seen) > 2000:
+        cur["seen_ids"] = seen[-2000:]
+    RECON_CURSOR_PATH.parent.mkdir(parents=True, exist_ok=True)
+    RECON_CURSOR_PATH.write_text(json.dumps(cur, indent=2, default=str))
+
+
+def _fetch_fill_activities(lookback_min: int) -> List[Dict[str, Any]]:
+    """GET /v2/account/activities/FILL?after=<iso>&direction=desc — stdlib only."""
+    if not live_mode():
+        return []
+    key = os.environ.get("ALPACA_PAPER_KEY")
+    secret = os.environ.get("ALPACA_PAPER_SECRET")
+    if not (key and secret):
+        return []
+    import urllib.parse
+    import urllib.request
+    after = (datetime.now(timezone.utc) - timedelta(minutes=max(1, lookback_min))).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
+    qs = urllib.parse.urlencode({
+        "activity_types": "FILL",
+        "after": after,
+        "direction": "desc",
+        "page_size": "100",
+    })
+    url = f"https://paper-api.alpaca.markets/v2/account/activities?{qs}"
+    req = urllib.request.Request(
+        url, headers={"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as r:  # noqa: S310
+            body = r.read().decode("utf-8")
+            data = json.loads(body or "[]")
+            return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+def _index_positions_by_order_id(
+    positions: Dict[str, List[Dict[str, Any]]]
+) -> Dict[str, Dict[str, Any]]:
+    """Build {broker_order_id -> position_ref} + {client_order_id -> position_ref}.
+    position_ref is a dict {"agent_tid": ..., "position": <mutable row>}."""
+    idx: Dict[str, Dict[str, Any]] = {}
+    for agent_tid, rows in (positions or {}).items():
+        for p in (rows or []):
+            oid = p.get("broker_order_id")
+            cid = p.get("client_order_id")
+            if oid:
+                idx[str(oid)] = {"agent_tid": agent_tid, "position": p}
+            if cid:
+                idx[str(cid)] = {"agent_tid": agent_tid, "position": p}
+    return idx
+
+
+def reconcile_broker_fills(lookback_min: int = 15) -> Dict[str, Any]:
+    """Poll Alpaca FILL activities and credit realized PnL back to per-agent
+    sub-bankrolls on closing fills (FIFO within a matched position).
+
+    Called at the top of every tick so executor.get_bankroll(tid) reflects true
+    post-fill balance before the next prompt is built.
+
+    Behavior:
+      * In dry-run mode, no-op (returns zeroed stats).
+      * Fills already in cursor.seen_ids are skipped.
+      * A fill whose order_id (or client_order_id) matches a local open position
+        with an OPPOSITE broker side is treated as a CLOSE:
+            - computes realized_pnl = qty_closed * (fill_px - entry_px) * direction
+            - credits (stake_portion + realized_pnl) to the agent's bankroll
+            - marks the position status="closed_by_fill" when the full qty closed
+        A same-side fill is just an open-fill confirmation — updates
+        filled_avg_price/filled_qty on the position, no bankroll move (the stake
+        was already reserved at submit).
+
+    Returns a stats dict:
+      {
+        "fills_processed": N,
+        "closes_applied":  K,
+        "bankroll_delta_by_agent": {tid: float_delta_usd},
+        "unmatched_fills": M,
+        "skipped_seen":    S,
+        "mode":            "live" | "dry_run",
+      }
+    """
+    stats: Dict[str, Any] = {
+        "fills_processed": 0,
+        "closes_applied": 0,
+        "bankroll_delta_by_agent": {},
+        "unmatched_fills": 0,
+        "skipped_seen": 0,
+        "mode": "live" if live_mode() else "dry_run",
+    }
+    if not live_mode():
+        return stats
+
+    cursor = _load_recon_cursor()
+    seen: List[str] = list(cursor.get("seen_ids") or [])
+    seen_set = set(seen)
+
+    fills = _fetch_fill_activities(lookback_min)
+    if not fills:
+        cursor["last_run_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        _save_recon_cursor(cursor)
+        return stats
+
+    positions = _load_positions()
+    idx = _index_positions_by_order_id(positions)
+    dirty = False
+
+    # Alpaca returns fills newest-first when direction=desc; process oldest-first
+    # so FIFO closes are applied in trade order.
+    for fill in reversed(fills):
+        fill_id = str(fill.get("id") or "")
+        if not fill_id:
+            continue
+        if fill_id in seen_set:
+            stats["skipped_seen"] += 1
+            continue
+        seen_set.add(fill_id)
+        seen.append(fill_id)
+
+        order_id = str(fill.get("order_id") or "")
+        client_order_id = str(fill.get("client_order_id") or "")
+        symbol = (fill.get("symbol") or "").upper()
+        fill_side = (fill.get("side") or "").lower()  # buy | sell | sell_short
+        try:
+            qty_filled = float(fill.get("qty") or 0)
+        except Exception:
+            qty_filled = 0.0
+        try:
+            fill_px = float(fill.get("price") or 0)
+        except Exception:
+            fill_px = 0.0
+
+        match = idx.get(order_id) or idx.get(client_order_id)
+        stats["fills_processed"] += 1
+
+        if not match:
+            # Fill we don't know about (e.g. bracket child stop-loss legs Alpaca
+            # generates internally). Log but don't credit — we can't safely pick
+            # an agent without a position link.
+            stats["unmatched_fills"] += 1
+            _append_ledger({
+                "event": "unmatched_fill",
+                "source": "broker_reconcile",
+                "fill_id": fill_id,
+                "order_id": order_id,
+                "client_order_id": client_order_id,
+                "ticker": symbol,
+                "side": fill_side,
+                "qty": qty_filled,
+                "price": fill_px,
+            })
+            continue
+
+        agent_tid = match["agent_tid"]
+        pos = match["position"]
+        pos_side = (pos.get("side") or "").lower()  # long | short
+        # Broker "sell" (for a long) OR "buy" (for a short) = closing fill.
+        is_close = (
+            (pos_side == "long" and fill_side == "sell")
+            or (pos_side == "short" and fill_side in ("buy", "buy_to_cover"))
+        )
+        is_open_confirm = (
+            (pos_side == "long" and fill_side == "buy")
+            or (pos_side == "short" and fill_side in ("sell", "sell_short"))
+        )
+
+        if is_open_confirm:
+            # Mark the fill on the position so subsequent MTM reads are honest.
+            pos["filled_avg_price"] = fill_px or pos.get("filled_avg_price")
+            # Accumulate filled_qty across partial fills.
+            prev_filled = float(pos.get("filled_qty") or 0)
+            pos["filled_qty"] = round(prev_filled + qty_filled, 6)
+            pos["filled_at"] = fill.get("transaction_time") or pos.get("filled_at")
+            if (pos.get("broker_status") or "").lower() != "filled":
+                pos["broker_status"] = "filled" if pos["filled_qty"] >= float(pos.get("qty") or 0) else "partially_filled"
+            dirty = True
+            _append_ledger({
+                "event": "open_fill_confirm",
+                "source": "broker_reconcile",
+                "fill_id": fill_id,
+                "ts": fill.get("transaction_time"),
+                "agent_tid": agent_tid,
+                "ticker": symbol,
+                "side": fill_side,
+                "qty": qty_filled,
+                "price": fill_px,
+                "realized_pnl": 0.0,
+            })
+            continue
+
+        if not is_close:
+            # Side doesn't make sense vs our recorded pos_side (e.g. recorded as
+            # long but fill came back as sell_short). Log and skip — surfaces as
+            # unmatched for audit, cursor still advances.
+            stats["unmatched_fills"] += 1
+            _append_ledger({
+                "event": "side_mismatch",
+                "source": "broker_reconcile",
+                "fill_id": fill_id,
+                "agent_tid": agent_tid,
+                "pos_side": pos_side,
+                "fill_side": fill_side,
+                "ticker": symbol,
+            })
+            continue
+
+        # CLOSING FILL: credit stake_portion + realized_pnl to the agent.
+        entry_px = float(pos.get("entry_price") or pos.get("filled_avg_price") or 0)
+        total_qty = float(pos.get("qty") or 0) or qty_filled
+        if total_qty <= 0:
+            stats["unmatched_fills"] += 1
+            continue
+        portion = min(1.0, qty_filled / total_qty) if total_qty else 1.0
+        stake = float(pos.get("stake_usd") or 0)
+        stake_portion = round(stake * portion, 2)
+        if pos_side == "long":
+            pnl = qty_filled * (fill_px - entry_px)
+        else:
+            pnl = qty_filled * (entry_px - fill_px)
+        pnl = round(pnl, 2)
+        credit = stake_portion + pnl
+
+        # Don't double-credit: if close_expired/close_position already credited
+        # this position (status starts with "closed"), skip the bankroll write
+        # but still ledger the broker fill for audit.
+        already_closed = str(pos.get("status") or "").startswith("closed")
+        if not already_closed:
+            credit_bankroll(agent_tid, credit, meta={
+                "event_type": "broker_reconcile_close",
+                "source": "broker_reconcile",
+                "fill_id": fill_id,
+                "ticker": symbol,
+                "qty_closed": qty_filled,
+                "fill_price": fill_px,
+                "entry_price": entry_px,
+                "stake_portion_returned": stake_portion,
+                "realized_pnl": pnl,
+            })
+            stats["bankroll_delta_by_agent"][agent_tid] = round(
+                stats["bankroll_delta_by_agent"].get(agent_tid, 0.0) + credit, 2
+            )
+            # Mark position closed when the full qty has been sold off.
+            if qty_filled >= total_qty - 1e-6:
+                pos["status"] = "closed_by_fill"
+                pos["closed_at"] = fill.get("transaction_time") or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                pos["realized_pnl_usd"] = pnl
+                pos["exit_price"] = fill_px
+            dirty = True
+
+        _append_ledger({
+            "event": "close_fill",
+            "source": "broker_reconcile",
+            "fill_id": fill_id,
+            "ts": fill.get("transaction_time"),
+            "agent_tid": agent_tid,
+            "ticker": symbol,
+            "side": fill_side,
+            "qty": qty_filled,
+            "price": fill_px,
+            "entry_price": entry_px,
+            "realized_pnl": pnl,
+            "stake_portion_returned": stake_portion,
+            "already_closed_locally": already_closed,
+        })
+        stats["closes_applied"] += 1
+
+    if dirty:
+        _save_positions(positions)
+    cursor["seen_ids"] = seen
+    cursor["last_run_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    _save_recon_cursor(cursor)
+    return stats
 
 
 def close_position(agent_tid: str, ticker: str) -> Dict[str, Any]:
