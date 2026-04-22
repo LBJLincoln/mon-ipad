@@ -1,0 +1,88 @@
+{
+  "proposal_id": "2026-04-22-08h-stacked-ensemble-nature2025",
+  "filed_at": "2026-04-22T08:00:00Z",
+  "filed_by": "cloud-brain-sonnet-4.6",
+  "source_papers": [
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "year": 2025,
+      "journal": "Nature Scientific Reports"
+    },
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "year": 2026,
+      "journal": "MDPI Information"
+    },
+    {
+      "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+      "url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "year": 2025,
+      "journal": "MDPI Computation",
+      "key_finding": "CNN model Brier=0.221 for NBA"
+    }
+  ],
+  "motivation": "Nature 2025 stacked ensemble (NB+AdaBoost+MLP+KNN+XGB+DT+LR) reveals two CPU-viable model types missing from our GA pool: AdaBoost and GaussianNB. MDPI 2026 uncertainty-aware paper shows LR reaching Brier=0.199 with rolling-form indicators + spatial shot-chart embeddings — our LR islands (S15 0.22325, S17 0.22289) have a 0.024 gap best addressed via feature engineering, not calibration.",
+  "fleet_context": {
+    "nba_live_best": 0.22154,
+    "nba_historical_best": 0.22073,
+    "nba_sota_lr_target": 0.199,
+    "gap_lr": 0.023,
+    "s14_top5_internal": "0.21966-0.22105 with extra_trees/RF post-diversify — promising internal signal"
+  },
+  "proposals": [
+    {
+      "id": "P1-adaboost-model-type",
+      "title": "Add AdaBoost as GA model type",
+      "priority": "MEDIUM",
+      "description": "Add sklearn.ensemble.AdaBoostClassifier with n_estimators∈[50,200] and learning_rate∈[0.05,1.0] to the island GA MODEL_TYPES pool. AdaBoost uses a different inductive bias than gradient boosting (XGB/LGB) and random forests — adds population diversity. Fits in ~2s on CPU for 30K games.",
+      "implementation": {
+        "file": "hf-space/app.py (island init/mutate/train blocks)",
+        "changes": [
+          "Add 'adaboost' to MODEL_TYPES list",
+          "Training: AdaBoostClassifier(n_estimators=int(Uniform(50,200)), learning_rate=LogUniform(0.05,1.0))",
+          "Wrap with CalibratedClassifierCV(cv=5, method='sigmoid') for probability calibration"
+        ],
+        "test_island": "S14 (post-diversify, most diverse — gen 543, extra_trees dominant)",
+        "cpu_feasibility": "YES — 100 estimators × 30K games ≈ 1.5s"
+      },
+      "expected_brier_improvement": "0.001-0.003 via GA population diversity increase",
+      "cross_port_to_political": true
+    },
+    {
+      "id": "P2-rolling-form-feature-audit",
+      "title": "Audit + expand rolling-form feature group in features/engine.py",
+      "priority": "HIGH",
+      "description": "MDPI 2026 shows LR Brier=0.199 uses rolling-form indicators as a key feature group. Our feature engine v3.1 has 54 categories / ~7213 candidates. Audit to confirm rolling-form coverage. If missing: last_5_win_pct, last_10_win_pct, home_away_form_split_last5, point_diff_trend_7d, opponent_form_last_5. These are the highest-value gap fillers to close the 0.023 LR Brier gap.",
+      "implementation": {
+        "file": "features/engine.py",
+        "changes": [
+          "Search categories for 'rolling', 'form', 'last_n' coverage",
+          "If <5 rolling-form features exist: add as new category (target: 5-10 features)",
+          "Features: last_5_win_pct, last_10_win_pct, last_5_home_win_pct, last_5_away_win_pct, point_diff_last5_avg, opponent_last5_win_pct, back_to_back_flag, days_rest"
+        ],
+        "parity_note": "Must update both features/engine.py AND hf-space/features/engine.py — run engine parity check after"
+      },
+      "expected_brier_improvement": "0.003-0.010 for LR-based islands (S15, S17)",
+      "cross_port_to_political": true
+    },
+    {
+      "id": "P3-naive-bayes-model-type",
+      "title": "Add GaussianNB as fast diversity seed in GA",
+      "priority": "LOW",
+      "description": "GaussianNB fits in <0.1s, solo Brier ~0.25 but contributes to stacking diversity. Useful as a meta-learner input in venn_abers_fusion islands (S22). Nature 2025 uses NB as one of 7 base learners.",
+      "implementation": {
+        "changes": ["Add 'naive_bayes' to MODEL_TYPES", "GaussianNB() — no calibration wrapper needed (probabilistic by design)"]
+      },
+      "expected_brier_improvement": "Negligible solo; useful as stacking base learner",
+      "cross_port_to_political": false
+    }
+  ],
+  "immediate_action": "P2 (rolling-form audit) is highest impact and non-breaking. DR FRANKENSTEIN should audit features/engine.py category list for rolling-form coverage before next evolution cycle. P1 (AdaBoost) is safe to A/B test on S14.",
+  "sources": [
+    "https://www.nature.com/articles/s41598-025-13657-1",
+    "https://www.mdpi.com/2078-2489/17/1/56",
+    "https://www.mdpi.com/2079-3197/13/10/230"
+  ]
+}

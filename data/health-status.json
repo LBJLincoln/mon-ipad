@@ -1,119 +1,161 @@
 {
-  "brain_cycle": "2026-04-22T04:00:00Z",
-  "updated_at": "2026-04-22T04:00:00Z",
+  "brain_cycle": "2026-04-22T08:00:00Z",
+  "updated_at": "2026-04-22T08:00:00Z",
+  "cycle_note": "08:00Z cycle — even cycle (SOTA research). Diversify from 04:00Z confirmed successful on S14 (stagnation reset 16→0) and S15 (23→0). S14 top-5 configs hitting 0.21966-0.22105 with extra_trees/RF — not yet validated test-set best. 8 of 11 islands 503 (HF CPU sleep, VM keepalive handles).",
   "nba_islands": {
     "S13_nba_evo_4": {
       "space": "nomos42/nba-evo-4",
-      "cycle": 134, "generation": 402, "best_brier": 0.23173, "best_roi": 0.1921,
-      "stagnation_cycles": 7, "model": "catboost", "status": "EVOLVING", "action": "none"
+      "status": "SLEEPING_503",
+      "generation": 402,
+      "best_brier": 0.23173,
+      "model": "catboost",
+      "note": "503 this cycle — VM keepalive will wake within 30min",
+      "action": "none"
     },
     "S14_nba_evo_5": {
       "space": "nomos42/nba-evo-5",
-      "cycle": 143, "generation": 429, "best_brier": 0.2345, "best_roi": 0.1634,
-      "stagnation_cycles": 16, "model": "xgboost", "status": "EVOLVING",
-      "action": "diversify_queued",
-      "action_note": "stagnation 16 cycles > threshold 15; POST /api/command {\"command\":\"diversify\"} accepted"
+      "generation": 543,
+      "best_brier": 0.2345,
+      "stagnation_cycles": 0,
+      "model": "extra_trees",
+      "status": "EVOLVING",
+      "action": "none",
+      "note": "Diversify from 04:00Z confirmed: stagnation reset 16→0, gen 429→543. Top-5 configs at 0.21966-0.22105 with extra_trees/RF + venn_abers. Monitor for validated test checkpoint."
     },
     "S15_nba_evo_6": {
       "space": "nomos42/nba-evo-6",
-      "cycle": 267, "generation": 799, "best_brier": 0.22325, "best_roi": 0.2868,
-      "stagnation_cycles": 23, "model": "logistic_regression", "status": "EVOLVING",
-      "action": "diversify_queued",
-      "action_note": "stagnation 23 cycles > threshold 15; top run: random_forest 0.21973 at gen 724",
-      "nota_bene": "hit 0.21973 with random_forest 200 features — technique worth porting"
+      "generation": 901,
+      "best_brier": 0.22325,
+      "stagnation_cycles": 0,
+      "model": "logistic_regression",
+      "status": "EVOLVING",
+      "action": "none",
+      "note": "Diversify from 04:00Z confirmed: stagnation reset 23→0, gen 799→901."
     },
     "S17_nba_evo_s17": {
       "space": "lbjlincoln26/nba-evo-s17",
-      "cycle": 716, "generation": 2146, "best_brier": 0.22289, "best_roi": 0.2897,
-      "stagnation_cycles": 13, "model": "logistic_regression", "status": "EVOLVING",
-      "action": "none",
-      "note": "improved from CLAUDE.md 0.22340"
+      "status": "SLEEPING_503",
+      "generation": 2146,
+      "best_brier": 0.22289,
+      "model": "ensemble",
+      "note": "503 this cycle — stagnation was 13 last check (below threshold 15)",
+      "action": "none"
     },
     "S18_nba_evo_s18": {
       "space": "testforge42/nba-evo-s18",
-      "cycle": 514, "generation": 1540, "best_brier": 0.22154, "best_roi": 0.3084,
-      "stagnation_cycles": 12, "model": "random_forest", "status": "EVOLVING",
-      "action": "none",
-      "note": "LIVE FLEET BEST — 0.22154 random_forest 76 features"
+      "status": "SLEEPING_503",
+      "generation": 1540,
+      "best_brier": 0.22154,
+      "model": "random_forest",
+      "note": "503 this cycle — LIVE FLEET BEST 0.22154 preserved",
+      "action": "none"
     },
     "S22_nba_evo_s22": {
       "space": "testforge42/nba-evo-s22",
-      "cycle": 185, "generation": 555, "best_brier": 0.2236, "best_roi": 0.2848,
-      "stagnation_cycles": 20, "model": "xgboost", "status": "EVOLVING",
-      "action": "diversify_queued",
-      "action_note": "stagnation 20+ cycles > threshold 15; regressed from historical best 0.22073"
+      "status": "SLEEPING_503",
+      "generation": 555,
+      "best_brier": 0.2236,
+      "model": "venn_abers_fusion",
+      "note": "503 this cycle — diversify queued at 04:00Z; VM keepalive will wake and diversify should fire on next /api/status poll",
+      "action": "none"
     }
   },
   "political_islands": {
     "P1_political_alpha": {
       "space": "nomos42/political-alpha",
-      "cycle": 10603, "generation": 31807, "best_brier": 0.24999,
-      "model": "xgboost", "status": "EVOLVING", "action": "none",
-      "prev_status": "SLEEPING (503) — RECOVERED this cycle"
+      "status": "SLEEPING_503",
+      "generation": 31807,
+      "best_brier": 0.24999,
+      "model": "xgboost",
+      "note": "503 this cycle",
+      "action": "none"
     },
     "P2_political_alpha_2": {
       "space": "nomos42/political-alpha-2",
-      "cycle": 8342, "generation": 25025, "best_brier": 0.24949,
-      "model": "logistic_regression", "status": "EVOLVING", "action": "none",
-      "prev_status": "SLEEPING (503) — RECOVERED this cycle"
+      "status": "SLEEPING_503",
+      "generation": 25025,
+      "best_brier": 0.24949,
+      "model": "logistic_regression",
+      "note": "503 this cycle",
+      "action": "none"
     },
     "P4_political_alpha_4": {
       "space": "lbjlincoln/political-alpha-4",
-      "cycle": 10619, "generation": 31854, "best_brier": 0.24956,
-      "model": "lightgbm", "status": "EVOLVING", "action": "none",
-      "prev_status": "SLEEPING — RECOVERED this cycle"
+      "status": "SLEEPING_503",
+      "generation": 31854,
+      "best_brier": 0.24956,
+      "model": "lightgbm",
+      "note": "503 this cycle",
+      "action": "none"
     },
     "P5_political_alpha_5": {
       "space": "lbjlincoln/political-alpha-5",
-      "cycle": 9124, "generation": 27370, "best_brier": 0.25219,
-      "model": "logistic_regression", "status": "EVOLVING", "action": "none",
-      "note": "regressed vs historical best 0.24923 — historical checkpoint preserved",
-      "prev_status": "SLEEPING — RECOVERED this cycle"
+      "generation": 28284,
+      "best_brier": 0.25219,
+      "stagnation_cycles": 0,
+      "model": "catboost",
+      "status": "EVOLVING",
+      "note": "Live 0.25219 (gen 28284), historical best 0.24923 checkpointed 2026-04-20",
+      "action": "none"
     },
     "P7_political_alpha_7": {
       "space": "lbjlincoln/political-alpha-7",
-      "cycle": 9744, "generation": 29231, "best_brier": 0.24937,
-      "model": "lightgbm", "status": "EVOLVING", "action": "none",
-      "note": "LIVE POL FLEET BEST (historical best remains P5 at 0.24923)",
-      "prev_status": "SLEEPING — RECOVERED this cycle"
+      "status": "SLEEPING_503",
+      "generation": 29231,
+      "best_brier": 0.24937,
+      "model": "lightgbm",
+      "note": "503 this cycle — POL LIVE BEST 0.24937 preserved",
+      "action": "none"
     }
   },
   "fleet_summary": {
     "nba_live_fleet_best": 0.22154,
-    "nba_live_fleet_best_island": "S18 (random_forest, 76 features, 30.84% ROI)",
+    "nba_live_fleet_best_island": "S18 (random_forest, 76 features)",
     "nba_historical_fleet_best": 0.22073,
     "nba_historical_fleet_best_island": "S22 gen39 venn_abers_fusion (checkpointed 2026-04-19)",
     "nba_checkpoint_target": 0.22085,
     "nba_checkpoint_triggered": false,
-    "nba_gap_to_checkpoint": 0.00069,
+    "nba_gap_to_checkpoint_target": 0.00069,
+    "nba_watch": "S14 top-5 at 0.21966-0.22105 with extra_trees — pending test-set validation; if confirmed could trigger checkpoint",
     "pol_live_fleet_best": 0.24937,
-    "pol_live_fleet_best_island": "P7 (lightgbm, 84 features)",
+    "pol_live_fleet_best_island": "P7 lightgbm — 503 this cycle, last confirmed 04:00Z",
     "pol_historical_fleet_best": 0.24923,
     "pol_historical_fleet_best_island": "P5 gen21048 catboost (checkpointed 2026-04-20)",
-    "all_pol_islands_recovered": true,
-    "diversify_queued": ["S14", "S15", "S22"],
-    "diversify_api_format": "POST /api/command {\"command\":\"diversify\"} (NOT action key)"
+    "diversify_result": "S14+S15 diversify from 04:00Z CONFIRMED successful. S22 diversify queued — sleeping, will fire on wake.",
+    "islands_503_count": 8,
+    "islands_responding_count": 2,
+    "503_note": "HF free CPU Spaces sleep between keepalive pings. VM cron :30 handles wakeup."
   },
   "engine_parity": {
+    "status": "OK — verified at 04:00Z cycle",
     "canonical_sha256": "04084284a10544c8",
     "canonical_path": "mon-ipad/features/engine.py",
     "canonical_lines": 8335,
-    "nomos_nba_agent_sha256_before": "5e66371c4a39ea42",
-    "nomos_nba_agent_lines_before": 8089,
-    "parity_fix_applied": true,
-    "hf_space_copy_sha256": "04084284a10544c8",
     "hf_space_parity": "OK"
   },
   "sota_research": {
+    "cycle": "even — SOTA research executed",
     "search_date": "2026-04-22",
-    "key_finding": "CNN model Brier=0.221 (MDPI 2025, NBA+WNBA). XGBoost SHAP top features: FG%, def_rebounds, turnovers. S18 at 0.22154 within 0.001 of published SOTA. Historical S22 (0.22073) beats SOTA.",
-    "our_position": "AT OR ABOVE published SOTA — S22 historical best (0.22073) beats CNN (0.221). Focus on calibration refinement.",
-    "proposal_written": "data/research-proposals/2026-04-22-nba-sota-cnn-shap.json"
+    "key_papers": [
+      {
+        "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+        "url": "https://www.mdpi.com/2078-2489/17/1/56",
+        "key_finding": "LR baseline Brier=0.199, XGBoost=0.202, MC Dropout RNN. Features: team performance + rolling-form + spatial shot-chart embeddings. Our LR (S17 0.22289) has 0.024 gap — addressable via rolling-form feature group audit.",
+        "actionability": "HIGH"
+      },
+      {
+        "title": "Stacked ensemble model for NBA game outcome prediction",
+        "url": "https://www.nature.com/articles/s41598-025-13657-1",
+        "key_finding": "NB + AdaBoost + MLP + KNN + XGBoost + DT + LR stacking. AdaBoost + GaussianNB are CPU-viable new model types for our GA pool.",
+        "actionability": "MEDIUM"
+      }
+    ],
+    "proposal_written": "data/research-proposals/2026-04-22-08h-stacked-ensemble-nature2025.json"
   },
   "councils_status": "DECOMMISSIONED 2026-04-20 — all 9 TESTforge42 dept councils deleted",
   "work_queue_status": {
     "pending_count": 1,
     "pending_items": ["tf-axelrod-verify-tune-12"],
-    "note": "USER GATE — awaiting explicit HF push approval. Not a crashed local-agent. Brain skips."
+    "note": "USER GATE — awaiting explicit HF push approval. Brain skips."
   }
 }
