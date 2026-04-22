@@ -63,15 +63,31 @@ POWER_LIQUIDITY_FLOOR_USD = 50_000_000  # $50M daily dollar volume = liquid enou
                                           # to exit any single-agent stake in seconds
 
 
-def _in_power_window(now: Optional[datetime] = None) -> bool:
-    """Return True if current UTC time is inside POWER-DEPLOY window (weekday)."""
+def _current_power_mode(
+    now: Optional[datetime] = None,
+    quotes: Optional[Dict[str, Dict[str, Any]]] = None,
+) -> Optional[str]:
+    """Return which power mode is active:
+        'equity_power' — 14:30-16:30 UTC weekdays. Applies to POWER_AGENTS only,
+                         any ticker whose runtime $-vol ≥ $50M qualifies.
+        'crypto_247'   — equity markets CLOSED + crypto tape moving. Applies to
+                         ALL 17 agents, crypto pairs only. Keeps compounding
+                         24/7 including weekends.
+        None           — no forced floor.
+    """
     now = now or datetime.now(timezone.utc)
-    if now.weekday() >= 5:
-        return False
-    cur_min = now.hour * 60 + now.minute
-    start_min = POWER_WINDOW_START[0] * 60 + POWER_WINDOW_START[1]
-    end_min = POWER_WINDOW_END[0] * 60 + POWER_WINDOW_END[1]
-    return start_min <= cur_min <= end_min
+    # Equity power-window (weekday first 2h of US open)
+    if now.weekday() < 5:
+        cur_min = now.hour * 60 + now.minute
+        start_min = POWER_WINDOW_START[0] * 60 + POWER_WINDOW_START[1]
+        end_min = POWER_WINDOW_END[0] * 60 + POWER_WINDOW_END[1]
+        if start_min <= cur_min <= end_min:
+            return "equity_power"
+    # Off-hours crypto window (equity closed, crypto tape active)
+    equity_open = now.weekday() < 5 and 8 <= now.hour < 24
+    if not equity_open and quotes and _off_hours_crypto_signal(quotes):
+        return "crypto_247"
+    return None
 
 
 def _is_power_liquid(ticker: str, quote: Optional[Dict[str, Any]]) -> bool:
@@ -89,6 +105,15 @@ def _is_power_liquid(ticker: str, quote: Optional[Dict[str, Any]]) -> bool:
     except (TypeError, ValueError):
         return False
     return last > 0 and vol > 0 and (last * vol) >= POWER_LIQUIDITY_FLOOR_USD
+
+
+def _agent_in_power_mode(persona_tid: str, mode: Optional[str]) -> bool:
+    """Which personas get the stake floor under which mode."""
+    if mode == "equity_power":
+        return persona_tid in POWER_AGENTS
+    if mode == "crypto_247":
+        return True  # ALL 17 agents compound 24/7 in crypto
+    return False
 
 
 # 2026-04-21 v2.6 — UNRESTRICTED UNIVERSE: on-demand fetch for any Alpaca-supported
@@ -910,24 +935,38 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         f"Passing is cowardice — the leaderboard rewards aggression compounded safely."
     )
 
-    # ── 2026-04-22 POWER-DEPLOY WINDOW — force liquid-specialist agents to
-    # deploy ≥20% sub-bankroll per trade during 14:30-16:30 UTC. Ticker is
-    # the agent's choice — liquidity is tested at runtime ($50M daily $-vol),
-    # not restricted to a hardcoded list.
-    if persona["tid"] in POWER_AGENTS and _in_power_window():
+    # ── 2026-04-22 POWER-DEPLOY MODES — force ≥20% sub-bankroll stake floor.
+    # Two modes:
+    #   equity_power : 14:30-16:30 UTC weekdays, 6 liquid-specialist agents,
+    #                  any ticker with $-vol ≥ $50M
+    #   crypto_247  : equity closed + crypto tape active, ALL 17 agents, crypto pairs only
+    # Ticker stays the agent's choice; liquidity tested at runtime.
+    _power_mode = _current_power_mode(quotes=ctx.get("quotes"))
+    if _agent_in_power_mode(persona["tid"], _power_mode):
         _power_floor = _agent_bankroll * POWER_STAKE_FLOOR_PCT
-        _bankroll_block += (
-            f"\n\n⚡ POWER-DEPLOY WINDOW ACTIVE (14:30-16:30 UTC = first 2h US open).\n"
-            f"YOU are a LIQUID-SPECIALIST agent. Your mandate this window:\n"
-            f"  • stake_usd FLOOR = ${_power_floor:,.0f} ({POWER_STAKE_FLOOR_PCT*100:.0f}% "
-            f"of ${_agent_bankroll:,.0f}). The executor SCALES any lower stake up to this.\n"
-            f"  • Pick ANY ticker you like — the floor applies IF daily dollar-volume "
-            f"≥ ${POWER_LIQUIDITY_FLOOR_USD/1e6:.0f}M (~all liquid US equities/ETFs + top-30 crypto). "
-            f"Illiquid pick? Stake stays at your 5-12% size — no penalty, no forced scale.\n"
-            f"  • PASS means missed window. The power-hour is short — deploy or step aside.\n"
-            f"  • Fleet target: ≥50% of $100k total bankroll deployed in 2h. Your stake "
-            f"is part of that number."
-        )
+        if _power_mode == "equity_power":
+            _bankroll_block += (
+                f"\n\n⚡ POWER-DEPLOY WINDOW ACTIVE (14:30-16:30 UTC = first 2h US open).\n"
+                f"YOU are a LIQUID-SPECIALIST agent. Your mandate this window:\n"
+                f"  • stake_usd FLOOR = ${_power_floor:,.0f} ({POWER_STAKE_FLOOR_PCT*100:.0f}% "
+                f"of ${_agent_bankroll:,.0f}). The executor SCALES any lower stake up to this.\n"
+                f"  • Pick ANY ticker you like — the floor applies IF daily dollar-volume "
+                f"≥ ${POWER_LIQUIDITY_FLOOR_USD/1e6:.0f}M (~all liquid US equities/ETFs + top-30 crypto). "
+                f"Illiquid pick? Stake stays at your 5-12% size — no penalty, no forced scale.\n"
+                f"  • PASS means missed window. The power-hour is short — deploy or step aside.\n"
+                f"  • Fleet target: ≥50% of $100k total bankroll deployed in 2h."
+            )
+        else:  # crypto_247
+            _bankroll_block += (
+                f"\n\n🌐 CRYPTO 24/7 MODE ACTIVE (equity markets CLOSED, crypto tape moving).\n"
+                f"ALL 17 agents compound right now. Your mandate:\n"
+                f"  • stake_usd FLOOR = ${_power_floor:,.0f} ({POWER_STAKE_FLOOR_PCT*100:.0f}% "
+                f"of ${_agent_bankroll:,.0f}) on any crypto pair (BTC/USD, ETH/USD, SOL/USD, "
+                f"AVAX/USD, LINK/USD, DOGE/USD, plus any other /USD pair in the tape).\n"
+                f"  • Pick ANY crypto — the floor only scales crypto stakes.\n"
+                f"  • Weekend? Doesn't matter. Crypto is 24/7 — so are you.\n"
+                f"  • PASS = missed compound tick. 90s ticks × 24h = 960 chances/day."
+            )
 
     return f"""{COLLECTIVE_MISSION}
 
@@ -1377,27 +1416,32 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
             else:
                 _tick_counts[_key] = _tick_counts.get(_key, 0) + 1
 
-        # ── 2026-04-22 POWER-DEPLOY FLOOR — enforce min 20% sub-bankroll
-        # stake for POWER_AGENTS during the window, on ANY ticker whose
-        # runtime dollar-volume ≥ $50M. Server-side guarantee of the prompt
-        # mandate; LLM can ignore the block but the stake gets scaled up.
-        if (action == "trade"
-                and persona["tid"] in POWER_AGENTS
-                and _in_power_window(now)):
-            _tk = decision.get("ticker") or ""
-            _quote = (ctx.get("quotes") or {}).get(_tk)
-            if _is_power_liquid(_tk, _quote):
-                _agent_bk = executor.get_bankroll(persona["tid"])
-                _power_floor = _agent_bk * POWER_STAKE_FLOOR_PCT
-                _cur_stake = float(decision.get("stake_usd") or 0)
-                if _cur_stake < _power_floor:
-                    decision = dict(decision)
-                    decision["stake_usd"] = round(_power_floor, 2)
-                    decision["_power_floor_applied"] = True
-                    decision["rationale"] = (
-                        (decision.get("rationale") or decision.get("thesis") or "")
-                        + f" [POWER-FLOOR: ${_cur_stake:.0f}→${_power_floor:.0f}]"
-                    )
+        # ── 2026-04-22 POWER-DEPLOY FLOOR — enforce 20% sub-bankroll stake.
+        #   equity_power : POWER_AGENTS on any $50M+ $-vol ticker
+        #   crypto_247  : ALL 17 agents on any crypto pair
+        # LLM can ignore the prompt mandate — executor still scales the stake up.
+        if action == "trade":
+            _mode_now = _current_power_mode(now=now, quotes=ctx.get("quotes"))
+            if _agent_in_power_mode(persona["tid"], _mode_now):
+                _tk = decision.get("ticker") or ""
+                _quote = (ctx.get("quotes") or {}).get(_tk)
+                _eligible = False
+                if _mode_now == "equity_power":
+                    _eligible = _is_power_liquid(_tk, _quote)
+                elif _mode_now == "crypto_247":
+                    _eligible = "/" in _tk  # crypto only
+                if _eligible:
+                    _agent_bk = executor.get_bankroll(persona["tid"])
+                    _power_floor = _agent_bk * POWER_STAKE_FLOOR_PCT
+                    _cur_stake = float(decision.get("stake_usd") or 0)
+                    if _cur_stake < _power_floor:
+                        decision = dict(decision)
+                        decision["stake_usd"] = round(_power_floor, 2)
+                        decision["_power_floor_applied"] = _mode_now
+                        decision["rationale"] = (
+                            (decision.get("rationale") or decision.get("thesis") or "")
+                            + f" [POWER-FLOOR {_mode_now}: ${_cur_stake:.0f}→${_power_floor:.0f}]"
+                        )
 
         result = {
             "ts": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
