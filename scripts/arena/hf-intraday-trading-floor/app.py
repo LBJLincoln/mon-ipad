@@ -1489,6 +1489,18 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                 print(f"[itf] stale-loser close: {_sl}", file=sys.stderr, flush=True)
     except Exception as _sle:
         print(f"[itf] stale-loser close FAIL: {_sle}", file=sys.stderr, flush=True)
+    # 2026-04-22 ROUND-3 ORDER-PILEUP — every 10th tick, cancel Alpaca open orders
+    # >30 min old. Incident: 319 pending brackets piled up, drained
+    # daytrading_buying_power from $157K → $246 on $101K equity. The dedup
+    # guard in executor.submit() prevents NEW pileups; this sweep unwinds any
+    # that slipped through (drifted limit price, partial fills stuck open, etc).
+    try:
+        if int(STATE.get("tick_count", 0)) % 10 == 0:
+            _cs = executor.cancel_stale_pending()
+            if _cs.get("cancelled", 0) > 0 or _cs.get("errors", 0) > 0 or _cs.get("budget_exceeded", 0) > 0:
+                print(f"[itf] cancel-stale-pending: {_cs}", file=sys.stderr, flush=True)
+    except Exception as _cse:
+        print(f"[itf] cancel-stale-pending FAIL: {_cse}", file=sys.stderr, flush=True)
     # v2.5 — ensure sub-bankrolls are seeded (idempotent) and sync each into STATE.
     try:
         executor.seed_bankrolls([p["tid"] for p in PERSONAS])

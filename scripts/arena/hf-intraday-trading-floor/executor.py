@@ -421,6 +421,203 @@ def close_stale_losers(max_age_sec: int = 14400, min_loss_pct: float = 0.02) -> 
     return stats
 
 
+# ───── 2026-04-22 ROUND-3 ORDER-PILEUP GUARDS ─────
+# Incident: 319 open bracket orders stacked on Alpaca paper (SPY×61, QQQ×37,
+# NVDA×35…) consumed $63K of initial_margin. daytrading_buying_power fell to
+# $246 on $101K equity. Agents kept emitting bracket orders every tick; none
+# filled (limit prices drifted, or same-symbol contention). Manual
+# `DELETE /v2/orders` freed BP back to $157K. Without these three guards the
+# pile rebuilds within hours.
+#
+# Guard 1: _refresh_pending_count() — 30s cached map of open-orders-by-symbol
+# Guard 2: cancel_stale_pending() — cancels orders older than max_age_min
+# Guard 3: _bp_pre_check() — rejects new placements when free BP < $500
+#
+# All three fail-open (errors logged, never raise).
+
+_PENDING_BY_SYMBOL: Dict[str, int] = {}
+_PENDING_BY_SYMBOL_TS: float = 0.0
+_PENDING_CACHE_TTL_SEC: float = 30.0
+
+
+def _refresh_pending_count(force: bool = False) -> None:
+    """Refresh the open-order-by-symbol cache. 30s TTL to keep HTTP traffic
+    bounded while still catching pileup within a single tick."""
+    global _PENDING_BY_SYMBOL, _PENDING_BY_SYMBOL_TS
+    if not live_mode():
+        return
+    if not force and (time.time() - _PENDING_BY_SYMBOL_TS) < _PENDING_CACHE_TTL_SEC:
+        return
+    key = os.environ.get("ALPACA_PAPER_KEY")
+    secret = os.environ.get("ALPACA_PAPER_SECRET")
+    if not (key and secret):
+        return
+    try:
+        import requests
+        r = requests.get(
+            "https://paper-api.alpaca.markets/v2/orders",
+            headers={"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret},
+            params={"status": "open", "limit": 500},
+            timeout=6,
+        )
+        if not r.ok:
+            return
+        orders = r.json() or []
+        counts: Dict[str, int] = {}
+        for o in orders:
+            sym = (o.get("symbol") or "").strip()
+            if not sym:
+                continue
+            counts[sym] = counts.get(sym, 0) + 1
+        _PENDING_BY_SYMBOL = counts
+        _PENDING_BY_SYMBOL_TS = time.time()
+    except Exception:
+        # Fail-open: stale cache is fine, will refresh next tick.
+        pass
+
+
+def _pending_count_for(symbol: str) -> int:
+    """Return cached pending-order count for a symbol. Refreshes if stale."""
+    _refresh_pending_count()
+    return int(_PENDING_BY_SYMBOL.get(symbol, 0))
+
+
+def _get_daytrading_buying_power() -> float:
+    """Fetch Alpaca daytrading_buying_power. Returns 0.0 on error (fail-closed
+    for BP-pre-check: if we can't read BP, treat as starved so we don't pile up)."""
+    if not live_mode():
+        return 1_000_000.0  # dry-run: unlimited
+    key = os.environ.get("ALPACA_PAPER_KEY")
+    secret = os.environ.get("ALPACA_PAPER_SECRET")
+    if not (key and secret):
+        return 0.0
+    try:
+        import requests
+        r = requests.get(
+            "https://paper-api.alpaca.markets/v2/account",
+            headers={"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret},
+            timeout=5,
+        )
+        if not r.ok:
+            return 0.0
+        j = r.json()
+        # Prefer daytrading_buying_power; fall back to buying_power.
+        return float(j.get("daytrading_buying_power") or j.get("buying_power") or 0)
+    except Exception:
+        return 0.0
+
+
+def _bp_pre_check(min_bp: float = 500.0) -> Dict[str, Any]:
+    """Return {ok: bool, bp: float, reason: str}. If BP is below `min_bp` the
+    caller should skip placement this tick. If BP is below 5% of equity, we
+    also trigger a fast cancel_stale_pending(max_age_min=10) to unblock."""
+    out = {"ok": True, "bp": 0.0, "reason": ""}
+    if not live_mode():
+        out["bp"] = 1_000_000.0
+        return out
+    bp = _get_daytrading_buying_power()
+    out["bp"] = bp
+    equity = _fetch_alpaca_equity()
+    if bp < min_bp:
+        out["ok"] = False
+        out["reason"] = f"bp={bp:.2f} < min={min_bp:.2f}"
+    if equity > 0 and bp < 0.05 * equity:
+        # BP less than 5% of equity — the pileup is eating margin. Force an
+        # inline 10-min stale cancel to unblock, best-effort.
+        try:
+            cs = cancel_stale_pending(max_age_min=10)
+            out["inline_stale_cancel"] = cs
+        except Exception as e:
+            out["inline_stale_cancel_err"] = str(e)[:200]
+    return out
+
+
+def cancel_stale_pending(max_age_min: int = 30) -> Dict[str, Any]:
+    """Cancel Alpaca open orders older than `max_age_min` minutes.
+
+    2026-04-22 ROUND-3 — Pileup RCA: Alpaca paper accumulated 319 open brackets
+    on ~12 symbols (SPY×61, QQQ×37, etc). None filled — limit prices drifted or
+    same-symbol contention blocked sequencing. initial_margin ate BP down to
+    $246 on $101K equity. This helper sweeps every tick/10 so the pile never
+    rebuilds.
+
+    Safety:
+      * Live-mode only (no dry-run no-op noise)
+      * Time-budgeted at ITF_CANCEL_STALE_BUDGET_SEC (default 10s)
+      * Only cancels orders where `submitted_at > max_age_min min ago`
+      * Uses DELETE /v2/orders/{id}; logs non-OK per-order but continues
+      * DOES cancel during pre-open (caller controls age threshold; legit GTC
+        overnight orders aren't stale at 30min so default is safe)
+
+    Returns: {cancelled, errors, skipped_young, budget_exceeded, seen}.
+    """
+    stats = {"cancelled": 0, "errors": 0, "skipped_young": 0,
+             "budget_exceeded": 0, "seen": 0}
+    if not live_mode():
+        return stats
+    key = os.environ.get("ALPACA_PAPER_KEY")
+    secret = os.environ.get("ALPACA_PAPER_SECRET")
+    if not (key and secret):
+        return stats
+    budget_sec = float(os.environ.get("ITF_CANCEL_STALE_BUDGET_SEC", "10"))
+    deadline = time.monotonic() + budget_sec
+    import requests
+    headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
+    now_utc = datetime.now(timezone.utc)
+
+    try:
+        r = requests.get(
+            "https://paper-api.alpaca.markets/v2/orders",
+            headers=headers, params={"status": "open", "limit": 500},
+            timeout=8,
+        )
+        if not r.ok:
+            stats["errors"] += 1
+            return stats
+        orders = r.json() or []
+    except Exception:
+        stats["errors"] += 1
+        return stats
+
+    stats["seen"] = len(orders)
+    for o in orders:
+        if time.monotonic() >= deadline:
+            stats["budget_exceeded"] += 1
+            break
+        try:
+            oid = o.get("id")
+            subm = o.get("submitted_at") or o.get("created_at") or ""
+            if not (oid and subm):
+                continue
+            try:
+                subm_dt = datetime.fromisoformat(str(subm).replace("Z", "+00:00"))
+            except Exception:
+                continue
+            age_min = (now_utc - subm_dt).total_seconds() / 60.0
+            if age_min < max_age_min:
+                stats["skipped_young"] += 1
+                continue
+            try:
+                rd = requests.delete(
+                    f"https://paper-api.alpaca.markets/v2/orders/{oid}",
+                    headers=headers, timeout=6,
+                )
+                if rd.status_code in (200, 204, 207):
+                    stats["cancelled"] += 1
+                else:
+                    stats["errors"] += 1
+            except Exception:
+                stats["errors"] += 1
+        except Exception:
+            stats["errors"] += 1
+    # Force-refresh the per-symbol cache so the next placement sees post-cancel state.
+    try:
+        _refresh_pending_count(force=True)
+    except Exception:
+        pass
+    return stats
+
+
 def _asset_class(ticker: str) -> str:
     if "/" in ticker:
         return "crypto"
@@ -536,6 +733,46 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
         _append_order_log(reject)
         return reject
 
+    # 2026-04-22 ROUND-3 GUARD 1 — per-symbol dedup. Before we even build the
+    # order payload, check how many OPEN orders already exist at Alpaca for
+    # this symbol. If >= ITF_MAX_PENDING_PER_SYMBOL (default 2), skip: another
+    # bracket will just deepen the 319-order pileup.
+    max_pending = int(os.environ.get("ITF_MAX_PENDING_PER_SYMBOL", "2"))
+    if live_mode():
+        sym_for_check = str(order.get("ticker") or "")
+        try:
+            pend = _pending_count_for(sym_for_check)
+        except Exception:
+            pend = 0
+        if pend >= max_pending:
+            skip = {
+                "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "agent_tid": agent_tid, "status": "broker_skip_dedupe",
+                "reason": f"already {pend} open orders for {sym_for_check} "
+                          f">= max_pending_per_symbol={max_pending}",
+                "order": order,
+            }
+            _append_order_log(skip)
+            return skip
+        # 2026-04-22 ROUND-3 GUARD 3 — BP pre-check. If daytrading_buying_power
+        # is starved (<$500), refuse and let cancel_stale_pending reclaim BP
+        # before we try again next tick.
+        try:
+            bp_ok = _bp_pre_check(min_bp=float(os.environ.get("ITF_MIN_BP_USD", "500")))
+        except Exception:
+            bp_ok = {"ok": True, "bp": -1.0, "reason": ""}
+        if not bp_ok.get("ok"):
+            skip = {
+                "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "agent_tid": agent_tid, "status": "broker_skip_bp_starved",
+                "reason": bp_ok.get("reason", "bp low"),
+                "bp": round(float(bp_ok.get("bp") or 0), 2),
+                "inline_stale_cancel": bp_ok.get("inline_stale_cancel"),
+                "order": order,
+            }
+            _append_order_log(skip)
+            return skip
+
     ticker = order["ticker"]
     side = order["side"]  # "long" | "short"
     stake = float(order.get("stake_usd", 1000))
@@ -580,6 +817,12 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
             entry["broker_order_id"] = resp.get("id")
             entry["broker_status"] = resp.get("status")
             entry["broker_class"] = resp.get("order_class") or ("notional" if resp.get("notional") else "bracket")
+            # 2026-04-22 ROUND-3 — optimistically bump the per-symbol pending
+            # cache so a second agent in the same tick will see the dedup guard.
+            try:
+                _PENDING_BY_SYMBOL[ticker] = int(_PENDING_BY_SYMBOL.get(ticker, 0)) + 1
+            except Exception:
+                pass
         except Exception as e:
             entry["status"] = "broker_error"
             # Capture Alpaca body text when available (RequestException.response) so we can
