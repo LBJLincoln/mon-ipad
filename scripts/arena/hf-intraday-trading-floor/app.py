@@ -1485,11 +1485,15 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     # positions (>4h old AND <= -2% unrealized PnL) to free buying power. Without
     # this, open positions pile up until free_bp=$0 and agents correctly pass via
     # bp_guard_free_bp_<$300 even with $49K cash. Crypto skipped (no BP issue).
+    # 2026-04-22 SHIP-100%: env-overridable to push ITF deploy 31% → 95%. Defaults
+    # tightened from 14400/0.02 to 7200/0.01 — 2h age + 1% loss = 2× faster rotation.
     try:
         if int(STATE.get("tick_count", 0)) % 5 == 0:
-            _sl = executor.close_stale_losers()
+            _max_age = int(os.environ.get("ITF_CLOSE_STALE_MAX_AGE_SEC", "7200"))
+            _min_loss = float(os.environ.get("ITF_CLOSE_STALE_MIN_LOSS_PCT", "0.01"))
+            _sl = executor.close_stale_losers(max_age_sec=_max_age, min_loss_pct=_min_loss)
             if _sl.get("closed", 0) > 0 or _sl.get("errors", 0) > 0 or _sl.get("budget_exceeded", 0) > 0:
-                print(f"[itf] stale-loser close: {_sl}", file=sys.stderr, flush=True)
+                print(f"[itf] stale-loser close (age>{_max_age}s,loss<={-_min_loss:+.1%}): {_sl}", file=sys.stderr, flush=True)
     except Exception as _sle:
         print(f"[itf] stale-loser close FAIL: {_sle}", file=sys.stderr, flush=True)
     # 2026-04-22 ROUND-3 ORDER-PILEUP — every 10th tick, cancel Alpaca open orders
