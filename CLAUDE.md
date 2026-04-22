@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-04-19
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-04-22
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -44,18 +44,18 @@ HF EVOLUTION ISLANDS — 11 SURVIVORS (6 NBA + 5 POL) after 2026-04-17 cull
     Eliminated slots now host selfhost LLMs on LBJLincoln/LBJLincoln26/TESTforge42.
 
     NBA Survivors (6, CPU tree-only, MAX_FEATURES=200):
-    ├── S13 Nomos42/nba-evo-4:        catboost      gen=130   brier=0.22749
-    ├── S14 Nomos42/nba-evo-5:        lightgbm      gen=554   brier=0.22186
-    ├── S15 Nomos42/nba-evo-6:        wide search   gen=127   brier=0.22418
-    ├── S17 LBJLincoln26/nba-evo-s17: ensemble      gen=78    brier=0.22340
-    ├── S18 TESTforge42/nba-evo-s18:  catboost_spec gen=1030  brier=0.22114
-    └── S22 TESTforge42/nba-evo-s22:  venn_abers_fusion gen=39 brier=0.22073  ★ FLEET BEST
+    ├── S13 Nomos42/nba-evo-4:        catboost          gen=402   brier=0.23173
+    ├── S14 Nomos42/nba-evo-5:        lightgbm          gen=429   brier=0.23450  [diversify sent 2026-04-22]
+    ├── S15 Nomos42/nba-evo-6:        wide search       gen=799   brier=0.22325  [diversify sent 2026-04-22]
+    ├── S17 LBJLincoln26/nba-evo-s17: ensemble          gen=2146  brier=0.22289
+    ├── S18 TESTforge42/nba-evo-s18:  random_forest     gen=1540  brier=0.22154  ★ LIVE BEST (2026-04-22)
+    └── S22 TESTforge42/nba-evo-s22:  venn_abers_fusion gen=555   brier=0.22360  [hist: 0.22073 ★ FLEET BEST; diversify sent 2026-04-22]
     Political Survivors (5, CPU tree-only):
-    ├── P1 Nomos42/political-alpha:      xgboost        gen=3042  brier=0.24996
-    ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=11953 brier=0.25223
-    ├── P4 LBJLincoln/political-alpha-4: logistic       gen=16728 brier=0.25146
-    ├── P5 LBJLincoln/political-alpha-5: catboost       gen=21048 brier=0.24923  ★ POL BEST (2026-04-20)
-    └── P7 LBJLincoln/political-alpha-7: gradient_boost gen=2098  brier=0.24987
+    ├── P1 Nomos42/political-alpha:      xgboost        gen=31807  brier=0.24999
+    ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=25025  brier=0.24949
+    ├── P4 LBJLincoln/political-alpha-4: logistic       gen=31854  brier=0.24956
+    ├── P5 LBJLincoln/political-alpha-5: catboost       gen=27370  brier=0.25219  [hist 0.24923 ★ POL BEST checkpointed 2026-04-20]
+    └── P7 LBJLincoln/political-alpha-7: gradient_boost gen=29231  brier=0.24937  ★ POL LIVE BEST (2026-04-22)
 
 SELFHOST LLM FLEET (6 RUNNING, 2 building — 2026-04-19 20:55 UTC)
     LBJLincoln   (3 RUNNING): qwen25-05b-cpu, gemma2-2b-cpu, phi35-mini-cpu

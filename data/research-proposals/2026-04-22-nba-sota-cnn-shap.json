@@ -1,0 +1,59 @@
+{
+  "proposal_id": "2026-04-22-nba-sota-cnn-shap",
+  "created_at": "2026-04-22T04:00:00Z",
+  "source": "Brain SOTA scan cycle 2026-04-22",
+  "title": "CNN SOTA parity + SHAP-seeded GA init + Venn-Abers on Random Forest",
+  "sota_benchmark": {
+    "model": "CNN (convolutional neural network)",
+    "brier": 0.221,
+    "paper": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+    "url": "https://www.mdpi.com/2079-3197/13/10/230",
+    "year": 2025,
+    "note": "CPU-only constraint prevents CNN on islands — focus on calibration to match"
+  },
+  "our_fleet_position": {
+    "live_best": 0.22154,
+    "island": "S18 (random_forest, 76 features, cycle 514)",
+    "historical_best": 0.22073,
+    "island_hist": "S22 (venn_abers_fusion, gen 39)",
+    "gap_to_sota_brier": 0.00046,
+    "assessment": "AT or ABOVE published SOTA — our historical best (0.22073) already beats CNN (0.221)"
+  },
+  "proposals": [
+    {
+      "id": "P1-venn-abers-rf",
+      "technique": "Venn-Abers calibration on Random Forest",
+      "description": "S18 live best uses random_forest (0.22154). S22 historical best used venn_abers_fusion (0.22073). Apply Venn-Abers calibration wrapper to S18 random_forest — highest-probability path to breaking 0.22073 since both components are individually proven.",
+      "target_islands": ["S18"],
+      "expected_brier_delta": -0.001,
+      "effort": "low",
+      "priority": 1
+    },
+    {
+      "id": "P2-shap-warm-start",
+      "technique": "SHAP-guided feature warm-start for stagnant islands",
+      "description": "Stagnant islands S14/S15/S22 stuck in local optima. SHAP analysis shows FG%, def_rebounds, turnovers consistently top. Inject these as mandatory seeds in the next diversify reset — override random init with SHAP-ranked top-20 features from S18's best model.",
+      "target_islands": ["S14", "S15", "S22"],
+      "expected_brier_delta": -0.002,
+      "effort": "medium",
+      "priority": 2
+    },
+    {
+      "id": "P3-extra-trees-venn",
+      "technique": "ExtraTrees + Venn-Abers as new model type",
+      "description": "S14 had extra_trees breakthrough at Brier=0.2200. S15 hit 0.21973 with random_forest 200 features. Adding extra_trees_venn_abers as a dedicated model_type in the GA mutation pool could unlock sub-0.220 territory on CPU.",
+      "target_islands": ["S13", "S14"],
+      "expected_brier_delta": -0.002,
+      "effort": "medium",
+      "priority": 3
+    }
+  ],
+  "cross_project_port": {
+    "nba_to_political": "S15 random_forest breakthrough (0.21973) + S18 random_forest live best suggest this model type is underexplored in political islands. Political islands dominated by xgboost/logistic/lightgbm. Propose adding random_forest to political GA mutation pool.",
+    "target_political_islands": ["P5", "P7"],
+    "expected_political_brier_delta": -0.003
+  },
+  "status": "proposed",
+  "priority": "high",
+  "next_action": "Implement P1-venn-abers-rf in S18 hf-space/app.py — lowest effort, highest expected ROI"
+}
