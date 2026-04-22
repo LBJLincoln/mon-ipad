@@ -3464,7 +3464,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     pass
             return tid, raw
 
-        _max_workers = min(len(TRADERS), 4)
+        _max_workers = min(len(TRADERS), int(os.environ.get("NBA_TF_LLM_POOL_WORKERS", "8")))
         _responses = {}
         _pool = ThreadPoolExecutor(max_workers=_max_workers)
         _futures = {_pool.submit(_agent_llm_worker, item): item[0]
