@@ -622,10 +622,13 @@ def _tier_directive(tier: str, total_equity: float, seed_share: float) -> str:
     """Dynamic, tier-keyed directive appended AFTER the static addendum."""
     delta_pct = ((total_equity - seed_share) / max(seed_share, 1.0)) * 100.0
     if tier == "winner":
+        _floor_pct = int(POWER_STAKE_FLOOR_PCT * 100)
         return (
             f"TIER: WINNER (equity ${total_equity:,.0f} = {delta_pct:+.1f}% vs seed). "
-            f"SCALE: per-trade floor = 33% of your sub-bankroll (ITF_STAKE_FLOOR_PCT=0.33 "
-            f"already set). You earned the right to size up — keep executing what works."
+            f"SCALE: per-trade floor = {_floor_pct}% of your sub-bankroll "
+            f"(ITF_STAKE_FLOOR_PCT={POWER_STAKE_FLOOR_PCT:.2f} active). You earned the "
+            f"right to size up — keep executing what works. Up to 5 concurrent orders "
+            f"per ticker allowed — stack conviction."
         )
     if tier == "deployer":
         return (
