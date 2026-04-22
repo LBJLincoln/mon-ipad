@@ -739,6 +739,9 @@ def pnl_snapshot(quote_fn=None) -> Dict[str, Any]:
     }
 
 
+MIN_HOLD_SEC = int(os.environ.get("ITF_MIN_HOLD_SEC", "900"))  # 15 min default, kills daytrade churn that drained BP to $1.9K
+
+
 def close_position(agent_tid: str, ticker: str) -> Dict[str, Any]:
     """2026-04-21 — agent-driven close. Mark matching local open positions closed
     and (in live mode) submit Alpaca DELETE /v2/positions/{symbol} to flatten the
@@ -747,6 +750,10 @@ def close_position(agent_tid: str, ticker: str) -> Dict[str, Any]:
     Scope: matches ALL open positions for this agent_tid + ticker pair. Broker
     close is market-time-in-force, so crypto closes GTC via order, equities via
     the dedicated positions-close endpoint (net flat).
+
+    2026-04-22 — MIN_HOLD_SEC guard: if ALL matched positions are younger than
+    MIN_HOLD_SEC, reject the close with status=blocked_by_min_hold. Forces the
+    fleet to hold through intra-hour noise instead of churning daytrades.
     """
     positions = _load_positions()
     ticker_u = (ticker or "").upper().strip()
@@ -754,6 +761,33 @@ def close_position(agent_tid: str, ticker: str) -> Dict[str, Any]:
         p for p in positions.get(agent_tid, [])
         if p.get("status") == "open" and (p.get("ticker", "") or "").upper().strip() == ticker_u
     ]
+    if matched and MIN_HOLD_SEC > 0:
+        now_utc = datetime.now(timezone.utc)
+        eligible = []
+        for p in matched:
+            try:
+                opened = datetime.fromisoformat((p.get("opened_at") or p.get("ts") or "").replace("Z", "+00:00"))
+                if (now_utc - opened).total_seconds() >= MIN_HOLD_SEC:
+                    eligible.append(p)
+            except Exception:
+                eligible.append(p)  # if timestamp unreadable, don't block
+        if not eligible:
+            blocked = {
+                "ts": now_utc.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "agent_tid": agent_tid,
+                "ticker": ticker_u,
+                "action": "close_position",
+                "status": "blocked_by_min_hold",
+                "min_hold_sec": MIN_HOLD_SEC,
+                "youngest_age_sec": int(min(
+                    (now_utc - datetime.fromisoformat((p.get("opened_at") or p.get("ts") or "").replace("Z", "+00:00"))).total_seconds()
+                    for p in matched
+                )),
+                "matched_positions": len(matched),
+            }
+            _append_order_log(blocked)
+            return blocked
+        matched = eligible
     entry = {
         "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "agent_tid": agent_tid,

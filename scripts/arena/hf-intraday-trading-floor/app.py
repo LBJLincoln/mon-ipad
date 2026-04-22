@@ -987,8 +987,11 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         f"Stake sizing: 5-12% of ${_agent_bankroll:,.0f} per trade = "
         f"${max(100, _agent_bankroll*0.05):.0f}-${max(300, _agent_bankroll*0.12):.0f}. "
         f"If bankroll < $200, shrink to $100/trade; if > $10k, scale to $1,200/trade max.\n"
-        f"PAPER ACCOUNT: no PDT rule — unlimited daytrades. Target 8-15 trades/day MINIMUM. "
-        f"Passing is cowardice — the leaderboard rewards aggression compounded safely."
+        f"PDT IS LIVE (confirmed 2026-04-22 — pattern_day_trader=True, BP drained to $1.9K after 228 daytrades). "
+        f"DOCTRINE: hold overnight, let winners run multi-day. Daytrade ONLY if edge ≥ 1% net of fees "
+        f"— spread + slippage on a $500 stake is ~$3, so a same-day close needs +0.6% minimum to break even. "
+        f"Ideal trade: open → hold 1-3 days → close on thesis hit OR 3% stop. "
+        f"Churning same-hour = fees eat you. Cowardice is trading WITHOUT an edge, not holding a conviction."
     )
 
     # ── 2026-04-22 POWER-DEPLOY MODES — force ≥20% sub-bankroll stake floor.
@@ -1704,6 +1707,48 @@ def _build_app():
     @app.get("/api/positions")
     def api_positions():
         return JSONResponse({"open": executor.list_open()})
+
+    @app.get("/api/events")
+    def api_events():
+        """Kalshi + Polymarket paper ledger — open positions, mark-to-market,
+        realized P&L. Dashboard uses this to surface the binary-event panel.
+        """
+        try:
+            ledger = ev.load_positions() or {}
+            all_pos: List[Dict[str, Any]] = []
+            fleet_unrealized = 0.0
+            fleet_realized = 0.0
+            for tid, rows in ledger.items():
+                for p in rows:
+                    all_pos.append({**p, "agent_tid": tid})
+                mtm = ev.mark_to_market(tid)
+                fleet_unrealized += float(mtm.get("unrealized_pnl") or 0)
+                fleet_realized += ev.realized_pnl(tid)
+            open_rows = [p for p in all_pos if p.get("status") == "open"]
+            closed_rows = [p for p in all_pos if p.get("status") == "closed"]
+            # Cache 60s of live top-markets as well so the dashboard can render
+            # the board even without a separate Kalshi/Poly fetch.
+            try:
+                kalshi_top = ev.list_markets("kalshi", limit=8)
+            except Exception:
+                kalshi_top = []
+            try:
+                poly_top = ev.list_markets("polymarket", limit=8)
+            except Exception:
+                poly_top = []
+            return JSONResponse({
+                "open_positions": open_rows,
+                "closed_positions": closed_rows[-50:],  # recent tail only
+                "fleet_unrealized_pnl": round(fleet_unrealized, 2),
+                "fleet_realized_pnl": round(fleet_realized, 2),
+                "venues": {
+                    "kalshi_top": kalshi_top,
+                    "polymarket_top": poly_top,
+                },
+                "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            })
+        except Exception as e:
+            return JSONResponse({"error": str(e)[:200], "open_positions": []}, status_code=200)
 
     @app.get("/api/decisions")
     def api_decisions(date: Optional[str] = None):
