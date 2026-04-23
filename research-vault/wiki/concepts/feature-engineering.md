@@ -1,10 +1,10 @@
 # Feature Engineering & Selection
 
-> Auto-compiled from 58 raw sources on 2026-04-22
+> Auto-compiled from 59 raw sources on 2026-04-23
 
 ## Overview
 
-This topic covers 58 research files spanning feature engineering & selection.
+This topic covers 59 research files spanning feature engineering & selection.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -52,6 +52,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **NBA Feature Engine v3.0-43cat state** (507 words) -- `raw/agent-memory/feature-engineer_project_engine_v38cat.md`
 - **NBA Feature Engine v3.0-43cat state** (507 words) -- `raw/feature-engineer/project_engine_v38cat.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
+- **ITF per-agent winner-aware prompts (17 personas, tier-keyed)** (456 words) -- `raw/agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/research-analyst/research_march2026_cycle8_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
@@ -70,6 +71,13 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 
 ## Key Findings
 
+- What shipped (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Why now (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Routing decisions (baked in per persona) (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Deploy (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Preserved (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Not touched (per task constraints) (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Next observable (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
 - Bugs found but NOT yet fixed (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
 - Key architecture facts (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
 - Three-File Architecture (NBA Version) (from `agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`)
@@ -83,13 +91,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - Phase 2: Crossover Rate (Days 3-4) (from `agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`)
 - Phase 3: Population Size (Days 5-6) (from `agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`)
 - Phase 4: Model Type (Days 7-8) (from `agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`)
-- Phase 5: Learning Rate Tuning (from `agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`)
-- Prior Experiments (from `agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`)
-- Red Flags / Stopping Points (from `agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`)
-- Success Criteria (from `agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`)
-- The Autonomous Loop (NBA Version) (from `agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`)
-- Agent Decision Logic (Pseudocode) (from `agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`)
-- Metric: Why Brier Score? (from `agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`)
 
 ## Related Topics
 

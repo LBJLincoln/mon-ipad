@@ -1,10 +1,10 @@
 # Trading Floor & AI Competition
 
-> Auto-compiled from 51 raw sources on 2026-04-22
+> Auto-compiled from 54 raw sources on 2026-04-23
 
 ## Overview
 
-This topic covers 51 research files spanning trading floor & ai competition.
+This topic covers 54 research files spanning trading floor & ai competition.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -40,7 +40,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **PQTF post-mortem + improvement-proposal bridge** (623 words) -- `raw/agent-memory/nomos-audit_dispatch-2026-04-19.md`
 - **research_april2026_cycle13_dashboard** (504 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle13_dashboard.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
+- **ITF per-agent winner-aware prompts (17 personas, tier-keyed)** (456 words) -- `raw/agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-21** (456 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-21.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-22** (456 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-22.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-15** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-15.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-16** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-16.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-17** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-17.md`
@@ -49,6 +51,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-20** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-20.md`
 - **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/agent-memory/repo-scout_project_pixel_dashboard_apr2026.md`
 - **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/repo-scout/project_pixel_dashboard_apr2026.md`
+- **NBA TF dead-provider ROUND-2 reroute (Apr 22)** (410 words) -- `raw/agent-memory/dr-frankenstein_project_nba_dead_round2_apr22.md`
 - **Trading Floor v4/v5 SOTA Audit — April 11 2026** (403 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle17_tf_sota.md`
 - **pixel-world architecture map** (371 words) -- `raw/agent-memory/pixel_reference_pixel_world_architecture.md`
 - **Political Alpha Scientific Experiment Report** (333 words) -- `raw/experiments/political-experiment-2026-04-06.md`
@@ -63,6 +66,13 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 
 ## Key Findings
 
+- What shipped (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Why now (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Routing decisions (baked in per persona) (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Deploy (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Preserved (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Not touched (per task constraints) (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
+- Next observable (from `agent-memory/dr-frankenstein_project_itf_per_agent_winner_aware_apr22.md`)
 - TLDR: What Is Obsidian RAG? (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
 - Architecture: 3 Stages + File Structure (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
 - Stage 1: Raw Ingest (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
@@ -76,13 +86,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - Phase 4: Health Checks (Optional, but high ROI) (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
 - Open-Source Tools & Integration (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
 - Expected Impact (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Research Velocity (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Knowledge Reuse (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Calibration (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Why Everyone Talks About It (But Hasn't Deployed) (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Recommendation (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- Next Steps (from `agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`)
-- TOP 7 PAPERS (Prioritized by Implementation Urgency & Expected Brier Delta) (from `agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`)
 
 ## Related Topics
 

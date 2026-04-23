@@ -1,10 +1,10 @@
 # Betting Strategy & Bankroll
 
-> Auto-compiled from 132 raw sources on 2026-04-22
+> Auto-compiled from 134 raw sources on 2026-04-23
 
 ## Overview
 
-This topic covers 132 research files spanning betting strategy & bankroll.
+This topic covers 134 research files spanning betting strategy & bankroll.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -111,6 +111,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Political Trading Season 2025-26 -- Agent MIXTRAL ENSEMBLE** (276 words) -- `raw/arena-docs/political-mixtral-season-2025-26.md`
 - **Political Trading Season 2025-26 -- Agent PHI THEORIST** (276 words) -- `raw/arena-docs/political-phi-season-2025-26.md`
 - **multi_target_trainer** (275 words) -- `raw/agent-memory/feature-engineer_project_multi_target_trainer.md`
+- **POL TF ceiling 184→304 dates + stub-regression save (2026-04-22)** (265 words) -- `raw/agent-memory/lobbyist_project_pol_tf_ceiling_304_apr22.md`
 - **May 2026 Monetization Sprint** (245 words) -- `raw/agent-memory/market-analyst_project_monetization_sprint.md`
 - **Historical odds dataset 2025-26** (190 words) -- `raw/agent-memory/market-analyst_project_historical_odds.md`
 - **Historical odds dataset 2025-26** (190 words) -- `raw/market-analyst/project_historical_odds.md`
@@ -137,6 +138,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-19** (136 words) -- `raw/research/github-betting-scan-2026-04-19.md`
 - **Research Scan: github-betting-scan-2026-04-20** (136 words) -- `raw/research/github-betting-scan-2026-04-20.md`
 - **Research Scan: github-betting-scan-2026-04-21** (136 words) -- `raw/research/github-betting-scan-2026-04-21.md`
+- **Research Scan: github-betting-scan-2026-04-22** (136 words) -- `raw/research/github-betting-scan-2026-04-22.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/agent-memory/market-analyst_feedback_model_game_mismatch.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/market-analyst/feedback_model_game_mismatch.md`
 - **Political Alpha Arena Results** (100 words) -- `raw/political/arena-results-summary.md`

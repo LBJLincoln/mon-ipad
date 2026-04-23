@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 205 raw sources on 2026-04-22
+> Auto-compiled from 210 raw sources on 2026-04-23
 
 ## Overview
 
-This topic covers 205 research files spanning nba prediction & ml models.
+This topic covers 210 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -96,6 +96,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Backtest Audit March 2026** (460 words) -- `raw/agent-memory/research-analyst_project_backtest_audit_march2026.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/research-analyst/project_backtest_audit_march2026.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-21** (456 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-21.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-22** (456 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-22.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-15** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-15.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-16** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-16.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-17** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-17.md`
@@ -107,6 +108,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/research-analyst/research_march2026_cycle8_data_sources.md`
 - **Backtesting & Multi-Agent Portfolio Research — April 2026 Cycle 11** (414 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle11_backtesting.md`
+- **NBA TF dead-provider ROUND-2 reroute (Apr 22)** (410 words) -- `raw/agent-memory/dr-frankenstein_project_nba_dead_round2_apr22.md`
 - **Trading Floor v4/v5 SOTA Audit — April 11 2026** (403 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle17_tf_sota.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/repo-scout/project_nba_data_sources.md`
@@ -142,6 +144,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **multi_target_trainer** (275 words) -- `raw/agent-memory/feature-engineer_project_multi_target_trainer.md`
 - **TF auto-restart race-condition fix** (271 words) -- `raw/agent-memory/dr-frankenstein_project_tf_autorestart_race_fix_apr22.md`
 - **YouTube narrative sim-date filter (2026-04-21)** (271 words) -- `raw/agent-memory/the-plumber_project_youtube_sim_date_filter_apr21.md`
+- **Research Scan: arxiv-scan-2026-04-22** (264 words) -- `raw/research/arxiv-scan-2026-04-22.md`
 - **May 2026 Monetization Sprint** (245 words) -- `raw/agent-memory/market-analyst_project_monetization_sprint.md`
 - **Research Scan: arxiv-scan-2026-04-20** (244 words) -- `raw/research/arxiv-scan-2026-04-20.md`
 - **Cat67 YouTube FinBERT + W3 OAuth subscriptions (2026-04-21)** (242 words) -- `raw/agent-memory/dr-frankenstein_project_cat67_youtube_finbert_apr21.md`
@@ -199,6 +202,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-scan-2026-04-18** (141 words) -- `raw/research/github-scan-2026-04-18.md`
 - **Research Scan: github-scan-2026-04-20** (141 words) -- `raw/research/github-scan-2026-04-20.md`
 - **Research Scan: github-scan-2026-04-21** (141 words) -- `raw/research/github-scan-2026-04-21.md`
+- **Research Scan: github-scan-2026-04-22** (141 words) -- `raw/research/github-scan-2026-04-22.md`
 - **Research Scan: github-scan-2026-04-15** (140 words) -- `raw/research/github-scan-2026-04-15.md`
 - **Research Scan: github-scan-2026-04-16** (140 words) -- `raw/research/github-scan-2026-04-16.md`
 - **Research Scan: github-betting-scan-2026-04-17** (136 words) -- `raw/research/github-betting-scan-2026-04-17.md`
@@ -206,6 +210,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-19** (136 words) -- `raw/research/github-betting-scan-2026-04-19.md`
 - **Research Scan: github-betting-scan-2026-04-20** (136 words) -- `raw/research/github-betting-scan-2026-04-20.md`
 - **Research Scan: github-betting-scan-2026-04-21** (136 words) -- `raw/research/github-betting-scan-2026-04-21.md`
+- **Research Scan: github-betting-scan-2026-04-22** (136 words) -- `raw/research/github-betting-scan-2026-04-22.md`
 - **Current Fleet State (iter 9, 2026-04-07 09:30 UTC)** (130 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`
 - **Research Scan: github-scan-2026-04-11** (123 words) -- `raw/research/github-scan-2026-04-11.md`
 - **Research Scan: github-scan-2026-04-13** (123 words) -- `raw/research/github-scan-2026-04-13.md`
