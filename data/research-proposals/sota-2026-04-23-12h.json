@@ -1,0 +1,67 @@
+{
+  "cycle": "2026-04-23-12h",
+  "source": "cloud-brain-sonnet-4.6",
+  "topic": "NBA SOTA ExtraTrees Dominance + Political Feature Pipeline Repair",
+  "sota_refs": [
+    {
+      "title": "Uncertainty-Aware ML for NBA Forecasting (MDPI Information 2026)",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "key_finding": "LSTM+MC-dropout achieves best betting calibration. Top-3 features: home_next (next game at home), team_elo_5_y (5-year ELO window), team_elo. Logistic regression Brier=0.199 (tabular SOTA). XGBoost Brier=0.202.",
+      "actionable": "home_next (is next game at home?) is top-3 predictor — check if our feature engine includes it"
+    },
+    {
+      "title": "Stacked Ensemble NBA Prediction (Nature Scientific Reports 2025)",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "key_finding": "Stacked ensemble achieves CNN Brier=0.221. Logistic regression attains best Brier=0.199 among single models. XGBoost best AUC=0.754 but worse probability calibration.",
+      "actionable": "LR post-calibration head on top of ExtraTrees/CatBoost — LR's calibration strength on tree model's features"
+    },
+    {
+      "title": "NBA prediction with ML (Towards Data Science)",
+      "url": "https://towardsdatascience.com/predicting-the-outcome-of-nba-games-with-machine-learning-a810bb768f20/",
+      "key_finding": "Best single model accuracy=0.87 achieved by LR, ElasticNet, SVM, DNN (Dec 2025). Home_next and ELO features dominate importance."
+    }
+  ],
+  "fleet_observations": {
+    "S17_top_performer": "extra_trees 200-feat brier=0.22084 — NEW LIVE BEST (<0.22085 threshold)",
+    "S18": "extra_trees 51-feat brier=0.22248 — previously live best",
+    "S14_current_gen": "random_forest 200-feat brier=0.2205 — approaching threshold",
+    "S15_current_gen": "random_forest 106-feat brier=0.2223 — advancing with karpathy_lightning inject",
+    "pattern": "ExtraTrees and Random Forest (high-variance, low-bias) dominating fleet. CatBoost/LightGBM underperforming. Venn-Abers calibration is the differentiator for fleet records."
+  },
+  "proposals": [
+    {
+      "id": "P1-home-next-feature",
+      "priority": 1,
+      "title": "Add home_next temporal feature to features/engine.py",
+      "problem": "MDPI 2026 ranks home_next as #1 predictor. Teams conserve effort knowing an upcoming home game reduces travel fatigue pressure.",
+      "implementation": "In features/engine.py: for each game, look up next scheduled game in season schedule. home_next=1 if team plays at home in their next game, 0 otherwise. away_next_after_away=1 as a back-to-back fatigue compounding flag. Add 2 features to Cat3 TEMPORAL block.",
+      "expected_impact": "0.001-0.003 Brier improvement. Top-3 SOTA feature currently missing.",
+      "cpu_cost": "low — O(n) schedule lookup, precomputed at feature extraction time"
+    },
+    {
+      "id": "P2-lr-platt-calibration",
+      "priority": 2,
+      "title": "Logistic regression Platt scaling post-calibration",
+      "problem": "LR achieves Brier=0.199 (SOTA) on same data as ExtraTrees. Our ExtraTrees gets good ranking but tails may be miscalibrated. Venn-Abers works but requires full holdout.",
+      "implementation": "After ExtraTrees fit, train a 2-param sigmoid (Platt scaling) on out-of-fold predictions. sklearn CalibratedClassifierCV(method='sigmoid') wrapping ExtraTrees. Test as alternative to venn_abers in islands.",
+      "expected_impact": "0.001-0.003 Brier, especially for high-confidence games where miscalibration is costly"
+    },
+    {
+      "id": "P3-political-feature-pipeline",
+      "priority": 1,
+      "title": "Fix political feature pipeline: 272 → 3200 candidates",
+      "problem": "Political engine v3.22 has 44 categories / ~3200 features on paper but islands see only 272. Cats 9-44 fail silently because snapshot data files and import modules are not present in HF space.",
+      "root_cause": "(a) fetch_political_data imports fail or return sparse data; (b) cat39-43 standalone modules not deployed to HF space; (c) cat44 YouTube FinBERT has no sentiment.parquet on HF.",
+      "implementation": "Step 1: Audit what data is actually available in the HF space event dicts (check saved evolution results). Step 2: For cats 23-26 (FEC velocity, congressional trades, EO timeline, tariff regime) — these only need event metadata (date, ticker, signal_type) — add fallback default signals when upstream data is missing. Step 3: Deploy cat39-43 snapshot files to hf-space/ in repo.",
+      "expected_impact": "10x more feature candidates for GA to select from. Estimated 0.005-0.01 Brier improvement when combined with the larger search space."
+    },
+    {
+      "id": "P4-et-bias-injection",
+      "priority": 3,
+      "title": "ExtraTrees bias injection on diversify/recover events",
+      "observation": "S17 (ET 200-feat 0.22084), S18 (ET 51-feat 0.22248), S22 historical record (venn_abers on ET base, 0.22073). Extra Trees consistently outperforms CatBoost/LightGBM/XGBoost on this dataset.",
+      "implementation": "When diversify is triggered on S13 (which uses xgboost), inject ET seed: POST /api/config with suggested model override to extra_trees with calibration=venn_abers. Low-effort: just mutate toward ET config space.",
+      "expected_impact": "Faster convergence to ET optimum on S13 recovery. Potentially 0.22523→0.22250 in next 5 cycles."
+    }
+  ]
+}
