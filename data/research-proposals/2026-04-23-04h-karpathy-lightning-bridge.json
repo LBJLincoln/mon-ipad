@@ -1,0 +1,37 @@
+{
+  "id": "karpathy-lightning-bridge-v1",
+  "created_at": "2026-04-23T04:00:00Z",
+  "source": "cloud-brain-sonnet-4.6",
+  "title": "Karpathy-Lightning Feature Bridge: Extract GPU-discovered indices → seed CPU islands",
+  "priority": "CRITICAL",
+  "problem": {
+    "summary": "S14 receives REMOTE_PROMOTE from karpathy_lightning_0.21218 every ~25 cycles but brier stays at 0.22431. The promoted individual (random_forest, n_est=275, n_feat=106, src=karpathy_lightning_0.21218) uses TabICL-derived feature discovery on P100 GPU. When the same feature set runs on CPU tree islands without the GPU feature selection context, the 106 features degrade to fleet-average performance.",
+    "root_cause": "The 106 feature *indices* from the lightning checkpoint index into the full 7213-feature engine.py candidate space. But the feature importance ordering and interaction weights differ between TabICL (GPU attention-based) and ExtraTrees/RandomForest (CPU split-based). Promoting the index list without relearning importance = importing noise.",
+    "evidence": [
+      "S14 brier stuck at 0.22431 for 485+ gens despite 100+ REMOTE_PROMOTE injections",
+      "Fleet best 0.22073 was achieved by S22 independently (venn_abers_fusion, no GPU seeding)",
+      "S15 gen=350 individual hit 0.2192 with 200-feat RF — INDEPENDENTLY, no lightning seed"
+    ]
+  },
+  "proposal": {
+    "step_1": "Extract the actual feature NAMES (not just indices) from the karpathy_lightning_0.21218 checkpoint. The lightning script saves a feature_names list alongside model. Path: scripts/kaggle/nba_karpathy_loop.py output → data/checkpoints/lightning-best-*.pkl",
+    "step_2": "Run SHAP importance on a quick CPU ExtraTrees fit over those 106 features using the existing 9551-game training set. Keep only the top 50 by SHAP value on CPU — this re-ranks for CPU tree compatibility.",
+    "step_3": "POST /api/config to each island with a 'seed_features' payload containing the top-50 CPU-reranked feature names. This bypasses the full GA feature search and directly tests whether the GPU-discovered feature NAMES (not ranks) are genuinely predictive on CPU.",
+    "step_4": "If 2+ islands improve within 10 cycles, commit the top-50 list to features/engine.py as a 'priority_seed' hint for the GA initializer. If no improvement, conclude lightning features are GPU-specific and remove REMOTE_PROMOTE."
+  },
+  "quick_win_alternative": {
+    "title": "S15 gen=350 hidden gem checkpoint",
+    "detail": "S15 logs show a generation-350 individual: brier=0.2192, ROI=33.53%, sharpe=9.928, 200-feat RandomForest. If this is a true holdout score, it beats the fleet record 0.22073. Action: POST /api/command {command: boost_mutation} to S15 immediately after its diversify lands, to explore the neighborhood of this individual. Also extract its feature list via /api/status?details=true and compare with S18's 51-feat extra_trees (brier=0.22248) — overlap may reveal the high-value feature cluster.",
+    "estimated_impact": "Potential new fleet record if holdout-confirmed",
+    "implementation": "VM cron or next brain cycle: curl /api/status?details=true on S15 after gen 355-360"
+  },
+  "cross_project_port": {
+    "political": "Political islands use only 272 feature candidates (vs NBA 7213). The same reranking approach (GPU-name → CPU-SHAP top-50) could be applied to political if a GPU political run ever produces a strong individual. Not applicable now — no political GPU run has occurred."
+  },
+  "estimated_effort": "4h VM work: extract lightning checkpoint features (1h), SHAP rerank (1h), POST /api/config to 6 islands (30min), monitor 10 cycles (2h)",
+  "assignee": "VM autonomous-cycle.sh or manual user session",
+  "files_to_modify": [
+    "scripts/kaggle/nba_karpathy_loop.py (add feature_names export to checkpoint)",
+    "scripts/autonomous-cycle.sh (add post-lightning feature extraction step)"
+  ]
+}
