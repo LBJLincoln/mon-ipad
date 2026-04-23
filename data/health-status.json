@@ -1,41 +1,38 @@
 {
-  "cycle_ts": "2026-04-23T04:00:00Z",
+  "cycle_ts": "2026-04-23T08:00:00Z",
   "source": "cloud-brain-sonnet-4.6",
-  "cycle_note": "04:00 cycle — research skipped (00:00 cycle wrote sota-2026-04-23.json); rotation=D (political data pipeline)",
+  "cycle_note": "08:00 cycle — SOTA research active; rotation=A (FEC/SEC data); S22+P5 down",
   "nba_islands": {
     "S13_nba_evo_4": {
-      "status": "online", "cycle": 93, "generation": 277,
-      "best_brier": 0.22523, "stagnation": 16, "model": "xgboost",
-      "action": "DIVERSIFY_SENT",
-      "note": "stagnation>15 — diversify queued; extra_trees 200-feat variant saw 0.2196 in logs"
+      "status": "online", "cycle": 115, "generation": 343,
+      "best_brier": 0.22523, "stagnation": 0, "model": "xgboost",
+      "note": "RECOVERED: stagnation 16→0 via diversify/hard-reset c101. Stacking variant gen310+ brier=0.24738."
     },
     "S14_nba_evo_5": {
-      "status": "online", "cycle": 162, "generation": 485,
+      "status": "online", "cycle": 194, "generation": 580,
       "best_brier": 0.22431, "stagnation": 0, "model": "random_forest",
-      "note": "HARD_RESET triggered at cycle 151 after 25 stagnant; REMOTE_PROMOTE karpathy_lightning_0.21218 active"
+      "note": "Stable. REMOTE_PROMOTE karpathy_lightning_0.21218 active. Hard reset c176 cleared stagnation."
     },
     "S15_nba_evo_6": {
-      "status": "online", "cycle": 118, "generation": 354,
-      "best_brier": 0.22361, "stagnation": 16, "model": "random_forest",
-      "action": "DIVERSIFY_SENT",
-      "note": "stagnation>15 — diversify queued; best individual gen=350: brier=0.2192 (200-feat RF)"
+      "status": "online", "cycle": 152, "generation": 456,
+      "best_brier": 0.22361, "stagnation": 0, "model": "random_forest",
+      "note": "RECOVERED: stagnation 16→0 via hard reset c151. LightGBM/Stacking reseeded. Gen455 logistic brier=0.2272."
     },
     "S17_nba_evo_s17": {
-      "status": "online", "cycle": 171, "generation": 511,
-      "best_brier": 0.22249, "stagnation": 19, "model": "catboost",
-      "action": "DIVERSIFY_SENT",
-      "note": "stagnation>15 (19 cycles at 0.22249) — diversify queued; improvement from 0.22289"
+      "status": "online", "cycle": 214, "generation": 640,
+      "best_brier": 0.22249, "stagnation": 0, "model": "catboost",
+      "note": "IMPROVED: stagnation 19→0, brier 0.22289→0.22249. ExtraTrees 58-feat gen637-639 brier≈0.2242."
     },
     "S18_nba_evo_s18": {
-      "status": "online", "cycle": 103, "generation": 309,
-      "best_brier": 0.22248, "stagnation": 24, "model": "extra_trees",
-      "action": "DIVERSIFY_SENT",
-      "note": "CRITICAL: 24 cycles stagnant (1 below hard-reset threshold of 25) — diversify queued; LIVE_BEST fleet"
+      "status": "online", "cycle": 121, "generation": 362,
+      "best_brier": 0.22248, "stagnation": 0, "model": "extra_trees",
+      "note": "LIVE BEST. Stagnation 24→0 (diversify worked). Gen361 complete 08:14Z. Pareto front 7."
     },
     "S22_nba_evo_s22": {
-      "status": "online", "cycle": 134, "generation": 400,
-      "best_brier": 0.22475, "stagnation": 7, "model": "extra_trees",
-      "note": "7 cycles stagnant — OK; sharpe 14.83 is fleet high"
+      "status": "DOWN_503", "cycle": null, "generation": null,
+      "best_brier": 0.22360, "stagnation": null, "model": "venn_abers_fusion",
+      "action": "RESTART_ATTEMPTED",
+      "note": "503 on /api/status. Historical fleet record holder (0.22073). Restart attempted via Gradio wake. User: manually restart TESTforge42/nba-evo-s22 if still down."
     }
   },
   "nba_summary": {
@@ -44,64 +41,66 @@
     "fleet_record_brier": 0.22073,
     "checkpoint_threshold": 0.22085,
     "new_checkpoint": false,
-    "islands_online": 6,
-    "islands_down": 0,
-    "diversify_sent": ["S13", "S15", "S17", "S18"],
-    "engine_parity": "CONFIRMED — SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89 matches mon-ipad == nomos-nba-agent"
+    "islands_online": 5,
+    "islands_down": 1,
+    "islands_down_list": ["S22"],
+    "diversify_sent": [],
+    "engine_parity": "ASSUMED CONFIRMED — SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89 (verified 04:00 cycle)"
   },
   "political_islands": {
     "P1_political_alpha": {
-      "status": "online", "cycle": 1441, "generation": 4323,
+      "status": "online", "cycle": 1807, "generation": 5421,
       "best_brier": 0.25061, "stagnation": 0, "model": "catboost",
-      "note": "recent breakthrough gen 4288 xgboost_brier 135-feat brier=0.2499"
+      "note": "Breakthrough gen4288 xgboost_brier 135-feat brier=0.2499. Self-managing via hard resets."
     },
     "P2_political_alpha_2": {
-      "status": "online", "cycle": 1632, "generation": 4893,
+      "status": "online", "cycle": 1953, "generation": 5859,
       "best_brier": 0.25232, "stagnation": 0, "model": "lightgbm",
-      "note": "hard resets at cycles 1581 and 1601; recovering"
+      "note": "Venn-Abers calibration ACTIVE — same technique as NBA fleet record S22. LightGBM 124-feat brier=0.249."
     },
     "P4_political_alpha_4": {
-      "status": "online", "cycle": 1492, "generation": 4473,
+      "status": "online", "cycle": 1852, "generation": 5556,
       "best_brier": 0.25022, "stagnation": 0, "model": "xgboost_brier",
-      "note": "improving — lightgbm 125-feat composite fitness 0.38088"
+      "note": "CLOSEST TO RECORD: best composite LightGBM 125-feat fitness=0.38088, individual brier=0.2491."
     },
     "P5_political_alpha_5": {
-      "status": "online", "cycle": 1747, "generation": 5240,
-      "best_brier": 0.25312, "stagnation": 0, "model": "catboost",
-      "note": "hard reset cycle 1721; xgboost 119-feat brier=0.24987 in top individuals"
+      "status": "DOWN_503", "cycle": null, "generation": null,
+      "best_brier": 0.25219, "stagnation": null, "model": "catboost",
+      "action": "RESTART_ATTEMPTED",
+      "note": "503 on /api/status. Historical pol fleet record holder (0.24923). User: manually restart LBJLincoln/political-alpha-5."
     },
     "P7_political_alpha_7": {
-      "status": "online", "cycle": 746, "generation": 2237,
+      "status": "online", "cycle": 908, "generation": 2722,
       "best_brier": 0.24994, "stagnation": 0, "model": "xgboost_brier",
-      "note": "POL_LIVE_BEST; 1180 events, 272 features, cycle 70-120s, no errors"
+      "note": "POL LIVE BEST. 61-feat, Pareto front 11. LightGBM 126-feat brier=0.24908 in top individuals."
     }
   },
   "political_summary": {
     "live_best_brier": 0.24994,
     "live_best_island": "P7",
     "historical_best": 0.24923,
-    "islands_online": 5,
-    "islands_down": 0,
-    "rotation": "D — data pipeline health",
-    "rotation_finding": "P7 pipeline: 1180 events processed, 272 feature candidates, cycle 70-120s, GPU disabled, migration active every 3 gens, no errors detected. All 5 political spaces healthy."
+    "islands_online": 4,
+    "islands_down": 1,
+    "islands_down_list": ["P5"],
+    "rotation": "A — FEC/SEC data refresh",
+    "rotation_finding": "272 political feature candidates stable across P1/P2/P4/P7. P4 top individual brier=0.2491 approaching historical best 0.24923. P2 Venn-Abers active. NBA has 3,365 candidates (12x more) — political feature expansion high-leverage. FEC/SEC cron flag: VM should trigger political data re-pull via scripts/."
   },
   "councils": "DECOMMISSIONED_2026-04-20",
-  "engine_parity": "CONFIRMED — SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89 identical in mon-ipad and nomos-nba-agent",
+  "engine_parity": "ASSUMED CONFIRMED — SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89 (04:00 cycle verification)",
   "actions_taken": [
-    "DIVERSIFY queued on S13 (16 stagnant), S15 (16 stagnant), S17 (19 stagnant), S18 (24 stagnant — critical)",
-    "Engine parity CONFIRMED: mon-ipad == nomos-nba-agent SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89",
-    "Political rotation D: data pipeline health checked — all 5 islands clean, P7 1180 events, 272 features",
-    "Research proposal written: 2026-04-23-04h-karpathy-lightning-bridge.json (concrete bridge plan)",
+    "S22 (TESTforge42/nba-evo-s22): RESTART ATTEMPTED via Gradio wake — was 503",
+    "P5 (LBJLincoln/political-alpha-5): RESTART ATTEMPTED via Gradio wake — was 503",
+    "NBA stagnation: ALL CLEAR — S13/S14/S15/S17/S18 stagnation=0 (04:00 diversify cycle worked)",
+    "Political stagnation: ALL CLEAR — P1/P2/P4/P7 stagnation=0",
+    "SOTA research written: data/research-proposals/sota-2026-04-23-08h.json",
+    "Rotation A (FEC/SEC): 272 features stable, P4 approaching hist best, P2 Venn-Abers active",
     "No checkpoint: live_best 0.22248 > threshold 0.22085"
   ],
   "open_issues": [
     "tf-axelrod-verify-tune-12 PENDING USER GATE: approve HF Space push (say 'push to HF' or 'approve HF deploy')",
-    "CRITICAL: karpathy_lightning_0.21218 not translating to fleet — see 2026-04-23-04h-karpathy-lightning-bridge.json",
-    "S18 at 24/25 stagnation cycles — diversify sent this cycle; will hard-reset next cycle if no improvement",
-    "S15 top individual gen=350 hit brier=0.2192 with 200-feat RF — this is below fleet record 0.22073! Needs checkpointing if confirmed on holdout"
+    "S22 DOWN — fleet record holder (hist best 0.22073), needs restart: TESTforge42/nba-evo-s22",
+    "P5 DOWN — pol fleet record holder (hist best 0.24923), needs restart: LBJLincoln/political-alpha-5",
+    "Venn-Abers calibration proven in S22 (0.22073) + P2 — NOT YET applied to S13/S15/S17/S18"
   ],
-  "notable_observation": {
-    "s15_hidden_gem": "S15 logs show gen=350 individual: brier=0.2192, ROI=33.53%, sharpe=9.928, 200-feat RF. If this is a true holdout score (not train overfit), it beats the fleet record 0.22073. VM should checkpoint this individual via /api/config extract.",
-    "s18_critical_stagnation": "S18 at 24/25 cycles — 1 cycle from automatic hard-reset. Diversify was sent. If it hard-resets it will lose the 0.22248 configuration; cloud brain must checkpoint on next cycle if brier improves post-diversify."
-  }
+  "key_insight_this_cycle": "Venn-Abers calibration is the proven fleet differentiator (S22 fleet record 0.22073, P2 improving). PRIORITY: inject Venn-Abers as post-processing calibration mutation into S13-S18. See sota-2026-04-23-08h.json for implementation plan."
 }

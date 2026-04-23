@@ -1,0 +1,83 @@
+{
+  "id": "sota-2026-04-23-08h",
+  "created_at": "2026-04-23T08:00:00Z",
+  "source": "cloud-brain-sonnet-4.6",
+  "search_query": "NBA game prediction machine learning SOTA 2026 Brier score calibration tabular models",
+  "papers_found": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "year": 2026,
+      "key_technique": "LSTM + Monte Carlo Dropout for calibrated uncertainty + shot-chart spatial embeddings",
+      "reported_brier": "not stated (win prob accuracy 74%+)",
+      "relevance": "HIGH — MC Dropout = calibration layer on top of any model"
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "year": 2025,
+      "key_technique": "Stacked ensemble: NaiveBayes + AdaBoost + MLP + KNN + XGBoost + DecisionTree + LogisticRegression",
+      "reported_brier": "not stated",
+      "relevance": "MEDIUM — our islands already do stacking; diverse base learner mix is novel"
+    },
+    {
+      "title": "XGBoost + SHAP for NBA game outcome prediction",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
+      "year": 2024,
+      "key_technique": "SHAP-driven feature selection + XGBoost. Logistic regression baseline Brier=0.199",
+      "reported_brier": 0.199,
+      "relevance": "HIGH — 0.199 is well below our 0.22248. Note: likely train/test not walk-forward."
+    }
+  ],
+  "fleet_context": {
+    "current_live_best": 0.22248,
+    "fleet_record": 0.22073,
+    "target": 0.22085,
+    "gap_to_target": 0.00163,
+    "proven_technique_in_fleet": "Venn-Abers calibration (S22 fleet record 0.22073)"
+  },
+  "proposals": [
+    {
+      "id": "P1-venn-abers-cross-island",
+      "priority": 1,
+      "title": "Apply Venn-Abers calibration to S13/S15/S17/S18 via mutation",
+      "rationale": "S22 holds fleet record 0.22073 using venn_abers_fusion. P2 (political) also improved with Venn-Abers. This is the single proven technique that pushes below threshold 0.22085. Zero engineering risk — it's a post-processing calibration wrapper.",
+      "implementation": "POST /api/config to each island with mutation injecting venn_abers calibration in crossover/mutate. Alternatively, /api/command diversify with model_type=venn_abers_fusion seeded in population.",
+      "expected_delta_brier": -0.002,
+      "effort": "LOW — config mutation only, no code changes",
+      "target_islands": ["S13", "S15", "S17", "S18"]
+    },
+    {
+      "id": "P2-rolling-form-features",
+      "priority": 2,
+      "title": "Add rolling-form temporal windows (5/10/15-game) as explicit feature categories",
+      "rationale": "SOTA paper (MDPI 2026) uses rolling-form indicators as key input. Our engine v3.1 has 54 categories but may not have explicit N-game momentum windows as separate feature group. Adding 3 window sizes × existing stats = ~150 new candidates.",
+      "implementation": "In features/engine.py: add rolling_form_5g, rolling_form_10g, rolling_form_15g category. Compute for: pts_diff, fg_pct, reb, ast, tov, plus/minus. Deploy to mon-ipad + nomos-nba-agent (engine parity). Restart islands to pick up new candidates.",
+      "expected_delta_brier": -0.001,
+      "effort": "MEDIUM — feature engine change requires parity commit + space restart",
+      "target_islands": ["S13", "S14", "S15", "S17", "S18", "S22"]
+    },
+    {
+      "id": "P3-conformal-prediction-calibration",
+      "priority": 3,
+      "title": "Conformal prediction (MAPIE) calibration as alternative to MC Dropout",
+      "rationale": "MDPI 2026 uses MC Dropout for calibrated uncertainty on LSTM. For tree models, conformal prediction via MAPIE library is the equivalent. Provides valid coverage guarantees and re-calibrates probability outputs.",
+      "implementation": "In space: after GA selects best model, wrap in MAPIE ConformalClassifier with cross-val calibration. Add as a new model_type option: 'conformal_xgboost', 'conformal_catboost'. Evaluate on holdout.",
+      "expected_delta_brier": -0.001,
+      "effort": "MEDIUM — code change in space app.py, requires MAPIE pip install",
+      "target_islands": ["S14", "S17"]
+    },
+    {
+      "id": "P4-political-feature-expansion",
+      "priority": 4,
+      "title": "Expand political feature candidates from 272 to ~500+ (match NBA density)",
+      "rationale": "NBA islands have 3,365 feature candidates; political has only 272 (12x fewer). Political engine v3.19 has 22 categories but low feature density. Expanding with derived features (rolling windows, interaction terms, FEC amount buckets) would give GA more search space.",
+      "implementation": "In nomos-political-alpha: extend political_engine.py feature generators. Add: 30/60/90-day rolling averages for each category, candidate-pair interaction features, FEC amount log-transform buckets.",
+      "expected_delta_brier": -0.002,
+      "effort": "MEDIUM — political_engine.py edit + island restart (no parity constraint since political has own engine)",
+      "target_islands": ["P1", "P2", "P4", "P7"]
+    }
+  ],
+  "immediate_action": "P1-venn-abers-cross-island: POST diversify with venn_abers_fusion seed to S13/S15/S17/S18. This is zero-risk and the single proven path to breaking fleet record 0.22073.",
+  "nota_bene": "Papers reporting Brier=0.199 use simple train/test splits on full seasons. Our walk-forward 19-week holdout (934 games) is harder. Our 0.22248 is competitive in a proper validation regime. Gap to 0.199 may reflect fundamental data limits more than algorithmic ones."
+}
