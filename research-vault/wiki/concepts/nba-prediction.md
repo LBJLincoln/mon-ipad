@@ -129,7 +129,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **nba_tf_brier_noise_floor_apr20** (311 words) -- `raw/agent-memory/swish_project_nba_tf_brier_noise_floor_apr20.md`
 - **Deep-scan triple-ship Apr 21 2026 (#1 calibrated-Kelly NBA, #3 ITF regime-gate, ** (309 words) -- `raw/agent-memory/dr-frankenstein_project_deep_scan_triple_apr21.md`
 - **Market Analyst Data Sources** (306 words) -- `raw/agent-memory/market-analyst_reference_data_sources.md`
-- **Karpathy POLITICAL — Mutation Effectiveness Analysis** (306 words) -- `raw/karpathy/political-mutation-analysis.md`
 - **Market Analyst Data Sources** (306 words) -- `raw/market-analyst/reference_data_sources.md`
 - **Nomos42 Weekly Research Digest** (305 words) -- `raw/research/weekly-digest-2026-04-06.md`
 - **Research Scan: latest-improvements-2026-03-31** (300 words) -- `raw/research/latest-improvements-2026-03-31.md`
@@ -137,6 +136,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Portfolio Optimization Deep Sweep — March 2026 Cycle 5** (299 words) -- `raw/research-analyst/research_march2026_cycle5_portfolio.md`
 - **project_hf_spaces_inventory** (297 words) -- `raw/agent-memory/repo-scout_project_hf_spaces_inventory.md`
 - **project_hf_spaces_inventory** (297 words) -- `raw/repo-scout/project_hf_spaces_inventory.md`
+- **Karpathy POLITICAL — Mutation Effectiveness Analysis** (295 words) -- `raw/karpathy/political-mutation-analysis.md`
 - **TF github:* silent-dead RCA + v3 reroute (2026-04-21)** (291 words) -- `raw/agent-memory/switchboard_project_tf_github_silentdead_apr21.md`
 - **dashboard-pixel-sota-research-apr17** (290 words) -- `raw/agent-memory/nomos-scout_project_dashboard_pixel_research_apr17.md`
 - **Nomos42 Weekly Research Digest** (277 words) -- `raw/research/weekly-digest-2026-03-31.md`

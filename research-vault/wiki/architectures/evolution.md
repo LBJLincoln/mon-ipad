@@ -59,7 +59,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/karpathy-researcher/feedback_karpathy_patterns_validated.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
 - **Karpathy NBA — Mutation Effectiveness Analysis** (328 words) -- `raw/karpathy/nba-mutation-analysis.md`
-- **Karpathy POLITICAL — Mutation Effectiveness Analysis** (306 words) -- `raw/karpathy/political-mutation-analysis.md`
+- **Karpathy POLITICAL — Mutation Effectiveness Analysis** (295 words) -- `raw/karpathy/political-mutation-analysis.md`
 - **Autonomous Org Benchmark April 2026** (292 words) -- `raw/agent-memory/research-analyst_research_april2026_autonomous_org_benchmark.md`
 - **multi_target_trainer** (275 words) -- `raw/agent-memory/feature-engineer_project_multi_target_trainer.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-17** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-17.md`

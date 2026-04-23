@@ -1,11 +1,11 @@
 # Current State — System Snapshot
 
-> Auto-generated on 2026-04-22 05:00 UTC
+> Auto-generated on 2026-04-23 05:00 UTC
 
 ## Brier Scores
 
 - NBA Karpathy best: 0.21218334576044304
-- Political Karpathy best: 0.20454312075559716
+- Political Karpathy best: 0.2023861347092226
 - Backtest live Brier: 0.20939
 - TARGET: 0.20000
 - ALL-TIME BEST: 0.21570 (Colab TabICL, 110f, iter 15)
@@ -21,15 +21,15 @@
 | S19_nba | 0.00000 |
 | S20_nba | 0.00000 |
 | S21_nba | 0.00000 |
-| S18_nba | 0.22154 |
-| S17_nba | 0.22289 |
-| S15_nba | 0.22325 |
-| S22_nba | 0.22360 |
-| S13_nba | 0.23173 |
-| S14_nba | 0.23450 |
+| S18_nba | 0.22248 |
+| S17_nba | 0.22249 |
+| S15_nba | 0.22361 |
+| S14_nba | 0.22431 |
+| S22_nba | 0.22475 |
+| S13_nba | 0.22523 |
 
 - Fleet champion: S10_nba (0.00000)
-- Fleet average: 0.10442
+- Fleet average: 0.10330
 
 ## NBA Karpathy Loop
 
