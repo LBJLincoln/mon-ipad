@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-04-23T20:20:00Z",
+  "cycle": "20:00",
+  "source": "cloud-brain-sonnet-4.6",
+  "title": "TabPFN-2.5 + Stacked ET-Calibrated Ensemble for NBA Brier Target <0.215",
+  "priority": "HIGH",
+  "current_best": {
+    "colab_tabiCL": 0.21514,
+    "fleet_live_best": 0.22248,
+    "fleet_all_time": 0.22073,
+    "target": 0.20
+  },
+  "proposals": [
+    {
+      "id": "P1_tabpfn25",
+      "title": "TabPFN-2.5 on NBA dataset (Colab T4)",
+      "priority": 1,
+      "rationale": "TabPFN-2.5 (Prior-Labs/tabpfn_2_5, Nature 2024) now handles up to 100K rows × 2000 features — our dataset (~1000 games × 200 selected features) is a perfect fit. Prior TabPFN v1 was limited to ~1000 rows. TabPFN-2.5 delivers calibrated Bayesian inference with no hyperparameter tuning. Competitor studies report Brier ~0.199 with calibrated models on similar datasets.",
+      "expected_brier_range": "0.200-0.215",
+      "effort": "LOW (pip install tabpfn, swap model, ~30min Colab)",
+      "platform": "Google Colab T4",
+      "hf_model": "Prior-Labs/tabpfn_2_5",
+      "action": "In next Colab session: pip install tabpfn; from tabpfn import TabPFNClassifier; fit on train split; predict_proba for Brier. Compare to TabICL baseline 0.21514."
+    },
+    {
+      "id": "P2_et_venn_abers_stack",
+      "title": "ExtraTrees + Venn-Abers calibration stacked ensemble",
+      "priority": 2,
+      "rationale": "Fleet best non-GPU model: S17 ET top_performer 0.22084 (gen795). S18 ET best_brier 0.22248. S22 venn_abers_fusion fleet record 0.22073. Stacking ET + Venn-Abers calibration in a single model not yet attempted. Venn-Abers is mondrian conformal predictor — guarantees calibration under distribution shift (ideal for NBA season where team quality shifts).",
+      "expected_brier_range": "0.219-0.222",
+      "effort": "MEDIUM (2h engineering)",
+      "platform": "HF Space (inject via /api/config or new island)",
+      "action": "Add ExtraTrees+VennAbers as a first-class model_type in features/engine.py GA. Inject into S22 when it restarts."
+    },
+    {
+      "id": "P3_autogluon_tabular",
+      "title": "AutoGluon Tabular on NBA (Kaggle P100)",
+      "priority": 3,
+      "rationale": "AutoGluon achieved 77.38% accuracy (Brier ~0.22) in comparative evaluations — competitive with SVM at 77.49%. AutoGluon's automatic stacking and ensembling may discover combinations our GA hasn't found. Kaggle P100 has AutoGluon available.",
+      "expected_brier_range": "0.215-0.222",
+      "effort": "LOW-MEDIUM (Kaggle notebook, 2h GPU)",
+      "platform": "Kaggle P100",
+      "action": "Update nba_karpathy_loop.py to include AutoGluon TabularPredictor as a baseline comparison."
+    },
+    {
+      "id": "P4_temporal_features",
+      "title": "Temporal/schedule features: home_next + rest_mismatch",
+      "priority": 4,
+      "rationale": "MDPI 2026 study: 'home_next' (has team played home game next?) is the #1 most influential feature across multiple models. Our engine has rest/schedule category but may not have forward-looking 'home_next' or 'opponent_rest_mismatch_days'. These are zero-cost to compute from existing schedule data.",
+      "expected_brier_delta": "-0.002 to -0.005",
+      "effort": "LOW (add 2-3 features to engine.py cat 6 REST_SCHEDULE)",
+      "action": "Add home_next_game_home (bool), next_game_days_gap, opponent_next_game_home to features/engine.py category 6."
+    },
+    {
+      "id": "P5_political_et_injection",
+      "title": "Rotation C: Inject ExtraTrees preference into political islands",
+      "priority": 5,
+      "rationale": "ExtraTrees dominates NBA (S17+S18 both ET, best Brier). Political islands use xgboost/catboost/lightgbm. ET's random feature subspace sampling may reduce noise from high-cardinality political event features. P7 xgboost_brier 0.24994 is live best — ET injection via /api/command may escape current plateau.",
+      "expected_brier_delta": "-0.001 to -0.003",
+      "effort": "LOW (POST /api/command to P5/P7)",
+      "action": "Next brain cycle: POST /api/command {\"action\": \"inject_model\", \"model_type\": \"extra_trees\"} to P7/P5. If endpoint not available, add extra_trees to political island mutation pool via PR."
+    }
+  ],
+  "sota_sources": [
+    {"title": "TabPFN-2.5 (Prior-Labs/tabpfn_2_5)", "url": "https://huggingface.co/Prior-Labs/tabpfn_2_5"},
+    {"title": "Accurate predictions on small data with a tabular foundation model (Nature 2024)", "url": "https://www.nature.com/articles/s41586-024-08328-6"},
+    {"title": "Uncertainty-Aware ML for NBA Forecasting (MDPI 2026)", "url": "https://www.mdpi.com/2078-2489/17/1/56"},
+    {"title": "Stacked ensemble model for NBA game outcome prediction (Nature/Sci Reports 2025)", "url": "https://www.nature.com/articles/s41598-025-13657-1"}
+  ]
+}
