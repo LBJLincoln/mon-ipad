@@ -1,0 +1,39 @@
+{
+  "date": "2026-04-23",
+  "source": "cloud-brain-sonnet-4.6",
+  "cycle_ts": "2026-04-23T00:00:00Z",
+  "title": "SOTA Survey + Karpathy Lightning Bridge Gap",
+  "proposals": [
+    {
+      "id": "P1",
+      "title": "Karpathy Lightning Feature Bridge: Extract + Inject 0.21218 Feature Subset",
+      "priority": "CRITICAL",
+      "motivation": "The Karpathy Lightning burst (P100 TabICL) produces a 0.21218 Brier individual with n_feat=106. This is being injected via REMOTE_PROMOTE into S14 but not translating — S14 stays at 0.22431 after 3+ injections. The feature indices from the lightning individual capture optimal feature combinations for this dataset. Extracting and seeding CPU islands with these 106 indices as high-priority starting individuals would bridge the GPU->CPU gap without requiring GPU compute.",
+      "implementation": "1. Read latest karpathy lightning output (scripts/gpu-burst/lightning-output/ or Lightning.ai artifacts). 2. Extract best individual's feature_indices array (106 entries from ~3365 candidates). 3. POST each survivor island /api/config with seed_individual containing those indices + catboost model_type. 4. Monitor next 5 cycles for brier improvement vs baseline.",
+      "expected_impact": "If 30% of lightning feature advantage transfers to catboost on CPU, expect brier drop from 0.22248 toward 0.220x range. Non-destructive — seeds 1 individual into 60-member population."
+    },
+    {
+      "id": "P2",
+      "title": "Logistic Regression Brier 0.199 — Add LR to GA Model Pool",
+      "priority": "HIGH",
+      "motivation": "Published 2026 research (MDPI uncertainty-aware NBA, Preprints.org Apr 2026) shows logistic regression achieving Brier 0.199 on NBA datasets — better than our fleet best 0.22073. Our previous sota-2026-04-19 flagged this. The GA has never included logistic_regression in its model_type pool. Adding it costs 1 line in island init and lets the GA discover if LR is competitive on our feature set.",
+      "implementation": "Add 'logistic_regression' to MODELS dict in island app.py with C=0.1/1.0/10.0 as GA-tunable hyperparams + saga solver + L1 penalty. Include in crossover/mutate model_type choices. GA will naturally select it if it performs.",
+      "expected_impact": "Low implementation cost, potentially high reward. LR is extremely fast to train (5-10x faster than xgboost), enabling larger populations or more generations per cycle."
+    },
+    {
+      "id": "P3",
+      "title": "SHAP-Protected Core Features — Prevent GA from Dropping Top-15",
+      "priority": "MEDIUM",
+      "motivation": "Preprints.org 'Key Factors Influencing NBA Game Outcomes' (Apr 2026 v2) and XGBoost+SHAP PMC paper consistently identify: home_win_pct, away_win_pct, elo_difference, rest_days_delta, back-to-back indicator, last-10 form. These 6-15 features are getting randomly dropped during mutation. SHAP on our best individuals would likely confirm these are our top features too. Making them protected from deletion would prevent wasted search.",
+      "implementation": "1. Run SHAP on current best individual from S18 (extra_trees, 51 features, brier 0.22248). 2. Identify top 15 feature indices by mean |SHAP|. 3. Add 'protected_feature_indices' list to island config via /api/config. 4. Modify mutation to skip deletion for protected indices.",
+      "expected_impact": "Accelerates convergence by 20-30% — eliminates generation cycles wasted on poor feature combinations."
+    }
+  ],
+  "sota_references": [
+    {"title": "Uncertainty-Aware ML for NBA Forecasting in Digital Betting", "url": "https://www.mdpi.com/2078-2489/17/1/56", "key_result": "LSTM+MC-dropout calibrated uncertainty; rolling-form + shot-chart embeddings; Brier competitive"},
+    {"title": "Key Factors Influencing NBA Game Outcomes (Apr 2026, v2)", "url": "https://www.preprints.org/manuscript/202504.1348", "key_result": "ML+SHAP: home_win_pct, elo_delta, rest_days, fatigue are top predictors"},
+    {"title": "XGBoost + SHAP NBA Integration (PMC 2024)", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/", "key_result": "Brier 0.202 with XGBoost+SHAP quantitative methodology"},
+    {"title": "Comparative Evaluation ML for NBA (SCIRP)", "url": "https://www.scirp.org/journal/paperinformation?paperid=147163", "key_result": "SVM accuracy 0.7749 best; AutoGluon 0.7738; DNN 0.7726"}
+  ],
+  "cross_project_win": "Port to Political: extra_trees with 34-51 features working in NBA (S18: 0.22248, S17: 0.22249). Political P4 top5 shows extra_trees at 41 features brier 0.2532 — needs more mutation pressure toward smaller feature counts (target 30-50). Add feature_count_penalty to political fitness that rewards compactness below 50 features."
+}

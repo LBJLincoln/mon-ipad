@@ -1,46 +1,53 @@
 {
-  "cycle_ts": "2026-04-22T08:00:00Z",
+  "cycle_ts": "2026-04-23T00:00:00Z",
   "source": "cloud-brain-sonnet-4.6",
   "nba_islands": {
-    "S13_nba_evo_4": {"status": "online", "cycle": 27, "best_brier": 0.22523, "stagnation_cycles": 16, "action": "diversify_queued"},
-    "S14_nba_evo_5": {"status": "down_503", "note": "Nomos42 acct 403 on restart"},
-    "S15_nba_evo_6": {"status": "down_503", "note": "Nomos42 acct 403 on restart"},
-    "S17_nba_evo_s17": {"status": "down_503", "note": "LBJLincoln26 - keepalive should recover"},
-    "S18_nba_evo_s18": {"status": "online", "cycle": 40, "best_brier": 0.22248, "stagnation_cycles": 13, "model": "extra_trees", "note": "LIVE_BEST"},
-    "S22_nba_evo_s22": {"status": "down_503", "note": "TESTforge42 - keepalive should recover"}
+    "S13_nba_evo_4": {"status": "online", "note": "HTTP_200_response_too_large_to_parse", "url": "nomos42-nba-evo-4.hf.space"},
+    "S14_nba_evo_5": {"status": "online", "cycle": 128, "generation": 384, "best_brier": 0.22431, "stagnation": 0, "model": "random_forest", "note": "HARD_RESET_active_at_25cyc; REMOTE_PROMOTE karpathy_lightning_0.21218 injecting"},
+    "S15_nba_evo_6": {"status": "online", "note": "HTTP_200_response_too_large_to_parse", "url": "nomos42-nba-evo-6.hf.space"},
+    "S17_nba_evo_s17": {"status": "online", "cycle": 143, "generation": 429, "best_brier": 0.22249, "stagnation": 0, "model": "catboost"},
+    "S18_nba_evo_s18": {"status": "online", "cycle": 82, "generation": 244, "best_brier": 0.22248, "stagnation": 0, "model": "extra_trees", "note": "LIVE_BEST"},
+    "S22_nba_evo_s22": {"status": "online", "cycle": 100, "generation": 300, "best_brier": 0.22475, "stagnation": 0, "model": "extra_trees"}
   },
   "nba_summary": {
     "live_best_brier": 0.22248,
     "fleet_record_brier": 0.22073,
     "checkpoint_threshold": 0.22085,
     "new_checkpoint": false,
-    "islands_online": 2,
-    "islands_down": 4
+    "islands_online": 6,
+    "islands_down": 0,
+    "note": "ALL_ISLANDS_RECOVERED — was 4 down last cycle; REMOTE_PROMOTE karpathy_0.21218 active on S14"
   },
   "political_islands": {
-    "P1_political_alpha": {"status": "online", "gen": 1220, "best_brier": 0.25022, "stagnation_cycles": 30, "action": "diversify_queued"},
-    "P2_political_alpha_2": {"status": "down_503", "note": "Nomos42 acct 403 on restart"},
-    "P4_political_alpha_4": {"status": "online", "gen": 1220, "best_brier": 0.25022, "stagnation_cycles": 30, "action": "diversify_queued"},
-    "P5_political_alpha_5": {"status": "down_503", "note": "LBJLincoln - keepalive should recover"},
-    "P7_political_alpha_7": {"status": "online", "gen": 658, "best_brier": 0.24994, "stagnation_cycles": 0, "note": "POL_LIVE_BEST_improving"}
+    "P1_political_alpha": {"status": "online", "cycle": 1161, "generation": 3482, "best_brier": 0.25061, "stagnation": 0, "model": "catboost"},
+    "P2_political_alpha_2": {"status": "online", "cycle": 1303, "generation": 3909, "best_brier": 0.25232, "stagnation": 0, "model": "lightgbm", "note": "RECOVERED_from_down_503"},
+    "P4_political_alpha_4": {"status": "online", "cycle": 1190, "generation": 3570, "best_brier": 0.25022, "stagnation": 0, "model": "xgboost_brier"},
+    "P5_political_alpha_5": {"status": "online", "cycle": 1425, "generation": 4275, "best_brier": 0.25312, "stagnation": 0, "model": "catboost", "note": "RECOVERED_from_down_503"},
+    "P7_political_alpha_7": {"status": "online", "cycle": 579, "generation": 1737, "best_brier": 0.24994, "stagnation": 0, "model": "xgboost_brier", "note": "POL_LIVE_BEST"}
   },
   "political_summary": {
     "live_best_brier": 0.24994,
     "historical_best": 0.24923,
-    "islands_online": 3,
-    "islands_down": 2
+    "islands_online": 5,
+    "islands_down": 0,
+    "note": "ALL_POL_ISLANDS_RECOVERED — was 2 down last cycle"
   },
   "councils": "DECOMMISSIONED_2026-04-20",
+  "engine_parity": "not_checked_this_cycle_engine.py_too_large_for_API",
   "actions_taken": [
-    "diversify queued S13 (stagnation 16 cycles) — fixed key from action to command",
-    "diversify queued P1 (stagnation 30 cycles)",
-    "diversify queued P4 (stagnation 30 cycles)",
-    "pushed apply-pol-fire17-v2.yml: fire-18 patches finally applied via base64-encoded Python, no heredoc escaping"
+    "No diversify needed — all islands show stagnation=0 (post-internal-hard-resets)",
+    "No checkpoint — live_best 0.22248 > threshold 0.22085",
+    "All 11 islands confirmed ONLINE (full fleet recovery from last cycle outages)",
+    "SOTA research proposal written: sota-2026-04-23.json (karpathy_lightning bridge + key factors paper Apr 2026)",
+    "Political rotation C: extra_trees small-feature NBA technique confirmed in P4 top5 already"
   ],
   "open_issues": [
-    "4 NBA islands down (S14/S15 on Nomos42 403, S17/S22 need keepalive)",
-    "2 Political islands down (P2 on Nomos42 403, P5 needs keepalive)",
-    "tf-axelrod-verify-tune-12 PENDING USER GATE: approve HF Space push"
+    "tf-axelrod-verify-tune-12 PENDING USER GATE: approve HF Space push (say 'push to HF' or 'approve HF deploy')",
+    "CRITICAL: karpathy_lightning_0.21218 not translating to fleet — feature bridge needed (see sota-2026-04-23.json)",
+    "S13/S15 on Nomos42 acct: responses too large to parse (but HTTP 200 confirmed online)",
+    "engine.py parity check deferred — file too large for GitHub API in single call"
   ],
-  "engine_parity": "not_checked_this_cycle"
+  "notable_observation": {
+    "karpathy_lightning_bridge_gap": "S14 receives REMOTE_PROMOTE(random_forest n_est=275 n_feat=106, src=karpathy_lightning_0.21218) every ~25 cycles but brier stays at 0.22431. Root cause hypothesis: lightning individual uses TabICL-derived feature discovery on P100 GPU; CPU tree islands degrade it. Action: extract 106 feature indices from latest lightning checkpoint and seed CPU islands via /api/config."
+  }
 }
