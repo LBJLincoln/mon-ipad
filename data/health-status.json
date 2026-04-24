@@ -1,159 +1,226 @@
 {
-  "generated_at": "2026-04-24T00:10:00Z",
+  "generated_at": "2026-04-24T04:15:00Z",
   "brain_version": "nomos42-brain-v21",
   "brain_cycle": "4h-scheduled",
+  "cycle_notes": "Apr 24 04:15Z cycle. Diversify sent S13/S14/S17. P1 503 wake pinged. Political TF recovered. cerebras:llama3.1-8b CRITICAL DEAD (3521 NBA TF failures).",
+
   "nba_islands": {
     "S13_nba_evo_4": {
       "space": "Nomos42/nba-evo-4",
-      "gen": 603,
-      "brier": 0.2209,
+      "gen": 658,
+      "cycle": 220,
+      "brier": 0.22090,
       "roi": 0.3157,
       "sharpe": 7.5175,
       "features": 61,
       "model": "extra_trees",
       "status": "EVOLVING",
-      "stagnation": 0,
-      "live_best": true,
-      "note": "Improved from 0.23173 (gen 402) to 0.2209 (gen 603) — extra_trees dominant"
+      "stagnation_cycles": 17,
+      "action": "DIVERSIFY_SENT",
+      "note": "17 cycles stagnation — diversify queued this cycle"
     },
     "S14_nba_evo_5": {
       "space": "Nomos42/nba-evo-5",
-      "gen": 885,
+      "gen": 973,
+      "cycle": 325,
       "brier": 0.22431,
       "roi": 0.2736,
       "sharpe": 8.144,
       "features": 52,
       "model": "random_forest",
       "status": "EVOLVING",
-      "stagnation": 0,
-      "note": "Improved from 0.23450 (gen 429) — large gain via random_forest"
+      "stagnation_cycles": 23,
+      "action": "DIVERSIFY_SENT",
+      "note": "23/25 cycles stagnation — diversify queued, approaching hard reset threshold"
     },
     "S15_nba_evo_6": {
       "space": "Nomos42/nba-evo-6",
-      "gen": null,
-      "brier": null,
-      "status": "DOWN_503",
-      "action": "wake_attempted",
-      "note": "Nomos42 account may be saturated. Last known brier: 0.22325 gen 799."
+      "gen": 742,
+      "cycle": 248,
+      "brier": 0.22361,
+      "roi": 0.323,
+      "sharpe": 7.77,
+      "features": null,
+      "model": "mixed",
+      "status": "EVOLVING",
+      "stagnation_cycles": 0,
+      "action": "OK",
+      "note": "Recovered from prior 503. Stagnation 0 — just reset at cycle 226."
     },
     "S17_nba_evo_s17": {
       "space": "LBJLincoln26/nba-evo-s17",
-      "gen": null,
-      "brier": null,
-      "status": "WOKE_UP_STARTING",
-      "action": "woke_successfully",
-      "note": "Was 503, root URL wake succeeded. Last known brier: 0.22289 gen 2146."
+      "gen": 1262,
+      "cycle": 421,
+      "brier": 0.22249,
+      "roi": null,
+      "sharpe": null,
+      "features": 75,
+      "model": "catboost",
+      "status": "EVOLVING",
+      "stagnation_cycles": 19,
+      "action": "DIVERSIFY_SENT",
+      "note": "19 cycles stagnation — diversify queued"
     },
     "S18_nba_evo_s18": {
       "space": "TESTforge42/nba-evo-s18",
-      "gen": 553,
+      "gen": 605,
+      "cycle": 202,
       "brier": 0.22248,
       "roi": 0.298,
       "sharpe": 7.9271,
       "features": 51,
       "model": "extra_trees",
       "status": "EVOLVING",
-      "stagnation": 0,
-      "note": "Gen reset (was 1540). Brier slight regression from 0.22154."
+      "stagnation_cycles": 0,
+      "live_best": true,
+      "action": "OK",
+      "note": "Stagnation 0 after two hard resets (cy176, cy201). LIVE BEST at 0.22248."
     },
     "S22_nba_evo_s22": {
       "space": "TESTforge42/nba-evo-s22",
-      "gen": 841,
+      "gen": 950,
+      "cycle": 317,
       "brier": 0.22475,
       "roi": 0.2715,
       "sharpe": 14.8254,
       "features": 46,
       "model": "extra_trees",
       "status": "EVOLVING",
-      "stagnation": 0,
-      "note": "Fleet best checkpoint 0.22073 (gen 39) still stands. Current 0.22475."
+      "stagnation_cycles": 0,
+      "action": "OK",
+      "note": "Fleet best checkpoint 0.22073 (gen 39, 2026-04-19) still stands. Current 0.22475."
     }
   },
+
   "nba_summary": {
     "islands_total": 6,
-    "islands_evolving": 4,
-    "islands_down": ["S15"],
-    "islands_woken": ["S17"],
+    "islands_evolving": 6,
+    "islands_down": [],
     "fleet_best_brier": 0.22073,
     "fleet_best_island": "S22",
     "fleet_best_checkpointed": "2026-04-19",
-    "live_best_brier": 0.2209,
-    "live_best_island": "S13",
+    "live_best_brier": 0.22248,
+    "live_best_island": "S18",
     "checkpoint_threshold": 0.22085,
     "checkpoint_triggered": false,
-    "diversify_needed": [],
-    "stagnation_alert": [],
-    "model_trend": "extra_trees dominant across S13/S18/S22 — consider forcing S15/S14 toward extra_trees on next diversify"
+    "diversify_sent_this_cycle": ["S13", "S14", "S17"],
+    "model_trend": "extra_trees dominant S13/S18/S22. S14 stuck on random_forest at 23-cycle plateau.",
+    "sota_gap": "Published SOTA: LR=0.199, XGB=0.202 (Uncertainty-Aware ML paper). Fleet best 0.22073 vs 0.199 = 0.021 gap. Key missing: shot-chart embeddings + MC dropout."
   },
+
   "political_islands": {
     "P1_political_alpha": {
       "space": "Nomos42/political-alpha",
-      "gen": 9837,
-      "brier": 0.25061,
-      "model": "catboost",
-      "status": "COOLDOWN",
-      "note": "Gen reset detected (was 31807). Model changed xgboost→catboost."
+      "gen": null,
+      "brier": null,
+      "status": "DOWN_503",
+      "action": "WAKE_PING_SENT",
+      "last_known_gen": 9837,
+      "last_known_brier": 0.25061,
+      "note": "503 on /api/status. Main URL returned 200 — wake ping sent. Monitor next cycle."
     },
     "P2_political_alpha_2": {
       "space": "Nomos42/political-alpha-2",
-      "gen": 9466,
+      "gen": 10565,
+      "cycle": 3522,
       "brier": 0.25232,
       "model": "lightgbm",
       "status": "EVOLVING",
-      "note": "Gen reset detected (was 25025). Brier regression from 0.24949."
+      "stagnation_cycles": 0,
+      "note": "Stagnation 0 after two hard resets (cy3481, cy3501)."
     },
     "P4_political_alpha_4": {
       "space": "LBJLincoln/political-alpha-4",
-      "gen": null,
-      "brier": null,
-      "status": "WOKE_UP_STARTING",
-      "action": "woke_successfully"
+      "gen": 11174,
+      "cycle": 3725,
+      "brier": 0.25022,
+      "model": "lightgbm",
+      "status": "EVOLVING",
+      "stagnation_cycles": 0,
+      "live_best": true,
+      "note": "POL LIVE BEST this cycle at 0.25022."
     },
     "P5_political_alpha_5": {
       "space": "LBJLincoln/political-alpha-5",
-      "gen": null,
-      "brier": null,
-      "status": "WOKE_UP_STARTING",
-      "action": "woke_successfully"
+      "gen": 12908,
+      "cycle": 4303,
+      "brier": 0.25312,
+      "model": "mixed",
+      "status": "EVOLVING",
+      "stagnation_cycles": 0,
+      "pol_fleet_best_checkpointed": 0.24923,
+      "pol_fleet_best_date": "2026-04-20"
     },
     "P7_political_alpha_7": {
       "space": "LBJLincoln/political-alpha-7",
-      "gen": 5494,
+      "gen": 6329,
+      "cycle": 2110,
       "brier": 0.24994,
       "model": "xgboost_brier",
       "status": "EVOLVING",
-      "live_best": true,
-      "note": "Gen reset detected (was 29231). Still POL LIVE BEST at 0.24994."
+      "stagnation_cycles": 0,
+      "note": "Stagnation 0 after hard resets cy2061/cy2081. Brier 0.24994."
     }
   },
+
   "political_summary": {
     "islands_total": 5,
-    "islands_evolving": 3,
-    "islands_starting": 2,
-    "islands_down": [],
-    "live_best_brier": 0.24994,
-    "live_best_island": "P7",
-    "alert": "Gen resets detected on P1/P2/P7 — Nomos42/LBJLincoln accounts may have rebuilt Spaces"
+    "islands_evolving": 4,
+    "islands_down": ["P1"],
+    "live_best_brier": 0.25022,
+    "live_best_island": "P4",
+    "pol_fleet_best_brier": 0.24923,
+    "pol_fleet_best_island": "P5",
+    "pol_fleet_best_checkpointed": "2026-04-20",
+    "alert": "P1 DOWN 503. Wake ping sent — monitor next cycle."
   },
+
+  "trading_floors": {
+    "nba_tf": {
+      "space": "LBJLincoln26/nba-llm-trading-floor",
+      "status": "RUNNING",
+      "day": 99,
+      "days_total": 175,
+      "bankroll": 1031.29,
+      "agent_count": 17,
+      "leader": "qwen-arb",
+      "leader_bankroll": 329.36,
+      "critical_alert": "cerebras:llama3.1-8b DEAD — 3521 failures. T3 llama-contra + T15 selfhost-gemma3 + T16 selfhost-qwen06 affected (all rerouted to this provider in Round-2). Gateway fallback count: 24.",
+      "recommended_fix": "Reroute T3/T15/T16: cerebras:llama3.1-8b → cerebras:llama3.1-70b or nvidia:llama-3.3-70b. Update llm-gateway routing table."
+    },
+    "political_tf": {
+      "space": "LBJLincoln26/political-llm-trading-floor",
+      "status": "RECOVERED",
+      "note": "Was 503 at cycle start. Recovered to 200 after HTTP wake ping."
+    }
+  },
+
   "sota_research": {
-    "finding": "CNN model achieved Brier 0.221 (PMC). S13 at 0.2209 extra_trees is competitive with published SOTA.",
-    "implication": "CPU tree ensemble on HF approaching published CNN SOTA. Feature selection (51-61 features) is key.",
-    "reference": "data/research-proposals/2026-04-24-nba-sota.md"
+    "cycle": "every_other",
+    "searched": true,
+    "key_findings": [
+      "LR achieves Brier 0.199, XGBoost 0.202 (Uncertainty-Aware ML for NBA, MDPI 2026)",
+      "CNN model: Brier 0.221 — S13 extra_trees 0.2209 matches CNN SOTA",
+      "Shot-chart spatial embeddings + MC dropout = uncertainty-aware framework",
+      "Stacked ensemble (SVM+AutoGluon+DNN) >77% accuracy"
+    ],
+    "gap_to_close": 0.021,
+    "proposal_file": "data/research-proposals/2026-04-24-nba-sota.md"
   },
+
   "actions_taken": [
-    "S17: woke from 503 (STARTING)",
-    "P4: woke from 503 (BUILDING FEATURES)",
-    "P5: woke from 503 (BUILDING FEATURES)",
-    "S15: still 503 after wake attempt — Nomos42 account saturation suspected",
-    "No stagnation >15 gens on any responding NBA island",
-    "No checkpoint triggered (live best 0.2209 > threshold 0.22085)",
-    "Extra_trees model trend noted across S13/S18/S22 — portfolio shift from catboost/lightgbm",
-    "NBA SOTA research saved to research-proposals"
+    "DIVERSIFY queued: S13 (17-cycle stag), S14 (23-cycle stag), S17 (19-cycle stag)",
+    "P1 wake ping sent (main 200, api/status 503 — monitoring next cycle)",
+    "Political TF woken from 503 — confirmed 200 post-ping",
+    "SOTA research written to research-proposals/2026-04-24-nba-sota.md",
+    "CRITICAL: cerebras:llama3.1-8b dead provider documented in NBA TF alert"
   ],
+
   "next_cycle_priorities": [
-    "Monitor S17/P4/P5 post-wake — confirm evolution resumed",
-    "S15 persistent 503 — escalate if still down next cycle",
-    "If S13 brier drops below 0.22073, trigger checkpoint + CLAUDE.md update",
-    "Political gen resets — investigate if Nomos42 spaces were factory-rebooted"
+    "CRITICAL: Fix cerebras:llama3.1-8b dead provider (T3/T15/T16 reroute in llm-gateway)",
+    "Verify P1 recovery — if still 503, escalate to factory restart",
+    "S14: if still stagnant at 23+ cycles, island hard reset approaching — monitor",
+    "If any island beats 0.22073, trigger checkpoint + CLAUDE.md update",
+    "Port extra_trees config (51-61 features) to political islands via diversify"
   ]
 }
