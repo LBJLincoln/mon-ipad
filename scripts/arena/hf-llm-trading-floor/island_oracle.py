@@ -252,23 +252,35 @@ def oracle_block_for_prompt(nba_pred: Optional[Dict[str, Any]] = None,
     """
     lines: List[str] = []
     if nba_pred and nba_pred.get("p_home"):
+        p = nba_pred.get("p_home", 0.5)
+        side = "HOME" if p >= 0.5 else "AWAY"
+        magnitude = abs(p - 0.5)
         lines.append(
-            "ISLAND ORACLE (S18 NBA, Brier {b:.4f}): p(home_win)={p:.3f}, "
-            "raw={r:.3f}, model={m}, confidence={c:.2f}. "
-            "Bet only if your edge vs this > 3%.".format(
+            "ISLAND ORACLE (calibrated NBA model, Brier {b:.4f}, 6509-game CV):\n"
+            "  p(home_win) = {p:.3f}  ->  this model predicts {side} with edge magnitude {mag:.3f}\n"
+            "  raw={r:.3f}, model={m}, confidence={c:.2f}\n"
+            "MANDATORY RULE (2026-04-24 POL fix validated: Brier 0.28->0.21 when this is trusted):\n"
+            "  If your thesis AGREES with the oracle -> proceed with sizing.\n"
+            "  If your thesis DISAGREES -> you MUST PASS unless you can cite >=0.07 structural edge\n"
+            "  (injury not in features, lineup news, venue quirk). Narrative gut doesn't count.\n"
+            "  'Just a feeling' vs this model = automatic PASS.".format(
                 b=nba_pred.get("brier_cv", 0),
-                p=nba_pred.get("p_home", 0.5),
+                p=p, side=side, mag=magnitude,
                 r=nba_pred.get("raw_p_home", 0.5),
                 m=nba_pred.get("model_type", "?"),
                 c=nba_pred.get("confidence", 0),
             )
         )
     if pol_pred and pol_pred.get("p_yes"):
+        p = pol_pred.get("p_yes", 0.5)
+        side = "YES" if p >= 0.5 else "NO"
         lines.append(
-            "ISLAND ORACLE (P7 POL, Brier {b:.4f}): p(event_yes)={p:.3f}, "
-            "model={m}, features={f}. Bet only if your edge vs this > 3%.".format(
+            "ISLAND ORACLE (calibrated POL model, Brier {b:.4f}):\n"
+            "  p(event_yes) = {p:.3f}  ->  side={side}\n"
+            "  model={m}, features={f}\n"
+            "MANDATORY RULE: If your thesis disagrees with this, PASS unless >=0.07 structural edge.".format(
                 b=pol_pred.get("brier_cv", 0),
-                p=pol_pred.get("p_yes", 0.5),
+                p=p, side=side,
                 m=pol_pred.get("model_type", "?"),
                 f=pol_pred.get("features_used", 0),
             )
