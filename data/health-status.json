@@ -1,155 +1,159 @@
 {
-  "cycle_ts": "2026-04-23T20:20:00Z",
-  "source": "cloud-brain-sonnet-4.6",
-  "cycle_note": "20:00 cycle — S17 SLEEPING (was LIVE BEST 0.22084, checkpoint confirmed 12:00 cycle). S18 LIVE BEST 0.22248 (sole active NBA). S14 gen836/brier=0.22431 post-reset, individual 0.21982 in Pareto front (sub-threshold, watch). Rotation C: port NBA techniques. TabPFN-2.5 SOTA proposal written.",
+  "generated_at": "2026-04-24T00:10:00Z",
+  "brain_version": "nomos42-brain-v21",
+  "brain_cycle": "4h-scheduled",
   "nba_islands": {
     "S13_nba_evo_4": {
-      "status": "SLEEPING_503",
-      "gen_last_known": 424,
-      "best_brier": 0.22523,
-      "model": "xgboost",
-      "note": "Nomos42 account saturated. Was stagnation=15 with diversify queued at 12:00 cycle."
+      "space": "Nomos42/nba-evo-4",
+      "gen": 603,
+      "brier": 0.2209,
+      "roi": 0.3157,
+      "sharpe": 7.5175,
+      "features": 61,
+      "model": "extra_trees",
+      "status": "EVOLVING",
+      "stagnation": 0,
+      "live_best": true,
+      "note": "Improved from 0.23173 (gen 402) to 0.2209 (gen 603) — extra_trees dominant"
     },
     "S14_nba_evo_5": {
-      "status": "EVOLVING",
-      "cycle": 279,
-      "generation": 836,
-      "best_brier": 0.22431,
-      "stagnation": 1,
+      "space": "Nomos42/nba-evo-5",
+      "gen": 885,
+      "brier": 0.22431,
+      "roi": 0.2736,
+      "sharpe": 8.144,
+      "features": 52,
       "model": "random_forest",
-      "alert": "Individual Brier=0.21982 in Pareto front gen833 — below 0.22085 threshold but not yet captured as official best_brier. Monitor next cycle for checkpoint trigger.",
-      "note": "Post-hard-reset at cycle 276. 1 cycle no improvement since reset."
+      "status": "EVOLVING",
+      "stagnation": 0,
+      "note": "Improved from 0.23450 (gen 429) — large gain via random_forest"
     },
     "S15_nba_evo_6": {
-      "status": "SLEEPING_503",
-      "gen_last_known": 514,
-      "best_brier": 0.22361,
-      "model": "random_forest",
-      "note": "Nomos42 account saturated. Was improving gen514/brier=0.2223 at 12:00 cycle."
+      "space": "Nomos42/nba-evo-6",
+      "gen": null,
+      "brier": null,
+      "status": "DOWN_503",
+      "action": "wake_attempted",
+      "note": "Nomos42 account may be saturated. Last known brier: 0.22325 gen 799."
     },
     "S17_nba_evo_s17": {
-      "status": "SLEEPING_503",
-      "gen_last_known": 796,
-      "best_brier": 0.22249,
-      "top_performer_brier": 0.22084,
-      "model": "extra_trees",
-      "note": "CHECKPOINT TRIGGERED (12:00 cycle) — top_performer brier=0.22084 < 0.22085. Fleet live best. Now sleeping (LBJLincoln26 last updated Apr 18)."
+      "space": "LBJLincoln26/nba-evo-s17",
+      "gen": null,
+      "brier": null,
+      "status": "WOKE_UP_STARTING",
+      "action": "woke_successfully",
+      "note": "Was 503, root URL wake succeeded. Last known brier: 0.22289 gen 2146."
     },
     "S18_nba_evo_s18": {
-      "status": "EVOLVING",
-      "cycle": 170,
-      "generation": 509,
-      "best_brier": 0.22248,
-      "stagnation": 0,
+      "space": "TESTforge42/nba-evo-s18",
+      "gen": 553,
+      "brier": 0.22248,
+      "roi": 0.298,
+      "sharpe": 7.9271,
+      "features": 51,
       "model": "extra_trees",
-      "note": "CURRENT LIVE BEST (S17 sleeping). Restarted ~2026-04-23 (was gen=1540/brier=0.22154). Two internal hard resets. 51-feat."
+      "status": "EVOLVING",
+      "stagnation": 0,
+      "note": "Gen reset (was 1540). Brier slight regression from 0.22154."
     },
     "S22_nba_evo_s22": {
-      "status": "DOWN_503",
-      "consecutive_down_cycles": 3,
-      "gen_last_known": 555,
-      "best_brier": 0.22360,
-      "model": "venn_abers_fusion",
-      "note": "3rd+ consecutive down cycle. Fleet all-time record holder (hist 0.22073). ACTION REQUIRED: manual restart TESTforge42/nba-evo-s22."
+      "space": "TESTforge42/nba-evo-s22",
+      "gen": 841,
+      "brier": 0.22475,
+      "roi": 0.2715,
+      "sharpe": 14.8254,
+      "features": 46,
+      "model": "extra_trees",
+      "status": "EVOLVING",
+      "stagnation": 0,
+      "note": "Fleet best checkpoint 0.22073 (gen 39) still stands. Current 0.22475."
     }
   },
   "nba_summary": {
-    "live_best_brier": 0.22248,
-    "live_best_island": "S18",
-    "checkpoint_this_cycle": false,
-    "checkpoint_prev_cycle_12h": true,
-    "checkpoint_prev_value": 0.22084,
-    "checkpoint_prev_island": "S17",
+    "islands_total": 6,
+    "islands_evolving": 4,
+    "islands_down": ["S15"],
+    "islands_woken": ["S17"],
+    "fleet_best_brier": 0.22073,
+    "fleet_best_island": "S22",
+    "fleet_best_checkpointed": "2026-04-19",
+    "live_best_brier": 0.2209,
+    "live_best_island": "S13",
     "checkpoint_threshold": 0.22085,
-    "fleet_record_brier": 0.22073,
-    "fleet_record_island": "S22_historical_gen39",
-    "watch_s14_pareto_individual": 0.21982,
-    "islands_online": 2,
-    "islands_sleeping": 3,
-    "islands_down": 1,
-    "islands_down_list": ["S22"],
-    "diversify_sent_this_cycle": [],
-    "engine_parity": "CONFIRMED — both mon-ipad + nomos-nba-agent SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89",
-    "engine_version": "v3.1 — 54 categories ~7213 feature candidates MAX_FEATURES=200"
+    "checkpoint_triggered": false,
+    "diversify_needed": [],
+    "stagnation_alert": [],
+    "model_trend": "extra_trees dominant across S13/S18/S22 — consider forcing S15/S14 toward extra_trees on next diversify"
   },
   "political_islands": {
     "P1_political_alpha": {
-      "status": "DOWN_503",
-      "note": "Nomos42 account saturated. Wake attempt failed. Manual restart required."
+      "space": "Nomos42/political-alpha",
+      "gen": 9837,
+      "brier": 0.25061,
+      "model": "catboost",
+      "status": "COOLDOWN",
+      "note": "Gen reset detected (was 31807). Model changed xgboost→catboost."
     },
     "P2_political_alpha_2": {
-      "status": "EVOLVING",
-      "cycle": 2841,
-      "generation": 8522,
-      "best_brier": 0.25232,
-      "stagnation": 0,
+      "space": "Nomos42/political-alpha-2",
+      "gen": 9466,
+      "brier": 0.25232,
       "model": "lightgbm",
-      "note": "Fully recovered. Venn-Abers calibration ACTIVE — best-calibrated political island."
+      "status": "EVOLVING",
+      "note": "Gen reset detected (was 25025). Brier regression from 0.24949."
     },
     "P4_political_alpha_4": {
-      "status": "WAKING",
-      "cycle": 2949,
-      "generation": 8847,
-      "best_brier": 0.25022,
-      "model": "xgboost_brier",
-      "note": "RECOVERED — woke on GET probe (was DOWN at 12:00). Gen advanced 2169 in gap period. COOLDOWN state."
+      "space": "LBJLincoln/political-alpha-4",
+      "gen": null,
+      "brier": null,
+      "status": "WOKE_UP_STARTING",
+      "action": "woke_successfully"
     },
     "P5_political_alpha_5": {
-      "status": "EVOLVING",
-      "cycle": 3402,
-      "generation": 10205,
-      "best_brier": 0.25312,
-      "stagnation": 0,
-      "model": "catboost",
-      "recent_hard_resets": 2,
-      "note": "RECOVERED since 12:00. Fleet record holder (hist 0.24923). Current brier 0.25312 — still converging back toward historical best."
+      "space": "LBJLincoln/political-alpha-5",
+      "gen": null,
+      "brier": null,
+      "status": "WOKE_UP_STARTING",
+      "action": "woke_successfully"
     },
     "P7_political_alpha_7": {
-      "status": "EVOLVING",
-      "cycle": 1629,
-      "generation": 4885,
-      "best_brier": 0.24994,
-      "stagnation": 0,
+      "space": "LBJLincoln/political-alpha-7",
+      "gen": 5494,
+      "brier": 0.24994,
       "model": "xgboost_brier",
-      "note": "POL LIVE BEST. 61-feat. Gen advanced 1387 since 12:00 cycle. Stable."
+      "status": "EVOLVING",
+      "live_best": true,
+      "note": "Gen reset detected (was 29231). Still POL LIVE BEST at 0.24994."
     }
   },
   "political_summary": {
+    "islands_total": 5,
+    "islands_evolving": 3,
+    "islands_starting": 2,
+    "islands_down": [],
     "live_best_brier": 0.24994,
     "live_best_island": "P7",
-    "historical_best": 0.24923,
-    "islands_online": 3,
-    "islands_waking": 1,
-    "islands_down": 1,
-    "islands_down_list": ["P1"],
-    "rotation": "C — port NBA techniques",
-    "rotation_actions": [
-      "ExtraTrees confirmed dominant NBA model (S17 top_performer 0.22084, S18 live best 0.22248) — recommend injecting ET bias into P5/P7 island mutations",
-      "Venn-Abers calibration proven in S22 (fleet best 0.22073) and P2 (most stable political) — recommend enabling for P4/P5/P7",
-      "Remote_promote pipeline (karpathy_lightning) working for NBA (S14 current_gen_brier 0.2205) — replicate for political when lightning burst yields sub-0.25 individual",
-      "ExtraTrees advantage for political: random subspace sampling may reduce noise in high-cardinality political event features better than xgboost"
-    ]
+    "alert": "Gen resets detected on P1/P2/P7 — Nomos42/LBJLincoln accounts may have rebuilt Spaces"
   },
-  "councils": "DECOMMISSIONED_2026-04-20",
-  "dashboard": "R8 DONE (2026-04-15) — no pending work",
+  "sota_research": {
+    "finding": "CNN model achieved Brier 0.221 (PMC). S13 at 0.2209 extra_trees is competitive with published SOTA.",
+    "implication": "CPU tree ensemble on HF approaching published CNN SOTA. Feature selection (51-61 features) is key.",
+    "reference": "data/research-proposals/2026-04-24-nba-sota.md"
+  },
   "actions_taken": [
-    "S22: wake attempt GET /api/status → 503 (still down). Manual restart required: TESTforge42/nba-evo-s22",
-    "P4: wake via GET /api/status → COOLDOWN cycle 2949 gen 8847 brier 0.25022 (RECOVERED)",
-    "P1: wake attempt GET /api/status → 503 (Nomos42 account saturated)",
-    "Engine parity: CONFIRMED SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89 (mon-ipad + nomos-nba-agent)",
-    "SOTA research proposal: data/research-proposals/sota-2026-04-23-20h.json (TabPFN-2.5 primary target)",
-    "Rotation C (port NBA techniques): documented in brain-status.json + health-status.json",
-    "health-status.json updated",
-    "brain-status.json updated (nomos-political-alpha)"
+    "S17: woke from 503 (STARTING)",
+    "P4: woke from 503 (BUILDING FEATURES)",
+    "P5: woke from 503 (BUILDING FEATURES)",
+    "S15: still 503 after wake attempt — Nomos42 account saturation suspected",
+    "No stagnation >15 gens on any responding NBA island",
+    "No checkpoint triggered (live best 0.2209 > threshold 0.22085)",
+    "Extra_trees model trend noted across S13/S18/S22 — portfolio shift from catboost/lightgbm",
+    "NBA SOTA research saved to research-proposals"
   ],
-  "open_issues": [
-    "tf-axelrod-verify-tune-12 PENDING USER GATE: say 'push to HF' to approve Trading Floor Space deploy",
-    "S22 DOWN (3rd+ cycle) — fleet record holder hist 0.22073. Manual restart: TESTforge42/nba-evo-s22",
-    "P1 DOWN — Nomos42/political-alpha saturated",
-    "CLAUDE.md stale: S17 shows gen=2146/brier=0.22289 (actual gen=796/top_performer=0.22084 checkpoint 2026-04-23). S18 restart not reflected.",
-    "Political feature gap: islands see 272/3200 candidates — cats 9-44 fail silently on HF. Priority fix.",
-    "S14 watch: Pareto individual Brier=0.21982 (gen833) below threshold — if persists as best_brier, checkpoint immediately",
-    "Venn-Abers port: only P2 uses it — P4/P5/P7 should enable calibration=venn_abers"
-  ],
-  "key_insight_this_cycle": "ExtraTrees dominates NBA fleet (S17+S18). S14 has sub-threshold Pareto individual 0.21982 — not yet official best_brier, watch closely. TabPFN-2.5 now handles 100K×2000 (perfect for our scale) — target next Colab GPU burst. P4 recovered via simple GET probe."
+  "next_cycle_priorities": [
+    "Monitor S17/P4/P5 post-wake — confirm evolution resumed",
+    "S15 persistent 503 — escalate if still down next cycle",
+    "If S13 brier drops below 0.22073, trigger checkpoint + CLAUDE.md update",
+    "Political gen resets — investigate if Nomos42 spaces were factory-rebooted"
+  ]
 }
