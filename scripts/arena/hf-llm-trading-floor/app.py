@@ -2158,15 +2158,23 @@ STRICT RULES:
 - Sum of allocation pct + parlay pct + cash_held_pct = 1.00 (±0.01)
 - Max 1 allocation per game_idx PER CATEGORY (you can bet ml_home + spread_away
   + total_over + prop_* + pp_* on the same game across different categories)
-- allocations[]: MUST contain ≥3 entries every day. Empty allocations[] is FORBIDDEN.
-  If the slate is weak, pick the 3 highest-edge categories anyway — never return [].
-- Max 25 allocations + 8 parlays (2026-04-24 user directive: use the 220-category
-  universe — ml, spread, total, alt_spread*, alt_total*, team_total*, halves,
-  quarters, game_props, player_props <stat>_<tier>_<side>).
+- 2026-04-24 REVISED: SELECTIVE BETTING PERMITTED. The old "≥3 allocations EVERY day"
+  forced losing bets on weak slates. New rule: bet ONLY when you see a genuine edge
+  (model p vs implied p > your min_edge). Empty allocations[] IS allowed when no bet
+  clears the bar — but you MUST write `cash_rationale` explaining which games you
+  inspected + why none cleared your edge bar. "Passed by laziness" is NOT acceptable.
+- Max 25 allocations + 8 parlays / day (2026-04-24 user directive: USE the 220-category
+  universe — ml, spread, total, alt_spread*, alt_total*, team_total*, halves, quarters,
+  game_props, pp_*). PARLAYS SHOULD BE USED — combined odds amplify small edges into
+  double-digit returns. A 3-leg parlay of 1.5 legs = 3.4× payout; two correlated 1.8
+  legs = 3.2× payout. 0 parlays per day across 17 agents is a scientific under-use.
+- ALT LINE SHOPPING REQUIRED: before betting spread_home at 1.91, check alt_spread_home_minus_*
+  variants — same team, different line, different odds (e.g., alt_spread_home_minus3.5 at 1.5
+  vs spread_home at 1.91 is a 3× better EV if your edge is wide enough). Same for alt_total.
 - Each allocation pct: 0.01–0.40 | Each parlay pct: 0.005–0.08 (combined odds amplify risk)
 - Parlays: 2–6 legs, each leg = distinct game_idx, all legs must win for payout
-- cash_held_pct: 0.00–0.25 MAX (aggressive-deploy policy, $1M collective goal — idle bankroll cannot compound)
-- MANDATORY: ≥75% of bankroll deployed every day. Holding >25% cash violates the collective goal.
+- cash_held_pct: 0.00–0.80 (raised from 0.25 — selective betting may hold more cash)
+- Deploy pct floor LIFTED when no edge clears your bar (pass with rationale).
 - Rationale MUST cite a specific stat/metric (not "I think they'll win")
 - Edge must be computed from model vs implied odds, NOT hardcoded
 - coalition_proposal is MANDATORY (must be present). Set it to a peer you want to pact
