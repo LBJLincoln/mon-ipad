@@ -974,15 +974,29 @@ TRADERS = {
 # drag. Rest of roster falls through to tier default. Mirrors POL 2026-04-22
 # champion-compound lever (commit fc1f62b65).
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    # 2026-04-22 13:20Z — "destroy the ceilings" ship. Bumped all top-3 caps ~45%
-    # above prior boost. PEAK_DD_GUARD_V2 still clamps at <50% of peak equity
-    # (→ 0.01 cap) and <25% (→ all-cash), so upside is raised but downside limited.
-    "llama-contra":      0.25,   # $63 (drawdown), was 0.18 — Kelly self-corrects via PEAK_DD_GUARD
-    "gemini-tact":       0.22,   # $103 current top, was 0.15
-    "gemini-anl":        0.22,   # $77 #3, was 0.15
-    "qwen-arb":          0.18,   # $95 97% pass rate, was 0.12 — reward ultra-selectivity with bigger stakes
-    "mistral-small":     0.04,   # over-trader PROBATION (unchanged)
-    "mistral-ministral": 0.04,   # over-trader PROBATION (unchanged)
+    # 2026-04-24 17:45Z — RIGOROUS VALIDATION DATA (data/audit/rigorous-latest.md):
+    # NBA fleet Brier 0.3849 (WORSE than random 0.25), ECE 0.4352 = systematic
+    # INVERSE calibration -- high-confidence bets LOSE 77% of the time. Only 2
+    # agents ship positive EV. Everyone else is punished by empirical Brier:
+    #   Kelly = max(0.01, 0.30 - brier * 0.50)  -- agent earns Kelly by being calibrated.
+    "llama-contra":      0.17,   # live brier 0.25, WR 56% -- calibrated, earn 0.17
+    "selfhost-qwen4b":   0.17,   # live brier 0.23, WR 64% -- BEST NBA agent
+    "gemini-tact":       0.13,   # live brier 0.33, WR 33% -- downgrade
+    "qwen-arb":          0.13,   # live brier 0.27, WR 42% -- downgrade
+    # PROBATION (Brier > 0.30 means edge is worse than random, Kelly floored):
+    "gemini-anl":        0.03,   # live brier 0.36 -- inverse-calibrated
+    "qwen-quant":        0.03,   # live brier 0.33 -- inverse-calibrated
+    "mistral-large":     0.03,
+    "mistral-medium":    0.03,
+    "mistral-small":     0.01,   # live brier 0.54, WR 4% -- ESSENTIALLY BANNED until calibration recovers
+    "mistral-ministral": 0.02,   # inverse-calibrated over-trader
+    "nvidia-llama70":    0.03,   # brier 0.32, WR 38%
+    "selfhost-dolphin3": 0.02,   # brier 0.35, WR 33%
+    "nemotron-120b":     0.02,
+    "nvidia-minimax":    0.02,
+    "selfhost-gemma3":   0.02,
+    "selfhost-qwen06":   0.02,
+    "mistral-nemo":      0.02,
 }
 
 AGENT_SYSTEM_PROMPTS = {
