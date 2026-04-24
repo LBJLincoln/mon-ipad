@@ -29,12 +29,14 @@ fi
 
 mkdir -p "$DEST"
 
-# rsync: mirror JSON files only, delete removed ones, exclude cron.log
-rsync -a --delete \
-  --include='*/' \
-  --include='*.json' \
-  --exclude='*' \
-  "$SRC/" "$DEST/"
+# Mirror JSON files only. rsync isn't installed on the VM; use cp + find-delete
+# which is equivalent and portable. --delete semantics: first clear DEST of any
+# day-*.json / summary.json that no longer exists in SRC, then cp -r from SRC.
+find "$DEST" -type f \( -name '*.json' -o -name '*.jsonl' \) -delete 2>/dev/null || true
+mkdir -p "$DEST"
+cp -r "$SRC"/. "$DEST/" 2>/dev/null || true
+# Strip cron.log and other non-JSON noise
+find "$DEST" -type f ! \( -name '*.json' -o -name '*.jsonl' \) -delete 2>/dev/null || true
 
 # Build the manifest Vercel reads server-side.
 cd "$DEST"
