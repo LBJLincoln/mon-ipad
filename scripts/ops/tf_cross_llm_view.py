@@ -54,13 +54,23 @@ NBA_POL_LLM_MAP = {
 
 
 def _load_itf_llm_map() -> dict[str, str]:
-    """Parse scripts/arena/hf-intraday-trading-floor/personas.py for tid->model_primary."""
+    """Fetch tid->llm_tag from ITF's live /api/bankrolls endpoint (source of truth
+    since 2026-04-24 llm_tag commit). Falls back to regex-parsing personas.py
+    if the endpoint is down."""
+    d = _http_get("https://lbjlincoln26-intraday-trading-floor.hf.space/api/bankrolls")
+    if isinstance(d, dict) and isinstance(d.get("agents"), dict):
+        out = {}
+        for tid, a in d["agents"].items():
+            if isinstance(a, dict) and a.get("llm_tag"):
+                out[tid] = a["llm_tag"]
+        if out:
+            return out
+    # Fallback: regex-parse the local personas.py
     p = REPO / "scripts" / "arena" / "hf-intraday-trading-floor" / "personas.py"
     if not p.exists():
         return {}
     src = p.read_text()
     out: dict[str, str] = {}
-    # Find blocks: "tid": "X", ... "model_primary": "Y"
     for match in re.finditer(
         r'"tid"\s*:\s*"([^"]+)".*?"model_primary"\s*:\s*"([^"]+)"',
         src, re.DOTALL
