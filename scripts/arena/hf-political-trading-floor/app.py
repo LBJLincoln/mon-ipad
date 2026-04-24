@@ -853,10 +853,14 @@ TRADERS = {
 # compound the signal; llama-contra probation after 500 bets net -$48 (volume
 # drag). Rest of roster falls through to tier default.
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    "qwen-arb":     0.15,   # FULL ROLLBACK 2026-04-24 after $250K single-category monoculture detected by category_collapse audit. From 0.22/0.25 → 0.15 (original baseline). $250K bankroll was overfit on insider_trade; Kelly needs to return to standard fractional.
-    "qwen-quant":   0.15,   # ROLLBACK 2026-04-24 from 0.22 — monoculture risk was fleet-wide, not just qwen-arb.
-    "gemini-anl":   0.15,   # ROLLBACK 2026-04-24 from 0.18 — unified cap until CATEGORY MANDATE verified holding.
-    "llama-contra": 0.03,   # PROBATION: 500 bets, $-48 net — volume-induced drawdown
+    # 2026-04-24 RE-BUMP: state was wiped to $100/agent earlier today (commit
+    # 3b47e598b), so the "monoculture at $250K" risk that motivated the 0.15
+    # rollback no longer exists. We need compounding-toward-$1M more than we
+    # need overfit-protection on a $100 seed. PEAK_DD_GUARD_V2 still clamps.
+    "qwen-arb":     0.25,   # champion (103x in 4h last run) — restore full Kelly so compounding works
+    "qwen-quant":   0.22,   # #2 on the previous run; disciplined EV sizing earns headroom
+    "gemini-anl":   0.20,   # #3 previous run; raise above tier default
+    "llama-contra": 0.03,   # PROBATION: 500 bets, $-48 net — volume-induced drawdown (unchanged)
     # ── TIER-2 EXTENSION (LOBBYIST, 2026-04-22, day 152) ─────────────────────
     # Round-1 override working (qwen-arb +$241 in 5d). Extend to tier-2
     # profitables + add probation for tier-3 bleeders/low-activity.
