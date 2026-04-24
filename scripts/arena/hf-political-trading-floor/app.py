@@ -853,23 +853,19 @@ TRADERS = {
 # compound the signal; llama-contra probation after 500 bets net -$48 (volume
 # drag). Rest of roster falls through to tier default.
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    # 2026-04-24 RE-BUMP: state was wiped to $100/agent earlier today (commit
-    # 3b47e598b), so the "monoculture at $250K" risk that motivated the 0.15
-    # rollback no longer exists. We need compounding-toward-$1M more than we
-    # need overfit-protection on a $100 seed. PEAK_DD_GUARD_V2 still clamps.
-    "qwen-arb":     0.25,   # champion (103x in 4h last run) — restore full Kelly so compounding works
-    "qwen-quant":   0.22,   # #2 on the previous run; disciplined EV sizing earns headroom
-    "gemini-anl":   0.20,   # #3 previous run; raise above tier default
-    "llama-contra": 0.03,   # PROBATION: 500 bets, $-48 net — volume-induced drawdown (unchanged)
-    # ── TIER-2 EXTENSION (LOBBYIST, 2026-04-22, day 152) ─────────────────────
-    # Round-1 override working (qwen-arb +$241 in 5d). Extend to tier-2
-    # profitables + add probation for tier-3 bleeders/low-activity.
-    "mistral-small":     0.13,  # #4 profitable $234, 194 bets — steady breadth
-    "gemini-tact":       0.13,  # #5 profitable $188, 198 bets — tactical lane
-    "mistral-medium":    0.12,  # tier-2 $101, 91 bets — smaller boost
-    "mistral-ministral": 0.04,  # PROBATION: bleeding $44 on 108 bets
-    "mistral-nemo":      0.05,  # PROBATION: low-activity $42 on 20 bets
-    "selfhost-dolphin3": 0.05,  # PROBATION: warming-up $41 on 7 bets / 147d
+    # 2026-04-24 17:50Z -- EVIDENCE-BASED (rigorous validation CI95, 30-day window).
+    # Formula: Kelly = max(0.01, 0.30 - brier_empirical * 0.50).
+    # POL fleet Brier 0.2662 CI[0.252,0.280] -- statistically better than random.
+    # Rigorous per-agent Brier (30d, 474 confident bets):
+    "gemini-tact":       0.20,   # Brier 0.2087 WR 66.7% +$22.70 -- POL's best calibrated
+    "mistral-medium":    0.19,   # Brier 0.2306 WR 57.9% +$6.77
+    "mistral-small":     0.18,   # Brier 0.2437 WR 50.0% +$7.14
+    "mistral-large":     0.18,   # Brier 0.2439 WR 56.0% (-$8 but Brier says it's ok, let Kelly compound)
+    "qwen-quant":        0.17,   # Brier 0.2629 WR 53.3% +$78.20 -- POL volume leader
+    "qwen-arb":          0.17,   # Brier 0.2678 WR 53.1% +$21.15
+    "selfhost-qwen06":   0.15,   # Brier 0.2918 WR 23.1% -- calibration ok, thin sample
+    "llama-contra":      0.15,   # Brier 0.2941 WR 44.4% -$7 -- mild recal (up from 0.03 probation)
+    # Rest fall through to tier default; improvement_cycle auto-adjusts as bets accumulate.
 }
 
 # ── WINNER-AWARE PER-AGENT PROMPTS (LOBBYIST v2, 2026-04-22) ─────────────────
