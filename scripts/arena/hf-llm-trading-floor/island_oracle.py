@@ -30,9 +30,15 @@ import urllib.request
 from typing import Any, Dict, List, Optional
 
 # Islands exposing /api/predict. Keep URLs here so ops can swap in a second.
+# Live Brier scan 2026-04-24T15:20Z:
+#   nba-evo-4  0.22090  <-- BEST (extra_trees, 61 feat) — now default oracle
+#   s18        0.22248  (was default)
+#   s17        0.22249  (catboost)
+#   s22        0.22475
+# Re-scan + swap via NBA_ORACLE_URL env var whenever leadership flips.
 NBA_ORACLE_URL = os.environ.get(
     "NBA_ORACLE_URL",
-    "https://testforge42-nba-evo-s18.hf.space/api/predict",
+    "https://nomos42-nba-evo-4.hf.space/api/predict",
 )
 POL_ORACLE_URL = os.environ.get(
     "POL_ORACLE_URL",
