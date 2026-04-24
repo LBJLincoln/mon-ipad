@@ -29,14 +29,22 @@ fi
 
 mkdir -p "$DEST"
 
-# Mirror JSON files only. rsync isn't installed on the VM; use cp + find-delete
-# which is equivalent and portable. --delete semantics: first clear DEST of any
-# day-*.json / summary.json that no longer exists in SRC, then cp -r from SRC.
-find "$DEST" -type f \( -name '*.json' -o -name '*.jsonl' \) -delete 2>/dev/null || true
+# Mirror JSON + MD files (rsync not installed). Clear DEST of stale data,
+# then cp -r fresh from SRC. Also mirror audit MD files (scorecard-latest,
+# rigorous-latest, cross-llm-latest, digest-*) so dashboard pages can render them.
+find "$DEST" -type f \( -name '*.json' -o -name '*.jsonl' -o -name '*.md' \) -delete 2>/dev/null || true
 mkdir -p "$DEST"
 cp -r "$SRC"/. "$DEST/" 2>/dev/null || true
-# Strip cron.log and other non-JSON noise
-find "$DEST" -type f ! \( -name '*.json' -o -name '*.jsonl' \) -delete 2>/dev/null || true
+# Also copy audit MD files into a subdirectory
+mkdir -p "$DEST/audit"
+for f in scorecard-latest.md rigorous-latest.md cross-llm-latest.md digest-latest.md; do
+  src="/home/termius/mon-ipad/data/audit/$f"
+  if [ -f "$src" ]; then
+    cp "$src" "$DEST/audit/$f"
+  fi
+done
+# Strip cron.log and other non-allowed noise
+find "$DEST" -type f ! \( -name '*.json' -o -name '*.jsonl' -o -name '*.md' \) -delete 2>/dev/null || true
 
 # Build the manifest Vercel reads server-side.
 cd "$DEST"
