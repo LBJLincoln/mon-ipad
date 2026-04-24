@@ -1823,7 +1823,8 @@ STRICT RULES:
 - direction must be "long" or "short" (no "cash" in allocations)
 - allocations[]: MUST contain ≥3 entries every day. Empty allocations[] is FORBIDDEN.
   If no event has obvious edge, spread across 3 sector ETFs (XLE/XLV/XLF/XLK/XLF) anyway.
-- Max 10 allocations, no duplicate event_idx
+- Max 25 allocations, no duplicate (event_idx, direction) pair — same event
+  can appear as short + long on different sector legs if thesis diverges
 - Each allocation pct: 0.01–0.40
 - cash_held_pct: 0.00–0.25 MAX (aggressive-deploy policy, $1M collective goal — idle capital cannot compound)
 - MANDATORY: ≥75% deployed every day. Holding >25% cash violates the collective goal.
