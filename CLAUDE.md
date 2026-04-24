@@ -135,6 +135,36 @@ SYSTEM CRONS (28 active on VM, all lightweight)
 10. **Git mutex** — every autonomous agent commit MUST shell through `scripts/lib/safe_commit.sh <CODENAME> "<msg>" [paths...]` (flock on `/tmp/nomos-git.lock`, pull --rebase --autostash, 3× push retry, `[AGENT]` prefix). Raw `git push` from agents is banned — with 14 crew on staggered crons the race-reject rate was unacceptable.
 11. **TF Quarantine (post-2026-04-22 compounding mandate)** — NBA + POL are on a 30-day no-reset quarantine. PQTF is frozen forever. `safe_commit.sh` auto-gates any commit mentioning a quarantined Space with destructive markers (`factory_reboot`, `DAY-0 RESET`, `reset-state`, `reset-bankrolls`, `state wipe`, `fresh state`). Override with `NOMOS_QUARANTINE_OVERRIDE=1` **only** when user has explicitly authorised the reset — document the reason in the commit message. State: `data/ops/quarantine.json`. Check: `scripts/ops/tf_quarantine.py status`. Why: 5 agent-initiated resets on 2026-04-22 destroyed every compounding trajectory (qwen-arb $10K → $100, POL fleet $126K → $1.7K, NBA 75% DD → $0). PQTF reached $602K only because nobody was allowed to touch it.
 12. **Champion-preserve** — every hour at :55, `scripts/ops/champion_preserve.py scan` snapshots any NBA/POL agent whose bankroll crosses `$500` (5× default seed) into `data/champions/<tf>/<agent>/<ts>.json`. These snapshots survive resets. Intent: future $100 → $10K compounders are preserved *before* the next reset, regardless of whether the reset is legitimate or false-positive leakage. Threshold tunable via `champion_preserve.py threshold <usd>`.
+13. **Evidence-based Kelly (2026-04-24)** — `_AGENT_KELLY_OVERRIDE` in NBA + POL `app.py` is now DERIVED from rigorous-validation Brier, not narrative. Formula: `Kelly = max(0.01, 0.30 - brier_empirical * 0.50)`. Agents with Brier > 0.32 (inverse-calibrated) get 0.01-0.03 probation cap; Brier < 0.23 earn 0.17-0.20. The auto-improvement cycle (cron `:20` every 4h) auto-tunes ±0.03 when live W/L or Brier signal crosses thresholds, cooldown 24h per agent.
+14. **INVERSE-CALIBRATION PROBATION prompt (2026-04-24)** — Any NBA agent whose `_AGENT_KELLY_OVERRIDE` cap ≤ 0.03 receives an auto-appended prompt addendum: `default action = PASS`, `HARD LIMIT 1 bet/day, edge ≥0.10, stake ≤3%`, `if disagree with Island Oracle direction → AUTOMATIC PASS`. Probation lifts when 30-day Brier drops below 0.28. Shipped because rigorous measured NBA fleet Brier 0.41 (worse than random 0.25) — LLMs were overriding the oracle's calibrated prediction with narrative. Result in first hour: Brier 0.41 → 0.36, most-recent walk-forward window 0.24 (first sub-0.25). First full scientific evidence the probation works.
+
+## Scientific scorecard layer (2026-04-24)
+
+| Tool | Cron | Output |
+|------|------|--------|
+| `scripts/ops/tf_baseline_check.py` | on-demand + appends `data/ops/tf-baseline-history.jsonl` | PASS/FAIL integrity (leakage / lockstep / walkforward / source purity / sector diversity) |
+| `scripts/ops/tf_scientific_scorecard.py` | `:50 every 4h` | WR, Brier, source purity, per-day trace, `data/audit/scorecard-latest.md` |
+| `scripts/ops/tf_rigorous_validation.py` | `:10 every 4h` | Bootstrap CI95 for Brier/WR/PnL + ECE + reliability diagram per bucket + walk-forward rolling Brier + Welch t-test NBA vs POL, `data/audit/rigorous-latest.md` |
+| `scripts/ops/tf_trajectory_flash.py` | `:15 every 4h` | IMPROVING/DEGRADING verdict from first-3 vs last-3 walk-forward windows, `data/audit/trajectory-latest.md` |
+| `scripts/ops/tf_improvement_cycle.py` | `:20 every 4h` | Auto-tune `_AGENT_KELLY_OVERRIDE` ±0.03 on WR or Brier signal, 24h cooldown per agent, applies to Space via HfApi + restart, appends `data/ops/tf-improvement-history.jsonl` |
+| `scripts/ops/tf_cross_llm_view.py` | `:55 every 4h` | Same LLM benchmarked across NBA+POL+ITF, `data/audit/cross-llm-latest.md`. Uses ITF `/api/llm-leaderboard` as source-of-truth for tid→llm mapping |
+| `scripts/ops/daily_scientific_digest.py` | `06:00 daily` | One-page morning briefing with baseline + rigorous + cross-LLM + 24h improvement actions + champion ledger + path-to-$1M math, `data/audit/digest-<date>.md` |
+| `scripts/ops/tf_unified_control.py` | on-demand | `status/run/stop/restart/reboot/health` against any TF with normalized schema; PQTF mechanically blocked from all write-actions |
+| `scripts/ops/pol_watchdog.sh` | `*/5 min` | Auto-fire `/api/run` if POL `running=False` |
+| `scripts/ops/itf_position_health.py` | `*/30 min` | Snapshot Alpaca equity/cash/BP/PnL + top 3 losers+winners to `data/ops/itf-position-health.jsonl` |
+| `scripts/ops/sync_tf_analytics_to_dashboard.sh` | `:40 hourly` | Mirror `data/tf-analytics/*.json` + audit MD files (scorecard/rigorous/cross-llm/digest/trajectory) to `nomos-dashboard/public/tf-analytics/` + commit+push. Vercel rebuilds. Token-free. |
+| `scripts/ops/weekly_oracle_retrain.sh` | `Sun 03:00` | Push Kaggle kernel → train RF from `nba_cached_data.npz` → download pickle → upload to HF dataset `LBJLincoln26/nba-oracle-model` → restart `LBJLincoln26/nba-oracle` Space |
+
+## Oracle Space (2026-04-24)
+
+`LBJLincoln26/nba-oracle` — Docker HF Space that loads the pickle from HF dataset `LBJLincoln26/nba-oracle-model` at startup and exposes `/api/predict`, `/api/status`, `/api/best`. Currently returns base-rate when called without features; will return full RF prediction when passed `{"games": [{"features": [6452-dim vector]}]}`. Fed by weekly Kaggle retrain cron. Current CV Brier 0.22087 (best fold 0.21383). Not yet NBA's default `NBA_ORACLE_URL` — that still points to `nomos42-nba-evo-4.hf.space` because the TF client only sends team names. Future step: wire feature-fetcher in the Space OR extend TF client to pass features.
+
+## NBA betting surface (2026-04-24)
+
+- 249 categories per game in `data/full-odds-2025-26.json` (162 alt_spread/alt_total, 28 team_total, 22 pp, 20 halves/quarters, 3 game props + ml/spread/total). Previously `[:8]` slicing in `_build_game_block` hid 200+ of them; now agents see all.
+- Max 25 allocations/day + 8 parlays/day (was 10+3).
+- Same game can appear in allocations under DIFFERENT categories (ml_home + spread_away + pp_points_star1_over valid together).
+- Parlays: 2-6 legs, each pct 0.005-0.08.
 
 ## New Tools (Apr 4)
 
