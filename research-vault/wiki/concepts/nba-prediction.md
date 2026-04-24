@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 210 raw sources on 2026-04-23
+> Auto-compiled from 214 raw sources on 2026-04-24
 
 ## Overview
 
-This topic covers 210 research files spanning nba prediction & ml models.
+This topic covers 214 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -105,6 +105,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-20** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-20.md`
 - **project_claude_code_ecosystem** (449 words) -- `raw/agent-memory/repo-scout_project_claude_code_ecosystem.md`
 - **project_claude_code_ecosystem** (449 words) -- `raw/repo-scout/project_claude_code_ecosystem.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-23** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-23.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/research-analyst/research_march2026_cycle8_data_sources.md`
 - **Backtesting & Multi-Agent Portfolio Research — April 2026 Cycle 11** (414 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle11_backtesting.md`
@@ -158,6 +159,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Multi-Agent Workflow Scan (April 2026)** (230 words) -- `raw/agent-memory/repo-scout_project_multiagent_workflow_apr2026.md`
 - **Research Scan: arxiv-scan-2026-04-16** (228 words) -- `raw/research/arxiv-scan-2026-04-16.md`
 - **Polyrepo Tooling Scan (April 2026)** (227 words) -- `raw/agent-memory/repo-scout_project_polyrepo_tooling_apr2026.md`
+- **Research Scan: arxiv-scan-2026-04-23** (226 words) -- `raw/research/arxiv-scan-2026-04-23.md`
 - **Research Scan: arxiv-scan-2026-04-17** (223 words) -- `raw/research/arxiv-scan-2026-04-17.md`
 - **Research Scan: arxiv-scan-2026-04-18** (223 words) -- `raw/research/arxiv-scan-2026-04-18.md`
 - **Research Scan: arxiv-scan-2026-04-19** (223 words) -- `raw/research/arxiv-scan-2026-04-19.md`
@@ -176,6 +178,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Enterprise Agent Matrix — 3-product 3-layer architecture** (161 words) -- `raw/agent-memory/nba-brain_project_enterprise_architecture.md`
 - **Enterprise Agent Matrix — 3-product 3-layer architecture** (161 words) -- `raw/nba-brain/project_enterprise_architecture.md`
 - **political_fleet_apr19** (160 words) -- `raw/agent-memory/nomos-alpha_project_political_fleet_apr19.md`
+- **Research Scan: github-scan-2026-04-23** (154 words) -- `raw/research/github-scan-2026-04-23.md`
 - **user_role** (153 words) -- `raw/agent-memory/research-analyst_user_role.md`
 - **user_role** (152 words) -- `raw/agent-memory/repo-scout_user_role.md`
 - **Research Scan: github-scan-2026-04-03** (149 words) -- `raw/research/github-scan-2026-04-03.md`
@@ -211,6 +214,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-20** (136 words) -- `raw/research/github-betting-scan-2026-04-20.md`
 - **Research Scan: github-betting-scan-2026-04-21** (136 words) -- `raw/research/github-betting-scan-2026-04-21.md`
 - **Research Scan: github-betting-scan-2026-04-22** (136 words) -- `raw/research/github-betting-scan-2026-04-22.md`
+- **Research Scan: github-betting-scan-2026-04-23** (136 words) -- `raw/research/github-betting-scan-2026-04-23.md`
 - **Current Fleet State (iter 9, 2026-04-07 09:30 UTC)** (130 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026_iter9.md`
 - **Research Scan: github-scan-2026-04-11** (123 words) -- `raw/research/github-scan-2026-04-11.md`
 - **Research Scan: github-scan-2026-04-13** (123 words) -- `raw/research/github-scan-2026-04-13.md`

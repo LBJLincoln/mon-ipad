@@ -1,10 +1,10 @@
 # Data Sources & APIs
 
-> Auto-compiled from 111 raw sources on 2026-04-23
+> Auto-compiled from 115 raw sources on 2026-04-24
 
 ## Overview
 
-This topic covers 111 research files spanning data sources & apis.
+This topic covers 115 research files spanning data sources & apis.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
@@ -61,6 +61,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-18** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-18.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-19** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-19.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-20** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-20.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-23** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-23.md`
 - **Research Scan: arxiv-axelrod-scan-2026-04-15** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-15.md`
 - **Research Scan: arxiv-axelrod-scan-2026-04-16** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-16.md`
 - **Research Scan: arxiv-axelrod-scan-2026-04-17** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-17.md`
@@ -69,6 +70,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-axelrod-scan-2026-04-20** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-20.md`
 - **Research Scan: arxiv-axelrod-scan-2026-04-21** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-21.md`
 - **Research Scan: arxiv-axelrod-scan-2026-04-22** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-22.md`
+- **Research Scan: arxiv-axelrod-scan-2026-04-23** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-23.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/research-analyst/research_march2026_cycle8_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
@@ -96,9 +98,11 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-calibration-scan-2026-04-17** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-17.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-18** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-18.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-19** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-19.md`
+- **Research Scan: arxiv-calibration-scan-2026-04-23** (232 words) -- `raw/research/arxiv-calibration-scan-2026-04-23.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-20** (231 words) -- `raw/research/arxiv-calibration-scan-2026-04-20.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-21** (229 words) -- `raw/research/arxiv-calibration-scan-2026-04-21.md`
 - **Research Scan: arxiv-scan-2026-04-16** (228 words) -- `raw/research/arxiv-scan-2026-04-16.md`
+- **Research Scan: arxiv-scan-2026-04-23** (226 words) -- `raw/research/arxiv-scan-2026-04-23.md`
 - **Research Scan: arxiv-scan-2026-04-17** (223 words) -- `raw/research/arxiv-scan-2026-04-17.md`
 - **Research Scan: arxiv-scan-2026-04-18** (223 words) -- `raw/research/arxiv-scan-2026-04-18.md`
 - **Research Scan: arxiv-scan-2026-04-19** (223 words) -- `raw/research/arxiv-scan-2026-04-19.md`
