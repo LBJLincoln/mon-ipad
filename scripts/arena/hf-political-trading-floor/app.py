@@ -2659,6 +2659,19 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             _axl_block = _axelrod_advice_block(tid, _active_peers)
             if _axl_block:
                 system_prompt = system_prompt + _axl_block
+            # 2026-04-24 — 7-day peer reputation block (POL arm).
+            try:
+                import pathlib as _pl
+                _rep_path = _pl.Path("/app/data/ops/agent-reputation.json")
+                if not _rep_path.exists():
+                    _rep_path = _pl.Path(__file__).resolve().parents[3] / "data/ops/agent-reputation.json"
+                if _rep_path.exists():
+                    _rep = json.loads(_rep_path.read_text())
+                    _rep_block = (_rep.get("tfs", {}).get("pol", {}) or {}).get("prompt_block")
+                    if _rep_block:
+                        system_prompt += "\n\n" + _rep_block
+            except Exception:
+                pass
             # PHASE 1 — council plan
             _council_block = build_council_block(day_council_plan, tid, fleet_best_bankroll)
             if _council_block:
