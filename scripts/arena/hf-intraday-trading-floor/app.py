@@ -997,6 +997,18 @@ non-participation is a wasted tick.
 When equity market is closed (nights/weekends), pivot weight to crypto +
 already-open options positions. Never pass the whole tick citing "market
 closed" -- crypto tape is ALWAYS live.
+
+POL-SIGNAL MANDATE (2026-04-24): The POL engine hot-signals block above lists
+specific tickers where insiders (Form-4 clusters), Congress, or bill-related
+news is actively firing. These are PRE-VETTED asymmetric-edge tickers. If the
+POL block shows a Form4 cluster (n>=3 insiders buying) OR a Congress buy OR a
+SCOTUS case in a specific sector, you MUST:
+  - Include that ticker (or its sector ETF) as a LONG allocation today, OR
+  - Write an explicit rebuttal in your `thesis` field citing why the POL
+    signal is wrong (e.g., "JPM cluster is disclosure-driven not alpha-driven"
+    with a specific counter-reason).
+Ignoring POL signals in silence = violating the mandate. The political engine
+ships fresh every 5 minutes precisely to give ITF its alpha edge -- USE IT.
 """
 
 
@@ -1143,11 +1155,26 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
     for k in kalshi[:2]:
         pol_hot_lines.append(f"  Kalshi: p={k.get('p')} v={k.get('v')} — {(k.get('t') or '')[:60]}")
     clusters = (pol_hot.get("cat6_form4_clusters") or {}).get("clusters") or []
-    for c in clusters[:3]:
-        pol_hot_lines.append(f"  Form4 cluster: {c.get('tkr')} n={c.get('n')} ${c.get('net_usd'):,}")
+    # 2026-04-24: show ALL (was [:3]) + robust net_usd formatting
+    for c in clusters[:10]:
+        net = c.get("net_usd")
+        net_s = f" ${net:,}" if isinstance(net, (int, float)) else ""
+        pol_hot_lines.append(f"  Form4 cluster: {c.get('tkr')} n={c.get('n')}{net_s} (most_recent {c.get('most_recent','?')})")
     congress = (pol_hot.get("cat24_congress") or {}).get("trades") or []
-    for t in congress[:3]:
-        pol_hot_lines.append(f"  Congress buy: {t.get('tkr')} by {t.get('rep')} ~${t.get('usd'):,}")
+    for t in congress[:10]:
+        usd = t.get("usd")
+        usd_s = f" ~${usd:,}" if isinstance(usd, (int, float)) else ""
+        pol_hot_lines.append(f"  Congress buy: {t.get('tkr')} by {t.get('rep')}{usd_s} ({t.get('date','?')})")
+    # 2026-04-24 MANDATE: collect POL-signaled tickers for prioritization
+    pol_signaled = set()
+    for c in clusters[:10]:
+        if c.get("tkr"): pol_signaled.add(c["tkr"])
+    for t in congress[:10]:
+        if t.get("tkr"): pol_signaled.add(t["tkr"])
+    if pol_signaled:
+        pol_hot_lines.append(
+            f"  POL-SIGNALED TICKERS (long-bias candidates): {', '.join(sorted(pol_signaled))}"
+        )
     scotus = (pol_hot.get("cat30_scotus") or {}).get("cases") or []
     for s in scotus[:2]:
         pol_hot_lines.append(f"  SCOTUS: {(s.get('case') or '')[:60]} [{s.get('sector')}/{s.get('stage')}]")
