@@ -2153,8 +2153,9 @@ def _build_app():
           available   = free cash in agent's sub-bankroll (after reserves)
           reserved    = sum of stake_usd on that agent's OPEN positions
           total_equity = available + reserved
-        Fleet rollups sum across all personas. stake_usd is the canonical
-        source of truth (reserved on submit, credited on close)."""
+          llm_tag     = underlying LLM this persona routes to (for cross-TF
+                        LLM leaderboard comparison with NBA/POL)
+        Fleet rollups sum across all personas."""
         cash = executor.all_bankrolls()  # {tid: available_float}
         positions = executor._load_positions()
         reserved_by_tid: Dict[str, float] = {}
@@ -2166,10 +2167,15 @@ def _build_app():
         agents: Dict[str, Dict[str, float]] = {}
         for tid, avail in cash.items():
             reserved = round(reserved_by_tid.get(tid, 0.0), 2)
+            # Look up underlying LLM from personas registry so cross-TF
+            # comparison (tf_cross_llm_view.py) can attribute PnL per model.
+            persona = get_persona(tid) or {}
             agents[tid] = {
                 "available": round(float(avail or 0.0), 2),
                 "reserved_open": reserved,
                 "total_equity": round(float(avail or 0.0) + reserved, 2),
+                "llm_tag": persona.get("model_primary") or "unknown",
+                "llm_fallback": persona.get("model_fallback") or None,
             }
         fleet_available = round(sum(a["available"] for a in agents.values()), 2)
         fleet_reserved = round(sum(a["reserved_open"] for a in agents.values()), 2)
@@ -2180,6 +2186,33 @@ def _build_app():
             "agents": agents,
             "meta": executor._load_bankrolls().get("_meta", {}),
         })
+
+    @app.get("/api/llm-leaderboard")
+    def api_llm_leaderboard():
+        """Roll-up by underlying LLM — shows which MODEL ships best on ITF.
+        Parallel to /api/leaderboard on NBA/POL (strategy-name there; here
+        the strategy wraps an LLM so we aggregate at the LLM level)."""
+        cash = executor.all_bankrolls()
+        positions = executor._load_positions()
+        reserved_by_tid: Dict[str, float] = {}
+        for tid, plist in (positions or {}).items():
+            for pos in (plist or []):
+                if pos.get("status") != "open":
+                    continue
+                reserved_by_tid[tid] = reserved_by_tid.get(tid, 0.0) + float(pos.get("stake_usd") or 0)
+        by_llm: Dict[str, Dict[str, Any]] = {}
+        for tid, avail in cash.items():
+            persona = get_persona(tid) or {}
+            llm = persona.get("model_primary") or "unknown"
+            slot = by_llm.setdefault(llm, {"llm": llm, "total_equity": 0.0, "tids": [], "n_agents": 0})
+            eq = float(avail or 0.0) + reserved_by_tid.get(tid, 0.0)
+            slot["total_equity"] += eq
+            slot["tids"].append(tid)
+            slot["n_agents"] += 1
+        rollup = sorted(by_llm.values(), key=lambda x: -x["total_equity"])
+        for r in rollup:
+            r["total_equity"] = round(r["total_equity"], 2)
+        return JSONResponse({"leaderboard": rollup, "n_llms": len(rollup)})
 
     @app.get("/api/reconcile")
     def api_reconcile(lookback_min: int = 60):
