@@ -196,11 +196,12 @@ def analyze_nba_pol(tf, latest, history, start_cap):
             per_category[cat]["stake_sum"] += a.get("stake", 0)
             per_category[cat]["profit_sum"] += a.get("profit", 0)
             per_category[cat]["agents"].add(tid)
-            # Per-bet log (compact)
-            per_bet.append({
+            # Per-bet log (compact) — unified schema across NBA+POL with TF-specific extras
+            game_or_ticker = a.get("game") or a.get("ticker") or a.get("event_idx")
+            bet_row = {
                 "tid": tid,
-                "game": a.get("game") or a.get("ticker") or a.get("event_idx"),
-                "cat": cat,
+                "game_or_ticker": game_or_ticker,
+                "cat_or_event_type": cat,
                 "stake": round(a.get("stake", 0), 2),
                 "pnl": round(a.get("profit", 0), 2),
                 "won": a.get("won"),
@@ -208,7 +209,21 @@ def analyze_nba_pol(tf, latest, history, start_cap):
                 "odds": a.get("odds"),
                 "confidence": a.get("confidence"),
                 "source": a.get("source", "direct"),
-            })
+            }
+            if tf == "nba":
+                # Preserve legacy NBA keys for dashboard parity.
+                bet_row["game"] = a.get("game")
+                bet_row["cat"] = cat
+            else:
+                # POL-specific: ticker / event_type / sector / direction / agency / thesis
+                bet_row["ticker"] = a.get("ticker") or a.get("underlying_ticker")
+                bet_row["event_type"] = a.get("event_type")
+                bet_row["sector"] = a.get("sector") or a.get("fallback_etf_label")
+                bet_row["direction"] = a.get("direction")
+                bet_row["agency"] = a.get("agency")
+                if a.get("thesis"):
+                    bet_row["thesis"] = (a.get("thesis") or "")[:200]
+            per_bet.append(bet_row)
 
     # Jaccard per agent vs fleet (mean pairwise)
     tids = list(pick_sets.keys())
@@ -354,14 +369,33 @@ def analyze_pqtf(latest):
             if pos.get("iv_open") is not None:
                 all_ivs.append(pos["iv_open"])
 
+            # PQTF-specific options row PLUS unified NBA/POL-parity keys so
+            # dashboard drill-down can render PQTF bets alongside the others.
+            pnl = pos.get("pnl")
+            won_flag = (pnl > 0) if isinstance(pnl, (int, float)) else None
             per_bet.append({
-                "tid": tid, "etf": etf, "type": opt,
-                "strike": round(strike, 2), "qty": qty,
+                "tid": tid,
+                "game_or_ticker": etf,
+                "cat_or_event_type": opt,
+                "stake": round(notional, 2),
+                "pnl": round(pnl, 2) if isinstance(pnl, (int, float)) else None,
+                "won": won_flag,
+                "edge": None,
+                "odds": None,
+                "confidence": None,
+                "source": "pqtf",
+                # PQTF-native fields (drill-down extras):
+                "etf": etf,
+                "type": opt,
+                "strike": round(strike, 2),
+                "qty": qty,
                 "entry_price": round(px, 4),
                 "tte_days": pos.get("tte_days"),
                 "iv_open": pos.get("iv_open"),
                 "notional": round(notional, 2),
                 "session": s.get("session_id"),
+                "multi_leg": is_multi_leg,
+                "strategy": pos.get("strategy"),
             })
 
     # Multi-leg detection — pact-linked positions count as legs of same structure
@@ -502,30 +536,82 @@ def analyze_itf(snap):
 
     for t in trades:
         tid = t.get("agent_tid")
-        ticker = t.get("ticker")
-        side = t.get("side")
-        stake = float(t.get("stake_usd") or 0)
+        # ITF trade shape (2026-04-24): 3 observed variants
+        #   (a) equities: top-level {status, order:{ticker,side,stake_usd,stop_pct,take_profit_pct,thesis}}
+        #   (b) options:  top-level {instrument_type:"option", underlying, option_type, strategy, legs:[{side,symbol,qty}], stake_usd, thesis, status}
+        #   (c) legacy flat: {ticker, side, qty, stake_usd, ...}
+        order = t.get("order") or {}
+        is_option = t.get("instrument_type") == "option" or bool(t.get("legs"))
+        ticker = t.get("ticker") or order.get("ticker") or t.get("underlying")
+        side = t.get("side") or order.get("side")
+        if not side and is_option:
+            # Derive side from first leg for options
+            legs = t.get("legs") or []
+            if legs:
+                side = legs[0].get("side")
+        # Normalize side → long/short for pick_sets / per_ticker counters.
+        norm_side = side
+        if side in ("buy", "long"): norm_side = "long"
+        elif side in ("sell", "short"): norm_side = "short"
+        stake = float(t.get("stake_usd") or order.get("stake_usd") or 0)
+        qty = t.get("qty") or order.get("qty")
+        entry_price = t.get("entry_price") or order.get("entry_price")
+        stop_pct = t.get("stop_pct") or order.get("stop_pct")
+        tp_pct = t.get("take_profit_pct") or order.get("take_profit_pct")
+        thesis = (t.get("thesis") or order.get("thesis") or "")[:200] or None
+        status = t.get("status")
+        filled = status not in (None, "", "broker_skip_bp_starved", "broker_error", "rejected")
+        pnl = t.get("realized_pnl_usd") or t.get("pnl") or None
+        won_flag = None
+        if isinstance(pnl, (int, float)):
+            won_flag = pnl > 0
         if tid in per_agent:
-            per_agent[tid]["tickers_touched"].add(ticker)
+            if ticker:
+                per_agent[tid]["tickers_touched"].add(ticker)
             per_agent[tid]["notional_gross"] += stake
-            pick_sets[tid].add((ticker, side))
-        per_ticker[ticker]["n_trades"] += 1
-        per_ticker[ticker]["notional"] += stake
-        per_ticker[ticker]["agents"].add(tid)
-        if side == "long": per_ticker[ticker]["longs"] += 1
-        elif side == "short": per_ticker[ticker]["shorts"] += 1
+            if ticker:
+                pick_sets[tid].add((ticker, norm_side))
+        if ticker:
+            per_ticker[ticker]["n_trades"] += 1
+            per_ticker[ticker]["notional"] += stake
+            per_ticker[ticker]["agents"].add(tid)
+            if norm_side == "long": per_ticker[ticker]["longs"] += 1
+            elif norm_side == "short": per_ticker[ticker]["shorts"] += 1
+        # For options trades, cat_or_event_type should be the strategy (vertical_debit etc.)
+        cat_or_type = (t.get("strategy") or t.get("option_type")) if is_option else norm_side
         per_bet.append({
             "ts": t.get("ts"),
             "tid": tid,
+            # Unified keys
+            "game_or_ticker": ticker,
+            "cat_or_event_type": cat_or_type,
+            "stake": round(stake, 2),
+            "pnl": round(pnl, 2) if isinstance(pnl, (int, float)) else None,
+            "won": won_flag,
+            "edge": None,
+            "odds": None,
+            "confidence": None,
+            "source": "itf",
+            # ITF-native fields
             "ticker": ticker,
             "side": side,
-            "qty": t.get("qty"),
-            "entry_price": t.get("entry_price"),
+            "direction": norm_side,
+            "qty": qty,
+            "entry_price": entry_price,
             "stake_usd": round(stake, 2),
-            "stop_pct": t.get("stop_pct"),
-            "take_profit_pct": t.get("take_profit_pct"),
-            "status": t.get("status"),
+            "stop_pct": stop_pct,
+            "take_profit_pct": tp_pct,
+            "status": status,
+            "filled": filled,
+            "reason": t.get("reason"),
             "broker_class": t.get("broker_class"),
+            "thesis": thesis,
+            # Options-specific extras
+            "instrument_type": t.get("instrument_type"),
+            "option_type": t.get("option_type"),
+            "strategy": t.get("strategy"),
+            "dte": t.get("dte"),
+            "expiry": t.get("expiry"),
         })
 
     # Pairwise Jaccard across agents that traded
