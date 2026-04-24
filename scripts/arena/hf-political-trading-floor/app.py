@@ -31,6 +31,16 @@ from fastapi.responses import JSONResponse
 # Centralised gateway router (vendored into Space; see scripts/arena/gateway_client.py)
 from gateway_client import gateway_call as _gateway_call, GATEWAY_URL as _GATEWAY_URL
 
+# Island oracle — bridges POL TF agents to P7's calibrated xgboost/extra_trees model.
+# Fail-open: if P7 is down, oracle returns {} and prompts skip the ORACLE line.
+try:
+    from island_oracle import pol_oracle_predict as _island_pol_predict
+    _POL_ORACLE_OK = True
+except Exception as _orc_err:
+    print(f"[pol-oracle] import failed: {_orc_err}")
+    _POL_ORACLE_OK = False
+    def _island_pol_predict(*a, **kw): return {}
+
 # ── STARTUP DIAGNOSTICS ─────────────────────────────────────────────────────
 print("=" * 60)
 print("NOMOS42 POLITICAL LLM TRADING FLOOR — STARTUP")
@@ -263,6 +273,14 @@ COLLECTIVE_MISSION = (
     "DEPLOY RULE (hard): ≥75% of your bankroll MUST be deployed EVERY DAY across ≥3 sector "
     "allocations. Holding >25% cash violates the collective goal. Use the full 7-sector SPDR menu "
     "(XLF/XLE/XLV/XLI/XLK/XLC/XLY) + individual stocks when politically warranted.\n"
+    "DATA REALITY (2026-04-24, honest): Of 3,597 source events, 98.4% are insider_trade, "
+    "1.5% fed_rule, <0.1% exec_order / polymarket. You are a POLITICAL INSIDER-TRADE "
+    "ARBITRAGE fleet — do not pretend to bet on categories the data doesn't contain.\n"
+    "DIVERSITY MANDATE (hard): across your daily allocations you MUST hit ≥3 DISTINCT "
+    "SPDR SECTORS (choose among XLF XLE XLV XLI XLK XLC XLY XLP XLRE XLU XLB). Placing "
+    "all stake on one sector (e.g. XLF-only on insider_trade) is a doctrine violation that "
+    "voids the day's allocation and triggers sacrificial archetype reassignment. Sector "
+    "diversity — not category diversity — is the enforceable risk control given the data.\n"
     "COLLABORATION STACK: (1) morning council plan (qwen-235B moderator) specifies focus sectors + "
     "per-agent commit. (2) Pact proposals let 2 agents bet the same sector+direction. "
     "(3) Axelrod canon strategy assigned per agent. (4) Post-mortem log visible to all. "
@@ -835,9 +853,9 @@ TRADERS = {
 # compound the signal; llama-contra probation after 500 bets net -$48 (volume
 # drag). Rest of roster falls through to tier default.
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    "qwen-arb":     0.22,   # PARTIAL ROLLBACK 2026-04-23T0228Z from 0.25 (ATH $28,751 -> $17,478 = -39% in 78min, trigger hit). Keep +2pp vs orig 0.20.
-    "qwen-quant":   0.22,   # #2 $4,833 (48× seed), aggressive boost on verified winner
-    "gemini-anl":   0.18,   # #3 $1,161 (11.6× seed), aggressive boost on verified winner
+    "qwen-arb":     0.15,   # FULL ROLLBACK 2026-04-24 after $250K single-category monoculture detected by category_collapse audit. From 0.22/0.25 → 0.15 (original baseline). $250K bankroll was overfit on insider_trade; Kelly needs to return to standard fractional.
+    "qwen-quant":   0.15,   # ROLLBACK 2026-04-24 from 0.22 — monoculture risk was fleet-wide, not just qwen-arb.
+    "gemini-anl":   0.15,   # ROLLBACK 2026-04-24 from 0.18 — unified cap until CATEGORY MANDATE verified holding.
     "llama-contra": 0.03,   # PROBATION: 500 bets, $-48 net — volume-induced drawdown
     # ── TIER-2 EXTENSION (LOBBYIST, 2026-04-22, day 152) ─────────────────────
     # Round-1 override working (qwen-arb +$241 in 5d). Extend to tier-2
@@ -1371,6 +1389,22 @@ def _format_event_block(idx: int, event: Dict, event_preds: Optional[Dict] = Non
     macro = event.get("macro", {}) or {}
 
     lines = [f"\n[{idx}] {ticker} | {event_type} | sector={signal_sector} | strength={signal_strength:.2f}"]
+
+    # Island oracle — P7 calibrated prediction for this specific event. Fail-open.
+    try:
+        _date = event.get("date") or ""
+        if _date and ticker and event_type:
+            _evid = f"{_date}_{ticker}_{event_type}"
+            _orc = _island_pol_predict(_evid, event)
+            if _orc and _orc.get("p_yes"):
+                lines.append(
+                    f"  ISLAND ORACLE (P7 Brier {_orc.get('brier_cv',0):.4f}): "
+                    f"p_yes={_orc.get('p_yes',0.5):.3f} raw={_orc.get('raw_p_yes',0.5):.3f} "
+                    f"model={_orc.get('model_type','?')} — bet only if your edge vs this > 3%."
+                )
+    except Exception:
+        pass
+
     if agency:
         lines.append(f"  agency={agency} | signal_type={signal_type}")
     if title:

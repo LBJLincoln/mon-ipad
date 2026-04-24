@@ -30,6 +30,22 @@ from fastapi.responses import JSONResponse
 # Centralised gateway router (vendored into Space; see scripts/arena/gateway_client.py)
 from gateway_client import gateway_call as _gateway_call, GATEWAY_URL as _GATEWAY_URL
 
+# Island oracle — bridges TF agents to the island-trained calibrated model (S18).
+# Failure-open: if island is down, oracle returns {} and the prompt skips the block.
+try:
+    from island_oracle import (
+        nba_oracle_predict as _island_nba_predict,
+        nba_oracle_predict_many as _island_nba_predict_many,
+        oracle_block_for_prompt as _island_oracle_block,
+    )
+    _ORACLE_OK = True
+except Exception as _orc_err:
+    print(f"[oracle] import failed: {_orc_err}")
+    _ORACLE_OK = False
+    def _island_nba_predict(*a, **kw): return {}
+    def _island_nba_predict_many(games): return [{} for _ in (games or [])]
+    def _island_oracle_block(nba_pred=None, pol_pred=None): return ""
+
 # ── STARTUP DIAGNOSTICS ─────────────────────────────────────────────────────
 print("=" * 60)
 print("NOMOS42 REAL LLM TRADING FLOOR — STARTUP")
@@ -1488,6 +1504,18 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
                     mins = p.get('MIN', p.get('min', 0)) or 0
                     pstrs.append(f"{p.get('name','?')} {ppg:.1f}p/{rpg:.1f}r/{apg:.1f}a {fg:.0%}FG")
                 lines.append(f"  {label} {t}: {' | '.join(pstrs)}")
+
+    # ── ISLAND ORACLE (S18 calibrated model) ──
+    # Inject S18's calibrated prediction so the LLM compares its thesis vs the evolved model.
+    # Fail-open: if oracle is down, block is empty and LLM reasons as before.
+    try:
+        _orc_pred = _island_nba_predict(home, away)
+    except Exception:
+        _orc_pred = {}
+    _orc_block = _island_oracle_block(nba_pred=_orc_pred) if _orc_pred else ""
+    if _orc_block:
+        lines.append("")
+        lines.append(_orc_block)
 
     # ── BASE ODDS ──
     lines.append(f"\nBASE ODDS:")
