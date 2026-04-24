@@ -264,25 +264,26 @@ def _tiered_risk(bankroll: float) -> dict:
     # (bankroll/peak<0.25 → force cash, <0.50 → bet cap 1%). Idle cash = 5% or less.
     # 2026-04-24 — fleet went -58% in 25 days under the 0.95-deploy floor.
     # Root cause: low-bankroll losers were forced to redeploy 95% every day,
-    # compounding losses. New lanes: sub-$50 agents in PRESERVE mode (50% deploy,
-    # edge >=0.08, max 1 bet/day), $50-100 TIGHTEN, $100-500 BASE aggressive.
-    # Once an agent climbs past $100 it re-enters normal aggressive sizing.
+    # compounding losses. New lanes: sub-$50 agents in PRESERVE mode.
+    # 2026-04-24 v2 — NBA vig is ~4-5% on -110 lines; min_edge across all tiers
+    # raised so oracle agreement must clear the vig hurdle (POL has no vig so
+    # its min_edge can stay lower). Target: bet fewer, bet better, trust oracle.
     if bankroll < 25.0:
         return {"deploy_floor": 0.40, "bet_floor": 0.05, "bet_cap": 0.15,
-                "min_edge": 0.10, "kelly_mult": 0.35,
+                "min_edge": 0.12, "kelly_mult": 0.35,
                 "min_allocs": 1, "min_cats": 1, "min_games": 1}
     if bankroll < 50.0:
         return {"deploy_floor": 0.50, "bet_floor": 0.04, "bet_cap": 0.15,
-                "min_edge": 0.08, "kelly_mult": 0.4,
+                "min_edge": 0.10, "kelly_mult": 0.4,
                 "min_allocs": 1, "min_cats": 1, "min_games": 1}
     if bankroll < 100.0:
         return {"deploy_floor": 0.70, "bet_floor": 0.03, "bet_cap": 0.15,
-                "min_edge": 0.07, "kelly_mult": 0.5,
-                "min_allocs": 3, "min_cats": 2, "min_games": 2}
+                "min_edge": 0.09, "kelly_mult": 0.5,
+                "min_allocs": 2, "min_cats": 2, "min_games": 2}
     if bankroll < 500.0:
         return {"deploy_floor": 0.90, "bet_floor": 0.02, "bet_cap": 0.15,
-                "min_edge": 0.06, "kelly_mult": 0.6,
-                "min_allocs": 15, "min_cats": 6, "min_games": 4}
+                "min_edge": 0.08, "kelly_mult": 0.6,
+                "min_allocs": 10, "min_cats": 5, "min_games": 3}
     # PROVEN tier: 5-20× starting, press edges harder (2026-04-22 ceiling-destroy)
     if bankroll < 2000.0:
         return {"deploy_floor": 0.95, "bet_floor": 0.02, "bet_cap": 0.22,
