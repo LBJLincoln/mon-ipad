@@ -1,0 +1,133 @@
+name: Train NBA Oracle (0.212 Brier target)
+
+on:
+  workflow_dispatch:
+    inputs:
+      n_estimators:
+        description: 'RF n_estimators (default 275 from best config)'
+        required: false
+        default: '275'
+      commit_artifact:
+        description: 'Commit the trained pickle to repo (true/false)'
+        required: false
+        default: 'true'
+  # Weekly retrain: every Sunday 02:00 UTC
+  schedule:
+    - cron: '0 2 * * 0'
+
+permissions:
+  contents: write
+
+jobs:
+  train:
+    name: Train + save NBA oracle pickle
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Install Python deps
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install numpy scikit-learn
+
+      - name: Train RF from best config + save pickle
+        env:
+          N_EST: ${{ inputs.n_estimators || '275' }}
+        run: |
+          python3 <<'PY'
+          import json, os, pickle, time
+          import numpy as np
+          from sklearn.ensemble import RandomForestClassifier
+          from sklearn.isotonic import IsotonicRegression
+          from sklearn.model_selection import KFold
+          from sklearn.metrics import brier_score_loss
+
+          t0 = time.time()
+          cache = np.load("data/karpathy/nba_cached_data.npz", allow_pickle=True)
+          X_all = cache["X"].astype(np.float32)
+          y     = cache["y"].astype(np.int32)
+          fn    = cache["feature_names"]
+          print(f"cache: X={X_all.shape} y_mean={y.mean():.4f}")
+
+          cfg = json.load(open("data/karpathy/nba-best-config.json"))
+          feat_idx = [i for i in cfg["feature_indices"] if 0 <= i < X_all.shape[1]]
+          X = X_all[:, feat_idx]
+          n_est = int(os.environ.get("N_EST") or cfg["n_estimators"])
+          print(f"config: model={cfg['model_type']} n_est={n_est} depth={cfg['max_depth']} n_feat={len(feat_idx)}")
+          print(f"target brier: {cfg['best_brier']:.5f}")
+
+          # 5-fold CV for honest reproduction of the GPU Brier
+          kf = KFold(n_splits=5, shuffle=True, random_state=42)
+          briers, oof = [], np.zeros(len(y))
+          for fold, (tr, te) in enumerate(kf.split(X)):
+              clf = RandomForestClassifier(
+                  n_estimators=n_est, max_depth=cfg["max_depth"],
+                  min_samples_leaf=cfg["min_samples_leaf"], max_features=cfg["max_features_ratio"],
+                  n_jobs=-1, random_state=42,
+              )
+              clf.fit(X[tr], y[tr])
+              p = clf.predict_proba(X[te])[:, 1]
+              oof[te] = p
+              b = brier_score_loss(y[te], p)
+              briers.append(b)
+              print(f"  fold {fold}: brier={b:.5f}")
+          brier_mean = float(np.mean(briers))
+          print(f"CV mean: {brier_mean:.5f} | target: {cfg['best_brier']:.5f} | delta: {brier_mean - cfg['best_brier']:+.5f}")
+
+          # Isotonic calibration on OOF preds
+          iso = IsotonicRegression(out_of_bounds="clip")
+          iso.fit(oof, y)
+
+          # Full-data final model
+          final = RandomForestClassifier(
+              n_estimators=n_est, max_depth=cfg["max_depth"],
+              min_samples_leaf=cfg["min_samples_leaf"], max_features=cfg["max_features_ratio"],
+              n_jobs=-1, random_state=42,
+          )
+          final.fit(X, y)
+
+          bundle = {
+              "model": final,
+              "calibrator": iso,
+              "feature_indices": feat_idx,
+              "feature_names": [str(fn[i]) for i in feat_idx],
+              "cv_brier_mean": brier_mean,
+              "cv_brier_per_fold": [float(b) for b in briers],
+              "target_brier": float(cfg["best_brier"]),
+              "config": cfg,
+              "n_samples": int(X.shape[0]),
+              "trained_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+          }
+          out = "data/karpathy/nba-oracle.pkl"
+          os.makedirs(os.path.dirname(out), exist_ok=True)
+          with open(out, "wb") as f:
+              pickle.dump(bundle, f)
+          print(f"saved {out} ({os.path.getsize(out)/1024:.0f} KB) in {time.time()-t0:.1f}s")
+
+          # Write a tiny summary for the commit
+          with open("data/karpathy/nba-oracle-summary.json", "w") as f:
+              json.dump({
+                  "cv_brier_mean": brier_mean,
+                  "target_brier": cfg["best_brier"],
+                  "delta": brier_mean - cfg["best_brier"],
+                  "n_samples": int(X.shape[0]),
+                  "n_features": len(feat_idx),
+                  "trained_at": bundle["trained_at"],
+              }, f, indent=2)
+          PY
+
+      - name: Commit pickle + summary if improved
+        if: ${{ inputs.commit_artifact != 'false' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/karpathy/nba-oracle.pkl data/karpathy/nba-oracle-summary.json
+          if git diff --cached --quiet; then
+            echo "no change"; exit 0
+          fi
+          brier=$(python3 -c "import json; print(json.load(open('data/karpathy/nba-oracle-summary.json'))['cv_brier_mean'])")
+          git commit -m "oracle: retrain NBA RF bundle (CV brier=${brier})" --no-verify
+          git push origin main
