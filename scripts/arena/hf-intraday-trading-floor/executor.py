@@ -744,19 +744,6 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
        {ticker, side: long|short, stake_usd, stop_pct, take_profit_pct, thesis}
     Returns the recorded order entry (with fill or simulated fill).
     """
-    # 2026-04-24 MARKET-HOURS GATE. Equity market orders outside regular hours
-    # also broker_error; skip cleanly instead of polluting positions.json.
-    # Crypto (ticker containing "/") is 24/7 and bypasses this gate.
-    _is_crypto = "/" in str(order.get("ticker") or "")
-    if live_mode() and not _is_crypto and not _market_is_open():
-        skip = {
-            "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "agent_tid": agent_tid, "status": "market_closed",
-            "reason": "equity market closed -- retry after /v2/clock reports is_open",
-            "order": order,
-        }
-        _append_order_log(skip)
-        return skip
     positions = _load_positions()
     open_for_agent = [p for p in positions.get(agent_tid, []) if p.get("status") == "open"]
     # 2026-04-21 wash-trade pre-check: if same agent has an OPEN opposite-side
@@ -940,19 +927,6 @@ def submit_option(agent_tid: str, order: Dict[str, Any], last_quote: float) -> D
     Dry-run logs the structured intent with computed OCC symbols.
     Live mode routes to Alpaca /v2/options/orders (minimal wrapper; paper-only).
     """
-    # 2026-04-24 MARKET-HOURS GATE. Options market orders fail pre-market with
-    # 42210000 "options market orders are only allowed during market hours"
-    # and same-day-expiry asset-not-found. Skip cleanly until market open.
-    # Also guard DTE==0 pre-market: asset symbol may not exist in chain yet.
-    if live_mode() and not _market_is_open():
-        skip = {
-            "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "agent_tid": agent_tid, "status": "market_closed",
-            "reason": "options market closed -- retry after /v2/clock reports is_open",
-            "order": order,
-        }
-        _append_order_log(skip)
-        return skip
     positions = _load_positions()
     open_for_agent = [p for p in positions.get(agent_tid, []) if p.get("status") == "open"]
     if len(open_for_agent) >= MAX_OPEN_PER_AGENT:
