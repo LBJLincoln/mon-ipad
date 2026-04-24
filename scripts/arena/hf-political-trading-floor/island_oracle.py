@@ -199,9 +199,12 @@ def pol_oracle_predict(event_id: str, event_features: Optional[Dict[str, Any]] =
     if cached and now - cached.get("_cached_ts", 0) < _CACHE_TTL_S:
         return cached["payload"]
 
-    payload = {"event_id": event_id}
+    # P7 expects {"events": [{"event_id": ..., ...}]} -- NOT a top-level event_id.
+    # Previous shape returned {"error": "no events to predict"} silently.
+    event_obj: Dict[str, Any] = {"event_id": event_id}
     if event_features:
-        payload["features"] = event_features
+        event_obj.update(event_features)
+    payload = {"events": [event_obj]}
 
     resp = _post_json(POL_ORACLE_URL, payload)
     if not resp or "predictions" not in resp:
