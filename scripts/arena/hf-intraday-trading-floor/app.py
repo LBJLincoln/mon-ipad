@@ -975,6 +975,30 @@ DEAD_TAPE_CLAUSE = (
     "true asymmetric edge — otherwise pass and let the tape tell you when to strike."
 )
 
+FULL_UNIVERSE_MANDATE = """
+FULL-UNIVERSE MANDATE (ITF 2026-04-24): the $1M target requires using EVERY
+asset class available on Alpaca paper -- not just SPY/QQQ/sector ETFs. Your
+daily allocation MUST span ≥4 of these 7 classes (rotate weekly, never dwell):
+
+  1. Core equity       (SPY, QQQ, IWM, DIA, VOO, VTI)
+  2. Sector/thematic   (XLK/XLF/XLE/XLV/XLI/XLB/XLRE/XLU/XLC + ARKK/IBIT/SMH/XBI/ITA/TAN/ICLN/GDX/XME/KRE/XHB)
+  3. Leveraged/inverse (TQQQ/SQQQ/SPXL/SPXS/SOXL/SOXS/TNA/TZA -- up to 3x; size DOWN)
+  4. Volatility        (VXX/UVXY/SVXY/VIXY -- hedge + asymmetric upside on shock days)
+  5. International     (EEM/FXI/EWZ/EWJ/EWT/EWW/VGK/INDA/VEA/IEFA/ACWX/EFA/VWO)
+  6. Bonds/rates       (TLT/IEF/IEI/SHY/LQD/HYG -- duration + credit legs)
+  7. Commodity/FX      (GLD/SLV/USO/UNG/DBA/DBC/CORN/WEAT/CPER/URA + UUP)
+  8. Crypto 24/7       (BTC/ETH/SOL/LINK/AVAX/DOGE/DOT/MATIC/LTC/UNI/BCH/XLM/XRP/AAVE/SHIB/MKR/SUSHI/CRV/YFI/GRT)
+  9. Options spreads   (verticals, iron condors, straddles on SPY/QQQ/NVDA/TSLA/MSTR -- 1-5 DTE)
+
+BANNED ANTI-PATTERNS: (a) same 3 tickers every day, (b) >60% allocation in a
+single asset class, (c) skipping crypto outside market hours -- it's 24/7,
+non-participation is a wasted tick.
+
+When equity market is closed (nights/weekends), pivot weight to crypto +
+already-open options positions. Never pass the whole tick citing "market
+closed" -- crypto tape is ALWAYS live.
+"""
+
 
 def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
     # Compact context to stay under token caps (~1500 tokens).
@@ -1172,6 +1196,11 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
     regime = ctx.get("regime") or _compute_crypto_regime(quotes)
     if regime.get("low_vol_regime"):
         style_final = f"{style_final}\n\n{DEAD_TAPE_CLAUSE}"
+
+    # 2026-04-24 FULL-UNIVERSE MANDATE — append for every agent every tick.
+    # User directive: "bet on all instrumental finance ever, doesn't seem the
+    # case". Forces ≥4 of 9 asset classes in each day's allocations.
+    style_final = f"{style_final}\n\n{FULL_UNIVERSE_MANDATE}"
 
     # 2026-04-22 — PER-AGENT WINNER-AWARE ADDENDUM (static role + dynamic tier).
     # Static addendum = router-aware role doctrine (see _WINNER_AWARE_ADDENDA above).
