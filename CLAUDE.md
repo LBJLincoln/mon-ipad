@@ -155,9 +155,16 @@ SYSTEM CRONS (28 active on VM, all lightweight)
 | `scripts/ops/sync_tf_analytics_to_dashboard.sh` | `:40 hourly` | Mirror `data/tf-analytics/*.json` + audit MD files (scorecard/rigorous/cross-llm/digest/trajectory) to `nomos-dashboard/public/tf-analytics/` + commit+push. Vercel rebuilds. Token-free. |
 | `scripts/ops/weekly_oracle_retrain.sh` | `Sun 03:00` | Push Kaggle kernel → train RF from `nba_cached_data.npz` → download pickle → upload to HF dataset `LBJLincoln26/nba-oracle-model` → restart `LBJLincoln26/nba-oracle` Space |
 
-## Oracle Space (2026-04-24)
+## Oracle Spaces (2026-04-24)
 
-`LBJLincoln26/nba-oracle` — Docker HF Space that loads the pickle from HF dataset `LBJLincoln26/nba-oracle-model` at startup and exposes `/api/predict`, `/api/status`, `/api/best`. Currently returns base-rate when called without features; will return full RF prediction when passed `{"games": [{"features": [6452-dim vector]}]}`. Fed by weekly Kaggle retrain cron. Current CV Brier 0.22087 (best fold 0.21383). Not yet NBA's default `NBA_ORACLE_URL` — that still points to `nomos42-nba-evo-4.hf.space` because the TF client only sends team names. Future step: wire feature-fetcher in the Space OR extend TF client to pass features.
+Both built via Kaggle CPU training → HF dataset → FastAPI Space. Weekly auto-retrain via `scripts/ops/weekly_oracle_retrain.sh` (Sun 03:00 UTC).
+
+| Space | Dataset | CV Brier | Target | Status |
+|-------|---------|----------|--------|--------|
+| `LBJLincoln26/nba-oracle` | `LBJLincoln26/nba-oracle-model` | **0.22087** (best fold 0.21383) | 0.21218 | live, serves /api/predict, /api/status, /api/best |
+| `LBJLincoln26/pol-oracle` | `LBJLincoln26/pol-oracle-model` | **0.23274** (best fold 0.22329) | 0.20239 | live |
+
+Both return base-rate when called without features (TF clients only pass identifiers). Full RF prediction requires `{"games"/"events": [{"features": [N-dim vector]}]}`. Neither is yet the default `NBA_ORACLE_URL`/`POL_ORACLE_URL` — that would regress predictions without feature wire-up. Oracles are warm backups + retrain targets for the weekly cron.
 
 ## NBA betting surface (2026-04-24)
 
