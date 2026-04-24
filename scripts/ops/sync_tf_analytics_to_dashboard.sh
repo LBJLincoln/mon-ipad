@@ -37,7 +37,7 @@ mkdir -p "$DEST"
 cp -r "$SRC"/. "$DEST/" 2>/dev/null || true
 # Also copy audit MD files into a subdirectory
 mkdir -p "$DEST/audit"
-for f in scorecard-latest.md rigorous-latest.md cross-llm-latest.md digest-latest.md; do
+for f in scorecard-latest.md rigorous-latest.md cross-llm-latest.md digest-latest.md trajectory-latest.md; do
   src="/home/termius/mon-ipad/data/audit/$f"
   if [ -f "$src" ]; then
     cp "$src" "$DEST/audit/$f"
