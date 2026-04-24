@@ -3480,6 +3480,28 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     "Tight caps auto-enforced (5%/bet, 50%/day, edge≥4%). Find ONE "
                     "high-confidence pick to survive and rebuild. No parlays."
                 )
+
+            # 2026-04-24 INVERSE-CALIBRATION PROBATION
+            # Agents in _AGENT_KELLY_OVERRIDE with Kelly <= 0.03 are there BECAUSE
+            # tf_rigorous_validation measured Brier > 0.32 (worse than random 0.25)
+            # on 30-day window. Their high-confidence picks have been 77% wrong.
+            # Add a hard-line prompt so the LLM knows the scientific measurement
+            # and is shepherded toward strict oracle-agreement only.
+            _kelly_cap = _AGENT_KELLY_OVERRIDE.get(tid)
+            if _kelly_cap is not None and _kelly_cap <= 0.03:
+                system_prompt += (
+                    "\n\n[INVERSE-CALIBRATION PROBATION]\n"
+                    f"Your Brier score on NBA over 30 days has been MEASURED > 0.32 "
+                    f"(random is 0.25; your Kelly cap is {_kelly_cap:.2f}). "
+                    "This means your high-confidence bets have been LOSING 60-77% "
+                    "of the time. Scientific reality:\n"
+                    "  - PASS is the default action. Bet only on ORACLE-AGREEING signals.\n"
+                    "  - HARD LIMIT: 1 bet per day, edge >= 0.10, stake <= 3% of bankroll.\n"
+                    "  - If your thesis disagrees with the Island Oracle in direction, "
+                    "AUTOMATIC PASS. No exceptions.\n"
+                    "  - Rebuild calibration by betting FEWER, more AGREEING picks.\n"
+                    "  - Once your 30-day Brier drops below 0.28, this probation lifts."
+                )
             user_prompt = build_day_prompt(
                 day_date, day_games, day_odds_list, day_stand_list, day_form_list,
                 ts, rosters=rosters, team_advanced=team_advanced,
