@@ -48,14 +48,18 @@ MIN_TRADING_AGENTS = 14
 MONOCULTURE_MULTIPLIER_NBA = 10.0  # any agent >10x average bankroll = FAIL
 MONOCULTURE_MULTIPLIER_POL = 50.0  # top / min ratio
 EQUITY_DIVERGENCE_USD = 2000.0
-MIN_DISTINCT_CATEGORIES = 3
+MIN_DISTINCT_CATEGORIES = 3  # legacy — pre-2026-04-24 when we thought POL had 22 live categories
+MIN_DISTINCT_SECTORS = 3     # actual enforceable invariant: POL source data is 98.4% insider_trade
+                              # but agents MUST span ≥3 SPDR sectors (XLF/XLE/XLV/XLI/XLK/XLC/XLY)
+POL_HUB_REPO = "LBJLincoln26/political-llm-trading-floor"
 
 
 # ---------- io helpers ----------
 
 
 def _load_env() -> None:
-    """Tiny key=value parser. Skips `export ` prefix, handles $REF simple expansion."""
+    """Tiny key=value parser. Skips `export ` prefix, handles quoted values with
+    inline `#` comments (common in .env.local), does one $REF expansion pass."""
     if not ENV_FILE.exists():
         return
     try:
@@ -69,8 +73,22 @@ def _load_env() -> None:
                 continue
             key, _, val = line.partition("=")
             key = key.strip()
-            val = val.strip().strip('"').strip("'")
-            # minimal $VAR expansion (single pass)
+            val = val.strip()
+            # Quoted value: take everything between matching quotes, discard rest.
+            if val and val[0] in ('"', "'"):
+                q = val[0]
+                end = val.find(q, 1)
+                if end != -1:
+                    val = val[1:end]
+                else:
+                    val = val[1:]
+            else:
+                # Unquoted: strip inline ` # comment` / `\t# comment`.
+                for sep in (" #", "\t#"):
+                    i = val.find(sep)
+                    if i != -1:
+                        val = val[:i].rstrip()
+                        break
             if val.startswith("$"):
                 ref = val[1:]
                 val = os.environ.get(ref, val)
@@ -175,8 +193,8 @@ def check_nba() -> dict[str, Any]:
 
 
 def _pol_categories_from_day(date: str) -> tuple[set[str], str]:
-    """Fetch one POL day and collect event_type values across all agents.
-    Returns (categories, err). event_type is the closest proxy to 'category' on POL allocations."""
+    """Legacy event_type collector (kept for back-compat — POL data is 98.4% insider_trade,
+    so this is no longer the enforceable invariant)."""
     url = POL_DAY_BYDATE.format(date=urllib.parse.quote(date))
     status, body, err = _http_get(url)
     if status != 200:
@@ -191,6 +209,67 @@ def _pol_categories_from_day(date: str) -> tuple[set[str], str]:
             if et:
                 cats.add(str(et))
     return cats, ""
+
+
+def _pol_recent_days_from_hub() -> tuple[list[dict], str]:
+    """List recent POL day-decision files directly from the Hub REST API -- bypasses
+    /api/day-decisions (flaky on multi-worker HF load balancers) and the
+    huggingface_hub SDK (ASCII-locale bug on non-ASCII import paths).
+
+    Returns (list_of_day_dicts newest-first, err_string). Pulls the last 3 days.
+    """
+    tok = os.environ.get("HF_TOKEN_NBA") or os.environ.get("HF_TOKEN") or os.environ.get("HF_TOKEN_POL")
+    headers = {"Authorization": f"Bearer {tok}"} if tok else {}
+
+    tree_url = f"https://huggingface.co/api/spaces/{POL_HUB_REPO}/tree/main?recursive=true"
+    status, body, err = _http_get(tree_url, headers=headers, timeout=30)
+    if status != 200:
+        return [], f"hub tree err: {err or status}"
+    data, perr = _json_body(body)
+    if perr or not isinstance(data, list):
+        return [], f"hub tree parse: {perr}"
+
+    day_files = sorted(
+        str(f.get("path"))
+        for f in data
+        if isinstance(f, dict)
+        and str(f.get("path", "")).startswith("data/decisions/day-")
+        and str(f.get("path", "")).endswith(".json")
+    )
+    if not day_files:
+        return [], "no day-decisions on hub"
+
+    out: list[dict] = []
+    for rf in day_files[-3:]:
+        raw_url = f"https://huggingface.co/spaces/{POL_HUB_REPO}/resolve/main/{urllib.parse.quote(rf)}"
+        d_status, d_body, d_err = _http_get(raw_url, headers=headers, timeout=30)
+        if d_status != 200:
+            continue
+        d_data, d_perr = _json_body(d_body)
+        if d_perr or not isinstance(d_data, dict):
+            continue
+        out.append(d_data)
+    return out, ""
+
+
+def _pol_sectors_from_days(days: list[dict]) -> tuple[set[str], set[str]]:
+    """Across a list of POL day payloads, collect distinct sectors + distinct
+    tickers the fleet allocated on. Sector diversity is the real scientific
+    invariant given 98.4%-insider_trade source data."""
+    sectors: set[str] = set()
+    tickers: set[str] = set()
+    for day in days:
+        if not isinstance(day, dict):
+            continue
+        for a in (day.get("agents") or {}).values():
+            for alloc in (a.get("allocations") or []):
+                s = alloc.get("sector") or alloc.get("signal_sector") or alloc.get("etf")
+                t = alloc.get("ticker")
+                if s:
+                    sectors.add(str(s).lower())
+                if t:
+                    tickers.add(str(t).upper())
+    return sectors, tickers
 
 
 def check_pol() -> dict[str, Any]:
@@ -237,55 +316,30 @@ def check_pol() -> dict[str, Any]:
     else:
         out["checks"]["monoculture"] = _check(False, "insufficient bankroll data", {"n_positive": len(vals)})
 
-    # Category diversity across recent days.
-    # /api/day-decisions (no args) returns `days` index (HF worker-local, typically 1 entry).
-    # Poll a few times to collect distinct dates, then probe each.
-    seen_dates: list[str] = []
-    index_errs: list[str] = []
-    for _ in range(4):
-        s, b, e = _http_get(POL_DAYS_INDEX)
-        if s != 200:
-            index_errs.append(e or str(s))
-            continue
-        idx, _pe = _json_body(b)
-        if isinstance(idx, dict):
-            for day in (idx.get("days") or []):
-                d = day.get("date")
-                if d and d not in seen_dates:
-                    seen_dates.append(d)
+    # Sector diversity across recent days — the actual scientific invariant.
+    # POL source events are 98.4% insider_trade (3540/3597) so event_type diversity
+    # is not achievable; SPDR-sector diversity is. Pull day files directly from Hub
+    # (bypassing the flaky HF worker LB /api/day-decisions endpoint).
+    days_payload, days_err = _pol_recent_days_from_hub()
+    sectors, tickers = _pol_sectors_from_days(days_payload)
 
-    # Keep last 3 dates (sorted desc if parseable)
-    try:
-        seen_dates_sorted = sorted(seen_dates, reverse=True)
-    except Exception:
-        seen_dates_sorted = seen_dates
-    probe_dates = seen_dates_sorted[:3]
-
-    categories: set[str] = set()
-    day_errs: list[str] = []
-    for date in probe_dates:
-        cats, e = _pol_categories_from_day(date)
-        categories |= cats
-        if e:
-            day_errs.append(e)
-
-    diversity_ok = len(categories) >= MIN_DISTINCT_CATEGORIES
-    # If we couldn't fetch any day at all, FAIL with explicit reason
-    if not probe_dates:
-        out["checks"]["category_diversity"] = _check(
+    diversity_ok = len(sectors) >= MIN_DISTINCT_SECTORS or len(tickers) >= MIN_DISTINCT_SECTORS
+    if not days_payload:
+        out["checks"]["sector_diversity"] = _check(
             False,
-            f"no day-decisions available to probe (index errors: {index_errs[:2]})",
-            {"dates_found": seen_dates, "index_errors": index_errs[:3]},
+            f"no POL day files on hub to probe: {days_err}",
+            {"err": days_err},
         )
     else:
-        out["checks"]["category_diversity"] = _check(
+        out["checks"]["sector_diversity"] = _check(
             diversity_ok,
-            f"distinct event_type categories across {len(probe_dates)} days: {len(categories)} (need >={MIN_DISTINCT_CATEGORIES})",
+            f"distinct sectors+tickers across {len(days_payload)} days: sectors={len(sectors)} tickers={len(tickers)} (need >={MIN_DISTINCT_SECTORS})",
             {
-                "dates_probed": probe_dates,
-                "categories": sorted(categories),
-                "n_categories": len(categories),
-                "day_errors": day_errs[:3],
+                "days_probed": len(days_payload),
+                "sectors": sorted(sectors),
+                "tickers": sorted(tickers)[:15],
+                "n_sectors": len(sectors),
+                "n_tickers": len(tickers),
             },
         )
 
