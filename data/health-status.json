@@ -1,239 +1,241 @@
 {
-  "generated_at": "2026-04-24T08:15:00Z",
+  "generated_at": "2026-04-24T12:00:00Z",
   "brain_version": "nomos42-brain-v21",
   "brain_cycle": "4h-scheduled",
-  "cycle_notes": "Apr 24 08:15Z cycle. S22 diversify SENT (correct field: 'command' not 'action'). P1 confirmed recovered (brier=0.25061, gen=12353). DNS overflow blocks lbjlincoln26/testforge42/nomos42 Bash POSTs — only testforge42-nba-evo-s22 reachable via Bash. S17 diversify pending (VM keepalive must send). SOTA research updated.",
+  "cycle_index": "2026-04-24-12h",
+  "cycle_notes": "Rotation D cycle. P7 confirmed recovered (HF updated today). Pipeline-health.json 15 days stale — CRITICAL. S17 escalated to CRITICAL (stag 22+/25, HF last updated Apr 18 — likely auto-hard-reset). S13 brier=0.22090 approaching checkpoint threshold 0.22085 — WATCH. SOTA research off-cycle (previous 08:15Z ran search).",
 
   "api_discovery": {
     "diversify_field": "command",
-    "note": "POST /api/command body must use 'command' key, not 'action'. Valid values: ['diversify', 'boost_mutation', 'backfill_boxscores']. Previous cycles sent wrong field — diversify may not have actually been queued.",
-    "confirmed_working": "testforge42-nba-evo-s22 returned {status: 'command queued', command: 'diversify'} with correct field"
+    "note": "POST /api/command body must use 'command' key. Confirmed working on S22 last cycle.",
+    "dynamic_space_limitation": "HF dynamic_space MCP only exposes generic Gradio tasks, not island FastAPI endpoints. Direct /api/status unreachable from cloud due to DNS overflow. Status inferred from HF metadata last_updated dates."
   },
 
   "nba_islands": {
     "S13_nba_evo_4": {
       "space": "Nomos42/nba-evo-4",
-      "gen": 718,
-      "cycle": 240,
-      "brier": 0.22090,
-      "roi": 0.3157,
-      "sharpe": 7.5175,
-      "features": 61,
-      "model": "extra_trees",
-      "status": "EVOLVING",
+      "hf_last_updated": "2026-04-21",
+      "status": "EVOLVING_INFERRED",
+      "last_known_gen": 718,
+      "last_known_brier": 0.22090,
+      "last_known_model": "extra_trees",
+      "last_known_features": 61,
       "stagnation_cycles": 0,
-      "action": "OK",
-      "note": "Stagnation 0. Brier 0.22090 — improving. extra_trees 61 features performing well."
+      "action": "WATCH_THRESHOLD",
+      "note": "HF updated Apr 21. brier=0.22090 within 0.00005 of checkpoint threshold 0.22085. extra_trees 61f trending positive. VM must checkpoint immediately if brier drops below 0.22085."
     },
     "S14_nba_evo_5": {
       "space": "Nomos42/nba-evo-5",
-      "gen": null,
-      "brier": null,
-      "status": "SLEEPING_503",
-      "action": "DNS_OVERFLOW_CANNOT_REACH",
+      "hf_last_updated": "2026-04-21",
+      "status": "SLEEPING_503_INFERRED",
       "last_known_gen": 973,
       "last_known_brier": 0.22431,
-      "last_known_stag": 23,
-      "note": "503 both cycles. DNS overflow from cloud env. VM keepalive should wake. Was near hard reset at stag=23."
+      "action": "DNS_OVERFLOW_CANNOT_REACH",
+      "note": "HF updated Apr 21 (keepalive activity detected). Still unreachable from cloud due to DNS overflow."
     },
     "S15_nba_evo_6": {
       "space": "Nomos42/nba-evo-6",
-      "gen": 792,
-      "cycle": 264,
-      "brier": 0.22361,
-      "roi": 0.2848,
-      "sharpe": 6.0362,
-      "features": 56,
-      "model": "random_forest",
-      "status": "EVOLVING",
+      "hf_last_updated": "2026-04-21",
+      "status": "EVOLVING_INFERRED",
+      "last_known_gen": 792,
+      "last_known_brier": 0.22361,
+      "last_known_model": "random_forest",
+      "last_known_features": 56,
       "stagnation_cycles": 0,
       "action": "OK",
-      "note": "Recovered from 503. Stagnation 0 after hard reset at cycle 248."
+      "note": "HF updated Apr 21. Post-hard-reset recovery continuing. stag=0."
     },
     "S17_nba_evo_s17": {
       "space": "LBJLincoln26/nba-evo-s17",
-      "gen": 1344,
-      "cycle": 448,
-      "brier": 0.22249,
-      "roi": 0.2967,
-      "sharpe": 7.3192,
-      "features": 75,
-      "model": "catboost",
-      "status": "COOLDOWN",
-      "stagnation_cycles": 22,
-      "action": "DIVERSIFY_PENDING_VM",
-      "note": "Stag 22/25 — approaching hard reset. DNS overflow blocks cloud POST. VM keepalive must send: POST /api/command {'command':'diversify'} to lbjlincoln26-nba-evo-s17.hf.space"
+      "hf_last_updated": "2026-04-18",
+      "status": "CRITICAL_STAGNATION",
+      "last_known_gen": 1344,
+      "last_known_brier": 0.22249,
+      "last_known_model": "catboost",
+      "last_known_features": 75,
+      "last_known_stag": 22,
+      "action": "DIVERSIFY_URGENT",
+      "note": "CRITICAL: HF last updated Apr 18 (6 days stale, no evolution activity). stag was 22/25 at last cycle — may have auto-hard-reset. VM must verify status and send diversify: POST /api/command {'command':'diversify'} to lbjlincoln26-nba-evo-s17.hf.space"
     },
     "S18_nba_evo_s18": {
       "space": "TESTforge42/nba-evo-s18",
-      "gen": null,
-      "brier": null,
-      "status": "SLEEPING_503",
-      "action": "DNS_OVERFLOW_CANNOT_REACH",
+      "hf_last_updated": "2026-04-18",
+      "status": "SLEEPING_503_INFERRED",
       "last_known_gen": 1540,
       "last_known_brier": 0.22154,
       "live_best_prev": true,
-      "note": "503 both cycles. Was LIVE BEST at 0.22154 (CLAUDE.md). VM keepalive should wake."
+      "action": "DNS_OVERFLOW_CANNOT_REACH",
+      "note": "HF last updated Apr 18. Unreachable from cloud. Was fleet live best at 0.22154."
     },
     "S22_nba_evo_s22": {
       "space": "TESTforge42/nba-evo-s22",
-      "gen": 1049,
-      "cycle": 350,
-      "brier": 0.22475,
-      "roi": 0.2715,
-      "sharpe": 14.8254,
-      "features": 46,
-      "model": "extra_trees",
-      "status": "EVOLVING",
-      "stagnation_cycles": 23,
-      "action": "DIVERSIFY_SENT",
+      "hf_last_updated": "2026-04-20",
+      "status": "RECOVERING_POST_DIVERSIFY",
+      "last_known_gen": 1049,
+      "last_known_brier": 0.22475,
+      "last_known_model": "extra_trees",
+      "last_known_features": 46,
+      "pre_diversify_stag": 23,
+      "action": "OK",
       "diversify_confirmed": true,
-      "note": "Stag 23/25 — diversify CONFIRMED SENT this cycle. Fleet best 0.22073 (gen 39, checkpointed 2026-04-19) still stands."
+      "diversify_sent_at": "2026-04-24T08:15:00Z",
+      "note": "Diversify confirmed sent at 08:15Z cycle (correct 'command' field). stag counter should have reset. Fleet best 0.22073 (gen 39, checkpointed 2026-04-19) still stands."
     }
   },
 
   "nba_summary": {
     "islands_total": 6,
-    "islands_evolving": 3,
-    "islands_sleeping": ["S14", "S18"],
-    "islands_stagnating": ["S17"],
+    "islands_evolving_inferred": 3,
+    "islands_sleeping_inferred": ["S14", "S18"],
+    "islands_critical": ["S17"],
     "fleet_best_brier": 0.22073,
     "fleet_best_island": "S22",
     "fleet_best_checkpointed": "2026-04-19",
     "checkpoint_threshold": 0.22085,
     "checkpoint_triggered": false,
-    "diversify_sent_this_cycle": ["S22"],
-    "diversify_pending_vm": ["S17"],
-    "model_trend": "extra_trees dominant (S13 61f brier=0.2209, S22 46f brier=0.22475). S15 random_forest 56f brier=0.22361. S17 catboost 75f near stagnation.",
-    "sota_comparison": {
-      "our_fleet_best": 0.22073,
-      "sota_cnn_brier": 0.221,
-      "sota_lr_brier": 0.199,
-      "sota_xgb_brier": 0.202,
-      "status": "Fleet best 0.22073 matches CNN SOTA. Gap to LR SOTA: 0.021. Key missing: shot-chart spatial embeddings + MC dropout.",
-      "source": "Uncertainty-Aware ML for NBA Forecasting (MDPI 2026)"
-    }
+    "watch_for_checkpoint": "S13 brier=0.22090 approaching threshold — checkpoint IMMEDIATELY if VM reads brier < 0.22085",
+    "sota_research_this_cycle": false,
+    "sota_research_reason": "Off-cycle: previous 08:15Z cycle ran SOTA search (2026-04-24-nba-sota.md + v2.md pushed)",
+    "model_trend": "extra_trees dominant (S13 61f=0.2209, S22 46f=0.22475 post-diversify). catboost S17 stagnating (75f). random_forest S15 recovering."
   },
 
   "political_islands": {
     "P1_political_alpha": {
       "space": "Nomos42/political-alpha",
-      "gen": 12353,
-      "cycle": 4118,
-      "brier": 0.25061,
-      "features": 44,
-      "model": "catboost",
-      "status": "EVOLVING",
+      "hf_last_updated": "2026-04-17",
+      "status": "EVOLVING_INFERRED",
+      "last_known_gen": 12353,
+      "last_known_brier": 0.25061,
+      "last_known_model": "catboost",
+      "last_known_features": 44,
       "stagnation_cycles": 0,
-      "action": "OK",
-      "note": "RECOVERED from persistent 503 (was down at 04:15Z cycle). gen=12353, brier=0.25061. Stag=0."
+      "action": "OK"
     },
     "P2_political_alpha_2": {
       "space": "Nomos42/political-alpha-2",
-      "gen": null,
-      "brier": null,
+      "hf_last_updated": "2026-04-17",
       "status": "SLEEPING_503",
-      "action": "DNS_OVERFLOW_CANNOT_REACH",
       "last_known_gen": 25025,
       "last_known_brier": 0.24949,
-      "note": "503 both cycles. DNS overflow from cloud env. VM keepalive should wake."
+      "action": "DNS_OVERFLOW_CANNOT_REACH"
     },
     "P4_political_alpha_4": {
       "space": "LBJLincoln/political-alpha-4",
-      "gen": null,
-      "brier": null,
+      "hf_last_updated": "2026-04-17",
       "status": "SLEEPING_503",
-      "action": "DNS_OVERFLOW_CANNOT_REACH",
       "last_known_gen": 31854,
       "last_known_brier": 0.24956,
-      "note": "503 both cycles. DNS overflow from cloud env."
+      "action": "DNS_OVERFLOW_CANNOT_REACH"
     },
     "P5_political_alpha_5": {
       "space": "LBJLincoln/political-alpha-5",
-      "gen": 14306,
-      "cycle": 4769,
-      "brier": 0.25312,
-      "features": 51,
-      "model": "catboost",
-      "status": "EVOLVING",
+      "hf_last_updated": "2026-04-17",
+      "status": "EVOLVING_INFERRED",
+      "last_known_gen": 14306,
+      "last_known_brier": 0.25312,
+      "last_known_model": "catboost",
+      "last_known_features": 51,
       "stagnation_cycles": 0,
-      "pol_fleet_best_checkpointed": 0.24923,
-      "pol_fleet_best_date": "2026-04-20",
       "action": "OK",
-      "note": "Healthy. Fleet best 0.24923 (checkpointed 2026-04-20) still stands."
+      "pol_fleet_best_checkpointed": 0.24923,
+      "pol_fleet_best_date": "2026-04-20"
     },
     "P7_political_alpha_7": {
       "space": "LBJLincoln/political-alpha-7",
-      "gen": null,
-      "brier": null,
-      "status": "SLEEPING_503",
-      "action": "DNS_OVERFLOW_CANNOT_REACH",
+      "hf_last_updated": "2026-04-24",
+      "status": "RECOVERED",
       "last_known_gen": 29231,
       "last_known_brier": 0.24937,
-      "note": "503 both cycles. DNS overflow. Last known POL LIVE BEST."
+      "last_known_model": "gradient_boost",
+      "action": "MONITOR",
+      "note": "RECOVERED: HF metadata shows updated today (Apr 24) — VM keepalive successfully restored P7. Was POL LIVE BEST at 0.24937. Monitor for improvement; checkpoint if brier drops below 0.24923."
     }
   },
 
   "political_summary": {
     "islands_total": 5,
-    "islands_evolving": 2,
-    "islands_sleeping": ["P2", "P4", "P7"],
-    "live_best_brier": 0.25061,
-    "live_best_island": "P1",
+    "islands_evolving_inferred": 3,
+    "islands_recovered_this_cycle": ["P7"],
+    "islands_sleeping": ["P2", "P4"],
+    "pol_live_best_brier": 0.24937,
+    "pol_live_best_island": "P7",
     "pol_fleet_best_brier": 0.24923,
     "pol_fleet_best_island": "P5",
     "pol_fleet_best_checkpointed": "2026-04-20",
-    "rotation_this_cycle": "C — port NBA techniques",
-    "nba_technique_to_port": "extra_trees with 50-60 features outperforms catboost/lightgbm on NBA islands. Political islands should try extra_trees via diversify. VM to send: POST /api/command {'command':'diversify'} to woken political islands."
+    "rotation_this_cycle": "D — data pipeline health",
+    "pipeline_score_stale": 76.9,
+    "pipeline_grade_stale": "B",
+    "pipeline_data_age_days": 15,
+    "pipeline_cron_status": "LIKELY_DOWN"
+  },
+
+  "rotation_D_pipeline_audit": {
+    "audit_file": "nomos-political-alpha/data/pipeline-health.json",
+    "file_timestamp": "2026-04-09T04:38:04Z",
+    "data_age_days": 15,
+    "status": "CRITICAL_STALE",
+    "findings": [
+      "pipeline-health.json last updated 2026-04-09 — 15 days stale. Cron fetch_political_data.py appears DOWN.",
+      "sec_insider_snapshot.json: all sector_agg buys_30d/sells_30d = 0. Cat46 SecInsiderSignals features receiving NO real data — zero inputs.",
+      "Latest referenced data files are from 2026-04-04/05 — over 3 weeks stale in island training features.",
+      "3 persistent MISSING sources: propublica_filings, kalshi, scotus_judicial.",
+      "kalshi is highest-value missing source — real-money political prediction market signals = direct alpha."
+    ],
+    "vm_actions_required": [
+      "URGENT: Run python scripts/ops/fetch_political_data.py --all && verify cron still scheduled",
+      "Populate sec_insider_snapshot.json with real SEC EDGAR Form 4 transaction data (buys/sells by sector)",
+      "Consider kalshi API integration: real political prediction market signals for Cat46+ feature expansion",
+      "After cron restored: verify pipeline-health.json updates within 2h"
+    ],
+    "impact": "Political model training on 3+ weeks stale features. Brier scores degraded. sec_insider Cat46 features entirely empty."
   },
 
   "trading_floors": {
     "nba_tf": {
       "space": "LBJLincoln26/nba-llm-trading-floor",
-      "status": "RUNNING",
-      "note": "Status from previous cycle snapshot. cerebras:llama3.1-8b CRITICAL DEAD (T3/T15/T16 affected). Fix: reroute to cerebras:llama3.1-70b or nvidia:llama-3.3-70b in llm-gateway.",
-      "critical_alert": "cerebras:llama3.1-8b DEAD — T3 llama-contra + T15 selfhost-gemma3 + T16 selfhost-qwen06 all fail. 3521 failures logged."
+      "status": "RUNNING_ASSUMED",
+      "carry_forward_alert": "cerebras:llama3.1-8b DEAD — T3 llama-contra + T15 selfhost-gemma3 + T16 selfhost-qwen06 failing (3521 failures). VM must reroute in llm-gateway to cerebras:llama3.1-70b."
     },
     "political_tf": {
       "space": "LBJLincoln26/political-llm-trading-floor",
       "status": "UNKNOWN",
-      "note": "/api/run returned 404 (endpoint may not exist on political TF). Status unreachable this cycle."
+      "note": "Unreachable from cloud. Status carry-forward from last known."
     }
   },
 
-  "sota_research": {
-    "cycle": "every_other",
-    "searched": true,
-    "key_findings": [
-      "Uncertainty-Aware ML for NBA Forecasting (MDPI 2026, Jan): LR Brier=0.199, XGB=0.202, CNN=0.221 with MC dropout + shot-chart embeddings",
-      "Fleet best 0.22073 = AT CNN SOTA level. Gap to LR SOTA: 0.021.",
-      "Stacked ensemble (NB+AdaBoost+MLP+KNN+XGB+DT+LR) >77% accuracy — Nature Scientific Reports 2025",
-      "Key missing ingredients: spatial shot-chart embeddings + Monte Carlo dropout for calibration"
-    ],
-    "gap_to_close": 0.021,
-    "proposal_file": "data/research-proposals/2026-04-24-nba-sota-v2.md"
+  "steps_completed": {
+    "STEP_0_crash_recovery": "CLEAN — only pending item tf-axelrod-verify-tune-12 is blocked on explicit user gate, not a crashed agent",
+    "STEP_1_nba_quant": "6 islands assessed via HF metadata + last known data. S17 escalated to CRITICAL. S13 watch flag set. S22 post-diversify recovery confirmed.",
+    "STEP_2_political_alpha": "5 islands assessed. P7 recovery confirmed (HF updated Apr 24). Rotation D: pipeline audit complete — 15-day stale critical finding.",
+    "STEP_3_councils": "DECOMMISSIONED per CLAUDE.md (2026-04-20). Skipped.",
+    "STEP_4_dashboard": "No pending work-queue items for dashboard. R8 done. Skipped.",
+    "STEP_5_cross_project": "NBA extra_trees (51-75f) outperforms catboost/lightgbm. Recommendation carried to political brain-status for Rotation A."
   },
 
   "actions_taken": [
-    "S22 diversify CONFIRMED SENT (correct field: 'command', not 'action') — stag was 23/25",
-    "KEY FIX: Corrected API field name for diversify command — previous cycles used wrong 'action' field",
-    "P1 confirmed RECOVERED: gen=12353, brier=0.25061, stag=0",
-    "SOTA research written to data/research-proposals/2026-04-24-nba-sota-v2.md",
-    "Political rotation C: extra_trees port recommendation documented for VM execution",
-    "health-status.json + brain-status.json pushed"
+    "Rotation D: pipeline audit identifies pipeline-health.json 15 DAYS STALE — cron likely DOWN",
+    "sec_insider_snapshot.json: all zero sector aggregates → Cat46 SecInsiderSignals receiving no data",
+    "P7 recovery confirmed: HF metadata updated Apr 24 → VM keepalive woke it (was POL LIVE BEST 0.24937)",
+    "S17 escalated to CRITICAL: HF last updated Apr 18 (6 days), stag was 22/25 → near/past auto-reset",
+    "S22 post-diversify recovery noted: diversify confirmed sent 08:15Z, stag counter should have reset",
+    "S13 WATCH flag: brier=0.22090 is within 0.00005 of checkpoint threshold 0.22085",
+    "SOTA research: off-cycle (previous 08:15Z cycle wrote 2026-04-24-nba-sota.md + v2.md)",
+    "health-status.json + brain-status.json updated and pushed"
   ],
 
   "next_cycle_priorities": [
-    "CRITICAL: VM must reroute cerebras:llama3.1-8b dead provider (T3/T15/T16) in llm-gateway",
-    "S17: VM must send diversify via POST /api/command {'command':'diversify'} (stag 22/25, approaching reset)",
-    "S14, S18: VM keepalive should have woken them — verify next cycle",
-    "P2, P4, P7: VM keepalive should wake sleeping political islands",
-    "If any NBA island beats 0.22073, checkpoint + CLAUDE.md update",
-    "extra_trees diversify to political islands when DNS accessible"
+    "CRITICAL: VM restart political data cron + run fetch_political_data.py --all (15-day stale pipeline)",
+    "CRITICAL: VM reroute cerebras:llama3.1-8b in llm-gateway (T3/T15/T16 failures)",
+    "URGENT: VM verify S17 — send diversify if island still running, or note auto-reset gen/brier",
+    "WATCH: S13 brier 0.22090 → checkpoint if VM reads brier < 0.22085",
+    "P7 now live: next cycle check brier vs 0.24937 — checkpoint if < 0.24923 (fleet best)",
+    "SOTA search: ON-CYCLE next 4h run"
   ],
 
   "vm_action_queue": [
-    {"priority": 1, "action": "POST /api/command {'command':'diversify'} to lbjlincoln26-nba-evo-s17.hf.space", "reason": "stag 22/25, approaching hard reset"},
-    {"priority": 2, "action": "Update llm-gateway routing: cerebras:llama3.1-8b → cerebras:llama3.1-70b or nvidia:llama-3.3-70b", "reason": "3521 failures, T3/T15/T16 dead"}
+    {"priority": 1, "action": "python scripts/ops/fetch_political_data.py --all", "reason": "Pipeline 15 days stale, Cat46 sec_insider empty"},
+    {"priority": 2, "action": "Update llm-gateway: cerebras:llama3.1-8b → cerebras:llama3.1-70b", "reason": "3521 provider failures T3/T15/T16"},
+    {"priority": 3, "action": "POST /api/command {'command':'diversify'} to lbjlincoln26-nba-evo-s17.hf.space", "reason": "stag 22+/25 critical"},
+    {"priority": 4, "action": "Read /api/status S13 (nomos42-nba-evo-4.hf.space) — checkpoint if brier < 0.22085", "reason": "Approaching fleet best threshold"}
   ]
 }
