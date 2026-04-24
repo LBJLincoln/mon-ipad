@@ -1009,6 +1009,18 @@ SCOTUS case in a specific sector, you MUST:
     with a specific counter-reason).
 Ignoring POL signals in silence = violating the mandate. The political engine
 ships fresh every 5 minutes precisely to give ITF its alpha edge -- USE IT.
+
+PQTF CHAMPION PLAYBOOK (2026-04-24 — empirical from 50-day archive):
+  PQTF mistral:large won +$244K by concentrating on:
+    XLF (+$14,406)  - financials, single-leg calls on Fed / rate-cut tailwind
+    XLK (+$4,305)   - tech, same pattern
+    XLC (+$2,271)   - communications
+  Multi-leg strategies (iron_condor/straddle/vertical) had NET LOSSES in the
+  same period. The PQTF champion's edge was SINGLE-LEG directional calls on
+  sector-rotation tickers, not clever spreads.
+  Lesson for ITF options-1 / iv-crush-1 personas: single-leg on XLF/XLK/XLC
+  during favorable regime is PROVEN. Reserve multi-leg for explicit vol/IV
+  trades, not as a default.
 """
 
 
