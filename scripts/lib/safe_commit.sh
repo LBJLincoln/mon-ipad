@@ -27,6 +27,29 @@ shift 2 || true
 
 cd "$REPO"
 
+# ---- Quarantine gate (2026-04-22 post-mortem) -----------------------------
+# Block destructive commits (factory_reboot, DAY-0 RESET, reset-state, ...)
+# on quarantined Spaces unless the caller passes NOMOS_QUARANTINE_OVERRIDE=1.
+# check-msg returns 0 when the message is non-destructive OR the Space is
+# clear. Returns 1 only when destructive + quarantined. Each NBA/POL/ITF/PQTF
+# is tested separately so a message mentioning NBA doesn't block a POL action.
+if [ "${NOMOS_QUARANTINE_OVERRIDE:-0}" != "1" ] && [ -x "scripts/ops/tf_quarantine.py" ]; then
+  for space in NBA POL ITF PQTF; do
+    # Only gate if the message actually names the Space — a generic "fix test"
+    # commit shouldn't be blocked because another Space is quarantined.
+    if echo "$MSG" | grep -qwi "$space"; then
+      if ! python3 scripts/ops/tf_quarantine.py check-msg "$space" "$MSG" >/dev/null 2>&1; then
+        echo "[safe_commit/$AGENT] BLOCKED: quarantine gate triggered on $space"
+        echo "[safe_commit/$AGENT] msg: $MSG"
+        python3 scripts/ops/tf_quarantine.py check "$space"
+        echo "[safe_commit/$AGENT] override: re-run with NOMOS_QUARANTINE_OVERRIDE=1 and document why in the commit message."
+        exit 10
+      fi
+    fi
+  done
+fi
+# ---- end quarantine gate --------------------------------------------------
+
 (
   # Block up to LOCK_TIMEOUT; fail loudly if can't acquire.
   flock -w "$LOCK_TIMEOUT" 9 || {
