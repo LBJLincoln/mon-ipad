@@ -1557,22 +1557,28 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
         alt_tot = [c for c in cats if c.startswith("alt_total")]
         team_tots = [c for c in cats if c.startswith("team_total")]
         halves = [c for c in cats if c.startswith("h1_") or c.startswith("h2_")]
-        quarters = [c for c in cats if c.startswith("q1_")]
+        quarters = [c for c in cats if c.startswith("q1_") or c.startswith("q2_")
+                   or c.startswith("q3_") or c.startswith("q4_")]
         game_props = [c for c in cats if c.startswith("prop_")]
+        player_props = [c for c in cats if c.startswith("pp_")]
         n_cats = fo_raw.get("category_count", len(cats))
-        lines.append(f"\nFULL ODDS ({n_cats} categories):")
+        lines.append(f"\nFULL ODDS ({n_cats} categories available -- bet any of them):")
+        # 2026-04-24: removed [:8] slicing so agents see ALL categories per user
+        # directive "17 agents do parlays + 220 categories per match"
         if alt_sp:
-            lines.append(f"  ALT SPREADS: {', '.join(_fmt(c) for c in alt_sp[:8])}")
+            lines.append(f"  ALT SPREADS ({len(alt_sp)}): {', '.join(_fmt(c) for c in alt_sp)}")
         if alt_tot:
-            lines.append(f"  ALT TOTALS: {', '.join(_fmt(c) for c in alt_tot[:8])}")
+            lines.append(f"  ALT TOTALS ({len(alt_tot)}): {', '.join(_fmt(c) for c in alt_tot)}")
         if team_tots:
-            lines.append(f"  TEAM TOTALS: {', '.join(_fmt(c) for c in team_tots)}")
+            lines.append(f"  TEAM TOTALS ({len(team_tots)}): {', '.join(_fmt(c) for c in team_tots)}")
         if halves:
-            lines.append(f"  HALVES: {', '.join(_fmt(c) for c in halves[:8])}")
+            lines.append(f"  HALVES ({len(halves)}): {', '.join(_fmt(c) for c in halves)}")
         if quarters:
-            lines.append(f"  QUARTERS: {', '.join(_fmt(c) for c in quarters)}")
+            lines.append(f"  QUARTERS ({len(quarters)}): {', '.join(_fmt(c) for c in quarters)}")
         if game_props:
-            lines.append(f"  GAME PROPS: {', '.join(_fmt(c) for c in game_props[:8])}")
+            lines.append(f"  GAME PROPS ({len(game_props)}): {', '.join(_fmt(c) for c in game_props)}")
+        if player_props:
+            lines.append(f"  PLAYER PROPS ({len(player_props)}): {', '.join(_fmt(c) for c in player_props)}")
 
     # ── NOMOS42 MODEL PREDICTIONS ──
     pred = (model_preds or {}).get(game_key, {})
@@ -2150,12 +2156,15 @@ NEW AUDIT FIELDS (MANDATORY — councils use these to score decision quality):
 
 STRICT RULES:
 - Sum of allocation pct + parlay pct + cash_held_pct = 1.00 (±0.01)
-- Max 1 allocation per game_idx in allocations[] (no hedging same game both sides)
+- Max 1 allocation per game_idx PER CATEGORY (you can bet ml_home + spread_away
+  + total_over + prop_* + pp_* on the same game across different categories)
 - allocations[]: MUST contain ≥3 entries every day. Empty allocations[] is FORBIDDEN.
   If the slate is weak, pick the 3 highest-edge categories anyway — never return [].
-- Max 10 allocations + 3 parlays
-- Each allocation pct: 0.01–0.40 | Each parlay pct: 0.01–0.10 (combined odds amplify risk)
-- Parlays: 2–4 legs, each leg = distinct game_idx, all legs must win for payout
+- Max 25 allocations + 8 parlays (2026-04-24 user directive: use the 220-category
+  universe — ml, spread, total, alt_spread*, alt_total*, team_total*, halves,
+  quarters, game_props, player_props <stat>_<tier>_<side>).
+- Each allocation pct: 0.01–0.40 | Each parlay pct: 0.005–0.08 (combined odds amplify risk)
+- Parlays: 2–6 legs, each leg = distinct game_idx, all legs must win for payout
 - cash_held_pct: 0.00–0.25 MAX (aggressive-deploy policy, $1M collective goal — idle bankroll cannot compound)
 - MANDATORY: ≥75% of bankroll deployed every day. Holding >25% cash violates the collective goal.
 - Rationale MUST cite a specific stat/metric (not "I think they'll win")
@@ -2323,7 +2332,7 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
     parlays_raw = parsed.get("parlays") or []
     parlays_clean: List[Dict] = []
     if isinstance(parlays_raw, list):
-        for p in parlays_raw[:3]:
+        for p in parlays_raw[:8]:  # 2026-04-24 user directive: 3 -> 8 parlays/day
             if not isinstance(p, dict):
                 continue
             legs_raw = p.get("legs") or []
