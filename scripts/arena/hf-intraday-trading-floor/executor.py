@@ -40,6 +40,44 @@ _LEDGER_DIRTY: bool = False
 # shipping it every tick (still shipped on the tick that crosses the limit).
 _LEDGER_MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 
+# 2026-04-24 MARKET-HOURS GATE — 189 broker_errors observed pre-market with
+# message "options market orders are only allowed during market hours" plus
+# same-day-expiry asset-not-found. Fix: poll /v2/clock once per 60s and
+# reject both equity AND options market orders when closed. Re-submission
+# happens next tick after market opens.
+_CLOCK_CACHE: tuple[float, bool] | None = None
+_CLOCK_TTL_SEC = 60.0
+
+
+def _market_is_open() -> bool:
+    """True iff Alpaca reports the equity market is open. Cached 60s.
+    Fail-closed: any error -> return False (safer than blasting broker_errors).
+    When live_mode() is False (dry run), assume open -- dry run shouldn't
+    depend on external availability."""
+    if not live_mode():
+        return True
+    global _CLOCK_CACHE
+    now = time.time()
+    if _CLOCK_CACHE is not None and (now - _CLOCK_CACHE[0] < _CLOCK_TTL_SEC):
+        return _CLOCK_CACHE[1]
+    try:
+        import requests
+        key = os.environ.get("ALPACA_PAPER_KEY", "")
+        secret = os.environ.get("ALPACA_PAPER_SECRET", "")
+        r = requests.get(
+            "https://paper-api.alpaca.markets/v2/clock",
+            headers={"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret},
+            timeout=5,
+        )
+        if r.ok:
+            is_open = bool(r.json().get("is_open"))
+            _CLOCK_CACHE = (now, is_open)
+            return is_open
+    except Exception:
+        pass
+    _CLOCK_CACHE = (now, False)
+    return False
+
 
 # ───── 2026-04-21 v2.5 PER-AGENT SUB-BANKROLL ─────
 # Each of 14 personas gets an equal slice of current Alpaca equity at cold-start.
@@ -706,6 +744,19 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
        {ticker, side: long|short, stake_usd, stop_pct, take_profit_pct, thesis}
     Returns the recorded order entry (with fill or simulated fill).
     """
+    # 2026-04-24 MARKET-HOURS GATE. Equity market orders outside regular hours
+    # also broker_error; skip cleanly instead of polluting positions.json.
+    # Crypto (ticker containing "/") is 24/7 and bypasses this gate.
+    _is_crypto = "/" in str(order.get("ticker") or "")
+    if live_mode() and not _is_crypto and not _market_is_open():
+        skip = {
+            "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "agent_tid": agent_tid, "status": "market_closed",
+            "reason": "equity market closed -- retry after /v2/clock reports is_open",
+            "order": order,
+        }
+        _append_order_log(skip)
+        return skip
     positions = _load_positions()
     open_for_agent = [p for p in positions.get(agent_tid, []) if p.get("status") == "open"]
     # 2026-04-21 wash-trade pre-check: if same agent has an OPEN opposite-side
@@ -889,6 +940,19 @@ def submit_option(agent_tid: str, order: Dict[str, Any], last_quote: float) -> D
     Dry-run logs the structured intent with computed OCC symbols.
     Live mode routes to Alpaca /v2/options/orders (minimal wrapper; paper-only).
     """
+    # 2026-04-24 MARKET-HOURS GATE. Options market orders fail pre-market with
+    # 42210000 "options market orders are only allowed during market hours"
+    # and same-day-expiry asset-not-found. Skip cleanly until market open.
+    # Also guard DTE==0 pre-market: asset symbol may not exist in chain yet.
+    if live_mode() and not _market_is_open():
+        skip = {
+            "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "agent_tid": agent_tid, "status": "market_closed",
+            "reason": "options market closed -- retry after /v2/clock reports is_open",
+            "order": order,
+        }
+        _append_order_log(skip)
+        return skip
     positions = _load_positions()
     open_for_agent = [p for p in positions.get(agent_tid, []) if p.get("status") == "open"]
     if len(open_for_agent) >= MAX_OPEN_PER_AGENT:
