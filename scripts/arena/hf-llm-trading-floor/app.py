@@ -4071,28 +4071,33 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     cat = alloc["category"]
 
                     edge_val = alloc.get("edge", 0.0) or 0.0
-                    # FULL FREEDOM 2026-04-18 — user directive: agents are absolutely free
-                    # to bet on any of 227 categories with whatever edge they claim.
-                    # Only safety: MIN_EDGE (0.02, near-zero) to block explicit -EV claims.
-                    # Removed BASE_CATS FDR gate entirely — LLMs now access the full tail.
-                    # Bankroll compound rule (_tiered_risk) still enforces sizing discipline.
-                    if edge_val < MIN_EDGE:
+                    # 2026-04-25 — bypass MIN_EDGE + collision gate for
+                    # PARSER-INJECTED bets. llama-contra day-065 emitted a
+                    # valid spread_away at edge=0.08, engine-only mode dropped
+                    # it (no engine view), llm_fallback_singleton restored it,
+                    # then THIS gate (tier MIN_EDGE=0.09 for bk<$100) silently
+                    # killed it. Same trap I hit with the 0.04 cap. Special
+                    # injected bets (engine_forced_floor, llm_fallback_singleton,
+                    # engine_fallback_singleton) come from the parser's last
+                    # resort to break silent-cascade and must bypass the
+                    # tier-min gate.
+                    _is_parser_injected = alloc.get("edge_source") in (
+                        "engine_forced_floor",
+                        "llm_fallback_singleton",
+                        "engine_fallback_singleton",
+                    )
+                    if (not _is_parser_injected) and edge_val < MIN_EDGE:
                         continue
                     # 2026-04-19 collision limiter: if >=COLLISION_MAX_AGENTS
                     # already picked this (game_idx, category) today, skip.
-                    # Forces structural divergence at the allocation level.
-                    # 2026-04-21 exception: fallback_uniform allocations are NOT
-                    # agent-chosen (LLM outage → system-emitted top-3 ML edges).
-                    # Collision gate would wipe 14/17 agents' allocations when the
-                    # whole fleet hits the fallback on a small-game-day (2-4 games),
-                    # which is exactly what happened to selfhost-gemma3/dolphin3
-                    # (0 bets in 17 days). Bypass the gate for fallback allocs so
-                    # every agent still trades — groupthink concern doesn't apply
-                    # when the LLM wasn't the decision-maker.
+                    # 2026-04-21 fallback_uniform exempt; 2026-04-25 parser-
+                    # injected (engine_forced_floor / fallback_singleton) also
+                    # exempt — same rationale: not agent-chosen, no groupthink.
                     coll_key = (alloc["game_idx"], cat)
                     _is_fallback_alloc = (
                         parsed.get("fallback_used") is True
                         or alloc.get("provider_status") == "fallback_uniform"
+                        or _is_parser_injected
                     )
                     if (not _is_fallback_alloc) and day_collisions.get(coll_key, 0) >= COLLISION_MAX_AGENTS:
                         continue
