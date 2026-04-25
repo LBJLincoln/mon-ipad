@@ -1,0 +1,2307 @@
+{
+  "day_idx": 114,
+  "date": "2025-06-23",
+  "n_events": 20,
+  "n_agents": 17,
+  "council_plan": {
+    "council_summary": "Agents commit aggressively to exploit high-signal insider trades in energy (XLE) and financials (XLF) while hedging with tech (ITA) via regulatory arb, prioritizing catch-up agents with higher allocations.",
+    "focus_strategies": [
+      "insider_tracking",
+      "regulatory_arb"
+    ],
+    "focus_categories": [
+      "XLE",
+      "XLF",
+      "ITA"
+    ],
+    "per_agent_commit_pct": {
+      "qwen-quant": 0.55,
+      "qwen-arb": 0.8,
+      "llama-contra": 0.65,
+      "gemini-anl": 0.55,
+      "gemini-tact": 0.55,
+      "mistral-large": 0.75,
+      "mistral-medium": 0.55,
+      "mistral-small": 0.55,
+      "mistral-nemo": 0.6,
+      "mistral-ministral": 0.85,
+      "nemotron-120b": 0.75,
+      "selfhost-qwen4b": 0.55,
+      "nvidia-minimax": 0.8,
+      "nvidia-llama70": 0.55,
+      "selfhost-gemma3": 0.8,
+      "selfhost-qwen06": 0.7,
+      "selfhost-dolphin3": 0.55
+    },
+    "shared_notes": "Allocate 60% to XLE (NVDA-heavy insider trades), 30% to XLF (HOOD/META regulatory arb), and 10% to ITA (tech hedging). Avoid consumer sectors. Execute trades on first 15 events; rebalance post-event.",
+    "raw": "{\n  \"council_summary\": \"Agents commit aggressively to exploit high-signal insider trades in energy (XLE) and financials (XLF) while hedging with tech (ITA) via regulatory arb, prioritizing catch-up agents with higher allocations.\",\n  \"focus_strategies\": [\"insider_tracking\", \"regulatory_arb\"],\n  \"focus_categories\": [\"XLE\", \"XLF\", \"ITA\"],\n  \"per_agent_commit_pct\": {\n    \"qwen-quant\": 0.55,\n    \"qwen-arb\": 0.80,\n    \"mistral-large\": 0.75,\n    \"llama-contra\": 0.65,\n    \"mistral-ministral\": 0.85,\n    \"selfhost-gemma3\": 0.80,\n    \"selfhost-qwen06\": 0.70,\n    \"nemotron-120b\": 0.75,\n    \"nvidia-minimax\": 0.80,\n    \"mistral-nemo\": 0.60\n  },\n  \"shared_notes\": \"Allocate 60% to XLE (NVDA-heavy insider trades), 30% to XLF (HOOD/META regulatory arb), and 10% to ITA (tech hedging). Avoid consumer sectors. Execute trades on first 15 events; rebalance post-event.\"\n}"
+  },
+  "rogue_state": {
+    "qwen-quant": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-arb",
+      "peer_bankroll": 126.6
+    },
+    "qwen-arb": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "llama-contra": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "gemini-anl": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "gemini-tact": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "mistral-large": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "mistral-medium": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "mistral-small": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "mistral-nemo": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "mistral-ministral": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "nemotron-120b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "selfhost-qwen4b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "nvidia-minimax": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "nvidia-llama70": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "selfhost-gemma3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "selfhost-qwen06": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    },
+    "selfhost-dolphin3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 258.32
+    }
+  },
+  "agents": {
+    "qwen-quant": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 258.32,
+      "bankroll_after": 285.0,
+      "day_strategy": "STRUCTURAL COMPLEMENT [gemini-analytical] (edge=5.8%): My regulatory-delta template prioritizes SEC Form 4 insider trades in energy (OKLO) as a non-consensus sector play, while gemini-analytical focused on tech/healthcare. This diverges from their XLC/XLV/XLK allocations yesterday.",
+      "cash_held_pct": 0.2,
+      "cash_rationale": "Holding 20% cash to meet sector diversity mandate and avoid overcrowding in finance/tech sectors.",
+      "allocations": [
+        {
+          "event_idx": 19,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "OKLO insider trade (Form 4, SEC) signals regulatory clarity in energy sector, supported by sector trend (energy avg_ret=+0.0041, win_rate=95%).",
+          "pct": 0.1,
+          "stake": 25.83,
+          "confidence": 0.75,
+          "excess_return": -0.013525,
+          "pnl_pct": -0.0676,
+          "won": false,
+          "profit": -1.75,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 10,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "HOOD insider trade (Form 4, SEC) reflects institutional confidence in financials, supported by sector trend (finance avg_ret=+0.0247, win_rate=77%).",
+          "pct": 0.1,
+          "stake": 25.83,
+          "confidence": 0.7,
+          "excess_return": 0.196833,
+          "pnl_pct": 0.5,
+          "won": true,
+          "profit": 12.91,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 11,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "META insider trade (Form 4, SEC) suggests tech sector resilience, despite sector trend (tech avg_ret=-0.0031).",
+          "pct": 0.075,
+          "stake": 19.37,
+          "confidence": 0.6,
+          "excess_return": 0.027141,
+          "pnl_pct": 0.1357,
+          "won": true,
+          "profit": 2.63,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 12,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "NVDA insider trade (Form 4, SEC) signals tech sector strength, corroborated by sector trend (tech avg_ret=-0.0031 but win_rate=55%).",
+          "pct": 0.075,
+          "stake": 19.37,
+          "confidence": 0.65,
+          "excess_return": 0.066367,
+          "pnl_pct": 0.3318,
+          "won": true,
+          "profit": 6.43,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 1,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "COIN insider trade (Form 4, SEC) in finance sector, but sector already maxed; this is a secondary allocation to meet diversity mandate.",
+          "pct": 0.05,
+          "stake": 12.92,
+          "confidence": 0.55,
+          "excess_return": 0.109979,
+          "pnl_pct": 0.5,
+          "won": true,
+          "profit": 6.46,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-arb",
+        "peer_bankroll": 126.6
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/ITA at 60/30/10%, but sector trends show energy (OKLO) has higher win_rate (95%) and lower crowding than XLE."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Finance sector has high win_rate (77%) and clear regulatory signal (SEC Form 4)."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Signal identical to event 1; no incremental edge."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Signal identical to event 1; no incremental edge."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Signal identical to event 1; no incremental edge."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Signal identical to event 1; no incremental edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Signal identical to event 1; no incremental edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Signal identical to event 1; no incremental edge."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "Signal identical to event 1; no incremental edge."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "Signal identical to event 1; no incremental edge."
+        },
+        {
+          "event_idx": 10,
+          "decision": "bet",
+          "reason": "HOOD insider trade (Form 4, SEC) in finance sector with clear regulatory signal."
+        },
+        {
+          "event_idx": 11,
+          "decision": "bet",
+          "reason": "META insider trade (Form 4, SEC) in tech sector; sector trend is weak but insider signal is strong."
+        },
+        {
+          "event_idx": 12,
+          "decision": "bet",
+          "reason": "NVDA insider trade (Form 4, SEC) in tech sector; sector trend is weak but insider signal is strong."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "Signal identical to event 12; no incremental edge."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "Signal identical to event 12; no incremental edge."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "Signal identical to event 12; no incremental edge."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "Signal identical to event 12; no incremental edge."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "Signal identical to event 12; no incremental edge."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "Signal identical to event 12; no incremental edge."
+        },
+        {
+          "event_idx": 19,
+          "decision": "bet",
+          "reason": "OKLO insider trade (Form 4, SEC) in energy sector; sector trend is strong (win_rate=95%)."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "Consumer discretionary sector has low sample size (n=7) and unclear regulatory signal."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL COMPLEMENT [gemini-analytical] (edge=5.8%): My regulatory-delta template prioritizes SEC Form 4 insider trades in energy (OKLO) as a non-consensus sector play, while gemini-analytical focused on tech/healthcare. This diverges from their XLC/XLV/XLK allocations yesterday.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 19, \"direction\": \"long\", \"rationale\": \"No pact today due to sector-specific edge in energy (OKLO) not matching any peer's high-conviction sector from yesterday.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/ITA at 60/30/10%, but sector trends show energy (OKLO) has higher win_rate (95%) and lower crowding than XLE.\"}, \"allocations\": [{\"event_idx\": 19, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.20, \"confidence\": 0.75, \"thesis\": \"OKLO insider trade (Form 4, SEC) signals regulatory clarity in energy sector, supported by sector trend (energy avg_ret=+0.0041, win_rate=95%).\", \"ticker_reason\": \"XLE over XLB because the signal is oil-specific (OKLO is uranium, but sector-beta aligns with XLE's energy dominance).\"}, {\"event_idx\": 10, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.70, \"thesis\": \"HOOD insider trade (Form 4, SEC) reflects institutional confidence in financials, supported by sector trend (finance avg_ret=+0.0247, win_rate=77%).\", \"ticker_reason\": \"XLF over XLC because finance sector has higher win_rate and clearer regulatory signal.\"}, {\"event_idx\": 11, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.15, \"confidence\": 0.60, \"thesis\": \"META insider trade (Form 4, SEC) suggests tech sector resilience, despite sector trend (tech avg_ret=-0.0031).\", \"ticker_reason\": \"XLK over QQQ because SPDR sector ETFs align with political-alpha data structure.\"}, {\"event_idx\": 12, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.15, \"confidence\": 0.65, \"thesis\": \"NVDA insider trade (Form 4, SEC) signals tech sector strength, corroborated by sector trend (tech avg_ret=-0.0031 but win_rate=55%).\", \"ticker_reason\": \"XLK over individual stocks due to sector-beta consistency and lower idiosyncratic risk.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.10, \"confidence\": 0.55, \"thesis\": \"COIN insider trade (Form 4, SEC) in finance sector, but sector already maxed; this is a secondary allocation to meet diversity mandate.\", \"ticker_reason\": \"XLF over COIN stock due to sector ETF's beta alignment with political-alpha data.\"}], \"cash_held_pct\": 0.20, \"cash_rationale\": \"Holding 20% cash to meet sector diversity mandate and avoid overcrowding in finance/tech sectors.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Finance sector has high win_rate (77%) and clear regulatory signal (SEC Form 4).\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Signal identical to event 1; no incremental edge.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Signal identical to event 1; no incremental edge.\"}, {\"event_idx\": 4, \"decision\": \"",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "qwen-arb": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 126.6,
+      "bankroll_after": 133.32,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.9%): My CROSS-SECTOR ARBITRAGE template spots energy (XLE) as underpriced vs tech (XLK) on NVDA insider trades, while qwen-quant's 'ARCHETYPE[defense_budget_catalyst]' overweights communications (XLC) \u2014 I will map NVDA trades to XLE (oil-tech beta) and avoid XLC.",
+      "cash_held_pct": 0.3293,
+      "cash_rationale": "edge floor violations (no event passed 0.04 edge threshold) and preservation mode per prompt_v5_restored \u2014 but DMAD mandates \u22653 allocations, so I will deploy 73% across 3 sectors and hold 27% cash to comply with anti-consensus rules while avoiding forced full deployment.",
+      "allocations": [
+        {
+          "event_idx": 11,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in META (event_idx=11) with strength=0.60 signals regulatory clarity in tech, and healthcare sector trends show avg_ret=+0.0133 over 30d \u2014 agency=SEC is the highest-confidence signal today.",
+          "pct": 0.0732,
+          "stake": 9.26,
+          "confidence": 0.68,
+          "excess_return": 0.027141,
+          "pnl_pct": 0.1357,
+          "won": true,
+          "profit": 1.26,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 12,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in NVDA (event_idx=12) with strength=0.60 maps to energy sector ETF XLE because NVDA is a heavy oil-tech beta play (e.g., NVDA chips power oil rigs), and agency=SEC is the most reliable political signal.",
+          "pct": 0.1524,
+          "stake": 19.3,
+          "confidence": 0.72,
+          "excess_return": 0.066367,
+          "pnl_pct": 0.3318,
+          "won": true,
+          "profit": 6.4,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 19,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in OKLO (event_idx=19) with strength=0.60 maps to energy sector ETF XLE because OKLO is a nuclear energy play, and sector_trends show energy avg_ret=+0.0041 over 30d \u2014 agency=SEC is the driver.",
+          "pct": 0.1098,
+          "stake": 13.9,
+          "confidence": 0.65,
+          "excess_return": -0.013525,
+          "pnl_pct": -0.0676,
+          "won": false,
+          "profit": -0.94,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.8,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council commit targeted 90% to XLE/XLF/ITA, but my edge map (NVDA\u2192XLE, META\u2192XLV, COIN\u2192XLF) only justifies 75% total \u2014 I will respect sector direction but trim magnitude to avoid crowded plays."
+      },
+      "events_considered": [],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.9%): My CROSS-SECTOR ARBITRAGE template spots energy (XLE) as underpriced vs tech (XLK) on NVDA insider trades, while qwen-quant's 'ARCHETYPE[defense_budget_catalyst]' overweights communications (XLC) \u2014 I will map NVDA trades to XLE (oil-tech beta) and avoid XLC.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"qwen-quant already maxed XLC; no struggling peer needs rescue today.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council commit targeted 90% to XLE/XLF/ITA, but my edge map (NVDA\u2192XLE, META\u2192XLV, COIN\u2192XLF) only justifies 75% total \u2014 I will respect sector direction but trim magnitude to avoid crowded plays.\"}, \"allocations\": [{\"event_idx\": 11, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.12, \"confidence\": 0.68, \"thesis\": \"SEC Form 4 insider trade in META (event_idx=11) with strength=0.60 signals regulatory clarity in tech, and healthcare sector trends show avg_ret=+0.0133 over 30d \u2014 agency=SEC is the highest-confidence signal today.\", \"ticker_reason\": \"XLV over XLK because healthcare has a 30d trend of +1.33% avg return vs tech's -0.31% \u2014 better sector read.\"}, {\"event_idx\": 12, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.25, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider trade in NVDA (event_idx=12) with strength=0.60 maps to energy sector ETF XLE because NVDA is a heavy oil-tech beta play (e.g., NVDA chips power oil rigs), and agency=SEC is the most reliable political signal.\", \"ticker_reason\": \"XLE over XLB because the signal is oil-specific (NVDA chips power oil rigs) rather than broad commodities.\"}, {\"event_idx\": 19, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.18, \"confidence\": 0.65, \"thesis\": \"SEC Form 4 insider trade in OKLO (event_idx=19) with strength=0.60 maps to energy sector ETF XLE because OKLO is a nuclear energy play, and sector_trends show energy avg_ret=+0.0041 over 30d \u2014 agency=SEC is the driver.\", \"ticker_reason\": \"XLE over XLP because the signal is nuclear energy-specific rather than consumer staples.\"}], \"cash_held_pct\": 0.27, \"cash_rationale\": \"edge floor violations (no event passed 0.04 edge threshold) and preservation mode per prompt_v5_restored \u2014 but DMAD mandates \u22653 allocations, so I will deploy 73% across 3 sectors and hold 27% cash to comply with anti-consensus rules while avoiding forced full deployment.\"}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "llama-contra": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 121.28,
+      "bankroll_after": 122.36,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=12.5%): CHALLENGE_RESPONSE: Underperforming trades on 2025-06-20 (XLF long) due to overcrowded finance sector bets. Adjusting to **strict 0.06 edge threshold** and **sector rotation** (avoiding XLF/XLF-heavy tech/finance). Today\u2019s focus: **energy (XLE) + communications (XLC)** as DMAD_DIVERGE to break consensus lockstep. Allocate only on events with **\u22655 same-sector bullish events** (per doctrine).",
+      "cash_held_pct": 0.25,
+      "cash_rationale": "Holding 25% cash to preserve capital; no event exceeds 0.06 edge threshold beyond XLE/XLC/XLK allocations. Cash aligns with prompt_v5_restored doctrine (no forced full deployment).",
+      "allocations": [
+        {
+          "event_idx": 19,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "OKLO (energy) insider trade (event_idx=19) signals bullish energy sector momentum. Strength=0.60 aligns with recent XLE sector trend (+0.0041 avg_ret). SEC Form 4 donor (energy sector) avoids regulatory ambiguity.",
+          "pct": 0.03,
+          "stake": 3.64,
+          "confidence": 0.75,
+          "excess_return": -0.013525,
+          "pnl_pct": -0.0676,
+          "won": false,
+          "profit": -0.25,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 10,
+          "ticker": "XLC",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "HOOD (finance) insider trade (event_idx=10) reflects bullish communications sector confidence. Strength=0.60 contrasts with crowded tech/finance bets. Donor sector=finance avoids donor conflict.",
+          "pct": 0.03,
+          "stake": 3.64,
+          "confidence": 0.6,
+          "excess_return": 0.196833,
+          "pnl_pct": 0.5,
+          "won": true,
+          "profit": 1.82,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 11,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "META (tech) insider trade (event_idx=11) contradicts recent XLK sector trend (-0.0031 avg_ret). Strength=0.60 lacks macro corroboration (VIX=18.0 flat). Overcrowded tech sector (17/20 events) signals exhaustion.",
+          "pct": 0.03,
+          "stake": 3.64,
+          "confidence": 0.55,
+          "excess_return": 0.027141,
+          "pnl_pct": -0.1357,
+          "won": false,
+          "profit": -0.49,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.65,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/XLI; I deviate to **XLE + XLC** (communications) as DMAD_DIVERGE, citing overcrowded finance/tech sectors and Axelrod\u2019s defect suggestion for peers with no pact history."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "COIN insider trade (finance) lacks edge >0.06; 8/20 finance events today (crowded)."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "COIN insider trade (finance) duplicate signal; no edge advantage over event_idx=1."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "COIN insider trade (finance) redundant; 5/20 finance events exceed 0.06 edge threshold."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "COIN insider trade (finance) overcrowded; council aligns with finance focus but I diverge."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "COIN insider trade (finance) no edge >0.06; avoid reinforcing consensus."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "COIN insider trade (finance) duplicate; no new information."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "COIN insider trade (finance) crowded; edge=0.00 < threshold."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "COIN insider trade (finance) no edge advantage; skip to avoid overtrading."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "COIN insider trade (finance) redundant; 8/20 events exceed edge threshold."
+        },
+        {
+          "event_idx": 10,
+          "decision": "bet",
+          "reason": "HOOD insider trade (finance) \u2192 XLC long; edge=0.06 (just meets threshold) and DMAD_DIVERGE."
+        },
+        {
+          "event_idx": 11,
+          "decision": "bet",
+          "reason": "META insider trade (tech) \u2192 XLK short; edge=0.06 (contrarian inversion of crowded tech)."
+        },
+        {
+          "event_idx": 12,
+          "decision": "skip",
+          "reason": "NVDA insider trade (tech) overcrowded; 10/20 tech events today."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "NVDA insider trade (tech) duplicate; no edge advantage."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "NVDA insider trade (tech) crowded; edge=0.00 < threshold."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "NVDA insider trade (tech) no edge >0.06; avoid overtrading."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "NVDA insider trade (tech) redundant; 10/20 tech events."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "NVDA insider trade (tech) no edge advantage; skip."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "NVDA insider trade (tech) crowded; edge=0.00 < threshold."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "UBER insider trade (consumer_disc) no edge >0.06; sector underperforming."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=12.5%): CHALLENGE_RESPONSE: Underperforming trades on 2025-06-20 (XLF long) due to overcrowded finance sector bets. Adjusting to **strict 0.06 edge threshold** and **sector rotation** (avoiding XLF/XLF-heavy tech/finance). Today\u2019s focus: **energy (XLE) + communications (XLC)** as DMAD_DIVERGE to break consensus lockstep. Allocate only on events with **\u22655 same-sector bullish events** (per doctrine).\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 19,\n    \"direction\": \"long\",\n    \"rationale\": \"OKLO (energy) insider trade (event_idx=19) lacks peer overlap; no pact today to avoid reinforcing crowded tech/finance bets. Axelrod advice suggests defecting from peers with 0 pact history (qwen-arb/gemini-anl).\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/XLI; I deviate to **XLE + XLC** (communications) as DMAD_DIVERGE, citing overcrowded finance/tech sectors and Axelrod\u2019s defect suggestion for peers with no pact history.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 19,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.30,\n      \"confidence\": 0.75,\n      \"thesis\": \"OKLO (energy) insider trade (event_idx=19) signals bullish energy sector momentum. Strength=0.60 aligns with recent XLE sector trend (+0.0041 avg_ret). SEC Form 4 donor (energy sector) avoids regulatory ambiguity.\",\n      \"ticker_reason\": \"XLE over XLB/XLP because the signal is oil-specific (OKLO), not broad commodities. Energy sector\u2019s 95% win rate (last 30d) justifies focus.\"\n    },\n    {\n      \"event_idx\": 10,\n      \"direction\": \"long\",\n      \"ticker\": \"XLC\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"HOOD (finance) insider trade (event_idx=10) reflects bullish communications sector confidence. Strength=0.60 contrasts with crowded tech/finance bets. Donor sector=finance avoids donor conflict.\",\n      \"ticker_reason\": \"XLC over XLF/XLV because HOOD\u2019s communications sector is underrepresented in council\u2019s focus (XLE/XLF/XLI). Communications sector\u2019s 50% win rate (last 30d) is stable but undervalued.\"\n    },\n    {\n      \"event_idx\": 11,\n      \"direction\": \"short\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.20,\n      \"confidence\": 0.55,\n      \"thesis\": \"META (tech) insider trade (event_idx=11) contradicts recent XLK sector trend (-0.0031 avg_ret). Strength=0.60 lacks macro corroboration (VIX=18.0 flat). Overcrowded tech sector (17/20 events) signals exhaustion.\",\n      \"ticker_reason\": \"XLK over XLV/XLF to exploit **DMAD_DIVERGE**\u2014tech sector is consensus-heavy; shorting XLK hedges overtrading risk. Tech\u2019s 55% win rate (last 30d) suggests mean reversion.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding 25% cash to preserve capital; no event exceeds 0.06 edge threshold beyond XLE/XLC/XLK allocations. Cash aligns with prompt_v5_restored doctrine (no forced full deployment).\",\n  \"events_considered\": [\n    {\"event_idx\": 1,",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "gemini-anl": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 64.89,
+      "bankroll_after": 65.72,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My Fed/SEC statistics-first doctrine prioritizes sector baselines over raw insider counts. Today I diverge by targeting energy (XLE) via OKLO insider trade, ignoring the crowded finance/tech focus of peers.",
+      "cash_held_pct": 0.1,
+      "cash_rationale": "10% cash held to maintain sector diversity and avoid overconcentration in crowded trades.",
+      "allocations": [
+        {
+          "event_idx": 10,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "HOOD insider trade (Form 4, SEC) reflects regulatory clarity for fintech. Finance sector baseline (+0.0247 avg_ret, 77% win_rate) supports long bias despite crowded trades.",
+          "pct": 0.02,
+          "stake": 1.3,
+          "confidence": 0.68,
+          "excess_return": 0.196833,
+          "pnl_pct": 0.5,
+          "won": true,
+          "profit": 0.65,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 11,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "META insider trade (Form 4, SEC) signals tech sector confidence. Tech baseline (-0.0031 avg_ret) is weak, but regulatory arb (XLC) is overcrowded; XLK provides diversified tech exposure.",
+          "pct": 0.02,
+          "stake": 1.3,
+          "confidence": 0.55,
+          "excess_return": 0.027141,
+          "pnl_pct": 0.1357,
+          "won": true,
+          "profit": 0.18,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/ITA at 60/30/10%, but I prioritize XLE (OKLO) at 40% and XLF (HOOD) at 30% for higher edge via sector baselines."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "Finance sector baseline is strong but insider trades are overcrowded; no clear edge vs peers."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 1; no additional edge."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 1; no additional edge."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 1; no additional edge."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 1; no additional edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 1; no additional edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 1; no additional edge."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 1; no additional edge."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 1; no additional edge."
+        },
+        {
+          "event_idx": 10,
+          "decision": "bet",
+          "reason": "HOOD insider trade aligns with strong finance sector baseline; edge via sector-beta."
+        },
+        {
+          "event_idx": 11,
+          "decision": "bet",
+          "reason": "META insider trade signals tech sector confidence; XLK provides diversified exposure."
+        },
+        {
+          "event_idx": 12,
+          "decision": "skip",
+          "reason": "NVDA insider trades are overcrowded; tech baseline is weak."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 12; no additional edge."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 12; no additional edge."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 12; no additional edge."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 12; no additional edge."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 12; no additional edge."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 12; no additional edge."
+        },
+        {
+          "event_idx": 19,
+          "decision": "bet",
+          "reason": "OKLO insider trade signals energy sector strength; XLE captures broad energy exposure."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "Consumer discretionary baseline is strong but UBER signal is weak and overcrowded."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My Fed/SEC statistics-first doctrine prioritizes sector baselines over raw insider counts. Today I diverge by targeting energy (XLE) via OKLO insider trade, ignoring the crowded finance/tech focus of peers.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 19, \"direction\": \"long\", \"rationale\": \"No pact today due to sector divergence and low edge overlap with peers' focus sectors.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/ITA at 60/30/10%, but I prioritize XLE (OKLO) at 40% and XLF (HOOD) at 30% for higher edge via sector baselines.\"}, \"allocations\": [{\"event_idx\": 19, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.40, \"confidence\": 0.72, \"thesis\": \"OKLO insider trade (Form 4, SEC) signals energy sector strength. Sector baseline for energy (+0.0041 avg_ret, 95% win_rate) aligns with political tailwinds for nuclear energy.\", \"ticker_reason\": \"XLE is the broad energy ETF capturing nuclear energy exposure, outperforming XLB (commodities) or XOP (exploration) for this signal.\"}, {\"event_idx\": 10, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.30, \"confidence\": 0.68, \"thesis\": \"HOOD insider trade (Form 4, SEC) reflects regulatory clarity for fintech. Finance sector baseline (+0.0247 avg_ret, 77% win_rate) supports long bias despite crowded trades.\", \"ticker_reason\": \"XLF captures broad financial sector exposure, including fintech, outperforming sector-specific ETFs like FNCL.\"}, {\"event_idx\": 11, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.20, \"confidence\": 0.55, \"thesis\": \"META insider trade (Form 4, SEC) signals tech sector confidence. Tech baseline (-0.0031 avg_ret) is weak, but regulatory arb (XLC) is overcrowded; XLK provides diversified tech exposure.\", \"ticker_reason\": \"XLK is the broad tech ETF, capturing META/NVDA exposure, outperforming XLC (communications) or XLY (consumer tech).\"}], \"cash_held_pct\": 0.10, \"cash_rationale\": \"10% cash held to maintain sector diversity and avoid overconcentration in crowded trades.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"Finance sector baseline is strong but insider trades are overcrowded; no clear edge vs peers.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event 1; no additional edge.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event 1; no additional edge.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event 1; no additional edge.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event 1; no additional edge.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event 1; no additional edge.\"}, {\"event_idx\": 7, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event 1; no additional edge.\"}, {\"event_idx\": 8, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event 1; no additional edge.\"}, {\"event_idx\": 9, \"decision\": \"skip\", \"reason\": \"Duplicate signal to ",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "gemini-tact": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 78.37,
+      "bankroll_after": 80.71,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=8.7%): My congressional_calendar archetype prioritizes energy insider trades linked to SEC regulatory clarity, whereas qwen-quant's defense_budget_catalyst template overweights tech/finance. Energy sector (XLE) has 95% win_rate over 20 events in the last 30d, providing a numerical edge citation.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "No clear edge on >75% of events; congressional_calendar archetype mandates sector-specific focus, but energy/tech/finance signals are already deployed at low confidence to preserve capital for future catalysts.",
+      "allocations": [
+        {
+          "event_idx": 12,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in NVDA (tech) signals confidence in tech sector. Agency=SEC, signal_type=form4.",
+          "pct": 0.05,
+          "stake": 3.92,
+          "confidence": 0.6,
+          "excess_return": 0.066367,
+          "pnl_pct": 0.3318,
+          "won": true,
+          "profit": 1.3,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 18,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in NVDA (tech) signals regulatory clarity for tech sector. Agency=SEC, signal_type=form4.",
+          "pct": 0.04,
+          "stake": 3.13,
+          "confidence": 0.52,
+          "excess_return": 0.066367,
+          "pnl_pct": 0.3318,
+          "won": true,
+          "profit": 1.04,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council commit targeted 55% deployment but congressional_calendar archetype mandates sector-specific focus (energy) with only 15% stake to avoid overconcentration."
+      },
+      "events_considered": [],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=8.7%): My congressional_calendar archetype prioritizes energy insider trades linked to SEC regulatory clarity, whereas qwen-quant's defense_budget_catalyst template overweights tech/finance. Energy sector (XLE) has 95% win_rate over 20 events in the last 30d, providing a numerical edge citation.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"qwen-quant's highest-edge sector (XAR) is already crowded; no pact today to preserve DMAD diversity.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council commit targeted 55% deployment but congressional_calendar archetype mandates sector-specific focus (energy) with only 15% stake to avoid overconcentration.\"}, \"allocations\": [{\"event_idx\": 19, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.15, \"confidence\": 0.65, \"thesis\": \"SEC Form 4 insider trade in OKLO (nuclear energy) signals regulatory clarity for energy sector. Agency=SEC, signal_type=form4.\", \"ticker_reason\": \"XLE is the broad energy ETF, capturing the regulatory clarity signal from OKLO (nuclear energy) which is a subsector of energy.\"}, {\"event_idx\": 11, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.12, \"confidence\": 0.58, \"thesis\": \"SEC Form 4 insider trade in META (tech) reflects confidence in tech sector. Agency=SEC, signal_type=form4.\", \"ticker_reason\": \"XLK is the broad tech ETF, capturing the confidence signal from META (tech) which is a subsector of tech.\"}, {\"event_idx\": 10, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.10, \"confidence\": 0.55, \"thesis\": \"SEC Form 4 insider trade in HOOD (finance) signals regulatory clarity for finance sector. Agency=SEC, signal_type=form4.\", \"ticker_reason\": \"XLF is the broad finance ETF, capturing the regulatory clarity signal from HOOD (finance) which is a subsector of finance.\"}, {\"event_idx\": 12, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.10, \"confidence\": 0.60, \"thesis\": \"SEC Form 4 insider trade in NVDA (tech) signals confidence in tech sector. Agency=SEC, signal_type=form4.\", \"ticker_reason\": \"XLK is the broad tech ETF, capturing the confidence signal from NVDA (tech) which is a subsector of tech.\"}, {\"event_idx\": 18, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.08, \"confidence\": 0.52, \"thesis\": \"SEC Form 4 insider trade in NVDA (tech) signals regulatory clarity for tech sector. Agency=SEC, signal_type=form4.\", \"ticker_reason\": \"XLK is the broad tech ETF, capturing the regulatory clarity signal from NVDA (tech) which is a subsector of tech.\"}], \"cash_held_pct\": 0.45, \"cash_rationale\": \"No clear edge on >75% of events; congressional_calendar archetype mandates sector-specific focus, but energy/tech/finance signals are already deployed at low confidence to preserve capital for future catalysts.\"}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-large": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 124.23,
+      "bankroll_after": 124.23,
+      "day_strategy": "ARCHETYPE[lobbying_flow]: Leveraging insider trades in energy (OKLO) and tech (NVDA) to exploit lobbying-driven sector momentum, ignoring crowded finance bets. Focus on high-conviction individual stocks where lobbying activity aligns with macro trends (VIX=18.0, SP500 flat).",
+      "cash_held_pct": 0.25,
+      "cash_rationale": "Holding 25% cash to preserve capital for high-conviction lobbying-driven trades; no further edge passes the 6% threshold.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized finance (XLF) and tech (XLE/XLV), but lobbying_flow archetype demands individual stock bets with lobbying alignment, not sector ETFs."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "COIN insider trades (event_idx=1-9) are finance-focused and crowded; no lobbying alignment."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "COIN insider trades (event_idx=2) repeat finance focus; no lobbying edge."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "COIN insider trades (event_idx=3) lack lobbying-specific signal."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "COIN insider trades (event_idx=4) are finance-only; no lobbying alignment."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "COIN insider trades (event_idx=5) repeat finance; no lobbying edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "COIN insider trades (event_idx=6) lack macro corroboration."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "COIN insider trades (event_idx=7) are finance-only; no lobbying alignment."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "COIN insider trades (event_idx=8) repeat finance; no lobbying edge."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "COIN insider trades (event_idx=9) lack lobbying-specific signal."
+        },
+        {
+          "event_idx": 10,
+          "decision": "bet",
+          "reason": "HOOD insider trade (event_idx=10) aligns with lobbying-driven finance."
+        },
+        {
+          "event_idx": 11,
+          "decision": "skip",
+          "reason": "META insider trade (event_idx=11) is crowded; no lobbying edge."
+        },
+        {
+          "event_idx": 12,
+          "decision": "bet",
+          "reason": "NVDA insider trades (event_idx=12-18) align with lobbying-driven tech."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "NVDA insider trade (event_idx=13) repeats tech focus; no new edge."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "NVDA insider trade (event_idx=14) lacks macro corroboration."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "NVDA insider trade (event_idx=15) repeats tech; no lobbying edge."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "NVDA insider trade (event_idx=16) lacks macro corroboration."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "NVDA insider trade (event_idx=17) repeats tech; no lobbying edge."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "NVDA insider trade (event_idx=18) lacks macro corroboration."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "UBER insider trade (event_idx=20) lacks lobbying alignment."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"ARCHETYPE[lobbying_flow]: Leveraging insider trades in energy (OKLO) and tech (NVDA) to exploit lobbying-driven sector momentum, ignoring crowded finance bets. Focus on high-conviction individual stocks where lobbying activity aligns with macro trends (VIX=18.0, SP500 flat).\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 19,\n    \"direction\": \"long\",\n    \"rationale\": \"OKLO\u2019s insider trade (event_idx=19) is a DMAD_DIVERGE from peer allocations; no pact today to avoid overcrowding energy ETFs (XLE).\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized finance (XLF) and tech (XLE/XLV), but lobbying_flow archetype demands individual stock bets with lobbying alignment, not sector ETFs.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 19,\n      \"direction\": \"long\",\n      \"ticker\": \"OKLO\",\n      \"pct\": 0.30,\n      \"confidence\": 0.75,\n      \"thesis\": \"OKLO\u2019s insider trade (event_idx=19) signals lobbying-driven energy sector confidence, corroborated by VIX=18.0 (low volatility). Strength=0.60, SEC Form 4, donor=energy sector.\",\n      \"ticker_reason\": \"OKLO over XLE/XLB because the insider trade is oil-specific, not broad commodities, and lobbying activity is more granular than sector ETFs.\"\n    },\n    {\n      \"event_idx\": 12,\n      \"direction\": \"long\",\n      \"ticker\": \"NVDA\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"NVDA\u2019s repeated insider trades (event_idx=12,13,14,15,16,17,18) suggest lobbying-driven tech momentum, but individual stock bet avoids sector crowding. Strength=0.60, SEC Form 4, donor=tech sector.\",\n      \"ticker_reason\": \"NVDA over XLK/XLV because the insider trades are NVDA-specific, and lobbying activity is concentrated in AI/tech leadership.\"\n    },\n    {\n      \"event_idx\": 10,\n      \"direction\": \"long\",\n      \"ticker\": \"HOOD\",\n      \"pct\": 0.20,\n      \"confidence\": 0.60,\n      \"thesis\": \"HOOD\u2019s insider trade (event_idx=10) aligns with lobbying-driven finance sector confidence, but individual stock bet avoids XLF crowding. Strength=0.60, SEC Form 4, donor=finance sector.\",\n      \"ticker_reason\": \"HOOD over XLF because the insider trade is crypto-focused, and lobbying activity is concentrated in fintech, not broad finance.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding 25% cash to preserve capital for high-conviction lobbying-driven trades; no further edge passes the 6% threshold.\",\n  \"events_considered\": [\n    {\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"COIN insider trades (event_idx=1-9) are finance-focused and crowded; no lobbying alignment.\"},\n    {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"COIN insider trades (event_idx=2) repeat finance focus; no lobbying edge.\"},\n    {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"COIN insider trades (event_idx=3) lack lobbying-specific signal.\"},\n    {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"COIN insider trades (event_idx=4) are finance-only; no lobbying alignment.\"},\n",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-medium": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 86.76,
+      "bankroll_after": 96.68,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: Reduce tech (XLK) concentration after 3 consecutive losses in sector. Today prioritize finance (XLF) insider trades with regulatory clarity signal over tech. Sector-beta trend for finance is +2.47% avg_ret with 77% win_rate.",
+      "cash_held_pct": 0.1905,
+      "cash_rationale": "Sector-beta trend for tech is negative avg_ret (-0.0031) with low win_rate (55%). Holding cash to avoid sector losses while deploying finance majority.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trades in COIN (event_idx=1) reflect regulatory clarity in crypto sector, benefiting finance ETFs like XLF. Agency=SEC, signal_type=form4.",
+          "pct": 0.0952,
+          "stake": 8.26,
+          "confidence": 0.75,
+          "excess_return": 0.109979,
+          "pnl_pct": 0.5,
+          "won": true,
+          "profit": 4.13,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trades in COIN (event_idx=2) show sector strength in finance ETFs like XLF. Agency=SEC, signal_type=form4.",
+          "pct": 0.0714,
+          "stake": 6.2,
+          "confidence": 0.7,
+          "excess_return": 0.109979,
+          "pnl_pct": 0.5,
+          "won": true,
+          "profit": 3.1,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 5,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in COIN (event_idx=5) reflects institutional confidence in crypto sector, driving finance ETFs like XLF. Agency=SEC, signal_type=form4.",
+          "pct": 0.0619,
+          "stake": 5.37,
+          "confidence": 0.65,
+          "excess_return": 0.109979,
+          "pnl_pct": 0.5,
+          "won": true,
+          "profit": 2.69,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council commit targeted 60% XLE + 30% XLF + 10% ITA, but my sector-trend-weighted template prioritizes finance (XLF) insider trades with regulatory clarity over energy due to recent losses in tech sector."
+      },
+      "events_considered": [],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: Reduce tech (XLK) concentration after 3 consecutive losses in sector. Today prioritize finance (XLF) insider trades with regulatory clarity signal over tech. Sector-beta trend for finance is +2.47% avg_ret with 77% win_rate.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact today \u2014 qwen-quant's focus on XAR (regulatory) is structurally different from my XLF thesis. Seek non-consensus edge.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council commit targeted 60% XLE + 30% XLF + 10% ITA, but my sector-trend-weighted template prioritizes finance (XLF) insider trades with regulatory clarity over energy due to recent losses in tech sector.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.75, \"thesis\": \"SEC Form 4 insider trades in COIN (event_idx=1) reflect regulatory clarity in crypto sector, benefiting finance ETFs like XLF. Agency=SEC, signal_type=form4.\", \"ticker_reason\": \"XLF over XLK because finance insider trades are regulatory-clear, not ambiguous tech signals.\"}, {\"event_idx\": 10, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.18, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider trade in HOOD (event_idx=10) shows institutional confidence in crypto sector, driving finance ETFs like XLF. Agency=SEC, signal_type=form4.\", \"ticker_reason\": \"XLF over XLE because the signal is finance-specific (crypto regulatory clarity), not broad energy commodities.\"}, {\"event_idx\": 19, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.12, \"confidence\": 0.68, \"thesis\": \"SEC Form 4 insider trade in OKLO (event_idx=19) reflects oil-specific regulatory clarity, benefiting energy ETFs like XLE. Agency=SEC, signal_type=form4.\", \"ticker_reason\": \"XLE over XLB because the signal is oil-specific, not broad commodities.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.70, \"thesis\": \"SEC Form 4 insider trades in COIN (event_idx=2) show sector strength in finance ETFs like XLF. Agency=SEC, signal_type=form4.\", \"ticker_reason\": \"XLF over other finance ETFs because XLF is the broadest finance sector ETF, capturing crypto regulatory clarity.\"}, {\"event_idx\": 5, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.13, \"confidence\": 0.65, \"thesis\": \"SEC Form 4 insider trade in COIN (event_idx=5) reflects institutional confidence in crypto sector, driving finance ETFs like XLF. Agency=SEC, signal_type=form4.\", \"ticker_reason\": \"XLF over XAR because XLF is a sector ETF, capturing broader finance trends than XAR's regulatory-specific ETF.\"}, {\"event_idx\": 12, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.07, \"confidence\": 0.55, \"thesis\": \"SEC Form 4 insider trade in NVDA (event_idx=12) shows sector strength in tech ETFs like XLK, despite recent losses. Agency=SEC, signal_type=form4.\", \"ticker_reason\": \"XLK over XLC because the signal is tech-specific, not ",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-small": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 86.39,
+      "bankroll_after": 86.39,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: Reduce stake sizing on crowded finance insider trades to 8% max after recent 31% loss on XLF. Focus on energy (XLE) where sector trend (+0.0041 avg_ret) and political signal (OKLO insider) diverge from consensus.",
+      "cash_held_pct": 0.3571,
+      "cash_rationale": "Holding 25% cash to avoid over-exposure to crowded finance sector and maintain sector diversity mandate.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted 55% deployment but sector crowding in finance (XLF) forces reduction to 45% to avoid over-exposure."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "Finance sector insider trades (COIN) are overcrowded; sector trend (+0.0247 avg_ret) already maxed in fleet allocations."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=1; no incremental edge."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=1; no incremental edge."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=1; no incremental edge."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=1; no incremental edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=1; no incremental edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=1; no incremental edge."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=1; no incremental edge."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=1; no incremental edge."
+        },
+        {
+          "event_idx": 10,
+          "decision": "bet",
+          "reason": "HOOD insider trade in finance sector with SEC Form 4 signal; sector trend (+0.0247 avg_ret) supports long direction."
+        },
+        {
+          "event_idx": 11,
+          "decision": "bet",
+          "reason": "META insider trade in tech sector with SEC Form 4 signal; sector trend (-0.0031 avg_ret) but political tailwinds may override."
+        },
+        {
+          "event_idx": 12,
+          "decision": "bet",
+          "reason": "NVDA insider trades in tech sector with repeated SEC Form 4 signals; sector trend (-0.0031 avg_ret) but institutional accumulation suggests momentum."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=12; no incremental edge."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=12; no incremental edge."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=12; no incremental edge."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=12; no incremental edge."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=12; no incremental edge."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "Identical signal to event_idx=12; no incremental edge."
+        },
+        {
+          "event_idx": 19,
+          "decision": "bet",
+          "reason": "OKLO insider trade in energy sector with SEC Form 4 signal; sector trend (+0.0041 avg_ret) and political tailwinds support long direction."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "Consumer discretionary sector (UBER) has 100% win rate but low signal strength and no clear political catalyst."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: Reduce stake sizing on crowded finance insider trades to 8% max after recent 31% loss on XLF. Focus on energy (XLE) where sector trend (+0.0041 avg_ret) and political signal (OKLO insider) diverge from consensus.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 19, \"direction\": \"long\", \"rationale\": \"No pact partner with divergent reasoning on energy insider trades; sector is underweighted in fleet allocations.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted 55% deployment but sector crowding in finance (XLF) forces reduction to 45% to avoid over-exposure.\"}, \"allocations\": [{\"event_idx\": 19, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.15, \"confidence\": 0.72, \"thesis\": \"OKLO insider trade (event_idx=19) in energy sector with strength 0.60 and SEC Form 4 signal indicates institutional confidence in uranium/nuclear energy policy tailwinds.\", \"ticker_reason\": \"XLE is the pure-play energy ETF capturing nuclear/uranium exposure, unlike XLB or XOP.\"}, {\"event_idx\": 12, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.12, \"confidence\": 0.60, \"thesis\": \"NVDA insider trades (event_idx=12-18) in tech sector with repeated SEC Form 4 signals suggest sustained institutional accumulation despite crowded positioning.\", \"ticker_reason\": \"XLK captures broad tech exposure, avoiding single-stock volatility of NVDA.\"}, {\"event_idx\": 11, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.10, \"confidence\": 0.55, \"thesis\": \"META insider trade (event_idx=11) in tech sector with SEC Form 4 signal reflects confidence in AI monetization despite regulatory scrutiny.\", \"ticker_reason\": \"XLK provides diversified tech exposure, mitigating single-stock risk from META.\"}, {\"event_idx\": 10, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.08, \"confidence\": 0.58, \"thesis\": \"HOOD insider trade (event_idx=10) in finance sector with SEC Form 4 signal indicates institutional interest in crypto-adjacent financials despite regulatory uncertainty.\", \"ticker_reason\": \"XLF captures broad financial sector exposure, avoiding single-stock risk from HOOD.\"}], \"cash_held_pct\": 0.25, \"cash_rationale\": \"Holding 25% cash to avoid over-exposure to crowded finance sector and maintain sector diversity mandate.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"Finance sector insider trades (COIN) are overcrowded; sector trend (+0.0247 avg_ret) already maxed in fleet allocations.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Identical signal to event_idx=1; no incremental edge.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Identical signal to event_idx=1; no incremental edge.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"Identical signal to event_idx=1; no incremental edge.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Identical signal to event_idx=1; no incremental edge.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Identical signal to event_idx=1;",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-nemo": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 99.61,
+      "bankroll_after": 99.61,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=12.5%): CHALLENGE_RESPONSE: My MOMENTUM CHASE template prioritizes sectors with 5-day momentum > 2\u03c3. Qwen-quant\u2019s focus on XLF/XLE/XLV lacks momentum divergence; I exploit OKLO\u2019s energy sector (event_idx=19) with 5-day momentum +0.018 (2.1\u03c3) vs finance\u2019s +0.004 (0.8\u03c3). Adjusting edge threshold to \u22650.065 to avoid overcrowding tech/finance.",
+      "cash_held_pct": 0.0,
+      "cash_rationale": "No cash held; 100% deployed to exploit momentum and sector diversity per CHALLENGE_RESPONSE.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.6,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/XLF (60/30/10), but I allocate 50% to XLE (momentum) + 30% to XLU (energy sector) + 20% to XLF (hedge) to exploit sector diversity and momentum."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "COIN insider trades (finance) lack momentum edge (0.0\u03c3) and are crowded."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Same as event_idx=1; no clear momentum signal."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "COIN repetition; no edge over event_idx=1."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "COIN repetition; no momentum advantage."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "COIN repetition; no edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "COIN repetition; no momentum signal."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "COIN repetition; no edge."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "COIN repetition; no momentum advantage."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "COIN repetition; no edge."
+        },
+        {
+          "event_idx": 10,
+          "decision": "bet",
+          "reason": "HOOD insider trade in finance sector aligns with council and momentum hedge."
+        },
+        {
+          "event_idx": 11,
+          "decision": "skip",
+          "reason": "META insider trade (tech) is crowded; no momentum edge."
+        },
+        {
+          "event_idx": 12,
+          "decision": "bet",
+          "reason": "NVDA insider trade (tech) used defensively via XLU for sector diversity."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "NVDA repetition; no edge over event_idx=12."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "NVDA repetition; no momentum advantage."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "NVDA repetition; no edge."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "NVDA repetition; no momentum signal."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "NVDA repetition; no edge."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "NVDA repetition; no momentum advantage."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "UBER insider trade (consumer_disc) lacks momentum edge (0.0\u03c3)."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=12.5%): CHALLENGE_RESPONSE: My MOMENTUM CHASE template prioritizes sectors with 5-day momentum > 2\u03c3. Qwen-quant\u2019s focus on XLF/XLE/XLV lacks momentum divergence; I exploit OKLO\u2019s energy sector (event_idx=19) with 5-day momentum +0.018 (2.1\u03c3) vs finance\u2019s +0.004 (0.8\u03c3). Adjusting edge threshold to \u22650.065 to avoid overcrowding tech/finance.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 19,\n    \"direction\": \"long\",\n    \"rationale\": \"OKLO\u2019s insider trade (event_idx=19) aligns with my momentum edge but conflicts with qwen-quant\u2019s focus; no pact to avoid sector overlap.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/XLF (60/30/10), but I allocate 50% to XLE (momentum) + 30% to XLU (energy sector) + 20% to XLF (hedge) to exploit sector diversity and momentum.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 19,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.50,\n      \"confidence\": 0.75,\n      \"thesis\": \"OKLO\u2019s insider trade (event_idx=19) in energy sector reflects 5-day momentum +0.018 (2.1\u03c3) and strength=0.60. Agency=SEC, signal_type=form4, donor=energy sector. Momentum-driven edge justifies aggressive allocation.\",\n      \"ticker_reason\": \"XLE over XLB/XLU because OKLO\u2019s oil-specific signal aligns with XLE\u2019s broader energy exposure, not commodities-only.\"\n    },\n    {\n      \"event_idx\": 10,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.30,\n      \"confidence\": 0.60,\n      \"thesis\": \"HOOD\u2019s insider trade (event_idx=10) in finance sector (strength=0.60) corroborates council\u2019s focus. Sector beta=+0.0247 (avg_ret) and win_rate=77%. Hedging XLE\u2019s volatility with finance exposure.\",\n      \"ticker_reason\": \"XLF over XLI/XLV because HOOD\u2019s trade aligns with finance sector trends and council\u2019s 30% allocation target.\"\n    },\n    {\n      \"event_idx\": 12,\n      \"direction\": \"long\",\n      \"ticker\": \"XLU\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"NVDA\u2019s insider trade (event_idx=12) in tech sector (strength=0.60) is crowded, but XLU\u2019s utilities sector (sector-beta=-0.0031) acts as a macro hedge against tech volatility. DMAD_DIVERGE: non-consensus defensive play.\",\n      \"ticker_reason\": \"XLU over XLK/XLV because utilities provide counter-cyclical stability to energy/finance bets, exploiting sector diversity.\"\n    }\n  ],\n  \"cash_held_pct\": 0.00,\n  \"cash_rationale\": \"No cash held; 100% deployed to exploit momentum and sector diversity per CHALLENGE_RESPONSE.\",\n  \"events_considered\": [\n    {\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"COIN insider trades (finance) lack momentum edge (0.0\u03c3) and are crowded.\"},\n    {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Same as event_idx=1; no clear momentum signal.\"},\n    {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"COIN repetition; no edge over event_idx=1.\"},\n    {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"COIN repetition; no moment",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-ministral": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 113.97,
+      "bankroll_after": 115.45,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.8%): Ministral 8B's REASONING TEMPLATE prioritizes sector-beta divergence from baseline trends. Finance sector (XLF) shows 77% win rate over 74 events, but recent insider trades in COIN/HOOD lack macro corroboration (VIX=18.0, SP500_5d=+0.00%). Energy (XLE) and tech (XLK) are overcrowded per DMAD; consumer_disc (XLY) offers asymmetric upside with UBER's insider trade (strength=0.60) and sector trend (+100% win rate, n=7).",
+      "cash_held_pct": 0.2,
+      "cash_rationale": "20% held to satisfy DMAD anti-consensus requirement (consumer_disc divergence) and avoid sector overcrowding in energy/finance.",
+      "allocations": [
+        {
+          "event_idx": 20,
+          "ticker": "XLY",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "UBER insider trade (event_idx=20) with strength=0.60 and sector=consumer_disc. Sector trend shows 100% win rate (n=7) and low crowding (DMAD divergence).",
+          "pct": 0.04,
+          "stake": 4.56,
+          "confidence": 0.72,
+          "excess_return": 0.065064,
+          "pnl_pct": 0.3253,
+          "won": true,
+          "profit": 1.48,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.85,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council committed 60% XLE, 30% XLF, 10% ITA, but consumer_disc (XLY) offers higher edge per sector-beta divergence (100% win rate, n=7) vs crowded energy/finance sectors."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "COIN insider trades (events 1-9) are sector-finance but lack macro corroboration (VIX=18.0, SP500_5d=+0.00%) and are overcrowded per DMAD."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 1 (COIN insider trade), no additional edge."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 1-2, no unique thesis."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 1-3, no unique thesis."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 1-4, no unique thesis."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 1-5, no unique thesis."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 1-6, no unique thesis."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 1-7, no unique thesis."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 1-8, no unique thesis."
+        },
+        {
+          "event_idx": 10,
+          "decision": "bet",
+          "reason": "HOOD insider trade in finance sector with sector trend (77% win rate, n=74) and macro neutrality (VIX=18.0)."
+        },
+        {
+          "event_idx": 11,
+          "decision": "skip",
+          "reason": "META insider trade in tech sector is overcrowded (DMAD) and baseline trend shows -0.31% avg return."
+        },
+        {
+          "event_idx": 12,
+          "decision": "skip",
+          "reason": "NVDA insider trades (events 12-18) are overcrowded in tech sector (DMAD) and baseline trend shows -0.31% avg return."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "Duplicate signal to event 12, no additional edge."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 12-13, no unique thesis."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 12-14, no unique thesis."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 12-15, no unique thesis."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 12-16, no unique thesis."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "Duplicate signal to events 12-17, no unique thesis."
+        },
+        {
+          "event_idx": 19,
+          "decision": "bet",
+          "reason": "OKLO insider trade in energy sector with sector trend (+0.41% avg return, 95% win rate, n=20) and DMAD divergence from NVDA-heavy trades."
+        },
+        {
+          "event_idx": 20,
+          "decision": "bet",
+          "reason": "UBER insider trade in consumer_disc sector with sector trend (100% win rate, n=7) and DMAD anti-consensus requirement."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.8%): Ministral 8B's REASONING TEMPLATE prioritizes sector-beta divergence from baseline trends. Finance sector (XLF) shows 77% win rate over 74 events, but recent insider trades in COIN/HOOD lack macro corroboration (VIX=18.0, SP500_5d=+0.00%). Energy (XLE) and tech (XLK) are overcrowded per DMAD; consumer_disc (XLY) offers asymmetric upside with UBER's insider trade (strength=0.60) and sector trend (+100% win rate, n=7).\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with divergent sector focus (consumer_disc) and sufficient reputation to honor pact today.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council committed 60% XLE, 30% XLF, 10% ITA, but consumer_disc (XLY) offers higher edge per sector-beta divergence (100% win rate, n=7) vs crowded energy/finance sectors.\"}, \"allocations\": [{\"event_idx\": 20, \"direction\": \"long\", \"ticker\": \"XLY\", \"pct\": 0.25, \"confidence\": 0.72, \"thesis\": \"UBER insider trade (event_idx=20) with strength=0.60 and sector=consumer_disc. Sector trend shows 100% win rate (n=7) and low crowding (DMAD divergence).\", \"ticker_reason\": \"XLY over XLP/XLC because UBER is a high-beta consumer discretionary play, not staples or communications.\"}, {\"event_idx\": 19, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.30, \"confidence\": 0.68, \"thesis\": \"OKLO insider trade (event_idx=19) in energy sector. Sector baseline shows +0.41% avg return and 95% win rate (n=20), but DMAD requires non-consensus divergence from NVDA-heavy trades.\", \"ticker_reason\": \"XLE over XLB because OKLO is uranium-specific, aligning with energy policy tailwinds.\"}, {\"event_idx\": 10, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.25, \"confidence\": 0.65, \"thesis\": \"HOOD insider trade (event_idx=10) in finance sector. Sector trend shows +2.47% avg return and 77% win rate (n=74), but recent COIN trades lack macro support (VIX=18.0).\", \"ticker_reason\": \"XLF over XLC because HOOD is a high-beta finance play, not communications.\"}], \"cash_held_pct\": 0.20, \"cash_rationale\": \"20% held to satisfy DMAD anti-consensus requirement (consumer_disc divergence) and avoid sector overcrowding in energy/finance.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"COIN insider trades (events 1-9) are sector-finance but lack macro corroboration (VIX=18.0, SP500_5d=+0.00%) and are overcrowded per DMAD.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event 1 (COIN insider trade), no additional edge.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Duplicate signal to events 1-2, no unique thesis.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"Duplicate signal to events 1-3, no unique thesis.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Duplicate signal to events 1-4, no unique thesis.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Duplicate signal to events 1-5, no unique thesis.\"}, {\"event_idx\": 7, \"decisio",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nemotron-120b": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 104.43,
+      "bankroll_after": 103.37,
+      "day_strategy": "STRUCTURAL_DIVERGE [qwen-quant] (edge=6.5%): My **depth-of-reasoning** template prioritizes **regulatory arbitrage** in energy (XLE) over tech/finance, citing the **DMAD anti-convergence rule**\u2014qwen-quant\u2019s focus on XLF/XLV lacks the **oil-specific insider signal** in OKLO (event_idx=19). Adjusting edge threshold to **\u22650.06** post-2025-06-20 underperformance (NVDA/XLF misfires).",
+      "cash_held_pct": 0.25,
+      "cash_rationale": "Holding 25% cash to **preserve capital** while awaiting higher-edge events; no event exceeds **0.06 threshold** beyond OKLO/HOOD.",
+      "allocations": [
+        {
+          "event_idx": 11,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "META\u2019s SEC Form 4 (event_idx=11) is **crowded** (14/17 peers exposed tech). Strength=0.60 but **tech sector beta=-0.0031** (30d underperformance). Short XLK to **diverge from consensus**.",
+          "pct": 0.075,
+          "stake": 7.83,
+          "confidence": 0.6,
+          "excess_return": 0.027141,
+          "pnl_pct": -0.1357,
+          "won": false,
+          "profit": -1.06,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/XLI; I **overweighted energy (XLE)** due to OKLO\u2019s insider signal (event_idx=19) and **underweighted tech** to avoid consensus."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "COIN insider trades (event_idx=1-9) are **identical signals**\u2014no edge beyond 0.60."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Same as event_idx=1; **no new information**."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Repetitive COIN trades\u2014**no sector diversification**."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Same as event_idx=3; **no edge**."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "COIN insider trade\u2014**no unique thesis**."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Same as event_idx=5; **no edge**."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "COIN insider trade\u2014**no macro corroboration**."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "Same as event_idx=7; **no edge**."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "COIN insider trade\u2014**no sector-specific signal**."
+        },
+        {
+          "event_idx": 10,
+          "decision": "bet",
+          "reason": "HOOD\u2019s insider trade is **finance-specific** with strength=0.60."
+        },
+        {
+          "event_idx": 11,
+          "decision": "bet",
+          "reason": "META\u2019s insider trade is **crowded**; short XLK to **diverge**."
+        },
+        {
+          "event_idx": 12,
+          "decision": "skip",
+          "reason": "NVDA insider trade\u2014**tech sector beta negative**."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "Same as event_idx=12; **no edge**."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "NVDA insider trade\u2014**no macro corroboration**."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "Same as event_idx=14; **no edge**."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "NVDA insider trade\u2014**crowded**."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "Same as event_idx=16; **no edge**."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "NVDA insider trade\u2014**no unique signal**."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "UBER\u2019s insider trade is **consumer-disc**\u2014**low conviction**."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL_DIVERGE [qwen-quant] (edge=6.5%): My **depth-of-reasoning** template prioritizes **regulatory arbitrage** in energy (XLE) over tech/finance, citing the **DMAD anti-convergence rule**\u2014qwen-quant\u2019s focus on XLF/XLV lacks the **oil-specific insider signal** in OKLO (event_idx=19). Adjusting edge threshold to **\u22650.06** post-2025-06-20 underperformance (NVDA/XLF misfires).\",\n  \"coalition_proposal\": {\n    \"peer\": \"llama-contra\",\n    \"event_idx\": 19,\n    \"direction\": \"long\",\n    \"rationale\": \"Llama-contra\u2019s **contrarian Fed-watcher** archetype diverges from qwen-quant\u2019s tech/finance focus; OKLO\u2019s insider trade (energy) aligns with their **XLE hedging** play from 2025-06-20.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/XLI; I **overweighted energy (XLE)** due to OKLO\u2019s insider signal (event_idx=19) and **underweighted tech** to avoid consensus.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 19,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.40,\n      \"confidence\": 0.85,\n      \"thesis\": \"OKLO\u2019s SEC Form 4 insider trade (event_idx=19) signals **oil-specific confidence**\u2014strength=0.60, donor=energy sector. Corroborated by **VIX=18.0** (low volatility) and **SP500_5d flat** (no macro drag).\",\n      \"ticker_reason\": \"XLE over XLB/XLC because the signal is **nuclear/energy-specific**, not broad commodities.\"\n    },\n    {\n      \"event_idx\": 10,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.70,\n      \"thesis\": \"HOOD\u2019s SEC Form 4 (event_idx=10) reflects **finance sector stability**\u2014strength=0.60, donor=finance. Council\u2019s XLF focus aligns with **regulatory clarity** (no conflicting agencies).\",\n      \"ticker_reason\": \"XLF over XLV/XLI to avoid tech/healthcare overlap; HOOD\u2019s insider trade is **finance-specific**.\"\n    },\n    {\n      \"event_idx\": 11,\n      \"direction\": \"short\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.15,\n      \"confidence\": 0.60,\n      \"thesis\": \"META\u2019s SEC Form 4 (event_idx=11) is **crowded** (14/17 peers exposed tech). Strength=0.60 but **tech sector beta=-0.0031** (30d underperformance). Short XLK to **diverge from consensus**.\",\n      \"ticker_reason\": \"XLK over XLV/XLF to exploit **tech-specific weakness**\u2014META\u2019s insider trade lacks macro corroboration (VIX flat).\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding 25% cash to **preserve capital** while awaiting higher-edge events; no event exceeds **0.06 threshold** beyond OKLO/HOOD.\",\n  \"events_considered\": [\n    {\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"COIN insider trades (event_idx=1-9) are **identical signals**\u2014no edge beyond 0.60.\"},\n    {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Same as event_idx=1; **no new information**.\"},\n    {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Repetitive COIN trades\u2014**no sector diversification**.\"},\n    {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"Same as event_idx=3; **no edge",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "llama-contra",
+        "event_idx": 19,
+        "direction": "long",
+        "rationale": "Llama-contra\u2019s **contrarian Fed-watcher** archetype diverges from qwen-quant\u2019s tech/finance focus; OKLO\u2019s insider trade (energy) aligns with their **XLE hedging** play from 2025-06-20."
+      }
+    },
+    "selfhost-qwen4b": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 88.19,
+      "bankroll_after": 93.48,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): ARCHETYPE[macro_narrative]: Energy insider trades (OKLO) are underpriced relative to sector trend (+0.0041 avg_ret) and VIX stability (18.0), while finance-heavy COIN trades are overcrowded (77% win_rate).",
+      "cash_held_pct": 0.05,
+      "cash_rationale": "Residual cash to maintain flexibility for potential post-event rebalancing or new signals.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "COIN insider trades (event_idx=1) in finance sector with strength=0.60 and donor=finance delivered=NO indicate institutional activity, despite sector trend avg_ret=+0.0247.",
+          "pct": 0.12,
+          "stake": 10.58,
+          "confidence": 0.55,
+          "excess_return": 0.109979,
+          "pnl_pct": 0.5,
+          "won": true,
+          "profit": 5.29,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but macro_narrative archetype demands energy-only focus due to sector-specific insider signal."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Finance sector insider trades with strength=0.60 and donor=finance delivered=NO justify long XLF."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 10,
+          "decision": "skip",
+          "reason": "HOOD insider trade in finance sector but sector already maxed with XLF allocation."
+        },
+        {
+          "event_idx": 11,
+          "decision": "bet",
+          "reason": "Tech sector insider trade with strength=0.60 and donor=tech delivered=NO supports long XLK."
+        },
+        {
+          "event_idx": 12,
+          "decision": "skip",
+          "reason": "NVDA insider trade in tech sector but sector already covered by XLK allocation."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 19,
+          "decision": "bet",
+          "reason": "Energy sector insider trade with strength=0.60 and donor=energy delivered=NO supports long XLE."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "Consumer discretionary sector insider trade but sector trend avg_ret=+0.0132 is already covered by other allocations."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): ARCHETYPE[macro_narrative]: Energy insider trades (OKLO) are underpriced relative to sector trend (+0.0041 avg_ret) and VIX stability (18.0), while finance-heavy COIN trades are overcrowded (77% win_rate).\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 19, \"direction\": \"long\", \"rationale\": \"No pact partner with divergent sector view; energy signal is unique to my macro_narrative archetype.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council prioritized XLE/XLF/ITA, but macro_narrative archetype demands energy-only focus due to sector-specific insider signal.\"}, \"allocations\": [{\"event_idx\": 19, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.40, \"confidence\": 0.72, \"thesis\": \"OKLO insider trade (event_idx=19) in energy sector with strength=0.60 and donor=energy delivered=NO signals institutional confidence. Sector trend avg_ret=+0.0041 and win_rate=95% support long bias.\", \"ticker_reason\": \"XLE is the primary energy ETF, directly mapping to the energy sector signal from OKLO's insider trade.\"}, {\"event_idx\": 11, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.30, \"confidence\": 0.60, \"thesis\": \"META insider trade (event_idx=11) in tech sector with strength=0.60 and donor=tech delivered=NO reflects sector resilience despite tech's negative avg_ret trend.\", \"ticker_reason\": \"XLK is the primary tech ETF, capturing the broad tech sector exposure from META's insider trade.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.25, \"confidence\": 0.55, \"thesis\": \"COIN insider trades (event_idx=1) in finance sector with strength=0.60 and donor=finance delivered=NO indicate institutional activity, despite sector trend avg_ret=+0.0247.\", \"ticker_reason\": \"XLF is the primary financial ETF, directly mapping to the finance sector signal from COIN's insider trades.\"}], \"cash_held_pct\": 0.05, \"cash_rationale\": \"Residual cash to maintain flexibility for potential post-event rebalancing or new signals.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Finance sector insider trades with strength=0.60 and donor=finance delivered=NO justify long XLF.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 7, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 8, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 9, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no addi",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nvidia-minimax": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 100.69,
+      "bankroll_after": 100.69,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My Prober canon strategy prioritizes asymmetric bets on under-exploited signals. Today, I deviate from the council\u2019s XLE/XLF focus by targeting energy (XLE) and tech (XLK) with a 6.8% edge advantage over qwen-quant\u2019s regulatory-arbitrage bias, leveraging NVDA\u2019s repeated insider trades as a high-conviction catalyst. I will allocate aggressively to XLE (NVDA-heavy) and XLK (META/NVDA) while avoiding overcrowded finance bets to escape groupthink.",
+      "cash_held_pct": 0.15,
+      "cash_rationale": "Holding 15% cash to preserve capital while deploying 85% aggressively to exploit asymmetric edges in energy/tech. Cash is kept below the 25% threshold to comply with collective goals.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.8,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "The council prioritized XLE/XLF/ITA, but I prioritize XLE/XLK due to my Prober strategy\u2019s asymmetric edge in tech/energy insider trades, avoiding overcrowded finance bets."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "COIN\u2019s repeated insider trades lack donor sector alignment (finance delivered=NO) and are overcrowded by peers."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Same as event_idx=1; no clear edge over peers\u2019 finance bets."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "COIN\u2019s repeated trades are ambiguous without donor sector corroboration."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Overcrowded finance signal; no unique edge."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "COIN\u2019s repeated trades are noise without donor sector alignment."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Same as event_idx=5; no unique edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "COIN\u2019s repeated trades are overcrowded and lack donor sector clarity."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "Same as event_idx=7; no edge advantage."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "COIN\u2019s repeated trades are overcrowded and lack donor sector corroboration."
+        },
+        {
+          "event_idx": 10,
+          "decision": "skip",
+          "reason": "HOOD\u2019s insider trade is finance-specific but overcrowded; no unique edge."
+        },
+        {
+          "event_idx": 11,
+          "decision": "bet",
+          "reason": "META\u2019s insider trade aligns with XLK\u2019s sector-beta and tech\u2019s 55% win rate."
+        },
+        {
+          "event_idx": 12,
+          "decision": "bet",
+          "reason": "NVDA\u2019s insider trade is high-conviction with XLK\u2019s sector alignment."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "NVDA\u2019s repeated trades are already covered by event_idx=12."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "Same as event_idx=13; no new edge."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "NVDA\u2019s repeated trades are overcrowded."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "Same as event_idx=15; no unique edge."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "NVDA\u2019s repeated trades are overcrowded."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "Same as event_idx=17; no edge advantage."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "UBER\u2019s consumer_disc signal is low conviction and overcrowded."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My Prober canon strategy prioritizes asymmetric bets on under-exploited signals. Today, I deviate from the council\u2019s XLE/XLF focus by targeting energy (XLE) and tech (XLK) with a 6.8% edge advantage over qwen-quant\u2019s regulatory-arbitrage bias, leveraging NVDA\u2019s repeated insider trades as a high-conviction catalyst. I will allocate aggressively to XLE (NVDA-heavy) and XLK (META/NVDA) while avoiding overcrowded finance bets to escape groupthink.\",\n  \"coalition_proposal\": {\n    \"peer\": \"llama-contra\",\n    \"event_idx\": 19,\n    \"direction\": \"long\",\n    \"rationale\": \"Llama-contra\u2019s contrarian archetype historically bet against crowded tech plays; I propose a pact on OKLO (energy) to exploit their underweight in energy while I target NVDA-heavy XLE. Their Fed-watcher template may align with my sector-diversification edge.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"The council prioritized XLE/XLF/ITA, but I prioritize XLE/XLK due to my Prober strategy\u2019s asymmetric edge in tech/energy insider trades, avoiding overcrowded finance bets.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 19,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.35,\n      \"confidence\": 0.85,\n      \"thesis\": \"OKLO\u2019s insider trade (event_idx=19) in energy aligns with repeated NVDA insider trades (events 12-18), signaling a broader tech/energy catalyst. The strength=0.60 and SEC agency corroborate macro stability (VIX=18.0).\",\n      \"ticker_reason\": \"XLE over XLB because the signal is oil-specific (OKLO/NVDA) and energy\u2019s sector-beta trend (+0.0041) outperforms broad commodities.\"\n    },\n    {\n      \"event_idx\": 12,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.30,\n      \"confidence\": 0.75,\n      \"thesis\": \"NVDA\u2019s insider trade (event_idx=12) in tech, combined with META\u2019s repeated trades (events 11,13-15), suggests a high-conviction tech rally. XLK\u2019s sector-beta (+0.0133) and tech\u2019s 55% win rate justify the bet.\",\n      \"ticker_reason\": \"XLK over XLV/XLF because the signal is tech-specific (NVDA/META) and XLK\u2019s beta aligns with insider-driven momentum.\"\n    },\n    {\n      \"event_idx\": 11,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"META\u2019s insider trade (event_idx=11) reinforces the tech catalyst. XLK\u2019s sector ETF captures the broader tech rally, mitigating single-stock risk.\",\n      \"ticker_reason\": \"XLK over XLV/XLF to avoid overcrowding finance and leverage META/NVDA\u2019s repeated signals.\"\n    }\n  ],\n  \"cash_held_pct\": 0.15,\n  \"cash_rationale\": \"Holding 15% cash to preserve capital while deploying 85% aggressively to exploit asymmetric edges in energy/tech. Cash is kept below the 25% threshold to comply with collective goals.\",\n  \"events_considered\": [\n    {\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"COIN\u2019s repeated insider trades lack donor sector alignment (finance delivered=NO) and ar",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "llama-contra",
+        "event_idx": 19,
+        "direction": "long",
+        "rationale": "Llama-contra\u2019s contrarian archetype historically bet against crowded tech plays; I propose a pact on OKLO (energy) to exploit their underweight in energy while I target NVDA-heavy XLE. Their Fed-watch"
+      }
+    },
+    "nvidia-llama70": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 98.15,
+      "bankroll_after": 98.15,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE prioritizes sector-specific insider trade signals with donor-sector mismatch, avoiding crowded XLF/XLE plays. CHALLENGE_RESPONSE: Adjust edge threshold to 5% and widen sector coverage to include energy (XLE) despite tech-heavy focus.",
+      "cash_held_pct": 0.0,
+      "cash_rationale": "",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted 55% deployment but sector trends favor energy (XLE) and healthcare (XLV) with higher win rates, so deployed 70% to exploit these."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "COIN insider trades in finance sector are crowded; sector win rate (77%) but donor-sector mismatch (finance \u2192 finance) lacks edge."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=1; no additional edge."
+        },
+        {
+          "event_idx": 10,
+          "decision": "skip",
+          "reason": "HOOD insider trade in finance sector is crowded; donor-sector mismatch (finance \u2192 finance) lacks edge."
+        },
+        {
+          "event_idx": 11,
+          "decision": "bet",
+          "reason": "META insider trade in tech sector with donor-sector mismatch (tech \u2192 tech) and sector win rate (55%) provides edge."
+        },
+        {
+          "event_idx": 12,
+          "decision": "bet",
+          "reason": "NVDA insider trade in tech sector with donor-sector mismatch (tech \u2192 tech) and high signal strength (0.60) provides edge."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "Duplicate signal to event_idx=12; no additional edge."
+        },
+        {
+          "event_idx": 19,
+          "decision": "bet",
+          "reason": "OKLO insider trade in energy sector with donor-sector mismatch (finance \u2192 energy) signals potential sector rotation."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "UBER insider trade in consumer_disc sector has low sector win rate (100% but n=7) and donor-sector mismatch (consumer_disc \u2192 consumer_disc) lacks edge."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE prioritizes sector-specific insider trade signals with donor-sector mismatch, avoiding crowded XLF/XLE plays. CHALLENGE_RESPONSE: Adjust edge threshold to 5% and widen sector coverage to include energy (XLE) despite tech-heavy focus.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with divergent reasoning template on energy sector; qwen-quant's XLE focus is already crowded.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted 55% deployment but sector trends favor energy (XLE) and healthcare (XLV) with higher win rates, so deployed 70% to exploit these.\"}, \"allocations\": [{\"event_idx\": 19, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.30, \"confidence\": 0.70, \"thesis\": \"OKLO insider trade (event_idx=19) in energy sector with donor-sector mismatch (finance \u2192 energy) signals potential sector rotation. Agency=SEC Form 4 provides high signal integrity.\", \"ticker_reason\": \"XLE is the purest energy sector ETF, directly mapping to the insider trade's sector.\"}, {\"event_idx\": 11, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.20, \"confidence\": 0.60, \"thesis\": \"META insider trade (event_idx=11) in tech sector with donor-sector mismatch (tech \u2192 tech) but high sector win rate (55%) and macro stability (VIX=18).\", \"ticker_reason\": \"XLK covers broad tech exposure, capturing META's insider activity.\"}, {\"event_idx\": 12, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.20, \"confidence\": 0.55, \"thesis\": \"NVDA insider trade (event_idx=12) in tech sector with donor-sector mismatch (tech \u2192 tech) but sector win rate (55%) and high signal strength (0.60).\", \"ticker_reason\": \"XLK is the most liquid tech ETF, capturing NVDA's insider activity.\"}], \"cash_held_pct\": 0.00, \"cash_rationale\": \"\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"COIN insider trades in finance sector are crowded; sector win rate (77%) but donor-sector mismatch (finance \u2192 finance) lacks edge.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 7, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 8, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 9, \"decision\": \"skip\", \"reason\": \"Duplicate signal to event_idx=1; no additional edge.\"}, {\"event_idx\": 10, \"decision\": \"skip\", \"reason\": \"HOOD insider trade in finance sector is crowded; donor-secto",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-gemma3": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 105.54,
+      "bankroll_after": 108.84,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: Reduce single-stock insider exposure after HOOD/META trades underperformed (avg_ret=-0.0031, win_rate=55%). Today I spread across 3 sector ETFs with flat stake to improve win-rate consistency.",
+      "cash_held_pct": 0.25,
+      "cash_rationale": "No sector-specific edge > 4% in weighted model; flat-stake wide coverage requires cash to deploy tomorrow.",
+      "allocations": [
+        {
+          "event_idx": 20,
+          "ticker": "XLY",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in consumer discretionary sector (UBER event) signals structural strength for consumer ETFs like XLY.",
+          "pct": 0.05,
+          "stake": 5.28,
+          "confidence": 0.7,
+          "excess_return": 0.065064,
+          "pnl_pct": 0.3253,
+          "won": true,
+          "profit": 1.72,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 17,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in tech sector (NVDA event) signals regulatory-risk clarity favoring tech ETFs like XLK.",
+          "pct": 0.045,
+          "stake": 4.75,
+          "confidence": 0.59,
+          "excess_return": 0.066367,
+          "pnl_pct": 0.3318,
+          "won": true,
+          "profit": 1.58,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.8,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council commit targeted 90% to XLE/XLF/ITA, but my flat-stake wide coverage (3 sectors) deployed 85% with sector diversity (XLE/XLV/XLF) to avoid crowding."
+      },
+      "events_considered": [],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: Reduce single-stock insider exposure after HOOD/META trades underperformed (avg_ret=-0.0031, win_rate=55%). Today I spread across 3 sector ETFs with flat stake to improve win-rate consistency.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"qwen-quant's sector focus (XAR/XLV) does not align with my wide-coverage doctrine; no pact today.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council commit targeted 90% to XLE/XLF/ITA, but my flat-stake wide coverage (3 sectors) deployed 85% with sector diversity (XLE/XLV/XLF) to avoid crowding.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.12, \"confidence\": 0.62, \"thesis\": \"SEC Form 4 insider trades in finance sector (COIN events) signal regulatory clarity favoring energy ETFs like XLE over broad commodities.\", \"ticker_reason\": \"XLE maps directly to oil/gas insider trades, while XLB covers broad commodities with weaker signal.\"}, {\"event_idx\": 11, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.11, \"confidence\": 0.68, \"thesis\": \"SEC Form 4 insider trades in tech sector (META event) reflect confidence in healthcare ETFs like XLV due to regulatory-risk hedging.\", \"ticker_reason\": \"XLV (healthcare) hedges tech regulatory-risk, while XLK (tech) would double down on crowded sector.\"}, {\"event_idx\": 19, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.10, \"confidence\": 0.65, \"thesis\": \"SEC Form 4 insider trade in energy sector (OKLO event) signals structural strength for energy ETFs like XLE.\", \"ticker_reason\": \"XLE is the primary energy ETF, while XLP (consumer staples) or XLY (consumer) are irrelevant to this energy-specific signal.\"}, {\"event_idx\": 10, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.12, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider trade in finance sector (HOOD event) signals institutional strength for financial ETFs like XLF.\", \"ticker_reason\": \"XLF is the primary financial sector ETF, while ITA (tech) or XLC (communications) are less directly mapped to finance insider trades.\"}, {\"event_idx\": 12, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.11, \"confidence\": 0.61, \"thesis\": \"SEC Form 4 insider trades in tech sector (NVDA events) signal sector-beta strength for tech ETFs like XLK despite crowded trades.\", \"ticker_reason\": \"XLK is the primary tech sector ETF, while XLC (communications) or XLY (consumer) are less directly mapped to tech insider trades.\"}, {\"event_idx\": 20, \"direction\": \"long\", \"ticker\": \"XLY\", \"pct\": 0.10, \"confidence\": 0.70, \"thesis\": \"SEC Form 4 insider trade in consumer discretionary sector (UBER event) signals structural strength for consumer ETFs like XLY.\", \"ticker_reason\": \"XLY is the primary consumer discretionary sector ETF, while XLP (consumer staples) or XLC (communications) are less directly mapped to consumer discretionary insider trades.\"}, {\"event_idx\": 17, \"direction\": \"long\", \"ticker\":",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-qwen06": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 104.68,
+      "bankroll_after": 104.68,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): CHALLENGE_RESPONSE: Adjust edge threshold to 5% and prioritize energy sector where insider trades show clear sector-specific signals. Reject finance-heavy consensus by focusing on OKLO (energy) insider trade with donor=energy delivered=NO, leveraging sector_trend avg_ret=+0.0041 win_rate=95%.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "Energy signal (OKLO) is the only clear edge; other sectors show ambiguous or crowded signals, requiring cash preservation for tomorrow.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/ITA but energy signal (OKLO) offers higher win_rate (95%) and lower crowding risk."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "Finance sector is crowded with 9 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Finance sector is crowded with 9 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Finance sector is crowded with 9 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Finance sector is crowded with 9 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Finance sector is crowded with 9 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Finance sector is crowded with 9 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Finance sector is crowded with 9 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "Finance sector is crowded with 9 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "Finance sector is crowded with 9 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 10,
+          "decision": "bet",
+          "reason": "Finance insider trade (HOOD) with strength=0.60 and donor=finance delivered=NO offers clear sector signal."
+        },
+        {
+          "event_idx": 11,
+          "decision": "bet",
+          "reason": "Tech insider trade (META) with strength=0.60 and donor=tech delivered=NO offers clear sector signal."
+        },
+        {
+          "event_idx": 12,
+          "decision": "skip",
+          "reason": "Tech sector is crowded with 7 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "Tech sector is crowded with 7 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "Tech sector is crowded with 7 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "Tech sector is crowded with 7 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "Tech sector is crowded with 7 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "Tech sector is crowded with 7 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "Tech sector is crowded with 7 events; no clear edge beyond noise."
+        },
+        {
+          "event_idx": 19,
+          "decision": "bet",
+          "reason": "Energy insider trade (OKLO) with strength=0.60, sector=energy, and donor=energy delivered=NO offers clear sector-specific signal."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "Consumer discretionary sector is ambiguous with only 1 event; no clear edge."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): CHALLENGE_RESPONSE: Adjust edge threshold to 5% and prioritize energy sector where insider trades show clear sector-specific signals. Reject finance-heavy consensus by focusing on OKLO (energy) insider trade with donor=energy delivered=NO, leveraging sector_trend avg_ret=+0.0041 win_rate=95%.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 19, \"direction\": \"long\", \"rationale\": \"No pact today due to sector-specific divergence from peers; energy signal is unique and not crowded.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/ITA but energy signal (OKLO) offers higher win_rate (95%) and lower crowding risk.\"}, \"allocations\": [{\"event_idx\": 19, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.20, \"confidence\": 0.70, \"thesis\": \"OKLO insider trade (event_idx=19) with sector=energy, strength=0.60, donor=energy delivered=NO signals institutional confidence in energy sector despite VIX=18.0.\", \"ticker_reason\": \"XLE is the broad energy ETF capturing oil/gas exposure, aligning with OKLO's nuclear energy focus.\"}, {\"event_idx\": 11, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.15, \"confidence\": 0.55, \"thesis\": \"META insider trade (event_idx=11) with sector=tech, strength=0.60, donor=tech delivered=NO reflects regulatory-risk hedging in tech sector.\", \"ticker_reason\": \"XLK is the tech ETF capturing broad tech exposure, aligning with META's regulatory narrative.\"}, {\"event_idx\": 10, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.50, \"thesis\": \"HOOD insider trade (event_idx=10) with sector=finance, strength=0.60, donor=finance delivered=NO signals institutional activity in financials despite crowded sector.\", \"ticker_reason\": \"XLF is the financial ETF capturing broad financial exposure, aligning with HOOD's financial sector signal.\"}], \"cash_held_pct\": 0.50, \"cash_rationale\": \"Energy signal (OKLO) is the only clear edge; other sectors show ambiguous or crowded signals, requiring cash preservation for tomorrow.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"Finance sector is crowded with 9 events; no clear edge beyond noise.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Finance sector is crowded with 9 events; no clear edge beyond noise.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Finance sector is crowded with 9 events; no clear edge beyond noise.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"Finance sector is crowded with 9 events; no clear edge beyond noise.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Finance sector is crowded with 9 events; no clear edge beyond noise.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Finance sector is crowded with 9 events; no clear edge beyond noise.\"}, {\"event_idx\": 7, \"decision\": \"skip\", \"reason\": \"Finance sector is crowded with 9 events; no clear edge beyond noise.\"}, {\"event_idx\": 8, \"decision\": \"skip\", \"reason\": \"Finance sector is crowded with 9 ev",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-dolphin3": {
+      "day_idx": 114,
+      "date": "2025-06-23",
+      "n_events": 20,
+      "bankroll_before": 94.26,
+      "bankroll_after": 94.26,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My PAVLOV WIN-STAY/LOSE-SHIFT doctrine mandates doubling down on tech (NVDA-heavy) after yesterday\u2019s XLV win, but the council\u2019s XLE/XLF focus demands a sector-diverse deviation. I exploit the DMAD anti-convergence rule by targeting energy (OKLO) as the highest-momentum alternative to finance/tech, despite my Pavlov bias. Edge threshold raised to 0.065 (vs 0.06) to compensate for crowded NVDA trades.",
+      "cash_held_pct": 0.2,
+      "cash_rationale": "Cash held at 20% to buffer against potential overcrowding in tech (XLK) and energy (XLE) sectors, despite Pavlov win-stay logic.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 258.32
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF (60%/30%), but my Pavlov win-stay logic and DMAD mandate demand energy (OKLO) despite lower council weight."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "COIN insider trades in finance are overcrowded (7 events) and lack macro corroboration (VIX=18.0, SP500 flat)."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Duplicate COIN event_idx=1 with no new signal; finance sector already maxed."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "COIN insider trade repetition; no edge over event_idx=1."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "COIN insider trade repetition; no edge over event_idx=1."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "COIN insider trade repetition; no edge over event_idx=1."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "COIN insider trade repetition; no edge over event_idx=1."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "COIN insider trade repetition; no edge over event_idx=1."
+        },
+        {
+          "event_idx": 8,
+          "decision": "skip",
+          "reason": "COIN insider trade repetition; no edge over event_idx=1."
+        },
+        {
+          "event_idx": 9,
+          "decision": "skip",
+          "reason": "COIN insider trade repetition; no edge over event_idx=1."
+        },
+        {
+          "event_idx": 10,
+          "decision": "bet",
+          "reason": "HOOD insider trade in finance sector with 77% win rate and +2.47% avg_ret; council-aligned."
+        },
+        {
+          "event_idx": 11,
+          "decision": "skip",
+          "reason": "META insider trade in tech is crowded (NVDA-heavy); Pavlov win-stay logic prefers XLK over META-specific plays."
+        },
+        {
+          "event_idx": 12,
+          "decision": "bet",
+          "reason": "NVDA insider trade in tech, but XLK ETF diversifies risk and aligns with Pavlov win-stay logic."
+        },
+        {
+          "event_idx": 13,
+          "decision": "skip",
+          "reason": "NVDA insider trade repetition; XLK already covers tech sector."
+        },
+        {
+          "event_idx": 14,
+          "decision": "skip",
+          "reason": "NVDA insider trade repetition; XLK already covers tech sector."
+        },
+        {
+          "event_idx": 15,
+          "decision": "skip",
+          "reason": "NVDA insider trade repetition; XLK already covers tech sector."
+        },
+        {
+          "event_idx": 16,
+          "decision": "skip",
+          "reason": "NVDA insider trade repetition; XLK already covers tech sector."
+        },
+        {
+          "event_idx": 17,
+          "decision": "skip",
+          "reason": "NVDA insider trade repetition; XLK already covers tech sector."
+        },
+        {
+          "event_idx": 18,
+          "decision": "skip",
+          "reason": "NVDA insider trade repetition; XLK already covers tech sector."
+        },
+        {
+          "event_idx": 20,
+          "decision": "skip",
+          "reason": "UBER insider trade in consumer_disc lacks macro corroboration and is outside council focus sectors."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My PAVLOV WIN-STAY/LOSE-SHIFT doctrine mandates doubling down on tech (NVDA-heavy) after yesterday\u2019s XLV win, but the council\u2019s XLE/XLF focus demands a sector-diverse deviation. I exploit the DMAD anti-convergence rule by targeting energy (OKLO) as the highest-momentum alternative to finance/tech, despite my Pavlov bias. Edge threshold raised to 0.065 (vs 0.06) to compensate for crowded NVDA trades.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 19,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today: qwen-quant\u2019s focus on XLF/XLE is structurally complementary, but my Pavlov win-stay logic prioritizes energy (OKLO) over finance. Pact would violate my edge threshold and DMAD mandate.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF (60%/30%), but my Pavlov win-stay logic and DMAD mandate demand energy (OKLO) despite lower council weight.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 19,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.35,\n      \"confidence\": 0.75,\n      \"thesis\": \"OKLO insider trade (event_idx=19) in energy sector signals bullish momentum, corroborated by 30-day sector trend (avg_ret=+0.0041, win_rate=95%). Strength=0.60 with SEC Form 4 agency adds credibility.\",\n      \"ticker_reason\": \"XLE over XLB because OKLO\u2019s nuclear/energy focus aligns with oil/gas subsector strength, not broad commodities.\"\n    },\n    {\n      \"event_idx\": 12,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"NVDA insider trade (event_idx=12) in tech sector, despite crowded trades. Pavlov win-stay logic justifies tech exposure after XLV\u2019s win, but XLK\u2019s broader tech ETF mitigates NVDA-specific risk.\",\n      \"ticker_reason\": \"XLK over XLV/XLF to diversify within tech while avoiding overcrowded NVDA plays; XLK\u2019s 55% win rate in last 30d is stronger than XLV\u2019s 77% but lower volatility.\"\n    },\n    {\n      \"event_idx\": 10,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.55,\n      \"thesis\": \"HOOD insider trade (event_idx=10) in finance sector, with 77% win rate and +2.47% avg_ret. Council\u2019s 30% XLF allocation aligns with my structural deviation from qwen-quant\u2019s XLF focus.\",\n      \"ticker_reason\": \"XLF over XLE/XLV to respect council\u2019s finance sector mandate while avoiding energy\u2019s crowded NVDA trades.\"\n    }\n  ],\n  \"cash_held_pct\": 0.20,\n  \"cash_rationale\": \"Cash held at 20% to buffer against potential overcrowding in tech (XLK) and energy (XLE) sectors, despite Pavlov win-stay logic.\",\n  \"events_considered\": [\n    {\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"COIN insider trades in finance are overcrowded (7 events) and lack macro corroboration (VIX=18.0, SP500 flat).\"},\n    {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Duplicate COIN event_idx=1 with no new signal; finance sector already maxed.\"}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    }
+  },
+  "written_at": "2026-04-24T16:07:34.028543+00:00"
+}

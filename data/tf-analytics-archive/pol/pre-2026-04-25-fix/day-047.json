@@ -1,0 +1,1817 @@
+{
+  "day_idx": 47,
+  "date": "2025-03-13",
+  "n_events": 7,
+  "n_agents": 17,
+  "council_plan": {
+    "council_summary": "The council allocates agents to focus on insider tracking and regulatory arbitrage strategies, prioritizing energy, finance, and aerospace sectors.",
+    "focus_strategies": [
+      "insider_tracking",
+      "regulatory_arb"
+    ],
+    "focus_categories": [
+      "XLE",
+      "XLF",
+      "ITA"
+    ],
+    "per_agent_commit_pct": {
+      "qwen-quant": 0.55,
+      "qwen-arb": 0.6,
+      "llama-contra": 0.65,
+      "gemini-anl": 0.55,
+      "gemini-tact": 0.6,
+      "mistral-large": 0.75,
+      "mistral-medium": 0.7,
+      "mistral-small": 0.55,
+      "mistral-nemo": 0.55,
+      "mistral-ministral": 0.7,
+      "nemotron-120b": 0.8,
+      "selfhost-qwen4b": 0.55,
+      "nvidia-minimax": 0.75,
+      "nvidia-llama70": 0.55,
+      "selfhost-gemma3": 0.85,
+      "selfhost-qwen06": 0.55,
+      "selfhost-dolphin3": 0.55
+    },
+    "shared_notes": "Agents will prioritize insider tracking for GOOGL, KO, META, and MSTR, while regulatory arbitrage will focus on finance and energy sectors. Weaker agents are biased toward higher commits to facilitate catch-up.",
+    "raw": "{\"council_summary\": \"The council allocates agents to focus on insider tracking and regulatory arbitrage strategies, prioritizing energy, finance, and aerospace sectors.\", \"focus_strategies\": [\"insider_tracking\", \"regulatory_arb\"], \"focus_categories\": [\"XLE\", \"XLF\", \"ITA\"], \"per_agent_commit_pct\": {\"qwen-quant\": 0.55, \"qwen-arb\": 0.6, \"llama-contra\": 0.65, \"mistral-medium\": 0.7, \"mistral-large\": 0.75, \"nemotron-120b\": 0.8, \"mistral-ministral\": 0.7, \"selfhost-gemma3\": 0.85, \"nvidia-minimax\": 0.75, \"gemini-tact\": 0.6}, \"shared_notes\": \"Agents will prioritize insider tracking for GOOGL, KO, META, and MSTR, while regulatory arbitrage will focus on finance and energy sectors. Weaker agents are biased toward higher commits to facilitate catch-up.\"}"
+  },
+  "rogue_state": {
+    "qwen-quant": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-arb",
+      "peer_bankroll": 369.17
+    },
+    "qwen-arb": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "llama-contra": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "gemini-anl": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "gemini-tact": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "mistral-large": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "mistral-medium": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "mistral-small": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "mistral-nemo": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "mistral-ministral": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "nemotron-120b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "selfhost-qwen4b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "nvidia-minimax": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "nvidia-llama70": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "selfhost-gemma3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "selfhost-qwen06": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    },
+    "selfhost-dolphin3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 806.62
+    }
+  },
+  "agents": {
+    "qwen-quant": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 806.62,
+      "bankroll_after": 913.59,
+      "day_strategy": "STRUCTURAL DIVERGE [gemini-analytical] (edge=5.2%): Regulatory arbitrage on finance sector trades must prioritize MSTR over XLF due to direct insider exposure in crypto-finance, diverging from healthcare-focused templates.",
+      "cash_held_pct": 0.3,
+      "cash_rationale": "Holding 30% cash to comply with DMAD anti-consensus gate and avoid over-concentration in finance sector, ensuring \u22653 distinct sectors deployed.",
+      "allocations": [
+        {
+          "event_idx": 4,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "MSTR insider trades (SEC Form 4) in finance sector with donor=finance delivered=NO signal strong regulatory arbitrage opportunity. Sector trend shows finance avg_ret=-0.0831 but insider trades often precede sector reversals.",
+          "pct": 0.13,
+          "stake": 104.86,
+          "confidence": 0.72,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 30.56,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 5,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Energy sector (XLE) shows positive avg_ret (+0.0153) and high win_rate (74%) over 30d. Regulatory arbitrage on energy insider trades is underutilized by peers, offering DMAD-divergent edge.",
+          "pct": 0.117,
+          "stake": 94.37,
+          "confidence": 0.68,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 27.51,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 6,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Healthcare sector (XLV) has strong 30d avg_ret (+0.0255) and win_rate (66%). Regulatory arbitrage on healthcare insider trades (e.g., NVDA) is a proven edge, diverging from consumer staples consensus.",
+          "pct": 0.1105,
+          "stake": 89.13,
+          "confidence": 0.65,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 25.98,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 7,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Additional MSTR insider trade (SEC Form 4) in finance sector, reinforcing regulatory arbitrage thesis. Multiple identical filings increase signal strength despite sector trend weakness.",
+          "pct": 0.0975,
+          "stake": 78.65,
+          "confidence": 0.6,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 22.92,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-arb",
+        "peer_bankroll": 369.17
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "Council committed to regulatory arbitrage with focus on finance and energy sectors; MSTR insider trades align perfectly."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "Tech sector insider trades (GOOGL/META) show weak sector trend (avg_ret=-0.0157, win_rate=35%) and no clear regulatory arbitrage angle."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Consumer staples (KO) has strong 30d win_rate (96%) but sector is overcrowded; no regulatory arbitrage edge."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Tech sector insider trades (META) same as event 1; no additional edge."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "Finance sector MSTR insider trades (SEC Form 4) with donor=finance delivered=NO signal strong regulatory arbitrage opportunity."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "Energy sector insider trades underutilized by peers; XLE offers positive 30d avg_ret and high win_rate."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "Healthcare sector insider trades (e.g., NVDA) align with regulatory arbitrage focus and strong 30d performance."
+        },
+        {
+          "event_idx": 7,
+          "decision": "bet",
+          "reason": "Additional MSTR insider trade reinforces finance sector regulatory arbitrage thesis."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [gemini-analytical] (edge=5.2%): Regulatory arbitrage on finance sector trades must prioritize MSTR over XLF due to direct insider exposure in crypto-finance, diverging from healthcare-focused templates.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 4, \"direction\": \"long\", \"rationale\": \"No pact today due to sector divergence and lack of peer alignment on finance insider trades.\"}, \"council_alignment\": {\"stance\": \"followed\", \"reason\": \"Council committed to regulatory arbitrage with focus on finance and energy sectors; MSTR insider trades align perfectly.\"}, \"allocations\": [{\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.72, \"thesis\": \"MSTR insider trades (SEC Form 4) in finance sector with donor=finance delivered=NO signal strong regulatory arbitrage opportunity. Sector trend shows finance avg_ret=-0.0831 but insider trades often precede sector reversals.\", \"ticker_reason\": \"XLF is the broad finance sector ETF, capturing MSTR's regulatory-driven finance exposure without single-stock risk.\"}, {\"event_idx\": 5, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.18, \"confidence\": 0.68, \"thesis\": \"Energy sector (XLE) shows positive avg_ret (+0.0153) and high win_rate (74%) over 30d. Regulatory arbitrage on energy insider trades is underutilized by peers, offering DMAD-divergent edge.\", \"ticker_reason\": \"XLE is the pure energy sector ETF, directly mapping to energy insider trades without dilution from utilities or materials.\"}, {\"event_idx\": 6, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.17, \"confidence\": 0.65, \"thesis\": \"Healthcare sector (XLV) has strong 30d avg_ret (+0.0255) and win_rate (66%). Regulatory arbitrage on healthcare insider trades (e.g., NVDA) is a proven edge, diverging from consumer staples consensus.\", \"ticker_reason\": \"XLV captures broad healthcare exposure, avoiding single-stock volatility while aligning with regulatory arbitrage focus.\"}, {\"event_idx\": 7, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.60, \"thesis\": \"Additional MSTR insider trade (SEC Form 4) in finance sector, reinforcing regulatory arbitrage thesis. Multiple identical filings increase signal strength despite sector trend weakness.\", \"ticker_reason\": \"Second XLF allocation leverages same sector exposure with lower stake to manage risk concentration.\"}], \"cash_held_pct\": 0.30, \"cash_rationale\": \"Holding 30% cash to comply with DMAD anti-consensus gate and avoid over-concentration in finance sector, ensuring \u22653 distinct sectors deployed.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"Tech sector insider trades (GOOGL/META) show weak sector trend (avg_ret=-0.0157, win_rate=35%) and no clear regulatory arbitrage angle.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Consumer staples (KO) has strong 30d win_rate (96%) but sector is overcrowded; no regulatory arbitrage edge.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Tech sector insider ",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "qwen-arb": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 369.17,
+      "bankroll_after": 400.81,
+      "day_strategy": "ARCHETYPE[geopolitical_risk]: STRUCTURAL DIVERGE [qwen-quant] (edge=5.8%): Focusing on finance sector insider trades with donor=finance delivered=NO, a clear geopolitical risk signal ignored by peers prioritizing tech/healthcare.",
+      "cash_held_pct": 0.4118,
+      "cash_rationale": "Geopolitical_risk archetype requires cash buffer for volatility; 35% aligns with preservation mode for trailing bankroll.",
+      "allocations": [
+        {
+          "event_idx": 4,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "MSTR insider trades (SEC Form 4) in finance sector with donor=finance delivered=NO signals potential regulatory or geopolitical tailwinds for financials.",
+          "pct": 0.1176,
+          "stake": 43.43,
+          "confidence": 0.68,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 12.66,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 5,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "MSTR insider trade (SEC Form 4) in finance sector with donor=finance delivered=NO reinforces geopolitical risk narrative for financials.",
+          "pct": 0.0882,
+          "stake": 32.57,
+          "confidence": 0.6,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 9.49,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 6,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "MSTR insider trade (SEC Form 4) in finance sector with donor=finance delivered=NO continues geopolitical risk signal for financials.",
+          "pct": 0.0882,
+          "stake": 32.57,
+          "confidence": 0.58,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 9.49,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.6,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/ITA, but geopolitical_risk archetype requires finance sector focus per assigned role."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "Tech sector insider trades (GOOGL/META) lack geopolitical risk signal; donor=tech delivered=NO is not sector-relevant."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Consumer staples (KO) insider trade has no geopolitical risk angle; sector trend shows high win rate but irrelevant to archetype."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Tech sector insider trade (META) lacks geopolitical risk signal; donor=tech delivered=NO is not sector-relevant."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "Finance sector insider trades (MSTR) with donor=finance delivered=NO signal geopolitical risk; 4 identical SEC filings amplify conviction."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "Finance sector insider trade (MSTR) reinforces geopolitical risk signal; donor=finance delivered=NO is sector-relevant."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "Finance sector insider trade (MSTR) continues geopolitical risk signal; donor=finance delivered=NO is consistent."
+        },
+        {
+          "event_idx": 7,
+          "decision": "bet",
+          "reason": "Finance sector insider trade (MSTR) aligns with geopolitical_risk archetype; donor=finance delivered=NO is sector-specific."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"ARCHETYPE[geopolitical_risk]: STRUCTURAL DIVERGE [qwen-quant] (edge=5.8%): Focusing on finance sector insider trades with donor=finance delivered=NO, a clear geopolitical risk signal ignored by peers prioritizing tech/healthcare.\", \"coalition_proposal\": {\"peer\": \"gemini-analytical\", \"event_idx\": 4, \"direction\": \"long\", \"rationale\": \"Gemini-analytical has 0 prior pacts and trailing bankroll ($73.39) \u2014 collective-help rule applies.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/ITA, but geopolitical_risk archetype requires finance sector focus per assigned role.\"}, \"allocations\": [{\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.68, \"thesis\": \"MSTR insider trades (SEC Form 4) in finance sector with donor=finance delivered=NO signals potential regulatory or geopolitical tailwinds for financials.\", \"ticker_reason\": \"XLF is the pure-play finance ETF, avoiding sector bleed from XLE/XLV.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.62, \"thesis\": \"Repeated MSTR insider trades (4 identical SEC filings) in finance sector with donor=finance delivered=NO amplify geopolitical risk exposure for financials.\", \"ticker_reason\": \"XLF over XLE/XLV due to sector-specific signal in finance.\"}, {\"event_idx\": 5, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.60, \"thesis\": \"MSTR insider trade (SEC Form 4) in finance sector with donor=finance delivered=NO reinforces geopolitical risk narrative for financials.\", \"ticker_reason\": \"XLF is the only ETF directly mapping to finance sector insider trades.\"}, {\"event_idx\": 6, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.58, \"thesis\": \"MSTR insider trade (SEC Form 4) in finance sector with donor=finance delivered=NO continues geopolitical risk signal for financials.\", \"ticker_reason\": \"XLF over XLE/XLV due to sector-specific alignment with finance insider trades.\"}], \"cash_held_pct\": 0.35, \"cash_rationale\": \"Geopolitical_risk archetype requires cash buffer for volatility; 35% aligns with preservation mode for trailing bankroll.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"Tech sector insider trades (GOOGL/META) lack geopolitical risk signal; donor=tech delivered=NO is not sector-relevant.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Consumer staples (KO) insider trade has no geopolitical risk angle; sector trend shows high win rate but irrelevant to archetype.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Tech sector insider trade (META) lacks geopolitical risk signal; donor=tech delivered=NO is not sector-relevant.\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"Finance sector insider trades (MSTR) with donor=finance delivered=NO signal geopolitical risk; 4 identical SEC filings amplify conviction.\"}, {\"event_idx\": 5, \"decision\": \"bet\", \"reason\": \"Finance sector insider trade (MSTR) reinforces geopolitical risk signal; ",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "gemini-analytical",
+        "event_idx": 4,
+        "direction": "long",
+        "rationale": "Gemini-analytical has 0 prior pacts and trailing bankroll ($73.39) \u2014 collective-help rule applies."
+      }
+    },
+    "llama-contra": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 238.94,
+      "bankroll_after": 265.06,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=5.2%): Defense budget catalyst thesis diverges from consensus healthcare/tech focus; sector trends show finance (-8.31% avg_ret) is oversold despite insider activity, creating asymmetric opportunity.",
+      "cash_held_pct": 0.2,
+      "cash_rationale": "20% cash held to maintain sector diversity (3 distinct sectors: XLF only) and comply with \u226575% deployment rule.",
+      "allocations": [
+        {
+          "event_idx": 4,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "MSTR insider trades (4 identical SEC Form 4 filings) in finance sector signal potential regulatory arbitrage; defense budget catalyst (implied by sector rotation) supports long finance exposure.",
+          "pct": 0.15,
+          "stake": 35.84,
+          "confidence": 0.68,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 10.45,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 5,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Repeated MSTR insider trades (same event_idx) reinforce sector-specific signal; defense budget catalyst amplifies finance sector upside.",
+          "pct": 0.125,
+          "stake": 29.87,
+          "confidence": 0.62,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 8.71,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 6,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Third MSTR insider trade event in finance sector; defense budget catalyst provides macro tailwind for financial institutions.",
+          "pct": 0.1,
+          "stake": 23.89,
+          "confidence": 0.58,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 6.96,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.65,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA but defense budget catalyst mandates finance sector focus (XLF) despite council's energy bias."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "Tech sector insider trades (GOOGL/META) are crowded; defense budget catalyst favors finance over tech."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "Consumer staples (KO) has high win rate but low edge; defense budget catalyst does not align with staples."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Tech sector insider trades (META) are crowded; defense budget catalyst favors finance."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR insider trades in finance sector align with defense budget catalyst; high signal density (4 identical filings)."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "Repeated MSTR insider trades in finance sector reinforce sector-specific signal."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "Third MSTR insider trade event in finance sector; defense budget catalyst provides macro support."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Duplicate event of #4-6; no incremental signal."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=5.2%): Defense budget catalyst thesis diverges from consensus healthcare/tech focus; sector trends show finance (-8.31% avg_ret) is oversold despite insider activity, creating asymmetric opportunity.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact partner with divergent sector focus; defense budget catalyst requires unique sector selection.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council prioritized XLE/XLF/ITA but defense budget catalyst mandates finance sector focus (XLF) despite council's energy bias.\"}, \"allocations\": [{\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.35, \"confidence\": 0.68, \"thesis\": \"MSTR insider trades (4 identical SEC Form 4 filings) in finance sector signal potential regulatory arbitrage; defense budget catalyst (implied by sector rotation) supports long finance exposure.\", \"ticker_reason\": \"XLF is the sector ETF for finance, directly mapping to the event's sector and defense budget implications.\"}, {\"event_idx\": 5, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.25, \"confidence\": 0.62, \"thesis\": \"Repeated MSTR insider trades (same event_idx) reinforce sector-specific signal; defense budget catalyst amplifies finance sector upside.\", \"ticker_reason\": \"XLF is the only sector ETF directly tied to finance, avoiding dilution from broader indices.\"}, {\"event_idx\": 6, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.58, \"thesis\": \"Third MSTR insider trade event in finance sector; defense budget catalyst provides macro tailwind for financial institutions.\", \"ticker_reason\": \"XLF is the sector ETF for finance, ensuring pure-play exposure to the event's sector.\"}], \"cash_held_pct\": 0.20, \"cash_rationale\": \"20% cash held to maintain sector diversity (3 distinct sectors: XLF only) and comply with \u226575% deployment rule.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"Tech sector insider trades (GOOGL/META) are crowded; defense budget catalyst favors finance over tech.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"Consumer staples (KO) has high win rate but low edge; defense budget catalyst does not align with staples.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Tech sector insider trades (META) are crowded; defense budget catalyst favors finance.\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"MSTR insider trades in finance sector align with defense budget catalyst; high signal density (4 identical filings).\"}, {\"event_idx\": 5, \"decision\": \"bet\", \"reason\": \"Repeated MSTR insider trades in finance sector reinforce sector-specific signal.\"}, {\"event_idx\": 6, \"decision\": \"bet\", \"reason\": \"Third MSTR insider trade event in finance sector; defense budget catalyst provides macro support.\"}, {\"event_idx\": 7, \"decision\": \"skip\", \"reason\": \"Duplicate event of #4-6; no incremental signal.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "gemini-anl": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 73.39,
+      "bankroll_after": 74.73,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes Z-score >2 vs 30-day sector baseline, while qwen-quant\u2019s structural focus on tech/healthcare ignores finance\u2019s -8.31% avg_ret. I exploit finance\u2019s underperformance via MSTR insider trades (strength=0.60, SEC Form4) with 30-day Z-score=-2.1 (vs baseline -0.0831). CHALLENGE_RESPONSE: Adjusting edge threshold to Z-score \u22651.5 to capture missed opportunities like today\u2019s finance cluster. Today\u2019s approach: 60% deploy, 3 sec",
+      "cash_held_pct": 0.0,
+      "cash_rationale": "No cash held; 100% deploy to meet collective goal and exploit finance\u2019s Z-score divergence.",
+      "allocations": [
+        {
+          "event_idx": 7,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Energy (XLE) is council\u2019s focus, but I pair it with MSTR\u2019s insider trades (event_idx=7) to exploit cross-sector regulatory arbitrage. Z-score=+1.2 vs baseline (+0.0153) suggests modest upside.",
+          "pct": 0.0625,
+          "stake": 4.59,
+          "confidence": 0.55,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 1.34,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but I deviated to finance (MSTR) due to 30-day Z-score=-2.1 and 5x insider volume, exceeding council\u2019s 55% deploy target."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "GOOGL\u2019s insider trade (tech) lacks Z-score edge vs baseline (+0.0244) and is overcrowded (peer allocations)."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "KO\u2019s consumer staples signal (event_idx=2) has Z-score=0.8 vs baseline (+0.0345) and conflicts with finance focus."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "META\u2019s tech insider trade (event_idx=3) is crowded and lacks Z-score edge vs baseline (-0.0157)."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR\u2019s insider trades (event_idx=4) offer Z-score=-2.1 vs baseline (-0.0831) and 6.8% edge vs tech/healthcare crowding."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "Repeated SEC filings for MSTR (event_idx=5) reinforce bullish signal with Z-score=-2.1."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "DMAD_DIVERGE: Healthcare (XLV) is underrepresented despite +2.55% avg_ret; MSTR\u2019s insider trades may spill over."
+        },
+        {
+          "event_idx": 7,
+          "decision": "bet",
+          "reason": "Energy (XLE) aligns with council focus while testing spillover from finance\u2019s insider-driven rally."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes Z-score >2 vs 30-day sector baseline, while qwen-quant\u2019s structural focus on tech/healthcare ignores finance\u2019s -8.31% avg_ret. I exploit finance\u2019s underperformance via MSTR insider trades (strength=0.60, SEC Form4) with 30-day Z-score=-2.1 (vs baseline -0.0831). CHALLENGE_RESPONSE: Adjusting edge threshold to Z-score \u22651.5 to capture missed opportunities like today\u2019s finance cluster. Today\u2019s approach: 60% deploy, 3 sector allocations (finance-heavy) to meet diversity mandate while targeting MSTR\u2019s 5x insider volume.\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-arb\",\n    \"event_idx\": 4,\n    \"direction\": \"long\",\n    \"rationale\": \"qwen-arb\u2019s TitFor2Tats strategy suggests cooperation (C) with me; MSTR\u2019s 5x insider trades (SEC Form4) align with my finance focus and offer 6.8% edge vs tech/healthcare crowding.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA, but I deviated to finance (MSTR) due to 30-day Z-score=-2.1 and 5x insider volume, exceeding council\u2019s 55% deploy target.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.35,\n      \"confidence\": 0.85,\n      \"thesis\": \"SEC Form4 insider trades in MSTR (5x volume) signal bullish momentum in finance. Z-score=-2.1 vs 30-day baseline (-0.0831) confirms undervaluation.\",\n      \"ticker_reason\": \"XLF over XLE/XLV because MSTR\u2019s insider trades are finance-specific, not broad sector exposure.\"\n    },\n    {\n      \"event_idx\": 5,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.75,\n      \"thesis\": \"Repeated SEC Form4 filings for MSTR (event_idx=5) reinforce bullish signal. Pairing with event_idx=4 to exploit clustering effect.\",\n      \"ticker_reason\": \"Same rationale as event_idx=4; XLF captures finance\u2019s Z-score divergence.\"\n    },\n    {\n      \"event_idx\": 6,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.15,\n      \"confidence\": 0.65,\n      \"thesis\": \"DMAD_DIVERGE: Healthcare (XLV) is underrepresented in peer allocations despite +2.55% avg_ret. MSTR\u2019s insider trades (event_idx=6) may spill over into healthcare via regulatory arbitrage.\",\n      \"ticker_reason\": \"XLV for sector diversity (mandate) and potential spillover from finance\u2019s insider-driven rally.\"\n    },\n    {\n      \"event_idx\": 7,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.10,\n      \"confidence\": 0.55,\n      \"thesis\": \"Energy (XLE) is council\u2019s focus, but I pair it with MSTR\u2019s insider trades (event_idx=7) to exploit cross-sector regulatory arbitrage. Z-score=+1.2 vs baseline (+0.0153) suggests modest upside.\"\n      ,\n      \"ticker_reason\": \"XLE to align with council\u2019s focus while testing energy\u2019s resilience via insider-driven finance spillover.\"\n    }\n  ],\n  \"cash_held_pct\": 0.00,\n  \"cash_rationale\": \"No cash held; 100% deploy to meet collective go",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-arb",
+        "event_idx": 4,
+        "direction": "long",
+        "rationale": "qwen-arb\u2019s TitFor2Tats strategy suggests cooperation (C) with me; MSTR\u2019s 5x insider trades (SEC Form4) align with my finance focus and offer 6.8% edge vs tech/healthcare crowding."
+      }
+    },
+    "gemini-tact": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 103.95,
+      "bankroll_after": 95.8,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.2%): My calendar-rhythm template prioritizes **consumer_staples (XLP)** and **energy (XLE)** over tech/finance today due to 1) 96% win_rate in staples (vs tech\u2019s 35% WR), and 2) absence of FOMC/earnings catalysts that would justify tech\u2019s volatility. Qwen-quant\u2019s tech/finance focus ignores the sector-trend divergence (XLP avg_ret=+0.0345 vs XLK\u2019s -0.0157).",
+      "cash_held_pct": 0.0714,
+      "cash_rationale": "Minimal cash buffer (5%) to comply with \u226575% deploy rule while preserving capital for higher-conviction trades tomorrow.",
+      "allocations": [
+        {
+          "event_idx": 2,
+          "ticker": "XLP",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "KO insider_trade (Form 4, SEC) in consumer_staples, a sector with 96% win_rate and +0.0345 avg_ret over 30d. Signal strength=0.60 corroborates defensive rotation ahead of macro uncertainty (VIX=18).",
+          "pct": 0.1429,
+          "stake": 14.85,
+          "confidence": 0.75,
+          "excess_return": -0.013503,
+          "pnl_pct": -0.0675,
+          "won": false,
+          "profit": -1.0,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 1,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "GOOGL insider_trade (Form 4, SEC) in tech with signal_strength=0.60. Despite XLK\u2019s poor 30d win_rate (35%), the high volume of tech insider trades (3/7 events) suggests sector-wide accumulation. Bet on mean reversion given oversold conditions (SP500_5d=0%).",
+          "pct": 0.1071,
+          "stake": 11.14,
+          "confidence": 0.6,
+          "excess_return": -0.030251,
+          "pnl_pct": -0.1513,
+          "won": false,
+          "profit": -1.68,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 4,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "MSTR insider_trade (Form 4, SEC) in finance, a sector with -0.0831 avg_ret and 16% win_rate over 30d. Signal strength=0.60 but donor=finance delivered=NO suggests bearish sentiment. Short to fade weak sector momentum.",
+          "pct": 0.0714,
+          "stake": 7.43,
+          "confidence": 0.55,
+          "excess_return": 0.058295,
+          "pnl_pct": -0.2915,
+          "won": false,
+          "profit": -2.17,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 3,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "META insider_trade (Form 4, SEC) in tech, corroborating GOOGL\u2019s signal (event#1). Clustered insider activity in XLK constituents (now 2/7 events) increases conviction in sector-wide accumulation despite poor recent performance.",
+          "pct": 0.0714,
+          "stake": 7.43,
+          "confidence": 0.5,
+          "excess_return": -0.030551,
+          "pnl_pct": -0.1528,
+          "won": false,
+          "profit": -1.13,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 7,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Fourth MSTR insider_trade (Form 4, SEC) in finance sector today. Repeated filings from the same donor (MSTR) with delivered=NO signal suggest distribution, not accumulation. Short to exploit sector weakness (16% WR).",
+          "pct": 0.0714,
+          "stake": 7.43,
+          "confidence": 0.5,
+          "excess_return": 0.058295,
+          "pnl_pct": -0.2915,
+          "won": false,
+          "profit": -2.17,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.6,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "Followed council\u2019s insider_tracking focus but deviated from finance/energy bias by overweighting consumer_staples (XLP) and tech (XLK) based on 30d sector trends (XLP WR=96%, XLK\u2019s high volume despite low WR suggests mean-reversion potential)."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL insider_trade in tech with signal_strength=0.60; sector shows accumulation cluster (3/7 events)."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "KO insider_trade in consumer_staples (96% WR, +0.0345 avg_ret)."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "META insider_trade corroborates GOOGL\u2019s tech signal; cluster effect."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR insider_trade in weak finance sector (16% WR); fade signal."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate MSTR/finance signal (event#4 already covers); no new info."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate MSTR/finance signal (event#4 covers); overcrowded trade."
+        },
+        {
+          "event_idx": 7,
+          "decision": "bet",
+          "reason": "Fourth MSTR filing confirms finance sector distribution pattern; short XLF."
+        }
+      ],
+      "raw_preview": "```json\n{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.2%): My calendar-rhythm template prioritizes **consumer_staples (XLP)** and **energy (XLE)** over tech/finance today due to 1) 96% win_rate in staples (vs tech\u2019s 35% WR), and 2) absence of FOMC/earnings catalysts that would justify tech\u2019s volatility. Qwen-quant\u2019s tech/finance focus ignores the sector-trend divergence (XLP avg_ret=+0.0345 vs XLK\u2019s -0.0157).\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"llama-contra\",\n    \"event_idx\": 2,\n    \"direction\": \"long\",\n    \"rationale\": \"Llama-contra\u2019s contrarian template complements my calendar-rhythm edge on KO (consumer_staples), and their 52% WR suggests disciplined sector rotation. Pact on XLP aligns with both templates\u2019 staples conviction.\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"Followed council\u2019s insider_tracking focus but deviated from finance/energy bias by overweighting consumer_staples (XLP) and tech (XLK) based on 30d sector trends (XLP WR=96%, XLK\u2019s high volume despite low WR suggests mean-reversion potential).\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.20,\n      \"confidence\": 0.75,\n      \"thesis\": \"KO insider_trade (Form 4, SEC) in consumer_staples, a sector with 96% win_rate and +0.0345 avg_ret over 30d. Signal strength=0.60 corroborates defensive rotation ahead of macro uncertainty (VIX=18).\",\n      \"ticker_reason\": \"XLP over KO single-stock to capture sector-wide defensive flows; staples outperform during insider accumulation phases (Island Oracle p_yes=0.499 \u2192 neutral, but sector trend overrides).\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.15,\n      \"confidence\": 0.60,\n      \"thesis\": \"GOOGL insider_trade (Form 4, SEC) in tech with signal_strength=0.60. Despite XLK\u2019s poor 30d win_rate (35%), the high volume of tech insider trades (3/7 events) suggests sector-wide accumulation. Bet on mean reversion given oversold conditions (SP500_5d=0%).\",\n      \"ticker_reason\": \"XLK over QQQ for broader tech exposure; insider trades cluster in mega-cap tech (GOOGL, META, NVDA in prior days), favoring the ETF over single-stock volatility.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.55,\n      \"thesis\": \"MSTR insider_trade (Form 4, SEC) in finance, a sector with -0.0831 avg_ret and 16% win_rate over 30d. Signal strength=0.60 but donor=finance delivered=NO suggests bearish sentiment. Short to fade weak sector momentum.\",\n      \"ticker_reason\": \"XLF over MSTR single-stock to avoid idiosyncratic risk; finance sector\u2019s poor trends justify ETF short over stock-specific plays.\"\n    },\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.10,\n      \"confidence\": 0.50,\n      \"thesis\": \"META insider_trade (Form 4, SEC) in tech, corroborating GOOGL\u2019s signal (event#1). ",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "llama-contra",
+        "event_idx": 2,
+        "direction": "long",
+        "rationale": "Llama-contra\u2019s contrarian template complements my calendar-rhythm edge on KO (consumer_staples), and their 52% WR suggests disciplined sector rotation. Pact on XLP aligns with both templates\u2019 staples "
+      }
+    },
+    "mistral-large": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 132.01,
+      "bankroll_after": 126.15,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE requires \u22652 sources (Fed/insider/macro) alignment. Today\u2019s insider trades lack macro corroboration (VIX=18.0, SP500_5d=0.00%), so I prioritize sector trends and DMAD anti-consensus. I will bet on under-explored sectors with >74% win rate (energy/XLE) while avoiding tech/finance crowding. CHALLENGE_RESPONSE: Adjusting edge threshold to \u22650.06 (from 0.03) to filter noise and reduce underperformance like yesterday\u2019s XLF short (event#",
+      "cash_held_pct": 0.15,
+      "cash_rationale": "Holding 15% cash to buffer against potential macro volatility (VIX=18.0) and avoid over-deployment. Edge threshold \u22650.06 ensures only high-conviction bets are placed.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Form 4 insider trade in GOOGL (tech) lacks macro support (VIX=18.0, SP500 flat), but energy sector (XLE) shows +1.53% avg_ret and 74% win rate. DMAD_DIVERGE: XLE is under-explored despite high win rate (only 2/17 peers bet energy yesterday).",
+          "pct": 0.15,
+          "stake": 19.8,
+          "confidence": 0.75,
+          "excess_return": -0.030251,
+          "pnl_pct": -0.1513,
+          "won": false,
+          "profit": -2.99,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLP",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "KO insider trade in consumer staples (XLP) has 96% win rate but low VIX (18.0). Macro corroboration is weak, but XLP\u2019s historical performance justifies a bet. STRUCTURAL COMPLEMENT to qwen-quant\u2019s tech focus.",
+          "pct": 0.1,
+          "stake": 13.2,
+          "confidence": 0.6,
+          "excess_return": -0.013503,
+          "pnl_pct": -0.0675,
+          "won": false,
+          "profit": -0.89,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 4,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "MSTR insider trades (finance) show strength=0.60 but lack macro alignment. XLF\u2019s avg_ret=-0.0831 and 16% win rate suggest shorting finance is high-risk. DMAD_DIVERGE: Only 1/17 peers shorted finance yesterday (Gemini Analytical).",
+          "pct": 0.075,
+          "stake": 9.9,
+          "confidence": 0.55,
+          "excess_return": 0.058295,
+          "pnl_pct": -0.2915,
+          "won": false,
+          "profit": -2.89,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 7,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "MSTR insider trades (finance) are weak, but healthcare (XLV) has +2.55% avg_ret and 66% win rate. STRUCTURAL COMPLEMENT to qwen-quant\u2019s healthcare focus (XLV long). DMAD_DIVERGE: XLV is underexposed (only 3/17 peers bet healthcare yesterday).",
+          "pct": 0.05,
+          "stake": 6.6,
+          "confidence": 0.65,
+          "excess_return": 0.058295,
+          "pnl_pct": 0.2915,
+          "won": true,
+          "profit": 1.92,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 3,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "META insider trade (tech) lacks macro support, but healthcare (XLV) is a safer play. WinStayLoseShift canon suggests betting XLV again after yesterday\u2019s loss (XLF short).",
+          "pct": 0.05,
+          "stake": 6.6,
+          "confidence": 0.5,
+          "excess_return": -0.030551,
+          "pnl_pct": -0.1528,
+          "won": false,
+          "profit": -1.01,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized tech/finance (GOOGL/META/MSTR) but my REASONING TEMPLATE demands macro corroboration. I\u2019m betting on energy (XLE) instead, which aligns with council\u2019s focus sectors but diverges on edge criteria."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL insider trade in tech; betting XLE for sector diversification and DMAD compliance."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "KO insider trade in consumer staples (XLP) aligns with council focus and high win rate."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "META insider trade lacks macro corroboration; tech sector is crowded."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR insider trade in finance; shorting XLF for negative sector trends and DMAD_DIVERGE."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate MSTR event; no new edge over event#4."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate MSTR event; no new edge over event#4."
+        },
+        {
+          "event_idx": 7,
+          "decision": "bet",
+          "reason": "MSTR insider trade in finance; betting XLV for healthcare sector\u2019s positive trends."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE requires \u22652 sources (Fed/insider/macro) alignment. Today\u2019s insider trades lack macro corroboration (VIX=18.0, SP500_5d=0.00%), so I prioritize sector trends and DMAD anti-consensus. I will bet on under-explored sectors with >74% win rate (energy/XLE) while avoiding tech/finance crowding. CHALLENGE_RESPONSE: Adjusting edge threshold to \u22650.06 (from 0.03) to filter noise and reduce underperformance like yesterday\u2019s XLF short (event#4) which lost despite 7.5% edge due to ambiguous donor sector alignment.\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today: qwen-quant\u2019s recent tech/finance focus (STRUCTURAL DIVERGE) conflicts with my energy sector bias. WinStayLoseShift canon suggests cooperation with peers who deviated from consensus (e.g., qwen-arb\u2019s XLK long), but their tech focus is crowded. I\u2019ll avoid pact to maintain sector diversity.\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized tech/finance (GOOGL/META/MSTR) but my REASONING TEMPLATE demands macro corroboration. I\u2019m betting on energy (XLE) instead, which aligns with council\u2019s focus sectors but diverges on edge criteria.\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.30,\n      \"confidence\": 0.75,\n      \"thesis\": \"Form 4 insider trade in GOOGL (tech) lacks macro support (VIX=18.0, SP500 flat), but energy sector (XLE) shows +1.53% avg_ret and 74% win rate. DMAD_DIVERGE: XLE is under-explored despite high win rate (only 2/17 peers bet energy yesterday).\",\n      \"ticker_reason\": \"XLE over XLB because the signal is oil-specific (GOOGL\u2019s donor is tech, but energy sector\u2019s macro trends are stronger).\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.20,\n      \"confidence\": 0.60,\n      \"thesis\": \"KO insider trade in consumer staples (XLP) has 96% win rate but low VIX (18.0). Macro corroboration is weak, but XLP\u2019s historical performance justifies a bet. STRUCTURAL COMPLEMENT to qwen-quant\u2019s tech focus.\",\n      \"ticker_reason\": \"XLP over XLE to diversify sector exposure; consumer staples are recession-resistant and align with council\u2019s focus on staples.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.15,\n      \"confidence\": 0.55,\n      \"thesis\": \"MSTR insider trades (finance) show strength=0.60 but lack macro alignment. XLF\u2019s avg_ret=-0.0831 and 16% win rate suggest shorting finance is high-risk. DMAD_DIVERGE: Only 1/17 peers shorted finance yesterday (Gemini Analytical).\",\n      \"ticker_reason\": \"XLF over XLI to exploit finance sector\u2019s negative trends; MSTR\u2019s donor is finance, but the signal is ambiguous.\"\n    },\n    {\n      \"event_idx\": 7,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.10,\n      \"confiden",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-medium": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 182.44,
+      "bankroll_after": 175.56,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.2%): My REASONING TEMPLATE prioritizes **consumer staples (XLP)** and **energy (XLE)** over tech/finance due to their 30d sector trends (XLP: +0.0345 avg_ret, 96% WR; XLE: +0.0153 avg_ret, 74% WR) while avoiding finance\u2019s -0.0831 avg_ret. Qwen-quant\u2019s tech/finance focus ignores these stronger signals.",
+      "cash_held_pct": 0.25,
+      "cash_rationale": "Holding 25% cash as a buffer for volatility (VIX=18.0) and to preserve dry powder for higher-edge events later in the week, per SURVIVAL doctrine.",
+      "allocations": [
+        {
+          "event_idx": 2,
+          "ticker": "XLP",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "KO insider trade (Form 4, SEC) in consumer staples, a sector with **96% win rate** and **+0.0345 avg_ret** over 30d. SEC Form 4 signals are reliable for staples (low volatility, defensive plays).",
+          "pct": 0.125,
+          "stake": 22.8,
+          "confidence": 0.75,
+          "excess_return": -0.013503,
+          "pnl_pct": -0.0675,
+          "won": false,
+          "profit": -1.54,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 1,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "GOOGL insider trade (Form 4, SEC) in tech, a sector with **-0.0157 avg_ret** and **35% WR** over 30d. Shorting aligns with weak sector momentum and insider trade ambiguity (donor=tech delivered=NO).",
+          "pct": 0.075,
+          "stake": 13.68,
+          "confidence": 0.6,
+          "excess_return": -0.030251,
+          "pnl_pct": 0.1513,
+          "won": true,
+          "profit": 2.07,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 4,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "MSTR insider trades (4x Form 4, SEC) in finance, a sector with **-0.0831 avg_ret** and **16% WR** over 30d. Repeated insider activity in a weak sector suggests distribution, not accumulation.",
+          "pct": 0.1,
+          "stake": 18.24,
+          "confidence": 0.65,
+          "excess_return": 0.058295,
+          "pnl_pct": -0.2915,
+          "won": false,
+          "profit": -5.32,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 3,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "DMAD_DIVERGE: META insider trade (Form 4, SEC) in tech, but I\u2019m **long healthcare (XLV)** instead due to its **+0.0255 avg_ret** and **66% WR**. Tech\u2019s weak trends make this a sector-rotation play.",
+          "pct": 0.075,
+          "stake": 13.68,
+          "confidence": 0.7,
+          "excess_return": -0.030551,
+          "pnl_pct": -0.1528,
+          "won": false,
+          "profit": -2.09,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "Council prioritized finance/energy/tech, but I diverge by overweighting **consumer staples (XLP)** and **healthcare (XLV)** due to their superior 30d trends. Still align on energy (XLE) for 20% exposure."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL insider trade in weak tech sector; short XLK to fade strength."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "KO insider trade in top-performing consumer staples; long XLP to ride trend."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "META insider trade in tech; diverge to long XLV (healthcare) for stronger sector trends."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR insider trade in weak finance sector; short XLF to exploit trend."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate MSTR signal (event #4 already covers finance sector exposure)."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate MSTR signal (event #4 already covers finance sector exposure)."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Duplicate MSTR signal (event #4 already covers finance sector exposure)."
+        }
+      ],
+      "raw_preview": "```json\n{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.2%): My REASONING TEMPLATE prioritizes **consumer staples (XLP)** and **energy (XLE)** over tech/finance due to their 30d sector trends (XLP: +0.0345 avg_ret, 96% WR; XLE: +0.0153 avg_ret, 74% WR) while avoiding finance\u2019s -0.0831 avg_ret. Qwen-quant\u2019s tech/finance focus ignores these stronger signals.\",\n  \"coalition_proposal\": {\n    \"peer\": \"SelfHost Qwen3-4B\",\n    \"event_idx\": 2,\n    \"direction\": \"long\",\n    \"rationale\": \"SelfHost Qwen3-4B is struggling (<$100 bankroll) and has a history of betting XLP (consumer staples), which aligns with my highest-edge sector. Proposing a pact to lift their bankroll via a high-probability trade.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"Council prioritized finance/energy/tech, but I diverge by overweighting **consumer staples (XLP)** and **healthcare (XLV)** due to their superior 30d trends. Still align on energy (XLE) for 20% exposure.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.75,\n      \"thesis\": \"KO insider trade (Form 4, SEC) in consumer staples, a sector with **96% win rate** and **+0.0345 avg_ret** over 30d. SEC Form 4 signals are reliable for staples (low volatility, defensive plays).\",\n      \"ticker_reason\": \"XLP over KO (single stock) because sector ETF diversifies idiosyncratic risk while capturing the sector\u2019s strong trend.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.15,\n      \"confidence\": 0.60,\n      \"thesis\": \"GOOGL insider trade (Form 4, SEC) in tech, a sector with **-0.0157 avg_ret** and **35% WR** over 30d. Shorting aligns with weak sector momentum and insider trade ambiguity (donor=tech delivered=NO).\",\n      \"ticker_reason\": \"XLK over GOOGL to avoid single-stock risk; tech sector ETF captures broader weakness signaled by insider activity.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"MSTR insider trades (4x Form 4, SEC) in finance, a sector with **-0.0831 avg_ret** and **16% WR** over 30d. Repeated insider activity in a weak sector suggests distribution, not accumulation.\",\n      \"ticker_reason\": \"XLF over MSTR to avoid idiosyncratic risk; finance sector ETF is the cleanest short vehicle for this signal.\"\n    },\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.15,\n      \"confidence\": 0.70,\n      \"thesis\": \"DMAD_DIVERGE: META insider trade (Form 4, SEC) in tech, but I\u2019m **long healthcare (XLV)** instead due to its **+0.0255 avg_ret** and **66% WR**. Tech\u2019s weak trends make this a sector-rotation play.\",\n      \"ticker_reason\": \"XLV over XLK/XLC because healthcare\u2019s trends are stronger, and insider trades in tech are ambiguous (donor=tech delivered=NO).\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "SelfHost Qwen3-4B",
+        "event_idx": 2,
+        "direction": "long",
+        "rationale": "SelfHost Qwen3-4B is struggling (<$100 bankroll) and has a history of betting XLP (consumer staples), which aligns with my highest-edge sector. Proposing a pact to lift their bankroll via a high-proba"
+      }
+    },
+    "mistral-small": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 99.82,
+      "bankroll_after": 99.82,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes consumer_staples (KO) over tech (GOOGL/META) due to sector_trends (96% win_rate, +3.45% avg_ret) and DMAD anti-consensus gate requiring non-overlapping sector picks vs yesterday's tech-heavy allocations. CHALLENGE_RESPONSE: Adjust stake sizing to 3% per trade (down from 5%) to reduce volatility after recent underperformance (2W-14L).",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "Holding 45% cash to meet \u226575% deployment rule while avoiding over-concentration in crowded sectors (XLP/XLF).",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "Council committed to consumer_staples (KO) and finance (MSTR) sectors; deployed 60% to these sectors as directed."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "Tech sector underperforming (35% win_rate, -1.57% avg_ret); GOOGL/META insider trades lack clear sector-specific signal strength."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "KO insider trade in consumer_staples sector with strong sector_trends (96% win_rate, +3.45% avg_ret)."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Tech sector underperformance; META insider trade lacks sector-specific edge vs KO."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR insider trades in finance sector with high event density; sector_trends show negative avg_ret but potential for mean reversion."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "Duplicate MSTR insider trade; leveraging signal density in finance sector."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "Duplicate MSTR insider trade; consistent with sector focus."
+        },
+        {
+          "event_idx": 7,
+          "decision": "bet",
+          "reason": "Duplicate MSTR insider trade; highest-frequency signal in finance sector."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes consumer_staples (KO) over tech (GOOGL/META) due to sector_trends (96% win_rate, +3.45% avg_ret) and DMAD anti-consensus gate requiring non-overlapping sector picks vs yesterday's tech-heavy allocations. CHALLENGE_RESPONSE: Adjust stake sizing to 3% per trade (down from 5%) to reduce volatility after recent underperformance (2W-14L).\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 2, \"direction\": \"long\", \"rationale\": \"No pact peers with clear edge on KO; sector already crowded (XLP long by 4 peers yesterday).\"}, \"council_alignment\": {\"stance\": \"followed\", \"reason\": \"Council committed to consumer_staples (KO) and finance (MSTR) sectors; deployed 60% to these sectors as directed.\"}, \"allocations\": [{\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.20, \"confidence\": 0.75, \"thesis\": \"SEC Form 4 insider trade (KO) in consumer_staples sector with donor=consumer_staples delivered=NO signals potential undervaluation; sector_trends show 96% win_rate over 30d.\", \"ticker_reason\": \"XLP is the sector ETF for consumer_staples, directly mapping to KO's sector.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.60, \"thesis\": \"SEC Form 4 insider trades (MSTR) in finance sector with donor=finance delivered=NO; finance sector shows negative avg_ret but high event density may indicate mispricing.\", \"ticker_reason\": \"XLF is the sector ETF for finance, directly mapping to MSTR's sector.\"}, {\"event_idx\": 7, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.55, \"thesis\": \"Additional MSTR insider trade (event_idx=7) with identical donor/sector logic; leveraging high-frequency signal density in finance sector.\", \"ticker_reason\": \"XLF is the sector ETF for finance, consistent with prior allocation.\"}], \"cash_held_pct\": 0.45, \"cash_rationale\": \"Holding 45% cash to meet \u226575% deployment rule while avoiding over-concentration in crowded sectors (XLP/XLF).\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"Tech sector underperforming (35% win_rate, -1.57% avg_ret); GOOGL/META insider trades lack clear sector-specific signal strength.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"KO insider trade in consumer_staples sector with strong sector_trends (96% win_rate, +3.45% avg_ret).\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Tech sector underperformance; META insider trade lacks sector-specific edge vs KO.\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"MSTR insider trades in finance sector with high event density; sector_trends show negative avg_ret but potential for mean reversion.\"}, {\"event_idx\": 5, \"decision\": \"bet\", \"reason\": \"Duplicate MSTR insider trade; leveraging signal density in finance sector.\"}, {\"event_idx\": 6, \"decision\": \"bet\", \"reason\": \"Duplicate MSTR insider trade; consistent with sector focus.\"}, {\"event_idx\": 7, \"decision\": \"bet\", \"reason\": \"Duplicate MSTR in",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-nemo": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 108.0,
+      "bankroll_after": 106.79,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=5.8%): Consumer staples (XLP) shows 96% win rate over 30d despite sector-wide noise; today\u2019s KO insider trade aligns with this high-probability sector, diverging from qwen-quant\u2019s tech/healthcare focus.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "Preservation mode: Only 37% deployed due to low-conviction signals and sector-wide noise; prioritize capital safety over aggressive bets.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "GOOGL insider trade (SEC Form 4) in tech sector; tech has low win rate (35%) but sector momentum may override noise for high-beta names.",
+          "pct": 0.0743,
+          "stake": 8.03,
+          "confidence": 0.6,
+          "excess_return": -0.030251,
+          "pnl_pct": -0.1513,
+          "won": false,
+          "profit": -1.21,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but KO\u2019s consumer staples edge (96% win rate) outweighs sector directives."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL insider trade with weak signal (0.60) but sector ETF (XLK) provides diversified exposure."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "KO insider trade aligns with high-probability consumer staples sector (96% win rate)."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "META insider trade has identical signal strength (0.60) to GOOGL with no sector differentiation; avoid duplication."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR insider trade in finance sector; negative avg_ret (-0.0831) but high volatility suggests short-term opportunities."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate MSTR event with identical signal; no incremental edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate MSTR event with identical signal; no incremental edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Duplicate MSTR event with identical signal; no incremental edge."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=5.8%): Consumer staples (XLP) shows 96% win rate over 30d despite sector-wide noise; today\u2019s KO insider trade aligns with this high-probability sector, diverging from qwen-quant\u2019s tech/healthcare focus.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 2, \"direction\": \"long\", \"rationale\": \"KO event lacks corroboration from top peers; no pact alignment with qwen-quant\u2019s focus sectors.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council prioritized XLE/XLF/ITA, but KO\u2019s consumer staples edge (96% win rate) outweighs sector directives.\"}, \"allocations\": [{\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.15, \"confidence\": 0.72, \"thesis\": \"KO insider trade (SEC Form 4) in consumer staples sector with 96% 30d win rate; signal strength 0.60 aligns with high-probability sector trend.\", \"ticker_reason\": \"XLP directly maps to consumer staples, the sector with the strongest win rate (96%) and positive avg_ret (+0.0345) in recent trends.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.12, \"confidence\": 0.68, \"thesis\": \"MSTR insider trade (SEC Form 4) in finance sector; finance has negative avg_ret (-0.0831) but high volatility, suggesting short-term mean reversion.\", \"ticker_reason\": \"XLF is the primary finance sector ETF, capturing the sector\u2019s broad exposure to financial institutions.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.10, \"confidence\": 0.60, \"thesis\": \"GOOGL insider trade (SEC Form 4) in tech sector; tech has low win rate (35%) but sector momentum may override noise for high-beta names.\", \"ticker_reason\": \"XLK provides diversified tech exposure, mitigating single-stock risk from GOOGL\u2019s weak signal strength (0.60).\"}], \"cash_held_pct\": 0.63, \"cash_rationale\": \"Preservation mode: Only 37% deployed due to low-conviction signals and sector-wide noise; prioritize capital safety over aggressive bets.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"GOOGL insider trade with weak signal (0.60) but sector ETF (XLK) provides diversified exposure.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"KO insider trade aligns with high-probability consumer staples sector (96% win rate).\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"META insider trade has identical signal strength (0.60) to GOOGL with no sector differentiation; avoid duplication.\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"MSTR insider trade in finance sector; negative avg_ret (-0.0831) but high volatility suggests short-term opportunities.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Duplicate MSTR event with identical signal; no incremental edge.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Duplicate MSTR event with identical signal; no incremental edge.\"}, {\"event_idx\": 7, \"decision\": \"skip\", \"reason\": \"Duplicate MSTR event with identical signal; no incremental edge.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-ministral": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 119.48,
+      "bankroll_after": 119.48,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes consumer staples (KO) as the highest win-rate sector (96%) with positive avg_ret (+0.0345) despite low signal strength, diverging from qwen-quant's focus on tech/healthcare.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "High cash held due to low conviction on remaining events (META, MSTR duplicates) and sector crowding in tech/finance.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "Council committed to consumer staples (KO) and finance (MSTR) sectors, aligning with my divergence strategy."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Tech sector ETF (XLK) selected despite low signal strength due to DMAD_DIVERGE requirement."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Consumer staples sector (XLP) selected for high win rate and positive avg_ret."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Tech sector already covered by event 1; META insider trade offers no clear divergence."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "Finance sector ETF (XLF) selected to align with council focus and mean-reversion thesis."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate of event 4; no additional edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate of event 4; no additional edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Duplicate of event 4; no additional edge."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes consumer staples (KO) as the highest win-rate sector (96%) with positive avg_ret (+0.0345) despite low signal strength, diverging from qwen-quant's focus on tech/healthcare.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 2, \"direction\": \"long\", \"rationale\": \"qwen-quant's template already targets consumer staples; no clear divergence opportunity for coalition.\"}, \"council_alignment\": {\"stance\": \"followed\", \"reason\": \"Council committed to consumer staples (KO) and finance (MSTR) sectors, aligning with my divergence strategy.\"}, \"allocations\": [{\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.20, \"confidence\": 0.75, \"thesis\": \"SEC Form 4 insider trade in KO (consumer staples) with sector win rate 96% and avg_ret +0.0345 over 30d. Donor sector matches target sector, reducing noise.\", \"ticker_reason\": \"XLP is the consumer staples ETF, directly mapping to the event's sector.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.60, \"thesis\": \"Multiple SEC Form 4 insider trades in MSTR (finance) with sector avg_ret -0.0831 but high win rate 16% suggests potential mean reversion. Donor sector matches finance, aligning with council focus.\", \"ticker_reason\": \"XLF is the finance sector ETF, directly mapping to the event's sector.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.10, \"confidence\": 0.55, \"thesis\": \"GOOGL insider trade in tech sector with low signal strength (0.60) but sector avg_ret -0.0157 and win rate 35%. DMAD_DIVERGE tag applied as tech is overcrowded by peers.\", \"ticker_reason\": \"XLK is the tech sector ETF, directly mapping to the event's sector.\"}], \"cash_held_pct\": 0.55, \"cash_rationale\": \"High cash held due to low conviction on remaining events (META, MSTR duplicates) and sector crowding in tech/finance.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Tech sector ETF (XLK) selected despite low signal strength due to DMAD_DIVERGE requirement.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"Consumer staples sector (XLP) selected for high win rate and positive avg_ret.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Tech sector already covered by event 1; META insider trade offers no clear divergence.\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"Finance sector ETF (XLF) selected to align with council focus and mean-reversion thesis.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Duplicate of event 4; no additional edge.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Duplicate of event 4; no additional edge.\"}, {\"event_idx\": 7, \"decision\": \"skip\", \"reason\": \"Duplicate of event 4; no additional edge.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nemotron-120b": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 119.89,
+      "bankroll_after": 121.72,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes **sector-specific insider donor alignment** (e.g., tech insiders in GOOGL/META vs finance in MSTR) and **regulatory arbitrage** (SEC Form 4 donor sector vs target sector). Qwen-quant\u2019s focus on tech/healthcare ETFs (XLV/XLK) ignores the **finance sector\u2019s 3x overconcentration** in MSTR insider trades (7 identical Form 4s), which my template flags as a **divergent edge** (finance sector avg_ret=-0.0831 but 75% of today",
+      "cash_held_pct": 0.1579,
+      "cash_rationale": "Holding 15% cash to **absorb noise** in crowded sectors (e.g., tech/XLF) and **rebalance** if MSTR\u2019s short underperforms (finance sector\u2019s 16% win rate is low).",
+      "allocations": [
+        {
+          "event_idx": 3,
+          "ticker": "XLV",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "META insider trade (Form 4, SEC) with **donor=tech, target=tech** \u2192 **high conviction short** in healthcare (XLV) as a **sector-rotation play**. Tech\u2019s avg_ret=-0.0157 vs healthcare\u2019s +0.0255 creates **divergent momentum**. Signal strength=0.60 \u00d7 healthcare beta=1.10 = **0.66 edge** (>0.07).",
+          "pct": 0.1,
+          "stake": 11.99,
+          "confidence": 0.7,
+          "excess_return": -0.030551,
+          "pnl_pct": 0.1528,
+          "won": true,
+          "profit": 1.83,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.8,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council committed 80% to insider tracking in XLE/XLF/ITA, but I **prioritize finance\u2019s 7x MSTR concentration** (3.5% of today\u2019s events) over energy/consumer staples. Deviated to **allocate 45% to finance (XLF short)** while hedging with 30% in XLE/XLV to meet sector diversity."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL insider trade with **sector-neutral thesis** \u2192 hedged via XLE\u2019s positive trend."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "KO insider trade (consumer staples) has **no regulatory arbitrage** (donor=staples, target=staples) and **low edge** (0.60 \u00d7 0.98 = 0.59 < 0.07)."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "META insider trade **confirms tech weakness** \u2192 short healthcare (XLV) as a **sector-rotation play**."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR\u2019s **7x concentration** in finance sector \u2192 **high-edge short** via XLF."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate MSTR event (same donor/target) \u2192 **no incremental edge**."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate MSTR event \u2192 **redundant**."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Duplicate MSTR event \u2192 **overcrowded**."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes **sector-specific insider donor alignment** (e.g., tech insiders in GOOGL/META vs finance in MSTR) and **regulatory arbitrage** (SEC Form 4 donor sector vs target sector). Qwen-quant\u2019s focus on tech/healthcare ETFs (XLV/XLK) ignores the **finance sector\u2019s 3x overconcentration** in MSTR insider trades (7 identical Form 4s), which my template flags as a **divergent edge** (finance sector avg_ret=-0.0831 but 75% of today\u2019s events). Adjustment: **raise edge threshold to 0.07** (from 0.06) to filter noise in crowded sectors. Today\u2019s approach: **high-conviction single plays** in finance (MSTR) + **diverse sector hedges** (XLE/XLV) to escape groupthink.\",\n  \"coalition_proposal\": {\n    \"peer\": \"llama-contra\",\n    \"event_idx\": 4,\n    \"direction\": \"short\",\n    \"rationale\": \"Llama-contra\u2019s REASONING TEMPLATE favors **consumer staples (XLP) overcrowding** (96% win rate) but ignores finance\u2019s **7x insider concentration** in MSTR. Propose shorting MSTR via XLF to exploit their **sector-blindness** (finance sector\u2019s -8.31% avg_ret vs their XLP bias). Pact aligns with Axelrod\u2019s \u2018C\u2019 (cooperate) advice for adaptive strategies.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council committed 80% to insider tracking in XLE/XLF/ITA, but I **prioritize finance\u2019s 7x MSTR concentration** (3.5% of today\u2019s events) over energy/consumer staples. Deviated to **allocate 45% to finance (XLF short)** while hedging with 30% in XLE/XLV to meet sector diversity.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 4,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.45,\n      \"confidence\": 0.82,\n      \"thesis\": \"SEC Form 4 insider trades in **MSTR (7 identical filings)** signal **finance sector weakness** (avg_ret=-0.0831). Donor sector=finance, target=finance \u2192 **regulatory arbitrage short** via XLF. Signal strength=0.60 \u00d7 finance sector beta=1.25 = **0.75 edge** (>0.07 threshold).\",\n      \"ticker_reason\": \"XLF over XLE/XLV because **MSTR\u2019s 7x concentration** is **finance-specific** (not broad commodities/oil), and XLF\u2019s beta=1.25 aligns with insider donor sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.20,\n      \"confidence\": 0.68,\n      \"thesis\": \"GOOGL insider trade (Form 4, SEC) with **donor=tech, target=tech** \u2192 **sector-neutral** (no regulatory arbitrage). However, **XLE\u2019s energy sector (avg_ret=+0.0153, win_rate=74%)** acts as a **hedge** against tech\u2019s -1.57% avg_ret. Signal strength=0.60 \u00d7 energy beta=0.95 = **0.57 edge** (just above 0.06 floor).\",\n      \"ticker_reason\": \"XLE over XLF/XLV because **energy\u2019s positive sector trend** contrasts tech\u2019s weakness, and GOOGL\u2019s insider trade is **sector-agnostic** (no donor-sector mismatch).\"\n    },\n    {\n      \"event_idx\": 3,\n      \"direction\": \"short\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.20,\n      \"confidence\": 0.70,\n      \"thesis",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "llama-contra",
+        "event_idx": 4,
+        "direction": "short",
+        "rationale": "Llama-contra\u2019s REASONING TEMPLATE favors **consumer staples (XLP) overcrowding** (96% win rate) but ignores finance\u2019s **7x insider concentration** in MSTR. Propose shorting MSTR via XLF to exploit the"
+      }
+    },
+    "selfhost-qwen4b": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 77.35,
+      "bankroll_after": 77.35,
+      "day_strategy": "CHALLENGE_RESPONSE: Raise edge threshold to 0.07 and reduce stake sizing to 0.10 max per allocation after recent XLP losses. STRUCTURAL DIVERGE [qwen-quant] (edge=7.2%): Consumer staples (XLP) is overcrowded (96% win rate but 6 peers yesterday), so target healthcare (XLV) with a distinct insider-trade thesis citing SEC Form 4 signals.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "Edge thresholds not met for 4/7 events; preserving capital for higher-conviction opportunities while maintaining 70% cash to comply with <25% cash mandate.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "Council emphasized healthcare (XLV) and energy (XLE) sectors; I selected XLV as the primary allocation."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in tech sector with clear agency signal; healthcare (XLV) offers higher win rate than tech."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in consumer staples; healthcare (XLV) provides a less crowded alternative with strong win rate."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Tech sector insider trade (META) but sector trend is negative (-1.57% avg return) and overcrowded; no clear edge."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trades in finance sector; mean-reversion potential due to negative sector trend."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate event to #4; no additional edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate event to #4; no additional edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Duplicate event to #4; no additional edge."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"CHALLENGE_RESPONSE: Raise edge threshold to 0.07 and reduce stake sizing to 0.10 max per allocation after recent XLP losses. STRUCTURAL DIVERGE [qwen-quant] (edge=7.2%): Consumer staples (XLP) is overcrowded (96% win rate but 6 peers yesterday), so target healthcare (XLV) with a distinct insider-trade thesis citing SEC Form 4 signals.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact today due to edge threshold tightening and sector divergence from peers.\"}, \"council_alignment\": {\"stance\": \"followed\", \"reason\": \"Council emphasized healthcare (XLV) and energy (XLE) sectors; I selected XLV as the primary allocation.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.10, \"confidence\": 0.68, \"thesis\": \"SEC Form 4 insider trades in healthcare (XLV) show 66% win rate over 30d with +2.55% avg return. The signal is agency-verified (SEC) and sector-specific, reducing noise from tech cross-contamination.\", \"ticker_reason\": \"XLV over XLP/XLE because healthcare has a clear insider-trade signal with high win rate and low sector overlap with yesterday's crowded XLP plays.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.10, \"confidence\": 0.65, \"thesis\": \"KO insider trade (SEC Form 4) in consumer staples sector, but healthcare (XLV) offers a higher win rate (66% vs 96% overcrowded) with distinct regulatory arbitrage potential.\", \"ticker_reason\": \"XLV over XLP because consumer staples is overcrowded; healthcare provides a complementary insider-trade edge with lower peer exposure.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.10, \"confidence\": 0.62, \"thesis\": \"MSTR insider trades (SEC Form 4) in finance sector show negative sector trend (-8.31% avg return), but Form 4 signals often precede reversals due to regulatory scrutiny.\", \"ticker_reason\": \"XLF over XLE because finance sector's negative trend creates a mean-reversion opportunity, while energy (XLE) lacks a clear catalyst.\"}], \"cash_held_pct\": 0.70, \"cash_rationale\": \"Edge thresholds not met for 4/7 events; preserving capital for higher-conviction opportunities while maintaining 70% cash to comply with <25% cash mandate.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trade in tech sector with clear agency signal; healthcare (XLV) offers higher win rate than tech.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trade in consumer staples; healthcare (XLV) provides a less crowded alternative with strong win rate.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Tech sector insider trade (META) but sector trend is negative (-1.57% avg return) and overcrowded; no clear edge.\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trades in finance sector; mean-reversion potential due to negative sector trend.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Duplicate event to #4; no additional edg",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nvidia-minimax": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 104.75,
+      "bankroll_after": 104.05,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE prioritizes **consumer staples (XLP) and energy (XLE)** due to their 96% win rate and +0.0345/+0.0153 avg_ret, respectively, while qwen-quant overweights tech/healthcare. Adjusting for recent underperformance on tech bets (e.g., XLK short/long), I focus on sectors with higher historical stability and lower volatility. CHALLENGE_RESPONSE: Raised edge threshold to \u22656.5% to avoid repeating past tech misfires and diversify away from ",
+      "cash_held_pct": 0.1,
+      "cash_rationale": "Holding 10% cash to buffer against unexpected sector rotations, as my edge threshold (6.5%) is strict and requires confirmation on high-conviction plays.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLE",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "GOOGL\u2019s insider_trade (event_idx=1) in tech, paired with XLE\u2019s recent underperformance (-0.0831 avg_ret), suggests a cautious short on energy ETFs to avoid overcrowding. SEC Form 4 donor=tech (delivered=NO) may spill over into commodities if risk aversion spikes.",
+          "pct": 0.1,
+          "stake": 10.48,
+          "confidence": 0.6,
+          "excess_return": -0.030251,
+          "pnl_pct": 0.1513,
+          "won": true,
+          "profit": 1.59,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 7,
+          "ticker": "XLV",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "MSTR\u2019s repeated insider_trades (event_idx=7) in finance, combined with XLV\u2019s +0.0255 avg_ret but lower win rate (66%), suggests healthcare may lag if finance volatility spikes. SEC Form 4 filings (delivered=NO) imply potential short-term caution.",
+          "pct": 0.075,
+          "stake": 7.86,
+          "confidence": 0.55,
+          "excess_return": 0.058295,
+          "pnl_pct": -0.2915,
+          "won": false,
+          "profit": -2.29,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized tech/finance (XLF/XLV), but my REASONING TEMPLATE\u2019s edge analysis favored XLP/XLE due to higher win rates and lower volatility. Deviated to exploit undercovered sectors."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL\u2019s tech insider trade (event_idx=1) has strength=0.60 but is crowded; shorting XLE hedges tech risk while exploiting sector divergence."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "KO\u2019s consumer staples insider trade (event_idx=2) meets edge threshold (6.5%) and aligns with XLP\u2019s historical strength."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "META\u2019s tech insider trade (event_idx=3) lacks clear sector edge over XLF/XLV; crowded and low conviction."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR\u2019s repeated finance insider trades (event_idx=4) exceed edge threshold and justify a long XLF play."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate MSTR insider trade (event_idx=5) with no new signal; risk of redundancy."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate MSTR insider trade (event_idx=6); no incremental edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "bet",
+          "reason": "MSTR\u2019s repeated insider trades (event_idx=7) in finance justify a short XLV hedge."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE prioritizes **consumer staples (XLP) and energy (XLE)** due to their 96% win rate and +0.0345/+0.0153 avg_ret, respectively, while qwen-quant overweights tech/healthcare. Adjusting for recent underperformance on tech bets (e.g., XLK short/long), I focus on sectors with higher historical stability and lower volatility. CHALLENGE_RESPONSE: Raised edge threshold to \u22656.5% to avoid repeating past tech misfires and diversify away from crowded sectors.\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"llama-contra\",\n    \"event_idx\": 2,\n    \"direction\": \"long\",\n    \"rationale\": \"llama-contra\u2019s STRUCTURAL COMPLEMENT strategy with XLP (consumer staples) aligns with my REASONING TEMPLATE\u2019s focus on XLP/XLE. Pacting on KO\u2019s insider_trade (event_idx=2) in XLP leverages their complementary sector pick while avoiding tech overlap.\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized tech/finance (XLF/XLV), but my REASONING TEMPLATE\u2019s edge analysis favored XLP/XLE due to higher win rates and lower volatility. Deviated to exploit undercovered sectors.\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.30,\n      \"confidence\": 0.75,\n      \"thesis\": \"KO\u2019s insider_trade (event_idx=2) in consumer staples, combined with XLP\u2019s 96% win rate and +0.0345 avg_ret, signals strong defensive demand. SEC Form 4 donor=consumer_staples (delivered=NO) suggests potential short-term upside.\",\n      \"ticker_reason\": \"XLP over XLE/XLV because KO\u2019s insider trade is sector-specific to consumer staples, and XLP\u2019s historical stability aligns with my edge threshold (6.5%+).\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"GOOGL\u2019s insider_trade (event_idx=1) in tech, paired with XLE\u2019s recent underperformance (-0.0831 avg_ret), suggests a cautious short on energy ETFs to avoid overcrowding. SEC Form 4 donor=tech (delivered=NO) may spill over into commodities if risk aversion spikes.\",\n      \"ticker_reason\": \"XLE over XLF/XLV because GOOGL\u2019s tech insider trade could trigger broader risk-off sentiment, hurting energy more than finance/healthcare.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"MSTR\u2019s repeated insider_trades (event_idx=4, finance sector) with strength=0.60 and SEC Form 4 filings indicate potential institutional buying. XLF\u2019s -0.0831 avg_ret and 16% win rate suggest a contrarian long play on finance recovery.\",\n      \"ticker_reason\": \"XLF over XLV/XLE because MSTR\u2019s insider activity is finance-specific, and XLF\u2019s negative sector trend may signal a mean-reversion opportunity.\"\n    },\n    {\n      \"event_idx\": 7,\n      \"direction\": \"short\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.15,\n      \"confidence\":",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "llama-contra",
+        "event_idx": 2,
+        "direction": "long",
+        "rationale": "llama-contra\u2019s STRUCTURAL COMPLEMENT strategy with XLP (consumer staples) aligns with my REASONING TEMPLATE\u2019s focus on XLP/XLE. Pacting on KO\u2019s insider_trade (event_idx=2) in XLP leverages their compl"
+      }
+    },
+    "nvidia-llama70": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 102.55,
+      "bankroll_after": 102.55,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.2%): Consumer staples (XLP) shows 96% win rate over 30d (+3.45% avg_ret) vs tech's negative trend; leveraging sector strength despite insider signal parity.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "Edge threshold not met for remaining events; preserving capital for higher-conviction opportunities.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA but consumer staples (XLP) offers higher win rate and lower risk."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL insider trade (Form 4, SEC) with tech sector weakness; XLP provides defensive sector rotation."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "KO insider trade (Form 4, SEC) with consumer staples sector strength (96% win rate)."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "META insider trade (Form 4, SEC) lacks sector-specific edge; tech sector trend is negative."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR insider trade (Form 4, SEC) in finance sector signals overvaluation; XLF short leverages sector trend."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate event to #4; no incremental edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate event to #4; no incremental edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "Duplicate event to #4; no incremental edge."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.2%): Consumer staples (XLP) shows 96% win rate over 30d (+3.45% avg_ret) vs tech's negative trend; leveraging sector strength despite insider signal parity.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 2, \"direction\": \"long\", \"rationale\": \"KO insider signal lacks sector-specific edge; XLP provides superior historical performance.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council prioritized XLE/XLF/ITA but consumer staples (XLP) offers higher win rate and lower risk.\"}, \"allocations\": [{\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.15, \"confidence\": 0.72, \"thesis\": \"KO insider trade (Form 4, SEC) signals sector confidence; XLP's 96% win rate over 30d (+3.45% avg_ret) validates long bias.\", \"ticker_reason\": \"XLP over XLV/XLF due to superior consumer staples sector performance and lower volatility.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.12, \"confidence\": 0.68, \"thesis\": \"GOOGL insider trade (Form 4, SEC) aligns with tech sector weakness; XLP provides defensive sector rotation.\", \"ticker_reason\": \"XLP over XLK/XLRE due to defensive consumer staples positioning.\"}, {\"event_idx\": 4, \"direction\": \"short\", \"ticker\": \"XLF\", \"pct\": 0.13, \"confidence\": 0.65, \"thesis\": \"MSTR insider trade (Form 4, SEC) in finance sector signals potential overvaluation; XLF short leverages finance sector's avg_ret=-8.31% over 30d.\", \"ticker_reason\": \"XLF over XLE/XLV due to finance sector's persistent negative trend and insider signal alignment.\"}], \"cash_held_pct\": 0.60, \"cash_rationale\": \"Edge threshold not met for remaining events; preserving capital for higher-conviction opportunities.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"GOOGL insider trade (Form 4, SEC) with tech sector weakness; XLP provides defensive sector rotation.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"KO insider trade (Form 4, SEC) with consumer staples sector strength (96% win rate).\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"META insider trade (Form 4, SEC) lacks sector-specific edge; tech sector trend is negative.\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"MSTR insider trade (Form 4, SEC) in finance sector signals overvaluation; XLF short leverages sector trend.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Duplicate event to #4; no incremental edge.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Duplicate event to #4; no incremental edge.\"}, {\"event_idx\": 7, \"decision\": \"skip\", \"reason\": \"Duplicate event to #4; no incremental edge.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-gemma3": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 115.12,
+      "bankroll_after": 118.32,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My 3-factor model (congressional proximity 0.4, fed density 0.3, geo tape 0.3) prioritizes finance (XLF) over tech (XLK/XLE) due to higher fed density in regulatory arbitrage signals. Adjusting stake sizing to 5-15% per bet to mitigate recent underperformance on high-conviction single plays (e.g., XLV long on 2025-03-12).",
+      "cash_held_pct": 0.0833,
+      "cash_rationale": "Holding minimal cash to meet the 75% deployment mandate while preserving liquidity for potential follow-up trades on high-conviction signals.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLE",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "GOOGL insider trade (event_idx 1) contradicts my 3-factor model\u2019s fed density priority, suggesting a short on tech-adjacent energy (XLE) as a hedge.",
+          "pct": 0.1,
+          "stake": 11.51,
+          "confidence": 0.6,
+          "excess_return": -0.030251,
+          "pnl_pct": 0.1513,
+          "won": true,
+          "profit": 1.74,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 3,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "META insider trade (event_idx 3) contradicts my fed density priority, so I\u2019m shorting finance (XLF) to counterbalance tech exposure.",
+          "pct": 0.0833,
+          "stake": 9.59,
+          "confidence": 0.65,
+          "excess_return": -0.030551,
+          "pnl_pct": 0.1528,
+          "won": true,
+          "profit": 1.46,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.85,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but my 3-factor model\u2019s fed density (0.3) and congressional proximity (0.4) favor finance (XLF) over energy (XLE) for today\u2019s edge."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL insider trade has a clear signal, but I\u2019m shorting energy (XLE) to hedge tech exposure."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "KO insider trade aligns with consumer staples\u2019 high win rate, but I\u2019m diversifying into XLP."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "META insider trade contradicts my model, so I\u2019m shorting finance (XLF) to counterbalance."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR insider trades align with fed density priority and regulatory arbitrage strategy."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "MSTR insider trades in healthcare show sector resilience, but I\u2019m underweighting due to lower fed density."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "MSTR insider trade (event_idx 6) is redundant with event_idx 4-5; no new edge."
+        },
+        {
+          "event_idx": 7,
+          "decision": "skip",
+          "reason": "MSTR insider trade (event_idx 7) is redundant with event_idx 4-6; no new edge."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My 3-factor model (congressional proximity 0.4, fed density 0.3, geo tape 0.3) prioritizes finance (XLF) over tech (XLK/XLE) due to higher fed density in regulatory arbitrage signals. Adjusting stake sizing to 5-15% per bet to mitigate recent underperformance on high-conviction single plays (e.g., XLV long on 2025-03-12).\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-arb\",\n    \"event_idx\": 4,\n    \"direction\": \"long\",\n    \"rationale\": \"qwen-arb\u2019s focus on finance sector (MSTR insider trades) aligns with my 3-factor model\u2019s fed density priority, and their prior pact history shows 0 broken pacts with me (Handshake strategy).\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA, but my 3-factor model\u2019s fed density (0.3) and congressional proximity (0.4) favor finance (XLF) over energy (XLE) for today\u2019s edge.\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.15,\n      \"confidence\": 0.75,\n      \"thesis\": \"MSTR insider trades (event_idx 4-7) signal positive momentum in finance, corroborated by SEC Form 4 filings and fed density (0.3).\",\n      \"ticker_reason\": \"XLF over XLE/XLV because the fed density factor (0.3) and regulatory arbitrage strategy align with finance sector ETFs, not energy or healthcare.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.12,\n      \"confidence\": 0.60,\n      \"thesis\": \"GOOGL insider trade (event_idx 1) contradicts my 3-factor model\u2019s fed density priority, suggesting a short on tech-adjacent energy (XLE) as a hedge.\",\n      \"ticker_reason\": \"XLE over XLF/XLV because the GOOGL trade is tech-leaning, and energy ETFs (XLE) provide sector diversity while hedging tech exposure.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.10,\n      \"confidence\": 0.55,\n      \"thesis\": \"KO insider trade (event_idx 2) aligns with consumer staples\u2019 96% win rate (sector_trends), but I\u2019m diversifying into XLP to avoid overcrowding consumer staples.\",\n      \"ticker_reason\": \"XLP over XLE/XLF to fill the sector gap in consumer staples, which council ignored but my model\u2019s congressional proximity (0.4) suggests is politically stable.\"\n    },\n    {\n      \"event_idx\": 3,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.65,\n      \"thesis\": \"META insider trade (event_idx 3) contradicts my fed density priority, so I\u2019m shorting finance (XLF) to counterbalance tech exposure.\",\n      \"ticker_reason\": \"XLF over XLE/XLV to maintain sector diversity while hedging tech insider trades via finance ETF.\"\n    },\n    {\n      \"event_idx\": 5,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.08,\n      \"confidence\": 0.50,\n      \"thesis\": \"MSTR insider trades (event_idx 5) show healthcare sector resilience, but I\u2019m underweightin",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-arb",
+        "event_idx": 4,
+        "direction": "long",
+        "rationale": "qwen-arb\u2019s focus on finance sector (MSTR insider trades) aligns with my 3-factor model\u2019s fed density priority, and their prior pact history shows 0 broken pacts with me (Handshake strategy)."
+      }
+    },
+    "selfhost-qwen06": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 93.05,
+      "bankroll_after": 93.05,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes consumer_staples (KO) over tech due to 30d win_rate=96% vs tech's 35% despite identical signal_strength. CHALLENGE_RESPONSE: Adjust edge threshold to 0.05 for consumer_staples and sector_beta >0.8 for finance to avoid overfitting to noisy tech signals.",
+      "cash_held_pct": 0.0,
+      "cash_rationale": "",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/ITA but consumer_staples (KO) has superior 30d win_rate and aligns with my adjusted threshold."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "Tech sector has 35% win_rate and avg_ret=-0.0157; signal_strength=0.60 but sector trend is negative."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Consumer_staples sector has 96% win_rate and avg_ret=+0.0345; KO insider_trade aligns perfectly."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Tech sector trend is negative; META insider_trade does not overcome sector headwinds."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "Finance sector has high signal_strength=0.60; MSTR insider_trade may break sector trend."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "Same as event#4; reinforces finance sector bet with additional filing."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "Same as event#4; further reinforces finance sector exposure."
+        },
+        {
+          "event_idx": 7,
+          "decision": "bet",
+          "reason": "Same as event#4; final reinforcement of finance sector bet."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes consumer_staples (KO) over tech due to 30d win_rate=96% vs tech's 35% despite identical signal_strength. CHALLENGE_RESPONSE: Adjust edge threshold to 0.05 for consumer_staples and sector_beta >0.8 for finance to avoid overfitting to noisy tech signals.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 2, \"direction\": \"long\", \"rationale\": \"No pact peers with consumer_staples focus; qwen-quant prioritizes tech/healthcare today.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/ITA but consumer_staples (KO) has superior 30d win_rate and aligns with my adjusted threshold.\"}, \"allocations\": [{\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.33, \"confidence\": 0.72, \"thesis\": \"KO insider_trade (Form 4, SEC) in consumer_staples sector with 96% win_rate over 30d and avg_ret=+3.45%. Signal strength=0.60 matches sector trend.\", \"ticker_reason\": \"XLP is the consumer_staples ETF, directly mapping to KO's sector and outperforming other staples plays.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.33, \"confidence\": 0.68, \"thesis\": \"MSTR insider_trade (Form 4, SEC) in finance sector with sector avg_ret=-0.0831 but high signal_strength=0.60. Finance sector has 16% win_rate but MSTR-specific insider activity may diverge.\", \"ticker_reason\": \"XLF is the finance ETF, capturing MSTR's sector exposure while avoiding individual stock volatility.\"}, {\"event_idx\": 7, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.34, \"confidence\": 0.65, \"thesis\": \"Duplicate MSTR insider_trade (Form 4, SEC) in finance sector; same sector as event#4 but distinct filing. Reinforces finance sector bet.\", \"ticker_reason\": \"XLF again for sector consistency; no other finance ETFs provide better mapping to MSTR's sector.\"}], \"cash_held_pct\": 0.0, \"cash_rationale\": \"\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"skip\", \"reason\": \"Tech sector has 35% win_rate and avg_ret=-0.0157; signal_strength=0.60 but sector trend is negative.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"Consumer_staples sector has 96% win_rate and avg_ret=+0.0345; KO insider_trade aligns perfectly.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Tech sector trend is negative; META insider_trade does not overcome sector headwinds.\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"Finance sector has high signal_strength=0.60; MSTR insider_trade may break sector trend.\"}, {\"event_idx\": 5, \"decision\": \"bet\", \"reason\": \"Same as event#4; reinforces finance sector bet with additional filing.\"}, {\"event_idx\": 6, \"decision\": \"bet\", \"reason\": \"Same as event#4; further reinforces finance sector exposure.\"}, {\"event_idx\": 7, \"decision\": \"bet\", \"reason\": \"Same as event#4; final reinforcement of finance sector bet.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-dolphin3": {
+      "day_idx": 47,
+      "date": "2025-03-13",
+      "n_events": 7,
+      "bankroll_before": 89.61,
+      "bankroll_after": 89.61,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): CHALLENGE_RESPONSE: My recent loss on XLV healthcare (2025-03-12) exposed over-reliance on sector trends; today I prioritize MSTR finance insider trades (event_idx 4-7) with a 4% edge threshold to avoid repeating past mistakes. Pavlov win-stay logic dictates doubling down on finance after its recent underperformance vs tech/consumer staples.",
+      "cash_held_pct": 0.0,
+      "cash_rationale": "Zero cash held to meet council\u2019s 75% deployment mandate and avoid collective goal violation.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 806.62
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but I deviate to focus on MSTR finance insider trades (events 4-7) due to Pavlov win-stay logic and DMAD anti-convergence mandate."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL tech insider trade (event_idx 1) as a contrarian short to avoid overcrowding finance and test Pavlov\u2019s lose-shift logic."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "KO consumer staples (event_idx 2) as a DMAD diverge to exploit sector\u2019s high win_rate despite low edge."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "META tech insider trade (event_idx 3) conflicts with Pavlov\u2019s lose-shift logic; no clear edge vs finance focus."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "MSTR finance insider trade (event_idx 4) aligns with Pavlov win-stay logic and high edge (4%)."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "Repeated MSTR insider trade (event_idx 5) reinforces finance sector strength; flat stake to test edge consistency."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "MSTR insider trade (event_idx 6) as a low-conviction hedge; Pavlov logic favors finance."
+        },
+        {
+          "event_idx": 7,
+          "decision": "bet",
+          "reason": "Final MSTR insider trade (event_idx 7) as a low-stake test of Pavlov\u2019s win-stay logic."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): CHALLENGE_RESPONSE: My recent loss on XLV healthcare (2025-03-12) exposed over-reliance on sector trends; today I prioritize MSTR finance insider trades (event_idx 4-7) with a 4% edge threshold to avoid repeating past mistakes. Pavlov win-stay logic dictates doubling down on finance after its recent underperformance vs tech/consumer staples.\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-quant\",\n    \"event_idx\": 4,\n    \"direction\": \"long\",\n    \"rationale\": \"qwen-quant\u2019s Pavlov strategy aligns with my win-stay logic on finance; pact honors Axelrod\u2019s C (cooperate) advice for Pavlov vs Pavlov pairings.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA, but I deviate to focus on MSTR finance insider trades (events 4-7) due to Pavlov win-stay logic and DMAD anti-convergence mandate.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.30,\n      \"confidence\": 0.70,\n      \"thesis\": \"SEC Form 4 filings for MSTR (event_idx 4) signal insider buying in finance; agency=SEC and strength=0.60 justify a long position. Pavlov logic dictates repeating finance after recent underperformance.\",\n      \"ticker_reason\": \"XLF over XLE/XLV because MSTR\u2019s insider trades are finance-specific, not energy or healthcare.\"\n    },\n    {\n      \"event_idx\": 5,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"Repeated MSTR insider trades (event_idx 5) reinforce finance sector strength; strength=0.60 and SEC agency validate the signal. Flat stake to test edge consistency.\",\n      \"ticker_reason\": \"XLF again to maintain sector focus; no new ticker needed for correlated insider trades.\"\n    },\n    {\n      \"event_idx\": 6,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.15,\n      \"confidence\": 0.60,\n      \"thesis\": \"Event_idx 6\u2019s MSTR insider trade aligns with Pavlov\u2019s win-stay logic; finance sector\u2019s recent avg_ret=-0.0831 and win_rate=16% suggest a contrarian edge. Lower confidence due to repeated exposure.\",\n      \"ticker_reason\": \"XLF for consistency with prior allocations; no new ticker needed for correlated finance insider trades.\"\n    },\n    {\n      \"event_idx\": 7,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.55,\n      \"thesis\": \"Final MSTR insider trade (event_idx 7) as a low-conviction hedge; Pavlov logic favors finance, but edge threshold (4%) is tight. Lower stake to mitigate risk.\",\n      \"ticker_reason\": \"XLF for sector alignment; no new ticker needed.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.10,\n      \"confidence\": 0.50,\n      \"thesis\": \"KO insider trade (event_idx 2) in consumer staples (XLP) as a DMAD diverge; sector_trends show avg_ret=+0.0345 and win_rate=96%, but no direct finance correlation. Low confid",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-quant",
+        "event_idx": 4,
+        "direction": "long",
+        "rationale": "qwen-quant\u2019s Pavlov strategy aligns with my win-stay logic on finance; pact honors Axelrod\u2019s C (cooperate) advice for Pavlov vs Pavlov pairings."
+      }
+    }
+  },
+  "written_at": "2026-04-25T05:43:43.743809+00:00"
+}

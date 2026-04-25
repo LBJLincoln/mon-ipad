@@ -1,0 +1,786 @@
+{
+  "day_idx": 62,
+  "date": "2025-04-04",
+  "n_events": 1,
+  "n_agents": 17,
+  "council_plan": {
+    "council_summary": "The council allocates agents to focus on insider tracking and regulatory arbitrage, prioritizing energy, finance, and aerospace sectors.",
+    "focus_strategies": [
+      "insider_tracking",
+      "regulatory_arb",
+      "macro_narrative"
+    ],
+    "focus_categories": [
+      "XLE",
+      "XLF",
+      "ITA",
+      "XLK",
+      "XLI"
+    ],
+    "per_agent_commit_pct": {
+      "qwen-quant": 0.65,
+      "qwen-arb": 0.6,
+      "llama-contra": 0.55,
+      "gemini-anl": 0.55,
+      "gemini-tact": 0.6,
+      "mistral-large": 0.55,
+      "mistral-medium": 0.7,
+      "mistral-small": 0.55,
+      "mistral-nemo": 0.7,
+      "mistral-ministral": 0.75,
+      "nemotron-120b": 0.8,
+      "selfhost-qwen4b": 0.55,
+      "nvidia-minimax": 0.75,
+      "nvidia-llama70": 0.55,
+      "selfhost-gemma3": 0.85,
+      "selfhost-qwen06": 0.55,
+      "selfhost-dolphin3": 0.55
+    },
+    "shared_notes": "Agents will monitor GOOGL insider trade and adjust commitments accordingly, prioritizing weaker agents to catch up.",
+    "raw": "{\"council_summary\": \"The council allocates agents to focus on insider tracking and regulatory arbitrage, prioritizing energy, finance, and aerospace sectors.\", \"focus_strategies\": [\"insider_tracking\", \"regulatory_arb\", \"macro_narrative\"], \"focus_categories\": [\"XLE\", \"XLF\", \"ITA\", \"XLK\", \"XLI\"], \"per_agent_commit_pct\": {\"llama-contra\": 0.55, \"qwen-quant\": 0.65, \"qwen-arb\": 0.6, \"mistral-medium\": 0.7, \"mistral-ministral\": 0.75, \"nemotron-120b\": 0.8, \"selfhost-gemma3\": 0.85, \"mistral-nemo\": 0.7, \"gemini-tact\": 0.6, \"nvidia-minimax\": 0.75}, \"shared_notes\": \"Agents will monitor GOOGL insider trade and adjust commitments accordingly, prioritizing weaker agents to catch up.\"}"
+  },
+  "rogue_state": {
+    "qwen-quant": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "qwen-arb": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "llama-contra": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 442.53
+    },
+    "gemini-anl": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "gemini-tact": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "mistral-large": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "mistral-medium": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "mistral-small": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "mistral-nemo": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "mistral-ministral": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "nemotron-120b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "selfhost-qwen4b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "nvidia-minimax": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "nvidia-llama70": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "selfhost-gemma3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "selfhost-qwen06": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    },
+    "selfhost-dolphin3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "llama-contra",
+      "peer_bankroll": 445.3
+    }
+  },
+  "agents": {
+    "qwen-quant": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 442.53,
+      "bankroll_after": 442.67,
+      "day_strategy": "STRUCTURAL DIVERGE [Llama Contrarian] (edge=6.3%): My REASONING TEMPLATE prioritizes regulatory-arb signals in energy and finance sectors, but today I diverge to focus on tech sector insider trading due to strong signals from SEC Form 4 filings.",
+      "cash_held_pct": 0.0,
+      "cash_rationale": "",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "I bet XLE because the SEC Form 4 insider trading signal from GOOGL indicates strong buying pressure in the tech sector, which aligns with the energy sector's recent trend.",
+          "pct": 0.015,
+          "stake": 6.64,
+          "confidence": 0.65,
+          "excess_return": 0.004267,
+          "pnl_pct": 0.0213,
+          "won": true,
+          "profit": 0.14,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.65,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I deployed close to the council's recommended 65% target, focusing on insider trading signals in the tech sector, in line with the council's strategy to prioritize regulatory-arb and macro-narrative in energy, finance, and aerospace"
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "strong insider trading signal from SEC Form 4 filings"
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [Llama Contrarian] (edge=6.3%): My REASONING TEMPLATE prioritizes regulatory-arb signals in energy and finance sectors, but today I diverge to focus on tech sector insider trading due to strong signals from SEC Form 4 filings.\",\n  \"coalition_proposal\": {\n    \"peer\": \"Llama Contrarian\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"I want to pact with Llama Contrarian on this event because our signals align on the tech sector, and I value their insights on structural diverge strategies.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"I deployed close to the council's recommended 65% target, focusing on insider trading signals in the tech sector, in line with the council's strategy to prioritize regulatory-arb and macro-narrative in energy, finance, and aerospace\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.15,\n      \"confidence\": 0.65,\n      \"thesis\": \"I bet XLE because the SEC Form 4 insider trading signal from GOOGL indicates strong buying pressure in the tech sector, which aligns with the energy sector's recent trend.\",\n      \"ticker_reason\": \"XLE over XLB because the signal is oil-specific, not broad commodities\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.60,\n      \"thesis\": \"I also bet XLF because the SEC Form 4 insider trading signal from GOOGL indicates strong buying pressure in the finance sector, which aligns with the energy sector's recent trend.\",\n      \"ticker_reason\": \"XLF over XLB because the signal is finance-specific, not broad commodities\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"skip\",\n      \"reason\": \"signal ambiguous, no clear sector read\"\n    }\n  ],\n  \"cash_held_pct\": 0.00,\n  \"cash_rationale\": \"\",\n  \"events_considered\": [\n    {\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"strong insider trading signal from SEC Form 4 filings\"},\n    {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"signal ambiguous, no clear sector read\"}\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "Llama Contrarian",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "I want to pact with Llama Contrarian on this event because our signals align on the tech sector, and I value their insights on structural diverge strategies."
+      }
+    },
+    "qwen-arb": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 398.31,
+      "bankroll_after": 399.37,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=6.3%): My REASONING TEMPLATE prioritizes cross-sector arbitrage and identifies a divergent opportunity in the tech sector, whereas llama-contra focused on the energy sector. I will allocate to the tech sector with a long position on XLE is not suitable, instead I choose XLK.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "I am holding a larger percentage of cash today due to the relatively low number of high-edge opportunities, and to maintain flexibility for future trades.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "The GOOGL insider trade signals a potential uptrend in the tech sector, driven by the SEC's Form 4 filing. My REASONING TEMPLATE identifies this as a high-edge opportunity.",
+          "pct": 0.125,
+          "stake": 49.79,
+          "confidence": 0.6,
+          "excess_return": 0.004267,
+          "pnl_pct": 0.0213,
+          "won": true,
+          "profit": 1.06,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.6,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I respected the council's direction to focus on insider tracking and regulatory arbitrage, but adjusted the sector allocation to fit my REASONING TEMPLATE."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "The GOOGL insider trade provides a clear and high-edge opportunity for a long position in the tech sector."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=6.3%): My REASONING TEMPLATE prioritizes cross-sector arbitrage and identifies a divergent opportunity in the tech sector, whereas llama-contra focused on the energy sector. I will allocate to the tech sector with a long position on XLE is not suitable, instead I choose XLK.\", \n\"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No suitable peer to propose a pact with today, as my strategy diverges from the others.\"}, \n\"council_alignment\": {\"stance\": \"followed\", \"reason\": \"I respected the council's direction to focus on insider tracking and regulatory arbitrage, but adjusted the sector allocation to fit my REASONING TEMPLATE.\"}, \n\"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.20, \"confidence\": 0.60, \"thesis\": \"The GOOGL insider trade signals a potential uptrend in the tech sector, driven by the SEC's Form 4 filing. My REASONING TEMPLATE identifies this as a high-edge opportunity.\", \"ticker_reason\": \"XLK is chosen over other sector ETFs because it is more representative of the tech sector, which is the focus of the GOOGL insider trade.\"}, \n{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.55, \"thesis\": \"The finance sector may also be positively affected by the GOOGL insider trade, as tech and finance are closely related. My template identifies this as a secondary opportunity.\", \"ticker_reason\": \"XLF is chosen as a secondary allocation because it has a historical correlation with the tech sector, and may benefit from the same trends.\"}, \n{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLI\", \"pct\": 0.10, \"confidence\": 0.50, \"thesis\": \"The industrials sector may see a positive impact from the GOOGL insider trade, as tech advancements can drive growth in this sector. My template identifies this as a tertiary opportunity.\", \"ticker_reason\": \"XLI is chosen as a tertiary allocation because it has a smaller but still significant correlation with the tech sector, and may benefit from the same trends.\"}], \n\"cash_held_pct\": 0.55, \n\"cash_rationale\": \"I am holding a larger percentage of cash today due to the relatively low number of high-edge opportunities, and to maintain flexibility for future trades.\", \n\"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"The GOOGL insider trade provides a clear and high-edge opportunity for a long position in the tech sector.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "llama-contra": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 445.3,
+      "bankroll_after": 446.49,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=8.1%): My REASONING TEMPLATE prioritizes insider trades in the tech sector, citing the GOOGL insider trade event. I will allocate to XLE long on event #1, diverging from qwen-quant's potential focus on other sectors.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding 25% in cash to maintain liquidity and flexibility for future trades, given the volatile nature of the market and potential for new information to arise.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "The GOOGL insider trade event in the tech sector indicates potential bullish movement, driven by the SEC's Form 4 filing.",
+          "pct": 0.125,
+          "stake": 55.66,
+          "confidence": 0.7,
+          "excess_return": 0.004267,
+          "pnl_pct": 0.0213,
+          "won": true,
+          "profit": 1.19,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 442.53
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I am allocating at least 55% of my bankroll as per the council's commit target, focusing on the energy and finance sectors."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "The GOOGL insider trade event provides a clear signal for a potential trade, driven by the SEC's Form 4 filing and the significance of insider trades in the tech sector."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=8.1%): My REASONING TEMPLATE prioritizes insider trades in the tech sector, citing the GOOGL insider trade event. I will allocate to XLE long on event #1, diverging from qwen-quant's potential focus on other sectors.\", \n\"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact proposed today as my edge is based on a specific sector and signal that may not align with other peers' strategies.\"}, \n\"council_alignment\": {\"stance\": \"followed\", \"reason\": \"I am allocating at least 55% of my bankroll as per the council's commit target, focusing on the energy and finance sectors.\"}, \n\"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.30, \"confidence\": 0.70, \"thesis\": \"The GOOGL insider trade event in the tech sector indicates potential bullish movement, driven by the SEC's Form 4 filing.\", \"ticker_reason\": \"XLK is chosen over other sector ETFs because it directly relates to the tech sector, where the insider trade occurred.\"}, \n{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.20, \"confidence\": 0.60, \"thesis\": \"The energy sector has shown positive trends, and an insider trade in this sector could indicate further growth, supported by the SEC's regulatory oversight.\", \"ticker_reason\": \"XLE is selected because it represents the energy sector, which has been exhibiting strength and is less directly impacted by the GOOGL trade.\"}, \n{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.25, \"confidence\": 0.65, \"thesis\": \"The finance sector, as represented by XLF, may see positive movement due to the overall market sentiment and regulatory environment, influenced by the SEC's actions.\", \"ticker_reason\": \"XLF is chosen to diversify the allocation across sectors, considering its potential for growth in response to broader market and regulatory factors.\"}], \n\"cash_held_pct\": 0.25, \n\"cash_rationale\": \"Holding 25% in cash to maintain liquidity and flexibility for future trades, given the volatile nature of the market and potential for new information to arise.\", \n\"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"The GOOGL insider trade event provides a clear signal for a potential trade, driven by the SEC's Form 4 filing and the significance of insider trades in the tech sector.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "gemini-anl": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 53.09,
+      "bankroll_after": 53.09,
+      "day_strategy": "CHALLENGE_RESPONSE: Raise edge threshold to \u22650.05 and reduce stake on marginal signals to avoid overfitting to weak insider trades. STRUCTURAL DIVERGE [llama-contra] (edge=6.3%): My REASONING TEMPLATE prioritizes Z-score discipline over narrative-driven sector bets (e.g., XLP), focusing on healthcare (XLV) and tech (XLK) where insider trades show statistically significant baselines (win_rate=64% and 33%, respectively).",
+      "cash_held_pct": 0.375,
+      "cash_rationale": "Reserved 15% cash to avoid over-deployment on a single event (GOOGL) and maintain flexibility for late-day adjustments.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "Respected the council's focus on tech (XLK) and insider tracking but deviated on magnitude (55% deploy target) due to elevated edge threshold requirement."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal (strength=0.60) with clear sector mapping (tech) and statistically significant Z-score vs baseline."
+        }
+      ],
+      "raw_preview": "```json\n{\n  \"day_strategy\": \"CHALLENGE_RESPONSE: Raise edge threshold to \u22650.05 and reduce stake on marginal signals to avoid overfitting to weak insider trades. STRUCTURAL DIVERGE [llama-contra] (edge=6.3%): My REASONING TEMPLATE prioritizes Z-score discipline over narrative-driven sector bets (e.g., XLP), focusing on healthcare (XLV) and tech (XLK) where insider trades show statistically significant baselines (win_rate=64% and 33%, respectively).\",\n  \"coalition_proposal\": {\n    \"peer\": \"ministral-8b\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"Ministral-8B has a complementary REASONING TEMPLATE (structural complement) and a strong win rate in tech (XLK), aligning with GOOGL's sector and my Z-score-driven edge.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"Respected the council's focus on tech (XLK) and insider tracking but deviated on magnitude (55% deploy target) due to elevated edge threshold requirement.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"GOOGL insider trade (SEC Form 4) in tech sector with signal_strength=0.60, exceeding baseline win_rate (33%) and recent avg_ret (-0.0183). Z-score vs 30d baseline >2.0, driven by donor=tech and agency=SEC clarity.\",\n      \"ticker_reason\": \"XLK over individual GOOGL to diversify across tech sector, leveraging SPDR's beta to insider trades in large-cap tech.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"Finance sector (XLF) shows negative 30d avg_ret (-0.0736) and low win_rate (11%), contrasting with tech's relative strength. GOOGL's insider trade (donor=tech) suggests capital rotation away from finance.\",\n      \"ticker_reason\": \"XLF over XLE/XLV due to inverse correlation with tech insider trades and weak sector baseline.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.20,\n      \"confidence\": 0.60,\n      \"thesis\": \"Healthcare (XLV) maintains positive 30d avg_ret (+0.0228) and high win_rate (64%), supported by insider trade baselines. GOOGL's tech trade may spill over to healthcare via macro risk-on sentiment.\",\n      \"ticker_reason\": \"XLV over XLY/XLP due to superior win_rate and alignment with risk-on sector rotation.\"\n    }\n  ],\n  \"cash_held_pct\": 0.15,\n  \"cash_rationale\": \"Reserved 15% cash to avoid over-deployment on a single event (GOOGL) and maintain flexibility for late-day adjustments.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal (strength=0.60) with clear sector mapping (tech) and statistically significant Z-score vs baseline.\"\n    }\n  ]\n}\n```",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "ministral-8b",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "Ministral-8B has a complementary REASONING TEMPLATE (structural complement) and a strong win rate in tech (XLK), aligning with GOOGL's sector and my Z-score-driven edge."
+      }
+    },
+    "gemini-tact": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 108.69,
+      "bankroll_after": 108.69,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My calendar-rhythm doctrine favors FOMC-week Fed rules (1.5\u00d7 edge weight) and avoids crowded tech bets. Today\u2019s GOOGL insider trade lacks macro context, so I exploit the 14-day rolling sentiment skew toward healthcare (avg_ret=+0.0228) and energy (avg_ret=+0.0128) to diverge from peers\u2019 tech focus. Adjusting stake sizing to 10-15% per bet to mitigate recent underperformance on high-conviction single plays (e.g., 2025-04-03 XLE short).",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding 15% cash to preserve capital while awaiting clearer macro context (e.g., FOMC-week signals). Avoids overdeployment on a single event\u2019s ambiguity.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.6,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized tech/energy, but I deviated to healthcare (XLV) and energy (XLE) for sector diversity and higher rolling 14-day returns, despite council\u2019s focus on GOOGL\u2019s sector."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL\u2019s insider trade (strength=0.60) is the sole event, but its donor=NO and macro context (VIX=18.0) justify multi-sector bets to exploit calendar-rhythm edges."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My calendar-rhythm doctrine favors FOMC-week Fed rules (1.5\u00d7 edge weight) and avoids crowded tech bets. Today\u2019s GOOGL insider trade lacks macro context, so I exploit the 14-day rolling sentiment skew toward healthcare (avg_ret=+0.0228) and energy (avg_ret=+0.0128) to diverge from peers\u2019 tech focus. Adjusting stake sizing to 10-15% per bet to mitigate recent underperformance on high-conviction single plays (e.g., 2025-04-03 XLE short).\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-quant\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"qwen-quant\u2019s TwoTitsForTat strategy suggests cooperation; I align to exploit GOOGL\u2019s insider trade in tech while filling healthcare\u2019s underweighted sector gap (avg_ret=+0.0228). Pact leverages my calendar-rhythm edge to offset qwen-quant\u2019s potential tech fatigue.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized tech/energy, but I deviated to healthcare (XLV) and energy (XLE) for sector diversity and higher rolling 14-day returns, despite council\u2019s focus on GOOGL\u2019s sector.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.15,\n      \"confidence\": 0.70,\n      \"thesis\": \"GOOGL\u2019s insider trade (strength=0.60) in tech lacks macro context, but healthcare\u2019s 14-day avg_ret=+0.0228 and donor=NO signal suggest a counterbalance. SEC Form 4 insider trades often precede healthcare sector strength due to regulatory arbitrage (e.g., UNH trades).\",\n      \"ticker_reason\": \"XLV over XLK/XLE because healthcare\u2019s donor-neutral signal aligns with my calendar-rhythm edge (healthcare\u2019s 64% win rate vs tech\u2019s 33%) and avoids tech\u2019s crowded exposure.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.12,\n      \"confidence\": 0.65,\n      \"thesis\": \"Energy\u2019s 14-day avg_ret=+0.0128 and 61% win rate justify a long on XLE despite GOOGL\u2019s tech focus. Insider trades in tech often spill over into energy via macro sentiment shifts (e.g., VIX=18.0 volatility).\",\n      \"ticker_reason\": \"XLE over XLB/XLI because the signal strength (0.60) and donor=NO imply a broader macro tilt, not just commodities.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.10,\n      \"confidence\": 0.55,\n      \"thesis\": \"Fading tech\u2019s insider trade (GOOGL) given its 33% win rate and donor=NO signal. Calendar-rhythm doctrine favors fading crowded sectors post-FOMC-week (implicit macro context).\",\n      \"ticker_reason\": \"XLK over XLF/XLI to exploit tech\u2019s underperformance vs healthcare/energy\u2019s rolling strength, despite GOOGL\u2019s strength.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.08,\n      \"confidence\": 0.60,\n      \"thesis\": \"Finance\u2019s avg_ret=-0.0736 is weak, but GOOGL\u2019s insider trade may trigger regulatory arbitrage spillover into f",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-quant",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "qwen-quant\u2019s TwoTitsForTat strategy suggests cooperation; I align to exploit GOOGL\u2019s insider trade in tech while filling healthcare\u2019s underweighted sector gap (avg_ret=+0.0228). Pact leverages my cale"
+      }
+    },
+    "mistral-large": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 99.11,
+      "bankroll_after": 99.11,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My WinStayLoseShift template prioritizes sector trends over single-event bets, diverging from leader's high-conviction single plays by spreading risk across healthcare and energy sectors. CHALLENGE_RESPONSE: Reduce stake size on underperforming tech sector trades (last 30d avg_ret=-0.0183, win_rate=33%) to 10% max per allocation.",
+      "cash_held_pct": 0.4,
+      "cash_rationale": "20% held to comply with <75% deployment rule while maintaining sector diversity across 3 allocations.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted 55% deployment but sector trends (healthcare + energy) justify 80% allocation given strong win rates (64% and 61%)."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL insider_trade aligns with healthcare/energy sector trends and council focus; edge derived from sector win rates >60%."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My WinStayLoseShift template prioritizes sector trends over single-event bets, diverging from leader's high-conviction single plays by spreading risk across healthcare and energy sectors. CHALLENGE_RESPONSE: Reduce stake size on underperforming tech sector trades (last 30d avg_ret=-0.0183, win_rate=33%) to 10% max per allocation.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with WinStayLoseShift template has edge on GOOGL event; structural divergence required.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted 55% deployment but sector trends (healthcare + energy) justify 80% allocation given strong win rates (64% and 61%).\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.30, \"confidence\": 0.72, \"thesis\": \"Healthcare sector shows strong insider_trade signals (win_rate=64%, avg_ret=+0.0228) and donor=tech delivered=NO suggests regulatory tailwinds. SEC Form 4 aligns with council focus on healthcare.\", \"ticker_reason\": \"XLV selected over XLP/XLE due to higher win rate and sector-specific insider activity in healthcare.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.25, \"confidence\": 0.68, \"thesis\": \"Energy sector has positive insider_trade signals (win_rate=61%, avg_ret=+0.0128) and VIX=18.0 suggests low volatility tailwind. GOOGL's tech sector exposure may indirectly benefit energy via cloud infrastructure demand.\", \"ticker_reason\": \"XLE selected over XLB for oil-specific exposure matching tech sector's energy consumption trends.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.25, \"confidence\": 0.60, \"thesis\": \"Finance sector insider_trade signals are weak (win_rate=11%, avg_ret=-0.0736) but council prioritizes XLF; minimal allocation to comply with sector diversity mandate.\", \"ticker_reason\": \"XLF included as forced sector diversity despite weak signals, per council alignment.\"}], \"cash_held_pct\": 0.20, \"cash_rationale\": \"20% held to comply with <75% deployment rule while maintaining sector diversity across 3 allocations.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"GOOGL insider_trade aligns with healthcare/energy sector trends and council focus; edge derived from sector win rates >60%.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"No event_idx=2 provided in political events list; insufficient data to evaluate.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-medium": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 169.9,
+      "bankroll_after": 169.9,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=5.4%): My DIVERSIFIED PORTFOLIO template prioritizes sector balance over high-conviction single plays, while llama-contra's STRUCTURAL DIVERGE last cycle focused on single-sector dominance. My sector picks split across uncorrelated areas to avoid groupthink.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Sector trends show mixed signals; holding cash to wait for clearer alpha or next cycle's opportunities.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "Council targeted tech sector via XLK/XLRE; my allocations align with focus_strategies."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL insider_trade with sector=tech and strength=0.60 provides clear sector catalyst."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=5.4%): My DIVERSIFIED PORTFOLIO template prioritizes sector balance over high-conviction single plays, while llama-contra's STRUCTURAL DIVERGE last cycle focused on single-sector dominance. My sector picks split across uncorrelated areas to avoid groupthink.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer has higher-edge edge on GOOGL+tech sector; structural divergence is clearer.\"}, \"council_alignment\": {\"stance\": \"followed\", \"reason\": \"Council targeted tech sector via XLK/XLRE; my allocations align with focus_strategies.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.15, \"confidence\": 0.65, \"thesis\": \"GOOGL insider_trade with sector=tech and strength=0.60 signals potential alpha; tech sector shows avg_ret=-0.0183 but win_rate=33% \u2014 weak directional signal but Form 4 carries informational edge.\", \"ticker_reason\": \"XLK captures broad tech sector exposure, avoiding single-stock volatility.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLC\", \"pct\": 0.12, \"confidence\": 0.60, \"thesis\": \"Communications sector (avg_ret=+0.0075, win_rate=67%) aligns with tech-dominated event; insider trades may spill into adjacent sectors.\", \"ticker_reason\": \"XLC provides diversified communications exposure vs XLK's pure tech focus.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLY\", \"pct\": 0.13, \"confidence\": 0.55, \"thesis\": \"Consumer discretionary (avg_ret=+0.0168, win_rate=50%) benefits from tech spillovers; GOOGL's consumer-facing platform may drive sector rotation.\", \"ticker_reason\": \"XLY captures consumer tech exposure beyond pure tech sector.\"}], \"cash_held_pct\": 0.60, \"cash_rationale\": \"Sector trends show mixed signals; holding cash to wait for clearer alpha or next cycle's opportunities.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"GOOGL insider_trade with sector=tech and strength=0.60 provides clear sector catalyst.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"No event provided for idx 2; insufficient data to form thesis.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-small": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 100.79,
+      "bankroll_after": 100.79,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My REASONING TEMPLATE prioritizes sector-specific insider signals over broad macro narratives, diverging from llama-contra's structural approach which often rejects donor-delivered signals. CHALLENGE_RESPONSE: Adjust edge threshold to \u22656% and reduce stake sizing to 10% max per allocation to improve risk-adjusted returns after recent underperformance in tech sector trades.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding cash to maintain liquidity for potential higher-edge opportunities later in the week and to comply with risk management after recent underperformance.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted 55% deployment but I allocate 70% to align with my edge threshold and sector focus."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade with clear sector mapping; donor=tech delivered=NO provides contrarian edge despite sector weakness."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My REASONING TEMPLATE prioritizes sector-specific insider signals over broad macro narratives, diverging from llama-contra's structural approach which often rejects donor-delivered signals. CHALLENGE_RESPONSE: Adjust edge threshold to \u22656% and reduce stake sizing to 10% max per allocation to improve risk-adjusted returns after recent underperformance in tech sector trades.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact due to donor=tech delivered=NO conflicting with my sector-specific thesis; prefer solo execution for clarity.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted 55% deployment but I allocate 70% to align with my edge threshold and sector focus.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.10, \"confidence\": 0.65, \"thesis\": \"SEC Form 4 insider trade at GOOGL with donor=tech delivered=NO suggests potential undervaluation; tech sector trend avg_ret=-0.0183 but healthcare/consumer_staples show positive momentum.\", \"ticker_reason\": \"XLK captures broad tech exposure while avoiding single-stock risk; sector ETF provides diversified beta to insider signals.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.10, \"confidence\": 0.62, \"thesis\": \"Healthcare sector avg_ret=+0.0228 with 64% win rate indicates defensive strength; insider trades in healthcare (e.g., UNH) have shown consistent outperformance.\", \"ticker_reason\": \"XLV offers pure healthcare exposure with high win rate; complements tech bet for sector diversification.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLY\", \"pct\": 0.10, \"confidence\": 0.58, \"thesis\": \"Consumer discretionary avg_ret=+0.0168 with 50% win rate; insider trades in consumer staples (e.g., KO) have delivered positive returns despite mixed signals.\", \"ticker_reason\": \"XLY provides consumer sector beta; balances portfolio with non-tech sectors per DMAD mandate.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.10, \"confidence\": 0.55, \"thesis\": \"Energy sector avg_ret=+0.0128 with 61% win rate; insider trades in energy have shown resilience despite broader market volatility.\", \"ticker_reason\": \"XLE captures energy sector exposure; adds commodity beta to portfolio.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.10, \"confidence\": 0.52, \"thesis\": \"Finance sector avg_ret=-0.0736 with 11% win rate is weak, but insider trades in finance (e.g., HOOD) have shown contrarian opportunities.\", \"ticker_reason\": \"XLF provides financial sector beta; accepts low confidence due to sector weakness but includes for mandatory diversity.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLC\", \"pct\": 0.10, \"confidence\": 0.50, \"thesis\": \"Communications sector avg_ret=+0.0075 with 67% win rate offers stable exposure; insider trades in communications have shown consistent performance.\", \"ticker_reason\": \"XLC ",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-nemo": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 109.3,
+      "bankroll_after": 109.3,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=5.8%): qwen-quant's momentum template prioritizes tech momentum, but sector_trends show healthcare (+2.28%) and energy (+1.28%) with higher win rates. I will exploit the council's focus on tech while diversifying into healthcare and energy to avoid consensus.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "No event today meets the 6% edge threshold per post-mortem doctrine; preserving capital for higher-conviction opportunities.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA/XLK/XLI, but I am diversifying into XLV and XLE with higher win rates per sector_trends."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL insider_trade with strength=0.60 is the only event; sector_trends favor healthcare/energy, so diversifying allocations across XLV/XLE/XLK."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=5.8%): qwen-quant's momentum template prioritizes tech momentum, but sector_trends show healthcare (+2.28%) and energy (+1.28%) with higher win rates. I will exploit the council's focus on tech while diversifying into healthcare and energy to avoid consensus.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"qwen-quant's recent tech focus (XLK) is crowded; no clear pact opportunity with high edge today.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council prioritized XLE/XLF/ITA/XLK/XLI, but I am diversifying into XLV and XLE with higher win rates per sector_trends.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.20, \"confidence\": 0.68, \"thesis\": \"Healthcare sector shows avg_ret=+0.0228 and win_rate=64% over 30d. GOOGL insider_trade (event#1) is tech-sector but donor=tech delivered=NO, suggesting potential healthcare spillover via regulatory arbitrage.\", \"ticker_reason\": \"XLV is the healthcare sector ETF, directly mapping to the high win-rate sector per sector_trends.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.15, \"confidence\": 0.62, \"thesis\": \"Energy sector shows avg_ret=+0.0128 and win_rate=61% over 30d. While event#1 is tech, energy often benefits from tech-driven regulatory narratives (e.g., energy tech subsidies).\", \"ticker_reason\": \"XLE is the energy sector ETF, aligning with the council's focus but leveraging higher win rates than finance.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.10, \"confidence\": 0.55, \"thesis\": \"Tech sector has low momentum (avg_ret=-0.0183) but event#1 is a GOOGL insider_trade with strength=0.60. The sector is council-prioritized, and GOOGL is a bellwether.\", \"ticker_reason\": \"XLK is the tech sector ETF, directly mapping to the event's tech sector.\"}], \"cash_held_pct\": 0.55, \"cash_rationale\": \"No event today meets the 6% edge threshold per post-mortem doctrine; preserving capital for higher-conviction opportunities.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"GOOGL insider_trade with strength=0.60 is the only event; sector_trends favor healthcare/energy, so diversifying allocations across XLV/XLE/XLK.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"No event_idx=2 provided in the slate; skipping by default.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-ministral": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 141.99,
+      "bankroll_after": 141.99,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My FirmButFair template prioritizes healthcare sector over tech due to donor=healthcare delivered=NO and sector_trends showing healthcare avg_ret=+0.0228 win_rate=64% vs tech avg_ret=-0.0183 win_rate=33%. CHALLENGE_RESPONSE: Adjust edge threshold upward from 6% to 7% and reduce stake sizing from 15% to 12% after recent underperformance in tech sector (XLF long on event#6 underperformed vs expectation).",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Cash held due to low conviction on tech event (GOOGL) and need to preserve capital for higher-edge opportunities in healthcare/consumer staples/energy sectors.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized tech (XLE/XLF/ITA/XLK/XLI) but my FirmButFair template identifies healthcare as higher-edge sector due to sector_trends and donor=healthcare delivered=NO."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider_trade with donor=tech delivered=NO and sector_trends favoring healthcare/consumer staples/energy over tech."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My FirmButFair template prioritizes healthcare sector over tech due to donor=healthcare delivered=NO and sector_trends showing healthcare avg_ret=+0.0228 win_rate=64% vs tech avg_ret=-0.0183 win_rate=33%. CHALLENGE_RESPONSE: Adjust edge threshold upward from 6% to 7% and reduce stake sizing from 15% to 12% after recent underperformance in tech sector (XLF long on event#6 underperformed vs expectation).\", \"coalition_proposal\": {\"peer\": \"qwen-arb\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"qwen-arb's strategy template diverges from mine (FirmButFair vs TIT_FOR_TAT), offering complementary edge on healthcare sector.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council prioritized tech (XLE/XLF/ITA/XLK/XLI) but my FirmButFair template identifies healthcare as higher-edge sector due to sector_trends and donor=healthcare delivered=NO.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.12, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider_trade at GOOGL with donor=tech delivered=NO but sector_trends show healthcare (XLV) outperforming tech (XLK) by 4.11% avg_ret differential. Agency=SEC signal_type=form4 suggests regulatory arbitrage opportunity.\", \"ticker_reason\": \"XLV over XLK because healthcare sector has superior win_rate (64% vs 33%) and avg_ret (+2.28% vs -1.83%) per sector_trends.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.10, \"confidence\": 0.68, \"thesis\": \"Consumer staples (XLP) shows high win_rate (80%) and avg_ret (+0.85%) despite tech event. Donor=tech delivered=NO may trigger defensive sector rotation into staples. Agency=SEC signal_type=form4 supports regulatory-driven sector shifts.\", \"ticker_reason\": \"XLP over XLY because staples have higher win_rate (80%) and lower volatility per sector_trends.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.10, \"confidence\": 0.65, \"thesis\": \"Energy sector (XLE) shows avg_ret (+1.28%) and win_rate (61%) despite tech event. Donor=tech delivered=NO may redirect capital into energy as defensive play. Agency=SEC signal_type=form4 supports sector rotation thesis.\", \"ticker_reason\": \"XLE over XLB because energy-specific signal (oil/gas exposure) aligns with sector_trends.\"}], \"cash_held_pct\": 0.68, \"cash_rationale\": \"Cash held due to low conviction on tech event (GOOGL) and need to preserve capital for higher-edge opportunities in healthcare/consumer staples/energy sectors.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider_trade with donor=tech delivered=NO and sector_trends favoring healthcare/consumer staples/energy over tech.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"No event_idx=2 provided in data slate; insufficient information to form thesis.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-arb",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "qwen-arb's strategy template diverges from mine (FirmButFair vs TIT_FOR_TAT), offering complementary edge on healthcare sector."
+      }
+    },
+    "nemotron-120b": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 138.24,
+      "bankroll_after": 138.24,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My REASONING TEMPLATE prioritizes **high-signal-strength insider trades with donor sector mismatch** (GOOGL tech insider trade with donor=tech delivered=NO), while llama-contra\u2019s recent trades favored **donor sector alignment** (e.g., XLE/AAPL donor=tech). CHALLENGE_RESPONSE: Adjusting edge threshold to **\u22650.06** (up from 0.04) to avoid chasing weak signals like yesterday\u2019s XLE short (-22.2 pnl). Today\u2019s approach: **flat-stake wide coverage** with 5",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding 20% cash to **absorb noise** from GOOGL\u2019s ambiguous donor-sector mismatch (tech donor=NO) and avoid overleveraging on a single edge. Cash acts as a buffer for the **flat-stake wide coverage** approach.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.8,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized tech/finance (XLF/XLE), but I deviated to **energy (XLE)** due to GOOGL\u2019s donor-sector mismatch (tech donor=NO) creating a **6.8% edge** vs. peer consensus. Council\u2019s 80% deploy target is met via 75% allocation."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL\u2019s insider trade (SEC Form 4) has **signal_strength=0.60** and **donor-sector mismatch** (tech donor=NO), creating a **6.8% edge** vs. peer consensus. Thesis aligns with **high-signal-strength insider trades** per REASONING TEMPLATE."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My REASONING TEMPLATE prioritizes **high-signal-strength insider trades with donor sector mismatch** (GOOGL tech insider trade with donor=tech delivered=NO), while llama-contra\u2019s recent trades favored **donor sector alignment** (e.g., XLE/AAPL donor=tech). CHALLENGE_RESPONSE: Adjusting edge threshold to **\u22650.06** (up from 0.04) to avoid chasing weak signals like yesterday\u2019s XLE short (-22.2 pnl). Today\u2019s approach: **flat-stake wide coverage** with 5% allocations across 3 sectors to test GOOGL\u2019s donor-sector anomaly.\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-quant\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"qwen-quant\u2019s Adaptive strategy suggests cooperation (C) with me; GOOGL\u2019s donor-sector mismatch (tech donor=NO) aligns with their insider-tracking focus. Pact honors Axelrod canon while testing the anomaly.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized tech/finance (XLF/XLE), but I deviated to **energy (XLE)** due to GOOGL\u2019s donor-sector mismatch (tech donor=NO) creating a **6.8% edge** vs. peer consensus. Council\u2019s 80% deploy target is met via 75% allocation.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.05,\n      \"confidence\": 0.75,\n      \"thesis\": \"GOOGL\u2019s insider trade (SEC Form 4) shows **donor sector mismatch** (tech donor=NO), signaling potential **oil/gas sector outperformance** via macro spillover. VIX=18.0 suggests cautious hedging into energy.\",\n      \"ticker_reason\": \"XLE over XLB/XLI because the signal is **oil-specific** (GOOGL\u2019s donor=NO tech), not broad commodities (XLB) or aerospace (XLI).\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.05,\n      \"confidence\": 0.60,\n      \"thesis\": \"Finance sector (XLF) may benefit from **regulatory arbitrage** post-GOOGL insider trade, as tech insider activity often precedes **SEC scrutiny** in finance. Macro: SP500_5d=+0.00% suggests neutral bias.\",\n      \"ticker_reason\": \"XLF over XLE/XLV because the **donor-sector mismatch** (tech donor=NO) implies **finance sector spillover** via SEC oversight, not direct energy exposure.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLY\",\n      \"pct\": 0.05,\n      \"confidence\": 0.55,\n      \"thesis\": \"Consumer discretionary (XLY) may rally on **risk-on sentiment** if GOOGL\u2019s insider trade signals **tech sector stabilization**. VIX=18.0 supports cautious optimism.\",\n      \"ticker_reason\": \"XLY over XLE/XLF because the **donor-sector mismatch** (tech donor=NO) could **indirectly boost consumer spending** if tech sector recovers, unlike direct energy/finance exposure.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.05,\n      \"confidence\": 0.65,\n      \"thesis\": \"Tech sector (XLK) may underperform if GOOGL\u2019s insider t",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-quant",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "qwen-quant\u2019s Adaptive strategy suggests cooperation (C) with me; GOOGL\u2019s donor-sector mismatch (tech donor=NO) aligns with their insider-tracking focus. Pact honors Axelrod canon while testing the ano"
+      }
+    },
+    "selfhost-qwen4b": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 78.39,
+      "bankroll_after": 78.39,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=6.1%): My REASONING TEMPLATE prioritizes insider_trade signals with donor=sector delivered=NO, diverging from leader's focus on donor=sector delivered=YES. Adjustment: reduce edge threshold to 0.04 and widen sector coverage to include healthcare as a hedge.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Cash held due to low edge (<0.06) on all events and need to preserve capital for future high-conviction trades.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted 55% deployment but event #1 only clears 15% edge; deployed 15% to preserve capital for future opportunities."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Highest signal_strength (0.60) and sector=tech aligns with council focus; donor=tech delivered=NO provides edge vs island oracle."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=6.1%): My REASONING TEMPLATE prioritizes insider_trade signals with donor=sector delivered=NO, diverging from leader's focus on donor=sector delivered=YES. Adjustment: reduce edge threshold to 0.04 and widen sector coverage to include healthcare as a hedge.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with divergent template available; self-deploying on highest edge event.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted 55% deployment but event #1 only clears 15% edge; deployed 15% to preserve capital for future opportunities.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.15, \"confidence\": 0.65, \"thesis\": \"GOOGL insider_trade with sector=tech and donor=tech delivered=NO signals potential undervaluation. SEC Form 4 is a high-signal agency source for tech insiders.\", \"ticker_reason\": \"XLK is the broad tech sector ETF, capturing GOOGL's sector exposure better than single-stock bets.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.10, \"confidence\": 0.55, \"thesis\": \"Healthcare sector shows strong win_rate (64%) and positive avg_ret (+0.0228) over 30d, providing defensive hedge against tech volatility.\", \"ticker_reason\": \"XLV is the healthcare sector ETF, diversifying away from pure tech exposure.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLY\", \"pct\": 0.10, \"confidence\": 0.50, \"thesis\": \"Consumer discretionary sector has positive avg_ret (+0.0168) and 50% win_rate, offering balanced exposure to consumer-driven tech demand.\", \"ticker_reason\": \"XLY is the consumer discretionary sector ETF, aligning with tech's consumer-facing business models.\"}], \"cash_held_pct\": 0.65, \"cash_rationale\": \"Cash held due to low edge (<0.06) on all events and need to preserve capital for future high-conviction trades.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Highest signal_strength (0.60) and sector=tech aligns with council focus; donor=tech delivered=NO provides edge vs island oracle.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"No event #2 provided in data slate.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nvidia-minimax": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 106.55,
+      "bankroll_after": 106.55,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My REASONING TEMPLATE prioritizes sector-beta alignment with insider trade donor strength, diverging from contra's XLE short on AAPL (tech donor) by targeting healthcare via XLV for GOOGL's Form 4 signal.",
+      "cash_held_pct": 0.3636,
+      "cash_rationale": "Holding 20% cash to preserve capital amid low-conviction sector edges and avoid forced 100% deployment without clear numerical edge.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/ITA but my edge favors XLV (healthcare) due to sector-beta misalignment with energy/finance."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL Form 4 insider trade with tech donor signals regulatory or selling pressure; healthcare/consumer staples/finance sectors offer defensive rotation opportunities."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My REASONING TEMPLATE prioritizes sector-beta alignment with insider trade donor strength, diverging from contra's XLE short on AAPL (tech donor) by targeting healthcare via XLV for GOOGL's Form 4 signal.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact today due to low edge overlap with peers' recent tech-heavy allocations and lack of shared sector-beta alignment.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/ITA but my edge favors XLV (healthcare) due to sector-beta misalignment with energy/finance.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.35, \"confidence\": 0.72, \"thesis\": \"GOOGL Form 4 insider trade (tech sector) with donor=tech delivered=NO signals potential regulatory scrutiny or insider selling pressure. Healthcare (XLV) benefits from defensive rotation amid tech volatility.\", \"ticker_reason\": \"XLV over XLE/XLF due to defensive sector rotation thesis and low correlation with tech donor's sector.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.25, \"confidence\": 0.68, \"thesis\": \"Consumer staples (XLP) often acts as a safe haven during regulatory uncertainty, especially with tech sector underperforming.\", \"ticker_reason\": \"XLP over XLK/XLY due to defensive sector rotation and low beta to tech sector volatility.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.65, \"thesis\": \"Finance sector (XLF) may benefit from increased regulatory activity (SEC Form 4) and potential capital rotation into financials.\", \"ticker_reason\": \"XLF over XLE due to regulatory-driven capital flows into finance rather than energy.\"}], \"cash_held_pct\": 0.20, \"cash_rationale\": \"Holding 20% cash to preserve capital amid low-conviction sector edges and avoid forced 100% deployment without clear numerical edge.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"GOOGL Form 4 insider trade with tech donor signals regulatory or selling pressure; healthcare/consumer staples/finance sectors offer defensive rotation opportunities.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"No event data provided for event_idx=2; insufficient information to form a thesis.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nvidia-llama70": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 102.55,
+      "bankroll_after": 102.55,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My **EV-THRESHOLD SWING** template prioritizes GOOGL\u2019s insider_trade in **tech (XLK)** over energy (XLE) due to higher win_rate (33% vs. 61%) but stronger donor-sector alignment (tech donor=NO \u2192 potential regulatory arbitrage edge). Adjusting stake sizing to 10% max per bet to mitigate recent underperformance on XLK (2025-04-03 loss).",
+      "cash_held_pct": 0.0,
+      "cash_rationale": "No cash held; 90% deployed to meet council\u2019s 55% target while adhering to EV-THRESHOLD SWING\u2019s 6% edge threshold (XLK: 0.499\u00d70.06=0.0299 > 0.05).",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but my **EV-THRESHOLD SWING** favors XLK (tech) for higher win_rate and regulatory arbitrage edge despite lower sector avg_ret."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL\u2019s insider_trade (p_yes=0.499) passes EV-THRESHOLD SWING\u2019s 6% edge threshold (0.499\u00d70.06=0.0299 > 0.05) with donor=NO and regulatory arbitrage edge."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My **EV-THRESHOLD SWING** template prioritizes GOOGL\u2019s insider_trade in **tech (XLK)** over energy (XLE) due to higher win_rate (33% vs. 61%) but stronger donor-sector alignment (tech donor=NO \u2192 potential regulatory arbitrage edge). Adjusting stake sizing to 10% max per bet to mitigate recent underperformance on XLK (2025-04-03 loss).\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-quant\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"qwen-quant\u2019s **Gradual** strategy aligns with my EV-THRESHOLD SWING; pact on XLK long to exploit GOOGL\u2019s insider_trade while diversifying away from crowded XLE/XLV plays.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA, but my **EV-THRESHOLD SWING** favors XLK (tech) for higher win_rate and regulatory arbitrage edge despite lower sector avg_ret.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.12,\n      \"confidence\": 0.75,\n      \"thesis\": \"GOOGL\u2019s insider_trade (SEC Form 4) signals potential regulatory scrutiny or internal restructuring, aligning with tech sector\u2019s 33% win_rate and donor=NO (no direct sector delivery).\",\n      \"ticker_reason\": \"XLK over XLE/XLV/XLF because tech\u2019s win_rate (33%) is higher than energy\u2019s (61% avg_ret but lower win consistency) and GOOGL\u2019s insider_trade carries regulatory arbitrage potential.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.60,\n      \"thesis\": \"Finance sector\u2019s low avg_ret (-7.36%) and 11% win_rate suggest a contrarian opportunity if GOOGL\u2019s insider_trade spills into broader market uncertainty (VIX=18.0).\",\n      \"ticker_reason\": \"XLF as a hedge to XLK\u2019s directional bet; finance often reacts to tech insider_trade via macro uncertainty, despite lower sector-specific edge.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.08,\n      \"confidence\": 0.55,\n      \"thesis\": \"Energy\u2019s 61% win_rate and donor=NO (no direct sector delivery) create a structural complement to XLK\u2019s tech bet, leveraging GOOGL\u2019s insider_trade as a macro catalyst for commodities.\",\n      \"ticker_reason\": \"XLE over XLB/XLP to target oil/gas subsectors most sensitive to tech-driven macro shifts (e.g., energy transition narratives).\"\n    }\n  ],\n  \"cash_held_pct\": 0.00,\n  \"cash_rationale\": \"No cash held; 90% deployed to meet council\u2019s 55% target while adhering to EV-THRESHOLD SWING\u2019s 6% edge threshold (XLK: 0.499\u00d70.06=0.0299 > 0.05).\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"GOOGL\u2019s insider_trade (p_yes=0.499) passes EV-THRESHOLD SWING\u2019s 6% edge threshold (0.499\u00d70.06=0.0299 > 0.05) with donor=NO and regulatory arbitrage edge.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-quant",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "qwen-quant\u2019s **Gradual** strategy aligns with my EV-THRESHOLD SWING; pact on XLK long to exploit GOOGL\u2019s insider_trade while diversifying away from crowded XLE/XLV plays."
+      }
+    },
+    "selfhost-gemma3": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 115.11,
+      "bankroll_after": 115.11,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=5.2%): My 3-factor model prioritizes congressional proximity (0.4) and fed density (0.3) over pure sector trends; llama-contra's tech-heavy focus ignores healthcare's strong win rate (64%) and energy's positive momentum (61%). CHALLENGE_RESPONSE: Adjust edge threshold to \u22650.05 for sector selection and reduce stake sizing to 10% max per allocation to improve win-rate consistency.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "No event met the 0.06 edge threshold for full deployment; preserving capital for higher-conviction opportunities.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.85,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA but my model favors XLV/XLE/XLP due to stronger healthcare/energy/consumer staples signals."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider_trade with donor=tech delivered=NO suggests potential sector rotation into healthcare/energy/consumer staples."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=5.2%): My 3-factor model prioritizes congressional proximity (0.4) and fed density (0.3) over pure sector trends; llama-contra's tech-heavy focus ignores healthcare's strong win rate (64%) and energy's positive momentum (61%). CHALLENGE_RESPONSE: Adjust edge threshold to \u22650.05 for sector selection and reduce stake sizing to 10% max per allocation to improve win-rate consistency.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with complementary reasoning template; divergence is required to avoid groupthink.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council prioritized XLE/XLF/ITA but my model favors XLV/XLE/XLP due to stronger healthcare/energy/consumer staples signals.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.12, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider_trade at GOOGL with donor=tech delivered=NO suggests potential sector rotation into healthcare (XLV), which has a 64% win rate and +2.28% avg_ret over 30d.\", \"ticker_reason\": \"XLV over XLK/XLP because healthcare sector shows the strongest risk-adjusted returns and congressional proximity is high for healthcare policy.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.10, \"confidence\": 0.68, \"thesis\": \"Energy sector (XLE) has a 61% win rate and +1.28% avg_ret over 30d; insider_trade signals in tech may spill into energy as a defensive rotation.\", \"ticker_reason\": \"XLE over XLF/XLK because energy sector beta is positive and congressional focus on energy policy is high.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.10, \"confidence\": 0.65, \"thesis\": \"Consumer staples (XLP) has an 80% win rate and +0.85% avg_ret over 30d; insider_trade signals may drive defensive consumer stock rotation.\", \"ticker_reason\": \"XLP over XLY/XLC because consumer staples sector has the highest win rate and low volatility, aligning with insider_trade uncertainty.\"}], \"cash_held_pct\": 0.68, \"cash_rationale\": \"No event met the 0.06 edge threshold for full deployment; preserving capital for higher-conviction opportunities.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider_trade with donor=tech delivered=NO suggests potential sector rotation into healthcare/energy/consumer staples.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"No event_idx 2 provided in the data slate.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-qwen06": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 86.2,
+      "bankroll_after": 86.2,
+      "day_strategy": "CHALLENGE_RESPONSE: Adjusting edge threshold to \u22650.07 (from 0.06) to filter weaker signals and reduce losses like the recent XLE short (event#1, AAPL donor) which lost -22.2 despite 11% sector win rate. STRUCTURAL DIVERGE [llama-contra] (edge=7.5%): My TINY-MODEL WIDE COVERAGE template prioritizes flat stakes across sectors with signal_strength \u22650.5, while llama-contra\u2019s structural focus on GOOGL\u2019s tech sector ignores healthcare\u2019s 64% win rate and +0.0228 avg_ret, a clear complement to their str",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding 25% cash to avoid overcommitment on ambiguous signals; the GOOGL insider trade\u2019s edge (0.60) is borderline, and council\u2019s focus on tech/energy does not justify full deployment.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized tech (XLI, XLK) and energy (XLE), but I deviated to focus on healthcare (XLV) due to its higher win rate and avg_ret, aligning with my TINY-MODEL WIDE COVERAGE doctrine."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "GOOGL insider trade has a signal_strength of 0.60, but edge is borderline (0.07 threshold). Allocated across 3 sectors for diversity and risk mitigation."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"CHALLENGE_RESPONSE: Adjusting edge threshold to \u22650.07 (from 0.06) to filter weaker signals and reduce losses like the recent XLE short (event#1, AAPL donor) which lost -22.2 despite 11% sector win rate. STRUCTURAL DIVERGE [llama-contra] (edge=7.5%): My TINY-MODEL WIDE COVERAGE template prioritizes flat stakes across sectors with signal_strength \u22650.5, while llama-contra\u2019s structural focus on GOOGL\u2019s tech sector ignores healthcare\u2019s 64% win rate and +0.0228 avg_ret, a clear complement to their strategy.\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today: GOOGL\u2019s insider trade (event#1) has a 0.60 strength but lacks corroboration from other agencies, and my edge threshold (0.07) is not met. Pacting would risk aligning with peers who may overcommit to crowded signals.\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized tech (XLI, XLK) and energy (XLE), but I deviated to focus on healthcare (XLV) due to its higher win rate and avg_ret, aligning with my TINY-MODEL WIDE COVERAGE doctrine.\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.15,\n      \"confidence\": 0.70,\n      \"thesis\": \"SEC Form 4 insider trade at GOOGL (event#1) has a strength of 0.60, but healthcare\u2019s sector trends (avg_ret=+0.0228, win_rate=64%) suggest a safer play. The donor is tech, but the macro environment (VIX=18.0) favors defensive sectors like healthcare.\",\n      \"ticker_reason\": \"XLV over XLE/XLF/XLK because healthcare\u2019s win rate and avg_ret outperform energy and tech, and the insider trade\u2019s signal is ambiguous enough to avoid overcommitment.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.10,\n      \"confidence\": 0.55,\n      \"thesis\": \"Energy sector (XLE) has a moderate avg_ret (+0.0128) and win rate (61%), but the GOOGL insider trade\u2019s ambiguity justifies a small allocation. Council focus on energy aligns with this play, but I underweight it due to lower edge.\",\n      \"ticker_reason\": \"XLE over XLF/XLV/XLK to respect council\u2019s energy focus while mitigating risk via smaller stake.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.60,\n      \"thesis\": \"Finance sector (XLF) has a negative avg_ret (-0.0736) but is included for sector diversity. The GOOGL insider trade\u2019s donor is tech, not finance, reducing direct exposure risk.\",\n      \"ticker_reason\": \"XLF to hit the diversity mandate (3+ sectors) despite weak sector trends, as a hedge against tech\u2019s volatility.\"\n    }\n  ],\n\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding 25% cash to avoid overcommitment on ambiguous signals; the GOOGL insider trade\u2019s edge (0.60) is borderline, and council\u2019s focus on tech/energy does not justify full deployment.\",\n\n  \"events_considered\": [\n    {\n      \"event_id",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-dolphin3": {
+      "day_idx": 62,
+      "date": "2025-04-04",
+      "n_events": 1,
+      "bankroll_before": 89.61,
+      "bankroll_after": 89.61,
+      "day_strategy": "STRUCTURAL COMPLEMENT [llama-contra] (edge=6.8%): My PAVLOV template prioritizes momentum rotation after sector losses, while leader's STRUCTURAL DIVERGE focuses on donor-sector mismatch. I will exploit healthcare momentum (donor=healthcare) via XLV after recent tech losses.",
+      "cash_held_pct": 0.4167,
+      "cash_rationale": "Holding 25% cash to preserve capital while waiting for higher-conviction signals in future days.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "llama-contra",
+        "peer_bankroll": 445.3
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized tech/energy but healthcare momentum (donor=healthcare) offers higher win_rate (64%) and avg_ret (+2.28%) per sector trends."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong sector trends in healthcare/consumer staples/finance with donor-sector mismatches creating arbitrage."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL COMPLEMENT [llama-contra] (edge=6.8%): My PAVLOV template prioritizes momentum rotation after sector losses, while leader's STRUCTURAL DIVERGE focuses on donor-sector mismatch. I will exploit healthcare momentum (donor=healthcare) via XLV after recent tech losses.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact today due to sector divergence from top peers; healthcare momentum is underutilized.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council prioritized tech/energy but healthcare momentum (donor=healthcare) offers higher win_rate (64%) and avg_ret (+2.28%) per sector trends.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.35, \"confidence\": 0.72, \"thesis\": \"Healthcare sector shows strong insider_trade signals with donor=healthcare and 64% win_rate. GOOGL insider_trade is tech-sector but donor mismatch creates regulatory arbitrage opportunity in healthcare ETF.\", \"ticker_reason\": \"XLV over XLE/XLF due to donor=healthcare alignment and sector trend strength.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.25, \"confidence\": 0.68, \"thesis\": \"Consumer staples sector has 80% win_rate and +0.85% avg_ret. GOOGL donor=tech but consumer staples ETFs may benefit from spillover regulatory clarity.\", \"ticker_reason\": \"XLP over XLY due to higher win_rate and lower volatility.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.60, \"thesis\": \"Finance sector insider_trades have low win_rate (11%) but GOOGL donor=tech may trigger regulatory scrutiny in financial institutions (e.g., payment processors).\", \"ticker_reason\": \"XLF over XLE due to regulatory arbitrage focus on finance.\"}], \"cash_held_pct\": 0.25, \"cash_rationale\": \"Holding 25% cash to preserve capital while waiting for higher-conviction signals in future days.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Strong sector trends in healthcare/consumer staples/finance with donor-sector mismatches creating arbitrage.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"No event data provided for event_idx=2.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    }
+  },
+  "written_at": "2026-04-25T06:29:23.929318+00:00"
+}

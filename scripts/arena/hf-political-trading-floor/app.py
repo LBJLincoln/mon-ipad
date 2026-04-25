@@ -1859,9 +1859,13 @@ def parse_day_allocation(raw: str, n_events: int, drawdown: float = 0.0) -> Opti
 
     VALID_DIRECTIONS = {"long", "short"}
 
+    # 2026-04-25 BUGFIX (user-flagged): cap was [:10] and dedup was per-event,
+    # so any hedge (long XLE + short XLF on same event) or multi-leg pact was
+    # silently dropped after the first leg. New cap is 25 allocs/day; dedup
+    # key is (event, ticker, direction) so each ticker-direction leg counts.
     clean = []
-    seen_events = set()
-    for a in allocations[:10]:
+    seen_keys = set()  # (eidx, ticker, direction) — was {eidx}
+    for a in allocations[:25]:  # was [:10]
         if not isinstance(a, dict):
             continue
         eidx = a.get("event_idx")
@@ -1880,9 +1884,10 @@ def parse_day_allocation(raw: str, n_events: int, drawdown: float = 0.0) -> Opti
             continue
         if eidx < 1 or eidx > n_events:
             continue
-        if eidx in seen_events:
+        key = (eidx, ticker, direction)
+        if key in seen_keys:
             continue
-        seen_events.add(eidx)
+        seen_keys.add(key)
         clean.append({
             "event_idx": eidx,
             "ticker": ticker[:10],
@@ -1953,6 +1958,7 @@ def parse_day_allocation(raw: str, n_events: int, drawdown: float = 0.0) -> Opti
 
     ec = parsed.get("events_considered") or []
     events_considered: List[Dict] = []
+    bet_events = {k[0] for k in seen_keys}  # 2026-04-25 — derived from new (eidx,ticker,dir) keys
     if isinstance(ec, list):
         seen_ec = set()
         for item in ec[:30]:
@@ -1964,7 +1970,7 @@ def parse_day_allocation(raw: str, n_events: int, drawdown: float = 0.0) -> Opti
             seen_ec.add(ei)
             decision = (item.get("decision") or "").lower().strip()
             if decision not in ("bet", "skip"):
-                decision = "bet" if ei in seen_events else "skip"
+                decision = "bet" if ei in bet_events else "skip"
             events_considered.append({
                 "event_idx": ei,
                 "decision": decision,

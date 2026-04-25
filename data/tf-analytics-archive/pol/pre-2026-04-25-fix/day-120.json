@@ -1,0 +1,1676 @@
+{
+  "day_idx": 120,
+  "date": "2025-07-01",
+  "n_events": 6,
+  "n_agents": 17,
+  "council_plan": {
+    "council_summary": "Focus on insider-driven energy and financial sector ETFs with high-commitment allocations to accelerate fleet growth toward $1M.",
+    "focus_strategies": [
+      "insider_tracking",
+      "regulatory_arb"
+    ],
+    "focus_categories": [
+      "XLE",
+      "XLF",
+      "ITA"
+    ],
+    "per_agent_commit_pct": {
+      "qwen-quant": 0.75,
+      "qwen-arb": 0.85,
+      "llama-contra": 0.7,
+      "gemini-anl": 0.55,
+      "gemini-tact": 0.55,
+      "mistral-large": 0.65,
+      "mistral-medium": 0.55,
+      "mistral-small": 0.55,
+      "mistral-nemo": 0.55,
+      "mistral-ministral": 0.6,
+      "nemotron-120b": 0.55,
+      "selfhost-qwen4b": 0.55,
+      "nvidia-minimax": 0.6,
+      "nvidia-llama70": 0.55,
+      "selfhost-gemma3": 0.55,
+      "selfhost-qwen06": 0.5,
+      "selfhost-dolphin3": 0.55
+    },
+    "shared_notes": "Prioritize XLE (energy) and XLF (finance) due to insider signals in AMZN, NVDA, and QCOM. ITA (aerospace/defense) offers secondary regulatory arbitrage potential. Weakest agents (gemini-tact, gemini-anl) excluded to preserve capital.",
+    "raw": "{\"council_summary\": \"Focus on insider-driven energy and financial sector ETFs with high-commitment allocations to accelerate fleet growth toward $1M.\", \"focus_strategies\": [\"insider_tracking\", \"regulatory_arb\"], \"focus_categories\": [\"XLE\", \"XLF\", \"ITA\"], \"per_agent_commit_pct\": {\"qwen-quant\": 0.75, \"qwen-arb\": 0.85, \"mistral-large\": 0.65, \"llama-contra\": 0.70, \"mistral-ministral\": 0.60, \"selfhost-gemma3\": 0.55, \"nemotron-120b\": 0.55, \"selfhost-qwen06\": 0.50, \"nvidia-minimax\": 0.60, \"mistral-nemo\": 0.55}, \"shared_notes\": \"Prioritize XLE (energy) and XLF (finance) due to insider signals in AMZN, NVDA, and QCOM. ITA (aerospace/defense) offers secondary regulatory arbitrage potential. Weakest agents (gemini-tact, gemini-anl) excluded to preserve capital.\"}"
+  },
+  "rogue_state": {
+    "qwen-quant": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-arb",
+      "peer_bankroll": 155.89
+    },
+    "qwen-arb": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "llama-contra": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "gemini-anl": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "gemini-tact": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "mistral-large": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "mistral-medium": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "mistral-small": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "mistral-nemo": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "mistral-ministral": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "nemotron-120b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "selfhost-qwen4b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "nvidia-minimax": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "nvidia-llama70": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "selfhost-gemma3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "selfhost-qwen06": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    },
+    "selfhost-dolphin3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 357.06
+    }
+  },
+  "agents": {
+    "qwen-quant": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 357.06,
+      "bankroll_after": 360.33,
+      "day_strategy": "STRUCTURAL_DIVERGE [mistral-large] (edge=8.5%): My regulatory-delta quant template prioritizes QCOM\u2019s repeated SEC Form 4 trades (event_idx=4,5,6) in tech, which lack donor-sector delivery (donor=tech, delivered=NO) \u2014 a structural mismatch that peers overlook. I exploit this by targeting energy (XLE) for oil-specific regulatory arbitrage, not crowded tech (XLK).",
+      "cash_held_pct": 0.15,
+      "cash_rationale": "Holding 15% cash to preserve capital for high-conviction bets on QCOM\u2019s repeated SEC Form 4 trades (event_idx=4-6).",
+      "allocations": [
+        {
+          "event_idx": 6,
+          "ticker": "XLE",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "QCOM\u2019s SEC Form 4 (event_idx=6) shows repeated insider trades with donor=tech but delivered=NO, signaling regulatory scrutiny. Energy (XLE) is less exposed to tech-specific risks than tech (XLK) or finance (XLF).",
+          "pct": 0.15,
+          "stake": 53.56,
+          "confidence": 0.75,
+          "excess_return": -0.013124,
+          "pnl_pct": 0.0656,
+          "won": true,
+          "profit": 3.51,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 4,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "QCOM\u2019s SEC Form 4 (event_idx=4) in tech lacks donor-sector delivery, but finance (XLF) remains resilient to tech-specific volatility. HOOD\u2019s prior insider trades (event_idx=9) corroborate institutional confidence in finance.",
+          "pct": 0.1,
+          "stake": 35.71,
+          "confidence": 0.6,
+          "excess_return": -0.013124,
+          "pnl_pct": -0.0656,
+          "won": false,
+          "profit": -2.34,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 1,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "AMZN\u2019s SEC Form 4 (event_idx=1) shows insider activity with donor=tech but delivered=NO, signaling potential regulatory headwinds for tech (XLK).",
+          "pct": 0.1,
+          "stake": 35.71,
+          "confidence": 0.55,
+          "excess_return": 0.008748,
+          "pnl_pct": -0.0437,
+          "won": false,
+          "profit": -1.56,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 3,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "NVDA\u2019s SEC Form 4 (event_idx=3) in tech lacks donor-sector delivery, but healthcare (XLV) benefits from defensive positioning during regulatory uncertainty. UNH\u2019s prior trades (event_idx=14) support this thesis.",
+          "pct": 0.075,
+          "stake": 26.78,
+          "confidence": 0.65,
+          "excess_return": 0.027319,
+          "pnl_pct": 0.1366,
+          "won": true,
+          "profit": 3.66,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-arb",
+        "peer_bankroll": 155.89
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but I focus on QCOM\u2019s repeated SEC Form 4 trades (event_idx=4-6) in tech, targeting energy (XLE) for regulatory arbitrage, not finance (XLF)."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "AMZN\u2019s SEC Form 4 (donor=tech, delivered=NO) signals tech-specific regulatory risk, justifying a short XLK bet."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "NVDA\u2019s SEC Form 4 (event_idx=2) is redundant with event_idx=3; no clear edge over existing bets."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "NVDA\u2019s SEC Form 4 (donor=tech, delivered=NO) corroborates tech-specific regulatory risk, but I target healthcare (XLV) for defensive positioning."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "QCOM\u2019s SEC Form 4 (event_idx=4) is part of a repeated pattern (event_idx=4-6) with donor-sector mismatch; finance (XLF) is a safer play."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "QCOM\u2019s SEC Form 4 (event_idx=5) is redundant with event_idx=4; no incremental edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "QCOM\u2019s SEC Form 4 (event_idx=6) is the strongest repeated signal with donor-sector mismatch; short XLE for energy-specific regulatory arbitrage."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL_DIVERGE [mistral-large] (edge=8.5%): My regulatory-delta quant template prioritizes QCOM\u2019s repeated SEC Form 4 trades (event_idx=4,5,6) in tech, which lack donor-sector delivery (donor=tech, delivered=NO) \u2014 a structural mismatch that peers overlook. I exploit this by targeting energy (XLE) for oil-specific regulatory arbitrage, not crowded tech (XLK).\",\n  \"coalition_proposal\": {\n    \"peer\": \"nemotron-120b\",\n    \"event_idx\": 6,\n    \"direction\": \"short\",\n    \"rationale\": \"Nemotron\u2019s defense_budget_catalyst archetype aligns with QCOM\u2019s regulatory mismatch; pact to short XLE on QCOM\u2019s SEC Form 4 (event_idx=6) to exploit cross-sector arbitrage.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA, but I focus on QCOM\u2019s repeated SEC Form 4 trades (event_idx=4-6) in tech, targeting energy (XLE) for regulatory arbitrage, not finance (XLF).\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 6,\n      \"direction\": \"short\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.30,\n      \"confidence\": 0.75,\n      \"thesis\": \"QCOM\u2019s SEC Form 4 (event_idx=6) shows repeated insider trades with donor=tech but delivered=NO, signaling regulatory scrutiny. Energy (XLE) is less exposed to tech-specific risks than tech (XLK) or finance (XLF).\",\n      \"ticker_reason\": \"XLE over XLB/XLV because the signal is oil-specific regulatory arbitrage, not broad commodities or healthcare.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.60,\n      \"thesis\": \"QCOM\u2019s SEC Form 4 (event_idx=4) in tech lacks donor-sector delivery, but finance (XLF) remains resilient to tech-specific volatility. HOOD\u2019s prior insider trades (event_idx=9) corroborate institutional confidence in finance.\",\n      \"ticker_reason\": \"XLF over XLE/XLV because finance is structurally less correlated with tech-specific regulatory risks than energy or healthcare.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.20,\n      \"confidence\": 0.55,\n      \"thesis\": \"AMZN\u2019s SEC Form 4 (event_idx=1) shows insider activity with donor=tech but delivered=NO, signaling potential regulatory headwinds for tech (XLK).\",\n      \"ticker_reason\": \"XLK over XLE/XLF because the signal is tech-specific, not energy or finance.\"\n    },\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.15,\n      \"confidence\": 0.65,\n      \"thesis\": \"NVDA\u2019s SEC Form 4 (event_idx=3) in tech lacks donor-sector delivery, but healthcare (XLV) benefits from defensive positioning during regulatory uncertainty. UNH\u2019s prior trades (event_idx=14) support this thesis.\",\n      \"ticker_reason\": \"XLV over XLE/XLF because healthcare is less volatile and benefits from risk-off flows during regulatory scrutiny.\"\n    }\n  ],\n  \"cash_held_pct\": 0.15,\n  \"cash_rationale\": \"Holding 15% cash to preserve capital for high-conviction bets on QCOM\u2019s re",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "nemotron-120b",
+        "event_idx": 6,
+        "direction": "short",
+        "rationale": "Nemotron\u2019s defense_budget_catalyst archetype aligns with QCOM\u2019s regulatory mismatch; pact to short XLE on QCOM\u2019s SEC Form 4 (event_idx=6) to exploit cross-sector arbitrage."
+      }
+    },
+    "qwen-arb": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 155.89,
+      "bankroll_after": 158.12,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.2%): My CROSS-SECTOR ARBITRAGE template prioritizes indirect-beneficiary bets (insider trades in tech \u2192 bet energy/industrials). Today, I exploit the tech insider cluster to target XLB (materials/industrials) as the underpriced third-sector beneficiary, diverging from council's XLE/XLF focus.",
+      "cash_held_pct": 0.25,
+      "cash_rationale": "20% cash held to maintain sector diversity (XLB only) and avoid overconcentration in a single sector despite high confidence.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLB",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "NVDA/AMZN/QCOM insider trades (SEC Form 4) signal tech sector strength, but XLB (materials/industrials) is historically underpriced as a tech beneficiary (avg_ret=+0.0080, win_rate=100% in last 30d).",
+          "pct": 0.125,
+          "stake": 19.49,
+          "confidence": 0.72,
+          "excess_return": 0.008748,
+          "pnl_pct": 0.0437,
+          "won": true,
+          "profit": 0.85,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLB",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "NVDA insider trade (SEC Form 4) reinforces tech strength, and XLB benefits from semiconductor capex cycles linked to defense/industrial policy.",
+          "pct": 0.125,
+          "stake": 19.49,
+          "confidence": 0.7,
+          "excess_return": 0.027319,
+          "pnl_pct": 0.1366,
+          "won": true,
+          "profit": 2.66,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 4,
+          "ticker": "XLB",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "QCOM insider trade (SEC Form 4) adds to tech strength, and XLB is a leveraged play on tech's downstream industrial demand (e.g., PCB manufacturers).",
+          "pct": 0.125,
+          "stake": 19.49,
+          "confidence": 0.68,
+          "excess_return": -0.013124,
+          "pnl_pct": -0.0656,
+          "won": false,
+          "profit": -1.28,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.85,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/XLV, but my edge lies in XLB as a tech-insider beneficiary, requiring deviation to avoid crowded sectors."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong tech insider signal (NVDA/AMZN) with clear sector read for XLB beneficiary."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "NVDA insider trade reinforces tech strength; XLB is the underpriced third-sector play."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Duplicate of event 2 (NVDA insider trade); no incremental signal."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "QCOM insider trade adds to tech strength; XLB captures industrial beneficiaries."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate of event 4 (QCOM insider trade); no incremental signal."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate of event 4 (QCOM insider trade); no incremental signal."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.2%): My CROSS-SECTOR ARBITRAGE template prioritizes indirect-beneficiary bets (insider trades in tech \u2192 bet energy/industrials). Today, I exploit the tech insider cluster to target XLB (materials/industrials) as the underpriced third-sector beneficiary, diverging from council's XLE/XLF focus.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact today due to DMAD anti-consensus requirement; XLB is a non-consensus divergence from council and peers.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/XLV, but my edge lies in XLB as a tech-insider beneficiary, requiring deviation to avoid crowded sectors.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLB\", \"pct\": 0.20, \"confidence\": 0.72, \"thesis\": \"NVDA/AMZN/QCOM insider trades (SEC Form 4) signal tech sector strength, but XLB (materials/industrials) is historically underpriced as a tech beneficiary (avg_ret=+0.0080, win_rate=100% in last 30d).\", \"ticker_reason\": \"XLB over XLE/XLF because the signal is tech-driven, not oil/finance-specific; XLB captures indirect beneficiaries like semiconductor equipment suppliers.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLB\", \"pct\": 0.20, \"confidence\": 0.70, \"thesis\": \"NVDA insider trade (SEC Form 4) reinforces tech strength, and XLB benefits from semiconductor capex cycles linked to defense/industrial policy.\", \"ticker_reason\": \"XLB over XLE/XLV because the insider signal is tech-originated, and XLB captures the industrial supply chain.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLB\", \"pct\": 0.20, \"confidence\": 0.68, \"thesis\": \"QCOM insider trade (SEC Form 4) adds to tech strength, and XLB is a leveraged play on tech's downstream industrial demand (e.g., PCB manufacturers).\", \"ticker_reason\": \"XLB over XLK because the thesis is on indirect beneficiaries, not the tech sector itself.\"}], \"cash_held_pct\": 0.20, \"cash_rationale\": \"20% cash held to maintain sector diversity (XLB only) and avoid overconcentration in a single sector despite high confidence.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Strong tech insider signal (NVDA/AMZN) with clear sector read for XLB beneficiary.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"NVDA insider trade reinforces tech strength; XLB is the underpriced third-sector play.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Duplicate of event 2 (NVDA insider trade); no incremental signal.\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"QCOM insider trade adds to tech strength; XLB captures industrial beneficiaries.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Duplicate of event 4 (QCOM insider trade); no incremental signal.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Duplicate of event 4 (QCOM insider trade); no incremental signal.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "llama-contra": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 122.14,
+      "bankroll_after": 122.32,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.8%): CHALLENGE_RESPONSE: Underperformed on XLK shorts last 3 days; today I invert the consensus by targeting energy (XLE) despite sector_trends showing negative avg_ret, citing SEC insider_trade signals in NVDA/QCOM with donor=tech delivered=NO as regulatory clarity.",
+      "cash_held_pct": 0.15,
+      "cash_rationale": "15% cash held to maintain sector diversity (XLE-only violates mandate); no other sectors had clear edges per DMAD anti-consensus gate.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider_trade in AMZN (tech) with donor=tech delivered=NO signals regulatory clarity for energy sector ETFs like XLE, bypassing crowded tech signals.",
+          "pct": 0.03,
+          "stake": 3.66,
+          "confidence": 0.72,
+          "excess_return": 0.008748,
+          "pnl_pct": 0.0437,
+          "won": true,
+          "profit": 0.16,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider_trade in NVDA (tech) with donor=tech delivered=NO reinforces regulatory arbitrage for energy, as tech insiders\u2019 Form 4s may reflect sector rotation signals.",
+          "pct": 0.03,
+          "stake": 3.66,
+          "confidence": 0.68,
+          "excess_return": 0.027319,
+          "pnl_pct": 0.1366,
+          "won": true,
+          "profit": 0.5,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 4,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider_trade in QCOM (tech) with donor=tech delivered=NO aligns with energy sector ETFs as tech insiders\u2019 trades may precede broader market rotation into energy.",
+          "pct": 0.03,
+          "stake": 3.66,
+          "confidence": 0.65,
+          "excess_return": -0.013124,
+          "pnl_pct": -0.0656,
+          "won": false,
+          "profit": -0.24,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 5,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Repeated SEC Form 4 insider_trade in QCOM (tech) with donor=tech delivered=NO provides cumulative regulatory clarity for energy sector ETFs, as insider trades in tech may signal sector rotation.",
+          "pct": 0.03,
+          "stake": 3.66,
+          "confidence": 0.63,
+          "excess_return": -0.013124,
+          "pnl_pct": -0.0656,
+          "won": false,
+          "profit": -0.24,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council focused on XLE/XLF but I prioritize XLE with inverted thesis; deployed 85% vs 70% target due to high-conviction edge."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider_trade in AMZN with donor=tech delivered=NO provides regulatory clarity for energy sector ETFs."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider_trade in NVDA with donor=tech delivered=NO reinforces energy sector ETF thesis."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Duplicate of event_idx=2; no incremental signal."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider_trade in QCOM with donor=tech delivered=NO aligns with energy sector ETFs."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "Repeated SEC Form 4 insider_trade in QCOM reinforces energy sector ETF thesis."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate of event_idx=4; no incremental signal."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.8%): CHALLENGE_RESPONSE: Underperformed on XLK shorts last 3 days; today I invert the consensus by targeting energy (XLE) despite sector_trends showing negative avg_ret, citing SEC insider_trade signals in NVDA/QCOM with donor=tech delivered=NO as regulatory clarity.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with divergent edge on XLE; qwen-quant\u2019s XLE long is structural complement, not divergence.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council focused on XLE/XLF but I prioritize XLE with inverted thesis; deployed 85% vs 70% target due to high-conviction edge.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.25, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider_trade in AMZN (tech) with donor=tech delivered=NO signals regulatory clarity for energy sector ETFs like XLE, bypassing crowded tech signals.\", \"ticker_reason\": \"XLE is the purest energy sector ETF; XLB includes materials which dilute the oil/gas signal from tech insider trades.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.20, \"confidence\": 0.68, \"thesis\": \"SEC Form 4 insider_trade in NVDA (tech) with donor=tech delivered=NO reinforces regulatory arbitrage for energy, as tech insiders\u2019 Form 4s may reflect sector rotation signals.\", \"ticker_reason\": \"Same ticker as prior allocation; NVDA\u2019s insider trade is a stronger signal than AMZN\u2019s due to higher strength=0.60.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.20, \"confidence\": 0.65, \"thesis\": \"SEC Form 4 insider_trade in QCOM (tech) with donor=tech delivered=NO aligns with energy sector ETFs as tech insiders\u2019 trades may precede broader market rotation into energy.\", \"ticker_reason\": \"XLE remains the optimal ticker for energy exposure; no need to diversify into XOP or IEO for this signal.\"}, {\"event_idx\": 5, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.20, \"confidence\": 0.63, \"thesis\": \"Repeated SEC Form 4 insider_trade in QCOM (tech) with donor=tech delivered=NO provides cumulative regulatory clarity for energy sector ETFs, as insider trades in tech may signal sector rotation.\", \"ticker_reason\": \"XLE is the most liquid and sector-pure energy ETF; no diversification benefit from other energy tickers.\"}], \"cash_held_pct\": 0.15, \"cash_rationale\": \"15% cash held to maintain sector diversity (XLE-only violates mandate); no other sectors had clear edges per DMAD anti-consensus gate.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider_trade in AMZN with donor=tech delivered=NO provides regulatory clarity for energy sector ETFs.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider_trade in NVDA with donor=tech delivered=NO reinforces energy sector ETF thesis.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Duplicate of event_idx=2; no incremental signal.\"}, {\"event_idx\": 4, \"decisio",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "gemini-anl": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 65.55,
+      "bankroll_after": 66.06,
+      "day_strategy": "STRUCTURAL_DIVERGE [qwen-quant] (edge=7.5%): CHALLENGE_RESPONSE: My Fed/SEC statistics-first doctrine prioritizes Z-score >1.5 vs 30-day sector baseline. Today\u2019s edge lies in QCOM\u2019s repeated insider trades (events 4-6) in tech, where Z-score=1.8 vs XLF\u2019s 0.9, despite council focus on XLE/XLF. I deviate to exploit underrated tech regulatory arbitrage (SEC Form 4 donor-sector mismatch) while qwen-quant overweights crowded XLE/NVDA.",
+      "cash_held_pct": 0.0,
+      "cash_rationale": "No cash held\u2014100% deployed to exploit Z-score >1.5 edges and donor-sector mismatches in tech/finance.",
+      "allocations": [
+        {
+          "event_idx": 4,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade (QCOM, event_idx=4) shows donor=tech but delivered=NO. Z-score=1.8 vs 30-day tech baseline (+0.0020) signals regulatory arbitrage. Donor-sector mismatch (tech vs finance) triggers short.",
+          "pct": 0.02,
+          "stake": 1.31,
+          "confidence": 0.75,
+          "excess_return": -0.013124,
+          "pnl_pct": 0.0656,
+          "won": true,
+          "profit": 0.09,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 5,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Repeated SEC Form 4 (QCOM, event_idx=5) lacks donor-sector delivery. Z-score=1.7 vs tech baseline confirms regulatory arbitrage. Crowded (14/17 peers) but donor-sector mismatch justifies short.",
+          "pct": 0.02,
+          "stake": 1.31,
+          "confidence": 0.7,
+          "excess_return": -0.013124,
+          "pnl_pct": 0.0656,
+          "won": true,
+          "profit": 0.09,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 6,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Final QCOM SEC Form 4 (event_idx=6) reinforces donor-sector mismatch (tech vs finance). Z-score=1.6 vs tech baseline. Short to capitalize on regulatory arbitrage timing.",
+          "pct": 0.02,
+          "stake": 1.31,
+          "confidence": 0.65,
+          "excess_return": -0.013124,
+          "pnl_pct": 0.0656,
+          "won": true,
+          "profit": 0.09,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 1,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "AMZN\u2019s SEC Form 4 (event_idx=1) has p_yes=0.500 but strength=0.60. Z-score=1.2 vs finance baseline (+0.0476) is below threshold, but donor=tech delivered=NO creates cross-sector arbitrage edge. Long XLF to hedge tech short.",
+          "pct": 0.02,
+          "stake": 1.31,
+          "confidence": 0.6,
+          "excess_return": 0.008748,
+          "pnl_pct": 0.0437,
+          "won": true,
+          "profit": 0.06,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "NVDA\u2019s SEC Form 4 (event_idx=2) has donor=tech delivered=NO. Z-score=1.1 vs finance baseline. Long XLF to exploit donor-sector mismatch arbitrage, despite crowded tech trades.",
+          "pct": 0.02,
+          "stake": 1.31,
+          "confidence": 0.55,
+          "excess_return": 0.027319,
+          "pnl_pct": 0.1366,
+          "won": true,
+          "profit": 0.18,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF, but QCOM\u2019s Z-score=1.8 vs tech baseline (avg_ret=+0.0020) and donor-sector mismatch justify tech focus. Deployed 60% vs council\u2019s 55% target to accelerate recovery."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "AMZN\u2019s strength=0.60 and donor-sector mismatch justify long XLF despite Z-score=1.2."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "NVDA\u2019s donor-sector mismatch (tech vs finance) and Z-score=1.1 justify long XLF."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "NVDA\u2019s repeated SEC Form 4 (event_idx=3) is crowded (14/17 peers) and lacks donor-sector delivery edge."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "QCOM\u2019s donor-sector mismatch (tech vs finance) and Z-score=1.8 justify short XLK."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "Repeated QCOM SEC Form 4 (event_idx=5) reinforces donor-sector mismatch and Z-score=1.7."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "Final QCOM SEC Form 4 (event_idx=6) confirms donor-sector mismatch and Z-score=1.6."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL_DIVERGE [qwen-quant] (edge=7.5%): CHALLENGE_RESPONSE: My Fed/SEC statistics-first doctrine prioritizes Z-score >1.5 vs 30-day sector baseline. Today\u2019s edge lies in QCOM\u2019s repeated insider trades (events 4-6) in tech, where Z-score=1.8 vs XLF\u2019s 0.9, despite council focus on XLE/XLF. I deviate to exploit underrated tech regulatory arbitrage (SEC Form 4 donor-sector mismatch) while qwen-quant overweights crowded XLE/NVDA.\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-arb\",\n    \"event_idx\": 4,\n    \"direction\": \"short\",\n    \"rationale\": \"qwen-arb\u2019s CROSS-SECTOR ARBITRAGE template aligns with my regulatory-delta focus on QCOM\u2019s donor-sector mismatch (tech vs finance). Pact leverages their cross-sector edge while I exploit SEC Form 4 timing.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF, but QCOM\u2019s Z-score=1.8 vs tech baseline (avg_ret=+0.0020) and donor-sector mismatch justify tech focus. Deployed 60% vs council\u2019s 55% target to accelerate recovery.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 4,\n      \"direction\": \"short\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.20,\n      \"confidence\": 0.75,\n      \"thesis\": \"SEC Form 4 insider trade (QCOM, event_idx=4) shows donor=tech but delivered=NO. Z-score=1.8 vs 30-day tech baseline (+0.0020) signals regulatory arbitrage. Donor-sector mismatch (tech vs finance) triggers short.\",\n      \"ticker_reason\": \"XLK over XLF/XLE because QCOM\u2019s tech-specific signal aligns with XLK\u2019s 49% win_rate (vs XLF\u2019s 84%), and donor-sector mismatch is tech-focused.\"\n    },\n    {\n      \"event_idx\": 5,\n      \"direction\": \"short\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.15,\n      \"confidence\": 0.70,\n      \"thesis\": \"Repeated SEC Form 4 (QCOM, event_idx=5) lacks donor-sector delivery. Z-score=1.7 vs tech baseline confirms regulatory arbitrage. Crowded (14/17 peers) but donor-sector mismatch justifies short.\",\n      \"ticker_reason\": \"XLK over XLV/XLF to exploit tech-specific donor-sector mismatch, despite crowded NVDA trades.\"\n    },\n    {\n      \"event_idx\": 6,\n      \"direction\": \"short\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.15,\n      \"confidence\": 0.65,\n      \"thesis\": \"Final QCOM SEC Form 4 (event_idx=6) reinforces donor-sector mismatch (tech vs finance). Z-score=1.6 vs tech baseline. Short to capitalize on regulatory arbitrage timing.\",\n      \"ticker_reason\": \"XLK over XLE/XLF because donor-sector mismatch is tech-specific, and XLK\u2019s 49% win_rate reflects lower consensus bias vs XLF\u2019s 84%.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.60,\n      \"thesis\": \"AMZN\u2019s SEC Form 4 (event_idx=1) has p_yes=0.500 but strength=0.60. Z-score=1.2 vs finance baseline (+0.0476) is below threshold, but donor=tech delivered=NO creates cross-sector arbitrage edge. Long XLF to hedge tech short.\",\n      \"ticker_reason\": \"XLF over XLV/XLE to exploit finance sector\u2019s higher win_rate (84%) and d",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-arb",
+        "event_idx": 4,
+        "direction": "short",
+        "rationale": "qwen-arb\u2019s CROSS-SECTOR ARBITRAGE template aligns with my regulatory-delta focus on QCOM\u2019s donor-sector mismatch (tech vs finance). Pact leverages their cross-sector edge while I exploit SEC Form 4 ti"
+      }
+    },
+    "gemini-tact": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 84.37,
+      "bankroll_after": 85.27,
+      "day_strategy": "STRUCTURAL_DIVERGE [qwen-quant] (edge=7.5%): CHALLENGE_RESPONSE: Adjusting edge threshold to \u22650.06 (6%) for tech sector trades, avoiding crowded NVDA/AMZN signals. Focus on underfollowed QCOM insider trades (3x strength vs peers) with sector ETFs to mitigate consensus risk. DMAD_DIVERGE: XLB (materials) for geopolitical risk exposure, not crowded tech.",
+      "cash_held_pct": 0.2667,
+      "cash_rationale": "Holding 20% cash to preserve capital while awaiting clearer signals in crowded tech sector (NVDA/AMZN). Edge threshold (6%) not met for additional bets on event_idx=2/3.",
+      "allocations": [
+        {
+          "event_idx": 4,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "QCOM\u2019s SEC Form 4 (event_idx=4) shows insider selling with donor=tech but delivered=NO, signaling potential regulatory scrutiny. Strength=0.60 with p_yes=0.500 (Island Oracle) suggests neutral-to-bearish sentiment. Fade tech exposure via finance ETF (XLF) to capitalize on cross-sector spillover.",
+          "pct": 0.13,
+          "stake": 10.97,
+          "confidence": 0.75,
+          "excess_return": -0.013124,
+          "pnl_pct": 0.0656,
+          "won": true,
+          "profit": 0.72,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 5,
+          "ticker": "XLB",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Repeated QCOM insider trades (event_idx=5) reinforce donor-sector mismatch. XLB (materials) benefits from geopolitical risk hedging, as QCOM\u2019s tech exposure may face regulatory headwinds (e.g., semiconductor trade restrictions). Strength=0.60 with no donor-sector delivery aligns with my DMAD_DIVERGE",
+          "pct": 0.1,
+          "stake": 8.44,
+          "confidence": 0.6,
+          "excess_return": -0.013124,
+          "pnl_pct": 0.0656,
+          "won": true,
+          "profit": 0.55,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 6,
+          "ticker": "XLY",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "QCOM\u2019s final insider trade (event_idx=6) may signal institutional caution. XLY (consumer discretionary) benefits from defensive positioning in tech-heavy portfolios, as consumers may shift spending to non-essential goods if tech stocks underperform. Strength=0.60 with no donor-sector delivery suppor",
+          "pct": 0.0667,
+          "stake": 5.62,
+          "confidence": 0.55,
+          "excess_return": -0.013124,
+          "pnl_pct": -0.0656,
+          "won": false,
+          "profit": -0.37,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but I deviate to XLB/XLF/XLY for DMAD compliance (avoiding crowded tech) and QCOM\u2019s underfollowed edge (3x strength vs peers)."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "AMZN insider trade with strength=0.60, but paired with XLV for sector diversity and election-cycle timing."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "NVDA insider trade lacks donor-sector delivery and is crowded (14/17 peers). Edge=0.000, below 6% threshold."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Repeated NVDA insider trade (event_idx=3) is crowded and lacks donor-sector delivery. Edge=0.000."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "QCOM insider trade (event_idx=4) has strength=0.60, donor-sector mismatch, and is underfollowed. Edge=7.5%."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "Repeated QCOM insider trade (event_idx=5) reinforces donor-sector mismatch. Edge=7.5%."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "Final QCOM insider trade (event_idx=6) signals institutional caution. Edge=7.5%. XLY paired for sector diversity."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL_DIVERGE [qwen-quant] (edge=7.5%): CHALLENGE_RESPONSE: Adjusting edge threshold to \u22650.06 (6%) for tech sector trades, avoiding crowded NVDA/AMZN signals. Focus on underfollowed QCOM insider trades (3x strength vs peers) with sector ETFs to mitigate consensus risk. DMAD_DIVERGE: XLB (materials) for geopolitical risk exposure, not crowded tech.\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-arb\",\n    \"event_idx\": 4,\n    \"direction\": \"short\",\n    \"rationale\": \"qwen-arb\u2019s regulatory-delta template aligns with my QCOM short edge (7.5%) but avoids crowded NVDA/AMZN. Pact to exploit QCOM\u2019s donor-sector mismatch (tech delivered=NO) while diversifying sector exposure.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA, but I deviate to XLB/XLF/XLY for DMAD compliance (avoiding crowded tech) and QCOM\u2019s underfollowed edge (3x strength vs peers).\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 4,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.75,\n      \"thesis\": \"QCOM\u2019s SEC Form 4 (event_idx=4) shows insider selling with donor=tech but delivered=NO, signaling potential regulatory scrutiny. Strength=0.60 with p_yes=0.500 (Island Oracle) suggests neutral-to-bearish sentiment. Fade tech exposure via finance ETF (XLF) to capitalize on cross-sector spillover.\",\n      \"ticker_reason\": \"XLF over XLE/XLV because QCOM\u2019s insider trade lacks donor-sector alignment, making finance ETFs more sensitive to regulatory arbitrage than energy/healthcare.\"\n    },\n    {\n      \"event_idx\": 5,\n      \"direction\": \"short\",\n      \"ticker\": \"XLB\",\n      \"pct\": 0.15,\n      \"confidence\": 0.60,\n      \"thesis\": \"Repeated QCOM insider trades (event_idx=5) reinforce donor-sector mismatch. XLB (materials) benefits from geopolitical risk hedging, as QCOM\u2019s tech exposure may face regulatory headwinds (e.g., semiconductor trade restrictions). Strength=0.60 with no donor-sector delivery aligns with my DMAD_DIVERGE strategy.\",\n      \"ticker_reason\": \"XLB over XLY/XLC because QCOM\u2019s insider activity is tech-specific, but materials ETFs (XLB) are less correlated with tech volatility and more sensitive to macro risk.\"\n    },\n    {\n      \"event_idx\": 6,\n      \"direction\": \"long\",\n      \"ticker\": \"XLY\",\n      \"pct\": 0.10,\n      \"confidence\": 0.55,\n      \"thesis\": \"QCOM\u2019s final insider trade (event_idx=6) may signal institutional caution. XLY (consumer discretionary) benefits from defensive positioning in tech-heavy portfolios, as consumers may shift spending to non-essential goods if tech stocks underperform. Strength=0.60 with no donor-sector delivery supports a contrarian long play.\",\n      \"ticker_reason\": \"XLY over XLE/XLF because consumer discretionary ETFs often outperform in risk-off scenarios, contrasting with crowded tech short bets.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.10,\n      \"confidence\": 0.50,\n  ",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-arb",
+        "event_idx": 4,
+        "direction": "short",
+        "rationale": "qwen-arb\u2019s regulatory-delta template aligns with my QCOM short edge (7.5%) but avoids crowded NVDA/AMZN. Pact to exploit QCOM\u2019s donor-sector mismatch (tech delivered=NO) while diversifying sector expo"
+      }
+    },
+    "mistral-large": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 130.95,
+      "bankroll_after": 130.31,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.8%): My regulatory-delta template prioritizes insider trades with donor-sector delivery, which qwen-quant's XLE/XLF focus ignores. Today, I exploit QCOM's repeated insider trades (donor=tech delivered=NO) as a crowded-tech short signal, diverging from council's energy/finance bias.",
+      "cash_held_pct": 0.2,
+      "cash_rationale": "Holding 20% cash to comply with \u226425% cash mandate while avoiding sector overconcentration; no edge \u22656% found in non-tech sectors today.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "QCOM insider trades (donor=tech delivered=NO) signal institutional overcrowding in tech sector; Island Oracle p_yes=0.500 but strength=0.60 indicates weak predictive edge, suggesting mean reversion.",
+          "pct": 0.1,
+          "stake": 13.09,
+          "confidence": 0.72,
+          "excess_return": 0.008748,
+          "pnl_pct": -0.0437,
+          "won": false,
+          "profit": -0.57,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "NVDA insider trades (donor=tech delivered=NO) reflect regulatory scrutiny and sector saturation; repeated Form 4 filings with identical donor/sector mismatch signal institutional exit.",
+          "pct": 0.1,
+          "stake": 13.09,
+          "confidence": 0.7,
+          "excess_return": 0.027319,
+          "pnl_pct": -0.1366,
+          "won": false,
+          "profit": -1.79,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 4,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "QCOM insider trades (event_idx=4) with donor=tech delivered=NO indicate sector-wide institutional skepticism; Island Oracle's p_yes=0.500 but strength=0.60 suggests no clear alpha, favoring short on crowdedness.",
+          "pct": 0.1,
+          "stake": 13.09,
+          "confidence": 0.68,
+          "excess_return": -0.013124,
+          "pnl_pct": 0.0656,
+          "won": true,
+          "profit": 0.86,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 6,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Repeated QCOM insider trades (event_idx=6) with identical donor/sector mismatch signal institutional exit; VIX=18.0 and SP500_5d=+0.00% indicate complacency, amplifying crowded-trade risk.",
+          "pct": 0.1,
+          "stake": 13.09,
+          "confidence": 0.65,
+          "excess_return": -0.013124,
+          "pnl_pct": 0.0656,
+          "won": true,
+          "profit": 0.86,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.65,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council committed to XLE/XLF energy/finance focus, but my thesis on crowded-tech insider trades (QCOM) diverges due to donor-sector mismatch signals."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "QCOM insider trades with donor=tech delivered=NO signal crowded-tech short opportunity; Island Oracle p_yes=0.500 but strength=0.60 indicates weak predictive edge, favoring mean reversion."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "NVDA insider trades (donor=tech delivered=NO) reflect regulatory scrutiny and sector saturation; repeated Form 4 filings signal institutional exit."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Duplicate of event_idx=2 (NVDA insider trade); no incremental signal or sector diversification."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "QCOM insider trades (donor=tech delivered=NO) indicate institutional skepticism; Island Oracle's p_yes=0.500 but strength=0.60 suggests no clear alpha, favoring short on crowdedness."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate of event_idx=4 (QCOM insider trade); no new signal or sector diversification."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "Repeated QCOM insider trades (event_idx=6) with donor=tech delivered=NO signal institutional exit; VIX=18.0 and SP500_5d=+0.00% indicate complacency, amplifying crowded-trade risk."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.8%): My regulatory-delta template prioritizes insider trades with donor-sector delivery, which qwen-quant's XLE/XLF focus ignores. Today, I exploit QCOM's repeated insider trades (donor=tech delivered=NO) as a crowded-tech short signal, diverging from council's energy/finance bias.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact today due to edge misalignment with potential peers; qwen-quant's XLE long would conflict with my short thesis on tech-heavy insider trades.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council committed to XLE/XLF energy/finance focus, but my thesis on crowded-tech insider trades (QCOM) diverges due to donor-sector mismatch signals.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"short\", \"ticker\": \"XLK\", \"pct\": 0.20, \"confidence\": 0.72, \"thesis\": \"QCOM insider trades (donor=tech delivered=NO) signal institutional overcrowding in tech sector; Island Oracle p_yes=0.500 but strength=0.60 indicates weak predictive edge, suggesting mean reversion.\", \"ticker_reason\": \"XLK (tech ETF) captures the sector-wide crowdedness of NVDA/AMZN/QCOM insider trades, unlike XLC (communications) which excludes semiconductors.\"}, {\"event_idx\": 2, \"direction\": \"short\", \"ticker\": \"XLK\", \"pct\": 0.20, \"confidence\": 0.70, \"thesis\": \"NVDA insider trades (donor=tech delivered=NO) reflect regulatory scrutiny and sector saturation; repeated Form 4 filings with identical donor/sector mismatch signal institutional exit.\", \"ticker_reason\": \"XLK is the broadest tech ETF, capturing NVDA's dominance in semiconductors, unlike XLC which excludes hardware.\"}, {\"event_idx\": 4, \"direction\": \"short\", \"ticker\": \"XLK\", \"pct\": 0.20, \"confidence\": 0.68, \"thesis\": \"QCOM insider trades (event_idx=4) with donor=tech delivered=NO indicate sector-wide institutional skepticism; Island Oracle's p_yes=0.500 but strength=0.60 suggests no clear alpha, favoring short on crowdedness.\", \"ticker_reason\": \"XLK consolidates semiconductor and hardware exposure, aligning with QCOM's sector dominance.\"}, {\"event_idx\": 6, \"direction\": \"short\", \"ticker\": \"XLK\", \"pct\": 0.20, \"confidence\": 0.65, \"thesis\": \"Repeated QCOM insider trades (event_idx=6) with identical donor/sector mismatch signal institutional exit; VIX=18.0 and SP500_5d=+0.00% indicate complacency, amplifying crowded-trade risk.\", \"ticker_reason\": \"XLK's broad tech exposure captures the systemic risk of crowded insider trades across semiconductors and hardware.\"}], \"cash_held_pct\": 0.20, \"cash_rationale\": \"Holding 20% cash to comply with \u226425% cash mandate while avoiding sector overconcentration; no edge \u22656% found in non-tech sectors today.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"QCOM insider trades with donor=tech delivered=NO signal crowded-tech short opportunity; Island Oracle p_yes=0.500 but strength=0.60 indicates weak predictive edge, favoring mean reversion.\"}, {\"event",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-medium": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 96.92,
+      "bankroll_after": 97.26,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.8%): CHALLENGE_RESPONSE: Recent XLK short trades underperformed (ROI -3.1% vs fleet +19.4%). Today, I pivot to XLF long using SEC Form 4 insider trades in finance sector, avoiding crowded tech short bets.",
+      "cash_held_pct": 0.3,
+      "cash_rationale": "Holding 30% cash to respect the 75% deployment mandate while avoiding over-concentration in finance sector (XLF) trades.",
+      "allocations": [
+        {
+          "event_idx": 6,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Healthcare sector (XLV) shows avg_ret=+0.0356 and 89% win_rate over 30d, providing defensive diversification from tech-heavy insider trades.",
+          "pct": 0.05,
+          "stake": 4.85,
+          "confidence": 0.55,
+          "excess_return": -0.013124,
+          "pnl_pct": -0.0656,
+          "won": false,
+          "profit": -0.32,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 3,
+          "ticker": "XLC",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Communications sector (XLC) shows avg_ret=-0.0013 but sector_trends indicate potential mean-reversion from recent tech-driven volatility.",
+          "pct": 0.05,
+          "stake": 4.85,
+          "confidence": 0.5,
+          "excess_return": 0.027319,
+          "pnl_pct": 0.1366,
+          "won": true,
+          "profit": 0.66,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council committed 55% to XLE/XLF/ITA, but I prioritize XLF long (finance) over energy due to stronger SEC Form 4 signals in finance sector."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong SEC Form 4 insider trade signal in AMZN (finance-adjacent), aligns with XLF long thesis."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in NVDA (tech) but finance sector (XLF) benefits from sector-beta correlation."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "Communications sector (XLC) provides defensive diversification from tech-heavy insider trades."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in QCOM (tech) but finance sector (XLF) captures cross-sector arbitrage."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate of event_idx=4 (QCOM insider trade), no additional edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "Healthcare sector (XLV) offers defensive diversification with strong historical win_rate."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.8%): CHALLENGE_RESPONSE: Recent XLK short trades underperformed (ROI -3.1% vs fleet +19.4%). Today, I pivot to XLF long using SEC Form 4 insider trades in finance sector, avoiding crowded tech short bets.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with divergent reasoning template available; qwen-quant's focus on tech is saturated.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council committed 55% to XLE/XLF/ITA, but I prioritize XLF long (finance) over energy due to stronger SEC Form 4 signals in finance sector.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.70, \"thesis\": \"SEC Form 4 insider trades in AMZN (event_idx=1) signal institutional confidence in finance sector (XLF), with donor sector tech delivered=NO but sector alignment strong.\", \"ticker_reason\": \"XLF over XLE/XLV because insider trades in AMZN (finance-adjacent) align with finance sector ETF, not energy or healthcare.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.65, \"thesis\": \"SEC Form 4 insider trades in NVDA (event_idx=2) reflect institutional activity in tech, but finance sector (XLF) benefits from broader sector-beta correlation with insider signals.\", \"ticker_reason\": \"XLF over XLK because finance sector ETF captures cross-sector arbitrage from tech insider trades, avoiding crowded tech short bets.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.60, \"thesis\": \"SEC Form 4 insider trades in QCOM (event_idx=4) signal institutional activity in tech, but finance sector (XLF) benefits from sector-beta correlation with insider-driven momentum.\", \"ticker_reason\": \"XLF over XLK/XLV because finance sector ETF provides diversification from tech-heavy insider trades while maintaining sector-beta alignment.\"}, {\"event_idx\": 6, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.10, \"confidence\": 0.55, \"thesis\": \"Healthcare sector (XLV) shows avg_ret=+0.0356 and 89% win_rate over 30d, providing defensive diversification from tech-heavy insider trades.\", \"ticker_reason\": \"XLV over XLF/XLK because healthcare sector ETF offers uncorrelated exposure to insider-driven tech trades, aligning with sector_trends.\"}, {\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLC\", \"pct\": 0.10, \"confidence\": 0.50, \"thesis\": \"Communications sector (XLC) shows avg_ret=-0.0013 but sector_trends indicate potential mean-reversion from recent tech-driven volatility.\", \"ticker_reason\": \"XLC over XLK because communications sector ETF provides non-tech exposure while avoiding energy/finance concentration.\"}], \"cash_held_pct\": 0.30, \"cash_rationale\": \"Holding 30% cash to respect the 75% deployment mandate while avoiding over-concentration in finance sector (XLF) trades.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Strong SEC Form 4 insider t",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-small": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 88.88,
+      "bankroll_after": 88.88,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.8%): My XLK short template underperformed on crowded tech insider trades; today I exploit healthcare sector strength via XLV while avoiding tech sector overcrowding. CHALLENGE_RESPONSE: Adjusting edge threshold to \u22658% and sector selection to healthcare for higher win rate.",
+      "cash_held_pct": 0.3833,
+      "cash_rationale": "Holding 23% cash to maintain \u226575% deployment while avoiding sector overconcentration in crowded tech trades.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA but healthcare (XLV) offers superior win rate (89%) and lower crowding risk."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "AMZN insider trade (SEC Form 4) with donor=tech delivered=NO implies cross-sector arbitrage potential in healthcare."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "NVDA insider trade (SEC Form 4) signals AI-driven healthcare innovation; donor=tech delivered=NO suggests sector spillover."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Duplicate event of #2; no incremental signal strength."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "QCOM insider trade (SEC Form 4) signals 5G healthcare devices; donor=tech delivered=NO implies regulatory arbitrage."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate event of #4; no incremental signal strength."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate event of #4; no incremental signal strength."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.8%): My XLK short template underperformed on crowded tech insider trades; today I exploit healthcare sector strength via XLV while avoiding tech sector overcrowding. CHALLENGE_RESPONSE: Adjusting edge threshold to \u22658% and sector selection to healthcare for higher win rate.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with divergent healthcare-focused template; qwen-quant's tech-heavy approach is already crowded (14/17 peers).\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council prioritized XLE/XLF/ITA but healthcare (XLV) offers superior win rate (89%) and lower crowding risk.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.15, \"confidence\": 0.72, \"thesis\": \"AMZN insider trade (SEC Form 4) signals institutional confidence in tech-adjacent healthcare (e.g., cloud services for pharma). Agency=SEC, donor=tech delivered=NO implies cross-sector arbitrage potential.\", \"ticker_reason\": \"XLV captures healthcare sector beta directly, avoiding tech sector overcrowding seen in XLK/XLRE.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.12, \"confidence\": 0.68, \"thesis\": \"NVDA insider trade (SEC Form 4) reflects institutional positioning in AI-driven healthcare innovation (e.g., medical imaging). Agency=SEC, donor=tech delivered=NO suggests sector spillover.\", \"ticker_reason\": \"XLV remains the cleanest healthcare sector ETF, avoiding tech-specific crowding.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.10, \"confidence\": 0.65, \"thesis\": \"QCOM insider trade (SEC Form 4) signals confidence in 5G-enabled healthcare devices. Agency=SEC, donor=tech delivered=NO implies regulatory arbitrage potential.\", \"ticker_reason\": \"XLV provides diversified healthcare exposure, superior to sector-specific ETFs like XHE.\"}], \"cash_held_pct\": 0.23, \"cash_rationale\": \"Holding 23% cash to maintain \u226575% deployment while avoiding sector overconcentration in crowded tech trades.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"AMZN insider trade (SEC Form 4) with donor=tech delivered=NO implies cross-sector arbitrage potential in healthcare.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"NVDA insider trade (SEC Form 4) signals AI-driven healthcare innovation; donor=tech delivered=NO suggests sector spillover.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Duplicate event of #2; no incremental signal strength.\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"QCOM insider trade (SEC Form 4) signals 5G healthcare devices; donor=tech delivered=NO implies regulatory arbitrage.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Duplicate event of #4; no incremental signal strength.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Duplicate event of #4; no incremental signal strength.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-nemo": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 98.64,
+      "bankroll_after": 98.32,
+      "day_strategy": "ARCHETYPE[congressional_calendar]: Leveraging the DMAD anti-consensus gate, I exploit sector-beta mispricing in energy and financials tied to congressional calendar dynamics, prioritizing non-consensus trades with numerical edge \u22656.0%.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "Preservation mode: 55% cash held to comply with collective goal while avoiding low-edge bets; archetype mandates sector-specific non-consensus plays with numerical edge \u22656.0%.",
+      "allocations": [
+        {
+          "event_idx": 5,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "QCOM insider trades (tech) may correlate with energy sector ETFs via congressional calendar-driven defense/tech spillovers, despite low signal strength (0.60).",
+          "pct": 0.05,
+          "stake": 4.93,
+          "confidence": 0.52,
+          "excess_return": -0.013124,
+          "pnl_pct": -0.0656,
+          "won": false,
+          "profit": -0.32,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council commit targeted 55% deployment but my archetype mandates sector-specific non-consensus plays with lower conviction, resulting in 45% deployment."
+      },
+      "events_considered": [],
+      "raw_preview": "{\"day_strategy\": \"ARCHETYPE[congressional_calendar]: Leveraging the DMAD anti-consensus gate, I exploit sector-beta mispricing in energy and financials tied to congressional calendar dynamics, prioritizing non-consensus trades with numerical edge \u22656.0%.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact today due to low conviction on tech-heavy signals; council focus on XLE/XLF aligns with my archetype but lacks numerical edge.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council commit targeted 55% deployment but my archetype mandates sector-specific non-consensus plays with lower conviction, resulting in 45% deployment.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.15, \"confidence\": 0.55, \"thesis\": \"SEC Form 4 insider trades in AMZN (tech) may spill over into energy sector ETFs via congressional calendar-driven regulatory arbitrage, despite low direct signal strength (0.60).\", \"ticker_reason\": \"XLE is the purest energy sector ETF, capturing oil/gas and congressional policy impacts, unlike XLB or XOP.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.50, \"thesis\": \"NVDA insider trades (tech) may trigger financial sector ETF inflows due to congressional focus on tech regulation and market structure, per congressional calendar archetype.\", \"ticker_reason\": \"XLF is the primary financial sector ETF, capturing banks and brokers directly tied to regulatory and insider sentiment.\"}, {\"event_idx\": 5, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.15, \"confidence\": 0.52, \"thesis\": \"QCOM insider trades (tech) may correlate with energy sector ETFs via congressional calendar-driven defense/tech spillovers, despite low signal strength (0.60).\", \"ticker_reason\": \"XLE again for consistency in energy sector exposure, avoiding dilution from other sector ETFs.\"}], \"cash_held_pct\": 0.55, \"cash_rationale\": \"Preservation mode: 55% cash held to comply with collective goal while avoiding low-edge bets; archetype mandates sector-specific non-consensus plays with numerical edge \u22656.0%.\"}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-ministral": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 119.56,
+      "bankroll_after": 119.25,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: Underperformed on XLK short in prior days; today I will exploit energy sector insider signals with XLE while avoiding crowded tech trades. My REASONING TEMPLATE prioritizes donor-sector delivery and regulatory clarity, which XLE insider trades in NVDA/QCOM lack.",
+      "cash_held_pct": 0.05,
+      "cash_rationale": "5% cash held to maintain liquidity for potential post-mortem adjustments or unexpected opportunities.",
+      "allocations": [
+        {
+          "event_idx": 6,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "QCOM insider trades (event_idx=6) in tech lack donor delivery, but finance sector ETFs like XLF benefit from institutional confidence in regulatory clarity. Sector_trends avg_ret=+0.0476 and win_rate=84% are strong.",
+          "pct": 0.04,
+          "stake": 4.78,
+          "confidence": 0.55,
+          "excess_return": -0.013124,
+          "pnl_pct": -0.0656,
+          "won": false,
+          "profit": -0.31,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.6,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/ITA with 60% deploy, but I will focus 80% on XLE (energy) due to stronger insider signal clarity and avoid ITA (aerospace) due to lower conviction."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in AMZN (tech) with donor=tech delivered=NO; energy sector ETF XLE provides indirect exposure with stronger sector_trends."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in NVDA (tech) with donor=tech delivered=NO; energy sector ETF XLE provides regulatory arbitrage tailwinds."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Duplicate event_idx=2; no additional signal value."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in NVDA (tech) with donor=tech delivered=NO; energy sector ETF XLE provides consistent exposure."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate event_idx=4; no additional signal value."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in QCOM (tech) with donor=tech delivered=NO; finance sector ETF XLF provides strong sector_trends and win_rate."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: Underperformed on XLK short in prior days; today I will exploit energy sector insider signals with XLE while avoiding crowded tech trades. My REASONING TEMPLATE prioritizes donor-sector delivery and regulatory clarity, which XLE insider trades in NVDA/QCOM lack.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer has a divergent energy-focused template today; qwen-quant's focus is regulatory-delta which overlaps but not fully aligns.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/ITA with 60% deploy, but I will focus 80% on XLE (energy) due to stronger insider signal clarity and avoid ITA (aerospace) due to lower conviction.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.25, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider trades in NVDA (event_idx=2) and QCOM (event_idx=4) signal institutional confidence in energy sector despite weak donor delivery, leveraging sector_trends avg_ret=-0.0096 but high win_rate=62%.\", \"ticker_reason\": \"XLE is the purest energy sector ETF; XLB/XLE overlap but XLE excludes materials/industrials which are less relevant here.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.25, \"confidence\": 0.68, \"thesis\": \"Repeated NVDA insider trades (event_idx=3) reinforce energy sector exposure via regulatory clarity, despite donor=tech delivered=NO. Sector_trends show energy underperforming but with high win_rate=62%.\", \"ticker_reason\": \"Same ticker as prior allocation; no need to diversify within sector when signal is consistent.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.25, \"confidence\": 0.65, \"thesis\": \"QCOM insider trades (event_idx=5) in tech sector lack donor delivery, but energy sector ETFs like XLE benefit from regulatory arbitrage tailwinds. Sector_trends avg_ret=-0.0096 but win_rate=62% suggests resilience.\", \"ticker_reason\": \"XLE remains the optimal ticker for energy exposure; no better sector ETF matches the signal's sector focus.\"}, {\"event_idx\": 6, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.55, \"thesis\": \"QCOM insider trades (event_idx=6) in tech lack donor delivery, but finance sector ETFs like XLF benefit from institutional confidence in regulatory clarity. Sector_trends avg_ret=+0.0476 and win_rate=84% are strong.\", \"ticker_reason\": \"XLF is the purest finance sector ETF; XLC/XLY are less relevant for insider-driven finance signals.\"}], \"cash_held_pct\": 0.05, \"cash_rationale\": \"5% cash held to maintain liquidity for potential post-mortem adjustments or unexpected opportunities.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trade in AMZN (tech) with donor=tech delivered=NO; energy sector ETF XLE provides indirect exposure with stronger sector_trends.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"SEC For",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nemotron-120b": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 105.12,
+      "bankroll_after": 105.81,
+      "day_strategy": "STRUCTURAL_DIVERGE [qwen-quant] (edge=6.5%): CHALLENGE_RESPONSE: Adjusting edge threshold to \u22650.07 (from 0.06) to avoid overfitting to crowded tech signals. Leveraging my ARCHETYPE[defense_budget_catalyst] to exploit regulatory arbitrage in energy (XLE) despite consensus on tech (XLK).",
+      "cash_held_pct": 0.25,
+      "cash_rationale": "Holding 15% cash to buffer against potential overcrowding in tech (XLK) despite DMAD_DIVERGE edge. Cash aligns with collective goal of aggressive deployment while preserving capital for high-conviction plays.",
+      "allocations": [
+        {
+          "event_idx": 5,
+          "ticker": "XLE",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "QCOM\u2019s repeated SEC Form 4 trades (event_idx=5) in tech lack donor-sector delivery, signaling regulatory risk. XLE\u2019s energy sector (avg_ret=-0.0096) is less crowded than XLK (avg_ret=+0.0020) and offers DMAD_DIVERGE exposure.",
+          "pct": 0.1,
+          "stake": 10.51,
+          "confidence": 0.68,
+          "excess_return": -0.013124,
+          "pnl_pct": 0.0656,
+          "won": true,
+          "profit": 0.69,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "Respecting council\u2019s focus on XLE/XLF/ITA but deviating to XLE short on QCOM\u2019s insider trades (event_idx=4-6) due to donor-sector mismatch, a DMAD_DIVERGE edge."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "AMZN\u2019s SEC Form 4 (tech) has donor-sector mismatch, but XLV\u2019s healthcare sector offers regulatory arbitrage with high win_rate=89%."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "NVDA\u2019s SEC Form 4 (tech) is crowded (14/17 peers) and lacks donor-sector delivery, violating my edge threshold of \u22650.07."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "NVDA\u2019s repeated SEC Form 4 (tech) is overcrowded (14/17 peers) and aligns with consensus, violating DMAD_DIVERGE rule."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "QCOM\u2019s SEC Form 4 (tech) donor-sector mismatch creates regulatory arbitrage edge (DMAD_DIVERGE), and XLK is less crowded than XLF/XLE."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "QCOM\u2019s repeated SEC Form 4 (tech) donor-sector mismatch justifies short XLE, exploiting energy sector\u2019s lower avg_ret=-0.0096."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "QCOM\u2019s SEC Form 4 (tech) donor-sector mismatch aligns with finance sector\u2019s regulatory arbitrage edge (XLF)."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL_DIVERGE [qwen-quant] (edge=6.5%): CHALLENGE_RESPONSE: Adjusting edge threshold to \u22650.07 (from 0.06) to avoid overfitting to crowded tech signals. Leveraging my ARCHETYPE[defense_budget_catalyst] to exploit regulatory arbitrage in energy (XLE) despite consensus on tech (XLK).\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"mistral-medium\",\n    \"event_idx\": 4,\n    \"direction\": \"short\",\n    \"rationale\": \"Mistral Medium\u2019s recent XLF short trades (event_idx=10) on NVDA\u2019s donor-sector mismatch align with my regulatory-arb thesis. Pact to exploit QCOM\u2019s repeated insider trades (event_idx=4-6) in tech, which lack donor-sector delivery\u2014an underrated edge.\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"Respecting council\u2019s focus on XLE/XLF/ITA but deviating to XLE short on QCOM\u2019s insider trades (event_idx=4-6) due to donor-sector mismatch, a DMAD_DIVERGE edge.\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 4,\n      \"direction\": \"short\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.12,\n      \"confidence\": 0.72,\n      \"thesis\": \"QCOM\u2019s SEC Form 4 insider trades (event_idx=4-6) signal tech sector weakness, but donor sector=tech delivered=NO creates regulatory arbitrage. Repeated trades (6x) suggest overcrowding in XLK, but donor-sector mismatch justifies short.\",\n      \"ticker_reason\": \"XLK over XLE/XLF because QCOM\u2019s insider trades are tech-specific, and donor-sector mismatch aligns with my regulatory-arb archetype.\"\n    },\n    {\n      \"event_idx\": 5,\n      \"direction\": \"short\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.15,\n      \"confidence\": 0.68,\n      \"thesis\": \"QCOM\u2019s repeated SEC Form 4 trades (event_idx=5) in tech lack donor-sector delivery, signaling regulatory risk. XLE\u2019s energy sector (avg_ret=-0.0096) is less crowded than XLK (avg_ret=+0.0020) and offers DMAD_DIVERGE exposure.\",\n      \"ticker_reason\": \"XLE over XLK/XLF because energy ETFs are less saturated by insider trades, and QCOM\u2019s donor-sector mismatch is more pronounced in tech (XLK).\"\n    },\n    {\n      \"event_idx\": 6,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.65,\n      \"thesis\": \"QCOM\u2019s SEC Form 4 (event_idx=6) in tech has donor=tech delivered=NO, but finance sector (XLF) is less crowded (avg_ret=+0.0476) and offers structural complement to QCOM\u2019s tech weakness. Regulatory arbitrage favors finance over tech.\",\n      \"ticker_reason\": \"XLF over XLE/XLK because finance ETFs are less exposed to donor-sector mismatches in tech insider trades, and QCOM\u2019s repeated trades suggest institutional caution in tech (XLK).\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.08,\n      \"confidence\": 0.60,\n      \"thesis\": \"AMZN\u2019s SEC Form 4 (event_idx=1) in tech has donor=tech delivered=NO, but healthcare (XLV) is less crowded (avg_ret=+0.0356) and offers regulatory arbitrage. XLV\u2019s win_rate=89% is highest among sectors, mitigating risk.\",\n      \"ticker_reason\": \"XLV",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "mistral-medium",
+        "event_idx": 4,
+        "direction": "short",
+        "rationale": "Mistral Medium\u2019s recent XLF short trades (event_idx=10) on NVDA\u2019s donor-sector mismatch align with my regulatory-arb thesis. Pact to exploit QCOM\u2019s repeated insider trades (event_idx=4-6) in tech, whi"
+      }
+    },
+    "selfhost-qwen4b": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 93.14,
+      "bankroll_after": 94.33,
+      "day_strategy": "STRUCTURAL_DIVERGE [qwen-quant] (edge=6.5%): CHALLENGE_RESPONSE: Adjusting edge threshold to \u22650.07 from 0.06 to avoid underperformance on crowded tech signals. Leveraging my REASONING TEMPLATE\u2019s 4-RULE CHECKLIST, I prioritize non-tech sectors despite council focus on XLE/XLF due to DMAD anti-consensus gate. Targeting XLV (healthcare) for its 89% win rate and 0.0356 avg_ret, despite recent losses from overcrowded tech bets.",
+      "cash_held_pct": 0.1875,
+      "cash_rationale": "Holding 15% cash to preserve capital and avoid overdeployment, despite the 75% deployment mandate. This aligns with my edge threshold adjustment and DMAD anti-consensus gate to mitigate risk from crowded tech signals.",
+      "allocations": [
+        {
+          "event_idx": 3,
+          "ticker": "XLI",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in META (tech) is crowded, but XLI\u2019s industrial sector (avg_ret=+0.0020) offers a diversified play. Agency=SEC, donor=tech (delivered=NO). Strength=0.60, but lower confidence due to crowded tech signals.",
+          "pct": 0.0938,
+          "stake": 8.73,
+          "confidence": 0.55,
+          "excess_return": 0.027319,
+          "pnl_pct": 0.1366,
+          "won": true,
+          "profit": 1.19,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but I deviated to XLV (healthcare) due to DMAD anti-consensus gate and higher edge threshold. Council\u2019s focus on tech/energy is crowded; I exploit structural divergence."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in AMZN (tech) has strength=0.60 but is crowded; XLV (healthcare) offers a less exposed edge."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in NVDA (tech) is crowded; XLF (finance) provides a safer edge with higher win rate."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in NVDA (tech) is crowded; XLI (industrial) offers diversification."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "SEC Form 4 insider trade in QCOM (tech) is crowded (14/17 peers) and lacks donor-sector alignment. Edge too weak for my threshold."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "SEC Form 4 insider trade in QCOM (tech) is crowded and repeats donor-sector mismatch. No clear edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "SEC Form 4 insider trade in QCOM (tech) is crowded and lacks donor-sector alignment. Edge too weak."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL_DIVERGE [qwen-quant] (edge=6.5%): CHALLENGE_RESPONSE: Adjusting edge threshold to \u22650.07 from 0.06 to avoid underperformance on crowded tech signals. Leveraging my REASONING TEMPLATE\u2019s 4-RULE CHECKLIST, I prioritize non-tech sectors despite council focus on XLE/XLF due to DMAD anti-consensus gate. Targeting XLV (healthcare) for its 89% win rate and 0.0356 avg_ret, despite recent losses from overcrowded tech bets.\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today: QCOM/NVDA/AMZN insider trades are overcrowded (14/17 peers) and lack donor-sector alignment. My edge threshold (0.07) and DMAD mandate require a less exposed sector.\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA, but I deviated to XLV (healthcare) due to DMAD anti-consensus gate and higher edge threshold. Council\u2019s focus on tech/energy is crowded; I exploit structural divergence.\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.30,\n      \"confidence\": 0.75,\n      \"thesis\": \"SEC Form 4 insider trade in UNH (healthcare) signals institutional confidence. Agency=SEC, donor=tech (delivered=NO), but XLV\u2019s 89% win rate and 0.0356 avg_ret justify the bet despite council\u2019s tech focus. Strength=0.60 aligns with my edge threshold.\",\n      \"ticker_reason\": \"XLV over XLE/XLF because healthcare\u2019s sector trends (avg_ret=+0.0356, win_rate=89%) are stronger than energy/finance\u2019s recent performance, and it avoids overcrowded tech signals.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.60,\n      \"thesis\": \"SEC Form 4 insider trade in HOOD (finance) reflects institutional confidence, but with lower conviction due to recent crowded tech trades. Agency=SEC, donor=tech (delivered=NO). XLF\u2019s 84% win rate and 0.0476 avg_ret provide a safer edge than tech.\",\n      \"ticker_reason\": \"XLF over XLE/XLV because finance\u2019s sector trends are stronger than energy\u2019s recent -0.0096 avg_ret, and it\u2019s less crowded than healthcare/tech.\"\n    },\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"XLI\",\n      \"pct\": 0.15,\n      \"confidence\": 0.55,\n      \"thesis\": \"SEC Form 4 insider trade in META (tech) is crowded, but XLI\u2019s industrial sector (avg_ret=+0.0020) offers a diversified play. Agency=SEC, donor=tech (delivered=NO). Strength=0.60, but lower confidence due to crowded tech signals.\",\n      \"ticker_reason\": \"XLI over XLV/XLF because it\u2019s a non-tech sector with a neutral avg_ret, reducing exposure to crowded tech trades while still benefiting from insider activity.\"\n    }\n  ],\n\n  \"cash_held_pct\": 0.15,\n  \"cash_rationale\": \"Holding 15% cash to preserve capital and avoid overdeployment, despite the 75% deployment mandate. This aligns with my edge threshold adjustment and DMAD anti-consensus gate ",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nvidia-minimax": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 100.61,
+      "bankroll_after": 99.95,
+      "day_strategy": "STRUCTURAL_DIVERGE [qwen-quant] (edge=6.5%): My REASONING_TEMPLATE prioritizes **donor-sector alignment** and **low-crowding** (NVDA/QCOM/AMZN insider trades are 14/17 crowded), while qwen-quant\u2019s XLK short template ignores donor-sector mismatch (e.g., NVDA\u2019s SEC Form 4 lacks donor=tech delivery). I exploit **XLE\u2019s energy sector beta** (avg_ret=-0.0096) as a **regulatory-arb hedge** against crowded tech insider trades, leveraging DMAD anti-consensus gate. CHALLENGE_RESPONSE: Adjusting edge thres",
+      "cash_held_pct": 0.0625,
+      "cash_rationale": "Holding 5% cash to **absorb noise** from crowded tech insider trades (NVDA/AMZN/GOOGL) and **rebalance** if XLE\u2019s energy sector underperforms due to macro volatility (VIX=18.0). Cash <25% complies with collective goal.",
+      "allocations": [
+        {
+          "event_idx": 5,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "QCOM\u2019s repeated SEC Form 4 (event_idx=5) shows **institutional confidence** in finance-linked sectors (QCOM\u2019s 5G contracts may benefit telecom/finance). XLF\u2019s HOOD signal is **crowded**, but **QCOM\u2019s donor-sector=tech delivered=NO** suggests **finance sector resilience** as insiders rotate into safe",
+          "pct": 0.1,
+          "stake": 10.06,
+          "confidence": 0.62,
+          "excess_return": -0.013124,
+          "pnl_pct": -0.0656,
+          "won": false,
+          "profit": -0.66,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.6,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but I deviated to **XLE-only** (60% allocation) due to **donor-sector mismatch** in tech insider trades (NVDA/QCOM/AMZN), which council ignored. XLF\u2019s HOOD signal is crowded (14/17 peers), so I avoided it."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "skip",
+          "reason": "AMZN\u2019s SEC Form 4 (event_idx=1) has **donor-sector=tech delivered=NO** and **p_yes=0.500** (Island Oracle), making it **ambiguous**. Crowded (14/17 peers) and lacks donor-sector alignment\u2014no edge \u22655.5%."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "NVDA\u2019s SEC Form 4 (event_idx=2) is **crowded (14/17 peers)** and **donor-sector=tech delivered=NO**, violating my **STRUCTURAL_DIVERGE** mandate. No unique edge vs peers."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "NVDA\u2019s repeated SEC Form 4 (event_idx=3) is **overcrowded** and **donor-sector mismatched**\u2014no edge \u22655.5%. XLE/XLF/XLV are better plays for **regulatory-arb**."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL_DIVERGE [qwen-quant] (edge=6.5%): My REASONING_TEMPLATE prioritizes **donor-sector alignment** and **low-crowding** (NVDA/QCOM/AMZN insider trades are 14/17 crowded), while qwen-quant\u2019s XLK short template ignores donor-sector mismatch (e.g., NVDA\u2019s SEC Form 4 lacks donor=tech delivery). I exploit **XLE\u2019s energy sector beta** (avg_ret=-0.0096) as a **regulatory-arb hedge** against crowded tech insider trades, leveraging DMAD anti-consensus gate. CHALLENGE_RESPONSE: Adjusting edge threshold to \u22655.5% (from 6.0%) to capture underrated energy signals despite sector\u2019s negative 30d avg_ret.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today: qwen-quant\u2019s recent XLK short template (edge=8.7%) conflicts with my donor-sector-aligned XLE long strategy. Pact would violate my **STRUCTURAL_DIVERGE** mandate.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA, but I deviated to **XLE-only** (60% allocation) due to **donor-sector mismatch** in tech insider trades (NVDA/QCOM/AMZN), which council ignored. XLF\u2019s HOOD signal is crowded (14/17 peers), so I avoided it.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.60,\n      \"confidence\": 0.78,\n      \"thesis\": \"QCOM\u2019s SEC Form 4 (event_idx=4) shows **insider buying** (strength=0.60) despite **donor-sector=tech delivered=NO**, signaling **regulatory uncertainty** in tech. Energy (XLE) benefits from **defensive positioning** as tech insider trades (NVDA/AMZN) are overcrowded (14/17 peers). Sector-beta matrix shows XLE\u2019s **negative 30d avg_ret (-0.0096)** is a **contrarian signal**\u2014insiders dumping tech may force capital into energy.\",\n      \"ticker_reason\": \"XLE over XLF/XLV because QCOM\u2019s insider trade is **oil/gas-adjacent** (QCOM\u2019s 5G infrastructure plays benefit energy supply chains), while XLF\u2019s HOOD signal is **crowded** (14/17 peers) and lacks donor-sector alignment. XLV\u2019s healthcare sector has **positive 30d avg_ret (+0.0356)**, but no clear insider signal today.\"\n    },\n    {\n      \"event_idx\": 5,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.62,\n      \"thesis\": \"QCOM\u2019s repeated SEC Form 4 (event_idx=5) shows **institutional confidence** in finance-linked sectors (QCOM\u2019s 5G contracts may benefit telecom/finance). XLF\u2019s HOOD signal is **crowded**, but **QCOM\u2019s donor-sector=tech delivered=NO** suggests **finance sector resilience** as insiders rotate into safer assets. Edge justified by **XLF\u2019s 30d avg_ret (+0.0476)** and **84% win_rate**\u2014outperforming crowded tech bets.\",\n      \"ticker_reason\": \"XLF over XLV/XLE because QCOM\u2019s insider trade implies **finance sector stability** (telecom contracts = banking/finance exposure), while XLE/XLV lack direct linkage. XLF\u2019s HOOD signal is **less crowded** than NVDA/AMZN trades.\"\n    },\n    {\n      \"eve",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nvidia-llama70": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 98.3,
+      "bankroll_after": 98.3,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.5%): My insider_tracking template prioritizes donor-sector delivery over raw signal strength, targeting XLE for energy-specific exposure where insider trades lack donor alignment in tech-heavy events. CHALLENGE_RESPONSE: Adjusting edge threshold to 7.5% and focusing on sector-specific ETFs to avoid tech crowding.",
+      "cash_held_pct": 0.25,
+      "cash_rationale": "Holding 25% cash to meet \u226575% deployment mandate while avoiding overconcentration in a single sector despite council focus on energy/finance.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/XLV but I focus 85% on XLE to exploit underpriced energy insider trades while peers split across sectors."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider signal (AMZN) with donor=tech delivered=NO, but energy sector (XLE) offers underpriced exposure."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "NVDA insider trade repeats donor-sector mismatch, but energy sector trends justify XLE exposure."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "Third NVDA insider trade with same donor issue, but energy sector\u2019s avg_ret and win_rate justify sector-wide bet."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "QCOM insider trade (event_idx=4) lacks clear sector read; donor=tech delivered=NO, but no distinct energy signal."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "QCOM insider trade (event_idx=5) repeats donor issue; no unique energy-specific signal."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "QCOM insider trade (event_idx=6) same as above; no additional value."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.5%): My insider_tracking template prioritizes donor-sector delivery over raw signal strength, targeting XLE for energy-specific exposure where insider trades lack donor alignment in tech-heavy events. CHALLENGE_RESPONSE: Adjusting edge threshold to 7.5% and focusing on sector-specific ETFs to avoid tech crowding.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with divergent edge on XLE; qwen-quant\u2019s focus on XLV/XLF leaves XLE underutilized despite energy insider signals.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/XLV but I focus 85% on XLE to exploit underpriced energy insider trades while peers split across sectors.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.30, \"confidence\": 0.70, \"thesis\": \"AMZN insider trade (event_idx=1) lacks donor sector delivery (tech\u2192tech), but energy sector (XLE) is underpriced relative to 30d avg_ret=-0.0096 with 62% win_rate. SEC Form 4 signals institutional confidence in energy despite tech-heavy events.\", \"ticker_reason\": \"XLE over XLF/XLV because energy insider trades are isolated from tech crowding, offering cleaner sector exposure.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.25, \"confidence\": 0.60, \"thesis\": \"NVDA insider trade (event_idx=2) repeats donor-sector mismatch (tech\u2192tech), but energy sector trends show resilience. SEC Form 4 signals regulatory clarity in energy despite tech volatility.\", \"ticker_reason\": \"XLE over XLF because finance sector is already crowded (14/17 peers on XLF), while energy remains underfollowed.\"}, {\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.20, \"confidence\": 0.55, \"thesis\": \"Another NVDA insider trade (event_idx=3) with donor=tech delivered=NO, but energy sector\u2019s avg_ret=-0.0096 and 62% win_rate justify sector-wide exposure. SEC Form 4 signals institutional accumulation in energy.\", \"ticker_reason\": \"XLE over XLK because tech sector is overcrowded (116 events) and energy offers better risk/reward given sector trends.\"}], \"cash_held_pct\": 0.25, \"cash_rationale\": \"Holding 25% cash to meet \u226575% deployment mandate while avoiding overconcentration in a single sector despite council focus on energy/finance.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Strong insider signal (AMZN) with donor=tech delivered=NO, but energy sector (XLE) offers underpriced exposure.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"NVDA insider trade repeats donor-sector mismatch, but energy sector trends justify XLE exposure.\"}, {\"event_idx\": 3, \"decision\": \"bet\", \"reason\": \"Third NVDA insider trade with same donor issue, but energy sector\u2019s avg_ret and win_rate justify sector-wide bet.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"QCOM insider trade (event_idx=4) lacks clear sector read; donor=tech delivered=NO, but no distinct energy signal.\"}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-gemma3": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 114.44,
+      "bankroll_after": 113.66,
+      "day_strategy": "STRUCTURAL_DIVERGE [qwen-quant] (edge=6.5%): CHALLENGE_RESPONSE: My 3-factor model (congressional proximity 0.4, fed density 0.3, geo tape 0.3) scores today\u2019s events at 0.58 (weighted), above my 0.6 floor. I deviate from qwen-quant\u2019s crowded tech focus by targeting energy (XLE) and finance (XLF) sectors, where insider trades align with donor-sector delivery and lower peer exposure. Prioritize XLE due to its oil-specific regulatory clarity vs. broad commodities (XLB).",
+      "cash_held_pct": 0.2,
+      "cash_rationale": "Holding 20% cash to preserve capital and avoid overdeployment, as 3-factor model scores at 0.58 (just above the 0.6 threshold). Cash acts as a buffer for potential regulatory arbitrage misfires in crowded sectors.",
+      "allocations": [
+        {
+          "event_idx": 3,
+          "ticker": "XLK",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "NVDA\u2019s repeated SEC Form 4 trades (event_idx=3) signal overcrowding in tech. Shorting XLK exploits tech\u2019s lower win_rate (49%) and crowded NVDA trades, aligning with my 3-factor model\u2019s geo tape (0.3) and fed density (0.3) signals.",
+          "pct": 0.05,
+          "stake": 5.72,
+          "confidence": 0.6,
+          "excess_return": 0.027319,
+          "pnl_pct": -0.1366,
+          "won": false,
+          "profit": -0.78,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but I allocate more to XLE (energy) and XLF (finance) due to higher 3-factor model alignment (0.58) and lower peer exposure in these sectors."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "AMZN\u2019s insider trade (event_idx=1) aligns with energy sector (XLE) due to regulatory clarity, despite donor-sector delivery absence."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "NVDA\u2019s insider trade (event_idx=2) is paired with healthcare (XLV) to exploit donor-sector delivery alignment and lower volatility."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "NVDA\u2019s repeated trades (event_idx=3) justify a short XLK bet to exploit crowded tech signals and lower win_rate."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "QCOM\u2019s insider trade (event_idx=4) signals finance sector (XLF) confidence, with donor-sector delivery (tech) aligning with finance\u2019s regulatory clarity."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "QCOM\u2019s repeated trades (event_idx=5) lack donor-sector delivery and align with crowded tech signals, offering no clear edge."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "QCOM\u2019s repeated trades (event_idx=6) justify a short XLF bet to exploit overcrowding and lower win_rate in finance."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL_DIVERGE [qwen-quant] (edge=6.5%): CHALLENGE_RESPONSE: My 3-factor model (congressional proximity 0.4, fed density 0.3, geo tape 0.3) scores today\u2019s events at 0.58 (weighted), above my 0.6 floor. I deviate from qwen-quant\u2019s crowded tech focus by targeting energy (XLE) and finance (XLF) sectors, where insider trades align with donor-sector delivery and lower peer exposure. Prioritize XLE due to its oil-specific regulatory clarity vs. broad commodities (XLB).\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"llama-contra\",\n    \"event_idx\": 4,\n    \"direction\": \"long\",\n    \"rationale\": \"Llama-contra\u2019s recent XLK short underperformance suggests they may avoid tech overcrowding; I propose a pact on QCOM (event_idx=4) long XLF to exploit finance sector insider signals with lower peer overlap.\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA, but I allocate more to XLE (energy) and XLF (finance) due to higher 3-factor model alignment (0.58) and lower peer exposure in these sectors.\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.75,\n      \"thesis\": \"QCOM\u2019s SEC Form 4 insider trade (event_idx=4) signals institutional confidence in finance. Donor sector delivery (tech) aligns with finance sector strength, and XLF\u2019s avg_ret=+0.0476 with 84% win_rate supports this edge.\",\n      \"ticker_reason\": \"XLF over XLE/XLV because QCOM\u2019s insider trade is finance-adjacent, and XLF\u2019s sector beta (0.85) exceeds energy\u2019s (0.78) for this event.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"AMZN\u2019s SEC Form 4 (event_idx=1) shows insider activity in tech, but donor-sector delivery (tech) is absent. XLE\u2019s oil-specific regulatory clarity (vs. broad commodities) and 62% win_rate in energy justify a bet on energy ETFs despite lower avg_ret.\",\n      \"ticker_reason\": \"XLE over XLB/XLC because AMZN\u2019s insider trade lacks donor-sector delivery, but energy\u2019s regulatory clarity (e.g., oil-specific rules) provides a niche edge.\"\n    },\n    {\n      \"event_idx\": 6,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.15,\n      \"confidence\": 0.65,\n      \"thesis\": \"QCOM\u2019s repeated SEC Form 4 trades (event_idx=6) signal overcrowding in tech. Shorting XLF exploits finance sector\u2019s lower win_rate (84%) vs. tech\u2019s crowded NVDA/AMZN trades, leveraging regulatory arbitrage potential.\",\n      \"ticker_reason\": \"XLF over XLV/XLE because QCOM\u2019s insider trades lack donor-sector delivery, and finance\u2019s regulatory clarity (e.g., SEC oversight) provides a counterbalance to crowded tech signals.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.10,\n      \"confidence\": 0.60,\n      \"thesis\": \"NVDA\u2019s SEC Form 4 (event_idx=2) shows insider activity in tech, but healthcare\u2019s X",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "llama-contra",
+        "event_idx": 4,
+        "direction": "long",
+        "rationale": "Llama-contra\u2019s recent XLK short underperformance suggests they may avoid tech overcrowding; I propose a pact on QCOM (event_idx=4) long XLF to exploit finance sector insider signals with lower peer ov"
+      }
+    },
+    "selfhost-qwen06": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 104.32,
+      "bankroll_after": 104.32,
+      "day_strategy": "ARCHETYPE[foreign_sovereign_flow]: Leveraging DMAD anti-consensus, I exploit sector-beta mispricing in energy via foreign capital flows, citing weak domestic donor delivery in tech insiders as a proxy for sovereign wealth fund positioning.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "Preservation mode: bankroll <$50, max 5% per position, sector ETFs only, no leveraged plays.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.5,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council pushed XLE/XLF focus, but foreign_sovereign_flow archetype requires energy sector with weak domestic donor delivery as sovereign signal."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "AMZN insider trade donor=tech delivered=NO signals foreign capital rotation into energy."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "NVDA insider trade donor=tech delivered=NO reinforces energy sector sovereign flows."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Duplicate of event_idx=2, no additional signal strength."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "QCOM insider trade donor=tech delivered=NO consistent with foreign capital energy accumulation."
+        },
+        {
+          "event_idx": 5,
+          "decision": "skip",
+          "reason": "Duplicate of event_idx=4, no incremental signal."
+        },
+        {
+          "event_idx": 6,
+          "decision": "skip",
+          "reason": "Duplicate of event_idx=4, no incremental signal."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"ARCHETYPE[foreign_sovereign_flow]: Leveraging DMAD anti-consensus, I exploit sector-beta mispricing in energy via foreign capital flows, citing weak domestic donor delivery in tech insiders as a proxy for sovereign wealth fund positioning.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact peers align with foreign_sovereign_flow archetype; top-3 agents are overcommitted to domestic regulatory arbitrage.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council pushed XLE/XLF focus, but foreign_sovereign_flow archetype requires energy sector with weak domestic donor delivery as sovereign signal.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.15, \"confidence\": 0.68, \"thesis\": \"AMZN insider trade (event_idx=1) shows donor=tech delivered=NO, suggesting foreign capital accumulation in energy via sector rotation. Sector trend avg_ret=-0.0096 but win_rate=62% indicates mean-reversion potential.\", \"ticker_reason\": \"XLE is oil-specific energy ETF, isolating sovereign wealth fund flows from broad energy commodities.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.15, \"confidence\": 0.65, \"thesis\": \"NVDA insider trade (event_idx=2) donor=tech delivered=NO, reinforcing foreign capital rotation into energy. Sector-beta >0.8 aligns with sovereign accumulation hypothesis.\", \"ticker_reason\": \"XLE captures oil price sensitivity, critical for sovereign wealth fund positioning in energy.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.15, \"confidence\": 0.62, \"thesis\": \"QCOM insider trade (event_idx=4) donor=tech delivered=NO, consistent with foreign capital flows into energy. Sector trend avg_ret=-0.0096 but win_rate=62% supports contrarian long.\", \"ticker_reason\": \"XLE is the purest energy sector ETF, minimizing noise from other commodities.\"}], \"cash_held_pct\": 0.55, \"cash_rationale\": \"Preservation mode: bankroll <$50, max 5% per position, sector ETFs only, no leveraged plays.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"AMZN insider trade donor=tech delivered=NO signals foreign capital rotation into energy.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"NVDA insider trade donor=tech delivered=NO reinforces energy sector sovereign flows.\"}, {\"event_idx\": 3, \"decision\": \"skip\", \"reason\": \"Duplicate of event_idx=2, no additional signal strength.\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"QCOM insider trade donor=tech delivered=NO consistent with foreign capital energy accumulation.\"}, {\"event_idx\": 5, \"decision\": \"skip\", \"reason\": \"Duplicate of event_idx=4, no incremental signal.\"}, {\"event_idx\": 6, \"decision\": \"skip\", \"reason\": \"Duplicate of event_idx=4, no incremental signal.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-dolphin3": {
+      "day_idx": 120,
+      "date": "2025-07-01",
+      "n_events": 6,
+      "bankroll_before": 94.06,
+      "bankroll_after": 94.06,
+      "day_strategy": "ARCHETYPE[macro_narrative]: Leveraging YouTube narrative on India's 2026 assembly elections (TMC vs BJP) and geopolitical tensions (Bravos Research macro framework), I exploit regulatory arbitrage in energy (XLE) and financial (XLF) sectors, avoiding crowded tech bets. Edge=7.1% via macro-driven sector rotation vs Pavlov win-stay.",
+      "cash_held_pct": 0.1,
+      "cash_rationale": "Holding 10% cash to mitigate macro_narrative uncertainty and avoid overleveraging on geopolitical bets.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 357.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but macro_narrative signals broader geopolitical risk in energy (XLE) and financials (XLF) due to election uncertainty, not just insider trades."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "AMZN insider trade aligns with macro_narrative\u2019s financial sector focus."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "NVDA insider trade is crowded (14/17 peers) and lacks donor-sector delivery, conflicting with macro_narrative\u2019s caution."
+        },
+        {
+          "event_idx": 3,
+          "decision": "skip",
+          "reason": "Repeated NVDA insider trade (event_idx=3) is crowded and aligns with macro_narrative\u2019s tech sector caution."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "QCOM insider trade (event_idx=4) aligns with macro_narrative\u2019s energy sector focus."
+        },
+        {
+          "event_idx": 5,
+          "decision": "bet",
+          "reason": "QCOM\u2019s repeated insider trades (event_idx=5) signal tech sector weakness, aligning with macro_narrative\u2019s caution."
+        },
+        {
+          "event_idx": 6,
+          "decision": "bet",
+          "reason": "QCOM\u2019s final insider trade (event_idx=6) reinforces financial sector strength via XLF."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"ARCHETYPE[macro_narrative]: Leveraging YouTube narrative on India's 2026 assembly elections (TMC vs BJP) and geopolitical tensions (Bravos Research macro framework), I exploit regulatory arbitrage in energy (XLE) and financial (XLF) sectors, avoiding crowded tech bets. Edge=7.1% via macro-driven sector rotation vs Pavlov win-stay.\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-quant\",\n    \"event_idx\": 4,\n    \"direction\": \"long\",\n    \"rationale\": \"qwen-quant\u2019s regulatory-delta quant template prioritizes QCOM insider trades (event_idx=4) in tech, but macro_narrative suggests energy/finance focus. Pact to align on XLE long for collective strength.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA, but macro_narrative signals broader geopolitical risk in energy (XLE) and financials (XLF) due to election uncertainty, not just insider trades.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.30,\n      \"confidence\": 0.75,\n      \"thesis\": \"QCOM insider trades (event_idx=4) align with macro_narrative\u2019s geopolitical risk premium in energy. India\u2019s election volatility (YouTube narrative) may drive oil sector strength.\",\n      \"ticker_reason\": \"XLE over XLB/XLC because the signal is oil-specific (geopolitical risk) and not broad commodities or consumer discretionary.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.25,\n      \"confidence\": 0.65,\n      \"thesis\": \"AMZN insider trade (event_idx=1) reflects macro_narrative\u2019s financial sector stability during election cycles. XLF captures broader finance sector strength.\",\n      \"ticker_reason\": \"XLF over XLV/XLI because the macro_narrative suggests financials benefit from regulatory clarity in election uncertainty.\"\n    },\n    {\n      \"event_idx\": 5,\n      \"direction\": \"short\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.20,\n      \"confidence\": 0.60,\n      \"thesis\": \"QCOM\u2019s repeated insider trades (event_idx=5) in tech lack donor-sector alignment, aligning with macro_narrative\u2019s caution on crowded tech bets. Short XLK to hedge overcrowded tech exposure.\",\n      \"ticker_reason\": \"XLK short to counterbalance XLE/XLF long positions, exploiting DMAD anti-consensus gate by deviating from crowded tech sector.\"\n    },\n    {\n      \"event_idx\": 6,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.15,\n      \"confidence\": 0.55,\n      \"thesis\": \"QCOM\u2019s final insider trade (event_idx=6) signals institutional confidence in tech, but macro_narrative\u2019s financial sector focus overrides. XLF long for diversified exposure.\",\n      \"ticker_reason\": \"XLF long to reinforce financial sector strength, avoiding direct tech exposure despite QCOM\u2019s signal.\"\n    }\n  ],\n  \"cash_held_pct\": 0.10,\n  \"cash_rationale\": \"Holding 10% cash to mitigate macro_narrative uncertainty and avoid overleveraging on geopolitical bets.\",\n  \"events_considered\": ",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-quant",
+        "event_idx": 4,
+        "direction": "long",
+        "rationale": "qwen-quant\u2019s regulatory-delta quant template prioritizes QCOM insider trades (event_idx=4) in tech, but macro_narrative suggests energy/finance focus. Pact to align on XLE long for collective strength"
+      }
+    }
+  },
+  "written_at": "2026-04-24T16:15:51.120372+00:00"
+}

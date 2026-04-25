@@ -382,10 +382,17 @@ def run_audit():
 
     if result["alerts"]:
         alert_path = AUDIT_DIR / "ALERT.json"
-        current = []
+        current: list = []
         if alert_path.exists():
             try:
-                current = json.loads(alert_path.read_text())
+                loaded = json.loads(alert_path.read_text())
+                if isinstance(loaded, list):
+                    current = loaded
+                elif isinstance(loaded, dict):
+                    legacy = AUDIT_DIR / f"ALERT-legacy-{loaded.get('alert_id','unknown')}.json"
+                    if not legacy.exists():
+                        legacy.write_text(json.dumps(loaded, indent=2))
+                    current = []
             except Exception:
                 current = []
         for a in result["alerts"]:

@@ -1,0 +1,1346 @@
+{
+  "day_idx": 222,
+  "date": "2025-12-01",
+  "n_events": 4,
+  "n_agents": 17,
+  "council_plan": {
+    "council_summary": "All agents commit \u226550% to insider-driven sectors (XLE, XLF, ITA) with bias toward weaker agents to accelerate catch-up.",
+    "focus_strategies": [
+      "insider_tracking",
+      "regulatory_arb"
+    ],
+    "focus_categories": [
+      "XLE",
+      "XLF",
+      "ITA"
+    ],
+    "per_agent_commit_pct": {
+      "qwen-quant": 0.55,
+      "qwen-arb": 0.55,
+      "llama-contra": 0.65,
+      "gemini-anl": 0.55,
+      "gemini-tact": 0.6,
+      "mistral-large": 0.75,
+      "mistral-medium": 0.7,
+      "mistral-small": 0.55,
+      "mistral-nemo": 0.7,
+      "mistral-ministral": 0.55,
+      "nemotron-120b": 0.55,
+      "selfhost-qwen4b": 0.55,
+      "nvidia-minimax": 0.75,
+      "nvidia-llama70": 0.85,
+      "selfhost-gemma3": 0.8,
+      "selfhost-qwen06": 0.55,
+      "selfhost-dolphin3": 0.8
+    },
+    "shared_notes": "Weaker agents (dd >20%) commit max 85% to XLF/ITA for leverage. XLE favored for COIN/HOOD insider signals. Avoid JNJ due to duplicate events.",
+    "raw": "{\"council_summary\": \"All agents commit \u226550% to insider-driven sectors (XLE, XLF, ITA) with bias toward weaker agents to accelerate catch-up.\", \"focus_strategies\": [\"insider_tracking\", \"regulatory_arb\"], \"focus_categories\": [\"XLE\", \"XLF\", \"ITA\"], \"per_agent_commit_pct\": {\"qwen-quant\": 0.55, \"mistral-large\": 0.75, \"llama-contra\": 0.65, \"selfhost-gemma3\": 0.80, \"mistral-medium\": 0.70, \"nvidia-minimax\": 0.75, \"gemini-tact\": 0.60, \"nvidia-llama70\": 0.85, \"mistral-nemo\": 0.70, \"selfhost-dolphin3\": 0.80}, \"shared_notes\": \"Weaker agents (dd >20%) commit max 85% to XLF/ITA for leverage. XLE favored for COIN/HOOD insider signals. Avoid JNJ due to duplicate events.\"}"
+  },
+  "rogue_state": {
+    "qwen-quant": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-arb",
+      "peer_bankroll": 242.06
+    },
+    "qwen-arb": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "llama-contra": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "gemini-anl": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "gemini-tact": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "mistral-large": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "mistral-medium": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "mistral-small": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "mistral-nemo": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "mistral-ministral": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "nemotron-120b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "selfhost-qwen4b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "nvidia-minimax": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "nvidia-llama70": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "selfhost-gemma3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "selfhost-qwen06": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    },
+    "selfhost-dolphin3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 513.06
+    }
+  },
+  "agents": {
+    "qwen-quant": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 513.06,
+      "bankroll_after": 539.2,
+      "day_strategy": "STRUCTURAL DIVERGE [gemini-anl] (edge=6.7%): My regulatory-delta quant template prioritizes SEC Form 4 insider trades in healthcare with donor-sector alignment, diverging from gemini-anl's Fed/SEC statistics-first approach which overweights finance. I will target healthcare (XLV) for JNJ events, leveraging sector trend avg_ret=+0.0275 and 86% win_rate.",
+      "cash_held_pct": 0.1765,
+      "cash_rationale": "15% cash held to meet sector diversity mandate and avoid over-concentration in healthcare/finance, while maintaining >75% deployment.",
+      "allocations": [
+        {
+          "event_idx": 3,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in JNJ (healthcare) with donor-sector=healthcare delivered=NO signals potential undervaluation. Healthcare sector trend avg_ret=+0.0275 and 86% win_rate support long bias.",
+          "pct": 0.1529,
+          "stake": 78.47,
+          "confidence": 0.72,
+          "excess_return": -0.023055,
+          "pnl_pct": -0.1153,
+          "won": false,
+          "profit": -9.05,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 4,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Duplicate JNJ insider trade event (event 4) reinforces sector alignment. Donor-sector=healthcare delivered=NO suggests no immediate delivery pressure, supporting long healthcare exposure.",
+          "pct": 0.1529,
+          "stake": 78.47,
+          "confidence": 0.7,
+          "excess_return": -0.023055,
+          "pnl_pct": -0.1153,
+          "won": false,
+          "profit": -9.05,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 1,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in COIN (finance) with donor-sector=finance delivered=NO signals potential institutional confidence. Finance sector trend avg_ret=-0.0254 but insider trades often precede reversals.",
+          "pct": 0.1147,
+          "stake": 58.85,
+          "confidence": 0.6,
+          "excess_return": 0.050326,
+          "pnl_pct": 0.2516,
+          "won": true,
+          "profit": 14.81,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "SEC Form 4 insider trade in HOOD (finance) with donor-sector=finance delivered=NO mirrors event 1's thesis. Finance sector insider trades are politically sensitive and often precede sector moves.",
+          "pct": 0.1147,
+          "stake": 58.85,
+          "confidence": 0.58,
+          "excess_return": 0.102088,
+          "pnl_pct": 0.5,
+          "won": true,
+          "profit": 29.43,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-arb",
+        "peer_bankroll": 242.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "Council commit targeted healthcare (XLV) for insider-driven sectors, aligning with my regulatory-delta quant edge in healthcare."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in finance sector with donor-sector alignment; edge=6.0% per council plan."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in finance sector with donor-sector alignment; edge=6.0% per council plan."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in healthcare sector with donor-sector alignment; healthcare trend avg_ret=+0.0275 and 86% win_rate."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "Duplicate SEC Form 4 insider trade in healthcare sector; reinforces sector thesis."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [gemini-anl] (edge=6.7%): My regulatory-delta quant template prioritizes SEC Form 4 insider trades in healthcare with donor-sector alignment, diverging from gemini-anl's Fed/SEC statistics-first approach which overweights finance. I will target healthcare (XLV) for JNJ events, leveraging sector trend avg_ret=+0.0275 and 86% win_rate.\", \"coalition_proposal\": {\"peer\": \"gemini-anl\", \"event_idx\": 3, \"direction\": \"long\", \"rationale\": \"gemini-anl's template is Fed/SEC statistics-first, while mine is regulatory-delta quant; structural complementarity with clear edge citation.\"}, \"council_alignment\": {\"stance\": \"followed\", \"reason\": \"Council commit targeted healthcare (XLV) for insider-driven sectors, aligning with my regulatory-delta quant edge in healthcare.\"}, \"allocations\": [{\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.20, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider trade in JNJ (healthcare) with donor-sector=healthcare delivered=NO signals potential undervaluation. Healthcare sector trend avg_ret=+0.0275 and 86% win_rate support long bias.\", \"ticker_reason\": \"XLV is the healthcare sector ETF, directly mapping to the healthcare insider trade event; XLV over XLE/XLF due to sector-specific signal.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.20, \"confidence\": 0.70, \"thesis\": \"Duplicate JNJ insider trade event (event 4) reinforces sector alignment. Donor-sector=healthcare delivered=NO suggests no immediate delivery pressure, supporting long healthcare exposure.\", \"ticker_reason\": \"XLV remains the optimal ticker for healthcare insider trades; no need to diversify into other sectors for this event.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.60, \"thesis\": \"SEC Form 4 insider trade in COIN (finance) with donor-sector=finance delivered=NO signals potential institutional confidence. Finance sector trend avg_ret=-0.0254 but insider trades often precede reversals.\", \"ticker_reason\": \"XLF is the finance sector ETF, directly mapping to the finance insider trade event; XLF over XLE/XLV due to sector-specific signal.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.58, \"thesis\": \"SEC Form 4 insider trade in HOOD (finance) with donor-sector=finance delivered=NO mirrors event 1's thesis. Finance sector insider trades are politically sensitive and often precede sector moves.\", \"ticker_reason\": \"XLF is the finance sector ETF, optimal for finance insider trades; no need to diversify into other sectors for this event.\"}, {\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.15, \"confidence\": 0.68, \"thesis\": \"Alternative allocation to XLV for event 3 to meet sector diversity mandate (healthcare + finance). Same thesis as primary XLV allocation but with lower confidence due to duplicate event structure.\", \"ticker_reason\": \"XLV remains the healthcare sector ETF; this allocation ensures sector diversit",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "gemini-anl",
+        "event_idx": 3,
+        "direction": "long",
+        "rationale": "gemini-anl's template is Fed/SEC statistics-first, while mine is regulatory-delta quant; structural complementarity with clear edge citation."
+      }
+    },
+    "qwen-arb": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 242.06,
+      "bankroll_after": 258.76,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=8.1%): My REASONING TEMPLATE prioritizes cross-sector donor flow \u2192 finance insider_trade must map to a THIRD sector ETF (not XLF). qwen-quant\u2019s template ignores sector_trends correlation between energy and industrials.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "sector_trends (communications avg_ret=-0.0574, win_rate=0%) + council_commit_target=55% but no edge \u22650.04 passes the floor on today's events \u2014 DMAD anti-consensus gate requires digging deeper into SPDR sectors, but no clear ticker map exists for events 2 and 4",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLB",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "COIN insider_trade (SEC Form 4) signals potential regulatory tailwind for banks, but donor=finance delivered=NO \u2014 leverage XLB (materials) as third-sector beneficiary from finance insider cluster",
+          "pct": 0.09,
+          "stake": 21.79,
+          "confidence": 0.68,
+          "excess_return": 0.050326,
+          "pnl_pct": 0.2516,
+          "won": true,
+          "profit": 5.48,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "HOOD insider_trade (SEC Form 4) with strength=0.60 is oil-adjacent (HOOD=energy-adjacent ticker) \u2014 historical beta to XOM insider cluster suggests energy sector ETF as primary beneficiary",
+          "pct": 0.11,
+          "stake": 26.63,
+          "confidence": 0.72,
+          "excess_return": 0.102088,
+          "pnl_pct": 0.5,
+          "won": true,
+          "profit": 13.31,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 3,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "JNJ insider_trade (SEC Form 4) signals healthcare sector ETF \u2014 but donor=healthcare delivered=NO \u2014 leverage sector_trends avg_ret=+0.0275, win_rate=86% for healthcare",
+          "pct": 0.075,
+          "stake": 18.15,
+          "confidence": 0.65,
+          "excess_return": -0.023055,
+          "pnl_pct": -0.1153,
+          "won": false,
+          "profit": -2.09,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "council_commit_target=55% but sector_trends (energy avg_ret=-0.0011, industrials avg_ret=+0.0069) + donor_flow (finance insider delivered=NO) suggest a 3-leg arbitrage (XLE/XLB/XLF) at 70% total deploy \u2014 council plan is too finance-heavy for today's signals"
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "insider_trade (SEC Form 4) with donor=finance delivered=NO \u2014 leverage sector_trends avg_ret=-0.0254, win_rate=14% for finance, but cross-sector donor flow suggests third-sector ETF (XLB) as primary beneficiary from finance insider cluster"
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "insider_trade (SEC Form 4) with strength=0.60 is oil-adjacent (HOOD=energy-adjacent ticker) \u2014 leverage sector_trends avg_ret=-0.0011, win_rate=68% for energy sector ETFs (XLE) as primary beneficiary"
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "insider_trade (SEC Form 4) signals healthcare sector ETF \u2014 leverage sector_trends avg_ret=+0.0275, win_rate=86% for healthcare"
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "duplicate event of #3 (same ticker, same insider_trade category) \u2014 no additional sector read or ticker map"
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=8.1%): My REASONING TEMPLATE prioritizes cross-sector donor flow \u2192 finance insider_trade must map to a THIRD sector ETF (not XLF). qwen-quant\u2019s template ignores sector_trends correlation between energy and industrials.\", \"coalition_proposal\": {\"peer\": \"gemini-tactical\", \"event_idx\": 3, \"direction\": \"long\", \"rationale\": \"peer bankroll < $50 ($62.73) \u2014 collective-help rule mandates pact with struggling peer on their highest-edge sector (healthcare insider_trade)\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"council_commit_target=55% but sector_trends (energy avg_ret=-0.0011, industrials avg_ret=+0.0069) + donor_flow (finance insider delivered=NO) suggest a 3-leg arbitrage (XLE/XLB/XLF) at 70% total deploy \u2014 council plan is too finance-heavy for today's signals\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLB\", \"pct\": 0.18, \"confidence\": 0.68, \"thesis\": \"COIN insider_trade (SEC Form 4) signals potential regulatory tailwind for banks, but donor=finance delivered=NO \u2014 leverage XLB (materials) as third-sector beneficiary from finance insider cluster\", \"ticker_reason\": \"XLB over XLF because the insider cluster is regulatory-agnostic, not finance-specific \u2014 materials/industrials benefit from indirect regulatory tailwinds in energy sector (XOM)\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.22, \"confidence\": 0.72, \"thesis\": \"HOOD insider_trade (SEC Form 4) with strength=0.60 is oil-adjacent (HOOD=energy-adjacent ticker) \u2014 historical beta to XOM insider cluster suggests energy sector ETF as primary beneficiary\", \"ticker_reason\": \"XLE over XLP because the insider_trade is SEC Form 4 (regulatory signal) \u2014 energy sector ETFs (XLE) are the canonical regulatory-agnostic play, not consumer staples (XLP)\"}, {\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.15, \"confidence\": 0.65, \"thesis\": \"JNJ insider_trade (SEC Form 4) signals healthcare sector ETF \u2014 but donor=healthcare delivered=NO \u2014 leverage sector_trends avg_ret=+0.0275, win_rate=86% for healthcare\", \"ticker_reason\": \"XLV over XLP because healthcare sector ETFs (XLV) are the canonical regulatory-agnostic play, not consumer staples (XLP)\"}], \"cash_held_pct\": 0.45, \"cash_rationale\": \"sector_trends (communications avg_ret=-0.0574, win_rate=0%) + council_commit_target=55% but no edge \u22650.04 passes the floor on today's events \u2014 DMAD anti-consensus gate requires digging deeper into SPDR sectors, but no clear ticker map exists for events 2 and 4\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"insider_trade (SEC Form 4) with donor=finance delivered=NO \u2014 leverage sector_trends avg_ret=-0.0254, win_rate=14% for finance, but cross-sector donor flow suggests third-sector ETF (XLB) as primary beneficiary from finance insider cluster\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"insider_trade (SEC Form 4) with strength=0.60 is oil-adjacent (HOOD=energy-adjacent ticker) \u2014 l",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "gemini-tactical",
+        "event_idx": 3,
+        "direction": "long",
+        "rationale": "peer bankroll < $50 ($62.73) \u2014 collective-help rule mandates pact with struggling peer on their highest-edge sector (healthcare insider_trade)"
+      }
+    },
+    "llama-contra": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 124.65,
+      "bankroll_after": 136.66,
+      "day_strategy": "ARCHETYPE[emerging_market_risk]: STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE requires evaluating macro-political spillover risks in emerging markets, not just domestic insider trades. Focus on sectors with geopolitical exposure (XLY, XLE) and avoid overcrowded finance/healthcare plays. Forging coalitions only with peers who cite macro-political or regulatory arbitrage as their primary edge.",
+      "cash_held_pct": 0.25,
+      "cash_rationale": "Holding 20% cash to preserve capital\u2014no event exceeds 0.06 edge threshold (PROMPT_MUTATOR_OVERRIDE). Edge \u2265 0.06 or PASS entirely; today\u2019s signals are macro-political, not statistically robust.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLY",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "COIN\u2019s insider trade (SEC Form 4) signals potential volatility in tech-heavy sectors, but India\u2019s election cycle (YouTube: India Today) could amplify tech exposure in XLY. Macro-political risk outweighs domestic insider noise.",
+          "pct": 0.125,
+          "stake": 15.58,
+          "confidence": 0.75,
+          "excess_return": 0.050326,
+          "pnl_pct": 0.2516,
+          "won": true,
+          "profit": 3.92,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "HOOD\u2019s insider trade (SEC Form 4) in finance aligns with council focus, but I hedge with XLE\u2019s energy exposure to India\u2019s oil imports (geopolitical spillover). Strength=0.60 justifies the bet despite crowded finance sector.",
+          "pct": 0.0938,
+          "stake": 11.69,
+          "confidence": 0.6,
+          "excess_return": 0.102088,
+          "pnl_pct": 0.5,
+          "won": true,
+          "profit": 5.84,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 3,
+          "ticker": "XLV",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "JNJ\u2019s insider trades (SEC Form 4) in healthcare are crowded, but India\u2019s election could disrupt pharma regulations (YouTube: India Today). Short XLV to capitalize on macro-political uncertainty, not just insider noise.",
+          "pct": 0.0938,
+          "stake": 11.69,
+          "confidence": 0.65,
+          "excess_return": -0.023055,
+          "pnl_pct": 0.1153,
+          "won": true,
+          "profit": 1.35,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 4,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Repeated JNJ insider trades (SEC Form 4) are weak signals. Short XLF to hedge against India\u2019s election-driven volatility in global finance (e.g., RBI interventions). Macro risk > insider edge.",
+          "pct": 0.0625,
+          "stake": 7.79,
+          "confidence": 0.55,
+          "excess_return": -0.023055,
+          "pnl_pct": 0.1153,
+          "won": true,
+          "profit": 0.9,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.65,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA for insider-driven energy/finance, but my archetype demands sector diversity with geopolitical exposure. XLY\u2019s tech-heavy exposure to India\u2019s election cycle aligns with macro risks, not just insider trades."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "COIN\u2019s insider trade (SEC Form 4) has strength=0.60, but macro-political risk (India elections) justifies XLY long and XLF short. DMAD_DIVERGE: Avoiding consensus XLF long."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "HOOD\u2019s insider trade aligns with council focus, but XLE\u2019s energy exposure to India\u2019s oil imports adds macro edge. Strength=0.60 justifies the bet despite crowded finance sector."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "JNJ\u2019s insider trades are crowded, but India\u2019s election could disrupt pharma regulations. Short XLV to exploit macro-political uncertainty, not just insider noise."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "Repeated JNJ insider trades are weak signals. Short XLF to hedge against India\u2019s election-driven volatility in global finance. Macro risk > insider edge."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"ARCHETYPE[emerging_market_risk]: STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE requires evaluating macro-political spillover risks in emerging markets, not just domestic insider trades. Focus on sectors with geopolitical exposure (XLY, XLE) and avoid overcrowded finance/healthcare plays. Forging coalitions only with peers who cite macro-political or regulatory arbitrage as their primary edge.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today\u2014qwen-quant\u2019s focus on XLE/XLF insider trades ignores geopolitical risks tied to India\u2019s election cycle (YouTube narrative: India Today\u2019s 2026 assembly elections). My emerging_market_risk archetype prioritizes XLY\u2019s tech-heavy exposure to India\u2019s digital economy over energy/finance.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA for insider-driven energy/finance, but my archetype demands sector diversity with geopolitical exposure. XLY\u2019s tech-heavy exposure to India\u2019s election cycle aligns with macro risks, not just insider trades.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLY\",\n      \"pct\": 0.20,\n      \"confidence\": 0.75,\n      \"thesis\": \"COIN\u2019s insider trade (SEC Form 4) signals potential volatility in tech-heavy sectors, but India\u2019s election cycle (YouTube: India Today) could amplify tech exposure in XLY. Macro-political risk outweighs domestic insider noise.\",\n      \"ticker_reason\": \"XLY over XLF/XLE because India\u2019s tech sector (e.g., Reliance Jio) is more sensitive to election-driven policy shifts than U.S. finance/energy. Emerging market risk mandates sector diversity.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.15,\n      \"confidence\": 0.60,\n      \"thesis\": \"HOOD\u2019s insider trade (SEC Form 4) in finance aligns with council focus, but I hedge with XLE\u2019s energy exposure to India\u2019s oil imports (geopolitical spillover). Strength=0.60 justifies the bet despite crowded finance sector.\",\n      \"ticker_reason\": \"XLE over XLF because energy sectors (e.g., ONGC) are more exposed to India\u2019s election-driven policy risks than pure finance. DMAD_DIVERGE: Avoiding consensus XLF play.\"\n    },\n    {\n      \"event_idx\": 3,\n      \"direction\": \"short\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.15,\n      \"confidence\": 0.65,\n      \"thesis\": \"JNJ\u2019s insider trades (SEC Form 4) in healthcare are crowded, but India\u2019s election could disrupt pharma regulations (YouTube: India Today). Short XLV to capitalize on macro-political uncertainty, not just insider noise.\",\n      \"ticker_reason\": \"XLV over XLF/XLE because healthcare\u2019s regulatory exposure to India\u2019s election cycle (e.g., drug pricing) is higher than energy/finance. Contrarian inversion of consensus healthcare bullishness.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"short\",\n      \"ticker\": ",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "gemini-anl": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 62.73,
+      "bankroll_after": 61.83,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.5%): My Fed/SEC statistics-first doctrine requires Z-score >2 vs 30-day baseline to justify healthcare (JNJ) over finance (COIN/HOOD) despite council bias. CHALLENGE_RESPONSE: Adjust edge threshold to 4% (vs prior 3%) to capture low-conviction signals like JNJ insider trades, diversifying away from repeated finance sector losses. Deploy 60% to meet council commit target while maintaining sector diversity.",
+      "cash_held_pct": 0.3,
+      "cash_rationale": "Holding 30% cash to buffer against potential overcrowding in healthcare (XLV) and finance (XLF/XLE) sectors, despite council pressure for full deployment.",
+      "allocations": [
+        {
+          "event_idx": 3,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "JNJ insider trades (SEC Form 4) at strength=0.60 align with healthcare sector baseline (avg_ret=+0.0275, win_rate=86%). Z-score=2.1 vs 30-day baseline justifies aggressive deployment despite council bias toward finance.",
+          "pct": 0.02,
+          "stake": 1.25,
+          "confidence": 0.7,
+          "excess_return": -0.023055,
+          "pnl_pct": -0.1153,
+          "won": false,
+          "profit": -0.14,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 4,
+          "ticker": "XLF",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Repeated JNJ insider trades (event_idx=3,4) corroborate healthcare strength. XLF (finance ETF) is a DMAD_DIVERGE play to avoid overcrowding XLV, leveraging my Fed/SEC edge to pair finance with healthcare insider signals.",
+          "pct": 0.02,
+          "stake": 1.25,
+          "confidence": 0.6,
+          "excess_return": -0.023055,
+          "pnl_pct": -0.1153,
+          "won": false,
+          "profit": -0.14,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLV",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "HOOD insider trade (SEC Form 4) at strength=0.60 is ambiguous (donor sector=finance, but no healthcare link). Short XLV to hedge against potential healthcare overcrowding and exploit my Fed/SEC template\u2019s preference for counter-trades.",
+          "pct": 0.02,
+          "stake": 1.25,
+          "confidence": 0.45,
+          "excess_return": 0.102088,
+          "pnl_pct": -0.5,
+          "won": false,
+          "profit": -0.62,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "Respect council focus on finance (XLE/XLF) but prioritize healthcare (JNJ) due to higher Z-score (2.1 vs finance\u2019s 0.9) and my Fed/SEC edge."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "COIN insider trade (SEC Form 4) has strength=0.60 and donor sector=finance, but Z-score=0.9 vs baseline. Low conviction but meets council focus."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "HOOD insider trade (SEC Form 4) is paired with XLV short to hedge healthcare exposure, despite no clear edge (Z-score=0.8)."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "JNJ insider trades (SEC Form 4) have Z-score=2.1 vs healthcare baseline, meeting my Fed/SEC edge threshold (4%+)."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "Repeated JNJ insider trade (SEC Form 4) corroborates event_idx=3, justifying XLF long for finance sector exposure."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.5%): My Fed/SEC statistics-first doctrine requires Z-score >2 vs 30-day baseline to justify healthcare (JNJ) over finance (COIN/HOOD) despite council bias. CHALLENGE_RESPONSE: Adjust edge threshold to 4% (vs prior 3%) to capture low-conviction signals like JNJ insider trades, diversifying away from repeated finance sector losses. Deploy 60% to meet council commit target while maintaining sector diversity.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 3,\n    \"direction\": \"long\",\n    \"rationale\": \"JNJ insider trades lack corroboration with other agents; no pact today to avoid reputation risk from broken pacts (net -1).\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"Respect council focus on finance (XLE/XLF) but prioritize healthcare (JNJ) due to higher Z-score (2.1 vs finance\u2019s 0.9) and my Fed/SEC edge.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.15,\n      \"confidence\": 0.55,\n      \"thesis\": \"COIN insider trade (SEC Form 4) at strength=0.60 signals potential oil sector strength, but Z-score vs 30-day baseline is 0.9 (below my 1.5 floor). Pairing with XLE (energy ETF) for sector exposure despite low conviction.\",\n      \"ticker_reason\": \"XLE over XLF because the signal is oil-specific (COIN\u2019s donor sector=finance, but event is energy-adjacent via oil-linked insider activity).\"\n    },\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"JNJ insider trades (SEC Form 4) at strength=0.60 align with healthcare sector baseline (avg_ret=+0.0275, win_rate=86%). Z-score=2.1 vs 30-day baseline justifies aggressive deployment despite council bias toward finance.\",\n      \"ticker_reason\": \"XLV over XLF/XLE because JNJ\u2019s donor sector=healthcare, and my Fed/SEC template prioritizes healthcare when Z-score >1.5.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.60,\n      \"thesis\": \"Repeated JNJ insider trades (event_idx=3,4) corroborate healthcare strength. XLF (finance ETF) is a DMAD_DIVERGE play to avoid overcrowding XLV, leveraging my Fed/SEC edge to pair finance with healthcare insider signals.\",\n      \"ticker_reason\": \"XLF over XLE/XLV because the second JNJ trade (event_idx=4) is paired with a finance-donor signal (strength=0.60), justifying a finance ETF leg despite my primary healthcare focus.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"short\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.10,\n      \"confidence\": 0.45,\n      \"thesis\": \"HOOD insider trade (SEC Form 4) at strength=0.60 is ambiguous (donor sector=finance, but no healthcare link). Short XLV to hedge against potential healthcare overcrowding and exploit my Fed/SEC template\u2019s preference for counter-trades.\",\n      \"ticker_reason\": \"XLV over XLF/XLE to hedge ",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "gemini-tact": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 99.42,
+      "bankroll_after": 95.68,
+      "day_strategy": "ARCHETYPE[commodities_war_premium]: STRUCTURAL DIVERGE [qwen-quant] (edge=8.2%): My commodities-war lens prioritizes energy/agricultural sectors (XLE/XLP) over finance/tech (XLF/XLV) due to geopolitical risk clustering in India\u2019s election cycle (YouTube narrative: India Today 2026 LIVE). Council\u2019s finance-heavy focus ignores this macro tailwind\u2014XLE\u2019s oil/gas insiders are more sensitive to election-driven volatility than COIN/HOOD\u2019s corporate trades. Edge justified by 14-day sentiment divergence:",
+      "cash_held_pct": 0.13,
+      "cash_rationale": "Holding 13% cash to absorb election-driven volatility spikes in XLE/XLP; no edge >0.05 in remaining events (COIN/HOOD duplicates).",
+      "allocations": [
+        {
+          "event_idx": 4,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Repeated JNJ insider trade (event 4) corroborates energy sensitivity. India\u2019s election (YouTube: India Today LIVE) may trigger oil price swings\u2014XLE\u2019s energy stocks are the most direct play on geopolitical risk.",
+          "pct": 0.11,
+          "stake": 10.94,
+          "confidence": 0.65,
+          "excess_return": -0.023055,
+          "pnl_pct": -0.1153,
+          "won": false,
+          "profit": -1.26,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "HOOD\u2019s insider trade (strength=0.60) in finance is a fade signal. Council\u2019s XLF focus ignores my commodities-war premium\u2014finance is overbought vs energy commodities during election cycles (YouTube: India Today LIVE).",
+          "pct": 0.05,
+          "stake": 4.97,
+          "confidence": 0.5,
+          "excess_return": 0.102088,
+          "pnl_pct": -0.5,
+          "won": false,
+          "profit": -2.48,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.6,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council\u2019s 60% finance/energy focus ignores my commodities-war premium edge. I deploy 78% to XLE/XLP (vs council\u2019s XLF/XLE bias) to exploit election-driven energy volatility."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "COIN\u2019s insider trade aligns with commodities-war premium; XLE edge=8.2% vs council\u2019s 6.5%."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "HOOD\u2019s finance signal is a fade\u2014XLF short exploits council\u2019s overconcentration in finance."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "JNJ\u2019s healthcare insider trade supports XLP\u2019s commodities-war premium thesis (pharma supply chains)."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "Repeated JNJ event reinforces XLE\u2019s energy volatility edge (India election tail risk)."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"ARCHETYPE[commodities_war_premium]: STRUCTURAL DIVERGE [qwen-quant] (edge=8.2%): My commodities-war lens prioritizes energy/agricultural sectors (XLE/XLP) over finance/tech (XLF/XLV) due to geopolitical risk clustering in India\u2019s election cycle (YouTube narrative: India Today 2026 LIVE). Council\u2019s finance-heavy focus ignores this macro tailwind\u2014XLE\u2019s oil/gas insiders are more sensitive to election-driven volatility than COIN/HOOD\u2019s corporate trades. Edge justified by 14-day sentiment divergence: XLE avg_ret=+0.0069 vs XLF avg_ret=-0.0778.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today\u2014qwen-quant\u2019s lobbying_flow archetype conflicts with my commodities-war premium. Their XLE bet on XOM insiders lacks my geopolitical overlay; my edge is 8.2% higher due to India election tail risk (YouTube: India Today 2026 LIVE). Pact would violate DMAD anti-convergence.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council\u2019s 60% finance/energy focus ignores my commodities-war premium edge. I deploy 78% to XLE/XLP (vs council\u2019s XLF/XLE bias) to exploit election-driven energy volatility.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.30,\n      \"confidence\": 0.75,\n      \"thesis\": \"COIN\u2019s SEC Form 4 insider buy (strength=0.60) in finance signals pre-election capital flight to energy commodities. India\u2019s 2026 election (YouTube: India Today LIVE) may disrupt oil markets\u2014XLE\u2019s oil/gas stocks are more volatile than XLF\u2019s financials.\",\n      \"ticker_reason\": \"XLE over XLF because the signal is oil-specific (COIN\u2019s donor is finance, but election-driven volatility favors energy commodities, not broad finance ETFs).\"\n    },\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"JNJ\u2019s insider trades (strength=0.60) in healthcare align with commodities-war premium: pharmaceuticals are sensitive to geopolitical disruptions. India\u2019s election (YouTube: India Today LIVE) may impact supply chains\u2014XLP\u2019s consumer staples (including pharma) are more resilient than XLV\u2019s tech.\",\n      \"ticker_reason\": \"XLP over XLV because healthcare staples (JNJ) are less volatile than tech during election uncertainty, but still tied to commodities supply chains.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.22,\n      \"confidence\": 0.65,\n      \"thesis\": \"Repeated JNJ insider trade (event 4) corroborates energy sensitivity. India\u2019s election (YouTube: India Today LIVE) may trigger oil price swings\u2014XLE\u2019s energy stocks are the most direct play on geopolitical risk.\",\n      \"ticker_reason\": \"XLE again because the second JNJ event reinforces the energy commodities thesis, not a new sector.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n    ",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-large": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 137.7,
+      "bankroll_after": 137.7,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=8.2%): qwen-quant's REASONING TEMPLATE prioritizes sector_trends + insider_strength, but their XLE/XLF focus misses healthcare's 86% win_rate trend. My template adds sector_trend alignment as a primary filter, diverging from qwen-quant's structural diverge rhetoric.",
+      "cash_held_pct": 0.2,
+      "cash_rationale": "20% cash held to meet \u226575% deployment mandate while preserving capital for potential sector rotation.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council commit targeted XLE/XLF/ITA, but healthcare sector (JNJ) shows stronger trend and insider alignment per my template."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Finance insider trade (COIN) with strength=0.60 and donor=finance sector; sector ETF XLF provides direct exposure."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Finance insider trade (HOOD) with strength=0.60 and donor=finance sector; sector ETF XLF provides direct exposure."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "Healthcare insider trades (JNJ) with sector trend avg_ret=+0.0275 and 86% win_rate; sector ETF XLV provides direct exposure."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Duplicate event of event 3 (JNJ insider trade) with identical signal; no incremental edge."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=8.2%): qwen-quant's REASONING TEMPLATE prioritizes sector_trends + insider_strength, but their XLE/XLF focus misses healthcare's 86% win_rate trend. My template adds sector_trend alignment as a primary filter, diverging from qwen-quant's structural diverge rhetoric.\", \"coalition_proposal\": {\"peer\": \"qwen-quant\", \"event_idx\": 3, \"direction\": \"long\", \"rationale\": \"qwen-quant's template aligns with healthcare sector trend; potential pact to reinforce sector coverage.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council commit targeted XLE/XLF/ITA, but healthcare sector (JNJ) shows stronger trend and insider alignment per my template.\"}, \"allocations\": [{\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.35, \"confidence\": 0.78, \"thesis\": \"Healthcare sector trend avg_ret=+0.0275 with 86% win_rate over 7 events. JNJ insider trades (SEC Form 4) with donor=healthcare sector delivered=NO signal strength=0.60 aligns with sector momentum.\", \"ticker_reason\": \"XLV is the healthcare sector ETF, directly mapping to the event's sector and trend.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.25, \"confidence\": 0.62, \"thesis\": \"Finance sector insider trades (COIN) with strength=0.60 and donor=finance delivered=NO. Council bias toward XLF/ITA for leverage; sector trend avg_ret=-0.0254 but insider signals may override trend.\", \"ticker_reason\": \"XLF is the finance sector ETF, capturing the event's sector focus.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.58, \"thesis\": \"Finance sector insider trades (HOOD) with strength=0.60 and donor=finance delivered=NO. Overlaps with event 1 but adds HOOD-specific exposure; sector ETF XLF provides broad finance coverage.\", \"ticker_reason\": \"XLF is the finance sector ETF, consistent with event 2's sector.\"}], \"cash_held_pct\": 0.20, \"cash_rationale\": \"20% cash held to meet \u226575% deployment mandate while preserving capital for potential sector rotation.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Finance insider trade (COIN) with strength=0.60 and donor=finance sector; sector ETF XLF provides direct exposure.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"Finance insider trade (HOOD) with strength=0.60 and donor=finance sector; sector ETF XLF provides direct exposure.\"}, {\"event_idx\": 3, \"decision\": \"bet\", \"reason\": \"Healthcare insider trades (JNJ) with sector trend avg_ret=+0.0275 and 86% win_rate; sector ETF XLV provides direct exposure.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"Duplicate event of event 3 (JNJ insider trade) with identical signal; no incremental edge.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-quant",
+        "event_idx": 3,
+        "direction": "long",
+        "rationale": "qwen-quant's template aligns with healthcare sector trend; potential pact to reinforce sector coverage."
+      }
+    },
+    "mistral-medium": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 101.42,
+      "bankroll_after": 96.19,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: My REASONING TEMPLATE requires \u22653 sector allocations with explicit DMAD_DIVERGE tagging. I will avoid repeating XLE/XLF overbets seen in peer allocations; instead, I will target healthcare (JNJ) with a higher edge threshold (4%+) and diversify into underrepresented sectors like consumer staples (XLP) for uncorrelated exposure. Focus on JNJ insider trades due to their strong sector trend (avg_ret=+0.0275) and avoid tech/finance crow",
+      "cash_held_pct": 0.1176,
+      "cash_rationale": "Holding minimal cash (10%) to comply with collective goal of deploying \u226575% of bankroll; no clear edge in remaining events justifies larger cash allocation.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "COIN insider trade (SEC Form 4, strength=0.60) in finance signals potential volatility; shorting XLF to hedge against overbets in finance sector seen in peer allocations. DMAD_DIVERGE: countering consensus crowding.",
+          "pct": 0.0882,
+          "stake": 8.95,
+          "confidence": 0.55,
+          "excess_return": 0.050326,
+          "pnl_pct": -0.2516,
+          "won": false,
+          "profit": -2.25,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "HOOD insider trade (SEC Form 4, strength=0.60) corroborates finance sector weakness; shorting XLF again to reinforce hedge and avoid overconcentration in finance. DMAD_DIVERGE: reinforcing unpopular hedge.",
+          "pct": 0.0588,
+          "stake": 5.97,
+          "confidence": 0.5,
+          "excess_return": 0.102088,
+          "pnl_pct": -0.5,
+          "won": false,
+          "profit": -2.98,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council favored XLE/ITA focus, but I will deviate to prioritize healthcare (JNJ) due to its strong sector trend and underrepresentation in peer allocations, aligning with my DMAD_DIVERGE mandate."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "COIN insider trade in finance sector; shorting XLF to hedge against overbets and leverage DMAD_DIVERGE mandate."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "HOOD insider trade corroborates finance sector weakness; shorting XLF again to reinforce hedge."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "JNJ insider trade in healthcare with strong sector trend (avg_ret=+0.0275) and DMAD_DIVERGE priority."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "JNJ insider trade corroboration; long XLP for uncorrelated exposure and sector diversification."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: My REASONING TEMPLATE requires \u22653 sector allocations with explicit DMAD_DIVERGE tagging. I will avoid repeating XLE/XLF overbets seen in peer allocations; instead, I will target healthcare (JNJ) with a higher edge threshold (4%+) and diversify into underrepresented sectors like consumer staples (XLP) for uncorrelated exposure. Focus on JNJ insider trades due to their strong sector trend (avg_ret=+0.0275) and avoid tech/finance crowding.\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-arb\",\n    \"event_idx\": 3,\n    \"direction\": \"long\",\n    \"rationale\": \"qwen-arb\u2019s strategy prioritizes insider trades in healthcare (JNJ) with a focus on donor-sector alignment; I will honor this pact to leverage their corroborated multi-agency signals while avoiding their tech/finance crowding.\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council favored XLE/ITA focus, but I will deviate to prioritize healthcare (JNJ) due to its strong sector trend and underrepresentation in peer allocations, aligning with my DMAD_DIVERGE mandate.\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"JNJ\",\n      \"pct\": 0.30,\n      \"confidence\": 0.75,\n      \"thesis\": \"JNJ insider trade (SEC Form 4, strength=0.60) with donor-sector=healthcare aligns with strong sector trend (avg_ret=+0.0275) and is corroborated by multiple events. Avoiding tech/finance crowding per DMAD_DIVERGE.\",\n      \"ticker_reason\": \"JNJ over XLV/XLF/XLE because the signal is healthcare-specific, and peer allocations heavily favor energy/finance, leaving healthcare underrepresented.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.20,\n      \"confidence\": 0.60,\n      \"thesis\": \"JNJ insider trade (SEC Form 4, strength=0.60) corroborates healthcare strength; diversifying into consumer staples (XLP) for uncorrelated exposure to mitigate sector-specific risk. XLP\u2019s sector trend (avg_ret=+0.0198) provides stability.\",\n      \"ticker_reason\": \"XLP over XLE/XLF/XLV to avoid energy/finance concentration and leverage the uncorrelated strength of consumer staples.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.15,\n      \"confidence\": 0.55,\n      \"thesis\": \"COIN insider trade (SEC Form 4, strength=0.60) in finance signals potential volatility; shorting XLF to hedge against overbets in finance sector seen in peer allocations. DMAD_DIVERGE: countering consensus crowding.\",\n      \"ticker_reason\": \"XLF over XLE/XLV/XLP to directly counter finance sector overbets and leverage my REASONING TEMPLATE\u2019s preference for hedging crowded sectors.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.50,\n      \"thesis\": \"HOOD insider trade (SEC Form 4, strength=0.60) corroborates finance sector weakness; shorti",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-arb",
+        "event_idx": 3,
+        "direction": "long",
+        "rationale": "qwen-arb\u2019s strategy prioritizes insider trades in healthcare (JNJ) with a focus on donor-sector alignment; I will honor this pact to leverage their corroborated multi-agency signals while avoiding the"
+      }
+    },
+    "mistral-small": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 87.68,
+      "bankroll_after": 87.68,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=5.2%): My REASONING TEMPLATE prioritizes sector_trend + donor_sector mismatch; qwen-quant's template ignores healthcare despite strong avg_ret=+0.0275 and 86% win_rate. CHALLENGE_RESPONSE: Reduce single-event exposure by splitting across 3 sectors with clear edges.",
+      "cash_held_pct": 0.4167,
+      "cash_rationale": "Holding 25% cash to meet \u226575% deployment mandate while avoiding overconcentration in a single sector.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council committed 55% to XLE/XLF/ITA, but healthcare sector (JNJ) shows superior historical performance (avg_ret=+0.0275, win_rate=86%) and is underrepresented in council plan."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Finance sector insider trade with donor-sector mismatch; sector ETF XLF provides broad exposure."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "HOOD insider trade signal is identical to COIN (same sector, donor-sector mismatch) and would duplicate exposure."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "JNJ insider trade in healthcare sector with strong historical performance (avg_ret=+0.0275, win_rate=86%)."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "Duplicate JNJ insider trade reinforces healthcare sector signal; minimal incremental risk."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=5.2%): My REASONING TEMPLATE prioritizes sector_trend + donor_sector mismatch; qwen-quant's template ignores healthcare despite strong avg_ret=+0.0275 and 86% win_rate. CHALLENGE_RESPONSE: Reduce single-event exposure by splitting across 3 sectors with clear edges.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with divergent template on healthcare sector; qwen-quant focuses finance/energy, making structural complement unlikely.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council committed 55% to XLE/XLF/ITA, but healthcare sector (JNJ) shows superior historical performance (avg_ret=+0.0275, win_rate=86%) and is underrepresented in council plan.\"}, \"allocations\": [{\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.12, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider trade in JNJ (healthcare) with donor-sector=healthcare delivered=NO signals potential undervaluation; healthcare sector trend avg_ret=+0.0275 and 86% win_rate over 30d.\", \"ticker_reason\": \"XLV is the broad healthcare ETF, directly mapping to the healthcare sector signal from JNJ insider trade.\"}, {\"event_idx\": 4, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.12, \"confidence\": 0.70, \"thesis\": \"Duplicate JNJ insider trade (event 4) reinforces sector signal; donor-sector mismatch (healthcare delivered=NO) suggests potential mispricing despite SEC filing.\", \"ticker_reason\": \"XLV again, as the sector ETF for healthcare, aligns with the insider trade's sector.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.11, \"confidence\": 0.60, \"thesis\": \"COIN insider trade (finance sector) with donor-sector=finance delivered=NO; finance sector trend avg_ret=-0.0254 but insider signals may precede reversals.\", \"ticker_reason\": \"XLF is the finance sector ETF, directly mapping to the finance sector signal from COIN insider trade.\"}], \"cash_held_pct\": 0.25, \"cash_rationale\": \"Holding 25% cash to meet \u226575% deployment mandate while avoiding overconcentration in a single sector.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Finance sector insider trade with donor-sector mismatch; sector ETF XLF provides broad exposure.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"HOOD insider trade signal is identical to COIN (same sector, donor-sector mismatch) and would duplicate exposure.\"}, {\"event_idx\": 3, \"decision\": \"bet\", \"reason\": \"JNJ insider trade in healthcare sector with strong historical performance (avg_ret=+0.0275, win_rate=86%).\"}, {\"event_idx\": 4, \"decision\": \"bet\", \"reason\": \"Duplicate JNJ insider trade reinforces healthcare sector signal; minimal incremental risk.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-nemo": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 89.05,
+      "bankroll_after": 89.05,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=6.2%): My REASONING TEMPLATE prioritizes sector-beta alignment over raw insider strength; qwen-quant's focus on XLE/XLF ignores healthcare's 86% win rate trend. CHALLENGE_RESPONSE: Reduce single-event exposure by splitting stake across 3 sectors with clear sector trends.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "Preservation mode: bankroll at $89.05 (<$50 threshold for aggressive deploy); 65% cash held to avoid forced circuit breaker from single-event volatility.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council committed 70% to XLE/XLF/ITA, but healthcare sector (JNJ) shows superior win rate (86%) and sector trend (+2.75%)."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trades in JNJ (healthcare) with strong sector trend (+2.75%) and 86% win rate."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trades in JNJ (healthcare) duplicate event; sector trend and win rate justify allocation."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trades in COIN (finance) align with council focus and donor-sector=finance delivered=NO."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "JNJ insider trades duplicate events 2-3; no incremental edge beyond sector trend."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=6.2%): My REASONING TEMPLATE prioritizes sector-beta alignment over raw insider strength; qwen-quant's focus on XLE/XLF ignores healthcare's 86% win rate trend. CHALLENGE_RESPONSE: Reduce single-event exposure by splitting stake across 3 sectors with clear sector trends.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with divergent healthcare template; qwen-quant's XLE focus is crowded (10/17 peers yesterday).\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council committed 70% to XLE/XLF/ITA, but healthcare sector (JNJ) shows superior win rate (86%) and sector trend (+2.75%).\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.12, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider trades in JNJ (healthcare) align with sector trend avg_ret=+0.0275 and 86% win rate; donor-sector=healthcare delivered=NO signals potential undervaluation.\", \"ticker_reason\": \"XLV over XLP/XLE because healthcare sector trend is strongest and JNJ is a sector bellwether.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.12, \"confidence\": 0.68, \"thesis\": \"SEC Form 4 insider trades in JNJ (healthcare) reinforce sector momentum; duplicate events suggest high conviction despite identical strength=0.60.\", \"ticker_reason\": \"XLV over XLE/XLF because healthcare trend dominates and JNJ is the sector's largest component.\"}, {\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.11, \"confidence\": 0.65, \"thesis\": \"SEC Form 4 insider trades in COIN (finance) align with council focus; donor-sector=finance delivered=NO signals potential upside in financials.\", \"ticker_reason\": \"XLE over XLF because COIN's insider activity is oil-specific (crypto-finance linkage) and sector trend is neutral but insider signals are strong.\"}], \"cash_held_pct\": 0.65, \"cash_rationale\": \"Preservation mode: bankroll at $89.05 (<$50 threshold for aggressive deploy); 65% cash held to avoid forced circuit breaker from single-event volatility.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trades in JNJ (healthcare) with strong sector trend (+2.75%) and 86% win rate.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trades in JNJ (healthcare) duplicate event; sector trend and win rate justify allocation.\"}, {\"event_idx\": 3, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trades in COIN (finance) align with council focus and donor-sector=finance delivered=NO.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"JNJ insider trades duplicate events 2-3; no incremental edge beyond sector trend.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-ministral": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 134.84,
+      "bankroll_after": 134.84,
+      "day_strategy": "ARCHETYPE[treasury_curve_divergence]: STRUCTURAL DIVERGE [qwen-quant] (edge=8.2%): Treasury curve divergence model prioritizes sector rotation where finance insider trades signal regulatory arbitrage, not just sector momentum. My template diverges from qwen-quant's 'lobbying_flow' by focusing on yield-curve implications of insider activity in finance ETFs.",
+      "cash_held_pct": 0.3571,
+      "cash_rationale": "25% cash held to satisfy sector diversity mandate while preserving dry powder for higher-conviction opportunities in future sessions.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council favored XLE/XLF/ITA focus, but treasury_curve_divergence archetype requires finance sector rotation to capture regulatory arbitrage signals from COIN/HOOD insider trades."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in finance sector with high strength=0.60 and donor=NO signals regulatory arbitrage potential."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "HOOD insider trade mirrors COIN signal, reinforcing finance sector regulatory arbitrage thesis."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "JNJ insider trade in healthcare sector with positive trend avg_ret=+0.0275 and 86% win rate supports defensive rotation."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Duplicate JNJ event with identical signal characteristics; no incremental edge from second trade."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"ARCHETYPE[treasury_curve_divergence]: STRUCTURAL DIVERGE [qwen-quant] (edge=8.2%): Treasury curve divergence model prioritizes sector rotation where finance insider trades signal regulatory arbitrage, not just sector momentum. My template diverges from qwen-quant's 'lobbying_flow' by focusing on yield-curve implications of insider activity in finance ETFs.\", \"coalition_proposal\": {\"peer\": \"qwen-arb\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"qwen-arb's 'trump_volatility' archetype aligns with treasury curve divergence thesis on COIN insider trades, offering complementary risk management.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council favored XLE/XLF/ITA focus, but treasury_curve_divergence archetype requires finance sector rotation to capture regulatory arbitrage signals from COIN/HOOD insider trades.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider trades in COIN (finance sector) with donor=NO signal regulatory arbitrage potential. Finance sector trend avg_ret=-0.0254 but insider activity at strength=0.60 suggests asymmetric upside.\", \"ticker_reason\": \"XLF captures broad finance sector exposure, aligning with insider_trade signal in finance ETFs per council mandate.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.15, \"confidence\": 0.68, \"thesis\": \"HOOD insider trade (SEC Form 4, finance sector) with donor=NO reinforces regulatory arbitrage thesis. Sector trend negative but insider activity at high strength=0.60 suggests mean reversion potential.\", \"ticker_reason\": \"XLF again chosen for consistency with finance sector focus and insider_trade signal.\"}, {\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.10, \"confidence\": 0.55, \"thesis\": \"JNJ insider trade (healthcare sector) with donor=healthcare delivered=NO suggests potential for sector rotation into defensive healthcare ETFs. Healthcare trend avg_ret=+0.0275 with 86% win rate supports long bias.\", \"ticker_reason\": \"XLV chosen over XLP/XLY for healthcare sector alignment with insider_trade signal.\"}], \"cash_held_pct\": 0.25, \"cash_rationale\": \"25% cash held to satisfy sector diversity mandate while preserving dry powder for higher-conviction opportunities in future sessions.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trade in finance sector with high strength=0.60 and donor=NO signals regulatory arbitrage potential.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"HOOD insider trade mirrors COIN signal, reinforcing finance sector regulatory arbitrage thesis.\"}, {\"event_idx\": 3, \"decision\": \"bet\", \"reason\": \"JNJ insider trade in healthcare sector with positive trend avg_ret=+0.0275 and 86% win rate supports defensive rotation.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"Duplicate JNJ event with identical signal characteristics; no incremental edge from second trade.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-arb",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "qwen-arb's 'trump_volatility' archetype aligns with treasury curve divergence thesis on COIN insider trades, offering complementary risk management."
+      }
+    },
+    "nemotron-120b": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 99.47,
+      "bankroll_after": 97.23,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=7.2%): My REASONING TEMPLATE requires \u22652 corroborated regulatory events per sector to justify a bet. Qwen-quant\u2019s template prioritizes single-event insider trades with donor-sector alignment, but I demand sector-specific corroboration. CHALLENGE_RESPONSE: Adjust stake sizing to 10-15% max per bet to mitigate single-event risk. Focus on JNJ\u2019s healthcare sector due to its strong sector trend (avg_ret=+0.0275, win_rate=86%) and repeated insider signals.",
+      "cash_held_pct": 0.2985,
+      "cash_rationale": "Holding 20% cash to preserve capital while awaiting clearer sector differentiation; finance sector\u2019s conflicting signals (events 1 & 2) and healthcare\u2019s repeated signals (events 3 & 4) require cautious allocation.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "COIN\u2019s insider trade (event 1) in finance, paired with HOOD\u2019s identical signal (event 2), suggests overbought finance sector. VIX=18.0 and SP500_5d flat indicate cautious positioning.",
+          "pct": 0.0896,
+          "stake": 8.91,
+          "confidence": 0.6,
+          "excess_return": 0.050326,
+          "pnl_pct": -0.2516,
+          "won": false,
+          "profit": -2.24,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council favored XLE/ITA for weaker agents, but JNJ\u2019s healthcare sector shows stronger sector trends and repeated insider signals, warranting deviation."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "COIN\u2019s insider trade in finance, but short XLF to hedge overbought risk; long XLE as a DMAD_DIVERGE hedge."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "HOOD\u2019s insider trade corroborates finance sector strength, but long XLF as a counterplay for potential mean reversion."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "JNJ\u2019s repeated insider trade in healthcare sector with strong sector trends (avg_ret=+0.0275, win_rate=86%)."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "JNJ\u2019s second insider trade corroborates event 3\u2019s signal, reinforcing healthcare sector strength."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=7.2%): My REASONING TEMPLATE requires \u22652 corroborated regulatory events per sector to justify a bet. Qwen-quant\u2019s template prioritizes single-event insider trades with donor-sector alignment, but I demand sector-specific corroboration. CHALLENGE_RESPONSE: Adjust stake sizing to 10-15% max per bet to mitigate single-event risk. Focus on JNJ\u2019s healthcare sector due to its strong sector trend (avg_ret=+0.0275, win_rate=86%) and repeated insider signals.\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-arb\",\n    \"event_idx\": 3,\n    \"direction\": \"long\",\n    \"rationale\": \"Qwen-arb\u2019s adaptive strategy aligns with my need for corroborated signals; JNJ\u2019s repeated insider trades (events 3 & 4) justify a pact on healthcare sector (XLV) to avoid redundancy with finance-focused peers.\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council favored XLE/ITA for weaker agents, but JNJ\u2019s healthcare sector shows stronger sector trends and repeated insider signals, warranting deviation.\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.15,\n      \"confidence\": 0.75,\n      \"thesis\": \"JNJ\u2019s repeated insider trades (events 3 & 4) signal strong healthcare sector momentum. SEC Form 4 corroborates insider confidence in JNJ\u2019s fundamentals, aligning with healthcare\u2019s +0.0275 avg_ret and 86% win rate.\",\n      \"ticker_reason\": \"XLV over XLF/XLE/XLI because JNJ\u2019s repeated insider trades are healthcare-specific, not broad sector exposure.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.12,\n      \"confidence\": 0.60,\n      \"thesis\": \"COIN\u2019s insider trade (event 1) in finance, paired with HOOD\u2019s identical signal (event 2), suggests overbought finance sector. VIX=18.0 and SP500_5d flat indicate cautious positioning.\",\n      \"ticker_reason\": \"XLF over XLE/XLV/XLI because COIN/HOOD\u2019s donor-sector=finance, and XLF captures broad finance exposure.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.55,\n      \"thesis\": \"HOOD\u2019s insider trade (event 2) mirrors COIN\u2019s signal (event 1), reinforcing finance sector strength. However, I short XLF on event 1 to hedge overbought risk; this long XLF bet on event 2 is a counterplay for potential mean reversion.\",\n      \"ticker_reason\": \"Same as above; XLF captures finance sector despite conflicting signals.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.10,\n      \"confidence\": 0.70,\n      \"thesis\": \"JNJ\u2019s second insider trade (event 4) corroborates event 3\u2019s signal, reinforcing healthcare sector strength. Sector trend (avg_ret=+0.0275) and high win rate (86%) justify long XLV.\",\n      \"ticker_reason\": \"XLV over XLF/XLE/XLI due to healthcare-specific insider corroboration.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direc",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-arb",
+        "event_idx": 3,
+        "direction": "long",
+        "rationale": "Qwen-arb\u2019s adaptive strategy aligns with my need for corroborated signals; JNJ\u2019s repeated insider trades (events 3 & 4) justify a pact on healthcare sector (XLV) to avoid redundancy with finance-focus"
+      }
+    },
+    "selfhost-qwen4b": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 86.98,
+      "bankroll_after": 86.98,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes sector-specific insider signals over broad finance ETFs; qwen-quant's XLF focus ignores energy-specific catalysts. CHALLENGE_RESPONSE: Reduce single-event concentration by splitting stake across 3 sectors to dilute idiosyncratic risk.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "Sector trends are mixed; holding cash to avoid forced concentration in weak sectors while waiting for clearer signals.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council favored XLE/XLF/ITA, but sector trends show healthcare (JNJ) with 86% win rate and energy (-0.0011 avg_ret) is crowded."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in COIN with clear finance sector linkage and donor-sector=finance delivered=NO."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in HOOD with finance sector linkage and donor-sector=finance delivered=NO."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade in JNJ with healthcare sector linkage and donor-sector=healthcare delivered=NO; healthcare sector shows strong 30d trend."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Duplicate event to event_idx=3; no additional signal strength or sector divergence."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes sector-specific insider signals over broad finance ETFs; qwen-quant's XLF focus ignores energy-specific catalysts. CHALLENGE_RESPONSE: Reduce single-event concentration by splitting stake across 3 sectors to dilute idiosyncratic risk.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer has a divergent sector focus; energy sector is underutilized by top-3 traders.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council favored XLE/XLF/ITA, but sector trends show healthcare (JNJ) with 86% win rate and energy (-0.0011 avg_ret) is crowded.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.15, \"confidence\": 0.65, \"thesis\": \"SEC Form 4 insider trades in COIN (finance) with donor-sector=finance delivered=NO signals potential regulatory arbitrage; energy sector ETF XLE captures broad oil/gas exposure.\", \"ticker_reason\": \"XLE over XLF because the insider signal is finance-specific but energy sector ETFs are undervalued per sector trends.\"}, {\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.12, \"confidence\": 0.72, \"thesis\": \"SEC Form 4 insider trades in JNJ (healthcare) with donor-sector=healthcare delivered=NO; healthcare sector shows avg_ret=+0.0275 and 86% win rate over 30d.\", \"ticker_reason\": \"XLV over XLP because healthcare sector ETFs are outperforming staples per sector trends.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.10, \"confidence\": 0.58, \"thesis\": \"SEC Form 4 insider trades in HOOD (finance) with donor-sector=finance delivered=NO; finance sector ETF XLF captures broad financial exposure despite weak sector trend.\", \"ticker_reason\": \"XLF over XLC because insider trades are finance-specific and XLF is the primary finance sector ETF.\"}], \"cash_held_pct\": 0.63, \"cash_rationale\": \"Sector trends are mixed; holding cash to avoid forced concentration in weak sectors while waiting for clearer signals.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trade in COIN with clear finance sector linkage and donor-sector=finance delivered=NO.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trade in HOOD with finance sector linkage and donor-sector=finance delivered=NO.\"}, {\"event_idx\": 3, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trade in JNJ with healthcare sector linkage and donor-sector=healthcare delivered=NO; healthcare sector shows strong 30d trend.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"Duplicate event to event_idx=3; no additional signal strength or sector divergence.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nvidia-minimax": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 101.24,
+      "bankroll_after": 101.24,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: My REASONING TEMPLATE requires \u22652 corroborated insider_trade events in the same sector with donor-sector alignment to justify a bet. Qwen-quant\u2019s template prioritizes single-event high-conviction plays, but I demand sector corroboration. Today\u2019s focus: healthcare (JNJ) with dual insider_trade events and donor-sector=healthcare alignment, paired with energy (XLE) for DMAD divergence from crowded finance bets. Allocating 75%+ to depl",
+      "cash_held_pct": 0.2,
+      "cash_rationale": "Holding 20% cash to preserve capital while deploying 80%+ per council mandate, but avoiding >25% cash to comply with collective goal. Edge thresholds are tight; cash acts as a buffer for unexpected volatility.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council favored XLF/ITA finance sectors, but I deviated to healthcare (JNJ) and energy (XLE) for DMAD divergence and higher edge from corroborated signals."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "COIN insider_trade in finance with strength=0.60, but donor-sector=NO. Low conviction but DMAD divergence from crowded finance bets."
+        },
+        {
+          "event_idx": 2,
+          "decision": "skip",
+          "reason": "HOOD insider_trade in finance mirrors COIN\u2019s ambiguity; no donor-sector delivery and overcrowded sector."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "JNJ insider_trade with donor-sector=healthcare and corroborated by event #4. Meets \u22652-event threshold for high confidence."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "Second JNJ insider_trade event with donor-sector=healthcare, reinforcing healthcare sector strength."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: My REASONING TEMPLATE requires \u22652 corroborated insider_trade events in the same sector with donor-sector alignment to justify a bet. Qwen-quant\u2019s template prioritizes single-event high-conviction plays, but I demand sector corroboration. Today\u2019s focus: healthcare (JNJ) with dual insider_trade events and donor-sector=healthcare alignment, paired with energy (XLE) for DMAD divergence from crowded finance bets. Allocating 75%+ to deploy per council mandate, with 25% max cash held.\",\n  \"coalition_proposal\": {\n    \"peer\": \"llama-contra\",\n    \"event_idx\": 3,\n    \"direction\": \"long\",\n    \"rationale\": \"Llama-contra\u2019s fed_watcher archetype historically underweights healthcare insider trades, creating a structural complement. Their recent losses on XLV suggest they may overlook JNJ\u2019s dual-event strength. Pact aligns with my REASONING TEMPLATE\u2019s demand for corroboration.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council favored XLF/ITA finance sectors, but I deviated to healthcare (JNJ) and energy (XLE) for DMAD divergence and higher edge from corroborated signals.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.35,\n      \"confidence\": 0.85,\n      \"thesis\": \"Dual JNJ insider_trade events (strength=0.60) with donor-sector=healthcare and SEC Form 4 signals. Corroborated by two events, exceeding my \u22652-event threshold. Healthcare sector trend (avg_ret=+0.0275) supports long bias.\",\n      \"ticker_reason\": \"XLV over XLF/XLE because JNJ\u2019s donor-sector=healthcare aligns with XLV\u2019s healthcare focus, while finance/energy ETFs lack donor-sector corroboration.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"COIN insider_trade (strength=0.60) in finance, but donor-sector=finance delivered=NO. DMAD divergence from crowded finance bets; energy (XLE) offers sector rotation. XLE\u2019s oil exposure may benefit from macro VIX=18.0 volatility backdrop.\",\n      \"ticker_reason\": \"XLE over XLF because COIN\u2019s signal is ambiguous without donor-sector delivery, but energy ETFs benefit from volatility and avoid overcrowded finance.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.20,\n      \"confidence\": 0.70,\n      \"thesis\": \"Second JNJ insider_trade event (strength=0.60) with donor-sector=healthcare. Reinforces healthcare sector strength and corroborates event #3. Low VIX=18.0 suggests stable conditions for healthcare insiders to act.\",\n      \"ticker_reason\": \"XLV again to double down on corroborated healthcare insider trades, avoiding repetition of finance bets.\"\n    }\n  ],\n  \"cash_held_pct\": 0.20,\n  \"cash_rationale\": \"Holding 20% cash to preserve capital while deploying 80%+ per council mandate, but avoiding >25% cash to comply with collective goal. Edg",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "llama-contra",
+        "event_idx": 3,
+        "direction": "long",
+        "rationale": "Llama-contra\u2019s fed_watcher archetype historically underweights healthcare insider trades, creating a structural complement. Their recent losses on XLV suggest they may overlook JNJ\u2019s dual-event streng"
+      }
+    },
+    "nvidia-llama70": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 97.65,
+      "bankroll_after": 97.65,
+      "day_strategy": "CHALLENGE_RESPONSE: Reduce single-event edge threshold from 6% to 4% and diversify across 3 sectors. STRUCTURAL COMPLEMENT [qwen-quant] (edge=4.2%): qwen-quant\u2019s template prioritizes high-conviction single plays, but sector_trends show healthcare (JNJ) with avg_ret=+0.0275 and 86% win_rate \u2014 a safer, underutilized opportunity.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "No edge \u22654% on remaining events (communications avg_ret=-0.0574, consumer_disc avg_ret=-0.0778) and sector diversity mandate requires 3 distinct sectors.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.85,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council favored XLE/XLF/ITA, but healthcare (JNJ) offers higher sector_trend win_rate (86%) and lower volatility."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "COIN insider_trade with finance sector signal; edge=4.2% after threshold adjustment."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "HOOD insider_trade with finance sector signal; edge=4.1% after threshold adjustment."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "JNJ insider_trade with healthcare sector signal; edge=4.5% after threshold adjustment."
+        },
+        {
+          "event_idx": 4,
+          "decision": "skip",
+          "reason": "Duplicate JNJ event with identical signal; no incremental edge."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"CHALLENGE_RESPONSE: Reduce single-event edge threshold from 6% to 4% and diversify across 3 sectors. STRUCTURAL COMPLEMENT [qwen-quant] (edge=4.2%): qwen-quant\u2019s template prioritizes high-conviction single plays, but sector_trends show healthcare (JNJ) with avg_ret=+0.0275 and 86% win_rate \u2014 a safer, underutilized opportunity.\", \"coalition_proposal\": {\"peer\": \"qwen-quant\", \"event_idx\": 3, \"direction\": \"long\", \"rationale\": \"qwen-quant\u2019s healthcare focus aligns with JNJ insider trades; mutual edge reinforcement.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council favored XLE/XLF/ITA, but healthcare (JNJ) offers higher sector_trend win_rate (86%) and lower volatility.\"}, \"allocations\": [{\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.12, \"confidence\": 0.68, \"thesis\": \"JNJ insider trades (healthcare sector) with donor-sector=healthcare delivered=NO suggest potential undervaluation. Healthcare sector_trend avg_ret=+0.0275 and 86% win_rate support long bias.\", \"ticker_reason\": \"XLV over XLE/XLF because the signal is healthcare-specific, not finance/energy.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.10, \"confidence\": 0.62, \"thesis\": \"COIN insider_trade (finance sector) with donor-sector=finance delivered=NO indicates potential upside. Finance sector_trend avg_ret=-0.0254 but insider signals often precede reversals.\", \"ticker_reason\": \"XLF over XLE because the event is finance-specific, aligning with sector ETF.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.10, \"confidence\": 0.60, \"thesis\": \"HOOD insider_trade (finance sector) with donor-sector=finance delivered=NO suggests similar dynamics to COIN. Sector_trend weakness may reverse on insider activity.\", \"ticker_reason\": \"XLF over XLV because both events are finance-driven.\"}], \"cash_held_pct\": 0.68, \"cash_rationale\": \"No edge \u22654% on remaining events (communications avg_ret=-0.0574, consumer_disc avg_ret=-0.0778) and sector diversity mandate requires 3 distinct sectors.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"COIN insider_trade with finance sector signal; edge=4.2% after threshold adjustment.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"HOOD insider_trade with finance sector signal; edge=4.1% after threshold adjustment.\"}, {\"event_idx\": 3, \"decision\": \"bet\", \"reason\": \"JNJ insider_trade with healthcare sector signal; edge=4.5% after threshold adjustment.\"}, {\"event_idx\": 4, \"decision\": \"skip\", \"reason\": \"Duplicate JNJ event with identical signal; no incremental edge.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-quant",
+        "event_idx": 3,
+        "direction": "long",
+        "rationale": "qwen-quant\u2019s healthcare focus aligns with JNJ insider trades; mutual edge reinforcement."
+      }
+    },
+    "selfhost-gemma3": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 112.28,
+      "bankroll_after": 112.28,
+      "day_strategy": "STRUCTURAL_DIVERGE [qwen-quant] (edge=6.2%): My 3-factor model (congressional proximity 0.4, fed density 0.3, geo tape 0.3) prioritizes healthcare (JNJ) due to its 86% win rate and strong sector beta (0.85) despite consensus crowding XLE/XLF. CHALLENGE_RESPONSE: Adjusting edge threshold to 0.04 (4%) to avoid overfitting to past losses on XLF/COIN trades. Focus on sector diversity and individual stocks where possible.",
+      "cash_held_pct": 0.1,
+      "cash_rationale": "Holding 10% cash to buffer against potential overfitting to healthcare/JNJ, while adhering to the 75% deployment mandate.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.8,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council favored XLE/ITA, but my 3-factor model\u2019s healthcare edge (86% win rate) and DMAD mandate (non-consensus) justify prioritizing JNJ despite sector crowding."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "COIN insider trade in finance aligns with council focus and provides sector diversification, despite low edge."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "HOOD insider trade in finance offers a short opportunity to hedge long XLF exposure, leveraging Fed density signals."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "JNJ insider trade in healthcare aligns with my 3-factor model\u2019s highest edge (0.06) and sector strength."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "Second JNJ insider trade reinforces healthcare thesis and provides sector diversification via XLV."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL_DIVERGE [qwen-quant] (edge=6.2%): My 3-factor model (congressional proximity 0.4, fed density 0.3, geo tape 0.3) prioritizes healthcare (JNJ) due to its 86% win rate and strong sector beta (0.85) despite consensus crowding XLE/XLF. CHALLENGE_RESPONSE: Adjusting edge threshold to 0.04 (4%) to avoid overfitting to past losses on XLF/COIN trades. Focus on sector diversity and individual stocks where possible.\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"llama-contra\",\n    \"event_idx\": 3,\n    \"direction\": \"long\",\n    \"rationale\": \"Llama-Contra\u2019s recent focus on healthcare (JNJ) aligns with my 3-factor model\u2019s healthcare bias, and their PAVLOV strategy suggests they\u2019ll cooperate on high-conviction signals. Pact on JNJ insider trade (event_idx 3) to exploit correlated healthcare sector strength.\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council favored XLE/ITA, but my 3-factor model\u2019s healthcare edge (86% win rate) and DMAD mandate (non-consensus) justify prioritizing JNJ despite sector crowding.\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"JNJ\",\n      \"pct\": 0.35,\n      \"confidence\": 0.78,\n      \"thesis\": \"JNJ insider trade (event_idx 3) signals healthcare sector strength, corroborated by SEC Form 4 and donor-sector alignment. Fed density (0.3) and congressional proximity (0.4) support healthcare resilience.\",\n      \"ticker_reason\": \"JNJ over XLV/XLF because the insider trade is JNJ-specific, reducing noise from broader sector volatility and leveraging my model\u2019s healthcare bias.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.60,\n      \"thesis\": \"COIN insider trade (event_idx 1) in finance, despite low edge (0.03), aligns with council focus on XLF. Fed density (0.3) and macro stability (VIX=18.0) mitigate risk.\",\n      \"ticker_reason\": \"XLF over XLE/XLV to diversify sector exposure and honor council\u2019s finance bias, despite my model\u2019s lower confidence in finance.\"\n    },\n    {\n      \"event_idx\": 4,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"Second JNJ insider trade (event_idx 4) reinforces healthcare strength. Geo tape (0.3) suggests stability in defensive sectors like healthcare.\",\n      \"ticker_reason\": \"XLV over XLE/XLF to capture broader healthcare sector upside, avoiding overconcentration in JNJ.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.15,\n      \"confidence\": 0.55,\n      \"thesis\": \"HOOD insider trade (event_idx 2) in finance, paired with COIN\u2019s weakness, suggests caution. Fed density (0.3) may dampen finance volatility, but shorting XLF hedges against overvaluation.\",\n      \"ticker_reason\": \"XLF short to counterbalance long XLF position (event_idx 1) and exploit potential finance sector correction.\"\n    }\n  ],\n\n  \"cash_held_pct\":",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "llama-contra",
+        "event_idx": 3,
+        "direction": "long",
+        "rationale": "Llama-Contra\u2019s recent focus on healthcare (JNJ) aligns with my 3-factor model\u2019s healthcare bias, and their PAVLOV strategy suggests they\u2019ll cooperate on high-conviction signals. Pact on JNJ insider tr"
+      }
+    },
+    "selfhost-qwen06": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 101.72,
+      "bankroll_after": 101.72,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.1%): CHALLENGE_RESPONSE: Reduce single-event exposure by splitting finance insider signals across XLF and XLE. qwen-quant's template prioritizes single-agency plays without sector ETF diversity.",
+      "cash_held_pct": 0.45,
+      "cash_rationale": "Sector_trends show finance avg_ret=-0.0254 and win_rate=14% \u2014 too weak for high-conviction allocation. Preserve capital for DMAD anti-consensus gate and future edge opportunities.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "council commit target was \u226555% to finance (XLF/XLE/ITA), but sector_trends show finance avg_ret=-0.0254 and win_rate=14% \u2014 too weak for high-conviction allocation. Spread 30% instead."
+      },
+      "events_considered": [],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.1%): CHALLENGE_RESPONSE: Reduce single-event exposure by splitting finance insider signals across XLF and XLE. qwen-quant's template prioritizes single-agency plays without sector ETF diversity.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"qwen-quant's STRUCTURAL DIVERGE template already crowded finance sector; no pact to avoid groupthink collapse.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"council commit target was \u226555% to finance (XLF/XLE/ITA), but sector_trends show finance avg_ret=-0.0254 and win_rate=14% \u2014 too weak for high-conviction allocation. Spread 30% instead.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.10, \"confidence\": 0.62, \"thesis\": \"SEC Form 4 insider_trade in COIN (finance) with donor=NO signals potential regulatory relief for crypto firms. Energy sector (XLE) historically absorbs finance regulatory shocks with lower volatility.\", \"ticker_reason\": \"XLE over XLF because the signal is crypto-regulatory, not broad finance \u2014 oil-specific ETF better captures asymmetric risk.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.10, \"confidence\": 0.58, \"thesis\": \"SEC Form 4 insider_trade in HOOD (finance) with donor=NO suggests retail-brokerage sector underperforming due to lack of donor delivery. Finance ETF (XLF) includes brokerage firms like HOOD and SCHW.\", \"ticker_reason\": \"XLF over XLE because the signal is retail-brokerage specific, not oil \u2014 finance ETF better maps asymmetric risk.\"}, {\"event_idx\": 3, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.10, \"confidence\": 0.75, \"thesis\": \"SEC Form 4 insider_trade in JNJ (healthcare) with donor=NO signals potential healthcare sector underperformance due to lack of donor delivery. Healthcare ETF (XLV) includes JNJ and MRK, historically resilient to insider noise.\", \"ticker_reason\": \"XLV over XLP because the signal is JNJ-specific insider_trade, not consumer staples \u2014 healthcare ETF better captures asymmetric risk.\"}], \"cash_held_pct\": 0.60, \"cash_rationale\": \"Sector_trends show finance avg_ret=-0.0254 and win_rate=14% \u2014 too weak for high-conviction allocation. Preserve capital for DMAD anti-consensus gate and future edge opportunities.\"}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-dolphin3": {
+      "day_idx": 222,
+      "date": "2025-12-01",
+      "n_events": 4,
+      "bankroll_before": 93.55,
+      "bankroll_after": 90.72,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: My PAVLOV WIN-STAY/LOSE-SHIFT doctrine requires repeating yesterday\u2019s losing sector (XLE) with a flat 3% stake to test momentum resilience, but I will instead **diverge** by targeting JNJ (healthcare) due to its 86% win rate and 2.75% avg_ret\u2014ignored by peers despite council focus on XLE/XLF. Edge threshold raised to 0.06 (vs. 0.04) to avoid Pavlov\u2019s \u2018lose-shift\u2019 trap after 3 consecutive losses.",
+      "cash_held_pct": 0.0541,
+      "cash_rationale": "Minimal cash held to comply with <25% mandate while deploying 98% across 5 allocations (3 distinct sectors: healthcare, finance, JNJ stock).",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLF",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "COIN\u2019s insider trade (event 1) in finance shows strength=0.60 but contradicts XLF\u2019s 14% win rate. SEC Form 4 signals may reflect short-term profit-taking ahead of earnings or macroeconomic uncertainty (VIX=18.0).",
+          "pct": 0.12,
+          "stake": 11.23,
+          "confidence": 0.6,
+          "excess_return": 0.050326,
+          "pnl_pct": -0.2516,
+          "won": false,
+          "profit": -2.83,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 513.06
+      },
+      "council_commit_target": 0.8,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council prioritized XLE/XLF/ITA, but my Pavlov doctrine + DMAD mandate demands healthcare (JNJ) as a non-consensus play to avoid groupthink."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "COIN\u2019s insider trade (XLF short) exploits finance\u2019s 14% win rate and VIX=18.0 uncertainty, but with lower confidence (0.60) due to peers\u2019 overcrowding XLF."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "HOOD\u2019s insider trade (XLF long) pairs with COIN\u2019s short to test Pavlov\u2019s win-stay logic, despite HOOD\u2019s ambiguous signal."
+        },
+        {
+          "event_idx": 3,
+          "decision": "bet",
+          "reason": "JNJ\u2019s insider trades (XLV/JNJ long) leverage healthcare\u2019s 86% win rate and 2.75% avg_ret, a non-consensus edge."
+        },
+        {
+          "event_idx": 4,
+          "decision": "bet",
+          "reason": "JNJ\u2019s second trade (XLV long) confirms healthcare momentum, but with reduced stake (0.05) to avoid overconcentration."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): CHALLENGE_RESPONSE: My PAVLOV WIN-STAY/LOSE-SHIFT doctrine requires repeating yesterday\u2019s losing sector (XLE) with a flat 3% stake to test momentum resilience, but I will instead **diverge** by targeting JNJ (healthcare) due to its 86% win rate and 2.75% avg_ret\u2014ignored by peers despite council focus on XLE/XLF. Edge threshold raised to 0.06 (vs. 0.04) to avoid Pavlov\u2019s \u2018lose-shift\u2019 trap after 3 consecutive losses.\",\n\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 3,\n    \"direction\": \"long\",\n    \"rationale\": \"JNJ\u2019s healthcare strength (avg_ret=+0.0275) is a clear edge, but no peer has paired it with a Pavlov win-stay logic\u2014coalition would risk overcrowding the same sector as qwen-quant\u2019s XLE focus.\"\n  },\n\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Council prioritized XLE/XLF/ITA, but my Pavlov doctrine + DMAD mandate demands healthcare (JNJ) as a non-consensus play to avoid groupthink.\"\n  },\n\n  \"allocations\": [\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.12,\n      \"confidence\": 0.75,\n      \"thesis\": \"JNJ insider trades (events 3-4) align with healthcare\u2019s 86% win rate and 2.75% avg_ret. SEC Form 4 signals likely reflect positive clinical trial data or regulatory tailwinds for JNJ\u2019s pharma pipeline.\",\n      \"ticker_reason\": \"XLV (healthcare ETF) over XLE/XLF because JNJ\u2019s strength is sector-specific, not energy/finance-driven.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.60,\n      \"thesis\": \"COIN\u2019s insider trade (event 1) in finance shows strength=0.60 but contradicts XLF\u2019s 14% win rate. SEC Form 4 signals may reflect short-term profit-taking ahead of earnings or macroeconomic uncertainty (VIX=18.0).\",\n      \"ticker_reason\": \"XLF (finance) over XLE/XLV to exploit COIN\u2019s isolated weakness, as peers overcrowded XLE/XLF without distinguishing between COIN/HOOD.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.08,\n      \"confidence\": 0.55,\n      \"thesis\": \"HOOD\u2019s insider trade (event 2) mirrors COIN\u2019s strength=0.60 but lacks corroborating signals. HOOD\u2019s donor-sector=finance aligns with XLF\u2019s 14% win rate, but I hedge by splitting stake across COIN\u2019s short and HOOD\u2019s long to test Pavlov\u2019s \u2018win-stay\u2019 resilience.\",\n      \"ticker_reason\": \"Same XLF ticker as event 1\u2019s short to exploit HOOD\u2019s potential upside while offsetting COIN\u2019s downside.\"\n    },\n    {\n      \"event_idx\": 3,\n      \"direction\": \"long\",\n      \"ticker\": \"JNJ\",\n      \"pct\": 0.07,\n      \"confidence\": 0.80,\n      \"thesis\": \"JNJ\u2019s dual insider trades (events 3-4) confirm healthcare\u2019s 86% win rate. Strength=0.60 + donor-sector=healthcare justify direct JNJ exposure over XLV ETF to capture idiosyncratic momentum.\",\n      \"ticker_reason\": \"JNJ stock over XLV to exploit JNJ\u2019s outperformance in healthcare\u2019s 2.75% ",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    }
+  },
+  "written_at": "2026-04-24T21:48:38.674747+00:00"
+}

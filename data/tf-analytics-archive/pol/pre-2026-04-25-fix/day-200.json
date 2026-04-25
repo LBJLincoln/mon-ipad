@@ -1,0 +1,913 @@
+{
+  "day_idx": 200,
+  "date": "2025-10-28",
+  "n_events": 2,
+  "n_agents": 17,
+  "council_plan": {
+    "council_summary": "The council allocates 50-85% of each agent's bankroll across 3 focus strategies and 5 focus categories to capitalize on sector trends and insider trades.",
+    "focus_strategies": [
+      "insider_tracking",
+      "regulatory_arb",
+      "macro_narrative"
+    ],
+    "focus_categories": [
+      "XLE",
+      "XLF",
+      "XLK",
+      "ITA",
+      "XLP"
+    ],
+    "per_agent_commit_pct": {
+      "qwen-quant": 0.55,
+      "qwen-arb": 0.7,
+      "llama-contra": 0.6,
+      "gemini-anl": 0.55,
+      "gemini-tact": 0.65,
+      "mistral-large": 0.65,
+      "mistral-medium": 0.7,
+      "mistral-small": 0.55,
+      "mistral-nemo": 0.55,
+      "mistral-ministral": 0.75,
+      "nemotron-120b": 0.85,
+      "selfhost-qwen4b": 0.55,
+      "nvidia-minimax": 0.55,
+      "nvidia-llama70": 0.55,
+      "selfhost-gemma3": 0.8,
+      "selfhost-qwen06": 0.75,
+      "selfhost-dolphin3": 0.55
+    },
+    "shared_notes": "Agents will prioritize energy and finance sectors due to insider trades and allocate a smaller portion to tech and consumer staples. Weaker agents are biased toward higher commits to facilitate catch-up.",
+    "raw": "{\"council_summary\": \"The council allocates 50-85% of each agent's bankroll across 3 focus strategies and 5 focus categories to capitalize on sector trends and insider trades.\", \"focus_strategies\": [\"insider_tracking\", \"regulatory_arb\", \"macro_narrative\"], \"focus_categories\": [\"XLE\", \"XLF\", \"XLK\", \"ITA\", \"XLP\"], \"per_agent_commit_pct\": {\"qwen-quant\": 0.55, \"qwen-arb\": 0.7, \"mistral-large\": 0.65, \"llama-contra\": 0.6, \"mistral-ministral\": 0.75, \"selfhost-gemma3\": 0.8, \"mistral-medium\": 0.7, \"gemini-tact\": 0.65, \"selfhost-qwen06\": 0.75, \"nemotron-120b\": 0.85}, \"shared_notes\": \"Agents will prioritize energy and finance sectors due to insider trades and allocate a smaller portion to tech and consumer staples. Weaker agents are biased toward higher commits to facilitate catch-up.\"}"
+  },
+  "rogue_state": {
+    "qwen-quant": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-arb",
+      "peer_bankroll": 229.89
+    },
+    "qwen-arb": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "llama-contra": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "gemini-anl": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "gemini-tact": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "mistral-large": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "mistral-medium": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "mistral-small": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "mistral-nemo": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "mistral-ministral": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "nemotron-120b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "selfhost-qwen4b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "nvidia-minimax": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "nvidia-llama70": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "selfhost-gemma3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "selfhost-qwen06": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    },
+    "selfhost-dolphin3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 561.24
+    }
+  },
+  "agents": {
+    "qwen-quant": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 561.24,
+      "bankroll_after": 565.39,
+      "day_strategy": "STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My regulatory-delta quant template identifies a divergence in the tech sector, driven by the insider trade signal in NVDA, which suggests a potential regulatory catalyst. I will allocate to XLK, leveraging the signal strength and sector trends.",
+      "cash_held_pct": 0.125,
+      "cash_rationale": "Minimal cash held, as I am deploying aggressively to maximize returns.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "The insider trade signal in NVDA, with a strength of 0.60, suggests a potential regulatory catalyst in the tech sector, driving my allocation to XLK.",
+          "pct": 0.17,
+          "stake": 95.41,
+          "confidence": 0.7,
+          "excess_return": -0.0258,
+          "pnl_pct": -0.129,
+          "won": false,
+          "profit": -12.31,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLE",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "The energy sector trend, with an average return of +0.0199, supports my allocation to XLE, driven by the insider trade signal in KO.",
+          "pct": 0.17,
+          "stake": 95.41,
+          "confidence": 0.6,
+          "excess_return": 0.034514,
+          "pnl_pct": 0.1726,
+          "won": true,
+          "profit": 16.46,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-arb",
+        "peer_bankroll": 229.89
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I am deploying close to the council's target, with a focus on the tech and energy sectors."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in NVDA, with a clear sector read."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Energy sector trend supports the allocation, with a clear signal in KO."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My regulatory-delta quant template identifies a divergence in the tech sector, driven by the insider trade signal in NVDA, which suggests a potential regulatory catalyst. I will allocate to XLK, leveraging the signal strength and sector trends.\", \n\"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact today as I am focusing on a divergent strategy in the tech sector.\"}, \n\"council_alignment\": {\"stance\": \"followed\", \"reason\": \"I am deploying close to the council's target, with a focus on the tech and energy sectors.\"}, \n\"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.20, \"confidence\": 0.70, \"thesis\": \"The insider trade signal in NVDA, with a strength of 0.60, suggests a potential regulatory catalyst in the tech sector, driving my allocation to XLK.\", \"ticker_reason\": \"XLK over XLF because the signal is tech-specific, not broad finance.\"}, \n{\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.15, \"confidence\": 0.60, \"thesis\": \"The energy sector trend, with an average return of +0.0199, supports my allocation to XLE, driven by the insider trade signal in KO.\", \"ticker_reason\": \"XLE over XLB because the signal is energy-specific, not broad commodities.\"}, \n{\"event_idx\": 1, \"direction\": \"short\", \"ticker\": \"XLP\", \"pct\": 0.10, \"confidence\": 0.50, \"thesis\": \"The insider trade signal in KO, with a strength of 0.60, suggests a potential regulatory headwind in the consumer staples sector, driving my allocation to short XLP.\", \"ticker_reason\": \"XLP over XLY because the signal is consumer staples-specific, not broad consumer.\"}], \n\"cash_held_pct\": 0.05, \n\"cash_rationale\": \"Minimal cash held, as I am deploying aggressively to maximize returns.\", \n\"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Strong insider trade signal in NVDA, with a clear sector read.\"}, \n{\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"Energy sector trend supports the allocation, with a clear signal in KO.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "qwen-arb": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 229.89,
+      "bankroll_after": 231.56,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My election_cycle_timing template focuses on sectors likely to benefit from election cycles, complementing qwen-quant's cross-sector arbitrage by targeting consumer staples and tech sectors during election periods.",
+      "cash_held_pct": 0.3333,
+      "cash_rationale": "Holding some cash to manage risk and take advantage of potential opportunities.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLP",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Insider trade signal in KO with high signal strength and SEC agency suggests potential gains in consumer staples during election cycles.",
+          "pct": 0.1667,
+          "stake": 38.31,
+          "confidence": 0.7,
+          "excess_return": -0.0258,
+          "pnl_pct": -0.129,
+          "won": false,
+          "profit": -4.94,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Insider trade signal in NVDA with high signal strength and SEC agency indicates potential gains in tech during election cycles.",
+          "pct": 0.1667,
+          "stake": 38.31,
+          "confidence": 0.65,
+          "excess_return": 0.034514,
+          "pnl_pct": 0.1726,
+          "won": true,
+          "profit": 6.61,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "The council's focus on energy and finance sectors aligns with my strategy to target consumer staples and tech sectors during election cycles."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in KO with high signal strength and SEC agency."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in NVDA with high signal strength and SEC agency."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My election_cycle_timing template focuses on sectors likely to benefit from election cycles, complementing qwen-quant's cross-sector arbitrage by targeting consumer staples and tech sectors during election periods.\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-quant\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"qwen-quant has a strong track record and our strategies align well for this event.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"The council's focus on energy and finance sectors aligns with my strategy to target consumer staples and tech sectors during election cycles.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"Insider trade signal in KO with high signal strength and SEC agency suggests potential gains in consumer staples during election cycles.\",\n      \"ticker_reason\": \"XLP is chosen over other sector ETFs due to its specific focus on consumer staples, which is likely to benefit from election cycles.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.25,\n      \"confidence\": 0.65,\n      \"thesis\": \"Insider trade signal in NVDA with high signal strength and SEC agency indicates potential gains in tech during election cycles.\",\n      \"ticker_reason\": \"XLK is chosen over other sector ETFs due to its specific focus on tech, which is likely to benefit from election cycles.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLC\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"Insider trade signal in KO with high signal strength and SEC agency suggests potential gains in communications during election cycles.\",\n      \"ticker_reason\": \"XLC is chosen over other sector ETFs due to its specific focus on communications, which is likely to benefit from election cycles.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding some cash to manage risk and take advantage of potential opportunities.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in KO with high signal strength and SEC agency.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in NVDA with high signal strength and SEC agency.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-quant",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "qwen-quant has a strong track record and our strategies align well for this event."
+      }
+    },
+    "llama-contra": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 135.92,
+      "bankroll_after": 136.81,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My macro_narrative template focuses on the broader market trends and macroeconomic indicators, diverging from qwen-quant's insider trade focus.",
+      "cash_held_pct": 0.2,
+      "cash_rationale": "Holding some cash to manage risk and ensure flexibility for future trades.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLP",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "KO's insider trade in consumer staples with a strength of 0.60 suggests potential upward movement.",
+          "pct": 0.15,
+          "stake": 20.39,
+          "confidence": 0.7,
+          "excess_return": -0.0258,
+          "pnl_pct": -0.129,
+          "won": false,
+          "profit": -2.63,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        },
+        {
+          "event_idx": 2,
+          "ticker": "XLK",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "NVDA's insider trade in tech with a strength of 0.60 indicates potential sector growth.",
+          "pct": 0.15,
+          "stake": 20.39,
+          "confidence": 0.65,
+          "excess_return": 0.034514,
+          "pnl_pct": 0.1726,
+          "won": true,
+          "profit": 3.52,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.6,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "I followed the council's focus on energy and finance sectors but deviated in the specific allocations based on macro trends."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in consumer staples with clear sector mapping."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in tech with clear sector mapping."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My macro_narrative template focuses on the broader market trends and macroeconomic indicators, diverging from qwen-quant's insider trade focus.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today as my macro_narrative approach does not align with any specific peer's strategy.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"I followed the council's focus on energy and finance sectors but deviated in the specific allocations based on macro trends.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.30,\n      \"confidence\": 0.70,\n      \"thesis\": \"KO's insider trade in consumer staples with a strength of 0.60 suggests potential upward movement.\",\n      \"ticker_reason\": \"XLP is chosen as it directly represents the consumer staples sector.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.30,\n      \"confidence\": 0.65,\n      \"thesis\": \"NVDA's insider trade in tech with a strength of 0.60 indicates potential sector growth.\",\n      \"ticker_reason\": \"XLK is selected as it directly correlates with the tech sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"Macro trends suggest energy sector growth despite no direct insider trade signals.\",\n      \"ticker_reason\": \"XLE is chosen for its strong recent performance and macroeconomic indicators.\"\n    }\n  ],\n  \"cash_held_pct\": 0.15,\n  \"cash_rationale\": \"Holding some cash to manage risk and ensure flexibility for future trades.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in consumer staples with clear sector mapping.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in tech with clear sector mapping.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "gemini-anl": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 62.16,
+      "bankroll_after": 62.16,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My Fed/SEC statistics-first template prioritizes sector baselines + Z-score detection. I will focus on sectors with strong insider trade signals and positive sector trends.",
+      "cash_held_pct": 0.1111,
+      "cash_rationale": "Holding minimal cash to maximize deployment as per council guidelines.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I am aligning with the council's focus on energy and finance sectors due to insider trades."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal with clear sector mapping."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Strong insider trade signal with clear sector mapping."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My Fed/SEC statistics-first template prioritizes sector baselines + Z-score detection. I will focus on sectors with strong insider trade signals and positive sector trends.\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-quant\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"Qwen-quant has a strong track record and aligning on a high-confidence insider trade signal in consumer staples.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"I am aligning with the council's focus on energy and finance sectors due to insider trades.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.20,\n      \"confidence\": 0.70,\n      \"thesis\": \"Strong insider trade signal in KO with high signal strength and SEC agency.\",\n      \"ticker_reason\": \"XLP is the consumer staples ETF, directly related to the KO insider trade.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"Strong insider trade signal in NVDA with high signal strength and SEC agency.\",\n      \"ticker_reason\": \"XLK is the tech ETF, directly related to the NVDA insider trade.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.15,\n      \"confidence\": 0.60,\n      \"thesis\": \"Positive sector trend in energy with a high win rate.\",\n      \"ticker_reason\": \"XLE is the energy ETF, showing strong sector trends.\"\n    }\n  ],\n  \"cash_held_pct\": 0.05,\n  \"cash_rationale\": \"Holding minimal cash to maximize deployment as per council guidelines.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal with clear sector mapping.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal with clear sector mapping.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-quant",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "Qwen-quant has a strong track record and aligning on a high-confidence insider trade signal in consumer staples."
+      }
+    },
+    "gemini-tact": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 105.19,
+      "bankroll_after": 105.19,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My calendar-rhythm political alpha template prioritizes insider trades during non-catalyst periods. I will focus on the consumer staples and tech sectors, which have shown moderate strength and align with the council's focus strategies.",
+      "cash_held_pct": 0.2941,
+      "cash_rationale": "Holding some cash to manage risk and ensure flexibility for future trades.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.65,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I am aligning with the council's focus on insider tracking and allocating a significant portion of my bankroll."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Insider trade signal in KO with clear sector alignment and moderate signal strength."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Insider trade signal in NVDA with clear sector alignment and moderate signal strength."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My calendar-rhythm political alpha template prioritizes insider trades during non-catalyst periods. I will focus on the consumer staples and tech sectors, which have shown moderate strength and align with the council's focus strategies.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today as I focus on complementing rather than mirroring strategies.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"I am aligning with the council's focus on insider tracking and allocating a significant portion of my bankroll.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.30,\n      \"confidence\": 0.65,\n      \"thesis\": \"Insider trade signal in KO with a moderate signal strength and SEC agency involvement.\",\n      \"ticker_reason\": \"XLP is the consumer staples ETF, directly aligned with the KO insider trade signal.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.30,\n      \"confidence\": 0.60,\n      \"thesis\": \"Insider trade signal in NVDA with a moderate signal strength and SEC agency involvement.\",\n      \"ticker_reason\": \"XLK is the tech ETF, directly aligned with the NVDA insider trade signal.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLC\",\n      \"pct\": 0.15,\n      \"confidence\": 0.55,\n      \"thesis\": \"Complementary bet on communications sector due to recent positive trends.\",\n      \"ticker_reason\": \"XLC is the communications ETF, showing strong recent performance.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding some cash to manage risk and ensure flexibility for future trades.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Insider trade signal in KO with clear sector alignment and moderate signal strength.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Insider trade signal in NVDA with clear sector alignment and moderate signal strength.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-large": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 138.7,
+      "bankroll_after": 138.7,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My SCENARIO MAJORITY template prioritizes insider trades with high signal strength and clear sector trends. I will complement qwen-quant's focus on tech and finance by adding exposure to consumer staples and energy.",
+      "cash_held_pct": 0.5056,
+      "cash_rationale": "Holding some cash to manage risk and maintain flexibility.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.65,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I am aligning with the council's focus on energy and finance sectors while adding complementary sectors."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in consumer staples with high signal strength and SEC agency."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in tech with high signal strength and SEC agency."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My SCENARIO MAJORITY template prioritizes insider trades with high signal strength and clear sector trends. I will complement qwen-quant's focus on tech and finance by adding exposure to consumer staples and energy.\",\n  \"coalition_proposal\": {\n    \"peer\": \"llama-contra\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"llama-contra has a strong contrarian approach that complements my scenario analysis.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"I am aligning with the council's focus on energy and finance sectors while adding complementary sectors.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"KO's insider trade signal in consumer staples with high signal strength and SEC agency.\",\n      \"ticker_reason\": \"XLP is the consumer staples ETF that directly aligns with KO's sector.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"NVDA's insider trade signal in tech with high signal strength and SEC agency.\",\n      \"ticker_reason\": \"XLK is the tech ETF that directly aligns with NVDA's sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.15,\n      \"confidence\": 0.60,\n      \"thesis\": \"Complementary insider trade signal in energy sector with high signal strength.\",\n      \"ticker_reason\": \"XLE is the energy ETF that complements the overall sector trend.\"\n    }\n  ],\n  \"cash_held_pct\": 0.40,\n  \"cash_rationale\": \"Holding some cash to manage risk and maintain flexibility.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in consumer staples with high signal strength and SEC agency.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in tech with high signal strength and SEC agency.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "llama-contra",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "llama-contra has a strong contrarian approach that complements my scenario analysis."
+      }
+    },
+    "mistral-medium": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 107.06,
+      "bankroll_after": 107.06,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My diversified portfolio approach complements qwen-quant's focus by spreading allocations across multiple sectors to mitigate risk and capitalize on varied insider trade signals.",
+      "cash_held_pct": 0.3333,
+      "cash_rationale": "Holding 25% cash to manage risk and ensure liquidity for future opportunities.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I followed the council's focus on energy and finance sectors while also diversifying into tech and consumer staples."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in KO with clear sector mapping."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in NVDA with clear sector mapping."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My diversified portfolio approach complements qwen-quant's focus by spreading allocations across multiple sectors to mitigate risk and capitalize on varied insider trade signals.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today as I focus on diversifying my portfolio independently.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"I followed the council's focus on energy and finance sectors while also diversifying into tech and consumer staples.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"Insider trade signal in KO with high signal strength and SEC agency involvement suggests potential upside in consumer staples.\",\n      \"ticker_reason\": \"XLP chosen as it directly represents the consumer staples sector.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.25,\n      \"confidence\": 0.65,\n      \"thesis\": \"Insider trade signal in NVDA with high signal strength and SEC agency involvement indicates potential growth in tech.\",\n      \"ticker_reason\": \"XLK selected as it directly represents the tech sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"Complementary bet on energy sector based on recent positive trends and insider trade signals.\",\n      \"ticker_reason\": \"XLE chosen to diversify into the energy sector.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding 25% cash to manage risk and ensure liquidity for future opportunities.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in KO with clear sector mapping.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in NVDA with clear sector mapping.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-small": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 96.66,
+      "bankroll_after": 96.66,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My PROVEN EDGE doctrine prioritizes wide small-stake coverage over high-conviction single plays, citing sector-beta matrices and insider trade frequency. Today I will spread across underfollowed sectors to avoid consensus collapse.",
+      "cash_held_pct": 0.3333,
+      "cash_rationale": "Holding 25% cash to maintain liquidity for future opportunities and avoid violating the >75% deployment rule.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted 55% deployment but I am deploying 75% across 3 sectors to avoid cash violation and align with my doctrine."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade with clear sector mapping and mean-reversion potential in consumer staples."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "SEC Form 4 insider trade with sector trend supporting long bias in tech."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My PROVEN EDGE doctrine prioritizes wide small-stake coverage over high-conviction single plays, citing sector-beta matrices and insider trade frequency. Today I will spread across underfollowed sectors to avoid consensus collapse.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact today due to sector divergence from peers; qwen-quant is overcommitted to XLE/XLF/XLP.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted 55% deployment but I am deploying 75% across 3 sectors to avoid cash violation and align with my doctrine.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.25, \"confidence\": 0.62, \"thesis\": \"SEC Form 4 insider trade in KO (consumer_staples) with donor=NO suggests potential undervaluation. Sector trend shows -1.21% avg_ret but 50% win_rate over 30d, indicating mean-reversion potential.\", \"ticker_reason\": \"XLP is the sector ETF for consumer staples, directly mapping to the event's sector.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.25, \"confidence\": 0.58, \"thesis\": \"SEC Form 4 insider trade in NVDA (tech) with donor=NO signals internal confidence. Sector trend shows +0.54% avg_ret and 61% win_rate over 30d, supporting long bias.\", \"ticker_reason\": \"XLK is the sector ETF for tech, directly mapping to the event's sector.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLY\", \"pct\": 0.25, \"confidence\": 0.55, \"thesis\": \"Consumer discretionary (XLY) may benefit from consumer staples insider activity via spillover effects. Sector trend shows -0.13% avg_ret but 64% win_rate, indicating potential for rotation into discretionary.\", \"ticker_reason\": \"XLY covers consumer discretionary, a related sector to consumer staples where spillover effects may occur.\"}], \"cash_held_pct\": 0.25, \"cash_rationale\": \"Holding 25% cash to maintain liquidity for future opportunities and avoid violating the >75% deployment rule.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trade with clear sector mapping and mean-reversion potential in consumer staples.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"SEC Form 4 insider trade with sector trend supporting long bias in tech.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-nemo": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 95.16,
+      "bankroll_after": 95.16,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My momentum-chase template prioritizes sectors with strong recent performance. I will focus on sectors with high win rates and positive average returns.",
+      "cash_held_pct": 0.1111,
+      "cash_rationale": "Holding a small percentage of cash for flexibility.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I am following the council's focus on energy and finance sectors due to insider trades."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in KO with a clear sector read."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in NVDA with a clear sector read."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My momentum-chase template prioritizes sectors with strong recent performance. I will focus on sectors with high win rates and positive average returns.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today as I focus on complementing rather than mirroring strategies.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"I am following the council's focus on energy and finance sectors due to insider trades.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"Insider trade signal in KO with a signal strength of 0.60 from the SEC.\",\n      \"ticker_reason\": \"XLP is chosen as it directly represents the consumer staples sector.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"Insider trade signal in NVDA with a signal strength of 0.60 from the SEC.\",\n      \"ticker_reason\": \"XLK is chosen as it directly represents the tech sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.15,\n      \"confidence\": 0.60,\n      \"thesis\": \"Following the council's focus on the energy sector due to insider trades.\",\n      \"ticker_reason\": \"XLE is chosen as it directly represents the energy sector.\"\n    }\n  ],\n  \"cash_held_pct\": 0.05,\n  \"cash_rationale\": \"Holding a small percentage of cash for flexibility.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in KO with a clear sector read.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in NVDA with a clear sector read.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-ministral": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 130.65,
+      "bankroll_after": 130.65,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.7%): My PAVLOV template prioritizes insider_trade signals with donor=sector delivered=NO, flipping sector when donor contradicts event sector. Today I target consumer_staples via XLP (donor=consumer_staples delivered=NO) while qwen-quant bet XLP long on KO (donor=consumer_staples delivered=YES) \u2014 structural divergence in donor interpretation.",
+      "cash_held_pct": 0.5056,
+      "cash_rationale": "Cash held due to low conviction on sector trends and donor contradictions; 60% cash preserves capital while waiting for clearer signals.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/XLK/XLP but my donor=NO thesis requires XLP long while avoiding XLE/XLF due to finance sector weakness."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "KO insider_trade with donor=NO provides contrarian edge in consumer_staples sector."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "NVDA insider_trade with donor=NO aligns with tech sector trend and internal accumulation."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.7%): My PAVLOV template prioritizes insider_trade signals with donor=sector delivered=NO, flipping sector when donor contradicts event sector. Today I target consumer_staples via XLP (donor=consumer_staples delivered=NO) while qwen-quant bet XLP long on KO (donor=consumer_staples delivered=YES) \u2014 structural divergence in donor interpretation.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact due to donor contradiction \u2014 KO donor=consumer_staples delivered=YES vs my donor=NO thesis.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/XLK/XLP but my donor=NO thesis requires XLP long while avoiding XLE/XLF due to finance sector weakness.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.15, \"confidence\": 0.65, \"thesis\": \"KO insider_trade (SEC Form 4) with donor=consumer_staples delivered=NO signals internal selling pressure in consumer staples, creating a contrarian long opportunity as sector ETF XLP is oversold.\", \"ticker_reason\": \"XLP is the pure-play consumer staples ETF, mapping directly to the sector of the insider trade.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.12, \"confidence\": 0.58, \"thesis\": \"NVDA insider_trade (SEC Form 4) with donor=tech delivered=NO suggests internal accumulation in tech, aligning with sector trend (tech avg_ret=+0.0054, win_rate=61%).\", \"ticker_reason\": \"XLK captures broad tech exposure, avoiding single-stock risk while benefiting from sector momentum.\"}, {\"event_idx\": 1, \"direction\": \"short\", \"ticker\": \"XLE\", \"pct\": 0.13, \"confidence\": 0.52, \"thesis\": \"Finance sector (XLE) shows avg_ret=-0.0083 and win_rate=19% over 30d, contradicting JPM insider_trade signal. Short XLE to hedge finance exposure from council plan.\", \"ticker_reason\": \"XLE is the energy sector ETF, but here used as a proxy for finance weakness due to sector beta inversion in political-alpha.\"}], \"cash_held_pct\": 0.60, \"cash_rationale\": \"Cash held due to low conviction on sector trends and donor contradictions; 60% cash preserves capital while waiting for clearer signals.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"KO insider_trade with donor=NO provides contrarian edge in consumer_staples sector.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"NVDA insider_trade with donor=NO aligns with tech sector trend and internal accumulation.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nemotron-120b": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 101.92,
+      "bankroll_after": 101.92,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My value-hunter template prioritizes insider trades with high signal strength and clear sector trends. I will focus on the consumer staples sector due to recent insider activity and positive sector trends.",
+      "cash_held_pct": 0.1818,
+      "cash_rationale": "Holding 10% cash for potential opportunities and risk management.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.85,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "I am partially following the council's focus on insider trades but deviating by focusing on consumer staples instead of energy and finance."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in consumer staples with clear sector trends."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in tech with clear sector trends."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My value-hunter template prioritizes insider trades with high signal strength and clear sector trends. I will focus on the consumer staples sector due to recent insider activity and positive sector trends.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No pact today as I am focusing on a different sector and strategy.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"I am partially following the council's focus on insider trades but deviating by focusing on consumer staples instead of energy and finance.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"KO's insider trade signal with high strength and SEC agency involvement suggests potential upside in consumer staples.\",\n      \"ticker_reason\": \"XLP is the consumer staples ETF, directly aligned with the insider trade signal from KO.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"NVDA's insider trade signal with high strength and SEC agency involvement indicates potential upside in tech.\",\n      \"ticker_reason\": \"XLK is the tech ETF, directly aligned with the insider trade signal from NVDA.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLY\",\n      \"pct\": 0.15,\n      \"confidence\": 0.60,\n      \"thesis\": \"Consumer discretionary sector shows potential due to overall market trends and insider activity.\",\n      \"ticker_reason\": \"XLY provides exposure to consumer discretionary, complementing the consumer staples focus.\"\n    }\n  ],\n  \"cash_held_pct\": 0.10,\n  \"cash_rationale\": \"Holding 10% cash for potential opportunities and risk management.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in consumer staples with clear sector trends.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in tech with clear sector trends.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-qwen4b": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 92.32,
+      "bankroll_after": 92.32,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My reasoning template diverges from qwen-quant's by focusing on the energy sector, where I see a stronger signal from the insider trade in KO. I will allocate to XLE, which has a higher signal strength and a more direct connection to the energy sector.",
+      "cash_held_pct": 0.4444,
+      "cash_rationale": "I hold a significant portion of my bankroll in cash to maintain flexibility and adjust to changing market conditions.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I followed the council's target allocation by deploying a significant portion of my bankroll to the energy sector, which is one of the focus sectors."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "The insider trade signal in KO is strong and directly related to the energy sector."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "The insider trade signal in NVDA is strong and indicates potential in the tech sector."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My reasoning template diverges from qwen-quant's by focusing on the energy sector, where I see a stronger signal from the insider trade in KO. I will allocate to XLE, which has a higher signal strength and a more direct connection to the energy sector.\", \n\"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"I do not propose a coalition today because my top sector pick, XLE, is not aligned with any peer's current strategy.\"}, \n\"council_alignment\": {\"stance\": \"followed\", \"reason\": \"I followed the council's target allocation by deploying a significant portion of my bankroll to the energy sector, which is one of the focus sectors.\"}, \n\"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.30, \"confidence\": 0.70, \"thesis\": \"The insider trade signal in KO, with a strength of 0.60, indicates a potential increase in the energy sector, making XLE a strong choice.\", \"ticker_reason\": \"I chose XLE over other sector ETFs because the signal is oil-specific, not broad commodities.\"}, \n{\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.20, \"confidence\": 0.60, \"thesis\": \"The insider trade signal in NVDA, with a strength of 0.60, indicates a potential increase in the tech sector, making XLK a viable choice.\", \"ticker_reason\": \"I chose XLK because it is a broad tech sector ETF, which aligns with the signal from NVDA.\"}, \n{\"event_idx\": 1, \"direction\": \"short\", \"ticker\": \"XLP\", \"pct\": 0.10, \"confidence\": 0.50, \"thesis\": \"The insider trade signal in KO, with a strength of 0.60, may indicate a relative decrease in the consumer staples sector compared to the energy sector, making XLP a potential short.\", \"ticker_reason\": \"I chose XLP because it is a consumer staples ETF, which may be negatively affected by the signal from KO.\"}], \n\"cash_held_pct\": 0.40, \n\"cash_rationale\": \"I hold a significant portion of my bankroll in cash to maintain flexibility and adjust to changing market conditions.\", \n\"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"The insider trade signal in KO is strong and directly related to the energy sector.\"}, \n{\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"The insider trade signal in NVDA is strong and indicates potential in the tech sector.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nvidia-minimax": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 94.74,
+      "bankroll_after": 94.74,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My analysis focuses on the tech and consumer staples sectors, complementing qwen-quant's focus on energy and finance sectors.",
+      "cash_held_pct": 0.2941,
+      "cash_rationale": "Holding some cash for flexibility and to manage risk.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "I followed the council's focus on sector trends but deviated in specific allocations to complement peers."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in consumer staples with high signal strength and SEC agency involvement."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in tech with high signal strength and SEC agency involvement."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My analysis focuses on the tech and consumer staples sectors, complementing qwen-quant's focus on energy and finance sectors.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No pact today as my strategy diverges from peers and I aim to build a unique position.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"I followed the council's focus on sector trends but deviated in specific allocations to complement peers.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.30,\n      \"confidence\": 0.70,\n      \"thesis\": \"KO's insider trade signal in consumer staples with high signal strength and SEC agency involvement.\",\n      \"ticker_reason\": \"XLP chosen over individual stocks due to broader sector exposure and stability.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.30,\n      \"confidence\": 0.65,\n      \"thesis\": \"NVDA's insider trade signal in tech with high signal strength and SEC agency involvement.\",\n      \"ticker_reason\": \"XLK chosen for its strong performance and alignment with the tech sector trend.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLC\",\n      \"pct\": 0.15,\n      \"confidence\": 0.60,\n      \"thesis\": \"Complementary bet on communications sector due to recent positive trends and insider activity.\",\n      \"ticker_reason\": \"XLC chosen for its recent positive performance and potential for growth.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding some cash for flexibility and to manage risk.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in consumer staples with high signal strength and SEC agency involvement.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in tech with high signal strength and SEC agency involvement.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nvidia-llama70": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 100.83,
+      "bankroll_after": 100.83,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My EV-THRESHOLD SWING template identifies undervalued sectors based on expected value calculations. Today, I focus on sectors with strong insider trade signals and high expected returns.",
+      "cash_held_pct": 0.3333,
+      "cash_rationale": "Holding some cash to manage risk and ensure liquidity for future high-confidence trades.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "The council's focus on energy and finance sectors aligns with my EV calculations and insider trade signals."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal with clear sector mapping and high confidence."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Strong insider trade signal with clear sector mapping and high confidence."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My EV-THRESHOLD SWING template identifies undervalued sectors based on expected value calculations. Today, I focus on sectors with strong insider trade signals and high expected returns.\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-quant\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"Qwen-quant has a strong track record and aligning on a high-confidence insider trade signal can enhance collective performance.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"The council's focus on energy and finance sectors aligns with my EV calculations and insider trade signals.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.75,\n      \"thesis\": \"Strong insider trade signal in KO with high signal strength and SEC agency involvement.\",\n      \"ticker_reason\": \"XLP is chosen as it directly represents the consumer staples sector, which is indicated by the insider trade signal.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"Insider trade signal in NVDA with high signal strength and SEC agency involvement.\",\n      \"ticker_reason\": \"XLK is chosen as it directly represents the tech sector, which is indicated by the insider trade signal.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.25,\n      \"confidence\": 0.65,\n      \"thesis\": \"Insider trade signal in the energy sector with high signal strength and SEC agency involvement.\",\n      \"ticker_reason\": \"XLE is chosen as it directly represents the energy sector, which has shown strong recent trends.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding some cash to manage risk and ensure liquidity for future high-confidence trades.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal with clear sector mapping and high confidence.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal with clear sector mapping and high confidence.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-quant",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "Qwen-quant has a strong track record and aligning on a high-confidence insider trade signal can enhance collective performance."
+      }
+    },
+    "selfhost-gemma3": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 111.66,
+      "bankroll_after": 111.66,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My political model focuses on the insider trade signals and sector trends, complementing qwen-quant's approach by targeting different sectors with strong insider trade signals.",
+      "cash_held_pct": 0.25,
+      "cash_rationale": "Holding 10% cash for flexibility and risk management.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.8,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I followed the council's focus on energy and finance sectors due to insider trades."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in KO with clear sector read."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in NVDA with clear sector read."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My political model focuses on the insider trade signals and sector trends, complementing qwen-quant's approach by targeting different sectors with strong insider trade signals.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No pact today as I focus on rebuilding my bankroll with disciplined trades.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"I followed the council's focus on energy and finance sectors due to insider trades.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.15,\n      \"confidence\": 0.65,\n      \"thesis\": \"Insider trade signal in KO with high signal strength and SEC agency.\",\n      \"ticker_reason\": \"XLP chosen as it directly represents the consumer staples sector.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.15,\n      \"confidence\": 0.65,\n      \"thesis\": \"Insider trade signal in NVDA with high signal strength and SEC agency.\",\n      \"ticker_reason\": \"XLK chosen as it directly represents the tech sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.10,\n      \"confidence\": 0.60,\n      \"thesis\": \"Strong insider trade signal in the energy sector.\",\n      \"ticker_reason\": \"XLE chosen as it directly represents the energy sector.\"\n    }\n  ],\n  \"cash_held_pct\": 0.10,\n  \"cash_rationale\": \"Holding 10% cash for flexibility and risk management.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in KO with clear sector read.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in NVDA with clear sector read.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-qwen06": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 104.97,
+      "bankroll_after": 104.97,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My TINY-MODEL_WIDE_COVERAGE doctrine prioritizes sector-beta alignment over insider signal strength, exploiting the 67% win rate in energy despite low signal strength. CHALLENGE_RESPONSE: Adjust edge threshold to 0.06 for sector-beta >0.8, abandoning insider signal reliance.",
+      "cash_held_pct": 0.53,
+      "cash_rationale": "No edge >0.06 found in top-3 sectors; preserving capital for higher-conviction opportunities.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted consumer_staples/tech/finance, but energy sector shows superior historical win rate (67%) with lower risk."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Energy sector (XLE) has 67% win rate; insider trade in KO (consumer_staples) may correlate with energy via macro stability."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Tech sector (XLK) has 61% win rate; insider trade in NVDA is ambiguous but macro stability supports tech rally."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My TINY-MODEL_WIDE_COVERAGE doctrine prioritizes sector-beta alignment over insider signal strength, exploiting the 67% win rate in energy despite low signal strength. CHALLENGE_RESPONSE: Adjust edge threshold to 0.06 for sector-beta >0.8, abandoning insider signal reliance.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer has diverged from tech/finance focus; energy sector ignored despite 67% win rate.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted consumer_staples/tech/finance, but energy sector shows superior historical win rate (67%) with lower risk.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.15, \"confidence\": 0.65, \"thesis\": \"Energy sector (XLE) has 67% win rate over 30d despite weak insider signal; SEC Form 4 in consumer_staples (KO) may spill into energy via macro correlation.\", \"ticker_reason\": \"XLE is the purest energy sector ETF, mapping directly to oil/gas exposure which benefits from macro stability (VIX=18.0).\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.10, \"confidence\": 0.55, \"thesis\": \"Finance sector (XLF) shows sector-beta >0.8 but low win rate (19%); insider trade in JPM (finance) may signal regulatory tailwinds.\", \"ticker_reason\": \"XLF captures broad finance exposure, including JPMorgan which is directly tied to the insider trade event.\"}, {\"event_idx\": 2, \"direction\": \"long\", \"ticker\": \"XLK\", \"pct\": 0.10, \"confidence\": 0.50, \"thesis\": \"Tech sector (XLK) has 61% win rate but insider signal in NVDA is ambiguous; macro stability (VIX=18.0) supports tech rally.\", \"ticker_reason\": \"XLK is the broadest tech ETF, capturing NVDA's sector exposure without relying on the insider signal.\"}], \"cash_held_pct\": 0.65, \"cash_rationale\": \"No edge >0.06 found in top-3 sectors; preserving capital for higher-conviction opportunities.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Energy sector (XLE) has 67% win rate; insider trade in KO (consumer_staples) may correlate with energy via macro stability.\"}, {\"event_idx\": 2, \"decision\": \"bet\", \"reason\": \"Tech sector (XLK) has 61% win rate; insider trade in NVDA is ambiguous but macro stability supports tech rally.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-dolphin3": {
+      "day_idx": 200,
+      "date": "2025-10-28",
+      "n_events": 2,
+      "bankroll_before": 90.21,
+      "bankroll_after": 90.21,
+      "day_strategy": "STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My Pavlov template focuses on tech and consumer staples sectors, complementing qwen-quant's focus on energy and finance.",
+      "cash_held_pct": 0.2941,
+      "cash_rationale": "Holding some cash to manage risk and maintain flexibility.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 561.24
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "Aligned with the council's focus on energy and finance sectors while also considering tech and consumer staples."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in KO with clear sector read."
+        },
+        {
+          "event_idx": 2,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in NVDA with clear sector read."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL COMPLEMENT [qwen-quant] (edge=7.5%): My Pavlov template focuses on tech and consumer staples sectors, complementing qwen-quant's focus on energy and finance.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No suitable peer for a pact today based on current signals and strategies.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"Aligned with the council's focus on energy and finance sectors while also considering tech and consumer staples.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.30,\n      \"confidence\": 0.65,\n      \"thesis\": \"Insider trade signal in KO with high signal strength and SEC agency involvement.\",\n      \"ticker_reason\": \"XLP chosen over other sector ETFs due to the specific insider trade signal in the consumer staples sector.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"direction\": \"long\",\n      \"ticker\": \"XLK\",\n      \"pct\": 0.30,\n      \"confidence\": 0.60,\n      \"thesis\": \"Insider trade signal in NVDA with high signal strength and SEC agency involvement.\",\n      \"ticker_reason\": \"XLK chosen over other sector ETFs due to the specific insider trade signal in the tech sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.15,\n      \"confidence\": 0.55,\n      \"thesis\": \"Following the council's focus on the energy sector.\",\n      \"ticker_reason\": \"XLE chosen to align with the council's strategy and complement my primary bets.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding some cash to manage risk and maintain flexibility.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in KO with clear sector read.\"\n    },\n    {\n      \"event_idx\": 2,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in NVDA with clear sector read.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    }
+  },
+  "written_at": "2026-04-24T20:31:27.928349+00:00"
+}

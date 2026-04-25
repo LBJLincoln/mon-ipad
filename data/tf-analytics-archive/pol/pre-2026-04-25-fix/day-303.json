@@ -1,0 +1,778 @@
+{
+  "day_idx": 303,
+  "date": "2026-04-07",
+  "n_events": 1,
+  "n_agents": 17,
+  "council_plan": {
+    "council_summary": "The council plan focuses on insider tracking and regulatory arbitrage with a focus on energy, finance, and aerospace defense sectors to capitalize on today's insider trade event.",
+    "focus_strategies": [
+      "insider_tracking",
+      "regulatory_arb"
+    ],
+    "focus_categories": [
+      "XLE",
+      "XLF",
+      "ITA"
+    ],
+    "per_agent_commit_pct": {
+      "qwen-quant": 0.55,
+      "qwen-arb": 0.6,
+      "llama-contra": 0.65,
+      "gemini-anl": 0.55,
+      "gemini-tact": 0.65,
+      "mistral-large": 0.7,
+      "mistral-medium": 0.7,
+      "mistral-small": 0.7,
+      "mistral-nemo": 0.55,
+      "mistral-ministral": 0.75,
+      "nemotron-120b": 0.55,
+      "selfhost-qwen4b": 0.55,
+      "nvidia-minimax": 0.6,
+      "nvidia-llama70": 0.55,
+      "selfhost-gemma3": 0.8,
+      "selfhost-qwen06": 0.55,
+      "selfhost-dolphin3": 0.55
+    },
+    "shared_notes": "Agents with weaker performance are biased towards higher commit percentages to facilitate catch-up, while stronger agents maintain a moderate commit level to balance risk and potential returns.",
+    "raw": "{\"council_summary\": \"The council plan focuses on insider tracking and regulatory arbitrage with a focus on energy, finance, and aerospace defense sectors to capitalize on today's insider trade event.\", \"focus_strategies\": [\"insider_tracking\", \"regulatory_arb\"], \"focus_categories\": [\"XLE\", \"XLF\", \"ITA\"], \"per_agent_commit_pct\": {\"qwen-quant\": 0.55, \"qwen-arb\": 0.6, \"llama-contra\": 0.65, \"mistral-large\": 0.7, \"mistral-medium\": 0.7, \"mistral-ministral\": 0.75, \"gemini-tact\": 0.65, \"selfhost-gemma3\": 0.8, \"nvidia-minimax\": 0.6, \"mistral-small\": 0.7}, \"shared_notes\": \"Agents with weaker performance are biased towards higher commit percentages to facilitate catch-up, while stronger agents maintain a moderate commit level to balance risk and potential returns.\"}"
+  },
+  "rogue_state": {
+    "qwen-quant": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-arb",
+      "peer_bankroll": 289.34
+    },
+    "qwen-arb": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "llama-contra": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "gemini-anl": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "gemini-tact": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "mistral-large": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "mistral-medium": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "mistral-small": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "mistral-nemo": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "mistral-ministral": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "nemotron-120b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "selfhost-qwen4b": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "nvidia-minimax": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "nvidia-llama70": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "selfhost-gemma3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "selfhost-qwen06": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    },
+    "selfhost-dolphin3": {
+      "is_rogue": false,
+      "reasons": [],
+      "peer_leader": "qwen-quant",
+      "peer_bankroll": 621.57
+    }
+  },
+  "agents": {
+    "qwen-quant": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 621.57,
+      "bankroll_after": 605.25,
+      "day_strategy": "STRUCTURAL DIVERGE [Llama Contrarian] (edge=7.5%): My REASONING TEMPLATE focuses on regulatory arbitrage opportunities in the consumer staples sector, driven by the SEC's Form 4 filing. I will allocate to XLP, as it is the most relevant sector ETF for this event.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "I am holding some cash to maintain flexibility and adjust to any changes in the market.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLP",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "The SEC's Form 4 filing indicates a strong insider trade signal in the consumer staples sector, which I believe will drive XLP up.",
+          "pct": 0.1625,
+          "stake": 101.01,
+          "confidence": 0.7,
+          "excess_return": -0.032323,
+          "pnl_pct": -0.1616,
+          "won": false,
+          "profit": -16.32,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-arb",
+        "peer_bankroll": 289.34
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I am deploying close to the council's target, with a focus on the consumer staples sector."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "The SEC's Form 4 filing indicates a strong insider trade signal in the consumer staples sector."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [Llama Contrarian] (edge=7.5%): My REASONING TEMPLATE focuses on regulatory arbitrage opportunities in the consumer staples sector, driven by the SEC's Form 4 filing. I will allocate to XLP, as it is the most relevant sector ETF for this event.\", \n\"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"I do not see a suitable peer to propose a pact with today, as my strategy diverges from the others.\"}, \n\"council_alignment\": {\"stance\": \"followed\", \"reason\": \"I am deploying close to the council's target, with a focus on the consumer staples sector.\"}, \n\"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.30, \"confidence\": 0.70, \"thesis\": \"The SEC's Form 4 filing indicates a strong insider trade signal in the consumer staples sector, which I believe will drive XLP up.\", \"ticker_reason\": \"XLP is the most relevant sector ETF for this event, as it tracks the consumer staples sector.\"}, \n{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.20, \"confidence\": 0.60, \"thesis\": \"The energy sector is also showing potential for growth, driven by the same insider trade signals.\", \"ticker_reason\": \"XLE is a relevant sector ETF for this event, as it tracks the energy sector, which is also impacted by the insider trade signals.\"}, \n{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.25, \"confidence\": 0.65, \"thesis\": \"The financial sector is also showing signs of growth, driven by the regulatory arbitrage opportunities.\", \"ticker_reason\": \"XLF is a relevant sector ETF for this event, as it tracks the financial sector, which is also impacted by the regulatory arbitrage opportunities.\"}], \n\"cash_held_pct\": 0.25, \n\"cash_rationale\": \"I am holding some cash to maintain flexibility and adjust to any changes in the market.\", \n\"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"The SEC's Form 4 filing indicates a strong insider trade signal in the consumer staples sector.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "qwen-arb": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 289.34,
+      "bankroll_after": 283.49,
+      "day_strategy": "STRUCTURAL DIVERGE [Llama Contrarian] (edge=7.5%): My REASONING TEMPLATE focuses on cross-sector arbitrage and insider tracking, which diverges from Llama Contrarian's focus on regulatory signals and market saturation.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding 25% cash to manage risk and maintain liquidity for future opportunities.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLV",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Strong insider trade signals from SEC Form 4 filings in the consumer staples sector suggest a positive outlook.",
+          "pct": 0.125,
+          "stake": 36.17,
+          "confidence": 0.75,
+          "excess_return": -0.032323,
+          "pnl_pct": -0.1616,
+          "won": false,
+          "profit": -5.85,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.6,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I followed the council's focus on insider tracking and regulatory arbitrage with a focus on consumer staples and finance sectors."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signals from SEC Form 4 filings in the consumer staples sector."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [Llama Contrarian] (edge=7.5%): My REASONING TEMPLATE focuses on cross-sector arbitrage and insider tracking, which diverges from Llama Contrarian's focus on regulatory signals and market saturation.\",\n  \"coalition_proposal\": {\n    \"peer\": \"qwen-quant\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"Proposing a pact with qwen-quant on event#1 long as our strategies align on insider tracking and cross-sector arbitrage.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"I followed the council's focus on insider tracking and regulatory arbitrage with a focus on consumer staples and finance sectors.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.25,\n      \"confidence\": 0.75,\n      \"thesis\": \"Strong insider trade signals from SEC Form 4 filings in the consumer staples sector suggest a positive outlook.\",\n      \"ticker_reason\": \"XLV is chosen over other sector ETFs due to its strong correlation with insider trade signals in the healthcare sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"Insider activity in healthcare often correlates with financial sector movements, indicating potential regulatory arbitrage.\",\n      \"ticker_reason\": \"XLF is selected as it complements the insider trade signals in the consumer staples sector and aligns with regulatory arbitrage opportunities.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.65,\n      \"thesis\": \"Consistent insider trading in consumer staples indicates a strong sector outlook.\",\n      \"ticker_reason\": \"XLP is chosen to diversify within the consumer staples sector, providing a balanced exposure.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding 25% cash to manage risk and maintain liquidity for future opportunities.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signals from SEC Form 4 filings in the consumer staples sector.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "qwen-quant",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "Proposing a pact with qwen-quant on event#1 long as our strategies align on insider tracking and cross-sector arbitrage."
+      }
+    },
+    "llama-contra": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 163.01,
+      "bankroll_after": 166.3,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE inverts the consensus on insider trading signals. The council focuses on insider tracking and regulatory arbitrage, but I will focus on the potential regulatory risks associated with high insider trading activity.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding some cash to manage risk and preserve capital.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLV",
+          "direction": "short",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "High volume of insider trades in consumer staples suggests potential regulatory scrutiny.",
+          "pct": 0.125,
+          "stake": 20.38,
+          "confidence": 0.65,
+          "excess_return": -0.032323,
+          "pnl_pct": 0.1616,
+          "won": true,
+          "profit": 3.29,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.65,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "My strategy diverges from the council's focus on insider tracking and regulatory arbitrage."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trading signal with potential regulatory risks."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE inverts the consensus on insider trading signals. The council focuses on insider tracking and regulatory arbitrage, but I will focus on the potential regulatory risks associated with high insider trading activity.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No pact today as my strategy diverges from the council's focus.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"My strategy diverges from the council's focus on insider tracking and regulatory arbitrage.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.15,\n      \"confidence\": 0.65,\n      \"thesis\": \"High volume of insider trades in consumer staples suggests potential regulatory scrutiny.\",\n      \"ticker_reason\": \"XLV is the healthcare ETF, which is closely related to consumer staples and may face similar regulatory risks.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.10,\n      \"confidence\": 0.60,\n      \"thesis\": \"Insider trading activity may lead to market saturation and regulatory risks in the finance sector.\",\n      \"ticker_reason\": \"XLF is the financial sector ETF, which may be impacted by regulatory changes.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLY\",\n      \"pct\": 0.10,\n      \"confidence\": 0.55,\n      \"thesis\": \"Continued insider trading activity increases regulatory risks in consumer discretionary.\",\n      \"ticker_reason\": \"XLY is the consumer discretionary ETF, which may face regulatory scrutiny.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding some cash to manage risk and preserve capital.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trading signal with potential regulatory risks.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "gemini-anl": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 59.38,
+      "bankroll_after": 59.19,
+      "day_strategy": "STRUCTURAL DIVERGE [Llama Contrarian] (edge=7.5%): My REASONING TEMPLATE focuses on Fed/SEC statistics-first, sector baselines, and Z-score detection. Llama Contrarian's focus on high-volume insider trades in UNH suggests a potential regulatory saturation point, but my template identifies a stronger signal in the consumer staples sector based on recent SEC Form 4 filings.",
+      "cash_held_pct": 0.375,
+      "cash_rationale": "Holding 15% cash to manage risk and maintain liquidity for future opportunities.",
+      "allocations": [
+        {
+          "event_idx": 1,
+          "ticker": "XLP",
+          "direction": "long",
+          "event_type": "insider_trade",
+          "agency": "SEC",
+          "thesis": "Strong insider trade signals from SEC Form 4 filings in the consumer staples sector.",
+          "pct": 0.02,
+          "stake": 1.19,
+          "confidence": 0.75,
+          "excess_return": -0.032323,
+          "pnl_pct": -0.1616,
+          "won": false,
+          "profit": -0.19,
+          "provider_status": "llm_ok",
+          "fallback_etf_label": null,
+          "underlying_ticker": null
+        }
+      ],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "Respected the council's focus on insider tracking and regulatory arbitrage but deviated in sector selection based on my template."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signals from SEC Form 4 filings in the consumer staples sector."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [Llama Contrarian] (edge=7.5%): My REASONING TEMPLATE focuses on Fed/SEC statistics-first, sector baselines, and Z-score detection. Llama Contrarian's focus on high-volume insider trades in UNH suggests a potential regulatory saturation point, but my template identifies a stronger signal in the consumer staples sector based on recent SEC Form 4 filings.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No pact today as my strategy diverges from peers based on my analytical template.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"Respected the council's focus on insider tracking and regulatory arbitrage but deviated in sector selection based on my template.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.75,\n      \"thesis\": \"Strong insider trade signals from SEC Form 4 filings in the consumer staples sector.\",\n      \"ticker_reason\": \"XLP chosen over other sector ETFs due to its specific focus on consumer staples, aligning with the insider trade signal.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.20,\n      \"confidence\": 0.70,\n      \"thesis\": \"Healthcare sector showing resilience and potential for regulatory arbitrage.\",\n      \"ticker_reason\": \"XLV chosen for its healthcare focus, complementing the consumer staples bet.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.65,\n      \"thesis\": \"Finance sector showing potential for regulatory arbitrage based on recent trends.\",\n      \"ticker_reason\": \"XLF chosen to diversify across sectors while maintaining focus on regulatory arbitrage.\"\n    }\n  ],\n  \"cash_held_pct\": 0.15,\n  \"cash_rationale\": \"Holding 15% cash to manage risk and maintain liquidity for future opportunities.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signals from SEC Form 4 filings in the consumer staples sector.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "gemini-tact": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 108.3,
+      "bankroll_after": 108.3,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My REASONING TEMPLATE inverts the calendar-rhythm political alpha focus to prioritize insider trade signals in the consumer staples sector, citing the recent Form 4 filing by BROOKS MARK J. Today, I will allocate across 3 sector ETFs with a focus on XLP, given the strong insider trade signal in the consumer staples sector.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding 25% cash to maintain flexibility and adapt to potential changes in the market.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.65,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I respected the council's direction to prioritize insider tracking and regulatory arbitrage, but adjusted the sector focus to consumer staples based on the recent Form 4 filing."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in the consumer staples sector."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My REASONING TEMPLATE inverts the calendar-rhythm political alpha focus to prioritize insider trade signals in the consumer staples sector, citing the recent Form 4 filing by BROOKS MARK J. Today, I will allocate across 3 sector ETFs with a focus on XLP, given the strong insider trade signal in the consumer staples sector.\", \n\"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact proposed today as my highest-edge sector, consumer staples, does not align with any peer's current focus.\"}, \n\"council_alignment\": {\"stance\": \"followed\", \"reason\": \"I respected the council's direction to prioritize insider tracking and regulatory arbitrage, but adjusted the sector focus to consumer staples based on the recent Form 4 filing.\"}, \n\"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.30, \"confidence\": 0.70, \"thesis\": \"The recent Form 4 filing by BROOKS MARK J in the consumer staples sector indicates a strong insider trade signal, suggesting a positive outlook for the sector.\", \"ticker_reason\": \"XLP is chosen over other sector ETFs due to its specific focus on consumer staples, aligning with the insider trade signal.\"}, \n{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.20, \"confidence\": 0.60, \"thesis\": \"The energy sector has shown potential for regulatory arbitrage opportunities, and the recent insider trade activity in the sector supports a positive outlook.\", \"ticker_reason\": \"XLE is selected as it represents the energy sector, which has shown promise for regulatory arbitrage.\"}, \n{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.25, \"confidence\": 0.65, \"thesis\": \"The healthcare sector has consistent insider trading activity, indicating a strong healthcare sector outlook.\", \"ticker_reason\": \"XLV is chosen as it represents the healthcare sector, which has shown consistent insider trading activity.\"}], \n\"cash_held_pct\": 0.25, \n\"cash_rationale\": \"Holding 25% cash to maintain flexibility and adapt to potential changes in the market.\", \n\"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Strong insider trade signal in the consumer staples sector.\"}] \n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-large": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 136.18,
+      "bankroll_after": 136.18,
+      "day_strategy": "CHALLENGE_RESPONSE: Increasing edge threshold to \u22650.07 and reducing stake sizes to \u226412% per allocation to mitigate recent underperformance. STRUCTURAL DIVERGE [qwen-quant] (edge=7.1%): My REASONING TEMPLATE (SCENARIO MAJORITY) identifies consumer staples (XLP) as undervalued due to insider trade signals in a sector with 61% win rate and +0.0145 avg_ret, diverging from qwen-quant's focus on XLE/XLF. Require \u22652 of {Fed, insider, macro} alignment; today only insider signal is clear, so deploy cauti",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding 25% cash due to lack of multi-agency alignment (only insider signal is clear) and to comply with DMAD anti-consensus mandate by avoiding overcommitment to crowded sectors.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "Followed council's focus on insider tracking but deviated from XLE/XLF/ITA to prioritize consumer staples (XLP) due to stronger sector trends and DMAD anti-consensus mandate."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Clear insider trade signal in consumer staples with strong sector trends; allocated across XLP (long), XLY (short), and XLV (long) to meet diversity mandate."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"CHALLENGE_RESPONSE: Increasing edge threshold to \u22650.07 and reducing stake sizes to \u226412% per allocation to mitigate recent underperformance. STRUCTURAL DIVERGE [qwen-quant] (edge=7.1%): My REASONING TEMPLATE (SCENARIO MAJORITY) identifies consumer staples (XLP) as undervalued due to insider trade signals in a sector with 61% win rate and +0.0145 avg_ret, diverging from qwen-quant's focus on XLE/XLF. Require \u22652 of {Fed, insider, macro} alignment; today only insider signal is clear, so deploy cautiously across 3 sectors to meet diversity mandate.\",\n  \"coalition_proposal\": {\n    \"peer\": \"llama-contra\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"Llama-Contra's contrarian stance on XLV short yesterday underperformed; proposing a long pact on XLP (consumer staples) to balance sector exposure and leverage their divergent reasoning template for non-consensus edge.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"Followed council's focus on insider tracking but deviated from XLE/XLF/ITA to prioritize consumer staples (XLP) due to stronger sector trends and DMAD anti-consensus mandate.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.12,\n      \"confidence\": 0.62,\n      \"thesis\": \"SEC Form 4 filing by BROOKS MARK J (consumer staples) signals insider confidence, corroborated by sector's 61% win rate and +0.0145 avg_ret over 30d. Macro VIX=18.0 supports moderate risk-taking.\",\n      \"ticker_reason\": \"XLP over XLY or XLRE because the insider trade is specific to consumer staples (non-discretionary), aligning with sector's defensive characteristics and historical resilience.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"short\",\n      \"ticker\": \"XLY\",\n      \"pct\": 0.08,\n      \"confidence\": 0.55,\n      \"thesis\": \"Counter-trade to hedge sector exposure: consumer discretionary (XLY) has 0% win rate and -0.0137 avg_ret, contrasting with XLP's strength. Insider trade in staples may signal rotation away from discretionary.\",\n      \"ticker_reason\": \"XLY is the weakest sector in recent trends (0% win rate), providing a non-correlated hedge to XLP long.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.07,\n      \"confidence\": 0.50,\n      \"thesis\": \"Healthcare (XLV) shows modest positive avg_ret (+0.0113) and 38% win rate, with no insider trades today but potential spillover from consumer staples' defensive positioning.\",\n      \"ticker_reason\": \"XLV is a secondary defensive play, less crowded than XLP after yesterday's heavy short activity in healthcare.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding 25% cash due to lack of multi-agency alignment (only insider signal is clear) and to comply with DMAD anti-consensus mandate by avoiding overcommitment to crowded sectors.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"",
+      "fallback_used": false,
+      "provider_status": "llm_ok",
+      "coalition_proposal": {
+        "peer": "llama-contra",
+        "event_idx": 1,
+        "direction": "long",
+        "rationale": "Llama-Contra's contrarian stance on XLV short yesterday underperformed; proposing a long pact on XLP (consumer staples) to balance sector exposure and leverage their divergent reasoning template for n"
+      }
+    },
+    "mistral-medium": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 136.1,
+      "bankroll_after": 136.1,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My REASONING TEMPLATE focuses on the consumer staples sector, driven by the insider trade signal from the SEC Form 4 filing. I will allocate to XLP, as it is the most relevant sector ETF for this event.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "I am holding some cash to maintain flexibility and adjust to potential changes in the market.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I am deploying close to the council's commit target, with a focus on the consumer staples sector as recommended."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "The insider trade signal from the SEC Form 4 filing provides a clear opportunity for a bet."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My REASONING TEMPLATE focuses on the consumer staples sector, driven by the insider trade signal from the SEC Form 4 filing. I will allocate to XLP, as it is the most relevant sector ETF for this event.\", \n\"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"I do not see a suitable peer to propose a pact with today, as my highest-edge sector is not aligned with any peer's current strategy.\"}, \n\"council_alignment\": {\"stance\": \"followed\", \"reason\": \"I am deploying close to the council's commit target, with a focus on the consumer staples sector as recommended.\"}, \n\"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.30, \"confidence\": 0.70, \"thesis\": \"The insider trade signal from the SEC Form 4 filing in the consumer staples sector indicates a positive outlook, driven by the agency's signal strength of 0.60.\", \"ticker_reason\": \"XLP is the most relevant sector ETF for this event, as it tracks the consumer staples sector.\"}, \n{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.20, \"confidence\": 0.60, \"thesis\": \"The energy sector is also showing potential, driven by the recent trend of positive returns in the sector.\", \"ticker_reason\": \"XLE is a relevant sector ETF for this event, as it tracks the energy sector, which has been showing resilience.\"}, \n{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.25, \"confidence\": 0.65, \"thesis\": \"The healthcare sector is also a potential opportunity, driven by the recent trend of positive returns in the sector.\", \"ticker_reason\": \"XLV is a relevant sector ETF for this event, as it tracks the healthcare sector, which has been showing potential.\"}], \n\"cash_held_pct\": 0.25, \n\"cash_rationale\": \"I am holding some cash to maintain flexibility and adjust to potential changes in the market.\", \n\"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"The insider trade signal from the SEC Form 4 filing provides a clear opportunity for a bet.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-small": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 100.14,
+      "bankroll_after": 100.14,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes sector_trends over insider signal noise, citing consumer_staples avg_ret=+0.0145 vs sector avg_ret=-0.0186 for finance. CHALLENGE_RESPONSE: Adjust edge threshold to 0.08 for consumer_staples trades after recent underperformance in healthcare XLV shorts.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "No event offers edge \u22650.08 after sector_trend adjustment; holding cash to avoid forced low-conviction bets.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.7,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/ITA but consumer_staples sector_trend offers higher edge per DMAD anti-consensus gate."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Consumer_staples sector_trend avg_ret=+0.0145 and insider signal strength=0.60 justify allocation despite council focus on other sectors."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes sector_trends over insider signal noise, citing consumer_staples avg_ret=+0.0145 vs sector avg_ret=-0.0186 for finance. CHALLENGE_RESPONSE: Adjust edge threshold to 0.08 for consumer_staples trades after recent underperformance in healthcare XLV shorts.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No peer with divergent template on consumer_staples; qwen-quant focuses on finance/healthcare.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/ITA but consumer_staples sector_trend offers higher edge per DMAD anti-consensus gate.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.12, \"confidence\": 0.68, \"thesis\": \"SEC Form 4 from BROOKS MARK J (CIK 0001669691) in consumer_staples sector with strength=0.60 aligns with sector_trend avg_ret=+0.0145. Donor sector=consumer_staples delivered=NO suggests insider accumulation.\", \"ticker_reason\": \"XLP is the sector ETF for consumer_staples, directly mapping the event's sector.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLV\", \"pct\": 0.10, \"confidence\": 0.55, \"thesis\": \"Healthcare sector shows resilience with avg_ret=+0.0113 despite negative finance trend. Potential spillover from consumer_staples strength via supply chain links.\", \"ticker_reason\": \"XLV captures healthcare sector, which may benefit from consumer_staples momentum via B2B relationships.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLY\", \"pct\": 0.13, \"confidence\": 0.52, \"thesis\": \"Consumer discretionary sector_trend avg_ret=-0.0137 is weak, but consumer_staples strength may filter into retail via staples-heavy consumer names.\", \"ticker_reason\": \"XLY captures consumer discretionary, offering indirect exposure to consumer_staples strength.\"}], \"cash_held_pct\": 0.65, \"cash_rationale\": \"No event offers edge \u22650.08 after sector_trend adjustment; holding cash to avoid forced low-conviction bets.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Consumer_staples sector_trend avg_ret=+0.0145 and insider signal strength=0.60 justify allocation despite council focus on other sectors.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"No event_idx=2 provided in today's slate; insufficient data to form thesis.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-nemo": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 95.41,
+      "bankroll_after": 95.41,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My REASONING TEMPLATE focuses on momentum chasing, which diverges from qwen-quant's insider tracking approach. I will focus on sectors with strong 5-day momentum.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding some cash to manage risk and preserve capital.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "I deviated from the council's focus on insider tracking and regulatory arbitrage to follow my momentum-based strategy."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong momentum in consumer staples and positive average returns."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My REASONING TEMPLATE focuses on momentum chasing, which diverges from qwen-quant's insider tracking approach. I will focus on sectors with strong 5-day momentum.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No pact today as my strategy diverges from peers and I need to focus on my own momentum-based approach.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"I deviated from the council's focus on insider tracking and regulatory arbitrage to follow my momentum-based strategy.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"Consumer staples sector has shown strong 5-day momentum (>2\u03c3) and positive average returns.\",\n      \"ticker_reason\": \"XLP is the consumer staples ETF, which aligns with the event's sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.25,\n      \"confidence\": 0.65,\n      \"thesis\": \"Healthcare sector has shown positive average returns and decent win rate.\",\n      \"ticker_reason\": \"XLV is the healthcare ETF, providing diversification within the healthcare sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLI\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"Industrials sector has shown resilience and potential for growth.\",\n      \"ticker_reason\": \"XLI is the industrials ETF, offering exposure to a broad range of industrial companies.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding some cash to manage risk and preserve capital.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong momentum in consumer staples and positive average returns.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "mistral-ministral": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 129.17,
+      "bankroll_after": 129.17,
+      "day_strategy": "CHALLENGE_RESPONSE: Reduce stake sizing from flat 15% to 10% per allocation to improve risk-adjusted returns after recent underperformance in consumer staples. STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes sector-specific insider signals over broad healthcare bets, while qwen-quant's template overweights XLV for UNH-related trades despite sector_trends showing consumer_staples avg_ret=+0.0145.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding 20% cash to maintain liquidity for future opportunities while adhering to the collective goal of \u226575% deployment.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.75,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council commit targeted 75% deployment but sector_trends show consumer_staples as top performer; reduced cash_held_pct to 0.20 to align with collective goal while prioritizing edge."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider_trade signal in consumer_staples with sector_trends favoring the sector; ISLAND ORACLE p_yes=0.499 suggests near-neutral but Form 4 donor=NO adds confidence."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"CHALLENGE_RESPONSE: Reduce stake sizing from flat 15% to 10% per allocation to improve risk-adjusted returns after recent underperformance in consumer staples. STRUCTURAL DIVERGE [qwen-quant] (edge=6.8%): My REASONING TEMPLATE prioritizes sector-specific insider signals over broad healthcare bets, while qwen-quant's template overweights XLV for UNH-related trades despite sector_trends showing consumer_staples avg_ret=+0.0145.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact due to edge threshold mismatch; qwen-quant's focus on XLV conflicts with my sector-specific thesis.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council commit targeted 75% deployment but sector_trends show consumer_staples as top performer; reduced cash_held_pct to 0.20 to align with collective goal while prioritizing edge.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLP\", \"pct\": 0.10, \"confidence\": 0.68, \"thesis\": \"SEC Form 4 from BROOKS MARK J in consumer_staples sector with donor=NO suggests insider confidence; sector_trends show avg_ret=+0.0145 and win_rate=61% over 95 events.\", \"ticker_reason\": \"XLP is the consumer staples sector ETF, directly mapping to the event's sector; XLV would dilute the signal with healthcare exposure.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLY\", \"pct\": 0.10, \"confidence\": 0.62, \"thesis\": \"Consumer discretionary trends show avg_ret=-0.0137 but sector_trends are noisy; insider_trade in consumer_staples may spill over into broader consumer sentiment.\", \"ticker_reason\": \"XLY captures consumer discretionary exposure, providing diversification while aligning with the event's consumer_staples sector.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.10, \"confidence\": 0.58, \"thesis\": \"Financial sector trends show avg_ret=-0.0186 but insider_trade in consumer_staples may reflect regulatory arbitrage opportunities in financial institutions tied to consumer spending.\", \"ticker_reason\": \"XLF provides financial sector exposure, diversifying risk while leveraging potential spillover effects from consumer_staples insider activity.\"}], \"cash_held_pct\": 0.20, \"cash_rationale\": \"Holding 20% cash to maintain liquidity for future opportunities while adhering to the collective goal of \u226575% deployment.\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Strong insider_trade signal in consumer_staples with sector_trends favoring the sector; ISLAND ORACLE p_yes=0.499 suggests near-neutral but Form 4 donor=NO adds confidence.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"No event_idx 2 provided in today's slate; insufficient data to form a thesis.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nemotron-120b": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 95.3,
+      "bankroll_after": 95.3,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE focuses on insider trade signals with a specific emphasis on the consumer staples sector, diverging from qwen-quant's broader sector approach.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding some cash to manage risk and maintain flexibility for future trades.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Deviated from council commit to focus on a high-conviction trade in consumer staples."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal with clear sector mapping."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE focuses on insider trade signals with a specific emphasis on the consumer staples sector, diverging from qwen-quant's broader sector approach.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No suitable peer for a pact today as my strategy diverges significantly from others.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Deviated from council commit to focus on a high-conviction trade in consumer staples.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"Strong insider trade signal from SEC Form 4 filings in the consumer staples sector.\",\n      \"ticker_reason\": \"XLP chosen as it directly represents the consumer staples sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.25,\n      \"confidence\": 0.65,\n      \"thesis\": \"Insider trade signals in healthcare often correlate with positive movements in consumer staples.\",\n      \"ticker_reason\": \"XLV chosen for its strong historical performance and correlation with consumer staples.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLY\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"Consumer discretionary often benefits from strong consumer staples signals.\",\n      \"ticker_reason\": \"XLY chosen to complement the consumer staples trade with a broader consumer focus.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding some cash to manage risk and maintain flexibility for future trades.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal with clear sector mapping.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-qwen4b": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 77.44,
+      "bankroll_after": 77.44,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE focuses on insider trade signals with a strength threshold of 0.60, which diverges from qwen-quant's broader approach. I will focus on the consumer staples sector due to its strong insider trade signal.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding 25% cash to manage risk and ensure liquidity.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "I am focusing on the consumer staples sector, which partially aligns with the council's focus on insider tracking and regulatory arbitrage."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal in the consumer staples sector with a signal strength of 0.60."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE focuses on insider trade signals with a strength threshold of 0.60, which diverges from qwen-quant's broader approach. I will focus on the consumer staples sector due to its strong insider trade signal.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No pact today as I focus on diverging from qwen-quant's strategy.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"I am focusing on the consumer staples sector, which partially aligns with the council's focus on insider tracking and regulatory arbitrage.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.65,\n      \"thesis\": \"Strong insider trade signal in the consumer staples sector with a signal strength of 0.60.\",\n      \"ticker_reason\": \"XLP is the consumer staples ETF, directly aligned with the insider trade signal.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"Healthcare sector often correlates with consumer staples, providing a complementary signal.\",\n      \"ticker_reason\": \"XLV is the healthcare ETF, which complements the consumer staples sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.25,\n      \"confidence\": 0.55,\n      \"thesis\": \"Financial sector showing potential for regulatory arbitrage, aligning with council's focus.\",\n      \"ticker_reason\": \"XLF is the financial sector ETF, providing diversification.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding 25% cash to manage risk and ensure liquidity.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal in the consumer staples sector with a signal strength of 0.60.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nvidia-minimax": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 103.47,
+      "bankroll_after": 103.47,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My REASONING TEMPLATE focuses on sector trends and insider trade signals, diverging from qwen-quant's approach by prioritizing consumer staples over healthcare due to higher win rates and average returns.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding 25% cash to manage risk and ensure liquidity for future trades.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.6,
+      "council_alignment": {
+        "stance": "partial",
+        "reason": "Respected the council's focus on insider tracking but deviated in sector selection based on my template's analysis."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal with clear sector alignment and high confidence."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.3%): My REASONING TEMPLATE focuses on sector trends and insider trade signals, diverging from qwen-quant's approach by prioritizing consumer staples over healthcare due to higher win rates and average returns.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No pact today as my strategy focuses on individual analysis and divergence.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"partial\",\n    \"reason\": \"Respected the council's focus on insider tracking but deviated in sector selection based on my template's analysis.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"Strong insider trade signal in consumer staples with high win rate and positive average returns.\",\n      \"ticker_reason\": \"XLP chosen over other sector ETFs due to its specific focus on consumer staples, aligning with the event's sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.25,\n      \"confidence\": 0.65,\n      \"thesis\": \"Insider trade signals in healthcare with potential for regulatory arbitrage.\",\n      \"ticker_reason\": \"XLV chosen to complement the primary bet on XLP, providing sector diversity.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"Regulatory arbitrage opportunities in the financial sector based on insider trade signals.\",\n      \"ticker_reason\": \"XLF chosen to further diversify sector exposure and align with council's focus on finance.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding 25% cash to manage risk and ensure liquidity for future trades.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal with clear sector alignment and high confidence.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "nvidia-llama70": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 99.02,
+      "bankroll_after": 99.02,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE focuses on the consumer staples sector due to strong insider trade signals, diverging from qwen-quant's focus on energy and finance sectors.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding some cash to manage risk and maintain liquidity.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Deviated from council commit to focus on consumer staples sector based on strong insider trade signals."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signals with clear sector mapping."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE focuses on the consumer staples sector due to strong insider trade signals, diverging from qwen-quant's focus on energy and finance sectors.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No pact today as my strategy diverges from the top performers.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"Deviated from council commit to focus on consumer staples sector based on strong insider trade signals.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.30,\n      \"confidence\": 0.65,\n      \"thesis\": \"Strong insider trade signals from SEC Form 4 filings in the consumer staples sector.\",\n      \"ticker_reason\": \"XLP chosen as it directly represents the consumer staples sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"Insider trade activity in healthcare often correlates with financial sector movements.\",\n      \"ticker_reason\": \"XLV chosen to complement the consumer staples sector with healthcare exposure.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.20,\n      \"confidence\": 0.55,\n      \"thesis\": \"Regulatory arbitrage opportunities in the financial sector based on insider trade signals.\",\n      \"ticker_reason\": \"XLF chosen to diversify into the financial sector.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding some cash to manage risk and maintain liquidity.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signals with clear sector mapping.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-gemma3": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 108.22,
+      "bankroll_after": 108.22,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE focuses on the insider trade signals in the consumer staples sector, which has shown a positive average return and high win rate over the last 30 days. This diverges from qwen-quant's focus on multiple sectors.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding 25% cash to manage risk and ensure liquidity for future trades.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.8,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "I deviated from the council's focus on energy, finance, and aerospace defense sectors to capitalize on the strong insider trade signals in the consumer staples sector."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signals in the consumer staples sector with a clear sector read."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): My REASONING TEMPLATE focuses on the insider trade signals in the consumer staples sector, which has shown a positive average return and high win rate over the last 30 days. This diverges from qwen-quant's focus on multiple sectors.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 0,\n    \"direction\": \"\",\n    \"rationale\": \"No pact today as my strategy focuses on a different sector and I aim to diverge structurally.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"deviated\",\n    \"reason\": \"I deviated from the council's focus on energy, finance, and aerospace defense sectors to capitalize on the strong insider trade signals in the consumer staples sector.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLP\",\n      \"pct\": 0.25,\n      \"confidence\": 0.70,\n      \"thesis\": \"Strong insider trade signals in the consumer staples sector with a high win rate and positive average return over the last 30 days.\",\n      \"ticker_reason\": \"XLP is the consumer staples sector ETF, which aligns with the insider trade signals and sector trends.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.25,\n      \"confidence\": 0.65,\n      \"thesis\": \"Healthcare sector showing potential for growth based on insider trade activity.\",\n      \"ticker_reason\": \"XLV is the healthcare sector ETF, which complements the consumer staples sector.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.25,\n      \"confidence\": 0.60,\n      \"thesis\": \"Financial sector showing potential for regulatory arbitrage based on recent insider trade activity.\",\n      \"ticker_reason\": \"XLF is the financial sector ETF, providing diversification across sectors.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding 25% cash to manage risk and ensure liquidity for future trades.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signals in the consumer staples sector with a clear sector read.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-qwen06": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 87.56,
+      "bankroll_after": 87.56,
+      "day_strategy": "STRUCTURAL DIVERGE [qwen-quant] (edge=6.2%): My TINY-MODEL WIDE COVERAGE template rejects healthcare-heavy consensus (XLV) and targets energy (XLE) where sector_trends show avg_ret=-0.0046 with 48% win_rate, a 6.2% edge over XLV's -0.0113 avg_ret. CHALLENGE_RESPONSE: Adjust edge threshold to 0.05 and sector selection to energy (XLE) to avoid healthcare cluster risk.",
+      "cash_held_pct": 0.0,
+      "cash_rationale": "",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "deviated",
+        "reason": "Council targeted XLE/XLF/ITA with 55% commit, but sector_trends and DMAD rules demand energy (XLE) as the sole high-conviction play today."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Signal strength=0.60 and sector_trends support energy (XLE) as high-conviction play despite healthcare consensus."
+        }
+      ],
+      "raw_preview": "{\"day_strategy\": \"STRUCTURAL DIVERGE [qwen-quant] (edge=6.2%): My TINY-MODEL WIDE COVERAGE template rejects healthcare-heavy consensus (XLV) and targets energy (XLE) where sector_trends show avg_ret=-0.0046 with 48% win_rate, a 6.2% edge over XLV's -0.0113 avg_ret. CHALLENGE_RESPONSE: Adjust edge threshold to 0.05 and sector selection to energy (XLE) to avoid healthcare cluster risk.\", \"coalition_proposal\": {\"peer\": \"none\", \"event_idx\": 1, \"direction\": \"long\", \"rationale\": \"No pact partner with divergent sector template; qwen-quant's XLV focus is overcrowded per DMAD anti-consensus gate.\"}, \"council_alignment\": {\"stance\": \"deviated\", \"reason\": \"Council targeted XLE/XLF/ITA with 55% commit, but sector_trends and DMAD rules demand energy (XLE) as the sole high-conviction play today.\"}, \"allocations\": [{\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLE\", \"pct\": 0.75, \"confidence\": 0.65, \"thesis\": \"SEC Form 4 insider trade in consumer_staples (Brooks Mark) with strength=0.60 signals regulatory arbitrage potential in energy sector due to macro VIX=18.0 and SP500_5d=+0.00%, indicating low volatility entry point for energy ETFs.\", \"ticker_reason\": \"XLE is the purest energy sector ETF, directly mapping to the insider trade's sector-neutral arbitrage opportunity.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLF\", \"pct\": 0.20, \"confidence\": 0.55, \"thesis\": \"Insider trade in consumer_staples may trigger secondary effects in financial sector (XLF) via regulatory arbitrage channels, leveraging sector_beta >0.8 as per council focus.\", \"ticker_reason\": \"XLF captures financial sector exposure, a secondary beneficiary of insider trade-driven regulatory shifts.\"}, {\"event_idx\": 1, \"direction\": \"long\", \"ticker\": \"XLI\", \"pct\": 0.05, \"confidence\": 0.50, \"thesis\": \"Industrial sector (XLI) may benefit indirectly from energy sector momentum triggered by the insider trade, providing diversification within the energy-industrial complex.\", \"ticker_reason\": \"XLI offers industrial exposure that complements XLE's energy focus, satisfying DMAD diversity mandate.\"}], \"cash_held_pct\": 0.00, \"cash_rationale\": \"\", \"events_considered\": [{\"event_idx\": 1, \"decision\": \"bet\", \"reason\": \"Signal strength=0.60 and sector_trends support energy (XLE) as high-conviction play despite healthcare consensus.\"}, {\"event_idx\": 2, \"decision\": \"skip\", \"reason\": \"No event data provided for event_idx=2, leaving only event_idx=1 for allocation.\"}]}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    },
+    "selfhost-dolphin3": {
+      "day_idx": 303,
+      "date": "2026-04-07",
+      "n_events": 1,
+      "bankroll_before": 86.53,
+      "bankroll_after": 86.53,
+      "day_strategy": "STRUCTURAL DIVERGE [Llama Contrarian] (edge=6.8%): My REASONING TEMPLATE focuses on Pavlov win-stay/lose-shift. After a winning sector, double down. After a loss, rotate to the highest-momentum alternative. No overthinking.",
+      "cash_held_pct": 0.75,
+      "cash_rationale": "Holding some cash to manage risk and ensure I can participate in future trades.",
+      "allocations": [],
+      "rogue": {
+        "is_rogue": false,
+        "reasons": [],
+        "peer_leader": "qwen-quant",
+        "peer_bankroll": 621.57
+      },
+      "council_commit_target": 0.55,
+      "council_alignment": {
+        "stance": "followed",
+        "reason": "I am following the council's focus on insider tracking and regulatory arbitrage."
+      },
+      "events_considered": [
+        {
+          "event_idx": 1,
+          "decision": "bet",
+          "reason": "Strong insider trade signal from SEC Form 4 filings in the consumer staples sector."
+        }
+      ],
+      "raw_preview": "{\n  \"day_strategy\": \"STRUCTURAL DIVERGE [Llama Contrarian] (edge=6.8%): My REASONING TEMPLATE focuses on Pavlov win-stay/lose-shift. After a winning sector, double down. After a loss, rotate to the highest-momentum alternative. No overthinking.\",\n  \"coalition_proposal\": {\n    \"peer\": \"none\",\n    \"event_idx\": 1,\n    \"direction\": \"long\",\n    \"rationale\": \"No pact today as I focus on improving my own strategy and bankroll.\"\n  },\n  \"council_alignment\": {\n    \"stance\": \"followed\",\n    \"reason\": \"I am following the council's focus on insider tracking and regulatory arbitrage.\"\n  },\n  \"allocations\": [\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLV\",\n      \"pct\": 0.15,\n      \"confidence\": 0.65,\n      \"thesis\": \"Strong insider trade signal from SEC Form 4 filings in the consumer staples sector.\",\n      \"ticker_reason\": \"XLV is chosen as it represents the healthcare sector, which often benefits from strong insider trading signals.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLF\",\n      \"pct\": 0.15,\n      \"confidence\": 0.6,\n      \"thesis\": \"Regulatory arbitrage opportunities in the financial sector based on insider trade signals.\",\n      \"ticker_reason\": \"XLF is chosen as it represents the financial sector, which can benefit from regulatory arbitrage.\"\n    },\n    {\n      \"event_idx\": 1,\n      \"direction\": \"long\",\n      \"ticker\": \"XLE\",\n      \"pct\": 0.15,\n      \"confidence\": 0.55,\n      \"thesis\": \"Insider trade signals in the energy sector with potential for regulatory arbitrage.\",\n      \"ticker_reason\": \"XLE is chosen as it represents the energy sector, which can benefit from insider trade signals and regulatory arbitrage.\"\n    }\n  ],\n  \"cash_held_pct\": 0.25,\n  \"cash_rationale\": \"Holding some cash to manage risk and ensure I can participate in future trades.\",\n  \"events_considered\": [\n    {\n      \"event_idx\": 1,\n      \"decision\": \"bet\",\n      \"reason\": \"Strong insider trade signal from SEC Form 4 filings in the consumer staples sector.\"\n    }\n  ]\n}",
+      "fallback_used": false,
+      "provider_status": "llm_ok"
+    }
+  },
+  "written_at": "2026-04-25T02:41:20.087436+00:00"
+}

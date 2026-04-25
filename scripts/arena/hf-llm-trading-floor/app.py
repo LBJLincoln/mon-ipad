@@ -2302,10 +2302,14 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
         allocations = []
     cash = float(parsed.get("cash_held_pct", 0.0) or 0.0)
 
-    # Filter invalid allocations
+    # Filter invalid allocations.
+    # 2026-04-25 BUGFIX (user-flagged): cap was [:10] and dedup was per-game,
+    # which silently dropped 6M-combo exploration to ~1 alloc/game. CLAUDE.md
+    # spec: 25 allocations/day max, and same game CAN appear under different
+    # categories (ml_home + spread_away + pp_points_star1_over valid together).
     clean = []
-    seen_games = set()
-    for a in allocations[:10]:
+    seen_keys = set()  # (gidx, category) — was {gidx}
+    for a in allocations[:25]:  # was [:10]
         if not isinstance(a, dict):
             continue
         gidx = a.get("game_idx")
@@ -2322,9 +2326,10 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             continue
         if gidx < 1 or gidx > n_games:
             continue
-        if gidx in seen_games:
+        key = (gidx, cat)
+        if key in seen_keys:
             continue
-        seen_games.add(gidx)
+        seen_keys.add(key)
         clean.append({
             "game_idx": gidx,
             "game": a.get("game", ""),
@@ -2475,6 +2480,7 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
 
     gc = parsed.get("games_considered") or []
     games_considered: List[Dict] = []
+    bet_games = {k[0] for k in seen_keys}  # 2026-04-25 — derived from new (gidx,cat) keys
     if isinstance(gc, list):
         seen_gc = set()
         for item in gc[:30]:
@@ -2486,7 +2492,7 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             seen_gc.add(gi)
             decision = (item.get("decision") or "").lower().strip()
             if decision not in ("bet", "skip"):
-                decision = "bet" if gi in seen_games else "skip"
+                decision = "bet" if gi in bet_games else "skip"
             games_considered.append({
                 "game_idx": gi,
                 "decision": decision,
