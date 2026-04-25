@@ -3741,19 +3741,21 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 MIN_EDGE = tier["min_edge"]
                 KELLY_MULT = tier["kelly_mult"]
                 # 2026-04-21 INTERNAL AFFAIRS RCA patch #3 — peak-equity drawdown clamp.
-                # gemini-anl peaked $170.79 day N then bled to $29.02 (-83% of peak)
-                # because stake size kept compounding on declining bankroll. Clamp:
-                # <50% of peak → stake cap 1% + forbid parlays; <25% of peak → force
-                # cash (ALL_PASS). Gated by PEAK_DD_GUARD_V2=1 (default on 2026-04-21).
+                # 2026-04-25 RELAXED: was force-cashing agents trapped at <25% of peak,
+                # preventing recovery (e.g. qwen-quant peaked $300 dropped to $30 = stuck
+                # forever in cash). New thresholds: <0.10 force cash (true bankruptcy
+                # protection), <0.25 1% bet cap, otherwise normal. Gives agents room
+                # to compound back. Also: PDD only enforces above $20 — below $20 the
+                # SURVIVAL FLOOR clauses in prompt take over.
                 _pdd_on = os.environ.get("PEAK_DD_GUARD_V2", "1") == "1"
                 _pdd_force_cash = False
                 _pdd_forbid_parlays = False
-                if _pdd_on:
+                if _pdd_on and ts["bankroll"] >= 20.0:
                     _pdd_peak = max(float(ts.get("best_bankroll") or 0.0), ts["bankroll"])
                     _pdd_ratio = (ts["bankroll"] / _pdd_peak) if _pdd_peak > 0 else 1.0
-                    if _pdd_ratio < 0.25:
+                    if _pdd_ratio < 0.10:
                         _pdd_force_cash = True
-                    elif _pdd_ratio < 0.50:
+                    elif _pdd_ratio < 0.25:
                         MAX_PCT_PER_BET = min(MAX_PCT_PER_BET, 0.01)
                         _pdd_forbid_parlays = True
                 BASE_CATS = {"ml_home","ml_away","spread_home","spread_away","total_over","total_under"}
