@@ -1,0 +1,25 @@
+{
+  "ts": "2026-04-25T11:08:00Z",
+  "tf": "political",
+  "action": "DAY-0 reset",
+  "trigger": "user authorised 'all perfect, finally' 2026-04-25 ~11:00Z",
+  "rationale": "POL was excluded from morning parser-fix DAY-0 (commit 1c6c37502 reset NBA only). State persisted through prior factory_reboot, so used /api/stop -> wipe 216 repo files -> /api/run sequence.",
+  "pre_reset_top_agents": {
+    "qwen-arb": 760,
+    "qwen-quant": 535,
+    "llama-contra": 522
+  },
+  "champion_preserve_files": [
+    "data/champions/pol/qwen-arb/20260425T110037Z.json",
+    "data/champions/pol/qwen-quant/20260425T110037Z.json",
+    "data/champions/pol/llama-contra/20260425T110037Z.json"
+  ],
+  "hub_wipe_commit": "62be566b1591ee01958e2b96c163d98cb0948b95",
+  "post_reset_verification": {
+    "days_processed": 1,
+    "events_processed": 8,
+    "qwen-quant_bankroll": 103.46,
+    "qwen-arb_bankroll": 102.94,
+    "llama-contra_bankroll": 103.27
+  }
+}
