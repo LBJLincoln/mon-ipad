@@ -1472,6 +1472,13 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
     date = game_ctx.get("date", "?")
     game_key = f"{date}_{away}@{home}"
 
+    # 2026-04-25 BUGFIX (user-flagged 4-cat lockstep): per-game prompt had a
+    # hardcoded 45-cat AVAILABLE CATEGORIES list AND "max 2 bets". Combined
+    # with parser dedup-per-game, fleet-wide diversity collapsed to 4 cats.
+    # Parser dedup fixed earlier today; now lift the prompt's cat-list cap
+    # and bet-count cap. cats[] is derived from full_odds below.
+    cats: List[str] = []
+
     ml_h = odds.get("ml_home_dec", 2.0)
     ml_a = odds.get("ml_away_dec", 2.0)
     impl_home = round(1.0 / ml_h, 3) if ml_h > 1 else 0.5
@@ -1546,7 +1553,7 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
     fo_raw = (full_odds or {}).get(game_key, {})
     fo = fo_raw.get("categories", fo_raw) if isinstance(fo_raw, dict) else {}
     if fo and isinstance(fo, dict):
-        cats = sorted(fo.keys())
+        cats[:] = sorted(fo.keys())
         def _fmt(c):
             v = fo[c]
             if isinstance(v, dict):
@@ -1619,8 +1626,17 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
         lines.append(f"\nAVAILABLE STRATEGIES ({len(strategies)}): {strat_list}")
 
     # ── DECISION FORMAT ──
+    # 2026-04-25 BUGFIX: AVAILABLE CATEGORIES is now derived from the live
+    # full_odds menu so the LLM can pick ANY of the ~200 per-game categories
+    # (was a hardcoded 45-cat subset → fleet-wide mean_odds collapsed to 1.91).
+    # Bet cap also lifted 2 → 8 per game so a single agent can finally place
+    # multi-leg same-game bets (ml + alt_spread + pp_points + etc).
+    available_cats_str = ", ".join(cats) if cats else (
+        "ml_home, ml_away, spread_home, spread_away, total_over, total_under, "
+        "alt_spread_home_minus3.5, alt_total_over_plus3"
+    )
     lines.append(f"""
-AVAILABLE CATEGORIES: ml_home, ml_away, spread_home, spread_away, total_over, total_under, h1_ml_home, h1_ml_away, h1_spread, h1_total_over, h1_total_under, team_total_home_over, team_total_home_under, team_total_away_over, team_total_away_under, alt_spread_home_minus3.5, alt_spread_home_minus5.5, alt_total_over_plus3, alt_total_under_minus3, q1_ml_home, q1_ml_away, prop_both_100, prop_overtime, pp_points_star1_home, pp_points_star1_away, pp_points_star2_home, pp_points_star2_away, pp_points_star3_home, pp_points_star3_away, pp_rebounds_star1_home, pp_rebounds_star1_away, pp_rebounds_star2_home, pp_rebounds_star2_away, pp_assists_star1_home, pp_assists_star1_away, pp_assists_star2_home, pp_assists_star2_away, pp_threes_star1_home, pp_threes_star1_away, pp_threes_star2_home, pp_threes_star2_away, pp_steals_star1_home, pp_steals_star1_away, pp_blocks_star1_home, pp_blocks_star1_away
+AVAILABLE CATEGORIES ({len(cats)}): {available_cats_str}
 
 RESPOND WITH RAW JSON ONLY. NO ```json fences. NO preamble. NO "Let me analyze". NO thinking out loud.
 FIRST CHARACTER MUST BE {{ — last character MUST be }}.
@@ -1630,7 +1646,9 @@ Schema:
 
 Rules:
 - confidence 0-1, edge must be POSITIVE and REAL (derive from model vs market — DO NOT hardcode 0.05).
-- bet_pct 0.005-0.06, max 2 bets, strategy from list above.
+- bet_pct 0.005-0.10, max 8 bets per game, strategy from list above.
+- DIVERSIFY: when edge is found, prefer multi-category coverage on this game (ml + alt_spread_X + pp_<stat>_<tier>) over duplicate plays on the same line.
+- ALT-LINE SHOPPING: alt_spread/alt_total variants pay BETTER odds (1.4-3.0) than standard 1.91; prefer them when your edge is wide.
 - If no genuine edge, return {{"reasoning": "...", "bets": [], "pass": true}}.
 - NEVER bet without computing edge from the provided odds and predictions.""")
 
@@ -2678,9 +2696,29 @@ def resolve_bet(category: str, odds: Dict, hs: int, as_: int, home_won: bool,
     return False
 
 
-def get_odds_dec(category: str, odds: Dict) -> float:
-    """Get decimal odds for a bet category. Supports 100+ categories."""
+def get_odds_dec(category: str, odds: Dict, full_odds_for_game: Optional[Dict] = None) -> float:
+    """Get decimal odds for a bet category. Supports 100+ categories.
+
+    2026-04-25 BUGFIX: now reads real per-category odds from full_odds_for_game
+    when available (249 cats × 802 games stored in full-odds-2025-26.json with
+    proper alt_spread variance 1.001..39.7 and per-prop odds). Hardcoded
+    fallbacks only fire when real data is missing.
+    """
     cat = category.lower().strip()
+    # Real odds lookup (preferred) — source-of-truth for alt_spread/alt_total/team_total/pp_*
+    if isinstance(full_odds_for_game, dict):
+        cats_dict = full_odds_for_game.get("categories", full_odds_for_game)
+        if isinstance(cats_dict, dict):
+            entry = cats_dict.get(cat)
+            if isinstance(entry, dict):
+                real = entry.get("odds")
+                if real is not None:
+                    try:
+                        rf = float(real)
+                        if rf > 1.0:
+                            return rf
+                    except (TypeError, ValueError):
+                        pass
     # Base categories with real odds
     if cat == "ml_home": return odds.get("ml_home_dec", 1.91)
     if cat == "ml_away": return odds.get("ml_away_dec", 1.91)
@@ -3851,7 +3889,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     day_collisions[coll_key] = day_collisions.get(coll_key, 0) + 1
 
                     won = resolve_bet(cat, odds, g["home_score"], g["away_score"], g["home_won"])
-                    odds_dec = get_odds_dec(cat, odds)
+                    # 2026-04-25 BUGFIX: pass full_odds[game_key] so settlement uses
+                    # real per-category odds (alt_spread variance, real pp_* prices)
+                    # instead of hardcoded 1.91 fallback.
+                    _gk = f"{g.get('date','')}_{g.get('away','')}@{g.get('home','')}"
+                    _full = (full_odds or {}).get(_gk) if isinstance(full_odds, dict) else None
+                    odds_dec = get_odds_dec(cat, odds, full_odds_for_game=_full)
                     if won:
                         profit = stake * (odds_dec - 1)
                         ts["bankroll"] += profit
