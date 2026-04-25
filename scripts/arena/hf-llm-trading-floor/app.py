@@ -2389,13 +2389,26 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
     # the top-1 LLM bet tagged 'llm_fallback_singleton' so the agent is
     # not silently force-passed on a no-engine-edge day.
     _engine_only_mode = (os.environ.get("NBA_ENGINE_ONLY_MODE", "0") or "0") in ("1", "true", "True")
+    # Parser-level pp_* hard ban — applies even when llm_fallback_singleton
+    # would otherwise restore a dropped bet. Live evidence: gemini-anl day-062
+    # got a pp_steals_role2_home restored as fallback_singleton DESPITE the
+    # menu hiding pp_* and the prompt explicitly banning. LLMs hallucinate
+    # category names from training data. Hard ban at parser kills the source.
+    _hide_pp_parser = (os.environ.get("NBA_HIDE_PP", "1") or "1") not in ("0", "", "false", "False")
     _engine_only_dropped: List[Dict] = []  # held LLM bets for fallback recovery
     n_engine_only_dropped = 0
+    n_pp_banned = 0
     for a in allocations[:25]:  # was [:10]
         if not isinstance(a, dict):
             continue
         gidx = a.get("game_idx")
         cat = (a.get("category") or "").lower().strip()
+        # Parser-level pp_* hard ban — the LLM hallucinated this category name;
+        # never let it propagate. Engine-only mode + fallback_singleton would
+        # otherwise restore it. Drop here, fully.
+        if _hide_pp_parser and cat.startswith("pp_"):
+            n_pp_banned += 1
+            continue
         try:
             pct = float(a.get("pct", 0) or 0)
             conf = float(a.get("confidence", 0.5) or 0.5)
