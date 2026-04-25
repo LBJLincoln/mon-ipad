@@ -2158,11 +2158,14 @@ STRICT RULES:
 - Sum of allocation pct + parlay pct + cash_held_pct = 1.00 (±0.01)
 - Max 1 allocation per game_idx PER CATEGORY (you can bet ml_home + spread_away
   + total_over + prop_* + pp_* on the same game across different categories)
-- 2026-04-24 REVISED: SELECTIVE BETTING PERMITTED. The old "≥3 allocations EVERY day"
-  forced losing bets on weak slates. New rule: bet ONLY when you see a genuine edge
-  (model p vs implied p > your min_edge). Empty allocations[] IS allowed when no bet
-  clears the bar — but you MUST write `cash_rationale` explaining which games you
-  inspected + why none cleared your edge bar. "Passed by laziness" is NOT acceptable.
+- 2026-04-25 REVISED v2: at LEAST 1 allocation/day required when ANY positive
+  edge >=0.05 exists in the day's full odds menu (and your model agrees). The
+  pre-ranked "TOP POSITIVE EDGES" provided in your context is your menu —
+  pick at least one. Probation agents may pass ONLY if no edge clears 0.07.
+  Empty allocations[] is allowed ONLY with cash_rationale citing why every
+  edge in the top-10 was rejected (e.g. "all top-10 are pp_* on injury-flagged
+  players"). "No edges" rationales without specific category review are NOT
+  acceptable — you have 220+ categories per game.
 - Max 25 allocations + 8 parlays / day (2026-04-24 user directive: USE the 220-category
   universe — ml, spread, total, alt_spread*, alt_total*, team_total*, halves, quarters,
   game_props, pp_*). PARLAYS SHOULD BE USED — combined odds amplify small edges into
