@@ -43,6 +43,22 @@ for f in scorecard-latest.md rigorous-latest.md cross-llm-latest.md digest-lates
     cp "$src" "$DEST/audit/$f"
   fi
 done
+# 2026-04-25: ship the per-agent forensic deep-audit MDs to the dashboard so
+# user can browse "why each odd was chosen" per-agent / per-game / cross-agent.
+TODAY=$(date -u +%Y-%m-%d)
+for tf in nba pol itf pqtf; do
+  for kind in per-agent-deep per-game-deep per-agent-factual; do
+    src="/home/termius/mon-ipad/data/audit/${kind}-${tf}-${TODAY}.md"
+    if [ -f "$src" ]; then
+      cp "$src" "$DEST/audit/${kind}-${tf}-latest.md"
+    fi
+  done
+done
+# Per-agent narrative trails (one file per agent per TF)
+if [ -d "/home/termius/mon-ipad/data/audit/per-agent-deep" ]; then
+  mkdir -p "$DEST/audit/per-agent-deep"
+  cp -r /home/termius/mon-ipad/data/audit/per-agent-deep/. "$DEST/audit/per-agent-deep/" 2>/dev/null || true
+fi
 # Strip cron.log and other non-allowed noise
 find "$DEST" -type f ! \( -name '*.json' -o -name '*.jsonl' -o -name '*.md' \) -delete 2>/dev/null || true
 
