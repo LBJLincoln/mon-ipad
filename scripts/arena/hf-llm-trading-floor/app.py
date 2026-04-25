@@ -2366,6 +2366,17 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
 
     n_engine_override = 0
     n_engine_no_view = 0
+    # 2026-04-25 ENGINE-ONLY MODE — when NBA_ENGINE_ONLY_MODE=1, drop any
+    # allocation whose edge_source != 'engine' (i.e. categories the
+    # walk-forward calibrated model has no view on, primarily pp_*). The
+    # fleet has been stacking 70%+ on player props with hallucinated 0.111
+    # edges. This forces bets ONLY where the engine has signal. Fallback:
+    # if engine filter empties clean[] but the LLM had >=1 alloc, restore
+    # the top-1 LLM bet tagged 'llm_fallback_singleton' so the agent is
+    # not silently force-passed on a no-engine-edge day.
+    _engine_only_mode = (os.environ.get("NBA_ENGINE_ONLY_MODE", "0") or "0") in ("1", "true", "True")
+    _engine_only_dropped: List[Dict] = []  # held LLM bets for fallback recovery
+    n_engine_only_dropped = 0
     for a in allocations[:25]:  # was [:10]
         if not isinstance(a, dict):
             continue
@@ -2435,6 +2446,22 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             "rationale": (a.get("rationale") or "")[:300],
             "category_reason": (a.get("category_reason") or "")[:300],
         })
+
+        # ENGINE-ONLY MODE drop — if active and this bet has no engine
+        # backing, pop it from clean[] and stash for potential fallback.
+        if _engine_only_mode and clean[-1]["edge_source"] != "engine":
+            _engine_only_dropped.append(clean.pop())
+            n_engine_only_dropped += 1
+            continue
+
+    # 2026-04-25 ENGINE-ONLY FALLBACK SINGLETON — if engine filter wiped
+    # everything but the LLM did emit >=1 raw allocation, restore the top-1
+    # by edge so the agent doesn't silently force-pass on no-engine-edge days.
+    if _engine_only_mode and not clean and _engine_only_dropped:
+        _engine_only_dropped.sort(key=lambda x: x.get("edge", 0.0), reverse=True)
+        _fb = _engine_only_dropped[0]
+        _fb["edge_source"] = "llm_fallback_singleton"
+        clean.append(_fb)
 
     # 2026-04-25 EDGE-HALLUCINATION GUARD — deep-audit forensic showed 5 agents
     # (mistral-ministral/mistral-nemo/mistral-small/selfhost-qwen06/nemotron-120b)
