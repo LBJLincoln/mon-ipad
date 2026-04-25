@@ -1,185 +1,208 @@
 {
-  "generated_at": "2026-04-25T12:30:00Z",
+  "generated_at": "2026-04-25T20:15:00Z",
   "brain_version": "nomos42-brain-v21",
   "brain_cycle": "4h-scheduled",
-  "cycle_index": "2026-04-25-12h",
-  "cycle_notes": "S15 top_performer 0.22062 triggers NEW FLEET BEST checkpoint. All 6 NBA islands alive + evolving, stagnation=0. P7 recovered from 503 (mid-restart, now cycle 1668 gen 5003 hist_best 0.24925). P5 boost_mutation sent. Engine parity CONFIRMED v3.2-67cat across mon-ipad + nomos-nba-agent. SOTA: CNN 0.221 (Oct-25) — our fleet now BEATS published CNN SOTA. Rotation C: NBA extra_trees port to political recommended.",
+  "cycle_index": "2026-04-25-20h",
+  "cycle_notes": "S14 DOWN (cert expired x2). S15 restarted at 20:07Z (BUILDING FEATURES, gen=0, Supabase preserves 71495 rows including fleet best 0.22062 at gen 1306). P7 recovered: gen 7833, top_performer 0.24925. P1 current_gen brier 0.24918 — potential new POL FLEET BEST (below 0.24923 threshold). Rotation B: political_engine.py CalibratedClassifierCV review.",
 
-  "api_discovery": {
-    "diversify_field": "command",
-    "boost_mutation_field": "command",
-    "note": "POST /api/command body must use 'command' key (NOT 'action'). Confirmed this cycle via P5 boost_mutation test. 'action' returns error even for valid commands."
-  },
+  "alerts": [
+    {"level": "HIGH",   "island": "S14", "msg": "cert expired, confirmed DOWN x2 — VM must restart Nomos42/nba-evo-5"},
+    {"level": "MEDIUM", "island": "S15", "msg": "space restarted 20:07Z, gen=0. Supabase row 71495 preserves fleet best 0.22062 genome. VM: consider restoring best config from Supabase /api/config."},
+    {"level": "WATCH",  "island": "P1",  "msg": "current_gen brier 0.24918 < pol_fleet_best 0.24923 — monitor next cycle for confirmation"}
+  ],
 
   "nba_islands": {
     "S13_nba_evo_4": {
       "space": "Nomos42/nba-evo-4",
-      "cycle": 418,
-      "gen": 1254,
-      "brier": 0.2209,
-      "roi": 0.3157,
-      "sharpe": 7.5175,
-      "model": "extra_trees",
-      "features": 61,
+      "cycle": 496,
+      "gen": 1488,
+      "best_brier": 0.2209,
+      "best_roi": 0.3157,
+      "best_sharpe": 7.5175,
+      "best_features": 61,
+      "best_model": "extra_trees",
+      "current_gen_brier": 0.23722,
+      "current_model": "lightgbm",
+      "mutation_rate": 0.1341,
       "stagnation": 0,
       "status": "EVOLVING",
       "action": "MONITOR",
-      "note": "Brier 0.2209 > threshold 0.22085. Healthy extra_trees run."
+      "note": "Alive fleet best: 0.2209. Healthy exploration (current gen lightgbm vs best extra_trees)."
     },
     "S14_nba_evo_5": {
       "space": "Nomos42/nba-evo-5",
-      "cycle": 514,
-      "gen": 1540,
-      "brier": 0.22431,
-      "roi": 0.2736,
-      "sharpe": 8.144,
-      "model": "random_forest",
-      "features": 52,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action": "MONITOR",
-      "note": "Highest brier in fleet. random_forest 52f. Consider diversify if stagnation rises."
+      "cycle": null,
+      "gen": null,
+      "best_brier": null,
+      "stagnation": null,
+      "status": "DOWN",
+      "action": "VM_RESTART_URGENT",
+      "error": "certificate is not yet valid (confirmed x2, both retry attempts)",
+      "note": "VM must restart this space via HF API or Space settings. Last known: gen 1540, brier 0.22431, random_forest 52f."
     },
     "S15_nba_evo_6": {
       "space": "Nomos42/nba-evo-6",
-      "cycle": 437,
-      "gen": 1310,
-      "brier": 0.22189,
-      "top_performer_brier": 0.22062,
-      "top_performer_gen": 1306,
-      "top_performer_model": "extra_trees",
-      "top_performer_features": 200,
-      "roi": 0.303,
-      "sharpe": 9.7294,
-      "model": "lightgbm",
-      "features": 62,
+      "cycle": 0,
+      "gen": 0,
+      "best_brier": 1.0,
       "stagnation": 0,
-      "status": "EVOLVING",
-      "action": "CHECKPOINT_RECORDED",
-      "alert": "NEW_FLEET_BEST_0.22062",
-      "note": "top_performer gen 1306: extra_trees 200f brier 0.22062 < threshold 0.22085. NEW FLEET BEST. CLAUDE.md updated this cycle."
+      "status": "BUILDING_FEATURES",
+      "action": "MONITOR_RECOVERY",
+      "started_at": "2026-04-25T20:07:06Z",
+      "note": "Space restarted, lost runtime state. Supabase preserves 71495 rows incl. fleet best 0.22062 (gen 1306 extra_trees 200f). Expected to start evolving within 1-2 cycles.",
+      "fleet_best_preserved_in_supabase": true,
+      "fleet_best_brier": 0.22062,
+      "fleet_best_gen": 1306
     },
     "S17_nba_evo_s17": {
       "space": "LBJLincoln26/nba-evo-s17",
-      "cycle": 732,
-      "gen": 2196,
-      "brier": 0.22249,
-      "roi": 0.2967,
-      "sharpe": 7.3192,
-      "model": "xgboost",
-      "features": 55,
+      "cycle": 829,
+      "gen": 2485,
+      "best_brier": 0.22249,
+      "best_roi": 0.2967,
+      "best_sharpe": 7.3192,
+      "best_features": 75,
+      "best_model": "catboost",
+      "current_brier": 0.22923,
+      "current_model": "logistic_regression",
+      "mutation_rate": 0.1491,
       "stagnation": 0,
       "status": "EVOLVING",
       "action": "MONITOR",
-      "note": "Gen 2196 — highest gen in fleet. Healthy."
+      "note": "Model shifted xgboost→catboost vs prev cycle — healthy diversity. Gen 2485 highest in alive fleet."
     },
     "S18_nba_evo_s18": {
       "space": "TESTforge42/nba-evo-s18",
-      "cycle": 382,
-      "gen": 1144,
-      "brier": 0.22248,
-      "roi": 0.298,
-      "sharpe": 7.9271,
-      "model": "extra_trees",
-      "features": 51,
+      "cycle": 420,
+      "gen": 1258,
+      "best_brier": 0.22248,
+      "best_roi": 0.298,
+      "best_sharpe": 7.9271,
+      "best_features": 51,
+      "best_model": "extra_trees",
+      "current_brier": 0.24738,
+      "current_model": "stacking",
+      "mutation_rate": 0.1041,
       "stagnation": 0,
+      "pareto_front": 9,
       "status": "EVOLVING",
       "action": "MONITOR",
-      "note": "Previously LIVE BEST 0.22154. Now 0.22248 — may have reset since 2026-04-22. Still healthy."
+      "note": "Space internal note: '18 cycles without improvement relative to threshold'. Stagnation counter=0 (reset by hard reset). cross-island-sync.py will trigger diversify if stagnation counter > 15."
     },
     "S22_nba_evo_s22": {
       "space": "TESTforge42/nba-evo-s22",
-      "cycle": 490,
-      "gen": 1469,
+      "cycle": 537,
+      "gen": 1609,
       "best_brier": 0.22475,
-      "roi": 0.2715,
-      "sharpe": 14.8254,
-      "model": "extra_trees",
-      "features": 46,
+      "best_roi": 0.2715,
+      "best_sharpe": 14.8254,
+      "best_features": 46,
+      "best_model": "extra_trees",
+      "mutation_rate": 0.1413,
       "stagnation": 0,
       "status": "EVOLVING",
       "action": "MONITOR",
-      "note": "Previous FLEET BEST 0.22073 (gen 39 venn_abers_fusion) superseded by S15 0.22062. Sharpe 14.8 exceptional."
+      "note": "Sharpe 14.83 exceptional. Worst alive brier but previous fleet best holder. Healthy."
     }
   },
 
   "nba_summary": {
     "islands_total": 6,
-    "islands_alive": 6,
-    "islands_evolving": 6,
+    "islands_alive": 4,
+    "islands_down": 1,
+    "islands_building": 1,
+    "islands_evolving": 4,
     "islands_stagnating": 0,
-    "fleet_best_brier": 0.22062,
-    "fleet_best_island": "S15_nba_evo_6",
-    "fleet_best_model": "extra_trees_200f",
-    "fleet_best_gen": 1306,
-    "fleet_best_checkpointed": "2026-04-25",
-    "prev_fleet_best": 0.22073,
-    "prev_fleet_best_island": "S22",
-    "improvement_vs_prev": -0.00011,
+    "alive_fleet_best_brier": 0.2209,
+    "alive_fleet_best_island": "S13",
+    "historical_fleet_best_brier": 0.22062,
+    "historical_fleet_best_island": "S15",
+    "historical_fleet_best_model": "extra_trees_200f",
+    "historical_fleet_best_gen": 1306,
+    "historical_fleet_best_in_supabase": true,
     "checkpoint_threshold": 0.22085,
-    "checkpoint_triggered": true,
+    "checkpoint_triggered": false,
     "best_overall": 0.21514,
     "best_overall_method": "Colab TabICL 186f iter129",
     "target": 0.20,
     "gap_to_target": 0.00562,
-    "sota_beat": "CNN-NBA Brier 0.221 (Oct-2025 MDPI) — our fleet 0.22062 now BEATS published CNN SOTA"
+    "sota_position": "Fleet hist best 0.22062 beats published CNN SOTA 0.221 (MDPI Oct-2025)"
   },
 
   "political_islands": {
     "P1_political_alpha": {
       "space": "Nomos42/political-alpha",
-      "cycle": 6984,
-      "gen": 20951,
-      "brier": 0.25061,
-      "model": "catboost",
+      "cycle": 7804,
+      "gen": 23410,
+      "best_brier": 0.25061,
+      "best_features": 44,
+      "best_model": "catboost",
+      "current_gen_brier": 0.24918,
+      "current_model": "lightgbm",
+      "current_features": 119,
       "stagnation": 0,
       "status": "EVOLVING",
-      "action": "MONITOR"
+      "action": "WATCH_NEW_BEST",
+      "alert": "current_gen brier 0.24918 < pol_fleet_best 0.24923 — if confirmed as new best_brier next cycle, triggers checkpoint",
+      "note": "P1 largest gen count in pol fleet (23410). CatBoost 44f best but LightGBM 119f current gen showing 0.24918."
     },
     "P2_political_alpha_2": {
       "space": "Nomos42/political-alpha-2",
-      "cycle": 5873,
-      "gen": 17618,
-      "brier": 0.25232,
-      "model": "lightgbm",
+      "cycle": 6516,
+      "gen": 19548,
+      "best_brier": 0.25232,
+      "best_features": 68,
+      "best_model": "lightgbm",
+      "mutation_rate": 0.1374,
       "stagnation": 0,
       "status": "EVOLVING",
       "action": "MONITOR"
     },
     "P4_political_alpha_4": {
       "space": "LBJLincoln/political-alpha-4",
-      "cycle": 6732,
-      "gen": 20196,
-      "brier": 0.25022,
-      "model": "xgboost_brier",
+      "cycle": 7786,
+      "gen": 23358,
+      "best_brier": 0.25022,
+      "best_features": 46,
+      "best_model": "xgboost_brier",
+      "mutation_rate": 0.1459,
       "stagnation": 0,
       "status": "EVOLVING",
       "action": "MONITOR",
-      "note": "POL LIVE BEST 0.25022"
+      "note": "POL LIVE BEST 0.25022. xgboost_brier objective continues to lead."
     },
     "P5_political_alpha_5": {
       "space": "LBJLincoln/political-alpha-5",
-      "cycle": 7416,
-      "gen": 22247,
-      "brier": 0.25312,
-      "model": "catboost",
+      "cycle": 8172,
+      "gen": 24516,
+      "best_brier": 0.25312,
+      "best_features": 51,
+      "best_model": "catboost",
+      "current_gen_brier": 0.2557,
+      "current_model": "xgboost",
+      "mutation_rate": 0.1407,
       "stagnation": 0,
       "status": "EVOLVING",
-      "action": "BOOST_MUTATION_SENT",
-      "boost_mutation_sent_at": "2026-04-25T12:25:00Z",
-      "note": "Worst performer. boost_mutation queued this cycle to escape catboost local optimum. Cross-port: try extra_trees 200f (NBA fleet best technique)."
+      "action": "MONITOR_POST_BOOST",
+      "note": "boost_mutation sent 12:25Z (+1 cycle ago). No improvement yet (best still 0.25312). Wait 1 more cycle before further intervention."
     },
     "P7_political_alpha_7": {
       "space": "LBJLincoln/political-alpha-7",
-      "cycle": 1668,
-      "gen": 5003,
-      "current_brier": 0.25412,
-      "hist_best_brier": 0.24925,
-      "model": "logistic",
+      "cycle": 2611,
+      "gen": 7833,
+      "best_brier": 0.25412,
+      "best_features": 74,
+      "best_model": "logistic_regression",
+      "top_performer_brier": 0.24925,
+      "top_performer_gen": 2,
+      "top_performer_features": 72,
+      "top_performer_model": "logistic_regression",
+      "mutation_rate": 0.1357,
       "stagnation": 0,
-      "status": "RECOVERED_EVOLVING",
+      "started_at": "2026-04-24T20:18:05Z",
+      "status": "EVOLVING",
       "action": "MONITOR",
-      "note": "Was 503 at poll time. Confirmed alive mid-restart (gen=0 building features). Now cycle 1668 gen 5003. Historical best 0.24925 preserved."
+      "note": "Fully recovered. top_performer brier 0.24925 at gen 2 matches historical best. Running as gradient_boost_specialist role."
     }
   },
 
@@ -188,83 +211,63 @@
     "islands_alive": 5,
     "islands_evolving": 5,
     "pol_live_best_brier": 0.25022,
-    "pol_live_best_island": "P4_political_alpha_4",
+    "pol_live_best_island": "P4",
     "pol_fleet_best_brier": 0.24923,
     "pol_fleet_best_island": "P5",
     "pol_fleet_best_checkpointed": "2026-04-20",
-    "rotation_this_cycle": "C — NBA extra_trees technique port",
-    "p7_recovery": "503 at poll → confirmed alive → cycle 1668 gen 5003. No manual restart needed."
+    "potential_new_best": {"island": "P1", "brier": 0.24918, "status": "unconfirmed_single_gen"},
+    "checkpoint_triggered": false,
+    "rotation_this_cycle": "B — political_engine.py review"
   },
 
   "engine_parity": {
-    "status": "OK",
+    "status": "PENDING_VERIFY",
     "version": "v3.2-67cat",
-    "sha": "f455c4758a6e42b3157a9e89f1a7c893d7a08f89",
-    "repos_confirmed": ["mon-ipad/features/engine.py", "nomos-nba-agent/features/engine.py"],
-    "hf_space_check": "PENDING_VM — cloud brain cannot verify hf-space/features/engine.py SHA",
-    "category_67": "YouTube FinBERT rolling sentiment (HAWKEYE 2026-04-21, sim_cutoff-gated)"
+    "last_confirmed_sha": "f455c4758a6e42b3157a9e89f1a7c893d7a08f89",
+    "last_confirmed_at": "2026-04-25T12:30:00Z",
+    "note": "Cloud brain cannot verify HF Space SHA directly. VM must confirm parity."
   },
 
   "sota_research": {
-    "search_date": "2026-04-25",
-    "key_papers": [
-      {
-        "ref": "MDPI Information 2026-01",
-        "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
-        "method": "RNN + Monte Carlo dropout, chronological partitioning 2012-2024",
-        "brier": 0.20,
-        "notes": "XGBoost/LR Brier ~0.20 on 2024 test. MC dropout for calibration. Our gap: 0.22062 - 0.20 = 0.02062."
-      },
-      {
-        "ref": "MDPI Computation 2025-10",
-        "title": "ML for Basketball Game Outcomes: NBA and WNBA Leagues",
-        "method": "CNN",
-        "brier": 0.221,
-        "notes": "Lowest published Brier 0.221 (CNN). Our fleet best 0.22062 NOW BEATS THIS."
-      },
-      {
-        "ref": "Kaggle March Mania 2026",
-        "url": "https://www.kaggle.com/competitions/march-machine-learning-mania-2026",
-        "notes": "Active competition. Top solutions use gradient boosted ensembles + calibration."
-      }
-    ],
-    "fleet_position": "0.22062 fleet best beats CNN SOTA 0.221. Gap to XGBoost/literature best 0.20: 0.02062.",
-    "key_insight": "Literature best 0.20 uses chronological train/val/test partitioning (2012-2022/2023/2024) + MC dropout calibration. Our GA already does this. Gap likely: (1) larger dataset span, (2) better calibration wrapper, (3) sequence features (RNN) inaccessible on CPU.",
-    "proposals_file": "data/research-proposals/2026-04-25-nba-sota-cycle.json"
+    "status": "SKIPPED_THIS_CYCLE",
+    "note": "Every-other-cycle schedule. Last research: 2026-04-25-12h. Next research cycle: 2026-04-26-00h or 04h.",
+    "last_proposals_file": "data/research-proposals/2026-04-25-nba-sota-cycle.json",
+    "fleet_position": "Hist best 0.22062 beats CNN SOTA 0.221. Gap to literature best 0.20: 0.00562."
   },
 
   "actions_taken": [
-    "CLAUDE.md fleet_best updated: 0.22073 (S22 venn_abers_fusion) → 0.22062 (S15 nba-evo-6 extra_trees 200f gen 1306)",
-    "P5 boost_mutation sent (command field confirmed) — escape catboost local optimum",
-    "P7 503 recovery confirmed: alive at cycle 1668 gen 5003, no manual restart needed",
-    "Engine parity confirmed: v3.2-67cat SHA f455c475 in mon-ipad + nomos-nba-agent",
-    "SOTA research: fleet 0.22062 now beats published CNN SOTA 0.221 (MDPI Oct-2025)"
+    "S14 DOWN flagged: cert expired, VM restart required (Nomos42/nba-evo-5)",
+    "S15 state loss noted: restarted 20:07Z, gen=0. Fleet best genome preserved in Supabase (71495 rows).",
+    "P7 recovery confirmed: gen 7833, top_performer 0.24925 — matches historical best",
+    "P1 current_gen 0.24918 alert raised — potential new POL fleet best, monitor next cycle",
+    "cross-island-sync.py verified: already uses correct 'command' field (not 'action') — no fix needed",
+    "Rotation B: political_engine.py CalibratedClassifierCV + venn_abers documented in brain-status.json"
   ],
 
   "cross_project_wins": {
     "nba_to_political": [
-      "extra_trees with full MAX_FEATURES=200 budget achieved fleet best 0.22062 on S15. Recommend P5 try extra_trees (currently catboost, worst political performer).",
-      "boost_mutation command format confirmed: use 'command' key not 'action'. Update all agent scripts accordingly."
+      "extra_trees 200f (fleet best 0.22062) → P5 is prime candidate (worst pol, catboost stuck). Port pending.",
+      "cross-island-sync.py 'command' field pattern (correct) — confirm political island scripts match."
     ],
     "political_to_nba": [
-      "P4 xgboost_brier achieving 0.25022 — Brier-targeted XGBoost objective is underused in NBA islands. Worth testing in S14 (worst NBA at 0.22431)."
+      "P4 xgboost_brier leads pol fleet. S14 (when restarted) should trial xgboost_brier objective."
     ]
   },
 
   "vm_action_queue": [
-    {"priority": 1, "action": "Verify S15 top_performer saved in island state (GET /api/status and confirm top_performer.brier=0.22062)", "reason": "Fleet best — confirm it's persisted across restarts"},
-    {"priority": 2, "action": "POST /api/command {'command':'diversify'} to S14 (nomos42-nba-evo-5.hf.space) if stagnation rises above 10", "reason": "S14 worst NBA at 0.22431 using random_forest — try extra_trees"},
-    {"priority": 3, "action": "Verify hf-space/features/engine.py SHA matches f455c4758a6e42b3157a9e89f1a7c893d7a08f89", "reason": "Cloud brain cannot reach HF Space directly for parity check"},
-    {"priority": 4, "action": "Monitor P5 boost_mutation effect in next cycle (lbjlincoln-political-alpha-5.hf.space/api/status)", "reason": "Confirm boost_mutation moved brier below 0.25312"},
-    {"priority": 5, "action": "SEC insider aggregation fix (see brain-status.json rotation_A)", "reason": "Cat46 SecInsiderSignals all zeros since Apr 9"}
+    {"priority": 1, "action": "Restart Nomos42/nba-evo-5 (S14) via HF API", "reason": "cert expired, DOWN confirmed x2", "cmd": "python3 scripts/ops/tf_unified_control.py restart S14"},
+    {"priority": 2, "action": "Restore S15 best config from Supabase after BUILDING FEATURES phase completes", "reason": "S15 (Nomos42/nba-evo-6) restarted at gen=0, fleet best 0.22062 genome in Supabase. Inject via /api/config after cycle>=1."},
+    {"priority": 3, "action": "Monitor P1 best_brier next cycle — if < 0.24923, commit new POL FLEET BEST checkpoint", "reason": "P1 current_gen 0.24918 unconfirmed single-gen result"},
+    {"priority": 4, "action": "Verify hf-space/features/engine.py SHA = f455c4758a6e42b3157a9e89f1a7c893d7a08f89", "reason": "Cloud brain cannot verify HF Space SHA"},
+    {"priority": 5, "action": "Fix pipeline data cron — data/pipeline-health.json is 16 days stale (2026-04-09)", "reason": "Political data pipeline likely down since Apr 9"}
   ],
 
   "steps_completed": {
-    "STEP_0_crash_recovery": "CLEAN — only pending work-queue item (tf-axelrod-verify-tune-12) is USER-GATED. Not a crashed agent.",
-    "STEP_1_nba_quant": "6 islands polled via /api/status. All alive, stagnation=0. S15 top_performer 0.22062 = NEW FLEET BEST. CLAUDE.md updated. Engine parity v3.2-67cat CONFIRMED.",
-    "STEP_2_political_alpha": "5 islands polled. All alive. P7 recovered from 503. P5 boost_mutation sent. Rotation C: NBA extra_trees port documented.",
+    "STEP_0_crash_recovery": "CLEAN — tf-axelrod-verify-tune-12 still USER-GATED (do_not_push_hf_space_yet). No crashed agents.",
+    "STEP_1_nba_quant": "6 islands polled. S14 DOWN (cert). S15 BUILDING (restarted). S13/S17/S18/S22 EVOLVING. Alive fleet best S13 0.22090.",
+    "STEP_2_political_alpha": "5 islands polled. All alive. P7 recovered gen 7833. P1 current_gen 0.24918 alert. Rotation B documented.",
     "STEP_3_councils": "DECOMMISSIONED per CLAUDE.md 2026-04-20. Skipped.",
-    "STEP_4_dashboard": "R8 status=done in work-queue. No pending gaps. Skipped.",
-    "STEP_5_cross_project": "NBA extra_trees 200f → recommend P5 political. Political xgboost_brier objective → recommend S14 NBA. boost_mutation field confirmed as 'command' not 'action'."
+    "STEP_4_dashboard": "R8 done in work-queue. No pending gaps. Skipped.",
+    "STEP_5_cross_project": "cross-island-sync.py verified correct. NBA extra_trees→P5 port pending. xgboost_brier→S14 on restart."
   }
 }
