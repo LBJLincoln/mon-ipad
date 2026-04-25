@@ -26,7 +26,7 @@ LEDGER_JSONL = REPO / "data" / "intraday" / "agent_ledger.jsonl"
 RECON_CURSOR_PATH = REPO / "data" / "intraday" / "fill_reconciliation_cursor.json"
 POSITIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-MAX_OPEN_PER_AGENT = 5  # 2026-04-21: 3→5, 14×5=70 max positions (+67%)
+MAX_OPEN_PER_AGENT = int(os.environ.get("ITF_MAX_OPEN_PER_AGENT", "30"))  # 2026-04-25: 5→30 to push 500/day. Was bottleneck — 17 agents × 5 = 85 fleet ceiling, currently 65 → most decisions rejected. New ceiling 17×30 = 510 fleet positions (matches 500/day round-trip target). Env-overridable.
 EOD_FLATTEN_UTC_HOUR = 19
 EOD_FLATTEN_UTC_MIN = 50
 
@@ -1264,7 +1264,7 @@ def pnl_snapshot(quote_fn=None) -> Dict[str, Any]:
     }
 
 
-MIN_HOLD_SEC = int(os.environ.get("ITF_MIN_HOLD_SEC", "900"))  # 15 min default, kills daytrade churn that drained BP to $1.9K
+MIN_HOLD_SEC = int(os.environ.get("ITF_MIN_HOLD_SEC", "180"))  # 3 min default. 2026-04-25: push fleet from ~60 to ~500 fills/day. Was 900 (15min) anti-churn, but BP drain root-cause was order pile-up (fixed via MAX_PENDING_PER_SYMBOL=4 + cancel_stale_pending). Account equity > $25K so PDT 4-roundtrip rule is moot; daytrading_buying_power=0 is the structural Reg-T limit (margin used). MIN_HOLD now prevents only sub-3min flap.
 
 
 # ───── 2026-04-22 BROKER-FILL RECONCILIATION ─────
