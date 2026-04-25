@@ -1901,12 +1901,24 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                     results.append(result)
                     continue
                 else:
-                    # 2026-04-25 — lift equity cap from $400 to $1500 to clear
-                    # whole-share thresholds on SPY/QQQ/XLK shorts (was 73%
-                    # broker_reject rate due to int_qty<1 fractional-short).
-                    # Matches the option_trade cap. BP guard still protects
-                    # against runaway sizing. $1M-road accelerant.
-                    raw_stake = min(raw_stake, 1500.0)
+                    # 2026-04-25 22:55Z — MAX AGGRESSIVE overnight $1M push.
+                    # Cap $400→$5000. Plus: convert SPY/QQQ/IWM longs to
+                    # 3x leveraged ETFs (TQQQ/UPRO/TNA) to amplify Kelly
+                    # sizing per trade. PQTF compounded $244K via leverage.
+                    # User authorized full aggression. BP guard still
+                    # protects against runaway sizing.
+                    raw_stake = min(raw_stake, 5000.0)
+                    # Leveraged ETF routing — 3x amplification
+                    _lev_map = {
+                        'SPY': 'UPRO',   # 3x SPY long
+                        'QQQ': 'TQQQ',   # 3x QQQ long
+                        'IWM': 'TNA',    # 3x IWM long
+                        'DIA': 'UDOW',   # 3x DIA long
+                    }
+                    if decision.get("side") == "long" and decision.get("ticker") in _lev_map:
+                        _orig = decision["ticker"]
+                        decision["ticker"] = _lev_map[_orig]
+                        decision["thesis"] = f"[3x-LEV {_orig}→{decision['ticker']}] {decision.get('thesis','')[:300]}"
             order = {
                 "ticker": decision["ticker"],
                 "side": decision.get("side", "long"),
@@ -1928,7 +1940,7 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                 "dte":         int(decision.get("dte", 0) or 0),
                 "strike_offset_pct": float(decision.get("strike_offset_pct", 0.0) or 0.0),
                 "wing_width_pct":    float(decision.get("wing_width_pct", 0.01) or 0.01),
-                "stake_usd":   min(1500, max(200, float(decision.get("stake_usd", 500) or 500))),
+                "stake_usd":   min(5000, max(200, float(decision.get("stake_usd", 500) or 500))),
                 "max_loss_pct":min(0.05, max(0.005, float(decision.get("max_loss_pct", 0.02) or 0.02))),
                 "thesis":      decision.get("thesis", ""),
             }

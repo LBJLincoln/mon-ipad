@@ -974,31 +974,29 @@ TRADERS = {
 # drag. Rest of roster falls through to tier default. Mirrors POL 2026-04-22
 # champion-compound lever (commit fc1f62b65).
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    # 2026-04-25 21:00Z — DAY-0 RESET ACCELERANT for $1M-road. All structural
-    # fixes shipped (engine override, pp_* ban, forced floor, settlement
-    # bypass for engine-validated). Pre-reset Brier values now invalid.
-    # Boost every agent's Kelly to 0.20 baseline, top calibrators to 0.30.
-    # The system is no longer fighting hallucination — bets are engine-
-    # validated. Bigger stakes accelerate compounding to $1M target.
-    # Old probation tiers (0.01-0.05) lifted: pre-reset bleed reflected
-    # pp_* hallucination, not agent skill. Re-evaluate after 30 fresh days.
-    "llama-contra":      0.30,   # was 0.17 — top calibrator, 2× boost
-    "selfhost-qwen4b":   0.30,   # was 0.17 — best NBA agent
-    "qwen-quant":        0.25,   # was 0.03 (probation lifted)
-    "gemini-anl":        0.25,   # was 0.03 (probation lifted)
-    "mistral-medium":    0.22,   # was 0.03
-    "mistral-large":     0.22,   # was 0.03
-    "gemini-tact":       0.20,   # was 0.13
-    "qwen-arb":          0.20,   # was 0.13
-    "nvidia-llama70":    0.20,   # was 0.03
-    "nvidia-minimax":    0.20,   # was 0.02
-    "selfhost-dolphin3": 0.18,   # was 0.02
-    "selfhost-gemma3":   0.18,   # was 0.02
-    "selfhost-qwen06":   0.18,   # was 0.02
-    "mistral-small":     0.15,   # was 0.01 — give it a real chance post-reset
-    "mistral-ministral": 0.15,   # was 0.02
-    "mistral-nemo":      0.15,   # was 0.02
-    "nemotron-120b":     0.15,   # was 0.02
+    # 2026-04-25 22:55Z — MAX-AGGRESSIVE $1M-ROAD. User authorized "go even
+    # largely more aggressive". All structural fixes intact (engine override,
+    # pp_* ban, forced floor, settlement bypass, $30 circuit breaker).
+    # Boost every agent's Kelly to overnight-compounding range. Top
+    # calibrators to 0.50 (Kelly half-fraction = 25%, full-fraction = 50%
+    # which matches POL champion qwen-arb $10K achievement at 0.20-0.30 cap).
+    "llama-contra":      0.50,   # top calibrator — max aggression
+    "selfhost-qwen4b":   0.50,   # best NBA agent
+    "qwen-quant":        0.45,
+    "gemini-anl":        0.45,
+    "mistral-medium":    0.40,
+    "mistral-large":     0.40,
+    "gemini-tact":       0.35,
+    "qwen-arb":          0.35,
+    "nvidia-llama70":    0.35,
+    "nvidia-minimax":    0.35,
+    "selfhost-dolphin3": 0.30,
+    "selfhost-gemma3":   0.30,
+    "selfhost-qwen06":   0.30,
+    "mistral-small":     0.25,
+    "mistral-ministral": 0.25,
+    "mistral-nemo":      0.25,
+    "nemotron-120b":     0.25,
 }
 
 AGENT_SYSTEM_PROMPTS = {

@@ -853,19 +853,20 @@ TRADERS = {
 # compound the signal; llama-contra probation after 500 bets net -$48 (volume
 # drag). Rest of roster falls through to tier default.
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    # 2026-04-25 21:00Z — $1M-ROAD ACCELERANT. POL day-203 fleet $1935 (+13.8%).
-    # qwen-quant peak +$274 (2.7× return), llama-contra +$167, mistral-small +$145
-    # — proven compounders. Boost top-tier Kelly to accelerate toward $1M target.
-    # Holding bleeders steady (no further tighten — give recovery room).
-    "qwen-quant":        0.30,   # was 0.18 — top compounder, peak +$274
-    "llama-contra":      0.28,   # was 0.18 — 2nd best +$167
-    "mistral-small":     0.25,   # was 0.18 — +$145 steady
-    "mistral-medium":    0.25,   # was 0.19 — +$130 range
-    "mistral-large":     0.22,   # was 0.18
-    "gemini-tact":       0.18,   # was 0.13 — recover from prior tighten
-    "qwen-arb":          0.18,   # was 0.13 — formerly champ, give room
-    "selfhost-qwen06":   0.15,   # was 0.13 — slight boost
-    "gemini-anl":        0.12,   # was 0.10 — minor recovery
+    # 2026-04-25 22:55Z — MAX-AGGRESSIVE overnight $1M push. User authorized
+    # "go even largely more aggressive". qwen-quant peak +$274 = 2.7× return
+    # validates 0.45 cap. llama-contra +$167 validates 0.40. Going hard on
+    # the proven compounders. Bleeders also boosted — give them room to
+    # mean-revert during overnight window.
+    "qwen-quant":        0.45,   # was 0.30 — top compounder, max aggression
+    "llama-contra":      0.40,   # was 0.28 — 2nd best
+    "mistral-small":     0.35,   # was 0.25 — calibrated steady
+    "mistral-medium":    0.35,   # was 0.25
+    "mistral-large":     0.32,   # was 0.22
+    "gemini-tact":       0.28,   # was 0.18
+    "qwen-arb":          0.28,   # was 0.18 — formerly $10K champ, full room
+    "selfhost-qwen06":   0.25,   # was 0.15
+    "gemini-anl":        0.20,   # was 0.12
 }
 
 # ── WINNER-AWARE PER-AGENT PROMPTS (LOBBYIST v2, 2026-04-22) ─────────────────
