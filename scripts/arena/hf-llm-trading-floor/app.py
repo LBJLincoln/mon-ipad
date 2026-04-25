@@ -2360,6 +2360,29 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             "category_reason": (a.get("category_reason") or "")[:300],
         })
 
+    # 2026-04-25 EDGE-HALLUCINATION GUARD — deep-audit forensic showed 5 agents
+    # (mistral-ministral/mistral-nemo/mistral-small/selfhost-qwen06/nemotron-120b)
+    # bleeding -74% with the SAME edge value (e.g. 0.111 = "11.1%") repeated
+    # verbatim across totally different games + categories. The rationale is
+    # post-hoc decoration on a hallucinated calibration. When ≥3 allocations
+    # share the SAME 3-decimal-rounded edge value, keep only the first 2 and
+    # drop the rest — forces the LLM to either earn the multiple bets or pass.
+    if len(clean) >= 3:
+        from collections import Counter as _Counter
+        _edge_counts = _Counter(round(a["edge"], 3) for a in clean)
+        _hallucinated = {e for e, c in _edge_counts.items() if c >= 3}
+        if _hallucinated:
+            _kept: List[Dict] = []
+            _seen_edge_count: Dict[float, int] = {}
+            for a in clean:
+                _re = round(a["edge"], 3)
+                if _re in _hallucinated:
+                    _seen_edge_count[_re] = _seen_edge_count.get(_re, 0) + 1
+                    if _seen_edge_count[_re] > 2:
+                        continue  # drop 3rd+ duplicate
+                _kept.append(a)
+            clean = _kept
+
     # PARLAY parsing (2026-04-17) — combined-odds bets across same-day legs.
     # Each parlay settles only if ALL legs win. Kelly sizing is stricter
     # because combined variance >> single leg.
@@ -3754,6 +3777,31 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         "coalition_proposal": _preserved_coalition,
                     }
 
+            # 2026-04-25 BANKROLL CIRCUIT BREAKER (deep-audit 2026-04-25)
+            # Forensic showed 5 NBA agents at -74% even though Kelly cap is
+            # 0.01-0.02 (essentially banned). The cap reduces stake size but
+            # not VOLUME, so 30+ small bets at 0% W-rate still compound to ruin.
+            # Hard floor: when bankroll below NBA_BANKROLL_FLOOR_USD (default
+            # $30 = 30% of $100 seed), force PASS. Resumes when bankroll
+            # recovers via parlay/MTM. Applied AFTER silent-pass branch so it
+            # also blocks fabricated uniform-fallback bets on dead agents.
+            _bk_floor = float(os.environ.get("NBA_BANKROLL_FLOOR_USD", "30") or 30)
+            if bankroll < _bk_floor:
+                parsed = {
+                    "day_strategy": (
+                        f"BANKROLL_CIRCUIT_BREAKER: ${bankroll:.2f} < "
+                        f"${_bk_floor:.0f} floor (anti-bleed, deep-audit 2026-04-25)"
+                    ),
+                    "cash_held_pct": 1.0,
+                    "cash_rationale": (
+                        f"forced PASS — bankroll ${bankroll:.2f} below recovery "
+                        f"floor ${_bk_floor:.0f}; resume when MTM/parlay lifts above"
+                    ),
+                    "allocations": [],
+                    "parlays": [],
+                    "coalition_proposal": _preserved_coalition,
+                }
+
             day_log = {
                 "day_idx": day_idx,
                 "date": day_date,
@@ -3916,7 +3964,10 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         print(f"[calib] update skipped for {tid}: {_ce}")
 
                     day_log["allocations"].append({
+                        "game_idx": gidx,                          # 2026-04-25 — preserve 0-indexed game id for audit
                         "game": f"{g['away']}@{g['home']}",
+                        "home": g.get("home"),
+                        "away": g.get("away"),
                         "category": cat,
                         "pct": round(alloc["pct"], 4),
                         "stake": stake,
@@ -3967,7 +4018,10 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         if not leg_won:
                             all_won = False
                         leg_details.append({
+                            "game_idx": lgidx,                       # 2026-04-25 — 0-indexed game ref for audit
                             "game": f"{lg['away']}@{lg['home']}",
+                            "home": lg.get("home"),
+                            "away": lg.get("away"),
                             "category": lcat,
                             "odds": round(leg_odds_dec, 3),
                             "won": leg_won,
@@ -4588,14 +4642,155 @@ async def api_logs(agent: str = None, limit: int = 50):
     summary = {tid: len(logs) for tid, logs in _agent_logs.items()}
     return JSONResponse({"agents": summary, "total_entries": sum(summary.values())})
 
+def _slim_alloc(a: dict) -> dict:
+    """Compact allocation row for /api/day-decisions/full responses."""
+    cat = (a.get("category") or "").lower()
+    side = None
+    for suf in ("_home", "_away", "_over", "_under", "_yes", "_no", "_star1", "_star2"):
+        if cat.endswith(suf):
+            side = suf.lstrip("_")
+            break
+    return {
+        "game_idx": a.get("game_idx"),
+        "game": a.get("game"),
+        "home": a.get("home"),
+        "away": a.get("away"),
+        "category": cat,
+        "side": side,
+        "odds": a.get("odds"),
+        "stake_pct": a.get("pct"),
+        "stake": a.get("stake"),
+        "edge": a.get("edge"),
+        "confidence": a.get("confidence"),
+        "won": a.get("won"),
+        "profit": a.get("profit"),
+        "rationale": (a.get("rationale") or "")[:240],
+        "provider_status": a.get("provider_status", "llm_ok"),
+    }
+
+
+def _slim_parlay(p: dict) -> dict:
+    """Compact parlay row for /api/day-decisions/full responses."""
+    return {
+        "n_legs": p.get("n_legs", len(p.get("legs", []))),
+        "legs": [
+            {
+                "game_idx": leg.get("game_idx"),
+                "game": leg.get("game"),
+                "category": leg.get("category"),
+                "odds": leg.get("odds"),
+                "won": leg.get("won"),
+            }
+            for leg in (p.get("legs") or [])
+        ],
+        "stake_pct": p.get("pct"),
+        "stake": p.get("stake"),
+        "combined_odds": p.get("combined_odds"),
+        "edge": p.get("edge"),
+        "confidence": p.get("confidence"),
+        "won": p.get("won"),
+        "profit": p.get("profit"),
+        "rationale": (p.get("rationale") or "")[:240],
+    }
+
+
+def _build_full_day_payload(day_date: str) -> dict:
+    """Per-agent allocations + parlays + rationale + council target for one day."""
+    agents_out: Dict[str, dict] = {}
+    fleet_alloc = 0
+    fleet_parlays = 0
+    fleet_stake_pct = 0.0
+    fleet_pnl = 0.0
+    for tid, logs in _agent_logs.items():
+        match = None
+        for l in logs:
+            if l.get("date") == day_date:
+                match = l
+                break
+        if match is None:
+            continue
+        allocs = [_slim_alloc(a) for a in match.get("allocations", [])]
+        parlays = [_slim_parlay(p) for p in match.get("parlays", [])]
+        n_alloc = len(allocs)
+        n_parlay = len(parlays)
+        deployed_pct = sum((a.get("stake_pct") or 0.0) for a in allocs) + sum(
+            (p.get("stake_pct") or 0.0) for p in parlays
+        )
+        day_pnl = (match.get("bankroll_after") or 0.0) - (match.get("bankroll_before") or 0.0)
+        cfg = TRADERS.get(tid, {})
+        agents_out[tid] = {
+            "name": cfg.get("name", tid),
+            "provider": cfg.get("provider"),
+            "model": cfg.get("model"),
+            "personality": cfg.get("personality"),
+            "bankroll_before": match.get("bankroll_before"),
+            "bankroll_after": match.get("bankroll_after"),
+            "day_pnl": round(day_pnl, 2),
+            "n_allocations": n_alloc,
+            "n_parlays": n_parlay,
+            "deployed_pct": round(deployed_pct, 4),
+            "cash_held_pct": match.get("cash_held_pct"),
+            "cash_rationale": (match.get("cash_rationale") or "")[:240],
+            "day_strategy": (match.get("day_strategy") or "")[:300],
+            "council_alignment": match.get("council_alignment"),
+            "council_commit_target": match.get("council_commit_target"),
+            "coalition_proposal": match.get("coalition_proposal"),
+            "fallback_used": bool(match.get("fallback_used", False)),
+            "provider_status": match.get("provider_status", "llm_ok"),
+            "llm_ok": (match.get("provider_status", "llm_ok") == "llm_ok"),
+            "allocations": allocs,
+            "parlays": parlays,
+        }
+        fleet_alloc += n_alloc
+        fleet_parlays += n_parlay
+        fleet_stake_pct += deployed_pct
+        fleet_pnl += day_pnl
+    council = _council_plans.get(day_date) or {}
+    return {
+        "date": day_date,
+        "n_agents_traded": len(agents_out),
+        "fleet_total_allocations": fleet_alloc,
+        "fleet_total_parlays": fleet_parlays,
+        "fleet_avg_deployed_pct": round(fleet_stake_pct / max(1, len(agents_out)), 4),
+        "fleet_day_pnl": round(fleet_pnl, 2),
+        "council_summary": (council.get("council_summary") or "")[:600],
+        "council_focus_strategies": council.get("focus_strategies"),
+        "council_focus_categories": council.get("focus_categories"),
+        "agents": agents_out,
+    }
+
+
 @api.get("/api/day-decisions")
-async def api_day_decisions(date: str = None, agent: str = None, limit: int = 200):
+async def api_day_decisions(
+    date: str = None,
+    agent: str = None,
+    limit: int = 200,
+    detail: str = None,
+):
     """Day-level decisions for council analysis.
 
     ?date=2025-10-21 — all agents' decisions for that day
+    ?date=2025-10-21&detail=full — same, with slim-allocations + parlays expanded
     ?agent=qwen-quant — all days for one agent
+    ?detail=full — list of all days, each with per-agent breakdown
     (no params) — summary by day with total allocations
     """
+    if detail == "full":
+        # Resolve which dates to render
+        if date:
+            return JSONResponse(_build_full_day_payload(date))
+        all_dates: set = set()
+        for logs in _agent_logs.values():
+            for l in logs:
+                d = l.get("date")
+                if d:
+                    all_dates.add(d)
+        ordered = sorted(all_dates)[-min(limit, 30):]  # cap fleet-detail at 30 days to stay <2MB
+        days_payload = [_build_full_day_payload(d) for d in ordered]
+        return JSONResponse({
+            "total_days": len(days_payload),
+            "days": days_payload,
+        })
     out = {}
     if date:
         for tid, logs in _agent_logs.items():
@@ -4614,14 +4809,44 @@ async def api_day_decisions(date: str = None, agent: str = None, limit: int = 20
             if not d:
                 continue
             if d not in by_date:
-                by_date[d] = {"date": d, "agents": 0, "total_allocations": 0, "total_cash_pct": 0.0}
+                by_date[d] = {
+                    "date": d, "agents": 0,
+                    "total_allocations": 0,
+                    "total_parlays": 0,
+                    "total_cash_pct": 0.0,
+                }
             by_date[d]["agents"] += 1
             by_date[d]["total_allocations"] += len(l.get("allocations", []))
+            by_date[d]["total_parlays"] += len(l.get("parlays", []))
             by_date[d]["total_cash_pct"] += l.get("cash_held_pct", 0.0)
     days = sorted(by_date.values(), key=lambda x: x["date"])
     for d in days:
         d["avg_cash_pct"] = round(d["total_cash_pct"] / max(1, d["agents"]), 3)
     return JSONResponse({"total_days": len(days), "days": days[-limit:]})
+
+
+@api.get("/api/day-decisions/full")
+async def api_day_decisions_full(date: str = None, limit: int = 14):
+    """Detailed per-agent decision breakdown.
+
+    ?date=2025-10-21 — full breakdown for that single day
+    (no params) — last `limit` days, each with full per-agent breakdown
+                  (limit hard-capped at 30 days to keep payload <2MB)
+    """
+    if date:
+        return JSONResponse(_build_full_day_payload(date))
+    all_dates: set = set()
+    for logs in _agent_logs.values():
+        for l in logs:
+            d = l.get("date")
+            if d:
+                all_dates.add(d)
+    ordered = sorted(all_dates)[-min(limit, 30):]
+    days_payload = [_build_full_day_payload(d) for d in ordered]
+    return JSONResponse({
+        "total_days": len(days_payload),
+        "days": days_payload,
+    })
 
 
 @api.get("/api/leaderboard")
