@@ -3265,6 +3265,30 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
     for g in all_games:
         games_by_date[g["date"]].append(g)
     dates_sorted = sorted(games_by_date.keys())
+    # 2026-04-25 ROOT-CAUSE FIX: full-odds-2025-26.json only covers Oct 21 -> Feb 12
+    # (111 dates of 178). After Feb 12 the sim was processing All-Star + post-AS
+    # games with empty odds → agents had nothing to bet → fleet stuck at $597.
+    # Filter dates_sorted down to only those that have BOTH games AND odds data.
+    try:
+        _full_odds_keys = set(load_full_odds().keys()) if 'load_full_odds' in dir() else set()
+    except Exception:
+        _full_odds_keys = set()
+    if not _full_odds_keys:
+        # Try direct file read so we don't depend on a not-yet-defined helper
+        try:
+            import json as _json
+            from pathlib import Path as _P
+            _fop = _P(__file__).resolve().parent / "data" / "full-odds-2025-26.json"
+            if _fop.exists():
+                _full_odds_keys = set(_json.loads(_fop.read_text()).keys())
+        except Exception:
+            _full_odds_keys = set()
+    if _full_odds_keys:
+        _dates_with_odds = {k.split("_", 1)[0] for k in _full_odds_keys if "_" in k}
+        _filtered = [d for d in dates_sorted if d in _dates_with_odds]
+        if _filtered and len(_filtered) < len(dates_sorted):
+            print(f"[run_exp] filtered dates: {len(dates_sorted)} -> {len(_filtered)} (kept only dates with full-odds coverage)", flush=True)
+            dates_sorted = _filtered
     n_days = len(dates_sorted)
 
     # ── Key availability ──
