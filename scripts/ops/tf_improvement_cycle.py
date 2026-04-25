@@ -48,7 +48,9 @@ WINNER_PNL_PCT = 0.10  # PnL gain as fraction of implied-seed before bumping
 KELLY_STEP = 0.03      # how much each adjustment moves Kelly
 KELLY_MIN = 0.02
 KELLY_MAX = 0.30
-AGENT_COOLDOWN_H = 24
+AGENT_COOLDOWN_H = 4   # was 24h; sim-loop processes ~100 days/hour so 24h cooldown
+                       # was too slow to react to compounding POL Brier degradation.
+                       # 4h still prevents oscillation but lets the cycle adjust each window.
 
 SPACES = {
     "nba": "LBJLincoln26/nba-llm-trading-floor",
