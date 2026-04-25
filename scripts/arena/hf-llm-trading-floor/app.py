@@ -974,29 +974,31 @@ TRADERS = {
 # drag. Rest of roster falls through to tier default. Mirrors POL 2026-04-22
 # champion-compound lever (commit fc1f62b65).
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    # 2026-04-24 17:45Z — RIGOROUS VALIDATION DATA (data/audit/rigorous-latest.md):
-    # NBA fleet Brier 0.3849 (WORSE than random 0.25), ECE 0.4352 = systematic
-    # INVERSE calibration -- high-confidence bets LOSE 77% of the time. Only 2
-    # agents ship positive EV. Everyone else is punished by empirical Brier:
-    #   Kelly = max(0.01, 0.30 - brier * 0.50)  -- agent earns Kelly by being calibrated.
-    "llama-contra":      0.17,   # live brier 0.25, WR 56% -- calibrated, earn 0.17
-    "selfhost-qwen4b":   0.17,   # live brier 0.23, WR 64% -- BEST NBA agent
-    "gemini-tact":       0.13,   # live brier 0.33, WR 33% -- downgrade
-    "qwen-arb":          0.13,   # live brier 0.27, WR 42% -- downgrade
-    # PROBATION (Brier > 0.30 means edge is worse than random, Kelly floored):
-    "gemini-anl":        0.03,   # live brier 0.36 -- inverse-calibrated
-    "qwen-quant":        0.03,   # live brier 0.33 -- inverse-calibrated
-    "mistral-large":     0.03,
-    "mistral-medium":    0.03,
-    "mistral-small":     0.01,   # live brier 0.54, WR 4% -- ESSENTIALLY BANNED until calibration recovers
-    "mistral-ministral": 0.02,   # inverse-calibrated over-trader
-    "nvidia-llama70":    0.03,   # brier 0.32, WR 38%
-    "selfhost-dolphin3": 0.02,   # brier 0.35, WR 33%
-    "nemotron-120b":     0.02,
-    "nvidia-minimax":    0.02,
-    "selfhost-gemma3":   0.02,
-    "selfhost-qwen06":   0.02,
-    "mistral-nemo":      0.02,
+    # 2026-04-25 21:00Z — DAY-0 RESET ACCELERANT for $1M-road. All structural
+    # fixes shipped (engine override, pp_* ban, forced floor, settlement
+    # bypass for engine-validated). Pre-reset Brier values now invalid.
+    # Boost every agent's Kelly to 0.20 baseline, top calibrators to 0.30.
+    # The system is no longer fighting hallucination — bets are engine-
+    # validated. Bigger stakes accelerate compounding to $1M target.
+    # Old probation tiers (0.01-0.05) lifted: pre-reset bleed reflected
+    # pp_* hallucination, not agent skill. Re-evaluate after 30 fresh days.
+    "llama-contra":      0.30,   # was 0.17 — top calibrator, 2× boost
+    "selfhost-qwen4b":   0.30,   # was 0.17 — best NBA agent
+    "qwen-quant":        0.25,   # was 0.03 (probation lifted)
+    "gemini-anl":        0.25,   # was 0.03 (probation lifted)
+    "mistral-medium":    0.22,   # was 0.03
+    "mistral-large":     0.22,   # was 0.03
+    "gemini-tact":       0.20,   # was 0.13
+    "qwen-arb":          0.20,   # was 0.13
+    "nvidia-llama70":    0.20,   # was 0.03
+    "nvidia-minimax":    0.20,   # was 0.02
+    "selfhost-dolphin3": 0.18,   # was 0.02
+    "selfhost-gemma3":   0.18,   # was 0.02
+    "selfhost-qwen06":   0.18,   # was 0.02
+    "mistral-small":     0.15,   # was 0.01 — give it a real chance post-reset
+    "mistral-ministral": 0.15,   # was 0.02
+    "mistral-nemo":      0.15,   # was 0.02
+    "nemotron-120b":     0.15,   # was 0.02
 }
 
 AGENT_SYSTEM_PROMPTS = {

@@ -1901,7 +1901,12 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                     results.append(result)
                     continue
                 else:
-                    raw_stake = min(raw_stake, 400.0)
+                    # 2026-04-25 — lift equity cap from $400 to $1500 to clear
+                    # whole-share thresholds on SPY/QQQ/XLK shorts (was 73%
+                    # broker_reject rate due to int_qty<1 fractional-short).
+                    # Matches the option_trade cap. BP guard still protects
+                    # against runaway sizing. $1M-road accelerant.
+                    raw_stake = min(raw_stake, 1500.0)
             order = {
                 "ticker": decision["ticker"],
                 "side": decision.get("side", "long"),

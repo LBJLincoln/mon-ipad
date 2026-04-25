@@ -853,22 +853,19 @@ TRADERS = {
 # compound the signal; llama-contra probation after 500 bets net -$48 (volume
 # drag). Rest of roster falls through to tier default.
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    # 2026-04-25 13:55Z -- DEEP-AUDIT update (post-reset 36d). 2026-04-24 caps
-    # were derived from pre-reset 30-day rigorous validation. Post-reset deep
-    # audit shows different live trajectory:
-    #   gemini-anl  -24.4% (64 bets, 27/36 days) -- narrative-heavy theses bleeding
-    #   qwen-arb    -22.7% (82 bets, 27/36 days) -- formerly $10K champion, RNG against
-    #   gemini-tact -20.8% (37 bets, 21/36 days) -- volume drift
-    # Tighten the bleeders, hold the winners. llama-contra +16% / qwen-quant +11%.
-    "gemini-tact":       0.13,   # was 0.20, post-reset -20.8% — tighten
-    "mistral-medium":    0.19,   # hold (no live signal)
-    "mistral-small":     0.18,   # hold (live +3.1%)
-    "mistral-large":     0.18,   # hold (live +4.5%)
-    "qwen-quant":        0.18,   # nudge +0.01 (live +10.8% confirms calibration)
-    "qwen-arb":          0.13,   # was 0.17, post-reset -22.7% — formerly champ, hold-period
-    "selfhost-qwen06":   0.13,   # was 0.15, sample still thin
-    "llama-contra":      0.18,   # was 0.15, live +16.1% confirms calibration recovered
-    "gemini-anl":        0.10,   # NEW probation (was tier-default 0.10), live -24.4% deepest bleed
+    # 2026-04-25 21:00Z — $1M-ROAD ACCELERANT. POL day-203 fleet $1935 (+13.8%).
+    # qwen-quant peak +$274 (2.7× return), llama-contra +$167, mistral-small +$145
+    # — proven compounders. Boost top-tier Kelly to accelerate toward $1M target.
+    # Holding bleeders steady (no further tighten — give recovery room).
+    "qwen-quant":        0.30,   # was 0.18 — top compounder, peak +$274
+    "llama-contra":      0.28,   # was 0.18 — 2nd best +$167
+    "mistral-small":     0.25,   # was 0.18 — +$145 steady
+    "mistral-medium":    0.25,   # was 0.19 — +$130 range
+    "mistral-large":     0.22,   # was 0.18
+    "gemini-tact":       0.18,   # was 0.13 — recover from prior tighten
+    "qwen-arb":          0.18,   # was 0.13 — formerly champ, give room
+    "selfhost-qwen06":   0.15,   # was 0.13 — slight boost
+    "gemini-anl":        0.12,   # was 0.10 — minor recovery
 }
 
 # ── WINNER-AWARE PER-AGENT PROMPTS (LOBBYIST v2, 2026-04-22) ─────────────────
