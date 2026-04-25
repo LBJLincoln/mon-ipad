@@ -2500,10 +2500,15 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             n_engine_only_dropped += 1
             continue
 
-    # 2026-04-25 ENGINE-ONLY FALLBACK SINGLETON — if engine filter wiped
-    # everything but the LLM did emit >=1 raw allocation, restore the top-1
-    # by edge so the agent doesn't silently force-pass on no-engine-edge days.
-    if _engine_only_mode and not clean and _engine_only_dropped:
+    # 2026-04-25 22:58Z — llm_fallback_singleton DISABLED. Win-rate audit
+    # over 10 days showed: 'engine' source = 83.1% WR (+$16.52 total) but
+    # llm_fallback_singleton = 35.5% WR (-$28.09 total). The singleton was
+    # restoring LLM hallucinations engine had no view on, NET NEGATIVE.
+    # Killing it lets engine_forced_floor (63.6% WR, marginal) handle
+    # silent-day fallback instead. Toggleable via NBA_LLM_FALLBACK_SINGLETON
+    # env. Default OFF.
+    _allow_llm_fallback = (os.environ.get("NBA_LLM_FALLBACK_SINGLETON", "0") or "0") in ("1", "true", "True")
+    if _allow_llm_fallback and _engine_only_mode and not clean and _engine_only_dropped:
         _engine_only_dropped.sort(key=lambda x: x.get("edge", 0.0), reverse=True)
         _fb = _engine_only_dropped[0]
         _fb["edge_source"] = "llm_fallback_singleton"
