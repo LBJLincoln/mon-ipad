@@ -2392,11 +2392,14 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             n_engine_override += 1
             edge_for_kelly = max(0.0, engine_edge)
         else:
-            # Engine has no view on this category — cap LLM edge at 0.04 floor
-            # to neutralize hallucinated 0.111 templating. Bet survives at
-            # reduced size; downstream Kelly uses real cap.
+            # Engine has no view on this category (typically pp_*/alt_* props
+            # the model doesn't predict). Pass the LLM edge through unchanged
+            # — capping it below the tier's min_edge (0.08-0.12) would silently
+            # drop EVERY no-engine-view bet at settlement. Hallucinated edge
+            # templates are caught separately by the edge-hallucination guard
+            # below (≥3 allocs sharing the same 3-decimal edge → keep 2).
             n_engine_no_view += 1
-            edge_for_kelly = max(0.0, min(llm_edge, 0.04))
+            edge_for_kelly = max(0.0, llm_edge)
 
         if edge_for_kelly <= 0:
             continue
