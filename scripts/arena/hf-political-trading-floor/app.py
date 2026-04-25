@@ -853,19 +853,22 @@ TRADERS = {
 # compound the signal; llama-contra probation after 500 bets net -$48 (volume
 # drag). Rest of roster falls through to tier default.
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    # 2026-04-24 17:50Z -- EVIDENCE-BASED (rigorous validation CI95, 30-day window).
-    # Formula: Kelly = max(0.01, 0.30 - brier_empirical * 0.50).
-    # POL fleet Brier 0.2662 CI[0.252,0.280] -- statistically better than random.
-    # Rigorous per-agent Brier (30d, 474 confident bets):
-    "gemini-tact":       0.20,   # Brier 0.2087 WR 66.7% +$22.70 -- POL's best calibrated
-    "mistral-medium":    0.19,   # Brier 0.2306 WR 57.9% +$6.77
-    "mistral-small":     0.18,   # Brier 0.2437 WR 50.0% +$7.14
-    "mistral-large":     0.18,   # Brier 0.2439 WR 56.0% (-$8 but Brier says it's ok, let Kelly compound)
-    "qwen-quant":        0.17,   # Brier 0.2629 WR 53.3% +$78.20 -- POL volume leader
-    "qwen-arb":          0.17,   # Brier 0.2678 WR 53.1% +$21.15
-    "selfhost-qwen06":   0.15,   # Brier 0.2918 WR 23.1% -- calibration ok, thin sample
-    "llama-contra":      0.15,   # Brier 0.2941 WR 44.4% -$7 -- mild recal (up from 0.03 probation)
-    # Rest fall through to tier default; improvement_cycle auto-adjusts as bets accumulate.
+    # 2026-04-25 13:55Z -- DEEP-AUDIT update (post-reset 36d). 2026-04-24 caps
+    # were derived from pre-reset 30-day rigorous validation. Post-reset deep
+    # audit shows different live trajectory:
+    #   gemini-anl  -24.4% (64 bets, 27/36 days) -- narrative-heavy theses bleeding
+    #   qwen-arb    -22.7% (82 bets, 27/36 days) -- formerly $10K champion, RNG against
+    #   gemini-tact -20.8% (37 bets, 21/36 days) -- volume drift
+    # Tighten the bleeders, hold the winners. llama-contra +16% / qwen-quant +11%.
+    "gemini-tact":       0.13,   # was 0.20, post-reset -20.8% — tighten
+    "mistral-medium":    0.19,   # hold (no live signal)
+    "mistral-small":     0.18,   # hold (live +3.1%)
+    "mistral-large":     0.18,   # hold (live +4.5%)
+    "qwen-quant":        0.18,   # nudge +0.01 (live +10.8% confirms calibration)
+    "qwen-arb":          0.13,   # was 0.17, post-reset -22.7% — formerly champ, hold-period
+    "selfhost-qwen06":   0.13,   # was 0.15, sample still thin
+    "llama-contra":      0.18,   # was 0.15, live +16.1% confirms calibration recovered
+    "gemini-anl":        0.10,   # NEW probation (was tier-default 0.10), live -24.4% deepest bleed
 }
 
 # ── WINNER-AWARE PER-AGENT PROMPTS (LOBBYIST v2, 2026-04-22) ─────────────────
