@@ -155,6 +155,30 @@ def _append_ledger(event: Dict[str, Any]) -> None:
     _LEDGER_DIRTY = True
 
 
+def _classify_reject(err: str) -> str:
+    """Map raw Alpaca error body to a short reason_code so the ledger histograms cleanly."""
+    e = err or ""
+    if "available\":\"0\"" in e or "balance\":\"-" in e:
+        return "insufficient_bp"
+    if "existing_order" in e or "40310000" in e:
+        return "duplicate_order"
+    if "42210000" in e or "qty must be" in e or "qty must" in e:
+        return "qty_invalid"
+    if "base_price" in e:
+        return "limit_too_far"
+    if "wash" in e.lower():
+        return "wash_trade"
+    if "market_closed" in e or "trading_blocked" in e:
+        return "market_closed"
+    if "422" in e:
+        return "unprocessable_other"
+    if "403" in e:
+        return "forbidden_other"
+    if "429" in e:
+        return "rate_limited"
+    return "other"
+
+
 def reserve_bankroll(tid: str, amount: float, meta: Optional[Dict[str, Any]] = None) -> float:
     """Deduct amount from tid's bankroll. Returns new balance (can go negative — caller checks)."""
     b = _load_bankrolls()
@@ -871,6 +895,16 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
             except Exception:
                 pass
             entry["error"] = (str(e) + body)[:600]
+            # 2026-04-25 — mirror reject into agent_ledger so per-agent visibility
+            # exists without correlating against positions.json (5MB+ blob).
+            _append_ledger({
+                "tid": agent_tid, "event": "broker_reject",
+                "ticker": ticker, "side": entry.get("side"),
+                "stake": entry.get("stake_usd"),
+                "instrument": "equity_or_crypto",
+                "reason_code": _classify_reject(entry["error"]),
+                "reason": entry["error"][:300],
+            })
     else:
         # Dry run — simulate the fill and set sim_close_at for EOD flatten
         entry["sim_filled_at"] = last
@@ -1065,6 +1099,15 @@ def submit_option(agent_tid: str, order: Dict[str, Any], last_quote: float) -> D
             except Exception:
                 pass
             entry["error"] = (str(e) + body)[:600]
+            # 2026-04-25 — mirror reject into agent_ledger (options path)
+            _append_ledger({
+                "tid": agent_tid, "event": "broker_reject",
+                "ticker": underlying, "side": entry.get("side"),
+                "stake": entry.get("stake_usd"),
+                "instrument": "option",
+                "reason_code": _classify_reject(entry["error"]),
+                "reason": entry["error"][:300],
+            })
     else:
         entry["sim_opened_at_underlying"] = last
 
