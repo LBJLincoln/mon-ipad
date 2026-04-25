@@ -1,0 +1,81 @@
+{
+  "generated_at": "2026-04-25T00:00:00Z",
+  "brain_cycle": "2026-04-25-00h",
+  "type": "nba_sota_research",
+  "sota_benchmarks": {
+    "logistic_regression_tabular": {"brier": 0.199, "source": "MDPI uncertainty-aware 2026"},
+    "xgboost_tabular": {"brier": 0.202, "source": "PMC XGBoost+SHAP"},
+    "cnn_shot_chart_mc_dropout": {"brier": 0.221, "source": "MDPI uncertainty-aware 2026"},
+    "stacked_ensemble_nature2025": {"accuracy_pct": 77, "source": "Nature Sci Reports 2025"},
+    "our_fleet_best": {"brier": 0.22073, "island": "S22", "checkpointed": "2026-04-19"}
+  },
+  "gap_to_sota": {
+    "vs_lr_tabular": 0.02173,
+    "vs_xgboost_tabular": 0.01873,
+    "vs_cnn_sota": 0.00027,
+    "note": "Fleet is within 0.0003 of CNN SOTA. Gap to LR tabular = 0.022 — requires non-tabular features OR superior calibration."
+  },
+  "new_findings_this_cycle": [
+    {
+      "technique": "CalibratedClassifierCV (sklearn isotonic)",
+      "source": "cmunch1/nba-prediction + MDPI calibration papers",
+      "description": "sklearn wrapper applying isotonic/sigmoid post-fit calibration to any tree model. Directly wraps XGB/ET/RF. Expected -0.002 to -0.005 Brier improvement from probability calibration alone.",
+      "priority": "HIGH",
+      "implementation": "Wrap predict_proba output in CalibratedClassifierCV(method='isotonic', cv=5) during island eval. CPU-compatible, no new data needed. Only S22 has Venn-Abers now — others are uncalibrated.",
+      "cpu_compatible": true
+    },
+    {
+      "technique": "Travel distance + referee assignment features",
+      "source": "https://www.preprints.org/manuscript/202504.1348",
+      "description": "Apr 2025 factor analysis: cumulative travel distance, referee assignments, and back-to-back scheduling are top predictors beyond basic stats. These may be absent from our v3.1 feature pool.",
+      "priority": "HIGH",
+      "implementation": "Audit features/engine.py for: travel_distance_cumulative, referee_id_encoded, back_to_back_away, back_to_back_home. If absent, add as Cat55+ candidates in next engine version.",
+      "cpu_compatible": true
+    },
+    {
+      "technique": "MambaNet (SSM + Feature Imitating Networks)",
+      "source": "https://link.springer.com/article/10.1007/s42979-024-02977-0",
+      "description": "Mamba state-space model processes sequential game stats, Feature Imitating Networks for latent signal representations. Captures temporal dynamics beyond rolling windows. Better than LSTM on sequential NBA data.",
+      "priority": "MEDIUM",
+      "implementation": "GPU-only. Flag for Colab/Lightning burst experiments, not CPU islands.",
+      "cpu_compatible": false
+    },
+    {
+      "technique": "Bayesian hierarchical team strength priors",
+      "source": "https://medium.com/@konlukrad/building-a-bayesian-model-to-predict-nba-playoff-runs-2026-a-full-analytics-breakdown-b4bc019de766",
+      "description": "Bayesian hierarchical model with team strength priors — better uncertainty quantification for playoff and upset scenarios.",
+      "priority": "LOW",
+      "implementation": "Out of scope for CPU islands. More applicable to Political oracle (structured event outcomes). Flag for political engine Rotation B.",
+      "cpu_compatible": false
+    }
+  ],
+  "previous_cycle_actions_status": {
+    "s22_diversify_apr24": "UNCONFIRMED — HF metadata still Apr 20. DNS overflow likely blocked delivery. Re-queue via VM direct call.",
+    "s17_diversify": "PENDING VM — 7 days stale (was stag 22+/25). Likely auto-hard-reset at stag=25. VM must verify current gen and send diversify or seed fresh with extra_trees.",
+    "s18_status": "7 days stale — was fleet live best 0.22154. Likely auto-reset. VM must verify.",
+    "extra_trees_superiority": "CONFIRMED on NBA fleet (S13 0.22090 61f, S22 venn_abers_fusion 0.22073). Port recommendation to political islands active."
+  },
+  "fleet_position_vs_sota": {
+    "summary": "Fleet at CNN SOTA level (0.22073 vs 0.221 CNN). Next breakthrough: (A) CalibratedClassifierCV on all uncalibrated islands — immediate, CPU-compatible; (B) travel/referee features — medium-term, audit engine.py; (C) shot-chart spatial embeddings — medium-term, requires browser scraper.",
+    "immediate_wins_ranked": [
+      "1. CalibratedClassifierCV isotonic on all islands — no new data, immediate Brier gain",
+      "2. Audit + add travel_distance + referee features to engine.py v3.2",
+      "3. S17/S18 post-reset: seed config with extra_trees + isotonic calibration"
+    ],
+    "medium_term": [
+      "Shot-chart spatial embeddings via nomos-browser-nba scraper",
+      "MambaNet on GPU burst (Colab/Lightning)"
+    ]
+  },
+  "sources": [
+    "https://www.mdpi.com/2078-2489/17/1/56",
+    "https://www.nature.com/articles/s41598-025-13657-1",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC12357926/",
+    "https://www.preprints.org/manuscript/202504.1348",
+    "https://link.springer.com/article/10.1007/s42979-024-02977-0",
+    "https://github.com/cmunch1/nba-prediction",
+    "https://medium.com/@konlukrad/building-a-bayesian-model-to-predict-nba-playoff-runs-2026-a-full-analytics-breakdown-b4bc019de766",
+    "https://ieeexplore.ieee.org/document/11030489/"
+  ]
+}
