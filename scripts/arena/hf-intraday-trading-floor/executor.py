@@ -735,10 +735,35 @@ def _alpaca_place_bracket(ticker: str, qty: float, stake: float, last: float,
         }
     else:
         int_qty = int(qty)  # floor — Alpaca rejects bracket on fractional
-        if int_qty >= 1:
-            # Defensive: bracket MUST have integer qty >= 1. If this assert ever fires,
-            # it means something bypassed the fractional routing — crash-log the call
-            # site so we can pin the regression fast.
+        # 2026-04-25 PQTF-LESSON: bracket equity orders require DTBP, not regt
+        # BP. When PDT-DTBP is starved (=0 from broker even though regt BP is
+        # plentiful), Alpaca rejects 40310000. PQTF compounded $244K because it
+        # held option positions OVERNIGHT (no day-trade classification, no DTBP
+        # cap). For ITF equities, ITF_PREFER_NON_BRACKET=1 routes to simple
+        # market+notional (regt BP path) instead of bracket-day. Stops are
+        # tracked client-side by close_stale_losers + close_expired.
+        prefer_non_bracket = (os.environ.get("ITF_PREFER_NON_BRACKET", "0") or "0") not in ("0", "", "false", "False")
+        # Auto-fallback: if DTBP < estimated cost for this trade, use non-bracket
+        # path even when ITF_PREFER_NON_BRACKET is unset. _get_daytrading_buying_power
+        # returns max(dt_bp, regt_bp), but for the bracket-route DECISION we need
+        # raw dt_bp specifically.
+        dt_bp_starved = False
+        if int_qty >= 1 and live_mode():
+            try:
+                _r = requests.get(
+                    "https://paper-api.alpaca.markets/v2/account",
+                    headers=headers, timeout=5,
+                )
+                if _r.ok:
+                    _j = _r.json()
+                    try: _dt = float(_j.get("daytrading_buying_power") or 0)
+                    except Exception: _dt = 0.0
+                    if _dt < stake:
+                        dt_bp_starved = True
+            except Exception:
+                pass
+        if int_qty >= 1 and not (prefer_non_bracket or dt_bp_starved):
+            # Bracket day-trade path. DTBP must cover stake.
             assert int_qty >= 1 and float(int_qty).is_integer(), \
                 f"bracket qty must be integer>=1, got {qty!r} (ticker={ticker}, stake={stake})"
             payload = {
@@ -753,8 +778,9 @@ def _alpaca_place_bracket(ticker: str, qty: float, stake: float, last: float,
                 "take_profit": {"limit_price": round(tp_price, 2)},
             }
         else:
-            # Stake too small for 1 whole share → notional fractional, no bracket.
-            # close_expired() already tracks stop/TP client-side via age/EOD flatten.
+            # Non-bracket: simple market notional. Uses regt BP, NOT DTBP, so
+            # survives PDT-exhausted accounts. Stops tracked client-side by
+            # close_stale_losers (>=4h at <=-2%) + close_expired (>=240min/EOD).
             payload = {
                 "symbol": ticker,
                 "notional": round(stake, 2),
