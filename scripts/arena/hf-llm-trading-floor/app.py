@@ -2500,6 +2500,51 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
                 _kept.append(a)
             clean = _kept
 
+    # 2026-04-25 ENGINE-FORCED FLOOR — break the groupthink cash cascade.
+    # If the LLM emitted 0 allocations (or all got dropped) AND the engine
+    # has at least one calibrated edge ≥ 0.03 across today's games, inject
+    # the strongest engine edge as a small forced bet (pct=0.02). Without
+    # this, day-N being silent feeds day-(N+1)'s peer_allocations as empty,
+    # which the LLMs read as "everyone cashed" and replicate. Verified on
+    # day-058: gemini-anl explicitly reasoned "Looking at yesterday's bets
+    # — everyone went CASH" then cashed itself. Cascade broken by
+    # guaranteeing every day has bets on engine-validated signal.
+    # Toggleable via NBA_ENGINE_FORCED_FLOOR env (default '1').
+    _engine_forced_floor = (os.environ.get("NBA_ENGINE_FORCED_FLOOR", "1") or "1") not in ("0", "", "false", "False")
+    if _engine_forced_floor and not clean and model_preds and day_games:
+        # Walk every game's per_category, find top engine edge
+        best = None  # (abs_edge, gidx, cat, edge_val, prob)
+        for _gidx, _g in enumerate(day_games, 1):
+            _h = (_g.get("home") or "").upper()
+            _a = (_g.get("away") or "").upper()
+            if not (_h and _a): continue
+            _gk = f"{_a}@{_h}"
+            _pred = model_preds.get(_gk) or {}
+            _per_cat = _pred.get("per_category") or {}
+            for _tag, _info in _per_cat.items():
+                if _tag.startswith("pp_"): continue  # respect pp_* ban
+                _e = _info.get("edge")
+                if not isinstance(_e, (int, float)): continue
+                _abs = abs(float(_e))
+                if _abs < 0.03: continue
+                if best is None or _abs > best[0]:
+                    best = (_abs, _gidx, _tag, float(_e), _info.get("prob", 0.5))
+        if best:
+            clean.append({
+                "game_idx": best[1],
+                "game": "",
+                "category": best[2],
+                "pct": 0.02,
+                "confidence": 0.55,
+                "edge": max(0.0, best[3]),
+                "edge_source": "engine_forced_floor",
+                "edge_llm_reported": None,
+                "edge_engine": best[3],
+                "strategy": "flat_2pct",
+                "rationale": f"engine_forced_floor: top |edge| {best[0]:.3f} on {best[2]} (g{best[1]}); LLM emitted no allocations — anti-cascade injection",
+                "category_reason": "auto-inject when fleet would otherwise go silent — breaks peer_allocations=empty groupthink",
+            })
+
     # PARLAY parsing (2026-04-17) — combined-odds bets across same-day legs.
     # Each parlay settles only if ALL legs win. Kelly sizing is stricter
     # because combined variance >> single leg.
