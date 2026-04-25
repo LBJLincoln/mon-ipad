@@ -315,23 +315,52 @@ def aggregate_itf() -> dict:
         ledger = []
 
     # Alpaca-direct order stream (real-time, no Hub-sync lag)
+    # 2026-04-25: split parent vs bracket-child orders. The 88% "cancel rate"
+    # was bracket stop/limit children getting auto-cancelled when their parent
+    # position was closed by close_stale_losers. Real trade-decision metric is
+    # parent-orders-filled / parent-orders-submitted.
     alpaca_orders = fetch_alpaca_orders(limit=500)
-    alpaca_status_c = Counter(o.get('status','?') for o in alpaca_orders)
-    n_filled = alpaca_status_c.get('filled', 0)
-    n_rejected = alpaca_status_c.get('rejected', 0)
-    n_canceled = alpaca_status_c.get('canceled', 0) + alpaca_status_c.get('cancelled', 0)
-    n_pending = sum(alpaca_status_c.get(s,0) for s in ('new','accepted','partially_filled','pending_new'))
-    n_total_alpaca = len(alpaca_orders)
-    fill_rate_alpaca = n_filled / max(n_total_alpaca, 1)
+    def _is_parent(o: dict) -> bool:
+        # Parent orders carry order_class but no legs reference; bracket children
+        # have order_type stop/limit AND order_class==bracket AND aren't market.
+        oc = o.get('order_class') or 'simple'
+        ot = (o.get('order_type') or '').lower()
+        # Heuristic: a "parent" decision is the user-submitted order. For brackets,
+        # that's the BUY/SELL market or limit order. The auto-spawned stop/limit
+        # children inherit order_class=bracket but order_type is stop or limit.
+        if oc in ('simple', 'oto', 'oco'):
+            return True
+        if oc == 'bracket':
+            return ot in ('market', 'limit', 'mleg')  # parents
+        return True
+    parents = [o for o in alpaca_orders if _is_parent(o)]
+    children = [o for o in alpaca_orders if not _is_parent(o)]
+    def _bucket(orders):
+        c = Counter(o.get('status','?') for o in orders)
+        return {
+            'total': len(orders),
+            'filled': c.get('filled', 0),
+            'rejected': c.get('rejected', 0),
+            'canceled': c.get('canceled', 0) + c.get('cancelled', 0),
+            'pending': sum(c.get(s,0) for s in ('new','accepted','partially_filled','pending_new')),
+            'status_counts': dict(c),
+        }
+    parent_b = _bucket(parents)
+    child_b = _bucket(children)
+    pf = parent_b['filled'] / max(parent_b['total'], 1)
+    overall_b = _bucket(alpaca_orders)
     alpaca_summary = {
-        'n_orders_last_500': n_total_alpaca,
-        'status_counts': dict(alpaca_status_c),
-        'filled': n_filled, 'rejected': n_rejected, 'canceled': n_canceled, 'pending': n_pending,
-        'fill_rate': round(fill_rate_alpaca, 3),
+        'parent_decisions': parent_b,
+        'bracket_children': child_b,
+        'overall': overall_b,
+        'parent_fill_rate': round(pf, 3),
+        'overall_fill_rate': round(overall_b['filled'] / max(overall_b['total'], 1), 3),
     }
-    print(f'[ITF Alpaca-direct] orders={n_total_alpaca} filled={n_filled} '
-          f'rejected={n_rejected} canceled={n_canceled} pending={n_pending} '
-          f'fill_rate={fill_rate_alpaca*100:.0f}%', file=sys.stderr)
+    print(f'[ITF Alpaca-direct] PARENT orders={parent_b["total"]} '
+          f'filled={parent_b["filled"]} rejected={parent_b["rejected"]} '
+          f'canceled={parent_b["canceled"]} | parent_fill_rate={pf*100:.0f}%   '
+          f'(overall {overall_b["filled"]}/{overall_b["total"]} = {alpaca_summary["overall_fill_rate"]*100:.0f}%)',
+          file=sys.stderr)
     by_agent = defaultdict(lambda: {
         'n_orders': 0, 'n_fills': 0, 'tickers': Counter(), 'strategies': Counter(),
         'sides': Counter(), 'notional_list': [], 'realized_pnl': 0.0,
@@ -380,17 +409,30 @@ def aggregate_itf() -> dict:
 def render_itf_md(itf: dict) -> str:
     meta = itf.get('meta', {})
     alp = itf.get('alpaca_direct', {})
+    parent = alp.get('parent_decisions', {})
+    child = alp.get('bracket_children', {})
+    pfr = alp.get('parent_fill_rate')
+    ofr = alp.get('overall_fill_rate')
+    pfr_s = f'{pfr*100:.0f}%' if isinstance(pfr, (int, float)) else '?'
+    ofr_s = f'{ofr*100:.0f}%' if isinstance(ofr, (int, float)) else '?'
     lines = [
         '# ITF — per-agent factual audit',
         f'Generated {dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}',
         f'Seed: ${meta.get("seed_share_usd","?")} per agent at {meta.get("seeded_at","?")} (n_agents={meta.get("n_agents","?")})',
         '',
         '## Alpaca-direct fill rate (real-time, bypasses Hub-sync)',
-        f'- last 500 orders: filled={alp.get("filled","?")} rejected={alp.get("rejected","?")} '
-        f'canceled={alp.get("canceled","?")} pending={alp.get("pending","?")} | '
-        f'**fill_rate={alp.get("fill_rate","?")*100 if alp.get("fill_rate") is not None else "?":.0f}%**'
-            if isinstance(alp.get("fill_rate"), float) else '- alpaca creds missing',
-        f'- status counts: {alp.get("status_counts", {})}',
+        '',
+        '### PARENT orders (real trade decisions)',
+        f'- total={parent.get("total","?")} filled={parent.get("filled","?")} '
+        f'rejected={parent.get("rejected","?")} canceled={parent.get("canceled","?")} '
+        f'pending={parent.get("pending","?")} | **parent_fill_rate={pfr_s}**',
+        '',
+        '### BRACKET CHILDREN (auto-cancel artifact when parent position closed)',
+        f'- total={child.get("total","?")} filled={child.get("filled","?")} '
+        f'canceled={child.get("canceled","?")} | NOT a real failure rate — '
+        'these are stop/limit children orphaned when close_stale_losers kills parent',
+        '',
+        f'### OVERALL (parent + child mixed) — overall_fill_rate={ofr_s}  ←  inflates denominator, do not use as KPI',
         '',
         '## Per-agent (from Hub ledger — may lag real-time)',
         '| agent | orders | fills | distinct_tickers | distinct_strategies | mean_notional | total_notional | realized_pnl | bankroll |',
