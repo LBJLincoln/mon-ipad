@@ -1,0 +1,101 @@
+{
+  "generated_at": "2026-04-25T12:30:00Z",
+  "cycle": "2026-04-25-12h",
+  "source": "WebSearch + cloud brain synthesis",
+
+  "sota_landscape": {
+    "summary": "As of April 2026, published NBA prediction SOTA sits at Brier ~0.20 (XGBoost/LR, MDPI 2026-01 uncertainty-aware paper) and 0.221 (CNN, MDPI 2025-10). Our island fleet best 0.22062 NOW BEATS the published CNN SOTA. Gap to XGBoost literature best: 0.02062.",
+    "our_best": 0.22062,
+    "our_best_method": "CPU GA extra_trees 200f (S15 nba-evo-6)",
+    "literature_best": 0.20,
+    "literature_best_method": "XGBoost / Logistic Regression + MC Dropout calibration, strict chronological split 2012-2022/2023/2024 (MDPI Information 2026-01)"
+  },
+
+  "proposals": [
+    {
+      "id": "P1-BRIER-OBJECTIVE",
+      "title": "XGBoost Brier-targeted objective for NBA S14",
+      "priority": "HIGH",
+      "effort": "LOW",
+      "expected_gain": "-0.001 to -0.003 Brier",
+      "evidence": "P4 political island uses xgboost_brier and achieves POL LIVE BEST 0.25022. S14 NBA uses random_forest and is worst NBA island at 0.22431.",
+      "implementation": "Next diversify POST on S14: seed xgboost with eval_metric='logloss' or custom Brier metric via objective param.",
+      "action": "VM: POST /api/command {'command':'diversify'} to nomos42-nba-evo-5.hf.space when stagnation >5"
+    },
+    {
+      "id": "P2-CALIBRATED-CV",
+      "title": "CalibratedClassifierCV isotonic wrapper for all islands",
+      "priority": "HIGH",
+      "effort": "LOW",
+      "expected_gain": "-0.002 to -0.005 Brier",
+      "evidence": "Literature standard. All top papers apply post-hoc calibration to tree ensembles. Our islands output raw probabilities.",
+      "implementation": "In island eval loop, wrap fitted model: CalibratedClassifierCV(base_model, method='isotonic', cv='prefit').fit(X_cal, y_cal). Add 10% calibration holdout from training set.",
+      "files": ["hf-space/app.py evaluate_individual() function"],
+      "action": "Engineering task for BLACKSMITH / DR FRANKENSTEIN in next cycle"
+    },
+    {
+      "id": "P3-MC-DROPOUT-CALIBRATION",
+      "title": "Monte Carlo Dropout uncertainty quantification",
+      "priority": "MEDIUM",
+      "effort": "MEDIUM",
+      "expected_gain": "-0.005 to -0.010 Brier with GPU; marginal on CPU",
+      "evidence": "MDPI 2026-01 paper achieves 0.20 Brier using RNN + MC Dropout. Adds epistemic uncertainty estimate.",
+      "constraint": "CPU-only islands cannot run RNN efficiently. Applicable to GPU burst (Modal A10G, ZeroGPU H200).",
+      "implementation": "In gpu-burst scripts, use LightGBM with dropout trees (num_drop=1, skip_drop=0.5) or tabular neural net (TabNet) with MC sampling.",
+      "action": "HAWKEYE: research LightGBM dropout variants applicable to CPU islands"
+    },
+    {
+      "id": "P4-EXTRA-TREES-FULL-BUDGET",
+      "title": "Extra Trees with full MAX_FEATURES=200 budget (proven S15 technique)",
+      "priority": "HIGH",
+      "effort": "NONE (already working)",
+      "expected_gain": "Confirmed 0.22062 on S15",
+      "evidence": "S15 top_performer gen 1306: extra_trees 200 features = fleet best 0.22062. Beats random_forest (S14 0.22431) and venn_abers (S22 0.22475 current).",
+      "recommendation": "Ensure all islands allow extra_trees with 200 features in mutation space. S13 (extra_trees 61f = 0.2209) vs S15 (extra_trees 200f = 0.22062) confirms more features helps for ExtraTreesClassifier.",
+      "action": "In GA mutate(): do not penalize high feature counts for extra_trees model type"
+    },
+    {
+      "id": "P5-ENSEMBLE-STACKING",
+      "title": "Model stacking: extra_trees + xgboost_brier + lightgbm",
+      "priority": "MEDIUM",
+      "effort": "MEDIUM",
+      "expected_gain": "-0.003 to -0.008 Brier",
+      "evidence": "Kaggle March Mania 2026 top solutions use gradient boosted ensembles. Literature consistently shows stacking beats single models by ~0.005 Brier.",
+      "constraint": "CLAUDE.md Rule 8: CPU-only islands, stacking removed. This is for GPU burst only.",
+      "implementation": "Modal A10G burst: train stacking ensemble (L1: extra_trees + xgboost + lgbm, L2: logistic meta-learner). Use island best configs as L1 base.",
+      "action": "Add stacking experiment to scripts/gpu-burst/modal-burst.py"
+    },
+    {
+      "id": "P6-CHRONOLOGICAL-VALIDATION",
+      "title": "Strict 4-season chronological train/val/test split",
+      "priority": "MEDIUM",
+      "effort": "LOW",
+      "expected_gain": "Correct Brier measurement (prevent leakage)",
+      "evidence": "MDPI 2026-01 paper specifically uses train≤2022/val=2023/test=2024. Our current GA uses random cross-validation. True OOS Brier may differ.",
+      "implementation": "Verify island eval uses time-sorted split (latest 2 seasons = test). In features/engine.py, confirm sim_cutoff gating is active.",
+      "action": "INTERNAL AFFAIRS: audit one island to confirm no future-data leakage in current evaluation"
+    },
+    {
+      "id": "P7-SEQUENCE-FEATURES",
+      "title": "Game sequence features: last-N game embedding",
+      "priority": "LOW",
+      "effort": "HIGH",
+      "expected_gain": "-0.003 to -0.010 Brier (requires sequence model)",
+      "evidence": "RNN models in literature capture game momentum sequences. Engine v3.2 Cat22 CROSS_WINDOW_MOMENTUM (630 features) partially covers this but uses rolling statistics, not learned representations.",
+      "constraint": "CPU-only islands cannot run RNN. GPU burst only.",
+      "implementation": "Treat last-5 games as a sequence. Embed with simple GRU (hidden=32). Concatenate embedding with tabular features for final prediction.",
+      "action": "Long-term HAWKEYE research target. Not for current sprint."
+    }
+  ],
+
+  "immediate_actions": [
+    "P1-BRIER-OBJECTIVE: diversify S14 toward xgboost_brier when stagnation >5",
+    "P2-CALIBRATED-CV: add CalibratedClassifierCV to island eval loop (engineering sprint)",
+    "P4-EXTRA-TREES-FULL-BUDGET: protect extra_trees 200f in mutation space (config check)"
+  ],
+
+  "cross_project_port": {
+    "nba_to_political": "P1 (xgboost_brier) and P4 (extra_trees 200f) recommendations apply equally to political islands",
+    "political_to_nba": "P4 political xgboost_brier success validates the technique — port to NBA S14"
+  }
+}

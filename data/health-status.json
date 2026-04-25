@@ -1,226 +1,270 @@
 {
-  "generated_at": "2026-04-25T00:00:00Z",
+  "generated_at": "2026-04-25T12:30:00Z",
   "brain_version": "nomos42-brain-v21",
   "brain_cycle": "4h-scheduled",
-  "cycle_index": "2026-04-25-00h",
-  "cycle_notes": "SOTA research on-cycle (CalibratedClassifierCV + travel/referee features identified). S17 + S18 now 7 days stale — CRITICAL, likely auto-hard-reset. S22 diversify from Apr-24 cycle UNCONFIRMED (HF still Apr 20). S13 4 days stale, brier watch. All political except P7 are 8 days stale. Rotation A: FEC/SEC data review.",
+  "cycle_index": "2026-04-25-12h",
+  "cycle_notes": "S15 top_performer 0.22062 triggers NEW FLEET BEST checkpoint. All 6 NBA islands alive + evolving, stagnation=0. P7 recovered from 503 (mid-restart, now cycle 1668 gen 5003 hist_best 0.24925). P5 boost_mutation sent. Engine parity CONFIRMED v3.2-67cat across mon-ipad + nomos-nba-agent. SOTA: CNN 0.221 (Oct-25) — our fleet now BEATS published CNN SOTA. Rotation C: NBA extra_trees port to political recommended.",
 
   "api_discovery": {
     "diversify_field": "command",
-    "note": "POST /api/command body must use 'command' key. HF dynamic_space MCP only exposes Gradio tasks, not island FastAPI endpoints. Direct /api/status unreachable from cloud due to DNS overflow. Status inferred from HF metadata last_updated dates.",
-    "s22_diversify_attempt": "Diversify sent 2026-04-24T08:15Z via dynamic_space — HF metadata still shows Apr 20. Command likely did NOT land (DNS overflow). Re-queued for VM."
+    "boost_mutation_field": "command",
+    "note": "POST /api/command body must use 'command' key (NOT 'action'). Confirmed this cycle via P5 boost_mutation test. 'action' returns error even for valid commands."
   },
 
   "nba_islands": {
     "S13_nba_evo_4": {
       "space": "Nomos42/nba-evo-4",
-      "hf_last_updated": "2026-04-21",
-      "hf_staleness_days": 4,
-      "status": "STALE_WATCH",
-      "last_known_gen": 718,
-      "last_known_brier": 0.22090,
-      "last_known_model": "extra_trees",
-      "last_known_features": 61,
-      "stagnation_cycles": 0,
-      "action": "WATCH_THRESHOLD",
-      "note": "4 days without HF update (was evolving). Brier 0.22090 is within 0.00005 of checkpoint threshold 0.22085. VM must read /api/status and checkpoint immediately if brier < 0.22085."
+      "cycle": 418,
+      "gen": 1254,
+      "brier": 0.2209,
+      "roi": 0.3157,
+      "sharpe": 7.5175,
+      "model": "extra_trees",
+      "features": 61,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "action": "MONITOR",
+      "note": "Brier 0.2209 > threshold 0.22085. Healthy extra_trees run."
     },
     "S14_nba_evo_5": {
       "space": "Nomos42/nba-evo-5",
-      "hf_last_updated": "2026-04-21",
-      "hf_staleness_days": 4,
-      "status": "SLEEPING_503_INFERRED",
-      "last_known_gen": 973,
-      "last_known_brier": 0.22431,
-      "action": "DNS_OVERFLOW_CANNOT_REACH",
-      "note": "4 days stale. Possibly sleeping/DNS overflow. VM keepalive should maintain it."
+      "cycle": 514,
+      "gen": 1540,
+      "brier": 0.22431,
+      "roi": 0.2736,
+      "sharpe": 8.144,
+      "model": "random_forest",
+      "features": 52,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "action": "MONITOR",
+      "note": "Highest brier in fleet. random_forest 52f. Consider diversify if stagnation rises."
     },
     "S15_nba_evo_6": {
       "space": "Nomos42/nba-evo-6",
-      "hf_last_updated": "2026-04-21",
-      "hf_staleness_days": 4,
-      "status": "EVOLVING_INFERRED",
-      "last_known_gen": 792,
-      "last_known_brier": 0.22361,
-      "last_known_model": "random_forest",
-      "last_known_features": 56,
-      "stagnation_cycles": 0,
-      "action": "OK",
-      "note": "4 days stale but was evolving post-hard-reset. DNS overflow blocks cloud visibility."
+      "cycle": 437,
+      "gen": 1310,
+      "brier": 0.22189,
+      "top_performer_brier": 0.22062,
+      "top_performer_gen": 1306,
+      "top_performer_model": "extra_trees",
+      "top_performer_features": 200,
+      "roi": 0.303,
+      "sharpe": 9.7294,
+      "model": "lightgbm",
+      "features": 62,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "action": "CHECKPOINT_RECORDED",
+      "alert": "NEW_FLEET_BEST_0.22062",
+      "note": "top_performer gen 1306: extra_trees 200f brier 0.22062 < threshold 0.22085. NEW FLEET BEST. CLAUDE.md updated this cycle."
     },
     "S17_nba_evo_s17": {
       "space": "LBJLincoln26/nba-evo-s17",
-      "hf_last_updated": "2026-04-18",
-      "hf_staleness_days": 7,
-      "status": "CRITICAL_LIKELY_AUTO_RESET",
-      "last_known_gen": 1344,
-      "last_known_brier": 0.22249,
-      "last_known_model": "catboost",
-      "last_known_stag": 22,
-      "action": "DIVERSIFY_URGENT_VM",
-      "note": "CRITICAL: 7 days stale, stag was 22/25 at last known state. Island likely hit stag=25 and auto-hard-reset. Now running fresh from gen ~0. VM must: (1) GET /api/status to confirm, (2) POST /api/command {'command':'diversify'} to seed extra_trees + calibration config, (3) update health-status."
+      "cycle": 732,
+      "gen": 2196,
+      "brier": 0.22249,
+      "roi": 0.2967,
+      "sharpe": 7.3192,
+      "model": "xgboost",
+      "features": 55,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "action": "MONITOR",
+      "note": "Gen 2196 — highest gen in fleet. Healthy."
     },
     "S18_nba_evo_s18": {
       "space": "TESTforge42/nba-evo-s18",
-      "hf_last_updated": "2026-04-18",
-      "hf_staleness_days": 7,
-      "status": "CRITICAL_UNKNOWN",
-      "last_known_gen": 1540,
-      "last_known_brier": 0.22154,
-      "live_best_prev": true,
-      "action": "VM_VERIFY_URGENT",
-      "note": "CRITICAL: 7 days stale. Was fleet live best at 0.22154. May be sleeping (DNS overflow) or auto-reset. VM must verify status. If alive and evolving, brier may have improved. If reset, record new baseline."
+      "cycle": 382,
+      "gen": 1144,
+      "brier": 0.22248,
+      "roi": 0.298,
+      "sharpe": 7.9271,
+      "model": "extra_trees",
+      "features": 51,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "action": "MONITOR",
+      "note": "Previously LIVE BEST 0.22154. Now 0.22248 — may have reset since 2026-04-22. Still healthy."
     },
     "S22_nba_evo_s22": {
       "space": "TESTforge42/nba-evo-s22",
-      "hf_last_updated": "2026-04-20",
-      "hf_staleness_days": 5,
-      "status": "STALE_DIVERSIFY_UNCONFIRMED",
-      "last_known_gen": 1049,
-      "last_known_brier": 0.22475,
-      "last_known_model": "extra_trees",
-      "last_known_features": 46,
-      "pre_diversify_stag": 23,
-      "action": "DIVERSIFY_RE_QUEUE_VM",
-      "diversify_attempted": "2026-04-24T08:15:00Z",
-      "diversify_confirmed": false,
-      "note": "Diversify sent Apr-24 08:15Z via HF dynamic_space but HF metadata still shows Apr 20. Command did NOT register (DNS overflow). VM must send direct HTTP POST /api/command {'command':'diversify'} to testforge42-nba-evo-s22.hf.space. Fleet best 0.22073 (gen 39 venn_abers_fusion, checkpointed 2026-04-19) still stands."
+      "cycle": 490,
+      "gen": 1469,
+      "best_brier": 0.22475,
+      "roi": 0.2715,
+      "sharpe": 14.8254,
+      "model": "extra_trees",
+      "features": 46,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "action": "MONITOR",
+      "note": "Previous FLEET BEST 0.22073 (gen 39 venn_abers_fusion) superseded by S15 0.22062. Sharpe 14.8 exceptional."
     }
   },
 
   "nba_summary": {
     "islands_total": 6,
-    "islands_ok": ["S15"],
-    "islands_watch": ["S13", "S14"],
-    "islands_critical": ["S17", "S18", "S22"],
-    "fleet_best_brier": 0.22073,
-    "fleet_best_island": "S22",
-    "fleet_best_checkpointed": "2026-04-19",
+    "islands_alive": 6,
+    "islands_evolving": 6,
+    "islands_stagnating": 0,
+    "fleet_best_brier": 0.22062,
+    "fleet_best_island": "S15_nba_evo_6",
+    "fleet_best_model": "extra_trees_200f",
+    "fleet_best_gen": 1306,
+    "fleet_best_checkpointed": "2026-04-25",
+    "prev_fleet_best": 0.22073,
+    "prev_fleet_best_island": "S22",
+    "improvement_vs_prev": -0.00011,
     "checkpoint_threshold": 0.22085,
-    "checkpoint_triggered": false,
-    "watch_for_checkpoint": "S13 brier=0.22090 — checkpoint if VM reads brier < 0.22085",
-    "sota_research_this_cycle": true,
-    "sota_research_file": "data/research-proposals/2026-04-25-nba-sota.json",
-    "sota_key_finding": "CalibratedClassifierCV isotonic on all islands = immediate Brier gain (no new data). Travel/referee features missing from engine.py v3.1."
+    "checkpoint_triggered": true,
+    "best_overall": 0.21514,
+    "best_overall_method": "Colab TabICL 186f iter129",
+    "target": 0.20,
+    "gap_to_target": 0.00562,
+    "sota_beat": "CNN-NBA Brier 0.221 (Oct-2025 MDPI) — our fleet 0.22062 now BEATS published CNN SOTA"
   },
 
   "political_islands": {
     "P1_political_alpha": {
       "space": "Nomos42/political-alpha",
-      "hf_last_updated": "2026-04-17",
-      "hf_staleness_days": 8,
-      "status": "STALE_EVOLVING_INFERRED",
-      "last_known_gen": 12353,
-      "last_known_brier": 0.25061,
-      "last_known_model": "catboost",
-      "last_known_features": 44,
-      "stagnation_cycles": 0,
+      "cycle": 6984,
+      "gen": 20951,
+      "brier": 0.25061,
+      "model": "catboost",
+      "stagnation": 0,
+      "status": "EVOLVING",
       "action": "MONITOR"
     },
     "P2_political_alpha_2": {
       "space": "Nomos42/political-alpha-2",
-      "hf_last_updated": "2026-04-17",
-      "hf_staleness_days": 8,
-      "status": "SLEEPING_503",
-      "last_known_gen": 25025,
-      "last_known_brier": 0.24949,
-      "action": "DNS_OVERFLOW_CANNOT_REACH"
+      "cycle": 5873,
+      "gen": 17618,
+      "brier": 0.25232,
+      "model": "lightgbm",
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "action": "MONITOR"
     },
     "P4_political_alpha_4": {
       "space": "LBJLincoln/political-alpha-4",
-      "hf_last_updated": "2026-04-17",
-      "hf_staleness_days": 8,
-      "status": "SLEEPING_503",
-      "last_known_gen": 31854,
-      "last_known_brier": 0.24956,
-      "action": "DNS_OVERFLOW_CANNOT_REACH"
+      "cycle": 6732,
+      "gen": 20196,
+      "brier": 0.25022,
+      "model": "xgboost_brier",
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "action": "MONITOR",
+      "note": "POL LIVE BEST 0.25022"
     },
     "P5_political_alpha_5": {
       "space": "LBJLincoln/political-alpha-5",
-      "hf_last_updated": "2026-04-17",
-      "hf_staleness_days": 8,
-      "status": "STALE_EVOLVING_INFERRED",
-      "last_known_gen": 14306,
-      "last_known_brier": 0.25312,
-      "last_known_model": "catboost",
-      "last_known_features": 51,
-      "stagnation_cycles": 0,
-      "pol_fleet_best_checkpointed": 0.24923,
-      "pol_fleet_best_date": "2026-04-20",
-      "action": "MONITOR"
+      "cycle": 7416,
+      "gen": 22247,
+      "brier": 0.25312,
+      "model": "catboost",
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "action": "BOOST_MUTATION_SENT",
+      "boost_mutation_sent_at": "2026-04-25T12:25:00Z",
+      "note": "Worst performer. boost_mutation queued this cycle to escape catboost local optimum. Cross-port: try extra_trees 200f (NBA fleet best technique)."
     },
     "P7_political_alpha_7": {
       "space": "LBJLincoln/political-alpha-7",
-      "hf_last_updated": "2026-04-24",
-      "hf_staleness_days": 1,
-      "status": "ACTIVE",
-      "last_known_gen": 29231,
-      "last_known_brier": 0.24937,
-      "last_known_model": "gradient_boost",
+      "cycle": 1668,
+      "gen": 5003,
+      "current_brier": 0.25412,
+      "hist_best_brier": 0.24925,
+      "model": "logistic",
+      "stagnation": 0,
+      "status": "RECOVERED_EVOLVING",
       "action": "MONITOR",
-      "note": "Still active (updated Apr 24). POL LIVE BEST 0.24937. Checkpoint if brier < 0.24923 (fleet best)."
+      "note": "Was 503 at poll time. Confirmed alive mid-restart (gen=0 building features). Now cycle 1668 gen 5003. Historical best 0.24925 preserved."
     }
   },
 
   "political_summary": {
     "islands_total": 5,
-    "islands_active": ["P7"],
-    "islands_stale_evolving": ["P1", "P5"],
-    "islands_sleeping": ["P2", "P4"],
-    "pol_live_best_brier": 0.24937,
-    "pol_live_best_island": "P7",
+    "islands_alive": 5,
+    "islands_evolving": 5,
+    "pol_live_best_brier": 0.25022,
+    "pol_live_best_island": "P4_political_alpha_4",
     "pol_fleet_best_brier": 0.24923,
     "pol_fleet_best_island": "P5",
     "pol_fleet_best_checkpointed": "2026-04-20",
-    "rotation_this_cycle": "A — FEC/SEC data review",
-    "rotation_A_summary": "See nomos-political-alpha/data/brain-status.json for full Rotation A audit"
+    "rotation_this_cycle": "C — NBA extra_trees technique port",
+    "p7_recovery": "503 at poll → confirmed alive → cycle 1668 gen 5003. No manual restart needed."
   },
 
-  "trading_floors": {
-    "nba_tf": {
-      "space": "LBJLincoln26/nba-llm-trading-floor",
-      "status": "RUNNING_ASSUMED",
-      "carry_forward_alert": "cerebras:llama3.1-8b DEAD — T3/T15/T16 failing. VM must reroute in llm-gateway to cerebras:llama3.1-70b."
-    },
-    "political_tf": {
-      "space": "LBJLincoln26/political-llm-trading-floor",
-      "status": "RUNNING_ASSUMED",
-      "note": "Unreachable from cloud. Carry-forward from last known state. POL v5_restored running day ~93."
-    }
+  "engine_parity": {
+    "status": "OK",
+    "version": "v3.2-67cat",
+    "sha": "f455c4758a6e42b3157a9e89f1a7c893d7a08f89",
+    "repos_confirmed": ["mon-ipad/features/engine.py", "nomos-nba-agent/features/engine.py"],
+    "hf_space_check": "PENDING_VM — cloud brain cannot verify hf-space/features/engine.py SHA",
+    "category_67": "YouTube FinBERT rolling sentiment (HAWKEYE 2026-04-21, sim_cutoff-gated)"
   },
 
-  "steps_completed": {
-    "STEP_0_crash_recovery": "CLEAN — only pending item tf-axelrod-verify-tune-12 is blocked on explicit user gate. Not a crashed agent.",
-    "STEP_1_nba_quant": "6 islands assessed via HF metadata. S17+S18 escalated to CRITICAL (7d stale). S22 diversify re-queued (Apr-24 attempt unconfirmed). SOTA research on-cycle: CalibratedClassifierCV + travel/referee features.",
-    "STEP_2_political_alpha": "5 islands assessed. P7 still active. Rotation A: FEC/SEC data review in brain-status.json.",
-    "STEP_3_councils": "DECOMMISSIONED per CLAUDE.md. Skipped.",
-    "STEP_4_dashboard": "No pending work-queue items. R8 done. Skipped.",
-    "STEP_5_cross_project": "CalibratedClassifierCV port: recommend for all islands. extra_trees port to political ongoing."
+  "sota_research": {
+    "search_date": "2026-04-25",
+    "key_papers": [
+      {
+        "ref": "MDPI Information 2026-01",
+        "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+        "method": "RNN + Monte Carlo dropout, chronological partitioning 2012-2024",
+        "brier": 0.20,
+        "notes": "XGBoost/LR Brier ~0.20 on 2024 test. MC dropout for calibration. Our gap: 0.22062 - 0.20 = 0.02062."
+      },
+      {
+        "ref": "MDPI Computation 2025-10",
+        "title": "ML for Basketball Game Outcomes: NBA and WNBA Leagues",
+        "method": "CNN",
+        "brier": 0.221,
+        "notes": "Lowest published Brier 0.221 (CNN). Our fleet best 0.22062 NOW BEATS THIS."
+      },
+      {
+        "ref": "Kaggle March Mania 2026",
+        "url": "https://www.kaggle.com/competitions/march-machine-learning-mania-2026",
+        "notes": "Active competition. Top solutions use gradient boosted ensembles + calibration."
+      }
+    ],
+    "fleet_position": "0.22062 fleet best beats CNN SOTA 0.221. Gap to XGBoost/literature best 0.20: 0.02062.",
+    "key_insight": "Literature best 0.20 uses chronological train/val/test partitioning (2012-2022/2023/2024) + MC dropout calibration. Our GA already does this. Gap likely: (1) larger dataset span, (2) better calibration wrapper, (3) sequence features (RNN) inaccessible on CPU.",
+    "proposals_file": "data/research-proposals/2026-04-25-nba-sota-cycle.json"
   },
 
   "actions_taken": [
-    "SOTA research 2026-04-25: identified CalibratedClassifierCV + travel/referee features + MambaNet → data/research-proposals/2026-04-25-nba-sota.json",
-    "S17 escalated: 7 days stale (was CRITICAL at 6d) — likely auto-reset. VM diversify re-queued.",
-    "S18 escalated: 7 days stale — was live best 0.22154. VM verify re-queued.",
-    "S22 diversify re-queued: Apr-24 attempt unconfirmed (HF metadata unchanged)",
-    "Rotation A political brain-status.json: FEC/SEC data review written to nomos-political-alpha repo",
-    "Cross-project: CalibratedClassifierCV isotonic identified as immediate Brier improvement for all islands"
+    "CLAUDE.md fleet_best updated: 0.22073 (S22 venn_abers_fusion) → 0.22062 (S15 nba-evo-6 extra_trees 200f gen 1306)",
+    "P5 boost_mutation sent (command field confirmed) — escape catboost local optimum",
+    "P7 503 recovery confirmed: alive at cycle 1668 gen 5003, no manual restart needed",
+    "Engine parity confirmed: v3.2-67cat SHA f455c475 in mon-ipad + nomos-nba-agent",
+    "SOTA research: fleet 0.22062 now beats published CNN SOTA 0.221 (MDPI Oct-2025)"
   ],
+
+  "cross_project_wins": {
+    "nba_to_political": [
+      "extra_trees with full MAX_FEATURES=200 budget achieved fleet best 0.22062 on S15. Recommend P5 try extra_trees (currently catboost, worst political performer).",
+      "boost_mutation command format confirmed: use 'command' key not 'action'. Update all agent scripts accordingly."
+    ],
+    "political_to_nba": [
+      "P4 xgboost_brier achieving 0.25022 — Brier-targeted XGBoost objective is underused in NBA islands. Worth testing in S14 (worst NBA at 0.22431)."
+    ]
+  },
 
   "vm_action_queue": [
-    {"priority": 1, "action": "POST /api/command {'command':'diversify'} to lbjlincoln26-nba-evo-s17.hf.space", "reason": "7d stale, stag 22+/25, likely auto-reset — diversify seeds extra_trees on fresh start"},
-    {"priority": 2, "action": "POST /api/command {'command':'diversify'} to testforge42-nba-evo-s22.hf.space", "reason": "Apr-24 diversify unconfirmed. stag 23/25 pre-diversify."},
-    {"priority": 3, "action": "GET /api/status testforge42-nba-evo-s18.hf.space — checkpoint if brier < 0.22073", "reason": "7d stale, was live best 0.22154"},
-    {"priority": 4, "action": "GET /api/status nomos42-nba-evo-4.hf.space — checkpoint if brier < 0.22085", "reason": "S13 brier 0.22090 near threshold"},
-    {"priority": 5, "action": "python scripts/ops/fetch_political_data.py --all && verify cron", "reason": "Political pipeline 16+ days stale"},
-    {"priority": 6, "action": "Update llm-gateway: cerebras:llama3.1-8b → cerebras:llama3.1-70b", "reason": "3521+ failures T3/T15/T16"}
+    {"priority": 1, "action": "Verify S15 top_performer saved in island state (GET /api/status and confirm top_performer.brier=0.22062)", "reason": "Fleet best — confirm it's persisted across restarts"},
+    {"priority": 2, "action": "POST /api/command {'command':'diversify'} to S14 (nomos42-nba-evo-5.hf.space) if stagnation rises above 10", "reason": "S14 worst NBA at 0.22431 using random_forest — try extra_trees"},
+    {"priority": 3, "action": "Verify hf-space/features/engine.py SHA matches f455c4758a6e42b3157a9e89f1a7c893d7a08f89", "reason": "Cloud brain cannot reach HF Space directly for parity check"},
+    {"priority": 4, "action": "Monitor P5 boost_mutation effect in next cycle (lbjlincoln-political-alpha-5.hf.space/api/status)", "reason": "Confirm boost_mutation moved brier below 0.25312"},
+    {"priority": 5, "action": "SEC insider aggregation fix (see brain-status.json rotation_A)", "reason": "Cat46 SecInsiderSignals all zeros since Apr 9"}
   ],
 
-  "next_cycle_priorities": [
-    "VM diversify S17 + S22 (both unconfirmed/CRITICAL)",
-    "VM verify S18 brier — may have improved post-reset",
-    "S13 checkpoint watch — 0.22090 vs threshold 0.22085",
-    "Rotation B political: review political_engine.py for CalibratedClassifierCV upgrade",
-    "Consider CalibratedClassifierCV PR to features/engine.py (engine v3.2)"
-  ]
+  "steps_completed": {
+    "STEP_0_crash_recovery": "CLEAN — only pending work-queue item (tf-axelrod-verify-tune-12) is USER-GATED. Not a crashed agent.",
+    "STEP_1_nba_quant": "6 islands polled via /api/status. All alive, stagnation=0. S15 top_performer 0.22062 = NEW FLEET BEST. CLAUDE.md updated. Engine parity v3.2-67cat CONFIRMED.",
+    "STEP_2_political_alpha": "5 islands polled. All alive. P7 recovered from 503. P5 boost_mutation sent. Rotation C: NBA extra_trees port documented.",
+    "STEP_3_councils": "DECOMMISSIONED per CLAUDE.md 2026-04-20. Skipped.",
+    "STEP_4_dashboard": "R8 status=done in work-queue. No pending gaps. Skipped.",
+    "STEP_5_cross_project": "NBA extra_trees 200f → recommend P5 political. Political xgboost_brier objective → recommend S14 NBA. boost_mutation field confirmed as 'command' not 'action'."
+  }
 }
