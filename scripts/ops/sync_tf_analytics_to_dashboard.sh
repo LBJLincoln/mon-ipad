@@ -47,12 +47,19 @@ done
 # user can browse "why each odd was chosen" per-agent / per-game / cross-agent.
 TODAY=$(date -u +%Y-%m-%d)
 for tf in nba pol itf pqtf; do
-  for kind in per-agent-deep per-game-deep per-agent-factual; do
+  for kind in per-agent-deep per-game-deep per-agent-factual coverage-report; do
     src="/home/termius/mon-ipad/data/audit/${kind}-${tf}-${TODAY}.md"
     if [ -f "$src" ]; then
       cp "$src" "$DEST/audit/${kind}-${tf}-latest.md"
     fi
   done
+done
+# Failing-agents diagnostic + combined coverage JSON
+for f in failing-agents-diagnostic-${TODAY}.md coverage-report-${TODAY}.json coverage-report-latest.json; do
+  src="/home/termius/mon-ipad/data/audit/$f"
+  if [ -f "$src" ]; then
+    cp "$src" "$DEST/audit/$(basename "$f")"
+  fi
 done
 # Per-agent narrative trails (one file per agent per TF)
 if [ -d "/home/termius/mon-ipad/data/audit/per-agent-deep" ]; then
