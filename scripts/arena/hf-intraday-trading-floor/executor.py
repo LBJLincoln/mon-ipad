@@ -563,8 +563,19 @@ def _get_daytrading_buying_power() -> float:
         if not r.ok:
             return 0.0
         j = r.json()
-        # Prefer daytrading_buying_power; fall back to buying_power.
-        return float(j.get("daytrading_buying_power") or j.get("buying_power") or 0)
+        # 2026-04-25: Alpaca returns BP fields as STRINGS ('0' is truthy in
+        # Python!), so `daytrading_buying_power or buying_power` returned '0'
+        # whenever PDT was exhausted. Cast each field to float FIRST, then
+        # pick max(daytrading_bp, regt_bp) so we use whichever is usable.
+        # daytrading_bp is intraday-only quota (often 0 when PDT limit hit),
+        # buying_power = regt_buying_power = settled-margin BP that survives
+        # PDT exhaustion. Equity > $25K so we are NOT subject to the PDT
+        # 4-roundtrip rule; daytrade_count of 69 is just paper-tracking noise.
+        try: dt_bp = float(j.get("daytrading_buying_power") or 0)
+        except Exception: dt_bp = 0.0
+        try: bp = float(j.get("buying_power") or 0)
+        except Exception: bp = 0.0
+        return max(dt_bp, bp)
     except Exception:
         return 0.0
 
