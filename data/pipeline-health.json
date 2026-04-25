@@ -1,82 +1,101 @@
 {
   "agent": "THE PLUMBER",
-  "timestamp": "2026-04-20T23:42:46+00:00",
-  "rollup": "DEGRADED",
-  "summary": "5/6 healthy. broken=['tf_state:pqtf_503'] stale=[] sla_breach=[]",
-  "checks": {
-    "odds_ingestion": {
-      "status": "ok",
-      "age_hours": 0.21,
-      "sla_hours": 12,
-      "size_bytes": 14530,
-      "path": "data/nba-agent/odds-latest.json",
-      "note": "fresh — TICKER ran within last 15min"
+  "timestamp": "2026-04-25T17:37:15Z",
+  "rollup": "HEALTHY",
+  "task": "post-sweep parity + freshness verification (3 TFs)",
+  "summary": "3/3 TFs PARITY MATCH. All day-loops fresh. Audit sync running. No alerts.",
+  "context": "Same-day re-verify after 8+ Space deploys. NBA had FRANKENSTEIN engine-only-mode deploy AFTER expected sha — content matches local HEAD anyway.",
+  "nba_tf": {
+    "space": "LBJLincoln26/nba-llm-trading-floor",
+    "local_path": "scripts/arena/hf-llm-trading-floor/app.py",
+    "sha_local": "02551868bed4263b466336f1d7d1ae930aa20c0c83fdd8433fffbdb8a4fd240c",
+    "sha_remote": "02551868bed4263b466336f1d7d1ae930aa20c0c83fdd8433fffbdb8a4fd240c",
+    "match": true,
+    "expected_hf_app_commit": "57907ff2c24e5d912c5bf64285fb1bd47722bea8",
+    "actual_hf_app_commit": "dde81aa654cb8c (newer — engine-only mode + fallback singleton, e60cc5707, deployed 2026-04-25T17:28:58Z)",
+    "actual_hf_main_commit": "3e12c90ce60c027e0e4fa4da8f81221cfb2026bd",
+    "deploy_chronology_note": "FRANKENSTEIN shipped 'engine-only mode + fallback singleton' AFTER my expected sha. Local HEAD includes this commit; content sha matches Space. PARITY OK.",
+    "first_fetch_caveat": "Initial /resolve/main/app.py returned stale CDN redirect (sha 41c4a21f, no engine-only code). Cache-bust + pinning to commit 3e12c90 confirmed actual content sha 02551868 = local. Logged so future audits know this redirect can lie.",
+    "latest_day_idx": 39,
+    "latest_day_date": "2025-11-30",
+    "latest_day_written_at": "2026-04-25T17:30:10Z",
+    "day_loop_age_sec_at_check": 425,
+    "stale_day_loop": false,
+    "verdict": "PASS"
+  },
+  "pol_tf": {
+    "space": "LBJLincoln26/political-llm-trading-floor",
+    "local_path": "scripts/arena/hf-political-trading-floor/app.py",
+    "sha_local": "913508301d164de6300fdb95c3aabe9f691b3e6b98d9a1c334dcd8e80207b7f6",
+    "sha_remote": "913508301d164de6300fdb95c3aabe9f691b3e6b98d9a1c334dcd8e80207b7f6",
+    "match": true,
+    "expected_hf_app_commit": "0dc2f7a60089826b5e50743c1afec73279a118d2",
+    "latest_day_idx": 110,
+    "latest_day_date": "2025-06-16",
+    "latest_day_written_at": "2026-04-25T17:34:23Z",
+    "day_loop_age_sec_at_check": 172,
+    "stale_day_loop": false,
+    "verdict": "PASS"
+  },
+  "itf_tf": {
+    "space": "LBJLincoln26/intraday-trading-floor",
+    "local_path": "scripts/arena/hf-intraday-trading-floor/executor.py",
+    "sha_local": "1af2569dcd70f8d8b3c1971603f2dff6e7bb41f177a7b0d6d3533c3c6c558096",
+    "sha_remote": "1af2569dcd70f8d8b3c1971603f2dff6e7bb41f177a7b0d6d3533c3c6c558096",
+    "match": true,
+    "expected_hf_executor_commit": "887084205bd42efb79fb268087e56b9aeca63bb0",
+    "latest_hf_top_commit": "c0131f32054e ([ITF-LEDGER] tick snapshot 2026-04-25T17:29:01Z)",
+    "running": true,
+    "last_tick_at": "2026-04-25T17:34:07Z",
+    "tick_age_sec_at_check": 32.7,
+    "tick_age_within_90s_sla": true,
+    "tick_count_displayed": 2,
+    "tick_count_note": "multi-worker LB sampling artifact (per memory feedback_itf_alpaca_ground_truth.md). Real tick cadence verified by ITF-LEDGER commits ~45s apart.",
+    "total_equity_displayed": null,
+    "total_equity_note": "Multi-worker LB returns None on most polls. Ground truth is Alpaca /v2/account direct; not queried this run.",
+    "llm_leaderboard_count_returned": 8,
+    "llm_leaderboard_distribution": {
+      "mistral:large": 1,
+      "mistral:medium": 1,
+      "cerebras:qwen-3-235b": 1,
+      "github:mistral-medium": 1,
+      "github:gpt-4.1-nano": 1,
+      "github:llama-3.3-70b": 1,
+      "github:gpt-4.1-mini": 1,
+      "selfhost:phi-4-mini": 1
     },
-    "predictions": {
-      "status": "ok",
-      "date": "2026-04-20",
-      "today_match": true,
-      "age_hours": 5.80,
-      "path": "nomos-nba-agent/data/nba-agent/predictions-today.json",
-      "backup_path": "nomos-nba-agent/data/predictions/predictions-2026-04-20.json",
-      "backup_age_hours": 15.20
-    },
-    "engine_parity": {
-      "status": "ok",
-      "expected_sha": "5e66371c4a39ea42ea76457ea83e3ee3175a203dc6823e5a8ace646015565cba",
-      "local_sha": "5e66371c4a39ea42ea76457ea83e3ee3175a203dc6823e5a8ace646015565cba",
-      "hf_space_sha": "5e66371c4a39ea42ea76457ea83e3ee3175a203dc6823e5a8ace646015565cba",
-      "match": true,
-      "note": "Cat 66 port at de6f64a25 — mon-ipad/features/engine.py == mon-ipad/hf-space/features/engine.py"
-    },
-    "political_data": {
-      "status": "ok",
-      "age_hours": 0.06,
-      "sla_hours": 24,
-      "latest_file": "nomos-political-alpha/data/signals/",
-      "mtime_unix": 1776728181
-    },
-    "tf_state": {
-      "status": "degraded",
-      "floors": {
-        "nba-tf": {
-          "status": "ok",
-          "days_processed": 128,
-          "days_total": 175,
-          "agents": 17,
-          "running": true,
-          "url": "LBJLincoln26/nba-llm-trading-floor"
-        },
-        "pol-tf": {
-          "status": "ok",
-          "days_processed": 124,
-          "days_total": 184,
-          "agents": 17,
-          "running": true,
-          "url": "LBJLincoln26/political-llm-trading-floor"
-        },
-        "pqtf": {
-          "status": "broken",
-          "error": "HTTP 503 — Space unreachable (HTML response, not JSON)",
-          "url": "LBJLincoln26/pqtf",
-          "delegate": "SWITCHBOARD — check Space health / factory_reboot"
-        },
-        "itf": {
-          "status": "ok",
-          "running": true,
-          "tick_count": 13,
-          "last_tick_at": "2026-04-20T23:42:49Z",
-          "agents": 14,
-          "url": "LBJLincoln26/intraday-trading-floor"
-        }
-      }
-    },
-    "csv_integrity": {
-      "status": "ok",
-      "path": "data/nba-agent/odds-latest.json",
-      "size_bytes": 14530,
-      "nan_pct": 0.0,
-      "note": "odds payload is JSON not CSV; no truncation detected"
-    }
-  }
+    "llm_leaderboard_note": "Single LB worker returned 8/17 agents (multi-worker sampling). Distribution shows expected mistral:large + mistral:medium + cerebras:qwen-3-235b primary mix.",
+    "verdict": "PASS"
+  },
+  "audit_sync": {
+    "cron_installed": true,
+    "cron_line": "27,57 * * * * per_agent_deep_audit.py + sync_tf_analytics_to_dashboard.sh",
+    "last_sync_dir_mtime": "2026-04-25T17:28:00Z",
+    "sync_age_min": 9.3,
+    "dashboard_files_count_audit_dir": 8,
+    "last_dashboard_commit": "028e52c tf-analytics: hourly sync 2026-04-25T17:28Z (nba=1 pol=2 itf=2 pqtf=50)",
+    "verdict": "PASS"
+  },
+  "data_sources": {
+    "nba_odds_path": "data/nba-agent/odds-latest.json",
+    "nba_odds_mtime": "2026-04-25T06:30:18Z",
+    "nba_odds_age_hours": 11.1,
+    "nba_odds_sla_12h_on_game_days": "WITHIN_SLA",
+    "political_polymarket_dir_mtime": "2026-04-25T00:01:30Z",
+    "political_insider_dir_mtime": "2026-04-25T00:38:21Z",
+    "political_age_hours": 17.6,
+    "political_sla_24h": "WITHIN_SLA",
+    "note_full_odds_2025_26": "data/full-odds-2025-26.json absent on VM — that file lives in NBA TF Space repo, not mon-ipad. The 'data/nba-agent/full-odds/2025-26.json' VM-side variant (1128 games × 108 cats) exists but is not referenced in this task; skipped.",
+    "verdict": "PASS"
+  },
+  "alerts": [],
+  "scientific_signals": {
+    "tf_parity_3of3_match": true,
+    "nba_day_loop_fresh_under_15min": true,
+    "pol_day_loop_fresh_under_15min": true,
+    "itf_tick_under_90s": true,
+    "audit_sync_within_30min": true,
+    "data_sources_within_sla": true
+  },
+  "summary_oneline": "3/3 PARITY MATCH. NBA tick 7m / POL 3m / ITF 33s. Audit sync 9m old. Odds 11h, political 18h — both within SLA. Zero alerts."
 }
