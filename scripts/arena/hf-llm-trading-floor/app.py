@@ -4203,13 +4203,26 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     # engine_fallback_singleton) come from the parser's last
                     # resort to break silent-cascade and must bypass the
                     # tier-min gate.
+                    # 2026-04-25 — bypass MIN_EDGE for ANY engine-validated
+                    # source. day-082: 4 agents above $30 had LLM bets tagged
+                    # edge_source='engine' (now that the DATE_AWAY@HOME key
+                    # fix unlocked engine-edge override) at edge ~0.06, but
+                    # tier MIN_EDGE=0.09 for bk<$100 silently dropped them.
+                    # Engine signal IS calibrated; trust it over the discipline
+                    # gate when the LLM picked a category the engine validates.
+                    _engine_validated = alloc.get("edge_source") in (
+                        "engine",
+                        "engine_forced_floor",
+                        "llm_fallback_singleton",
+                        "engine_fallback_singleton",
+                    )
+                    if (not _engine_validated) and edge_val < MIN_EDGE:
+                        continue
                     _is_parser_injected = alloc.get("edge_source") in (
                         "engine_forced_floor",
                         "llm_fallback_singleton",
                         "engine_fallback_singleton",
                     )
-                    if (not _is_parser_injected) and edge_val < MIN_EDGE:
-                        continue
                     # 2026-04-19 collision limiter: if >=COLLISION_MAX_AGENTS
                     # already picked this (game_idx, category) today, skip.
                     # 2026-04-21 fallback_uniform exempt; 2026-04-25 parser-
