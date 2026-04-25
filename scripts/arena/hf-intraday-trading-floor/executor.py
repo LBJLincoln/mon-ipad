@@ -735,18 +735,17 @@ def _alpaca_place_bracket(ticker: str, qty: float, stake: float, last: float,
         }
     else:
         int_qty = int(qty)  # floor — Alpaca rejects bracket on fractional
+        is_short = (side == "sell")
         # 2026-04-25 PQTF-LESSON: bracket equity orders require DTBP, not regt
         # BP. When PDT-DTBP is starved (=0 from broker even though regt BP is
         # plentiful), Alpaca rejects 40310000. PQTF compounded $244K because it
         # held option positions OVERNIGHT (no day-trade classification, no DTBP
         # cap). For ITF equities, ITF_PREFER_NON_BRACKET=1 routes to simple
-        # market+notional (regt BP path) instead of bracket-day. Stops are
+        # market+integer-qty (regt BP path) instead of bracket-day. Stops are
         # tracked client-side by close_stale_losers + close_expired.
         prefer_non_bracket = (os.environ.get("ITF_PREFER_NON_BRACKET", "0") or "0") not in ("0", "", "false", "False")
         # Auto-fallback: if DTBP < estimated cost for this trade, use non-bracket
-        # path even when ITF_PREFER_NON_BRACKET is unset. _get_daytrading_buying_power
-        # returns max(dt_bp, regt_bp), but for the bracket-route DECISION we need
-        # raw dt_bp specifically.
+        # path even when ITF_PREFER_NON_BRACKET is unset.
         dt_bp_starved = False
         if int_qty >= 1 and live_mode():
             try:
@@ -762,10 +761,9 @@ def _alpaca_place_bracket(ticker: str, qty: float, stake: float, last: float,
                         dt_bp_starved = True
             except Exception:
                 pass
-        if int_qty >= 1 and not (prefer_non_bracket or dt_bp_starved):
+        use_non_bracket = prefer_non_bracket or dt_bp_starved
+        if int_qty >= 1 and not use_non_bracket:
             # Bracket day-trade path. DTBP must cover stake.
-            assert int_qty >= 1 and float(int_qty).is_integer(), \
-                f"bracket qty must be integer>=1, got {qty!r} (ticker={ticker}, stake={stake})"
             payload = {
                 "symbol": ticker,
                 "qty": int_qty,
@@ -777,10 +775,25 @@ def _alpaca_place_bracket(ticker: str, qty: float, stake: float, last: float,
                 "stop_loss": {"stop_price": round(stop_price, 2)},
                 "take_profit": {"limit_price": round(tp_price, 2)},
             }
+        elif int_qty >= 1 and use_non_bracket:
+            # Simple integer market — uses regt BP, integer qty (works for short
+            # too: Alpaca disallows fractional shorts but accepts integer-qty
+            # shorts with regular BP).
+            payload = {
+                "symbol": ticker,
+                "qty": int_qty,
+                "side": side,
+                "type": "market",
+                "time_in_force": "day",
+            }
         else:
-            # Non-bracket: simple market notional. Uses regt BP, NOT DTBP, so
-            # survives PDT-exhausted accounts. Stops tracked client-side by
-            # close_stale_losers (>=4h at <=-2%) + close_expired (>=240min/EOD).
+            # int_qty < 1 — only longs can use notional fractional. Shorts must
+            # be skipped (Alpaca: "fractional orders cannot be sold short").
+            if is_short:
+                raise ValueError(
+                    f"short fractional skip: ticker={ticker} qty={qty} stake={stake} "
+                    f"(int_qty={int_qty} < 1, Alpaca rejects fractional shorts)"
+                )
             payload = {
                 "symbol": ticker,
                 "notional": round(stake, 2),
@@ -822,6 +835,31 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
             }
             _append_order_log(wash)
             return wash
+    # 2026-04-25 cross-agent same-ticker collision pre-check. After non-bracket
+    # fix unblocked DTBP, the next failure layer was: agent A long QQQ, agent B
+    # tries short QQQ → Alpaca account-wide position pool rejects with
+    # "insufficient qty available" (40310000 with `available`/`existing_qty`
+    # fields). Pre-check returns clean ledger event so agent retries elsewhere
+    # next tick (or divert pool kicks in upstream). Cross-agent SAME-side is
+    # allowed (multiple longs aggregate). Only OPPOSITE side is blocked.
+    if _inbound_side and _inbound_ticker:
+        for _other_tid, _other_rows in positions.items():
+            if _other_tid == agent_tid: continue
+            for _op in _other_rows:
+                if _op.get("status") != "open": continue
+                if _op.get("ticker") != _inbound_ticker: continue
+                _other_side = _op.get("side")
+                if _other_side and _other_side != _inbound_side:
+                    skip = {
+                        "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "agent_tid": agent_tid, "status": "cross_agent_collision_skip",
+                        "reason": f"agent {_other_tid} has opposite-side {_other_side} open on {_inbound_ticker}",
+                        "order": order,
+                    }
+                    _append_order_log(skip)
+                    return skip
+            # break inner loop after first match for this other_tid (no need to
+            # walk all their positions)
     if len(open_for_agent) >= MAX_OPEN_PER_AGENT:
         reject = {
             "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
