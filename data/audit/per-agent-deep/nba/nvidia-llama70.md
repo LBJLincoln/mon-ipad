@@ -1,8 +1,8 @@
 # NBA — `nvidia-llama70` decision trail
-Generated 2026-04-25 13:19 UTC
-80 days with activity
+Generated 2026-04-25 14:23 UTC
+97 days with activity
 
-**Bankroll**: $100.00 → $96.83 (-3.17)
+**Bankroll**: $100.00 → $86.37 (-13.63)
 
 ## Day 1 — 2025-10-22 (bankroll: $100.00 → $104.05)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] by focusing on the SAS@DAL game with a high-edge ml_away bet, citing my REASONING TEMPLATE which prioritizes away teams with strong offense and defense metrics.
@@ -364,3 +364,63 @@ Generated 2026-04-25 13:19 UTC
 - 2-leg @1.71 stake=$2.99 edge=0.100 won=✗ profit=-2.99 
   legs: UTA@CLE:ml_home@1.16✗ + BOS@IND:ml_away@1.48✗
   > I combined the two legs to amplify the edge, as both bets have a high confidence and edge.
+
+## Day 86 — 2026-01-19 (bankroll: $96.83 → $93.93)
+> **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=7.1%): Today, I will focus on the DAL@NYK game, where my model predicts a significant edge in the moneyline category.
+> **Cash:** 0.8285% — I am holding 25% cash to maintain a conservative approach and avoid over-exposure.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @9.28 stake=$2.90 edge=0.100 won=✗ profit=-2.90 
+  legs: DAL@NYK:ml_home@1.16✗ + UTA@SAS:ml_away@8.00✗
+  > Combining the NYK moneyline with the UTA moneyline provides a higher payout and a 10% edge.
+
+## Day 87 — 2026-01-20 (bankroll: $93.93 → $91.11)
+> **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=7.1%): Today, I will focus on the SAS@HOU game, where my model predicts a significant edge in the ml_away category.
+> **Cash:** 0.8285% — I am holding 25% cash to maintain flexibility and adjust to changing market conditions.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @4.68 stake=$2.82 edge=0.100 won=✗ profit=-2.82 
+  legs: SAS@HOU:ml_away@2.45✗ + PHX@PHI:spread_away@1.91✓
+  > I am creating a parlay with the SAS@HOU ml_away and PHX@PHI spread_away categories, as both have high edges and are correlated.
+
+## Day 90 — 2026-01-23 (bankroll: $91.11 → $88.38)
+> **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=7.1%): Today, I will focus on the IND@OKC game, where my model predicts a high edge on the ml_home category.
+> **Cash:** 0.8285% — I held 25% cash to maintain flexibility and adjust to changing market conditions.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @2.10 stake=$2.73 edge=0.100 won=✗ profit=-2.73 
+  legs: IND@OKC:ml_home@1.10✗ + HOU@DET:spread_away@1.91✓
+  > The parlay combines two high-edge bets, amplifying the potential payout.
+
+## Day 94 — 2026-01-27 (bankroll: $88.38 → $89.04)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.0%): Today, I will focus on the SAC@NYK game, where my model predicts a strong edge on the ml_home category, contrary to llama-contra's pick on the same game.
+> **Cash:** 0.8177% — I am holding 25% of my bankroll in cash to maintain a conservative approach and avoid over-exposure.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @1.25 stake=$2.65 edge=0.100 won=✓ profit=+0.66 
+  legs: SAC@NYK:ml_home@1.11✓ + NOP@OKC:ml_home@1.12✓
+  > I am creating a parlay with the SAC@NYK and NOP@OKC games, both on the ml_home category, as my model predicts a high probability of both home teams winning.
+
+## Day 96 — 2026-01-29 (bankroll: $89.04 → $86.37)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.0%): Today, I will focus on the SAC@PHI game, where my REASONING TEMPLATE suggests a different pick than llama-contra's. My template prioritizes the away team's recent performance and the home team's struggles, citing a 6.3% edge in the spread_away category.
+> **Cash:** 0.5708% — I held 10% cash due to the relatively low edges in today's games.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @7.83 stake=$2.67 edge=0.100 won=✗ profit=-2.67 
+  legs: SAC@PHI:ml_away@4.10✗ + CHA@DAL:total_over@1.91✓
+  > The away team in the SAC@PHI game and the over in the CHA@DAL game have correlated edges, making this parlay a favorable bet.

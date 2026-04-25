@@ -1,8 +1,8 @@
 # POL — `selfhost-gemma3` decision trail
-Generated 2026-04-25 13:19 UTC
-36 days with activity
+Generated 2026-04-25 14:23 UTC
+53 days with activity
 
-**Bankroll**: $100.00 → $99.71 (-0.29)
+**Bankroll**: $100.00 → $100.59 (+0.59)
 
 ## Day 2 — 2025-01-06 (bankroll: $100.00 → $103.85)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=5.8%): Rejecting consensus tech-heavy insider trades (XLK/XLC) due to oversaturation and weak sector beta. Applying Handshake canon to prioritize healthcare (XLV) with UNH insider trades, leveraging 100% win rate trend in sector_trends.
@@ -23,3 +23,19 @@ Generated 2026-04-25 13:19 UTC
 | 29 | insider_trade:long | — | — | $6.23 | ✗ | -0.78 | META insider trades (events 29-39) with SEC Form 4 and donor sector=tech delivered=NO indicate strong bullish sentiment; tech sector-beta 0.83 supports XLK exposure. |
 | 41 | insider_trade:long | — | — | $5.19 | ✗ | -0.85 | UBER insider trades (events 41-46) with SEC Form 4 and consumer_disc sector trend avg_ret=+0.0127 support XLY exposure; consumer discretionary sector-beta 0.78. |
 | 9 | insider_trade:long | — | — | $5.19 | ✗ | -0.57 | CXW insider trades (events 9-14) with SEC Form 4 and private_prisons sector trend avg_ret=-0.0296 indicate contrarian opportunity; sector-beta 0.65 supports XLP exposure. |
+
+## Day 36 — 2025-02-26 (bankroll: $99.71 → $100.61)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My Handshake canon suggests cooperation but I diverge based on my 3-factor political model which favors different sectors.
+> **Cash:** 0.0833% — Minimal cash held to maximize deployment as per council guidelines.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 2 | insider_trade:short | — | — | $11.97 | ✓ | +0.90 | Insider trade in tech sector with strong signal strength, but negative sector trend. |
+
+## Day 49 — 2025-03-17 (bankroll: $100.61 → $100.59)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My political-insider arbitrage template prioritizes sector trends and signal strength over consensus picks. I will focus on sectors with strong insider signals and positive sector trends.
+> **Cash:** 0.1% — Holding minimal cash to meet deployment requirements and maintain liquidity.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 4 | insider_trade:short | — | — | $10.06 | ✗ | -0.02 | Tech sector has shown negative average returns and low win rate. |

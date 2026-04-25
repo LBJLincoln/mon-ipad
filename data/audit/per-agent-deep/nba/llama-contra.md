@@ -1,6 +1,6 @@
 # NBA — `llama-contra` decision trail
-Generated 2026-04-25 13:19 UTC
-80 days with activity
+Generated 2026-04-25 14:23 UTC
+97 days with activity
 
 **Bankroll**: $100.00 → $96.81 (-3.19)
 

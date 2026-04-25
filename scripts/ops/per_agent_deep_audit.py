@@ -98,6 +98,12 @@ def deep_extract_nba_pol(days, tf, event_key, cat_key, rationale_key='rationale'
                     'pct': al.get('pct'),
                     'stake': al.get('stake'),
                     'edge': al.get('edge'),
+                    # 2026-04-25 NBA engine-edge override telemetry — present on
+                    # bets parsed AFTER the override ship (HF 873fa2a20d25).
+                    # Lets audit distinguish engine-validated bets from LLM-only.
+                    'edge_source': al.get('edge_source'),
+                    'edge_llm_reported': al.get('edge_llm_reported'),
+                    'edge_engine': al.get('edge_engine'),
                     'confidence': al.get('confidence'),
                     'rationale': _trunc(al.get(rationale_key) or al.get('thesis')),
                     'won': al.get('won'),
@@ -320,9 +326,9 @@ def render_per_agent_md(tf, tid, days, schema='nba'):
         lines.append('_No days with activity._')
         return '\n'.join(lines)
     bk_first = next((d.get('bankroll_before') for d in days
-                     if d.get('bankroll_before') is not None), None)
+                     if isinstance(d.get('bankroll_before'), (int, float))), None)
     bk_last = next((d.get('bankroll_after') for d in reversed(days)
-                    if d.get('bankroll_after') is not None), None)
+                    if isinstance(d.get('bankroll_after'), (int, float))), None)
     if bk_first is not None and bk_last is not None:
         lines.append(f'**Bankroll**: ${bk_first:.2f} → ${bk_last:.2f} ({bk_last-bk_first:+.2f})')
         lines.append('')
@@ -331,8 +337,11 @@ def render_per_agent_md(tf, tid, days, schema='nba'):
         n_par = len(d.get('parlays') or [])
         if n_alloc == 0 and n_par == 0:
             continue
+        bb = d.get('bankroll_before'); ba = d.get('bankroll_after')
+        bb_s = f'${bb:.2f}' if isinstance(bb, (int, float)) else '—'
+        ba_s = f'${ba:.2f}' if isinstance(ba, (int, float)) else '—'
         lines.append(f'## Day {d.get("day_idx")} — {d.get("date")} '
-                     f'(bankroll: ${d.get("bankroll_before") or 0:.2f} → ${d.get("bankroll_after") or 0:.2f})')
+                     f'(bankroll: {bb_s} → {ba_s})')
         if d.get('day_strategy'):
             lines.append(f'> **Strategy:** {d["day_strategy"]}')
         if d.get('cash_rationale'):
@@ -341,11 +350,15 @@ def render_per_agent_md(tf, tid, days, schema='nba'):
         if schema == 'pqtf':
             lines.append('| sess | ETF | type | strike | qty | entry | mark | pnl | template | rationale |')
             lines.append('|---:|---|---|---:|---:|---:|---:|---:|---|---|')
+            def _fmt(v, spec):
+                if isinstance(v, (int, float)):
+                    return format(v, spec)
+                return '—'
             for p in d.get('positions', []):
                 lines.append(f'| {p.get("session","")} | {p.get("etf","")} | '
-                             f'{p.get("option_type","")} | {p.get("strike",0):.2f} | '
-                             f'{p.get("qty",0)} | {p.get("entry_price",0):.4f} | '
-                             f'{p.get("mark",0):.4f} | {(p.get("pnl") or 0):+.2f} | '
+                             f'{p.get("option_type","")} | {_fmt(p.get("strike"), ".2f")} | '
+                             f'{p.get("qty","")} | {_fmt(p.get("entry_price"), ".4f")} | '
+                             f'{_fmt(p.get("mark"), ".4f")} | {_fmt(p.get("pnl"), "+.2f")} | '
                              f'{p.get("reasoning_template","")} | {p.get("rationale","")} |')
         else:
             lines.append('| event | category | odds | edge | stake | won | profit | rationale |')

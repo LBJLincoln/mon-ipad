@@ -1,8 +1,8 @@
 # NBA — `qwen-quant` decision trail
-Generated 2026-04-25 13:19 UTC
-80 days with activity
+Generated 2026-04-25 14:23 UTC
+97 days with activity
 
-**Bankroll**: $102.07 → $64.74 (-37.33)
+**Bankroll**: $102.07 → $59.09 (-42.98)
 
 ## Day 1 — 2025-10-22 (bankroll: $102.07 → $93.16)
 > **Strategy:** ARCHETYPE[injury_arbitrage]: STRUCTURAL DIVERGE [SelfHost Qwen3-4B] (edge=11.1%). Today's council plan targets home moneylines and away spreads, but I exploit injury-driven inefficiencies in player props. Specifically, I focus on steals props for players with recent defensive upticks or injury returns (e.g., OG Anunoby's 2.3 spg in last 3 games vs CLE's Donovan Mitchell, who averages 1.1 spg post-injury). My REASONING TEMPLATE isolates props with edge ≥10% where market odds ignore recent injury
@@ -187,3 +187,31 @@ Generated 2026-04-25 13:19 UTC
 | event | category | odds | edge | stake | won | profit | rationale |
 |---|---|---:|---:|---:|:---:|---:|---|
 | SAS@OKC | pp_threes_star2_home | 1.91 | 0.091 | $2.00 | ✗ | -2.00 | Chet Holmgren (OKC) averages 2.8 threes/game on 41% shooting; market line (2.5) is 0.3 below my projection, yielding a 9.1% edge. |
+
+## Day 82 — 2026-01-15 (bankroll: $64.74 → $62.80)
+> **Strategy:** STRUCTURAL COMPLEMENT [nvidia-llama70] (edge=8.1%): My pace-focused totals edge on UTA@DAL complements the leader's spread-heavy focus, leveraging model confidence in pace-driven variance where spread markets are sticky.
+> **Cash:** 0.8323% — Top-3 category families (ml_, spread_, total_) all show crowding in peer_allocations; preserving capital for tomorrow's softer edges.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @3.07 stake=$1.94 edge=0.092 won=✗ profit=-1.94 
+  legs: UTA@DAL:total_over@1.91✓ + CHA@LAL:ml_home@1.61✗
+  > Correlated legs: UTA's pace and LAL's home-court advantage both favor over/ML markets.
+
+## Day 89 — 2026-01-22 (bankroll: $62.80 → $60.92)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.0%): My REASONING TEMPLATE (DMAD) prioritizes totals and alt-totals due to superior pace modeling. While llama-contra focuses on ml_home and spreads, I exploit mispriced totals in LAL@LAC and MIA@POR, where model pred_total (225, 236) diverges from market (224.5, 235.5) by ≥0.5pts, yielding edge ≥6.0% on alt_total_over variants.
+> **Cash:** 0.7777% — Held cash to avoid over-deploying on marginal edges (<0.06) in other games; preserved capital for tomorrow’s slate with stronger signals.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| CHA@ORL | pp_threes_role2_home | 1.91 | 0.111 | $1.88 | ✗ | -1.88 | Franz Wagner (role2) has 42% 3P% on 5.1 attempts; CHA’s 113.5 DefRTG vs ORL’s 114.2 OffRTG creates open looks. Market odds (8.5) underprice his volume. |
+
+## Day 96 — 2026-01-29 (bankroll: $60.92 → $59.09)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): Today's focus is on alt-totals to exploit pace variance ignored by the leader. My pace-heavy model predicts 228 total in OKC@MIN (vs 225.5 market) — a 6.8% edge on alt_total_over_plus2.5 (+2.5 points) at 1.90 odds.
+> **Cash:** 0.8435% — Reserve for future alt-line opportunities where edge >7% appears post-market movement.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| MIA@CHI | pp_steals_star1_away | 1.91 | 0.100 | $1.83 | ✗ | -1.83 | MIA's 8.4% steal rate (league avg 7.1%) overperforms vs CHI's 6.7% — 10% edge on Powell's 22p usage. |

@@ -1,0 +1,893 @@
+{
+  "ts": "2026-04-25T08:10:01.946172+00:00",
+  "tfs": {
+    "nba": {
+      "tf": "nba",
+      "ok": true,
+      "n_days": 12,
+      "n_bets": 80,
+      "brier": {
+        "lo": 0.4212187499999998,
+        "mid": 0.45747874999999977,
+        "hi": 0.49376499999999995
+      },
+      "wr": {
+        "lo": 0.0875,
+        "mid": 0.15,
+        "hi": 0.225
+      },
+      "pnl": {
+        "lo": -191.0899999999999,
+        "mid": -126.75,
+        "hi": -58.760000000000005
+      },
+      "ece": 0.5621,
+      "reliability": [
+        {
+          "bucket": "0.5-0.6",
+          "n": 1,
+          "avg_predicted": 0.58,
+          "avg_actual": 0.0,
+          "gap": -0.58
+        },
+        {
+          "bucket": "0.6-0.7",
+          "n": 28,
+          "avg_predicted": 0.646,
+          "avg_actual": 0.286,
+          "gap": -0.36
+        },
+        {
+          "bucket": "0.7-0.8",
+          "n": 39,
+          "avg_predicted": 0.726,
+          "avg_actual": 0.051,
+          "gap": -0.675
+        },
+        {
+          "bucket": "0.8-0.9",
+          "n": 11,
+          "avg_predicted": 0.825,
+          "avg_actual": 0.182,
+          "gap": -0.644
+        },
+        {
+          "bucket": "0.9-1.0",
+          "n": 1,
+          "avg_predicted": 0.9,
+          "avg_actual": 0.0,
+          "gap": -0.9
+        }
+      ],
+      "walk_forward": [
+        {
+          "start_day": 0,
+          "end_day": 2,
+          "n": 20,
+          "brier": 0.4453
+        },
+        {
+          "start_day": 0,
+          "end_day": 3,
+          "n": 20,
+          "brier": 0.4161
+        },
+        {
+          "start_day": 1,
+          "end_day": 3,
+          "n": 20,
+          "brier": 0.4251
+        },
+        {
+          "start_day": 2,
+          "end_day": 4,
+          "n": 20,
+          "brier": 0.4471
+        },
+        {
+          "start_day": 2,
+          "end_day": 4,
+          "n": 20,
+          "brier": 0.4653
+        },
+        {
+          "start_day": 3,
+          "end_day": 5,
+          "n": 20,
+          "brier": 0.4642
+        },
+        {
+          "start_day": 3,
+          "end_day": 6,
+          "n": 20,
+          "brier": 0.4428
+        },
+        {
+          "start_day": 4,
+          "end_day": 7,
+          "n": 20,
+          "brier": 0.4727
+        },
+        {
+          "start_day": 4,
+          "end_day": 7,
+          "n": 20,
+          "brier": 0.4249
+        },
+        {
+          "start_day": 5,
+          "end_day": 8,
+          "n": 20,
+          "brier": 0.4409
+        },
+        {
+          "start_day": 7,
+          "end_day": 10,
+          "n": 20,
+          "brier": 0.4436
+        },
+        {
+          "start_day": 7,
+          "end_day": 11,
+          "n": 20,
+          "brier": 0.4565
+        },
+        {
+          "start_day": 7,
+          "end_day": 11,
+          "n": 20,
+          "brier": 0.4944
+        }
+      ],
+      "per_agent": [
+        {
+          "tid": "llama-contra",
+          "n": 6,
+          "wr": 0.667,
+          "brier": 0.2337,
+          "pnl": 19.92
+        },
+        {
+          "tid": "gemini-tact",
+          "n": 4,
+          "wr": 0.5,
+          "brier": 0.2812,
+          "pnl": 11.27
+        },
+        {
+          "tid": "selfhost-qwen4b",
+          "n": 5,
+          "wr": 0.6,
+          "brier": 0.2605,
+          "pnl": -1.68
+        },
+        {
+          "tid": "nvidia-minimax",
+          "n": 1,
+          "wr": null,
+          "brier": 0.5625,
+          "pnl": -2.0
+        },
+        {
+          "tid": "nvidia-llama70",
+          "n": 2,
+          "wr": 0.5,
+          "brier": 0.2313,
+          "pnl": -2.79
+        },
+        {
+          "tid": "mistral-large",
+          "n": 1,
+          "wr": null,
+          "brier": 0.4624,
+          "pnl": -3.0
+        },
+        {
+          "tid": "mistral-medium",
+          "n": 1,
+          "wr": null,
+          "brier": 0.4225,
+          "pnl": -3.0
+        },
+        {
+          "tid": "selfhost-dolphin3",
+          "n": 2,
+          "wr": null,
+          "brier": 0.3482,
+          "pnl": -3.96
+        },
+        {
+          "tid": "qwen-arb",
+          "n": 1,
+          "wr": null,
+          "brier": 0.49,
+          "pnl": -5.24
+        },
+        {
+          "tid": "gemini-anl",
+          "n": 4,
+          "wr": 0.25,
+          "brier": 0.3644,
+          "pnl": -8.2
+        },
+        {
+          "tid": "selfhost-gemma3",
+          "n": 4,
+          "wr": null,
+          "brier": 0.5083,
+          "pnl": -10.56
+        },
+        {
+          "tid": "selfhost-qwen06",
+          "n": 7,
+          "wr": 0.143,
+          "brier": 0.4217,
+          "pnl": -15.07
+        },
+        {
+          "tid": "mistral-small",
+          "n": 6,
+          "wr": null,
+          "brier": 0.5738,
+          "pnl": -15.8
+        },
+        {
+          "tid": "nemotron-120b",
+          "n": 10,
+          "wr": null,
+          "brier": 0.4541,
+          "pnl": -25.54
+        },
+        {
+          "tid": "mistral-nemo",
+          "n": 13,
+          "wr": null,
+          "brier": 0.6112,
+          "pnl": -30.18
+        },
+        {
+          "tid": "mistral-ministral",
+          "n": 13,
+          "wr": null,
+          "brier": 0.5615,
+          "pnl": -30.92
+        }
+      ]
+    },
+    "pol": {
+      "tf": "pol",
+      "ok": true,
+      "n_days": 30,
+      "n_bets": 378,
+      "brier": {
+        "lo": 0.25161164021164034,
+        "mid": 0.2672460317460319,
+        "hi": 0.28436031746031754
+      },
+      "wr": {
+        "lo": 0.47619047619047616,
+        "mid": 0.5291005291005291,
+        "hi": 0.5767195767195767
+      },
+      "pnl": {
+        "lo": -232.30999999999992,
+        "mid": 56.93999999999992,
+        "hi": 352.47999999999996
+      },
+      "ece": 0.1154,
+      "reliability": [
+        {
+          "bucket": "0.3-0.4",
+          "n": 2,
+          "avg_predicted": 0.385,
+          "avg_actual": 0.5,
+          "gap": 0.115
+        },
+        {
+          "bucket": "0.4-0.5",
+          "n": 7,
+          "avg_predicted": 0.451,
+          "avg_actual": 0.571,
+          "gap": 0.12
+        },
+        {
+          "bucket": "0.5-0.6",
+          "n": 83,
+          "avg_predicted": 0.551,
+          "avg_actual": 0.53,
+          "gap": -0.021
+        },
+        {
+          "bucket": "0.6-0.7",
+          "n": 191,
+          "avg_predicted": 0.635,
+          "avg_actual": 0.539,
+          "gap": -0.096
+        },
+        {
+          "bucket": "0.7-0.8",
+          "n": 87,
+          "avg_predicted": 0.72,
+          "avg_actual": 0.471,
+          "gap": -0.248
+        },
+        {
+          "bucket": "0.8-0.9",
+          "n": 2,
+          "avg_predicted": 0.845,
+          "avg_actual": 1.0,
+          "gap": 0.155
+        },
+        {
+          "bucket": "0.9-1.0",
+          "n": 6,
+          "avg_predicted": 0.94,
+          "avg_actual": 0.833,
+          "gap": -0.107
+        }
+      ],
+      "walk_forward": [
+        {
+          "start_day": 274,
+          "end_day": 274,
+          "n": 20,
+          "brier": 0.1944
+        },
+        {
+          "start_day": 274,
+          "end_day": 275,
+          "n": 20,
+          "brier": 0.2084
+        },
+        {
+          "start_day": 274,
+          "end_day": 276,
+          "n": 20,
+          "brier": 0.1844
+        },
+        {
+          "start_day": 274,
+          "end_day": 276,
+          "n": 20,
+          "brier": 0.1918
+        },
+        {
+          "start_day": 274,
+          "end_day": 276,
+          "n": 20,
+          "brier": 0.2053
+        },
+        {
+          "start_day": 275,
+          "end_day": 276,
+          "n": 20,
+          "brier": 0.2073
+        },
+        {
+          "start_day": 276,
+          "end_day": 276,
+          "n": 20,
+          "brier": 0.2419
+        },
+        {
+          "start_day": 276,
+          "end_day": 277,
+          "n": 20,
+          "brier": 0.2952
+        },
+        {
+          "start_day": 276,
+          "end_day": 277,
+          "n": 20,
+          "brier": 0.3472
+        },
+        {
+          "start_day": 276,
+          "end_day": 277,
+          "n": 20,
+          "brier": 0.3787
+        },
+        {
+          "start_day": 276,
+          "end_day": 280,
+          "n": 20,
+          "brier": 0.3517
+        },
+        {
+          "start_day": 277,
+          "end_day": 281,
+          "n": 20,
+          "brier": 0.3373
+        },
+        {
+          "start_day": 277,
+          "end_day": 281,
+          "n": 20,
+          "brier": 0.3312
+        },
+        {
+          "start_day": 277,
+          "end_day": 281,
+          "n": 20,
+          "brier": 0.3312
+        },
+        {
+          "start_day": 280,
+          "end_day": 281,
+          "n": 20,
+          "brier": 0.3242
+        },
+        {
+          "start_day": 281,
+          "end_day": 283,
+          "n": 20,
+          "brier": 0.2823
+        },
+        {
+          "start_day": 281,
+          "end_day": 283,
+          "n": 20,
+          "brier": 0.2535
+        },
+        {
+          "start_day": 281,
+          "end_day": 284,
+          "n": 20,
+          "brier": 0.2146
+        },
+        {
+          "start_day": 281,
+          "end_day": 284,
+          "n": 20,
+          "brier": 0.2095
+        },
+        {
+          "start_day": 283,
+          "end_day": 284,
+          "n": 20,
+          "brier": 0.2054
+        },
+        {
+          "start_day": 283,
+          "end_day": 285,
+          "n": 20,
+          "brier": 0.1998
+        },
+        {
+          "start_day": 284,
+          "end_day": 285,
+          "n": 20,
+          "brier": 0.216
+        },
+        {
+          "start_day": 284,
+          "end_day": 285,
+          "n": 20,
+          "brier": 0.2231
+        },
+        {
+          "start_day": 284,
+          "end_day": 285,
+          "n": 20,
+          "brier": 0.2533
+        },
+        {
+          "start_day": 285,
+          "end_day": 285,
+          "n": 20,
+          "brier": 0.2602
+        },
+        {
+          "start_day": 285,
+          "end_day": 286,
+          "n": 20,
+          "brier": 0.2399
+        },
+        {
+          "start_day": 285,
+          "end_day": 286,
+          "n": 20,
+          "brier": 0.2425
+        },
+        {
+          "start_day": 285,
+          "end_day": 286,
+          "n": 20,
+          "brier": 0.2177
+        },
+        {
+          "start_day": 286,
+          "end_day": 286,
+          "n": 20,
+          "brier": 0.2705
+        },
+        {
+          "start_day": 286,
+          "end_day": 286,
+          "n": 20,
+          "brier": 0.2941
+        },
+        {
+          "start_day": 286,
+          "end_day": 287,
+          "n": 20,
+          "brier": 0.3034
+        },
+        {
+          "start_day": 286,
+          "end_day": 287,
+          "n": 20,
+          "brier": 0.3326
+        },
+        {
+          "start_day": 286,
+          "end_day": 287,
+          "n": 20,
+          "brier": 0.2992
+        },
+        {
+          "start_day": 286,
+          "end_day": 287,
+          "n": 20,
+          "brier": 0.3022
+        },
+        {
+          "start_day": 287,
+          "end_day": 287,
+          "n": 20,
+          "brier": 0.288
+        },
+        {
+          "start_day": 287,
+          "end_day": 288,
+          "n": 20,
+          "brier": 0.279
+        },
+        {
+          "start_day": 287,
+          "end_day": 288,
+          "n": 20,
+          "brier": 0.2634
+        },
+        {
+          "start_day": 287,
+          "end_day": 288,
+          "n": 20,
+          "brier": 0.2395
+        },
+        {
+          "start_day": 288,
+          "end_day": 289,
+          "n": 20,
+          "brier": 0.2264
+        },
+        {
+          "start_day": 288,
+          "end_day": 289,
+          "n": 20,
+          "brier": 0.2373
+        },
+        {
+          "start_day": 288,
+          "end_day": 290,
+          "n": 20,
+          "brier": 0.2293
+        },
+        {
+          "start_day": 288,
+          "end_day": 290,
+          "n": 20,
+          "brier": 0.2633
+        },
+        {
+          "start_day": 289,
+          "end_day": 291,
+          "n": 20,
+          "brier": 0.2566
+        },
+        {
+          "start_day": 290,
+          "end_day": 291,
+          "n": 20,
+          "brier": 0.2595
+        },
+        {
+          "start_day": 290,
+          "end_day": 291,
+          "n": 20,
+          "brier": 0.3204
+        },
+        {
+          "start_day": 290,
+          "end_day": 291,
+          "n": 20,
+          "brier": 0.2977
+        },
+        {
+          "start_day": 291,
+          "end_day": 293,
+          "n": 20,
+          "brier": 0.316
+        },
+        {
+          "start_day": 291,
+          "end_day": 293,
+          "n": 20,
+          "brier": 0.3048
+        },
+        {
+          "start_day": 291,
+          "end_day": 293,
+          "n": 20,
+          "brier": 0.2351
+        },
+        {
+          "start_day": 291,
+          "end_day": 294,
+          "n": 20,
+          "brier": 0.2736
+        },
+        {
+          "start_day": 293,
+          "end_day": 294,
+          "n": 20,
+          "brier": 0.3319
+        },
+        {
+          "start_day": 293,
+          "end_day": 294,
+          "n": 20,
+          "brier": 0.3146
+        },
+        {
+          "start_day": 293,
+          "end_day": 294,
+          "n": 20,
+          "brier": 0.3689
+        },
+        {
+          "start_day": 294,
+          "end_day": 296,
+          "n": 20,
+          "brier": 0.3657
+        },
+        {
+          "start_day": 294,
+          "end_day": 297,
+          "n": 20,
+          "brier": 0.3076
+        },
+        {
+          "start_day": 294,
+          "end_day": 297,
+          "n": 20,
+          "brier": 0.2892
+        },
+        {
+          "start_day": 296,
+          "end_day": 297,
+          "n": 20,
+          "brier": 0.2395
+        },
+        {
+          "start_day": 296,
+          "end_day": 297,
+          "n": 20,
+          "brier": 0.2007
+        },
+        {
+          "start_day": 297,
+          "end_day": 298,
+          "n": 20,
+          "brier": 0.2287
+        },
+        {
+          "start_day": 297,
+          "end_day": 298,
+          "n": 20,
+          "brier": 0.2984
+        },
+        {
+          "start_day": 297,
+          "end_day": 298,
+          "n": 20,
+          "brier": 0.3042
+        },
+        {
+          "start_day": 297,
+          "end_day": 298,
+          "n": 20,
+          "brier": 0.3277
+        },
+        {
+          "start_day": 298,
+          "end_day": 299,
+          "n": 20,
+          "brier": 0.3159
+        },
+        {
+          "start_day": 298,
+          "end_day": 299,
+          "n": 20,
+          "brier": 0.2379
+        },
+        {
+          "start_day": 298,
+          "end_day": 299,
+          "n": 20,
+          "brier": 0.2158
+        },
+        {
+          "start_day": 298,
+          "end_day": 299,
+          "n": 20,
+          "brier": 0.166
+        },
+        {
+          "start_day": 299,
+          "end_day": 300,
+          "n": 20,
+          "brier": 0.14
+        },
+        {
+          "start_day": 299,
+          "end_day": 300,
+          "n": 20,
+          "brier": 0.1918
+        },
+        {
+          "start_day": 299,
+          "end_day": 302,
+          "n": 20,
+          "brier": 0.2303
+        },
+        {
+          "start_day": 299,
+          "end_day": 302,
+          "n": 20,
+          "brier": 0.2526
+        },
+        {
+          "start_day": 300,
+          "end_day": 302,
+          "n": 20,
+          "brier": 0.3004
+        },
+        {
+          "start_day": 301,
+          "end_day": 303,
+          "n": 20,
+          "brier": 0.2923
+        }
+      ],
+      "per_agent": [
+        {
+          "tid": "qwen-quant",
+          "n": 59,
+          "wr": 0.61,
+          "brier": 0.2471,
+          "pnl": 55.44
+        },
+        {
+          "tid": "mistral-medium",
+          "n": 23,
+          "wr": 0.696,
+          "brier": 0.2197,
+          "pnl": 35.6
+        },
+        {
+          "tid": "qwen-arb",
+          "n": 55,
+          "wr": 0.491,
+          "brier": 0.2865,
+          "pnl": 19.93
+        },
+        {
+          "tid": "mistral-small",
+          "n": 23,
+          "wr": 0.696,
+          "brier": 0.2249,
+          "pnl": 17.04
+        },
+        {
+          "tid": "nvidia-llama70",
+          "n": 3,
+          "wr": 0.667,
+          "brier": 0.2217,
+          "pnl": 2.8
+        },
+        {
+          "tid": "gemini-anl",
+          "n": 39,
+          "wr": 0.641,
+          "brier": 0.23,
+          "pnl": 1.97
+        },
+        {
+          "tid": "selfhost-qwen06",
+          "n": 2,
+          "wr": 0.5,
+          "brier": 0.2725,
+          "pnl": 0.34
+        },
+        {
+          "tid": "nemotron-120b",
+          "n": 7,
+          "wr": 0.286,
+          "brier": 0.2829,
+          "pnl": 0.06
+        },
+        {
+          "tid": "mistral-ministral",
+          "n": 16,
+          "wr": 0.375,
+          "brier": 0.3026,
+          "pnl": -0.28
+        },
+        {
+          "tid": "mistral-nemo",
+          "n": 3,
+          "wr": 0.333,
+          "brier": 0.2933,
+          "pnl": -0.41
+        },
+        {
+          "tid": "nvidia-minimax",
+          "n": 5,
+          "wr": 0.4,
+          "brier": 0.3158,
+          "pnl": -0.46
+        },
+        {
+          "tid": "selfhost-qwen4b",
+          "n": 4,
+          "wr": 0.5,
+          "brier": 0.2965,
+          "pnl": -2.89
+        },
+        {
+          "tid": "mistral-large",
+          "n": 15,
+          "wr": 0.533,
+          "brier": 0.2511,
+          "pnl": -2.99
+        },
+        {
+          "tid": "selfhost-gemma3",
+          "n": 4,
+          "wr": 0.25,
+          "brier": 0.3675,
+          "pnl": -3.81
+        },
+        {
+          "tid": "selfhost-dolphin3",
+          "n": 3,
+          "wr": null,
+          "brier": 0.333,
+          "pnl": -4.2
+        },
+        {
+          "tid": "gemini-tact",
+          "n": 44,
+          "wr": 0.5,
+          "brier": 0.2786,
+          "pnl": -14.53
+        },
+        {
+          "tid": "llama-contra",
+          "n": 73,
+          "wr": 0.452,
+          "brier": 0.292,
+          "pnl": -46.67
+        }
+      ]
+    }
+  },
+  "cross_tf_test": {
+    "t": 8.9698,
+    "df": 107.3,
+    "p_two_sided": 0.0,
+    "mean_brier_a": 0.4575,
+    "mean_brier_b": 0.2672
+  }
+}

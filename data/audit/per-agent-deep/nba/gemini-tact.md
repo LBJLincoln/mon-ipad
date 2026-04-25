@@ -1,8 +1,8 @@
 # NBA — `gemini-tact` decision trail
-Generated 2026-04-25 13:19 UTC
-80 days with activity
+Generated 2026-04-25 14:23 UTC
+97 days with activity
 
-**Bankroll**: $100.00 → $72.85 (-27.15)
+**Bankroll**: $100.00 → $66.16 (-33.84)
 
 ## Day 3 — 2025-10-24 (bankroll: $100.00 → $95.32)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=8.0%): Focusing on first-half totals and schedule-based spread plays. Today’s approach leverages schedule spots and first-half efficiency metrics to identify value.
@@ -57,3 +57,23 @@ Generated 2026-04-25 13:19 UTC
 |---|---|---:|---:|---:|:---:|---:|---|
 | PHX@MIA | pp_steals_star1_home | 1.91 | 0.091 | $2.54 | ✗ | -2.54 | Norman Powell's 22p usage and 1.5 spg career average vs MIA's 13.8 TOV/gm create a steal-heavy matchup; model edge 9.1% on pp_steals_star1_home. |
 | MIN@MIL | pp_blocks_star3_away | 1.91 | 0.111 | $2.99 | ✗ | -2.99 | Anthony Edwards' 0.9 bpg career average vs Giannis' 1.4 bpg creates a blocks mismatch; model edge 11.1% on pp_blocks_star3_away. |
+
+## Day 86 — 2026-01-19 (bankroll: $72.85 → $69.21)
+> **Strategy:** STRUCTURAL COMPLEMENT [nvidia-llama70] (edge=6.2%): Today, I deviate from the leader's high-conviction favorites by targeting schedule-spot edges in halves/totals where rest differential and tempo create exploitable gaps. My REASONING TEMPLATE (DMAD) prioritizes first-half totals and correlated spreads with rest ≥2 days, avoiding consensus lockstep on moneylines.
+> **Cash:** 0.7702% — Selective betting on halves/totals with rest differential edges; cash held for future schedule-spot opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @3.65 stake=$3.64 edge=0.110 won=✗ profit=-3.64 
+  legs: DAL@NYK:h1_total_over@1.91✗ + UTA@SAS:h1_total_under@1.91✓
+  > Correlated halves/totals on high-tempo games (NYK/DAL + SAS/UTA) create compounded edge with lower variance than single plays.
+
+## Day 94 — 2026-01-27 (bankroll: $69.21 → $66.16)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.1%): My half_kelly schedule-spot sniper template targets rest-differential ≥2 days and first-half totals where market lines are 1-2pts softer than model. Today I exploit DEN@DET's high-tempo matchup and model's +7.6 margin edge by fading the home favorite in a neutral-altitude game.
+> **Cash:** 0.7764% — Selective betting on high-conviction edges; remaining cash held for opportunistic value plays if lines move.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| NOP@OKC | pp_steals_star2_away | 1.91 | 0.111 | $3.05 | ✗ | -3.05 | OKC's 11.1% team steal rate vs league avg 8.3% creates 11.1% edge on away player steals for secondary defenders. |

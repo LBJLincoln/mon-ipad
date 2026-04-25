@@ -1,5 +1,5 @@
 # PQTF — per-game cross-agent forensic
-Generated 2026-04-25 13:22 UTC
+Generated 2026-04-25 14:24 UTC
 Last 14 dates expanded (295 total game-rows in JSON)
 
 > Reads: for each (date, game/event), which agents picked WHAT and WHY.

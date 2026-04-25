@@ -1,5 +1,5 @@
 # PQTF — per-agent deep audit (rollup)
-Generated 2026-04-25 13:22 UTC
+Generated 2026-04-25 14:24 UTC
 Total simmed days: 50
 Per-agent narrative files: `data/audit/per-agent-deep/pqtf/<agent>.md`
 

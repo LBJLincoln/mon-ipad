@@ -1,5 +1,5 @@
 # PQTF — `gemini-anl` decision trail
-Generated 2026-04-25 13:22 UTC
+Generated 2026-04-25 14:24 UTC
 25 days with activity
 
 **Bankroll**: $100.00 → $83207.88 (+83107.88)

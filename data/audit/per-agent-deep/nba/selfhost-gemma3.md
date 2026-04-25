@@ -1,8 +1,8 @@
 # NBA — `selfhost-gemma3` decision trail
-Generated 2026-04-25 13:19 UTC
-80 days with activity
+Generated 2026-04-25 14:23 UTC
+97 days with activity
 
-**Bankroll**: $96.04 → $32.23 (-63.81)
+**Bankroll**: $96.04 → $24.72 (-71.32)
 
 ## Day 5 — 2025-10-26 (bankroll: $96.04 → $97.13)
 > **Strategy:** STRUCTURAL DIVERGE [selfhost-qwen4b] (edge=8.0%): Using weighted factor model {form 0.4, rest 0.3, home 0.3} to identify non-consensus moneyline overlays. Council plan favors IND@MIN ml_home (1.16), but my model shows SAS@BKN ml_home (1.20) with stronger form (SAS 7-0 vs MIN 3-5) and rest advantage (SAS 2d rest vs BKN 1d). Targeting SAS ml_home for higher edge and DMAD_DIVERGE from peer allocations.
@@ -263,3 +263,42 @@ Generated 2026-04-25 13:19 UTC
 - 2-leg @3.65 stake=$0.66 edge=0.120 won=✗ profit=-0.66 
   legs: NOP@ORL:pp_steals_star2_home@1.91✗ + WAS@PHX:pp_steals_star2_home@1.91✗
   > Correlated steals props in high-turnover games (ORL and PHX) compound edge to 12% with combined odds (3.2x payout).
+
+## Day 85 — 2026-01-18 (bankroll: $32.23 → $30.94)
+> **Strategy:** STRUCTURAL DIVERGE [nvidia-llama70] (edge=7.7%): Today, I deviate from the leader's consensus on BKN@CHI by targeting a non-consensus prop edge (pp_steals_star1_home) where the model's edge (10.0%) is 2.3% higher than the next-best pp_* category. This exploits DMAD anti-lockstep while maintaining high-conviction on a low-variance stat.
+> **Cash:** 0.8331% — Holding cash to rebuild calibration under probation; no edges >0.07 in non-prop categories and council's focus on parlays is structurally diverged.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| BKN@CHI | pp_steals_star1_home | 1.91 | 0.100 | $1.29 | ✗ | -1.29 | Model edge 10.0% on pp_steals_star1_home (CHI) vs market price; CHI's defensive rating (117.4) and Giddey's 18p usage suggest high steal potential for starters. |
+
+## Day 87 — 2026-01-20 (bankroll: $30.94 → $26.82)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.9%): Today, I exploit the DMAD anti-consensus gate by targeting a non-crowded player prop in a blowout game (MIN@UTA) where the market underestimates defensive stats for the away team. My REASONING TEMPLATE (DMAD) prioritizes breadth over moneylines, focusing on pp_steals_star3_away with a 10.0% edge.
+> **Cash:** 0.8294% — Top-3 agents (llama-contra, nvidia-llama70, minimax-m2.7) hold 60% of fleet bankroll; preserving capital aligns with collective survival.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| MIN@UTA | pp_steals_star3_away | 1.91 | 0.100 | $1.24 | ✗ | -1.24 | MIN's defensive unit (Jaden McDaniels, Anthony Edwards) averages 8.7 steals per game; UTA's turnover-prone guards (Keyonte George) force extra steals in blowouts. |
+| SAS@HOU | pp_blocks_role1_away | 1.91 | 0.100 | $1.19 | ✗ | -1.19 | HOU's frontcourt (Alperen Sengun, Amen Thompson) averages 5.2 blocks per game; SAS's paint defense is porous, creating structural edge. |
+| MIA@SAC | pp_steals_star2_home | 1.91 | 0.100 | $1.14 | ✗ | -1.14 | SAC's guards (Zach LaVine, DeMar DeRozan) average 3.1 steals per game; MIA's transition defense is elite, but SAC's poor ball security creates steals in losses. |
+
+**Parlays:**
+- 2-leg @3.65 stake=$0.55 edge=0.100 won=✗ profit=-0.55 
+  legs: MIN@UTA:pp_steals_star3_away@1.91✗ + SAS@HOU:pp_blocks_role1_away@1.91✗
+  > Both legs target defensive props in blowout games with identical 10.0% edges, compounding payouts via correlated variance.
+
+## Day 88 — 2026-01-21 (bankroll: $26.82 → $25.75)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.9%): Today, I will focus on high-edge opportunities in less crowded categories, leveraging my weighted factor model to identify value in specific player props and alternative spreads.
+> **Cash:** 0.82% — Holding cash to preserve bankroll and wait for higher-edge opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| CLE@CHA | pp_threes_star3_away | 1.91 | 0.111 | $1.07 | ✗ | -1.07 | Donovan Mitchell has a high three-point percentage and volume, making this a strong play. |
+
+## Day 90 — 2026-01-23 (bankroll: $25.75 → $24.72)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.0%): My REASONING TEMPLATE (DMAD) prioritizes non-consensus props with ≥0.07 edge. Today, I exploit underrated player props in blowout-proof games where market odds ignore micro-stats.
+> **Cash:** 0.8125% — No allocations met edge ≥0.07 in category-families not crowded by peers; cash held to preserve capital for tomorrow's higher-edge opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| NOP@MEM | pp_threes_star1_home | 1.91 | 0.110 | $1.03 | ✗ | -1.03 | Ty Jerome's 3P% (38% on 4.2 attempts) is a hidden edge in MEM's defensive scheme; model edge 11.1% on threes prop. |

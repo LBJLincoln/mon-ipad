@@ -1,8 +1,8 @@
 # POL — `qwen-arb` decision trail
-Generated 2026-04-25 13:19 UTC
-36 days with activity
+Generated 2026-04-25 14:23 UTC
+53 days with activity
 
-**Bankroll**: $100.00 → $77.29 (-22.71)
+**Bankroll**: $100.00 → $67.39 (-32.61)
 
 ## Day 0 — 2025-01-02 (bankroll: $100.00 → $102.94)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] citing CROSS-SECTOR ARBITRAGE. I will bet on QCOM, leveraging the insider trade signal from the SEC, as it indicates a potential increase in the tech sector, and I will allocate 15% of my bankroll to XLE, a sector ETF that historically tracks the energy sector, as the donor is sector=energy
@@ -274,3 +274,134 @@ Generated 2026-04-25 13:19 UTC
 | 7 | insider_trade:long | — | — | $11.10 | ✓ | +0.92 | CXW insider trade cluster (7 events, SEC Form 4) in private_prisons, a sector with 59% win_rate and neutral avg_ret (+0.0058). Strength=0.60 signals accumulation. |
 | 16 | insider_trade:long | — | — | $7.40 | ✗ | -0.03 | PFE insider trade (Form 4, SEC) in healthcare, a sector with 61% win_rate and +0.0228 avg_ret. Signal strength=0.60 suggests accumulation despite recent flat returns. |
 | 1 | insider_trade:short | — | — | $6.17 | ✓ | +0.58 | AMZN insider trade cluster (6 events, SEC Form 4) in tech, a sector with 33% win_rate and -0.0078 avg_ret. Strength=0.60 may indicate profit-taking or hedging. |
+
+## Day 36 — 2025-02-26 (bankroll: $77.29 → $79.83)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.2%): My cross-sector arbitrage template identifies underpriced third-sector beneficiaries from insider trades in correlated sectors.
+> **Cash:** 0.0833% — Holding minimal cash to meet deployment requirements.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:long | — | — | $12.88 | ✗ | -1.01 | Insider trade in COIN with strong signal strength and SEC agency involvement suggests potential upside in finance. |
+| 4 | insider_trade:long | — | — | $12.88 | ✓ | +2.83 | Insider trade in JNJ with strong signal strength and SEC agency involvement suggests potential upside in healthcare. |
+| 2 | insider_trade:short | — | — | $9.66 | ✓ | +0.72 | Insider trade in GOOGL with strong signal strength but tech sector trends show lower win rate. |
+
+## Day 37 — 2025-02-27 (bankroll: $79.83 → $78.98)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.2%): My cross-sector arbitrage template identifies underpriced third-sector beneficiaries from insider trades in tech and consumer staples.
+> **Cash:** 0.1429% — Holding 10% cash to manage risk and maintain liquidity.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 15 | insider_trade:long | — | — | $13.57 | ✓ | +0.30 | Strong insider trade signal in KO with high signal strength and SEC agency corroboration. |
+| 1 | insider_trade:short | — | — | $11.40 | ✗ | -0.47 | Multiple insider trades in AAPL with strong signal strength but tech sector has poor recent performance. |
+| 12 | insider_trade:long | — | — | $8.55 | ✗ | -0.68 | Insider trade in CVX with strong signal strength and SEC agency corroboration. |
+
+## Day 38 — 2025-02-28 (bankroll: $78.98 → $77.68)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My cross-sector arbitrage template focuses on identifying underpriced third-sector beneficiaries, which diverges from Llama Contrarian's momentum-based approach.
+> **Cash:** 0.1429% — Holding a small percentage of cash to manage risk and maintain liquidity.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 11 | insider_trade:long | — | — | $13.43 | ✓ | +0.01 | Strong insider trade signal in PFE with high signal strength and SEC agency involvement. |
+| 2 | insider_trade:long | — | — | $11.28 | ✓ | +0.16 | Insider trade signal in KO with strong signal strength and SEC agency involvement. |
+| 1 | insider_trade:short | — | — | $8.46 | ✗ | -1.47 | Insider trade signal in GOOGL with a negative sector trend in tech. |
+
+## Day 42 — 2025-03-06 (bankroll: $77.68 → $76.66)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.1%): Grudger canon prioritizes defensive healthcare and avoids overcrowded tech shorts. Council’s XLE/XLF focus is congested by top-3 peers; structural divergence fills healthcare gap with PFE insider buy signals.
+> **Cash:** 0.1429% — Residual cash for opportunistic fills; 90% deployed meets collective goal
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 3 | insider_trade:long | — | — | $11.10 | ✓ | +1.64 | JNJ insider_trade (event#3) with SEC Form 4 and healthcare donor signals undervalued pharma; healthcare trend avg_ret=+0.0237 win_rate=56% over 30d |
+| 7 | insider_trade:long | — | — | $13.21 | ✓ | +1.31 | PFE insider_trade (event#7) with SEC Form 4 and healthcare donor signals defensive pharma play; PFE is 4.2% of XLV holdings |
+| 19 | insider_trade:long | — | — | $8.32 | ✗ | -3.97 | TSLA insider_trade (event#19) with SEC Form 4 and tech donor provides macro tech rotation hedge; consumer_staples trend avg_ret=+0.0358 win_rate=98% |
+
+## Day 43 — 2025-03-07 (bankroll: $76.66 → $72.34)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.2%): ARCHETYPE[foreign_sovereign_flow]: Grudger canon prioritizes retaliatory but forgiving stance on energy/finance insider trades, diverging from leader's XLV/healthcare focus to exploit energy sector's +1.60% avg_ret and 77% win_rate.
+> **Cash:** 0.05% — Reserve for potential sector rotation or additional energy/finance opportunities if new signals emerge.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 8 | insider_trade:long | — | — | $13.03 | ✓ | +1.73 | OKLO insider_trade (event#8) with SEC Form 4 and energy donor — sector trend +1.60% avg_ret, 77% win_rate, strength=0.60 indicates undervalued energy play. |
+| 7 | insider_trade:long | — | — | $9.58 | ✗ | -4.51 | HOOD insider_trade (event#7) with SEC Form 4 and finance donor — sector trend -7.89% avg_ret but insider signal strength=0.60 suggests potential reversal in finance-heavy ETFs. |
+| 1 | insider_trade:long | — | — | $7.67 | ✗ | -1.31 | CMCSA insider_trade (event#1) with SEC Form 4 and communications donor — sector trend +3.60% avg_ret, 100% win_rate, strength=0.60 indicates strong communications play. |
+| 2 | insider_trade:long | — | — | $5.75 | ✗ | -0.23 | GOOGL insider_trade (event#2) with SEC Form 4 and tech donor — sector trend -1.79% avg_ret but insider signal strength=0.60 suggests potential tech rebound. |
+
+## Day 44 — 2025-03-10 (bankroll: $72.34 → $71.89)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=10.5%): My cross-sector arbitrage template prioritizes tech and healthcare sectors based on insider trading signals, diverging from llama-contra's focus on finance and energy.
+> **Cash:** 0.1% — Holding minimal cash to maximize deployment while maintaining liquidity.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 3 | insider_trade:long | — | — | $12.30 | ✓ | +0.46 | QCOM insider trade signals strong potential in tech sector, supported by SEC Form 4 data. |
+| 1 | insider_trade:long | — | — | $10.85 | ✗ | -1.18 | CMCSA insider trade indicates potential upside in communications sector, backed by SEC Form 4. |
+| 7 | insider_trade:long | — | — | $7.23 | ✓ | +0.27 | Repeated QCOM insider trades suggest healthcare sector benefits, supported by SEC Form 4 data. |
+
+## Day 45 — 2025-03-11 (bankroll: $71.89 → $65.20)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=10.5%): My cross-sector arbitrage template prioritizes underpriced third-sector beneficiaries, diverging from llama-contra's focus on direct sector plays. I will focus on correlated ETFs diverging > 2σ from historical beta.
+> **Cash:** 0.2941% — Holding 25% cash to manage risk and maintain flexibility for future opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:long | — | — | $8.46 | ✗ | -1.65 | FOUR's insider trade in finance suggests potential spillover benefits to industrials due to correlated sector movements. |
+| 2 | insider_trade:short | — | — | $8.46 | ✗ | -3.95 | GEO's insider trade in private prisons may indicate regulatory headwinds for healthcare sector. |
+| 6 | insider_trade:long | — | — | $8.46 | ✗ | -1.09 | KO's insider trade in consumer staples signals strength in a historically stable sector. |
+
+## Day 46 — 2025-03-12 (bankroll: $65.20 → $65.27)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=11.2%): My cross-sector arbitrage template prioritizes indirect beneficiaries from insider trades in tech, focusing on healthcare and industrials.
+> **Cash:** 0.0833% — Holding minimal cash to maximize deployment as per council guidelines.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:long | — | — | $10.87 | ✗ | -1.67 | Insider trade in tech (AMZN) suggests potential spillover to healthcare sector. |
+| 4 | insider_trade:long | — | — | $10.87 | ✓ | +0.97 | Insider trade in tech (NVDA) indicates potential strength in industrials. |
+| 10 | insider_trade:long | — | — | $8.15 | ✓ | +0.77 | Insider trade in tech (QCOM) suggests healthcare sector strength. |
+
+## Day 47 — 2025-03-13 (bankroll: $65.27 → $62.10)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.5%): My cross-sector arbitrage template identifies correlated ETFs diverging > 2σ from historical beta. Focus on consumer staples and healthcare sectors based on insider trades and sector trends.
+> **Cash:** 0.1875% — Holding some cash to manage risk and maintain flexibility for future opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 2 | insider_trade:long | — | — | $10.20 | ✗ | -0.69 | Insider trade in consumer staples sector with strong signal strength and SEC agency. |
+| 1 | insider_trade:long | — | — | $8.16 | ✗ | -1.23 | Insider trade in tech sector with strong signal strength and SEC agency. |
+| 3 | insider_trade:long | — | — | $8.16 | ✗ | -1.25 | Insider trade in tech sector with strong signal strength and SEC agency, suggesting potential spillover to healthcare. |
+
+## Day 48 — 2025-03-14 (bankroll: $62.10 → $61.64)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.5%): My cross-sector arbitrage template prioritizes multi-agency corroboration. I will focus on sectors with strong insider trading signals and positive sector trends.
+> **Cash:** 0.0769% — Holding minimal cash to maximize deployment as per council's recommendation.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:long | — | — | $9.55 | ✗ | -0.46 | Strong insider trading signal in the tech sector with high signal strength and SEC agency involvement. |
+| 2 | insider_trade:long | — | — | $9.55 | ✗ | -0.46 | Insider trading in the tech sector with strong signal strength and SEC agency involvement. |
+| 3 | insider_trade:short | — | — | $9.55 | ✓ | +0.46 | Insider trading in the tech sector with strong signal strength but negative sector trend. |
+
+## Day 49 — 2025-03-17 (bankroll: $61.64 → $68.09)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.7%): My cross-sector arbitrage template prioritizes multi-agency corroboration in energy and healthcare sectors, diverging from Llama Contrarian's focus on finance and tech.
+> **Cash:** 0.1% — Holding minimal cash to maximize deployment and compounding potential.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:long | — | — | $9.25 | ✓ | +2.74 | Strong insider trading signal in the finance sector with high signal strength and SEC agency involvement. |
+| 3 | insider_trade:long | — | — | $10.48 | ✓ | +4.84 | Insider trading in the private_prisons sector with strong signal strength and SEC involvement. |
+| 5 | insider_trade:short | — | — | $6.16 | ✗ | -1.13 | Insider trading in the consumer_disc sector with strong signal strength but negative sector trends. |
+
+## Day 50 — 2025-03-18 (bankroll: $68.09 → $66.54)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.8%): My cross-sector arbitrage template identifies underpriced third-sector beneficiaries from insider trades in energy and tech, focusing on materials and industrials.
+> **Cash:** 0.0833% — Holding minimal cash to meet deployment requirements and maintain liquidity.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 10 | insider_trade:long | — | — | $11.35 | ✗ | -0.42 | Strong insider trading signal in the energy sector with high win rate and positive average returns. |
+| 3 | insider_trade:long | — | — | $11.35 | ✗ | -1.86 | Insider trading signal in the healthcare sector with strong signal strength and high win rate. |
+| 1 | insider_trade:long | — | — | $8.51 | ✓ | +0.73 | Insider trading signal in the tech sector with strong signal strength. |
+
+## Day 51 — 2025-03-19 (bankroll: $66.54 → $67.39)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.8%): My cross-sector arbitrage template identifies underpriced third-sector beneficiaries, complementing llama-contra's focus on insider-driven communications and private prisons regulatory arb with energy hedge.
+> **Cash:** 0.1% — Holding minimal cash to maximize deployment and compounding potential.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:long | — | — | $8.65 | ✗ | -0.05 | Strong insider trading signal in the communications sector with high signal strength and SEC agency involvement. |
+| 2 | insider_trade:short | — | — | $8.65 | ✓ | +0.64 | Insider trading signal in private prisons with regulatory overhang and SEC agency involvement. |
+| 7 | insider_trade:long | — | — | $6.65 | ✓ | +0.26 | Insider trading signal in the tech sector with strong signal strength and SEC agency involvement. |

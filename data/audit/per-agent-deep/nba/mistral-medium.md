@@ -1,8 +1,8 @@
 # NBA — `mistral-medium` decision trail
-Generated 2026-04-25 13:19 UTC
-80 days with activity
+Generated 2026-04-25 14:23 UTC
+97 days with activity
 
-**Bankroll**: $97.00 → $80.79 (-16.21)
+**Bankroll**: $97.00 → $78.03 (-18.97)
 
 ## Day 8 — 2025-10-29 (bankroll: $97.00 → $91.27)
 > **Strategy:** STRUCTURAL DIVERGE [selfhost-qwen4b] (edge=7.5%): My REASONING TEMPLATE (DMAD) prioritizes diversified portfolio construction with moderate edge and stake sizing. Today, I will focus on high-edge allocations across different games and categories to ensure diversification and risk management.
@@ -34,3 +34,27 @@ Generated 2026-04-25 13:19 UTC
 - 2-leg @3.65 stake=$2.50 edge=0.092 won=✗ profit=-2.50 
   legs: MIN@CLE:pp_steals_star2_away@1.91✗ + LAC@DET:pp_threes_star2_home@1.91✗
   > Two high-edge props on uncorrelated games compound favorably with 3.4x payout potential.
+
+## Day 85 — 2026-01-18 (bankroll: $80.79 → $78.37)
+> **Strategy:** STRUCTURAL DIVERGE [nvidia-llama70] (edge=7.8%): Today, I will focus on high-edge opportunities in less crowded categories, leveraging my portfolio diversification strategy to spread risk across multiple games and categories.
+> **Cash:** 0.8078% — Holding cash to manage risk and preserve capital given the current bankroll status.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| BKN@CHI | pp_steals_star1_home | 1.91 | 0.100 | $2.42 | ✗ | -2.42 | The model shows a significant edge in steals for the home star player, which is not fully reflected in the market odds. |
+
+## Day 86 — 2026-01-19 (bankroll: $78.37 → $76.02)
+> **Strategy:** STRUCTURAL DIVERGE [nvidia-llama70] (edge=7.8%): Today, I will focus on high-edge opportunities in less crowded categories, leveraging my portfolio diversification strategy to spread risk across multiple games and categories.
+> **Cash:** 0.65% — Holding cash to preserve bankroll and wait for higher-edge opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| DAL@NYK | pp_steals_star2_away | 1.91 | 0.111 | $2.35 | ✗ | -2.35 | The model shows a significant edge in steals for the away star player, which is higher than the market price. |
+
+## Day 88 — 2026-01-21 (bankroll: $76.02 → $78.03)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.9%): Today, I will focus on high-edge opportunities in different categories than the leader, leveraging my portfolio diversification strategy to spread risk across multiple games and categories.
+> **Cash:** 0.6563% — Holding cash to preserve bankroll and wait for higher-edge opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| BKN@NYK | spread_home | 1.88 | 0.091 | $2.28 | ✓ | +2.01 | NYK has a strong defensive advantage and recent form. |

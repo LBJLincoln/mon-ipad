@@ -1,8 +1,8 @@
 # POL — `mistral-nemo` decision trail
-Generated 2026-04-25 13:19 UTC
-36 days with activity
+Generated 2026-04-25 14:23 UTC
+53 days with activity
 
-**Bankroll**: $100.00 → $106.52 (+6.52)
+**Bankroll**: $100.00 → $104.52 (+4.52)
 
 ## Day 4 — 2025-01-08 (bankroll: $100.00 → $101.75)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=6.5%): Applying momentum chase strategy to focus on sectors with strong 5-day momentum > 2σ, particularly in tech and healthcare.
@@ -46,3 +46,51 @@ Generated 2026-04-25 13:19 UTC
 | 14 | insider_trade:long | — | — | $10.32 | ✓ | +2.43 | Insider trades in KO suggest stability in consumer staples, and XLP is a suitable ETF for this sector. |
 | 8 | insider_trade:long | — | — | $10.32 | ✓ | +0.75 | Insider trades in FOUR indicate potential growth in finance, and XLF is a relevant ETF for this sector. |
 | 25 | insider_trade:long | — | — | $10.32 | ✓ | +0.15 | Insider trades in META suggest potential growth in tech, and XLK is a suitable ETF for this sector. |
+
+## Day 36 — 2025-02-26 (bankroll: $106.52 → $106.06)
+> **Strategy:** STRUCTURAL COMPLEMENT [Gemini Tactical] (edge=5.2%): My momentum hunter template prioritizes consumer staples (XLP) over private prisons (XLRE) due to 30d win_rate=94% vs 71% and sector_trend avg_ret=+0.0433 vs +0.0001. I will exploit the divergence by targeting XLP long where peer focused on XLRE.
+> **Cash:** 0.45% — No event met the ≥6% edge threshold required by post-mortem doctrine; preserving capital for higher-conviction opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 5 | insider_trade:long | — | — | $9.52 | ✗ | -0.46 | SEC Form 4 insider_trade in tech sector (META) with donor=tech delivered=NO suggests potential undervaluation. Tech sector_trend shows avg_ret=-0.0086 but momentum hunter template favors tech due to insider activity clustering. |
+
+## Day 37 — 2025-02-27 (bankroll: $106.06 → $106.50)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My momentum hunter template focuses on sectors with strong 5-day momentum. Today, I will focus on consumer staples and energy sectors due to their strong momentum and insider signals.
+> **Cash:** 0.25% — Holding some cash to preserve capital and manage risk.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:long | — | — | $10.61 | ✓ | +0.44 | Insider trade in AAPL with strong signal strength and SEC agency. |
+
+## Day 44 — 2025-03-10 (bankroll: $106.50 → $106.10)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.5%): My momentum chase template prioritizes sectors with strong 5-day momentum. I will focus on sectors with strong momentum signals and diverge from llama-contra's focus on insider tracking.
+> **Cash:** 0.25% — Holding some cash to preserve capital and manage risk.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 3 | insider_trade:short | — | — | $10.65 | ✗ | -0.40 | QCOM insider trade with a signal strength of 0.60 and a clear sector signal in tech. |
+
+## Day 45 — 2025-03-11 (bankroll: $106.10 → $108.17)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.5%): My momentum chase template prioritizes sectors with strong recent performance. I will focus on sectors with 5-day momentum > 2σ, particularly consumer staples and healthcare, which have shown strong win rates and positive average returns.
+> **Cash:** 0.4% — Holding some cash to preserve capital and maintain flexibility for future trades.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:short | — | — | $10.61 | ✓ | +2.07 | FOUR's insider trade in finance with a strong signal strength of 0.60 but a low win rate of 16%. |
+
+## Day 46 — 2025-03-12 (bankroll: $108.17 → $106.14)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My momentum chase template prioritizes sectors with strong recent performance and high win rates. I will focus on consumer staples and healthcare sectors based on their positive trends and win rates.
+> **Cash:** 0.25% — Holding some cash for stability and to manage risk.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 3 | insider_trade:long | — | — | $10.82 | ✗ | -2.03 | Healthcare sector has a positive trend and a decent win rate, making it a good choice for stability. |
+
+## Day 47 — 2025-03-13 (bankroll: $106.14 → $104.52)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.5%): My momentum chase template prioritizes sectors with strong recent performance, diverging from Llama Contrarian's contrarian approach.
+> **Cash:** 0.25% — Holding some cash to preserve capital and manage risk.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 3 | insider_trade:long | — | — | $10.61 | ✗ | -1.62 | META's insider trade in tech with a signal strength of 0.60. |

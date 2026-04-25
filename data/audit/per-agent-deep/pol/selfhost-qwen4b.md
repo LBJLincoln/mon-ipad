@@ -1,6 +1,6 @@
 # POL — `selfhost-qwen4b` decision trail
-Generated 2026-04-25 13:19 UTC
-36 days with activity
+Generated 2026-04-25 14:23 UTC
+53 days with activity
 
 **Bankroll**: $100.00 → $97.86 (-2.14)
 

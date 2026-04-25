@@ -1,0 +1,198 @@
+{
+  "ts": "2026-04-23T08:40:02.087799Z",
+  "nba": {
+    "space": "LBJLincoln26/nba-llm-trading-floor",
+    "days_checked": [
+      "day-125",
+      "day-126",
+      "day-127"
+    ],
+    "bets": 7,
+    "deploy": {
+      "avg": 0.003,
+      "min": 0.0,
+      "p50": 0.0,
+      "max": 0.061,
+      "n": 51
+    },
+    "fleet_range": [
+      22.66,
+      218.07
+    ],
+    "checks": {
+      "leakage": "ok",
+      "source": "ok",
+      "wr": "ok",
+      "lockstep": "ok",
+      "walkforward": "ok"
+    },
+    "details": {
+      "leakage": {
+        "pairs": 0,
+        "note": "insufficient-bets"
+      },
+      "source": {
+        "counts": {
+          "direct": 7
+        },
+        "direct_ratio": 1.0
+      },
+      "wr": {
+        "flags": []
+      },
+      "lockstep": {
+        "worst_share": 0,
+        "per_day": [
+          {
+            "day": "data/decisions/day-125.json",
+            "share_10": 0,
+            "share_all": 0,
+            "total": 3,
+            "share_pct": 0.0
+          },
+          {
+            "day": "data/decisions/day-126.json",
+            "share_10": 0,
+            "share_all": 0,
+            "total": 3,
+            "share_pct": 0.0
+          },
+          {
+            "day": "data/decisions/day-127.json",
+            "share_10": 0,
+            "share_all": 0,
+            "total": 1,
+            "share_pct": 0.0
+          }
+        ]
+      },
+      "walkforward": {
+        "note": "nba-walkforward-check-not-implemented"
+      }
+    }
+  },
+  "pol": {
+    "space": "LBJLincoln26/political-llm-trading-floor",
+    "days_checked": [
+      "day-286",
+      "day-287",
+      "day-288"
+    ],
+    "bets": 30,
+    "deploy": {
+      "avg": 0.04,
+      "min": 0.0,
+      "p50": 0.0,
+      "max": 0.375,
+      "n": 51
+    },
+    "fleet_range": [
+      7.44,
+      25781.57
+    ],
+    "checks": {
+      "leakage": "ok",
+      "source": "ok",
+      "wr": "ok",
+      "lockstep": "ok",
+      "walkforward": "ok"
+    },
+    "details": {
+      "leakage": {
+        "pairs": 26,
+        "corr": -0.438,
+        "n_gate": true
+      },
+      "source": {
+        "counts": {
+          "direct": 30
+        },
+        "direct_ratio": 1.0
+      },
+      "wr": {
+        "flags": []
+      },
+      "lockstep": {
+        "worst_share": 0,
+        "per_day": [
+          {
+            "day": "data/decisions/day-286.json",
+            "share_10": 0,
+            "share_all": 0,
+            "total": 11,
+            "share_pct": 0.0
+          },
+          {
+            "day": "data/decisions/day-287.json",
+            "share_10": 0,
+            "share_all": 0,
+            "total": 16,
+            "share_pct": 0.0
+          },
+          {
+            "day": "data/decisions/day-288.json",
+            "share_10": 0,
+            "share_all": 0,
+            "total": 3,
+            "share_pct": 0.0
+          }
+        ]
+      },
+      "walkforward": {
+        "fallback_ratio": 0.0,
+        "total_preds": 258,
+        "fallback_keys": 0
+      }
+    }
+  },
+  "pqtf": {
+    "space": "LBJLincoln26/political-quant-trading-floor",
+    "days_checked": [
+      "day-047",
+      "day-048",
+      "day-049"
+    ],
+    "fleet_range": [
+      93.70009307160997,
+      244049.5537339871
+    ],
+    "checks": {
+      "lockstep": "ok",
+      "risk": "ok"
+    },
+    "details": {
+      "lockstep": {
+        "mean": 0.062,
+        "max": 0.25,
+        "per_day": [
+          {
+            "day": "data/decisions/day-047.json",
+            "n_agents": 4,
+            "mean": 0.074,
+            "max": 0.25
+          },
+          {
+            "day": "data/decisions/day-048.json",
+            "n_agents": 3,
+            "mean": 0.131,
+            "max": 0.25
+          },
+          {
+            "day": "data/decisions/day-049.json",
+            "n_agents": 5,
+            "mean": 0.034,
+            "max": 0.167
+          }
+        ]
+      },
+      "risk": {
+        "sessions": 12,
+        "avg_var_95": 13.06,
+        "max_var_95": 26.51,
+        "multi_leg_ratio": 0.448,
+        "stops_triggered": 2
+      }
+    }
+  },
+  "alerts": []
+}

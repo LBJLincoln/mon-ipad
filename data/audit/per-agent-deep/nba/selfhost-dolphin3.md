@@ -1,8 +1,8 @@
 # NBA — `selfhost-dolphin3` decision trail
-Generated 2026-04-25 13:19 UTC
-80 days with activity
+Generated 2026-04-25 14:23 UTC
+97 days with activity
 
-**Bankroll**: $100.00 → $78.26 (-21.74)
+**Bankroll**: $100.00 → $81.70 (-18.30)
 
 ## Day 1 — 2025-10-22 (bankroll: $100.00 → $102.20)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] by focusing on the highest-edge categories in the day's full odds menu, citing my REASONING TEMPLATE which prioritizes non-consensus bets with high edge.
@@ -306,3 +306,63 @@ Generated 2026-04-25 13:19 UTC
 - 2-leg @2.22 stake=$1.60 edge=0.100 won=✗ profit=-1.60 
   legs: UTA@CLE:ml_home@1.16✗ + PHI@TOR:spread_away@1.91✓
   > Combining CLE's strong home performance with TOR's potential for a close game against PHI amplifies the edge.
+
+## Day 82 — 2026-01-15 (bankroll: $78.26 → $76.69)
+> **Strategy:** STRUCTURAL DIVERGE [nvidia-llama70] (edge=6.3%): Today, I will focus on the MIL@SAS game, where my REASONING TEMPLATE (PAVLOV WIN-STAY/LOSE-SHIFT) suggests a different pick than nvidia-llama70's.
+> **Cash:** 0.8285% — I am holding 25% cash to maintain flexibility for future bets.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @4.63 stake=$1.57 edge=0.100 won=✗ profit=-1.57 
+  legs: MIL@SAS:ml_home@1.43✓ + NYK@GSW:ml_away@3.25✗
+  > The parlay of SAS winning at home and NYK winning away offers a high combined edge.
+
+## Day 85 — 2026-01-18 (bankroll: $76.69 → $79.59)
+> **Strategy:** STRUCTURAL DIVERGE [nvidia-llama70] (edge=7.1%): Today, I will focus on the CHA@DEN game, exploiting the underdog value with a bet on NOP ml_away.
+> **Cash:** 0.8285% — Holding 25% cash to maintain flexibility for future bets and adapt to changing market conditions.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @2.90 stake=$1.53 edge=0.100 won=✓ profit=+2.90 
+  legs: CHA@DEN:ml_away@1.69✓ + TOR@LAL:ml_home@1.71✓
+  > Combining the underdog value in CHA@DEN with the favorite's advantage in TOR@LAL creates a favorable parlay.
+
+## Day 86 — 2026-01-19 (bankroll: $79.59 → $78.00)
+> **Strategy:** STRUCTURAL DIVERGE [nvidia-llama70] (edge=7.1%): Today, I will focus on the DAL@NYK game, where my model shows a significant edge in the ml_home category.
+> **Cash:** 0.8285% — I am holding 25% cash to maintain a conservative approach and avoid over-exposure.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @1.26 stake=$1.59 edge=0.100 won=✗ profit=-1.59 
+  legs: DAL@NYK:ml_home@1.16✗ + UTA@SAS:ml_home@1.09✓
+  > I created a parlay with the DAL@NYK and UTA@SAS games, both with ml_home categories, as my model shows a strong edge for the home teams in both games.
+
+## Day 90 — 2026-01-23 (bankroll: $78.00 → $79.90)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.1%): Today, I will focus on the IND@OKC game, where my model predicts a higher edge on the spread_away category.
+> **Cash:** 0.8285% — I am holding 30% cash due to the high uncertainty in the other games on the slate.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @2.22 stake=$1.56 edge=0.100 won=✓ profit=+1.90 
+  legs: IND@OKC:spread_away@1.91✓ + SAC@CLE:ml_home@1.16✓
+  > The IND@OKC and SAC@CLE games have correlated edges, making a parlay a attractive option.
+
+## Day 94 — 2026-01-27 (bankroll: $79.90 → $81.70)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.1%): My REASONING TEMPLATE (DMAD) prioritizes the SAC@NYK game, focusing on the strong favorite and correlated spreads.
+> **Cash:** 0.8129% — I held 50% cash due to the limited number of favorable edges today.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @2.12 stake=$1.60 edge=0.100 won=✓ profit=+1.80 
+  legs: SAC@NYK:ml_home@1.11✓ + NOP@OKC:spread_away@1.91✓
+  > The combination of the SAC@NYK ml_home and NOP@OKC spread_away categories offers a favorable edge of 10.1%.

@@ -1,8 +1,8 @@
 # POL — `mistral-ministral` decision trail
-Generated 2026-04-25 13:19 UTC
-36 days with activity
+Generated 2026-04-25 14:23 UTC
+53 days with activity
 
-**Bankroll**: $100.00 → $106.40 (+6.40)
+**Bankroll**: $100.00 → $110.27 (+10.27)
 
 ## Day 0 — 2025-01-02 (bankroll: $100.00 → $101.42)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] due to sector concentration risk in tech-heavy council plan. Council prioritizes XLE/XLF/XLK but insider signals in tech (GOOGL/META/QCOM) show identical Oracle probabilities, creating overcrowded exposure. Deploying 15% in XLE (energy) as a counterbalance to tech-heavy council alignment.
@@ -91,3 +91,89 @@ Generated 2026-04-25 13:19 UTC
 | event | category | odds | edge | stake | won | profit | rationale |
 |---|---|---:|---:|---:|:---:|---:|---|
 | 14 | insider_trade:short | — | — | $8.10 | ✗ | -1.57 | HOOD insider trades (Form 4, SEC) with donor=finance delivered=NO signal sector weakness. Sector trend avg_ret=-0.0460, win_rate=36%. |
+
+## Day 36 — 2025-02-26 (bankroll: $106.40 → $105.89)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=5.8%): Ministral 8B's FirmButFair canon rejects XLF-heavy consensus; sector trends show healthcare (XLV) with 56% win_rate and +2.07% avg_ret over 30d, outperforming finance (-4.34%).
+> **Cash:** 0.3333% — Holding 25% cash to comply with DMAD anti-consensus mandate and preserve dry powder for potential sector rotation opportunities not yet signaled by insider trades.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 5 | insider_trade:long | — | — | $10.64 | ✗ | -0.51 | SEC Form 4 insider trade in META (tech sector) with donor=tech delivered=NO suggests potential undervaluation; consumer discretionary (XLC) sector trend (-2.99% avg_ret) is weak, but tech insider trades often precede sector rotation. |
+
+## Day 37 — 2025-02-27 (bankroll: $105.89 → $107.86)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=6.5%): Ministral 8B's FirmButFair canon rejects consensus on tech shorts; instead, leverages consumer staples insider signals with high win-rate (94%) and donor alignment.
+> **Cash:** 0.1% — Residual cash to maintain ≥75% deployment while preserving flexibility for future sector rotations.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 11 | insider_trade:long | — | — | $10.59 | ✓ | +1.80 | COIN insider trade (Form 4, SEC) with donor=finance delivered=NO; finance sector has 36% win-rate but insider signals may indicate idiosyncratic gains. |
+| 18 | insider_trade:long | — | — | $7.94 | ✓ | +0.17 | KO insider trade (Form 4, SEC) with donor=consumer_staples delivered=NO; repeated KO signals reinforce consumer staples sector strength. |
+
+## Day 38 — 2025-02-28 (bankroll: $107.86 → $109.74)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.3%): My FirmButFair canon rejects overcrowded consumer_staples (XLP) trades where 9/17 peers are already exposed. Instead, I target healthcare (XLV) with a multi-event thesis leveraging repeated PFE insider trades and sector_trends showing avg_ret=+0.0210, win_rate=56% — a clear divergence from consensus XLP focus.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:long | — | — | $10.79 | ✓ | +1.88 | GOOGL insider trade (tech sector) with SEC Form 4 signal and sector_trends showing avg_ret=-0.0095, win_rate=33% — low baseline but donor=tech delivered=NO suggests potential for mean reversion. |
+
+## Day 39 — 2025-03-03 (bankroll: $109.74 → $116.79)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=8.2%): Healthcare sector was underweighted by leader (XLV long only on PFE), but PFE's insider trades are clustered with donor=healthcare delivered=NO, suggesting structural alpha in healthcare beyond XLV. My FirmButFair canon prioritizes sector-specific donor alignment over generic trend-following.
+> **Cash:** 0.45% — Cash held to avoid sector crowding (XLV/XLP already targeted) and preserve dry powder for tomorrow's events
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:long | — | — | $10.06 | ✓ | +4.27 | CXW insider trade (event 1) in private_prisons sector with donor=private_prisons delivered=NO, sector_trends avg_ret=+0.0001 win_rate=71% — niche sector with high win_rate despite low avg_ret |
+| 17 | insider_trade:long | — | — | $8.05 | ✓ | +2.78 | MO insider trades (events 17-23) in consumer_staples with donor=consumer_staples delivered=NO, sector_trends avg_ret=+0.0308 win_rate=96% — extreme win_rate suggests structural alpha in staples |
+
+## Day 40 — 2025-03-04 (bankroll: $116.79 → $114.79)
+> **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=7.2%): My FirmButFair canon prioritizes sector-beta arbitrage over insider-cluster momentum, targeting underweighted energy (XLE) despite crowding in communications (XLC).
+> **Cash:** 0.45% — Energy (XLE) and finance (XLF) allocations are below council target; holding cash to avoid forced overcommitment in crowded sectors.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 18 | insider_trade:long | — | — | $10.71 | ✗ | -2.00 | META insider trade (event #18) aligns with tech sector_trends showing -1.02% avg_ret but 33% win_rate; insider accumulation may precede rebound. |
+
+## Day 41 — 2025-03-05 (bankroll: $114.79 → $108.68)
+> **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=8.2%): My FirmButFair canon prioritizes private_prisons sector ignored by qwen-quant's XLE/XLF focus, citing sector_trends avg_ret=+0.0035 win_rate=72% with GEO insider signals. This sector is structurally underweighted in council plan but shows consistent insider delivery.
+> **Cash:** 0.35% — Cash held to meet ≥75% deployment mandate while maintaining sector diversity and avoiding overconcentration in crowded sectors.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 10 | insider_trade:long | — | — | $10.33 | ✗ | -3.56 | GEO insider_trade events (10-29) show consistent Form 4 filings with donor=private_prisons delivered=NO, sector_trends avg_ret=+0.0035 win_rate=72% — structural alpha in underfollowed sector. |
+| 31 | insider_trade:short | — | — | $6.89 | ✓ | +1.74 | META insider_trade event (31) with donor=tech delivered=NO contradicts sector_trends avg_ret=-0.0109 win_rate=33% — tech sector shows structural weakness despite insider activity. |
+| 32 | insider_trade:long | — | — | $5.74 | ✗ | -1.42 | NVDA insider_trade events (32-36) with donor=tech delivered=NO show sector divergence from META — tech sector has mixed signals but NVDA-specific insider activity may outperform. |
+| 37 | insider_trade:long | — | — | $5.74 | ✗ | -2.87 | TSLA insider_trade events (37-38) with donor=tech delivered=NO indicate sector-specific momentum despite broader tech weakness — TSLA may decouple from sector trend. |
+
+## Day 42 — 2025-03-06 (bankroll: $108.68 → $106.47)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.1%): My FirmButFair canon prioritizes healthcare insider trades over tech shorting, citing sector_trends (healthcare avg_ret=+0.0237, win_rate=56%) vs tech avg_ret=-0.0178, win_rate=30%.
+> **Cash:** 0.45% — Sector_trends show mixed signals; cash held to avoid overcommitting to low-edge opportunities while maintaining flexibility.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 5 | insider_trade:long | — | — | $5.43 | ✗ | -0.16 | META insider_trade (event#5) with SEC Form 4 and donor=tech delivered=NO may spill over into healthcare via sector correlations, but weak signal warrants smaller allocation. |
+| 1 | insider_trade:long | — | — | $5.43 | ✗ | -2.05 | COIN insider_trade (event#1) with SEC Form 4 and donor=finance delivered=NO suggests potential finance sector upside, despite sector_trends avg_ret=-0.0744. |
+
+## Day 43 — 2025-03-07 (bankroll: $106.47 → $106.03)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.2%): My FirmButFair canon prioritizes energy sector (XLE) for insider trades in fossil fuel, diverging from leader's healthcare-heavy XLV focus. Sector trend shows energy avg_ret=+0.0160 with 77% win rate (n=64), a clear edge over tech's negative returns.
+> **Cash:** 0.35% — Holding 35% cash to meet the 75% deployment mandate while maintaining sector diversity and avoiding overconcentration in crowded trades.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 2 | insider_trade:long | — | — | $5.32 | ✗ | -0.22 | Multiple SEC Form 4 insider trades in GOOGL (tech sector) with donor=tech delivered=NO indicate potential institutional accumulation. Tech sector trend is negative but insider trades may signal alpha. |
+| 3 | insider_trade:long | — | — | $5.32 | ✗ | -0.22 | Repeated SEC Form 4 insider trades in GOOGL (tech sector) reinforce potential institutional confidence. Tech sector trend is negative but insider trades may signal alpha. |
+
+## Day 44 — 2025-03-10 (bankroll: $106.03 → $108.15)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.2%): My FirmButFair canon prioritizes sector-specific insider signals with donor-sector mismatch, while leader's 'pac_money_velocity' archetype overweights finance. I will exploit tech insider concentration (QCOM) with XLK, avoiding crowded healthcare/finance plays.
+> **Cash:** 0.1% — 10% cash held to maintain liquidity for potential post-mortem adjustments and to comply with ≤25% cash rule.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 2 | insider_trade:short | — | — | $10.60 | ✓ | +1.82 | FOUR insider_trade (event#2) with SEC Form 4 shows donor=finance delivered=NO, but finance sector trend -8.50% avg_ret and 17% win_rate indicates structural headwinds. |
+| 5 | insider_trade:long | — | — | $7.95 | ✓ | +0.30 | QCOM insider_trade (event#5) repeats sector=tech with donor=tech delivered=NO, reinforcing XLK exposure. Sector trend remains unfavorable but insider activity suggests mean-reversion. |
+
+## Day 45 — 2025-03-11 (bankroll: $108.15 → $110.27)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.7%): My FirmButFair canon prioritizes retaliating against overcrowded sectors while exploiting donor-sector mismatches. Today’s sector trends show finance (XLF) is over-exposed (16% win rate, avg_ret=-0.0840) and private_prisons (ITA) is ambiguous (41% win rate, avg_ret=-0.0277), but consumer_staples (XLP) remains a high-confidence play (98% win rate, avg_ret=+0.0358).
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:short | — | — | $10.82 | ✓ | +2.12 | FOUR’s insider trade (event#1) in finance sector with donor=finance delivered=NO contradicts sector trend (16% win rate, -8.40% avg return). Regulatory scrutiny on finance insiders is elevated. |

@@ -1,8 +1,8 @@
 # NBA — `mistral-large` decision trail
-Generated 2026-04-25 13:19 UTC
-80 days with activity
+Generated 2026-04-25 14:23 UTC
+97 days with activity
 
-**Bankroll**: $102.07 → $55.39 (-46.68)
+**Bankroll**: $102.07 → $51.24 (-50.83)
 
 ## Day 2 — 2025-10-23 (bankroll: $102.07 → $96.04)
 > **Strategy:** STRUCTURAL COMPLEMENT [NVIDIA Llama 3.3-70B] (edge=9.1%): Today’s council plan focuses on parlay_2leg + proportional_edge, but I will exploit the top-tier pp_threes_star2_away edge (9.1%) that the leader ignored for compounding via a prop parlay, diversifying risk across categories.
@@ -188,3 +188,36 @@ Generated 2026-04-25 13:19 UTC
 | event | category | odds | edge | stake | won | profit | rationale |
 |---|---|---:|---:|---:|:---:|---:|---|
 | MIN@CLE | pp_steals_role1_away | 1.91 | 0.111 | $1.71 | ✗ | -1.71 | Anthony Edwards averages 1.8 steals per game with 3.5 steals in last 5; model flags +11.1% edge on his steal prop vs market |
+
+## Day 85 — 2026-01-18 (bankroll: $55.39 → $53.73)
+> **Strategy:** STRUCTURAL DIVERGE [nvidia-llama70] (edge=6.8%): Today I exploit the consensus fatigue on CHA@DEN by targeting a non-moneyline prop edge where the market underprices defensive metrics (steals/blocks) despite strong model alignment. This diverges from leader's focus on parlays and total points.
+> **Cash:** 0.7819% — Bankroll at $55.39 (bottom quartile) and today's edges are concentrated in non-parlay props; holding cash preserves capital for higher-edge opportunities tomorrow per probation rules.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| CHA@DEN | pp_steals_star3_away | 1.91 | 0.111 | $1.66 | ✗ | -1.66 | CHA's model edge on pp_steals_star3_away (11.1%) exceeds market implied odds by 3.1x, driven by LaMelo Ball's 20% steal rate in past 5 games. |
+
+## Day 90 — 2026-01-23 (bankroll: $53.73 → $50.56)
+> **Strategy:** STRUCTURAL COMPLEMENT [qwen-quant] (edge=8.0%): My WinStayLoseShift template diverges from qwen-quant’s structural approach by prioritizing high-conviction parlay legs where model edges align across games, filling gaps in their single-play focus.
+> **Cash:** 0.8178% — Edges >0.07 are scarce outside pp_* and ml_* categories; holding cash preserves capital for tomorrow's higher-conviction opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| SAC@CLE | pp_threes_star3_home | 1.91 | 0.111 | $1.61 | ✗ | -1.61 | CLE’s Jalen Johnson (star3) has 42% 3P% on 5.1 attempts; market total threes under 10.5 is 52% implied vs model 63% probability. |
+
+**Parlays:**
+- 2-leg @2.10 stake=$1.56 edge=0.094 won=✗ profit=-1.56 
+  legs: SAC@CLE:pp_threes_star3_home@1.91✗ + IND@OKC:ml_home@1.10✗
+  > Correlated high-probability outcomes: CLE’s three-point explosion pairs with OKC’s guaranteed win, amplifying compounded returns.
+
+## Day 94 — 2026-01-27 (bankroll: $50.56 → $51.24)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.0%): My REASONING TEMPLATE (DMAD) prioritizes high-conviction consensus plays with edge ≥0.06. Today, I diverge by targeting NOP@OKC ml_home (edge=8.0%) instead of SAC@NYK, as OKC's rest advantage and home dominance (41-11) align with model predictions (P(home)=93%) and offer a cleaner edge. Council focus on NYK/SAC is crowded; I exploit OKC's underrepresented strength.
+> **Cash:** 0.7867% — Holding 70% cash to comply with inverse-calibration probation (max 3 bets/day, edge ≥0.07). No other edges in the top-10 met the 0.07 threshold.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @1.45 stake=$1.52 edge=0.120 won=✓ profit=+0.68 
+  legs: NOP@OKC:ml_home@1.12✓ + LAC@UTA:ml_away@1.29✓
+  > Combining OKC and LAC moneylines (1.12 * 1.29 = 1.44) amplifies edge (12%) while maintaining correlation (both are strong favorites).

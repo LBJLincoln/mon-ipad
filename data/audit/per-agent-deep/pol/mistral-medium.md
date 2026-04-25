@@ -1,8 +1,8 @@
 # POL — `mistral-medium` decision trail
-Generated 2026-04-25 13:19 UTC
-36 days with activity
+Generated 2026-04-25 14:23 UTC
+53 days with activity
 
-**Bankroll**: $100.00 → $107.07 (+7.07)
+**Bankroll**: $100.00 → $121.19 (+21.19)
 
 ## Day 2 — 2025-01-06 (bankroll: $100.00 → $102.76)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=8.2%): ARCHETYPE[foreign_sovereign_flow]: Foreign capital flows into US tech (XLK) are underpriced in insider signals despite sector saturation. Focus on META trades with donor=tech delivered=NO as proxy for foreign accumulation.
@@ -98,3 +98,82 @@ Generated 2026-04-25 13:19 UTC
 | 28 | insider_trade:long | — | — | $10.12 | ✓ | +1.75 | UNH insider trades (Form 4, SEC) in healthcare sector with donor=healthcare delivered=NO suggest strong positive alpha. Sector_trends show healthcare avg_ret=+0.0215 and win_rate=57% despite 65 events. |
 | 30 | insider_trade:long | — | — | $9.56 | ✓ | +1.65 | Another UNH insider trade (event_idx=30) in healthcare sector with identical signal_type and agency. Repetition reinforces thesis without overcommitting to finance sector. |
 | 31 | insider_trade:long | — | — | $8.43 | ✓ | +1.45 | Third UNH insider trade (event_idx=31) in healthcare sector. Multiple events in the same sector strengthen the correlation-aware portfolio construction thesis. |
+
+## Day 36 — 2025-02-26 (bankroll: $107.07 → $105.83)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.2%): My reasoning template focuses on sector diversification and correlation-aware portfolio construction, which complements llama-contra's focus on insider tracking and regulatory arbitrage.
+> **Cash:** 0.0769% — Holding a small percentage of cash for flexibility and to manage risk.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 2 | insider_trade:long | — | — | $16.47 | ✗ | -1.24 | Insider trades in the tech sector (GOOGL) with a strong signal from the SEC suggest potential growth. |
+
+## Day 38 — 2025-02-28 (bankroll: $105.83 → $106.75)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My diversified portfolio construction template prioritizes uncorrelated sector exposure with moderate signal strength across multiple events, diverging from llama-contra's high-concentration approach. Today's focus is on consumer_staples (XLP) and healthcare (XLV) with a small hedge in tech (XLK), leveraging the 30d sector trends (consumer_staples win_rate=95%, healthcare win_rate=56%) and repeated insider signals in KO, MO, and PFE.
+> **Cash:** 0.25% — Holding 25% cash as a buffer for intra-day volatility and to comply with the 75% deployment rule, given the moderate edge across events.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:long | — | — | $5.29 | ✓ | +0.92 | GOOGL insider trade (Form 4, SEC) with signal strength 0.60 in tech, used as a small hedge given the sector's mixed 30d performance (avg_ret=-0.0095, win_rate=33%). Agency clarity (SEC) justifies minimal exposure. |
+| 12 | insider_trade:long | — | — | $5.29 | ✓ | +0.00 | Second PFE insider trade (Form 4, SEC) reinforcing healthcare sector signal. Consistent with event #11 and sector trends (avg_ret=+0.0210). |
+
+## Day 39 — 2025-03-03 (bankroll: $106.75 → $119.97)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=6.2%): My GenerousTitForTat canon requires sector diversification; leader focused on XLV/XLP but healthcare trend avg_ret=+0.0202 with 51% win_rate is underweighted in portfolio construction.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 30 | insider_trade:long | — | — | $13.34 | ✓ | +3.64 | PFE insider_trade cluster (events 30-37) with high-frequency SEC Form 4 signals indicates regulatory-positive momentum in healthcare sector despite weak donor delivery |
+| 31 | insider_trade:long | — | — | $10.68 | ✓ | +2.91 | PFE insider_trade (event 31) reinforces sector trend with SEC Form 4 signal strength 0.60 in healthcare avg_ret=+0.0202 |
+| 32 | insider_trade:long | — | — | $10.68 | ✓ | +2.91 | Third consecutive PFE insider_trade (event 32) with SEC Form 4 creates momentum in healthcare sector per sector_trends |
+| 1 | insider_trade:long | — | — | $8.01 | ✓ | +3.40 | CXW private_prisons insider_trade (event 1) with signal strength 0.60 benefits from sector_trends avg_ret=+0.0001 and 71% win_rate |
+| 2 | insider_trade:short | — | — | $5.34 | ✗ | -0.91 | GOOGL insider_trade (event 2) with weak sector_trends avg_ret=-0.0130 and 28% win_rate suggests overvaluation in tech sector |
+| 16 | insider_trade:short | — | — | $5.34 | ✓ | +1.27 | META insider_trade (event 16) with same tech sector_trends avg_ret=-0.0130 reinforces short thesis in XLK |
+
+## Day 44 — 2025-03-10 (bankroll: $119.97 → $122.35)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.5%): My GenerousTitForTat canon prioritizes diversified sector exposure. I will focus on communications and tech sectors while also considering energy for diversification.
+> **Cash:** 0.0769% — Holding a small amount of cash for flexibility and to manage risk.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 2 | insider_trade:short | — | — | $13.84 | ✓ | +2.38 | FOUR insider trade with strong signal strength but finance sector has shown poor performance recently. |
+
+## Day 46 — 2025-03-12 (bankroll: $122.35 → $123.81)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.5%): My diversified portfolio approach complements llama-contra's focus on tech and defense by adding stability through healthcare and consumer staples.
+> **Cash:** 0.1333% — Holding 10% cash to maintain liquidity and flexibility for future opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 6 | insider_trade:long | — | — | $16.31 | ✓ | +1.46 | Diversifying into healthcare to complement the tech focus, based on strong sector trends. |
+
+## Day 47 — 2025-03-13 (bankroll: $123.81 → $118.65)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.5%): My diversified portfolio approach complements llama-contra's contrarian inversion by adding exposure to sectors with strong win rates and positive trends.
+> **Cash:** 0.0714% — Holding minimal cash to meet deployment requirements.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 4 | insider_trade:short | — | — | $17.69 | ✗ | -5.16 | MSTR's insider trade in finance with strong signal strength and SEC agency, but finance sector has a low win rate. |
+
+## Day 49 — 2025-03-17 (bankroll: $118.65 → $118.62)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My GenerousTitForTat canon prioritizes sector diversification and correlation-aware portfolio construction, leading to a different sector pick than llama-contra's focus on single sectors.
+> **Cash:** 0.1% — Holding minimal cash to maximize deployment and compounding potential.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 4 | insider_trade:short | — | — | $11.87 | ✗ | -0.03 | Insider trade in tech with strong signal strength but negative sector trends. |
+
+## Day 50 — 2025-03-18 (bankroll: $118.62 → $120.74)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.8%): My GenerousTitForTat canon prioritizes diversified sector exposure with moderate signal strength. I will focus on energy and healthcare sectors, complementing the council's focus on tech and finance.
+> **Cash:** 0.0833% — Holding a small amount of cash for flexibility and to manage risk.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 4 | insider_trade:long | — | — | $9.89 | ✓ | +2.12 | Insider trading signal in consumer discretionary with strong signal strength. |
+
+## Day 51 — 2025-03-19 (bankroll: $120.74 → $121.19)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=8.2%): My GenerousTitForTat canon prioritizes sector-diversified political-alpha with correlation-aware hedges. Today I complement llama-contra’s XLE/XLV focus by adding XLK (tech insider cluster) and XLY (consumer discretionary momentum), while avoiding overcrowded CXW trades where 6+ peers are likely to converge.
+> **Cash:** 0.22% — Holding 22% cash as a buffer against the CXW short’s regulatory tail risk (private_prisons sector has 45% win_rate) and to preserve dry powder for tomorrow’s likely fed_rule events (YouTube narrative hints at Senate midterm forecasts).
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 7 | insider_trade:long | — | — | $15.09 | ✓ | +0.59 | GOOGL insider cluster (7 events) with SEC Form 4 signals (strength=0.60) in tech, where sector trends show -1.44% avg_return but 35% win_rate suggests mean reversion potential. Agency SEC + donor sector=tech delivered a clear insider accum… |
+| 18 | insider_trade:long | — | — | $12.07 | ✗ | -0.81 | JNJ insider_trade (SEC Form 4, strength=0.60) in healthcare, which has +3.30% avg_return and 79% win_rate over last 30d. Signal aligns with council’s regulatory_arb focus, as JNJ often leads sector moves on FDA/SEC crossover events. |
+| 2 | insider_trade:short | — | — | $9.06 | ✓ | +0.67 | CXW insider_trade cluster (6 events) with SEC Form 4 signals in private_prisons, which has -1.56% avg_return and 45% win_rate. High event frequency suggests insider selling ahead of regulatory headwinds (council’s private_prisons focus). |

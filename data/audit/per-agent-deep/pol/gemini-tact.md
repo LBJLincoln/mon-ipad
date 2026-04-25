@@ -1,8 +1,8 @@
 # POL — `gemini-tact` decision trail
-Generated 2026-04-25 13:19 UTC
-36 days with activity
+Generated 2026-04-25 14:23 UTC
+53 days with activity
 
-**Bankroll**: $100.00 → $79.18 (-20.82)
+**Bankroll**: $100.00 → $83.81 (-16.19)
 
 ## Day 2 — 2025-01-06 (bankroll: $100.00 → $102.80)
 > **Strategy:** ARCHETYPE[fed_watcher]: STRUCTURAL DIVERGE [qwen-quant] (edge=5.2%): Focus on Fed-specific insider signals and regulatory arbitrage, ignoring consensus tech/energy trades due to oversaturation and weak sector trends in finance/communications.
@@ -187,3 +187,90 @@ Generated 2026-04-25 13:19 UTC
 | 7 | insider_trade:long | — | — | $7.86 | ✓ | +0.65 | CXW insider trades (Form 4, SEC) with donor=private_prisons delivered=NO signal regulatory arbitrage opportunity in private prisons sector. Sector trend shows avg_ret=-0.0066 but win_rate=59% over 30d. |
 | 14 | insider_trade:short | — | — | $5.90 | ✗ | -1.14 | HOOD insider trades (Form 4, SEC) with donor=finance delivered=NO signal potential downside in finance sector. Sector trend shows avg_ret=-0.0460 and win_rate=36% over 30d. |
 | 1 | insider_trade:long | — | — | $3.93 | ✗ | -0.37 | AMZN insider trades (Form 4, SEC) with donor=tech delivered=NO signal potential upside in tech sector. Sector trend shows avg_ret=-0.0078 but win_rate=33% over 30d. |
+
+## Day 36 — 2025-02-26 (bankroll: $79.18 → $79.13)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.2%): My tactical timing template prioritizes sector diversity and calendar rhythms, complementing llama-contra's focus on insider trades with a broader sector allocation.
+> **Cash:** 0.1% — Holding a small percentage of cash for flexibility and risk management.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:long | — | — | $11.88 | ✗ | -0.94 | Insider trade in COIN with a strong signal from the SEC suggests potential growth in the finance sector. |
+| 2 | insider_trade:short | — | — | $11.88 | ✓ | +0.89 | Insider trade in GOOGL with a strong signal from the SEC suggests potential decline in the tech sector. |
+
+## Day 37 — 2025-02-27 (bankroll: $79.13 → $78.72)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=6.8%): My tactical timing template prioritizes calendar risk and sector trends. I will focus on consumer staples and energy sectors based on strong insider signals and sector trends.
+> **Cash:** 0.0833% — Minimal cash held to maximize deployment as per council guidelines.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:short | — | — | $9.89 | ✗ | -0.41 | Insider trade signal in AAPL with a negative sector trend in tech. |
+
+## Day 38 — 2025-02-28 (bankroll: $78.72 → $79.54)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=5.2%): My tactical timing template prioritizes healthcare over consumer staples when insider trades cluster in both sectors. Sector_trends show healthcare avg_ret=+0.0210 win_rate=56% vs consumer_staples avg_ret=+0.0355 win_rate=95% — but healthcare has 4× more events, indicating deeper political-alpha read. Today I exploit the underrated healthcare sector despite council focus on consumer staples.
+> **Cash:** 0.3125% — No clear sector read for 3 events (event_idx 3, 5-10), and sector_trends show tech with avg_ret=-0.0095 win_rate=33% — the lowest among sectors with significant events. Deploying 75% across healthcare and consumer staples sectors to respect sector diversity mandate.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 4 | insider_trade:long | — | — | $7.38 | ✓ | +0.76 | SEC Form 4 insider trades in MO (consumer_staples) with donor=consumer_staples delivered=NO signal a fade opportunity in consumer staples sector. Sector_trends show consumer_staples avg_ret=+0.0355 win_rate=95% — but multiple identical tra… |
+| 2 | insider_trade:long | — | — | $3.94 | ✓ | +0.06 | SEC Form 4 insider trades in KO (consumer_staples) with donor=consumer_staples delivered=NO signal a potential sector strength opportunity despite multiple identical trades. Sector_trends show consumer_staples avg_ret=+0.0355 win_rate=95% … |
+
+## Day 41 — 2025-03-05 (bankroll: $79.54 → $81.83)
+> **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=6.2%): My calendar-rhythm political alpha template suggests a stronger edge in energy sector due to recent insider trades, diverging from qwen-quant's focus on finance sector. I will allocate my bankroll across energy and tech sectors to capitalize on these signals.
+> **Cash:** 0.1818% — I held 10% cash to maintain flexibility and adjust to potential changes in market trends.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 6 | insider_trade:long | — | — | $14.46 | ✓ | +6.03 | The recent insider trades in CVX (event #6) indicate a strong signal in the energy sector, and I will allocate 20% of my bankroll to XLE to capitalize on this edge. My calendar-rhythm template suggests that energy sector will outperform in… |
+| 31 | insider_trade:long | — | — | $10.85 | ✗ | -2.74 | The insider trade in META (event #31) suggests a positive trend in the tech sector, and I will allocate 15% of my bankroll to XLK to benefit from this signal. My template indicates that tech sector will experience a short-term boost. |
+| 1 | insider_trade:long | — | — | $7.23 | ✗ | -1.00 | The insider trade in AMZN (event #1) indicates a potential trend in the tech sector, but my template suggests that energy sector is a stronger bet, so I will allocate 10% of my bankroll to XLE to diversify my portfolio. |
+
+## Day 44 — 2025-03-10 (bankroll: $81.83 → $81.03)
+> **Strategy:** STRUCTURAL COMPLEMENT [llama-contra] (edge=7.5%): My tactical timing template prioritizes insider trades in the tech sector, complementing llama-contra's focus on healthcare and energy.
+> **Cash:** 0.1% — Holding minimal cash to comply with deployment rules and maximize exposure to high-confidence trades.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 3 | insider_trade:long | — | — | $16.37 | ✓ | +0.61 | QCOM insider trade with strong signal strength and clear sector mapping to tech. |
+| 2 | insider_trade:long | — | — | $8.18 | ✗ | -1.41 | FOUR insider trade with strong signal strength and clear sector mapping to finance. |
+
+## Day 45 — 2025-03-11 (bankroll: $81.03 → $85.76)
+> **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=8.7%): My tactical timing template prioritizes consumer staples stability over crowded finance/tech sectors, citing KO's insider trade as a low-beta signal in a high-volatility environment.
+> **Cash:** 0.2% — Holding 20% cash to meet the ≥75% deployment rule while avoiding over-exposure to crowded sectors.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 2 | insider_trade:long | — | — | $10.13 | ✓ | +4.73 | GEO's repeated Form 4 insider trades (private prisons) suggest regulatory tailwinds; ITA (aerospace/defense ETF) provides indirect exposure to private prison contractors. |
+
+## Day 46 — 2025-03-12 (bankroll: $85.76 → $85.73)
+> **Strategy:** STRUCTURAL COMPLEMENT [nemotron-120b] (edge=7.2%): My tactical timing template prioritizes healthcare and staples stability, while Nemotron's private_prisons focus leaves healthcare underweight despite GEO's insider signals.
+> **Cash:** 0.3125% — Holding 25% cash to comply with ≤25% cash rule while maintaining sector diversity and avoiding forced deployments on weak signals.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 2 | insider_trade:long | — | — | $10.72 | ✗ | -0.03 | GEO's repeated insider trades (private_prisons) signal regulatory or operational stress, likely spilling into healthcare sector via prison healthcare contractors or broader private prison ecosystem contagion. |
+
+## Day 47 — 2025-03-13 (bankroll: $85.73 → $87.36)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.2%): My tactical timing template prioritizes calendar-rhythm political alpha with insider_trade signals, diverging from the leader's contrarian inversion by focusing on sector-specific momentum rather than structural divergence.
+> **Cash:** 0.22% — Holding 22% cash to meet the 75% deployment rule while maintaining sector diversity and avoiding over-concentration in any single sector.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 4 | insider_trade:long | — | — | $10.72 | ✓ | +3.12 | MSTR insider_trade (event#4) in finance sector with repeated signals (events 4-7) suggests institutional confidence. Sector trend shows avg_ret=-0.0831 but insider_trade signals may override trend. |
+| 1 | insider_trade:long | — | — | $9.86 | ✗ | -1.49 | GOOGL insider_trade (event#1) in tech sector with signal_strength=0.60 and donor=NO suggests regulatory alignment. Sector trend is negative but insider_trade signals may precede reversals. |
+
+## Day 48 — 2025-03-14 (bankroll: $87.36 → $86.84)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.5%): My tactical timing template prioritizes calendar-rhythm political alpha. Focus on FOMC weeks, earnings windows, and election cycles. Today, I will focus on the energy sector due to its strong 30-day average return and high win rate.
+> **Cash:** 0.25% — Holding some cash to manage risk and ensure liquidity for future opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 3 | insider_trade:long | — | — | $10.92 | ✗ | -0.52 | The energy sector has shown strong performance with a 30-day average return of +0.0320 and a win rate of 98%. The insider trade signal strength of 0.60 for MSFT indicates a positive outlook. |
+
+## Day 49 — 2025-03-17 (bankroll: $86.84 → $83.81)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.5%): My tactical timing template prioritizes calendar-rhythm political alpha, focusing on sectors with strong insider signals and macro-narrative tailwinds.
+> **Cash:** 0.25% — Holding some cash to manage risk and maintain flexibility for future trades.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 3 | insider_trade:short | — | — | $10.86 | ✗ | -5.02 | Insider trading signal in private prisons with strong signal strength but negative sector trends. |
+| 5 | insider_trade:long | — | — | $10.86 | ✓ | +1.99 | Insider trading signal in consumer discretionary with strong signal strength and positive sector trends. |

@@ -1,8 +1,8 @@
 # POL — `mistral-large` decision trail
-Generated 2026-04-25 13:19 UTC
-36 days with activity
+Generated 2026-04-25 14:23 UTC
+53 days with activity
 
-**Bankroll**: $100.00 → $104.48 (+4.48)
+**Bankroll**: $100.00 → $94.95 (-5.05)
 
 ## Day 0 — 2025-01-02 (bankroll: $100.00 → $100.75)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] Insider flows in energy (COP) are underappreciated by tech-heavy council focus; leveraging sector-specific Form 4 signals with low VIX tail risk.
@@ -139,3 +139,66 @@ Generated 2026-04-25 13:19 UTC
 | 14 | insider_trade:long | — | — | $12.98 | ✓ | +3.05 | KO insider trades (Form 4) with donor=consumer_staples delivered=NO and sector_trends showing +3.67% avg_ret/75% win_rate justify long XLP. |
 | 28 | insider_trade:long | — | — | $12.98 | ✓ | +2.24 | UNH insider trades (Form 4) with donor=healthcare delivered=NO and sector_trends showing +2.15% avg_ret/57% win_rate justify long XLV. |
 | 1 | insider_trade:long | — | — | $12.98 | ✗ | -4.63 | COIN insider trades (Form 4) with donor=finance delivered=NO and sector_trends showing -5.34% avg_ret/33% win_rate justify long XLF despite poor trend due to insider signal strength=0.60. |
+
+## Day 36 — 2025-02-26 (bankroll: $104.48 → $104.26)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=6.8%): My REASONING TEMPLATE (DMAD) requires multi-agency corroboration (≥2 of {Fed, insider, macro}) to align. Llama-contra's XLP/XLRE focus lacks insider-macro convergence; I target healthcare (XLV) and tech (XLK) where insider trades (JNJ, GOOGL) align with sector trends (healthcare win_rate=56%, tech win_rate=31% but recent underperformance suggests mean reversion).
+> **Cash:** 0.2% — Reserve for high-conviction opportunities if insider-macro alignment strengthens.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 2 | insider_trade:long | — | — | $13.93 | ✗ | -1.04 | GOOGL insider trades (Form 4, SEC) in tech, a sector with recent underperformance (30d avg_ret -0.0086) but high insider activity (2/5 events today). |
+| 1 | insider_trade:short | — | — | $10.45 | ✓ | +0.82 | COIN insider trades (Form 4, SEC) in finance, a sector with 30d avg_ret -0.0434 and win_rate 38%. Macro stability (VIX=18) suggests downside risk. |
+
+## Day 37 — 2025-02-27 (bankroll: $104.26 → $104.63)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.2%): My WinStayLoseShift canon requires a sector shift from tech-heavy consensus to consumer staples, leveraging the 94% win rate in consumer_staples despite low tech sector strength.
+> **Cash:** 0.45% — Edge threshold not met for 11/19 events; cash preserved for higher-conviction opportunities.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 16 | insider_trade:long | — | — | $9.30 | ✓ | +0.20 | KO insider trades (Form 4, SEC) in consumer_staples with donor=consumer_staples delivered=NO signal strength=0.60 and sector avg_ret=+0.0433, win_rate=94%. |
+| 18 | insider_trade:long | — | — | $7.75 | ✓ | +0.17 | KO insider trades (Form 4, SEC) in consumer_staples with donor=consumer_staples delivered=NO signal strength=0.60 and sector avg_ret=+0.0433, win_rate=94%. |
+
+## Day 46 — 2025-03-12 (bankroll: $104.63 → $102.66)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.8%): My WinStayLoseShift canon prioritizes insider trades in tech and healthcare sectors, diverging from llama-contra's focus on energy and consumer staples.
+> **Cash:** 0.1% — Holding minimal cash to meet deployment requirements and maintain liquidity.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 3 | insider_trade:long | — | — | $10.46 | ✗ | -1.97 | META insider trade with strong signal strength and SEC agency backing, indicating potential healthcare sector movement. |
+
+## Day 47 — 2025-03-13 (bankroll: $102.66 → $104.46)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.5%): My political-insider arbitrage template prioritizes insider trades with strong signal strength and clear sector trends. I will focus on the consumer staples and finance sectors based on today's events.
+> **Cash:** 0.25% — Holding some cash to manage risk and ensure flexibility for future trades.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 4 | insider_trade:long | — | — | $12.83 | ✓ | +3.74 | Repeated insider trades in finance sector with strong signal strength and SEC agency. |
+| 1 | insider_trade:long | — | — | $12.83 | ✗ | -1.94 | Insider trade in tech sector with strong signal strength and SEC agency. |
+
+## Day 48 — 2025-03-14 (bankroll: $104.46 → $104.46)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.2%): My political-insider arbitrage template prioritizes multi-agency corroboration (Fed + insider + macro) with ≥2/3 alignment, whereas llama-contra’s contrarian inversion template relies on single-agency signals. Today’s MSFT cluster (events 1–8) lacks Fed/macro convergence, so I diverge to consumer staples (XLP) where sector trends (94% win rate, +3.35% avg return) and macro stability (VIX=18) provide edge.
+> **Cash:** 0.125% — 10% cash held as buffer for intra-day volatility, given 4 active allocations (80% deployed).
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 3 | insider_trade:long | — | — | $9.79 | ✗ | -0.47 | Healthcare sector shows 70% win rate and +2.81% avg return, with no conflicting signals. Defensive play aligned with low VIX (18). |
+| 4 | insider_trade:short | — | — | $9.79 | ✓ | +0.47 | Tech sector’s 34% win rate and -1.6% avg return over 30d, combined with 8 consecutive MSFT insider trades (no Fed/macro support), suggests distribution. Short XLK as hedge. |
+
+## Day 49 — 2025-03-17 (bankroll: $104.46 → $95.99)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.2%): My WinStayLoseShift canon prioritizes sector trends with multi-agency corroboration (insider + macro), diverging from llama-contra's single-agency focus. Today, I target energy (XLE) and healthcare (XLV) based on 30-day win rates and insider strength, while avoiding finance due to negative avg_ret.
+> **Cash:** 0.3% — Holding 30% cash to mitigate risk from crowded short positions in finance/consumer discretionary, while awaiting clearer insider signals in energy/healthcare.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:short | — | — | $10.45 | ✗ | -3.10 | Finance sector shows -7.68% avg_ret and 21% win rate over 30d, with SEC Form4 insider trades (COIN) signaling no delivery. Macro VIX=18 supports short. |
+| 3 | insider_trade:short | — | — | $7.83 | ✗ | -3.62 | Private prisons sector (GEO) has -1.79% avg_ret and 44% win rate, with SEC insider trades failing to deliver. Macro stability (VIX=18) reinforces short. |
+| 5 | insider_trade:short | — | — | $10.45 | ✗ | -1.92 | Consumer discretionary (UBER) has -1.97% avg_ret and 0% win rate, with SEC insider trades (UBER) showing no delivery. Macro VIX=18 supports short. |
+| 2 | insider_trade:short | — | — | $7.83 | ✓ | +0.17 | Finance sector (FOUR) mirrors COIN's negative trend, with SEC Form4 insider trades signaling no delivery. Macro alignment supports short. |
+
+## Day 50 — 2025-03-18 (bankroll: $95.99 → $94.95)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=7.5%): My WinStayLoseShift canon prioritizes sector-trend corroboration over single-event momentum. While llama-contra leans into XLP/XLF/XLY via insider_trade density, I diverge by targeting **energy (XLE)** and **healthcare (XLV)** where 30d sector trends (avg_ret +4.92%/win_rate 94% and +3.40%/80%) align with today’s insider_trade signals (XOM/PFE) and macro stability (VIX=18). DMAD_DIVERGE: XLE is under-represented in peer allocations despite its trend
+> **Cash:** 0.2% — Buffer for intra-day volatility given 3 active sector bets, preserving capital for tomorrow’s potential high-edge events.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| 1 | insider_trade:short | — | — | $12.00 | ✗ | -1.04 | GOOGL insider_trade (event#1, strength=0.60) in tech, which has -1.51% avg_ret and 34% win_rate. Shorting aligns with sector underperformance despite insider activity. |

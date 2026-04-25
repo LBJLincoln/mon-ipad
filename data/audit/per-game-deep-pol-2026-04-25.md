@@ -1,533 +1,616 @@
 # POL — per-game cross-agent forensic
-Generated 2026-04-25 13:19 UTC
-Last 14 dates expanded (162 total game-rows in JSON)
+Generated 2026-04-25 14:23 UTC
+Last 14 dates expanded (266 total game-rows in JSON)
 
 > Reads: for each (date, game/event), which agents picked WHAT and WHY.
 > Use to spot consensus vs divergence, and identify why agents diverged.
 
-## 2025-02-25
-### 1 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:short | — | — | $6.17 | ✓ | AMZN insider trade cluster (6 events, SEC Form 4) in tech, a sector with 33% win_rate and -0.0078 avg_ret. Strength=0.60 may indicate profit-taking or hedging. |
-| `mistral-small` | insider_trade:long | — | — | $5.23 | ✗ | AMZN insider trades (Form 4, SEC) with donor=tech delivered=NO signal potential upside in tech. Sector_trend shows tech avg_ret=-0.78% but win_rate=33% over 30d. |
-| `gemini-tact` | insider_trade:long | — | — | $3.93 | ✗ | AMZN insider trades (Form 4, SEC) with donor=tech delivered=NO signal potential upside in tech sector. Sector trend shows avg_ret=-0.0078 but win_rate=33% over 30d. |
-
-### 14 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-ministral` | insider_trade:short | — | — | $8.10 | ✗ | HOOD insider trades (Form 4, SEC) with donor=finance delivered=NO signal sector weakness. Sector trend avg_ret=-0.0460, win_rate=36%. |
-| `gemini-tact` | insider_trade:short | — | — | $5.90 | ✗ | HOOD insider trades (Form 4, SEC) with donor=finance delivered=NO signal potential downside in finance sector. Sector trend shows avg_ret=-0.0460 and win_rate=36% over 30d. |
-| `mistral-small` | insider_trade:short | — | — | $5.23 | ✗ | HOOD insider trades (Form 4, SEC) with donor=finance delivered=NO signal potential downside in finance. Sector_trend shows finance avg_ret=-4.60% and win_rate=36% over 30d. |
-
-### 15 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $16.84 | ✓ | Insider trades in KO suggest stability in consumer staples, supported by strong sector trends. |
-| `qwen-arb` | insider_trade:long | — | — | $12.34 | ✓ | KO insider trade (Form 4, SEC) in consumer_staples, a sector with 93% win_rate and +0.0442 avg_ret over 30d. Signal strength=0.60 corroborated by sector momentum. |
-| `gemini-tact` | insider_trade:long | — | — | $9.83 | ✓ | KO insider trades (Form 4, SEC) with donor=consumer_staples delivered=NO signal regulatory arbitrage opportunity in consumer staples. Sector trend shows avg_ret=+0.0442 and win_rate=93% over 30d. |
-
-### 16 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $11.23 | ✗ | Insider trades in PFE suggest potential growth in healthcare, though sector trends are mixed. |
-| `gemini-tact` | insider_trade:long | — | — | $7.86 | ✗ | PFE insider trades (Form 4, SEC) with donor=healthcare delivered=NO signal potential upside in healthcare sector. Sector trend shows avg_ret=+0.0228 and win_rate=61% over 30d. |
-| `qwen-arb` | insider_trade:long | — | — | $7.40 | ✗ | PFE insider trade (Form 4, SEC) in healthcare, a sector with 61% win_rate and +0.0228 avg_ret. Signal strength=0.60 suggests accumulation despite recent flat returns. |
-
-### 7 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $16.84 | ✓ | Insider trades in CXW indicate potential growth in private prisons, supported by recent sector trends. |
-| `qwen-arb` | insider_trade:long | — | — | $11.10 | ✓ | CXW insider trade cluster (7 events, SEC Form 4) in private_prisons, a sector with 59% win_rate and neutral avg_ret (+0.0058). Strength=0.60 signals accumulation. |
-| `gemini-tact` | insider_trade:long | — | — | $7.86 | ✓ | CXW insider trades (Form 4, SEC) with donor=private_prisons delivered=NO signal regulatory arbitrage opportunity in private prisons sector. Sector trend shows avg_ret=-0.0066 but win_rate=59% over 30d. |
-
-## 2025-02-24
+## 2025-03-20
 ### 1 (2 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `mistral-large` | insider_trade:long | — | — | $12.98 | ✗ | COIN insider trades (Form 4) with donor=finance delivered=NO and sector_trends showing -5.34% avg_ret/33% win_rate justify long XLF despite poor trend due to insider signal strength=0.60. |
-| `selfhost-qwen4b` | insider_trade:long | — | — | $7.37 | ✗ | SEC Form4 insider_trade (COIN) with donor=finance delivered=NO signals finance sector strength. Island Oracle p_yes=0.499 suggests mispricing. |
-
-### 14 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-large` | insider_trade:long | — | — | $12.98 | ✓ | KO insider trades (Form 4) with donor=consumer_staples delivered=NO and sector_trends showing +3.67% avg_ret/75% win_rate justify long XLP. |
-| `mistral-ministral` | insider_trade:long | — | — | $10.54 | ✓ | KO insider trades (Form 4) with donor=consumer_staples delivered=NO and sector_trends showing +3.67% avg_ret suggest abnormal insider confidence in staples stability. Agency=SEC signal_type=form4 is high-fidelity for political-alpha arbitr… |
-| `mistral-nemo` | insider_trade:long | — | — | $10.32 | ✓ | Insider trades in KO suggest stability in consumer staples, and XLP is a suitable ETF for this sector. |
-
-### 25 (2 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-nemo` | insider_trade:long | — | — | $10.32 | ✓ | Insider trades in META suggest potential growth in tech, and XLK is a suitable ETF for this sector. |
-| `mistral-ministral` | insider_trade:long | — | — | $9.40 | ✓ | META insider trades (Form 4) with donor=tech delivered=NO and sector_trends showing tech avg_ret=-0.0081 but 32% win_rate suggest potential mean-reversion. Agency=SEC signal_type=form4 provides political-alpha edge. |
-
-### 28 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-large` | insider_trade:long | — | — | $12.98 | ✓ | UNH insider trades (Form 4) with donor=healthcare delivered=NO and sector_trends showing +2.15% avg_ret/57% win_rate justify long XLV. |
-| `llama-contra` | insider_trade:long | — | — | $10.68 | ✓ | Insider trades in UNH suggest potential upside in healthcare sector. |
-| `mistral-medium` | insider_trade:long | — | — | $10.12 | ✓ | UNH insider trades (Form 4, SEC) in healthcare sector with donor=healthcare delivered=NO suggest strong positive alpha. Sector_trends show healthcare avg_ret=+0.0215 and win_rate=57% despite 65 events. |
-
-### 29 (1 bet)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $10.68 | ✓ | Repeated insider trades in UNH reinforce healthcare sector potential. |
-
-### 30 (2 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $10.68 | ✓ | Consistent insider trades in UNH indicate strong healthcare sector signals. |
-| `mistral-medium` | insider_trade:long | — | — | $9.56 | ✓ | Another UNH insider trade (event_idx=30) in healthcare sector with identical signal_type and agency. Repetition reinforces thesis without overcommitting to finance sector. |
-
-### 31 (1 bet)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-medium` | insider_trade:long | — | — | $8.43 | ✓ | Third UNH insider trade (event_idx=31) in healthcare sector. Multiple events in the same sector strengthen the correlation-aware portfolio construction thesis. |
-
-### 8 (1 bet)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-nemo` | insider_trade:long | — | — | $10.32 | ✓ | Insider trades in FOUR indicate potential growth in finance, and XLF is a relevant ETF for this sector. |
-
-## 2025-02-21
-### 1 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $14.45 | ✗ | GOOGL insider trade (Form 4) with donor=NO suggests potential sector rotation into energy-adjacent tech plays. SEC Form 4 signals with donor=NO historically precede 2.1% avg sector moves in energy (XLE) over 5d. |
-| `qwen-arb` | insider_trade:long | — | — | $12.86 | ✗ | Insider trades in tech (GOOGL) often precede energy sector movements due to correlated supply chain dependencies. |
-| `qwen-quant` | insider_trade:long | — | — | $11.56 | ✗ | GOOGL insider trade (Form 4) may trigger financial sector rotation as tech earnings optimism flows into payment processors and cloud infrastructure spend. SEC Form 4s in tech with donor=NO correlate 1.8% avg moves in XLF. |
-
-### 2 (4 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $13.54 | ✗ | Insider trades in tech (QCOM) suggest stability in consumer staples as a defensive play. |
-| `qwen-arb` | insider_trade:long | — | — | $12.86 | ✗ | Insider trades in tech (QCOM) can indirectly benefit healthcare due to tech-healthcare partnerships. |
-| `qwen-quant` | insider_trade:long | — | — | $11.56 | ✗ | QCOM insider trade (Form 4) with donor=NO suggests semiconductor supply chain demand for energy tech. SEC Form 4s in tech with donor=NO precede 1.9% avg XLE moves over 3d. |
-| `mistral-ministral` | insider_trade:short | — | — | $10.42 | ✓ | QCOM insider trade (Form 4) with donor=tech delivered=NO mirrors GOOGL's structural issue; sector_trends confirm tech underperformance (avg_ret=-0.0040). |
-
-### 3 (4 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $13.54 | ✗ | Repeated insider trades in QCOM indicate potential spillover effects into healthcare. |
-| `qwen-arb` | insider_trade:long | — | — | $9.65 | ✗ | Insider trades in tech (QCOM) can also benefit industrials through supply chain and manufacturing ties. |
-| `mistral-ministral` | insider_trade:short | — | — | $9.56 | ✓ | Duplicate QCOM event (same agency/signal_type) reinforces bearish thesis; sector_trends validate tech weakness (win_rate=36%). |
-| `qwen-quant` | insider_trade:long | — | — | $5.78 | ✗ | QCOM insider trade (Form 4) with donor=NO may drive financial sector rotation via semiconductor capex spending. SEC Form 4s in tech with donor=NO correlate 1.5% avg XLF moves over 2d. |
-
-## 2025-02-20
-### 1 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $21.44 | ✗ | SEC Form 4 insider_trade (COIN) in finance sector with donor=NO signals regulatory-agnostic buying. Sector trend shows finance avg_ret=-0.0437 but Form 4 strength=0.60 and donor=NO implies asymmetric edge. |
-| `qwen-arb` | insider_trade:long | — | — | $11.87 | ✗ | COIN insider trade (event 1) in finance sector with SEC Form 4 signal; donor delivered=NO suggests potential undervaluation. Sector trend shows finance avg_ret=-0.0437 with 36% win_rate, but insider signals often precede reversals. |
-| `qwen-arb` | insider_trade:long | — | — | $7.12 | ✗ | COIN insider trade (event 1) indirectly benefits energy via macro liquidity flows; energy sector trend shows avg_ret=+0.0058 with 73% win_rate, suggesting resilience. |
-
-### 11 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `nvidia-llama70` | insider_trade:long | — | — | $7.92 | ✗ | GOOGL insider_trade in tech sector with SEC Form 4; energy sector_trends show resilience (avg_ret=+0.0058) and low correlation to tech volatility spikes. |
-| `mistral-small` | insider_trade:long | — | — | $5.26 | ✗ | GOOGL insider trade (event 11) in tech sector with SEC Form 4 signal_type and donor delivered=NO. Tech sector trends show avg_ret=-0.0018 and win_rate=38%, but GOOGL's insider trade strength=0.60 and council's ITA focus justify a small all… |
-| `mistral-ministral` | insider_trade:long | — | — | $5.10 | ✗ | GOOGL insider_trade (event 11) with sector=tech and donor=tech delivered=NO; sector_trends show tech avg_ret=-0.0018 (win_rate=38%) — potential oversold bounce. |
-
-### 12 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $12.61 | ✗ | SEC Form 4 insider_trade (HOOD) in finance sector with donor=NO reinforces XLF thesis. Multiple Form 4s in same sector increase conviction despite weak sector trend. |
-| `qwen-arb` | insider_trade:long | — | — | $9.50 | ✗ | HOOD insider trade (event 12) in finance sector with SEC Form 4 signal; donor delivered=NO aligns with COIN signal for sector-wide undervaluation. |
-| `qwen-arb` | insider_trade:long | — | — | $7.12 | ✗ | HOOD insider trade (event 12) in finance sector may trigger sector rotation into energy; energy's strong win_rate (73%) supports this thesis. |
+| `llama-contra` | insider_trade:short | — | — | $8.39 | ✗ | META insider trade in tech (42% win rate, -1.17% avg return) shows sector weakness; SEC Form 4 signals may reflect overvaluation rather than growth. |
+| `gemini-anl` | insider_trade:long | — | — | $7.00 | ✓ | Insider trading signal in the tech sector with moderate signal strength. |
 
 ### 13 (3 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $12.61 | ✓ | SEC Form 4 insider_trade (MRK) in healthcare sector with donor=NO. Healthcare sector trend avg_ret=+0.0213 and win_rate=57% supports long bias despite council focus on XLE/XLF. |
-| `llama-contra` | insider_trade:long | — | — | $7.77 | ✓ | MRK insider_trade (event 13) in healthcare with donor delivered=NO; healthcare sector avg_ret=+0.0213 (win_rate=57%) — donor delivered=NO signals potential underreaction to positive insider activity. |
-| `gemini-anl` | insider_trade:long | — | — | $7.19 | ✓ | MRK insider trade in healthcare sector (Form 4) with donor delivered=NO shows sector strength (30-day avg_ret=+2.13%, win_rate=57%). Healthcare is a defensive play amid political volatility. |
+| `mistral-small` | insider_trade:long | — | — | $19.06 | ✗ | UNH insider trades (14 events) with SEC Form 4 signals indicate strong healthcare sector momentum. Donor sector matches healthcare, suggesting aligned incentives. |
+| `llama-contra` | insider_trade:long | — | — | $13.98 | ✗ | UNH insider trades (14 events) in healthcare show 78% win rate and +3.24% avg return; SEC Form 4 signals indicate strong regulatory support for sector momentum. |
+| `gemini-anl` | insider_trade:long | — | — | $7.00 | ✗ | Strong insider trading signal in the healthcare sector with a high win rate and positive average returns. |
 
-### 14 (3 bets)
+### 14 (2 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $6.31 | ✓ | SEC Form 4 insider_trade (PPC) in consumer_staples sector with donor=NO. Sector trend avg_ret=+0.0264 and win_rate=67% provides asymmetric edge despite low council priority. |
-| `llama-contra` | insider_trade:long | — | — | $5.18 | ✓ | PPC insider_trade (event 14) in consumer_staples with donor delivered=NO; consumer_staples sector avg_ret=+0.0264 (win_rate=67%) — donor delivered=NO may mask positive momentum. |
-| `gemini-anl` | insider_trade:long | — | — | $3.60 | ✓ | PPC insider trade in consumer_staples sector (Form 4) with donor delivered=NO aligns with sector trend (30-day avg_ret=+2.64%, win_rate=67%). Consumer staples are resilient in uncertain markets. |
-
-### 2 (5 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-large` | insider_trade:long | — | — | $11.52 | ✓ | CXW insider_trade cluster (events 2-10) with donor=NO in private_prisons sector signals potential undervaluation; SEC Form 4 agency adds credibility despite sector_trend avg_ret=-0.0238. |
-| `nvidia-minimax` | insider_trade:short | — | — | $10.45 | ✗ | CXW insider_trade (event 2) with SEC Form 4 and donor sector=private_prisons delivered=NO signals regulatory/ESG risk. Sector_trends show private_prisons avg_ret=-0.0238 and win_rate=12% over 8 events. |
-| `mistral-ministral` | insider_trade:long | — | — | $9.57 | ✓ | CXW insider_trade cluster (events 2-10) with donor=private_prisons delivered=NO signals potential reversal; sector_trends show private_prisons avg_ret=-0.0238 (win_rate=12%) — extreme underreaction to insider activity. |
-| `gemini-tact` | insider_trade:short | — | — | $7.82 | ✗ | CXW insider trades (events 2-10) show 9 consecutive Form 4s with donor=NO, indicating potential regulatory scrutiny (SEC focus on private_prisons sector). Sector trend for private_prisons avg_ret=-0.0238 with 12% win_rate, supporting short… |
-| `llama-contra` | insider_trade:long | — | — | $6.21 | ✓ | CXW insider_trade signals (events 2-10) cluster in private_prisons with donor delivered=NO, a sector with avg_ret=-0.0238 and win_rate=12% — structural underreaction to negative momentum. |
-
-## 2025-02-19
-### 1 (2 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `selfhost-gemma3` | insider_trade:long | — | — | $9.35 | ✗ | AMZN insider trades (events 1-3) with SEC Form 4 signals and donor sector=tech delivered=NO indicate bullish momentum; tech sector-beta 0.83 supports XLK exposure. |
-| `mistral-small` | insider_trade:long | — | — | $6.28 | ✗ | AMZN insider_trade (event 1) with SEC Form 4 signal_type and donor=tech delivered=NO suggests positive momentum in tech sector. XLK captures broad tech exposure. |
-
-### 15 (1 bet)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `selfhost-gemma3` | insider_trade:long | — | — | $7.79 | ✗ | GOOGL insider trades (event 15) with SEC Form 4 and donor sector=tech delivered=NO signal bullish momentum; tech sector trend avg_ret=+0.0037 supports XLK allocation. |
-
-### 18 (1 bet)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-small` | insider_trade:long | — | — | $5.23 | ✓ | JNJ insider_trade cluster (events 18-28) in healthcare sector with donor=healthcare delivered=NO suggests positive sentiment. XLV captures broad healthcare exposure. |
-
-### 29 (1 bet)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `selfhost-gemma3` | insider_trade:long | — | — | $6.23 | ✗ | META insider trades (events 29-39) with SEC Form 4 and donor sector=tech delivered=NO indicate strong bullish sentiment; tech sector-beta 0.83 supports XLK exposure. |
-
-### 40 (1 bet)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-small` | insider_trade:long | — | — | $5.23 | ✓ | MO insider_trade (event 40) in consumer_staples sector with donor=consumer_staples delivered=NO suggests positive sentiment. XLP captures consumer staples exposure. |
-
-### 41 (2 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-small` | insider_trade:long | — | — | $5.23 | ✗ | UBER insider_trade (event 41) in consumer_disc sector with donor=consumer_disc delivered=NO indicates positive momentum. XLY captures consumer discretionary exposure. |
-| `selfhost-gemma3` | insider_trade:long | — | — | $5.19 | ✗ | UBER insider trades (events 41-46) with SEC Form 4 and consumer_disc sector trend avg_ret=+0.0127 support XLY exposure; consumer discretionary sector-beta 0.78. |
-
-### 9 (2 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-small` | insider_trade:long | — | — | $6.80 | ✗ | CXW insider_trade (event 9) in private_prisons sector with donor=private_prisons delivered=NO indicates regulatory/political tailwinds. XLP captures consumer staples but sector trend shows private_prisons as a high-conviction play. |
-| `selfhost-gemma3` | insider_trade:long | — | — | $5.19 | ✗ | CXW insider trades (events 9-14) with SEC Form 4 and private_prisons sector trend avg_ret=-0.0296 indicate contrarian opportunity; sector-beta 0.65 supports XLP exposure. |
-
-## 2025-02-18
-### 15 (2 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `gemini-tact` | insider_trade:long | — | — | $7.43 | ✗ | META insider_trade (event 15, sector=tech) with donor delivered=NO. Tech sector avg_ret=+0.0052 (48% win_rate n=64) offers modest but non-correlated edge vs consumer_disc. |
-| `gemini-anl` | insider_trade:long | — | — | $5.31 | ✗ | META insider_trade (event 15) with SEC Form 4 signal_type and tech sector strength=0.60; tech sector baseline avg_ret=+0.0052 with 48% win_rate but high signal density. |
-
-### 17 (2 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $9.12 | ✓ | PFE insider trade (event 17) with donor delivered=NO in healthcare sector. Sector_trends show healthcare avg_ret=+0.0017, and PFE-specific signals are underfollowed by peers (only 2/17 agents bet healthcare yesterday). |
-| `gemini-anl` | insider_trade:long | — | — | $6.38 | ✓ | PFE insider_trade (event 17) with SEC Form 4 signal_type and healthcare sector strength=0.60; PFE is a core healthcare holding with strong insider activity. |
-
-### 18 (2 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `gemini-tact` | insider_trade:long | — | — | $7.87 | ✗ | UBER insider_trade (event 18, sector=consumer_disc) with donor delivered=NO signals strong alpha potential. Sector_trends show avg_ret=+0.0213 (100% win_rate n=6), outperforming energy/finance. |
-| `gemini-anl` | insider_trade:long | — | — | $5.31 | ✗ | UBER insider_trade (event 18) with SEC Form 4 signal_type and consumer_disc sector strength=0.60; consumer_disc sector baseline avg_ret=+0.0213 with 100% win_rate over 6 events. |
-
-### 19 (2 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $9.12 | ✗ | UNH insider trades (events 19-25) in healthcare sector with donor delivered=NO. Sector_trends show healthcare avg_ret=+0.0017, and UNH-specific signals are ignored by peers (0/17 agents bet healthcare yesterday). |
-| `gemini-anl` | insider_trade:long | — | — | $6.02 | ✗ | UNH insider_trade (event 19) with SEC Form 4 signal_type and healthcare sector strength=0.60; UNH is a bellwether for healthcare services with consistent insider activity. |
-
-### 3 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $9.12 | ✓ | JNJ insider trades (events 3-14) cluster in healthcare with donor delivered=NO, signaling potential undervaluation. Sector_trends show healthcare avg_ret=+0.0017 despite low win_rate (38%), indicating noise-driven mispricing. |
-| `gemini-anl` | insider_trade:long | — | — | $7.08 | ✓ | JNJ insider_trade (event 3) with SEC Form 4 signal_type and healthcare sector strength=0.60 indicates potential alpha; sector baseline avg_ret=+0.0017 with 38% win_rate but high signal density justifies allocation. |
-| `gemini-tact` | insider_trade:long | — | — | $6.56 | ✓ | JNJ insider_trade cluster (events 3-14, sector=healthcare) with donor delivered=NO. Healthcare avg_ret=+0.0017 (38% win_rate n=34) but high-frequency insider flow suggests alpha. |
-
-## 2025-02-14
-### 1 (4 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $13.00 | ✗ | AMZN insider trade with high strength and clear sector signal in tech. |
-| `qwen-quant` | insider_trade:long | — | — | $10.50 | ✗ | AMZN insider trade (event 1) with tech sector strength=0.60 and SEC Form 4 agency signal. Tech sector-beta matrix shows resilience to macro shocks. |
-| `qwen-arb` | insider_trade:long | — | — | $10.48 | ✗ | Insider trade in AMZN with high strength and clear sector signals from the SEC. |
-| `mistral-nemo` | insider_trade:short | — | — | $2.86 | ✓ | AMZN insider trade (strength=0.60) in tech, which has +0.37% 30d avg_return but only 47% win-rate. Short as a fade to the council’s XLK blindness (no allocations yesterday). |
-
-### 10 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:long | — | — | $13.97 | ✓ | Insider trade in PFE with high strength and clear sector signals from the SEC. |
-| `qwen-quant` | insider_trade:long | — | — | $12.35 | ✓ | PFE insider trade (event 10) with healthcare sector strength=0.60 and SEC Form 4 agency signal indicates regulatory arbitrage opportunity. Sector-beta matrix shows healthcare underpriced relative to insider activity. |
-| `qwen-quant` | insider_trade:long | — | — | $6.18 | ✓ | Direct PFE insider trade (event 10) with healthcare sector strength=0.60 and SEC Form 4 agency signal. Regulatory arbitrage edge is strongest in individual stock vs sector ETF. |
-
-### 2 (4 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-nemo` | insider_trade:long | — | — | $10.40 | ✓ | SEC Form 4 insider trade (strength=0.60) in CXW (private_prisons) after a -7.03% 30d drawdown and 0% win_rate. Mean-reversion setup with no crowding (DMAD_DIVERGE). |
-| `qwen-quant` | insider_trade:short | — | — | $9.26 | ✗ | CXW insider trade (event 2) with private_prisons sector strength=0.60 and SEC Form 4 agency signal. Sector trend shows negative skew (avg_ret=-0.0703) despite insider activity. |
-| `gemini-tact` | insider_trade:short | — | — | $6.79 | ✗ | CXW insider_trade (private_prisons) with donor delivered=NO flags regulatory risk; private_prisons avg_ret=-0.0703 over 1 event suggests sector vulnerability |
-| `mistral-small` | insider_trade:short | — | — | $5.18 | ✗ | CXW insider_trade (event 2) with sector=private_prisons and donor=private_prisons delivered=NO; sector_trend avg_ret=-0.0703 and win_rate=0% indicate structural headwinds. |
-
-### 3 (6 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:long | — | — | $15.44 | ✓ | Multiple insider trades in OXY with high strength and clear sector signals from the SEC. |
-| `llama-contra` | insider_trade:short | — | — | $13.00 | ✗ | OXY insider trade with high strength but conflicting sector trends in energy. |
-| `mistral-large` | insider_trade:long | — | — | $12.48 | ✓ | Strong insider trading signals from OXY with high strength and clear sector signals. |
-| `qwen-quant` | insider_trade:long | — | — | $11.12 | ✓ | OXY insider trade cluster (events 3-9) with energy sector strength=0.60 and SEC Form 4 agency signal. Energy sector-beta shows positive skew despite recent underperformance. |
-| `gemini-anl` | insider_trade:short | — | — | $7.29 | ✗ | Energy sector baseline shows avg_ret=-0.0072 with 59% win rate; OXY insider signals (events 3-9) are noise given sector trend. |
-| `mistral-nemo` | insider_trade:short | — | — | $5.72 | ✗ | OXY insider cluster (events 3–9) shows 6 trades at 0.60 strength, but energy’s -0.72% 30d avg_return and 59% win_rate suggest exhaustion. Short as a hedge against the council’s long-XLE consensus. |
-
-### 4 (1 bet)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-small` | insider_trade:long | — | — | $5.18 | ✓ | OXY insider_trade (event 4) duplicates sector=energy signal but reinforces thesis; energy sector_trend avg_ret=-0.0072 with 59% win_rate suggests mean-reversion potential. |
-
-## 2025-02-13
-### 1 (6 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $21.22 | ✓ | Strong insider trading signals from COP with high strength and clear sector read. |
-| `llama-contra` | insider_trade:short | — | — | $16.12 | ✗ | COP insider trades (events 1-11) with sector=energy and strength=0.60 show 11 consecutive identical signals. Energy sector has avg_ret=-0.0110 and win_rate=50%, suggesting overcrowded and weak edge. |
-| `qwen-arb` | insider_trade:long | — | — | $12.60 | ✓ | Multiple insider trades in COP with high strength and clear sector signals from the SEC. |
-| `gemini-tact` | insider_trade:long | — | — | $10.04 | ✓ | Multiple insider trades in COP with consistent strength and sector trends showing moderate win rate. |
-| `gemini-anl` | insider_trade:short | — | — | $8.80 | ✗ | COP insider_trade cluster (events 1-11, strength=0.60) in energy sector with 30d avg_ret=-0.0110 and 50% win_rate. Negative expectancy (avg_ret < 0) + high-frequency insider sales (7 filings in 24h) signal distribution. Short aligns with L… |
-| `mistral-large` | insider_trade:short | — | — | $8.46 | ✗ | COP insider_trade cluster (9 events, strength=0.60) but energy sector’s 30d avg_ret=-0.0110 and 50% win_rate. Short aligns with Llama Contrarian’s 2025-02-12 XLE short win (+3.0%). |
-
-### 12 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $18.72 | ✗ | Insider trading signals from GOOGL with high strength and a strong tech sector signal. |
-| `llama-contra` | insider_trade:long | — | — | $16.12 | ✗ | GOOGL insider trade (event 12) with sector=tech and strength=0.60 aligns with council focus. Tech sector has avg_ret=+0.0043 but low win_rate (49%), indicating crowded trade risk. |
-| `qwen-arb` | insider_trade:long | — | — | $15.71 | ✗ | Insider trade in GOOGL with high strength and clear sector signals from the SEC. |
-
-### 13 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-large` | insider_trade:long | — | — | $12.70 | ✗ | META insider_trade (strength=0.60, SEC Form 4) corroborates GOOGL signal. Sector_trends show tech’s resilience (avg_ret positive despite 49% win_rate). |
-| `gemini-tact` | insider_trade:long | — | — | $10.04 | ✗ | Insider trade in META with high strength and sector trends showing positive win rate. |
-| `mistral-ministral` | insider_trade:long | — | — | $8.27 | ✗ | MRK insider_trade (event 14) with sector=healthcare and strength=0.60 signals potential alpha. Healthcare sector_trends show avg_ret=+0.0019 over 30d despite low win_rate (36%), indicating hidden edge in selective bets. |
-
-### 14 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $16.12 | ✗ | MRK insider trade (event 14) with sector=healthcare and strength=0.60 signals potential alpha. Healthcare sector shows avg_ret=+0.0019 over 30d despite low win_rate (36%), suggesting contrarian opportunity. |
-| `qwen-arb` | insider_trade:long | — | — | $12.60 | ✗ | Insider trade in MRK with high strength and clear sector signals from the SEC. |
-| `qwen-quant` | insider_trade:long | — | — | $12.48 | ✗ | Insider trading signals from MRK with high strength and a healthcare sector focus. |
-
-## 2025-02-12
-### 1 (4 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `gemini-tact` | insider_trade:long | — | — | $14.25 | ✗ | Insider trade signal from COIN with a clear finance sector read. |
-| `mistral-medium` | insider_trade:long | — | — | $13.21 | ✗ | Insider trading signal from COIN with moderate strength, suggesting a positive trend in the finance sector. |
-| `llama-contra` | insider_trade:short | — | — | $11.65 | ✓ | Energy sector shows avg_ret=-0.0141 over 30d despite 44 events, indicating insider_trade signals are noise. SEC Form 4s (CVX/COP) are crowded (11+ events) with donor=energy delivered=NO, suggesting regulatory arbitrage failure. |
-| `gemini-anl` | insider_trade:long | — | — | $7.16 | ✗ | COIN insider trade (event #1) shows sector=finance with donor=finance delivered=NO — regulatory arbitrage overlay. Finance sector_trends show avg_ret=+0.0078 with 61% win_rate, supporting long thesis. |
-
-### 10 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-medium` | insider_trade:long | — | — | $17.62 | ✗ | Multiple insider trading signals from JNJ with high strength, indicating a strong healthcare sector trend. |
-| `mistral-small` | insider_trade:long | — | — | $11.73 | ✗ | JNJ insider trades (events 10-19) show consistent Form 4 filings with donor=healthcare delivered=NO, signaling regulatory-approved insider confidence in healthcare sector despite sector_trends avg_ret=+0.0059. |
-| `gemini-anl` | insider_trade:long | — | — | $8.59 | ✗ | JNJ insider trades (events #10-19) show healthcare sector strength with donor=healthcare delivered=NO — regulatory arbitrage overlay. Healthcare sector_trends show avg_ret=+0.0059 with 52% win_rate, supporting long thesis. |
+| `mistral-small` | insider_trade:long | — | — | $15.88 | ✗ | Additional UNH insider trade (event#14) reinforces sector-wide healthcare strength. Multiple events reduce idiosyncratic risk. |
+| `llama-contra` | insider_trade:long | — | — | $12.58 | ✗ | Repeated UNH insider trades (event_idx 14-28) confirm sector-wide confidence; donor sector=healthcare delivered=NO suggests no overcrowding risk. |
 
 ### 2 (2 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `mistral-medium` | insider_trade:long | — | — | $17.62 | ✓ | Strong insider trading signal from CVX with high strength and clear sector mapping to energy. |
-| `gemini-tact` | insider_trade:long | — | — | $10.68 | ✓ | Insider trade signal from CVX with a strong energy sector signal. |
+| `llama-contra` | insider_trade:long | — | — | $10.48 | ✗ | PPC insider trade in consumer_staples (96% win rate, +3.44% avg return) signals defensive sector strength; SEC Form 4 indicates regulatory legitimacy. |
+| `gemini-anl` | insider_trade:long | — | — | $7.00 | ✗ | Insider trading signal in the consumer staples sector with strong signal strength. |
 
-### 20 (3 bets)
+### 21 (1 bet)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $9.71 | ✗ | Consumer staples (KO) shows avg_ret=+0.0263 with 100% win_rate over 30d, contradicting energy’s weakness. SEC Form 4 (KO) is isolated (1 event) with donor=consumer_staples delivered=NO, indicating low crowding. |
-| `mistral-small` | insider_trade:long | — | — | $7.82 | ✗ | KO insider trade (event 20) with donor=consumer_staples delivered=NO suggests regulatory-approved insider confidence in consumer staples, aligning with sector_trends avg_ret=+0.0263 and win_rate=100%. |
-| `gemini-anl` | insider_trade:long | — | — | $5.73 | ✗ | KO insider trade (event #20) shows sector=consumer_staples with donor=consumer_staples delivered=NO — regulatory arbitrage overlay. Consumer_staples sector_trends show avg_ret=+0.0263 with 100% win_rate (n=1), supporting long thesis. |
+| `mistral-small` | insider_trade:long | — | — | $7.94 | ✗ | Energy sector shows positive average returns (+4.59%) and high win rate (88%) over 30 days. No direct insider signal today, but sector trend supports allocation. |
 
-### 21 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `gemini-tact` | insider_trade:long | — | — | $14.25 | ✗ | Insider trade signal from META with a strong tech sector signal. |
-| `llama-contra` | insider_trade:long | — | — | $7.77 | ✗ | Tech sector (avg_ret=+0.0052) has 48% win_rate but META insider_trade signals are isolated (4 events) with donor=tech delivered=NO, reducing crowding risk. |
-| `gemini-anl` | insider_trade:long | — | — | $4.77 | ✗ | META insider trades (events #21-24) show sector=tech with donor=tech delivered=NO — regulatory arbitrage overlay. Tech sector_trends show avg_ret=+0.0052 with 48% win_rate, but insider signal strength=0.60 supports long thesis. |
-
-## 2025-02-11
+## 2025-03-19
 ### 1 (3 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $14.97 | ✗ | Cluster of 11 COP/CVX/OXY Form 4 filings (strength=0.60) with donor=energy delivered=NO signals accumulation ahead of a regulatory catalyst. SEC’s form4 timing (macro: VIX=18.0) suggests pre-earnings positioning. |
-| `llama-contra` | insider_trade:long | — | — | $12.17 | ✗ | COP insider_trade (SEC Form 4) with donor=energy delivered=NO signals potential undervaluation; sector_trends show energy underperforming but insider signals often precede reversals. |
-| `qwen-arb` | insider_trade:long | — | — | $7.37 | ✗ | COP insider cluster (11 Form 4s) **overrides weak sector trend** (-0.0039 avg_ret). Strength=0.60 × 11 signals = **composite edge=6.6%**, justifying XLE despite council crowding. |
-
-### 12 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:long | — | — | $12.29 | ✗ | CVX insider trade (Form 4, strength=0.60) triggers **industrial capex cycle** (historical beta=1.3 to energy insider clusters). SEC signal + donor=NO implies internal growth bets, lifting XLI via machinery/construction. |
-| `llama-contra` | insider_trade:long | — | — | $9.74 | ✗ | CVX insider_trade (SEC Form 4) with donor=energy delivered=NO mirrors COP’s signal; energy sector’s underperformance creates a contrarian entry point. |
-| `mistral-large` | insider_trade:short | — | — | $5.83 | ✓ | CVX insider trade (SEC Form 4, strength=0.60) with donor=NO and energy sector's negative 30d avg_ret (-0.0039) suggests downside risk. |
-
-### 13 (5 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:short | — | — | $12.25 | ✗ | DMAD_DIVERGE: HOOD’s lone Form 4 (finance) contrasts with 15x energy/healthcare signals. Finance’s +0.0011 avg_ret and 59% win_rate are statistically weak, but XLC’s 1.15 beta to SPY offers a macro hedge if insider clusters underperform. |
-| `mistral-small` | insider_trade:long | — | — | $9.93 | ✓ | HOOD insider trade (event #13) with donor=finance delivered=NO signal strength=0.60 aligns with finance sector trend (avg_ret=+0.0011, win_rate=59%). Form 4 signals in finance are actionable for ETF exposure. |
-| `mistral-large` | insider_trade:long | — | — | $8.74 | ✓ | HOOD insider trade (SEC Form 4, strength=0.60) in finance sector with 59% 30d win_rate, diverging from crowded tech (XLK) and energy (XLE). |
-| `qwen-arb` | insider_trade:short | — | — | $6.14 | ✗ | HOOD insider trade (Form 4) with **donor=finance delivered=NO** signals **regulatory risk hedging**. Finance’s +0.0011 avg_ret masks tail risk; short XLF as contrarian play. |
-| `gemini-anl` | insider_trade:long | — | — | $4.55 | ✓ | HOOD insider trade (event #13) in finance sector with SEC Form 4 and donor=finance delivered=NO. Finance sector shows +0.11% avg_ret over 30d, supporting long bias. |
-
-### 14 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $13.61 | ✗ | 4x JNJ/MRK Form 4 filings in healthcare (strength=0.60) with sector’s 67% win_rate and +0.0123 avg_ret over 30d. Agency=SEC signals compliance-driven accumulation, not distress. |
-| `qwen-arb` | insider_trade:long | — | — | $11.06 | ✗ | JNJ insider cluster (4 Form 4s, strength=0.60) with **donor=NO** suggests R&D acceleration. Healthcare’s 67% win_rate (last 30d) + low volatility (VIX=18) favors XLV over single-stock risk. |
-| `gemini-anl` | insider_trade:long | — | — | $6.82 | ✗ | JNJ insider trades (events #14-17) show healthcare sector strength (+1.23% avg_ret) with Form 4 signals from SEC. Donor=healthcare delivered=NO suggests bullish insider conviction despite market noise. |
+| `llama-contra` | insider_trade:long | — | — | $20.91 | ✗ | Strong insider trading signal in the communications sector with high signal strength. |
+| `qwen-quant` | insider_trade:long | — | — | $11.29 | ✗ | Insider trading signal in the communications sector with strong signal strength. |
+| `qwen-arb` | insider_trade:long | — | — | $8.65 | ✗ | Strong insider trading signal in the communications sector with high signal strength and SEC agency involvement. |
 
 ### 18 (3 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `mistral-large` | insider_trade:long | — | — | $8.74 | ✗ | MRK insider trade (SEC Form 4, strength=0.60) reinforces healthcare sector thesis, aligning with JNJ cluster (events 14-17). |
-| `gemini-anl` | insider_trade:long | — | — | $5.68 | ✗ | MRK insider trade (event #18) with SEC Form 4 and donor=healthcare delivered=NO reinforces healthcare sector momentum. Strength=0.60 aligns with 30d avg_ret trend. |
-| `qwen-quant` | insider_trade:long | — | — | $4.08 | ✗ | MRK’s Form 4 (event #18) is the 4th healthcare signal, reinforcing XLV’s cluster edge. Strength=0.60 + agency=SEC meets my 1.05 EV threshold. |
+| `qwen-quant` | insider_trade:long | — | — | $18.81 | ✗ | Strong insider trading signal in the healthcare sector with high signal strength. |
+| `mistral-medium` | insider_trade:long | — | — | $12.07 | ✗ | JNJ insider_trade (SEC Form 4, strength=0.60) in healthcare, which has +3.30% avg_return and 79% win_rate over last 30d. Signal aligns with council’s regulatory_arb focus, as JNJ often leads sector moves on FDA/SEC crossover events. |
+| `gemini-anl` | insider_trade:long | — | — | $7.02 | ✗ | JNJ insider_trade (event#18) in healthcare sector with strong signal strength (0.60) and sector_trends avg_ret=+0.0330, win_rate=79%. Agency=SEC signal_type=form4 indicates regulatory compliance-driven insider activity. |
 
-### 19 (3 bets)
+### 2 (4 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:long | — | — | $9.22 | ✗ | OXY insider trade (Form 4) leaks into **materials via chemical inputs** (historical spillover: +0.045 avg_ret when energy insiders buy). Agency=SEC + strength=0.60 confirms signal integrity. |
-| `qwen-quant` | insider_trade:long | — | — | $8.17 | ✗ | OXY’s Form 4 (event #19) is the 12th energy insider trade today, corroborating the XLE thesis. Donor=energy delivered=NO suggests pre-FOMC positioning (macro: SP500_5d=0.0%). |
-| `llama-contra` | insider_trade:long | — | — | $8.11 | ✗ | OXY insider_trade (SEC Form 4) with donor=energy delivered=NO adds a contrarian play on energy’s mean reversion thesis. |
+| `qwen-quant` | insider_trade:long | — | — | $15.05 | ✗ | Insider trading signal in the energy sector with strong signal strength. |
+| `llama-contra` | insider_trade:short | — | — | $13.94 | ✓ | Private prisons sector showing weak performance and insider trading signals. |
+| `mistral-medium` | insider_trade:short | — | — | $9.06 | ✓ | CXW insider_trade cluster (6 events) with SEC Form 4 signals in private_prisons, which has -1.56% avg_return and 45% win_rate. High event frequency suggests insider selling ahead of regulatory headwinds (council’s private_prisons focus). |
+| `qwen-arb` | insider_trade:short | — | — | $8.65 | ✓ | Insider trading signal in private prisons with regulatory overhang and SEC agency involvement. |
 
-## 2025-02-10
-### 1 (4 bets)
+### 7 (4 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $14.23 | ✗ | META Form 4 cluster (events #1-2, strength=0.60×1.3 donor=NO multiplier) signals accumulated insider buying. SEC’s 2024 enforcement report shows tech insider trades with donor=NO precede +4.2% 5-day sector moves (n=128, p<0.01). |
-| `qwen-arb` | insider_trade:long | — | — | $14.13 | ✗ | Strong insider trade signal in tech sector with high signal strength. |
-| `llama-contra` | insider_trade:long | — | — | $12.98 | ✗ | META insider trade (Form 4) with donor=tech delivered=NO and signal strength=0.60 suggests hidden momentum. Tech sector avg_ret=+0.0059 supports long bias despite crowded Form 4s. |
-| `gemini-anl` | insider_trade:short | — | — | $7.05 | ✓ | META insider trade (SEC Form 4, strength=0.60) with donor=NO in tech sector, where 30-day baseline avg_ret=+0.0059 but win_rate=50% suggests overcrowding. ISLAND ORACLE p_yes=0.499 (Brier 0.2541) implies no edge without additional catalyst… |
+| `mistral-medium` | insider_trade:long | — | — | $15.09 | ✓ | GOOGL insider cluster (7 events) with SEC Form 4 signals (strength=0.60) in tech, where sector trends show -1.44% avg_return but 35% win_rate suggests mean reversion potential. Agency SEC + donor sector=tech delivered a clear insider accum… |
+| `llama-contra` | insider_trade:short | — | — | $13.94 | ✗ | Tech sector showing negative average returns and low win rate despite insider trading signals. |
+| `qwen-arb` | insider_trade:long | — | — | $6.65 | ✓ | Insider trading signal in the tech sector with strong signal strength and SEC agency involvement. |
+| `gemini-anl` | insider_trade:long | — | — | $5.27 | ✓ | GOOGL insider_trade (event#7) in tech sector with signal strength (0.60), but sector_trends avg_ret=-0.0144, win_rate=35%. Agency=SEC signal_type=form4 indicates insider activity, but sector underperformance may limit upside. |
+
+## 2025-03-18
+### 1 (6 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:short | — | — | $18.07 | ✗ | Tech sector has shown negative average returns and low win rate over the last 30 days. |
+| `qwen-quant` | insider_trade:long | — | — | $13.17 | ✓ | Insider trading signal in the tech sector with strong signal strength. |
+| `mistral-large` | insider_trade:short | — | — | $12.00 | ✗ | GOOGL insider_trade (event#1, strength=0.60) in tech, which has -1.51% avg_ret and 34% win_rate. Shorting aligns with sector underperformance despite insider activity. |
+| `qwen-arb` | insider_trade:long | — | — | $8.51 | ✓ | Insider trading signal in the tech sector with strong signal strength. |
+| `gemini-anl` | insider_trade:long | — | — | $8.02 | ✓ | Insider trading signal in the tech sector with strong signal strength, despite recent negative trends. |
+| `nvidia-minimax` | insider_trade:short | — | — | $1.50 | ✗ | GOOGL insider trade (event#1) in tech, which has -1.51% avg return and 34% WR. Shorting as a hedge against potential sector drag from repeated insider sales (5 GOOGL events in 7 days). |
+
+### 10 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $20.89 | ✗ | Strong insider trading signal in the energy sector with high signal strength. |
+| `llama-contra` | insider_trade:long | — | — | $18.07 | ✗ | Strong insider trading signal in the energy sector with high strength. |
+| `qwen-arb` | insider_trade:long | — | — | $11.35 | ✗ | Strong insider trading signal in the energy sector with high win rate and positive average returns. |
 
 ### 2 (1 bet)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $8.54 | ✗ | Second META Form 4 (event #2) confirms the cluster. Meta’s insider buys with donor=NO show 72% win rate (n=32) per SEC’s 2025 Insider Trading Report, with +5.3% avg return when VIX < 20 (current VIX=18.0). |
-
-### 3 (4 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:long | — | — | $18.01 | ✗ | Strong insider trade signal in energy sector with high signal strength. |
-| `llama-contra` | insider_trade:short | — | — | $15.58 | ✓ | OKLO insider trade (Form 4) with donor=energy delivered=NO signals weak momentum in energy sector, contradicting qwen-quant’s CVX cluster. Sector trend avg_ret=-0.0014 supports short bias. |
-| `qwen-quant` | insider_trade:long | — | — | $12.80 | ✗ | OKLO Form 4 (energy, strength=0.60) with donor=NO triggers nuclear-fuel subsector alpha. DOE’s 2025 Advanced Reactor Demo Program correlates with +6.8% XLE moves post-insider filings (n=19). |
-| `gemini-anl` | insider_trade:long | — | — | $7.84 | ✗ | OKLO insider trade (SEC Form 4, strength=0.60) in energy sector, where 30-day baseline avg_ret=-0.0014 but win_rate=60% suggests mean-reversion potential. Signal strength >0.5 and donor=NO indicate undervalued insider activity. |
-
-### 4 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:long | — | — | $14.13 | ✓ | Strong insider trade signal in tech sector with high signal strength. |
-| `qwen-quant` | insider_trade:long | — | — | $10.67 | ✓ | DMAD_DIVERGE: QCOM Form 4 (tech) leaks into aerospace via 5G defense contracts (DoD’s 2025 JADC2 budget). Cross-sector insider spillover to ITA shows +3.9% avg return (n=12) when tech filings cite ‘national security’ (event #4 title implie… |
-| `llama-contra` | insider_trade:long | — | — | $10.39 | ✓ | QCOM insider trade (Form 4) with donor=tech delivered=NO and signal strength=0.60 aligns with tech sector’s positive trend (avg_ret=+0.0059). |
-
-### 5 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `mistral-small` | insider_trade:long | — | — | $12.43 | ✗ | TSLA insider trade (SEC Form 4) with donor=tech delivered=NO signals potential momentum; tech sector's insider-driven moves often compound quickly. |
-| `qwen-quant` | insider_trade:short | — | — | $8.54 | ✓ | TSLA Form 4 (tech) inverses to healthcare via ESG arbitrage: TSLA’s insider sales historically precede +2.1% XLV shorts (n=8) as funds rebalance ESG portfolios. Donor=NO amplifies the signal (no offsetting political cover). |
-| `gemini-anl` | insider_trade:long | — | — | $6.66 | ✗ | TSLA insider trade (SEC Form 4, strength=0.60) in tech sector, but healthcare (XLV) baseline (+0.0123 avg_ret, 67% win_rate) is stronger. TSLA's regulatory tailwinds (EV credits) may spill over into healthcare via supply chain linkages (e.… |
-
-## 2025-02-07
-### 1 (5 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:long | — | — | $18.92 | ✗ | The strong insider trade signal in the healthcare sector, driven by MRK and UNH insider trades, indicates a potential upside in the sector. The signal strength of 0.60 and the sector's average return of +0.0210 support this thesis. |
-| `llama-contra` | insider_trade:long | — | — | $16.17 | ✗ | Healthcare sector shows avg_ret=+0.0210 (86% win_rate) with 4 MRK/UNH insider trades today. Regulatory uncertainty (SEC scrutiny on Form 4s) creates asymmetric upside for XLV vs XLE. |
-| `qwen-quant` | insider_trade:long | — | — | $14.77 | ✗ | MRK Form 4 cluster (events #1-3) with donor=NO suggests defensive accumulation ahead of election-driven healthcare reforms. YouTube’s Breaking Points video («Politicians CAUGHT Trading THEMSELVES») amplifies sector volatility. |
-| `mistral-nemo` | insider_trade:short | — | — | $10.28 | ✓ | MRK’s insider trade (event #1, SEC Form 4, strength=0.60) with donor=NO contradicts council’s XLF long bias. Short XLF hedges against finance sector weakness post-council’s XLF long consensus. |
-| `mistral-medium` | insider_trade:short | — | — | $5.84 | ✓ | MRK insider (Form 4) in healthcare; short XLF as counterbalance to XLV longs. Finance sector’s -0.0009 avg_ret and 53% win_rate justify hedging. |
-
-### 2 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $18.46 | ✗ | DMAD_DIVERGE: Zero peers allocated to tech (XLK/ITA) yesterday. MRK’s Form 4 (event #2) may reflect cross-sector M&A hedging (healthcare-tech convergence). ITA’s aerospace/defense subsector benefits from election-year budget expansions (pe… |
-| `qwen-arb` | insider_trade:long | — | — | $16.69 | ✗ | The energy sector's average return of -0.0014 and the signal strength of 0.60 support a potential upside in the sector, driven by the CVX insider trades. |
-| `llama-contra` | insider_trade:long | — | — | $16.17 | ✗ | Second MRK insider trade (Form 4) reinforces sector-wide healthcare momentum. Donor=NO signals no insider conflict, reducing regulatory risk. |
+| `nemotron-120b` | insider_trade:short | — | — | $5.35 | ✗ | GOOGL insider_trade event (event#2) with sector=tech and strength=0.60 contradicts tech's sector_trends avg_ret=-0.0151 and 34% win_rate (n=98). Agency=SEC Form4 donor=tech delivered=NO signals overvaluation in tech sector. |
 
 ### 3 (3 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:long | — | — | $11.13 | ✗ | The finance sector's average return of -0.0009 and the signal strength of 0.60 support a potential upside in the sector, driven by the COIN insider trades. |
-| `qwen-quant` | insider_trade:long | — | — | $11.08 | ✗ | DMAD_DIVERGE: Communications sector (XLC) ignored by all peers despite ABC News’ «Battle over regulating prediction markets» video (event #3’s macro context). Insider trades in healthcare (MRK) often precede comms-sector lobbying spends. |
-| `gemini-tact` | insider_trade:long | — | — | $4.30 | ✗ | MRK Form 4 (event #3) may indirectly benefit financials via healthcare financing ties (e.g., UNH’s insurance linkages). Finance sector’s 53% win_rate is weak but meets diversity mandate. |
-
-### 4 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $22.15 | ✗ | UNH insider trade (event #4, strength=0.60) coincides with Bengal/Tamil Nadu election turnout narratives (CNN-News18/India Today) signaling healthcare policy volatility. SEC Form 4 + macro sentiment = compounded edge. |
-| `llama-contra` | insider_trade:long | — | — | $13.47 | ✗ | UNH insider trade (Form 4) aligns with MRK’s sector strength. Healthcare policy shifts (e.g., Medicare reimbursement) amplify ETF beta. |
-| `gemini-anl` | insider_trade:long | — | — | $7.20 | ✗ | UNH insider trade (Form 4, SEC) with donor=NO in healthcare sector; same sector baseline and donor=NO pattern reinforce high-conviction play. |
-
-## 2025-02-06
-### 1 (6 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:long | — | — | $13.43 | ✗ | Insider trade signal in finance sector with moderate signal strength. |
-| `mistral-small` | insider_trade:long | — | — | $10.31 | ✗ | Healthcare sector_trend avg_ret=+0.0210 with 86% win_rate on insider_trade events, providing a low-crowd, high-conviction edge. SEC Form 4 insider trades in finance (COIN) suggest regulatory scrutiny may spill into healthcare via policy sp… |
-| `qwen-quant` | insider_trade:short | — | — | $8.37 | ✓ | COIN Form 4 (event #1) with donor=NO in finance sector (48% win_rate, -0.0032% avg_ret). Agency=SEC but finance underperforms on donor=NO signals (p=0.03 in my 2025 backtest). Shorting to hedge XLE/XLK long exposure. |
-| `llama-contra` | insider_trade:short | — | — | $7.76 | ✓ | COIN insider trade (SEC Form 4, strength=0.60) with donor=finance delivered=NO signals potential overvaluation in finance sector, conflicting with sector_trend avg_ret=-0.0032. |
-| `gemini-anl` | insider_trade:short | — | — | $6.41 | ✓ | COIN insider trade (Form 4, SEC) with donor=NO in finance sector. 30-day baseline avg_ret=-0.0032 (48% win rate) and weak signal strength (0.60) suggest downside. Z-score=-1.5 vs baseline. |
-| `gemini-tact` | insider_trade:long | — | — | $6.33 | ✗ | Finance sector shows 48% win rate but COIN insider_trade with donor=finance delivered=NO suggests internal accumulation not reflected in price |
-
-### 2 (3 bets)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:long | — | — | $17.91 | ✓ | Strong insider trade signal in energy sector with high signal strength and multiple filings. |
-| `llama-contra` | insider_trade:long | — | — | $15.51 | ✓ | CVX insider trades (7 events) with donor=energy delivered=NO signal potential undervaluation in energy sector despite sector_trend avg_ret=-0.0135. SEC Form 4 filings with strength=0.60 indicate insider confidence. |
-| `qwen-quant` | insider_trade:long | — | — | $10.46 | ✓ | CVX Form 4 cluster (events #2-8, 7 filings) with donor=NO and strength=0.60 signals accumulation. SEC agency + energy sector’s 86% win_rate on donor=NO subsample (n=14) overrides the -1.35% 30d avg_ret (noise from donor=YES events). |
-
-### 3 (1 bet)
-| agent | category | odds | edge | stake | won | rationale |
-|---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $8.37 | ✓ | CVX Form 4 (event #3) in the cluster. Energy sector’s beta to insider trades (0.86 on donor=NO) outweighs the -0.0135% 30d avg_ret (driven by donor=YES noise). |
+| `llama-contra` | insider_trade:long | — | — | $18.07 | ✗ | Insider trading signal in healthcare with strong signal strength. |
+| `qwen-quant` | insider_trade:long | — | — | $17.56 | ✗ | Strong insider trading signal in the healthcare sector with high signal strength. |
+| `qwen-arb` | insider_trade:long | — | — | $11.35 | ✗ | Insider trading signal in the healthcare sector with strong signal strength and high win rate. |
 
 ### 4 (1 bet)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $10.46 | ✓ | Second CVX Form 4 in the cluster (event #4) reinforces the donor=NO signal. Energy sector’s 86% win_rate on SEC Form 4s with donor=NO (n=14) justifies doubling down. VIX=18.0 neutralizes macro noise. |
+| `mistral-medium` | insider_trade:long | — | — | $9.89 | ✓ | Insider trading signal in consumer discretionary with strong signal strength. |
 
 ### 5 (1 bet)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `gemini-anl` | insider_trade:long | — | — | $6.41 | ✓ | DMAD_DIVERGE: Healthcare sector baseline avg_ret=+0.0210 (86% win rate) is strongest across sectors. No insider trade today, but sector momentum justifies flat bet. Z-score=2.3 vs 30-day baseline. |
+| `nemotron-120b` | insider_trade:long | — | — | $10.71 | ✓ | UBER insider_trade event (event#5) with sector=consumer_disc and strength=0.60 exploits consumer_disc's sector_trends avg_ret=-0.0159 and 7% win_rate (n=15) — shorting would be consensus, but Adaptive canon favors contrarian exposure to lo… |
+
+## 2025-03-17
+### 1 (6 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:short | — | — | $20.70 | ✗ | Two identical insider_trade events (COIN, FOUR) in finance with donor=finance delivered=NO and VIX=18.0 suggest overcrowded trade, aligning with sector_trends showing finance avg_ret=-0.0768 and win_rate=21%. |
+| `qwen-quant` | insider_trade:long | — | — | $11.31 | ✓ | SEC Form4 insider trade in finance (COIN) with donor=finance delivered=NO suggests potential sector rotation into energy (XLE) as a hedge. Energy sector shows +4.92% avg return and 94% win rate over 30d. |
+| `mistral-small` | insider_trade:short | — | — | $11.15 | ✗ | SEC Form4 insider_trade in COIN (finance) with donor=finance delivered=NO and sector_trends showing finance avg_ret=-0.0768 and win_rate=21% signals structural headwinds. |
+| `mistral-large` | insider_trade:short | — | — | $10.45 | ✗ | Finance sector shows -7.68% avg_ret and 21% win rate over 30d, with SEC Form4 insider trades (COIN) signaling no delivery. Macro VIX=18 supports short. |
+| `qwen-arb` | insider_trade:long | — | — | $9.25 | ✓ | Strong insider trading signal in the finance sector with high signal strength and SEC agency involvement. |
+| `gemini-anl` | insider_trade:long | — | — | $8.54 | ✓ | Strong insider trading signal in the finance sector with high signal strength and SEC involvement. |
+
+### 2 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `gemini-anl` | insider_trade:long | — | — | $8.54 | ✗ | Insider trading in the healthcare sector with strong signal strength and SEC involvement. |
+| `mistral-large` | insider_trade:short | — | — | $7.83 | ✓ | Finance sector (FOUR) mirrors COIN's negative trend, with SEC Form4 insider trades signaling no delivery. Macro alignment supports short. |
+
+### 3 (6 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $20.70 | ✓ | SEC Form4 insider_trade in GEO (private_prisons) with donor=private_prisons delivered=NO signals potential sector rotation into consumer_staples ETFs, which historically outperform during political tailwinds for incarceration policies. |
+| `gemini-tact` | insider_trade:short | — | — | $10.86 | ✗ | Insider trading signal in private prisons with strong signal strength but negative sector trends. |
+| `qwen-arb` | insider_trade:long | — | — | $10.48 | ✓ | Insider trading in the private_prisons sector with strong signal strength and SEC involvement. |
+| `qwen-quant` | insider_trade:long | — | — | $10.18 | ✓ | SEC Form4 insider trade in private prisons (GEO) with donor=private_prisons delivered=NO indicates sector-specific alpha. Consumer staples (XLP) has +3.44% avg return and 96% win rate over 30d, providing defensive exposure. |
+| `gemini-anl` | insider_trade:short | — | — | $8.54 | ✗ | Insider trading in the private prisons sector with strong signal strength but negative average returns. |
+| `mistral-large` | insider_trade:short | — | — | $7.83 | ✗ | Private prisons sector (GEO) has -1.79% avg_ret and 44% win rate, with SEC insider trades failing to deliver. Macro stability (VIX=18) reinforces short. |
+
+### 4 (4 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-medium` | insider_trade:short | — | — | $11.87 | ✗ | Insider trade in tech with strong signal strength but negative sector trends. |
+| `nemotron-120b` | insider_trade:short | — | — | $10.71 | ✗ | Tech sector has shown negative average returns and low win rate, with strong signal strength indicating a potential downturn. |
+| `selfhost-gemma3` | insider_trade:short | — | — | $10.06 | ✗ | Tech sector has shown negative average returns and low win rate. |
+| `mistral-small` | insider_trade:long | — | — | $8.58 | ✓ | SEC Form4 insider_trade in NVDA (tech) with donor=tech delivered=NO suggests defensive tech rotation. Sector_trends show tech avg_ret=-0.0152 and win_rate=33%, but insider signals may precede reversal. |
+
+### 5 (5 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $17.25 | ✓ | SEC Form4 insider_trade in UBER (consumer_disc) with donor=consumer_disc delivered=NO signals potential consumer sentiment shift, supported by sector_trends showing consumer_disc avg_ret=-0.0197 but win_rate=0% (contrarian opportunity). |
+| `gemini-tact` | insider_trade:long | — | — | $10.86 | ✓ | Insider trading signal in consumer discretionary with strong signal strength and positive sector trends. |
+| `mistral-large` | insider_trade:short | — | — | $10.45 | ✗ | Consumer discretionary (UBER) has -1.97% avg_ret and 0% win rate, with SEC insider trades (UBER) showing no delivery. Macro VIX=18 supports short. |
+| `qwen-quant` | insider_trade:long | — | — | $9.61 | ✓ | SEC Form4 insider trade in consumer discretionary (UBER) with donor=consumer_disc delivered=NO suggests sector rotation into staples (XLP) as a defensive play. Consumer staples outperforms discretionary in high-VIX environments. |
+| `qwen-arb` | insider_trade:short | — | — | $6.16 | ✗ | Insider trading in the consumer_disc sector with strong signal strength but negative sector trends. |
+
+## 2025-03-14
+### 1 (4 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $19.43 | ✗ | Strong signal strength and SEC agency involvement suggest a positive move in the energy sector. |
+| `llama-contra` | insider_trade:long | — | — | $13.08 | ✗ | SEC Form4 (MSFT) donor=tech delivered=NO signals internal weakness. Healthcare sector (XLV) shows 30d avg_ret=+0.0281 with 70% win_rate — a structural hedge against tech overvaluation. |
+| `nemotron-120b` | insider_trade:short | — | — | $10.61 | ✓ | MSFT's 7 identical insider trades (events 1-7) with signal_strength=0.60 and ISLAND ORACLE p_yes=0.499 suggest no material edge. Tech sector's 30d avg_ret=-0.0160 and 34% win rate reinforce short thesis. SEC Form 4 filings lack clarity on … |
+| `qwen-arb` | insider_trade:long | — | — | $9.55 | ✗ | Strong insider trading signal in the tech sector with high signal strength and SEC agency involvement. |
+
+### 2 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $17.14 | ✗ | Healthcare sector shows positive average returns and high win rate, supported by strong signal strength. |
+| `qwen-arb` | insider_trade:long | — | — | $9.55 | ✗ | Insider trading in the tech sector with strong signal strength and SEC agency involvement. |
+| `gemini-anl` | insider_trade:long | — | — | $8.64 | ✗ | Insider trade in tech with strong signal strength and SEC involvement. |
+
+### 3 (6 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:short | — | — | $11.99 | ✓ | SEC Form4 cluster (events 4-7) in finance (MSTR) shows repeated insider trades. Finance sector trend avg_ret=-0.0763 with 21% win_rate — a textbook crowded trade. Shorting XLF exploits this sector weakness. |
+| `qwen-quant` | insider_trade:short | — | — | $11.43 | ✓ | Tech sector has shown negative average returns and low win rate, with strong signal strength suggesting a potential downturn. |
+| `gemini-tact` | insider_trade:long | — | — | $10.92 | ✗ | The energy sector has shown strong performance with a 30-day average return of +0.0320 and a win rate of 98%. The insider trade signal strength of 0.60 for MSFT indicates a positive outlook. |
+| `mistral-large` | insider_trade:long | — | — | $9.79 | ✗ | Healthcare sector shows 70% win rate and +2.81% avg return, with no conflicting signals. Defensive play aligned with low VIX (18). |
+| `qwen-arb` | insider_trade:short | — | — | $9.55 | ✓ | Insider trading in the tech sector with strong signal strength but negative sector trend. |
+| `gemini-anl` | insider_trade:long | — | — | $8.64 | ✗ | Insider trade in tech with strong signal strength and SEC involvement. |
+
+### 4 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-large` | insider_trade:short | — | — | $9.79 | ✓ | Tech sector’s 34% win rate and -1.6% avg return over 30d, combined with 8 consecutive MSFT insider trades (no Fed/macro support), suggests distribution. Short XLK as hedge. |
+| `selfhost-qwen06` | insider_trade:long | — | — | $5.97 | ✗ | SEC Form4 insider_trade in MSFT (event 4) maps to finance sector via donor=tech delivered=NO. Finance sector shows negative avg_ret (-0.0763) but low volatility (n=53), suggesting finance ETFs (XLF) will outperform due to sector-specific a… |
+
+### 5 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $13.08 | ✗ | SEC Form4 (MSFT) donor=tech delivered=NO signals macro-sector neutrality. Consumer discretionary (XLY) shows 30d avg_ret=-0.0197 but has 0% win_rate — a contrarian play where the crowd is systematically wrong. |
+| `selfhost-qwen06` | insider_trade:long | — | — | $8.14 | ✗ | SEC Form4 insider_trade in MSFT (event 5) maps to consumer staples sector via donor=tech delivered=NO. This implies regulatory pressure on tech, benefiting consumer staples (XLP win_rate=94% last 30d). |
+
+### 6 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `selfhost-qwen06` | insider_trade:long | — | — | $5.97 | ✗ | SEC Form4 insider_trade in MSFT (event 6) maps to finance sector via donor=tech delivered=NO. Finance sector shows negative avg_ret (-0.0763) but low volatility (n=53), suggesting finance ETFs (XLF) will outperform due to sector-specific a… |
 
 ### 7 (1 bet)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `qwen-quant` | insider_trade:long | — | — | $8.37 | ✓ | CVX Form 4 (event #7) completes the 7-filing cluster. Signal strength=0.60 + donor=NO + agency=SEC = +0.5% expected excess return (regulatory-delta model). |
+| `selfhost-qwen06` | insider_trade:long | — | — | $8.14 | ✗ | SEC Form4 insider_trade in MSFT (event 7) maps to consumer staples sector via donor=tech delivered=NO. This implies regulatory pressure on tech, benefiting consumer staples (XLP win_rate=94% last 30d). |
+
+### 8 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `nemotron-120b` | insider_trade:short | — | — | $10.61 | ✓ | Final MSFT insider trade (event_idx=8) mirrors prior 7 trades with identical signal_strength and agency (SEC). No new information suggests sustained tech sector weakness, corroborated by 30d avg_ret=-0.0160. |
+
+## 2025-03-13
+### 1 (6 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:short | — | — | $16.47 | ✓ | Tech sector shows signs of overvaluation and potential regulatory risks. |
+| `qwen-quant` | insider_trade:short | — | — | $14.38 | ✓ | GOOGL's insider trade in tech with strong signal strength but negative sector trend. |
+| `mistral-large` | insider_trade:long | — | — | $12.83 | ✗ | Insider trade in tech sector with strong signal strength and SEC agency. |
+| `gemini-tact` | insider_trade:long | — | — | $9.86 | ✗ | GOOGL insider_trade (event#1) in tech sector with signal_strength=0.60 and donor=NO suggests regulatory alignment. Sector trend is negative but insider_trade signals may precede reversals. |
+| `qwen-arb` | insider_trade:long | — | — | $8.16 | ✗ | Insider trade in tech sector with strong signal strength and SEC agency. |
+| `gemini-anl` | insider_trade:short | — | — | $3.68 | ✓ | GOOGL’s insider_trade (event#1) in tech (30d avg_ret=-0.0157, win_rate=35%) aligns with my template’s rule: **short tech on single Form4s with strength=0.60**. No donor conflict + SEC agency = reliable bearish signal. |
+
+### 2 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $19.77 | ✗ | Insider trade in consumer staples with strong signal strength and SEC agency. |
+| `qwen-quant` | insider_trade:long | — | — | $17.26 | ✗ | KO's insider trade in consumer staples with strong signal strength and SEC agency. |
+| `qwen-arb` | insider_trade:long | — | — | $10.20 | ✗ | Insider trade in consumer staples sector with strong signal strength and SEC agency. |
+
+### 3 (4 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $11.50 | ✗ | META's insider trade in tech, but healthcare sector shows positive trend and high win rate. |
+| `mistral-nemo` | insider_trade:long | — | — | $10.61 | ✗ | META's insider trade in tech with a signal strength of 0.60. |
+| `qwen-arb` | insider_trade:long | — | — | $8.16 | ✗ | Insider trade in tech sector with strong signal strength and SEC agency, suggesting potential spillover to healthcare. |
+| `nemotron-120b` | insider_trade:short | — | — | $5.15 | ✓ | META’s insider trade (event 3) mirrors GOOGL’s bearish setup: tech’s 30d avg_ret=-0.0157 + Form 4 sales precede -2.8% 5d returns for META (POL-TF 2024 study). Short aligns with XLK’s sector trend. |
+
+### 4 (6 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $19.77 | ✓ | Insider trade in finance with strong signal strength and SEC agency. |
+| `mistral-medium` | insider_trade:short | — | — | $17.69 | ✗ | MSTR's insider trade in finance with strong signal strength and SEC agency, but finance sector has a low win rate. |
+| `mistral-large` | insider_trade:long | — | — | $12.83 | ✓ | Repeated insider trades in finance sector with strong signal strength and SEC agency. |
+| `gemini-tact` | insider_trade:long | — | — | $10.72 | ✓ | MSTR insider_trade (event#4) in finance sector with repeated signals (events 4-7) suggests institutional confidence. Sector trend shows avg_ret=-0.0831 but insider_trade signals may override trend. |
+| `nvidia-minimax` | insider_trade:short | — | — | $10.32 | ✗ | Insider trade in finance with strong signal strength and SEC agency, but negative sector trend. |
+| `gemini-anl` | insider_trade:short | — | — | $7.35 | ✗ | MSTR’s **4 repeated insider_trades** (events 4–7) in finance (30d avg_ret=-0.0831, win_rate=16%) signal sector weakness. Clustered Form4s with identical strength=0.60 historically precede -2% moves (per 2024 backtest). |
+
+### 5 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `selfhost-qwen06` | insider_trade:long | — | — | $8.56 | ✓ | Second MSTR Form4 (event 5) reinforces finance sector strength. Sector_trends show avg_ret=+0.0153 with 74% win rate—consistent with prior event’s thesis. |
+| `nemotron-120b` | insider_trade:long | — | — | $7.73 | ✓ | Second MSTR trade in the 4× cluster (event 5) reinforces the finance-sector thesis. Repetition reduces noise risk (single insider trades have 62% false-positive rate; clusters drop to 18%). |
+
+### 6 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `selfhost-qwen06` | insider_trade:long | — | — | $5.70 | ✓ | Third MSTR Form4 (event 6) maintains sector strength. Clustered insider trades (events 4–7) suggest institutional confidence in finance. |
+
+### 7 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `selfhost-qwen06` | insider_trade:long | — | — | $5.70 | ✓ | Final MSTR Form4 (event 7) closes the cluster. Finance sector’s 74% win rate and 0.8+ beta justify final long allocation. |
+
+## 2025-03-12
+### 1 (5 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:short | — | — | $16.17 | ✓ | Insider trade in tech sector with strong signal strength, but contrarian view suggests potential downside. |
+| `qwen-arb` | insider_trade:long | — | — | $10.87 | ✗ | Insider trade in tech (AMZN) suggests potential spillover to healthcare sector. |
+| `qwen-quant` | insider_trade:long | — | — | $8.07 | ✗ | AMZN Form 4 with donor=NO (no political donor conflict) and signal_strength=0.60. Tech sector’s -1.7% avg_ret masks AMZN’s +2.1% insider-trade alpha (n=47). |
+| `nemotron-120b` | insider_trade:short | — | — | $7.64 | ✓ | AMZN's insider trade signals potential weakness in tech sector. |
+| `gemini-anl` | insider_trade:long | — | — | $7.43 | ✗ | AMZN insider trade (event 1) correlates with XLY’s (consumer discretionary) 30d Z-score of -0.8. Donor=tech delivered=NO suggests defensive accumulation, per my Fed/SEC template’s donor-sector cross-reference matrix. |
+
+### 10 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-arb` | insider_trade:long | — | — | $8.15 | ✓ | Insider trade in tech (QCOM) suggests healthcare sector strength. |
+| `qwen-quant` | insider_trade:long | — | — | $8.07 | ✓ | QCOM Form 4 with signal_strength=0.60 and donor=NO. Tech’s poor avg_ret (-1.7%) is dragged by semiconductors, but QCOM’s telecom exposure has +0.9% insider-trade alpha (n=22). |
+| `gemini-anl` | insider_trade:long | — | — | $3.72 | ✓ | QCOM insider trade (event 10) in tech triggers my healthcare hedge rule: tech’s 30d avg_ret=-0.0170 correlates with XLV’s (healthcare) defensive outperformance (win_rate=66%). |
+
+### 11 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-small` | insider_trade:long | — | — | $5.60 | ✗ | TSLA's insider trade (event#11) in tech suggests potential upside in semiconductors (XLK) due to TSLA's reliance on chip suppliers. Agency=SEC, donor=tech delivered=NO indicates insider confidence. |
+
+### 2 (5 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $16.17 | ✗ | Insider trade in private prisons sector with strong signal strength, suggesting potential upside. |
+| `llama-contra` | insider_trade:long | — | — | $16.17 | ✗ | Insider trade in private prisons sector with strong signal strength, suggesting potential upside. |
+| `qwen-quant` | insider_trade:short | — | — | $12.10 | ✓ | GEO’s private_prisons Form 4 (event#2) historically precedes healthcare sell-offs (73% win_rate when private_prisons signal_strength ≥ 0.60). Cross-sector spillover effect per my regulatory-delta matrix. |
+| `gemini-tact` | insider_trade:long | — | — | $10.72 | ✗ | GEO's repeated insider trades (private_prisons) signal regulatory or operational stress, likely spilling into healthcare sector via prison healthcare contractors or broader private prison ecosystem contagion. |
+| `gemini-anl` | insider_trade:short | — | — | $5.57 | ✓ | GEO’s insider trade (event 2) in private_prisons (avg_ret=-0.0176) aligns with XLF’s (finance) 30d win_rate=16%. My template flags donor=private_prisons as a leading indicator for financial sector underperformance (Granger causality p=0.03… |
+
+### 3 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-nemo` | insider_trade:long | — | — | $10.82 | ✗ | Healthcare sector has a positive trend and a decent win rate, making it a good choice for stability. |
+| `mistral-large` | insider_trade:long | — | — | $10.46 | ✗ | META insider trade with strong signal strength and SEC agency backing, indicating potential healthcare sector movement. |
+| `mistral-small` | insider_trade:long | — | — | $7.00 | ✗ | META's insider trade (event#3) in tech may drive defensive rotations into healthcare (XLV) as a stable sector, given tech's avg_ret=-0.0170 and low win_rate=30%. Agency=SEC, donor=tech delivered=NO suggests caution. |
+
+### 4 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $16.14 | ✓ | NVDA’s 5x SEC Form 4 cluster (events 4–9) signals insider accumulation at VIX=18.0, a historically bullish setup for tech (win_rate=30% but with 1.2x sector_beta leverage). Agency=SEC + signal_strength=0.60 × 5 repetitions → composite edge… |
+| `qwen-quant` | insider_trade:long | — | — | $12.10 | ✓ | First of 5 NVDA Form 4s—insider trades with identical strength/signal_type suggest coordinated accumulation. SEC filings at VIX=18.0 have 62% follow-through per my backtest (n=89). |
+| `qwen-arb` | insider_trade:long | — | — | $10.87 | ✓ | Insider trade in tech (NVDA) indicates potential strength in industrials. |
+
+### 6 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-medium` | insider_trade:long | — | — | $16.31 | ✓ | Diversifying into healthcare to complement the tech focus, based on strong sector trends. |
+
+## 2025-03-11
+### 1 (6 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $21.32 | ✗ | FOUR's SEC Form 4 insider trade shows strong signal strength in the finance sector. |
+| `llama-contra` | insider_trade:long | — | — | $14.38 | ✗ | FOUR's insider trade in finance with donor=finance delivered=NO suggests regulatory relief rather than exploitation; oil sector (XLE) has positive avg_ret (+1.37%) and low crowding. |
+| `mistral-ministral` | insider_trade:short | — | — | $10.82 | ✓ | FOUR’s insider trade (event#1) in finance sector with donor=finance delivered=NO contradicts sector trend (16% win rate, -8.40% avg return). Regulatory scrutiny on finance insiders is elevated. |
+| `mistral-nemo` | insider_trade:short | — | — | $10.61 | ✓ | FOUR's insider trade in finance with a strong signal strength of 0.60 but a low win rate of 16%. |
+| `mistral-small` | insider_trade:short | — | — | $10.09 | ✓ | FOUR's insider trade (event#1) in finance sector with donor=finance delivered=NO and sector trend avg_ret=-0.0840. Crowded trade (6 peers yesterday) reduces edge. |
+| `qwen-arb` | insider_trade:long | — | — | $8.46 | ✗ | FOUR's insider trade in finance suggests potential spillover benefits to industrials due to correlated sector movements. |
+
+### 2 (5 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:short | — | — | $12.54 | ✗ | GEO's insider trade in private prisons with strong signal strength but lower win rate. |
+| `llama-contra` | insider_trade:short | — | — | $12.47 | ✗ | GEO's repeated insider trades in private_prisons with donor=private_prisons delivered=NO signal potential regulatory crackdown; private_prisons sector has negative avg_ret (-2.77%) and low win_rate (41%). |
+| `nemotron-120b` | insider_trade:long | — | — | $10.40 | ✓ | GEO’s repeated SEC Form4 insider trades (strength=0.60) in private_prisons signal regulatory arbitrage potential. The donor sector (private_prisons) vs event sector (finance) mismatch creates a mispricing edge vs peers’ finance focus. |
+| `gemini-tact` | insider_trade:long | — | — | $10.13 | ✓ | GEO's repeated Form 4 insider trades (private prisons) suggest regulatory tailwinds; ITA (aerospace/defense ETF) provides indirect exposure to private prison contractors. |
+| `qwen-arb` | insider_trade:short | — | — | $8.46 | ✗ | GEO's insider trade in private prisons may indicate regulatory headwinds for healthcare sector. |
+
+### 3 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `nemotron-120b` | insider_trade:long | — | — | $5.20 | ✓ | GEO’s repeated SEC Form4 (event#3) reinforces the private_prisons regulatory arbitrage thesis. The donor sector (private_prisons) vs event sector (private_prisons) confirms the signal strength, and XLP’s stability aligns with council’s foc… |
+
+### 4 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `nemotron-120b` | insider_trade:long | — | — | $5.20 | ✓ | GEO’s SEC Form4 (event#4) in private_prisons (strength=0.60) creates a mispricing edge vs peers’ finance focus. The healthcare sector (XLV) may benefit from regulatory arbitrage spillover, given the donor sector’s proximity to healthcare-a… |
+
+### 5 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `gemini-anl` | insider_trade:long | — | — | $5.38 | ✓ | GEO's insider trades indirectly signal healthcare sector strength (baseline +0.0255 avg_ret, 66% win_rate). Agency=SEC signal_type=form4 (cross-sector read). |
+| `nemotron-120b` | insider_trade:short | — | — | $5.20 | ✗ | GEO’s SEC Form4 (event#5) in private_prisons (strength=0.60) contradicts the finance sector’s -8.4% avg_ret. The donor sector (private_prisons) vs event sector (finance) misalignment suggests a short opportunity in XLF, given the macro VIX… |
+
+### 6 (4 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $18.81 | ✗ | KO's insider trade in consumer staples with strong signal strength and high win rate. |
+| `llama-contra` | insider_trade:long | — | — | $11.51 | ✗ | KO's insider trade in consumer_staples with donor=consumer_staples delivered=NO signals stability; consumer_staples sector has high win_rate (98%) and avg_ret (+3.58%). |
+| `qwen-arb` | insider_trade:long | — | — | $8.46 | ✗ | KO's insider trade in consumer staples signals strength in a historically stable sector. |
+| `nemotron-120b` | insider_trade:short | — | — | $7.80 | ✓ | KO’s insider trade (event#6) in consumer_staples (strength=0.60) contradicts the sector’s 98% win rate. The ISLAND ORACLE’s p_yes=0.499 suggests a short opportunity, especially given the macro VIX=18.0 stability signal. |
+
+## 2025-03-10
+### 1 (4 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $17.68 | ✗ | CMCSA insider trade with strong signal strength and high win rate in the communications sector. |
+| `qwen-arb` | insider_trade:long | — | — | $10.85 | ✗ | CMCSA insider trade indicates potential upside in communications sector, backed by SEC Form 4. |
+| `qwen-quant` | insider_trade:short | — | — | $9.55 | ✓ | CMCSA’s insider trade (strength=0.60) in communications with *donor=NO* implies potential sector underperformance (30d win_rate=90% is inflated by low n=10). Shorting captures mean reversion. |
+| `gemini-anl` | insider_trade:long | — | — | $5.53 | ✗ | SEC Form4 insider_trade at CMCSA signals donor=communications delivered=NO, implying sector underreaction to insider activity. |
+
+### 2 (6 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $15.91 | ✗ | FOUR’s SEC Form 4 insider trade (strength=0.60) in finance sector with *no donor-sector overlap* signals clean alpha. Finance’s 30d win_rate=17% is misleading—this is a regulatory-delta play on isolated agency action. |
+| `mistral-medium` | insider_trade:short | — | — | $13.84 | ✓ | FOUR insider trade with strong signal strength but finance sector has shown poor performance recently. |
+| `mistral-ministral` | insider_trade:short | — | — | $10.60 | ✓ | FOUR insider_trade (event#2) with SEC Form 4 shows donor=finance delivered=NO, but finance sector trend -8.50% avg_ret and 17% win_rate indicates structural headwinds. |
+| `nemotron-120b` | insider_trade:short | — | — | $10.33 | ✓ | FOUR insider_trade in finance sector with donor=finance sector delivering NO; finance trend avg_ret=-0.0850, win_rate=17% suggests overvaluation |
+| `gemini-anl` | insider_trade:long | — | — | $8.29 | ✗ | SEC Form4 insider_trade at FOUR signals donor=finance delivered=NO, implying finance sector underreaction to insider activity despite negative trend. |
+| `gemini-tact` | insider_trade:long | — | — | $8.18 | ✗ | FOUR insider trade with strong signal strength and clear sector mapping to finance. |
+
+### 3 (6 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:short | — | — | $17.68 | ✗ | QCOM insider trade with strong signal strength but diverging from the consensus by shorting tech. |
+| `gemini-tact` | insider_trade:long | — | — | $16.37 | ✓ | QCOM insider trade with strong signal strength and clear sector mapping to tech. |
+| `qwen-arb` | insider_trade:long | — | — | $12.30 | ✓ | QCOM insider trade signals strong potential in tech sector, supported by SEC Form 4 data. |
+| `qwen-quant` | insider_trade:short | — | — | $11.94 | ✗ | QCOM’s cluster of insider trades (6 events) in tech with *donor=tech* signals regulatory headwinds (e.g., antitrust probes). Tech’s 30d win_rate=25% aligns with bearish thesis. |
+| `mistral-nemo` | insider_trade:short | — | — | $10.65 | ✗ | QCOM insider trade with a signal strength of 0.60 and a clear sector signal in tech. |
+| `gemini-anl` | insider_trade:long | — | — | $6.91 | ✓ | SEC Form4 insider_trade at QCOM signals donor=tech delivered=NO, implying tech sector underreaction to insider activity despite negative trend. |
+
+### 4 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `nvidia-minimax` | insider_trade:long | — | — | $10.28 | ✓ | QCOM insider trade with a strength of 0.60 and clear sector mapping to tech. |
+| `qwen-quant` | insider_trade:short | — | — | $7.96 | ✗ | Repeated QCOM insider trade (event#4) reinforces the tech-sector regulatory thesis. Shorting XLK a second time diversifies entry points. |
+
+### 5 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-ministral` | insider_trade:long | — | — | $7.95 | ✓ | QCOM insider_trade (event#5) repeats sector=tech with donor=tech delivered=NO, reinforcing XLK exposure. Sector trend remains unfavorable but insider activity suggests mean-reversion. |
+
+### 7 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-arb` | insider_trade:long | — | — | $7.23 | ✓ | Repeated QCOM insider trades suggest healthcare sector benefits, supported by SEC Form 4 data. |
+| `gemini-anl` | insider_trade:short | — | — | $3.69 | ✗ | SEC Form4 insider_trade at HOOD (event_idx 7) shows donor=finance delivered=NO, implying finance sector overreaction to insider activity. |
+
+### 8 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $17.68 | ✓ | QCOM insider trade with strong signal strength and positive returns in the energy sector. |
+| `qwen-quant` | insider_trade:long | — | — | $14.32 | ✓ | QCOM’s *six* repeated insider trades (events 3–8) in tech suggest sector-wide regulatory scrutiny, making energy (XLE) a defensive pivot. OKLO’s prior energy insider trade (2025-03-07) had +2.7% excess return, corroborating the sanctions-a… |
+
+## 2025-03-07
+### 1 (4 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $20.14 | ✗ | CMCSA insider trade (event_idx 1) signals communications donor, but SEC Form 4’s 48h liquidity decay creates a 6.1% velocity arbitrage vs finance ETFs. Donor-sector misalignment (communications vs finance) exploits peer overfitting to sect… |
+| `qwen-quant` | insider_trade:short | — | — | $12.98 | ✓ | CMCSA’s insider trade in communications sector signals potential sanctions-related regulatory scrutiny (e.g., cross-border data flows). Short finance ETF to hedge against sanctions-driven tech/telecom crackdowns. |
+| `qwen-arb` | insider_trade:long | — | — | $7.67 | ✗ | CMCSA insider_trade (event#1) with SEC Form 4 and communications donor — sector trend +3.60% avg_ret, 100% win_rate, strength=0.60 indicates strong communications play. |
+| `gemini-anl` | insider_trade:long | — | — | $6.68 | ✗ | SEC Form4 insider trade at CMCSA (event #1) with donor=communications sector and macro VIX=18.0. Sector trend shows communications avg_ret=+0.0360 with 100% win rate over 30 days, a clear outlier. |
+
+### 2 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `gemini-anl` | insider_trade:long | — | — | $5.89 | ✗ | SEC Form4 insider trade at GOOGL (event #2) with donor=tech sector and macro VIX=18.0. Sector trend shows tech avg_ret=-0.0179 but high event density suggests alpha opportunities. |
+| `qwen-arb` | insider_trade:long | — | — | $5.75 | ✗ | GOOGL insider_trade (event#2) with SEC Form 4 and tech donor — sector trend -1.79% avg_ret but insider signal strength=0.60 suggests potential tech rebound. |
+| `mistral-ministral` | insider_trade:long | — | — | $5.32 | ✗ | Multiple SEC Form 4 insider trades in GOOGL (tech sector) with donor=tech delivered=NO indicate potential institutional accumulation. Tech sector trend is negative but insider trades may signal alpha. |
+
+### 3 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-ministral` | insider_trade:long | — | — | $5.32 | ✗ | Repeated SEC Form 4 insider trades in GOOGL (tech sector) reinforce potential institutional confidence. Tech sector trend is negative but insider trades may signal alpha. |
+| `gemini-anl` | insider_trade:long | — | — | $3.93 | ✗ | SEC Form4 insider trade at GOOGL (event #3) with donor=tech sector and macro VIX=18.0. Repetitive GOOGL trades indicate insider confidence; sector ETF mitigates idiosyncratic risk. |
+
+### 7 (4 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:short | — | — | $16.79 | ✓ | HOOD finance insider trade (event_idx 7) shows donor-sector misalignment (finance vs tech). Shorting XLF exploits peer overfitting to XLF’s 30-day avg_ret=-0.0789, while velocity decay (48h) creates a 5.8% edge. |
+| `qwen-quant` | insider_trade:long | — | — | $16.23 | ✗ | HOOD’s SEC Form 4 insider trade in finance sector reflects sanctions-sensitive financial instruments (e.g., sanctions evasion monitoring). Regulatory arbitrage favors finance ETFs with sanctions compliance exposure. |
+| `qwen-arb` | insider_trade:long | — | — | $9.58 | ✗ | HOOD insider_trade (event#7) with SEC Form 4 and finance donor — sector trend -7.89% avg_ret but insider signal strength=0.60 suggests potential reversal in finance-heavy ETFs. |
+| `gemini-anl` | insider_trade:long | — | — | $7.07 | ✗ | SEC Form4 insider trade at HOOD (event #7) with donor=finance sector and macro VIX=18.0. Sector trend shows finance avg_ret=-0.0789 but high win rate on insider trades (20% avg_ret vs baseline). |
+
+### 8 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $22.07 | ✓ | OKLO’s SEC Form 4 insider trade signals sanctions-related energy sector exposure. Sanctions arbitrage favors energy stocks with geopolitical risk hedges (e.g., nuclear/advanced energy). |
+| `llama-contra` | insider_trade:long | — | — | $20.14 | ✓ | OKLO energy insider trade (event_idx 8) has 0% donor-sector overlap with peers’ XLF/XLV focus. Energy ETFs (XLE) benefit from mispriced velocity arbitrage (7.2% edge) due to SuspiciousTitForTat’s retaliatory bias. |
+| `qwen-arb` | insider_trade:long | — | — | $13.03 | ✓ | OKLO insider_trade (event#8) with SEC Form 4 and energy donor — sector trend +1.60% avg_ret, 77% win_rate, strength=0.60 indicates undervalued energy play. |
+
+## 2025-03-06
+### 1 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-small` | insider_trade:long | — | — | $8.83 | ✗ | COIN insider trade (event #1) with SEC Form 4 and donor=finance delivered=NO indicates potential banking sector strength despite finance trend avg_ret=-0.0744. Finance sector may be oversold due to regulatory noise. |
+| `gemini-anl` | insider_trade:long | — | — | $5.93 | ✗ | COIN insider trade (event#1) with SEC Form 4 and donor=finance delivered=NO targets finance sector baseline (avg_ret=-0.0744, win_rate=22%). Weak baseline but insider signal (strength=0.60) provides edge vs Oracle's p_yes=0.499. |
+| `mistral-ministral` | insider_trade:long | — | — | $5.43 | ✗ | COIN insider_trade (event#1) with SEC Form 4 and donor=finance delivered=NO suggests potential finance sector upside, despite sector_trends avg_ret=-0.0744. |
+
+### 13 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $7.36 | ✓ | SEC Form4 insider_trade (PFE) events — donor=healthcare delivered=NO with strength=0.60. Healthcare sector_trend avg_ret=+0.0237 with win_rate=56%. |
+
+### 19 (5 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:short | — | — | $12.38 | ✓ | TSLA insider_trade (event#19) with SEC Form 4 and donor=tech delivered=NO conflicts with tech sector_trends (-1.78% avg_ret, 30% win_rate). Tech is the weakest sector per 30d data. |
+| `mistral-small` | insider_trade:long | — | — | $10.01 | ✗ | TSLA insider trade (event #19) with SEC Form 4 and donor=tech delivered=NO suggests consumer discretionary strength, but XLP provides defensive consumer staples exposure as a hedge against tech volatility. |
+| `qwen-arb` | insider_trade:long | — | — | $8.32 | ✗ | TSLA insider_trade (event#19) with SEC Form 4 and tech donor provides macro tech rotation hedge; consumer_staples trend avg_ret=+0.0358 win_rate=98% |
+| `qwen-quant` | insider_trade:short | — | — | $6.13 | ✓ | SEC Form4 insider_trade (TSLA) in tech sector with donor=tech delivered=NO. Tech sector_trend avg_ret=-0.0178 with win_rate=30% over 92 events — Form4 signals in tech sector are weakest edge today. |
+| `gemini-anl` | insider_trade:short | — | — | $3.96 | ✓ | TSLA insider trade (event#19) with SEC Form 4 and donor=tech delivered=NO signals overvaluation in tech sector baseline (avg_ret=-0.0178, win_rate=30%). Short XLK leverages sector-wide weakness. |
+
+### 3 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $18.57 | ✓ | JNJ insider_trade (event#3) with SEC Form 4 and donor=healthcare delivered=NO signals potential undervaluation. Healthcare sector_trends show +2.37% avg_ret over 30d, outperforming finance (-7.44%). |
+| `qwen-arb` | insider_trade:long | — | — | $11.10 | ✓ | JNJ insider_trade (event#3) with SEC Form 4 and healthcare donor signals undervalued pharma; healthcare trend avg_ret=+0.0237 win_rate=56% over 30d |
+| `qwen-quant` | insider_trade:long | — | — | $11.03 | ✓ | SEC Form4 insider_trade (JNJ) signals donor=healthcare and strength=0.60. Healthcare sector_trend avg_ret=+0.0237 with win_rate=56% over 79 events. |
+
+### 4 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $4.90 | ✓ | SEC Form4 insider_trade (JNJ) events — donor=healthcare delivered=NO with strength=0.60. Healthcare sector_trend avg_ret=+0.0237 with win_rate=56%. |
+
+### 5 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:short | — | — | $9.29 | ✓ | META insider_trade (event#5) with SEC Form 4 and donor=tech delivered=NO is drowned out by tech sector_trends (-1.78% avg_ret). Tech's structural weakness invalidates single-stock alpha. |
+| `gemini-anl` | insider_trade:long | — | — | $5.93 | ✗ | META insider trade (event#5) with SEC Form 4 and donor=tech delivered=NO shows sector spillover into healthcare (avg_ret=-0.0178 for tech vs +0.0237 for healthcare). Weak tech baseline but strong insider signal warrants cross-sector alloca… |
+| `mistral-ministral` | insider_trade:long | — | — | $5.43 | ✗ | META insider_trade (event#5) with SEC Form 4 and donor=tech delivered=NO may spill over into healthcare via sector correlations, but weak signal warrants smaller allocation. |
+
+### 6 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $9.20 | ✓ | SEC Form4 insider_trade (OKLO) in energy sector with donor=energy delivered=NO. Sector_trend avg_ret=+0.0147 with win_rate=77% over 73 events — energy-specific Form4 signals strongest edge today. |
+| `mistral-small` | insider_trade:long | — | — | $8.83 | ✓ | OKLO insider trade (event #6) with SEC Form 4 and donor=energy delivered=NO signals energy sector momentum. Energy trend avg_ret=+0.0147 with 77% win rate over 73 events. |
+
+### 7 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $15.48 | ✓ | PFE insider_trade (event#7) with SEC Form 4 and donor=healthcare delivered=NO aligns with healthcare sector strength (+2.37% avg_ret). Multiple PFE events (19 total) indicate high signal density. |
+| `qwen-arb` | insider_trade:long | — | — | $13.21 | ✓ | PFE insider_trade (event#7) with SEC Form 4 and healthcare donor signals defensive pharma play; PFE is 4.2% of XLV holdings |
+| `qwen-quant` | insider_trade:long | — | — | $7.36 | ✓ | SEC Form4 insider_trade (PFE) events — healthcare donor=healthcare delivered=NO with strength=0.60. Healthcare sector_trend avg_ret=+0.0237 with win_rate=56%. |
+
+## 2025-03-05
+### 1 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `gemini-tact` | insider_trade:long | — | — | $7.23 | ✗ | The insider trade in AMZN (event #1) indicates a potential trend in the tech sector, but my template suggests that energy sector is a stronger bet, so I will allocate 10% of my bankroll to XLE to diversify my portfolio. |
+
+### 10 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-ministral` | insider_trade:long | — | — | $10.33 | ✗ | GEO insider_trade events (10-29) show consistent Form 4 filings with donor=private_prisons delivered=NO, sector_trends avg_ret=+0.0035 win_rate=72% — structural alpha in underfollowed sector. |
+| `llama-contra` | insider_trade:long | — | — | $6.92 | ✗ | GEO insider_trade (event#10) with SEC Form 4 and donor=private_prisons delivered=NO — private_prisons sector_trend shows avg_ret=+0.0035 win_rate=72% over 30d, signaling potential regulatory tailwinds for private prison operators. |
+| `mistral-small` | insider_trade:long | — | — | $6.90 | ✗ | GEO insider_trade (event #10-29) with SEC Form 4 filing in private_prisons sector, donor=private_prisons delivered=NO. Sector_trend avg_ret=+0.0035 win_rate=72% supports long exposure. |
+
+### 31 (4 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `gemini-tact` | insider_trade:long | — | — | $10.85 | ✗ | The insider trade in META (event #31) suggests a positive trend in the tech sector, and I will allocate 15% of my bankroll to XLK to benefit from this signal. My template indicates that tech sector will experience a short-term boost. |
+| `llama-contra` | insider_trade:short | — | — | $8.65 | ✓ | META insider_trade (event#31) with SEC Form 4 and donor=tech delivered=NO — sector_trends show tech avg_ret=-0.0109 win_rate=33% over 30d, and insider activity in META aligns with a crowded tech play that is structurally likely to underper… |
+| `mistral-small` | insider_trade:short | — | — | $8.63 | ✓ | META insider_trade (event #31) with SEC Form 4 in tech sector, donor=tech delivered=NO. Sector_trend avg_ret=-0.0109 win_rate=33% suggests downside pressure. |
+| `mistral-ministral` | insider_trade:short | — | — | $6.89 | ✓ | META insider_trade event (31) with donor=tech delivered=NO contradicts sector_trends avg_ret=-0.0109 win_rate=33% — tech sector shows structural weakness despite insider activity. |
+
+### 32 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:short | — | — | $5.77 | ✓ | NVDA insider_trade (event#32) with SEC Form 4 and donor=tech delivered=NO — sector_trends show tech avg_ret=-0.0109 win_rate=33% over 30d, and insider activity in NVDA aligns with a crowded tech play that is structurally likely to underper… |
+| `mistral-small` | insider_trade:long | — | — | $5.75 | ✗ | NVDA insider_trade (event #32-36) with SEC Form 4 in tech sector, donor=tech delivered=NO. Sector_trend avg_ret=-0.0109 win_rate=33% but NVDA-specific insider activity may outperform sector. |
+| `mistral-ministral` | insider_trade:long | — | — | $5.74 | ✗ | NVDA insider_trade events (32-36) with donor=tech delivered=NO show sector divergence from META — tech sector has mixed signals but NVDA-specific insider activity may outperform. |
+
+### 37 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:short | — | — | $5.77 | ✓ | TSLA insider_trade (event#37) with SEC Form 4 and donor=tech delivered=NO — sector_trends show tech avg_ret=-0.0109 win_rate=33% over 30d, and insider activity in TSLA aligns with a crowded tech play that is structurally likely to underper… |
+| `mistral-ministral` | insider_trade:long | — | — | $5.74 | ✗ | TSLA insider_trade events (37-38) with donor=tech delivered=NO indicate sector-specific momentum despite broader tech weakness — TSLA may decouple from sector trend. |
+
+### 6 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `gemini-tact` | insider_trade:long | — | — | $14.46 | ✓ | The recent insider trades in CVX (event #6) indicate a strong signal in the energy sector, and I will allocate 20% of my bankroll to XLE to capitalize on this edge. My calendar-rhythm template suggests that energy sector will outperform in… |
+| `llama-contra` | insider_trade:long | — | — | $10.38 | ✓ | CVX insider_trade (event#6) with SEC Form 4 and donor=energy delivered=NO — sector_trends show energy avg_ret=+0.0120 win_rate=76% over 30d, and insider activity in CVX aligns with energy-specific tailwinds. |
+| `mistral-small` | insider_trade:long | — | — | $10.35 | ✓ | CVX insider_trade (event #6-8) with SEC Form 4 in energy sector, donor=energy delivered=NO. Sector_trend avg_ret=+0.0120 win_rate=76% aligns with council focus. |
+
+## 2025-03-04
+### 12 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $14.97 | ✗ | HOOD's insider trades (event #12-17) in finance sector reinforce FOUR's signals. SEC Form 4 signals insider confidence in financials despite sector drag. |
+| `qwen-quant` | insider_trade:long | — | — | $9.11 | ✗ | HOOD insider_trade (event #12) with SEC Form 4 in finance sector; repeated filings (events #12-17) indicate sustained insider activity. |
+| `mistral-small` | insider_trade:long | — | — | $5.78 | ✗ | HOOD insider_trade (Form 4, SEC) with donor=finance delivered=NO indicates financial sector resilience despite weak avg_ret; insider signals may precede sector reversal. |
+
+### 18 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-ministral` | insider_trade:long | — | — | $10.71 | ✗ | META insider trade (event #18) aligns with tech sector_trends showing -1.02% avg_ret but 33% win_rate; insider accumulation may precede rebound. |
+| `mistral-small` | insider_trade:long | — | — | $8.68 | ✗ | META insider_trade (Form 4, SEC) with donor=tech delivered=NO signals potential undervaluation; sector_trends show healthcare avg_ret=+0.0237 with 56% win_rate. |
+| `qwen-quant` | insider_trade:short | — | — | $6.07 | ✓ | META insider_trade (event #18) with SEC Form 4 in tech sector; sector_trends show avg_ret=-0.0102 and 33% win_rate, indicating weak momentum. |
+
+### 20 (2 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $9.11 | ✓ | OXY insider_trade (event #20) with SEC Form 4 in energy sector; repeated filings (events #20-27) suggest strong insider confidence in energy sector. |
+| `mistral-small` | insider_trade:long | — | — | $6.94 | ✓ | OXY insider_trade (Form 4, SEC) with donor=energy delivered=NO reinforces energy sector momentum; multiple OXY events signal sector-wide bullishness. |
+
+### 7 (3 bets)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `llama-contra` | insider_trade:long | — | — | $17.96 | ✓ | COP's insider trades (event #7-8) in energy sector align with sector_trends showing energy avg_ret=+0.0055 and win_rate=72%. SEC Form 4 signals insider confidence in energy despite low avg_ret. |
+| `qwen-quant` | insider_trade:long | — | — | $12.15 | ✓ | COP insider_trade (event #7) with SEC Form 4 filing in energy sector; sector_trends show 72% win_rate and avg_ret=+0.0055 over 30d, aligning with insider momentum. |
+| `mistral-small` | insider_trade:long | — | — | $11.57 | ✓ | COP insider_trade (Form 4, SEC) with donor=energy delivered=NO indicates bullish sector sentiment; energy avg_ret=+0.0055 with 72% win_rate. |
 
 ### 9 (3 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `qwen-arb` | insider_trade:long | — | — | $17.91 | ✓ | Insider trade signal in tech sector with strong signal strength. |
-| `llama-contra` | insider_trade:long | — | — | $15.51 | ✓ | META insider trade (SEC Form 4, strength=0.60) with donor=tech delivered=NO suggests insider confidence, despite sector_trend avg_ret=+0.0057. Tech cluster may rebound after yesterday's losses. |
-| `qwen-quant` | insider_trade:long | — | — | $8.37 | ✓ | META Form 4 (event #9, strength=0.60) with donor=NO in tech sector (51% win_rate but +0.0057% avg_ret on donor=NO). Agency=SEC + signal_type=form4 historically correlates with +0.4% 5d excess return (per my regulatory-delta backtest). |
+| `llama-contra` | insider_trade:long | — | — | $17.96 | ✗ | FOUR's insider trades (event #9-11) in finance sector align with sector_trends showing finance avg_ret=-0.0479 but high win_rate=31% in recent events. SEC Form 4 signals insider confidence despite macro drag. |
+| `qwen-quant` | insider_trade:long | — | — | $10.93 | ✗ | FOUR insider_trade (event #9) with SEC Form 4 in finance sector; sector_trends show 31% win_rate but strong regulatory-delta edge from Form 4 filings. |
+| `mistral-small` | insider_trade:long | — | — | $10.41 | ✗ | FOUR insider_trade (Form 4, SEC) with donor=finance delivered=NO suggests financial sector strength; finance avg_ret=-0.0479 with 31% win_rate but insider signals may override. |
 
-## 2025-02-05
-### 1 (5 bets)
+## 2025-03-03
+### 1 (4 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `mistral-medium` | insider_trade:long | — | — | $12.81 | ✓ | COIN insider trade with strong signal strength of 0.60 from SEC Form 4. |
-| `llama-contra` | insider_trade:short | — | — | $11.69 | ✗ | The insider trade signal for COIN is strong, but the finance sector has shown weakness. |
-| `mistral-ministral` | insider_trade:long | — | — | $8.03 | ✓ | SEC Form 4 insider trade in finance (COIN) with donor=NO suggests regulatory scrutiny, but healthcare sector (XLV) has +4.29% avg_ret over 30d. XLV provides defensive exposure to consumer staples and biotech, sectors with strong insider ac… |
-| `gemini-anl` | insider_trade:short | — | — | $7.80 | ✗ | COIN insider trade (event 1) in finance sector shows donor-sector=finance delivered=NO, but baseline Z-score=-0.5 vs. avg_ret=-0.0113 (neutral). SEC Form 4 strength=0.60 aligns with council focus, but short XLF to exploit sector’s slight u… |
-| `mistral-large` | insider_trade:short | — | — | $7.22 | ✗ | COIN insider trade (1 Form 4, strength=0.60) in finance sector with donor=finance delivered=NO. Sector’s -1.13% avg return (last 30d) and HOOD’s ambiguity yesterday suggest downside. |
+| `mistral-small` | insider_trade:long | — | — | $18.50 | ✓ | CXW insider_trade (Form4, SEC) with donor=private_prisons delivered=NO signals regulatory arbitrage in prisons sector. XLP (consumer staples) is the closest sector ETF for prisons-specific exposure. |
+| `mistral-ministral` | insider_trade:long | — | — | $10.06 | ✓ | CXW insider trade (event 1) in private_prisons sector with donor=private_prisons delivered=NO, sector_trends avg_ret=+0.0001 win_rate=71% — niche sector with high win_rate despite low avg_ret |
+| `mistral-medium` | insider_trade:long | — | — | $8.01 | ✓ | CXW private_prisons insider_trade (event 1) with signal strength 0.60 benefits from sector_trends avg_ret=+0.0001 and 71% win_rate |
+| `qwen-quant` | insider_trade:short | — | — | $7.60 | ✗ | CXW’s insider trade (event #1, private_prisons) is a sector outlier with near-zero avg_ret (+0.0001). Shorting XLE as a hedge against political risk in carceral stocks (e.g., regulatory headwinds). |
 
-### 11 (3 bets)
+### 16 (1 bet)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `llama-contra` | insider_trade:long | — | — | $11.69 | ✓ | The insider trade signal for XOM is strong, and the energy sector has shown resilience. |
-| `gemini-anl` | insider_trade:long | — | — | $9.36 | ✓ | XOM insider trades (events 11/12) in energy sector show donor-sector alignment (energy) but baseline Z-score=-1.8 vs. sector avg_ret=-0.0156, signaling undervaluation. SEC Form 4 strength=0.60 + VIX=18.0 (low volatility) supports long expo… |
-| `gemini-tact` | insider_trade:long | — | — | $8.80 | ✓ | XOM insider trade (SEC Form 4, strength=0.60) with donor=energy delivered=NO signals potential undervaluation in energy sector despite sector trend (-1.56% avg_ret). |
+| `mistral-medium` | insider_trade:short | — | — | $5.34 | ✓ | META insider_trade (event 16) with same tech sector_trends avg_ret=-0.0130 reinforces short thesis in XLK |
 
-### 12 (1 bet)
+### 17 (1 bet)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `mistral-ministral` | insider_trade:long | — | — | $8.03 | ✓ | Second XOM insider trade (SEC Form 4) with donor=energy delivered=NO reinforces energy weakness, but consumer discretionary (XLY) remains a high-win_rate sector (+100% win_rate). XLY captures consumer spending resilience. |
+| `mistral-ministral` | insider_trade:long | — | — | $8.05 | ✓ | MO insider trades (events 17-23) in consumer_staples with donor=consumer_staples delivered=NO, sector_trends avg_ret=+0.0308 win_rate=96% — extreme win_rate suggests structural alpha in staples |
 
-### 3 (5 bets)
+### 2 (1 bet)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `mistral-medium` | insider_trade:long | — | — | $17.08 | ✓ | META insider trade with strong signal strength of 0.60 from SEC Form 4. |
-| `llama-contra` | insider_trade:short | — | — | $15.79 | ✗ | The insider trade signal for META is strong, but the crowded trade in tech suggests a potential reversal. |
-| `mistral-large` | insider_trade:long | — | — | $9.62 | ✓ | META insider trade cluster (6 Form 4 filings, strength=0.60) in tech sector with donor=tech delivered=NO. SEC signal aligns with council’s XLK focus and sector’s 47% win rate. |
-| `gemini-anl` | insider_trade:short | — | — | $9.36 | ✗ | META insider trades (events 3-8) in tech sector show Z-score=+0.9 vs. baseline avg_ret=+0.0065 (overperformance). Donor-sector=tech delivered=NO, but baseline divergence suggests overvaluation. Short XLK to exploit sector-wide Z-score comp… |
-| `gemini-tact` | insider_trade:long | — | — | $7.92 | ✓ | META insider trade cluster (7 events, SEC Form 4, strength=0.60) with donor=tech delivered=NO suggests institutional confidence in tech despite sector trend (+0.65% avg_ret). |
+| `mistral-medium` | insider_trade:short | — | — | $5.34 | ✗ | GOOGL insider_trade (event 2) with weak sector_trends avg_ret=-0.0130 and 28% win_rate suggests overvaluation in tech sector |
 
-### 9 (4 bets)
+### 30 (3 bets)
 | agent | category | odds | edge | stake | won | rationale |
 |---|---|---:|---:|---:|:---:|---|
-| `mistral-small` | insider_trade:long | — | — | $8.51 | ✗ | TSLA insider trade (SEC Form 4, strength=0.60) with donor=tech delivered=NO suggests insider confidence in tech sector beyond META alone. |
-| `mistral-ministral` | insider_trade:long | — | — | $8.03 | ✗ | TSLA insider trade (SEC Form 4) with donor=tech delivered=NO suggests tech headwinds, but consumer discretionary (XLY) has +1.82% avg_ret and 100% win_rate over 8 events. TSLA's exposure to EV demand aligns with consumer trends. |
-| `gemini-tact` | insider_trade:long | — | — | $7.48 | ✗ | TSLA insider trade (SEC Form 4, strength=0.60) with donor=tech delivered=NO indicates potential momentum in tech hardware despite sector trend. |
-| `mistral-large` | insider_trade:short | — | — | $7.22 | ✓ | TSLA insider trade (2 Form 4 filings, strength=0.60) conflicts with META’s cluster. Donor=tech delivered=NO and sector’s flat 5d SP500 suggest profit-taking in high-valuation tech. |
+| `qwen-quant` | insider_trade:long | — | — | $19.86 | ✓ | PFE’s 7× insider trade cluster (events #30–36, SEC Form 4) in healthcare (avg_ret +2.02%, 51% win_rate) signals bullish conviction. Agency=SEC + signal_strength=0.60 corroborates sector momentum. |
+| `mistral-small` | insider_trade:long | — | — | $18.50 | ✓ | PFE insider_trade cluster (14× Form4, SEC) with donor=healthcare delivered=NO reinforces healthcare sector. Island Oracle p_yes=0.499 but sector_trends avg_ret=+0.0202 with 51% win_rate supports long. |
+| `mistral-medium` | insider_trade:long | — | — | $13.34 | ✓ | PFE insider_trade cluster (events 30-37) with high-frequency SEC Form 4 signals indicates regulatory-positive momentum in healthcare sector despite weak donor delivery |
+
+### 31 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-medium` | insider_trade:long | — | — | $10.68 | ✓ | PFE insider_trade (event 31) reinforces sector trend with SEC Form 4 signal strength 0.60 in healthcare avg_ret=+0.0202 |
+
+### 32 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `mistral-medium` | insider_trade:long | — | — | $10.68 | ✓ | Third consecutive PFE insider_trade (event 32) with SEC Form 4 creates momentum in healthcare sector per sector_trends |
+
+### 4 (1 bet)
+| agent | category | odds | edge | stake | won | rationale |
+|---|---|---:|---:|---:|:---:|---|
+| `qwen-quant` | insider_trade:long | — | — | $17.53 | ✓ | KO’s 10× insider trades (events #4–13, SEC Form 4) in consumer_staples (avg_ret +3.08%, 96% win_rate) reflect extreme agency alignment. Donor=consumer_staples + no delivery suggests accumulation. |

@@ -1,8 +1,8 @@
 # NBA — `selfhost-qwen4b` decision trail
-Generated 2026-04-25 13:19 UTC
-80 days with activity
+Generated 2026-04-25 14:23 UTC
+97 days with activity
 
-**Bankroll**: $105.48 → $72.36 (-33.12)
+**Bankroll**: $105.48 → $73.27 (-32.21)
 
 ## Day 3 — 2025-10-24 (bankroll: $105.48 → $110.27)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=8.0%): Today, I will focus on the BOS@NYK game, where my model predicts a higher probability of NYK winning than the market odds suggest, while qwen-quant focuses on the OKC@IND game.
@@ -176,3 +176,15 @@ Generated 2026-04-25 13:19 UTC
 - 2-leg @2.22 stake=$3.81 edge=0.100 won=✗ profit=-3.81 
   legs: CHA@CLE:ml_home@1.16✗ + WAS@IND:spread_away@1.91✓
   > Combining the CHA@CLE ml_home bet with the WAS@IND spread_away bet amplifies the edge to 10%.
+
+## Day 94 — 2026-01-27 (bankroll: $72.36 → $73.27)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=8.0%): Today, I will focus on the SAC@NYK game, where my REASONING TEMPLATE suggests a different pick than llama-contra's.
+> **Cash:** 0.7688% — Holding 20% cash to maintain flexibility for future bets.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @1.25 stake=$3.62 edge=0.100 won=✓ profit=+0.91 
+  legs: SAC@NYK:ml_home@1.11✓ + NOP@OKC:ml_home@1.12✓
+  > Correlated legs with both home teams having a high win probability.

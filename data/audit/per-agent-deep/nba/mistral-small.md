@@ -1,8 +1,8 @@
 # NBA — `mistral-small` decision trail
-Generated 2026-04-25 13:19 UTC
-80 days with activity
+Generated 2026-04-25 14:23 UTC
+97 days with activity
 
-**Bankroll**: $98.00 → $25.26 (-72.74)
+**Bankroll**: $98.00 → $24.25 (-73.75)
 
 ## Day 1 — 2025-10-22 (bankroll: $98.00 → $95.06)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] (edge=8.0%): Reject consensus GSW@LAL ML herd by targeting a non-consensus prop edge with higher EV. CHALLENGE_RESPONSE: Over-trading leak fixed — today's single high-edge bet with eighth_kelly sizing to rebuild discipline.
@@ -347,3 +347,11 @@ Generated 2026-04-25 13:19 UTC
 | event | category | odds | edge | stake | won | profit | rationale |
 |---|---|---:|---:|---:|:---:|---:|---|
 | PHX@MIA | pp_steals_star2_away | 1.91 | 0.111 | $1.05 | ✗ | -1.05 | Tyler Herro's 21% usage rate + MIA's 113.6 defensive rating create a 11.1% edge on steals props vs market price. |
+
+## Day 85 — 2026-01-18 (bankroll: $25.26 → $24.25)
+> **Strategy:** STRUCTURAL DIVERGE [nvidia-llama70] (edge=8.0%): Today, I exploit the NOP@HOU structural edge in pp_steals_star3_away (edge+11.1%) while the leader focuses on moneylines. This prop category is underpriced by the market despite HOU's defensive dominance and NOP's turnover-prone offense.
+> **Cash:** 0.8177% — All top edges are in crowded moneyline/spread categories; preserving capital to wait for structural diverges with lower crowding risk.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+| NOP@HOU | pp_steals_star3_away | 1.91 | 0.111 | $1.01 | ✗ | -1.01 | HOU's defensive rating (112.1) and NOP's 15.4% turnover rate create a 11.1% edge on away team steals by star3 (likely Amen Thompson). |

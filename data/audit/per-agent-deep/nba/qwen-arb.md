@@ -1,8 +1,8 @@
 # NBA — `qwen-arb` decision trail
-Generated 2026-04-25 13:19 UTC
-80 days with activity
+Generated 2026-04-25 14:23 UTC
+97 days with activity
 
-**Bankroll**: $100.00 → $69.25 (-30.75)
+**Bankroll**: $100.00 → $80.24 (-19.76)
 
 ## Day 1 — 2025-10-22 (bankroll: $100.00 → $87.46)
 > **Strategy:** STRUCTURAL DIVERGE [qwen-quant] by focusing on the CLE@NYK game with a high-edge ml_away bet, citing my REASONING TEMPLATE which prioritizes away underdogs with strong recent form.
@@ -50,3 +50,15 @@ Generated 2026-04-25 13:19 UTC
 - 2-leg @2.36 stake=$3.65 edge=0.090 won=✗ profit=-3.65 
   legs: HOU@NOP:ml_away@1.24✗ + LAL@UTA:alt_spread_away_plus10@1.91✗
   > Correlated legs: HOU’s ML win (85% model) and LAL’s alt-spread cover (75.3% model) share a macro tailwind (Western Conference road teams covering 58% of spreads in December). Combined odds (1.24 * 1.45 = 1.799) yield 9.0% edge vs implied 5…
+
+## Day 90 — 2026-01-23 (bankroll: $69.25 → $80.24)
+> **Strategy:** STRUCTURAL DIVERGE [llama-contra] (edge=6.3%): My REASONING TEMPLATE (CROSS-MARKET ARBITRAGE) identifies mispriced implied probabilities in ml_home vs spread_away discrepancies, particularly in SAC@CLE and DEN@MIL, where model edges exceed 7% but market odds are inefficient. This diverges from llama-contra's focus on blowout-proof games by targeting correlated 2-leg parlays with internal inconsistency ≥0.05.
+> **Cash:** 0.7709% — Reserved 50% cash to capitalize on post-injury line movements or late-breaking alt_total opportunities; top-10 edges below 0.04 were rejected per selectivity rule.
+
+| event | category | odds | edge | stake | won | profit | rationale |
+|---|---|---:|---:|---:|:---:|---:|---|
+
+**Parlays:**
+- 2-leg @4.18 stake=$3.46 edge=0.120 won=✓ profit=+10.99 
+  legs: SAC@CLE:ml_home@1.16✓ + DEN@MIL:ml_away@3.60✓
+  > Correlated legs: CLE and DEN are both home underdogs with >7% edges; combined odds (1.16 * 3.60 = 4.176) amplify 0.20*0.34=0.068 joint probability to 28.4% implied, creating 12% edge.
