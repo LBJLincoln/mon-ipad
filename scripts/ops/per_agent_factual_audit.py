@@ -321,18 +321,16 @@ def aggregate_itf() -> dict:
     # parent-orders-filled / parent-orders-submitted.
     alpaca_orders = fetch_alpaca_orders(limit=500)
     def _is_parent(o: dict) -> bool:
-        # Parent orders carry order_class but no legs reference; bracket children
-        # have order_type stop/limit AND order_class==bracket AND aren't market.
-        oc = o.get('order_class') or 'simple'
-        ot = (o.get('order_type') or '').lower()
-        # Heuristic: a "parent" decision is the user-submitted order. For brackets,
-        # that's the BUY/SELL market or limit order. The auto-spawned stop/limit
-        # children inherit order_class=bracket but order_type is stop or limit.
-        if oc in ('simple', 'oto', 'oco'):
+        # 2026-04-25 v2 FIX: legs/parent_order_id-based detection. Take-profit
+        # limit children of a bracket also have order_class=bracket+order_type=limit
+        # so the previous market/limit-only heuristic over-counted parents.
+        if (o.get('order_class') or 'simple') in ('simple', 'oto', 'oco'):
             return True
-        if oc == 'bracket':
-            return ot in ('market', 'limit', 'mleg')  # parents
-        return True
+        if o.get('legs'):                  # explicit child list = parent
+            return True
+        if o.get('parent_order_id'):       # has parent_id = child
+            return False
+        return o.get('order_type') == 'market'  # market entry leg, conservative
     parents = [o for o in alpaca_orders if _is_parent(o)]
     children = [o for o in alpaca_orders if not _is_parent(o)]
     def _bucket(orders):

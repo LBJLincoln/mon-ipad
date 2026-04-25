@@ -225,7 +225,13 @@ def parse_congress_files(prices):
             events.append({
                 "date": date,
                 "ticker": ticker,
-                "event_type": "insider_trade",
+                # 2026-04-25 BUGFIX: was "insider_trade" — congressional trades
+                # were being lumped together with SEC Form 4 insider trades, so
+                # event_type distribution showed 98.4% insider_trade instead of
+                # the real ~50/50 split. Now properly tagged so agents can
+                # differentiate Member-of-Congress trade signals from corporate-
+                # officer signals (very different alpha profiles).
+                "event_type": "congressional_trade",
                 "signal_strength": 0.65,
                 "agency": "House/Senate",
                 "title": f"{rep}: {tx_type} {ticker} {amount}".strip()[:200],

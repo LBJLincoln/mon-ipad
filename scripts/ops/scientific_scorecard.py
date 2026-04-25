@@ -188,9 +188,27 @@ def fetch_alpaca_summary() -> dict:
     except Exception as e:
         return {'error': f'{type(e).__name__}: {e}'}
 
-    parents = [o for o in orders if (o.get('order_class') or 'simple') in ('simple','oto','oco')
-               or ((o.get('order_class') == 'bracket') and (o.get('order_type','') in ('market','limit','mleg')))]
-    children = [o for o in orders if o not in parents]
+    # 2026-04-25 FIX: bracket-parent detection. A bracket parent's `legs` field
+    # holds the child legs; children have parent_order_id set OR appear without
+    # `legs`. The previous heuristic (bracket+limit = parent) wrongly flagged
+    # take-profit limit children as parents, inflating the parent denominator.
+    def _is_parent(o):
+        if (o.get('order_class') or 'simple') in ('simple','oto','oco'):
+            return True
+        # bracket: parent is the one with `legs`, OR if API didn't expand,
+        # the entry-side market order
+        legs = o.get('legs')
+        if legs:  # explicit child list = parent
+            return True
+        if o.get('parent_order_id'):  # has parent_id = child
+            return False
+        # Fallback for brackets without expanded legs: market order_type is
+        # almost always the entry parent (limit could be entry OR take-profit
+        # leg → assume child to be conservative; under-counts true parents but
+        # at least doesn't over-count).
+        return o.get('order_type') == 'market'
+    parents = [o for o in orders if _is_parent(o)]
+    children = [o for o in orders if not _is_parent(o)]
     pc = Counter(o.get('status','?') for o in parents)
     cc = Counter(o.get('status','?') for o in children)
     pf = pc.get('filled', 0) / max(len(parents), 1)
