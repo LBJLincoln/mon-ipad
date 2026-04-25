@@ -860,6 +860,35 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
                     return skip
             # break inner loop after first match for this other_tid (no need to
             # walk all their positions)
+    # 2026-04-25 fleet diversification cap — limit how many agents can take the
+    # SAME (ticker, side) so the fleet spreads across the universe instead of
+    # piling 8 agents long QQQ. Skipping forces the agent to pass this tick;
+    # the upstream divert pool then routes them to a different ticker. Tunable
+    # via ITF_MAX_AGENTS_PER_DIR_TICKER (default 3 agents per direction).
+    _max_agents_dir = int(os.environ.get("ITF_MAX_AGENTS_PER_DIR_TICKER", "3"))
+    if _inbound_side and _inbound_ticker and _max_agents_dir > 0:
+        _same_dir_count = 0
+        _same_dir_tids = []
+        for _other_tid, _other_rows in positions.items():
+            if _other_tid == agent_tid: continue
+            for _op in _other_rows:
+                if (_op.get("status") == "open" and
+                    _op.get("ticker") == _inbound_ticker and
+                    _op.get("side") == _inbound_side):
+                    _same_dir_count += 1
+                    _same_dir_tids.append(_other_tid)
+                    break  # one match per other agent is enough
+        if _same_dir_count >= _max_agents_dir:
+            skip = {
+                "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "agent_tid": agent_tid, "status": "fleet_dir_cap_skip",
+                "reason": (f"{_same_dir_count} agents already {_inbound_side} on "
+                           f"{_inbound_ticker} >= cap {_max_agents_dir} "
+                           f"({','.join(_same_dir_tids[:3])})"),
+                "order": order,
+            }
+            _append_order_log(skip)
+            return skip
     if len(open_for_agent) >= MAX_OPEN_PER_AGENT:
         reject = {
             "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
