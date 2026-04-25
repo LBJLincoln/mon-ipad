@@ -1553,7 +1553,20 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
     fo_raw = (full_odds or {}).get(game_key, {})
     fo = fo_raw.get("categories", fo_raw) if isinstance(fo_raw, dict) else {}
     if fo and isinstance(fo, dict):
-        cats[:] = sorted(fo.keys())
+        # 2026-04-25 — strip pp_* (player props) from the displayed menu and
+        # from the cats[] list used in AVAILABLE CATEGORIES at the bottom.
+        # Engine has NO walk-forward calibration on player props (Brier
+        # 0.217 fleet metric is for ml only). 17 agents had been stacking
+        # 70%+ of bets on pp_steals_* / pp_threes_* with hallucinated
+        # edge=0.111, 0% win rate. This kills the source: if the LLM doesn't
+        # see pp_*, it can't pick them. Toggleable via NBA_HIDE_PP=0 env if
+        # we ever want them back. Engine-only mode then becomes redundant
+        # (it also dropped pp_*) so this is the cleaner upstream fix.
+        _hide_pp = (os.environ.get("NBA_HIDE_PP", "1") or "1") not in ("0", "", "false", "False")
+        if _hide_pp:
+            cats[:] = sorted(c for c in fo.keys() if not c.startswith("pp_"))
+        else:
+            cats[:] = sorted(fo.keys())
         def _fmt(c):
             v = fo[c]
             if isinstance(v, dict):
@@ -1567,11 +1580,9 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
         quarters = [c for c in cats if c.startswith("q1_") or c.startswith("q2_")
                    or c.startswith("q3_") or c.startswith("q4_")]
         game_props = [c for c in cats if c.startswith("prop_")]
-        player_props = [c for c in cats if c.startswith("pp_")]
+        player_props = [c for c in cats if c.startswith("pp_")]  # always [] when _hide_pp
         n_cats = fo_raw.get("category_count", len(cats))
-        lines.append(f"\nFULL ODDS ({n_cats} categories available -- bet any of them):")
-        # 2026-04-24: removed [:8] slicing so agents see ALL categories per user
-        # directive "17 agents do parlays + 220 categories per match"
+        lines.append(f"\nFULL ODDS ({n_cats} categories available -- bet ml/spread/total/alt/halves/quarters):")
         if alt_sp:
             lines.append(f"  ALT SPREADS ({len(alt_sp)}): {', '.join(_fmt(c) for c in alt_sp)}")
         if alt_tot:
@@ -1584,7 +1595,9 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
             lines.append(f"  QUARTERS ({len(quarters)}): {', '.join(_fmt(c) for c in quarters)}")
         if game_props:
             lines.append(f"  GAME PROPS ({len(game_props)}): {', '.join(_fmt(c) for c in game_props)}")
-        if player_props:
+        if _hide_pp:
+            lines.append(f"  [Player props (pp_*) HIDDEN — engine has no walk-forward calibration]")
+        elif player_props:
             lines.append(f"  PLAYER PROPS ({len(player_props)}): {', '.join(_fmt(c) for c in player_props)}")
 
     # ── NOMOS42 MODEL PREDICTIONS ──
@@ -1662,9 +1675,10 @@ Schema:
 {{"reasoning": "1 short sentence", "bets": [{{"category": "ml_home", "confidence": 0.65, "edge": 0.05, "bet_pct": 0.02, "strategy": "half_kelly"}}], "pass": false}}
 
 Rules:
-- confidence 0-1, edge must be POSITIVE and REAL (derive from model vs market — DO NOT hardcode 0.05).
+- confidence 0-1, edge must be POSITIVE and REAL (derive from model vs market — DO NOT hardcode 0.05 / 0.10 / 0.111).
 - bet_pct 0.005-0.10, max 8 bets per game, strategy from list above.
-- DIVERSIFY: when edge is found, prefer multi-category coverage on this game (ml + alt_spread_X + pp_<stat>_<tier>) over duplicate plays on the same line.
+- PLAYER PROPS (pp_*) BANNED. The engine has NO walk-forward calibration on individual-player props — picking them is gambling on hallucination. Categories allowed: ml_home/away, spread_home/away, total_over/under, alt_spread_*, alt_total_*, team_total_*, h1_*, q1_*, prop_* (game props). Bet ONLY in these.
+- DIVERSIFY: when edge is found, prefer multi-category coverage (ml + alt_spread_X + total_X) over duplicate plays on the same line.
 - ALT-LINE SHOPPING: alt_spread/alt_total variants pay BETTER odds (1.4-3.0) than standard 1.91; prefer them when your edge is wide.
 - If no genuine edge, return {{"reasoning": "...", "bets": [], "pass": true}}.
 - NEVER bet without computing edge from the provided odds and predictions.""")
