@@ -1,0 +1,55 @@
+name: axelrod-cycle1-mech-a-ck-consensus-field
+on:
+  push:
+    paths:
+      - '.github/workflows/axelrod-cycle1-mech-a-ck-consensus-field.yml'
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply ck_consensus_stance patches (NBA + Political)
+        run: python3 scripts/ops/apply_axelrod_cycle1_patch.py
+
+      - name: Verify syntax
+        run: |
+          python3 -m py_compile scripts/arena/hf-llm-trading-floor/app.py \
+            && echo "NBA py_compile: PASS" || { echo "NBA py_compile: FAIL"; exit 1; }
+          python3 -m py_compile scripts/arena/hf-political-trading-floor/app.py \
+            && echo "POL py_compile: PASS" || { echo "POL py_compile: FAIL"; exit 1; }
+
+      - name: Commit patched files and self-delete
+        run: |
+          git config user.name "Claude Cloud Trigger"
+          git config user.email "noreply@anthropic.com"
+          git add scripts/arena/hf-llm-trading-floor/app.py
+          git add scripts/arena/hf-political-trading-floor/app.py
+          git add data/work-queue.json
+          git rm scripts/ops/apply_axelrod_cycle1_patch.py
+          git rm .github/workflows/axelrod-cycle1-mech-a-ck-consensus-field.yml
+          git commit -m "feat(tf): Axelrod mechanism A — add ck_consensus_stance field to CK broadcast (both NBA+Political)
+
+Adds mandatory ck_consensus_stance JSON field to both TF agent prompts (build_day_prompt
+schema) and captures it in the Mech C post-mortem log (write_axelrod_log day-N.jsonl).
+
+Gap: DMAD anti-groupthink required explicit per-response consensus stance but prompt
+schema had no structured field for it. Agents saw COMMON_KNOWLEDGE in context but had
+no mandatory field to state diverge|agree|partial and justify vs specific peers from CK.
+This is the primary Mech A behavioral variable needed for the paper dataset.
+
+Changes (NBA + Political at parity):
+- build_day_prompt schema: ck_consensus_stance field added between council_alignment
+  and allocations. stance=diverge|agree|partial + 1 sentence citing peer names and
+  positions observed in COMMON_KNOWLEDGE.
+- AUDIT FIELDS doc: ck_consensus_stance bullet added explaining the field is mandatory
+  and feeds the day-N.jsonl Axelrod dataset.
+- write_axelrod_log: ck_consensus_stance captured per-agent per-day in day-N.jsonl.
+
+py_compile: PASS both apps. do_not_push_hf_space_yet=true.
+
+Co-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+          git push origin main
