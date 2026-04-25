@@ -32,7 +32,11 @@ def latest_day(space):
     return out  # commit-time order, freshest first
 
 def parse_day(space, p):
-    return json.loads(fetch(f'https://huggingface.co/spaces/{space}/resolve/main/{urllib.parse.quote(p)}'))
+    try:
+        return json.loads(fetch(f'https://huggingface.co/spaces/{space}/resolve/main/{urllib.parse.quote(p)}'))
+    except Exception as e:
+        print(f'  [parse_day {p[-9:]}] {type(e).__name__}: {str(e)[:60]}', file=sys.stderr)
+        return None
 
 now = datetime.now(timezone.utc).strftime('%H:%M:%SZ')
 print(f'\n========== {now} TF MONITOR ==========')
@@ -42,6 +46,7 @@ print(f'\n[NBA] LBJLincoln26/nba-llm-trading-floor')
 days = latest_day('LBJLincoln26/nba-llm-trading-floor')
 for p in days:
     d = parse_day('LBJLincoln26/nba-llm-trading-floor', p)
+    if d is None: continue
     ag = d.get('agents') or {}
     bets = sum(len(a.get('allocations',[])) for a in ag.values())
     edge_src = Counter()
@@ -82,6 +87,7 @@ print(f'\n[POL]')
 days = latest_day('LBJLincoln26/political-llm-trading-floor')
 if days:
     d = parse_day('LBJLincoln26/political-llm-trading-floor', days[-1])
+    if d is None: d = {}
     ag = d.get('agents') or {}
     bets = sum(len(a.get('allocations',[])) for a in ag.values())
     bk_total = sum((a.get('bankroll_after',0) or 0) for a in ag.values())
