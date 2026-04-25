@@ -1592,30 +1592,47 @@ def build_game_prompt(game_ctx: Dict, trader_state: Dict,
     if pred:
         n_agents = pred.get('ml_total_agents', pred.get('total_agents', 0))
         core = pred.get('derived_core', {})
-        lines.append(f"\nNOMOS42 AI MODEL (Brier=0.217, {n_agents} agents, fleet S10-S22):")
+        # 2026-04-25 — surface walk-forward depth + feature count so agents
+        # know the lineage: 19-week walk-forward across 10+ NBA seasons,
+        # 7,213 raw features, 249 odds categories. Brier 0.217 is the
+        # FLEET ml_* benchmark; engine has NO walk-forward on player props
+        # (pp_*) — those are LLM-only edges, flag accordingly.
+        lines.append(f"\nNOMOS42 AI MODEL (10+ NBA seasons walk-forward, 19-week CV, 7,213 features, 249 odds cats):")
+        lines.append(f"  Fleet: {n_agents} agents (islands S13-S22) | Brier 0.217 on ml_* (calibrated benchmark)")
         lines.append(f"  ML: {pred.get('consensus_ml_direction','?')} (agree {pred.get('ml_agreement_pct',0):.0f}%)")
         lines.append(f"  Spread: {pred.get('consensus_spread_direction','?')} (agree {pred.get('spread_agreement_pct',0):.0f}%)")
         lines.append(f"  Total: {pred.get('consensus_total_direction','?')} (agree {pred.get('total_agreement_pct',0):.0f}%)")
         if core:
             lines.append(f"  Predicted margin: {core.get('predicted_margin',0):+.1f} | Total pts: {core.get('predicted_total',0):.1f} | P(home): {core.get('predicted_p_home',0):.1%}")
 
-        # Per-category predictions — every category with edge ≥ 3%
+        # 2026-04-25 ENGINE-RANKED EDGES — sort by abs(edge) descending so
+        # agents see the BEST mispricings first (was insertion-order before,
+        # which buried strong edges below weak ones). Show top-25 + tag each
+        # with reliability tier so agents weight engine-validated cats over
+        # LLM-only props.
         per_cat = pred.get('per_category', {})
         if per_cat:
-            strong_cats = []
+            ranked = []
             for tag, info in per_cat.items():
                 prob = info.get('prob', 0)
                 edge = info.get('edge')
-                if edge is not None and abs(edge) >= 0.03:
-                    sign = '+' if edge > 0 else ''
-                    strong_cats.append(f"{tag}={prob:.2f} (edge {sign}{edge:+.1%})")
-                elif prob >= 0.55 or prob <= 0.45:  # interesting probs even without edge
-                    strong_cats.append(f"{tag}={prob:.2f}")
-            # Show top-12 most informative
-            if strong_cats:
-                lines.append(f"  MODEL PER-CATEGORY ({len(per_cat)} cats, showing top-12 with edge or prob>0.55):")
-                for s in strong_cats[:12]:
-                    lines.append(f"    · {s}")
+                if edge is not None:
+                    ranked.append((abs(float(edge)), tag, info))
+            ranked.sort(reverse=True)
+            # Reliability tier per category-class. ml/spread/total have
+            # walk-forward Brier; alt_*/h1/q1/team_total derived from same
+            # core; pp_* are LLM-only (no calibrated probability).
+            def _tier(t: str) -> str:
+                if t.startswith(('ml_', 'spread_', 'total_')): return 'HIGH'
+                if t.startswith(('alt_spread', 'alt_total', 'team_total', 'h1_', 'h2_', 'q1_', 'q2_', 'q3_', 'q4_')): return 'MEDIUM'
+                if t.startswith('pp_'): return 'LOW'  # engine no walk-forward
+                return 'UNKNOWN'
+            top = [r for r in ranked if r[0] >= 0.02][:25]
+            if top:
+                lines.append(f"  ENGINE EDGES sorted by |edge| desc (top {len(top)} of {len(per_cat)} cats):")
+                for _, tag, info in top:
+                    sign = '+' if info.get('edge', 0) > 0 else ''
+                    lines.append(f"    · [{_tier(tag)}] {tag}: prob={info.get('prob',0):.2f} edge={sign}{info.get('edge',0):+.1%}")
 
     # ── TRACK RECORD ──
     lines.append(f"\nYOUR TRACK RECORD: ${bankroll:.2f} | {total_bets} bets | {wins}W-{losses}L | ROI {roi:+.1f}%")
