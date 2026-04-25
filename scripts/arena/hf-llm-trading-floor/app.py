@@ -3987,6 +3987,18 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # day_log assembly catches them. Only fires if (a) bankroll above
             # circuit-breaker floor, (b) parsed has no allocations.
             _ff_enable = (os.environ.get("NBA_ENGINE_FORCED_FLOOR", "1") or "1") not in ("0", "", "false", "False")
+            # 2026-04-25 telemetry — log every gate decision to diagnose silent failures
+            _ff_diag = {
+                "ff_enable": _ff_enable,
+                "bk_above_floor": bankroll >= _bk_floor,
+                "parsed_truthy": bool(parsed),
+                "no_allocations": not (parsed and parsed.get("allocations")),
+                "model_preds_truthy": bool(model_preds),
+                "day_games_truthy": bool(day_games),
+                "n_model_preds": len(model_preds) if isinstance(model_preds, dict) else 0,
+                "n_day_games": len(day_games) if day_games else 0,
+                "bankroll": round(bankroll, 2),
+            }
             if (_ff_enable and bankroll >= _bk_floor and parsed and
                     not parsed.get("allocations") and model_preds and day_games):
                 _gidx_to_gk = {}
@@ -3996,6 +4008,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     if _h and _a:
                         _gidx_to_gk[_idx] = f"{_a}@{_h}"
                 _best = None  # (abs_edge, gidx, cat, edge_val, prob)
+                _all_edges_count = 0  # diagnostic — how many engine edges exist at all
                 for _gi, _gk in _gidx_to_gk.items():
                     _pred = model_preds.get(_gk) or {}
                     _per_cat = _pred.get("per_category") or {}
@@ -4004,10 +4017,18 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         _e = _info.get("edge")
                         if not isinstance(_e, (int, float)): continue
                         _abs = abs(float(_e))
-                        if _abs < 0.03: continue
+                        _all_edges_count += 1
+                        # 2026-04-25 — last-resort floor, take ANY engine edge
+                        # (was 0.03 threshold; some days have no edge that high
+                        # → forced_floor bailed silently → 4/17 agents stayed
+                        # silent above the circuit breaker). Pick top regardless.
                         if _best is None or _abs > _best[0]:
                             _best = (_abs, _gi, _tag, float(_e), _info.get("prob", 0.5))
+                _ff_diag["all_engine_edges"] = _all_edges_count
+                _ff_diag["best_found"] = _best is not None
                 if _best:
+                    _ff_diag["best_cat"] = _best[2]
+                    _ff_diag["best_edge"] = _best[3]
                     parsed.setdefault("allocations", [])
                     parsed["allocations"].append({
                         "game_idx": _best[1],
@@ -4030,6 +4051,13 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                             f"ENGINE_FORCED_FLOOR (day-level): LLM silent/unparseable → "
                             f"injected top engine edge {_best[2]} (|edge| {_best[0]:.3f})"
                         )
+            # Stash telemetry on parsed for visibility in day file (only when
+            # an agent went silent — we don't pollute non-silent ones)
+            if parsed and not parsed.get("allocations"):
+                parsed["_ff_diag"] = _ff_diag
+            elif _ff_enable and _ff_diag.get("bk_above_floor") and not parsed.get("_ff_diag"):
+                # bet was injected; tag the diag for audit
+                parsed["_ff_diag"] = _ff_diag
 
             day_log = {
                 "day_idx": day_idx,
@@ -4058,6 +4086,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 day_proposals[tid] = parsed["coalition_proposal"]
                 day_log["coalition_proposal"] = parsed["coalition_proposal"]
 
+            # Always propagate forced-floor telemetry to day_log for audit
+            if parsed and parsed.get("_ff_diag"):
+                day_log["_ff_diag"] = parsed["_ff_diag"]
             if parsed and parsed.get("allocations"):
                 day_log["day_strategy"] = parsed["day_strategy"]
                 day_log["cash_held_pct"] = parsed["cash_held_pct"]
