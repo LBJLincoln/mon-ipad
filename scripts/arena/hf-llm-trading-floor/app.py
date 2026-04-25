@@ -2306,8 +2306,18 @@ def _conf_width_from_allocations(clean: List[Dict]) -> float:
 
 
 def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
-                          tid: str = "") -> Optional[Dict]:
+                          tid: str = "",
+                          model_preds: Optional[Dict] = None,
+                          day_games: Optional[List[Dict]] = None) -> Optional[Dict]:
     """Parse day allocation JSON. Validates sum=1.0 within tolerance.
+
+    2026-04-25 ENGINE-EDGE OVERRIDE: when model_preds + day_games are passed,
+    each allocation's `edge` is REPLACED with the engine's calibrated edge from
+    `model_preds[game_key].per_category[cat].edge`. The LLM's self-reported
+    edge (frequently hallucinated as identical 0.111 across totally different
+    games per the deep-audit forensic) is dropped. Bets where engine has no
+    view on this category are marked `engine_edge=None`; the caller decides
+    whether to drop or keep on tier-default.
 
     Returns dict with: day_strategy, allocations (normalized), cash_held_pct,
     cash_rationale. Returns None if unparseable or grossly invalid.
@@ -2327,6 +2337,18 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
     # categories (ml_home + spread_away + pp_points_star1_over valid together).
     clean = []
     seen_keys = set()  # (gidx, category) — was {gidx}
+
+    # Build (gidx → game_key) lookup for engine-edge override
+    _gidx_to_game_key = {}
+    if day_games:
+        for _idx, _g in enumerate(day_games, 1):
+            _h = (_g.get("home") or "").upper()
+            _a = (_g.get("away") or "").upper()
+            if _h and _a:
+                _gidx_to_game_key[_idx] = f"{_a}@{_h}"
+
+    n_engine_override = 0
+    n_engine_no_view = 0
     for a in allocations[:25]:  # was [:10]
         if not isinstance(a, dict):
             continue
@@ -2335,10 +2357,10 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
         try:
             pct = float(a.get("pct", 0) or 0)
             conf = float(a.get("confidence", 0.5) or 0.5)
-            edge = float(a.get("edge", 0) or 0)
+            llm_edge = float(a.get("edge", 0) or 0)
         except (TypeError, ValueError):
             continue
-        if not cat or pct <= 0 or edge <= 0:
+        if not cat or pct <= 0:
             continue
         if gidx is None or not isinstance(gidx, int):
             continue
@@ -2348,13 +2370,47 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
         if key in seen_keys:
             continue
         seen_keys.add(key)
+
+        # ENGINE-EDGE OVERRIDE — replace LLM-reported edge with engine's
+        # calibrated edge if available. The deep audit showed mistral-ministral
+        # / nemo / small / qwen06 / nemotron-120b emitting edge=0.111 verbatim
+        # across totally different games — that's hallucination, not an edge
+        # signal. The engine's `per_category[cat].edge` is calibrated against
+        # market_implied_prob for ml/spread/total/pp/etc. If engine has no
+        # view, fall back to LLM edge but cap at 0.04 (tier-default floor).
+        engine_edge: Optional[float] = None
+        if model_preds and gidx in _gidx_to_game_key:
+            _gk = _gidx_to_game_key[gidx]
+            _pred = model_preds.get(_gk) or {}
+            _per_cat = _pred.get("per_category") or {}
+            _info = _per_cat.get(cat) or {}
+            _e = _info.get("edge")
+            if isinstance(_e, (int, float)):
+                engine_edge = float(_e)
+
+        if engine_edge is not None:
+            n_engine_override += 1
+            edge_for_kelly = max(0.0, engine_edge)
+        else:
+            # Engine has no view on this category — cap LLM edge at 0.04 floor
+            # to neutralize hallucinated 0.111 templating. Bet survives at
+            # reduced size; downstream Kelly uses real cap.
+            n_engine_no_view += 1
+            edge_for_kelly = max(0.0, min(llm_edge, 0.04))
+
+        if edge_for_kelly <= 0:
+            continue
+
         clean.append({
             "game_idx": gidx,
             "game": a.get("game", ""),
             "category": cat,
             "pct": max(0.01, min(0.40, pct)),
             "confidence": max(0.0, min(1.0, conf)),
-            "edge": max(0.0, edge),
+            "edge": edge_for_kelly,
+            "edge_source": "engine" if engine_edge is not None else "llm_capped",
+            "edge_llm_reported": llm_edge,
+            "edge_engine": engine_edge,
             "strategy": (a.get("strategy") or "half_kelly")[:30],
             "rationale": (a.get("rationale") or "")[:300],
             "category_reason": (a.get("category_reason") or "")[:300],
@@ -3728,7 +3784,8 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             # 2026-04-20 — pass current drawdown so MIN_DEPLOY_PCT floor can shrink
             # for ruined agents (dd>0.5 → floor drops, dd>0.9 → floor=0.25).
             _ts_dd = float(ts.get("max_drawdown", 0.0) or 0.0)
-            parsed = parse_day_allocation(raw_response, len(day_games), drawdown=_ts_dd, tid=tid) if raw_response else None
+            parsed = parse_day_allocation(raw_response, len(day_games), drawdown=_ts_dd, tid=tid,
+                                           model_preds=model_preds, day_games=day_games) if raw_response else None
 
             # 2026-04-18 — PRE-FILTER ml_home fallback REMOVED.
             # Post-mortem showed 16/16 agents silent on day 44 all injected identical
