@@ -4030,6 +4030,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         "stake": stake,
                         "confidence": alloc["confidence"],
                         "edge": round(alloc["edge"], 4),
+                        # 2026-04-25 engine-edge override audit telemetry —
+                        # carried through settlement so deep_audit can track
+                        # which bets used calibrated engine edge vs LLM-capped.
+                        "edge_source": alloc.get("edge_source"),
+                        "edge_llm_reported": alloc.get("edge_llm_reported"),
+                        "edge_engine": alloc.get("edge_engine"),
                         "rationale": alloc["rationale"],
                         "won": won,
                         "odds": round(odds_dec, 3),
