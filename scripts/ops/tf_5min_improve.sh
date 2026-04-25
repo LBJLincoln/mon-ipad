@@ -21,16 +21,22 @@ mkdir -p "$(dirname "$HIST")"
 
 TS=$(date -u +%FT%H:%M:%SZ)
 
-# Fetch a number, default -1 on any failure
+# Fetch a number, default -1 on any failure (single line output guaranteed)
 fetch_num() {
-  curl -s --max-time 6 "$1" | python3 -c "
+  local result
+  result=$(curl -sf --max-time 6 "$1" 2>/dev/null | python3 -c "
 import sys, json
 try:
     d = json.loads(sys.stdin.read())
     print($2)
 except Exception:
     print(-1)
-" 2>/dev/null || echo -1
+" 2>/dev/null | head -1)
+  if [ -z "$result" ]; then
+    echo "-1"
+  else
+    echo "$result"
+  fi
 }
 
 NBA_FLEET=$(fetch_num 'https://lbjlincoln26-nba-llm-trading-floor.hf.space/api/leaderboard' 'sum(float(r.get("bankroll",0)) for r in d.get("leaderboard",[]))')
