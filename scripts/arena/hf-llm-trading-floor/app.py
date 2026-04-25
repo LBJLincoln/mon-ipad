@@ -3978,6 +3978,59 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     "coalition_proposal": _preserved_coalition,
                 }
 
+            # 2026-04-25 ENGINE_FORCED_FLOOR — fleet-level safety net. Even
+            # when LLM was silent / unparseable / parse_day_allocation was
+            # never called, agents above the bankroll floor should still bet
+            # on the strongest engine-validated edge (engine_forced_floor at
+            # parser level only fires when parse runs — 9/17 agents bypass it
+            # via NO_LLM_RESPONSE or PARSER_DROPPED). This second pass at the
+            # day_log assembly catches them. Only fires if (a) bankroll above
+            # circuit-breaker floor, (b) parsed has no allocations.
+            _ff_enable = (os.environ.get("NBA_ENGINE_FORCED_FLOOR", "1") or "1") not in ("0", "", "false", "False")
+            if (_ff_enable and bankroll >= _bk_floor and parsed and
+                    not parsed.get("allocations") and model_preds and day_games):
+                _gidx_to_gk = {}
+                for _idx, _g in enumerate(day_games, 1):
+                    _h = (_g.get("home") or "").upper()
+                    _a = (_g.get("away") or "").upper()
+                    if _h and _a:
+                        _gidx_to_gk[_idx] = f"{_a}@{_h}"
+                _best = None  # (abs_edge, gidx, cat, edge_val, prob)
+                for _gi, _gk in _gidx_to_gk.items():
+                    _pred = model_preds.get(_gk) or {}
+                    _per_cat = _pred.get("per_category") or {}
+                    for _tag, _info in _per_cat.items():
+                        if _tag.startswith("pp_"): continue
+                        _e = _info.get("edge")
+                        if not isinstance(_e, (int, float)): continue
+                        _abs = abs(float(_e))
+                        if _abs < 0.03: continue
+                        if _best is None or _abs > _best[0]:
+                            _best = (_abs, _gi, _tag, float(_e), _info.get("prob", 0.5))
+                if _best:
+                    parsed.setdefault("allocations", [])
+                    parsed["allocations"].append({
+                        "game_idx": _best[1],
+                        "game": "",
+                        "category": _best[2],
+                        "pct": 0.02,
+                        "confidence": 0.55,
+                        "edge": max(0.0, _best[3]),
+                        "edge_source": "engine_forced_floor",
+                        "edge_llm_reported": None,
+                        "edge_engine": _best[3],
+                        "strategy": "flat_2pct",
+                        "rationale": (f"engine_forced_floor (day-level): top |edge| "
+                                      f"{_best[0]:.3f} on {_best[2]} g{_best[1]}; "
+                                      f"LLM was silent/unparseable, anti-cascade injection"),
+                        "category_reason": "auto-inject when LLM goes silent/dead — fleet-level safety net",
+                    })
+                    if parsed.get("day_strategy", "") in ("", None) or "LLM_SILENT_PASS" in str(parsed.get("day_strategy", "")):
+                        parsed["day_strategy"] = (
+                            f"ENGINE_FORCED_FLOOR (day-level): LLM silent/unparseable → "
+                            f"injected top engine edge {_best[2]} (|edge| {_best[0]:.3f})"
+                        )
+
             day_log = {
                 "day_idx": day_idx,
                 "date": day_date,
