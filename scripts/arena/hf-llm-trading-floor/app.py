@@ -2369,14 +2369,33 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
     clean = []
     seen_keys = set()  # (gidx, category) — was {gidx}
 
-    # Build (gidx → game_key) lookup for engine-edge override
+    # Build (gidx → game_key) lookup for engine-edge override.
+    # 2026-04-25 BUGFIX — engine keys are "DATE_AWAY@HOME" (settlement line
+    # ~4182), my old "AWAY@HOME" lookup never matched → engine override
+    # never fired. Try date-prefixed first; fall back to substring match.
     _gidx_to_game_key = {}
-    if day_games:
+    if day_games and model_preds:
         for _idx, _g in enumerate(day_games, 1):
             _h = (_g.get("home") or "").upper()
             _a = (_g.get("away") or "").upper()
-            if _h and _a:
-                _gidx_to_game_key[_idx] = f"{_a}@{_h}"
+            _date = _g.get("date") or ""
+            if not (_h and _a): continue
+            _candidates = []
+            if _date:
+                _candidates.append(f"{_date}_{_a}@{_h}")
+            _candidates.append(f"{_a}@{_h}")
+            _matched = None
+            for _c in _candidates:
+                if _c in model_preds:
+                    _matched = _c
+                    break
+            if not _matched:
+                for _k in model_preds.keys():
+                    if isinstance(_k, str) and f"{_a}@{_h}" in _k:
+                        _matched = _k
+                        break
+            if _matched:
+                _gidx_to_game_key[_idx] = _matched
 
     n_engine_override = 0
     n_engine_no_view = 0
@@ -4005,8 +4024,27 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 for _idx, _g in enumerate(day_games, 1):
                     _h = (_g.get("home") or "").upper()
                     _a = (_g.get("away") or "").upper()
+                    _date = _g.get("date") or ""
                     if _h and _a:
-                        _gidx_to_gk[_idx] = f"{_a}@{_h}"
+                        # 2026-04-25 BUGFIX — engine model_preds is keyed
+                        # "DATE_AWAY@HOME" (matches settlement at line ~4182).
+                        # My old "AWAY@HOME" lookup always returned None →
+                        # all_engine_edges:0 → forced_floor silently bailed.
+                        # Try date-prefixed first, fall back to bare for safety.
+                        _candidates = []
+                        if _date:
+                            _candidates.append(f"{_date}_{_a}@{_h}")
+                        _candidates.append(f"{_a}@{_h}")
+                        for _c in _candidates:
+                            if _c in model_preds:
+                                _gidx_to_gk[_idx] = _c
+                                break
+                        else:
+                            # If neither matched, try the first key that contains AWAY@HOME
+                            for _k in model_preds.keys():
+                                if isinstance(_k, str) and f"{_a}@{_h}" in _k:
+                                    _gidx_to_gk[_idx] = _k
+                                    break
                 _best = None  # (abs_edge, gidx, cat, edge_val, prob)
                 _all_edges_count = 0  # diagnostic — how many engine edges exist at all
                 for _gi, _gk in _gidx_to_gk.items():
