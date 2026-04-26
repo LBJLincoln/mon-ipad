@@ -1704,7 +1704,9 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
                        away_std: Dict, home_form: Dict, away_form: Dict,
                        team_advanced: Dict, player_stats: Dict,
                        full_odds: Dict, model_preds: Dict,
-                       tid: str = "") -> str:
+                       tid: str = "",
+                       rosters: Optional[Dict] = None,
+                       injuries: Optional[Dict] = None) -> str:
     """Compact single-game block for day-level prompts.
 
     tid: when provided, each agent sees a DIFFERENT top-20 edge list — the scores
@@ -1733,16 +1735,42 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
 
     lines.append(f"  ODDS: ML {home} {ml_h:.2f} ({impl_h:.1%}) | {away} {ml_a:.2f} ({impl_a:.1%}) | Spread {odds.get('spread_home','?')} | Total {odds.get('total','?')}")
 
-    # Top 3 players only for day prompt (space budget)
-    if player_stats:
+    # Top 3 players + INJURY status + roster depth (2026-04-26 wired in).
+    if player_stats or rosters or injuries:
         for t, label in [(home, "H"), (away, "A")]:
-            ps_entry = player_stats.get(t, {})
+            # Top scorers from player_stats
+            ps_entry = (player_stats or {}).get(t, {})
             players = (ps_entry.get("players", ps_entry) if isinstance(ps_entry, dict) else ps_entry) or []
+            top_scorer_names = set()
             if isinstance(players, list):
-                players = players[:3]
-                if players:
-                    pstrs = [f"{p.get('name','?')[:15]} {p.get('PPG',p.get('ppg',0)) or 0:.0f}p" for p in players]
+                top3 = players[:3]
+                if top3:
+                    pstrs = [f"{p.get('name','?')[:15]} {p.get('PPG',p.get('ppg',0)) or 0:.0f}p" for p in top3]
                     lines.append(f"  {label}: {' | '.join(pstrs)}")
+                    top_scorer_names = {(p.get('name') or '').upper() for p in top3}
+            # Roster depth (next 5 names beyond top-3, position-tagged)
+            roster = (rosters or {}).get(t) or (rosters or {}).get(t.upper()) or []
+            if isinstance(roster, list) and roster:
+                # Skip names already shown as top scorers; show next 5
+                rest = []
+                for p in roster:
+                    nm = (p.get('name') if isinstance(p, dict) else str(p)) or ''
+                    if not nm or nm.upper() in top_scorer_names:
+                        continue
+                    pos = (p.get('position') if isinstance(p, dict) else '') or ''
+                    age = (p.get('age') if isinstance(p, dict) else '') or ''
+                    rest.append(f"{nm[:14]}{f'/{pos}' if pos else ''}")
+                    if len(rest) >= 5:
+                        break
+                if rest:
+                    lines.append(f"  {label}_DEPTH ({len(roster)} total): {' | '.join(rest)}")
+            # Injuries (CRITICAL — was missing entirely before 2026-04-26)
+            inj_entry = (injuries or {}).get(t) or (injuries or {}).get(t.upper()) or []
+            if isinstance(inj_entry, list) and inj_entry:
+                hot = [i for i in inj_entry if str(i.get('status','')).lower() in ('out','d','dnp','suspended','questionable','q')]
+                if hot:
+                    inj_lines = [f"{(i.get('name') or '?')[:14]}/{i.get('status','?').upper()[:3]}" for i in hot[:5]]
+                    lines.append(f"  {label}_INJ ⚠ {' | '.join(inj_lines)}")
 
     # Model prediction (base + derived core)
     game_key = f"{date}_{away}@{home}"
@@ -2065,7 +2093,7 @@ def build_day_prompt(day_date: str, day_games: List[Dict], day_odds: List[Dict],
             i, g, day_odds[idx], day_standings[idx][0], day_standings[idx][1],
             day_forms[idx][0], day_forms[idx][1],
             team_advanced, player_stats, full_odds, model_preds,
-            tid=tid,
+            tid=tid, rosters=rosters, injuries=load_injuries(),
         ))
 
     if strategies:
@@ -3102,6 +3130,22 @@ def load_rosters():
     path = DATA / "rosters-2025-26.json"
     if path.exists():
         return json.loads(path.read_text())
+    return {}
+
+def load_injuries():
+    """Load injury report {team_abbr: [{name, status, reason, updated}, ...]}.
+
+    2026-04-26 — wired in. Previously NBA agents bet roster-dependent outcomes
+    blind. File is updated by scripts/ops/scrape_nba_injuries.py cron (hourly
+    during US daytime). Status codes: OUT, D (doubtful), Q (questionable),
+    DNP, suspended.
+    """
+    path = DATA / "injuries-current.json"
+    if path.exists():
+        try:
+            return json.loads(path.read_text())
+        except Exception:
+            return {}
     return {}
 
 def load_team_advanced():
