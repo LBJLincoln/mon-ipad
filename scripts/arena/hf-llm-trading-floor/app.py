@@ -4162,10 +4162,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                                 if isinstance(_k, str) and f"{_a}@{_h}" in _k:
                                     _gidx_to_gk[_idx] = _k
                                     break
-                # 2026-04-26 — collect TOP-3 engine edges (was top-1).
-                # User mandate: ≥3 bets/day, ≥60% deploy. With 3 bets at 22% each
-                # = 66% deploy, satisfies both constraints when LLM is silent.
-                _all_cands = []  # (abs_edge, gidx, cat, edge_val, prob)
+                # 2026-04-26 PM — collect TOP-3 POSITIVE engine edges (was sorted by |edge|).
+                # CRITICAL FIX: previous version used abs(edge) as sort key, so negative
+                # edges (engine predicting AGAINST that side) ranked equally with positive.
+                # Result: server force-injecting losing bets — engine says ml_away has
+                # -57% edge but injection picks it anyway. Now: only positive edges.
+                _all_cands = []  # (edge_val, gidx, cat, prob)
                 _all_edges_count = 0
                 _seen_keys = set()
                 for _gi, _gk in _gidx_to_gk.items():
@@ -4175,9 +4177,11 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         if _tag.startswith("pp_"): continue
                         _e = _info.get("edge")
                         if not isinstance(_e, (int, float)): continue
-                        _abs = abs(float(_e))
                         _all_edges_count += 1
-                        _all_cands.append((_abs, _gi, _tag, float(_e), _info.get("prob", 0.5)))
+                        _ev = float(_e)
+                        if _ev <= 0:
+                            continue  # SKIP negative-edge cats
+                        _all_cands.append((_ev, _gi, _tag, _info.get("prob", 0.5)))
                 _all_cands.sort(reverse=True)
                 # Dedup by (gidx, cat) — single position only
                 _picks = []
@@ -4189,34 +4193,35 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     if len(_picks) >= 3: break
                 _ff_diag["all_engine_edges"] = _all_edges_count
                 _ff_diag["best_found"] = len(_picks) > 0
-                _ff_diag["picks"] = [(p[2], round(p[3], 3)) for p in _picks]
+                _ff_diag["picks"] = [(p[2], round(p[0], 3)) for p in _picks]
                 if _picks:
                     _ff_diag["best_cat"] = _picks[0][2]
-                    _ff_diag["best_edge"] = _picks[0][3]
+                    _ff_diag["best_edge"] = _picks[0][0]
                     parsed.setdefault("allocations", [])
-                    # 22% per bet × 3 = 66% deploy floor, no edge values exposed.
-                    for _abs, _gi, _tag, _ev, _prob in _picks:
+                    # pct=0.40 (per-bet cap). After kelly_mult haircut (typical 0.5)
+                    # this lands at ~0.20 effective per bet × 3 = 60% deploy ✓
+                    for _ev, _gi, _tag, _prob in _picks:
                         parsed["allocations"].append({
                             "game_idx": _gi,
                             "game": "",
                             "category": _tag,
-                            "pct": 0.22,
-                            "confidence": 0.55,
-                            "edge": max(0.0, _ev),
+                            "pct": 0.40,
+                            "confidence": 0.65,
+                            "edge": _ev,
                             "edge_source": "engine_forced_floor",
                             "edge_llm_reported": None,
                             "edge_engine": _ev,
-                            "strategy": "engine_top3_force",
-                            "rationale": (f"engine_forced_floor top-3 (day-level): |edge| "
-                                          f"{_abs:.3f} on {_tag} g{_gi}; LLM silent/unparseable; "
-                                          f"server inject to satisfy ≥3 bets/≥60% deploy mandate"),
-                            "category_reason": "auto-inject when LLM goes silent/dead",
+                            "strategy": "engine_top3_force_positive",
+                            "rationale": (f"engine_forced_floor top-3 POSITIVE-only: edge "
+                                          f"+{_ev:.3f} on {_tag} g{_gi}; LLM silent; "
+                                          f"server inject pct=0.40 (post-kelly-clip ~0.20)"),
+                            "category_reason": "auto-inject when LLM dead — POSITIVE engine edge only",
                         })
-                    parsed["cash_held_pct"] = round(max(0.0, 1.0 - 0.22 * len(_picks)), 4)
+                    parsed["cash_held_pct"] = round(max(0.0, 1.0 - 0.40 * len(_picks)), 4)
                     if parsed.get("day_strategy", "") in ("", None) or "LLM_SILENT_PASS" in str(parsed.get("day_strategy", "")):
                         parsed["day_strategy"] = (
-                            f"ENGINE_FORCED_FLOOR top-3 (day-level): LLM silent/unparseable → "
-                            f"injected {len(_picks)} bets at 22% each = {0.22*len(_picks)*100:.0f}% deploy"
+                            f"ENGINE_FORCED_FLOOR top-3 POSITIVE: LLM silent → "
+                            f"{len(_picks)} bets at pct=0.40 (post-kelly ~60% deploy)"
                         )
             # Stash telemetry on parsed for visibility in day file (only when
             # an agent went silent — we don't pollute non-silent ones)
