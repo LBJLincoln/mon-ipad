@@ -1901,13 +1901,13 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                     results.append(result)
                     continue
                 else:
-                    # 2026-04-25 22:55Z — MAX AGGRESSIVE overnight $1M push.
-                    # Cap $400→$5000. Plus: convert SPY/QQQ/IWM longs to
-                    # 3x leveraged ETFs (TQQQ/UPRO/TNA) to amplify Kelly
-                    # sizing per trade. PQTF compounded $244K via leverage.
-                    # User authorized full aggression. BP guard still
-                    # protects against runaway sizing.
-                    raw_stake = min(raw_stake, 5000.0)
+                    # 2026-04-26 02:38Z — TIER-DOWN TRIGGER FIRED. Fleet bk
+                    # dropped to $68,562 (-31% from $99,569 seed), below the
+                    # -30% pull-back threshold. Cap $5000→$2500. Halves the
+                    # per-trade variance while keeping above the original $400.
+                    # 3x leveraged ETF routing preserved (still high-leverage
+                    # path). When fleet recovers above $85K (-15%), re-evaluate.
+                    raw_stake = min(raw_stake, 2500.0)
                     # Leveraged ETF routing — 3x amplification
                     _lev_map = {
                         'SPY': 'UPRO',   # 3x SPY long
