@@ -73,6 +73,11 @@ def render_day(day_idx: int) -> str:
     except Exception as e:
         all_rosters = {}
         L.append(f'> WARN: could not fetch rosters: {e}')
+    try:
+        all_full_odds = fetch_full_dataset('data/full-odds-2025-26.json')
+    except Exception as e:
+        all_full_odds = {}
+        L.append(f'> WARN: could not fetch full_odds: {e}')
 
     # Build day-game list from the day file's allocations (extract games)
     games_in_day = set()
@@ -125,8 +130,10 @@ def render_day(day_idx: int) -> str:
                     edges = sorted([(abs(info.get('edge', 0)), tag, info)
                                     for tag, info in per_cat.items()
                                     if isinstance(info.get('edge'), (int, float))],
-                                   reverse=True)[:15]
-                    L.append(f'- **TOP-15 engine edges** (out of {len(per_cat)}):')
+                                   reverse=True)
+                    L.append(f'- **ALL {len(per_cat)} engine categories** (sorted by |edge| desc):')
+                    L.append('<details><summary>Show all categories</summary>')
+                    L.append('')
                     L.append('  | category | prob | edge | NOTE |')
                     L.append('  |---|---:|---:|---|')
                     for abs_e, tag, info in edges:
@@ -138,12 +145,27 @@ def render_day(day_idx: int) -> str:
                         elif tag.startswith('pp_'):
                             note = '🚫 pp_* (banned at parser)'
                         L.append(f'  | `{tag}` | {prob:.3f} | {edge:+.3f} | {note} |')
+                    L.append('')
+                    L.append('</details>')
+                    L.append('')
                 # Roster summary for both teams
                 for team in (away, home):
                     roster = (all_rosters or {}).get(team) or (all_rosters or {}).get(team.upper()) or []
                     if isinstance(roster, list) and roster:
                         names = [str(p.get('name','') if isinstance(p, dict) else p)[:25] for p in roster[:8]]
-                        L.append(f'- **{team} roster**: {len(roster)} players — {", ".join(names)}…')
+                        L.append(f'- **{team} roster** ({len(roster)} players): {", ".join(names)}…')
+                    else:
+                        L.append(f'- **{team} roster**: ⚠ MISSING from data/rosters-2025-26.json')
+                # Standings/Rankings
+                L.append(f'- **Rankings**: ⚠ NO standings/rankings dataset on Space (gap to fill)')
+                # Full odds menu
+                try:
+                    full_odds_obj = (all_full_odds or {}).get(gk) or {}
+                    full_cats = full_odds_obj.get('categories', full_odds_obj) if isinstance(full_odds_obj, dict) else {}
+                    if isinstance(full_cats, dict) and full_cats:
+                        L.append(f'- **Full odds menu**: {len(full_cats)} betting categories available')
+                except Exception:
+                    pass
         # Agent bets on this game
         bets = by_game.get(game_str, [])
         if bets:
