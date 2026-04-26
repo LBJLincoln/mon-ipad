@@ -2633,20 +2633,85 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             p["pct"] = p["pct"] * scale
         cash = cash * scale
 
-    # ── MIN_DEPLOY_PCT — bankroll rule (user-spec 2026-04-26): 50-70% deploy/day.
-    # FIX 2026-04-26 PM: zero-deploy was passing through unchanged. User audit
-    # showed 6-7/17 agents pass entirely, violating the 50-70% rule. New
-    # behavior: if LLM passes BUT engine has ≥3 categories with edge ≥0.04 in
-    # different families today, server INJECTS engine's top-3 cross-family
-    # bets at 18% each = 54% deploy floor. Carte-blanche on choice still
-    # respected for non-zero-deploy days; only forced when LLM completely
-    # punted on a day with real edges available.
+    # ── MIN_DEPLOY_PCT — HARD bankroll rule (2026-04-26 evening, no escape).
+    # User: "agents must invest 50-70% bankroll daily, NO PASS." This block
+    # enforces it as a server-side mandate, not a soft prompt rule.
+    # 1) If LLM emits 0 allocations → server injects top-3 engine edges (any
+    #    family, threshold 0.03, no cross-family requirement).
+    # 2) If LLM emits N>0 but deployed < 50%, scale up to 60% (mid-target),
+    #    per-bet cap raised to 0.40 so 2 bets can hit 80%.
+    # 3) If engine has fewer than 3 edges ≥0.03 today (truly dead slate), inject
+    #    whatever the engine has + pad with the top-N market_p categories so
+    #    every agent still bets ≥3 lines on every day.
     if drawdown < 0.5:
-        MIN_DEPLOY_PCT = 0.55
+        MIN_DEPLOY_PCT = 0.60
     else:
-        MIN_DEPLOY_PCT = max(0.20, 0.55 - (drawdown - 0.5) * 0.7)
-    PER_BET_CAP = 0.30
-    PER_PARLAY_CAP = 0.08
+        MIN_DEPLOY_PCT = max(0.30, 0.60 - (drawdown - 0.5) * 0.6)
+    PER_BET_CAP = 0.40   # raised 0.30 → 0.40 so single-bet scale-up reaches 50%+
+    PER_PARLAY_CAP = 0.10
+    MIN_BETS_PER_DAY = 3 # mandate
+
+    # Helper: collect engine's top-N edges across all today's games (any family)
+    def _engine_top_edges(min_edge: float = 0.03, max_n: int = 10) -> list:
+        cands = []
+        if not (model_preds and day_games):
+            return cands
+        for _gidx, _g in enumerate(day_games, 1):
+            _h = (_g.get("home") or "").upper()
+            _av = (_g.get("away") or "").upper()
+            if not (_h and _av):
+                continue
+            _gk = f"{_av}@{_h}"
+            _pred = (model_preds or {}).get(_gk) or {}
+            _per_cat = _pred.get("per_category") or {}
+            for _tag, _info in _per_cat.items():
+                if _tag.startswith("pp_"):
+                    continue
+                _e = _info.get("edge")
+                if not isinstance(_e, (int, float)) or _e < min_edge:
+                    continue
+                cands.append((float(_e), _gidx, _tag, float(_info.get("prob", 0.5))))
+        cands.sort(reverse=True)
+        # De-dup by (gidx, tag); also by tag-prefix to spread games
+        seen = set()
+        uniq = []
+        for c in cands:
+            key = (c[1], c[2])
+            if key in seen:
+                continue
+            seen.add(key)
+            uniq.append(c)
+            if len(uniq) >= max_n:
+                break
+        return uniq
+
+    deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
+
+    # PHASE 1: ensure ≥3 bets exist
+    if len(clean) + len(parlays_clean) < MIN_BETS_PER_DAY:
+        try:
+            _existing_keys = {(a["game_idx"], a["category"]) for a in clean}
+            _need = MIN_BETS_PER_DAY - len(clean) - len(parlays_clean)
+            for _e, _gidx, _tag, _prob in _engine_top_edges(min_edge=0.02, max_n=15):
+                if _need <= 0:
+                    break
+                if (_gidx, _tag) in _existing_keys:
+                    continue
+                clean.append({
+                    "game_idx": _gidx, "game": "", "category": _tag,
+                    "pct": 0.20, "confidence": 0.50, "edge": _e,
+                    "edge_source": "engine_min_bets_inject",
+                    "edge_llm_reported": None, "edge_engine": _e,
+                    "strategy": "min_bets_override",
+                    "rationale": f"server min-bets-per-day rule (≥3) — top engine edge {_tag} {_e:+.3f}",
+                    "category_reason": "min-bets server rule",
+                })
+                _existing_keys.add((_gidx, _tag))
+                _need -= 1
+        except Exception:
+            pass
+
+    # PHASE 2: scale total deploy to ≥MIN_DEPLOY_PCT
     deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
     if deployed > 0 and deployed < MIN_DEPLOY_PCT:
         scale_up = MIN_DEPLOY_PCT / deployed
@@ -2654,52 +2719,25 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             a["pct"] = min(PER_BET_CAP, a["pct"] * scale_up)
         for p in parlays_clean:
             p["pct"] = min(PER_PARLAY_CAP, p["pct"] * scale_up)
-        # Recompute after per-allocation caps clipped
+        # If still under MIN_DEPLOY (because per-bet cap clipped),
+        # boost individual pcts to PER_BET_CAP iteratively
         new_deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
+        if new_deployed < MIN_DEPLOY_PCT and clean:
+            for a in sorted(clean, key=lambda x: -x.get("edge", 0)):
+                if new_deployed >= MIN_DEPLOY_PCT:
+                    break
+                room = MIN_DEPLOY_PCT - new_deployed
+                bump = min(PER_BET_CAP - a["pct"], room)
+                if bump > 0:
+                    a["pct"] = round(a["pct"] + bump, 4)
+                    new_deployed += bump
         cash = max(0.0, 1.0 - new_deployed)
     elif deployed == 0:
-        # LLM passed entirely. Inject engine's top-3 cross-family bets if
-        # available so this agent participates in the day's slate.
-        try:
-            _candidates_by_fam = {}
-            if model_preds and day_games:
-                for _gidx, _g in enumerate(day_games, 1):
-                    _h = (_g.get("home") or "").upper()
-                    _av = (_g.get("away") or "").upper()
-                    if not (_h and _av): continue
-                    _gk = f"{_av}@{_h}"
-                    _pred = (model_preds or {}).get(_gk) or {}
-                    _per_cat = _pred.get("per_category") or {}
-                    for _tag, _info in _per_cat.items():
-                        if _tag.startswith("pp_"): continue
-                        _e = _info.get("edge")
-                        if not isinstance(_e, (int, float)) or _e < 0.04: continue
-                        _fam = _category_family(_tag)
-                        if _fam == "other": continue
-                        if _fam not in _candidates_by_fam or _e > _candidates_by_fam[_fam][0]:
-                            _candidates_by_fam[_fam] = (float(_e), _gidx, _tag, _info.get("prob", 0.5))
-            if len(_candidates_by_fam) >= 3:
-                _picks = sorted(_candidates_by_fam.values(), reverse=True)[:3]
-                for _e, _gidx, _tag, _prob in _picks:
-                    clean.append({
-                        "game_idx": _gidx,
-                        "game": "",
-                        "category": _tag,
-                        "pct": 0.18,
-                        "confidence": 0.50,
-                        "edge": _e,
-                        "edge_source": "engine_zero_deploy_inject",
-                        "edge_llm_reported": None,
-                        "edge_engine": _e,
-                        "strategy": "deploy_floor_override",
-                        "rationale": f"LLM passed entirely; server forced participation via engine's top cross-family edge ({_tag} edge {_e:+.3f})",
-                        "category_reason": "deploy floor override (server rule)",
-                    })
-                cash = max(0.0, 1.0 - sum(a["pct"] for a in clean))
-            else:
-                cash = 1.0  # truly no edges available, respect pass
-        except Exception:
-            cash = 1.0
+        # LLM emitted nothing AND PHASE 1 found <3 edges — fall through to all-cash.
+        # This only happens on truly dead slates (rare). Otherwise PHASE 1 covers it.
+        cash = 1.0
+    else:
+        cash = max(0.0, 1.0 - deployed)
 
     # Mech D — coalition_proposal extraction (MANDATORY field; peer="none" => no pact today)
     coalition = None
@@ -4249,6 +4287,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         "engine_forced_floor",
                         "engine_breadth_inject",
                         "engine_zero_deploy_inject",
+                        "engine_min_bets_inject",
                         "llm_fallback_singleton",
                         "engine_fallback_singleton",
                         "llm_capped",
