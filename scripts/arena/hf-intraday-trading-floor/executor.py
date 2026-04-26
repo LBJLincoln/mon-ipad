@@ -958,8 +958,11 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
             except Exception:
                 continue
         _total_committed = _reserved + stake
-        # Allow up to 1.05× sub-bankroll (5% slack for slippage / odd lots)
-        _cap = (_agent_avail + _reserved) * 1.05
+        # 2026-04-26 PM — user wants leverage. Cap raised 1.05× → 3.0× sub-bankroll.
+        # Real Alpaca paper account has ~4× margin available; 3× per-agent is
+        # conservative-aggressive. Fleet still capped at MAX_OPEN_PER_AGENT.
+        _leverage_mult = float(os.environ.get('ITF_AGENT_LEVERAGE', '3.0'))
+        _cap = (_agent_avail + _reserved) * _leverage_mult
         if _total_committed > _cap:
             skip = {
                 "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
