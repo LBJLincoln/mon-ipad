@@ -199,34 +199,18 @@ from gateway_client import gateway_call  # type: ignore  # noqa: E402
 
 # ───────────────────────── Prompts ─────────────────────────
 
+# 2026-04-26 — STRIPPED to user spec: personality (in personas.py) + bankroll rules + $1M goal.
+# No "passing is cowardice", no "MUST trade", no AGGRESSIVE_MANDATE, no PQTF playbook coercion.
+# Agents are autonomous; Kelly cap + bankroll floor are enforced server-side.
 COLLECTIVE_MISSION = """
-You are ONE of 14 LLM agents on the Nomos42 Intraday Trading Floor (AGGRESSIVE MODE +1).
-All 14 see the same market tape, research digest, peer bets, and council plan.
-COLLECTIVE GOAL: ONE of us must reach $1,000,000 by Aug 1, 2026 — rapidly.
-You each start at $10,000. EVERY trading day ≥9 of the 14 must hold a position.
-Passing is cowardice, punished on the leaderboard. Pass ONLY if tape is
-literally flat (all moves < 0.15%).
-
-PQTF PROOF — DERIVATIVES $1M PLAYBOOK (50 days, 6 agents, $600 → $602,354):
-  • mistral:large $100 → $244,050 (+40,667%) — 12 positions/day, sized 5-8% per trade,
-    concentrated XLC/XLE/XLF/XLK sectors with options overlay, 4 cooperation pacts.
-  • mistral:medium $100 → $154,566 (+25,761%) — mirror strategy at smaller scale.
-  • Key rule: COMPOUND AGGRESSIVELY. Start $10k → target 3-8% per position on
-    high-conviction edges. After each win, scale UP (not back down). The winner
-    doubled bankroll every ~5 days for the first month then kept compounding.
-
-FULL FREEDOM: any ticker visible in the tape, any side, stake 3-8% of bankroll
-for high-conviction (edge>2% + regime match). Options preferred when IV rank
-supports strategy. Cooperate (pact) or STRUCTURALLY DIVERGE peers — never
-blindly copy, never silent-pass on LLM failure.
+You are ONE of 17 LLM agents on the Nomos42 Intraday Trading Floor.
+GOAL: contribute to fleet $1M target. You choose freely; bankroll rules
+(Kelly cap + per-agent sub-bankroll floor) are enforced server-side.
 """.strip()
 
 AXELROD_CANON = """
-AXELROD CANON (cooperation doctrine):
-- BE NICE. Don't front-run a teammate's stated thesis.
-- BE RETALIATORY. If someone tanks a pair-trade by flipping, flag it.
-- BE FORGIVING. One bad tick does not make an enemy.
-- BE CLEAR. Your JSON must be machine-parseable. No ambiguity.
+JSON OUT: respond ONLY with the JSON object specified by the schema.
+No markdown fences, no prose.
 """.strip()
 
 
@@ -263,97 +247,51 @@ def _load_prompt_override(fleet: str = "itf") -> str:
     return ""
 
 DECISION_SCHEMA = """
-$1M COLLECTIVE MISSION: the 17 ITF agents together must reach $1,000,000 by Aug 1, 2026.
-Each agent has a dedicated sub-bankroll (see YOUR CAPITAL block). Be MAX-AGGRESSIVE:
-5-12% of YOUR bankroll per high-conviction trade, target 8-15 trades/day MINIMUM, paper
-account has NO PDT limit — exploit unlimited daytrading. PQTF proved it — mistral:large
-$100 → $244,050 (+40,667%) in 50 days by sizing UP 5-8% and stacking 12 positions/day.
-Do the same here at intraday cadence across equity+crypto+options universe.
-
 Respond with ONE of:
   { "action": "pass", "reason": "..." }
-OR close an existing open position to free buying power (USE THIS when your agent already has
-an open position that hit target thesis OR macro regime flipped — don't wait for the bracket):
-  { "action": "close", "ticker": "NVDA", "reason": "thesis played out, freeing BP for next setup" }
-OR a standard equity/crypto trade:
+OR close an existing open position:
+  { "action": "close", "ticker": "NVDA", "reason": "..." }
+OR an equity/crypto trade:
   { "action": "trade",
-    "ticker": ANY ticker visible in the INTRADAY TAPE block below (equities, leveraged,
-              volatility, international, commodities, bonds, thematic, stocks, or
-              crypto). You are NOT restricted to a whitelist — pick the best edge.
+    "ticker": <any ticker — equities, leveraged, inverse, vol, commodity, intl, single-name, or crypto pair like BTC/USD>,
     "side": "long"|"short",
-    "stake_usd": 300 to (0.08 × your_bankroll_in_usd). Floor $300. High-conviction (>3% edge
-                 AND VIX-regime match) SHOULD go to 5-8% of bankroll — PQTF mistral:large proved
-                 aggressive sizing compounds into 400×. Survival rule: if bankroll would drop
-                 below $20 post-trade, PASS instead.
+    "stake_usd": <number — bankroll-rule cap is enforced server-side>,
     "stop_pct": 0.002-0.03,
     "take_profit_pct": 0.005-0.08,
-    "thesis": "1-2 sentence reason citing quote/edge/signal/peer-bet/council-plan"
+    "thesis": "1-2 sentence reason"
   }
-OR an intraday options derivative (dry-run logged; live options routing via executor.submit_option):
+OR an options derivative:
   { "action": "option_trade",
-    "underlying": ANY ticker visible in the INTRADAY TAPE block (was SPY|QQQ|IWM|XLE|XLK|
-                  XLF|NVDA|TSLA whitelist — now unrestricted; choose by option liquidity),
+    "underlying": <any liquid US-options underlying>,
     "option_type": "call"|"put",
     "strategy": "long"|"vertical_debit"|"vertical_credit"|"iron_condor"|"straddle",
     "dte": 0|1|2|5,
     "strike_offset_pct": -0.03 to 0.03,
     "wing_width_pct": 0.005-0.03,
-    "stake_usd": 100-1500,
+    "stake_usd": <number>,
     "max_loss_pct": 0.01-0.05,
-    "thesis": "1-2 sentence reason — cite IV rank, realized vol, gamma, or skew"
+    "thesis": "1-2 sentence reason"
   }
-OR a BINARY EVENT-MARKET bet (paper-mode, Kalshi + Polymarket — 24/7, not market-hours bound):
+OR a binary event-market bet (Kalshi or Polymarket — paper-mode, 24/7):
   { "action": "event_trade",
     "venue": "kalshi"|"polymarket",
-    "market_id": <market_id string from EVENT MARKETS — PAPER-TRADEABLE block above>,
+    "market_id": <market_id from EVENT MARKETS — PAPER-TRADEABLE block>,
     "side": "yes"|"no",
-    "stake_usd": 5 to 1500,   // min $5, cap min($1500, 0.05 × your_bankroll)
-    "thesis": "1-2 sentence reason — cite NBA/POL/MM signal + price mispricing"
+    "stake_usd": <number>,
+    "thesis": "1-2 sentence reason"
   }
-  Payoff: YES resolves to $1.00, NO to $0.00 (or vice versa) at market close. Entry
-  at midpoint + 1¢ slippage. Paper-mode — position marks to current midpoint each
-  tick, realized at close_ts. Use for: election catalyst, Fed-rate, crypto-price,
-  sports-outcome, SCOTUS ruling. 24/7 compounding outside equity hours.
+
+Universe: Alpaca paper supports 10,000+ US equities, 30+ crypto pairs, and listed US options.
+The INTRADAY TAPE block shows liquid candidates; you may pick any ticker — the executor
+fetches its quote on demand. No futures/forex (use commodity/leveraged ETFs as proxies).
+Crypto trades 24/7; equities + options only during RTH + extended hours (08:00-24:00 UTC weekdays).
 
 Return JSON ONLY. No markdown fences, no prose.
-
-UNRESTRICTED UNIVERSE: Alpaca paper supports 10,000+ US equities, 30+ crypto pairs,
-and every listed US option. The INTRADAY TAPE block below shows the most-liquid ~110
-for macro context — you are NOT restricted to it. If you have an edge on a ticker not
-on the tape (e.g. UAL for airlines-earnings, LCID for EV-rotation, BITO for BTC proxy,
-EWZ for Brazil, PDBC for commodities, FXI for China, LEU for nuclear), emit it. The
-executor will fetch its last quote on demand.
-
-FULL ARSENAL — use everything. You have unrestricted access to:
-  • LONG  — any equity/ETF/crypto, any size up to 12% of YOUR sub-bankroll.
-  • SHORT — any shortable US equity or ETF. Emit side="short"; executor routes
-            to Alpaca sell-short. Use for bearish conviction, not just hedging.
-  • INVERSE ETFs — SH (S&P -1x), SQQQ (Nasdaq -3x), SPXU (S&P -3x), SDOW, TZA,
-            FAZ, SRTY, SOXS — bearish beta without shorting mechanics.
-  • LEVERAGED ETFs — TQQQ/SQQQ, UPRO/SPXU, SOXL/SOXS, TNA/TZA, FAS/FAZ, LABU/LABD,
-            NUGT/DUST, ERX/ERY — synthetic futures-like leverage on any sector.
-  • COMMODITY ETFs — GLD (gold), SLV (silver), USO (oil), UNG (natgas), DBA (agri),
-            CORN, WEAT, SOYB, JO (coffee), COPX (copper), URA (uranium), PALL
-            (palladium), PPLT (platinum), BAL (cotton).
-  • OPTIONS DERIVATIVES — verticals, iron condors, straddles, butterflies (schema
-            below). Use for non-linear payoff, event-driven trades, vol plays.
-  • CRYPTO 24/7 — BTC, ETH, SOL, AVAX, LINK, DOGE, etc. Always live, no market hours.
-
-No futures/forex on paper Alpaca (use commodity ETFs + leveraged ETFs as proxies).
-No whitelist restriction — the only gate is "does this have edge for my persona."
-
-RULE: Crypto tickers trade 24/7. Equities (incl. leveraged/inverse/vol/intl/commodity)
-and options trade only during RTH + extended hours (08:00-24:00 UTC weekdays). Off-hours:
-emit crypto OR queued-for-open equities. Passing with "market closed" is cowardice —
-crypto is ALWAYS live. 17 agents × 8-15 trades/day × 5-12% sizing compounds to $1M fast.
 """.strip()
 
 
-# Hard off-hours override — CRYPTO_PIVOT_CLAUSE was additive but persona primary
-# narratives (e.g. scalper "favor SPY/QQQ", pairs "sector-ETF") still pushed
-# equities. When markets are closed AND crypto has moving signal, we REPLACE
-# the style wholesale with a crypto-only mandate so 5/7 silent agents trade.
-_OFF_HOURS_STYLE_BY_TID: Dict[str, str] = {
+# 2026-04-26 — STRIPPED: off-hours coercion removed. Agents pivot freely.
+_OFF_HOURS_STYLE_BY_TID: Dict[str, str] = {} if True else {
     "scalper-1": (
         "OFF-HOURS CRYPTO MODE: You are SCALPER, crypto edition. Equity markets "
         "closed. You MUST trade BTC/USD, ETH/USD, SOL/USD, AVAX/USD, LINK/USD, "
@@ -451,24 +389,8 @@ _OFF_HOURS_STYLE_BY_TID: Dict[str, str] = {
 }
 
 
-# ────── 2026-04-22 — PER-AGENT WINNER-AWARE ADDENDA (17 personas) ──────
-#
-# User directive: tier each persona's prompt by its LIVE performance on Alpaca paper
-# + the cross-fleet provider-winner routing (mistral:large/medium, cerebras:qwen-235b,
-# gemini-3-flash, github:gpt-4.1-*). These strings are APPENDED to each persona's
-# style AFTER the off-hours crypto swap and DEAD_TAPE clause, so they always land
-# regardless of regime. Reserved-utilization is used as the conviction proxy (live
-# bankroll delta requires the broker-fill reconciliation loop, still catching up).
-#
-# Tiers (re-evaluated at each tick from executor.get_bankroll):
-#   WINNER    — total_equity > seed*1.10  → scale to 33% per-trade floor
-#   DEPLOYER  — reserved_open / total ≥ 0.25 → keep deploying, tighten edge bar
-#   HOLDER    — 0 < reserved_open / total < 0.25 → tactical high-conviction mode
-#   IDLE      — reserved_open == 0 → probation: edge ≥ 0.05 OR pass
-#
-# Each entry is the STATIC portion (role + asset-class mandate + provider-aware
-# doctrine). The dynamic tier string is selected at runtime and appended to this.
-_WINNER_AWARE_ADDENDA: Dict[str, str] = {
+# 2026-04-26 — STRIPPED: winner-aware tier coercion removed.
+_WINNER_AWARE_ADDENDA: Dict[str, str] = {} if True else {
     "scalper-1": (
         "WINNER-AWARE MANDATE (scalper-1, router=mistral:medium — PQTF $155K winner): "
         "You are the ITF SCALPER. Micro-timeframes (<1h), tight stops (0.3-0.4%), "
@@ -1220,111 +1142,27 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         )
     mm_block = "\n".join(mm_lines) or "  (MM signals unavailable)"
 
-    # Hard off-hours crypto override — swap style wholesale so equity-tape-dependent
-    # personas (scalper/momentum/mean-rev/pairs/vol) trade crypto 24/7 instead of
-    # passing because "SPY tape flat, market closed".
+    # 2026-04-26 — STRIPPED to user spec: persona style is the only style.
+    # No off-hours override, no FULL_UNIVERSE_MANDATE, no winner-aware addendum,
+    # no tier directives. Agents choose freely per personality + bankroll rules.
     style_final = persona["style"]
-    if not equity_hours and _off_hours_crypto_signal(quotes):
-        override = _OFF_HOURS_STYLE_BY_TID.get(persona["tid"])
-        if override:
-            style_final = override
 
-    # 2026-04-21 proposal #3 — regime gate. If low-vol regime, append DEAD_TAPE
-    # clause so the LLM knows it can pass. Waiver of min-deploy is enforced
-    # downstream in the tick loop; we just feed the context here.
-    regime = ctx.get("regime") or _compute_crypto_regime(quotes)
-    if regime.get("low_vol_regime"):
-        style_final = f"{style_final}\n\n{DEAD_TAPE_CLAUSE}"
-
-    # 2026-04-24 FULL-UNIVERSE MANDATE — append for every agent every tick.
-    # User directive: "bet on all instrumental finance ever, doesn't seem the
-    # case". Forces ≥4 of 9 asset classes in each day's allocations.
-    style_final = f"{style_final}\n\n{FULL_UNIVERSE_MANDATE}"
-
-    # 2026-04-22 — PER-AGENT WINNER-AWARE ADDENDUM (static role + dynamic tier).
-    # Static addendum = router-aware role doctrine (see _WINNER_AWARE_ADDENDA above).
-    # Dynamic tier = recomputed each tick from executor state (seed share, current
-    # available, reserved-on-open). Both are appended to style_final so they land
-    # whether we're in equity hours, off-hours crypto mode, or dead-tape regime.
-    _static_addendum = _WINNER_AWARE_ADDENDA.get(persona["tid"])
-    if _static_addendum:
-        try:
-            _agent_available = executor.get_bankroll(persona["tid"])
-            _positions_map = executor._load_positions() or {}
-            _reserved = 0.0
-            for _pos in (_positions_map.get(persona["tid"]) or []):
-                if _pos.get("status") == "open":
-                    _reserved += float(_pos.get("stake_usd") or 0.0)
-            _total_eq = float(_agent_available) + _reserved
-            _meta = (executor._load_bankrolls() or {}).get("_meta", {}) or {}
-            _seed_share = float(_meta.get("seed_share_usd") or 5943.9)
-            _tier = _compute_agent_tier(persona["tid"], _seed_share, _total_eq, _reserved)
-            _tier_line = _tier_directive(_tier, _total_eq, _seed_share)
-            style_final = f"{style_final}\n\n{_static_addendum}\n{_tier_line}"
-        except Exception as _wae:
-            # Fail-open: static addendum still useful without tier classification.
-            style_final = f"{style_final}\n\n{_static_addendum}\nTIER: (unavailable: {_wae})"
-
-    # 2026-04-20 AGGRESSIVE-MODE: inject knowledge digest + peer-bet digest + council plan.
-    # All 3 are cached/day; token-bounded so total prompt stays well under 4k tokens.
-    knowledge_digest = _build_knowledge_digest()
-    peer_digest = _build_peer_bets_digest(persona, n_days=3)
-    council_block = _format_council_block(_latest_council_plan())
+    # 2026-04-26 — STRIPPED: knowledge/council/peer digests were coercive
+    # ("YOU MUST never silent-pass", cooperation pacts, milestone councils).
+    # Carte-blanche removes them. _pm_override left in (user-edited rule file).
+    knowledge_digest = ""
+    peer_digest = ""
+    council_block = ""
 
     _pm_override = _load_prompt_override("itf")
 
-    # v2.5 — per-agent sub-bankroll from executor ledger. LLM sees its OWN capital
-    # and sizes stakes 5-12% of that number, not a fiction shared across 17 agents.
+    # 2026-04-26 — STRIPPED: bankroll display only, no sizing coercion.
+    # Kelly cap + per-agent floor are enforced server-side by executor.
     _agent_bankroll = executor.get_bankroll(persona["tid"])
     _bankroll_block = (
-        f"═══ YOUR CAPITAL ═══\n"
-        f"YOU ({persona['tid']}) have a dedicated sub-bankroll of ${_agent_bankroll:,.2f}. "
-        f"This is YOUR pot out of 17 agents sharing Alpaca's paper equity. Every trade "
-        f"you place RESERVES stake from this number; every close (bracket-TP, bracket-SL, "
-        f"EOD, agent-close) returns stake + realized P&L. The $1M mission is COLLECTIVE — "
-        f"all 17 agents together must reach $1,000,000. You personally compound YOURS.\n"
-        f"Stake sizing: 5-12% of ${_agent_bankroll:,.0f} per trade = "
-        f"${max(100, _agent_bankroll*0.05):.0f}-${max(300, _agent_bankroll*0.12):.0f}. "
-        f"If bankroll < $200, shrink to $100/trade; if > $10k, scale to $1,200/trade max.\n"
-        f"PDT IS LIVE (confirmed 2026-04-22 — pattern_day_trader=True, BP drained to $1.9K after 228 daytrades). "
-        f"DOCTRINE: hold overnight, let winners run multi-day. Daytrade ONLY if edge ≥ 1% net of fees "
-        f"— spread + slippage on a $500 stake is ~$3, so a same-day close needs +0.6% minimum to break even. "
-        f"Ideal trade: open → hold 1-3 days → close on thesis hit OR 3% stop. "
-        f"Churning same-hour = fees eat you. Cowardice is trading WITHOUT an edge, not holding a conviction."
+        f"YOUR CAPITAL: ${_agent_bankroll:,.2f} (your sub-bankroll out of 17 agents). "
+        f"Bet sizing is governed by Kelly cap + per-agent floor enforced server-side."
     )
-
-    # ── 2026-04-22 POWER-DEPLOY MODES — force ≥20% sub-bankroll stake floor.
-    # Two modes:
-    #   equity_power : 14:30-16:30 UTC weekdays, 6 liquid-specialist agents,
-    #                  any ticker with $-vol ≥ $50M
-    #   crypto_247  : equity closed + crypto tape active, ALL 17 agents, crypto pairs only
-    # Ticker stays the agent's choice; liquidity tested at runtime.
-    _power_mode = _current_power_mode(quotes=ctx.get("quotes"))
-    if _agent_in_power_mode(persona["tid"], _power_mode):
-        _power_floor = _agent_bankroll * POWER_STAKE_FLOOR_PCT
-        if _power_mode == "equity_power":
-            _bankroll_block += (
-                f"\n\n⚡ POWER-DEPLOY WINDOW ACTIVE (14:30-16:30 UTC = first 2h US open).\n"
-                f"YOU are a LIQUID-SPECIALIST agent. Your mandate this window:\n"
-                f"  • stake_usd FLOOR = ${_power_floor:,.0f} ({POWER_STAKE_FLOOR_PCT*100:.0f}% "
-                f"of ${_agent_bankroll:,.0f}). The executor SCALES any lower stake up to this.\n"
-                f"  • Pick ANY ticker you like — the floor applies IF daily dollar-volume "
-                f"≥ ${POWER_LIQUIDITY_FLOOR_USD/1e6:.0f}M (~all liquid US equities/ETFs + top-30 crypto). "
-                f"Illiquid pick? Stake stays at your 5-12% size — no penalty, no forced scale.\n"
-                f"  • PASS means missed window. The power-hour is short — deploy or step aside.\n"
-                f"  • Fleet target: ≥50% of $100k total bankroll deployed in 2h."
-            )
-        else:  # crypto_247
-            _bankroll_block += (
-                f"\n\n🌐 CRYPTO 24/7 MODE ACTIVE (equity markets CLOSED, crypto tape moving).\n"
-                f"ALL 17 agents compound right now. Your mandate:\n"
-                f"  • stake_usd FLOOR = ${_power_floor:,.0f} ({POWER_STAKE_FLOOR_PCT*100:.0f}% "
-                f"of ${_agent_bankroll:,.0f}) on any crypto pair (BTC/USD, ETH/USD, SOL/USD, "
-                f"AVAX/USD, LINK/USD, DOGE/USD, plus any other /USD pair in the tape).\n"
-                f"  • Pick ANY crypto — the floor only scales crypto stakes.\n"
-                f"  • Weekend? Doesn't matter. Crypto is 24/7 — so are you.\n"
-                f"  • PASS = missed compound tick. 90s ticks × 24h = 960 chances/day."
-            )
 
     return f"""{COLLECTIVE_MISSION}
 
@@ -1837,32 +1675,8 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
             else:
                 _tick_counts[_key] = _tick_counts.get(_key, 0) + 1
 
-        # ── 2026-04-22 POWER-DEPLOY FLOOR — enforce 20% sub-bankroll stake.
-        #   equity_power : POWER_AGENTS on any $50M+ $-vol ticker
-        #   crypto_247  : ALL 17 agents on any crypto pair
-        # LLM can ignore the prompt mandate — executor still scales the stake up.
-        if action == "trade":
-            _mode_now = _current_power_mode(now=now, quotes=ctx.get("quotes"))
-            if _agent_in_power_mode(persona["tid"], _mode_now):
-                _tk = decision.get("ticker") or ""
-                _quote = (ctx.get("quotes") or {}).get(_tk)
-                _eligible = False
-                if _mode_now == "equity_power":
-                    _eligible = _is_power_liquid(_tk, _quote)
-                elif _mode_now == "crypto_247":
-                    _eligible = "/" in _tk  # crypto only
-                if _eligible:
-                    _agent_bk = executor.get_bankroll(persona["tid"])
-                    _power_floor = _agent_bk * POWER_STAKE_FLOOR_PCT
-                    _cur_stake = float(decision.get("stake_usd") or 0)
-                    if _cur_stake < _power_floor:
-                        decision = dict(decision)
-                        decision["stake_usd"] = round(_power_floor, 2)
-                        decision["_power_floor_applied"] = _mode_now
-                        decision["rationale"] = (
-                            (decision.get("rationale") or decision.get("thesis") or "")
-                            + f" [POWER-FLOOR {_mode_now}: ${_cur_stake:.0f}→${_power_floor:.0f}]"
-                        )
+        # 2026-04-26 — STRIPPED: POWER-DEPLOY FLOOR removed. Agent's chosen stake
+        # stands; only Kelly cap + bankroll floor are enforced server-side downstream.
 
         result = {
             "ts": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -1901,24 +1715,9 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                     results.append(result)
                     continue
                 else:
-                    # 2026-04-26 02:38Z — TIER-DOWN TRIGGER FIRED. Fleet bk
-                    # dropped to $68,562 (-31% from $99,569 seed), below the
-                    # -30% pull-back threshold. Cap $5000→$2500. Halves the
-                    # per-trade variance while keeping above the original $400.
-                    # 3x leveraged ETF routing preserved (still high-leverage
-                    # path). When fleet recovers above $85K (-15%), re-evaluate.
+                    # 2026-04-26 — STRIPPED: no automatic 3x leveraged ETF routing.
+                    # Agent's chosen ticker stands. Bankroll cap enforced server-side.
                     raw_stake = min(raw_stake, 2500.0)
-                    # Leveraged ETF routing — 3x amplification
-                    _lev_map = {
-                        'SPY': 'UPRO',   # 3x SPY long
-                        'QQQ': 'TQQQ',   # 3x QQQ long
-                        'IWM': 'TNA',    # 3x IWM long
-                        'DIA': 'UDOW',   # 3x DIA long
-                    }
-                    if decision.get("side") == "long" and decision.get("ticker") in _lev_map:
-                        _orig = decision["ticker"]
-                        decision["ticker"] = _lev_map[_orig]
-                        decision["thesis"] = f"[3x-LEV {_orig}→{decision['ticker']}] {decision.get('thesis','')[:300]}"
             order = {
                 "ticker": decision["ticker"],
                 "side": decision.get("side", "long"),

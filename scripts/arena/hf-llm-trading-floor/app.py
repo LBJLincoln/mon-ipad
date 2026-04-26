@@ -2076,113 +2076,34 @@ def build_day_prompt(day_date: str, day_games: List[Dict], day_odds: List[Dict],
 
     lines.append("""
 === YOUR TASK ===
-Allocate your bankroll across today's games.
-Each allocation = one bet on one game/category. Total allocations + cash_held must sum to 1.00.
-MANDATORY: You MUST place at least 1 bet. Zero-bet days are NOT allowed.
-Even if edges are small, pick your BEST edge and bet 5-15% on it. Cash-only is forbidden.
+Allocate your bankroll across today's games. You see all games + their full odds menu
+(ml/spread/total/alt_*/team_total/halves/quarters/props/pp_*). Pick freely.
 
-AVAILABLE BET CATEGORIES (~90 per game — pick from MODEL EDGES block first):
-  BASE:   ml_home, ml_away, spread_home, spread_away, total_over, total_under
-  ALT SP: alt_spread_home_plus0..plus10, alt_spread_home_minus1..minus10 (same for away)
-  ALT TO: alt_total_over_plus2..plus10, alt_total_under_minus2..minus10
-  TEAMS:  team_total_home_over_X, team_total_home_under_X, team_total_away_over_X, team_total_away_under_X
-  HALVES: h1_ml_home, h1_ml_away, h1_spread_home, h1_spread_away, h1_total_over, h1_total_under
-  Q1:     q1_ml_home, q1_ml_away, q1_total_over, q1_total_under
-  PROPS:  prop_both_100, prop_overtime, prop_blowout_20
+RESPOND WITH RAW JSON ONLY. First character {, last character }. No markdown fences.
 
-Each category in MODEL EDGES above comes with a model_prob and edge vs market — use those for bet sizing.
-
-RESPOND WITH RAW JSON ONLY. No markdown fences. No explanation before or after. First character MUST be {, last MUST be }. Do NOT wrap in ```json blocks.
-
-Schema (FILL EVERY FIELD — top-of-JSON fields get priority under token pressure):
+Schema (minimal):
 {
-  "day_strategy": "MUST start with STRUCTURAL DIVERGE [peer] or STRUCTURAL COMPLEMENT [peer] citing your REASONING TEMPLATE. 1-2 sentences on today's overall approach.",
-  "coalition_proposal": {
-    "peer": "qwen-quant (or \"none\" if no pact today)",
-    "game_idx": 1,
-    "category": "ml_home",
-    "rationale": "1 sentence — why this peer / why no pact today"
-  },
-  "council_alignment": {
-    "stance": "followed|deviated|partial",
-    "reason": "1 sentence — why"
-  },
   "allocations": [
-    {
-      "game_idx": 1,
-      "game": "AWAY@HOME",
-      "category": "ml_home",
-      "pct": 0.15,
-      "confidence": 0.65,
-      "edge": 0.04,
-      "strategy": "half_kelly",
-      "rationale": "1 sentence: which stat/metric drove this and why it beats market price",
-      "category_reason": "1 sentence — why ml_home vs spread_home vs alt_spread"
-    }
+    {"game_idx": 1, "game": "AWAY@HOME", "category": "<exact name from this game's odds menu>",
+     "pct": 0.05, "confidence": 0.65, "edge": 0.04, "strategy": "half_kelly",
+     "rationale": "1 sentence"}
   ],
   "parlays": [
-    {
-      "legs": [
-        {"game_idx": 1, "category": "ml_home"},
-        {"game_idx": 3, "category": "spread_away"}
-      ],
-      "pct": 0.04,
-      "confidence": 0.45,
-      "edge": 0.06,
-      "rationale": "1 sentence: why these legs compound favorably"
-    }
+    {"legs": [{"game_idx":1, "category":"ml_home"}, {"game_idx":3, "category":"spread_away"}],
+     "pct": 0.02, "confidence": 0.45, "edge": 0.06, "rationale": "1 sentence"}
   ],
-  "cash_held_pct": 0.25,
-  "cash_rationale": "1 sentence if cash > 0",
-  "games_considered": [
-    {"game_idx": 1, "decision": "bet|skip", "reason": "1 short phrase"}
-  ]
+  "cash_held_pct": 0.25
 }
 
-NEW AUDIT FIELDS (MANDATORY — councils use these to score decision quality):
-- council_alignment: ONE of {followed|deviated|partial} + reason. Council assigned you
-  a commit_pct target today (see COUNCIL_PLAN block); if you deployed close to it say
-  "followed", if you went much higher/lower say "deviated" and explain, say "partial"
-  if you respected direction but magnitude differs.
-- games_considered: ONE entry per game on today's slate (include EVERY game_idx you saw,
-  not just the ones you bet). For skipped games give the specific reason —
-  "low edge 1.1%", "injury report", "market already efficient", "bankroll exposure cap", etc.
-- category_reason on each allocation: say why this CATEGORY beat the others for this game
-  (e.g. "total_over line 225.5 is 2pts softer than my 227.8 model — softest edge today").
-
-STRICT RULES:
-- Sum of allocation pct + parlay pct + cash_held_pct = 1.00 (±0.01)
-- Max 1 allocation per game_idx PER CATEGORY (you can bet ml_home + spread_away
-  + total_over + prop_* + pp_* on the same game across different categories)
-- 2026-04-25 REVISED v2: at LEAST 1 allocation/day required when ANY positive
-  edge >=0.05 exists in the day's full odds menu (and your model agrees). The
-  pre-ranked "TOP POSITIVE EDGES" provided in your context is your menu —
-  pick at least one. Probation agents may pass ONLY if no edge clears 0.07.
-  Empty allocations[] is allowed ONLY with cash_rationale citing why every
-  edge in the top-10 was rejected (e.g. "all top-10 are pp_* on injury-flagged
-  players"). "No edges" rationales without specific category review are NOT
-  acceptable — you have 220+ categories per game.
-- Max 25 allocations + 8 parlays / day (2026-04-24 user directive: USE the 220-category
-  universe — ml, spread, total, alt_spread*, alt_total*, team_total*, halves, quarters,
-  game_props, pp_*). PARLAYS SHOULD BE USED — combined odds amplify small edges into
-  double-digit returns. A 3-leg parlay of 1.5 legs = 3.4× payout; two correlated 1.8
-  legs = 3.2× payout. 0 parlays per day across 17 agents is a scientific under-use.
-- ALT LINE SHOPPING REQUIRED: before betting spread_home at 1.91, check alt_spread_home_minus_*
-  variants — same team, different line, different odds (e.g., alt_spread_home_minus3.5 at 1.5
-  vs spread_home at 1.91 is a 3× better EV if your edge is wide enough). Same for alt_total.
-- Each allocation pct: 0.01–0.40 | Each parlay pct: 0.005–0.08 (combined odds amplify risk)
-- Parlays: 2–6 legs, each leg = distinct game_idx, all legs must win for payout
-- cash_held_pct: 0.00–0.80 (raised from 0.25 — selective betting may hold more cash)
-- Deploy pct floor LIFTED when no edge clears your bar (pass with rationale).
-- Rationale MUST cite a specific stat/metric (not "I think they'll win")
-- Edge must be computed from model vs implied odds, NOT hardcoded
-- coalition_proposal is MANDATORY (must be present). Set it to a peer you want to pact
-  with AND match with a bet on that game_idx+category, or set peer="none" with a
-  reason why no pact today. Empty/missing field = invalid response.
-  COLLECTIVE-HELP RULE: if ANY peer bankroll < $50, a top-3 agent must propose a
-  pact with that peer on their own highest-edge pick — the struggling peer sees it
-  via COMMON_KNOWLEDGE and can mirror. This is how the collective lifts survivors.
-  Pact honored IFF both you and peer place the same (game_idx, category) bet.
+Rules (carte blanche — only these constraints):
+- Sum of allocation pct + parlay pct + cash_held_pct ≈ 1.00.
+- Each allocation pct 0.005–0.50 (Kelly cap enforced server-side per agent).
+- Each parlay pct 0.005–0.08 (combined odds amplify risk).
+- Parlays: 2–6 legs, each leg a distinct game_idx, all must win.
+- Max 25 allocations + 8 parlays per day. Max 8 bets per game (across distinct categories).
+- DO NOT invent category names. Pick ONLY from the per-game odds menu shown above.
+  Names not in the menu silently get fake 1.91 odds + random outcomes.
+- Empty allocations[] / pass is allowed with a brief cash_rationale.
 """)
     return "\n".join(lines)
 
