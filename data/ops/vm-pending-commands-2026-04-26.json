@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-04-26T00:00:00Z",
+  "generated_by": "cloud-brain",
+  "reason": "Direct curl blocked by DNS overflow in brain environment; delegating to VM where HF domains resolve",
+  "commands": [
+    {
+      "id": "diversify-s18",
+      "priority": 1,
+      "action": "curl -s -X POST https://testforge42-nba-evo-s18.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'",
+      "reason": "S18 stagnation_count=21 exceeds threshold=15",
+      "island": "TESTforge42/nba-evo-s18",
+      "status": "pending"
+    },
+    {
+      "id": "restart-s17",
+      "priority": 2,
+      "action": "curl -s -X POST 'https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart' -H 'Authorization: Bearer $HF_TOKEN'",
+      "reason": "S17 returned 503 on /api/status — space is down",
+      "space": "LBJLincoln26/nba-evo-s17",
+      "status": "pending"
+    },
+    {
+      "id": "claude-md-patch",
+      "priority": 3,
+      "action": "python3 scripts/ops/apply_claude_md_patch.py",
+      "patch": {
+        "date": {"old": "Updated: 2026-04-22", "new": "Updated: 2026-04-26"},
+        "nba_survivors": {
+          "S13": {"gen": 1987, "brier": 0.22090, "date": "2026-04-26"},
+          "S14": {"gen": 2361, "brier": 0.22431, "date": "2026-04-26"},
+          "S15": {"gen": 517, "brier": 0.22064, "note": "SPACE RESET: gen 1310->517", "date": "2026-04-26"},
+          "S17": {"status": "DOWN 503", "note": "RESTART NEEDED", "date": "2026-04-26"},
+          "S18": {"gen": 1567, "brier": 0.22248, "stagnation": 21, "note": "diversify triggered 2026-04-26"},
+          "S22": {"gen": 1980, "brier": 0.22475, "date": "2026-04-26"}
+        },
+        "pol_survivors": {
+          "P1": {"algorithm": "lightgbm", "gen": 28800, "brier": 0.25061, "date": "2026-04-26"},
+          "P2": {"algorithm": "lightgbm", "gen": 24071, "brier": 0.25232, "date": "2026-04-26"},
+          "P4": {"algorithm": "lightgbm", "gen": 29557, "brier": 0.24902, "note": "POL ALL-TIME BEST; prev 0.24923", "date": "2026-04-26"},
+          "P5": {"algorithm": "catboost", "gen": 29400, "brier": 0.25312, "date": "2026-04-26"},
+          "P7": {"algorithm": "logistic", "gen": 13587, "brier": 0.25412, "date": "2026-04-26"}
+        }
+      },
+      "status": "pending"
+    }
+  ]
+}
