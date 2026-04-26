@@ -2632,11 +2632,22 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
     if tid:
         _ece = get_agent_ece(tid)
         _cw = _conf_width_from_allocations(clean)
+        # 2026-04-26 PM — kelly_mult bypass for server-injected forced_floor.
+        # Kelly haircut was clipping forced_floor pct=0.40 to ~0.13 effective,
+        # blocking the 60% deploy mandate. Server injections are gated on POSITIVE
+        # engine edge already, so kelly haircut is redundant + harmful here.
+        _BYPASS_KELLY_SOURCES = {
+            "engine_forced_floor", "engine_min_bets_inject",
+            "engine_breadth_inject", "engine_zero_deploy_inject",
+        }
         for a in clean:
             _raw_pct = a["pct"]
+            if a.get("edge_source") in _BYPASS_KELLY_SOURCES:
+                # Honor injected pct as-is; tag for audit.
+                a["calibrated_kelly"] = "bypass_forced_floor"
+                a["raw_pct_pre_kelly"] = round(_raw_pct, 4)
+                continue
             _frac = calibrated_kelly_fraction(a.get("edge", 0.0), _ece, _cw)
-            # Fraction bounds allocation pct to (0, _frac]; preserves LLM's relative
-            # conviction by keeping the smaller of declared pct and calibrated cap.
             a["pct"] = round(min(_raw_pct, _frac), 4)
             a["calibrated_kelly"] = round(_frac, 4)
             a["raw_pct_pre_kelly"] = round(_raw_pct, 4)
