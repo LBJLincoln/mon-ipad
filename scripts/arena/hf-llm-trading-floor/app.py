@@ -2095,12 +2095,14 @@ Schema (minimal):
   "cash_held_pct": 0.25
 }
 
-Rules (carte blanche — only these constraints):
+Rules (carte blanche — only these bankroll constraints):
 - Sum of allocation pct + parlay pct + cash_held_pct ≈ 1.00.
-- Each allocation pct 0.005–0.50 (Kelly cap enforced server-side per agent).
-- Each parlay pct 0.005–0.08 (combined odds amplify risk).
-- Parlays: 2–6 legs, each leg a distinct game_idx, all must win.
-- Max 25 allocations + 8 parlays per day. Max 8 bets per game (across distinct categories).
+- Daily deploy floor: 50-70% of bankroll across your chosen bets. Server-side
+  scales single-bet allocations up to 30% cap (so 2 bets can hit the 55% floor).
+- Each allocation pct 0.005–0.50; per-bet server cap 0.30. Kelly cap enforced
+  server-side per agent (over-bets are clipped, you don't need to micro-tune).
+- Each parlay pct 0.005–0.08, 2–6 legs, distinct game_idx, all must win.
+- Max 25 allocations + 8 parlays per day. Max 8 bets per game (distinct categories).
 - DO NOT invent category names. Pick ONLY from the per-game odds menu shown above.
   Names not in the menu silently get fake 1.91 odds + random outcomes.
 - Empty allocations[] / pass is allowed with a brief cash_rationale.
@@ -2536,28 +2538,28 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             p["pct"] = p["pct"] * scale
         cash = cash * scale
 
-    # ── MIN_DEPLOY_PCT — carte-blanche calibration (NBA binary bets)
-    # 2026-04-22 — 0.80 → 0.35. Binary NBA bets pay -100% on a loss; forcing
-    # 80% daily deploy at ~45% WR compounded a -50% drawdown in 73 days.
-    # Lower floor lets agents size to their actual edge count per day. Per-bet
-    # cap tightened 0.40 → 0.18 to force diversification across 227 cats.
-    # Dynamic drawdown tapering preserved.
+    # ── MIN_DEPLOY_PCT — bankroll rule (user-spec 2026-04-26): 50-70% deploy/day.
+    # Per-bet cap raised 0.18 → 0.30 so an agent emitting just 2 bets can still
+    # hit the 55% floor. Drawdown taper preserved for survival. LLM still chooses
+    # WHICH categories — server only scales magnitude when they under-deploy.
     if drawdown < 0.5:
-        MIN_DEPLOY_PCT = 0.35
+        MIN_DEPLOY_PCT = 0.55
     else:
-        MIN_DEPLOY_PCT = max(0.15, 0.35 - (drawdown - 0.5) * 0.5)
+        MIN_DEPLOY_PCT = max(0.20, 0.55 - (drawdown - 0.5) * 0.7)
+    PER_BET_CAP = 0.30
+    PER_PARLAY_CAP = 0.08
     deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
     if deployed > 0 and deployed < MIN_DEPLOY_PCT:
         scale_up = MIN_DEPLOY_PCT / deployed
         for a in clean:
-            a["pct"] = min(0.18, a["pct"] * scale_up)
+            a["pct"] = min(PER_BET_CAP, a["pct"] * scale_up)
         for p in parlays_clean:
-            p["pct"] = min(0.05, p["pct"] * scale_up)
+            p["pct"] = min(PER_PARLAY_CAP, p["pct"] * scale_up)
         # Recompute after per-allocation caps clipped
         new_deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
         cash = max(0.0, 1.0 - new_deployed)
     elif deployed == 0:
-        # LLM refused to bet at all — keep as-is (min edge gate will protect)
+        # LLM chose to pass all — respect carte-blanche; min edge gate will protect.
         cash = 1.0
 
     # Mech D — coalition_proposal extraction (MANDATORY field; peer="none" => no pact today)

@@ -247,44 +247,50 @@ def _load_prompt_override(fleet: str = "itf") -> str:
     return ""
 
 DECISION_SCHEMA = """
-Respond with ONE of:
+Five action types (all equally first-class — pick whichever fits your edge):
+
+(1) Pass:
   { "action": "pass", "reason": "..." }
-OR close an existing open position:
+
+(2) Close an existing open position:
   { "action": "close", "ticker": "NVDA", "reason": "..." }
-OR an equity/crypto trade:
+
+(3) Equity / crypto trade:
   { "action": "trade",
-    "ticker": <any ticker — equities, leveraged, inverse, vol, commodity, intl, single-name, or crypto pair like BTC/USD>,
+    "ticker": <any equity, leveraged ETF, inverse ETF, vol product, commodity ETF, intl ETF, single-name, or crypto pair like BTC/USD>,
     "side": "long"|"short",
-    "stake_usd": <number — bankroll-rule cap is enforced server-side>,
+    "stake_usd": <number — Kelly cap enforced server-side>,
     "stop_pct": 0.002-0.03,
     "take_profit_pct": 0.005-0.08,
     "thesis": "1-2 sentence reason"
   }
-OR an options derivative:
+
+(4) Options derivative:
   { "action": "option_trade",
     "underlying": <any liquid US-options underlying>,
     "option_type": "call"|"put",
     "strategy": "long"|"vertical_debit"|"vertical_credit"|"iron_condor"|"straddle",
-    "dte": 0|1|2|5,
-    "strike_offset_pct": -0.03 to 0.03,
-    "wing_width_pct": 0.005-0.03,
-    "stake_usd": <number>,
-    "max_loss_pct": 0.01-0.05,
-    "thesis": "1-2 sentence reason"
-  }
-OR a binary event-market bet (Kalshi or Polymarket — paper-mode, 24/7):
-  { "action": "event_trade",
-    "venue": "kalshi"|"polymarket",
-    "market_id": <market_id from EVENT MARKETS — PAPER-TRADEABLE block>,
-    "side": "yes"|"no",
-    "stake_usd": <number>,
+    "dte": 0|1|2|5, "strike_offset_pct": -0.03 to 0.03, "wing_width_pct": 0.005-0.03,
+    "stake_usd": <number>, "max_loss_pct": 0.01-0.05,
     "thesis": "1-2 sentence reason"
   }
 
-Universe: Alpaca paper supports 10,000+ US equities, 30+ crypto pairs, and listed US options.
-The INTRADAY TAPE block shows liquid candidates; you may pick any ticker — the executor
-fetches its quote on demand. No futures/forex (use commodity/leveraged ETFs as proxies).
-Crypto trades 24/7; equities + options only during RTH + extended hours (08:00-24:00 UTC weekdays).
+(5) Binary event-market bet on Kalshi or Polymarket — paper-mode, 24/7, NOT gated by equity hours.
+    Market_ids are listed in the EVENT MARKETS — PAPER-TRADEABLE block above with live YES/NO prices.
+    YES resolves to $1.00 and NO to $0.00 at close. Edge = your model_p − market YES price.
+  { "action": "event_trade",
+    "venue": "kalshi"|"polymarket",
+    "market_id": <copy market_id verbatim from the EVENT MARKETS block>,
+    "side": "yes"|"no",
+    "stake_usd": <number — server caps at min($1500, 5% of your bankroll)>,
+    "thesis": "1-2 sentence reason citing the price mispricing"
+  }
+
+Universe: Alpaca paper supports 10,000+ US equities, 30+ crypto pairs, listed US options.
+Kalshi + Polymarket cover politics, Fed rates, crypto prices, sports, SCOTUS — 24/7.
+The INTRADAY TAPE shows liquid equities; the EVENT MARKETS block shows binary markets.
+Both are FIRST-CLASS — pick whichever venue your edge fits. No futures/forex (use ETFs).
+Crypto + event markets trade 24/7; equities + options only during RTH + extended hours.
 
 Return JSON ONLY. No markdown fences, no prose.
 """.strip()
@@ -1156,12 +1162,14 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
 
     _pm_override = _load_prompt_override("itf")
 
-    # 2026-04-26 — STRIPPED: bankroll display only, no sizing coercion.
-    # Kelly cap + per-agent floor are enforced server-side by executor.
+    # 2026-04-26 — bankroll rules block (carte-blanche on choice, structural on sizing).
     _agent_bankroll = executor.get_bankroll(persona["tid"])
     _bankroll_block = (
-        f"YOUR CAPITAL: ${_agent_bankroll:,.2f} (your sub-bankroll out of 17 agents). "
-        f"Bet sizing is governed by Kelly cap + per-agent floor enforced server-side."
+        f"YOUR CAPITAL: ${_agent_bankroll:,.2f} (your sub-bankroll out of 17 agents).\n"
+        f"Bankroll rules (server-enforced):\n"
+        f"  • Stake sizing: Kelly cap + per-agent floor (over-bets clipped automatically).\n"
+        f"  • 5 action types are first-class: trade / option_trade / event_trade (Kalshi/Polymarket) / close / pass.\n"
+        f"  • Event markets are 24/7 — outside equity hours they are often the only live edge."
     )
 
     return f"""{COLLECTIVE_MISSION}
