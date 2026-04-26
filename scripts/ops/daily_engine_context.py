@@ -204,12 +204,62 @@ def render_day(day_idx: int) -> str:
     return '\n'.join(L)
 
 
+def list_existing_days() -> list:
+    """List all day_idx values that have a day-NNN.json on the NBA TF Hub."""
+    import re
+    url = f'https://huggingface.co/api/spaces/{NBA_SPACE}/tree/main/data/decisions'
+    try:
+        files = json.loads(fetch(url))
+        days = []
+        for f in files:
+            if isinstance(f, dict):
+                m = re.search(r'day-(\d+)\.json$', f.get('path', ''))
+                if m:
+                    days.append(int(m.group(1)))
+        return sorted(days)
+    except Exception as e:
+        print(f'list_existing_days err: {e}', file=sys.stderr)
+        return []
+
+
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('--day', type=int, required=True, help='day_idx to render')
+    p.add_argument('--day', type=int, help='day_idx to render')
+    p.add_argument('--all', action='store_true', help='render every day on Hub')
+    p.add_argument('--last', type=int, default=0, help='render last N days only')
     args = p.parse_args()
 
     AUDIT.mkdir(parents=True, exist_ok=True)
+
+    if args.all or args.last:
+        days = list_existing_days()
+        if args.last:
+            days = days[-args.last:]
+        if not days:
+            print('no day files on Hub yet', file=sys.stderr)
+            return
+        print(f'rendering {len(days)} days: {days[0]} → {days[-1]}', file=sys.stderr)
+        for d in days:
+            try:
+                md = render_day(d)
+                out = AUDIT / f'day-context-nba-{d:03d}.md'
+                out.write_text(md)
+            except Exception as e:
+                print(f'  day-{d:03d} FAIL: {e}', file=sys.stderr)
+        # latest = most recent one
+        latest_md = (AUDIT / f'day-context-nba-{days[-1]:03d}.md').read_text()
+        (AUDIT / 'day-context-nba-latest.md').write_text(latest_md)
+        # Build index of available days (consumed by /audit page dropdown)
+        idx = {'days': [{'idx': d, 'file': f'day-context-nba-{d:03d}.md'} for d in days],
+               'latest_idx': days[-1],
+               'updated_at': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}
+        (AUDIT / 'day-context-nba-index.json').write_text(json.dumps(idx, indent=2))
+        print(f'wrote {len(days)} day-context files + index', file=sys.stderr)
+        return
+
+    if args.day is None:
+        p.error('--day required (or use --all / --last N)')
+
     md = render_day(args.day)
     out = AUDIT / f'day-context-nba-{args.day:03d}.md'
     out.write_text(md)

@@ -62,11 +62,15 @@ for f in failing-agents-diagnostic-${TODAY}.md coverage-report-${TODAY}.json cov
   fi
 done
 # 2026-04-26 — day-context forensic (per-day full agent + engine context)
+# Copies ALL day-context MDs + the index JSON consumed by /audit dropdown.
 for f in /home/termius/mon-ipad/data/audit/day-context-nba-*.md; do
   if [ -f "$f" ]; then
     cp "$f" "$DEST/audit/$(basename "$f")"
   fi
 done
+if [ -f /home/termius/mon-ipad/data/audit/day-context-nba-index.json ]; then
+  cp /home/termius/mon-ipad/data/audit/day-context-nba-index.json "$DEST/audit/"
+fi
 # Also write -latest.md aliases for files the dashboard expects under stable
 # names (the audit page hard-codes failing-agents-diagnostic-latest.md).
 diag_dated="/home/termius/mon-ipad/data/audit/failing-agents-diagnostic-${TODAY}.md"
