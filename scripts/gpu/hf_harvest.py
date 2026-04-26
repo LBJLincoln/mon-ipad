@@ -137,8 +137,8 @@ def push_oracle_artifact(
     receipt["local_path"] = str(out_path)
     receipt["local_size_mb"] = round(out_path.stat().st_size / 1024 / 1024, 2)
 
-    # Try HF auth + push
-    tok = os.environ.get("HF_TOKEN") or os.environ.get("HF_TOKEN_NBA") or ""
+    # Try HF auth + push (HF_TOKEN_NBA is LBJLincoln26-owner, prefer it)
+    tok = os.environ.get("HF_TOKEN_NBA") or os.environ.get("HF_TOKEN") or ""
     if not tok:
         receipt["upload_status"] = "no_hf_token"
         _local_log(receipt)

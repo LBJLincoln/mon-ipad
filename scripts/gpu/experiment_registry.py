@@ -52,9 +52,10 @@ def _utc_now() -> str:
 
 def _api():
     from huggingface_hub import HfApi
-    tok = os.environ.get('HF_TOKEN') or os.environ.get('HF_TOKEN_NBA') or ''
+    # Prefer HF_TOKEN_NBA (LBJLincoln26 owns the dataset) over HF_TOKEN (LBJLincoln, no write access)
+    tok = os.environ.get('HF_TOKEN_NBA') or os.environ.get('HF_TOKEN') or ''
     if not tok:
-        raise RuntimeError('HF_TOKEN missing')
+        raise RuntimeError('HF_TOKEN_NBA / HF_TOKEN missing')
     return HfApi(token=tok)
 
 
