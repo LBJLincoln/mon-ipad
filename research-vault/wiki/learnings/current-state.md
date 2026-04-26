@@ -1,6 +1,6 @@
 # Current State — System Snapshot
 
-> Auto-generated on 2026-04-25 05:00 UTC
+> Auto-generated on 2026-04-26 05:00 UTC
 
 ## Brier Scores
 
@@ -18,18 +18,18 @@
 | S11_nba | 0.00000 |
 | S12_nba | 0.00000 |
 | S16_nba | 0.00000 |
+| S17_nba | 0.00000 |
 | S19_nba | 0.00000 |
 | S20_nba | 0.00000 |
 | S21_nba | 0.00000 |
+| S15_nba | 0.22064 |
 | S13_nba | 0.22090 |
 | S18_nba | 0.22248 |
-| S17_nba | 0.22249 |
-| S15_nba | 0.22361 |
 | S14_nba | 0.22431 |
 | S22_nba | 0.22475 |
 
 - Fleet champion: S10_nba (0.00000)
-- Fleet average: 0.10296
+- Fleet average: 0.08562
 
 ## NBA Karpathy Loop
 
