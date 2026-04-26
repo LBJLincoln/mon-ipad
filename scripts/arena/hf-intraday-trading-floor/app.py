@@ -1164,12 +1164,23 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
 
     # 2026-04-26 — bankroll rules block (carte-blanche on choice, structural on sizing).
     _agent_bankroll = executor.get_bankroll(persona["tid"])
+    # POL-signaled tickers (Form-4 insider clusters + Congress trades — proven
+    # alpha source from POL TF where qwen-quant +275% / llama-contra +100% on
+    # exactly these signals).
+    _pol_signaled_str = ", ".join(sorted(pol_signaled)) if pol_signaled else "(none today)"
     _bankroll_block = (
         f"YOUR CAPITAL: ${_agent_bankroll:,.2f} (your sub-bankroll out of 17 agents).\n"
         f"Bankroll rules (server-enforced):\n"
         f"  • Stake sizing: Kelly cap + per-agent floor (over-bets clipped automatically).\n"
-        f"  • 5 action types are first-class: trade / option_trade / event_trade (Kalshi/Polymarket) / close / pass.\n"
-        f"  • Event markets are 24/7 — outside equity hours they are often the only live edge."
+        f"  • 5 action types first-class: trade / option_trade / event_trade (Kalshi/Polymarket) / close / pass.\n"
+        f"  • Event markets are 24/7 — outside equity hours they are often the only live edge.\n"
+        f"  • POL CROSS-POLLINATION (priority): when your chosen ticker matches a POL\n"
+        f"    SIGNAL (Form-4 insider cluster ≥3 OR Congress trade), the server applies\n"
+        f"    a 1.5× stake multiplier. POL agents qwen-quant/llama-contra/gemini-tact\n"
+        f"    compounded +275% / +100% / +97% on exactly these signals. Today's POL-\n"
+        f"    signaled tickers: {_pol_signaled_str}. Sector ETFs (XLE/XLK/XLF/XLV/XLY)\n"
+        f"    are the proven POL-winners' instrument; single-name from the cluster\n"
+        f"    list also qualifies for the 1.5× stake bonus."
     )
 
     return f"""{COLLECTIVE_MISSION}
@@ -1685,6 +1696,49 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
 
         # 2026-04-26 — STRIPPED: POWER-DEPLOY FLOOR removed. Agent's chosen stake
         # stands; only Kelly cap + bankroll floor are enforced server-side downstream.
+
+        # 2026-04-26 — POL CROSS-POLLINATION 1.5× stake multiplier.
+        # When agent's chosen ticker matches a POL signal (Form-4 insider cluster
+        # ≥3 OR Congress trade), apply 1.5× stake. Sector ETFs of POL-signaled
+        # sector also qualify. This is what made POL agents qwen-quant +275% /
+        # llama-contra +100% — same signal class, applied to live Alpaca paper.
+        if action in ("trade", "option_trade"):
+            _tk = (decision.get("ticker") or decision.get("underlying") or "").upper()
+            _ticker_to_sector_etf = {
+                # tech
+                'AAPL':'XLK','MSFT':'XLK','GOOG':'XLK','GOOGL':'XLK','META':'XLK',
+                'NVDA':'XLK','AMD':'XLK','MU':'XLK','AMZN':'XLY','AVGO':'XLK',
+                'CRM':'XLK','ORCL':'XLK',
+                # financials
+                'JPM':'XLF','GS':'XLF','MS':'XLF','BAC':'XLF','WFC':'XLF','C':'XLF',
+                # energy
+                'COP':'XLE','XOM':'XLE','CVX':'XLE','SLB':'XLE','EOG':'XLE',
+                # healthcare
+                'UNH':'XLV','PFE':'XLV','LLY':'XLV','JNJ':'XLV',
+                # consumer
+                'WMT':'XLY','HD':'XLY','MCD':'XLY','NKE':'XLY','TSLA':'XLY',
+            }
+            _signal_match = False
+            _signal_reason = ""
+            if _tk in pol_signaled:
+                _signal_match = True
+                _signal_reason = f"direct POL signal on {_tk}"
+            elif _tk in ('XLE','XLK','XLF','XLV','XLY','XLP','XLI','XLU'):
+                # Sector ETF — match if any POL-signaled ticker maps to this sector
+                _matched_tickers = [t for t in pol_signaled if _ticker_to_sector_etf.get(t) == _tk]
+                if _matched_tickers:
+                    _signal_match = True
+                    _signal_reason = f"sector ETF {_tk} aggregates POL signals on {','.join(_matched_tickers[:3])}"
+            if _signal_match:
+                _orig_stake = float(decision.get("stake_usd") or 0)
+                if _orig_stake > 0:
+                    decision = dict(decision)
+                    decision["stake_usd"] = round(_orig_stake * 1.5, 2)
+                    decision["_pol_signal_bonus"] = _signal_reason
+                    decision["thesis"] = (
+                        f"[POL-SIGNAL 1.5×: {_signal_reason}] "
+                        f"{decision.get('thesis', '')[:300]}"
+                    )
 
         result = {
             "ts": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
