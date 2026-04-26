@@ -4129,6 +4129,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "n_day_games": len(day_games) if day_games else 0,
                 "bankroll": round(bankroll, 2),
             }
+            # 2026-04-26 PM — also fire when parsed is None entirely (LLM unparseable / no response).
+            # Was: only fired when parsed truthy but allocations empty.
+            # Now: stub a parsed dict so the injection path can run.
+            if parsed is None and _ff_enable and bankroll >= _bk_floor and model_preds and day_games:
+                parsed = {"allocations": [], "parlays": [], "cash_held_pct": 1.0,
+                          "_stub_for_injection": True}
             if (_ff_enable and bankroll >= _bk_floor and parsed and
                     not parsed.get("allocations") and model_preds and day_games):
                 _gidx_to_gk = {}
@@ -4156,8 +4162,12 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                                 if isinstance(_k, str) and f"{_a}@{_h}" in _k:
                                     _gidx_to_gk[_idx] = _k
                                     break
-                _best = None  # (abs_edge, gidx, cat, edge_val, prob)
-                _all_edges_count = 0  # diagnostic — how many engine edges exist at all
+                # 2026-04-26 — collect TOP-3 engine edges (was top-1).
+                # User mandate: ≥3 bets/day, ≥60% deploy. With 3 bets at 22% each
+                # = 66% deploy, satisfies both constraints when LLM is silent.
+                _all_cands = []  # (abs_edge, gidx, cat, edge_val, prob)
+                _all_edges_count = 0
+                _seen_keys = set()
                 for _gi, _gk in _gidx_to_gk.items():
                     _pred = model_preds.get(_gk) or {}
                     _per_cat = _pred.get("per_category") or {}
@@ -4167,38 +4177,46 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         if not isinstance(_e, (int, float)): continue
                         _abs = abs(float(_e))
                         _all_edges_count += 1
-                        # 2026-04-25 — last-resort floor, take ANY engine edge
-                        # (was 0.03 threshold; some days have no edge that high
-                        # → forced_floor bailed silently → 4/17 agents stayed
-                        # silent above the circuit breaker). Pick top regardless.
-                        if _best is None or _abs > _best[0]:
-                            _best = (_abs, _gi, _tag, float(_e), _info.get("prob", 0.5))
+                        _all_cands.append((_abs, _gi, _tag, float(_e), _info.get("prob", 0.5)))
+                _all_cands.sort(reverse=True)
+                # Dedup by (gidx, cat) — single position only
+                _picks = []
+                for c in _all_cands:
+                    k = (c[1], c[2])
+                    if k in _seen_keys: continue
+                    _seen_keys.add(k)
+                    _picks.append(c)
+                    if len(_picks) >= 3: break
                 _ff_diag["all_engine_edges"] = _all_edges_count
-                _ff_diag["best_found"] = _best is not None
-                if _best:
-                    _ff_diag["best_cat"] = _best[2]
-                    _ff_diag["best_edge"] = _best[3]
+                _ff_diag["best_found"] = len(_picks) > 0
+                _ff_diag["picks"] = [(p[2], round(p[3], 3)) for p in _picks]
+                if _picks:
+                    _ff_diag["best_cat"] = _picks[0][2]
+                    _ff_diag["best_edge"] = _picks[0][3]
                     parsed.setdefault("allocations", [])
-                    parsed["allocations"].append({
-                        "game_idx": _best[1],
-                        "game": "",
-                        "category": _best[2],
-                        "pct": 0.08,  # 2026-04-26 user-aggressive: 0.02 -> 0.08
-                        "confidence": 0.55,
-                        "edge": max(0.0, _best[3]),
-                        "edge_source": "engine_forced_floor",
-                        "edge_llm_reported": None,
-                        "edge_engine": _best[3],
-                        "strategy": "flat_2pct",
-                        "rationale": (f"engine_forced_floor (day-level): top |edge| "
-                                      f"{_best[0]:.3f} on {_best[2]} g{_best[1]}; "
-                                      f"LLM was silent/unparseable, anti-cascade injection"),
-                        "category_reason": "auto-inject when LLM goes silent/dead — fleet-level safety net",
-                    })
+                    # 22% per bet × 3 = 66% deploy floor, no edge values exposed.
+                    for _abs, _gi, _tag, _ev, _prob in _picks:
+                        parsed["allocations"].append({
+                            "game_idx": _gi,
+                            "game": "",
+                            "category": _tag,
+                            "pct": 0.22,
+                            "confidence": 0.55,
+                            "edge": max(0.0, _ev),
+                            "edge_source": "engine_forced_floor",
+                            "edge_llm_reported": None,
+                            "edge_engine": _ev,
+                            "strategy": "engine_top3_force",
+                            "rationale": (f"engine_forced_floor top-3 (day-level): |edge| "
+                                          f"{_abs:.3f} on {_tag} g{_gi}; LLM silent/unparseable; "
+                                          f"server inject to satisfy ≥3 bets/≥60% deploy mandate"),
+                            "category_reason": "auto-inject when LLM goes silent/dead",
+                        })
+                    parsed["cash_held_pct"] = round(max(0.0, 1.0 - 0.22 * len(_picks)), 4)
                     if parsed.get("day_strategy", "") in ("", None) or "LLM_SILENT_PASS" in str(parsed.get("day_strategy", "")):
                         parsed["day_strategy"] = (
-                            f"ENGINE_FORCED_FLOOR (day-level): LLM silent/unparseable → "
-                            f"injected top engine edge {_best[2]} (|edge| {_best[0]:.3f})"
+                            f"ENGINE_FORCED_FLOOR top-3 (day-level): LLM silent/unparseable → "
+                            f"injected {len(_picks)} bets at 22% each = {0.22*len(_picks)*100:.0f}% deploy"
                         )
             # Stash telemetry on parsed for visibility in day file (only when
             # an agent went silent — we don't pollute non-silent ones)
