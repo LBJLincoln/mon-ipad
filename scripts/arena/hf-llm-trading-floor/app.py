@@ -2634,9 +2634,13 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
         cash = cash * scale
 
     # ── MIN_DEPLOY_PCT — bankroll rule (user-spec 2026-04-26): 50-70% deploy/day.
-    # Per-bet cap raised 0.18 → 0.30 so an agent emitting just 2 bets can still
-    # hit the 55% floor. Drawdown taper preserved for survival. LLM still chooses
-    # WHICH categories — server only scales magnitude when they under-deploy.
+    # FIX 2026-04-26 PM: zero-deploy was passing through unchanged. User audit
+    # showed 6-7/17 agents pass entirely, violating the 50-70% rule. New
+    # behavior: if LLM passes BUT engine has ≥3 categories with edge ≥0.04 in
+    # different families today, server INJECTS engine's top-3 cross-family
+    # bets at 18% each = 54% deploy floor. Carte-blanche on choice still
+    # respected for non-zero-deploy days; only forced when LLM completely
+    # punted on a day with real edges available.
     if drawdown < 0.5:
         MIN_DEPLOY_PCT = 0.55
     else:
@@ -2654,8 +2658,48 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
         new_deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
         cash = max(0.0, 1.0 - new_deployed)
     elif deployed == 0:
-        # LLM chose to pass all — respect carte-blanche; min edge gate will protect.
-        cash = 1.0
+        # LLM passed entirely. Inject engine's top-3 cross-family bets if
+        # available so this agent participates in the day's slate.
+        try:
+            _candidates_by_fam = {}
+            if model_preds and day_games:
+                for _gidx, _g in enumerate(day_games, 1):
+                    _h = (_g.get("home") or "").upper()
+                    _av = (_g.get("away") or "").upper()
+                    if not (_h and _av): continue
+                    _gk = f"{_av}@{_h}"
+                    _pred = (model_preds or {}).get(_gk) or {}
+                    _per_cat = _pred.get("per_category") or {}
+                    for _tag, _info in _per_cat.items():
+                        if _tag.startswith("pp_"): continue
+                        _e = _info.get("edge")
+                        if not isinstance(_e, (int, float)) or _e < 0.04: continue
+                        _fam = _category_family(_tag)
+                        if _fam == "other": continue
+                        if _fam not in _candidates_by_fam or _e > _candidates_by_fam[_fam][0]:
+                            _candidates_by_fam[_fam] = (float(_e), _gidx, _tag, _info.get("prob", 0.5))
+            if len(_candidates_by_fam) >= 3:
+                _picks = sorted(_candidates_by_fam.values(), reverse=True)[:3]
+                for _e, _gidx, _tag, _prob in _picks:
+                    clean.append({
+                        "game_idx": _gidx,
+                        "game": "",
+                        "category": _tag,
+                        "pct": 0.18,
+                        "confidence": 0.50,
+                        "edge": _e,
+                        "edge_source": "engine_zero_deploy_inject",
+                        "edge_llm_reported": None,
+                        "edge_engine": _e,
+                        "strategy": "deploy_floor_override",
+                        "rationale": f"LLM passed entirely; server forced participation via engine's top cross-family edge ({_tag} edge {_e:+.3f})",
+                        "category_reason": "deploy floor override (server rule)",
+                    })
+                cash = max(0.0, 1.0 - sum(a["pct"] for a in clean))
+            else:
+                cash = 1.0  # truly no edges available, respect pass
+        except Exception:
+            cash = 1.0
 
     # Mech D — coalition_proposal extraction (MANDATORY field; peer="none" => no pact today)
     coalition = None
@@ -4204,6 +4248,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         "engine",
                         "engine_forced_floor",
                         "engine_breadth_inject",
+                        "engine_zero_deploy_inject",
                         "llm_fallback_singleton",
                         "engine_fallback_singleton",
                         "llm_capped",
