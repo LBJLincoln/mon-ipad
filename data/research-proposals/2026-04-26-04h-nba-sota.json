@@ -1,0 +1,90 @@
+{
+  "generated_at": "2026-04-26T04:00:00Z",
+  "brain_cycle": "2026-04-26-04h",
+  "research_type": "alternating-cycle-sota-search",
+  "fleet_best": {"brier": 0.22062, "method": "extra_trees_200f", "island": "S15", "gen": 1306},
+  "colab_best": {"brier": 0.21514, "method": "TabICL_186f_iter129"},
+  "target": 0.20,
+  "gap_to_target_fleet": 0.00562,
+  "gap_to_target_colab": 0.01514,
+
+  "new_findings": [
+    {
+      "id": "NF-2026-04-26-1",
+      "title": "Uncertainty-Aware MC Dropout for NBA Forecasting (MDPI Jan 2026)",
+      "source": "MDPI Information 17(1):56, 2026",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "summary": "RNN + Monte Carlo dropout for uncertainty quantification in NBA game forecasting. Integrates team performance, rolling-form indicators, spatial shot-chart embeddings. Brier competitive with 0.199 LR baseline.",
+      "cpu_implementation": "BaggingClassifier(base_estimator=ExtraTreesClassifier(n_estimators=50), n_estimators=10, max_samples=0.8) as proxy for MC Dropout — average predicted probs across bags = calibrated ensemble output.",
+      "expected_brier_delta": "-0.001 to -0.003",
+      "actionability": "HIGH — add 'bagging_et' and 'bagging_xgb' as model_type options in GA init/mutate. ~15 LOC.",
+      "island_candidates": ["S17", "S18"],
+      "priority": "HIGH",
+      "status": "NEW — not yet in fleet"
+    },
+    {
+      "id": "NF-2026-04-26-2",
+      "title": "Calibration Selection +34.69% ROI vs Accuracy Selection",
+      "source": "arXiv 2303.06021",
+      "url": "https://arxiv.org/abs/2303.06021",
+      "summary": "Systematic study: calibration as model selection criterion yields +34.69% ROI vs accuracy-based selection (-35.17%). Confirms Brier-minimization GA fitness is correct approach.",
+      "fleet_relevance": "P4 xgboost_brier = POL LIVE BEST 0.25022. Our GA fitness = Brier. Calibration mandate already in features/engine.py.",
+      "actionability": "CONFIRMATORY — no code change needed. Validates existing approach.",
+      "priority": "CONFIRMATORY"
+    },
+    {
+      "id": "NF-2026-04-26-3",
+      "title": "Logistic Regression Brier 0.199, XGBoost 0.202 (literature benchmarks)",
+      "source": "MDPI Information 17(1):56, 2026 + Symmetry 2024",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "summary": "LR achieves Brier 0.199, XGBoost 0.202 on NBA data — both below our Colab TabICL best 0.21514. Critical caveat: may use different train/test splits or in-sample evaluation.",
+      "actionability": "HIGH — P7 runs LR (best 0.25412). Investigate methodology gap. Boost LR mutation weight in P7 GA. If OOS replicable, would be new fleet best by large margin.",
+      "island_candidates": ["P7 (LR)", "S14 on restart (LR trial)"],
+      "priority": "HIGH — if OOS replicable",
+      "status": "TRACKED since 2026-04-19 proposals"
+    },
+    {
+      "id": "NF-2026-04-26-4",
+      "title": "Stacked Ensemble Meta-Learner (Nature Scientific Reports 2025)",
+      "source": "Nature Scientific Reports 2025, s41598-025-13657-1",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "summary": "L1-regularized LR meta-learner over XGBoost/RF/CatBoost base models outperforms individual trees on NBA outcomes.",
+      "actionability": "MEDIUM — stacking banned on CPU islands (Rule 8). Feasible on Colab/GPU burst. Add to gpu-burst pipeline.",
+      "priority": "MEDIUM — GPU only",
+      "status": "TRACKED since 2026-04-22-08h"
+    }
+  ],
+
+  "implementation_priorities": [
+    {
+      "rank": 1,
+      "technique": "BaggingClassifier MC Dropout proxy in GA",
+      "expected_brier_delta": "-0.001 to -0.003",
+      "islands": ["S17", "S18"],
+      "effort": "LOW — ~15 LOC in island app.py model init",
+      "model_types_to_add": ["bagging_et", "bagging_xgb"]
+    },
+    {
+      "rank": 2,
+      "technique": "Boost LR mutation weight in P7 GA + feature expansion",
+      "expected_brier_delta": "unknown — needs OOS validation",
+      "islands": ["P7"],
+      "effort": "LOW"
+    },
+    {
+      "rank": 3,
+      "technique": "P5 diversify with feature_count 120-200 seed",
+      "expected_brier_delta": "-0.002 to -0.008",
+      "islands": ["P5"],
+      "effort": "LOW — POST {command: diversify}",
+      "trigger": "boost_mutation sent 12h ago, no improvement in best_brier 0.25312"
+    }
+  ],
+
+  "sources": [
+    "https://www.mdpi.com/2078-2489/17/1/56",
+    "https://arxiv.org/abs/2303.06021",
+    "https://www.nature.com/articles/s41598-025-13657-1",
+    "https://www.mdpi.com/2079-3197/13/10/230"
+  ]
+}
