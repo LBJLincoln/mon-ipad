@@ -4407,7 +4407,16 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     if (not _is_fallback_alloc) and day_collisions.get(coll_key, 0) >= COLLISION_MAX_AGENTS:
                         continue
                     # Tiered sizing: Kelly aggression × LLM pct, floor at bet_floor, cap at bet_cap.
-                    sized_pct = (alloc["pct"] or 0.0) * KELLY_MULT
+                    # 2026-04-26 PM — bypass KELLY_MULT for server-injected forced_floor.
+                    # Was clipping pct=0.40 → effective 0.16, blocking 60% deploy mandate.
+                    _bypass_kelly_mult = alloc.get("edge_source") in (
+                        "engine_forced_floor", "engine_min_bets_inject",
+                        "engine_breadth_inject", "engine_zero_deploy_inject",
+                    )
+                    if _bypass_kelly_mult:
+                        sized_pct = (alloc["pct"] or 0.0)
+                    else:
+                        sized_pct = (alloc["pct"] or 0.0) * KELLY_MULT
                     capped_pct = max(MIN_BET_PCT, min(sized_pct, MAX_PCT_PER_BET))
                     # Daily cumulative guard: shrink if day exposure would exceed 98%.
                     remaining_day = max(0.0, MAX_PCT_PER_DAY - day_exposure_pct)
