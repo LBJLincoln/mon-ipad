@@ -980,8 +980,8 @@ _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
     # Boost every agent's Kelly to overnight-compounding range. Top
     # calibrators to 0.50 (Kelly half-fraction = 25%, full-fraction = 50%
     # which matches POL champion qwen-arb $10K achievement at 0.20-0.30 cap).
-    "llama-contra":      0.50,   # top calibrator — max aggression
-    "selfhost-qwen4b":   0.50,   # best NBA agent
+    "llama-contra":      0.35,   # 2026-04-26 05:45Z TIER-DOWN: 0.50→0.35 (NBA fleet $1089 < $1300 trigger)
+    "selfhost-qwen4b":   0.35,   # tier-down — same trigger
     "qwen-quant":        0.45,
     "gemini-anl":        0.45,
     "mistral-medium":    0.40,
