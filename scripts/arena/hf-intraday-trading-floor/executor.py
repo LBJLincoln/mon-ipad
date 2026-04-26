@@ -943,6 +943,38 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
     side = order["side"]  # "long" | "short"
     stake = float(order.get("stake_usd", 1000))
     stop_pct = float(order.get("stop_pct", 0.005))
+
+    # 2026-04-26 — sub-bankroll cap. Reject if reserved_open + new_stake > sub-bankroll.
+    # Was bleeding because momentum-1/mean-rev-1/earnings-gap-1 went NEGATIVE bk
+    # by stacking 6+ open positions on a $5,811 sub-pot (audit shows mean-rev-1
+    # at -$1,350 with 6 open positions × ~$5K each = $30K reserved). Enforce a
+    # hard ceiling: sum(open stakes) + new_stake ≤ get_bankroll(tid).
+    try:
+        _agent_avail = get_bankroll(agent_tid)
+        _reserved = 0.0
+        for _p in open_for_agent:
+            try:
+                _reserved += float(_p.get("stake_usd") or 0)
+            except Exception:
+                continue
+        _total_committed = _reserved + stake
+        # Allow up to 1.05× sub-bankroll (5% slack for slippage / odd lots)
+        _cap = (_agent_avail + _reserved) * 1.05
+        if _total_committed > _cap:
+            skip = {
+                "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "agent_tid": agent_tid, "status": "sub_bankroll_cap_skip",
+                "reason": f"reserved=${_reserved:.0f} + new=${stake:.0f} "
+                          f"would exceed sub-bankroll ${_agent_avail+_reserved:.0f} (cap ${_cap:.0f})",
+                "reserved_open": round(_reserved, 2),
+                "agent_available": round(_agent_avail, 2),
+                "order": order,
+            }
+            _append_order_log(skip)
+            return skip
+    except Exception:
+        pass  # fail-open if bookkeeping unavailable
+
     tp_pct = float(order.get("take_profit_pct", 0.012))
     last = float(last_quote or 0) or 1.0
     qty = round(stake / last, 2)

@@ -2099,6 +2099,11 @@ Rules (carte blanche — only these bankroll constraints):
 - Sum of allocation pct + parlay pct + cash_held_pct ≈ 1.00.
 - Daily deploy floor: 50-70% of bankroll across your chosen bets. Server-side
   scales single-bet allocations up to 30% cap (so 2 bets can hit the 55% floor).
+- COMPOUND MANDATE (PQTF playbook, $600→$602K validation): after each winning
+  day, scale UP your daily deploy %. Top quartile bankroll = use the high end
+  of the 50-70% range. Your bankroll grows by compounding wins, not by playing
+  small after a win. The PQTF $244K winner doubled bankroll every ~5 days
+  for the first month — same instrument allowed here.
 - BREADTH RULE: your allocations[] MUST span ≥3 distinct category families per day.
   Family list: ml, spread, total, alt_spread, alt_total, team_total, h1_*, h2_*,
   q1_*, q2_*, q3_*, q4_*, prop_*. Each game has ~200 categories — using only ml
