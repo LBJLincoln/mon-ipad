@@ -4338,6 +4338,22 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     )
                     if (not _bypass_min_edge) and edge_val < MIN_EDGE:
                         continue
+                    # 2026-04-26 — LONGSHOT GATE: block SINGLE bets at odds > 5.0
+                    # when source=llm_capped (LLM hallucinated edge). Day-1 audit
+                    # showed selfhost-gemma3 won $13→$1434 on alt_spread_home_minus18
+                    # at 105:1 src=llm_capped — pure lottery hit dressed as alpha.
+                    # Parlays UNAFFECTED (separate parlays loop). LLM hallucinated
+                    # the +10.6% edge with zero engine backing.
+                    try:
+                        _gkey_lo = f"{g.get('date','')}_{g.get('away','')}@{g.get('home','')}"
+                        _full_for_game = (full_odds or {}).get(_gkey_lo) if isinstance(full_odds, dict) else None
+                        _odds_dec_lo = get_odds_dec(cat, odds, _full_for_game)
+                    except Exception:
+                        _odds_dec_lo = 0
+                    _src_lo = alloc.get("edge_source", "")
+                    _engine_backed_lo = _src_lo in ("engine", "engine_forced_floor", "engine_breadth_inject", "engine_zero_deploy_inject", "engine_min_bets_inject", "engine_fallback_singleton")
+                    if isinstance(_odds_dec_lo, (int, float)) and _odds_dec_lo > 5.0 and not _engine_backed_lo:
+                        continue  # llm_capped longshot — drop
                     _is_parser_injected = alloc.get("edge_source") in (
                         "engine_forced_floor",
                         "llm_fallback_singleton",
