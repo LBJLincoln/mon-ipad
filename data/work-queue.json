@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-22T18:00:00Z",
+  "updated_at": "2026-04-26T13:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {"id":"R7","priority":2,"status":"done","completed_at":"2026-04-15T19:00:00Z","commit_hash":"61c4b61394e2381ab0e1702f0581c292055b235c","owner":"local-agent-a63b2bad","subject":"Deploy S20/S21/S22 NBA islands"},
@@ -89,6 +89,38 @@
       ],
       "bonus_finding": "NBA TRADERS dict in mon-ipad git already reflects Round-2 reroute (mistral:large, cerebras:qwen-3-235b, nvidia:llama-3.3-70b providers). Git source is current with live HF Space routing.",
       "cosmetic_note": "Political run_morning_council docstring still says '10 political agents' (stale from pre-17-agent era) — no functional impact, not worth a fix fire.",
+      "do_not_push_hf_space_yet": true,
+      "next_action": "Only remaining pending item: tf-axelrod-verify-tune-12 (HF Space push, awaiting explicit user gate approval — say 'push to HF' or 'approve HF deploy')."
+    },
+    {
+      "id": "tf-axelrod-verify-tune-20",
+      "priority": 29,
+      "status": "done",
+      "completed_at": "2026-04-26T13:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 20 — full spec audit post carte-blanche stripping (2026-04-26)",
+      "audit_method": "GitHub code search (10 symbols) + direct NBA app.py read (5340 lines) + Political app.py read (3742 lines)",
+      "audit_result": "SPEC CLEAN — all 3 Axelrod mechanisms confirmed fully intact in both NBA + Political app.py after today's user-driven carte-blanche stripping (commits 6501e8841, 142e95ed, 38ad90fd). The stripping only removed per-day prompt coercion directives (MANDATORY DIVERSIFY, ALT-LINE SHOPPING, coalition_proposal). Axelrod machinery was NOT touched.",
+      "wiring_confirmed": [
+        "NBA build_day_prompt L2040 accepts common_knowledge_block param; L2074 injects it if present",
+        "NBA AXELROD_CANON prepended at L3731 per-agent before every LLM call",
+        "NBA build_common_knowledge_block called at L4413, stored at L4418",
+        "NBA write_axelrod_log called at L4421",
+        "NBA assign_sacrificial_archetypes called at L4425, challenge tiers at L4430",
+        "Political identical wiring at L1765/L2668/L2705/L3021/L3026/L3029/L3033/L3038"
+      ],
+      "symbols_verified": [
+        "build_common_knowledge_block — NBA L3116 ✓, Political L2134 ✓",
+        "write_axelrod_log — NBA L3407 ✓, Political L2417 ✓",
+        "sacrificial — NBA ✓, Political ✓",
+        "AXELROD_CANON — NBA L339 ✓, Political L291 ✓",
+        "DMAD anti-consensus gate — NBA ✓, Political L317 ✓",
+        "_society_archetypes_by_day — NBA ✓, Political L121/L2309/L2333 ✓",
+        "_common_knowledge — NBA L122 ✓, Political L118 ✓",
+        "_sacrificial_assignments — NBA L123 ✓, Political L119 ✓"
+      ],
+      "parity_gap": "NBA breadth rule (≥3 distinct category families/day, server-side L2425, 2026-04-26 commit 38ad90fd) not ported to Political TF. Political already has v5_restored doctrine ≥3 distinct categories enforced separately. Breadth rule is orthogonal to Axelrod spec — not a regression, noting for completeness.",
+      "py_compile": "NOT RUN (no code changes — audit-only fire)",
       "do_not_push_hf_space_yet": true,
       "next_action": "Only remaining pending item: tf-axelrod-verify-tune-12 (HF Space push, awaiting explicit user gate approval — say 'push to HF' or 'approve HF deploy')."
     }
