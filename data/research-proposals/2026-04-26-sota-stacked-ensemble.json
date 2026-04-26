@@ -1,0 +1,75 @@
+{
+  "id": "SOTA-2026-04-26-stacked-ensemble",
+  "created_at": "2026-04-26T20:30:00Z",
+  "proposed_by": "cloud-brain-4h",
+  "priority": "HIGH",
+  "status": "proposed",
+  "title": "Temperature Scaling + Shot-Zone Features: Path from 0.221 to sub-0.21 Brier",
+  "hypothesis": "Current fleet best 0.22062 can break 0.21 by combining: (1) temperature scaling calibration post-processing on tree ensemble outputs, (2) shot-zone spatial features (5 zones x home/away x season/last10), (3) CPU-safe stacked ensemble (extra_trees + rf + xgboost with LogReg meta-learner).",
+  "evidence": [
+    {
+      "source": "IEEE Comparison 2026 (ieeexplore.ieee.org/document/11030489)",
+      "finding": "CNN achieves Brier 0.221, LogReg 0.199, XGBoost 0.202 — calibration + feature quality, not model complexity, is the bottleneck"
+    },
+    {
+      "source": "Nature Scientific Reports 2025 (nature.com/articles/s41598-025-13657-1)",
+      "finding": "Stacked ensemble (NB + AdaBoost + MLP + KNN + XGBoost + DT + LR) outperforms all single models for NBA prediction"
+    },
+    {
+      "source": "MDPI Uncertainty-Aware 2026 (mdpi.com/2078-2489/17/1/56)",
+      "finding": "MC-dropout RNN + rolling-form indicators + spatial shot-chart embeddings yields calibrated sequential probabilities for NBA"
+    },
+    {
+      "source": "PLOS One 2025 (journals.plos.org/plosone/article?id=10.1371/journal.pone.0326326)",
+      "finding": "TimeSeriesSplit + calibration heads essential for temporal NBA data — isotonic/temperature scaling improve Brier significantly"
+    }
+  ],
+  "implementation_steps": [
+    {
+      "step": 1,
+      "action": "Add shot-zone features to features/engine.py",
+      "detail": "New category: spatial_shot_zones — 5 zones (paint, mid-range, corner-3, above-break-3, free-throw) x home/away x season/last10 = 20 raw features. Needs NBA shot-chart data source.",
+      "cpu_safe": true,
+      "estimated_features": 20
+    },
+    {
+      "step": 2,
+      "action": "Implement temperature scaling in features/engine.py calibration wrapper",
+      "detail": "Post-hoc calibration: learn scalar T on held-out calibration fold. Apply sigmoid(logit(p)/T) to all probability outputs. T in [0.5, 2.0], learned via minimize(binary_crossentropy). No GPU needed, 1 parameter.",
+      "cpu_safe": true,
+      "estimated_brier_delta": -0.003
+    },
+    {
+      "step": 3,
+      "action": "Add stacking crossover variant to GA",
+      "detail": "When two parents have different model_types (e.g. extra_trees x xgboost), offspring can be a StackingClassifier with the parents as base learners and LogisticRegression(C=0.1) as meta-learner. Cap at 10% of crossover ops to avoid population drift.",
+      "cpu_safe": true,
+      "estimated_brier_delta": -0.004
+    },
+    {
+      "step": 4,
+      "action": "Test on S18 (healthiest island, gen 1798 brier 0.22248)",
+      "detail": "S18 is currently the live best with stagnation 0. Ideal candidate for feature injection + calibration test. Inject via /api/config or wait for next mutation cycle.",
+      "target_island": "TESTforge42/nba-evo-s18"
+    }
+  ],
+  "risk_assessment": {
+    "level": "LOW",
+    "notes": [
+      "Temperature scaling is a post-hoc wrapper — does not change model training",
+      "Shot-zone features are additive to existing 7213 feature candidates",
+      "Stacking crossover is opt-in variant — existing crossover ops unchanged",
+      "All CPU-safe: no neural networks required"
+    ]
+  },
+  "expected_improvements": {
+    "brier_delta": "-0.005 to -0.010 based on calibration literature",
+    "current_best": 0.22062,
+    "target": 0.21,
+    "stretch_target": 0.199
+  },
+  "cross_project_applicability": {
+    "political_alpha": "Temperature scaling directly applicable to POL islands (same sklearn stack). POL current best 0.24902 could reach 0.23 with calibration.",
+    "action": "Port temperature scaling to political_engine.py once NBA validation delta confirmed"
+  }
+}
