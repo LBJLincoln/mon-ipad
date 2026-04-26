@@ -2345,7 +2345,14 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             n_engine_no_view += 1
             edge_for_kelly = max(0.0, llm_edge)
 
-        if edge_for_kelly <= 0:
+        # 2026-04-26 — bankroll rule: minimum edge floor.
+        # NBA vig is ~5%; any positive expected value below 2% is inside the
+        # noise envelope and shouldn't get capital. Day-14 audit showed 3
+        # engine-source bets with edge = +0.000 (engine_edge 0.001-0.005) all
+        # lost. Carte-blanche on category — server refuses zero-edge deploy.
+        # Tunable via env NBA_MIN_KELLY_EDGE.
+        _MIN_KELLY_EDGE = float(os.environ.get("NBA_MIN_KELLY_EDGE", "0.02") or "0.02")
+        if edge_for_kelly < _MIN_KELLY_EDGE:
             continue
 
         clean.append({
