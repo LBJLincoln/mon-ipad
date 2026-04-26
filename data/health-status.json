@@ -1,41 +1,150 @@
 {
-  "updated_at": "2026-04-26T00:00:00Z",
+  "updated_at": "2026-04-26T16:30:00Z",
   "cycle": "cloud-brain-4h",
   "nba_islands": {
-    "S13": {"gen": 1987, "brier": 0.22090, "stagnation": 10, "status": "EVOLVING", "healthy": true},
-    "S14": {"gen": 2361, "brier": 0.22431, "stagnation": 11, "status": "EVOLVING", "healthy": true},
-    "S15": {"gen": 517, "brier": 0.22064, "stagnation": 0, "status": "EVOLVING", "healthy": true, "note": "SPACE RESET detected gen 1310->517; brier 0.22064 below 0.22085 threshold"},
-    "S17": {"gen": null, "brier": null, "stagnation": null, "status": "DOWN 503", "healthy": false, "action": "RESTART NEEDED — LBJLincoln26/nba-evo-s17"},
-    "S18": {"gen": 1567, "brier": 0.22248, "stagnation": 21, "status": "EVOLVING", "healthy": true, "action": "diversify triggered (stagnation 21 > threshold 15)"},
-    "S22": {"gen": 1980, "brier": 0.22475, "stagnation": 9, "status": "EVOLVING", "healthy": true}
+    "S13": {
+      "space": "Nomos42/nba-evo-4",
+      "gen": 82,
+      "brier": 0.22726,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "healthy": true,
+      "note": "Hard reset at cycle 26 (25-cycle stagnation) — was gen 1987; rebuilding"
+    },
+    "S14": {
+      "space": "Nomos42/nba-evo-5",
+      "gen": null,
+      "brier": null,
+      "stagnation": null,
+      "status": "DOWN 503",
+      "healthy": false,
+      "last_known": {"gen": 2361, "brier": 0.22431},
+      "action": "wake attempted via HTTP — persistent 503"
+    },
+    "S15": {
+      "space": "Nomos42/nba-evo-6",
+      "gen": 645,
+      "brier": 0.22409,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "healthy": true,
+      "note": "Hard reset at cycle 202 — was gen 1310 (fleet-best 0.22062 checkpointed); now catboost, rebuilding"
+    },
+    "S17": {
+      "space": "LBJLincoln26/nba-evo-s17",
+      "gen": null,
+      "brier": null,
+      "stagnation": null,
+      "status": "DOWN 503",
+      "healthy": false,
+      "last_known": {"gen": 2196, "brier": 0.22249},
+      "action": "wake attempted via HTTP — persistent 503"
+    },
+    "S18": {
+      "space": "TESTforge42/nba-evo-s18",
+      "gen": 1657,
+      "brier": 0.22248,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "healthy": true,
+      "note": "Previous stagnation 21 resolved — auto-reset cleared it; current best live island"
+    },
+    "S22": {
+      "space": "TESTforge42/nba-evo-s22",
+      "gen": null,
+      "brier": null,
+      "stagnation": null,
+      "status": "DOWN 503",
+      "healthy": false,
+      "last_known": {"gen": 1980, "brier": 0.22475},
+      "action": "wake attempted via HTTP — persistent 503"
+    }
   },
   "political_islands": {
-    "P1": {"gen": 28800, "brier": 0.25061, "algorithm": "lightgbm", "stagnation": 0, "status": "EVOLVING", "healthy": true},
-    "P2": {"gen": 24071, "brier": 0.25232, "algorithm": "lightgbm", "stagnation": 0, "status": "EVOLVING", "healthy": true},
-    "P4": {"gen": 29557, "brier": 0.24902, "algorithm": "lightgbm", "stagnation": 0, "status": "EVOLVING", "healthy": true, "note": "NEW ALL-TIME POL BEST — surpassed prev best 0.24923 (P5); checkpointed"},
-    "P5": {"gen": 29400, "brier": 0.25312, "algorithm": "catboost", "stagnation": 0, "status": "EVOLVING", "healthy": true},
-    "P7": {"gen": 13587, "brier": 0.25412, "algorithm": "logistic", "stagnation": 0, "status": "COOLDOWN", "healthy": true}
+    "P1": {
+      "space": "Nomos42/political-alpha",
+      "gen": null,
+      "brier": null,
+      "stagnation": null,
+      "status": "DOWN 503",
+      "healthy": false,
+      "last_known": {"gen": 28800, "brier": 0.25061, "algorithm": "catboost"}
+    },
+    "P2": {
+      "space": "Nomos42/political-alpha-2",
+      "gen": 24952,
+      "brier": 0.25232,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "healthy": true,
+      "algorithm": "lightgbm"
+    },
+    "P4": {
+      "space": "LBJLincoln/political-alpha-4",
+      "gen": null,
+      "brier": null,
+      "stagnation": null,
+      "status": "DOWN 503",
+      "healthy": false,
+      "last_known": {"gen": 29557, "brier": 0.24902, "note": "POL fleet best — PRIORITY RESTART"}
+    },
+    "P5": {
+      "space": "LBJLincoln/political-alpha-5",
+      "gen": null,
+      "brier": null,
+      "stagnation": null,
+      "status": "DOWN 503",
+      "healthy": false,
+      "last_known": {"gen": 29400, "brier": 0.25312, "hist_best": 0.24923}
+    },
+    "P7": {
+      "space": "LBJLincoln/political-alpha-7",
+      "gen": null,
+      "brier": null,
+      "stagnation": null,
+      "status": "DOWN 503",
+      "healthy": false,
+      "last_known": {"gen": 13587, "brier": 0.25412, "hist_best": 0.24925}
+    }
   },
   "fleet_bests": {
     "nba_best_brier": 0.22062,
     "nba_best_island": "S15",
     "nba_best_gen": 1306,
+    "nba_best_achieved": "2026-04-25",
+    "nba_best_model": "extra_trees_200f",
+    "nba_current_best_live": 0.22248,
+    "nba_current_best_island": "S18",
     "pol_best_brier": 0.24902,
     "pol_best_island": "P4",
     "pol_best_gen": 29557,
     "pol_best_achieved": "2026-04-26",
-    "pol_prev_best": 0.24923,
-    "pol_improvement": 0.00021
+    "pol_best_model": "xgboost_brier"
+  },
+  "fleet_health_summary": {
+    "nba_alive": 3,
+    "nba_total": 6,
+    "nba_pct": 0.50,
+    "pol_alive": 1,
+    "pol_total": 5,
+    "pol_pct": 0.20,
+    "status": "DEGRADED — fleet running at 50% NBA / 20% POL capacity"
   },
   "actions_taken": [
-    "S18 diversify command attempted via curl (DNS overflow — retry next cycle via VM cron)",
-    "S17 DOWN 503 — flagged for HF restart (LBJLincoln26/nba-evo-s17)",
-    "P4 new political all-time best 0.24902 — checkpointed in CLAUDE.md",
-    "S15 SPACE RESET detected (gen 1310->517); current brier 0.22064 below 0.22085 threshold"
+    "S15 (nba-evo-6) woken via HTTP hit — now EVOLVING at gen 645 brier 0.22409 (reset at cycle 202)",
+    "S18 (nba-evo-s18) confirmed LIVE gen 1657 brier 0.22248 stagnation 0 — prior stagnation 21 auto-cleared",
+    "S13 confirmed LIVE gen 82 brier 0.22726 — auto-reset at cycle 26, rebuilding",
+    "S14/S17/S22 persistent 503 — wake attempts failed; need VM cron keepalive to hit these",
+    "P1/P4/P5/P7 persistent 503 — wake attempts failed; P4 fleet-best 0.24902 needs urgent restart",
+    "P2 confirmed LIVE gen 24952 brier 0.25232 stagnation 0",
+    "Research proposal written: 16h cycle — Nature stacked ensemble + IEEE comparison findings"
   ],
   "alerts": [
-    "URGENT: S17 (LBJLincoln26/nba-evo-s17) DOWN 503 — needs HF space restart",
-    "S15 SPACE RESET: generation counter reset from 1310 to 517 (space was restarted)",
-    "S18 stagnation=21 > threshold=15 — diversify pending (VM curl DNS blocked)"
+    "CRITICAL: 3/6 NBA islands DOWN (S14, S17, S22) — fleet running at 50% NBA capacity",
+    "CRITICAL: 4/5 Political islands DOWN (P1, P4, P5, P7) — only P2 running at 20% POL capacity",
+    "P4 (POL fleet best 0.24902) is DOWN — priority restart needed",
+    "S13 hard reset lost gen 1987 — at gen 82 rebuilding (brier 0.22726)",
+    "S15 hard reset lost fleet-best context — brier 0.22062 checkpoint preserved, live now 0.22409",
+    "keepalive-spaces.sh on VM needs to verify it is actually reaching sleeping spaces"
   ]
 }

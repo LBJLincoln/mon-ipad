@@ -1,0 +1,81 @@
+{
+  "cycle": "2026-04-26-16h",
+  "source": "WebSearch: NBA game outcome prediction Brier score SOTA machine learning 2026",
+  "sota_findings": [
+    {
+      "rank": 1,
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "venue": "MDPI Information 2026-01",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "best_brier": 0.199,
+      "model": "Logistic Regression (baseline in uncertainty-aware framework)",
+      "xgboost_brier": 0.202,
+      "key_innovations": [
+        "Monte Carlo dropout RNN for uncertainty quantification",
+        "Spatial shot-chart embeddings per team per zone",
+        "Rolling-form indicators at multiple scales",
+        "Calibrated sequential probability bands"
+      ],
+      "relevance": "SOTA target — Brier 0.199 directly matches our <0.20 goal"
+    },
+    {
+      "rank": 2,
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "venue": "Nature Scientific Reports 2025",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "best_brier": 0.221,
+      "model": "CNN (lowest in comparative; stacked ensemble uses NB+AdaBoost+MLP+KNN+XGB+DT+LR)",
+      "key_innovations": [
+        "CNN feature extractor + stacked tabular base learners",
+        "AdaBoost as meta-learner showed strong calibration",
+        "Ensemble diversity via heterogeneous base model selection"
+      ],
+      "relevance": "CNN 0.221 < our S18 live best 0.22248 — already below on GPU; CPU tree gap is small"
+    },
+    {
+      "rank": 3,
+      "title": "Comparing Machine Learning Methods for NBA Game Outcome Prediction",
+      "venue": "IEEE Conference 2026",
+      "url": "https://ieeexplore.ieee.org/document/11030489/",
+      "key_innovations": ["Systematic benchmark of 8+ ML methods on identical feature sets"],
+      "relevance": "Validation methodology — benchmark framework applicable to our island eval"
+    }
+  ],
+  "fleet_context": {
+    "fleet_best_brier": 0.22062,
+    "fleet_best_island": "S15 extra_trees 200f gen 1306",
+    "sota_gap_to_cnn": 0.00038,
+    "sota_gap_to_sota_rnn": 0.02162,
+    "walk_forward_avg": 0.22447,
+    "target": 0.20
+  },
+  "proposed_improvements": [
+    {
+      "priority": 1,
+      "name": "Multi-scale rolling-form windows",
+      "description": "Add 21-game rolling window features alongside existing 3/7/15-game windows. SOTA paper uses multi-scale specifically for playoff momentum. Engine v3.1 partially has this — extend range.",
+      "implementation": "features/engine.py: add rolling_21 window variants to team_form category group",
+      "target_island": "S18 (most stable, gen 1657, extra_trees 51f)",
+      "expected_delta": -0.002,
+      "gpu_required": false
+    },
+    {
+      "priority": 2,
+      "name": "Shot-zone success rate features",
+      "description": "Per-team paint/midrange/3pt success rates as features. SOTA paper's spatial shot-chart embeddings — CPU-compatible proxy via season averages from data already in full-odds-2025-26.json team_total categories.",
+      "implementation": "Derive from existing team_total categories in betting data; no new data source needed",
+      "target_island": "S15 (catboost, fresh post-reset, good exploration candidate)",
+      "expected_delta": -0.003,
+      "gpu_required": false
+    },
+    {
+      "priority": 3,
+      "name": "Fleet keepalive improvement",
+      "description": "CRITICAL operational: 4/5 POL islands and 3/6 NBA islands sleeping at time of this cycle. keepalive-spaces.sh on VM is supposed to hit 33 spaces every 30 min — needs verification it is reaching LBJLincoln/LBJLincoln26 spaces which require different auth or different URL patterns.",
+      "implementation": "Audit scripts/keepalive-spaces.sh — verify URL list includes P4/P5/P7 and S14/S17/S22",
+      "urgency": "HIGH — P4 fleet-best 0.24902 offline",
+      "gpu_required": false
+    }
+  ],
+  "cross_project_insight": "NBA rolling-form multi-scale windows directly applicable to Political alpha islands — political event recency weighting uses same principle. Port to political_engine.py after NBA validation."
+}
