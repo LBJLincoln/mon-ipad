@@ -61,6 +61,18 @@ for f in failing-agents-diagnostic-${TODAY}.md coverage-report-${TODAY}.json cov
     cp "$src" "$DEST/audit/$(basename "$f")"
   fi
 done
+# 2026-04-26 — day-context forensic (per-day full agent + engine context)
+for f in /home/termius/mon-ipad/data/audit/day-context-nba-*.md; do
+  if [ -f "$f" ]; then
+    cp "$f" "$DEST/audit/$(basename "$f")"
+  fi
+done
+# Also write -latest.md aliases for files the dashboard expects under stable
+# names (the audit page hard-codes failing-agents-diagnostic-latest.md).
+diag_dated="/home/termius/mon-ipad/data/audit/failing-agents-diagnostic-${TODAY}.md"
+if [ -f "$diag_dated" ]; then
+  cp "$diag_dated" "$DEST/audit/failing-agents-diagnostic-latest.md"
+fi
 # Per-agent narrative trails (one file per agent per TF)
 if [ -d "/home/termius/mon-ipad/data/audit/per-agent-deep" ]; then
   mkdir -p "$DEST/audit/per-agent-deep"

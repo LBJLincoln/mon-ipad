@@ -2571,7 +2571,7 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
                 "game_idx": best[1],
                 "game": "",
                 "category": best[2],
-                "pct": 0.02,
+                "pct": 0.08,  # 2026-04-26 user-aggressive: 0.02 -> 0.08
                 "confidence": 0.55,
                 "edge": max(0.0, best[3]),
                 "edge_source": "engine_forced_floor",
@@ -4077,7 +4077,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         "game_idx": _best[1],
                         "game": "",
                         "category": _best[2],
-                        "pct": 0.02,
+                        "pct": 0.08,  # 2026-04-26 user-aggressive: 0.02 -> 0.08
                         "confidence": 0.55,
                         "edge": max(0.0, _best[3]),
                         "edge_source": "engine_forced_floor",
