@@ -1,10 +1,10 @@
 # Data Sources & APIs
 
-> Auto-compiled from 96 raw sources on 2026-04-25
+> Auto-compiled from 101 raw sources on 2026-04-26
 
 ## Overview
 
-This topic covers 96 research files spanning data sources & apis.
+This topic covers 101 research files spanning data sources & apis.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
@@ -49,6 +49,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-20** (454 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-20.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-23** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-23.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-24** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-24.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-25** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-25.md`
 - **Research Scan: arxiv-axelrod-scan-2026-04-15** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-15.md`
 - **Research Scan: arxiv-axelrod-scan-2026-04-16** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-16.md`
 - **Research Scan: arxiv-axelrod-scan-2026-04-17** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-17.md`
@@ -59,6 +60,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-axelrod-scan-2026-04-22** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-22.md`
 - **Research Scan: arxiv-axelrod-scan-2026-04-23** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-23.md`
 - **Research Scan: arxiv-axelrod-scan-2026-04-24** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-24.md`
+- **Research Scan: arxiv-axelrod-scan-2026-04-25** (431 words) -- `raw/research/arxiv-axelrod-scan-2026-04-25.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
 - **Multi-Market NBA Betting Research March 2026** (377 words) -- `raw/agent-memory/research-analyst_research_march2026_multi_market.md`
@@ -87,8 +89,10 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-scan-2026-04-18** (223 words) -- `raw/research/arxiv-scan-2026-04-18.md`
 - **Research Scan: arxiv-scan-2026-04-19** (223 words) -- `raw/research/arxiv-scan-2026-04-19.md`
 - **Research Scan: arxiv-scan-2026-04-24** (223 words) -- `raw/research/arxiv-scan-2026-04-24.md`
+- **Research Scan: arxiv-scan-2026-04-25** (223 words) -- `raw/research/arxiv-scan-2026-04-25.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-16** (221 words) -- `raw/research/arxiv-calibration-scan-2026-04-16.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-24** (212 words) -- `raw/research/arxiv-calibration-scan-2026-04-24.md`
+- **Research Scan: arxiv-calibration-scan-2026-04-25** (212 words) -- `raw/research/arxiv-calibration-scan-2026-04-25.md`
 - **Historical odds dataset 2025-26** (190 words) -- `raw/agent-memory/market-analyst_project_historical_odds.md`
 - **Research Scan: hawkeye-scan-2026-04-20** (104 words) -- `raw/research/hawkeye-scan-2026-04-20.md`
 - **Research Scan: arxiv-scan-2026-03-31** (13 words) -- `raw/research/arxiv-scan-2026-03-31.md`
@@ -105,6 +109,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-scan-2026-04-15** (13 words) -- `raw/research/arxiv-scan-2026-04-15.md`
 - **Research Scan: github-scan-2026-04-12** (13 words) -- `raw/research/github-scan-2026-04-12.md`
 - **Research Scan: github-scan-2026-04-17** (13 words) -- `raw/research/github-scan-2026-04-17.md`
+- **Research Scan: github-scan-2026-04-25** (13 words) -- `raw/research/github-scan-2026-04-25.md`
 
 ## Key Findings
 
