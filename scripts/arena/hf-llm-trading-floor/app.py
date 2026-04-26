@@ -4323,12 +4323,22 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 BASE_CATS = {"ml_home","ml_away","spread_home","spread_away","total_over","total_under"}
                 day_exposure_pct = 0.0
                 if _pdd_force_cash:
-                    # <25% of peak equity → survival mode. All-cash, skip allocs+parlays.
-                    # Tags cash_rationale for audit; allocations list stays empty.
-                    day_log["cash_rationale"] = f"PEAK_DD_GUARD_V2: bankroll/peak<0.25, force cash (bankroll=${ts['bankroll']:.2f})"
-                    parsed = {**parsed, "allocations": [], "parlays": [],
-                              "cash_held_pct": 1.0,
-                              "peak_dd_guard": "force_cash"}
+                    # 2026-04-26 PM — preserve forced_floor allocations so deeply-drawn-down
+                    # agents still get 3 small positive-edge bets (only path to recovery).
+                    # Was: nuke everything. Now: keep server-injected positive-edge bets
+                    # at HALF size (each pct × 0.5) for survival-mode recovery.
+                    _ff_keep = [a for a in (parsed.get("allocations") or [])
+                                if a.get("edge_source") in ("engine_forced_floor", "engine_min_bets_inject")]
+                    for a in _ff_keep:
+                        a["pct"] = round(float(a.get("pct", 0.0)) * 0.5, 4)
+                        a["peak_dd_size_halved"] = True
+                    day_log["cash_rationale"] = (
+                        f"PEAK_DD_GUARD_V2: bk/peak<0.10 (bk=${ts['bankroll']:.2f}); "
+                        f"kept {len(_ff_keep)} forced_floor at half size for recovery"
+                    )
+                    parsed = {**parsed, "allocations": _ff_keep, "parlays": [],
+                              "cash_held_pct": round(max(0.0, 1.0 - sum(a["pct"] for a in _ff_keep)), 4),
+                              "peak_dd_guard": "force_cash_with_ff_recovery"}
                 for alloc in parsed["allocations"]:
                     gidx = alloc["game_idx"] - 1  # 1-indexed in prompt
                     if gidx < 0 or gidx >= len(day_games):
