@@ -1,0 +1,43 @@
+{
+  "id": "NF-2026-04-26-08h-1",
+  "generated_at": "2026-04-26T08:30:00Z",
+  "brain_cycle": "2026-04-26-08h",
+  "title": "Stacked Ensemble with AdaBoost + XGBoost Base Learners (Scientific Reports 2025)",
+  "source": "Nature Scientific Reports 2025: Stacked ensemble model for NBA game outcome prediction analysis. PMC12357926. DOI: 10.1038/s41598-025-13657-1",
+  "priority": "HIGH",
+  "expected_brier_delta": "-0.002 to -0.005",
+  "cpu_feasible": true,
+  "effort_loc": "~40 LOC (new model_type in GA app.py)",
+  "key_gap": "AdaBoost is absent from current GA model pool [extra_trees, random_forest, xgboost, catboost, lightgbm, gradient_boosting, logistic_regression]. Scientific Reports 2025 SOTA uses AdaBoost + XGBoost + GB stacked ensemble achieving 83.60% test accuracy, outperforming all individual models.",
+
+  "proposal": {
+    "technique": "adaboost_ga_type + stacked_adaboost_xgb",
+    "architecture": "Option A (simple): add AdaBoost as standalone GA model type. Option B (stacked): Level-1 [extra_trees, xgboost, adaboost, gradient_boosting], Level-2 CalibratedClassifierCV(LogisticRegression, cv=3, method=isotonic)",
+    "recommended": "Option A first (5 LOC), Option B as follow-up",
+    "target_islands": ["S14 (gen 2219, potential record gen)", "S17 (xgboost strong baseline)"],
+    "target_political": ["P2 (lightgbm, diversification opportunity)", "P7 (logistic, add tree diversity)"],
+    "implementation": [
+      "In app.py MODEL_TYPES: add 'adaboost'",
+      "In _train_model: case 'adaboost' → AdaBoostClassifier(n_estimators=100, random_state=42)",
+      "In _train_model: case 'stacked_adaboost_xgb' → StackingClassifier(estimators=[('et', ExtraTreesClassifier()), ('xgb', XGBClassifier()), ('ada', AdaBoostClassifier())], final_estimator=CalibratedClassifierCV(LogisticRegression(), cv=3, method='isotonic'))"
+    ]
+  },
+
+  "literature_context": {
+    "stacked_ensemble_scientific_reports_2025": {"accuracy": 0.8360, "models": "XGBoost + AdaBoost + GradientBoosting → LR meta", "key_win": "stacking outperforms all individual models"},
+    "uncertainty_aware_jan2026":               {"lr_brier": 0.199, "xgb_brier": 0.202, "method": "RNN MC Dropout + shot-chart embeddings"},
+    "shap_xgboost_oct2025":                   {"finding": "XGBoost SHAP feature selection +ROI", "status": "already in GA as xgboost_brier"},
+    "ieee_comparative_2026":                  {"status": "monitoring for Brier values"}
+  },
+
+  "cross_project_applicability": {
+    "nba": "Add to S14, S17 GA pool. S14 current_brier=0.22052 this gen — AdaBoost diversification could consolidate record.",
+    "political": "Add to P2, P7 GA pool simultaneously. AdaBoost strong on political event features (PAC exposure, insider trades — categorical splits).",
+    "action": "Single VM session: edit NBA island app.py + Political island app.py + restart both Spaces."
+  },
+
+  "risks": {
+    "cpu_speed": "AdaBoost with n_estimators=100 is ~2-3x slower than single ExtraTrees on CPU. Reduce to n_estimators=50 if cycle time exceeds 60s.",
+    "stacking_overhead": "Option B adds significant training overhead — defer to post-Option-A validation."
+  }
+}
