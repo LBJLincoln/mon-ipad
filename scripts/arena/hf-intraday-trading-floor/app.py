@@ -1702,7 +1702,15 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
         # ≥3 OR Congress trade), apply 1.5× stake. Sector ETFs of POL-signaled
         # sector also qualify. This is what made POL agents qwen-quant +275% /
         # llama-contra +100% — same signal class, applied to live Alpaca paper.
+        # 2026-04-26 PM FIX: re-derive pol_signaled from ctx (was scope-leaking
+        # crash since pol_signaled is local to _build_prompt).
         if action in ("trade", "option_trade"):
+            _pol_hot = ctx.get("pol_engine_hot") or {}
+            _pol_signaled_set = set()
+            for _c in (_pol_hot.get("cat6_form4_clusters") or {}).get("clusters", [])[:10]:
+                if _c.get("tkr"): _pol_signaled_set.add(_c["tkr"])
+            for _t in (_pol_hot.get("cat24_congress") or {}).get("trades", [])[:10]:
+                if _t.get("tkr"): _pol_signaled_set.add(_t["tkr"])
             _tk = (decision.get("ticker") or decision.get("underlying") or "").upper()
             _ticker_to_sector_etf = {
                 # tech
@@ -1720,12 +1728,12 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
             }
             _signal_match = False
             _signal_reason = ""
-            if _tk in pol_signaled:
+            if _tk in _pol_signaled_set:
                 _signal_match = True
                 _signal_reason = f"direct POL signal on {_tk}"
             elif _tk in ('XLE','XLK','XLF','XLV','XLY','XLP','XLI','XLU'):
                 # Sector ETF — match if any POL-signaled ticker maps to this sector
-                _matched_tickers = [t for t in pol_signaled if _ticker_to_sector_etf.get(t) == _tk]
+                _matched_tickers = [t for t in _pol_signaled_set if _ticker_to_sector_etf.get(t) == _tk]
                 if _matched_tickers:
                     _signal_match = True
                     _signal_reason = f"sector ETF {_tk} aggregates POL signals on {','.join(_matched_tickers[:3])}"
