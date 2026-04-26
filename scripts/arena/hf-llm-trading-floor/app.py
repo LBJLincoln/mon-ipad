@@ -3056,12 +3056,10 @@ def load_model_predictions():
         try:
             preds = json.loads(oracle_path.read_text())
             if preds and len(preds) > 100:
-                print(f"[load_predictions] using Oracle predictions ({len(preds)} games) from {oracle_path.name}",
-                      file=sys.stderr, flush=True)
+                print(f"[load_predictions] using Oracle predictions ({len(preds)} games) from {oracle_path.name}", flush=True)
                 return preds
         except Exception as e:
-            print(f"[load_predictions] oracle file unreadable ({e}), falling back to consensus",
-                  file=sys.stderr, flush=True)
+            print(f"[load_predictions] oracle file unreadable ({e}), falling back to consensus", flush=True)
     path = DATA / "model-predictions-2025-26.json"
     if path.exists():
         return json.loads(path.read_text())

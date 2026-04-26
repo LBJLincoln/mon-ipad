@@ -15,13 +15,29 @@ check_and_restart() {
     return
   fi
   running=$(python3 -c "import json; d=json.load(open('/tmp/tf-status-$tag.json')); print(d.get('running'))" 2>/dev/null || echo "?")
+  llm_calls=$(python3 -c "import json; d=json.load(open('/tmp/tf-status-$tag.json')); print(d.get('llm_calls', 0))" 2>/dev/null || echo "0")
+  started=$(python3 -c "import json; d=json.load(open('/tmp/tf-status-$tag.json')); print(d.get('started_utc', ''))" 2>/dev/null || echo "")
+  # Healthy = running AND has actually called the LLM (not stuck pre-loop).
+  # 2026-04-26 fix: NameError on sys.stderr made running=True but llm_calls=0
+  # for 30+ min after Day-0 reset. Watchdog now detects this stuck state.
   if [ "$running" = "True" ]; then
-    return  # healthy, nothing to do
+    if [ "$llm_calls" -gt 0 ]; then
+      return  # truly healthy
+    fi
+    # running=True but 0 LLM calls — check age
+    if [ -n "$started" ]; then
+      local age_sec
+      age_sec=$(python3 -c "from datetime import datetime, timezone; t=datetime.fromisoformat('$started'.replace('Z','+00:00')); print(int((datetime.now(timezone.utc)-t).total_seconds()))" 2>/dev/null || echo "0")
+      if [ "$age_sec" -lt 300 ]; then
+        return  # <5min, still warming up
+      fi
+      echo "$(date -u +%FT%TZ) $tag STUCK: running=True llm_calls=0 after ${age_sec}s — forcing /api/run" >> "$LOG"
+    fi
   fi
-  # Not running → kick it
+  # Not running, OR running-but-stuck → kick it
   local resp
   resp=$(curl -s -X POST --max-time 15 "$url/api/run" 2>/dev/null || echo "curl_err")
-  echo "$(date -u +%FT%TZ) $tag running=$running → restart: $resp" >> "$LOG"
+  echo "$(date -u +%FT%TZ) $tag running=$running llm_calls=$llm_calls → restart: $resp" >> "$LOG"
 }
 
 check_and_restart NBA https://lbjlincoln26-nba-llm-trading-floor.hf.space
