@@ -3039,7 +3039,24 @@ def load_full_odds():
     return {}
 
 def load_model_predictions():
-    """Load our Nomos42 model consensus predictions {game_key: {...}}"""
+    """Load model predictions {game_key: {...}}.
+
+    2026-04-26: Prefer Oracle predictions (oracle-predictions-latest.json) over
+    the legacy 221-agent consensus file. Oracle is built by Colab oracle_pipeline.ipynb
+    pushing real Kaggle Oracle (Brier 0.21383 best fold) predictions to a NEW path
+    that's NOT LFS-tracked. Falls back to consensus if Oracle file missing.
+    """
+    oracle_path = DATA / "oracle-predictions-latest.json"
+    if oracle_path.exists():
+        try:
+            preds = json.loads(oracle_path.read_text())
+            if preds and len(preds) > 100:
+                print(f"[load_predictions] using Oracle predictions ({len(preds)} games) from {oracle_path.name}",
+                      file=sys.stderr, flush=True)
+                return preds
+        except Exception as e:
+            print(f"[load_predictions] oracle file unreadable ({e}), falling back to consensus",
+                  file=sys.stderr, flush=True)
     path = DATA / "model-predictions-2025-26.json"
     if path.exists():
         return json.loads(path.read_text())
