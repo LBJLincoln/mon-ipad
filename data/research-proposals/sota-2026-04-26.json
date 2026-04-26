@@ -1,0 +1,56 @@
+{
+  "date": "2026-04-26",
+  "source": "cloud-brain-research",
+  "proposals": [
+    {
+      "title": "TabPFN-2.5 / Real-TabPFN-2.5 as Drop-in Probabilistic Classifier",
+      "source_paper": "TabPFN-2.5: Advancing the State of the Art in Tabular Foundation Models (arXiv:2511.08667, Nov 2025); ScoringBench: Evaluating Tabular Foundation Models with Proper Scoring Rules (arXiv:2603.29928, Mar 2026)",
+      "technique": "Replace or ensemble the current gradient-boosted model with TabPFN-2.5 (supports up to 100k rows, 2k features). Fine-tune with Brier-score loss via the TabTune library (ScoringBench shows fine-tuning on a target scoring rule consistently improves that metric). Use Real-TabPFN-2.5 initialisation for warm-start on real sports data. TabPFN-2.5 posts Brier scores of 0.118-0.150 on general tabular benchmarks and wins 87% of head-to-heads against tuned XGBoost at scale.",
+      "expected_brier_improvement": "~0.005-0.015 absolute reduction (0.220 -> ~0.205-0.215) based on benchmark deltas vs. tuned XGBoost; larger gains possible with Brier-targeted fine-tuning per ScoringBench findings",
+      "implementation_complexity": "medium",
+      "priority": 1
+    },
+    {
+      "title": "Uncertainty-Aware RNN + Monte Carlo Dropout with Shot-Chart CNN Embeddings",
+      "source_paper": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets (MDPI Information, Jan 2026, doi:10.3390/info17010056)",
+      "technique": "Augment the current feature set with spatial shot-chart embeddings encoded by a lightweight CNN (PCA-20 or CNN-encoded court zones). Feed concatenated box-score + shot-chart + rolling-form vectors into an LSTM/GRU with MC-Dropout (T=50 forward passes). This directly targets Brier calibration: the 2026 MDPI paper reports Brier ~0.20 with this architecture on 2024 NBA season, vs ~0.22 for static XGBoost baselines. MC-Dropout yields calibrated probability intervals useful for Kelly sizing.",
+      "expected_brier_improvement": "~0.010-0.020 absolute reduction (0.221 -> ~0.200-0.210); the referenced paper achieves Brier ~0.20 on comparable data",
+      "implementation_complexity": "high",
+      "priority": 2
+    },
+    {
+      "title": "Dual-ELO Feature Engineering + Market-Implied Probability Fusion",
+      "source_paper": "Uncertainty-Aware ML for NBA Forecasting (MDPI 2026); Sharps Research Rolling-Reset ELO (2025); Stacked Ensemble NBA Prediction (Nature Scientific Reports, Aug 2025, s41598-025-13657-1)",
+      "technique": "Replace single Elo rating with dual Elo (regular-season tuned vs. playoff tuned, per Neil Paine 2025-26 methodology). Add a Rolling-Reset ELO that decays older games. Include market-derived features: closing line implied probability, spread, total, overround. These market features encode crowd wisdom and sharp-money signals. The MDPI 2026 paper shows including market features in the concatenated feature vector is among the top-3 contributors by SHAP importance. Low-lift: pure feature addition to existing model.",
+      "expected_brier_improvement": "~0.005-0.010 absolute reduction from dual-ELO + market features alone; additive to any model backbone",
+      "implementation_complexity": "low",
+      "priority": 3
+    },
+    {
+      "title": "SHAP-Guided Feature Pruning + LightGBM Ranking Objective",
+      "source_paper": "Explaining Basketball Game Performance with SHAP (Nature Scientific Reports, Apr 2025, s41598-025-97817-3); Machine Learning Models for NBA Game Prediction (ITM Conferences, 2025); Integration of XGBoost and SHAP for NBA Prediction (PMC11265715)",
+      "technique": "Run SHAP on current model to eliminate low-importance features (reduce noise/overfitting). Switch to LightGBM with a ranking objective (LambdaRank / pairwise) in addition to binary cross-entropy, exploiting its superiority on structured data: LightGBM achieves mAP=0.867, NDCG=0.98 for NBA team ranking tasks. Use SHAP interaction values to engineer 3-5 interaction features (e.g., home_elo_delta x recent_form) before passing to the model. Also explore LightGBM DART boosting to reduce overfitting on imbalanced game slates.",
+      "expected_brier_improvement": "~0.003-0.008 absolute reduction; primary benefit is variance reduction and better calibration on tail matchups",
+      "implementation_complexity": "low",
+      "priority": 4
+    },
+    {
+      "title": "Conformal Prediction Wrapper for Distribution-Free Coverage Guarantees",
+      "source_paper": "Conformal Win Probability for Basketball (American Statistician, 2023/2024, doi:10.1080/00031305.2023.2283199); Gentle Introduction to Conformal Time Series Forecasting (arXiv:2511.13608, Nov 2025)",
+      "technique": "Apply split-conformal or adaptive-conformal prediction (ACI) as a post-hoc calibration layer on top of any base model. ACI handles temporal distribution shift (team strength changes across season) which standard Platt scaling ignores. Produces prediction sets with guaranteed marginal coverage, directly improving Brier calibration on out-of-distribution games (back-to-backs, trade-deadline periods). Implementation: scikit-learn-compatible MAPIE or crepes library; no model retraining required. Especially valuable for bet-sizing confidence intervals.",
+      "expected_brier_improvement": "~0.002-0.006 absolute reduction via improved tail calibration; main value is reliable uncertainty sets rather than raw Brier gain",
+      "implementation_complexity": "low",
+      "priority": 5
+    }
+  ],
+  "current_best": {
+    "nba_brier": 0.22062,
+    "target": 0.20
+  },
+  "research_context": {
+    "best_published_brier_nba_2026": 0.199,
+    "best_published_source": "Logistic Regression baseline in MDPI Uncertainty-Aware NBA paper (Jan 2026); XGBoost ~0.202 same paper",
+    "tabpfn_general_brier": "0.118-0.150 (general tabular benchmarks, not NBA-specific)",
+    "key_insight": "The gap between current best (0.199 LR, 0.202 XGBoost) and target (0.20) is narrow. Gains must come from (1) better features (dual-ELO, market lines, shot charts) and (2) better-calibrated models (TabPFN-2.5 fine-tuned on Brier, conformal wrapping). Tree ensembles remain competitive but tabular foundation models now match or beat tuned AutoGluon on small-medium datasets."
+  }
+}
