@@ -2099,9 +2099,17 @@ Rules (carte blanche — only these bankroll constraints):
 - Sum of allocation pct + parlay pct + cash_held_pct ≈ 1.00.
 - Daily deploy floor: 50-70% of bankroll across your chosen bets. Server-side
   scales single-bet allocations up to 30% cap (so 2 bets can hit the 55% floor).
+- BREADTH RULE: your allocations[] MUST span ≥3 distinct category families per day.
+  Family list: ml, spread, total, alt_spread, alt_total, team_total, h1_*, h2_*,
+  q1_*, q2_*, q3_*, q4_*, prop_*. Each game has ~200 categories — using only ml
+  is a 99% under-use of the menu. Pick ml on game 1, alt_spread_home_minus3.5 on
+  game 2, total_over on game 3, team_total_home_over_X on game 4, etc. Server
+  drops monoculture allocations (≥3 bets all same family).
 - Each allocation pct 0.005–0.50; per-bet server cap 0.30. Kelly cap enforced
   server-side per agent (over-bets are clipped, you don't need to micro-tune).
 - Each parlay pct 0.005–0.08, 2–6 legs, distinct game_idx, all must win.
+  Parlays mixing 2-3 different category families (e.g. ml_home + total_over +
+  alt_spread_away) compound small edges into higher payouts. Use them.
 - Max 25 allocations + 8 parlays per day. Max 8 bets per game (distinct categories).
 - DO NOT invent category names. Pick ONLY from the per-game odds menu shown above.
   Names not in the menu silently get fake 1.91 odds + random outcomes.
@@ -2413,6 +2421,81 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
                         continue  # drop 3rd+ duplicate
                 _kept.append(a)
             clean = _kept
+
+    # 2026-04-26 — CATEGORY-BREADTH BANKROLL RULE
+    # User directive (months-long): agents must use the 200+ category menu, not
+    # camp on ml_home/ml_away. Empirical bleed audit on selfhost-qwen4b: 33/33
+    # bets ml_*, 73% WR, -$26 PnL — heavy-fav addiction kills compounding.
+    # This filter: if ≥3 allocations all share one family AND the engine has
+    # ≥1 calibrated edge ≥0.04 in a DIFFERENT family on today's games, drop the
+    # weakest same-family allocation and inject the cross-family one instead.
+    # Pure bankroll rule (forced diversification), not personality coercion.
+    def _category_family(_cat: str) -> str:
+        c = (_cat or "").lower()
+        if c.startswith("ml_"):           return "ml"
+        if c.startswith("spread_"):       return "spread"
+        if c.startswith("alt_spread"):    return "alt_spread"
+        if c.startswith("total_"):        return "total"
+        if c.startswith("alt_total"):     return "alt_total"
+        if c.startswith("team_total"):    return "team_total"
+        if c.startswith("h1_"):           return "h1"
+        if c.startswith("h2_"):           return "h2"
+        if c.startswith("q1_"):           return "q1"
+        if c.startswith("q2_"):           return "q2"
+        if c.startswith("q3_"):           return "q3"
+        if c.startswith("q4_"):           return "q4"
+        if c.startswith("prop_"):         return "prop"
+        if c.startswith("pp_"):           return "pp"
+        return "other"
+
+    if len(clean) >= 3 and model_preds and day_games:
+        _families = [_category_family(a["category"]) for a in clean]
+        _family_counts = {}
+        for _f in _families:
+            _family_counts[_f] = _family_counts.get(_f, 0) + 1
+        _dominant = max(_family_counts, key=_family_counts.get)
+        if _family_counts[_dominant] >= 3 and len(_family_counts) <= 1:
+            # Monoculture detected — find the best cross-family engine edge today.
+            _candidates = []
+            for _gidx, _g in enumerate(day_games, 1):
+                _h = (_g.get("home") or "").upper()
+                _av = (_g.get("away") or "").upper()
+                if not (_h and _av): continue
+                _gk = f"{_av}@{_h}"
+                _pred = (model_preds or {}).get(_gk) or {}
+                _per_cat = _pred.get("per_category") or {}
+                for _tag, _info in _per_cat.items():
+                    if _tag.startswith("pp_"): continue  # respect pp_* ban
+                    if _category_family(_tag) == _dominant: continue
+                    if _category_family(_tag) == "other": continue
+                    _e = _info.get("edge")
+                    if not isinstance(_e, (int, float)) or _e < 0.04: continue
+                    if (_gidx, _tag) in seen_keys: continue
+                    _candidates.append((float(_e), _gidx, _tag, _info.get("prob", 0.5)))
+            _candidates.sort(reverse=True)
+            if _candidates:
+                # Drop the weakest same-family allocation and inject cross-family.
+                _same_family = [(i, a) for i, a in enumerate(clean) if _category_family(a["category"]) == _dominant]
+                _same_family.sort(key=lambda x: x[1].get("edge", 0.0))
+                _drop_idx = _same_family[0][0]
+                _avg_pct = clean[_drop_idx].get("pct", 0.05) or 0.05
+                clean.pop(_drop_idx)
+                _e, _gidx_new, _tag_new, _prob_new = _candidates[0]
+                clean.append({
+                    "game_idx": _gidx_new,
+                    "game": "",
+                    "category": _tag_new,
+                    "pct": max(0.02, min(0.20, _avg_pct)),
+                    "confidence": 0.55,
+                    "edge": _e,
+                    "edge_source": "engine_breadth_inject",
+                    "edge_llm_reported": None,
+                    "edge_engine": _e,
+                    "strategy": "breadth_diversify",
+                    "rationale": f"server breadth-rule: {_dominant}-family monoculture detected, injected cross-family {_category_family(_tag_new)} (engine_edge {_e:+.3f})",
+                    "category_reason": "forced diversification (server rule)",
+                })
+                seen_keys.add((_gidx_new, _tag_new))
 
     # 2026-04-25 ENGINE-FORCED FLOOR — break the groupthink cash cascade.
     # If the LLM emitted 0 allocations (or all got dropped) AND the engine
@@ -4100,6 +4183,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     _bypass_min_edge = alloc.get("edge_source") in (
                         "engine",
                         "engine_forced_floor",
+                        "engine_breadth_inject",
                         "llm_fallback_singleton",
                         "engine_fallback_singleton",
                         "llm_capped",
