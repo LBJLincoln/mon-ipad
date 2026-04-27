@@ -32,19 +32,25 @@ SYNERGY = json.loads((KARP / "synergy_data.json").read_text())
 COACHING = json.loads((KARP / "coaching_data.json").read_text())
 ALTITUDE = json.loads((KARP / "altitude_data.json").read_text())
 TRACKING = json.loads((KARP / "tracking_data.json").read_text())
+TRAVEL = json.loads((KARP / "travel_data.json").read_text())
+FRANCHISE = json.loads((KARP / "franchise_data.json").read_text())
+VEGAS = json.loads((KARP / "vegas_preseason_data.json").read_text())
+COACH_EXT = json.loads((KARP / "coaching_extended_data.json").read_text())
+STAR_META = json.loads((KARP / "star_metadata.json").read_text())
 
 OUT = KARP / "player_data_merged.json"
 
 
-def coach_to_features(coach: dict) -> dict:
-    """Map coaching_data fields to engine `coach_*` keys."""
+def coach_to_features(coach: dict, ext: dict) -> dict:
+    """Map coaching_data fields to engine `coach_*` keys.
+    `ext` is coaching_extended_data — overrides defaults with curated values.
+    """
     if not coach:
         return {}
-    # Reasonable proxies for fields we don't have direct data on
     base_wr = coach.get("win_rate", 0.5)
     return {
         "coach_career_wp": base_wr,
-        "coach_playoff_wp": base_wr * 0.95,  # playoff slightly worse on avg
+        "coach_playoff_wp": base_wr * 0.95,
         "coach_tenure_years": float(coach.get("exp_years", 1)),
         "coach_with_team_years": min(float(coach.get("exp_years", 1)), 5.0),
         "coach_home_wp": min(0.85, base_wr + 0.07),
@@ -54,13 +60,28 @@ def coach_to_features(coach: dict) -> dict:
         "coach_comeback_rate": 0.30,
         "coach_blowout_wp": base_wr * 1.05 if base_wr > 0.5 else base_wr,
         "coach_vs_winning_teams_wp": base_wr * 0.88,
-        "coach_pace_preference": 0.5,
-        "coach_offensive_rating_rank": 0.5,
-        "coach_defensive_rating_rank": 0.5,
-        "coach_ato_rating": 0.5,
-        "coach_challenge_success_rate": 0.4,
+        "coach_pace_preference": ext.get("pace_pref", 0.5),
+        "coach_offensive_rating_rank": ext.get("off_rank", 0.5),
+        "coach_defensive_rating_rank": ext.get("def_rank", 0.5),
+        "coach_ato_rating": ext.get("ato_rating", 0.5),
+        "coach_challenge_success_rate": ext.get("challenge", 0.4),
         "coach_championships": float(coach.get("championships", 0)),
         "coach_playoff_rate": coach.get("playoff_rate", 0.4),
+    }
+
+
+def franchise_to_features(fr: dict) -> dict:
+    if not fr:
+        return {}
+    return {
+        "franchise_wp_10yr": fr["wp_10yr"],
+        "franchise_wp_5yr": fr["wp_5yr"],
+        "franchise_championships": float(fr["championships"]),
+        "franchise_finals": float(fr["finals"]),
+        "franchise_playoff_rate_10yr": fr["playoff_rate_10yr"],
+        "franchise_avg_seed_5yr": fr["avg_seed_5yr"],
+        "franchise_consistency_5yr": fr["consistency_5yr"],
+        "franchise_stability_index": fr["stability_index"],
     }
 
 
@@ -87,29 +108,36 @@ def tracking_to_features(tk: dict) -> dict:
 
 
 def main() -> int:
-    # ── Step 1: per-team broadcast fields (same value for all team's games) ──
+    # ── Step 1: per-team broadcast fields ──
     team_static = {}
-    for tabbr in COACHING.keys() | SYNERGY.keys() | ALTITUDE.keys() | TRACKING.keys():
+    all_teams = (COACHING.keys() | SYNERGY.keys() | ALTITUDE.keys() | TRACKING.keys()
+                 | FRANCHISE.keys() | VEGAS.keys() | COACH_EXT.keys())
+    for tabbr in all_teams:
         merged = {}
-        merged.update(coach_to_features(COACHING.get(tabbr, {})))
+        merged.update(coach_to_features(COACHING.get(tabbr, {}), COACH_EXT.get(tabbr, {})))
         merged.update(altitude_to_features(ALTITUDE.get(tabbr, {})))
         merged.update(tracking_to_features(TRACKING.get(tabbr, {})))
-        merged.update(SYNERGY.get(tabbr, {}))  # combo1_netrtg etc as-is
+        merged.update(SYNERGY.get(tabbr, {}))
+        merged.update(franchise_to_features(FRANCHISE.get(tabbr, {})))
+        merged.update(VEGAS.get(tabbr, {}))
         team_static[tabbr] = merged
-    print(f"team-static fields built for {len(team_static)} teams", file=sys.stderr)
-    sample = list(team_static.values())[0] if team_static else {}
-    print(f"team-static fields per team: {len(sample)}", file=sys.stderr)
+    print(f"team-static fields: {len(team_static)} teams × {len(list(team_static.values())[0])} fields", file=sys.stderr)
 
     # ── Step 2: merge per-(team, date) ──
     out = {}
     for key, pd_per_game in PLAYER.items():
         team, date = key.split("|", 1)
-        merged = dict(team_static.get(team, {}))  # start with team-level baseline
-        merged.update(pd_per_game)                # overwrite with per-game injury data
-        # add position breakdown for this game
+        merged = dict(team_static.get(team, {}))   # team baseline
+        merged.update(pd_per_game)                  # injury fields
         pos_entry = POSITION.get(key)
         if pos_entry:
             merged.update(pos_entry)
+        travel_entry = TRAVEL.get(key)
+        if travel_entry:
+            merged.update(travel_entry)
+        star_entry = STAR_META.get(key)
+        if star_entry:
+            merged.update(star_entry)
         out[key] = merged
 
     # ── Step 3: also write team-only entries for cold-start fallback ──
