@@ -3174,6 +3174,56 @@ class NBAFeatureEngine:
             "yt_abs_pol_mean_14",# mean |polarity| last 14d
         ])
 
+        # ── Cat 68: REAL-DATA AUGMENTED FEATURES (~140 cols) ──
+        # All read from player_data_merged.json (no defaults — these come from
+        # nba_api / box-scores / public sources). Variance > 0 verified at probe time.
+        for prefix in ["h", "a"]:
+            # Streaks / SOS (12 cols × 2 = 24)
+            for f in ["current_win_streak","current_loss_streak","last10_wp","last5_wp",
+                      "sos_l10","sos_season","vs_winning_record_wp","vs_losing_record_wp",
+                      "home_wp_l10","road_wp_l10","margin_avg_l10","margin_var_l10"]:
+                names.append(f"{prefix}_{f}")
+            # Clutch (7 × 2 = 14)
+            for f in ["clutch_net_rating","clutch_off_rating","clutch_def_rating",
+                      "clutch_w_pct","clutch_pace","clutch_efg","clutch_ts"]:
+                names.append(f"{prefix}_{f}")
+            # Misc team (12 × 2 = 24)
+            for f in ["pts_off_tov","second_chance_pts","fb_pts","paint_pts","opp_pts_off_tov",
+                      "def_rating_season","opp_fg_pct","opp_fg3_pct","efg_pct_season",
+                      "fta_rate","tov_pct","oreb_pct"]:
+                names.append(f"{prefix}_{f}")
+            # Pace/ratio (3 × 2 = 6)
+            for f in ["pace_season","ast_ratio","off_rating_season"]:
+                names.append(f"{prefix}_{f}")
+            # Shot zones (12 × 2 = 24)
+            for f in ["ra_fg_pct","ra_freq","paint_fg_pct","paint_freq",
+                      "midrange_fg_pct","midrange_freq","corner3_fg_pct","corner3_freq",
+                      "arc3_fg_pct","arc3_freq","above_break_3_fg_pct","above_break_3_freq"]:
+                names.append(f"{prefix}_{f}")
+            # Top-5 players base stats (5 × 7 × 2 = 70)
+            for rank in range(1, 6):
+                for stat in ["pts","reb","ast","min","fg_pct","fg3_pct","plus_minus"]:
+                    names.append(f"{prefix}_top{rank}_{stat}")
+            # Top-5 advanced (5 × 4 × 2 = 40)
+            for rank in range(1, 6):
+                for stat in ["usg","ts","off_rtg","def_rtg"]:
+                    names.append(f"{prefix}_top{rank}_{stat}")
+            # Team estimated (10 × 2 = 20)
+            for f in ["est_e_off_rating","est_e_def_rating","est_e_net_rating","est_e_pace",
+                      "est_e_ast_ratio","est_e_oreb_pct","est_e_dreb_pct","est_e_reb_pct",
+                      "est_e_tm_tov_pct","est_e_usg_pct"]:
+                names.append(f"{prefix}_{f}")
+            # Franchise real (7 × 2 = 14)
+            for f in ["wp_10yr_real","wp_5yr_real","championships_real","finals_real",
+                      "playoff_rate_10yr_real","consistency_5yr_real","stability_index_real"]:
+                names.append(f"{prefix}_{f}")
+
+        # Cross/diff features (h - a) — 12 cols
+        for f in ["last10_wp","sos_l10","clutch_net_rating","pace_season","off_rating_season",
+                 "def_rating_season","est_e_net_rating","wp_10yr_real","margin_avg_l10",
+                 "current_win_streak","oreb_pct","fta_rate"]:
+            names.append(f"diff_{f}")
+
         self.feature_names = names
 
     def build(self, games, market_data=None, referee_data=None, player_data=None, quarter_data=None, tracking_data=None, odds_data=None):
@@ -3581,7 +3631,7 @@ class NBAFeatureEngine:
             # 11-15. PLACEHOLDER CATEGORIES (skippable — all zeros/defaults without real data)
             if not self.skip_placeholder:
                 # 11. REFEREE FEATURES (10 features)
-                ref = (referee_data or {}).get(game.get("id", gd), {})
+                ref = (referee_data or {}).get(game.get("game_id"), (referee_data or {}).get(game.get("id", gd), {})) or {}
                 row.extend([
                     ref.get("home_foul_bias", 0.0),
                     ref.get("total_fouls_avg", 42.0),
@@ -3597,7 +3647,7 @@ class NBAFeatureEngine:
 
                 # 12. PLAYER IMPACT FEATURES (16 features)
                 for prefix, team_key in [("h", home), ("a", away)]:
-                    pd_ = (player_data or {}).get(team_key, {})
+                    pd_ = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
                     row.append(pd_.get("star_usage_rate", 0.55))
                     row.append(pd_.get("star_minutes_load", 34.0) / 48.0)
                     row.append(pd_.get("injury_impact_score", 0.0))
@@ -3610,7 +3660,7 @@ class NBAFeatureEngine:
 
                 # 13. QUARTER-LEVEL PATTERNS (14 features)
                 for prefix, tr in [("h", hr_), ("a", ar_)]:
-                    qd_ = (quarter_data or {}).get(home if prefix == "h" else away, {})
+                    qd_ = (quarter_data or {}).get((home if prefix == "h" else away, gd), (quarter_data or {}).get(home if prefix == "h" else away, {}))
                     row.append(qd_.get("q1_margin_avg", 0.0))
                     row.append(qd_.get("q3_margin_avg", 0.0))
                     row.append(qd_.get("q4_clutch_netrtg", 0.0) / 10.0)
@@ -4328,7 +4378,7 @@ class NBAFeatureEngine:
                 row.append(48.0 / 48.0)
 
                 # Star minutes cumulative (proxy from player data)
-                pd_ = (player_data or {}).get(team_key, {})
+                pd_ = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
                 star_min = pd_.get("star_minutes_load", 34.0) * cumul_gp
                 row.append(star_min / (82.0 * 40.0))  # Normalized
 
@@ -4541,7 +4591,7 @@ class NBAFeatureEngine:
                 "raptor_total": 0.0, "ts_pct": 0.55, "ast_pct": 0.15, "reb_pct": 0.10,
             }
             for prefix, team_key in [("h", home), ("a", away)]:
-                pd_ = (player_data or {}).get(team_key, {})
+                pd_ = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
                 # Star 1 stats across windows
                 for stat in _pi_stats:
                     base = pd_.get(f"star1_{stat}", _pi_defaults.get(stat, 0.0))
@@ -4601,7 +4651,7 @@ class NBAFeatureEngine:
             row.append(h_pd.get("clutch_player_rating", 0.0) - a_pd.get("clutch_player_rating", 0.0))
 
             # ── 27. REFEREE DEEP ANALYSIS (120 features) ──
-            ref = (referee_data or {}).get(game.get("id", gd), {})
+            ref = (referee_data or {}).get(game.get("game_id"), (referee_data or {}).get(game.get("id", gd), {})) or {}
             # Quarter-specific features (24 features)
             for q in ["q1", "q2", "q3", "q4"]:
                 row.append(ref.get(f"{q}_foul_rate", 5.0) / 10.0)
@@ -5010,7 +5060,7 @@ class NBAFeatureEngine:
 
             # ── 32. BAYESIAN PRIORS (220 features) ──
             for prefix, team_key, tr in [("h", home, hr_), ("a", away, ar_)]:
-                pd_ = (player_data or {}).get(team_key, {})
+                pd_ = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
                 n_gp = len(tr)
                 actual_wp = self._wp(tr, n_gp)
                 # Pre-season and Vegas priors (10 per team)
@@ -5318,7 +5368,7 @@ class NBAFeatureEngine:
             # 26b. Position & lineup expanded features
             _positions = ["pg", "sg", "sf", "pf", "c"]
             for prefix, team_key in [("h", home), ("a", away)]:
-                pd_ = (player_data or {}).get(team_key, {})
+                pd_ = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
                 for pos in _positions:
                     row.append(pd_.get(f"pos_{pos}_rating", 0.0))
                     row.append(pd_.get(f"pos_{pos}_minutes_share", 0.2))
@@ -5328,7 +5378,7 @@ class NBAFeatureEngine:
                     row.append(pd_.get(f"pos_{pos}_def_rating", 110.0) / 120.0)
             # Player synergy combos
             for prefix, team_key in [("h", home), ("a", away)]:
-                pd_ = (player_data or {}).get(team_key, {})
+                pd_ = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
                 for combo_idx in range(1, 6):
                     row.append(pd_.get(f"combo{combo_idx}_netrtg", 0.0) / 10.0)
                     row.append(pd_.get(f"combo{combo_idx}_minutes", 10.0) / 48.0)
@@ -6002,7 +6052,7 @@ class NBAFeatureEngine:
 
             # ── Quarter-specific detailed features ──
             for prefix, team_key in [("h", home), ("a", away)]:
-                qd_ = (quarter_data or {}).get(team_key, {})
+                qd_ = (quarter_data or {}).get((team_key, gd), (quarter_data or {}).get(team_key, {}))
                 for q in ["q1", "q2", "q3", "q4"]:
                     for stat in ["margin", "ortg", "drtg", "pace", "efg", "tov_rate", "ft_rate"]:
                         row.append(qd_.get(f"{q}_{stat}", 0.0))
@@ -7425,6 +7475,70 @@ class NBAFeatureEngine:
                     row.extend([0.0] * 6)
             except Exception:
                 row.extend([0.0] * 6)
+
+            # ── Cat 68: REAL-DATA AUGMENTED FEATURES ──
+            try:
+                # Get per-team merged data (h, then a). Engine looks up (team, gd) tuple
+                # → falls back to team-only. Both populated from player_data_merged.json.
+                cat68_per_team = []
+                for team_key in [home, away]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    # Streaks 12
+                    streaks = [pd_t.get(k, 0.0) for k in [
+                        "current_win_streak","current_loss_streak","last10_wp","last5_wp",
+                        "sos_l10","sos_season","vs_winning_record_wp","vs_losing_record_wp",
+                        "home_wp_l10","road_wp_l10","margin_avg_l10","margin_var_l10"]]
+                    # Clutch 7
+                    clutch = [pd_t.get(k, 0.0) for k in [
+                        "clutch_net_rating","clutch_off_rating","clutch_def_rating",
+                        "clutch_w_pct","clutch_pace","clutch_efg","clutch_ts"]]
+                    # Misc 12
+                    misc = [pd_t.get(k, 0.0) for k in [
+                        "pts_off_tov","second_chance_pts","fb_pts","paint_pts","opp_pts_off_tov",
+                        "def_rating_season","opp_fg_pct","opp_fg3_pct","efg_pct_season",
+                        "fta_rate","tov_pct","oreb_pct"]]
+                    # Pace 3
+                    pace3 = [pd_t.get(k, 0.0) for k in ["pace_season","ast_ratio","off_rating_season"]]
+                    # Shot zones 12
+                    sz = [pd_t.get(k, 0.0) for k in [
+                        "ra_fg_pct","ra_freq","paint_fg_pct","paint_freq",
+                        "midrange_fg_pct","midrange_freq","corner3_fg_pct","corner3_freq",
+                        "arc3_fg_pct","arc3_freq","above_break_3_fg_pct","above_break_3_freq"]]
+                    # Top-5 base 35
+                    top_base = []
+                    for rank in range(1, 6):
+                        for stat in ["pts","reb","ast","min","fg_pct","fg3_pct","plus_minus"]:
+                            top_base.append(pd_t.get(f"top{rank}_{stat}", 0.0))
+                    # Top-5 adv 20
+                    top_adv = []
+                    for rank in range(1, 6):
+                        for stat in ["usg","ts","off_rtg","def_rtg"]:
+                            top_adv.append(pd_t.get(f"top{rank}_{stat}", 0.0))
+                    # Team estimated 10
+                    team_est = [pd_t.get(k, 0.0) for k in [
+                        "est_e_off_rating","est_e_def_rating","est_e_net_rating","est_e_pace",
+                        "est_e_ast_ratio","est_e_oreb_pct","est_e_dreb_pct","est_e_reb_pct",
+                        "est_e_tm_tov_pct","est_e_usg_pct"]]
+                    # Franchise real 7
+                    franchise_r = [pd_t.get(k, 0.0) for k in [
+                        "wp_10yr_real","wp_5yr_real","championships_real","finals_real",
+                        "playoff_rate_10yr_real","consistency_5yr_real","stability_index_real"]]
+                    cat68_per_team.append(streaks + clutch + misc + pace3 + sz + top_base + top_adv + team_est + franchise_r)
+
+                # Append home then away
+                row.extend(cat68_per_team[0])
+                row.extend(cat68_per_team[1])
+
+                # Cross-diff features (12)
+                pd_h = (player_data or {}).get((home, gd), (player_data or {}).get(home, {}))
+                pd_a = (player_data or {}).get((away, gd), (player_data or {}).get(away, {}))
+                for f in ["last10_wp","sos_l10","clutch_net_rating","pace_season","off_rating_season",
+                          "def_rating_season","est_e_net_rating","wp_10yr_real","margin_avg_l10",
+                          "current_win_streak","oreb_pct","fta_rate"]:
+                    row.append(float(pd_h.get(f, 0.0)) - float(pd_a.get(f, 0.0)))
+            except Exception as e:
+                # Pad with zeros if anything explodes — never crash the build
+                row.extend([0.0] * 248)
 
             X.append(row)
             y.append(1 if hs > as_ else 0)

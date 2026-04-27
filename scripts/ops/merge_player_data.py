@@ -37,6 +37,13 @@ FRANCHISE = json.loads((KARP / "franchise_data.json").read_text())
 VEGAS = json.loads((KARP / "vegas_preseason_data.json").read_text())
 COACH_EXT = json.loads((KARP / "coaching_extended_data.json").read_text())
 STAR_META = json.loads((KARP / "star_metadata.json").read_text())
+STREAKS = json.loads((KARP / "streaks_data.json").read_text())
+CLUTCH = json.loads((KARP / "clutch_data.json").read_text())
+MISC = json.loads((KARP / "misc_team_data.json").read_text())
+SHOT_ZONES = json.loads((KARP / "shot_zones_data.json").read_text())
+PLAYER_TOP = json.loads((KARP / "player_top_data.json").read_text())
+TEAM_EST = json.loads((KARP / "team_est_data.json").read_text())
+FRANCHISE_REAL = json.loads((KARP / "franchise_real_data.json").read_text())
 
 OUT = KARP / "player_data_merged.json"
 
@@ -111,7 +118,9 @@ def main() -> int:
     # ── Step 1: per-team broadcast fields ──
     team_static = {}
     all_teams = (COACHING.keys() | SYNERGY.keys() | ALTITUDE.keys() | TRACKING.keys()
-                 | FRANCHISE.keys() | VEGAS.keys() | COACH_EXT.keys())
+                 | FRANCHISE.keys() | VEGAS.keys() | COACH_EXT.keys()
+                 | CLUTCH.keys() | MISC.keys() | SHOT_ZONES.keys()
+                 | PLAYER_TOP.keys() | TEAM_EST.keys() | FRANCHISE_REAL.keys())
     for tabbr in all_teams:
         merged = {}
         merged.update(coach_to_features(COACHING.get(tabbr, {}), COACH_EXT.get(tabbr, {})))
@@ -120,6 +129,12 @@ def main() -> int:
         merged.update(SYNERGY.get(tabbr, {}))
         merged.update(franchise_to_features(FRANCHISE.get(tabbr, {})))
         merged.update(VEGAS.get(tabbr, {}))
+        merged.update(CLUTCH.get(tabbr, {}))
+        merged.update(MISC.get(tabbr, {}))
+        merged.update(SHOT_ZONES.get(tabbr, {}))
+        merged.update(PLAYER_TOP.get(tabbr, {}))
+        merged.update(TEAM_EST.get(tabbr, {}))
+        merged.update(FRANCHISE_REAL.get(tabbr, {}))
         team_static[tabbr] = merged
     print(f"team-static fields: {len(team_static)} teams × {len(list(team_static.values())[0])} fields", file=sys.stderr)
 
@@ -138,6 +153,9 @@ def main() -> int:
         star_entry = STAR_META.get(key)
         if star_entry:
             merged.update(star_entry)
+        streak_entry = STREAKS.get(key)
+        if streak_entry:
+            merged.update(streak_entry)
         out[key] = merged
 
     # ── Step 3: also write team-only entries for cold-start fallback ──
