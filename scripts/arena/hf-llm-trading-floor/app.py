@@ -1735,16 +1735,32 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
 
     lines.append(f"  ODDS: ML {home} {ml_h:.2f} ({impl_h:.1%}) | {away} {ml_a:.2f} ({impl_a:.1%}) | Spread {odds.get('spread_home','?')} | Total {odds.get('total','?')}")
 
-    # 2026-04-27 — ROSTER + INJURY DATA REMOVED entirely from per-game prompts.
-    # User audit caught CURRENT (Apr 2026) injuries leaking into Oct 2025 sim
-    # dates — agents reasoned from "AD/Sarr injuries" on Wizards in Oct, but
-    # AD wasn't traded to WAS until late season. Same for static roster snapshots:
-    # current roster retroactively applied across all 175 sim dates = leakage.
-    # Until per-day rosters + per-game DNP data is properly scraped via
-    # nba_api.BoxScoreTraditionalV2, NO roster/injury context is shown.
-    # Agents reason only from leakage-safe inputs: standings, form, real odds,
-    # team_advanced (single-snapshot but at least real signal), AI MODEL.
-    pass  # block intentionally empty — see comment above
+    # 2026-04-27 — LEAKAGE-SAFE per-game lineup from actual box score.
+    # Loaded by load_box_scores() from data/box-scores-2025-26.json (scraped via
+    # scripts/modal/scrape_nba_box_scores.py). Each game_id has the EXACT
+    # players who suited up that night with their minutes, plus the DNP list.
+    # No future data, no static roster — only what was real for THIS game.
+    # User audit on day-005 caught the prior leakage (AD on WAS Oct 2025 from
+    # static rosters + Apr 2026 injuries-current.json).
+    box_lookup = (load_box_scores() or {}).get(game.get("game_id", ""))
+    if box_lookup:
+        for label, key_active, key_dnp in [("H", "active_home", "dnp_home"),
+                                            ("A", "active_away", "dnp_away")]:
+            actives = box_lookup.get(key_active, [])
+            dnps = box_lookup.get(key_dnp, [])
+            # Top scorers actually on the floor that night
+            top = sorted(actives, key=lambda p: -p.get("pts", 0))[:5]
+            if top:
+                pstrs = [f"{p['name'][:14]} {p['min']:.0f}m/{p['pts']}p" for p in top]
+                lines.append(f"  {label}: {' | '.join(pstrs)}")
+            if dnps:
+                # Show up to 5 DNPs with comment if available (e.g. "DND - Injury")
+                dstrs = []
+                for p in dnps[:5]:
+                    nm = p.get("name", "?")[:14]
+                    cm = (p.get("comment") or "DNP")[:25]
+                    dstrs.append(f"{nm}/{cm}")
+                lines.append(f"  {label}_DNP ({len(dnps)}): {' | '.join(dstrs)}")
 
     # Model prediction (base + derived core)
     game_key = f"{date}_{away}@{home}"
@@ -3118,20 +3134,33 @@ def load_rosters():
     return {}
 
 def load_injuries():
-    """Load injury report {team_abbr: [{name, status, reason, updated}, ...]}.
+    """DISABLED 2026-04-27 — was leaking current injuries into past sim dates."""
+    return {}
 
-    2026-04-26 — wired in. Previously NBA agents bet roster-dependent outcomes
-    blind. File is updated by scripts/ops/scrape_nba_injuries.py cron (hourly
-    during US daytime). Status codes: OUT, D (doubtful), Q (questionable),
-    DNP, suspended.
+
+_BOX_SCORE_CACHE: dict = {"loaded": False, "data": {}}
+
+def load_box_scores():
+    """Load per-game box scores keyed by game_id.
+
+    2026-04-27 — proper leakage-safe replacement for static rosters + current-injuries.
+    File built by scripts/modal/scrape_nba_box_scores.py (Modal job).
+    Each entry: {date, home, away, active_home/away [name,min,pts,reb,ast],
+                 dnp_home/away [name, comment]}.
+
+    Returns {} until the scrape lands. _format_game_block falls back to
+    showing only odds + standings + form when this is empty.
     """
-    path = DATA / "injuries-current.json"
+    if _BOX_SCORE_CACHE["loaded"]:
+        return _BOX_SCORE_CACHE["data"]
+    path = DATA / "box-scores-2025-26.json"
     if path.exists():
         try:
-            return json.loads(path.read_text())
+            _BOX_SCORE_CACHE["data"] = json.loads(path.read_text())
         except Exception:
-            return {}
-    return {}
+            _BOX_SCORE_CACHE["data"] = {}
+    _BOX_SCORE_CACHE["loaded"] = True
+    return _BOX_SCORE_CACHE["data"]
 
 def load_team_advanced():
     """Load advanced team stats {team_abbr: {OFF_RATING, DEF_RATING, ...}}"""
