@@ -1,160 +1,152 @@
 {
-  "updated_at": "2026-04-27T16:15:00Z",
+  "updated_at": "2026-04-27T20:00:00Z",
   "cycle": "cloud-brain-4h",
   "trigger": "trig_01BS3ixBvt2uKHY9p5EemcgD",
 
   "step0_recovery": {
     "pending_items_scanned": 1,
     "items_taken": 0,
-    "note": "tf-axelrod-verify-tune-12 (priority 21) blocked on explicit user gate for HF Space push. do_not_push_hf_space_yet=true. Not taken by brain."
+    "note": "tf-axelrod-verify-tune-12 (priority 21) blocked on explicit user gate for HF Space push. do_not_push_hf_space_yet=true. Owner=cloud-trigger-axelrod-2026 (not a crashed local-agent). Not taken."
   },
 
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "gen": null,
-      "best_brier": null,
-      "status": "503 DOWN — Nomos42 account sleeping/saturated",
+      "status": "503 — transient sleep",
       "healthy": false,
-      "last_known": {"gen": 1254, "brier": 0.22090, "date": "2026-04-25"},
       "hf_last_updated": "27 Apr, 2026",
-      "note": "503 likely transient. HF shows updated today — may be sleeping mid-evolution. VM keepalive-spaces.sh every 30min should recover."
+      "classification": "TRANSIENT — updated today, VM keepalive will recover",
+      "last_known": {"gen": 1254, "brier": 0.22090, "date": "2026-04-25"}
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "gen": 16,
-      "best_brier": 0.24699,
-      "algorithm": "xgboost_brier",
-      "stagnation_cycles": 15,
-      "status": "EVOLVING — STAGNANT (stagnation=15, AT threshold)",
-      "healthy": true,
-      "checkpoint_loaded": false,
-      "note": "Cold-restarted since prev cycle (was gen 91 at 12:30Z, now gen 16). brier 0.24699 confirms checkpoint NOT loaded — started from scratch (expected ~0.22 if checkpoint worked). Nomos42 NBA checkpoint persistence broken.",
-      "action_taken": "POST {command: diversify} sent — response: {status: command queued, command: diversify}. Will inject new feature/model variation to escape 15-cycle plateau.",
-      "api_correction": "Brain system prompt uses {action: diversify} (WRONG). Correct API field is {command: diversify}. Confirmed this cycle."
+      "status": "503 — transient sleep",
+      "healthy": false,
+      "hf_last_updated": "27 Apr, 2026",
+      "classification": "TRANSIENT — updated today, was evolving gen 16 brier 0.24699 at 16:15Z post-diversify",
+      "last_known": {"gen": 16, "brier": 0.24699, "note": "post-diversify cold restart at 16:15Z"}
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "gen": 0,
-      "best_brier": 1.0,
-      "algorithm": "NSGA-II Island Model",
-      "stagnation_cycles": 0,
-      "status": "BUILDING FEATURES — fresh restart at 16:05Z",
-      "healthy": true,
-      "checkpoint_loaded": false,
-      "started_at": "2026-04-27T16:05:47Z",
-      "note": "Restarted AGAIN since prev cycle (was gen 142 brier 0.22425 at 12:30Z). Second restart today. Nomos42 fleet best 0.22062 was on this island (gen 1306). Checkpoint not preserved — rebuilding from scratch. Will take ~1300+ gens to regain fleet best.",
-      "fleet_best_history": "0.22062 (gen 1306, extra_trees 200f, 2026-04-25) — confirmed checkpointed to dataset but not loading on restart"
+      "status": "503 — transient sleep",
+      "healthy": false,
+      "hf_last_updated": "27 Apr, 2026",
+      "classification": "TRANSIENT — updated today, was gen 0 fresh restart at 16:05Z",
+      "fleet_best_history": "0.22062 gen 1306 extra_trees 200f — checkpoint load broken on Nomos42 NBA",
+      "last_known": {"gen": 0, "note": "fresh restart building features at 16:05Z"}
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
-      "gen": null,
-      "best_brier": null,
-      "status": "PAUSED — truly paused on HF (not transient sleep)",
+      "status": "503 — TRULY PAUSED",
       "healthy": false,
-      "last_known": {"gen": 2196, "brier": 0.22249, "date": "2026-04-25"},
       "hf_last_updated": "18 Apr, 2026",
-      "days_since_update": 9,
-      "action_needed": "VM restart: curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'. Cloud brain cannot restart (no HF token).",
-      "gens_missed_estimate": "~2700+ (S22 rate ~50 gens/h x 216h)"
+      "days_stale": 9,
+      "classification": "HARD PAUSED — 9 days stale, needs VM restart",
+      "vm_action": "curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'",
+      "last_known": {"gen": 2196, "brier": 0.22249, "date": "2026-04-25"}
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "gen": null,
-      "best_brier": null,
-      "status": "503 DOWN — TESTforge42 account sleeping",
+      "status": "503 — TRULY PAUSED",
       "healthy": false,
-      "last_known": {"gen": 2006, "brier": 0.22248, "date": "2026-04-27T08:30:00Z"},
       "hf_last_updated": "18 Apr, 2026",
-      "note": "Diversify was successfully queued last cycle (stagnation was 17). Now 503 — sleeping or respawning post-diversify. VM keepalive should recover."
+      "days_stale": 9,
+      "classification": "HARD PAUSED — 9 days stale, needs VM restart",
+      "vm_action": "curl -X POST https://huggingface.co/api/spaces/TESTforge42/nba-evo-s18/restart -H 'Authorization: Bearer $HF_TOKEN'",
+      "repurpose_proposal": "2026 SOTA: LR Brier 0.199 — if checkpoint broken, repurpose S18 as logistic_regression island instead of extra_trees. Change ALGORITHM env var before restart.",
+      "last_known": {"gen": 2006, "brier": 0.22248, "date": "2026-04-27T08:30:00Z"}
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "gen": 2722,
-      "best_brier": 0.22475,
-      "algorithm": "extra_trees",
-      "stagnation_cycles": 0,
-      "features_selected": 46,
-      "feature_candidates": 3377,
-      "status": "EVOLVING (cycle 908) — HEALTHY",
-      "healthy": true,
-      "last_hard_reset": "cycle 901 (stagnation threshold 25 hit, seeded lightgbm/logistic variants)",
-      "best_sharpe": 14.8254,
-      "note": "Only fully-alive NBA island this cycle. Self-reset at cycle 901 broke plateau at 0.22475 — mutation rate boosted to 0.15, new model types injected. Stagnation=0 post-reset. Steady 50+ gens/h."
+      "status": "503 — likely transient (was healthy at 16:15Z)",
+      "healthy": false,
+      "hf_last_updated": "20 Apr, 2026",
+      "days_code_stale": 7,
+      "classification": "LIKELY TRANSIENT — was gen 2722 stagnation=0 at 16:15Z. Code not updated since Apr 20 but space can run without code push.",
+      "last_known": {"gen": 2722, "brier": 0.22475, "sharpe": 14.8, "stagnation": 0}
     }
   },
 
   "fleet_summary": {
-    "alive_confirmed": ["S22"],
-    "alive_unconfirmed_503": ["S13", "S14 (evolving but 503 prev check)", "S18"],
-    "building": ["S15 (gen 0)"],
-    "paused_hard": ["S17"],
+    "alive_confirmed": [],
+    "transient_503": ["S13", "S14", "S15", "S22"],
+    "hard_paused": ["S17", "S18"],
     "total": 6,
     "fleet_best_brier": 0.22062,
     "fleet_best_island": "S15 historical",
     "fleet_best_algorithm": "extra_trees_200f",
     "fleet_best_gen": 1306,
-    "fleet_best_date": "2026-04-25",
-    "checkpoint_status": "WARNING — fleet best on S15 may not reload on restart. Nomos42 NBA checkpoint persistence broken.",
     "threshold_broken": false,
-    "target": 0.22085
+    "target": 0.22085,
+    "stagnation_check": "SKIP — all islands 503, cannot read stagnation_cycles",
+    "diversify_sent_prev_cycle": "S14 at 16:15Z (stagnation was 15, threshold)"
   },
 
-  "critical_finding": {
-    "name": "Nomos42 NBA checkpoint persistence broken",
-    "severity": "CRITICAL",
-    "evidence": [
-      "S14: prev gen=91 brier=0.22175, restarted → gen=16 brier=0.24699 (fresh start, no checkpoint)",
-      "S15: prev gen=142 brier=0.22425, restarted → gen=0 brier=1.0 (fresh start, building features)",
-      "In contrast, Nomos42 POLITICAL islands P1/P2 DO load checkpoints on restart (P1: brier improved 0.25061→0.24991 after restart)"
-    ],
-    "hypothesis": "NBA app.py on Nomos42 spaces either: (a) has broken save_to_dataset() for NBA checkpoint, (b) loads from wrong dataset_repo name, or (c) has no checkpoint load on startup at all.",
-    "contrast": "Political app.py checkpoint works on same account — compare political_engine.py save/load vs NBA features/engine.py",
-    "fix_steps": [
-      "1. On VM: grep 'save_to_dataset\\|push_to_hub\\|load_checkpoint' scripts/arena/hf-nba-evo-*/app.py",
-      "2. Compare against nomos-political-alpha/hf-space/P2/app.py (working checkpoint)",
-      "3. Ensure NBA DATASET_REPO points to correct HF dataset and HF_TOKEN has write access",
-      "4. Verify checkpoint is being written: check HF dataset LBJLincoln26/nba-oracle-model or equivalent for NBA evolution checkpoints"
-    ],
-    "impact": "Every Nomos42 NBA restart wastes ~1300 gens to recover fleet best 0.22062. Fix = each restart resumes from 0.22 in <100 gens."
+  "political_fleet_summary": {
+    "alive_confirmed": [],
+    "all_503": ["P1", "P2", "P4", "P5", "P7"],
+    "hf_updated": {
+      "P1": "17 Apr", "P2": "17 Apr", "P4": "17 Apr", "P5": "17 Apr", "P7": "24 Apr"
+    },
+    "classification": "All political islands 503. P1/P2 Nomos42 (updated 17 Apr — checkpoint works, likely transient). P4/P5 LBJLincoln (checkpoint broken, OOM pattern). P7 updated 24 Apr.",
+    "live_fleet_best": 0.24991,
+    "live_best_island": "P1 (confirmed at 16:15Z)",
+    "historical_best": 0.24902,
+    "historical_best_island": "P4 (LOST — checkpoint broken on LBJLincoln)"
   },
 
-  "political_fleet_update": {
-    "new_live_best": {"brier": 0.24991, "island": "P1 (Nomos42/political-alpha)", "gen": 564, "note": "Restarted from checkpoint, quickly improved from 0.25061"},
-    "historical_best_status": "LOST — P4 0.24902 at gen 29557 (cold-reset 2026-04-26, checkpoint broken on LBJLincoln)"
+  "critical_issues": [
+    {
+      "name": "Widespread space sleep — VM keepalive-spaces.sh suspect",
+      "severity": "HIGH",
+      "evidence": "All 11 islands (6 NBA + 5 POL) returned 503 simultaneously. Previous cycle showed S14/S22/P1/P2/P7 alive. Either VM keepalive failed or HF had a platform event.",
+      "vm_check": "ps aux | grep keepalive; crontab -l | grep keepalive; cat /var/log/keepalive-spaces.log | tail -50"
+    },
+    {
+      "name": "Nomos42 NBA checkpoint persistence broken",
+      "severity": "CRITICAL",
+      "evidence": "S14 restarted gen 91→16 (no checkpoint). S15 restarted gen 142→0 (no checkpoint). Contrast: Nomos42 POL checkpoint works (P1 loaded checkpoint, improved 0.25061→0.24991).",
+      "impact": "Every restart wastes ~1300 gens to regain fleet best 0.22062.",
+      "vm_fix": "grep -n 'save_to_dataset\\|push_to_hub\\|load_checkpoint\\|DATASET_REPO' scripts/arena/hf-nba-evo-*/app.py | head -30; compare vs nomos-political-alpha/hf-space/P1/app.py"
+    },
+    {
+      "name": "S17 hard paused 9+ days",
+      "severity": "HIGH",
+      "action": "curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'"
+    },
+    {
+      "name": "S18 hard paused 9+ days — repurpose proposal",
+      "severity": "MEDIUM",
+      "action": "Consider repurposing as logistic_regression island (2026 SOTA: LR Brier 0.199). Change ALGORITHM=logistic_regression env var before restarting."
+    }
+  ],
+
+  "sota_cycle": {
+    "performed": true,
+    "proposal_file": "data/research-proposals/sota-2026-04-27-20h.json",
+    "headline": "2026 Uncertainty-Aware study: LR Brier 0.199, XGBoost 0.202 — both below our 0.20 target. Gap to fleet best = 0.022. Closes entirely with: calibration (0.005) + better features.",
+    "top_action": "Isotonic calibration in evaluate_individual() — P0, expected -0.005 Brier"
   },
 
   "engine_parity": {
-    "feature_candidates": {
-      "S14": 3377, "S15": 3377, "S22": 3377,
-      "S17": "unknown (paused)",
-      "S18": "unknown (503)"
-    },
-    "sha256_check": "Deferred — cannot compare inline from cloud. VM should run: sha256sum features/engine.py scripts/arena/hf-nba-evo-*/features/engine.py"
+    "check": "DEFERRED — cannot sha256 from cloud",
+    "vm_command": "sha256sum features/engine.py scripts/arena/hf-nba-evo-*/features/engine.py 2>/dev/null | sort | uniq -c"
   },
-
-  "actions_taken": [
-    "S14: POST {command: diversify} → {status: command queued} — stagnation=15 diversify injected",
-    "S15: Fresh restart detected (gen 0 at 16:05Z). No action needed — let it build.",
-    "S22: Confirmed healthy at gen 2722, stagnation=0 post-self-reset",
-    "S17: Flagged PAUSED for VM restart (day 9+)",
-    "Critical finding documented: Nomos42 NBA checkpoint persistence broken",
-    "SOTA research proposal written: data/research-proposals/sota-2026-04-27-16h.json"
-  ],
 
   "steps_status": {
     "step0_recovery": "SKIP — only pending item blocked on user gate",
-    "step1_nba": "DONE — diversify sent S14; critical checkpoint bug documented; SOTA proposal written",
-    "step2_political": "DONE — see nomos-political-alpha/data/brain-status.json (rotation B this cycle)",
+    "step1_nba": "DONE — all 503, last cycle diversify for S14 noted, SOTA proposal written (sota-2026-04-27-20h.json)",
+    "step2_political": "DONE — see nomos-political-alpha/data/brain-status.json (rotation C)",
     "step3_councils": "N/A — DECOMMISSIONED 2026-04-20",
     "step4_dashboard": "N/A — all work-queue items done",
-    "step5_cross_project": "Finding: political checkpoint works, NBA doesn't — port political checkpoint load pattern to NBA (P0 fix)"
+    "step5_cross_project": "NBA→POL: logistic_regression validated by 2026 SOTA (P7 pattern). gc.collect() OOM fix for P4/P5 documented in political brain-status."
   },
 
   "next_cycle_priorities": [
-    "P0: Investigate + fix NBA checkpoint persistence on Nomos42 islands (S14/S15 losing progress on every restart)",
-    "P1: S17 PAUSED 9+ days — user/VM restart needed",
-    "P2: Verify S14 post-diversify improvement (stagnation broken?)",
-    "P3: Monitor P1 political progress — currently at 0.24991, target <0.24902 fleet best"
+    "P0: Implement isotonic calibration in features/engine.py evaluate_individual() — expected Brier -0.005",
+    "P1: Check VM keepalive-spaces.sh — all 11 islands sleeping simultaneously",
+    "P2: Restart S17 (paused 9+ days) and S18 (paused 9+ days, consider LR repurpose)",
+    "P3: Fix Nomos42 NBA checkpoint persistence (S14/S15 lose all progress on restart)",
+    "P4: Political gc.collect() fix for P4/P5 OOM crash cycle"
   ]
 }

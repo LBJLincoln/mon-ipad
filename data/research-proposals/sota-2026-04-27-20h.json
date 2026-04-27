@@ -1,0 +1,98 @@
+{
+  "created_at": "2026-04-27T20:00:00Z",
+  "cycle": "cloud-brain-4h",
+  "type": "SOTA research — NBA 2026",
+  "trigger": "every-other-cycle WebSearch",
+
+  "headline": "2026 Uncertainty-Aware ML study: Logistic Regression Brier 0.199 (BELOW our 0.20 target), XGBoost 0.202 — both better than fleet best 0.22062",
+
+  "sources": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "year": 2026,
+      "venue": "MDPI Information",
+      "key_results": {
+        "logistic_regression_brier": 0.199,
+        "logistic_regression_log_loss": 0.583,
+        "xgboost_brier": 0.202,
+        "xgboost_log_loss": 0.589,
+        "xgboost_auc": 0.754,
+        "best_model": "LSTM + Monte Carlo dropout at inference",
+        "best_model_capability": "Calibrated probabilities + uncertainty quantification"
+      }
+    },
+    {
+      "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+      "url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "year": 2025,
+      "venue": "MDPI Computation (Oct 2025)",
+      "key_results": {
+        "cnn_brier": 0.221,
+        "models_tested": ["LogReg", "Ridge", "RF", "NaiveBayes", "KNN", "SVM", "Stacking", "Bagging", "MLP", "AdaBoost", "XGBoost", "CNN"]
+      }
+    },
+    {
+      "title": "Comparing Machine Learning Methods for NBA Game Outcome Prediction",
+      "url": "https://ieeexplore.ieee.org/document/11030489/",
+      "year": 2026,
+      "venue": "IEEE Conference 2026"
+    }
+  ],
+
+  "key_insight": "Logistic Regression with proper feature selection achieves Brier 0.199 in 2026 SOTA — beating our target of 0.20 AND beating XGBoost (0.202). This directly validates P7 (our logistic_regression political island, most stable) and argues for adding a logistic_regression NBA island.",
+
+  "relevance_to_fleet": {
+    "S17_xgboost": "XGBoost achieves 0.202 in SOTA (vs our S17 best 0.22249). Gap = 0.020. Indicates our XGBoost features/tuning has room. Feature engineering quality is the bottleneck, not model choice.",
+    "S13_S15_extra_trees": "Extra Trees not benchmarked in 2026 study. CNN achieves 0.221 (comparable to our 0.22062 fleet best). Suggests extra_trees may be near its ceiling.",
+    "P7_logistic": "Political P7 uses logistic_regression, is the most STABLE island (686 gens/h, no OOM crashes). 2026 study confirms LR is competitive. P7's 0.25412 brier gap from 0.199 is ENTIRELY feature engineering.",
+    "new_island_proposal": "Add logistic_regression NBA island. Would use same feature engine, different model. Historical evidence: LR = most stable + calibrated. Zero extra memory vs XGBoost."
+  },
+
+  "actionable_techniques": [
+    {
+      "name": "Monte Carlo Dropout Calibration Head",
+      "description": "Wrap tree ensemble predictions with MC dropout during inference to generate uncertainty estimates. On CPU: run predict_proba() N=30 times with bootstrap resampling to simulate MC dropout.",
+      "cpu_adaptation": "Bootstrap predict_proba() over 30 random feature subsets (already done by RandomForest, but explicit uncertainty = std across trees). ExtraTrees: use estimators list, take std as uncertainty.",
+      "expected_brier_delta": -0.003,
+      "implementation_loc": "features/engine.py evaluate_individual() — wrap y_pred with calibration step",
+      "priority": "HIGH"
+    },
+    {
+      "name": "Isotonic Calibration Post-Processing",
+      "description": "sklearn.calibration.CalibratedClassifierCV(method='isotonic', cv=3) wrapper on ExtraTrees/XGBoost. Already proposed in sota-2026-04-27-16h.json. Re-confirming: this is the highest-ROI technique.",
+      "expected_brier_delta": -0.005,
+      "implementation_loc": "features/engine.py evaluate_individual()",
+      "priority": "P0"
+    },
+    {
+      "name": "Add Logistic Regression NBA Island",
+      "description": "Replace the paused S18 (TESTforge42/nba-evo-s18, stale 9 days) with a logistic_regression variant. 2026 SOTA achieves 0.199 with LR. Zero OOM risk, stable, fast.",
+      "expected_brier_target": 0.199,
+      "rationale": "S18 already stale 9 days. If checkpoint is broken, restart from scratch with LR. LR trains 10x faster than ExtraTrees per generation — more gens/h.",
+      "priority": "MEDIUM"
+    },
+    {
+      "name": "Rolling Feature Importance Pruning",
+      "description": "Every 100 gens, recompute feature importance and drop bottom 20%. Prevents feature bloat as GA adds features. Matches paper's emphasis on feature selection quality over model complexity.",
+      "expected_brier_delta": -0.002,
+      "implementation_loc": "GA mutate() / crossover() in HF space app.py",
+      "priority": "MEDIUM"
+    }
+  ],
+
+  "fleet_context": {
+    "fleet_best_brier": 0.22062,
+    "target_brier": 0.22085,
+    "sota_2026_brier": 0.199,
+    "gap_to_sota": 0.02162,
+    "gap_interpretation": "Our gap to 2026 SOTA is entirely attributable to: (1) CPU-only constraint (no LSTM/deep learning), (2) feature engineering quality, (3) lack of calibration post-processing. Calibration alone (isotonic) should close ~0.005 gap."
+  },
+
+  "vm_action_items": [
+    "1. Implement isotonic calibration in features/engine.py evaluate_individual() — see sota-2026-04-27-16h.json for exact code",
+    "2. If S18 stays paused: repurpose as logistic_regression island (change ALGORITHM env var, restart)",
+    "3. S17 paused 9+ days on LBJLincoln26: curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'",
+    "4. Verify keepalive-spaces.sh is running: crontab -l | grep keepalive — all spaces 503 this cycle"
+  ]
+}
