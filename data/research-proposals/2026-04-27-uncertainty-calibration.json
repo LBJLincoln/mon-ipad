@@ -1,0 +1,92 @@
+{
+  "id": "2026-04-27-uncertainty-calibration",
+  "created_at": "2026-04-27T08:30:00Z",
+  "source": "cloud-brain WebSearch 2026 NBA SOTA",
+  "title": "Probability Calibration + Uncertainty-Aware Features for NBA Island Models",
+  "priority": "HIGH",
+  "estimated_brier_improvement": "0.002 to 0.005 (0.222 → 0.217-0.220)",
+
+  "sota_references": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "venue": "MDPI Information 2026",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "key_result": "Logistic regression with calibrated uncertainty: Brier 0.199, XGBoost: 0.202 on 2024 NBA test data",
+      "techniques": ["Monte Carlo dropout equivalent", "rolling-form indicators", "spatial shot-chart embeddings", "temperature scaling calibration"]
+    },
+    {
+      "title": "Stacked Ensemble Model for NBA Game Outcome Prediction Analysis",
+      "venue": "Nature Scientific Reports 2025",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "key_result": "Stacked ensemble (XGBoost+KNN+AdaBoost+NB+LR+DT + MLP meta) achieves 83.27% accuracy, AUC 0.9213",
+      "techniques": ["5-fold CV stacking", "SHAP interpretability", "paired t-tests for significance"]
+    },
+    {
+      "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+      "venue": "MDPI Computation 2025",
+      "url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "key_result": "CNN achieves lowest Brier 0.221; LightGBM near-parity with XGBoost"
+    }
+  ],
+
+  "gap_analysis": {
+    "current_fleet_best_brier": 0.22062,
+    "sota_brier": 0.199,
+    "gap": 0.02162,
+    "primary_gap_reason": "Our island models output raw tree probabilities (predict_proba) without post-hoc calibration. Trees are notoriously miscalibrated — they output overconfident probabilities near 0/1 boundaries.",
+    "secondary_gap": "No explicit uncertainty quantification — we treat each prediction as a point estimate rather than a distribution"
+  },
+
+  "proposals": [
+    {
+      "id": "P1",
+      "name": "Isotonic Regression Calibration Wrapper",
+      "priority": 1,
+      "effort": "LOW — 3 lines of code change per island",
+      "description": "Wrap GA-selected models with sklearn CalibratedClassifierCV(method='isotonic', cv=3). Isotonic regression corrects for overconfidence at probability extremes. Training data: same fold used for Brier evaluation.",
+      "implementation": {
+        "change": "In features/engine.py or island app.py: after model.fit(), wrap: model = CalibratedClassifierCV(model, method='isotonic', cv='prefit'); model.fit(X_cal, y_cal)",
+        "validation": "Compare ECE (Expected Calibration Error) pre/post. ECE should drop from ~0.08 to ~0.03.",
+        "risk": "Low — calibration only affects probability output, not feature selection. Worst case: marginal degradation (revert easily).",
+        "cpu_cost": "Minimal — calibration is O(N log N) for isotonic, runs in <1s on 9551 games."
+      }
+    },
+    {
+      "id": "P2",
+      "name": "Rolling Form Indicator Features",
+      "priority": 2,
+      "effort": "MEDIUM — new feature category in engine.py",
+      "description": "SOTA papers emphasize rolling 5/10/20 game windows for team offensive/defensive ratings, net rating momentum, and home/away split momentum. Our engine likely has rolling features but explicit momentum features (slope of last-5 vs last-20 rating) may be missing.",
+      "implementation": {
+        "new_features": [
+          "team_ortg_momentum_5_20 = (ortg_last5 - ortg_last20) / ortg_last20",
+          "team_drtg_momentum_5_20 = (drtg_last5 - drtg_last20) / drtg_last20",
+          "team_net_rating_slope_5 = slope(net_rating last 5 games)",
+          "h2h_last3_win_rate (head-to-head momentum)"
+        ],
+        "add_to": "features/engine.py — new category 'team_momentum_indicators' (category 55 if v3.1 has 54)"
+      }
+    },
+    {
+      "id": "P3",
+      "name": "Expected Calibration Error (ECE) as GA Fitness Objective",
+      "priority": 3,
+      "effort": "MEDIUM — modify GA fitness function",
+      "description": "Add ECE as third optimization objective in NSGA-II alongside Brier and ROI/Sharpe. Models with low Brier AND low ECE represent well-calibrated predictions — better for Kelly sizing.",
+      "implementation": {
+        "change": "In island app.py fitness(): compute ECE with 10 bins. Add to Pareto objectives: minimize [brier, ece, -sharpe]",
+        "formula": "ECE = sum_b (n_b/N) * |avg_confidence_b - accuracy_b| for 10 equal-width probability bins"
+      }
+    }
+  ],
+
+  "recommended_order": [
+    "P1 (calibration wrapper) — ship to one island (S15, fleet best candidate) as A/B test",
+    "P2 (momentum features) — add to engine.py v3.2 after P1 validated",
+    "P3 (ECE objective) — ship after P1+P2 prove calibration benefit"
+  ],
+
+  "next_action": "DR FRANKENSTEIN to implement P1 (CalibratedClassifierCV) in S15 island app.py. Measure Brier delta over 50 generations. If Brier improves > 0.001, port to all islands.",
+
+  "cross_project": "Same P1 calibration applies to political islands. P4 (xgboost_brier, 0.24913) could be first political calibration target."
+}
