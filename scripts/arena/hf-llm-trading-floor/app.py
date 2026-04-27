@@ -1735,42 +1735,16 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
 
     lines.append(f"  ODDS: ML {home} {ml_h:.2f} ({impl_h:.1%}) | {away} {ml_a:.2f} ({impl_a:.1%}) | Spread {odds.get('spread_home','?')} | Total {odds.get('total','?')}")
 
-    # Top 3 players + INJURY status + roster depth (2026-04-26 wired in).
-    if player_stats or rosters or injuries:
-        for t, label in [(home, "H"), (away, "A")]:
-            # Top scorers from player_stats
-            ps_entry = (player_stats or {}).get(t, {})
-            players = (ps_entry.get("players", ps_entry) if isinstance(ps_entry, dict) else ps_entry) or []
-            top_scorer_names = set()
-            if isinstance(players, list):
-                top3 = players[:3]
-                if top3:
-                    pstrs = [f"{p.get('name','?')[:15]} {p.get('PPG',p.get('ppg',0)) or 0:.0f}p" for p in top3]
-                    lines.append(f"  {label}: {' | '.join(pstrs)}")
-                    top_scorer_names = {(p.get('name') or '').upper() for p in top3}
-            # Roster depth (next 5 names beyond top-3, position-tagged)
-            roster = (rosters or {}).get(t) or (rosters or {}).get(t.upper()) or []
-            if isinstance(roster, list) and roster:
-                # Skip names already shown as top scorers; show next 5
-                rest = []
-                for p in roster:
-                    nm = (p.get('name') if isinstance(p, dict) else str(p)) or ''
-                    if not nm or nm.upper() in top_scorer_names:
-                        continue
-                    pos = (p.get('position') if isinstance(p, dict) else '') or ''
-                    age = (p.get('age') if isinstance(p, dict) else '') or ''
-                    rest.append(f"{nm[:14]}{f'/{pos}' if pos else ''}")
-                    if len(rest) >= 5:
-                        break
-                if rest:
-                    lines.append(f"  {label}_DEPTH ({len(roster)} total): {' | '.join(rest)}")
-            # Injuries (CRITICAL — was missing entirely before 2026-04-26)
-            inj_entry = (injuries or {}).get(t) or (injuries or {}).get(t.upper()) or []
-            if isinstance(inj_entry, list) and inj_entry:
-                hot = [i for i in inj_entry if str(i.get('status','')).lower() in ('out','d','dnp','suspended','questionable','q')]
-                if hot:
-                    inj_lines = [f"{(i.get('name') or '?')[:14]}/{i.get('status','?').upper()[:3]}" for i in hot[:5]]
-                    lines.append(f"  {label}_INJ ⚠ {' | '.join(inj_lines)}")
+    # 2026-04-27 — ROSTER + INJURY DATA REMOVED entirely from per-game prompts.
+    # User audit caught CURRENT (Apr 2026) injuries leaking into Oct 2025 sim
+    # dates — agents reasoned from "AD/Sarr injuries" on Wizards in Oct, but
+    # AD wasn't traded to WAS until late season. Same for static roster snapshots:
+    # current roster retroactively applied across all 175 sim dates = leakage.
+    # Until per-day rosters + per-game DNP data is properly scraped via
+    # nba_api.BoxScoreTraditionalV2, NO roster/injury context is shown.
+    # Agents reason only from leakage-safe inputs: standings, form, real odds,
+    # team_advanced (single-snapshot but at least real signal), AI MODEL.
+    pass  # block intentionally empty — see comment above
 
     # Model prediction (base + derived core)
     game_key = f"{date}_{away}@{home}"
