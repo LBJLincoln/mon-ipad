@@ -1744,23 +1744,27 @@ def _format_game_block(idx: int, game: Dict, odds: Dict, home_std: Dict,
     # static rosters + Apr 2026 injuries-current.json).
     box_lookup = (load_box_scores() or {}).get(game.get("game_id", ""))
     if box_lookup:
-        for label, key_active, key_dnp in [("H", "active_home", "dnp_home"),
-                                            ("A", "active_away", "dnp_away")]:
-            actives = box_lookup.get(key_active, [])
-            dnps = box_lookup.get(key_dnp, [])
-            # Top scorers actually on the floor that night
+        for label, k_active, k_dnp, k_inactive in [
+            ("H", "active_home", "dnp_home", "inactive_home"),
+            ("A", "active_away", "dnp_away", "inactive_away"),
+        ]:
+            actives = box_lookup.get(k_active, [])
+            dnps = box_lookup.get(k_dnp, [])
+            inactives = box_lookup.get(k_inactive, [])
+            # Top scorers actually on the floor
             top = sorted(actives, key=lambda p: -p.get("pts", 0))[:5]
             if top:
                 pstrs = [f"{p['name'][:14]} {p['min']:.0f}m/{p['pts']}p" for p in top]
                 lines.append(f"  {label}: {' | '.join(pstrs)}")
-            if dnps:
-                # Show up to 5 DNPs with comment if available (e.g. "DND - Injury")
-                dstrs = []
-                for p in dnps[:5]:
-                    nm = p.get("name", "?")[:14]
-                    cm = (p.get("comment") or "DNP")[:25]
-                    dstrs.append(f"{nm}/{cm}")
-                lines.append(f"  {label}_DNP ({len(dnps)}): {' | '.join(dstrs)}")
+            # Combined OUT list: DNPs + Inactives (agent should see who wasn't on floor)
+            out_list = []
+            for p in dnps:
+                cm = (p.get("comment") or "DNP")[:25]
+                out_list.append(f"{p['name'][:14]}/{cm}")
+            for p in inactives:
+                out_list.append(f"{p['name'][:14]}/INACTIVE")
+            if out_list:
+                lines.append(f"  {label}_OUT ({len(out_list)}): {' | '.join(out_list[:8])}")
 
     # Model prediction (base + derived core)
     game_key = f"{date}_{away}@{home}"
@@ -4149,8 +4153,13 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             if parsed is None and _ff_enable and bankroll >= _bk_floor and model_preds and day_games:
                 parsed = {"allocations": [], "parlays": [], "cash_held_pct": 1.0,
                           "_stub_for_injection": True}
+            # 2026-04-27 — extend forced_floor to top-up partial-LLM agents.
+            # Was: only fired when LLM emitted 0 allocations.
+            # Now: fires when LLM emitted < 3 allocations (so 1-2 bet agents get
+            # filled to 3 with positive engine edges from cross-family).
+            _alloc_count = len((parsed or {}).get("allocations") or [])
             if (_ff_enable and bankroll >= _bk_floor and parsed and
-                    not parsed.get("allocations") and model_preds and day_games):
+                    _alloc_count < 3 and model_preds and day_games):
                 _gidx_to_gk = {}
                 for _idx, _g in enumerate(day_games, 1):
                     _h = (_g.get("home") or "").upper()

@@ -132,20 +132,35 @@ def main() -> int:
             dnp_home = [p for p in home_players if p["min"] == 0]
             dnp_away = [p for p in away_players if p["min"] == 0]
 
-            # Officials via SummaryV3 (extra call — soft-fail if 4/10+ data gap)
+            # Officials + INACTIVE list via SummaryV3
+            # 2026-04-27: V3 BoxScoreTraditional only lists players who suited up
+            # (active + DNP). Players who were INACTIVE (injured DNS, suspended,
+            # etc.) never appear there — that's why LeBron didn't show in Oct 21
+            # 2025 LAL game (he was injured, on inactive list, didn't suit up).
+            # SummaryV3.inactivePlayers fills this gap.
             officials = []
+            inactive_home = []
+            inactive_away = []
             try:
                 summary = boxscoresummaryv3.BoxScoreSummaryV3(game_id=gid).get_dict()
-                # V3 nests under "boxScoreSummary" → "officials"
                 bs_sum = summary.get("boxScoreSummary") or {}
                 offs = bs_sum.get("officials") or []
                 for r in offs:
                     nm = r.get("nameI") or f"{r.get('firstName','')} {r.get('familyName','')}".strip()
                     if nm.strip():
                         officials.append({"name": nm[:40], "jersey": str(r.get("jerseyNum") or "")})
+                # Inactive players list
+                for ip in (bs_sum.get("inactivePlayers") or []):
+                    nm = ip.get("nameI") or f"{ip.get('firstName','')} {ip.get('familyName','')}".strip()
+                    team_abbr = ip.get("teamTricode") or ""
+                    entry = {"name": nm[:40], "comment": "INACTIVE"}
+                    if team_abbr == home:
+                        inactive_home.append(entry)
+                    elif team_abbr == away:
+                        inactive_away.append(entry)
                 time.sleep(0.5)
             except Exception:
-                officials = []
+                pass
 
             out[gid] = {
                 "date": date,
@@ -154,6 +169,8 @@ def main() -> int:
                 "active_away": active_away,
                 "dnp_home": dnp_home,
                 "dnp_away": dnp_away,
+                "inactive_home": inactive_home,
+                "inactive_away": inactive_away,
                 "officials": officials,
             }
             new_count += 1
