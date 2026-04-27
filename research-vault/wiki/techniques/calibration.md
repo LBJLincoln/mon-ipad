@@ -1,6 +1,6 @@
 # Calibration & Probability Scoring
 
-> Auto-compiled from 32 raw sources on 2026-04-26
+> Auto-compiled from 32 raw sources on 2026-04-27
 
 ## Overview
 

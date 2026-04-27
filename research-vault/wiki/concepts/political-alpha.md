@@ -1,10 +1,10 @@
 # Political Alpha & Prediction Markets
 
-> Auto-compiled from 71 raw sources on 2026-04-26
+> Auto-compiled from 73 raw sources on 2026-04-27
 
 ## Overview
 
-This topic covers 71 research files spanning political alpha & prediction markets.
+This topic covers 73 research files spanning political alpha & prediction markets.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Mutation Operators, Political Alpha, SHAP.
 
 ## Sources
@@ -50,6 +50,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-23** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-23.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-24** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-24.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-25** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-25.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-26** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-26.md`
 - **YouTube FinBERT sentiment features shipped (Cat 67 NBA / Cat 44 POL) + OAuth sub** (385 words) -- `raw/agent-memory/dr-frankenstein_project_youtube_finbert_apr21.md`
 - **Political Alpha Deployment** (363 words) -- `raw/agent-memory/feature-engineer_project_political_alpha_deploy.md`
 - **Political Alpha Scientific Experiment Report** (333 words) -- `raw/experiments/political-experiment-2026-04-06.md`
@@ -79,6 +80,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: github-betting-scan-2026-04-23** (136 words) -- `raw/research/github-betting-scan-2026-04-23.md`
 - **Research Scan: github-betting-scan-2026-04-24** (136 words) -- `raw/research/github-betting-scan-2026-04-24.md`
 - **Research Scan: github-betting-scan-2026-04-25** (136 words) -- `raw/research/github-betting-scan-2026-04-25.md`
+- **Research Scan: github-betting-scan-2026-04-26** (136 words) -- `raw/research/github-betting-scan-2026-04-26.md`
 - **Research Scan: tf-proposals-pol-options-overlay-2026-04-20** (129 words) -- `raw/research/tf-proposals-pol-options-overlay-2026-04-20.md`
 
 ## Key Findings
