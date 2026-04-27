@@ -40,5 +40,6 @@ check_and_restart() {
   echo "$(date -u +%FT%TZ) $tag running=$running llm_calls=$llm_calls → restart: $resp" >> "$LOG"
 }
 
-check_and_restart NBA https://lbjlincoln26-nba-llm-trading-floor.hf.space
+# DISABLED 2026-04-27 to preserve NBA halt — re-enable when better Oracle wired
+# check_and_restart NBA https://lbjlincoln26-nba-llm-trading-floor.hf.space
 check_and_restart POL https://lbjlincoln26-political-llm-trading-floor.hf.space
