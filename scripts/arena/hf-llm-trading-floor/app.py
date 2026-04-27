@@ -2117,6 +2117,24 @@ Schema (minimal):
   "cash_held_pct": 0.25
 }
 
+CRITICAL DATA you MUST use:
+
+  * H_OUT / A_OUT lines list players who DID NOT PLAY this exact game
+    (status INACTIVE = on inactive list, did not suit up; DNP-CD = bench;
+    DND-Injury = injured). The AI MODEL's edge prediction does NOT know about
+    these — it uses season averages. So:
+      - If H_OUT or A_OUT contains a STAR (a player listed in the H/A top 5
+        scorers above with pts ≥ 15), heavily downgrade that team's chances:
+        * STAR INACTIVE on the favorite → fade ml_favorite, take ml_dog or
+          alt_spread_dog. Engine's claimed edge on the favorite is wrong.
+        * STAR INACTIVE on the dog → ml_favorite is even safer than engine
+          says, but its odds already reflect that — small edge only.
+      - Multiple INACTIVES on one team → totals likely UNDER (less offense).
+      - Both teams have stars OUT → totals UNDER, prefer team_total_under.
+  * REFS line shows the 3 officials. Some refs are "high foul" (more FTs,
+    higher totals) and some "let them play" (fewer FTs, lower totals).
+    Reference your training-data knowledge of NBA officials when total betting.
+
 Rules (carte blanche — only these bankroll constraints):
 - Sum of allocation pct + parlay pct + cash_held_pct ≈ 1.00.
 - Daily deploy floor: 50-70% of bankroll across your chosen bets. Server-side
