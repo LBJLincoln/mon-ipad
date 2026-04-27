@@ -1,113 +1,121 @@
 {
-  "updated_at": "2026-04-26T20:30:00Z",
+  "updated_at": "2026-04-27T04:00:00Z",
   "cycle": "cloud-brain-4h",
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "gen": null,
-      "brier": null,
-      "stagnation": null,
-      "status": "DOWN 503",
-      "healthy": false,
-      "last_known": {"gen": 82, "brier": 0.22726, "note": "Was alive last cycle at gen 82 post-reset"}
+      "gen": 118,
+      "brier": 0.24738,
+      "stagnation": 11,
+      "algorithm": "stacking",
+      "status": "EVOLVING — RECOVERED",
+      "healthy": true,
+      "note": "Recovered from 503. Gen 118 brier 0.24738. NOTE: stacking model detected — rule 8 (CPU-only, tree-based only) may not be enforced in this space."
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "gen": 2473,
+      "gen": 2585,
       "brier": 0.22431,
-      "stagnation": 23,
-      "status": "EVOLVING — STAGNATION WARNING",
+      "stagnation": 0,
+      "algorithm": "random_forest",
+      "status": "EVOLVING — HEALTHY",
       "healthy": true,
-      "alert": "STAGNATION 23/25 — diversify command needed NOW; auto-hard-reset fires at 25",
-      "last_breakthrough": "generation 2455 (Brier 0.2204)"
+      "note": "Last cycle stagnation 23 cleared by auto-hard-reset at cycle 851. Rebuilt to gen 2585. ROI 27.4% Sharpe 8.1. Strong."
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "gen": null,
-      "brier": null,
-      "stagnation": null,
-      "status": "DOWN 503",
-      "healthy": false,
-      "last_known": {"gen": 645, "brier": 0.22409, "note": "Was alive last cycle post-reset from fleet-best gen 1310"}
+      "gen": 68,
+      "brier": 0.22302,
+      "stagnation_field": 0,
+      "cycles_without_improvement": 21,
+      "improvement_threshold": 0.22282,
+      "algorithm": "random_forest",
+      "status": "EVOLVING — STAGNATION 21/25",
+      "healthy": true,
+      "alert": "STAGNATION 21/25 — VM cron must POST /api/command {action:diversify} to nomos42-nba-evo-6.hf.space BEFORE auto-reset fires at 25. Cloud brain cannot POST.",
+      "note": "Recovered from 503. Appears reset from gen 1310. Fleet best checkpoint (gen 1306, 0.22062) was preserved separately 2026-04-25."
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
       "gen": null,
       "brier": null,
       "stagnation": null,
+      "algorithm": "xgboost",
       "status": "DOWN 503",
       "healthy": false,
-      "last_known": {"gen": 2196, "brier": 0.22249}
+      "last_known": {"gen": 2196, "brier": 0.22249, "note": "Persistent 503 for 2+ cycles. Could not wake via HTTP. VM keepalive must restore."}
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "gen": 1798,
-      "brier": 0.22248,
+      "gen": 0,
+      "brier": 1.0,
       "stagnation": 0,
-      "status": "EVOLVING",
+      "algorithm": "extra_trees",
+      "status": "STARTING — COLD RESET",
       "healthy": true,
-      "note": "LIVE BEST — extra_trees, stagnation 0, Pareto front 10, 9551 games evaluated"
+      "note": "Woke from 503 via HTTP but cold-reset to gen 0. Was gen 1798 brier 0.22248 (LIVE BEST last cycle). Rebuilding from scratch — checkpoint NOT restored."
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "gen": null,
-      "brier": null,
-      "stagnation": null,
-      "status": "DOWN 503",
-      "healthy": false,
-      "last_known": {"gen": 1980, "brier": 0.22475}
+      "gen": 0,
+      "brier": 1.0,
+      "stagnation": 0,
+      "algorithm": "extra_trees",
+      "status": "STARTING — COLD RESET",
+      "healthy": true,
+      "note": "Woke from 503 via HTTP but cold-reset to gen 0. Was gen 1469 brier 0.22475. Rebuilding."
     }
   },
   "political_islands": {
     "P1": {
       "space": "Nomos42/political-alpha",
-      "gen": 31149,
+      "gen": 32501,
       "brier": 0.25061,
       "algorithm": "catboost",
       "stagnation": 0,
-      "status": "EVOLVING",
+      "status": "EVOLVING — HEALTHY",
       "healthy": true,
-      "note": "RECOVERED — was 503 last cycle; back online gen 31149"
+      "note": "Continued progress: was gen 31149 last cycle, now 32501. Stable 0.25061 catboost."
     },
     "P2": {
       "space": "Nomos42/political-alpha-2",
-      "gen": 155,
-      "brier": 0.25254,
-      "algorithm": "random_forest",
+      "gen": 26968,
+      "brier": 0.25232,
+      "algorithm": "lightgbm",
       "stagnation": 0,
-      "status": "EVOLVING — HARD RESET",
+      "status": "EVOLVING — FULLY RECOVERED",
       "healthy": true,
-      "note": "Hard reset occurred — was gen 24952 brier 0.25232; now rebuilding from gen 155"
+      "note": "REMARKABLE RECOVERY — last cycle gen 155 after hard reset, now 26968 this cycle. Checkpoint restore confirmed working for P2 (Nomos42 account). 24797 gens recovered."
     },
     "P4": {
       "space": "LBJLincoln/political-alpha-4",
-      "gen": 155,
-      "brier": 0.25254,
-      "algorithm": "random_forest",
-      "stagnation": 0,
-      "status": "EVOLVING — APPEARS RESET",
+      "gen": 0,
+      "brier": 1.0,
+      "algorithm": "unknown",
+      "stagnation": null,
+      "status": "BUILDING FEATURES — COLD RESET",
       "healthy": true,
-      "note": "Woke from 503 via HTTP; appears reset from gen 29557 xgboost_brier (fleet best 0.24902) to gen 155 random_forest. Fleet best checkpoint should be preserved in HF dataset."
+      "note": "Woke from 503 via HTTP but cold-reset to gen 0. FLEET BEST 0.24902 at gen 29557 xgboost_brier (2026-04-26) must be verified in HF dataset LBJLincoln/political-alpha-4-model."
     },
     "P5": {
       "space": "LBJLincoln/political-alpha-5",
-      "gen": 1690,
-      "brier": 0.25703,
+      "gen": null,
+      "brier": null,
+      "stagnation": null,
       "algorithm": "catboost",
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "healthy": true,
-      "note": "RECOVERED — was 503 last cycle; rebuilding (hist_best 0.24923 may be preserved)"
+      "status": "DOWN 503",
+      "healthy": false,
+      "last_known": {"gen": 1690, "brier": 0.25703, "note": "REGRESSION — was alive last cycle, now 503. Could not wake via HTTP."}
     },
     "P7": {
       "space": "LBJLincoln/political-alpha-7",
-      "gen": 0,
-      "brier": 1.0,
-      "algorithm": "logistic",
-      "stagnation": null,
-      "status": "BUILDING FEATURES",
+      "gen": 1206,
+      "brier": 0.24913,
+      "algorithm": "lightgbm",
+      "stagnation": 0,
+      "status": "EVOLVING — NEW PERSONAL BEST",
       "healthy": true,
-      "note": "WAKING — fresh restart detected, loading 1180 events, building feature space"
+      "note": "NEW PERSONAL BEST 0.24913 < hist_best 0.24925. 2nd best live political. Gap to fleet best 0.24902 = 0.00011. Monitor closely next cycle."
     }
   },
   "fleet_bests": {
@@ -116,49 +124,68 @@
     "nba_best_gen": 1306,
     "nba_best_achieved": "2026-04-25",
     "nba_best_model": "extra_trees_200f",
-    "nba_current_best_live": 0.22248,
-    "nba_current_best_island": "S18",
+    "nba_current_best_live_brier": 0.22302,
+    "nba_current_best_live_island": "S15",
+    "nba_current_best_live_gen": 68,
     "pol_best_brier": 0.24902,
     "pol_best_island": "P4",
     "pol_best_gen": 29557,
     "pol_best_achieved": "2026-04-26",
     "pol_best_model": "xgboost_brier",
-    "pol_best_note": "CHECKPOINT PRESERVED — P4 reset but fleet best was checkpointed before reset"
+    "pol_best_note": "CHECKPOINT STATUS: P4 cold-reset to gen 0 this cycle — verify HF dataset LBJLincoln/political-alpha-4-model for preservation",
+    "pol_current_best_live_brier": 0.24913,
+    "pol_current_best_live_island": "P7",
+    "pol_current_best_live_gen": 1206
+  },
+  "engine_parity": {
+    "status": "CONFIRMED",
+    "sha": "f455c4758a6e42b3157a9e89f1a7c893d7a08f89",
+    "repos_checked": ["lbjlincoln/mon-ipad features/engine.py", "lbjlincoln/nomos-nba-agent features/engine.py"],
+    "note": "Both files identical SHA. No drift."
   },
   "fleet_health_summary": {
-    "nba_alive": 2,
+    "nba_alive": 5,
     "nba_total": 6,
-    "nba_pct": 0.33,
+    "nba_pct": 0.83,
+    "nba_established_evolving": 3,
+    "nba_cold_starting": 2,
     "pol_alive": 4,
     "pol_total": 5,
     "pol_pct": 0.80,
-    "status": "NBA DEGRADED 33% / POL RECOVERING 80% — net improvement vs last cycle (50% / 20%)"
+    "pol_established_evolving": 3,
+    "pol_cold_starting": 1,
+    "status": "NBA RECOVERING 83% (3 evolving + 2 cold-start) / POL STABLE 80% — net improvement vs last cycle (33% / 80%)"
   },
   "alerts": [
-    "CRITICAL: S14 stagnation 23/25 — VM cron must POST /api/command {action:diversify} to nomos42-nba-evo-5.hf.space",
-    "CRITICAL: NBA fleet at 33% (2/6) — S13/S15/S17/S22 all 503; VM keepalive-spaces.sh must restore",
-    "WARNING: P4 POL fleet best 0.24902 appears reset from gen 29557 to gen 155 — xgboost_brier -> random_forest",
-    "WARNING: P2 hard reset from gen 24952 to gen 155 — 24797 generations of progress lost",
-    "INFO: POL fleet recovered 4/5 alive (was 1/5 last cycle) — positive trend",
-    "INFO: P1 recovered gen 31149 brier 0.25061 catboost",
-    "INFO: P7 waking from fresh restart — BUILDING FEATURES"
+    "CRITICAL: S15 stagnation_counter 21/25 — VM cron must POST /api/command {action:diversify} to nomos42-nba-evo-6.hf.space BEFORE auto-reset at 25",
+    "CRITICAL: S17 persistent 503 for 2+ cycles — check HF Space management console for LBJLincoln26/nba-evo-s17",
+    "WARNING: P5 regression to 503 — was alive gen 1690 last cycle; VM keepalive must restore",
+    "WARNING: S18/S22/P4 cold-reset on wake — checkpoint not restored; audit save logic vs P2 which restores correctly",
+    "WARNING: S13 stacking model detected — rule 8 says CPU-only tree-based only (no stacking); flag for cleanup",
+    "INFO: Engine parity CONFIRMED — SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89 across both repos",
+    "INFO: P7 NEW PERSONAL BEST 0.24913 < hist_best 0.24925 — next cycle may challenge fleet best 0.24902",
+    "INFO: P2 checkpoint restore confirmed — gen 155 → 26968 in 4h (Nomos42 account checkpoint works)"
   ],
   "actions_taken": [
-    "Fetched all 11 island /api/status endpoints",
-    "Woke P4 via HTTP hit — now EVOLVING gen 155 (was persistent 503)",
-    "Woke P7 via HTTP hit — now BUILDING FEATURES (was persistent 503)",
-    "S14 stagnation 23 logged — diversify command required from VM cron (cloud brain cannot POST)",
-    "WebSearch NBA SOTA 2026: stacked ensemble (Nature 2025) best Brier LogReg 0.199, CNN 0.221, XGB 0.202; uncertainty-aware RNN+MC-dropout+shot-zones (MDPI 2026)",
-    "Research proposal written: data/research-proposals/2026-04-26-sota-stacked-ensemble.json"
+    "Fetched all 6 NBA + 5 POL island /api/status",
+    "Engine parity check: CONFIRMED SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89",
+    "Woke S18 via HTTP GET — STARTING gen 0 (cold reset from gen 1798)",
+    "Woke S22 via HTTP GET — STARTING gen 0 (cold reset from gen 1469)",
+    "Woke P4 via HTTP GET — BUILDING FEATURES gen 0 (cold reset)",
+    "S17 and P5: persistent 503, cannot wake via HTTP GET",
+    "S15 diversify: cloud brain cannot POST — flagged as CRITICAL alert for VM cron",
+    "WebSearch NBA SOTA 2026: LogReg 0.199, XGBoost 0.202 — temperature scaling is the calibration gap",
+    "Research proposal written: data/research-proposals/2026-04-27-temperature-scaling-calibration.json"
   ],
   "sota_research_this_cycle": {
-    "key_insight": "IEEE 2026 benchmark shows LogReg 0.199 Brier — calibration + feature quality, not model complexity, is the bottleneck. Current fleet best 0.22062 can reach 0.21 via temperature scaling + shot-zone features.",
-    "proposal_file": "data/research-proposals/2026-04-26-sota-stacked-ensemble.json",
+    "key_insight": "Temperature scaling post-processing on existing extra_trees/XGBoost outputs can close 0.22062 → 0.21 gap. LogReg achieves 0.199 via calibration quality, not model complexity. Simple T-parameter learned on holdout set — 10-20 lines of code, no retraining.",
+    "proposal_file": "data/research-proposals/2026-04-27-temperature-scaling-calibration.json",
+    "brier_target": 0.21,
+    "gap_to_close": 0.01062,
     "sources": [
-      "Nature Scientific Reports 2025: Stacked ensemble NBA prediction",
-      "MDPI Uncertainty-Aware 2026: MC-dropout RNN + rolling-form + shot-chart embeddings",
-      "IEEE Comparison 2026: CNN=0.221, LogReg=0.199, XGB=0.202 Brier benchmark",
-      "PLOS One 2025: TimeSeriesSplit + calibration heads for temporal NBA data"
+      "https://www.mdpi.com/2078-2489/17/1/56",
+      "https://www.nature.com/articles/s41598-025-13657-1",
+      "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/"
     ]
   }
 }
