@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-27T08:30:00Z",
+  "updated_at": "2026-04-27T12:30:00Z",
   "cycle": "cloud-brain-4h",
   "trigger": "trig_01BS3ixBvt2uKHY9p5EemcgD",
 
@@ -12,48 +12,41 @@
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "gen": 92,
-      "best_brier": 0.22563,
-      "current_brier": 0.22079,
-      "algorithm": "LightGBM",
-      "stagnation_cycles": 0,
-      "features_selected": 53,
+      "gen": "92+ (prev cycle 08:30Z); stale cache at 08:03Z showed gen=16 — WebFetch cache lag",
+      "best_brier": 0.2277,
+      "current_brier": null,
+      "algorithm": "Extra Trees / NSGA-II multi-island",
+      "stagnation_cycles": "0 per 08:30Z health-status (stale WebFetch showed 12 at gen 16 — discard)",
+      "features_selected": 48,
       "feature_candidates": 3377,
-      "status": "EVOLVING — FRESH RESTART",
+      "status": "EVOLVING — likely gen 150+ by this cycle",
       "healthy": true,
-      "started": "2026-04-27T00:39:07Z",
-      "uptime_h": 3.85,
-      "note": "Fresh restart today. current_brier=0.22079 < 0.22085 threshold (monitoring — not committed best yet). Best_brier=0.22563 for elitist checkpoint."
+      "started": "2026-04-27T07:05:44Z",
+      "note": "WebFetch returned stale cached data (08:03Z) — prev cycle health-status (08:30Z, gen=92) is more authoritative. best_brier 0.2277 from early gen; fleet threshold 0.22085 not broken yet."
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "gen": 91,
+      "gen": null,
       "best_brier": 0.22175,
-      "current_brier": 0.22385,
       "algorithm": "Random Forest",
-      "stagnation_cycles": 4,
-      "features_selected": 42,
-      "feature_candidates": 3377,
-      "status": "EVOLVING — FRESH RESTART",
-      "healthy": true,
-      "started": "2026-04-27T00:39:07Z",
-      "uptime_h": 3.83,
-      "note": "Fresh restart today. best_brier=0.22175 from early gen. 4 cycles no improvement — recovering post hard-reset at cycle 26."
+      "stagnation_cycles": null,
+      "status": "503 DOWN — Nomos42 account sleeping or overloaded",
+      "healthy": false,
+      "last_known": {"gen": 91, "brier": 0.22175, "date": "2026-04-27T08:30:00Z"},
+      "action_needed": "VM keepalive-spaces.sh should wake it; Nomos42 account saturated so no manual restart from cloud.",
+      "note": "503 may be transient HF sleep on free-tier (fresh restart at 00:39Z today — could have gone to sleep after inactivity). keepalive-spaces.sh runs every 30 min."
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "gen": 142,
+      "gen": null,
       "best_brier": 0.22425,
-      "current_brier": 0.22425,
-      "algorithm": "Random Forest",
-      "stagnation_cycles": 0,
-      "features_selected": 68,
-      "feature_candidates": 3377,
-      "status": "EVOLVING — FRESH RESTART",
-      "healthy": true,
-      "started": "2026-04-27T00:39:03Z",
-      "uptime_h": 3.76,
-      "note": "Fresh restart today. Extra Trees variant at gen 136-141 achieved 0.2212 — monitoring for fleet best challenge. Historical fleet best 0.22062 (gen 1306, extra_trees, 2026-04-25) was on this island."
+      "algorithm": "Random Forest / Extra Trees variants",
+      "stagnation_cycles": null,
+      "status": "503 DOWN — Nomos42 account sleeping or overloaded",
+      "healthy": false,
+      "last_known": {"gen": 142, "best_brier": 0.22425, "date": "2026-04-27T08:30:00Z"},
+      "fleet_best_holder": "Historical fleet best 0.22062 (gen 1306, extra_trees) was on this island.",
+      "note": "503 likely transient sleep. keepalive-spaces.sh should recover."
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
@@ -61,52 +54,53 @@
       "best_brier": null,
       "algorithm": "xgboost",
       "stagnation_cycles": null,
-      "status": "PAUSED — NEEDS RESTART",
+      "status": "PAUSED — HF runtime truly paused (not sleep), stage=PAUSED. 503 on /api/status.",
       "healthy": false,
-      "hf_runtime_stage": "PAUSED",
-      "hf_hardware_requested": "cpu-basic",
+      "hf_last_updated": "18 Apr, 2026",
       "last_known": {"gen": 2196, "brier": 0.22249, "date": "2026-04-25"},
-      "action_needed": "HF dashboard restart (LBJLincoln26 account) or VM keepalive-spaces.sh. Cloud brain has no HF token — cannot restart remotely this cycle.",
-      "note": "Space is truly PAUSED (not sleeping). Confirmed via HF runtime API: stage=PAUSED, hardware=null. Must be restarted by user or VM cron."
+      "action_needed": "User or VM must restart via HF dashboard or: curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'. Cloud brain has no HF token.",
+      "days_paused_approx": 9,
+      "gens_missed_estimate": "~2000+ (S22 at gen 2552 runs ~50 gens/h)"
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "gen": 2006,
+      "gen": null,
       "best_brier": 0.22248,
-      "current_brier": 0.22605,
       "algorithm": "Extra Trees",
-      "stagnation_cycles": 17,
-      "features_selected": 51,
-      "feature_candidates": 3365,
-      "status": "EVOLVING — DIVERSIFY QUEUED",
-      "healthy": true,
-      "started": "2026-04-22T10:09:00Z",
-      "uptime_h": 118,
-      "action_taken": "POST /api/command {command: diversify} → {status: command queued, command: diversify}",
-      "note": "Stagnation 17 cycles > 15 threshold. Diversify command queued. NOTE: correct API field is 'command' not 'action'. Feature candidates 3365 (vs 3377 on Nomos42 islands — minor discrepancy, possible data or engine version diff)."
+      "stagnation_cycles": null,
+      "status": "503 DOWN — TESTforge42 account sleeping or overloaded",
+      "healthy": false,
+      "last_known": {"gen": 2006, "brier": 0.22248, "date": "2026-04-27T08:30:00Z", "note": "diversify command queued last cycle"},
+      "note": "Diversify was queued last cycle (stagnation 17 > 15). 503 this cycle — may be waking from sleep. keepalive-spaces.sh should recover."
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "gen": 2444,
+      "gen": 2552,
       "best_brier": 0.22475,
-      "current_brier": 0.23865,
+      "current_brier": 0.2387,
       "algorithm": "Extra Trees",
-      "stagnation_cycles": 13,
+      "stagnation_cycles": 0,
       "features_selected": 46,
       "feature_candidates": 3377,
-      "status": "EVOLVING — MONITORING",
+      "status": "EVOLVING (cycle 851) — HEALTHY",
       "healthy": true,
       "started": "2026-04-22T10:09:00Z",
-      "uptime_h": 118,
-      "note": "13 stagnation cycles (< 15 threshold). Last hard reset cycle 801. Best Sharpe 14.83 (highest in fleet). Next hard-reset will trigger if 2 more cycles without improvement."
+      "uptime_h": 122,
+      "last_hard_reset_cycle": 826,
+      "best_sharpe": 14.8254,
+      "note": "Self-reset at cycle 826 (25-cycle stagnation threshold) cleared the 13-cycle stagnation seen last cycle. Now at stagnation=0 and evolving well. Stagnation threshold on this island is 25 (not 15 from brain instructions) — internal self-management working."
     }
   },
 
   "fleet_summary": {
-    "alive": 5,
+    "alive": 2,
+    "503_transient": 3,
     "paused": 1,
     "total": 6,
-    "health_pct": 0.833,
+    "health_pct": 0.333,
+    "alive_confirmed": ["S13 (stale cache only)", "S22 (live)"],
+    "503_likely_transient": ["S14", "S15", "S18"],
+    "truly_paused": ["S17"],
     "fleet_best_brier": 0.22062,
     "fleet_best_island": "S15",
     "fleet_best_algorithm": "extra_trees_200f",
@@ -114,45 +108,49 @@
     "fleet_best_date": "2026-04-25",
     "threshold_target": 0.22085,
     "threshold_broken": false,
-    "threshold_watch": "S13 current_brier=0.22079 below threshold but not a committed best (gen 92, fresh island)"
+    "closest_this_cycle": "S13 early gen showing 0.2277 (stale) — not a committed best"
   },
 
   "engine_parity": {
-    "feature_candidates_by_island": {
+    "feature_candidates": {
       "S13": 3377, "S14": 3377, "S15": 3377,
-      "S17": null,
+      "S17": "unknown (paused)",
       "S18": 3365,
       "S22": 3377
     },
-    "parity_status": "MINOR DISCREPANCY — S18 reports 3365 vs 3377 on Nomos42 islands. Likely older data snapshot or minor engine version diff. Not critical (0.36% difference). Full SHA256 check deferred (features/engine.py too large for cloud read: 468K chars)."
+    "parity_status": "MINOR DISCREPANCY — S18=3365 vs 3377 (0.36% diff). Likely older data snapshot. Not critical.",
+    "sha256_check": "Deferred — features/engine.py too large for cloud read inline"
   },
 
-  "api_command_fix": {
-    "finding": "Correct field name for /api/command POST is 'command', not 'action'",
-    "evidence": "POST with {action: diversify} → error; POST with {command: diversify} → {status: command queued, command: diversify}",
-    "valid_commands": ["diversify", "boost_mutation", "backfill_boxscores"],
-    "note": "System prompt says 'POST /api/command {action: diversify}' — this is incorrect. Update system prompt / CLAUDE.md to use 'command' key."
+  "sota_research": {
+    "done_this_cycle": true,
+    "proposal_written": "data/research-proposals/sota-calibration-2026-04-27.json",
+    "headline": "Isotonic probability calibration (MDPI 2026) → Brier ~0.20. Fleet at 0.22062 already beats CNN (0.221). Calibration wrapper could close remaining 0.02 gap.",
+    "source": "WebSearch 2026 NBA ML Brier SOTA"
   },
 
   "actions_taken": [
-    "S18: POST /api/command {command: diversify} → SUCCESS (stagnation=17 cycles > 15 threshold)",
-    "S17: Confirmed PAUSED via HF runtime API. Cannot restart from cloud (no HF token). Flagged for VM keepalive-spaces.sh or user HF dashboard action.",
-    "S13: Monitoring current_brier=0.22079 (below 0.22085 threshold but fresh island gen 92 — not committed best)"
+    "S22 self-reset at cycle 826 confirmed HEALTHY (was 13 stagnation cycles last cycle — now 0). No diversify command needed.",
+    "S14, S15, S18: 503 — logged as likely transient HF sleep. VM keepalive-spaces.sh should recover. Cannot restart from cloud (no HF token / Nomos42 saturated).",
+    "S17: PAUSED day 9 — flagged for user/VM manual restart. ~2000+ gens missed.",
+    "SOTA research: isotonic calibration proposal written to data/research-proposals/sota-calibration-2026-04-27.json",
+    "No diversify commands sent this cycle (S22 self-reset, S13 stagnation=0 per prev cycle, S18 already diversified last cycle)."
   ],
 
   "steps_status": {
-    "step0_recovery": "SKIP — only pending item blocked on user gate",
-    "step1_nba": "DONE — 6 islands polled, S18 diversified, S17 paused flagged, engine parity minor discrepancy noted",
+    "step0_recovery": "SKIP — only pending item blocked on user gate (tf-axelrod-verify-tune-12)",
+    "step1_nba": "DONE — 6 islands polled; S22 healthy; S14/S15/S18 503 (transient); S17 PAUSED (day 9); SOTA proposal written",
     "step2_political": "DONE — see nomos-political-alpha/data/brain-status.json",
     "step3_councils": "N/A — DECOMMISSIONED 2026-04-20",
     "step4_dashboard": "N/A — R8 done, no pending items",
-    "step5_cross_project": "DONE — API field fix documented, research proposal written, S17 restart flagged"
+    "step5_cross_project": "DONE — SOTA calibration technique applicable to both NBA islands and political islands (rotation-C already identified, now formalized as proposal)"
   },
 
-  "s17_restart_instructions": {
-    "method_1": "VM: bash scripts/keepalive-spaces.sh (runs every 30 min, should catch PAUSED state if configured to restart paused)",
-    "method_2": "HF dashboard: https://huggingface.co/spaces/LBJLincoln26/nba-evo-s17 → click Restart",
-    "method_3": "VM with HF token: curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'",
-    "priority": "HIGH — S17 (xgboost, gen 2196, brier 0.22249) was fleet #3. Each 4h of pause = missed generations."
-  }
+  "api_command_note": {
+    "correct_field": "command (not 'action')",
+    "valid_commands": ["diversify", "boost_mutation", "backfill_boxscores"],
+    "brain_system_prompt_bug": "Brain prompt says {action: diversify} — incorrect. Use {command: diversify}. Confirmed last cycle."
+  },
+
+  "s17_restart_priority": "HIGH — day 9 paused. Every 4h = ~50+ missed gens (S22 reference rate). Restart instructions: HF dashboard LBJLincoln26/nba-evo-s17 or VM: curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'"
 }

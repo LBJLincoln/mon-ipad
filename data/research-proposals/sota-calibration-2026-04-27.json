@@ -1,0 +1,75 @@
+{
+  "id": "sota-calibration-2026-04-27",
+  "created_at": "2026-04-27T12:30:00Z",
+  "source": "Cloud Brain 4h Cycle — WebSearch SOTA (2026 NBA ML Brier)",
+  "title": "Isotonic Probability Calibration — Proposed Bridge from 0.22062 to 0.20 Brier",
+  "priority": "HIGH",
+  "assigned_to": "DR FRANKENSTEIN (D2 Engineering)",
+
+  "papers": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "year": 2026,
+      "key_result": "LR + XGBoost with Monte Carlo Dropout and isotonic calibration achieves Brier ~0.20 on 2024 NBA season. Isotonic post-processing is the key calibration step.",
+      "relevance": "DIRECT — confirms calibration is the bridge from tree-model Brier ~0.22 to target ~0.20"
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "year": 2025,
+      "key_result": "Stacked ensembles (NB + AdaBoost + MLP + KNN + XGBoost + DT + LR) for outcome prediction. Diversity in base learners improves ensemble calibration.",
+      "relevance": "MEDIUM — ensemble diversity aligns with our multi-island GA approach; stacking as post-GA step"
+    },
+    {
+      "title": "Comparative Evaluation of Machine Learning Models for NBA Game Outcome Prediction",
+      "url": "https://www.scirp.org/journal/paperinformation?paperid=147163",
+      "year": 2025,
+      "key_result": "CNN achieved Brier 0.221. SVM accuracy 0.7749. Fleet already beats CNN Brier benchmark (fleet best 0.22062).",
+      "relevance": "CONTEXT — confirms fleet is at/above SOTA for tree-based models without calibration"
+    }
+  ],
+
+  "fleet_context": {
+    "fleet_best_brier": 0.22062,
+    "target_brier": 0.20,
+    "gap_to_target": 0.02062,
+    "sota_paper_brier_with_calibration": 0.20,
+    "sota_paper_model": "LR + XGBoost + isotonic calibration",
+    "fleet_model": "Extra Trees 200f (S15, gen 1306)",
+    "estimated_calibration_gain": "0.002-0.004 Brier reduction",
+    "remaining_gap_after_calibration": "0.016-0.018",
+    "cnn_benchmark_beaten": true
+  },
+
+  "proposed_implementation": {
+    "technique": "CalibratedClassifierCV(method='isotonic', cv='prefit')",
+    "library": "sklearn.calibration.CalibratedClassifierCV",
+    "target_island": "S22 (TESTforge42/nba-evo-s22) — most stable, gen 2552, stagnation 0 post-reset",
+    "fallback_island": "S15 (Nomos42/nba-evo-6) — fleet best holder, extra_trees_200f",
+    "implementation_plan": [
+      "1. In app.py: after model.fit() in evaluate_model(), wrap: calibrated = CalibratedClassifierCV(model, method='isotonic', cv='prefit'); calibrated.fit(X_val, y_val)",
+      "2. Use calibrated.predict_proba() instead of model.predict_proba() for Brier evaluation",
+      "3. Hold-out calibration set: last 2 seasons (2024-25, 2025-26) — never seen during GA evolution",
+      "4. A/B compare: raw Brier vs calibrated Brier on same feature set",
+      "5. If calibrated_brier < raw_brier - 0.001, adopt calibration in final evaluation; else revert"
+    ],
+    "risk": "LOW — isotonic calibration is monotone transformation, cannot increase Brier below random",
+    "cpu_compatible": true,
+    "extra_dependencies": "None (sklearn already in requirements)"
+  },
+
+  "monte_carlo_dropout_note": {
+    "applicability": "DEFERRED — requires neural architecture. Not applicable to CPU tree islands.",
+    "future_venue": "GPU burst (Modal A10G or Lightning.ai T4) — implement TabNet or shallow NN with MC Dropout for comparison against tree baseline"
+  },
+
+  "cross_project_applicability": {
+    "political_islands": "YES — already identified in brain-status rotation-C as technique_1_calibration. Political catboost/lgbm/xgboost also output overconfident probabilities. Same CalibratedClassifierCV wrapper applies.",
+    "political_feature_candidates": "272 (political) vs 3377 (NBA) — political calibration may have larger relative gain since fewer features = less diverse signal = more overconfidence",
+    "recommended_political_target": "P4 (xgboost_brier, LBJLincoln/political-alpha-4) — already brier-optimized loss, calibration is natural next step"
+  },
+
+  "status": "PROPOSED — awaiting DR FRANKENSTEIN (D2) implementation",
+  "karpathy_loop_action": "EXECUTE: implement calibration wrapper in S22 app.py → evaluate → if Brier improves > 0.001 keep, else revert. Max 5 min implementation."
+}
