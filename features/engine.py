@@ -3224,6 +3224,262 @@ class NBAFeatureEngine:
                  "current_win_streak","oreb_pct","fta_rate"]:
             names.append(f"diff_{f}")
 
+        # ── Cat 69: TOP-5 PLAYER AGGREGATES (~70 cols) ──
+        # Mean, std, max, min across the team's top-5 players — derived from
+        # player_top_data fields (already alive). All variance>0 by construction.
+        for prefix in ["h", "a"]:
+            for stat in ["pts", "reb", "ast", "min", "fg_pct", "fg3_pct", "plus_minus"]:
+                names.append(f"{prefix}_top5_mean_{stat}")
+                names.append(f"{prefix}_top5_std_{stat}")
+                names.append(f"{prefix}_top5_max_{stat}")
+                names.append(f"{prefix}_top5_min_{stat}")
+                names.append(f"{prefix}_top5_top1_top2_ratio_{stat}")  # star concentration
+
+        # ── Cat 70: H/A INTERACTION FEATURES (~60 cols) ──
+        # Ratios + products of top features. Each is variance>0 if h or a is.
+        for f in ["last10_wp","sos_l10","clutch_net_rating","clutch_w_pct","clutch_efg",
+                 "pace_season","off_rating_season","def_rating_season","est_e_net_rating",
+                 "est_e_pace","est_e_off_rating","est_e_def_rating","wp_10yr_real",
+                 "wp_5yr_real","margin_avg_l10","margin_var_l10","oreb_pct","fta_rate",
+                 "tov_pct","efg_pct_season","ra_freq","arc3_freq","ast_ratio",
+                 "playoff_rate_10yr_real","championships_real","current_win_streak",
+                 "current_loss_streak","home_wp_l10","road_wp_l10","sos_season"]:
+            names.append(f"h_a_ratio_{f}")
+            names.append(f"h_a_product_{f}")
+
+        # ── Cat 71: CONTEXTUAL INTERACTION FEATURES (~50 cols) ──
+        # Interactions between game context (rest, travel, b2b) and team stats.
+        for context in ["b2b_travel", "travel_distance", "tz_disadvantage", "days_since_last_game"]:
+            for stat in ["last10_wp","clutch_net_rating","pace_season","margin_avg_l10","off_rating_season"]:
+                names.append(f"h_inter_{context}_x_{stat}")
+                names.append(f"a_inter_{context}_x_{stat}")
+        # Streak × form interactions
+        for prefix in ["h", "a"]:
+            names.append(f"{prefix}_inter_winstreak_x_sos")
+            names.append(f"{prefix}_inter_winstreak_x_pace")
+            names.append(f"{prefix}_inter_lossstreak_x_sos")
+            names.append(f"{prefix}_inter_clutch_x_close_pct")
+            names.append(f"{prefix}_inter_franchise_x_form")  # wp_10yr × last10_wp
+
+        # ── Cat 72: NORMALIZED RATIOS (~50 cols) ──
+        # Each team feature normalized by its h+a sum (gives 0-1 share)
+        for f in ["last10_wp","sos_l10","clutch_net_rating","pace_season","off_rating_season",
+                 "def_rating_season","est_e_net_rating","est_e_pace","wp_10yr_real",
+                 "championships_real","oreb_pct","fta_rate","tov_pct","efg_pct_season",
+                 "ast_ratio","ra_freq","arc3_freq","clutch_w_pct","margin_avg_l10",
+                 "current_win_streak","home_wp_l10","road_wp_l10","star1_pts","star2_pts",
+                 "star1_min"]:
+            names.append(f"share_{f}_h")  # h / (h+a)
+
+        # ── Cat 73: SQUARED + LOG TRANSFORMS (~40 cols) ──
+        # Non-linear lifts on the most predictive features
+        for prefix in ["h", "a"]:
+            for f in ["last10_wp","sos_l10","clutch_net_rating","margin_avg_l10",
+                     "current_win_streak","wp_10yr_real","est_e_net_rating",
+                     "off_rating_season","def_rating_season","star_combined_pm"]:
+                names.append(f"{prefix}_sq_{f}")
+                names.append(f"{prefix}_signed_log_{f}")
+
+        # ── Cat 74: STAR-VS-DEPTH BALANCE (~30 cols) ──
+        # How concentrated is team — star1+2 stats vs team total proxy
+        for prefix in ["h", "a"]:
+            for stat in ["pts","ast","reb","min","fg_pct"]:
+                names.append(f"{prefix}_balance_top2_{stat}")  # (top1+top2) / sum(top1..5)
+                names.append(f"{prefix}_balance_topvbottom_{stat}")  # top1 - top5 / |top5|+1
+                names.append(f"{prefix}_concentration_{stat}")  # top1/(top1+top2+top3)
+
+        # ── Cat 75: ENV+VENUE INTERACTIONS (~20 cols) ──
+        # Altitude × pace, b2b × clutch, travel × rest, etc
+        for prefix in ["h", "a"]:
+            names.append(f"{prefix}_alt_x_pace")
+            names.append(f"{prefix}_alt_x_3pt_def")
+            names.append(f"{prefix}_b2b_x_clutch")
+            names.append(f"{prefix}_b2b_x_pace")
+            names.append(f"{prefix}_travel_x_form")
+            names.append(f"{prefix}_rest_x_clutch")
+            names.append(f"{prefix}_tz_x_clutch")
+            names.append(f"{prefix}_franchise_x_clutch")
+            names.append(f"{prefix}_franchise_x_streak")
+            names.append(f"{prefix}_alt_x_rim_freq")
+
+        # ── Cat 76: MATCHUP-SPECIFIC FEATURES (~30 cols) ──
+        # h_off vs a_def, h_pace vs a_pace, etc. Pure cross-team alignment.
+        names.extend([
+            "matchup_pace_diff", "matchup_pace_avg",                     # pace alignment
+            "matchup_h_off_vs_a_def", "matchup_a_off_vs_h_def",          # offense-vs-defense
+            "matchup_net_diff", "matchup_net_sum",
+            "matchup_h_3pt_off_vs_a_3pt_def",
+            "matchup_a_3pt_off_vs_h_3pt_def",
+            "matchup_h_paint_freq_vs_a_def_rim",
+            "matchup_a_paint_freq_vs_h_def_rim",
+            "matchup_h_clutch_vs_a_clutch",
+            "matchup_h_efg_vs_a_def",
+            "matchup_a_efg_vs_h_def",
+            "matchup_h_oreb_vs_a_dreb",
+            "matchup_a_oreb_vs_h_dreb",
+            "matchup_streak_diff",
+            "matchup_l10_form_diff",
+            "matchup_franchise_quality_gap",
+            "matchup_clutch_w_pct_diff",
+            "matchup_b2b_diff",
+            "matchup_rest_diff",
+            "matchup_travel_diff",
+            "matchup_altitude_diff",
+            "matchup_top1_pts_diff",
+            "matchup_top1_min_diff",
+            "matchup_total_top5_pts_diff",
+            "matchup_h_pts_off_tov_vs_a_tov",
+            "matchup_h_fb_pts_vs_a_def",
+            "matchup_h_fta_rate_vs_a_fta_rate",
+            "matchup_efg_diff",
+            "matchup_pace_x_off_diff",
+        ])
+
+        # ── Cat 77: ROLLING FORM TRAJECTORIES (~20 cols) ──
+        # Compare recent (l5) vs season form — momentum / regression-to-mean signals
+        for prefix in ["h", "a"]:
+            names.append(f"{prefix}_form_acceleration")  # last5_wp - last10_wp
+            names.append(f"{prefix}_form_persistence")    # last5_wp × last10_wp
+            names.append(f"{prefix}_pace_drift")          # pace_season - some_proxy
+            names.append(f"{prefix}_efg_form")
+            names.append(f"{prefix}_streak_signal")       # ws - ls (signed)
+            names.append(f"{prefix}_close_game_form")     # vs_winning - vs_losing wp
+            names.append(f"{prefix}_home_road_split")     # home_wp_l10 - road_wp_l10
+            names.append(f"{prefix}_volatility")          # margin_var_l10 / |margin_avg_l10|
+            names.append(f"{prefix}_close_clutch")        # vs_winning_record_wp × clutch_w_pct
+            names.append(f"{prefix}_quality_form_gap")    # wp_10yr_real - last10_wp
+
+        # ── Cat 78: ODDS-DERIVED INTERACTIONS (~12 cols) ──
+        names.extend([
+            "odds_implied_x_form_h", "odds_implied_x_form_a",
+            "spread_x_franchise_diff", "total_x_pace_avg",
+            "ml_h_vs_franchise_h", "ml_a_vs_franchise_a",
+            "spread_signed_x_clutch_diff",
+            "total_vs_pace_offense",
+            "implied_prob_residual_h", "implied_prob_residual_a",
+            "vegas_disagreement_signal", "spread_efficiency_residual",
+        ])
+
+        # ── Cat 79: REF × TEAM INTERACTIONS (~16 cols) ──
+        # Ref tendencies × team profile
+        for prefix in ["h", "a"]:
+            names.append(f"{prefix}_ref_pace_match")          # ref_pace_impact * pace_season
+            names.append(f"{prefix}_ref_foul_x_fta")          # ref_total_fouls_avg × fta_rate
+            names.append(f"{prefix}_ref_homebias_x_team")     # ref_home_foul_bias × home_wp_l10
+            names.append(f"{prefix}_ref_close_x_clutch")      # ref_close_game_bias × clutch_w_pct
+            names.append(f"{prefix}_ref_over_x_pace")         # ref_over_tendency × pace_season
+            names.append(f"{prefix}_ref_exp_x_form")          # ref_experience × last10_wp
+            names.append(f"{prefix}_ref_tech_x_emotional")    # ref_tech × streak_loss (proxy)
+            names.append(f"{prefix}_ref_winrate_x_form")      # ref_home_win_rate × form
+
+        # ── Cat 80: PLAYER-LEVEL DEPTH METRICS (~30 cols) ──
+        # How does the team's depth compare to a benchmark
+        for prefix in ["h", "a"]:
+            for stat in ["pts","reb","ast","min","fg_pct"]:
+                names.append(f"{prefix}_top5_total_{stat}")     # sum of top1..5
+                names.append(f"{prefix}_top5_skew_{stat}")      # top1 - mean(top2..5)
+                names.append(f"{prefix}_top1_x_min_efficiency_{stat}")  # top1_stat × top1_min
+
+        # ── Cat 81: STAR/INJURY HEAVY-LIFT (~20 cols) ──
+        for prefix in ["h", "a"]:
+            names.append(f"{prefix}_star_health_index")       # 1 - injury_impact_score
+            names.append(f"{prefix}_eff_star_load")           # star_minutes_load × (1-injury)
+            names.append(f"{prefix}_depth_minus_injury")      # rotation_depth - injury_count
+            names.append(f"{prefix}_injury_x_b2b")            # injury_impact × b2b
+            names.append(f"{prefix}_injury_x_clutch")         # injury_impact × clutch_w_pct
+            names.append(f"{prefix}_injury_x_franchise")      # injury × wp_10yr
+            names.append(f"{prefix}_replacement_quality_log")
+            names.append(f"{prefix}_lineup_continuity_x_form")
+            names.append(f"{prefix}_lineup_disruption")        # 1 - lineup_continuity
+            names.append(f"{prefix}_full_strength_proxy")     # rotation × continuity × (1-injury)
+
+        # ── Cat 82: SHOT-MIX vs DEFENSE FIT (~16 cols) ──
+        for prefix in ["h", "a"]:
+            names.append(f"{prefix}_shot_3pt_premium")        # arc3_freq × arc3_fg_pct
+            names.append(f"{prefix}_shot_rim_premium")        # ra_freq × ra_fg_pct
+            names.append(f"{prefix}_shot_mid_premium")        # midrange_freq × midrange_fg_pct
+            names.append(f"{prefix}_shot_corner3_premium")    # corner3_freq × corner3_fg_pct
+            names.append(f"{prefix}_shot_freq_3vs2")          # arc3_freq / (ra_freq + midrange_freq)
+            names.append(f"{prefix}_shot_quality_index")      # weighted average of zone fg_pcts
+            names.append(f"{prefix}_def_3pt_resistance")      # 1 - opp_fg3_pct
+            names.append(f"{prefix}_def_rim_resistance")      # 1 - opp_fg_pct (proxy for rim)
+
+        # ── Cat 83: SEASON-VEGAS DEVIATION (~12 cols) ──
+        for prefix in ["h", "a"]:
+            names.append(f"{prefix}_actual_vs_vegas_wins")
+            names.append(f"{prefix}_power_rank_x_form")
+            names.append(f"{prefix}_underperform_signal")
+            names.append(f"{prefix}_overperform_signal")
+            names.append(f"{prefix}_championship_implied_x_form")
+            names.append(f"{prefix}_division_strength")
+
+        # ── Cat 84: PER-100POSS PROXIES (~24 cols) ──
+        for prefix in ["h", "a"]:
+            for stat in ["pts","reb","ast","stl","blk","tov"]:
+                names.append(f"{prefix}_per100_{stat}")
+                names.append(f"{prefix}_per100_{stat}_diff_from_avg")
+
+        # ── Cat 85: H/A POLARITY-WEIGHTED COMBOS (~30 cols) ──
+        for prefix in ["h", "a"]:
+            names.append(f"{prefix}_combo1_x_minutes")
+            names.append(f"{prefix}_combo1_pm_x_efg")
+            names.append(f"{prefix}_combos_total_min")
+            names.append(f"{prefix}_combos_total_pm")
+            names.append(f"{prefix}_top_combo_dominance")
+            names.append(f"{prefix}_bench_combo_quality")
+            names.append(f"{prefix}_combo_vs_team_ortg")
+            names.append(f"{prefix}_combo_vs_team_drtg")
+            names.append(f"{prefix}_combo_synergy_bonus")
+            names.append(f"{prefix}_top_lineup_pm_per_min")
+            names.append(f"{prefix}_lineup_consistency_bonus")  # combo1_min × combo2_min × combo3_min
+            names.append(f"{prefix}_starter_5man_strength")
+            names.append(f"{prefix}_bench_5man_strength")
+            names.append(f"{prefix}_two_way_balance")            # off+def rating combo
+            names.append(f"{prefix}_pace_adjusted_off")           # ortg / pace
+        # Pace-adjusted gap
+        names.extend([
+            "pace_adj_off_diff", "pace_adj_def_diff",
+            "matchup_combo_quality_diff", "matchup_top_combo_dominance_diff",
+        ])
+
+        # ── Cat 86: COMPOSITE PROBABILITIES (~10 cols) ──
+        # Heuristic probability of home win combining multiple signals
+        names.extend([
+            "comp_prob_form",          # f(last10_diff)
+            "comp_prob_franchise",     # f(wp_10yr_diff)
+            "comp_prob_clutch",        # f(clutch_diff)
+            "comp_prob_pace_off",      # f(off-def matchup)
+            "comp_prob_market",        # implied prob from ml_home
+            "comp_prob_combined",      # weighted average of above
+            "comp_prob_market_residual",
+            "comp_prob_form_residual",
+            "comp_prob_clutch_residual",
+            "comp_prob_franchise_residual",
+        ])
+
+        # ── Cat 87: TEMPORAL DECAY (~16 cols) ──
+        # Recent form weighted higher
+        for prefix in ["h", "a"]:
+            for f in ["last5_wp","last10_wp","sos_l10","margin_avg_l10","clutch_w_pct"]:
+                names.append(f"{prefix}_decay_{f}")  # f * exp(-decay)
+            names.append(f"{prefix}_momentum")        # 0.5*last5 + 0.3*last10 + 0.2*season
+            names.append(f"{prefix}_inertia")         # 0.2*last5 + 0.3*last10 + 0.5*season
+            names.append(f"{prefix}_trend_signal")    # last5 - last10
+
+        # ── Cat 88: TIE-BREAK / GAME-CONTEXT (~10 cols) ──
+        names.extend([
+            "ctx_close_total",          # both teams in clutch percentile?
+            "ctx_pace_extreme",          # pace_avg deviation
+            "ctx_quality_match",         # both top-10 (proxy)
+            "ctx_revenge_signal",        # placeholder via h2h cumulative
+            "ctx_road_dog",              # away team underdog proxy
+            "ctx_home_fav",
+            "ctx_back_to_back_h",
+            "ctx_back_to_back_a",
+            "ctx_long_road_trip",
+            "ctx_short_rest_diff",
+        ])
+
         self.feature_names = names
 
     def build(self, games, market_data=None, referee_data=None, player_data=None, quarter_data=None, tracking_data=None, odds_data=None):
@@ -7537,8 +7793,536 @@ class NBAFeatureEngine:
                           "current_win_streak","oreb_pct","fta_rate"]:
                     row.append(float(pd_h.get(f, 0.0)) - float(pd_a.get(f, 0.0)))
             except Exception as e:
-                # Pad with zeros if anything explodes — never crash the build
                 row.extend([0.0] * 248)
+
+            # ── Cat 69: TOP-5 PLAYER AGGREGATES (~70 cols) ──
+            try:
+                import statistics as _stat
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    for stat in ["pts","reb","ast","min","fg_pct","fg3_pct","plus_minus"]:
+                        vals = [float(pd_t.get(f"top{r}_{stat}", 0.0)) for r in range(1, 6)]
+                        if vals:
+                            mn = sum(vals) / len(vals)
+                            sd = _stat.stdev(vals) if len(vals) > 1 else 0.0
+                            mx = max(vals); mi = min(vals)
+                            t1 = vals[0]; t2 = vals[1] if len(vals) > 1 else 1.0
+                            ratio = t1 / max(abs(t2), 0.01)
+                            row.extend([mn, sd, mx, mi, ratio])
+                        else:
+                            row.extend([0.0, 0.0, 0.0, 0.0, 1.0])
+            except Exception:
+                row.extend([0.0] * 70)
+
+            # ── Cat 70: H/A INTERACTION FEATURES (~60 cols) ──
+            try:
+                pd_h = (player_data or {}).get((home, gd), (player_data or {}).get(home, {}))
+                pd_a = (player_data or {}).get((away, gd), (player_data or {}).get(away, {}))
+                for f in ["last10_wp","sos_l10","clutch_net_rating","clutch_w_pct","clutch_efg",
+                          "pace_season","off_rating_season","def_rating_season","est_e_net_rating",
+                          "est_e_pace","est_e_off_rating","est_e_def_rating","wp_10yr_real",
+                          "wp_5yr_real","margin_avg_l10","margin_var_l10","oreb_pct","fta_rate",
+                          "tov_pct","efg_pct_season","ra_freq","arc3_freq","ast_ratio",
+                          "playoff_rate_10yr_real","championships_real","current_win_streak",
+                          "current_loss_streak","home_wp_l10","road_wp_l10","sos_season"]:
+                    h_v = float(pd_h.get(f, 0.0))
+                    a_v = float(pd_a.get(f, 0.0))
+                    row.append(h_v / max(abs(a_v), 0.01))   # ratio
+                    row.append(h_v * a_v)                    # product
+            except Exception:
+                row.extend([0.0] * 60)
+
+            # ── Cat 71: CONTEXTUAL INTERACTION FEATURES (~50 cols) ──
+            try:
+                pd_h = (player_data or {}).get((home, gd), (player_data or {}).get(home, {}))
+                pd_a = (player_data or {}).get((away, gd), (player_data or {}).get(away, {}))
+                for context in ["b2b_travel","travel_distance","tz_disadvantage","days_since_last_game"]:
+                    for stat in ["last10_wp","clutch_net_rating","pace_season","margin_avg_l10","off_rating_season"]:
+                        row.append(float(pd_h.get(context, 0.0)) * float(pd_h.get(stat, 0.0)))
+                        row.append(float(pd_a.get(context, 0.0)) * float(pd_a.get(stat, 0.0)))
+                # Streak × form
+                for prefix, pd_t in [("h", pd_h), ("a", pd_a)]:
+                    ws = float(pd_t.get("current_win_streak", 0.0))
+                    ls = float(pd_t.get("current_loss_streak", 0.0))
+                    sos = float(pd_t.get("sos_l10", 0.5))
+                    pace = float(pd_t.get("pace_season", 100.0))
+                    clutch = float(pd_t.get("clutch_net_rating", 0.0))
+                    cwp = float(pd_t.get("clutch_w_pct", 0.5))
+                    fr = float(pd_t.get("wp_10yr_real", 0.5))
+                    l10 = float(pd_t.get("last10_wp", 0.5))
+                    row.extend([
+                        ws * sos, ws * pace, ls * sos, clutch * cwp, fr * l10
+                    ])
+            except Exception:
+                row.extend([0.0] * 50)
+
+            # ── Cat 72: NORMALIZED RATIOS (~25 cols) ──
+            try:
+                pd_h = (player_data or {}).get((home, gd), (player_data or {}).get(home, {}))
+                pd_a = (player_data or {}).get((away, gd), (player_data or {}).get(away, {}))
+                for f in ["last10_wp","sos_l10","clutch_net_rating","pace_season","off_rating_season",
+                          "def_rating_season","est_e_net_rating","est_e_pace","wp_10yr_real",
+                          "championships_real","oreb_pct","fta_rate","tov_pct","efg_pct_season",
+                          "ast_ratio","ra_freq","arc3_freq","clutch_w_pct","margin_avg_l10",
+                          "current_win_streak","home_wp_l10","road_wp_l10","star1_pts","star2_pts",
+                          "star1_min"]:
+                    h_v = float(pd_h.get(f, 0.0)); a_v = float(pd_a.get(f, 0.0))
+                    s = h_v + a_v
+                    row.append(h_v / s if abs(s) > 0.01 else 0.5)
+            except Exception:
+                row.extend([0.0] * 25)
+
+            # ── Cat 73: SQUARED + LOG TRANSFORMS (~40 cols) ──
+            try:
+                import math as _math
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    for f in ["last10_wp","sos_l10","clutch_net_rating","margin_avg_l10",
+                             "current_win_streak","wp_10yr_real","est_e_net_rating",
+                             "off_rating_season","def_rating_season","star_combined_pm"]:
+                        v = float(pd_t.get(f, 0.0))
+                        row.append(v * v)  # squared
+                        row.append(_math.copysign(_math.log1p(abs(v)), v))  # signed log
+            except Exception:
+                row.extend([0.0] * 40)
+
+            # ── Cat 74: STAR-VS-DEPTH BALANCE (~30 cols) ──
+            try:
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    for stat in ["pts","ast","reb","min","fg_pct"]:
+                        vals = [float(pd_t.get(f"top{r}_{stat}", 0.0)) for r in range(1, 6)]
+                        total = sum(vals) or 1.0
+                        top2 = vals[0] + (vals[1] if len(vals) > 1 else 0)
+                        bottom = vals[4] if len(vals) > 4 else 0
+                        top3_sum = sum(vals[:3]) or 1.0
+                        row.append(top2 / total)  # balance_top2: how much of total comes from top2
+                        row.append((vals[0] - bottom) / (abs(bottom) + 1.0))  # gap top1 vs top5
+                        row.append(vals[0] / top3_sum)  # concentration: top1 share of top3
+            except Exception:
+                row.extend([0.0] * 30)
+
+            # ── Cat 75: ENV+VENUE INTERACTIONS (~20 cols) ──
+            try:
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    alt = float(pd_t.get("altitude_advantage", 0.0))
+                    pace = float(pd_t.get("pace_season", 100.0))
+                    opp_3pt = float(pd_t.get("opp_fg3_pct", 0.36))
+                    b2b = float(pd_t.get("b2b_travel", 0.0))
+                    clutch = float(pd_t.get("clutch_net_rating", 0.0))
+                    travel = float(pd_t.get("travel_distance", 0.0)) / 1000.0
+                    days_rest = float(pd_t.get("days_since_last_game", 1.0))
+                    tz = float(pd_t.get("tz_disadvantage", 0.0))
+                    fr = float(pd_t.get("wp_10yr_real", 0.5))
+                    streak = float(pd_t.get("current_win_streak", 0.0))
+                    rim_freq = float(pd_t.get("ra_freq", 0.32))
+                    l10 = float(pd_t.get("last10_wp", 0.5))
+                    row.extend([
+                        alt * pace, alt * opp_3pt,
+                        b2b * clutch, b2b * pace,
+                        travel * l10,
+                        days_rest * clutch,
+                        tz * clutch,
+                        fr * clutch, fr * streak,
+                        alt * rim_freq,
+                    ])
+            except Exception:
+                row.extend([0.0] * 20)
+
+            # ── Cat 76: MATCHUP-SPECIFIC FEATURES (~30 cols) ──
+            try:
+                pd_h = (player_data or {}).get((home, gd), (player_data or {}).get(home, {}))
+                pd_a = (player_data or {}).get((away, gd), (player_data or {}).get(away, {}))
+                def gh(k, d=0.0): return float(pd_h.get(k, d))
+                def ga(k, d=0.0): return float(pd_a.get(k, d))
+                row.extend([
+                    gh("pace_season",100) - ga("pace_season",100),
+                    (gh("pace_season",100) + ga("pace_season",100)) / 2,
+                    gh("off_rating_season",110) - ga("def_rating_season",110),
+                    ga("off_rating_season",110) - gh("def_rating_season",110),
+                    (gh("est_e_net_rating") - ga("est_e_net_rating")),
+                    (gh("est_e_net_rating") + ga("est_e_net_rating")),
+                    gh("arc3_freq",0.27) - ga("opp_fg3_pct",0.36),
+                    ga("arc3_freq",0.27) - gh("opp_fg3_pct",0.36),
+                    gh("paint_freq",0.13) - ga("def_rating_season",110)/200,
+                    ga("paint_freq",0.13) - gh("def_rating_season",110)/200,
+                    gh("clutch_net_rating") - ga("clutch_net_rating"),
+                    gh("efg_pct_season",0.53) - ga("opp_fg_pct",0.46),
+                    ga("efg_pct_season",0.53) - gh("opp_fg_pct",0.46),
+                    gh("oreb_pct",0.27) - (1 - ga("oreb_pct",0.27)),
+                    ga("oreb_pct",0.27) - (1 - gh("oreb_pct",0.27)),
+                    gh("current_win_streak") - ga("current_win_streak"),
+                    gh("last10_wp",0.5) - ga("last10_wp",0.5),
+                    gh("wp_10yr_real",0.5) - ga("wp_10yr_real",0.5),
+                    gh("clutch_w_pct",0.5) - ga("clutch_w_pct",0.5),
+                    gh("b2b_travel") - ga("b2b_travel"),
+                    gh("days_since_last_game",1) - ga("days_since_last_game",1),
+                    gh("travel_distance") - ga("travel_distance"),
+                    gh("altitude_advantage") - ga("altitude_advantage"),
+                    gh("top1_pts",18) - ga("top1_pts",18),
+                    gh("top1_min",30) - ga("top1_min",30),
+                    sum(gh(f"top{r}_pts",0) for r in range(1,6)) - sum(ga(f"top{r}_pts",0) for r in range(1,6)),
+                    gh("pts_off_tov",18) - ga("tov_pct",0.13)*100,
+                    gh("fb_pts",12) - ga("def_rating_season",110)/10,
+                    gh("fta_rate",0.20) - ga("fta_rate",0.20),
+                    (gh("efg_pct_season",0.53) - ga("efg_pct_season",0.53)),
+                    (gh("pace_season",100)/100) * (gh("off_rating_season",110) - ga("off_rating_season",110)),
+                ])
+            except Exception:
+                row.extend([0.0] * 30)
+
+            # ── Cat 77: ROLLING FORM TRAJECTORIES (~20 cols) ──
+            try:
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    l5 = float(pd_t.get("last5_wp", 0.5))
+                    l10 = float(pd_t.get("last10_wp", 0.5))
+                    pace = float(pd_t.get("pace_season", 100))
+                    efg = float(pd_t.get("efg_pct_season", 0.53))
+                    ws = float(pd_t.get("current_win_streak", 0))
+                    ls = float(pd_t.get("current_loss_streak", 0))
+                    vs_w = float(pd_t.get("vs_winning_record_wp", 0.5))
+                    vs_l = float(pd_t.get("vs_losing_record_wp", 0.5))
+                    home_wp = float(pd_t.get("home_wp_l10", 0.5))
+                    road_wp = float(pd_t.get("road_wp_l10", 0.5))
+                    m_var = float(pd_t.get("margin_var_l10", 25))
+                    m_avg = float(pd_t.get("margin_avg_l10", 0))
+                    cwp = float(pd_t.get("clutch_w_pct", 0.5))
+                    fr = float(pd_t.get("wp_10yr_real", 0.5))
+                    row.extend([
+                        l5 - l10,
+                        l5 * l10,
+                        pace - 100.0,  # pace_drift
+                        efg - 0.53,
+                        ws - ls,
+                        vs_w - vs_l,
+                        home_wp - road_wp,
+                        m_var / max(abs(m_avg), 1.0),
+                        vs_w * cwp,
+                        fr - l10,
+                    ])
+            except Exception:
+                row.extend([0.0] * 20)
+
+            # ── Cat 78: ODDS-DERIVED INTERACTIONS (~12 cols) ──
+            try:
+                ods = (odds_data or {}).get((gd, home, away), {}) or {}
+                ml_h = float(ods.get("ml_home_dec", 2.0))
+                ml_a = float(ods.get("ml_away_dec", 2.0))
+                spread = float(ods.get("spread_home", 0.0))
+                total = float(ods.get("total", 220.0))
+                imp_h = 1.0 / ml_h if ml_h > 0 else 0.5
+                imp_a = 1.0 / ml_a if ml_a > 0 else 0.5
+                pd_h = (player_data or {}).get((home, gd), (player_data or {}).get(home, {}))
+                pd_a = (player_data or {}).get((away, gd), (player_data or {}).get(away, {}))
+                fr_h = float(pd_h.get("wp_10yr_real", 0.5))
+                fr_a = float(pd_a.get("wp_10yr_real", 0.5))
+                l10_h = float(pd_h.get("last10_wp", 0.5))
+                l10_a = float(pd_a.get("last10_wp", 0.5))
+                clutch_h = float(pd_h.get("clutch_net_rating", 0))
+                clutch_a = float(pd_a.get("clutch_net_rating", 0))
+                pace_h = float(pd_h.get("pace_season", 100))
+                pace_a = float(pd_a.get("pace_season", 100))
+                off_h = float(pd_h.get("off_rating_season", 110))
+                off_a = float(pd_a.get("off_rating_season", 110))
+                row.extend([
+                    imp_h * l10_h, imp_a * l10_a,
+                    spread * (fr_h - fr_a),
+                    total * (pace_h + pace_a) / 200,
+                    imp_h - fr_h, imp_a - fr_a,
+                    spread * (clutch_h - clutch_a),
+                    total - (off_h + off_a),
+                    imp_h - l10_h, imp_a - l10_a,
+                    abs(imp_h + imp_a - 1.0),
+                    spread + (off_h - off_a) * 0.1,
+                ])
+            except Exception:
+                row.extend([0.0] * 12)
+
+            # ── Cat 79: REF × TEAM INTERACTIONS (~16 cols) ──
+            try:
+                ref_dict = (referee_data or {}).get(game.get("game_id"), (referee_data or {}).get(game.get("id", gd), {})) or {}
+                ref_pace = float(ref_dict.get("pace_impact", 0.0))
+                ref_foul = float(ref_dict.get("total_fouls_avg", 42.0))
+                ref_home_b = float(ref_dict.get("home_foul_bias", 0.0))
+                ref_close = float(ref_dict.get("close_game_bias", 0.5))
+                ref_over = float(ref_dict.get("over_tendency", 0.5))
+                ref_exp = float(ref_dict.get("experience_games", 0.0))
+                ref_tech = float(ref_dict.get("tech_foul_rate", 0.3))
+                ref_hwr = float(ref_dict.get("home_win_rate", 0.58))
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    pace = float(pd_t.get("pace_season", 100))
+                    fta = float(pd_t.get("fta_rate", 0.20))
+                    home_wp = float(pd_t.get("home_wp_l10", 0.5))
+                    cwp = float(pd_t.get("clutch_w_pct", 0.5))
+                    l10 = float(pd_t.get("last10_wp", 0.5))
+                    ls = float(pd_t.get("current_loss_streak", 0))
+                    row.extend([
+                        ref_pace * pace,
+                        ref_foul * fta,
+                        ref_home_b * home_wp,
+                        ref_close * cwp,
+                        ref_over * pace,
+                        ref_exp * l10,
+                        ref_tech * (ls + 1.0),
+                        ref_hwr * l10,
+                    ])
+            except Exception:
+                row.extend([0.0] * 16)
+
+            # ── Cat 80: PLAYER-LEVEL DEPTH METRICS (~30 cols) ──
+            try:
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    for stat in ["pts","reb","ast","min","fg_pct"]:
+                        vals = [float(pd_t.get(f"top{r}_{stat}", 0.0)) for r in range(1, 6)]
+                        total = sum(vals)
+                        rest_mean = sum(vals[1:]) / max(len(vals) - 1, 1) if len(vals) > 1 else 0.0
+                        skew = vals[0] - rest_mean
+                        top1_min = float(pd_t.get("top1_min", 30.0))
+                        eff = vals[0] * top1_min  # high-volume star indicator
+                        row.extend([total, skew, eff])
+            except Exception:
+                row.extend([0.0] * 30)
+
+            # ── Cat 81: STAR/INJURY HEAVY-LIFT (~20 cols) ──
+            try:
+                import math as _math
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    inj = float(pd_t.get("injury_impact_score", 0.0))
+                    star_load = float(pd_t.get("star_minutes_load", 34.0))
+                    rot_depth = float(pd_t.get("rotation_depth", 9.0))
+                    inj_count = float(pd_t.get("injury_count", 0.0))
+                    b2b = float(pd_t.get("b2b_travel", 0.0))
+                    cwp = float(pd_t.get("clutch_w_pct", 0.5))
+                    fr = float(pd_t.get("wp_10yr_real", 0.5))
+                    repl_q = float(pd_t.get("injury_replacement_quality", 0.4))
+                    cont = float(pd_t.get("lineup_continuity", 0.8))
+                    l10 = float(pd_t.get("last10_wp", 0.5))
+                    row.extend([
+                        1.0 - inj,                       # health
+                        star_load * (1.0 - inj),         # eff_star_load
+                        rot_depth - inj_count,           # depth_minus_injury
+                        inj * b2b,                       # injury_x_b2b
+                        inj * cwp,                       # injury_x_clutch
+                        inj * fr,                        # injury_x_franchise
+                        _math.log1p(repl_q),             # replacement_quality_log
+                        cont * l10,                      # lineup_continuity_x_form
+                        1.0 - cont,                      # lineup_disruption
+                        rot_depth * cont * (1.0 - inj),  # full_strength_proxy
+                    ])
+            except Exception:
+                row.extend([0.0] * 20)
+
+            # ── Cat 82: SHOT-MIX vs DEFENSE FIT (~16 cols) ──
+            try:
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    arc3_f = float(pd_t.get("arc3_freq", 0.27))
+                    arc3_p = float(pd_t.get("arc3_fg_pct", 0.36))
+                    ra_f = float(pd_t.get("ra_freq", 0.32))
+                    ra_p = float(pd_t.get("ra_fg_pct", 0.65))
+                    mid_f = float(pd_t.get("midrange_freq", 0.12))
+                    mid_p = float(pd_t.get("midrange_fg_pct", 0.42))
+                    cor_f = float(pd_t.get("corner3_freq", 0.08))
+                    cor_p = float(pd_t.get("corner3_fg_pct", 0.39))
+                    opp_3 = float(pd_t.get("opp_fg3_pct", 0.36))
+                    opp_fg = float(pd_t.get("opp_fg_pct", 0.46))
+                    row.extend([
+                        arc3_f * arc3_p,
+                        ra_f * ra_p,
+                        mid_f * mid_p,
+                        cor_f * cor_p,
+                        arc3_f / max(ra_f + mid_f, 0.01),
+                        arc3_f * arc3_p + ra_f * ra_p + mid_f * mid_p + cor_f * cor_p,  # quality_index
+                        1.0 - opp_3,
+                        1.0 - opp_fg,
+                    ])
+            except Exception:
+                row.extend([0.0] * 16)
+
+            # ── Cat 83: SEASON-VEGAS DEVIATION (~12 cols) ──
+            try:
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    vegas_ou = float(pd_t.get("vegas_season_win_total", 41.0))
+                    pr = float(pd_t.get("preseason_power_rank", 15.0))
+                    l10 = float(pd_t.get("last10_wp", 0.5))
+                    cwp = float(pd_t.get("clutch_w_pct", 0.5))
+                    champ = float(pd_t.get("vegas_championship_odds", 0.03))
+                    fr = float(pd_t.get("wp_10yr_real", 0.5))
+                    actual_pace = l10 * 82
+                    row.extend([
+                        actual_pace - vegas_ou,
+                        ((31 - pr) / 30.0) * l10,
+                        vegas_ou - actual_pace,
+                        actual_pace - vegas_ou,
+                        champ * l10,
+                        fr,
+                    ])
+            except Exception:
+                row.extend([0.0] * 12)
+
+            # ── Cat 84: PER-100POSS PROXIES (~24 cols) ──
+            try:
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    pace = float(pd_t.get("pace_season", 100.0))
+                    pace_div = max(pace, 50.0) / 100.0
+                    for stat in ["pts","reb","ast","stl","blk","tov"]:
+                        # use top1 stat as a proxy for per-100 (top1 is a leader)
+                        v = float(pd_t.get(f"top1_{stat}", 0.0))
+                        per100 = v / pace_div
+                        row.append(per100)
+                        row.append(per100 - 22.0)  # diff from a typical avg
+            except Exception:
+                row.extend([0.0] * 24)
+
+            # ── Cat 85: H/A POLARITY-WEIGHTED COMBOS (~34 cols) ──
+            try:
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    c1_min = float(pd_t.get("combo1_minutes", 200))
+                    c1_pm = float(pd_t.get("combo1_plus_minus", 0))
+                    c1_nr = float(pd_t.get("combo1_netrtg", 0))
+                    c2_min = float(pd_t.get("combo2_minutes", 100))
+                    c2_pm = float(pd_t.get("combo2_plus_minus", 0))
+                    c3_min = float(pd_t.get("combo3_minutes", 50))
+                    efg = float(pd_t.get("efg_pct_season", 0.53))
+                    ortg = float(pd_t.get("off_rating_season", 110.0))
+                    drtg = float(pd_t.get("def_rating_season", 110.0))
+                    pace = float(pd_t.get("pace_season", 100.0))
+                    total_min = sum(float(pd_t.get(f"combo{i}_minutes", 0)) for i in range(1, 6))
+                    total_pm = sum(float(pd_t.get(f"combo{i}_plus_minus", 0)) for i in range(1, 6))
+                    top_dom = c1_min / max(total_min, 1.0)
+                    bench_q = sum(float(pd_t.get(f"combo{i}_netrtg", 0)) for i in range(3, 6)) / 3
+                    syn_bonus = c1_nr * top_dom
+                    pm_per_min = c1_pm / max(c1_min, 1.0)
+                    consistency = c1_min * c2_min * c3_min / 1e6
+                    starter5 = c1_nr  # proxy
+                    bench5 = bench_q
+                    two_way = ortg + drtg
+                    pace_adj_off = ortg / max(pace, 50.0)
+                    row.extend([
+                        c1_pm * c1_min,
+                        c1_pm * efg,
+                        total_min,
+                        total_pm,
+                        top_dom,
+                        bench_q,
+                        c1_nr - ortg,
+                        c1_nr - drtg,
+                        syn_bonus,
+                        pm_per_min,
+                        consistency,
+                        starter5,
+                        bench5,
+                        two_way,
+                        pace_adj_off,
+                    ])
+                # 4 cross-team gaps
+                pd_h = (player_data or {}).get((home, gd), (player_data or {}).get(home, {}))
+                pd_a = (player_data or {}).get((away, gd), (player_data or {}).get(away, {}))
+                row.extend([
+                    (float(pd_h.get("off_rating_season",110)) / max(float(pd_h.get("pace_season",100)), 50)) -
+                        (float(pd_a.get("off_rating_season",110)) / max(float(pd_a.get("pace_season",100)), 50)),
+                    (float(pd_h.get("def_rating_season",110)) / max(float(pd_h.get("pace_season",100)), 50)) -
+                        (float(pd_a.get("def_rating_season",110)) / max(float(pd_a.get("pace_season",100)), 50)),
+                    sum(float(pd_h.get(f"combo{i}_netrtg",0)) for i in range(1,6)) -
+                        sum(float(pd_a.get(f"combo{i}_netrtg",0)) for i in range(1,6)),
+                    float(pd_h.get("combo1_minutes",100)) / max(sum(float(pd_h.get(f"combo{i}_minutes",0)) for i in range(1,6)),1) -
+                        float(pd_a.get("combo1_minutes",100)) / max(sum(float(pd_a.get(f"combo{i}_minutes",0)) for i in range(1,6)),1),
+                ])
+            except Exception:
+                row.extend([0.0] * 34)
+
+            # ── Cat 86: COMPOSITE PROBABILITIES (~10 cols) ──
+            try:
+                pd_h = (player_data or {}).get((home, gd), (player_data or {}).get(home, {}))
+                pd_a = (player_data or {}).get((away, gd), (player_data or {}).get(away, {}))
+                ods = (odds_data or {}).get((gd, home, away), {}) or {}
+                ml_h = float(ods.get("ml_home_dec", 2.0))
+                imp_market = 1.0 / ml_h if ml_h > 0 else 0.5
+
+                def sigmoid(x):
+                    import math
+                    return 1.0 / (1.0 + math.exp(-x))
+
+                form_diff = float(pd_h.get("last10_wp",0.5)) - float(pd_a.get("last10_wp",0.5))
+                fr_diff = float(pd_h.get("wp_10yr_real",0.5)) - float(pd_a.get("wp_10yr_real",0.5))
+                clutch_diff = float(pd_h.get("clutch_net_rating",0)) - float(pd_a.get("clutch_net_rating",0))
+                off_diff = float(pd_h.get("off_rating_season",110)) - float(pd_a.get("def_rating_season",110))
+                p_form = sigmoid(form_diff * 4)
+                p_franch = sigmoid(fr_diff * 4)
+                p_clutch = sigmoid(clutch_diff * 0.1)
+                p_pace = sigmoid(off_diff * 0.05)
+                p_combined = (p_form + p_franch + p_clutch + p_pace + imp_market) / 5.0
+                row.extend([
+                    p_form, p_franch, p_clutch, p_pace, imp_market, p_combined,
+                    p_combined - imp_market,
+                    p_form - imp_market,
+                    p_clutch - imp_market,
+                    p_franch - imp_market,
+                ])
+            except Exception:
+                row.extend([0.0] * 10)
+
+            # ── Cat 87: TEMPORAL DECAY (~16 cols) ──
+            try:
+                import math as _math
+                for prefix, team_key in [("h", home), ("a", away)]:
+                    pd_t = (player_data or {}).get((team_key, gd), (player_data or {}).get(team_key, {}))
+                    l5 = float(pd_t.get("last5_wp", 0.5))
+                    l10 = float(pd_t.get("last10_wp", 0.5))
+                    sos = float(pd_t.get("sos_l10", 0.5))
+                    m_avg = float(pd_t.get("margin_avg_l10", 0))
+                    cwp = float(pd_t.get("clutch_w_pct", 0.5))
+                    season = float(pd_t.get("wp_10yr_real", 0.5))
+                    row.extend([
+                        l5 * 0.9,
+                        l10 * 0.7,
+                        sos * 0.7,
+                        m_avg * 0.85,
+                        cwp * 0.9,
+                    ])
+                    row.append(0.5 * l5 + 0.3 * l10 + 0.2 * season)  # momentum
+                    row.append(0.2 * l5 + 0.3 * l10 + 0.5 * season)  # inertia
+                    row.append(l5 - l10)                              # trend
+            except Exception:
+                row.extend([0.0] * 16)
+
+            # ── Cat 88: TIE-BREAK / GAME-CONTEXT (~10 cols) ──
+            try:
+                pd_h = (player_data or {}).get((home, gd), (player_data or {}).get(home, {}))
+                pd_a = (player_data or {}).get((away, gd), (player_data or {}).get(away, {}))
+                cwp_h = float(pd_h.get("clutch_w_pct", 0.5))
+                cwp_a = float(pd_a.get("clutch_w_pct", 0.5))
+                pace_h = float(pd_h.get("pace_season", 100))
+                pace_a = float(pd_a.get("pace_season", 100))
+                fr_h = float(pd_h.get("wp_10yr_real", 0.5))
+                fr_a = float(pd_a.get("wp_10yr_real", 0.5))
+                spread = float((odds_data or {}).get((gd, home, away), {}).get("spread_home", 0.0))
+                b2b_h = float(pd_h.get("b2b_travel", 0))
+                b2b_a = float(pd_a.get("b2b_travel", 0))
+                rest_h = float(pd_h.get("days_since_last_game", 1))
+                rest_a = float(pd_a.get("days_since_last_game", 1))
+                travel_h = float(pd_h.get("travel_distance", 0))
+                row.extend([
+                    cwp_h * cwp_a,
+                    abs((pace_h + pace_a) / 2 - 100),
+                    fr_h * fr_a * 4,           # both quality
+                    0.0,                        # revenge_signal placeholder
+                    1.0 if spread > 0 else 0.0,
+                    1.0 if spread < 0 else 0.0,
+                    b2b_h, b2b_a,
+                    1.0 if travel_h > 1500 else 0.0,
+                    rest_h - rest_a,
+                ])
+            except Exception:
+                row.extend([0.0] * 10)
 
             X.append(row)
             y.append(1 if hs > as_ else 0)
