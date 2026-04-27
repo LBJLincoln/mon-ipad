@@ -1,25 +1,19 @@
 #!/usr/bin/env python3
-"""VM-runnable NBA box-score scraper — leakage-safe per-game data.
+"""VM-runnable NBA box-score scraper — leakage-safe per-game data (V3 endpoint).
 
-Pulls every 2025-26 game's BoxScoreTraditionalV2 via nba_api (free) and writes
-data/box-scores-2025-26.json keyed by game_id with:
-  - active_home/away: players who suited up that night [name, min, pts, reb, ast, comment]
-  - dnp_home/away:    players on bench with reason ("DND - Injury", etc.)
+V2 was deprecated for 2025-26. Uses BoxScoreTraditionalV3 + BoxScoreSummaryV3.
+Each player has nested {personId, firstName, familyName, nameI, position,
+comment, jerseyNum, statistics: {minutes, points, rebounds, assists, ...}}.
+
+Output: data/box-scores-2025-26.json keyed by game_id with:
+  active_home/away [name, min, pts, reb, ast, comment, position]
+  dnp_home/away    [name, comment, position]
+  officials        [name, jersey]
 
 Pure I/O — no model compute. ~12-14 min for 1257 games at 0.6s rate limit.
-~150 MB RAM, fits the 969 MB VM.
-
-Output also pushed to:
-  - HF dataset LBJLincoln26/nba-box-scores
-  - NBA TF Space data/box-scores-2025-26.json (so app.py reads it)
-
-USAGE:
-  cd /home/termius/mon-ipad
-  source .env.local
-  python3 scripts/ops/scrape_nba_box_scores.py
 """
 from __future__ import annotations
-import json, os, sys, time
+import json, math, os, sys, time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -30,35 +24,54 @@ ARCHIVE_DATASET = "LBJLincoln26/nba-box-scores"
 RATE_LIMIT_SEC = 0.6
 
 
-def _row_to_dict(row) -> dict:
-    """Pull MIN/PTS/REB/AST + DNP comment from a player box-score row."""
-    m_raw = row.get("MIN")
-    if m_raw is None or (isinstance(m_raw, float) and m_raw != m_raw):
-        min_dec = 0.0
-    elif isinstance(m_raw, str) and ":" in m_raw:
+def _safe_int(v) -> int:
+    try:
+        if v is None: return 0
+        f = float(v)
+        if math.isnan(f): return 0
+        return int(f)
+    except Exception:
+        return 0
+
+
+def _parse_minutes(m_raw) -> float:
+    if m_raw is None: return 0.0
+    if isinstance(m_raw, str):
+        if ":" in m_raw:
+            try:
+                mm, ss = m_raw.split(":", 1)
+                return round(float(mm) + float(ss) / 60.0, 1)
+            except Exception:
+                return 0.0
+        try: return float(m_raw)
+        except Exception: return 0.0
+    if isinstance(m_raw, (int, float)):
         try:
-            mm, ss = m_raw.split(":")
-            min_dec = round(int(mm) + int(ss) / 60.0, 1)
+            f = float(m_raw)
+            if math.isnan(f): return 0.0
+            return round(f, 1)
         except Exception:
-            min_dec = 0.0
-    else:
-        try:
-            min_dec = float(m_raw or 0)
-        except Exception:
-            min_dec = 0.0
+            return 0.0
+    return 0.0
+
+
+def _player_to_dict(p: dict) -> dict:
+    name = p.get("nameI") or f"{p.get('firstName','')} {p.get('familyName','')}".strip()
+    stats = p.get("statistics") or {}
     return {
-        "name": row.get("PLAYER_NAME", "?"),
-        "min": min_dec,
-        "pts": int(row.get("PTS") or 0),
-        "reb": int(row.get("REB") or 0),
-        "ast": int(row.get("AST") or 0),
-        "comment": (row.get("COMMENT") or "")[:60],
+        "name": name[:40],
+        "min": _parse_minutes(stats.get("minutes")),
+        "pts": _safe_int(stats.get("points")),
+        "reb": _safe_int(stats.get("reboundsTotal") or stats.get("rebounds")),
+        "ast": _safe_int(stats.get("assists")),
+        "comment": (p.get("comment") or "")[:60],
+        "pos": p.get("position", "")[:3],
     }
 
 
 def main() -> int:
     try:
-        from nba_api.stats.endpoints import boxscoretraditionalv2
+        from nba_api.stats.endpoints import boxscoretraditionalv3, boxscoresummaryv3
     except ImportError:
         print("nba_api not installed. Run: pip install --break-system-packages nba_api", file=sys.stderr)
         return 2
@@ -70,7 +83,6 @@ def main() -> int:
     games = doc.get("games", doc) if isinstance(doc, dict) else doc
     print(f"loaded {len(games)} games from {GAMES_LOCAL.name}", file=sys.stderr)
 
-    # Resume from existing file if present
     out: dict = {}
     if OUT_LOCAL.exists():
         try:
@@ -81,13 +93,17 @@ def main() -> int:
 
     failures = []
     new_count = 0
+    skipped_preseason = 0
     for i, g in enumerate(games):
         gid = g.get("game_id", "")
         if not gid or gid in out:
             continue
+        # Skip preseason (game_id starts with "001") — V3 has no data for these
+        if gid.startswith("001"):
+            skipped_preseason += 1
+            continue
         date = (g.get("game_date") or "")[:10]
-        h_obj = g.get("home", {})
-        a_obj = g.get("away", {})
+        h_obj = g.get("home", {}); a_obj = g.get("away", {})
         home = (h_obj.get("team_abbr") if isinstance(h_obj, dict) else "") or ""
         away = (a_obj.get("team_abbr") if isinstance(a_obj, dict) else "") or ""
         if not (home and away):
@@ -99,17 +115,37 @@ def main() -> int:
             continue
 
         try:
-            box = boxscoretraditionalv2.BoxScoreTraditionalV2(game_id=gid).get_data_frames()
-            player_df = box[0]
-            home_rows = player_df[player_df["TEAM_ABBREVIATION"] == home]
-            away_rows = player_df[player_df["TEAM_ABBREVIATION"] == away]
+            bs = boxscoretraditionalv3.BoxScoreTraditionalV3(game_id=gid).get_dict()
+            payload = bs.get("boxScoreTraditional") or {}
+            home_block = payload.get("homeTeam") or {}
+            away_block = payload.get("awayTeam") or {}
+            home_team_abbr = home_block.get("teamTricode") or home
+            away_team_abbr = away_block.get("teamTricode") or away
+            # Verify abbrs match (V3 might disagree with our games file)
+            if home_team_abbr != home: home = home_team_abbr
+            if away_team_abbr != away: away = away_team_abbr
 
-            home_players = [_row_to_dict(r) for _, r in home_rows.iterrows()]
-            away_players = [_row_to_dict(r) for _, r in away_rows.iterrows()]
+            home_players = [_player_to_dict(p) for p in (home_block.get("players") or [])]
+            away_players = [_player_to_dict(p) for p in (away_block.get("players") or [])]
             active_home = [p for p in home_players if p["min"] > 0]
             active_away = [p for p in away_players if p["min"] > 0]
             dnp_home = [p for p in home_players if p["min"] == 0]
             dnp_away = [p for p in away_players if p["min"] == 0]
+
+            # Officials via SummaryV3 (extra call — soft-fail if 4/10+ data gap)
+            officials = []
+            try:
+                summary = boxscoresummaryv3.BoxScoreSummaryV3(game_id=gid).get_dict()
+                # V3 nests under "boxScoreSummary" → "officials"
+                bs_sum = summary.get("boxScoreSummary") or {}
+                offs = bs_sum.get("officials") or []
+                for r in offs:
+                    nm = r.get("nameI") or f"{r.get('firstName','')} {r.get('familyName','')}".strip()
+                    if nm.strip():
+                        officials.append({"name": nm[:40], "jersey": str(r.get("jerseyNum") or "")})
+                time.sleep(0.5)
+            except Exception:
+                officials = []
 
             out[gid] = {
                 "date": date,
@@ -118,33 +154,33 @@ def main() -> int:
                 "active_away": active_away,
                 "dnp_home": dnp_home,
                 "dnp_away": dnp_away,
+                "officials": officials,
             }
             new_count += 1
         except Exception as e:
             failures.append(f"{gid}: {str(e)[:80]}")
-            print(f"  [{i+1}/{len(games)}] {gid} FAIL: {e}", file=sys.stderr)
+            if len(failures) <= 5 or len(failures) % 50 == 0:
+                print(f"  [{i+1}/{len(games)}] {gid} FAIL: {e}", file=sys.stderr)
             continue
 
         if (i + 1) % 50 == 0:
-            print(f"  [{i+1}/{len(games)}] {len(out)} scraped", file=sys.stderr)
-            # Snapshot every 50 — resilient to ctrl-C / network drops
+            print(f"  [{i+1}/{len(games)}] {len(out)} scraped (+{new_count} new), {len(failures)} fails",
+                  file=sys.stderr)
             OUT_LOCAL.parent.mkdir(parents=True, exist_ok=True)
             OUT_LOCAL.write_text(json.dumps(out, indent=None))
         time.sleep(RATE_LIMIT_SEC)
 
-    # Final save
     OUT_LOCAL.parent.mkdir(parents=True, exist_ok=True)
     OUT_LOCAL.write_text(json.dumps(out, indent=None))
     sz_mb = OUT_LOCAL.stat().st_size / (1024 * 1024)
-    print(f"\n=== scraped {len(out)} games (+{new_count} new), {len(failures)} failures, {sz_mb:.1f} MB ===",
-          file=sys.stderr)
+    print(f"\n=== scraped {len(out)} games (+{new_count} new this run), "
+          f"{len(failures)} failures, {skipped_preseason} preseason-skipped, "
+          f"{sz_mb:.1f} MB ===", file=sys.stderr)
 
-    # Push to HF — token resolution: HF_TOKEN_NBA owns LBJLincoln26 datasets/spaces
     tok = os.environ.get("HF_TOKEN_NBA") or os.environ.get("HF_TOKEN", "")
     if not tok:
-        print("HF_TOKEN_NBA missing — local file written but not uploaded", file=sys.stderr)
+        print("HF_TOKEN_NBA missing — local file written, no upload", file=sys.stderr)
         return 0
-
     try:
         from huggingface_hub import HfApi
         api = HfApi(token=tok)
@@ -153,13 +189,13 @@ def main() -> int:
             path_or_fileobj=str(OUT_LOCAL),
             path_in_repo="box-scores-2025-26.json",
             repo_id=ARCHIVE_DATASET, repo_type="dataset",
-            commit_message=f"[box-scrape] {len(out)} games via nba_api",
+            commit_message=f"[box-scrape V3] {len(out)} games (+refs)",
         )
         api.upload_file(
             path_or_fileobj=str(OUT_LOCAL),
             path_in_repo="data/box-scores-2025-26.json",
             repo_id=TF_SPACE, repo_type="space",
-            commit_message=f"[box-scrape] {len(out)} leakage-safe per-game lineups",
+            commit_message=f"[box-scrape V3] {len(out)} leakage-safe per-game lineups + refs",
         )
         print(f"pushed to {ARCHIVE_DATASET} + {TF_SPACE}", file=sys.stderr)
     except Exception as e:
