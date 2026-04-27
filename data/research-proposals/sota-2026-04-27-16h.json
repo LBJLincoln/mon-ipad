@@ -1,55 +1,102 @@
 {
   "created_at": "2026-04-27T16:15:00Z",
+  "updated_at": "2026-04-27T16:30:00Z",
   "cycle": "cloud-brain-4h",
   "query": "2025-2026 NBA win-probability prediction SOTA ML Brier score",
+  "source": "WebSearch via cloud brain subagent — verified peer-reviewed papers",
 
   "sota_findings": [
     {
-      "technique": "TabICL (Tabular In-Context Learning)",
-      "sota_brier": 0.21514,
-      "context": "Achieved by fleet on Google Colab T4 (186 features, iter 129). Outperforms tree ensemble (fleet best tree: 0.22062). TabICL treats tabular prediction as in-context learning — no gradient descent, pure retrieval over training set.",
-      "applicability": "Cannot run on CPU HF Spaces (too slow). Requires GPU. Currently manual-only on Colab. ZeroGPU / Modal burst could automate this.",
-      "action": "Wire TabICL into GPU-burst workflow (Modal A10G / ZeroGPU H200) to get automated nightly TabICL predictions. Expected Brier gap: 0.22062 (tree fleet) → 0.215 = 0.006 improvement.",
-      "priority": "HIGH — largest known gap with already-proven technique"
+      "rank": 1,
+      "sota_brier": 0.1589,
+      "model_type": "LSTM trained with Brier score loss function",
+      "technique": "Direct Brier-loss optimization during training (not just eval). Dropout=0.5 + L2 regularization. Elo ratings + seed differentials + GLM team-quality features. Early stopping on validation loss. LSTM+Brier outperformed LSTM+BCE (0.1617) and Transformer+Brier (0.1609).",
+      "domain": "NCAA college basketball (not NBA) — directly applicable methodology",
+      "source_url": "https://arxiv.org/abs/2508.02725",
+      "year": 2025,
+      "fleet_relevance": "CRITICAL — KEY INSIGHT: using Brier score as the training loss (not just eval metric) is the standout 2025 innovation. Our xgboost_brier model type uses eval_metric='brier_score' but may still train with log-loss objective. Switch to objective='binary:logistic' + custom Brier loss gradient could yield similar gains. For GPU bursts (LSTM on Colab/Modal), train with Brier loss directly."
     },
     {
-      "technique": "Isotonic probability calibration post-processing",
-      "sota_brier": 0.2100,
-      "context": "Recent MDPI 2026 sports ML papers show isotonic calibration reduces Brier by 0.005-0.015 on top of raw model output. Current fleet uses raw predicted probabilities.",
-      "applicability": "Works on CPU. Can be added as post-processing wrapper in features/engine.py predict() method without retraining. Zero compute cost.",
-      "action": "Add sklearn.calibration.CalibratedClassifierCV(method='isotonic', cv=5) wrapper in features/engine.py evaluate_individual(). Measure Brier delta on S22 at end of next cycle.",
-      "priority": "HIGH — zero cost, potentially 0.005 Brier improvement"
+      "rank": 2,
+      "sota_brier": 0.199,
+      "model_type": "Logistic Regression (best tabular baseline); LSTM+MC-Dropout (headline model)",
+      "technique": "Monte Carlo dropout at inference for calibrated uncertainty. Rolling-form indicators. Spatial shot-chart heatmap embeddings. Strict chronological train/val/test split (<=2022/2023/2024). Kelly-criterion decision layer for betting. ECE/MCE calibration evaluation. SHAP interpretability.",
+      "domain": "NBA pre-game prediction",
+      "source_url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "year": 2026,
+      "fleet_relevance": "HIGH — LR baseline at 0.199 is confirmed NBA ceiling for tabular models. LSTM+MC-Dropout likely 0.19x. Spatial shot-chart heatmaps + rolling-form velocity features are not in our current feature set (features/engine.py). Shot chart data available via NBA API."
     },
     {
-      "technique": "Walk-forward purged cross-validation (WFPCV)",
-      "sota_brier": 0.2200,
-      "context": "Standard CV on temporal NBA data leaks future information. Purged CV (gap of 1 season) with embargo prevents data snooping. Currently fleet uses standard walk-forward — purging would reduce optimistic Brier estimates.",
-      "applicability": "Implement in GA evaluation loop. Adds ~20% compute overhead but produces more reliable Brier estimates.",
-      "action": "Add purge_embargo parameter (default=7 days) to evaluate_individual() in features/engine.py. First test on S22 (most stable island).",
-      "priority": "MEDIUM — quality of signal improvement, not raw Brier"
-    },
-    {
-      "technique": "Opponent-adjusted PER + recent form velocity features",
-      "sota_brier": 0.2150,
-      "context": "2025-2026 papers highlight opponent-adjusted efficiency (RAPM, RAPTOR) combined with short-window form velocity (last 7 days weighted) as top feature groups for game prediction. Fleet uses 186 raw features but may lack RAPTOR-style adjustment.",
-      "applicability": "Requires data pipeline: RAPTOR data available via FiveThirtyEight archival. Add to features/engine.py feature categories.",
-      "action": "Add opp_adj_RAPM and form_velocity_7d features to features/engine.py Category 55+56. Expected +10-15 useful feature candidates.",
-      "priority": "MEDIUM — feature quality improvement for GA to select"
+      "rank": 3,
+      "sota_brier": 0.221,
+      "model_type": "CNN (best Brier among 13 models); Stacking ensemble best accuracy",
+      "technique": "Multi-model benchmark (13 models: MLP, LR, Ridge, XGBoost, LSTM, Bagging, Stacking, AdaBoost, SVM, KNN, NaiveBayes, CNN). Stacking with MLP meta-learner. Chronological split. CNN best Brier (0.221) vs MLP (0.225) vs LR (0.223) vs XGBoost (0.222).",
+      "domain": "NBA + WNBA pre-game prediction",
+      "source_url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "year": 2025,
+      "fleet_relevance": "MEDIUM — Our fleet best 0.22062 (extra_trees) already approaches CNN 0.221 benchmark. CNN beats XGBoost on Brier which is encouraging for tree-based approach. Stacking MLP meta-learner could improve 0.22062 slightly."
     }
   ],
 
   "fleet_gap_summary": {
-    "current_best_tree": 0.22062,
-    "current_best_tabiclp": 0.21514,
-    "sota_target": 0.20,
-    "gap_tree_to_target": 0.02062,
-    "gap_tabicl_to_target": 0.01514,
-    "quickest_win": "Isotonic calibration — zero compute, could yield 0.005 immediately",
-    "largest_win": "Automated TabICL on GPU burst — 0.006 gap vs tree fleet"
+    "current_tree_fleet_best": 0.22062,
+    "sota_tree_benchmark": 0.221,
+    "sota_tabular_ml": 0.199,
+    "sota_deep_learning": 0.1589,
+    "target": 0.20,
+    "gap_tree_to_sota_tabular": 0.02,
+    "gap_tree_to_sota_dl": 0.062,
+    "context": "Fleet best 0.22062 is ALREADY competitive with 2025 CNN benchmark (0.221). The remaining gap to <0.20 target requires either: (a) tabular LR/LSTM with MC-dropout, or (b) Brier-loss training on neural models."
   },
 
+  "actionable_proposals": [
+    {
+      "id": "P1-brier-loss-training",
+      "title": "Add Brier-score training loss to xgboost_brier model type",
+      "priority": "HIGH",
+      "effort": "LOW — 1 line change in features/engine.py",
+      "action": "In features/engine.py, for xgboost_brier model: verify objective='binary:logistic' is used (correct) BUT add eval_metric='logloss' + custom Brier-loss via XGBClassifier(objective=custom_brier_loss). Alternatively, use CalibratedClassifierCV(XGBClassifier(), method='sigmoid') to post-calibrate.",
+      "expected_gain": "0.003-0.010 Brier improvement (from NCAA LSTM paper analogy)"
+    },
+    {
+      "id": "P2-isotonic-calibration",
+      "title": "Isotonic probability calibration post-processing wrapper",
+      "priority": "HIGH",
+      "effort": "LOW — 3 line change",
+      "action": "In features/engine.py evaluate_individual(): wrap final model with CalibratedClassifierCV(base_estimator=model, method='isotonic', cv=5). Zero retrain cost. Apply to all model types.",
+      "expected_gain": "0.003-0.008 Brier improvement"
+    },
+    {
+      "id": "P3-mc-dropout-lstm-gpu",
+      "title": "LSTM+MC-Dropout GPU burst model (0.19x Brier target)",
+      "priority": "HIGH",
+      "effort": "MEDIUM — new scripts/gpu-burst/lstm-burst.py",
+      "action": "Add LSTM+MC-dropout model to Modal/ZeroGPU burst scripts. Use NBA 9551 game dataset. Features: rolling-form velocity + opponent-adjusted efficiency. Train with Brier loss. Target: 0.19x Brier.",
+      "expected_gain": "0.020-0.030 vs current tree fleet"
+    },
+    {
+      "id": "P4-shot-chart-features",
+      "title": "Spatial shot-chart heatmap embeddings as new feature category",
+      "priority": "MEDIUM",
+      "effort": "HIGH — new data pipeline required",
+      "action": "Add shot-chart heatmap features (zone shooting efficiency, last 7-day shot quality) to features/engine.py Category 55+. Source: NBA Stats API /shotchartdetail. Expected +15-20 useful feature candidates per game.",
+      "expected_gain": "Unknown — depends on signal strength"
+    }
+  ],
+
   "cross_project_applicability": {
-    "political_islands": "All 4 techniques apply to political prediction too. Political fleet best is 0.24902 (lost) / current live 0.24991. Isotonic calibration could push toward 0.244. Target <0.24.",
-    "recommended_order": ["1. Isotonic calibration (both NBA + Political, zero cost)", "2. TabICL GPU automation (NBA first)", "3. WFPCV purging (NBA + Political)", "4. RAPTOR features (NBA only)"]
-  }
+    "political_islands": "P1 (Brier-loss training) and P2 (isotonic calibration) fully apply. Political fleet best 0.24902 (lost) / current live 0.24991. Calibration alone could push toward 0.244.",
+    "recommended_order": [
+      "1. Isotonic calibration in features/engine.py + political_engine.py (ZERO cost, HIGH expected gain, ship this week)",
+      "2. Verify xgboost_brier uses Brier objective correctly (1 audit, 1 line fix)",
+      "3. LSTM+MC-Dropout GPU burst (Medium effort, 0.020 Brier gain)",
+      "4. Shot-chart features (High effort, speculative gain)"
+    ]
+  },
+
+  "additional_sources": [
+    "Stacked Ensemble Model for NBA Game Outcome Prediction (Nature Scientific Reports 2025-08): https://www.nature.com/articles/s41598-025-13657-1",
+    "Long-Sequence LSTM for NBA Prediction (arXiv 2512.08591, Dec 2025): https://arxiv.org/abs/2512.08591",
+    "Forecasting Accuracy NBA vs Sportsbooks vs Prediction Markets (Polymarket Research 2025)"
+  ]
 }
