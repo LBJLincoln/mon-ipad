@@ -1,0 +1,44 @@
+{
+  "id": "2026-04-27-temperature-scaling-calibration",
+  "date": "2026-04-27",
+  "priority": "HIGH",
+  "title": "Temperature Scaling Calibration: Bridge 0.22062 → 0.21 NBA Brier Gap",
+  "source_papers": [
+    "MDPI Information 2026 (uncertainty-aware NBA forecasting): https://www.mdpi.com/2078-2489/17/1/56",
+    "Nature Scientific Reports 2025 (stacked ensemble NBA): https://www.nature.com/articles/s41598-025-13657-1",
+    "PMC / XGBoost + SHAP NBA 2024: https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/"
+  ],
+  "key_insight": "IEEE 2026 benchmark: LogReg achieves Brier 0.199 vs XGBoost 0.202 vs CNN 0.221. Our extra_trees fleet best is 0.22062. The LogReg advantage is NOT model complexity — it is native probability calibration. Temperature scaling is a simple post-processing step that can close this gap without retraining.",
+  "technique": "temperature_scaling",
+  "mechanism": "Divide logit outputs by learned scalar T before sigmoid: P_cal = sigmoid(logit(P_raw) / T). T is learned by minimizing NLL (negative log-likelihood) on a holdout set via scalar optimization. T > 1 softens overconfident predictions; T < 1 sharpens underconfident ones.",
+  "expected_brier_gain": "0.002 to 0.008 absolute improvement on walk-forward test",
+  "fleet_best_before": 0.22062,
+  "brier_target": 0.21,
+  "gap": 0.01062,
+  "implementation": {
+    "complexity": "LOW — 10-20 lines of code, no retraining required",
+    "target_island": "S15 (Nomos42/nba-evo-6) — holds fleet best checkpoint at gen 1306",
+    "steps": [
+      "1. Load champion model checkpoint from S15 (gen 1306, extra_trees)",
+      "2. Generate raw probability outputs on 20% holdout set",
+      "3. Find optimal T via scipy.optimize.minimize_scalar minimizing NLL on holdout",
+      "4. Apply P_cal = expit(logit(P_raw) / T) at inference",
+      "5. Re-evaluate Brier on walk-forward windows",
+      "6. If Brier improves > 0.001, wrap as post-processing step in engine.py predict()"
+    ],
+    "code_sketch": "from scipy.special import logit, expit; from scipy.optimize import minimize_scalar; T = minimize_scalar(lambda t: -np.mean(y*np.log(expit(logit(p)/t)+1e-9) + (1-y)*np.log(1-expit(logit(p)/t)+1e-9)), bounds=(0.1,10), method='bounded').x"
+  },
+  "secondary_techniques": [
+    "Platt scaling (logistic regression on raw outputs) — alternative to temperature scaling",
+    "Isotonic regression calibration — non-parametric, better for larger datasets",
+    "Shot-zone spatial embeddings (rolling-form + shot-chart) from MDPI uncertainty paper",
+    "MC-dropout uncertainty bands — enables reject-option betting (only bet when uncertainty < threshold)"
+  ],
+  "applicability": {
+    "nba_islands": "Apply to S15 fleet-best checkpoint first, then roll to S14/S18 if improvement confirmed",
+    "political_islands": "Directly applicable — political predictions have same calibration issue (Brier 0.25 vs theoretical optimum ~0.20)"
+  },
+  "status": "PROPOSED",
+  "proposed_by": "cloud-brain-4h",
+  "assigned_to": "DR FRANKENSTEIN (D1 Research) or SWISH (D3 Evolution)"
+}
