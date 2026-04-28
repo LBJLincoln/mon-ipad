@@ -2105,6 +2105,25 @@ def persist_ledgers_to_hub(force: bool = False) -> Dict[str, Any]:
         (RECON_CURSOR_PATH, "data/intraday/fill_reconciliation_cursor.json", False),
         (LEDGER_JSONL, "data/intraday/agent_ledger.jsonl", True),
     ]
+    # 2026-04-28 — also persist last 7 days of per-day decisions/*.jsonl so the
+    # audit pipeline (per_agent_deep_audit.py) keeps the rationale trail across
+    # factory_reboot. Without this every reset wiped /api/decisions history,
+    # making cross-day comparison impossible. Each file is small (~17 rows/day
+    # × ~2 KB/row = 30 KB/day), capped at 7 days = ~200 KB total.
+    try:
+        decisions_dir = REPO / "data" / "intraday" / "decisions"
+        if decisions_dir.is_dir():
+            from datetime import datetime as _dt, timezone as _tz, timedelta as _td
+            today = _dt.now(_tz.utc).date()
+            for i in range(7):
+                d = today - _td(days=i)
+                p = decisions_dir / f"{d.isoformat()}.jsonl"
+                if p.exists():
+                    candidates.append(
+                        (p, f"data/intraday/decisions/{d.isoformat()}.jsonl", True)
+                    )
+    except Exception as _e:
+        out["errors"].append(f"decisions_enum: {str(_e)[:200]}")
     ops: List[Any] = []
     for local, remote, is_ledger in candidates:
         try:

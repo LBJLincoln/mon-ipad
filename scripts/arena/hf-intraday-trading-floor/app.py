@@ -553,8 +553,26 @@ def _compute_agent_tier(tid: str, seed_share: float, total_equity: float,
 
 
 def _tier_directive(tier: str, total_equity: float, seed_share: float) -> str:
-    """Dynamic, tier-keyed directive appended AFTER the static addendum."""
+    """Dynamic, tier-keyed directive appended AFTER the static addendum.
+
+    2026-04-28 — MAX-AGGRO override: when ITF_MAX_AGGRO=1, every tier inherits
+    the WINNER 80%-floor directive. User explicitly authorised FULL-loss
+    tolerance ('don't care losing all'); the conservative loser/holder/idle
+    branches were defeating the deploy mandate (live: 57% deployed vs 80%
+    target). Tier system stays for analytics; sizing is mandate-driven.
+    """
     delta_pct = ((total_equity - seed_share) / max(seed_share, 1.0)) * 100.0
+    if os.environ.get("ITF_MAX_AGGRO", "0") == "1":
+        _floor_pct = int(POWER_STAKE_FLOOR_PCT * 100)
+        return (
+            f"TIER: MAX-AGGRO ALL ({tier.upper()}, equity ${total_equity:,.0f} "
+            f"= {delta_pct:+.1f}% vs seed). MANDATE: per-trade floor = {_floor_pct}% "
+            f"of sub-bankroll (ITF_STAKE_FLOOR_PCT={POWER_STAKE_FLOOR_PCT:.2f}). "
+            f"Edge >=0.005 floor (was 0.015), R/R 2:1 floor (was 3:1), 6x leverage "
+            f"on PDT. Stack conviction up to 5 concurrent orders/ticker. User has "
+            f"declared full-loss tolerance — selectivity is OFF, deployment is ON. "
+            f"Silent-pass is banned (uniform_fallback_itf still applies if LLM dies)."
+        )
     if tier == "winner":
         _floor_pct = int(POWER_STAKE_FLOOR_PCT * 100)
         return (

@@ -82,6 +82,20 @@ if [ -d "/home/termius/mon-ipad/data/audit/per-agent-deep" ]; then
   mkdir -p "$DEST/audit/per-agent-deep"
   cp -r /home/termius/mon-ipad/data/audit/per-agent-deep/. "$DEST/audit/per-agent-deep/" 2>/dev/null || true
 fi
+# 2026-04-28 — mirror dispatch-log.jsonl + arena/council-log to dashboard public/
+# so /api/crew-activity + /api/arena/council-log have a public source. Vercel
+# can't fetch private mon-ipad without a token; HF mirror was unreliable.
+if [ -f "/home/termius/mon-ipad/data/ops/dispatch-log.jsonl" ]; then
+  mkdir -p "$DEST/ops"
+  cp /home/termius/mon-ipad/data/ops/dispatch-log.jsonl "$DEST/ops/dispatch-log.jsonl"
+fi
+if [ -d "/home/termius/mon-ipad/data/arena" ]; then
+  mkdir -p "$DEST/arena"
+  # only the small summary files the dashboard needs
+  for f in /home/termius/mon-ipad/data/arena/council-log-*.json /home/termius/mon-ipad/data/arena/backfill-summary*.json; do
+    [ -f "$f" ] && cp "$f" "$DEST/arena/" 2>/dev/null || true
+  done
+fi
 # Strip cron.log and other non-allowed noise
 find "$DEST" -type f ! \( -name '*.json' -o -name '*.jsonl' -o -name '*.md' \) -delete 2>/dev/null || true
 
