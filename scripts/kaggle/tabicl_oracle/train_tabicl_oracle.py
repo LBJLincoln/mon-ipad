@@ -49,6 +49,32 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.isotonic import IsotonicRegression
 from huggingface_hub import HfApi, hf_hub_download
 
+# 2026-04-28 — TabICLClassifier defaults to CPU when `device` is not passed.
+# Colab/Kaggle GPU sessions silently ran on CPU (~5× slower) because we omitted
+# the param. Detect CUDA explicitly + FAIL LOUD if a GPU runtime was expected
+# but torch can't see it (mismatched torch/CUDA install, runtime not attached).
+import torch
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+print(f'[GPU] torch.cuda.is_available()={torch.cuda.is_available()} -> DEVICE={DEVICE}', flush=True)
+if torch.cuda.is_available():
+    print(f'[GPU] device_name={torch.cuda.get_device_name(0)} '
+          f'capability={torch.cuda.get_device_capability(0)} '
+          f'mem_total={torch.cuda.get_device_properties(0).total_memory/1e9:.1f}GB',
+          flush=True)
+    try:
+        import subprocess
+        print('[GPU] nvidia-smi:')
+        print(subprocess.check_output(['nvidia-smi', '-L'], text=True).strip(), flush=True)
+    except Exception:
+        pass
+elif os.environ.get('REQUIRE_GPU', '0') == '1':
+    raise RuntimeError(
+        'REQUIRE_GPU=1 but torch.cuda.is_available()=False. '
+        'Likely cause: Colab Runtime -> Change runtime type was set to CPU, '
+        'or PyTorch wheel was installed without CUDA support. '
+        'Run !nvidia-smi in a cell first to confirm a GPU is attached.'
+    )
+
 # --- 1. Pull cache ------------------------------------------------------------
 NPZ = hf_hub_download(
     repo_id='LBJLincoln26/nba-feature-cache',
@@ -137,6 +163,7 @@ def sweep_tabicl(X_train, y_train):
             t0 = time.time()
             for tr, te in cpcv_folds(len(X_train)):
                 m = TabICLClassifier(n_estimators=1, softmax_temperature=temp,
+                                     device=DEVICE,
                                      random_state=RANDOM_STATE)
                 sub_tr = tr[-ctx:]
                 m.fit(X_train[sub_tr], y_train[sub_tr])
@@ -186,6 +213,7 @@ best = min(sweep, key=lambda r: r['cv_brier_mean'])
 print(f'  best ctx={best["ctx"]} temp={best["temp"]} cv={best["cv_brier_mean"]:.5f}', flush=True)
 from tabicl import TabICLClassifier
 ti_train = TabICLClassifier(n_estimators=1, softmax_temperature=best['temp'],
+                            device=DEVICE,
                             random_state=RANDOM_STATE)
 ti_sub = train_idx[-best['ctx']:]
 ti_train.fit(X_186[ti_sub], y[ti_sub])
