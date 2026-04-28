@@ -1,10 +1,10 @@
 # Calibration & Probability Scoring
 
-> Auto-compiled from 32 raw sources on 2026-04-27
+> Auto-compiled from 40 raw sources on 2026-04-28
 
 ## Overview
 
-This topic covers 32 research files spanning calibration & probability scoring.
+This topic covers 40 research files spanning calibration & probability scoring.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -21,16 +21,23 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **SOTA Deep Scan — 2026-04-21** (1393 words) -- `raw/research/sota-deep-scan-2026-04-21.md`
 - **NBA Scientific Experiment Report** (1189 words) -- `raw/experiments/nba-experiment-2026-04-06.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
+- **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
 - **NBA Scientific Experiment Report** (1082 words) -- `raw/experiments/nba-experiment-2026-04-07.md`
 - **NBA Scientific Experiment Report** (1063 words) -- `raw/experiments/nba-experiment-2026-04-10.md`
 - **Dashboard Libraries & Agent Studio UI SOTA (April 2026)** (945 words) -- `raw/agent-memory/karpathy-researcher_research_dashboard_libraries_apr14_2026.md`
 - **research_march2026_agentic_ai** (930 words) -- `raw/agent-memory/research-analyst_research_march2026_agentic_ai.md`
+- **research_march2026_agentic_ai** (930 words) -- `raw/research-analyst/research_march2026_agentic_ai.md`
 - **Claude Code Karpathy Plugins & Ecosystem (April 2026)** (776 words) -- `raw/agent-memory/karpathy-researcher_research_claude_code_plugins_apr2026.md`
 - **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
+- **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
 - **research_march2026_cycle4** (764 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle4.md`
+- **research_march2026_cycle4** (764 words) -- `raw/research-analyst/research_march2026_cycle4.md`
 - **project_nba_research_state** (660 words) -- `raw/agent-memory/research-analyst_project_nba_research_state.md`
+- **project_nba_research_state** (660 words) -- `raw/research-analyst/project_nba_research_state.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle6.md`
+- **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/research-analyst/research_march2026_cycle6.md`
 - **NBA Feature Engine v3.0-43cat state** (507 words) -- `raw/agent-memory/feature-engineer_project_engine_v38cat.md`
+- **NBA Feature Engine v3.0-43cat state** (507 words) -- `raw/feature-engineer/project_engine_v38cat.md`
 - **research_april2026_cycle13_dashboard** (504 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle13_dashboard.md`
 - **Backtesting & Multi-Agent Portfolio Research — April 2026 Cycle 11** (414 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle11_backtesting.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
@@ -39,6 +46,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **research_april2026_cycle14_drift_monitoring** (289 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle14_drift_monitoring.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-22** (265 words) -- `raw/research/arxiv-calibration-scan-2026-04-22.md`
 - **project_scan_history** (235 words) -- `raw/agent-memory/repo-scout_project_scan_history.md`
+- **project_scan_history** (235 words) -- `raw/repo-scout/project_scan_history.md`
 - **Research Scan: tf-proposals-2026-04-20-refresh** (165 words) -- `raw/research/tf-proposals-2026-04-20-refresh.md`
 - **Calibration & Drift Monitoring** (149 words) -- `raw/learnings/calibration-drift-status.md`
 

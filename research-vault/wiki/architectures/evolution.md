@@ -1,10 +1,10 @@
 # Genetic Algorithm & Evolution
 
-> Auto-compiled from 47 raw sources on 2026-04-27
+> Auto-compiled from 63 raw sources on 2026-04-28
 
 ## Overview
 
-This topic covers 47 research files spanning genetic algorithm & evolution.
+This topic covers 63 research files spanning genetic algorithm & evolution.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -15,33 +15,48 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Autonomous AI Organization Benchmark — April 14, 2026** (3224 words) -- `raw/research/autonomous-org-benchmark-apr14-2026.md`
 - **SOTA Game-Like Dashboards + Pixel Agent Visualization — April 17, 2026** (2566 words) -- `raw/research/dashboard-pixel-sota-apr17.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
+- **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
 - **Nomos42 Dashboard Overhaul — Ship Plan (Apr 16 2026)** (2074 words) -- `raw/research/dashboard-overhaul-plan-apr16.md`
 - **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/agent-memory/karpathy-researcher_kaggle_automation_research_march2026.md`
+- **Kaggle Automation Research (March 2026)** (1938 words) -- `raw/karpathy-researcher/kaggle_automation_research_march2026.md`
 - **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
 - **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/agent-memory/karpathy-researcher_karpathy_nba_adaptation.md`
+- **Karpathy Autoresearch Pattern — NBA Prediction Adaptation** (1573 words) -- `raw/karpathy-researcher/karpathy_nba_adaptation.md`
 - **Claude Code Karpathy Skills & Autoresearch Ecosystem** (1407 words) -- `raw/agent-memory/karpathy-researcher_research_claude_code_karpathy_skills_apr2026.md`
 - **SOTA Deep Scan — 2026-04-21** (1393 words) -- `raw/research/sota-deep-scan-2026-04-21.md`
 - **RGWA HuggingFace Models Survey March 2026** (1265 words) -- `raw/agent-memory/research-analyst_research_rgwa_hf_models_march2026.md`
+- **RGWA HuggingFace Models Survey March 2026** (1265 words) -- `raw/research-analyst/research_rgwa_hf_models_march2026.md`
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/research/self-improvement-harness-sources-2026-03-31.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
+- **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
 - **Self-Improvement Harness: Quick Wins (2026-03-31)** (1040 words) -- `raw/research/self-improvement-harness-quick-wins-2026-03-31.md`
 - **Dashboard Redesign Research — Apr 14 2026** (944 words) -- `raw/agent-memory/research-analyst_research_april2026_dashboard_redesign.md`
 - **Research Cycle 7 — Self-Improvement Harness (March 31 2026)** (925 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_self_improvement_harness.md`
+- **Research Cycle 7 — Self-Improvement Harness (March 31 2026)** (925 words) -- `raw/karpathy-researcher/research_cycle7_self_improvement_harness.md`
 - **project_agent_superpowers_scan** (920 words) -- `raw/agent-memory/repo-scout_project_agent_superpowers_scan.md`
+- **project_agent_superpowers_scan** (920 words) -- `raw/repo-scout/project_agent_superpowers_scan.md`
 - **Claude Code Karpathy Plugins & Ecosystem (April 2026)** (776 words) -- `raw/agent-memory/karpathy-researcher_research_claude_code_plugins_apr2026.md`
 - **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
+- **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
 - **research_march2026_cycle4** (764 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle4.md`
+- **research_march2026_cycle4** (764 words) -- `raw/research-analyst/research_march2026_cycle4.md`
 - **Evolution Fleet Status — April 2026** (747 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
+- **Evolution Fleet Status — April 2026** (747 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **hf_march2026_scan** (733 words) -- `raw/agent-memory/research-analyst_project_hf_march2026_scan.md`
+- **hf_march2026_scan** (733 words) -- `raw/research-analyst/project_hf_march2026_scan.md`
 - **Cycle 8 ONNX + ClearML Research (Apr 3, 2026)** (679 words) -- `raw/agent-memory/karpathy-researcher_research_cycle8_onnx_clearml.md`
+- **Cycle 8 ONNX + ClearML Research (Apr 3, 2026)** (679 words) -- `raw/karpathy-researcher/research_cycle8_onnx_clearml.md`
 - **project_nba_research_state** (660 words) -- `raw/agent-memory/research-analyst_project_nba_research_state.md`
+- **project_nba_research_state** (660 words) -- `raw/research-analyst/project_nba_research_state.md`
 - **April 2026 Cycle 18 — Competitor Audit + Council Honest Assessment** (604 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle18_competitor_audit.md`
 - **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/agent-memory/karpathy-researcher_research_bloomberg_opencode_pi.md`
+- **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/karpathy-researcher/research_bloomberg_opencode_pi.md`
 - **Cat 66 Canary Plan — `v3.1-66cat`** (558 words) -- `raw/research/eng-v3.1-66cat-canary.md`
 - **Research Scan: self-improvement-harness-2026-03-31** (530 words) -- `raw/research/self-improvement-harness-2026-03-31.md`
 - **Agent Frameworks April 2026 Evaluation** (409 words) -- `raw/agent-memory/repo-scout_project_agent_frameworks_apr2026.md`
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`
+- **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/karpathy-researcher/feedback_karpathy_patterns_validated.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`
 - **Karpathy NBA — Mutation Effectiveness Analysis** (328 words) -- `raw/karpathy/nba-mutation-analysis.md`
 - **Karpathy POLITICAL — Mutation Effectiveness Analysis** (295 words) -- `raw/karpathy/political-mutation-analysis.md`
@@ -53,6 +68,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-calibration-scan-2026-04-23** (232 words) -- `raw/research/arxiv-calibration-scan-2026-04-23.md`
 - **Research Scan: arxiv-scan-2026-04-23** (226 words) -- `raw/research/arxiv-scan-2026-04-23.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/agent-memory/feature-engineer_project_gpu_evolution_v2.md`
+- **gpu_evolution_v2_integration** (222 words) -- `raw/feature-engineer/project_gpu_evolution_v2.md`
 - **HF Department Council Spaces Architecture** (184 words) -- `raw/agent-memory/feature-engineer_project_hf_dept_council_spaces.md`
 - **user_role** (152 words) -- `raw/agent-memory/repo-scout_user_role.md`
 - **Council: evolution** (15 words) -- `raw/councils/council-evolution-latest.md`

@@ -1,7 +1,7 @@
 # Nomos42 Research Vault — Knowledge Index
 
-> Last compiled: 2026-04-27 05:00 UTC
-> Raw sources: 310 files | Topics: 11 | Concepts: 26
+> Last compiled: 2026-04-28 04:00 UTC
+> Raw sources: 363 files | Topics: 11 | Concepts: 26
 
 ## How to Use This Vault
 
@@ -16,71 +16,71 @@ This is a Markdown-first knowledge base (Karpathy LLM KB pattern).
 
 ### [[Betting Strategy & Bankroll]]
 - Wiki: `wiki/techniques/betting-strategy.md`
-- Sources: 117 raw files
+- Sources: 138 raw files
 
 ### [[Calibration & Probability Scoring]]
 - Wiki: `wiki/techniques/calibration.md`
-- Sources: 32 raw files
+- Sources: 40 raw files
 
 ### [[Data Sources & APIs]]
 - Wiki: `wiki/concepts/data-sources.md`
-- Sources: 105 raw files
+- Sources: 133 raw files
 
 ### [[Genetic Algorithm & Evolution]]
 - Wiki: `wiki/architectures/evolution.md`
-- Sources: 47 raw files
+- Sources: 63 raw files
 
 ### [[Feature Engineering & Selection]]
 - Wiki: `wiki/concepts/feature-engineering.md`
-- Sources: 42 raw files
+- Sources: 59 raw files
 
 ### [[Infrastructure & Compute]]
 - Wiki: `wiki/architectures/infrastructure.md`
-- Sources: 69 raw files
+- Sources: 97 raw files
 
 ### [[Karpathy Autoresearch & Agent Patterns]]
 - Wiki: `wiki/architectures/karpathy-patterns.md`
-- Sources: 14 raw files
+- Sources: 20 raw files
 
 ### [[NBA Prediction & ML Models]]
 - Wiki: `wiki/concepts/nba-prediction.md`
-- Sources: 187 raw files
+- Sources: 230 raw files
 
 ### [[Political Alpha & Prediction Markets]]
 - Wiki: `wiki/concepts/political-alpha.md`
-- Sources: 73 raw files
+- Sources: 80 raw files
 
 ### [[Trading Floor & AI Competition]]
 - Wiki: `wiki/architectures/trading-floor.md`
-- Sources: 54 raw files
+- Sources: 59 raw files
 
 ## Top Concepts (by mention frequency)
 
-- **[[Brier Score]]** -- 100 mentions across betting-strategy, calibration, data-sources
-- **[[Calibration]]** -- 68 mentions across betting-strategy, calibration, data-sources
-- **[[Ensemble Methods]]** -- 68 mentions across betting-strategy, data-sources, karpathy-patterns
-- **[[HF Spaces]]** -- 52 mentions across evolution, feature-engineering, infrastructure
-- **[[Kelly Criterion]]** -- 50 mentions across betting-strategy, calibration, data-sources
-- **[[Bankroll Management]]** -- 48 mentions across betting-strategy, infrastructure, nba-prediction
-- **[[Trading Floor]]** -- 48 mentions across betting-strategy, evolution, feature-engineering
-- **[[Tree Models]]** -- 41 mentions across betting-strategy, calibration, data-sources
-- **[[Feature Engineering]]** -- 39 mentions across data-sources, evolution, infrastructure
-- **[[Walk-Forward]]** -- 36 mentions across betting-strategy, data-sources, infrastructure
-- **[[Political Alpha]]** -- 31 mentions across betting-strategy, evolution, infrastructure
-- **[[Value Betting]]** -- 29 mentions across betting-strategy, nba-prediction
-- **[[TabICL]]** -- 25 mentions across data-sources, infrastructure, karpathy-patterns
-- **[[Karpathy Loop]]** -- 21 mentions across evolution, infrastructure, karpathy-patterns
-- **[[Feature Selection]]** -- 15 mentions across evolution, infrastructure, karpathy-patterns
-- **[[Venn-ABERS]]** -- 14 mentions across calibration, data-sources, karpathy-patterns
-- **[[SHAP]]** -- 14 mentions across data-sources, feature-engineering, infrastructure
-- **[[Mutation Operators]]** -- 11 mentions across evolution, karpathy-patterns, nba-prediction
-- **[[Shot Chart]]** -- 11 mentions across data-sources, nba-prediction
-- **[[Genetic Algorithm]]** -- 9 mentions across evolution, infrastructure, karpathy-patterns
-- **[[Isotonic Regression]]** -- 9 mentions across calibration, nba-prediction
-- **[[Crossover]]** -- 8 mentions across evolution, nba-prediction
-- **[[Multi-Island Evolution]]** -- 5 mentions across karpathy-patterns, nba-prediction
-- **[[Platt Scaling]]** -- 3 mentions across karpathy-patterns, nba-prediction
-- **[[LLM Council]]** -- 2 mentions across karpathy-patterns
+- **[[Brier Score]]** -- 128 mentions across betting-strategy, calibration, data-sources
+- **[[Calibration]]** -- 85 mentions across betting-strategy, calibration, data-sources
+- **[[Ensemble Methods]]** -- 82 mentions across betting-strategy, data-sources, karpathy-patterns
+- **[[HF Spaces]]** -- 73 mentions across evolution, feature-engineering, infrastructure
+- **[[Kelly Criterion]]** -- 60 mentions across betting-strategy, calibration, data-sources
+- **[[Tree Models]]** -- 57 mentions across betting-strategy, calibration, data-sources
+- **[[Bankroll Management]]** -- 54 mentions across betting-strategy, infrastructure, nba-prediction
+- **[[Trading Floor]]** -- 53 mentions across betting-strategy, evolution, feature-engineering
+- **[[Feature Engineering]]** -- 49 mentions across data-sources, evolution, infrastructure
+- **[[Walk-Forward]]** -- 42 mentions across betting-strategy, data-sources, infrastructure
+- **[[TabICL]]** -- 40 mentions across data-sources, infrastructure, karpathy-patterns
+- **[[Political Alpha]]** -- 37 mentions across betting-strategy, evolution, infrastructure
+- **[[Karpathy Loop]]** -- 30 mentions across evolution, infrastructure, karpathy-patterns
+- **[[Value Betting]]** -- 30 mentions across betting-strategy, nba-prediction
+- **[[Feature Selection]]** -- 25 mentions across evolution, infrastructure, karpathy-patterns
+- **[[SHAP]]** -- 23 mentions across data-sources, feature-engineering, infrastructure
+- **[[Venn-ABERS]]** -- 20 mentions across calibration, data-sources, karpathy-patterns
+- **[[Shot Chart]]** -- 17 mentions across data-sources, nba-prediction
+- **[[Mutation Operators]]** -- 16 mentions across evolution, karpathy-patterns, nba-prediction
+- **[[Crossover]]** -- 14 mentions across evolution, nba-prediction
+- **[[Genetic Algorithm]]** -- 13 mentions across evolution, infrastructure, karpathy-patterns
+- **[[Isotonic Regression]]** -- 13 mentions across calibration, nba-prediction
+- **[[Multi-Island Evolution]]** -- 8 mentions across karpathy-patterns, nba-prediction
+- **[[Platt Scaling]]** -- 5 mentions across karpathy-patterns, nba-prediction
+- **[[LLM Council]]** -- 4 mentions across karpathy-patterns
 
 ## Raw Source Inventory
 
@@ -89,12 +89,19 @@ This is a Markdown-first knowledge base (Karpathy LLM KB pattern).
 | `raw/agent-memory/` | 110 | 61,014 |
 | `raw/arena-docs/` | 21 | 93,113 |
 | `raw/councils/` | 10 | 276 |
+| `raw/evolution-optimizer/` | 1 | 747 |
 | `raw/experiments/` | 8 | 10,414 |
+| `raw/feature-engineer/` | 3 | 1,092 |
 | `raw/karpathy/` | 3 | 949 |
+| `raw/karpathy-researcher/` | 10 | 15,081 |
 | `raw/learnings/` | 5 | 973 |
+| `raw/market-analyst/` | 4 | 893 |
+| `raw/nba-brain/` | 2 | 341 |
 | `raw/political/` | 8 | 6,009 |
-| `raw/research/` | 138 | 59,310 |
+| `raw/repo-scout/` | 8 | 4,154 |
+| `raw/research/` | 145 | 61,186 |
+| `raw/research-analyst/` | 18 | 12,441 |
 | `raw/scientific/` | 7 | 5,909 |
 
 ---
-*Generated by compile.py on 2026-04-27 05:00 UTC*
+*Generated by compile.py on 2026-04-28 04:00 UTC*

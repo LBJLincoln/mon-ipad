@@ -1,10 +1,10 @@
 # Trading Floor & AI Competition
 
-> Auto-compiled from 54 raw sources on 2026-04-27
+> Auto-compiled from 59 raw sources on 2026-04-28
 
 ## Overview
 
-This topic covers 54 research files spanning trading floor & ai competition.
+This topic covers 59 research files spanning trading floor & ai competition.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -14,11 +14,13 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Autonomous AI Organization Benchmark — April 14, 2026** (3224 words) -- `raw/research/autonomous-org-benchmark-apr14-2026.md`
 - **SOTA Game-Like Dashboards + Pixel Agent Visualization — April 17, 2026** (2566 words) -- `raw/research/dashboard-pixel-sota-apr17.md`
 - **Karpathy April 2026 Research Summary** (2365 words) -- `raw/agent-memory/karpathy-researcher_research_karpathy_april2026.md`
+- **Karpathy April 2026 Research Summary** (2365 words) -- `raw/karpathy-researcher/research_karpathy_april2026.md`
 - **Nomos42 Dashboard Overhaul — Ship Plan (Apr 16 2026)** (2074 words) -- `raw/research/dashboard-overhaul-plan-apr16.md`
 - **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **Multi-Agent LLM Prediction Systems (April 2026 Landscape)** (1641 words) -- `raw/agent-memory/karpathy-researcher_research_multi_agent_llm_systems_apr2026.md`
 - **Obsidian RAG Pattern — Implementation Guide for NBA Quant** (1607 words) -- `raw/agent-memory/karpathy-researcher_obsidian_rag_implementation_april2026.md`
 - **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/agent-memory/research-analyst_research_april2026_free_inference_capacity.md`
+- **Free LLM Inference Capacity — Full Audit April 2026** (1605 words) -- `raw/research-analyst/research_april2026_free_inference_capacity.md`
 - **SOTA Deep Scan — 2026-04-21** (1393 words) -- `raw/research/sota-deep-scan-2026-04-21.md`
 - **Dashboard Libraries & Agent Studio UI SOTA (April 2026)** (945 words) -- `raw/agent-memory/karpathy-researcher_research_dashboard_libraries_apr14_2026.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (857 words) -- `raw/political/political-experiment-2026-04-12.md`
@@ -51,7 +53,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-24** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-24.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-25** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-25.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-26** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-26.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-27** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-27.md`
 - **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/agent-memory/repo-scout_project_pixel_dashboard_apr2026.md`
+- **Pixel Dashboard Deep Dive (Apr 2026)** (441 words) -- `raw/repo-scout/project_pixel_dashboard_apr2026.md`
 - **NBA TF dead-provider ROUND-2 reroute (Apr 22)** (410 words) -- `raw/agent-memory/dr-frankenstein_project_nba_dead_round2_apr22.md`
 - **Trading Floor v4/v5 SOTA Audit — April 11 2026** (403 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle17_tf_sota.md`
 - **pixel-world architecture map** (371 words) -- `raw/agent-memory/pixel_reference_pixel_world_architecture.md`
@@ -63,6 +67,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **HF Self-Host LLM Expansion — April 2026 Cycle 20** (248 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle20_hf_self_host.md`
 - **diegetic panels research Apr 17** (201 words) -- `raw/agent-memory/nomos-scout_project_diegetic_panels_apr17.md`
 - **Strategy Confrontation Backtest** (180 words) -- `raw/agent-memory/nba-brain_project_strategy_confrontation.md`
+- **Strategy Confrontation Backtest** (180 words) -- `raw/nba-brain/project_strategy_confrontation.md`
 
 ## Key Findings
 

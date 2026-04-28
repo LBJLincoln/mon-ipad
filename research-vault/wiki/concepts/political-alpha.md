@@ -1,10 +1,10 @@
 # Political Alpha & Prediction Markets
 
-> Auto-compiled from 73 raw sources on 2026-04-27
+> Auto-compiled from 80 raw sources on 2026-04-28
 
 ## Overview
 
-This topic covers 73 research files spanning political alpha & prediction markets.
+This topic covers 80 research files spanning political alpha & prediction markets.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Mutation Operators, Political Alpha, SHAP.
 
 ## Sources
@@ -13,15 +13,19 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Dashboard Redesign Research — Apr 14 2026** (3866 words) -- `raw/research/dashboard-redesign-apr14-2026.md`
 - **Diegetic Data Panels for Pixel-Art Multi-Agent Trading Floors** (3304 words) -- `raw/research/pixel-world-diegetic-panels-apr17.md`
 - **YouTube Feature Research Cycle 7** (3208 words) -- `raw/agent-memory/karpathy-researcher_research_cycle7_youtube_features.md`
+- **YouTube Feature Research Cycle 7** (3208 words) -- `raw/karpathy-researcher/research_cycle7_youtube_features.md`
 - **Nomos42 Dashboard Overhaul — Ship Plan (Apr 16 2026)** (2074 words) -- `raw/research/dashboard-overhaul-plan-apr16.md`
 - **SOTA Research Papers Apr 2026 — Multi-Agent Trading + Sports Prediction** (1828 words) -- `raw/agent-memory/karpathy-researcher_research_cycle_april2026_sota_papers.md`
 - **YouTube Corpus → Tabular Training Features** (1814 words) -- `raw/research/youtube-to-training-features-2026-04-21.md`
 - **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/agent-memory/karpathy-researcher_karpathy_autoresearch_pattern.md`
+- **Karpathy Autoresearch Pattern — 5-Minute GPU Iterate Loop** (1663 words) -- `raw/karpathy-researcher/karpathy_autoresearch_pattern.md`
 - **Multi-Agent LLM Prediction Systems (April 2026 Landscape)** (1641 words) -- `raw/agent-memory/karpathy-researcher_research_multi_agent_llm_systems_apr2026.md`
 - **Hermes + Browser-Agent Deployment Proposal** (1633 words) -- `raw/research/hermes-browser-agents-2026-04-20.md`
 - **SOTA Deep Scan — 2026-04-21** (1393 words) -- `raw/research/sota-deep-scan-2026-04-21.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
+- **project_march2026_findings** (1102 words) -- `raw/repo-scout/project_march2026_findings.md`
 - **project_agent_superpowers_scan** (920 words) -- `raw/agent-memory/repo-scout_project_agent_superpowers_scan.md`
+- **project_agent_superpowers_scan** (920 words) -- `raw/repo-scout/project_agent_superpowers_scan.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (857 words) -- `raw/political/political-experiment-2026-04-12.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (857 words) -- `raw/scientific/political-experiment-2026-04-12.md`
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/political/political-experiment-2026-04-06.md`
@@ -38,6 +42,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **NOMOS42 Political Alpha — Scientific Experiment Report** (842 words) -- `raw/scientific/political-experiment-2026-04-11.md`
 - **April 2026 Cycle 18 — Competitor Audit + Council Honest Assessment** (604 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle18_competitor_audit.md`
 - **Political Alpha Research — March 2026** (527 words) -- `raw/agent-memory/research-analyst_research_political_alpha_march2026.md`
+- **Political Alpha Research — March 2026** (527 words) -- `raw/research-analyst/research_political_alpha_march2026.md`
 - **April 2026 Cycle 12 — SOTA Trading Floor Experiments + Visualization** (488 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle12_trading_floor.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-21** (456 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-21.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-22** (456 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-22.md`
@@ -51,8 +56,10 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-24** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-24.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-25** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-25.md`
 - **Research Scan: arxiv-multiagent-trading-scan-2026-04-26** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-26.md`
+- **Research Scan: arxiv-multiagent-trading-scan-2026-04-27** (445 words) -- `raw/research/arxiv-multiagent-trading-scan-2026-04-27.md`
 - **YouTube FinBERT sentiment features shipped (Cat 67 NBA / Cat 44 POL) + OAuth sub** (385 words) -- `raw/agent-memory/dr-frankenstein_project_youtube_finbert_apr21.md`
 - **Political Alpha Deployment** (363 words) -- `raw/agent-memory/feature-engineer_project_political_alpha_deploy.md`
+- **Political Alpha Deployment** (363 words) -- `raw/feature-engineer/project_political_alpha_deploy.md`
 - **Political Alpha Scientific Experiment Report** (333 words) -- `raw/experiments/political-experiment-2026-04-06.md`
 - **May 2026 Monetization Sprint** (245 words) -- `raw/agent-memory/market-analyst_project_monetization_sprint.md`
 - **POL TF record — qwen-arb $3,119 (2026-04-22)** (210 words) -- `raw/agent-memory/lobbyist_project_pol_tf_record_qwen_arb_apr22.md`
