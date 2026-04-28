@@ -92,6 +92,21 @@ def build_features(games: list) -> tuple:
     X = np.nan_to_num(np.array(X, dtype=np.float32))
     y = np.array(y, dtype=np.float64)
 
+    # game_dates aligned to X rows — required by stratified-by-month sanity
+    # check in the Oracle training pipelines (Colab v3 + Kaggle script).
+    # Engine.build() preserves game order; assume row-i corresponds to games[i]
+    # iff row count matches. Otherwise emit empty array and let downstream skip.
+    if len(games) == X.shape[0]:
+        game_dates = np.array(
+            [(g.get("game_date") or "")[:10] for g in games], dtype=object
+        )
+    else:
+        log.warning(
+            "engine kept %d of %d games — game_dates will be empty (month-stratified holdout will skip)",
+            X.shape[0], len(games),
+        )
+        game_dates = np.array([], dtype=object)
+
     log.info(f"Features built in {elapsed:.1f}s: {X.shape[0]} games x {X.shape[1]} features")
     log.info(f"y distribution: mean={y.mean():.3f}, sum={y.sum():.0f}/{len(y)}")
 
@@ -105,10 +120,10 @@ def build_features(games: list) -> tuple:
         log.error("SYNTHETIC DATA DETECTED — feature names are 'feat_000' etc!")
         sys.exit(1)
 
-    return X, y, feature_names
+    return X, y, feature_names, game_dates
 
 
-def save_cache(X, y, feature_names):
+def save_cache(X, y, feature_names, game_dates=None):
     """Save the cache as compressed .npz."""
     CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
@@ -118,12 +133,14 @@ def save_cache(X, y, feature_names):
             old.unlink()
             log.info(f"Removed old cache: {old.name}")
 
-    np.savez_compressed(
-        CACHE_PATH,
-        X=X,
-        y=y,
-        feature_names=np.array(feature_names),
-    )
+    save_kwargs = {
+        "X": X,
+        "y": y,
+        "feature_names": np.array(feature_names),
+    }
+    if game_dates is not None and len(game_dates) > 0:
+        save_kwargs["game_dates"] = np.array(game_dates)
+    np.savez_compressed(CACHE_PATH, **save_kwargs)
 
     size_mb = CACHE_PATH.stat().st_size / (1024 * 1024)
     log.info(f"Cache saved: {CACHE_PATH} ({size_mb:.1f} MB)")
@@ -165,8 +182,8 @@ def main():
 
     t0 = time.time()
     games = load_games(max_seasons=args.max_seasons)
-    X, y, feature_names = build_features(games)
-    save_cache(X, y, feature_names)
+    X, y, feature_names, game_dates = build_features(games)
+    save_cache(X, y, feature_names, game_dates=game_dates)
 
     log.info(f"Total time: {time.time() - t0:.1f}s")
     log.info("Done — nba_iterate.py will use this cache automatically")
