@@ -1373,8 +1373,52 @@ _CALL_AGENT_TIMEOUT = float(os.environ.get("ITF_LLM_TIMEOUT", "10.0"))
 
 def _call_agent(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
     prompt = _build_prompt(persona, ctx)
+    # 2026-04-28 — wire _tier_directive (was dead code: defined but never called).
+    # Compute live tier per agent + DTBP-aware addendum so MAX-AGGRO and
+    # PDT-roundtrip exhaustion guidance reach the LLM. Without this the v3 80%
+    # mandate addendum was never landing → deploy% stuck at 61.4%.
+    try:
+        tid = persona.get("tid") or "?"
+        cash = executor.all_bankrolls() or {}
+        agent_cash = float(cash.get(tid) or 0.0)
+        positions = executor._load_positions() or {}
+        agent_open = [p for p in (positions.get(tid) or []) if p.get("status") == "open"]
+        reserved = sum(float(p.get("reserved_usd", 0) or 0) for p in agent_open)
+        total_equity = agent_cash + reserved
+        meta = (cash.get("_meta") if isinstance(cash, dict) else None) or {}
+        try:
+            seed_share = float(meta.get("seed_share_usd") or 0)
+        except Exception:
+            seed_share = 0
+        if seed_share <= 0:
+            seed_share = 5463.82  # current per-agent seed
+        tier = _compute_agent_tier(tid, seed_share, total_equity, reserved)
+        tier_block = _tier_directive(tier, total_equity, seed_share)
+        # DTBP-aware overlay: when Alpaca DTBP is exhausted, push agents toward
+        # options + crypto (no PDT cost) and overnight equity holds.
+        try:
+            acct = executor.fetch_alpaca_account() or {}
+            dtbp = float(acct.get("daytrading_buying_power") or 0)
+            bp = float(acct.get("buying_power") or 0)
+        except Exception:
+            dtbp, bp = -1, -1
+        dtbp_block = ""
+        if dtbp >= 0 and dtbp < 1000:
+            dtbp_block = (
+                f"\nDTBP-AWARE: Alpaca DTBP=${dtbp:.0f} (<$1000, PDT roundtrip "
+                f"cap exhausted). Same-day buy+sell on equities will REJECT 40310000. "
+                f"Three valid paths: (a) HOLD overnight — open equity now, close ≥4h "
+                f"or tomorrow; (b) OPTIONS — auto-settled, no PDT cost; (c) CRYPTO — "
+                f"24/7, no PDT. ACCOUNT BP=${bp:.0f} so initial-margin is fine."
+            )
+    except Exception:
+        tier_block = ""
+        dtbp_block = ""
+    sys_content = f"{COLLECTIVE_MISSION}\n\n{AXELROD_CANON}"
+    if tier_block:
+        sys_content += f"\n\n{tier_block}{dtbp_block}"
     messages = [
-        {"role": "system", "content": f"{COLLECTIVE_MISSION}\n\n{AXELROD_CANON}"},
+        {"role": "system", "content": sys_content},
         {"role": "user", "content": prompt},
     ]
     # Try primary then fallback
