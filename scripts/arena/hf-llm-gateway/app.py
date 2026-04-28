@@ -1110,17 +1110,27 @@ fastapi_app = FastAPI(title="Nomos42 LLM Gateway", docs_url="/api/docs", redoc_u
 
 @fastapi_app.get("/api/health")
 def api_health():
-    """Terse health snapshot: 200 if any model is healthy, 503 if all dead."""
+    """Terse health snapshot: 200 if any model is healthy, 503 if all dead.
+
+    2026-04-28 — fixed status enum mismatch. Writes (line ~593) use
+    "healthy" / "error" / "unknown"; this endpoint was reading "ok" /
+    "degraded" / "down" → always counted alive=0 → returned 503 even when
+    every chat call was 200ing. Now matches the actual values + falls back
+    to calls_ok>0 as proof-of-life when probe hasn't run yet.
+    """
     with health_lock:
         snap = {mid: dict(h) for mid, h in model_health.items()}
-    alive = sum(1 for h in snap.values() if h.get("status") == "ok")
-    degraded = sum(1 for h in snap.values() if h.get("status") == "degraded")
-    dead = sum(1 for h in snap.values() if h.get("status") == "down")
+    alive = sum(
+        1 for h in snap.values()
+        if h.get("status") == "healthy" or (h.get("calls_ok", 0) > 0 and h.get("status") != "error")
+    )
+    dead = sum(1 for h in snap.values() if h.get("status") == "error")
+    unknown = sum(1 for h in snap.values() if h.get("status") in (None, "unknown") and h.get("calls_ok", 0) == 0)
     body = {
         "ok": alive > 0,
         "alive": alive,
-        "degraded": degraded,
         "down": dead,
+        "unknown": unknown,
         "total": len(snap),
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
