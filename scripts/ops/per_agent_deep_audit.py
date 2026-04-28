@@ -221,9 +221,42 @@ def deep_extract_pqtf(days):
 
 # -------------------- ITF deep extract --------------------
 
+def fetch_itf_decisions_history(n_days=14):
+    """Walk per-day decisions persisted at data/intraday/decisions/YYYY-MM-DD.jsonl
+    on the live ITF Space (read via /api/decisions?date=YYYY-MM-DD which mmaps
+    the JSONL and returns parsed rows). Hub-raw URL would be empty: the Space
+    only Hub-persists the 4 ledger files, not decisions, so disk-via-API is the
+    truthful source.
+    Returns list[(date_str, [decision_rows...])] sorted by date ascending.
+    """
+    out = []
+    today = dt.datetime.utcnow().date()
+    base = 'https://lbjlincoln26-intraday-trading-floor.hf.space/api/decisions'
+    for i in range(n_days, -1, -1):
+        d = today - dt.timedelta(days=i)
+        ds = d.isoformat()
+        try:
+            req = urllib.request.Request(f'{base}?date={ds}')
+            with urllib.request.urlopen(req, timeout=20) as r:
+                payload = json.loads(r.read())
+            rows = payload.get('decisions') or []
+        except Exception:
+            rows = []
+        if rows:
+            out.append((ds, rows))
+    return out
+
+
 def deep_extract_itf():
-    """ITF has no day files. Dump ledger events grouped by agent +
-    Alpaca orders (last 500) + live /api/decisions snapshot."""
+    """Pulls every persisted source the ITF Space writes:
+      - per-day decisions.jsonl  (rationale + execution per agent per tick)
+      - agent_ledger.jsonl       (broker_reject / open_fill_confirm / reserve / credit)
+      - agent_bankrolls.json     (per-tid sub-bankroll truth)
+      - positions.json           (open positions)
+      - Alpaca orders (last 500)
+    Builds a per-agent dump that matches the NBA/POL `by_agent[tid] -> day_rows`
+    schema so render_per_agent_md('itf', tid, days, schema='itf') works.
+    """
     H = {}
     tok = os.environ.get('HF_TOKEN_NBA') or os.environ.get('HF_TOKEN', '')
     if tok: H['Authorization'] = f'Bearer {tok}'
@@ -241,15 +274,22 @@ def deep_extract_itf():
     try: positions = json.loads(http_get(pos_url))
     except Exception: positions = []
 
-    # live /api/decisions
+    # Walk per-day persisted decisions (rationale + execution trail).
+    days_history = fetch_itf_decisions_history(n_days=14)
+    print(f'[ITF] decisions: {sum(len(r) for _,r in days_history)} rows across '
+          f'{len(days_history)} days', file=sys.stderr)
+    # Live /api/decisions for today (in case it's not yet flushed to disk).
     decisions = []
-    try:
-        req = urllib.request.Request(
-            'https://lbjlincoln26-intraday-trading-floor.hf.space/api/decisions?limit=200')
-        with urllib.request.urlopen(req, timeout=30) as r:
-            decisions = json.loads(r.read()).get('decisions') or []
-    except Exception as e:
-        print(f'[ITF] /api/decisions err: {e}', file=sys.stderr)
+    if days_history:
+        decisions = days_history[-1][1]
+    if not decisions:
+        try:
+            req = urllib.request.Request(
+                'https://lbjlincoln26-intraday-trading-floor.hf.space/api/decisions')
+            with urllib.request.urlopen(req, timeout=30) as r:
+                decisions = json.loads(r.read()).get('decisions') or []
+        except Exception as e:
+            print(f'[ITF] /api/decisions err: {e}', file=sys.stderr)
 
     # Alpaca orders (real-time)
     orders = fetch_alpaca_orders(limit=500)
@@ -298,9 +338,66 @@ def deep_extract_itf():
             ],
         }
 
+    # 2026-04-28 — restructure history into day_dicts matching NBA/POL schema so
+    # render_per_agent_md('itf', tid, days) renders the same format the user
+    # already reads on /audit for NBA. Each persisted decision row looks like:
+    #   {ts, agent_tid, agent_name, tier, decision:{action,ticker,side,stake,edge,rationale}, execution:{...}}
+    # → flatten to allocation rows the existing renderer expects.
+    by_agent_days: Dict[str, list] = defaultdict(list)
+    for d_idx, (ds, rows) in enumerate(days_history):
+        per_tid = defaultdict(list)
+        for r in rows:
+            tid = r.get('agent_tid') or r.get('tid') or '?'
+            if tid == '?': continue
+            per_tid[tid].append(r)
+        for tid, rs in per_tid.items():
+            allocs = []
+            n_pass = 0
+            for r in rs:
+                dec = r.get('decision') or {}
+                exe = r.get('execution') or {}
+                action = (dec.get('action') or '').lower()
+                if action == 'pass':
+                    n_pass += 1
+                    continue
+                ticker = dec.get('ticker') or exe.get('symbol') or ''
+                side = dec.get('side') or exe.get('side') or ''
+                cat = action if not side else f'{action}_{side}'
+                # outcome: filled → · (open), rejected → ✗, closed-with-pnl → ✓ if profit>0 else ✗
+                status = (exe.get('status') or '').lower()
+                pnl = exe.get('realized_pnl') if isinstance(exe.get('realized_pnl'), (int, float)) else None
+                if status in ('rejected', 'canceled'): won = False
+                elif status == 'filled' and pnl is not None: won = pnl > 0
+                else: won = None
+                allocs.append({
+                    'event':  ticker,
+                    'category': cat,
+                    'direction': side or None,
+                    'odds':   exe.get('filled_avg_price') or dec.get('limit_price') or None,
+                    'edge':   dec.get('edge'),
+                    'stake':  dec.get('stake') or exe.get('notional'),
+                    'won':    won,
+                    'profit': pnl,
+                    'rationale': _trunc(dec.get('rationale') or dec.get('thesis') or ''),
+                })
+            if not allocs and n_pass == 0:
+                continue
+            bk_tid = bk.get(tid) if isinstance(bk, dict) else None
+            by_agent_days[tid].append({
+                'day_idx': d_idx,
+                'date': ds,
+                'bankroll_before': None,
+                'bankroll_after':  bk_tid if d_idx == len(days_history)-1 else None,
+                'day_strategy': f'{len(allocs)} trade(s), {n_pass} pass(es) on {ds}',
+                'cash_rationale': '',
+                'allocations': allocs,
+                'parlays': [],
+            })
+
     return {
         'meta': bk.get('_meta', {}) if isinstance(bk, dict) else {},
         'by_agent': by_agent_summary,
+        'by_agent_days': dict(by_agent_days),
         'positions_snapshot': positions if isinstance(positions, list) else [],
         'live_decisions_snapshot': decisions[:50],
         'recent_alpaca_orders': [
@@ -603,7 +700,13 @@ def main():
         (AUDIT / f'per-agent-deep-itf-{today}.json').write_text(
             json.dumps(itf, indent=1, default=str))
         (AUDIT / f'per-agent-deep-itf-{today}.md').write_text(render_itf_deep_md(itf))
-        print(f'[ITF] wrote deep audit', file=sys.stderr)
+        # Per-agent narrative trail (matches NBA/POL /audit ITF tab format).
+        write_per_agent_files('itf', itf.get('by_agent_days', {}), schema='nba')
+        # Stable -latest aliases for the dashboard mirror.
+        (AUDIT / 'per-agent-deep-itf-latest.md').write_text(
+            (AUDIT / f'per-agent-deep-itf-{today}.md').read_text())
+        print(f'[ITF] wrote deep audit + {len(itf.get("by_agent_days",{}))} per-agent files',
+              file=sys.stderr)
 
     print(f'\nAll outputs under {AUDIT}', file=sys.stderr)
 
