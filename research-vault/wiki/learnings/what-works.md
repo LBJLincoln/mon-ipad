@@ -1,6 +1,6 @@
 # What Works — Empirically Validated
 
-> Auto-generated from experiment data on 2026-04-27 05:00 UTC
+> Auto-generated from experiment data on 2026-04-28 05:00 UTC
 > Only includes findings backed by measured improvement
 
 ## NBA — Mutation Effectiveness
