@@ -1403,20 +1403,18 @@ def _call_agent(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
         except Exception:
             dtbp, bp = -1, -1
         dtbp_block = ""
+        # v8 — equity is BACK. Account config flipped to dtbp_check=exit,
+        # pdt_check=exit, ptp_no_exception_entry=false. Equity entries now
+        # use RegT BP (multiplier 4×). Old DTBP-aware overlay would tell
+        # agents to avoid equity, but the wall is down. Keep a soft hint
+        # that DTBP=$0 means same-day round-trips will reject at exit.
         if dtbp >= 0 and dtbp < 500:
             dtbp_block = (
-                f"\nDTBP=$0 EQUITY-BANNED-TODAY: Alpaca paper PDT account, DTBP=${dtbp:.0f}. "
-                f"FORENSIC (last 8 min): 102/124 broker events were 403 on equity opens "
-                f"(SPY/QQQ/IWM/TQQQ/SOXL/NVDA/XLK). Alpaca paper conflates DTBP and RegT "
-                f"BP for PDT, so even NEW equity opens reject until 9:30am ET tomorrow.\n"
-                f"EQUITY = BANNED THIS TICK. The executor pre-flight refuses ANY equity "
-                f"order before it reaches Alpaca; do not waste a slot proposing one.\n"
-                f"ONLY TWO LIVE PATHS:\n"
-                f"  (a) CRYPTO — 24/7, no PDT. BTC/USD ETH/USD SOL/USD AVAX/USD LINK/USD "
-                f"DOGE/USD AAVE/USD. Stake floor = your sub-bankroll × {POWER_STAKE_FLOOR_PCT:.2f}.\n"
-                f"  (b) OPTIONS — auto-settled, no PDT cost. SPY/QQQ/IWM 0DTE/1DTE OTM "
-                f"calls or puts. Defined risk, premium fully at risk.\n"
-                f"Pass is FORBIDDEN unless both paths show no edge. Default = act."
+                f"\nDTBP-EXIT-NOTICE: Alpaca DTBP=${dtbp:.0f} (almost gone). "
+                f"Account config now uses dtbp_check=exit so equity ENTRIES go through "
+                f"on RegT BP=${bp:.0f}. But CLOSING any equity you opened today will "
+                f"reject (DTBP refreshes 9:30am ET). Plan: open NEW equity, hold until "
+                f"tomorrow's open or until DTBP refreshes. Crypto + options unaffected."
             )
         # Cash-idle pressure: if this agent's available cash > 50% of seed_share,
         # force deployment of ≥80% of it this tick. Unblocks the structural lag
