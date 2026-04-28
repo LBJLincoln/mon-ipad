@@ -65,8 +65,14 @@ import event_executor as ev  # noqa: E402
 POWER_WINDOW_START = (14, 30)  # UTC
 POWER_WINDOW_END = (16, 30)
 POWER_AGENTS = {
-    "momentum-1", "breakout-1", "leveraged-momentum-1",
-    "news-catalyst-1", "crypto-whale-1", "scalper-1",
+    # 2026-04-28 — re-keyed to new LLM-tids (NBA/POL parity rename).
+    # Same 6 high-aggression strategies, now under their LLM-named owners.
+    "mistral-large",       # was momentum-1
+    "mistral-small",       # was breakout-1
+    "mistral-medium",      # was leveraged-momentum-1
+    "gemini-tact",         # was news-catalyst-1
+    "nvidia-llama70",      # was crypto-whale-1
+    "nvidia-minimax",      # was scalper-1
 }
 POWER_STAKE_FLOOR_PCT = float(os.environ.get("ITF_STAKE_FLOOR_PCT", "0.20"))  # 20% default, bumpable via env for max-aggressive runs
 POWER_LIQUIDITY_FLOOR_USD = 50_000_000  # $50M daily dollar volume = liquid enough
@@ -1183,28 +1189,37 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         f"    list also qualifies for the 1.5× stake bonus."
     )
 
-    # 2026-04-28 MAX-AGGRESSION DOCTRINE — gated on ITF_MAX_AGGRO env. User has
-    # explicitly accepted -$90K downside to chase $1M target ($93K → $1M = ~10×).
-    # Removes edge floors below 1.5%, mandates leveraged instruments on conviction,
-    # and blocks "PASS unless tape is dead" framing.
+    # 2026-04-28 MAX-AGGRESSION v2 — user explicitly authorized FULL drawdown of
+    # remaining $93K to chase $1M (~11× target). v1 was edge-floor 1.5% / 3:1
+    # reward-risk / leverage 4×. v2 strips ALL throttles. Gated on ITF_MAX_AGGRO=1.
     _max_aggro_block = ""
     if os.environ.get("ITF_MAX_AGGRO") == "1":
         _max_aggro_block = (
-            "\n=== MAX-AGGRESSION DOCTRINE (user-authorized 2026-04-28) ===\n"
-            "TARGET: fleet equity $1,000,000 (we are at ~$93K). User has explicitly\n"
-            "accepted -$90K full drawdown of remaining capital to get there.\n"
-            "RULES:\n"
-            "  • Every position must have ≥3× asymmetric upside (3:1 reward/risk min).\n"
-            "  • Edge floor: 1.5%. Below that → PASS. Above → SIZE UP, not down.\n"
-            "  • PREFER: 0DTE OTM options on SPY/QQQ/IWM (max gamma), leveraged ETFs\n"
-            "    (TQQQ/SOXL/SPXL/UPRO/TNA on bullish, SQQQ/SPXS/TZA on bearish),\n"
-            "    high-conviction crypto (BTC/ETH/SOL when momentum >2σ).\n"
-            "  • PASS only when there is genuinely no setup — never as risk avoidance.\n"
-            "  • Stake size = the FULL Kelly cap, not fractional. The server enforces\n"
-            "    your per-agent leverage ceiling ($per_agent_equity × 4) — sizing UP\n"
-            "    to that ceiling is correct behavior, not reckless.\n"
-            "  • You are 1 of 17 agents. Top winners (qwen-arb +103×, mistral-large +PQTF)\n"
-            "    got there by sizing up on their highest-conviction setups, not hedging.\n"
+            "\n=== MAX-AGGRESSION v2 DOCTRINE (user-authorized FULL-loss 2026-04-28) ===\n"
+            "TARGET: fleet equity $1,000,000 from $93K (~11×). User has explicitly\n"
+            "stated they accept LOSING THE ENTIRE REMAINING $93K to chase this number.\n"
+            "There is no '90K-only' tolerance — total loss is ON THE TABLE.\n"
+            "\n"
+            "RULES — strip every throttle:\n"
+            "  • EDGE FLOOR: 0.5% (not 1.5%). Above 0.5% → SIZE UP. Below → consider PASS.\n"
+            "  • REWARD/RISK FLOOR: 2:1 (not 3:1). Conviction trades may go below if\n"
+            "    expected hit-rate compensates.\n"
+            "  • DEPLOY MANDATE: ≥80% of your sub-bankroll committed every tick. Idle\n"
+            "    cash is the failure mode. Server enforces stake floor.\n"
+            "  • SIZING: The leverage cap is now per-agent equity × 6 (was 4× PDT).\n"
+            "    Use it. Quarter-Kelly is wrong; full-Kelly to the cap is correct.\n"
+            "  • INSTRUMENTS — strongly prefer (in order):\n"
+            "      1. 0DTE OTM options on SPY/QQQ/IWM at <1σ strikes (max gamma per $).\n"
+            "      2. Leveraged ETFs: TQQQ/SOXL/SPXL/UPRO/TNA long, SQQQ/SPXS/TZA short.\n"
+            "      3. High-momentum crypto (>2σ moves on BTC/ETH/SOL).\n"
+            "      4. Single-name on conviction (NVDA/COIN/MSTR/AMD on >1% catalyst).\n"
+            "  • PASS only when there is GENUINELY no setup. PASS-as-fear = wrong tier.\n"
+            "  • Multi-leg debit verticals are encouraged (defined risk, lower premium\n"
+            "    than naked, capital-efficient under our $25K option-stake cap).\n"
+            "  • You compete with 16 other LLM agents on the SAME tape. Hedging behind\n"
+            "    a winner is failure; carving your own conviction is what compounds.\n"
+            "  • TOP COMPOUNDERS (cross-TF reference): qwen-arb +103× on POL via "
+            "non-consensus mandate. mistral-large $244K on PQTF via momentum sizing.\n"
             "=========================================================\n"
         )
 
@@ -1586,24 +1601,26 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     # of 5 silent-passing every tick (observed 2026-04-20: 70/75 passes on
     # momentum-1/breakout-1/pairs-1/vol-1/macro-rotate-1 were anti-lockstep
     # forced to pass, not LLM choice). Pool = persona's uniform_fallback pool + crypto.
+    # 2026-04-28 — divert pools rekeyed by new LLM-named tids (NBA/POL parity).
+    # Strategy specialty preserved per persona; pools keep prior intent.
     _DIVERT_POOLS = {
-        "scalper-1":            ["QQQ", "IWM", "DIA", "XLK", "BTC/USD"],
-        "momentum-1":           ["XLK", "XLE", "XLF", "XLV", "XLY", "ETH/USD"],
-        "mean-rev-1":           ["XLV", "XLP", "XLU", "XLRE", "SOL/USD"],
-        "breakout-1":           ["TSLA", "AMD", "COIN", "SMCI", "LINK/USD"],
-        "pairs-1":              ["XLU", "XLB", "XLC", "XLI", "DOGE/USD"],
-        "vol-1":                ["VXX", "UVXY", "TLT", "GLD", "BTC/USD"],
-        "options-1":            ["SPY", "QQQ", "IWM"],
-        "arbitrage-1":          ["IWM", "DIA", "XLK", "XLE", "ETH/USD"],
-        "news-catalyst-1":      ["NVDA", "COIN", "SMCI", "AMD", "BTC/USD"],
-        "crypto-whale-1":       ["ETH/USD", "SOL/USD", "LINK/USD", "AVAX/USD", "DOGE/USD", "BTC/USD"],
-        "earnings-gap-1":       ["NVDA", "AMD", "META", "GOOGL", "AAPL"],
-        "iv-crush-1":           ["SPY", "QQQ", "IWM"],
-        "macro-rotate-1":       ["GLD", "TLT", "UUP", "XLU", "SHY"],
-        "leveraged-momentum-1": ["SPXL", "SOXL", "TNA", "UPRO", "BTC/USD"],
-        "gap-fade-1":           ["SPY", "QQQ", "IWM", "DIA", "XLK"],
-        "carry-1":              ["SPY", "QQQ", "IWM", "DIA", "XLV"],
-        "breakdown-1":          ["SPY", "QQQ", "IWM", "TQQQ", "SPXL"],
+        "qwen-quant":         ["IWM", "DIA", "XLK", "XLE", "ETH/USD"],
+        "qwen-arb":           ["XLU", "XLB", "XLC", "XLI", "DOGE/USD"],
+        "llama-contra":       ["XLV", "XLP", "XLU", "XLRE", "SOL/USD"],
+        "gemini-anl":         ["GLD", "TLT", "UUP", "XLU", "SHY"],
+        "gemini-tact":        ["NVDA", "COIN", "SMCI", "AMD", "BTC/USD"],
+        "mistral-large":      ["XLK", "XLE", "XLF", "XLV", "XLY", "ETH/USD"],
+        "mistral-medium":     ["SPXL", "SOXL", "TNA", "UPRO", "BTC/USD"],
+        "mistral-small":      ["TSLA", "AMD", "COIN", "SMCI", "LINK/USD"],
+        "mistral-nemo":       ["VXX", "UVXY", "TLT", "GLD", "BTC/USD"],
+        "mistral-ministral":  ["SPY", "QQQ", "IWM"],
+        "nemotron-120b":      ["SPY", "QQQ", "IWM"],
+        "selfhost-qwen4b":    ["SPY", "QQQ", "IWM", "DIA", "XLV"],
+        "nvidia-minimax":     ["QQQ", "IWM", "DIA", "XLK", "BTC/USD"],
+        "nvidia-llama70":     ["ETH/USD", "SOL/USD", "LINK/USD", "AVAX/USD", "DOGE/USD", "BTC/USD"],
+        "selfhost-gemma3":    ["NVDA", "AMD", "META", "GOOGL", "AAPL"],
+        "selfhost-qwen06":    ["SPY", "QQQ", "IWM", "DIA", "XLK"],
+        "selfhost-dolphin3":  ["SPY", "QQQ", "IWM", "TQQQ", "SPXL"],
     }
 
     def _divert(tid: str, original_ticker: str, original_side: str) -> Optional[str]:
@@ -1825,8 +1842,8 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                 else:
                     # 2026-04-26 — STRIPPED: no automatic 3x leveraged ETF routing.
                     # Agent's chosen ticker stands. Bankroll cap enforced server-side.
-                    # 2026-04-28 MAX_AGGRO — equity per-trade ceiling lifts $2.5K → $7.5K.
-                    _eq_cap = 7500.0 if os.environ.get("ITF_MAX_AGGRO") == "1" else 2500.0
+                    # 2026-04-28 MAX_AGGRO v2 — equity per-trade ceiling $15K (was $7.5K v1).
+                    _eq_cap = 15000.0 if os.environ.get("ITF_MAX_AGGRO") == "1" else 2500.0
                     raw_stake = min(raw_stake, _eq_cap)
             order = {
                 "ticker": decision["ticker"],
@@ -1849,7 +1866,7 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                 "dte":         int(decision.get("dte", 0) or 0),
                 "strike_offset_pct": float(decision.get("strike_offset_pct", 0.0) or 0.0),
                 "wing_width_pct":    float(decision.get("wing_width_pct", 0.01) or 0.01),
-                "stake_usd":   min(10000 if os.environ.get("ITF_MAX_AGGRO") == "1" else 5000, max(200, float(decision.get("stake_usd", 500) or 500))),
+                "stake_usd":   min(25000 if os.environ.get("ITF_MAX_AGGRO") == "1" else 5000, max(200, float(decision.get("stake_usd", 500) or 500))),
                 "max_loss_pct":min(0.05, max(0.005, float(decision.get("max_loss_pct", 0.02) or 0.02))),
                 "thesis":      decision.get("thesis", ""),
             }
