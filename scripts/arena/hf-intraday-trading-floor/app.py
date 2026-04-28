@@ -1405,18 +1405,39 @@ def _call_agent(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
         dtbp_block = ""
         if dtbp >= 0 and dtbp < 1000:
             dtbp_block = (
-                f"\nDTBP-AWARE: Alpaca DTBP=${dtbp:.0f} (<$1000, PDT roundtrip "
+                f"\nDTBP-AWARE-MANDATE: Alpaca DTBP=${dtbp:.0f} (PDT roundtrip "
                 f"cap exhausted). Same-day buy+sell on equities will REJECT 40310000. "
-                f"Three valid paths: (a) HOLD overnight — open equity now, close ≥4h "
-                f"or tomorrow; (b) OPTIONS — auto-settled, no PDT cost; (c) CRYPTO — "
-                f"24/7, no PDT. ACCOUNT BP=${bp:.0f} so initial-margin is fine."
+                f"This does NOT mean pass. MANDATORY ROUTING:\n"
+                f"  (1) PRIMARY: open NEW equity position TODAY, hold OVERNIGHT (no "
+                f"close until tomorrow's open) — bypasses DTBP entirely.\n"
+                f"  (2) OPTIONS: auto-settled at expiry, no PDT cost — favor 0DTE/1DTE "
+                f"OTM on directional conviction.\n"
+                f"  (3) CRYPTO: 24/7, no PDT — BTC/ETH/SOL momentum or pairs.\n"
+                f"FORBIDDEN this tick: closing any equity position you opened today, "
+                f"day-trading SPY/QQQ. ACCOUNT BP=${bp:.0f} so initial-margin is fine. "
+                f"Pass is a LAST resort, not a default."
+            )
+        # Cash-idle pressure: if this agent's available cash > 50% of seed_share,
+        # force deployment of ≥80% of it this tick. Unblocks the structural lag
+        # where closed-position cash sits while LLMs propose only 1-2 trades.
+        idle_pressure_block = ""
+        agent_idle = total_equity - reserved
+        idle_ratio = agent_idle / max(seed_share, 1.0)
+        if idle_ratio > 0.5:
+            idle_pressure_block = (
+                f"\nCASH-IDLE-PRESSURE: you have ${agent_idle:,.0f} idle "
+                f"({idle_ratio*100:.0f}% of seed share). MANDATE: deploy ≥80% of "
+                f"that ${agent_idle:,.0f} THIS TICK across allowed paths above. "
+                f"Idle cash earning 0% violates the $1M doctrine — every dollar "
+                f"sitting is a dollar not compounding. Multiple parallel trades OK; "
+                f"SUBMITS_PER_TICK=5 lets you spread across 3-5 conviction names."
             )
     except Exception:
         tier_block = ""
         dtbp_block = ""
     sys_content = f"{COLLECTIVE_MISSION}\n\n{AXELROD_CANON}"
     if tier_block:
-        sys_content += f"\n\n{tier_block}{dtbp_block}"
+        sys_content += f"\n\n{tier_block}{dtbp_block}{idle_pressure_block}"
     messages = [
         {"role": "system", "content": sys_content},
         {"role": "user", "content": prompt},
