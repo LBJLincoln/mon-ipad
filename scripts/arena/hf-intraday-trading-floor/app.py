@@ -1403,19 +1403,20 @@ def _call_agent(persona: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
         except Exception:
             dtbp, bp = -1, -1
         dtbp_block = ""
-        if dtbp >= 0 and dtbp < 1000:
+        if dtbp >= 0 and dtbp < 500:
             dtbp_block = (
-                f"\nDTBP-AWARE-MANDATE: Alpaca DTBP=${dtbp:.0f} (PDT roundtrip "
-                f"cap exhausted). Same-day buy+sell on equities will REJECT 40310000. "
-                f"This does NOT mean pass. MANDATORY ROUTING:\n"
-                f"  (1) PRIMARY: open NEW equity position TODAY, hold OVERNIGHT (no "
-                f"close until tomorrow's open) — bypasses DTBP entirely.\n"
-                f"  (2) OPTIONS: auto-settled at expiry, no PDT cost — favor 0DTE/1DTE "
-                f"OTM on directional conviction.\n"
-                f"  (3) CRYPTO: 24/7, no PDT — BTC/ETH/SOL momentum or pairs.\n"
-                f"FORBIDDEN this tick: closing any equity position you opened today, "
-                f"day-trading SPY/QQQ. ACCOUNT BP=${bp:.0f} so initial-margin is fine. "
-                f"Pass is a LAST resort, not a default."
+                f"\nDTBP=$0 EQUITY-BANNED-TODAY: Alpaca paper PDT account, DTBP=${dtbp:.0f}. "
+                f"FORENSIC (last 8 min): 102/124 broker events were 403 on equity opens "
+                f"(SPY/QQQ/IWM/TQQQ/SOXL/NVDA/XLK). Alpaca paper conflates DTBP and RegT "
+                f"BP for PDT, so even NEW equity opens reject until 9:30am ET tomorrow.\n"
+                f"EQUITY = BANNED THIS TICK. The executor pre-flight refuses ANY equity "
+                f"order before it reaches Alpaca; do not waste a slot proposing one.\n"
+                f"ONLY TWO LIVE PATHS:\n"
+                f"  (a) CRYPTO — 24/7, no PDT. BTC/USD ETH/USD SOL/USD AVAX/USD LINK/USD "
+                f"DOGE/USD AAVE/USD. Stake floor = your sub-bankroll × {POWER_STAKE_FLOOR_PCT:.2f}.\n"
+                f"  (b) OPTIONS — auto-settled, no PDT cost. SPY/QQQ/IWM 0DTE/1DTE OTM "
+                f"calls or puts. Defined risk, premium fully at risk.\n"
+                f"Pass is FORBIDDEN unless both paths show no edge. Default = act."
             )
         # Cash-idle pressure: if this agent's available cash > 50% of seed_share,
         # force deployment of ≥80% of it this tick. Unblocks the structural lag

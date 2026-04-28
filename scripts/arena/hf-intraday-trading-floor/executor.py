@@ -1013,6 +1013,33 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
        {ticker, side: long|short, stake_usd, stop_pct, take_profit_pct, thesis}
     Returns the recorded order entry (with fill or simulated fill).
     """
+    # 2026-04-28 DTBP=0 pre-flight refuse — when Alpaca DTBP exhausted, every
+    # equity submit gets a 403 40310000 (insufficient day trading buying
+    # power). Forensic: 102 of 124 post-v6-restart events were this exact
+    # reject. Refuse the equity attempt before it touches Alpaca + return a
+    # structured ledger event the agent can see and route around (crypto /
+    # options stay live). Bypass for crypto pairs (contains '/'). Save the
+    # broker round-trip + LLM tick.
+    _inbound_ticker = order.get("ticker") or ""
+    is_crypto = "/" in _inbound_ticker
+    if not is_crypto:
+        try:
+            acct = fetch_alpaca_account() or {}
+            dtbp = float(acct.get("daytrading_buying_power") or 0)
+        except Exception:
+            dtbp = -1
+        if 0 <= dtbp < 500:
+            skip = {
+                "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "agent_tid": agent_tid,
+                "status": "dtbp_exhausted_equity_skip",
+                "reason": (f"Alpaca DTBP=${dtbp:.0f} (<$500) — equity orders refused "
+                           f"pre-flight. Route to crypto (24/7) or options (auto-settle). "
+                           f"DTBP refreshes 9:30am ET tomorrow."),
+                "order": order,
+            }
+            _append_order_log(skip)
+            return skip
     positions = _load_positions()
     open_for_agent = [p for p in positions.get(agent_tid, []) if p.get("status") == "open"]
     # 2026-04-21 wash-trade pre-check: if same agent has an OPEN opposite-side
