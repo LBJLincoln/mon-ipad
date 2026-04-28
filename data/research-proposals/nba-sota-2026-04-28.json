@@ -1,0 +1,80 @@
+{
+  "id": "nba-sota-2026-04-28",
+  "created_at": "2026-04-28T00:30:00Z",
+  "created_by": "cloud-brain",
+  "query": "NBA game prediction machine learning SOTA Brier score 2026",
+  "headline": "2026 SOTA: LR+XGBoost at Brier ~0.20, below our fleet best 0.22062 by 0.020 pts",
+
+  "sota_papers": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "venue": "MDPI Information 17(1):56",
+      "date": "Jan 2026",
+      "key_result": "LR and XGBoost: accuracy ~0.68, Brier score ~0.20 on 2024 test season",
+      "architecture": "Team-level performance metrics + rolling-form indicators + spatial shot-chart embeddings + RNN with Monte Carlo dropout for calibrated sequential probabilities",
+      "gap_to_fleet_best": 0.020,
+      "note": "MC-dropout = calibration uncertainty. Beat our walk-forward avg 0.22447 by 0.024."
+    },
+    {
+      "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+      "venue": "MDPI Computation 13(10):230",
+      "date": "Oct 2025",
+      "key_result": "CNN best Brier = 0.221 among MLP, LSTM, CNN architectures",
+      "key_features": "Home advantage, team ELO ratings, recent team form consistently most predictive",
+      "note": "CNN 0.221 matches our current-run S14 best 0.22151 — tree ensemble is competitive with CNN"
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction",
+      "venue": "Scientific Reports (Nature), 2025",
+      "key_result": "Stacking improves over single models",
+      "note": "CLAUDE.md rule 8 prohibits stacking on CPU islands — but valid for Colab/GPU runs"
+    }
+  ],
+
+  "actionable_proposals": [
+    {
+      "rank": 1,
+      "priority": "P0",
+      "name": "Isotonic Calibration Post-Processing",
+      "description": "Best 2026 paper key insight: calibration is separable from accuracy. Add CalibratedClassifierCV(method='isotonic', cv=3) post-processing to evaluate_individual() in features/engine.py and political_engine.py.",
+      "code_sketch": "from sklearn.calibration import CalibratedClassifierCV\ncal = CalibratedClassifierCV(model, method='isotonic', cv=3)\ncal.fit(X_val, y_val)\ny_pred = cal.predict_proba(X_test)[:, 1]",
+      "expected_brier_delta": -0.005,
+      "effort": "LOW — 3-5 lines in evaluate_individual()",
+      "already_in_engine": "Cat33 calibration anchors exist as features, but no post-processing calibration on model output"
+    },
+    {
+      "rank": 2,
+      "priority": "P1",
+      "name": "Logistic Regression NBA Island",
+      "description": "2026 SOTA shows LR equals XGBoost at Brier ~0.20. Create NBA LR island by repurposing S17 when restarted (change ALGORITHM env var). S18 LR proposal from prev cycle also valid.",
+      "effort": "LOW — change ALGORITHM=logistic_regression env var before S17 restart",
+      "supporting_evidence": "P7 LR island in political is most stable (25293 gens, no OOM crashes vs CatBoost P4/P5 crashes)"
+    },
+    {
+      "rank": 3,
+      "priority": "P1",
+      "name": "Spatial/Shot-Distribution Features",
+      "description": "MDPI 2026 paper uses shot-chart spatial embeddings. Add shot zone distribution features (corner 3, mid-range, paint, etc.) to feature engine Cat55+. Available via NBA API.",
+      "expected_delta": -0.003,
+      "effort": "MEDIUM — new feature category, ~15-20 features"
+    },
+    {
+      "rank": 4,
+      "priority": "P2",
+      "name": "Rolling Sequential Features Audit",
+      "description": "2026 papers consistently cite rolling-form indicators as most predictive. Audit feature_indices in top5 populations to verify rolling window features survive GA selection at MAX_FEATURES=200.",
+      "effort": "LOW — analysis only"
+    }
+  ],
+
+  "our_benchmarks": {
+    "fleet_best_brier": 0.22062,
+    "fleet_best_source": "S15 nba-evo-6 extra_trees 200f gen 1306",
+    "personal_best_brier": 0.21514,
+    "personal_best_source": "Colab TabICL 186f iter 129",
+    "walk_forward_avg": 0.22447,
+    "sota_target": 0.20,
+    "gap_fleet_to_sota": 0.020,
+    "gap_personal_to_sota": 0.015
+  }
+}
