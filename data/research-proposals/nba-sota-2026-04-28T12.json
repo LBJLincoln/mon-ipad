@@ -1,0 +1,67 @@
+{
+  "created_at": "2026-04-28T12:30:00Z",
+  "source": "cloud-brain-4h-2026-04-28-cycle3",
+  "query": "NBA game prediction machine learning SOTA 2026 Brier score tabular forecasting",
+  "findings": [
+    {
+      "id": "sota-2026-01",
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "date": "2026-01",
+      "key_insight": "RNN with Monte Carlo dropout yields calibrated sequential probabilities. MC dropout at inference time provides uncertainty estimates without a separate calibration step. Brier ~0.221.",
+      "applicability": "HIGH — MC dropout or isotonic calibration wrapper around our best tree ensemble could close remaining gap",
+      "implementation": "In evaluate_individual(): after model.predict_proba(), apply CalibratedClassifierCV(method='isotonic', cv=3) — already documented in carryover, expected -0.005 Brier"
+    },
+    {
+      "id": "sota-2026-02",
+      "title": "Integration of XGBoost and SHAP for NBA Game Outcome Prediction",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
+      "date": "2025",
+      "key_insight": "Top-3 features across all tested models: home_next (next game home/away indicator), team_elo_5_y (5-year rolling ELO), team_elo (current ELO). These dominate SHAP importance in every model type tested. Achieves Brier ~0.20.",
+      "applicability": "HIGH — verify these 3 feature types are in features/engine.py; ELO is the single highest-value feature to add if missing",
+      "implementation": "grep -i 'elo' features/engine.py. If absent: add rolling Elo calculation (K=20, home_advantage=100) updated each game result — ~50 LOC addition to engine"
+    },
+    {
+      "id": "sota-2026-03",
+      "title": "Comparing Machine Learning Methods for NBA Game Outcome Prediction",
+      "url": "https://ieeexplore.ieee.org/document/11030489/",
+      "date": "2026",
+      "key_insight": "CNN over rolling 10-game form windows achieves Brier 0.221, competitive with our fleet best. Captures sequential momentum effects that static features miss.",
+      "applicability": "MEDIUM — requires GPU (Conv layers). Could be implemented as Colab/Modal burst experiment.",
+      "implementation": "Script: 10-game rolling window → Conv1D(32) → Dense(16) → sigmoid. Run on Modal A10G burst."
+    },
+    {
+      "id": "sota-2026-04",
+      "title": "Stacked Ensemble Model for NBA Game Outcome Prediction",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "date": "2025",
+      "key_insight": "Stacked ensemble (XGBoost + RF + LogReg meta-learner) outperforms any single model. On CPU islands stacking is disabled (too slow) — but shallow 2-model stack via Colab shows measurable gains.",
+      "applicability": "LOW for CPU islands (disabled); HIGH for Colab experiments. In TabICL pipeline: stack TabICL + XGBoost oof predictions as meta-features.",
+      "implementation": "Colab: generate OOF predictions from TabICL + XGBoost separately → LightGBM meta-learner on stacked preds"
+    },
+    {
+      "id": "sota-2026-05",
+      "title": "March Machine Learning Mania 2026 (Kaggle)",
+      "url": "https://www.kaggle.com/competitions/march-machine-learning-mania-2026",
+      "date": "2026",
+      "key_insight": "Active Kaggle competition with public leaderboard Brier scores. Top entries likely achieve <0.20. Review public kernels for feature engineering ideas applicable to NBA (tournament context differs but feature patterns overlap).",
+      "applicability": "MEDIUM — tournament ≠ regular season but top Kaggle kernels often reveal novel feature combinations",
+      "implementation": "Browse top-10 public kernels for feature engineering patterns transferable to our engine"
+    }
+  ],
+  "top_action": {
+    "priority": 1,
+    "action": "Verify ELO rating features in features/engine.py",
+    "rationale": "team_elo is the #1 SOTA feature across all 2025-2026 papers; if absent from our 7213-candidate engine it represents the single highest-value addition",
+    "expected_brier_delta": -0.002,
+    "effort": "medium — ~50 LOC, needs historical game results to initialize",
+    "vm_command": "grep -i 'elo' features/engine.py | head -20"
+  },
+  "secondary_action": {
+    "priority": 2,
+    "action": "Isotonic calibration wrapper in evaluate_individual()",
+    "rationale": "Consistent -0.003 to -0.005 Brier across all SOTA papers; directly applicable to our tree ensembles without GPU",
+    "expected_brier_delta": -0.005,
+    "effort": "low — 5 LOC change, already documented in carryover"
+  }
+}

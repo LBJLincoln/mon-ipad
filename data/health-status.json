@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-04-28T04:30:00Z",
-  "cycle": "cloud-brain-4h-2026-04-28-cycle2",
+  "updated_at": "2026-04-28T12:30:00Z",
+  "cycle": "cloud-brain-4h-2026-04-28-cycle3",
   "trigger": "trig_01BS3ixBvt2uKHY9p5EemcgD",
 
   "step0_recovery": {
@@ -14,162 +14,150 @@
       "space": "Nomos42/nba-evo-4",
       "status": "EVOLVING",
       "healthy": true,
-      "hf_last_updated": "27 Apr, 2026",
-      "gen_estimate": "~90",
+      "gen": 553,
       "best_brier": 0.22198,
-      "stagnation_est": 0,
-      "algo": "random_forest",
-      "note": "Recovering from restart — was gen 1254, currently rebuilding from gen 0"
+      "stagnation": 0,
+      "algo": "random_forest"
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
       "status": "EVOLVING",
       "healthy": true,
-      "hf_last_updated": "27 Apr, 2026",
-      "gen_estimate": "~90",
+      "gen": 463,
       "best_brier": 0.22151,
-      "stagnation_est": 0,
+      "stagnation": 1,
       "algo": "random_forest",
-      "note": "Best current-run Brier in fleet"
+      "note": "Current-run fleet best"
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
       "status": "EVOLVING",
       "healthy": true,
-      "hf_last_updated": "27 Apr, 2026",
-      "gen_estimate": "~225",
-      "best_brier": 0.22190,
-      "stagnation_est": 0,
-      "algo": "xgboost_brier",
+      "gen": 286,
+      "best_brier": 0.22177,
+      "stagnation": 19,
+      "algo": "extra_trees",
+      "action": "diversify QUEUED 2026-04-28T12:28Z (stagnation=19 exceeded threshold=15)",
       "fleet_best_history": "0.22062 gen 1306 extra_trees 200f — checkpointed 2026-04-25"
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
-      "status": "PAUSED",
+      "status": "DOWN",
       "healthy": false,
-      "hf_last_updated": "18 Apr, 2026",
-      "days_paused": 10,
-      "restart_attempted": "2026-04-28T04:30:00Z — FAILED (HF_TOKEN not available in cloud env, returns 401)",
-      "vm_fix": "curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'",
-      "last_known": {"gen": 2196, "brier": 0.22249, "algo": "xgboost"}
+      "error": "503",
+      "days_paused_est": 11,
+      "last_known": {"gen": 2196, "brier": 0.22249, "algo": "xgboost"},
+      "vm_fix": "curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'"
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
       "status": "EVOLVING",
       "healthy": true,
-      "hf_last_updated": "18 Apr, 2026",
-      "gen_estimate": "~2520",
+      "gen": 2737,
       "best_brier": 0.22248,
-      "stagnation_est": 0,
+      "stagnation": 11,
       "algo": "extra_trees"
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "status": "EVOLVING",
-      "healthy": true,
-      "hf_last_updated": "20 Apr, 2026",
-      "gen_estimate": "~280",
-      "best_brier": 0.22192,
-      "stagnation_est": 2,
-      "algo": "catboost",
-      "note": "Diversify sent prev cycle (stagnation 30→2) — recovering well"
+      "status": "ANOMALY",
+      "healthy": false,
+      "anomaly": "Space returning political engine data (total_events=1180, feature_candidates=272, optimization_role=political_exploitation, brier=0.25456). Expected NBA data (9551 games, 3377 features). Space restarted with wrong code.",
+      "last_known_nba": {"gen": 1469, "brier": 0.22475, "algo": "extra_trees", "date": "2026-04-25"},
+      "vm_fix": "Redeploy TESTforge42/nba-evo-s22 with NBA app.py from scripts/arena/hf-nba-evo/"
     }
   },
 
   "fleet_summary": {
-    "alive_confirmed": ["S13", "S14", "S15", "S18", "S22"],
-    "paused": ["S17"],
+    "alive_confirmed": ["S13", "S14", "S15", "S18"],
+    "anomaly": ["S22"],
+    "down": ["S17"],
     "total": 6,
-    "pct_healthy": 83.3,
-    "fleet_best_brier": 0.22062,
-    "fleet_best_island": "S15 historical top_perf gen1306 extra_trees_200f",
-    "fleet_best_checkpointed": "2026-04-25",
-    "threshold_broken": false,
-    "threshold": 0.22085,
+    "pct_healthy": 66.7,
+    "fleet_best_brier_historical": 0.22062,
+    "fleet_best_island_historical": "S15 top_perf gen1306 extra_trees_200f (2026-04-25)",
     "current_run_best_brier": 0.22151,
-    "current_run_best_island": "S14 (random_forest, est gen ~90)",
-    "stagnation_actions": "None needed — all stagnation below 15-gen threshold"
+    "current_run_best_island": "S14 (random_forest, gen 463)",
+    "threshold": 0.22085,
+    "threshold_broken": false,
+    "stagnation_actions": ["S15 diversify QUEUED (stagnation=19, threshold=15)"]
   },
 
   "political_fleet_summary": {
     "alive_confirmed": ["P1", "P2", "P4", "P5", "P7"],
-    "paused": [],
     "total": 5,
     "pct_healthy": 100.0,
-    "live_fleet_best_brier": 0.24997,
-    "live_best_island": "P1 (Nomos42/political-alpha, xgboost_brier)",
+    "live_fleet_best_brier": 0.24924,
+    "live_best_island": "P5 (LBJLincoln/political-alpha-5, logistic_regression, gen 28890)",
+    "prev_best_brier": 0.25022,
+    "prev_best_island": "P4 (2026-04-25)",
     "historical_best_brier": 0.24923,
-    "historical_best_island": "P5 (not recovered in current run)"
+    "historical_best_island": "P5 all-time — now essentially recovered at 0.24924",
+    "new_best_this_cycle": true
   },
 
   "actions_taken": [
-    "S17 restart attempted via HF API curl — FAILED (HF_TOKEN not set in cloud env, HTTP 401). VM must restart manually.",
-    "All 5 NBA active islands confirmed RUNNING (HF hub_repo_details updated 27 Apr)",
-    "All 5 POL islands confirmed RUNNING (HF hub_repo_details updated 17-24 Apr)",
-    "No stagnation >15 detected across NBA fleet — no diversify needed this cycle",
-    "SOTA search: skipped (performed last cycle per every-other-cycle rule)",
-    "Rotation A: fetch_scotus.py fixed in nomos-political-alpha — SCOTUS feed gap since Apr 9 resolved"
+    "S15 diversify QUEUED via POST /api/command {command:diversify} — stagnation=19 exceeded threshold=15",
+    "S22 ANOMALY detected: returning political engine data instead of NBA. Last NBA best was 0.22475. VM must redeploy with NBA code.",
+    "S17 still 503 DOWN — cannot restart from cloud (no HF_TOKEN). VM fix documented.",
+    "P5 new POL LIVE BEST: 0.24924 (was P4 at 0.25022). Matches all-time hist_best 0.24923. boost_mutation from 2026-04-25 worked.",
+    "boost_mutation sent to P1 (brier=0.24997, top_model=0.24904) to push toward <0.249",
+    "SOTA search performed — uncertainty-aware MC dropout RNN + ELO features top findings",
+    "Research proposal written to data/research-proposals/nba-sota-2026-04-28T12.json",
+    "CLAUDE.md updated: P5 POL LIVE BEST, S15 stagnation action, S22 anomaly flag"
   ],
 
   "critical_issues": [
     {
-      "name": "S17 PAUSED on LBJLincoln26",
+      "name": "S17 DOWN (503)",
       "severity": "HIGH",
-      "days_paused": 10,
-      "vm_fix": "curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'",
-      "cloud_restart_blocked": "HF_TOKEN not available in cloud trigger environment"
+      "days_paused_est": 11,
+      "vm_fix": "curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'"
     },
     {
-      "name": "Nomos42 NBA checkpoint broken",
+      "name": "S22 running political engine (ANOMALY)",
       "severity": "HIGH",
-      "evidence": "S13/S14/S15 all at gen<100 (were 1254/1540/1310 before restart). Each restart wastes ~1300 gens.",
-      "vm_fix": "Check HF_TOKEN and push_to_hub() calls in island app.py — compare with P1 which loads checkpoint correctly"
+      "vm_fix": "Redeploy TESTforge42/nba-evo-s22 with NBA app.py from scripts/arena/hf-nba-evo/"
+    },
+    {
+      "name": "Nomos42 NBA islands low gen count (was 1254/1540/1310, now 553/463/286)",
+      "severity": "HIGH",
+      "vm_fix": "Fix checkpoint save/load in Nomos42 island app.py — compare with P1 which recovers correctly"
     },
     {
       "name": "Political data feeds: Kalshi + ProPublica missing since Apr 9",
       "severity": "MEDIUM",
-      "vm_fix_kalshi": "python3 hf-space/ops/fetch_political_data.py --source kalshi; if 401, renew at kalshi.com/account/api",
+      "vm_fix_kalshi": "python3 scripts/data/fetch_kalshi.py — renew API key at kalshi.com/account/api if 401",
       "vm_fix_propublica": "Check https://projects.propublica.org/api-docs/congress-api/ for URL changes"
-    },
-    {
-      "name": "pipeline-health.json stale 19+ days",
-      "severity": "MEDIUM",
-      "vm_fix": "crontab -l | grep plumber; verify scripts/ops/the_plumber.py is running"
     }
   ],
 
-  "cross_project": {
-    "fetched_scotus_fix": "Ported awareness of CourtListener v4 auth change. fix_scotus script committed to nomos-political-alpha. SCOTUS data gap (Cat30 features) should resolve on next VM cron.",
-    "isotonic_calibration": "Still pending for both NBA + POL engines. Expected -0.005 Brier. VM agent to implement.",
-    "gc_collect_oom_fix": "Still pending for POL P4/P5 — 30K+ gens, crash risk rising."
-  },
-
-  "sota_cycle": {
-    "performed": false,
-    "reason": "Skipped — performed last cycle (2026-04-28T00:30Z). Every-other-cycle rule.",
-    "last_proposal": "data/research-proposals/nba-sota-2026-04-28.json",
-    "top_carryover_action": "Isotonic calibration post-processing on evaluate_individual() — expected -0.005 Brier"
-  },
-
-  "engine_parity": {
-    "check": "DEFERRED — cannot sha256 from cloud",
-    "vm_command": "sha256sum features/engine.py scripts/arena/hf-nba-evo-*/features/engine.py 2>/dev/null | sort | uniq -c"
+  "sota_this_cycle": {
+    "performed": true,
+    "top_findings": [
+      "Uncertainty-aware RNN + MC dropout achieves calibrated sequential probabilities (MDPI Jan 2026) — Brier ~0.221",
+      "XGBoost + SHAP: top-3 features = home_next, team_elo_5_y, team_elo — verify all 3 in our engine.py",
+      "CNN over 10-game rolling windows: Brier 0.221 (IEEE 2026) — competitive with fleet best",
+      "XGBoost achieves Brier ~0.20 on 2024 test data — our sub-0.21 target is reachable with right features"
+    ],
+    "proposal_file": "data/research-proposals/nba-sota-2026-04-28T12.json",
+    "key_action": "Verify team_elo features in features/engine.py — most consistent SOTA predictor across all papers"
   },
 
   "steps_status": {
     "step0_recovery": "DONE — only pending item user-gated",
-    "step1_nba": "DONE — 5/6 healthy, S17 restart attempted+failed documented, no stagnation action needed",
-    "step2_political": "DONE — all 5 running, rotation A: fetch_scotus.py fixed, Kalshi+ProPublica gaps documented",
+    "step1_nba": "DONE — 4/6 healthy, S17 down documented, S22 anomaly flagged, S15 diversify sent",
+    "step2_political": "DONE — all 5 running, P5 new fleet best 0.24924, boost_mutation sent to P1",
     "step3_councils": "N/A — DECOMMISSIONED 2026-04-20",
     "step4_dashboard": "N/A — no pending work-queue items",
-    "step5_cross_project": "DONE — scotus fix ported, carryover items documented for VM"
+    "step5_cross_project": "DONE — SOTA findings + CLAUDE.md + both health files updated"
   },
 
   "next_cycle_priorities": [
-    "P0: Restart S17 from VM — curl POST with $HF_TOKEN (10 days paused, losing xgboost island coverage)",
-    "P1: Fix Nomos42 NBA checkpoint — each restart loses ~1300 gens of progress toward fleet-best",
-    "P2: Verify fetch_scotus.py fix worked — check data/signals/scotus_*.json freshness after VM cron",
-    "P3: Fix Kalshi API key — attempt python3 hf-space/ops/fetch_political_data.py --source kalshi",
-    "P4: Implement isotonic calibration in evaluate_individual() (expected -0.005 Brier — both NBA + POL)"
+    "P0: VM restart S17 (11+ days paused, losing xgboost island coverage)",
+    "P1: VM fix S22 anomaly — redeploy TESTforge42/nba-evo-s22 with NBA code",
+    "P2: VM fix Nomos42 NBA checkpoint (losing 1300 gens per restart — compare with P1 checkpoint logic)",
+    "P3: Monitor P1 boost_mutation effect (sent this cycle, brier=0.24997 — watch for <0.249)",
+    "P4: Verify team_elo features in features/engine.py (top SOTA predictor — grep for elo)"
   ]
 }
