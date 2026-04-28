@@ -565,13 +565,25 @@ def _tier_directive(tier: str, total_equity: float, seed_share: float) -> str:
     if os.environ.get("ITF_MAX_AGGRO", "0") == "1":
         _floor_pct = int(POWER_STAKE_FLOOR_PCT * 100)
         return (
-            f"TIER: MAX-AGGRO ALL ({tier.upper()}, equity ${total_equity:,.0f} "
+            f"TIER: BREAK-OR-1M-EUR ({tier.upper()}, equity ${total_equity:,.0f} "
             f"= {delta_pct:+.1f}% vs seed). MANDATE: per-trade floor = {_floor_pct}% "
-            f"of sub-bankroll (ITF_STAKE_FLOOR_PCT={POWER_STAKE_FLOOR_PCT:.2f}). "
-            f"Edge >=0.005 floor (was 0.015), R/R 2:1 floor (was 3:1), 6x leverage "
-            f"on PDT. Stack conviction up to 5 concurrent orders/ticker. User has "
-            f"declared full-loss tolerance — selectivity is OFF, deployment is ON. "
-            f"Silent-pass is banned (uniform_fallback_itf still applies if LLM dies)."
+            f"of sub-bankroll. Edge >=0.005, R/R 2:1, leverage 4x on PDT (multiplier=4). "
+            f"User declared 'go broke or 1M EUR' — selectivity OFF, full Kelly ON.\n\n"
+            f"PQTF $602K LESSONS (3 winners frozen as scientific proof):\n"
+            f"  - mistral-large $244K via PQTF: sector ETF momentum (XLE/XLK/XLF/XLV/XLY) "
+            f"+ 0DTE OTM SPY/QQQ calls/puts on >1.5% expected directional moves.\n"
+            f"  - mistral-medium $155K: leveraged ETF momentum on confirmed >1.5% breakouts "
+            f"(TQQQ/SOXL/SPXL/UPRO/TNA). Decay real — NEVER hold 3x ETFs through chop.\n"
+            f"  - gemini-anl $17K: macro-rotate SPY/TLT/GLD pairs on regime shifts.\n"
+            f"  - WINNERS STACKED into single thesis with 95%+ Kelly. Did NOT diversify.\n\n"
+            f"POL qwen-arb 103x LESSON ($100 -> $10,310 in days):\n"
+            f"  - Paired/correlation trades, concentrated when ratio exceeded 2-sigma band.\n"
+            f"  - Non-consensus mandate: peer lockstep <=0.88, >=3 distinct categories/day.\n"
+            f"  - Compounding mandate: cash holding >5% of bankroll = doctrine violation.\n\n"
+            f"COPY THE PATTERN: stack {_floor_pct}% Kelly into highest-conviction "
+            f"named thesis. Multiple parallel entries on the SAME thesis OK (e.g. SPY "
+            f"calls + TQQQ + XLK long all = same NDX-up bet stacked). Pass forbidden "
+            f"unless every category shows zero edge."
         )
     if tier == "winner":
         _floor_pct = int(POWER_STAKE_FLOOR_PCT * 100)
