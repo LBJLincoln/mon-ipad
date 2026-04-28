@@ -1391,6 +1391,19 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
             print(f"[itf] fill-reconcile: {_rc}", file=sys.stderr, flush=True)
     except Exception as _rce:
         print(f"[itf] fill-reconcile err (non-fatal): {_rce}", file=sys.stderr, flush=True)
+    # 2026-04-28 — every tick, rescale per-agent bankrolls so SUM == alpaca.equity.
+    # Cheap (Alpaca account fetch is 30s-cached). Threshold env-tunable; default 2%.
+    try:
+        _eq_rc = executor.reconcile_fleet_to_alpaca(
+            min_drift_pct=float(os.environ.get("ITF_FLEET_RECON_MIN_DRIFT", "0.02")),
+            persist=True,
+        )
+        if _eq_rc.get("applied"):
+            print(f"[itf] fleet-equity reconcile: {_eq_rc}",
+                  file=sys.stderr, flush=True)
+    except Exception as _erc:
+        print(f"[itf] fleet-equity reconcile err (non-fatal): {_erc}",
+              file=sys.stderr, flush=True)
     # 2026-04-21 — refresh stale broker statuses BEFORE anything else so
     # /api/status + positions.json reflect real fills, not cached pending_new.
     # Addresses user report: "ITF seems slow, orders not moving at all".
@@ -1934,6 +1947,26 @@ def _build_app():
 
     @app.get("/api/status")
     def api_status():
+        # 2026-04-28 — Alpaca truth on every status reply so dashboards never
+        # disagree with the broker. Cached 30s in executor.fetch_alpaca_account.
+        try:
+            acct = executor.fetch_alpaca_account()
+        except Exception as _e:
+            acct = {}
+        cash = executor.all_bankrolls()
+        # Total equity = available cash + reserved on open positions (matches
+        # /api/bankrolls.fleet_equity_internal). Comparing Alpaca's total-equity
+        # against agent available alone would always overstate drift.
+        _open = executor._load_positions() or {}
+        _reserved_total = 0.0
+        for _tid, _plist in _open.items():
+            for _pos in (_plist or []):
+                if _pos.get("status") == "open":
+                    _reserved_total += float(_pos.get("stake_usd") or 0.0)
+        internal_available = round(sum(float(v or 0.0) for v in cash.values()), 2)
+        internal_total = round(internal_available + _reserved_total, 2)
+        alpaca_equity = float(acct.get("equity") or 0.0)
+        drift = round(alpaca_equity - internal_total, 2) if alpaca_equity > 0 else None
         return JSONResponse({
             "running": STATE["running"],
             "last_tick_at": STATE["last_tick_at"],
@@ -1942,6 +1975,20 @@ def _build_app():
             "agents": STATE["agents"],
             "config_agents": PERSONAS,
             "quote_source": (quote_latest() or {}).get("_source"),
+            "alpaca": {
+                "equity": acct.get("equity"),
+                "cash": acct.get("cash"),
+                "buying_power": acct.get("buying_power"),
+                "long_market_value": acct.get("long_market_value"),
+                "short_market_value": acct.get("short_market_value"),
+                "daytrade_count": acct.get("daytrade_count"),
+                "pattern_day_trader": acct.get("pattern_day_trader"),
+                "fetched_at": acct.get("fetched_at"),
+            } if acct else None,
+            "fleet_internal_total_usd": internal_total,
+            "fleet_internal_available_usd": internal_available,
+            "fleet_internal_reserved_usd": round(_reserved_total, 2),
+            "fleet_drift_vs_alpaca_usd": drift,
             # 2026-04-22 DIAG — tick_count pin RCA. If reader and writer see
             # different id(STATE) → different processes → single-worker premise wrong.
             "_diag_state_id": id(STATE),
@@ -2073,14 +2120,26 @@ def _build_app():
         return JSONResponse({"count": len(trades), "trades": trades})
 
     @app.get("/api/bankrolls")
-    def api_bankrolls():
-        """Honest accounting — per-agent + fleet:
-          available   = free cash in agent's sub-bankroll (after reserves)
-          reserved    = sum of stake_usd on that agent's OPEN positions
+    def api_bankrolls(reconcile: bool = False):
+        """Honest accounting — per-agent + fleet, anchored to Alpaca truth.
+          available    = free cash in agent's sub-bankroll (after reserves)
+          reserved     = sum of stake_usd on that agent's OPEN positions
           total_equity = available + reserved
-          llm_tag     = underlying LLM this persona routes to (for cross-TF
-                        LLM leaderboard comparison with NBA/POL)
-        Fleet rollups sum across all personas."""
+          llm_tag      = underlying LLM this persona routes to (for cross-TF
+                         LLM leaderboard comparison with NBA/POL)
+
+        2026-04-28 reconciliation contract: every reply ALSO returns the live
+        Alpaca account snapshot (`alpaca_truth`) and `fleet_drift_vs_alpaca_usd`.
+        Pass `?reconcile=true` to persistently rescale the per-agent ledger so
+        SUM(agent.equity) ≡ alpaca.equity (drift > 2%); the rescaled view is
+        what's returned. Without that flag the response is read-only.
+        """
+        if reconcile:
+            try:
+                executor.reconcile_fleet_to_alpaca(min_drift_pct=0.02, persist=True)
+            except Exception as _e:
+                print(f"[itf] reconcile_fleet_to_alpaca err: {_e}",
+                      file=sys.stderr, flush=True)
         cash = executor.all_bankrolls()  # {tid: available_float}
         positions = executor._load_positions()
         reserved_by_tid: Dict[str, float] = {}
@@ -2104,10 +2163,30 @@ def _build_app():
             }
         fleet_available = round(sum(a["available"] for a in agents.values()), 2)
         fleet_reserved = round(sum(a["reserved_open"] for a in agents.values()), 2)
+        fleet_equity_internal = round(fleet_available + fleet_reserved, 2)
+        try:
+            acct = executor.fetch_alpaca_account()
+        except Exception:
+            acct = {}
+        alpaca_equity = float(acct.get("equity") or 0.0)
+        drift = round(alpaca_equity - fleet_equity_internal, 2) if alpaca_equity > 0 else None
         return JSONResponse({
             "fleet_available": fleet_available,
             "fleet_reserved": fleet_reserved,
-            "fleet_equity": round(fleet_available + fleet_reserved, 2),
+            "fleet_equity": fleet_equity_internal,
+            "fleet_equity_internal": fleet_equity_internal,
+            "fleet_equity_alpaca": acct.get("equity"),
+            "fleet_drift_vs_alpaca_usd": drift,
+            "alpaca_truth": {
+                "equity": acct.get("equity"),
+                "cash": acct.get("cash"),
+                "buying_power": acct.get("buying_power"),
+                "long_market_value": acct.get("long_market_value"),
+                "short_market_value": acct.get("short_market_value"),
+                "daytrade_count": acct.get("daytrade_count"),
+                "pattern_day_trader": acct.get("pattern_day_trader"),
+                "fetched_at": acct.get("fetched_at"),
+            } if acct else None,
             "agents": agents,
             "meta": executor._load_bankrolls().get("_meta", {}),
         })
@@ -2145,6 +2224,18 @@ def _build_app():
         cron/dashboards. Default lookback 60 min (tick default is 15)."""
         try:
             stats = executor.reconcile_broker_fills(lookback_min=int(lookback_min))
+            return JSONResponse({"ok": True, **stats})
+        except Exception as e:
+            return JSONResponse({"ok": False, "error": str(e)[:400]}, status_code=500)
+
+    @app.post("/api/reconcile-equity")
+    def api_reconcile_equity(min_drift_pct: float = 0.02):
+        """Persistent fleet→Alpaca rescale. Use when the dashboard shows drift
+        between fleet_equity and Alpaca equity. Default min_drift_pct=0.02 (2%);
+        below that we no-op so we don't churn the ledger on noise."""
+        try:
+            stats = executor.reconcile_fleet_to_alpaca(
+                min_drift_pct=float(min_drift_pct), persist=True)
             return JSONResponse({"ok": True, **stats})
         except Exception as e:
             return JSONResponse({"ok": False, "error": str(e)[:400]}, status_code=500)

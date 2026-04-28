@@ -100,10 +100,20 @@ def _save_bankrolls(b: Dict[str, float]) -> None:
     _LEDGER_DIRTY = True
 
 
-def _fetch_alpaca_equity() -> float:
-    """Pull live Alpaca paper equity. Fallback $100k if not live or API error."""
+_ALPACA_ACCT_CACHE: Dict[str, Any] = {"ts": 0.0, "data": None}
+
+
+def fetch_alpaca_account(ttl_sec: float = 30.0) -> Dict[str, Any]:
+    """Pull full Alpaca paper account (equity + BP + cash + position MVs) with
+    in-process TTL cache. Returns {} when not in live mode or API fails so
+    callers can decide on fallback. Single source of broker truth — every UI
+    surface (/api/status, /api/bankrolls, /api/leaderboard) and every tick
+    reconcile pulls from here so they never disagree."""
+    now = time.monotonic()
+    if _ALPACA_ACCT_CACHE["data"] is not None and (now - _ALPACA_ACCT_CACHE["ts"]) < ttl_sec:
+        return _ALPACA_ACCT_CACHE["data"]
     if not live_mode():
-        return 100_000.0
+        return {}
     try:
         import requests
         r = requests.get(
@@ -115,10 +125,125 @@ def _fetch_alpaca_equity() -> float:
             timeout=5,
         )
         if r.ok:
-            return float(r.json().get("equity") or 100_000.0)
+            j = r.json()
+            data = {
+                "equity": float(j.get("equity") or 0.0),
+                "last_equity": float(j.get("last_equity") or 0.0),
+                "cash": float(j.get("cash") or 0.0),
+                "buying_power": float(j.get("buying_power") or 0.0),
+                "long_market_value": float(j.get("long_market_value") or 0.0),
+                "short_market_value": float(j.get("short_market_value") or 0.0),
+                "daytrade_count": int(j.get("daytrade_count") or 0),
+                "pattern_day_trader": bool(j.get("pattern_day_trader") or False),
+                "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            }
+            _ALPACA_ACCT_CACHE["data"] = data
+            _ALPACA_ACCT_CACHE["ts"] = now
+            return data
     except Exception:
         pass
-    return 100_000.0
+    return _ALPACA_ACCT_CACHE.get("data") or {}
+
+
+def _fetch_alpaca_equity() -> float:
+    """Back-compat wrapper. Returns 100_000 fallback when account unavailable."""
+    a = fetch_alpaca_account()
+    return float(a.get("equity") or 100_000.0)
+
+
+def reconcile_fleet_to_alpaca(min_drift_pct: float = 0.02,
+                              persist: bool = True) -> Dict[str, Any]:
+    """Rescale per-agent bankrolls so SUM(agent.bankroll) == alpaca.equity.
+
+    Drift > min_drift_pct triggers a proportional rescale (each tid scaled by
+    alpaca_equity / internal_total). When persist=True, writes the rescaled
+    ledger back to bankrolls.json so subsequent ticks decide on truth, not
+    drift. When persist=False, returns the would-apply numbers without
+    mutating — used by /api/bankrolls preview path.
+
+    Returns a stats dict suitable for surfacing in /api/status:
+        {alpaca_equity, internal_before, internal_after, scale, drift_pct,
+         applied (bool), reason (str)}
+    """
+    acct = fetch_alpaca_account()
+    alpaca_equity = float(acct.get("equity") or 0.0)
+    if alpaca_equity <= 0:
+        return {"applied": False, "reason": "no_alpaca_account",
+                "alpaca_equity": alpaca_equity}
+    b = _load_bankrolls()
+    tids = [k for k in b.keys() if not k.startswith("_")]
+    available = {t: float(b.get(t, 0.0) or 0.0) for t in tids}
+    sum_available = sum(available.values())
+    # Compute reserved per tid from positions.json (matches /api/bankrolls).
+    positions = _load_positions() or {}
+    reserved_by_tid: Dict[str, float] = {}
+    for tid, plist in positions.items():
+        for pos in (plist or []):
+            if pos.get("status") == "open":
+                reserved_by_tid[tid] = reserved_by_tid.get(tid, 0.0) + float(
+                    pos.get("stake_usd") or 0.0)
+    sum_reserved = sum(reserved_by_tid.values())
+    internal_total = sum_available + sum_reserved  # equity-equivalent
+    if internal_total == 0:
+        return {"applied": False, "reason": "ledger_empty",
+                "alpaca_equity": alpaca_equity,
+                "internal_before": internal_total,
+                "sum_available": round(sum_available, 2),
+                "sum_reserved": round(sum_reserved, 2)}
+    drift = (alpaca_equity - internal_total) / max(1e-6, abs(internal_total))
+    if abs(drift) < min_drift_pct:
+        return {"applied": False, "reason": "below_threshold",
+                "alpaca_equity": round(alpaca_equity, 2),
+                "internal_before": round(internal_total, 2),
+                "internal_after": round(internal_total, 2),
+                "sum_available": round(sum_available, 2),
+                "sum_reserved": round(sum_reserved, 2),
+                "scale": 1.0, "drift_pct": round(drift, 4)}
+    # Rescale strategy: reserved is anchored to broker positions (we can't move
+    # those without closing). We absorb the drift on the available side so
+    # SUM(available) + SUM(reserved) == alpaca_equity. Each tid's new available
+    # is its current share of total available scaled to the new target.
+    target_available_total = alpaca_equity - sum_reserved
+    if persist:
+        if abs(sum_available) < 1e-6:
+            # Edge case: every penny is reserved. Distribute target equally.
+            share = target_available_total / max(1, len(tids))
+            for t in tids:
+                b[t] = round(share, 2)
+        else:
+            scale = target_available_total / sum_available
+            for t in tids:
+                b[t] = round(available[t] * scale, 2)
+        meta = b.setdefault("_meta", {})
+        meta["last_reconcile_at"] = datetime.now(timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%SZ")
+        meta["last_reconcile_alpaca_equity"] = round(alpaca_equity, 2)
+        meta["last_reconcile_internal_before"] = round(internal_total, 2)
+        meta["last_reconcile_target_available"] = round(target_available_total, 2)
+        meta["last_reconcile_drift_pct"] = round(drift, 4)
+        _save_bankrolls(b)
+        try:
+            _append_ledger({
+                "tid": "_FLEET_", "event": "fleet_reconcile",
+                "delta": round(alpaca_equity - internal_total, 2),
+                "balance_before": round(internal_total, 2),
+                "balance_after": round(alpaca_equity, 2),
+                "sum_available_before": round(sum_available, 2),
+                "sum_reserved": round(sum_reserved, 2),
+                "target_available": round(target_available_total, 2),
+                "drift_pct": round(drift, 4),
+            })
+        except Exception:
+            pass
+    return {"applied": persist,
+            "reason": "drift_above_threshold",
+            "alpaca_equity": round(alpaca_equity, 2),
+            "internal_before": round(internal_total, 2),
+            "internal_after": round(alpaca_equity if persist else internal_total, 2),
+            "sum_available_before": round(sum_available, 2),
+            "sum_reserved": round(sum_reserved, 2),
+            "target_available": round(target_available_total, 2),
+            "drift_pct": round(drift, 4)}
 
 
 def seed_bankrolls(tids: List[str], force: bool = False) -> Dict[str, float]:
