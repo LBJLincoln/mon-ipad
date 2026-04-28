@@ -1641,19 +1641,55 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     # worst case, incompatible with 30s tick cadence. Fan out to ThreadPoolExecutor
     # so all 17 personas call their gateway concurrently; wall-clock ≈ slowest call.
     # Post-processing (anti-lockstep/broker) stays sequential to avoid broker races.
-    from concurrent.futures import ThreadPoolExecutor as _TPE, as_completed as _ac
+    #
+    # 2026-04-28 STRUCTURAL FIX (partial-tick acceptance) — `as_completed` raised
+    # TimeoutError when ≥1 future was unfinished, propagated through `with _TPE(...)`,
+    # aborted tick_once() BEFORE the persona-processing for-loop ran, throwing away
+    # every successful LLM call. Live log evidence: "[itf] tick failed: 5 (of 17)
+    # futures unfinished" → 12 working agents discarded → /api/decisions empty for
+    # 7+ days. Now: accept partial results (uniform-fallback the laggards), cancel
+    # outstanding futures with shutdown(wait=False, cancel_futures=True), proceed.
+    from concurrent.futures import (
+        ThreadPoolExecutor as _TPE,
+        as_completed as _ac,
+        TimeoutError as _FutTimeoutError,
+    )
     _decisions_by_tid: Dict[str, Dict[str, Any]] = {}
     _call_budget = float(os.environ.get("ITF_TICK_BUDGET_SEC", "25.0"))
-    with _TPE(max_workers=len(_personas_this_tick)) as _pool:
+    _pool = _TPE(max_workers=len(_personas_this_tick))
+    try:
         _futs = {_pool.submit(_call_agent, p, ctx): p for p in _personas_this_tick}
-        for _fut in _ac(_futs, timeout=_call_budget + 5):
-            _p = _futs[_fut]
-            try:
-                _decisions_by_tid[_p["tid"]] = _fut.result(timeout=_call_budget)
-            except Exception as _ce:
-                print(f"[itf] _call_agent raised for {_p['tid']}: {_ce} — "
-                      f"uniform fallback", file=sys.stderr, flush=True)
-                _decisions_by_tid[_p["tid"]] = _uniform_fallback_itf(_p, ctx)
+        try:
+            for _fut in _ac(_futs, timeout=_call_budget + 5):
+                _p = _futs[_fut]
+                try:
+                    _decisions_by_tid[_p["tid"]] = _fut.result(timeout=0)
+                except Exception as _ce:
+                    print(f"[itf] _call_agent raised for {_p['tid']}: {_ce} — "
+                          f"uniform fallback", file=sys.stderr, flush=True)
+                    _decisions_by_tid[_p["tid"]] = _uniform_fallback_itf(_p, ctx)
+        except _FutTimeoutError:
+            _laggards = []
+            for _f, _p in _futs.items():
+                _tid = _p["tid"]
+                if _f.done():
+                    if _tid not in _decisions_by_tid:
+                        try:
+                            _decisions_by_tid[_tid] = _f.result(timeout=0)
+                        except Exception:
+                            _decisions_by_tid[_tid] = _uniform_fallback_itf(_p, ctx)
+                else:
+                    _laggards.append(_tid)
+                    _decisions_by_tid[_tid] = _uniform_fallback_itf(_p, ctx)
+                    _f.cancel()
+            print(
+                f"[itf] tick #{STATE.get('tick_count')} accepted partial: "
+                f"completed={len(_personas_this_tick) - len(_laggards)}/{len(_personas_this_tick)} "
+                f"laggards={_laggards}",
+                file=sys.stderr, flush=True,
+            )
+    finally:
+        _pool.shutdown(wait=False, cancel_futures=True)
 
     for persona in _personas_this_tick:
         # 2026-04-21 compute cap — if agent already submitted SUBMITS_PER_TICK
