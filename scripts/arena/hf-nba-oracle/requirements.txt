@@ -1,5 +1,12 @@
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
 numpy
-scikit-learn==1.4.0
+scikit-learn==1.6.1
 huggingface_hub
+# 2026-04-28 — production .pkl is now TabICL-backed (Colab promotion 2026-04-28T00-34Z).
+# Unpickling requires the tabicl module + torch on the path. Plus xgboost/lightgbm
+# in case future promotions swap back to those.
+tabicl
+xgboost
+lightgbm
+torch
