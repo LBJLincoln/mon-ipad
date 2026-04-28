@@ -16,7 +16,7 @@ import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 REPO = Path(__file__).resolve().parents[3]
 ORDERS_JSONL = REPO / "data" / "intraday" / "dry-run-orders.jsonl"
@@ -302,6 +302,58 @@ def _classify_reject(err: str) -> str:
     if "429" in e:
         return "rate_limited"
     return "other"
+
+
+def _agent_open_reserved(tid: str) -> float:
+    positions = _load_positions()
+    s = 0.0
+    for pos in (positions.get(tid, []) or []):
+        if pos.get("status") == "open":
+            s += float(pos.get("stake_usd") or 0.0)
+    return s
+
+
+def agent_leverage_check(tid: str, new_stake: float) -> Tuple[bool, str, Dict[str, float]]:
+    """Pre-flight margin/leverage gate for new orders. Returns (ok, reason, stats).
+
+    Cap formula: `per_agent_cap = (alpaca_equity / n_agents) * leverage_mult`.
+    `n_agents` is the count of seeded tids in bankrolls.json. `leverage_mult`
+    defaults to 4.0 (PDT intraday max) and rises to env `ITF_AGENT_LEVERAGE_MULT`
+    when present. When Alpaca account isn't reachable, falls back to 4× of the
+    seeded share so dry-run + degraded states still gate cleanly.
+
+    The caller (submit / submit_option) gets a clean rejection ledger event
+    instead of a 40310000 broker error when an agent tries to over-commit.
+    """
+    try:
+        leverage_mult = float(os.environ.get("ITF_AGENT_LEVERAGE_MULT", "4.0"))
+    except Exception:
+        leverage_mult = 4.0
+    acct = fetch_alpaca_account()
+    alpaca_equity = float(acct.get("equity") or 0.0)
+    b = _load_bankrolls()
+    tids = [k for k in b.keys() if not k.startswith("_")]
+    n_agents = max(1, len(tids))
+    if alpaca_equity > 0:
+        per_agent_equity = alpaca_equity / n_agents
+    else:
+        per_agent_equity = float(b.get("_meta", {}).get("seed_share_usd") or 5_500.0)
+    cap = per_agent_equity * leverage_mult
+    reserved = _agent_open_reserved(tid)
+    projected = reserved + float(new_stake or 0.0)
+    stats = {
+        "leverage_mult": round(leverage_mult, 2),
+        "per_agent_equity_usd": round(per_agent_equity, 2),
+        "per_agent_cap_usd": round(cap, 2),
+        "reserved_open_usd": round(reserved, 2),
+        "projected_after_usd": round(projected, 2),
+        "alpaca_equity_usd": round(alpaca_equity, 2),
+    }
+    if projected > cap:
+        return False, (f"agent_leverage_cap projected=${projected:,.0f} > "
+                       f"cap=${cap:,.0f} (equity_share=${per_agent_equity:,.0f} × "
+                       f"{leverage_mult:.1f}x)"), stats
+    return True, "ok", stats
 
 
 def reserve_bankroll(tid: str, amount: float, meta: Optional[Dict[str, Any]] = None) -> float:
@@ -1028,6 +1080,19 @@ def submit(agent_tid: str, order: Dict[str, Any], last_quote: float) -> Dict[str
     # order payload, check how many OPEN orders already exist at Alpaca for
     # this symbol. If >= ITF_MAX_PENDING_PER_SYMBOL (default 2), skip: another
     # bracket will just deepen the 319-order pileup.
+    # 2026-04-28 — leverage gate. Refuse if agent's projected reserved would
+    # exceed (per_agent_equity × ITF_AGENT_LEVERAGE_MULT). Default 4× = PDT max.
+    _lvg_ok, _lvg_reason, _lvg_stats = agent_leverage_check(
+        agent_tid, float(order.get("stake_usd") or 0.0))
+    if not _lvg_ok:
+        skip = {
+            "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "agent_tid": agent_tid, "status": "leverage_cap_skip",
+            "reason": _lvg_reason, "leverage_stats": _lvg_stats,
+            "order": order,
+        }
+        _append_order_log(skip)
+        return skip
     max_pending = int(os.environ.get("ITF_MAX_PENDING_PER_SYMBOL", "2"))
     if live_mode():
         sym_for_check = str(order.get("ticker") or "")
@@ -1227,6 +1292,18 @@ def submit_option(agent_tid: str, order: Dict[str, Any], last_quote: float) -> D
     """
     positions = _load_positions()
     open_for_agent = [p for p in positions.get(agent_tid, []) if p.get("status") == "open"]
+    # 2026-04-28 — same leverage gate as equity submit() (mirror).
+    _lvg_ok, _lvg_reason, _lvg_stats = agent_leverage_check(
+        agent_tid, float(order.get("stake_usd") or 0.0))
+    if not _lvg_ok:
+        skip = {
+            "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "agent_tid": agent_tid, "status": "leverage_cap_skip",
+            "reason": _lvg_reason, "leverage_stats": _lvg_stats,
+            "order": order,
+        }
+        _append_order_log(skip)
+        return skip
     if len(open_for_agent) >= MAX_OPEN_PER_AGENT:
         reject = {
             "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),

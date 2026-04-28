@@ -1183,6 +1183,31 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         f"    list also qualifies for the 1.5× stake bonus."
     )
 
+    # 2026-04-28 MAX-AGGRESSION DOCTRINE — gated on ITF_MAX_AGGRO env. User has
+    # explicitly accepted -$90K downside to chase $1M target ($93K → $1M = ~10×).
+    # Removes edge floors below 1.5%, mandates leveraged instruments on conviction,
+    # and blocks "PASS unless tape is dead" framing.
+    _max_aggro_block = ""
+    if os.environ.get("ITF_MAX_AGGRO") == "1":
+        _max_aggro_block = (
+            "\n=== MAX-AGGRESSION DOCTRINE (user-authorized 2026-04-28) ===\n"
+            "TARGET: fleet equity $1,000,000 (we are at ~$93K). User has explicitly\n"
+            "accepted -$90K full drawdown of remaining capital to get there.\n"
+            "RULES:\n"
+            "  • Every position must have ≥3× asymmetric upside (3:1 reward/risk min).\n"
+            "  • Edge floor: 1.5%. Below that → PASS. Above → SIZE UP, not down.\n"
+            "  • PREFER: 0DTE OTM options on SPY/QQQ/IWM (max gamma), leveraged ETFs\n"
+            "    (TQQQ/SOXL/SPXL/UPRO/TNA on bullish, SQQQ/SPXS/TZA on bearish),\n"
+            "    high-conviction crypto (BTC/ETH/SOL when momentum >2σ).\n"
+            "  • PASS only when there is genuinely no setup — never as risk avoidance.\n"
+            "  • Stake size = the FULL Kelly cap, not fractional. The server enforces\n"
+            "    your per-agent leverage ceiling ($per_agent_equity × 4) — sizing UP\n"
+            "    to that ceiling is correct behavior, not reckless.\n"
+            "  • You are 1 of 17 agents. Top winners (qwen-arb +103×, mistral-large +PQTF)\n"
+            "    got there by sizing up on their highest-conviction setups, not hedging.\n"
+            "=========================================================\n"
+        )
+
     return f"""{COLLECTIVE_MISSION}
 
 {AXELROD_CANON}{_pm_override}
@@ -1219,7 +1244,7 @@ MM DEALER POSITIONING (vol regime, gamma, unusual flow — what market-makers ar
 NBA TOP-5 EDGES today: {nba_block}
 POL TOP-5 SIGNALS today: {pol_block}
 PQTF state: {pqtf_block}
-
+{_max_aggro_block}
 {DECISION_SCHEMA}
 """
 
@@ -1800,7 +1825,9 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                 else:
                     # 2026-04-26 — STRIPPED: no automatic 3x leveraged ETF routing.
                     # Agent's chosen ticker stands. Bankroll cap enforced server-side.
-                    raw_stake = min(raw_stake, 2500.0)
+                    # 2026-04-28 MAX_AGGRO — equity per-trade ceiling lifts $2.5K → $7.5K.
+                    _eq_cap = 7500.0 if os.environ.get("ITF_MAX_AGGRO") == "1" else 2500.0
+                    raw_stake = min(raw_stake, _eq_cap)
             order = {
                 "ticker": decision["ticker"],
                 "side": decision.get("side", "long"),
@@ -1822,7 +1849,7 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
                 "dte":         int(decision.get("dte", 0) or 0),
                 "strike_offset_pct": float(decision.get("strike_offset_pct", 0.0) or 0.0),
                 "wing_width_pct":    float(decision.get("wing_width_pct", 0.01) or 0.01),
-                "stake_usd":   min(5000, max(200, float(decision.get("stake_usd", 500) or 500))),
+                "stake_usd":   min(10000 if os.environ.get("ITF_MAX_AGGRO") == "1" else 5000, max(200, float(decision.get("stake_usd", 500) or 500))),
                 "max_loss_pct":min(0.05, max(0.005, float(decision.get("max_loss_pct", 0.02) or 0.02))),
                 "thesis":      decision.get("thesis", ""),
             }
