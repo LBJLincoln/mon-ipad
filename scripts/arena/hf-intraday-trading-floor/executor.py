@@ -965,19 +965,37 @@ def _alpaca_place_bracket(ticker: str, qty: float, stake: float, last: float,
             }
         else:
             # int_qty < 1 — only longs can use notional fractional. Shorts must
-            # be skipped (Alpaca: "fractional orders cannot be sold short").
+            # be qty>=1 (Alpaca: "fractional orders cannot be sold short").
+            #
+            # 2026-04-28 MAX-AGGRO upsize — instead of dropping the trade, when
+            # ITF_MAX_AGGRO=1 and side=short with int_qty=0, upsize qty to 1.
+            # Cost: stake rises from agent's intended size to 1×last_quote;
+            # since user authorised full-loss tolerance, executing the short
+            # is preferable to discarding the directional view (46+ skips
+            # observed in last 300 ledger events 2026-04-28).
             if is_short:
-                raise ValueError(
-                    f"short fractional skip: ticker={ticker} qty={qty} stake={stake} "
-                    f"(int_qty={int_qty} < 1, Alpaca rejects fractional shorts)"
-                )
-            payload = {
-                "symbol": ticker,
-                "notional": round(stake, 2),
-                "side": side,
-                "type": "market",
-                "time_in_force": "day",
-            }
+                if os.environ.get("ITF_MAX_AGGRO", "0") == "1":
+                    int_qty = 1
+                    payload = {
+                        "symbol": ticker,
+                        "qty": int_qty,
+                        "side": side,
+                        "type": "market",
+                        "time_in_force": "day",
+                    }
+                else:
+                    raise ValueError(
+                        f"short fractional skip: ticker={ticker} qty={qty} stake={stake} "
+                        f"(int_qty={int_qty} < 1, Alpaca rejects fractional shorts)"
+                    )
+            else:
+                payload = {
+                    "symbol": ticker,
+                    "notional": round(stake, 2),
+                    "side": side,
+                    "type": "market",
+                    "time_in_force": "day",
+                }
     if client_order_id:
         payload["client_order_id"] = client_order_id
     r = requests.post(

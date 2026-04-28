@@ -1595,8 +1595,10 @@ def tick_once(dry_print: bool = False) -> List[Dict[str, Any]]:
     # accumulation also caps out. Without this, 2 ticks of 2 AVAX-longs each = 4 AVAX-longs.
     # Fair-order randomization so early-called personas don't monopolize the edge.
     import random as _random
-    MAX_CONCURRENT_PER_KEY = 4  # 2026-04-21 aggression push: 3→4 concurrent agents per (ticker,side)
-    SUBMITS_PER_TICK = 3  # 2026-04-21 aggression push: 2→3 new orders per agent per tick (compute still OK — 17×3=51/tick)
+    # 2026-04-28 MAX-AGGRO: 4→6 concurrent same-trade, 3→5 submits/tick. 17×5=85/tick
+    # at 20s tick = ~255 orders/min ceiling. Pairs with executor short-upsize fix.
+    MAX_CONCURRENT_PER_KEY = int(os.environ.get("ITF_MAX_CONCURRENT_PER_KEY", "6"))
+    SUBMITS_PER_TICK = int(os.environ.get("ITF_SUBMITS_PER_TICK", "5"))
     _submits_this_tick: Dict[str, int] = {}
     _tick_counts: Dict[Tuple[str, str], int] = {}
     try:
