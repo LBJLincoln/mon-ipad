@@ -121,6 +121,46 @@ app = FastAPI(title="NBA Oracle", version="1.0")
 @app.on_event("startup")
 def _startup() -> None:
     _load_bundle()
+    # 2026-04-28 — background re-loader so newly-promoted oracle goes live
+    # without manual Space restart. Polls dataset etag every 5 min; reloads
+    # only if it changed. Pairs with /api/reload (synchronous trigger from
+    # Colab Cell 10 right after the promote upload, bypassing the 5-min wait).
+    import threading
+    def _watch():
+        import time as _t
+        from huggingface_hub import HfApi
+        api = HfApi(token=os.environ.get("HF_TOKEN") or None)
+        last_sha = None
+        while True:
+            _t.sleep(300)  # 5 min
+            try:
+                info = api.dataset_info("LBJLincoln26/nba-oracle-model")
+                cur_sha = info.sha
+                if cur_sha and cur_sha != last_sha:
+                    print(f"[oracle] dataset sha changed {last_sha} -> {cur_sha}, reloading", flush=True)
+                    _load_bundle()
+                    last_sha = cur_sha
+            except Exception as _e:
+                print(f"[oracle] watch err: {_e}", flush=True)
+    threading.Thread(target=_watch, daemon=True).start()
+
+
+@app.post("/api/reload")
+def api_reload() -> Dict[str, Any]:
+    """Manual re-fetch of the bundle from HF dataset. Called by training
+    pipelines (Colab Cell 10, weekly Kaggle retrain) right after a promote
+    upload so the new model goes live within seconds instead of waiting for
+    the 5-min etag watcher."""
+    before = _STATE.get("loaded_at")
+    _load_bundle()
+    return {
+        "reloaded": True,
+        "loaded_at_before": before,
+        "loaded_at_after": _STATE.get("loaded_at"),
+        "brier_cv": _STATE.get("cv_brier_mean"),
+        "n_features": _STATE.get("n_features"),
+        "err": _STATE.get("load_err"),
+    }
 
 
 @app.get("/")
@@ -128,7 +168,7 @@ def root() -> Dict[str, Any]:
     return {
         "service": "nba-oracle",
         "state": _STATE,
-        "endpoints": ["/api/predict", "/api/status"],
+        "endpoints": ["/api/predict", "/api/status", "/api/reload", "/api/best"],
     }
 
 
