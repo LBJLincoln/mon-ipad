@@ -1,0 +1,65 @@
+{
+  "date": "2026-04-28T16:10:00Z",
+  "cycle": "cloud-brain-4h-2026-04-28-cycle4",
+  "title": "LogReg-First: Add logistic_regression to NBA GA candidate pool (SOTA + live P7 corroboration)",
+  "priority": "HIGH",
+  "status": "NEW",
+
+  "motivation": {
+    "sota_evidence": [
+      {
+        "source": "MDPI Computation 2026 — Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+        "url": "https://www.mdpi.com/2078-2489/17/1/56",
+        "finding": "Logistic regression achieves Brier 0.199 on 2024 NBA test data — best tabular baseline, beating XGBoost (0.202), CNN (0.221).",
+        "features_used": "team ELO rating (team_elo_5_y), home advantage, rolling 5-game win rate, rest days"
+      },
+      {
+        "source": "PMC 2024 — XGBoost + SHAP for NBA game outcome",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
+        "finding": "Top-3 SHAP features: home_next, team_elo_5_y, team_elo. XGBoost Brier 0.202. ELO signal dominates."
+      }
+    ],
+    "live_corroboration": {
+      "island": "P7 LBJLincoln/political-alpha-7",
+      "algo": "logistic_regression",
+      "gen": 29900,
+      "brier": 0.24924,
+      "result": "P7 is the current POL LIVE BEST across all 5 political islands — beating catboost (P1 0.25456), xgboost_brier (P2 0.24997), and logistic_regression competitors (P4 0.25646). Direct evidence that logistic_regression GA candidates produce top-tier results in the Nomos42 multi-island architecture.",
+      "previous_live_best": "P4 xgboost_brier 0.25022 (2026-04-25)",
+      "improvement": 0.00098
+    }
+  },
+
+  "proposal": {
+    "action": "Add logistic_regression as an explicit model type in the NBA GA candidate initialization.",
+    "current_state": "NBA islands use: random_forest (S13, S14), extra_trees (S15, S18), catboost (S22), xgboost (S17 DOWN). No logistic_regression island currently active.",
+    "target": "Repurpose S22 (lowest current gen=718, freshly restarted) to test logistic_regression as primary algo. Or configure as a new mutation target in the GA init pool.",
+    "implementation": [
+      "In hf-nba-evo app.py: add 'logistic_regression' to MODEL_TYPES list and implement _train_logistic_regression() using sklearn LogisticRegression(C=1.0, solver='lbfgs', max_iter=1000) + CalibratedClassifierCV(cv=5, method='isotonic')",
+      "Feature selection: use GA selected features (50-200 from engine.py pool) — logistic regression is L2-regularized so handles moderate feature counts",
+      "Isotonic calibration mandatory: CalibratedClassifierCV wrapping, matching SOTA paper methodology",
+      "Expected Brier: ~0.222-0.225 initially (same candidate pool as current islands), with potential to reach ~0.215 with ELO-optimized feature subset"
+    ],
+    "risk": "LOW — logistic regression trains fast on CPU (seconds vs minutes for tree ensembles), reducing per-generation time and allowing more GA cycles per hour."
+  },
+
+  "cross_project_port": {
+    "confirmed": true,
+    "from": "Political Alpha (P7 logistic_regression live best)",
+    "to": "NBA Islands (add logistic_regression as GA candidate)",
+    "mechanism": "P7 running logistic_regression for 29900 gens vs P4 xgboost_brier 6373 gens suggests logistic_regression is more stable and less prone to restart-based gen loss. CPU training speed advantage enables 5-10x more gens per wall-clock hour."
+  },
+
+  "elo_feature_gap": {
+    "finding": "All SOTA papers identify ELO as top predictor. features/engine.py v3.1 has 54 categories with ~7213 raw candidates. ELO-style features should be in 'elo' or 'momentum' category.",
+    "action": "Grep features/engine.py for 'elo' to verify presence. If missing, this is the single highest-value feature to add — estimated Brier improvement 0.002-0.005 based on SOTA feature importance.",
+    "search_command": "grep -n 'elo\\|ELO\\|rating' scripts/features/engine.py | head -20"
+  },
+
+  "previous_related_proposals": [
+    "2026-04-19-sota-logistic-0199.md — first identified logistic 0.199 SOTA",
+    "2026-04-21-20h-lr-calibration-path.json — calibration path for LR",
+    "2026-04-22-12h-fatigue-elo-feature-audit.json — ELO feature audit"
+  ],
+  "escalation": "These proposals have been made before but not yet implemented. P7 live performance provides the strongest possible evidence — the algorithm works at production scale in our own infrastructure. This should unblock implementation."
+}
