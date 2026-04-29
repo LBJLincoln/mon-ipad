@@ -319,16 +319,22 @@ AXELROD_ARCHETYPES = [
 #         Axelrod & Hamilton 1981 Science + Nowak & Sigmund 1993 Pavlov +
 #         Du et al. 2023 DMAD + Prediction Arena 2604.07355 (Mar 2026).
 COLLECTIVE_MISSION = (
-    "=== COLLECTIVE MISSION (2026-04-17, binding) ===\n"
+    "=== COLLECTIVE MISSION (2026-04-29 v2, binding) ===\n"
     "You are ONE of 17 LLM agents sharing a society bankroll. All 17 agents see the SAME data: "
     "1257 games, 100+ betting categories per game, full odds + standings + forms + player stats + "
     "model predictions + peer bankrolls + peer allocations + post-mortem logs.\n"
     "COMMON GOAL: ONE of us reaches $1,000,000 bankroll by season end. That agent's win counts "
     "as a collective win — help each other reach it. Individual greed (>$250K while peers dying) "
     "triggers a DEFECT rogue permission.\n"
-    "DEPLOY RULE (hard): ≥75% of your bankroll MUST be deployed EVERY DAY. ≥3 allocations EVERY DAY. "
-    "Holding >25% cash violates the collective goal. Pick from the FULL 100+ category menu — "
-    "moneylines, spreads, totals, halves, quarters, alt-lines, team totals, props. Use breadth.\n"
+    "QWEN-STYLE DOCTRINE (Nof1 Alpha Arena 2026 winner): fewer trades, higher conviction, ride "
+    "winners until thesis invalidates. Edge floor: 5% expected value or PASS (Gemini lost Alpha Arena "
+    "with 13 trades/day at low edge floor — 13% of capital burned in fees). Best result is not 'most "
+    "active': it's 'most selective'. PASS is fully valid. The market is not obligated to give you "
+    "an edge every day.\n"
+    "STAKING: per-bet stake set by your tier-Kelly cap (assigned per-agent based on rolling Brier). "
+    "Server sizes; you choose category and direction. Don't try to override staking — focus on the "
+    "thesis. ENGINE EDGES > 25% are calibration-noise on extreme dogs/longshots — server will refuse "
+    "those bets even if you propose them. Trust the filter; pick categories with engine edge 5-25%.\n"
     "COLLABORATION STACK: (1) morning council plan (qwen-235B moderator) specifies focus_strategies + "
     "focus_categories + per-agent commit. (2) Pact proposals let 2 agents bet the same game+category. "
     "(3) Axelrod canon strategy assigned per agent. (4) Post-mortem log visible to all. "
@@ -2396,6 +2402,19 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
 
         if engine_edge is not None:
             n_engine_override += 1
+            # 2026-04-29: cap engine edges at NBA_LLM_MAX_EDGE (default 0.25).
+            # Calibration noise: engine claimed +50% on +540 dogs (ml_home
+            # odds=4.529 edge=0.507). Day 2 audit: 3 LLMs trusted these and lost.
+            # If LLM picks a category where engine edge is calibration-garbage,
+            # REFUSE the bet entirely — it's the server's job to filter known
+            # calibration noise out of LLM-facing data, not the LLM's job to
+            # second-guess "trusted" engine signals.
+            _llm_max_engine_edge = float(os.environ.get("NBA_LLM_MAX_EDGE", "0.25"))
+            if engine_edge > _llm_max_engine_edge:
+                # Drop this bet — refuse to accept LLM's choice when the engine
+                # signal it leaned on is calibration-garbage. Goes to the
+                # _engine_only_dropped bucket (tracked but not staked).
+                continue
             edge_for_kelly = max(0.0, engine_edge)
         else:
             # Engine has no view on this category (typically pp_*/alt_* props
