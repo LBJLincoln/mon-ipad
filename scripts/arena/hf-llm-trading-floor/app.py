@@ -2407,18 +2407,15 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
 
         if engine_edge is not None:
             n_engine_override += 1
-            # 2026-04-29: cap engine edges at NBA_LLM_MAX_EDGE (default 0.25).
-            # Calibration noise: engine claimed +50% on +540 dogs (ml_home
-            # odds=4.529 edge=0.507). Day 2 audit: 3 LLMs trusted these and lost.
-            # If LLM picks a category where engine edge is calibration-garbage,
-            # REFUSE the bet entirely — it's the server's job to filter known
-            # calibration noise out of LLM-facing data, not the LLM's job to
-            # second-guess "trusted" engine signals.
-            _llm_max_engine_edge = float(os.environ.get("NBA_LLM_MAX_EDGE", "0.25"))
+            # 2026-04-29 HARDCODED 0.20 cap on engine edges (was env-tunable
+            # NBA_LLM_MAX_EDGE but day-004 audit showed bets with engine_edge=0.5238
+            # bypassing the env-based check despite filter present in deployed
+            # app.py. Going hardcoded eliminates env-load timing as a variable).
+            # Also same env override for ops who want to relax temporarily.
+            _llm_max_engine_edge = float(os.environ.get("NBA_LLM_MAX_EDGE", "0.20"))
             if engine_edge > _llm_max_engine_edge:
-                # Drop this bet — refuse to accept LLM's choice when the engine
-                # signal it leaned on is calibration-garbage. Goes to the
-                # _engine_only_dropped bucket (tracked but not staked).
+                import sys as _s
+                print(f"[FILTER-FIRE] dropped engine_edge={engine_edge:.4f} cat={cat} cap={_llm_max_engine_edge}", file=_s.stderr, flush=True)
                 continue
             edge_for_kelly = max(0.0, engine_edge)
         else:
@@ -2441,14 +2438,15 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
         if edge_for_kelly < _MIN_KELLY_EDGE:
             continue
 
-        # 2026-04-29 BELT-AND-SUSPENDERS — universal max-edge filter at the
-        # final pre-append gate. The earlier engine_edge>NBA_LLM_MAX_EDGE check
-        # at line ~2413 was bypassed in day-002 audit (3 LLMs landed
-        # ml_home edge=0.507 bets). Reason still unclear (env-load timing or
-        # second code path) so this catches every possible flow regardless of
-        # edge_source. Same env var NBA_LLM_MAX_EDGE (default 0.25, current 0.20).
-        _final_edge_cap = float(os.environ.get("NBA_LLM_MAX_EDGE", "0.25"))
+        # 2026-04-29 BELT-AND-SUSPENDERS — HARDCODED 0.20 cap at final gate.
+        # day-002+003+004 audits showed engine_edge=0.50+ bets landing despite
+        # the earlier check. Final defense at the pre-append point. Hardcoded
+        # to remove env-loading from the variables (caller can override via
+        # explicit env to loosen for special-case ops).
+        _final_edge_cap = float(os.environ.get("NBA_LLM_MAX_EDGE", "0.20"))
         if edge_for_kelly > _final_edge_cap:
+            import sys as _s2
+            print(f"[FILTER-BELT] dropped edge_for_kelly={edge_for_kelly:.4f} src=engine? cat={cat} cap={_final_edge_cap}", file=_s2.stderr, flush=True)
             continue
 
         clean.append({
