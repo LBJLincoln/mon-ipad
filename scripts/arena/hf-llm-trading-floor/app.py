@@ -333,8 +333,13 @@ COLLECTIVE_MISSION = (
     "an edge every day.\n"
     "STAKING: per-bet stake set by your tier-Kelly cap (assigned per-agent based on rolling Brier). "
     "Server sizes; you choose category and direction. Don't try to override staking — focus on the "
-    "thesis. ENGINE EDGES > 25% are calibration-noise on extreme dogs/longshots — server will refuse "
-    "those bets even if you propose them. Trust the filter; pick categories with engine edge 5-25%.\n"
+    "thesis. ENGINE EDGES > 20% are calibration-noise on extreme dogs/longshots — server will refuse "
+    "those bets even if you propose them. Trust the filter; pick categories with engine edge 5-20%.\n"
+    "PARLAYS — the compound lever: 2-3 leg parlays of INDEPENDENT +EV legs compound 3-5× faster "
+    "than singles. Cap is 12% per parlay (server-enforced). Up to 8 parlays per day allowed. "
+    "Use them when you spot multiple uncorrelated edges in the same slate. Avoid same-game parlays "
+    "(legs are correlated → lose together → no diversification). Best parlay: 2 strong singles "
+    "across different games + same direction (e.g. two home favorites both at engine edge ≥ 0.07).\n"
     "COLLABORATION STACK: (1) morning council plan (qwen-235B moderator) specifies focus_strategies + "
     "focus_categories + per-agent commit. (2) Pact proposals let 2 agents bet the same game+category. "
     "(3) Axelrod canon strategy assigned per agent. (4) Post-mortem log visible to all. "
@@ -2743,7 +2748,12 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
     else:
         MIN_DEPLOY_PCT = 0.0  # NO mandate — LLM picks size freely
     PER_BET_CAP = float(os.environ.get("NBA_PER_BET_CAP", "0.15"))  # 0.40 → 0.15
-    PER_PARLAY_CAP = 0.10
+    # 2026-04-29: bump PER_PARLAY_CAP 0.10 → 0.12. Parlay variance is high but
+    # multi-leg compound is 3-5× faster per win than singles. With our reduced
+    # singles caps (Kelly 0.04-0.10), parlays are the genuine compound lever.
+    # Tunable via NBA_PER_PARLAY_CAP. Cap stays on individual parlay; total
+    # parlay-deployed across day is still in the deploy mandate envelope.
+    PER_PARLAY_CAP = float(os.environ.get("NBA_PER_PARLAY_CAP", "0.12"))
     MIN_BETS_PER_DAY = int(os.environ.get("NBA_MIN_BETS_PER_DAY", "0"))  # 3 → 0
 
     # Helper: collect engine's top-N edges across all today's games (any family)
