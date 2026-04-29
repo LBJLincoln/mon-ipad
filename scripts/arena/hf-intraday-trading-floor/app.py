@@ -1296,6 +1296,18 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
             "  • POL qwen-arb +103×: paired correlation trades, non-consensus.\n"
             "    Lockstep ≤0.88. ≥3 distinct categories per day.\n"
             "  • Both winners were left ALONE (no resets, no retunes).\n"
+            "\n"
+            "BNF DOCTRINE ADDENDUM (Takashi Kotegawa — turned ¥1.6M into ¥18.5B):\n"
+            "  Applies to mean-reversion plays specifically (not the Qwen momentum core).\n"
+            "  • Setup: stock fell 20-35% below its 25-day moving average → BUY long.\n"
+            "  • Exit: price returns to within 2-3% of the 25-day MA. Don't hold for trend.\n"
+            "  • RSI<30 = oversold reversal entry; RSI>70 = overbought short entry.\n"
+            "  • Stop-loss: 1-2% of capital per trade. NEVER more.\n"
+            "  • Profit target: 1-3% per trade — small consistent wins.\n"
+            "  • NEVER hold overnight. Close everything by market close (16:00 ET).\n"
+            "  • Discipline: wait for the perfect setup. Most days = no setup = pass.\n"
+            "  Use BNF when: clear mean-reversion signal exists AND Qwen momentum thesis\n"
+            "  has nothing to lean on. Don't mix the two on the same ticker.\n"
             "=========================================================\n"
         )
 

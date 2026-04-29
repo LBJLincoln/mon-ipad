@@ -985,38 +985,58 @@ TRADERS = {
 # drag. Rest of roster falls through to tier default. Mirrors POL 2026-04-22
 # champion-compound lever (commit fc1f62b65).
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    # 2026-04-29 SCIENCE-RESTORE. Audit showed 17/17 agents lost 90-99% of
-    # seed in 110 days. Per-bet Kelly caps of 0.30-0.45 = gambler's ruin
-    # (1 losing bet at 45% = halve bankroll).
+    # 2026-04-29 v2 — DIFFERENTIATE by Axelrod aggressiveness. v1 was uniform
+    # conservative 0.04-0.10 across all 17, which contradicted personalities
+    # (mistral-nemo "aggressive hunt big edges" was cap 0.04 — the lowest).
+    # User feedback: "personnalités agressives devraient investir 50% bankroll/day
+    # — devrait facile [compound]". Math: 50% deploy / 3 bets = ~17% per bet.
+    # Aggressive Kelly 0.17 × 3 bets matches user expectation.
     #
-    # Formula from project rule #13 (Kelly = max(0.01, 0.30 - brier*0.50)):
-    #   Brier 0.22 → 0.19   (calibrated top tier)
-    #   Brier 0.25 → 0.175  (typical sports-bet model)
-    #   Brier 0.30 → 0.15   (mid tier)
-    #   Brier 0.32+ → 0.01-0.03 (inverse probation)
+    # Tiers by Axelrod strategy + personality alignment:
+    #   AGGRESSIVE (0.17): Defector / Grudger / TwoTits / SuspiciousTFT —
+    #     mistral-nemo (Defector + "aggressive"), qwen-arb (Grudger + arb),
+    #     gemini-tact (TwoTitsForTat + tactical), llama-contra (SusTFT + contra)
+    #   ADAPTIVE (0.13): Pavlov/WSLS / Adaptive / Gradual — proven learners get
+    #     a bigger size to capitalize on found edges:
+    #     selfhost-dolphin3 (Pavlov), mistral-large (WSLS),
+    #     nemotron-120b (Adaptive), nvidia-llama70 (Gradual)
+    #   BALANCED (0.10): TitForTat / TitFor2Tats / FirmButFair / Tullock —
+    #     qwen-quant (TFT), gemini-anl (TFT2), mistral-ministral (FBF),
+    #     selfhost-qwen4b (Tullock)
+    #   CAUTIOUS (0.07): GenerousTFT / Prober / Handshake —
+    #     mistral-medium (GTFT), nvidia-minimax (Prober), selfhost-gemma3 (HS)
+    #   COOPERATOR (0.04): always-cooperate, conservative —
+    #     mistral-small (Coop), selfhost-qwen06 (Coop)
     #
-    # No empirical per-agent Brier yet — clean-slate relaunch baseline:
-    # 0.10 top, 0.07 mid, 0.04 speculative. Will be auto-tuned by
-    # tf_improvement_cycle.py (cron :20) based on rolling W/L + Brier
-    # signal as live data accumulates. Tunable via NBA_KELLY_TIER_TOP /
-    # NBA_KELLY_TIER_MID / NBA_KELLY_TIER_SPEC env if user wants override.
-    "qwen-quant":        0.10,
-    "gemini-anl":        0.10,
-    "mistral-large":     0.10,
-    "mistral-medium":    0.10,
-    "gemini-tact":       0.08,
-    "qwen-arb":          0.08,
-    "llama-contra":      0.08,
-    "nvidia-llama70":    0.07,
-    "nvidia-minimax":    0.07,
-    "selfhost-qwen4b":   0.06,
-    "selfhost-dolphin3": 0.06,
-    "selfhost-gemma3":   0.06,
-    "selfhost-qwen06":   0.05,
-    "nemotron-120b":     0.05,
-    "mistral-small":     0.04,
-    "mistral-ministral": 0.04,
-    "mistral-nemo":      0.04,
+    # Auto-tune (tf_improvement_cycle.py cron :20) will further adjust ±0.03
+    # based on empirical rolling Brier and W/L. Top performers earn up; bottom
+    # get probation cap.
+    #
+    # Aggressive 0.17 with 3 bets/day = ~50% deploy as user requested. Bottom
+    # cap 0.04 means a Cooperator needs 6 bets/day to hit 24% deploy — appropriate
+    # for risk-averse personality.
+    # AGGRESSIVE
+    "mistral-nemo":      0.17,   # Defector + "aggressive hunt big edges"
+    "qwen-arb":          0.17,   # Grudger + arbitrage hunter
+    "gemini-tact":       0.17,   # TwoTitsForTat + tactical/aggressive
+    "llama-contra":      0.17,   # SuspiciousTFT + public-fading contrarian
+    # ADAPTIVE (proven-learner tier)
+    "selfhost-dolphin3": 0.13,   # Pavlov win-stay/lose-shift (currently 60% WR)
+    "mistral-large":     0.13,   # WSLS + ensemble/meta-learning
+    "nemotron-120b":     0.13,   # Adaptive long-run learner
+    "nvidia-llama70":    0.13,   # Gradual + clean ML+spread (currently 53% WR)
+    # BALANCED
+    "qwen-quant":        0.10,   # TitForTat + EV-driven quant
+    "gemini-anl":        0.10,   # TitFor2Tats + analytical
+    "mistral-ministral": 0.10,   # FirmButFair + KL-divergence
+    "selfhost-qwen4b":   0.10,   # Tullock + high-conviction picks
+    # CAUTIOUS
+    "mistral-medium":    0.07,   # GenerousTitForTat + correlation-aware
+    "nvidia-minimax":    0.07,   # Prober + alt-totals/Q-lines
+    "selfhost-gemma3":   0.07,   # Handshake + factor allocation
+    # COOPERATOR
+    "mistral-small":     0.04,   # Cooperator + many small flat bets (by design)
+    "selfhost-qwen06":   0.04,   # Cooperator + flat-stake single highest-edge
 }
 
 AGENT_SYSTEM_PROMPTS = {
