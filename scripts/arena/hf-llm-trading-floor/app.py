@@ -2820,6 +2820,50 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
 
     deployed = sum(a["pct"] for a in clean) + sum(p["pct"] for p in parlays_clean)
 
+    # PARLAY FLOOR (2026-04-29) — server-inject 1 small parlay if LLM emitted
+    # zero. The audit rule requires ≥1 parlay/agent/day; on Day-1 post-reset,
+    # 8/17 agents had zero. Pick the top-2 lowest-correlation engine edges from
+    # different games and combine. pct floored at 0.01 (tiny) — this is the
+    # compound lever, not a wager. Skip when fewer than 2 games or LLM has
+    # explicitly opted out via cash_held_pct >= 0.95 (preservation mode).
+    _parlay_floor_on = os.environ.get("NBA_PARLAY_FLOOR", "1") == "1"
+    _parlay_floor_pct = float(os.environ.get("NBA_PARLAY_FLOOR_PCT", "0.01"))
+    if _parlay_floor_on and len(parlays_clean) == 0 and n_games >= 2:
+        try:
+            _llm_pres_mode = float(parsed.get("cash_held_pct") or 0) >= 0.95
+            if not _llm_pres_mode:
+                # collect engine edges by game (max 1 leg per game)
+                _edges_by_game: Dict[int, Tuple[float, str]] = {}
+                for _e, _gidx, _tag, _prob in _engine_top_edges(min_edge=0.04, max_n=20):
+                    if _gidx not in _edges_by_game:
+                        _edges_by_game[_gidx] = (_e, _tag)
+                _ranked = sorted(_edges_by_game.items(), key=lambda kv: -kv[1][0])
+                if len(_ranked) >= 2:
+                    _legs = []
+                    for _gidx, (_e, _tag) in _ranked[:2]:
+                        _legs.append({
+                            "game_idx": _gidx,
+                            "category": _tag,
+                            "odds": 1.91,
+                            "edge": round(float(_e), 4),
+                        })
+                    parlays_clean.append({
+                        "legs": _legs,
+                        "pct": round(_parlay_floor_pct, 4),
+                        "confidence": 0.45,
+                        "edge_source": "engine_parlay_floor",
+                        "rationale": (
+                            f"server parlay-floor inject: LLM emitted 0 parlays — "
+                            f"top-2 cross-game engine edges {_legs[0]['category']} "
+                            f"+{_legs[0]['edge']:.3f} x {_legs[1]['category']} "
+                            f"+{_legs[1]['edge']:.3f}; pct={_parlay_floor_pct:.3f} (compound lever)"
+                        ),
+                        "won": False,
+                        "profit": 0.0,
+                    })
+        except Exception as _pf_err:
+            print(f"[parlay_floor] inject failed: {_pf_err}")
+
     # PHASE 1: ensure ≥3 bets exist
     if len(clean) + len(parlays_clean) < MIN_BETS_PER_DAY:
         try:
