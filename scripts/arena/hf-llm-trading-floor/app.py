@@ -974,29 +974,38 @@ TRADERS = {
 # drag. Rest of roster falls through to tier default. Mirrors POL 2026-04-22
 # champion-compound lever (commit fc1f62b65).
 _AGENT_KELLY_OVERRIDE: Dict[str, float] = {
-    # 2026-04-25 22:55Z — MAX-AGGRESSIVE $1M-ROAD. User authorized "go even
-    # largely more aggressive". All structural fixes intact (engine override,
-    # pp_* ban, forced floor, settlement bypass, $30 circuit breaker).
-    # Boost every agent's Kelly to overnight-compounding range. Top
-    # calibrators to 0.50 (Kelly half-fraction = 25%, full-fraction = 50%
-    # which matches POL champion qwen-arb $10K achievement at 0.20-0.30 cap).
-    "llama-contra":      0.35,   # 2026-04-26 05:45Z TIER-DOWN: 0.50→0.35 (NBA fleet $1089 < $1300 trigger)
-    "selfhost-qwen4b":   0.35,   # tier-down — same trigger
-    "qwen-quant":        0.45,
-    "gemini-anl":        0.45,
-    "mistral-medium":    0.40,
-    "mistral-large":     0.40,
-    "gemini-tact":       0.35,
-    "qwen-arb":          0.35,
-    "nvidia-llama70":    0.35,
-    "nvidia-minimax":    0.35,
-    "selfhost-dolphin3": 0.30,
-    "selfhost-gemma3":   0.30,
-    "selfhost-qwen06":   0.30,
-    "mistral-small":     0.25,
-    "mistral-ministral": 0.25,
-    "mistral-nemo":      0.25,
-    "nemotron-120b":     0.25,
+    # 2026-04-29 SCIENCE-RESTORE. Audit showed 17/17 agents lost 90-99% of
+    # seed in 110 days. Per-bet Kelly caps of 0.30-0.45 = gambler's ruin
+    # (1 losing bet at 45% = halve bankroll).
+    #
+    # Formula from project rule #13 (Kelly = max(0.01, 0.30 - brier*0.50)):
+    #   Brier 0.22 → 0.19   (calibrated top tier)
+    #   Brier 0.25 → 0.175  (typical sports-bet model)
+    #   Brier 0.30 → 0.15   (mid tier)
+    #   Brier 0.32+ → 0.01-0.03 (inverse probation)
+    #
+    # No empirical per-agent Brier yet — clean-slate relaunch baseline:
+    # 0.10 top, 0.07 mid, 0.04 speculative. Will be auto-tuned by
+    # tf_improvement_cycle.py (cron :20) based on rolling W/L + Brier
+    # signal as live data accumulates. Tunable via NBA_KELLY_TIER_TOP /
+    # NBA_KELLY_TIER_MID / NBA_KELLY_TIER_SPEC env if user wants override.
+    "qwen-quant":        0.10,
+    "gemini-anl":        0.10,
+    "mistral-large":     0.10,
+    "mistral-medium":    0.10,
+    "gemini-tact":       0.08,
+    "qwen-arb":          0.08,
+    "llama-contra":      0.08,
+    "nvidia-llama70":    0.07,
+    "nvidia-minimax":    0.07,
+    "selfhost-qwen4b":   0.06,
+    "selfhost-dolphin3": 0.06,
+    "selfhost-gemma3":   0.06,
+    "selfhost-qwen06":   0.05,
+    "nemotron-120b":     0.05,
+    "mistral-small":     0.04,
+    "mistral-ministral": 0.04,
+    "mistral-nemo":      0.04,
 }
 
 AGENT_SYSTEM_PROMPTS = {
@@ -2412,7 +2421,10 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             "game_idx": gidx,
             "game": a.get("game", ""),
             "category": cat,
-            "pct": max(0.01, min(0.40, pct)),
+            # 2026-04-29: parse-time clip 0.40 → 0.15. Prior cap let LLM
+            # hallucinate 30-40% bankroll bets through. The Kelly override
+            # below clips again per-tid, but raw 0.15 cap is a sanity guard.
+            "pct": max(0.01, min(0.15, pct)),
             "confidence": max(0.0, min(1.0, conf)),
             "edge": edge_for_kelly,
             "edge_source": "engine" if engine_edge is not None else "llm_capped",
@@ -2493,7 +2505,12 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
         if c.startswith("pp_"):           return "pp"
         return "other"
 
-    if len(clean) >= 3 and model_preds and day_games:
+    # 2026-04-29: breadth_inject opt-in. Was always-on. Replaces an LLM choice
+    # with a server cross-family pick — directly conflicts with "agents respect
+    # their own prompts" goal. Re-enable via NBA_BREADTH_INJECT=1 if monoculture
+    # ever causes a ROI regression.
+    _breadth_inject_enabled = (os.environ.get("NBA_BREADTH_INJECT", "0") or "0") in ("1", "true", "True")
+    if _breadth_inject_enabled and len(clean) >= 3 and model_preds and day_games:
         _families = [_category_family(a["category"]) for a in clean]
         _family_counts = {}
         for _f in _families:
@@ -2552,10 +2569,14 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
     # — everyone went CASH" then cashed itself. Cascade broken by
     # guaranteeing every day has bets on engine-validated signal.
     # Toggleable via NBA_ENGINE_FORCED_FLOOR env (default '1').
+    # 2026-04-29 parser-level forced_floor — same death-trap audit as day_log
+    # path. pct 0.08 → 0.03 default, signed POSITIVE edges only (was abs() → was
+    # picking 'against' side), calibration filter <= 0.20 (skip nonsense edges).
     _engine_forced_floor = (os.environ.get("NBA_ENGINE_FORCED_FLOOR", "1") or "1") not in ("0", "", "false", "False")
+    _parser_ff_pct = float(os.environ.get("NBA_PARSER_FF_PCT", "0.03"))
+    _parser_ff_max_edge = float(os.environ.get("NBA_PARSER_FF_MAX_EDGE", "0.20"))
     if _engine_forced_floor and not clean and model_preds and day_games:
-        # Walk every game's per_category, find top engine edge
-        best = None  # (abs_edge, gidx, cat, edge_val, prob)
+        best = None  # (signed_edge, gidx, cat, prob)
         for _gidx, _g in enumerate(day_games, 1):
             _h = (_g.get("home") or "").upper()
             _a = (_g.get("away") or "").upper()
@@ -2567,23 +2588,24 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
                 if _tag.startswith("pp_"): continue  # respect pp_* ban
                 _e = _info.get("edge")
                 if not isinstance(_e, (int, float)): continue
-                _abs = abs(float(_e))
-                if _abs < 0.03: continue
-                if best is None or _abs > best[0]:
-                    best = (_abs, _gidx, _tag, float(_e), _info.get("prob", 0.5))
+                _ev = float(_e)
+                if _ev < 0.03 or _ev > _parser_ff_max_edge:
+                    continue  # skip negatives + calibration garbage
+                if best is None or _ev > best[0]:
+                    best = (_ev, _gidx, _tag, _info.get("prob", 0.5))
         if best:
             clean.append({
                 "game_idx": best[1],
                 "game": "",
                 "category": best[2],
-                "pct": 0.08,  # 2026-04-26 user-aggressive: 0.02 -> 0.08
+                "pct": _parser_ff_pct,
                 "confidence": 0.55,
-                "edge": max(0.0, best[3]),
+                "edge": best[0],
                 "edge_source": "engine_forced_floor",
                 "edge_llm_reported": None,
-                "edge_engine": best[3],
-                "strategy": "flat_2pct",
-                "rationale": f"engine_forced_floor: top |edge| {best[0]:.3f} on {best[2]} (g{best[1]}); LLM emitted no allocations — anti-cascade injection",
+                "edge_engine": best[0],
+                "strategy": "flat_safe",
+                "rationale": f"engine_forced_floor: top positive edge +{best[0]:.3f} on {best[2]} (g{best[1]}); LLM emitted no allocations — anti-cascade injection at pct={_parser_ff_pct:.2f}",
                 "category_reason": "auto-inject when fleet would otherwise go silent — breaks peer_allocations=empty groupthink",
             })
 
@@ -2684,23 +2706,26 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             p["pct"] = p["pct"] * scale
         cash = cash * scale
 
-    # ── MIN_DEPLOY_PCT — HARD bankroll rule (2026-04-26 evening, no escape).
-    # User: "agents must invest 50-70% bankroll daily, NO PASS." This block
-    # enforces it as a server-side mandate, not a soft prompt rule.
-    # 1) If LLM emits 0 allocations → server injects top-3 engine edges (any
-    #    family, threshold 0.03, no cross-family requirement).
-    # 2) If LLM emits N>0 but deployed < 50%, scale up to 60% (mid-target),
-    #    per-bet cap raised to 0.40 so 2 bets can hit 80%.
-    # 3) If engine has fewer than 3 edges ≥0.03 today (truly dead slate), inject
-    #    whatever the engine has + pad with the top-N market_p categories so
-    #    every agent still bets ≥3 lines on every day.
-    if drawdown < 0.5:
-        MIN_DEPLOY_PCT = 0.60
+    # ── MIN_DEPLOY_PCT — DISABLED 2026-04-29 (was the prime death mechanism).
+    # Forensic audit: 17/17 agents lost 90-99% in 110 days. Cause: server
+    # forced 60% bankroll deployment daily + 3-bet minimum, scaling LLM
+    # conservatism up 6× to hit the mandate. With ~30% hit rate, expected
+    # daily loss ~24% bankroll → ruin in 3-5 days.
+    #
+    # Now OPT-IN via env. Default 0/0 = LLM is sovereign on bet count + size.
+    # If LLM says "PASS today, no edge" the server respects it. If user wants
+    # the old over-trading mandate back, set NBA_MIN_DEPLOY_PCT=0.6 and
+    # NBA_MIN_BETS_PER_DAY=3 in HF Space env.
+    _user_min_deploy = float(os.environ.get("NBA_MIN_DEPLOY_PCT", "0.0"))
+    if _user_min_deploy > 0 and drawdown < 0.5:
+        MIN_DEPLOY_PCT = _user_min_deploy
+    elif _user_min_deploy > 0:
+        MIN_DEPLOY_PCT = max(0.30, _user_min_deploy - (drawdown - 0.5) * 0.6)
     else:
-        MIN_DEPLOY_PCT = max(0.30, 0.60 - (drawdown - 0.5) * 0.6)
-    PER_BET_CAP = 0.40   # raised 0.30 → 0.40 so single-bet scale-up reaches 50%+
+        MIN_DEPLOY_PCT = 0.0  # NO mandate — LLM picks size freely
+    PER_BET_CAP = float(os.environ.get("NBA_PER_BET_CAP", "0.15"))  # 0.40 → 0.15
     PER_PARLAY_CAP = 0.10
-    MIN_BETS_PER_DAY = 3 # mandate
+    MIN_BETS_PER_DAY = int(os.environ.get("NBA_MIN_BETS_PER_DAY", "0"))  # 3 → 0
 
     # Helper: collect engine's top-N edges across all today's games (any family)
     def _engine_top_edges(min_edge: float = 0.03, max_n: int = 10) -> list:
