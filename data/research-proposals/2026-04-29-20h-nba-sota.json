@@ -1,0 +1,61 @@
+{
+  "filed": "2026-04-29T20:00:00Z",
+  "cycle": "brain-4h-20h",
+  "title": "NBA SOTA 20h — Uncertainty-Aware RNN + ELO Feature Priority",
+  "sources": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "date": "January 2026",
+      "key_result": "RNN + Monte Carlo Dropout; integrates team-level metrics, rolling-form indicators, spatial shot-chart embeddings. LR and XGBoost both achieve Brier ~0.20 on 2024 NBA test season.",
+      "top_features": ["home_next", "team_elo_5_y", "team_elo"]
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "date": "2025",
+      "key_result": "Stacked ensemble (Nature Scientific Reports). Competitive with SOTA."
+    },
+    {
+      "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+      "url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "date": "October 2025",
+      "key_result": "CNN model achieves Brier 0.221 — competitive with our fleet best 0.22062."
+    }
+  ],
+  "gap_to_sota": {
+    "our_fleet_best": 0.22062,
+    "sota_brier": 0.20,
+    "gap": 0.02062,
+    "note": "Our TabICL best is 0.21139 (holdout, window-biased). Honest gap to SOTA LR/XGBoost is ~0.02 on CV basis."
+  },
+  "actionable_proposals": [
+    {
+      "id": "elo-feature-prioritization",
+      "priority": "HIGH",
+      "description": "SOTA paper identifies home_next, team_elo_5_y, team_elo as top-3 predictors. Audit features/engine.py to confirm these ELO rolling features are present and not being filtered out by MAX_FEATURES=200 cap.",
+      "action": "Search features/engine.py for 'elo' category. If elo_rolling_5y and home_next_game_indicator are present, verify GA islands select them (check island logs for feature indices). If absent, propose adding to engine v3.2.",
+      "expected_impact": "Potential 0.005-0.010 Brier improvement if ELO features are currently under-weighted."
+    },
+    {
+      "id": "rolling-form-injection",
+      "priority": "MEDIUM",
+      "description": "SOTA uses rolling-form indicators as explicit feature category. Our engine has form features but SOTA combines them with shot-chart spatial embeddings for context. Port: add 10-game rolling win% differential + points-per-possession rolling delta as explicit features.",
+      "action": "Add to features/engine.py: team_rolling_10g_win_pct_diff, team_rolling_10g_ppp_diff. Test on S14 random_forest as control island.",
+      "expected_impact": "Small (~0.001-0.003) improvement but orthogonal to current feature set."
+    },
+    {
+      "id": "mc-dropout-calibration-post-process",
+      "priority": "LOW",
+      "description": "RNN+MC-Dropout achieves Brier 0.20 via uncertainty-aware calibration, not just prediction accuracy. Apply MC-Dropout-style calibration post-processing to our tree ensemble outputs (already have isotonic calibration; add Platt scaling + temperature scaling ensemble).",
+      "action": "In island eval loop: after tree model predict_proba, apply sklearn CalibratedClassifierCV(method='sigmoid') as stacking head. Measure Brier delta vs. raw isotonic.",
+      "expected_impact": "0.002-0.005 Brier improvement on top of current 0.22062. Already partially implemented (isotonic)."
+    }
+  ],
+  "cross_project_insight": "The ELO and rolling-form feature dominance found in NBA SOTA maps directly to political prediction — political event outcomes similarly depend on entity historical momentum (legislator vote consistency, party approval rolling average). Port: add political_entity_rolling_10cycle_brier_delta to political engine as feature category.",
+  "next_steps": [
+    "Verify ELO features exist in features/engine.py (audit 'elo' category)",
+    "Check if home_next feature is in island selected-feature logs",
+    "Queue rolling-form injection for S18 (extra_trees, stagnation 4 cycles — diversify opportunity)"
+  ]
+}
