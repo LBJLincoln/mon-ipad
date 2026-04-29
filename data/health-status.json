@@ -1,5 +1,5 @@
 {
-  "brain_cycle": "2026-04-29T12:00:00Z",
+  "brain_cycle": "2026-04-29T16:00:00Z",
   "trigger": "cloud-brain-4h",
 
   "step0_crash_recovery": {
@@ -10,77 +10,68 @@
   "nba_islands": {
     "fleet_best_alltime": {"brier": 0.22062, "island": "S15", "gen": 1306, "algo": "extra_trees", "checkpoint_date": "2026-04-25"},
     "checkpoint_threshold": 0.22085,
-    "cycle_best": {"brier": 0.22192, "island": "S22", "beats_threshold": false},
+    "cycle_best": {"brier": 0.22151, "island": "S14", "beats_threshold": false, "note": "S14 improved 0.22431→0.22151 (random_forest post-hard-reset), best S14 reading ever"},
     "islands": [
-      {"id": "S13", "space": "Nomos42/nba-evo-4",        "status": "EVOLVING", "gen": 1325, "brier": 0.22198, "stagnation": 0, "algo": "random_forest", "note": "stacking population takeover in Pareto front (0.2474); tree-based best preserved at 0.22198. auto-reseed fired cycle 426."},
-      {"id": "S14", "space": "Nomos42/nba-evo-5",        "status": "EVOLVING", "gen": null, "brier": null, "stagnation": null, "algo": null, "note": "API response too large; last known gen=947 brier=0.22151"},
-      {"id": "S15", "space": "Nomos42/nba-evo-6",        "status": "EVOLVING", "gen": null, "brier": null, "stagnation": null, "algo": null, "note": "API response too large; last known gen=734 brier=0.22177"},
-      {"id": "S17", "space": "LBJLincoln26/nba-evo-s17", "status": "DOWN",     "gen": null, "brier": null, "stagnation": null, "algo": null, "error": "503", "note": "persistent 503 — HF Hub last updated Apr 18; VM keepalive.sh should recover but may need manual restart"},
-      {"id": "S18", "space": "TESTforge42/nba-evo-s18",  "status": "EVOLVING", "gen": 3247, "brier": 0.22248, "stagnation": 0, "algo": "extra_trees"},
-      {"id": "S22", "space": "TESTforge42/nba-evo-s22",  "status": "EVOLVING", "gen": 1069, "brier": 0.22192, "stagnation": 0, "algo": "catboost", "note": "improved from 0.22475 after restart — new algo catboost"}
+      {"id": "S13", "space": "Nomos42/nba-evo-4",        "status": "EVOLVING", "gen": 1457, "brier": 0.22171, "stagnation_cycles": 24, "algo": "random_forest", "alert": "STAGNATION_DIVERSIFY_NEEDED — 24 cycles > 15 threshold. VM cron must POST /api/command {action:diversify} to https://nomos42-nba-evo-4.hf.space/api/command"},
+      {"id": "S14", "space": "Nomos42/nba-evo-5",        "status": "EVOLVING", "gen": 1177, "brier": 0.22151, "stagnation_cycles": 0,  "algo": "random_forest", "note": "IMPROVED 0.22431→0.22151 after hard reset. Best S14 brier ever."},
+      {"id": "S15", "space": "Nomos42/nba-evo-6",        "status": "EVOLVING", "gen": 931,  "brier": 0.22177, "stagnation_cycles": 9,  "algo": "extra_trees", "note": "gen=931 (space may have restarted). Fleet best 0.22062 checkpoint preserved from gen 1306."},
+      {"id": "S17", "space": "LBJLincoln26/nba-evo-s17", "status": "DOWN",     "gen": null, "brier": null,    "stagnation_cycles": null, "error": "503 persistent", "alert": "DOWN 11+ DAYS (HF hub last_updated=Apr 18). Needs manual factory_reboot. Cannot trigger from cloud-brain."},
+      {"id": "S18", "space": "TESTforge42/nba-evo-s18",  "status": "EVOLVING", "gen": 3384, "brier": 0.22248, "stagnation_cycles": 0,  "algo": "extra_trees", "note": "Stable post-2 hard resets (cycles 1101+1126)."},
+      {"id": "S22", "space": "TESTforge42/nba-evo-s22",  "status": "EVOLVING", "gen": 1262, "brier": 0.22192, "stagnation_cycles": 0,  "algo": "catboost", "note": "Stable."}
     ],
-    "stagnation_alert": false,
+    "stagnation_alert": true,
+    "stagnation_islands": ["S13"],
     "diversify_sent": false,
+    "diversify_command": "curl -X POST https://nomos42-nba-evo-4.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'",
     "new_checkpoint": false,
-    "concern": "S13 Pareto front stacking-dominated (brier 0.2474). best_brier 0.22198 preserved. Auto-reseed fired cycle 426 with xgboost/lightgbm/catboost types; recovery in progress."
+    "sota_research_filed": "data/research-proposals/2026-04-29-16h-nba-sota.md"
   },
 
   "political_islands": {
-    "pol_best_alltime": {"brier": 0.24924, "island": "P7", "gen": 34884, "algo": "logistic_regression", "updated": "2026-04-29T12:00:00Z"},
+    "pol_best_alltime": {"brier": 0.24924, "island": "P7", "gen": 36008, "algo": "logistic_regression", "updated": "2026-04-29T16:00:00Z"},
     "islands": [
-      {"id": "P1", "space": "Nomos42/political-alpha",       "status": "EVOLVING", "gen": 14339, "brier": 0.24997, "stagnation": 0, "algo": "xgboost_brier", "note": "improved from 0.25256 last cycle — approaching POL best"},
-      {"id": "P2", "space": "Nomos42/political-alpha-2",     "status": "EVOLVING", "gen": null, "brier": null, "stagnation": null, "algo": null, "note": "API response too large; last known gen=10207 brier=0.25646"},
-      {"id": "P4", "space": "LBJLincoln/political-alpha-4",  "status": "EVOLVING", "gen": 21948, "brier": 0.25703, "stagnation": 0, "algo": "catboost"},
-      {"id": "P5", "space": "LBJLincoln/political-alpha-5",  "status": "COOLDOWN", "gen": null, "brier": null, "stagnation": null, "algo": null, "note": "API response too large; last known gen=20961 brier=0.25703"},
-      {"id": "P7", "space": "LBJLincoln/political-alpha-7",  "status": "COOLDOWN", "gen": 34884, "brier": 0.24924, "stagnation": 0, "algo": "logistic_regression", "note": "POL BEST confirmed live"}
+      {"id": "P1", "space": "Nomos42/political-alpha",       "status": "EVOLVING", "gen": 15664, "brier": 0.24997, "stagnation_cycles": 0, "algo": "xgboost_brier",      "note": "2 hard resets (cycles 5181+5201). 0.00073 behind POL best."},
+      {"id": "P2", "space": "Nomos42/political-alpha-2",     "status": "EVOLVING", "gen": 12034, "brier": 0.25646, "stagnation_cycles": 0, "algo": "logistic_regression"},
+      {"id": "P4", "space": "LBJLincoln/political-alpha-4",  "status": "EVOLVING", "gen": 23435, "brier": 0.25703, "stagnation_cycles": 0, "algo": "catboost"},
+      {"id": "P5", "space": "LBJLincoln/political-alpha-5",  "status": "COOLDOWN", "gen": 6099,  "brier": 0.25313, "stagnation_cycles": 0, "algo": "xgboost_brier",      "note": "IMPROVED 0.25703→0.25313. 2 hard resets (cycles 1988+2008)."},
+      {"id": "P7", "space": "LBJLincoln/political-alpha-7",  "status": "EVOLVING", "gen": 36008, "brier": 0.24924, "stagnation_cycles": 0, "algo": "logistic_regression", "note": "POL BEST maintained. 2 hard resets (cycles 11955+11975)."}
     ],
     "new_pol_best": false,
     "pol_best_brier": 0.24924,
     "pol_best_island": "P7",
-    "rotate_task": "C_nba_technique_ports"
+    "rotate_task": "D_data_pipeline",
+    "pipeline_health_alert": "STALE — pipeline-health.json last updated 2026-04-09 (20 days ago). PLUMBER cron may be down or not committing. 3 MISSING sources: propublica_filings, kalshi, scotus_judicial. Grade B (76.9%). Action: check VM cron for PLUMBER (:35 every 4h) + safe_commit.sh execution."
   },
 
   "dept_councils": {
     "status": "DECOMMISSIONED",
-    "note": "All 9 TESTforge42/nomos-dept-d* Spaces deleted 2026-04-20. No action required."
+    "note": "All 9 TESTforge42/nomos-dept-d* Spaces deleted 2026-04-20."
   },
 
   "trading_floors": {
     "nba_tf": {
-      "status": "RUNNING",
-      "day": 3,
-      "days_total": 111,
-      "fleet_leader": "nvidia-llama70",
-      "fleet_leader_bankroll": 128.53,
-      "started_utc": "2026-04-29T12:09:23Z",
-      "provider_issues": [
-        "cerebras:qwen-3-235b DEAD (3505s cooldown)",
-        "cerebras:llama3.1-8b DEAD (3511s cooldown)",
-        "mistral:large DEAD (219s cooldown)"
-      ],
-      "gateway_routing": false,
-      "gateway_status": "TIMEOUT — sleeping/unreachable. All 32 LLM calls going direct fallback.",
-      "axelrod_active": true,
-      "note": "Early days (3/111). nvidia-llama70 $128.53 leading. mistral-small $111.18 #2."
+      "status": "NOT_CHECKED_THIS_CYCLE",
+      "last_known": {"day": 3, "days_total": 111, "leader": "nvidia-llama70", "leader_bankroll": 128.53, "as_of": "2026-04-29T12:00:00Z"}
     },
     "pol_tf": {
       "status": "RUNNING",
       "day": 73,
       "days_total": 304,
       "fleet_leader": "qwen-quant",
-      "fleet_leader_bankroll": 7435.29,
-      "doctrine": "v5_restored",
-      "note": "qwen-quant $7,435 leading. qwen-arb $2,013. llama-contra $1,790. Healthy."
+      "leader_bankroll_approx": 7435.29,
+      "doctrine": "v5_restored"
     }
   },
 
   "alerts": [
-    {"severity": "WARN",  "msg": "S17 LBJLincoln26/nba-evo-s17 persistent 503. HF Hub last updated Apr 18. VM keepalive.sh not recovering — may need manual factory_reboot."},
-    {"severity": "WARN",  "msg": "llm-gateway LBJLincoln26/llm-gateway: /health 404, /api/status timeout. NBA TF falling back to direct calls (cerebras + mistral:large dead)."},
-    {"severity": "INFO",  "msg": "S22 improved 0.22475 → 0.22192 after restart (catboost, gen 1069)."},
-    {"severity": "INFO",  "msg": "P1 improved 0.25256 → 0.24997 — approaching POL best 0.24924."},
-    {"severity": "INFO",  "msg": "SOTA: academic LR achieves Brier 0.199 on 2024 NBA test set (below 0.20 target). See research-proposals/2026-04-29-nba-sota.md"}
+    {"severity": "WARN",  "msg": "S13 stagnation=24 cycles (>15 threshold). VM cron: curl -X POST https://nomos42-nba-evo-4.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'"},
+    {"severity": "WARN",  "msg": "S17 LBJLincoln26/nba-evo-s17: DOWN 11+ days (503 persistent, HF hub last_updated Apr 18). Needs manual factory_reboot."},
+    {"severity": "WARN",  "msg": "Political pipeline-health.json STALE 20 days (last Apr 9). PLUMBER cron possibly down. 3 MISSING: propublica_filings, kalshi, scotus_judicial."},
+    {"severity": "INFO",  "msg": "S14 IMPROVED 0.22431→0.22151 (random_forest, gen 1177 post-hard-reset). Best S14 result ever."},
+    {"severity": "INFO",  "msg": "P5 IMPROVED 0.25703→0.25313 (xgboost_brier, gen 6099, COOLDOWN)."},
+    {"severity": "INFO",  "msg": "P1 approaching POL best: 0.24997 (gap=0.00073 to P7 0.24924)."},
+    {"severity": "INFO",  "msg": "SOTA: LR Brier 0.199 on NBA 2024 test (MDPI Jan 2026) — gap to our fleet best 0.22062 = 0.0216. Filed: data/research-proposals/2026-04-29-16h-nba-sota.md"}
   ],
 
-  "next_cycle": "2026-04-29T16:00:00Z"
+  "next_cycle": "2026-04-29T20:00:00Z"
 }
