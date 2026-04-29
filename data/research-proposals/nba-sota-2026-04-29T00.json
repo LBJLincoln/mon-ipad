@@ -1,0 +1,67 @@
+{
+  "id": "nba-sota-2026-04-29T00",
+  "created_at": "2026-04-29T00:30:00Z",
+  "source": "cloud-brain WebSearch cycle 2026-04-29-cycle1",
+  "title": "NBA Prediction SOTA 2026: Logistic+Isotonic achieves Brier 0.199 — corroborated by P7 POL live best",
+  "priority": "HIGH",
+  "status": "proposed",
+
+  "sota_summary": {
+    "logistic_regression_calibrated": {
+      "brier": 0.199,
+      "notes": "Best tabular baseline on 2024-25 NBA test data. CalibratedClassifierCV isotonic wrapper is key.",
+      "source": "PMC/Nature Scientific Reports 2025: Stacked ensemble model for NBA game outcome prediction (PMC12357926)"
+    },
+    "xgboost_calibrated": {
+      "brier": 0.202,
+      "notes": "2nd best tabular. Already in our GA MODEL_TYPES but likely without CalibratedClassifierCV isotonic.",
+      "source": "PMC XGBoost+SHAP NBA paper (PMC11265715)"
+    },
+    "cnn_rolling_window": {
+      "brier": 0.221,
+      "notes": "Matches our GA fleet level. Requires sequence data — not feasible on CPU islands.",
+      "source": "MDPI Information 2026 uncertainty-aware framework"
+    },
+    "elo_features": {
+      "note": "Top-3 predictor across all 2026 studies: home_next_elo, team_elo_5y, team_elo. Verify present in features/engine.py v3.1."
+    }
+  },
+
+  "corroboration": {
+    "p7_pol_live": "P7 (LBJLincoln/political-alpha-7) logistic_regression achieves POL LIVE BEST 0.24924 at gen 32058 — confirms logistic is a strong algorithm in our GA framework, not just in literature.",
+    "implication": "If logistic achieves 0.24924 in political (272 features, 1180 events), it could plausibly reach 0.199-0.220 in NBA (3377 features, 9551 games) with isotonic calibration."
+  },
+
+  "proposed_changes": [
+    {
+      "file": "features/engine.py (+ matching hf-space/features/engine.py)",
+      "change": "Add 'logistic_regression_calibrated' to MODEL_TYPES: sklearn LogisticRegression(C=0.1, max_iter=1000) wrapped in CalibratedClassifierCV(method='isotonic', cv=3)",
+      "priority": "HIGH",
+      "effort": "LOW — 10-line addition to MODEL_TYPES dict"
+    },
+    {
+      "file": "features/engine.py",
+      "change": "Verify ELO-style features present: home_elo, away_elo, elo_diff, home_form_5g, away_form_5g. Top-3 SOTA predictors.",
+      "priority": "MEDIUM",
+      "effort": "VERIFY ONLY — grep 'elo' features/engine.py"
+    },
+    {
+      "file": "features/engine.py",
+      "change": "Add stacking meta-learner: LogisticRegression meta on OOF predictions from XGBoost + ExtraTrees + RandomForest (3-fold). SOTA stacked ensemble approach.",
+      "priority": "LOW",
+      "effort": "HIGH — requires OOF generation in GA fitness eval"
+    }
+  ],
+
+  "quick_win": {
+    "action": "Add logistic_regression + CalibratedClassifierCV isotonic to MODEL_TYPES in features/engine.py. ~10 lines. Immediate GA candidate on next island mutation.",
+    "expected_impact": "Potential Brier improvement from current 0.22062 toward 0.20-0.22 range, corroborated by both SOTA literature and live P7 performance."
+  },
+
+  "sources": [
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC12357926/",
+    "https://www.nature.com/articles/s41598-025-13657-1",
+    "https://www.mdpi.com/2078-2489/17/1/56",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/"
+  ]
+}
