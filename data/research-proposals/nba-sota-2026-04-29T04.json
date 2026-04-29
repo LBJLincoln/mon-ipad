@@ -1,0 +1,50 @@
+{
+  "created_at": "2026-04-29T04:30:00Z",
+  "source": "cloud-brain SOTA research cycle2",
+  "title": "NBA CPU-Actionable SOTA Techniques — April 2026",
+  "priority": "HIGH",
+
+  "proposals": [
+    {
+      "id": "P1",
+      "title": "Add logistic_regression + isotonic calibration to NBA GA MODEL_TYPES",
+      "rationale": "2026 tabular SOTA (MDPI, Nature) shows logistic+CalibratedClassifierCV(isotonic) achieves Brier 0.199 on NBA — vs our current fleet best 0.22151. P7 political island uses logistic and holds POL LIVE BEST 0.24924, corroborating the technique. CPU-compatible.",
+      "implementation": "In hf-space/evolution_island.py or app.py, add MODEL_TYPES entry: {'type': 'logistic_calibrated', 'model': CalibratedClassifierCV(LogisticRegression(C=1.0, max_iter=1000), method='isotonic', cv=3)}",
+      "effort": "LOW — 5 lines in MODEL_TYPES dict",
+      "expected_brier_gain": "0.001-0.010 if logistic proves competitive on this dataset",
+      "references": ["https://www.mdpi.com/2078-2489/17/1/56", "https://www.nature.com/articles/s41598-025-13657-1"]
+    },
+    {
+      "id": "P2",
+      "title": "XGBoost direct Brier loss objective",
+      "rationale": "arXiv 2508.02725 (Aug 2025): optimizing directly on Brier loss (squared error on probabilities) rather than binary cross-entropy consistently improves calibration and final Brier score. XGBoost supports this via objective='reg:squarederror' on probabilities.",
+      "implementation": "Add MODEL_TYPES entry: {'type': 'xgboost_brier_direct', 'model': XGBClassifier(objective='reg:squarederror', ...)} alongside existing xgboost_brier model. Let GA select.",
+      "effort": "LOW",
+      "expected_brier_gain": "0.001-0.005",
+      "references": ["https://arxiv.org/abs/2508.02725"]
+    },
+    {
+      "id": "P3",
+      "title": "Stacked meta-learner ensemble",
+      "rationale": "Nature Aug 2025 stacked ensemble (NaiveBayes + AdaBoost + MLP + KNN + XGBoost + LR meta-learner) outperforms all single models on NBA. With 6 CPU islands running diverse base models (ET, RF, XGB, LGB, CB, LR), a nightly stacking step on predictions could yield sub-0.220.",
+      "implementation": "New script: scripts/ops/nba_stacked_ensemble.py — load top-3 island predictions for each game, fit LogisticRegression meta-learner on OOF predictions, evaluate holdout Brier.",
+      "effort": "MEDIUM — new script, no Space changes needed",
+      "expected_brier_gain": "0.003-0.008",
+      "references": ["https://www.nature.com/articles/s41598-025-13657-1"]
+    },
+    {
+      "id": "P4",
+      "title": "Market-implied odds as primary features",
+      "rationale": "Top-3 predictor in 2026 NBA studies. We already have 249 odds categories in data/full-odds-2025-26.json. Ensure implied_prob_home, implied_prob_away, line_movement, juice features are in the top feature candidates fed to the GA.",
+      "implementation": "Check features/engine.py — verify implied_probability and line_movement features exist in the feature engine. If not, add to market_efficiency category.",
+      "effort": "LOW-MEDIUM",
+      "expected_brier_gain": "0.002-0.010 (market features are efficiency signals)",
+      "references": ["https://www.mdpi.com/2078-2489/17/1/56"]
+    }
+  ],
+
+  "quick_win": "P1 — logistic+isotonic in GA MODEL_TYPES. 5 lines, CPU-compatible, corroborated by P7 political live performance and 2026 MDPI paper.",
+  "gpu_only_proposals_excluded": ["LSTM+shot-chart CNN (MDPI, Brier 0.089)", "Long-sequence LSTM 8 seasons (arXiv 2512.08591)"],
+  "target_brier": 0.22085,
+  "current_fleet_best": 0.22151
+}
