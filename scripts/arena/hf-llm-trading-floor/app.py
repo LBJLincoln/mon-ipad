@@ -2441,6 +2441,16 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
         if edge_for_kelly < _MIN_KELLY_EDGE:
             continue
 
+        # 2026-04-29 BELT-AND-SUSPENDERS — universal max-edge filter at the
+        # final pre-append gate. The earlier engine_edge>NBA_LLM_MAX_EDGE check
+        # at line ~2413 was bypassed in day-002 audit (3 LLMs landed
+        # ml_home edge=0.507 bets). Reason still unclear (env-load timing or
+        # second code path) so this catches every possible flow regardless of
+        # edge_source. Same env var NBA_LLM_MAX_EDGE (default 0.25, current 0.20).
+        _final_edge_cap = float(os.environ.get("NBA_LLM_MAX_EDGE", "0.25"))
+        if edge_for_kelly > _final_edge_cap:
+            continue
+
         clean.append({
             "game_idx": gidx,
             "game": a.get("game", ""),
