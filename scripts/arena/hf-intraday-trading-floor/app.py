@@ -564,33 +564,39 @@ def _tier_directive(tier: str, total_equity: float, seed_share: float) -> str:
     delta_pct = ((total_equity - seed_share) / max(seed_share, 1.0)) * 100.0
     if os.environ.get("ITF_MAX_AGGRO", "0") == "1":
         _floor_pct = int(POWER_STAKE_FLOOR_PCT * 100)
+        # 2026-04-29: rotate per-agent state signal only. The strategic doctrine
+        # lives in _max_aggro_block (Alpha Arena evidence). Earlier verbose
+        # tier blocks duplicated and conflicted with that — Gemini-failure-mode.
+        if tier == "winner":
+            tier_msg = (
+                f"You are a WINNER (equity ${total_equity:,.0f}, {delta_pct:+.1f}% vs seed). "
+                f"Your thesis pattern is working. Lean harder into the SAME thesis. "
+                f"Up to 5 stacked entries on one thesis. Trim only at thesis invalidation."
+            )
+        elif tier == "loser":
+            tier_msg = (
+                f"You are at LOSS-CUT TIER (equity ${total_equity:,.0f}, {delta_pct:+.1f}%). "
+                f"Edge floor BUMPED to 2.5% on new entries (was 1.5%). Stop-loss discipline "
+                f"is what separates Qwen-style winners from Claude-style losers — don't average "
+                f"down on a busted thesis. Pick ONE high-conviction setup or PASS."
+            )
+        elif tier == "deployer":
+            tier_msg = (
+                f"You are ACTIVE-DEPLOYER (equity ${total_equity:,.0f}, {delta_pct:+.1f}%). "
+                f"Manage existing book to thesis completion. New entries: edge ≥ 1.5% AND "
+                f"on the SAME named thesis as your open positions. No new orthogonal bets."
+            )
+        else:
+            tier_msg = (
+                f"You are HOLDER/IDLE (equity ${total_equity:,.0f}, {delta_pct:+.1f}%). "
+                f"PASS is fully valid. The market doesn't owe you a setup every tick. "
+                f"Wait for a 1.5%+ edge in a NAMED thesis. No 'just to stay active' bets."
+            )
         return (
-            f"TIER: BREAK-OR-1M-EUR ({tier.upper()}, equity ${total_equity:,.0f} "
-            f"= {delta_pct:+.1f}% vs seed). MANDATE: per-trade floor = {_floor_pct}% "
-            f"of sub-bankroll. Edge >=0.005, R/R 2:1, leverage 4x on PDT (multiplier=4). "
-            f"User declared 'go broke or 1M EUR' — selectivity OFF, full Kelly ON.\n\n"
-            f"PQTF $602K LESSONS (3 winners frozen as scientific proof):\n"
-            f"  - mistral-large $244K via PQTF: sector ETF momentum (XLE/XLK/XLF/XLV/XLY) "
-            f"+ 0DTE OTM SPY/QQQ calls/puts on >1.5% expected directional moves.\n"
-            f"  - mistral-medium $155K: leveraged ETF momentum on confirmed >1.5% breakouts "
-            f"(TQQQ/SOXL/SPXL/UPRO/TNA). Decay real — NEVER hold 3x ETFs through chop.\n"
-            f"  - gemini-anl $17K: macro-rotate SPY/TLT/GLD pairs on regime shifts.\n"
-            f"  - WINNERS STACKED into single DIRECTIONAL thesis with 95%+ Kelly. Did NOT diversify, did NOT hedge.\n\n"
-            f"POL qwen-arb 103x LESSON ($100 -> $10,310 in days):\n"
-            f"  - Paired/correlation trades, concentrated when ratio exceeded 2-sigma band.\n"
-            f"  - Non-consensus mandate: peer lockstep <=0.88, >=3 distinct categories/day.\n"
-            f"  - Compounding mandate: cash holding >5% of bankroll = doctrine violation.\n\n"
-            f"NET-DIRECTIONAL RULE (2026-04-28): you must DECLARE thesis direction "
-            f"(BULL / BEAR / NEUTRAL-PAIRS) before sizing. Bull = stack longs + long calls + leveraged-long ETFs only. "
-            f"Bear = stack shorts + long puts + inverse ETFs (SQQQ/SPXS/SH) only. NEUTRAL-PAIRS = "
-            f"explicit pair (e.g. long XLK / short XLP on tech-vs-staples ratio). Mixing longs and "
-            f"shorts on UNRELATED tickers without declared pair = DOCTRINE VIOLATION (capital sits in "
-            f"dual-direction stalemate, ROI=0). Forensic 16:35Z: fleet had \\$71K long + \\$74K short, "
-            f"net direction ~0 — that is theatre, not a position. Pick a side, stack it.\n\n"
-            f"COPY THE PATTERN: stack {_floor_pct}% Kelly into highest-conviction "
-            f"named thesis. Multiple parallel entries on the SAME thesis OK (e.g. SPY "
-            f"calls + TQQQ + XLK long all = same NDX-up bet stacked). Pass forbidden "
-            f"unless every category shows zero edge."
+            f"TIER: {tier.upper()} ({delta_pct:+.1f}% vs seed). MANDATE-SUMMARY: stake "
+            f"floor {_floor_pct}% / edge floor 1.5% / max 5 entries per tick / all on "
+            f"ONE named thesis / -40% MTM stops new entries on that ticker.\n\n"
+            f"{tier_msg}"
         )
     if tier == "winner":
         _floor_pct = int(POWER_STAKE_FLOOR_PCT * 100)
@@ -1226,37 +1232,70 @@ def _build_prompt(persona: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         f"    list also qualifies for the 1.5× stake bonus."
     )
 
-    # 2026-04-28 MAX-AGGRESSION v2 — user explicitly authorized FULL drawdown of
-    # remaining $93K to chase $1M (~11× target). v1 was edge-floor 1.5% / 3:1
-    # reward-risk / leverage 4×. v2 strips ALL throttles. Gated on ITF_MAX_AGGRO=1.
+    # 2026-04-29 ALPHA ARENA DOCTRINE — replaces v2 (which lost $7.7K in 7 days
+    # via 0DTE bleed + edge-floor 0.5% noise). Grounded in Nof1 Alpha Arena 2026
+    # Q1 live results: Qwen3-Max won ($12.3K from $10K seed, +23%) with "fewer
+    # but higher-conviction trades, moderate leverage". Gemini lost (~62% drawdown)
+    # via 238 trades/13 trades-per-day, 13% capital burned in fees. Claude lost
+    # via 100% long no stops. We were running the Gemini+Claude failure modes
+    # combined: low edge floor + 0DTE bleed + no stop discipline.
     _max_aggro_block = ""
     if os.environ.get("ITF_MAX_AGGRO") == "1":
         _max_aggro_block = (
-            "\n=== MAX-AGGRESSION v2 DOCTRINE (user-authorized FULL-loss 2026-04-28) ===\n"
-            "TARGET: fleet equity $1,000,000 from $93K (~11×). User has explicitly\n"
-            "stated they accept LOSING THE ENTIRE REMAINING $93K to chase this number.\n"
-            "There is no '90K-only' tolerance — total loss is ON THE TABLE.\n"
+            "\n=== ALPHA ARENA DOCTRINE (2026-04-29, ITF_MAX_AGGRO=1) ===\n"
+            "TARGET: $93K → $1M. User has explicitly authorised LOSING THE ENTIRE\n"
+            "REMAINING $93K in the attempt. Total loss is ON THE TABLE.\n"
             "\n"
-            "RULES — strip every throttle:\n"
-            "  • EDGE FLOOR: 0.5% (not 1.5%). Above 0.5% → SIZE UP. Below → consider PASS.\n"
-            "  • REWARD/RISK FLOOR: 2:1 (not 3:1). Conviction trades may go below if\n"
-            "    expected hit-rate compensates.\n"
-            "  • DEPLOY MANDATE: ≥80% of your sub-bankroll committed every tick. Idle\n"
-            "    cash is the failure mode. Server enforces stake floor.\n"
-            "  • SIZING: The leverage cap is now per-agent equity × 6 (was 4× PDT).\n"
-            "    Use it. Quarter-Kelly is wrong; full-Kelly to the cap is correct.\n"
-            "  • INSTRUMENTS — strongly prefer (in order):\n"
-            "      1. 0DTE OTM options on SPY/QQQ/IWM at <1σ strikes (max gamma per $).\n"
-            "      2. Leveraged ETFs: TQQQ/SOXL/SPXL/UPRO/TNA long, SQQQ/SPXS/TZA short.\n"
-            "      3. High-momentum crypto (>2σ moves on BTC/ETH/SOL).\n"
-            "      4. Single-name on conviction (NVDA/COIN/MSTR/AMD on >1% catalyst).\n"
-            "  • PASS only when there is GENUINELY no setup. PASS-as-fear = wrong tier.\n"
-            "  • Multi-leg debit verticals are encouraged (defined risk, lower premium\n"
-            "    than naked, capital-efficient under our $25K option-stake cap).\n"
-            "  • You compete with 16 other LLM agents on the SAME tape. Hedging behind\n"
-            "    a winner is failure; carving your own conviction is what compounds.\n"
-            "  • TOP COMPOUNDERS (cross-TF reference): qwen-arb +103× on POL via "
-            "non-consensus mandate. mistral-large $244K on PQTF via momentum sizing.\n"
+            "EVIDENCE BASE — Nof1 Alpha Arena live competition (2026 Q1, $10K real\n"
+            "crypto each to 6 frontier LLMs):\n"
+            "  WINNER (Qwen3-Max, +23%):  fewer trades, higher conviction, ride\n"
+            "                             winners, moderate leverage, named theses.\n"
+            "  LOSER  (Gemini, -45%):     238 trades / ~13 per day. 13% of capital\n"
+            "                             burned in fees alone. Edge floor too low.\n"
+            "  LOSER  (Claude, -38%):     100% long, no hedge, no stop-loss. Ride-\n"
+            "                             until-it-hurts becomes ride-until-zero.\n"
+            "\n"
+            "WIN PATTERN — copy this:\n"
+            "  1. THESIS FIRST. Name it before sizing (BULL_NDX / BEAR_RATES /\n"
+            "     LONG_GOLD / SHORT_REGIONAL_BANKS / etc). 'I want to bet' is not\n"
+            "     a thesis. PASS until you have one.\n"
+            "  2. CONCENTRATE. 3-5 entries per tick max, ALL on the same thesis\n"
+            "     (e.g. BULL_NDX = SPY-calls + TQQQ + XLK + NVDA, all same bet).\n"
+            "     >5 entries = lack of conviction = Gemini failure mode.\n"
+            "  3. EDGE FLOOR 1.5%. Below 1.5% expected edge, PASS. The 0.5%\n"
+            "     floor we had since Apr 28 was the Gemini path — fees ate the\n"
+            "     edge. Real winners' edge floor is 1.5-2.0%.\n"
+            "  4. R/R 2:1 minimum, 3:1 preferred.\n"
+            "  5. RIDE WINNERS. A position at +30% MTM is your conviction working.\n"
+            "     NEVER trim. Add on a retrace. Trim only at the original thesis\n"
+            "     invalidation level.\n"
+            "  6. STOP-LOSS DISCIPLINE. Any position at -40% MTM: stop new entries\n"
+            "     on that ticker AND that thesis until the next session. Claude\n"
+            "     lost because nothing closed his losers. Don't be Claude.\n"
+            "\n"
+            "INSTRUMENT TIERS (post-0DTE-disaster Apr 27-28):\n"
+            "  PREFER:  Equity / leveraged-ETF directional exposure (TQQQ/SOXL/\n"
+            "           SQQQ/SPXS), 5-30 DTE options, crypto on >2σ moves, single-\n"
+            "           name on >1% catalyst (NVDA/COIN/MSTR/AMD).\n"
+            "  ALLOW:   Multi-leg debit verticals (defined-risk, capital-efficient).\n"
+            "  AVOID:   0DTE / 1DTE options new entries unless edge >= 15%. We\n"
+            "           lost $1.3K/day for 5 straight days to theta. 0DTE is a\n"
+            "           Qwen-style high-conviction gamma play, not a default.\n"
+            "  FORBID:  Long-and-short on UNRELATED tickers in the same tick\n"
+            "           without an explicit pair-trade thesis (e.g. long XLK /\n"
+            "           short XLP IS a pair; long NVDA + short SOXL is NOT).\n"
+            "           Net-zero direction = $0 ROI = theatre.\n"
+            "\n"
+            "DEPLOY MANDATE: ≥80% of sub-bankroll committed every tick on a NAMED\n"
+            "thesis. Idle cash without an active thesis = waiting. Idle cash WITH\n"
+            "an active thesis = unwillingness to size up = wrong agent.\n"
+            "\n"
+            "CROSS-TF EVIDENCE WE'VE GENERATED OURSELVES:\n"
+            "  • PQTF mistral-large +$244K: ONE thesis (NDX-up), 12 instruments\n"
+            "    stacked on it. Did NOT diversify. Did NOT hedge. Pure conviction.\n"
+            "  • POL qwen-arb +103×: paired correlation trades, non-consensus.\n"
+            "    Lockstep ≤0.88. ≥3 distinct categories per day.\n"
+            "  • Both winners were left ALONE (no resets, no retunes).\n"
             "=========================================================\n"
         )
 
