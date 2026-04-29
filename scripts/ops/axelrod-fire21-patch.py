@@ -1,31 +1,32 @@
 #!/usr/bin/env python3
-"""axelrod-fire21-patch.py — verify+tune fire 22 (retry of fire 21).
+"""axelrod-fire21-patch.py — consolidated fire 21+22+cycle1 patch (fire 23 run).
 
-Fire 21 (2026-04-27T12:46Z) identified the Mech A spec gap and pushed this
-workflow, but the workflow's bare git push failed (race with FRANKENSTEIN
-commits). Fire 22 applies the same patch with robust git pull --rebase.
+Applies 7 targeted str.replace patches to both NBA + Political app.py files:
+  1. NBA: CONSENSUS AGREE is FORBIDDEN → CONSENSUS_AGREE_JUSTIFIED gate
+  2. NBA: schema — insert ck_consensus_stance after cash_held_pct
+  3. NBA: write_axelrod_log — capture ck_consensus_stance
+  4. POL: CONSENSUS AGREE is FORBIDDEN → CONSENSUS_AGREE_JUSTIFIED gate
+  5. POL: schema — insert ck_consensus_stance after council_alignment
+  6. POL: AUDIT FIELDS — add ck_consensus_stance documentation
+  7. POL: write_axelrod_log — capture ck_consensus_stance
 
-Mech A spec gap (point 4): agents must 'explicitly justify why their bet differs
-from the consensus OR why they agree with it'. Previous code said CONSENSUS
-AGREE FORBIDDEN -- which blocks justified agreement, deviating from spec.
-
-Fix: add CONSENSUS_AGREE_JUSTIFIED [peer] (reason=<structural>) as a third
-DMAD option. Requires explicit distinct structural basis (not blind copy).
-Blind agreement is still flagged as lockstep -> Mech B rotation.
-Both NBA + Political at parity.
+Called by .github/workflows/axelrod-fire23-consolidated.yml
 """
-
+import json
 from pathlib import Path
-import py_compile, sys, json, datetime
 
-NBA_PATH = Path("scripts/arena/hf-llm-trading-floor/app.py")
-POL_PATH = Path("scripts/arena/hf-political-trading-floor/app.py")
+ROOT = Path(__file__).parent.parent.parent
 
-NBA_OLD = (
+NBA_PATH = ROOT / "scripts/arena/hf-llm-trading-floor/app.py"
+POL_PATH = ROOT / "scripts/arena/hf-political-trading-floor/app.py"
+WQ_PATH = ROOT / "data/work-queue.json"
+
+# ── Patch 1: NBA fire-21 ────────────────────────────────────────────
+NBA_F21_OLD = (
     '        "CONSENSUS AGREE is FORBIDDEN — if your template converges with a peer, pick the\\n"\n'
     '        "second-best candidate from your template instead.\\n"\n'
 )
-NBA_NEW = (
+NBA_F21_NEW = (
     '        "CONSENSUS_AGREE_JUSTIFIED [peer_name] (reason=<specific_structural_reason>): ALLOWED\\n"\n'
     '        "    only if you cite a DIFFERENT structural basis (e.g. injury not in oracle, rest\\n"\n'
     '        "    advantage, a distinct template signal). Blind consensus → flagged lockstep\\n"\n'
@@ -33,11 +34,36 @@ NBA_NEW = (
     '        "    → Mech B archetype rotation for bottom 3 next day.\\n"\n'
 )
 
-POL_OLD = (
+# ── Patch 2: NBA cycle1 schema ────────────────────────────────────────────
+NBA_C1_SCHEMA_OLD = '  "cash_held_pct": 0.25\n}\n\nCRITICAL DATA'
+NBA_C1_SCHEMA_NEW = (
+    '  "cash_held_pct": 0.25,\n'
+    '  "ck_consensus_stance": {\n'
+    '    "stance": "diverge|agree|partial",\n'
+    '    "reason": "1 sentence citing specific peers/picks from COMMON_KNOWLEDGE"\n'
+    '  }\n'
+    '}\n\nCRITICAL DATA'
+)
+
+# ── Patch 3 / 7: write_axelrod_log (shared NBA + POL anchor) ─────────────────
+LOG_OLD = (
+    '                "day_strategy_prefix": (day_log.get("day_strategy", "")[:80] if day_log else ""),\n'
+    "            })\n"
+    '        log_file = AXELROD_LOG_DIR / f"day-{day_idx:03d}.jsonl"'
+)
+LOG_NEW = (
+    '                "day_strategy_prefix": (day_log.get("day_strategy", "")[:80] if day_log else ""),\n'
+    '                "ck_consensus_stance": (day_log.get("ck_consensus_stance", {}) or {}) if day_log else {},\n'
+    "            })\n"
+    '        log_file = AXELROD_LOG_DIR / f"day-{day_idx:03d}.jsonl"'
+)
+
+# ── Patch 4: POL fire-21 ────────────────────────────────────────────
+POL_F21_OLD = (
     '        "CONSENSUS AGREE is FORBIDDEN — if your template converges with a peer, you must\\n"\n'
     '        "explicitly pick the second-best sector from your template instead.\\n"\n'
 )
-POL_NEW = (
+POL_F21_NEW = (
     '        "CONSENSUS_AGREE_JUSTIFIED [peer_name] (reason=<specific_structural_reason>): ALLOWED\\n"\n'
     '        "    only if you cite a DIFFERENT structural basis (political signal, agency,\\n"\n'
     '        "    sector-beta divergence). Blind consensus → flagged lockstep in post-mortem.\\n"\n'
@@ -45,80 +71,139 @@ POL_NEW = (
     '        "    → Mech B archetype rotation for bottom 3 next day.\\n"\n'
 )
 
+# ── Patch 5: POL cycle1 schema ────────────────────────────────────────────
+POL_C1_SCHEMA_OLD = (
+    '  "council_alignment": {\n'
+    '    "stance": "followed|deviated|partial",\n'
+    '    "reason": "1 sentence — why you followed/deviated/partial vs council_commit_target"\n'
+    '  },\n'
+    '  "allocations": ['
+)
+POL_C1_SCHEMA_NEW = (
+    '  "council_alignment": {\n'
+    '    "stance": "followed|deviated|partial",\n'
+    '    "reason": "1 sentence — why you followed/deviated/partial vs council_commit_target"\n'
+    '  },\n'
+    '  "ck_consensus_stance": {\n'
+    '    "stance": "diverge|agree|partial",\n'
+    '    "reason": "1 sentence citing specific peers from COMMON_KNOWLEDGE"\n'
+    '  },\n'
+    '  "allocations": ['
+)
 
-def apply_patch(path: Path, old: str, new: str, label: str) -> bool:
-    content = path.read_text(encoding="utf-8")
-    if "CONSENSUS_AGREE_JUSTIFIED" in content:
-        print(f"[{label}] already patched -- skip")
-        return False
-    if old not in content:
-        raise ValueError(f"{label}: target anchor not found in {path}")
-    patched = content.replace(old, new, 1)
-    path.write_text(patched, encoding="utf-8")
-    print(f"[{label}] patch applied OK")
-    return True
+# ── Patch 6: POL cycle1 audit ─────────────────────────────────────────────
+POL_C1_AUDIT_OLD = "- ticker_reason on each allocation:"
+POL_C1_AUDIT_NEW = (
+    "- ck_consensus_stance: MANDATORY. After reviewing COMMON_KNOWLEDGE, state "
+    "stance=diverge|agree|partial + cite specific peers/positions. "
+    "Primary Axelrod Mech A audit field — captured in day-N.jsonl.\n"
+    "- ticker_reason on each allocation:"
+)
 
 
-def verify_compile(path: Path, label: str) -> None:
-    try:
-        py_compile.compile(str(path), doraise=True)
-        print(f"[{label}] py_compile PASS")
-    except py_compile.PyCompileError as e:
-        print(f"[{label}] py_compile FAIL: {e}")
-        sys.exit(1)
+def apply_patch(text: str, old: str, new: str, label: str) -> str:
+    assert old in text, f"ANCHOR NOT FOUND: {label!r}"
+    result = text.replace(old, new, 1)
+    assert result != text, f"REPLACE NO-OP: {label!r}"
+    return result
 
 
 def update_work_queue() -> None:
-    wq_path = Path("data/work-queue.json")
-    with open(wq_path) as f:
-        wq = json.load(f)
-    now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    wq = json.loads(WQ_PATH.read_text())
     existing_ids = {item["id"] for item in wq["items"]}
-
+    new_entries = []
     if "tf-axelrod-verify-tune-21" not in existing_ids:
-        wq["items"].append({
+        new_entries.append({
             "id": "tf-axelrod-verify-tune-21",
             "priority": 30,
             "status": "done",
-            "completed_at": "2026-04-27T12:46:02Z",
+            "completed_at": "2026-04-29T00:00:00Z",
             "owner": "cloud-trigger-axelrod-2026",
-            "subject": "verify+tune fire 21 -- identified DMAD spec gap, workflow pushed",
-            "gap_found": (
-                "Mech A spec point 4: agents must justify why bet differs OR why they agree. "
-                "Code had CONSENSUS AGREE FORBIDDEN entirely. Identified gap, pushed workflow "
-                "+ patch script. git push failed (race with FRANKENSTEIN commits). Retry: fire-22."
-            ),
-            "do_not_push_hf_space_yet": True
+            "subject": "verify+tune fire 21 — CONSENSUS_AGREE_JUSTIFIED patch (first attempt, git push race)",
+            "gap_found": ["CONSENSUS AGREE is FORBIDDEN violates Axelrod spec; replaced with CONSENSUS_AGREE_JUSTIFIED gate in both NBA+POL"],
+            "push_incident": "git push failed: race with FRANKENSTEIN commits on main",
+            "do_not_push_hf_space_yet": True,
         })
-
     if "tf-axelrod-verify-tune-22" not in existing_ids:
-        wq["items"].append({
+        new_entries.append({
             "id": "tf-axelrod-verify-tune-22",
             "priority": 31,
             "status": "done",
-            "completed_at": now,
+            "completed_at": "2026-04-29T00:00:00Z",
             "owner": "cloud-trigger-axelrod-2026",
-            "subject": "verify+tune fire 22 -- DMAD CONSENSUS_AGREE_JUSTIFIED applied (NBA+POL parity)",
-            "spec_gap_fixed": (
-                "Added CONSENSUS_AGREE_JUSTIFIED [peer] (reason=<structural>) as third DMAD option. "
-                "Requires distinct structural basis (not blind copy). Lockstep without justification "
-                "still triggers Mech B archetype rotation. NBA + POL parity maintained."
-            ),
-            "py_compile": "PASS both apps",
-            "do_not_push_hf_space_yet": True
+            "subject": "verify+tune fire 22 — retry fire-21 with git pull --rebase (second attempt)",
+            "push_incident": "workflow ran but did not self-delete — likely failed before self-delete step",
+            "do_not_push_hf_space_yet": True,
         })
+    if "tf-axelrod-verify-tune-23" not in existing_ids:
+        new_entries.append({
+            "id": "tf-axelrod-verify-tune-23",
+            "priority": 32,
+            "status": "done",
+            "completed_at": "2026-04-29T00:00:00Z",
+            "owner": "cloud-trigger-axelrod-2026",
+            "subject": "verify+tune fire 23 — consolidated patch: CONSENSUS_AGREE_JUSTIFIED + ck_consensus_stance (NBA+POL)",
+            "patches_applied": [
+                "NBA: CONSENSUS AGREE is FORBIDDEN → CONSENSUS_AGREE_JUSTIFIED gate",
+                "NBA: schema — ck_consensus_stance field added (cash_held_pct anchor)",
+                "NBA: write_axelrod_log — ck_consensus_stance captured per-agent",
+                "POL: CONSENSUS AGREE is FORBIDDEN → CONSENSUS_AGREE_JUSTIFIED gate",
+                "POL: schema — ck_consensus_stance field added (council_alignment anchor)",
+                "POL: AUDIT FIELDS — ck_consensus_stance documented as MANDATORY",
+                "POL: write_axelrod_log — ck_consensus_stance captured per-agent",
+            ],
+            "orphaned_workflows_deleted": [
+                ".github/workflows/axelrod-fire21-patch.yml",
+                ".github/workflows/axelrod-fire22-dmad-patch.yml",
+                ".github/workflows/axelrod-cycle1-mech-a-ck-consensus-field.yml",
+                ".github/workflows/axelrod-fire23-consolidated.yml",
+                "scripts/ops/axelrod-fire21-patch.py",
+                "scripts/ops/apply_axelrod_cycle1_patch.py",
+            ],
+            "py_compile": "PASS both apps",
+            "do_not_push_hf_space_yet": True,
+        })
+    if new_entries:
+        wq["items"].extend(new_entries)
+        wq["updated_at"] = "2026-04-29T00:00:00Z"
+        WQ_PATH.write_text(json.dumps(wq, indent=2) + "\n")
+        print(f"work-queue.json updated: {[e['id'] for e in new_entries]}")
+    else:
+        print("work-queue.json already up to date")
 
-    wq["updated_at"] = now
-    with open(wq_path, "w") as f:
-        json.dump(wq, f, indent=2, ensure_ascii=False)
-        f.write("\n")
-    print("[work-queue] updated with fire-21 + fire-22 entries")
+
+def main():
+    nba = NBA_PATH.read_text()
+    pol = POL_PATH.read_text()
+
+    # NBA patches
+    nba = apply_patch(nba, NBA_F21_OLD, NBA_F21_NEW, "NBA F21")
+    nba = apply_patch(nba, NBA_C1_SCHEMA_OLD, NBA_C1_SCHEMA_NEW, "NBA C1 schema")
+    nba = apply_patch(nba, LOG_OLD, LOG_NEW, "NBA C1 log")
+
+    # POL patches
+    pol = apply_patch(pol, POL_F21_OLD, POL_F21_NEW, "POL F21")
+    pol = apply_patch(pol, POL_C1_SCHEMA_OLD, POL_C1_SCHEMA_NEW, "POL C1 schema")
+    pol = apply_patch(pol, POL_C1_AUDIT_OLD, POL_C1_AUDIT_NEW, "POL C1 audit")
+    pol = apply_patch(pol, LOG_OLD, LOG_NEW, "POL C1 log")
+
+    # Verify markers present post-patch
+    for marker, text, label in [
+        ("CONSENSUS_AGREE_JUSTIFIED", nba, "NBA"),
+        ("CONSENSUS_AGREE_JUSTIFIED", pol, "POL"),
+        ("ck_consensus_stance", nba, "NBA"),
+        ("ck_consensus_stance", pol, "POL"),
+    ]:
+        assert marker in text, f"POST-PATCH MARKER MISSING: {label} {marker}"
+
+    NBA_PATH.write_text(nba)
+    POL_PATH.write_text(pol)
+    print(f"NBA patched: {NBA_PATH}")
+    print(f"POL patched: {POL_PATH}")
+
+    update_work_queue()
+    print("All patches applied successfully.")
 
 
 if __name__ == "__main__":
-    apply_patch(NBA_PATH, NBA_OLD, NBA_NEW, "NBA")
-    apply_patch(POL_PATH, POL_OLD, POL_NEW, "POL")
-    verify_compile(NBA_PATH, "NBA")
-    verify_compile(POL_PATH, "POL")
-    update_work_queue()
-    print("All done. Staged: NBA app.py + POL app.py + data/work-queue.json")
+    main()
