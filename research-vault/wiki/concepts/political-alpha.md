@@ -1,10 +1,10 @@
 # Political Alpha & Prediction Markets
 
-> Auto-compiled from 80 raw sources on 2026-04-28
+> Auto-compiled from 81 raw sources on 2026-04-29
 
 ## Overview
 
-This topic covers 80 research files spanning political alpha & prediction markets.
+This topic covers 81 research files spanning political alpha & prediction markets.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Mutation Operators, Political Alpha, SHAP.
 
 ## Sources
@@ -78,6 +78,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: github-betting-scan-2026-04-14** (145 words) -- `raw/research/github-betting-scan-2026-04-14.md`
 - **Research Scan: github-betting-scan-2026-04-15** (145 words) -- `raw/research/github-betting-scan-2026-04-15.md`
 - **Research Scan: github-betting-scan-2026-04-16** (145 words) -- `raw/research/github-betting-scan-2026-04-16.md`
+- **Research Scan: github-betting-scan-2026-04-28** (145 words) -- `raw/research/github-betting-scan-2026-04-28.md`
 - **Research Scan: github-betting-scan-2026-04-17** (136 words) -- `raw/research/github-betting-scan-2026-04-17.md`
 - **Research Scan: github-betting-scan-2026-04-18** (136 words) -- `raw/research/github-betting-scan-2026-04-18.md`
 - **Research Scan: github-betting-scan-2026-04-19** (136 words) -- `raw/research/github-betting-scan-2026-04-19.md`

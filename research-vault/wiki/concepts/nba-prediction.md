@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 230 raw sources on 2026-04-28
+> Auto-compiled from 233 raw sources on 2026-04-29
 
 ## Overview
 
-This topic covers 230 research files spanning nba prediction & ml models.
+This topic covers 233 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -162,6 +162,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: arxiv-calibration-scan-2026-04-17** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-17.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-18** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-18.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-19** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-19.md`
+- **Research Scan: arxiv-scan-2026-04-28** (231 words) -- `raw/research/arxiv-scan-2026-04-28.md`
 - **Multi-Agent Workflow Scan (April 2026)** (230 words) -- `raw/agent-memory/repo-scout_project_multiagent_workflow_apr2026.md`
 - **Research Scan: arxiv-scan-2026-04-16** (228 words) -- `raw/research/arxiv-scan-2026-04-16.md`
 - **Polyrepo Tooling Scan (April 2026)** (227 words) -- `raw/agent-memory/repo-scout_project_polyrepo_tooling_apr2026.md`
@@ -211,7 +212,9 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-14** (145 words) -- `raw/research/github-betting-scan-2026-04-14.md`
 - **Research Scan: github-betting-scan-2026-04-15** (145 words) -- `raw/research/github-betting-scan-2026-04-15.md`
 - **Research Scan: github-betting-scan-2026-04-16** (145 words) -- `raw/research/github-betting-scan-2026-04-16.md`
+- **Research Scan: github-betting-scan-2026-04-28** (145 words) -- `raw/research/github-betting-scan-2026-04-28.md`
 - **Research Scan: github-scan-2026-04-26** (142 words) -- `raw/research/github-scan-2026-04-26.md`
+- **Research Scan: github-scan-2026-04-28** (142 words) -- `raw/research/github-scan-2026-04-28.md`
 - **Department Council Summary** (141 words) -- `raw/councils/department-summary.md`
 - **Research Scan: github-scan-2026-04-18** (141 words) -- `raw/research/github-scan-2026-04-18.md`
 - **Research Scan: github-scan-2026-04-20** (141 words) -- `raw/research/github-scan-2026-04-20.md`

@@ -1,10 +1,10 @@
 # Genetic Algorithm & Evolution
 
-> Auto-compiled from 63 raw sources on 2026-04-28
+> Auto-compiled from 64 raw sources on 2026-04-29
 
 ## Overview
 
-This topic covers 63 research files spanning genetic algorithm & evolution.
+This topic covers 64 research files spanning genetic algorithm & evolution.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution, Mutation Operators.
 
 ## Sources
@@ -66,6 +66,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: arxiv-calibration-scan-2026-04-18** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-18.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-19** (234 words) -- `raw/research/arxiv-calibration-scan-2026-04-19.md`
 - **Research Scan: arxiv-calibration-scan-2026-04-23** (232 words) -- `raw/research/arxiv-calibration-scan-2026-04-23.md`
+- **Research Scan: arxiv-scan-2026-04-28** (231 words) -- `raw/research/arxiv-scan-2026-04-28.md`
 - **Research Scan: arxiv-scan-2026-04-23** (226 words) -- `raw/research/arxiv-scan-2026-04-23.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/agent-memory/feature-engineer_project_gpu_evolution_v2.md`
 - **gpu_evolution_v2_integration** (222 words) -- `raw/feature-engineer/project_gpu_evolution_v2.md`
