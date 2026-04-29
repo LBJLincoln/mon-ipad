@@ -1,5 +1,5 @@
 {
-  "brain_cycle": "2026-04-29T08:15:00Z",
+  "brain_cycle": "2026-04-29T12:00:00Z",
   "trigger": "cloud-brain-4h",
 
   "step0_crash_recovery": {
@@ -10,32 +10,34 @@
   "nba_islands": {
     "fleet_best_alltime": {"brier": 0.22062, "island": "S15", "gen": 1306, "algo": "extra_trees", "checkpoint_date": "2026-04-25"},
     "checkpoint_threshold": 0.22085,
-    "cycle_best": {"brier": 0.22151, "island": "S14", "beats_threshold": false},
+    "cycle_best": {"brier": 0.22192, "island": "S22", "beats_threshold": false},
     "islands": [
-      {"id": "S13", "space": "Nomos42/nba-evo-4",       "status": "EVOLVING", "gen": 1189, "brier": 0.22198, "stagnation": 0, "algo": "random_forest"},
-      {"id": "S14", "space": "Nomos42/nba-evo-5",       "status": "EVOLVING", "gen": 947,  "brier": 0.22151, "stagnation": 0, "algo": "random_forest"},
-      {"id": "S15", "space": "Nomos42/nba-evo-6",       "status": "EVOLVING", "gen": 734,  "brier": 0.22177, "stagnation": 0, "algo": "extra_trees"},
-      {"id": "S17", "space": "LBJLincoln26/nba-evo-s17", "status": "DOWN",     "gen": null, "brier": null,    "stagnation": null, "algo": null, "error": "503", "action": "keepalive.sh will restart within 30 min"},
-      {"id": "S18", "space": "TESTforge42/nba-evo-s18",  "status": "EVOLVING", "gen": 3114, "brier": 0.22248, "stagnation": 0, "algo": "extra_trees"},
-      {"id": "S22", "space": "TESTforge42/nba-evo-s22",  "status": "EVOLVING", "gen": 1004, "brier": 0.22192, "stagnation": 0, "algo": "catboost"}
+      {"id": "S13", "space": "Nomos42/nba-evo-4",        "status": "EVOLVING", "gen": 1325, "brier": 0.22198, "stagnation": 0, "algo": "random_forest", "note": "stacking population takeover in Pareto front (0.2474); tree-based best preserved at 0.22198. auto-reseed fired cycle 426."},
+      {"id": "S14", "space": "Nomos42/nba-evo-5",        "status": "EVOLVING", "gen": null, "brier": null, "stagnation": null, "algo": null, "note": "API response too large; last known gen=947 brier=0.22151"},
+      {"id": "S15", "space": "Nomos42/nba-evo-6",        "status": "EVOLVING", "gen": null, "brier": null, "stagnation": null, "algo": null, "note": "API response too large; last known gen=734 brier=0.22177"},
+      {"id": "S17", "space": "LBJLincoln26/nba-evo-s17", "status": "DOWN",     "gen": null, "brier": null, "stagnation": null, "algo": null, "error": "503", "note": "persistent 503 — HF Hub last updated Apr 18; VM keepalive.sh should recover but may need manual restart"},
+      {"id": "S18", "space": "TESTforge42/nba-evo-s18",  "status": "EVOLVING", "gen": 3247, "brier": 0.22248, "stagnation": 0, "algo": "extra_trees"},
+      {"id": "S22", "space": "TESTforge42/nba-evo-s22",  "status": "EVOLVING", "gen": 1069, "brier": 0.22192, "stagnation": 0, "algo": "catboost", "note": "improved from 0.22475 after restart — new algo catboost"}
     ],
     "stagnation_alert": false,
     "diversify_sent": false,
-    "new_checkpoint": false
+    "new_checkpoint": false,
+    "concern": "S13 Pareto front stacking-dominated (brier 0.2474). best_brier 0.22198 preserved. Auto-reseed fired cycle 426 with xgboost/lightgbm/catboost types; recovery in progress."
   },
 
   "political_islands": {
-    "pol_best_alltime": {"brier": 0.24924, "island": "P7", "gen": 33896, "algo": "logistic_regression", "updated": "2026-04-29T08:15:00Z"},
+    "pol_best_alltime": {"brier": 0.24924, "island": "P7", "gen": 34884, "algo": "logistic_regression", "updated": "2026-04-29T12:00:00Z"},
     "islands": [
-      {"id": "P1", "space": "Nomos42/political-alpha",       "status": "COOLDOWN", "gen": 3840,  "brier": 0.25256, "stagnation": 0, "algo": "lightgbm",          "note": "recently restarted 2026-04-28"},
-      {"id": "P2", "space": "Nomos42/political-alpha-2",     "status": "EVOLVING", "gen": 10207, "brier": 0.25646, "stagnation": 0, "algo": "logistic_regression"},
-      {"id": "P4", "space": "LBJLincoln/political-alpha-4",  "status": "COOLDOWN", "gen": 20961, "brier": 0.25703, "stagnation": 0, "algo": "catboost"},
-      {"id": "P5", "space": "LBJLincoln/political-alpha-5",  "status": "COOLDOWN", "gen": 20961, "brier": 0.25703, "stagnation": 0, "algo": "catboost"},
-      {"id": "P7", "space": "LBJLincoln/political-alpha-7",  "status": "EVOLVING", "gen": 33896, "brier": 0.24924, "stagnation": 0, "algo": "logistic_regression", "note": "NEW POL BEST — beats hist_best 0.24925"}
+      {"id": "P1", "space": "Nomos42/political-alpha",       "status": "EVOLVING", "gen": 14339, "brier": 0.24997, "stagnation": 0, "algo": "xgboost_brier", "note": "improved from 0.25256 last cycle — approaching POL best"},
+      {"id": "P2", "space": "Nomos42/political-alpha-2",     "status": "EVOLVING", "gen": null, "brier": null, "stagnation": null, "algo": null, "note": "API response too large; last known gen=10207 brier=0.25646"},
+      {"id": "P4", "space": "LBJLincoln/political-alpha-4",  "status": "EVOLVING", "gen": 21948, "brier": 0.25703, "stagnation": 0, "algo": "catboost"},
+      {"id": "P5", "space": "LBJLincoln/political-alpha-5",  "status": "COOLDOWN", "gen": null, "brier": null, "stagnation": null, "algo": null, "note": "API response too large; last known gen=20961 brier=0.25703"},
+      {"id": "P7", "space": "LBJLincoln/political-alpha-7",  "status": "COOLDOWN", "gen": 34884, "brier": 0.24924, "stagnation": 0, "algo": "logistic_regression", "note": "POL BEST confirmed live"}
     ],
-    "new_pol_best": true,
-    "new_pol_best_brier": 0.24924,
-    "new_pol_best_island": "P7"
+    "new_pol_best": false,
+    "pol_best_brier": 0.24924,
+    "pol_best_island": "P7",
+    "rotate_task": "C_nba_technique_ports"
   },
 
   "dept_councils": {
@@ -43,10 +45,42 @@
     "note": "All 9 TESTforge42/nomos-dept-d* Spaces deleted 2026-04-20. No action required."
   },
 
+  "trading_floors": {
+    "nba_tf": {
+      "status": "RUNNING",
+      "day": 3,
+      "days_total": 111,
+      "fleet_leader": "nvidia-llama70",
+      "fleet_leader_bankroll": 128.53,
+      "started_utc": "2026-04-29T12:09:23Z",
+      "provider_issues": [
+        "cerebras:qwen-3-235b DEAD (3505s cooldown)",
+        "cerebras:llama3.1-8b DEAD (3511s cooldown)",
+        "mistral:large DEAD (219s cooldown)"
+      ],
+      "gateway_routing": false,
+      "gateway_status": "TIMEOUT — sleeping/unreachable. All 32 LLM calls going direct fallback.",
+      "axelrod_active": true,
+      "note": "Early days (3/111). nvidia-llama70 $128.53 leading. mistral-small $111.18 #2."
+    },
+    "pol_tf": {
+      "status": "RUNNING",
+      "day": 73,
+      "days_total": 304,
+      "fleet_leader": "qwen-quant",
+      "fleet_leader_bankroll": 7435.29,
+      "doctrine": "v5_restored",
+      "note": "qwen-quant $7,435 leading. qwen-arb $2,013. llama-contra $1,790. Healthy."
+    }
+  },
+
   "alerts": [
-    {"severity": "WARN", "msg": "S17 LBJLincoln26/nba-evo-s17 returning 503. keepalive.sh will auto-restart."},
-    {"severity": "INFO", "msg": "P7 achieved new POL best brier=0.24924 (beats hist_best 0.24925). CLAUDE.md updated."}
+    {"severity": "WARN",  "msg": "S17 LBJLincoln26/nba-evo-s17 persistent 503. HF Hub last updated Apr 18. VM keepalive.sh not recovering — may need manual factory_reboot."},
+    {"severity": "WARN",  "msg": "llm-gateway LBJLincoln26/llm-gateway: /health 404, /api/status timeout. NBA TF falling back to direct calls (cerebras + mistral:large dead)."},
+    {"severity": "INFO",  "msg": "S22 improved 0.22475 → 0.22192 after restart (catboost, gen 1069)."},
+    {"severity": "INFO",  "msg": "P1 improved 0.25256 → 0.24997 — approaching POL best 0.24924."},
+    {"severity": "INFO",  "msg": "SOTA: academic LR achieves Brier 0.199 on 2024 NBA test set (below 0.20 target). See research-proposals/2026-04-29-nba-sota.md"}
   ],
 
-  "next_cycle": "2026-04-29T12:00:00Z"
+  "next_cycle": "2026-04-29T16:00:00Z"
 }
