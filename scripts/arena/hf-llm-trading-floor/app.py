@@ -4171,13 +4171,16 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
             if parsed is None and _ff_enable and bankroll >= _bk_floor and model_preds and day_games:
                 parsed = {"allocations": [], "parlays": [], "cash_held_pct": 1.0,
                           "_stub_for_injection": True}
-            # 2026-04-27 — extend forced_floor to top-up partial-LLM agents.
-            # Was: only fired when LLM emitted 0 allocations.
-            # Now: fires when LLM emitted < 3 allocations (so 1-2 bet agents get
-            # filled to 3 with positive engine edges from cross-family).
+            # 2026-04-29 forensic audit: 17/17 NBA agents lost 90-99% of seed.
+            # Root cause: forced_floor at pct=0.40 fires on LLM-silent days, agent
+            # eats 3 bets at 40% bankroll each (60%+ deploy), engine edges of 0.439
+            # on +1800 dogs are calibration garbage, hit rate ~30%, account dies.
+            # Fix: only fire when 0 allocations (was: <3 — was overriding LLMs that
+            # said "1 high-conviction bet" with 2 server-injected forced bets).
+            # If LLM said 1 bet, that's the LLM's signal — trust it. PASS valid.
             _alloc_count = len((parsed or {}).get("allocations") or [])
             if (_ff_enable and bankroll >= _bk_floor and parsed and
-                    _alloc_count < 3 and model_preds and day_games):
+                    _alloc_count == 0 and model_preds and day_games):
                 _gidx_to_gk = {}
                 for _idx, _g in enumerate(day_games, 1):
                     _h = (_g.get("home") or "").upper()
@@ -4211,6 +4214,11 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 _all_cands = []  # (edge_val, gidx, cat, prob)
                 _all_edges_count = 0
                 _seen_keys = set()
+                # 2026-04-29 calibration filter — engine emits edge=0.439 on +1800
+                # dogs (impossible). Per audit, edges >0.20 are nearly-pure
+                # calibration error (60-80% loss rate vs implied prob). Cap at 0.20.
+                _ff_max_edge = float(os.environ.get("NBA_FF_MAX_EDGE", "0.20"))
+                _calib_filtered = 0
                 for _gi, _gk in _gidx_to_gk.items():
                     _pred = model_preds.get(_gk) or {}
                     _per_cat = _pred.get("per_category") or {}
@@ -4222,6 +4230,9 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                         _ev = float(_e)
                         if _ev <= 0:
                             continue  # SKIP negative-edge cats
+                        if _ev > _ff_max_edge:
+                            _calib_filtered += 1
+                            continue  # SKIP calibration-garbage edges
                         _all_cands.append((_ev, _gi, _tag, _info.get("prob", 0.5)))
                 _all_cands.sort(reverse=True)
                 # Dedup by (gidx, cat) — single position only
@@ -4238,31 +4249,36 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 if _picks:
                     _ff_diag["best_cat"] = _picks[0][2]
                     _ff_diag["best_edge"] = _picks[0][0]
+                    _ff_diag["calib_filtered"] = _calib_filtered
                     parsed.setdefault("allocations", [])
-                    # pct=0.40 (per-bet cap). After kelly_mult haircut (typical 0.5)
-                    # this lands at ~0.20 effective per bet × 3 = 60% deploy ✓
+                    # 2026-04-29 — pct slashed 0.40 → 0.05 after audit showed
+                    # forced_floor at 40% per bet = 60% daily deploy was the
+                    # death mechanism for all 17 NBA agents (-90% to -99% in 110d).
+                    # 5% × 3 bets = 15% deploy on LLM-silent days. Survivable.
+                    # Tunable via NBA_FF_PCT env (default 0.05).
+                    _ff_pct = float(os.environ.get("NBA_FF_PCT", "0.05"))
                     for _ev, _gi, _tag, _prob in _picks:
                         parsed["allocations"].append({
                             "game_idx": _gi,
                             "game": "",
                             "category": _tag,
-                            "pct": 0.40,
-                            "confidence": 0.65,
+                            "pct": _ff_pct,
+                            "confidence": 0.55,
                             "edge": _ev,
                             "edge_source": "engine_forced_floor",
                             "edge_llm_reported": None,
                             "edge_engine": _ev,
-                            "strategy": "engine_top3_force_positive",
+                            "strategy": "engine_top3_force_positive_safe",
                             "rationale": (f"engine_forced_floor top-3 POSITIVE-only: edge "
                                           f"+{_ev:.3f} on {_tag} g{_gi}; LLM silent; "
-                                          f"server inject pct=0.40 (post-kelly-clip ~0.20)"),
-                            "category_reason": "auto-inject when LLM dead — POSITIVE engine edge only",
+                                          f"server inject pct={_ff_pct:.2f} (calib-filter <={_ff_max_edge:.2f})"),
+                            "category_reason": "auto-inject when LLM dead — POSITIVE engine edge only, calib-filtered",
                         })
-                    parsed["cash_held_pct"] = round(max(0.0, 1.0 - 0.40 * len(_picks)), 4)
+                    parsed["cash_held_pct"] = round(max(0.0, 1.0 - _ff_pct * len(_picks)), 4)
                     if parsed.get("day_strategy", "") in ("", None) or "LLM_SILENT_PASS" in str(parsed.get("day_strategy", "")):
                         parsed["day_strategy"] = (
                             f"ENGINE_FORCED_FLOOR top-3 POSITIVE: LLM silent → "
-                            f"{len(_picks)} bets at pct=0.40 (post-kelly ~60% deploy)"
+                            f"{len(_picks)} bets at pct={_ff_pct:.2f} (~{int(100*_ff_pct*len(_picks))}% deploy, calib-filtered)"
                         )
             # Stash telemetry on parsed for visibility in day file (only when
             # an agent went silent — we don't pollute non-silent ones)
