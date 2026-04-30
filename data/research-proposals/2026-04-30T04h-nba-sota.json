@@ -1,0 +1,79 @@
+{
+  "filed_at": "2026-04-30T04:00:00Z",
+  "cycle": "cloud-brain-4h",
+  "topic": "NBA prediction SOTA 2026 — quarterly update",
+  "sources": [
+    "MDPI 2026: 'Uncertainty-Aware ML for NBA Forecasting in Digital Betting Markets' https://www.mdpi.com/2078-2489/17/1/56",
+    "MDPI 2025: 'Machine Learning for Basketball Game Outcomes: NBA and WNBA' https://www.mdpi.com/2079-3197/13/10/230",
+    "Scientific Reports 2025: 'Stacked ensemble model for NBA game outcome prediction' https://www.nature.com/articles/s41598-025-13657-1",
+    "IEEE Xplore 2025: 'Comparing ML Methods for NBA Game Outcome Prediction' https://ieeexplore.ieee.org/document/11030489/",
+    "PMC 2024: 'XGBoost + SHAP for NBA game outcome prediction' https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/"
+  ],
+  "sota_benchmarks": {
+    "logistic_regression": {"brier": 0.199, "notes": "Best tabular baseline, strict chronological partition"},
+    "xgboost": {"brier": 0.202, "notes": "Second-best tabular, SHAP feature analysis available"},
+    "cnn": {"brier": 0.221, "notes": "Our fleet best 0.22021 beats this"},
+    "uncertainty_aware_rnn_mc_dropout": {
+      "brier": "~0.195-0.205",
+      "notes": "MDPI Jan 2026 — rolling-form indicators + shot-chart spatial embeddings + MC dropout. GPU required."
+    }
+  },
+  "our_fleet_best": {
+    "brier": 0.22021,
+    "island": "S13 Nomos42/nba-evo-4",
+    "algo": "extra_trees",
+    "gen": 117,
+    "cycle": 39,
+    "beats_cnn_sota": true,
+    "gap_to_lr_sota": 0.02121,
+    "gap_to_xgb_sota": 0.01821
+  },
+  "gap_analysis": {
+    "verdict": "We beat CNN SOTA. Main gap vs LR/XGBoost: (1) no shot-chart spatial features, (2) limited rolling-form momentum explicitly encoded, (3) no MC dropout calibration (isotonic only in Colab).",
+    "addressable_by_feature_eng": 0.010,
+    "addressable_by_calibration": 0.002,
+    "requires_gpu_rnn": 0.005
+  },
+  "key_sota_features": [
+    "team_elo_5_y — ELO rolling 5-year momentum",
+    "home_next — next-game home/away indicator",
+    "rolling_form_last_10 — win % last 10 games",
+    "shot_chart_zone_efficiency — spatial shot distribution (requires shot log data)",
+    "back_to_back_indicator — fatigue proxy",
+    "opponent_adjusted_pace — pace-adjusted strength"
+  ],
+  "proposals": [
+    {
+      "id": "NBA-P1-momentum-boost",
+      "priority": "HIGH",
+      "description": "Add explicit 5-game momentum feature category to engine.py: team_win_streak, team_momentum_5g, team_pts_diff_momentum_5g, opp_momentum_5g. All computable from nba_cached_data.npz game history.",
+      "expected_brier_delta": -0.003,
+      "effort": "low — add 4 derived columns to engine.py feature category block"
+    },
+    {
+      "id": "NBA-P2-xgboost-brier-objective",
+      "priority": "HIGH",
+      "description": "Port xgboost_brier custom Brier loss objective from political islands to NBA island mutation pool. Political P2 uses it and leads at 0.24997. NBA islands primarily use extra_trees/RF/catboost — xgboost_brier objective could push through current floor.",
+      "expected_brier_delta": -0.002,
+      "effort": "medium — add to island model_type mutation candidates"
+    },
+    {
+      "id": "NBA-P3-isotonic-calibration",
+      "priority": "HIGH",
+      "description": "Add isotonic regression post-hoc calibration to evolution island evaluation loop (currently only in Colab TabICL). Colab calibrated best 0.22054 vs uncalibrated 0.22169 — ~0.001 gain.",
+      "expected_brier_delta": -0.001,
+      "effort": "medium — modify island eval function"
+    },
+    {
+      "id": "NBA-P4-back-to-back-verify",
+      "priority": "MEDIUM",
+      "description": "Verify back_to_back and rest_days features are present in island populations. SOTA consistently ranks these top-10. Confirm in engine.py audit.",
+      "expected_brier_delta": -0.001,
+      "effort": "low"
+    }
+  ],
+  "cross_project_port_summary": {
+    "nba_to_political": "Momentum features → political_entity_momentum_score: rolling approval trend, party vote consistency rolling, market-implied momentum (Kalshi 30d). P7 LR result validates linear momentum signal dominance.",
+    "political_to_nba": "xgboost_brier objective. P2 political at 0.24997 using it. Add to NBA island model_type mutation pool."
+  }
+}

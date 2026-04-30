@@ -1,71 +1,233 @@
 {
-  "brain_cycle": "2026-04-30T00:00:00Z",
+  "brain_cycle": "2026-04-30T04:00:00Z",
   "trigger": "cloud-brain-4h",
 
   "step0_crash_recovery": {
     "status": "clean",
-    "note": "Only pending work-queue item is tf-axelrod-verify-tune-12 (explicit user gate: awaiting 'push to HF' approval). No crashed local-agent items."
+    "note": "Only pending work-queue item is tf-axelrod-verify-tune-12 (explicit user gate: awaiting 'push to HF' approval). No crashed local-agent items found."
   },
 
   "nba_islands": {
-    "fleet_best_alltime": {"brier": 0.22045, "island": "S13", "space": "Nomos42/nba-evo-4", "gen": 1, "algo": "extra_trees", "checkpoint_date": "2026-04-30", "note": "Achieved at gen 1 of fresh restart. Previous fleet best: 0.22062 S15 gen1306 2026-04-25."},
+    "fleet_best_alltime": {
+      "brier": 0.22021,
+      "island": "S13",
+      "space": "Nomos42/nba-evo-4",
+      "gen": 117,
+      "algo": "extra_trees",
+      "checkpoint_date": "2026-04-30T04:00:00Z",
+      "note": "top_performer_brier=0.22021 at cycle 39 gen 117. Prev: 0.22045 same island 00:00Z. All-time prev: 0.22062 S15 gen1306 2026-04-25. CLAUDE.md updated."
+    },
     "checkpoint_threshold": 0.22085,
-    "cycle_best": {"brier": 0.22045, "island": "S13", "beats_threshold": true, "note": "NEW FLEET BEST 0.22045 < 0.22085 threshold. CLAUDE.md updated."},
-    "islands": [
-      {"id": "S13", "space": "Nomos42/nba-evo-4",        "status": "EVOLVING", "gen": 19,   "brier": 0.22045, "stagnation_cycles": 5,  "algo": "extra_trees",    "note": "FRESH RESTART. Best 0.22045 at gen 1. New fleet best < 0.22085 threshold. 5 cycles stagnation since gen 1. CLAUDE.md updated."},
-      {"id": "S14", "space": "Nomos42/nba-evo-5",        "status": "EVOLVING", "gen": 1348, "brier": 0.22151, "stagnation_cycles": 21, "algo": "random_forest",  "note": "Stagnation 21 cycles (threshold 25). DIVERSIFY QUEUED this cycle."},
-      {"id": "S15", "space": "Nomos42/nba-evo-6",        "status": "EVOLVING", "gen": 1165, "brier": 0.22177, "stagnation_cycles": 12, "algo": "extra_trees",    "note": "Stagnation 12 cycles. Monitoring. Previous fleet best 0.22062 at gen 1306."},
-      {"id": "S17", "space": "LBJLincoln26/nba-evo-s17", "status": "PAUSED",   "gen": null, "brier": null,    "stagnation_cycles": null, "error": "Space paused — maintainer restart required via HF UI or API. Public endpoints return 'ask a maintainer'.", "alert": "PAUSED. Needs manual HF unpause."},
-      {"id": "S18", "space": "TESTforge42/nba-evo-s18",  "status": "EVOLVING", "gen": 3654, "brier": 0.22248, "stagnation_cycles": 17, "algo": "extra_trees",    "note": "Stagnation 17 cycles. DIVERSIFY QUEUED this cycle. 2 prior hard resets at cycles 1176+1201."},
-      {"id": "S22", "space": "TESTforge42/nba-evo-s22",  "status": "EVOLVING", "gen": 1411, "brier": 0.22192, "stagnation_cycles": 0,  "algo": "catboost",      "note": "Active post-reset. CatBoost 44f best. Stagnation 0."}
-    ],
-    "stagnation_alert": true,
-    "diversify_sent": ["S14", "S18"],
     "new_checkpoint": true,
-    "checkpoint_note": "S13 0.22045 < 0.22085. CLAUDE.md fleet_best updated.",
-    "sota_research_filed": "data/research-proposals/2026-04-30T00h-nba-sota.json"
+    "checkpoint_note": "S13 top_performer_brier 0.22021 < 0.22085. New fleet best. CLAUDE.md updated.",
+    "islands": [
+      {
+        "id": "S13",
+        "space": "Nomos42/nba-evo-4",
+        "status": "EVOLVING",
+        "cycle": 39,
+        "gen": 117,
+        "brier": 0.22045,
+        "top_performer_brier": 0.22021,
+        "stagnation": 0,
+        "algo": "extra_trees",
+        "features": 73,
+        "roi": 0.3209,
+        "sharpe": 8.536,
+        "note": "NEW FLEET BEST top_performer=0.22021. Active stagnation=0. Pareto front 13."
+      },
+      {
+        "id": "S14",
+        "space": "Nomos42/nba-evo-5",
+        "status": "EVOLVING",
+        "cycle": 504,
+        "gen": 1511,
+        "brier": 0.22151,
+        "stagnation": 0,
+        "algo": "random_forest",
+        "features": 70,
+        "roi": 0.3075,
+        "sharpe": 6.97,
+        "note": "Active stagnation=0."
+      },
+      {
+        "id": "S15",
+        "space": "Nomos42/nba-evo-6",
+        "status": "EVOLVING",
+        "cycle": 413,
+        "gen": 1239,
+        "brier": 0.22177,
+        "stagnation": 0,
+        "algo": "extra_trees",
+        "features": 96,
+        "roi": 0.3034,
+        "sharpe": 10.9193,
+        "note": "Active stagnation=0. Prior fleet best holder (0.22062 gen1306)."
+      },
+      {
+        "id": "S17",
+        "space": "LBJLincoln26/nba-evo-s17",
+        "status": "DOWN",
+        "error": "503 for 2+ consecutive brain cycles",
+        "gen": null,
+        "brier": null,
+        "stagnation": null,
+        "alert": "DOWN 2nd consecutive cycle. VM keepalive cron should restart. If persists: check LBJLincoln26 HF quota."
+      },
+      {
+        "id": "S18",
+        "space": "TESTforge42/nba-evo-s18",
+        "status": "EVOLVING",
+        "cycle": 1266,
+        "gen": 3798,
+        "brier": 0.22248,
+        "stagnation": 0,
+        "algo": "extra_trees",
+        "features": 51,
+        "roi": 0.298,
+        "sharpe": 7.9271,
+        "note": "Active stagnation=0."
+      },
+      {
+        "id": "S22",
+        "space": "TESTforge42/nba-evo-s22",
+        "status": "EVOLVING",
+        "cycle": 475,
+        "gen": 1423,
+        "brier": 0.22192,
+        "stagnation": 0,
+        "algo": "catboost",
+        "features": 44,
+        "roi": 0.3011,
+        "sharpe": 7.7707,
+        "note": "Active stagnation=0."
+      }
+    ],
+    "stagnation_alert": false,
+    "diversify_sent": [],
+    "sota_research_filed": "data/research-proposals/2026-04-30T04h-nba-sota.json"
   },
 
   "political_islands": {
-    "pol_best_alltime": {"brier": 0.24924, "island": "P7", "space": "LBJLincoln/political-alpha-7", "gen": 38085, "algo": "logistic_regression", "updated": "2026-04-30T00:00:00Z"},
+    "pol_best_alltime": {
+      "brier": 0.24924,
+      "island": "P7",
+      "space": "LBJLincoln/political-alpha-7",
+      "gen": 38916,
+      "algo": "logistic_regression",
+      "updated": "2026-04-30T04:00:00Z"
+    },
     "islands": [
-      {"id": "P1", "space": "Nomos42/political-alpha",       "status": "EVOLVING", "gen": 8303,  "brier": 0.25313, "stagnation_cycles": 0,  "algo": "xgboost_brier",      "note": "RECOVERED from stagnation=59 critical alert last cycle. Now stagnation=0. New run with xgboost_brier objective. Previous algo: catboost."},
-      {"id": "P2", "space": "Nomos42/political-alpha-2",     "status": "SAVING",   "gen": 18003, "brier": 0.24997, "stagnation_cycles": 20, "algo": "xgboost_brier",      "note": "Stagnation 20 cycles. DIVERSIFY QUEUED. Best P2 ever. Gap to POL BEST = 0.00073."},
-      {"id": "P4", "space": "LBJLincoln/political-alpha-4",  "status": "EVOLVING", "gen": 13705, "brier": 0.25646, "stagnation_cycles": 0,  "algo": "logistic_regression", "note": "Regressed from prev best 0.25022. Likely restarted."},
-      {"id": "P5", "space": "LBJLincoln/political-alpha-5",  "status": "COOLDOWN", "gen": 26160, "brier": 0.25703, "stagnation_cycles": 20, "algo": "lightgbm",           "note": "Stagnation 20 cycles. DIVERSIFY QUEUED. LightGBM 122f best fitness 0.24898 in model config."},
-      {"id": "P7", "space": "LBJLincoln/political-alpha-7",  "status": "SAVING",   "gen": 38085, "brier": 0.24924, "stagnation_cycles": 0,  "algo": "logistic_regression", "fleet_best": true, "note": "POL BEST 0.24924 maintained. Marginally improved vs hist_best 0.24925. Gen 38085."}
+      {
+        "id": "P1",
+        "space": "Nomos42/political-alpha",
+        "status": "COOLDOWN",
+        "cycle": 3091,
+        "gen": 9273,
+        "brier": 0.25249,
+        "stagnation": 0,
+        "algo": "catboost",
+        "features": 40,
+        "note": "Improved 0.25313→0.25249 vs prev cycle. stagnation=0."
+      },
+      {
+        "id": "P2",
+        "space": "Nomos42/political-alpha-2",
+        "status": "EVOLVING",
+        "cycle": 6298,
+        "gen": 18894,
+        "brier": 0.24997,
+        "stagnation": 0,
+        "algo": "xgboost_brier",
+        "features": 68,
+        "note": "0.24997 best P2 ever. 0.00073 gap to POL BEST. stagnation=0."
+      },
+      {
+        "id": "P4",
+        "space": "LBJLincoln/political-alpha-4",
+        "status": "EVOLVING",
+        "cycle": 4788,
+        "gen": 14363,
+        "brier": 0.25646,
+        "stagnation": 0,
+        "algo": "logistic_regression",
+        "features": 62,
+        "note": "Recovering from hard reset (gen 20196→14363). stagnation=0."
+      },
+      {
+        "id": "P5",
+        "space": "LBJLincoln/political-alpha-5",
+        "status": "EVOLVING",
+        "cycle": 9048,
+        "gen": 27144,
+        "brier": 0.25703,
+        "stagnation": 0,
+        "algo": "catboost",
+        "features": 50,
+        "note": "stagnation=0. Internal model fitness may diverge from top-level brier (eval set discrepancy)."
+      },
+      {
+        "id": "P7",
+        "space": "LBJLincoln/political-alpha-7",
+        "status": "SAVING",
+        "cycle": 12972,
+        "gen": 38916,
+        "brier": 0.24924,
+        "stagnation": 0,
+        "algo": "logistic_regression",
+        "features": 68,
+        "fleet_best": true,
+        "note": "POL BEST 0.24924 held. Gen 38916 deepest search of any political island. stagnation=0."
+      }
     ],
-    "new_pol_best": true,
-    "new_pol_best_note": "P7 0.24924 < prev hist_best 0.24925. Marginal improvement confirmed.",
+    "stagnation_alert": false,
+    "diversify_sent": [],
+    "rotation_this_cycle": "C",
+    "rotation_note": "Port NBA SOTA momentum features to political entity momentum. See brain-status.json in nomos-political-alpha.",
     "pol_best_brier": 0.24924,
-    "pol_best_island": "P7",
-    "diversify_sent": ["P2", "P5"],
-    "rotate_task": "B_engine_review",
-    "rotate_task_note": "Rotation B: political_engine.py review. VM action: read nomos-political-alpha/scripts/political_engine.py, identify top-3 feature improvement opportunities. Cross-reference P7 logistic_regression success vs P1 xgboost_brier — what features drive P7 lead?"
+    "pol_best_island": "P7"
   },
 
   "dept_councils": {
     "status": "DECOMMISSIONED",
-    "note": "All 9 TESTforge42/nomos-dept-d* Spaces deleted 2026-04-20. Skip."
+    "note": "All 9 TESTforge42/nomos-dept-d* Spaces deleted 2026-04-20. Skipped."
   },
 
   "trading_floors": {
     "note": "TF Quarantine active (30-day no-reset, post 2026-04-22). Monitoring only.",
     "quarantine_expires": "2026-05-22",
-    "last_known_nba": {"leader": "gemini-anl", "as_of": "2026-04-29T20:00:00Z"},
-    "last_known_pol": {"day": 90, "leader": "qwen-arb", "bankroll_approx": 3472, "doctrine": "v5_restored"}
+    "nba_tf_last_updated": "2026-04-30",
+    "pol_tf_last_updated": "2026-04-29",
+    "gateway_last_updated": "2026-04-28"
   },
 
   "alerts": [
-    {"severity": "CHECKPOINT", "msg": "NEW NBA FLEET BEST: S13 brier=0.22045 (extra_trees, gen=1, fresh restart). Threshold 0.22085 breached. CLAUDE.md updated."},
-    {"severity": "WARN",       "msg": "S17 LBJLincoln26/nba-evo-s17 PAUSED — maintainer unpause required via HF UI (https://hf.co/spaces/LBJLincoln26/nba-evo-s17). Public endpoints locked."},
-    {"severity": "INFO",       "msg": "S14 diversify queued (stagnation=21 cycles). S18 diversify queued (stagnation=17 cycles)."},
-    {"severity": "INFO",       "msg": "P1 RECOVERED: stagnation 59→0 cycles. New xgboost_brier run gen=8303."},
-    {"severity": "INFO",       "msg": "P2 diversify queued (stagnation=20). P5 diversify queued (stagnation=20)."},
-    {"severity": "INFO",       "msg": "P7 POL BEST 0.24924 confirmed (logistic_regression, gen=38085). Marginal improvement vs hist 0.24925."},
-    {"severity": "INFO",       "msg": "SOTA 2026: LSTM+Brier-loss achieves 0.1589 on NCAA. NBA SOTA: LR Brier 0.199, XGB 0.202 (2024 test set). Key features: home_next, team_elo_5_y. Filed: data/research-proposals/2026-04-30T00h-nba-sota.json"}
+    {
+      "severity": "CHECKPOINT",
+      "msg": "NEW NBA FLEET BEST: S13 top_performer_brier=0.22021 (extra_trees, gen=117, cycle=39). Threshold 0.22085 breached. Prev best: 0.22045 same island 00:00Z cycle. CLAUDE.md updated."
+    },
+    {
+      "severity": "WARN",
+      "msg": "S17 LBJLincoln26/nba-evo-s17 DOWN (503) 2nd consecutive brain cycle. VM keepalive cron should restart it."
+    },
+    {
+      "severity": "INFO",
+      "msg": "All NBA islands stagnation=0. No diversify commands sent this cycle."
+    },
+    {
+      "severity": "INFO",
+      "msg": "Political: P1 improved 0.25313→0.25249. P2 best ever 0.24997. P7 POL BEST 0.24924 held (gen 38916)."
+    },
+    {
+      "severity": "INFO",
+      "msg": "SOTA 2026: LR Brier 0.199, XGBoost 0.202, CNN 0.221. We beat CNN baseline (0.22021). Gap to LR SOTA: 0.021. Key: rolling-form momentum, shot-chart spatial, MC dropout calibration."
+    },
+    {
+      "severity": "INFO",
+      "msg": "Rotation C: NBA momentum features (team_momentum_5g, rolling_form_last_10) ported as political entity analogs. xgboost_brier objective queued for NBA island mutation pool (P2 political validates at 0.24997)."
+    }
   ],
 
-  "next_cycle": "2026-04-30T04:00:00Z",
-  "next_rotation": "C_nba_technique_ports"
+  "next_cycle": "2026-04-30T08:00:00Z",
+  "next_rotation": "D"
 }
