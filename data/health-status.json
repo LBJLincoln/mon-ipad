@@ -1,5 +1,5 @@
 {
-  "brain_cycle": "2026-04-30T08:00:00Z",
+  "brain_cycle": "2026-04-30T20:00:00Z",
   "trigger": "cloud-brain-4h",
 
   "step0_crash_recovery": {
@@ -15,106 +15,109 @@
       "gen": 117,
       "algo": "extra_trees",
       "checkpoint_date": "2026-04-30T04:00:00Z",
-      "note": "top_performer_brier=0.22021 first detected at 04:00Z cycle (gen 117, cycle 39). Current best_brier field: 0.22045 (gen 223, cycle 75). All-time prev: 0.22062 S15 gen1306 2026-04-25. CLAUDE.md updated this (08:00Z) cycle — 04:00Z cycle claim was not committed."
+      "note": "S13 currently DOWN (cert error this cycle). Record preserved from 04Z/08Z cycle."
     },
     "checkpoint_threshold": 0.22085,
-    "new_checkpoint": false,
-    "checkpoint_note": "Fleet best already captured at 04:00Z (0.22021). CLAUDE.md update executed this cycle.",
-    "sota_gap": {
-      "our_best": 0.22021,
-      "sota_lr": 0.199,
-      "sota_xgboost": 0.202,
-      "sota_cnn": 0.221,
-      "gap_to_sota_lr": 0.02121,
-      "gap_to_sota_xgb": 0.01821,
-      "beat_cnn_baseline": true,
-      "sota_key_features": ["rolling-form ELO momentum", "point_differential denoising", "home_next scheduling", "MC dropout calibration"],
-      "note": "LR 0.199 (Information 2026) / XGBoost 0.202 / CNN 0.221. We beat CNN. Gap to XGBoost SOTA: 0.018. Key unlock: dynamic rolling-form + ELO momentum features."
-    },
+    "new_checkpoint_this_cycle": true,
+    "checkpoint_note": "S18 best_brier=0.22027 (gen=15, extra_trees, 63f) is below 0.22085 threshold. NOT a new alltime best (S13 holds 0.22021). S18 early-run result is promising — monitor to see if it improves at higher gen.",
+    "sota_research_this_cycle": false,
+    "sota_research_note": "Skipped (08Z cycle filed research — alternating every-other-cycle schedule).",
     "islands": [
       {
         "id": "S13",
         "space": "Nomos42/nba-evo-4",
-        "status": "EVOLVING",
-        "cycle": 75,
-        "gen": 223,
-        "brier": 0.22045,
-        "top_performer_brier": 0.22021,
-        "stagnation": 0,
-        "algo": "extra_trees",
-        "features": 73,
-        "roi": 0.3209,
-        "sharpe": 8.536,
-        "note": "FLEET BEST holder (0.22021 top_perf gen117). gen=223 cycle=75. Active stagnation=0. Hard reset at cycle 51 was effective."
+        "status": "DOWN",
+        "error": "certificate is not yet valid",
+        "gen": null,
+        "brier": null,
+        "prev_brier": 0.22045,
+        "alltime_top_perf": 0.22021,
+        "alert": "DOWN this cycle (cert error). Alltime fleet best holder (top_perf=0.22021, gen117). Was EVOLVING gen=223 at 08Z. Likely transient HF cert rotation — monitor next cycle."
       },
       {
         "id": "S14",
         "space": "Nomos42/nba-evo-5",
         "status": "EVOLVING",
-        "cycle": 532,
-        "gen": 1594,
+        "cycle": 607,
+        "gen": 1820,
         "brier": 0.22151,
-        "stagnation": 3,
+        "stagnation": 0,
         "algo": "random_forest",
         "features": 70,
         "roi": 0.3075,
         "sharpe": 6.97,
-        "note": "stagnation=3 cycles. Hard reset at cycle 528 applied. Monitoring — no diversify needed yet (<15)."
+        "note": "Steady. stagnation=0. Hard reset at cycle 528 was effective."
       },
       {
         "id": "S15",
         "space": "Nomos42/nba-evo-6",
-        "status": "EVOLVING",
-        "cycle": 453,
-        "gen": 1358,
-        "brier": 0.22177,
+        "status": "RESET_RECOVERY",
+        "cycle": 36,
+        "gen": 107,
+        "brier": 0.22984,
         "stagnation": 0,
-        "algo": "extra_trees",
-        "features": 66,
-        "roi": 0.214,
-        "note": "Prior fleet best holder (0.22062). Current 0.22177 stable. stagnation=0."
+        "algo": "catboost",
+        "features": 76,
+        "prev_brier": 0.22177,
+        "alert": "REGRESSION: hard reset at cycle 27 after 25 stagnation cycles. gen 1358→107, brier 0.22177→0.22984, extra_trees→catboost. Recovery in progress (stagnation=0 is positive)."
       },
       {
         "id": "S17",
         "space": "LBJLincoln26/nba-evo-s17",
-        "status": "DOWN",
-        "error": "503 for 3rd consecutive brain cycle",
-        "gen": null,
-        "brier": null,
-        "alert": "DOWN 3rd consecutive cycle (prev best 0.22249). Wake attempt sent via HTTP GET. If still down at 12:00Z cycle, escalate to HF support / manual LBJLincoln26 account check.",
-        "action_taken": "HTTP GET wake attempt"
+        "status": "EVOLVING",
+        "cycle": 1438,
+        "gen": 4312,
+        "brier": 0.22248,
+        "stagnation": 11,
+        "stagnation_threshold_internal": 25,
+        "brain_diversify_threshold": 15,
+        "algo": "extra_trees",
+        "features": 51,
+        "roi": 0.298,
+        "sharpe": 7.9271,
+        "note": "RECOVERED (was DOWN at 08Z). stagnation=11 — approaching brain threshold of 15. Two internal hard resets (cycles 1401, 1426) applied. Next cycle: if stagnation>=15 POST /api/command {action:diversify}."
       },
       {
         "id": "S18",
         "space": "TESTforge42/nba-evo-s18",
         "status": "EVOLVING",
-        "cycle": 1310,
-        "gen": 3927,
-        "brier": 0.22248,
-        "stagnation": 0,
+        "cycle": 6,
+        "gen": 15,
+        "brier": 0.22027,
+        "stagnation": 4,
+        "stagnation_threshold": 25,
         "algo": "extra_trees",
-        "features": 51,
-        "roi": 0.257,
-        "note": "Stable. Two recent hard resets (cycles 1276, 1301) handled internally. stagnation=0."
+        "features": 63,
+        "roi": 0.3226,
+        "sharpe": 8.7186,
+        "fleet_best_candidate": true,
+        "note": "★ BELOW THRESHOLD (0.22027 < 0.22085). Very early run (gen=15, cycle=6). Extra_trees 63f. Strong ROI 32.26%, Sharpe 8.72 at just gen=15. Not new alltime best (S13 holds 0.22021). Watch next cycle for sustained improvement."
       },
       {
         "id": "S22",
         "space": "TESTforge42/nba-evo-s22",
-        "status": "EVOLVING",
-        "cycle": 480,
-        "gen": 1439,
-        "brier": 0.22192,
+        "status": "EVOLVING_ANOMALOUS",
+        "cycle": 77,
+        "gen": 231,
+        "brier": 0.25340,
         "stagnation": 0,
-        "algo": "catboost",
+        "algo": "extra_trees",
         "features": 44,
-        "roi": 0.3011,
-        "sharpe": 7.7707,
-        "note": "Active. Two recent hard resets (cycles 453, 478). CatBoost now leading on this island."
+        "feature_candidates_live": 272,
+        "feature_candidates_expected": 3377,
+        "alert": "ANOMALY: feature_candidates=272 (NBA expects ~3377). Brier=0.2534 in political range (not NBA ~0.22x). S22 may be running political engine instead of NBA engine — likely misconfiguration after recent HF restart. Investigate: check Space app.py FEATURE_ENGINE env or NBA_DATA_PATH. Prev CLAUDE.md record: gen=1469, brier=0.22475. This is a significant regression if confirmed misconfig."
       }
     ],
     "stagnation_alert": false,
     "diversify_sent": [],
-    "sota_research_filed": "data/research-proposals/2026-04-30T08h-nba-sota.json"
+    "engine_parity_check": "not_run_this_cycle",
+    "alerts": [
+      "S13 DOWN (cert error) — alltime fleet best holder (0.22021). Monitor next cycle.",
+      "S15 RESET regression — brier 0.22177→0.22984, gen 1358→107. Recovery in progress.",
+      "S17 stagnation=11 (brain threshold=15) — POST diversify next cycle if still stagnant.",
+      "S22 ANOMALY: 272 feature_candidates (NBA expects ~3377). Brier in political range. Investigate misconfiguration.",
+      "S18 ★ FLEET BEST CANDIDATE: 0.22027 at gen=15 (below 0.22085 threshold). Monitor."
+    ]
   },
 
   "political_islands": {
@@ -122,131 +125,119 @@
       "brier": 0.24924,
       "island": "P7",
       "space": "LBJLincoln/political-alpha-7",
-      "gen": 39812,
       "algo": "logistic_regression",
-      "features": 68,
-      "sharpe": 0.766,
-      "updated": "2026-04-30T08:00:00Z",
-      "note": "P7 POL BEST confirmed (beats P5 hist 0.24923). gen 39812 = deepest political island search. LR dominance validates linear momentum feature hypothesis."
+      "gen": 39812,
+      "note": "P7 record set before 19:06Z HF cold restart. P7 currently at gen=243 post-restart."
     },
     "islands": [
       {
         "id": "P1",
         "space": "Nomos42/political-alpha",
         "status": "EVOLVING",
-        "cycle": 3381,
-        "gen": 10142,
+        "cycle": 4186,
+        "gen": 12557,
         "brier": 0.25249,
         "stagnation": 0,
         "algo": "catboost",
-        "features": 112,
-        "roi": 0.0103,
-        "sharpe": 1.03,
-        "note": "Two hard resets (3328, 3348) effective. Active recovery. stagnation=0."
+        "features": 40,
+        "note": "Steady. +805 cycles since 08Z. stagnation=0."
       },
       {
         "id": "P2",
         "space": "Nomos42/political-alpha-2",
-        "status": "COOLDOWN",
-        "cycle": 6631,
-        "gen": 19893,
-        "brier": 0.24997,
+        "status": "EVOLVING",
+        "cycle": 381,
+        "gen": 1140,
+        "brier": 0.24992,
         "stagnation": 0,
         "algo": "xgboost_brier",
         "features": 68,
-        "note": "P2 all-time best. 0.00073 gap to POL BEST. xgboost_brier objective validated — queue for NBA mutation pool."
+        "note": "Hard reset between 08Z and now (was cycle=6631 gen=19893 at 08Z). Paradox: post-reset brier=0.24992 at gen=1140 — BETTER than pre-reset best (0.24997 in 19893 gens). Validates xgboost_brier objective strongly. PORT to NBA mutation pool."
       },
       {
         "id": "P4",
         "space": "LBJLincoln/political-alpha-4",
         "status": "EVOLVING",
-        "cycle": 5023,
-        "gen": 15068,
-        "brier": 0.25646,
-        "stagnation": 0,
-        "algo": "logistic_regression",
-        "features": 62,
-        "note": "Hard reset regression: gen 20196→15068, brier 0.25022→0.25646. Active recovery, stagnation=0."
+        "cycle": 57,
+        "gen": 170,
+        "brier": 0.25345,
+        "stagnation": 5,
+        "algo": "extra_trees",
+        "started_at": "2026-04-30T19:06:20Z",
+        "note": "HF cold restart at 19:06Z (was cycle=5023 gen=15068 at 08Z). State partially preserved via checkpoint. Recovery in progress."
       },
       {
         "id": "P5",
         "space": "LBJLincoln/political-alpha-5",
         "status": "EVOLVING",
-        "cycle": 9427,
-        "gen": 28280,
-        "brier": 0.25703,
-        "stagnation": 0,
-        "algo": "catboost",
-        "features": 50,
+        "cycle": 82,
+        "gen": 243,
+        "brier": 0.25412,
+        "stagnation": 2,
+        "started_at": "2026-04-30T19:06:20Z",
         "hist_best": 0.24923,
-        "roi": 0.0077,
-        "note": "Regressed from hist_best 0.24923. Deep exploration. stagnation=0."
+        "note": "HF cold restart at 19:06Z (was cycle=9427 gen=28280 at 08Z). Recovery in progress. hist_best=0.24923 preserved in checkpoint."
       },
       {
         "id": "P7",
         "space": "LBJLincoln/political-alpha-7",
         "status": "EVOLVING",
-        "cycle": 13271,
-        "gen": 39812,
-        "brier": 0.24924,
-        "stagnation": 0,
-        "algo": "logistic_regression",
-        "features": 68,
-        "fleet_best": true,
-        "sharpe": 0.766,
-        "note": "POL BEST. gen 39812, deepest political search. stagnation=0."
+        "cycle": 82,
+        "gen": 243,
+        "brier": 0.25412,
+        "stagnation": 2,
+        "started_at": "2026-04-30T19:07:23Z",
+        "prev_alltime_best": 0.24924,
+        "lightning_injection": {
+          "label": "karpathy_lightning_0.20238",
+          "island_eval_brier": 0.25412,
+          "note": "Lightning.ai 14:00Z burst produced elite with reported brier=0.20238. Injected into P7 population. Island re-evaluated it at 0.25412 (Lightning model overfit or different validation split). Elite did not set new island best."
+        },
+        "note": "HF cold restart at 19:07Z (was cycle=13271 gen=39812 at 08Z). POL alltime best 0.24924 preserved in checkpoint. Recovery in progress."
       }
     ],
     "stagnation_alert": false,
     "diversify_sent": [],
-    "rotation_this_cycle": "D",
-    "rotation_note": "Rotation D: data pipeline health audit. Stale pipeline-health.json, 3 missing sources (propublica, kalshi, scotus_judicial). See brain-status.json.",
+    "rotation_this_cycle": "A",
+    "rotation_note": "Rotation A: FEC/SEC data audit. Key gaps: (1) LBJLincoln/nomos-browser-nba /api/scrape-fec still ENDPOINT_NOT_YET_DEPLOYED — primary FEC feature source blocked. (2) Kalshi political markets API still 0 features integrated. These are Rotation A priority-1 and priority-2 items. See brain-status.json for recommendations.",
     "pol_best_brier": 0.24924,
-    "pol_best_island": "P7"
+    "pol_best_island": "P7",
+    "pol_best_preserved": true
   },
 
   "dept_councils": {
     "status": "DECOMMISSIONED",
-    "note": "All 9 TESTforge42/nomos-dept-d* Spaces deleted 2026-04-20. Skipped."
+    "note": "All 9 TESTforge42/nomos-dept-d* Spaces deleted 2026-04-20. Step 3 skipped."
   },
 
   "trading_floors": {
     "note": "TF Quarantine active (30-day no-reset, post 2026-04-22). Monitoring only.",
     "quarantine_expires": "2026-05-22",
-    "nba_tf_axelrod_status": "fire-12 HF push pending explicit user gate approval ('push to HF')",
+    "nba_tf_axelrod_status": "fire-12 HF push pending explicit user gate approval ('push to HF'). All Axelrod patches committed (caee9c9 + fire-26 schema parity commit).",
     "pol_tf_doctrine": "v5_restored (day ~90 of 304)",
     "pol_tf_leader": "qwen-arb ~$3,472"
   },
 
   "cross_project": {
-    "nba_to_political": "entity momentum features (rolling_approval_10event, party_kalshi_momentum_30d, entity_brier_delta_10event) — analogs of NBA rolling-form ELO momentum. Top-3 SOTA feature class.",
-    "political_to_nba": "xgboost_brier objective validated by P2 0.24997. Proposal SOTA-4 filed. Queue for NBA island mutation pool.",
-    "sota_to_both": "Rolling-form ELO momentum + point_differential denoising → priority-1 feature additions for next engine version"
+    "nba_to_political": "entity momentum features (rolling_approval_10event, party_kalshi_momentum_30d, entity_brier_delta_10event) — queued from 08Z cycle. No new ports this cycle.",
+    "political_to_nba": "xgboost_brier objective: P2 achieves 0.24992 at gen=1140 post-reset — 6x faster than previous run (19893 gens). STRONG validation. Recommend adding xgboost_brier to NBA island S22 mutation pool (currently misconfigured, needs fix first) and S15 (post-recovery).",
+    "lightning_finding": "karpathy_lightning_0.20238 injected into P7 did not improve island best (still 0.25412). Suggests Lightning model is overfit to training split. Lightning burst methodology produces high in-sample Brier but fails walk-forward validation. File for evaluation team review."
   },
 
   "alerts": [
-    {
-      "severity": "CHECKPOINT",
-      "msg": "NBA FLEET BEST: S13 top_performer_brier=0.22021 (extra_trees gen117). CLAUDE.md updated this cycle (04:00Z claim was uncommitted). Beats old fleet best 0.22062 (S15 gen1306)."
-    },
-    {
-      "severity": "WARN",
-      "msg": "S17 LBJLincoln26/nba-evo-s17 DOWN (503) 3rd consecutive cycle. Wake GET sent. Escalate if down at 12:00Z."
-    },
-    {
-      "severity": "INFO",
-      "msg": "NBA SOTA 2026: LR 0.199 / XGBoost 0.202 / CNN 0.221. Our 0.22021 beats CNN. Gap to XGBoost: 0.018. Key: rolling-form ELO momentum + point_diff denoising. Filed in research-proposals/2026-04-30T08h-nba-sota.json."
-    },
-    {
-      "severity": "INFO",
-      "msg": "POL: P7 confirmed all-time best 0.24924 at gen 39812. P2 xgboost_brier best ever 0.24997 (0.00073 from POL BEST)."
-    },
-    {
-      "severity": "INFO",
-      "msg": "Rotation D: data pipeline health. Known issues: pipeline-health.json stale 20+ days, 3 missing sources. See brain-status.json."
-    }
+    {"severity": "WARN",  "msg": "S13 DOWN (cert error). Alltime fleet best holder (0.22021). Monitor next cycle."},
+    {"severity": "WARN",  "msg": "S22 ANOMALY: feature_candidates=272, brier=0.2534. Expected NBA range. Possible political engine misconfiguration."},
+    {"severity": "WARN",  "msg": "S15 RESET regression: gen 1358→107, brier 0.22177→0.22984. Recovery in progress."},
+    {"severity": "INFO",  "msg": "S17 stagnation=11 (brain threshold=15). POST diversify if stagnation>=15 at next cycle."},
+    {"severity": "CHECKPOINT", "msg": "S18 brier=0.22027 at gen=15 — below 0.22085 threshold. Not new alltime best. Watch."},
+    {"severity": "INFO",  "msg": "P2 xgboost_brier post-reset paradox: 0.24992 at gen=1140 (was 0.24997 at gen=19893). 6x faster convergence validates xgboost_brier for NBA port."},
+    {"severity": "INFO",  "msg": "P4/P5/P7 HF cold restart at 19:06Z. All running, recovering. P7 POL alltime best 0.24924 preserved in checkpoint."},
+    {"severity": "INFO",  "msg": "Lightning 0.20238 injection into P7 failed island validation (island eval: 0.25412). Lightning burst methodology likely overfit."},
+    {"severity": "INFO",  "msg": "Rotation A: FEC/SEC data. Blockers: nomos-browser-nba /api/scrape-fec not deployed, Kalshi API 0 features."},
+    {"severity": "INFO",  "msg": "TF Quarantine day ~8/30. fire-12 HF push still pending user gate."},
+    {"severity": "INFO",  "msg": "Dept councils DECOMMISSIONED (2026-04-20). Step 3 skipped."}
   ],
 
-  "next_cycle": "2026-04-30T12:00:00Z",
-  "next_rotation": "A"
+  "next_cycle": "2026-05-01T00:00:00Z",
+  "next_rotation": "B"
 }
