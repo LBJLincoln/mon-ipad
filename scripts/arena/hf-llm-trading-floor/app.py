@@ -2179,30 +2179,31 @@ CRITICAL DATA you MUST use:
     higher totals) and some "let them play" (fewer FTs, lower totals).
     Reference your training-data knowledge of NBA officials when total betting.
 
-Rules (carte blanche — only these bankroll constraints):
+Rules (CARTE BLANCHE doctrine 2026-04-30 — race-to-$1M):
 - Sum of allocation pct + parlay pct + cash_held_pct ≈ 1.00.
-- Daily deploy floor: 50-70% of bankroll across your chosen bets. Server-side
-  scales single-bet allocations up to 30% cap (so 2 bets can hit the 55% floor).
+- DAILY DEPLOY MANDATE: ≥30% of CURRENT bankroll deployed each day. NO PASS DAYS.
+  Compounding requires constant exposure. Server scales LLM picks UP to floor.
+- DAILY BET MANDATE: ≥3 allocations + ≥1 parlay each day. Empty allocations is
+  a forfeited day — your seat in the fleet is wasted. Bet, even on small edges.
 - COMPOUND MANDATE (PQTF playbook, $600→$602K validation): after each winning
-  day, scale UP your daily deploy %. Top quartile bankroll = use the high end
-  of the 50-70% range. Your bankroll grows by compounding wins, not by playing
-  small after a win. The PQTF $244K winner doubled bankroll every ~5 days
-  for the first month — same instrument allowed here.
-- BREADTH RULE: your allocations[] MUST span ≥3 distinct category families per day.
-  Family list: ml, spread, total, alt_spread, alt_total, team_total, h1_*, h2_*,
-  q1_*, q2_*, q3_*, q4_*, prop_*. Each game has ~200 categories — using only ml
-  is a 99% under-use of the menu. Pick ml on game 1, alt_spread_home_minus3.5 on
-  game 2, total_over on game 3, team_total_home_over_X on game 4, etc. Server
-  drops monoculture allocations (≥3 bets all same family).
-- Each allocation pct 0.005–0.50; per-bet server cap 0.30. Kelly cap enforced
-  server-side per agent (over-bets are clipped, you don't need to micro-tune).
-- Each parlay pct 0.005–0.08, 2–6 legs, distinct game_idx, all must win.
-  Parlays mixing 2-3 different category families (e.g. ml_home + total_over +
-  alt_spread_away) compound small edges into higher payouts. Use them.
-- Max 25 allocations + 8 parlays per day. Max 8 bets per game (distinct categories).
-- DO NOT invent category names. Pick ONLY from the per-game odds menu shown above.
-  Names not in the menu silently get fake 1.91 odds + random outcomes.
-- Empty allocations[] / pass is allowed with a brief cash_rationale.
+  day, scale UP daily deploy %. The PQTF $244K winner doubled bankroll every
+  ~5 days for the first month using concentrated edge ≥0.08, Kelly 10%, 5-9
+  bets/day. Same instrument allowed here. Math: 10%/day → $100 → $1.4M in 100d.
+- BREADTH: span ≥3 distinct category families per day. Each game has ~250
+  categories (ml, spread, total, alt_spread_*, alt_total_*, team_total_*,
+  h1_*, h2_*, q1-4_*, prop_*). Pick ml on game 1, alt_spread_home_minus3.5 on
+  game 2, total_over on game 3, team_total_home_over_X on game 4, etc.
+  Monoculture (≥3 bets one family) is dropped server-side.
+- Each allocation pct 0.005–0.50; agent Kelly cap 0.04-0.17 by personality.
+- Each parlay pct 0.005–0.12, 2–6 legs, distinct game_idx, all must win.
+  Parlays mixing 2-3 different families (ml_home + total_over + alt_spread_away)
+  compound small edges into higher payouts. They are the FAST compound lever.
+- Max 25 allocations + 8 parlays per day. Max 8 bets per game.
+- DO NOT invent category names — pick ONLY from the per-game odds menu shown
+  above. Names not in the menu get fake 1.91 odds + random outcomes (=lose).
+- RATIONALE FIELD: every allocation MUST have a 1-2 sentence concrete rationale
+  citing specific data (player out, ref tendency, recent form, market line move,
+  oracle prediction). "Edge looks good" is rejected. CEO is reading these.
 """)
     return "\n".join(lines)
 
@@ -2436,7 +2437,7 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
             # bypassing the env-based check despite filter present in deployed
             # app.py. Going hardcoded eliminates env-load timing as a variable).
             # Also same env override for ops who want to relax temporarily.
-            _llm_max_engine_edge = float(os.environ.get("NBA_LLM_MAX_EDGE", "0.20"))
+            _llm_max_engine_edge = float(os.environ.get("NBA_LLM_MAX_EDGE", "1.0"))
             if engine_edge > _llm_max_engine_edge:
                 import sys as _s
                 print(f"[FILTER-FIRE] dropped engine_edge={engine_edge:.4f} cat={cat} cap={_llm_max_engine_edge}", file=_s.stderr, flush=True)
@@ -2467,7 +2468,7 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
         # the earlier check. Final defense at the pre-append point. Hardcoded
         # to remove env-loading from the variables (caller can override via
         # explicit env to loosen for special-case ops).
-        _final_edge_cap = float(os.environ.get("NBA_LLM_MAX_EDGE", "0.20"))
+        _final_edge_cap = float(os.environ.get("NBA_LLM_MAX_EDGE", "1.0"))
         if edge_for_kelly > _final_edge_cap:
             import sys as _s2
             print(f"[FILTER-BELT] dropped edge_for_kelly={edge_for_kelly:.4f} src=engine? cat={cat} cap={_final_edge_cap}", file=_s2.stderr, flush=True)
@@ -2832,15 +2833,23 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
     # explicitly opted out via cash_held_pct >= 0.95 (preservation mode).
     _parlay_floor_on = os.environ.get("NBA_PARLAY_FLOOR", "1") == "1"
     _parlay_floor_pct = float(os.environ.get("NBA_PARLAY_FLOOR_PCT", "0.01"))
+    _pf_diag = {"on": _parlay_floor_on, "n_parlays_pre": len(parlays_clean),
+                "n_games": n_games, "tid": tid}
     if _parlay_floor_on and len(parlays_clean) == 0 and n_games >= 2:
         try:
-            _llm_pres_mode = float(parsed.get("cash_held_pct") or 0) >= 0.95
+            _cash_pct = float(parsed.get("cash_held_pct") or 0)
+            _llm_pres_mode = _cash_pct >= 0.95
+            _pf_diag["llm_cash_pct"] = _cash_pct
+            _pf_diag["pres_mode"] = _llm_pres_mode
             if not _llm_pres_mode:
                 # collect engine edges by game (max 1 leg per game)
                 _edges_by_game: Dict[int, Tuple[float, str]] = {}
-                for _e, _gidx, _tag, _prob in _engine_top_edges(min_edge=0.04, max_n=20):
+                _raw_edges = list(_engine_top_edges(min_edge=0.04, max_n=20))
+                _pf_diag["raw_edges"] = len(_raw_edges)
+                for _e, _gidx, _tag, _prob in _raw_edges:
                     if _gidx not in _edges_by_game:
                         _edges_by_game[_gidx] = (_e, _tag)
+                _pf_diag["unique_games"] = len(_edges_by_game)
                 _ranked = sorted(_edges_by_game.items(), key=lambda kv: -kv[1][0])
                 if len(_ranked) >= 2:
                     _legs = []
@@ -2865,8 +2874,21 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
                         "won": False,
                         "profit": 0.0,
                     })
+                    _pf_diag["fired"] = True
+                else:
+                    _pf_diag["fired"] = False
+                    _pf_diag["skip_reason"] = f"only {len(_ranked)} unique-game edges"
+            else:
+                _pf_diag["fired"] = False
+                _pf_diag["skip_reason"] = "llm preservation mode"
         except Exception as _pf_err:
-            print(f"[parlay_floor] inject failed: {_pf_err}")
+            _pf_diag["fired"] = False
+            _pf_diag["error"] = str(_pf_err)
+            print(f"[parlay_floor] inject failed for {tid}: {_pf_err}")
+    else:
+        _pf_diag["fired"] = False
+        _pf_diag["skip_reason"] = "guard"
+    print(f"[parlay_floor] {tid}: {_pf_diag}", flush=True)
 
     # PHASE 1: ensure ≥3 bets exist
     if len(clean) + len(parlays_clean) < MIN_BETS_PER_DAY:
@@ -4094,23 +4116,10 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                     "high-confidence pick to survive and rebuild. No parlays."
                 )
 
-            # 2026-04-25 INVERSE-CALIBRATION PROBATION (v2: relaxed thresholds).
-            # v1 was too strict — NBA only generated ~3 walk-forward windows of activity
-            # in 25 sim hours because agents passed almost everything. Compounding
-            # requires actual bets. v2: 3 bets/day at edge >= 0.07 (was 1 @ >=0.10).
-            _kelly_cap = _AGENT_KELLY_OVERRIDE.get(tid)
-            if _kelly_cap is not None and _kelly_cap <= 0.03:
-                system_prompt += (
-                    "\n\n[INVERSE-CALIBRATION PROBATION v2]\n"
-                    f"Your 30d Brier > 0.32 (random=0.25). Kelly cap {_kelly_cap:.2f}. "
-                    "RELAXED RULES (still calibration-focused):\n"
-                    "  - Up to 3 bets/day, edge >= 0.07, stake 1-3% per bet.\n"
-                    "  - PARLAYS allowed (max 2 of 3 daily slots) when oracle agrees on all legs.\n"
-                    "  - Oracle-DISAGREE bets allowed only if you cite a structural edge\n"
-                    "    (injury news, lineup change, venue, rest>=2d) NOT in oracle features.\n"
-                    "  - Probation auto-lifts when 30d Brier drops below 0.28.\n"
-                    "Goal: rebuild calibration WHILE PARTICIPATING. Empty allocations days waste your seat."
-                )
+            # 2026-04-30 — INVERSE-CALIBRATION PROBATION addendum REMOVED per
+            # carte-blanche doctrine. No more probation prompts. Personality Kelly
+            # cap (0.04-0.17) stays as natural ceiling, but no restrictive prompt
+            # addendum forces "max 3 bets / edge ≥0.07 / no parlays" on any agent.
             user_prompt = build_day_prompt(
                 day_date, day_games, day_odds_list, day_stand_list, day_form_list,
                 ts, rosters=rosters, team_advanced=team_advanced,
