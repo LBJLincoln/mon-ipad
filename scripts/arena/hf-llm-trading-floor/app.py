@@ -2141,10 +2141,25 @@ def build_day_prompt(day_date: str, day_games: List[Dict], day_odds: List[Dict],
 Allocate your bankroll across today's games. You see all games + their full odds menu
 (ml/spread/total/alt_*/team_total/halves/quarters/props/pp_*). Pick freely.
 
-RESPOND WITH RAW JSON ONLY. First character {, last character }. No markdown fences.
+RESPOND WITH RAW JSON ONLY. No markdown fences. No explanation before or after. First character MUST be {, last MUST be }.
 
-Schema (minimal):
+Schema (FILL EVERY FIELD — top-of-JSON fields get priority under token pressure):
 {
+  "day_strategy": "MUST start with STRUCTURAL DIVERGE [peer] or STRUCTURAL COMPLEMENT [peer] citing your REASONING TEMPLATE — then 1-2 sentences on approach. Or CONSENSUS_AGREE_JUSTIFIED [peer] (reason=<structural_reason>).",
+  "coalition_proposal": {
+    "peer": "qwen-quant (or \"none\" if no pact today)",
+    "game_idx": 1,
+    "category": "ml_home",
+    "rationale": "1 sentence — why this peer / why no pact today"
+  },
+  "council_alignment": {
+    "stance": "followed|deviated|partial",
+    "reason": "1 sentence — why you followed/deviated/partial vs council_commit_target"
+  },
+  "ck_consensus_stance": {
+    "stance": "diverge|agree|partial",
+    "reason": "1 sentence citing specific peers/picks from COMMON_KNOWLEDGE"
+  },
   "allocations": [
     {"game_idx": 1, "game": "AWAY@HOME", "category": "<exact name from this game's odds menu>",
      "pct": 0.05, "confidence": 0.65, "edge": 0.04, "strategy": "half_kelly",
@@ -2155,11 +2170,26 @@ Schema (minimal):
      "pct": 0.02, "confidence": 0.45, "edge": 0.06, "rationale": "1 sentence"}
   ],
   "cash_held_pct": 0.25,
-  "ck_consensus_stance": {
-    "stance": "diverge|agree|partial",
-    "reason": "1 sentence citing specific peers/picks from COMMON_KNOWLEDGE"
-  }
+  "cash_rationale": "1 sentence if cash > 0",
+  "games_considered": [
+    {"game_idx": 1, "decision": "bet|skip", "reason": "1 sentence — if skip: why (edge low / category monoculture / injury priced / no clear read)"},
+    {"game_idx": 2, "decision": "skip", "reason": "no edge above 4% threshold"}
+  ]
 }
+
+NEW AUDIT FIELDS (MANDATORY — councils use these to score decision quality):
+- day_strategy: MUST start with STRUCTURAL DIVERGE/COMPLEMENT/CONSENSUS_AGREE_JUSTIFIED citing
+  your REASONING TEMPLATE. Required for ANTI-GROUPTHINK enforcement (Axelrod CK gate).
+- council_alignment: ONE of {followed|deviated|partial} + reason citing council_commit_target.
+- games_considered: ONE entry per game on today's slate (include EVERY game_idx, not just bets).
+  For skipped games give the specific reason — "edge < 4%", "star OUT already priced in",
+  "category monoculture risk", "ref tendencies neutral", "rest gap <1 day", etc.
+- ck_consensus_stance: MANDATORY. After reviewing COMMON_KNOWLEDGE, state stance=diverge|agree|partial
+  + cite specific peers/picks. Primary Axelrod Mech A audit field — captured in day-N.jsonl.
+- coalition_proposal: MANDATORY. Set to a peer + game you want to pact on, OR peer="none" with
+  reason. Pact honored IFF both you and peer place the same (game_idx, category) bet.
+  COLLECTIVE-HELP RULE: if ANY peer bankroll < $50, a top-3 agent must propose a pact with that
+  peer on their highest-edge game — the struggling peer sees it via COMMON_KNOWLEDGE.
 
 CRITICAL DATA you MUST use:
 

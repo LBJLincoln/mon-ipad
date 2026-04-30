@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-30T01:00:00Z",
+  "updated_at": "2026-04-30T12:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -430,6 +430,29 @@
         "scripts/ops/axelrod-fire21-patch.py"
       ],
       "py_compile": "PASS both apps",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-26",
+      "priority": 35,
+      "status": "done",
+      "completed_at": "2026-04-30T12:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 26 — NBA build_day_prompt schema parity (full schema + MANDATORY CK audit block)",
+      "gap_found": "NBA build_day_prompt used 'Schema (minimal)' with 4 top-level keys; POL had full 'Schema (FILL EVERY FIELD)' with 8 keys + NEW AUDIT FIELDS MANDATORY block. NBA agents never saw day_strategy/coalition_proposal/council_alignment/games_considered/cash_rationale in the schema, and ck_consensus_stance had no MANDATORY label.",
+      "patches_applied": [
+        "NBA build_day_prompt L2144: RESPOND header updated to match POL (no markdown fences / first char MUST be {)",
+        "NBA build_day_prompt L2146: 'Schema (minimal)' → 'Schema (FILL EVERY FIELD — top-of-JSON fields get priority under token pressure)'",
+        "NBA build_day_prompt: add day_strategy (STRUCTURAL DIVERGE/COMPLEMENT/CONSENSUS_AGREE_JUSTIFIED) as first schema field",
+        "NBA build_day_prompt: add coalition_proposal {peer, game_idx, category, rationale} (NBA-flavor: game_idx+category vs POL event_idx+direction)",
+        "NBA build_day_prompt: add council_alignment {stance, reason}",
+        "NBA build_day_prompt: move ck_consensus_stance to slot 4 (after council_alignment, before allocations)",
+        "NBA build_day_prompt: add cash_rationale field after cash_held_pct",
+        "NBA build_day_prompt: add games_considered array (one entry per game_idx, bet|skip + reason)",
+        "NBA build_day_prompt: add NEW AUDIT FIELDS (MANDATORY) block with ck_consensus_stance MANDATORY note + Primary Axelrod Mech A audit field label"
+      ],
+      "py_compile": "PASS both apps (NBA 5784 lines, POL 3762 lines)",
+      "parity_status": "NBA build_day_prompt now at full parity with POL build_day_prompt for Axelrod Mech A audit fields",
       "do_not_push_hf_space_yet": true
     },
     {
