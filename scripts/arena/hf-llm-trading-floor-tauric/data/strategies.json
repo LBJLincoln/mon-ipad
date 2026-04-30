@@ -1,0 +1,159 @@
+{
+  "full_kelly": {
+    "family": "kelly",
+    "fraction": 1.0,
+    "min_edge": 0.02,
+    "max_pct": 0.25,
+    "desc": "Full Kelly criterion - mathematically optimal but high variance. Bet fraction = edge/odds. Research: Kelly 1956."
+  },
+  "half_kelly": {
+    "family": "kelly",
+    "fraction": 0.5,
+    "min_edge": 0.02,
+    "max_pct": 0.15,
+    "desc": "Half Kelly - 75% of optimal growth at 50% variance. Most recommended by professional bettors. Research: Thorp 2006."
+  },
+  "quarter_kelly": {
+    "family": "kelly",
+    "fraction": 0.25,
+    "min_edge": 0.03,
+    "max_pct": 0.08,
+    "desc": "Quarter Kelly - conservative growth, very low ruin probability. Good for bankroll preservation."
+  },
+  "eighth_kelly": {
+    "family": "kelly",
+    "fraction": 0.125,
+    "min_edge": 0.03,
+    "max_pct": 0.05,
+    "desc": "Eighth Kelly - ultra conservative. Near-zero ruin probability. For large bankrolls."
+  },
+  "flat_1pct": {
+    "family": "flat",
+    "bet_pct": 0.01,
+    "min_edge": 0.01,
+    "desc": "Flat 1% of bankroll per bet. Simple, predictable. Research: Ziemba 2017."
+  },
+  "flat_2pct": {
+    "family": "flat",
+    "bet_pct": 0.02,
+    "min_edge": 0.01,
+    "desc": "Flat 2% - moderate flat betting. Standard recreational approach."
+  },
+  "flat_5pct": {
+    "family": "flat",
+    "bet_pct": 0.05,
+    "min_edge": 0.02,
+    "desc": "Flat 5% - aggressive flat. Higher growth but higher drawdown risk."
+  },
+  "diversified_flat": {
+    "family": "flat",
+    "bet_pct": 0.01,
+    "min_edge": 0.005,
+    "desc": "Diversified flat 1% with low edge threshold. Spread bets across many games. Volume strategy."
+  },
+  "confidence_scaled": {
+    "family": "confidence",
+    "min_edge": 0.02,
+    "max_pct": 0.2,
+    "desc": "Scale bet size with confidence level. 0-100% confidence maps to 0-max_pct. Research: Prediction Arena 2604.07355."
+  },
+  "proportional_edge": {
+    "family": "proportional",
+    "min_edge": 0.02,
+    "max_pct": 0.15,
+    "multiplier": 3.0,
+    "desc": "Bet size proportional to edge x multiplier. Larger edges = larger bets. Research: Benter 1994."
+  },
+  "ev_threshold_110": {
+    "family": "ev_threshold",
+    "min_edge": 0.02,
+    "max_pct": 0.15,
+    "ev_gate": 1.1,
+    "desc": "Only bet when EV > 1.10 (10% expected profit). High selectivity. Research: Haghani & White 2017."
+  },
+  "value_hunter": {
+    "family": "value",
+    "min_edge": 0.05,
+    "max_pct": 0.12,
+    "desc": "Only bet when edge > 5%. Very selective, high-conviction plays only. Research: Pinnacle sharp methodology."
+  },
+  "underdog_specialist": {
+    "family": "underdog",
+    "min_odds": 2.2,
+    "min_edge": 0.03,
+    "max_pct": 0.08,
+    "desc": "Only bet underdogs (odds > +120). Exploits favorite-longshot bias. Research: Woodland & Woodland 1994."
+  },
+  "dog_value_plus": {
+    "family": "underdog",
+    "min_odds": 3.0,
+    "min_edge": 0.02,
+    "max_pct": 0.06,
+    "desc": "Big underdogs only (odds > +200). Small bets, large payoffs. Lottery-style value hunting."
+  },
+  "first_half_sniper": {
+    "family": "kelly",
+    "fraction": 0.5,
+    "min_edge": 0.02,
+    "max_pct": 0.15,
+    "cats": [
+      "h1_ml_home",
+      "h1_ml_away"
+    ],
+    "desc": "Specializes in first-half moneylines. Teams often show true form early. Research: Paul & Weinbach 2005."
+  },
+  "first_half_away": {
+    "family": "kelly",
+    "fraction": 0.5,
+    "min_edge": 0.02,
+    "max_pct": 0.12,
+    "desc": "First-half away ML specialist. 53.2% win rate in backtest. Away teams underpriced in H1."
+  },
+  "home_specialist": {
+    "family": "kelly",
+    "fraction": 0.5,
+    "min_edge": 0.02,
+    "max_pct": 0.12,
+    "cats": [
+      "ml_home",
+      "spread_home",
+      "h1_ml_home"
+    ],
+    "desc": "Home advantage specialist. NBA home teams win ~58%. Exploits travel fatigue and crowd effect."
+  },
+  "anti_martingale": {
+    "family": "anti_mart",
+    "min_edge": 0.02,
+    "max_pct": 0.2,
+    "base_pct": 0.02,
+    "desc": "Increase bets after wins, decrease after losses. Ride hot streaks. Research: Anti-Martingale system, Dubins & Savage 1976."
+  },
+  "drawdown_adjusted": {
+    "family": "drawdown_adj",
+    "min_edge": 0.02,
+    "max_pct": 0.15,
+    "dd_threshold": 0.15,
+    "desc": "Reduce bet size when drawdown exceeds threshold. Protects against ruin. Research: DMAD framework."
+  },
+  "streak_momentum": {
+    "family": "streak",
+    "min_edge": 0.02,
+    "max_pct": 0.2,
+    "streak_boost": 3,
+    "desc": "Boost bet size after N consecutive wins. Captures momentum. Research: TradingAgents 2412.20138."
+  },
+  "parlay_2leg": {
+    "family": "parlay",
+    "legs": 2,
+    "min_edge": 0.03,
+    "max_pct": 0.05,
+    "desc": "2-leg parlays combining correlated bets (e.g., ML + total). Higher payoff. Research: PolySwarm correlation analysis."
+  },
+  "teaser_6pt": {
+    "family": "teaser",
+    "points": 6,
+    "min_edge": 0.01,
+    "max_pct": 0.08,
+    "desc": "6-point NBA teaser. Move spread 6 points in your favor at reduced odds. Research: Wong teasers methodology."
+  }
+}
