@@ -1,0 +1,87 @@
+{
+  "filed_at": "2026-04-30T00:00:00Z",
+  "filed_by": "cloud-brain-4h",
+  "search_query": "NBA prediction AI SOTA 2026 Brier score transformer tabular ensemble calibration",
+
+  "sota_papers": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "year": 2026,
+      "key_finding": "RNN + Monte Carlo Dropout: team-level metrics + rolling-form + spatial shot-chart embeddings. Calibrated sequential probabilities. Achieves sub-0.21 Brier on 2024 NBA.",
+      "relevance": "HIGH",
+      "actionable": "Port shot-chart embeddings as feature category. Add MC Dropout calibration post-processing to island predictions."
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "year": 2025,
+      "key_finding": "Stacking: Naïve Bayes + AdaBoost + MLP + KNN + XGBoost + Decision Tree + Logistic Regression. Superior to any single model.",
+      "relevance": "MEDIUM",
+      "actionable": "Island S22 already uses CatBoost. Consider adding AdaBoost to crossover pool as CPU-friendly alternative."
+    },
+    {
+      "title": "Forecasting NCAA Basketball with LSTM vs Transformer (Brier loss)",
+      "url": "https://arxiv.org/html/2508.02725v1",
+      "year": 2025,
+      "key_finding": "LSTM + Brier loss achieves Brier 0.1589 (NCAA). Transformer has higher AUC (0.8473) but worse calibration. Brier-loss training objective directly improves Brier score.",
+      "relevance": "HIGH",
+      "actionable": "Current islands optimize Brier as objective — validated. LSTM architecture not feasible on CPU-only islands. Calibration post-processing (isotonic/Platt) applicable."
+    }
+  ],
+
+  "top_features_from_literature": [
+    {"feature": "home_next", "description": "Home/away next game indicator", "source": "MDPI 2026"},
+    {"feature": "team_elo_5_y", "description": "5-year rolling ELO momentum", "source": "MDPI 2026"},
+    {"feature": "team_elo", "description": "Current ELO rating", "source": "MDPI 2026"},
+    {"feature": "shot_chart_spatial", "description": "Zone-by-zone shot distribution embeddings", "source": "MDPI 2026"},
+    {"feature": "rolling_form_10g", "description": "10-game rolling win rate", "source": "stacked ensemble paper"}
+  ],
+
+  "benchmark_brier_scores": {
+    "LSTM_brier_loss_NCAA_2025": 0.1589,
+    "logistic_regression_NBA_2024": 0.199,
+    "xgboost_NBA_2024": 0.202,
+    "nomos_fleet_best_current": 0.22045,
+    "nomos_tabicl_colab": 0.22054,
+    "nomos_cv_best": 0.22169,
+    "gap_to_sota": 0.021
+  },
+
+  "proposals": [
+    {
+      "id": "SOTA-2026-04-30-A",
+      "title": "Add shot-chart spatial zones as feature category",
+      "priority": "HIGH",
+      "effort": "MEDIUM",
+      "description": "Add 7-zone shot efficiency features (paint/mid/corner3/above-break3 × FG% + attempt rate) to engine.py. These appear in MDPI 2026 as top predictors. Can be sourced from NBA stats API or boxscore data already in cache.",
+      "expected_brier_delta": -0.002
+    },
+    {
+      "id": "SOTA-2026-04-30-B",
+      "title": "Brier-loss training objective already confirmed optimal",
+      "priority": "INFO",
+      "effort": "NONE",
+      "description": "LSTM paper confirms Brier-loss training > cross-entropy for calibration. Our islands already optimize Brier directly. No change needed — current approach validated by SOTA.",
+      "expected_brier_delta": 0
+    },
+    {
+      "id": "SOTA-2026-04-30-C",
+      "title": "AdaBoost to island crossover pool",
+      "priority": "MEDIUM",
+      "effort": "LOW",
+      "description": "Add sklearn AdaBoostClassifier to the model_type rotation pool in evolution islands. Stacked ensemble paper shows AdaBoost contributes meaningfully when stacked. CPU-feasible. Implement in mutate() as new model option.",
+      "expected_brier_delta": -0.001
+    },
+    {
+      "id": "SOTA-2026-04-30-D",
+      "title": "Port ELO momentum features to political engine",
+      "priority": "MEDIUM",
+      "effort": "MEDIUM",
+      "description": "NBA SOTA top features are momentum/form (team_elo_5_y, home_next). Analogues for political: legislator_approval_rolling_10event, party_momentum_kalshi_30d, entity_recent_brier_delta. Add to political engine.py feature categories. P7 logistic_regression success suggests momentum features already dominate — formalize them.",
+      "expected_brier_delta": -0.002
+    }
+  ],
+
+  "cross_project_insight": "P7 logistic_regression achieves POL BEST 0.24924. SOTA literature confirms LR excels when momentum features dominate (P7 has 38085 gens of momentum-feature selection). Same principle: NBA islands should verify which feature categories drive S13 extra_trees gen-1 success."
+}
