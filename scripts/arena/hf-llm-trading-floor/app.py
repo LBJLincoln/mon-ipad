@@ -1,3 +1,1 @@
-"""
-Nomos42 Real LLM Trading Floor — HuggingFace Spaces
-====================================================
+PLACEHOLDER_NBA
