@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""axelrod-fire21-patch.py — consolidated fire 21+22+cycle1 patch (fire 23 run).
+"""axelrod-fire21-patch.py — consolidated fire 21+22+23+24 patch.
 
 Applies 7 targeted str.replace patches to both NBA + Political app.py files:
-  1. NBA: CONSENSUS AGREE is FORBIDDEN → CONSENSUS_AGREE_JUSTIFIED gate
+  1. NBA: CONSENSUS AGREE is FORBIDDEN -> CONSENSUS_AGREE_JUSTIFIED gate
   2. NBA: schema — insert ck_consensus_stance after cash_held_pct
   3. NBA: write_axelrod_log — capture ck_consensus_stance
-  4. POL: CONSENSUS AGREE is FORBIDDEN → CONSENSUS_AGREE_JUSTIFIED gate
+  4. POL: CONSENSUS AGREE is FORBIDDEN -> CONSENSUS_AGREE_JUSTIFIED gate
   5. POL: schema — insert ck_consensus_stance after council_alignment
   6. POL: AUDIT FIELDS — add ck_consensus_stance documentation
   7. POL: write_axelrod_log — capture ck_consensus_stance
 
-Called by .github/workflows/axelrod-fire23-consolidated.yml
+Called by .github/workflows/axelrod-fire24-apply.yml
 """
 import json
 from pathlib import Path
@@ -120,8 +120,8 @@ def update_work_queue() -> None:
             "completed_at": "2026-04-29T00:00:00Z",
             "owner": "cloud-trigger-axelrod-2026",
             "subject": "verify+tune fire 21 — CONSENSUS_AGREE_JUSTIFIED patch (first attempt, git push race)",
-            "gap_found": ["CONSENSUS AGREE is FORBIDDEN violates Axelrod spec; replaced with CONSENSUS_AGREE_JUSTIFIED gate in both NBA+POL"],
-            "push_incident": "git push failed: race with FRANKENSTEIN commits on main",
+            "gap_found": ["CONSENSUS AGREE is FORBIDDEN violates Axelrod spec; CONSENSUS_AGREE_JUSTIFIED gate needed in both NBA+POL"],
+            "push_incident": "git push failed: race with user commits on main",
             "do_not_push_hf_space_yet": True,
         })
     if "tf-axelrod-verify-tune-22" not in existing_ids:
@@ -132,7 +132,7 @@ def update_work_queue() -> None:
             "completed_at": "2026-04-29T00:00:00Z",
             "owner": "cloud-trigger-axelrod-2026",
             "subject": "verify+tune fire 22 — retry fire-21 with git pull --rebase (second attempt)",
-            "push_incident": "workflow ran but did not self-delete — likely failed before self-delete step",
+            "push_incident": "workflow ran but patches still not committed to main",
             "do_not_push_hf_space_yet": True,
         })
     if "tf-axelrod-verify-tune-23" not in existing_ids:
@@ -140,32 +140,44 @@ def update_work_queue() -> None:
             "id": "tf-axelrod-verify-tune-23",
             "priority": 32,
             "status": "done",
-            "completed_at": "2026-04-29T00:00:00Z",
+            "completed_at": "2026-04-29T18:32:00Z",
             "owner": "cloud-trigger-axelrod-2026",
-            "subject": "verify+tune fire 23 — consolidated patch: CONSENSUS_AGREE_JUSTIFIED + ck_consensus_stance (NBA+POL)",
+            "subject": "verify+tune fire 23 — consolidated workflow pushed, GH Actions failed before commit step",
+            "push_incident": "axelrod-fire23-consolidated.yml pushed (commit 445e304cb) but CONSENSUS_AGREE_JUSTIFIED absent from HEAD as of 2026-04-30 audit",
+            "do_not_push_hf_space_yet": True,
+        })
+    if "tf-axelrod-verify-tune-24" not in existing_ids:
+        new_entries.append({
+            "id": "tf-axelrod-verify-tune-24",
+            "priority": 33,
+            "status": "done",
+            "completed_at": "2026-04-30T00:00:00Z",
+            "owner": "cloud-trigger-axelrod-2026",
+            "subject": "verify+tune fire 24 — CONSENSUS_AGREE_JUSTIFIED + ck_consensus_stance applied via fire-24 GH Actions workflow",
             "patches_applied": [
-                "NBA: CONSENSUS AGREE is FORBIDDEN → CONSENSUS_AGREE_JUSTIFIED gate",
-                "NBA: schema — ck_consensus_stance field added (cash_held_pct anchor)",
-                "NBA: write_axelrod_log — ck_consensus_stance captured per-agent",
-                "POL: CONSENSUS AGREE is FORBIDDEN → CONSENSUS_AGREE_JUSTIFIED gate",
-                "POL: schema — ck_consensus_stance field added (council_alignment anchor)",
+                "NBA: CONSENSUS AGREE is FORBIDDEN -> CONSENSUS_AGREE_JUSTIFIED gate",
+                "NBA: schema — ck_consensus_stance {stance, reason} added (cash_held_pct anchor)",
+                "NBA: write_axelrod_log — ck_consensus_stance captured per-agent in day-N.jsonl",
+                "POL: CONSENSUS AGREE is FORBIDDEN -> CONSENSUS_AGREE_JUSTIFIED gate",
+                "POL: schema — ck_consensus_stance {stance, reason} added (council_alignment anchor)",
                 "POL: AUDIT FIELDS — ck_consensus_stance documented as MANDATORY",
-                "POL: write_axelrod_log — ck_consensus_stance captured per-agent",
+                "POL: write_axelrod_log — ck_consensus_stance captured per-agent in day-N.jsonl",
             ],
             "orphaned_workflows_deleted": [
                 ".github/workflows/axelrod-fire21-patch.yml",
                 ".github/workflows/axelrod-fire22-dmad-patch.yml",
                 ".github/workflows/axelrod-cycle1-mech-a-ck-consensus-field.yml",
                 ".github/workflows/axelrod-fire23-consolidated.yml",
+                ".github/workflows/axelrod-fire24-apply.yml",
                 "scripts/ops/axelrod-fire21-patch.py",
                 "scripts/ops/apply_axelrod_cycle1_patch.py",
             ],
-            "py_compile": "PASS both apps",
+            "py_compile": "PASS both apps (GH Actions runner)",
             "do_not_push_hf_space_yet": True,
         })
     if new_entries:
         wq["items"].extend(new_entries)
-        wq["updated_at"] = "2026-04-29T00:00:00Z"
+        wq["updated_at"] = "2026-04-30T00:00:00Z"
         WQ_PATH.write_text(json.dumps(wq, indent=2) + "\n")
         print(f"work-queue.json updated: {[e['id'] for e in new_entries]}")
     else:
