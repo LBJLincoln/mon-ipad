@@ -3743,6 +3743,17 @@ def write_axelrod_log(day_idx: int, day_date: str, state: Dict,
                 "was_sacrificed": tid in sacrificial_map,
                 "num_decisions": len(decisions),
                 "wins_today": sum(1 for d in decisions if d.get("won")),
+                "decisions_summary": [
+                    {
+                        "game": d.get("game", ""),
+                        "category": d.get("category", ""),
+                        "stake": round(d.get("stake", 0), 2),
+                        "edge": round(d.get("edge", 0), 4),
+                        "won": bool(d.get("won")),
+                        "profit": round(d.get("profit", 0), 2),
+                    }
+                    for d in decisions
+                ],
                 "peer_consensus_distance": round(
                     compute_consensus_distance(tid, day_date, state, agent_logs), 4
                 ),
@@ -3760,7 +3771,7 @@ def write_axelrod_log(day_idx: int, day_date: str, state: Dict,
 # ── EXPERIMENT RUNNER ────────────────────────────────────────────────────────
 
 def run_experiment(progress=gr.Progress(track_tqdm=False)):
-    """v3 DAY-BUCKET experiment: 10 agents × all game-days.
+    """v3 DAY-BUCKET experiment: 17 agents × all game-days.
 
     Each agent receives ALL games of a single day in one prompt, and must
     allocate 100% of their bankroll across them (or explicitly hold cash with

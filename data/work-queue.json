@@ -431,6 +431,23 @@
       ],
       "py_compile": "PASS both apps",
       "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-25",
+      "priority": 34,
+      "status": "done",
+      "completed_at": "2026-04-30T07:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 25 — decisions_summary field added to Mech C log (NBA+POL)",
+      "audit_result": "SPEC CLEAN — all 3 mechanisms confirmed fully intact (fire-24 state). All 24 prior fires done. Only pending: fire-12 (HF push, awaiting user gate).",
+      "patches_applied": [
+        "NBA: write_axelrod_log — add decisions_summary [{game,category,stake,edge,won,profit}] after wins_today",
+        "POL: write_axelrod_log — add decisions_summary [{ticker,direction,event_type,stake,edge,won,profit}] after wins_today",
+        "NBA: run_experiment docstring '10 agents' → '17 agents' (stale from pre-parity era)"
+      ],
+      "spec_gap_closed": "Mech C spec requires 'decisions' per agent in day-N.jsonl. Prior implementation wrote num_decisions (count only). Now writes full decisions_summary array — paper dataset is spec-complete.",
+      "py_compile": "PASS both apps (NBA 5747 lines, POL 3762 lines)",
+      "do_not_push_hf_space_yet": true
     }
   ],
   "recovery_protocol": {
