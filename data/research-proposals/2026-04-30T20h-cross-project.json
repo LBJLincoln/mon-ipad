@@ -1,0 +1,92 @@
+{
+  "created_at": "2026-04-30T20:00:00Z",
+  "source": "cloud-brain-4h",
+  "title": "Cross-project wins: xgboost_brier NBA port, S22 engine audit, Lightning injection gate",
+
+  "proposals": [
+    {
+      "id": "XP-1",
+      "priority": "HIGH",
+      "title": "Port xgboost_brier objective to NBA island mutation pool",
+      "evidence": {
+        "source": "P2 Nomos42/political-alpha-2 post-reset observation (20Z cycle)",
+        "pre_reset": {"brier": 0.24997, "gen": 19893, "cycles": 6631},
+        "post_reset": {"brier": 0.24992, "gen": 1140, "cycles": 381},
+        "speedup_factor": 17.4,
+        "conclusion": "xgboost_brier achieves equivalent performance 17x faster. Applies to NBA: direct Brier minimization should outperform log-loss proxy on calibrated tree ensembles."
+      },
+      "target_islands": ["S15 (post-reset-recovery)", "S22 (post-misconfig-fix)"],
+      "implementation": {
+        "file": "scripts/arena/hf-nba-evo-*/app.py",
+        "change": "In MODEL_CONFIG or ALLOWED_MODELS dict, add entry: {\"model_type\": \"xgboost_brier\", \"params\": {\"objective\": \"binary:logistic\", \"eval_metric\": \"logloss\", \"max_depth\": 6, \"learning_rate\": 0.1}}",
+        "note": "NBA islands S13/S14/S18 use extra_trees/random_forest. Adding xgboost_brier to mutation pool adds diversity without disrupting existing champions."
+      },
+      "expected_brier_delta": -0.002,
+      "effort": "low"
+    },
+    {
+      "id": "XP-2",
+      "priority": "HIGH",
+      "title": "Investigate and fix S22 (TESTforge42/nba-evo-s22) engine misconfiguration",
+      "evidence": {
+        "live_feature_candidates": 272,
+        "expected_feature_candidates": 3377,
+        "live_brier": 0.2534,
+        "expected_brier_range": "0.22x",
+        "conclusion": "S22 appears to be running political engine (272f) instead of NBA engine (3377f). Brier in political range confirms this."
+      },
+      "investigation_steps": [
+        "1. Check S22 Space app.py: grep for NBA_DATA_PATH or POLITICAL_DATA_PATH env var",
+        "2. Check HF Space environment variables: HUGGINGFACE_HUB or Space Settings > Variables",
+        "3. Compare S22 app.py against S18 app.py (both TESTforge42 account) — S18 works correctly (brier=0.22027)",
+        "4. Likely fix: update S22 Space env or app.py to point to NBA data file (nba_cached_data.npz or equivalent)",
+        "5. After fix: restart Space, verify feature_candidates ~3377 and brier drops to 0.22x range"
+      ],
+      "impact": "S22 slot currently wasted (running political GA with political brier target on NBA slots). Fix restores full 6-island NBA fleet coverage."
+    },
+    {
+      "id": "XP-3",
+      "priority": "MEDIUM",
+      "title": "Gate Lightning.ai elite injection at island_eval_brier < current_island_best",
+      "evidence": {
+        "observation": "P7 received karpathy_lightning_0.20238 elite injection. Island re-evaluated at 0.25412. Lightning's reported 0.20238 (in-sample or different split) did not generalize.",
+        "risk": "Noisy elite injections can corrupt island population, wasting compute cycles on overfit models"
+      },
+      "proposed_fix": {
+        "file": "scripts/lightning/launch_karpathy.py",
+        "change": "Before injecting Lightning elite into island, call /api/status on target island, compare reported best_brier. Only inject if lightning_eval_brier (re-evaluated with island's own data split) < island_best_brier.",
+        "fallback": "If island has no /api/inject endpoint, log the candidate to data/research-proposals/lightning-elites/ for manual review instead of auto-injecting."
+      },
+      "note": "Existing 2026-04-23-04h-karpathy-lightning-bridge.json proposal covers the bridge mechanism. This is a targeted quality gate for the injection step."
+    },
+    {
+      "id": "XP-4",
+      "priority": "MEDIUM",
+      "title": "S17 stagnation early-warning: pre-load diversify candidates for next cycle",
+      "evidence": {
+        "s17_stagnation": 11,
+        "brain_threshold": 15,
+        "cycles_until_action": "~1 brain cycle (~4h)",
+        "current_brier": 0.22248
+      },
+      "action": "At next cycle, if S17 stagnation>=15, POST https://lbjlincoln26-nba-evo-s17.hf.space/api/command {\"action\": \"diversify\"}. S17's extra_trees population has been locked at 51 features for 1438+ cycles — diversify should inject random_forest and xgboost_brier variants."
+    }
+  ],
+
+  "nba_fleet_summary": {
+    "alltime_best": {"brier": 0.22021, "island": "S13", "status": "DOWN this cycle"},
+    "best_active": {"brier": 0.22027, "island": "S18", "gen": 15},
+    "worst_active": {"brier": 0.2534, "island": "S22", "note": "likely misconfiguration"},
+    "healthy_count": 4,
+    "down_count": 1,
+    "anomalous_count": 1
+  },
+
+  "political_fleet_summary": {
+    "alltime_best": {"brier": 0.24924, "island": "P7", "status": "recovering from HF restart"},
+    "best_active_live": {"brier": 0.24992, "island": "P2", "algo": "xgboost_brier"},
+    "healthy_count": 5,
+    "down_count": 0,
+    "restarting_count": 3
+  }
+}
