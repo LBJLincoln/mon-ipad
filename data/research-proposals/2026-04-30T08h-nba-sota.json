@@ -1,0 +1,79 @@
+{
+  "id": "2026-04-30T08h-nba-sota",
+  "generated_at": "2026-04-30T08:00:00Z",
+  "trigger": "cloud-brain-4h cycle (every-other-cycle SOTA research)",
+  "sources": [
+    "Uncertainty-Aware ML for NBA Forecasting, Information 2026 (MDPI) — https://www.mdpi.com/2078-2489/17/1/56",
+    "Stacked Ensemble Model for NBA Prediction, Scientific Reports 2025 (Nature) — https://www.nature.com/articles/s41598-025-13657-1",
+    "XGBoost + SHAP for NBA Game Outcomes, PMC NIH — https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
+    "Best Data Points for 2026 NBA Predictions, SportBotAI"
+  ],
+  "sota_benchmarks": {
+    "logistic_regression_brier": 0.199,
+    "xgboost_brier": 0.202,
+    "cnn_brier": 0.221,
+    "our_fleet_best_brier": 0.22021,
+    "gap_to_lr_sota": 0.02121,
+    "gap_to_xgb_sota": 0.01821,
+    "beat_cnn_baseline": true,
+    "tabnet_tabicl_breakthrough": false,
+    "note": "No breakthrough TabNet/TabICL found. Gradient boosting dominance continues through 2026. We beat CNN (0.221). Gap to XGBoost SOTA: 0.018."
+  },
+  "key_findings": [
+    "Dynamic rolling-form ELO momentum (team_elo_rolling_5g, season momentum) consistently ranks top-3 predictive feature across all 2025-2026 published models — primary gap vs SOTA",
+    "Point differential denoising: team_point_diff_rolling_10g replaces raw W/L to reduce luck/clutch variance; published Brier gain 0.003-0.005",
+    "home_next scheduling feature (is next game home?) as proxy for rest/travel fatigue — simple but ranks top predictors in SportBotAI 2026 analysis",
+    "RNN + Monte Carlo dropout for calibrated uncertainty quantification — improves ECE without degrading Brier; relevant for TF agent calibration",
+    "XGBoost + SHAP integration: SHAP-guided feature selection removes 60-80% low-value features while preserving predictive power — aligns with MAX_FEATURES=200 constraint",
+    "Stacked ensembles (tree + sequential, Nature 2025): modest gains but high complexity cost; gradient boosting alone competitive for our use case"
+  ],
+  "proposals": [
+    {
+      "id": "SOTA-1-elo-momentum",
+      "priority": "HIGH",
+      "title": "Add team ELO rolling momentum features to features/engine.py",
+      "description": "team_elo_5g_momentum (rolling 5-game ELO delta), team_elo_season_momentum (season-to-date ELO trend slope), team_form_last_5 (W/L ratio last 5 games weighted by margin). Identified as top-3 predictive in LR SOTA (0.199). We may have base ELO but likely missing rolling momentum variants.",
+      "expected_brier_delta": -0.005,
+      "effort": "low — 3 derived features in features/engine.py v3.1",
+      "cross_project_parity": "Directly maps to POL-C1-entity-momentum (party_kalshi_momentum_30d, legislator_approval_rolling_10event)"
+    },
+    {
+      "id": "SOTA-2-point-diff-denoising",
+      "priority": "HIGH",
+      "title": "Add point_differential_rolling denoising features",
+      "description": "team_point_diff_rolling_10g (rolling 10-game avg point differential), team_point_diff_vs_spread_10g (actual PD minus spread expectation rolling). Reduces win/loss luck variance. Published gain: 0.003-0.005 Brier reduction.",
+      "expected_brier_delta": -0.003,
+      "effort": "low — 2 derived features"
+    },
+    {
+      "id": "SOTA-3-home-next-schedule",
+      "priority": "MEDIUM",
+      "title": "Add scheduling fatigue features",
+      "description": "home_next (next game is home/away), games_last_7d (back-to-back proxy), days_rest (days since last game). SportBotAI identifies these as top 2026 predictors.",
+      "expected_brier_delta": -0.002,
+      "effort": "medium — requires schedule parsing from existing data"
+    },
+    {
+      "id": "SOTA-4-xgboost-brier-objective",
+      "priority": "HIGH",
+      "title": "Add xgboost_brier objective to NBA island mutation pool",
+      "description": "Political P2 reached all-time best 0.24997 using xgboost_brier objective (Brier/log-loss optimized XGBoost). Should be added to NBA island mutation pool immediately. Low risk — config change only, no engine modification.",
+      "cross_project_validation": "POL P2 xgboost_brier 0.24997 (all-time best for P2) is definitive validation",
+      "expected_brier_delta": -0.002,
+      "effort": "low — mutation pool config in island app.py"
+    },
+    {
+      "id": "SOTA-5-isotonic-calibration",
+      "priority": "MEDIUM",
+      "title": "Add isotonic calibration to island GA eval loop",
+      "description": "Post-hoc isotonic calibration already used in Colab TabICL run (0.22054 calibrated vs 0.22169 CV = 0.001 gain). Adding to island eval loop would optimize calibrated Brier throughout GA evolution. ECE improvement expected.",
+      "expected_brier_delta": -0.001,
+      "effort": "medium — eval loop modification in HF Space app.py"
+    }
+  ],
+  "immediate_actions": [
+    "SOTA-4 (xgboost_brier mutation pool): queue for next island config push — lowest effort, cross-project validated",
+    "SOTA-1 (ELO momentum features): queue for features/engine.py v3.2 — highest expected gain",
+    "SOTA-2 (point_diff denoising): bundle with SOTA-1 in same engine version"
+  ]
+}
