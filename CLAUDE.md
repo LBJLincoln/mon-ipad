@@ -1,10 +1,10 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-04-22
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-01
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22062 (S15 nba-evo-6 extra_trees 200f, gen 1306, checkpointed 2026-04-25) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22027 (S22 nba-evo-s22 extra_trees 63f, gen 288, checkpointed 2026-05-01) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
 **NBA TF v7 + reroute + pool=8 (Apr 22, 17 agents, DAY-0 RESET 15:24Z):** prompt_v7 (3-bet cap + 100% deploy mandate, Kelly-weighted floors). Round-2 dead-provider reroute (HF SHA cc905b3e1dcd): nemotron-120b→mistral:large, selfhost-dolphin3→nvidia:llama-3.3-70b, selfhost-qwen06/gemma3→cerebras:llama3.1-8b, selfhost-qwen4b→cerebras:qwen-3-235b, nvidia-minimax→mistral:medium. Pool concurrency 4→8 (env NBA_TF_LLM_POOL_WORKERS=8), LLM timeout 45s (env NBA_TF_LLM_TIMEOUT_SEC=45.0). Live day 8/175, 14/17 agents at 100% llm_ok post-reset. PEAK_DD_GUARD_V2 sole safety net. Top: gemini-anl $108, dolphin3 $107.
 **Political TF v5_restored (Apr 22 15:46Z ROLLBACK):** 17 agents, day 90. v6 100%-deploy mandate destroyed alpha (qwen-arb -39% / llama-contra -51% in 1h) — rolled back to v5 doctrine: non-consensus mandate (lockstep≤0.88) + ≥3 distinct categories per day. State preserved. qwen-arb $3,472 / qwen-quant $1,459 / gemini-anl $584 carrying forward.
@@ -45,18 +45,18 @@ HF EVOLUTION ISLANDS — 11 SURVIVORS (6 NBA + 5 POL) after 2026-04-17 cull
     Eliminated slots now host selfhost LLMs on LBJLincoln/LBJLincoln26/TESTforge42.
 
     NBA Survivors (6, CPU tree-only, MAX_FEATURES=200):
-    ├── S13 Nomos42/nba-evo-4:        extra_trees       gen=1254  brier=0.22090  (2026-04-25)
-    ├── S14 Nomos42/nba-evo-5:        random_forest     gen=1540  brier=0.22431  (2026-04-25)
-    ├── S15 Nomos42/nba-evo-6:        extra_trees 200f  gen=1310  brier=0.22189  ★ FLEET BEST 0.22062 top_perf gen1306 (2026-04-25)
-    ├── S17 LBJLincoln26/nba-evo-s17: xgboost           gen=2196  brier=0.22249  (2026-04-25)
-    ├── S18 TESTforge42/nba-evo-s18:  extra_trees       gen=1144  brier=0.22248  (2026-04-25)
-    └── S22 TESTforge42/nba-evo-s22:  extra_trees       gen=1469  brier=0.22475  sharpe=14.8 (2026-04-25)
+    ├── S13 Nomos42/nba-evo-4:        extra_trees       gen=212   brier=0.22050  ★ <0.22085 threshold (2026-05-01)
+    ├── S14 Nomos42/nba-evo-5:        random_forest     gen=1966  brier=0.22151  (2026-05-01)
+    ├── S15 Nomos42/nba-evo-6:        extra_trees 200f  gen=325   brier=0.22984  [regressed — restarted] (2026-05-01)
+    ├── S17 LBJLincoln26/nba-evo-s17: xgboost           gen=---   brier=0.22249  ⚠ DOWN 503 — restart via keepalive cron (2026-05-01)
+    ├── S18 TESTforge42/nba-evo-s18:  extra_trees       gen=4440  brier=0.22248  (2026-05-01)
+    └── S22 TESTforge42/nba-evo-s22:  extra_trees 63f   gen=288   brier=0.22027  ★ NEW FLEET BEST (2026-05-01)
     Political Survivors (5, CPU tree-only):
-    ├── P1 Nomos42/political-alpha:      catboost       gen=20951  brier=0.25061  (2026-04-25)
-    ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=17618  brier=0.25232  (2026-04-25)
-    ├── P4 LBJLincoln/political-alpha-4: xgboost_brier  gen=20196  brier=0.25022  ★ POL LIVE BEST (2026-04-25)
-    ├── P5 LBJLincoln/political-alpha-5: catboost       gen=22247  brier=0.25312  [hist 0.24923 ★ POL BEST; boost_mutation sent 2026-04-25]
-    └── P7 LBJLincoln/political-alpha-7: logistic       gen=5003   brier=0.25412  hist_best=0.24925 [recovered 2026-04-25]
+    ├── P1 Nomos42/political-alpha:      lightgbm+VA    gen=14307  brier=0.25249  [restarted — regressed from 0.25061] (2026-05-01)
+    ├── P2 Nomos42/political-alpha-2:    logistic       gen=860    brier=0.25953  [restarted — regressed from 0.25232] (2026-05-01)
+    ├── P4 LBJLincoln/political-alpha-4: xgboost_brier  gen=4030   brier=0.24992  ★ POL LIVE BEST (2026-05-01)
+    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier  gen=2095   brier=0.25345  [hist 0.24923 ★ POL BEST] (2026-05-01)
+    └── P7 LBJLincoln/political-alpha-7: lightgbm       gen=1292   brier=0.25412  hist_best=0.24925 (2026-05-01)
 
 SELFHOST LLM FLEET (6 RUNNING, 2 building — 2026-04-19 20:55 UTC)
     LBJLincoln   (3 RUNNING): qwen25-05b-cpu, gemma2-2b-cpu, phi35-mini-cpu
@@ -225,7 +225,7 @@ Channel: @Nomos42
 ## Department Forge Structure (v19)
 
 | Dept | Name | Karpathy Loop | Metric | Max Run |
-|------|------|---------------|--------|---------|
+|------|------|---------------|--------|----------|
 | D1 | RESEARCH | paper→extract→propose→measure | papers/week, techniques tested | 5 min |
 | D2 | ENGINEERING | code→test→measure Brier→keep/revert | Brier delta, test pass rate | 5 min |
 | D3 | EVOLUTION | mutate→eval→measure fitness→select | gen/hr, best Brier, diversity | 5 min |
@@ -320,7 +320,7 @@ Secrets set: `GOOGLE_API_KEY` (all 3). Pending user add: `ANTHROPIC_API_KEY`, `B
 ## Delegation
 
 | Task | Model | Mechanism |
-|------|-------|-----------|
+|------|-------|----------|
 | Analysis, decisions, pilotage | Opus 4.6 | Direct |
 | 24/7 brain trigger | Sonnet 4.6 | Remote trigger |
 | Batch execution, search | Sonnet 4.6 | Agent(model: "sonnet") |
@@ -355,4 +355,3 @@ Each department runs a Karpathy autoresearch loop:
 - Runner: scripts/councils/hermes-runner.sh <dept>
 
 Shared infra: VM (control tower) + Laptop (local models) + HF Spaces (3 accounts) + GPU burst
-
