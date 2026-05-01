@@ -71,18 +71,59 @@ def _file_age_seconds(p: Path) -> float | None:
 
 
 def _trajectory_verdict() -> dict:
-    """Parse trajectory-latest.md (small file) for IMPROVING/DEGRADING."""
-    p = AUDIT / "trajectory-latest.md"
+    """Read trajectory-latest.json (JSON-first, MD fallback) for verdicts + slopes."""
+    pj = AUDIT / "trajectory-latest.json"
     out: dict[str, Any] = {"nba": None, "pol": None, "ts": None}
+    if pj.exists():
+        try:
+            d = json.loads(pj.read_text())
+            out["ts"] = d.get("ts")
+            for tf, v in (d.get("tfs") or {}).items():
+                out[tf] = v if isinstance(v, dict) else None
+            return out
+        except Exception:
+            pass
+    # MD fallback (legacy)
+    p = AUDIT / "trajectory-latest.md"
     if not p.exists():
         return out
     txt = p.read_text()
-    out["ts"] = re.search(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}", txt)
-    out["ts"] = out["ts"].group(0) if out["ts"] else None
+    m = re.search(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}", txt)
+    out["ts"] = m.group(0) if m else None
     for tf in ("nba", "pol"):
-        m = re.search(rf"##\s+{tf.upper()}.*?verdict[:\s]+(\w+)", txt, re.IGNORECASE | re.DOTALL)
-        out[tf] = m.group(1).upper() if m else None
+        m = re.search(rf"##\s+{tf.upper()}.*?(IMPROVING|DEGRADING|FLAT)", txt, re.IGNORECASE | re.DOTALL)
+        out[tf] = {"verdict": m.group(1).upper()} if m else None
     return out
+
+
+def _read_rigorous() -> dict | None:
+    """Prefer fixed-name rigorous-latest.json; fall back to newest timestamped one."""
+    fixed = AUDIT / "rigorous-latest.json"
+    if fixed.exists():
+        try: return json.loads(fixed.read_text())
+        except Exception: pass
+    candidates = sorted(AUDIT.glob("rigorous-*.json"), reverse=True)
+    for c in candidates:
+        if c.name == "rigorous-latest.json":
+            continue
+        try: return json.loads(c.read_text())
+        except Exception: continue
+    return None
+
+
+def _read_scorecard() -> dict | None:
+    """Prefer fixed-name scorecard-latest.json; fall back to newest timestamped."""
+    fixed = AUDIT / "scorecard-latest.json"
+    if fixed.exists():
+        try: return json.loads(fixed.read_text())
+        except Exception: pass
+    candidates = sorted(AUDIT.glob("scorecard-*.json"), reverse=True)
+    for c in candidates:
+        if c.name == "scorecard-latest.json":
+            continue
+        try: return json.loads(c.read_text())
+        except Exception: continue
+    return None
 
 
 def _baseline_status() -> dict[str, Any]:
@@ -179,8 +220,8 @@ def _build_per_tf(tf: str, rigorous: dict, scorecard: dict,
 
 
 def main() -> int:
-    rigorous = _read_json(AUDIT / "rigorous-latest.json")
-    scorecard = _read_json(AUDIT / "scorecard-latest.json")
+    rigorous = _read_rigorous()
+    scorecard = _read_scorecard()
     pipe = _read_json(PIPE_HEALTH)
     traj = _trajectory_verdict()
     baseline = _baseline_status()
