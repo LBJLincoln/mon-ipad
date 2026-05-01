@@ -34,27 +34,24 @@ receive natural-language descriptions of their role, history, and environment an
 free-text reasoning before committing to an action. This shifts the locus of strategy from
 the programmer to the model's emergent reasoning, enabling far richer behavioral
 repertoires. CAMEL [@li2023camel] pioneered role-playing LLM societies; AutoGen
-[@wu2023autogen] formalized multi-agent conversation patterns; MetaGPT
-[@hong2023metagpt, arXiv:2308.00352 — *verify*] introduced role-specialization with
-shared memory. More recently, TradingAgents
-[@liu2024tradingagents, arXiv:2412.20138] instantiated a multi-LLM financial trading
-system with analyst, risk management, and execution roles communicating through structured
-dialogues — the closest antecedent to our architecture. Oasis [@yang2024oasis,
-camel-ai/oasis] extended multi-agent interaction to one-million-node social simulations on
-real social network topologies.
+[@wu2023autogen] formalized multi-agent conversation patterns; MetaGPT [@hong2023metagpt] introduced role-specialisation with shared memory. More recently, TradingAgents [@xiao2024tradingagents] instantiated a multi-LLM financial
+trading system with analyst, risk management, and execution roles communicating through
+structured dialogues — the closest antecedent to our architecture. OASIS [@yang2024oasis]
+extended multi-agent interaction to one-million-node social simulations on real social
+network topologies.
 
 A critical and under-studied challenge in all of these systems is **behavioral
 homogeneity**: when agents share the same underlying model family or receive similar
 prompts, their outputs collapse toward consensus, forfeiting the ensemble's principal
-advantage over any single agent. DMAD [@zhou2025dmad, arXiv:2502.XXXXX — *full ID to be confirmed in §2 BibTeX*] —
-Diverse Multi-Agent Debate — addresses this through adversarial prompting to force
-disagreement, but does so via external intervention rather than an endogenous mechanism
-the agents themselves invoke.
-The Prediction Arena framework [@anonymous2026arena, arXiv:2604.07355] provides an
-evaluation scaffold for prediction-market multi-agent experiments but does not formalize
-diversity as a first-class optimization target. The Agent Trading Arena [@du2025agenttrading,
-arXiv:2502.17967] introduces competitive market microstructure for LLM agents but studies
-price-formation rather than cooperative diversity dynamics.
+advantage over any single agent. DMAD [@liu2025dmad] — Diverse Multi-Agent Debate
+(ICLR 2025) — addresses this through adversarial prompting to force disagreement, but
+does so via external intervention rather than an endogenous mechanism the agents
+themselves invoke.
+The Prediction Arena framework [@zhang2026arena] provides an evaluation scaffold for
+prediction-market multi-agent experiments but does not formalise diversity as a
+first-class optimisation target. The Agent Trading Arena [@ma2025agent] introduces
+competitive market microstructure for LLM agents but studies price-formation rather
+than cooperative diversity dynamics.
 
 ## The Gap This Paper Fills
 
