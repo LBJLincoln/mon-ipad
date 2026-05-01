@@ -1,18 +1,21 @@
-name: Deploy TFs to HF Spaces (NBA + POL + PQTF)
+name: Deploy TFs to HF Spaces (NBA + POL + PQTF + Tauric + ITF)
 
 on:
   workflow_dispatch:
     inputs:
       targets:
-        description: 'Comma-sep: nba,pol,pqtf (default all)'
+        description: 'Comma-sep: nba,pol,pqtf,nba_tauric,itf,itf_tauric (default all)'
         required: false
-        default: 'nba,pol,pqtf'
+        default: 'nba,pol,pqtf,nba_tauric,itf,itf_tauric'
   push:
     branches: [main]
     paths:
       - 'scripts/arena/hf-llm-trading-floor/**'
       - 'scripts/arena/hf-political-trading-floor/**'
       - 'scripts/arena/hf-political-quant-trading-floor/**'
+      - 'scripts/arena/hf-llm-trading-floor-tauric/**'
+      - 'scripts/arena/hf-intraday-trading-floor/**'
+      - 'scripts/arena/hf-intraday-trading-floor-tauric/**'
 
 permissions:
   contents: read
@@ -28,16 +31,23 @@ jobs:
       - name: Upload per-TF files
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN_2 }}
-          TARGETS: ${{ inputs.targets || 'nba,pol,pqtf' }}
+          # Tauric NBA + ITF Tauric live on LBJLincoln26 / TESTforge42 — same
+          # token works for LBJLincoln26 spaces; TESTforge42 needs HF_TOKEN_3.
+          HF_TOKEN_TESTFORGE: ${{ secrets.HF_TOKEN_3 }}
+          TARGETS: ${{ inputs.targets || 'nba,pol,pqtf,nba_tauric,itf,itf_tauric' }}
         run: |
           python3 <<'PY'
           import os, pathlib
           from huggingface_hub import HfApi
-          api = HfApi(token=os.environ['HF_TOKEN'])
-          targets = [t.strip() for t in os.environ.get('TARGETS','nba,pol,pqtf').split(',') if t.strip()]
+          token_main = os.environ['HF_TOKEN']
+          token_testforge = os.environ.get('HF_TOKEN_TESTFORGE') or token_main
+          api_main = HfApi(token=token_main)
+          api_tf42 = HfApi(token=token_testforge)
+          targets = [t.strip() for t in os.environ.get('TARGETS','nba,pol,pqtf,nba_tauric,itf,itf_tauric').split(',') if t.strip()]
 
           TFS = {
               'nba': {
+                  'api': api_main,
                   'repo': 'LBJLincoln26/nba-llm-trading-floor',
                   'src':  'scripts/arena/hf-llm-trading-floor',
                   'files': ['app.py','gateway_client.py','provider_health.py',
@@ -45,6 +55,7 @@ jobs:
                             'extend_predictions_all_categories.py','prepare_data.py'],
               },
               'pol': {
+                  'api': api_main,
                   'repo': 'LBJLincoln26/political-llm-trading-floor',
                   'src':  'scripts/arena/hf-political-trading-floor',
                   'files': ['app.py','gateway_client.py','provider_health.py',
@@ -52,11 +63,39 @@ jobs:
                             'extend_predictions_all_categories.py','build_full_dataset.py'],
               },
               'pqtf': {
+                  'api': api_main,
                   'repo': 'LBJLincoln26/political-quant-trading-floor',
                   'src':  'scripts/arena/hf-political-quant-trading-floor',
                   'files': ['app.py','engine.py','requirements.txt','README.md',
                             'gateway_client.py','intraday_paths.py','options.py',
                             'provider_health.py','session_data.py','spreads.py'],
+              },
+              # 2026-05-01 — Tauric A/B variants + ITF originals added so the
+              # gateway_client.py symlink fix + Tauric prompt work auto-deploy
+              # on push to main like the other TFs.
+              'nba_tauric': {
+                  'api': api_main,
+                  'repo': 'LBJLincoln26/nba-tauric-trading-floor',
+                  'src':  'scripts/arena/hf-llm-trading-floor-tauric',
+                  'files': ['app.py','gateway_client.py','provider_health.py',
+                            'island_oracle.py','requirements.txt','README.md',
+                            'extend_predictions_all_categories.py','prepare_data.py'],
+              },
+              'itf': {
+                  'api': api_main,
+                  'repo': 'LBJLincoln26/intraday-trading-floor',
+                  'src':  'scripts/arena/hf-intraday-trading-floor',
+                  'files': ['app.py','gateway_client.py','provider_health.py',
+                            'island_oracle.py','personas.py','event_executor.py',
+                            'executor.py','restore_ledgers.py','__init__.py'],
+              },
+              'itf_tauric': {
+                  'api': api_tf42,  # TESTforge42 account
+                  'repo': 'TESTforge42/itf-tauric-trading-floor',
+                  'src':  'scripts/arena/hf-intraday-trading-floor-tauric',
+                  'files': ['app.py','gateway_client.py','provider_health.py',
+                            'island_oracle.py','personas.py','event_executor.py',
+                            'executor.py','restore_ledgers.py','__init__.py'],
               },
           }
 
@@ -65,10 +104,17 @@ jobs:
                   print(f"[deploy] unknown: {t}"); continue
               cfg = TFS[t]
               src = pathlib.Path(cfg['src'])
+              api = cfg['api']
               for f in cfg['files']:
                   p = src / f
                   if not p.exists():
                       print(f"[deploy-{t}] skip missing: {f}"); continue
+                  # Refuse to upload a symlink — that's exactly the ITF Tauric
+                  # bug the 2026-05-01 fix repaired. Better fail loud than ship
+                  # a dead /home/termius/... pointer to the live Space.
+                  if p.is_symlink():
+                      print(f"[deploy-{t}] REFUSE symlink (would break Space): {f} -> {os.readlink(p)}")
+                      continue
                   try:
                       api.upload_file(path_or_fileobj=str(p), path_in_repo=f,
                                       repo_id=cfg['repo'], repo_type='space',
