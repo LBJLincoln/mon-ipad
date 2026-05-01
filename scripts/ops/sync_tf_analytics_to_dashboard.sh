@@ -37,12 +37,18 @@ mkdir -p "$DEST"
 cp -r "$SRC"/. "$DEST/" 2>/dev/null || true
 # Also copy audit MD files into a subdirectory
 mkdir -p "$DEST/audit"
-for f in scorecard-latest.md rigorous-latest.md cross-llm-latest.md digest-latest.md trajectory-latest.md scientific-scorecard-latest.md scientific-scorecard-latest.json; do
+for f in scorecard-latest.md rigorous-latest.md cross-llm-latest.md digest-latest.md trajectory-latest.md scientific-scorecard-latest.md scientific-scorecard-latest.json rigorous-latest.json scorecard-latest.json; do
   src="/home/termius/mon-ipad/data/audit/$f"
   if [ -f "$src" ]; then
     cp "$src" "$DEST/audit/$f"
   fi
 done
+# 2026-05-01 — dashboard-bundle.json is the lab-grade aggregate the new
+# /nba + /political pages will fetch (CI bands, walk-forward time series,
+# calibration buckets, trust signals). Emitted by tf_dashboard_bundle.py.
+if [ -f "/home/termius/mon-ipad/data/tf-analytics/dashboard-bundle.json" ]; then
+  cp "/home/termius/mon-ipad/data/tf-analytics/dashboard-bundle.json" "$DEST/dashboard-bundle.json"
+fi
 # 2026-04-25: ship the per-agent forensic deep-audit MDs to the dashboard so
 # user can browse "why each odd was chosen" per-agent / per-game / cross-agent.
 TODAY=$(date -u +%Y-%m-%d)

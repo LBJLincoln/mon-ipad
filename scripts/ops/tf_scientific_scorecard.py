@@ -209,10 +209,11 @@ def main() -> int:
     ts = _now()
     ts_str = ts.strftime("%Y-%m-%dT%H%MZ")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    (OUT_DIR / f"scorecard-{ts_str}.json").write_text(
-        json.dumps({"ts": ts.isoformat(), "tfs": sc_by_tf}, indent=2, default=str)
-    )
+    payload = json.dumps({"ts": ts.isoformat(), "tfs": sc_by_tf}, indent=2, default=str)
+    (OUT_DIR / f"scorecard-{ts_str}.json").write_text(payload)
     (OUT_DIR / "scorecard-latest.md").write_text(_markdown(sc_by_tf))
+    # Fixed-name latest JSON for the dashboard to fetch — pairs with the MD.
+    (OUT_DIR / "scorecard-latest.json").write_text(payload)
     print(f"ts={ts.isoformat()} scored tfs={list(SPACES)}")
     for tf, s in sc_by_tf.items():
         if s.get("ok"):

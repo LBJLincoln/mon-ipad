@@ -318,6 +318,8 @@ def main() -> int:
     ts_str = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H%MZ")
     (OUT_DIR / f"rigorous-{ts_str}.json").write_text(json.dumps(saveable, indent=2, default=str))
     (OUT_DIR / "rigorous-latest.md").write_text(_md(results))
+    # Fixed-name latest JSON for the dashboard to fetch — pairs with the MD.
+    (OUT_DIR / "rigorous-latest.json").write_text(json.dumps(saveable, indent=2, default=str))
     print(f"rigorous validation done: {ts_str}")
     for tf, r in results["tfs"].items():
         if r.get("ok"):
