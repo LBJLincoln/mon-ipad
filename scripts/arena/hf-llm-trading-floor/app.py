@@ -3029,6 +3029,7 @@ def parse_day_allocation(raw: str, n_games: int, drawdown: float = 0.0,
         "coalition_proposal": coalition,
         "council_alignment": council_alignment,
         "games_considered": games_considered,
+        "ck_consensus_stance": (parsed.get("ck_consensus_stance") or {}),
     }
 
 
@@ -4486,6 +4487,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "rogue": day_rogue_state.get(tid, {"is_rogue": False}),
                 "council_commit_target": day_council_plan.get("per_agent_commit_pct", {}).get(tid, 0.55),
                 "council_alignment": (parsed or {}).get("council_alignment"),
+                "ck_consensus_stance": (parsed or {}).get("ck_consensus_stance") or {},
                 "games_considered": (parsed or {}).get("games_considered") or [],
                 "raw_preview": (raw_response or "")[:3000],
                 "fallback_used": _day_fallback_used,  # 2026-04-19 uniform-fallback tag

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-01T00:00:00Z",
+  "updated_at": "2026-05-01T06:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -470,6 +470,24 @@
       ],
       "spec_gap_closed": "Mech C spec requires 'decisions' per agent in day-N.jsonl. Prior implementation wrote num_decisions (count only). Now writes full decisions_summary array — paper dataset is spec-complete.",
       "py_compile": "PASS both apps (NBA 5747 lines, POL 3762 lines)",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-28",
+      "priority": 37,
+      "status": "done",
+      "completed_at": "2026-05-01T06:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 28 — ck_consensus_stance pipeline gap closed (NBA+POL)",
+      "gap_found": "ck_consensus_stance returned by LLM in JSON was silently discarded: parse_day_allocation() return dict did not include it, and day_log initial dict also omitted it. write_axelrod_log always wrote {} for this Mech C audit field.",
+      "patches_applied": [
+        "NBA parse_day_allocation return dict: add ck_consensus_stance: (parsed.get('ck_consensus_stance') or {})",
+        "POL parse_day_allocation return dict: add ck_consensus_stance: (parsed.get('ck_consensus_stance') or {})",
+        "NBA day_log initial dict: add ck_consensus_stance: (parsed or {}).get('ck_consensus_stance') or {}",
+        "POL day_log initial dict: add ck_consensus_stance: (parsed or {}).get('ck_consensus_stance') or {}"
+      ],
+      "impact": "Mech C day-N.jsonl ck_consensus_stance field was always empty dict. Now captures actual LLM stance (diverge|agree|partial + reason). Paper dataset was missing Mech A divergence audit trail for every agent on every day.",
+      "py_compile": "PASS both apps (NBA 5787 lines, POL 3763 lines)",
       "do_not_push_hf_space_yet": true
     },
     {
