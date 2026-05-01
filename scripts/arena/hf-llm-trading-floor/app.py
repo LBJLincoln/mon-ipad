@@ -701,7 +701,7 @@ _load_logs_from_disk()
 
 # ── TEAM MAP ────────────────────────────────────────────────────────────────
 TEAM_MAP = {
-    "Los Angeles Lakers": "LAL", "Los Angeles Clippers": "LAC",
+    "Los Angeles Lakers": "LAL", "Los Angeles Clippers": "LAC", "L.A. Clippers": "LAC",
     "Golden State Warriors": "GSW", "Boston Celtics": "BOS",
     "Oklahoma City Thunder": "OKC", "Houston Rockets": "HOU",
     "Cleveland Cavaliers": "CLE", "New York Knicks": "NYK",
