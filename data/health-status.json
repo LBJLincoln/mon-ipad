@@ -1,145 +1,164 @@
 {
-  "generated_at": "2026-05-01T04:30:00Z",
-  "brain_cycle": "2026-05-01 ~04:30Z",
-  "step0_crash_recovery": "clean — no pending local-agent items; only pending item tf-axelrod-verify-tune-12 is user-gated (explicit approval required)",
+  "generated_at": "2026-05-01T08:30:00Z",
+  "brain_cycle": "2026-05-01 ~08:30Z",
+  "step0_crash_recovery": "clean — no pending local-agent items; tf-axelrod-verify-tune-12 remains user-gated (explicit HF deploy approval required)",
   "nba_fleet_best": {
     "space": "TESTforge42/nba-evo-s22",
     "island_id": "S22",
     "brier": 0.22027,
-    "gen": 288,
-    "cycle": 96,
+    "gen": 380,
+    "cycle": 127,
     "algo": "extra_trees",
     "features": 63,
     "checkpointed_at": "2026-05-01T04:30:00Z",
-    "note": "NEW FLEET BEST — beats previous S15 0.22062 (2026-04-25). Below 0.22085 threshold. Also S13 0.22050 below threshold."
+    "note": "Holding fleet best. Gen advanced 288→380 since last cycle. No new Brier breakthrough — 0.22027 is stable floor."
   },
   "nba_islands": {
     "S13_Nomos42-nba-evo-4": {
       "status": "EVOLVING",
-      "gen": 212,
-      "cycle": 71,
-      "best_brier": 0.22050,
-      "current_brier": 0.2284,
+      "gen": 26,
+      "cycle": 9,
+      "best_brier": 0.22193,
       "algo": "extra_trees",
-      "stagnation_cycles": 19,
-      "action_taken": "boost_mutation queued (stagnation >15 cycles; below 0.22085 threshold)",
-      "note": "Restarted since 2026-04-25. New best 0.22050 beats prev 0.22090."
+      "stagnation_cycles": 0,
+      "note": "HARD RESET since last cycle (gen 212→26). Was stagnated 19 cycles. Rebuilding clean with extra_trees. brier 0.22193 at gen 26 is on good trajectory (prev best 0.22050)."
     },
     "S14_Nomos42-nba-evo-5": {
       "status": "EVOLVING",
-      "gen": 1966,
-      "cycle": 656,
+      "gen": 2069,
+      "cycle": 690,
       "best_brier": 0.22151,
-      "current_brier": 0.2231,
       "algo": "random_forest",
       "stagnation_cycles": 0,
-      "note": "Improved from 0.22431 to 0.22151. Hard reset at cycle 653."
+      "note": "Stable. Progressed 103 gens since last cycle. Brier holding at 0.22151. Hard reset at cycle 678 previously cleared stagnation."
     },
     "S15_Nomos42-nba-evo-6": {
-      "status": "EVOLVING",
-      "gen": 325,
-      "cycle": 109,
+      "status": "COOLDOWN",
+      "gen": 417,
+      "cycle": 139,
       "best_brier": 0.22984,
-      "current_brier": 0.22984,
-      "algo": "extra_trees",
-      "stagnation_cycles": 6,
-      "note": "REGRESSED from fleet-best 0.22062 — space restarted, rebuilding. No longer fleet best."
+      "algo": "catboost",
+      "stagnation_cycles": 0,
+      "note": "Rebuilding post-restart. In COOLDOWN after cycle 139. CatBoost at 0.22984 — significantly worse than extra_trees (S22=0.22027). Hard reset at cycle 127 cleared prior stagnation."
     },
     "S17_LBJLincoln26-nba-evo-s17": {
       "status": "DOWN_503",
       "gen": null,
       "best_brier": 0.22249,
-      "action_taken": "restart_needed — HF API token not available from brain; keepalive cron at */30min should auto-restart",
-      "note": "503 error on /api/status fetch"
+      "action_taken": "wake_attempt_via_GET_failed — HF space still returning 503; last HF repo update 2026-04-18; keepalive cron handles restart at */30min",
+      "note": "503 error on both /api/status and root URL. Space may be in error/sleeping state. Keepalive cron manages restart."
     },
     "S18_TESTforge42-nba-evo-s18": {
       "status": "EVOLVING",
-      "gen": 4440,
-      "cycle": 1480,
+      "gen": 4543,
+      "cycle": 1515,
       "best_brier": 0.22248,
-      "current_brier": 0.22605,
       "algo": "extra_trees",
-      "stagnation_cycles": 19,
-      "action_taken": "diversify queued"
+      "stagnation_cycles": 0,
+      "note": "Two hard resets at cycles 1476+1501 cleared prior stagnation. Gen advanced 4440→4543. Top Pareto individual showed 0.21925 in one summary (may be CV-only; tracked best_brier=0.22248)."
     },
     "S22_TESTforge42-nba-evo-s22": {
       "status": "EVOLVING",
-      "gen": 288,
-      "cycle": 96,
+      "gen": 380,
+      "cycle": 127,
       "best_brier": 0.22027,
-      "current_brier": 0.2221,
       "algo": "extra_trees",
       "features": 63,
-      "stagnation_cycles": 19,
-      "action_taken": "diversify queued + NEW FLEET BEST checkpointed in CLAUDE.md",
-      "note": "NEW FLEET BEST — beats previous 0.22062 (S15). Below 0.22085 brain threshold."
+      "stagnation_cycles": 0,
+      "note": "FLEET BEST. Gen advanced 288→380. brier 0.22027 stable. Hard resets at cycles 101+126 cleared prior stagnation. Next target: break 0.22000."
     }
   },
   "political_fleet_best": {
     "space": "LBJLincoln/political-alpha-4",
     "island_id": "P4",
     "brier": 0.24992,
-    "gen": 4030,
-    "note": "Improved from 0.25022 (2026-04-25). POL LIVE BEST. All-time POL best: P5 hist 0.24923."
+    "gen": 5634,
+    "note": "Holding live best. P5 now 0.24993 after restart — near-parity. All-time POL best: P5 hist 0.24923."
   },
   "political_islands": {
     "P1_Nomos42-political-alpha": {
       "status": "EVOLVING",
-      "gen": 14307,
-      "cycle": 4769,
+      "gen": 16021,
+      "cycle": 5341,
       "best_brier": 0.25249,
       "algo": "LightGBM+VennAbers",
-      "note": "Restarted — regressed from 0.25061. Hard reset at cycle 4748."
+      "stagnation_cycles": 0,
+      "note": "Big gen jump 14307→16021. Two hard resets at cycles 5288+5308 cleared stagnation. Rebuilding from regression (prev best 0.25061)."
     },
     "P2_Nomos42-political-alpha-2": {
       "status": "EVOLVING",
-      "gen": 860,
-      "cycle": 287,
+      "gen": 1120,
+      "cycle": 374,
       "best_brier": 0.25953,
       "algo": "logistic_regression",
-      "note": "Restarted — regressed from 0.25232."
+      "stagnation_cycles": 0,
+      "note": "Gen 860→1120. Logistic regression consistently underperforms vs xgboost. If >0.259 persists at gen 1500 → candidate for boost_mutation toward XGBoost."
     },
     "P4_LBJLincoln-political-alpha-4": {
       "status": "EVOLVING",
-      "gen": 4030,
-      "cycle": 1344,
+      "gen": 5634,
+      "cycle": 1878,
       "best_brier": 0.24992,
       "algo": "xgboost_brier",
-      "note": "POL LIVE BEST. Improved from 0.25022."
+      "stagnation_cycles": 0,
+      "note": "POL LIVE BEST. Gen jumped 4030→5634 (+1604 gens). Holding 0.24992. Two hard resets at cycles 1834+1854 cleared stagnation."
     },
     "P5_LBJLincoln-political-alpha-5": {
       "status": "EVOLVING",
-      "gen": 2095,
-      "cycle": 699,
-      "best_brier": 0.25345,
+      "gen": 281,
+      "cycle": 94,
+      "best_brier": 0.24993,
       "algo": "xgboost_brier",
-      "note": "Restarted — slight regression from 0.25312. Hist best 0.24923 preserved."
+      "stagnation_cycles": 0,
+      "note": "RESTARTED since last cycle (gen 2095→281). New best 0.24993 — near-parity with P4's live best 0.24992. All-time best 0.24923. On strong trajectory. Hard resets at cycles 41+61."
     },
     "P7_LBJLincoln-political-alpha-7": {
       "status": "EVOLVING",
-      "gen": 1292,
-      "cycle": 431,
+      "gen": 1710,
+      "cycle": 570,
       "best_brier": 0.25412,
       "algo": "LightGBM",
-      "note": "Stable. Hist best 0.24925."
+      "stagnation_cycles": 0,
+      "note": "Progressed 1292→1710. Hard resets at cycles 521+541. Hist best 0.24925."
     }
   },
   "councils": "DECOMMISSIONED 2026-04-20 — all 9 TESTforge42 dept spaces deleted, slots freed for selfhost LLMs",
   "dashboard": "R8 done — no pending gaps in work-queue",
-  "engine_parity": "unverified this cycle — check via VM cron",
+  "engine_parity": {
+    "reference_sha": "b7ec5b547f6693aa43de90d5b610636850c911d9",
+    "path": "features/engine.py",
+    "size_bytes": 505167,
+    "status": "reference_recorded — hf-space copies to be verified by VM cron (VM has HF API token)",
+    "note": "Engine.py is 505KB (~7213 raw feature candidates, v3.1, 54 categories). Cross-space SHA comparison requires HF API access not available from cloud brain."
+  },
+  "sota_search_result": {
+    "source": "Information (MDPI) January 2026",
+    "best_brier_external": 0.199,
+    "method": "Logistic regression + spatial shot-chart embeddings + RNN with Monte Carlo dropout",
+    "gap_to_close": "Fleet best 0.22027 vs external SOTA 0.199 = 0.021 gap",
+    "secondary_sota": {
+      "method": "Stacked ensemble (LR+XGB+NN+Ridge)",
+      "brier": 0.221,
+      "source": "Nature Scientific Reports 2025"
+    },
+    "proposal_file": "data/research-proposals/2026-05-01T08h-nba-sota.json"
+  },
   "actions_taken": [
-    "S22: diversify queued (19 cycles stagnation, new fleet best 0.22027)",
-    "S18: diversify queued (19 cycles stagnation)",
-    "S13: boost_mutation queued (19 cycles stagnation, below 0.22085 threshold)",
-    "S17: DOWN_503 — restart needed, keepalive cron should handle at */30min",
-    "CLAUDE.md updated: S22 new fleet best 0.22027, all island states refreshed (2026-05-01)",
-    "Research proposals written to data/research-proposals/2026-05-01-nba-sota.json",
-    "health-status.json and brain-status.json written"
+    "S17: wake attempt via GET failed (503 persisting) — keepalive cron on watch",
+    "S13: hard reset confirmed after 19-cycle stagnation — gen 212→26, rebuilding with extra_trees",
+    "S22: gen advanced 288→380, fleet best 0.22027 holding steady",
+    "P5: restarted (gen 2095→281), new brier 0.24993 near-parity with P4 live best 0.24992",
+    "P1: two hard resets (cycles 5288+5308), gen 14307→16021",
+    "SOTA research proposal written: data/research-proposals/2026-05-01T08h-nba-sota.json",
+    "Engine parity SHA recorded: b7ec5b547f6693aa43de90d5b610636850c911d9",
+    "health-status.json + brain-status.json updated (2026-05-01T08:30Z)"
   ],
   "next_cycle_priorities": [
-    "Verify S17 recovered (check /api/status)",
-    "S22: monitor diversify result — if best_brier improves beyond 0.22027 → new checkpoint",
-    "Evaluate TabPFN v2 feasibility (low complexity, high potential) — research proposal priority 2",
-    "Engine parity check (features/engine.py sha256 across all 6 NBA islands)"
+    "Verify S17 recovered — if still DOWN after 2 more cycles, flag for manual HF restart",
+    "S22 next target: break 0.22000 — monitor whether hard resets help or hinder",
+    "S15: if brier >0.23 persists at gen 600 → send /api/command diversify to push toward extra_trees",
+    "P5: track trajectory — if reaching 0.24923 hist best → new POL fleet best checkpoint",
+    "P2: if still >0.259 at gen 1500 → boost_mutation to explore XGBoost variants",
+    "Spatial shot-chart embeddings feasibility: can we add shot-zone aggregate features to engine.py?"
   ]
 }

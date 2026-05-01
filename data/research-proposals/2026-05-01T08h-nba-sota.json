@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-05-01T08:30:00Z",
+  "brain_cycle": "2026-05-01 ~08:30Z",
+  "cycle_index": "every-other (SOTA search cycle)",
+  "title": "RNN + Spatial Shot-Chart Embeddings + Monte Carlo Dropout for NBA Brier 0.199",
+  "sources": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "journal": "Information (MDPI)",
+      "date": "January 2026",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "brier_reported": 0.199,
+      "method_summary": "Logistic regression baseline + spatial shot-chart embeddings + RNN with Monte Carlo dropout for uncertainty quantification"
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "journal": "Nature Scientific Reports",
+      "date": "2025",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "brier_reported": 0.221,
+      "method_summary": "Stacked ensemble: LR + XGBoost + Neural Network + Ridge meta-learner"
+    },
+    {
+      "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+      "journal": "Computation (MDPI)",
+      "date": "2025",
+      "url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "brier_reported": 0.221,
+      "method_summary": "CNN model with SHAP feature importance; CNN best among tabular-CNN-GRU comparison"
+    }
+  ],
+  "fleet_status": {
+    "fleet_best": 0.22027,
+    "island": "S22 (extra_trees, 63 features)",
+    "tabicl_holdout_best": 0.21139,
+    "tabicl_cv_honest": 0.22054,
+    "gap_to_external_sota": 0.021
+  },
+  "key_finding": "January 2026 MDPI study achieves Brier 0.199 — 0.021 better than our fleet best. The winning combination is spatial shot-chart zone aggregates (not raw player stats) fed into a GRU/RNN, with Monte Carlo dropout providing calibrated uncertainty estimates. Logistic regression + shot-chart embeddings alone beats XGBoost in their comparison.",
+  "proposals": [
+    {
+      "id": "P1-shot-chart-zones",
+      "title": "Add shot-zone aggregate features to engine.py",
+      "priority": 1,
+      "complexity": "medium",
+      "rationale": "The SOTA gap (0.021) is primarily explained by spatial shot-chart features — zone efficiency (paint/mid-range/3PT by zone), shot selection tendencies, and opponent defensive zone ratings. These are addable to engine.py as rolling-average features per team. Data source: NBA Stats API shot zone dashboard, already in our data pipeline context.",
+      "estimated_brier_impact": "-0.003 to -0.008",
+      "implementation_path": "features/engine.py: add ~12 new shot-zone category features (off_paint_freq, def_3pt_zone_pct, etc.) → re-run GA on S22 clone → measure brier delta",
+      "cpu_feasible": true,
+      "blocker": "Shot-zone data must be available in nba_cached_data.npz or added to data pipeline"
+    },
+    {
+      "id": "P2-mc-dropout-calibration",
+      "title": "Monte Carlo dropout calibration head for post-training uncertainty",
+      "priority": 2,
+      "complexity": "low",
+      "rationale": "MC dropout (T=30 forward passes at inference) wrapping any scikit-learn model via a thin neural calibration head. The SOTA paper uses this to reduce ECE from 0.041 to 0.018. Our isotonic-calibrated CV Brier is 0.22054 — the MC dropout head could push this further. Feasible on Colab T4 as a post-hoc calibration layer over our best XGBoost/ExtraTrees.",
+      "estimated_brier_impact": "-0.001 to -0.003",
+      "implementation_path": "scripts/kaggle/nba_karpathy_loop.py: add MCDropoutCalibrator class wrapping best model → evaluate on holdout → compare to isotonic",
+      "cpu_feasible": false,
+      "blocker": "Needs GPU session (Colab T4 or Kaggle P100)"
+    },
+    {
+      "id": "P3-stacked-ensemble-nature",
+      "title": "Stacked ensemble meta-learner (LR+XGB+ExtraTrees+Ridge)",
+      "priority": 3,
+      "complexity": "medium",
+      "rationale": "Nature 2025 paper achieves Brier 0.221 with 4-model stacking. Our islands are single-model per individual. A stacking layer (LR meta) over S22-ExtraTrees + S14-RF + S18-ExtraTrees could combine diversity and accuracy. Note CLAUDE.md Rule 8: stacking removed from CPU islands — this should be a GPU-burst-only experiment.",
+      "estimated_brier_impact": "-0.001 to -0.004",
+      "implementation_path": "scripts/gpu-burst/zerogpu-burst.py or modal-burst.py: add StackedNBAEnsemble experiment",
+      "cpu_feasible": false,
+      "blocker": "Rule 8 prohibits stacking on CPU islands; GPU burst only"
+    }
+  ],
+  "recommended_next_action": "P1 (shot-zone features) is the highest-impact CPU-feasible improvement. Request HAWKEYE or DR FRANKENSTEIN to audit NBA Stats API shot-zone dashboard availability in the current data pipeline and add ~12 zone features to engine.py v3.2.",
+  "cross_project_note": "Political alpha does not have equivalent shot-zone data, but the Monte Carlo dropout calibration head (P2) is directly portable to political engine as a post-hoc calibration improvement."
+}
