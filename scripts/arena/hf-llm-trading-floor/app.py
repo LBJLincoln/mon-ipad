@@ -726,7 +726,7 @@ STAT_KEYS = ["fg_pct", "fg3_pct", "ft_pct", "reb", "ast", "tov", "stl", "blk", "
 #   Google Gemini 3 Flash (key 2):      100% success, 14 RPM
 #   Mistral (la Plateforme free tier):  large/medium/small/nemo/ministral all OK
 # Dead: OpenRouter (6 models, quota), Gemini key 1, Groq keys (org restricted).
-# With day-bucket design: 1 call/agent/day × 180 days × 10 agents = 1800 calls
+# With day-bucket design: 1 call/agent/day × 180 days × 17 agents = 3060 calls
 # — fits free tiers with 10x headroom.
 PROVIDERS = {
     # Cerebras (shared key, 30 RPM)
@@ -1953,7 +1953,7 @@ def run_morning_council(day_idx: int, day_date: str, day_games: List[Dict],
     fleet_total = sum(state[t]["bankroll"] for t in state)
     progress_pct = (fleet_best_bankroll / SEASON_TARGET) * 100.0
 
-    # Build council-only prompt — compact summary of all 10 agents
+    # Build council-only prompt — compact summary of all 17 agents
     roster_lines = []
     for tid, ts in sorted(state.items(), key=lambda x: -x[1]["bankroll"]):
         wr = (ts["wins"] / max(1, ts["wins"] + ts["losses"])) * 100.0
@@ -1972,7 +1972,7 @@ def run_morning_council(day_idx: int, day_date: str, day_games: List[Dict],
         "Your job is to coordinate all agents into a unified allocation plan for today. "
         "Common goal: one agent must reach $1,000,000 by season end. Coordination beats "
         "independent betting because parlays compound and capital-commitment diversifies risk. "
-        "You are NOT placing bets yourself — you are writing the plan the 10 agents will follow."
+        "You are NOT placing bets yourself — you are writing the plan the 17 agents will follow."
     )
     usr_prompt = f"""COUNCIL SESSION · DAY {day_idx+1} · {day_date}
 
@@ -1997,7 +1997,7 @@ AVAILABLE CATEGORIES (253): ml_home, ml_away, spread_home, spread_away, total_ov
   and tier ∈ {{star1,star2,star3,role1,role2}} and side ∈ {{home,away}}
   (30 per side × 2 = 60 player-props per game available)
 
-TASK: Output a COUNCIL PLAN as JSON. All 10 agents will see and follow it unless
+TASK: Output a COUNCIL PLAN as JSON. All 17 agents will see and follow it unless
 their bankroll crashes (below ${STARTING_CAPITAL * ROGUE_DRAWDOWN_THRESHOLD:.0f}) or
 a peer exceeds ${ROGUE_GREED_THRESHOLD:,.0f} (greed rogue).
 

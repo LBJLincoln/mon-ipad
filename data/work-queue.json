@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-04-30T12:00:00Z",
+  "updated_at": "2026-05-01T00:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -470,6 +470,26 @@
       ],
       "spec_gap_closed": "Mech C spec requires 'decisions' per agent in day-N.jsonl. Prior implementation wrote num_decisions (count only). Now writes full decisions_summary array — paper dataset is spec-complete.",
       "py_compile": "PASS both apps (NBA 5747 lines, POL 3762 lines)",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-27",
+      "priority": 36,
+      "status": "done",
+      "completed_at": "2026-05-01T00:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 27 — fix stale '10 agents' in council prompts (NBA+POL parity)",
+      "gap_found": [
+        "NBA council system prompt (L1975): 'writing the plan the 10 agents will follow' → 17",
+        "NBA council user prompt (L2000): 'All 10 agents will see and follow it unless' → 17",
+        "NBA council comment (L1956): 'compact summary of all 10 agents' → 17",
+        "NBA provider comment (L729): '10 agents = 1800 calls' → 17 agents = 3060 calls",
+        "POL council TASK block (L1613): 'All 10 agents follow unless rogue.' → 17",
+        "POL provider comment (L611): '10 agents = 140 calls' → 17 agents = 238 calls",
+        "POL run_experiment docstring (L2476): '10 agents × all event-days.' → 17"
+      ],
+      "impact": "Council LLM (qwen-235B moderator) was told to coordinate 10 agents but fleet has 17. Fixing morning-council coordination quality for both TFs. Fire-25 fixed NBA run_experiment docstring but missed 3 NBA + 3 POL council-prompt occurrences.",
+      "py_compile": "PASS both apps (NBA 5786 lines, POL 3762 lines)",
       "do_not_push_hf_space_yet": true
     }
   ],

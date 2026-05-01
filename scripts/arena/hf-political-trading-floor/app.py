@@ -608,7 +608,7 @@ LEVERAGE = 5.0  # Effective sector-ETF leverage for 1-week holds (typical for 2x
 #   Google Gemini 3 Flash (key 2):      100% success, 14 RPM
 #   Mistral (la Plateforme free tier):  large/medium/small/nemo/ministral all OK
 # Dead: OpenRouter (6 models, quota), Gemini key 1, Groq keys (org restricted).
-# With day-bucket design: 1 call/agent/day × 14 days × 10 agents = 140 calls
+# With day-bucket design: 1 call/agent/day × 14 days × 17 agents = 238 calls
 # — fits free tiers with 10x headroom.
 PROVIDERS = {
     # Cerebras (shared key, 30 RPM)
@@ -1610,7 +1610,7 @@ STRATEGIES: insider_tracking, regulatory_arb, macro_narrative, congressional_cal
 
 CATEGORIES (sector ETFs): XLE, XLF, XLV, XLI, XLY, XLP, XLB, XLK, XLU, XLRE, ITA, XBI
 
-TASK: Output COUNCIL PLAN. All 10 agents follow unless rogue.
+TASK: Output COUNCIL PLAN. All 17 agents follow unless rogue.
 
 RULES:
 - Each agent commits ≥ {int(COUNCIL_MIN_COMMIT_PER_AGENT*100)}% of bankroll today.
@@ -2473,7 +2473,7 @@ def write_axelrod_log(day_idx: int, day_date: str, state: Dict,
 # ── EXPERIMENT RUNNER ────────────────────────────────────────────────────────
 
 def run_experiment(progress=gr.Progress(track_tqdm=False)):
-    """v3 DAY-BUCKET experiment: 10 agents × all event-days.
+    """v3 DAY-BUCKET experiment: 17 agents × all event-days.
 
     Each agent receives ALL political events of a single day in one prompt, and
     must allocate 100% of their bankroll (long/short sector ETFs) or hold cash.
