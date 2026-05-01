@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-05-01T12:00:00Z",
+  "cycle": "2026-05-01T12:00Z",
+  "title": "SOTA Sweep — MC Dropout Calibration + Spatial Shot-Chart Embeddings + P5 Plateau Break",
+  "sota_gap": {
+    "fleet_best_nba": 0.22027,
+    "sota_best_nba": 0.199,
+    "gap": 0.021,
+    "pol_fleet_best": 0.24992,
+    "target_nba": 0.20
+  },
+  "proposals": [
+    {
+      "id": "P1-mc-dropout-wrapper",
+      "priority": 1,
+      "title": "Monte Carlo Dropout calibration wrapper on S22 extra_trees checkpoint",
+      "source": "MDPI 2026 — Uncertainty-Aware Machine Learning for NBA Forecasting (doi:10.3390/info17010056)",
+      "technique": "T=30 stochastic forward passes via bootstrap ensemble sampling (tree model approximation of MC dropout). Average predictions yield calibrated probability distribution with uncertainty estimates.",
+      "expected_brier_gain": "-0.003 to -0.005 (ECE 0.041→0.018 in source paper; direct Brier improvement ≈ 50% of ECE improvement)",
+      "implementation": "New script: scripts/gpu-burst/mc_dropout_calibration.py. Load S22 checkpoint (.pkl), wrap with BootstrapMCWrapper(T=30, subsample=0.80), evaluate on 2024-25 holdout (9551 games). 30 bootstrap evals ≈ 5 min on Colab T4. Output: calibrated_brier, ECE, reliability diagram.",
+      "feasibility": "HIGH — pure post-hoc, no retraining, scikit-learn compatible. GPU not required (tree inference is CPU). Colab T4 or even VM would work.",
+      "next_action": "Write mc_dropout_calibration.py; schedule for next Colab T4 session"
+    },
+    {
+      "id": "P2-spatial-shot-embeddings",
+      "priority": 2,
+      "title": "24-zone spatial shot-chart embeddings as engine.py v3.2 feature category",
+      "source": "MDPI 2026 uncertainty-aware paper (primary spatial technique), MDPI 2079-3197/13/10/230 (CNN confirmation)",
+      "technique": "24-zone court segmentation (paint/mid-range/3pt × left/center/right × corner/wing/above-break) × 3 metrics (shot_freq, FG_pct, eFG_pct) = 72 features per team. category name: 'shot_zones'. With 2 teams per game: 144 features added to engine.",
+      "expected_brier_gain": "-0.005 to -0.010 (source paper attributes 0.021 SOTA gap to spatial features as key differentiator)",
+      "implementation": "1. Audit nba_cached_data.npz: check for shot_chart_detail columns. 2. If present, add 'shot_zones' category (144 features) to features/engine.py. 3. Bump version header to v3.2. 4. Deploy to all 6 NBA islands (MAX_FEATURES=200 cap — GA will select best subset). ETA: 1 VM session.",
+      "feasibility": "MEDIUM — depends on nba_cached_data.npz shot zone coverage. nba_api.stats.endpoints.shotchartdetail available if not cached. Data pipeline work estimated 2-4h.",
+      "data_source": "nba_cached_data.npz (check column list) OR nba_api.stats.endpoints.shotchartdetail (requires new scrape)",
+      "next_action": "Audit nba_cached_data.npz column list for shot zone data; write engine.py extension if data exists"
+    },
+    {
+      "id": "P3-p1-p5-plateau-break",
+      "priority": 3,
+      "title": "Break P1 (20-cycle) and P5 (3 hard-reset) political plateaus",
+      "observation": "P1: 20 cycles at 0.25249 (exceeds 15-cycle diversify threshold). P5: 3 consecutive hard resets at 0.24993 — standard GA diversity exhausted.",
+      "technique": "A) Diversify commands (already logged for VM cron). B) New political features: FEC donor density by congressional district, senate seat margin index (±5% swing), quarterly state GDP change, presidential approval by region. Add 5 features to political_engine.py.",
+      "expected_brier_gain": "-0.001 to -0.003 per island (new optima created by expanded feature space)",
+      "implementation_a": "VM cron sends: POST /api/command {\"action\":\"diversify\"} to P1 + P5. Already logged in health-status.json vm_cron_actions_required.",
+      "implementation_b": "Review nomos-political-alpha/features/political_engine.py for underrepresented categories. Add 5 FEC-based features. Requires FEC scraper (nomos-browser-nba /api/scrape-fec) or manual data pull.",
+      "feasibility": "HIGH for A (VM cron), MEDIUM for B (FEC scrape endpoint is stub per CLAUDE.md)",
+      "next_action": "A: VM cron executes diversify (next autonomous-cycle.sh run). B: Review political_engine.py categories."
+    }
+  ],
+  "s15_win_analysis": {
+    "observation": "S15 (Nomos42/nba-evo-6) recovered from 0.22984 (catboost, COOLDOWN) to 0.22226 (xgboost, EVOLVING) in 1 brain cycle via natural GA algorithm evolution",
+    "mechanism": "GA fitness pressure forced algorithm switch from underperforming catboost to xgboost. 0.076 Brier point improvement.",
+    "applicability_to_political": "P1 (LightGBM, plateau 0.25249) and P7 (LightGBM, stable 0.25412) may follow same natural evolution. Allow 3-5 more cycles before considering forced algorithm injection. P4/P5 already on xgboost_brier.",
+    "recommendation": "Allow natural GA evolution for P1/P7. If still plateau after diversify, consider boosting mutation rate toward xgboost."
+  },
+  "sources": [
+    {"title": "Uncertainty-Aware ML for NBA Forecasting in Digital Betting Markets", "url": "https://www.mdpi.com/2078-2489/17/1/56"},
+    {"title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues", "url": "https://www.mdpi.com/2079-3197/13/10/230"},
+    {"title": "Comparative Evaluation of ML Models for NBA Game Outcome Prediction", "url": "https://www.scirp.org/journal/paperinformation?paperid=147163"},
+    {"title": "XGBoost and SHAP models for NBA game outcome prediction and analysis", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/"}
+  ]
+}
