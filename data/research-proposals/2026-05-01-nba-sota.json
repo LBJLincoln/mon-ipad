@@ -1,0 +1,29 @@
+[
+  {
+    "generated_at": "2026-05-01T04:30:00Z",
+    "title": "Uncertainty-Aware LSTM with Monte Carlo Dropout and Shot-Chart Embeddings",
+    "source": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets (MDPI Information, Jan 8 2026)",
+    "technique": "Replace or augment GBT backbone with LSTM + Monte Carlo Dropout ingesting rolling team-level efficiency metrics, spatial shot-chart embeddings (CNN over court zones), and form indicators. Run N=50 stochastic forward passes for calibrated win-probability distribution. Apply Platt scaling post-hoc on GBT outputs as low-effort first step; paper reports logistic regression Brier 0.199 and XGBoost 0.202 on 2024 season with strict chronological splits.",
+    "estimated_brier_improvement": "0.019-0.022 reduction (from 0.221 toward ~0.199-0.202)",
+    "implementation_complexity": "high",
+    "priority": 1
+  },
+  {
+    "generated_at": "2026-05-01T04:30:00Z",
+    "title": "TabPFN v2 as Drop-In Calibrated Classifier over Existing Feature Set",
+    "source": "TabPFN v2 / TabPFN-2.5 — Nature 2024; TabArena benchmark 2025 (arXiv 2511.08667v1)",
+    "technique": "Swap GBT model for TabPFN v2 using existing evolution-selected feature set as-is. Bayesian prior-fitted transformer with inherent calibration, zero hyperparameter tuning, runs in seconds. Test on <=10k rows; if dataset is larger use TabPFN as meta-learner in stacking ensemble on top of existing GBT. Targets Brier score directly.",
+    "estimated_brier_improvement": "0.010-0.018 reduction depending on dataset size and feature quality",
+    "implementation_complexity": "low",
+    "priority": 2
+  },
+  {
+    "generated_at": "2026-05-01T04:30:00Z",
+    "title": "Player-Impact Feature Augmentation via EPM/RAPTOR + Stacked Ensemble",
+    "source": "Stacked Ensemble for NBA Game Outcome Prediction (Nature Scientific Reports, Aug 2025); EPM data dunksandthrees.com/epm",
+    "technique": "Enrich feature set with EPM, RAPTOR, or LEBRON player-impact ratings aggregated per team roster per game: sum/average top-8-minute-weighted player EPM values for pre-game team-strength delta. Feed enriched set into stacked ensemble (GBT base + logistic meta-learner). EPM updated daily, ML-optimized for next-game prediction. Additive to existing evolution-based selector.",
+    "estimated_brier_improvement": "0.006-0.012 reduction",
+    "implementation_complexity": "medium",
+    "priority": 3
+  }
+]
