@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-01T06:00:00Z",
+  "updated_at": "2026-05-01T12:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -102,7 +102,7 @@
       "completed_at": "2026-04-16T06:30:00Z",
       "commit_hash": "0c7696fd5f28057dc5210d7d5a7d9f8c1b7a12b3",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 3 \u2014 push Python files + dry-run"
+      "subject": "verify+tune fire 3 — push Python files + dry-run"
     },
     {
       "id": "tf-axelrod-verify-tune-4",
@@ -133,7 +133,7 @@
       "status": "done",
       "completed_at": "2026-04-17T00:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 6 \u2014 GH Actions workflow to apply society-wide archetype dedup",
+      "subject": "verify+tune fire 6 — GH Actions workflow to apply society-wide archetype dedup",
       "approach": "push_files cannot carry 128K chars inline. Pushed .github/workflows/axelrod-fire6-patch.yml (6.7KB) that self-triggers on push, restores NBA app.py from pre-placeholder git history, applies patches to both files, py_compiles, commits, and self-deletes the workflow.",
       "py_compile": "PASS both /tmp patched files (pre-push local verification)",
       "do_not_push_hf_space_yet": true
@@ -145,7 +145,7 @@
       "completed_at": "2026-04-17T04:09:00Z",
       "commit_hash": "35474e80d4c0ac277eeaf4c808e06f98279afbfd",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 7 \u2014 confirm GH Actions ran + re-trigger with fix",
+      "subject": "verify+tune fire 7 — confirm GH Actions ran + re-trigger with fix",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -155,7 +155,7 @@
       "completed_at": "2026-04-17T12:23:48Z",
       "commit_hash": "bdfd309ea36c881ccbee985f1532ad00a9e4fecc",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 8 \u2014 society-wide Mech B archetype dedup (NBA + Political)",
+      "subject": "verify+tune fire 8 — society-wide Mech B archetype dedup (NBA + Political)",
       "push_incident": "Both app.py + work-queue.json replaced with 13-byte stubs by fire-8 commit (push_files size corruption, same failure mode as fire-5). GH Actions workflow approach also failed to apply patches.",
       "do_not_push_hf_space_yet": true
     },
@@ -165,7 +165,7 @@
       "status": "done",
       "completed_at": "2026-04-17T12:30:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 9 \u2014 spec audit + restore stubs + society-wide Mech B CONFIRMED",
+      "subject": "verify+tune fire 9 — spec audit + restore stubs + society-wide Mech B CONFIRMED",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -174,7 +174,7 @@
       "status": "done",
       "completed_at": "2026-04-18T00:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 10 \u2014 full independent spec audit (no code changes needed)",
+      "subject": "verify+tune fire 10 — full independent spec audit (no code changes needed)",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -183,7 +183,7 @@
       "status": "done",
       "completed_at": "2026-04-18T06:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 11 \u2014 deep parity audit, NBA CK hardcoded-count bug found",
+      "subject": "verify+tune fire 11 — deep parity audit, NBA CK hardcoded-count bug found",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -191,7 +191,7 @@
       "priority": 21,
       "status": "pending",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 12 \u2014 HF Space push (USER GATE: explicit approval required)",
+      "subject": "verify+tune fire 12 — HF Space push (USER GATE: explicit approval required)",
       "scope": [
         "1. User explicitly approves HF Space push (say 'push to HF' or 'approve HF deploy').",
         "2. CK fix confirmed applied (tf-axelrod-fix-ck-hardcoded brain-verified 2026-04-20). No code changes needed before deploy.",
@@ -202,7 +202,7 @@
         "7. Mark this item done with do_not_push_hf_space_yet=false."
       ],
       "do_not_push_hf_space_yet": true,
-      "blocked_on": "explicit user approval only (CK fix + CK rationale both confirmed applied 2026-04-21, all 3 mechanisms spec-complete as of fire-13/15/16 audits)"
+      "blocked_on": "explicit user approval only (CK fix + CK rationale both confirmed applied 2026-04-21, all 3 mechanisms spec-complete as of fire-13/15/16 audits, fire-29 re-confirmed 2026-05-01)"
     },
     {
       "id": "tf-axelrod-fix-ck-hardcoded",
@@ -210,8 +210,8 @@
       "status": "done",
       "completed_at": "2026-04-19T00:16:11Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "Fix NBA CK block hardcoded agent-count (12\u219217, $1200\u2192dynamic)",
-      "brain_verification_2026-04-20": "CONFIRMED APPLIED \u2014 n_traders=len(TRADERS) at L2579, ONE of 17 at L239. axelrod-ck-fix-v1.yml ran but did not self-delete (cosmetic).",
+      "subject": "Fix NBA CK block hardcoded agent-count (12→17, $1200→dynamic)",
+      "brain_verification_2026-04-20": "CONFIRMED APPLIED — n_traders=len(TRADERS) at L2579, ONE of 17 at L239. axelrod-ck-fix-v1.yml ran but did not self-delete (cosmetic).",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -221,7 +221,7 @@
       "completed_at": "2026-04-20T06:11:00Z",
       "commit_hash": "6a8f75e4f6d90596c2a391f8affc1126c6ace3bd",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 13 \u2014 full spec re-audit + stale workflow cleanup",
+      "subject": "verify+tune fire 13 — full spec re-audit + stale workflow cleanup",
       "audit_result": "ALL THREE MECHANISMS CONFIRMED SPEC-COMPLETE in both NBA + Political app.py. No code changes needed. Both apps in full parity.",
       "do_not_push_hf_space_yet": true
     },
@@ -231,7 +231,7 @@
       "status": "done",
       "completed_at": "2026-04-20T12:15:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 14 \u2014 py_compile re-check + spec confirmation (no code changes)",
+      "subject": "verify+tune fire 14 — py_compile re-check + spec confirmation (no code changes)",
       "py_compile": "PASS both apps (NBA 4256 lines, Political 3500 lines)",
       "do_not_push_hf_space_yet": true
     },
@@ -241,7 +241,7 @@
       "status": "done",
       "completed_at": "2026-04-21T00:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 15 \u2014 deep parity audit, edge_rationale gap found",
+      "subject": "verify+tune fire 15 — deep parity audit, edge_rationale gap found",
       "py_compile": "PASS both apps (NBA 4288 lines, POL 3523 lines)",
       "gap_found": "Per-bet rationale text not surfaced in CK block. Logged as tf-axelrod-ck-rationale (priority 24).",
       "do_not_push_hf_space_yet": true
@@ -262,9 +262,9 @@
       "status": "done",
       "completed_at": "2026-04-21T16:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 16 \u2014 confirm CK rationale applied + spec re-audit",
+      "subject": "verify+tune fire 16 — confirm CK rationale applied + spec re-audit",
       "verification_method": "GitHub code search: query 'rationale build_common_knowledge_block repo:lbjlincoln/mon-ipad' returns both hf-llm-trading-floor/app.py and hf-political-trading-floor/app.py. CK rationale CONFIRMED APPLIED in both files.",
-      "spec_audit_result": "CLEAN \u2014 all 15 Axelrod symbols confirmed identical across NBA+POL (per fire-15 audit). No new gaps found. tf-axelrod-ck-rationale closure verified.",
+      "spec_audit_result": "CLEAN — all 15 Axelrod symbols confirmed identical across NBA+POL (per fire-15 audit). No new gaps found. tf-axelrod-ck-rationale closure verified.",
       "parity_status": "15/15 symbols parity NBA+POL. CK block now includes per-bet rationale[:60]. All 3 mechanisms spec-complete.",
       "next_action": "Only pending item is fire-12 (HF Space push, awaiting USER GATE approval).",
       "do_not_push_hf_space_yet": true
@@ -275,18 +275,18 @@
       "status": "done",
       "completed_at": "2026-04-22T00:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 17 \u2014 DMAD anti-consensus gate parity (Political TF)",
+      "subject": "verify+tune fire 17 — DMAD anti-consensus gate parity (Political TF)",
       "gap_found": [
-        "DMAD ANTI-CONSENSUS GATE block added to NBA AXELROD_CANON (2026-04-21) was NOT ported to Political AXELROD_CANON \u2014 post-fire-16 gap.",
-        "Political COLLECTIVE_MISSION said '16 agents' but TRADERS dict has 17 \u2014 agent count mismatch."
+        "DMAD ANTI-CONSENSUS GATE block added to NBA AXELROD_CANON (2026-04-21) was NOT ported to Political AXELROD_CANON — post-fire-16 gap.",
+        "Political COLLECTIVE_MISSION said '16 agents' but TRADERS dict has 17 — agent count mismatch."
       ],
       "patches_applied": [
-        "Political COLLECTIVE_MISSION: 'ONE of 16 LLM agents' \u2192 'ONE of 17 LLM agents'",
+        "Political COLLECTIVE_MISSION: 'ONE of 16 LLM agents' → 'ONE of 17 LLM agents'",
         "Political AXELROD_CANON: DMAD ANTI-CONSENSUS GATE (ticker+direction+event_type flavour) added after END AXELROD CANON"
       ],
       "py_compile": "PASS both apps (NBA 4593 lines, Political 3665 lines)",
       "do_not_push_hf_space_yet": true,
-      "push_incident": "Patches computed and py_compile verified on /tmp copies but commit to git was not made \u2014 fire-18 found and applied the missing changes."
+      "push_incident": "Patches computed and py_compile verified on /tmp copies but commit to git was not made — fire-18 found and applied the missing changes."
     },
     {
       "id": "tf-axelrod-verify-tune-18",
@@ -294,13 +294,13 @@
       "status": "done",
       "completed_at": "2026-04-22T06:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 18 \u2014 apply fire-17 patches actually missing from repo",
+      "subject": "verify+tune fire 18 — apply fire-17 patches actually missing from repo",
       "gap_found": [
         "fire-17 marked done but patches NOT committed: Political COLLECTIVE_MISSION still said 'ONE of 16'",
         "Political AXELROD_CANON missing DMAD ANTI-CONSENSUS GATE block (NBA had it since 2026-04-21)"
       ],
       "approach": "GH Actions workflow axelrod-fire18-restore-patch.yml: restores Political app.py from pre-stub SHA 918cc67, applies both patches, py_compiles, commits and self-deletes",
-      "stub_incident": "create_or_update_file called with only first 17 lines (docstring) instead of full 179K file \u2014 created 794-byte stub at commit 42fac66. Workflow restores from 918cc67.",
+      "stub_incident": "create_or_update_file called with only first 17 lines (docstring) instead of full 179K file — created 794-byte stub at commit 42fac66. Workflow restores from 918cc67.",
       "workflow_commit": "ed887643f6a672a39994bae00910d325b42583ab",
       "py_compile": "PASS (verified locally: NBA 4625 lines, Political 3688 lines)",
       "do_not_push_hf_space_yet": true,
@@ -312,25 +312,25 @@
       "status": "done",
       "completed_at": "2026-04-22T18:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 19 \u2014 full spec re-audit, no code changes needed",
+      "subject": "verify+tune fire 19 — full spec re-audit, no code changes needed",
       "audit_method": "GitHub code search across both app.py files + Explore agent deep-read of file contents",
-      "audit_result": "SPEC CLEAN \u2014 all 3 Axelrod mechanisms confirmed in both NBA + Political app.py. Fire-17 patches confirmed applied (commit 556d9f9f8e80443ec3a5afad869d709084cce0cc): '17 LLM agents' and 'anti-consensus' gate both present in both files via code search.",
+      "audit_result": "SPEC CLEAN — all 3 Axelrod mechanisms confirmed in both NBA + Political app.py. Fire-17 patches confirmed applied (commit 556d9f9f8e80443ec3a5afad869d709084cce0cc): '17 LLM agents' and 'anti-consensus' gate both present in both files via code search.",
       "symbols_verified": [
-        "build_common_knowledge_block \u2014 NBA \u2713, Political \u2713",
-        "write_axelrod_log \u2014 NBA \u2713, Political \u2713",
-        "sacrificial \u2014 NBA \u2713, Political \u2713",
-        "AXELROD_CANON \u2014 NBA \u2713, Political \u2713",
-        "consensus_distance \u2014 NBA \u2713, Political \u2713",
-        "anti-consensus gate \u2014 NBA \u2713, Political \u2713",
-        "17 LLM agents \u2014 NBA \u2713, Political \u2713",
-        "_society_archetypes_by_day \u2014 NBA \u2713, Political \u2713 (society-wide archetype dedup confirmed)",
-        "_common_knowledge Dict \u2014 NBA \u2713, Political \u2713",
-        "_sacrificial_assignments Dict \u2014 NBA \u2713, Political \u2713"
+        "build_common_knowledge_block — NBA ✓, Political ✓",
+        "write_axelrod_log — NBA ✓, Political ✓",
+        "sacrificial — NBA ✓, Political ✓",
+        "AXELROD_CANON — NBA ✓, Political ✓",
+        "consensus_distance — NBA ✓, Political ✓",
+        "anti-consensus gate — NBA ✓, Political ✓",
+        "17 LLM agents — NBA ✓, Political ✓",
+        "_society_archetypes_by_day — NBA ✓, Political ✓ (society-wide archetype dedup confirmed)",
+        "_common_knowledge Dict — NBA ✓, Political ✓",
+        "_sacrificial_assignments Dict — NBA ✓, Political ✓"
       ],
       "bonus_finding": "NBA TRADERS dict in mon-ipad git already reflects Round-2 reroute (mistral:large, cerebras:qwen-3-235b, nvidia:llama-3.3-70b providers). Git source is current with live HF Space routing.",
-      "cosmetic_note": "Political run_morning_council docstring still says '10 political agents' (stale from pre-17-agent era) \u2014 no functional impact, not worth a fix fire.",
+      "cosmetic_note": "Political run_morning_council docstring still says '10 political agents' (stale from pre-17-agent era) — no functional impact, not worth a fix fire.",
       "do_not_push_hf_space_yet": true,
-      "next_action": "Only remaining pending item: tf-axelrod-verify-tune-12 (HF Space push, awaiting explicit user gate approval \u2014 say 'push to HF' or 'approve HF deploy')."
+      "next_action": "Only remaining pending item: tf-axelrod-verify-tune-12 (HF Space push, awaiting explicit user gate approval — say 'push to HF' or 'approve HF deploy')."
     },
     {
       "id": "tf-axelrod-verify-tune-20",
@@ -338,9 +338,9 @@
       "status": "done",
       "completed_at": "2026-04-26T13:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 20 \u2014 full spec audit post carte-blanche stripping (2026-04-26)",
+      "subject": "verify+tune fire 20 — full spec audit post carte-blanche stripping (2026-04-26)",
       "audit_method": "GitHub code search (10 symbols) + direct NBA app.py read (5340 lines) + Political app.py read (3742 lines)",
-      "audit_result": "SPEC CLEAN \u2014 all 3 Axelrod mechanisms confirmed fully intact in both NBA + Political app.py after today's user-driven carte-blanche stripping (commits 6501e8841, 142e95ed, 38ad90fd). The stripping only removed per-day prompt coercion directives (MANDATORY DIVERSIFY, ALT-LINE SHOPPING, coalition_proposal). Axelrod machinery was NOT touched.",
+      "audit_result": "SPEC CLEAN — all 3 Axelrod mechanisms confirmed fully intact in both NBA + Political app.py after today's user-driven carte-blanche stripping (commits 6501e8841, 142e95ed, 38ad90fd). The stripping only removed per-day prompt coercion directives (MANDATORY DIVERSIFY, ALT-LINE SHOPPING, coalition_proposal). Axelrod machinery was NOT touched.",
       "wiring_confirmed": [
         "NBA build_day_prompt L2040 accepts common_knowledge_block param; L2074 injects it if present",
         "NBA AXELROD_CANON prepended at L3731 per-agent before every LLM call",
@@ -350,19 +350,19 @@
         "Political identical wiring at L1765/L2668/L2705/L3021/L3026/L3029/L3033/L3038"
       ],
       "symbols_verified": [
-        "build_common_knowledge_block \u2014 NBA L3116 \u2713, Political L2134 \u2713",
-        "write_axelrod_log \u2014 NBA L3407 \u2713, Political L2417 \u2713",
-        "sacrificial \u2014 NBA \u2713, Political \u2713",
-        "AXELROD_CANON \u2014 NBA L339 \u2713, Political L291 \u2713",
-        "DMAD anti-consensus gate \u2014 NBA \u2713, Political L317 \u2713",
-        "_society_archetypes_by_day \u2014 NBA \u2713, Political L121/L2309/L2333 \u2713",
-        "_common_knowledge \u2014 NBA L122 \u2713, Political L118 \u2713",
-        "_sacrificial_assignments \u2014 NBA L123 \u2713, Political L119 \u2713"
+        "build_common_knowledge_block — NBA L3116 ✓, Political L2134 ✓",
+        "write_axelrod_log — NBA L3407 ✓, Political L2417 ✓",
+        "sacrificial — NBA ✓, Political ✓",
+        "AXELROD_CANON — NBA L339 ✓, Political L291 ✓",
+        "DMAD anti-consensus gate — NBA ✓, Political L317 ✓",
+        "_society_archetypes_by_day — NBA ✓, Political L121/L2309/L2333 ✓",
+        "_common_knowledge — NBA L122 ✓, Political L118 ✓",
+        "_sacrificial_assignments — NBA L123 ✓, Political L119 ✓"
       ],
-      "parity_gap": "NBA breadth rule (\u22653 distinct category families/day, server-side L2425, 2026-04-26 commit 38ad90fd) not ported to Political TF. Political already has v5_restored doctrine \u22653 distinct categories enforced separately. Breadth rule is orthogonal to Axelrod spec \u2014 not a regression, noting for completeness.",
-      "py_compile": "NOT RUN (no code changes \u2014 audit-only fire)",
+      "parity_gap": "NBA breadth rule (≥3 distinct category families/day, server-side L2425, 2026-04-26 commit 38ad90fd) not ported to Political TF. Political already has v5_restored doctrine ≥3 distinct categories enforced separately. Breadth rule is orthogonal to Axelrod spec — not a regression, noting for completeness.",
+      "py_compile": "NOT RUN (no code changes — audit-only fire)",
       "do_not_push_hf_space_yet": true,
-      "next_action": "Only remaining pending item: tf-axelrod-verify-tune-12 (HF Space push, awaiting explicit user gate approval \u2014 say 'push to HF' or 'approve HF deploy')."
+      "next_action": "Only remaining pending item: tf-axelrod-verify-tune-12 (HF Space push, awaiting explicit user gate approval — say 'push to HF' or 'approve HF deploy')."
     },
     {
       "id": "tf-axelrod-verify-tune-21",
@@ -370,9 +370,9 @@
       "status": "done",
       "completed_at": "2026-04-30T01:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 21 \u2014 CONSENSUS_AGREE_JUSTIFIED replaces CONSENSUS AGREE FORBIDDEN (NBA+POL)",
+      "subject": "verify+tune fire 21 — CONSENSUS_AGREE_JUSTIFIED replaces CONSENSUS AGREE FORBIDDEN (NBA+POL)",
       "patches_applied": [
-        "NBA P1 (F21): CONSENSUS AGREE is FORBIDDEN \u2192 CONSENSUS_AGREE_JUSTIFIED [peer_name] with lockstep gate (\u226510/17 same pick \u2192 Mech B rotation for bottom 3)",
+        "NBA P1 (F21): CONSENSUS AGREE is FORBIDDEN → CONSENSUS_AGREE_JUSTIFIED [peer_name] with lockstep gate (≥10/17 same pick → Mech B rotation for bottom 3)",
         "POL P4 (F21): Same CONSENSUS_AGREE_JUSTIFIED patch for Political TF"
       ],
       "rationale": "CONSENSUS AGREE FORBIDDEN was forcing agents to always pick second-best even when consensus was structurally justified. New rule: ALLOWED if citing a DIFFERENT structural basis; flagged otherwise.",
@@ -385,7 +385,7 @@
       "status": "done",
       "completed_at": "2026-04-30T01:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 22 \u2014 ck_consensus_stance schema field (NBA+POL)",
+      "subject": "verify+tune fire 22 — ck_consensus_stance schema field (NBA+POL)",
       "patches_applied": [
         "NBA P2 (C1 schema): add ck_consensus_stance {stance, reason} after cash_held_pct in day JSON schema",
         "POL P5 (C1 schema): add ck_consensus_stance after council_alignment in day JSON schema"
@@ -399,7 +399,7 @@
       "status": "done",
       "completed_at": "2026-04-30T01:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 23 \u2014 ck_consensus_stance audit field + log capture (NBA+POL)",
+      "subject": "verify+tune fire 23 — ck_consensus_stance audit field + log capture (NBA+POL)",
       "patches_applied": [
         "POL P6 (C1 audit): add ck_consensus_stance MANDATORY audit instruction before ticker_reason",
         "NBA P3 (C1 log): write ck_consensus_stance to write_axelrod_log day-N.jsonl",
@@ -414,12 +414,12 @@
       "status": "done",
       "completed_at": "2026-04-30T01:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 24 \u2014 fire-21/22/23 consolidated push to mon-ipad git",
+      "subject": "verify+tune fire 24 — fire-21/22/23 consolidated push to mon-ipad git",
       "approach": "Local git clone at /home/user/mon-ipad with proxy push (GH Actions approach abandoned after 4 failures). Applied all 7 patches via Python script, verified py_compile PASS, committed and pushed via local git proxy.",
       "commit_hash": "caee9c921132162e87396fa075664630581623a6",
       "files_changed": [
         "scripts/arena/hf-llm-trading-floor/app.py (NBA: 5736 lines, 3 ck_consensus_stance, 2 CONSENSUS_AGREE_JUSTIFIED)",
-        "scripts/arena/hf-political-trading-floor/app.py (POL: 3750 lines, 4 ck_consensus_stance, 2 CONSENSUS_AGREE_JUSTIFIED)"
+        "scripts/arena/hf-political-trading-floor/app.py (POL: 5736 lines, 4 ck_consensus_stance, 2 CONSENSUS_AGREE_JUSTIFIED)"
       ],
       "orphaned_files_deleted": [
         ".github/workflows/axelrod-fire21-patch.yml",
@@ -509,6 +509,38 @@
       "impact": "Council LLM (qwen-235B moderator) was told to coordinate 10 agents but fleet has 17. Fixing morning-council coordination quality for both TFs. Fire-25 fixed NBA run_experiment docstring but missed 3 NBA + 3 POL council-prompt occurrences.",
       "py_compile": "PASS both apps (NBA 5786 lines, POL 3762 lines)",
       "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-29",
+      "priority": 38,
+      "status": "done",
+      "completed_at": "2026-05-01T12:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 29 — deep spec audit post fire-28, all mechanisms confirmed",
+      "audit_method": "Direct code read of both app.py files from GitHub (NBA 5787 lines, POL 3763 lines). Checked all Axelrod symbol wiring end-to-end including parse_day_allocation return dicts, initial day_log dicts, prev_day_ck init, challenge tier injection, and ARCHETYPES lists.",
+      "audit_result": "SPEC CLEAN — all 3 Axelrod mechanisms confirmed spec-complete in both NBA + Political app.py. Fire-28 patches confirmed applied in code (not just in work-queue claims): ck_consensus_stance in parse_day_allocation return (NBA L3032, POL L1999) and initial day_log dict (NBA L4490, POL L2866). 15+ Axelrod symbols verified at parity NBA↔POL.",
+      "symbols_verified": [
+        "build_common_knowledge_block — NBA L3481 ✓, Political L2140 ✓",
+        "write_axelrod_log — NBA L3774 ✓, Political L2426 ✓",
+        "assign_sacrificial_archetypes — NBA L3644 ✓, Political L2301 ✓",
+        "build_sacrificial_system_suffix — NBA L3690 ✓, Political L2346 ✓",
+        "assign_challenge_tiers — NBA L3702 ✓, Political L2358 ✓",
+        "build_challenge_block — NBA L3723 ✓, Political L2379 ✓",
+        "compute_consensus_distance (L1 half-norm) — NBA L3743 ✓, Political L2399 ✓",
+        "AXELROD_CANON — NBA L350 ✓, Political L291 ✓",
+        "AXELROD_ARCHETYPES (20 each, domain-appropriate) — NBA L306 ✓, Political L254 ✓",
+        "_society_archetypes_by_day — NBA ✓, Political ✓",
+        "_common_knowledge Dict — NBA L122 ✓, Political L118 ✓",
+        "_sacrificial_assignments Dict — NBA L123 ✓, Political L119 ✓",
+        "ck_consensus_stance in parse_day_allocation return — NBA L3032 ✓, Political L1999 ✓",
+        "ck_consensus_stance in initial day_log — NBA L4490 ✓, Political L2866 ✓",
+        "prev_day_ck restore-on-resume — NBA L4012 ✓, Political L2625 ✓",
+        "challenge tier injection in agent LLM worker — NBA L4108 ✓, Political L2687 ✓"
+      ],
+      "no_gaps_found": true,
+      "py_compile": "NOT RUN (no code changes — audit-only fire; last PASS confirmed fire-28: NBA 5787 lines, POL 3763 lines)",
+      "do_not_push_hf_space_yet": true,
+      "next_action": "Only remaining pending item: tf-axelrod-verify-tune-12 (HF Space push, awaiting explicit user gate approval — say 'push to HF' or 'approve HF deploy')."
     }
   ],
   "recovery_protocol": {
