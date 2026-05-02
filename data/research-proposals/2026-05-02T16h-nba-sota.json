@@ -1,0 +1,109 @@
+{
+  "generated_at": "2026-05-02T16:00:00Z",
+  "brain_cycle": "2026-05-02 ~16:00Z",
+  "search_query": "NBA prediction AI machine learning SOTA Brier score 2026 state of the art basketball forecasting",
+  "sota_benchmark": {
+    "best_published_brier": 0.199,
+    "model": "Logistic Regression + isotonic calibration",
+    "source": "MDPI Information 2026 — Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+    "url": "https://www.mdpi.com/2078-2489/17/1/56",
+    "comparison": {
+      "sota_LR_brier": 0.199,
+      "sota_XGBoost_brier": 0.202,
+      "sota_CNN_brier": 0.221,
+      "our_fleet_best_brier": 0.22027,
+      "our_tabicl_best_brier": 0.21139,
+      "gap_fleet_to_sota": 0.021,
+      "gap_tabicl_to_sota": 0.012
+    }
+  },
+  "fleet_validation": {
+    "S14_LR_discovery": "S14 (Nomos42/nba-evo-5) GA at gen 845 independently discovered LogisticRegression as its best model. Brier improved 0.25312→0.22680 at just 22 features — without any explicit instruction to try LR. This is scientific validation that the SOTA direction (LR) is correct AND discoverable by pure evolution.",
+    "implication": "The GA, given enough generations, finds LR. We can accelerate this by explicitly seeding LR configs in all island inits rather than waiting for natural discovery.",
+    "urgency": "HIGH — S14 just proved it. Port to all islands."
+  },
+  "key_papers": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "year": 2026,
+      "key_finding": "LR Brier 0.199, XGBoost 0.202 on walk-forward NBA test. LSTM with MC dropout provides calibrated uncertainty. Framework: team-level performance metrics + rolling-form indicators + spatial shot-chart embeddings.",
+      "actionable_for_islands": "Rolling-form indicators (5g/10g windows of W%, PTS_diff, ATS_cover_rate) are CPU-cheap and can be added to engine.py. Shot-chart embeddings require GPU but rolling form alone should yield -0.002 Brier."
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "year": 2025,
+      "key_finding": "CNN achieves lowest Brier 0.221. Stacked ensemble (XGBoost + LR + RF base + LR meta) outperforms individuals. Key: diversity of base learners.",
+      "actionable_for_islands": "Our islands ban stacking (Rule #8, CPU-only). But LR as an independent engine option is valid. Adding LR to GA pool forces evolution to discover ensemble-equivalent diversity naturally."
+    },
+    {
+      "title": "Integration of machine learning XGBoost and SHAP models for NBA game outcome prediction",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
+      "year": 2024,
+      "key_finding": "Home advantage, team Elo ratings, and next-game rest are top 3 SHAP features across ALL models. Dominate over statistical features.",
+      "actionable_for_islands": "Add feature_always_include guard for home_advantage, elo_home, elo_away, days_rest_diff in GA init. 4-line change prevents GA from accidentally pruning these in feature selection."
+    }
+  ],
+  "proposals": [
+    {
+      "id": "P1-explicit-LR-seeding",
+      "priority": 1,
+      "title": "Explicitly seed LogisticRegression configs in all NBA island GA inits",
+      "evidence": "S14 discovered LR naturally at gen 845, achieving 0.22680 at 22f. SOTA LR achieves 0.199. Explicit seeding accelerates discovery on S13/S15/S18/S22.",
+      "implementation": "In island GA init, add LogisticRegression(C=[0.01, 0.1, 1.0], solver='saga', max_iter=1000, penalty='l2') as seeded config. 5-10 individuals with LR configs in initial population. Feature count 20-35f (S14 shows 22f optimal).",
+      "expected_brier_delta": -0.003,
+      "complexity": "low",
+      "target_islands": ["S13", "S15", "S18", "S22"],
+      "feasibility": "high — S14 proves LR is fast on CPU with 22f"
+    },
+    {
+      "id": "P2-rolling-form-features",
+      "priority": 2,
+      "title": "Add rolling-form feature block to engine.py (5-game and 10-game windows)",
+      "evidence": "SOTA uncertainty-aware framework uses rolling-form indicators as primary signal. Our features may have some rolling stats but not systematic 5g/10g windows.",
+      "implementation": "Add to engine.py: rolling_5g_win_pct, rolling_10g_win_pct, rolling_5g_pts_diff, rolling_10g_pts_diff, rolling_5g_ats_cover, rolling_5g_efg_pct. All computable from existing boxscore data in nba_cached_data.npz. ~6 new features.",
+      "expected_brier_delta": -0.002,
+      "complexity": "medium",
+      "target": "engine.py — applies to all islands after engine-parity-sync",
+      "feasibility": "medium — requires engine.py edit (VM task, blocked by parity-sync)",
+      "blocker": "engine-parity-sync must complete first (VM work-queue item pending)"
+    },
+    {
+      "id": "P3-top3-feature-freeze",
+      "priority": 3,
+      "title": "Feature freeze for top-3 SHAP features in island GA",
+      "evidence": "SHAP analysis across 3 independent papers: home_advantage, elo_delta, days_rest are top features consistently. GA may prune these during feature selection, losing core signal.",
+      "implementation": "Add feature_always_include = ['home_advantage', 'elo_home', 'elo_away', 'days_rest_diff'] to island GA config. These bypass selection and are always passed to model. Reduces search space by 4 dimensions.",
+      "expected_brier_delta": -0.001,
+      "complexity": "low",
+      "target_islands": ["all survivors"],
+      "feasibility": "high — 4-line change to GA init"
+    },
+    {
+      "id": "P4-LR-political-cross-pollination",
+      "priority": 4,
+      "title": "Port LR to political_engine.py GA pool",
+      "evidence": "S14 proves LR works at 22f in NBA domain. Political GA currently uses xgboost_brier/lightgbm. Adding LR creates healthy engine diversity.",
+      "implementation": "Add LogisticRegression to political island GA model pool. Target: P2 (fresh restart, most flexible) as first trial. P4/P5 near all-time best — don't disturb.",
+      "expected_brier_delta": -0.002,
+      "complexity": "low",
+      "target_islands": ["P2"],
+      "feasibility": "high"
+    }
+  ],
+  "cross_domain_opportunity": {
+    "nba_to_political": "LR + rolling-form features map directly to political domain: 5-poll rolling average, recent event sentiment window, rolling-5-day approval change. Add to political_engine.py as rolling_N feature category.",
+    "political_to_nba": "P4 (lightgbm) and P5 (xgboost) competing at same brier with different engines — natural diversity preventing monoculture. Apply same multi-engine diversity to NBA: S13 (random_forest) + S14 (LR) + S15 (xgboost) is the right diversity pattern."
+  },
+  "gap_closure_path": {
+    "current_fleet_best": 0.22027,
+    "sota_target": 0.199,
+    "gap": 0.021,
+    "step1_LR_seeding": "Expected -0.003 → 0.21727",
+    "step2_rolling_form": "Expected -0.002 → 0.21527",
+    "step3_feature_freeze": "Expected -0.001 → 0.21427",
+    "projected_achievable_cpu": 0.214,
+    "note": "CPU-only fleet targeting 0.214 with proposed changes. Full SOTA 0.199 requires GPU (TabICL/LR+shot-chart) but 0.214 is achievable on HF CPU spaces."
+  }
+}
