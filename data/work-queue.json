@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-02T12:00:00Z",
+  "updated_at": "2026-05-02T18:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {"id": "R7", "priority": 2, "status": "done", "completed_at": "2026-04-15T19:00:00Z", "commit_hash": "61c4b61394e2381ab0e1702f0581c292055b235c", "owner": "local-agent-a63b2bad", "subject": "Deploy S20/S21/S22 NBA islands"},
@@ -38,7 +38,7 @@
         "7. Mark this item done with do_not_push_hf_space_yet=false."
       ],
       "do_not_push_hf_space_yet": true,
-      "blocked_on": "explicit user approval only (CK fix + CK rationale both confirmed applied 2026-04-21, all 3 mechanisms spec-complete as of fire-13/15/16 audits, fire-29 re-confirmed 2026-05-01, fire-31 re-confirmed 2026-05-02)"
+      "blocked_on": "explicit user approval only (CK fix + CK rationale both confirmed applied 2026-04-21, all 3 mechanisms spec-complete as of fire-13/15/16 audits, fire-29 re-confirmed 2026-05-01, fire-31 re-confirmed 2026-05-02, fire-32 re-confirmed 2026-05-02T18:00Z — ast.parse PASS both apps NBA 5798L POL 3774L)"
     },
     {"id": "tf-axelrod-fix-ck-hardcoded", "priority": 19, "status": "done", "completed_at": "2026-04-19T00:16:11Z", "owner": "cloud-trigger-axelrod-2026", "subject": "Fix NBA CK block hardcoded agent-count", "do_not_push_hf_space_yet": true},
     {"id": "tf-axelrod-verify-tune-13", "priority": 20, "status": "done", "completed_at": "2026-04-20T06:11:00Z", "commit_hash": "6a8f75e4f6d90596c2a391f8affc1126c6ace3bd", "owner": "cloud-trigger-axelrod-2026", "subject": "verify+tune fire 13", "do_not_push_hf_space_yet": true},
@@ -86,6 +86,23 @@
       "owner": "cloud-brain-sonnet4-6",
       "subject": "Update CLAUDE.md island table with 2026-05-02 gen counts and state changes",
       "note": "Used live /api/status data from 12:00Z poll. S13 brier breakthrough (0.24551→0.22430) incorporated. CLAUDE.md updated in same brain commit."
+    },
+    {
+      "id": "tf-axelrod-verify-tune-32",
+      "priority": 43,
+      "status": "done",
+      "completed_at": "2026-05-02T18:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 32 — full spec re-audit, CLEAN",
+      "audit_findings": {
+        "mech_a": "COMPLETE — build_common_knowledge_block wired at day-end (NBA:4872, POL:3054); prev_day_ck passed to build_day_prompt as common_knowledge_block on next day; last_ck_block persisted for resume; DMAD anti-groupthink gate in CK output block",
+        "mech_b": "COMPLETE — assign_sacrificial_archetypes (bottom-3 trailing-7d delta), assign_challenge_tiers (mid-tier), build_sacrificial_system_suffix + build_challenge_block applied in _agent_llm_worker; society-wide USED_ARCHETYPES dedup via _society_archetypes_by_day; NBA has 20 NBA archetypes, POL has 20 political archetypes",
+        "mech_c": "COMPLETE — write_axelrod_log writes data/arena/axelrod-log/day-NNN.jsonl per-agent rows with {decisions, rank, archetype_assigned, was_sacrificed, peer_consensus_distance (L1 proxy for KL)}; Hub push to Space repo data/arena/axelrod-log/",
+        "ast_parse": "PASS both apps — NBA 5798 lines, POL 3774 lines",
+        "parity": "NBA and POL at structural parity for all 3 mechanisms",
+        "hf_push": "BLOCKED — pending explicit user approval (tf-axelrod-verify-tune-12)"
+      },
+      "do_not_push_hf_space_yet": true
     }
   ],
   "recovery_protocol": {
