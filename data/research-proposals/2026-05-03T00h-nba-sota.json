@@ -1,0 +1,78 @@
+{
+  "generated_at": "2026-05-03T00:00:00Z",
+  "cycle": "2026-05-03 ~00:00Z brain cycle",
+  "title": "NBA Prediction SOTA 2026: S14 ExtraTrees 200f Fleet Best + S13 CatBoost Discovery",
+  "sources_searched": [
+    "MDPI 2026 (doi:10.3390/info17010056) — Uncertainty-Aware ML for NBA forecasting, LR Brier 0.199",
+    "MDPI Oct 2025 (doi:10.3390/computation13100230) — CNN achieves Brier 0.221",
+    "Nature Scientific Reports 2025 (doi:10.1038/s41598-025-13657-1) — Stacked ensemble NBA",
+    "IEEE Xplore 2025 (doi:10.1109/11030489) — Comparing ML methods for NBA outcome prediction"
+  ],
+  "sota_summary": {
+    "best_published_brier": 0.199,
+    "achieved_with": "LR + uncertainty-aware framework (MDPI 2026)",
+    "cnn_brier": 0.221,
+    "stacked_ensemble_methods": ["NaiveBayes", "AdaBoost", "MLP", "KNN", "XGBoost", "DecisionTree", "LR"],
+    "lr_xgboost_accuracy": 0.68,
+    "lr_xgboost_auc": "0.75-0.76",
+    "fleet_gap_to_sota": 0.021
+  },
+  "fleet_this_cycle": {
+    "new_fleet_best": {
+      "island": "S14 Nomos42/nba-evo-5",
+      "brier": 0.22019,
+      "algo": "extra_trees",
+      "features": 200,
+      "gen": 1078,
+      "significance": "Beats S22 0.22027. Below oracle CV 0.22085. ExtraTrees 200f > XGBoost 63f at this data scale."
+    },
+    "catboost_signal": {
+      "island": "S13 Nomos42/nba-evo-4",
+      "brier": 0.22060,
+      "algo": "catboost",
+      "features": 67,
+      "gen": 6,
+      "significance": "First CatBoost result in fleet. Sub-oracle-threshold at gen 6. Strong signal for political domain."
+    }
+  },
+  "proposals": [
+    {
+      "priority": 1,
+      "title": "Seed ExtraTrees 200f explicitly in all island GA init populations",
+      "rationale": "S14 proves ET 200f beats sparse XGBoost 63f. GA should pre-seed ET(n_estimators=300, max_features=sqrt) + 200f configs.",
+      "targets": ["S15", "S18", "S22", "P2"],
+      "expected_brier_gain": "0.001-0.003"
+    },
+    {
+      "priority": 2,
+      "title": "Add CatBoost to political GA engine pool",
+      "rationale": "S13 CatBoost hit 0.22060 at gen 6 from fresh restart. Political domain has many categorical event features — CatBoost handles natively vs XGBoost/LGB one-hot encoding.",
+      "targets": ["P2", "P4 (next restart)"],
+      "expected_brier_gain": "May break 0.249xx POL plateau"
+    },
+    {
+      "priority": 3,
+      "title": "LR + isotonic calibration in S14 GA pool",
+      "rationale": "S14 at 0.22019 (ET 200f). SOTA shows LR achieves 0.199. Add LR(C=0.1, solver=saga) + CalibratedClassifierCV(isotonic) as explicit GA candidate.",
+      "targets": ["S14"],
+      "expected_brier_gain": "0.220→0.219 within 200 gens if LR wins selection"
+    },
+    {
+      "priority": 4,
+      "title": "Revive Kaggle P100 stacked ensemble run (STALE since Mar 28)",
+      "rationale": "Nature 2025 stacked ensemble promising. S14 ET 200f alone at 0.22019 — stacking with XGBoost+LR meta could approach 0.199 SOTA.",
+      "targets": ["scripts/kaggle/nba_karpathy_loop.py"],
+      "expected_brier_gain": "Potential sub-0.220 on holdout"
+    }
+  ],
+  "s22_restart_note": "S22 (previous fleet best 0.22027, XGBoost 63f, gen 861) restarted and now at gen 38 brier 0.22431 stagnation=16. Re-seed the 63f XGBoost config that achieved 0.22027 into S22 init population via next diversify.",
+  "fleet_gap_analysis": {
+    "fleet_best": 0.22019,
+    "oracle_cv": 0.22087,
+    "sota_lr": 0.199,
+    "tabicl_colab": 0.21139,
+    "gap_to_sota": 0.021,
+    "gap_to_tabicl": 0.009,
+    "comment": "Fleet CPU-only islands within 0.021 of LR SOTA. TabICL gap 0.009 achievable via GPU run. LR approach could close gap entirely."
+  }
+}
