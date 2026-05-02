@@ -1,10 +1,10 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-01
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-02
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22027 (S22 nba-evo-s22 extra_trees 63f, gen 288, checkpointed 2026-05-01) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22027 (S22 nba-evo-s22 63f, gen 861, checkpointed 2026-05-01) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
 **NBA TF v7 + reroute + pool=8 (Apr 22, 17 agents, DAY-0 RESET 15:24Z):** prompt_v7 (3-bet cap + 100% deploy mandate, Kelly-weighted floors). Round-2 dead-provider reroute (HF SHA cc905b3e1dcd): nemotron-120b→mistral:large, selfhost-dolphin3→nvidia:llama-3.3-70b, selfhost-qwen06/gemma3→cerebras:llama3.1-8b, selfhost-qwen4b→cerebras:qwen-3-235b, nvidia-minimax→mistral:medium. Pool concurrency 4→8 (env NBA_TF_LLM_POOL_WORKERS=8), LLM timeout 45s (env NBA_TF_LLM_TIMEOUT_SEC=45.0). Live day 8/175, 14/17 agents at 100% llm_ok post-reset. PEAK_DD_GUARD_V2 sole safety net. Top: gemini-anl $108, dolphin3 $107.
 **Political TF v5_restored (Apr 22 15:46Z ROLLBACK):** 17 agents, day 90. v6 100%-deploy mandate destroyed alpha (qwen-arb -39% / llama-contra -51% in 1h) — rolled back to v5 doctrine: non-consensus mandate (lockstep≤0.88) + ≥3 distinct categories per day. State preserved. qwen-arb $3,472 / qwen-quant $1,459 / gemini-anl $584 carrying forward.
@@ -45,18 +45,18 @@ HF EVOLUTION ISLANDS — 11 SURVIVORS (6 NBA + 5 POL) after 2026-04-17 cull
     Eliminated slots now host selfhost LLMs on LBJLincoln/LBJLincoln26/TESTforge42.
 
     NBA Survivors (6, CPU tree-only, MAX_FEATURES=200):
-    ├── S13 Nomos42/nba-evo-4:        extra_trees       gen=212   brier=0.22050  ★ <0.22085 threshold (2026-05-01)
-    ├── S14 Nomos42/nba-evo-5:        random_forest     gen=1966  brier=0.22151  (2026-05-01)
-    ├── S15 Nomos42/nba-evo-6:        extra_trees 200f  gen=325   brier=0.22984  [regressed — restarted] (2026-05-01)
-    ├── S17 LBJLincoln26/nba-evo-s17: xgboost           gen=---   brier=0.22249  ⚠ DOWN 503 — restart via keepalive cron (2026-05-01)
-    ├── S18 TESTforge42/nba-evo-s18:  extra_trees       gen=4440  brier=0.22248  (2026-05-01)
-    └── S22 TESTforge42/nba-evo-s22:  extra_trees 63f   gen=288   brier=0.22027  ★ NEW FLEET BEST (2026-05-01)
+    ├── S13 Nomos42/nba-evo-4:        extra_trees       gen=351   brier=0.22430  (2026-05-02)
+    ├── S14 Nomos42/nba-evo-5:        random_forest     gen=628   brier=0.25312  (2026-05-02)
+    ├── S15 Nomos42/nba-evo-6:        random_forest     gen=1675  brier=0.22226  [RECOVERED] (2026-05-02)
+    ├── S17 LBJLincoln26/nba-evo-s17: xgboost           gen=---   brier=0.22249  ⚠ DOWN 503 — manual HF admin check needed (2026-05-02)
+    ├── S18 TESTforge42/nba-evo-s18:  extra_trees       gen=5448  brier=0.22248  stagnation=15 ⚠ (2026-05-02)
+    └── S22 TESTforge42/nba-evo-s22:  xgboost 63f       gen=861   brier=0.22027  ★ FLEET BEST checkpointed (2026-05-02)
     Political Survivors (5, CPU tree-only):
-    ├── P1 Nomos42/political-alpha:      lightgbm+VA    gen=14307  brier=0.25249  [restarted — regressed from 0.25061] (2026-05-01)
-    ├── P2 Nomos42/political-alpha-2:    logistic       gen=860    brier=0.25953  [restarted — regressed from 0.25232] (2026-05-01)
-    ├── P4 LBJLincoln/political-alpha-4: xgboost_brier  gen=4030   brier=0.24992  ★ POL LIVE BEST (2026-05-01)
-    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier  gen=2095   brier=0.25345  [hist 0.24923 ★ POL BEST] (2026-05-01)
-    └── P7 LBJLincoln/political-alpha-7: lightgbm       gen=1292   brier=0.25412  hist_best=0.24925 (2026-05-01)
+    ├── P1 Nomos42/political-alpha:      xgboost_brier  gen=23796  brier=0.25231  (2026-05-02)
+    ├── P2 Nomos42/political-alpha-2:    xgboost_brier  gen=206    brier=0.25003  [fresh restart] (2026-05-02)
+    ├── P4 LBJLincoln/political-alpha-4: xgboost_brier  gen=15225  brier=0.24992  ★ POL LIVE BEST (2026-05-02)
+    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier  gen=6447   brier=0.24993  [hist 0.24923 ★ POL BEST] (2026-05-02)
+    └── P7 LBJLincoln/political-alpha-7: lightgbm       gen=6628   brier=0.25412  hist_best=0.24925 (2026-05-02)
 
 SELFHOST LLM FLEET (6 RUNNING, 2 building — 2026-04-19 20:55 UTC)
     LBJLincoln   (3 RUNNING): qwen25-05b-cpu, gemma2-2b-cpu, phi35-mini-cpu
@@ -124,7 +124,7 @@ SYSTEM CRONS (28 active on VM, all lightweight)
 ## Rules
 
 1. **ZERO ML on VM** — 1 vCPU / 969 MB RAM. ALL training on HF Spaces
-2. **Feature engine parity** — `features/engine.py` = `hf-space/features/engine.py` always
+2. **Feature engine parity** — `features/engine.py` = `hf-space/features/engine.py` always ⚠ MISMATCH 2026-05-02: mon-ipad b7ec5b5 (+54KB) ahead of nomos-nba-agent f455c47 — engine-parity-sync in work-queue
 3. **1 fix per iteration** — never multiple simultaneous changes
 4. **All experiments tagged** with `feature_engine_version` in Supabase
 5. **Feature engine** — v3.1 = 54 categories, ~7213 raw feature candidates (verified 2026-04-18 from features/engine.py header)
@@ -136,7 +136,7 @@ SYSTEM CRONS (28 active on VM, all lightweight)
 11. **TF Quarantine (post-2026-04-22 compounding mandate)** — NBA + POL are on a 30-day no-reset quarantine. PQTF is frozen forever. `safe_commit.sh` auto-gates any commit mentioning a quarantined Space with destructive markers (`factory_reboot`, `DAY-0 RESET`, `reset-state`, `reset-bankrolls`, `state wipe`, `fresh state`). Override with `NOMOS_QUARANTINE_OVERRIDE=1` **only** when user has explicitly authorised the reset — document the reason in the commit message. State: `data/ops/quarantine.json`. Check: `scripts/ops/tf_quarantine.py status`. Why: 5 agent-initiated resets on 2026-04-22 destroyed every compounding trajectory (qwen-arb $10K → $100, POL fleet $126K → $1.7K, NBA 75% DD → $0). PQTF reached $602K only because nobody was allowed to touch it.
 12. **Champion-preserve** — every hour at :55, `scripts/ops/champion_preserve.py scan` snapshots any NBA/POL agent whose bankroll crosses `$500` (5× default seed) into `data/champions/<tf>/<agent>/<ts>.json`. These snapshots survive resets. Intent: future $100 → $10K compounders are preserved *before* the next reset, regardless of whether the reset is legitimate or false-positive leakage. Threshold tunable via `champion_preserve.py threshold <usd>`.
 13. **Evidence-based Kelly (2026-04-24)** — `_AGENT_KELLY_OVERRIDE` in NBA + POL `app.py` is now DERIVED from rigorous-validation Brier, not narrative. Formula: `Kelly = max(0.01, 0.30 - brier_empirical * 0.50)`. Agents with Brier > 0.32 (inverse-calibrated) get 0.01-0.03 probation cap; Brier < 0.23 earn 0.17-0.20. The auto-improvement cycle (cron `:20` every 4h) auto-tunes ±0.03 when live W/L or Brier signal crosses thresholds, cooldown 24h per agent.
-14. **INVERSE-CALIBRATION PROBATION prompt (2026-04-24)** — Any NBA agent whose `_AGENT_KELLY_OVERRIDE` cap ≤ 0.03 receives an auto-appended prompt addendum: `default action = PASS`, `HARD LIMIT 1 bet/day, edge ≥0.10, stake ≤3%`, `if disagree with Island Oracle direction → AUTOMATIC PASS`. Probation lifts when 30-day Brier drops below 0.28. Shipped because rigorous measured NBA fleet Brier 0.41 (worse than random 0.25) — LLMs were overriding the oracle's calibrated prediction with narrative. Result in first hour: Brier 0.41 → 0.36, most-recent walk-forward window 0.24 (first sub-0.25). First full scientific evidence the probation works.
+14. **INVERSE-CALIBRATION PROBATION prompt (2026-04-24)** — Any NBA agent whose `_AGENT_KELLY_OVERRIDE` cap ≤0.03 receives an auto-appended prompt addendum: `default action = PASS`, `HARD LIMIT 1 bet/day, edge ≥0.10, stake ≤3%`, `if disagree with Island Oracle direction → AUTOMATIC PASS`. Probation lifts when 30-day Brier drops below 0.28. Shipped because rigorous measured NBA fleet Brier 0.41 (worse than random 0.25) — LLMs were overriding the oracle's calibrated prediction with narrative. Result in first hour: Brier 0.41 → 0.36, most-recent walk-forward window 0.24 (first sub-0.25). First full scientific evidence the probation works.
 
 ## Scientific scorecard layer (2026-04-24)
 
@@ -176,7 +176,7 @@ Both return base-rate when called without features (TF clients only pass identif
 ## New Tools (Apr 4)
 
 | Tool | Script | Purpose |
-|------|--------|---------|
+|------|--------|--------|
 | Bloomberg Terminal | `scripts/bloomberg/nomos42-terminal.py` | Rich TUI: odds, predictions, fleet, bankroll |
 | Bloomberg API | `scripts/bloomberg/bloomberg-api.py` | HTTP API on port 8042 (auto-restart cron) |
 | Free Models | `scripts/forge/free-models-integration.py` | Qwen/Gemma/Mistral council advisors via HF API |
@@ -216,7 +216,7 @@ Both return base-rate when called without features (TF clients only pass identif
 ## Telegram
 
 | Bot | Repo | Purpose |
-|-----|------|---------|
+|-----|------|--------|
 | @Nomos42Bot | mon-ipad | NBA Brain -- predictions, analysis, research |
 | @RGWAbot | rgwa | AI Art Terminal -- generation, gallery, quality |
 
