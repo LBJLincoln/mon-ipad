@@ -1,183 +1,201 @@
 {
-  "generated_at": "2026-05-02T00:15:00Z",
-  "brain_cycle": "2026-05-02 ~00:00Z",
-  "step0_crash_recovery": "clean — no pending local-agent items; tf-axelrod-verify-tune-12 remains user-gated (explicit HF deploy approval required)",
+  "generated_at": "2026-05-02T04:00:00Z",
+  "brain_cycle": "2026-05-02 ~04:00Z",
+  "step0_crash_recovery": "clean — only pending item tf-axelrod-verify-tune-12 is user-gated (explicit HF deploy approval required, say 'push to HF'). No crashed local-agent items.",
   "nba_fleet_best": {
     "space": "TESTforge42/nba-evo-s22",
     "island_id": "S22",
     "brier": 0.22027,
-    "gen": 748,
-    "cycle": 250,
+    "gen": 805,
+    "cycle": 269,
     "algo": "extra_trees",
     "features": 63,
     "checkpointed_at": "2026-05-01T04:30:00Z",
-    "note": "FLEET BEST stable. Gen 559→748 (+189 gens). Brier 0.22027 unchanged. Hard resets + REMOTE DIVERSIFY executing automatically. No new breakthrough."
+    "note": "FLEET BEST holding. Gen 748→805 (+57). Hard reset fired at cycle 251. Stagnation=0. Improvement threshold <0.22007 not yet broken."
   },
   "nba_islands": {
     "S13_Nomos42-nba-evo-4": {
       "status": "EVOLVING",
-      "gen": 135,
-      "cycle": 45,
+      "gen": 251,
+      "cycle": 84,
       "best_brier": 0.24551,
       "algo": "xgboost_brier",
       "stagnation_cycles": 0,
-      "last_update": "2026-05-02T00:02:38Z",
-      "note": "REGRESSION: Freshly restarted since prev cycle (was gen=335, brier=0.22193). Now at early gen 135, brier 0.24551. Prior best of 0.22193 (below threshold 0.22085) is lost. Expected to recover in ~200-300 more gens."
+      "last_update": "2026-05-02T04:00:00Z",
+      "note": "Recovery ongoing (fresh restart). Gen 135→251 (+116). Brier 0.24551 unchanged. NOTABLE: extra_trees configs hitting 0.2209-0.2218 emerging in population Pareto front — below historical threshold. Watch for promotion."
     },
     "S14_Nomos42-nba-evo-5": {
       "status": "EVOLVING",
-      "gen": 318,
-      "cycle": 106,
+      "gen": 454,
+      "cycle": 152,
       "best_brier": 0.25312,
       "algo": "random_forest",
-      "stagnation_cycles": 19,
-      "last_update": "2026-05-02T00:02:14Z",
-      "note": "STAGNATING: 19+ cycles at brier=0.25312 since restart. No improvement from gen-1 value. Historical best 0.22151 not being recovered. Auto hard-reset should trigger at 25 cycles. Monitor next cycle."
+      "stagnation_cycles": 0,
+      "last_update": "2026-05-02T04:00:00Z",
+      "note": "Hard reset fired at cycle 151 (25-cycle stagnation plateau cleared). Gen 318→454 (+136). Stagnation counter reset to 0. Brier 0.25312 unchanged — expect movement over next 2-3 cycles."
     },
     "S15_Nomos42-nba-evo-6": {
-      "status": "DOWN_503",
-      "gen": null,
-      "best_brier_last_known": 0.22226,
-      "consecutive_down_cycles": 1,
-      "note": "DOWN this cycle. Was EVOLVING at brier=0.22226 (prev cycle). Nomos42 account saturated — auto-restart via keepalive cron may fail (403). Flag for monitoring."
+      "status": "EVOLVING",
+      "gen": 1470,
+      "cycle": 490,
+      "best_brier": 0.22226,
+      "algo": "random_forest",
+      "stagnation_cycles": 0,
+      "last_update": "2026-05-02T04:00:00Z",
+      "note": "RECOVERED from DOWN_503 (was down last cycle). Gen=1470, cycle=490, brier=0.22226, stagnation=0. Mutation rate 0.1406. Nomos42 account keepalive cron restored it."
     },
     "S17_LBJLincoln26-nba-evo-s17": {
       "status": "DOWN_503",
       "gen": null,
       "best_brier_last_known": 0.22249,
-      "consecutive_down_cycles": 3,
-      "note": "DOWN 3rd consecutive brain cycle. VM keepalive cron (*/30min) should be attempting restarts. LBJLincoln26 account not saturated. Escalate: user may need to check HF Space manually."
+      "consecutive_down_cycles": 4,
+      "last_update": "2026-05-02T04:00:00Z",
+      "note": "DOWN 4th consecutive brain cycle (16h+). HF Space updated 18 Apr — may be in sleeping/error state. LBJLincoln26 account not saturated. VM keepalive cron should be attempting every 30min. ESCALATE: user should check HF admin panel for LBJLincoln26/nba-evo-s17 manually."
     },
     "S18_TESTforge42-nba-evo-s18": {
-      "status": "EVOLVING",
-      "gen": 5137,
-      "cycle": 1713,
+      "status": "COOLDOWN",
+      "gen": 5304,
+      "cycle": 1768,
       "best_brier": 0.22248,
       "algo": "extra_trees",
       "features": 51,
       "stagnation_cycles": 0,
-      "last_update": "2026-05-02T00:02:57Z",
-      "note": "Stable. Gen 4814→5137 (+323 gens). Brier 0.22248 unchanged. Stagnation counter reset (was 3 prev cycle). Hard resets occurring at 25-cycle marks automatically."
+      "last_update": "2026-05-02T04:00:00Z",
+      "note": "Stable. Gen 5137→5304 (+167). Recent hard reset at cycle 1751. Brier 0.22248 unchanged. Stagnation=0."
     },
     "S22_TESTforge42-nba-evo-s22": {
       "status": "EVOLVING",
-      "gen": 748,
-      "cycle": 250,
+      "gen": 805,
+      "cycle": 269,
       "best_brier": 0.22027,
       "algo": "extra_trees",
       "features": 63,
       "stagnation_cycles": 0,
-      "last_update": "2026-05-02T00:01:27Z",
-      "note": "FLEET BEST. Gen 559→748 (+189). Brier 0.22027 unchanged since gen 288. REMOTE DIVERSIFY at cycles 208, 221, 234, 248. Hard resets at cycles 201, 226. Internal stagnation-escape working but no new Brier record."
+      "last_update": "2026-05-02T04:00:00Z",
+      "note": "FLEET BEST. Gen 748→805 (+57). Hard reset at cycle 251. Stagnation=0. Internal improvement threshold <0.22007 not yet triggered. Auto-diversify and hard-resets working correctly."
     }
   },
+  "nba_stagnation_actions": "NONE — all islands at stagnation=0 this cycle. No /api/command diversify needed.",
   "political_fleet_best": {
     "space": "LBJLincoln/political-alpha-4",
     "island_id": "P4",
     "brier": 0.24992,
-    "gen": 11910,
+    "gen": 13686,
     "algo": "xgboost_brier",
-    "note": "POL LIVE BEST. Gen 8826→11910 (+3084 gens). Brier 0.24992 stable. P5 near-parity at 0.24993. All-time POL best: P5 hist 0.24923."
+    "note": "POL LIVE BEST. Gen 11910→13686 (+1776). Stable. P5 at 0.24993 near-parity. All-time POL best: P5 hist 0.24923. NOTABLE: P1 has LightGBM-VA 110f config at 0.24902 in population — below P4 live best."
   },
   "political_islands": {
     "P1_Nomos42-political-alpha": {
       "status": "EVOLVING",
-      "gen": 20973,
-      "cycle": 6991,
+      "gen": 22554,
+      "cycle": 7519,
       "best_brier": 0.25249,
       "algo": "catboost",
       "features": 40,
       "stagnation_cycles": 0,
-      "last_update": "2026-05-02T00:03:23Z",
-      "note": "Stagnation counter reset (was 20 last cycle — auto hard-reset fired). Brier 0.25249 unchanged. Expected to see movement in next 2-3 cycles."
+      "last_update": "2026-05-02T04:00:00Z",
+      "note": "Gen 20973→22554 (+1581). Two hard resets fired (7468, 7508). Stagnation=0. NOTABLE: LightGBM-VA model with 110 features achieving Brier 0.24902 visible in Pareto front — first population member below P4 live best 0.24992. Monitor for promotion."
     },
     "P2_Nomos42-political-alpha-2": {
-      "status": "COOLDOWN",
-      "gen": 2829,
-      "cycle": 943,
+      "status": "SAVING",
+      "gen": 3270,
+      "cycle": 1090,
       "best_brier": 0.25529,
       "algo": "extra_trees",
       "features": 57,
       "stagnation_cycles": 0,
-      "last_update": "2026-05-02T00:03:27Z",
-      "improvement": "0.25953 → 0.25529 (+0.00424 Brier reduction)",
-      "note": "WIN this cycle: improved 0.25953→0.25529. extra_trees algo evolution finding better fitness. Monitor for further improvement toward 0.252."
+      "last_update": "2026-05-02T04:00:00Z",
+      "note": "Holding last cycle's improvement (0.25953→0.25529). Gen 2829→3270 (+441). Two hard resets (1041, 1081). xgboost_brier configs in population hitting 0.2499."
     },
     "P4_LBJLincoln-political-alpha-4": {
       "status": "EVOLVING",
-      "gen": 11910,
-      "cycle": 3970,
+      "gen": 13686,
+      "cycle": 4562,
       "best_brier": 0.24992,
       "algo": "xgboost_brier",
       "features": 71,
       "stagnation_cycles": 0,
-      "last_update": "2026-05-02T00:03:16Z",
-      "note": "POL LIVE BEST. Gen 8826→11910 (+3084). Brier 0.24992 stable. Target: break all-time best 0.24923."
+      "last_update": "2026-05-02T04:00:00Z",
+      "note": "POL LIVE BEST. Gen 11910→13686 (+1776). Two hard resets (4514, 4554). Stagnation=0. Target: break all-time best 0.24923."
     },
     "P5_LBJLincoln-political-alpha-5": {
       "status": "EVOLVING",
-      "gen": 4350,
-      "cycle": 1450,
+      "gen": 5537,
+      "cycle": 1846,
       "best_brier": 0.24993,
       "algo": "xgboost_brier",
       "features": 58,
       "stagnation_cycles": 0,
-      "last_update": "2026-05-02T00:03:16Z",
-      "note": "Near-parity with P4 (0.24993 vs 0.24992). Gen 2384→4350 (+1966). Close to all-time best 0.24923."
+      "last_update": "2026-05-02T04:00:00Z",
+      "note": "Near-parity with P4 (0.24993 vs 0.24992). Gen 4350→5537 (+1187). Two hard resets (1801, 1841). Stagnation=0. hist_best=0.24923 (all-time POL best)."
     },
     "P7_LBJLincoln-political-alpha-7": {
       "status": "EVOLVING",
-      "gen": 4581,
-      "cycle": 1527,
+      "gen": 5649,
+      "cycle": 1883,
       "best_brier": 0.25412,
       "algo": "lightgbm",
       "features": 45,
       "stagnation_cycles": 0,
-      "last_update": "2026-05-02T00:03:26Z",
-      "note": "Stable. Gen 2740→4581 (+1841). Brier 0.25412 unchanged. Hist best 0.24925. P2 extra_trees win this cycle: allow natural algo evolution away from LightGBM if fitness demands."
+      "last_update": "2026-05-02T04:00:00Z",
+      "note": "Stable. Gen 4581→5649 (+1068). Two hard resets (1841, 1881). Stagnation=0. hist_best=0.24925."
     }
   },
+  "political_stagnation_actions": "NONE — all islands at stagnation=0. No diversify needed.",
   "councils": "DECOMMISSIONED 2026-04-20 — all 9 TESTforge42 dept spaces deleted",
-  "dashboard": "R8 done — no pending gaps in work-queue",
-  "sota_search": "deferred this cycle (every-other-cycle rule — last ran 2026-05-01T12h)",
+  "dashboard": "R8 done — no pending gaps in work-queue. nomosdashboard.vercel.app healthy.",
   "engine_parity": {
-    "path": "features/engine.py",
-    "status": "deferred to VM cron — cloud brain cannot access HF Space file system for SHA comparison"
+    "mon_ipad_sha": "b7ec5b547f6693aa43de90d5b610636850c911d9",
+    "nba_agent_sha": "f455c4758a6e42b3157a9e89f1a7c893d7a08f89",
+    "status": "MISMATCH — Rule#2 violation",
+    "delta": "mon-ipad is +54KB larger (523KB vs 468KB) — newer/more features",
+    "action": "engine-parity-sync added to work-queue for VM (file too large for cloud MCP push — 523K chars vs ~111K limit)"
+  },
+  "sota_search": {
+    "ran_this_cycle": true,
+    "last_ran": "2026-05-02T04:00:00Z",
+    "key_findings": [
+      "Uncertainty-aware deep learning with Monte Carlo dropout (Jan 2026, MDPI): XGBoost baseline Brier ~0.20 on 2024 test data — important caveat: 2024 test set, not walk-forward 2025-26",
+      "CNN-based approach (Oct 2025): Brier 0.221 — near our fleet best 0.22027",
+      "Stacked ensemble (Nature Sci Reports 2025): multi-model stacking as dominant pattern",
+      "Gap analysis: literature Brier 0.20 on 2024 data vs our 0.22027 walk-forward 2025-26 — stricter holdout explains ~0.02 gap. True SOTA on 2025-26 walk-forward likely 0.21-0.22."
+    ],
+    "proposal_file": "data/research-proposals/nba-sota-2026-05-02.md"
   },
   "actions_taken": [
-    "STEP 0: work-queue.json read — only pending item tf-axelrod-verify-tune-12 is user-gated, not a crashed local-agent. No recovery needed.",
-    "STEP 1: All 6 NBA islands polled via /api/status",
-    "S13: REGRESSION — fresh restart since prev cycle. gen=135, brier=0.24551 (was 0.22193). Prior sub-threshold brier lost.",
-    "S14: STAGNATING — gen=318, brier=0.25312 unchanged from gen-1. 19+ cycles without improvement. Hard reset expected at cycle ~131.",
-    "S15: DOWN 503 — was EVOLVING at 0.22226. Nomos42 account saturated (keepalive restart may 403).",
-    "S17: DOWN 503 — 3rd consecutive brain cycle. VM keepalive cron should be handling.",
-    "S18: gen=5137, brier=0.22248 stable. Stagnation counter reset.",
-    "S22: gen=748, brier=0.22027 FLEET BEST stable. Auto-diversify working.",
-    "STEP 2: All 5 Political islands polled via /api/status — all UP",
-    "P1: gen=20973, brier=0.25249 — stagnation counter reset (auto hard-reset fired from last cycle 20-plateau)",
-    "P2: IMPROVED 0.25953→0.25529 — extra_trees algo finding better fitness",
-    "P4: gen=11910, brier=0.24992 POL LIVE BEST stable",
-    "P5: gen=4350, brier=0.24993 stable near-parity",
-    "P7: gen=4581, brier=0.25412 stable",
-    "STEP 3: Councils DECOMMISSIONED 2026-04-20 — skipped",
-    "STEP 4: work-queue R8 status=done — no dashboard gaps to execute",
-    "STEP 5: health-status.json committed to mon-ipad, brain-status.json committed to nomos-political-alpha"
+    "STEP 0: work-queue read — no crashed local-agent items; tf-axelrod-verify-tune-12 user-gated only",
+    "STEP 1: All 6 NBA islands polled",
+    "S13: gen 135→251, brier 0.24551 unchanged. Extra_trees 0.2209-0.2218 emerging in pop — promising.",
+    "S14: gen 318→454, brier 0.25312. Hard reset fired at cycle 151. Stagnation cleared.",
+    "S15: RECOVERED from DOWN_503. gen=1470, brier=0.22226, stagnation=0.",
+    "S17: STILL DOWN 503 (4th cycle). No HF restart tool available in cloud brain. VM must handle.",
+    "S18: gen 5137→5304, brier 0.22248 stable. Hard reset at 1751.",
+    "S22: gen 748→805, brier 0.22027 FLEET BEST. Hard reset at 251. Stagnation=0.",
+    "STEP 2: All 5 political islands UP and responding",
+    "P1: gen 20973→22554, brier 0.25249. Two hard resets. LightGBM-VA 110f at 0.24902 in pop!",
+    "P2: gen 2829→3270, brier 0.25529 holding. xgboost configs at 0.2499 in pop.",
+    "P4: gen 11910→13686, brier 0.24992 POL LIVE BEST stable.",
+    "P5: gen 4350→5537, brier 0.24993 stable near-parity.",
+    "P7: gen 4581→5649, brier 0.25412 stable.",
+    "STEP 3: Councils DECOMMISSIONED — skipped",
+    "STEP 4: R8 done — no dashboard gaps",
+    "STEP 5: engine_parity MISMATCH found (SHA divergence +54KB). Added engine-parity-sync to work-queue for VM. SOTA research proposal written.",
+    "ROTATE B (political): political_engine.py review notes written in brain-status.json"
   ],
   "alerts": [
-    "⚠ S17 DOWN 3 cycles — escalate to user if still down next cycle",
-    "⚠ S15 newly DOWN — watch Nomos42 account capacity",
-    "⚠ S13 regression — fresh restart wiped prior 0.22193 best (was below 0.22085 threshold)",
-    "⚠ S14 stagnation 19+ cycles — no improvement from 0.25312 since restart"
+    "🚨 S17 DOWN 4th consecutive cycle — manual HF admin check needed for LBJLincoln26/nba-evo-s17",
+    "⚠ engine parity MISMATCH — mon-ipad SHA b7ec5b5 vs nba-agent SHA f455c47 (+54KB gap). VM sync required.",
+    "📊 P1 population: LightGBM-VA 110f at Brier 0.24902 — watch for promotion to official best",
+    "📊 S13 population: extra_trees at 0.2209-0.2218 — watch for promotion; could recover to sub-threshold range"
   ],
   "wins_this_cycle": [
-    "P2 improved: 0.25953→0.25529 (+0.00424 Brier reduction)",
-    "P1 stagnation broken: auto hard-reset cleared 20-cycle plateau",
-    "S22 FLEET BEST 0.22027 holding steady at gen 748",
-    "P4 POL LIVE BEST 0.24992 holding at gen 11910"
+    "S15 RECOVERED from DOWN_503 (gen=1470, brier=0.22226)",
+    "All political islands UP, all stagnation=0 (post-hard-resets working)",
+    "S14 hard reset fired (cleared 25-cycle plateau)",
+    "SOTA search completed: gap analysis shows our walk-forward stricter than literature by ~0.02 Brier"
   ],
   "vm_cron_actions_required": [
-    "Monitor S17 — 3rd consecutive DOWN 503; if keepalive cron failing, user needs manual HF Space admin restart for LBJLincoln26/nba-evo-s17",
-    "Monitor S15 — newly DOWN; Nomos42 account saturated, keepalive may 403 on restart",
-    "S14: watch for auto hard-reset at ~cycle 131 (19+25=44 cycles from restart)"
+    "URGENT: Manually check LBJLincoln26/nba-evo-s17 in HF admin (4th DOWN cycle)",
+    "Run: cp features/engine.py ../nomos-nba-agent/features/engine.py && cd ../nomos-nba-agent && git add features/engine.py && bash scripts/lib/safe_commit.sh LAUNCHPAD 'sync features/engine.py to mon-ipad (b7ec5b5, +54KB)' features/engine.py"
   ]
 }
