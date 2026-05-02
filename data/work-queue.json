@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-01T12:00:00Z",
+  "updated_at": "2026-05-02T06:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -541,6 +541,22 @@
       "py_compile": "NOT RUN (no code changes — audit-only fire; last PASS confirmed fire-28: NBA 5787 lines, POL 3763 lines)",
       "do_not_push_hf_space_yet": true,
       "next_action": "Only remaining pending item: tf-axelrod-verify-tune-12 (HF Space push, awaiting explicit user gate approval — say 'push to HF' or 'approve HF deploy')."
+    },
+    {
+      "id": "tf-axelrod-verify-tune-30",
+      "priority": 39,
+      "status": "done",
+      "completed_at": "2026-05-02T06:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 30 — Mech C Hub persistence gap closed (NBA+POL)",
+      "gap_found": "write_axelrod_log wrote Mech C JSONL only to /tmp (ephemeral). Spec says data/arena/axelrod-log/day-N.jsonl as primary paper dataset. On every Space restart the entire post-mortem trail was lost. No prior fire caught this because /api/axelrod-log reads from /tmp (appears fine mid-run) but the data never survived container preemption.",
+      "patches_applied": [
+        "NBA write_axelrod_log: after writing /tmp/axelrod-log/day-NNN.jsonl, push to HF Space repo at data/arena/axelrod-log/day-NNN.jsonl via _hub_api.upload_file (failure-tolerant inner try/except)",
+        "POL write_axelrod_log: same Hub push to data/arena/axelrod-log/day-NNN.jsonl (parity)"
+      ],
+      "py_compile": "PASS both apps (NBA 5798 lines, POL 3774 lines)",
+      "do_not_push_hf_space_yet": true,
+      "parity_status": "NBA + POL write_axelrod_log now identical Hub-push pattern"
     }
   ],
   "recovery_protocol": {

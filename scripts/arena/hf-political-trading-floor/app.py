@@ -2467,6 +2467,16 @@ def write_axelrod_log(day_idx: int, day_date: str, state: Dict,
         with log_file.open("w") as f:
             for row in rows:
                 f.write(json.dumps(row) + "\n")
+        if _hub_api:
+            try:
+                _hub_api.upload_file(
+                    path_or_fileobj=log_file.read_bytes(),
+                    path_in_repo=f"data/arena/axelrod-log/day-{day_idx:03d}.jsonl",
+                    repo_id=HF_REPO_ID, repo_type="space",
+                    commit_message=f"axelrod-mech-c: day {day_idx} ({day_date}) post-mortem",
+                )
+            except Exception as hub_e:
+                print(f"[axelrod-mech-c] hub push failed: {hub_e}")
     except Exception as e:
         print(f"[axelrod-mech-c] write failed: {e}")
 
