@@ -1,0 +1,99 @@
+{
+  "timestamp": "2026-05-03T10:00:00Z",
+  "generated_by": "cloud-brain-sonnet4-6",
+  "trigger": "every-other-cycle-research",
+  "sota_sources": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "year": 2026,
+      "key_finding": "Uncertainty quantification (MC dropout + bootstrap CI) improves calibration and betting decision quality for NBA market predictions"
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "year": 2025,
+      "key_finding": "Stacked ensemble: SVM 77.49% accuracy, AutoGluon 77.38%, DNN 77.26%. Ensemble methods consistently outperform single-model approaches."
+    },
+    {
+      "title": "Comparing Machine Learning Methods for NBA Game Outcome Prediction",
+      "url": "https://ieeexplore.ieee.org/document/11030489/",
+      "year": 2026,
+      "key_finding": "CNN achieves Brier 0.221; Logistic Regression achieves 0.199; XGBoost 0.202 on NBA game prediction"
+    },
+    {
+      "title": "Key Factors Influencing NBA Game Outcomes: A Machine Learning Study",
+      "url": "https://www.preprints.org/manuscript/202504.1348",
+      "year": 2026,
+      "key_finding": "SHAP analysis identifies top predictive factors; feature importance aligns with our GA selection patterns"
+    },
+    {
+      "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+      "url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "key_finding": "LightGBM competitive with XGBoost; ensemble superiority confirmed across NBA/WNBA domains"
+    }
+  ],
+  "brier_benchmarks": {
+    "logistic_regression_sota": 0.199,
+    "xgboost_sota": 0.202,
+    "cnn_sota": 0.221,
+    "our_fleet_hist_best": 0.22019,
+    "our_s15_api_best": 0.22028,
+    "our_s15_gen2471_obs": 0.21954,
+    "our_tabicl_colab_best": 0.21139,
+    "gap_to_lr_sota": 0.0212,
+    "note": "Our fleet is competitive with CNN SOTA (0.221). LR 0.199 likely on different dataset/split. S15 gen-2471 obs 0.21954 approaches CNN performance territory."
+  },
+  "fleet_observation": {
+    "s15_breakthrough": "S15 extra_trees 38-feature model observed at Brier=0.21954 (gen 2471) — approaching CNN SOTA from tree-model side. API best_brier=0.22028 confirmed below 0.22085 checkpoint threshold.",
+    "compact_feature_signal": "S15 at 38 features vs 200f cap shows over-parameterization reduction helps. GA is learning to prune. S14 also at only 26 features post-reset.",
+    "implication": "Consider reducing MAX_FEATURES target to 50 from 200 for newly seeded islands. The GA converges to compact sets anyway — tighter cap would accelerate convergence."
+  },
+  "proposals": [
+    {
+      "id": "P1-compact-elite-injection",
+      "priority": "HIGH",
+      "title": "Cross-island elite injection of S15's 38-feature extra_trees configuration",
+      "rationale": "S15 gen-2471 obs Brier=0.21954 with 38 features is the fleet's best observed result. Injecting this feature mask as an elite individual into S13/S18/S22 seeds the search from a strong compact configuration.",
+      "implementation": "POST /api/command {\"action\": \"inject_elite\", \"feature_mask\": \"s15_gen2471_top38\"} to Nomos42/nba-evo-4 (S13) and TESTforge42/nba-evo-s18 (S18). Let each island's GA adapt from this compact seed.",
+      "expected_impact": "0.001-0.003 Brier improvement if 38f pattern generalizes across models",
+      "cpu_safe": true,
+      "blocker": "Need S15's exact feature indices — available from /api/status top_performer field"
+    },
+    {
+      "id": "P2-isotonic-recalibration-tree-fleet",
+      "priority": "MEDIUM",
+      "title": "Add isotonic recalibration post-step to tree island predictions",
+      "rationale": "MDPI 2026 uncertainty-aware paper + our TabICL result (calibrated 0.22054 vs raw 0.22169 — delta 0.001) confirm isotonic recalibration improves Brier. Tree fleet does not currently apply isotonic calibration.",
+      "implementation": "In each island's evaluate_individual(): wrap tree.predict_proba()[:,1] with sklearn.isotonic.IsotonicRegression().fit(val_proba, val_y) on held-out 20% temporal split. Replace raw proba with calibrated proba for Brier scoring.",
+      "expected_impact": "0.001-0.002 Brier reduction (mirrors TabICL calibration gap)",
+      "cpu_safe": true,
+      "risk": "Must use temporal split for calibration (no leakage). Adds ~50ms per individual evaluation on CPU."
+    },
+    {
+      "id": "P3-s17-recovery",
+      "priority": "HIGH",
+      "title": "S17 restart and re-seeding from S15 elite",
+      "rationale": "S17 LBJLincoln26/nba-evo-s17 has been DOWN 503 for 8+ cycles (>32h). Once restarted, seed population with S15's compact 38f configuration to accelerate convergence.",
+      "implementation": "VM: curl -X POST https://huggingface.co/api/spaces/LBJLincoln26/nba-evo-s17/restart. After restart, POST /api/command inject_elite from S15.",
+      "expected_impact": "Restores fleet slot. XGBoost specialist with S15 seed may achieve 0.220-0.221 range.",
+      "cpu_safe": true
+    },
+    {
+      "id": "P4-political-compact-feature-diversify",
+      "priority": "MEDIUM",
+      "title": "Diversify P7 toward compact feature counts (NBA rotation C)",
+      "rationale": "Political rotation C: port NBA techniques. S15's 38f success pattern applicable to political. P7 at brier=0.25412 (highest in fleet, worst performer) with 45 features and 60 individuals. Diversify with compact-feature pressure may break plateau.",
+      "implementation": "POST /api/command {\"action\": \"diversify\", \"mutation_rate\": 0.15, \"feature_selection_pressure\": \"compact\"} to LBJLincoln/political-alpha-7",
+      "expected_impact": "0.002-0.005 improvement in P7 brier if compact-feature pattern generalizes to political domain",
+      "cpu_safe": true
+    }
+  ],
+  "actions_taken_this_cycle": {
+    "S15_checkpoint": "brier=0.22028 confirmed below 0.22085 threshold. CLAUDE.md island update delegated to VM via work-queue item claude-md-island-update-2026-05-03T10h.",
+    "S17": "DOWN 503 >32h noted. Restart must be done by VM or manual HF action.",
+    "all_political_healthy": "5/5 political islands running, stagnation=0 across all",
+    "stagnation": "No diversify commands needed this cycle — all islands stagnation=0",
+    "diversify_S18": "Previous cycle's diversify command confirmed successful — S18 stagnation cleared"
+  }
+}

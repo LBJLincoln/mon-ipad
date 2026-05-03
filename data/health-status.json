@@ -1,200 +1,63 @@
 {
-  "generated_at": "2026-05-03T00:00:00Z",
-  "brain_cycle": "2026-05-03 ~00:00Z",
-  "step0_crash_recovery": "clean — tf-axelrod-verify-tune-12 blocked on user approval; engine-parity-sync pending VM (523KB); tf-axelrod-pol-dmad-percent-fix pending VM. No local-agent crash items.",
-  "nba_fleet_best": {
-    "space": "Nomos42/nba-evo-5",
-    "island_id": "S14",
-    "brier": 0.22019,
-    "gen": 1078,
-    "cycle": 360,
-    "algo": "extra_trees 200f",
-    "note": "NEW FLEET BEST 2026-05-03. Beats previous S22 0.22027. ExtraTrees 200f, gen 845→1078 (+233). Recovered from stagnation via hard reset. Below oracle CV threshold (0.22085)."
-  },
+  "cycle_id": "2026-05-03T10:00:00Z",
+  "generated_by": "cloud-brain-sonnet4-6",
   "nba_islands": {
-    "S13_Nomos42-nba-evo-4": {
-      "status": "EVOLVING",
-      "gen": 6,
-      "cycle": 3,
-      "best_brier": 0.22060,
-      "algo": "catboost",
-      "features": 67,
-      "stagnation_cycles": 0,
-      "last_update": "2026-05-03T00:00:00Z",
-      "note": "RESTARTED (gen 499/cycle 167 → gen 6/cycle 3). CatBoost newly available in GA pool. Brier 0.22060 at gen 6 — below oracle threshold (0.22085). Monitor closely."
-    },
-    "S14_Nomos42-nba-evo-5": {
-      "status": "EVOLVING",
-      "gen": 1078,
-      "cycle": 360,
-      "best_brier": 0.22019,
-      "algo": "extra_trees",
-      "features": 200,
-      "stagnation_cycles": 0,
-      "last_update": "2026-05-03T00:00:00Z",
-      "note": "FLEET BEST. Brier 0.22680→0.22019 via hard reset seeding ExtraTrees 200f. Below oracle CV 0.22085. Gen 845→1078 (+233). Stagnation resolved."
-    },
-    "S15_Nomos42-nba-evo-6": {
-      "status": "EVOLVING",
-      "gen": 2338,
-      "cycle": 780,
-      "best_brier": 0.22226,
-      "algo": "random_forest",
-      "features": 35,
-      "stagnation_cycles": 0,
-      "last_update": "2026-05-03T00:00:00Z",
-      "note": "Gen 1909→2338 (+429). Brier stable 0.22226. RF primary, stagnation=0. Healthy."
-    },
-    "S17_LBJLincoln26-nba-evo-s17": {
-      "status": "DOWN_503",
-      "gen": null,
-      "best_brier_last_known": 0.22249,
-      "consecutive_down_cycles": 7,
-      "last_update": "2026-05-03T00:00:00Z",
-      "note": "DOWN 7th consecutive brain cycle (~28h). CRITICAL: user must check HF admin for LBJLincoln26/nba-evo-s17."
-    },
-    "S18_TESTforge42-nba-evo-s18": {
-      "status": "EVOLVING",
-      "gen": 5827,
-      "cycle": 1943,
-      "best_brier": 0.22248,
-      "algo": "extra_trees",
-      "features": 51,
-      "stagnation_cycles": 16,
-      "last_update": "2026-05-03T00:00:00Z",
-      "note": "Gen 5583→5827 (+244). Stagnation INCREASED 10→16 (threshold exceeded). VM must POST /api/command {action:diversify}."
-    },
-    "S22_TESTforge42-nba-evo-s22": {
-      "status": "EVOLVING",
-      "gen": 38,
-      "cycle": 13,
-      "best_brier": 0.22431,
-      "algo": "xgboost",
-      "features": 44,
-      "stagnation_cycles": 16,
-      "last_update": "2026-05-03T00:00:00Z",
-      "note": "RESTARTED (was gen 963/cycle 322 fleet best 0.22027). Now gen 38/cycle 13. Lost fleet best to S14. Stagnation=16 on fresh start. VM must POST /api/command {action:diversify}."
-    }
+    "S13": {"space": "Nomos42/nba-evo-4", "algorithm": "catboost", "gen": 91, "cycle": 31, "best_brier": 0.22060, "stagnation": 0, "status": "EVOLVING", "best_roi": 0.3165, "best_sharpe": 9.8171, "best_features": 67, "note": "cycle=31; elite injection from karpathy_lightning_0.21218 received"},
+    "S14": {"space": "Nomos42/nba-evo-5", "algorithm": "extra_trees", "gen": 1222, "cycle": 408, "best_brier": 0.22158, "stagnation": 0, "status": "EVOLVING", "best_roi": 0.3085, "best_sharpe": 8.1948, "best_features": 26, "note": "post-reset (cycle 393 hard reset); hist_best=0.22019 FLEET BEST gen=1078 preserved"},
+    "S15": {"space": "Nomos42/nba-evo-6", "algorithm": "extra_trees", "gen": 2472, "cycle": 825, "best_brier": 0.22028, "stagnation": 0, "status": "EVOLVING", "checkpoint": true, "best_roi": 0.3190, "best_sharpe": 8.51, "best_features": 35, "note": "S15 BEST — from 0.22226, delta=-0.002, below 0.22085 threshold; gen-2471 top_performer_obs=0.21954 roi=33.28% sharpe=9.10 38f (unconfirmed as api_best)"},
+    "S17": {"space": "LBJLincoln26/nba-evo-s17", "algorithm": "xgboost", "gen": null, "best_brier": 0.22249, "status": "DOWN_503", "note": "DOWN 503 for 8th+ cycle, >32h; VM keepalive-spaces.sh should attempt restart; manual intervention may be needed"},
+    "S18": {"space": "TESTforge42/nba-evo-s18", "algorithm": "extra_trees", "gen": 5888, "cycle": 1963, "best_brier": 0.22248, "stagnation": 0, "status": "EVOLVING", "note": "stagnation cleared (was 16 last cycle); diversify command queued ran successfully"},
+    "S22": {"space": "TESTforge42/nba-evo-s22", "algorithm": "xgboost", "gen": 193, "cycle": 65, "best_brier": 0.22431, "stagnation": 0, "status": "EVOLVING", "note": "recovering from restart; hard resets at cycles 37 and 62"}
   },
-  "nba_stagnation_actions": "S18 stagnation=16 and S22 stagnation=16 — both exceed 15-gen threshold. WebFetch is GET-only; cannot POST. VM autonomous-cycle.sh must POST /api/command {action:diversify} to both S18 and S22.",
-  "nba_sota_research": {
-    "cycle": "2026-05-03T00:00Z",
-    "key_findings": [
-      "LR+XGBoost both achieve Brier ~0.20 on 2024 NBA test data (accuracy 0.68, AUC 0.75-0.76)",
-      "CNN achieves Brier 0.221 (Oct 2025 MDPI) — close to fleet best 0.22019 but CPU-unfeasible",
-      "Stacked ensemble (NB+AdaBoost+MLP+KNN+XGBoost+DT+LR) in Nature Scientific Reports 2025",
-      "Fleet gap to SOTA: 0.22019 (S14) vs 0.199 = 0.021 gap remaining"
-    ],
-    "proposal_file": "data/research-proposals/2026-05-03T00h-nba-sota.json"
-  },
-  "political_fleet_best": {
-    "space": "LBJLincoln/political-alpha-4",
-    "island_id": "P4",
-    "brier": 0.24992,
-    "gen": 20202,
-    "algo": "lightgbm",
-    "note": "POL LIVE BEST stable. Gen 16808→20202 (+3394). Stagnation=20, internal hard reset triggered. All-time best: 0.24923 (P5 hist)."
+  "nba_summary": {
+    "fleet_best_brier": 0.22019,
+    "fleet_best_island": "S14_historical_gen1078",
+    "s15_checkpoint": {"api_best": 0.22028, "gen_obs_unconfirmed": 0.21954, "below_threshold_0_22085": true},
+    "islands_evolving": 5,
+    "islands_down": 1,
+    "stagnation_alerts": [],
+    "diversify_commands_sent": [],
+    "engine_parity_status": "PENDING_VM — mon-ipad b7ec5b5 (+54KB) ahead of nomos-nba-agent f455c47"
   },
   "political_islands": {
-    "P1_Nomos42-political-alpha": {
-      "status": "EVOLVING",
-      "gen": 28938,
-      "cycle": 9647,
-      "best_brier": 0.25231,
-      "algo": "lightgbm",
-      "features": 70,
-      "stagnation_cycles": 0,
-      "last_update": "2026-05-03T00:00:00Z",
-      "note": "Gen 25376→28938 (+3562). Lightgbm primary confirmed. Brier stable."
-    },
-    "P2_Nomos42-political-alpha-2": {
-      "status": "EVOLVING",
-      "gen": 2369,
-      "cycle": 790,
-      "best_brier": 0.25003,
-      "algo": "xgboost_brier",
-      "features": 65,
-      "stagnation_cycles": 0,
-      "last_update": "2026-05-03T00:00:00Z",
-      "note": "Gen 928→2369 (+1441). Fast convergence. Cross-pollination target: ExtraTrees 200f from S14."
-    },
-    "P4_LBJLincoln-political-alpha-4": {
-      "status": "COOLDOWN",
-      "gen": 20202,
-      "cycle": 6734,
-      "best_brier": 0.24992,
-      "algo": "lightgbm",
-      "features": 108,
-      "stagnation_cycles": 20,
-      "last_update": "2026-05-03T00:00:00Z",
-      "note": "POL LIVE BEST. Internal hard reset triggered at stagnation=20 (COOLDOWN observed). Features expanded 71→108. VM must also POST /api/command diversify."
-    },
-    "P5_LBJLincoln-political-alpha-5": {
-      "status": "COOLDOWN",
-      "gen": 9825,
-      "cycle": 3275,
-      "best_brier": 0.24993,
-      "algo": "xgboost_brier",
-      "features": 58,
-      "stagnation_cycles": 0,
-      "last_update": "2026-05-03T00:00:00Z",
-      "note": "Near-parity with P4. Gen 7485→9825 (+2340). hist_best=0.24923 (all-time POL best)."
-    },
-    "P7_LBJLincoln-political-alpha-7": {
-      "status": "EVOLVING",
-      "gen": 9266,
-      "cycle": 3089,
-      "best_brier": 0.25412,
-      "algo": "lightgbm",
-      "features": 45,
-      "stagnation_cycles": 0,
-      "last_update": "2026-05-03T00:00:00Z",
-      "note": "Gen 7653→9266 (+1613). hist_best=0.24925. Healthy."
+    "P1": {"space": "Nomos42/political-alpha", "algorithm": "lightgbm", "gen": 30816, "cycle": 10273, "best_brier": 0.25231, "stagnation": 0, "running": true, "status": "EVOLVING"},
+    "P2": {"space": "Nomos42/political-alpha-2", "algorithm": "xgboost_brier", "gen": 3877, "cycle": 1293, "best_brier": 0.25003, "stagnation": 0, "running": true, "status": "EVOLVING"},
+    "P4": {"space": "LBJLincoln/political-alpha-4", "algorithm": "lightgbm", "gen": 22023, "cycle": 7342, "best_brier": 0.24992, "stagnation": 0, "running": true, "status": "EVOLVING", "note": "POL LIVE BEST; stagnation cleared from 20 last cycle"},
+    "P5": {"space": "LBJLincoln/political-alpha-5", "algorithm": "xgboost_brier", "gen": 11500, "cycle": 3834, "best_brier": 0.24993, "stagnation": 0, "running": true, "status": "EVOLVING", "hist_best": 0.24923},
+    "P7": {"space": "LBJLincoln/political-alpha-7", "algorithm": "lightgbm", "gen": 10023, "cycle": 3342, "best_brier": 0.25412, "stagnation": 0, "running": true, "status": "EVOLVING", "hist_best": 0.24925}
+  },
+  "political_summary": {
+    "pol_fleet_best_brier": 0.24992,
+    "pol_fleet_best_island": "P4",
+    "islands_running": 5,
+    "islands_down": 0,
+    "stagnation_alerts": [],
+    "rotation": "C — port NBA compact-feature technique: S15 38f extra_trees pattern applicable to political islands"
+  },
+  "councils": "DECOMMISSIONED 2026-04-20 — all 9 TESTforge42 spaces deleted",
+  "cross_project": {
+    "engine_parity": "PENDING VM (engine-parity-sync work-queue item)",
+    "tf_axelrod_pol_dmad_percent_fix": "PENDING VM (tf-axelrod-pol-dmad-percent-fix work-queue item)",
+    "tf_axelrod_verify_tune_12": "BLOCKED on explicit user approval for HF Space push",
+    "s15_compact_feature_for_pol": "PROPOSAL: inject S15 38f config into P7 via diversify command targeting compact features"
+  },
+  "sota_research_written": "data/research-proposals/2026-05-03T10h-nba-sota.json",
+  "claude_md_update_pending": {
+    "reason": "File too large for safe inline cloud MCP reconstruction",
+    "work_queue_item": "claude-md-island-update-2026-05-03T10h",
+    "changes_needed": {
+      "S13": "gen=6->91, cycle=31",
+      "S14": "gen=1078->1222, brier=0.22019->0.22158, add post-reset note, hist_best=0.22019",
+      "S15": "algorithm=random_forest->extra_trees, gen=2338->2472, brier=0.22226->0.22028, add checkpoint note",
+      "S17": "7th->8th+ cycle >32h",
+      "S18": "gen=5827->5888, remove stagnation=16 warning",
+      "S22": "gen=38->193, cycle=65",
+      "P1": "gen=28938->30816, add cycle=10273",
+      "P2": "gen=2369->3877, add cycle=1293",
+      "P4": "gen=20202->22023, add cycle=7342, remove stagnation=20",
+      "P5": "gen=9825->11500, add cycle=3834",
+      "P7": "gen=9266->10023, add cycle=3342",
+      "fleet_best_line": "add S15 checkpoint note below 0.22085 threshold"
     }
-  },
-  "political_stagnation_actions": "P4 stagnation=20 — internal hard reset triggered. VM should also POST /api/command {action:diversify} to P4.",
-  "rotate_this_cycle": "A — FEC/SEC data",
-  "rotate_a_findings": {
-    "fec_scraper_status": "scrape_fec_edgar.py exits 0 with ENDPOINT_NOT_YET_DEPLOYED — LBJLincoln/nomos-browser-nba /api/scrape-fec not yet deployed.",
-    "sec_status": "No SEC scraper active. Political engine uses 718 synthetic event features.",
-    "next_action": "Wire /api/scrape-fec endpoint in nomos-browser-nba Space. Medium priority.",
-    "pipeline_health": "All 5 political islands returning valid status. No data pipeline issues."
-  },
-  "cross_pollination": {
-    "s14_extra_trees_200f": "S14 ExtraTrees 200f at 0.22019 proves full feature budget beats sparse selection. Seed ET+200f explicitly in P2 GA init.",
-    "catboost_new": "S13 CatBoost hit 0.22060 at gen 6 — first CatBoost in fleet. Political domain categorical features suit CatBoost well. Cross-pollinate to P2/P4.",
-    "pol_to_nba": "P4/P5 dual-engine near-parity (lightgbm vs xgboost at 0.24992/0.24993) confirms natural engine diversity strategy working."
-  },
-  "councils": "DECOMMISSIONED 2026-04-20",
-  "dashboard": "R8 done. No pending gaps.",
-  "engine_parity": {
-    "mon_ipad_sha": "b7ec5b547f6693aa43de90d5b610636850c911d9",
-    "nba_agent_sha": "f455c4758a6e42b3157a9e89f1a7c893d7a08f89",
-    "status": "MISMATCH — Rule#2 violation",
-    "action": "engine-parity-sync pending VM (file too large for cloud MCP push)."
-  },
-  "actions_taken": [
-    "STEP 0: No crash recovery. All pending work-queue items are VM-only or user-gated.",
-    "STEP 1: All 6 NBA islands polled. S14 NEW FLEET BEST 0.22019 (ET 200f). S13 restarted with CatBoost (0.22060). S22 restarted (lost fleet best). S18+S22 stagnation=16 flagged for VM diversify.",
-    "STEP 2: All 5 political islands polled. P4 stagnation=20 hard reset confirmed. Rotation A (FEC/SEC) — FEC endpoint not yet deployed.",
-    "STEP 3: Councils DECOMMISSIONED — skipped.",
-    "STEP 4: No dashboard gaps — skipped.",
-    "STEP 5: CatBoost+ExtraTrees 200f insights cross-pollinated. CLAUDE.md updated with new fleet best."
-  ],
-  "alerts": [
-    "FLEET BEST S14 0.22019 (extra_trees 200f, gen 1078) — beats S22 0.22027",
-    "NEW S13 CatBoost: gen 6, brier 0.22060 — first CatBoost in fleet, below oracle threshold",
-    "S22 RESTARTED: was fleet best 0.22027, now gen 38 brier 0.22431 stagnation=16",
-    "S18 stagnation=16 — VM must POST diversify",
-    "CRITICAL S17 DOWN 503 (7th cycle ~28h) — user must check LBJLincoln26 HF admin",
-    "P4 stagnation=20 internal hard reset triggered"
-  ],
-  "vm_cron_actions_required": [
-    "CRITICAL: Check LBJLincoln26/nba-evo-s17 HF admin — 7th consecutive DOWN (~28h)",
-    "POST /api/command {action:diversify} to testforge42-nba-evo-s18 (stagnation=16)",
-    "POST /api/command {action:diversify} to testforge42-nba-evo-s22 (stagnation=16, restarted)",
-    "POST /api/command {action:diversify} to lbjlincoln-political-alpha-4 (stagnation=20)",
-    "engine-parity-sync: cp features/engine.py ../nomos-nba-agent/features/engine.py (from nomos-nba-agent dir)",
-    "tf-axelrod-pol-dmad-percent-fix: sed -i 's/~18%% (DMAD/~18% (DMAD/' scripts/arena/hf-political-trading-floor/app.py"
-  ]
+  }
 }
