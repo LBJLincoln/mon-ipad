@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-03T22:00:00Z",
+  "updated_at": "2026-05-04T00:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -75,7 +75,22 @@
     {"id":"tf-axelrod-verify-tune-9","priority":16,"status":"done","completed_at":"2026-04-17T12:30:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 9","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-10","priority":17,"status":"done","completed_at":"2026-04-18T00:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 10","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-11","priority":18,"status":"done","completed_at":"2026-04-18T06:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 11","do_not_push_hf_space_yet":true},
-    {"id":"tf-axelrod-verify-tune-12","priority":21,"status":"pending","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 12 — HF Space push (USER GATE: explicit approval required)","scope":["1. User explicitly approves HF Space push.","2. Ensure tf-axelrod-pol-app-restore (priority-0) is DONE before HF push.","3. Push NBA app.py to LBJLincoln26/nba-llm-trading-floor.","4. Push POL app.py to LBJLincoln26/political-llm-trading-floor.","5. Restart both Spaces. 6. Verify /api/status healthy."],"do_not_push_hf_space_yet":true,"blocked_on":"explicit user approval + tf-axelrod-pol-app-restore must be done first"},
+    {
+      "id": "tf-axelrod-verify-tune-12",
+      "priority": 21,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 12 — HF Space push (USER GATE: explicit approval required)",
+      "scope": [
+        "1. User explicitly approves HF Space push.",
+        "2. Ensure tf-axelrod-pol-app-restore (priority-0) is DONE before HF push.",
+        "3. Push NBA app.py to LBJLincoln26/nba-llm-trading-floor.",
+        "4. Push POL app.py to LBJLincoln26/political-llm-trading-floor.",
+        "5. Restart both Spaces. 6. Verify /api/status healthy."
+      ],
+      "do_not_push_hf_space_yet": true,
+      "blocked_on": "explicit user approval + tf-axelrod-pol-app-restore must be done first"
+    },
     {"id":"tf-axelrod-fix-ck-hardcoded","priority":19,"status":"done","completed_at":"2026-04-19T00:16:11Z","owner":"cloud-trigger-axelrod-2026","subject":"Fix NBA CK block hardcoded agent-count","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-13","priority":20,"status":"done","completed_at":"2026-04-20T06:11:00Z","commit_hash":"6a8f75e4f6d90596c2a391f8affc1126c6ace3bd","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 13","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-14","priority":22,"status":"done","completed_at":"2026-04-20T12:15:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 14","do_not_push_hf_space_yet":true},
@@ -97,15 +112,85 @@
     {"id":"tf-axelrod-verify-tune-29","priority":38,"status":"done","completed_at":"2026-05-01T12:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 29","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-30","priority":39,"status":"done","completed_at":"2026-05-02T06:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 30","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-31","priority":42,"status":"done","completed_at":"2026-05-02T12:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 31 — full independent spec audit, CLEAN","no_gaps_found":true,"py_compile":"PASS both apps (NBA 5799 lines, POL 3775 lines)","do_not_push_hf_space_yet":true},
-    {"id":"engine-parity-sync","priority":40,"status":"pending","owner":"local-vm","subject":"Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation)","detected_at":"2026-05-02T04:00:00Z","cloud_brain_note":"Cannot execute via cloud MCP — file is 523KB, exceeds inline push limit. VM must run: cp features/engine.py ../nomos-nba-agent/features/engine.py && bash scripts/lib/safe_commit.sh LAUNCHPAD 'sync features/engine.py from mon-ipad (b7ec5b5, Rule#2)' features/engine.py","scope":["mon-ipad features/engine.py SHA b7ec5b547f6693aa43de90d5b610636850c911d9 (523KB) — canonical/newer","nomos-nba-agent features/engine.py SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89 (468KB) — 54KB behind"],"do_not_push":false},
+    {
+      "id": "engine-parity-sync",
+      "priority": 40,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation)",
+      "detected_at": "2026-05-02T04:00:00Z",
+      "cloud_brain_note": "Cannot execute via cloud MCP — file is 523KB, exceeds inline push limit. VM must run: cp features/engine.py ../nomos-nba-agent/features/engine.py && bash scripts/lib/safe_commit.sh LAUNCHPAD 'sync features/engine.py from mon-ipad (b7ec5b5, Rule#2)' features/engine.py",
+      "scope": [
+        "mon-ipad features/engine.py SHA b7ec5b547f6693aa43de90d5b610636850c911d9 (523KB) — canonical/newer",
+        "nomos-nba-agent features/engine.py SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89 (468KB) — 54KB behind"
+      ],
+      "do_not_push": false
+    },
     {"id":"claude-md-island-update-2026-05-02","priority":41,"status":"done","completed_at":"2026-05-02T12:00:00Z","owner":"cloud-brain-sonnet4-6","subject":"Update CLAUDE.md island table with 2026-05-02 gen counts and state changes"},
     {"id":"tf-axelrod-verify-tune-32","priority":43,"status":"done","completed_at":"2026-05-02T18:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 32 — full spec re-audit, CLEAN","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-33","priority":44,"status":"done","completed_at":"2026-05-03T00:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 33 — PASS audit, found %%-percent bug in POL DMAD gate","do_not_push_hf_space_yet":true},
-    {"id":"tf-axelrod-pol-dmad-percent-fix","priority":45,"status":"pending","owner":"local-vm","subject":"Fix ~18%% -> ~18% in POL AXELROD_CANON DMAD gate — DELEGATED TO VM (file too large for cloud MCP)","detected_at":"2026-05-03T00:00:00Z","note":"fire-36 cloud agent attempted fix but accidentally corrupted the file (see tf-axelrod-pol-app-restore priority-0). VM must execute tf-axelrod-pol-app-restore steps first, which includes this sed fix.","do_not_push_hf_space_yet":true},
+    {
+      "id": "tf-axelrod-pol-dmad-percent-fix",
+      "priority": 45,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Fix ~18%% -> ~18% in POL AXELROD_CANON DMAD gate — DELEGATED TO VM (file too large for cloud MCP)",
+      "detected_at": "2026-05-03T00:00:00Z",
+      "note": "fire-36 cloud agent attempted fix but accidentally corrupted the file (see tf-axelrod-pol-app-restore priority-0). VM must execute tf-axelrod-pol-app-restore steps first, which includes this sed fix.",
+      "do_not_push_hf_space_yet": true
+    },
     {"id":"tf-axelrod-verify-tune-34","priority":46,"status":"done","completed_at":"2026-05-03T06:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 34 — re-audit CLEAN","do_not_push_hf_space_yet":true},
-    {"id":"claude-md-island-update-2026-05-03T10h","priority":47,"status":"pending","owner":"local-vm","subject":"Update CLAUDE.md island table with 2026-05-03T10h cycle data (S15 checkpoint)","detected_at":"2026-05-03T10:00:00Z","cloud_brain_note":"S15 brier 0.22226->0.22028 at 10h, but S15 has since restarted (gen 2338->246, brier 0.22028->0.22504 by 22h). Current island state in health-status.json. VM should update CLAUDE.md with live data from that file.","do_not_push":false},
+    {
+      "id": "claude-md-island-update-2026-05-03T10h",
+      "priority": 47,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Update CLAUDE.md island table with 2026-05-03T10h cycle data (S15 checkpoint)",
+      "detected_at": "2026-05-03T10:00:00Z",
+      "cloud_brain_note": "S15 brier 0.22226->0.22028 at 10h, but S15 has since restarted (gen 2338->246, brier 0.22028->0.22504 by 22h). Current island state in health-status.json. VM should update CLAUDE.md with live data from that file.",
+      "do_not_push": false
+    },
     {"id":"tf-axelrod-verify-tune-35","priority":48,"status":"done","completed_at":"2026-05-03T12:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 35 — PASS audit, no new tune","do_not_push_hf_space_yet":true},
-    {"id":"tf-axelrod-verify-tune-36","priority":49,"status":"done","completed_at":"2026-05-03T18:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 36 — PASS audit; POL file corruption accident; recovery queued priority-0","audit_findings":{"mech_a":"COMPLETE — NBA:3480 POL:2139 build_common_knowledge_block; DMAD gate present; ck_consensus_stance mandatory","mech_b":"COMPLETE — assign_sacrificial_archetypes + assign_challenge_tiers; 20 archetypes each; _society_archetypes_by_day","mech_c":"COMPLETE — write_axelrod_log day-N.jsonl; compute_consensus_distance L1-norm; hub push","ast_parse":"PASS NBA 5799L py_compile PASS; POL verified locally 3774L PASS before push","tune_attempted":"tf-axelrod-pol-dmad-percent-fix: fix verified locally py_compile PASS; cloud MCP create_or_update_file accidentally replaced 184KB file with 794-byte docstring stub. RECOVERY: tf-axelrod-pol-app-restore (priority-0) filed for VM.","lesson":"NEVER use create_or_update_file or push_files for files >10KB from cloud MCP — content cannot be inlined within output token budget. Always delegate large-file edits to VM via safe_commit.sh.","parity":"POL file currently corrupted — parity broken until VM restores","hf_push":"BLOCKED — DO NOT push until tf-axelrod-pol-app-restore is done"},"do_not_push_hf_space_yet":true}
+    {
+      "id": "tf-axelrod-verify-tune-36",
+      "priority": 49,
+      "status": "done",
+      "completed_at": "2026-05-03T18:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 36 — PASS audit; POL file corruption accident; recovery queued priority-0",
+      "audit_findings": {
+        "mech_a": "COMPLETE — NBA:3480 POL:2139 build_common_knowledge_block; DMAD gate present; ck_consensus_stance mandatory",
+        "mech_b": "COMPLETE — assign_sacrificial_archetypes + assign_challenge_tiers; 20 archetypes each; _society_archetypes_by_day",
+        "mech_c": "COMPLETE — write_axelrod_log day-N.jsonl; compute_consensus_distance L1-norm; hub push",
+        "ast_parse": "PASS NBA 5799L py_compile PASS; POL verified locally 3774L PASS before push",
+        "tune_attempted": "tf-axelrod-pol-dmad-percent-fix: fix verified locally py_compile PASS; cloud MCP create_or_update_file accidentally replaced 184KB file with 794-byte docstring stub. RECOVERY: tf-axelrod-pol-app-restore (priority-0) filed for VM.",
+        "lesson": "NEVER use create_or_update_file or push_files for files >10KB from cloud MCP — content cannot be inlined within output token budget. Always delegate large-file edits to VM via safe_commit.sh.",
+        "parity": "POL file currently corrupted — parity broken until VM restores",
+        "hf_push": "BLOCKED — DO NOT push until tf-axelrod-pol-app-restore is done"
+      },
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-37",
+      "priority": 50,
+      "status": "done",
+      "completed_at": "2026-05-04T00:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 37 — NBA PASS (code-search audit), POL still awaiting VM restore",
+      "do_not_push_hf_space_yet": true,
+      "audit_findings": {
+        "nba_app_sha": "0434d4319b5230b938a38720727a017aa2c246e7",
+        "mech_a": "CONFIRMED — build_common_knowledge_block symbol present (GitHub code search hit)",
+        "mech_b": "CONFIRMED — assign_sacrificial_archetypes symbol present (GitHub code search hit)",
+        "mech_c": "CONFIRMED — write_axelrod_log symbol present (GitHub code search hit)",
+        "pol_app_status": "STILL CORRUPTED (SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826) — tf-axelrod-pol-app-restore priority-0 not yet executed by VM",
+        "parity": "BROKEN — POL is 794-byte docstring stub; parity cannot be verified until VM restores full 3774-line file",
+        "tune_actions": "none — NBA code-search audit PASS, no regressions, no edits made to any app.py",
+        "hf_push": "BLOCKED — tf-axelrod-verify-tune-12 (priority-21) requires explicit user approval + POL restore",
+        "lesson_enforced": "Did NOT attempt create_or_update_file or push_files on any app.py (both >10KB; rule from fire-36 enforced)",
+        "next_action": "VM must execute tf-axelrod-pol-app-restore (priority-0) steps to restore POL parity, then cloud can resume full dual-file audits"
+      }
+    }
   ],
   "recovery_protocol": {
     "on_brain_wake": [
