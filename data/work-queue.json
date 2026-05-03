@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-03T18:30:00Z",
+  "updated_at": "2026-05-03T22:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -35,6 +35,26 @@
       "bad_commit": "c869455823af50a9a10e117834fa87f1be7ddb83",
       "original_blob_sha": "519536029000f5e89d24f4d953ce6c3035b9196c",
       "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "vm-restart-s17-2026-05-03T22h",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — DOWN 503 for 28h+ despite keepalive-spaces.sh",
+      "detected_at": "2026-05-03T22:00:00Z",
+      "cloud_brain_note": "S17 returned 503 again in brain cycle 2026-05-03T22h. keepalive-spaces.sh not resolving. VM must restart: curl -X POST https://huggingface.co/api/spaces/lbjlincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-diversify-s18-2026-05-03T22h",
+      "priority": 3,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "S18 (TESTforge42/nba-evo-s18) stagnation=21 — send diversify command",
+      "detected_at": "2026-05-03T22:00:00Z",
+      "cloud_brain_note": "S18 stagnation=21 exceeds threshold 15. Cloud brain cannot POST to FastAPI endpoints. VM must run: curl -X POST https://testforge42-nba-evo-s18.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'",
+      "do_not_push": false
     },
     {"id":"R7","priority":2,"status":"done","completed_at":"2026-04-15T19:00:00Z","commit_hash":"61c4b61394e2381ab0e1702f0581c292055b235c","owner":"local-agent-a63b2bad","subject":"Deploy S20/S21/S22 NBA islands"},
     {"id":"R8","priority":1,"status":"done","completed_at":"2026-04-15T20:30:00Z","owner":"local-agent-ab8a71a3","subject":"5 dashboard coverage gaps"},
@@ -83,7 +103,7 @@
     {"id":"tf-axelrod-verify-tune-33","priority":44,"status":"done","completed_at":"2026-05-03T00:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 33 — PASS audit, found %%-percent bug in POL DMAD gate","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-pol-dmad-percent-fix","priority":45,"status":"pending","owner":"local-vm","subject":"Fix ~18%% -> ~18% in POL AXELROD_CANON DMAD gate — DELEGATED TO VM (file too large for cloud MCP)","detected_at":"2026-05-03T00:00:00Z","note":"fire-36 cloud agent attempted fix but accidentally corrupted the file (see tf-axelrod-pol-app-restore priority-0). VM must execute tf-axelrod-pol-app-restore steps first, which includes this sed fix.","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-34","priority":46,"status":"done","completed_at":"2026-05-03T06:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 34 — re-audit CLEAN","do_not_push_hf_space_yet":true},
-    {"id":"claude-md-island-update-2026-05-03T10h","priority":47,"status":"pending","owner":"local-vm","subject":"Update CLAUDE.md island table with 2026-05-03T10h cycle data (S15 checkpoint)","detected_at":"2026-05-03T10:00:00Z","cloud_brain_note":"S15 brier improved 0.22226->0.22028. File too large for cloud-brain inline push.","do_not_push":false},
+    {"id":"claude-md-island-update-2026-05-03T10h","priority":47,"status":"pending","owner":"local-vm","subject":"Update CLAUDE.md island table with 2026-05-03T10h cycle data (S15 checkpoint)","detected_at":"2026-05-03T10:00:00Z","cloud_brain_note":"S15 brier 0.22226->0.22028 at 10h, but S15 has since restarted (gen 2338->246, brier 0.22028->0.22504 by 22h). Current island state in health-status.json. VM should update CLAUDE.md with live data from that file.","do_not_push":false},
     {"id":"tf-axelrod-verify-tune-35","priority":48,"status":"done","completed_at":"2026-05-03T12:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 35 — PASS audit, no new tune","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-36","priority":49,"status":"done","completed_at":"2026-05-03T18:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 36 — PASS audit; POL file corruption accident; recovery queued priority-0","audit_findings":{"mech_a":"COMPLETE — NBA:3480 POL:2139 build_common_knowledge_block; DMAD gate present; ck_consensus_stance mandatory","mech_b":"COMPLETE — assign_sacrificial_archetypes + assign_challenge_tiers; 20 archetypes each; _society_archetypes_by_day","mech_c":"COMPLETE — write_axelrod_log day-N.jsonl; compute_consensus_distance L1-norm; hub push","ast_parse":"PASS NBA 5799L py_compile PASS; POL verified locally 3774L PASS before push","tune_attempted":"tf-axelrod-pol-dmad-percent-fix: fix verified locally py_compile PASS; cloud MCP create_or_update_file accidentally replaced 184KB file with 794-byte docstring stub. RECOVERY: tf-axelrod-pol-app-restore (priority-0) filed for VM.","lesson":"NEVER use create_or_update_file or push_files for files >10KB from cloud MCP — content cannot be inlined within output token budget. Always delegate large-file edits to VM via safe_commit.sh.","parity":"POL file currently corrupted — parity broken until VM restores","hf_push":"BLOCKED — DO NOT push until tf-axelrod-pol-app-restore is done"},"do_not_push_hf_space_yet":true}
   ],
