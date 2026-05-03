@@ -1,18 +1,21 @@
 {
-  "cycle_id": "2026-05-03T10:00:00Z",
+  "cycle_id": "2026-05-03T14:00:00Z",
   "generated_by": "cloud-brain-sonnet4-6",
   "nba_islands": {
-    "S13": {"space": "Nomos42/nba-evo-4", "algorithm": "catboost", "gen": 91, "cycle": 31, "best_brier": 0.22060, "stagnation": 0, "status": "EVOLVING", "best_roi": 0.3165, "best_sharpe": 9.8171, "best_features": 67, "note": "cycle=31; elite injection from karpathy_lightning_0.21218 received"},
-    "S14": {"space": "Nomos42/nba-evo-5", "algorithm": "extra_trees", "gen": 1222, "cycle": 408, "best_brier": 0.22158, "stagnation": 0, "status": "EVOLVING", "best_roi": 0.3085, "best_sharpe": 8.1948, "best_features": 26, "note": "post-reset (cycle 393 hard reset); hist_best=0.22019 FLEET BEST gen=1078 preserved"},
-    "S15": {"space": "Nomos42/nba-evo-6", "algorithm": "extra_trees", "gen": 2472, "cycle": 825, "best_brier": 0.22028, "stagnation": 0, "status": "EVOLVING", "checkpoint": true, "best_roi": 0.3190, "best_sharpe": 8.51, "best_features": 35, "note": "S15 BEST — from 0.22226, delta=-0.002, below 0.22085 threshold; gen-2471 top_performer_obs=0.21954 roi=33.28% sharpe=9.10 38f (unconfirmed as api_best)"},
-    "S17": {"space": "LBJLincoln26/nba-evo-s17", "algorithm": "xgboost", "gen": null, "best_brier": 0.22249, "status": "DOWN_503", "note": "DOWN 503 for 8th+ cycle, >32h; VM keepalive-spaces.sh should attempt restart; manual intervention may be needed"},
-    "S18": {"space": "TESTforge42/nba-evo-s18", "algorithm": "extra_trees", "gen": 5888, "cycle": 1963, "best_brier": 0.22248, "stagnation": 0, "status": "EVOLVING", "note": "stagnation cleared (was 16 last cycle); diversify command queued ran successfully"},
-    "S22": {"space": "TESTforge42/nba-evo-s22", "algorithm": "xgboost", "gen": 193, "cycle": 65, "best_brier": 0.22431, "stagnation": 0, "status": "EVOLVING", "note": "recovering from restart; hard resets at cycles 37 and 62"}
+    "S13": {"space": "Nomos42/nba-evo-4", "algorithm": "catboost", "gen": 152, "cycle": 51, "best_brier": 0.22060, "stagnation": 0, "status": "EVOLVING", "best_roi": 0.3165, "best_sharpe": 9.8171, "best_features": 67},
+    "S14": {"space": "Nomos42/nba-evo-5", "algorithm": "extra_trees", "gen": 1331, "cycle": 444, "best_brier": 0.22158, "stagnation": 0, "status": "EVOLVING", "note": "post-stagnation-25 reset@cyc393; hist_best=0.22019 FLEET BEST gen=1078"},
+    "S15": {"space": "Nomos42/nba-evo-6", "algorithm": "extra_trees", "gen": 2606, "cycle": 869, "best_brier": 0.22226, "stagnation": 0, "status": "EVOLVING", "note": "hard reset@cyc868; hist_best=0.22028@cyc825 (was below 0.22085 threshold)"},
+    "S17": {"space": "LBJLincoln26/nba-evo-s17", "algorithm": "xgboost", "gen": null, "best_brier": 0.22249, "status": "DOWN_503", "note": "Persistent 503 >36h; last HF update 2026-04-18; requires manual restart"},
+    "S18": {"space": "TESTforge42/nba-evo-s18", "algorithm": "extra_trees", "gen": 5943, "cycle": 1982, "best_brier": 0.22248, "stagnation": 5, "status": "EVOLVING"},
+    "S22": {"space": "TESTforge42/nba-evo-s22", "algorithm": "xgboost", "gen": 355, "cycle": 119, "best_brier": 0.22431, "stagnation": 0, "status": "EVOLVING"}
   },
   "nba_summary": {
     "fleet_best_brier": 0.22019,
     "fleet_best_island": "S14_historical_gen1078",
-    "s15_checkpoint": {"api_best": 0.22028, "gen_obs_unconfirmed": 0.21954, "below_threshold_0_22085": true},
+    "current_best_live": 0.22060,
+    "current_best_island": "S13",
+    "checkpoint_cycle": {"S15_hist": 0.22028, "S15_hist_cycle": 825, "S15_reset_cycle": 868},
+    "threshold_0_22085": "S13(0.22060) and S14_hist(0.22019) already documented; no new sub-threshold this cycle",
     "islands_evolving": 5,
     "islands_down": 1,
     "stagnation_alerts": [],
@@ -20,11 +23,11 @@
     "engine_parity_status": "PENDING_VM — mon-ipad b7ec5b5 (+54KB) ahead of nomos-nba-agent f455c47"
   },
   "political_islands": {
-    "P1": {"space": "Nomos42/political-alpha", "algorithm": "lightgbm", "gen": 30816, "cycle": 10273, "best_brier": 0.25231, "stagnation": 0, "running": true, "status": "EVOLVING"},
-    "P2": {"space": "Nomos42/political-alpha-2", "algorithm": "xgboost_brier", "gen": 3877, "cycle": 1293, "best_brier": 0.25003, "stagnation": 0, "running": true, "status": "EVOLVING"},
-    "P4": {"space": "LBJLincoln/political-alpha-4", "algorithm": "lightgbm", "gen": 22023, "cycle": 7342, "best_brier": 0.24992, "stagnation": 0, "running": true, "status": "EVOLVING", "note": "POL LIVE BEST; stagnation cleared from 20 last cycle"},
-    "P5": {"space": "LBJLincoln/political-alpha-5", "algorithm": "xgboost_brier", "gen": 11500, "cycle": 3834, "best_brier": 0.24993, "stagnation": 0, "running": true, "status": "EVOLVING", "hist_best": 0.24923},
-    "P7": {"space": "LBJLincoln/political-alpha-7", "algorithm": "lightgbm", "gen": 10023, "cycle": 3342, "best_brier": 0.25412, "stagnation": 0, "running": true, "status": "EVOLVING", "hist_best": 0.24925}
+    "P1": {"space": "Nomos42/political-alpha", "algorithm": "lightgbm", "gen": 32305, "cycle": 10769, "best_brier": 0.25231, "stagnation": 0, "status": "EVOLVING"},
+    "P2": {"space": "Nomos42/political-alpha-2", "algorithm": "xgboost_brier", "gen": 4761, "cycle": 1588, "best_brier": 0.25003, "stagnation": 0, "status": "EVOLVING"},
+    "P4": {"space": "LBJLincoln/political-alpha-4", "algorithm": "lightgbm", "gen": 23314, "cycle": 7772, "best_brier": 0.24992, "stagnation": 0, "status": "EVOLVING", "note": "POL LIVE BEST"},
+    "P5": {"space": "LBJLincoln/political-alpha-5", "algorithm": "xgboost_brier", "gen": 12924, "cycle": 4308, "best_brier": 0.24993, "stagnation": 0, "status": "EVOLVING", "hist_best": 0.24923},
+    "P7": {"space": "LBJLincoln/political-alpha-7", "algorithm": "lightgbm", "gen": 10697, "cycle": 3566, "best_brier": 0.25412, "stagnation": 0, "status": "EVOLVING", "hist_best": 0.24925}
   },
   "political_summary": {
     "pol_fleet_best_brier": 0.24992,
@@ -32,32 +35,19 @@
     "islands_running": 5,
     "islands_down": 0,
     "stagnation_alerts": [],
-    "rotation": "C — port NBA compact-feature technique: S15 38f extra_trees pattern applicable to political islands"
+    "all_healthy": true,
+    "rotation": "D — data pipeline health check"
   },
   "councils": "DECOMMISSIONED 2026-04-20 — all 9 TESTforge42 spaces deleted",
   "cross_project": {
-    "engine_parity": "PENDING VM (engine-parity-sync work-queue item)",
-    "tf_axelrod_pol_dmad_percent_fix": "PENDING VM (tf-axelrod-pol-dmad-percent-fix work-queue item)",
+    "engine_parity": "PENDING VM (engine-parity-sync work-queue item #40)",
+    "tf_axelrod_pol_dmad_percent_fix": "PENDING VM (work-queue item #45)",
     "tf_axelrod_verify_tune_12": "BLOCKED on explicit user approval for HF Space push",
-    "s15_compact_feature_for_pol": "PROPOSAL: inject S15 38f config into P7 via diversify command targeting compact features"
+    "s17_restart": "DOWN 503 persistent >36h — requires HF manual restart"
   },
-  "sota_research_written": "data/research-proposals/2026-05-03T10h-nba-sota.json",
-  "claude_md_update_pending": {
-    "reason": "File too large for safe inline cloud MCP reconstruction",
-    "work_queue_item": "claude-md-island-update-2026-05-03T10h",
-    "changes_needed": {
-      "S13": "gen=6->91, cycle=31",
-      "S14": "gen=1078->1222, brier=0.22019->0.22158, add post-reset note, hist_best=0.22019",
-      "S15": "algorithm=random_forest->extra_trees, gen=2338->2472, brier=0.22226->0.22028, add checkpoint note",
-      "S17": "7th->8th+ cycle >32h",
-      "S18": "gen=5827->5888, remove stagnation=16 warning",
-      "S22": "gen=38->193, cycle=65",
-      "P1": "gen=28938->30816, add cycle=10273",
-      "P2": "gen=2369->3877, add cycle=1293",
-      "P4": "gen=20202->22023, add cycle=7342, remove stagnation=20",
-      "P5": "gen=9825->11500, add cycle=3834",
-      "P7": "gen=9266->10023, add cycle=3342",
-      "fleet_best_line": "add S15 checkpoint note below 0.22085 threshold"
-    }
-  }
+  "sota_research_written": "data/research-proposals/2026-05-03T14h-nba-sota.json",
+  "alerts": [
+    "S17 DOWN 503 persistent >36h — manual restart needed",
+    "S15 hard reset at cyc868 wiped checkpoint 0.22028 — consider increasing stagnation threshold from 25 to 35"
+  ]
 }

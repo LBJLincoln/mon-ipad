@@ -1,0 +1,49 @@
+{
+  "generated_at": "2026-05-03T14:00:00Z",
+  "cycle": "2026-05-03T14h",
+  "source": "arXiv search via WebFetch",
+  "papers": [
+    {
+      "title": "Beyond Winning: Margin of Victory Relative to Expectation (MOVDA)",
+      "arxiv_id": "2506.00348",
+      "authors": "Shivam Shorewala, Zihao Yang",
+      "date": "June 2025",
+      "key_finding": "MOVDA framework reduces Brier score prediction error by 1.54% compared to TrueSkill and improves outcome accuracy by 0.58% on NBA data 2013-2023 (13,619 games)",
+      "relevance": "CRITICAL — direct Brier reduction on NBA game prediction",
+      "actionable_technique": "Incorporate winning-margin dynamics as features: margin_vs_expected, margin_volatility_7d, margin_home_advantage. These capture prediction confidence calibration beyond win/loss.",
+      "fleet_potential_impact": "~0.003-0.005 Brier reduction on fleet best 0.22019 → target ~0.215",
+      "priority": "HIGH"
+    },
+    {
+      "title": "Long-Sequence LSTM Modeling for NBA Game Outcome Prediction",
+      "arxiv_id": "2512.08591",
+      "authors": "Charles Rios, Longzhen Han, Almas Baimagambetov, Nikolaos Polatidis",
+      "date": "December 2025",
+      "key_finding": "LSTM using 9,840 games (8 seasons) achieved 72.35% accuracy, 73.15% precision, 76.13% AUC-ROC",
+      "relevance": "MODERATE — incompatible with current GA feature-only approach; 2-stage: LSTM embeddings → XGBoost",
+      "priority": "MEDIUM"
+    },
+    {
+      "title": "Graph-based Encoding for NBA Prediction",
+      "arxiv_id": "2603.05671",
+      "authors": "Junhao Su, David Grimsman, Christopher Archibald",
+      "date": "March 2026",
+      "key_finding": "Knowledge graphs improve predictive models for NBA forecasting",
+      "relevance": "LOW for GA islands; interesting for Oracle future work",
+      "priority": "LOW"
+    }
+  ],
+  "immediate_recommendation": {
+    "action": "Add MOVDA-inspired margin features to engine.py v3.2",
+    "features_to_add": [
+      "team_avg_margin_last10",
+      "team_margin_vs_spread_last10",
+      "opp_margin_allowed_last10",
+      "home_margin_volatility_last10",
+      "expected_margin_delta"
+    ],
+    "rationale": "1.54% Brier reduction on fleet best 0.22019 → ~0.2170; approaches 0.21139 walk-forward holdout benchmark",
+    "implementation_effort": "2-4 engine.py additions in team_season_features() or game_context_features()",
+    "gate_rule": "Add to engine.py, increment version to v3.2, sync both repos (Rule#2), restart islands for discovery"
+  }
+}
