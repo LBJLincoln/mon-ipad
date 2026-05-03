@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-04T00:00:00Z",
+  "updated_at": "2026-05-04T02:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -41,9 +41,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — DOWN 503 for 28h+ despite keepalive-spaces.sh",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 16 days (not just 503)",
       "detected_at": "2026-05-03T22:00:00Z",
-      "cloud_brain_note": "S17 returned 503 again in brain cycle 2026-05-03T22h. keepalive-spaces.sh not resolving. VM must restart: curl -X POST https://huggingface.co/api/spaces/lbjlincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'",
+      "updated_at": "2026-05-04T02:00:00Z",
+      "cloud_brain_note": "S17 confirmed PAUSED (not transient 503) by HF API runtime check 2026-05-04T02:00Z. HF last_modified 2026-04-18 — PAUSED 16 days. keepalive-spaces.sh does not handle PAUSED stage. VM must restart: curl -X POST https://huggingface.co/api/spaces/lbjlincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'. ALSO FIX keepalive-spaces.sh to check /api/spaces/{id}/runtime stage, not just HTTP 503.",
       "do_not_push": false
     },
     {
@@ -51,9 +52,19 @@
       "priority": 3,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "S18 (TESTforge42/nba-evo-s18) stagnation=21 — send diversify command",
+      "subject": "S18 (TESTforge42/nba-evo-s18) stagnation≈22 — send diversify command",
       "detected_at": "2026-05-03T22:00:00Z",
-      "cloud_brain_note": "S18 stagnation=21 exceeds threshold 15. Cloud brain cannot POST to FastAPI endpoints. VM must run: curl -X POST https://testforge42-nba-evo-s18.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'",
+      "cloud_brain_note": "S18 stagnation was 21 at 22h cycle, now estimated 22+. Exceeds threshold 15. VM must run: curl -X POST https://testforge42-nba-evo-s18.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-diversify-s22-2026-05-04T02h",
+      "priority": 5,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "S22 (TESTforge42/nba-evo-s22) stagnation≈15 — send diversify command",
+      "detected_at": "2026-05-04T02:00:00Z",
+      "cloud_brain_note": "S22 stagnation was 11 at 2026-05-03T22h cycle, estimated ≥15 by 02h cycle (threshold=15). VM must run: curl -X POST https://testforge42-nba-evo-s22.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'",
       "do_not_push": false
     },
     {"id":"R7","priority":2,"status":"done","completed_at":"2026-04-15T19:00:00Z","commit_hash":"61c4b61394e2381ab0e1702f0581c292055b235c","owner":"local-agent-a63b2bad","subject":"Deploy S20/S21/S22 NBA islands"},

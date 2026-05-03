@@ -1,19 +1,76 @@
 {
-  "timestamp": "2026-05-03T22:00:00Z",
-  "cycle": "cloud-brain-2026-05-03T22:00Z",
+  "timestamp": "2026-05-04T02:00:00Z",
+  "cycle": "cloud-brain-2026-05-04T02:00Z",
   "trigger": "trig_01BS3ixBvt2uKHY9p5EemcgD",
   "model": "claude-sonnet-4-6",
   "step0_crash_recovery": {
     "status": "no_crash",
-    "note": "No local-agent-* items with >6h staleness. All pending items owned by local-vm — left for VM execution."
+    "note": "No local-agent-* items with >6h staleness. Pending items owned by local-vm (3 tasks) or cloud-trigger blocked on user approval. No crash recovery action taken."
   },
   "nba_islands": {
-    "S13": {"space": "Nomos42/nba-evo-4", "gen": 195, "best_brier": 0.22652, "stagnation": 8, "algorithm": "xgboost", "status": "UP"},
-    "S14": {"space": "Nomos42/nba-evo-5", "gen": 1582, "best_brier": 0.22158, "alltime_best": 0.22019, "current_model": "logistic_regression", "stagnation": 0, "status": "UP", "note": "fleet best 0.22019 from earlier session (extra_trees gen=1078)"},
-    "S15": {"space": "Nomos42/nba-evo-6", "gen": 246, "best_brier": 0.22504, "stagnation": 6, "algorithm": "random_forest", "status": "UP", "note": "restarted — gen dropped from 2338; hard reset at cycle 76, recovering"},
-    "S17": {"space": "LBJLincoln26/nba-evo-s17", "gen": null, "best_brier": null, "stagnation": null, "status": "DOWN_503", "note": "503 error persists — keepalive-spaces.sh not resolving; VM restart queued (vm-restart-s17-2026-05-03T22h)"},
-    "S18": {"space": "TESTforge42/nba-evo-s18", "gen": 6217, "best_brier": 0.22248, "stagnation": 21, "algorithm": "extra_trees", "status": "UP", "action_needed": "DIVERSIFY (stagnation=21 > threshold 15)", "action_queued": "vm-diversify-s18-2026-05-03T22h"},
-    "S22": {"space": "TESTforge42/nba-evo-s22", "gen": 594, "best_brier": 0.22431, "stagnation": 11, "algorithm": "xgboost", "status": "UP"}
+    "S13": {
+      "space": "Nomos42/nba-evo-4",
+      "hf_stage": "RUNNING",
+      "gen_est": 250,
+      "best_brier": 0.22652,
+      "stagnation_est": 12,
+      "algorithm": "xgboost",
+      "status": "UP",
+      "note": "Recovering from restart; estimate from 22h baseline + 4h evolution rate"
+    },
+    "S14": {
+      "space": "Nomos42/nba-evo-5",
+      "hf_stage": "RUNNING",
+      "gen_est": 1620,
+      "best_brier": 0.22158,
+      "alltime_best": 0.22019,
+      "stagnation_est": 0,
+      "algorithm": "logistic_regression",
+      "status": "UP",
+      "note": "Fleet all-time best 0.22019 (extra_trees gen=1078). Current session exploring LR."
+    },
+    "S15": {
+      "space": "Nomos42/nba-evo-6",
+      "hf_stage": "RUNNING",
+      "gen_est": 310,
+      "best_brier": 0.22504,
+      "stagnation_est": 10,
+      "algorithm": "random_forest",
+      "status": "UP",
+      "note": "Post-restart recovery (hard reset cycle 76); making progress"
+    },
+    "S17": {
+      "space": "LBJLincoln26/nba-evo-s17",
+      "hf_stage": "PAUSED",
+      "gen": null,
+      "best_brier": null,
+      "stagnation": null,
+      "status": "DOWN_PAUSED",
+      "last_modified_hf": "2026-04-18T21:50:48Z",
+      "note": "ROOT CAUSE CONFIRMED: HF stage=PAUSED (not transient 503). PAUSED since Apr 18 (16 days). keepalive-spaces.sh only handles HTTP 503, not HF PAUSED stage. VM restart queued (vm-restart-s17-2026-05-03T22h). KEEPALIVE BUG: script should check HF /api/spaces/{id}/runtime stage and restart if stage != RUNNING, not just watch for 503."
+    },
+    "S18": {
+      "space": "TESTforge42/nba-evo-s18",
+      "hf_stage": "RUNNING",
+      "gen_est": 6320,
+      "best_brier": 0.22248,
+      "stagnation_est": 22,
+      "algorithm": "extra_trees",
+      "status": "UP",
+      "action_needed": "DIVERSIFY (stagnation≈22 >> threshold 15)",
+      "action_queued": "vm-diversify-s18-2026-05-03T22h"
+    },
+    "S22": {
+      "space": "TESTforge42/nba-evo-s22",
+      "hf_stage": "RUNNING",
+      "gen_est": 660,
+      "best_brier": 0.22431,
+      "stagnation_est": 15,
+      "algorithm": "xgboost",
+      "status": "UP",
+      "action_needed": "DIVERSIFY (stagnation≈15, at threshold)",
+      "action_queued": "vm-diversify-s22-2026-05-04T02h"
+    }
   },
   "nba_summary": {
     "fleet_best_brier": 0.22019,
@@ -22,16 +79,18 @@
     "fleet_best_gen": 1078,
     "islands_up": 5,
     "islands_down": 1,
-    "stagnation_alerts": ["S18 (stagnation=21)"],
+    "islands_paused": 1,
+    "stagnation_alerts": ["S18 (stagnation≈22, VM diversify pending)", "S22 (stagnation≈15, NEW — VM diversify queued)"],
     "checkpoint_threshold_breached": false,
-    "note": "Fleet best 0.22019 already recorded; no new sub-0.22085 achievement this cycle"
+    "note": "Fleet best 0.22019 all-time (S14 extra_trees). No new sub-0.22085 this cycle. S17 root cause: PAUSED since Apr 18 — 16 days, not just 28h.",
+    "sota_search": "SKIPPED — done at 22h cycle (every-other-cycle rule; next at 06h)"
   },
   "political_islands": {
-    "P1": {"space": "Nomos42/political-alpha", "gen": 2454, "best_brier": 0.2499, "stagnation": 0, "algorithm": "xgboost_brier", "status": "UP", "note": "restarted — gen dropped from 28938"},
-    "P2": {"space": "Nomos42/political-alpha-2", "gen": 7606, "best_brier": 0.25003, "stagnation": 0, "algorithm": "xgboost_brier", "status": "UP"},
-    "P4": {"space": "LBJLincoln/political-alpha-4", "gen": 27374, "best_brier": 0.24992, "stagnation": 0, "algorithm": "lightgbm", "status": "UP", "fleet_best": true},
-    "P5": {"space": "LBJLincoln/political-alpha-5", "gen": 18050, "best_brier": 0.24993, "stagnation": 0, "algorithm": "xgboost_brier", "status": "UP"},
-    "P7": {"space": "LBJLincoln/political-alpha-7", "gen": 12927, "best_brier": 0.25412, "stagnation": 0, "algorithm": "lightgbm", "status": "UP"}
+    "P1": {"space": "Nomos42/political-alpha", "hf_stage": "RUNNING", "gen_est": 4000, "best_brier": 0.2499, "stagnation_est": 0, "algorithm": "xgboost_brier", "status": "UP"},
+    "P2": {"space": "Nomos42/political-alpha-2", "hf_stage": "RUNNING", "gen_est": 9500, "best_brier": 0.25003, "stagnation_est": 0, "algorithm": "xgboost_brier", "status": "UP"},
+    "P4": {"space": "LBJLincoln/political-alpha-4", "hf_stage": "RUNNING", "gen_est": 29000, "best_brier": 0.24992, "stagnation_est": 0, "algorithm": "lightgbm", "status": "UP", "fleet_best": true},
+    "P5": {"space": "LBJLincoln/political-alpha-5", "hf_stage": "RUNNING", "gen_est": 19500, "best_brier": 0.24993, "stagnation_est": 0, "algorithm": "xgboost_brier", "status": "UP"},
+    "P7": {"space": "LBJLincoln/political-alpha-7", "hf_stage": "RUNNING", "gen_est": 14300, "best_brier": 0.25412, "stagnation_est": 0, "algorithm": "lightgbm", "status": "UP", "watch": "0.25412 — 0.042 gap vs fleet best; monitor for stagnation"}
   },
   "political_summary": {
     "fleet_best_brier": 0.24992,
@@ -40,25 +99,29 @@
     "islands_up": 5,
     "islands_down": 0,
     "stagnation_alerts": [],
-    "all_healthy": true
+    "all_healthy": true,
+    "rotation": "A — FEC/SEC data (see nomos-political-alpha/data/brain-status.json)",
+    "fec_scraper_status": "STUB — ENDPOINT_NOT_YET_DEPLOYED (scrape_fec_edgar.py exists but endpoint undeployed)"
   },
   "councils": "DECOMMISSIONED 2026-04-20 — skipped",
   "dashboard": "R8 done — no pending work",
   "actions_this_cycle": [
-    "Wrote data/health-status.json",
-    "Wrote nomos-political-alpha/data/brain-status.json",
-    "Wrote data/research-proposals/nba-sota-2026-05-03.md",
-    "Updated data/work-queue.json: added vm-restart-s17, vm-diversify-s18"
+    "Wrote data/health-status.json (2026-05-04T02:00Z)",
+    "Wrote nomos-political-alpha/data/brain-status.json (Rotation A: FEC/SEC data)",
+    "Updated data/work-queue.json: added vm-diversify-s22-2026-05-04T02h (stagnation≈15)",
+    "S17 root cause clarified: HF stage=PAUSED since Apr 18 (not transient 503); flagged keepalive-spaces.sh gap"
   ],
   "vm_tasks_queued": [
-    "vm-restart-s17-2026-05-03T22h: restart LBJLincoln26/nba-evo-s17 (503, 28h+ down)",
-    "vm-diversify-s18-2026-05-03T22h: POST /api/command {action:diversify} to TESTforge42/nba-evo-s18"
+    "PRIORITY 0: tf-axelrod-pol-app-restore — POL app.py corrupted (fire-36), revert c869455 + sed fix",
+    "vm-restart-s17-2026-05-03T22h: restart LBJLincoln26/nba-evo-s17 (PAUSED 16 days)",
+    "vm-diversify-s18-2026-05-03T22h: POST /api/command {action:diversify} to TESTforge42/nba-evo-s18",
+    "vm-diversify-s22-2026-05-04T02h: POST /api/command {action:diversify} to TESTforge42/nba-evo-s22 (stagnation≈15, NEW)"
   ],
   "critical_vm_pending": [
     "PRIORITY 0: tf-axelrod-pol-app-restore — POL app.py corrupted (fire-36), revert c869455 + sed fix",
     "PRIORITY 40: engine-parity-sync — features/engine.py 54KB behind in nomos-nba-agent",
-    "PRIORITY 45: tf-axelrod-pol-dmad-percent-fix — covered by priority-0 recovery steps"
+    "KEEPALIVE BUG: keepalive-spaces.sh must check HF runtime stage (not just HTTP 503). S17 PAUSED 16 days undetected. Fix: curl https://huggingface.co/api/spaces/{owner}/{name}/runtime and check .stage == RUNNING"
   ],
-  "sota_research": "data/research-proposals/nba-sota-2026-05-03.md",
-  "next_cycle": "2026-05-04T02:00:00Z"
+  "next_cycle": "2026-05-04T06:00:00Z",
+  "next_cycle_actions": ["SOTA WebSearch (every-other-cycle)", "S17 restart status check", "S18/S22 diversify effect check"]
 }
