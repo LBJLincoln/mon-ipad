@@ -55,7 +55,7 @@
       "owner": "local-vm",
       "subject": "S18 (TESTforge42/nba-evo-s18) stagnation≤22 — send diversify command",
       "detected_at": "2026-05-03T22:00:00Z",
-      "cloud_brain_note": "S18 stagnation was 21 at 22h cycle, now estimated 22+. Exceeds threshold 15. VM must run: curl -X POST https://testforge42-nba-evo-s18.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'",
+      "cloud_brain_note": "10h brain cycle: S18 stagnation now 0 (gen=6682, brier=0.22248). Issue resolved — VM diversify ran or island auto-reset. VM should mark done.",
       "do_not_push": false
     },
     {
@@ -65,7 +65,7 @@
       "owner": "local-vm",
       "subject": "S22 (TESTforge42/nba-evo-s22) stagnation≤15 — send diversify command",
       "detected_at": "2026-05-04T02:00:00Z",
-      "cloud_brain_note": "S22 stagnation was 11 at 2026-05-03T22h cycle, estimated ≥15 by 02h cycle (threshold=15). VM must run: curl -X POST https://testforge42-nba-evo-s22.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'",
+      "cloud_brain_note": "10h brain cycle: S22 stagnation now 0 (gen=837, brier=0.22431). Issue resolved — hard resets at cycles 237+262 cleared stagnation. VM should mark done.",
       "do_not_push": false
     },
     {"id":"R7","priority":2,"status":"done","completed_at":"2026-04-15T19:00:00Z","commit_hash":"61c4b61394e2381ab0e1702f0581c292055b235c","owner":"local-agent-a63b2bad","subject":"Deploy S20/S21/S22 NBA islands"},
@@ -154,11 +154,13 @@
     {
       "id": "claude-md-island-update-2026-05-03T10h",
       "priority": 47,
-      "status": "pending",
-      "owner": "local-vm",
+      "status": "done",
+      "completed_at": "2026-05-04T10:00:00Z",
+      "commit_hash": "ea4fd2a",
+      "owner": "cloud-brain-sonnet4-6",
       "subject": "Update CLAUDE.md island table with 2026-05-03T10h cycle data (S15 checkpoint)",
       "detected_at": "2026-05-03T10:00:00Z",
-      "cloud_brain_note": "S15 brier 0.22226->0.22028 at 10h, but S15 has since restarted (gen 2338->246, brier 0.22028->0.22504 by 22h). Current island state in health-status.json. VM should update CLAUDE.md with live data from that file.",
+      "cloud_brain_note": "COMPLETED by 10h cloud brain cycle. Updated all 6 NBA + 5 POL island gen counts, brier, status from live /api/status fetches. S13 stagnation=16 diversify sent. S17 PAUSED noted. S15 gen=157 rebuilding. POL all UP.",
       "do_not_push": false
     },
     {"id":"tf-axelrod-verify-tune-35","priority":48,"status":"done","completed_at":"2026-05-03T12:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 35 — PASS audit, no new tune","do_not_push_hf_space_yet":true},
