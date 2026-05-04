@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-04T18:00:00Z",
+  "updated_at": "2026-05-05T00:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -10,8 +10,8 @@
       "owner": "local-vm",
       "subject": "URGENT: Restore corrupted POL app.py — cloud MCP push timeout (fire-38 confirmed 184KB cannot be pushed inline)",
       "detected_at": "2026-05-03T18:30:00Z",
-      "updated_at": "2026-05-04T18:00:00Z",
-      "cloud_brain_note": "fire-40 cloud verification: POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 still the 794-byte stub. AXELROD_CANON code-search returns 0 hits in hf-political-trading-floor path. Parity BROKEN. VM must execute recovery steps. fire-38 confirmed py_compile PASS from commit 2c96e0f. Rule reconfirmed: NEVER use create_or_update_file or push_files for files >50KB from cloud.",
+      "updated_at": "2026-05-05T00:00:00Z",
+      "cloud_brain_note": "fire-41 cloud verification: POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. compute_consensus_distance code-search returns 0 hits in hf-political-trading-floor path. AXELROD_CANON absent from POL path. Parity BROKEN across 5 consecutive fires (37-41). VM must execute recovery steps. fire-38 confirmed py_compile PASS from commit 2c96e0f. Rule reconfirmed: NEVER use create_or_update_file or push_files for files >50KB from cloud.",
       "scope": [
         "STEP 1 — Revert the corruption commit:",
         "  git revert c869455823af50a9a10e117834fa87f1be7ddb83 --no-edit",
@@ -290,6 +290,66 @@
         "hf_push": "BLOCKED — priority-0 restore not done; do_not_push_hf_space_yet=true",
         "no_tune_needed": "NBA code stable across 10+ consecutive PASS fires. Tune will become relevant after POL parity restored and HF push gate opened."
       }
+    },
+    {
+      "id": "tf-axelrod-verify-tune-41",
+      "priority": 55,
+      "status": "done",
+      "completed_at": "2026-05-05T00:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 41 — NBA PASS (code-search working, all 3 mechs confirmed); POL still corrupted; KL-divergence gap identified; Tauric TF discovered",
+      "do_not_push_hf_space_yet": true,
+      "audit_findings": {
+        "nba_app_indexed_sha": "0434d4319b5230b938a38720727a017aa2c246e7",
+        "nba_app_blob_sha": "0b0e4c81f84dc4b5807eee5d4b064416a6b11ab2",
+        "code_search_method": "mcp__github__search_code — returned 3 hits for compute_consensus_distance (NBA app + work-queue + tauric), 13 hits for AXELROD_CANON",
+        "mech_a": "CONFIRMED — build_common_knowledge_block hit in hf-llm-trading-floor/app.py",
+        "mech_b": "CONFIRMED — assign_sacrificial_archetypes confirmed via prior fire + AXELROD_CANON present",
+        "mech_c": "CONFIRMED — write_axelrod_log + compute_consensus_distance confirmed via code-search",
+        "spec_gap_found": "Spec requires peer_consensus_distance to use KL divergence from CK; fire-39 confirmed implementation uses L1-norm. Gap logged as tf-axelrod-kl-divergence (priority 56, VM task).",
+        "tauric_tf_discovered": "hf-llm-trading-floor-tauric/app.py (SHA 8b4c4e18234edf29876d3870d29bcf353f728edd) also contains compute_consensus_distance — third TF with Axelrod code. Needs scope audit fire-42 to determine if it should be kept in parity.",
+        "pol_app_sha": "696180bc64c4dc7a24d0ad6ee00ecaba39466826",
+        "pol_app_status": "STILL CORRUPTED — 794-byte docstring stub for 5th consecutive fire (37-41). VM priority-0 restore is now critically overdue.",
+        "parity": "BROKEN — VM restore required",
+        "hf_push": "BLOCKED — do_not_push_hf_space_yet=true; parity broken; NBA 296KB + POL 184KB exceed 50KB cloud MCP push limit",
+        "nba_unchanged": true
+      }
+    },
+    {
+      "id": "tf-axelrod-kl-divergence",
+      "priority": 56,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Upgrade compute_consensus_distance from L1-norm to KL divergence (spec gap, Mech C paper dataset quality)",
+      "detected_at": "2026-05-05T00:00:00Z",
+      "scope": [
+        "CONTEXT: Spec (Mech C) says peer_consensus_distance = KL divergence from CK.",
+        "CURRENT: NBA app.py ~L3743 uses L1-norm (sum of absolute differences in pick fractions).",
+        "FIX: Replace L1-norm in compute_consensus_distance with KL divergence:",
+        "  import math",
+        "  def _kl(p, q, eps=1e-9): return sum(pi * math.log((pi+eps)/(qi+eps)) for pi,qi in zip(p,q))",
+        "  Compute probability vectors over discrete bet outcomes, then call _kl(agent_dist, consensus_dist).",
+        "ALSO APPLY TO: POL app.py after tf-axelrod-pol-app-restore is completed.",
+        "VERIFY: python3 -m py_compile both apps after edit. wc -l should be unchanged ±5 lines.",
+        "COMMIT: bash scripts/lib/safe_commit.sh LAUNCHPAD 'tune(tf): upgrade peer_consensus_distance L1→KL-divergence for paper dataset accuracy (both NBA+POL)' scripts/arena/hf-llm-trading-floor/app.py scripts/arena/hf-political-trading-floor/app.py"
+      ],
+      "blocked_on": "tf-axelrod-pol-app-restore (priority-0) must be done first so both apps can be updated together",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-tauric-scope-audit",
+      "priority": 57,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Audit hf-llm-trading-floor-tauric/app.py — determine if it should be kept in parity with NBA+POL Axelrod mechs",
+      "detected_at": "2026-05-05T00:00:00Z",
+      "cloud_brain_note": "fire-41 discovered scripts/arena/hf-llm-trading-floor-tauric/app.py (SHA 8b4c4e18234edf29876d3870d29bcf353f728edd) has compute_consensus_distance. Unknown if this is an experimental fork, abandoned branch, or active TF. Read file, check if it's used in any HF Space, determine parity requirements.",
+      "scope": [
+        "1. Read scripts/arena/hf-llm-trading-floor-tauric/app.py — check line count, last-modified context, whether it has all 3 mechs.",
+        "2. Check if there is a corresponding HF Space (search for 'tauric' in CLAUDE.md / any Space config).",
+        "3. If active: add to parity matrix (NBA + POL + Tauric must stay in sync).",
+        "4. If abandoned: note in work-queue, no action needed."
+      ]
     }
   ],
   "recovery_protocol": {
