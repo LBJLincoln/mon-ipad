@@ -1,177 +1,47 @@
 {
-  "generated_at": "2026-05-05T02:00:00Z",
-  "cycle": "2026-05-05T02h",
-  "brain_version": "cloud-brain-sonnet4-6",
-  "fleet_best_brier": 0.22019,
-  "fleet_best_source": "S14 all-time gen=1078 extra_trees 200f checkpoint",
-  "fleet_second_best_brier": 0.22034,
-  "fleet_second_best_source": "S15 Nomos42/nba-evo-6 xgboost+rf 76f gen=190 CHECKPOINT (triggered 22h, confirmed 02h)",
-  "fleet_best_target": 0.22085,
-  "checkpoint_triggered": false,
-  "checkpoint_note": "No new checkpoint this cycle. S15 0.22034 checkpoint was triggered at 22h. S18 reset (was gen=6847, now gen=119 rebuilding). S22 diversify recovery (stagnation 18→9).",
+  "timestamp": "2026-05-05T04:00:00Z",
+  "cycle": "cloud-brain-05-05T00h",
+  "trigger": "every-4h",
   "nba_islands": {
-    "S13": {
-      "id": "S13",
-      "repo": "Nomos42/nba-evo-4",
-      "algorithm": "extra_trees",
-      "generation": 467,
-      "best_brier": 0.22457,
-      "current_brier": 0.22139,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action": null,
-      "note": "Improved from 0.22558 at 14h. Diversify at 14h worked. current_brier=0.22139 approaching fleet best range. +245 gens in 12h."
-    },
-    "S14": {
-      "id": "S14",
-      "repo": "Nomos42/nba-evo-5",
-      "algorithm": "island_ga_with_island_model",
-      "generation": 2035,
-      "best_brier": 0.22158,
-      "current_brier": 0.28145,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action": null,
-      "note": "All-time fleet best 0.22019 at gen=1078. Current post-reset exploration at 0.28145. +153 gens since 14h."
-    },
-    "S15": {
-      "id": "S15",
-      "repo": "Nomos42/nba-evo-6",
-      "algorithm": "island_ga_xgboost_rf",
-      "generation": 190,
-      "best_brier": 0.22034,
-      "current_brier": 0.23260,
-      "stagnation": 9,
-      "status": "EVOLVING",
-      "action": "vm_checkpoint_queued",
-      "note": "CHECKPOINT triggered at 22h: 0.22034 < 0.22085. Stagnation=9 (threshold=15). Was CatBoost at gen=16 at 14h. Rapid rebuild via XGBoost+RF. VM: POST /api/command {action:checkpoint}. vm-checkpoint-s15 item in work-queue."
-    },
-    "S17": {
-      "id": "S17",
-      "repo": "LBJLincoln26/nba-evo-s17",
-      "generation": null,
-      "best_brier": null,
-      "current_brier": null,
-      "stagnation": null,
-      "status": "PAUSED",
-      "http_status": 503,
-      "paused_days": 20,
-      "action": "vm_restart_queued",
-      "note": "PAUSED 20+ days. VM restart is highest-priority action. vm-restart-s17 item priority=1 in work-queue."
-    },
-    "S18": {
-      "id": "S18",
-      "repo": "TESTforge42/nba-evo-s18",
-      "generation": 119,
-      "best_brier": 0.22315,
-      "current_brier": 0.22532,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action": "monitor",
-      "note": "RESET CONFIRMED: gen=6847 at 14h → gen=0 at 22h → gen=119 now. New instance using NSGA-II Island Model. New best=0.22315 from fresh start. keepalive-spaces.sh likely factory-rebooted on transient 503. VM: audit keepalive to check HF runtime stage before restart.",
-      "reset_analysis": {
-        "hypothesis": "keepalive-spaces.sh saw transient 503 and issued factory_reboot without checking runtime stage",
-        "impact": "Lost 6847 generations. prev best 0.22248, new instance best 0.22315",
-        "fix": "Check /api/spaces/{id}/runtime stage=PAUSED before restart; skip if stage=RUNNING"
-      }
-    },
-    "S22": {
-      "id": "S22",
-      "repo": "TESTforge42/nba-evo-s22",
-      "algorithm": "island_ga_multi_objective",
-      "generation": 1040,
-      "best_brier": 0.22431,
-      "current_brier": 0.23044,
-      "stagnation": 9,
-      "status": "EVOLVING",
-      "action": null,
-      "note": "Diversify sent at 22h cycle reduced stagnation from 18 to 9. +135 gens since 14h. Recovering. Watch if stagnation approaches 15 again."
-    }
+    "S13": {"space": "Nomos42/nba-evo-4", "gen": 2, "brier": 0.22558, "stagnation": 0, "status": "rebuilding_after_reset", "model": "xgboost"},
+    "S14": {"space": "Nomos42/nba-evo-5", "gen": 2146, "brier": 0.22158, "stagnation": 0, "status": "healthy", "all_time_best": 0.22019, "fleet_best": true, "model": "logistic_regr"},
+    "S15": {"space": "Nomos42/nba-evo-6", "gen": 274, "brier": 0.22034, "stagnation": 0, "status": "milestone", "best_brier": 0.22034, "milestone_note": "best < 0.22085 threshold triggered; no checkpoint API available (valid cmds: diversify/boost_mutation/backfill_boxscores)", "model": "xgboost_brier"},
+    "S17": {"space": "LBJLincoln26/nba-evo-s17", "gen": null, "brier": null, "status": "PAUSED", "paused_days": 19, "action_required": "VM_restart"},
+    "S18": {"space": "TESTforge42/nba-evo-s18", "gen": 279, "brier": 0.22315, "stagnation": 0, "status": "rebuilding_after_reset", "model": "xgboost_brier"},
+    "S22": {"space": "TESTforge42/nba-evo-s22", "gen": 1114, "brier": 0.2304, "stagnation": 9, "status": "healthy", "best_brier": 0.22431, "model": "catboost", "note": "stagnation=9, approaching 15 threshold"}
   },
-  "nba_summary": {
-    "islands_up": 5,
-    "islands_paused": 1,
-    "islands_stagnant_threshold_exceeded": 0,
-    "fleet_best": 0.22019,
-    "fleet_second_best": 0.22034,
-    "checkpoint_triggered_this_cycle": false,
-    "notable": "S13 improved (diversify worked, current=0.22139). S15 CHECKPOINT 0.22034 (confirmed). S17 PAUSED 20d. S18 RESET rebuilding gen=119 new_best=0.22315. S22 stagnation 18→9 (diversify working)."
-  },
+  "nba_fleet_best": 0.22019,
+  "nba_fleet_best_island": "S14",
   "pol_islands": {
-    "P1": {
-      "id": "P1",
-      "repo": "Nomos42/political-alpha",
-      "algorithm": "island_based_genetic_algorithm",
-      "generation": 9618,
-      "best_brier": 0.24990,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "gens_since_22h": 1026
-    },
-    "P2": {
-      "id": "P2",
-      "repo": "Nomos42/political-alpha-2",
-      "algorithm": "genetic_algorithm_multi_objective",
-      "generation": 14490,
-      "best_brier": 0.25003,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "gens_since_22h": 1106,
-      "note": "Persistent 0.25003 plateau. ElasticNetCV elite injection recommended."
-    },
-    "P4": {
-      "id": "P4",
-      "repo": "LBJLincoln/political-alpha-4",
-      "algorithm": "lightgbm_multi_island",
-      "generation": 33866,
-      "best_brier": 0.24992,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "fleet_best": true,
-      "gens_since_22h": 924
-    },
-    "P5": {
-      "id": "P5",
-      "repo": "LBJLincoln/political-alpha-5",
-      "algorithm": "xgboost_brier",
-      "generation": 26547,
-      "best_brier": 0.24993,
-      "stagnation": 0,
-      "status": "COOLDOWN",
-      "gens_since_22h": 1043
-    },
-    "P7": {
-      "id": "P7",
-      "repo": "LBJLincoln/political-alpha-7",
-      "algorithm": "lightgbm_gradient_boost_specialist",
-      "generation": 17230,
-      "best_brier": 0.25412,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "gens_since_22h": 666,
-      "note": "Active improvement, stagnation=0. Two hard resets at cycles 5701/5741 cleared prior stagnation. Next cycle: confirm if best_brier breaks 0.25412."
-    }
+    "P1": {"space": "Nomos42/political-alpha", "gen": 10750, "brier": 0.2494, "stagnation": 0, "status": "healthy", "best_brier": 0.2499},
+    "P2": {"space": "Nomos42/political-alpha-2", "gen": 15571, "brier": 0.24908, "stagnation": 0, "status": "healthy", "best_brier": 0.25003},
+    "P4": {"space": "LBJLincoln/political-alpha-4", "gen": 34978, "brier": 0.24904, "stagnation": 0, "status": "pol_fleet_best", "best_brier": 0.24992},
+    "P5": {"space": "LBJLincoln/political-alpha-5", "gen": 27672, "brier": 0.28, "stagnation": 0, "status": "healthy", "best_brier": 0.24993},
+    "P7": {"space": "LBJLincoln/political-alpha-7", "gen": 17948, "brier": 0.24904, "stagnation": 0, "status": "healthy", "best_brier": 0.25412}
   },
-  "pol_summary": {
-    "islands_up": 5,
-    "islands_paused": 0,
-    "islands_restarted": 0,
-    "fleet_best": 0.24992,
-    "overall_health": "GOOD",
-    "notable": "All 5 POL islands healthy. P2 persistent 0.25003 plateau — elite injection recommended. P7 stagnation=0 active improvement phase."
-  },
-  "pending_vm_actions": [
-    {"id": "tf-axelrod-pol-app-restore", "priority": 0, "action": "restore POL app.py (git revert c869455 + sed fix + safe_commit)", "urgency": "CRITICAL"},
-    {"id": "vm-restart-s17", "priority": 1, "action": "restart S17 PAUSED 20d", "command": "curl -X POST https://huggingface.co/api/spaces/lbjlincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'"},
-    {"id": "vm-checkpoint-s15", "priority": 4, "action": "checkpoint S15 best_brier=0.22034", "command": "curl -s -X POST https://nomos42-nba-evo-6.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"checkpoint\"}'"},
-    {"id": "engine-parity-sync", "priority": 40, "action": "sync nomos-nba-agent features/engine.py from mon-ipad"}
+  "pol_fleet_best": 0.24992,
+  "pol_fleet_best_island": "P4",
+  "alerts": [
+    "S17 PAUSED 19 days — VM restart critically needed",
+    "S13 hard-reset — rebuilding from gen=2 (was gen=222)",
+    "S18 hard-reset — rebuilding from gen=279 (was gen=6847)",
+    "S22 stagnation=9 — approaching 15-threshold, watch next cycle",
+    "S15 milestone: best_brier=0.22034 < 0.22085 threshold; checkpoint API not available"
   ],
-  "cloud_actions_taken": [
-    {"action": "status_check_all_11_islands", "result": "6 NBA + 5 POL fetched", "timestamp": "2026-05-05T02:00:00Z"},
-    {"action": "health_status_written", "result": "health-status.json updated", "timestamp": "2026-05-05T02:00:00Z"},
-    {"action": "claude_md_island_table_updated", "result": "CLAUDE.md island table updated with 02h live data", "timestamp": "2026-05-05T02:00:00Z"},
-    {"action": "brain_status_updated", "result": "nomos-political-alpha brain-status.json written", "timestamp": "2026-05-05T02:00:00Z"}
+  "actions_this_cycle": [
+    "tauric-scope-audit: abandoned 10-agent fork, no HF Space, missing Axelrod mechs A/B/C, has BH FDR + island_oracle — no parity required, keep as reference",
+    "checkpoint attempted on S15 via POST /api/command — rejected (unknown command); milestone documented in CLAUDE.md",
+    "research proposal written: uncertainty-aware ML + ECE calibration (Montrucchio et al. 2026)",
+    "CLAUDE.md island table updated with current gen/brier/stagnation",
+    "work-queue: tf-axelrod-tauric-scope-audit marked done",
+    "vm-diversify-s13 note updated: hard reset resolved stagnation, diversify moot"
   ],
-  "rotation_task": "D",
-  "rotation_note": "Rotation D: Data pipeline health. All POL islands healthy (5/5 up, 0 stagnant). NBA: S17 PAUSED 20d (most urgent). S18 reset anomaly — keepalive-spaces.sh likely issued factory_reboot on transient 503 without checking HF Space runtime stage. Root cause fix: VM should patch keepalive to call GET /api/spaces/{id}/runtime and verify stage != RUNNING before restarting."
+  "councils_status": "DECOMMISSIONED 2026-04-20 — all 9 TESTforge42 dept councils deleted",
+  "dashboard_r8": "DONE (completed 2026-04-15)",
+  "next_priority_vm_tasks": [
+    "priority-0: tf-axelrod-pol-app-restore (POL app.py still corrupted)",
+    "priority-1: vm-restart-s17 (PAUSED 19 days)",
+    "priority-40: engine-parity-sync (features/engine.py 54KB behind)",
+    "priority-56: tf-axelrod-kl-divergence (L1-norm -> KL upgrade)"
+  ]
 }
