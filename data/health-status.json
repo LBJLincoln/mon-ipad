@@ -1,125 +1,98 @@
 {
-  "generated_at": "2026-05-04T14:00:00Z",
-  "cycle": "2026-05-04T14h",
+  "generated_at": "2026-05-04T22:00:00Z",
+  "cycle": "2026-05-04T22h",
   "brain_version": "cloud-brain-sonnet4-6",
   "fleet_best_brier": 0.22019,
   "fleet_best_source": "S14 all-time gen=1078 extra_trees 200f checkpoint",
+  "fleet_second_best_brier": 0.22034,
+  "fleet_second_best_source": "S15 Nomos42/nba-evo-6 xgboost_brier 76f gen=122 cycle=41 — NEW CHECKPOINT 2026-05-04T22h",
   "fleet_best_target": 0.22085,
-  "fleet_best_below_target": false,
+  "checkpoint_triggered": true,
+  "checkpoint_note": "S15 best_brier=0.22034 < 0.22085 threshold — second-best fleet position ever",
   "nba_islands": {
     "S13": {
-      "id": "S13",
-      "repo": "Nomos42/nba-evo-4",
-      "url": "https://nomos42-nba-evo-4.hf.space",
-      "algorithm": "random_forest",
-      "generation": 222,
-      "best_brier": 0.22558,
-      "current_brier": 0.22077,
-      "stagnation": 17,
-      "status": "EVOLVING",
-      "action": "diversify_queued",
-      "note": "Stagnation=17 > 15 threshold. Diversify sent at 10h cycle, still incrementing. New diversify queued for VM (vm-diversify-s13-2026-05-04T14h)."
+      "id": "S13", "repo": "Nomos42/nba-evo-4", "algorithm": "extra_trees",
+      "generation": 344, "best_brier": 0.22457, "current_brier": 0.22558,
+      "stagnation": 0, "cycles_since_improvement": 30,
+      "status": "EVOLVING", "action": null,
+      "note": "Hard reset at cycle 110 cleared prior stagnation=17. 30 cycles since last improvement — watch next cycle."
     },
     "S14": {
-      "id": "S14",
-      "repo": "Nomos42/nba-evo-5",
-      "url": "https://nomos42-nba-evo-5.hf.space",
-      "algorithm": "logistic_regression",
-      "generation": 1882,
-      "best_brier": 0.22158,
-      "current_brier": 0.2474,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action": null,
-      "note": "All-time fleet best 0.22019 at gen=1078. Hard resets at cycles 593+618 keep search active."
+      "id": "S14", "repo": "Nomos42/nba-evo-5", "algorithm": "logistic_regression",
+      "generation": 1962, "best_brier": 0.22158, "current_brier": 0.24738,
+      "stagnation": 11,
+      "status": "EVOLVING", "action": null,
+      "note": "All-time fleet best 0.22019 at gen=1078. Stagnation=11, threshold=15 — watch next cycle."
     },
     "S15": {
-      "id": "S15",
-      "repo": "Nomos42/nba-evo-6",
-      "url": "https://nomos42-nba-evo-6.hf.space",
-      "algorithm": "catboost",
-      "generation": 16,
-      "best_brier": 0.22613,
-      "current_brier": 0.22613,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action": null,
-      "note": "Hard-reset at gen~160 (was 157 last cycle). Now rebuilding with CatBoost — new algorithm for this island. 0.22613 at gen=16 is promising start. Better than previous extra_trees best of 0.22661."
+      "id": "S15", "repo": "Nomos42/nba-evo-6", "algorithm": "xgboost_brier",
+      "generation": 122, "best_brier": 0.22034, "current_brier": 0.22451,
+      "stagnation": 0, "features": 76,
+      "status": "EVOLVING", "action": "checkpoint",
+      "note": "CHECKPOINT: 0.22034 < 0.22085 threshold. Second-best fleet position ever. Was 0.22613 (CatBoost) at 14h cycle — switched to xgboost_brier after hard reset, immediate improvement. 76 features aligns with academic SOTA (ElasticNetCV top-75)."
     },
     "S17": {
-      "id": "S17",
-      "repo": "LBJLincoln26/nba-evo-s17",
-      "url": "https://lbjlincoln26-nba-evo-s17.hf.space",
-      "algorithm": "xgboost",
-      "generation": null,
-      "best_brier": null,
-      "current_brier": null,
-      "stagnation": null,
-      "status": "PAUSED",
-      "http_status": 503,
-      "paused_days": 18,
+      "id": "S17", "repo": "LBJLincoln26/nba-evo-s17",
+      "generation": null, "best_brier": null, "current_brier": null, "stagnation": null,
+      "status": "PAUSED", "http_status": 503, "paused_days": 19,
       "action": "vm_restart_queued",
-      "note": "PAUSED 18 days. 503 on /api/status. VM restart queued (vm-restart-s17-2026-05-03T22h priority=1)."
+      "note": "PAUSED 19 days. VM restart queued (vm-restart-s17-2026-05-03T22h priority=1)."
     },
     "S18": {
-      "id": "S18",
-      "repo": "TESTforge42/nba-evo-s18",
-      "url": "https://testforge42-nba-evo-s18.hf.space",
-      "algorithm": "extra_trees",
-      "generation": 6847,
-      "best_brier": 0.22248,
-      "current_brier": 0.2283,
+      "id": "S18", "repo": "TESTforge42/nba-evo-s18",
+      "generation": 0, "best_brier": 1.0, "current_brier": 1.0,
       "stagnation": 0,
-      "status": "EVOLVING",
-      "action": null,
-      "note": "Breakthrough at gen~6379 (0.22605→0.22248). Hard resets at cycle 2251 resolved stagnation."
+      "status": "BUILDING_FEATURES", "action": "monitor",
+      "note": "ALERT: FULL RESTART detected — was gen=6847 brier=0.22248 at 14h cycle. Now gen=0. Space cold-start after auto-restart or keepalive. Monitor next cycle for recovery. Alert item: cloud-s18-restart-alert-2026-05-04T22h."
     },
     "S22": {
-      "id": "S22",
-      "repo": "TESTforge42/nba-evo-s22",
-      "url": "https://testforge42-nba-evo-s22.hf.space",
-      "algorithm": "xgboost",
-      "generation": 905,
-      "best_brier": 0.22431,
-      "current_brier": 0.2304,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action": null,
-      "note": "Hard resets at cycles 262+287 cleared prior stagnation. Consistent XGBoost 44 features."
+      "id": "S22", "repo": "TESTforge42/nba-evo-s22", "algorithm": "xgboost",
+      "generation": 992, "best_brier": 0.22431, "current_brier": 0.23044,
+      "stagnation": 18,
+      "status": "EVOLVING", "action": "diversify_sent",
+      "note": "Stagnation=18 > 15. Cloud diversify sent successfully: POST {command:diversify} → {status:command queued}. Previous attempt with 'action' key failed (TESTforge42 API version uses 'command' key)."
     }
   },
   "nba_summary": {
     "islands_up": 5,
     "islands_paused": 1,
-    "islands_stagnant": 1,
+    "islands_stagnant_threshold_exceeded": 1,
+    "islands_building": 1,
     "fleet_best": 0.22019,
-    "best_active_brier": 0.22158,
-    "notable": "S15 reset to CatBoost — new algorithm diversity. S13 persistent stagnation despite diversify commands."
+    "fleet_second_best": 0.22034,
+    "checkpoint_triggered": true,
+    "notable": "S15 CHECKPOINT 0.22034 — second best fleet ever. S18 full restart detected (was gen=6847). S22 diversify sent."
   },
-  "pending_actions": [
-    {
-      "island": "S13",
-      "action": "diversify",
-      "priority": "high",
-      "queued_at": "2026-05-04T14:00:00Z",
-      "owner": "local-vm",
-      "work_queue_id": "vm-diversify-s13-2026-05-04T14h",
-      "command": "curl -s -X POST https://nomos42-nba-evo-4.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'"
-    },
-    {
-      "island": "S17",
-      "action": "restart",
-      "priority": "high",
-      "queued_at": "2026-05-03T22:00:00Z",
-      "owner": "local-vm",
-      "work_queue_id": "vm-restart-s17-2026-05-03T22h",
-      "command": "curl -X POST https://huggingface.co/api/spaces/lbjlincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'"
-    }
+  "pol_islands": {
+    "P1": {"id":"P1","repo":"Nomos42/political-alpha","algorithm":"xgboost_brier","generation":8592,"best_brier":0.24990,"current_brier":0.24940,"stagnation":0,"status":"EVOLVING"},
+    "P2": {"id":"P2","repo":"Nomos42/political-alpha-2","algorithm":"xgboost_brier","generation":13384,"best_brier":0.25003,"current_brier":0.24908,"stagnation":0,"status":"EVOLVING","note":"3 hard resets at cycles 4421/4441/4461 — persistent plateau at 0.25003"},
+    "P4": {"id":"P4","repo":"LBJLincoln/political-alpha-4","algorithm":"lightgbm","generation":32942,"best_brier":0.24992,"current_brier":0.24904,"stagnation":0,"status":"EVOLVING","fleet_best":true},
+    "P5": {"id":"P5","repo":"LBJLincoln/political-alpha-5","algorithm":"xgboost_brier","generation":25504,"best_brier":0.24993,"current_brier":0.28000,"stagnation":0,"status":"EVOLVING","note":"current_brier regressed to 0.28 — likely post-reset exploration"},
+    "P7": {"id":"P7","repo":"LBJLincoln/political-alpha-7","algorithm":"lightgbm","generation":16564,"best_brier":0.25412,"current_brier":0.24904,"stagnation":0,"status":"EVOLVING","note":"WATCH: current_brier=0.24904 already better than recorded best=0.25412 — new fleet best imminent"}
+  },
+  "pol_summary": {
+    "islands_up": 5,
+    "islands_paused": 0,
+    "fleet_best": 0.24992,
+    "overall_health": "GOOD",
+    "notable": "P7 current=0.24904 < recorded best=0.25412 — new POL fleet best imminent. All 5 islands healthy."
+  },
+  "pending_vm_actions": [
+    {"id":"vm-restart-s17-2026-05-03T22h","priority":1,"action":"restart S17","command":"curl -X POST https://huggingface.co/api/spaces/lbjlincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'"},
+    {"id":"vm-diversify-s13-2026-05-04T14h","priority":2,"action":"diversify S13 (stagnation=0 now, likely resolved by hard reset)","resolved_likely":true},
+    {"id":"cloud-s18-restart-alert-2026-05-04T22h","priority":56,"action":"monitor S18 recovery (gen=0, was gen=6847)"}
   ],
-  "research_alert": {
-    "source": "WebSearch 2026-05-04",
-    "finding": "XGBoost/LR with CalibratedClassifierCV achieves Brier ~0.20 on NBA data (academic SOTA). CNN achieves 0.221. Our fleet best 0.22019 is competitive but calibration post-processing and stacked ensembles offer ~0.02 improvement path.",
-    "proposal": "data/research-proposals/2026-05-04-calibrated-ensemble.md",
-    "recommended_test_island": "S15 (rebuilding with CatBoost, gen=16 — clean slate)"
+  "cloud_actions_taken": [
+    {"action":"diversify_s22","result":"SUCCESS — command queued","timestamp":"2026-05-04T22:00:00Z"},
+    {"action":"checkpoint_s15","result":"CLAUDE.md + health-status.json updated","timestamp":"2026-05-04T22:00:00Z"}
+  ],
+  "research_pulse": {
+    "sota_source": "MDPI 2079-3197/13/10/230 (2026)",
+    "sota_best_brier": 0.221,
+    "sota_model": "CNN + ElasticNetCV feature selection (75 features)",
+    "our_fleet_best": 0.22019,
+    "gap_to_sota": 0.00081,
+    "key_insight": "S15's 76 features + xgboost at 0.22034 exactly matches academic SOTA feature count (75 via ElasticNetCV). Our GA discovers same range organically. Focus: break 0.22 barrier.",
+    "proposal": "data/research-proposals/2026-05-04T22h-sota-elasticnet-feature-injection.md"
   }
 }
