@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-04T14:00:00Z",
+  "updated_at": "2026-05-04T18:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -10,8 +10,8 @@
       "owner": "local-vm",
       "subject": "URGENT: Restore corrupted POL app.py — cloud MCP push timeout (fire-38 confirmed 184KB cannot be pushed inline)",
       "detected_at": "2026-05-03T18:30:00Z",
-      "updated_at": "2026-05-04T06:00:00Z",
-      "cloud_brain_note": "fire-38 cloud verification: downloaded app.py from commit 2c96e0f at /tmp/pol_app_restored.py. py_compile PASS, 3774 lines, ~18%% fix applied (1 substitution verified). All 3 mechs present. Cloud CANNOT push 184KB file via push_files (stream timeout in both direct and sub-agent attempts). VM must push. Fastest path: git revert c869455823af50a9a10e117834fa87f1be7ddb83 --no-edit + apply sed fix + safe_commit.",
+      "updated_at": "2026-05-04T18:00:00Z",
+      "cloud_brain_note": "fire-40 cloud verification: POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 still the 794-byte stub. AXELROD_CANON code-search returns 0 hits in hf-political-trading-floor path. Parity BROKEN. VM must execute recovery steps. fire-38 confirmed py_compile PASS from commit 2c96e0f. Rule reconfirmed: NEVER use create_or_update_file or push_files for files >50KB from cloud.",
       "scope": [
         "STEP 1 — Revert the corruption commit:",
         "  git revert c869455823af50a9a10e117834fa87f1be7ddb83 --no-edit",
@@ -251,7 +251,7 @@
           "rogue_state": "compute_rogue_state approx line 4050"
         },
         "pol_app_sha": "696180bc64c4dc7a24d0ad6ee00ecaba39466826",
-        "pol_app_status": "STILL CORRUPTED — 794-byte docstring stub. VM must revert c869455 + sed s/~18%%/~18%/ + py_compile verify + safe_commit.",
+        "pol_app_status": "STILL CORRUPTED — 794-byte docstring stub. VM must revert c869455 --no-edit + sed s/~18%%/~18%/ + py_compile verify + safe_commit.",
         "parity": "BROKEN — VM must execute tf-axelrod-pol-app-restore (priority-0)",
         "hf_push": "BLOCKED — parity broken; NBA 296KB + POL 184KB both exceed ~50KB cloud MCP push limit",
         "cloud_limit_reconfirmed": "push_files stream-timeout confirmed for files >50KB; cloud can only update small files (work-queue.json, CLAUDE.md, etc.)"
@@ -266,6 +266,30 @@
       "subject": "Update CLAUDE.md island table + health-status.json + research proposal (2026-05-04T14h cycle)",
       "cloud_brain_note": "14h cycle: S13 stagnation=17 diversify queued, S15 reset again w/ CatBoost at gen=16, S17 still PAUSED, all POL healthy. Research: calibrated ensemble SOTA achieves Brier ~0.20. Written health-status.json + research proposal.",
       "do_not_push": false
+    },
+    {
+      "id": "tf-axelrod-verify-tune-40",
+      "priority": 54,
+      "status": "done",
+      "completed_at": "2026-05-04T18:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 40 — NBA PASS (Bash grep confirms all 3 mechs + line numbers); POL still awaiting VM restore",
+      "do_not_push_hf_space_yet": true,
+      "audit_findings": {
+        "nba_app_blob_sha": "0b0e4c81f84dc4b5807eee5d4b064416a6b11ab2",
+        "nba_app_indexed_sha": "0434d4319b5230b938a38720727a017aa2c246e7",
+        "nba_total_chars": 292982,
+        "mech_a": "CONFIRMED — build_common_knowledge_block at char 178269, approx L3481; AXELROD_CANON at L350; COMMON_KNOWLEDGE at L365",
+        "mech_b": "CONFIRMED — assign_sacrificial_archetypes at char 186501, approx L3644; build_sacrificial_system_suffix at L3690",
+        "mech_c": "CONFIRMED — write_axelrod_log at char 192517, approx L3774; compute_consensus_distance at L3743; archetype_assigned in log row at L3795",
+        "method": "Bash grep on saved tool-result file (github-indexed code-search unavailable this fire — 0 hits for path: filter; Bash grep on 293KB blob used instead)",
+        "nba_unchanged": true,
+        "pol_app_sha": "696180bc64c4dc7a24d0ad6ee00ecaba39466826",
+        "pol_app_status": "STILL CORRUPTED — 794-byte docstring stub. AXELROD_CANON code-search returns 0 hits in hf-political-trading-floor path. VM must execute priority-0 restore.",
+        "parity": "BROKEN — VM restore still required",
+        "hf_push": "BLOCKED — priority-0 restore not done; do_not_push_hf_space_yet=true",
+        "no_tune_needed": "NBA code stable across 10+ consecutive PASS fires. Tune will become relevant after POL parity restored and HF push gate opened."
+      }
     }
   ],
   "recovery_protocol": {
