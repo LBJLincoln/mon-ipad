@@ -1,45 +1,45 @@
 {
-  "timestamp": "2026-05-04T06:00:00Z",
-  "cycle": "cloud-brain-2026-05-04T06:00Z",
+  "timestamp": "2026-05-04T10:00:00Z",
+  "cycle": "cloud-brain-2026-05-04T10:00Z",
   "trigger": "trig_01BS3ixBvt2uKHY9p5EemcgD",
   "model": "claude-sonnet-4-6",
   "step0_crash_recovery": {
     "status": "no_crash",
-    "note": "All pending work-queue items owned by local-vm or cloud-trigger blocked on user approval (tf-axelrod-verify-tune-12). No cloud-owned items to recover this cycle."
+    "note": "All pending work-queue items owned by local-vm or cloud-trigger blocked on user approval. No local-agent-* items to recover."
   },
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "gen": 157,
-      "cycle": 53,
-      "best_brier": 0.22463,
-      "stagnation": 0,
-      "algorithm": "xgboost",
+      "gen": 73,
+      "cycle": 25,
+      "best_brier": 0.22558,
+      "stagnation": 16,
+      "algorithm": "random_forest",
       "status": "UP",
-      "note": "Evolving normally; XGBoost 48f, ROI 27.25%, Sharpe 6.88"
+      "action": "DIVERSIFY sent (stagnation=16 exceeded threshold 15). Command: {\"command\":\"diversify\"} → {\"status\":\"command queued\"}",
+      "note": "Restarted recently (gen low). ROI 26.1%, Sharpe 4.24."
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "gen": 1750,
-      "cycle": 584,
+      "gen": 1813,
+      "cycle": 605,
       "best_brier": 0.22158,
       "alltime_best": 0.22019,
       "stagnation": 0,
       "algorithm": "logistic_regression",
       "status": "UP",
-      "note": "Exploring LR after hard reset at cycle 568 (stagnation 25). All-time fleet best 0.22019 (extra_trees gen=1078) preserved from prior session. Current session best 0.22158 LR 26f."
+      "note": "Exploring LR after hard reset at cycle 568. All-time fleet best 0.22019 (extra_trees gen=1078) preserved. Current session best 0.22158. ROI 30.9%, Sharpe 8.19."
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "gen": 0,
-      "cycle": 0,
-      "best_brier": 1.0,
+      "gen": 157,
+      "cycle": 53,
+      "best_brier": 0.22661,
       "stagnation": 0,
-      "algorithm": "island_model_nsga2",
-      "status": "BUILDING",
-      "started_at": "2026-05-04T00:05:02Z",
-      "last_update": "2026-05-04T00:36:01Z",
-      "note": "Restarted midnight 05-04. In BUILDING FEATURES phase (diversify+boost_mutation+config update applied). Expect first brier in ~1-2h."
+      "algorithm": "extra_trees",
+      "status": "UP",
+      "note": "Hard reset triggered at gen~108 (25 stagnation cycles). Rebuilding. Best individual in Pareto front: extra_trees 200f gen=122 Brier=0.21933 ROI=33.3% — below fleet best 0.22019 in individual eval, but best_brier JSON field=0.22661 (different eval protocol). Monitor.",
+      "monitor": "If best_brier drops below 0.22019 in next cycle, trigger checkpoint."
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
@@ -47,66 +47,68 @@
       "best_brier": null,
       "stagnation": null,
       "status": "DOWN_503",
-      "note": "Still returning 503. Root cause: HF stage=PAUSED since Apr 18 (17 days). VM restart queued (vm-restart-s17-2026-05-03T22h). Check at 10h cycle."
+      "note": "PAUSED 17+ days (since Apr 18). VM restart task in work-queue: vm-restart-s17-2026-05-03T22h (priority 1, owner: local-vm). keepalive-spaces.sh does not handle PAUSED stage."
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "gen": 6555,
-      "cycle": 2185,
+      "gen": 6682,
+      "cycle": 2228,
       "best_brier": 0.22248,
       "stagnation": 0,
       "algorithm": "extra_trees",
       "status": "UP",
-      "note": "Stagnation cleared (was 22 at 02h cycle, now 0). VM diversify likely executed or internal hard-reset triggered. ROI 29.8%, Sharpe 7.93."
+      "note": "Stagnation cleared from 22→0. VM diversify likely ran. ROI 29.8%, Sharpe 7.93."
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "gen": 770,
-      "cycle": 257,
+      "gen": 837,
+      "cycle": 279,
       "best_brier": 0.22431,
       "stagnation": 0,
       "algorithm": "xgboost",
       "status": "UP",
-      "note": "Stagnation cleared (was 15 at 02h). Hard resets at cycles 212+237 noted. Diversify or internal reset resolved. ROI 27.71%, Sharpe 4.45."
+      "note": "Hard resets at cycles 237+262. Stagnation cleared. ROI 27.7%, Sharpe 4.45."
     }
   },
   "nba_summary": {
     "fleet_best_brier": 0.22019,
     "fleet_best_island": "S14",
-    "fleet_best_model": "extra_trees",
+    "fleet_best_model": "extra_trees_200f",
     "fleet_best_gen": 1078,
-    "islands_up": 4,
-    "islands_building": 1,
+    "fleet_best_cycle": 360,
+    "islands_up": 5,
     "islands_down": 1,
-    "stagnation_alerts": [],
+    "stagnation_alerts": ["S13 stagnation=16 → diversify sent"],
+    "actions_taken": ["S13 diversify queued (stagnation=16)"],
     "checkpoint_threshold_breached": false,
-    "checkpoint_note": "Fleet all-time best 0.22019 already checkpointed (promoted 2026-04-28). Current best session brier 0.22158 > 0.22085 threshold. No new checkpoint.",
-    "sota_search": "DONE (06h every-other-cycle). Key: shot-chart spatial embeddings (MDPI), ELO/form top-3 (PMC SHAP), XGBoost/LR Brier~0.20 achievable (IEEE), stacked ensemble (Nature 2025). New proposal: data/research-proposals/2026-05-04T06h-nba-sota.json"
+    "checkpoint_note": "Fleet all-time best 0.22019 stands. Current session best 0.22158 (S14). S15 Pareto individual at 0.21933 noted but best_brier JSON=0.22661 — need confirmation next cycle.",
+    "engine_parity": "MISMATCH — mon-ipad 505KB (bdf9db5) vs nomos-nba-agent 452KB (04084284). VM task engine-parity-sync (priority 40).",
+    "sota_search": "SKIPPED this cycle (06h cycle ran SOTA; every-other-cycle policy). Next SOTA search: 14h cycle."
   },
   "political_islands": {
     "P1": {
       "space": "Nomos42/political-alpha",
-      "gen": 5146,
-      "cycle": 1716,
-      "best_brier": 0.2499,
+      "gen": 6147,
+      "cycle": 2050,
+      "best_brier": 0.24990,
       "stagnation": 0,
       "algorithm": "xgboost_brier",
       "status": "UP"
     },
     "P2": {
       "space": "Nomos42/political-alpha-2",
-      "gen": 9532,
-      "cycle": 3178,
+      "gen": 10589,
+      "cycle": 3530,
       "best_brier": 0.25003,
       "stagnation": 0,
       "algorithm": "xgboost_brier",
       "status": "UP",
-      "note": "Breakthrough at gen 9433: LightGBM achieved 0.2491 (near fleet best 0.24992). Monitor if persistent in next cycle."
+      "note": "Plateau at 0.2491 LightGBM (first observed gen 9433). Monitor — if 0.25003 persists, breakthrough may have been single-gen anomaly."
     },
     "P4": {
       "space": "LBJLincoln/political-alpha-4",
-      "gen": 29677,
-      "cycle": 9893,
+      "gen": 30720,
+      "cycle": 10240,
       "best_brier": 0.24992,
       "stagnation": 0,
       "algorithm": "lightgbm",
@@ -115,23 +117,23 @@
     },
     "P5": {
       "space": "LBJLincoln/political-alpha-5",
-      "gen": 21546,
-      "cycle": 7182,
+      "gen": 23046,
+      "cycle": 7682,
       "best_brier": 0.24993,
       "stagnation": 0,
-      "algorithm": "xgboost_brier",
-      "status": "UP",
-      "note": "Hard resets at cycles 7141+7161 post stagnation=20. Recovered to 0 stagnation."
+      "algorithm": "catboost_specialist",
+      "status": "UP"
     },
     "P7": {
       "space": "LBJLincoln/political-alpha-7",
-      "gen": 14420,
-      "cycle": 4807,
+      "gen": 15122,
+      "cycle": 5038,
       "best_brier": 0.25412,
       "stagnation": 0,
       "algorithm": "lightgbm",
       "status": "UP",
-      "watch": "0.044 gap to fleet best P4. Monitor for convergence opportunity next cycle."
+      "action": "boost_mutation sent to help close 0.044 gap to P4 fleet best",
+      "watch": "0.044 gap to P4. boost_mutation queued. Monitor at 14h."
     }
   },
   "political_summary": {
@@ -142,35 +144,42 @@
     "islands_down": 0,
     "stagnation_alerts": [],
     "all_healthy": true,
-    "rotation": "B — political_engine.py review (see nomos-political-alpha/data/brain-status.json)",
-    "key_finding": "ENGINE v3.22, ~3200 declared candidates but GA sees only 272 (8.5% coverage). NO VarianceThreshold, NO isotonic calibration. Two quick wins queued for VM: variance filter + isotonic wrapper."
+    "rotation": "C — port NBA techniques (boost_mutation sent to P7; variance filter + isotonic calibration queued for VM)",
+    "actions_taken": ["P7 boost_mutation queued (NBA technique port — escape local optima, close gap to P4)"]
   },
   "councils": "DECOMMISSIONED 2026-04-20 — skipped",
-  "dashboard": "R8 done — no pending work this cycle",
+  "dashboard": "R8 done per work-queue — no pending work",
+  "work_queue_pending": {
+    "vm_tasks": [
+      "PRIORITY 0: tf-axelrod-pol-app-restore — POL app.py corrupted. Revert c869455 + sed fix. CRITICAL.",
+      "PRIORITY 1: vm-restart-s17 — restart LBJLincoln26/nba-evo-s17 (PAUSED 17+ days)",
+      "PRIORITY 3: vm-diversify-s18 — stagnation now 0, likely VM executed; mark done",
+      "PRIORITY 5: vm-diversify-s22 — stagnation now 0, likely VM executed; mark done",
+      "PRIORITY 21: tf-axelrod-verify-tune-12 — blocked on user approval + priority-0 done",
+      "PRIORITY 40: engine-parity-sync — cp features/engine.py to nomos-nba-agent (523KB, VM only)",
+      "PRIORITY 45: tf-axelrod-pol-dmad-percent-fix — subsumed by priority-0",
+      "PRIORITY 47: claude-md-island-update — DONE THIS CYCLE (10h brain updated island table)",
+      "NEW (VM): Add VarianceThreshold(0.01) filter to political eval loop (Rotation B finding)",
+      "NEW (VM): Add isotonic calibration wrapper to political eval Brier scoring (Rotation B finding)"
+    ]
+  },
   "actions_this_cycle": [
-    "STEP 0: No crash — all pending items VM-owned or user-gated",
-    "STEP 1: All 6 NBA islands fetched. S18+S22 stagnation cleared to 0. S15 rebuilding. S17 still 503/PAUSED.",
-    "STEP 2: All 5 political islands fetched. All UP, stagnation=0. P2 breakthrough 0.2491 at gen 9433.",
-    "STEP 2 Rotation B: political_engine.py reviewed (v3.22). Found: no variance filter, no isotonic calibration, 272/3200 feature coverage gap. Actions queued for VM.",
+    "STEP 0: No crash — all pending items VM-owned or user-gated (cloud-trigger items)",
+    "STEP 1: All 6 NBA islands fetched. S13 stagnation=16 → diversify sent. Engine parity MISMATCH confirmed (VM task). No new fleet best.",
+    "STEP 2: All 5 political islands fetched. All UP, stagnation=0. P7 boost_mutation sent (Rotation C).",
+    "STEP 2 Rotation C: NBA technique port — boost_mutation to P7 (0.044 gap to P4 fleet best). VM tasks: variance filter + isotonic calibration queued.",
     "STEP 3: Councils decommissioned — skipped",
-    "STEP 4: Dashboard R8 done — no pending work",
-    "STEP 5: Pushed health-status.json + brain-status.json + SOTA proposal",
-    "SOTA WebSearch done (06h cycle): shot-chart spatial embeddings, ELO mandatory seed, SHAP-guided GA init proposals filed"
+    "STEP 4: Dashboard R8 done — skipped",
+    "STEP 5: health-status.json + brain-status.json + CLAUDE.md island table updated",
+    "CLAUDE.md: Updated island table — S13 gen 73 random_forest stagnation→diversify; S14 gen 1813 LR; S15 gen 157 extra_trees rebuilding; S18 gen 6682; S22 gen 837; P4 gen 30720 fleet best."
   ],
-  "vm_tasks_pending": [
-    "PRIORITY 0: tf-axelrod-pol-app-restore — POL app.py corrupted (fire-36). Revert c869455 + sed fix. CRITICAL.",
-    "vm-restart-s17: restart LBJLincoln26/nba-evo-s17 (PAUSED 17+ days)",
-    "vm-diversify-s18: stagnation now 0 — mark done in work-queue if VM executed",
-    "vm-diversify-s22: stagnation now 0 — mark done in work-queue if VM executed",
-    "engine-parity-sync (PRIORITY 40): cp features/engine.py → nomos-nba-agent (523KB)",
-    "claude-md-island-update: update CLAUDE.md island table with current live gen counts",
-    "pol-engine-variance-filter (NEW): Add VarianceThreshold(0.01) + isotonic calibration to political eval loop (Rotation B finding, est. 2-3h, ~0.002 Brier gain)"
-  ],
-  "next_cycle": "2026-05-04T10:00:00Z",
+  "next_cycle": "2026-05-04T14:00:00Z",
   "next_cycle_actions": [
-    "S17 restart status check",
-    "S15 first brier reading (started midnight, should have result by 10h)",
-    "Political alternating research — skip SOTA (06h done); check data pipeline health",
-    "P2 breakthrough 0.2491 — verify if persistent or one-gen anomaly"
+    "S17 restart status check (VM should have run it by 14h)",
+    "S15 best_brier confirmation — check if 0.21933 Pareto individual reflects new fleet best",
+    "P7 boost_mutation result — did gap close vs P4?",
+    "P2 breakthrough 0.2491 — verify persistence at gen ~11000",
+    "Rotation D: data pipeline health — ops/fetch_political_data.py outputs + Cat45 market_preposition data",
+    "NBA SOTA search (every-other-cycle — 14h is the slot)"
   ]
 }
