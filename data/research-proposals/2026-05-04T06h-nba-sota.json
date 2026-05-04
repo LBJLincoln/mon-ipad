@@ -1,0 +1,88 @@
+{
+  "timestamp": "2026-05-04T06:00:00Z",
+  "cycle": "cloud-brain-2026-05-04T06:00Z",
+  "search_query": "NBA game prediction machine learning SOTA 2026 Brier score improvement techniques",
+  "fleet_status_at_search": {
+    "fleet_best_brier": 0.22019,
+    "fleet_best_island": "S14 extra_trees gen=1078",
+    "current_session_best": 0.22158,
+    "target": 0.20
+  },
+  "papers_found": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "source": "MDPI Information 2025",
+      "key_finding": "LSTM + Monte Carlo dropout at inference yields calibrated sequential probabilities. Integrates rolling-form indicators + spatial shot-chart embeddings. Consistent improvements in discrimination and calibration over tree-only baselines.",
+      "relevance": "HIGH — shot-chart spatial embeddings are a feature type not currently in engine.py"
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "source": "Nature Scientific Reports 2025",
+      "key_finding": "Stacked meta-learner over NB + AdaBoost + MLP + KNN + XGBoost + LR base learners. Multi-model stacking consistently outperforms single best model.",
+      "relevance": "MEDIUM — GA evolves diverse models; explicit stacking of GA-champion models as meta-learner is unexplored"
+    },
+    {
+      "title": "Comparing Machine Learning Methods for NBA Game Outcome Prediction",
+      "url": "https://ieeexplore.ieee.org/document/11030489/",
+      "source": "IEEE Xplore 2025",
+      "key_finding": "Systematic comparison confirms XGBoost/LR reach Brier ~0.20 with accuracy ~0.68. Confirms 0.20 is achievable with proper features.",
+      "relevance": "MEDIUM — validates target; our 0.22019 still 0.02 above reported SOTA"
+    },
+    {
+      "title": "Integration of machine learning XGBoost and SHAP models for NBA game outcome prediction",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
+      "source": "PMC 2024",
+      "key_finding": "SHAP analysis identifies top-3 features universally: home_advantage, team_ELO, current_form_last5. These features dominate predictive power regardless of model.",
+      "relevance": "HIGH — ELO and form are in engine.py but compete with 3377 candidates in GA; pinning them as mandatory seeds would guarantee top signal is always present"
+    }
+  ],
+  "proposals": [
+    {
+      "id": "PROP-2026-05-04-01",
+      "title": "Shot-Chart Spatial Embeddings — New Feature Category",
+      "priority": "HIGH",
+      "novelty": "Not yet in engine.py. Prior proposals (LSTM, MC dropout, stacking) focused on model architecture; this adds a new feature signal type.",
+      "description": "Add shooting zone distribution features to engine.py Category 55. Per-team, per-window (3g, 7g): zone_pct_paint, zone_pct_midrange, zone_pct_corner3, zone_pct_abovebreak3, opp_zone_fg_pct_paint, opp_zone_fg_pct_3pt. ~30 new features capture spatial matchup signals beyond aggregate FG%.",
+      "data_source": "NBA Stats API shots endpoint (zone breakdown). Partially available in bbref advanced boxscores.",
+      "implementation": "Add Category 55 SHOT_ZONE to engine.py (~30 features). Requires shot-zone data fetch in predict pipeline. VM engineering task.",
+      "estimated_brier_gain": "0.001-0.003",
+      "effort_hours": 5
+    },
+    {
+      "id": "PROP-2026-05-04-02",
+      "title": "ELO + Form as Mandatory GA Seed Features",
+      "priority": "HIGH",
+      "novelty": "SHAP literature confirms these are universally top-3. Our GA can accidentally drop them during mutation.",
+      "description": "Pin a small set of MANDATORY_FEATURES in HF space GA that bypass the drop operator: elo_diff, home_elo_approx (or similar), team_form_last5_wins_pct, home_court_advantage. These 4 features are always included in every individual in the population. GA can still add/remove all other features freely.",
+      "implementation": "Add MANDATORY_FEATURES = ['elo_diff', 'home_form_win_pct_last5', 'away_form_win_pct_last5', 'home_advantage'] to island GA config. In mutate(): skip drop operator for mandatory features. ~2h per space.",
+      "estimated_brier_gain": "0.001 (prevents regression, ensures top signal always present)",
+      "effort_hours": 2
+    },
+    {
+      "id": "PROP-2026-05-04-03",
+      "title": "SHAP-Guided GA Population Initialization",
+      "priority": "MEDIUM",
+      "description": "Use SHAP values from current fleet champion (S14 extra_trees 0.22019) to bias GA initialization. Compute mean|SHAP| per feature. Set p_include(feature) proportional to SHAP rank (top-25% features get 0.9 inclusion prob, bottom-25% get 0.1). Reduces burn-in from ~200 gens to ~50 while still allowing full exploration.",
+      "implementation": "Extract SHAP from champion model pickle. Serialize SHAP ranks to HF dataset. Load in GA init to set biased sampling probs. One-time setup + GA init patch.",
+      "estimated_brier_gain": "0.001-0.002 (faster convergence, not higher asymptote)",
+      "effort_hours": 4
+    }
+  ],
+  "cross_project_portability": {
+    "to_political": "PROP-02 (mandatory seed) directly portable to political GA: pin top-SHAP features from P4 fleet best (0.24992) as mandatory seeds. PROP-03 (SHAP-guided init) universally applicable.",
+    "from_political_to_nba": "Political Rotation B finding: variance filter (VarianceThreshold 0.01) removes dead features. Same filter can be applied to NBA engine.py's 7213 raw candidates to improve GA search efficiency."
+  },
+  "implementation_order": [
+    "1. PROP-02 — ELO mandatory seed (highest ROI/hour, 2h, no new data)",
+    "2. PROP-01 — Shot-chart embeddings (new signal, 5h, new data fetch)",
+    "3. PROP-03 — SHAP-guided init (medium-term, 4h, requires champion extraction)"
+  ],
+  "sources": [
+    {"title": "Uncertainty-Aware Machine Learning for NBA Forecasting", "url": "https://www.mdpi.com/2078-2489/17/1/56"},
+    {"title": "Stacked ensemble model for NBA game outcome prediction", "url": "https://www.nature.com/articles/s41598-025-13657-1"},
+    {"title": "Comparing Machine Learning Methods for NBA Game Outcome Prediction", "url": "https://ieeexplore.ieee.org/document/11030489/"},
+    {"title": "XGBoost and SHAP for NBA outcome prediction", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/"}
+  ]
+}
