@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-04T10:00:00Z",
+  "updated_at": "2026-05-04T14:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -42,10 +42,21 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 16 days (not just 503)",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 18 days (not just 503)",
       "detected_at": "2026-05-03T22:00:00Z",
-      "updated_at": "2026-05-04T02:00:00Z",
-      "cloud_brain_note": "S17 confirmed PAUSED (not transient 503) by HF API runtime check 2026-05-04T02:00Z. HF last_modified 2026-04-18 — PAUSED 16 days. keepalive-spaces.sh does not handle PAUSED stage. VM must restart: curl -X POST https://huggingface.co/api/spaces/lbjlincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'. ALSO FIX keepalive-spaces.sh to check /api/spaces/{id}/runtime stage, not just HTTP 503.",
+      "updated_at": "2026-05-04T14:00:00Z",
+      "cloud_brain_note": "14h cycle: S17 still 503 (PAUSED 18 days now). VM must restart: curl -X POST https://huggingface.co/api/spaces/lbjlincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'. ALSO FIX keepalive-spaces.sh to check /api/spaces/{id}/runtime stage, not just HTTP 503.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-diversify-s13-2026-05-04T14h",
+      "priority": 2,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "S13 (Nomos42/nba-evo-4) stagnation=17 — send diversify command",
+      "detected_at": "2026-05-04T14:00:00Z",
+      "updated_at": "2026-05-04T14:00:00Z",
+      "cloud_brain_note": "14h cycle: S13 stagnation=17 > 15 threshold. Diversify was sent at 10h cycle but stagnation still incrementing (may need another round or deeper diversification). gen=222, best_brier=0.22558, current_brier=0.22077. Command: curl -s -X POST https://nomos42-nba-evo-4.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'",
       "do_not_push": false
     },
     {
@@ -55,7 +66,7 @@
       "owner": "local-vm",
       "subject": "S18 (TESTforge42/nba-evo-s18) stagnation<=22 — send diversify command",
       "detected_at": "2026-05-03T22:00:00Z",
-      "cloud_brain_note": "10h brain cycle: S18 stagnation now 0 (gen=6682, brier=0.22248). Issue resolved — VM diversify ran or island auto-reset. VM should mark done.",
+      "cloud_brain_note": "14h cycle: S18 stagnation now 0 (gen=6847, brier=0.22248). CONFIRMED RESOLVED — hard resets at cycle 2251 cleared. VM can mark done.",
       "do_not_push": false
     },
     {
@@ -65,7 +76,7 @@
       "owner": "local-vm",
       "subject": "S22 (TESTforge42/nba-evo-s22) stagnation<=15 — send diversify command",
       "detected_at": "2026-05-04T02:00:00Z",
-      "cloud_brain_note": "10h brain cycle: S22 stagnation now 0 (gen=837, brier=0.22431). Issue resolved — hard resets at cycles 237+262 cleared stagnation. VM should mark done.",
+      "cloud_brain_note": "14h cycle: S22 stagnation now 0 (gen=905, brier=0.22431). CONFIRMED RESOLVED. Hard resets at cycles 262+287 cleared. VM can mark done.",
       "do_not_push": false
     },
     {"id":"R7","priority":2,"status":"done","completed_at":"2026-04-15T19:00:00Z","commit_hash":"61c4b61394e2381ab0e1702f0581c292055b235c","owner":"local-agent-a63b2bad","subject":"Deploy S20/S21/S22 NBA islands"},
@@ -245,6 +256,16 @@
         "hf_push": "BLOCKED — parity broken; NBA 296KB + POL 184KB both exceed ~50KB cloud MCP push limit",
         "cloud_limit_reconfirmed": "push_files stream-timeout confirmed for files >50KB; cloud can only update small files (work-queue.json, CLAUDE.md, etc.)"
       }
+    },
+    {
+      "id": "claude-md-island-update-2026-05-04T14h",
+      "priority": 53,
+      "status": "done",
+      "completed_at": "2026-05-04T14:00:00Z",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "Update CLAUDE.md island table + health-status.json + research proposal (2026-05-04T14h cycle)",
+      "cloud_brain_note": "14h cycle: S13 stagnation=17 diversify queued, S15 reset again w/ CatBoost at gen=16, S17 still PAUSED, all POL healthy. Research: calibrated ensemble SOTA achieves Brier ~0.20. Written health-status.json + research proposal.",
+      "do_not_push": false
     }
   ],
   "recovery_protocol": {
