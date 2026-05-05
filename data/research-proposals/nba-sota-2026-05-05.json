@@ -1,0 +1,80 @@
+{
+  "proposal_id": "nba-sota-2026-05-05",
+  "generated_at": "2026-05-05T00:00:00Z",
+  "generated_by": "cloud-brain-sonnet4-6",
+  "title": "NBA Prediction SOTA 2026: Calibration-Aware Stacked Ensemble + Uncertainty Quantification",
+  "sota_brier_literature": 0.199,
+  "our_fleet_best": 0.22019,
+  "gap": 0.021,
+  "target": 0.20,
+  "sources": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "key_finding": "LSTM with Monte Carlo dropout provides calibrated probabilities; Brier 0.221 with ECE minimization. Uncertainty estimates are crucial for principled Kelly sizing.",
+      "relevance": "HIGH — directly addresses calibration gap in our current fleet (CV→holdout negative gap ~-0.01)"
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "key_finding": "Stacked ensemble (NB + AdaBoost + MLP + KNN + XGBoost + DT + LR meta-learner) achieves Brier 0.199. Logistic regression as meta-learner outperforms direct LR base.",
+      "relevance": "HIGH — stacking with LR meta-learner is actionable on CPU Spaces"
+    },
+    {
+      "title": "Integration of machine learning XGBoost and SHAP models for NBA game outcome prediction",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
+      "key_finding": "XGBoost with SHAP feature selection achieves Brier 0.202. SHAP-based feature pruning to 50-80 features outperforms full feature set.",
+      "relevance": "MEDIUM — confirms our MAX_FEATURES=200 may be too high; 50-80 features per SHAP is optimal"
+    },
+    {
+      "title": "Machine Learning for Basketball Game Outcomes (MDPI 2026)",
+      "url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "key_finding": "CNN achieves Brier 0.221; logistic regression baseline Brier 0.199; XGBoost Brier 0.202.",
+      "relevance": "MEDIUM — confirms LR as strong meta-learner; CNN not viable on CPU islands"
+    }
+  ],
+  "actionable_techniques": [
+    {
+      "technique": "Stacked Ensemble with LR meta-learner",
+      "description": "Train base learners (XGBoost, LightGBM, ExtraTrees, RandomForest) on fold-k out-of-fold predictions. Train LogisticRegression meta-learner on stacked OOF predictions.",
+      "expected_brier_gain": -0.003,
+      "implementation": "Add stacking layer to GA individual evaluation. Score stacked prediction instead of base model prediction.",
+      "target_island": "S14 or S22 (most stable)",
+      "cpu_feasible": true,
+      "priority": 1
+    },
+    {
+      "technique": "Expected Calibration Error (ECE) minimization via isotonic regression",
+      "description": "Post-hoc calibration of raw model probabilities using isotonic regression (already attempted in Colab — achieved 0.22054). Port to island GA fitness function: add ECE as secondary Pareto objective.",
+      "expected_brier_gain": -0.002,
+      "implementation": "Add ECE to NSGA-II Pareto objectives alongside Brier and ROI. Islands already use isotonic calibration option.",
+      "target_island": "All survivors",
+      "cpu_feasible": true,
+      "priority": 2
+    },
+    {
+      "technique": "SHAP-based feature pre-selection (50-80f optimal)",
+      "description": "Literature confirms 50-80 SHAP-selected features outperform 200-feature sets. Our GA is already using MAX_FEATURES=200 cap and selecting 26-76f per champion. Explicitly seed new populations with SHAP-top-75f subsets.",
+      "expected_brier_gain": -0.001,
+      "implementation": "Run SHAP on best S14 individual, extract top-75 features, inject as elite Gen-0 seeds on S13/S15 after next reset.",
+      "target_island": "S13 (rebuilding, gen=31)",
+      "cpu_feasible": true,
+      "priority": 3
+    },
+    {
+      "technique": "Stratified-by-month holdout re-cut (in-progress)",
+      "description": "Current walkforward shows negative CV→holdout gap (-0.01) indicating window bias. Stratified monthly re-cut will give honest out-of-sample estimate. Already queued per CLAUDE.md.",
+      "expected_brier_gain": 0.0,
+      "implementation": "Kaggle P100 job — already noted in CLAUDE.md as queued",
+      "target_island": "Kaggle/Colab evaluation only",
+      "cpu_feasible": true,
+      "priority": 4
+    }
+  ],
+  "cross_port_to_political": {
+    "applicable": ["stacked_ensemble_lr_meta", "ece_calibration_objective"],
+    "not_applicable": ["shap_nba_features"],
+    "pol_specific_addition": "Political domain benefits from calibration more than NBA (higher outcome uncertainty, longer event windows). ECE secondary objective recommended for P2 to break 0.25003 plateau."
+  },
+  "summary": "SOTA literature achieves Brier 0.199 with stacked LR meta-ensemble (Nature 2025). Our gap is 0.021 from fleet best 0.22019. Primary path: (1) stacked ensemble LR meta-learner on S14/S22, (2) ECE as NSGA-II Pareto objective on all islands, (3) SHAP top-75f elite seeding on S13. Combined expected gain: ~-0.006 Brier → projected 0.214, still above 0.20 target but significant progress. GPU burst (TabICL) remains the primary path to 0.20."
+}
