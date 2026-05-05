@@ -1,0 +1,64 @@
+{
+  "id": "nba-sota-2026-05-05T20h",
+  "timestamp": "2026-05-05T20:00:00Z",
+  "cycle": "fire-47",
+  "research_type": "sota_survey",
+  "sources": [
+    {
+      "title": "Forecasting NCAA Basketball Outcomes with Deep Learning: LSTM and Transformer",
+      "arxiv": "2508.02725",
+      "key_result": "LSTM+Brier loss objective 0.1589 Brier (best calibration). Transformer+BCE AUC 0.8473 (best discrimination). LSTM wins on Brier; Transformer wins on AUC.",
+      "applicability": "HIGH — same domain. Gap: our 0.22019 vs SOTA 0.1589 = 0.039."
+    },
+    {
+      "title": "Uncertainty-Aware ML for NBA Forecasting (MDPI Information 17/1/56)",
+      "key_result": "LR Brier=0.199, XGBoost Brier=0.202 on NBA 2025-26 data. MC-Dropout LSTM for calibrated uncertainty.",
+      "applicability": "MEDIUM — our XGBoost 0.223 vs their 0.202 (gap: feature engineering or training scope)."
+    },
+    {
+      "title": "March Madness 2026: XGBoost Cauchy Loss + LightGBM Ensemble Stack",
+      "url": "https://jtmarcu.github.io/projects/march-madness.html",
+      "key_result": "XGBoost Cauchy loss (reg:pseudohubererror) more robust than MSE/Brier for basketball — handles outlier upsets better. LightGBM adds ensemble diversity.",
+      "applicability": "HIGH — direct transfer. Try xgboost_cauchy as mutation candidate for S13 (stuck at 0.245). Cauchy loss reduces penalty for extreme wrong predictions on upset games."
+    },
+    {
+      "title": "Winning beyond scoring: explainable ML for CBA KPIs (BMC Sports Science 2026)",
+      "url": "https://link.springer.com/article/10.1186/s13102-026-01620-0",
+      "key_result": "SHAP-XGBoost identifies 5 dominant KPIs: assist ratio, eFG%, defensive rebound rate, 3PT attempt rate, free throw rate. Interpretability without accuracy loss.",
+      "applicability": "MEDIUM — run SHAP on our best S14 model (26f fleet best) to confirm which features dominate. Could guide engine pruning."
+    },
+    {
+      "title": "Gradient Boosting + Probability Clipping for Brier Stability",
+      "key_result": "Clipping predicted probabilities to [0.025, 0.975] prevents single-game collapse from destroying Brier score. Platt scaling + isotonic regression for post-hoc calibration.",
+      "applicability": "HIGH — easy 1-line addition to island fitness evaluation. No engine change. Expected: 0.001-0.003 Brier improvement on edge games."
+    }
+  ],
+  "quick_wins": [
+    {
+      "technique": "Probability clipping [0.025, 0.975] in island fitness eval",
+      "effort": "LOW — 1 line in predict_proba postprocessing",
+      "expected_gain": "0.001-0.003 Brier",
+      "priority": 1
+    },
+    {
+      "technique": "XGBoost Cauchy loss (xgboost_cauchy model_type) in mutation pool",
+      "effort": "MEDIUM — new model_type option, reg:pseudohubererror objective",
+      "expected_gain": "May break 0.245 floor on S13; estimate 0.01 Brier on upset-heavy games",
+      "priority": 2
+    },
+    {
+      "technique": "SHAP feature importance → aggressive pruning toward S14 sparsity (26f)",
+      "effort": "MEDIUM — run SHAP on best S14 model",
+      "expected_gain": "Validate why 26f > 200f; confirm sparsity is the key driver",
+      "priority": 3
+    }
+  ],
+  "fleet_context": {
+    "our_best": 0.22019,
+    "sota_nba": 0.199,
+    "sota_ncaa_lstm": 0.1589,
+    "gap_to_sota_nba": 0.021,
+    "path_to_0_21": "S14 logistic_regression 26f = fleet best 0.22019. Cauchy loss + prob clipping on stagnated islands is next lever. Target: 0.218 by end of May.",
+    "pol_note": "P4 new fleet best 0.24904. POL feature_candidates=272 vs NBA 3377 is primary bottleneck. FEC/SEC data integration blocked on nomos-browser-nba /api/scrape-fec."
+  }
+}

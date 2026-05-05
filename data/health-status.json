@@ -1,37 +1,36 @@
 {
-  "timestamp": "2026-05-05T12:00:00Z",
-  "cycle": "cloud-brain-05-05T12h",
+  "timestamp": "2026-05-05T20:00:00Z",
+  "cycle": "cloud-brain-fire-47-05-05T20h",
   "trigger": "every-4h",
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "gen": 14,
-      "cycle": 5,
-      "brier": 0.23409,
-      "best_brier": 0.23409,
-      "stagnation": 13,
-      "status": "rebuilding_after_reset",
+      "gen": 150,
+      "brier": 0.24535,
+      "best_brier": 0.24535,
+      "stagnation": 21,
+      "status": "stagnated_diversify_sent",
       "model": "lightgbm",
-      "note": "hard-reset again: gen dropped 59→14, model logistic_regr→lightgbm. stagnation=13, approaching threshold=15."
+      "diversify_sent": true,
+      "note": "stagnation=21 > threshold 15 — DIVERSIFY SENT this cycle (curl POST confirmed queued). Was gen=14 at 12h cycle — fast recovery but now stagnated."
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "gen": 2820,
-      "cycle": 940,
-      "brier": 0.22158,
+      "gen": 2953,
+      "brier": 0.2303,
       "best_brier": 0.22158,
-      "stagnation": 21,
+      "stagnation": 16,
       "status": "stagnated_diversify_sent",
       "model": "logistic_regression",
       "all_time_best": 0.22019,
       "fleet_best": true,
-      "note": "stagnation=21 > threshold 15 — DIVERSIFY SENT this cycle. All-time fleet best 0.22019 from gen=1078."
+      "diversify_sent": true,
+      "note": "stagnation=16 > threshold 15 — DIVERSIFY SENT. Stagnation declined 21→16 since 12h (some progress). All-time fleet best 0.22019 from gen=1078."
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "gen": 638,
-      "cycle": 213,
-      "brier": 0.22034,
+      "gen": 709,
+      "brier": 0.2474,
       "best_brier": 0.22034,
       "stagnation": 0,
       "status": "healthy",
@@ -49,28 +48,21 @@
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "gen": 878,
-      "cycle": 293,
+      "gen": 1036,
       "brier": 0.22315,
       "best_brier": 0.22315,
-      "stagnation": 16,
+      "stagnation": 19,
       "status": "stagnated_diversify_sent",
       "model": "xgboost_brier",
-      "note": "stagnation=16 > threshold 15 — DIVERSIFY SENT this cycle. 0.21924 candidate from gen=571 CONFIRMED LOST: hard resets at cycles 251/276 occurred before VM checkpoint. Current best_brier=0.22315.",
-      "candidate_loss": {
-        "original_candidate_brier": 0.21924,
-        "original_gen": 571,
-        "loss_reason": "hard resets at cycles 251 and 276 erased top_performer before VM ran checkpoint",
-        "vm_task_note": "s18-checkpoint-gen571 (priority-61) — VM should verify /api/best and cancel if 0.22315 is current best"
-      }
+      "diversify_sent": true,
+      "note": "stagnation=19 > threshold 15 — DIVERSIFY SENT. Stagnation increased 16→19 since 12h (previous diversify had no effect yet). 0.21924 candidate CONFIRMED LOST."
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "gen": 1479,
-      "cycle": 493,
-      "brier": 0.22431,
+      "gen": 1569,
+      "brier": 0.23044,
       "best_brier": 0.22431,
-      "stagnation": 0,
+      "stagnation": 11,
       "status": "healthy",
       "model": "xgboost"
     }
@@ -84,114 +76,101 @@
     "lstm_brier_loss_ncaa": 0.1589,
     "logistic_regression_nba": 0.199,
     "xgboost_nba": 0.202,
-    "cnn_nba": 0.221,
+    "transformer_auc_best": 0.8473,
     "our_fleet_best": 0.22019,
-    "gap_to_sota_lr": 0.021,
-    "source_lstm": "Forecasting NCAA Basketball Outcomes with LSTM and Transformer (2508.02725, Aug 2025) — LSTM+Brier loss achieves 0.1589",
-    "source_trad": "Uncertainty-Aware ML for NBA Forecasting (MDPI 2026)",
-    "foresight_learning": "Qwen3-32B + RLVR improves Brier 27%% + halves calibration error (2601.06336, Jan 2026) — applicable to TF LLM agent calibration",
-    "note": "LSTM+Brier on NCAA 0.1589 — strong target. NBA equivalent likely 0.18-0.20. Foresight Learning RL may fix TF agent Brier 0.41."
+    "gap_to_sota_nba": 0.021,
+    "new_2026_technique": "XGBoost Cauchy loss (reg:pseudohubererror) more robust than Brier for upset-heavy games — March Madness 2026 stack. Probability clipping [0.025, 0.975] stabilizes Brier. Both transferable without engine changes.",
+    "source": "arXiv 2508.02725 (LSTM+Brier 0.1589), MDPI Information 17/1/56 (XGBoost NBA 0.202), March Madness 2026 (Cauchy+LightGBM stack)"
   },
   "pol_islands": {
     "P1": {
       "space": "Nomos42/political-alpha",
-      "gen": 14805,
-      "cycle": 4935,
-      "best_brier": 0.24990,
+      "gen": 15766,
+      "best_brier": 0.24940,
       "stagnation": 0,
-      "status": "SAVING",
-      "model": "xgboost_brier",
-      "gens_since_prev": 1894
+      "status": "EVOLVING",
+      "model": "lightgbm",
+      "gens_since_prev": 961
     },
     "P2": {
       "space": "Nomos42/political-alpha-2",
-      "gen": 19215,
-      "cycle": 6405,
+      "gen": 19850,
       "best_brier": 0.25003,
-      "stagnation": 0,
-      "status": "COOLDOWN",
-      "model": "xgboost_brier",
-      "gens_since_prev": 1395,
-      "note": "Self-switched lightgbm→xgboost_brier this cycle. Previous 0.24908 individual not yet official best_brier."
-    },
-    "P4": {
-      "space": "LBJLincoln/political-alpha-4",
-      "gen": 38649,
-      "cycle": 12883,
-      "best_brier": 0.24992,
-      "stagnation": 0,
-      "status": "SAVING",
-      "model": "xgboost_brier",
-      "fleet_best": true,
-      "gens_since_prev": 1715,
-      "note": "Self-switched lightgbm→xgboost_brier. Fleet best confirmed."
-    },
-    "P5": {
-      "space": "LBJLincoln/political-alpha-5",
-      "gen": 32476,
-      "cycle": 10826,
-      "best_brier": 0.24993,
       "stagnation": 0,
       "status": "EVOLVING",
       "model": "xgboost_brier",
-      "gens_since_prev": 2227,
-      "top_performer_brier": 0.24906,
-      "top_performer_gen": 29959
+      "gens_since_prev": 635,
+      "top_model_brier": 0.24902
+    },
+    "P4": {
+      "space": "LBJLincoln/political-alpha-4",
+      "gen": 39520,
+      "brier_score": 0.24904,
+      "best_brier": 0.24904,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "model": "xgboost_brier",
+      "fleet_best": true,
+      "new_fleet_best": true,
+      "prev_fleet_best": 0.24992,
+      "gens_since_prev": 871,
+      "note": "NEW POL FLEET BEST: brier_score=0.24904, below stored best 0.24992."
+    },
+    "P5": {
+      "space": "LBJLincoln/political-alpha-5",
+      "gen": 33489,
+      "best_brier": 0.24993,
+      "stagnation": 0,
+      "status": "SAVING",
+      "model": "xgboost_brier",
+      "gens_since_prev": 1013,
+      "top_performer_brier": 0.24906
     },
     "P7": {
       "space": "LBJLincoln/political-alpha-7",
-      "gen": 21033,
-      "cycle": 7011,
+      "gen": 21973,
       "best_brier": 0.25412,
-      "current_gen_brier": 0.24900,
+      "current_gen_brier_approx": 0.249,
       "stagnation": 0,
-      "status": "SAVING",
+      "status": "EVOLVING",
       "model": "lightgbm",
-      "gens_since_prev": 1650,
-      "note": "current_gen brier=0.2490 < official best_brier 0.25412. May update official best next cycle."
+      "gens_since_prev": 940
     }
   },
-  "pol_fleet_best": 0.24992,
+  "pol_fleet_best": 0.24904,
   "pol_fleet_best_island": "P4",
+  "pol_fleet_best_updated_this_cycle": true,
   "pol_all_up": true,
   "pol_restarts_this_cycle": 0,
   "axelrod_parity": {
-    "nba_app": "HEALTHY — mechs A/B/C confirmed fire-44 deep audit (L3482/L4873, L3645/L4118, L3775/L3744)",
-    "pol_app": "CORRUPTED (priority-0 restore pending VM day 4 overdue) — SHA 696180bc 794-byte stub",
+    "nba_app": "HEALTHY — mechs A/B/C confirmed fire-45 deep audit (NBA 5799 lines, A:L3485/L4873, B:L3652/L480, C:L3775/L3744)",
+    "pol_app": "CORRUPTED — priority-0 VM restore DAY 5 OVERDUE. SHA 696180bc 794-byte stub. git revert c869455 + sed fix.",
     "tauric": "ACTIVE separate experiment — no Axelrod mechs required"
   },
-  "councils_status": "DECOMMISSIONED 2026-04-20 — all 9 TESTforge42 dept councils deleted",
-  "dashboard_r8": "DONE (completed 2026-04-15)",
+  "councils_status": "DECOMMISSIONED 2026-04-20",
   "actions_this_cycle": [
-    "S14 DIVERSIFY SENT — stagnation=21 > threshold 15 → {status: command queued}",
-    "S18 DIVERSIFY SENT — stagnation=16 > threshold 15 → {status: command queued}",
-    "S18 0.21924 candidate CONFIRMED LOST — hard resets at cycles 251/276 before VM checkpoint",
-    "S13 hard-reset again: gen 59→14, model logistic_regr→lightgbm, stagnation=13",
-    "All POL islands healthy: P1-P2-P4-P5-P7 UP, stagnation=0, no restarts",
-    "P2 and P4 self-switched lightgbm→xgboost_brier (GA self-discovered superiority)",
-    "P7 current_gen brier=0.2490 approaching official best 0.25412",
-    "Research proposal: LSTM+Brier 0.1589 NCAA SOTA + Foresight Learning RL",
-    "Rotation C brain-status: port NBA techniques to POL",
+    "S13 DIVERSIFY SENT — stagnation=21 (curl POST confirmed queued)",
+    "S14 DIVERSIFY SENT — stagnation=16 (curl POST confirmed queued)",
+    "S18 DIVERSIFY SENT — stagnation=19 (curl POST confirmed queued)",
+    "P4 NEW POL FLEET BEST 0.24904 confirmed (was 0.24992)",
+    "NBA SOTA fire-47: Cauchy loss + prob clipping [0.025,0.975] identified",
+    "Rotation D: POL data pipeline — 272 features vs NBA 3377 bottleneck, FEC scraper blocked",
     "CLAUDE.md island table updated"
   ],
   "alerts": [
-    "CRITICAL-0: POL app.py still corrupted — VM tf-axelrod-pol-app-restore (priority-0) DAY 4 OVERDUE",
-    "CRITICAL-1: S17 PAUSED 21 days — VM restart (priority-1) OVERDUE",
-    "WARN: S13 hard-reset repeat pattern — unstable island (gen 59→14 this cycle)",
-    "WARN: S18 0.21924 candidate LOST before VM checkpoint — checkpoint urgency window was <4h",
-    "INFO: S14 stagnation=21 → diversify sent",
-    "INFO: S18 stagnation=16 → diversify sent",
-    "INFO: P5 top_performer gen=29959 brier=0.24906 — confirm official update next cycle",
-    "engine-parity-sync still pending (priority-40)",
-    "tf-axelrod-kl-divergence still pending (priority-56)",
-    "vm-fix-diversify-command-format still pending (priority-59)"
+    "CRITICAL-0: POL app.py STILL CORRUPTED — priority-0 DAY 5 OVERDUE (fires 37-45 blocked)",
+    "CRITICAL-1: S17 PAUSED 21+ days — priority-1 VM restart OVERDUE",
+    "WARN: S18 stagnation 16→19 (second diversify sent)",
+    "WARN: S13 stagnation 13→21 (diversify sent)",
+    "INFO: P4 NEW POL FLEET BEST 0.24904",
+    "INFO: S14 stagnation 21→16 (progress but still stagnating)"
   ],
   "next_priority_vm_tasks": [
-    "priority-0: tf-axelrod-pol-app-restore (git revert c869455 + sed fix + safe_commit)",
-    "priority-1: vm-restart-s17 (curl POST HF restart API)",
-    "priority-40: engine-parity-sync (cp features/engine.py to nomos-nba-agent)",
-    "priority-56: tf-axelrod-kl-divergence (L1-norm → KL upgrade, both apps)",
-    "priority-59: vm-fix-diversify-command-format (action→command field fix)",
-    "priority-61: s18-checkpoint-gen571 — VERIFY then likely CANCEL (0.21924 LOST)"
+    "priority-0: tf-axelrod-pol-app-restore — DAY 5 URGENT",
+    "priority-1: vm-restart-s17 — 21+ DAYS URGENT",
+    "priority-40: engine-parity-sync",
+    "priority-56: tf-axelrod-kl-divergence",
+    "priority-59: vm-fix-diversify-command-format",
+    "priority-61: s18-checkpoint-gen571 — likely CANCEL (0.21924 LOST)"
   ]
 }
