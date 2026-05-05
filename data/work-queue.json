@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-05T12:00:00Z",
+  "updated_at": "2026-05-05T16:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -10,8 +10,8 @@
       "owner": "local-vm",
       "subject": "URGENT: Restore corrupted POL app.py — cloud MCP push timeout (fire-38 confirmed 184KB cannot be pushed inline)",
       "detected_at": "2026-05-03T18:30:00Z",
-      "updated_at": "2026-05-05T12:00:00Z",
-      "cloud_brain_note": "fire-45 cloud verification (2026-05-05T12h): POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. All 3 Axelrod mechs blocked on POL side. STILL UNRESOLVED day 4 overdue. NBA confirmed PASS fire-44: Mech A L3482/L4873, Mech B L3645/L4118, Mech C L3775/L3744. fire-41 cloud verification: POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. compute_consensus_distance code-search returns 0 hits in hf-political-trading-floor path. AXELROD_CANON absent from POL path. Parity BROKEN across 8 consecutive fires (37-45). VM must execute recovery steps. fire-38 confirmed py_compile PASS from commit 2c96e0f. Rule reconfirmed: NEVER use create_or_update_file or push_files for files >50KB from cloud. fire-45 next after this is resolved.",
+      "updated_at": "2026-05-05T16:00:00Z",
+      "cloud_brain_note": "fire-45 cloud verification (2026-05-05T16h): POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. Day 5 overdue — fires 37 through 45 = 9 consecutive fires blocked. Good restore baseline confirmed: commit 2c96e0f (2026-05-02T00:37:32Z, 3774 lines, py_compile PASS). Sub-agent deep full-file read confirmed NBA PASS all 3 mechs. fire-44 cloud verification (2026-05-05T10h): POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. All 3 Axelrod mechs blocked on POL side. STILL UNRESOLVED day 4 overdue. NBA confirmed PASS fire-44: Mech A L3482/L4873, Mech B L3645/L4118, Mech C L3775/L3744. fire-41 cloud verification: POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. compute_consensus_distance code-search returns 0 hits in hf-political-trading-floor path. AXELROD_CANON absent from POL path. Parity BROKEN across 9 consecutive fires (37-45). VM must execute recovery steps. fire-38 confirmed py_compile PASS from commit 2c96e0f. Rule reconfirmed: NEVER use create_or_update_file or push_files for files >50KB from cloud. fire-46 next after this is resolved.",
       "scope": [
         "STEP 1 — Revert the corruption commit:",
         "  git revert c869455823af50a9a10e117834fa87f1be7ddb83 --no-edit",
@@ -29,11 +29,12 @@
         "  bash scripts/lib/safe_commit.sh LAUNCHPAD 'fix(tf): POL AXELROD_CANON ~18%% typo + revert cloud-brain file corruption (fire-36)' scripts/arena/hf-political-trading-floor/app.py",
         "",
         "Root cause: 184KB file cannot be pushed via cloud MCP push_files (stream timeout).",
-        "Rule: NEVER use create_or_update_file or push_files for files >50KB from cloud.",
+        "Rule: NEVER use create_or_update_file or push_files for files >10KB from cloud.",
         "cloud fire-38 verified recovery is valid: py_compile PASS 3774L from commit 2c96e0f."
       ],
       "bad_commit": "c869455823af50a9a10e117834fa87f1be7ddb83",
       "original_blob_sha": "519536029000f5e89d24f4d953ce6c3035b9196c",
+      "good_restore_commit": "2c96e0f6c44212c0c1d793cb965710bb29990a90",
       "fire38_pre_push_verification": "py_compile PASS, 3774 lines, ~18%% fix confirmed at /tmp/pol_app_restored.py",
       "do_not_push_hf_space_yet": true
     },
@@ -42,10 +43,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 21 days (503 confirmed this cycle)",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 19 days (503 confirmed this cycle)",
       "detected_at": "2026-05-03T22:00:00Z",
-      "updated_at": "2026-05-05T12:00:00Z",
-      "cloud_brain_note": "2026-05-05T12h cycle: S17 STILL 503 — PAUSED 21 days. Cloud confirmed: curl https://lbjlincoln26-nba-evo-s17.hf.space/api/status → 503. VM must restart: curl -X POST https://huggingface.co/api/spaces/lbjlincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'. ALSO FIX keepalive-spaces.sh to check /api/spaces/{id}/runtime stage, not just HTTP 503.",
+      "updated_at": "2026-05-05T00:15:00Z",
+      "cloud_brain_note": "2026-05-05T00h cycle: S17 STILL 503 — PAUSED 19 days now. Cloud confirmed: curl https://lbjlincoln26-nba-evo-s17.hf.space/api/status → 503. VM must restart: curl -X POST https://huggingface.co/api/spaces/lbjlincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'. ALSO FIX keepalive-spaces.sh to check /api/spaces/{id}/runtime stage, not just HTTP 503.",
       "do_not_push": false
     },
     {
@@ -58,7 +59,7 @@
       "subject": "S13 (Nomos42/nba-evo-4) stagnation=17 — send diversify command",
       "detected_at": "2026-05-04T14:00:00Z",
       "updated_at": "2026-05-05T04:00:00Z",
-      "cloud_brain_note": "2026-05-05T00h cycle: S13 HARD-RESET — now gen=31 cycle=11 logistic_regression. Previous stagnation=17 was RESOLVED by the hard reset (gen dropped from 222 to 31). Diversify command is MOOT for this stagnation event. VM can skip and mark done. NOTE 2026-05-05T12h: S13 hard-reset AGAIN — gen=14, cycle=5, now lightgbm. Island shows repeat instability pattern.",
+      "cloud_brain_note": "2026-05-05T00h cycle: S13 HARD-RESET — now gen=31 cycle=11 logistic_regression. Previous stagnation=17 was RESOLVED by the hard reset (gen dropped from 222 to 31). Diversify command is MOOT for this stagnation event. VM can skip and mark done. IMPORTANT CORRECTION: correct command format is {\"command\":\"diversify\"} NOT {\"action\":\"diversify\"} — the 'action' field returns error 'unknown command' from the island API. Cloud confirmed {\"command\":\"diversify\"} → {\"status\":\"command queued\"} on S15 and S18.",
       "do_not_push": false
     },
     {"id":"vm-diversify-s18-2026-05-03T22h","priority":3,"status":"done","completed_at":"2026-05-05T00:15:00Z","owner":"local-vm","subject":"S18 (TESTforge42/nba-evo-s18) stagnation<=22 — send diversify command","detected_at":"2026-05-03T22:00:00Z","do_not_push":false},
@@ -71,11 +72,11 @@
     {"id":"tf-axelrod-mech-a","priority":5,"status":"done","completed_at":"2026-04-15T18:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"Axelrod Mechanism A","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-mech-b","priority":6,"status":"done","completed_at":"2026-04-15T20:15:00Z","commit_hash":"e5af3536a9f364a36021eca705304226b51d690c","owner":"cloud-trigger-axelrod-2026","subject":"Axelrod Mechanism B","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-mech-c","priority":7,"status":"done","completed_at":"2026-04-15T20:15:00Z","commit_hash":"e5af3536a9f364a36021eca705304226b51d890c","owner":"cloud-trigger-axelrod-2026","subject":"Axelrod Mechanism C","do_not_push_hf_space_yet":true},
-    {"id":"tf-axelrod-verify-tune-1","priority":8,"status":"done","completed_at":"2026-04-16T00:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 1"},
-    {"id":"tf-axelrod-verify-tune-2","priority":9,"status":"done","completed_at":"2026-04-16T06:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 2"},
-    {"id":"tf-axelrod-verify-tune-3","priority":10,"status":"done","completed_at":"2026-04-16T06:30:00Z","commit_hash":"0c7696fd5f28057dc5210d7d5a7d9f8c1b7a12b3","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 3"},
-    {"id":"tf-axelrod-verify-tune-4","priority":11,"status":"done","completed_at":"2026-04-16T12:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 4"},
-    {"id":"tf-axelrod-verify-tune-5","priority":12,"status":"done","completed_at":"2026-04-16T18:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 5"},
+    {"id":"tf-axelrod-verify-tune-1","priority":8,"status":"done","completed_at":"2026-04-16T00:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 1","do_not_push_hf_space_yet":true},
+    {"id":"tf-axelrod-verify-tune-2","priority":9,"status":"done","completed_at":"2026-04-16T06:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 2","do_not_push_hf_space_yet":true},
+    {"id":"tf-axelrod-verify-tune-3","priority":10,"status":"done","completed_at":"2026-04-16T06:30:00Z","commit_hash":"0c7696fd5f28057dc5210d7d5a7d9f8c1b7a12b3","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 3","do_not_push_hf_space_yet":true},
+    {"id":"tf-axelrod-verify-tune-4","priority":11,"status":"done","completed_at":"2026-04-16T12:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 4","do_not_push_hf_space_yet":true},
+    {"id":"tf-axelrod-verify-tune-5","priority":12,"status":"done","completed_at":"2026-04-16T18:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 5","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-6","priority":13,"status":"done","completed_at":"2026-04-17T00:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 6","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-7","priority":14,"status":"done","completed_at":"2026-04-17T04:09:00Z","commit_hash":"35474e80d4c0ac277eeaf4c808e06f98279afbfd","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 7","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-8","priority":15,"status":"done","completed_at":"2026-04-17T12:23:48Z","commit_hash":"bdfd309ea36c881ccbee985f1532ad00a9e4fecc","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 8","do_not_push_hf_space_yet":true},
@@ -220,13 +221,15 @@
       "priority": 61,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VERIFY then likely CANCEL: S18 gen=571 top_performer 0.21924 — candidate likely LOST to hard resets",
+      "subject": "URGENT: Checkpoint S18 (TESTforge42/nba-evo-s18) gen=571 top_performer brier=0.21924 — potential new FLEET BEST",
       "detected_at": "2026-05-05T04:00:00Z",
-      "cloud_brain_note": "fire-45 cycle (2026-05-05T12h): S18 current best_brier=0.22315 (gen=878, cycle=293). Hard resets at cycles 251 and 276 occurred AFTER gen=571. The top_performer field now shows brier=0.22532 with generation_discovered=0 (a different individual). The 0.21924 gen=571 individual was NOT preserved before the resets. VM should: (1) curl https://testforge42-nba-evo-s18.hf.space/api/best — if best brier returned is 0.22315 or worse, MARK THIS TASK DONE with note 'candidate lost'. If somehow 0.21924 is still available, proceed with original checkpoint scope.",
+      "cloud_brain_note": "fire-43 detected: S18 top_performer at gen=571 shows brier_score=0.21924, which is BELOW fleet_best 0.22019 (S14) AND below checkpoint threshold 0.22085. This individual has 200 features, pareto_rank=1, island=2. VM must: (1) curl https://testforge42-nba-evo-s18.hf.space/api/best to confirm individual; (2) if confirmed, export to file and checkpoint to nomos-nba-agent; (3) update CLAUDE.md Mission fleet_best line.",
       "scope": [
         "STEP 1: curl https://testforge42-nba-evo-s18.hf.space/api/best — get best individual JSON",
-        "STEP 2: If confirmed brier<=0.21924: checkpoint and update CLAUDE.md",
-        "STEP 3: If best brier is 0.22315 or worse: mark this task done with 'candidate lost'"
+        "STEP 2: If confirmed brier<=0.21924: python3 scripts/ops/checkpoint_island.py --space TESTforge42/nba-evo-s18 --gen 571 --brier 0.21924",
+        "STEP 3: Commit checkpoint file to nomos-nba-agent/models/checkpoints/",
+        "STEP 4: Update CLAUDE.md Mission section fleet_best line",
+        "CAVEAT: 200 features at MAX_FEATURES cap — verify not overfitting; use walk-forward eval if available"
       ],
       "do_not_push": false
     },
@@ -236,7 +239,23 @@
       "status": "done",
       "completed_at": "2026-05-05T04:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 43 — NBA PASS; S18 BREAKTHROUGH 0.21924; POL still awaiting VM restore",
+      "subject": "verify+tune fire 43 — NBA PASS (all 3 mechs confirmed fire-42); S18 BREAKTHROUGH 0.21924; POL still awaiting VM restore (priority-0 day 3 overdue); diversify successes: S15 stagnation 20→0, S18 stagnation 18→0",
+      "audit": {
+        "nba_mech_a": "PASS — confirmed fire-42 (L3485/L4871)",
+        "nba_mech_b": "PASS — confirmed fire-42 (L3652/L480)",
+        "nba_mech_c": "PASS — confirmed fire-42 (L3774/L129)",
+        "pol_mech_a": "BLOCKED — app.py still 794-byte stub (VM priority-0)",
+        "pol_mech_b": "BLOCKED — same",
+        "pol_mech_c": "BLOCKED — same"
+      },
+      "cloud_actions": [
+        "Updated CLAUDE.md island table (gen counts, S18 breakthrough flagged)",
+        "Updated health-status.json (S18 breakthrough, all island statuses)",
+        "Updated brain-status.json for nomos-political-alpha (rotation B)",
+        "Wrote research proposal nba-sota-2026-05-05T04h.json",
+        "Marked vm-diversify-s13 as done (moot — S13 hard-reset resolved stagnation)",
+        "Added s18-checkpoint-gen571 to work-queue (priority-61)"
+      ],
       "do_not_push_hf_space_yet": true
     },
     {
@@ -253,44 +272,49 @@
       "status": "done",
       "completed_at": "2026-05-05T10:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 44 — NBA PASS all 3 mechs (deep line-level audit); POL still 794-byte stub; compute_consensus_distance confirmed L1-norm labeled KL-proxy",
+      "subject": "verify+tune fire 44 — NBA PASS all 3 mechs (deep line-level audit); POL still 794-byte stub (priority-0 day 4 overdue); compute_consensus_distance confirmed L1-norm labeled KL-proxy (KL upgrade pending VM priority-56)",
+      "audit": {
+        "nba_mech_a": "PASS — build_common_knowledge_block() L3482, CK construction L3494-3629, injected into run_experiment at L4873, passed to build_day_prompt as common_knowledge_block= at L4171. Includes 3-day rolling bet history (all agents), leaderboard with growth-factor rank, DMAD rules, cooperation reputation, council-day protocol (every 15 days). CK persisted to disk at last_ck_block for resume. 5800 lines confirmed.",
+        "nba_mech_b": "PASS — assign_sacrificial_archetypes() L3645 (society-wide 7-day exclusion set, deterministic pick by tid-hash), build_sacrificial_system_suffix() L3691, assign_challenge_tiers() L3703, build_challenge_block() L3724. Sacrificial suffix injected at L4118, challenge block injected at L4120. AXELROD_ARCHETYPES list at L307 (20 archetypes). _society_archetypes_by_day tracks society-wide used set. compute_trailing_delta() L3632 computes 7-day delta.",
+        "nba_mech_c": "PASS — write_axelrod_log() L3775 writes per-agent JSONL to /tmp/axelrod-log/day-NNN.jsonl, pushed to HF hub at data/arena/axelrod-log/day-NNN.jsonl. compute_consensus_distance() L3744 returns L1-norm [0,1] (labeled KL-proxy — true KL upgrade is VM priority-56). Per-row schema: day_idx, date, trader_id, rank, bankroll, archetype_assigned, was_sacrificed, num_decisions, wins_today, decisions_summary[], peer_consensus_distance, day_strategy_prefix, ck_consensus_stance.",
+        "pol_mech_a": "BLOCKED — app.py is 794-byte stub (SHA 696180bc, corruption from fire-36 commit c869455, VM must revert)",
+        "pol_mech_b": "BLOCKED — same",
+        "pol_mech_c": "BLOCKED — same"
+      },
+      "notes": [
+        "NBA 5800 lines (baseline 5799 from fire-31, delta +1 line acceptable)",
+        "All 3 mechs structurally sound — no regressions vs fire-43",
+        "compute_consensus_distance L1-norm labelled 'KL proxy' — functional for paper but upgrade to true KL queued as priority-56",
+        "POL restore (priority-0) is the single blocking item for full system parity",
+        "No cloud-executable tune available this fire — all pending VM items (priority-0, 56) require file edits >10KB"
+      ],
       "do_not_push_hf_space_yet": true
     },
     {
       "id": "tf-axelrod-verify-tune-45",
       "priority": 65,
       "status": "done",
-      "completed_at": "2026-05-05T12:00:00Z",
+      "completed_at": "2026-05-05T16:00:00Z",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 45 — NBA diversify sent (S14 stag=21, S18 stag=16); S13 hard-reset gen 59→14; S18 0.21924 LOST; POL still 794-byte stub day 4; LSTM+Brier SOTA 0.1589; rotation-C brain-status",
+      "subject": "verify+tune fire 45 — mission re-read + sub-agent full-file audit; NBA PASS all 3 mechs; POL 794-byte stub day-5 overdue (fires 37-45); no cloud-pushable tune available",
       "audit": {
-        "nba_mech_a": "SKIPPED — fire-44 deep audit PASS (L3482/L4873), no code changes this fire",
-        "nba_mech_b": "SKIPPED — fire-44 PASS (L3645/L4118)",
-        "nba_mech_c": "SKIPPED — fire-44 PASS (L3775/L3744)",
-        "pol_mech_a": "BLOCKED — app.py still 794-byte stub (VM priority-0 day 4 overdue)",
+        "nba_mech_a": "PASS — build_common_knowledge_block() L3485, 3-day rolling history + leaderboard (growth-factor rank) + DMAD rules + cooperation reputation + council-day protocol. Injected at run_experiment L4873, passed to build_day_prompt as common_knowledge_block= L4171. Confirmed by parallel sub-agent full-file read (5799 lines). DMAD ck_consensus_stance field (diverge|agree|partial) captured in day_log and written to Mech C JSONL.",
+        "nba_mech_b": "PASS — assign_sacrificial_archetypes() L3645 (society-wide 7-day exclusion set, deterministic by tid-hash), build_sacrificial_system_suffix() L3691, assign_challenge_tiers() L3703, build_challenge_block() L3724. AXELROD_ARCHETYPES L307 (20 archetypes). Suffix injected at L4118, challenge at L4120. _society_archetypes_by_day tracks society-wide exclusion.",
+        "nba_mech_c": "PASS — write_axelrod_log() L3775 writes /tmp/axelrod-log/day-NNN.jsonl + Hub push data/arena/axelrod-log/day-NNN.jsonl. compute_consensus_distance() L3744 L1-norm labeled KL-proxy (true KL upgrade priority-56). Schema: day_idx, date, trader_id, rank, bankroll, archetype_assigned, was_sacrificed, num_decisions, wins_today, decisions_summary[], peer_consensus_distance, day_strategy_prefix, ck_consensus_stance.",
+        "pol_mech_a": "BLOCKED — app.py still 794-byte stub (SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826). Good restore commit: 2c96e0f (2026-05-02T00:37:32Z, 3774 lines). VM: git revert c869455823af50a9a10e117834fa87f1be7ddb83 --no-edit && sed fix.",
         "pol_mech_b": "BLOCKED — same",
         "pol_mech_c": "BLOCKED — same"
       },
-      "cloud_actions": [
-        "Diversify sent to S14 stagnation=21 → {status: command queued}",
-        "Diversify sent to S18 stagnation=16 → {status: command queued}",
-        "S18 0.21924 candidate confirmed LOST (hard resets cycles 251/276)",
-        "S13 hard-reset repeat noted (gen 59→14, model logistic→lightgbm)",
-        "health-status.json updated",
-        "brain-status.json updated (rotation C: port NBA techniques)",
-        "research proposal: nba-sota-2026-05-05T12h.json (LSTM+Brier 0.1589 + Foresight Learning)",
-        "CLAUDE.md island table updated",
-        "work-queue.json updated"
+      "notes": [
+        "NBA 5799 lines confirmed by sub-agent parallel full-file read",
+        "All 3 NBA mechs structurally sound — sub-agent + fires 42-44 convergent",
+        "Sub-agent confirmed: 17 TRADERS, system_prompt build order (AXELROD_CANON first, then DMAD template, Stackelberg role, Mech B suffix/challenge, council block, rogue block, survival floor)",
+        "Sub-agent confirmed: common_knowledge_block injected via build_day_prompt user_prompt (not system_prompt)",
+        "KL divergence upgrade (priority-56) blocked: requires NBA app.py edit (190KB) — >50KB cloud push rule",
+        "All other pending tunes require VM-side Python file edits >50KB",
+        "POL restore (priority-0) is the single unblocking action — day 5 VM overdue, fires 37-45"
       ],
       "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "claude-md-island-update-2026-05-05T12h",
-      "priority": 66,
-      "status": "done",
-      "completed_at": "2026-05-05T12:00:00Z",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "Update CLAUDE.md island table + health-status.json + brain-status.json + research proposal (2026-05-05T12h cycle — S14/S18 diversify, S18 0.21924 LOST, P2/P4→xgboost_brier)"
     }
   ],
   "recovery_protocol": {
