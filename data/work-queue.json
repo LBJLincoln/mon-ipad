@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-05T06:00:00Z",
+  "updated_at": "2026-05-05T04:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -51,11 +51,13 @@
     {
       "id": "vm-diversify-s13-2026-05-04T14h",
       "priority": 2,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-05-05T04:00:00Z",
+      "completed_by": "cloud-brain-05-05T04h",
       "owner": "local-vm",
       "subject": "S13 (Nomos42/nba-evo-4) stagnation=17 — send diversify command",
       "detected_at": "2026-05-04T14:00:00Z",
-      "updated_at": "2026-05-05T00:15:00Z",
+      "updated_at": "2026-05-05T04:00:00Z",
       "cloud_brain_note": "2026-05-05T00h cycle: S13 HARD-RESET — now gen=31 cycle=11 logistic_regression. Previous stagnation=17 was RESOLVED by the hard reset (gen dropped from 222 to 31). Diversify command is MOOT for this stagnation event. VM can skip and mark done. IMPORTANT CORRECTION: correct command format is {\"command\":\"diversify\"} NOT {\"action\":\"diversify\"} — the 'action' field returns error 'unknown command' from the island API. Cloud confirmed {\"command\":\"diversify\"} → {\"status\":\"command queued\"} on S15 and S18.",
       "do_not_push": false
     },
@@ -212,6 +214,56 @@
         "Updated work-queue.json (added verify-tune-42, marked priority-58 done)"
       ],
       "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "s18-checkpoint-gen571",
+      "priority": 61,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "URGENT: Checkpoint S18 (TESTforge42/nba-evo-s18) gen=571 top_performer brier=0.21924 — potential new FLEET BEST",
+      "detected_at": "2026-05-05T04:00:00Z",
+      "cloud_brain_note": "fire-43 detected: S18 top_performer at gen=571 shows brier_score=0.21924, which is BELOW fleet_best 0.22019 (S14) AND below checkpoint threshold 0.22085. This individual has 200 features, pareto_rank=1, island=2. VM must: (1) curl https://testforge42-nba-evo-s18.hf.space/api/best to confirm individual; (2) if confirmed, export to file and checkpoint to nomos-nba-agent; (3) update CLAUDE.md Mission fleet_best line.",
+      "scope": [
+        "STEP 1: curl https://testforge42-nba-evo-s18.hf.space/api/best — get best individual JSON",
+        "STEP 2: If confirmed brier<=0.21924: python3 scripts/ops/checkpoint_island.py --space TESTforge42/nba-evo-s18 --gen 571 --brier 0.21924",
+        "STEP 3: Commit checkpoint file to nomos-nba-agent/models/checkpoints/",
+        "STEP 4: Update CLAUDE.md Mission section fleet_best line",
+        "CAVEAT: 200 features at MAX_FEATURES cap — verify not overfitting; use walk-forward eval if available"
+      ],
+      "do_not_push": false
+    },
+    {
+      "id": "tf-axelrod-verify-tune-43",
+      "priority": 62,
+      "status": "done",
+      "completed_at": "2026-05-05T04:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 43 — NBA PASS (all 3 mechs confirmed fire-42); S18 BREAKTHROUGH 0.21924; POL still awaiting VM restore (priority-0 day 3 overdue); diversify successes: S15 stagnation 20→0, S18 stagnation 18→0",
+      "audit": {
+        "nba_mech_a": "PASS — confirmed fire-42 (L3485/L4871)",
+        "nba_mech_b": "PASS — confirmed fire-42 (L3652/L480)",
+        "nba_mech_c": "PASS — confirmed fire-42 (L3774/L129)",
+        "pol_mech_a": "BLOCKED — app.py still 794-byte stub (VM priority-0)",
+        "pol_mech_b": "BLOCKED — same",
+        "pol_mech_c": "BLOCKED — same"
+      },
+      "cloud_actions": [
+        "Updated CLAUDE.md island table (gen counts, S18 breakthrough flagged)",
+        "Updated health-status.json (S18 breakthrough, all island statuses)",
+        "Updated brain-status.json for nomos-political-alpha (rotation B)",
+        "Wrote research proposal nba-sota-2026-05-05T04h.json",
+        "Marked vm-diversify-s13 as done (moot — S13 hard-reset resolved stagnation)",
+        "Added s18-checkpoint-gen571 to work-queue (priority-61)"
+      ],
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "cloud-md-island-update-2026-05-05T04h",
+      "priority": 63,
+      "status": "done",
+      "completed_at": "2026-05-05T04:00:00Z",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "Update CLAUDE.md + health-status.json + brain-status.json + research proposal (2026-05-05T04h cycle — S18 breakthrough 0.21924)"
     }
   ],
   "recovery_protocol": {
