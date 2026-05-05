@@ -1,0 +1,63 @@
+{
+  "id": "nba-sota-2026-05-05T12h",
+  "generated_at": "2026-05-05T12:00:00Z",
+  "cycle": "cloud-brain-05-05T12h",
+  "title": "NBA SOTA — LSTM+Brier 0.1589 NCAA + Foresight Learning RL for TF agents",
+  "sota_brier": {
+    "lstm_brier_loss_ncaa": 0.1589,
+    "logistic_regression_nba": 0.199,
+    "xgboost_nba": 0.202,
+    "cnn_nba": 0.221,
+    "our_fleet_best": 0.22019,
+    "gap_to_sota_lr": 0.021,
+    "gap_to_lstm_sota": 0.062
+  },
+  "papers": [
+    {
+      "title": "Forecasting NCAA Basketball Outcomes with Deep Learning: LSTM and Transformer Models",
+      "arxiv": "2508.02725",
+      "year": 2025,
+      "key_finding": "LSTM+Brier loss achieves Brier score 0.1589 on NCAA Division 1 Men's/Women's tournaments. Transformer+BCE achieves AUC 0.8473 (best discrimination). Brier loss explicitly optimizes calibration; BCE optimizes discrimination. Key features: GLM team quality, Elo ratings, seed differences, box-score stats.",
+      "actionable": "(1) Switch plain xgboost islands to xgboost_brier (already done S15/S18). (2) For GPU burst (Modal A10G/ZeroGPU): try LSTM with Brier loss on full 9551-game NBA dataset. (3) Add Elo rating as explicit feature if not already in engine. Expected gain: 0.02-0.04 Brier improvement on GPU.",
+      "relevance": "HIGH — same sport domain, same Brier metric. 0.1589 NCAA vs our 0.22019 NBA = 0.062 gap. Direct architecture to try on GPU burst."
+    },
+    {
+      "title": "Future-as-Label: Scalable Supervision from Real-World Outcomes (Foresight Learning)",
+      "arxiv": "2601.06336",
+      "year": 2026,
+      "key_finding": "Qwen3-32B trained with RLVR using proper scoring rules (Brier score as reward signal) improves Brier by 27%% and halves calibration error vs pretrained baseline. Outperforms Qwen3-235B (7x larger) on forecasting tasks.",
+      "actionable": "Apply to TF LLM agents: current agents evaluated on WR and PnL but not explicit Brier score reward. Adding per-day Brier score as RL signal to the agent improvement cycle (tf_improvement_cycle.py) could fix measured agent Brier=0.41. This is the key paper for the probation/Kelly system — agents trained on Brier RLVR would self-calibrate without needing manual probation caps.",
+      "relevance": "HIGH — directly applicable to TF LLM agent calibration problem (Brier 0.41 → target <0.28)."
+    },
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "year": 2026,
+      "key_finding": "LSTM with Monte Carlo dropout provides calibrated probability estimates. Most influential features: home indicator, team Elo ratings, next-game information (days rest). Isotonic calibration post-processing shown effective.",
+      "actionable": "Add next_game_days_rest as feature candidate if not already present. Monte Carlo dropout requires GPU (Modal/ZeroGPU). Isotonic calibration already in our best model (0.22054).",
+      "relevance": "MEDIUM — NBA specific but GPU-dependent for LSTM/MC-dropout"
+    },
+    {
+      "title": "Rethinking Evaluation Metric for Probability Estimation: Balance Score",
+      "arxiv": "2309.06248",
+      "year": 2023,
+      "key_finding": "Balance Score proposed as superior alternative to Brier+ECE. Approximates true expected calibration error without binning artifacts.",
+      "actionable": "Add Balance Score metric to tf_rigorous_validation.py alongside existing Brier/ECE. Gives cleaner calibration signal for agent evaluation.",
+      "relevance": "LOW-MEDIUM — evaluation enhancement, no training change"
+    }
+  ],
+  "quick_wins": [
+    "S13 model switched to lightgbm after reset — watch if lightgbm or xgboost_brier wins next cycle",
+    "Add explicit Brier-loss training objective to any new island (not all have xgboost_brier)",
+    "S22 uses plain xgboost — next mutation injection should favor xgboost_brier",
+    "P7 still on lightgbm but P2/P4 self-switched to xgboost_brier — P7 lightgbm may stagnate soon"
+  ],
+  "gpu_burst_proposals": [
+    "Modal A10G: try LSTM (PyTorch 2-layer, Brier loss) on 9551 NBA games, Elo + box-score + next_game features. Target: <0.20 Brier.",
+    "ZeroGPU H200: TabICL with extended context (ctx=4096) + top-300 features from new engine v3.1"
+  ],
+  "cross_project_tf_proposals": [
+    "Foresight Learning RL: add per-day Brier score as reward signal in tf_improvement_cycle.py. Per-agent Brier already tracked in tf_scientific_scorecard.py — route as RL signal to reduce Kelly cap on high-Brier agents.",
+    "Balance Score: add to tf_rigorous_validation.py as supplemental metric alongside Brier+ECE"
+  ]
+}
