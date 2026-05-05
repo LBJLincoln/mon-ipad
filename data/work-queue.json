@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-05T04:00:00Z",
+  "updated_at": "2026-05-05T10:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -10,8 +10,8 @@
       "owner": "local-vm",
       "subject": "URGENT: Restore corrupted POL app.py — cloud MCP push timeout (fire-38 confirmed 184KB cannot be pushed inline)",
       "detected_at": "2026-05-03T18:30:00Z",
-      "updated_at": "2026-05-05T06:00:00Z",
-      "cloud_brain_note": "fire-41 cloud verification: POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. compute_consensus_distance code-search returns 0 hits in hf-political-trading-floor path. AXELROD_CANON absent from POL path. Parity BROKEN across 6 consecutive fires (37-42). VM must execute recovery steps. fire-38 confirmed py_compile PASS from commit 2c96e0f. Rule reconfirmed: NEVER use create_or_update_file or push_files for files >50KB from cloud. fire-42 (2026-05-05T06h): STILL UNRESOLVED, VM priority-0 now day 3 overdue. fire-42 completed island table update (priority-58) and added verify-tune-42 entry. fire-43 next.",
+      "updated_at": "2026-05-05T10:00:00Z",
+      "cloud_brain_note": "fire-44 cloud verification (2026-05-05T10h): POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. All 3 Axelrod mechs blocked on POL side. STILL UNRESOLVED day 4 overdue. NBA confirmed PASS fire-44: Mech A L3482/L4873, Mech B L3645/L4118, Mech C L3775/L3744. fire-41 cloud verification: POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. compute_consensus_distance code-search returns 0 hits in hf-political-trading-floor path. AXELROD_CANON absent from POL path. Parity BROKEN across 7 consecutive fires (37-44). VM must execute recovery steps. fire-38 confirmed py_compile PASS from commit 2c96e0f. Rule reconfirmed: NEVER use create_or_update_file or push_files for files >50KB from cloud. fire-44 next after this is resolved.",
       "scope": [
         "STEP 1 — Revert the corruption commit:",
         "  git revert c869455823af50a9a10e117834fa87f1be7ddb83 --no-edit",
@@ -146,7 +146,7 @@
       "do_not_push_hf_space_yet": true
     },
     {"id":"tf-axelrod-verify-tune-34","priority":46,"status":"done","completed_at":"2026-05-03T06:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 34 — re-audit CLEAN","do_not_push_hf_space_yet":true},
-    {"id":"claude-md-island-update-2026-05-03T10h","priority":47,"status":"done","completed_at":"2026-05-04T10:00:00Z","commit_hash":"ea4fd2a","owner":"cloud-brain-sonnet4-6","subject":"Update CLAUDE.md island table with 2026-05-03T10h cycle data (S15 checkpoint)","do_not_push":false},
+    {"id":"claude-md-island-update-2026-05-03T10h","priority":47,"status":"done","completed_at":"2026-05-04T10:00:00Z","commit_hash":"ea4fd2a","owner":"cloud-brain-sonnet4-6","subject":"Update CLAUDE.md island table + health-status.json + research proposal (2026-05-03T10h cycle — S15 checkpoint)","do_not_push":false},
     {"id":"tf-axelrod-verify-tune-35","priority":48,"status":"done","completed_at":"2026-05-03T12:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 35 — PASS audit, no new tune","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-36","priority":49,"status":"done","completed_at":"2026-05-03T18:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 36 — PASS audit; POL file corruption accident; recovery queued priority-0","do_not_push_hf_space_yet":true},
     {"id":"tf-axelrod-verify-tune-37","priority":50,"status":"done","completed_at":"2026-05-04T00:00:00Z","owner":"cloud-trigger-axelrod-2026","subject":"verify+tune fire 37 — NBA PASS, POL still awaiting VM restore","do_not_push_hf_space_yet":true},
@@ -164,8 +164,8 @@
       "detected_at": "2026-05-05T00:00:00Z",
       "scope": [
         "CONTEXT: Spec (Mech C) says peer_consensus_distance = KL divergence from CK.",
-        "CURRENT: NBA app.py ~L3743 uses L1-norm (sum of absolute differences in pick fractions).",
-        "FIX: Replace L1-norm in compute_consensus_distance with KL divergence:",
+        "CURRENT: NBA app.py L3744 uses L1-norm (sum of absolute differences in pick fractions), labeled 'KL proxy'.",
+        "FIX: Replace L1-norm in compute_consensus_distance (L3767-3772) with KL divergence:",
         "  import math",
         "  def _kl(p, q, eps=1e-9): return sum(pi * math.log((pi+eps)/(qi+eps)) for pi,qi in zip(p,q))",
         "  Compute probability vectors over discrete bet outcomes, then call _kl(agent_dist, consensus_dist).",
@@ -264,6 +264,30 @@
       "completed_at": "2026-05-05T04:00:00Z",
       "owner": "cloud-brain-sonnet4-6",
       "subject": "Update CLAUDE.md + health-status.json + brain-status.json + research proposal (2026-05-05T04h cycle — S18 breakthrough 0.21924)"
+    },
+    {
+      "id": "tf-axelrod-verify-tune-44",
+      "priority": 64,
+      "status": "done",
+      "completed_at": "2026-05-05T10:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 44 — NBA PASS all 3 mechs (deep line-level audit); POL still 794-byte stub (priority-0 day 4 overdue); compute_consensus_distance confirmed L1-norm labeled KL-proxy (KL upgrade pending VM priority-56)",
+      "audit": {
+        "nba_mech_a": "PASS — build_common_knowledge_block() L3482, CK construction L3494-3629, injected into run_experiment at L4873, passed to build_day_prompt as common_knowledge_block= at L4171. Includes 3-day rolling bet history (all agents), leaderboard with growth-factor rank, DMAD rules, cooperation reputation, council-day protocol (every 15 days). CK persisted to disk at last_ck_block for resume. 5800 lines confirmed.",
+        "nba_mech_b": "PASS — assign_sacrificial_archetypes() L3645 (society-wide 7-day exclusion set, deterministic pick by tid-hash), build_sacrificial_system_suffix() L3691, assign_challenge_tiers() L3703, build_challenge_block() L3724. Sacrificial suffix injected at L4118, challenge block injected at L4120. AXELROD_ARCHETYPES list at L307 (20 archetypes). _society_archetypes_by_day tracks society-wide used set. compute_trailing_delta() L3632 computes 7-day delta.",
+        "nba_mech_c": "PASS — write_axelrod_log() L3775 writes per-agent JSONL to /tmp/axelrod-log/day-NNN.jsonl, pushed to HF hub at data/arena/axelrod-log/day-NNN.jsonl. compute_consensus_distance() L3744 returns L1-norm [0,1] (labeled KL-proxy — true KL upgrade is VM priority-56). Per-row schema: day_idx, date, trader_id, rank, bankroll, archetype_assigned, was_sacrificed, num_decisions, wins_today, decisions_summary[], peer_consensus_distance, day_strategy_prefix, ck_consensus_stance.",
+        "pol_mech_a": "BLOCKED — app.py is 794-byte stub (SHA 696180bc, corruption from fire-36 commit c869455, VM must revert)",
+        "pol_mech_b": "BLOCKED — same",
+        "pol_mech_c": "BLOCKED — same"
+      },
+      "notes": [
+        "NBA 5800 lines (baseline 5799 from fire-31, delta +1 line acceptable)",
+        "All 3 mechs structurally sound — no regressions vs fire-43",
+        "compute_consensus_distance L1-norm labelled 'KL proxy' — functional for paper but upgrade to true KL queued as priority-56",
+        "POL restore (priority-0) is the single blocking item for full system parity",
+        "No cloud-executable tune available this fire — all pending VM items (priority-0, 56) require file edits >10KB"
+      ],
+      "do_not_push_hf_space_yet": true
     }
   ],
   "recovery_protocol": {
