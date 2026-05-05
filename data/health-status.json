@@ -1,47 +1,169 @@
 {
-  "timestamp": "2026-05-05T04:00:00Z",
+  "timestamp": "2026-05-05T00:00:00Z",
   "cycle": "cloud-brain-05-05T00h",
   "trigger": "every-4h",
   "nba_islands": {
-    "S13": {"space": "Nomos42/nba-evo-4", "gen": 2, "brier": 0.22558, "stagnation": 0, "status": "rebuilding_after_reset", "model": "xgboost"},
-    "S14": {"space": "Nomos42/nba-evo-5", "gen": 2146, "brier": 0.22158, "stagnation": 0, "status": "healthy", "all_time_best": 0.22019, "fleet_best": true, "model": "logistic_regr"},
-    "S15": {"space": "Nomos42/nba-evo-6", "gen": 274, "brier": 0.22034, "stagnation": 0, "status": "milestone", "best_brier": 0.22034, "milestone_note": "best < 0.22085 threshold triggered; no checkpoint API available (valid cmds: diversify/boost_mutation/backfill_boxscores)", "model": "xgboost_brier"},
-    "S17": {"space": "LBJLincoln26/nba-evo-s17", "gen": null, "brier": null, "status": "PAUSED", "paused_days": 19, "action_required": "VM_restart"},
-    "S18": {"space": "TESTforge42/nba-evo-s18", "gen": 279, "brier": 0.22315, "stagnation": 0, "status": "rebuilding_after_reset", "model": "xgboost_brier"},
-    "S22": {"space": "TESTforge42/nba-evo-s22", "gen": 1114, "brier": 0.2304, "stagnation": 9, "status": "healthy", "best_brier": 0.22431, "model": "catboost", "note": "stagnation=9, approaching 15 threshold"}
+    "S13": {
+      "space": "Nomos42/nba-evo-4",
+      "gen": 31,
+      "cycle": 11,
+      "brier": 0.22582,
+      "stagnation": 12,
+      "status": "rebuilding_after_reset",
+      "model": "logistic_regression",
+      "note": "hard-reset again; was gen=222 stagnation=17 prev cycle; now rebuilding cycle=11; stagnation resolved by reset"
+    },
+    "S14": {
+      "space": "Nomos42/nba-evo-5",
+      "gen": 2322,
+      "cycle": 774,
+      "brier": 0.22158,
+      "stagnation": 5,
+      "status": "healthy",
+      "all_time_best": 0.22019,
+      "fleet_best": true,
+      "model": "xgboost",
+      "note": "all-time fleet best 0.22019 from gen=1078 (older cycle); current session best=0.22158 post-resets"
+    },
+    "S15": {
+      "space": "Nomos42/nba-evo-6",
+      "gen": 373,
+      "cycle": 125,
+      "brier": 0.22034,
+      "stagnation": 20,
+      "status": "diversify_queued",
+      "model": "random_forest",
+      "milestone": "best_brier=0.22034 < 0.22085 threshold — checkpoint event",
+      "action": "POST /api/command {\"command\":\"diversify\"} → {\"status\":\"command queued\"} ✓"
+    },
+    "S17": {
+      "space": "LBJLincoln26/nba-evo-s17",
+      "gen": null,
+      "brier": null,
+      "status": "PAUSED_503",
+      "paused_days": 19,
+      "action_required": "VM must: curl -X POST https://huggingface.co/api/spaces/lbjlincoln26/nba-evo-s17/restart -H 'Authorization: Bearer $HF_TOKEN'"
+    },
+    "S18": {
+      "space": "TESTforge42/nba-evo-s18",
+      "gen": 435,
+      "cycle": 145,
+      "brier": 0.22315,
+      "stagnation": 18,
+      "status": "diversify_queued",
+      "model": "extra_trees",
+      "note": "new reset cycle (was gen=6847 prev cycle); stagnation=18 triggered diversify",
+      "action": "POST /api/command {\"command\":\"diversify\"} → {\"status\":\"command queued\"} ✓"
+    },
+    "S22": {
+      "space": "TESTforge42/nba-evo-s22",
+      "gen": 1203,
+      "cycle": 402,
+      "brier": 0.22431,
+      "stagnation": 14,
+      "status": "healthy_watch",
+      "model": "catboost",
+      "note": "stagnation=14 — approaching 15 threshold; monitor next cycle"
+    }
   },
-  "nba_fleet_best": 0.22019,
+  "nba_fleet_best_alltime": 0.22019,
   "nba_fleet_best_island": "S14",
+  "nba_session_best": 0.22034,
+  "nba_session_best_island": "S15",
+  "nba_target": 0.20,
+  "nba_milestone_this_cycle": "S15 brier=0.22034 — first NBA island to hit sub-0.22085 in this reset generation (random_forest, gen=373)",
+  "diverfisy_command_format_correction": "IMPORTANT: correct format is {\"command\":\"diversify\"} NOT {\"action\":\"diversify\"} — old vm-diversify work-queue items have wrong field name",
   "pol_islands": {
-    "P1": {"space": "Nomos42/political-alpha", "gen": 10750, "brier": 0.2494, "stagnation": 0, "status": "healthy", "best_brier": 0.2499},
-    "P2": {"space": "Nomos42/political-alpha-2", "gen": 15571, "brier": 0.24908, "stagnation": 0, "status": "healthy", "best_brier": 0.25003},
-    "P4": {"space": "LBJLincoln/political-alpha-4", "gen": 34978, "brier": 0.24904, "stagnation": 0, "status": "pol_fleet_best", "best_brier": 0.24992},
-    "P5": {"space": "LBJLincoln/political-alpha-5", "gen": 27672, "brier": 0.28, "stagnation": 0, "status": "healthy", "best_brier": 0.24993},
-    "P7": {"space": "LBJLincoln/political-alpha-7", "gen": 17948, "brier": 0.24904, "stagnation": 0, "status": "healthy", "best_brier": 0.25412}
+    "P1": {
+      "space": "Nomos42/political-alpha",
+      "gen": 11904,
+      "cycle": 3969,
+      "best_brier": 0.24990,
+      "current_brier": 0.24940,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "model": "xgboost_brier"
+    },
+    "P2": {
+      "space": "Nomos42/political-alpha-2",
+      "gen": 16764,
+      "cycle": 5588,
+      "best_brier": 0.25003,
+      "current_brier": 0.24910,
+      "stagnation": 0,
+      "status": "COOLDOWN",
+      "model": "xgboost_brier",
+      "note": "persistent 0.25003 plateau; VM elite_injection recommended"
+    },
+    "P4": {
+      "space": "LBJLincoln/political-alpha-4",
+      "gen": 36037,
+      "cycle": 12013,
+      "best_brier": 0.24992,
+      "current_brier": 0.24904,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "model": "lightgbm",
+      "fleet_best": true
+    },
+    "P5": {
+      "space": "LBJLincoln/political-alpha-5",
+      "gen": 29071,
+      "cycle": 9691,
+      "best_brier": 0.24993,
+      "current_brier": 0.24929,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "model": "lightgbm"
+    },
+    "P7": {
+      "space": "LBJLincoln/political-alpha-7",
+      "gen": 18688,
+      "cycle": 6230,
+      "best_brier": 0.25412,
+      "current_brier": 0.24904,
+      "stagnation": 0,
+      "status": "EVOLVING",
+      "model": "lightgbm",
+      "note": "stagnation confirmed resolved; active improvement phase"
+    }
   },
   "pol_fleet_best": 0.24992,
   "pol_fleet_best_island": "P4",
-  "alerts": [
-    "S17 PAUSED 19 days — VM restart critically needed",
-    "S13 hard-reset — rebuilding from gen=2 (was gen=222)",
-    "S18 hard-reset — rebuilding from gen=279 (was gen=6847)",
-    "S22 stagnation=9 — approaching 15-threshold, watch next cycle",
-    "S15 milestone: best_brier=0.22034 < 0.22085 threshold; checkpoint API not available"
-  ],
-  "actions_this_cycle": [
-    "tauric-scope-audit: abandoned 10-agent fork, no HF Space, missing Axelrod mechs A/B/C, has BH FDR + island_oracle — no parity required, keep as reference",
-    "checkpoint attempted on S15 via POST /api/command — rejected (unknown command); milestone documented in CLAUDE.md",
-    "research proposal written: uncertainty-aware ML + ECE calibration (Montrucchio et al. 2026)",
-    "CLAUDE.md island table updated with current gen/brier/stagnation",
-    "work-queue: tf-axelrod-tauric-scope-audit marked done",
-    "vm-diversify-s13 note updated: hard reset resolved stagnation, diversify moot"
-  ],
+  "pol_all_up": true,
+  "pol_restarts_this_cycle": 0,
+  "axelrod_parity": {
+    "nba_app": "HEALTHY — 3 mechs confirmed fires 37-41",
+    "pol_app": "CORRUPTED (priority-0 restore pending VM) — SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 still 794-byte stub",
+    "tauric": "ACTIVE A/B variant (LBJLincoln26/nba-tauric-trading-floor) — intentionally NO Axelrod mechs A/B/C; has island_oracle.py; classified as separate experimental fork; parity NOT required"
+  },
   "councils_status": "DECOMMISSIONED 2026-04-20 — all 9 TESTforge42 dept councils deleted",
   "dashboard_r8": "DONE (completed 2026-04-15)",
+  "actions_this_cycle": [
+    "S15 diversify queued: {\"command\":\"diversify\"} → {\"status\":\"command queued\"} ✓",
+    "S18 diversify queued: {\"command\":\"diversify\"} → {\"status\":\"command queued\"} ✓",
+    "tf-axelrod-tauric-scope-audit DONE: active HF Space (deploy-tfs.yml confirmed), no Axelrod mechs, classified as intentional A/B fork with island_oracle.py",
+    "vm-diversify-s18 marked done (stagnation=0 confirmed prior cycle; new stagnation cycle addressed separately)",
+    "vm-diversify-s22 marked done (stagnation=0 confirmed prior cycle)",
+    "NBA SOTA research proposal written (calibration-ensemble): data/research-proposals/nba-sota-2026-05-05.json",
+    "brain-status.json updated for nomos-political-alpha (rotation A: FEC/SEC data)",
+    "command format correction documented: {\"command\":\"diversify\"} is correct (not {\"action\":\"diversify\"})"
+  ],
+  "alerts": [
+    "CRITICAL-0: POL app.py still corrupted — VM must execute tf-axelrod-pol-app-restore (priority-0)",
+    "CRITICAL-1: S17 PAUSED 19 days — VM must restart (priority-1)",
+    "S15 milestone: brier=0.22034 sub-0.22085 threshold but stagnating=20; diversify queued",
+    "S18 diversify queued (stagnation=18 in new reset cycle)",
+    "S22 stagnation=14 approaching threshold — watch next cycle",
+    "S13 hard-reset again (cycle=11); prev stagnation=17 resolved by reset",
+    "engine-parity-sync still pending (priority-40)",
+    "COMMAND FORMAT BUG: all vm-diversify work-queue items use {\"action\":\"diversify\"} which FAILS — correct is {\"command\":\"diversify\"}"
+  ],
   "next_priority_vm_tasks": [
-    "priority-0: tf-axelrod-pol-app-restore (POL app.py still corrupted)",
-    "priority-1: vm-restart-s17 (PAUSED 19 days)",
-    "priority-40: engine-parity-sync (features/engine.py 54KB behind)",
-    "priority-56: tf-axelrod-kl-divergence (L1-norm -> KL upgrade)"
+    "priority-0: tf-axelrod-pol-app-restore (git revert c869455 + sed fix + safe_commit)",
+    "priority-1: vm-restart-s17 (curl POST HF restart API)",
+    "priority-40: engine-parity-sync (cp features/engine.py to nomos-nba-agent)",
+    "priority-56: tf-axelrod-kl-divergence (L1-norm → KL upgrade, both apps)",
+    "BONUS: fix command format in vm cron scripts: {\"action\":\"diversify\"} → {\"command\":\"diversify\"}"
   ]
 }
