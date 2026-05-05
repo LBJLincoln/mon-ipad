@@ -1,0 +1,77 @@
+{
+  "proposal_id": "nba-sota-2026-05-06",
+  "generated_at": "2026-05-06T00:00:00Z",
+  "cycle": "cloud-brain-fire-49",
+  "search_date": "2026-05-06",
+  "category": "NBA_SOTA_RESEARCH",
+  "priority": "HIGH",
+  "findings": [
+    {
+      "paper": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "source": "MDPI Information 17/1/56 (January 2026)",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "key_technique": "RNN + Monte Carlo dropout for calibrated sequential probability estimates",
+      "nba_brier": 0.221,
+      "actionable": "Add MC dropout to neural model candidates. GA mutation: add 'rnn_mcdropout' to model_type pool for CPU-capable variant (GRU with p=0.2 dropout, 2-3 layers). Expected Brier improvement: 0.002-0.005.",
+      "effort": "MEDIUM — add model type to features/engine.py mutation pool"
+    },
+    {
+      "paper": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "source": "Nature Scientific Reports 2025",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "key_technique": "Stacked ensemble: L1 (XGBoost+LightGBM+RandomForest) -> L2 (logistic regression meta-learner)",
+      "insight": "Stacking L1 tree models under logistic meta-learner outperforms any single model. Our GA uses single model types — adding stacking as a GA chromosome option could push past 0.22 floor.",
+      "actionable": "Add 'stacked_ensemble' to model_type pool: L1=[xgboost,lightgbm,random_forest] with 3-fold CV -> L2 logistic. Gate: only for gen>500 (costly to evaluate). Expected improvement: 0.003-0.008.",
+      "effort": "HIGH — requires engine.py + island mutation changes"
+    },
+    {
+      "paper": "A Data-Driven Machine Learning Algorithm for Predicting the Outcomes of NBA Games",
+      "source": "MDPI Symmetry 15/4/798",
+      "url": "https://www.mdpi.com/2073-8994/15/4/798",
+      "key_insight": "Logistic regression 0.199 Brier outperforms XGBoost 0.202 — ensemble of simple models beats single complex model",
+      "actionable": "S14 logistic_regression at 0.22158 confirms this trend. Increase logistic_regression weight in GA initial population seeding (currently equal to tree models)."
+    },
+    {
+      "paper": "Integration of machine learning XGBoost and SHAP models for NBA game outcome prediction",
+      "source": "PMC 2024-2025",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
+      "key_insight": "SHAP feature importance reveals top predictive game factors; pruning correlated features reduces noise",
+      "actionable": "Run SHAP on S14/S15 best models. Output top-50 SHAP features -> warm-start seed for new island with MAX_FEATURES=50 hard-constrained to SHAP top set."
+    }
+  ],
+  "fleet_lesson_this_cycle": {
+    "observation": "S13 extra_trees recovery: best_brier 0.24535->0.23196 after diversify command",
+    "lesson": "Model-type diversity is critical for escaping local optima. extra_trees discovered a better region than lightgbm was stuck in.",
+    "recommendation": "Ensure all islands cycle through extra_trees, catboost, and random_forest in addition to xgboost/lightgbm. Diversify command should always reset model_type distribution, not just mutation rate."
+  },
+  "cross_project_transfer": {
+    "to_political": "Stacked ensemble (L1+L2) applicable to POL. Political has 272 features — stacking could add 0.003-0.005 Brier improvement.",
+    "to_political_rnn": "RNN+MCDropout: political events as time-series warrants sequential model. Political has natural temporal structure (election cycles, approval ratings).",
+    "rotation_note": "Rotation A (FEC/SEC data audit): POL pipeline 272 features vs NBA 3377. Priority: deploy /api/scrape-fec endpoint on LBJLincoln/nomos-browser-nba."
+  },
+  "quick_wins": [
+    {
+      "id": "increase-lr-seed-weight",
+      "description": "Increase logistic_regression seeding probability in GA initial population",
+      "effort": "LOW",
+      "estimated_gain": "May discover S14-like 0.22x on other islands faster",
+      "islands": ["S13", "S18", "S22"]
+    },
+    {
+      "id": "prob-clipping-0025-0975",
+      "description": "Add probability clipping [0.025, 0.975] post-prediction to Brier evaluation",
+      "effort": "LOW",
+      "estimated_gain": "0.001-0.003 Brier",
+      "noted_since": "fire-47"
+    }
+  ],
+  "sota_reference_table": {
+    "logistic_regression_nba_sota": 0.199,
+    "xgboost_nba_sota": 0.202,
+    "rnn_mcdropout_nba_2026": 0.221,
+    "our_fleet_best": 0.22019,
+    "our_sub_oracle": 0.22034,
+    "gap_to_best_sota_nba": 0.02119,
+    "gap_to_target_0_20": 0.02019
+  }
+}
