@@ -1,0 +1,78 @@
+# .github/workflows/pol-tf-restore.yml
+# One-shot GH Action to restore POL app.py from the git revert.
+# Bypasses the 184KB cloud MCP push limit that blocked fires 37-48.
+# See work-queue.json priority-0: tf-axelrod-pol-app-restore
+#
+# HOW TO RUN:
+#   GitHub → Actions → "POL App Restore (One-Shot)" → Run workflow
+#   In the "confirm" field: type exactly  RESTORE
+#   Then click "Run workflow".
+
+name: POL App Restore (One-Shot)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type RESTORE to confirm (this pushes directly to main)"
+        required: true
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'RESTORE'
+
+    steps:
+      - name: Checkout (full history required for revert)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.email "cloud-agent@nomos42.ai"
+          git config user.name "Cloud Agent [pol-tf-restore]"
+
+      - name: Revert corruption commit c869455
+        run: |
+          git revert c869455823af50a9a10e117834fa87f1be7ddb83 --no-edit
+          echo "Revert complete — checking file size:"
+          wc -l scripts/arena/hf-political-trading-floor/app.py
+
+      - name: Apply percent-sign fix (18%% -> 18%)
+        run: |
+          sed -i "s/~18%% (DMAD/~18% (DMAD/g" scripts/arena/hf-political-trading-floor/app.py
+          echo "Sed fix applied"
+          grep '18%' scripts/arena/hf-political-trading-floor/app.py | head -5
+
+      - name: Verify py_compile + line-count gate
+        run: |
+          python3 -m py_compile scripts/arena/hf-political-trading-floor/app.py && echo "py_compile PASS"
+          LINE_COUNT=$(wc -l < scripts/arena/hf-political-trading-floor/app.py)
+          echo "Line count: $LINE_COUNT (expected ~3774)"
+          if [ "$LINE_COUNT" -lt 3770 ]; then
+            echo "ERROR: line count $LINE_COUNT < 3770 — restore incomplete"
+            exit 1
+          fi
+
+      - name: Amend revert commit to include sed fix
+        run: |
+          git add scripts/arena/hf-political-trading-floor/app.py
+          git commit --amend -m "fix(tf): POL AXELROD_CANON restore (revert c869455) + ~18%% typo fix (fire-48 GH Action)
+
+          Restores scripts/arena/hf-political-trading-floor/app.py from 794-byte stub
+          back to 3774-line full Axelrod-2026 app (good commit 2c96e0f).
+          Applies the ~18%% -> ~18% sed fix that was the original intent of the
+          corruption commit (fire-36).
+          Triggered via workflow_dispatch by human reviewer.
+
+          Co-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+
+      - name: Push to main
+        run: |
+          git push origin main
+          echo "Push complete — POL app.py restored"
