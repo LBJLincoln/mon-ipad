@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-06
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-06T12h
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -45,18 +45,18 @@ HF EVOLUTION ISLANDS — 11 SURVIVORS (6 NBA + 5 POL) after 2026-04-17 cull
     Eliminated slots now host selfhost LLMs on LBJLincoln/LBJLincoln26/TESTforge42.
 
     NBA Survivors (6, CPU tree-only, MAX_FEATURES=200):
-    ├── S13 Nomos42/nba-evo-4:        extra_trees       gen=220   brier=0.23196  stagnation=0 recovery↑ (diversify fire-47 worked) (2026-05-06T00h)
-    ├── S14 Nomos42/nba-evo-5:        logistic_regr     gen=3075  brier=0.22158  stagnation=0 ★ FLEET BEST alltime=0.22019 (2026-05-06T00h)
-    ├── S15 Nomos42/nba-evo-6:        xgboost_brier     gen=795   brier=0.22034  stagnation=0 ★sub-oracle (2026-05-06T00h)
-    ├── S17 LBJLincoln26/nba-evo-s17: xgboost           gen=---   brier=---      ⚠ PAUSED 22d+ — VM restart OVERDUE (2026-05-06T00h)
-    ├── S18 TESTforge42/nba-evo-s18:  xgboost_brier     gen=1177  brier=0.22315  stagnation=0 ⚠ 0.21924 LOST (2026-05-06T00h)
-    └── S22 TESTforge42/nba-evo-s22:  xgboost           gen=1657  brier=0.22431  stagnation=0 (2026-05-06T00h)
+    ├── S13 Nomos42/nba-evo-4:        extra_trees       gen=484   brier=0.23196  stagnation=0 ✓ div fire-50 worked (2026-05-06T12h)
+    ├── S14 Nomos42/nba-evo-5:        logistic_regr     gen=3474  brier=0.22158  stagnation=15 ★ FLEET BEST alltime=0.22019 ⚠ DIVERSIFY QUEUED (2026-05-06T12h)
+    ├── S15 Nomos42/nba-evo-6:        xgboost_brier     gen=1379  brier=0.22034  stagnation=0 ★sub-oracle (2026-05-06T12h)
+    ├── S17 LBJLincoln26/nba-evo-s17: xgboost           gen=---   brier=---      ⚠ PAUSED 23d+ — VM restart OVERDUE (2026-05-06T12h)
+    ├── S18 TESTforge42/nba-evo-s18:  xgboost_brier     gen=1606  brier=0.22315  stagnation=0 ✓ div fire-50 worked, 0.21924 LOST (2026-05-06T12h)
+    └── S22 TESTforge42/nba-evo-s22:  xgboost           gen=1801  brier=0.22431  stagnation=0 ✓ div fire-50 worked (2026-05-06T12h)
     Political Survivors (5, CPU tree-only):
-    ├── P1 Nomos42/political-alpha:      xgboost_brier  gen=16685  brier=0.24990  stagnation=0 (2026-05-06T00h)
-    ├── P2 Nomos42/political-alpha-2:    xgboost_brier  gen=20707  brier=0.25003  stagnation=0 top_model=0.24902 (2026-05-06T00h)
-    ├── P4 LBJLincoln/political-alpha-4: lightgbm       gen=40344  brier=0.24992  stagnation=0 ★ POL FLEET BEST alltime=0.24904 (2026-05-06T00h)
-    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier  gen=34500  brier=0.24993  stagnation=0 top_performer=0.24906 (2026-05-06T00h)
-    └── P7 LBJLincoln/political-alpha-7: lightgbm       gen=22859  brier=0.25412  stagnation=0 (2026-05-06T00h)
+    ├── P1 Nomos42/political-alpha:      xgboost_brier  gen=19353  brier=0.24990  stagnation=0 (2026-05-06T12h)
+    ├── P2 Nomos42/political-alpha-2:    xgboost_brier  gen=23035  brier=0.25003  stagnation=0 (2026-05-06T12h)
+    ├── P4 LBJLincoln/political-alpha-4: lightgbm       gen=42945  brier=0.24992  stagnation=0 ★ POL FLEET BEST alltime=0.24904 (2026-05-06T12h)
+    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier  gen=37587  brier=0.24993  stagnation=0 (2026-05-06T12h)
+    └── P7 LBJLincoln/political-alpha-7: lightgbm       gen=25670  brier=0.25412  stagnation=0 (2026-05-06T12h)
 
 SELFHOST LLM FLEET (6 RUNNING, 2 building — 2026-04-19 20:55 UTC)
     LBJLincoln   (3 RUNNING): qwen25-05b-cpu, gemma2-2b-cpu, phi35-mini-cpu
@@ -71,7 +71,7 @@ HF TRADING FLOORS (Real LLM experiment, NBA 16 agents / Political 16 agents — 
     ├── LBJLincoln26/nba-llm-trading-floor: NBA engine (1257 games, FastAPI + Gradio)
     │   └── Source: scripts/arena/hf-llm-trading-floor/
     ├── LBJLincoln26/political-llm-trading-floor: POLITICAL engine (1120 events, same architecture)
-    │   └── Source: scripts/arena/hf-political-trading-floor/
+    │   └── Source: scripts/arena/hf-political-trading-floor/ — AXELROD RESTORED fire-51 (SHA 96e31b67, Mechs A/B/C ✓)
     ├── Both expose: /api/status /run /stop /reset /mutate /logs /day-decisions /leaderboard
     └── LBJLincoln26/llm-gateway: Centralized LLM proxy (11 models, fallback chains)
 
