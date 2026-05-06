@@ -1,0 +1,75 @@
+{
+  "id": "sota-2026-05-07T00h-uncertainty-calibration",
+  "generated_at": "2026-05-07T00:00:00Z",
+  "cycle": "fire-54",
+  "category": "uncertainty_quantification",
+  "title": "Uncertainty-Aware NBA Forecasting via MC Dropout + Calibration",
+  "sources": [
+    {
+      "paper": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "date": "2026-01",
+      "reported_brier": {"logistic_regression": 0.199, "xgboost": 0.202, "cnn": 0.221},
+      "key_features": ["rolling form indicators", "spatial shot-chart embeddings", "MC dropout uncertainty quantification"]
+    },
+    {
+      "paper": "Stacked Ensemble Model for NBA Game Outcome Prediction Analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "date": "2025",
+      "method": "NB + AdaBoost + MLP + KNN + XGBoost + DT + LR stacked",
+      "key_finding": "Heterogeneous stacking improves over any single model"
+    }
+  ],
+  "sota_gap_analysis": {
+    "external_best_brier": 0.199,
+    "our_fleet_best": 0.22019,
+    "gap": 0.02119,
+    "gap_pct": "10.6%",
+    "notes": "External 0.199 is single-season 2024 test set, not walk-forward holdout. Our honest walk-forward: 0.22447 (Kaggle, 19 weeks). External comparable would be walk-forward — gap may be smaller."
+  },
+  "actionable_techniques": [
+    {
+      "technique": "MC Dropout Uncertainty Quantification",
+      "cpu_feasible": false,
+      "reason": "Requires neural network with dropout — incompatible with CPU-only tree constraint (Rule #8)",
+      "alternative": "GA Pareto front variance already serves as ensemble uncertainty proxy"
+    },
+    {
+      "technique": "Rolling Form Indicators (7/14/30d windows)",
+      "cpu_feasible": true,
+      "current_status": "Partially covered in engine.py Cat8 (form) and Cat37 (momentum). Audit 14d/30d window completeness.",
+      "priority": "MEDIUM",
+      "action": "Audit engine.py Cat8/Cat37 for 7/14/30d rolling completeness. Add missing windows.",
+      "estimated_brier_delta": "-0.002 to -0.005"
+    },
+    {
+      "technique": "Sigmoid Calibration in GA Fitness for All Islands",
+      "cpu_feasible": true,
+      "current_status": "S15 uses sigmoid calibration → 0.22034 (sub-oracle). S13/S18/S22 may not.",
+      "priority": "HIGH",
+      "action": "GET /api/config on S13, S18, S22. If calibration missing, POST /api/config {calibration: sigmoid}.",
+      "estimated_brier_delta": "-0.001 to -0.003 per island"
+    },
+    {
+      "technique": "Logistic Regression as GA Model Candidate",
+      "cpu_feasible": true,
+      "current_status": "S14 organically discovered logistic_regression (26f, composite 0.37). Already in pool.",
+      "priority": "LOW — already implemented in S14",
+      "action": "Verify LR is in mutation pool of S13/S15/S18/S22 as well"
+    }
+  ],
+  "recommended_quick_win": {
+    "action": "Enable sigmoid calibration on S13, S18, S22 via /api/config",
+    "rationale": "S15 sigmoid calibration → sub-oracle 0.22034. S13 (0.23196), S18 (0.22315), S22 (0.22431) all above. Calibration is post-training only — no GA structure change.",
+    "steps": [
+      "GET https://nomos42-nba-evo-4.hf.space/api/config → check calibration field",
+      "GET https://testforge42-nba-evo-s18.hf.space/api/config → check calibration field",
+      "GET https://testforge42-nba-evo-s22.hf.space/api/config → check calibration field",
+      "If missing: POST /api/config {\"calibration\": \"sigmoid\"} to each"
+    ],
+    "risk": "LOW"
+  },
+  "cross_project": {
+    "political": "Rotation C port: sigmoid calibration + extra_trees + rolling polling windows — see nomos-political-alpha/data/research-proposals/rotation-c-nba-techniques-2026-05-07.json"
+  }
+}
