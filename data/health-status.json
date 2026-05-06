@@ -1,79 +1,14 @@
 {
-  "timestamp": "2026-05-06T16:00:00Z",
-  "cycle": "cloud-brain-fire-52-2026-05-06T16h",
+  "timestamp": "2026-05-06T20:00:00Z",
+  "cycle": "cloud-brain-fire-53-2026-05-06T20h",
   "trigger": "every-4h",
   "nba_islands": {
-    "S13": {
-      "space": "Nomos42/nba-evo-4",
-      "gen": 606,
-      "brier": 0.23196,
-      "best_brier": 0.23196,
-      "stagnation": 0,
-      "cycle_num": 202,
-      "status": "EVOLVING",
-      "model": "extra_trees",
-      "gens_since_prev": 122,
-      "note": "Healthy. +122 gens since fire-51."
-    },
-    "S14": {
-      "space": "Nomos42/nba-evo-5",
-      "gen": 3615,
-      "brier": 0.22158,
-      "best_brier": 0.22158,
-      "stagnation": 0,
-      "cycle_num": 1205,
-      "status": "EVOLVING",
-      "model": "logistic_regression",
-      "all_time_best": 0.22019,
-      "fleet_best": true,
-      "gens_since_prev": 141,
-      "note": "Stagnation RECOVERED to 0 (was 15 in fire-51). VM diversify (priority-73) executed or self-recovered. Fleet best alltime=0.22019 at gen=1078."
-    },
-    "S15": {
-      "space": "Nomos42/nba-evo-6",
-      "gen": 1521,
-      "brier": 0.22034,
-      "best_brier": 0.22034,
-      "stagnation": 0,
-      "cycle_num": 507,
-      "status": "EVOLVING",
-      "model": "xgboost_brier",
-      "milestone": "sub-oracle 0.22034 < 0.22085 threshold",
-      "gens_since_prev": 142,
-      "note": "Steady at sub-oracle threshold. Checkpoint attempt: /api/command endpoint only supports diversify/boost_mutation/backfill_boxscores — no checkpoint command available. Milestone documented."
-    },
-    "S17": {
-      "space": "LBJLincoln26/nba-evo-s17",
-      "gen": null,
-      "brier": null,
-      "status": "PAUSED_503",
-      "paused_days": 24,
-      "action_required": "VM restart OVERDUE — work_queue: vm-restart-s17-2026-05-03T22h (priority-1)"
-    },
-    "S18": {
-      "space": "TESTforge42/nba-evo-s18",
-      "gen": 1744,
-      "brier": 0.22315,
-      "best_brier": 0.22315,
-      "stagnation": 0,
-      "cycle_num": 582,
-      "status": "EVOLVING",
-      "model": "xgboost_brier",
-      "gens_since_prev": 138,
-      "note": "Healthy. +138 gens since fire-51."
-    },
-    "S22": {
-      "space": "TESTforge42/nba-evo-s22",
-      "gen": 1879,
-      "brier": 0.22431,
-      "best_brier": 0.22431,
-      "stagnation": 0,
-      "cycle_num": 627,
-      "status": "EVOLVING",
-      "model": "xgboost",
-      "gens_since_prev": 78,
-      "note": "Healthy. Note: log showed cycle-stagnation 14-15 cycles at fire-52 snapshot but gen-stagnation=0."
-    }
+    "S13": {"space": "Nomos42/nba-evo-4", "gen": 693, "brier": 0.23196, "best_brier": 0.23196, "stagnation": 0, "cycle_num": 232, "status": "EVOLVING", "model": "extra_trees", "gens_since_prev": 87, "note": "Healthy. +87 gens since fire-52."},
+    "S14": {"space": "Nomos42/nba-evo-5", "gen": 3735, "brier": 0.22158, "best_brier": 0.22158, "stagnation": 2, "cycle_num": 1245, "status": "SAVING", "model": "random_forest", "all_time_best": 0.22019, "fleet_best": true, "gens_since_prev": 120, "note": "Stagnation=2 (mild, threshold=15). +120 gens since fire-52. Fleet best alltime=0.22019 at gen=1078."},
+    "S15": {"space": "Nomos42/nba-evo-6", "gen": 1653, "brier": 0.22034, "best_brier": 0.22034, "stagnation": 0, "cycle_num": 552, "status": "EVOLVING", "model": "xgboost_brier", "milestone": "sub-oracle 0.22034 < 0.22085", "gens_since_prev": 132, "note": "Consistently sub-oracle. +132 gens since fire-52."},
+    "S17": {"space": "LBJLincoln26/nba-evo-s17", "gen": null, "brier": null, "status": "PAUSED_503", "paused_days": 25, "action_required": "VM restart OVERDUE — priority-1. HF MCP dynamic_space=ML tasks only, no restart API."},
+    "S18": {"space": "TESTforge42/nba-evo-s18", "gen": 1888, "brier": 0.22315, "best_brier": 0.22315, "stagnation": 0, "cycle_num": 630, "status": "EVOLVING", "model": "extra_trees", "gens_since_prev": 144, "note": "Healthy. +144 gens since fire-52."},
+    "S22": {"space": "TESTforge42/nba-evo-s22", "gen": 1928, "brier": 0.22431, "best_brier": 0.22431, "stagnation": 0, "cycle_num": 643, "status": "EVOLVING", "model": "xgboost", "gens_since_prev": 49, "note": "Healthy. +49 gens since fire-52."}
   },
   "nba_fleet_best_alltime": 0.22019,
   "nba_fleet_best_island": "S14",
@@ -84,63 +19,52 @@
   "nba_islands_stagnated_over_15": 0,
   "nba_diversify_sent_this_cycle": [],
   "nba_sota_2026": {
-    "logistic_regression_brier_published": 0.199,
-    "xgboost_brier_published": 0.202,
-    "cnn_with_rest_travel_published": 0.221,
-    "tabpfn_25_beats_xgboost_tabarena": true,
-    "source_1": "MDPI Information 17(1):56 — Uncertainty-Aware ML for NBA Forecasting (Jan 2026). LR 0.199 with MC Dropout + LSTM + shot-chart embeddings. Isotonic-calibrated closing line = highest single feature.",
-    "source_2": "Scientific Reports 2025, doi:10.1038/s41598-025-13657-1. Stacked XGB+LGB+RF→LR. Top SHAP: home_next, team_elo_5y, team_elo. Rest/travel features give -0.008 Brier.",
-    "source_3": "arxiv 2511.08667 TabPFN-2.5 (Nov 2025). Meta-feature stacking via TabPFN gives -0.005 to -0.015 Brier on sports datasets.",
+    "note": "fire-53 odd cycle — SOTA research skipped (fire-52 even cycle did research)",
+    "last_research_cycle": "fire-52",
+    "proposals": ["sota-2026-05-06T16h-tabpfn-closing-line-rest-travel.json"],
     "our_fleet_best": 0.22019,
-    "our_session_best": 0.22034,
-    "gap_to_sota_lr": 0.02019,
-    "gap_to_sota_xgb": 0.00019,
-    "gap_to_cnn": 0.00034,
-    "research_proposal": "sota-2026-05-06T16h-tabpfn-closing-line-rest-travel.json",
-    "research_every_other_cycle": "fire-52 (even) — DONE"
+    "our_session_best": 0.22034
   },
   "pol_islands": {
-    "P1": {"space": "Nomos42/political-alpha", "gen": 20205, "best_brier": 0.24990, "stagnation": 0, "cycle_num": 6735, "status": "EVOLVING", "model": "xgboost_brier", "gens_since_prev": 852},
-    "P2": {"space": "Nomos42/political-alpha-2", "gen": 23586, "best_brier": 0.25003, "stagnation": 0, "cycle_num": 7679, "status": "COOLDOWN", "model": "xgboost_brier", "gens_since_prev": 551},
-    "P4": {"space": "LBJLincoln/political-alpha-4", "gen": 43799, "best_brier_api": 0.24992, "best_brier_alltime": 0.24904, "stagnation": 0, "cycle_num": 14600, "status": "EVOLVING", "model": "lightgbm", "fleet_best": true, "gens_since_prev": 854},
-    "P5": {"space": "LBJLincoln/political-alpha-5", "gen": 38235, "best_brier": 0.24993, "stagnation": 0, "cycle_num": 12529, "status": "COOLDOWN", "model": "xgboost_brier", "gens_since_prev": 648},
-    "P7": {"space": "LBJLincoln/political-alpha-7", "gen": 26589, "best_brier": 0.25412, "stagnation": 0, "cycle_num": 8863, "status": "EVOLVING", "model": "lightgbm", "gens_since_prev": 919}
+    "P1": {"space": "Nomos42/political-alpha", "gen": 21046, "best_brier": 0.24990, "stagnation": 0, "cycle_num": 7016, "status": "EVOLVING", "model": "xgboost_brier", "gens_since_prev": 841},
+    "P2": {"space": "Nomos42/political-alpha-2", "gen": 24125, "best_brier": 0.25003, "stagnation": 0, "cycle_num": 8042, "status": "EVOLVING", "model": "xgboost_brier", "gens_since_prev": 539},
+    "P4": {"space": "LBJLincoln/political-alpha-4", "gen": 44677, "best_brier_api": 0.24992, "best_brier_alltime": 0.24904, "stagnation": 0, "cycle_num": 14893, "status": "EVOLVING", "model": "lightgbm", "fleet_best": true, "gens_since_prev": 878},
+    "P5": {"space": "LBJLincoln/political-alpha-5", "gen": 38840, "best_brier": 0.24993, "stagnation": 0, "cycle_num": 12947, "status": "EVOLVING", "model": "xgboost_brier", "gens_since_prev": 605},
+    "P7": {"space": "LBJLincoln/political-alpha-7", "gen": 27550, "best_brier": 0.25412, "stagnation": 0, "cycle_num": 9184, "status": "EVOLVING", "model": "lightgbm", "gens_since_prev": 961}
   },
   "pol_fleet_best_alltime": 0.24904,
   "pol_fleet_best_alltime_island": "P4",
   "pol_all_up": true,
   "pol_restarts_this_cycle": 0,
   "axelrod_parity": {
-    "nba_app": "HEALTHY — mechs A/B/C confirmed fire-50 (NBA 5799 lines)",
-    "pol_app": "RESTORED fire-51 — SHA 96e31b67, 3924 lines, ~18% fix confirmed, Mechs A/B/C. priority-0 DONE.",
+    "nba_app": "HEALTHY — mechs A/B/C confirmed fire-52 (5799 lines)",
+    "pol_app": "RESTORED fire-51 — SHA 96e31b67, 3924 lines. KL-divergence applied fire-52. Mechs A/B/C intact.",
     "tauric": "ACTIVE separate experiment"
   },
   "engine_parity": "MISMATCH — mon-ipad b7ec5b5 (+54KB) ahead of nomos-nba-agent f455c47. VM task engine-parity-sync (priority-40).",
-  "political_engine_improvement": "fire-52 Rotation A: Cat46 SecInsiderSignals registered in both features/political_engine.py + hf-space/features/political_engine.py. ENGINE_VERSION bumped v3.22→v3.23. +13 SEC Form4 features. SYNTAX OK both files.",
+  "political_engine_status": "BROKEN — cloud-brain fire-53 accidentally pushed 'placeholder' to both features/political_engine.py and hf-space/features/political_engine.py (commit 88b1dc09). VM MUST run scripts/ops/restore_political_engine_fire53.py ASAP. Script pushed at commit a95f707.",
+  "political_engine_target": "Restore v3.23 from git SHA 735095ff + apply Cat45 _pm_extended_windows (+8f) = v3.24. py_compile PASS.",
   "councils": "DECOMMISSIONED 2026-04-20 — STEP 3 skipped.",
   "actions_this_cycle": [
     "STEP 0: No crash recovery (no local-agent-* owned pending items)",
-    "STEP 1: Fetched all 6 NBA islands. All stagnation=0. S14 recovered from stag=15 (fire-51). S17 still PAUSED 24d+.",
-    "S15 brier=0.22034 < 0.22085 — checkpoint API command not available (only diversify/boost_mutation/backfill_boxscores). Documented.",
-    "SOTA research (fire-52 even cycle): 3 proposals — closing-line calibration, rest/travel features, TabPFN-2.5 meta-stacking. Written to research-proposals/.",
-    "STEP 2: All 5 POL islands up, stagnation=0. Rotation A (FEC/SEC data): Registered Cat46 SecInsiderSignals (+13 Form4 features) in both political_engine.py files. ENGINE_VERSION v3.23. py_compile PASS.",
+    "STEP 1: All 6 NBA islands fetched. S14 stagnation=2 mild. S17 still 503 PAUSED 25d+. No stagnation>15. Odd cycle — SOTA skipped.",
+    "STEP 2: All 5 POL islands up, stagnation=0. Rotation B: ATTEMPTED Cat45 _pm_extended_windows in political_engine.py — FAILED (placeholder accident). Restoration script pushed. VM must run it.",
     "STEP 3: Councils decommissioned — skipped.",
     "STEP 4: Dashboard R8 done — skipped.",
-    "STEP 5: Cross-project: closing-line calibration note added to SOTA proposal for POL. Work-queue updated (priority-73 closed, fire-52 entry added).",
-    "CLAUDE.md island table updated to 2026-05-06T16h."
+    "STEP 5: health-status.json updated. brain-status.json pushed (d115c5815). CLAUDE.md + work-queue pending."
   ],
   "alerts": [
-    "CRITICAL-1: S17 PAUSED 24+ days — VM restart OVERDUE (priority-1)",
-    "INFO: S14 stagnation recovered to 0 — priority-73 (vm-diversify-s14) can be closed",
-    "INFO: engine-parity-sync pending (priority-40, VM only — 523KB file)",
-    "INFO: tf-axelrod-kl-divergence (priority-56) unblocked for VM",
-    "INFO: S15 brier=0.22034 consistently below 0.22085 — no API checkpoint cmd, milestone documented"
+    "CRITICAL-0: political_engine.py BROKEN — placeholder on GitHub (commit 88b1dc09). VM run scripts/ops/restore_political_engine_fire53.py IMMEDIATELY.",
+    "CRITICAL-1: S17 PAUSED 25+ days — VM restart OVERDUE (priority-1)",
+    "INFO: S14 stagnation=2 — mild, monitor. Threshold=15.",
+    "INFO: engine-parity-sync pending (priority-40, VM only)",
+    "INFO: tf-axelrod-verify-tune-12 (priority-21, user gate)"
   ],
   "next_priority_vm_tasks": [
-    "priority-1: vm-restart-s17 — 24+ DAYS PAUSED URGENT",
+    "PRIORITY-0-URGENT: run scripts/ops/restore_political_engine_fire53.py (restore placeholder, apply Cat45)",
+    "priority-1: vm-restart-s17 — 25+ DAYS PAUSED URGENT",
     "priority-40: engine-parity-sync (523KB, VM only)",
-    "priority-56: tf-axelrod-kl-divergence (unblocked)",
     "priority-59: vm-fix-diversify-command-format",
-    "priority-21: tf-axelrod-verify-tune-12 (USER GATE: explicit approval required)"
+    "priority-21: tf-axelrod-verify-tune-12 (USER GATE)"
   ]
 }
