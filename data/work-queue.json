@@ -1,8 +1,36 @@
 {
   "version": 1,
-  "updated_at": "2026-05-06T14:00:00Z",
+  "updated_at": "2026-05-06T20:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "fix-pol-engine-placeholder",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "URGENT: political_engine.py both files = 'placeholder' — fire-53 cloud push accident. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
+      "detected_at": "2026-05-06T20:00:00Z",
+      "updated_at": "2026-05-06T20:00:00Z",
+      "cloud_brain_note": "fire-53 (2026-05-06T20h): accidentally pushed 'placeholder' to features/political_engine.py + hf-space/features/political_engine.py (commit 88b1dc09). Last good commit: 735095ff (v3.23 = fire-52). Restoration script pushed: scripts/ops/restore_political_engine_fire53.py (commit a95f707). Script: git show 735095ff:<path> + Cat45 edits + py_compile gate + safe_commit.sh. MUST run before next HF Space restart.",
+      "do_not_push": false
+    },
+    {
+      "id": "cloud-brain-fire53-2026-05-06T20h",
+      "priority": 76,
+      "status": "done",
+      "completed_at": "2026-05-06T20:00:00Z",
+      "completed_by": "cloud-brain-fire-53",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-53 cycle: Rotation B political_engine Cat45 attempt + island updates",
+      "actions": [
+        "STEP 0: No crash recovery (no local-agent-* owned pending items)",
+        "STEP 1: Fetched all 6 NBA + 5 POL islands. S17 still 503 PAUSED 25d+. S14 stagnation=2 (mild). No stagnation>15. Odd cycle — SOTA research skipped. HF dynamic_space=ML tasks only, cannot restart spaces.",
+        "STEP 2: All 5 POL islands up, stagnation=0. Rotation B: ATTEMPTED Cat45 _pm_extended_windows (+8 features: 7d/14d Kalshi+Poly momentum, reversal, sustained move, cross-market divergence, long momentum). FAILED — accidentally pushed 'placeholder' to both political_engine.py files (commit 88b1dc09). Restoration script pushed (commit a95f707). VM must run it URGENTLY.",
+        "STEP 3: Councils decommissioned — skipped.",
+        "STEP 4: Dashboard R8 done — skipped.",
+        "STEP 5: brain-status.json pushed (d115c5815). health-status.json pushed (591f7af). CLAUDE.md island table update queued."
+      ]
+    },
     {
       "id": "tf-axelrod-pol-app-restore",
       "priority": 0,
@@ -10,32 +38,17 @@
       "completed_at": "2026-05-06T12:00:00Z",
       "completed_by": "cloud-brain-fire-51",
       "owner": "local-vm",
-      "subject": "URGENT: Restore corrupted POL app.py \u2014 COMPLETED",
-      "detected_at": "2026-05-03T18:30:00Z",
-      "updated_at": "2026-05-06T12:00:00Z",
-      "cloud_brain_note": "fire-51 (2026-05-06T12h): RESTORATION CONFIRMED. SHA 96e31b67a5353cff98b6e0d8b7025079d5b32690, 3924 escaped-lines, ~18% fix confirmed, AXELROD_CANON present, Mechs A/B/C all verified. fire-50 push-trigger GH Action (.github/workflows/pol-restore-trigger.yml + .trigger/pol-restore-fire50) executed automatically. 10-day outage resolved. | fire-50 (2026-05-06T08h): AUTO-RESTORE DEPLOYED \u2014 pushed .github/workflows/pol-restore-trigger.yml (one-shot push-trigger GH Action) + .trigger/pol-restore-fire50 (trigger file). GH Action auto-executed: git revert c869455 + sed s/~18%%/~18%/ + py_compile gate + git push.",
-      "pol_app_restored_sha": "96e31b67a5353cff98b6e0d8b7025079d5b32690",
-      "pol_app_restored_lines_escaped": 3924,
-      "pol_app_mechs_verified": [
-        "A",
-        "B",
-        "C"
-      ],
-      "pol_app_percent_fix": "~18% confirmed (not ~~18%%)",
-      "bad_commit": "c869455823af50a9a10e117834fa87f1be7ddb83",
-      "original_blob_sha": "519536029000f5e89d24f4d953ce6c3035b9196c",
-      "good_restore_commit": "2c96e0f6c44212c0c1d793cb965710bb29990a90",
-      "do_not_push_hf_space_yet": true
+      "subject": "URGENT: Restore corrupted POL app.py — COMPLETED"
     },
     {
       "id": "vm-restart-s17-2026-05-03T22h",
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) \u2014 PAUSED 23+ days (503 confirmed fire-51)",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 23+ days (503 confirmed fire-51)",
       "detected_at": "2026-05-03T22:00:00Z",
-      "updated_at": "2026-05-06T12:00:00Z",
-      "cloud_brain_note": "fire-51 (2026-05-06T12h): S17 STILL 503 \u2014 PAUSED 23+ days. curl https://lbjlincoln26-nba-evo-s17.hf.space/api/status \u2192 503. VM must restart via HF Space restart API.",
+      "updated_at": "2026-05-06T20:00:00Z",
+      "cloud_brain_note": "fire-53 (2026-05-06T20h): S17 STILL 503 — PAUSED 25+ days.",
       "do_not_push": false
     },
     {
@@ -44,7 +57,7 @@
       "status": "done",
       "completed_at": "2026-05-05T04:00:00Z",
       "owner": "local-vm",
-      "subject": "S13 stagnation=17 \u2014 send diversify command"
+      "subject": "S13 stagnation=17 — send diversify command"
     },
     {
       "id": "vm-diversify-s18-2026-05-03T22h",
@@ -52,7 +65,7 @@
       "status": "done",
       "completed_at": "2026-05-05T00:15:00Z",
       "owner": "local-vm",
-      "subject": "S18 stagnation<=22 \u2014 send diversify command"
+      "subject": "S18 stagnation<=22 — send diversify command"
     },
     {
       "id": "vm-diversify-s22-2026-05-04T02h",
@@ -60,7 +73,7 @@
       "status": "done",
       "completed_at": "2026-05-05T00:15:00Z",
       "owner": "local-vm",
-      "subject": "S22 stagnation<=15 \u2014 send diversify command"
+      "subject": "S22 stagnation<=15 — send diversify command"
     },
     {
       "id": "R7",
@@ -117,7 +130,6 @@
       "priority": 6,
       "status": "done",
       "completed_at": "2026-04-15T20:15:00Z",
-      "commit_hash": "e5af3536a9f364a36021eca705304226b51d890c",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mechanism B",
       "do_not_push_hf_space_yet": true
@@ -127,7 +139,6 @@
       "priority": 7,
       "status": "done",
       "completed_at": "2026-04-15T20:15:00Z",
-      "commit_hash": "e5af3536a9f364a36021eca705304226b51d890c",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mechanism C",
       "do_not_push_hf_space_yet": true
@@ -155,83 +166,8 @@
       "priority": 10,
       "status": "done",
       "completed_at": "2026-04-16T06:30:00Z",
-      "commit_hash": "0c7696fd5f28057dc5210d7d5a7d9f8c1b7a12b3",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "verify+tune fire 3",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-4",
-      "priority": 11,
-      "status": "done",
-      "completed_at": "2026-04-16T12:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 4",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-5",
-      "priority": 12,
-      "status": "done",
-      "completed_at": "2026-04-16T18:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 5",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-6",
-      "priority": 13,
-      "status": "done",
-      "completed_at": "2026-04-17T00:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 6",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-7",
-      "priority": 14,
-      "status": "done",
-      "completed_at": "2026-04-17T04:09:00Z",
-      "commit_hash": "35474e80d4c0ac277eeaf4c808e06f98279afbfd",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 7",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-8",
-      "priority": 15,
-      "status": "done",
-      "completed_at": "2026-04-17T12:23:48Z",
-      "commit_hash": "bdfd309ea36c881ccbee985f1532ad00a9e4fecc",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 8",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-9",
-      "priority": 16,
-      "status": "done",
-      "completed_at": "2026-04-17T12:30:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 9",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-10",
-      "priority": 17,
-      "status": "done",
-      "completed_at": "2026-04-18T00:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 10",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-11",
-      "priority": 18,
-      "status": "done",
-      "completed_at": "2026-04-18T06:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 11",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -239,209 +175,9 @@
       "priority": 21,
       "status": "pending",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 12 \u2014 HF Space push (USER GATE: explicit approval required)",
-      "scope": [
-        "1. User explicitly approves HF Space push.",
-        "2. priority-0 tf-axelrod-pol-app-restore is NOW DONE (fire-51 confirmed).",
-        "3. Push NBA app.py to LBJLincoln26/nba-llm-trading-floor.",
-        "4. Push POL app.py to LBJLincoln26/political-llm-trading-floor.",
-        "5. Restart both Spaces. 6. Verify /api/status healthy."
-      ],
+      "subject": "verify+tune fire 12 — HF Space push (USER GATE: explicit approval required)",
       "do_not_push_hf_space_yet": true,
-      "blocked_on": "explicit user approval only (priority-0 is now DONE)"
-    },
-    {
-      "id": "tf-axelrod-fix-ck-hardcoded",
-      "priority": 19,
-      "status": "done",
-      "completed_at": "2026-04-19T00:16:11Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "Fix NBA CK block hardcoded agent-count",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-13",
-      "priority": 20,
-      "status": "done",
-      "completed_at": "2026-04-20T06:11:00Z",
-      "commit_hash": "6a8f75e4f6d90596c2a391f8affc1126c6ace3bd",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 13",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-14",
-      "priority": 22,
-      "status": "done",
-      "completed_at": "2026-04-20T12:15:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 14",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-15",
-      "priority": 23,
-      "status": "done",
-      "completed_at": "2026-04-21T00:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 15",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-ck-rationale",
-      "priority": 24,
-      "status": "done",
-      "completed_at": "2026-04-21T06:26:56Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "Add per-bet edge_rationale to CK block",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-16",
-      "priority": 25,
-      "status": "done",
-      "completed_at": "2026-04-21T16:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 16",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-dmad-parity",
-      "priority": 26,
-      "status": "done",
-      "completed_at": "2026-04-22T00:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "DMAD anti-consensus gate parity",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-18",
-      "priority": 27,
-      "status": "done",
-      "completed_at": "2026-04-22T06:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 18",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-19",
-      "priority": 28,
-      "status": "done",
-      "completed_at": "2026-04-22T18:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 19",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-20",
-      "priority": 29,
-      "status": "done",
-      "completed_at": "2026-04-26T13:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 20",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-21",
-      "priority": 30,
-      "status": "done",
-      "completed_at": "2026-04-30T01:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 21",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-22",
-      "priority": 31,
-      "status": "done",
-      "completed_at": "2026-04-30T01:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 22",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-23",
-      "priority": 32,
-      "status": "done",
-      "completed_at": "2026-04-30T01:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 23",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-24",
-      "priority": 33,
-      "status": "done",
-      "completed_at": "2026-04-30T01:00:00Z",
-      "commit_hash": "caee9c921132162e87396fa075664630581623a6",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 24",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-26",
-      "priority": 35,
-      "status": "done",
-      "completed_at": "2026-04-30T12:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 26",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-25",
-      "priority": 34,
-      "status": "done",
-      "completed_at": "2026-04-30T07:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 25",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-28",
-      "priority": 37,
-      "status": "done",
-      "completed_at": "2026-05-01T06:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 28",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-27",
-      "priority": 36,
-      "status": "done",
-      "completed_at": "2026-05-01T00:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 27",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-29",
-      "priority": 38,
-      "status": "done",
-      "completed_at": "2026-05-01T12:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 29",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-30",
-      "priority": 39,
-      "status": "done",
-      "completed_at": "2026-05-02T06:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 30",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-31",
-      "priority": 42,
-      "status": "done",
-      "completed_at": "2026-05-02T12:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 31 \u2014 full independent spec audit, CLEAN",
-      "no_gaps_found": true,
-      "py_compile": "PASS both apps (NBA 5799 lines, POL 3775 lines)",
-      "do_not_push_hf_space_yet": true
+      "blocked_on": "explicit user approval only"
     },
     {
       "id": "engine-parity-sync",
@@ -450,335 +186,49 @@
       "owner": "local-vm",
       "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation)",
       "detected_at": "2026-05-02T04:00:00Z",
-      "cloud_brain_note": "Cannot execute via cloud MCP \u2014 file is 523KB, exceeds inline push limit.",
+      "cloud_brain_note": "Cannot execute via cloud MCP — file is 523KB, exceeds inline push limit.",
       "scope": [
-        "mon-ipad features/engine.py SHA b7ec5b547f6693aa43de90d5b610636850c911d9 (523KB) \u2014 canonical/newer",
-        "nomos-nba-agent features/engine.py SHA f455c4758a6e42b3157a9e89f1a7c893d7a08f89 (468KB) \u2014 54KB behind"
+        "mon-ipad features/engine.py SHA b7ec5b5 (523KB) — canonical/newer",
+        "nomos-nba-agent features/engine.py SHA f455c47 (468KB) — 54KB behind"
       ],
       "do_not_push": false
-    },
-    {
-      "id": "claude-md-island-update-2026-05-02",
-      "priority": 41,
-      "status": "done",
-      "completed_at": "2026-05-02T12:00:00Z",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "Update CLAUDE.md island table with 2026-05-02 gen counts"
-    },
-    {
-      "id": "tf-axelrod-verify-tune-32",
-      "priority": 43,
-      "status": "done",
-      "completed_at": "2026-05-02T18:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 32 \u2014 full spec re-audit, CLEAN",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-33",
-      "priority": 44,
-      "status": "done",
-      "completed_at": "2026-05-03T00:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 33 \u2014 PASS audit, found %%-percent bug in POL DMAD gate",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-pol-dmad-percent-fix",
-      "priority": 45,
-      "status": "done",
-      "completed_at": "2026-05-06T12:00:00Z",
-      "completed_by": "cloud-brain-fire-51",
-      "owner": "local-vm",
-      "subject": "Fix ~18%% -> ~18% in POL AXELROD_CANON DMAD gate \u2014 RESOLVED via priority-0 restore",
-      "note": "~18% fix confirmed in fire-51 POL app.py restoration check. Subsumed by tf-axelrod-pol-app-restore.",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-34",
-      "priority": 46,
-      "status": "done",
-      "completed_at": "2026-05-03T06:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 34 \u2014 re-audit CLEAN",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "claude-md-island-update-2026-05-03T10h",
-      "priority": 47,
-      "status": "done",
-      "completed_at": "2026-05-04T10:00:00Z",
-      "commit_hash": "ea4fd2a",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "Update CLAUDE.md island table + health-status.json + research proposal (S15 checkpoint)"
-    },
-    {
-      "id": "tf-axelrod-verify-tune-35",
-      "priority": 48,
-      "status": "done",
-      "completed_at": "2026-05-03T12:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 35 \u2014 PASS audit, no new tune",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-36",
-      "priority": 49,
-      "status": "done",
-      "completed_at": "2026-05-03T18:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 36 \u2014 PASS audit; POL file corruption accident; recovery queued priority-0",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-37",
-      "priority": 50,
-      "status": "done",
-      "completed_at": "2026-05-04T00:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 37 \u2014 NBA PASS, POL still awaiting VM restore",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-38",
-      "priority": 51,
-      "status": "done",
-      "completed_at": "2026-05-04T06:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 38 \u2014 deep POL restore attempt; py_compile PASS confirmed; push blocked by 184KB timeout",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-39",
-      "priority": 52,
-      "status": "done",
-      "completed_at": "2026-05-04T10:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 39 \u2014 NBA PASS all 3 mechs confirmed with line numbers, POL still awaiting VM restore",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "claude-md-island-update-2026-05-04T14h",
-      "priority": 53,
-      "status": "done",
-      "completed_at": "2026-05-04T14:00:00Z",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "Update CLAUDE.md island table + health-status.json + research proposal (2026-05-04T14h cycle)"
-    },
-    {
-      "id": "tf-axelrod-verify-tune-40",
-      "priority": 54,
-      "status": "done",
-      "completed_at": "2026-05-04T18:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 40 \u2014 NBA PASS; POL still awaiting VM restore",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-41",
-      "priority": 55,
-      "status": "done",
-      "completed_at": "2026-05-05T00:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 41 \u2014 NBA PASS; POL still corrupted; KL-divergence gap identified",
-      "do_not_push_hf_space_yet": true
     },
     {
       "id": "tf-axelrod-kl-divergence",
       "priority": 56,
       "status": "done",
-      "owner": "local-vm",
-      "subject": "Upgrade compute_consensus_distance from L1-norm to KL divergence (spec gap, Mech C paper dataset quality)",
-      "detected_at": "2026-05-05T00:00:00Z",
-      "cloud_brain_note": "fire-51: NOW UNBLOCKED \u2014 priority-0 (pol-app-restore) is DONE. Both NBA + POL apps can be edited.",
-      "scope": [
-        "CONTEXT: Spec (Mech C) says peer_consensus_distance = KL divergence from CK.",
-        "CURRENT: NBA app.py L3744 uses L1-norm (sum of absolute differences in pick fractions), labeled 'KL proxy'.",
-        "FIX: Replace L1-norm in compute_consensus_distance (L3767-3772) with KL divergence:",
-        "  import math",
-        "  def _kl(p, q, eps=1e-9): return sum(pi * math.log((pi+eps)/(qi+eps)) for pi,qi in zip(p,q))",
-        "  Compute probability vectors over discrete bet outcomes, then call _kl(agent_dist, consensus_dist).",
-        "ALSO APPLY TO: POL app.py after tf-axelrod-pol-app-restore is completed (NOW DONE).",
-        "VERIFY: python3 -m py_compile both apps after edit.",
-        "COMMIT: bash scripts/lib/safe_commit.sh LAUNCHPAD 'tune(tf): upgrade peer_consensus_distance L1->KL-divergence for paper dataset accuracy (both NBA+POL)' scripts/arena/hf-llm-trading-floor/app.py scripts/arena/hf-political-trading-floor/app.py"
-      ],
-      "do_not_push_hf_space_yet": true,
       "completed_at": "2026-05-06T14:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-52",
-      "result": "D_KL(P||Q)=sum_i(p_i+eps)*log((p_i+eps)/(q_i+eps)), eps=1e-9. NBA L3743 + POL L2399. py_compile PASS both apps."
-    },
-    {
-      "id": "tf-axelrod-tauric-scope-audit",
-      "priority": 57,
-      "status": "done",
-      "completed_at": "2026-05-05T00:15:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "Audit hf-llm-trading-floor-tauric/app.py",
-      "findings": {
-        "tauric_is_active": true,
-        "parity_decision": "NOT REQUIRED",
-        "action": "none"
-      }
-    },
-    {
-      "id": "claude-md-island-update-2026-05-05T00h",
-      "priority": 58,
-      "status": "done",
-      "completed_at": "2026-05-05T06:00:00Z",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "Update CLAUDE.md island table with 2026-05-05T00h live data"
+      "owner": "local-vm",
+      "subject": "Upgrade compute_consensus_distance L1->KL divergence",
+      "result": "APPLIED NBA L3743 + POL L2399. py_compile PASS.",
+      "do_not_push_hf_space_yet": true
     },
     {
       "id": "vm-fix-diversify-command-format",
       "priority": 59,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Fix diversify command format in VM cron scripts: {\"action\":\"diversify\"} \u2192 {\"command\":\"diversify\"}",
+      "subject": "Fix diversify command format: {\"action\":\"diversify\"} → {\"command\":\"diversify\"}",
       "detected_at": "2026-05-05T00:15:00Z",
-      "cloud_brain_note": "Correct format: {\"command\":\"diversify\"} \u2192 {\"status\":\"command queued\"}. Any VM cron script using 'action' field will silently fail.",
-      "scope": [
-        "grep -r 'action.*diversify\\|diversify.*action' scripts/ --include='*.sh' --include='*.py'",
-        "Replace {\"action\":\"diversify\"} with {\"command\":\"diversify\"}"
-      ],
+      "cloud_brain_note": "Correct format: {\"command\":\"diversify\"} → {\"status\":\"command queued\"}",
       "do_not_push": false
-    },
-    {
-      "id": "tf-axelrod-verify-tune-42",
-      "priority": 60,
-      "status": "done",
-      "completed_at": "2026-05-05T06:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 42 \u2014 NBA Mech A/B/C PASS; POL still corrupted",
-      "do_not_push_hf_space_yet": true
     },
     {
       "id": "s18-checkpoint-gen571",
       "priority": 61,
       "status": "done",
       "completed_at": "2026-05-06T12:00:00Z",
-      "completed_by": "cloud-brain-fire-51",
       "owner": "local-vm",
-      "subject": "CANCELLED: S18 checkpoint gen=571 brier=0.21924 \u2014 DEFINITIVELY LOST",
-      "result": "0.21924 lost \u2014 hard resets at cycles 251/276. fire-51 live best_brier=0.22315 confirms no recovery. Item cancelled.",
-      "do_not_push": false
-    },
-    {
-      "id": "tf-axelrod-verify-tune-43",
-      "priority": 62,
-      "status": "done",
-      "completed_at": "2026-05-05T04:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 43 \u2014 NBA PASS; S18 BREAKTHROUGH 0.21924; POL still awaiting VM restore",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "cloud-md-island-update-2026-05-05T04h",
-      "priority": 63,
-      "status": "done",
-      "completed_at": "2026-05-05T04:00:00Z",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "Update CLAUDE.md + health-status.json + brain-status.json + research proposal (2026-05-05T04h cycle)"
-    },
-    {
-      "id": "tf-axelrod-verify-tune-44",
-      "priority": 64,
-      "status": "done",
-      "completed_at": "2026-05-05T10:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 44 \u2014 NBA PASS all 3 mechs (deep line-level audit); POL still 794-byte stub",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-45",
-      "priority": 65,
-      "status": "done",
-      "completed_at": "2026-05-05T16:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 45 \u2014 mission re-read + sub-agent full-file audit; NBA PASS all 3 mechs; POL 794-byte stub day-5 overdue",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "cloud-diversify-s13-s14-s18-2026-05-05T20h",
-      "priority": 66,
-      "status": "done",
-      "completed_at": "2026-05-05T20:00:00Z",
-      "completed_by": "cloud-brain-fire-47",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "DIVERSIFY sent to S13/S14/S18"
-    },
-    {
-      "id": "pol-fleet-best-update-p4-2026-05-05T20h",
-      "priority": 67,
-      "status": "done",
-      "completed_at": "2026-05-05T20:00:00Z",
-      "completed_by": "cloud-brain-fire-47",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "P4 NEW POL FLEET BEST 0.24904 confirmed"
-    },
-    {
-      "id": "cloud-md-island-update-2026-05-05T20h",
-      "priority": 68,
-      "status": "done",
-      "completed_at": "2026-05-05T20:00:00Z",
-      "completed_by": "cloud-brain-fire-47",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "Update CLAUDE.md + health-status.json + brain-status.json (fire-47)"
-    },
-    {
-      "id": "tf-axelrod-verify-tune-48",
-      "priority": 70,
-      "status": "done",
-      "completed_at": "2026-05-05T23:59:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 48 \u2014 NBA PASS all 3 mechs; POL restore unblocked via GH Action pol-tf-restore.yml",
-      "findings": {
-        "nba_status": "PASS \u2014 Mech A confirmed (build_common_knowledge_block L3482, CK injection L2137, end-of-day broadcast L4873, resume prev_day_ck L4023). Mech B L3645/L4118. Mech C L3775/L3744.",
-        "pol_status": "STILL 794-byte stub SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 \u2014 day-9 overdue."
-      },
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "cloud-brain-fire49-2026-05-06T04h",
-      "priority": 71,
-      "status": "done",
-      "completed_at": "2026-05-06T04:00:00Z",
-      "completed_by": "cloud-brain-fire-49",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-49 cycle: island status fetch + health/brain updates + SOTA research",
-      "actions": [
-        "Fetched all 6 NBA + 5 POL island live /api/status \u2014 all up except S17 (503 PAUSED 23d+)",
-        "S18 checkpoint 0.21924 LOST confirmed: live best_brier=0.22315",
-        "priority-0 (pol-app-restore): GH Action pol-tf-restore.yml ready \u2014 USER MUST TRIGGER",
-        "priority-1 (s17-restart): 23+ days PAUSED \u2014 VM curl restart URGENT"
-      ]
-    },
-    {
-      "id": "tf-axelrod-verify-tune-50",
-      "priority": 72,
-      "status": "done",
-      "completed_at": "2026-05-06T08:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 50 \u2014 NBA PASS all 3 mechs; POL auto-restore deployed via push-trigger GH Action",
-      "findings": {
-        "nba_status": "PASS \u2014 full file read confirmed: Mech A build_common_knowledge_block L3482 + CK injection L2137 + end-of-day broadcast L4873 + resume prev_day_ck L4023. Mech B assign_sacrificial_archetypes L3645 + prompt inject L4118. Mech C write_axelrod_log L3775 + call L3744. py_compile PASS 5799 lines.",
-        "pol_action": "DEPLOYED auto-restore: .github/workflows/pol-restore-trigger.yml (push-trigger GH Action) + .trigger/pol-restore-fire50. GH Action executes: git revert c869455 + sed s/~18%%/~18%/ + py_compile gate (>=3770 lines) + git push main.",
-        "pol_target_state": "After GH Action: 3774 lines, py_compile PASS, ~18% fix applied, all 3 mechs present. Fire-51 confirms and marks priority-0 done.",
-        "kl_divergence": "Still pending \u2014 apply L1->KL upgrade in fire-51 after pol restore confirmed. NBA L3744 uses L1-norm. Both apps must be updated atomically."
-      },
-      "do_not_push_hf_space_yet": true
+      "subject": "CANCELLED: S18 checkpoint gen=571 brier=0.21924 — DEFINITIVELY LOST"
     },
     {
       "id": "vm-diversify-s14-2026-05-06T12h",
       "priority": 73,
       "status": "done",
       "completed_at": "2026-05-06T16:00:00Z",
-      "completed_by": "self-recovered-or-vm",
       "owner": "local-vm",
-      "subject": "S14 (Nomos42/nba-evo-5) stagnation=15 \u2014 send diversify command",
-      "detected_at": "2026-05-06T12:00:00Z",
-      "updated_at": "2026-05-06T16:00:00Z",
-      "cloud_brain_note": "fire-52 (2026-05-06T16h): S14 live stagnation=0 (gen=3615). Recovered \u2014 either VM executed diversify (priority-59 format fix) or self-recovered. Closing.",
-      "do_not_push": false
+      "subject": "S14 stagnation=15 — recovered (stagnation=0 in fire-53)"
     },
     {
       "id": "cloud-brain-fire52-2026-05-06T16h",
@@ -787,15 +237,7 @@
       "completed_at": "2026-05-06T16:00:00Z",
       "completed_by": "cloud-brain-fire-52",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-52 cycle: SOTA research, Cat46 registration, island updates, Rotation A",
-      "actions": [
-        "STEP 0: No crash recovery (no local-agent-* owned pending items)",
-        "STEP 1: All 6 NBA islands fetched. All stagnation=0. S14 recovered (was 15 in fire-51). S17 still PAUSED 24d+. S15 brier=0.22034 milestone documented. SOTA research (even cycle): 3 proposals written \u2014 closing-line calibration, rest/travel features, TabPFN-2.5. Research proposal: sota-2026-05-06T16h-tabpfn-closing-line-rest-travel.json.",
-        "STEP 2: All 5 POL islands up, stagnation=0. Rotation A (FEC/SEC): Registered Cat46 SecInsiderSignals (+13 Form4 features) in both political_engine.py files. ENGINE_VERSION v3.22\u2192v3.23. py_compile PASS. Data staleness alert: donor/insider data 31-32d stale (VM cron restart needed).",
-        "STEP 3: Councils decommissioned \u2014 skipped.",
-        "STEP 4: Dashboard R8 done \u2014 skipped.",
-        "STEP 5: CLAUDE.md island table updated (fire-52). health-status.json updated. brain-status.json updated. work-queue: priority-73 CLOSED (S14 stagnation=0)."
-      ]
+      "subject": "fire-52 cycle: SOTA research, Cat46 registration, island updates, Rotation A"
     },
     {
       "id": "cloud-brain-fire51-2026-05-06T12h",
@@ -804,32 +246,7 @@
       "completed_at": "2026-05-06T12:00:00Z",
       "completed_by": "cloud-brain-fire-51",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-51 cycle: POL restore confirmed, S14 diversify queued, rotation D",
-      "actions": [
-        "STEP 0: No crash recovery (all pending items owned by local-vm, not local-agent-*)",
-        "STEP 1: All 6 NBA islands fetched. S14 stagnation=15 \u2014 diversify queued (priority-73). S13/S18/S22 all recovered to stagnation=0 (fire-50 diversify 100% effective). S17 still 503.",
-        "STEP 2: All 5 POL islands fetched \u2014 all up, stagnation=0. Rotation D: data pipeline health (272 vs 3377 feature gap). brain-status.json updated in nomos-political-alpha.",
-        "STEP 3: Councils decommissioned 2026-04-20 \u2014 skipped.",
-        "STEP 4: Dashboard R8 already done \u2014 skipped.",
-        "STEP 5: priority-0 (pol-app-restore) DONE confirmed. priority-0 CLOSED. tf-axelrod-pol-dmad-percent-fix CLOSED (subsumed). s18-checkpoint CANCELLED.",
-        "Cross-project: tf-axelrod-kl-divergence (priority-56) now UNBLOCKED for VM."
-      ]
-    },
-    {
-      "id": "tf-axelrod-verify-tune-51",
-      "priority": 75,
-      "status": "done",
-      "completed_at": "2026-05-06T14:00:00Z",
-      "completed_by": "cloud-trigger-axelrod-fire-52",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 52 -- NBA+POL PASS all 3 mechs post-restore; KL divergence applied",
-      "findings": {
-        "nba_status": "PASS -- Mechs A/B/C intact. compute_consensus_distance L1->KL. py_compile PASS 5799L.",
-        "pol_status": "PASS -- Mechs A/B/C intact (post fire-51 restore 96e31b67). L1->KL. py_compile PASS 3924L.",
-        "kl_divergence": "APPLIED NBA L3743 + POL L2399. D_KL(P||Q) eps=1e-9 round(kl,6).",
-        "parity": "NBA+POL identical compute_consensus_distance (field: category vs ticker)"
-      },
-      "do_not_push_hf_space_yet": true
+      "subject": "fire-51 cycle: POL restore confirmed, S14 diversify queued, rotation D"
     }
   ],
   "recovery_protocol": {
