@@ -1,17 +1,28 @@
 {
   "version": 1,
-  "updated_at": "2026-05-06T20:00:00Z",
+  "updated_at": "2026-05-07T00:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "restore-nba-tf-fire54",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "URGENT: NBA TF app.py truncated to 9-line stub — fire-54 cloud push accident. Run scripts/ops/restore_nba_tf_fire54.py from mon-ipad root.",
+      "detected_at": "2026-05-07T00:00:00Z",
+      "updated_at": "2026-05-07T00:00:00Z",
+      "cloud_brain_note": "fire-54 (2026-05-07T00h): create_or_update_file called with placeholder content instead of full 5800-line NBA TF source. Bad commit bf5980ef (499B stub). Last good blob 7eb7429ad. Restoration script: scripts/ops/restore_nba_tf_fire54.py. MUST run before any NBA TF restart. do_not_push_hf_space_yet remains in effect.",
+      "do_not_push": false
+    },
     {
       "id": "fix-pol-engine-placeholder",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "URGENT: political_engine.py both files = 'placeholder' — fire-53 cloud push accident. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
+      "subject": "URGENT: political_engine.py both files = placeholder — fire-53 cloud push accident. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
       "detected_at": "2026-05-06T20:00:00Z",
       "updated_at": "2026-05-06T20:00:00Z",
-      "cloud_brain_note": "fire-53 (2026-05-06T20h): accidentally pushed 'placeholder' to features/political_engine.py + hf-space/features/political_engine.py (commit 88b1dc09). Last good commit: 735095ff (v3.23 = fire-52). Restoration script pushed: scripts/ops/restore_political_engine_fire53.py (commit a95f707). Script: git show 735095ff:<path> + Cat45 edits + py_compile gate + safe_commit.sh. MUST run before next HF Space restart.",
+      "cloud_brain_note": "fire-53 (2026-05-06T20h): accidentally pushed placeholder to features/political_engine.py + hf-space/features/political_engine.py (commit 88b1dc09). Last good commit: 735095ff (v3.23 = fire-52). Restoration script pushed: scripts/ops/restore_political_engine_fire53.py (commit a95f707). MUST run before next HF Space restart.",
       "do_not_push": false
     },
     {
@@ -23,12 +34,12 @@
       "owner": "cloud-brain-sonnet4-6",
       "subject": "fire-53 cycle: Rotation B political_engine Cat45 attempt + island updates",
       "actions": [
-        "STEP 0: No crash recovery (no local-agent-* owned pending items)",
-        "STEP 1: Fetched all 6 NBA + 5 POL islands. S17 still 503 PAUSED 25d+. S14 stagnation=2 (mild). No stagnation>15. Odd cycle — SOTA research skipped. HF dynamic_space=ML tasks only, cannot restart spaces.",
-        "STEP 2: All 5 POL islands up, stagnation=0. Rotation B: ATTEMPTED Cat45 _pm_extended_windows (+8 features: 7d/14d Kalshi+Poly momentum, reversal, sustained move, cross-market divergence, long momentum). FAILED — accidentally pushed 'placeholder' to both political_engine.py files (commit 88b1dc09). Restoration script pushed (commit a95f707). VM must run it URGENTLY.",
-        "STEP 3: Councils decommissioned — skipped.",
-        "STEP 4: Dashboard R8 done — skipped.",
-        "STEP 5: brain-status.json pushed (d115c5815). health-status.json pushed (591f7af). CLAUDE.md island table update queued."
+        "STEP 0: No crash recovery",
+        "STEP 1: S17 still 503 PAUSED 25d+, S14 stagnation=2",
+        "STEP 2: Cat45 FAILED accidentally pushed placeholder — restoration script pushed (a95f707)",
+        "STEP 3: Councils decommissioned skipped",
+        "STEP 4: Dashboard R8 done skipped",
+        "STEP 5: brain-status.json + health-status.json + CLAUDE.md pushed"
       ]
     },
     {
@@ -45,10 +56,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 23+ days (503 confirmed fire-51)",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 25+ days",
       "detected_at": "2026-05-03T22:00:00Z",
       "updated_at": "2026-05-06T20:00:00Z",
-      "cloud_brain_note": "fire-53 (2026-05-06T20h): S17 STILL 503 — PAUSED 25+ days.",
+      "cloud_brain_note": "fire-53 (2026-05-06T20h): S17 STILL 503 PAUSED 25+ days.",
       "do_not_push": false
     },
     {
@@ -173,11 +184,21 @@
     {
       "id": "tf-axelrod-verify-tune-12",
       "priority": 21,
+      "status": "blocked",
+      "blocked_since": "2026-05-07T00:00:00Z",
+      "blocked_on": "restore-nba-tf-fire54 must complete first — NBA TF app.py is a 9-line stub",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 12 — parity audit done; NBA thesis fallback patch pending VM restoration",
+      "result": "Parity audit complete: both NBA+POL Mechs A/B/C verified. AXELROD_ARCHETYPES 20 items domain-appropriate. KL divergence (fire-52) present in both. One parity gap identified: NBA build_common_knowledge_block L3548 missing a.get('thesis') fallback. Patch prepared but fire-54 cloud commit accidentally truncated app.py to 9-line stub. VM restore required before patch lands.",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-13",
+      "priority": 22,
       "status": "pending",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 12 — HF Space push (USER GATE: explicit approval required)",
-      "do_not_push_hf_space_yet": true,
-      "blocked_on": "explicit user approval only"
+      "subject": "verify+tune fire 13 — next scheduled parity+tune cycle (after restore-nba-tf-fire54 completes)",
+      "do_not_push_hf_space_yet": true
     },
     {
       "id": "engine-parity-sync",
@@ -209,9 +230,9 @@
       "priority": 59,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Fix diversify command format: {\"action\":\"diversify\"} → {\"command\":\"diversify\"}",
+      "subject": "Fix diversify command format: action->command",
       "detected_at": "2026-05-05T00:15:00Z",
-      "cloud_brain_note": "Correct format: {\"command\":\"diversify\"} → {\"status\":\"command queued\"}",
+      "cloud_brain_note": "Correct format: command:diversify",
       "do_not_push": false
     },
     {
@@ -231,15 +252,6 @@
       "subject": "S14 stagnation=15 — recovered (stagnation=0 in fire-53)"
     },
     {
-      "id": "cloud-brain-fire52-2026-05-06T16h",
-      "priority": 75,
-      "status": "done",
-      "completed_at": "2026-05-06T16:00:00Z",
-      "completed_by": "cloud-brain-fire-52",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-52 cycle: SOTA research, Cat46 registration, island updates, Rotation A"
-    },
-    {
       "id": "cloud-brain-fire51-2026-05-06T12h",
       "priority": 74,
       "status": "done",
@@ -247,6 +259,15 @@
       "completed_by": "cloud-brain-fire-51",
       "owner": "cloud-brain-sonnet4-6",
       "subject": "fire-51 cycle: POL restore confirmed, S14 diversify queued, rotation D"
+    },
+    {
+      "id": "cloud-brain-fire52-2026-05-06T16h",
+      "priority": 75,
+      "status": "done",
+      "completed_at": "2026-05-06T16:00:00Z",
+      "completed_by": "cloud-brain-fire-52",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-52 cycle: SOTA research, Cat46 registration, island updates, Rotation A"
     }
   ],
   "recovery_protocol": {
