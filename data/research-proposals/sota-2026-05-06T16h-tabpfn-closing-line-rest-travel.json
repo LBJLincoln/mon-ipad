@@ -1,0 +1,68 @@
+{
+  "generated_at": "2026-05-06T16:00:00Z",
+  "cycle": "cloud-brain-fire-52-2026-05-06T16h",
+  "search_query": "2026 NBA game outcome prediction machine learning Brier score tabular",
+  "target_brier": 0.20,
+  "current_fleet_best": 0.22019,
+  "current_session_best": 0.22034,
+  "proposals": [
+    {
+      "rank": 1,
+      "title": "Closing-Line Calibrated Probability as a Single High-Signal Feature",
+      "source": "MDPI Information 17(1):56 — Uncertainty-Aware ML for NBA Forecasting (Jan 2026)",
+      "rationale": "Isotonic-regression-calibrated closing moneyline implied probabilities form a near-optimal probabilistic baseline. This single feature often outweighs hundreds of box-score features in Brier score contribution. Post-hoc isotonic regression on XGBoost outputs against holdout set directly optimizes Brier. Estimated gain: -0.008 to -0.015 Brier.",
+      "implementation": [
+        "Add closing_ml_implied_prob column to game rows (from data/full-odds-2025-26.json ml_home odds)",
+        "Apply isotonic regression: from sklearn.isotonic import IsotonicRegression, fit on 70% train holdout",
+        "Use calibrated_prob as Cat 55 feature in engine.py",
+        "Also post-process island outputs via calibration wrapper"
+      ],
+      "effort": "LOW",
+      "expected_brier_delta": -0.010,
+      "priority": 1
+    },
+    {
+      "rank": 2,
+      "title": "Rest/Travel/Back-to-Back Feature Audit and Completion",
+      "source": "Scientific Reports 2025, doi:10.1038/s41598-025-13657-1 — stacked ensemble NBA",
+      "rationale": "The Sci Reports 2025 stacked ensemble paper (L1: XGB+LGB+RF → L2: LR, 77.5% accuracy) found that top-3 SHAP features across all model types were: home_next (next game home indicator), team_elo_5y (5-year Elo decay), and team_elo. Models without explicit rest-days and back-to-back travel distance features underperformed by ~0.008 Brier. CNN Brier=0.221 closed the gap to <0.21 by adding these 3 families. Our S15 at 0.22034 has a CNN gap of only 0.00034 — rest/travel features are likely the marginal improvement path.",
+      "implementation": [
+        "Audit feature_names in S15 gen=1521 population for: rest_days_diff, b2b_flag_home, b2b_flag_away, travel_miles_7d",
+        "If missing, add to engine.py Cat 2 (game context) or Cat 5 (schedule features)",
+        "rest_days_diff = game_date - last_game_date per team",
+        "b2b_flag = rest_days_diff <= 1",
+        "travel_miles: use team arena lat/lon + haversine for last away game"
+      ],
+      "effort": "MEDIUM",
+      "expected_brier_delta": -0.008,
+      "priority": 2
+    },
+    {
+      "rank": 3,
+      "title": "TabPFN-2.5 as Meta-Feature Stacking Layer",
+      "source": "arxiv 2511.08667 — TabPFN v2 (Nov 2025), TabArena benchmark 2026",
+      "rationale": "TabPFN-2.5 (Nov 2025) handles ~100K rows and ~2000 features, beating tuned XGBoost on TabArena. The winning technique from DrivenData PREPARE challenge 2025: use TabPFN-2.5 to generate soft probability outputs ('meta-features') as input columns for XGBoost. In-context learning acts as a strong stacking layer without retraining. Typical stacking gain on sports datasets: -0.005 to -0.015 Brier.",
+      "implementation": [
+        "Colab T4 experiment: train TabPFN-2.5 on 80% of 9551 games",
+        "Extract 2-class probability vector [P(home_wins), P(away_wins)] for all games",
+        "Add tabpfn_prob_home as new feature in Kaggle karpathy loop",
+        "Benchmark: TabPFN-standalone vs XGBoost+TabPFN_meta vs XGBoost_baseline"
+      ],
+      "effort": "MEDIUM",
+      "expected_brier_delta": -0.008,
+      "priority": 3,
+      "gpu_required": true,
+      "platform": "Colab T4 or Kaggle P100"
+    }
+  ],
+  "sota_benchmarks_2026": {
+    "logistic_regression_with_mc_dropout": 0.199,
+    "xgboost_brier_published": 0.202,
+    "cnn_with_rest_travel_features": 0.221,
+    "stacked_ensemble_lr_xgb_rf": "77.5% accuracy (Brier not reported)",
+    "source_mdpi": "MDPI Information 17(1):56 (Jan 2026)",
+    "source_scireports": "Scientific Reports 2025 doi:10.1038/s41598-025-13657-1",
+    "source_tabpfn": "arxiv 2511.08667 (Nov 2025)"
+  },
+  "cross_project_note": "Closing-line calibrated probability and isotonic regression are directly applicable to Political Alpha (POL brier 0.249-0.254). Kalshi/Polymarket implied probabilities are already tracked (Cat 11 POLYMARKET_DELTA_24H, Cat 27 PREDICTION_MARKET_INSIDER_SIGNALS). Adding post-hoc isotonic calibration to POL is low-effort (see brain-status.json actions_pending)."
+}

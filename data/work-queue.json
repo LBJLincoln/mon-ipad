@@ -233,13 +233,32 @@
     {
       "id": "vm-diversify-s14-2026-05-06T12h",
       "priority": 73,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-05-06T16:00:00Z",
+      "completed_by": "self-recovered-or-vm",
       "owner": "local-vm",
       "subject": "S14 (Nomos42/nba-evo-5) stagnation=15 — send diversify command",
       "detected_at": "2026-05-06T12:00:00Z",
-      "updated_at": "2026-05-06T12:00:00Z",
-      "cloud_brain_note": "fire-51: S14 live stagnation=15 (gen=3474, brier=0.22158). At threshold. Command: POST https://nomos42-nba-evo-5.hf.space/api/command {\"command\":\"diversify\"}. Note: use 'command' not 'action' field (priority-59 fix).",
+      "updated_at": "2026-05-06T16:00:00Z",
+      "cloud_brain_note": "fire-52 (2026-05-06T16h): S14 live stagnation=0 (gen=3615). Recovered — either VM executed diversify (priority-59 format fix) or self-recovered. Closing.",
       "do_not_push": false
+    },
+    {
+      "id": "cloud-brain-fire52-2026-05-06T16h",
+      "priority": 75,
+      "status": "done",
+      "completed_at": "2026-05-06T16:00:00Z",
+      "completed_by": "cloud-brain-fire-52",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-52 cycle: SOTA research, Cat46 registration, island updates, Rotation A",
+      "actions": [
+        "STEP 0: No crash recovery (no local-agent-* owned pending items)",
+        "STEP 1: All 6 NBA islands fetched. All stagnation=0. S14 recovered (was 15 in fire-51). S17 still PAUSED 24d+. S15 brier=0.22034 milestone documented. SOTA research (even cycle): 3 proposals written — closing-line calibration, rest/travel features, TabPFN-2.5. Research proposal: sota-2026-05-06T16h-tabpfn-closing-line-rest-travel.json.",
+        "STEP 2: All 5 POL islands up, stagnation=0. Rotation A (FEC/SEC): Registered Cat46 SecInsiderSignals (+13 Form4 features) in both political_engine.py files. ENGINE_VERSION v3.22→v3.23. py_compile PASS. Data staleness alert: donor/insider data 31-32d stale (VM cron restart needed).",
+        "STEP 3: Councils decommissioned — skipped.",
+        "STEP 4: Dashboard R8 done — skipped.",
+        "STEP 5: CLAUDE.md island table updated (fire-52). health-status.json updated. brain-status.json updated. work-queue: priority-73 CLOSED (S14 stagnation=0)."
+      ]
     },
     {
       "id": "cloud-brain-fire51-2026-05-06T12h",
