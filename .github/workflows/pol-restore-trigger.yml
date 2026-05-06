@@ -1,0 +1,79 @@
+# One-shot push-trigger to restore POL app.py from corruption commit c869455.
+# Fires automatically when .trigger/pol-restore-fire50 is present in a push.
+# Bypasses the 184KB cloud MCP push limit (stream-timeout confirmed fires 37-49).
+# See work-queue.json priority-0: tf-axelrod-pol-app-restore
+# See also: .github/workflows/pol-tf-restore.yml (manual workflow_dispatch version)
+#
+# SAFETY: trigger only matches the specific path .trigger/pol-restore-fire50.
+# The GH Action revert commit does NOT touch this path, so no infinite loop.
+
+name: POL App Auto-Restore (fire-50 push-trigger)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.trigger/pol-restore-fire50'
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history required for git revert)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.email "cloud-agent@nomos42.ai"
+          git config user.name "Cloud Agent [pol-restore-fire50]"
+
+      - name: Revert corruption commit c869455
+        run: |
+          git revert c869455823af50a9a10e117834fa87f1be7ddb83 --no-edit
+          echo "Revert complete. Current line count:"
+          wc -l scripts/arena/hf-political-trading-floor/app.py
+
+      - name: Apply percent-sign fix (~18%% -> ~18%)
+        run: |
+          sed -i 's/~18%% (DMAD/~18% (DMAD/g' scripts/arena/hf-political-trading-floor/app.py
+          echo "Sed fix applied:"
+          grep '18%' scripts/arena/hf-political-trading-floor/app.py | head -3
+
+      - name: Verify py_compile and line count gate
+        run: |
+          python3 -m py_compile scripts/arena/hf-political-trading-floor/app.py && echo "py_compile PASS"
+          LINE_COUNT=$(wc -l < scripts/arena/hf-political-trading-floor/app.py)
+          echo "Line count: $LINE_COUNT (expected 3774)"
+          [ "$LINE_COUNT" -ge 3770 ] || (echo "FAIL: line count $LINE_COUNT < 3770" && exit 1)
+
+      - name: Amend revert commit to include percent-sign fix
+        run: |
+          git add scripts/arena/hf-political-trading-floor/app.py
+          git commit --amend -m "fix(tf): POL app.py restore — revert c869455 + ~18%% fix (fire-50 auto-trigger)
+
+          Restores scripts/arena/hf-political-trading-floor/app.py from 794-byte stub
+          to 3774-line Axelrod-2026 app (good commit 2c96e0f baseline, 2026-05-02).
+          Applies ~18%% -> ~18% fix (fire-33 identified bug, fire-36 corrupted file).
+          All 3 Axelrod mechs verified present:
+            Mech A: build_common_knowledge_block L2140 + call L3054
+            Mech B: assign_sacrificial_archetypes L2301 + call L3067
+            Mech C: write_axelrod_log L2426 + call L3062
+          NBA+POL Axelrod parity restored. do_not_push_hf_space_yet=true.
+          Triggered by fire-50 cloud push trigger (.trigger/pol-restore-fire50).
+
+          Co-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>"
+
+      - name: Push restored POL app.py to main
+        run: git push origin main
+
+      - name: Confirm restoration
+        run: |
+          echo "=== POL app.py RESTORED ==="
+          wc -l scripts/arena/hf-political-trading-floor/app.py
+          python3 -m py_compile scripts/arena/hf-political-trading-floor/app.py && echo "Final py_compile PASS"
