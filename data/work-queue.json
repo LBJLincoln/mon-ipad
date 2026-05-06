@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-05T23:59:00Z",
+  "updated_at": "2026-05-06T00:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -10,10 +10,10 @@
       "owner": "local-vm",
       "subject": "URGENT: Restore corrupted POL app.py — cloud MCP push timeout (fire-38 confirmed 184KB cannot be pushed inline)",
       "detected_at": "2026-05-03T18:30:00Z",
-      "updated_at": "2026-05-05T23:59:00Z",
-      "cloud_brain_note": "fire-48 (2026-05-05T23h): Created .github/workflows/pol-tf-restore.yml — workflow_dispatch GH Action that runs git revert c869455 + sed fix without needing the VM. USER ACTION REQUIRED: go to GitHub Actions tab, select 'POL App Restore (One-Shot)', click Run workflow, type RESTORE in the confirm field. This bypasses the 184KB MCP stream-timeout. After successful run, mark this item done. | fire-47 cloud verification (2026-05-05T20h): POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. Day 5 overdue — fires 37 through 45 = 9 consecutive fires blocked. Good restore baseline confirmed: commit 2c96e0f (2026-05-02T00:37:32Z, 3774 lines, py_compile PASS). Sub-agent deep full-file read confirmed NBA PASS all 3 mechs. fire-44 cloud verification (2026-05-05T10h): POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. All 3 Axelrod mechs blocked on POL side. STILL UNRESOLVED day 4 overdue. NBA confirmed PASS fire-44: Mech A L3482/L4873, Mech B L3645/L4118, Mech C L3775/L3744. fire-41 cloud verification: POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. compute_consensus_distance code-search returns 0 hits in hf-political-trading-floor path. AXELROD_CANON absent from POL path. Parity BROKEN across 9 consecutive fires (37-45). VM must execute recovery steps. fire-38 confirmed py_compile PASS from commit 2c96e0f. Rule reconfirmed: NEVER use create_or_update_file or push_files for files >50KB from cloud. fire-46 next after this is resolved.",
+      "updated_at": "2026-05-06T00:00:00Z",
+      "cloud_brain_note": "fire-49 (2026-05-06T00h): pol-tf-restore.yml GH Action (SHA d06e83e2) created fire-48 is ready. USER ACTION REQUIRED: go to GitHub Actions tab → 'POL App Restore (One-Shot)' → Run workflow → type RESTORE in the confirm field. After successful run, mark this item done. | fire-48 (2026-05-05T18h): Created .github/workflows/pol-tf-restore.yml — workflow_dispatch GH Action that runs git revert c869455 + sed fix without needing the VM. | fire-47 cloud verification (2026-05-05T20h): POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. Day 5 overdue — fires 37 through 45 = 9 consecutive fires blocked. Good restore baseline confirmed: commit 2c96e0f (2026-05-02T00:37:32Z, 3774 lines, py_compile PASS). Sub-agent deep full-file read confirmed NBA PASS all 3 mechs. fire-44 cloud verification (2026-05-05T10h): POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. All 3 Axelrod mechs blocked on POL side. STILL UNRESOLVED day 4 overdue. NBA confirmed PASS fire-44: Mech A L3482/L4873, Mech B L3645/L4118, Mech C L3775/L3744. fire-41 cloud verification: POL app.py SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 STILL the 794-byte stub. compute_consensus_distance code-search returns 0 hits in hf-political-trading-floor path. AXELROD_CANON absent from POL path. Parity BROKEN across 9 consecutive fires (37-45). VM must execute recovery steps. fire-38 confirmed py_compile PASS from commit 2c96e0f. Rule reconfirmed: NEVER use create_or_update_file or push_files for files >50KB from cloud. fire-46 next after this is resolved.",
       "scope": [
-        "OPTION A (NEW — fire-48) — GitHub Action (no VM needed):",
+        "OPTION A (READY — fire-48) — GitHub Action (no VM needed):",
         "  1. Go to: https://github.com/lbjlincoln/mon-ipad/actions/workflows/pol-tf-restore.yml",
         "  2. Click 'Run workflow'",
         "  3. In the confirm field, type: RESTORE",
@@ -38,7 +38,7 @@
         "  bash scripts/lib/safe_commit.sh LAUNCHPAD 'fix(tf): POL AXELROD_CANON ~18%% typo + revert cloud-brain file corruption (fire-36)' scripts/arena/hf-political-trading-floor/app.py",
         "",
         "Root cause: 184KB file cannot be pushed via cloud MCP push_files (stream timeout).",
-        "Rule: NEVER use create_or_update_file or push_files for files >10KB from cloud.",
+        "Rule: NEVER use create_or_update_file or push_files for files >50KB from cloud.",
         "cloud fire-38 verified recovery is valid: py_compile PASS 3774L from commit 2c96e0f."
       ],
       "bad_commit": "c869455823af50a9a10e117834fa87f1be7ddb83",
@@ -161,6 +161,8 @@
       "owner": "local-vm",
       "subject": "Upgrade compute_consensus_distance from L1-norm to KL divergence (spec gap, Mech C paper dataset quality)",
       "detected_at": "2026-05-05T00:00:00Z",
+      "updated_at": "2026-05-06T00:00:00Z",
+      "cloud_brain_note": "fire-49 confirmed: L3766-L3770 uses abs(p_agt - p_soc) — pure L1-norm, labeled 'KL proxy' in docstring. Not true KL divergence. Requires VM edit (NBA app.py > 10KB push limit from cloud).",
       "scope": [
         "CONTEXT: Spec (Mech C) says peer_consensus_distance = KL divergence from CK.",
         "CURRENT: NBA app.py L3744 uses L1-norm (sum of absolute differences in pick fractions), labeled 'KL proxy'.",
@@ -172,7 +174,7 @@
         "VERIFY: python3 -m py_compile both apps after edit. wc -l should be unchanged +-5 lines.",
         "COMMIT: bash scripts/lib/safe_commit.sh LAUNCHPAD 'tune(tf): upgrade peer_consensus_distance L1->KL-divergence for paper dataset accuracy (both NBA+POL)' scripts/arena/hf-llm-trading-floor/app.py scripts/arena/hf-political-trading-floor/app.py"
       ],
-      "blocked_on": "tf-axelrod-pol-app-restore (priority-0) must be done first",
+      "blocked_on": "tf-axelrod-pol-app-restore (priority-0) must be done first for POL side; NBA side requires VM (>50KB file edit from cloud blocked)",
       "do_not_push_hf_space_yet": true
     },
     {"id":"tf-axelrod-tauric-scope-audit","priority":57,"status":"done","completed_at":"2026-05-05T00:15:00Z","owner":"cloud-trigger-axelrod-2026","subject":"Audit hf-llm-trading-floor-tauric/app.py","findings":{"tauric_is_active":true,"hf_space":"LBJLincoln26/nba-tauric-trading-floor","parity_decision":"NOT REQUIRED — tauric is a parallel experiment","action":"none"}},
@@ -256,6 +258,23 @@
         "pol_status": "STILL 794-byte stub SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 — day-9 overdue. Real 3774-line app in HF Space private repo, NOT in mon-ipad.",
         "pol_local_backtest": "scripts/arena/political-trading-floor.py = 1663-line rules-based sim (NO LLM calls, NO Axelrod mechs). Different architecture from HF Space version.",
         "new_unblock": "Created .github/workflows/pol-tf-restore.yml — workflow_dispatch GH Action that runs git revert c869455 + sed fix on GitHub runner, bypassing 184KB MCP limit. USER: trigger from GitHub Actions UI."
+      },
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-verify-tune-49",
+      "priority": 71,
+      "status": "done",
+      "completed_at": "2026-05-06T00:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 49 — NBA PASS all 3 mechs (line-level grep); POL GH Action ready but USER-PENDING; KL upgrade VM-pending",
+      "findings": {
+        "nba_status": "PASS — Mech A: build_common_knowledge_block L3481, COMMON_KNOWLEDGE dict L122, prev_day_ck L4022/L4872, CK injected L4170. Mech B: assign_sacrificial_archetypes L3644 (society-wide dedup, trailing-7d exclusion), build_sacrificial_system_suffix L3690, USED_ARCHETYPES L124/_society_archetypes_by_day L3686, injected L4118. Mech C: compute_consensus_distance L3743 (L1-norm, labeled KL proxy), write_axelrod_log L3774, AXELROD_LOG_DIR L129, axelrod-log 5 hits. AXELROD_CANON L350.",
+        "pol_status": "STILL 794-byte stub SHA 696180bc64c4dc7a24d0ad6ee00ecaba39466826 — day-10 overdue. pol-tf-restore.yml GH Action (SHA d06e83e2) created fire-48 and ready. USER ACTION: GitHub Actions → 'POL App Restore (One-Shot)' → Run workflow → confirm=RESTORE.",
+        "kl_divergence_confirmed": "L3766-L3770 verified: abs(p_agt - p_soc) — pure L1-norm, NOT true KL. tf-axelrod-kl-divergence priority-56 pending. Requires VM edit (>50KB file, cloud push blocked).",
+        "mech_b_naming": "Spec calls it SACRIFICIAL_PROMPT[D], implementation uses build_sacrificial_system_suffix() — no variable named SACRIFICIAL_PROMPT but function generates identical text. Functionally correct.",
+        "commits_since_fire_48": "46f7f5e (watchdog 23:33Z), 4d2d599+1ab92db (BRAIN fire-49 health 20:17-20:23Z). No TF app.py changes.",
+        "no_new_tune_possible": "All pending improvements require >50KB file edits (cloud push blocked) or are owned by local-vm. No cloud-executable tune available this fire."
       },
       "do_not_push_hf_space_yet": true
     }
