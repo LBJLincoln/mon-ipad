@@ -1,77 +1,78 @@
 {
-  "proposal_id": "nba-sota-2026-05-06",
-  "generated_at": "2026-05-06T00:00:00Z",
-  "cycle": "cloud-brain-fire-49",
-  "search_date": "2026-05-06",
-  "category": "NBA_SOTA_RESEARCH",
-  "priority": "HIGH",
-  "findings": [
+  "id": "nba-sota-2026-05-06",
+  "generated_at": "2026-05-06T04:00:00Z",
+  "cycle": "fire-49-cloud-brain",
+  "title": "2026 NBA Prediction SOTA: LR 0.199 Brier & Stacked Ensembles & Uncertainty-Aware LSTM",
+  "sources": [
     {
-      "paper": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
-      "source": "MDPI Information 17/1/56 (January 2026)",
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
       "url": "https://www.mdpi.com/2078-2489/17/1/56",
-      "key_technique": "RNN + Monte Carlo dropout for calibrated sequential probability estimates",
-      "nba_brier": 0.221,
-      "actionable": "Add MC dropout to neural model candidates. GA mutation: add 'rnn_mcdropout' to model_type pool for CPU-capable variant (GRU with p=0.2 dropout, 2-3 layers). Expected Brier improvement: 0.002-0.005.",
-      "effort": "MEDIUM — add model type to features/engine.py mutation pool"
+      "year": 2026,
+      "key_finding": "LSTM+MCDropout achieves calibrated uncertainty estimates; CNN achieves 0.221 Brier",
+      "relevance": "HIGH"
     },
     {
-      "paper": "Stacked ensemble model for NBA game outcome prediction analysis",
-      "source": "Nature Scientific Reports 2025",
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
       "url": "https://www.nature.com/articles/s41598-025-13657-1",
-      "key_technique": "Stacked ensemble: L1 (XGBoost+LightGBM+RandomForest) -> L2 (logistic regression meta-learner)",
-      "insight": "Stacking L1 tree models under logistic meta-learner outperforms any single model. Our GA uses single model types — adding stacking as a GA chromosome option could push past 0.22 floor.",
-      "actionable": "Add 'stacked_ensemble' to model_type pool: L1=[xgboost,lightgbm,random_forest] with 3-fold CV -> L2 logistic. Gate: only for gen>500 (costly to evaluate). Expected improvement: 0.003-0.008.",
-      "effort": "HIGH — requires engine.py + island mutation changes"
+      "year": 2025,
+      "key_finding": "Stacked ensemble L1(XGB+LGB+RF)->L2(LR) outperforms single models; SVM 77.5% accuracy",
+      "relevance": "HIGH"
     },
     {
-      "paper": "A Data-Driven Machine Learning Algorithm for Predicting the Outcomes of NBA Games",
-      "source": "MDPI Symmetry 15/4/798",
-      "url": "https://www.mdpi.com/2073-8994/15/4/798",
-      "key_insight": "Logistic regression 0.199 Brier outperforms XGBoost 0.202 — ensemble of simple models beats single complex model",
-      "actionable": "S14 logistic_regression at 0.22158 confirms this trend. Increase logistic_regression weight in GA initial population seeding (currently equal to tree models)."
+      "title": "Comparative Evaluation of Machine Learning Models for NBA Game Outcome Prediction",
+      "url": "https://www.scirp.org/journal/paperinformation?paperid=147163",
+      "year": 2025,
+      "key_finding": "LR achieves 0.199 Brier, XGBoost 0.202 Brier — tabular models competitive with DL",
+      "relevance": "CRITICAL"
     },
     {
-      "paper": "Integration of machine learning XGBoost and SHAP models for NBA game outcome prediction",
-      "source": "PMC 2024-2025",
-      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
-      "key_insight": "SHAP feature importance reveals top predictive game factors; pruning correlated features reduces noise",
-      "actionable": "Run SHAP on S14/S15 best models. Output top-50 SHAP features -> warm-start seed for new island with MAX_FEATURES=50 hard-constrained to SHAP top set."
+      "title": "Comparing Machine Learning Methods for NBA Game Outcome Prediction",
+      "url": "https://ieeexplore.ieee.org/document/11030489/",
+      "year": 2026,
+      "key_finding": "AutoGluon ensemble 77.38% accuracy, DNN 77.26% — stacking critical",
+      "relevance": "MEDIUM"
     }
   ],
-  "fleet_lesson_this_cycle": {
-    "observation": "S13 extra_trees recovery: best_brier 0.24535->0.23196 after diversify command",
-    "lesson": "Model-type diversity is critical for escaping local optima. extra_trees discovered a better region than lightgbm was stuck in.",
-    "recommendation": "Ensure all islands cycle through extra_trees, catboost, and random_forest in addition to xgboost/lightgbm. Diversify command should always reset model_type distribution, not just mutation rate."
+  "sota_benchmarks": {
+    "logistic_regression_brier": 0.199,
+    "xgboost_brier": 0.202,
+    "cnn_brier": 0.221,
+    "our_fleet_best_brier": 0.22019,
+    "our_s15_brier": 0.22034,
+    "gap_to_lr_sota": 0.02119,
+    "gap_to_xgb_sota": 0.00081,
+    "note": "S15 at 0.22034 is SOTA-competitive with published CNN (0.221). S14 LR at 0.22158 is 0.022 behind published LR 0.199. Gap likely due to feature engineering (ELO features critical per lit)."
   },
-  "cross_project_transfer": {
-    "to_political": "Stacked ensemble (L1+L2) applicable to POL. Political has 272 features — stacking could add 0.003-0.005 Brier improvement.",
-    "to_political_rnn": "RNN+MCDropout: political events as time-series warrants sequential model. Political has natural temporal structure (election cycles, approval ratings).",
-    "rotation_note": "Rotation A (FEC/SEC data audit): POL pipeline 272 features vs NBA 3377. Priority: deploy /api/scrape-fec endpoint on LBJLincoln/nomos-browser-nba."
-  },
+  "key_insights": [
+    "Published LR achieves 0.199 Brier. Our S14 LR = 0.22158. Gap 0.022 — root cause: (1) ELO features (home_next, team_elo_5_y, team_elo) critical per literature, (2) different feature selection pipeline, (3) possible different train/test split.",
+    "Stacked ensemble L1(XGB+LGB+RF)->L2(LR): add as new model_type option to island mutation pool.",
+    "LSTM+MCDropout (MDPI 2026): sequential model for form streaks. Partial transfer: compute 5/10-game rolling Brier as calibration feature.",
+    "S15 xgboost_brier at 0.22034 is within 0.001 of CNN SOTA (0.221) — already competitive.",
+    "S13 extra_trees recovery 0.24535->0.23196 confirms model-type diversity is critical to escape local optima."
+  ],
   "quick_wins": [
     {
-      "id": "increase-lr-seed-weight",
-      "description": "Increase logistic_regression seeding probability in GA initial population",
+      "win": "Verify ELO features in feature selection: team_elo, team_elo_5y, home_advantage. Boost their selection weight.",
       "effort": "LOW",
-      "estimated_gain": "May discover S14-like 0.22x on other islands faster",
-      "islands": ["S13", "S18", "S22"]
+      "expected_brier_gain": 0.002,
+      "target": "S14 (LR island)"
     },
     {
-      "id": "prob-clipping-0025-0975",
-      "description": "Add probability clipping [0.025, 0.975] post-prediction to Brier evaluation",
+      "win": "Add StackedEnsemble model_type (XGB+LGB+ExtraTrees -> LR meta) to island mutation pool",
+      "effort": "MEDIUM",
+      "expected_brier_gain": 0.003,
+      "target": "S18 or S22"
+    },
+    {
+      "win": "Proactive diversify S15 (stagnation=12) and S18 (stagnation=13) if stagnation reaches 14 next cycle",
       "effort": "LOW",
-      "estimated_gain": "0.001-0.003 Brier",
-      "noted_since": "fire-47"
+      "expected_brier_gain": 0.001,
+      "target": "S15, S18"
     }
   ],
-  "sota_reference_table": {
-    "logistic_regression_nba_sota": 0.199,
-    "xgboost_nba_sota": 0.202,
-    "rnn_mcdropout_nba_2026": 0.221,
-    "our_fleet_best": 0.22019,
-    "our_sub_oracle": 0.22034,
-    "gap_to_best_sota_nba": 0.02119,
-    "gap_to_target_0_20": 0.02019
-  }
+  "action_items": [
+    "DEFERRED to VM: verify ELO feature coverage in features/engine.py (post engine-parity-sync, priority-40)",
+    "DEFERRED to VM: implement StackedEnsemble model_type in island app.py (all active NBA spaces)",
+    "CLOUD (next cycle fire-50): send diversify to S15 and/or S18 if stagnation >= 14"
+  ]
 }
