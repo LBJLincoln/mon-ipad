@@ -2150,7 +2150,7 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
     n_traders = len(TRADERS)
     total_start = n_traders * 100.0
     lines = [
-        f"=== COMMON KNOWLEDGE — Day {day_date} (full transparency) ===",
+        f"=== COMMON_KNOWLEDGE[{day_date}] — Axelrod-2026 Mech A (day-end broadcast) ===",
         f"COLLECTIVE GOAL: maximize TOTAL GROUP bankroll → target ${total_start:.0f} ($100×{n_traders} start).",
         f"You are ONE of {n_traders} political-alpha traders. Every allocation you make affects the group.",
         "",
@@ -2177,7 +2177,7 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
         elif rank <= 3:
             role = " [TOP-3]"
         lines.append(
-            f"  #{rank} {cfg.get('name', tid):<20} ${ts['bankroll']:.2f} ({roi:+.1f}%)"
+            f"  #{rank} {cfg.get('name', tid):<20} ${ts['bankroll']:.2f} GF={gf:.3f}× ({roi:+.1f}%)"
             f" | {ts['total_bets']}b {wr:.0f}%WR | DD {ts['max_drawdown']:.1%}{role}"
         )
 
@@ -2204,14 +2204,32 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
             else:
                 for a in allocs:
                     outcome = "W" if a["won"] else "L"
-                    _rat = (a.get('rationale') or a.get('thesis') or '')[:60]
-                    _rat_sfx = f' [{_rat}]' if _rat else ''
+                    _edge_rat = (a.get('rationale') or a.get('thesis') or '')[:60]
                     lines.append(
-                        f"  {name}: {a['ticker']} {a['direction']} {a.get('event_type', '?')} "
-                        f"${a.get('stake', 0):.1f} edge={a.get('edge', 0):.3f}→{outcome} "
-                        f"pnl={a.get('profit', 0):+.1f}{_rat_sfx}")
+                        f"  {name}: event={a.get('ticker', '?')} pick={a.get('direction', '?')} {a.get('event_type', '?')} "
+                        f"stake=${a.get('stake', 0):.1f} edge={a.get('edge', 0):.3f}→{outcome} "
+                        f"pnl={a.get('profit', 0):+.1f}"
+                        + (f" [edge_rationale: {_edge_rat}]" if _edge_rat else ""))
                 if strat:
                     lines.append(f"    Strategy: \"{strat}\"")
+
+    # Axelrod-2026 Mech A: consensus pick aggregation for yesterday
+    if recent_dates:
+        _yesterday = recent_dates[-1]
+        _pick_ctr: Dict[str, int] = {}
+        _n_active = 0
+        for _t2, _ in ranked:
+            _d2 = next((l for l in reversed(agent_logs.get(_t2, [])) if l.get("date") == _yesterday), None)
+            if _d2:
+                _n_active += 1
+                for _a2 in _d2.get("allocations", []):
+                    _pk = f"{_a2.get('ticker', '?')} {_a2.get('direction', '?')}"
+                    _pick_ctr[_pk] = _pick_ctr.get(_pk, 0) + 1
+        if _pick_ctr:
+            lines.append(f"\nCONSENSUS PICKS on {_yesterday} (Axelrod-2026: cite your diverge/agree stance):")
+            for _pk2, _cnt2 in sorted(_pick_ctr.items(), key=lambda x: -x[1])[:8]:
+                _pct2 = _cnt2 / max(_n_active, 1) * 100
+                lines.append(f"  {_cnt2}/{_n_active} ({_pct2:.0f}%): {_pk2}")
 
     # Mech D — Cooperation reputation + today's pact resolutions
     if reputation:
