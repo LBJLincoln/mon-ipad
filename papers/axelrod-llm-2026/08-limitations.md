@@ -235,9 +235,11 @@ The feature engine (v3.1, `features/engine.py`) does not use personally
 identifiable information.
 
 **LLM inference costs and environmental impact.** The 12-agent NBA
-and 10-agent political ensembles generate approximately 4,000–6,000
-LLM API calls per day across both domains, using the free and low-cost
-commercial tiers of Cerebras, Google, Mistral, and OpenRouter. All
+and 10-agent political ensembles generate approximately 200–400
+LLM API calls per day across both domains (12 agents × ~10 games/day NBA
++ 10 agents × ~10 events/day political + morning council overhead), using
+the free and low-cost commercial tiers of Cerebras, Google, Mistral, and
+OpenRouter. All
 providers offer these tiers on shared GPU infrastructure whose carbon
 intensity reflects grid averages for their respective data centre locations.
 The self-hosted agent (T12) runs on a CPU-only HuggingFace Space.

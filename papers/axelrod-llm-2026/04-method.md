@@ -129,9 +129,10 @@ $$\underbrace{\frac{1}{N}\sum_i B_{\text{ens},t}}_{\text{ensemble Brier}} =
 
 Since Ambiguity $\geq 0$ always, any mechanism that increases inter-agent prediction
 variance without degrading mean individual calibration will reduce ensemble Brier.
-JSD is a monotone function of this Ambiguity term for Bernoulli predictions
-(proof: Appendix B.1), so increasing $D_d$ is equivalent to reducing ensemble Brier
-holding $\overline{B}_d$ fixed. This motivates $D_d$ as our primary diversity target.
+JSD is a monotone function of this Ambiguity term for Bernoulli predictions in the
+operating range $\bar{p}_t \in [0.15, 0.85]$, $\text{Amb} \leq 0.08$
+(proof: Appendix B.1, via Taylor expansion of $H$ around $\bar{p}$), so increasing
+$D_d$ is equivalent to reducing ensemble Brier holding $\overline{B}_d$ fixed. This motivates $D_d$ as our primary diversity target.
 
 ---
 
@@ -215,36 +216,27 @@ take differentiated positions [@surowiecki2004wisdom].
 > at day $d$ strictly increases $\mathbb{E}[D_{d+1}]$.
 
 *Proof.* Let agent $i$ be sacrifice-eligible and let $r^*$ be the drawn vacant
-archetype. Pre-SRR, agent $i$ contributes the JSD term:
-
-$$\delta_i^{\text{before}} = H\!\left(\bar{p}_t\right) - H\!\left(p_{i,t}\right)
-\quad (\text{agent $i$'s marginal JSD contribution})$$
-
-Post-SRR, agent $i$ reports $p_{i,t}' \sim \sigma_i(r^*, x_d, h_{i,d-1})$,
-which by A1 satisfies $|p_{i,t}' - p_{i,t}| \geq \epsilon_{\text{arch}}$ in expectation.
-Let $\bar{p}_t' = \bar{p}_t + \frac{1}{N}(p_{i,t}' - p_{i,t})$ be the updated centroid.
-By A2, $p_{i,t}$ is close to $\bar{p}_t$, so the perturbation
-$p_{i,t}' = p_{i,t} + \epsilon_{\text{arch}} \cdot \text{sgn}(r^*\text{-direction})$
-moves away from $\bar{p}_t$. By the strict concavity of binary entropy $H$:
-
-$$H(\bar{p}_t') = H\!\left(\bar{p}_t + \tfrac{1}{N}(p_{i,t}' - p_{i,t})\right)
-\geq H(\bar{p}_t) - C \cdot \frac{1}{N}|p_{i,t}' - p_{i,t}|$$
-
-for a constant $C < \infty$, while $H(p_{i,t}')$ changes by at most
-$O(\epsilon_{\text{arch}})$. The net change in $\text{JSD}$ is:
+archetype. The change in JSD from replacing agent $i$'s prediction $p_{i,t}$ by
+$p_{i,t}' \sim \sigma_i(r^*, x_d, h_{i,d-1})$ is:
 
 $$\Delta\text{JSD} = \left[H(\bar{p}_t') - \frac{1}{N}\sum_j H(p_{j,t}')\right]
 - \left[H(\bar{p}_t) - \frac{1}{N}\sum_j H(p_{j,t})\right]$$
 
-The only terms that change are agent $i$'s: this reduces to
-$H(\bar{p}_t') - H(\bar{p}_t) + \frac{1}{N}(H(p_{i,t}) - H(p_{i,t}'))$.
-By the archetype-distinguishability assumption, $r^*$ is vacant, meaning
-no other agent currently uses it; hence $p_{i,t}'$ lies in a direction
-not represented by any $p_{j,t}$, $j \neq i$. By strict concavity of $H$
-and the argument that mixing a new extreme point into a distribution
-strictly increases mixture entropy (Cover & Thomas, Theorem 2.7.4
-[@cover2006elements]), $\mathbb{E}[\Delta\text{JSD}] > 0$.
-Taking expectation over the event $t$ and $\mathcal{B}_d$ completes the proof. $\square$
+Only agent $i$'s terms change, so:
+
+$$\Delta\text{JSD} = \underbrace{H(\bar{p}_t') - H(\bar{p}_t)}_{\text{(I): centroid shift}} +
+\underbrace{\frac{1}{N}\!\left(H(p_{i,t}) - H(p_{i,t}')\right)}_{\text{(II): individual entropy change}}$$
+
+By A1, $|p_{i,t}' - p_{i,t}| \geq \epsilon_{\text{arch}}$ in expectation.
+By A2, $p_{i,t}$ is close to $\bar{p}_t$; hence $r^*$ (a vacant archetype)
+moves $p_{i,t}'$ away from $\bar{p}_t$, closer to an extreme of $[0,1]$.
+The strict concavity of $H$ (maximised at $\frac{1}{2}$) then gives
+$H(p_{i,t}') < H(p_{i,t})$, making term (II) strictly positive and $O(\epsilon_{\text{arch}})$.
+Term (I) is the change in mixture entropy due to a centroid shift of magnitude
+$|\bar{p}_t' - \bar{p}_t| = \frac{1}{N}|p_{i,t}' - p_{i,t}| = O(\epsilon_{\text{arch}}/N)$;
+by Lipschitz continuity of $H$, term (I) is $O(\epsilon_{\text{arch}}/N)$.
+For $N \geq 2$, term (II) dominates term (I), so $\mathbb{E}[\Delta\text{JSD}] > 0$.
+Taking expectation over event $t$ and $\mathcal{B}_d$ completes the proof. $\square$
 
 > **Proposition 2 (SRR as equilibrium refinement).** In the LPSG, the strategy
 > profile $(\sigma_i^{\text{SRR}})_{i \in \mathcal{I}}$ — where every
@@ -263,10 +255,17 @@ reallocate) strictly reduces Amb by Lemma 1. Since sacrifice-eligible agents
 have $\overline{B}_{i} \geq \bar{B} + \delta_{\text{sac}}$ by definition,
 their individual Brier is above the ensemble mean — refusing SRR does not
 improve their individual Brier in expectation (they remain in the same
-strategy archetype that produced the deficit). Hence no coalition member
+strategy archetype that produced the deficit, and by Assumption A3 below,
+the deficit persists in expectation). Hence no coalition member
 achieves both a reduction in individual Brier and an increase in ensemble Brier
 through deviation. The profile $(\sigma^{\text{SRR}})$ is therefore not
 improvable by any coalitional deviation in the societal Brier objective. $\square$
+
+**Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,
+a sacrifice-eligible agent's expected Brier over the next $W_{\text{persist}}$ days
+is at least $\bar{B} + \delta_{\text{sac}}/2$ (partial persistence of the performance
+deficit). This assumption excludes pure mean-reversion scenarios and is empirically
+testable via the Sham-SRR control (§4.3).
 
 *Remark.* Proposition 2 does not claim SRR maximises any single agent's
 individual fitness. It claims the *society* cannot improve its collective

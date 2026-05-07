@@ -58,8 +58,8 @@ than cooperative diversity dynamics.
 Three key elements are missing from the existing literature:
 
 **1. Endogenous diversity maintenance.** Current approaches to LLM ensemble diversity
-require external adversarial prompting [@zhou2025dmad] or architectural separation between
-agent roles [@liu2024tradingagents]. Neither approach is self-correcting: if all agents
+require external adversarial prompting [@liu2025dmad] or architectural separation between
+agent roles [@xiao2024tradingagents]. Neither approach is self-correcting: if all agents
 receive prompts that accidentally converge (e.g., all see the same high-salience news
 event), no internal mechanism restores diversity. We need an *intrinsic* mechanism that
 agents invoke based on their own performance signal.

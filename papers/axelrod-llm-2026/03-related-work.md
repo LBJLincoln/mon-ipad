@@ -41,6 +41,14 @@ neither relatedness, nor repeated bilateral interaction, nor
 reputation tracking, nor network structure — only a common-knowledge
 performance signal and a finite strategy taxonomy.
 
+Recent empirical work has returned to the original Axelrod questions using LLMs as
+subjects rather than experimenters. Jorgensen et al. [@llm_ipd2024] find that LLM
+agents are systematically *more* cooperative than human players in iterated PD,
+crediting shared training-data conventions for creating an implicit common prior
+that biases toward Tit-for-Tat–like strategies. This finding has a direct implication
+for our setting: if LLMs share cooperation biases, they may also share *prediction*
+biases — a homogeneity pressure that SRR is designed to counteract.
+
 Two structural features of the original Axelrod setup limit
 direct transfer to our setting. First, the action space was binary
 (cooperate / defect), whereas real-world prediction markets require
@@ -230,6 +238,18 @@ with genuine capital; models lost 16–30.8% on Kalshi but only −1.1%
 on Polymarket, with platform microstructure emerging as a more
 important performance driver than model capability.
 
+Two concurrent works deserve explicit positioning against ours.
+PolySwarm [@polyswarm2026] deploys a 50-persona LLM swarm on Polymarket with
+cross-market KL-divergence analysis and Kelly stake sizing — architecturally close
+to our system, but treating persona diversity as a *fixed* structural property
+rather than a dynamically maintained one. No endogenous mechanism detects and
+repairs diversity erosion; persona assignments are frozen at deployment.
+Schoenegger et al. [@schoenegger2024wisdom] demonstrate that a 12-LLM ensemble
+matches a 925-human crowd on geopolitical event forecasting accuracy — powerful
+evidence for the *silicon-crowd hypothesis* underpinning our approach — but their
+ensemble uses no explicit diversity-maintenance mechanism, leaving the Ambiguity
+term as an unrealised potential gain that SRR is specifically designed to capture.
+
 Our work differs from all of these predecessors in three respects.
 First, we study *society-level dynamics* across a multi-agent
 population rather than the performance of individual agents or
@@ -261,6 +281,8 @@ endogenous diversity maintenance via SRR.
 | TradingAgents [@xiao2024tradingagents] | ✓ | ✓ (stocks) | — | — |
 | Agent Trading Arena [@ma2025agent] | ✓ | ✓ (stocks) | — | — |
 | Prediction Arena [@zhang2026arena] | ✓ | ✓ (Kalshi/Polymarket) | — | — |
+| PolySwarm [@polyswarm2026] | ✓ | ✓ (Polymarket) | — | — (fixed personas) |
+| Silicon Crowd [@schoenegger2024wisdom] | ✓ | ✓ (geo. events) | — | — |
 | **Axelrod-LLM (this work)** | **✓** | **✓ (NBA + Political)** | **✓** | **✓ (SRR, endogenous)** |
 
 *Table 1: Comparison with related work across four key framework properties.

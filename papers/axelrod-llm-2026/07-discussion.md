@@ -84,7 +84,7 @@ This has a connection to the biological literature on *phenotypic switching*
 in clonal populations [@wolf2005diversity], where genetically identical cells
 stochastically express different phenotypes to hedge against environmental
 uncertainty — a form of bet-hedging that improves population fitness without
-requiring individual sacrifice. Our mechanism is analogous but performancetriggered rather than stochastic, and it operates in a finite-archetype
+requiring individual sacrifice. Our mechanism is analogous but performance-triggered rather than stochastic, and it operates in a finite-archetype
 discrete space rather than a continuous phenotype space.
 
 ---
