@@ -1,14 +1,14 @@
 {
-  "timestamp": "2026-05-07T10:00:00Z",
-  "cycle": "cloud-brain-fire-56-2026-05-07T10h",
+  "timestamp": "2026-05-07T18:00:00Z",
+  "cycle": "cloud-brain-fire-58-2026-05-07T18h",
   "trigger": "every-4h",
   "nba_islands": {
-    "S13": {"space": "Nomos42/nba-evo-4", "gen": 1005, "brier": 0.23196, "best_brier": 0.23196, "stagnation": 0, "cycle_num": 335, "status": "EVOLVING", "model": "extra_trees", "gens_since_prev": 214, "top5_venn_abers_brier": 0.22864, "note": "Healthy +214 gens. CYCLE_STAG=22 at 0.23196. Top5 individual: ET/venn_abers 62f brier=0.22864."},
-    "S14": {"space": "Nomos42/nba-evo-5", "gen": 4154, "brier": 0.22158, "best_brier": 0.22158, "stagnation": 0, "cycle_num": 1385, "status": "EVOLVING", "model": "logistic_regression", "all_time_best": 0.22019, "fleet_best": true, "gens_since_prev": 292, "note": "Fleet best alltime=0.22019 (LR 26f gen=1078). +292 gens. LR 26f dominant composite leader."},
-    "S15": {"space": "Nomos42/nba-evo-6", "gen": 2064, "brier": 0.22034, "best_brier": 0.22034, "stagnation": 0, "cycle_num": 688, "status": "EVOLVING", "model": "extra_trees", "milestone": "sub-oracle 0.22034 < 0.22085", "gens_since_prev": 292, "top5_individual_brier": 0.21858, "top5_individual_gen": 2063, "top5_individual_model": "extra_trees/sigmoid/200f", "note": "MILESTONE CANDIDATE: top5 Pareto individual Brier=0.21858 at gen=2063 — below fleet alltime 0.22019. API best_brier=0.22034 unchanged (individual vs validated best). History also shows gen=1565 brier=0.21948. Monitor next cycle for API best_brier update."},
-    "S17": {"space": "LBJLincoln26/nba-evo-s17", "gen": null, "brier": null, "status": "PAUSED_503", "paused_days": 27, "action_required": "VM restart OVERDUE 27+ days — priority-1 in work-queue."},
-    "S18": {"space": "TESTforge42/nba-evo-s18", "gen": 2367, "brier": 0.22315, "best_brier": 0.22315, "stagnation": 0, "cycle_num": 789, "status": "EVOLVING", "model": "xgboost_brier", "gens_since_prev": 333, "note": "Healthy +333 gens. CYCLE_STAG=13 at 0.22315."},
-    "S22": {"space": "TESTforge42/nba-evo-s22", "gen": 2112, "brier": 0.22431, "best_brier": 0.22431, "stagnation": 0, "cycle_num": 704, "status": "EVOLVING", "model": "xgboost", "gens_since_prev": 137, "note": "Healthy +137 gens."}
+    "S13": {"space": "Nomos42/nba-evo-4", "gen": 1086, "brier": 0.23196, "best_brier": 0.23196, "stagnation": 10, "cycle_num": 362, "status": "COOLDOWN", "model": "extra_trees", "gens_since_prev": 81, "note": "Stagnation=10 — approaching threshold 15. Watch next cycle."},
+    "S14": {"space": "Nomos42/nba-evo-5", "gen": 4315, "brier": 0.22158, "best_brier": 0.22158, "stagnation": 0, "cycle_num": 1439, "status": "EVOLVING", "model": "logistic_regression", "all_time_best": 0.22019, "fleet_best": true, "gens_since_prev": 161, "pareto_top_brier": 0.2189, "pareto_top_features": 200, "note": "Fleet best alltime=0.22019. Pareto member at 0.2189 (200f) noted but not confirmed as best_brier."},
+    "S15": {"space": "Nomos42/nba-evo-6", "gen": 2233, "brier": 0.22034, "best_brier": 0.22034, "stagnation": 0, "cycle_num": 745, "status": "EVOLVING", "model": "xgboost_brier", "milestone": "sub-oracle 0.22034 < 0.22085", "gens_since_prev": 169, "top5_individual_brier": 0.21858, "note": "Model updated: xgboost_brier (was extra_trees in fire-56). sub-oracle status maintained. top5=0.21858 NEW BEST CANDIDATE."},
+    "S17": {"space": "LBJLincoln26/nba-evo-s17", "gen": null, "brier": null, "status": "PAUSED_503", "paused_days": 28, "action_required": "VM restart OVERDUE 28+ days — priority-1 in work-queue."},
+    "S18": {"space": "TESTforge42/nba-evo-s18", "gen": 2523, "brier": 0.22315, "best_brier": 0.22315, "stagnation": 0, "cycle_num": 841, "status": "COOLDOWN", "model": "xgboost_brier", "gens_since_prev": 156, "pareto_front_size": 16, "note": "Healthy. 49 features optimal."},
+    "S22": {"space": "TESTforge42/nba-evo-s22", "gen": 2176, "brier": 0.22431, "best_brier": 0.22431, "stagnation": 13, "cycle_num": 726, "status": "EVOLVING", "model": "xgboost", "gens_since_prev": 64, "pareto_top_brier": 0.21905, "pareto_top_model": "extra_trees/200f", "note": "ALERT stag=13 — diversify threshold=15. Pareto member at 0.21905 (ET 200f) remarkable — below fleet alltime best 0.22019. VM watch-item added."}
   },
   "nba_fleet_best_alltime": 0.22019,
   "nba_fleet_best_island": "S14",
@@ -19,93 +19,72 @@
     "island": "S15",
     "brier": 0.21858,
     "gen": 2063,
-    "model": "extra_trees/sigmoid",
-    "features": 200,
-    "note": "Pareto front individual — needs API best_brier update to confirm as new fleet best. Will checkpoint if API reports <0.22019 next cycle."
+    "model": "xgboost_brier",
+    "note": "Pareto front individual — below fleet alltime 0.22019. Checkpoint if API best_brier drops below 0.22019."
   },
+  "nba_pareto_notable": {
+    "S22_pareto_top": {"brier": 0.21905, "model": "extra_trees", "features": 200, "note": "Remarkable pareto member — if validated would be second-best candidate after S15 top5=0.21858."}
+  },
+  "nba_stagnation_alerts": [
+    {"island": "S13", "stagnation": 10, "threshold": 15, "action": "watch — diversify if reaches 15 next cycle"},
+    {"island": "S22", "stagnation": 13, "threshold": 15, "action": "URGENT watch — 2 gens from threshold. VM item added."}
+  ],
+  "nba_diversify_sent_this_cycle": [],
   "nba_target": 0.20,
   "nba_islands_stagnated_over_15": 0,
-  "nba_diversify_sent_this_cycle": [],
-  "nba_sota_2026": {
-    "note": "fire-56 even cycle — SOTA research done",
-    "last_research_cycle": "fire-56",
-    "proposals": ["sota-2026-05-07T10h-fire56-stacked-ensemble-cnn.json"],
-    "our_fleet_best": 0.22019,
-    "our_session_best": 0.22034,
-    "our_top5_candidate": 0.21858,
-    "external_sota": [
-      {
-        "paper": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
-        "url": "https://www.mdpi.com/2079-3197/13/10/230",
-        "date": "2025-10",
-        "best_brier": 0.221,
-        "model": "CNN",
-        "note": "Our fleet best 0.22019 NOW BEATS this CNN benchmark."
-      },
-      {
-        "paper": "Stacked ensemble model for NBA game outcome prediction analysis",
-        "url": "https://www.nature.com/articles/s41598-025-13657-1",
-        "date": "2025",
-        "model": "NB+AdaBoost+MLP+KNN+XGB+DT+LR stacked",
-        "actionable": "Stacking CPU-incompatible (Rule#8). Insight: add Venn-Abers calibration to S14/S18/S22 mutation pools (S13 top5 already uses it at 0.22864)."
-      },
-      {
-        "paper": "Uncertainty-Aware ML for NBA Forecasting in Digital Betting Markets",
-        "url": "https://www.mdpi.com/2078-2489/17/1/56",
-        "date": "2026-01",
-        "best_brier": 0.199,
-        "model": "logistic_regression + MC dropout",
-        "gap_to_fleet_best": 0.02119,
-        "actionable": "LR already in S14 pool (fleet best). MC dropout CPU-incompatible. Venn-Abers = CPU-compatible uncertainty alternative."
-      }
-    ],
-    "position": "Our fleet best 0.22019 BEATS CNN benchmark (0.221). Gap to LR+MC-dropout SOTA (0.199) = 0.021. Top5 candidate 0.21858 would reduce gap to 0.016."
+  "nba_sota_this_cycle": {
+    "cycle": "fire-58 odd-cycle",
+    "proposal": "sota-2026-05-07T18h-fire58-uncertainty-aware-markets.json",
+    "key_finding": "LSTM+market-implied-features Brier=0.089; LR tabular=0.199. Our gap to LR: 0.22034-0.199=0.021. Root cause: market features (spread/total implied win prob) likely absent from engine.py."
   },
   "pol_islands": {
-    "P1": {"space": "Nomos42/political-alpha", "gen": 23758, "best_brier": 0.2499, "stagnation": 0, "cycle_num": 7920, "status": "EVOLVING", "model": "xgboost_brier", "gens_since_prev": 1914, "feature_candidates": 272},
-    "P2": {"space": "Nomos42/political-alpha-2", "gen": 25768, "best_brier": 0.25003, "stagnation": 0, "cycle_num": 8590, "status": "EVOLVING", "model": "lightgbm", "gens_since_prev": 1158, "top_individual_brier": 0.24902, "feature_candidates": 272, "note": "Top individual LightGBM 113f brier=0.24902 — within 0.00002 of fleet best 0.24904!"},
-    "P4": {"space": "LBJLincoln/political-alpha-4", "gen": 47193, "best_brier_api": 0.24992, "best_brier_alltime": 0.24904, "stagnation": 0, "cycle_num": 15731, "status": "EVOLVING", "model": "lightgbm", "fleet_best": true, "gens_since_prev": 1713, "feature_candidates": 272},
-    "P5": {"space": "LBJLincoln/political-alpha-5", "gen": 40693, "best_brier": 0.24993, "stagnation": 0, "cycle_num": 13565, "status": "EVOLVING", "model": "xgboost_brier", "gens_since_prev": 1256, "top_individual_brier": 0.24903, "feature_candidates": 272},
-    "P7": {"space": "LBJLincoln/political-alpha-7", "gen": 30392, "best_brier": 0.25412, "stagnation": 0, "cycle_num": 10131, "status": "EVOLVING", "model": "lightgbm", "gens_since_prev": 1929, "feature_candidates": 272, "note": "Highest gens this cycle (+1929). Recent individual 0.2490. Extra_trees patch from Rotation C targets this gap."}
+    "P1": {"space": "Nomos42/political-alpha", "gen": 24747, "best_brier": 0.2499, "stagnation": 0, "cycle_num": 8249, "status": "SAVING", "model": "xgboost_brier", "gens_since_prev": 989, "feature_candidates": 272},
+    "P2": {"space": "Nomos42/political-alpha-2", "gen": 25768, "best_brier": 0.25003, "stagnation": 0, "cycle_num": null, "status": "403_FORBIDDEN", "model": "lightgbm", "top_individual_brier": 0.24902, "feature_candidates": 272, "note": "403 this cycle — Nomos42 account saturated. Last good: gen=25768 (fire-56 10h). VM check-item added."},
+    "P4": {"space": "LBJLincoln/political-alpha-4", "gen": 48034, "best_brier": 0.24992, "best_brier_alltime": 0.24904, "stagnation": 0, "cycle_num": 16012, "status": "EVOLVING", "model": "xgboost_brier", "fleet_best": true, "gens_since_prev": 841, "feature_candidates": 272},
+    "P5": {"space": "LBJLincoln/political-alpha-5", "gen": 41317, "best_brier": 0.24993, "stagnation": 0, "cycle_num": 13773, "status": "EVOLVING", "model": "xgboost_brier", "gens_since_prev": 624, "top_individual_brier": 0.24993, "feature_candidates": 272},
+    "P7": {"space": "LBJLincoln/political-alpha-7", "gen": 31337, "best_brier": 0.25412, "stagnation": 0, "cycle_num": 10446, "status": "EVOLVING", "model": "lightgbm", "gens_since_prev": 945, "feature_candidates": 272}
   },
   "pol_fleet_best_alltime": 0.24904,
   "pol_fleet_best_alltime_island": "P4",
-  "pol_all_up": true,
+  "pol_4_of_5_up": true,
   "pol_restarts_this_cycle": 0,
-  "pol_critical_bottleneck": "ALL political islands have only 272 feature_candidates vs NBA 3377 (12x gap). Data pipeline staleness is primary reason POL Brier stalls at 0.249 vs NBA 0.220. Rotation D documents fix plan.",
+  "pol_critical_bottleneck": "272 feature_candidates vs NBA 3377 (12x gap). Political data crons 39+ days stale. FEC/SEC scraper endpoint not deployed. Rotation A plan written this cycle.",
+  "rotation_this_cycle": "A",
+  "rotation_A_deliverable": "nomos-political-alpha/data/research-proposals/rotation-a-fec-sec-2026-05-07T18h.json — Polymarket/Kalshi implied probs + FEC + SEC insider as key missing feature categories.",
   "axelrod_parity": {
-    "nba_app": "BROKEN — DOUBLE ACCIDENT: fire-54 pushed 9-line stub (bf5980ef), fire-55 pushed PLACEHOLDER_NBA (297facd4). Last good: 73b9c9f9 (5799L, Mechs A/B/C + KL-divergence). VM MUST run scripts/ops/restore_nba_tf_fire55.py.",
-    "pol_app": "RESTORED fire-51 (SHA 96e31b67, 3924 lines). KL-divergence applied fire-52. Mechs A/B/C intact. political_engine.py placeholder still unrestored (fire-53 accident)."
+    "nba_app": "BROKEN — VM must run scripts/ops/restore_nba_tf_fire55.py (pending restore-nba-tf-fire55 + tf-axelrod-2026-mech-a-gf-vm).",
+    "pol_app": "RESTORED fire-51 (Mechs A/B/C + KL-div). political_engine.py placeholder unrestored (fire-53)."
   },
-  "engine_parity": "MISMATCH — mon-ipad b7ec5b5 (+54KB) ahead of nomos-nba-agent f455c47. VM task engine-parity-sync (priority-40).",
-  "political_engine_status": "BROKEN — placeholder (fire-53 accident, commit 88b1dc09). VM MUST run scripts/ops/restore_political_engine_fire53.py.",
-  "nba_tf_app_status": "BROKEN — double accident (fire-54+fire-55). VM MUST run scripts/ops/restore_nba_tf_fire55.py.",
+  "engine_parity": "MISMATCH — mon-ipad ahead of nomos-nba-agent. VM task engine-parity-sync (priority-40).",
+  "political_engine_status": "BROKEN — placeholder (fire-53). VM run scripts/ops/restore_political_engine_fire53.py.",
+  "nba_tf_app_status": "BROKEN — double accident (fire-54+fire-55). VM run scripts/ops/restore_nba_tf_fire55.py.",
   "councils": "DECOMMISSIONED 2026-04-20 — STEP 3 skipped.",
-  "rotation_this_cycle": "D",
-  "rotation_D_deliverable": "nomos-political-alpha/data/research-proposals/rotation-d-data-pipeline-2026-05-07T10h.json — audit: 272 vs 3377 feature gap, political data staleness, FEC/SEC scraper not deployed, NBA data healthy. Fix plan: restart crons + deploy FEC endpoint + expand political_engine categories.",
   "actions_this_cycle": [
-    "STEP 0: No crash recovery (no local-agent-* stale items; tune-12 blocked on VM restore; tune-13 pending VM restore)",
-    "STEP 1: All 5 active NBA islands EVOLVING. S17 503 PAUSED 27d. No stagnation>15 — no diversify. MILESTONE: S15 top5 individual Brier=0.21858 at gen=2063 (below fleet alltime 0.22019). Even cycle SOTA: fleet best 0.22019 now BEATS CNN benchmark 0.221 (MDPI Oct 2025).",
-    "STEP 2: All 5 POL islands UP, stagnation=0. P2 top individual 0.24902 (fleet best 0.24904!). Rotation D: 272 feature gap diagnosed, fix plan written.",
+    "STEP 0: No crash recovery — all pending items owner=local-vm (not local-agent-*). tf-axelrod-verify-tune-12 remains blocked on restore.",
+    "STEP 1: 5/6 NBA islands polled OK. S13 stag=10 (watch), S14 stag=0 LR fleet-best, S15 stag=0 sub-oracle (top5=0.21858), S17 503 PAUSED 28d, S18 stag=0, S22 stag=13 ALERT approaching threshold. No island >15 → no diversify sent.",
+    "STEP 2: 4/5 POL islands UP. P2 403 (Nomos42 saturated). P4 gen=48034, P5 gen=41317, P7 gen=31337 all stag=0. Rotation A: FEC/SEC + Polymarket implied-prob plan written.",
     "STEP 3: Councils decommissioned — skipped.",
-    "STEP 4: Dashboard R8 done — skipped.",
-    "STEP 5: health-status.json, CLAUDE.md, work-queue.json, SOTA proposal pushed. brain-status.json + rotation-D proposal pushed to nomos-political-alpha."
+    "STEP 4: No dashboard R8 pending — skipped.",
+    "STEP 5: SOTA: Uncertainty-Aware LSTM+market paper (MDPI 2026) — LSTM Brier=0.089 with market features, LR tabular=0.199. Key gap: market-implied features not in engine.py. S22 pareto member 0.21905 (ET 200f) remarkable. health-status + work-queue + SOTA proposal pushed to mon-ipad. brain-status + Rotation A proposal pushed to nomos-political-alpha."
   ],
   "alerts": [
-    "CRITICAL-0: NBA TF app.py BROKEN — double accident (fire-54+fire-55). VM run scripts/ops/restore_nba_tf_fire55.py IMMEDIATELY.",
-    "CRITICAL-1: political_engine.py BROKEN — placeholder (fire-53). VM run scripts/ops/restore_political_engine_fire53.py IMMEDIATELY.",
-    "WARNING-2: S17 PAUSED 27+ days — VM restart OVERDUE (priority-1)",
-    "MILESTONE: S15 top5 individual Brier=0.21858 at gen=2063 — below fleet alltime 0.22019. Watch API best_brier next cycle (fire-57).",
-    "INFO: P2 top individual LightGBM 113f 0.24902 — within 0.00002 of fleet best 0.24904",
-    "INFO: Political 272 feature_candidates (vs NBA 3377) = critical bottleneck. Rotation D fix plan ready.",
-    "INFO: fleet best 0.22019 beats CNN MDPI Oct 2025 benchmark (0.221)"
+    "CRITICAL-0: NBA TF app.py BROKEN — VM run scripts/ops/restore_nba_tf_fire55.py IMMEDIATELY.",
+    "CRITICAL-1: political_engine.py BROKEN — VM run scripts/ops/restore_political_engine_fire53.py IMMEDIATELY.",
+    "WARNING-2: S17 PAUSED 28+ days — VM restart OVERDUE.",
+    "WARNING-3: S22 stagnation=13 — 2 gens from diversify threshold. VM monitor.",
+    "WARNING-4: S13 stagnation=10 — watch.",
+    "WARNING-5: P2 returned 403 — Nomos42 account saturated. VM check.",
+    "RESEARCH: LSTM+market-features Brier=0.089 SOTA (MDPI 2026). Our gap: 0.13 (with market) / 0.021 (without market). Market features may be transformative.",
+    "MILESTONE: S22 Pareto member 0.21905 (ET 200f) — if API-validated would be below fleet alltime 0.22019."
   ],
   "next_priority_vm_tasks": [
-    "PRIORITY-0-URGENT: scripts/ops/restore_nba_tf_fire55.py",
-    "PRIORITY-0-URGENT: scripts/ops/restore_political_engine_fire53.py",
-    "priority-1: vm-restart-s17 — 27+ DAYS PAUSED",
-    "priority-1: restart political data crons (fetch_political_data.py + insider_tracker.py, 39+ days stale)",
-    "priority-40: engine-parity-sync (523KB, VM only)",
+    "PRIORITY-0: scripts/ops/restore_nba_tf_fire55.py (NBA TF restore)",
+    "PRIORITY-0: scripts/ops/restore_political_engine_fire53.py",
+    "priority-1: vm-restart-s17 (28d PAUSED)",
+    "priority-1: restart political data crons (39d stale)",
+    "priority-2: watch S22 stagnation — send diversify if reaches 15",
+    "priority-3: check P2 403 (keepalive wake)",
+    "priority-40: engine-parity-sync",
     "priority-59: vm-fix-diversify-command-format"
   ]
 }

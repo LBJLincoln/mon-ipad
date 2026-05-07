@@ -1,0 +1,100 @@
+{
+  "id": "sota-fire58-uncertainty-aware-markets",
+  "created_at": "2026-05-07T18:00:00Z",
+  "brain_cycle": "fire-58",
+  "rotation": "SOTA (odd-cycle alternate with Rotation)",
+  "title": "Uncertainty-Aware LSTM + Market-Implied Features: Brier 0.089 SOTA — Gap Analysis & Actionable Plan",
+  "source_paper": {
+    "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+    "url": "https://www.mdpi.com/2078-2489/17/1/56",
+    "year": 2026,
+    "venue": "MDPI Information"
+  },
+  "key_results": {
+    "lstm_mc_dropout_with_market": 0.089,
+    "logistic_regression_tabular_only": 0.199,
+    "xgboost_tabular_only": 0.202,
+    "our_fleet_best": 0.22019,
+    "our_top5_candidate": 0.21858,
+    "our_session_best_brier": 0.22034
+  },
+  "gap_analysis": {
+    "gap_to_lr_tabular": 0.02161,
+    "gap_to_lstm_market": 0.13119,
+    "interpretation": "Our 0.22034 vs LR 0.199 = 0.021 gap achievable with tabular-only improvements. The 0.089 LSTM requires market-implied features (betting lines) as INPUT features — fundamentally different.",
+    "decomposition": [
+      "Tabular-only gap (0.021): Feature engineering differences — rolling 5-game efficiency, season z-normalization, feature selection quality",
+      "Market-features gap (0.13): Betting lines encode crowd-wisdom signal unavailable in box-score stats. LSTM+dropout learns calibrated uncertainty from spread/total/implied-prob.",
+      "Neural model gap: CPU-incompatible (Rule#8). LSTM is not an island option."
+    ]
+  },
+  "paper_architecture": {
+    "primary_model": "LSTM with Monte Carlo dropout",
+    "cnn_encoder": "3 conv-pool blocks on shot-chart spatial embeddings → PCA 20 components (92.7% variance)",
+    "feature_categories": [
+      "Team efficiency ratings (OffRtg, DefRtg, NetRtg)",
+      "Rolling 5-game indicators (lagged, no lookahead bias)",
+      "Market-derived: implied win probability, spread, total, overround",
+      "Spatial shot-location patterns (CNN+PCA)",
+      "Home/away indicator, recent form windows"
+    ],
+    "calibration": "Monte Carlo dropout (50 forward passes) for Bayesian uncertainty. Season-level z-normalization.",
+    "training_period": "NBA seasons ≤2022",
+    "test_period": "2024 season"
+  },
+  "actionable_insights": [
+    {
+      "insight": "Market-implied win probability as engine feature",
+      "priority": "HIGH",
+      "cpu_compatible": true,
+      "description": "Add implied win prob derived from moneyline odds as a feature in engine.py Cat55 (new category: market_signals). Formula: implied_prob = 1 / (1 + decimal_odds). Our odds are in data/full-odds-2025-26.json (249 categories). This single feature may close 30-50% of the tabular gap.",
+      "implementation": "engine.py: add 'market_signals' category. Extract ml_home/ml_away moneyline → compute implied_prob, overround, market_consensus_winner. ~15 features.",
+      "prerequisite": "engine-parity-sync must complete first (VM task priority-40). Then add Cat55 to mon-ipad features/engine.py and sync.",
+      "expected_brier_gain": "0.005-0.010 (estimate based on LR tabular gap 0.021, market features likely responsible for half)"
+    },
+    {
+      "insight": "Rolling 5-game efficiency ratings (lagged)",
+      "priority": "MEDIUM",
+      "cpu_compatible": true,
+      "description": "Ensure engine generates rolling-window features (5g, 10g, 20g) for OffRtg, DefRtg, NetRtg, TS%, eFG%. Season z-normalization applied across features to handle era-drift. Verify no lookahead bias in window calculation.",
+      "implementation": "Audit engine.py rolling features — confirm 5-game lag is implemented correctly. Add z-normalization by season.",
+      "expected_brier_gain": "0.002-0.005"
+    },
+    {
+      "insight": "Season-level z-normalization",
+      "priority": "MEDIUM",
+      "cpu_compatible": true,
+      "description": "Normalize all features per season (mean/std from training window). Accounts for era-dependent rule changes (3-pt explosion, pace, load management). Key finding in paper: robustness 2012-2024.",
+      "implementation": "Add normalization step in island preprocessing or engine.py. StandardScaler per season-split.",
+      "expected_brier_gain": "0.001-0.003"
+    },
+    {
+      "insight": "Venn-Abers calibration (CPU-compatible MC-dropout alternative)",
+      "priority": "MEDIUM",
+      "cpu_compatible": true,
+      "description": "Monte Carlo dropout requires neural networks. Venn-Abers provides guaranteed calibration bounds for any classifier. S13 top5 already shows ET/venn_abers 62f=0.22864 (better than base ET). Apply to LR in S14 and xgboost in S18/S22.",
+      "implementation": "Add 'venn_abers' as calibration option in island mutation pool. Already tested in S13 top5.",
+      "expected_brier_gain": "0.001-0.005 (calibration improvement)"
+    },
+    {
+      "insight": "Political alpha: Prediction market implied probs as features",
+      "priority": "HIGH",
+      "domain": "political",
+      "description": "Polymarket/Kalshi market-implied probabilities for political events mirror the market-feature advantage in NBA. These encode crowd-wisdom + expert signal unavailable in polling data alone. Add via Rotation A (FEC/SEC + markets).",
+      "implementation": "Add Polymarket/Kalshi API scraping to political data pipeline. Features: market_implied_prob, market_volume, market_spread_vs_polling. ~10 features per event.",
+      "expected_impact": "Could reduce Political Brier from 0.249 toward 0.22 over 10k+ gens with fresh features"
+    }
+  ],
+  "not_actionable_cpu_incompatible": [
+    "LSTM (sequential model — CPU too slow for island GA)",
+    "CNN shot-chart encoder (GPU needed)",
+    "Monte Carlo dropout at inference scale"
+  ],
+  "competitive_position": {
+    "our_fleet_vs_cnn_mdpi_2025": "BEATS — our 0.22019 < CNN 0.221",
+    "our_fleet_vs_lr_tabular": "BEHIND by 0.021 — addressable",
+    "our_fleet_vs_lstm_market": "BEHIND by 0.131 — requires neural+market, not an island target",
+    "path_to_target_0_20": "0.021 gap to LR-tabular SOTA: market features + rolling efficiency + z-norm could close it. Target 0.20 within reach with tabular-only improvements."
+  },
+  "recommended_vm_task": "Add engine.py Cat55 (market_signals: implied_prob, overround, market_consensus) after engine-parity-sync completes. Test on S14 (LR already best, market feature would amplify signal). Estimated 1-2 weeks for GA to reflect improvement."
+}
