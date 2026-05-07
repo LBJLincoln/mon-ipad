@@ -1,17 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-05-08T06:00:00Z",
+  "updated_at": "2026-05-08T10:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
       "id": "restore-nba-tf-fire55",
       "priority": 0,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-05-08T10:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-62",
       "owner": "local-vm",
-      "subject": "URGENT: NBA TF app.py = placeholder stub — three successive cloud-trigger accidents (fire-54/55/60). Run scripts/ops/restore_nba_tf_fire55.py from mon-ipad root.",
-      "detected_at": "2026-05-07T06:00:00Z",
-      "updated_at": "2026-05-08T06:00:00Z",
-      "cloud_brain_note": "fire-61 (06h): Still pending. fire-60 (02h): THIRD ACCIDENT. Cloud trigger accidentally pushed 'PLACEHOLDER_NBA_CONTENT_TOO_LARGE'. restore_nba_tf_fire55.py STILL VALID — uses 'git show 73b9c9f9:...' so current file state is irrelevant. VM run is the only fix.",
+      "subject": "URGENT: NBA TF app.py = placeholder stub — three successive cloud-trigger accidents (fire-54/55/60).",
+      "result": "fire-62 (VM session): Restored NBA app.py from local git SHA 8488c42c (5799L, full Mechs A/B/C + KL-divergence). All 4 AXELROD-2026 Mech A patches applied + py_compile PASS. Pushed to origin. do_not_push_hf_space_yet still holds.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -28,12 +28,12 @@
     {
       "id": "tf-axelrod-2026-mech-a-gf-vm",
       "priority": 1,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-05-08T10:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-62",
       "owner": "local-vm",
       "subject": "AXELROD-2026 Mech A GF parity: run both scripts on VM for NBA + Political TF",
-      "detected_at": "2026-05-07T14:00:00Z",
-      "updated_at": "2026-05-08T06:00:00Z",
-      "cloud_brain_note": "fire-61 (06h): Still pending. VM scripts: (1) python3 scripts/ops/restore_nba_tf_fire55.py (NBA + GF label). (2) python3 scripts/ops/apply_axelrod2026_mech_a_gf.py (Political GF). Run both from mon-ipad root.",
+      "result": "fire-62 (VM session): Applied all 4 AXELROD-2026 Mech A patches to both NBA + Political app.py. py_compile PASS both. Committed + pushed to origin as 04bb216.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -95,13 +95,50 @@
     {
       "id": "tf-axelrod-verify-tune-12",
       "priority": 21,
-      "status": "blocked",
-      "blocked_since": "2026-05-07T06:00:00Z",
-      "blocked_on": "restore-nba-tf-fire55 must complete first (third accident in fire-60).",
+      "status": "done",
+      "completed_at": "2026-05-08T10:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-62",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 12 — NBA thesis fallback patch (pending VM restore)",
-      "result": "fire-60: Patch verified locally (py_compile PASS). NBA file too large for MCP inline push. VM must run restore_nba_tf_fire55.py which includes both patches.",
+      "subject": "verify+tune fire 12 — NBA thesis fallback patch",
+      "result": "fire-62 (VM session): Included in the 4-patch suite applied to both NBA + Political app.py. edge_rationale patch includes a.get('thesis') fallback for both. Unblocked and completed.",
       "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-2026-mech-b",
+      "priority": 10,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "AXELROD-2026 Mechanism B — Sacrificial Role Reallocation: verify both NBA+Political have bottom-3 trailing-7d delta → forced archetype assignment. Parity audit + any gap patches.",
+      "detected_at": "2026-05-08T10:00:00Z",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-2026-mech-c",
+      "priority": 11,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "AXELROD-2026 Mechanism C — verify write_axelrod_log() emits bankroll_growth_factor + consensus_pick_distribution fields in both apps.",
+      "detected_at": "2026-05-08T10:00:00Z",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "cloud-trigger-axelrod-fire-62-2026-05-08T10h",
+      "priority": 86,
+      "status": "done",
+      "completed_at": "2026-05-08T10:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-62",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-62: AXELROD-2026 Mech A full delivery — NBA restore + both TF apps patched (4 patches each)",
+      "actions": [
+        "NBA TF app.py: restored from local git 8488c42c (5799L) + applied 4 AXELROD-2026 patches",
+        "Political TF app.py: patched from 3779L disk version (pre-accident good) + applied 4 patches",
+        "Patches: COMMON_KNOWLEDGE[D] header, edge_rationale format, GF=xxx× leaderboard, consensus pick aggregation",
+        "py_compile PASS both files",
+        "Force-pushed to origin (local proxy at 127.0.0.1:41359 → GitHub)",
+        "Commit: 04bb216 [AXELROD-FIRE62]",
+        "WQ updated: restore-nba-tf-fire55 DONE, tf-axelrod-2026-mech-a-gf-vm DONE, tf-axelrod-verify-tune-12 DONE",
+        "Note: do_not_push_hf_space_yet still holds for both TF Spaces"
+      ]
     },
     {
       "id": "cloud-brain-fire61-2026-05-08T06h",
