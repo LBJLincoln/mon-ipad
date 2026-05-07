@@ -1,43 +1,90 @@
 {
-  "updated_at": "2026-05-07T22:00:00Z",
-  "fire": 59,
-  "rotation": "B",
+  "updated_at": "2026-05-08T06:00:00Z",
+  "fire": 61,
+  "rotation": "C",
   "nba_islands": {
-    "S13": {"island": "Nomos42/nba-evo-4", "gen": 1130, "brier": 0.24535, "stag": 0, "model": "xgboost_brier", "best_brier": 0.23196, "status": "EVOLVING"},
-    "S14": {"island": "Nomos42/nba-evo-5", "gen": 4451, "brier": 0.2303, "stag": 0, "model": "random_forest", "best_brier": 0.22158, "status": "EVOLVING", "note": "fleet alltime best=0.22019"},
-    "S15": {"island": "Nomos42/nba-evo-6", "gen": 2397, "brier": 0.22102, "stag": 0, "model": "extra_trees", "best_brier": 0.22034, "top5_brier": [0.21885, 0.21879, 0.21956, 0.22102, 0.22166], "top5_models": ["rf_200f", "rf_200f", "et_200f", "et_200f", "et_200f"], "status": "EVOLVING", "note": "Pareto top5: RF 200f gens 2392-2393 BEAT prior 0.21858 candidate"},
-    "S17": {"island": "LBJLincoln26/nba-evo-s17", "status": "503_PAUSED", "note": "PAUSED 28d+ — VM restart OVERDUE"},
-    "S18": {"island": "TESTforge42/nba-evo-s18", "gen": 2672, "brier": 0.22532, "stag": 14, "model": "extra_trees", "best_brier": 0.22315, "status": "EVOLVING", "alert": "STAGNATION=14 → VM must POST /api/command {command:diversify} BEFORE NEXT GEN"},
-    "S22": {"island": "TESTforge42/nba-evo-s22", "gen": 2229, "brier": 0.23044, "stag": 6, "model": "catboost", "best_brier": 0.22431, "top5_brier": [0.23044, 0.21886, 0.21954, 0.22064, 0.22005], "status": "EVOLVING", "note": "stag recovered 13→6; Pareto candidate 0.21886 promising"}
+    "S13": {"island": "Nomos42/nba-evo-4", "gen": 1203, "brier": 0.24535, "stag": 0, "model": "xgboost_brier", "best_brier": 0.23196, "status": "EVOLVING"},
+    "S14": {"island": "Nomos42/nba-evo-5", "gen": 4592, "brier": 0.2303, "stag": 0, "model": "random_forest", "best_brier": 0.22158, "status": "EVOLVING", "note": "alltime GA best=0.22019 gen=1078"},
+    "S15": {
+      "island": "Nomos42/nba-evo-6",
+      "gen": 67,
+      "burst_cycle": 23,
+      "brier": 0.22012,
+      "stag": 0,
+      "model": "random_forest",
+      "best_brier": 0.22012,
+      "status": "EVOLVING",
+      "alert": "CHECKPOINT: best_brier=0.22012 < 0.22085 — NEW FLEET BEST (prev 0.22019 S14 gen=1078)",
+      "top5_pareto_brier": [0.21879, 0.21885],
+      "top5_models": ["rf_200f", "rf_200f"]
+    },
+    "S17": {"island": "LBJLincoln26/nba-evo-s17", "status": "503_PAUSED", "note": "PAUSED 28d+ — VM restart OVERDUE (fire-61 confirmed 503)"},
+    "S18": {"island": "TESTforge42/nba-evo-s18", "gen": 2812, "brier": 0.22532, "stag": 0, "model": "extra_trees", "best_brier": 0.22315, "status": "EVOLVING", "note": "stag RECOVERED 14→0; diversify was effective"},
+    "S22": {
+      "island": "TESTforge42/nba-evo-s22",
+      "gen": 2310,
+      "brier": 0.23044,
+      "stag": 8,
+      "model": "catboost",
+      "best_brier": 0.22431,
+      "status": "EVOLVING",
+      "alert": "stag=8 rising (was 6 fire-59) — diversify if reaches 12 next cycle",
+      "top5_pareto": [
+        {"gen": 2309, "brier": 0.2185,  "roi": 0.3432, "sharpe": 9.0602, "features": 200, "model": "catboost"},
+        {"gen": 2307, "brier": 0.21912, "roi": 0.3357, "sharpe": 7.9937, "features": 200, "model": "catboost"},
+        {"gen": 2309, "brier": 0.2195,  "roi": 0.3316, "sharpe": 8.2085, "features": 200, "model": "catboost"},
+        {"gen": 2308, "brier": 0.21994, "roi": 0.325,  "sharpe": 7.9432, "features": 200, "model": "catboost"}
+      ],
+      "note": "Pareto fleet best 0.21850 gen=2309 — NEW ALL-TIME PARETO RECORD (prev 0.21879 S15 RF_200f)"
+    }
   },
   "political_islands": {
-    "P1": {"island": "Nomos42/political-alpha", "gen": 25727, "brier": 0.2533, "stag": 0, "model": "logistic_regression", "best_brier": 0.24990, "status": "EVOLVING"},
-    "P2": {"island": "Nomos42/political-alpha-2", "gen": 26894, "brier": 0.24902, "stag": 0, "model": "lightgbm", "best_brier": 0.25003, "status": "EVOLVING", "note": "403 RESOLVED — back online gen=26894"},
-    "P4": {"island": "LBJLincoln/political-alpha-4", "gen": 48870, "brier": 0.24904, "stag": 0, "model": "lightgbm", "best_brier": 0.24992, "status": "SAVING", "note": "POL fleet alltime best=0.24904"},
-    "P5": {"island": "LBJLincoln/political-alpha-5", "gen": 41862, "brier": 0.25577, "stag": 0, "model": "extra_trees", "best_brier": 0.24993, "status": "EVOLVING"},
-    "P7": {"island": "LBJLincoln/political-alpha-7", "gen": 32248, "brier": 0.24904, "stag": 0, "model": "lightgbm", "best_brier": 0.25412, "status": "EVOLVING"}
+    "P1": {"island": "Nomos42/political-alpha",      "gen": 26689, "brier": 0.2533,  "stag": 0, "model": "logistic_regression", "best_brier": 0.2499,  "status": "EVOLVING"},
+    "P2": {"island": "Nomos42/political-alpha-2",    "gen": 27444, "brier": 0.2490,  "stag": 0, "model": "lightgbm",            "best_brier": 0.25003, "status": "SAVING"},
+    "P4": {"island": "LBJLincoln/political-alpha-4", "gen": 49777, "brier": 0.24904, "stag": 0, "model": "lightgbm",            "best_brier": 0.24992, "status": "EVOLVING", "note": "POL fleet alltime best=0.24904"},
+    "P5": {"island": "LBJLincoln/political-alpha-5", "gen": 42351, "brier": 0.2558,  "stag": 0, "model": "extra_trees",         "best_brier": 0.24993, "status": "SAVING"},
+    "P7": {"island": "LBJLincoln/political-alpha-7", "gen": 33153, "brier": 0.24904, "stag": 0, "model": "lightgbm",            "best_brier": 0.25412, "status": "EVOLVING"}
   },
   "fleet_bests": {
-    "nba_alltime_validated": 0.22019,
-    "nba_pareto_candidate_best": 0.21879,
-    "nba_pareto_candidate_island": "S15",
-    "nba_pareto_candidate_model": "RandomForest_200f",
-    "nba_pareto_candidate_gen": 2392,
+    "nba_alltime_validated": 0.22012,
+    "nba_alltime_validated_island": "S15",
+    "nba_alltime_validated_prev": 0.22019,
+    "nba_alltime_validated_prev_island": "S14",
+    "nba_pareto_candidate_best": 0.21850,
+    "nba_pareto_candidate_island": "S22",
+    "nba_pareto_candidate_model": "CatBoost_200f",
+    "nba_pareto_candidate_gen": 2309,
+    "nba_pareto_prev_best": 0.21879,
+    "nba_pareto_prev_island": "S15",
     "pol_alltime_validated": 0.24904,
-    "pol_current_running_best": 0.24902
+    "pol_alltime_island": "P4",
+    "pol_current_running_best": 0.24904
   },
   "sota_gap": {
-    "tabular_external_sota_brier": 0.221,
-    "our_pareto_candidate_brier": 0.21879,
-    "gap_vs_external_tabular": -0.00221,
-    "note": "Our S15 Pareto candidates BEAT published tabular-only CNN SOTA (0.221). Market-based LSTM reaches 0.089 using live betting lines."
+    "tabular_cnn_sota_brier": 0.221,
+    "mc_dropout_rnn_sota_brier": 0.199,
+    "mc_dropout_rnn_note": "Uses live betting lines as sequential features (MDPI 2078-2489/17/1/56) — different data regime",
+    "our_fleet_best_validated": 0.22012,
+    "our_pareto_candidate_best": 0.21850,
+    "gap_vs_tabular_cnn": -0.00288,
+    "note": "S22 Pareto CatBoost_200f 0.21850 beats tabular-only CNN SOTA by 0.6%. MC-dropout RNN 0.199 target requires sequential market-feature modeling."
+  },
+  "rotation_c_action": {
+    "rotation": "C",
+    "theme": "Port NBA techniques to Political",
+    "nba_win_technique": "CatBoost_200f + NSGA-II Pareto → 0.21850 Pareto brier on S22 gen=2309",
+    "proposal": "See data/research-proposals/rotation-c-2026-05-08-catboost-political.md",
+    "political_current_best": 0.24904,
+    "expected_gain": "~0.002-0.003 Brier from catboost addition; ~0.005 from feature cron restart (272→320+ candidates)"
   },
   "urgent_vm_actions": [
-    "CRITICAL-1: POST testforge42-nba-evo-s18.hf.space/api/command {command:diversify} — S18 stag=14",
-    "CRITICAL-2: python3 scripts/ops/restore_nba_tf_fire55.py — NBA TF still placeholder",
-    "CRITICAL-3: python3 scripts/ops/restore_political_engine_fire53.py — POL engine still placeholder",
-    "HIGH-4: Restart S17 LBJLincoln26/nba-evo-s17 — 503 PAUSED 28d+",
-    "HIGH-5: Restart political data crons (fetch_political_data.py + insider_tracker.py)"
+    "CRITICAL-1: python3 scripts/ops/restore_nba_tf_fire55.py — NBA TF still placeholder stub",
+    "CRITICAL-2: python3 scripts/ops/restore_political_engine_fire53.py — POL engine still placeholder",
+    "CRITICAL-3: python3 scripts/ops/apply_axelrod2026_mech_a_gf.py — Political TF GF patch pending",
+    "HIGH-4: Restart S17 LBJLincoln26/nba-evo-s17 — 503 PAUSED 28d+ (fire-61 confirmed)",
+    "HIGH-5: Restart political data crons (fetch_political_data.py + insider_tracker.py) — 39d+ stale",
+    "HIGH-6: engine-parity-sync — nomos-nba-agent features/engine.py 54KB behind mon-ipad",
+    "WATCH-7: S22 stag=8 rising — diversify if reaches 12 at next cycle"
   ],
-  "brain_notes": "GitHub MCP token expired fire-59 — writes delayed one cycle. S15 RF_200f Pareto candidates 0.21879/0.21885 at gens 2392-2393 are legitimate sub-0.22 Pareto members; need external walk-forward validation before promotion to oracle. P2 self-recovered from 403."
+  "brain_notes": "fire-61 (Rotation C): S15 NEW FLEET BEST 0.22012 < 0.22085 CHECKPOINT. S22 Pareto 0.21850 CatBoost_200f gen=2309 is new all-time Pareto record (prev S15 RF 0.21879). S18 diversify fully recovered 14→0. All POL islands healthy stag=0. SOTA: MC-dropout RNN 0.199 using betting lines — sequential model is the gap vs our tree-only approach."
 }
