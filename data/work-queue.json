@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-07T06:00:00Z",
+  "updated_at": "2026-05-07T10:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -10,7 +10,7 @@
       "owner": "local-vm",
       "subject": "URGENT: NBA TF app.py = 15-char stub — two successive cloud-trigger accidents. Run scripts/ops/restore_nba_tf_fire55.py from mon-ipad root.",
       "detected_at": "2026-05-07T06:00:00Z",
-      "updated_at": "2026-05-07T06:00:00Z",
+      "updated_at": "2026-05-07T10:00:00Z",
       "cloud_brain_note": "fire-54 (bf5980ef) pushed 9-line stub. fire-55 (297facd4) attempted restore but pushed literal PLACEHOLDER_NBA instead of 292K source. Last good commit: 73b9c9f9 (5799L, Mechs A/B/C + KL divergence). Restoration script: scripts/ops/restore_nba_tf_fire55.py. MUST run before any NBA TF restart. Includes thesis fallback parity patch (build_common_knowledge_block L3548).",
       "do_not_push_hf_space_yet": true
     },
@@ -31,9 +31,25 @@
       "owner": "local-vm",
       "subject": "URGENT: political_engine.py both files = placeholder — fire-53 cloud push accident. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
       "detected_at": "2026-05-06T20:00:00Z",
-      "updated_at": "2026-05-06T20:00:00Z",
+      "updated_at": "2026-05-07T10:00:00Z",
       "cloud_brain_note": "fire-53 (2026-05-06T20h): accidentally pushed placeholder to features/political_engine.py + hf-space/features/political_engine.py (commit 88b1dc09). Last good commit: 735095ff (v3.23 = fire-52). Restoration script pushed: scripts/ops/restore_political_engine_fire53.py (commit a95f707). MUST run before next HF Space restart.",
       "do_not_push": false
+    },
+    {
+      "id": "cloud-brain-fire56-2026-05-07T10h",
+      "priority": 79,
+      "status": "done",
+      "completed_at": "2026-05-07T10:00:00Z",
+      "completed_by": "cloud-brain-fire-56",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-56 cycle: Rotation D data pipeline audit, SOTA research, S15 top5=0.21858 milestone flagged",
+      "actions": [
+        "STEP 0: No crash recovery (no local-agent-* stale items; tune-12 blocked on VM restore; tune-13 pending VM restore)",
+        "STEP 1: Live /api/status fetched all 6 NBA islands. S13 gen=1005 stag=0 (CYCLE_STAG=22 watch), S14 gen=4154 stag=0 LR fleet best, S15 gen=2064 stag=0 top5=0.21858 BELOW fleet alltime 0.22019, S17 503 PAUSED 27d, S18 gen=2367 stag=0, S22 gen=2112 stag=0. No stagnation>15 — no diversify. Even cycle SOTA done.",
+        "STEP 2: All 5 POL islands UP stag=0. P2 top individual 0.24902 (fleet best 0.24904!). Rotation D: 272 feature gap vs NBA 3377 = primary bottleneck. Fix plan written.",
+        "STEP 3-4: Skipped (councils decommissioned, dashboard R8 done)",
+        "STEP 5: health-status.json + CLAUDE.md + work-queue.json + SOTA proposal pushed to mon-ipad. brain-status.json + rotation-D proposal pushed to nomos-political-alpha."
+      ]
     },
     {
       "id": "cloud-brain-fire55-2026-05-07T06h",
@@ -59,32 +75,7 @@
       "completed_at": "2026-05-07T00:00:00Z",
       "completed_by": "cloud-brain-fire-54",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-54 cycle: SOTA research (MC-dropout calibration), Rotation C NBA→Political, island updates",
-      "actions": [
-        "STEP 0: No crash recovery (no local-agent-* stale items)",
-        "STEP 1: All 6 NBA islands fetched. No stagnation>15. S14 recovered stag=2→0 (hard reset cycle=1268). S17 still 503 PAUSED 26d. Even cycle SOTA done.",
-        "STEP 2: All 5 POL islands up, stagnation=0. Rotation C: NBA→political technique port proposal written.",
-        "STEP 3: Councils decommissioned — skipped.",
-        "STEP 4: Dashboard R8 done — skipped.",
-        "STEP 5: health-status.json + work-queue.json + CLAUDE.md updated. nomos-political-alpha brain-status.json + rotation-c proposal pushed."
-      ]
-    },
-    {
-      "id": "cloud-brain-fire53-2026-05-06T20h",
-      "priority": 76,
-      "status": "done",
-      "completed_at": "2026-05-06T20:00:00Z",
-      "completed_by": "cloud-brain-fire-53",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-53 cycle: Rotation B political_engine Cat45 attempt + island updates",
-      "actions": [
-        "STEP 0: No crash recovery",
-        "STEP 1: S17 still 503 PAUSED 25d+, S14 stagnation=2",
-        "STEP 2: Cat45 FAILED accidentally pushed placeholder — restoration script pushed (a95f707)",
-        "STEP 3: Councils decommissioned skipped",
-        "STEP 4: Dashboard R8 done skipped",
-        "STEP 5: brain-status.json + health-status.json + CLAUDE.md + work-queue pending"
-      ]
+      "subject": "fire-54 cycle: SOTA research (MC-dropout calibration), Rotation C NBA→Political, island updates"
     },
     {
       "id": "tf-axelrod-pol-app-restore",
@@ -100,10 +91,21 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 26+ days",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 27+ days",
       "detected_at": "2026-05-03T22:00:00Z",
-      "updated_at": "2026-05-07T00:00:00Z",
-      "cloud_brain_note": "fire-54 (2026-05-07T00h): S17 STILL 503 PAUSED 26+ days.",
+      "updated_at": "2026-05-07T10:00:00Z",
+      "cloud_brain_note": "fire-56 (2026-05-07T10h): S17 still 503 PAUSED 27+ days.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-restart-political-data-crons",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Restart political data crons: fetch_political_data.py + insider_tracker.py (39+ days stale)",
+      "detected_at": "2026-05-07T10:00:00Z",
+      "updated_at": "2026-05-07T10:00:00Z",
+      "cloud_brain_note": "Rotation D fire-56: political islands have 272 feature_candidates (vs NBA 3377). Data crons likely dead. Restart on VM to restore fresh polling + insider data. Expected: +50 features.",
       "do_not_push": false
     },
     {
@@ -172,60 +174,6 @@
       "subject": "Audit 7 repos for dead files"
     },
     {
-      "id": "tf-axelrod-mech-a",
-      "priority": 5,
-      "status": "done",
-      "completed_at": "2026-04-15T18:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "Axelrod Mechanism A — day-end common knowledge broadcast",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-mech-b",
-      "priority": 6,
-      "status": "done",
-      "completed_at": "2026-04-15T20:15:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "Axelrod Mechanism B — sacrificial role reallocation",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-mech-c",
-      "priority": 7,
-      "status": "done",
-      "completed_at": "2026-04-15T20:15:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "Axelrod Mechanism C — end-of-game post-mortem log + dataset schema",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-1",
-      "priority": 8,
-      "status": "done",
-      "completed_at": "2026-04-16T00:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 1",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-2",
-      "priority": 9,
-      "status": "done",
-      "completed_at": "2026-04-16T06:00:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 2",
-      "do_not_push_hf_space_yet": true
-    },
-    {
-      "id": "tf-axelrod-verify-tune-3",
-      "priority": 10,
-      "status": "done",
-      "completed_at": "2026-04-16T06:30:00Z",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 3",
-      "do_not_push_hf_space_yet": true
-    },
-    {
       "id": "tf-axelrod-verify-tune-12",
       "priority": 21,
       "status": "blocked",
@@ -242,6 +190,8 @@
       "status": "pending",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "verify+tune fire 13 — next scheduled parity+tune cycle (after restore-nba-tf-fire55 completes)",
+      "updated_at": "2026-05-07T10:00:00Z",
+      "cloud_brain_note": "fire-56: still blocked on VM restore. NBA TF app.py remains stub. Will execute on next fire after VM confirms restore.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -312,6 +262,39 @@
       "completed_by": "cloud-brain-fire-52",
       "owner": "cloud-brain-sonnet4-6",
       "subject": "fire-52 cycle: SOTA research, Cat46 registration, island updates, Rotation A"
+    },
+    {
+      "id": "cloud-brain-fire53-2026-05-06T20h",
+      "priority": 76,
+      "status": "done",
+      "completed_at": "2026-05-06T20:00:00Z",
+      "completed_by": "cloud-brain-fire-53",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-53 cycle: Rotation B political_engine Cat45 attempt + island updates"
+    },
+    {
+      "id": "tf-axelrod-mech-a",
+      "priority": 5,
+      "status": "done",
+      "completed_at": "2026-04-15T18:00:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod Mechanism A — day-end common knowledge broadcast"
+    },
+    {
+      "id": "tf-axelrod-mech-b",
+      "priority": 6,
+      "status": "done",
+      "completed_at": "2026-04-15T20:15:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod Mechanism B — sacrificial role reallocation"
+    },
+    {
+      "id": "tf-axelrod-mech-c",
+      "priority": 7,
+      "status": "done",
+      "completed_at": "2026-04-15T20:15:00Z",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Axelrod Mechanism C — end-of-game post-mortem log + dataset schema"
     }
   ],
   "recovery_protocol": {

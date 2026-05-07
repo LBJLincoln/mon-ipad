@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-05-07T10:00:00Z",
+  "cycle": "fire-56",
+  "rotation": "even-cycle-SOTA",
+  "our_position": {
+    "fleet_best": 0.22019,
+    "session_best": 0.22034,
+    "top5_candidate": 0.21858,
+    "beats_cnn_benchmark": true,
+    "gap_to_sota": 0.021,
+    "milestone": "fleet_best 0.22019 NOW BEATS external CNN benchmark 0.221 (MDPI Oct 2025)"
+  },
+  "findings": [
+    {
+      "paper": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+      "url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "date": "2025-10",
+      "best_brier": 0.221,
+      "model": "CNN",
+      "actionable": "Our fleet best 0.22019 BEATS this. CNN not applicable on CPU. Direction: confirmed correct.",
+      "priority": "LOW"
+    },
+    {
+      "paper": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "date": "2025",
+      "model": "NB+AdaBoost+MLP+KNN+XGB+DT+LR stacked ensemble",
+      "actionable": "Neural stacking = CPU-incompatible (Rule#8). KEY INSIGHT: multi-model diversity is the win. Action: add Venn-Abers calibration to S14/S18/S22 mutation pools. S13 top5 already achieves 0.22864 with ET+Venn-Abers vs ET+sigmoid=best_brier. Venn-Abers is CPU-compatible uncertainty quantification.",
+      "priority": "MEDIUM",
+      "quick_win": "Add venn_abers to calibration mutation pool in S14/S18/S22 app.py"
+    },
+    {
+      "paper": "Uncertainty-Aware ML for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "date": "2026-01",
+      "best_brier": 0.199,
+      "model": "logistic_regression + MC dropout",
+      "gap_to_fleet_best": 0.02119,
+      "actionable": "LR already dominant in S14 (fleet best 26f LR). MC dropout CPU-incompatible. S15 top5 individual 0.21858 uses extra_trees+sigmoid — this is our path to sub-0.219.",
+      "priority": "HIGH — already acting on LR"
+    },
+    {
+      "paper": "March Machine Learning Mania 2026",
+      "url": "https://www.kaggle.com/competitions/march-machine-learning-mania-2026",
+      "date": "2026",
+      "actionable": "Kaggle Brier leaderboard (basketball) provides live SOTA benchmark. Monitor top solutions for feature engineering insights.",
+      "priority": "MEDIUM"
+    }
+  ],
+  "quick_wins": [
+    {
+      "action": "add_venn_abers_to_s14_s18_s22",
+      "rationale": "S13 top5 uses Venn-Abers achieving 0.22864 — better than S13 best_brier=0.23196. Venn-Abers = CPU-compatible uncertainty quantification. Add to calibration mutation pool for all islands.",
+      "effort": "LOW",
+      "expected_gain": "0.002-0.005 Brier improvement"
+    },
+    {
+      "action": "checkpoint_s15_top5_0_21858",
+      "rationale": "S15 Pareto front individual at Brier=0.21858 (gen=2063, ET/sigmoid/200f) is below fleet alltime 0.22019. If API best_brier updates <0.22019 in fire-57, checkpoint immediately.",
+      "effort": "MONITOR",
+      "trigger": "API best_brier < 0.22019"
+    },
+    {
+      "action": "s13_diversify_watch",
+      "rationale": "S13 CYCLE_STAG=22 cycles at 0.23196. If stagnation reaches 15 in fire-57 check, send diversify.",
+      "effort": "MONITOR",
+      "trigger": "stagnation >= 15"
+    }
+  ]
+}
