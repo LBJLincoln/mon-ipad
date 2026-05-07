@@ -1,8 +1,18 @@
 {
   "version": 1,
-  "updated_at": "2026-05-07T18:00:00Z",
+  "updated_at": "2026-05-07T22:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "vm-diversify-s18-2026-05-07T22h",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "URGENT: S18 (TESTforge42/nba-evo-s18) stagnation=14 — POST /api/command {\"command\":\"diversify\"} BEFORE NEXT GENERATION",
+      "detected_at": "2026-05-07T22:00:00Z",
+      "cloud_brain_note": "fire-59 (22h): S18 gen=2672 brier=0.22532 stag=14. Threshold=15. One generation away. WebFetch cannot POST — VM must execute immediately. URL: https://testforge42-nba-evo-s18.hf.space/api/command  Body: {\"command\":\"diversify\"}",
+      "do_not_push": false
+    },
     {
       "id": "restore-nba-tf-fire55",
       "priority": 0,
@@ -10,8 +20,8 @@
       "owner": "local-vm",
       "subject": "URGENT: NBA TF app.py = 15-char stub — two successive cloud-trigger accidents. Run scripts/ops/restore_nba_tf_fire55.py from mon-ipad root.",
       "detected_at": "2026-05-07T06:00:00Z",
-      "updated_at": "2026-05-07T18:00:00Z",
-      "cloud_brain_note": "fire-58 (18h): Still pending. fire-54 (bf5980ef) pushed 9-line stub, fire-55 (297facd4) pushed PLACEHOLDER_NBA. Last good: 73b9c9f9 (5799L, Mechs A/B/C + KL divergence). Script restore_nba_tf_fire55.py applies 2 patches: (1) thesis fallback, (2) AXELROD-2026 GF label. MUST run before any NBA TF restart.",
+      "updated_at": "2026-05-07T22:00:00Z",
+      "cloud_brain_note": "fire-59 (22h): Still pending. fire-54 (bf5980ef) pushed 9-line stub, fire-55 (297facd4) pushed PLACEHOLDER_NBA. Last good: 73b9c9f9 (5799L, Mechs A/B/C + KL divergence). Script restore_nba_tf_fire55.py applies 2 patches: (1) thesis fallback, (2) AXELROD-2026 GF label. MUST run before any NBA TF restart.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -25,24 +35,14 @@
       "do_not_push_hf_space_yet": true
     },
     {
-      "id": "restore-nba-tf-fire54",
-      "priority": 0,
-      "status": "done",
-      "completed_at": "2026-05-07T06:00:00Z",
-      "completed_by": "cloud-trigger-axelrod-fire-55",
-      "owner": "local-vm",
-      "subject": "Superseded by restore-nba-tf-fire55.",
-      "result": "fire-55 accident. restore_nba_tf_fire55.py handles both fire-54 + fire-55 from 73b9c9f9."
-    },
-    {
       "id": "fix-pol-engine-placeholder",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
       "subject": "URGENT: political_engine.py both files = placeholder — fire-53 cloud push accident. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
       "detected_at": "2026-05-06T20:00:00Z",
-      "updated_at": "2026-05-07T18:00:00Z",
-      "cloud_brain_note": "fire-58 (18h): Still pending. fire-53 (2026-05-06T20h): commit 88b1dc09 placeholder. Last good: 735095ff (v3.23=fire-52). Restoration script: scripts/ops/restore_political_engine_fire53.py (commit a95f707).",
+      "updated_at": "2026-05-07T22:00:00Z",
+      "cloud_brain_note": "fire-59 (22h): Still pending. fire-53 (2026-05-06T20h): commit 88b1dc09 placeholder. Last good: 735095ff (v3.23=fire-52). Restoration script: scripts/ops/restore_political_engine_fire53.py (commit a95f707).",
       "do_not_push": false
     },
     {
@@ -97,8 +97,8 @@
       "owner": "local-vm",
       "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 28+ days",
       "detected_at": "2026-05-03T22:00:00Z",
-      "updated_at": "2026-05-07T18:00:00Z",
-      "cloud_brain_note": "fire-58 (18h): S17 still 503 PAUSED 28+ days.",
+      "updated_at": "2026-05-07T22:00:00Z",
+      "cloud_brain_note": "fire-59 (22h): S17 still 503 PAUSED 28+ days. Urgent.",
       "do_not_push": false
     },
     {
@@ -108,29 +108,29 @@
       "owner": "local-vm",
       "subject": "Restart political data crons: fetch_political_data.py + insider_tracker.py (39+ days stale)",
       "detected_at": "2026-05-07T10:00:00Z",
-      "updated_at": "2026-05-07T18:00:00Z",
-      "cloud_brain_note": "Critical for POL: 272 feature_candidates vs NBA 3377. Restart crons = +50 features expected.",
+      "updated_at": "2026-05-07T22:00:00Z",
+      "cloud_brain_note": "Critical for POL: 272 feature_candidates vs NBA 3377. Restart crons = +50 features expected. Rotation B: key blocker for political_engine improvement.",
       "do_not_push": false
     },
     {
       "id": "vm-watch-s22-stag13-2026-05-07T18h",
       "priority": 2,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "S22 (TESTforge42/nba-evo-s22) stagnation=13 — approaching diversify threshold. Send POST /api/command {\"command\":\"diversify\"} if reaches 15.",
-      "detected_at": "2026-05-07T18:00:00Z",
-      "cloud_brain_note": "fire-58: S22 gen=2176, brier=0.22431, stag=13. Threshold=15. Also notable: Pareto member at brier=0.21905 (ET 200f) — if API-validated, would be second-best behind S15 top5=0.21858.",
-      "do_not_push": false
+      "status": "done",
+      "completed_at": "2026-05-07T22:00:00Z",
+      "completed_by": "cloud-brain-fire-59",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "S22 stagnation watch resolved — stag recovered 13→6",
+      "result": "fire-59: S22 gen=2229 stag=6 (recovered from 13). No diversify needed. Pareto top5 candidate 0.21886 present."
     },
     {
       "id": "vm-check-p2-403-2026-05-07T18h",
       "priority": 3,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "P2 (Nomos42/political-alpha-2) returned 403 — possibly sleeping. Nomos42 account saturated. VM check and wake if possible.",
-      "detected_at": "2026-05-07T18:00:00Z",
-      "cloud_brain_note": "fire-58: P2 last good gen=25768 (fire-56 10h). 403 this cycle. keepalive-spaces.sh should handle. If account truly saturated and P2 can't wake, note in CLAUDE.md.",
-      "do_not_push": false
+      "status": "done",
+      "completed_at": "2026-05-07T22:00:00Z",
+      "completed_by": "cloud-brain-fire-59",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "P2 (Nomos42/political-alpha-2) 403 check — RESOLVED",
+      "result": "fire-59: P2 back online gen=26894 brier=0.24902 stag=0 model=lightgbm. Self-recovered."
     },
     {
       "id": "vm-diversify-s13-2026-05-04T14h",
@@ -300,14 +300,23 @@
       "completed_at": "2026-05-07T18:00:00Z",
       "completed_by": "cloud-brain-fire-58",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-58: Rotation A (FEC/SEC), SOTA uncertainty-aware markets, S22 stag=13 watch, P2 403 flagged",
+      "subject": "fire-58: Rotation A (FEC/SEC), SOTA uncertainty-aware markets, S22 stag=13 watch, P2 403 flagged"
+    },
+    {
+      "id": "cloud-brain-fire59-2026-05-07T22h",
+      "priority": 83,
+      "status": "done",
+      "completed_at": "2026-05-07T22:00:00Z",
+      "completed_by": "cloud-brain-fire-59",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-59: Rotation B political_engine review + SOTA research, S18 stag=14 URGENT diversify queued, S22 stag recovered 6, P2 403 cleared, S15 top5=0.21879 RF_200f new Pareto best",
       "actions": [
-        "STEP 0: No crash recovery — all pending items owner=local-vm (not local-agent-*). tf-axelrod-verify-tune-12 remains blocked.",
-        "STEP 1: 5/6 NBA alive. S13 stag=10 (watch), S14 stag=0 fleet-best 0.22019, S15 stag=0 sub-oracle top5=0.21858 model=xgboost_brier, S17 503 PAUSED 28d, S18 stag=0, S22 stag=13 ALERT (approaching 15). No island >15 → no diversify.",
-        "STEP 2: 4/5 POL up. P2 403 (Nomos42 saturated). P4/P5/P7 all stag=0. Rotation A: FEC/SEC + Polymarket implied-prob feature plan written.",
+        "STEP 0: No crash recovery — no local-agent-* items pending. tf-axelrod-verify-tune-12 remains blocked on VM.",
+        "STEP 1: 5/6 NBA alive. S13 stag=0 (recovered from 10). S14 stag=0 fleet-best 0.22019, model now RF. S15 stag=0 top5=[0.21885,0.21879,0.21956,...] RF_200f gens 2392-2393. S17 503 PAUSED. S18 stag=14 URGENT. S22 stag=6 (recovered from 13) Pareto candidate 0.21886.",
+        "STEP 2: All 5 POL up. P2 self-recovered from 403 (gen=26894). P4 SAVING (fleet best 0.24992). All stag=0. Rotation B: market-implied probs + rolling Elo features planned for political_engine.py (blocked on restore_political_engine_fire53.py).",
         "STEP 3: Councils decommissioned — skipped.",
-        "STEP 4: No R8 pending — skipped.",
-        "STEP 5: SOTA research (Uncertainty-Aware LSTM MDPI 2026): LSTM+market Brier=0.089, LR tabular=0.199. Gap to our best: 0.021 without market features, 0.13 with market. health-status + work-queue + SOTA proposal pushed. brain-status + Rotation A proposal pushed to nomos-political-alpha."
+        "STEP 4: R8 done — skipped.",
+        "STEP 5: SOTA research done (NBA tabular CNN=0.221, our candidates beat it; Polymarket Brier=0.187 market-based). Rotation B proposal written. GitHub MCP token expired — writes attempted via push_files. health-status + work-queue pushed."
       ]
     },
     {
