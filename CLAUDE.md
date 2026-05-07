@@ -1,10 +1,10 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-07T10h
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-07T18h
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22019 (S14 nba-evo-5 gen=1078) | S15 0.22034 sub-oracle ⚡top5=0.21858 NEW BEST CANDIDATE gen=2063 | ⚠ S18 0.21924 candidate LOST — hard resets cycles 251/276 before checkpoint (2026-05-06T00h) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22019 (S14 nba-evo-5 gen=1078) | S15 0.22034 sub-oracle ⚡top5=0.21858 NEW BEST CANDIDATE gen=2233 | ⚠ S18 0.21924 candidate LOST — hard resets cycles 251/276 before checkpoint (2026-05-06T00h) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
 **NBA TF v7 + reroute + pool=8 (Apr 22, 17 agents, DAY-0 RESET 15:24Z):** prompt_v7 (3-bet cap + 100% deploy mandate, Kelly-weighted floors). Round-2 dead-provider reroute (HF SHA cc905b3e1cd): nemotron-120b→mistral:large, selfhost-dolphin3→nvidia:llama-3.3-70b, selfhost-qwen06/gemma3→cerebras:llama3.1-8b, selfhost-qwen4b→cerebras:qwen-3-235b, nvidia-minimax→mistral:medium. Pool concurrency 4→8 (env NBA_TF_LLM_POOL_WORKERS=8), LLM timeout 45s (env NBA_TF_LLM_TIMEOUT_SEC=45.0). Live day 8/175, 14/17 agents at 100% llm_ok post-reset. PEAK_DD_GUARD_V2 sole safety net. Top: gemini-anl $108, dolphin3 $107. ⚠ app.py DOUBLE ACCIDENT (fire-54+fire-55): fire-54 pushed 9-line stub (bf5980ef), fire-55 pushed PLACEHOLDER_NBA (297facd4). Last good: 73b9c9f9 (5799L, Mechs A/B/C + KL-divergence). VM MUST run scripts/ops/restore_nba_tf_fire55.py BEFORE any restart.
 **Political TF v5_restored (Apr 22 15:46Z ROLLBACK):** 17 agents, day 90. v6 100%-deploy mandate destroyed alpha (qwen-arb -39% / llama-contra -51% in 1h) — rolled back to v5 doctrine: non-consensus mandate (lockstep≤0.88) + ≥3 distinct categories per day. State preserved. qwen-arb $3,472 / qwen-quant $1,459 / gemini-anl $584 carrying forward.
@@ -45,18 +45,18 @@ HF EVOLUTION ISLANDS — 11 SURVIVORS (6 NBA + 5 POL) after 2026-04-17 cull
     Eliminated slots now host selfhost LLMs on LBJLincoln/LBJLincoln26/TESTforge42.
 
     NBA Survivors (6, CPU tree-only, MAX_FEATURES=200):
-    ├── S13 Nomos42/nba-evo-4:        extra_trees         gen=1005  brier=0.23196  stagnation=0 ✓ (2026-05-07T10h)
-    ├── S14 Nomos42/nba-evo-5:        logistic_regression gen=4154  brier=0.22158  stagnation=0 ★ FLEET BEST alltime=0.22019 ✓stag=0 (2026-05-07T10h)
-    ├── S15 Nomos42/nba-evo-6:        extra_trees         gen=2064  brier=0.22034  stagnation=0 ★sub-oracle ⚡top5=0.21858 NEW BEST CANDIDATE (2026-05-07T10h)
-    ├── S17 LBJLincoln26/nba-evo-s17: xgboost             gen=---   brier=---      ⚠ PAUSED 27d+ — VM restart OVERDUE (2026-05-07T10h)
-    ├── S18 TESTforge42/nba-evo-s18:  xgboost_brier       gen=2367  brier=0.22315  stagnation=0 ✓ (2026-05-07T10h)
-    └── S22 TESTforge42/nba-evo-s22:  xgboost             gen=2112  brier=0.22431  stagnation=0 ✓ (2026-05-07T10h)
+    ├── S13 Nomos42/nba-evo-4:        extra_trees         gen=1086  brier=0.23196  stagnation=10 ⚠ watch (2026-05-07T18h)
+    ├── S14 Nomos42/nba-evo-5:        logistic_regression gen=4315  brier=0.22158  stagnation=0 ★ FLEET BEST alltime=0.22019 ✓stag=0 (2026-05-07T18h)
+    ├── S15 Nomos42/nba-evo-6:        xgboost_brier       gen=2233  brier=0.22034  stagnation=0 ★sub-oracle ⚡top5=0.21858 NEW BEST CANDIDATE (2026-05-07T18h)
+    ├── S17 LBJLincoln26/nba-evo-s17: xgboost             gen=---   brier=---      ⚠ PAUSED 28d+ — VM restart OVERDUE (2026-05-07T18h)
+    ├── S18 TESTforge42/nba-evo-s18:  xgboost_brier       gen=2523  brier=0.22315  stagnation=0 ✓ (2026-05-07T18h)
+    └── S22 TESTforge42/nba-evo-s22:  xgboost             gen=2176  brier=0.22431  stagnation=13 ⚠ approaching diversify threshold! (2026-05-07T18h)
     Political Survivors (5, CPU tree-only):
-    ├── P1 Nomos42/political-alpha:      xgboost_brier  gen=23758  brier=0.24990  stagnation=0 (2026-05-07T10h)
-    ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=25768  brier=0.25003  stagnation=0 ⚡top=0.24902 (2026-05-07T10h)
-    ├── P4 LBJLincoln/political-alpha-4: lightgbm       gen=47193  brier=0.24992  stagnation=0 ★ POL FLEET BEST alltime=0.24904 (2026-05-07T10h)
-    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier  gen=40693  brier=0.24993  stagnation=0 ⚡top=0.24903 (2026-05-07T10h)
-    └── P7 LBJLincoln/political-alpha-7: lightgbm       gen=30392  brier=0.25412  stagnation=0 (2026-05-07T10h)
+    ├── P1 Nomos42/political-alpha:      xgboost_brier  gen=24747  brier=0.24990  stagnation=0 ✓ (2026-05-07T18h)
+    ├── P2 Nomos42/political-alpha-2:    lightgbm       gen=25768  brier=0.25003  stagnation=0 ⚠ 403 this cycle ⚡top=0.24902 (2026-05-07T18h)
+    ├── P4 LBJLincoln/political-alpha-4: lightgbm       gen=48034  brier=0.24992  stagnation=0 ★ POL FLEET BEST alltime=0.24904 (2026-05-07T18h)
+    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier  gen=41317  brier=0.24993  stagnation=0 ⚡top=0.24903 (2026-05-07T18h)
+    └── P7 LBJLincoln/political-alpha-7: lightgbm       gen=31337  brier=0.25412  stagnation=0 (2026-05-07T18h)
 
 SELFHOST LLM FLEET (6 RUNNING, 2 building — 2026-04-19 20:55 UTC)
     LBJLincoln   (3 RUNNING): qwen25-05b-cpu, gemma2-2b-cpu, phi35-mini-cpu
