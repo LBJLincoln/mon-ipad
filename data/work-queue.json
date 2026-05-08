@@ -1,1 +1,56 @@
-PLACEHOLDER_WQ
+{
+  "version": 1,
+  "updated_at": "2026-05-09T14:30:00Z",
+  "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
+  "items": [
+    {
+      "id": "repair-pol-tf-fire67",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "URGENT: Political TF app.py = 2-line placeholder. fire-67 stub + fire-69 cloud accident compounded. Run scripts/ops/repair_pol_tf_fire67.py from mon-ipad root — it uses git checkout 9167a1c which overwrites any stub.",
+      "detected_at": "2026-05-09T08:00:00Z",
+      "updated_at": "2026-05-09T14:30:00Z",
+      "cloud_brain_note": "fire-69 cloud-trigger accidentally pushed literal PLACEHOLDER_TO_BE_REPLACED string as file content (commit 77b00d2). App.py is now 2-line stub. repair_pol_tf_fire67.py still correct — git checkout 9167a1c overwrites whatever stub is there. VM: python3 scripts/ops/repair_pol_tf_fire67.py",
+      "do_not_push_hf_space_yet": true
+    },
+    {"id": "restore-nba-tf-fire55", "priority": 0, "status": "done", "completed_at": "2026-05-08T10:00:00Z", "completed_by": "cloud-trigger-axelrod-fire-62", "owner": "local-vm", "subject": "URGENT: NBA TF app.py = placeholder stub.", "result": "fire-62: Restored.", "do_not_push_hf_space_yet": true},
+    {"id": "fix-pol-engine-placeholder", "priority": 0, "status": "pending", "owner": "local-vm", "subject": "URGENT: political_engine.py both files = placeholder — fire-53 cloud push accident. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.", "detected_at": "2026-05-06T20:00:00Z", "updated_at": "2026-05-09T10:00:00Z", "cloud_brain_note": "STILL PENDING 72h+. File is 194KB — cannot be safely restored cloud-side.", "do_not_push": false},
+    {"id": "tf-placeholder-accident-fire63", "priority": 0, "status": "done", "completed_at": "2026-05-08T14:30:00Z", "completed_by": "cloud-brain-fire-63-mech-agent", "owner": "cloud-brain-sonnet4-6", "subject": "URGENT: fire-63 placeholder accident fixed.", "do_not_push_hf_space_yet": true},
+    {"id": "tf-axelrod-2026-mech-a-gf-vm", "priority": 1, "status": "done", "completed_at": "2026-05-08T10:00:00Z", "completed_by": "cloud-trigger-axelrod-fire-62", "owner": "local-vm", "subject": "AXELROD-2026 Mech A GF parity", "do_not_push_hf_space_yet": true},
+    {"id": "vm-restart-s17-2026-05-03T22h", "priority": 1, "status": "pending", "owner": "local-vm", "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) — PAUSED 35+ days", "cloud_brain_note": "fire-68: S17 still returning 503. 36+ days paused. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"", "do_not_push": false},
+    {"id": "vm-restart-political-data-crons", "priority": 1, "status": "pending", "owner": "local-vm", "subject": "Restart political data crons: fetch_political_data.py + insider_tracker.py", "do_not_push": false},
+    {"id": "tf-axelrod-2026-mech-b", "priority": 10, "status": "done", "completed_at": "2026-05-08T14:30:00Z", "completed_by": "cloud-brain-fire-63", "owner": "cloud-trigger-axelrod-2026", "subject": "AXELROD-2026 Mechanism B verified.", "do_not_push_hf_space_yet": true},
+    {"id": "tf-axelrod-2026-mech-c", "priority": 11, "status": "done", "completed_at": "2026-05-08T14:30:00Z", "completed_by": "cloud-brain-fire-63", "owner": "cloud-trigger-axelrod-2026", "subject": "AXELROD-2026 Mechanism C patched.", "do_not_push_hf_space_yet": true},
+    {"id": "tf-axelrod-2026-mech-a-edge-parity", "priority": 12, "status": "done", "completed_at": "2026-05-08T22:00:00Z", "completed_by": "cloud-trigger-axelrod-fire-65", "owner": "cloud-trigger-axelrod-2026", "subject": "AXELROD-2026 Mech A parity — Political TF edge field fix.", "do_not_push_hf_space_yet": true},
+    {
+      "id": "tf-axelrod-2026-mech-a-dmad-parity",
+      "priority": 13,
+      "status": "blocked",
+      "blocked_since": "2026-05-09T08:00:00Z",
+      "blocked_by": "repair-pol-tf-fire67",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "AXELROD-2026 Mech A DMAD parity — Political TF day_strategy schema missing CONSENSUS_AGREE_JUSTIFIED + timeout hardcoded 12s.",
+      "result": "BLOCKED: 3 patches verified correct + py_compile PASS on /tmp/pol_app_patched.py (fire-69), but push_files accidentally sent placeholder string. VM repair script at scripts/ops/repair_pol_tf_fire67.py applies all 3 patches. do_not_push_hf_space_yet.",
+      "do_not_push_hf_space_yet": true
+    },
+    {"id": "engine-parity-sync", "priority": 40, "status": "pending", "owner": "local-vm", "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation)", "cloud_brain_note": "fire-68 confirmed: mon-ipad 523050 chars vs nomos-nba-agent 468146 chars (+54904 char delta). Mismatch persists.", "do_not_push": false},
+    {"id": "vm-fix-diversify-command-format", "priority": 59, "status": "pending", "owner": "local-vm", "subject": "Fix diversify command format: action->command", "cloud_brain_note": "fire-68 CONFIRMED: /api/command endpoint requires {\"command\":\"diversify\"} not {\"action\":\"diversify\"}. Brain sent correct format and got 200 OK. VM scripts need same fix.", "do_not_push": false},
+    {"id": "cloud-trigger-axelrod-fire-69-2026-05-09T14h", "priority": 95, "status": "done", "completed_at": "2026-05-09T14:30:00Z", "completed_by": "cloud-trigger-axelrod-fire-69", "owner": "cloud-trigger-axelrod-2026", "subject": "fire-69: ACCIDENT — attempted Political TF repair but push_files sent placeholder string (commit 77b00d2). 3 patches were correctly computed + py_compile PASS locally but never reached the repo. repair-pol-tf-fire67 reset to PENDING. VM repair script still valid."},
+    {"id": "cloud-brain-fire68-2026-05-09T10h", "priority": 93, "status": "done", "completed_at": "2026-05-09T10:00:00Z", "completed_by": "cloud-brain-fire-68", "owner": "cloud-brain-sonnet4-6", "subject": "fire-68: Rotation C — S14 diversify (stagnation=20), extra_trees→Political proposal, SOTA research (CNN 0.221, stacked ensemble), health-status updated"},
+    {"id": "cloud-trigger-axelrod-fire-67-2026-05-09T08h", "priority": 92, "status": "done", "completed_at": "2026-05-09T08:00:00Z", "completed_by": "cloud-trigger-axelrod-fire-67", "owner": "cloud-trigger-axelrod-2026", "subject": "fire-67: Mech A DMAD parity — ACCIDENT: push_files truncated to 4 lines. Repair script pushed."},
+    {"id": "cloud-brain-fire66-2026-05-09T02h", "priority": 91, "status": "done", "completed_at": "2026-05-09T02:00:00Z", "completed_by": "cloud-brain-fire-66", "owner": "cloud-brain-sonnet4-6", "subject": "fire-66: Rotation B — S15 NEW PARETO BEST 0.21841"},
+    {"id": "cloud-trigger-axelrod-fire-65-2026-05-08T22h", "priority": 90, "status": "done", "completed_at": "2026-05-08T22:00:00Z", "completed_by": "cloud-trigger-axelrod-fire-65", "owner": "cloud-trigger-axelrod-2026", "subject": "fire-65: Political TF edge field fix"},
+    {"id": "cloud-brain-fire64-2026-05-08T18h", "priority": 88, "status": "done", "completed_at": "2026-05-08T18:00:00Z", "completed_by": "cloud-brain-fire-64", "owner": "cloud-brain-sonnet4-6", "subject": "fire-64: S22+S14 stag recovered"},
+    {"id": "cloud-brain-fire63-2026-05-08T14h", "priority": 87, "status": "done", "completed_at": "2026-05-08T14:30:00Z", "completed_by": "cloud-brain-fire-63", "owner": "cloud-brain-sonnet4-6", "subject": "fire-63: Mech B verified, Mech C patched"},
+    {"id": "cloud-trigger-axelrod-fire-62-2026-05-08T10h", "priority": 86, "status": "done", "completed_at": "2026-05-08T10:00:00Z", "completed_by": "cloud-trigger-axelrod-fire-62", "owner": "cloud-trigger-axelrod-2026", "subject": "fire-62: AXELROD-2026 Mech A full delivery"},
+    {"id": "cloud-brain-fire61-2026-05-08T06h", "priority": 85, "status": "done", "completed_at": "2026-05-08T06:00:00Z", "completed_by": "cloud-brain-fire-61", "owner": "cloud-brain-sonnet4-6", "subject": "fire-61: S15 FLEET BEST 0.22012"},
+    {"id": "tf-axelrod-kl-divergence", "priority": 56, "status": "done", "completed_at": "2026-05-06T14:00:00Z", "completed_by": "cloud-trigger-axelrod-fire-52", "owner": "local-vm", "subject": "Upgrade consensus distance L1 to KL divergence"},
+    {"id": "R8", "priority": 1, "status": "done", "completed_at": "2026-04-15T20:30:00Z", "owner": "local-agent-ab8a71a3", "subject": "5 dashboard coverage gaps"},
+    {"id": "R7", "priority": 2, "status": "done", "completed_at": "2026-04-15T19:00:00Z", "commit_hash": "61c4b61394e2381ab0e1702f0581c292055b235c", "owner": "local-agent-a63b2bad", "subject": "Deploy S20/S21/S22 NBA islands"}
+  ],
+  "recovery_protocol": {
+    "on_brain_wake": ["Read this file.", "Pick lowest-priority pending item owned by cloud; do the scope; commit.", "VM-owned items: skip, they are queued for the VM cron.", "Update this file: set status=done + commit_hash + completed_at OR status=blocked + reason."],
+    "on_cli_resume": ["CLI reads this file first.", "Skips items with status=done.", "Re-dispatches status=pending items whose local-agent has not committed in 30 min."]
+  }
+}
