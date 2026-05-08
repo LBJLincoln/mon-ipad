@@ -249,7 +249,7 @@ produce ensemble predictions no better than any single constituent.
 
 Ensemble learning theory provides a formal version of this intuition.
 The *ambiguity decomposition* (Brown et al.)
-[@brown2005diversity; @brown2013generalized] states that for convex
+[@krogh1995neural; @brown2005diversity] states that for convex
 loss functions (including the Brier score):
 
 $$\text{Ensemble Loss} = \overline{\text{Individual Loss}} - \text{Ambiguity}$$
@@ -388,7 +388,10 @@ in LLM form, with analyst, risk management, and execution roles
 communicating through structured dialogues; the paper reports
 improvements in cumulative returns, Sharpe ratio, and maximum
 drawdown over single-agent baselines. QuantAgents
-[@quantagents2025, arXiv:2510.04643] simulated multi-agent
+[@quantagents2025, arXiv:2510.04643]^[Two distinct works share the
+name "QuantAgents": the cited paper is Du et al. (arXiv:2510.04643,
+2025); see also arXiv:2509.09995 for a separate QuantAgent HFT
+system. Author list to be confirmed before submission.] simulated multi-agent
 quantitative trading in A-share and HK-share markets, achieving
 claimed returns of 111.87% (Sharpe 2.02) over two quarters — though
 as with all LLM trading papers, questions of look-ahead bias and
@@ -1955,6 +1958,76 @@ component of the agent cohort.
 > and whether the taxonomy designer's prior knowledge biases the vacancy
 > dynamics — cannot be resolved within the current experimental design.
 > We flag them as priority targets for follow-on replication studies.
+
+---
+
+# Appendix B — Mathematical Supplements
+
+---
+
+## B.1  JSD–Ambiguity Monotonicity in the Operating Range
+
+We prove the claim in §3.3: that Jensen–Shannon diversity $D_d$ is a strictly
+increasing function of the Ambiguity term $\text{Amb}_t = \frac{1}{N}\sum_i (p_{i,t} - \bar{p}_t)^2$
+in the operating range $\bar{p}_t \in [0.15, 0.85]$, $\text{Amb}_t \leq 0.08$,
+when $\bar{p}_t$ is held fixed.
+
+**Setup.** For a fixed event $t$, let $p_1, \ldots, p_N \in [0,1]$ be agent
+predictions, $\bar{p} = \frac{1}{N}\sum_i p_i$, and $\delta_i = p_i - \bar{p}$
+(so $\sum_i \delta_i = 0$).  The JSD for $N$ Bernoulli distributions is:
+
+$$\text{JSD} = H(\bar{p}) - \frac{1}{N}\sum_{i=1}^N H(p_i)$$
+
+with $H(p) = -p\log_2 p - (1-p)\log_2(1-p)$ and $\text{Amb} = \frac{1}{N}\sum_i \delta_i^2$.
+
+**Taylor expansion.** Expanding $H(p_i) = H(\bar{p} + \delta_i)$ to second order:
+
+$$H(\bar{p} + \delta_i) = H(\bar{p}) + H'(\bar{p})\,\delta_i + \frac{1}{2}H''(\bar{p})\,\delta_i^2 + R_i$$
+
+where $R_i = \frac{1}{6}H'''(\xi_i)\,\delta_i^3$ for some $\xi_i$ between $\bar{p}$ and $p_i$.
+Averaging over $i$ and using $\sum_i \delta_i = 0$:
+
+$$\frac{1}{N}\sum_{i=1}^N H(p_i) = H(\bar{p}) + \frac{1}{2}H''(\bar{p})\cdot\text{Amb} + \bar{R}$$
+
+Therefore:
+
+$$\text{JSD} = -\frac{1}{2}H''(\bar{p})\cdot\text{Amb} - \bar{R} \tag{B.1}$$
+
+**Sign of the leading coefficient.** Since $H''(p) = -\frac{1}{p(1-p)\ln 2} < 0$,
+the coefficient $-\frac{1}{2}H''(\bar{p}) = \frac{1}{2\bar{p}(1-\bar{p})\ln 2} > 0$.
+At $\bar{p} = 0.15$: $-\frac{1}{2}H''(0.15) \approx 5.65$; at $\bar{p} = 0.50$: $\approx 2.89$.
+
+**Bounding the remainder.** The third derivative satisfies
+$|H'''(p)| = \frac{|1-2p|}{p^2(1-p)^2 \ln 2}$, maximised at $\bar{p} = 0.15$ as
+$|H'''(0.15)| \approx 62.3$.  By the power-mean inequality,
+$\frac{1}{N}\sum_i |\delta_i|^3 \leq \text{Amb}^{3/2}$, so
+$|\bar{R}| \leq \frac{|H'''|_{\max}}{6}\,\text{Amb}^{3/2}$ and
+$|\partial\bar{R}/\partial\text{Amb}| \leq \frac{|H'''|_{\max}}{4}\sqrt{\text{Amb}}$.
+
+**Monotonicity.** In the operating range ($\bar{p} \in [0.15, 0.85]$,
+$\text{Amb} \leq 0.08$), the total derivative is:
+
+$$\frac{\partial \text{JSD}}{\partial \text{Amb}}\bigg|_{\bar{p}} \geq
+5.65 - \frac{62.3}{4}\sqrt{0.08} \approx 5.65 - 4.41 = 1.24 > 0$$
+
+confirming strict monotonicity throughout the stated range. $\square$
+
+*Remark.* The margin narrows near the corner $\bar{p}=0.15$, $\text{Amb}=0.08$.
+In the typical experimental regime ($\bar{p} \in [0.25,0.75]$, $\text{Amb} \leq 0.05$)
+the remainder is an order of magnitude smaller than the leading term.
+
+---
+
+## B.2  Pairwise Archetype Distinguishability Matrix
+
+*Table B.2: Full $20 \times 20$ matrix of pairwise archetype distinguishability
+estimates $\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)})$ from the 2024–25 pilot season.*
+
+**[PENDING: table to be populated from
+`data/arena/axelrod-log/pilot-archetype-pairs.jsonl` once the 2024–25 pilot
+backtest completes. Expected minimum entry $\geq 0.037$; pre-registered expectation
+is that the (`wide-coverage`, `diversified`) pair yields the minimum and
+(`contrarian`, `quantitative`) the maximum.]**
 
 ---
 

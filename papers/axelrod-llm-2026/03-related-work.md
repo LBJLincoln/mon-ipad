@@ -82,7 +82,7 @@ produce ensemble predictions no better than any single constituent.
 
 Ensemble learning theory provides a formal version of this intuition.
 The *ambiguity decomposition* (Brown et al.)
-[@brown2005diversity; @brown2013generalized] states that for convex
+[@krogh1995neural; @brown2005diversity] states that for convex
 loss functions (including the Brier score):
 
 $$\text{Ensemble Loss} = \overline{\text{Individual Loss}} - \text{Ambiguity}$$
@@ -134,7 +134,7 @@ A critical and underexplored property of all of these systems is
 agents are drawn from the same provider or receive similar prompt
 templates, their posterior distributions over actions tend to collapse
 — a failure mode the LLM community has begun calling "groupthink"
-[@zhou2025dmad] by analogy to social psychology. We treat this as
+[@liu2025dmad] by analogy to social psychology. We treat this as
 a first-class design problem, not a side note.
 
 ---
@@ -221,7 +221,12 @@ in LLM form, with analyst, risk management, and execution roles
 communicating through structured dialogues; the paper reports
 improvements in cumulative returns, Sharpe ratio, and maximum
 drawdown over single-agent baselines. QuantAgents
-[@quantagents2025, arXiv:2510.04643] simulated multi-agent
+[@quantagents2025, arXiv:2510.04643]^[Two distinct works share the
+name "QuantAgents": the cited paper is Du et al. (arXiv:2510.04643,
+2025), concerning multi-agent simulated trading on A-share and HK-share
+markets; see also arXiv:2509.09995 for a separate QuantAgent HFT
+system. Author list to be confirmed against live arXiv record before
+submission.] simulated multi-agent
 quantitative trading in A-share and HK-share markets, achieving
 claimed returns of 111.87% (Sharpe 2.02) over two quarters — though
 as with all LLM trading papers, questions of look-ahead bias and

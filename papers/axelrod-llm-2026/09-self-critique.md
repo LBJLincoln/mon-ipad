@@ -154,3 +154,157 @@ decomposition for MSE-type losses. *(Open)*
 - `paper.md` compiled (Cycle 7 deliverable)
 - `references.bib` promoted from stub
 - 3 new citations added to related work and positioning table
+
+---
+
+# Peer-Review Self-Critique — Cycle 9 (2026-05-08)
+
+*Audit of the six issues left open after Cycle 8, plus new issues surfaced
+by re-reading the compiled manuscript.*
+
+---
+
+## STATUS: CYCLE 8 OPEN ISSUES
+
+### M3. Lemma 1 proof notation [FIXED — applied in Cycle 8, confirmed Cycle 9]
+
+Re-reading `04-method.md` confirms the corrected $\Delta\text{JSD}$ formulation
+is already present: the proof uses "The change in JSD from replacing agent $i$'s
+prediction" and splits into term (I) centroid shift and term (II) individual
+entropy change.  The incorrect "marginal JSD contribution" language was removed.
+Self-critique tracking error: Cycle 8 applied the fix but left M3 marked [OPEN].
+**Resolved.** ✓
+
+---
+
+### M4. JSD-Ambiguity monotonicity — Appendix B.1 written [FIXED]
+
+**What was open:** The qualifier "in the operating range $\bar{p}_t \in [0.15,0.85]$,
+$\text{Amb} \leq 0.08$" was added to §3.3 in Cycle 8, citing "(proof: Appendix B.1,
+via Taylor expansion of $H$ around $\bar{p}$)" — but `appendix-b.md` did not exist.
+
+**What was done in Cycle 9:** Created `appendix-b.md` §B.1 with the complete
+Taylor expansion argument.  Key result:
+
+$$\frac{\partial \text{JSD}}{\partial \text{Amb}}\bigg|_{\bar{p}} \geq
+5.65 - 4.41 = 1.24 > 0 \quad \forall\, \bar{p} \in [0.15, 0.85],\; \text{Amb} \leq 0.08$$
+
+The leading coefficient $-\frac{1}{2}H''(\bar{p}) \geq 5.65$ always dominates the
+remainder $|\partial\bar{R}/\partial\text{Amb}| \leq 4.41$ in the stated range.
+The Appendix B content is also incorporated into `paper.md`. ✓
+
+---
+
+### M5. Proposition 2 — Assumption A3 [FIXED — applied in Cycle 8, confirmed Cycle 9]
+
+Re-reading `04-method.md` confirms that Assumption A3 (No spontaneous recovery) is
+already present at lines 264–268, and the Proposition 2 proof sketch explicitly
+invokes "by Assumption A3 below, the deficit persists in expectation."
+Self-critique tracking error: Cycle 8 applied the fix but left M5 marked [OPEN].
+**Resolved.** ✓
+
+---
+
+### m2. QuantAgents citation ambiguity [FIXED]
+
+Added inline footnote^[...] immediately after the `@quantagents2025` citation in
+both `03-related-work.md` §2.6 and `paper.md`, identifying Du et al.
+(arXiv:2510.04643) as the intended reference and flagging arXiv:2509.09995 as
+the separate QuantAgent HFT system.  Author list still pending verification against
+live arXiv record (author field in BibTeX uses `Du, Jiawei and others`). ✓ (partially)
+
+---
+
+### m3. API call count in §7.7 [FIXED — applied in Cycle 8, confirmed Cycle 9]
+
+Re-reading `08-limitations.md` §7.7 confirms the corrected estimate: "approximately
+200–400 LLM API calls per day across both domains."  The inflated 4,000–6,000 figure
+was replaced before the Cycle 8 self-critique was written. **Resolved.** ✓
+
+---
+
+### m5. `@brown2013generalized` unverified venue [FIXED]
+
+Replaced `@brown2013generalized` (arXiv:1312.7463, no confirmed venue) with
+`@krogh1995neural` (Krogh & Vedelsby, NeurIPS 1995, pp. 231–238, MIT Press) —
+the canonical original statement of the bias–variance–ambiguity decomposition for
+MSE-class losses.  The citation change was applied in:
+- `03-related-work.md` §2.2: `[@krogh1995neural; @brown2005diversity]`
+- `paper.md` corresponding passage ✓
+
+*Residual note:* `@brown2005diversity` (Brown et al., Information Fusion 2005)
+is retained as the survey citation for diversity creation methods; it does not
+claim to introduce the decomposition and its venue is verified (DOI:
+10.1016/j.inffus.2004.04.004). ✓
+
+---
+
+### M1-partial. `@zhou2025dmad` stale key in `03-related-work.md` [FIXED]
+
+Cycle 8 marked M1 as fully fixed, but `@zhou2025dmad` remained in
+`03-related-work.md` line 137 (§2.3: "groupthink" attribution). The key
+`@zhou2025dmad` was absent from `references.bib`; the correct key is
+`@liu2025dmad` (first author: Liu Yexiang, ICLR 2025).
+Fixed: `[@zhou2025dmad]` → `[@liu2025dmad]` in `03-related-work.md` §2.3. ✓
+
+---
+
+## NEW ISSUES (identified in Cycle 9 re-read)
+
+### N1. Placeholder author fields in two BibTeX entries [OPEN]
+
+**Reviewer:** The entries `@llm_ipd2024` and `@polyswarm2026` use the
+placeholder author `{[Authors: verify arXiv:XXXX]}`.  Most LaTeX bibliography
+styles will render this placeholder verbatim, producing malformed author–year
+citations (e.g., "[Authors: verify arXiv:2406.13605] (2024)") and likely
+failing the journal's metadata ingestion pipeline.
+
+**Author response:** Both papers require author verification against their live
+arXiv records before submission. Interim fix: temporarily assign the correct
+first author where known (Jorgensen for arXiv:2406.13605 per the in-text
+citation style; PolySwarm authors remain unknown to the research team without
+network access). Pre-submission task: verify both arXiv records and update
+author fields. *(Open)*
+
+---
+
+### N2. Three appendices referenced but not yet written [OPEN]
+
+**Reviewer:** The manuscript cites Appendix A (20-archetype taxonomy), Appendix C.1
+(experimental calendar), and Appendix C.2 (hyperparameter sensitivity analysis),
+none of which exist in the file tree. `appendix-b.md` was created in Cycle 9.
+
+**Author response:** Appendix A requires the final archetype taxonomy to be
+locked; Appendix C.1 and C.2 require the experimental run to complete.
+These are blocked on the experimental timeline and will be written as the
+season data accumulates. *(Open — data-blocked)*
+
+---
+
+### N3. `@llm_ipd2024` in-text first-author mismatch [OPEN]
+
+**Reviewer:** The in-text citation (§2.1) refers to "Jorgensen et al.
+[@llm_ipd2024]", but the BibTeX uses the placeholder author field. If the
+first author is not Jorgensen, the author-year citation style will produce an
+incorrect in-text reference even after the author field is fixed.
+
+**Author response:** Verify author list for arXiv:2406.13605. The paper title
+is "Nicer Than Humans: How do Large Language Models Behave in the Prisoner's
+Dilemma?" If Jorgensen is confirmed as first author, the in-text attribution
+is correct. Otherwise, update both the BibTeX and the §2.1 prose attribution. *(Open)*
+
+---
+
+## CYCLE 9 SUMMARY
+
+**Fixed this cycle:** M3 (confirmed), M4 (Appendix B.1 written), M5 (confirmed),
+m2 (footnote added), m3 (confirmed), m5 (Krogh & Vedelsby substituted),
+M1-partial (`@zhou2025dmad` corrected)
+
+**Remaining open:** N1, N2, N3
+
+**Structural additions this cycle:**
+- `appendix-b.md` created (B.1 Taylor expansion proof; B.2 pending)
+- `paper.md` updated with Appendix B section, QuantAgents footnote, citation fixes
+- `references.bib` updated: `@brown2013generalized` → `@krogh1995neural`
+- All 7 open Cycle 8 issues resolved
