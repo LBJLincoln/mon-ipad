@@ -1,136 +1,146 @@
 {
-  "updated_at": "2026-05-09T02:00:00Z",
-  "fire": 66,
-  "rotation": "B",
+  "updated_at": "2026-05-09T06:00:00Z",
+  "fire": 67,
+  "rotation": "C",
   "nba_islands": {
     "S13": {
       "island": "Nomos42/nba-evo-4",
-      "gen": 1573,
-      "cycle": 525,
+      "gen": 1665,
+      "cycle": 556,
       "brier": 0.23196,
       "stag": 0,
       "model": "extra_trees",
       "best_brier": 0.23196,
-      "pareto_front_size": 16,
+      "pareto_front_size": 17,
       "status": "EVOLVING",
-      "note": "Advancing — gen 1573 (was 1493 at fire-64). Hard reset at cycle 502 (stag=25). Checkpoint NOT triggered (0.23196 > 0.22085). Watch continues."
+      "note": "gen 1573→1665 (+92). Pareto front 17. No checkpoint (0.23196 > 0.22085)."
     },
     "S14": {
       "island": "Nomos42/nba-evo-5",
-      "gen": 5036,
-      "cycle": null,
-      "brier": 0.22158,
-      "stag": 0,
-      "model": "logistic_regression",
-      "best_brier": 0.22019,
-      "status": "TIMEOUT",
-      "note": "WebFetch timeout at fire-66. Last known: gen=5194 brier=0.22158 stag=0 from fire-64. alltime GA best=0.22019 gen=1078 preserved."
+      "gen": 78,
+      "cycle": 27,
+      "brier": 0.22295,
+      "stag": 20,
+      "model": "random_forest",
+      "best_brier": 0.22295,
+      "alltime_best": 0.22019,
+      "status": "ALERT_STAG20",
+      "note": "HARD RESET detected: gen=78 (was 5036). stag=20 ABOVE diversify threshold (>15). Cloud cannot POST /api/command. Space auto-resets at stag=25 (~2-3 cycles). VM action needed: POST https://nomos42-nba-evo-5.hf.space/api/command {\"command\":\"diversify\"}"
     },
     "S15": {
       "island": "Nomos42/nba-evo-6",
-      "gen": 570,
-      "cycle": 190,
+      "gen": 650,
+      "cycle": 217,
       "brier": 0.22012,
       "stag": 0,
-      "model": "extra_trees",
+      "model": "random_forest",
       "best_brier": 0.22012,
+      "best_features_count": 75,
+      "best_roi": 0.3242,
+      "best_sharpe": 9.2099,
+      "pareto_best": 0.21841,
+      "pareto_best_model": "extra_trees",
+      "pareto_best_gen": 566,
       "status": "EVOLVING",
-      "pareto_top_brier": 0.21841,
-      "pareto_top_model": "extra_trees",
-      "pareto_top_gen": 566,
-      "pareto_top_sharpe": 10.5488,
-      "pareto_top_roi": 0.3453,
-      "alert": "NEW FLEET PARETO BEST: 0.21841 extra_trees gen=566 — beats previous alltime 0.21850 (S22 CatBoost gen=2309)",
-      "note": "FLEET BEST official 0.22012. Post-reset recovery phase. Hard reset at cycle 176 (stag=25). Model distribution reseeded."
+      "note": "gen 570→650 (+80). Fleet best 0.22012 RF 75f ROI=32.42% Sharpe=9.21. Pareto best 0.21841 extra_trees gen=566 confirmed alltime fleet best."
     },
     "S17": {
       "island": "LBJLincoln26/nba-evo-s17",
       "status": "503_PAUSED",
-      "note": "PAUSED 35+ days — VM restart OVERDUE. python -c 'from huggingface_hub import HfApi; HfApi().restart_space(\"LBJLincoln26/nba-evo-s17\")'"
+      "note": "PAUSED 36+ days. VM restart OVERDUE."
     },
     "S18": {
       "island": "TESTforge42/nba-evo-s18",
-      "gen": 3361,
-      "cycle": 1121,
+      "gen": 3490,
+      "cycle": 1164,
       "brier": 0.22315,
       "stag": 0,
       "model": "xgboost_brier",
       "best_brier": 0.22315,
-      "pareto_front_size": 13,
+      "pareto_front_size": 16,
       "status": "EVOLVING",
-      "alert": "19 cycles without improvement vs threshold (0.22315 required <0.22295). stag counter=0 post-reset. Watch for stag rise.",
-      "note": "gen advanced 3087→3361. Pareto member 0.21861 documented (2nd best ever). Official best_brier unchanged at 0.22315."
+      "note": "gen 3361→3490 (+129). stag=0. Pareto member 0.21861 (2nd best ever). 3365 feature candidates."
     },
     "S22": {
       "island": "TESTforge42/nba-evo-s22",
-      "gen": 2540,
-      "cycle": 847,
+      "gen": 2610,
+      "cycle": 871,
       "brier": 0.22431,
       "stag": 0,
-      "model": "catboost",
+      "model": "xgboost",
       "best_brier": 0.22431,
+      "pareto_front_size": 5,
       "status": "EVOLVING",
-      "pareto_best_alltime": 0.2185,
-      "pareto_best_gen": 2309,
-      "pareto_best_model": "CatBoost_200f",
-      "note": "Post-diversify recovery confirmed. gen 2469→2540. Hard resets at cycles 812+837. Previous Pareto best 0.21850 preserved but now surpassed by S15 0.21841."
+      "note": "gen 2540→2610 (+70). stag=0. Post-diversify recovery steady. ROI=27.71% Sharpe=4.45."
     }
   },
   "political_islands": {
     "P1": {
       "island": "Nomos42/political-alpha",
-      "gen": 30282,
-      "cycle": 10094,
+      "gen": 31176,
+      "cycle": 10393,
       "brier": 0.2499,
       "stag": 0,
       "model": "xgboost_brier",
       "best_brier": 0.2499,
+      "features_selected": 72,
+      "feature_candidates": 272,
+      "feature_density_pct": 26.5,
       "status": "EVOLVING",
-      "note": "272 feature candidates. Stable at ~0.2499. 1811 gen advance since fire-64."
+      "note": "gen 30282→31176 (+894). Feature density 26.5% vs NBA optimal 2.2% — over-selection hypothesis."
     },
     "P2": {
       "island": "Nomos42/political-alpha-2",
-      "gen": 29743,
-      "cycle": 9915,
+      "gen": 30293,
+      "cycle": 10098,
       "brier": 0.25003,
       "stag": 0,
       "model": "xgboost_brier",
       "best_brier": 0.24902,
+      "features_selected": 65,
+      "feature_density_pct": 23.9,
       "status": "EVOLVING",
-      "note": "alltime 0.24902. Current pop 0.25003 post-reset. Steady advance."
+      "note": "gen 29743→30293 (+550). alltime 0.24902."
     },
     "P4": {
       "island": "LBJLincoln/political-alpha-4",
-      "gen": 53157,
-      "cycle": 17719,
+      "gen": 54012,
+      "cycle": 18004,
       "brier": 0.24992,
       "stag": 0,
-      "model": "xgboost_brier",
+      "model": "lightgbm",
       "best_brier": 0.24904,
-      "status": "SAVING",
-      "note": "POL FLEET BEST alltime=0.24904 LightGBM 108f. 853 gen advance since fire-64."
+      "features_selected": 71,
+      "feature_density_pct": 26.1,
+      "status": "COOLDOWN",
+      "note": "gen 53157→54012 (+855). POL FLEET BEST alltime=0.24904. Model switched to lightgbm. COOLDOWN 5s."
     },
     "P5": {
       "island": "LBJLincoln/political-alpha-5",
-      "gen": 44282,
-      "cycle": 14761,
+      "gen": 44813,
+      "cycle": 14938,
       "brier": 0.24993,
       "stag": 0,
       "model": "xgboost_brier",
       "best_brier": 0.24993,
+      "features_selected": 58,
+      "feature_density_pct": 21.3,
+      "sharpe": 0.1745,
       "status": "EVOLVING",
-      "note": "454 gen advance. LightGBM 108f top. Near-tie with P4 alltime."
+      "note": "gen 44282→44813 (+531). stag=0."
     },
     "P7": {
       "island": "LBJLincoln/political-alpha-7",
-      "gen": 37290,
-      "cycle": 12430,
+      "gen": 38300,
+      "cycle": 12767,
       "brier": 0.25412,
       "stag": 0,
       "model": "lightgbm",
       "best_brier": 0.25412,
-      "status": "SAVING",
-      "note": "1036 gen advance. Multiple hard resets (12381, 12401). Cooldown recovery. Top config LightGBM 134f."
+      "features_selected": 45,
+      "feature_density_pct": 16.5,
+      "status": "EVOLVING",
+      "note": "gen 37290→38300 (+1010). Weakest POL island. Rotation C target: reduce feature density 16.5%→5-8% (45→15-20f)."
     }
   },
   "fleet_bests": {
@@ -140,46 +150,48 @@
     "nba_pareto_best": 0.21841,
     "nba_pareto_best_island": "S15",
     "nba_pareto_best_model": "extra_trees_gen566",
-    "nba_pareto_best_prev": 0.2185,
-    "nba_pareto_best_prev_island": "S22",
-    "nba_pareto_best_prev_model": "CatBoost_200f_gen2309",
     "pol_alltime_validated": 0.24904,
     "pol_alltime_island": "P4",
     "pol_alltime_model": "lightgbm_108f"
   },
   "actions_taken": [
-    "S15 NEW PARETO BEST 0.21841 extra_trees gen=566 — beats previous alltime 0.21850 (S22)",
-    "s13-top-performer-watch CLOSED: gen=1573 advancing stag=0, checkpoint not triggered (0.23196>0.22085)",
-    "S18 plateau watch noted: 19cy no improvement vs threshold, stag=0 post-reset",
-    "S22 post-diversify recovery confirmed: gen=2540 stag=0",
-    "All 5 POL islands EVOLVING stag=0, steady gen advance",
-    "Rotation B: extra_trees dominance finding (S15 Pareto best) documented for POL cross-port",
-    "SOTA: stacked-ensemble + extra_trees proposal filed (Nature 2025 + IEEE 2026)"
+    "S14: stag=20 ALERT (post-hard-reset gen=78). Diversify POST not possible from cloud (WebFetch GET-only). Space auto-resets at stag=25. VM diversify item added to work-queue.",
+    "S15 /api/best confirmed: RF 75f brier=0.22012 ROI=32.42% Sharpe=9.21. Pareto best 0.21841 extra_trees gen=566 is alltime fleet best.",
+    "S13/S15/S18/S22 all advancing stag=0. S17 503 PAUSED (36d+).",
+    "All 5 POL islands stag=0, advancing. P4 fleet best 0.24904 holds (lightgbm model).",
+    "Rotation C SOTA: Springer 2025 confirms LightGBM/XGBoost SOTA for political prediction. Extra Trees leads financial markets (MDPI 2023).",
+    "Rotation C finding: POL feature density (16-27%) vs NBA optimal (2.2%) — over-selection hypothesis. NBA Sharpe=9.21 vs POL Sharpe=0.17 (53x gap).",
+    "Research proposal filed: rotation-c-pol-feature-density-fire67.md — P7 target 45f→15-20f.",
+    "Wrote health-status.json (fire-67), work-queue.json, CLAUDE.md, brain-status.json."
   ],
   "sota_research": {
-    "rotation": "B",
-    "theme": "political_engine.py review + NBA→POL cross-port",
+    "rotation": "C",
+    "theme": "Port NBA techniques to Political",
     "findings": [
-      "S15 Pareto best 0.21841 uses extra_trees — outperforms CatBoost/RF/XGBoost in Pareto sense",
-      "Stacked ensemble (Nature s41598-025-13657-1): best NBA prediction uses NB+AdaBoost+MLP+KNN+XGB+DT+LR stack",
-      "CNN model (IEEE 11030489): Brier 0.221 — we match with S15 official 0.22012",
-      "XGBoost+SHAP (PMC 11265715): feature importance analysis could guide engine pruning",
-      "POL plateau 0.249-0.254 = data starvation (272f vs NBA 3377f). Engine tech secondary to data.",
-      "Extra trees insight: inject extra_trees individuals into POL island mutations (Rule: 1 fix/iter)"
+      "Springer IJ Data Sci 2025: LightGBM/XGBoost SOTA for political prediction (XGB macro-F1 −0.042 vs RF, LGB −0.032 vs RF)",
+      "MDPI Electronics 2023: Extra Trees Classifier leads financial significant-change prediction",
+      "S15 fleet best: 75f from 3377 pool = 2.2% density. Sharpe=9.21 ROI=32.42%",
+      "POL P1: 72f from 272 pool = 26.5% density. Sharpe~0.17 (NBA is 53x higher)",
+      "Hypothesis: POL over-selects features → variance inflation → poor calibration → low Sharpe",
+      "NBA cross-port: target POL feature density 5-8% (14-22f from 272 pool). Start with P7 (weakest, 45f→15-20f)",
+      "Extra_trees injection still blocked by VM political_engine.py placeholder"
     ],
     "actionable": {
-      "proposal_id": "extra_trees_pol_injection_fire66",
-      "estimated_brier_delta": -0.003,
-      "file": "data/research-proposals/extra-trees-pol-injection-fire66.md",
-      "blocker": "POL engine placeholder — VM must restore political_engine.py first"
+      "proposal_id": "pol_feature_density_reduction_fire67",
+      "target_island": "P7",
+      "current_features": 45,
+      "target_features": "15-20",
+      "estimated_brier_delta": -0.002,
+      "file": "data/research-proposals/rotation-c-pol-feature-density-fire67.md",
+      "method": "POST /api/config {\"max_features_target\": 18} to P7 if endpoint supports it; else VM patch"
     }
   },
   "urgent_vm_actions": [
-    "CRITICAL-0 (72h+): python3 scripts/ops/restore_political_engine_fire53.py — still placeholder",
-    "CRITICAL-1 (35d+): Restart S17 LBJLincoln26/nba-evo-s17",
-    "CRITICAL-2 (40d+): Restart fetch_political_data.py + insider_tracker.py crons",
-    "INFO: engine-parity-sync nomos-nba-agent 54KB behind",
-    "INFO: vm-fix-diversify-command-format (action→command)"
+    "ALERT: S14 stag=20 — POST https://nomos42-nba-evo-5.hf.space/api/command {\"command\":\"diversify\"} before stag=25 auto-reset",
+    "CRITICAL-0 (72h+): python3 scripts/ops/restore_political_engine_fire53.py — political_engine.py still placeholder",
+    "CRITICAL-1 (36d+): Restart S17 LBJLincoln26/nba-evo-s17",
+    "CRITICAL-2 (41d+): Restart fetch_political_data.py + insider_tracker.py crons (272f vs NBA 3377f — 12x deficit)",
+    "INFO: engine-parity-sync nomos-nba-agent 54KB behind"
   ],
-  "brain_notes": "fire-66 (Rotation B): KEY WIN — S15 new Pareto alltime fleet best 0.21841 extra_trees gen=566, surpassing S22's 0.21850 CatBoost. S13 watch closed (advancing, no checkpoint). S14 timeout (assume stable). S18 19cy plateau watch flagged. All POL islands stable stag=0. Rotation B analysis: extra_trees dominance from S15 should be injected into POL islands — blocked on VM engine restore. Three VM criticals still pending (72h/35d/40d stale)."
+  "brain_notes": "fire-67 (Rotation C): S14 post-hard-reset stag=20 ALERT — will auto-reset at stag=25, ~2 cycles. S15 fleet best confirmed 0.22012 RF/75f + Pareto 0.21841 extra_trees. Rotation C key finding: POL feature density (16-27%) is 10-12x higher than NBA optimal (2.2%). NBA Sharpe=9.21 vs POL Sharpe=0.17 — 53x gap. Reducing POL feature density to 5-8% is the NBA technique to port. Filed proposal for P7 (45→15-20 features). Extra_trees injection still blocked by VM placeholder."
 }
