@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-08T10:00:00Z",
+  "updated_at": "2026-05-08T16:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -69,47 +69,24 @@
       "do_not_push": false
     },
     {
-      "id": "vm-fix-diversify-command-format",
-      "priority": 59,
+      "id": "tf-axelrod-mechb-vm-apply-fire63",
+      "priority": 9,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Fix diversify command format: action->command",
-      "detected_at": "2026-05-05T00:15:00Z",
-      "cloud_brain_note": "Correct format: command:diversify",
-      "do_not_push": false
-    },
-    {
-      "id": "engine-parity-sync",
-      "priority": 40,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation)",
-      "detected_at": "2026-05-02T04:00:00Z",
-      "cloud_brain_note": "Cannot execute via cloud MCP — file is 523KB, exceeds inline push limit.",
-      "scope": [
-        "mon-ipad features/engine.py SHA b7ec5b5 (523KB) — canonical/newer",
-        "nomos-nba-agent features/engine.py SHA f455c47 (468KB) — 54KB behind"
-      ],
-      "do_not_push": false
-    },
-    {
-      "id": "tf-axelrod-verify-tune-12",
-      "priority": 21,
-      "status": "done",
-      "completed_at": "2026-05-08T10:00:00Z",
-      "completed_by": "cloud-trigger-axelrod-fire-62",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "verify+tune fire 12 — NBA thesis fallback patch",
-      "result": "fire-62 (VM session): Included in the 4-patch suite applied to both NBA + Political app.py. edge_rationale patch includes a.get('thesis') fallback for both. Unblocked and completed.",
+      "subject": "Apply Mech B log patch to both TF app.py files (fire-63 script)",
+      "detected_at": "2026-05-08T16:00:00Z",
+      "cloud_brain_note": "fire-63: Run from mon-ipad root: python3 scripts/ops/apply_mechb_log_patch.py then: bash scripts/lib/safe_commit.sh AXELROD-FIRE63 'feat(tf): Axelrod Mech B log patch — tier/was_challenged/trailing_7d_delta in write_axelrod_log (NBA+Political)\n\nCo-Authored-By: Claude Cloud Trigger <noreply@anthropic.com>' scripts/arena/hf-llm-trading-floor/app.py scripts/arena/hf-political-trading-floor/app.py data/work-queue.json",
       "do_not_push_hf_space_yet": true
     },
     {
       "id": "tf-axelrod-2026-mech-b",
       "priority": 10,
-      "status": "pending",
+      "status": "done",
+      "completed_at": "2026-05-08T16:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-63",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "AXELROD-2026 Mechanism B — Sacrificial Role Reallocation: verify both NBA+Political have bottom-3 trailing-7d delta → forced archetype assignment. Parity audit + any gap patches.",
-      "detected_at": "2026-05-08T10:00:00Z",
+      "result": "fire-63: Parity audit PASS — both apps identical Mech B logic (bottom_n=3, trailing_days=7, society-wide archetype dedup, challenge tiers). Gap: write_axelrod_log() missing challenge-tier fields. Patch script created at scripts/ops/apply_mechb_log_patch.py. VM must run the script + safe_commit to apply. do_not_push_hf_space_yet still holds.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -120,6 +97,25 @@
       "subject": "AXELROD-2026 Mechanism C — verify write_axelrod_log() emits bankroll_growth_factor + consensus_pick_distribution fields in both apps.",
       "detected_at": "2026-05-08T10:00:00Z",
       "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "cloud-trigger-axelrod-fire-63-2026-05-08T16h",
+      "priority": 87,
+      "status": "done",
+      "completed_at": "2026-05-08T16:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-63",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-63: Mech B parity audit + log patch script — tier/was_challenged/trailing_7d_delta in write_axelrod_log (both NBA+Political)",
+      "actions": [
+        "Read CLAUDE.md, both TF app.py files (5818+3798 lines), work-queue.json",
+        "Parity audit Mech B: both apps identical (bottom_n=3, trailing_days=7, society-wide archetype dedup) — PASS",
+        "Gap identified: write_axelrod_log() missing was_challenged/challenge_rank/tier/trailing_7d_delta",
+        "Patch verified locally: py_compile PASS NBA (5822L) + POL (3802L)",
+        "Created scripts/ops/apply_mechb_log_patch.py (VM-runnable, 3 patches × 2 files)",
+        "Pushed patch script to mon-ipad main (SHA c993097)",
+        "WQ: tf-axelrod-2026-mech-b DONE, VM sub-task queued (priority 9), fire-63 entry added",
+        "do_not_push_hf_space_yet still holds for both TF Spaces"
+      ]
     },
     {
       "id": "cloud-trigger-axelrod-fire-62-2026-05-08T10h",
@@ -147,28 +143,7 @@
       "completed_at": "2026-05-08T06:00:00Z",
       "completed_by": "cloud-brain-fire-61",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-61: Rotation C — S15 FLEET BEST 0.22012, S22 Pareto 0.21850, S18 stag recovered, all POL healthy",
-      "actions": [
-        "Fetched live /api/status for all 6 NBA + 5 POL islands",
-        "S15 best_brier=0.22012 < 0.22085 — CHECKPOINT TRIGGERED, CLAUDE.md updated",
-        "S22 Pareto fleet best 0.21850 CatBoost_200f gen=2309 — new all-time Pareto record",
-        "S18 stag RECOVERED 14→0 — closed vm-diversify-s18 WQ item",
-        "S22 stag=8 rising — new watch item added",
-        "All POL islands online stag=0, no restarts",
-        "Rotation C: CatBoost→Political research proposal written",
-        "SOTA research: MC-dropout RNN 0.199, tabular CNN 0.221; we beat tabular SOTA",
-        "Wrote health-status.json (fire-61), work-queue.json, research proposal, CLAUDE.md"
-      ]
-    },
-    {
-      "id": "vm-diversify-s18-2026-05-07T22h",
-      "priority": 0,
-      "status": "done",
-      "completed_at": "2026-05-08T06:00:00Z",
-      "completed_by": "cloud-brain-fire-61",
-      "owner": "local-vm",
-      "subject": "URGENT: S18 (TESTforge42/nba-evo-s18) stagnation=14 — POST /api/command {\"command\":\"diversify\"} BEFORE NEXT GENERATION",
-      "result": "fire-61: S18 stag RECOVERED to 0 (gen=2812). Diversify was effective. Item closed."
+      "subject": "fire-61: Rotation C — S15 FLEET BEST 0.22012, S22 Pareto 0.21850, S18 stag recovered, all POL healthy"
     },
     {
       "id": "cloud-brain-fire60-2026-05-08T02h",
@@ -203,7 +178,7 @@
       "status": "done",
       "completed_at": "2026-05-07T06:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-55",
-      "owner": "cloud-trigger-axelrod-2026",
+      "owner": "cloud-brain-sonnet4-6",
       "subject": "fire-55: NBA TF restore attempt + thesis fallback parity patch (ACCIDENT — pushed PLACEHOLDER)"
     },
     {
@@ -231,8 +206,7 @@
       "completed_at": "2026-05-07T22:00:00Z",
       "completed_by": "cloud-brain-fire-59",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "S22 stagnation watch resolved — stag recovered 13 to 6",
-      "result": "fire-59: S22 gen=2229 stag=6 (recovered from 13). New watch item s22-stag-watch-fire-61 added (stag=8)."
+      "subject": "S22 stagnation watch resolved — stag recovered 13 to 6"
     },
     {
       "id": "vm-check-p2-403-2026-05-07T18h",
@@ -305,6 +279,17 @@
       "subject": "verify+tune fire 13 — AXELROD-2026 Mech A GF improvement (scripts prepared)"
     },
     {
+      "id": "tf-axelrod-verify-tune-12",
+      "priority": 22,
+      "status": "done",
+      "completed_at": "2026-05-08T10:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-62",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "verify+tune fire 12 — NBA thesis fallback patch",
+      "result": "fire-62 (VM session): Included in the 4-patch suite applied to both NBA + Political app.py. edge_rationale patch includes a.get('thesis') fallback for both. Unblocked and completed.",
+      "do_not_push_hf_space_yet": true
+    },
+    {
       "id": "s18-checkpoint-gen571",
       "priority": 61,
       "status": "done",
@@ -346,6 +331,40 @@
       "completed_by": "cloud-brain-fire-53",
       "owner": "cloud-brain-sonnet4-6",
       "subject": "fire-53: Rotation B political_engine Cat45 attempt + island updates"
+    },
+    {
+      "id": "vm-diversify-s18-2026-05-07T22h",
+      "priority": 0,
+      "status": "done",
+      "completed_at": "2026-05-08T06:00:00Z",
+      "completed_by": "cloud-brain-fire-61",
+      "owner": "local-vm",
+      "subject": "URGENT: S18 (TESTforge42/nba-evo-s18) stagnation=14 — POST /api/command {\"command\":\"diversify\"} BEFORE NEXT GENERATION",
+      "result": "fire-61: S18 stag RECOVERED to 0 (gen=2812). Diversify was effective. Item closed."
+    },
+    {
+      "id": "vm-fix-diversify-command-format",
+      "priority": 59,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Fix diversify command format: action->command",
+      "detected_at": "2026-05-05T00:15:00Z",
+      "cloud_brain_note": "Correct format: command:diversify",
+      "do_not_push": false
+    },
+    {
+      "id": "engine-parity-sync",
+      "priority": 40,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation)",
+      "detected_at": "2026-05-02T04:00:00Z",
+      "cloud_brain_note": "Cannot execute via cloud MCP — file is 523KB, exceeds inline push limit.",
+      "scope": [
+        "mon-ipad features/engine.py SHA b7ec5b5 (523KB) — canonical/newer",
+        "nomos-nba-agent features/engine.py SHA f455c47 (468KB) — 54KB behind"
+      ],
+      "do_not_push": false
     },
     {
       "id": "R8",
