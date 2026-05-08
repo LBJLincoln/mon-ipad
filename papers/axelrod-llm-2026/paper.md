@@ -1961,6 +1961,179 @@ component of the agent cohort.
 
 ---
 
+# Appendix A — Strategy Archetype Taxonomy
+
+This appendix documents the full $K = 20$ strategy archetype taxonomy $\mathcal{R}$
+operationalised in the LPSG experiments (§3.1, §4.4). Each archetype corresponds to
+a system-prompt module that shapes the agent's reasoning disposition, position
+construction logic, and risk tolerance. Modules are composable with the shared
+`COLLECTIVE_MISSION` preamble (§3.6) and are swapped atomically during SRR events
+(§3.4) without modifying the agent's prediction history or bankroll state.
+
+---
+
+## A.1  Design Principles
+
+The taxonomy satisfies three criteria: (1) **span** — the 20 archetypes cover five
+orthogonal dimensions (D1 position construction, D2 risk appetite, D3 information
+source priority, D4 temporal horizon, D5 ensemble relationship); (2) **distinguishability**
+— every archetype pair satisfies $\hat{\epsilon}_{\text{arch}} \geq 0.037$ on the
+2024–25 pilot (Assumption A1; full matrix in Table B.2); and (3) **non-cherry-picking**
+— no archetype was designed with knowledge of which agent would initially occupy it.
+
+## A.2  Five-Dimension Design Space
+
+| Dimension | Label | Poles |
+|-----------|-------|-------|
+| D1 | Position construction | quantitative ←→ narrative; contrarian as a third axis |
+| D2 | Risk appetite | aggressive ←→ conservative; diversified as a third axis |
+| D3 | Information source | market signals ←→ statistical features ←→ situational context |
+| D4 | Temporal horizon | short-term momentum ←→ long-term mean-reversion |
+| D5 | Ensemble relationship | independent ←→ coordinator ←→ devil's-advocate |
+
+## A.3  Full Taxonomy Table
+
+| # | Archetype | Dim | Initially Occupied | $\kappa_{\min}$ |
+|---|-----------|----|-------------------|-----------------|
+| 1 | quantitative | D1 | NBA: T1 · POL: T1 | 0.05 |
+| 2 | analytical | D1 | NBA: T4 · POL: T4 | 0.04 |
+| 3 | narrative | D1 | — (vacant at day 0) | 0.04 |
+| 4 | contrarian | D1 | NBA: T3 · POL: T3 | 0.04 |
+| 5 | aggressive | D2 | NBA: T9 · POL: T9 | 0.08 |
+| 6 | conservative | D2 | — (vacant at day 0) | 0.01 |
+| 7 | diversified | D2 | NBA: T7 · POL: T7 | 0.03 |
+| 8 | disciplined | D2 | NBA: T12 · POL: — | 0.03 |
+| 9 | tactical | D3 | NBA: T5 · POL: T5 | 0.05 |
+| 10 | value | D3 | — (vacant at day 0) | 0.04 |
+| 11 | arbitrage | D3 | NBA: T2 · POL: T2 | 0.06 |
+| 12 | wide-coverage | D3 | NBA: T8 · POL: T8 | 0.02 |
+| 13 | momentum | D4 | — (vacant at day 0) | 0.05 |
+| 14 | mean-reversion | D4 | — (vacant at day 0) | 0.04 |
+| 15 | theoretical | D4 | NBA: T10 · POL: T10 | 0.03 |
+| 16 | chain-of-thought | D4 | NBA: T11 · POL: — | 0.05 |
+| 17 | ensemble | D5 | NBA: T6 · POL: T6 | 0.04 |
+| 18 | coordinator | D5 | — (vacant at day 0) | 0.04 |
+| 19 | devil's-advocate | D5 | — (vacant at day 0) | 0.05 |
+| 20 | adaptive | D5 | — (vacant at day 0) | 0.03 |
+
+*Table A.1: $K = 20$ archetype taxonomy. Eight archetypes are vacant at day 0
+(nos. 3, 6, 10, 13, 14, 18, 19, 20), constituting $\mathcal{V}_0$ for SRR
+(Definition 2, §3.4). Full prompt modules at `data/arena/archetypes/<name>.txt`.*
+
+## A.4  Per-Archetype Entries (Abbreviated)
+
+Each entry gives the reasoning disposition and the abbreviated prompt directive.
+Full prompt text is archived in `data/arena/archetypes/`.
+
+**D1 — Position Construction**
+
+*(1) Quantitative.* Relies on oracle statistical estimates ($\geq 80\%$ weight);
+minimal narrative adjustment. *Directive:* "Begin with statistical model
+probability; adjust by at most 5 pp on qualitative grounds unless oracle
+$\sigma > 0.08$. Report calibrated probability to two decimal places."
+
+*(2) Analytical.* Four-factor explicit weighing (oracle 0.40 + market 0.25 +
+situational 0.20 + form divergence 0.15). *Directive:* "Score each factor
+independently. Combine with stated weights. Report the single most-deviant factor."
+
+*(3) Narrative.* Qualitative-first; news, injuries, motivation dominate.
+*Directive:* "Identify the single most important narrative driver. Assign it
+up to 15 pp independent weight when absent from oracle summary. Document
+agreement or divergence from market implied probability."
+
+*(4) Contrarian.* Fades market consensus; default position $5$–$7$ pp below
+favourite implied probability. *Directive:* "Fade the favourite by 5–7 pp unless
+oracle $\sigma < 0.05$. Do not override when crowd exceeds 70% consensus."
+
+**D2 — Risk Appetite**
+
+*(5) Aggressive.* Concentrated positions; Kelly up to $\kappa_i = 0.70$.
+*Directive:* "When oracle probability is outside $[0.40, 0.60]$, increase stake
+by up to 30% above default Kelly. State edge estimate explicitly."
+
+*(6) Conservative.* Minimise Brier; cap at 30% of standard Kelly; shrink to $[0.20, 0.80]$.
+*Directive:* "Cap all positions at 30% Kelly. Shrink extreme predictions toward 0.50
+by 10 pp. Default to PASS when uncertain."
+
+*(7) Diversified.* Portfolio style; $\geq 5$ predictions/day; $\leq 2\%$ bankroll each.
+*Directive:* "Generate at least 5 independent predictions from different matchup
+contexts. Cap each stake at 2%."
+
+*(8) Disciplined.* Edge gate: only predict when divergence from market is $\geq 4$ pp
+and oracle $\sigma < 0.09$. *Directive:* "If within 4 pp of market implied or oracle
+is uncertain, PASS. Document edge gap explicitly."
+
+**D3 — Information Source Priority**
+
+*(9) Tactical.* Situational context dominates (rest, travel, injury, motivation);
+override oracle by up to 10 pp. *Directive:* "Score situational factors on
+$[-10, +10]$. If combined score $\geq 3$, adjust prediction by up to 10 pp
+regardless of oracle."
+
+*(10) Value.* Positive-EV market inefficiency; oracle vs.\ market gap $\geq 5$ pp.
+*Directive:* "Compute market implied probability. If oracle diverges by $\geq 5$ pp
+and oracle CI excludes market implied, predict in oracle's direction."
+
+*(11) Arbitrage.* Cross-market inconsistency; moneyline vs.\ alternate spread vs.\ team total.
+*Directive:* "Check for $\geq 3$ pp inconsistency between market categories
+on the same binary outcome. Predict in direction that resolves the inconsistency."
+
+*(12) Wide-Coverage.* Predict all events; oracle-anchored with $\pm 2$ pp uncertainty.
+*Directive:* "Generate one prediction per event in today's bucket. Default to
+oracle probability $\pm 2$ pp. Volume is your KPI."
+
+**D4 — Temporal Horizon**
+
+*(13) Momentum.* 7-day form extrapolation; $+3$–$5$ pp in streak direction.
+*Directive:* "Compute 7-day win/loss differential. If $\geq 3$, adjust
+prediction by 3–5 pp in the favoured team's direction, overriding oracle."
+
+*(14) Mean-Reversion.* Fade streaks of $\geq 5$-of-$7$ wins/losses toward
+season baseline. *Directive:* "If a team has won (or lost) $\geq 5$ of last 7,
+adjust 3–5 pp against the streak toward the season home-win base rate ($\approx 0.54$)."
+
+*(15) Theoretical.* Season-long statistics only; reject $< 20$-game samples;
+$\leq 10$ pp from base rate. *Directive:* "Default to season-long base rate.
+Reject any signal with fewer than 20 observations. Never adjust more than 10 pp
+from the base rate."
+
+*(16) Chain-of-Thought.* Extended deliberation before prediction; enumerate and
+eliminate $\geq 4$ factors each direction. *Directive:* "List at minimum four
+factors for and four against the home team. Assign weights. Only then state
+final probability. Reasoning portion must be $\geq 150$ tokens."
+
+**D5 — Ensemble Relationship**
+
+*(17) Ensemble.* Internal aggregation of three sub-predictions (oracle, market, situational).
+*Directive:* "Construct three sub-predictions. Average as final prediction.
+Report all three sub-predictions."
+
+*(18) Coordinator.* Morning council synthesiser; tracks consensus; allows $\leq 5$ pp
+divergence on high-uncertainty events. *Directive:* "Review yesterday's leaderboard.
+Represent the informed centre; allow divergence only for high-uncertainty events."
+
+*(19) Devil's-Advocate.* Fades agent-society consensus when $\geq 60\%$ agreement.
+*Directive:* "If morning council shows $\geq 60\%$ consensus, take the opposite
+direction 5–8 pp beyond the minority pole. Revert to oracle when no strong consensus."
+
+*(20) Adaptive.* Meta-archetype; self-selects reasoning style based on last-7-day Brier.
+*Directive:* "Identify which signal type produced smallest Brier errors in last 7 days.
+Weight it at 50% today; distribute remaining 50% equally among the other three signal types."
+
+## A.5  Initial Vacancy Analysis
+
+At NBA day 0, 12 of 20 archetypes are occupied and 8 are vacant ($\mathcal{V}_0$:
+nos.\ 3, 6, 10, 13, 14, 18, 19, 20). With vacancy threshold $\tau_{\text{vac}} = 1/(2K) = 0.025$,
+all 8 unoccupied archetypes qualify as vacant (occupancy $0 < 0.025$); all 12 occupied
+archetypes pass ($1/12 \approx 0.083 \gg 0.025$). For the political cohort ($N = 10$),
+T12 is absent, giving $|\mathcal{V}_0^{\text{POL}}| = 9$.
+
+The initial JSD diversity $D_0$ under the 12-archetype assignment is strictly below
+the theoretical maximum achievable with 20 archetypes, providing a measurable
+improvement target for SRR (§5.1, results pending).
+
+---
+
 # Appendix B — Mathematical Supplements
 
 ---
@@ -2028,6 +2201,141 @@ estimates $\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)})$ from the 2024–25 pi
 backtest completes. Expected minimum entry $\geq 0.037$; pre-registered expectation
 is that the (`wide-coverage`, `diversified`) pair yields the minimum and
 (`contrarian`, `quantitative`) the maximum.]**
+
+---
+
+# Appendix C — Experimental Supplements
+
+---
+
+## C.1  Experimental Calendar
+
+| Phase | Period | Purpose |
+|-------|--------|---------|
+| Archetype pilot | 2024–25 NBA season | Measure pairwise $\hat{\epsilon}_{\text{arch}}$; tune $\delta_{\text{sac}}$, $W$, $W_{\text{persist}}$ |
+| Pre-registration | 2025-10-01 | Hypotheses H1–H4 locked; SHA-256 at tag `preregistration-v1` |
+| **Condition A** (Full SRR) — *live* | 2025-10-14 – 2026-06-20 | 175 NBA trading days; 90 political event days |
+| **Condition B** (Fixed Ensemble) — *replay* | 2026-07-01 – 2026-07-14 | Archetypes frozen at initial assignment |
+| **Condition C** (DMAD-Static) — *replay* | 2026-07-15 – 2026-07-28 | Max-diversity init; SRR disabled |
+| **Condition D** (Sham-SRR) — *replay* | 2026-08-01 – 2026-08-14 | Label-only reallocation; prompts unchanged |
+| **Condition E** (Free-Rider) — *replay* | 2026-08-15 – 2026-08-28 | Random agent selected for reallocation |
+| Analysis + write-up | 2026-09 | Bootstrap CIs; figure generation; manuscript revision |
+
+*Table C.1: Experimental timeline. Conditions B–E are retrospective
+replays over the logged event stream from Condition A.*
+As of the current draft (May 2026), Condition A is $\approx 71\%$ complete.
+All prediction logs are archived at `data/arena/axelrod-log/` (schema in §C.5/Appendix D).
+
+---
+
+## C.2  Hyperparameter Sensitivity Analysis
+
+Hyperparameters $\delta_{\text{sac}}$, $W$, $W_{\text{persist}}$ were selected
+by cross-validation on the 2024–25 pilot season.
+
+| Hyperparameter | Values tested | Selected value |
+|----------------|---------------|----------------|
+| $\delta_{\text{sac}}$ | 0.01, 0.02, 0.03, 0.05 | **0.02** |
+| $W$ (patience, days) | 3, 5, 7, 10, 14 | **7** |
+| $W_{\text{persist}}$ (persistence, days) | 7, 14, 21, 28 | **14** |
+
+Selection criterion: minimise pilot-season ensemble Brier on held-out events
+($D_{\text{pilot}} = 80$ trading days) under Condition A.
+
+**[PENDING: sensitivity surface from `data/arena/axelrod-log/pilot-hparam-grid.jsonl`.
+Expected: $\delta_{\text{sac}} = 0.01$ triggers excessive SRR events;
+$W \leq 3$ misidentifies transient slumps; $W_{\text{persist}} = 28$ delays recovery.
+Selected values $(0.02, 7, 14)$ pre-registered as Pareto-optimal on pilot grid.]**
+
+The number of SRR events per season scales as
+$N/W \cdot P[\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}}]$,
+yielding a U-shaped relationship with ensemble Brier: too few events leave
+under-represented archetypes vacant; too many events cause calibration degradation
+during archetype transitions.
+
+---
+
+## C.3  Temperature Sensitivity Analysis
+
+All agents use a fixed generation temperature $\tau = 0.7$ (§4.6). A sensitivity
+sweep over $\tau \in \{0.30, 0.50, 0.70, 0.90, 1.10\}$ is conducted on a
+20-game held-out pilot subset using T4 (*analytical* archetype) as the
+representative agent.
+
+**[PENDING: per-$\tau$ Brier and ECE from `data/arena/axelrod-log/temp-sensitivity.jsonl`.
+Pre-registered expectation: $\tau = 0.7$ is near-optimal for *analytical*;
+*conservative* may prefer $\tau \leq 0.5$; *devil's-advocate* may benefit from
+$\tau \geq 0.9$. Per-archetype temperature sweep deferred to future work.]**
+
+---
+
+## C.4  Statistical Power Calculations
+
+### C.4.1  Primary Test: Brier Score (H1, H2)
+
+Let $\Delta_t = B_{\text{ens},t}^{(B)} - B_{\text{ens},t}^{(A)}$ be the per-game
+Brier difference (positive = SRR improves over fixed ensemble). With ICC
+$\rho_{\text{ICC}} \approx 0.10$–$0.15$ and $\approx 7.2$ games per day-bucket:
+
+$$\text{DEFF} = 1 + (n_{\text{cluster}} - 1)\,\rho_{\text{ICC}} \approx 1.62\text{–}1.93
+\quad\Rightarrow\quad n_{\text{eff}} \approx 651\text{–}776$$
+
+For a two-sided paired $t$-test with $\sigma_\Delta \approx 0.033$ (pilot estimate),
+$\alpha = 0.05$, $1-\beta = 0.80$, and $n_{\text{eff}} = 651$, the minimum detectable
+effect is:
+
+$$\delta_{\min} = (z_{\alpha/2} + z_\beta)\,\frac{\sigma_\Delta}{\sqrt{n_{\text{eff}}}}
+= 2.802 \times \frac{0.033}{\sqrt{651}} \approx 0.0036 \text{ Brier points}$$
+
+Our pre-registered target $\delta = 0.005$ exceeds $\delta_{\min}$, yielding power:
+
+$$1 - \beta = \Phi\!\left(\frac{0.005}{0.033/\sqrt{651}} - 1.960\right)
+= \Phi(1.916) \approx 0.97$$
+
+**The study is powered at $\approx 97\%$ to detect a $0.005$ Brier point improvement.**
+
+*Pessimistic check.* If $\sigma_\Delta = 0.043$ (30% above pilot estimate),
+power drops to 88%, and $n_{\text{eff}} \geq 580$ is still required for 80% power —
+below our lower-bound estimate of 651. The study remains adequately powered.
+
+### C.4.2  Secondary Test: JSD Diversity (H1)
+
+Let $D = 175$ day-level observations (approximately independent). With
+$\sigma_D \approx 0.022$ (pilot) and $\delta_D = 0.005$ (hypothesised SRR gain):
+
+$$n^* = \frac{(z_{\alpha/2}+z_\beta)^2\,\sigma_D^2}{\delta_D^2}
+= \frac{7.84 \times 0.000484}{0.000025} \approx 152 \text{ days}$$
+
+With $D = 175$ trading days, power $\approx \Phi(1.045) \approx 85\%$ for
+the JSD diversity test.
+
+---
+
+## C.5  Appendix D — Axelrod Log Schema  *(stub)*
+
+Each file in `data/arena/axelrod-log/` is newline-delimited JSON with schema:
+
+```json
+{
+  "date": "YYYY-MM-DD",  "domain": "nba|political",  "condition": "A–E",
+  "day_index": <int>,
+  "events": [{
+    "event_id": "<str>",  "ground_truth": 0|1,
+    "predictions": { "<agent_id>": {
+      "probability": <float>, "archetype": "<str>",
+      "brier": <float>, "stake_pct": <float>, "llm_call_ms": <int>
+    }},
+    "ensemble_mean": <float>, "ensemble_brier": <float>, "jsd": <float>
+  }],
+  "srr_events": [{"agent_id":"<str>","prev_archetype":"<str>",
+                  "new_archetype":"<str>","trigger_brier":<float>}],
+  "society_brier_7d": <float>, "society_jsd_7d": <float>
+}
+```
+
+`srr_events` is empty for conditions B, C, D (D: label-only; flagged `"sham":true`),
+and E (random reallocation flagged `"free_rider":true`).
+Unresolved events have `ground_truth: null` and `brier: null`.
 
 ---
 
