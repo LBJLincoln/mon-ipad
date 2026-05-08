@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-08T06h
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-08T14h
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -45,18 +45,18 @@ HF EVOLUTION ISLANDS — 11 SURVIVORS (6 NBA + 5 POL) after 2026-04-17 cull
     Eliminated slots now host selfhost LLMs on LBJLincoln/LBJLincoln26/TESTforge42.
 
     NBA Survivors (6, CPU tree-only, MAX_FEATURES=200):
-    ├── S13 Nomos42/nba-evo-4:        xgboost_brier       gen=1203  brier=0.24535  stagnation=0 ✓ (2026-05-08T06h)
-    ├── S14 Nomos42/nba-evo-5:        random_forest       gen=4592  brier=0.23030  stagnation=0 alltime=0.22019 ✓stag=0 (2026-05-08T06h)
-    ├── S15 Nomos42/nba-evo-6:        random_forest       gen=67/burst23 best=0.22012 stagnation=0 ★ FLEET BEST <0.22085 CHECKPOINT ⚡top5=0.21879 RF_200f gen=2392 (2026-05-08T06h)
-    ├── S17 LBJLincoln26/nba-evo-s17: xgboost             gen=---   brier=---      ⚠ PAUSED 28d+ — VM restart OVERDUE (2026-05-08T06h)
-    ├── S18 TESTforge42/nba-evo-s18:  extra_trees         gen=2812  brier=0.22532  stagnation=0 ✓ stag-recovered 14→0 (2026-05-08T06h)
-    └── S22 TESTforge42/nba-evo-s22:  catboost            gen=2310  brier=0.23044  stagnation=8 ⚡Pareto fleet best=0.21850 CatBoost_200f gen=2309 🔥 watch-stag (2026-05-08T06h)
+    ├── S13 Nomos42/nba-evo-4:        extra_trees         gen=1412  brier=0.23196  stagnation=0 ✓ gen1409 top=0.22186 near-checkpoint! (2026-05-08T14h)
+    ├── S14 Nomos42/nba-evo-5:        logistic_regression gen=5036  brier=0.22158  stagnation=10 ⚠ alltime=0.22019 watch-stag (2026-05-08T14h)
+    ├── S15 Nomos42/nba-evo-6:        random_forest       gen=310/burst104 best=0.22012 stagnation=? ★ FLEET BEST <0.22085 CHECKPOINT ⚡ post-reset plateau (2026-05-08T14h)
+    ├── S17 LBJLincoln26/nba-evo-s17: xgboost             gen=---   brier=---      ⚠ PAUSED 30d+ — VM restart OVERDUE (2026-05-08T14h)
+    ├── S18 TESTforge42/nba-evo-s18:  xgboost             gen=3087  brier=0.22315  stagnation=0 ✓ improved from 0.22532 (2026-05-08T14h)
+    └── S22 TESTforge42/nba-evo-s22:  catboost            gen=2397  brier=0.22431  stagnation=12 → DIVERSIFY SENT ⚡Pareto best=0.21850 CatBoost_200f gen=2309 (2026-05-08T14h)
     Political Survivors (5, CPU tree-only):
-    ├── P1 Nomos42/political-alpha:      logistic_regression gen=26689  brier=0.2533   stagnation=0 ✓ (2026-05-08T06h)
-    ├── P2 Nomos42/political-alpha-2:    lightgbm            gen=27444  brier=0.24902  stagnation=0 ✓ SAVING (2026-05-08T06h)
-    ├── P4 LBJLincoln/political-alpha-4: lightgbm            gen=49777  brier=0.24904  stagnation=0 ★ POL FLEET BEST alltime=0.24904 EVOLVING (2026-05-08T06h)
-    ├── P5 LBJLincoln/political-alpha-5: extra_trees         gen=42351  brier=0.2558   stagnation=0 SAVING (2026-05-08T06h)
-    └── P7 LBJLincoln/political-alpha-7: lightgbm            gen=33153  brier=0.24904  stagnation=0 ✓ (2026-05-08T06h)
+    ├── P1 Nomos42/political-alpha:      xgboost             gen=28471  brier=0.2499   stagnation=0 ✓ improved (2026-05-08T14h)
+    ├── P2 Nomos42/political-alpha-2:    xgboost             gen=28573  brier=0.25003  stagnation=0 alltime=0.24902 post-reset (2026-05-08T14h)
+    ├── P4 LBJLincoln/political-alpha-4: xgboost             gen=51489  brier=0.24992  stagnation=0 ★ POL FLEET BEST alltime=0.24904 (2026-05-08T14h)
+    ├── P5 LBJLincoln/political-alpha-5: extra_trees         gen=43309  brier=0.24993  stagnation=0 ✓ improved! top=0.24903 LightGBM 110f (2026-05-08T14h)
+    └── P7 LBJLincoln/political-alpha-7: lightgbm            gen=35220  brier=0.25412  stagnation=0 COOLDOWN 2×hard-reset recovery (2026-05-08T14h)
 
 SELFHOST LLM FLEET (6 RUNNING, 2 building — 2026-04-19 20:55 UTC)
     LBJLincoln   (3 RUNNING): qwen25-05b-cpu, gemma2-2b-cpu, phi35-mini-cpu
