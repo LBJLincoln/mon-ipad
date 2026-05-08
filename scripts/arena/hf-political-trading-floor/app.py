@@ -1,1 +1,1 @@
-"""\nNomos42 Political LLM Trading Floor — HuggingFace Spaces\n=========================================================\n10 AI agents (real LLM API calls) compete on ~1120 political events\nover ~14 days (2026-03-12 to 2026-03-26).
+PLACEHOLDER_TO_BE_REPLACED
