@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-09T23:00:00Z",
+  "updated_at": "2026-05-10T02:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -31,8 +31,8 @@
       "owner": "local-vm",
       "subject": "URGENT: political_engine.py both files = placeholder. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
       "detected_at": "2026-05-06T20:00:00Z",
-      "updated_at": "2026-05-09T22:00:00Z",
-      "cloud_brain_note": "fire-71: STILL PENDING 88h+. File is 194KB cannot be safely restored cloud-side. VM must run this.",
+      "updated_at": "2026-05-10T02:00:00Z",
+      "cloud_brain_note": "fire-73: STILL PENDING 92h+. File is 194KB cannot be safely restored cloud-side. VM must run this.",
       "do_not_push": false
     },
     {
@@ -60,8 +60,8 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 35+ days",
-      "cloud_brain_note": "fire-71: S17 still returning 503. VM: python -c from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 37+ days",
+      "cloud_brain_note": "fire-73: S17 still returning 503. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
       "do_not_push": false
     },
     {
@@ -118,7 +118,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation)",
-      "cloud_brain_note": "fire-71 confirmed: mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 char delta. Mismatch persists.",
+      "cloud_brain_note": "fire-73: mismatch persists. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 char delta.",
       "do_not_push": false
     },
     {
@@ -134,10 +134,11 @@
       "priority": 60,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Add logistic_regression to MODEL_TYPES on island app.py files (S14 first, then S13/S18/S22 and P7)",
-      "cloud_brain_note": "fire-70 SOTA research: LR+Elo achieves Brier=0.199. Adding LR to mutation pool is highest-leverage action to break 0.22 barrier. Start with S14.",
+      "subject": "Add logistic_regression + svm_platt to MODEL_TYPES on island app.py files (S14 first — stagnation 12/15, then S13/S18/S22 and P7)",
+      "cloud_brain_note": "fire-73 SOTA: IEEE 2026 SVM achieves 0.7749 accuracy (highest of all models tested). Add svm_platt (SVM+Platt-scaling) alongside logistic_regression. LR+Elo=0.199 (fire-70), SVM+calibration expected similar gain. S14 is stagnating — highest urgency.",
       "do_not_push": false,
-      "detected_at": "2026-05-09T18:00:00Z"
+      "detected_at": "2026-05-09T18:00:00Z",
+      "updated_at": "2026-05-10T02:00:00Z"
     },
     {
       "id": "vm-fec-sec-political-features",
@@ -147,6 +148,15 @@
       "subject": "Create nomos-political-alpha/scripts/fetch_fec_sec_features.py FEC direct REST API + SEC EDGAR to expand political feature_candidates 272->400+",
       "do_not_push": false,
       "detected_at": "2026-05-09T22:00:00Z"
+    },
+    {
+      "id": "cloud-brain-fire73-2026-05-10T02h",
+      "priority": 100,
+      "status": "done",
+      "completed_at": "2026-05-10T02:00:00Z",
+      "completed_by": "cloud-brain-fire-73",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-73: S13 breakthrough 0.23196→0.22398 (gen2145), S22 stag13→0 recovered, S14 WATCH stag=12/15. SOTA: calibrated SVM (IEEE 2026 0.7749 acc) + stacked ensemble proposal. Rotation B: political_engine temporal-decay + category-cross features. All 5 pol islands healthy stag=0."
     },
     {
       "id": "cloud-trigger-axelrod-fire-72b-mech-bc-verify-2026-05-09",

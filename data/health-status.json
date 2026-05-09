@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-05-09T22:00:00Z",
-  "cycle": "fire-71",
+  "updated_at": "2026-05-10T02:00:00Z",
+  "cycle": "fire-73",
   "brain_version": "cloud-brain-sonnet-4-6",
   "nba_fleet": {
     "fleet_best_brier": 0.22012,
@@ -9,26 +9,26 @@
     "pareto_best_island": "S15",
     "target_brier": 0.20,
     "islands": {
-      "S13": {"space": "Nomos42/nba-evo-4",        "gen": 1930, "best_brier": 0.23196, "stagnation": 0,  "status": "EVOLVING",  "model": "extra_trees"},
-      "S14": {"space": "Nomos42/nba-evo-5",        "gen": 413,  "best_brier": 0.22295, "stagnation": 5,  "status": "EVOLVING",  "model": "random_forest", "note": "fire68_diversify_working_20to5"},
-      "S15": {"space": "Nomos42/nba-evo-6",        "gen": 935,  "best_brier": 0.22012, "stagnation": 0,  "status": "EVOLVING",  "model": "random_forest", "pareto_best": 0.21841, "flag": "FLEET_BEST"},
-      "S17": {"space": "LBJLincoln26/nba-evo-s17", "gen": null, "best_brier": null,    "stagnation": null, "status": "503_DOWN", "alert": "PAUSED_36D+_VM_RESTART_NEEDED"},
-      "S18": {"space": "TESTforge42/nba-evo-s18",  "gen": 3911, "best_brier": 0.22315, "stagnation": 0,  "status": "EVOLVING",  "model": "xgboost_brier"},
-      "S22": {"space": "TESTforge42/nba-evo-s22",  "gen": 2851, "best_brier": 0.22431, "stagnation": 13, "status": "EVOLVING",  "model": "xgboost", "alert": "WATCH_stagnation13_threshold15"}
+      "S13": {"space": "Nomos42/nba-evo-4",        "gen": 2145, "best_brier": 0.22398, "stagnation": 0,   "status": "EVOLVING", "model": "xgboost",       "note": "breakthrough_0.23196to0.22398_gen2129"},
+      "S14": {"space": "Nomos42/nba-evo-5",        "gen": 671,  "best_brier": 0.22336, "stagnation": 12,  "status": "EVOLVING", "model": "extra_trees",    "alert": "WATCH_stagnation12_threshold15"},
+      "S15": {"space": "Nomos42/nba-evo-6",        "gen": 1131, "best_brier": 0.22012, "stagnation": 0,   "status": "EVOLVING", "model": "random_forest",  "pareto_best": 0.21841, "flag": "FLEET_BEST", "note": "hard_reset_cycle376_recovering"},
+      "S17": {"space": "LBJLincoln26/nba-evo-s17", "gen": null, "best_brier": null,    "stagnation": null, "status": "503_DOWN",  "alert": "PAUSED_37D+_VM_RESTART_NEEDED"},
+      "S18": {"space": "TESTforge42/nba-evo-s18",  "gen": 4205, "best_brier": 0.22315, "stagnation": 0,   "status": "EVOLVING", "model": "xgboost_brier",  "pareto_candidate": 0.21956, "note": "200f_pareto_candidate_0.21956"},
+      "S22": {"space": "TESTforge42/nba-evo-s22",  "gen": 3049, "best_brier": 0.22431, "stagnation": 0,   "status": "EVOLVING", "model": "xgboost",       "note": "recovered_stagnation13to0"}
     }
   },
   "political_fleet": {
     "fleet_best_brier": 0.24992,
     "fleet_best_island": "P4",
     "alltime_best": 0.24904,
-    "rotation": "A",
-    "rotation_desc": "FEC/SEC data — api.fec.gov direct REST proposed to expand feature_candidates 272->500+",
+    "rotation": "B",
+    "rotation_desc": "political_engine.py review — temporal polynomial + category cross-features proposal (see nomos-political-alpha/data/brain-status.json)",
     "islands": {
-      "P1": {"space": "Nomos42/political-alpha",       "gen": 33805, "best_brier": 0.2499,  "stagnation": 0, "status": "EVOLVING"},
-      "P2": {"space": "Nomos42/political-alpha-2",     "gen": 31899, "best_brier": 0.25003, "stagnation": 0, "status": "EVOLVING"},
-      "P4": {"space": "LBJLincoln/political-alpha-4",  "gen": 56646, "best_brier": 0.24992, "stagnation": 0, "status": "EVOLVING", "flag": "POL_FLEET_BEST"},
-      "P5": {"space": "LBJLincoln/political-alpha-5",  "gen": 46680, "best_brier": 0.24993, "stagnation": 0, "status": "EVOLVING"},
-      "P7": {"space": "LBJLincoln/political-alpha-7",  "gen": 41319, "best_brier": 0.25412, "stagnation": 0, "status": "EVOLVING"}
+      "P1": {"space": "Nomos42/political-alpha",      "gen": 35623, "best_brier": 0.2499,  "stagnation": 0, "status": "EVOLVING"},
+      "P2": {"space": "Nomos42/political-alpha-2",    "gen": 33073, "best_brier": 0.25003, "stagnation": 0, "status": "EVOLVING"},
+      "P4": {"space": "LBJLincoln/political-alpha-4", "gen": 58512, "best_brier": 0.24992, "stagnation": 0, "status": "EVOLVING", "flag": "POL_FLEET_BEST"},
+      "P5": {"space": "LBJLincoln/political-alpha-5", "gen": 47951, "best_brier": 0.24993, "stagnation": 0, "status": "EVOLVING"},
+      "P7": {"space": "LBJLincoln/political-alpha-7", "gen": 43401, "best_brier": 0.25412, "stagnation": 0, "status": "EVOLVING"}
     }
   },
   "engine_parity": {
@@ -40,16 +40,18 @@
     "owner": "local-vm"
   },
   "actions_taken": [
-    {"action": "s22_stagnation_watch",  "target": "S22", "note": "stagnation=13, threshold=15 — no diversify yet, watching", "timestamp": "2026-05-09T22:00:00Z"},
-    {"action": "s14_recovery_confirmed", "target": "S14", "note": "stagnation dropped 20->15->5 after fire-68 diversify — healthy", "timestamp": "2026-05-09T22:00:00Z"},
-    {"action": "rotation_a_proposal",   "result": "FEC/SEC direct REST API integration plan written — data/research-proposals/political-fec-sec-direct-api-2026-05-09.md", "timestamp": "2026-05-09T22:00:00Z"}
+    {"action": "s13_breakthrough",         "target": "S13", "note": "brier 0.23196→0.22398 at gen 2145 after 25-cycle stagnation reset — XGBoost now best model type on S13", "timestamp": "2026-05-10T02:00:00Z"},
+    {"action": "s22_stagnation_recovered", "target": "S22", "note": "stagnation 13→0 — no diversify needed this cycle", "timestamp": "2026-05-10T02:00:00Z"},
+    {"action": "s14_watch",                "target": "S14", "note": "stagnation 12/15 — will POST diversify on fire-74 if no improvement", "timestamp": "2026-05-10T02:00:00Z"},
+    {"action": "sota_research_proposal",   "result": "data/research-proposals/nba-sota-calibration-svm-2026-05-10.md — calibrated SVM (0.7749 acc IEEE 2026) + stacked ensemble + Venn-Abers on XGBoost islands", "timestamp": "2026-05-10T02:00:00Z"},
+    {"action": "rotation_b_proposal",      "result": "nomos-political-alpha/data/brain-status.json — temporal decay + category cross-features for political_engine.py when restored", "timestamp": "2026-05-10T02:00:00Z"}
   ],
   "alerts": [
-    {"island": "S22", "level": "WATCH",    "msg": "stagnation=13 approaching threshold 15 — next cycle will need diversify if no improvement"},
-    {"island": "S17", "level": "CRITICAL", "msg": "503 DOWN 36d+, VM restart required (vm-restart-s17 in work-queue)"},
-    {"check": "engine_parity",  "level": "WARNING",  "msg": "mon-ipad engine.py +54KB ahead of nomos-nba-agent; VM sync needed"},
-    {"check": "pol_tf_repair",  "level": "CRITICAL", "msg": "repair-pol-tf-fire67 STILL PENDING — Political TF app.py is 2-line stub, VM: scripts/ops/repair_pol_tf_fire67.py"},
-    {"check": "pol_engine",     "level": "CRITICAL", "msg": "fix-pol-engine-placeholder 88h+ pending — political_engine.py placeholder, VM: scripts/ops/restore_political_engine_fire53.py"}
+    {"island": "S14",            "level": "WATCH",    "msg": "stagnation=12 approaching threshold 15 — fire-74 will POST /api/command diversify if no improvement"},
+    {"island": "S17",            "level": "CRITICAL", "msg": "503 DOWN 37d+, VM restart required: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\""},
+    {"check": "engine_parity",   "level": "WARNING",  "msg": "mon-ipad engine.py +54KB ahead of nomos-nba-agent; VM sync needed (engine-parity-sync work-queue item)"},
+    {"check": "pol_engine",      "level": "CRITICAL", "msg": "fix-pol-engine-placeholder 92h+ pending — political_engine.py placeholder, VM: scripts/ops/restore_political_engine_fire53.py"},
+    {"check": "pol_tf_hf_deploy", "level": "INFO",    "msg": "POL TF app.py fixed in repo fire-72 (3812L, py_compile PASS). do_not_push_hf_space_yet=true — awaiting user approval for HF Space deploy"}
   ],
   "step0_crash_recovery": "No local-agent-* owned pending items — no crash recovery needed this cycle",
   "councils": "DECOMMISSIONED 2026-04-20 — skipped per CLAUDE.md",
