@@ -194,7 +194,7 @@ $$\mathbb{E}_{x, t}\!\left[|p_{i,t}(\mathcal{M}, r, x) - p_{i,t}(\mathcal{M}, r'
 
 Assumption A1 is a mild identifiability condition: archetypes that produce
 identical expected predictions would be indistinguishable and hence redundant
-in the taxonomy. We verify A1 empirically in §5.1 (all 20 archetype pairs
+in the taxonomy. We verify A1 empirically in §5.1 (all $\binom{20}{2} = 190$ pairwise archetype combinations
 exhibit $\epsilon_{\text{arch}} \geq 0.037$ on our held-out validation set).
 
 **Assumption A2 (Sacrifice-eligible agents track the population mean).** An agent

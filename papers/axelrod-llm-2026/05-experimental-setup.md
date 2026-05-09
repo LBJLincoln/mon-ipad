@@ -189,7 +189,10 @@ coordinator vs. devil's-advocate).
 Archetypes were drafted iteratively over a pre-season pilot (2024–25 NBA
 season, withheld from all evaluation) and revised to ensure the
 archetype-distinguishability bound $\epsilon_{\text{arch}} \geq 0.037$ was
-met for all 190 pairwise archetype pairs on held-out pilot data (§3.5).
+met for all 190 pairwise archetype pairs on held-out pilot data (§3.5;
+pre-registered constraint — any pair failing the threshold will trigger
+archetype revision before Conditions B–E commence; confirmation pending
+Table B.2 once pilot backtest completes).
 No archetype was designed with knowledge of which agents would be initially
 assigned to it, preventing cherry-picked archetype-agent pairings.
 
@@ -260,7 +263,15 @@ archetype modules and the COLLECTIVE\_MISSION preamble) are archived in
 `data/arena/archetypes/`. LLM temperature is fixed at
 $\tau = 0.7$ for all agents across all conditions to balance
 expressiveness with reproducibility; sensitivity to $\tau$ is tested
-in Appendix C.3.
+in Appendix C.3. We note that for managed-inference APIs (T1–T11),
+the provider's instruction-following fine-tuning mediates the relationship
+between the API temperature parameter and token-logit variance, so the
+effective stochasticity at $\tau = 0.7$ is provider-dependent.
+For self-hosted models (T12, Qwen3-4B-CPU), the parameter acts more
+directly on the logit distribution. The $\tau = 0.7$ selection was
+validated on T4 (Gemini 3 Flash, \textit{analytical} archetype);
+its transferability to self-hosted inference is treated as a limitation
+and flagged in Appendix C.3.3.
 
 **Pre-registration.** The four hypotheses tested in this paper —
 (H1) SRR increases $\overline{D}$ versus fixed ensemble;
@@ -276,12 +287,16 @@ tag `preregistration-v1`.
 
 ---
 
-> **Note on statistical power.** With $T = 1{,}257$ NBA events at
-> an assumed intra-bucket ICC of 0.15 (correlated games on the same day),
-> an effective sample size of $\approx 850$ independent observations is
-> available for the NBA domain. A two-sided paired $t$-test to detect
-> a Brier improvement of 0.005 ($\approx$ 2.3% relative) at $\alpha = 0.05$,
-> $\beta = 0.20$ requires $n \approx 350$ game-equivalents, which our
-> dataset comfortably exceeds. Political events ($T = 1{,}120$) provide
-> a comparable effective sample after adjusting for within-category
-> correlation. Full power calculations are in Appendix C.4.
+> **Note on statistical power.** With $T = 1{,}257$ NBA events grouped into
+> day-buckets (average cluster size $\bar{m} \approx 7.2$ games), the effective
+> sample size depends on the assumed intra-bucket intraclass correlation (ICC).
+> Pilot data suggest $\rho_{\text{ICC}} \in [0.10, 0.15]$, yielding design
+> effects DEFF $\in [1.62, 1.93]$ and $n_{\text{eff}} \in [651, 776]$
+> independent observations; the conservative lower bound ($n_{\text{eff}} = 651$,
+> ICC $= 0.15$, DEFF $= 1.93$) is used in all power calculations (Appendix C.4).
+> A two-sided paired $t$-test to detect a Brier improvement of $0.005$
+> ($\approx 2.3\%$ relative) at $\alpha = 0.05$, $\beta = 0.20$ requires
+> $n \approx 342$ game-equivalents; our conservative $n_{\text{eff}} = 651$
+> comfortably exceeds this, yielding power $\approx 97\%$ (Appendix C.4.1).
+> Political events ($T = 1{,}120$) provide a comparable effective sample
+> after adjusting for within-category correlation.
