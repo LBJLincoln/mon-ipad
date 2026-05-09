@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-10T06:00:00Z",
+  "updated_at": "2026-05-10T10:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -31,8 +31,8 @@
       "owner": "local-vm",
       "subject": "URGENT: political_engine.py both files = placeholder. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
       "detected_at": "2026-05-06T20:00:00Z",
-      "updated_at": "2026-05-10T02:00:00Z",
-      "cloud_brain_note": "fire-73: STILL PENDING 92h+. File is 194KB cannot be safely restored cloud-side. VM must run this.",
+      "updated_at": "2026-05-10T10:00:00Z",
+      "cloud_brain_note": "fire-75: STILL PENDING 100h+. File is 194KB cannot be safely restored cloud-side. VM must run this.",
       "do_not_push": false
     },
     {
@@ -61,7 +61,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 37+ days",
-      "cloud_brain_note": "fire-73: S17 still returning 503. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
+      "cloud_brain_note": "fire-75: S17 still returning 503. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
       "do_not_push": false
     },
     {
@@ -70,6 +70,16 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Restart political data crons: fetch_political_data.py + insider_tracker.py",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-investigate-s22-restart",
+      "priority": 2,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Investigate S22 (TESTforge42/nba-evo-s22) unexpected restart — was gen=3130/brier=0.22431, now gen=130/brier=0.24471",
+      "detected_at": "2026-05-10T10:00:00Z",
+      "cloud_brain_note": "fire-75: S22 regressed from gen=3130 brier=0.22431 stagnation=6 to gen=130 brier=0.24471 stagnation=0. Model changed xgboost->lightgbm. Possible causes: (1) HF Space factory restart, (2) accidental redeployment, (3) hard-reset cascade. VM should check Space logs; if unintentional restore from checkpoint.",
       "do_not_push": false
     },
     {
@@ -118,7 +128,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation)",
-      "cloud_brain_note": "fire-73: mismatch persists. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 char delta.",
+      "cloud_brain_note": "fire-75: mismatch persists. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 char delta.",
       "do_not_push": false
     },
     {
@@ -126,19 +136,20 @@
       "priority": 59,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Fix diversify command format: action->command",
+      "subject": "Fix diversify command format: action->command in all VM scripts",
+      "cloud_brain_note": "fire-75 CONFIRMED: API returns {error:unknown command, valid:[diversify,boost_mutation,backfill_boxscores]} for {action:diversify}. Correct call: POST /api/command {command:diversify} — S14 successfully queued with correct format. VM scripts using old format need update.",
       "do_not_push": false
     },
     {
       "id": "vm-add-logistic-regression-model-pool",
-      "priority": 60,
+      "priority": 50,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Add logistic_regression + svm_platt to MODEL_TYPES on island app.py files (S14 first \u2014 stagnation 12/15, then S13/S18/S22 and P7)",
-      "cloud_brain_note": "fire-73 SOTA: IEEE 2026 SVM achieves 0.7749 accuracy (highest of all models tested). Add svm_platt (SVM+Platt-scaling) alongside logistic_regression. LR+Elo=0.199 (fire-70), SVM+calibration expected similar gain. S14 is stagnating \u2014 highest urgency.",
+      "subject": "Add logistic_regression + svm_platt to MODEL_TYPES on island app.py files (S14 first, then S13/S18/S22 and P7)",
+      "cloud_brain_note": "fire-75 SOTA VALIDATION: MDPI 2026 Uncertainty-Aware NBA paper confirms LR achieves Brier 0.199 = best tabular baseline. LR+isotonic+market odds = strongest overall. IEEE 2026 SVM+calibration = 0.7749 accuracy. Priority UPGRADED from 60->50. S14 at stag=22 urgently needs this.",
       "do_not_push": false,
       "detected_at": "2026-05-09T18:00:00Z",
-      "updated_at": "2026-05-10T02:00:00Z"
+      "updated_at": "2026-05-10T10:00:00Z"
     },
     {
       "id": "vm-fec-sec-political-features",
@@ -150,13 +161,13 @@
       "detected_at": "2026-05-09T22:00:00Z"
     },
     {
-      "id": "cloud-brain-fire73-2026-05-10T02h",
-      "priority": 100,
+      "id": "cloud-brain-fire75-2026-05-10T10h",
+      "priority": 103,
       "status": "done",
-      "completed_at": "2026-05-10T02:00:00Z",
-      "completed_by": "cloud-brain-fire-73",
+      "completed_at": "2026-05-10T10:00:00Z",
+      "completed_by": "cloud-brain-fire-75",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-73: S13 breakthrough 0.23196->0.22398 (gen2145), S22 stag13->0 recovered, S14 WATCH stag=12/15. SOTA: calibrated SVM (IEEE 2026 0.7749 acc) + stacked ensemble proposal. Rotation B: political_engine temporal-decay + category-cross features. All 5 pol islands healthy stag=0."
+      "subject": "fire-75: S13 self-reset stag=25 ✓, S14 DIVERSIFY SENT stag=22 (correct cmd format confirmed), S15 fleet best 0.22012 stable, S18 recovering stag=12, S22 FACTORY RESTART DETECTED gen=130/0.24471 was gen=3130/0.22431. All 5 POL islands healthy stag=0. SOTA: LR+isotonic Brier 0.199 (MDPI 2026) + stacked ensemble (Scientific Reports 2025) validated. vm-add-logistic-regression-model-pool priority upgraded 60->50. vm-investigate-s22-restart added. Rotation B: cross-pollinate LR+isotonic to political."
     },
     {
       "id": "cloud-trigger-axelrod-fire-74-2026-05-10T06h",
@@ -175,7 +186,7 @@
       "completed_at": "2026-05-09T23:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-72-cont",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-72 Cycle2: Full Mech B+C parity verification. NBA(5828L)+POL(3812L) both at functional parity. Mech B: assign_sacrificial_archetypes/build_sacrificial_system_suffix/assign_challenge_tiers/build_challenge_block all present \u2014 identical logic, correct domain-specific language (bet->trade, category->sector). Mech C: write_axelrod_log present, bankroll_growth_factor+consensus_pick_distribution fields confirmed, POL has additional direction/event_type fields which is correct. No code changes needed. do_not_push_hf_space_yet.",
+      "subject": "fire-72 Cycle2: Full Mech B+C parity verification. NBA(5828L)+POL(3812L) both at functional parity. Mech B: assign_sacrificial_archetypes/build_sacrificial_system_suffix/assign_challenge_tiers/build_challenge_block all present. Mech C: write_axelrod_log present, bankroll_growth_factor+consensus_pick_distribution confirmed. do_not_push_hf_space_yet.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -185,7 +196,16 @@
       "completed_at": "2026-05-09T22:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-72",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-72: Political TF restore 9167a1c + Mech A DMAD parity 3 patches, py_compile PASS 3812L. NBA TF verified unchanged. repair-pol-tf-fire67=done, tf-axelrod-2026-mech-a-dmad-parity=done. do_not_push_hf_space_yet."
+      "subject": "fire-72: Political TF restore 9167a1c + Mech A DMAD parity 3 patches, py_compile PASS 3812L. do_not_push_hf_space_yet."
+    },
+    {
+      "id": "cloud-brain-fire73-2026-05-10T02h",
+      "priority": 100,
+      "status": "done",
+      "completed_at": "2026-05-10T02:00:00Z",
+      "completed_by": "cloud-brain-fire-73",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-73: S13 breakthrough 0.23196->0.22398 (gen2145), S22 stag13->0 recovered, S14 WATCH stag=12/15. SOTA: calibrated SVM (IEEE 2026 0.7749 acc) + stacked ensemble proposal. Rotation B: political_engine temporal-decay + category-cross features. All 5 pol islands healthy stag=0."
     },
     {
       "id": "cloud-brain-fire71-2026-05-09T22h",

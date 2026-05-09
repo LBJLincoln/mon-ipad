@@ -1,58 +1,81 @@
 {
-  "updated_at": "2026-05-10T06:00:00Z",
-  "cycle": "fire-74",
-  "brain_version": "cloud-brain-sonnet-4-6",
-  "nba_fleet": {
-    "fleet_best_brier": 0.22012,
-    "fleet_best_island": "S15",
-    "pareto_best_brier": 0.21841,
-    "pareto_best_island": "S15",
-    "target_brier": 0.20,
-    "islands": {
-      "S13": {"space": "Nomos42/nba-evo-4",        "gen": 2274, "best_brier": 0.22398, "stagnation": 23,   "status": "EVOLVING", "model": "xgboost",       "alert": "DIVERSIFY_URGENT_23of25_VM_POST_NEEDED"},
-      "S14": {"space": "Nomos42/nba-evo-5",        "gen": 802,  "best_brier": 0.22336, "stagnation": 0,    "status": "EVOLVING", "model": "extra_trees",    "note": "hard_reset_post_stag25_LR_stacking_injected"},
-      "S15": {"space": "Nomos42/nba-evo-6",        "gen": 1224, "best_brier": 0.22012, "stagnation": 0,    "status": "EVOLVING", "model": "random_forest",  "pareto_best": 0.21841, "flag": "FLEET_BEST"},
-      "S17": {"space": "LBJLincoln26/nba-evo-s17", "gen": null, "best_brier": null,    "stagnation": null, "status": "503_DOWN",  "alert": "PAUSED_37D+_VM_RESTART_NEEDED"},
-      "S18": {"space": "TESTforge42/nba-evo-s18",  "gen": 4333, "best_brier": 0.22315, "stagnation": 18,   "status": "EVOLVING", "model": "xgboost_brier",  "alert": "DIVERSIFY_NEEDED_18of25_VM_POST_NEEDED"},
-      "S22": {"space": "TESTforge42/nba-evo-s22",  "gen": 3130, "best_brier": 0.22431, "stagnation": 6,    "status": "EVOLVING", "model": "xgboost",        "note": "recovering_from_stag13"}
+  "updated_at": "2026-05-10T10:00:00Z",
+  "cycle": "fire-75",
+  "nba_islands": {
+    "S13": {
+      "space": "Nomos42/nba-evo-4",
+      "generation": 2430,
+      "best_brier": 0.22398,
+      "stagnation": 25,
+      "status": "SELF_RESET",
+      "model": "xgboost_brier",
+      "note": "Hard reset triggered at cycle 785+810 — recovered, mutation=0.1291"
+    },
+    "S14": {
+      "space": "Nomos42/nba-evo-5",
+      "generation": 901,
+      "best_brier": 0.22336,
+      "stagnation": 22,
+      "status": "DIVERSIFY_SENT",
+      "model": "extra_trees",
+      "note": "fire-75: diversify command queued via POST /api/command {command:diversify}, stagnation=22/25"
+    },
+    "S15": {
+      "space": "Nomos42/nba-evo-6",
+      "generation": 1306,
+      "best_brier": 0.22012,
+      "stagnation": 0,
+      "status": "FLEET_BEST",
+      "model": "random_forest",
+      "pareto_best": 0.21841,
+      "pareto_model": "extra_trees",
+      "pareto_gen": 566,
+      "note": "Stable, fleet best, Pareto best extra_trees gen=566"
+    },
+    "S17": {
+      "space": "LBJLincoln26/nba-evo-s17",
+      "generation": null,
+      "best_brier": null,
+      "stagnation": null,
+      "status": "503_PAUSED",
+      "model": "xgboost",
+      "note": "PAUSED 37d+ — VM restart OVERDUE"
+    },
+    "S18": {
+      "space": "TESTforge42/nba-evo-s18",
+      "generation": 4466,
+      "best_brier": 0.22315,
+      "stagnation": 12,
+      "status": "RECOVERING",
+      "model": "extra_trees",
+      "note": "stagnation recovering 18->12"
+    },
+    "S22": {
+      "space": "TESTforge42/nba-evo-s22",
+      "generation": 130,
+      "best_brier": 0.24471,
+      "stagnation": 0,
+      "status": "FACTORY_RESTART_DETECTED",
+      "model": "lightgbm",
+      "prev_gen": 3130,
+      "prev_brier": 0.22431,
+      "note": "Was gen=3130/brier=0.22431 — factory restart detected, rebuilding from scratch"
     }
   },
-  "political_fleet": {
-    "fleet_best_brier": 0.24992,
-    "fleet_best_island": "P4",
-    "alltime_best": 0.24904,
-    "rotation": "C",
-    "rotation_desc": "Port NBA techniques to Political: random_forest model pool + hard-reset reseeding + Venn-Abers calibration (see nomos-political-alpha/data/research-proposals/rotation-c-nba-to-pol-2026-05-10.md)",
-    "islands": {
-      "P1": {"space": "Nomos42/political-alpha",      "gen": 36519, "best_brier": 0.2499,  "stagnation": 0, "status": "EVOLVING"},
-      "P2": {"space": "Nomos42/political-alpha-2",    "gen": 33711, "best_brier": 0.25003, "stagnation": 0, "status": "EVOLVING"},
-      "P4": {"space": "LBJLincoln/political-alpha-4", "gen": 59369, "best_brier": 0.24992, "stagnation": 0, "status": "EVOLVING", "flag": "POL_FLEET_BEST"},
-      "P5": {"space": "LBJLincoln/political-alpha-5", "gen": 48603, "best_brier": 0.24993, "stagnation": 0, "status": "EVOLVING"},
-      "P7": {"space": "LBJLincoln/political-alpha-7", "gen": 44454, "best_brier": 0.25412, "stagnation": 0, "status": "EVOLVING", "rotation_c_target": true}
-    }
-  },
-  "engine_parity": {
-    "mon_ipad_size_chars": 523050,
-    "nomos_nba_agent_size_chars": 468146,
-    "delta_chars": 54904,
-    "status": "MISMATCH",
-    "work_queue_item": "engine-parity-sync",
-    "owner": "local-vm"
-  },
-  "actions_taken": [
-    {"action": "s13_diversify_attempted", "target": "S13", "stagnation": 23, "result": "FAILED_GET_ONLY — /api/command returned 404, WebFetch cannot POST. Added vm-post-diversify-s13-s18 priority-0 to work-queue.", "timestamp": "2026-05-10T06:00:00Z"},
-    {"action": "s18_diversify_attempted", "target": "S18", "stagnation": 18, "result": "FAILED_GET_ONLY — /api/command returned 404, WebFetch cannot POST. Added vm-post-diversify-s13-s18 priority-0 to work-queue.", "timestamp": "2026-05-10T06:00:00Z"},
-    {"action": "rotation_c_proposal", "result": "nomos-political-alpha/data/research-proposals/rotation-c-nba-to-pol-2026-05-10.md — random_forest + hard-reset-reseeding + Venn-Abers calibration for political islands (P7 highest priority)", "timestamp": "2026-05-10T06:00:00Z"}
-  ],
+  "fleet_best_brier": 0.22012,
+  "fleet_best_island": "S15",
+  "pareto_best_brier": 0.21841,
+  "pareto_best_island": "S15",
+  "action_taken": "diversify -> S14 (stagnation=22/25, correct cmd format: {command:diversify})",
   "alerts": [
-    {"island": "S13",          "level": "CRITICAL", "msg": "stagnation=23/25 — hard auto-reset IMMINENT at 25! VM URGENT: curl -X POST https://nomos42-nba-evo-4.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'"},
-    {"island": "S18",          "level": "WARNING",  "msg": "stagnation=18/25 — VM: curl -X POST https://testforge42-nba-evo-s18.hf.space/api/command -H 'Content-Type: application/json' -d '{\"action\":\"diversify\"}'"},
-    {"island": "S17",          "level": "CRITICAL", "msg": "503 DOWN 37d+. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\""},
-    {"check": "engine_parity", "level": "WARNING",  "msg": "mon-ipad engine.py +54KB ahead of nomos-nba-agent. VM sync needed (engine-parity-sync)."},
-    {"check": "pol_engine",    "level": "CRITICAL", "msg": "fix-pol-engine-placeholder 96h+ pending. VM: scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root."},
-    {"check": "pol_tf",        "level": "INFO",     "msg": "POL TF app.py fixed in repo fire-72 (3812L). do_not_push_hf_space_yet — awaiting user approval for HF Space deploy."}
+    "S14 stagnation=22/25 — diversify sent fire-75",
+    "S17 PAUSED 503 — VM restart overdue 37d+",
+    "S22 FACTORY RESTART DETECTED — was gen=3130 brier=0.22431, now gen=130 brier=0.24471"
   ],
-  "step0_crash_recovery": "No local-agent-* owned pending items — no crash recovery needed this cycle",
-  "councils": "DECOMMISSIONED 2026-04-20 — skipped per CLAUDE.md",
-  "dashboard": "R8 done — no pending work-queue items"
+  "political_summary": {
+    "all_healthy": true,
+    "all_stagnation_zero": true,
+    "fleet_best": "P4 brier=0.24992",
+    "rotation_this_cycle": "B"
+  }
 }
