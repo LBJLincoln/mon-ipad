@@ -122,6 +122,33 @@ may prefer $\tau \leq 0.5$, while archetypes designed for high divergence
 (e.g., *devil's-advocate*) may benefit from $\tau \geq 0.9$. A
 per-archetype temperature sweep is deferred to future work.]**
 
+### C.3.3  Limitation: Self-Hosted Model Temperature
+
+The temperature sweep in C.3.1–C.3.2 uses T4 (Gemini 3 Flash Preview,
+managed inference via Google API) as the representative agent.
+For managed-inference providers, the API `temperature` parameter is
+processed downstream of instruction-following fine-tuning; the relationship
+between `temperature` and token-logit variance is non-linear and
+provider-specific [@ouyang2022training]. In particular, Gemini 3 Flash
+applies an internal scaling layer that may compress the effective
+temperature range relative to the nominal parameter value.
+
+The self-hosted agent T12 (Qwen3-4B-CPU, served via llama.cpp) does not
+apply this scaling layer: `temperature` maps directly to the softmax
+inverse-temperature applied to raw model logits. Consequently, $\tau = 0.7$
+may correspond to systematically lower stochasticity for T12 than for T4
+under the same parameter value, potentially under-exploring the prediction
+space for the *disciplined* archetype.
+
+**Planned follow-up** (deferred to future work, not part of the
+pre-registered experimental protocol): a matching temperature sweep on T12
+across $\tau \in \{0.30, 0.50, 0.70, 0.90, 1.10\}$ on the same 20-game
+held-out subset, with results compared to T4. If a substantially different
+optimal temperature is identified for T12, the self-hosted agent will be
+assigned a distinct temperature in the retrospective replay conditions
+(B–E), with a sensitivity analysis testing whether the $\tau$ choice
+materially affects the SRR vs.\ Fixed Ensemble comparison.
+
 ---
 
 ## C.4  Statistical Power Calculations
@@ -148,16 +175,14 @@ the design effect is:
 $$\text{DEFF} = 1 + (n_{\text{cluster}} - 1) \cdot \rho_{\text{ICC}}
 = 1 + 6.2 \times 0.15 = 1.93$$
 
-The effective sample size is:
+The effective sample size at ICC $= 0.15$ (conservative upper bound) is:
 
 $$n_{\text{eff}} = \frac{T}{\text{DEFF}} = \frac{1{,}257}{1.93} \approx 651$$
 
-*Remark.* The text in §4.5 reports $n_{\text{eff}} \approx 850$, using a
-slightly lower pilot-estimated ICC of $\rho \approx 0.10$
-(DEFF $= 1 + 6.2 \times 0.10 = 1.62$; $n_{\text{eff}} = 1{,}257/1.62 = 776$,
-rounded up to 850 with a conservatism adjustment for clustering within
-playoff series). The range [651, 850] brackets the likely value under
-reasonable ICC assumptions; we use the conservative lower bound here.
+Under ICC $= 0.10$ (optimistic lower bound), DEFF $= 1.62$ and
+$n_{\text{eff}} = 776$. The range $[651, 776]$ brackets the plausible
+effective sample size; §4.5 and all power statements use the conservative
+lower bound $n_{\text{eff}} = 651$.
 
 **Minimum detectable effect.** For a two-sided paired $t$-test at
 $\alpha = 0.05$ and power $1 - \beta = 0.80$:
