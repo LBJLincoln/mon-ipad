@@ -1,81 +1,84 @@
 {
-  "updated_at": "2026-05-10T10:00:00Z",
-  "cycle": "fire-75",
+  "updated_at": "2026-05-10T14:00:00Z",
+  "cycle": "fire-77",
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "generation": 2430,
+      "generation": 2556,
       "best_brier": 0.22398,
-      "stagnation": 25,
-      "status": "SELF_RESET",
+      "stagnation": 0,
+      "status": "HEALTHY",
       "model": "xgboost_brier",
-      "note": "Hard reset triggered at cycle 785+810 — recovered, mutation=0.1291"
+      "note": "Recovered from stagnation=25 (self-reset worked)"
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "generation": 901,
+      "generation": 998,
       "best_brier": 0.22336,
-      "stagnation": 22,
-      "status": "DIVERSIFY_SENT",
+      "stagnation": 0,
+      "status": "HEALTHY",
       "model": "extra_trees",
-      "note": "fire-75: diversify command queued via POST /api/command {command:diversify}, stagnation=22/25"
+      "note": "fire-75 diversify command worked — stagnation 22→0"
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "generation": 1306,
+      "generation": 1394,
       "best_brier": 0.22012,
-      "stagnation": 0,
-      "status": "FLEET_BEST",
-      "model": "random_forest",
+      "stagnation": 13,
+      "status": "WATCH_STAGNATION",
+      "model": "extra_trees",
       "pareto_best": 0.21841,
       "pareto_model": "extra_trees",
       "pareto_gen": 566,
-      "note": "Stable, fleet best, Pareto best extra_trees gen=566"
+      "note": "stagnation=13 approaching threshold >15 — DIVERSIFY if >15 next cycle"
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
       "generation": null,
       "best_brier": null,
       "stagnation": null,
-      "status": "503_PAUSED",
+      "status": "503_DOWN",
       "model": "xgboost",
       "note": "PAUSED 37d+ — VM restart OVERDUE"
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "generation": 4466,
+      "generation": 4598,
       "best_brier": 0.22315,
-      "stagnation": 12,
+      "stagnation": 6,
       "status": "RECOVERING",
-      "model": "extra_trees",
-      "note": "stagnation recovering 18->12"
+      "model": "xgboost_brier",
+      "note": "stagnation recovering 12→6"
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "generation": 130,
-      "best_brier": 0.24471,
-      "stagnation": 0,
-      "status": "FACTORY_RESTART_DETECTED",
-      "model": "lightgbm",
+      "generation": 310,
+      "best_brier": 0.2215,
+      "stagnation": 2,
+      "status": "GREAT_RECOVERY",
+      "model": "xgboost",
       "prev_gen": 3130,
       "prev_brier": 0.22431,
-      "note": "Was gen=3130/brier=0.22431 — factory restart detected, rebuilding from scratch"
+      "note": "REMARKABLE: 0.24471→0.2215 after hard reset (xgboost replaced lightgbm). Now #2 fleet, BETTER than pre-restart brier=0.22431"
     }
   },
   "fleet_best_brier": 0.22012,
   "fleet_best_island": "S15",
+  "fleet_second_brier": 0.2215,
+  "fleet_second_island": "S22",
   "pareto_best_brier": 0.21841,
   "pareto_best_island": "S15",
-  "action_taken": "diversify -> S14 (stagnation=22/25, correct cmd format: {command:diversify})",
+  "action_taken": "SOTA research — MambaNet SSM hybrid (AUC 0.82) + roster-conditioned temporal transformer 25M params. S15 stagnation=13 WATCH.",
   "alerts": [
-    "S14 stagnation=22/25 — diversify sent fire-75",
-    "S17 PAUSED 503 — VM restart overdue 37d+",
-    "S22 FACTORY RESTART DETECTED — was gen=3130 brier=0.22431, now gen=130 brier=0.24471"
+    "S15 stagnation=13 WATCH — approaching threshold >15. Next cycle: DIVERSIFY if >15",
+    "S17 503 DOWN — VM restart overdue 37d+",
+    "S22 GREAT RECOVERY: 0.24471→0.2215 via hard reset (xgboost replaced lightgbm) — now #2 fleet"
   ],
   "political_summary": {
     "all_healthy": true,
     "all_stagnation_zero": true,
     "fleet_best": "P4 brier=0.24992",
-    "rotation_this_cycle": "B"
+    "rotation_this_cycle": "D",
+    "rotation_description": "data pipeline health"
   }
 }
