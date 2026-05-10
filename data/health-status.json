@@ -1,28 +1,27 @@
 {
-  "fire": 81,
-  "timestamp": "2026-05-11T02:00:00Z",
+  "fire": 82,
+  "timestamp": "2026-05-11T06:00:00Z",
   "cycle_type": "4h-cloud-brain",
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "gen": 3067,
+      "gen": 3259,
       "best_brier": 0.22398,
       "stag": 0,
-      "model": "xgboost_brier",
+      "model": "xgboost",
       "status": "healthy"
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "gen": 1283,
-      "best_brier": 0.22336,
-      "stag": 0,
-      "model": "extra_trees",
-      "status": "healthy",
-      "note": "catboost competitive at gen-front (brier 0.22513)"
+      "status": "down_403",
+      "last_known_gen": 1283,
+      "last_known_brier": 0.22336,
+      "last_seen": "fire-81",
+      "action": "vm-restart-s14-fire82 queued priority 1"
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "gen": 1735,
+      "gen": 1838,
       "best_brier": 0.22012,
       "pareto_best": 0.21841,
       "stag": 0,
@@ -32,20 +31,20 @@
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
       "status": "down_503",
-      "action": "vm-restart-s17 pending"
+      "action": "vm-restart-s17 pending (persistent)"
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "gen": 4946,
+      "gen": 5057,
       "best_brier": 0.22315,
-      "stag": 0,
-      "model": "xgboost_brier",
-      "status": "healthy",
-      "note": "fully recovered from stag 19->8->0"
+      "stag": 9,
+      "model": "extra_trees",
+      "status": "WATCH_stag_9",
+      "note": "stag rising 0→9, threshold 15 — diversify if stag>15 next cycle"
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "gen": 652,
+      "gen": 735,
       "best_brier": 0.22551,
       "stag": 0,
       "model": "extra_trees",
@@ -60,7 +59,7 @@
   "political_islands": {
     "P1": {
       "space": "Nomos42/political-alpha",
-      "gen": 40856,
+      "gen": 41778,
       "best_brier": 0.2499,
       "stag": 0,
       "model": "xgboost_brier",
@@ -68,57 +67,59 @@
     },
     "P2": {
       "space": "Nomos42/political-alpha-2",
-      "status": "down_403",
-      "last_known_gen": 36069,
-      "last_known_brier": 0.25003,
-      "last_seen": "fire-79",
-      "action": "restart queued in work-queue as cloud-restart-p2-fire81"
+      "gen": 37257,
+      "best_brier": 0.25003,
+      "stag": 0,
+      "model": "xgboost_brier",
+      "status": "self_recovered",
+      "note": "was 403 DOWN at fire-81, self-recovered — cloud-restart-p2-fire81 marked done"
     },
     "P4": {
       "space": "LBJLincoln/political-alpha-4",
-      "gen": 62829,
+      "gen": 63582,
       "best_brier": 0.24992,
       "alltime_best": 0.24904,
       "stag": 0,
-      "model": "xgboost_brier",
+      "model": "lightgbm",
       "status": "pol_fleet_best"
     },
     "P5": {
       "space": "LBJLincoln/political-alpha-5",
-      "gen": 51671,
+      "gen": 52401,
       "best_brier": 0.24993,
       "stag": 0,
       "model": "xgboost_brier",
-      "status": "healthy_recovered",
-      "note": "self-recovered since fire-79 cert error — vm-restart-p5-fire79 marked done"
+      "status": "healthy"
     },
     "P7": {
       "space": "LBJLincoln/political-alpha-7",
-      "gen": 49659,
+      "gen": 50733,
       "best_brier": 0.25412,
       "stag": 0,
       "model": "lightgbm",
-      "status": "healthy_worst_pol"
+      "status": "saving_stable"
     }
   },
   "pol_fleet_best": 0.24904,
   "pol_stagnation_alert": false,
   "actions_taken": [
-    "P5 self-recovered (cert error resolved) — vm-restart-p5-fire79 marked done in work-queue",
-    "P2 403 Forbidden NEW — restart queued as cloud-restart-p2-fire81 (priority 1)",
-    "No diversify commands needed — all active islands stag=0",
-    "No new NBA checkpoint — fleet best still 0.22012, threshold 0.22085"
+    "P2 self-recovered (403→EVOLVING gen=37257 brier=0.25003) — cloud-restart-p2-fire81 marked done in work-queue",
+    "S14 NEW 403 DOWN — vm-restart-s14-fire82 added to work-queue priority 1",
+    "S18 stag=9 WATCH — no diversify (threshold 15), escalate if stag>15 at fire-83",
+    "S17 still 503 DOWN — vm-restart-s17 persists in work-queue",
+    "SOTA: IEEE 2026 NBA ML comparison catalogued — fire82 research proposal written",
+    "Rotation D: political data pipeline health audit complete"
   ],
   "pending_vm_items": [
-    "vm-restart-s17 (503 DOWN)",
-    "cloud-restart-p2-fire81 (403 DOWN)",
-    "engine-parity-sync (+54KB delta)",
+    "vm-restart-s14-fire82 (NEW 403 DOWN — Nomos42/nba-evo-5)",
+    "vm-restart-s17 (503 DOWN persistent)",
+    "engine-parity-sync (+54KB delta — MISMATCH still open)",
+    "fix-pol-engine-placeholder (BLOCKING Rotation B — OVERDUE 150h+)",
     "vm-add-logistic-regression-model-pool",
     "vm-p7-extra-trees-trial",
     "vm-fec-sec-political-features",
-    "fix-pol-engine-placeholder (BLOCKING Rotation B)",
-    "vm-fix-diversify-command-format",
-    "vm-restart-political-data-crons"
+    "vm-restart-political-data-crons (URGENT — Rotation D)",
+    "vm-fix-diversify-command-format"
   ],
-  "sota_research": "data/research-proposals/fire81-stacked-neural-ensemble-2026-05-11.md"
+  "sota_research": "data/research-proposals/fire82-ieee-nba-ml-comparison-2026-05-11.md"
 }
