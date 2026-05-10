@@ -1,157 +1,124 @@
 {
-  "cycle": "fire-79",
-  "timestamp": "2026-05-10T22:00:00Z",
+  "fire": 81,
+  "timestamp": "2026-05-11T02:00:00Z",
+  "cycle_type": "4h-cloud-brain",
   "nba_islands": {
     "S13": {
-      "space": "nomos42/nba-evo-4",
-      "gen": 2870,
+      "space": "Nomos42/nba-evo-4",
+      "gen": 3067,
       "best_brier": 0.22398,
-      "stagnation": 0,
-      "model": "xgboost",
-      "status": "HEALTHY",
-      "note": "stag 13→0 ✓ fully recovered from fire-78 WATCH"
+      "stag": 0,
+      "model": "xgboost_brier",
+      "status": "healthy"
     },
     "S14": {
-      "space": "nomos42/nba-evo-5",
-      "gen": 1206,
+      "space": "Nomos42/nba-evo-5",
+      "gen": 1283,
       "best_brier": 0.22336,
-      "stagnation": 0,
+      "stag": 0,
       "model": "extra_trees",
-      "status": "HEALTHY",
-      "note": "stable, 44 features"
+      "status": "healthy",
+      "note": "catboost competitive at gen-front (brier 0.22513)"
     },
     "S15": {
-      "space": "nomos42/nba-evo-6",
-      "gen": 1624,
+      "space": "Nomos42/nba-evo-6",
+      "gen": 1735,
       "best_brier": 0.22012,
-      "stagnation": 0,
-      "model": "extra_trees",
-      "status": "FLEET_BEST",
-      "note": "stag 7→0 ✓ hard reset cycle 526 cleared stagnation. FLEET BEST 0.22012 ★. PARETO BEST 0.21841 gen=566."
+      "pareto_best": 0.21841,
+      "stag": 0,
+      "model": "random_forest",
+      "status": "fleet_best"
     },
     "S17": {
-      "space": "lbjlincoln26/nba-evo-s17",
-      "gen": null,
-      "best_brier": null,
-      "stagnation": null,
-      "model": null,
-      "status": "DOWN_503",
-      "note": "503 DOWN — VM restart OVERDUE. See work-queue vm-restart-s17."
+      "space": "LBJLincoln26/nba-evo-s17",
+      "status": "down_503",
+      "action": "vm-restart-s17 pending"
     },
     "S18": {
-      "space": "testforge42/nba-evo-s18",
-      "gen": 4827,
+      "space": "TESTforge42/nba-evo-s18",
+      "gen": 4946,
       "best_brier": 0.22315,
-      "stagnation": 8,
+      "stag": 0,
       "model": "xgboost_brier",
-      "status": "RECOVERING",
-      "note": "stag 19→8 ✓ VM diversified or self-recovered. Still below 15 threshold."
+      "status": "healthy",
+      "note": "fully recovered from stag 19->8->0"
     },
     "S22": {
-      "space": "testforge42/nba-evo-s22",
-      "gen": 588,
+      "space": "TESTforge42/nba-evo-s22",
+      "gen": 652,
       "best_brier": 0.22551,
-      "stagnation": 0,
+      "stag": 0,
       "model": "extra_trees",
-      "status": "RECOVERING",
-      "note": "Post hard-reset (cycle 165). best regressed 0.2215→0.22551 — another reset occurred. Slow recovery continuing."
+      "status": "healthy"
     }
   },
-  "nba_summary": {
-    "fleet_best_brier": 0.22012,
-    "fleet_best_island": "S15",
-    "target_brier": 0.20,
-    "checkpoint_threshold": 0.22085,
-    "new_checkpoint_this_cycle": false,
-    "islands_healthy": ["S13", "S14", "S15"],
-    "islands_recovering": ["S18", "S22"],
-    "islands_down": ["S17"],
-    "diversify_sent": [],
-    "diversify_pending_vm": []
-  },
+  "nba_fleet_best": 0.22012,
+  "nba_pareto_best": 0.21841,
+  "nba_stagnation_alert": false,
+  "nba_new_checkpoint": false,
+  "nba_diversify_sent": false,
   "political_islands": {
     "P1": {
-      "space": "nomos42/political-alpha",
-      "gen": 39973,
+      "space": "Nomos42/political-alpha",
+      "gen": 40856,
       "best_brier": 0.2499,
-      "stagnation": 0,
+      "stag": 0,
       "model": "xgboost_brier",
-      "status": "HEALTHY"
+      "status": "healthy"
     },
     "P2": {
-      "space": "nomos42/political-alpha-2",
-      "gen": 36069,
-      "best_brier": 0.25003,
-      "stagnation": 0,
-      "model": "xgboost_brier",
-      "status": "HEALTHY",
-      "note": "alltime=0.24902"
+      "space": "Nomos42/political-alpha-2",
+      "status": "down_403",
+      "last_known_gen": 36069,
+      "last_known_brier": 0.25003,
+      "last_seen": "fire-79",
+      "action": "restart queued in work-queue as cloud-restart-p2-fire81"
     },
     "P4": {
-      "space": "lbjlincoln/political-alpha-4",
-      "gen": 62148,
+      "space": "LBJLincoln/political-alpha-4",
+      "gen": 62829,
       "best_brier": 0.24992,
-      "stagnation": 0,
+      "alltime_best": 0.24904,
+      "stag": 0,
       "model": "xgboost_brier",
-      "status": "FLEET_BEST",
-      "note": "alltime=0.24904"
+      "status": "pol_fleet_best"
     },
     "P5": {
-      "space": "lbjlincoln/political-alpha-5",
-      "gen": null,
-      "best_brier": null,
-      "stagnation": null,
-      "model": null,
-      "status": "DOWN_CERT_ERROR",
-      "note": "SSL certificate not yet valid — space rebuilding. VM restart needed. See work-queue vm-restart-p5-fire79."
+      "space": "LBJLincoln/political-alpha-5",
+      "gen": 51671,
+      "best_brier": 0.24993,
+      "stag": 0,
+      "model": "xgboost_brier",
+      "status": "healthy_recovered",
+      "note": "self-recovered since fire-79 cert error — vm-restart-p5-fire79 marked done"
     },
     "P7": {
-      "space": "lbjlincoln/political-alpha-7",
-      "gen": 48606,
+      "space": "LBJLincoln/political-alpha-7",
+      "gen": 49659,
       "best_brier": 0.25412,
-      "stagnation": 0,
+      "stag": 0,
       "model": "lightgbm",
-      "status": "HEALTHY",
-      "note": "worst POL island — extra_trees cross-port vm-p7-extra-trees-trial pending"
+      "status": "healthy_worst_pol"
     }
   },
-  "political_summary": {
-    "fleet_best_brier": 0.24992,
-    "fleet_best_island": "P4",
-    "all_time_best": 0.24904,
-    "all_time_best_island": "P4",
-    "p5_down": true,
-    "all_healthy": false,
-    "rotation": "B",
-    "rotation_focus": "political_engine.py review",
-    "rotation_a_completed": "fetch_fec_sec_features.py created cloud-side (fire-79) — SEC Form4 + FEC PAC flow features"
-  },
-  "sota_research": {
-    "finding": "CNN model Brier 0.221 (MDPI 2025) — slightly above fleet best 0.22012; spatial shot-chart embeddings (MC-dropout LSTM, MDPI 2026) are first sub-0.20 architecture",
-    "relevance": "Shot-chart spatial features unrepresented in current engine; MC-dropout uncertainty quantification for calibrated Kelly sizing",
-    "proposal_file": "data/research-proposals/shot-chart-spatial-embeddings-2026-05-10.md"
-  },
-  "cross_project_action": "Rotation A: scripts/fetch_fec_sec_features.py written to nomos-political-alpha — FEC PAC flows by sector + SEC Form 4 insider trading → political GA features",
+  "pol_fleet_best": 0.24904,
+  "pol_stagnation_alert": false,
   "actions_taken": [
-    "health-status.json written (fire-79)",
-    "work-queue.json updated: fire-79 entry + vm-restart-p5-fire79 + vm-s18-diversify-urgent marked done",
-    "CLAUDE.md updated: island tables at 22h",
-    "brain-status.json written to nomos-political-alpha (rotation A→B)",
-    "scripts/fetch_fec_sec_features.py created in nomos-political-alpha (Rotation A concrete action)",
-    "research proposal: shot-chart-spatial-embeddings-2026-05-10.md written"
+    "P5 self-recovered (cert error resolved) — vm-restart-p5-fire79 marked done in work-queue",
+    "P2 403 Forbidden NEW — restart queued as cloud-restart-p2-fire81 (priority 1)",
+    "No diversify commands needed — all active islands stag=0",
+    "No new NBA checkpoint — fleet best still 0.22012, threshold 0.22085"
   ],
-  "actions_pending_vm": [
-    "P5 restart (SSL cert error DOWN — URGENT, vm-restart-p5-fire79)",
-    "S17 restart (503 DOWN — OVERDUE, vm-restart-s17)",
-    "fix-pol-engine-placeholder (194KB, 120h+ pending)",
-    "vm-fec-sec-political-features: run fetch_fec_sec_features.py to generate actual data",
-    "vm-add-logistic-regression-model-pool (priority 50)",
-    "vm-p7-extra-trees-trial (priority 55)"
+  "pending_vm_items": [
+    "vm-restart-s17 (503 DOWN)",
+    "cloud-restart-p2-fire81 (403 DOWN)",
+    "engine-parity-sync (+54KB delta)",
+    "vm-add-logistic-regression-model-pool",
+    "vm-p7-extra-trees-trial",
+    "vm-fec-sec-political-features",
+    "fix-pol-engine-placeholder (BLOCKING Rotation B)",
+    "vm-fix-diversify-command-format",
+    "vm-restart-political-data-crons"
   ],
-  "next_cycle_watch": [
-    "S18 stagnation=8 — DIVERSIFY if >15",
-    "S22 best_brier: should improve toward 0.22315 as recovery continues",
-    "P5: should be back online after VM restart",
-    "P4 alltime 0.24904: watch for new POL fleet best breakthrough"
-  ]
+  "sota_research": "data/research-proposals/fire81-stacked-neural-ensemble-2026-05-11.md"
 }

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-10T22:00:00Z",
+  "updated_at": "2026-05-11T02:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -41,8 +41,8 @@
       "owner": "local-vm",
       "subject": "URGENT: political_engine.py both files = placeholder. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
       "detected_at": "2026-05-06T20:00:00Z",
-      "updated_at": "2026-05-10T22:00:00Z",
-      "cloud_brain_note": "fire-79: STILL PENDING 120h+. File is 194KB cannot be safely restored cloud-side. VM must run this. BLOCKING: political engine may be degraded without this fix. Rotation B (political_engine.py review) blocked on this.",
+      "updated_at": "2026-05-11T02:00:00Z",
+      "cloud_brain_note": "fire-81: STILL PENDING 150h+. File is 194KB cannot be safely restored cloud-side. VM must run this. BLOCKING: Rotation B (political_engine.py review) blocked on this.",
       "do_not_push": false
     },
     {
@@ -66,14 +66,24 @@
       "do_not_push_hf_space_yet": true
     },
     {
-      "id": "vm-restart-p5-fire79",
+      "id": "cloud-restart-p2-fire81",
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart P5 (LBJLincoln/political-alpha-5) — SSL certificate error (DOWN)",
-      "detected_at": "2026-05-10T22:00:00Z",
-      "cloud_brain_note": "fire-79: P5 returned 'certificate is not yet valid' at /api/status. Space may be rebuilding or SSL cert expired. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln/political-alpha-5')\"",
+      "subject": "Restart P2 (Nomos42/political-alpha-2) — 403 Forbidden DOWN",
+      "detected_at": "2026-05-11T02:00:00Z",
+      "cloud_brain_note": "fire-81: P2 returned 403 Forbidden at /api/status (was gen=36069 brier=0.25003 at fire-79). Space may be paused or HF infrastructure issue. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('Nomos42/political-alpha-2')\"",
       "do_not_push": false
+    },
+    {
+      "id": "vm-restart-p5-fire79",
+      "priority": 1,
+      "status": "done",
+      "owner": "local-vm",
+      "completed_at": "2026-05-11T02:00:00Z",
+      "completed_by": "cloud-brain-fire-81",
+      "subject": "Restart P5 (LBJLincoln/political-alpha-5) — SSL certificate error (DOWN)",
+      "result": "fire-81: P5 self-recovered — returned gen=51671 brier=0.24993 stag=0 at /api/status. SSL cert resolved on its own. No VM action needed."
     },
     {
       "id": "vm-restart-s17-2026-05-03T22h",
@@ -81,7 +91,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 37+ days",
-      "cloud_brain_note": "fire-79: S17 still 503. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
+      "cloud_brain_note": "fire-81: S17 still 503. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
       "do_not_push": false
     },
     {
@@ -99,7 +109,7 @@
       "owner": "local-vm",
       "subject": "Investigate S22 (TESTforge42/nba-evo-s22) repeated resets — multiple uncontrolled restarts",
       "detected_at": "2026-05-10T10:00:00Z",
-      "cloud_brain_note": "fire-79: S22 gen=588 brier=0.22551 stag=0, recovering. Another reset occurred between fire-77 (best=0.2215) and fire-78 (best=0.22551). Root cause investigation still valuable to prevent future uncontrolled restarts.",
+      "cloud_brain_note": "fire-81: S22 gen=652 brier=0.22551 stag=0, stable. Root cause investigation still valuable.",
       "do_not_push": false
     },
     {
@@ -148,7 +158,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation) + add roster continuity features (fire-77 SOTA)",
-      "cloud_brain_note": "fire-79: mismatch persists. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 char delta. fire-77 SOTA adds 3 roster continuity features: lineup_continuity_score_7d, player_availability_index, rotation_depth_score.",
+      "cloud_brain_note": "fire-81: mismatch persists. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 char delta. fire-77 SOTA adds 3 roster continuity features: lineup_continuity_score_7d, player_availability_index, rotation_depth_score.",
       "do_not_push": false
     },
     {
@@ -157,10 +167,10 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add logistic_regression + svm_platt to MODEL_TYPES on island app.py files (S14 first, then S13/S18/S22 and P7)",
-      "cloud_brain_note": "fire-79: S14 stag=0 healthy — safe to add LR+SVM now. fire-75 SOTA VALIDATION: MDPI 2026 LR achieves Brier 0.199 = best tabular baseline.",
+      "cloud_brain_note": "fire-81: S14 stag=0 healthy — safe to add LR+SVM now. fire-75 SOTA VALIDATION: MDPI 2026 LR achieves Brier 0.199 = best tabular baseline. fire-81 SOTA adds: stacked_ensemble (LR meta on XGB+ET+LGBM base) recommended — see fire81-stacked-neural-ensemble-2026-05-11.md",
       "do_not_push": false,
       "detected_at": "2026-05-09T18:00:00Z",
-      "updated_at": "2026-05-10T22:00:00Z"
+      "updated_at": "2026-05-11T02:00:00Z"
     },
     {
       "id": "vm-p7-extra-trees-trial",
@@ -169,7 +179,7 @@
       "owner": "local-vm",
       "subject": "Cross-project port: add extra_trees to P7 (LBJLincoln/political-alpha-7) model pool",
       "detected_at": "2026-05-10T18:00:00Z",
-      "cloud_brain_note": "fire-79: P7 brier=0.25412 still worst POL. NBA evidence: S15+S14 extra_trees = fleet best. Low risk port. Prioritise after P5 restart.",
+      "cloud_brain_note": "fire-81: P7 brier=0.25412 still worst POL. NBA evidence: S15+S14 extra_trees = fleet best. Rotation C active. Add stacked_ensemble simultaneously (see fire81 SOTA proposal). Prioritise after P2 restart.",
       "do_not_push": false
     },
     {
@@ -187,7 +197,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Fix diversify command format: action->command in all VM scripts",
-      "cloud_brain_note": "fire-79: still pending. Correct call: POST /api/command {command:diversify}.",
+      "cloud_brain_note": "fire-81: still pending. Correct call: POST /api/command {command:diversify}.",
       "do_not_push": false
     },
     {
@@ -198,7 +208,7 @@
       "subject": "Run nomos-political-alpha/scripts/fetch_fec_sec_features.py to generate FEC PAC + SEC Form4 feature data",
       "do_not_push": false,
       "detected_at": "2026-05-09T22:00:00Z",
-      "cloud_brain_note": "fire-79 Rotation A DONE (cloud): fetch_fec_sec_features.py created in nomos-political-alpha/scripts/. VM must RUN it to generate actual feature data: cd nomos-political-alpha && python scripts/fetch_fec_sec_features.py. Outputs to data/fec/features/. Adds ~15 new features for GA (PAC sector flows + Form4 insider sentiment)."
+      "cloud_brain_note": "fire-81: Rotation A DONE (cloud): fetch_fec_sec_features.py created in nomos-political-alpha/scripts/. VM must RUN it to generate actual feature data: cd nomos-political-alpha && python scripts/fetch_fec_sec_features.py. Outputs to data/fec/features/. Adds ~15 new features for GA (PAC sector flows + Form4 insider sentiment)."
     },
     {
       "id": "R8",
@@ -216,6 +226,15 @@
       "commit_hash": "61c4b61394e2381ab0e1702f0581c292055b235c",
       "owner": "local-agent-a63b2bad",
       "subject": "Deploy S20/S21/S22 NBA islands."
+    },
+    {
+      "id": "cloud-brain-fire81-2026-05-11T02h",
+      "priority": 113,
+      "status": "done",
+      "completed_at": "2026-05-11T02:00:00Z",
+      "completed_by": "cloud-brain-fire-81",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-81: S13 gen=3067 stag=0 ✓, S14 gen=1283 stag=0 ✓ catboost competitive, S15 gen=1735 stag=0 ✓ RF current best / fleet best 0.22012, S18 gen=4946 stag=0 ✓ FULLY RECOVERED (was 8), S22 gen=652 stag=0 ✓. NBA all healthy. P1 gen=40856 stag=0 ✓, P2 🔴 403 DOWN — restart queued, P4 gen=62829 stag=0 ✓ POL FLEET BEST, P5 gen=51671 stag=0 ✓ SELF-RECOVERED (was CERT ERROR), P7 gen=49659 stag=0 ✓. Rotation C active (B blocked). SOTA: stacked ensemble MLP meta (Sci Reports 2025) + LSTM/Transformer basketball (arXiv 2508.02725) + CNN Brier 0.221 (MDPI). S17 still 503 DOWN."
     },
     {
       "id": "cloud-trigger-axelrod-fire-80-2026-05-10",
