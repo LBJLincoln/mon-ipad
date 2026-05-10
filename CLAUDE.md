@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-11T02h
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-11T06h
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -45,18 +45,18 @@ HF EVOLUTION ISLANDS — 11 SURVIVORS (6 NBA + 5 POL) after 2026-04-17 cull
     Eliminated slots now host selfhost LLMs on LBJLincoln/LBJLincoln26/TESTforge42.
 
     NBA Survivors (6, CPU tree-only, MAX_FEATURES=200):
-    ├── S13 Nomos42/nba-evo-4:        xgboost_brier       gen=3067  brier=0.22398  stagnation=0 ✓ stable (2026-05-11T02h)
-    ├── S14 Nomos42/nba-evo-5:        extra_trees         gen=1283  brier=0.22336  stagnation=0 ✓ stable catboost competitive at gen-front (2026-05-11T02h)
-    ├── S15 Nomos42/nba-evo-6:        random_forest       gen=1735  best=0.22012   stagnation=0 ✓ ★ FLEET BEST ⚡PARETO BEST 0.21841 gen=566 (2026-05-11T02h)
-    ├── S17 LBJLincoln26/nba-evo-s17: xgboost             gen=---   brier=---      🔴 503 DOWN — VM restart OVERDUE (2026-05-11T02h)
-    ├── S18 TESTforge42/nba-evo-s18:  xgboost_brier       gen=4946  brier=0.22315  stagnation=0 ✓ fully recovered stag 19→8→0 (2026-05-11T02h)
-    └── S22 TESTforge42/nba-evo-s22:  extra_trees         gen=652   brier=0.22551  stagnation=0 ✓ stable (2026-05-11T02h)
+    ├── S13 Nomos42/nba-evo-4:        xgboost             gen=3259  brier=0.22398  stagnation=0 ✓ stable (2026-05-11T06h)
+    ├── S14 Nomos42/nba-evo-5:        extra_trees         gen=---   brier=---      🔴 403 DOWN — VM restart queued fire-82 (was gen=1283 brier=0.22336) (2026-05-11T06h)
+    ├── S15 Nomos42/nba-evo-6:        random_forest       gen=1838  best=0.22012   stagnation=0 ✓ ★ FLEET BEST ⚡PARETO BEST 0.21841 gen=566 (2026-05-11T06h)
+    ├── S17 LBJLincoln26/nba-evo-s17: xgboost             gen=---   brier=---      🔴 503 DOWN — VM restart OVERDUE (2026-05-11T06h)
+    ├── S18 TESTforge42/nba-evo-s18:  extra_trees         gen=5057  brier=0.22315  stagnation=9 ⚠ WATCH approaching threshold 15 (2026-05-11T06h)
+    └── S22 TESTforge42/nba-evo-s22:  extra_trees         gen=735   brier=0.22551  stagnation=0 ✓ stable (2026-05-11T06h)
     Political Survivors (5, CPU tree-only):
-    ├── P1 Nomos42/political-alpha:      xgboost_brier       gen=40856  brier=0.2499   stagnation=0 ✓ stable (2026-05-11T02h)
-    ├── P2 Nomos42/political-alpha-2:    xgboost_brier       gen=---    brier=---      🔴 403 DOWN — restart queued (last known gen=36069 brier=0.25003) (2026-05-11T02h)
-    ├── P4 LBJLincoln/political-alpha-4: xgboost_brier       gen=62829  brier=0.24992  stagnation=0 ★ POL FLEET BEST alltime=0.24904 (2026-05-11T02h)
-    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier       gen=51671  brier=0.24993  stagnation=0 ✓ SELF-RECOVERED was CERT ERROR fire-79 (2026-05-11T02h)
-    └── P7 LBJLincoln/political-alpha-7: lightgbm            gen=49659  brier=0.25412  stagnation=0 Rotation C: extra_trees+stacked_ensemble port queued (B blocked) (2026-05-11T02h)
+    ├── P1 Nomos42/political-alpha:      xgboost_brier       gen=41778  brier=0.2499   stagnation=0 ✓ stable (2026-05-11T06h)
+    ├── P2 Nomos42/political-alpha-2:    xgboost_brier       gen=37257  brier=0.25003  stagnation=0 ✓ SELF-RECOVERED (was 403 DOWN at fire-81) (2026-05-11T06h)
+    ├── P4 LBJLincoln/political-alpha-4: lightgbm            gen=63582  brier=0.24992  stagnation=0 ★ POL FLEET BEST alltime=0.24904 (2026-05-11T06h)
+    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier       gen=52401  brier=0.24993  stagnation=0 ✓ stable (2026-05-11T06h)
+    └── P7 LBJLincoln/political-alpha-7: lightgbm            gen=50733  brier=0.25412  stagnation=0 Rotation D: data pipeline health; Rotation C queued: extra_trees+stacked_ensemble (2026-05-11T06h)
 
 SELFHOST LLM FLEET (6 RUNNING, 2 building — 2026-04-19 20:55 UTC)
     LBJLincoln   (3 RUNNING): qwen25-05b-cpu, gemma2-2b-cpu, phi35-mini-cpu
