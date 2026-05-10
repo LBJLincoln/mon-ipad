@@ -1,1 +1,1 @@
-CONTENT_FROM_FILE_BELOW
+placeholder_nba
