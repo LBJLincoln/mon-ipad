@@ -1,1 +1,61 @@
-placeholder_wq
+{
+  "version": 1,
+  "updated_at": "2026-05-11T08:00:00Z",
+  "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
+  "items": [
+    {
+      "id": "vm-s18-diversify-urgent",
+      "priority": 0,
+      "status": "done",
+      "owner": "local-vm",
+      "completed_at": "2026-05-10T22:00:00Z",
+      "completed_by": "cloud-brain-fire-79",
+      "subject": "URGENT: S18 stagnation=19 > threshold 15. Diversify.",
+      "result": "fire-79: S18 stag confirmed 19→8 — VM executed diversify or S18 self-recovered. Marking done."
+    },
+    {
+      "id": "fix-pol-engine-placeholder",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "URGENT: political_engine.py both files = placeholder. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
+      "detected_at": "2026-05-06T20:00:00Z",
+      "updated_at": "2026-05-11T06:00:00Z",
+      "cloud_brain_note": "fire-82: STILL PENDING 156h+. File is 194KB cannot be safely restored cloud-side. VM must run this. BLOCKING: Rotation B (political_engine.py review) blocked on this. CRITICAL — escalate.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-restart-s14-fire82",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Restart S14 (Nomos42/nba-evo-5) — 403 DOWN, NEW this cycle (fire-82)",
+      "detected_at": "2026-05-11T06:00:00Z",
+      "cloud_brain_note": "fire-82: S14 returned 403 at /api/status (was gen=1283 brier=0.22336 stag=0 at fire-81). VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('Nomos42/nba-evo-5')\"",
+      "do_not_push": false
+    },
+    {
+      "id": "cloud-trigger-axelrod-fire-82-2026-05-11",
+      "priority": 114,
+      "status": "done",
+      "completed_at": "2026-05-11T08:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-82",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-82: verify+tune Axelrod Mech A — added trailing-7d-delta (7dΔ) to CK leaderboard in build_common_knowledge_block (both NBA+POL). Agents now see per-peer 7d momentum alongside GF in COMMON_KNOWLEDGE[D] block, surfacing who is trending hot/cold before Mech B sacrifice assignments run. NBA 5873→5874L | POL 3855→3856L | py_compile PASS both. All 3 mechs (A/B/C) verified at parity. do_not_push_hf_space_yet.",
+      "do_not_push_hf_space_yet": true
+    }
+  ],
+  "recovery_protocol": {
+    "on_brain_wake": [
+      "Read this file.",
+      "Pick lowest-priority pending item owned by cloud; do the scope; commit.",
+      "VM-owned items: skip, they are queued for the VM cron.",
+      "Update this file: set status=done + commit_hash + completed_at OR status=blocked + reason."
+    ],
+    "on_cli_resume": [
+      "CLI reads this file first.",
+      "Skips items with status=done.",
+      "Re-dispatches status=pending items whose local-agent has not committed in 30 min."
+    ]
+  }
+}
