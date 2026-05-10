@@ -13,7 +13,7 @@ concludes in June 2026.
 ### C.1.1  Timeline
 
 | Phase | Period | Purpose |
-|-------|--------|---------|
+|-------|--------|----------|
 | Archetype pilot | 2024–25 NBA season (Oct 2024 – Jun 2025) | Measure pairwise $\hat{\epsilon}_{\text{arch}}$; tune $\delta_{\text{sac}}$, $W$, $W_{\text{persist}}$ |
 | Pre-registration | 2025-10-01 | Hypotheses H1–H4 locked; SHA-256 recorded at tag `preregistration-v1` |
 | **Condition A** (Full SRR) — *live* | 2025-10-14 – 2026-06-20 | 175 NBA trading days; 90 political event days; primary treatment |
@@ -126,25 +126,41 @@ per-archetype temperature sweep is deferred to future work.]**
 
 The temperature sweep in C.3.1–C.3.2 uses T4 (Gemini 3 Flash Preview,
 managed inference via Google API) as the representative agent.
-For managed-inference providers, the API `temperature` parameter is
-processed downstream of instruction-following fine-tuning; the relationship
-between `temperature` and token-logit variance is non-linear and
-provider-specific [@ouyang2022training]. In particular, Gemini 3 Flash
-applies an internal scaling layer that may compress the effective
-temperature range relative to the nominal parameter value.
+Two structurally distinct mechanisms cause managed-inference models to
+respond to the `temperature` parameter differently from self-hosted models:
 
-The self-hosted agent T12 (Qwen3-4B-CPU, served via llama.cpp) does not
-apply this scaling layer: `temperature` maps directly to the softmax
-inverse-temperature applied to raw model logits. Consequently, $\tau = 0.7$
-may correspond to systematically lower stochasticity for T12 than for T4
-under the same parameter value, potentially under-exploring the prediction
-space for the *disciplined* archetype.
+**(a) RLHF-induced distribution sharpening.** Instruction-following
+fine-tuning via reinforcement learning from human feedback (RLHF)
+concentrates logit probability mass on tokens consistent with alignment
+objectives [@ouyang2022training]. Because the pre-softmax logit spread
+narrows during RLHF, the *effective* sample entropy at a given $\tau$
+is lower for an instruction-tuned model than for a base model of the
+same scale — not because temperature is applied differently, but because
+the input logit distribution is already sharper. This effect is
+model-scale- and training-recipe-dependent and cannot be characterised
+from the API alone.
 
-**Planned follow-up** (deferred to future work, not part of the
-pre-registered experimental protocol): a matching temperature sweep on T12
-across $\tau \in \{0.30, 0.50, 0.70, 0.90, 1.10\}$ on the same 20-game
+**(b) Provider-specific sampling pipeline.** Several managed-inference
+APIs apply top-$k$ or nucleus top-$p$ sampling *after* temperature
+scaling but before token emission, further constraining the output
+distribution beyond what $\tau$ alone specifies. Gemini 3 Flash applies
+such a filtering step; the exact cutoffs are undisclosed, making the
+effective generation entropy provider-dependent at identical $\tau$ values.
+
+The self-hosted agent T12 (Qwen3-4B-CPU, served via llama.cpp) is
+subject to neither effect in the same way: Qwen3-4B uses a lighter
+alignment procedure than frontier instruction-tuned models, and llama.cpp
+applies temperature directly to raw model logits with no implicit top-$k$
+filtering unless explicitly configured. As a result, $\tau = 0.7$ may
+correspond to substantially higher effective generation entropy for T12
+than for T4, potentially *over*-exploring the prediction space for the
+*disciplined* archetype relative to design intent.
+
+**Planned follow-up** (deferred to future work, outside the pre-registered
+protocol): a matching temperature sweep on T12 across
+$\tau \in \{0.30, 0.50, 0.70, 0.90, 1.10\}$ on the same 20-game
 held-out subset, with results compared to T4. If a substantially different
-optimal temperature is identified for T12, the self-hosted agent will be
+optimal $\tau$ is identified for T12, the self-hosted agent will be
 assigned a distinct temperature in the retrospective replay conditions
 (B–E), with a sensitivity analysis testing whether the $\tau$ choice
 materially affects the SRR vs.\ Fixed Ensemble comparison.
