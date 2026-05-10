@@ -4,6 +4,16 @@
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
+      "id": "vm-s18-diversify-urgent",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "URGENT: S18 stagnation=19 > threshold 15. Diversify immediately.",
+      "detected_at": "2026-05-10T18:00:00Z",
+      "cloud_brain_note": "fire-78: stagnation jumped 6→19 in one 4h window. Cloud brain cannot POST directly. VM: curl -X POST https://testforge42-nba-evo-s18.hf.space/api/command -H 'Content-Type: application/json' -d '{\"command\":\"diversify\"}'",
+      "do_not_push": false
+    },
+    {
       "id": "repair-pol-tf-fire67",
       "priority": 0,
       "status": "done",
@@ -31,8 +41,8 @@
       "owner": "local-vm",
       "subject": "URGENT: political_engine.py both files = placeholder. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
       "detected_at": "2026-05-06T20:00:00Z",
-      "updated_at": "2026-05-10T14:00:00Z",
-      "cloud_brain_note": "fire-77: STILL PENDING 100h+. File is 194KB cannot be safely restored cloud-side. VM must run this.",
+      "updated_at": "2026-05-10T18:00:00Z",
+      "cloud_brain_note": "fire-78: STILL PENDING 100h+. File is 194KB cannot be safely restored cloud-side. VM must run this. BLOCKING: political engine may be degraded without this fix.",
       "do_not_push": false
     },
     {
@@ -61,7 +71,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 37+ days",
-      "cloud_brain_note": "fire-77: S17 still 503. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
+      "cloud_brain_note": "fire-78: S17 still 503. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
       "do_not_push": false
     },
     {
@@ -79,7 +89,7 @@
       "owner": "local-vm",
       "subject": "Investigate S22 (TESTforge42/nba-evo-s22) unexpected restart — was gen=3130/brier=0.22431, now recovering",
       "detected_at": "2026-05-10T10:00:00Z",
-      "cloud_brain_note": "fire-77: S22 SELF-RECOVERED via hard reset at cycle 77 (xgboost replaced lightgbm), now gen=310 brier=0.2215 — BETTER than pre-restart 0.22431. Investigation still valuable to prevent future uncontrolled restarts, but no longer urgent. VM: check Space logs to understand factory restart root cause.",
+      "cloud_brain_note": "fire-78: S22 at gen=485 brier=0.22551, still recovering toward pre-reset 0.22431. Stag=0 healthy. Investigation still valuable to prevent future uncontrolled restarts. VM: check Space logs.",
       "do_not_push": false
     },
     {
@@ -128,7 +138,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation) + add roster continuity features (fire-77 SOTA)",
-      "cloud_brain_note": "fire-77: mismatch persists. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 char delta. fire-77 SOTA adds 3 roster continuity features to add: lineup_continuity_score_7d, player_availability_index, rotation_depth_score.",
+      "cloud_brain_note": "fire-78: mismatch persists. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 char delta. fire-77 SOTA adds 3 roster continuity features: lineup_continuity_score_7d, player_availability_index, rotation_depth_score.",
       "do_not_push": false
     },
     {
@@ -137,10 +147,20 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add logistic_regression + svm_platt to MODEL_TYPES on island app.py files (S14 first, then S13/S18/S22 and P7)",
-      "cloud_brain_note": "fire-75 SOTA VALIDATION: MDPI 2026 LR achieves Brier 0.199 = best tabular baseline. fire-77: S14 now recovered stag=0, good time for model pool expansion.",
+      "cloud_brain_note": "fire-75 SOTA VALIDATION: MDPI 2026 LR achieves Brier 0.199 = best tabular baseline. fire-78: S14 stag=0 healthy, S18 pending diversify first before model pool change.",
       "do_not_push": false,
       "detected_at": "2026-05-09T18:00:00Z",
-      "updated_at": "2026-05-10T14:00:00Z"
+      "updated_at": "2026-05-10T18:00:00Z"
+    },
+    {
+      "id": "vm-p7-extra-trees-trial",
+      "priority": 55,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Cross-project port: add extra_trees to P7 (LBJLincoln/political-alpha-7) model pool",
+      "detected_at": "2026-05-10T18:00:00Z",
+      "cloud_brain_note": "fire-78: NBA fleet shows extra_trees dominant — S15 fleet best 0.22012, S14 stag=0 fastest recovery (both extra_trees). P7 uses lightgbm and has worst POL brier 0.25412. Cross-project port: add extra_trees to P7 MODEL_TYPES or mutate primary to extra_trees. Low risk — same GA framework.",
+      "do_not_push": false
     },
     {
       "id": "vm-fix-diversify-command-format",
@@ -148,7 +168,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Fix diversify command format: action->command in all VM scripts",
-      "cloud_brain_note": "fire-75 CONFIRMED: correct call is POST /api/command {command:diversify}. VM scripts using old {action:diversify} need update.",
+      "cloud_brain_note": "fire-75 CONFIRMED: correct call is POST /api/command {command:diversify}. VM scripts using old {action:diversify} need update. fire-78: still pending.",
       "do_not_push": false
     },
     {
@@ -158,7 +178,8 @@
       "owner": "local-vm",
       "subject": "Create nomos-political-alpha/scripts/fetch_fec_sec_features.py FEC direct REST API + SEC EDGAR to expand political feature_candidates 272->400+",
       "do_not_push": false,
-      "detected_at": "2026-05-09T22:00:00Z"
+      "detected_at": "2026-05-09T22:00:00Z",
+      "cloud_brain_note": "fire-78 Rotation A: FEC/SEC data pipeline is this cycle's political rotation focus. High value — more features → better GA candidates. Direct FEC REST at api.fec.gov/v1/ + SEC EDGAR full-text at efts.sec.gov."
     },
     {
       "id": "tf-axelrod-kl-divergence",
@@ -185,6 +206,15 @@
       "commit_hash": "61c4b61394e2381ab0e1702f0581c292055b235c",
       "owner": "local-agent-a63b2bad",
       "subject": "Deploy S20/S21/S22 NBA islands."
+    },
+    {
+      "id": "cloud-brain-fire78-2026-05-10T18h",
+      "priority": 110,
+      "status": "done",
+      "completed_at": "2026-05-10T18:00:00Z",
+      "completed_by": "cloud-brain-fire-78",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-78: S13 stag=13 ⚠WATCH (was 0), S14 stag=0 ✓, S15 stag 13→7 ✓ recovering (fleet best 0.22012), S18 stag=19 🚨DIVERSIFY PENDING VM (was 6), S22 gen=485 brier=0.22551 stag=0 ✓ recovering. All 5 POL stag=0 P4 fleet best 0.24992. SOTA: MC-dropout LSTM Brier 0.199 (MDPI 2078-2489/17/1/56). Cross-project: extra_trees port to P7 queued. S17 still 503 DOWN."
     },
     {
       "id": "cloud-brain-fire77-2026-05-10T14h",
@@ -232,16 +262,6 @@
       "completed_by": "cloud-brain-fire-73",
       "owner": "cloud-brain-sonnet4-6",
       "subject": "fire-73: S13 breakthrough 0.23196->0.22398 (gen2145), S22 stag13->0 recovered, S14 WATCH stag=12/15. SOTA: calibrated SVM (IEEE 2026 0.7749 acc) + stacked ensemble proposal."
-    },
-    {
-      "id": "cloud-trigger-axelrod-fire-78-2026-05-10",
-      "priority": 109,
-      "status": "done",
-      "completed_at": "2026-05-10T18:00:00Z",
-      "completed_by": "cloud-trigger-axelrod-fire-78",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-78: verify+tune. All 3 Axelrod mechs confirmed at parity NBA(5844L)+POL(3826L) py_compile PASS. Tune: added coalition_proposal + council_alignment to Mech C write_axelrod_log rows in both files (cooperation signal now captured in paper dataset). Added confidence + strategy to NBA decisions_summary for dataset completeness. do_not_push_hf_space_yet.",
-      "do_not_push_hf_space_yet": true
     }
   ],
   "recovery_protocol": {

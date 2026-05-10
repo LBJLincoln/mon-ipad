@@ -1,84 +1,153 @@
 {
-  "updated_at": "2026-05-10T14:00:00Z",
-  "cycle": "fire-77",
+  "cycle": "fire-78",
+  "timestamp": "2026-05-10T18:00:00Z",
   "nba_islands": {
     "S13": {
-      "space": "Nomos42/nba-evo-4",
-      "generation": 2556,
+      "space": "nomos42/nba-evo-4",
+      "gen": 2695,
       "best_brier": 0.22398,
-      "stagnation": 0,
-      "status": "HEALTHY",
-      "model": "xgboost_brier",
-      "note": "Recovered from stagnation=25 (self-reset worked)"
+      "stagnation": 13,
+      "model": "xgboost",
+      "status": "WATCH",
+      "note": "stagnation 0→13 since fire-77, approaching threshold 15. Diversify next cycle if >15."
     },
     "S14": {
-      "space": "Nomos42/nba-evo-5",
-      "generation": 998,
+      "space": "nomos42/nba-evo-5",
+      "gen": 1104,
       "best_brier": 0.22336,
       "stagnation": 0,
-      "status": "HEALTHY",
       "model": "extra_trees",
-      "note": "fire-75 diversify command worked — stagnation 22→0"
+      "status": "HEALTHY",
+      "note": "44 features, stag=0, confirmed recovery from fire-75 diversify"
     },
     "S15": {
-      "space": "Nomos42/nba-evo-6",
-      "generation": 1394,
+      "space": "nomos42/nba-evo-6",
+      "gen": 1524,
       "best_brier": 0.22012,
-      "stagnation": 13,
-      "status": "WATCH_STAGNATION",
+      "stagnation": 7,
       "model": "extra_trees",
-      "pareto_best": 0.21841,
-      "pareto_model": "extra_trees",
-      "pareto_gen": 566,
-      "note": "stagnation=13 approaching threshold >15 — DIVERSIFY if >15 next cycle"
+      "status": "FLEET_BEST",
+      "note": "stagnation 13→7 ✓ recovering. PARETO BEST 0.21841 gen=566. 75 features."
     },
     "S17": {
-      "space": "LBJLincoln26/nba-evo-s17",
-      "generation": null,
+      "space": "lbjlincoln26/nba-evo-s17",
+      "gen": null,
       "best_brier": null,
       "stagnation": null,
-      "status": "503_DOWN",
-      "model": "xgboost",
-      "note": "PAUSED 37d+ — VM restart OVERDUE"
+      "model": null,
+      "status": "DOWN_503",
+      "note": "503 DOWN — VM restart overdue. See work-queue vm-restart-s17-2026-05-03T22h"
     },
     "S18": {
-      "space": "TESTforge42/nba-evo-s18",
-      "generation": 4598,
+      "space": "testforge42/nba-evo-s18",
+      "gen": 4710,
       "best_brier": 0.22315,
-      "stagnation": 6,
-      "status": "RECOVERING",
-      "model": "xgboost_brier",
-      "note": "stagnation recovering 12→6"
+      "stagnation": 19,
+      "model": "extra_trees",
+      "status": "DIVERSIFY_REQUIRED",
+      "note": "stagnation=19 > threshold 15. Cloud cannot POST — VM must curl -X POST https://testforge42-nba-evo-s18.hf.space/api/command -d '{\"command\":\"diversify\"}'"
     },
     "S22": {
-      "space": "TESTforge42/nba-evo-s22",
-      "generation": 310,
-      "best_brier": 0.2215,
-      "stagnation": 2,
-      "status": "GREAT_RECOVERY",
-      "model": "xgboost",
-      "prev_gen": 3130,
-      "prev_brier": 0.22431,
-      "note": "REMARKABLE: 0.24471→0.2215 after hard reset (xgboost replaced lightgbm). Now #2 fleet, BETTER than pre-restart brier=0.22431"
+      "space": "testforge42/nba-evo-s22",
+      "gen": 485,
+      "best_brier": 0.22551,
+      "stagnation": 0,
+      "model": "extra_trees",
+      "status": "RECOVERING",
+      "note": "gen=485 post hard-reset (xgb→lgbm→xgb), stag=0, still recovering toward pre-reset 0.22431"
     }
   },
-  "fleet_best_brier": 0.22012,
-  "fleet_best_island": "S15",
-  "fleet_second_brier": 0.2215,
-  "fleet_second_island": "S22",
-  "pareto_best_brier": 0.21841,
-  "pareto_best_island": "S15",
-  "action_taken": "SOTA research — MambaNet SSM hybrid (AUC 0.82) + roster-conditioned temporal transformer 25M params. S15 stagnation=13 WATCH.",
-  "alerts": [
-    "S15 stagnation=13 WATCH — approaching threshold >15. Next cycle: DIVERSIFY if >15",
-    "S17 503 DOWN — VM restart overdue 37d+",
-    "S22 GREAT RECOVERY: 0.24471→0.2215 via hard reset (xgboost replaced lightgbm) — now #2 fleet"
-  ],
+  "nba_summary": {
+    "fleet_best_brier": 0.22012,
+    "fleet_best_island": "S15",
+    "target_brier": 0.20,
+    "checkpoint_threshold": 0.22085,
+    "new_checkpoint_this_cycle": false,
+    "islands_healthy": ["S14", "S15", "S22"],
+    "islands_watch": ["S13"],
+    "islands_action_required": ["S18"],
+    "islands_down": ["S17"],
+    "diversify_sent": [],
+    "diversify_pending_vm": ["S18"]
+  },
+  "political_islands": {
+    "P1": {
+      "space": "nomos42/political-alpha",
+      "gen": 39132,
+      "best_brier": 0.2499,
+      "stagnation": 0,
+      "model": "xgboost_brier",
+      "status": "HEALTHY"
+    },
+    "P2": {
+      "space": "nomos42/political-alpha-2",
+      "gen": 35517,
+      "best_brier": 0.25003,
+      "stagnation": 0,
+      "model": "lightgbm_brier",
+      "status": "HEALTHY"
+    },
+    "P4": {
+      "space": "lbjlincoln/political-alpha-4",
+      "gen": 61503,
+      "best_brier": 0.24992,
+      "stagnation": 0,
+      "model": "lightgbm",
+      "status": "FLEET_BEST"
+    },
+    "P5": {
+      "space": "lbjlincoln/political-alpha-5",
+      "gen": 50367,
+      "best_brier": 0.24993,
+      "stagnation": 0,
+      "model": "xgboost_brier",
+      "status": "HEALTHY"
+    },
+    "P7": {
+      "space": "lbjlincoln/political-alpha-7",
+      "gen": 47609,
+      "best_brier": 0.25412,
+      "stagnation": 0,
+      "model": "lightgbm",
+      "status": "HEALTHY",
+      "note": "worst POL island — extra_trees trial queued (cross-project from NBA S14/S15)"
+    }
+  },
   "political_summary": {
+    "fleet_best_brier": 0.24992,
+    "fleet_best_island": "P4",
+    "all_time_best": 0.24904,
+    "all_time_best_island": "P4",
     "all_healthy": true,
-    "all_stagnation_zero": true,
-    "fleet_best": "P4 brier=0.24992",
-    "rotation_this_cycle": "D",
-    "rotation_description": "data pipeline health"
-  }
+    "rotation": "A",
+    "rotation_focus": "FEC/SEC data pipeline"
+  },
+  "sota_research": {
+    "finding": "MC-dropout LSTM uncertainty-aware NBA forecasting (MDPI 2078-2489/17/1/56, Jan 2026)",
+    "brier": 0.199,
+    "method": "LSTM + Monte Carlo dropout N=50 passes at inference, calibrated probabilities",
+    "train_test_split": "chronological: train ≤2022, val 2023, test 2024",
+    "relevance": "HIGH — first sub-0.20 Brier architecture with uncertainty quantification for Kelly sizing",
+    "proposal_file": "data/research-proposals/mc-dropout-lstm-2026-05-10.md"
+  },
+  "cross_project_action": "Port extra_trees to P7 political island — vm-p7-extra-trees-trial queued in work-queue",
+  "actions_taken": [
+    "health-status.json written",
+    "research proposal: mc-dropout-lstm written",
+    "work-queue updated: S18 diversify urgent VM task added",
+    "work-queue updated: P7 extra_trees cross-project port queued",
+    "brain-status.json written to nomos-political-alpha"
+  ],
+  "actions_pending_vm": [
+    "S18 diversify POST (stagnation=19 — URGENT)",
+    "S17 restart (503 DOWN — OVERDUE)",
+    "fix-pol-engine-placeholder (194KB, 100h+ pending)",
+    "vm-fix-diversify-command-format (update old {action:diversify} scripts)"
+  ],
+  "next_cycle_watch": [
+    "S13 stagnation=13 → if >15 at fire-79, DIVERSIFY",
+    "S18 check if VM executed diversify",
+    "S22 brier improving toward 0.22315 target",
+    "S15 stagnation=7 — watch if rising again"
+  ]
 }
