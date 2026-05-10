@@ -1,11 +1,11 @@
 {
-  "fire": 82,
-  "timestamp": "2026-05-11T06:00:00Z",
+  "fire": 83,
+  "timestamp": "2026-05-11T10:00:00Z",
   "cycle_type": "4h-cloud-brain",
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "gen": 3259,
+      "gen": 3444,
       "best_brier": 0.22398,
       "stag": 0,
       "model": "xgboost",
@@ -13,38 +13,40 @@
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "status": "down_403",
-      "last_known_gen": 1283,
-      "last_known_brier": 0.22336,
-      "last_seen": "fire-81",
-      "action": "vm-restart-s14-fire82 queued priority 1"
+      "gen": 1447,
+      "best_brier": 0.22336,
+      "stag": 0,
+      "model": "extra_trees",
+      "status": "self_recovered",
+      "note": "was 403 DOWN at fire-82 — self-recovered by fire-83 (gen=1447 brier=0.22336). vm-restart-s14-fire82 marked done."
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "gen": 1838,
+      "gen": 1877,
       "best_brier": 0.22012,
       "pareto_best": 0.21841,
       "stag": 0,
       "model": "random_forest",
-      "status": "fleet_best"
+      "status": "fleet_best",
+      "note": "cycle-stag=24 at cycle-625 — internal hard reset imminent at cycle-626. Post-reset-601 stacking survivors dominating population at 0.2474 (regressed). VM must remove stacking from MODEL_TYPES (Rule#8). New work-queue item: vm-remove-stacking-s15."
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
       "status": "down_503",
-      "action": "vm-restart-s17 pending (persistent)"
+      "action": "vm-restart-s17 pending (persistent 37+ days)"
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "gen": 5057,
+      "gen": 5126,
       "best_brier": 0.22315,
-      "stag": 9,
-      "model": "extra_trees",
-      "status": "WATCH_stag_9",
-      "note": "stag rising 0→9, threshold 15 — diversify if stag>15 next cycle"
+      "stag": 0,
+      "model": "xgboost_brier",
+      "status": "healthy",
+      "note": "cycle-stag=7 post latest hard-reset (cycle-1701). Recovered from stag=9 at fire-82. Healthy."
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "gen": 735,
+      "gen": 773,
       "best_brier": 0.22551,
       "stag": 0,
       "model": "extra_trees",
@@ -59,7 +61,7 @@
   "political_islands": {
     "P1": {
       "space": "Nomos42/political-alpha",
-      "gen": 41778,
+      "gen": 42531,
       "best_brier": 0.2499,
       "stag": 0,
       "model": "xgboost_brier",
@@ -67,33 +69,33 @@
     },
     "P2": {
       "space": "Nomos42/political-alpha-2",
-      "gen": 37257,
+      "gen": 37729,
       "best_brier": 0.25003,
-      "stag": 0,
-      "model": "xgboost_brier",
-      "status": "self_recovered",
-      "note": "was 403 DOWN at fire-81, self-recovered — cloud-restart-p2-fire81 marked done"
-    },
-    "P4": {
-      "space": "LBJLincoln/political-alpha-4",
-      "gen": 63582,
-      "best_brier": 0.24992,
-      "alltime_best": 0.24904,
-      "stag": 0,
-      "model": "lightgbm",
-      "status": "pol_fleet_best"
-    },
-    "P5": {
-      "space": "LBJLincoln/political-alpha-5",
-      "gen": 52401,
-      "best_brier": 0.24993,
       "stag": 0,
       "model": "xgboost_brier",
       "status": "healthy"
     },
+    "P4": {
+      "space": "LBJLincoln/political-alpha-4",
+      "gen": 64104,
+      "best_brier": 0.24992,
+      "alltime_best": 0.24904,
+      "stag": 0,
+      "model": "xgboost_brier",
+      "status": "pol_fleet_best"
+    },
+    "P5": {
+      "space": "LBJLincoln/political-alpha-5",
+      "gen": 53100,
+      "best_brier": 0.24993,
+      "stag": 0,
+      "model": "xgboost_brier",
+      "status": "healthy",
+      "note": "COOLDOWN mode at time of check — hard reset fired 20 cycles prior"
+    },
     "P7": {
       "space": "LBJLincoln/political-alpha-7",
-      "gen": 50733,
+      "gen": 51721,
       "best_brier": 0.25412,
       "stag": 0,
       "model": "lightgbm",
@@ -103,23 +105,24 @@
   "pol_fleet_best": 0.24904,
   "pol_stagnation_alert": false,
   "actions_taken": [
-    "P2 self-recovered (403→EVOLVING gen=37257 brier=0.25003) — cloud-restart-p2-fire81 marked done in work-queue",
-    "S14 NEW 403 DOWN — vm-restart-s14-fire82 added to work-queue priority 1",
-    "S18 stag=9 WATCH — no diversify (threshold 15), escalate if stag>15 at fire-83",
-    "S17 still 503 DOWN — vm-restart-s17 persists in work-queue",
-    "SOTA: IEEE 2026 NBA ML comparison catalogued — fire82 research proposal written",
-    "Rotation D: political data pipeline health audit complete"
+    "S14 SELF-RECOVERED (403→EVOLVING gen=1447 brier=0.22336 stag=0) — vm-restart-s14-fire82 marked done in work-queue",
+    "S18 stag=0 ✓ — recovered from stag=9 at fire-82 (cycle-stag=7 post hard-reset-1701)",
+    "S17 still 503 DOWN — vm-restart-s17 remains queued",
+    "S15 CRITICAL: cycle-stag=24, stacking survivor dominance post-reset-601 — new work-queue item vm-remove-stacking-s15 added (priority 45)",
+    "All 5 POL islands healthy stag=0",
+    "Rotation A: FEC/SEC pipeline confirmed pending VM run (vm-fec-sec-political-features still queued)",
+    "Cross-project: extra_trees→P7 + stacked_ensemble documented for VM (vm-p7-extra-trees-trial still queued)"
   ],
   "pending_vm_items": [
-    "vm-restart-s14-fire82 (NEW 403 DOWN — Nomos42/nba-evo-5)",
-    "vm-restart-s17 (503 DOWN persistent)",
+    "vm-restart-s17 (503 DOWN persistent 37+ days)",
+    "fix-pol-engine-placeholder (BLOCKING Rotation B — OVERDUE 160h+)",
     "engine-parity-sync (+54KB delta — MISMATCH still open)",
-    "fix-pol-engine-placeholder (BLOCKING Rotation B — OVERDUE 150h+)",
+    "vm-remove-stacking-s15 (NEW: remove stacking from S15 app.py MODEL_TYPES — Rule#8 violation causing survivor dominance post hard-reset)",
     "vm-add-logistic-regression-model-pool",
     "vm-p7-extra-trees-trial",
-    "vm-fec-sec-political-features",
-    "vm-restart-political-data-crons (URGENT — Rotation D)",
+    "vm-fec-sec-political-features (Rotation A blocked)",
+    "vm-restart-political-data-crons (URGENT)",
     "vm-fix-diversify-command-format"
   ],
-  "sota_research": "data/research-proposals/fire82-ieee-nba-ml-comparison-2026-05-11.md"
+  "sota_research": "skipped this cycle (fire-82 did SOTA; fire-83 cross-project rotation focus)"
 }
