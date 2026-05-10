@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Apply Cycle 12 changes to paper.md (N12 fix: §4.6 + C.3.3).
 Idempotent — no-op if already applied. Run from repo root."""
+# v3 — git-native workflow commit
 
 import sys
 
@@ -17,7 +18,7 @@ OLD1 = (
 )
 NEW1 = (
     "in Appendix C.3. We note that for managed-inference APIs (T1–T11),\n"
-    "the provider’s instruction-following fine-tuning mediates the relationship\n"
+    "the provider's instruction-following fine-tuning mediates the relationship\n"
     "between the API temperature parameter and token-logit variance, so the\n"
     "effective stochasticity at $\\tau = 0.7$ is provider-dependent.\n"
     "For self-hosted models (T12, Qwen3-4B-CPU), the parameter acts more\n"
@@ -31,7 +32,7 @@ NEW1 = (
 
 # ── Change 2: C.3.3 section ───────────────────────────────────────────────────
 OLD2 = (
-    "*conservative* may prefer $\\tau \\leq 0.5$; *devil’s-advocate* may benefit from\n"
+    "*conservative* may prefer $\\tau \\leq 0.5$; *devil's-advocate* may benefit from\n"
     "$\\tau \\geq 0.9$. Per-archetype temperature sweep deferred to future work.]**\n"
     "\n"
     "---\n"
@@ -39,7 +40,7 @@ OLD2 = (
     "## C.4"
 )
 NEW2 = (
-    "*conservative* may prefer $\\tau \\leq 0.5$; *devil’s-advocate* may benefit from\n"
+    "*conservative* may prefer $\\tau \\leq 0.5$; *devil's-advocate* may benefit from\n"
     "$\\tau \\geq 0.9$. Per-archetype temperature sweep deferred to future work.]**\n"
     "\n"
     "### C.3.3  Limitation: Self-Hosted Model Temperature\n"
@@ -56,7 +57,7 @@ NEW2 = (
     "The self-hosted agent T12 (Qwen3-4B-CPU via llama.cpp) is subject to neither effect:\n"
     "temperature maps directly to the softmax inverse-temperature with no implicit top-$k$\n"
     "gate. Consequently $\\tau = 0.7$ may produce higher effective stochasticity for T12\n"
-    "than for T4, potentially over-exploring the *disciplined* archetype’s prediction space.\n"
+    "than for T4, potentially over-exploring the *disciplined* archetype's prediction space.\n"
     "A follow-up T12 temperature sweep is planned but lies outside the pre-registered protocol.\n"
     "\n"
     "---\n"
