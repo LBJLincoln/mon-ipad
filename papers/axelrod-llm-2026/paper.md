@@ -31,9 +31,9 @@ broadcast enables calibration while preserving belief diversity; and (iv) *sacri
 role reallocation* (SRR) allows underperforming agents to adopt under-represented
 strategy archetypes, provably increasing Jensen–Shannon population diversity.
 We formalise the system as the *LLM Prediction Society Game* (LPSG) — a Bayesian
-population game — and prove SRR constitutes a diversity-improving Nash equilibrium
-refinement (Lemma 1, Proposition 2). Results across 12 NBA and 10 political LLM agents
-from five provider ecosystems over 175 trading days are pending full seasonal resolution
+population game — and prove SRR constitutes a diversity-improving Strong Nash equilibrium
+refinement (Lemma 1, Proposition 2). Results across 12 NBA agents (175 trading days)
+and 10 political agents (90 trading days) from five provider ecosystems are pending full seasonal resolution
 (`data/arena/axelrod-log/`). The framework bridges Axelrod-era cooperation theory and
 principled design of diverse, calibrated LLM prediction ensembles.
 
@@ -290,7 +290,7 @@ simulation to one million agents on real Twitter and Reddit topologies,
 demonstrating emergent phenomena — information cascades, group
 polarization, herd effects — that are invisible at the small-agent-count
 scale studied by CAMEL and AutoGen. Our Axelrod-LLM system operates at
-the opposite end of the scale spectrum (16 agents), but shares OASIS's
+the opposite end of the scale spectrum (12 NBA agents, 10 political agents), but shares OASIS's
 commitment to real-world grounding: unlike OASIS's social-simulation
 environment, our arena resolves every event against an exogenous binary
 ground truth (game outcomes and political event resolutions), imposing
@@ -490,7 +490,7 @@ Axelrod's iterated Prisoner's Dilemma to (a) LLM agents reasoning over natural l
 (b) a continuous-action prediction market with real-world ground truth,
 (c) day-end common-knowledge broadcasts, and (d) an endogenous diversity mechanism —
 *Sacrificial Role Reallocation* (SRR). We then prove that SRR strictly increases
-expected population diversity and characterise it as a Nash equilibrium refinement.
+expected population diversity and characterise it as a Strong Nash equilibrium refinement.
 
 ---
 
@@ -608,7 +608,7 @@ and equals zero if and only if all agents report identical predictions.
 The connection to ensemble accuracy is formalised by the *Brier ambiguity decomposition*
 [@brown2005diversity]:
 
-$$\underbrace{\frac{1}{N}\sum_i B_{\text{ens},t}}_{\text{ensemble Brier}} =
+$$\underbrace{B_{\text{ens},t}}_{\text{ensemble Brier}} =
 \underbrace{\frac{1}{N}\sum_i B_{i,t}}_{\overline{\text{indiv. Brier}}} -
 \underbrace{\frac{1}{N}\sum_i (p_{i,t} - \bar{p}_t)^2}_{\text{Ambiguity}}$$
 
@@ -851,7 +851,7 @@ reallocation. The full experiment log is archived at
 ## 4.1  Agent Population
 
 **NBA cohort (N = 12).** Table 3 describes the twelve LLM agents fielded in
-the NBA prediction domain. The cohort spans four provider ecosystems, four
+the NBA prediction domain. The cohort spans five provider ecosystems, four
 model scales (0.6B to 235B parameters), and twelve distinct initial strategy
 archetypes drawn from the 20-archetype taxonomy (Appendix A). The initial
 archetype assignment was *not* optimised to maximise initial diversity; rather,
@@ -1926,7 +1926,7 @@ centre locations. The self-hosted agent (T12) runs on a CPU-only
 HuggingFace Space. Using published emission factors for GPU inference
 [@lannelongue2021green], total estimated carbon footprint over the
 175-day experimental period is below 10 kg CO$_2$-equivalent —
-comparable to a single transatlantic flight passenger-kilometre.
+comparable to driving a typical petrol car approximately 60 km.
 
 **Agent autonomy and human oversight.** All agent predictions in this
 experiment are recorded but no real bets are placed autonomously. A human

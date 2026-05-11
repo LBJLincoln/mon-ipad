@@ -812,169 +812,166 @@ N11 (`@du2023improving` → `@zhao2021calibrate` in A.4.16; new entry in
 
 ---
 
-# Peer-Review Self-Critique — Cycle 13 (2026-05-11)
+# Peer-Review Self-Critique — Cycle 14 (2026-05-11)
 
-*Full-manuscript re-read following Cycle 12 closure of all prior open issues.
-Seven new issues identified (O1–O7); all seven fixed in this cycle.*
-
----
-
-## CYCLE 12 STATUS: All previously open issues resolved ✓
-
-No carry-over from Cycle 12. PRE-SUBMISSION checklist items 1–3 (author
-verification) remain deferred pending network access to live arXiv records.
+*Full-manuscript re-read following Cycle 13 closure of all prior open issues.
+Six new issues identified (P1–P6); all six fixed in this cycle.*
 
 ---
 
-## NEW ISSUES (Cycle 13 re-read)
+## CYCLE 13 STATUS: All previously open issues resolved ✓
 
-### O1. §1 Introduction misrepresents Proposition 2 as Nash Equilibrium (NE) rather than Strong Nash Equilibrium (SNE) [FIXED]
-
-**Reviewer:** Contribution 2 in the Introduction states "We prove under mild
-assumptions that SRR is a Nash equilibrium refinement: no agent can *unilaterally*
-deviate and improve *societal* Brier score." This is wrong in two ways:
-
-1. Proposition 2 in §3.5 proves a *Strong* Nash Equilibrium — no *coalition*
-   $\mathcal{C} \subseteq \mathcal{I}$ can jointly deviate and improve. SNE is
-   strictly stronger than NE (which requires only no profitable *unilateral*
-   deviation). Understating the formal result is not conservative — it is
-   inaccurate.
-2. The NE framing invites a different type of deviation analysis than the SNE
-   framing. A hostile reviewer may attempt to construct a unilateral deviation that
-   improves "societal Brier" (a vague term), find no contradiction in the proof
-   sketch, and conclude the proof is incomplete.
-
-**Fix applied:** Introduction Contribution 2 rewritten to match Proposition 2's
-actual claim: "no coalition of agents can jointly deviate from SRR and simultaneously
-(weakly) improve ensemble Brier for the coalition while (weakly) reducing individual
-Brier for each coalition member." Reference updated to "Proposition 2, §3.5" (was
-"§3.4"). Applied to both `02-introduction.md` and `paper.md`. ✓
+No carry-over from Cycle 13. PRE-SUBMISSION checklist items 1–3 (author
+verification for `@ouyang2022training`, `@llm_ipd2024`, `@polyswarm2026`)
+remain deferred pending network access to live arXiv records.
 
 ---
 
-### O2. §2.3–2.6: arXiv IDs used as pandoc citation locators produce malformed citations [FIXED]
+## NEW ISSUES (Cycle 14 full-manuscript re-read)
 
-**Reviewer:** Throughout §2.3 ("LLM Multi-Agent Societies") and §2.6 ("LLM Agents
-in Financial and Prediction Markets"), citations appear in the form
-`[@li2023camel, arXiv:2303.17760]`, `[@wu2023autogen, arXiv:2308.08155]`, etc.
-In pandoc-citeproc, the comma-separated text inside a single `[@key, ...]` bracket is
-treated as a *locator* or suffix appended after the citation reference — not a second
-citation key. This produces rendered text such as "(Li et al., 2023, arXiv:2303.17760)"
-in author-year style and "[1, arXiv:2303.17760]" in numbered style — both wrong for
-journal submission. The arXiv IDs are already present in the BibTeX `note` fields and
-need not appear in-text.
+### P1. Abstract claims "Nash equilibrium refinement"; Cycle 13 fixed only §1 Introduction [FIXED]
 
-Affected citations:
-`[@li2023camel, arXiv:2303.17760]`, `[@wu2023autogen, arXiv:2308.08155]`,
-`[@hong2023metagpt, arXiv:2308.00352]`, `[@yang2024oasis, arXiv:2411.11581]`
-(§2.3); `[@du2023improving, arXiv:2305.14325]` (§2.4);
-`[@yu2024finmem, arXiv:2311.13743]`, `[@xiao2024tradingagents, arXiv:2412.20138]`,
-`[@quantagents2025, arXiv:2510.04643]`, `[@ma2025agent, arXiv:2502.17967]`,
-`[@zhang2026arena, arXiv:2604.07355]` (§2.6).
+**Reviewer:** Cycle 13 issue O1 corrected the Introduction (§1 Contribution 2)
+from "no agent can *unilaterally* deviate" to the correct Strong Nash framing.
+However, the abstract (`01-abstract.md` line 14) still read:
 
-**Fix applied:** All ten arXiv locator suffixes removed from pandoc citation brackets
-in both `03-related-work.md` and the corresponding passages of `paper.md`. Post-fix
-verification: `grep -n "\[@.*arXiv:" paper.md` returns no output. ✓
+> "and prove SRR constitutes a diversity-improving **Nash equilibrium**
+> refinement (Lemma 1, Proposition 2)"
 
-*Residual.* The QuantAgents footnote `^[Two distinct works share the name...]` retains
-inline arXiv IDs in plain prose (not as pandoc citation locators); this is correct and
-unchanged.
+The abstract is the first thing an editor reads; an incorrect
+equilibrium concept at that location is a fatal inconsistency regardless
+of whether §1 and §3.5 use the correct term. The method section preamble
+(`04-method.md` line 8) was also affected: "characterise it as a Nash
+equilibrium refinement."
 
----
+**Fix applied:**
+- `01-abstract.md` line 14: "Nash equilibrium refinement" →
+  "**Strong** Nash equilibrium refinement." ✓
+- `04-method.md` opening sentence: same correction. ✓
+- `paper.md` lines 34 and 493: both occurrences updated. ✓
 
-### O3. §6.5 Discussion references "Appendix E" which does not exist [FIXED]
-
-**Reviewer:** §6.5 (Financial Stakes as a Calibration Discipline) states "The emergent
-ensemble weighting is a form of implicit *Bayesian model averaging* where the weight
-assigned to each agent is proportional to evidence from its track record — a connection
-we formalise in Appendix E." No Appendix E exists in the manuscript (appendices are A,
-B, C, D). Dangling cross-references will cause `\ref{appE}` to resolve to `??` in the
-PDF and are fatal submission defects.
-
-**Fix applied:** The "Appendix E" forward-reference removed from §6.5 in both
-`07-discussion.md` and `paper.md`. The sentence now reads: "The emergent ensemble
-weighting is a form of implicit *Bayesian model averaging*: each agent's effective
-influence on the ensemble mean prediction $\bar{p}_t$ is proportional to its accumulated
-track record, with Kelly stakes as the weighting mechanism." If a formal derivation of
-this connection is desired, it can be added as Appendix E in a future cycle — but the
-forward reference must not precede the appendix's existence. ✓
+*Root cause note:* Cycle 13's O1 fix targeted `02-introduction.md` §1
+Contribution 2 specifically, and the tracking log recorded the fix as
+complete without checking the abstract or the method-section preamble.
+Future cycles should run `grep -n "Nash equilibrium" *.md` as a post-fix
+verification step.
 
 ---
 
-### O4. §1 Introduction Contribution 3: "self-hosted Phi-3.5" contradicts Table 3 [FIXED]
+### P2. §3.3 Brier ambiguity decomposition: spurious $\frac{1}{N}\sum_i$ on LHS [FIXED]
 
-**Reviewer:** Contribution 3 in the Introduction lists "self-hosted Phi-3.5" as the
-fifth provider ecosystem. However, Table 3 (§4.1) correctly identifies agent T12 as
-"Qwen3-4B (CPU)" and its `agent_id` as `selfhost-qwen4b`. The §7.1 Limitations
-section also correctly uses "self-hosted Qwen3-4B." Phi-3.5 was a different
-self-hosted model in an earlier iteration of the system; it was replaced by Qwen3-4B.
-The inconsistency in the Introduction is a factual error that creates a description
-mismatch between §1 and §4.1.
+**Reviewer:** The displayed Brier ambiguity decomposition in §3.3 had:
 
-**Fix applied:** §1 Contribution 3: "self-hosted Phi-3.5" → "self-hosted Qwen3-4B"
-in both `02-introduction.md` and `paper.md`. Now consistent with Table 3, §7.1, and
-the system architecture as described in CLAUDE.md. ✓
+$$\underbrace{\frac{1}{N}\sum_i B_{\text{ens},t}}_{\text{ensemble Brier}} = \ldots$$
 
----
+The term $B_{\text{ens},t} = (\bar{p}_t - \omega_t)^2$ does not depend on the
+agent index $i$; summing it over $i$ and dividing by $N$ is algebraically
+equivalent to writing $B_{\text{ens},t}$ alone, but visually implies that
+each summand is a distinct, agent-indexed quantity. A hostile reviewer can
+reasonably read this as either (a) a notational error, or (b) an attempt to
+obscure the algebraic identity $B_{\text{ens},t} = \overline{B}_{i,d} - \text{Amb}$.
+Either reading is fatal to the proof of Lemma 1, which relies on the reader
+accepting the decomposition.
 
-### O5. §3.4 SRR Definition 2 silent on simultaneous multiple eligibilities [FIXED]
+**Fix applied (both `04-method.md` and `paper.md` §3.3):**
 
-**Reviewer:** Definition 2 specifies "If agent $i$ is sacrifice-eligible…" in the
-singular. If two agents $i$ and $j$ are simultaneously sacrifice-eligible on day $d$
-and both independently draw from $\mathcal{V}_d = \{r^*\}$ (a single vacant archetype),
-they could both be assigned $r^*$, leaving no other archetype vacant and potentially
-creating a two-agent cluster in a previously singleton archetype. The ordering of
-simultaneous reallocations and the update semantics of $\mathcal{V}_d$ are unspecified,
-which a formal reviewer will flag as an incomplete mechanism description.
+$$\underbrace{B_{\text{ens},t}}_{\text{ensemble Brier}} =
+\underbrace{\frac{1}{N}\sum_i B_{i,t}}_{\overline{\text{indiv. Brier}}} -
+\underbrace{\frac{1}{N}\sum_i (p_{i,t} - \bar{p}_t)^2}_{\text{Ambiguity}}$$
 
-**Fix applied:** Added a **Multiple simultaneous eligibilities** paragraph immediately
-after Definition 2's persistence clause in both `04-method.md` and `paper.md`:
-reallocations execute in decreasing order of $\overline{B}_{i,d}$ (worst performer
-first), with $\mathcal{V}_d$ recomputed after each individual reallocation. This
-sequential greedy execution eliminates the duplicate-draw ambiguity and provides a
-unique, deterministic outcome for any simultaneous-eligibility scenario. ✓
+The RHS is unchanged; only the LHS underbrace was corrected. The algebraic
+identity is now immediately transparent: $(\bar{p}_t - \omega_t)^2 =
+\frac{1}{N}\sum_i(p_{i,t}-\omega_t)^2 - \frac{1}{N}\sum_i(p_{i,t}-\bar{p}_t)^2$
+follows from the bias–variance–ambiguity identity [@krogh1995neural]. ✓
 
 ---
 
-### O6. §4.3 Condition reset description omits LLM conversation history [FIXED]
+### P3. §7.7 carbon footprint comparison is off by approximately 50× [FIXED]
 
-**Reviewer:** §4.3 states that at the start of each condition, "each agent's internal
-state is reset (bankrolls re-initialised to \$100,000; Brier histories cleared)." A
-methodological reviewer may ask: are the LLM agents' in-context conversation histories
-also reset? If not, agent T1 in Condition B would enter the first day with a non-empty
-context from Condition A, introducing a prior-condition bias that violates the between-condition isolation assumption. This should be stated explicitly to close the gap.
+**Reviewer:** §7.7 stated: "Total estimated carbon footprint over the
+175-day experimental period is below 10 kg CO$_2$-equivalent —
+comparable to a single transatlantic flight passenger-kilometre."
 
-**Fix applied:** §4.3 reset description extended in both `05-experimental-setup.md`
-and `paper.md`: "LLM conversation context buffers flushed so that no prediction
-reasoning from a prior condition persists as in-context history" added to the reset
-parenthetical. ✓
+One passenger-kilometre of economy-class transatlantic air travel
+produces approximately 0.15–0.25 kg CO$_2$ (using published emission
+factors of 195 g CO$_2$/pkm [@lannelongue2021green]). The claim that
+10 kg CO$_2$ is "comparable" to 0.2 kg CO$_2$ is wrong by a factor
+of ≈ 50, and would be immediately spotted by any reviewer with
+environmental computing expertise.
 
----
-
-### O7. Table 4 caption states pending A1 result as established fact [FIXED]
-
-**Reviewer:** The caption for Table 4 (§5.1) reads "All 190 off-diagonal entries
-exceed 0.037 (Assumption A1 threshold)." However, all table cells are marked
-**[PENDING]**. Stating as fact a result that is both (a) the central pre-registered
-hypothesis of §5.1 and (b) currently unpopulated constitutes an inconsistency that
-a referee will cite as evidence of result inflation.
-
-**Fix applied:** Table 4 caption updated in both `06-results.md` and `paper.md`:
-"exceed 0.037" → "are expected to exceed 0.037 (pre-registered Assumption A1
-threshold; values pending pilot backtest completion — see Table B.2)." ✓
+**Fix applied (`08-limitations.md` and `paper.md` §7.7):**
+"comparable to a single transatlantic flight passenger-kilometre" →
+"comparable to driving a typical petrol car approximately 60 km"
+(using the European fleet average of ≈ 167 g CO$_2$/km:
+10 kg / 0.167 kg·km$^{-1}$ ≈ 60 km). This comparison is verifiable
+from standard transport emission databases and is accurate at the
+stated CO$_2$ magnitude. ✓
 
 ---
 
-## CYCLE 13 SUMMARY
+### P4. §4.1 says "four provider ecosystems" but Table 3 and all other §§ say "five" [FIXED]
 
-**Fixed:** O1 (NE→SNE in §1), O2 (arXiv locators removed from 10 citations),
-O3 (Appendix E dangling reference), O4 (Phi-3.5 → Qwen3-4B in §1),
-O5 (simultaneous SRR eligibility mechanism specified),
-O6 (LLM history reset clarified), O7 (Table 4 caption qualified)
+**Reviewer:** §4.1, first paragraph: "The cohort spans **four** provider
+ecosystems, four model scales..." Table 3 immediately below lists agents
+from five distinct providers: Cerebras (T1–T3), Google (T4–T5),
+Mistral (T6–T10), OpenRouter (T11), and self-hosted (T12). Every other
+occurrence in the paper — §1 Contribution 3, §7.1, §7.7 — correctly
+states "five provider ecosystems." The inconsistency in §4.1 is a
+factual error that a reviewer verifying the cohort against Table 3
+will immediately notice.
 
-**Remaining open:** None.
+**Fix applied (`05-experimental-setup.md` and `paper.md` §4.1):**
+"four provider ecosystems" → "five provider ecosystems." ✓
 
-**PRE-SUBMISSION checklist (updated):**
+---
+
+### P5. Abstract says "over 175 trading days" applies to both domains; political domain is 90 days [FIXED]
+
+**Reviewer:** The abstract read: "Results across 12 NBA and 10 political
+LLM agents from five provider ecosystems **over 175 trading days** are
+pending full seasonal resolution." The 175-day figure covers the
+2025–26 NBA season. The political domain runs for 90 days (§3.7 Table 2:
+$D_{\text{POL}} = 90$; §7.2 and throughout). Attributing 175 trading
+days to both domains conflates two distinct experimental timelines and
+overstates the political experiment duration by nearly 100%.
+
+**Fix applied (`01-abstract.md` and `paper.md` abstract paragraph):**
+"Results across 12 NBA and 10 political LLM agents from five provider
+ecosystems over 175 trading days" →
+"Results across 12 NBA agents (175 trading days) and 10 political agents
+(90 trading days) from five provider ecosystems." ✓
+
+---
+
+### P6. §2.3 Related Work states "16 agents" — inconsistent with the paper's 12/10 agent design [FIXED]
+
+**Reviewer:** §2.3, positioning Axelrod-LLM against OASIS's 1M-node scale:
+"Our Axelrod-LLM system operates at the opposite end of the scale spectrum
+**(16 agents)**, but shares OASIS's commitment to real-world grounding."
+
+The paper describes 12 NBA agents and 10 political agents, not 16.
+The 16-agent figure corresponds to an earlier iteration of the system
+(the HuggingFace Trading Floor, which uses 16 agents per domain as
+documented in the codebase). Using the TF count in a paper that
+describes a 12-agent NBA cohort introduces an unresolvable discrepancy
+between §2.3 and §4.1 (Table 3), and would strike a reviewer reading
+§§2–4 sequentially as either a change in system design or an uncorrected
+copy-paste error.
+
+**Fix applied (`03-related-work.md` and `paper.md` §2.3):**
+"(16 agents)" → "(12 NBA agents, 10 political agents)." ✓
+
+---
+
+## CYCLE 14 SUMMARY
+
+**Fixed:** P1 (abstract + method preamble SNE), P2 (Brier LHS notation),
+P3 (carbon comparison corrected), P4 (four→five providers in §4.1),
+P5 (abstract domain-day counts disambiguated), P6 (16→12/10 agents in §2.3)
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (unchanged from Cycle 13 — data-blocked items):**
 1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
 2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
 3. Verify `@polyswarm2026` author list against arXiv:2604.03888
@@ -984,10 +981,15 @@ O6 (LLM history reset clarified), O7 (Table 4 caption qualified)
 7. Remove abstract's `> *Brier-delta... to be inserted*` note and fill with actual results
 8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
 
-**Structural additions this cycle:**
-- `02-introduction.md` + `paper.md`: SNE language + Qwen3-4B fix
-- `03-related-work.md` + `paper.md` §2.3/2.4/2.6: 10 arXiv locators removed
-- `04-method.md` + `paper.md` §3.4: simultaneous eligibility paragraph added
-- `05-experimental-setup.md` + `paper.md` §4.3: LLM history-reset clarification
-- `06-results.md` + `paper.md` §5.1: Table 4 caption qualified as pre-registered
-- `07-discussion.md` + `paper.md` §6.5: Appendix E dangling reference removed
+**Post-fix verification protocol added to process (from P1 root cause analysis):**
+After any targeted fix to a specific section, run
+`grep -rn "<corrected-term>" papers/axelrod-llm-2026/*.md`
+to confirm the fix propagated to all relevant files before marking the issue closed.
+
+**Structural changes this cycle:**
+- `01-abstract.md`: P1 (SNE) + P5 (domain day counts)
+- `03-related-work.md` §2.3: P6 (agent count 16→12/10)
+- `04-method.md`: P1 (method preamble SNE) + P2 (Brier LHS)
+- `05-experimental-setup.md` §4.1: P4 (provider count four→five)
+- `08-limitations.md` §7.7: P3 (carbon comparison)
+- `paper.md`: all six fixes mirrored
