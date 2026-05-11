@@ -101,7 +101,7 @@ prediction markets.
 The emergence of instruction-following LLMs enabled a qualitatively
 new class of multi-agent system in which strategy is implicit in the
 model's emergent reasoning rather than explicit in hand-coded
-transitions. CAMEL [@li2023camel, arXiv:2303.17760] pioneered
+transitions. CAMEL [@li2023camel] pioneered
 role-playing LLM societies, introducing *inception prompting* — an
 approach in which agents receive natural-language role definitions
 that shape their behavioral repertoires across a conversation. CAMEL's
@@ -109,16 +109,16 @@ key finding was that role specialization markedly increases task
 completion quality, but it did not study the equilibrium properties of
 the resulting agent societies.
 
-AutoGen [@wu2023autogen, arXiv:2308.08155] formalized multi-agent
+AutoGen [@wu2023autogen] formalized multi-agent
 conversation as a general programming primitive, introducing
 *conversable agents* and *group chat* orchestration patterns that
 support both cooperative and competitive dynamics. MetaGPT
-[@hong2023metagpt, arXiv:2308.00352] encoded Standardized Operating
+[@hong2023metagpt] encoded Standardized Operating
 Procedures (SOPs) into agent prompt sequences, achieving state-of-the-art
 code generation through strict role specialization and shared memory
 structures.
 
-OASIS [@yang2024oasis, arXiv:2411.11581] scaled LLM multi-agent
+OASIS [@yang2024oasis] scaled LLM multi-agent
 simulation to one million agents on real Twitter and Reddit topologies,
 demonstrating emergent phenomena — information cascades, group
 polarization, herd effects — that are invisible at the small-agent-count
@@ -153,7 +153,7 @@ each agent a distinct problem-solving *mental set* — a specific
 reasoning strategy (e.g., analogical, systematic, contrarian) — before
 debate begins, preventing the convergence to homogeneous reasoning
 chains that plagues standard Multi-Agent Debate
-[@du2023improving, arXiv:2305.14325].
+[@du2023improving].
 DMAD consistently outperforms both self-reflection and standard MAD
 on logical reasoning benchmarks. However, it relies on a static
 strategy assignment decided by an external designer before each task,
@@ -211,17 +211,17 @@ consensus that SRR counteracts.
 ## 2.6 LLM Agents in Financial and Prediction Markets
 
 The intersection of LLMs and financial trading has developed rapidly
-since 2023. FinMem [@yu2024finmem, arXiv:2311.13743] introduced
+since 2023. FinMem [@yu2024finmem] introduced
 layered memory and character design for trading agents, enabling
 hierarchical assimilation of financial data across intraday, daily,
 and event-driven time horizons. TradingAgents
-[@xiao2024tradingagents, arXiv:2412.20138] — the closest antecedent
+[@xiao2024tradingagents] — the closest antecedent
 to our architecture — instantiated a full professional trading firm
 in LLM form, with analyst, risk management, and execution roles
 communicating through structured dialogues; the paper reports
 improvements in cumulative returns, Sharpe ratio, and maximum
 drawdown over single-agent baselines. QuantAgents
-[@quantagents2025, arXiv:2510.04643]^[Two distinct works share the
+[@quantagents2025]^[Two distinct works share the
 name "QuantAgents": the cited paper is Du et al. (arXiv:2510.04643,
 2025), concerning multi-agent simulated trading on A-share and HK-share
 markets; see also arXiv:2509.09995 for a separate QuantAgent HFT
@@ -232,12 +232,12 @@ claimed returns of 111.87% (Sharpe 2.02) over two quarters — though
 as with all LLM trading papers, questions of look-ahead bias and
 benchmark selection require careful scrutiny.
 
-The Agent Trading Arena [@ma2025agent, arXiv:2502.17967] placed
+The Agent Trading Arena [@ma2025agent] placed
 LLM agents in a virtual stock market and studied price-formation and
 numerical reasoning; the key finding was that chart-based visual
 input significantly improved agent performance over text-only
 conditions, with a reflection module providing further gains. The
-Prediction Arena [@zhang2026arena, arXiv:2604.07355] evaluated six
+Prediction Arena [@zhang2026arena] evaluated six
 frontier models on live prediction markets (Kalshi and Polymarket)
 with genuine capital; models lost 16–30.8% on Kalshi but only −1.1%
 on Polymarket, with platform microstructure emerging as a more

@@ -173,6 +173,14 @@ pilot data). SRR is *decentralised*: no central planner is needed. Each agent
 executes the eligibility check using only its own Brier history and the population
 state $\mathbf{x}_d$ (which is available via the leaderboard broadcast).
 
+**Multiple simultaneous eligibilities.** When $|\{i : i \text{ is sacrifice-eligible at day } d\}| > 1$,
+reallocations execute in decreasing order of $\overline{B}_{i,d}$ (worst performer first),
+with the vacancy set $\mathcal{V}_d$ recomputed after each individual reallocation to
+reflect the updated archetype distribution. This sequential greedy execution ensures
+that the agent with the largest performance deficit receives the widest vacancy set,
+and prevents two agents from independently drawing the same vacant archetype and
+partially defeating the diversity objective.
+
 **Prompt mechanics.** The archetype taxonomy $\mathcal{R}$ is operationalised
 as a library of 20 system-prompt modules (Appendix A). When SRR fires,
 the agent's system prompt is atomically replaced by composing the base
