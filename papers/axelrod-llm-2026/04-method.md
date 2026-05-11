@@ -5,7 +5,7 @@ Axelrod's iterated Prisoner's Dilemma to (a) LLM agents reasoning over natural l
 (b) a continuous-action prediction market with real-world ground truth,
 (c) day-end common-knowledge broadcasts, and (d) an endogenous diversity mechanism —
 *Sacrificial Role Reallocation* (SRR). We then prove that SRR strictly increases
-expected population diversity and characterise it as a Nash equilibrium refinement.
+expected population diversity and characterise it as a Strong Nash equilibrium refinement.
 
 ---
 
@@ -123,7 +123,7 @@ and equals zero if and only if all agents report identical predictions.
 The connection to ensemble accuracy is formalised by the *Brier ambiguity decomposition*
 [@brown2005diversity]:
 
-$$\underbrace{\frac{1}{N}\sum_i B_{\text{ens},t}}_{\text{ensemble Brier}} =
+$$\underbrace{B_{\text{ens},t}}_{\text{ensemble Brier}} =
 \underbrace{\frac{1}{N}\sum_i B_{i,t}}_{\overline{\text{indiv. Brier}}} -
 \underbrace{\frac{1}{N}\sum_i (p_{i,t} - \bar{p}_t)^2}_{\text{Ambiguity}}$$
 

@@ -13,7 +13,7 @@ reallocation. The full experiment log is archived at
 ## 4.1  Agent Population
 
 **NBA cohort (N = 12).** Table 3 describes the twelve LLM agents fielded in
-the NBA prediction domain. The cohort spans four provider ecosystems, four
+the NBA prediction domain. The cohort spans five provider ecosystems, four
 model scales (0.6B to 235B parameters), and twelve distinct initial strategy
 archetypes drawn from the 20-archetype taxonomy (Appendix A). The initial
 archetype assignment was *not* optimised to maximise initial diversity; rather,
