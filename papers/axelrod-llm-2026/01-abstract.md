@@ -11,9 +11,9 @@ broadcast enables calibration while preserving belief diversity; and (iv) *sacri
 role reallocation* (SRR) allows underperforming agents to adopt under-represented
 strategy archetypes, provably increasing Jensen–Shannon population diversity.
 We formalise the system as the *LLM Prediction Society Game* (LPSG) — a Bayesian
-population game — and prove SRR constitutes a diversity-improving Nash equilibrium
-refinement (Lemma 1, Proposition 2). Results across 12 NBA and 10 political LLM agents
-from five provider ecosystems over 175 trading days are pending full seasonal resolution
+population game — and prove SRR constitutes a diversity-improving Strong Nash equilibrium
+refinement (Lemma 1, Proposition 2). Results across 12 NBA agents (175 trading days)
+and 10 political agents (90 trading days) from five provider ecosystems are pending full seasonal resolution
 (`data/arena/axelrod-log/`). The framework bridges Axelrod-era cooperation theory and
 principled design of diverse, calibrated LLM prediction ensembles.
 
