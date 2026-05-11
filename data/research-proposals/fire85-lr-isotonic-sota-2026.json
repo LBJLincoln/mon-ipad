@@ -1,0 +1,67 @@
+{
+  "proposal_id": "fire85-lr-isotonic-sota-2026",
+  "created_at": "2026-05-11T14:00:00Z",
+  "fire": 85,
+  "title": "Logistic Regression + Isotonic Calibration: SOTA Brier 0.199 on NBA (MDPI Jan 2026)",
+  "priority": "HIGH — LR Brier 0.199 beats fleet-best 0.22012",
+  "sources": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "journal": "MDPI Information",
+      "doi": "10.3390/info17010056",
+      "year": 2026,
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "key_finding": "Logistic regression attains best Brier score among tabular baselines at 0.199. XGBoost 0.202. CNN model 0.221. MC-dropout RNN + shot-chart spatial embeddings also achieves 0.199."
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "journal": "Scientific Reports (Nature)",
+      "year": 2025,
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "key_finding": "Stacked ensemble (NB + AdaBoost + MLP + KNN + XGB + DT + LR as meta-learner) achieves SOTA. Validates LR as meta-learner for CPU-legal stacked ensemble."
+    },
+    {
+      "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+      "journal": "MDPI Computation",
+      "year": 2025,
+      "url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "key_finding": "CNN model achieves Brier 0.221. Baseline comparison confirms tree ensembles competitive at 0.202."
+    }
+  ],
+  "current_fleet_best": 0.22012,
+  "sota_target": 0.199,
+  "gap": 0.02112,
+  "hypothesis": "Adding logistic_regression to NBA island MODEL_TYPES allows GA to discover LR-based individuals. LR with isotonic calibration (already deployed on S15 as isotonic_temporal) may achieve Brier near 0.199 — a 10% improvement over current fleet-best.",
+  "recommended_action": {
+    "work_queue_item": "vm-add-logistic-regression-model-pool",
+    "priority": 50,
+    "steps": [
+      "Edit S14 (Nomos42/nba-evo-5) app.py: add 'logistic_regression' and 'logistic_regression_brier' to MODEL_TYPES list",
+      "Add 'svm_platt' as secondary candidate (MDPI 2026 cites calibrated SVM 0.7749 accuracy)",
+      "Restart S14 Space to begin GA exploration of LR individuals",
+      "Monitor for 24h — if LR individuals reach top-5 by gen+50, port to S13/S18/S22",
+      "If LR achieves Brier <0.221 on any island → checkpoint + CLAUDE.md update"
+    ],
+    "cpu_compatibility": "LogisticRegression is CPU-legal (sklearn, no neural). SVM with Platt scaling also CPU-legal. Both compatible with Rule#8.",
+    "calibration_note": "S15 already uses isotonic_temporal calibration for fleet-best 0.22012. Apply same calibration to LR individuals."
+  },
+  "secondary_proposal": {
+    "title": "MC-dropout LSTM: GPU burst target",
+    "finding": "MDPI Jan 2026 shows MC-dropout RNN + spatial shot-chart embeddings achieves Brier 0.199",
+    "action": "Add to scripts/gpu-burst/ or scripts/kaggle/ Karpathy loop as GPU target",
+    "caveat": "GPU-only (LSTM). Cannot run on CPU islands. Target: ZeroGPU burst or Kaggle P100.",
+    "shot_chart_note": "Shot-chart spatial embeddings require play-by-play spatial data — not currently in features/engine.py. Would require new data pipeline step. Medium-term goal."
+  },
+  "stacked_ensemble_proposal": {
+    "title": "LR meta-learner on XGB+ET+LGBM (CPU-legal)",
+    "source": "Scientific Reports 2025 (nature.com/articles/s41598-025-13657-1)",
+    "work_queue_item": "vm-add-logistic-regression-model-pool",
+    "action": "Add 'stacked_ensemble_lr_meta' as a MODEL_TYPE: base learners XGB+ET+LGBM, meta-learner LR. This is CPU-legal (no neural). Differs from banned 'stacking' which used neural meta-learner.",
+    "distinction_from_banned_stacking": "Rule#8 bans 'stacking' because it uses neural meta-learner on CPU. LR meta-learner is legal. Requires implementing stacked_ensemble_lr_meta as distinct model type in island app.py."
+  },
+  "expected_impact": {
+    "brier_improvement": "0.021 (if SOTA replicated: 0.22012 → 0.199)",
+    "confidence": "MEDIUM-HIGH — MDPI 2026 peer-reviewed, NBA dataset 2024 season, comparable setup",
+    "caveat": "Our features differ from paper (186 features vs paper's feature set). Actual improvement may be smaller. GA exploration needed."
+  }
+}
