@@ -809,3 +809,185 @@ N11 (`@du2023improving` → `@zhao2021calibrate` in A.4.16; new entry in
 - `appendix-c.md` §C.3.3: full rewrite with mechanism-(a)/(b) structure; directional error corrected
 - `paper.md` §4.6: three-sentence provider-dependency note added
 - `paper.md` §C.3.3: condensed version added (was missing despite Cycle 11 claim)
+
+---
+
+# Peer-Review Self-Critique — Cycle 13 (2026-05-11)
+
+*Full-manuscript re-read following Cycle 12 closure of all prior open issues.
+Seven new issues identified (O1–O7); all seven fixed in this cycle.*
+
+---
+
+## CYCLE 12 STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle 12. PRE-SUBMISSION checklist items 1–3 (author
+verification) remain deferred pending network access to live arXiv records.
+
+---
+
+## NEW ISSUES (Cycle 13 re-read)
+
+### O1. §1 Introduction misrepresents Proposition 2 as Nash Equilibrium (NE) rather than Strong Nash Equilibrium (SNE) [FIXED]
+
+**Reviewer:** Contribution 2 in the Introduction states "We prove under mild
+assumptions that SRR is a Nash equilibrium refinement: no agent can *unilaterally*
+deviate and improve *societal* Brier score." This is wrong in two ways:
+
+1. Proposition 2 in §3.5 proves a *Strong* Nash Equilibrium — no *coalition*
+   $\mathcal{C} \subseteq \mathcal{I}$ can jointly deviate and improve. SNE is
+   strictly stronger than NE (which requires only no profitable *unilateral*
+   deviation). Understating the formal result is not conservative — it is
+   inaccurate.
+2. The NE framing invites a different type of deviation analysis than the SNE
+   framing. A hostile reviewer may attempt to construct a unilateral deviation that
+   improves "societal Brier" (a vague term), find no contradiction in the proof
+   sketch, and conclude the proof is incomplete.
+
+**Fix applied:** Introduction Contribution 2 rewritten to match Proposition 2's
+actual claim: "no coalition of agents can jointly deviate from SRR and simultaneously
+(weakly) improve ensemble Brier for the coalition while (weakly) reducing individual
+Brier for each coalition member." Reference updated to "Proposition 2, §3.5" (was
+"§3.4"). Applied to both `02-introduction.md` and `paper.md`. ✓
+
+---
+
+### O2. §2.3–2.6: arXiv IDs used as pandoc citation locators produce malformed citations [FIXED]
+
+**Reviewer:** Throughout §2.3 ("LLM Multi-Agent Societies") and §2.6 ("LLM Agents
+in Financial and Prediction Markets"), citations appear in the form
+`[@li2023camel, arXiv:2303.17760]`, `[@wu2023autogen, arXiv:2308.08155]`, etc.
+In pandoc-citeproc, the comma-separated text inside a single `[@key, ...]` bracket is
+treated as a *locator* or suffix appended after the citation reference — not a second
+citation key. This produces rendered text such as "(Li et al., 2023, arXiv:2303.17760)"
+in author-year style and "[1, arXiv:2303.17760]" in numbered style — both wrong for
+journal submission. The arXiv IDs are already present in the BibTeX `note` fields and
+need not appear in-text.
+
+Affected citations:
+`[@li2023camel, arXiv:2303.17760]`, `[@wu2023autogen, arXiv:2308.08155]`,
+`[@hong2023metagpt, arXiv:2308.00352]`, `[@yang2024oasis, arXiv:2411.11581]`
+(§2.3); `[@du2023improving, arXiv:2305.14325]` (§2.4);
+`[@yu2024finmem, arXiv:2311.13743]`, `[@xiao2024tradingagents, arXiv:2412.20138]`,
+`[@quantagents2025, arXiv:2510.04643]`, `[@ma2025agent, arXiv:2502.17967]`,
+`[@zhang2026arena, arXiv:2604.07355]` (§2.6).
+
+**Fix applied:** All ten arXiv locator suffixes removed from pandoc citation brackets
+in both `03-related-work.md` and the corresponding passages of `paper.md`. Post-fix
+verification: `grep -n "\[@.*arXiv:" paper.md` returns no output. ✓
+
+*Residual.* The QuantAgents footnote `^[Two distinct works share the name...]` retains
+inline arXiv IDs in plain prose (not as pandoc citation locators); this is correct and
+unchanged.
+
+---
+
+### O3. §6.5 Discussion references "Appendix E" which does not exist [FIXED]
+
+**Reviewer:** §6.5 (Financial Stakes as a Calibration Discipline) states "The emergent
+ensemble weighting is a form of implicit *Bayesian model averaging* where the weight
+assigned to each agent is proportional to evidence from its track record — a connection
+we formalise in Appendix E." No Appendix E exists in the manuscript (appendices are A,
+B, C, D). Dangling cross-references will cause `\ref{appE}` to resolve to `??` in the
+PDF and are fatal submission defects.
+
+**Fix applied:** The "Appendix E" forward-reference removed from §6.5 in both
+`07-discussion.md` and `paper.md`. The sentence now reads: "The emergent ensemble
+weighting is a form of implicit *Bayesian model averaging*: each agent's effective
+influence on the ensemble mean prediction $\bar{p}_t$ is proportional to its accumulated
+track record, with Kelly stakes as the weighting mechanism." If a formal derivation of
+this connection is desired, it can be added as Appendix E in a future cycle — but the
+forward reference must not precede the appendix's existence. ✓
+
+---
+
+### O4. §1 Introduction Contribution 3: "self-hosted Phi-3.5" contradicts Table 3 [FIXED]
+
+**Reviewer:** Contribution 3 in the Introduction lists "self-hosted Phi-3.5" as the
+fifth provider ecosystem. However, Table 3 (§4.1) correctly identifies agent T12 as
+"Qwen3-4B (CPU)" and its `agent_id` as `selfhost-qwen4b`. The §7.1 Limitations
+section also correctly uses "self-hosted Qwen3-4B." Phi-3.5 was a different
+self-hosted model in an earlier iteration of the system; it was replaced by Qwen3-4B.
+The inconsistency in the Introduction is a factual error that creates a description
+mismatch between §1 and §4.1.
+
+**Fix applied:** §1 Contribution 3: "self-hosted Phi-3.5" → "self-hosted Qwen3-4B"
+in both `02-introduction.md` and `paper.md`. Now consistent with Table 3, §7.1, and
+the system architecture as described in CLAUDE.md. ✓
+
+---
+
+### O5. §3.4 SRR Definition 2 silent on simultaneous multiple eligibilities [FIXED]
+
+**Reviewer:** Definition 2 specifies "If agent $i$ is sacrifice-eligible…" in the
+singular. If two agents $i$ and $j$ are simultaneously sacrifice-eligible on day $d$
+and both independently draw from $\mathcal{V}_d = \{r^*\}$ (a single vacant archetype),
+they could both be assigned $r^*$, leaving no other archetype vacant and potentially
+creating a two-agent cluster in a previously singleton archetype. The ordering of
+simultaneous reallocations and the update semantics of $\mathcal{V}_d$ are unspecified,
+which a formal reviewer will flag as an incomplete mechanism description.
+
+**Fix applied:** Added a **Multiple simultaneous eligibilities** paragraph immediately
+after Definition 2's persistence clause in both `04-method.md` and `paper.md`:
+reallocations execute in decreasing order of $\overline{B}_{i,d}$ (worst performer
+first), with $\mathcal{V}_d$ recomputed after each individual reallocation. This
+sequential greedy execution eliminates the duplicate-draw ambiguity and provides a
+unique, deterministic outcome for any simultaneous-eligibility scenario. ✓
+
+---
+
+### O6. §4.3 Condition reset description omits LLM conversation history [FIXED]
+
+**Reviewer:** §4.3 states that at the start of each condition, "each agent's internal
+state is reset (bankrolls re-initialised to \$100,000; Brier histories cleared)." A
+methodological reviewer may ask: are the LLM agents' in-context conversation histories
+also reset? If not, agent T1 in Condition B would enter the first day with a non-empty
+context from Condition A, introducing a prior-condition bias that violates the between-condition isolation assumption. This should be stated explicitly to close the gap.
+
+**Fix applied:** §4.3 reset description extended in both `05-experimental-setup.md`
+and `paper.md`: "LLM conversation context buffers flushed so that no prediction
+reasoning from a prior condition persists as in-context history" added to the reset
+parenthetical. ✓
+
+---
+
+### O7. Table 4 caption states pending A1 result as established fact [FIXED]
+
+**Reviewer:** The caption for Table 4 (§5.1) reads "All 190 off-diagonal entries
+exceed 0.037 (Assumption A1 threshold)." However, all table cells are marked
+**[PENDING]**. Stating as fact a result that is both (a) the central pre-registered
+hypothesis of §5.1 and (b) currently unpopulated constitutes an inconsistency that
+a referee will cite as evidence of result inflation.
+
+**Fix applied:** Table 4 caption updated in both `06-results.md` and `paper.md`:
+"exceed 0.037" → "are expected to exceed 0.037 (pre-registered Assumption A1
+threshold; values pending pilot backtest completion — see Table B.2)." ✓
+
+---
+
+## CYCLE 13 SUMMARY
+
+**Fixed:** O1 (NE→SNE in §1), O2 (arXiv locators removed from 10 citations),
+O3 (Appendix E dangling reference), O4 (Phi-3.5 → Qwen3-4B in §1),
+O5 (simultaneous SRR eligibility mechanism specified),
+O6 (LLM history reset clarified), O7 (Table 4 caption qualified)
+
+**Remaining open:** None.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's `> *Brier-delta... to be inserted*` note and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+
+**Structural additions this cycle:**
+- `02-introduction.md` + `paper.md`: SNE language + Qwen3-4B fix
+- `03-related-work.md` + `paper.md` §2.3/2.4/2.6: 10 arXiv locators removed
+- `04-method.md` + `paper.md` §3.4: simultaneous eligibility paragraph added
+- `05-experimental-setup.md` + `paper.md` §4.3: LLM history-reset clarification
+- `06-results.md` + `paper.md` §5.1: Table 4 caption qualified as pre-registered
+- `07-discussion.md` + `paper.md` §6.5: Appendix E dangling reference removed
