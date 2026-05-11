@@ -1,0 +1,74 @@
+{
+  "proposal_id": "fire88-ieee-lr-sota-2026",
+  "fire": 88,
+  "created_at": "2026-05-11T22:00:00Z",
+  "title": "IEEE 2026 Confirmation: LR + XGBoost Brier ~0.20 — Primary CPU-Actionable SOTA",
+  "summary": "Comprehensive IEEE 2026 method comparison confirms logistic regression and XGBoost both achieve Brier ~0.20 and AUC 0.75-0.76 on NBA game prediction. Complex sequence models (MC-dropout LSTM) do not automatically outperform classical well-calibrated baselines. This is independent corroboration of the MDPI 2026 finding from fire-85.",
+  "sources": [
+    {
+      "title": "Comparing Machine Learning Methods for NBA Game Outcome Prediction",
+      "venue": "IEEE Conference Publication 2026",
+      "url": "https://ieeexplore.ieee.org/document/11030489",
+      "key_metrics": {
+        "logistic_regression_brier": "~0.20",
+        "xgboost_brier": "~0.20",
+        "auc": "0.75-0.76",
+        "lstm_mc_dropout": "does not auto-beat classical models"
+      }
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "venue": "Scientific Reports 2025",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "key_metrics": {
+        "approach": "NB+AdaBoost+MLP+KNN+XGBoost+DT+LR with LR meta-learner",
+        "takeaway": "LR meta on tree bases outperforms individual models"
+      }
+    },
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting",
+      "venue": "MDPI Information 2026",
+      "doi": "10.3390/info17010056",
+      "key_metrics": {
+        "logistic_regression_brier": "0.199",
+        "approach": "LR + isotonic calibration + MC-dropout LSTM ensemble"
+      }
+    }
+  ],
+  "fleet_gap": {
+    "current_fleet_best": 0.22012,
+    "sota_target": 0.20,
+    "gap": 0.02012,
+    "gap_pct": "9.1%",
+    "conclusion": "Fleet is 9% above SOTA. LR addition is the single highest-leverage CPU-legal action."
+  },
+  "cpu_actions": [
+    {
+      "action": "Add logistic_regression to MODEL_TYPES on all NBA islands (S14 first, most likely to break through)",
+      "work_queue_item": "vm-add-logistic-regression-model-pool",
+      "priority": 50,
+      "expected_brier": "0.20-0.22 range",
+      "evidence_strength": "confirmed by 2 independent papers (MDPI 2026 + IEEE 2026)"
+    },
+    {
+      "action": "Add logistic_regression to P7 MODEL_TYPES (extra_trees already confirmed present)",
+      "work_queue_item": "vm-add-logistic-regression-model-pool covers P7 scope",
+      "expected_brier": "0.247-0.249 range for P7",
+      "evidence_strength": "confirmed by cross-domain transfer from NBA"
+    },
+    {
+      "action": "Stacked ensemble: tree bases (XGBoost + ET + RF) + LR meta-learner",
+      "work_queue_item": "vm-add-logistic-regression-model-pool (stacked_ensemble_lr_meta scope)",
+      "cpu_legal": true,
+      "note": "CPU-legal per Rule#8: base learners are tree-based, LR meta is not neural"
+    }
+  ],
+  "gpu_actions": [
+    {
+      "action": "MC-dropout LSTM ensemble for sequential game prediction",
+      "platform": "Colab T4 or Kaggle P100",
+      "note": "Does not automatically beat LR calibration per IEEE 2026 — lower priority than LR addition"
+    }
+  ],
+  "status": "QUEUED — awaiting vm-add-logistic-regression-model-pool execution"
+}

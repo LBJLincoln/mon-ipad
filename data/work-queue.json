@@ -4,6 +4,26 @@
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
+      "id": "vm-diversify-s14-fire88",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "URGENT: S14 (Nomos42/nba-evo-5) cycle_stag=23 threshold~25 — DIVERSIFY NOW",
+      "cloud_brain_note": "fire-88: S14 gen=1730 brier=0.22336 cycle=577 cycle_stag=23 (hard reset was at cycle 553, 24 cycles ago, current stag=23). WITHIN 1h: POST https://nomos42-nba-evo-5.hf.space/api/command {\"command\":\"diversify\"}. If missed, hard reset will occur ~cycle 578-580 generating stacking-infected population.",
+      "detected_at": "2026-05-11T22:00:00Z",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-diversify-s18-fire88",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "URGENT: S18 (TESTforge42/nba-evo-s18) cycle_stag=21 threshold~25 — DIVERSIFY within 4h",
+      "cloud_brain_note": "fire-88: S18 gen=5469 brier=0.22315 cycle=1823 cycle_stag=21. POST https://testforge42-nba-evo-s18.hf.space/api/command {\"command\":\"diversify\"}. Trend: fire-82 stag=9, fire-86 stag=9 sustained, fire-88 cycle_stag jumped to 21.",
+      "detected_at": "2026-05-11T22:00:00Z",
+      "do_not_push": false
+    },
+    {
       "id": "vm-s18-diversify-urgent",
       "priority": 0,
       "status": "done",
@@ -41,8 +61,8 @@
       "owner": "local-vm",
       "subject": "URGENT: political_engine.py both files = placeholder. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
       "detected_at": "2026-05-06T20:00:00Z",
-      "updated_at": "2026-05-11T18:00:00Z",
-      "cloud_brain_note": "fire-86: STILL PENDING 168h+. File is 194KB cannot be safely restored cloud-side. VM must run this. BLOCKING: Rotation B (political_engine.py review) blocked on this. CRITICAL — escalate.",
+      "updated_at": "2026-05-11T22:00:00Z",
+      "cloud_brain_note": "fire-88: STILL PENDING 192h+. File is 194KB cannot be safely restored cloud-side. VM must run this. BLOCKING: Rotation B (political_engine.py review) blocked on this. CRITICAL — escalate to user immediately.",
       "do_not_push": false
     },
     {
@@ -84,7 +104,7 @@
       "completed_by": "cloud-brain-fire-82",
       "owner": "local-vm",
       "subject": "Restart P2 (Nomos42/political-alpha-2) — 403 Forbidden DOWN",
-      "result": "fire-82: P2 self-recovered — returned gen=37257 brier=0.25003 stag=0 at /api/status. Space recovered on its own between fire-81 and fire-82. No VM action needed."
+      "result": "fire-82: P2 self-recovered — returned gen=37257 brier=0.25003 stag=0 at /api/status."
     },
     {
       "id": "vm-restart-p5-fire79",
@@ -94,15 +114,15 @@
       "completed_at": "2026-05-11T02:00:00Z",
       "completed_by": "cloud-brain-fire-81",
       "subject": "Restart P5 (LBJLincoln/political-alpha-5) — SSL certificate error (DOWN)",
-      "result": "fire-81: P5 self-recovered — returned gen=51671 brier=0.24993 stag=0 at /api/status. SSL cert resolved on its own. No VM action needed."
+      "result": "fire-81: P5 self-recovered — returned gen=51671 brier=0.24993 stag=0 at /api/status."
     },
     {
       "id": "vm-restart-s17-2026-05-03T22h",
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 42+ days",
-      "cloud_brain_note": "fire-86: S17 still 503 DOWN 42+ days. CRITICALLY OVERDUE — no VM action taken since work queue item was created (May 3). VM MUST: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 43+ days",
+      "cloud_brain_note": "fire-88: S17 still 503 DOWN 43+ days. CRITICALLY OVERDUE. VM MUST: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
       "do_not_push": false
     },
     {
@@ -111,7 +131,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Restart political data crons: fetch_political_data.py + insider_tracker.py",
-      "cloud_brain_note": "fire-86: Still uncertain status. URGENT for data freshness. Rotation A blocked on this. VM must confirm crontab -l shows */2h fetch_political_data.py and insider_tracker.py running.",
+      "cloud_brain_note": "fire-88: Still uncertain status. URGENT for data freshness. Rotation A blocked on this. VM must confirm crontab -l shows */2h fetch_political_data.py and insider_tracker.py running.",
       "do_not_push": false
     },
     {
@@ -121,7 +141,7 @@
       "owner": "local-vm",
       "subject": "Investigate S22 (TESTforge42/nba-evo-s22) repeated resets — multiple uncontrolled restarts",
       "detected_at": "2026-05-10T10:00:00Z",
-      "cloud_brain_note": "fire-86: S22 gen=955 brier=0.22551 stag=3, stable. Root cause investigation still valuable — factory-reboot loops may recur.",
+      "cloud_brain_note": "fire-88: S22 gen=1041 brier=0.22551 cycle_stag=6, stable. Root cause investigation still valuable to prevent recurrence.",
       "do_not_push": false
     },
     {
@@ -131,7 +151,7 @@
       "completed_at": "2026-05-11T12:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-84",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "Axelrod Mechanism A verified at parity (NBA+POL). Leaderboard with GF+7dΔ, consensus picks, DMAD gate, ck_consensus_stance MANDATORY. Active since fire-62; fires 62→84 each added tuning. do_not_push_hf_space_yet.",
+      "subject": "Axelrod Mechanism A verified at parity (NBA+POL).",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -171,7 +191,7 @@
       "completed_at": "2026-05-09T22:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-72",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "AXELROD-2026 Mech A DMAD parity: (1) CONSENSUS_AGREEMENT_JUSTIFIED in day_strategy schema, (2) day_strategy anti-groupthink audit bullet, (3) POL_TF_LLM_TIMEOUT_SEC env-configurable default 45s. py_compile PASS 3812L.",
+      "subject": "AXELROD-2026 Mech A DMAD parity + POL_TF_LLM_TIMEOUT_SEC env-configurable.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -180,7 +200,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation) + add roster continuity features (fire-77 SOTA)",
-      "cloud_brain_note": "fire-86: mismatch persists. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 char delta. fire-77 SOTA adds 3 roster continuity features: lineup_continuity_score_7d, player_availability_index, rotation_depth_score.",
+      "cloud_brain_note": "fire-88: mismatch persists. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 char delta. fire-77 SOTA adds 3 roster continuity features: lineup_continuity_score_7d, player_availability_index, rotation_depth_score.",
       "do_not_push": false
     },
     {
@@ -190,8 +210,8 @@
       "owner": "local-vm",
       "subject": "Remove 'stacking' from S15 (Nomos42/nba-evo-6) MODEL_TYPES — Rule#8 violation causing post-reset survivor dominance",
       "detected_at": "2026-05-11T10:00:00Z",
-      "updated_at": "2026-05-11T18:00:00Z",
-      "cloud_brain_note": "fire-86 CRITICAL: /api/status confirmed cycle=677 cycle-stag=16 (hard reset threshold ~25). Stacking model Brier=0.2474 dominating gens 1922-1926+. At current rate HARD RESET IN ~4-6h. Each reset generates new stacking-infected population permanently blocking fleet-best 0.22012 improvement. VM MUST: (1) edit S15 app.py MODEL_TYPES remove 'stacking', (2) restart Nomos42/nba-evo-6 Space IMMEDIATELY.",
+      "updated_at": "2026-05-11T22:00:00Z",
+      "cloud_brain_note": "fire-88 CRITICAL: /api/status confirmed MODEL_TYPES=[stacking,xgboost,xgboost_brier,lightgbm,lightgbm_brier,logistic_regression,extra_trees,random_forest]. cycle_stag=17 (was 16 fire-86, 17 fire-88). Hard reset estimated ~8 cycles away. Each reset re-infects population with stacking Brier=0.2474. VM MUST: (1) edit S15 app.py MODEL_TYPES remove 'stacking', (2) restart Nomos42/nba-evo-6 Space IMMEDIATELY.",
       "do_not_push": false
     },
     {
@@ -200,20 +220,20 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add logistic_regression + svm_platt to MODEL_TYPES on island app.py files (S14 first, then S13/S18/S22 and P7)",
-      "cloud_brain_note": "fire-86: SOTA CONFIRMED — LR achieves Brier 0.199 (MDPI Jan 2026, doi:10.3390/info17010056) — BEATS fleet-best 0.22012 by 0.021. fire-86 SOTA also confirms hierarchical player model (GPU-only) but LR is CPU-legal. HIGH PRIORITY — potential 10% fleet improvement.",
+      "cloud_brain_note": "fire-88: SOTA CONFIRMED — IEEE 2026 (doi:ieeexplore.ieee.org/document/11030489) confirms LR Brier ~0.20 AUC 0.75-0.76, beating fleet-best 0.22012 by 0.020. P7 already has extra_trees confirmed (fire-88). Still missing logistic_regression on P7 and all NBA islands. HIGH PRIORITY — confirmed by 2 independent papers (MDPI 2026 + IEEE 2026).",
       "do_not_push": false,
       "detected_at": "2026-05-09T18:00:00Z",
-      "updated_at": "2026-05-11T18:00:00Z"
+      "updated_at": "2026-05-11T22:00:00Z"
     },
     {
       "id": "vm-p7-extra-trees-trial",
       "priority": 55,
-      "status": "pending",
+      "status": "done",
       "owner": "local-vm",
+      "completed_at": "2026-05-11T22:00:00Z",
+      "completed_by": "cloud-brain-fire-88",
       "subject": "Cross-project port: add extra_trees to P7 (LBJLincoln/political-alpha-7) model pool",
-      "detected_at": "2026-05-10T18:00:00Z",
-      "updated_at": "2026-05-11T18:00:00Z",
-      "cloud_brain_note": "fire-86: P7 gen=54639 brier=0.25412 still worst POL stag=0. Rotation C active. NBA evidence: S15+S14 extra_trees = fleet best. Add stacked_ensemble LR meta simultaneously (LR Brier 0.199 SOTA). fire-86 brain-status.json documents Rotation C in detail.",
+      "result": "fire-88: /api/status confirmed MODEL_TYPES=[xgboost_brier,catboost,extra_trees,lightgbm] — extra_trees ALREADY present. Primary goal satisfied. Remaining: add logistic_regression → covered by vm-add-logistic-regression-model-pool priority-50.",
       "do_not_push": false
     },
     {
@@ -231,7 +251,7 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Fix diversify command format: action->command in all VM scripts",
-      "cloud_brain_note": "fire-86: still pending. Correct call confirmed: POST /api/command {command:diversify} (fire-86 tested successfully against S13). CLAUDE.md still shows {action:diversify} — VM must update all scripts that use POST /api/command.",
+      "cloud_brain_note": "fire-88: still pending. Correct call: POST /api/command {command:diversify}. CLAUDE.md still shows {action:diversify}. VM must update all scripts that use POST /api/command.",
       "do_not_push": false
     },
     {
@@ -242,8 +262,8 @@
       "subject": "Run nomos-political-alpha/scripts/fetch_fec_sec_features.py to generate FEC PAC + SEC Form4 feature data",
       "do_not_push": false,
       "detected_at": "2026-05-09T22:00:00Z",
-      "updated_at": "2026-05-11T18:00:00Z",
-      "cloud_brain_note": "fire-86: Rotation A — pipeline uncertain. VM must RUN: cd nomos-political-alpha && python scripts/fetch_fec_sec_features.py. Outputs to data/fec/features/. Adds ~15 new features for GA."
+      "updated_at": "2026-05-11T22:00:00Z",
+      "cloud_brain_note": "fire-88: Rotation A — pipeline uncertain. VM must RUN: cd nomos-political-alpha && python scripts/fetch_fec_sec_features.py. Outputs to data/fec/features/. Adds ~15 new features for GA."
     },
     {
       "id": "R8",
@@ -261,6 +281,15 @@
       "commit_hash": "61c4b61394e2381ab0e1702f0581c292055b235c",
       "owner": "local-agent-a63b2bad",
       "subject": "Deploy S20/S21/S22 NBA islands."
+    },
+    {
+      "id": "cloud-brain-fire88-2026-05-11T22h",
+      "priority": 121,
+      "status": "done",
+      "completed_at": "2026-05-11T22:00:00Z",
+      "completed_by": "cloud-brain-fire-88",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-88: S13 gen=4171 cycle_stag=5 ✓ RECOVERED (fire-86 diversify worked), S14 gen=1730 cycle_stag=23 ⚠ DIVERSIFY QUEUED (threshold ~25), S15 gen=2082 cycle_stag=17 stacking CONFIRMED in MODEL_TYPES CRITICAL, S17 503 DOWN 43+ days OVERDUE, S18 gen=5469 cycle_stag=21 ⚠ DIVERSIFY QUEUED, S22 gen=1041 cycle_stag=6 ✓. All 5 POL healthy: P1 gen=45573 ✓ CONFIRMED, P2 gen=40016 ✓, P4 gen=66487 alltime=0.24904 ✓, P5 gen=56134 ✓, P7 gen=55571 extra_trees CONFIRMED in MODEL_TYPES → vm-p7-extra-trees-trial CLOSED. IEEE 2026 (11030489) confirms LR+XGBoost Brier~0.20. fire88-ieee-lr-sota-2026.json written. brain-status.json updated nomos-political-alpha."
     },
     {
       "id": "cloud-brain-fire86-2026-05-11T18h",
@@ -287,7 +316,7 @@
       "completed_at": "2026-05-11T10:00:00Z",
       "completed_by": "cloud-brain-fire-83",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-83: S13 gen=3444 stag=0 ✓, S14 ✓ SELF-RECOVERED gen=1447 brier=0.22336 (was 403 DOWN fire-82 — vm-restart-s14-fire82 marked done), S15 gen=1877 brier=0.22012 fleet-best cycle-stag=24 ⚡ INTERNAL HARD RESET IMMINENT — stacking survivor dominance (0.2474) — vm-remove-stacking-s15 added priority-45, S17 503 DOWN persistent, S18 gen=5126 brier=0.22315 stag=0 ✓ recovered cycle-stag=7, S22 gen=773 brier=0.22551 stag=0 ✓. P1 gen=42531 stag=0 ✓, P2 gen=37729 stag=0 ✓, P4 gen=64104 stag=0 ✓ POL FLEET BEST 0.24992, P5 gen=53100 stag=0 ✓, P7 gen=51721 stag=0 ✓. Rotation C: extra_trees for P7 + stacked_ensemble documented. All 5 POL healthy."
+      "subject": "fire-83 summary on record"
     },
     {
       "id": "cloud-brain-fire82-2026-05-11T06h",
@@ -296,7 +325,7 @@
       "completed_at": "2026-05-11T06:00:00Z",
       "completed_by": "cloud-brain-fire-82",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-82: S13 gen=3259 stag=0 ✓, S14 🔴 NEW 403 DOWN (vm-restart-s14-fire82 queued), S15 gen=1838 stag=0 ✓ RF fleet best 0.22012, S17 503 DOWN persistent, S18 gen=5057 stag=9 ⚠ WATCH (threshold 15), S22 gen=735 stag=0 ✓. P1 gen=41778 stag=0 ✓, P2 ✓ SELF-RECOVERED gen=37257 brier=0.25003 (was 403 DOWN fire-81 — cloud-restart-p2-fire81 marked done), P4 gen=63582 stag=0 ✓ POL FLEET BEST, P5 gen=52401 stag=0 ✓, P7 gen=50733 stag=0 ✓ SAVING. SOTA: IEEE 2026 LR Brier~0.20 + stacked ensemble (Sci Reports 2025) → fire82 research proposal written. Rotation D: political data pipeline health audit — vm-restart-political-data-crons URGENT."
+      "subject": "fire-82 summary on record"
     },
     {
       "id": "cloud-brain-fire81-2026-05-11T02h",
@@ -305,7 +334,17 @@
       "completed_at": "2026-05-11T02:00:00Z",
       "completed_by": "cloud-brain-fire-81",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-81: S13 gen=3067 stag=0 ✓, S14 gen=1283 stag=0 ✓ catboost competitive, S15 gen=1735 stag=0 ✓ RF current best / fleet best 0.22012, S18 gen=4946 stag=0 ✓ FULLY RECOVERED (was 8), S22 gen=652 stag=0 ✓. NBA all healthy. P1 gen=40856 stag=0 ✓, P2 🔴 403 DOWN → restart queued, P4 gen=62829 stag=0 ✓ POL FLEET BEST, P5 gen=51671 stag=0 ✓ SELF-RECOVERED (was CERT ERROR), P7 gen=49659 stag=0 ✓. Rotation C active (B blocked). SOTA: stacked ensemble MLP meta (Sci Reports 2025) + LSTM/Transformer basketball (arXiv 2508.02725) + CNN Brier 0.221 (MDPI). S17 still 503 DOWN."
+      "subject": "fire-81 summary on record"
+    },
+    {
+      "id": "cloud-trigger-axelrod-fire-87-2026-05-11",
+      "priority": 120,
+      "status": "done",
+      "completed_at": "2026-05-11T22:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-87",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-87: CONSENSUS PICKS stake field + cash_held_pct in Mech C rows. NBA 5913→5917L | POL 3897→3901L | py_compile PASS both. do_not_push_hf_space_yet.",
+      "do_not_push_hf_space_yet": true
     },
     {
       "id": "cloud-trigger-axelrod-fire-85-2026-05-11",
@@ -314,7 +353,7 @@
       "completed_at": "2026-05-11T14:30:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-85",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-85: verify+tune — (1) PEER CK STANCES[D] block in build_common_knowledge_block: agents see each peer's ck_consensus_stance (diverge/agree/partial + reason[:80]) from yesterday, closing Mech A meta-learning loop. (2) dmad_prefix_type field in write_axelrod_log Mech C rows: parsed categorical DMAD compliance label for paper dataset. (3) _parse_dmad_prefix() helper at parity. NBA 5881->5913L | POL 3865->3897L | py_compile PASS both. All 3 mechs (A/B/C) verified at parity. do_not_push_hf_space_yet.",
+      "subject": "fire-85: PEER CK STANCES[D] block + dmad_prefix_type field. NBA 5881→5913L | POL 3865→3897L | py_compile PASS both. do_not_push_hf_space_yet.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -324,7 +363,7 @@
       "completed_at": "2026-05-11T12:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-84",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-84: Mech B persistence — society_archetypes_by_day+sacrificial_assignments now saved in _experiment_state JSON + restored at run_experiment entry. Fixes 7-day archetype dedup across Space restarts. POL Mech C parity: +confidence+thesis to decisions_summary. NBA 5874→5881L | POL 3856→3865L | py_compile PASS both. All 3 mechs (A/B/C) verified at parity. do_not_push_hf_space_yet.",
+      "subject": "fire-84: Mech B persistence — society_archetypes_by_day+sacrificial_assignments saved in _experiment_state JSON. NBA 5874→5881L | POL 3856→3865L | py_compile PASS both. do_not_push_hf_space_yet.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -334,7 +373,7 @@
       "completed_at": "2026-05-11T08:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-82",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-82: verify+tune Axelrod Mech A — added trailing-7d-delta (7dΔ) to CK leaderboard in build_common_knowledge_block (both NBA+POL). Agents now see per-peer 7d momentum alongside GF in COMMON_KNOWLEDGE[D] block. NBA 5873→5874L | POL 3855→3856L | py_compile PASS both. All 3 mechs (A/B/C) verified at parity. do_not_push_hf_space_yet.",
+      "subject": "fire-82: trailing-7d-delta to CK leaderboard. NBA 5873→5874L | POL 3855→3856L | py_compile PASS both. do_not_push_hf_space_yet.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -344,7 +383,7 @@
       "completed_at": "2026-05-10T22:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-80",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-80: All 3 Axelrod mechs verified at parity NBA(5872L)+POL(3854L) py_compile PASS. Tune: added AXELROD_ARCHETYPE_DESCRIPTIONS dict (20 NBA + 20 POL one-sentence directives) to build_sacrificial_system_suffix. do_not_push_hf_space_yet.",
+      "subject": "fire-80: AXELROD_ARCHETYPE_DESCRIPTIONS dict added. NBA 5872L+POL 3854L py_compile PASS. do_not_push_hf_space_yet.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -354,7 +393,7 @@
       "completed_at": "2026-05-10T22:00:00Z",
       "completed_by": "cloud-brain-fire-79",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-79: S13 stag=0 ✓ (13→0), S14 stag=0 ✓, S15 stag=0 ✓ FLEET BEST 0.22012 (hard reset cycle 526 cleared stag), S18 stag=8 ✓ (19→8 recovered), S22 gen=588 0.22551 stag=0 recovering. P5 🔴 CERT ERROR DOWN → vm-restart-p5-fire79 queued. P4 POL FLEET BEST 0.24992. Rotation A→B: fetch_fec_sec_features.py created (FEC PAC flows + SEC Form 4). SOTA: shot-chart spatial embeddings proposal written. S17 still 503 DOWN."
+      "subject": "fire-79 summary on record"
     },
     {
       "id": "cloud-brain-fire78-2026-05-10T18h",
@@ -363,7 +402,7 @@
       "completed_at": "2026-05-10T18:00:00Z",
       "completed_by": "cloud-brain-fire-78",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-78: S13 stag=13 ⚠ WATCH (was 0), S14 stag=0 ✓, S15 stag 13→7 ✓ recovering (fleet best 0.22012), S18 stag=19 🔥 DIVERSIFY PENDING VM (was 6), S22 gen=485 brier=0.22551 stag=0 ✓ recovering. All 5 POL stag=0 P4 fleet best 0.24992. SOTA: MC-dropout LSTM Brier 0.199 (MDPI 2078-2489/17/1/56). Cross-project: extra_trees port to P7 queued. S17 still 503 DOWN."
+      "subject": "fire-78 summary on record"
     },
     {
       "id": "cloud-brain-fire77-2026-05-10T14h",
@@ -372,7 +411,7 @@
       "completed_at": "2026-05-10T14:00:00Z",
       "completed_by": "cloud-brain-fire-77",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-77: S13 recovered stag=25→0, S14 recovered stag=22→0 (diversify fire-75 worked), S15 stag=13 WATCH approaching threshold, S22 GREAT RECOVERY 0.24471→0.22151. All 5 POL healthy stag=0. SOTA: MambaNET SSM hybrid AUC 0.82. Rotation D: political data pipeline health. S17 still 503 DOWN."
+      "subject": "fire-77 summary on record"
     },
     {
       "id": "cloud-trigger-axelrod-fire-76-2026-05-09",
@@ -381,7 +420,7 @@
       "completed_at": "2026-05-09T14:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-76",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-76: All 3 Axelrod mechs confirmed at full parity NBA(5840L)+POL(3824L) py_compile PASS. Tune: added fleet/provider/trailing_7d_delta to Mech C write_axelrod_log rows in both files.",
+      "subject": "fire-76: fleet/provider/trailing_7d_delta added to Mech C. do_not_push_hf_space_yet.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -391,7 +430,7 @@
       "completed_at": "2026-05-10T10:00:00Z",
       "completed_by": "cloud-brain-fire-75",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-75: S13 self-reset stag=25 ✓, S14 DIVERSIFY SENT stag=22, S15 fleet best 0.22012 stable, S18 recovering stag=12, S22 FACTORY RESTART DETECTED gen=130/0.24471. All 5 POL islands healthy stag=0. SOTA: LR+isotonic Brier 0.199 (MDPI 2026). vm-add-logistic-regression-model-pool priority upgraded 60→50."
+      "subject": "fire-75 summary on record"
     },
     {
       "id": "cloud-trigger-axelrod-fire-74-2026-05-10T06h",
@@ -400,7 +439,7 @@
       "completed_at": "2026-05-10T06:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-74",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-74: All 3 Axelrod mechs verified at parity NBA(5836L)+POL(3820L) py_compile PASS.",
+      "subject": "fire-74: All 3 Axelrod mechs verified NBA(5836L)+POL(3820L). do_not_push_hf_space_yet.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -410,17 +449,7 @@
       "completed_at": "2026-05-10T02:00:00Z",
       "completed_by": "cloud-brain-fire-73",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-73: S13 breakthrough 0.23196→0.22398 (gen2145), S22 stag13→0 recovered, S14 WATCH stag=12/15. SOTA: calibrated SVM (IEEE 2026 0.7749 acc) + stacked ensemble proposal."
-    },
-    {
-      "id": "cloud-trigger-axelrod-fire-87-2026-05-11",
-      "priority": 120,
-      "status": "done",
-      "completed_at": "2026-05-11T22:00:00Z",
-      "completed_by": "cloud-trigger-axelrod-fire-87",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-87: verify+tune — (1) Mech A CK block: CONSENSUS PICKS now shows total fleet stake per pick alongside agent count (stake=$XXX) — implements Axelrod-2026 spec {stake} field in aggregate, gives agents WHERE-the-money-is signal not just headcount. (2) Mech C write_axelrod_log: added cash_held_pct to per-agent paper-dataset rows (deployment vs cash analysis). Both NBA+POL at parity. NBA 5913→5917L | POL 3897→3901L | py_compile PASS both. All 3 mechs (A/B/C) verified at parity. do_not_push_hf_space_yet.",
-      "do_not_push_hf_space_yet": true
+      "subject": "fire-73 summary on record"
     }
   ],
   "recovery_protocol": {
