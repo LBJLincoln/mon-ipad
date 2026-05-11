@@ -256,9 +256,9 @@ predictions (staking too little on high-edge bets) forgo returns.
 This creates a second-order feedback: agents with better-calibrated probability
 estimates stake more, earn more, and their bankroll weight in the ensemble
 mean prediction grows. The emergent ensemble weighting is a form of implicit
-*Bayesian model averaging* where the weight assigned to each agent is
-proportional to evidence from its track record — a connection we formalise
-in Appendix E.
+*Bayesian model averaging*: each agent's effective influence on the
+ensemble mean prediction $\bar{p}_t$ is proportional to its accumulated
+track record, with Kelly stakes as the weighting mechanism.
 
 The Prediction Arena findings [@zhang2026arena] — LLM agents losing
 16–30.8% on Kalshi despite sophisticated reasoning — are consistent with

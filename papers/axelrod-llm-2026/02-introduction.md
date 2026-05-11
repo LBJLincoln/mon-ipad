@@ -34,7 +34,8 @@ receive natural-language descriptions of their role, history, and environment an
 free-text reasoning before committing to an action. This shifts the locus of strategy from
 the programmer to the model's emergent reasoning, enabling far richer behavioral
 repertoires. CAMEL [@li2023camel] pioneered role-playing LLM societies; AutoGen
-[@wu2023autogen] formalized multi-agent conversation patterns; MetaGPT [@hong2023metagpt] introduced role-specialisation with shared memory. More recently, TradingAgents [@xiao2024tradingagents] instantiated a multi-LLM financial
+[@wu2023autogen] formalized multi-agent conversation patterns; MetaGPT [@hong2023metagpt] introduced role-specialisation with shared memory. More recently, TradingAgents
+[@xiao2024tradingagents] instantiated a multi-LLM financial
 trading system with analyst, risk management, and execution roles communicating through
 structured dialogues — the closest antecedent to our architecture. OASIS [@yang2024oasis]
 extended multi-agent interaction to one-million-node social simulations on real social
@@ -87,12 +88,14 @@ This paper makes four contributions:
    an agent with persistent performance deficiency (defined formally as sustained negative
    regret relative to the society mean) probabilistically adopts an underrepresented
    strategy archetype from a predefined taxonomy, increasing population-level Jensen–Shannon
-   divergence (§3.3). We prove under mild assumptions that SRR is a Nash equilibrium
-   refinement: no agent can unilaterally deviate and improve *societal* Brier score (§3.4).
+   divergence (§3.3). We prove under mild assumptions that SRR is a *Strong* Nash equilibrium
+   refinement (Proposition 2, §3.5): no coalition of agents can jointly deviate from SRR
+   and simultaneously (weakly) improve ensemble Brier for the coalition while (weakly)
+   reducing individual Brier for each coalition member.
 
 3. **Real-world LLM trading experiment.** We deploy 12 heterogeneous LLM agents (spanning
    five provider ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, and
-   self-hosted Phi-3.5) on the full 2025–26 NBA season (1,257 games) and 1,120 US
+   self-hosted Qwen3-4B) on the full 2025–26 NBA season (1,257 games) and 1,120 US
    political events, constituting — to our knowledge — the largest real-money-equivalent
    LLM prediction market experiment in peer-reviewed literature (§4).
 

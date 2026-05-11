@@ -25,7 +25,7 @@ observed in the SRR condition cannot be attributed to a favourable starting
 configuration.
 
 | # | Agent ID | Model | Provider | Initial Archetype | $\kappa_i$ |
-|---|----------|-------|----------|-------------------|-----------|
+|---|----------|-------|----------|-------------------|----------|
 | T1 | qwen-quant | Qwen 3 235B-A22B | Cerebras | quantitative | 0.55 |
 | T2 | qwen-arb | Qwen 3 235B-A22B | Cerebras | arbitrage | 0.65 |
 | T3 | llama-contra | Llama 3.1 8B | Cerebras | contrarian | 0.55 |
@@ -170,7 +170,8 @@ The five conditions are run sequentially on the same chronological event stream,
 not in parallel, to control for market-state variation. Order effects are
 mitigated by the fact that each agent's internal state is reset at the start
 of each condition (bankrolls re-initialised to \$100,000; Brier histories
-cleared). The full experimental calendar is described in Appendix C.1.
+cleared; LLM conversation context buffers flushed so that no prediction
+reasoning from a prior condition persists as in-context history). The full experimental calendar is described in Appendix C.1.
 
 ---
 
