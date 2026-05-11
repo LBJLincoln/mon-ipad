@@ -30,7 +30,7 @@ the spirit, if not the mechanism, of LLM-based agents.
 Nowak's landmark 2006 *Science* synthesis [@nowak2006five]
 identified five mechanisms through which cooperation can evolve:
 kin selection, direct reciprocity, indirect reciprocity, network
-reciprocity, and group selection. Each mechanism corresponds to a
+reciprosity, and group selection. Each mechanism corresponds to a
 structural condition on the interaction graph or payoff
 structure. Our paper introduces a sixth candidate in the context of
 LLM agent societies: *role sacrifice*, where an agent voluntarily
@@ -123,7 +123,7 @@ simulation to one million agents on real Twitter and Reddit topologies,
 demonstrating emergent phenomena — information cascades, group
 polarization, herd effects — that are invisible at the small-agent-count
 scale studied by CAMEL and AutoGen. Our Axelrod-LLM system operates at
-the opposite end of the scale spectrum (16 agents), but shares OASIS's
+the opposite end of the scale spectrum (12 NBA agents, 10 political agents), but shares OASIS's
 commitment to real-world grounding: unlike OASIS's social-simulation
 environment, our arena resolves every event against an exogenous binary
 ground truth (game outcomes and political event resolutions), imposing

@@ -246,7 +246,7 @@ The self-hosted agent (T12) runs on a CPU-only HuggingFace Space.
 Using published emission factors for GPU inference
 [@lannelongue2021green], total estimated carbon footprint over the
 175-day experimental period is below 10 kg CO$_2$-equivalent —
-comparable to a single transatlantic flight passenger-kilometre.
+comparable to driving a typical petrol car approximately 60 km.
 
 **Agent autonomy and human oversight.** All agent predictions in this
 experiment are recorded but no real bets are placed autonomously. A human
