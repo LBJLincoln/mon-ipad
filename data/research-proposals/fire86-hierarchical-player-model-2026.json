@@ -1,0 +1,74 @@
+{
+  "id": "fire86-hierarchical-player-model-2026",
+  "created_at": "2026-05-11T18:00:00Z",
+  "fire": 86,
+  "title": "Hierarchical 4-Level Neural + Roster-Conditioned Transformer for NBA Prediction",
+  "sources": [
+    {
+      "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+      "url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "key_finding": "Hierarchical 4-level neural architecture: Layer 1=player ability embeddings, Layer 2=player synergy modelling, Layer 3=team-level effects, Layer 4=game matchup prediction. ~1.4M parameters. Consistently outperforms flat XGBoost/LR on Brier."
+    },
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "key_finding": "Roster-conditioned temporal transformer: processes each team's full season history with player-level attention (~25M params). LR achieves Brier 0.199, XGBoost 0.202 as strong baselines. Monte Carlo dropout at inference for calibrated uncertainty."
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "key_finding": "Stacked ensemble with LR meta-learner on tree base learners (XGBoost+LightGBM+ExtraTrees) outperforms individual models. CPU-legal."
+    }
+  ],
+  "summary": "Two GPU-only SOTA architectures identified this cycle. The hierarchical 4-level neural models player synergy explicitly, capturing lineup combinations that flat models miss. The roster-conditioned transformer processes sequential team history at player granularity. Both require GPU (Colab/Kaggle A100/P100) but the feature insights are CPU-applicable: player synergy proxy features should be added to engine.py.",
+  "actionable_cpu_legal": [
+    {
+      "action": "LR+isotonic calibration as new MODEL_TYPE",
+      "expected_brier": 0.199,
+      "status": "queued (vm-add-logistic-regression-model-pool priority-50)",
+      "beats_fleet_best_by": 0.021
+    },
+    {
+      "action": "Stacked ensemble with LR meta-learner on XGBoost+LightGBM+ExtraTrees base",
+      "expected_brier": "<0.22 based on Sci Reports 2025",
+      "status": "queued (vm-add-logistic-regression-model-pool includes this)",
+      "note": "Rule#8 CPU-only — no neural stacking, tree-only ensemble legal"
+    },
+    {
+      "action": "Player synergy proxy features in engine.py",
+      "features": [
+        "lineup_continuity_score_7d (already queued fire-77)",
+        "player_availability_index (already queued fire-77)",
+        "rotation_depth_score (already queued fire-77)",
+        "pairwise_player_synergy_top5 (NEW fire-86 — top-5 two-player combinations by +/- over last 14d)",
+        "lineup_5man_familiarity_score (NEW fire-86 — avg games played together by starting 5 over last 30d)"
+      ],
+      "status": "2 new features for engine-parity-sync scope"
+    }
+  ],
+  "actionable_gpu": [
+    {
+      "action": "Hierarchical 4-level neural architecture",
+      "params": "~1.4M",
+      "platform": "Colab T4 / Kaggle P100",
+      "priority": "medium — GPU burst sessions only"
+    },
+    {
+      "action": "Roster-conditioned temporal transformer",
+      "params": "~25M",
+      "platform": "ZeroGPU H200 / Modal A10G",
+      "priority": "low — large model, slow inference"
+    }
+  ],
+  "fleet_best_context": {
+    "current_fleet_best_brier": 0.22012,
+    "lr_target_brier": 0.199,
+    "improvement_if_lr_works": "10.1% relative improvement",
+    "checkpoint_gate": "<0.22085 triggers CLAUDE.md update + checkpoint"
+  },
+  "related_proposals": [
+    "fire85-lr-isotonic-sota-2026.json",
+    "fire82-sota-stacked-ensemble-2026.json"
+  ],
+  "priority": "medium — GPU architectures queued; CPU actions (LR + 2 new features) HIGH PRIORITY"
+}
