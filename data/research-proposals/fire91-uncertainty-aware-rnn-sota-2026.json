@@ -1,0 +1,78 @@
+{
+  "id": "fire91-uncertainty-aware-rnn-sota-2026",
+  "created_at": "2026-05-12T10:00:00Z",
+  "brain_cycle": "fire-91",
+  "title": "Uncertainty-Aware NBA Forecasting: RNN + Monte Carlo Dropout (MDPI 2026 SOTA)",
+  "sources": [
+    {
+      "paper": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "journal": "MDPI Information",
+      "year": 2026,
+      "key_result": "RNN+MC dropout Brier ~0.20, LR+XGBoost baseline also ~0.20"
+    },
+    {
+      "paper": "Comparing Machine Learning Methods for NBA Game Outcome Prediction",
+      "url": "https://ieeexplore.ieee.org/document/11030489/",
+      "journal": "IEEE Xplore",
+      "year": 2026,
+      "key_result": "LR Brier ~0.199-0.20, AUC 0.75-0.76 — already in vm-add-logistic-regression-model-pool"
+    },
+    {
+      "paper": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+      "url": "https://www.mdpi.com/2079-3197/13/10/230",
+      "journal": "MDPI Computation",
+      "year": 2025,
+      "key_result": "CNN Brier 0.221"
+    }
+  ],
+  "architecture": {
+    "model": "Recurrent Neural Network (LSTM/GRU) with Monte Carlo Dropout",
+    "features": [
+      "team-level rolling performance metrics",
+      "rolling-form indicators (5/10/20 game windows)",
+      "spatial shot-chart embeddings (CNN sub-network)",
+      "Elo ratings (5-game rolling + season-long)",
+      "home-court advantage encoded"
+    ],
+    "uncertainty_mechanism": "MC dropout at inference: N=50 forward passes → mean prediction + epistemic uncertainty estimate",
+    "output": "P(home_win) distribution, not point estimate"
+  },
+  "key_findings": {
+    "brier_score": 0.20,
+    "vs_fleet_best": "Fleet best 0.22012 vs SOTA 0.20 = 0.020 headroom (~9% improvement)",
+    "lr_baseline": "LR+XGBoost baseline also achieves ~0.20 — CPU-actionable today",
+    "uncertainty_value": "Confidence bounds enable variance-adjusted Kelly sizing: lower stake when MC variance is high"
+  },
+  "cpu_actionable": {
+    "action": "Add logistic_regression to all island MODEL_TYPES",
+    "work_queue_item": "vm-add-logistic-regression-model-pool (priority-50)",
+    "expected_improvement": "Fleet best 0.22012 → ~0.200-0.199 (based on IEEE 2026 + MDPI 2026)",
+    "islands_needing_lr": ["S15", "S22", "P2", "P4", "P5", "P7"],
+    "islands_with_lr": ["S14 ✓", "S18 ✓", "P1 ✓"]
+  },
+  "gpu_future": {
+    "action_1": {
+      "name": "MC Dropout RNN for NBA",
+      "description": "Train LSTM with MC dropout on 11440 games + temporal features. At inference, run 50 forward passes to get uncertainty estimate.",
+      "platform": "Modal A10G (auto via .github/workflows/modal-burst.yml) or Kaggle P100",
+      "effort": "medium",
+      "expected_brier": 0.20
+    },
+    "action_2": {
+      "name": "Shot-Chart CNN Embeddings",
+      "description": "Train CNN on shot-chart heatmaps → 128-dim embedding as GA feature. Requires shot-chart data ingestion (browser-use scraper or public API).",
+      "platform": "Google Colab T4 (manual)",
+      "effort": "high",
+      "dependency": "shot-chart data pipeline not yet built"
+    }
+  },
+  "betting_application": {
+    "insight": "MC dropout outputs a DISTRIBUTION P(home_win), not just a number",
+    "kelly_upgrade": "Kelly fraction = f(edge, uncertainty) — when MC std_dev is high (0.15+), cap stake at 50% of normal Kelly",
+    "expected_roi_impact": "Lower variance → better Sharpe ratio even at same Brier score",
+    "implementation": "Modify _calculate_kelly_fraction in TF agents to accept confidence_bound parameter"
+  },
+  "cross_project_note": "Same uncertainty architecture applies to Political Alpha. pol-oracle Brier 0.23274 — MC dropout could push toward 0.20 target.",
+  "verdict": "PRIORITY-1 for next GPU burst. LR addition is immediate CPU win (today). MC dropout RNN is medium-term GPU target (Modal A10G). Shot-chart embeddings are longer-term."
+}
