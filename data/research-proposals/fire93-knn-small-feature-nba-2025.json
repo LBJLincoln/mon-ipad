@@ -1,0 +1,30 @@
+{
+  "id": "fire93-knn-small-feature-nba-2025",
+  "created_at": "2026-05-12T18:00:00Z",
+  "fire": 93,
+  "title": "KNN as CPU Base Learner for NBA Prediction with Feature Count Gate (<100f)",
+  "source": {
+    "paper": "Machine Learning Models for NBA Game Prediction",
+    "venue": "ITM Conferences CSEIT 2025",
+    "url": "https://www.itm-conferences.org/articles/itmconf/pdf/2025/09/itmconf_cseit2025_01011.pdf"
+  },
+  "finding": "Comprehensive benchmark of LR, Ridge, RF, NaiveBayes, KNN, SVM, Stacking, Bagging, MLP, AdaBoost, XGBoost for NBA prediction. AdaBoost ranked 2nd after XGBoost. KNN viable as a competitive CPU model specifically when feature count is small (<100f), where distance computation is fast.",
+  "proposal": {
+    "model": "sklearn.neighbors.KNeighborsClassifier(n_neighbors=5, metric='euclidean', weights='distance')",
+    "feature_gate": "Only evaluate KNN individuals with n_features < 100 (inference speed guard). Skip KNN for >100f individuals in GA eval loop.",
+    "expected_brier": "~0.230-0.240 (below LR+AdaBoost but provides search diversity at low feature counts)",
+    "cpu_cost": "O(n*k*d) at inference — fast for d<100, slow for d>200. Gate required.",
+    "implementation": "Add 'knn' to MODEL_TYPES list. In eval function: if model_type=='knn' and n_features>=100: skip/return None. Use KNeighborsClassifier(n_neighbors=5, metric='euclidean', weights='distance').",
+    "priority": 70,
+    "work_queue_item": "vm-add-knn-small-feature-model-pool",
+    "prerequisite": "AdaBoost + NaïveBayes must be validated first (vm-add-adaboost-naive-bayes-model-pool priority-56)"
+  },
+  "cross_fleet_applicability": {
+    "nba": "S15, S22 (after stacking removal)",
+    "political": "P4, P7, P2, P5 — POL has 272 feature candidates vs NBA 3377; KNN at <100f will activate more often on POL islands"
+  },
+  "additional_references": [
+    {"title": "Leveraging ML and DL for NBA Match Results", "doi": "10.1145/3773365.3773520", "venue": "ACM DL 2025", "finding": "DL ceiling Brier ~0.221 matches fleet best 0.22012 — no CPU actionable improvement beyond current roadmap"},
+    {"title": "Forecasting NCAA Basketball with Deep Learning", "arxiv": "2508.02725", "finding": "NCAA context only, not NBA — noted for cross-sport transfer potential"}
+  ]
+}
