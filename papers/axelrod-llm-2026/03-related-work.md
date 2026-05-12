@@ -30,7 +30,7 @@ the spirit, if not the mechanism, of LLM-based agents.
 Nowak's landmark 2006 *Science* synthesis [@nowak2006five]
 identified five mechanisms through which cooperation can evolve:
 kin selection, direct reciprocity, indirect reciprocity, network
-reciprosity, and group selection. Each mechanism corresponds to a
+reciprocity, and group selection. Each mechanism corresponds to a
 structural condition on the interaction graph or payoff
 structure. Our paper introduces a sixth candidate in the context of
 LLM agent societies: *role sacrifice*, where an agent voluntarily
@@ -199,8 +199,8 @@ established that small individual behavioral asymmetries can produce
 large aggregate patterns — a structurally similar insight to our
 finding that individual agent sacrifice (SRR) produces a
 disproportionate improvement in societal Brier score.
-Schelling's later work on focal points [@schelling1960strategy]
-provides a further connection: in the absence of explicit coordination,
+Schelling's earlier *The Strategy of Conflict* [@schelling1960strategy]
+introduced the focal-point concept: in the absence of explicit coordination,
 agents converge on salient solutions. In our setting, the prevailing
 market line (the Las Vegas spread) functions as a Schelling focal
 point that all agents observe, creating a gravitational pull toward
