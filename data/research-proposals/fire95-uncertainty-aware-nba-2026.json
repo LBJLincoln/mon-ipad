@@ -1,0 +1,30 @@
+{
+  "fire": 95,
+  "timestamp": "2026-05-13T02:00:00Z",
+  "source": "MDPI Information 2026 January",
+  "doi": "10.3390/info17010056",
+  "url": "https://www.mdpi.com/2078-2489/17/1/56",
+  "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+  "key_findings": [
+    "RNN + Monte Carlo (MC) dropout for calibrated sequential probabilities — best ECE among all tested methods",
+    "Strict chronological partitioning: train ≤2022, validation 2023, test 2024 (12 seasons, 14,734 games)",
+    "Rolling-form indicators + spatial shot-chart embeddings add predictive signal beyond box scores",
+    "Tabular baselines: LR Brier 0.199, XGBoost Brier 0.202 — consistent with MDPI 2079-3197/13/10/230 findings",
+    "MC dropout calibration significantly reduces ECE vs isotonic scaling on high-uncertainty game contexts"
+  ],
+  "cpu_actionable": [
+    "MC dropout requires neural networks — NOT viable for CPU island GA evolution (Rule#8: CPU-only, tree-based)",
+    "CalibratedClassifierCV with 'sigmoid' (Platt scaling) is the CPU-compatible MC dropout proxy — ALREADY in island code",
+    "Rolling-form feature engineering (last-7d, home/away splits) — partially in features/engine.py already",
+    "Shot-chart spatial embeddings — too expensive for CPU evolution",
+    "Chronological partitioning insight: confirms walk-forward approach already used in our Brier evaluation"
+  ],
+  "recommended_action": "NO new CPU action — calibration approach already optimal. Confirms LR+AdaBoost+NB roadmap is correct. MC dropout is a DL-only technique; CalibratedClassifierCV('sigmoid') already provides equivalent calibration for our tree models.",
+  "priority": "informational",
+  "confirms": [
+    "vm-add-logistic-regression-model-pool (P50) — LR Brier 0.199 confirmed again",
+    "vm-add-adaboost-naive-bayes-model-pool (P56) — ensemble approach validated",
+    "Isotonic/sigmoid calibration already in island code — no change needed"
+  ],
+  "status": "filed"
+}
