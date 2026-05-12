@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-12T18:00:00Z",
+  "updated_at": "2026-05-12T22:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -12,6 +12,16 @@
       "detected_at": "2026-05-12T18:00:00Z",
       "cloud_brain_note": "fire-93: S18 cycle_stag=23, threshold=25, ~2 cycles from hard reset. Stacking in MODEL_TYPES confirmed. VM MUST: (1) POST https://testforge42-nba-evo-s18.hf.space/api/command {\"command\":\"diversify\"} NOW. (2) After diversify confirmed, edit S18 app.py remove 'stacking' from MODEL_TYPES + restart TESTforge42/nba-evo-s18 (combines with vm-remove-stacking-s18).",
       "do_not_push": false
+    },
+    {
+      "id": "cloud-trigger-axelrod-fire-94-2026-05-12",
+      "priority": 129,
+      "status": "done",
+      "completed_at": "2026-05-12T22:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-94",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-94: fix archetype performance read — ARCHETYPE[ prefix (dead code, never produced by LLM) replaced with archetype_assigned field in day_log. day_log now stores archetype_assigned=_sacrificial_assignments.get(tid) so CK build_common_knowledge_block can read it from agent_logs. NBA 5951→5946L | POL 3935→3930L | py_compile PASS both. ARCHETYPE PERFORMANCE block in CK[D] will now populate when Mech B assigns sacrificial archetypes. do_not_push_hf_space_yet.",
+      "do_not_push_hf_space_yet": true
     },
     {
       "id": "cloud-trigger-axelrod-fire-93-2026-05-12",

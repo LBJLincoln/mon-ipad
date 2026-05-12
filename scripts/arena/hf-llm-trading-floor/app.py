@@ -3630,12 +3630,7 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
                 _adl = next((l for l in reversed(agent_logs.get(_tat, [])) if l.get("date") == _apd), None)
                 if not _adl:
                     continue
-                _astrat = _adl.get("day_strategy", "")
-                _aarch = None
-                if _astrat.startswith("ARCHETYPE["):
-                    _ab = _astrat.find("]")
-                    if _ab > 0:
-                        _aarch = _astrat[len("ARCHETYPE["):_ab]
+                _aarch = _adl.get("archetype_assigned")
                 if _aarch:
                     for _aa in _adl.get("allocations", []):
                         _arch_bets[_aarch] = _arch_bets.get(_aarch, 0) + 1
@@ -4646,6 +4641,7 @@ def run_experiment(progress=gr.Progress(track_tqdm=False)):
                 "council_commit_target": day_council_plan.get("per_agent_commit_pct", {}).get(tid, 0.55),
                 "council_alignment": (parsed or {}).get("council_alignment"),
                 "ck_consensus_stance": (parsed or {}).get("ck_consensus_stance") or {},
+                "archetype_assigned": _sacrificial_assignments.get(tid),
                 "games_considered": (parsed or {}).get("games_considered") or [],
                 "raw_preview": (raw_response or "")[:3000],
                 "fallback_used": _day_fallback_used,  # 2026-04-19 uniform-fallback tag
