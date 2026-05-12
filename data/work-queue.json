@@ -1,8 +1,18 @@
 {
   "version": 1,
-  "updated_at": "2026-05-12T14:00:00Z",
+  "updated_at": "2026-05-12T18:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-trigger-axelrod-fire-93-2026-05-12",
+      "priority": 128,
+      "status": "done",
+      "completed_at": "2026-05-12T18:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-93",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-93: AXELROD-2026 full verification — Mechs A/B/C confirmed at parity (NBA 5951L / POL 3935L). Spec coverage verified: CK broadcast w/ {trader_id, pick, stake, edge_rationale}, GF leaderboard, 3d rolling history, consensus picks pnl/wr, peer CK stances, archetype performance (fire-91), DMAD ck_consensus_stance MANDATORY in JSON schema + day_log capture, KL divergence Mech C (fire-52), bottom-3 sacrificial w/ society-wide archetype dedup 20-item lists. All spec requirements met. do_not_push_hf_space_yet.",
+      "do_not_push_hf_space_yet": true
+    },
     {
       "id": "vm-diversify-s13-fire89",
       "priority": 0,
@@ -21,9 +31,9 @@
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "URGENT: S14 (Nomos42/nba-evo-5) cycle_stag≈20 threshold=25 — DIVERSIFY NOW",
+      "subject": "URGENT: S14 (Nomos42/nba-evo-5) cycle_stag≥20 threshold=25 — DIVERSIFY NOW",
       "detected_at": "2026-05-12T14:00:00Z",
-      "cloud_brain_note": "fire-92: S14 at fire-91 (10:00Z) had cycle_stag=18. Projected ≈20 at fire-92 (14:00Z). fire-91 health-status set VM trigger at cycle_stag=20. ~5 cycles from hard reset at 25. VM MUST: POST https://nomos42-nba-evo-5.hf.space/api/command {\"command\":\"diversify\"}. MODEL_TYPES has logistic_regression ✓ — do NOT hard reset, just diversify to extend runway.",
+      "cloud_brain_note": "fire-92: S14 at fire-91 (10:00Z) had cycle_stag=18. Projected ≥20 at fire-92 (14:00Z). fire-91 health-status set VM trigger at cycle_stag=20. ~5 cycles from hard reset at 25. VM MUST: POST https://nomos42-nba-evo-5.hf.space/api/command {\"command\":\"diversify\"}. MODEL_TYPES has logistic_regression ✓ — do NOT hard reset, just diversify to extend runway.",
       "do_not_push": false
     },
     {
