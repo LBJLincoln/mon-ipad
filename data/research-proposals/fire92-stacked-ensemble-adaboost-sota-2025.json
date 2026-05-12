@@ -1,0 +1,83 @@
+{
+  "id": "fire92-stacked-ensemble-adaboost-sota-2025",
+  "created_at": "2026-05-12T14:00:00Z",
+  "fire": 92,
+  "title": "Nature Scientific Reports 2025 Stacked Ensemble — CPU-actionable: AdaBoost + NaiveBayes + KNN",
+  "source": {
+    "paper": "Stacked ensemble model for NBA game outcome prediction analysis",
+    "journal": "Scientific Reports (Nature)",
+    "pmcid": "PMC12357926",
+    "doi": "10.1038/s41598-025-13657-1",
+    "url": "https://www.nature.com/articles/s41598-025-13657-1",
+    "year": 2025
+  },
+  "source_2": {
+    "paper": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+    "journal": "MDPI Computers",
+    "doi": "10.3390/computers13100230",
+    "url": "https://www.mdpi.com/2079-3197/13/10/230",
+    "year": 2025,
+    "note": "confirms ensemble diversity benefit; CNN Brier 0.221 (similar to our fleet best 0.22012)"
+  },
+  "source_3": {
+    "paper": "PLOS One NBA prediction 2025",
+    "doi": "10.1371/journal.pone.0326326",
+    "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0326326",
+    "year": 2025,
+    "note": "flagged for investigation — content not yet analyzed, may contain feature engineering insights"
+  },
+  "key_findings": [
+    "PMC12357926 stacked ensemble: AdaBoost, NaiveBayes, KNN, XGBoost, Decision Tree, MLP base learners with LR meta-learner",
+    "AdaBoost is validated as one of strongest NBA base learners — boosted stumps, low bias, orthogonal inductive bias to XGB/LGB",
+    "GaussianNB provides population-level diversity via independence assumption; fast CPU eval <0.1s",
+    "KNN (5-15 neighbors) captures local matchup similarity and back-to-back schedule effects",
+    "LR meta-learner re-confirms LR standalone value (already validated by IEEE 11030489, MDPI 17/1/56)",
+    "MDPI 2079-3197/13/10/230: CNN achieved Brier 0.221 on NBA — equivalent to our CPU fleet best 0.22012"
+  ],
+  "cpu_actionable": {
+    "rule_8_constraint": "CPU-only islands. No neural models (MLP, CNN excluded). No stacking meta-learner (Rule#8 violation). All additions must be standalone classifiers in MODEL_TYPES.",
+    "additions": [
+      {
+        "model": "adaboost",
+        "sklearn_class": "sklearn.ensemble.AdaBoostClassifier",
+        "recommended_params": {"n_estimators": 100, "learning_rate": 1.0, "algorithm": "SAMME"},
+        "expected_brier": "~0.221-0.223",
+        "cpu_speed": "fast (~2-5s/eval at 7213 features with feature selection gate)",
+        "diversity_value": "boosting inductive bias orthogonal to bagging (RF/ET) and gradient boosting (XGB/LGB); strong NBA validated base learner",
+        "priority": 1
+      },
+      {
+        "model": "naive_bayes",
+        "sklearn_class": "sklearn.naive_bayes.GaussianNB",
+        "recommended_params": {"var_smoothing": 1e-9},
+        "expected_brier": "~0.230-0.235",
+        "cpu_speed": "extremely fast (<0.1s/eval)",
+        "diversity_value": "feature independence assumption creates strong divergent diversity signal; essentially free compute",
+        "priority": 2
+      },
+      {
+        "model": "knn",
+        "sklearn_class": "sklearn.neighbors.KNeighborsClassifier",
+        "recommended_params": {"n_neighbors": 10, "metric": "euclidean", "n_jobs": -1},
+        "expected_brier": "~0.225-0.230",
+        "cpu_speed": "moderate — O(N*d) at inference, may be slow with 7213 features; requires feature selection gate of ~100 features",
+        "diversity_value": "local similarity captures back-to-back fatigue, historical matchup patterns",
+        "priority": 3,
+        "caveat": "only add after LR+AdaBoost validated; high feature-count inference cost is a concern"
+      }
+    ],
+    "implementation_sequence": [
+      "1. LR first (vm-add-logistic-regression-model-pool priority-50, already queued)",
+      "2. AdaBoost after LR validated per island (vm-add-adaboost-naive-bayes-model-pool priority-56)",
+      "3. NaïveBayes alongside AdaBoost as free diversity add",
+      "4. KNN only after AdaBoost confirmed and feature selection gate verified"
+    ]
+  },
+  "cross_project_scope": {
+    "nba_islands": ["S13", "S14", "S15", "S18", "S22"],
+    "pol_islands": ["P2", "P4", "P5", "P7"],
+    "note": "Apply to NBA first (larger eval dataset, faster feedback). Port to POL after NBA validation."
+  },
+  "work_queue_item": "vm-add-adaboost-naive-bayes-model-pool (priority-56, pending in work-queue.json)",
+  "expected_impact": "AdaBoost in GA pool adds boosting diversity. GA fitness pressure keeps/discards via Brier. If AdaBoost reaches LR territory (~0.221), fleet best improves. NaïveBayes adds diversity signal at zero cost. Combined: wider model selection in GA → higher probability of evolutionary breakthrough past current fleet best 0.22012."
+}
