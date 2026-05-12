@@ -993,3 +993,219 @@ to confirm the fix propagated to all relevant files before marking the issue clo
 - `05-experimental-setup.md` §4.1: P4 (provider count four→five)
 - `08-limitations.md` §7.7: P3 (carbon comparison)
 - `paper.md`: all six fixes mirrored
+
+---
+
+# Peer-Review Self-Critique — Cycle 15 (2026-05-12)
+
+*Full manuscript re-read following Cycle 14's clean slate. Seven new issues
+identified (Q1–Q7); all seven fixed in this cycle.*
+
+---
+
+## CYCLE 14 STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle 14. PRE-SUBMISSION checklist items 1–3 (author
+verification for `@ouyang2022training`, `@llm_ipd2024`, `@polyswarm2026`)
+remain deferred pending network access to live arXiv records.
+
+---
+
+## NEW ISSUES (Cycle 15 full-manuscript re-read)
+
+### Q1. `§2.1` Typo: "network reciprosity" should be "network reciprocity" [FIXED]
+
+**Reviewer:** `03-related-work.md` line 33 reads "kin selection, direct
+reciprocity, indirect reciprocity, network **reciprosity**, and group
+selection" — a misspelling of *reciprocity* that is particularly damaging
+because it occurs in a paraphrase of Nowak's canonical five-rule taxonomy.
+All other occurrences of the term in the paper (§2.1 introduction, §6.1
+×3) are correctly spelled "reciprocity." An inconsistency of this kind
+in a quoted technical term signals insufficient proofreading to any
+reviewer familiar with Nowak 2006.
+
+**Fix applied:** `03-related-work.md` line 33: "reciprosity" →
+"reciprocity." `paper.md` did not carry the typo (the compiled manuscript
+was evidently drawn from a later revision of the related-work source).
+Confirmed with `grep -n "recipros" *.md` returning zero hits post-fix. ✓
+
+---
+
+### Q2. `§3.5` Assumption A3 defined after Proposition 2 that invokes it [FIXED]
+
+**Reviewer:** Proposition 2's proof sketch (§3.5) invokes "by Assumption A3
+[stated below / below]" before A3 is presented. In standard mathematical
+writing, all assumptions used in a proof must be stated before the proposition.
+Presenting an assumption *after* the proof sketch that requires it forces the
+reader to read ahead to assess whether the assumption is reasonable, and
+it violates the logical structure that assumptions precede the claims they
+underpin. A hostile reviewer will cite this as a structural defect and
+question whether the assumption was constructed post-hoc to patch a gap
+in the proof.
+
+**Fix applied (both `04-method.md` and `paper.md`):**
+
+- **A3 moved to before Proposition 2:** After Lemma 1's proof, Assumption A3
+  is now stated immediately and explicitly (same position as A1 and A2 —
+  both precede Lemma 1, and now A3 precedes Proposition 2).
+- **"by Assumption A3 below" / "stated below" removed:** The proof sketch
+  now reads "by Assumption A3," with no forward-reference qualifier,
+  since A3 is now above the proof. ✓
+
+---
+
+### Q3. `§2.5` Schelling chronological error — "later work" refers to 1960, which precedes 1978 [FIXED]
+
+**Reviewer:** Section 2.5 cites Schelling (1978) *Micromotives and
+Macrobehavior* first, then states "Schelling's **later** work on focal
+points [@schelling1960strategy] provides a further connection." *The
+Strategy of Conflict* was published in **1960**, eighteen years *before*
+*Micromotives and Macrobehavior* (1978) — making it Schelling's *earlier*
+work, not later. This chronological error misrepresents the intellectual
+development of Schelling's research programme and would be immediately
+spotted by any reviewer familiar with Schelling's bibliography.
+
+**Fix applied (`03-related-work.md` §2.5 and `paper.md` §2.5):**
+"Schelling's later work on focal points [@schelling1960strategy] provides
+a further connection: in the absence of explicit coordination, agents
+converge on salient solutions." →
+"Schelling's **earlier** *The Strategy of Conflict* [@schelling1960strategy]
+**introduced the focal-point concept**: in the absence of explicit
+coordination, agents converge on salient solutions." ✓
+
+---
+
+### Q4. `§4.6` LaTeX `\textit{}` macro in Markdown source [FIXED]
+
+**Reviewer:** `05-experimental-setup.md` line 273 uses
+`\textit{analytical}` — a raw LaTeX macro — inside prose that
+otherwise uses Pandoc Markdown italic syntax (`*...*`).
+Although Pandoc will pass `\textit{}` through to LaTeX correctly,
+the inconsistency creates an maintainability risk: any intermediate
+processing step that renders Markdown without a LaTeX back-end
+(e.g., a GitHub preview, a Word export, or a journal submission
+portal that strips LaTeX commands) will display the literal string
+`\textit{analytical}` rather than italicised text.
+The paper specification states "mdx-style markdown (compiles to LaTeX
+later via pandoc)"; inline LaTeX macros should be reserved for
+mathematical notation, not prose emphasis.
+
+**Fix applied (`05-experimental-setup.md` §4.6):**
+`\textit{analytical}` → `*analytical*`. Note: `paper.md` did not carry
+this macro; its §4.6 section is a condensed version that omits the
+specific phrase. ✓
+
+---
+
+### Q5. `§3.6` Cites `CLAUDE.md §13` — a project-internal file inaccessible to reviewers [FIXED]
+
+**Reviewer:** Section 3.6 (Day-Bucket v3 Architecture) describes Kelly
+stake sizing with "an empirically derived cap
+($\kappa_i \in [0.01, 0.20]$, tuned per agent as described in
+CLAUDE.md §13)." `CLAUDE.md` is a private project-operations document
+stored in the repository but not in the supplementary materials; it
+contains no scientific derivation and is meaningless to any reader
+outside the project. Citing a non-published internal file in the methods
+section of a Nature-tier paper is equivalent to citing a private email:
+it is not a verifiable source. Additionally, §6.5 of the same paper
+provides the Kelly cap formula explicitly — so the correct cross-reference
+already exists in the manuscript; only the §3.6 pointer is broken.
+
+**Fix applied (`04-method.md` §3.6 and `paper.md` §3.6):**
+"tuned per agent as described in CLAUDE.md §13" →
+"$\kappa_i = \max(0.01, 0.30 - \overline{B}_i \times 0.50)$, where
+$\overline{B}_i$ is the agent's rolling 28-day Brier from the pilot
+season; derivation and bounds discussion in §6.5." ✓
+
+---
+
+### Q6. `§3.1` Rolling mean Brier formula has $W+1$ terms divided by $W$ [FIXED]
+
+**Reviewer:** The rolling mean Brier formula reads:
+
+$$\overline{B}_{i,d} = \frac{1}{W}\sum_{\ell=d-W}^{d} B_{i,\ell}$$
+
+The sum runs over $\ell \in \{d-W, d-W+1, \ldots, d\}$, which is
+$W+1$ terms (not $W$), because both endpoints are included. Dividing
+$W+1$ terms by $W$ produces a rolling average that overstates the true
+$W$-period mean by a factor of $(W+1)/W \approx 1.14$ when $W = 7$.
+This off-by-one error inflates the rolling Brier estimate used in the
+sacrifice eligibility check (§3.4), causing the system to under-trigger
+SRR (agents whose Brier is genuinely elevated will appear to have
+a smaller Brier excess over $\bar{B}_d$ than they actually do, because
+both numerator and denominator of the eligibility condition use the
+same biased estimator). The companion interval notation "$[d-W, d]$"
+(also in §3.6) similarly spans $W+1$ days when interpreted as a
+closed integer interval.
+
+**Fix applied (`04-method.md` §3.1, §3.6 and `paper.md` §3.1, §3.6):**
+
+- §3.1: "the rolling mean Brier score over the patience window $[d-W, d]$"
+  → "the rolling mean Brier score over the most recent $W$ days";
+  $\frac{1}{W}\sum_{\ell=d-W}^{d}$ → $\frac{1}{W}\sum_{\ell=d-W+1}^{d}$ ✓
+- §3.6: "rolling window $[d-7, d]$" → "rolling window of the most recent
+  $W = 7$ days" ✓
+
+*Note on sacrifice eligibility:* The eligibility condition in §3.4 uses
+$\overline{B}_{i,d}$ as defined in §3.1. Fixing the §3.1 formula
+propagates automatically to §3.4 and §3.6; no additional changes needed.
+
+---
+
+### Q7. `§4.2.1` Changelog language: "resolving a prior design flaw (pre-October 2025 builds sliced only the first 8 categories)" [FIXED]
+
+**Reviewer:** The sentence "Of these, agents receive the full 249-category
+context block, resolving a prior design flaw (pre-October 2025 builds
+sliced only the first 8 categories)" is changelog prose, not scientific
+writing. A reader of the submitted paper has no relationship to
+"pre-October 2025 builds" — that narrative belongs in a version-control
+commit message or a technical appendix, not in the Methods section of a
+peer-reviewed paper. The parenthetical creates a false impression that
+the present system is a patched version of a flawed predecessor, which
+invites the question of whether other "prior design flaws" exist that
+were not disclosed. The scientific claim — that agents receive all 249
+market categories — stands on its own without the historical comparison.
+
+**Fix applied (`05-experimental-setup.md` §4.2.1 and `paper.md` §4.2.1):**
+"249-category context block, resolving a prior design flaw
+(pre-October 2025 builds sliced only the first 8 categories)." →
+"249-category context block." ✓
+
+---
+
+## CYCLE 15 SUMMARY
+
+**Fixed:** Q1 (typo "reciprosity"), Q2 (A3 moved before Proposition 2),
+Q3 (Schelling chronological error), Q4 (`\textit{}` macro), Q5
+(CLAUDE.md reference), Q6 (rolling mean formula off-by-one), Q7
+(changelog language in §4.2.1)
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's `> *Brier-delta... to be inserted*` note and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+
+**Post-fix verification (Q6):** Confirmed `grep -n "d-W\]" *.md` returns zero
+hits across all paper files after applying the rolling-formula fix.
+
+**Structural changes this cycle:**
+- `03-related-work.md` §2.1: "reciprosity" → "reciprocity" (Q1)
+- `03-related-work.md` §2.5: "Schelling's later work" → "Schelling's
+  earlier *The Strategy of Conflict*" (Q3)
+- `04-method.md` §3.1: rolling mean formula corrected ($d-W$ → $d-W+1$,
+  interval prose updated) (Q6)
+- `04-method.md` §3.5: A3 moved before Proposition 2; "below"
+  forward-reference removed (Q2)
+- `04-method.md` §3.6: CLAUDE.md reference replaced with formula +
+  §6.5 cross-reference (Q5); rolling window interval prose updated (Q6)
+- `05-experimental-setup.md` §4.2.1: changelog parenthetical removed (Q7)
+- `05-experimental-setup.md` §4.6: `\textit{analytical}` →
+  `*analytical*` (Q4)
+- `paper.md`: all seven fixes mirrored (Q1–Q7)
