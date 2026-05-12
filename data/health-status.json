@@ -1,166 +1,177 @@
 {
-  "fire": 95,
-  "timestamp": "2026-05-13T02:00:00Z",
+  "fire": 96,
+  "timestamp": "2026-05-13T06:00:00Z",
   "cycle_type": "4h-cloud-brain",
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "gen": 5676,
+      "gen": 5875,
       "best_brier": 0.22398,
-      "cycle": 1892,
-      "cycle_stag": 21,
+      "cycle": 1959,
+      "cycle_stag": 0,
       "stag": 0,
       "model": "xgboost",
       "feature_candidates": 3377,
-      "status": "CRITICAL_diversify_now",
-      "note": "⚠⚠ CRITICAL: cycle_stag=21, threshold=25, ~4 cycles (~20 min) from hard reset. Stacking was reseeded at hard reset cycle 1810 — pop contains stacking individuals. VM MUST: (1) POST https://nomos42-nba-evo-4.hf.space/api/command {\"command\":\"diversify\"} IMMEDIATELY. (2) Then vm-remove-stacking-s13: edit app.py remove 'stacking' from MODEL_TYPES + restart Nomos42/nba-evo-4. vm-diversify-s13-fire95 P0 added."
+      "status": "healthy_post_reset",
+      "note": "✓ RECOVERED — hard reset triggered at ~cycle 1935 (cycle_stag hit 25 threshold). cycle_stag=0. gen progressed 5676→5875. vm-diversify-s13-fire95 CLOSED. REMAIN: VM must verify MODEL_TYPES post-cycle-1935 reset does NOT contain stacking. vm-remove-stacking-s13 (P44) still pending."
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "gen": 2151,
+      "gen": 2221,
       "best_brier": 0.22336,
-      "cycle": 717,
+      "cycle": 741,
       "cycle_stag": 0,
       "stag": 0,
       "model": "extra_trees",
       "feature_candidates": 3377,
       "status": "healthy",
-      "note": "✓ stag=0. Stable. LR confirmed in MODEL_TYPES ✓. No stacking ✓."
+      "note": "✓ Hard reset at cycle 728. cycle_stag=0. catboost active in latest gen. No stacking ✓."
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "gen": 2561,
+      "gen": 2601,
       "best_brier": 0.22012,
-      "cycle": 854,
+      "cycle": 867,
       "cycle_stag": 0,
       "stag": 0,
       "model": "random_forest",
       "feature_candidates": 3377,
       "status": "fleet_best_healthy",
-      "note": "★ FLEET BEST 0.22012. Two hard resets (cycles 826+851) — both reseeded WITHOUT stacking ✓. LR in population ✓. vm-remove-stacking-s15 still PENDING: stacking may persist in MODEL_TYPES config."
+      "note": "★ FLEET BEST 0.22012. cycle=867 stable. vm-remove-stacking-s15 still PENDING: VM must verify MODEL_TYPES config for stacking."
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
       "status": "down_503",
-      "down_days": 50,
-      "action": "vm-restart-s17 CRITICALLY OVERDUE 50+ days. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\""
+      "down_days": 51,
+      "action": "vm-restart-s17 CRITICALLY OVERDUE 51+ days. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\""
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "gen": 6397,
+      "gen": 6460,
       "best_brier": 0.22315,
-      "cycle": 2133,
-      "cycle_stag": 6,
+      "cycle": 2154,
+      "cycle_stag": 2,
       "stag": 0,
       "model": "xgboost_brier",
       "feature_candidates": 3365,
-      "hard_resets_since_fire93": [
-        {"cycle": 2101, "reseed_models": ["xgboost_brier", "lightgbm", "catboost", "stacking"], "stacking_injected": true},
-        {"cycle": 2126, "reseed_models": ["xgboost", "lightgbm", "lightgbm_brier", "catboost", "random_forest"], "stacking_injected": false}
+      "hard_resets_total": 3,
+      "hard_resets": [
+        {"cycle": 2101, "stacking_in_reseed": true},
+        {"cycle": 2126, "stacking_in_reseed": false},
+        {"cycle": 2151, "stacking_in_reseed": "unknown_verify"}
       ],
-      "status": "stable_post_reset_stacking_in_pop",
-      "note": "Two hard resets since fire-93. cycle_stag=6 post-2126 (not urgent). BUT reset at cycle 2101 reinjected stacking into population. vm-diversify-s18-fire93 CLOSED (resets = diversified). vm-remove-stacking-s18 (P43) still PENDING: VM must edit app.py remove 'stacking' from MODEL_TYPES."
+      "model_types_in_status": ["extra_trees", "xgboost", "lightgbm", "catboost", "random_forest"],
+      "stacking_in_config": false,
+      "status": "stable_config_clean",
+      "note": "3rd hard reset at cycle 2151 (NEW fire-96). cycle_stag=2. /api/status MODEL_TYPES: Extra Trees, XGBoost, LightGBM, CatBoost, Random Forest — NO stacking. vm-remove-stacking-s18 CLOSED (config clean). VM should verify cycle 2151 reseed did not include stacking individuals."
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "gen": 1617,
+      "gen": 1674,
       "best_brier": 0.22551,
-      "cycle": 539,
+      "cycle": 558,
       "cycle_stag": 0,
       "stag": 0,
       "model": "extra_trees",
       "feature_candidates": 3377,
+      "hard_resets": [{"cycle": 515}, {"cycle": 540}],
       "status": "healthy",
-      "note": "✓ stag=0. Stable. Hard reset at cycle 515 — reseed clean."
+      "note": "✓ 2nd hard reset at cycle 540 (NEW fire-96). CatBoost dominant in recent gens. Stable."
     }
   },
   "nba_fleet_best": 0.22012,
   "nba_pareto_best": 0.21841,
   "nba_new_checkpoint": false,
-  "nba_stagnation_alert": true,
-  "nba_stagnation_alert_detail": "S13 cycle_stag=21 CRITICAL (~4 cycles from threshold 25, stacking in pop). S17 503 DOWN 50+ days.",
-  "nba_diversify_queued_for_vm": ["S13 CRITICAL: cycle_stag=21 threshold=25 — vm-diversify-s13-fire95 priority-0 NEW fire-95"],
+  "nba_stagnation_alert": false,
+  "nba_stagnation_alert_detail": "All islands cycle_stag=0 post-hard-resets. S17 still 503 DOWN 51+ days.",
   "engine_parity": {
     "status": "MISMATCH_CONFIRMED",
     "mon_ipad_chars": 523050,
     "nomos_nba_agent_chars": 468146,
     "delta_chars": 54904,
     "feature_candidates_by_island": {"S13": 3377, "S14": 3377, "S15": 3377, "S18": 3365, "S22": 3377},
-    "note": "S18 3365 vs others 3377 — root cause is engine parity mismatch. engine-parity-sync P40 pending VM."
+    "note": "S18 3365 vs others 3377 — engine parity mismatch root cause. engine-parity-sync P40 still pending VM."
   },
   "political_islands": {
     "P1": {
       "space": "Nomos42/political-alpha",
-      "gen": 51952,
-      "cycle": 17318,
+      "gen": 52753,
+      "cycle": 17585,
       "best_brier": 0.2499,
       "stag": 0,
       "model": "xgboost_brier",
       "feature_candidates": 272,
-      "status": "healthy",
-      "note": "✓ stable. LR + catboost + xgboost_brier confirmed — best diversity in POL fleet."
+      "model_types": ["logistic_regression", "xgboost_brier"],
+      "status": "healthy_lr_present",
+      "note": "✓ LR confirmed in MODEL_TYPES ✓. Two hard resets at cycles 17541+17581. Best diversity in POL fleet."
     },
     "P2": {
       "space": "Nomos42/political-alpha-2",
-      "gen": 44522,
-      "cycle": 14841,
+      "gen": 45014,
+      "cycle": 15005,
       "best_brier": 0.25003,
       "stag": 0,
       "model": "xgboost_brier",
       "feature_candidates": 272,
+      "model_types": ["extra_trees", "xgboost", "catboost", "lightgbm"],
       "status": "healthy_lr_missing",
-      "note": "✓ stable. Active MODEL_TYPES: ET+XGB+LGB — LR missing. vm-add-logistic-regression P50 pending."
+      "note": "✓ stable. Two hard resets at 14961+14981. LR NOT in MODEL_TYPES — vm-add-logistic-regression P50 pending."
     },
     "P4": {
       "space": "LBJLincoln/political-alpha-4",
-      "gen": 72603,
-      "cycle": 24201,
+      "gen": 73339,
+      "cycle": 24447,
       "best_brier": 0.24992,
       "alltime_best": 0.24904,
       "stag": 0,
       "model": "xgboost_brier",
       "feature_candidates": 272,
       "status": "pol_fleet_best_narrowest_pool",
-      "note": "★ POL FLEET BEST alltime=0.24904. Narrowest pool [LGB+XGB] confirmed. Consecutive resets = local optima loop. Priority 1 for LR+ET+AdaBoost+NB expansion."
+      "note": "★ POL FLEET BEST alltime=0.24904. Two hard resets at 24394+24414 — consecutive reset pattern = local optima. Priority 1 for LR expansion. vm-add-logistic-regression P50 pending."
     },
     "P5": {
       "space": "LBJLincoln/political-alpha-5",
-      "gen": 61368,
-      "cycle": 20456,
+      "gen": 61942,
+      "cycle": 20648,
       "best_brier": 0.24993,
       "stag": 0,
       "model": "xgboost_brier",
       "feature_candidates": 272,
+      "model_types": ["extra_trees", "lightgbm", "xgboost_brier"],
       "status": "healthy_lr_missing",
-      "note": "✓ stable. LR missing. vm-add-logistic-regression P50 pending."
+      "note": "✓ stable. Two hard resets at 20601+20641. LR missing — vm-add-logistic-regression P50 pending."
     },
     "P7": {
       "space": "LBJLincoln/political-alpha-7",
-      "gen": 62306,
-      "cycle": 20769,
+      "gen": 63087,
+      "cycle": 21029,
       "best_brier": 0.25412,
       "alltime_top_performer": 0.24904,
-      "alltime_top_performer_gen": 660,
+      "latest_gen_brier": 0.249,
+      "latest_gen_features": 134,
+      "latest_gen_pareto_front": 11,
       "stag": 0,
       "model": "lightgbm",
       "feature_candidates": 272,
-      "status": "worst_fleet_historic_top",
-      "note": "Worst current 0.25412 BUT top_performer at gen=660 was 0.24904 — matches POL fleet best P4 alltime. This individual was LOST through subsequent resets. LR+ET+AdaBoost+NB needed to rediscover this level. vm-add-logistic-regression P50 pending."
+      "model_types": ["lightgbm", "xgboost_brier"],
+      "status": "improving_signal_near_fleet_best",
+      "note": "⚡ Latest gen (63086) Brier=0.2490 with 134 features, Pareto front=11 — NEAR FLEET BEST 0.24904! Active exploration. LR missing — vm-add-logistic-regression P50 pending. WATCH: if Brier reaches 0.24904 → checkpoint."
     }
   },
   "pol_fleet_best": 0.24904,
   "pol_stagnation_alert": false,
-  "sota_research_fire95": {
-    "cycle_scan": "YES (every-other cycle)",
+  "pol_new_signal": "P7 gen63086 Brier=0.2490 near fleet best 0.24904 — active exploration, watch for checkpoint",
+  "sota_research_fire96": {
+    "cycle_scan": "YES (every-other cycle — fire-96 is even)",
     "papers": [
       {
-        "source": "MDPI Information 2026 January — NEW fire-95",
-        "doi": "10.3390/info17010056",
-        "url": "https://www.mdpi.com/2078-2489/17/1/56",
-        "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
-        "finding": "RNN + Monte Carlo dropout for calibrated sequential probabilities. LR Brier 0.199, XGBoost 0.202 (14,734 games, 2012-2024). MC dropout best calibration (beats isotonic on ECE). Strict chronological partitioning.",
-        "cpu_actionable": "MC dropout is DL-only — not viable for CPU island GA. CalibratedClassifierCV('sigmoid') is the CPU-compatible proxy and is already in island code. Rolling-form features already partially in engine.py. No new CPU action needed — confirms current calibration approach is correct.",
-        "status": "filed → research-proposals/fire95-uncertainty-aware-nba-2026.json"
+        "source": "MDPI Computers 2025 October — NEW fire-96",
+        "doi": "10.3390/computers13100230",
+        "url": "https://www.mdpi.com/2079-3197/13/10/230",
+        "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+        "finding": "Multi-league ML framework for NBA + WNBA. CNN achieved Brier=0.221 — matches our fleet best 0.22012. Cross-league WNBA training augmentation: WNBA game data provides additional game contexts for tree-based models, potentially reducing overfitting on NBA-only patterns.",
+        "cpu_actionable": "CNN is DL-only — not viable for CPU island GA. However, cross-league feature transfer (adding WNBA historical seasons to training cache) is novel and CPU-viable. Could expand games from 9,551 to ~15,000+. Proposal: test on S22 (freshest island, lowest brier penalty from augmentation risk).",
+        "status": "filed → data/research-proposals/fire96-nba-wnba-ml-2025.json"
       },
       {
         "source": "Nature Scientific Reports PMC12357926 (carry-forward)",
@@ -168,40 +179,39 @@
         "status": "queued vm-add-adaboost-naive-bayes P56"
       },
       {
-        "source": "ITM CSEIT 2025 (carry-forward)",
-        "finding": "KNN viable <100f feature sets.",
-        "status": "queued vm-add-knn P70"
+        "source": "MDPI Information 2026 (doi:10.3390/info17010056) (carry-forward)",
+        "finding": "LR Brier 0.199 on 14,734 games — confirms LR superiority.",
+        "status": "no new CPU action — LR already in queue vm-add-logistic-regression P50"
       }
     ]
   },
-  "actions_taken_fire95": [
-    "STEP 0: No crash recovery — all pending items are local-vm owned.",
-    "STEP 1 NBA: S13 cycle_stag=21 CRITICAL → vm-diversify-s13-fire95 P0 added. S18 two hard resets (2101 stacking+, 2126 clean) → vm-diversify-s18-fire93 CLOSED, vm-remove-stacking-s18 remains P43. S15 fleet best 0.22012 stable. S14/S22 healthy. S17 503 DOWN 50+ days.",
-    "STEP 2 POL: All 5 stag=0. P7 top_performer=0.24904 at gen=660 matches fleet best — lost through resets. P4 narrowest pool [LGB+XGB] reset loop continues.",
+  "actions_taken_fire96": [
+    "STEP 0: No crash recovery — no local-agent-* owned pending items >6h old found.",
+    "STEP 1 NBA: S13 RECOVERED — hard reset at ~cycle 1935, cycle_stag=0 (was 21). vm-diversify-s13-fire95 CLOSED. S18 3rd hard reset at cycle 2151 (NEW), MODEL_TYPES config clean (no stacking) — vm-remove-stacking-s18 CLOSED. S22 2nd hard reset at cycle 540 (NEW). S14/S15 healthy. S17 still 503 DOWN 51+ days.",
+    "STEP 2 POL: All 5 stag=0. P7 latest gen Brier=0.2490 — near fleet best 0.24904 (exciting signal). P1 LR confirmed present in MODEL_TYPES ✓. P2/P4/P5/P7 still missing LR — vm-add-logistic-regression P50 still pending VM.",
     "STEP 3 Councils: DECOMMISSIONED 2026-04-20 — skipped.",
-    "STEP 4 Dashboard: R8 status=done per work-queue — skipped.",
-    "STEP 5 SOTA: MDPI 2026 uncertainty-aware MC dropout paper confirms calibration approach correct. No new CPU actions. Research proposal filed.",
+    "STEP 4 Dashboard: R8 status=done — skipped.",
+    "STEP 5 SOTA (even cycle): MDPI Computers 2025 NBA+WNBA paper filed — CNN Brier=0.221 matches fleet best. Cross-league WNBA augmentation proposed as novel CPU-viable technique (expands training set 9551→~15000+ games).",
     "Pushed health-status.json + work-queue.json + research-proposal to mon-ipad; brain-status.json to nomos-political-alpha."
   ],
   "escalation_to_user": {
     "item": "fix-pol-engine-placeholder",
-    "overdue_hours": 228,
-    "impact": "political_engine.py = 194KB placeholder. Rotation B BLOCKED. Islands affected indirectly.",
-    "action_required": "VM must run: cd nomos-political-alpha && python scripts/ops/restore_political_engine_fire53.py"
+    "overdue_hours": 232,
+    "impact": "political_engine.py = 194KB placeholder. Rotation B BLOCKED. 232h+ overdue.",
+    "action_required": "VM: cd nomos-political-alpha && python scripts/ops/restore_political_engine_fire53.py"
   },
   "pending_vm_items_priority_order": [
-    "[CRITICAL P0 NEW] vm-diversify-s13-fire95: cycle_stag=21/25, ~4 cycles from reset, stacking in pop. DIVERSIFY NOW.",
-    "[CRITICAL P0] fix-pol-engine-placeholder: 228h+ OVERDUE — ESCALATE TO USER. Run restore_political_engine_fire53.py.",
-    "[OVERDUE P1] vm-restart-s17: 503 DOWN 50+ days.",
+    "[CRITICAL P0] fix-pol-engine-placeholder: 232h+ OVERDUE — ESCALATE TO USER. Run restore_political_engine_fire53.py.",
+    "[OVERDUE P1] vm-restart-s17: 503 DOWN 51+ days. python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
     "[URGENT P1] vm-restart-political-data-crons: confirm crontab has fetch_political_data.py + insider_tracker.py.",
-    "[HIGH P43] vm-remove-stacking-s18: edit app.py MODEL_TYPES remove 'stacking' + restart TESTforge42/nba-evo-s18.",
-    "[HIGH P44] vm-remove-stacking-s13: after diversify — edit app.py MODEL_TYPES remove 'stacking' + restart Nomos42/nba-evo-4.",
-    "[HIGH P45] vm-remove-stacking-s15: verify MODEL_TYPES config, remove if present.",
-    "[HIGH P50] vm-add-logistic-regression-model-pool: P4→P7→P2→P5 (POL), then S15/S22 (NBA).",
+    "[HIGH P44] vm-remove-stacking-s13: verify MODEL_TYPES post-cycle-1935 reset. Remove stacking if present + restart Nomos42/nba-evo-4.",
+    "[HIGH P45] vm-remove-stacking-s15: verify MODEL_TYPES config, remove if stacking present.",
+    "[HIGH P50] vm-add-logistic-regression-model-pool: P4→P7→P2→P5 (POL), then S15/S22 (NBA). P1 already has LR ✓.",
     "[P56] vm-add-adaboost-naive-bayes-model-pool: after LR validated.",
     "[P40] engine-parity-sync: +54KB delta mon-ipad vs nomos-nba-agent.",
+    "[P59] vm-fix-diversify-command-format.",
     "[P61] vm-fec-sec-political-features.",
     "[P2] vm-investigate-s22-restart."
   ],
-  "next_cycle": "fire-96 ~2026-05-13T06:00Z"
+  "next_cycle": "fire-97 ~2026-05-13T10:00Z"
 }

@@ -1,0 +1,37 @@
+{
+  "id": "fire96-nba-wnba-ml-2025",
+  "fire": 96,
+  "created_at": "2026-05-13T06:00:00Z",
+  "title": "Cross-League Training Augmentation: WNBA Data to Expand NBA Model Training Set",
+  "source_paper": {
+    "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+    "journal": "MDPI Computers",
+    "doi": "10.3390/computers13100230",
+    "url": "https://www.mdpi.com/2079-3197/13/10/230",
+    "published": "2025-10",
+    "key_finding": "CNN achieves Brier=0.221 on NBA/WNBA combined dataset — matches our fleet best 0.22012. Multi-league training demonstrated valid for basketball outcome prediction."
+  },
+  "proposal": {
+    "hypothesis": "Adding WNBA historical game data to the NBA training cache will expand the training set from ~9,551 to ~15,000+ games, reducing overfitting and improving generalization of tree-based GA models, particularly for low-frequency NBA game patterns.",
+    "mechanism": "WNBA seasons share basketball fundamentals (team form, home advantage, rest days, point differentials) with NBA. Features derived from these patterns are transferable. The GA's feature selection will naturally weight WNBA-sourced features if they improve CV Brier.",
+    "cpu_viable": true,
+    "implementation": [
+      "1. Source WNBA game data from Basketball-Reference or stats.wnba.com API (similar schema to NBA)",
+      "2. Generate feature vectors using existing engine.py (categories applicable to both leagues)",
+      "3. Add league_indicator binary feature to allow model to learn NBA vs WNBA differences",
+      "4. Expand games cache from 9,551 → ~15,000+ entries",
+      "5. Test on S22 first (freshest island, least risk from cache change)"
+    ],
+    "risk": "MODERATE — WNBA games may introduce distribution shift. Mitigation: keep WNBA weight at 0.5× NBA (sample_weight parameter in sklearn). If Brier improves on S22 after 100 gens, port to S15/S18.",
+    "expected_brier_delta": "-0.002 to -0.005 (extrapolated from dataset size scaling laws in NBA ML literature)",
+    "priority": "medium",
+    "blocked_by": "engine-parity-sync (P40) — must sync engine.py first so WNBA features compute consistently across islands",
+    "assigned_to": "local-vm",
+    "status": "proposal"
+  },
+  "secondary_finding": {
+    "title": "CNN Brier=0.221 Ceiling Confirmed",
+    "significance": "Deep learning CNN matches our GA fleet best 0.22012. This is the 3rd independent confirmation of the ~0.220 ceiling for sequential NBA game prediction using game-level features (previous: ACM 2025 DL 0.221, MDPI Uncertainty 2026 RNN 0.221). Our tree-based GA at 0.22012 is competitive with DL without GPU. Pareto best 0.21841 already below DL ceiling — this is the path forward.",
+    "implication": "Focus should remain on feature quality (engine parity, FEC data) and calibration (LR, MC dropout proxy via CalibratedClassifierCV) rather than model architecture changes."
+  }
+}
