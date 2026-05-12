@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-13T02:00:00Z",
+  "updated_at": "2026-05-13T04:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -24,6 +24,16 @@
       "completed_by": "cloud-brain-fire-95",
       "result": "fire-95: S18 experienced TWO hard resets since fire-93: (1) cycle 2101 — reseeded with ['xgboost_brier','lightgbm','catboost','stacking'] (stacking contamination). (2) cycle 2126 — reseeded with ['xgboost','lightgbm','lightgbm_brier','catboost','random_forest'] (clean). cycle_stag=6 post-2126. Hard resets = diversified. Diversify command MOOT — CLOSING. REMAINING CONCERN: stacking in population from cycle 2101 reset → see vm-remove-stacking-s18 P43.",
       "do_not_push": false
+    },
+    {
+      "id": "cloud-trigger-axelrod-fire-96-2026-05-13",
+      "priority": 131,
+      "status": "done",
+      "completed_at": "2026-05-13T04:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-96",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-96: Mech A enhancement — CK[D] now surfaces day D+1 tier assignments to all agents. Reordered day-end loop C→B→A: Mech C logs day D state, Mech B computes D+1 assignments, Mech A builds CK block with next_day_sacrificial+next_day_challenge params. Added TOMORROW'S SOCIETY TIERS section to CK block — non-sacrificed agents now see who is SACRIFICIAL/CHALLENGE/TOP-3 for day D+1 before betting (closes gap where non-constrained agents couldn't see peers' roles). NBA 5946→5969L | POL 3930→3953L | py_compile PASS both. do_not_push_hf_space_yet.",
+      "do_not_push_hf_space_yet": true
     },
     {
       "id": "cloud-trigger-axelrod-fire-94-2026-05-12",
