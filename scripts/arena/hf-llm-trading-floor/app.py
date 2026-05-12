@@ -3620,6 +3620,33 @@ def build_common_knowledge_block(day_date: str, state: Dict, agent_logs: Dict,
         if _ck_stances:
             lines.append(f"\nPEER CK STANCES on {_yesterday} (diverge/agree/partial — how each agent processed CK[D-1]):")
             lines.extend(_ck_stances)
+        # Axelrod-2026 fire-91: archetype performance summary for meta-learning.
+        # Agents see which sacrificial archetypes were profitable → informs diverge/agree on today's bets.
+        _arch_pnl: Dict[str, float] = {}
+        _arch_bets: Dict[str, int] = {}
+        _arch_wins: Dict[str, int] = {}
+        for _apd in recent_dates:
+            for _tat, _ in ranked:
+                _adl = next((l for l in reversed(agent_logs.get(_tat, [])) if l.get("date") == _apd), None)
+                if not _adl:
+                    continue
+                _astrat = _adl.get("day_strategy", "")
+                _aarch = None
+                if _astrat.startswith("ARCHETYPE["):
+                    _ab = _astrat.find("]")
+                    if _ab > 0:
+                        _aarch = _astrat[len("ARCHETYPE["):_ab]
+                if _aarch:
+                    for _aa in _adl.get("allocations", []):
+                        _arch_bets[_aarch] = _arch_bets.get(_aarch, 0) + 1
+                        _arch_wins[_aarch] = _arch_wins.get(_aarch, 0) + (1 if _aa.get("won") else 0)
+                        _arch_pnl[_aarch] = _arch_pnl.get(_aarch, 0.0) + float(_aa.get("profit", 0) or 0)
+        if _arch_pnl:
+            lines.append(f"\nARCHETYPE PERFORMANCE (last {len(recent_dates)}d — sacrificial agents; diverge/agree signal):")
+            for _aname, _apnl in sorted(_arch_pnl.items(), key=lambda x: -x[1]):
+                _an = _arch_bets.get(_aname, 0)
+                _awr = _arch_wins.get(_aname, 0) / max(_an, 1) * 100
+                lines.append(f"  {_aname:<30} pnl={_apnl:+.1f} wr={_awr:.0f}% n={_an}b")
 
     # Mech D — Cooperation reputation + today's pact resolutions
     if reputation:
