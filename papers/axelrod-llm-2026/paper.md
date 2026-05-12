@@ -366,8 +366,8 @@ established that small individual behavioral asymmetries can produce
 large aggregate patterns — a structurally similar insight to our
 finding that individual agent sacrifice (SRR) produces a
 disproportionate improvement in societal Brier score.
-Schelling's later work on focal points [@schelling1960strategy]
-provides a further connection: in the absence of explicit coordination,
+Schelling's earlier *The Strategy of Conflict* [@schelling1960strategy]
+introduced the focal-point concept: in the absence of explicit coordination,
 agents converge on salient solutions. In our setting, the prevailing
 market line (the Las Vegas spread) functions as a Schelling focal
 point that all agents observe, creating a gravitational pull toward
@@ -534,8 +534,8 @@ The agent's per-day Brier score is:
 
 $$B_{i,d} = \frac{1}{|\mathcal{B}_d|} \sum_{t \in \mathcal{B}_d} (p_{i,t} - \omega_t)^2$$
 
-and the rolling mean Brier score over the patience window $[d - W, d]$ is
-$\overline{B}_{i,d} = \frac{1}{W}\sum_{\ell=d-W}^{d} B_{i,\ell}$.
+and the rolling mean Brier score over the most recent $W$ days is
+$\overline{B}_{i,d} = \frac{1}{W}\sum_{\ell=d-W+1}^{d} B_{i,\ell}$.
 Society-mean Brier is $\bar{B}_d = \frac{1}{N}\sum_i \overline{B}_{i,d}$.
 
 **Strategy.** Agent $i$'s *strategy* is a stochastic function:
@@ -724,6 +724,12 @@ by Lipschitz continuity of $H$, term (I) is $O(\epsilon_{\text{arch}}/N)$.
 For $N \geq 2$, term (II) dominates term (I), so $\mathbb{E}[\Delta\text{JSD}] > 0$.
 Taking expectation over event $t$ and $\mathcal{B}_d$ completes the proof. $\square$
 
+**Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,
+a sacrifice-eligible agent's expected Brier over the next $W_{\text{persist}}$ days
+is at least $\bar{B} + \delta_{\text{sac}}/2$ (partial persistence of the
+performance deficit). This is a non-trivial claim — it excludes pure mean-reversion
+scenarios — and is empirically testable via the Sham-SRR condition (§4.3, §5.3).
+
 > **Proposition 2 (SRR as equilibrium refinement).** In the LPSG, the strategy
 > profile $(\sigma_i^{\text{SRR}})_{i \in \mathcal{I}}$ — where every
 > sacrifice-eligible agent executes SRR — is a *Strong Nash Equilibrium*
@@ -741,17 +747,11 @@ reallocate) strictly reduces Amb by Lemma 1. Since sacrifice-eligible agents
 have $\overline{B}_{i} \geq \bar{B} + \delta_{\text{sac}}$ by definition,
 their individual Brier is above the ensemble mean — refusing SRR does not
 improve their individual Brier in expectation (they remain in the same
-strategy archetype that produced the deficit, and by Assumption A3 stated below,
+strategy archetype that produced the deficit, and by Assumption A3,
 the deficit persists in expectation). Hence no coalition member
 achieves both a reduction in individual Brier and an increase in ensemble Brier
 through deviation. The profile $(\sigma^{\text{SRR}})$ is therefore not
 improvable by any coalitional deviation in the societal Brier objective. $\square$
-
-**Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,
-a sacrifice-eligible agent's expected Brier over the next $W_{\text{persist}}$ days
-is at least $\bar{B} + \delta_{\text{sac}}/2$ (partial persistence of the
-performance deficit). This is a non-trivial claim — it excludes pure mean-reversion
-scenarios — and is empirically testable via the Sham-SRR condition (§4.3, §5.3).
 
 *Remark.* Proposition 2 does not claim SRR maximises any single agent's
 individual fitness. It claims the *society* cannot improve its collective
@@ -782,14 +782,15 @@ no agent can observe another's current-day output until the end-of-day broadcast
 **Bankroll and Kelly allocation.** Each agent maintains a virtual bankroll
 initialised at \$100,000 USD-equivalent. Stake sizing follows
 Kelly-criterion-adjusted allocations with an empirically derived cap
-($\kappa_i \in [0.01, 0.20]$, tuned per agent as described in CLAUDE.md §13).
+$\kappa_i = \max(0.01, 0.30 - \overline{B}_i \times 0.50)$, where $\overline{B}_i$ is the agent's
+rolling 28-day Brier from the pilot season; derivation and bounds discussion in §6.5.
 The ensemble prediction $\bar{p}_t$ is used as the *oracle signal*:
 agents whose allocations persistently diverge from the oracle direction
 are flagged as inverse-calibrated and receive reduced $\kappa_i$.
 
 **End-of-day broadcast.** At 23:59 UTC, resolved outcomes $\Omega_d$ are
 broadcast to all agents. Each agent updates its private history $h_{i,d}$.
-SRR eligibility is evaluated using the rolling window $[d-7, d]$.
+SRR eligibility is evaluated using the rolling window of the most recent $W = 7$ days.
 
 **SRR execution.** SRR fires at most once per agent per 14-day window.
 The archetype update is applied by modifying the agent's HuggingFace Space
@@ -918,8 +919,7 @@ ingested via `scripts/bloomberg/bloomberg-api.py` and archived in
 `data/full-odds-2025-26.json`, which contains 249 market categories per game
 (162 alternative spread/total lines, 28 team-total, 22 player-prop, 20 halves
 and quarters, 3 primary game-level markets). Of these, agents receive the full
-249-category context block, resolving a prior design flaw (pre-October 2025
-builds sliced only the first 8 categories).
+249-category context block.
 
 Additionally, each agent receives the feature representation used by the
 ensemble oracle: the LPSG feature engine (v3.1) generates 7,213 candidate
