@@ -80,8 +80,7 @@ ingested via `scripts/bloomberg/bloomberg-api.py` and archived in
 `data/full-odds-2025-26.json`, which contains 249 market categories per game
 (162 alternative spread/total lines, 28 team-total, 22 player-prop, 20 halves
 and quarters, 3 primary game-level markets). Of these, agents receive the full
-249-category context block, resolving a prior design flaw (pre-October 2025
-builds sliced only the first 8 categories).
+249-category context block.
 
 Additionally, each agent receives the feature representation used by the
 ensemble oracle: the LPSG feature engine (v3.1) generates 7,213 candidate
@@ -270,7 +269,7 @@ between the API temperature parameter and token-logit variance, so the
 effective stochasticity at $\tau = 0.7$ is provider-dependent.
 For self-hosted models (T12, Qwen3-4B-CPU), the parameter acts more
 directly on the logit distribution. The $\tau = 0.7$ selection was
-validated on T4 (Gemini 3 Flash, \textit{analytical} archetype);
+validated on T4 (Gemini 3 Flash, *analytical* archetype);
 its transferability to self-hosted inference is treated as a limitation
 and flagged in Appendix C.3.3.
 
