@@ -73,12 +73,20 @@ it has persistently above-mean Brier and there is no better individual
 strategy available in its current archetype. Defection from SRR — refusing
 the reallocation — offers no individual improvement and imposes a diversity
 tax on the population. In the vocabulary of evolutionary dynamics, epistemic
-role sacrifice is a *weakly dominant* strategy for chronically
-below-performing agents: it weakly improves individual fitness (via the
-archetype change) and strictly improves group fitness (via diversity
-increase). The result is stable against invasion by free-riders because
-free-riding offers no individual advantage once the eligibility condition
-is met [@sandholm2010population].
+role sacrifice is *individually incentive-compatible under Assumption A3*
+for chronically below-performing agents: by A3, remaining in the same
+archetype yields at most $\bar{B} + \delta_{\text{sac}}/2$ in expected
+individual Brier, while accepting the reallocation offers a strictly
+positive probability of improvement through the archetype change and
+strictly improves group fitness through the Ambiguity increase from
+Lemma 1.
+The mechanism is therefore individually rational in expectation
+(not unconditionally dominant — an agent whose archetype happens to
+recover spontaneously would rationally resist — but A3 precisely
+identifies agents for whom spontaneous recovery is not expected).
+The strategy profile is stable against free-riders because (under A3)
+free-riding yields no expected individual advantage while imposing a
+diversity cost on the population [@sandholm2010population].
 
 This has a connection to the biological literature on *phenotypic switching*
 in clonal populations [@wolf2005diversity], where genetically identical cells
