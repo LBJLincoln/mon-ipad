@@ -8,9 +8,10 @@
       "priority": -1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "CRITICAL: NBA+POL app.py EMPTY on GitHub main (704a645 accident not yet fixed). VM MUST run: cd /home/termius/mon-ipad && python3 scripts/ops/restore_tf_fire102.py — restores both from 095594aa + applies fire-100 tune + safe_commit+push. py_compile verified. Cloud agent git proxy blocked (403).",
+      "subject": "CRITICAL: NBA+POL app.py EMPTY/PLACEHOLDER on GitHub main. HISTORY: 704a645=empty blobs (fire-100), 2a74ece=placeholder strings (fire-102 MCP accident). VM MUST run: cd /home/termius/mon-ipad && python3 scripts/ops/restore_tf_fire102.py — restores both from 095594aa via git history + applies fire-100 tune + safe_commit+push. Script uses 'git show 095594aa:path' so local git history must include that commit. py_compile verified. Cloud agent git proxy blocked (403).",
       "detected_at": "2026-05-14T06:00:00Z",
-      "do_not_push": false
+      "do_not_push": false,
+      "updated_at": "2026-05-14T06:30:00Z"
     },
     {
       "id": "cloud-trigger-axelrod-fire-102-2026-05-14",
@@ -19,7 +20,7 @@
       "completed_at": "2026-05-14T06:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-102",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-102: RESTORE empty NBA+POL app.py (fire-100/704a645 accident) from 095594aa + re-apply fire-100 tune (_tdesc inline in SACRIFICIAL tier). NBA 5969->5970L | POL 3953->3954L | py_compile PASS both. restore_tf_fire102.py written for VM execution.",
+      "subject": "fire-102: RESTORE empty NBA+POL app.py (fire-100/704a645 accident) from 095594aa + re-apply fire-100 tune (_tdesc inline in SACRIFICIAL tier). NBA 5969->5970L | POL 3953->3954L | py_compile PASS both. restore_tf_fire102.py written for VM execution. NOTE: cloud agent push_files MCP accidentally pushed placeholder strings in 2a74ece.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -27,7 +28,7 @@
       "priority": -1,
       "status": "done",
       "owner": "local-vm",
-      "subject": "CRITICAL: GitHub main 704a645 has EMPTY NBA+POL app.py (cloud agent git proxy is read-only, cannot force-push). VM MUST: (1) verify local NOT at 704a645: git -C /home/termius/mon-ipad log --oneline -1; (2) if at 84e56d7 or earlier: git -C /home/termius/mon-ipad push --force origin main; (3) then re-apply fire-100 tune: in build_common_knowledge_block SACRIFICIAL block add _tdesc=AXELROD_ARCHETYPE_DESCRIPTIONS.get(_tarch,'')[:100] and append | {_tdesc} to the line. NBA 5969->5971L. Cloud agent local e52e04b at /home/user/mon-ipad has correct 5971L NBA+3955L POL for reference.",
+      "subject": "CRITICAL: GitHub main 704a645 has EMPTY NBA+POL app.py (cloud agent git proxy is read-only, cannot force-push). Superseded by vm-git-recovery-fire102.",
       "detected_at": "2026-05-13T22:00:00Z",
       "completed_at": "2026-05-14T06:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-102",
@@ -43,7 +44,7 @@
       "detected_at": "2026-05-13T10:00:00Z",
       "completed_at": "2026-05-13T14:00:00Z",
       "completed_by": "cloud-brain-fire-98",
-      "result": "fire-98: S14 SSL_CERT_ERROR at fire-98 — cannot confirm reset outcome. Given stag=21/25 at fire-97 with 4h elapsed (~40+ cycles), hard reset at cycle ~798 almost certainly occurred. Closing unconfirmed. Re-open if S14 comes back up and reset did not occur."
+      "result": "fire-98: S14 SSL_CERT_ERROR at fire-98 — cannot confirm reset outcome. Closing unconfirmed."
     },
     {
       "id": "vm-diversify-s13-fire95",
@@ -74,7 +75,7 @@
       "completed_at": "2026-05-13T22:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-100",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-100: Mech A tune — inline archetype desc in CK[D] SACRIFICIAL tier entries (NBA+POL parity). NBA 5969->5971L | POL 3953->3955L | py_compile PASS both. NOTE: git proxy blocked push; vm-git-recovery-nba-app-fire100 added for VM to restore GitHub main.",
+      "subject": "fire-100: Mech A tune — inline archetype desc in CK[D] SACRIFICIAL tier entries (NBA+POL parity). NOTE: git proxy blocked push; vm-git-recovery-nba-app-fire100 added for VM to restore GitHub main.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -114,7 +115,7 @@
       "owner": "local-vm",
       "completed_at": "2026-05-12T18:00:00Z",
       "completed_by": "cloud-brain-fire-93",
-      "subject": "URGENT: S14 (Nomos42/nba-evo-5) cycle_stag>=20 threshold~25 — DIVERSIFY NOW",
+      "subject": "URGENT: S14 cycle_stag>=20 — DIVERSIFY NOW",
       "result": "fire-93: S14 SELF-RECOVERED."
     },
     {
@@ -124,7 +125,7 @@
       "owner": "local-vm",
       "completed_at": "2026-05-12T14:00:00Z",
       "completed_by": "cloud-brain-fire-92",
-      "subject": "URGENT: S13 (Nomos42/nba-evo-4) cycle_stag=24 threshold=25 — DIVERSIFY IMMEDIATELY",
+      "subject": "URGENT: S13 cycle_stag=24 — DIVERSIFY IMMEDIATELY",
       "result": "fire-92: CLOSED."
     },
     {
@@ -134,8 +135,8 @@
       "owner": "local-vm",
       "completed_at": "2026-05-12T02:00:00Z",
       "completed_by": "cloud-brain-fire-89",
-      "subject": "URGENT: S14 (Nomos42/nba-evo-5) cycle_stag=23 threshold~25 — DIVERSIFY NOW",
-      "result": "fire-89: S14 hard reset occurred at cycle 578. logistic_regression AUTOMATICALLY ADDED during reseeding. Diversify command moot — CLOSING."
+      "subject": "URGENT: S14 cycle_stag=23 — DIVERSIFY NOW",
+      "result": "fire-89: S14 hard reset occurred at cycle 578. CLOSING."
     },
     {
       "id": "vm-diversify-s18-fire88",
@@ -144,7 +145,7 @@
       "owner": "local-vm",
       "completed_at": "2026-05-12T02:00:00Z",
       "completed_by": "cloud-brain-fire-89",
-      "subject": "URGENT: S18 (TESTforge42/nba-evo-s18) cycle_stag=21 threshold~25 — DIVERSIFY within 4h",
+      "subject": "URGENT: S18 cycle_stag=21 — DIVERSIFY within 4h",
       "result": "fire-89: S18 experienced hard resets at cycles 1826 AND 1851. CLOSING."
     },
     {
@@ -164,7 +165,7 @@
       "completed_at": "2026-05-09T22:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-72",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "Political TF app.py restored from commit 9167a1c (3810L base) + 3 DMAD parity patches. py_compile PASS.",
+      "subject": "Political TF app.py restored from commit 9167a1c (3810L base) + 3 DMAD parity patches.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -186,7 +187,7 @@
       "subject": "URGENT: political_engine.py both files = placeholder. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
       "detected_at": "2026-05-06T20:00:00Z",
       "updated_at": "2026-05-14T02:00:00Z",
-      "cloud_brain_note": "fire-101: STILL PENDING 250h+. File is 194KB — cannot be safely restored cloud-side. VM must run this. BLOCKING: Rotation B (political_engine.py review). CRITICAL — ESCALATE TO USER IMMEDIATELY. VM: cd nomos-political-alpha && python scripts/ops/restore_political_engine_fire53.py",
+      "cloud_brain_note": "fire-101: STILL PENDING 250h+. File is 194KB — cannot be safely restored cloud-side. VM must run this. BLOCKING: Rotation B. CRITICAL — ESCALATE TO USER IMMEDIATELY. VM: cd nomos-political-alpha && python scripts/ops/restore_political_engine_fire53.py",
       "do_not_push": false
     },
     {
@@ -216,7 +217,7 @@
       "owner": "local-vm",
       "completed_at": "2026-05-11T10:00:00Z",
       "completed_by": "cloud-brain-fire-83",
-      "subject": "Restart S14 (Nomos42/nba-evo-5) — 403 DOWN",
+      "subject": "Restart S14 — 403 DOWN",
       "result": "fire-83: S14 self-recovered.",
       "do_not_push": false
     },
@@ -227,7 +228,7 @@
       "completed_at": "2026-05-11T06:00:00Z",
       "completed_by": "cloud-brain-fire-82",
       "owner": "local-vm",
-      "subject": "Restart P2 (Nomos42/political-alpha-2) — 403 Forbidden DOWN",
+      "subject": "Restart P2 — 403 Forbidden DOWN",
       "result": "fire-82: P2 self-recovered."
     },
     {
@@ -237,7 +238,7 @@
       "owner": "local-vm",
       "completed_at": "2026-05-11T02:00:00Z",
       "completed_by": "cloud-brain-fire-81",
-      "subject": "Restart P5 (LBJLincoln/political-alpha-5) — SSL certificate error (DOWN)",
+      "subject": "Restart P5 — SSL certificate error",
       "result": "fire-81: P5 self-recovered."
     },
     {
@@ -268,7 +269,7 @@
       "subject": "Investigate S22 (TESTforge42/nba-evo-s22) repeated resets",
       "detected_at": "2026-05-10T10:00:00Z",
       "updated_at": "2026-05-14T02:00:00Z",
-      "cloud_brain_note": "fire-101: S22 gen=1920 cycle=640 stag=0. Resets at 590+615+640. Hard reset imminent at ~cycle 665. vm-remove-stacking-s22 still pending.",
+      "cloud_brain_note": "fire-101: S22 gen=1920 cycle=640 stag=0. Hard reset imminent at ~cycle 665. vm-remove-stacking-s22 still pending.",
       "do_not_push": false
     },
     {
@@ -278,7 +279,7 @@
       "owner": "local-vm",
       "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation) + add roster continuity features",
       "updated_at": "2026-05-14T02:00:00Z",
-      "cloud_brain_note": "fire-101: mismatch confirmed. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 delta. S18 feature candidates 3365 vs 3377 on other islands.",
+      "cloud_brain_note": "fire-101: mismatch confirmed. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 delta.",
       "do_not_push": false
     },
     {
@@ -288,7 +289,7 @@
       "owner": "local-vm",
       "completed_at": "2026-05-13T06:00:00Z",
       "completed_by": "cloud-brain-fire-96",
-      "subject": "Remove 'stacking' from S18 (TESTforge42/nba-evo-s18) MODEL_TYPES — Rule#8 violation",
+      "subject": "Remove 'stacking' from S18 MODEL_TYPES — Rule#8 violation",
       "result": "fire-96: MODEL_TYPES confirmed no stacking. CLOSING."
     },
     {
@@ -299,7 +300,7 @@
       "subject": "Remove 'stacking' from S13 (Nomos42/nba-evo-4) MODEL_TYPES — Rule#8 violation",
       "detected_at": "2026-05-12T02:00:00Z",
       "updated_at": "2026-05-14T02:00:00Z",
-      "cloud_brain_note": "fire-101: S13 FRESH RESTART gen=61 cycle=21. Hard reset at cycle 2055 occurred. VM MUST patch MODEL_TYPES before stacking recontaminates next reseed."
+      "cloud_brain_note": "fire-101: S13 FRESH RESTART gen=61 cycle=21. VM MUST patch MODEL_TYPES before stacking recontaminates next reseed."
     },
     {
       "id": "vm-remove-stacking-s15",
@@ -309,7 +310,7 @@
       "subject": "Remove 'stacking' from S15 (Nomos42/nba-evo-6) MODEL_TYPES — Rule#8 violation",
       "detected_at": "2026-05-11T10:00:00Z",
       "updated_at": "2026-05-14T02:00:00Z",
-      "cloud_brain_note": "fire-101: S15 cycle=954 stag=0. Hard reset at cycle=901 confirmed. Current pop stacking-clean. But MODEL_TYPES config may still define stacking — VM MUST patch before next reset at ~cycle 927+."
+      "cloud_brain_note": "fire-101: S15 cycle=954 stag=0. VM MUST patch before next reset at ~cycle 927+."
     },
     {
       "id": "vm-remove-stacking-s22",
@@ -319,7 +320,7 @@
       "subject": "Remove 'stacking' from S22 (TESTforge42/nba-evo-s22) MODEL_TYPES — Rule#8 violation",
       "detected_at": "2026-05-13T14:00:00Z",
       "updated_at": "2026-05-14T02:00:00Z",
-      "cloud_brain_note": "fire-101: S22 cycle=640 stag=0. No stacking in pop. Hard reset imminent ~cycle 665. VM MUST patch MODEL_TYPES before next reset.",
+      "cloud_brain_note": "fire-101: S22 cycle=640 stag=0. Hard reset imminent ~cycle 665. VM MUST patch MODEL_TYPES before next reset.",
       "do_not_push": false
     },
     {
@@ -330,7 +331,7 @@
       "subject": "Remove 'stacking' from S14 (Nomos42/nba-evo-5) MODEL_TYPES — Rule#8 violation NEW fire-99",
       "detected_at": "2026-05-13T18:00:00Z",
       "updated_at": "2026-05-14T02:00:00Z",
-      "cloud_brain_note": "fire-101: S14 cycle=834 stag=0. Hard resets at 803+828. Stacking still in MODEL_TYPES. VM MUST patch before next reset.",
+      "cloud_brain_note": "fire-101: S14 cycle=834 stag=0. Hard resets at 803+828. VM MUST patch before next reset.",
       "do_not_push": false
     },
     {
@@ -341,7 +342,7 @@
       "subject": "Add logistic_regression to MODEL_TYPES on islands missing it (POL: P2, P4, P5, P7; NBA: S15, S22 verify) + extra_trees to P4+P7",
       "detected_at": "2026-05-09T18:00:00Z",
       "updated_at": "2026-05-14T02:00:00Z",
-      "cloud_brain_note": "fire-101: Convergent 0.249 signal across P2/P4/P5/P7 (4th fire). Adding LR+extra_trees would expand diversity and potentially push one island below 0.249. P4+P7 (extra_trees) highest priority. P2 LightGBM 0.24901 candidate 2nd fire PENDING VAL.",
+      "cloud_brain_note": "fire-101: Convergent 0.249 signal across P2/P4/P5/P7 (4th fire). P4+P7 (extra_trees) highest priority.",
       "do_not_push": false
     },
     {
@@ -352,7 +353,7 @@
       "completed_at": "2026-05-11T22:00:00Z",
       "completed_by": "cloud-brain-fire-88",
       "subject": "Cross-project port: add extra_trees to P7 (LBJLincoln/political-alpha-7) model pool",
-      "result": "fire-88: extra_trees ALREADY present. Primary goal satisfied."
+      "result": "fire-88: extra_trees ALREADY present."
     },
     {
       "id": "vm-add-adaboost-naive-bayes-model-pool",
@@ -362,7 +363,7 @@
       "subject": "Add adaboost + naive_bayes to MODEL_TYPES on NBA+POL islands — fire-92 SOTA",
       "detected_at": "2026-05-12T14:00:00Z",
       "updated_at": "2026-05-14T02:00:00Z",
-      "cloud_brain_note": "fire-101: PMC12357926 + ITM CSEIT 2025 both validate AdaBoost+NaiveBayes for CPU-only ensemble. AFTER logistic_regression added (P50). Research proposal sota-uncertainty-aware-nba-2026-05-14.md written.",
+      "cloud_brain_note": "fire-101: PMC12357926 + ITM CSEIT 2025 both validate AdaBoost+NaiveBayes for CPU-only ensemble. AFTER logistic_regression added (P50).",
       "do_not_push": false
     },
     {
@@ -381,7 +382,7 @@
       "owner": "local-vm",
       "subject": "Fix diversify command format: action->command in all VM scripts",
       "updated_at": "2026-05-14T02:00:00Z",
-      "cloud_brain_note": "fire-101: Cloud brain confirmed correct call: POST /api/command {\"command\":\"diversify\"}. S18 diversified fire-101 using this format (response: {\"status\":\"command queued\",\"command\":\"diversify\"}). VM scripts may still use old {\"action\":\"diversify\"} format.",
+      "cloud_brain_note": "fire-101: Cloud brain confirmed correct call: POST /api/command {\"command\":\"diversify\"}.",
       "do_not_push": false
     },
     {
@@ -393,7 +394,7 @@
       "do_not_push": false,
       "detected_at": "2026-05-09T22:00:00Z",
       "updated_at": "2026-05-14T02:00:00Z",
-      "cloud_brain_note": "fire-101: Rotation A still BLOCKED on vm-restart-political-data-crons. VM: cd nomos-political-alpha && python scripts/fetch_fec_sec_features.py."
+      "cloud_brain_note": "fire-101: Rotation A still BLOCKED on vm-restart-political-data-crons."
     },
     {
       "id": "vm-add-knn-small-feature-model-pool",
@@ -430,7 +431,7 @@
       "completed_at": "2026-05-14T02:00:00Z",
       "completed_by": "cloud-brain-fire-101",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-101 ODD: S13 FRESH RESTART gen=61 cycle=21 (hard-reset-cycle-2055 confirmed, diversify fire-99 ✓). S14 gen=2500 cycle=834 stag=0. S15 gen=2861 cycle=954 stag=0 fleet-best-0.22012 UNCHANGED. S18 stag=16 DIVERSIFY SENT fire-101 (response: command queued). S22 gen=1920 cycle=640 stag=0. S17 503 DOWN 67d. All 5 POL UP stag=0. P2 LightGBM-117f-0.24901 PENDING-VAL 2nd consecutive fire. P5 LightGBM 0.249 4th fire. P7 0.25412 fleet laggard hard-resets 21881+21901 no improvement. Rotation B blocked (pol-engine placeholder 250h). Rotation C: SOTA AdaBoost+NB+KNN cross-port documented. SOTA: MDPI-2026 uncertainty-aware LSTM+MCDropout + PMC12357926 stacked ensemble. Research proposal written. health-status.json + brain-status.json pushed."
+      "subject": "fire-101 ODD: S13 FRESH RESTART gen=61. S14 stag=0. S15 fleet-best-0.22012. S18 stag=16 DIVERSIFY SENT. S22 stag=0. S17 503 DOWN 67d. All 5 POL UP. P2 LightGBM 0.24901 2nd fire. P5 LightGBM 0.249 4th fire. P7 0.25412 laggard."
     },
     {
       "id": "cloud-brain-fire99-2026-05-13T18h",
@@ -439,7 +440,7 @@
       "completed_at": "2026-05-13T18:00:00Z",
       "completed_by": "cloud-brain-fire-99",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-99 ODD: S13 stag=23 DIVERSIFIED. S15 stag=24 DIVERSIFIED (hard reset cycle 901 no-stacking confirmed). S14 RECOVERED (SSL cleared, hard reset cycle 803, stacking in MODEL_TYPES NEW vm-remove-stacking-s14). S17 DOWN 63d. S18 stag=0 extra_trees stable. S22 stag=0 no stacking in pop. P1+P7 RECOVERED (SSL cleared). P2 new POL candidate LightGBM 117f 0.24901 BELOW alltime 0.24904 (PENDING VAL). P4 RECOVERED stag=0. P5 LightGBM 0.249 signal persists 3rd consecutive fire. Convergent 0.249 signal across P2+P4+P7 top5."
+      "subject": "fire-99 ODD: S13+S15 DIVERSIFIED. S14 RECOVERED. P2 LightGBM 0.24901 PENDING VAL. P5 LightGBM 0.249 3rd fire."
     },
     {
       "id": "cloud-brain-fire98-2026-05-13T14h",
@@ -448,7 +449,7 @@
       "completed_at": "2026-05-13T14:00:00Z",
       "completed_by": "cloud-brain-fire-98",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-98 EVEN: S18 EXTRA_TREES SURGE all top5 extra_trees best 0.21842 gen=6549 SOTA validated. S15 stag=24/25 CRITICAL stacking back gen=2699 CatBoost 0.21881 candidate best_brier STILL 0.22012. S22 NEW Rule#8 stacking violation P46 added. S14/P1/P7 SSL cert errors transient. P4 stag=20/20 consecutive reset loop. P5 lightgbm 0.249 gen=49527 IDENTICAL to fire-97. SOTA: 2026 Springer ETR+LGBR+XGBR validates extra_trees; fleet 0.22012 below CNN 0.221 reference. Cross-port: extra_trees -> P4. fire-98 EVEN: SOTA scan complete."
+      "subject": "fire-98 EVEN: S18 extra_trees 0.21842 SOTA. S15 CatBoost 0.21881 candidate. S22 Rule#8 stacking violation."
     },
     {
       "id": "cloud-brain-fire97-2026-05-13T10h",
@@ -457,7 +458,7 @@
       "completed_at": "2026-05-13T10:00:00Z",
       "completed_by": "cloud-brain-fire-97",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-97: S14 cycle_stag=21 CRITICAL. S13 cycle-1985 stacking RECONTAMINATION. S15 top5 RF 0.21941 gen=2689 candidate. S17 503 DOWN 55+ days. P5 lightgbm 104f brier=0.249 convergent signal. P7 pareto_front=4down."
+      "subject": "fire-97: S14 cycle_stag=21 CRITICAL. S13 stacking RECONTAMINATION. S15 RF 0.21941 candidate. P5 lightgbm 0.249."
     },
     {
       "id": "cloud-brain-fire96-2026-05-13T06h",
@@ -466,7 +467,7 @@
       "completed_at": "2026-05-13T06:00:00Z",
       "completed_by": "cloud-brain-fire-96",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-96: S13 RECOVERED. S18 config clean. S22 2nd reset cycle 540. SOTA: MDPI Computers 2025 NBA+WNBA multi-league ML."
+      "subject": "fire-96: S13 RECOVERED. S18 config clean. S22 2nd reset cycle 540."
     },
     {
       "id": "cloud-brain-fire95-2026-05-13T02h",
@@ -475,7 +476,7 @@
       "completed_at": "2026-05-13T02:00:00Z",
       "completed_by": "cloud-brain-fire-95",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-95: S13 cycle_stag=21 CRITICAL. S18 2x hard-reset. S15 fleet best 0.22012 stable. S17 503 DOWN 50+ days."
+      "subject": "fire-95: S13 cycle_stag=21 CRITICAL. S18 2x hard-reset. S15 fleet best 0.22012 stable."
     },
     {
       "id": "cloud-brain-fire93-2026-05-12T18h",
@@ -484,7 +485,7 @@
       "completed_at": "2026-05-12T18:00:00Z",
       "completed_by": "cloud-brain-fire-93",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-93: S14 RECOVERED. S18 cycle_stag=23 CRITICAL. S15 hard-reset-826 LR-in-reseed. S13 hard-reset-1810 stacking-in-reseed."
+      "subject": "fire-93: S14 RECOVERED. S18 cycle_stag=23 CRITICAL. S15+S13 hard-resets."
     },
     {
       "id": "cloud-trigger-axelrod-fire-91-2026-05-12",
@@ -493,7 +494,7 @@
       "completed_at": "2026-05-12T10:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-91",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-91: ARCHETYPE PERFORMANCE summary added to CK[D] Mech A block. NBA 5924->5951L | POL 3908->3935L | py_compile PASS both.",
+      "subject": "fire-91: ARCHETYPE PERFORMANCE summary added to CK[D] Mech A block. NBA 5924->5951L | POL 3908->3935L.",
       "do_not_push_hf_space_yet": true
     },
     {
@@ -503,7 +504,7 @@
       "completed_at": "2026-05-12T06:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-90",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-90: CONSENSUS PICKS pnl+wr outcome fields added to CK[D]. NBA 5918->5924L | POL 3902->3908L | py_compile PASS both.",
+      "subject": "fire-90: CONSENSUS PICKS pnl+wr outcome fields added to CK[D]. NBA 5918->5924L | POL 3902->3908L.",
       "do_not_push_hf_space_yet": true
     }
   ],
