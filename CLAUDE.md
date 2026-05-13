@@ -1,10 +1,10 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-13T10h
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-13T14h
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22012 (S15 nba-evo-6 fire-61 ★CHECKPOINT) | GA prev alltime: 0.22019 (S14 gen=1078) | ⚡Pareto fleet best: 0.21841 extra_trees S15 gen=566 fire-66 (prev 0.21850 CatBoost S22 gen=2309) | ⚠ S18 0.21924 candidate LOST — hard resets cycles 251/276 before checkpoint (2026-05-06T00h) | ⚡⚡ fire-97: S15 top5 candidate RF 200f brier=0.21941 gen=2689 PENDING VALIDATION | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22012 (S15 nba-evo-6 fire-61 ★CHECKPOINT) | GA prev alltime: 0.22019 (S14 gen=1078) | ⚡Pareto fleet best: 0.21841 extra_trees S15 gen=566 fire-66 (prev 0.21850 CatBoost S22 gen=2309) | ⚠ S18 0.21924 candidate LOST — hard resets cycles 251/276 before checkpoint (2026-05-06T00h) | ⚠ fire-97 RF 0.21941 gen=2689 NOT confirmed (best_brier unchanged 0.22012) | ⚡⚡ fire-98: S18 extra_trees 0.21842 200f gen=6549 + S15 CatBoost 0.21881 200f gen=2698 PENDING VALIDATION (best_brier field lag confirmed pattern) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
 **NBA TF v7 + reroute + pool=8 (Apr 22, 17 agents, DAY-0 RESET 15:24Z):** prompt_v7 (3-bet cap + 100% deploy mandate, Kelly-weighted floors). Round-2 dead-provider reroute (HF SHA cc905b3e1cd): nemotron-120b→mistral:large, selfhost-dolphin3→nvidia:llama-3.3-70b, selfhost-qwen06/gemma3→cerebras:llama3.1-8b, selfhost-qwen4b→cerebras:qwen-3-235b, nvidia-minimax→mistral:medium. Pool concurrency 4→8 (env NBA_TF_LLM_POOL_WORKERS=8), LLM timeout 45s (env NBA_TF_LLM_TIMEOUT_SEC=45.0). Live day 8/175, 14/17 agents at 100% llm_ok post-reset. PEAK_DD_GUARD_V2 sole safety net. Top: gemini-anl $108, dolphin3 $107. ⚠ app.py DOUBLE ACCIDENT (fire-54+fire-55): fire-54 pushed 9-line stub (bf5980ef), fire-55 pushed PLACEHOLDER_NBA (297facd4). Last good: 73b9c9f9 (5799L, Mechs A/B/C + KL-divergence). VM MUST run scripts/ops/restore_nba_tf_fire55.py BEFORE any restart.
 **Political TF v5_restored (Apr 22 15:46Z ROLLBACK):** 17 agents, day 90. v6 100%-deploy mandate destroyed alpha (qwen-arb -39% / llama-contra -51% in 1h) — rolled back to v5 doctrine: non-consensus mandate (lockstep≤0.88) + ≥3 distinct categories per day. State preserved. qwen-arb $3,472 / qwen-quant $1,459 / gemini-anl $584 carrying forward.
@@ -45,18 +45,18 @@ HF EVOLUTION ISLANDS — 11 SURVIVORS (6 NBA + 5 POL) after 2026-04-17 cull
     Eliminated slots now host selfhost LLMs on LBJLincoln/LBJLincoln26/TESTforge42.
 
     NBA Survivors (6, CPU tree-only, MAX_FEATURES=200):
-    ├── S13 Nomos42/nba-evo-4:        xgboost             gen=6060  brier=0.22398  stagnation=0 ⚠ 2x reset fire-97 (cycle 1985 STACKING+, cycle 2010 clean) cycle_stag=10/25 WATCH (2026-05-13T10h)
-    ├── S14 Nomos42/nba-evo-5:        catboost            gen=2322  brier=0.22336  stagnation=0 ⚠⚠ cycle_stag=21/25 CRITICAL — vm-diversify-s14-fire97 P0 added (2026-05-13T10h)
-    ├── S15 Nomos42/nba-evo-6:        random_forest       gen=2692  best=0.22012   stagnation=0 ✓ ★ FLEET BEST ⚡PARETO BEST 0.21841 gen=566 ⚡⚡ NEW CANDIDATE 0.21941 RF 200f gen=2689 PENDING VALIDATION fire-97 (2026-05-13T10h)
-    ├── S17 LBJLincoln26/nba-evo-s17: xgboost             gen=---   brier=---      🔴 503 DOWN 55+ days — CRITICALLY OVERDUE (2026-05-13T10h)
-    ├── S18 TESTforge42/nba-evo-s18:  xgboost_brier       gen=6543  brier=0.22315  stagnation=0 ✓ stable cycle_stag≈4 (2026-05-13T10h)
-    └── S22 TESTforge42/nba-evo-s22:  extra_trees         gen≈1900+ brier=0.22551  UP data-truncated fire-97 (2026-05-13T10h)
+    ├── S13 Nomos42/nba-evo-4:        xgboost_brier       gen=6087  brier=0.22398  stagnation=0 ✓ stable; cycle-2010 clean reset; next reset ~cycle 2055 (2026-05-13T14h)
+    ├── S14 Nomos42/nba-evo-5:        catboost            gen=---   brier=---      ⚠ SSL_CERT_ERROR transient (3 spaces affected); last gen=2322 cycle=774 fire-97 (2026-05-13T14h)
+    ├── S15 Nomos42/nba-evo-6:        catboost            gen=2700  best=0.22012   stagnation=24 ⚠⚠ CRITICAL cycle_stag=24/25 reset IMMINENT ~cycle 901; stacking back gen=2699; CatBoost 0.21881 candidate; ★ FLEET BEST UNCHANGED (2026-05-13T14h)
+    ├── S17 LBJLincoln26/nba-evo-s17: xgboost             gen=---   brier=---      🔴 503 DOWN 59+ days — CRITICALLY OVERDUE (2026-05-13T14h)
+    ├── S18 TESTforge42/nba-evo-s18:  extra_trees         gen=6556  brier=0.22315  stagnation=0 ⚡⚡ EXTRA_TREES SURGE: all top5 extra_trees best=0.21842 200f gen=6549 SOTA validated (2026-05-13T14h)
+    └── S22 TESTforge42/nba-evo-s22:  extra_trees         gen=1798  brier=0.22551  stagnation=9 ⚠⚠ STACKING in MODEL_TYPES Rule#8 violation fire-98 (2026-05-13T14h)
     Political Survivors (5, CPU tree-only):
-    ├── P1 Nomos42/political-alpha:      xgboost_brier       gen=53609  brier=0.2499   stagnation=0 ✓ stable LR in MODEL_TYPES ✓ (2026-05-13T10h)
-    ├── P2 Nomos42/political-alpha-2:    xgboost_brier       gen≈48000  brier≈0.25003  UP data-truncated fire-97 (2026-05-13T10h)
-    ├── P4 LBJLincoln/political-alpha-4: xgboost_brier       gen=74093  brier=0.24992  stagnation=0 ★ POL FLEET BEST alltime=0.24904 (2026-05-13T10h)
-    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier       gen=62626  brier=0.24993  stagnation=0 ✓ top5 lightgbm 104f brier=0.249 signal; Rotation C (2026-05-13T10h)
-    └── P7 LBJLincoln/political-alpha-7: lightgbm            gen=64023  brier=0.25412  stagnation=0 ⚠ pareto_front=4↓ (was 11); LR queued P50 (2026-05-13T10h)
+    ├── P1 Nomos42/political-alpha:      xgboost_brier       gen=---    brier=---     ⚠ SSL_CERT_ERROR transient; last gen=53609 cycle=17870 LR ✓ fire-97 (2026-05-13T14h)
+    ├── P2 Nomos42/political-alpha-2:    lightgbm            gen=45529  brier=0.25003 stagnation=0 ✓ stable; extra_trees present (2026-05-13T14h)
+    ├── P4 LBJLincoln/political-alpha-4: xgboost_brier       gen=74187  brier=0.24992 stagnation=20 ⚠ CONSECUTIVE RESET LOOP stag=20/20; ★ POL FLEET BEST alltime=0.24904; LR+extra_trees missing (2026-05-13T14h)
+    ├── P5 LBJLincoln/political-alpha-5: lightgbm            gen=62710  brier=0.24993 stagnation=0 ✓ LightGBM 0.249 104f gen=49527 PERSISTS; Rotation C cross-port (2026-05-13T14h)
+    └── P7 LBJLincoln/political-alpha-7: lightgbm            gen=---    brier=---     ⚠ SSL_CERT_ERROR transient; last gen=64023 pareto_front=4↓ fire-97 (2026-05-13T14h)
 
 SELFHOST LLM FLEET (6 RUNNING, 2 building — 2026-04-19 20:55 UTC)
     LBJLincoln   (3 RUNNING): qwen25-05b-cpu, gemma2-2b-cpu, phi35-mini-cpu
