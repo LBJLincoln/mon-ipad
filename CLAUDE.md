@@ -1,10 +1,10 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-13T18h
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-14T02h
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22012 (S15 nba-evo-6 fire-61 ★CHECKPOINT) | GA prev alltime: 0.22019 (S14 gen=1078) | ⚡Pareto fleet best: 0.21841 extra_trees S15 gen=566 fire-66 (prev 0.21850 CatBoost S22 gen=2309) | ⚠ S18 0.21924 candidate LOST — hard resets cycles 251/276 before checkpoint (2026-05-06T00h) | ⚠ fire-97 RF 0.21941 gen=2689 NOT confirmed (best_brier unchanged 0.22012) | ⚡⚡ fire-98: S18 extra_trees 0.21842 200f gen=6549 + S15 CatBoost 0.21881 200f gen=2698 PENDING VALIDATION (best_brier field lag confirmed pattern) | fire-99: S14 RECOVERED ssl-cleared hard-reset-803 stacking-violation-new; S13 stag=23+S15 stag=24 DIVERSIFIED; P2 0.24901 + P7 0.24904 POL candidates (PENDING VAL); convergent 0.249 signal P2+P4+P5+P7 | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22012 (S15 nba-evo-6 fire-61 ★CHECKPOINT) | GA prev alltime: 0.22019 (S14 gen=1078) | ⚡Pareto fleet best: 0.21841 extra_trees S15 gen=566 fire-66 (prev 0.21850 CatBoost S22 gen=2309) | ⚠ S18 0.21924 candidate LOST — hard resets cycles 251/276 before checkpoint (2026-05-06T00h) | ⚠ fire-97 RF 0.21941 gen=2689 NOT confirmed (best_brier unchanged 0.22012) | ⚡⚡ fire-98: S18 extra_trees 0.21842 200f gen=6549 + S15 CatBoost 0.21881 200f gen=2698 PENDING VALIDATION (best_brier field lag confirmed pattern) | fire-99: S14 RECOVERED ssl-cleared hard-reset-803 stacking-violation-new; S13 stag=23+S15 stag=24 DIVERSIFIED; P2 0.24901 + P7 0.24904 POL candidates (PENDING VAL); convergent 0.249 signal P2+P4+P5+P7 | fire-101: S13 FRESH RESTART cycle=21 (hard-reset-2055 ✓); S15 stag cleared cycle=954; S18 stag=16 DIVERSIFY SENT; all POL UP stag=0; P2 0.24901 2nd fire; P5 LightGBM 0.249 4th fire | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
 **NBA TF v7 + reroute + pool=8 (Apr 22, 17 agents, DAY-0 RESET 15:24Z):** prompt_v7 (3-bet cap + 100% deploy mandate, Kelly-weighted floors). Round-2 dead-provider reroute (HF SHA cc905b3e1cd): nemotron-120b→mistral:large, selfhost-dolphin3→nvidia:llama-3.3-70b, selfhost-qwen06/gemma3→cerebras:llama3.1-8b, selfhost-qwen4b→cerebras:qwen-3-235b, nvidia-minimax→mistral:medium. Pool concurrency 4→8 (env NBA_TF_LLM_POOL_WORKERS=8), LLM timeout 45s (env NBA_TF_LLM_TIMEOUT_SEC=45.0). Live day 8/175, 14/17 agents at 100% llm_ok post-reset. PEAK_DD_GUARD_V2 sole safety net. Top: gemini-anl $108, dolphin3 $107. ⚠ app.py DOUBLE ACCIDENT (fire-54+fire-55): fire-54 pushed 9-line stub (bf5980ef), fire-55 pushed PLACEHOLDER_NBA (297facd4). Last good: 73b9c9f9 (5799L, Mechs A/B/C + KL-divergence). VM MUST run scripts/ops/restore_nba_tf_fire55.py BEFORE any restart.
 **Political TF v5_restored (Apr 22 15:46Z ROLLBACK):** 17 agents, day 90. v6 100%-deploy mandate destroyed alpha (qwen-arb -39% / llama-contra -51% in 1h) — rolled back to v5 doctrine: non-consensus mandate (lockstep≤0.88) + ≥3 distinct categories per day. State preserved. qwen-arb $3,472 / qwen-quant $1,459 / gemini-anl $584 carrying forward.
@@ -45,18 +45,19 @@ HF EVOLUTION ISLANDS — 11 SURVIVORS (6 NBA + 5 POL) after 2026-04-17 cull
     Eliminated slots now host selfhost LLMs on LBJLincoln/LBJLincoln26/TESTforge42.
 
     NBA Survivors (6, CPU tree-only, MAX_FEATURES=200):
-    ├── S13 Nomos42/nba-evo-4:        xgboost_brier       gen=6249  brier=0.22398  stagnation=23 ⚠ stag=23/25 DIVERSIFY sent fire-99; hard reset ~cycle 2055 occurred; top XGBoost 200f 0.2214 gen=6248 (2026-05-13T18h)
-    ├── S14 Nomos42/nba-evo-5:        extra_trees         gen=2413  brier=0.22336  stagnation=0 ✓ RECOVERED (SSL cleared); hard reset cycle=803; ⚠ stacking in MODEL_TYPES vm-remove-stacking-s14 NEW (2026-05-13T18h)
-    ├── S15 Nomos42/nba-evo-6:        random_forest       gen=2775  best=0.22012   stagnation=24 ⚠⚠ CRITICAL stag=24/25 DIVERSIFY sent fire-99; hard reset cycle=901 (no stacking); ★ FLEET BEST UNCHANGED (2026-05-13T18h)
-    ├── S17 LBJLincoln26/nba-evo-s17: ---                 gen=---   brier=---      🔴 503 DOWN 63+ days — CRITICALLY OVERDUE (2026-05-13T18h)
-    ├── S18 TESTforge42/nba-evo-s18:  xgboost_brier       gen=6641  brier=0.22315  stagnation=0 ✓ stable; top extra_trees 33f 0.22532; resets at 2176+2201 (2026-05-13T18h)
-    └── S22 TESTforge42/nba-evo-s22:  extra_trees         gen=1861  brier=0.22551  stagnation=0 ✓ stable; no stacking in current pop; MODEL_TYPES config patch pending vm-remove-stacking-s22 (2026-05-13T18h)
+    ├── S13 Nomos42/nba-evo-4:        xgboost_brier       gen=61    brier=0.22344  stagnation=0  ✓ FRESH RESTART post hard-reset cycle-2055 (diversify fire-99 ✓); cycle=21 (2026-05-14T02h)
+    ├── S14 Nomos42/nba-evo-5:        extra_trees         gen=2500  brier=0.22336  stagnation=0  ✓ cycle=834; hard resets 803+828; ⚠ stacking in MODEL_TYPES vm-remove-stacking-s14 (2026-05-14T02h)
+    ├── S15 Nomos42/nba-evo-6:        random_forest       gen=2861  best=0.22012   stagnation=0  ✓ cycle=954; hard reset cycle=901 confirmed stag cleared; ★ FLEET BEST 0.22012 (2026-05-14T02h)
+    ├── S17 LBJLincoln26/nba-evo-s17: ---                 gen=---   brier=---      🔴 503 DOWN 67+ days — VM RESTART REQUIRED (2026-05-14T02h)
+    ├── S18 TESTforge42/nba-evo-s18:  xgboost_brier       gen=6727  brier=0.22315  stagnation=16 ⚠ stag=16/25 DIVERSIFY SENT fire-101; cycle=2243; resets 2201+2226 (2026-05-14T02h)
+    └── S22 TESTforge42/nba-evo-s22:  extra_trees         gen=1920  brier=0.22551  stagnation=0  ✓ cycle=640; no stacking in pop; MODEL_TYPES config patch pending vm-remove-stacking-s22 (2026-05-14T02h)
     Political Survivors (5, CPU tree-only):
-    ├── P1 Nomos42/political-alpha:      xgboost_brier       gen=54504  brier=0.2499  stagnation=0 ✓ RECOVERED (SSL cleared); cycle=18168 LR ✓ (2026-05-13T18h)
-    ├── P2 Nomos42/political-alpha-2:    xgboost_brier       gen=45985  brier=0.25003 stagnation=0 ✓ stable; ⚡ top LightGBM 117f 0.24901 NEW POL CANDIDATE below alltime 0.24904 (PENDING VAL) (2026-05-13T18h)
-    ├── P4 LBJLincoln/political-alpha-4: lightgbm            gen=74899  brier=0.24992 stagnation=0 ✓ RECOVERED from reset loop; ★ POL FLEET BEST alltime=0.24904; LR+extra_trees missing (2026-05-13T18h)
-    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier       gen=63342  brier=0.24993 stagnation=0 ✓ LightGBM 0.249 stable (3rd consecutive fire); resets 21061+21081 (2026-05-13T18h)
-    └── P7 LBJLincoln/political-alpha-7: lightgbm            gen=64894  brier=0.25412 stagnation=0 ✓ RECOVERED (SSL cleared); ⚡ top LightGBM 134f 0.24904 = alltime POL best (2026-05-13T18h)
+    ├── P1 Nomos42/political-alpha:      xgboost_brier       gen=55325  brier=0.2499  stagnation=0  ✓ cycle=18442 stable (2026-05-14T02h)
+    ├── P2 Nomos42/political-alpha-2:    xgboost_brier       gen=46510  brier=0.25003 stagnation=0  ✓ cycle=15504; ⚡ top LightGBM 117f 0.24901 POL CANDIDATE 2nd fire (PENDING VAL) (2026-05-14T02h)
+    ├── P4 LBJLincoln/political-alpha-4: xgboost_brier       gen=75614  brier=0.24992 stagnation=0  ✓ cycle=25205; ★ POL FLEET BEST alltime=0.24904; hard resets continue (2026-05-14T02h)
+    ├── P5 LBJLincoln/political-alpha-5: xgboost_brier       gen=63964  brier=0.24993 stagnation=0  ✓ cycle=21322; LightGBM 104f 0.249 persistent (4th fire); resets 21281+21301 (2026-05-14T02h)
+    └── P7 LBJLincoln/political-alpha-7: lightgbm            gen=65789  brier=0.25412 stagnation=0  ✓ cycle=21930; fleet laggard stuck at 0.25412; hard resets 21881+21901 no improvement (2026-05-14T02h)
+```
 
 SELFHOST LLM FLEET (6 RUNNING, 2 building — 2026-04-19 20:55 UTC)
     LBJLincoln   (3 RUNNING): qwen25-05b-cpu, gemma2-2b-cpu, phi35-mini-cpu
@@ -107,7 +108,6 @@ SYSTEM CRONS (28 active on VM, all lightweight)
     ├── :30   autonomous-cycle.sh
     ├── */2h  monitoring, vault sync, political data
     └──       Bloomberg API (port 8042), data server (port 8080)
-```
 
 ## Skills
 
@@ -160,7 +160,7 @@ SYSTEM CRONS (28 active on VM, all lightweight)
 Both built via Kaggle CPU training → HF dataset → FastAPI Space. Weekly auto-retrain via `scripts/ops/weekly_oracle_retrain.sh` (Sun 03:00 UTC).
 
 | Space | Dataset | CV Brier | Target | Status |
-|-------|---------|----------|--------|
+|-------|---------|----------|--------|--------|
 | `LBJLincoln26/nba-oracle` | `LBJLincoln26/nba-oracle-model` | **0.22087** (best fold 0.21383) | 0.21218 | live, serves /api/predict, /api/status, /api/best |
 | `LBJLincoln26/pol-oracle` | `LBJLincoln26/pol-oracle-model` | **0.23274** (best fold 0.22329) | 0.20239 | live |
 
