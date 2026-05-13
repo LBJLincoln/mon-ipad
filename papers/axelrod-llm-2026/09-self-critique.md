@@ -1209,3 +1209,215 @@ hits across all paper files after applying the rolling-formula fix.
 - `05-experimental-setup.md` §4.6: `\textit{analytical}` →
   `*analytical*` (Q4)
 - `paper.md`: all seven fixes mirrored (Q1–Q7)
+
+---
+
+# Peer-Review Self-Critique — Cycle 16 (2026-05-13)
+
+*Full manuscript re-read following Cycle 15's clean slate. Five new issues
+identified (R3, R5, R6, R13, R19); all five fixed in this cycle.*
+
+---
+
+## CYCLE 15 STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle 15. PRE-SUBMISSION checklist items 1–3 (author
+verification for `@ouyang2022training`, `@llm_ipd2024`, `@polyswarm2026`)
+remain deferred pending network access to live arXiv records.
+
+---
+
+## NEW ISSUES (Cycle 16 full-manuscript re-read)
+
+### R3. §3.2 Definition 1 — SRR cross-reference says "§3.3" but SRR is defined in §3.4 [FIXED]
+
+**Reviewer:** Definition 1 (LPSG) states "and $\text{SRR}$ is the sacrificial
+role reallocation mechanism **defined in §3.3**." The section headings are:
+§3.3 "Diversity Metric" and §3.4 "Sacrificial Role Reallocation (SRR)." The
+forward reference is wrong by one section number. A reader who turns to §3.3
+to find the SRR definition finds the JSD diversity metric instead — a particularly
+confusing misdirection because §3.3 is a prerequisite for understanding SRR but is
+not SRR itself.
+
+**Fix applied (`04-method.md` §3.2 and `paper.md` §3.2):**
+"defined in §3.3" → "defined in §3.4." ✓
+
+*Root cause:* The section numbering shifted when the Diversity Metric section
+was inserted between the LPSG definition and the SRR definition; the forward
+reference was not updated. Post-fix verification: `grep -n "SRR.*defined" *.md`
+returns `§3.4` in all relevant files.
+
+---
+
+### R5. §5.4 Diversity–Accuracy Regression — Covariate uses per-day Brier, inconsistent with 28-day rolling primary metrics [FIXED]
+
+**Reviewer:** The regression in §5.4 specified:
+
+$$B_{\text{ens},d} = \beta_0 + \beta_1 \overline{D}_d + \beta_2 \overline{B}_d + \varepsilon_d$$
+
+with "$\overline{B}_d = \frac{1}{N}\sum_i B_{i,d}$ is the mean individual Brier."
+Three problems arise:
+
+1. The dependent variable uses $B_{\text{ens},d}$ (per-day, not rolling), while
+   Figure 3's caption explicitly states "28-day rolling $(\overline{D}_d, B_{\text{ens},d})$."
+   A regression of rolling $Y$ on rolling $X_1$ but per-day $X_2$ mixes
+   temporal scales in the same model.
+
+2. The notation $\overline{B}_d$ (with overline) collides with $\overline{B}_{i,d}$
+   (agent $i$'s 28-day rolling Brier, defined in §3.1), creating a potential reader
+   confusion between per-day cross-agent mean and rolling per-agent mean.
+
+3. The symbol $\bar{B}_d$ (single bar) is already defined in §3.1 as
+   $\frac{1}{N}\sum_i \overline{B}_{i,d}$ — the rolling society-mean Brier. Using
+   a different overline variant for a different quantity introduces typographic
+   ambiguity that is invisible in plain text but produces visually similar symbols
+   in rendered LaTeX.
+
+**Fix applied (`06-results.md` §5.4 and `paper.md` §5.4):**
+- Dependent variable updated to $\overline{B}_{\text{ens},d}$ (rolling ensemble Brier,
+  consistent with Figure 3).
+- Covariate changed to $\bar{B}_d = \frac{1}{N}\sum_i \overline{B}_{i,d}$ (rolling
+  mean individual Brier, consistent with §3.1 definition and §4.5 secondary metric).
+- Cross-reference to §3.1 added in the covariate definition. ✓
+
+---
+
+### R6. Lemma 1 Proof — "Moves $p_{i,t}'$ closer to an extreme of $[0,1]$" claim fails when $\bar{p}_t \neq \frac{1}{2}$ [FIXED — major mathematical gap]
+
+**Reviewer:** The Lemma 1 proof used the following argument chain:
+(1) A2 implies $p_{i,t} \approx \bar{p}_t$; (2) the vacant archetype moves
+$p_{i,t}'$ away from $\bar{p}_t$, "closer to an extreme of $[0,1]$";
+(3) strict concavity of binary entropy $H$ (maximised at $\frac{1}{2}$) then
+gives $H(p_{i,t}') < H(p_{i,t})$.
+
+Step (3) requires $|p_{i,t}' - \frac{1}{2}| > |p_{i,t} - \frac{1}{2}|$
+— i.e., the new prediction is *more extreme* (further from $1/2$) than the
+old one. Step (2) establishes that $p_{i,t}'$ is further from $\bar{p}_t$
+than $p_{i,t}$ is, but "further from $\bar{p}_t$" and "further from $1/2$"
+are the same condition only when $\bar{p}_t = \frac{1}{2}$. In the NBA domain,
+the home-team win rate is approximately 60%, so $\bar{p}_t \approx 0.6$.
+A vacant archetype that produces predictions around $0.5$ would be
+"further from $\bar{p}_t = 0.6$" but also "closer to $1/2$," making
+$H(p_{i,t}') > H(p_{i,t})$ and term (II) *negative* — contradicting
+the claimed sign.
+
+This is a genuine mathematical gap: the H-entropy argument fails whenever
+$\bar{p}_t \neq \frac{1}{2}$, which is the typical operating condition.
+The previous two-term decomposition (centroid-shift term (I) and entropy term (II))
+was correct as an algebraic identity but the bound on term (II) was wrong.
+
+**Fix applied (`04-method.md` §3.5 Lemma 1 proof and `paper.md` §3.5):**
+
+The proof is restructured to use the **Ambiguity-path argument**, which is
+valid regardless of $\bar{p}_t$:
+
+Let $\Delta p = p_{i,t}' - p_{i,t}$ and $\delta_i = p_{i,t} - \bar{p}_t$.
+By A1, $|\Delta p| \geq \epsilon_{\text{arch}}$ in expectation.
+By A2, $|\delta_i| = O(\sqrt{\text{Amb}_t})$ and is small relative to $|\Delta p|$.
+A direct computation of the Ambiguity change (expanding per-agent squared deviations
+from the updated centroid $\bar{p}_t' = \bar{p}_t + \Delta p/N$) gives:
+
+$$\Delta\text{Amb}_t = \frac{(\Delta p)^2(N-1)}{N^2} + O\!\left(\frac{|\delta_i|\,|\Delta p|}{N}\right) \geq \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0 \quad (N \geq 2)$$
+
+The Ambiguity increase is guaranteed by A1 alone (no assumption on the direction of
+the move relative to $1/2$) and is independent of whether $\bar{p}_t = 0.5$.
+The JSD–Ambiguity monotonicity result (Appendix B.1) then gives $\Delta D_d > 0$. ✓
+
+*Note on the old proof's term (II):* The two-term JSD decomposition (centroid-shift +
+individual entropy) was algebraically correct; only the entropy argument was wrong.
+The Ambiguity-path proof is cleaner because it does not require decomposing the
+JSD expression and directly uses the result already proved in Appendix B.1.
+
+---
+
+### R13. `@aumann1959acceptable` typed as `@article` — should be `@incollection` [FIXED]
+
+**Reviewer:** The entry `@article{aumann1959acceptable}` uses `journal = {Contributions
+to the Theory of Games}`. Aumann (1959) "Acceptable Points in General Cooperative
+$n$-Person Games" appeared as a chapter in *Contributions to the Theory of Games,
+Volume IV*, edited by Tucker and Luce (Princeton University Press, Annals of
+Mathematics Studies No. 40). This is a book chapter, not a journal article.
+Using `@article` with a `journal` field for a book chapter will produce malformed
+output in most bibliography styles: the publisher, editor, and book title will not
+appear, making the citation both incomplete and misleading.
+
+**Fix applied (`references.bib`):**
+`@article{aumann1959acceptable}` → `@incollection{aumann1959acceptable}` with:
+- `booktitle = {Contributions to the Theory of Games, Volume {IV}}`
+- `editor = {Tucker, Albert W. and Luce, R. Duncan}`
+- `series = {Annals of Mathematics Studies}`
+- `number = {40}`
+- `publisher = {Princeton University Press}`
+- `address = {Princeton, NJ}`
+The `journal` field was removed; `pages` and `year` retained unchanged. ✓
+
+---
+
+### R19. §6.1 Claims SRR is a "weakly dominant strategy" — overclaims beyond Proposition 2 [FIXED]
+
+**Reviewer:** Section 6.1 stated: "In the vocabulary of evolutionary dynamics,
+epistemic role sacrifice is a *weakly dominant* strategy for chronically
+below-performing agents." A *weakly dominant* strategy in game theory is one that
+weakly improves payoff regardless of what opponents do — an unconditional property.
+Proposition 2 proves a Strong Nash Equilibrium result (no coalition can deviate),
+which is a condition on strategy *profiles* under the SRR policy, not a claim
+about individual dominance. The "weakly dominant" framing is strictly stronger than
+what the formal theory establishes:
+
+1. SRR is individually rational under A3 (no spontaneous recovery), but an agent
+   whose archetype recovers spontaneously — violating A3 — would be better off
+   refusing the reallocation. So SRR is not dominant *unconditionally*.
+
+2. Calling it "weakly dominant" without qualification, after having carefully
+   defined A3 as a stated assumption of the theory, is internally inconsistent.
+
+3. A hostile reviewer who checks the game-theory vocabulary will immediately
+   challenge this claim as unsupported by the formal analysis.
+
+**Fix applied (`07-discussion.md` §6.1 and `paper.md` §6.1):**
+"*weakly dominant* strategy for chronically below-performing agents: it weakly
+improves individual fitness (via the archetype change) and strictly improves
+group fitness (via diversity increase)" →
+"*individually incentive-compatible under Assumption A3* for chronically
+below-performing agents: by A3, remaining in the same archetype yields at most
+$\bar{B} + \delta_{\text{sac}}/2$ in expected individual Brier, while accepting
+the reallocation offers a strictly positive probability of improvement through
+the archetype change and strictly improves group fitness through the Ambiguity
+increase from Lemma 1. The mechanism is therefore individually rational in
+expectation (not unconditionally dominant — an agent whose archetype happens to
+recover spontaneously would rationally resist — but A3 precisely identifies
+agents for whom spontaneous recovery is not expected)." ✓
+
+---
+
+## CYCLE 16 SUMMARY
+
+**Fixed:** R3 (§3.2 SRR cross-reference §3.3→§3.4), R5 (§5.4 regression
+covariate rolling consistency), R6 (Lemma 1 proof entropy-extremism gap →
+Ambiguity-path), R13 (`@aumann1959acceptable` `@article`→`@incollection`),
+R19 (§6.1 "weakly dominant" → "individually incentive-compatible under A3")
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (unchanged — data-blocked items only):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's `> *Brier-delta... to be inserted*` note and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+
+**Post-fix verification protocol (carried forward):**
+After any targeted fix to a specific section, run
+`grep -rn "<corrected-term>" papers/axelrod-llm-2026/*.md`
+to confirm the fix propagated to all relevant files before marking the issue closed.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.2: SRR forward-reference §3.3 → §3.4 (R3)
+- `04-method.md` §3.5 Lemma 1: entropy-extremism proof → Ambiguity-path proof (R6)
+- `06-results.md` §5.4: regression formula dependent variable + covariate updated (R5)
+- `07-discussion.md` §6.1: "weakly dominant" → "individually incentive-compatible under A3" (R19)
+- `references.bib`: `@aumann1959acceptable` `@article` → `@incollection` with full editors/series (R13)
+- `paper.md`: all five fixes mirrored (R3, R5, R6, R13, R19)
