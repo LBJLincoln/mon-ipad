@@ -83,9 +83,14 @@ higher JSD diversity is better.*
 | Market Baseline | Political | **[PENDING]** | N/A | N/A | **[PENDING]** |
 
 The *Market Baseline* row reports the Brier score obtained by always predicting
-the market-implied probability (derived from the no-vig moneyline). This is
-the minimum meaningful performance benchmark: any system that fails to beat it
-offers no value over reading the betting line.
+the market-implied probability (derived from the no-vig moneyline):
+
+$$p_{\text{mkt}} = \frac{1/o_{\text{home}}}{1/o_{\text{home}} + 1/o_{\text{away}}}$$
+
+where $o_{\text{home}}$ and $o_{\text{away}}$ are the American-odds moneyline
+prices converted to decimal odds. This is the minimum meaningful performance
+benchmark: any system that fails to beat it offers no value over reading the
+betting line.
 
 **H1 outcome:** **[PENDING]** ($t$-statistic: **[PENDING]**, $p$: **[PENDING]**).
 
@@ -140,11 +145,13 @@ The Brier ambiguity decomposition (§3.3) predicts a negative relationship
 between rolling JSD diversity and ensemble Brier, holding mean individual
 calibration constant. We test this directly by estimating:
 
-$$B_{\text{ens},d} = \beta_0 + \beta_1 \overline{D}_d + \beta_2 \overline{B}_d + \varepsilon_d$$
+$$\overline{B}_{\text{ens},d} = \beta_0 + \beta_1 \overline{D}_d + \beta_2 \bar{B}_d + \varepsilon_d$$
 
-where $\overline{B}_d = \frac{1}{N}\sum_i B_{i,d}$ is the mean individual
-Brier (included as a covariate to partial out individual-skill variation from
-the diversity effect). The coefficient $\hat{\beta}_1$ provides the
+where $\overline{B}_{\text{ens},d}$ and $\overline{D}_d$ are the 28-day rolling
+ensemble Brier and JSD diversity (as in §4.5), and $\bar{B}_d = \frac{1}{N}\sum_i \overline{B}_{i,d}$
+is the rolling mean individual Brier (defined in §3.1; included as a covariate
+to partial out individual-skill variation from the diversity effect).
+The coefficient $\hat{\beta}_1$ provides the
 diversity–accuracy slope conditional on mean agent quality.
 
 > *Figure 3: Scatter of 28-day rolling $(\overline{D}_d,\, B_{\text{ens},d})$
