@@ -78,7 +78,7 @@ The LPSG is a repeated game with the following structure.
 > **Definition 1 (LPSG).** The *LLM Prediction Society Game* is the tuple
 > $(\mathcal{I}, \mathcal{R}, \mathcal{E}, \mathcal{X}, \sigma, \text{BS}, \text{CK}, \text{SRR})$
 > where $\text{CK}$ denotes the day-end common-knowledge broadcast protocol and
-> $\text{SRR}$ is the sacrificial role reallocation mechanism defined in §3.3.
+> $\text{SRR}$ is the sacrificial role reallocation mechanism defined in §3.4.
 > Within each day $d$, play proceeds as:
 >
 > 1. **Context receipt.** All agents receive $x_d$ and $\Omega_{d-1}$ simultaneously.
@@ -223,28 +223,31 @@ take differentiated positions [@surowiecki2004wisdom].
 > **Lemma 1 (SRR increases expected diversity).** Under A1 and A2, an SRR event
 > at day $d$ strictly increases $\mathbb{E}[D_{d+1}]$.
 
-*Proof.* Let agent $i$ be sacrifice-eligible and let $r^*$ be the drawn vacant
-archetype. The change in JSD from replacing agent $i$'s prediction $p_{i,t}$ by
-$p_{i,t}' \sim \sigma_i(r^*, x_d, h_{i,d-1})$ is:
+*Proof.* Let agent $i$ be sacrifice-eligible, $\Delta p = p_{i,t}' - p_{i,t}$,
+and $\delta_i = p_{i,t} - \bar{p}_t$.
+By A1, $|\Delta p| \geq \epsilon_{\text{arch}}$ in expectation.
+By A2, $|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t} - \bar{p}_t|$; that is,
+$|\delta_i| = O(\sqrt{\text{Amb}_t})$ and is small relative to $|\Delta p|$
+when $\epsilon_{\text{arch}}$ is not negligible.
 
-$$\Delta\text{JSD} = \left[H(\bar{p}_t') - \frac{1}{N}\sum_j H(p_{j,t}')\right]
-- \left[H(\bar{p}_t) - \frac{1}{N}\sum_j H(p_{j,t})\right]$$
+We analyse the effect on the Ambiguity term.
+Let $\bar{p}_t' = \bar{p}_t + \Delta p/N$ be the updated centroid.
+Expanding $(p_{j,t} - \bar{p}_t')^2$ for $j \neq i$ and $(p_{i,t}' - \bar{p}_t')^2$,
+then subtracting the pre-SRR Ambiguity and using $\sum_j \delta_j = 0$:
 
-Only agent $i$'s terms change, so:
+$$\Delta\text{Amb}_t \;=\; \frac{(\Delta p)^2(N-1)}{N^2}
+\;+\; O\!\left(\frac{|\delta_i|\,|\Delta p|}{N}\right)
+\;\geq\; \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0 \quad (N \geq 2)$$
 
-$$\Delta\text{JSD} = \underbrace{H(\bar{p}_t') - H(\bar{p}_t)}_{\text{(I): centroid shift}} +
-\underbrace{\frac{1}{N}\!\left(H(p_{i,t}) - H(p_{i,t}')\right)}_{\text{(II): individual entropy change}}$$
+The remainder $O(|\delta_i|\,|\Delta p|/N)$ is dominated by the leading term under A2:
+the condition $|\delta_i| \ll |\Delta p|\cdot(N-1)/N$ holds in expectation given the
+distinguishability gap $\epsilon_{\text{arch}}$ and the small spread $|\delta_i|$.
 
-By A1, $|p_{i,t}' - p_{i,t}| \geq \epsilon_{\text{arch}}$ in expectation.
-By A2, $p_{i,t}$ is close to $\bar{p}_t$; hence $r^*$ (a vacant archetype)
-moves $p_{i,t}'$ away from $\bar{p}_t$, closer to an extreme of $[0,1]$.
-The strict concavity of $H$ (maximised at $\frac{1}{2}$) then gives
-$H(p_{i,t}') < H(p_{i,t})$, making term (II) strictly positive and $O(\epsilon_{\text{arch}})$.
-Term (I) is the change in mixture entropy due to a centroid shift of magnitude
-$|\bar{p}_t' - \bar{p}_t| = \frac{1}{N}|p_{i,t}' - p_{i,t}| = O(\epsilon_{\text{arch}}/N)$;
-by Lipschitz continuity of $H$, term (I) is $O(\epsilon_{\text{arch}}/N)$.
-For $N \geq 2$, term (II) dominates term (I), so $\mathbb{E}[\Delta\text{JSD}] > 0$.
-Taking expectation over event $t$ and $\mathcal{B}_d$ completes the proof. $\square$
+Hence $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
+By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
+$\bar{p}_t \in [0.15, 0.85]$ and $\text{Amb}_t \leq 0.08$), increasing Ambiguity
+strictly increases JSD.
+Averaging over events $t \in \mathcal{B}_d$ gives $\mathbb{E}[\Delta D_{d+1}] > 0$. $\square$
 
 **Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,
 a sacrifice-eligible agent's expected Brier over the next $W_{\text{persist}}$ days
