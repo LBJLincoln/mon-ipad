@@ -563,7 +563,7 @@ The LPSG is a repeated game with the following structure.
 > **Definition 1 (LPSG).** The *LLM Prediction Society Game* is the tuple
 > $(\mathcal{I}, \mathcal{R}, \mathcal{E}, \mathcal{X}, \sigma, \text{BS}, \text{CK}, \text{SRR})$
 > where $\text{CK}$ denotes the day-end common-knowledge broadcast protocol and
-> $\text{SRR}$ is the sacrificial role reallocation mechanism defined in §3.3.
+> $\text{SRR}$ is the sacrificial role reallocation mechanism defined in §3.4.
 > Within each day $d$, play proceeds as:
 >
 > 1. **Context receipt.** All agents receive $x_d$ and $\Omega_{d-1}$ simultaneously.
@@ -701,28 +701,31 @@ take differentiated positions [@surowiecki2004wisdom].
 > **Lemma 1 (SRR increases expected diversity).** Under A1 and A2, an SRR event
 > at day $d$ strictly increases $\mathbb{E}[D_{d+1}]$.
 
-*Proof.* Let agent $i$ be sacrifice-eligible and let $r^*$ be the drawn vacant
-archetype. The change in JSD from replacing agent $i$'s prediction $p_{i,t}$ by
-$p_{i,t}' \sim \sigma_i(r^*, x_d, h_{i,d-1})$ is:
+*Proof.* Let agent $i$ be sacrifice-eligible, $\Delta p = p_{i,t}' - p_{i,t}$,
+and $\delta_i = p_{i,t} - \bar{p}_t$.
+By A1, $|\Delta p| \geq \epsilon_{\text{arch}}$ in expectation.
+By A2, $|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t} - \bar{p}_t|$; that is,
+$|\delta_i| = O(\sqrt{\text{Amb}_t})$ and is small relative to $|\Delta p|$
+when $\epsilon_{\text{arch}}$ is not negligible.
 
-$$\Delta\text{JSD} = \left[H(\bar{p}_t') - \frac{1}{N}\sum_j H(p_{j,t}')\right]
-- \left[H(\bar{p}_t) - \frac{1}{N}\sum_j H(p_{j,t})\right]$$
+We analyse the effect on the Ambiguity term.
+Let $\bar{p}_t' = \bar{p}_t + \Delta p/N$ be the updated centroid.
+Expanding $(p_{j,t} - \bar{p}_t')^2$ for $j \neq i$ and $(p_{i,t}' - \bar{p}_t')^2$,
+then subtracting the pre-SRR Ambiguity and using $\sum_j \delta_j = 0$:
 
-Only agent $i$'s term changes, so:
+$$\Delta\text{Amb}_t \;=\; \frac{(\Delta p)^2(N-1)}{N^2}
+\;+\; O\!\left(\frac{|\delta_i|\,|\Delta p|}{N}\right)
+\;\geq\; \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0 \quad (N \geq 2)$$
 
-$$\Delta\text{JSD} = \underbrace{H(\bar{p}_t') - H(\bar{p}_t)}_{\text{(I): centroid shift}} +
-\underbrace{\frac{1}{N}\!\left(H(p_{i,t}) - H(p_{i,t}')\right)}_{\text{(II): individual entropy change}}$$
+The remainder $O(|\delta_i|\,|\Delta p|/N)$ is dominated by the leading term under A2:
+the condition $|\delta_i| \ll |\Delta p|\cdot(N-1)/N$ holds in expectation given the
+distinguishability gap $\epsilon_{\text{arch}}$ and the small spread $|\delta_i|$.
 
-By A1, $|p_{i,t}' - p_{i,t}| \geq \epsilon_{\text{arch}}$ in expectation.
-By A2, $p_{i,t}$ is close to $\bar{p}_t$; hence $r^*$ (a vacant archetype)
-moves $p_{i,t}'$ away from $\bar{p}_t$, closer to an extreme of $[0,1]$.
-The strict concavity of $H$ (maximised at $\frac{1}{2}$) then gives
-$H(p_{i,t}') < H(p_{i,t})$, making term (II) strictly positive and $O(\epsilon_{\text{arch}})$.
-Term (I) is the change in mixture entropy due to a centroid shift of magnitude
-$|\bar{p}_t' - \bar{p}_t| = \frac{1}{N}|p_{i,t}' - p_{i,t}| = O(\epsilon_{\text{arch}}/N)$;
-by Lipschitz continuity of $H$, term (I) is $O(\epsilon_{\text{arch}}/N)$.
-For $N \geq 2$, term (II) dominates term (I), so $\mathbb{E}[\Delta\text{JSD}] > 0$.
-Taking expectation over event $t$ and $\mathcal{B}_d$ completes the proof. $\square$
+Hence $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
+By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
+$\bar{p}_t \in [0.15, 0.85]$ and $\text{Amb}_t \leq 0.08$), increasing Ambiguity
+strictly increases JSD.
+Averaging over events $t \in \mathcal{B}_d$ gives $\mathbb{E}[\Delta D_{d+1}] > 0$. $\square$
 
 **Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,
 a sacrifice-eligible agent's expected Brier over the next $W_{\text{persist}}$ days
@@ -1269,11 +1272,13 @@ The Brier ambiguity decomposition (§3.3) predicts a negative relationship
 between rolling JSD diversity and ensemble Brier, holding mean individual
 calibration constant. We test this directly by estimating:
 
-$$B_{\text{ens},d} = \beta_0 + \beta_1 \overline{D}_d + \beta_2 \overline{B}_d + \varepsilon_d$$
+$$\overline{B}_{\text{ens},d} = \beta_0 + \beta_1 \overline{D}_d + \beta_2 \bar{B}_d + \varepsilon_d$$
 
-where $\overline{B}_d = \frac{1}{N}\sum_i B_{i,d}$ is the mean individual
-Brier (included as a covariate to partial out individual-skill variation from
-the diversity effect). The coefficient $\hat{\beta}_1$ provides the
+where $\overline{B}_{\text{ens},d}$ and $\overline{D}_d$ are the 28-day rolling
+ensemble Brier and JSD diversity (as in §4.5), and $\bar{B}_d = \frac{1}{N}\sum_i \overline{B}_{i,d}$
+is the rolling mean individual Brier (defined in §3.1; included as a covariate
+to partial out individual-skill variation from the diversity effect).
+The coefficient $\hat{\beta}_1$ provides the
 diversity–accuracy slope conditional on mean agent quality.
 
 > *Figure 3: Scatter of 28-day rolling $(\overline{D}_d,\, B_{\text{ens},d})$
@@ -1431,12 +1436,20 @@ it has persistently above-mean Brier and there is no better individual
 strategy available in its current archetype. Defection from SRR — refusing
 the reallocation — offers no individual improvement and imposes a diversity
 tax on the population. In the vocabulary of evolutionary dynamics, epistemic
-role sacrifice is a *weakly dominant* strategy for chronically
-below-performing agents: it weakly improves individual fitness (via the
-archetype change) and strictly improves group fitness (via diversity
-increase). The result is stable against invasion by free-riders because
-free-riding offers no individual advantage once the eligibility condition
-is met [@sandholm2010population].
+role sacrifice is *individually incentive-compatible under Assumption A3*
+for chronically below-performing agents: by A3, remaining in the same
+archetype yields at most $\bar{B} + \delta_{\text{sac}}/2$ in expected
+individual Brier, while accepting the reallocation offers a strictly
+positive probability of improvement through the archetype change and
+strictly improves group fitness through the Ambiguity increase from
+Lemma 1.
+The mechanism is therefore individually rational in expectation
+(not unconditionally dominant — an agent whose archetype happens to
+recover spontaneously would rationally resist — but A3 precisely
+identifies agents for whom spontaneous recovery is not expected).
+The strategy profile is stable against free-riders because (under A3)
+free-riding yields no expected individual advantage while imposing a
+diversity cost on the population [@sandholm2010population].
 
 This has a connection to the biological literature on *phenotypic switching*
 in clonal populations [@wolf2005diversity], where genetically identical cells
