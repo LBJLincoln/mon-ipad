@@ -1,15 +1,37 @@
 {
   "version": 1,
-  "updated_at": "2026-05-14T02:00:00Z",
+  "updated_at": "2026-05-14T06:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
-      "id": "vm-git-recovery-nba-app-fire100",
+      "id": "vm-git-recovery-fire102",
       "priority": -1,
       "status": "pending",
       "owner": "local-vm",
+      "subject": "CRITICAL: NBA+POL app.py EMPTY on GitHub main (704a645 accident not yet fixed). VM MUST run: cd /home/termius/mon-ipad && python3 scripts/ops/restore_tf_fire102.py — restores both from 095594aa + applies fire-100 tune + safe_commit+push. py_compile verified. Cloud agent git proxy blocked (403).",
+      "detected_at": "2026-05-14T06:00:00Z",
+      "do_not_push": false
+    },
+    {
+      "id": "cloud-trigger-axelrod-fire-102-2026-05-14",
+      "priority": 138,
+      "status": "done",
+      "completed_at": "2026-05-14T06:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-102",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-102: RESTORE empty NBA+POL app.py (fire-100/704a645 accident) from 095594aa + re-apply fire-100 tune (_tdesc inline in SACRIFICIAL tier). NBA 5969->5970L | POL 3953->3954L | py_compile PASS both. restore_tf_fire102.py written for VM execution.",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "vm-git-recovery-nba-app-fire100",
+      "priority": -1,
+      "status": "done",
+      "owner": "local-vm",
       "subject": "CRITICAL: GitHub main 704a645 has EMPTY NBA+POL app.py (cloud agent git proxy is read-only, cannot force-push). VM MUST: (1) verify local NOT at 704a645: git -C /home/termius/mon-ipad log --oneline -1; (2) if at 84e56d7 or earlier: git -C /home/termius/mon-ipad push --force origin main; (3) then re-apply fire-100 tune: in build_common_knowledge_block SACRIFICIAL block add _tdesc=AXELROD_ARCHETYPE_DESCRIPTIONS.get(_tarch,'')[:100] and append | {_tdesc} to the line. NBA 5969->5971L. Cloud agent local e52e04b at /home/user/mon-ipad has correct 5971L NBA+3955L POL for reference.",
       "detected_at": "2026-05-13T22:00:00Z",
+      "completed_at": "2026-05-14T06:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-102",
+      "result": "fire-102: Superseded by vm-git-recovery-fire102. restore_tf_fire102.py written — VM should run that script instead.",
       "do_not_push": false
     },
     {
