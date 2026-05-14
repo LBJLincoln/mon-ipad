@@ -1,7 +1,7 @@
 {
-  "fire": "fire-109",
-  "timestamp": "2026-05-15T06:00:00Z",
-  "cycle_parity": "ODD",
+  "fire": "fire-110",
+  "timestamp": "2026-05-15T10:00:00Z",
+  "cycle_parity": "EVEN",
   "brain_model": "claude-sonnet-4-6",
 
   "nba_islands": {
@@ -10,47 +10,47 @@
     "fleet_best_fire": "fire-61",
     "checkpoint_threshold": 0.22085,
     "new_checkpoint": false,
-    "pending_candidate": {
-      "island": "S15",
+    "s15_catboost_candidate": {
+      "status": "DROPPED",
       "candidate_brier": 0.21932,
       "model": "catboost",
       "features": 200,
       "gen_detected": 3050,
-      "current_gen": 3227,
-      "fires_pending": 2,
-      "status": "UNCONFIRMED after 2 brain fires — best_brier still 0.22012",
-      "note": "gen advanced 3050→3227 (+177) with no best_brier update. Likely CatBoost Pareto secondary (not updating RF primary best_brier). Close watch at fire-110 if still unconfirmed."
+      "gen_at_drop": 3323,
+      "fires_pending": 3,
+      "note": "3 consecutive fires (fire-108→110): gen advanced 3050→3323 (+273), best_brier unchanged at 0.22012. CatBoost likely Pareto-secondary to RF on Brier axis. DROPPED."
     },
     "islands": {
       "S13": {
-        "gen": 594, "cycle": 198, "brier": 0.22344, "stag": 0,
+        "gen": 684, "cycle": 229, "brier": 0.22344, "stag": 0,
         "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "✓ Stag CLEARED 8→0 (fire-107=8, fire-109=0). Stable evolution. vm-remove-stacking-s13 still pending VM."
+        "discovery": "LR ALREADY IN MODEL POOL — current gen=684 uses logistic_regression with 48 features. Partially validates vm-add-logistic-regression for S13.",
+        "note": "✓ stag=0. vm-remove-stacking-s13 still pending VM. Cycle +31 since fire-109."
       },
       "S14": {
-        "gen": 2953, "cycle": 985, "brier": 0.22336, "stag": 0,
+        "gen": 3024, "cycle": 1009, "brier": 0.22336, "stag": 0,
         "model": "extra_trees", "status": "EVOLVING",
-        "note": "Hard reset at cycle=978 (25-stag). Now cycle=985 stag=0. vm-remove-stacking-s14 still pending VM."
+        "note": "✓ stag=0. Hard reset at cycle=978 (25-stag). vm-remove-stacking-s14 still pending VM. Cycle +24 since fire-109."
       },
       "S15": {
-        "gen": 3227, "cycle": 1076, "brier": 0.22012, "stag": 0,
+        "gen": 3323, "cycle": 1108, "brier": 0.22012, "stag": 0,
         "model": "random_forest", "status": "EVOLVING",
-        "note": "★ FLEET BEST 0.22012 stable. CatBoost 200f 0.21932 candidate 2nd brain fire UNCONFIRMED. vm-remove-stacking-s15 still pending VM."
+        "note": "★ FLEET BEST 0.22012 stable. CatBoost candidate DROPPED (3 fires). vm-remove-stacking-s15 still pending VM. Cycle +32 since fire-109."
       },
       "S17": {
         "gen": null, "cycle": null, "brier": null, "stag": null,
         "model": null, "status": "503_DOWN",
-        "note": "503 DOWN 72+ days. VM: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\""
+        "note": "503 DOWN 72+ days. VM MUST: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\""
       },
       "S18": {
-        "gen": 7305, "cycle": 2435, "brier": 0.22315, "stag": 0,
+        "gen": 7375, "cycle": 2459, "brier": 0.22315, "stag": 0,
         "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "Healthy. Stag fully recovered. Latest hard reset cycle=2351."
+        "note": "✓ stag=0. Healthy. Cycle +24 since fire-109."
       },
       "S22": {
-        "gen": 2298, "cycle": 766, "brier": 0.22551, "stag": 0,
+        "gen": 2375, "cycle": 792, "brier": 0.22551, "stag": 0,
         "model": "extra_trees", "status": "EVOLVING",
-        "note": "Fleet laggard. Hard resets 690+715+740. vm-add-lightgbm-s22-s13 + vm-remove-stacking-s22 PENDING VM."
+        "note": "Fleet laggard. Hard resets 690+715+740. vm-add-lightgbm-s22-s13 + vm-remove-stacking-s22 PENDING VM. Cycle +26 since fire-109."
       }
     }
   },
@@ -58,98 +58,100 @@
   "pol_islands": {
     "fleet_best_brier": 0.24904,
     "fleet_best_island": "P4_alltime",
-    "p7_field_lag_fires": 6,
-    "p7_diversify_attempt": "BLOCKED — cloud brain has no HTTP POST tool; escalated to vm-diversify-p7-fire109 (priority=0 URGENT)",
+    "p7_field_lag_fires": 7,
+    "p7_diversify_attempt": "BLOCKED 7+ fires — vm-diversify-p7-fire109 still pending local-vm; cloud brain cannot POST to HF Space",
+    "p4_model_change": "P4 model_type changed to lightgbm at fire-110 (was xgboost_brier). Hard resets at 26734+26754. Confirms LightGBM dominance.",
     "islands": {
       "P1": {
-        "gen": 59997, "cycle": 19999, "brier": 0.2499, "stag": 0,
-        "model": "xgboost_brier", "status": "COOLDOWN",
-        "note": "Stable. Cycle milestone 19999 reached."
+        "gen": 60853, "cycle": 20285, "brier": 0.2499, "stag": 0,
+        "model": "xgboost_brier", "status": "EVOLVING",
+        "note": "✓ Stable. Hard resets at 20241+20261. Gen +856 since fire-109."
       },
       "P2": {
-        "gen": 49726, "cycle": 16576, "brier": 0.25003, "stag": 0,
+        "gen": 50305, "cycle": 16769, "brier": 0.25003, "stag": 0,
         "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "In-pop LightGBM 123f 0.249 — field-lag PERSISTENT 7+ fires."
+        "note": "In-pop LightGBM 123f 0.249 — field-lag 8+ fires (PENDING VAL)."
       },
       "P4": {
-        "gen": 79605, "cycle": 26535, "brier": 0.24992, "stag": 0,
-        "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "In-pop LightGBM 108f 0.24904 at gen=79604. ★ POL FLEET BEST alltime=0.24904 stands."
+        "gen": 80327, "cycle": 26776, "brier": 0.24992, "stag": 0,
+        "model": "lightgbm", "status": "EVOLVING",
+        "note": "★ model_type=lightgbm CONFIRMED (changed from xgboost). Hard resets 26734+26754. POL FLEET BEST alltime=0.24904. In-pop 0.2490 108f persistent."
       },
       "P5": {
-        "gen": 67756, "cycle": 22586, "brier": 0.24993, "stag": 0,
+        "gen": 68374, "cycle": 22792, "brier": 0.24993, "stag": 0,
         "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "Stable. LightGBM persistent in Pareto front 5+ fires."
+        "note": "✓ Stable. Hard resets 22741+22761. LightGBM persistent in Pareto 6+ fires."
       },
       "P7": {
-        "gen": 71018, "cycle": 23673, "brier": 0.25412, "stag": 0,
+        "gen": 71620, "cycle": 23874, "brier": 0.25412, "stag": 0,
         "model": "lightgbm", "status": "EVOLVING",
-        "note": "⚠ FIELD-LAG 6+ FIRES: best_brier=0.25412 UNCHANGED. vm-diversify-p7-fire109 URGENT — VM must POST /api/command {\"command\":\"diversify\"} immediately."
+        "note": "⚠ FIELD-LAG 7+ FIRES: best_brier=0.25412 UNCHANGED since fire-103. VM MUST POST /api/command {\"command\":\"diversify\"} to lbjlincoln-political-alpha-7.hf.space IMMEDIATELY."
       }
     }
   },
 
   "actions_taken": [
-    "All 11 islands polled: S13/S14/S15/S18/S22 + P1/P2/P4/P5/P7 UP | S17 503 DOWN 72+d confirmed",
-    "No stagnation on any live island (all stag=0) — no emergency diversify needed",
-    "S13 stag CLEARED 8→0 (was growing fire-107, resolved naturally at cycle=198)",
-    "S14 hard reset at cycle=978 confirmed (25-stag triggered, now cycle=985 stag=0)",
-    "P7 field-lag 6+ fires confirmed: best_brier STILL 0.25412 — cloud-brain-p7-diversify-fire108 BLOCKED (no POST tool in cloud brain)",
-    "vm-diversify-p7-fire109 added to work-queue priority=0 for immediate VM action",
-    "SOTA research (ODD cycle): ACM CISAI 2025 LR+ElasticNet 0.87 + BMC Sports Science 2026 SHAP KPI",
-    "Research proposal written: fire109-sota-2026-05-15.md",
-    "health-status.json + brain-status.json + work-queue.json updated (fire-109)"
+    "All 11 islands polled: S13/S14/S15/S18/S22 + P1/P2/P4/P5/P7 UP | S17 503 DOWN 72+d",
+    "No stagnation on any live island (all stag=0) — no emergency diversify needed this cycle",
+    "S13 DISCOVERY: logistic_regression already in MODEL_TYPES (current gen=684 uses LR 48f). Partially validates vm-add-logistic-regression for S13.",
+    "S15 CatBoost 0.21932 candidate DROPPED: 3 consecutive brain fires (108/109/110) with gen advancing 3050→3323 and best_brier unchanged at 0.22012",
+    "P4 model_type CONFIRMED lightgbm (was xgboost_brier at fire-109). Hard resets 26734+26754. LightGBM now champion at P4.",
+    "P7 field-lag 7+ fires confirmed: best_brier STILL 0.25412. vm-diversify-p7 BLOCKED (cloud has no POST). VM must act.",
+    "SOTA research (EVEN cycle): LSTM+Brier 0.1589 NCAA arXiv:2508.02725; LR Brier=0.199 6th confirm; stacked ensemble confirmed",
+    "Research proposal written: fire110-sota-lstm-transformer-2026-05-15.md",
+    "health-status.json + work-queue.json + CLAUDE.md updated (fire-110)"
   ],
 
   "alerts": [
-    "CRITICAL: fix-pol-engine-placeholder — political_engine.py placeholder 345h+. ESCALATE TO USER IMMEDIATELY",
-    "URGENT: vm-diversify-p7-fire109 — P7 field-lag 6+ fires, POST /api/command {\"command\":\"diversify\"} to lbjlincoln-political-alpha-7.hf.space NOW",
+    "CRITICAL: fix-pol-engine-placeholder — political_engine.py placeholder 350h+. ESCALATE TO USER IMMEDIATELY",
+    "URGENT: vm-diversify-p7 — FIELD-LAG 7+ fires, POST /api/command {\"command\":\"diversify\"} to lbjlincoln-political-alpha-7.hf.space NOW",
     "URGENT: vm-restart-s17 — 503 DOWN 72+ days",
     "URGENT: vm-remove-stacking-s13/s14/s15/s22 — Rule#8 violations on 4 islands",
-    "WATCH: S15 CatBoost 200f 0.21932 — 2nd brain fire unconfirmed (close at fire-110 if still stuck)",
-    "WATCH: P4 in-pop LightGBM 0.24904 gen=79604 — POL alltime best candidate"
+    "ACTION: vm-add-logistic-regression — S13 already has LR; confirm S14/S15/S18/S22 + POL islands",
+    "WATCH: P4 model_type=lightgbm confirmed — LightGBM dominance signal very strong across 4/5 POL islands"
   ],
 
   "vm_tasks_outstanding": [
-    "CRITICAL: fix-pol-engine-placeholder — run restore_political_engine_fire53.py (345h+ OVERDUE)",
-    "URGENT: vm-diversify-p7-fire109 — POST /api/command diversify to P7 IMMEDIATELY",
+    "CRITICAL: fix-pol-engine-placeholder — run restore_political_engine_fire53.py (350h+ OVERDUE)",
+    "URGENT: vm-diversify-p7 — POST /api/command diversify to P7 IMMEDIATELY (7+ fires)",
     "URGENT: vm-restart-s17 — 72+ days down",
-    "URGENT: vm-remove-stacking-s13 — Rule#8, config patch still needed despite stag cleared",
-    "URGENT: vm-remove-stacking-s15 — fleet-best island, Rule#8 violation risk",
+    "URGENT: vm-remove-stacking-s13/s14/s15/s22 — Rule#8 violations",
+    "HIGH: vm-add-logistic-regression-model-pool + ElasticNet — S13 already has LR (verify rest)",
+    "HIGH: vm-add-lightgbm-s22-s13 — 4/5 POL islands confirm LightGBM dominance",
     "engine-parity-sync — +54KB mismatch mon-ipad vs nomos-nba-agent",
-    "vm-remove-stacking-s14/s22 — Rule#8 violations",
-    "vm-add-logistic-regression-model-pool + ElasticNet — SOTA LR Brier=0.199 x5 + ACM CISAI 2025",
-    "vm-add-lightgbm-s22-s13 — cross-port from POL (4/5 islands converged on LightGBM)",
     "vm-restart-political-data-crons — unblocks Rotation A+B"
   ],
 
   "sota_this_cycle": {
-    "cycle_parity": "ODD — WebSearch performed",
+    "cycle_parity": "EVEN — WebSearch + HF paper_search performed",
+    "top_find": "arXiv:2508.02725 — LSTM+Brier achieves 0.1589 Brier on NCAA basketball (Habib, Aug 2025). GPU-only: LSTM trained with Brier loss outperforms Transformer+BCE on calibration. Transformer+BCE best AUC=0.8473. GLM-based team quality + Elo + seed + box-score features.",
     "papers": [
       {
-        "title": "Leveraging Machine Learning and Deep Learning for Predicting NBA Match Results",
-        "source": "ACM CISAI 2025 (dl.acm.org/doi/full/10.1145/3773365.3773520)",
-        "key_result": "0.87 accuracy with LR, ElasticNet, SVM, DNN. Confirms LR+ElasticNet as top tabular baselines.",
-        "cpu_actionable": "Add ElasticNet to vm-add-logistic-regression-model-pool (P50) — strongest multi-source confirmation"
+        "arxiv": "2508.02725",
+        "title": "Forecasting NCAA Basketball Outcomes with Deep Learning: LSTM vs Transformer",
+        "source": "HF Papers, published Aug 1 2025",
+        "key_result": "LSTM+Brier loss: Brier=0.1589 (best calibration). Transformer+BCE: AUC=0.8473 (best discrimination). Features: GLM team quality + Elo + seed diff + box-score.",
+        "cpu_actionable": "NOT applicable to CPU islands (neural model). GPU burst target: Colab/Modal. Feature engineering ideas applicable: Elo ratings, seed-based features.",
+        "gpu_action": "Add to GPU burst scripts: LSTM with Brier loss training on full 9551-game NBA dataset. Compare to RF Brier=0.22012."
       },
       {
-        "title": "Winning beyond scoring: explainable ML framework for KPI identification in basketball",
-        "source": "BMC Sports Science, Medicine and Rehabilitation 2026 (s13102-026-01620-0)",
-        "key_result": "SHAP identifies 10-15 dominant performance KPIs. Feature pruning via SHAP after GA evolution.",
-        "cpu_actionable": "Future VM task: SHAP analysis on S15 best-evolved feature set (80 priority)"
+        "title": "Uncertainty-Aware Machine Learning for NBA Forecasting (Montrucchio et al.)",
+        "source": "MDPI Information 17(1):56, 2026 — 6th consecutive cycle reconfirmation",
+        "key_result": "LR Brier=0.199, XGBoost=0.202. RNN+MC-dropout for calibrated sequential probs.",
+        "cpu_actionable": "vm-add-logistic-regression-model-pool (P50) — S13 confirmed LR works. Add to remaining 9 islands."
       },
       {
-        "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
-        "source": "MDPI Information 17(1):56, Montrucchio et al., 2026 — 5th consecutive cycle reconfirmation",
-        "key_result": "LR Brier=0.199, XGBoost=0.202. Remains highest SOTA Brier result.",
-        "cpu_actionable": "vm-add-logistic-regression-model-pool (P50) — HIGHEST priority new model"
+        "title": "Stacked ensemble model for NBA game outcome prediction",
+        "source": "Scientific Reports, Nature 2025",
+        "key_result": "NB+AdaBoost+MLP+KNN+XGB+DT+LR stacked ensemble. LightGBM closest to XGBoost.",
+        "cpu_actionable": "vm-add-adaboost-naive-bayes-model-pool (P56) — confirms AdaBoost+NB worthwhile. Stacking banned (Rule#8) but individual models valuable."
       }
     ],
     "cross_project_insights": [
-      "LightGBM convergence: P2(123f,0.249) + P4(108f,0.24904) + P5(persistent) + P7(model_type) = 4/5 POL islands → port to NBA S22 via vm-add-lightgbm-s22-s13",
-      "ElasticNet (ACM CISAI 2025) new this cycle — add alongside LR in vm-add-logistic-regression-model-pool",
-      "S13 stag self-clears every ~125 cycles (resets at 101+126). Normal pattern — no proactive diversify needed for S13",
-      "P1 milestone: cycle=19999 / gen=59997 — approaching 60K gen next fire"
+      "P4 model_type=lightgbm confirmed this fire (hard resets 26734+26754 may have cleared xgboost bias). 4/5 POL islands now show LightGBM dominance → port to S22 via vm-add-lightgbm-s22-s13 is HIGH PRIORITY.",
+      "S13 already has LR in model pool (gen=684 uses logistic_regression 48f) — vm-add-logistic-regression partially done for S13. Verify/add for S14/S15/S18/S22 + all POL.",
+      "LSTM Brier=0.1589 > our 0.22012. Gap = 0.059. If achievable on NBA: massive improvement. Requires GPU + sequential model. Target for next Colab/Modal burst session.",
+      "Elo ratings (used in LSTM paper) not yet in our feature engine (7213 raw features). Cross-port: add Elo head-to-head ratings as engine feature category."
     ]
   }
 }
