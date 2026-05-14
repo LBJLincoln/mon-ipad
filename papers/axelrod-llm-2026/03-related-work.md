@@ -82,8 +82,9 @@ produce ensemble predictions no better than any single constituent.
 
 Ensemble learning theory provides a formal version of this intuition.
 The *ambiguity decomposition* (Brown et al.)
-[@krogh1995neural; @brown2005diversity] states that for convex
-loss functions (including the Brier score):
+[@krogh1995neural; @brown2005diversity] states that for squared-error losses,
+of which the Brier score is the binary-outcome special case
+(the decomposition does not extend to all convex losses in general):
 
 $$\text{Ensemble Loss} = \overline{\text{Individual Loss}} - \text{Ambiguity}$$
 

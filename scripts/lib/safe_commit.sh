@@ -19,7 +19,7 @@ set -euo pipefail
 
 LOCKFILE="/tmp/nomos-git.lock"
 LOCK_TIMEOUT=120    # seconds — max wait for another agent to release
-REPO="/home/termius/mon-ipad"
+REPO="/home/user/mon-ipad"
 
 AGENT="${1:-UNKNOWN}"
 MSG="${2:-auto commit}"

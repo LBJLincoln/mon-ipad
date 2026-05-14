@@ -86,7 +86,7 @@ The LPSG is a repeated game with the following structure.
 > 3. **Resolution.** Outcomes $\omega_t$ are revealed as events $t \in \mathcal{B}_d$ resolve.
 > 4. **Score.** $B_{i,d}$ is computed for all $i$.
 > 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.
-> 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.3).
+> 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.4).
 
 This structure places the LPSG in the family of *Bayesian population games*
 [@sandholm2010population], in which each agent has a private type
@@ -225,6 +225,7 @@ take differentiated positions [@surowiecki2004wisdom].
 
 *Proof.* Let agent $i$ be sacrifice-eligible, $\Delta p = p_{i,t}' - p_{i,t}$,
 and $\delta_i = p_{i,t} - \bar{p}_t$.
+<<<<<<< Updated upstream
 By A1, $|\Delta p| \geq \epsilon_{\text{arch}}$ in expectation.
 By A2, $|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t} - \bar{p}_t|$; that is,
 $|\delta_i| = O(\sqrt{\text{Amb}_t})$ and is small relative to $|\Delta p|$
@@ -244,6 +245,41 @@ the condition $|\delta_i| \ll |\Delta p|\cdot(N-1)/N$ holds in expectation given
 distinguishability gap $\epsilon_{\text{arch}}$ and the small spread $|\delta_i|$.
 
 Hence $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
+=======
+By A1, $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}}$ and hence
+$\mathbb{E}[(\Delta p)^2] \geq \epsilon_{\text{arch}}^2 > 0$.
+
+**Exact Ambiguity formula.** Let $\bar{p}_t' = \bar{p}_t + \Delta p/N$.
+Expanding $(p_{i,t}' - \bar{p}_t')^2 = (\delta_i + \Delta p(N-1)/N)^2$ and
+$(p_{j,t} - \bar{p}_t')^2 = (\delta_j - \Delta p/N)^2$ for $j \neq i$,
+summing, and using $\sum_j \delta_j = 0$ (centroid identity), one obtains:
+
+$$\Delta\text{Amb}_t = \frac{(\Delta p)^2(N-1)}{N^2} + \frac{2\delta_i\Delta p}{N}$$
+
+The leading term is always non-negative; the cross-term $\frac{2\delta_i\Delta p}{N}$
+can take either sign.  We consider both cases.
+
+*Case 1* ($\delta_i\Delta p \geq 0$, i.e.\ the new archetype moves the agent's prediction
+away from or orthogonal to the centroid):
+
+$$\Delta\text{Amb}_t \;\geq\; \frac{(\Delta p)^2(N-1)}{N^2} \;\geq\; \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$$
+
+*Case 2* ($\delta_i\Delta p < 0$, i.e.\ the new archetype moves the prediction toward
+the centroid):
+
+$$\Delta\text{Amb}_t = |\Delta p|\!\left[\frac{|\Delta p|(N-1)}{N^2} - \frac{2|\delta_i|}{N}\right]$$
+
+This is positive whenever $|\delta_i| < \frac{|\Delta p|(N-1)}{2N}$.
+By A2, $|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t}-\bar{p}_t|$ — the sacrifice-eligible
+agent is no further from the centroid than the population average.
+The quantitative condition $|\delta_i| < \frac{\epsilon_{\text{arch}}(N-1)}{2N}$
+(which equals $\approx 0.017$ for $\epsilon_{\text{arch}} = 0.037$, $N = 12$)
+is the operative constraint; its satisfaction is verified from pilot backtest data
+as part of the §5.1 Assumption A1 check (pilot agents confirm
+$\mathbb{E}[|\delta_i|] \leq 0.014$ for sacrifice-eligible agents).
+
+In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
+>>>>>>> Stashed changes
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
 $\bar{p}_t \in [0.15, 0.85]$ and $\text{Amb}_t \leq 0.08$), increasing Ambiguity
 strictly increases JSD.

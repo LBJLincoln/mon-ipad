@@ -249,8 +249,9 @@ produce ensemble predictions no better than any single constituent.
 
 Ensemble learning theory provides a formal version of this intuition.
 The *ambiguity decomposition* (Brown et al.)
-[@krogh1995neural; @brown2005diversity] states that for convex
-loss functions (including the Brier score):
+[@krogh1995neural; @brown2005diversity] states that for squared-error losses,
+of which the Brier score is the binary-outcome special case
+(the decomposition does not extend to all convex losses in general):
 
 $$\text{Ensemble Loss} = \overline{\text{Individual Loss}} - \text{Ambiguity}$$
 
@@ -571,7 +572,7 @@ The LPSG is a repeated game with the following structure.
 > 3. **Resolution.** Outcomes $\omega_t$ are revealed as events $t \in \mathcal{B}_d$ resolve.
 > 4. **Score.** $B_{i,d}$ is computed for all $i$.
 > 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.
-> 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.3).
+> 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.4).
 
 This structure places the LPSG in the family of *Bayesian population games*
 [@sandholm2010population], in which each agent has a private type
@@ -703,6 +704,7 @@ take differentiated positions [@surowiecki2004wisdom].
 
 *Proof.* Let agent $i$ be sacrifice-eligible, $\Delta p = p_{i,t}' - p_{i,t}$,
 and $\delta_i = p_{i,t} - \bar{p}_t$.
+<<<<<<< Updated upstream
 By A1, $|\Delta p| \geq \epsilon_{\text{arch}}$ in expectation.
 By A2, $|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t} - \bar{p}_t|$; that is,
 $|\delta_i| = O(\sqrt{\text{Amb}_t})$ and is small relative to $|\Delta p|$
@@ -722,6 +724,41 @@ the condition $|\delta_i| \ll |\Delta p|\cdot(N-1)/N$ holds in expectation given
 distinguishability gap $\epsilon_{\text{arch}}$ and the small spread $|\delta_i|$.
 
 Hence $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
+=======
+By A1, $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}}$ and hence
+$\mathbb{E}[(\Delta p)^2] \geq \epsilon_{\text{arch}}^2 > 0$.
+
+**Exact Ambiguity formula.** Let $\bar{p}_t' = \bar{p}_t + \Delta p/N$.
+Expanding $(p_{i,t}' - \bar{p}_t')^2 = (\delta_i + \Delta p(N-1)/N)^2$ and
+$(p_{j,t} - \bar{p}_t')^2 = (\delta_j - \Delta p/N)^2$ for $j \neq i$,
+summing, and using $\sum_j \delta_j = 0$ (centroid identity), one obtains:
+
+$$\Delta\text{Amb}_t = \frac{(\Delta p)^2(N-1)}{N^2} + \frac{2\delta_i\Delta p}{N}$$
+
+The leading term is always non-negative; the cross-term $\frac{2\delta_i\Delta p}{N}$
+can take either sign.  We consider both cases.
+
+*Case 1* ($\delta_i\Delta p \geq 0$, i.e.\ the new archetype moves the agent's prediction
+away from or orthogonal to the centroid):
+
+$$\Delta\text{Amb}_t \;\geq\; \frac{(\Delta p)^2(N-1)}{N^2} \;\geq\; \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$$
+
+*Case 2* ($\delta_i\Delta p < 0$, i.e.\ the new archetype moves the prediction toward
+the centroid):
+
+$$\Delta\text{Amb}_t = |\Delta p|\!\left[\frac{|\Delta p|(N-1)}{N^2} - \frac{2|\delta_i|}{N}\right]$$
+
+This is positive whenever $|\delta_i| < \frac{|\Delta p|(N-1)}{2N}$.
+By A2, $|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t}-\bar{p}_t|$ — the sacrifice-eligible
+agent is no further from the centroid than the population average.
+The quantitative condition $|\delta_i| < \frac{\epsilon_{\text{arch}}(N-1)}{2N}$
+(which equals $\approx 0.017$ for $\epsilon_{\text{arch}} = 0.037$, $N = 12$)
+is the operative constraint; its satisfaction is verified from pilot backtest data
+as part of the §5.1 Assumption A1 check (pilot agents confirm
+$\mathbb{E}[|\delta_i|] \leq 0.014$ for sacrifice-eligible agents).
+
+In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
+>>>>>>> Stashed changes
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
 $\bar{p}_t \in [0.15, 0.85]$ and $\text{Amb}_t \leq 0.08$), increasing Ambiguity
 strictly increases JSD.
@@ -856,7 +893,13 @@ reallocation. The full experiment log is archived at
 
 **NBA cohort (N = 12).** Table 3 describes the twelve LLM agents fielded in
 the NBA prediction domain. The cohort spans five provider ecosystems, four
+<<<<<<< Updated upstream
 model scales (0.6B to 235B parameters), and twelve distinct initial strategy
+=======
+identified model scale classes (4B to 235B parameters for providers with publicly
+disclosed sizes; Google Gemini 3 Flash and Mistral commercial variants have
+undisclosed parameter counts), and twelve distinct initial strategy
+>>>>>>> Stashed changes
 archetypes drawn from the 20-archetype taxonomy (Appendix A). The initial
 archetype assignment was *not* optimised to maximise initial diversity; rather,
 archetypes were assigned to reflect natural provider tendencies (e.g., smaller
@@ -1007,11 +1050,15 @@ instead reallocated. This condition tests whether the performance-based
 *targeting* of SRR is essential, or whether any reallocation — regardless of
 which agent — produces the diversity gains.
 
-The five conditions are run sequentially on the same chronological event stream,
-not in parallel, to control for market-state variation. Order effects are
-mitigated by the fact that each agent's internal state is reset at the start
-of each condition (bankrolls re-initialised to \$100,000; Brier histories
-cleared). The full experimental calendar is described in Appendix C.1.
+Each condition is simulated independently over the complete 1,257-game, 175-trading-day
+event stream, starting from Day 1 of the 2025–26 season, with identical historical
+market signals and odds data.  Conditions are run sequentially (one condition's full
+simulation completes before the next begins) rather than concurrently, because running
+five independent agent fleets in parallel would require 60 NBA + 50 political concurrent
+LLM inference threads, exceeding provider rate limits.  Each condition's agent state is
+reset completely before its simulation begins: bankrolls re-initialised to \$100,000;
+Brier histories cleared; LLM conversation context buffers flushed.
+The full experimental calendar is described in Appendix C.1.
 
 ---
 
@@ -1735,41 +1782,35 @@ but together they bound the mean-reversion contribution.
 
 ---
 
-## 7.2  Sequential Condition Design and Temporal Confounds
+## 7.2  Sequential Condition Design and Provider Drift
 
-Our five conditions are run sequentially on the same chronological event
-stream, not in a fully randomised within-season design. This choice was
-motivated by two hard constraints: (a) running five parallel agent fleets
-simultaneously would require 60 NBA + 50 political concurrent LLM inference
-threads, exceeding the combined rate limits of our five provider ecosystems;
-and (b) the SRR mechanism requires a minimum of seven days before any agent
-becomes sacrifice-eligible ($W = 7$ patience window), making crossover designs
-shorter than one week uninformative.
+Our five conditions are each simulated over the complete 1,257-game,
+175-trading-day event stream, with identical historical market signals and
+odds data (§4.3).  Because all conditions begin from Day 1 of the 2025–26
+season with fully reset agent state, the within-season temporal confounds
+that plague partial-season crossover designs — sportsbook calibration drift,
+accumulating agent context, or in-season form trends — do not apply: every
+condition's Day $k$ processes exactly the same historical event data, odds,
+and oracle feature context.
 
-The sequential design introduces a temporal confound: later conditions could
-benefit from systematic changes in the prediction environment over the
-season. Two specific sources of temporal variation are plausible:
+The operative confound in a sequentially-simulated multi-condition study is
+instead **LLM provider model drift**: because each condition's simulation
+invokes the LLM APIs at a different calendar time (Condition A during the
+live 2025–26 season, Conditions B–E thereafter in replay order), the
+underlying model weights served by managed endpoints may silently change
+between simulation runs without user notification.  A model update between
+Condition A and Condition B would introduce a version confound that is
+inseparable from the SRR-vs-fixed experimental manipulation.
 
-**Sportsbook calibration drift.** Odds markets become sharper as the season
-progresses and sportsbooks accumulate more data on team tendencies.
-A later condition therefore faces a higher market-line quality baseline,
-making it harder to achieve meaningful Brier improvement over the baseline
-— a conservative bias against conditions run later in the season.
-
-**Agent calibration drift.** Agents whose prompts include historical context
-accumulate progressively more season-specific information as the season
-advances. Conditions run later have access to richer context, which could
-improve predictions independent of the experimental manipulation.
-
-We partially control for temporal confounds by normalising each condition's
-Brier against a simultaneously computed *market baseline* (the Brier score
-of predicting the market-implied probability for each event, computed in
-the same temporal window as the condition). Brier improvement relative to
-the market baseline is expected to be more temporally stable than absolute
-Brier, since both the agent's and the market's calibration improve over time.
-We cannot fully rule out residual temporal confounding and acknowledge this
-as a limitation that a fully parallelised multi-fleet design would address
-at the cost of provider rate-limit violations.
+We document provider drift via the response-hash protocol described in §7.4
+(probing each endpoint with a fixed query at the start of each condition's
+simulation and archiving the hash).  Hash stability across conditions serves
+as circumstantial evidence that model weights did not change; a hash change
+triggers a notation in the experimental log and a sensitivity analysis
+excluding the affected agent.  The self-hosted agent T12 (frozen model version
+in `LBJLincoln26/llm-gateway`) is immune to this confound; systematic
+T12-vs-commercial discrepancies in the per-agent analysis (§5.6) would
+flag drift as a contributing factor.
 
 ---
 
