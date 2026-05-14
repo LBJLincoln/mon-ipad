@@ -1421,8 +1421,6 @@ to confirm the fix propagated to all relevant files before marking the issue clo
 - `07-discussion.md` §6.1: "weakly dominant" → "individually incentive-compatible under A3" (R19)
 - `references.bib`: `@aumann1959acceptable` `@article` → `@incollection` with full editors/series (R13)
 - `paper.md`: all five fixes mirrored (R3, R5, R6, R13, R19)
-<<<<<<< Updated upstream
-=======
 
 ---
 
@@ -1651,4 +1649,3 @@ to confirm propagation to all relevant files before marking closed.
 - `08-limitations.md` §7.2: renamed; replaced sportsbook/agent-drift with provider-drift
   as the operative sequential-design confound (S3)
 - `paper.md`: all five fixes mirrored (S1–S5)
->>>>>>> Stashed changes

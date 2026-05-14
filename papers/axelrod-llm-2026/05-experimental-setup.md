@@ -14,13 +14,9 @@ reallocation. The full experiment log is archived at
 
 **NBA cohort (N = 12).** Table 3 describes the twelve LLM agents fielded in
 the NBA prediction domain. The cohort spans five provider ecosystems, four
-<<<<<<< Updated upstream
-model scales (0.6B to 235B parameters), and twelve distinct initial strategy
-=======
 identified model scale classes (4B to 235B parameters for providers with publicly
 disclosed sizes; Google Gemini 3 Flash and Mistral commercial variants have
 undisclosed parameter counts), and twelve distinct initial strategy
->>>>>>> Stashed changes
 archetypes drawn from the 20-archetype taxonomy (Appendix A). The initial
 archetype assignment was *not* optimised to maximise initial diversity; rather,
 archetypes were assigned to reflect natural provider tendencies (e.g., smaller
@@ -171,14 +167,6 @@ instead reallocated. This condition tests whether the performance-based
 *targeting* of SRR is essential, or whether any reallocation — regardless of
 which agent — produces the diversity gains.
 
-<<<<<<< Updated upstream
-The five conditions are run sequentially on the same chronological event stream,
-not in parallel, to control for market-state variation. Order effects are
-mitigated by the fact that each agent's internal state is reset at the start
-of each condition (bankrolls re-initialised to \$100,000; Brier histories
-cleared; LLM conversation context buffers flushed so that no prediction
-reasoning from a prior condition persists as in-context history). The full experimental calendar is described in Appendix C.1.
-=======
 Each condition is simulated independently over the complete 1,257-game, 175-trading-day
 event stream, starting from Day 1 of the 2025–26 season, with identical historical
 market signals and odds data.  Conditions are run sequentially (one condition's full
@@ -191,7 +179,6 @@ Each condition's agent state is reset completely before its simulation begins:
 bankrolls re-initialised to \$100,000; Brier histories cleared; LLM conversation context
 buffers flushed so that no prediction reasoning from a prior condition persists.
 The full experimental calendar is described in Appendix C.1.
->>>>>>> Stashed changes
 
 ---
 

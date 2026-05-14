@@ -704,27 +704,6 @@ take differentiated positions [@surowiecki2004wisdom].
 
 *Proof.* Let agent $i$ be sacrifice-eligible, $\Delta p = p_{i,t}' - p_{i,t}$,
 and $\delta_i = p_{i,t} - \bar{p}_t$.
-<<<<<<< Updated upstream
-By A1, $|\Delta p| \geq \epsilon_{\text{arch}}$ in expectation.
-By A2, $|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t} - \bar{p}_t|$; that is,
-$|\delta_i| = O(\sqrt{\text{Amb}_t})$ and is small relative to $|\Delta p|$
-when $\epsilon_{\text{arch}}$ is not negligible.
-
-We analyse the effect on the Ambiguity term.
-Let $\bar{p}_t' = \bar{p}_t + \Delta p/N$ be the updated centroid.
-Expanding $(p_{j,t} - \bar{p}_t')^2$ for $j \neq i$ and $(p_{i,t}' - \bar{p}_t')^2$,
-then subtracting the pre-SRR Ambiguity and using $\sum_j \delta_j = 0$:
-
-$$\Delta\text{Amb}_t \;=\; \frac{(\Delta p)^2(N-1)}{N^2}
-\;+\; O\!\left(\frac{|\delta_i|\,|\Delta p|}{N}\right)
-\;\geq\; \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0 \quad (N \geq 2)$$
-
-The remainder $O(|\delta_i|\,|\Delta p|/N)$ is dominated by the leading term under A2:
-the condition $|\delta_i| \ll |\Delta p|\cdot(N-1)/N$ holds in expectation given the
-distinguishability gap $\epsilon_{\text{arch}}$ and the small spread $|\delta_i|$.
-
-Hence $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
-=======
 By A1, $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}}$ and hence
 $\mathbb{E}[(\Delta p)^2] \geq \epsilon_{\text{arch}}^2 > 0$.
 
@@ -758,7 +737,6 @@ as part of the §5.1 Assumption A1 check (pilot agents confirm
 $\mathbb{E}[|\delta_i|] \leq 0.014$ for sacrifice-eligible agents).
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
->>>>>>> Stashed changes
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
 $\bar{p}_t \in [0.15, 0.85]$ and $\text{Amb}_t \leq 0.08$), increasing Ambiguity
 strictly increases JSD.
@@ -893,13 +871,9 @@ reallocation. The full experiment log is archived at
 
 **NBA cohort (N = 12).** Table 3 describes the twelve LLM agents fielded in
 the NBA prediction domain. The cohort spans five provider ecosystems, four
-<<<<<<< Updated upstream
-model scales (0.6B to 235B parameters), and twelve distinct initial strategy
-=======
 identified model scale classes (4B to 235B parameters for providers with publicly
 disclosed sizes; Google Gemini 3 Flash and Mistral commercial variants have
 undisclosed parameter counts), and twelve distinct initial strategy
->>>>>>> Stashed changes
 archetypes drawn from the 20-archetype taxonomy (Appendix A). The initial
 archetype assignment was *not* optimised to maximise initial diversity; rather,
 archetypes were assigned to reflect natural provider tendencies (e.g., smaller
