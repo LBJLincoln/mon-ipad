@@ -1421,3 +1421,231 @@ to confirm the fix propagated to all relevant files before marking the issue clo
 - `07-discussion.md` §6.1: "weakly dominant" → "individually incentive-compatible under A3" (R19)
 - `references.bib`: `@aumann1959acceptable` `@article` → `@incollection` with full editors/series (R13)
 - `paper.md`: all five fixes mirrored (R3, R5, R6, R13, R19)
+
+---
+
+# Peer-Review Self-Critique — Cycle 17 (2026-05-14)
+
+*Full manuscript re-read following Cycle 16's clean slate. Five new issues
+identified (S1–S5); all five fixed in this cycle.*
+
+---
+
+## CYCLE 16 STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle 16. PRE-SUBMISSION checklist items 1–3 (author
+verification for `@ouyang2022training`, `@llm_ipd2024`, `@polyswarm2026`)
+remain deferred pending network access to live arXiv records.
+
+---
+
+## NEW ISSUES (Cycle 17 full-manuscript re-read)
+
+### S1. Lemma 1 Ambiguity-path proof: point-wise lower bound incorrectly stated; cross-term can be negative [FIXED]
+
+**Reviewer:** The Cycle 16 proof restructure (R6) introduced the correct
+Ambiguity-path formulation, but retained an unjustified equality:
+
+$$\Delta\text{Amb}_t \;=\; \frac{(\Delta p)^2(N-1)}{N^2}
+\;+\; O\!\left(\frac{|\delta_i|\,|\Delta p|}{N}\right)
+\;\geq\; \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$$
+
+The exact formula (derivable by expanding the centroid-shift and squaring)
+is $\Delta\text{Amb}_t = \frac{(\Delta p)^2(N-1)}{N^2} + \frac{2\delta_i\Delta p}{N}$.
+The Big-O representation hides the sign: the cross-term $\frac{2\delta_i\Delta p}{N}$
+is negative whenever the new archetype moves the sacrifice-eligible agent's prediction
+*toward* the centroid ($\delta_i\Delta p < 0$). The inequality "$\geq
+\frac{\epsilon_{\text{arch}}^2(N-1)}{N^2}$" is therefore not universally valid —
+it requires the cross-term to be non-negative, which is not guaranteed by A1 or A2.
+
+The proof's assertion that "the condition $|\delta_i| \ll |\Delta p|(N-1)/N$
+holds in expectation" is also imprecise. For the leading term to dominate over
+a negative cross-term, one needs $|\delta_i| < \frac{|\Delta p|(N-1)}{2N}$.
+With $\epsilon_{\text{arch}} = 0.037$ and $N = 12$ this requires
+$|\delta_i| < 0.017$ — a quantitative bound that A2 (as stated) does not
+imply directly, since A2 only says the sacrifice-eligible agent is no
+*further* from the centroid than the population average, without bounding
+that average.
+
+**Fix applied (`04-method.md` §3.5 and `paper.md` §3.5):**
+
+The proof is restructured to present the exact formula explicitly and handle
+both cases:
+
+- **Case 1** ($\delta_i\Delta p \geq 0$): the new archetype moves the prediction
+  away from or orthogonal to the centroid.  The cross-term is non-negative,
+  and $\Delta\text{Amb}_t \geq \frac{(\Delta p)^2(N-1)}{N^2} \geq
+  \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$. ✓
+
+- **Case 2** ($\delta_i\Delta p < 0$): the new archetype moves the prediction
+  toward the centroid.  The net change is positive iff
+  $|\delta_i| < \frac{|\Delta p|(N-1)}{2N} \approx 0.017$.
+  The proof explicitly identifies this as the operative quantitative
+  requirement on A2 and defers verification to §5.1 pilot data
+  ("pilot agents confirm $\mathbb{E}[|\delta_i|] \leq 0.014$ for
+  sacrifice-eligible agents"). ✓
+
+The final conclusion $\mathbb{E}[\Delta\text{Amb}_t] > 0$ is now properly
+supported in both cases, with the Case 2 condition flagged as an empirical
+check rather than an unsupported claim. ✓
+
+*Residual.* The §5.1 statement "$\mathbb{E}[|\delta_i|] \leq 0.014$" is
+a pre-registration claim pending pilot backtest completion (alongside Table B.2).
+It is flagged as [PENDING] in the structural sense but is logically necessary
+for the Lemma 1 proof; if the pilot contradicts it, the proof requires additional
+conditioning on archetype vacancy direction. Add to pre-submission checklist.
+
+---
+
+### S2. Definition 1, Step 6: cross-reference "(§3.3)" should be "(§3.4)" — missed by Cycle 16 R3 fix [FIXED]
+
+**Reviewer:** The R3 fix in Cycle 16 corrected the preamble of Definition 1
+from "defined in §3.3" to "defined in §3.4." However, the numbered list
+within Definition 1 (step 6) still read:
+"**SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.3)."
+SRR is defined in §3.4 (Sacrificial Role Reallocation), not §3.3 (Diversity Metric).
+A reader following the parenthetical cross-reference would find the JSD diversity
+formula, not the SRR eligibility rules — a confusing misdirection.
+
+**Root cause:** The Cycle 16 R3 fix used a targeted `old_string` that matched
+the preamble sentence only; the step-6 parenthetical is a separate string occurrence
+that was not covered by the same edit.
+
+**Fix applied (`04-method.md` step 6 and `paper.md` step 6):**
+"(§3.3)" → "(§3.4)". Post-fix verification:
+`grep -n "execute (§3" *.md` returns "(§3.4)" in all relevant files. ✓
+
+---
+
+### S3. §4.3 and §7.2 inconsistent about the sequential condition design: within-season temporal confounds cited for a full-season simulation [FIXED]
+
+**Reviewer:** §4.3 states "The five conditions are run sequentially on the
+same chronological event stream … each agent's internal state is reset at
+the start of each condition (bankrolls re-initialised to \$100,000; Brier
+histories cleared; LLM conversation context buffers flushed)." This
+language clearly describes each condition as an independent full-season
+simulation starting from Day 1, with complete state reset.
+
+However, §7.2 discussed two "temporal confounds" that apply only when
+conditions cover *different* portions of the season:
+(a) "Sportsbook calibration drift — Odds markets become sharper as the
+season progresses. A later condition therefore faces a higher market-line
+quality baseline."
+(b) "Agent calibration drift — Conditions run later have access to richer
+[historical] context."
+
+Both confounds require "later conditions" to process later-season events,
+which contradicts the §4.3 design (all conditions cover Day 1–175 with
+identical data). The §7.2 analysis was describing a partial-season crossover
+design that was never actually implemented. An attentive reviewer comparing
+§4.3 and §7.2 would identify this as either a design change mid-paper or
+an internal inconsistency.
+
+**Fix applied:**
+
+- `05-experimental-setup.md` §4.3: Clarified that each condition is
+  "simulated independently over the complete 1,257-game, 175-trading-day
+  event stream, starting from Day 1 of the 2025–26 season, with identical
+  historical market signals and odds data." The reason for sequential (not
+  parallel) simulation is now correctly stated as provider rate limits, not
+  "to control for market-state variation." ✓
+
+- `08-limitations.md` §7.2: Renamed "Sequential Condition Design and
+  **Temporal Confounds**" → "Sequential Condition Design and **Provider Drift**."
+  The incorrect sportsbook/agent-calibration-drift paragraphs are replaced
+  with the correct operative confound: **LLM provider model drift** between
+  simulation calendar dates (each condition calls APIs at a different real-world
+  timestamp). The response-hash detection protocol (§7.4) and T12 immunity
+  are cited as the mitigation. ✓
+
+- `paper.md`: Both sections updated identically. ✓
+
+---
+
+### S4. §4.1 "0.6B to 235B parameters" — smallest model in Table 3 is T12 at 4B, not 0.6B [FIXED]
+
+**Reviewer:** Section 4.1 states "The cohort spans … four model scales
+(0.6B to 235B parameters)." Table 3 lists 12 agents; the self-hosted agent
+T12 is Qwen3-4B (4 billion parameters), the smallest model in the cohort.
+No 0.6B model appears in Table 3 or anywhere in the paper. The 0.6B figure
+corresponds to `selfhost-qwen06` (Qwen3-0.6B), listed in the system
+infrastructure (CLAUDE.md) but not fielded in the 12-agent NBA cohort.
+The minimum parameter count in the actual experimental cohort is 4B, not 0.6B.
+
+This is a factual error that any reviewer cross-checking §4.1 against Table 3
+will catch immediately.
+
+**Fix applied (`05-experimental-setup.md` §4.1 and `paper.md` §4.1):**
+"four model scales (0.6B to 235B parameters)" →
+"four identified model scale classes (4B to 235B parameters for providers with
+publicly disclosed sizes; Google Gemini 3 Flash and Mistral commercial variants
+have undisclosed parameter counts)." ✓
+
+*Note on count.* The four identified scale classes are: 4B (T12), 8B (T3, T8–T10),
+120B (T11), and 235B (T1–T2). Google and Mistral models are undisclosed — the
+"four model scales" count remains approximately correct for the disclosed agents
+and is now honestly qualified.
+
+---
+
+### S5. §2.2 ambiguity decomposition: "convex loss functions" is too broad — the decomposition holds for squared-error losses specifically [FIXED]
+
+**Reviewer:** §2.2 stated "The *ambiguity decomposition* … states that for
+**convex loss functions** (including the Brier score)." The Krogh & Vedelsby
+(1995) result and the Brown et al. (2005) survey establish this decomposition
+for **mean-squared-error (MSE) class losses**, specifically the quadratic loss
+$(y - \hat{y})^2$. For other convex losses — cross-entropy, absolute error,
+Huber loss, pinball loss — no analogous ambiguity decomposition holds in the
+same form: the ensemble-equals-mean-individual-minus-diversity factorisation
+breaks down because those losses are not translation-equivariant in the same way.
+
+Stating "for convex loss functions (including the Brier score)" implies the
+Brier score is cited as one instance of a general principle; a reviewer expert
+in ensemble theory would immediately note that the general principle does not
+exist for all convex losses and that the Brier score is only valid here because
+it is a squared-error loss.
+
+**Fix applied (`03-related-work.md` §2.2 and `paper.md` §2.2):**
+"for convex loss functions (including the Brier score)" →
+"for squared-error losses, of which the Brier score is the binary-outcome
+special case (the decomposition does not extend to all convex losses in
+general)." ✓
+
+---
+
+## CYCLE 17 SUMMARY
+
+**Fixed:** S1 (Lemma 1 exact cross-term formula + two-case analysis),
+S2 (Definition 1 Step 6 §3.3 → §3.4), S3 (§4.3/§7.2 design inconsistency
+resolved; temporal confound → provider drift), S4 (0.6B → 4B parameter count),
+S5 (ambiguity decomposition scope: convex → squared-error)
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's `> *Brier-delta... to be inserted*` note and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. **NEW — Verify Lemma 1 Case 2 empirical claim:** confirm pilot data shows
+   $\mathbb{E}[|\delta_i|] \leq 0.014$ for sacrifice-eligible agents (required for
+   Case 2 of the Ambiguity-path proof; add to §5.1 [PENDING] verification text)
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking closed.
+
+**Structural changes this cycle:**
+- `03-related-work.md` §2.2: "convex loss functions" → "squared-error losses" (S5)
+- `04-method.md` §3.2 step 6: "(§3.3)" → "(§3.4)" (S2)
+- `04-method.md` §3.5 Lemma 1: Big-O proof → exact formula + two-case analysis (S1)
+- `05-experimental-setup.md` §4.1: "0.6B to 235B" → "4B to 235B, disclosed sizes only" (S4)
+- `05-experimental-setup.md` §4.3: clarified full-season simulation design; corrected
+  motivation for sequential execution from "market-state" to "rate limits" (S3)
+- `08-limitations.md` §7.2: renamed; replaced sportsbook/agent-drift with provider-drift
+  as the operative sequential-design confound (S3)
+- `paper.md`: all five fixes mirrored (S1–S5)
