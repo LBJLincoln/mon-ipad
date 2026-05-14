@@ -1,8 +1,18 @@
 {
   "version": 1,
-  "updated_at": "2026-05-14T22:00:00Z",
+  "updated_at": "2026-05-15T04:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-trigger-axelrod-fire-108-2026-05-15",
+      "priority": 146,
+      "status": "done",
+      "completed_at": "2026-05-15T04:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-108",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-108: RESTORE attempted — cloud session git-clone success: NBA 5971L / POL 3955L / py_compile PASS / commit c0acca2 local. git push HTTP 403 (cloud proxy blocks writes). GitHub main STILL corrupted. work-queue.json pushed via MCP. vm-git-recovery-fire102 remains CRITICAL PENDING.",
+      "do_not_push_hf_space_yet": true
+    },
     {
       "id": "cloud-brain-fire107-2026-05-14T22h",
       "priority": 143,
@@ -68,8 +78,8 @@
       "subject": "CRITICAL: NBA+POL app.py EMPTY/PLACEHOLDER on GitHub main. HISTORY: 704a645=empty blobs (fire-100), 2a74ece=placeholder strings (fire-102 MCP accident). VM MUST run: cd /home/termius/mon-ipad && python3 scripts/ops/restore_tf_fire102.py — restores both from 095594aa via git history + applies fire-100 tune + safe_commit+push. Script uses 'git show 095594aa:path' so local git history must include that commit. py_compile verified.",
       "detected_at": "2026-05-14T06:00:00Z",
       "do_not_push": false,
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: STILL PENDING. ROOT CAUSE CONFIRMED — cloud cannot push >300KB Python files. restore_tf_fire102.py VERIFIED CORRECT. ESCALATE TO USER: VM must run scripts/ops/restore_tf_fire102.py IMMEDIATELY."
+      "updated_at": "2026-05-15T04:00:00Z",
+      "cloud_brain_note": "fire-108: Cloud trigger restored both files locally in cloud session (commit c0acca2 at /home/user/mon-ipad): NBA 5971L / POL 3955L / py_compile PASS. git push -> HTTP 403 (proxy blocks writes in cloud sessions). GitHub main STILL has empty/placeholder blobs. VM MUST run scripts/ops/restore_tf_fire102.py — HIGHEST PRIORITY, verified correct by fire-105 AND fire-108. 3rd+ escalation — USER INTERVENTION REQUIRED."
     },
     {
       "id": "cloud-trigger-axelrod-fire-102-2026-05-14",
