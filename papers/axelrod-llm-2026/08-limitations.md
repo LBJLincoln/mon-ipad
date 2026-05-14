@@ -41,41 +41,39 @@ but together they bound the mean-reversion contribution.
 
 ---
 
-## 7.2  Sequential Condition Design and Temporal Confounds
+## 7.2  Sequential Condition Design and Provider Drift
 
-Our five conditions are run sequentially on the same chronological event
-stream, not in a fully randomised within-season design. This choice was
-motivated by two hard constraints: (a) running five parallel agent fleets
-simultaneously would require 60 NBA + 50 political concurrent LLM inference
-threads, exceeding the combined rate limits of our five provider ecosystems;
-and (b) the SRR mechanism requires a minimum of seven days before any agent
-becomes sacrifice-eligible ($W = 7$ patience window), making crossover designs
-shorter than one week uninformative.
+Our five conditions are each simulated over the complete 1,257-game,
+175-trading-day event stream, with identical historical market signals and
+odds data (§4.3).  Because all conditions begin from Day 1 of the 2025–26
+season with fully reset agent state, the within-season temporal confounds
+that plague partial-season crossover designs — sportsbook calibration drift,
+accumulating agent context, or in-season form trends — do not apply: every
+condition's Day $k$ processes exactly the same historical event data, odds,
+and oracle feature context.
 
-The sequential design introduces a temporal confound: later conditions could
-benefit from systematic changes in the prediction environment over the
-season. Two specific sources of temporal variation are plausible:
+The operative confound in a sequentially-simulated multi-condition study is
+instead **LLM provider model drift**: because each condition's simulation
+invokes the LLM APIs at a different calendar time (Condition A during the
+live 2025–26 season, Conditions B–E thereafter in replay order), the
+underlying model weights served by `mistral-large-latest`, `gemini-3-flash-preview`,
+or `cerebras/qwen-3-235b-a22b-instruct-2507` may silently change between
+simulation runs without user notification.  A model update between Condition A
+and Condition B would introduce a version confound that is inseparable from
+the SRR-vs-fixed experimental manipulation: if Condition B agents call a
+sharper model than Condition A, any Brier difference is partly attributable
+to model drift rather than the archetype-fixing manipulation.
 
-**Sportsbook calibration drift.** Odds markets become sharper as the season
-progresses and sportsbooks accumulate more data on team tendencies.
-A later condition therefore faces a higher market-line quality baseline,
-making it harder to achieve meaningful Brier improvement over the baseline
-— a conservative bias against conditions run later in the season.
-
-**Agent calibration drift.** Agents whose prompts include historical context
-accumulate progressively more season-specific information as the season
-advances. Conditions run later have access to richer context, which could
-improve predictions independent of the experimental manipulation.
-
-We partially control for temporal confounds by normalising each condition's
-Brier against a simultaneously computed *market baseline* (the Brier score
-of predicting the market-implied probability for each event, computed in
-the same temporal window as the condition). Brier improvement relative to
-the market baseline is expected to be more temporally stable than absolute
-Brier, since both the agent's and the market's calibration improve over time.
-We cannot fully rule out residual temporal confounding and acknowledge this
-as a limitation that a fully parallelised multi-fleet design would address
-at the cost of provider rate-limit violations.
+We document provider drift via the response-hash protocol described in §7.4
+(probing each endpoint with a fixed query at the start of each condition's
+simulation and archiving the hash).  Hash stability across conditions serves
+as circumstantial evidence that model weights did not change; a hash change
+triggers a notation in the experimental log and a sensitivity analysis
+excluding the affected agent.  As with provider non-stationarity generally
+(§7.4), the self-hosted agent T12 (frozen model version in
+`LBJLincoln26/llm-gateway`) is immune to this confound, and systematic
+T12-vs-commercial discrepancies in the per-agent analysis (§5.6) would
+flag drift as a contributing factor.
 
 ---
 
