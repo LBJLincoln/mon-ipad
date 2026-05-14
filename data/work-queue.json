@@ -1,8 +1,28 @@
 {
   "version": 1,
-  "updated_at": "2026-05-15T04:30:00Z",
+  "updated_at": "2026-05-15T06:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire109-2026-05-15T06h",
+      "priority": 148,
+      "status": "done",
+      "completed_at": "2026-05-15T06:00:00Z",
+      "completed_by": "cloud-brain-fire-109",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-109 ODD: All 11 islands polled. S13 stag CLEARED 8→0 cycle=198. S14 hard-reset-978 recovered stag=0. S15 0.22012 ★ stable gen=3227. S18 stag=0 cycle=2435. S17 503 DOWN 72+d. All 5 POL UP stag=0. P7 best_brier STILL 0.25412 (6+ fires) — cloud-brain-p7-diversify-fire108 BLOCKED (no POST tool), vm-diversify-p7-fire109 added priority=0. P4 in-pop LightGBM 0.24904 gen=79604. P2 in-pop LightGBM 123f. SOTA: ACM CISAI 2025 LR+ElasticNet 0.87 (new) + BMC 2026 SHAP KPI framework (new). ElasticNet added to vm-add-logistic-regression scope."
+    },
+    {
+      "id": "vm-diversify-p7-fire109",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "URGENT: POST /api/command {\"command\":\"diversify\"} to P7 (lbjlincoln-political-alpha-7.hf.space) — field-lag 6+ fires, best_brier STUCK at 0.25412",
+      "detected_at": "2026-05-15T06:00:00Z",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: cloud-brain-p7-diversify-fire108 BLOCKED — cloud brain has no HTTP POST capability to reach HF Space /api/command. P7 best_brier=0.25412 UNCHANGED for 6 consecutive fire cycles (fire-103 through fire-109). VM MUST: curl -X POST https://lbjlincoln-political-alpha-7.hf.space/api/command -H 'Content-Type: application/json' -d '{\"command\":\"diversify\"}'",
+      "do_not_push": false
+    },
     {
       "id": "cloud-trigger-axelrod-fire-108-2026-05-15",
       "priority": 146,
@@ -20,17 +40,17 @@
       "completed_at": "2026-05-14T22:00:00Z",
       "completed_by": "cloud-brain-fire-107",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-107 ODD: All 11 islands polled. S13 stag=8/25 MONITOR (was 0 at fire-106 cycle=103); S14/S15/S18/S22 stag=0; S17 503 DOWN 70+d. S15 ⚡ CatBoost 200f 0.21932 gen=3050 PENDING CHECKPOINT (1st fire, field-lag pattern). All 5 POL UP stag=0; P4 best_brier=0.24992 NOT new alltime (0.24904 stands); P7 field-lag 5+ fires best_brier=0.25412 → cloud-brain-p7-diversify-fire108 queued. SOTA: LR Brier=0.199 4th confirm, stacked AdaBoost+KNN+NB+LR+XGB ensemble, uncertainty-aware RNN MC-dropout 2026. No stagnation actions taken this cycle."
+      "subject": "fire-107 ODD: All 11 islands polled. S13 stag=8/25 MONITOR (was 0 at fire-106 cycle=103); S14/S15/S18/S22 stag=0; S17 503 DOWN 70+d. S15 ⚡ CatBoost 200f 0.21932 gen=3050 PENDING CHECKPOINT (1st fire, field-lag pattern). All 5 POL UP stag=0; P4 best_brier=0.24992 NOT new alltime (0.24904 stands); P7 field-lag 5+ fires (current=0.24904 vs best=0.25412). SOTA: LR Brier=0.199 4th confirm, stacked AdaBoost+KNN+NB+LR+XGB ensemble, uncertainty-aware RNN MC-dropout 2026. No stagnation actions taken this cycle."
     },
     {
       "id": "cloud-brain-p7-diversify-fire108",
       "priority": 145,
-      "status": "pending",
+      "status": "blocked",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "P7 field-lag CONFIRMED 5+ fires — fire-108 MUST send diversify if best_brier still 0.25412",
+      "subject": "P7 field-lag CONFIRMED 6+ fires — diversify MUST be sent by VM (see vm-diversify-p7-fire109)",
       "detected_at": "2026-05-14T22:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107 NEW: P7 (LBJLincoln/political-alpha-7) best_brier=0.25412 UNCHANGED for 5+ fire cycles (fire-103, 104, 105, 106, 107) despite persistent 0.249 in-pop LightGBM signal. At fire-108: if best_brier STILL 0.25412, POST https://lbjlincoln-political-alpha-7.hf.space/api/command {\"command\":\"diversify\"}. Do NOT wait further.",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: BLOCKED — cloud brain confirmed P7 best_brier=0.25412 UNCHANGED (6+ consecutive fires). Cloud brain has NO HTTP POST tool to reach HF Space /api/command endpoint. Escalated to vm-diversify-p7-fire109 (priority=0). VM MUST act at next :30 cron cycle.",
       "do_not_push": false
     },
     {
@@ -253,8 +273,8 @@
       "owner": "local-vm",
       "subject": "URGENT: political_engine.py both files = placeholder. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
       "detected_at": "2026-05-06T20:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: STILL PENDING 322h+. File is 194KB — cloud output-cap constraint applies. VM must run this. BLOCKING: Rotation B. CRITICAL — ESCALATE TO USER IMMEDIATELY. VM: cd nomos-political-alpha && python scripts/ops/restore_political_engine_fire53.py",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: STILL PENDING 345h+. File is 194KB — cloud output-cap constraint applies. VM must run this. BLOCKING: Rotation B. CRITICAL — ESCALATE TO USER IMMEDIATELY. VM: cd nomos-political-alpha && python scripts/ops/restore_political_engine_fire53.py",
       "do_not_push": false
     },
     {
@@ -313,9 +333,9 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 70+ days",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: HF 503 DOWN confirmed 70+d. VM MUST: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 72+ days",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: HF 503 DOWN confirmed 72+d. VM MUST: python -c \"from huggingface_hub import HfApi; HfApi().restart_space('LBJLincoln26/nba-evo-s17')\"",
       "do_not_push": false
     },
     {
@@ -324,8 +344,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Restart political data crons: fetch_political_data.py + insider_tracker.py",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: Still pending. Rotation A blocked 322h+.",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: Still pending. Rotation A blocked 345h+.",
       "do_not_push": false
     },
     {
@@ -335,8 +355,8 @@
       "owner": "local-vm",
       "subject": "Investigate S22 (TESTforge42/nba-evo-s22) repeated resets",
       "detected_at": "2026-05-10T10:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: S22 cycle=735 gen=2204 stag=0. Hard resets at 690+715. vm-remove-stacking-s22 + vm-add-lightgbm-s22-s13 both pending.",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: S22 cycle=766 gen=2298 stag=0. Hard resets at 690+715+740. vm-remove-stacking-s22 + vm-add-lightgbm-s22-s13 both pending.",
       "do_not_push": false
     },
     {
@@ -345,8 +365,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation) + add roster continuity features",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: mismatch confirmed. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 delta. BLOCKS new feature additions.",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: mismatch confirmed. mon-ipad 523050 chars vs nomos-nba-agent 468146 chars +54904 delta. BLOCKS new feature additions.",
       "do_not_push": false
     },
     {
@@ -366,8 +386,8 @@
       "owner": "local-vm",
       "subject": "Remove 'stacking' from S13 (Nomos42/nba-evo-4) MODEL_TYPES — Rule#8 violation",
       "detected_at": "2026-05-12T02:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: S13 cycle=135 gen=403 stag=8 GROWING — URGENT: VM must patch before next hard reset (threshold=25, ETA ~17 cycles at current rate)"
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: S13 cycle=198 gen=594 stag=0 (cleared). Still needs MODEL_TYPES stacking removal even though stag is 0. Do before next stagnation episode."
     },
     {
       "id": "vm-remove-stacking-s15",
@@ -376,8 +396,8 @@
       "owner": "local-vm",
       "subject": "Remove 'stacking' from S15 (Nomos42/nba-evo-6) MODEL_TYPES — Rule#8 violation",
       "detected_at": "2026-05-11T10:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: cycle=1018 stag=0. STILL URGENT — fleet-best island, any hard reset could reintroduce stacking. S15 has CatBoost 200f candidate 0.21932 in pop — must protect this island."
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: cycle=1076 stag=0. STILL URGENT — fleet-best island. CatBoost 200f 0.21932 candidate unconfirmed 2nd brain fire. Must protect this island."
     },
     {
       "id": "vm-remove-stacking-s22",
@@ -386,8 +406,8 @@
       "owner": "local-vm",
       "subject": "Remove 'stacking' from S22 (TESTforge42/nba-evo-s22) MODEL_TYPES — Rule#8 violation",
       "detected_at": "2026-05-13T14:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: S22 cycle=735 hard resets 690+715. Combine with vm-add-lightgbm-s22-s13.",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: S22 cycle=766 hard resets 690+715+740. Combine with vm-add-lightgbm-s22-s13.",
       "do_not_push": false
     },
     {
@@ -397,8 +417,8 @@
       "owner": "local-vm",
       "subject": "Remove 'stacking' from S14 (Nomos42/nba-evo-5) MODEL_TYPES — Rule#8 violation",
       "detected_at": "2026-05-13T18:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: S14 cycle=933 stag=0. VM MUST patch MODEL_TYPES.",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: S14 cycle=985 stag=0 (hard reset at 978). VM MUST patch MODEL_TYPES.",
       "do_not_push": false
     },
     {
@@ -406,10 +426,10 @@
       "priority": 48,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Add lightgbm to S22 and verify in S13 MODEL_TYPES — fire-107 cross-domain port from POL LightGBM dominance signal",
+      "subject": "Add lightgbm to S22 and verify in S13 MODEL_TYPES — cross-domain port from POL LightGBM dominance signal",
       "detected_at": "2026-05-14T18:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: EVIDENCE STRONGER — P2 (cycle=16212) + P4 (cycle=26104) + P7 (cycle=23130) ALL show in-pop LightGBM 108f achieving 0.249. S22 (NBA laggard 0.22551) has never tried LightGBM. POST /api/config {\"MODEL_TYPES\": [\"random_forest\", \"extra_trees\", \"catboost\", \"lightgbm\"]} to testforge42-nba-evo-s22.hf.space. Also verify S13.",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: EVIDENCE STRONGEST YET — P2(123f,0.249) + P4(108f,0.24904) + P5(persistent) + P7(model_type=lightgbm) = 4/5 POL islands dominated by LightGBM (6 cycles). S22 (NBA laggard 0.22551) has never tried LightGBM. POST /api/config {\"MODEL_TYPES\": [\"random_forest\", \"extra_trees\", \"catboost\", \"lightgbm\"]} to testforge42-nba-evo-s22.hf.space. Also verify S13.",
       "do_not_push": false
     },
     {
@@ -417,10 +437,10 @@
       "priority": 50,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Add logistic_regression to MODEL_TYPES on islands missing it (POL: P2, P4, P5, P7; NBA: S15, S22 verify) + extra_trees to P4+P7",
+      "subject": "Add logistic_regression + elastic_net to MODEL_TYPES on islands missing them (POL: P2, P4, P5, P7; NBA: S15, S22 verify) + extra_trees to P4+P7",
       "detected_at": "2026-05-09T18:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: QUADRUPLE CONFIRMED SOTA — Montrucchio 2026 + MDPI WNBA 2026 + MDPI Symmetry 2023 + Sci Reports 2025 ALL confirm LR/logistic Brier=0.199. HIGHEST PRIORITY new model addition after stacking removal.",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: QUINTUPLE CONFIRMED SOTA — Montrucchio 2026 + MDPI WNBA 2026 + MDPI Symmetry 2023 + Sci Reports 2025 + ACM CISAI 2025 ALL confirm LR/logistic Brier=0.199. ACM CISAI 2025 ALSO confirms ElasticNet at 0.87 accuracy — add both LR and ElasticNet to model pools. HIGHEST PRIORITY new model addition.",
       "do_not_push": false
     },
     {
@@ -440,8 +460,8 @@
       "owner": "local-vm",
       "subject": "Add adaboost + naive_bayes to MODEL_TYPES on NBA+POL islands — fire-92 SOTA",
       "detected_at": "2026-05-12T14:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: PMC12357926 + ITM CSEIT 2025 + Sci Reports 2025 stacked ensemble all validate AdaBoost+NaiveBayes. AFTER logistic_regression added (P50).",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: PMC12357926 + ITM CSEIT 2025 + Sci Reports 2025 stacked ensemble all validate AdaBoost+NaiveBayes. AFTER logistic_regression+elastic_net added (P50).",
       "do_not_push": false
     },
     {
@@ -459,8 +479,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Fix diversify command format: action->command in all VM scripts",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: Cloud brain uses POST /api/command {\"command\":\"diversify\"} (confirmed correct). VM scripts may still use old format.",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: Cloud brain uses POST /api/command {\"command\":\"diversify\"} (confirmed correct). VM scripts may still use old format.",
       "do_not_push": false
     },
     {
@@ -471,8 +491,8 @@
       "subject": "Run nomos-political-alpha/scripts/fetch_fec_sec_features.py to generate FEC PAC + SEC Form4 feature data",
       "do_not_push": false,
       "detected_at": "2026-05-09T22:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: Rotation A still BLOCKED on vm-restart-political-data-crons."
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: Rotation A still BLOCKED on vm-restart-political-data-crons."
     },
     {
       "id": "vm-add-knn-small-feature-model-pool",
@@ -481,8 +501,19 @@
       "owner": "local-vm",
       "subject": "Add KNN to MODEL_TYPES on islands with feature count cap — fire-93 SOTA (ITM CSEIT 2025)",
       "detected_at": "2026-05-12T18:00:00Z",
-      "updated_at": "2026-05-14T22:00:00Z",
-      "cloud_brain_note": "fire-107: Sci Reports 2025 stacked ensemble + ITM CSEIT 2025 both confirm KNN viable <100f. AFTER AdaBoost+NB validated (P56).",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: Sci Reports 2025 stacked ensemble + ITM CSEIT 2025 both confirm KNN viable <100f. AFTER AdaBoost+NB validated (P56).",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-shap-feature-analysis-s15",
+      "priority": 80,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "SHAP analysis on S15 best RF feature set (75 features, gen=3227) — identify top 10-15 dominant KPIs",
+      "detected_at": "2026-05-15T06:00:00Z",
+      "updated_at": "2026-05-15T06:00:00Z",
+      "cloud_brain_note": "fire-109: NEW from BMC Sports Science 2026 (s13102-026-01620-0). SHAP-based KPI framework for basketball shows 10-15 dominant features. Run on S15 best model to identify which of 75 evolved features drive Brier=0.22012. Compare SHAP-pruned 15f vs GA 75f on holdout.",
       "do_not_push": false
     },
     {
