@@ -1,8 +1,53 @@
 {
   "version": 1,
-  "updated_at": "2026-05-15T06:00:00Z",
+  "updated_at": "2026-05-15T12:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-trigger-axelrod-fire-110-2026-05-15",
+      "priority": 149,
+      "status": "done",
+      "completed_at": "2026-05-15T12:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-110",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-110: Mech A tune — society entropy H=-Sp*log(p) added to CONSENSUS PICKS header in CK[D] broadcast + LOCKSTEP ALERT block (>=60% threshold) + society_entropy in Mech C axelrod-log rows (paper dataset). NBA +17L (5971->5988) | POL +17L (3955->3972) | py_compile PASS both. Patch script: scripts/ops/axelrod_entropy_patch_fire110.py — VM must apply.",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "vm-axelrod-entropy-patch-fire110",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "Apply fire-110 Mech A entropy patch: cd /home/termius/mon-ipad && python3 scripts/ops/axelrod_entropy_patch_fire110.py — then safe_commit.sh. Adds society entropy + lockstep alert to CK[D] broadcast. py_compile verified by cloud trigger.",
+      "detected_at": "2026-05-15T12:00:00Z",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-mech-a",
+      "priority": 150,
+      "status": "done",
+      "completed_at": "2026-05-15T12:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-110",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "Mech A (day-end common knowledge broadcast) confirmed implemented + at parity NBA-POL (fire-93). fire-110 tune: society entropy + lockstep alert in CK[D].",
+      "do_not_push_hf_space_yet": true
+    },
+    {
+      "id": "tf-axelrod-mech-b",
+      "priority": 151,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "VERIFY: Mech B (sacrificial role reallocation) — confirm assign_sacrificial_archetypes / build_sacrificial_system_suffix / assign_challenge_tiers / build_challenge_block are all at NBA-POL parity. Check bottom_n=3 uses trailing 7d delta. Next fire.",
+      "detected_at": "2026-05-15T12:00:00Z"
+    },
+    {
+      "id": "tf-axelrod-mech-c",
+      "priority": 152,
+      "status": "pending",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "VERIFY: Mech C (post-mortem log + paper dataset) — confirm write_axelrod_log schema complete: decisions, rank, archetype_assigned, was_sacrificed, peer_consensus_distance (KL), society_entropy (fire-110), dmad_prefix_type, ck_consensus_stance. Next fire.",
+      "detected_at": "2026-05-15T12:00:00Z"
+    },
     {
       "id": "cloud-brain-fire109-2026-05-15T06h",
       "priority": 148,
