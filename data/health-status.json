@@ -1,147 +1,165 @@
 {
-  "fire": "fire-112",
-  "timestamp": "2026-05-15T18:00:00Z",
-  "cycle_parity": "EVEN",
-  "brain_model": "claude-sonnet-4-6",
-
+  "updated_at": "2026-05-16T02:00:00Z",
+  "fire": 113,
+  "cycle_type": "ODD",
   "nba_islands": {
-    "fleet_best_brier": 0.22012,
-    "fleet_best_island": "S15",
-    "fleet_best_fire": "fire-61",
-    "checkpoint_threshold": 0.22085,
-    "new_checkpoint": false,
-    "s15_pareto_candidate": {
-      "status": "CONFIRMED_2ND_FIRE_VM_CHECKPOINT_URGENT",
-      "candidate_brier": 0.21896,
-      "model": "extra_trees",
-      "features": 200,
-      "gen_detected": 3517,
-      "fires_confirmed": 2,
-      "fire_111_candidate": {"model": "random_forest", "brier": 0.21951},
-      "fire_112_candidate": {"model": "extra_trees", "brier": 0.21896},
-      "note": "fire-112 2nd consecutive detection. Hard reset at cycle=1151 happened between fire-111 and fire-112, but post-reset population re-converged to ET 0.21896 in ~22 cycles. Both candidates below fleet best (0.22012) and checkpoint threshold (0.22085). S18 0.21924 was LOST to a hard reset — VM must checkpoint S15 NOW before another reset. vm-checkpoint-s15-et-0.21896 added to work-queue priority=1."
+    "S13": {
+      "space": "Nomos42/nba-evo-4",
+      "cycle": 343,
+      "gen": 1027,
+      "best_brier": 0.22344,
+      "stagnation": 0,
+      "model_type": "xgboost_brier",
+      "status": "EVOLVING",
+      "hard_reset_cycle": 326,
+      "pareto_candidate_1st_fire": {
+        "brier": 0.22002,
+        "features": 200,
+        "model_type": "random_forest",
+        "fire_first": 113,
+        "note": "BELOW fleet best 0.22012 — 1st detection fire-113 — monitor for 2nd fire"
+      }
     },
-    "islands": {
-      "S13": {
-        "gen": 881, "cycle": 294, "brier": 0.22344, "stag": 0,
-        "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "✓ stag CLEARED (was 12 at fire-111). LR in model pool confirmed. vm-remove-stacking-s13 PENDING VM."
-      },
-      "S14": {
-        "gen": 3179, "cycle": 1060, "brier": 0.22336, "stag": 0,
-        "model": "extra_trees", "status": "EVOLVING",
-        "note": "✓ stag=0. Hard reset at cycle=1053 (25-gen stagnation). Healthy. vm-remove-stacking-s14 PENDING VM."
-      },
-      "S15": {
-        "gen": 3517, "cycle": 1173, "brier": 0.22012, "stag": 0,
-        "model": "extra_trees", "status": "EVOLVING",
-        "note": "★ FLEET BEST 0.22012 (field). ⚡⚡ CONFIRMED 2nd fire: ET 200f Brier=0.21896 (was RF 0.21951 fire-111). Hard reset at cycle=1151 occurred between fires — post-reset pop re-converged sub-0.22012 in 22 cycles. VM-CHECKPOINT-URGENT: vm-checkpoint-s15-et-0.21896 priority=1."
-      },
-      "S17": {
-        "gen": null, "cycle": null, "brier": null, "stag": null,
-        "model": null, "status": "503_DOWN",
-        "note": "503 DOWN 76+ days. VM MUST restart."
-      },
-      "S18": {
-        "gen": 7547, "cycle": 2516, "brier": 0.22315, "stag": 0,
-        "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "✓ stag=0. Hard resets at 2451+2476. Stable +30 cycles since fire-111."
-      },
-      "S22": {
-        "gen": 2517, "cycle": 839, "brier": 0.22551, "stag": 0,
-        "model": "extra_trees", "status": "EVOLVING",
-        "note": "Fleet laggard. stag=0 post-reset. vm-add-lightgbm-s22-s13 + vm-remove-stacking-s22 PENDING VM."
+    "S14": {
+      "space": "Nomos42/nba-evo-5",
+      "cycle": 1112,
+      "gen": 3335,
+      "best_brier": 0.22336,
+      "stagnation": 0,
+      "model_type": "extra_trees",
+      "status": "EVOLVING",
+      "hard_reset_cycle": 1103
+    },
+    "S15": {
+      "space": "Nomos42/nba-evo-6",
+      "cycle": 1251,
+      "gen": 3752,
+      "best_brier": 0.22012,
+      "stagnation": 0,
+      "model_type": "random_forest",
+      "best_features": 75,
+      "status": "EVOLVING",
+      "fleet_best": true,
+      "pareto_pending": {
+        "brier": 0.21896,
+        "features": 200,
+        "model_type": "extra_trees",
+        "confirmed_fires": 2,
+        "vm_action": "CHECKPOINT URGENT — vm-checkpoint-s15-et-0.21896 priority=1"
       }
+    },
+    "S17": {
+      "space": "LBJLincoln26/nba-evo-s17",
+      "status": "DOWN_503",
+      "days_down": 77
+    },
+    "S18": {
+      "space": "TESTforge42/nba-evo-s18",
+      "cycle": 2570,
+      "gen": 7708,
+      "best_brier": 0.22315,
+      "stagnation": 0,
+      "model_type": "xgboost_brier",
+      "status": "EVOLVING",
+      "hard_resets": [2526, 2551]
+    },
+    "S22": {
+      "space": "TESTforge42/nba-evo-s22",
+      "cycle": 876,
+      "gen": 2626,
+      "best_brier": 0.22551,
+      "stagnation": 0,
+      "model_type": "extra_trees",
+      "status": "EVOLVING",
+      "hard_resets": [840, 865],
+      "reseed_pool_note": "lightgbm+logistic_regression auto-added to reseed pool at hard-reset-865 — partial vm-add-lightgbm-s22 self-deployed; VM must still POST /api/config to make permanent"
     }
   },
-
-  "pol_islands": {
-    "fleet_best_brier": 0.24904,
-    "fleet_best_island": "P4_alltime",
-    "p7_status": "FRESH_RESTART_cycle64_resolved",
-    "p7_prior_stuck_fires": 9,
-    "islands": {
-      "P1": {
-        "gen": 62633, "cycle": 20878, "brier": 0.2499, "stag": 0,
-        "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "✓ stag CLEARED (was 13 at fire-111). Hard resets at 20521+20561. Gen 62K milestone."
-      },
-      "P2": {
-        "gen": 51342, "cycle": 17114, "brier": 0.25003, "stag": 0,
-        "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "✓ stag=0. In-pop LightGBM Brier=0.249 (persistent, PENDING VAL)."
-      },
-      "P4": {
-        "gen": 81806, "cycle": 27269, "brier": 0.24992, "stag": 0,
-        "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "★ POL alltime best=0.24904. Last log: LightGBM 108f Brier=0.2490 (gen=81806). Hard resets 27214+27234."
-      },
-      "P5": {
-        "gen": 69501, "cycle": 23167, "brier": 0.24993, "stag": 0,
-        "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "✓ stag=0. Pareto: LightGBM gen=49527 Brier=0.249. Hard resets 23121+23141."
-      },
-      "P7": {
-        "gen": 192, "cycle": 64, "brier": 0.25004, "stag": 0,
-        "model": "xgboost_brier", "status": "EVOLVING",
-        "note": "FRESH RESTART observed fire-112 (cycle=64 gen=192 — was cycle=24016 gen=72046 at fire-111). best_brier=0.25004 already (was stuck 0.25412×9fires). Appears to have been factory rebooted. vm-diversify-p7-fire109 task resolved by restart."
-      }
+  "political_islands": {
+    "P1": {
+      "space": "Nomos42/political-alpha",
+      "cycle": 21430,
+      "gen": 64290,
+      "best_brier": 0.2499,
+      "stagnation": 0,
+      "model_type": "xgboost_brier",
+      "status": "EVOLVING"
+    },
+    "P2": {
+      "space": "Nomos42/political-alpha-2",
+      "cycle": 17483,
+      "gen": 52446,
+      "best_brier": 0.25003,
+      "stagnation": 0,
+      "model_type": "xgboost_brier",
+      "status": "EVOLVING"
+    },
+    "P4": {
+      "space": "LBJLincoln/political-alpha-4",
+      "cycle": 27771,
+      "gen": 83310,
+      "best_brier": 0.24992,
+      "stagnation": 0,
+      "model_type": "lightgbm",
+      "status": "EVOLVING",
+      "pol_fleet_best": true
+    },
+    "P5": {
+      "space": "LBJLincoln/political-alpha-5",
+      "cycle": 23620,
+      "gen": 70857,
+      "best_brier": 0.24993,
+      "stagnation": 0,
+      "model_type": "xgboost_brier",
+      "status": "EVOLVING"
+    },
+    "P7": {
+      "space": "LBJLincoln/political-alpha-7",
+      "cycle": 528,
+      "gen": 1581,
+      "best_brier": 0.25004,
+      "stagnation": 0,
+      "model_type": "xgboost_brier",
+      "status": "EVOLVING",
+      "note": "Fresh restart recovering well — c64 fire-112 → c528 fire-113"
     }
   },
-
-  "sota_research": {
-    "fire": "fire-112",
-    "parity": "EVEN",
-    "findings": [
-      {
-        "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
-        "source": "MDPI Information 17(1):56, January 2026",
-        "url": "https://www.mdpi.com/2078-2489/17/1/56",
-        "key_result": "Uncertainty-aware RNN with MC dropout. Baseline: LR+XGBoost Brier~0.20 on 2024 season. Features: team-level metrics + rolling-form indicators + spatial shot-chart embeddings.",
-        "relevance": "Our fleet best 0.22012. SOTA baseline (LR/XGBoost) ~0.20. Confirms LR push correct. GPU target: RNN+MC-dropout below 0.20.",
-        "actions": ["Add shot-chart spatial embeddings to engine.py (new feature category)", "Confirm LR in all islands (vm-add-logistic-regression-model-pool)", "GPU target: RNN+MC-dropout on Kaggle/Colab"]
-      },
-      {
-        "title": "CNN model for NBA prediction",
-        "source": "MDPI Computation 2026",
-        "key_result": "CNN achieves Brier 0.221 on NBA outcomes",
-        "relevance": "Our fleet best 0.22012 already beats CNN baseline"
-      }
-    ],
-    "proposal_file": "data/research-proposals/uncertainty-aware-rnn-nba-2026-05-15.md"
+  "trading_floors": {
+    "NBA_TF": {
+      "space": "LBJLincoln26/nba-llm-trading-floor",
+      "status": "DOWN_503",
+      "last_updated_hf": "2026-05-12",
+      "axelrod_log_files": 111,
+      "axelrod_log_latest": "day-110.jsonl",
+      "axelrod_mech_c_push": "CONFIRMED",
+      "axelrod_schema_issue": "dmad_prefix_type, was_challenged, tier, bankroll_growth_factor, trailing_7d_delta, USED_ARCHETYPES missing"
+    },
+    "POL_TF": {
+      "space": "LBJLincoln26/political-llm-trading-floor",
+      "status": "DOWN_TIMEOUT",
+      "last_updated_hf": "2026-05-07"
+    }
   },
-
-  "actions_taken": [
-    "All 11 islands polled: S13/S14/S15/S18/S22 + P1/P2/P4/P5/P7 UP | S17 503 DOWN",
-    "S15 Pareto candidate CONFIRMED 2nd fire: ET 200f Brier=0.21896 (was RF 0.21951 fire-111). VM-CHECKPOINT-URGENT added to work-queue priority=1.",
-    "S13 stagnation CLEARED: stag=0 (was 12 at fire-111). LR in model pool stable.",
-    "P1 stagnation CLEARED: stag=0 (was 13 at fire-111).",
-    "P7 FRESH RESTART observed: cycle=64 gen=192 best=0.25004 (was stuck 0.25412×9fires). vm-diversify-p7 resolved.",
-    "P4 LightGBM confirmed in log: Gen 81806 Model=lightgbm Brier=0.2490.",
-    "P5 hard resets 23121+23141 since fire-111.",
-    "EVEN cycle WebSearch: uncertainty-aware RNN MC-dropout SOTA found. Research proposal written.",
-    "No diversify commands needed: all stag=0.",
-    "health-status.json + work-queue.json + CLAUDE.md updated (fire-112)",
-    "nomos-political-alpha/data/brain-status.json updated (fire-112)"
+  "fleet_best_brier": 0.22012,
+  "fleet_best_space": "S15",
+  "pareto_best_brier": 0.21896,
+  "pareto_best_space": "S15",
+  "pareto_best_fires_confirmed": 2,
+  "threshold_0_22085_met": false,
+  "diversify_sent": [],
+  "fire113_actions": [
+    "S13 RF-200f-0.22002 1st fire Pareto candidate detected — BELOW fleet best 0.22012 — S13-pareto-candidate-fire113 monitor item added",
+    "No diversify sent — all 10 active islands at stagnation=0",
+    "vm-diversify-p7-fire109 CLOSED — P7 c64 fire-112 → c528 fire-113, fully recovered",
+    "Axelrod-log HF Hub push CONFIRMED: 111 files (day-000 to day-110), readable at HF Hub space repo",
+    "Axelrod Mech B/C schema INCOMPLETE: dmad_prefix_type, was_challenged, tier, bankroll_growth_factor, trailing_7d_delta, USED_ARCHETYPES all absent from day-110.jsonl — vm-fix-axelrod-log-schema added priority=64",
+    "S22 hard-reset-865 reseed already includes lightgbm+logistic_regression (partial auto-deploy of vm-add-lightgbm-s22-s13)"
   ],
-
-  "alerts": [
-    "VM-CHECKPOINT-URGENT: S15 ET-200f-0.21896 confirmed 2nd fire. S18 0.21924 was LOST to hard reset — checkpoint S15 NOW.",
-    "CRITICAL: fix-pol-engine-placeholder — political_engine.py placeholder 358h+. VM MUST act.",
-    "URGENT: vm-restart-s17 — 503 DOWN 76+ days",
-    "HIGH: vm-remove-stacking-s13/s14/s15/s22 — Rule#8 violations still pending",
-    "HIGH: vm-add-logistic-regression-model-pool — S13 confirmed LR, add to S14/S15/S18/S22+P1/P2/P4/P5/P7"
-  ],
-
-  "vm_tasks_outstanding": [
-    "VM-CHECKPOINT-URGENT: vm-checkpoint-s15-et-0.21896 (priority=1, new this fire)",
-    "CRITICAL: fix-pol-engine-placeholder — run restore_political_engine_fire53.py (358h+ OVERDUE)",
-    "URGENT: vm-restart-s17 — 76+ days down",
-    "URGENT: vm-remove-stacking-s13/s14/s15/s22 — Rule#8 violations",
-    "HIGH: vm-add-logistic-regression-model-pool + ElasticNet to 9 remaining islands",
-    "HIGH: vm-add-lightgbm-s22-s13 — 5/5 POL evidence",
-    "engine-parity-sync — +54KB mismatch",
-    "vm-restart-political-data-crons",
-    "vm-diversify-p7-fire109 — verify P7 fresh restart intentional, then close"
+  "pending_vm_urgent": [
+    "vm-checkpoint-s15-et-0.21896 (priority=1) — ET-200f-0.21896 confirmed 2 fires, checkpoint before next hard reset",
+    "vm-restart-s17 (priority=1) — 77+ days down",
+    "fix-pol-engine-placeholder (priority=0) — 358h+ critical",
+    "vm-restart-nba-tf (new priority=10) — NBA TF 503, HF sleeping",
+    "vm-restart-pol-tf (new priority=11) — POL TF timeout, HF sleeping"
   ]
 }
