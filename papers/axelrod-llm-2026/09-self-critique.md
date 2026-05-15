@@ -1649,3 +1649,254 @@ to confirm propagation to all relevant files before marking closed.
 - `08-limitations.md` §7.2: renamed; replaced sportsbook/agent-drift with provider-drift
   as the operative sequential-design confound (S3)
 - `paper.md`: all five fixes mirrored (S1–S5)
+
+---
+
+# Peer-Review Self-Critique — Cycle 18 (2026-05-15)
+
+*Format: simulated Reviewer 2 assessment followed by author response for each issue.
+Issues marked [FIXED] were addressed in this cycle; [OPEN] remain for future cycles.*
+
+---
+
+## MAJOR CONCERNS
+
+### M1. Figure 1 is referenced in §3.6 but never defined — LaTeX compile error [FIXED]
+
+**Reviewer:** Section 3.6 opens "The LPSG is instantiated in a *Day-Bucket v3* pipeline
+(Figure 1; implementation at ...)." However, no figure environment labelled Figure 1
+appears anywhere in the manuscript — not in §3.6, not in any appendix, not even as
+a stub with `\label{fig:dag_v3}`. In LaTeX/pandoc compilation this produces an
+undefined cross-reference warning that promotes to an error under strict compilation
+flags. Nature Machine Intelligence requires all numbered figures to have a corresponding
+figure environment (even if placeholder art is used during review). A missing Figure 1
+is a mechanical submission-rejection criterion: the PDF will display "??" at the
+cross-reference site.
+
+Additionally, the figure is load-bearing: §3.6 describes five pipeline stages and the
+figure is the promised graphical summary of those stages. Its absence means a reader
+who encounters the parenthetical "(Figure 1)" has no figure to consult, making the
+pipeline description harder to follow for non-specialist reviewers.
+
+**Author response:** A Figure 1 placeholder with a complete self-contained caption
+has been inserted immediately before the first paragraph of §3.6 in both
+`04-method.md` and `paper.md`. The caption specifies all five pipeline stages, notes
+which conditions have the SRR stage active, and directs the reader to the source
+script `scripts/plots/day_bucket_architecture.py`. The `[FIGURE PENDING]` tag
+marks it for replacement with the rendered diagram before submission. ✓
+
+---
+
+### M2. Proposition 2 states "no coalition $\mathcal{C} \subseteq \mathcal{I}$" but the proof only covers coalitions of sacrifice-eligible agents [FIXED]
+
+**Reviewer:** The statement of Proposition 2 claims Strong Nash Equilibrium status
+for the full player set $\mathcal{I}$: "no coalition $\mathcal{C} \subseteq \mathcal{I}$
+can jointly deviate from SRR and (weakly) improve the ensemble Brier of $\mathcal{C}$
+while (weakly) reducing individual Brier for all members of $\mathcal{C}$."
+
+The proof sketch, however, only addresses the case where coalition members are
+sacrifice-eligible agents who *refuse* SRR. The argument has two components:
+(i) refusing SRR reduces Ambiguity (by Lemma 1), harming ensemble Brier; and
+(ii) the individual Brier of sacrifice-eligible agents does not improve from
+refusal (by A3). Both steps depend essentially on the assumption that the coalition
+members *are* sacrifice-eligible.
+
+The stated claim admits coalitions that include non-sacrifice-eligible agents.
+A non-eligible agent $j \in \mathcal{C}$ has no SRR action available (the eligibility
+condition is false), so its participation in the coalition is vacuous: it cannot
+"deviate from SRR" because SRR would not fire for it regardless. However, a
+coalition of all $N$ agents — some eligible, some not — could in principle include
+a non-eligible member who defects by *refusing to update its archetype labelling*
+if that label is broadcast. The proof sketch does not address this edge case, and
+more fundamentally, the quantifier "$\mathcal{C} \subseteq \mathcal{I}$" implies
+a stronger claim than what is proved.
+
+The correct claim is that the profile $(\sigma^{\text{SRR}})$ is Strong Nash
+among $\mathcal{I}_{\text{elig},d}$, the set of sacrifice-eligible agents at day $d$.
+This is a materially weaker statement — it is coalition-proof only over the agents
+for whom the SRR action is available — and it is the correct scope of Proposition 2's
+proof.
+
+**Author response:** Proposition 2 has been reworded to restrict the coalition
+explicitly to $\mathcal{C} \subseteq \mathcal{I}_{\text{elig},d}$, with a parenthetical
+explanation that non-eligible agents have no available deviation. The proof sketch
+remains valid under this corrected scope.
+
+The formal definition:
+$$\mathcal{I}_{\text{elig},d} = \{i \in \mathcal{I} : i \text{ is sacrifice-eligible at day } d\}$$
+has been added to the statement. The corrected claim is therefore:
+
+> *No coalition $\mathcal{C} \subseteq \mathcal{I}_{\text{elig},d}$ of sacrifice-eligible
+> agents can jointly refuse SRR and (weakly) improve the ensemble Brier of $\mathcal{C}$
+> while (weakly) reducing individual Brier for all members of $\mathcal{C}$.*
+
+This scoping is consistent with the proof and is not weaker in any practically relevant
+sense: non-eligible agents, by the eligibility definition, have no performance deficit
+that makes them candidates for SRR deviation. ✓
+
+---
+
+## SIGNIFICANT CONCERNS
+
+### S1. Definition 2 omits the cooldown constraint that §3.6 states — internal inconsistency [FIXED]
+
+**Reviewer:** Section 3.6 states "SRR fires at most once per agent per 14-day window."
+This is a binding constraint on the mechanism: without it, an agent who remains
+persistently above the society mean could trigger SRR on day $d$, fail to improve,
+trigger SRR again on day $d+7$, and so on — resetting the 14-day persistence window
+before it has elapsed. This would make the Brier-improvement retention test (Definition
+2, step 5) structurally impossible to evaluate, since the comparison window would be
+overwritten.
+
+Despite this, the formal Definition 2 (§3.4) includes no reference to the cooldown.
+The sacrifice-eligibility definition reads "Agent $i$ is sacrifice-eligible at day $d$
+if $\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}}$ for $W$ consecutive days"
+without the cooldown constraint. This means the formal definition and the implementation
+description in §3.6 are inconsistent: a reader using only Definition 2 would implement
+SRR without the cooldown, producing a different system from what §3.6 describes.
+
+**Author response:** The sacrifice-eligibility definition in §3.4 has been extended
+with the cooldown constraint: agent $i$ must satisfy both the consecutive-day Brier
+threshold *and* not have undergone SRR within the most recent $W_{\text{persist}}$
+days. The extension also adds a brief rationale: the cooldown "prevents re-evaluation
+before the reallocation persistence window has elapsed, ensuring each reallocation has
+a fair assessment period." Section 3.6's reference to "at most once per 14-day window"
+now cites "the cooldown constraint formalised in the eligibility definition of §3.4,"
+making the cross-reference explicit. ✓
+
+---
+
+### S2. "Axelrod-style round-robin" attribution for moderator rotation is factually incorrect [FIXED]
+
+**Reviewer:** Section 3.6 describes the morning council moderator as rotating "weekly
+(Axelrod-style round-robin) to prevent single-model anchoring." This attribution is
+factually incorrect and potentially confusing. Axelrod's 1980 tournament used a
+round-robin format in the sense that every submitted strategy played every other
+strategy an equal number of rounds. The term "Axelrod-style round-robin" in context
+implies that the weekly rotation of the moderator role follows some principle introduced
+or distinctive of Axelrod's design.
+
+In fact, the moderator rotation is simply a standard week-length round-robin schedule —
+no Axelrod-specific design principle is invoked, and no reader familiar with
+Axelrod (1980) would associate "Axelrod-style" with moderator rotation in a
+multi-agent prediction system. The attribution therefore (a) implies a misleading
+intellectual lineage, and (b) uses Axelrod's name as a stylistic flourish rather
+than a substantive citation. This is the kind of loose attribution that a specialist
+reviewer would flag immediately.
+
+**Author response:** The phrase "Axelrod-style round-robin" has been replaced with
+"weekly round-robin basis" in both `04-method.md` and `paper.md`. No citation is
+needed for a standard scheduling decision. ✓
+
+---
+
+### S3. §3.2 claims strict properness provides "truth-inducing" guarantees for LLMs, but LLMs are not Bayesian expected-score optimisers [FIXED]
+
+**Reviewer:** Section 3.2 states that the Brier score "ensures that no agent can
+improve expected score by misreporting beliefs, giving the game its *truth-inducing*
+character [@gneiting2007strictly]." The Gneiting & Raftery (2007) result is correct
+for Bayesian-rational agents who maximise expected scoring-rule payoff by reporting
+their true posterior probability. However, LLMs do not optimise expected score; they
+generate responses via autoregressive token sampling conditioned on a system prompt
+and context. The "truthfulness" guarantee of a strictly proper scoring rule is
+therefore an incentive-theoretic property of the game design, not a mechanically
+enforced property of LLM outputs.
+
+A reviewer specialising in LLM alignment or mechanism design would note this
+immediately. The current phrasing implies a guarantee that the paper cannot deliver:
+LLMs can and do output overconfident, underconfident, or inconsistent probabilities
+regardless of the scoring rule, because they are not expected-utility maximisers.
+Leaving the claim unqualified would invite a pointed response: "the truth-induction
+guarantee of proper scoring rules requires agents to behave as rational Bayesian
+expected-utility maximisers; no evidence is provided that LLMs do so."
+
+**Author response:** The truth-induction sentence in §3.2 has been split and qualified:
+(i) the guarantee is attributed specifically to "Bayesian-rational" agents
+(`no *Bayesian-rational* agent can improve expected score by misreporting beliefs`);
+(ii) a follow-on sentence explicitly acknowledges that LLMs generate outputs via
+autoregressive sampling rather than expected-score optimisation, and characterises
+truth-induction as "a normative design goal and a property of the incentive structure,
+not a mechanical guarantee over LLM behaviour." This framing is consistent with the
+honesty established in §8.1 (Limitations) without undermining the value of the
+scoring-rule choice. ✓
+
+---
+
+### S4. §3.6 contained platform-specific HuggingFace implementation detail in the primary methods section [FIXED]
+
+**Reviewer:** Section 3.6 described the SRR archetype update as "modifying the
+agent's HuggingFace Space environment variable `AGENT_PERSONA` and issuing a
+hot-reload of the system-prompt template (no Space restart required)." This level
+of platform specificity is inappropriate in a primary methods section for several
+reasons:
+
+(a) *Reproducibility scope.* The description implies that SRR requires a HuggingFace
+Space deployment to operate, whereas the mechanism is platform-agnostic. Any
+system capable of updating an agent's system prompt between prediction windows
+implements SRR; the HuggingFace env-var mechanism is an artefact of this particular
+instantiation.
+
+(b) *Fragility.* HuggingFace platform APIs change; environment variable names change.
+A methods description that specifies `AGENT_PERSONA` as a named variable will
+silently become inaccurate as the platform evolves.
+
+(c) *Level of abstraction.* Nature Machine Intelligence methods sections describe the
+*mechanism*, not the deployment substrate. The deployment-level detail belongs in
+Appendix D alongside other engineering specifications.
+
+**Author response:** The HuggingFace-specific sentence in §3.6 has been replaced
+with a platform-agnostic description: "The archetype update is applied by atomically
+replacing the agent's runtime system-prompt configuration without interrupting the
+inference service (implementation details in Appendix D)." The reference to Appendix D
+signals where platform-specific detail is documented without cluttering the primary
+methods section. ✓
+
+---
+
+## CYCLE 18 SUMMARY
+
+**Fixed:** M1 (Figure 1 placeholder defined in §3.6 with self-contained caption),
+M2 (Proposition 2 coalition scope restricted to $\mathcal{I}_{\text{elig},d}$),
+S1 (Definition 2 cooldown constraint added to eligibility definition, §3.6 cross-cited),
+S2 ("Axelrod-style round-robin" → "weekly round-robin basis"),
+S3 (truth-induction claim qualified to Bayesian-rational agents with LLM caveat),
+S4 (HuggingFace implementation detail abstracted to platform-agnostic description
+with pointer to Appendix D)
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's `> *Brier-delta... to be inserted*` note and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2 empirical claim: confirm pilot data shows
+   $\mathbb{E}[|\delta_i|] \leq 0.014$ for sacrifice-eligible agents
+10. **NEW — Render Figure 1** from `scripts/plots/day_bucket_architecture.py`
+    and insert final art before submission; remove `[FIGURE PENDING]` tag
+11. **NEW — Add §D (Appendix D) entry** for SRR runtime implementation:
+    describe environment-variable mechanism, hot-reload protocol, and
+    the `AGENT_PERSONA` env-var so the platform-specific detail is still
+    preserved for reproducibility — just in the right place
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking closed.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.2: truth-induction claim scoped to Bayesian-rational agents
+  + LLM autoregressive caveat added (S3)
+- `04-method.md` §3.4 eligibility: cooldown constraint added; §3.6 SRR execution
+  cross-cites eligibility definition (S1)
+- `04-method.md` §3.5 Proposition 2: coalition scope restricted to
+  $\mathcal{I}_{\text{elig},d}$ with definition and justification (M2)
+- `04-method.md` §3.6: Figure 1 placeholder with self-contained caption
+  inserted before pipeline description (M1)
+- `04-method.md` §3.6: "Axelrod-style round-robin" → "weekly round-robin basis" (S2)
+- `04-method.md` §3.6 SRR execution: HuggingFace specifics abstracted;
+  pointer to Appendix D added (S4)
+- `paper.md`: all six fixes mirrored (M1–M2, S1–S4)
