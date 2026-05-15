@@ -1,7 +1,7 @@
 {
-  "fire": 116,
-  "parity": "EVEN",
-  "timestamp": "2026-05-16T14:00:00Z",
+  "fire": 118,
+  "parity": "ODD",
+  "timestamp": "2026-05-17T00:00:00Z",
   "fleet_best_nba": {
     "brier": 0.22012,
     "island": "S15",
@@ -15,99 +15,119 @@
     "features": 108
   },
   "pareto_best_nba": {
-    "brier": 0.21896,
-    "island": "S15",
-    "source": "in-pop ET-200f fire-112 confirmed 4+ fires",
-    "checkpoint_status": "PENDING_VM_EXTREME_URGENT"
+    "brier": 0.21885,
+    "island": "S18",
+    "gen": 7952,
+    "features": 200,
+    "source": "in-pop 200f gen=7952 fire-118 CONFIRMED 2nd detection (prev candidate: S15 ET-0.21896 fire-112+)",
+    "checkpoint_status": "PENDING_VM_URGENT — vm-checkpoint-s18 priority=1 + vm-checkpoint-s15 priority=1 both needed"
   },
   "nba_islands": {
     "S13": {
-      "cycle": 394,
-      "gen": 1180,
+      "cycle": 411,
+      "gen": 1230,
       "best_brier": 0.22216,
-      "stagnation": 18,
-      "action": "DIVERSIFY_SENT",
-      "note": "NEW S13 PERSONAL BEST (was 0.22344). stag=18>15."
+      "stagnation": 0,
+      "status": "OK",
+      "note": "hard-reset-c404 (diversify-c394 worked, stag CLEARED from 18). S13 personal best 0.22216 (was 0.22344 pre-fire-116)."
     },
     "S14": {
-      "cycle": 1171,
-      "gen": 3513,
+      "cycle": 1189,
+      "gen": 3565,
       "best_brier": 0.22336,
       "stagnation": 0,
-      "status": "OK"
+      "status": "OK",
+      "note": "hard resets triggering in c1178-1189 range. Pareto 13 candidates. vm-remove-stacking-s14 PENDING VM."
     },
     "S15": {
-      "cycle": 1363,
-      "gen": 4087,
+      "cycle": 1399,
+      "gen": 4197,
       "best_brier": 0.22012,
       "stagnation": 0,
       "status": "OK_FLEET_BEST",
-      "note": "hard-reset-c1351 (12c ago). 5-fire ET attractor. VM-CHECKPOINT-EXTREME-URGENT."
+      "pareto_top": {
+        "brier": 0.21932,
+        "model": "extra_trees",
+        "features": 200,
+        "gen": 4192,
+        "fire_count": "6th+"
+      },
+      "note": "hard-reset-c1376 (3rd reset with ET attractor reconverging). ET-200f-0.21932 in-pop gen=4192 (6th+ consecutive fire). VM-CHECKPOINT-EXTREME-URGENT."
     },
     "S17": {
       "status": "503_DOWN",
-      "days_down": 80
+      "days_down": 82,
+      "note": "vm-restart-s17 PENDING VM"
     },
     "S18": {
-      "cycle": 2630,
-      "gen": 7888,
+      "cycle": 2652,
+      "gen": 7956,
       "best_brier": 0.22315,
       "stagnation": 0,
-      "status": "OK",
-      "note": "pareto-0.2190-0.2194 WATCHING fire-117 (no hard-reset, field-lag consistent)"
+      "status": "OK_PARETO_CONFIRMED",
+      "pareto_top3": [
+        {"brier": 0.21885, "features": 200, "gen": 7952, "sharpe": 11.38, "roi": 0.341},
+        {"brier": 0.21915, "features": 200, "gen": 7951, "sharpe": 8.11, "roi": 0.337},
+        {"brier": 0.21962, "features": 200, "gen": 7952, "sharpe": 9.87, "roi": 0.332}
+      ],
+      "note": "PARETO CONFIRMED fire-118 (2nd real detection). 0.21885 = NEW in-pop best (below S15 0.21896). No stagnation reset between fire-115 and fire-118. vm-checkpoint-s18 added p=1."
     },
     "S22": {
-      "cycle": 934,
-      "gen": 2802,
+      "cycle": 962,
+      "gen": 2886,
       "best_brier": 0.22551,
       "stagnation": 0,
       "status": "OK",
-      "note": "pareto-fire115 DROPPED: CYCLE-STAG hard-resets c890+c915 confirmed in log"
+      "note": "hard resets c915+c940. No sub-0.22012 in pareto. vm-remove-stacking-s22 PENDING VM."
     }
   },
   "pol_islands": {
     "P1": {
-      "cycle": 22202,
-      "gen": 66605,
+      "cycle": 22472,
+      "gen": 67416,
       "best_brier": 0.2499,
       "stagnation": 0
     },
     "P2": {
-      "cycle": 17958,
-      "gen": 53873,
+      "cycle": 18120,
+      "gen": 54360,
       "best_brier": 0.25003,
       "stagnation": 0
     },
     "P4": {
-      "cycle": 28605,
-      "gen": 85815,
+      "cycle": 28878,
+      "gen": 86633,
       "best_brier": 0.24992,
       "stagnation": 0,
       "top5_best": 0.24904,
-      "note": "POL FLEET BEST LightGBM-108f-0.24904 stable"
+      "model": "lightgbm",
+      "note": "POL FLEET BEST LightGBM-108f-0.24904 stable. 6+ fires confirmed."
     },
     "P5": {
-      "cycle": 24273,
-      "gen": 72817,
+      "cycle": 24510,
+      "gen": 73530,
       "best_brier": 0.24993,
       "stagnation": 0
     },
     "P7": {
-      "cycle": 1147,
-      "gen": 3439,
+      "cycle": 1402,
+      "gen": 4206,
       "best_brier": 0.25004,
       "stagnation": 0,
-      "status": "RECOVERING"
+      "status": "RECOVERING_WELL",
+      "pareto_top": {"brier": 0.24967, "model": "lightgbm", "features": 128, "gen": 3735},
+      "note": "LightGBM 128f 0.24967 in Pareto (1st detection). Monitor fire-119 to confirm. Hard resets c1361+c1381."
     }
   },
   "trading_floors": {
     "nba_tf": {
       "status": "503_DOWN",
-      "days_down": 5
+      "days_down": 7,
+      "note": "vm-restart-nba-tf PENDING VM. Axelrod Mech B+C runtime verify blocked."
     },
     "pol_tf": {
       "status": "PARTIAL_RESPONSE",
-      "note": "Gradio $38916 collective visible, FastAPI uncertain"
+      "note": "Gradio $38,916+ collective visible. FastAPI uncertain. vm-restart-pol-tf PENDING VM. Axelrod runtime verify blocked."
     }
   },
   "sota_research": {
@@ -117,9 +137,13 @@
     "proposal": "data/research-proposals/sota-lstm-brier-fire116-2026-05-16.md"
   },
   "actions_this_fire": [
-    "S13_diversify_SENT (stag=18>15)",
-    "S22_pareto_fire115_DROPPED (CYCLE-STAG resets c890+c915)",
-    "S18_pareto_fire115_WATCHING_fire117",
-    "EVEN_research_proposal_written"
+    "S18_pareto_CONFIRMED_0.21885_new_inpop_best (vm-checkpoint-s18 added priority=1)",
+    "S13_stag_CLEARED (hard-reset-c404 resolved stag=18 from fire-116)",
+    "all_stag=0_no_diversify_needed",
+    "S15_ET_attractor_6th+_fire_0.21932_gen=4192 (VM-CHECKPOINT-EXTREME-URGENT)",
+    "P7_pareto_LightGBM_128f_0.24967_1st_detection (monitor fire-119)",
+    "ODD_cycle_WebSearch_skipped",
+    "STEP3_councils_DECOMMISSIONED_skipped",
+    "STEP4_dashboard_R8_done_skipped"
   ]
 }
