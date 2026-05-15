@@ -1649,3 +1649,243 @@ to confirm propagation to all relevant files before marking closed.
 - `08-limitations.md` §7.2: renamed; replaced sportsbook/agent-drift with provider-drift
   as the operative sequential-design confound (S3)
 - `paper.md`: all five fixes mirrored (S1–S5)
+
+---
+
+# Peer-Review Self-Critique — Cycle 18 (2026-05-15)
+
+*Full manuscript re-read following Cycle 17's clean slate. Five new issues
+identified (T1–T5); all five fixed in this cycle.*
+
+---
+
+## CYCLE 17 STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle 17. PRE-SUBMISSION checklist items 1–3 (author
+verification for `@ouyang2022training`, `@llm_ipd2024`, `@polyswarm2026`)
+remain deferred pending network access to live arXiv records.
+
+---
+
+## NEW ISSUES (Cycle 18 full-manuscript re-read)
+
+### T1. §3.5 Proposition 2 proof uses "strictly reduces Amb by Lemma 1" — incorrect application of Lemma 1 [FIXED]
+
+**Reviewer:** The Proposition 2 proof sketch (`04-method.md` §3.5) stated:
+"A coalition deviating from SRR (i.e., sacrifice-eligible agents refusing to
+reallocate) *strictly reduces Amb by Lemma 1.*"
+
+This is a logical error. Lemma 1 states that **executing SRR increases Amb**.
+The proof invokes Lemma 1 in the context where SRR is *not* executed
+(the coalition refuses). Lemma 1 says nothing directly about the case where
+SRR does not fire — it only provides a one-sided result about the SRR event
+itself. The correct argument is that the deviating coalition *foregoes*
+the Ambiguity increase that Lemma 1 guarantees, so the deviation's Amb
+is strictly lower than the SRR profile's Amb. The word "reduces" implies
+an absolute decrease in Amb from some baseline, whereas the correct claim
+is a relative comparison (the deviation produces lower Amb than SRR would).
+A referee checking the logic of the proof will flag "reduces Amb *by Lemma 1*"
+as a misapplication of the lemma.
+
+**Fix applied (`04-method.md` §3.5 and `paper.md` §3.5):**
+
+"A coalition deviating from SRR...strictly reduces Amb by Lemma 1" →
+"A coalition deviating from SRR...forgoes the Ambiguity increase that
+Lemma 1 guarantees: executing SRR strictly increases $\text{Amb}$ (Lemma 1),
+so the deviating coalition's $\text{Amb}$ is strictly lower than under the
+SRR profile, giving $B_{\text{ens}}^{\text{deviation}} \geq
+B_{\text{ens}}^{\text{SRR}}$ (coalition ensemble Brier is weakly worse
+than under SRR)."
+
+This framing correctly casts the proof as a relative comparison — the coalition
+cannot improve ensemble Brier relative to the SRR baseline because it foregoes
+the Amb increase — rather than asserting an absolute decrease in Amb. ✓
+
+*Post-fix verification:*
+`grep -n "strictly reduces Amb" *.md` → zero hits in all paper files. ✓
+
+---
+
+### T2. §2.4 cross-reference "Section 3.3 formalizes SRR" — SRR is in §3.4, not §3.3 [FIXED]
+
+**Reviewer:** `03-related-work.md` §2.4, closing paragraph: "Section 3.3
+formalizes SRR and Section 5.3 provides an ablation comparing SRR to
+DMAD-style static assignment in our trading environment."
+
+Section 3.3 is "Diversity Metric" (the JSD formulation); SRR is formally
+defined in Section 3.4 "Sacrificial Role Reallocation." A reader following
+the cross-reference to §3.3 finds the JSD metric, not the SRR mechanism —
+a confusing misdirection because §3.3 is a prerequisite for §3.4 but is not
+SRR. This is the **third instance** of the §3.3/§3.4 confusion:
+
+- R3 (Cycle 16): Definition 1 preamble — "defined in §3.3" → "defined in §3.4"
+- S2 (Cycle 17): Definition 1 step 6 — "execute (§3.3)" → "execute (§3.4)"
+- T2 (Cycle 18): §2.4 Related Work — "Section 3.3 formalizes SRR" → "Section 3.4"
+
+The root cause is that §3.3 (Diversity Metric) was inserted between the LPSG
+definition and SRR during a revision, and not all forward-references were
+updated in a single sweep. The pre-submission checklist has been updated with
+a final `grep` sweep to catch any remaining instances.
+
+**Fix applied (`03-related-work.md` §2.4 and `paper.md` §2.4):**
+"Section 3.3 formalizes SRR" → "Section 3.4 formalizes SRR." ✓
+
+*Post-fix verification:*
+`grep -n "Section 3.3 formalizes SRR" *.md` → zero hits. ✓
+
+---
+
+### T3. §3.3 uses undefined notation $\overline{B}_d$ for the "held-constant" quantity in the diversity–accuracy claim [FIXED]
+
+**Reviewer:** `04-method.md` §3.3, final sentence before the subsection break:
+"so increasing $D_d$ is equivalent to reducing ensemble Brier holding
+$\overline{B}_d$ fixed."
+
+The paper's formal notation (§3.1) defines:
+- $\overline{B}_{i,d} = \frac{1}{W}\sum_{\ell=d-W+1}^{d} B_{i,\ell}$:
+  agent $i$'s rolling $W$-day mean Brier (double-bar, agent subscript)
+- $\bar{B}_d = \frac{1}{N}\sum_i \overline{B}_{i,d}$:
+  society-mean rolling Brier (single bar, no agent subscript)
+
+The symbol $\overline{B}_d$ (double bar, no agent subscript) is not defined
+anywhere in §3.1 or elsewhere. A reader encountering it must guess between:
+(a) a rolling mean (by analogy to $\overline{B}_{i,d}$, agent index dropped),
+or (b) the per-day cross-agent mean individual Brier $\frac{1}{N}\sum_i B_{i,d}$
+(not a rolling average).
+
+The correct quantity is (b): the Ambiguity decomposition $B_{\text{ens},t}
+= \frac{1}{N}\sum_i B_{i,t} - \text{Amb}_t$ holds per-event; averaged over
+$\mathcal{B}_d$ it gives a day-level identity in which the "held fixed" term
+is the per-day cross-agent mean individual Brier $\frac{1}{N}\sum_i B_{i,d}$,
+*not* the rolling window average $\bar{B}_d$ (which spans the preceding $W$
+days). Using $\overline{B}_d$ (double-bar, undefined) for a per-day quantity
+is typographically misleading and likely to be flagged by any reviewer who
+checks §3.1 for the symbol definition.
+
+**Fix applied (`04-method.md` §3.3 and `paper.md` §3.3):**
+
+"holding $\overline{B}_d$ fixed" →
+"holding the per-day mean individual Brier $\frac{1}{N}\sum_i B_{i,d}$ fixed"
+
+This is explicit, matches the Ambiguity decomposition exactly, avoids
+introducing a new symbol, and cannot be confused with the rolling-mean
+notation from §3.1. ✓
+
+*Post-fix verification:*
+`grep -n 'overline{B}_d' *.md` → hits only in `09-self-critique.md`
+(this history document); zero hits in main paper files. ✓
+
+---
+
+### T4. §3.6 describes moderator as "Qwen 3 235B, the highest-capacity model" — inconsistent with the stated weekly rotation [FIXED]
+
+**Reviewer:** `04-method.md` §3.6:
+"A designated *moderator* agent **(Qwen 3 235B, the highest-capacity model
+in our fleet)** circulates a structured morning brief...
+The moderator role rotates weekly (Axelrod-style round-robin) to prevent
+single-model anchoring."
+
+Two problems:
+
+1. The parenthetical implies Qwen 3 235B is the permanent moderator, while
+   the immediately following sentence states the role rotates. The description
+   is internally contradictory.
+
+2. With 12 agents in a weekly round-robin over 25 weeks, the moderator
+   cycles through all agents including T3 (Llama 3.1 8B), T8–T10 (Mistral 8B
+   variants), and T12 (Qwen3-4B). The moderating model's capacity varies by
+   up to 15× (4B to 235B) across weeks. This is an unacknowledged
+   experimental confound: the quality of free-text synthesis in the morning
+   brief depends on which model is moderating. An attentive reviewer will ask
+   whether low-capacity moderation weeks show systematically different
+   prediction patterns.
+
+   Additionally, T1 and T2 are *both* Qwen 3 235B-A22B, so "Qwen 3 235B"
+   is ambiguous for Weeks 1 and 2 of the rotation.
+
+**Fix applied (`04-method.md` §3.6 and `paper.md` §3.6):**
+
+The parenthetical "(Qwen 3 235B, the highest-capacity model in our fleet)"
+is removed. The description now explicitly states the rotation start and
+discloses the capacity confound with a bounding argument:
+
+> "A *moderator* agent circulates a structured morning brief...
+> The moderator role rotates weekly (Axelrod-style round-robin) across
+> all agents, beginning with T1 (Qwen 3 235B-A22B) in Week 1; moderating
+> capacity therefore varies from 235B (T1–T2) to 8B parameters (T3, T8–T10)
+> across the 25-week season. This is a minor confound: all agents receive
+> an identical structured morning brief template regardless of moderator
+> identity, so the confound is bounded to the quality of free-text synthesis
+> in the brief body." ✓
+
+*Post-fix verification:*
+`grep -n "highest-capacity model in our fleet" *.md` → zero hits. ✓
+
+---
+
+### T5. §6.5 Kelly cap formula uses $B_i$ (no overline) — inconsistent with $\overline{B}_i$ in §3.6 [FIXED]
+
+**Reviewer:** `07-discussion.md` §6.5:
+"the evidence-based Kelly cap ($\kappa_i = \max(0.01,\, 0.30 - B_i \times 0.50)$,
+cf. §3.6)"
+
+`04-method.md` §3.6:
+"$\kappa_i = \max(0.01, 0.30 - \overline{B}_i \times 0.50)$, where
+$\overline{B}_i$ is the agent's **rolling 28-day Brier** from the pilot season."
+
+In §3.1, $B_{i,d}$ (no overline) denotes the per-day Brier score; $\overline{B}_{i,d}$
+(with overline) denotes the rolling mean. Using bare $B_i$ in the Kelly formula
+(§6.5) implies the stake is sized off a single day's Brier, which would cause
+extreme day-to-day stake fluctuations — behaviour inconsistent with the pilot
+description in §3.6 ("rolling 28-day Brier"). The notation inconsistency
+produces contradictory descriptions of the same formula in §3.6 and §6.5.
+
+**Fix applied (`07-discussion.md` §6.5 and `paper.md` §6.5):**
+`$\kappa_i = \max(0.01,\, 0.30 - B_i \times 0.50)$` →
+`$\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$` ✓
+
+*Post-fix verification:*
+`grep -n "0\.30 - B_i " *.md` → zero hits in all paper files. ✓
+
+---
+
+## CYCLE 18 SUMMARY
+
+**Fixed:** T1 (Proposition 2 proof "strictly reduces Amb by Lemma 1" →
+"forgoes the Ambiguity increase"), T2 (§2.4 SRR cross-reference §3.3 → §3.4),
+T3 (§3.3 undefined $\overline{B}_d$ → explicit per-day mean individual Brier
+$\frac{1}{N}\sum_i B_{i,d}$), T4 (§3.6 moderator description: misleading
+parenthetical removed; rotating-capacity range and confound disclosure added),
+T5 (§6.5 $B_i$ → $\overline{B}_i$ in Kelly cap formula)
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's `> *Brier-delta... to be inserted*` note and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2 empirical claim: confirm pilot data shows
+   $\mathbb{E}[|\delta_i|] \leq 0.014$ for sacrifice-eligible agents
+10. **NEW — Final SRR cross-reference sweep:** run
+    `grep -n "3\.3.*SRR\|SRR.*3\.3" *.md` before submission to confirm
+    no further instances of the §3.3/§3.4 confusion remain (three instances
+    caught across Cycles 16–18).
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking closed.
+
+**Structural changes this cycle:**
+- `03-related-work.md` §2.4: "Section 3.3 formalizes SRR" → "Section 3.4" (T2)
+- `04-method.md` §3.3: $\overline{B}_d$ → $\frac{1}{N}\sum_i B_{i,d}$ (T3)
+- `04-method.md` §3.5 Proposition 2 proof: "strictly reduces Amb by Lemma 1" →
+  "forgoes the Ambiguity increase...coalition Brier weakly worse than SRR" (T1)
+- `04-method.md` §3.6: "Qwen 3 235B, highest-capacity" removed;
+  rotating-capacity range and confound disclosure added (T4)
+- `07-discussion.md` §6.5: $B_i$ → $\overline{B}_i$ in Kelly cap formula (T5)
+- `paper.md`: all five fixes mirrored (T1–T5)

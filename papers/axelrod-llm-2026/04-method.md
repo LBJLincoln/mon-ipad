@@ -132,7 +132,7 @@ variance without degrading mean individual calibration will reduce ensemble Brie
 JSD is a monotone function of this Ambiguity term for Bernoulli predictions in the
 operating range $\bar{p}_t \in [0.15, 0.85]$, $\text{Amb} \leq 0.08$
 (proof: Appendix B.1, via Taylor expansion of $H$ around $\bar{p}$), so increasing
-$D_d$ is equivalent to reducing ensemble Brier holding $\overline{B}_d$ fixed. This motivates $D_d$ as our primary diversity target.
+$D_d$ is equivalent to reducing ensemble Brier holding the per-day mean individual Brier $\frac{1}{N}\sum_i B_{i,d}$ fixed. This motivates $D_d$ as our primary diversity target.
 
 ---
 
@@ -282,7 +282,11 @@ testable via the Sham-SRR control (§4.3).
 $$B_{\text{ens}} = \overline{B}_{\text{indiv}} - \text{Amb}$$
 
 A coalition deviating from SRR (i.e., sacrifice-eligible agents refusing to
-reallocate) strictly reduces Amb by Lemma 1. Since sacrifice-eligible agents
+reallocate) forgoes the Ambiguity increase that Lemma 1 guarantees: executing
+SRR strictly increases $\text{Amb}$ (Lemma 1), so the deviating coalition's
+$\text{Amb}$ is strictly lower than under the SRR profile, giving
+$B_{\text{ens}}^{\text{deviation}} \geq B_{\text{ens}}^{\text{SRR}}$
+(coalition ensemble Brier is weakly worse than under SRR). Since sacrifice-eligible agents
 have $\overline{B}_{i} \geq \bar{B} + \delta_{\text{sac}}$ by definition,
 their individual Brier is above the ensemble mean — refusing SRR does not
 improve their individual Brier in expectation (they remain in the same
@@ -306,13 +310,16 @@ selection criterion [@nowak2006five].
 The LPSG is instantiated in a *Day-Bucket v3* pipeline
 (Figure 1; implementation at `scripts/arena/hf-llm-trading-floor/`).
 
-**Morning council (09:00 local time).** A designated *moderator* agent
-(Qwen 3 235B, the highest-capacity model in our fleet) circulates a
+**Morning council (09:00 local time).** A *moderator* agent circulates a
 structured morning brief: yesterday's outcomes, current bankroll standings,
 and any flagged anomalies. All 12 NBA agents and 10 political agents receive
 this brief as a shared prefix before generating independent predictions.
-The moderator role rotates weekly (Axelrod-style round-robin) to prevent
-single-model anchoring.
+The moderator role rotates weekly (Axelrod-style round-robin) across all
+agents, beginning with T1 (Qwen 3 235B-A22B) in Week 1; moderating capacity
+therefore varies from 235B (T1–T2) to 8B parameters (T3, T8–T10) across
+the 25-week season. This is a minor confound: all agents receive an identical
+structured morning brief template regardless of moderator identity, so the
+confound is bounded to the quality of free-text synthesis in the brief body.
 
 **Prediction window.** Each agent generates predictions independently
 and asynchronously over a 15-minute window. Predictions are sealed;

@@ -167,7 +167,7 @@ an external designer; (2) it is *dynamic* — the strategy reassignment
 persists across trading days and can be reverted; (3) it is grounded
 in *real financial stakes* rather than benchmark correctness; and
 (4) it operates over a *continuous* action space (probability
-estimates) rather than a discrete answer choice. Section 3.3 formalizes
+estimates) rather than a discrete answer choice. Section 3.4 formalizes
 SRR and Section 5.3 provides an ablation comparing SRR to DMAD-style
 static assignment in our trading environment.
 

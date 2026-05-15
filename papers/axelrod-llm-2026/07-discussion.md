@@ -272,7 +272,7 @@ The Prediction Arena findings [@zhang2026arena] — LLM agents losing
 16–30.8% on Kalshi despite sophisticated reasoning — are consistent with
 a failure of calibration at the agent level that is not corrected by the
 market-feedback signal alone. In our system, the evidence-based Kelly cap
-($\kappa_i = \max(0.01,\, 0.30 - B_i \times 0.50)$, cf. §3.6) creates
+($\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$, cf. §3.6) creates
 an automatic damping: agents with high Brier receive smaller stakes
 irrespective of the confidence expressed in their predictions, preventing
 a poorly calibrated agent from dominating the ensemble.
