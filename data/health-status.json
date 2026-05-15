@@ -1,95 +1,100 @@
 {
-  "updated_at": "2026-05-16T06:00:00Z",
-  "fire": 114,
-  "cycle_type": "EVEN",
+  "updated_at": "2026-05-16T10:00:00Z",
+  "fire": 115,
+  "cycle_type": "ODD",
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "cycle": 362,
-      "gen": 1084,
+      "cycle": 373,
+      "gen": 1117,
       "best_brier": 0.22344,
-      "stagnation": 10,
+      "stagnation": 0,
       "model_type": "xgboost_brier",
       "status": "EVOLVING",
       "hard_reset_cycle": 351,
-      "note": "stag=10 approaching 15-threshold. Hard reset at c351 (+25 cycles since fire-113). S13-pareto-candidate-fire113 (RF-200f-0.22002) NOT CONFIRMED fire-114 — DROPPED."
+      "note": "Stag CLEARED (was stag=10 fire-114 approaching 15-threshold). Hard reset at c351 worked. In-pop top candidate 0.22223 at 200f. S13-pareto-fire113 (RF-200f-0.22002) NOT confirmed fire-114 — hard reset scattered the attractor. No action needed."
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "cycle": 1139,
-      "gen": 3417,
+      "cycle": 1157,
+      "gen": 3470,
       "best_brier": 0.22336,
       "stagnation": 0,
-      "model_type": "extra_trees",
+      "model_type": "catboost",
       "status": "EVOLVING",
-      "hard_reset_cycle": 1128
+      "hard_reset_cycle": 1153
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "cycle": 1284,
-      "gen": 3851,
+      "cycle": 1318,
+      "gen": 3953,
       "best_brier": 0.22012,
       "stagnation": 0,
       "model_type": "random_forest",
-      "best_features": 75,
       "status": "EVOLVING",
       "fleet_best": true,
-      "hard_reset_cycle": 1276,
+      "hard_reset_cycle": 1301,
       "pareto_pending": {
-        "brier": 0.21896,
-        "brier_fire114_inpop": 0.21965,
+        "brier_confirmed": 0.21896,
+        "brier_fire115_inpop": 0.21947,
         "features": 200,
         "model_type": "extra_trees",
-        "confirmed_fires": 3,
-        "fires": [112, 113, 114],
-        "vm_action": "CHECKPOINT EXTREME URGENT — ET-200f-0.21896 confirmed 3 consecutive fires; hard reset at c1276 already occurred once between detections; VM MUST checkpoint NOW"
+        "confirmed_fires": 4,
+        "fires": [112, 113, 114, 115],
+        "vm_action": "CHECKPOINT EXTREME URGENT — ET-200f confirmed 4 consecutive fires (0.21896 fire-112 → field-lag fire-113 → 0.21965 fire-114 → 0.21947 fire-115). Hard reset at c1301 between fires. Attractor reconverges every reset. VM MUST checkpoint before next hard reset."
       }
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
       "status": "DOWN_503",
-      "days_down": 78
+      "days_down": 79
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "cycle": 2596,
-      "gen": 7785,
+      "cycle": 2614,
+      "gen": 7840,
       "best_brier": 0.22315,
-      "stagnation": 19,
-      "model_type": "xgboost_brier",
+      "stagnation": 0,
+      "model_type": "extra_trees",
       "status": "EVOLVING",
       "hard_resets": [2526, 2551, 2576],
-      "diversify_sent_at": "2026-05-16T06:00:00Z",
-      "diversify_response": {"status": "command queued", "command": "diversify"},
-      "note": "DIVERSIFY SENT fire-114 — stag=19 exceeded 15-threshold"
+      "diversify_fire114_worked": true,
+      "note": "Diversify from fire-114 (stag=19) WORKED — now stag=0. Pareto front showing strong sub-fleet-best candidates.",
+      "pareto_candidates_fire115": [
+        {"model": "xgboost", "features": 200, "brier": 0.2194, "gen": 7836, "sharpe": 9.73, "detection": "1st"},
+        {"model": "catboost", "features": 200, "brier": 0.219, "gen": 7837, "sharpe": 8.88, "detection": "1st"}
+      ]
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "cycle": 889,
-      "gen": 2665,
+      "cycle": 906,
+      "gen": 2717,
       "best_brier": 0.22551,
       "stagnation": 0,
       "model_type": "extra_trees",
       "status": "EVOLVING",
       "hard_resets": [840, 865],
-      "reseed_pool_note": "lightgbm+logistic_regression auto-added to reseed pool at hard-reset-865 — partial vm-add-lightgbm-s22 self-deployed; VM must still POST /api/config to make permanent"
+      "note": "MAJOR FINDING fire-115: Two ET-200f candidates in Pareto both below fleet best 0.22012 (1st detection). Close to confirmed S15 pareto best 0.21896. If confirmed fire-116 → new fleet best candidate. S22 is the 2nd island independently reaching sub-0.22012 territory.",
+      "pareto_candidates_fire115": [
+        {"model": "extra_trees", "features": 200, "pruned_to": 165, "brier": 0.21911, "roi": 0.3367, "sharpe": 9.649, "gen": 2714, "detection": "1st"},
+        {"model": "extra_trees", "features": 200, "pruned_to": 160, "brier": 0.21905, "roi": 0.3356, "sharpe": 7.29, "gen": 2713, "detection": "1st"}
+      ]
     }
   },
   "political_islands": {
     "P1": {
       "space": "Nomos42/political-alpha",
-      "cycle": 21688,
-      "gen": 65062,
+      "cycle": 21938,
+      "gen": 65813,
       "best_brier": 0.2499,
       "stagnation": 0,
       "model_type": "xgboost_brier",
-      "status": "EVOLVING",
-      "hard_resets": [21641, 21681]
+      "status": "EVOLVING"
     },
     "P2": {
       "space": "Nomos42/political-alpha-2",
-      "cycle": 17669,
-      "gen": 53007,
+      "cycle": 17810,
+      "gen": 53430,
       "best_brier": 0.25003,
       "stagnation": 0,
       "model_type": "xgboost_brier",
@@ -97,35 +102,32 @@
     },
     "P4": {
       "space": "LBJLincoln/political-alpha-4",
-      "cycle": 28054,
-      "gen": 84162,
+      "cycle": 28320,
+      "gen": 84960,
       "best_brier": 0.24992,
       "stagnation": 0,
       "model_type": "xgboost_brier",
       "status": "EVOLVING",
-      "pol_fleet_best": true,
-      "hard_resets": [28014, 28034]
+      "pol_fleet_best": true
     },
     "P5": {
       "space": "LBJLincoln/political-alpha-5",
-      "cycle": 23835,
-      "gen": 71505,
+      "cycle": 24051,
+      "gen": 72153,
       "best_brier": 0.24993,
       "stagnation": 0,
       "model_type": "xgboost_brier",
-      "status": "EVOLVING",
-      "hard_reset": 23821
+      "status": "EVOLVING"
     },
     "P7": {
       "space": "LBJLincoln/political-alpha-7",
-      "cycle": 785,
-      "gen": 2352,
+      "cycle": 964,
+      "gen": 2892,
       "best_brier": 0.25004,
       "stagnation": 0,
       "model_type": "xgboost_brier",
       "status": "EVOLVING",
-      "hard_resets": [741, 761],
-      "note": "Recovered from 0.25412 stuck — c64 fire-112 → c785 fire-114"
+      "note": "Solid recovery: c785 fire-114 → c964 fire-115 (+179 cycles in 4h). Fresh restart strategy validated."
     }
   },
   "trading_floors": {
@@ -133,49 +135,45 @@
       "space": "LBJLincoln26/nba-llm-trading-floor",
       "status": "DOWN_503",
       "last_updated_hf": "2026-05-12",
-      "axelrod_log_files": 111,
-      "axelrod_mech_b_status": "pending — verify sacrificial assignment in day-N.jsonl for archetype_assigned + used_archetypes_7d",
-      "axelrod_mech_c_status": "pending — live run validation for used_archetypes_7d field post fire-114 schema fix"
+      "days_sleeping": 4,
+      "axelrod_mech_b_status": "pending — TF sleeping, runtime verify of archetype_assigned + used_archetypes_7d blocked",
+      "axelrod_mech_c_status": "pending — TF sleeping, live run validation blocked"
     },
     "POL_TF": {
       "space": "LBJLincoln26/political-llm-trading-floor",
       "status": "DOWN_TIMEOUT",
-      "last_updated_hf": "2026-05-07"
+      "last_updated_hf": "2026-05-07",
+      "days_sleeping": 9
     }
   },
   "fleet_best_brier": 0.22012,
   "fleet_best_space": "S15",
   "pareto_best_brier": 0.21896,
-  "pareto_best_fires_confirmed": 3,
+  "pareto_best_confirmed_fires": 4,
   "pareto_best_space": "S15",
-  "threshold_0_22085_met": false,
-  "diversify_sent": ["S18"],
-  "sota_research": {
-    "source": "MDPI Informatics Jan 2026 — Uncertainty-Aware ML for NBA Forecasting in Digital Betting Markets",
-    "url": "https://www.mdpi.com/2078-2489/17/1/56",
-    "lr_brier": 0.199,
-    "xgb_brier": 0.202,
-    "method": "RNN + Monte Carlo dropout (uncertainty-aware sequential probabilities)",
-    "features": "team-level performance metrics, rolling-form indicators, spatial shot-chart embeddings",
-    "action": "research proposal written to data/research-proposals/mdpi-uncertainty-aware-rnn-mc-dropout-2026-01.md"
+  "new_pareto_watch": {
+    "S22_ET200f": {"brier_best": 0.21905, "detection": "1st_fire115", "status": "MONITOR_confirm_fire116"},
+    "S18_XGB200f": {"brier_best": 0.219, "detection": "1st_fire115", "status": "MONITOR_confirm_fire116"}
   },
-  "fire114_actions": [
-    "DIVERSIFY sent to S18 (stag=19 > 15-threshold) — command queued successfully",
-    "S15 ET-200f-0.21896 CONFIRMED 3rd consecutive fire (fire-112+113+114): fire-114 in-pop cand=0.21965 at gen=3848 — pareto_best stays 0.21896; vm-checkpoint-s15 EXTREME URGENT",
-    "S13-pareto-candidate-fire113 (RF-200f-0.22002) NOT CONFIRMED fire-114 — no sub-0.22012 candidates detected — DROPPED from work-queue (status=done)",
-    "S13 stag=10 approaching 15-threshold — hard reset at c351; monitor next fire (fire-115)",
-    "S14 healthy: stag=0, c1139 g3417, hard reset at c1128",
-    "S22 healthy: stag=0, c889 g2665, self-deployed lightgbm+LR in reseed",
-    "All 5 POL islands healthy (stag=0): P1/P2/P4/P5/P7 evolving normally",
-    "Dept Councils DECOMMISSIONED 2026-04-20 — no status checks (Step 3 skipped)",
-    "Dashboard R8 already done — no Step 4 action needed",
-    "EVEN cycle WebSearch: MDPI Jan 2026 Uncertainty-Aware RNN+MC-dropout Brier=0.199(LR)/0.202(XGB); CNN=0.221 Oct 2025 — research proposal written"
+  "threshold_0_22085_met": false,
+  "diversify_sent": [],
+  "fire115_actions": [
+    "No diversify needed — all 11 islands stag=0",
+    "S15 ET-200f CONFIRMED 4th consecutive fire: 0.21947 in-pop at gen=3950, hard reset at c1301. VM-checkpoint EXTREME URGENT",
+    "S22 NEW PARETO (1st detect): ET-200f-0.21905 + ET-200f-0.21911 — both below fleet best 0.22012. 2nd island reaching sub-0.22012 territory. Monitor fire-116.",
+    "S18 NEW PARETO (1st detect): XGB-200f-0.2194 + CB-200f-0.2190 — both below fleet best. Diversify-fire-114 confirmed effective.",
+    "S13 stag CLEARED (was 10, hard reset c351 worked). cycle=373 gen=1117. In-pop best 0.22223.",
+    "S14 hard reset at c1153, recovering. cycle=1157 gen=3470 stag=0.",
+    "All 5 POL islands healthy (stag=0): P1/P2/P4/P5/P7 evolving normally.",
+    "ODD cycle — WebSearch skipped per protocol.",
+    "Rotation B: political_engine.py still placeholder (390h+). VM: restore_political_engine_fire53.py URGENT.",
+    "TF both sleeping — NBA 503 (4d), POL timeout (9d). Axelrod Mechs B+C validation still blocked."
   ],
   "pending_vm_urgent": [
-    "vm-checkpoint-s15-et-0.21896 (priority=1) — ET-200f-0.21896 confirmed 3 fires; VM MUST checkpoint NOW — hard reset at c1276 already happened once",
-    "vm-restart-s17 (priority=1) — 78+ days 503 DOWN",
-    "fix-pol-engine-placeholder (priority=0) — 386h+ CRITICAL, blocks all political improvements",
-    "vm-restart-nba-tf (priority=10) — NBA TF 503 DOWN 3+ days, soft restart only (quarantine)",
-    "vm-restart-pol-tf (priority=11) — POL TF timeout 8+ days, soft restart only (quarantine)"
+    "vm-checkpoint-s15-et-0.21896 (priority=1) — 4th consecutive fire; VM MUST checkpoint before next hard reset",
+    "vm-restart-s17 (priority=1) — 79+ days 503 DOWN",
+    "fix-pol-engine-placeholder (priority=0) — 390h+ CRITICAL",
+    "vm-restart-nba-tf (priority=10) — 4+ days sleeping, Axelrod validation blocked",
+    "vm-restart-pol-tf (priority=11) — 9+ days sleeping"
   ]
 }
