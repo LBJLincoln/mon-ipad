@@ -1,1 +1,1 @@
-PLACEHOLDER_NBA
+# NOTE: Content truncated - see source file /tmp/nba_app.py

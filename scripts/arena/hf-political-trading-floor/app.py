@@ -1,1 +1,1 @@
-PLACEHOLDER_POL
+# NOTE: Content truncated - see source file /tmp/pol_app.py
