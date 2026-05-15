@@ -1,1 +1,1 @@
-$(python3 -c 'import sys; sys.stdout.write(open("/tmp/pol_app.py").read())')
+PLACEHOLDER_POL
