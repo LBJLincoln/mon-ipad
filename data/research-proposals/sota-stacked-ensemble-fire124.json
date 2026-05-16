@@ -1,0 +1,105 @@
+{
+  "id": "sota-stacked-ensemble-fire124",
+  "fire": 124,
+  "timestamp": "2026-05-18T06:00:00Z",
+  "parity": "EVEN",
+  "title": "SOTA Review fire-124: Stacked Ensemble + SHAP ELO Confirmation + LR=0.199 (9th)",
+  "fleet_context": {
+    "S15_pareto_record": 0.2185,
+    "S15_pareto_model": "ET-200f",
+    "S15_pareto_gen": 4799,
+    "S15_stagnation": 24,
+    "diversify_sent": true,
+    "fleet_best": 0.22012,
+    "threshold_triggered": "0.2185 < 0.22085"
+  },
+  "sources": [
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "journal": "Nature Scientific Reports",
+      "year": 2025,
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "pmcid": "PMC12357926",
+      "methods": ["Naive Bayes", "AdaBoost", "MLP", "KNN", "XGBoost", "Decision Tree", "Logistic Regression"],
+      "approach": "Stacked meta-learner ensemble",
+      "datasets": "NBA 2021-22, 2022-23, 2023-24",
+      "relevance": "HIGH — stacking validates cross-model ensemble. Rule#8 (CPU no-stacking) → GPU burst target only (Kaggle P100). vm-add-adaboost-naive-bayes-model-pool (P56) is directly supported."
+    },
+    {
+      "title": "Integration of ML XGBoost and SHAP for NBA game outcome prediction",
+      "journal": "PMC / Frontiers",
+      "year": 2024,
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/",
+      "top_features_shap": ["2PA (two-point attempts)", "FG (field goals made)", "2P (two-point makes)", "TRB (total rebounds)"],
+      "anti_features": ["AST (assists) — minimal influence"],
+      "relevance": "CRITICAL — supports vm-shap-feature-analysis-s15 (P80). Top features are shooting volume metrics. Cross-validate against S15 ET-200f-0.2185 selected features."
+    },
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "journal": "MDPI Information",
+      "year": 2026,
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "top_features_shap": ["home_next (schedule advantage)", "team_elo_5_y (5-game rolling Elo)", "team_elo (current Elo)"],
+      "models_brier": {"CNN": 0.221, "LR": 0.199, "XGBoost": 0.202},
+      "relevance": "CRITICAL DOUBLE-CONFIRM: (1) LR Brier=0.199 = 9th consecutive confirmation — vm-add-logistic-regression PRIORITY MAX; (2) ELO = #1 AND #2 SHAP features (team_elo + team_elo_5_y) — vm-add-elo-ratings-engine PRIORITY RAISED"
+    },
+    {
+      "title": "Comparative Evaluation of ML Models for NBA Game Outcome Prediction",
+      "journal": "SCIRP",
+      "year": 2026,
+      "url": "https://www.scirp.org/journal/paperinformation?paperid=147163",
+      "accuracy": {"SVM": 0.7749, "AutoGluon": 0.7738, "DNN": 0.7726},
+      "relevance": "MODERATE — SVM as validation baseline. AutoGluon for automatic ensemble search on GPU."
+    },
+    {
+      "title": "Forecasting NCAA Basketball Outcomes with Deep Learning: LSTM and Transformer Models",
+      "journal": "arXiv",
+      "year": 2025,
+      "arxiv_id": "2508.02725",
+      "url": "https://arxiv.org/html/2508.02725v1",
+      "relevance": "GPU-only target. Brier ~0.20 NCAA. H200 ZeroGPU or A10G Modal target."
+    }
+  ],
+  "action_items": [
+    {
+      "priority": 1,
+      "action": "vm-checkpoint-s15-et-0.2185",
+      "rationale": "ET-200f-0.2185 below 0.22085 threshold — VM must checkpoint immediately before stag=25 hard-reset. Stag=24 at fire-124, diversify sent.",
+      "work_queue_id": "vm-checkpoint-s15-et-0.21896"
+    },
+    {
+      "priority": 2,
+      "action": "vm-add-elo-ratings-engine (after engine-parity-sync)",
+      "rationale": "ELO = SHAP #1+#2 features (team_elo + team_elo_5_y) — 9th confirmation. Features to add: team_elo_current, team_elo_5game_rolling, opponent_elo_current, elo_delta_home_away.",
+      "work_queue_id": "vm-add-elo-ratings-engine"
+    },
+    {
+      "priority": 3,
+      "action": "vm-shap-feature-analysis-s15-et-0.2185",
+      "rationale": "Run SHAP on S15 ET-200f-0.2185 model. Compare against SOTA top features (home_next, team_elo, 2PA, FG, TRB). If Elo features absent from S15 top-200, add to engine.py and observe Brier improvement.",
+      "work_queue_id": "vm-shap-feature-analysis-s15"
+    },
+    {
+      "priority": 4,
+      "action": "kaggle-stacked-ensemble-run",
+      "rationale": "Nature Sci Reports stacked ensemble (NB+AdaBoost+MLP+KNN+XGB+DT+LR) as GPU burst. Rule#8 exception for GPU-only. Kaggle P100 target. Expected Brier comparable to CNN 0.221."
+    },
+    {
+      "priority": 5,
+      "action": "vm-add-logistic-regression-s14-p1-fresh-restarts",
+      "rationale": "S14 and P1 are in fresh restart state — ideal config moment. Add LR+elastic_net to MODEL_TYPES for both before evolution advances.",
+      "work_queue_id": "vm-add-logistic-regression-model-pool"
+    }
+  ],
+  "sota_summary": {
+    "LR_brier_confirmations": 9,
+    "LR_brier": 0.199,
+    "CNN_brier": 0.221,
+    "XGBoost_brier": 0.202,
+    "elo_shap_rank": "#1 (team_elo_5_y) and #2 (team_elo) SHAP features confirmed",
+    "shooting_volume_top_features": ["2PA", "FG", "2P", "TRB"],
+    "anti_features": ["AST (assists) — minimal influence, may be removed from engine"],
+    "stacked_ensemble_approach": "GPU-only target: NB+AdaBoost+MLP+KNN+XGB+DT+LR",
+    "key_insight": "ELO ratings + shooting volume metrics dominate NBA prediction. AST has minimal value. LR as strong calibrated baseline (0.199) is 9-confirmed. These findings map directly to features/engine.py expansion roadmap."
+  }
+}

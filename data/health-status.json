@@ -1,190 +1,191 @@
 {
-  "fire": 123,
-  "parity": "ODD",
-  "timestamp": "2026-05-18T02:00:00Z",
+  "fire": 124,
+  "parity": "EVEN",
+  "timestamp": "2026-05-18T06:00:00Z",
   "nba_fleet_best": 0.22012,
-  "nba_pareto_best": 0.21914,
-  "nba_pareto_island": "S13",
-  "nba_pareto_note": "S13 ET-200f-0.21914 CONFIRMED 2nd fire (no reset since c454, 73 cycles stable, pareto_front=12); S15 ET-200f attractor 9th+ fire (champion 0.22012); S18 pareto_front=18 largest in fleet ET-200f-0.2191; S14 RF-200f-0.2189 DROPPED (hard-reset-c1253 evicted)",
+  "nba_pareto_best": 0.2185,
+  "nba_pareto_island": "S15",
+  "nba_pareto_note": "S15 ET-200f-0.2185 gen=4799 NEW NBA PARETO RECORD (<0.22085 threshold). DIVERSIFY SENT (stag=24). VM-CHECKPOINT-EXTREME-URGENT. S13 ET-0.21914 DROPPED (hard-reset c529). S14 FRESH RESTART (was c1273 g3819).",
   "pol_fleet_best": 0.24904,
   "pol_fleet_island": "P4",
   "pol_pareto_best": 0.24937,
   "pol_pareto_island": "P7",
-  "pol_pareto_note": "P7 LightGBM-116f-0.24937 in pareto (vm-checkpoint PENDING priority=2). P4 LightGBM-108f-0.2490 Sharpe=1.01 steady POL fleet best.",
-  "diversify_sent": [],
+  "pol_pareto_note": "P7 LightGBM-116f-0.24937 UNCERTAIN — hard-resets c3001/c3021 may have evicted. VM verify. P4 LightGBM-108f-0.2490 Sharpe=1.01 stable.",
+  "diversify_sent": ["S15"],
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "cycle": 527,
-      "generation": 1579,
+      "cycle": 552,
+      "generation": 1654,
       "best_brier": 0.22216,
       "stagnation": 0,
       "model": "xgboost_brier",
       "features": 47,
-      "pareto_front_size": 12,
-      "pareto_top_brier": 0.21914,
-      "pareto_top_model": "extra_trees",
-      "pareto_top_features": 200,
-      "note": "ET-200f-0.21914 PARETO CONFIRMED 2nd fire. No hard reset since c454 (73 cycles stable). vm-checkpoint-s13-ET ADDED priority=2.",
+      "pareto_front_size": 15,
+      "note": "Hard-reset c529 (after 25 stag) evicted ET-200f-0.21914 pareto candidate — DROPPED. Reseeded xgboost/lightgbm/LR. stag=0 recovering.",
       "status": "EVOLVING"
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "cycle": 1273,
-      "generation": 3819,
-      "best_brier": 0.22336,
+      "cycle": 0,
+      "generation": 0,
+      "best_brier": 1.0,
       "stagnation": 0,
-      "model": "extra_trees",
-      "features": 44,
-      "pareto_front_size": 12,
-      "note": "hard-reset-c1253 (17 cycles after RF-0.2189 detection at c1236) evicted pareto candidate. S14-pareto-RF monitor CLOSED-DROPPED.",
-      "status": "EVOLVING"
+      "model": "None",
+      "features": 0,
+      "note": "FRESH RESTART ALERT — was c1273 g3819 brier=0.22336. Space crashed between fire-123 (02:00Z) and fire-124 (06:00Z). Evolution not yet begun. S14-fresh-restart-fire124 ADDED work-queue priority=3.",
+      "status": "FRESH_RESTART_ALERT"
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "cycle": 1557,
-      "generation": 4669,
+      "cycle": 1600,
+      "generation": 4800,
       "best_brier": 0.22012,
-      "stagnation": 0,
+      "stagnation": 24,
       "model": "random_forest",
       "features": 75,
-      "pareto_front_size": 11,
-      "note": "FLEET BEST 0.22012. ET-200f attractor 9th+ CONSECUTIVE FIRE. VM-CHECKPOINT-EXTREME-URGENT.",
+      "pareto_top_brier": 0.2185,
+      "pareto_top_model": "extra_trees",
+      "pareto_top_features": 200,
+      "pareto_top_gen": 4799,
+      "note": "FLEET BEST 0.22012. stag=24 > 15 DIVERSIFY SENT (fire-124). ET-200f-0.2185 NEW NBA PARETO RECORD (Gen=4799, Island 4) — BELOW 0.22085 THRESHOLD. VM-CHECKPOINT-EXTREME-URGENT.",
       "status": "EVOLVING_FLEET_BEST"
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
       "status": "503_DOWN",
-      "down_days": 90,
+      "down_days": 94,
       "note": "VM RESTART REQUIRED"
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "cycle": 2755,
-      "generation": 8265,
+      "cycle": 2783,
+      "generation": 8347,
       "best_brier": 0.22315,
-      "stagnation": 4,
-      "model": "extra_trees",
+      "stagnation": 0,
+      "model": "xgboost_brier",
       "features": 49,
-      "pareto_front_size": 18,
-      "pareto_top_brier": 0.2191,
+      "pareto_front_size": 16,
+      "pareto_top_brier": 0.2198,
       "pareto_top_model": "extra_trees",
-      "note": "stag=4 OK (<15 threshold). hard-reset-c2726 occurred. Pareto front=18 LARGEST IN FLEET. vm-checkpoint-s18 URGENT priority=1.",
-      "status": "SAVING"
+      "note": "stag=0. Pareto front=16. Top: ET-200f 0.2198, ET-200f 0.2201, ET-200f 0.2205, XGB-200f 0.2203. Healthy. vm-checkpoint-s18 URGENT priority=1.",
+      "status": "EVOLVING"
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "cycle": 1052,
-      "generation": 3155,
+      "cycle": 1068,
+      "generation": 3203,
       "best_brier": 0.22551,
-      "stagnation": 0,
+      "stagnation": 2,
       "model": "extra_trees",
       "features": 44,
-      "pareto_front_size": 7,
-      "note": "Steady. vm-remove-stacking-s22 + vm-add-lightgbm PENDING VM.",
+      "note": "Hard-resets c1040+c1065. stag=2 ok. vm-remove-stacking + vm-add-lightgbm PENDING VM.",
       "status": "EVOLVING"
     }
   },
   "pol_islands": {
     "P1": {
       "space": "Nomos42/political-alpha",
-      "cycle": 473,
-      "generation": 1417,
+      "cycle": 632,
+      "generation": 1895,
       "best_brier": 0.24987,
       "stagnation": 0,
       "model": "xgboost_brier",
       "features": 85,
-      "note": "FRESH RESTART DETECTED — cycle 473 (was 23017). HF Space crashed or factory-rebooted. P1-fresh-restart-fire123 investigation item added. Evolution resuming normally.",
-      "status": "FRESH_RESTART_ALERT"
+      "note": "FRESH RESTART recovering (was c23017). Stag-warnings c582+c602 normal. brier=0.24987 close to pre-restart best. Progressing.",
+      "status": "FRESH_RESTART_RECOVERY"
     },
     "P2": {
       "space": "Nomos42/political-alpha-2",
-      "cycle": 18738,
-      "generation": 56214,
+      "cycle": 18863,
+      "generation": 56587,
       "best_brier": 0.25003,
       "stagnation": 0,
       "model": "xgboost_brier",
       "pareto_lgbm_brier": 0.249,
       "pareto_lgbm_features": 123,
-      "note": "Steady. LightGBM-123f-0.249 in pareto. hard-resets-18681+18701 survived.",
+      "note": "Steady. LightGBM-123f-0.249 in pareto (gen=47692). Hard-resets-18821+18841 survived.",
       "status": "EVOLVING"
     },
     "P4": {
       "space": "LBJLincoln/political-alpha-4",
-      "cycle": 29807,
-      "generation": 89419,
+      "cycle": 29935,
+      "generation": 89803,
       "best_brier": 0.24992,
       "stagnation": 0,
       "model": "xgboost_brier",
       "top_model": {
-        "brier": 0.249,
+        "brier": 0.24904,
         "model": "lightgbm",
         "features": 108,
         "sharpe": 1.0138
       },
       "alltime_best": 0.24904,
-      "note": "POL FLEET BEST stable. LightGBM-108f-0.2490 Sharpe=1.01 confirmed.",
+      "note": "POL FLEET BEST stable. Hard-resets-29894+29914 survived. LightGBM-108f Sharpe=1.01 confirmed.",
       "status": "EVOLVING_POL_FLEET_BEST"
     },
     "P5": {
       "space": "LBJLincoln/political-alpha-5",
-      "cycle": 25423,
-      "generation": 76268,
+      "cycle": 25635,
+      "generation": 76905,
       "best_brier": 0.24993,
       "stagnation": 0,
       "model": "xgboost_brier",
       "top_model": {
-        "brier": 0.249,
         "model": "lightgbm",
-        "features": 59,
-        "sharpe": 1.0138
+        "features": 102,
+        "composite_fitness": 0.45423
       },
-      "note": "LightGBM-59f-0.249 Sharpe=1.01 top model.",
+      "note": "LightGBM-102f composite_fitness=0.45423 top model. Hard-resets-25581+25601 survived.",
       "status": "EVOLVING"
     },
     "P7": {
       "space": "LBJLincoln/political-alpha-7",
-      "cycle": 2686,
-      "generation": 8058,
+      "cycle": 3041,
+      "generation": 9121,
       "best_brier": 0.25004,
       "stagnation": 0,
       "model": "xgboost_brier",
-      "pareto_front_size": 4,
-      "pareto_candidate": {
-        "brier": 0.24937,
-        "model": "lightgbm",
-        "features": 116,
-        "fire_count": "2nd fire confirmed (fire-121); monitored fire-123",
-        "action": "vm-checkpoint-p7-lgbm-0.24937 PENDING VM priority=2"
-      },
-      "status": "SAVING"
+      "pareto_front_size": 6,
+      "note": "Hard-resets c3001+c3021. LightGBM-116f-0.24937 pareto candidate UNCERTAIN — not confirmed in /api/status, may evicted by resets. VM: verify via /api/export.",
+      "status": "EVOLVING"
     }
   },
   "trading_floors": {
     "nba_tf": {
       "status": "503_DOWN",
-      "note": "App.py restored fire-122 (5986L). VM must push to HF Space then soft-restart (no factory_reboot). QUARANTINE active."
+      "note": "App.py restored fire-122 (5986L + fire-123 +2L). VM must push to HF Space then soft-restart (no factory_reboot). QUARANTINE active."
     },
     "pol_tf": {
       "status": "DOWN",
-      "note": "App.py restored fire-122 (3970L). VM must push to HF Space then soft-restart. Axelrod Mech B/C runtime verify unblocked once TF restarted."
+      "note": "App.py restored fire-122 (3970L + fire-123 +2L). VM must push to HF Space then soft-restart. QUARANTINE active."
     }
   },
   "cross_fleet_insight": {
-    "nba": "ET-200f confirmed as persistent attractor: S13 (2nd fire, 0.21914), S15 (9th+ fire), S18 (pareto_front=18, 0.2191). S14 RF dropped. 3/5 active NBA islands showing ET-200f below-best-brier pareto candidates.",
-    "pol": "LightGBM dominant P2/P4/P5/P7. P4 Sharpe=1.01 stable. P7 pareto active. P1 FRESH RESTART — lost 22544 cycles.",
-    "pattern": "NBA ET-200f attractor + POL LightGBM attractor both persistent across 123 fires. Model convergence is feature-space driven, not noise."
+    "nba": "ET-200f dominant attractor: S15 pareto 0.2185 NEW RECORD (gen=4799) — below 0.22085 threshold. S18 pareto 0.2198 (front=16). S13 pareto dropped (reset c529). S14 FRESH RESTART. 3/5 active islands ET-200f in pareto.",
+    "pol": "LightGBM dominant P2/P4/P5. P7 0.24937 uncertain. P1 recovering from fresh restart.",
+    "pattern": "NBA→ET-200f, POL→LightGBM. S15 ET-200f-0.2185 = new fire-124 pareto record. SHAP confirms ELO = top-2 features (9th confirm LR=0.199)."
+  },
+  "sota_research": {
+    "fire": 124,
+    "parity": "EVEN",
+    "findings": [
+      "Nat-Sci-Reports 2025: Stacked ensemble (NB+AdaBoost+MLP+KNN+XGB+DT+LR) — GPU burst Kaggle target",
+      "SHAP PMC 2025: Top features = 2PA, FG, 2P, TRB; AST minimal influence",
+      "MDPI Information 2026 (Uncertainty-Aware): ELO = SHAP #1+#2 features (home_next, team_elo_5_y, team_elo); LR Brier=0.199 9th confirmation; CNN Brier=0.221",
+      "SCIRP 2026: SVM 0.7749 acc > AutoGluon 0.7738 > DNN 0.7726"
+    ],
+    "proposal_written": "data/research-proposals/sota-stacked-ensemble-fire124.json"
   },
   "urgent_vm_actions": [
-    "PRIORITY 0: fix-pol-engine-placeholder (CRITICAL ~500h+ blocks Rotation B)",
-    "PRIORITY 1: vm-checkpoint-s15 (9th+ fire EXTREME URGENT)",
-    "PRIORITY 1: vm-checkpoint-s18 (pareto_front=18 largest in fleet)",
-    "PRIORITY 1: vm-restart-s17 (90+ days down)",
-    "PRIORITY 2: vm-checkpoint-s13-ET-0.21914 (CONFIRMED 2nd fire — NEW fire-123)",
-    "PRIORITY 2: vm-checkpoint-p7-lgbm-0.24937 (2nd fire confirmed)",
-    "PRIORITY 3: investigate P1 FRESH RESTART (fire-123 alert)",
-    "PRIORITY 10: vm-restart-nba-tf (push restored app.py then soft-restart)",
-    "PRIORITY 11: vm-restart-pol-tf (push restored app.py then soft-restart)"
-  ],
-  "sota_note": "ODD fire — no WebSearch. Next EVEN fire: update with 2026 NBA SOTA."
+    "PRIORITY 0: fix-pol-engine-placeholder (CRITICAL ~504h+ blocks Rotation B)",
+    "PRIORITY 1: vm-checkpoint-s15 (ET-200f-0.2185 NEW PARETO RECORD fire-124 — EXTREME URGENT before next hard-reset)",
+    "PRIORITY 1: vm-checkpoint-s18 (pareto_front=16, ET-200f-0.2198)",
+    "PRIORITY 1: vm-restart-s17 (94+ days down)",
+    "PRIORITY 3: S14 FRESH RESTART investigate (was c1273, now c0)",
+    "PRIORITY 3: P7 vm-checkpoint verify (0.24937 uncertain after hard-resets c3001/c3021)",
+    "PRIORITY 10: vm-restart-nba-tf (push restored app.py then soft-restart, no factory_reboot)",
+    "PRIORITY 11: vm-restart-pol-tf (push restored app.py then soft-restart)",
+    "PRIORITY 40: engine-parity-sync (blocks vm-add-elo-ratings-engine — ELO now SHAP #1+#2 confirmed)"
+  ]
 }
