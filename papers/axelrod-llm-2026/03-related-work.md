@@ -91,7 +91,7 @@ $$\text{Ensemble Loss} = \overline{\text{Individual Loss}} - \text{Ambiguity}$$
 where Ambiguity is a non-negative diversity term measuring how much
 agents disagree. This result implies that, holding individual agent
 skill constant, increasing prediction disagreement *always* reduces
-ensemble loss. Our Jensen–Shannon divergence diversity metric (§3.5)
+ensemble loss. Our Jensen–Shannon divergence diversity metric (§3.3)
 is designed to track exactly this quantity in continuous-action
 prediction markets.
 

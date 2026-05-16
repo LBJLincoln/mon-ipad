@@ -1889,3 +1889,240 @@ to confirm propagation to all relevant files before marking closed.
   rotating-capacity range and confound disclosure added (T4)
 - `07-discussion.md` §6.5: $B_i$ → $\overline{B}_i$ in Kelly cap formula (T5)
 - `paper.md`: all five fixes mirrored (T1–T5)
+
+---
+
+# Peer-Review Self-Critique — Cycle 19 (2026-05-16)
+
+*Full manuscript re-read following Cycle 18's clean slate. Five new issues
+identified (U1–U5); all five fixed in this cycle.*
+
+---
+
+## CYCLE 18 STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle 18. PRE-SUBMISSION checklist items 1–3 (author
+verification for `@ouyang2022training`, `@llm_ipd2024`, `@polyswarm2026`)
+remain deferred pending network access to live arXiv records.
+
+---
+
+## NEW ISSUES (Cycle 19 full-manuscript re-read)
+
+### U1. §2.2 JSD diversity metric cross-reference "(§3.5)" should be "(§3.3)" [FIXED]
+
+**Reviewer:** `03-related-work.md` §2.2, final sentence:
+"Our Jensen–Shannon divergence diversity metric **(§3.5)** is designed to
+track exactly this quantity in continuous-action prediction markets."
+
+The JSD diversity metric is formally defined in §3.3 ("Diversity Metric").
+§3.5 is "Theoretical Analysis" (Lemma 1, Proposition 2) — a reader following
+the cross-reference finds a proof, not a metric definition. The three prior
+§3.3/§3.4 confusion fixes (R3/S2/T2) all targeted SRR cross-references; the
+JSD diversity metric cross-reference was not covered by those sweeps.
+
+**Fix applied (`03-related-work.md` §2.2 and `paper.md` §2.2):**
+"(§3.5)" → "(§3.3)".
+
+*Post-fix verification:*
+`grep -n "diversity metric (§3" *.md` → "(§3.3)" in all relevant files. ✓
+
+---
+
+### U2. Definition 1 broadcast protocol does not mention the leaderboard broadcast required for SRR [FIXED]
+
+**Reviewer:** Definition 1 (§3.2) step 5 stated:
+
+> "**Broadcast.** $\Omega_d$ is broadcast as common knowledge. Peer predictions
+> $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast."
+
+However, §3.4 states: "Each agent executes the eligibility check using only
+its own Brier history and the population state $\mathbf{x}_d$ (which is
+available via the leaderboard broadcast)."
+
+The population state $\mathbf{x}_d$ — the empirical distribution of agents
+over archetypes — requires knowing each agent's current archetype label
+$r_j$. Definition 1's broadcast protocol conveys only $\Omega_d$ (yesterday's
+outcomes) and withholds peer predictions. It does not mention archetype labels
+or bankroll standings. A reader checking Definition 1 to understand what
+information agents have before SRR eligibility checking finds no step that
+delivers $\mathbf{x}_d$, making §3.4's "via the leaderboard broadcast"
+a reference to a broadcast event that has no grounding in the formal protocol.
+
+This is an information-architecture gap, not merely a cross-reference error:
+as formally defined, the LPSG does not give agents enough information to
+compute $\mathbf{x}_d$ and execute SRR. The fix is to add the leaderboard
+broadcast explicitly to Definition 1.
+
+*Note on Aumann compatibility:* Archetype labels and bankroll standings are
+*structural* population information, not *belief* information (predicted
+probabilities). Sharing them does not invoke the Aumann posterior-merging
+argument, which applies to shared probability estimates. The asymmetry
+"outcomes + structure broadcast; predictions withheld" is preserved. ✓
+
+**Fix applied (`04-method.md` §3.2 step 5 and `paper.md` §3.2 step 5):**
+
+> "5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current
+> leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$
+> and cumulative bankroll standings — is also broadcast as common knowledge,
+> enabling each agent to compute the population state $\mathbf{x}_d$ required
+> for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for
+> $j \neq i$ are NOT broadcast."
+
+*Post-fix verification:*
+`grep -n "leaderboard.*comprising" *.md` → both `04-method.md` and `paper.md`
+contain the updated step 5 text. ✓
+
+---
+
+### U3. §6.3 misuses $\hat{\epsilon}_{\text{arch}}$ for inter-agent correlation [FIXED]
+
+**Reviewer:** `07-discussion.md` §6.3:
+
+> "the five Mistral agents (T6–T10) are expected to show lower pairwise
+> distinguishability ($\hat{\epsilon}_{\text{arch}}$) than cross-provider pairs"
+
+$\hat{\epsilon}_{\text{arch}}$ is defined in §5.1 as the mean absolute prediction
+difference when the *same agent* is given *different archetype* prompts:
+
+$$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)}) =
+\frac{1}{T_{\text{pilot}}} \sum_{t} \left| p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}} \right|$$
+
+This is a *cross-archetype, same-agent* quantity (prompt sensitivity).
+§6.3 invokes it to describe a *same-archetype, cross-agent* quantity: how much
+agents from the same provider family converge in prediction regardless of their
+prompts (model-family correlation). These are structurally different comparisons:
+prompt sensitivity does not imply or bound inter-agent prediction correlation.
+An expert reader checking §5.1 will immediately notice the misapplication.
+
+**Fix applied (`07-discussion.md` §6.3 and `paper.md` §6.3):**
+"lower pairwise distinguishability ($\hat{\epsilon}_{\text{arch}}$) than
+cross-provider pairs" →
+"higher intra-provider prediction correlation (lower inter-agent
+Jensen–Shannon divergence) than cross-provider pairs"
+
+The parenthetical notation is removed; the quantity is described in plain
+English consistent with the JSD diversity metric in §3.3. ✓
+
+*Post-fix verification:*
+`grep -n "pairwise distinguishability" *.md` → remaining hits are all in
+§5.1/Appendix A where the term correctly describes cross-archetype Assumption A1
+verification. Zero hits in §6 or any discussion section. ✓
+
+---
+
+### U4. Introduction §1 "full agent prompt templates" overclaims Appendix A content [FIXED]
+
+**Reviewer:** `02-introduction.md` §1 "Paper Organization":
+
+> "Appendices provide **full agent prompt templates**, strategy archetype
+> taxonomy, and derivation of the diversity–accuracy bound."
+
+Appendix A (`appendix-a.md`) provides the 20-archetype taxonomy with
+*abbreviated prompt directives* — concise one-to-three-sentence descriptions
+of each archetype's reasoning disposition and staking tendency (Table A.1).
+It does not reproduce the complete system prompts, which combine the
+COLLECTIVE\_MISSION preamble (~300 words), the archetype module, and
+agent-specific history formatting. Those are in the code repository
+(`scripts/arena/hf-llm-trading-floor/`) but are not transcribed in the paper.
+
+The phrase "full agent prompt templates" implies that prompts sufficient for
+replication can be found in the appendix — they cannot. This is a
+reproducibility overclaim that any reviewer checking the appendix against
+the stated contents will identify immediately.
+
+**Fix applied (`02-introduction.md` and `paper.md` §1):**
+"Appendices provide full agent prompt templates, strategy archetype taxonomy,
+and derivation of the diversity–accuracy bound." →
+"Appendices provide the strategy archetype taxonomy with abbreviated prompt
+directives (full prompt modules are available in the code repository),
+and the derivation of the diversity–accuracy bound." ✓
+
+*Post-fix verification:*
+`grep -n "full agent prompt" *.md` → zero hits in all paper files. ✓
+
+---
+
+### U5. §3.5 Proposition 2 proof and §6.1 use $\bar{B}$, $\overline{B}_i$ without day subscript, inconsistent with §3.1 formal notation [FIXED]
+
+**Reviewer:** §3.1 defines day-indexed quantities:
+- $\overline{B}_{i,d}$: agent $i$'s rolling $W$-day mean Brier *at day $d$*
+- $\bar{B}_d$: society-mean rolling Brier *at day $d$*
+
+The sacrifice eligibility condition in §3.4 correctly uses this notation:
+"$\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}}$ for $W$ consecutive days."
+
+However, three passages in the proof sketch and discussion dropped the $d$ subscript:
+
+1. §3.5 Assumption A3: "expected Brier…is at least $\bar{B} + \delta_{\text{sac}}/2$"
+   → should be $\bar{B}_d + \delta_{\text{sac}}/2$
+2. §3.5 Proposition 2 proof: "agents have $\overline{B}_{i} \geq \bar{B} + \delta_{\text{sac}}$"
+   → should be $\overline{B}_{i,d} \geq \bar{B}_d + \delta_{\text{sac}}$
+3. §6.1: "remaining in the same archetype yields at most $\bar{B} + \delta_{\text{sac}}/2$"
+   → should be $\bar{B}_d + \delta_{\text{sac}}/2$
+
+Dropping the $d$ subscript implies these are time-invariant constants, whereas
+sacrifice eligibility is evaluated per day using a rolling window that changes
+continuously throughout the season. The undated $\bar{B}$ conflicts with the
+day-indexed $\bar{B}_d$ defined three pages earlier and would cause any reader
+checking notation against §3.1 to doubt whether the proof refers to the correct,
+dynamically computed quantity.
+
+*Scope note:* The Kelly cap formula in §3.6 intentionally uses $\overline{B}_i$
+without a day subscript — this refers to the *pilot-season* Brier used for
+static stake calibration, which is time-invariant by design. That usage is
+correct and is not affected by this fix.
+
+**Fix applied:**
+- `04-method.md` §3.5 A3 and Proposition 2 proof: subscripts added as above
+- `07-discussion.md` §6.1: subscript added
+- `paper.md`: all three locations mirrored ✓
+
+*Post-fix verification:*
+`grep -c '\\bar{B} + \\delta' 04-method.md 07-discussion.md paper.md`
+→ `0 / 0 / 0`. ✓
+
+---
+
+## CYCLE 19 SUMMARY
+
+**Fixed:** U1 (§2.2 JSD cross-reference §3.5 → §3.3), U2 (Definition 1 step 5:
+leaderboard broadcast added to supply $\mathbf{x}_d$ for SRR vacancy checking),
+U3 (§6.3 $\hat{\epsilon}_{\text{arch}}$ misuse → inter-agent JSD phrasing),
+U4 (Introduction "full agent prompt templates" → "strategy archetype taxonomy
+with abbreviated prompt directives"), U5 (§3.5 A3 + Prop 2 proof and §6.1:
+$\bar{B}$, $\overline{B}_i$ → $\bar{B}_d$, $\overline{B}_{i,d}$)
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (unchanged — data-blocked items only):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's `> *Brier-delta... to be inserted*` note and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+   for sacrifice-eligible agents (required for Case 2 of Ambiguity-path proof in §3.5)
+10. Final SRR cross-reference sweep: `grep -n "3\.3.*SRR\|SRR.*3\.3" *.md` before
+    submission to confirm no further §3.3/§3.4 confusion instances remain
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking closed.
+
+**Structural changes this cycle:**
+- `03-related-work.md` §2.2: "(§3.5)" → "(§3.3)" for JSD diversity metric (U1)
+- `04-method.md` §3.2 step 5: leaderboard broadcast (archetype labels + standings)
+  added to protocol; Aumann-compatibility note added (U2)
+- `04-method.md` §3.5 A3: $\bar{B}$ → $\bar{B}_d$ (U5)
+- `04-method.md` §3.5 Prop 2 proof: $\overline{B}_{i} \geq \bar{B}$ →
+  $\overline{B}_{i,d} \geq \bar{B}_d$ (U5)
+- `07-discussion.md` §6.3: $\hat{\epsilon}_{\text{arch}}$ parenthetical replaced
+  by "higher intra-provider prediction correlation (lower inter-agent JSD)" (U3)
+- `07-discussion.md` §6.1: $\bar{B}$ → $\bar{B}_d$ (U5)
+- `02-introduction.md` §1 Paper Organization: "full agent prompt templates" →
+  "strategy archetype taxonomy with abbreviated prompt directives" (U4)
+- `paper.md`: all seven edits mirrored (U1–U5)

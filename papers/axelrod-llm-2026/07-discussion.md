@@ -75,7 +75,7 @@ the reallocation — offers no individual improvement and imposes a diversity
 tax on the population. In the vocabulary of evolutionary dynamics, epistemic
 role sacrifice is *individually incentive-compatible under Assumption A3*
 for chronically below-performing agents: by A3, remaining in the same
-archetype yields at most $\bar{B} + \delta_{\text{sac}}/2$ in expected
+archetype yields at most $\bar{B}_d + \delta_{\text{sac}}/2$ in expected
 individual Brier, while accepting the reallocation offers a strictly
 positive probability of improvement through the archetype change and
 strictly improves group fitness through the Ambiguity increase from
@@ -177,8 +177,7 @@ prompt does not override the model's learned distributional tendencies.
 This implies a *within-provider correlation floor*: the maximum achievable
 Ambiguity within a cohort of same-provider agents is bounded by one minus
 their pairwise prediction correlation. In our system, the five Mistral agents
-(T6–T10) are expected to show lower pairwise distinguishability ($\hat{\epsilon}_{\text{arch}}$) than cross-provider pairs, and SRR events involving only
-Mistral-to-Mistral archetype reassignments may produce smaller JSD diversity
+(T6–T10) are expected to show higher intra-provider prediction correlation (lower inter-agent Jensen–Shannon divergence) than cross-provider pairs, and SRR events involving only Mistral-to-Mistral archetype reassignments may produce smaller JSD diversity
 gains than cross-provider reassignments.
 
 If this within-provider correlation floor is empirically confirmed, it

@@ -150,8 +150,9 @@ Section 2 surveys related work across evolutionary game theory, LLM multi-agent 
 and prediction market mechanisms. Section 3 formalizes the LPSG and SRR. Section 4
 describes the experimental setup. Section 5 presents results. Section 6 discusses
 connections to cooperation theory and implications for LLM ensemble design. Section 7
-covers limitations and ethics. Appendices provide full agent prompt templates, strategy
-archetype taxonomy, and derivation of the diversity–accuracy bound.
+covers limitations and ethics. Appendices provide the strategy archetype taxonomy
+with abbreviated prompt directives (full prompt modules are available in the code
+repository), and the derivation of the diversity–accuracy bound.
 
 ---
 
@@ -258,7 +259,7 @@ $$\text{Ensemble Loss} = \overline{\text{Individual Loss}} - \text{Ambiguity}$$
 where Ambiguity is a non-negative diversity term measuring how much
 agents disagree. This result implies that, holding individual agent
 skill constant, increasing prediction disagreement *always* reduces
-ensemble loss. Our Jensen–Shannon divergence diversity metric (§3.5)
+ensemble loss. Our Jensen–Shannon divergence diversity metric (§3.3)
 is designed to track exactly this quantity in continuous-action
 prediction markets.
 
@@ -571,7 +572,7 @@ The LPSG is a repeated game with the following structure.
 > 2. **Prediction.** Each agent $i$ independently samples $\mathbf{p}_{i,d} \sim \sigma_i(r_i, x_d, h_{i,d-1})$.
 > 3. **Resolution.** Outcomes $\omega_t$ are revealed as events $t \in \mathcal{B}_d$ resolve.
 > 4. **Score.** $B_{i,d}$ is computed for all $i$.
-> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.
+> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.
 > 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.4).
 
 This structure places the LPSG in the family of *Bayesian population games*
@@ -744,7 +745,7 @@ Averaging over events $t \in \mathcal{B}_d$ gives $\mathbb{E}[\Delta D_{d+1}] > 
 
 **Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,
 a sacrifice-eligible agent's expected Brier over the next $W_{\text{persist}}$ days
-is at least $\bar{B} + \delta_{\text{sac}}/2$ (partial persistence of the
+is at least $\bar{B}_d + \delta_{\text{sac}}/2$ (partial persistence of the
 performance deficit). This is a non-trivial claim — it excludes pure mean-reversion
 scenarios — and is empirically testable via the Sham-SRR condition (§4.3, §5.3).
 
@@ -766,7 +767,7 @@ SRR strictly increases $\text{Amb}$ (Lemma 1), so the deviating coalition's
 $\text{Amb}$ is strictly lower than under the SRR profile, giving
 $B_{\text{ens}}^{\text{deviation}} \geq B_{\text{ens}}^{\text{SRR}}$
 (coalition ensemble Brier is weakly worse than under SRR). Since sacrifice-eligible agents
-have $\overline{B}_{i} \geq \bar{B} + \delta_{\text{sac}}$ by definition,
+have $\overline{B}_{i,d} \geq \bar{B}_d + \delta_{\text{sac}}$ by definition,
 their individual Brier is above the ensemble mean — refusing SRR does not
 improve their individual Brier in expectation (they remain in the same
 strategy archetype that produced the deficit, and by Assumption A3,
@@ -1466,7 +1467,7 @@ the reallocation — offers no individual improvement and imposes a diversity
 tax on the population. In the vocabulary of evolutionary dynamics, epistemic
 role sacrifice is *individually incentive-compatible under Assumption A3*
 for chronically below-performing agents: by A3, remaining in the same
-archetype yields at most $\bar{B} + \delta_{\text{sac}}/2$ in expected
+archetype yields at most $\bar{B}_d + \delta_{\text{sac}}/2$ in expected
 individual Brier, while accepting the reallocation offers a strictly
 positive probability of improvement through the archetype change and
 strictly improves group fitness through the Ambiguity increase from
@@ -1568,8 +1569,7 @@ prompt does not override the model's learned distributional tendencies.
 This implies a *within-provider correlation floor*: the maximum achievable
 Ambiguity within a cohort of same-provider agents is bounded by one minus
 their pairwise prediction correlation. In our system, the five Mistral agents
-(T6–T10) are expected to show lower pairwise distinguishability ($\hat{\epsilon}_{\text{arch}}$) than cross-provider pairs, and SRR events involving only
-Mistral-to-Mistral archetype reassignments may produce smaller JSD diversity
+(T6–T10) are expected to show higher intra-provider prediction correlation (lower inter-agent Jensen–Shannon divergence) than cross-provider pairs, and SRR events involving only Mistral-to-Mistral archetype reassignments may produce smaller JSD diversity
 gains than cross-provider reassignments.
 
 If this within-provider correlation floor is empirically confirmed, it

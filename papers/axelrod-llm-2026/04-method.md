@@ -85,7 +85,7 @@ The LPSG is a repeated game with the following structure.
 > 2. **Prediction.** Each agent $i$ independently samples $\mathbf{p}_{i,d} \sim \sigma_i(r_i, x_d, h_{i,d-1})$.
 > 3. **Resolution.** Outcomes $\omega_t$ are revealed as events $t \in \mathcal{B}_d$ resolve.
 > 4. **Score.** $B_{i,d}$ is computed for all $i$.
-> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.
+> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.
 > 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.4).
 
 This structure places the LPSG in the family of *Bayesian population games*
@@ -265,7 +265,7 @@ Averaging over events $t \in \mathcal{B}_d$ gives $\mathbb{E}[\Delta D_{d+1}] > 
 
 **Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,
 a sacrifice-eligible agent's expected Brier over the next $W_{\text{persist}}$ days
-is at least $\bar{B} + \delta_{\text{sac}}/2$ (partial persistence of the performance
+is at least $\bar{B}_d + \delta_{\text{sac}}/2$ (partial persistence of the performance
 deficit). This assumption excludes pure mean-reversion scenarios and is empirically
 testable via the Sham-SRR control (§4.3).
 
@@ -287,7 +287,7 @@ SRR strictly increases $\text{Amb}$ (Lemma 1), so the deviating coalition's
 $\text{Amb}$ is strictly lower than under the SRR profile, giving
 $B_{\text{ens}}^{\text{deviation}} \geq B_{\text{ens}}^{\text{SRR}}$
 (coalition ensemble Brier is weakly worse than under SRR). Since sacrifice-eligible agents
-have $\overline{B}_{i} \geq \bar{B} + \delta_{\text{sac}}$ by definition,
+have $\overline{B}_{i,d} \geq \bar{B}_d + \delta_{\text{sac}}$ by definition,
 their individual Brier is above the ensemble mean — refusing SRR does not
 improve their individual Brier in expectation (they remain in the same
 strategy archetype that produced the deficit, and by Assumption A3,
