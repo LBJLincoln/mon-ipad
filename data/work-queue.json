@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-17T00:00:00Z",
+  "updated_at": "2026-05-17T12:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -10,18 +10,18 @@
       "owner": "local-vm",
       "subject": "CRITICAL: Restore NBA+POL app.py after fire-119 placeholder push (20230a05) — run scripts/ops/restore_tf_fire119.py",
       "detected_at": "2026-05-17T06:00:00Z",
-      "updated_at": "2026-05-17T06:00:00Z",
-      "cloud_trigger_note": "fire-119: Bad commit 20230a05 replaced NBA+POL app.py with placeholder strings. VM must run: python3 scripts/ops/restore_tf_fire119.py from mon-ipad root. Script restores from parent commit 20230a05^ and applies 1-line edge_rationale patch to both files. py_compile verified. do_not_push_hf_space_yet. After restore, vm-restart-nba-tf (p=10) and vm-restart-pol-tf (p=11) can proceed.",
+      "updated_at": "2026-05-17T12:00:00Z",
+      "cloud_trigger_note": "fire-119: Bad commit 20230a05 replaced NBA+POL app.py with placeholder strings. VM must run: python3 scripts/ops/restore_tf_fire119.py from mon-ipad root. Script restores from parent commit 20230a05^ and applies 1-line edge_rationale patch to both files. py_compile verified. do_not_push_hf_space_yet. After restore, vm-restart-nba-tf (p=10) and vm-restart-pol-tf (p=11) can proceed. | fire-120: STILL PENDING (2nd fire). NBA app.py SHA 4c5b1249 = PLACEHOLDER_NBA_REPLACED_BELOW. POL app.py SHA 7675cf9c = PLACEHOLDER_POL_REPLACED_BELOW. VM has NOT run restore_tf_fire119.py. This blocks all TF Axelrod Mech B+C runtime verification. ESCALATE: every 6h this remains unrun is another fire of lost runtime verify opportunity.",
       "do_not_push": false
     },
     {
-      "id": "cloud-brain-fire118-2026-05-17T00h",
-      "priority": 157,
+      "id": "cloud-trigger-axelrod-fire-120-2026-05-17",
+      "priority": 159,
       "status": "done",
-      "completed_at": "2026-05-17T00:00:00Z",
-      "completed_by": "cloud-brain-fire-118",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-118 ODD: All 11 islands polled. S13 c411 g1230 brier=0.22216 stag=0 hard-reset-c404 (diversify-c394 WORKED). S14 c1189 g3565 brier=0.22336 stag=0. S15 c1399 g4197 brier=0.22012★ stag=0 hard-reset-c1376 ET-200f-0.21932 6th+ fire VM-CHECKPOINT-EXTREME-URGENT. S17 503 DOWN 82+d. S18 c2652 g7956 brier=0.22315 stag=0 PARETO-CONFIRMED: 0.21885+0.21915+0.21962 (200f gen=7951-7952) — 0.21885 NEW in-pop best below S15-0.21896; vm-checkpoint-s18 added p=1. S22 c962 g2886 brier=0.22551 stag=0. All stag=0 no diversify. P1 c22472 g67416. P2 c18120 g54360. P4 c28878 g86633 model=lightgbm. P5 c24510 g73530. P7 c1402 g4206 brier=0.25004 stag=0 PARETO LightGBM-128f-0.24967 1st detection. No POL diversify needed. NBA TF 503 7d. POL TF partial. ODD: WebSearch skipped."
+      "completed_at": "2026-05-17T12:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-120",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-120: BLOCKED — NBA+POL app.py still PLACEHOLDER (vm-restore-tf-fire119 NOT run, 2nd fire). No code changes possible. TFs still down: NBA 503 / POL timeout. Mech B/C runtime verify remains blocked. vm-restore-tf-fire119 re-escalated (priority=2 CRITICAL). Confirmed SHAs: NBA 4c5b1249 / POL 7675cf9c. Work-queue updated."
     },
     {
       "id": "cloud-trigger-axelrod-fire-119-2026-05-17",
@@ -40,6 +40,15 @@
       "completed_by": "cloud-trigger-axelrod-fire-117",
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "fire-117: Axelrod-2026 Mech A/B/C code-level audit — NBA (5987L) + POL (3971L) both py_compile PASS, fully spec-compliant and at parity. Mech A: build_common_knowledge_block ✓ (leaderboard GF×, 7dΔ, consensus, DMAD, peer stances, archetype perf, D+1 tiers). Mech B: assign_sacrificial_archetypes society-wide 7d dedup ✓, 20 archetypes each. Mech C: write_axelrod_log schema complete (25 fields incl. KL divergence, used_archetypes_7d). Runtime verify blocked (NBA 503 6d+ / POL timeout 10d+). work-queue mech-b + mech-c notes updated. do_not_push_hf_space_yet."
+    },
+    {
+      "id": "cloud-brain-fire118-2026-05-17T00h",
+      "priority": 157,
+      "status": "done",
+      "completed_at": "2026-05-17T00:00:00Z",
+      "completed_by": "cloud-brain-fire-118",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-118 ODD: All 11 islands polled. S13 c411 g1230 brier=0.22216 stag=0 hard-reset-c404 (diversify-c394 WORKED). S14 c1189 g3565 brier=0.22336 stag=0. S15 c1399 g4197 brier=0.22012★ stag=0 hard-reset-c1376 ET-200f-0.21932 6th+ fire VM-CHECKPOINT-EXTREME-URGENT. S17 503 DOWN 82+d. S18 c2652 g7956 brier=0.22315 stag=0 PARETO-CONFIRMED: 0.21885+0.21915+0.21962 (200f gen=7951-7952) — 0.21885 NEW in-pop best below S15-0.21896; vm-checkpoint-s18 added p=1. S22 c962 g2886 brier=0.22551 stag=0. All stag=0 no diversify. P1 c22472 g67416. P2 c18120 g54360. P4 c28878 g86633 model=lightgbm. P5 c24510 g73530. P7 c1402 g4206 brier=0.25004 stag=0 PARETO LightGBM-128f-0.24967 1st detection. No POL diversify needed. NBA TF 503 7d. POL TF partial. ODD: WebSearch skipped."
     },
     {
       "id": "cloud-brain-fire116-2026-05-16T14h",
@@ -84,7 +93,7 @@
       "completed_at": "2026-05-15T18:00:00Z",
       "completed_by": "cloud-brain-fire-112",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-112 EVEN: All 11 islands polled. S13 stag=0 CLEARED gen=881 c294. S14 hard-reset-1053 gen=3179. S15 HARD-RESET-1151 ET-200f-0.21896 CONFIRMED 2nd fire (was RF-0.21951 fire-111) VM-CHECKPOINT-URGENT. S17 503 DOWN 76+d. S18 gen=7547 c2516 stag=0. S22 gen=2517 c839 stag=0. P1 stag=0 CLEARED gen=62633 c20878. P2 gen=51342. P4 gen=81806 LightGBM-log-0.2490 hard-resets-27214+27234. P5 gen=69501 hard-resets-23121+23141. P7 FRESH-RESTART cycle=64 gen=192 best=0.25004 (was stuck 0.25412x9fires). All stag=0 no diversify needed. EVEN cycle: SOTA RNN-MC-dropout Brier~0.20 MDPI-Info-Jan2026 research proposal written. s15-pareto-candidate-fire111 CONFIRMED → vm-checkpoint-s15-et-0.21896 ADDED priority=1."
+      "subject": "fire-112 EVEN: All 11 islands polled. S13 stag=0 CLEARED gen=881 c294. S14 hard-reset-1053 gen=3179. S15 HARD-RESET-1151 ET-200f-0.21896 CONFIRMED 2nd fire (was RF-0.21951 fire-111) VM-CHECKPOINT-URGENT. S17 503 DOWN. S18 gen=7547 c2516 stag=0. S22 gen=2517 c839 stag=0. P1 stag=0 CLEARED gen=62633 c20878. P2 gen=51342. P4 gen=81806 LightGBM-log-0.2490 hard-resets-27214+27234. P5 gen=69501 hard-resets-23121+23141. P7 FRESH-RESTART cycle=64 gen=192 best=0.25004 (was stuck 0.25412x9fires). All stag=0 no diversify needed. EVEN cycle: SOTA RNN-MC-dropout Brier~0.20 MDPI-Info-Jan2026 research proposal written. s15-pareto-candidate-fire111 CONFIRMED → vm-checkpoint-s15-et-0.21896 ADDED priority=1."
     },
     {
       "id": "tf-axelrod-mech-b",
@@ -93,8 +102,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech B — sacrificial role reallocation: runtime verify used_archetypes 7-day lookback assigns NEVER-USED archetype to bottom-3; confirm USED_ARCHETYPES tracked in axelrod log schema.",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-17T06:00:00Z",
-      "cloud_trigger_note": "fire-117: Code-level audit complete. NBA L3754 assign_sacrificial_archetypes + POL L2413 — parity confirmed. Society-wide 7-day exclusion set built from _society_archetypes_by_day union: available=[a for a in AXELROD_ARCHETYPES if a not in society_used and a not in today_used]. Bottom-3 ranked by compute_trailing_delta (7d absolute delta, spec-compliant). Fallback on pool exhaustion confirmed (double fallback). Daily recording to _society_archetypes_by_day[day_date] ✓. assign_challenge_tiers uses bankroll for top-3 cut (intentional — overall performance, not recency). Both apps py_compile PASS (NBA 5987L / POL 3971L). | fire-119: Re-confirmed. assign_sacrificial_archetypes society-wide 7d exclusion ✓, assign_challenge_tiers mid-tier ✓, build_challenge_block ✓, build_sacrificial_system_suffix ✓. py_compile PASS (NBA 5988L / POL 3972L). Runtime verify (live bottom-3 assignment to NEVER-USED arch) still blocked. NBA TF 503 7d+ / POL TF timeout 11d+. VM: soft-restart both (quarantine active, no DAY-0 RESET)."
+      "updated_at": "2026-05-17T12:00:00Z",
+      "cloud_trigger_note": "fire-117: Code-level audit complete. NBA L3754 assign_sacrificial_archetypes + POL L2413 — parity confirmed. Society-wide 7-day exclusion set built from _society_archetypes_by_day union: available=[a for a in AXELROD_ARCHETYPES if a not in society_used and a not in today_used]. Bottom-3 ranked by compute_trailing_delta (7d absolute delta, spec-compliant). Fallback on pool exhaustion confirmed (double fallback). Daily recording to _society_archetypes_by_day[day_date] ✓. assign_challenge_tiers uses bankroll for top-3 cut (intentional — overall performance, not recency). Both apps py_compile PASS (NBA 5987L / POL 3971L). | fire-119: Re-confirmed. assign_sacrificial_archetypes society-wide 7d exclusion ✓, assign_challenge_tiers mid-tier ✓, build_challenge_block ✓, build_sacrificial_system_suffix ✓. py_compile PASS (NBA 5988L / POL 3972L). Runtime verify (live bottom-3 assignment to NEVER-USED arch) still blocked. NBA TF 503 7d+ / POL TF timeout 11d+. VM: soft-restart both (quarantine active, no DAY-0 RESET). | fire-120: STILL BLOCKED. app.py files are PLACEHOLDER (vm-restore-tf-fire119 not run). Cannot runtime verify until: (1) VM runs restore_tf_fire119.py, (2) VM soft-restarts both TFs."
     },
     {
       "id": "tf-axelrod-mech-c",
@@ -103,8 +112,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech C — post-mortem log: verify HF Hub push to data/arena/axelrod-log/ succeeds in live run and log schema is complete (peer_consensus_distance KL divergence, dmad_prefix_type, tier, trailing_7d_delta).",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-17T06:00:00Z",
-      "cloud_trigger_note": "fire-117: Schema audit complete. Both NBA (L3905-L4005) and POL (L2563-L2661) write_axelrod_log contain all 25 required fields. HF Hub push: NBA L3994 / POL L2650 → data/arena/axelrod-log/day-NNN.jsonl. Runtime verify (live HF push) blocked until TF wakes. | fire-118: Still blocked. | fire-119: Schema now 26 fields after adding edge_rationale to decisions_summary (spec: {trader_id, game/event, pick, stake, edge_rationale}). NBA: (d.get('rationale') or d.get('edge_rationale', ''))[:100]. POL: (d.get('rationale') or d.get('thesis') or d.get('edge_rationale', ''))[:100]. py_compile PASS. Runtime verify (live HF push) still blocked: NBA TF 503 7d+ / POL TF timeout 11d+."
+      "updated_at": "2026-05-17T12:00:00Z",
+      "cloud_trigger_note": "fire-117: Schema audit complete. Both NBA (L3905-L4005) and POL (L2563-L2661) write_axelrod_log contain all 25 required fields. HF Hub push: NBA L3994 / POL L2650 → data/arena/axelrod-log/day-NNN.jsonl. Runtime verify (live HF push) blocked until TF wakes. | fire-118: Still blocked. | fire-119: Schema now 26 fields after adding edge_rationale to decisions_summary (spec: {trader_id, game/event, pick, stake, edge_rationale}). NBA: (d.get('rationale') or d.get('edge_rationale', ''))[:100]. POL: (d.get('rationale') or d.get('thesis') or d.get('edge_rationale', ''))[:100]. py_compile PASS. Runtime verify (live HF push) still blocked: NBA TF 503 7d+ / POL TF timeout 11d+. | fire-120: STILL BLOCKED. app.py files are PLACEHOLDER (vm-restore-tf-fire119 not run). Cannot runtime verify until VM restores files and restarts TFs."
     },
     {
       "id": "vm-fix-axelrod-log-schema",
