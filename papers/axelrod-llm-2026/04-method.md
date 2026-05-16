@@ -34,7 +34,7 @@ Crucially, $x_d$ does not include peer predictions from day $d$ — only the out
 $\Omega_{d-1} = \{\omega_t : t \in \mathcal{B}_{d-1}\}$ of the previous day's events.
 This asymmetry — outcome broadcast without prediction broadcast — is the formal mechanism
 that prevents common knowledge of beliefs from collapsing all agent posteriors
-(cf. Aumann, 1976 [@aumann1976agreeing]; see §3.3 for elaboration).
+(cf. Aumann, 1976 [@aumann1976agreeing]; see §6.2 for elaboration).
 
 **Actions.** On day $d$, each agent $i$ reports a probability estimate
 $p_{i,t} \in [0, 1]$ for each event $t \in \mathcal{B}_d$.
@@ -183,8 +183,10 @@ partially defeating the diversity objective.
 
 **Prompt mechanics.** The archetype taxonomy $\mathcal{R}$ is operationalised
 as a library of 20 system-prompt modules (Appendix A). When SRR fires,
-the agent's system prompt is atomically replaced by composing the base
-COLLECTIVE\_MISSION preamble with the new archetype module.
+the agent's system prompt is atomically replaced by composing the shared
+mission preamble — a ~300-word statement establishing the collective \$1M
+target, mandatory deployment floor, and collaborative protocols,
+common to all agents — with the new archetype module.
 The agent's prediction history and bankroll state are preserved across the transition —
 only the reasoning disposition changes, not the agent's memory.
 

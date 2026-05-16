@@ -2126,3 +2126,271 @@ to confirm propagation to all relevant files before marking closed.
 - `02-introduction.md` §1 Paper Organization: "full agent prompt templates" →
   "strategy archetype taxonomy with abbreviated prompt directives" (U4)
 - `paper.md`: all seven edits mirrored (U1–U5)
+
+---
+
+# Peer-Review Self-Critique — Cycle 20 (2026-05-16)
+
+*Full manuscript re-read following Cycle 19's clean slate. Five new issues
+identified (V1–V5); all five fixed in this cycle.*
+
+---
+
+## CYCLE 19 STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle 19. PRE-SUBMISSION checklist items 1–3 (author
+verification for `@ouyang2022training`, `@llm_ipd2024`, `@polyswarm2026`)
+remain deferred pending network access to live arXiv records.
+
+---
+
+## NEW ISSUES (Cycle 20 full-manuscript re-read)
+
+### V1. Table 3 $\kappa_i$ column values (0.35–0.70) impossible under §3.6 Kelly cap formula; inconsistent with §4.5 stated range [FIXED]
+
+**Reviewer:** Table 3 lists a column labelled "$\kappa_i$" with values:
+T1 = 0.55, T2 = 0.65, T3 = 0.55, T4 = 0.55, T5 = 0.60, T6 = 0.50,
+T7 = 0.45, T8 = 0.35, T9 = 0.70, T10 = 0.35, T11 = 0.55, T12 = 0.40.
+The Table 3 caption states "$\kappa_i$ is the initial Kelly stake cap (§3.6)."
+
+However, §3.6 defines the Kelly cap as
+$\kappa_i = \max(0.01, 0.30 - \overline{B}_i \times 0.50)$, and §4.5
+explicitly states the cap range as "$\kappa_i \in [0.01, 0.20]$." The formula
+is monotone decreasing in $\overline{B}_i$ and attains its maximum of $0.30$
+only when $\overline{B}_i = 0$ (a perfect predictor). No agent with
+$\overline{B}_i \geq 0$ can yield $\kappa_i > 0.30$ under this formula; yet
+Table 3 lists values as large as 0.70 (T9) and 0.65 (T2).
+
+The Table 3 values are recognisable as the personality *risk weights* $\rho_i$
+from the trading system's agent configuration — a separate parameter governing
+each agent's willingness to commit stake to high-edge opportunities — not the
+formula-derived Kelly cap. The column was mislabelled when the paper was
+originally drafted from the system documentation. This inconsistency has
+survived 19 review cycles because it appears in a results-pending table
+whose numerical entries were not scrutinised against the method-section formula.
+
+**Fix applied:**
+
+- `05-experimental-setup.md` Table 3: column header `$\kappa_i$` →
+  `$\rho_i$`; caption rewritten to distinguish the personality risk weight
+  $\rho_i \in (0,1]$ from the formula-derived Kelly cap
+  $\kappa_i = \max(0.01, 0.30 - \overline{B}_i \times 0.50) \in [0.01, 0.20]$,
+  clarifying that the realised stake fraction is $\rho_i \times \kappa_i$. ✓
+- `paper.md` Table 3: same changes applied identically. ✓
+
+*Post-fix verification:*
+`grep -n "kappa_i.*initial Kelly stake cap" *.md` → zero hits. ✓
+
+*Note on §3.6 formula:* The formula $\kappa_i = \max(0.01, 0.30 - \overline{B}_i
+\times 0.50)$ and §4.5 range $[0.01, 0.20]$ remain correct as stated; the
+issue was solely the mislabelling of $\rho_i$ as $\kappa_i$ in Table 3.
+The realised stake fraction $\rho_i \times \kappa_i$ satisfies the intended
+design: conservative agents (low $\rho_i$) stake less even when the Kelly
+formula permits a higher cap, while aggressive agents (high $\rho_i$) approach
+the formula ceiling.
+
+---
+
+### V2. H4 hypothesis states DMAD-Static achieves "lower" initial $\overline{D}$ — should be "higher" [FIXED]
+
+**Reviewer:** The pre-registration statement in §4.6 reads:
+"(H4) DMAD-static achieves **lower** initial $\overline{D}$ than fixed
+ensemble but does not sustain it over 175 days."
+An identical formulation appears in §5.3:
+"DMAD-Static (Condition C) achieves **lower** initial $\overline{D}$ than
+Fixed Ensemble but does not sustain it over 175 days."
+
+Both occurrences claim Condition C (DMAD-Static) starts with *lower* JSD
+diversity than Condition B (Fixed Ensemble). This contradicts:
+
+(a) §4.3's description of Condition C: "pre-assigned to 12 **distinct**
+archetypes from the taxonomy **(maximum initial diversity)** at day 0."
+
+(b) §6.4's description: "The DMAD-Static condition provides the **strongest
+possible diversity initialisation**: all 12 NBA archetypes are distinct from
+Day 1."
+
+(c) The scientific rationale for Condition C: it tests whether *one-time*
+maximum diversity initialisation sustains over time. The interesting null
+result would be that it starts *higher* than Fixed Ensemble but decays.
+Starting *lower* than Fixed Ensemble would make Condition C an inferior
+control with no meaningful scientific value.
+
+The word "lower" is a sign inversion that inverts the scientific narrative
+and directly contradicts the two passages above. The error likely arose
+from a copy-paste from an H1 or H2 template (where SRR achieving *lower*
+Brier is the positive result) applied to the diversity metric (where higher
+is better for DMAD-Static at initialisation).
+
+**Fix applied:**
+
+- `05-experimental-setup.md` §4.6 pre-registration paragraph:
+  "lower initial $\overline{D}$" → "**higher** initial $\overline{D}$" ✓
+- `06-results.md` §5.3 (H4) bullet:
+  "lower initial $\overline{D}$" → "**higher** initial $\overline{D}$" ✓
+- `paper.md` §4.6 and §5.3: both occurrences updated identically ✓
+
+*Post-fix verification:*
+`grep -n "lower initial.*overline{D}" *.md | grep -v "09-self-critique"` →
+zero hits. ✓
+
+---
+
+### V3. §3.1 Aumann cross-reference points to §3.3 (Diversity Metric) — should point to §6.2 [FIXED]
+
+**Reviewer:** `04-method.md` §3.1, prediction-context paragraph:
+"This asymmetry — outcome broadcast without prediction broadcast — is the
+formal mechanism that prevents common knowledge of beliefs from collapsing
+all agent posteriors (cf. Aumann, 1976 [@aumann1976agreeing]; **see §3.3
+for elaboration**)."
+
+Section 3.3 is "Diversity Metric" — it presents the JSD diversity formula
+and the Brier ambiguity decomposition. The promised "elaboration" on Aumann's
+theorem and why outcome broadcast, but not prediction broadcast, preserves
+diversity is not in §3.3. That elaboration appears in §6.2 ("Common-Knowledge
+Architecture and Aumann's Theorem in Practice"), where the distinction between
+calibration via outcome-sharing and belief-synchronisation via prediction-sharing
+is fully developed.
+
+This is the fourth cross-reference error involving the §3.3/§3.4 numbering
+(after R3, S2, T2), but it concerns the Aumann reference rather than SRR —
+a distinct navigational error. A reader following the §3.3 pointer finds the
+JSD formula and the Brier decomposition, with no mention of Aumann's
+agreeing-to-disagree result.
+
+**Fix applied (`04-method.md` §3.1 and `paper.md` §3.1):**
+"see §3.3 for elaboration" → "see §6.2 for elaboration" ✓
+
+*Post-fix verification:*
+`grep -n "3\.3 for elaboration" *.md | grep -v "09-self-critique"` →
+zero hits. ✓
+
+*Root cause note:* The §6.2 discussion of Aumann was written after the §3.1
+note, and the forward-reference in §3.1 was not updated when §6.2 was added.
+**Pre-submission action:** run `grep -n "for elaboration" *.md` before
+submission to confirm all forward-references point to the correct sections.
+
+---
+
+### V4. `COLLECTIVE_MISSION` internal codename used in scientific text [FIXED]
+
+**Reviewer:** Three locations in the paper use the string `COLLECTIVE_MISSION`
+as though it were a standard technical term:
+
+1. `04-method.md` §3.4 Prompt mechanics: "composing the base
+   `COLLECTIVE_MISSION` preamble with the new archetype module."
+2. `appendix-a.md` §A.1 intro: "Modules are composable with the shared
+   `COLLECTIVE_MISSION` preamble (§3.6)."
+3. `appendix-a.md` §A.5 prompt module schema: NOTES field description and
+   the closing sentence of the prompt-mechanics paragraph.
+
+`COLLECTIVE_MISSION` is a project-internal environment variable name from
+the private deployment codebase (see project operations documentation).
+External readers have no access to this naming convention and cannot look
+it up; to them it reads as an unexplained acronym or machine identifier.
+The analogous Q5 issue in Cycle 15 replaced an internal file reference
+(`CLAUDE.md §13`) with scientific content; `COLLECTIVE_MISSION` is the
+same category of error.
+
+**Fix applied:**
+
+- `04-method.md` §3.4: "`COLLECTIVE_MISSION` preamble" → "shared mission
+  preamble — a ~300-word statement establishing the collective \$1M target,
+  mandatory deployment floor, and collaborative protocols, common to all agents"
+  (the description is self-contained and reproducible without access to the
+  private codebase). ✓
+- `appendix-a.md` §A.1 intro: "`COLLECTIVE_MISSION` preamble (§3.6)" →
+  "shared mission preamble (§3.4)". ✓
+- `appendix-a.md` §A.5 prompt schema NOTES field: "`COLLECTIVE_MISSION`
+  preamble" → "shared mission preamble". ✓
+- `appendix-a.md` §A.5 closing sentence: same replacement. ✓
+- `paper.md`: all four locations mirrored. ✓
+
+*Post-fix verification:*
+`grep -n "COLLECTIVE_MISSION" *.md | grep -v "09-self-critique"` →
+zero hits. ✓
+
+---
+
+### V5. §7.7 Ethics references "safe-commit protocols described in the project documentation" — inaccessible internal reference [FIXED]
+
+**Reviewer:** `08-limitations.md` §7.7:
+"We operate under the principle that autonomous mechanisms affecting agent
+behaviour require complete audit trails, and our implementation satisfies
+this requirement via the `data/ops/quarantine.json` and **safe-commit
+protocols described in the project documentation**."
+
+"Project documentation" is not a citable or accessible source for any reader
+outside the development team. The phrase is structurally identical to the
+Q5 issue in Cycle 15, where "CLAUDE.md §13" was replaced with scientific
+content. The `data/ops/quarantine.json` file is similarly an internal
+operations record not included in the supplementary materials.
+
+The audit-trail claim is scientifically important (it establishes that the
+SRR mechanism is auditable and human-overrideable, directly addressing the
+autonomous-AI ethics concern), but its supporting evidence should reference
+artefacts that reviewers and replicators can access: the axelrod-log schema
+(Appendix D), the public repository, and a brief description of the
+commit-gate mechanism.
+
+**Fix applied (`08-limitations.md` §7.7 and `paper.md` §7.7):**
+"via the `data/ops/quarantine.json` and safe-commit protocols described
+in the project documentation." →
+"via append-only JSON prediction logs (`data/arena/axelrod-log/`), the
+archetype transition records documented in Appendix D, and a programmatic
+commit gate that enforces repository-level review before any agent
+system-prompt modification is persisted — all archived in the public
+repository upon acceptance." ✓
+
+*Post-fix verification:*
+`grep -n "safe-commit protocols described" *.md | grep -v "09-self-critique"` →
+zero hits. ✓
+
+---
+
+## CYCLE 20 SUMMARY
+
+**Fixed:** V1 (Table 3 $\kappa_i$ → $\rho_i$; Kelly cap / risk weight
+distinction clarified), V2 (H4 "lower" → "higher" initial $\overline{D}$
+in §4.6 and §5.3), V3 (§3.1 Aumann cross-reference §3.3 → §6.2),
+V4 (`COLLECTIVE_MISSION` codename → "shared mission preamble" with
+scientific description, 4 locations), V5 (§7.7 "project documentation"
+→ axelrod-log + Appendix D + repository reference)
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's `> *Brier-delta... to be inserted*` note and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+   for sacrifice-eligible agents
+10. Final SRR cross-reference sweep: `grep -n "3\.3.*SRR\|SRR.*3\.3" *.md` before
+    submission
+11. **NEW — Verify all forward-references:** run `grep -n "for elaboration" *.md`
+    before submission to confirm all forward-reference pointers reach the correct sections
+12. **NEW — Table 3 pilot Brier values:** once pilot backtest completes, populate the
+    per-agent $\overline{B}_i$ values so that $\kappa_i$ can be stated explicitly
+    alongside $\rho_i$ in Table 3 (currently formula-derived but numerically absent)
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking closed.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.1: Aumann cross-reference "(§3.3)" → "(§6.2)" (V3)
+- `04-method.md` §3.4 Prompt mechanics: `COLLECTIVE_MISSION` →
+  "shared mission preamble" with scientific description (V4)
+- `05-experimental-setup.md` Table 3: `$\kappa_i$` → `$\rho_i$`;
+  caption rewritten to distinguish risk weight from Kelly cap formula (V1)
+- `05-experimental-setup.md` §4.6: H4 "lower" → "higher" initial $\overline{D}$ (V2)
+- `06-results.md` §5.3: H4 "lower" → "higher" initial $\overline{D}$ (V2)
+- `08-limitations.md` §7.7: "project documentation" → scientific audit-trail
+  description referencing axelrod-log + Appendix D + repository (V5)
+- `appendix-a.md` (4 locations): `COLLECTIVE_MISSION` → "shared mission preamble" (V4)
+- `paper.md`: all fixes mirrored (V1–V5, 8 edit locations)

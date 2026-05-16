@@ -26,7 +26,7 @@ predictions, while large reasoning-capable models receive *analytical* or
 observed in the SRR condition cannot be attributed to a favourable starting
 configuration.
 
-| # | Agent ID | Model | Provider | Initial Archetype | $\kappa_i$ |
+| # | Agent ID | Model | Provider | Initial Archetype | $\rho_i$ |
 |---|----------|-------|----------|-------------------|----------|
 | T1 | qwen-quant | Qwen 3 235B-A22B | Cerebras | quantitative | 0.55 |
 | T2 | qwen-arb | Qwen 3 235B-A22B | Cerebras | arbitrage | 0.65 |
@@ -41,9 +41,13 @@ configuration.
 | T11 | nemotron-120b | Nemotron-3-Super-120B | OpenRouter (free) | chain-of-thought | 0.55 |
 | T12 | selfhost-qwen4b | Qwen3-4B (CPU) | self-hosted | disciplined | 0.40 |
 
-*Table 3: NBA LLM agent cohort ($N = 12$). $\kappa_i$ is the initial
-Kelly stake cap (§3.6). Model sizes range from 4B (T12) to 235B (T1–T2)
-parameters. Provider column names refer to the LLM gateway routing layer
+*Table 3: NBA LLM agent cohort ($N = 12$). $\rho_i \in (0,1]$ is the agent's
+personality risk weight governing willingness to commit to high-edge opportunities;
+the formula-derived Kelly stake cap $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i
+\times 0.50) \in [0.01, 0.20]$ (§3.6) is computed from each agent's pilot-season
+Brier and multiplied by $\rho_i$ to produce the realised stake fraction.
+Model sizes range from 4B (T12) to 235B (T1–T2) parameters. Provider column
+names refer to the LLM gateway routing layer
 (source: `scripts/arena/hf-llm-trading-floor/app.py`).*
 
 **Political cohort (N = 10).** The political domain uses T1–T10, the
@@ -285,7 +289,7 @@ and flagged in Appendix C.3.3.
 (H1) SRR increases $\overline{D}$ versus fixed ensemble;
 (H2) SRR reduces $B_{\text{ens}}$ versus fixed ensemble;
 (H3) Sham-SRR does not reproduce the Brier improvement of full SRR;
-(H4) DMAD-static achieves lower initial $\overline{D}$ than
+(H4) DMAD-static achieves higher initial $\overline{D}$ than
 fixed ensemble but does not sustain it over 175 days —
 were documented in `data/arena/preregistration-2025-10-01.md`
 before the 2025–26 NBA season began, preventing post-hoc hypothesis

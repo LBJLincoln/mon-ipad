@@ -3,8 +3,7 @@
 This appendix documents the full $K = 20$ strategy archetype taxonomy $\mathcal{R}$
 operationalised in the LPSG experiments (§3.1, §4.4). Each archetype corresponds to
 a system-prompt module that shapes the agent's reasoning disposition, position
-construction logic, and risk tolerance. Modules are composable with the shared
-`COLLECTIVE_MISSION` preamble (§3.6) and are swapped atomically during SRR events
+construction logic, and risk tolerance. Modules are composable with the shared mission preamble (§3.4) and are swapped atomically during SRR events
 (§3.4) without modifying the agent's prediction history or bankroll state.
 
 ---
@@ -523,9 +522,9 @@ DIRECTIVE:
 <1–4 sentence system-prompt module text>
 ---
 NOTES:
-<Optional notes on interaction with COLLECTIVE_MISSION preamble>
+<Optional notes on interaction with shared mission preamble>
 ```
 
 When SRR fires (§3.4), the `DIRECTIVE` block replaces the agent's current
-archetype block in its system prompt. The `COLLECTIVE_MISSION` preamble,
+archetype block in its system prompt. The shared mission preamble,
 bankroll state, and prediction history are prepended and are archetype-invariant.

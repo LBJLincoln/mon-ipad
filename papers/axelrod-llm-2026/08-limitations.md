@@ -255,8 +255,11 @@ is logged, reversible, and subject to the $W_{\text{persist}} = 14$ day
 review window before the new archetype is confirmed. We operate under the
 principle that autonomous mechanisms affecting agent behaviour require
 complete audit trails, and our implementation satisfies this requirement
-via the `data/ops/quarantine.json` and safe-commit protocols described
-in the project documentation.
+via append-only JSON prediction logs (`data/arena/axelrod-log/`), the
+archetype transition records documented in Appendix D, and a programmatic
+commit gate that enforces repository-level review before any agent
+system-prompt modification is persisted — all archived in the public
+repository upon acceptance.
 
 **Reproducibility and openness.** Upon acceptance, code (licensed under
 MIT), data (`data/arena/axelrod-log/` in newline-delimited JSON), agent

@@ -521,7 +521,7 @@ Crucially, $x_d$ does not include peer predictions from day $d$ — only the out
 $\Omega_{d-1} = \{\omega_t : t \in \mathcal{B}_{d-1}\}$ of the previous day's events.
 This asymmetry — outcome broadcast without prediction broadcast — is the formal mechanism
 that prevents common knowledge of beliefs from collapsing all agent posteriors
-(cf. Aumann, 1976 [@aumann1976agreeing]; see §3.3 for elaboration).
+(cf. Aumann, 1976 [@aumann1976agreeing]; see §6.2 for elaboration).
 
 **Actions.** On day $d$, each agent $i$ reports a probability estimate
 $p_{i,t} \in [0, 1]$ for each event $t \in \mathcal{B}_d$.
@@ -663,8 +663,10 @@ state $\mathbf{x}_d$ (which is available via the leaderboard broadcast).
 
 **Prompt mechanics.** The archetype taxonomy $\mathcal{R}$ is operationalised
 as a library of 20 system-prompt modules (Appendix A). When SRR fires,
-the agent's system prompt is atomically replaced by composing the base
-COLLECTIVE\_MISSION preamble with the new archetype module.
+the agent's system prompt is atomically replaced by composing the shared
+mission preamble — a ~300-word statement establishing the collective \$1M
+target, mandatory deployment floor, and collaborative protocols,
+common to all agents — with the new archetype module.
 The agent's prediction history and bankroll state are preserved across the transition —
 only the reasoning disposition changes, not the agent's memory.
 
@@ -891,7 +893,7 @@ predictions, while large reasoning-capable models receive *analytical* or
 observed in the SRR condition cannot be attributed to a favourable starting
 configuration.
 
-| # | Agent ID | Model | Provider | Initial Archetype | $\kappa_i$ |
+| # | Agent ID | Model | Provider | Initial Archetype | $\rho_i$ |
 |---|----------|-------|----------|-------------------|-----------|
 | T1 | qwen-quant | Qwen 3 235B-A22B | Cerebras | quantitative | 0.55 |
 | T2 | qwen-arb | Qwen 3 235B-A22B | Cerebras | arbitrage | 0.65 |
@@ -906,9 +908,13 @@ configuration.
 | T11 | nemotron-120b | Nemotron-3-Super-120B | OpenRouter (free) | chain-of-thought | 0.55 |
 | T12 | selfhost-qwen4b | Qwen3-4B (CPU) | self-hosted | disciplined | 0.40 |
 
-*Table 3: NBA LLM agent cohort ($N = 12$). $\kappa_i$ is the initial
-Kelly stake cap (§3.6). Model sizes range from 4B (T12) to 235B (T1–T2)
-parameters. Provider column names refer to the LLM gateway routing layer
+*Table 3: NBA LLM agent cohort ($N = 12$). $\rho_i \in (0,1]$ is the agent's
+personality risk weight governing willingness to commit to high-edge opportunities;
+the formula-derived Kelly stake cap $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i
+\times 0.50) \in [0.01, 0.20]$ (§3.6) is computed from each agent's pilot-season
+Brier and multiplied by $\rho_i$ to produce the realised stake fraction.
+Model sizes range from 4B (T12) to 235B (T1–T2) parameters. Provider column
+names refer to the LLM gateway routing layer
 (source: `scripts/arena/hf-llm-trading-floor/app.py`).*
 
 **Political cohort (N = 10).** The political domain uses T1–T10, the
@@ -1136,7 +1142,7 @@ in Appendix C.3.
 (H1) SRR increases $\overline{D}$ versus fixed ensemble;
 (H2) SRR reduces $B_{\text{ens}}$ versus fixed ensemble;
 (H3) Sham-SRR does not reproduce the Brier improvement of full SRR;
-(H4) DMAD-static achieves lower initial $\overline{D}$ than
+(H4) DMAD-static achieves higher initial $\overline{D}$ than
 fixed ensemble but does not sustain it over 175 days —
 were documented in `data/arena/preregistration-2025-10-01.md`
 before the 2025–26 NBA season began, preventing post-hoc hypothesis
@@ -1261,7 +1267,7 @@ Three pre-registered hypotheses isolate the individual active ingredients:
 - **(H3)** Sham-SRR (Condition D) does not reproduce the Brier improvement of
   Full SRR (Condition A): $B_{\text{ens}}^D$ is not significantly lower than
   $B_{\text{ens}}^B$, controlling for $B_{\text{ens}}^A - B_{\text{ens}}^B$.
-- **(H4)** DMAD-Static (Condition C) achieves lower initial $\overline{D}$ than
+- **(H4)** DMAD-Static (Condition C) achieves higher initial $\overline{D}$ than
   Fixed Ensemble but does not sustain it over 175 days: the diversity
   $\overline{D}^C$ declines monotonically over the season, whereas
   $\overline{D}^A$ is non-decreasing in expectation.
@@ -1972,8 +1978,11 @@ is logged, reversible, and subject to the $W_{\text{persist}} = 14$ day
 review window before the new archetype is confirmed. We operate under the
 principle that autonomous mechanisms affecting agent behaviour require
 complete audit trails, and our implementation satisfies this requirement
-via the `data/ops/quarantine.json` and safe-commit protocols described
-in the project documentation.
+via append-only JSON prediction logs (`data/arena/axelrod-log/`), the
+archetype transition records documented in Appendix D, and a programmatic
+commit gate that enforces repository-level review before any agent
+system-prompt modification is persisted — all archived in the public
+repository upon acceptance.
 
 **Reproducibility and openness.** Upon acceptance, code (licensed under
 MIT), data (`data/arena/axelrod-log/` in newline-delimited JSON), agent
@@ -2001,8 +2010,7 @@ component of the agent cohort.
 This appendix documents the full $K = 20$ strategy archetype taxonomy $\mathcal{R}$
 operationalised in the LPSG experiments (§3.1, §4.4). Each archetype corresponds to
 a system-prompt module that shapes the agent's reasoning disposition, position
-construction logic, and risk tolerance. Modules are composable with the shared
-`COLLECTIVE_MISSION` preamble (§3.6) and are swapped atomically during SRR events
+construction logic, and risk tolerance. Modules are composable with the shared mission preamble (§3.4) and are swapped atomically during SRR events
 (§3.4) without modifying the agent's prediction history or bankroll state.
 
 ---

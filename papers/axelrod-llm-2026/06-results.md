@@ -105,7 +105,7 @@ Three pre-registered hypotheses isolate the individual active ingredients:
 - **(H3)** Sham-SRR (Condition D) does not reproduce the Brier improvement of
   Full SRR (Condition A): $B_{\text{ens}}^D$ is not significantly lower than
   $B_{\text{ens}}^B$, controlling for $B_{\text{ens}}^A - B_{\text{ens}}^B$.
-- **(H4)** DMAD-Static (Condition C) achieves lower initial $\overline{D}$ than
+- **(H4)** DMAD-Static (Condition C) achieves higher initial $\overline{D}$ than
   Fixed Ensemble but does not sustain it over 175 days: the diversity
   $\overline{D}^C$ declines monotonically over the season, whereas
   $\overline{D}^A$ is non-decreasing in expectation.
