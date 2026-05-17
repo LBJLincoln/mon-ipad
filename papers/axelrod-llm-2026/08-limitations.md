@@ -20,7 +20,7 @@ T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: self-hosted Qwen3-
 Clean attribution of performance differences to any single factor requires
 holding the others constant — a condition that cannot be fully satisfied with
 a heterogeneous agent cohort. If qwen-arb (T2, Cerebras 235B, *arbitrage*)
-outperforms mistral-small (T8, Mistral ~8B, *wide-coverage*), this difference
+outperforms mistral-small (T8, Mistral, size undisclosed per §4.1, *wide-coverage*), this difference
 plausibly reflects model scale, provider quality, archetype assignment, SRR
 history, or any combination of the four. Our ablation conditions (§4.3)
 partially address this by holding the agent population fixed across conditions —

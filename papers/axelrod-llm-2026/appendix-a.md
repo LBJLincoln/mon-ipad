@@ -111,7 +111,7 @@ no more than 5 pp based on qualitative factors unless the oracle confidence
 interval is wide ($\sigma > 0.08$). Report calibrated probability to two
 decimal places."
 
-*Kelly note.* Assigned $\kappa_i = 0.55$ for T1 (Qwen 3 235B), reflecting
+*Kelly note.* Assigned risk weight $\rho_i = 0.55$ for T1 (Qwen 3 235B) (Table 3), reflecting
 the model's strong reasoning capacity and the archetype's empirically low
 false-positive rate on oracle-aligned bets.
 
@@ -177,7 +177,7 @@ market probability and your deviation from it. Do not override contrarian
 prior when the crowd consensus exceeds 70%."
 
 *Kelly note.* Contrarian positions tend to be smaller-field bets;
-$\kappa_i = 0.55$ for T3 reflects the model's willingness to sustain
+$\rho_i = 0.55$ for T3 (Table 3) reflects the model's willingness to sustain
 short-run drawdowns while awaiting mean-reversion.
 
 ---
@@ -189,8 +189,9 @@ short-run drawdowns while awaiting mean-reversion.
 **5. Aggressive**
 
 *Description.* The aggressive archetype maximises expected bankroll growth
-subject to the Kelly criterion. The agent is permitted to stake up to
-$\kappa_i = 0.70$ of the Kelly-recommended fraction on high-confidence
+subject to the Kelly criterion. The agent carries personality risk weight $\rho_i = 0.70$ (Table 3), the
+highest in the cohort, allowing realised stakes $\kappa_i \times \rho_i$
+up to 70% of the formula-derived Kelly cap on high-confidence
 predictions (oracle $p > 0.65$ or $p < 0.35$). It accepts larger short-run
 Brier variance in exchange for compound growth potential. The archetype is
 assigned only to models with sufficient capacity to avoid systematic

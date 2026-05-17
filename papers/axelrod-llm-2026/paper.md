@@ -129,12 +129,13 @@ This paper makes four contributions:
    an agent with persistent performance deficiency (defined formally as sustained negative
    regret relative to the society mean) probabilistically adopts an underrepresented
    strategy archetype from a predefined taxonomy, increasing population-level Jensen–Shannon
-   divergence (§3.3). We prove under mild assumptions that SRR is a Nash equilibrium
-   refinement: no agent can unilaterally deviate and improve *societal* Brier score (§3.4).
+   divergence (§3.3). We prove under mild assumptions that SRR is a *Strong* Nash equilibrium
+   refinement (Proposition 2, §3.5): no coalition of agents can jointly deviate from SRR
+   and weakly improve ensemble Brier while doing so.
 
 3. **Real-world LLM trading experiment.** We deploy 12 heterogeneous LLM agents (spanning
    five provider ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, and
-   self-hosted Phi-3.5) on the full 2025–26 NBA season (1,257 games) and 1,120 US
+   self-hosted Qwen3-4B) on the full 2025–26 NBA season (1,257 games) and 1,120 US
    political events, constituting — to our knowledge — the largest real-money-equivalent
    LLM prediction market experiment in peer-reviewed literature (§4).
 
@@ -798,7 +799,9 @@ and any flagged anomalies. All 12 NBA agents and 10 political agents receive
 this brief as a shared prefix before generating independent predictions.
 The moderator role rotates weekly (Axelrod-style round-robin) across all
 agents, beginning with T1 (Qwen 3 235B-A22B) in Week 1; moderating capacity
-therefore varies from 235B (T1–T2) to 8B parameters (T3, T8–T10) across
+therefore varies from 235B (T1–T2) to 4B parameters (T12: Qwen3-4B); the
+full size breakdown is in §4.1 (T3: Llama 3.1 8B; T10: ministral-8b, 8B;
+Mistral T6–T9 sizes are undisclosed by the provider) across
 the 25-week season. This is a minor confound: all agents receive an identical
 structured morning brief template regardless of moderator identity, so the
 confound is bounded to the quality of free-text synthesis in the brief body.
@@ -1132,7 +1135,7 @@ code at `scripts/arena/hf-llm-trading-floor/app.py`
 transition records, and bankroll histories are written to
 `data/arena/axelrod-log/` in newline-delimited JSON. The axelrod-log
 schema is documented in Appendix D. Agent prompts (including all 20
-archetype modules and the COLLECTIVE\_MISSION preamble) are archived in
+archetype modules and the shared mission preamble) are archived in
 `data/arena/archetypes/`. LLM temperature is fixed at
 $\tau = 0.7$ for all agents across all conditions to balance
 expressiveness with reproducibility; sensitivity to $\tau$ is tested
@@ -1748,7 +1751,7 @@ T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: self-hosted Qwen3-
 Clean attribution of performance differences to any single factor requires
 holding the others constant — a condition that cannot be fully satisfied with
 a heterogeneous agent cohort. If qwen-arb (T2, Cerebras 235B, *arbitrage*)
-outperforms mistral-small (T8, Mistral ~8B, *wide-coverage*), this difference
+outperforms mistral-small (T8, Mistral, size undisclosed per §4.1, *wide-coverage*), this difference
 plausibly reflects model scale, provider quality, archetype assignment, SRR
 history, or any combination of the four. Our ablation conditions (§4.3)
 partially address this by holding the agent population fixed across conditions —
@@ -2090,9 +2093,9 @@ oracle $\sigma < 0.05$. Do not override when crowd exceeds 70% consensus."
 
 **D2 — Risk Appetite**
 
-*(5) Aggressive.* Concentrated positions; Kelly up to $\kappa_i = 0.70$.
-*Directive:* "When oracle probability is outside $[0.40, 0.60]$, increase stake
-by up to 30% above default Kelly. State edge estimate explicitly."
+*(5) Aggressive.* Concentrated positions; risk weight $\rho_i = 0.70$ (highest in cohort),
+realised stake = $\kappa_i \times \rho_i$. *Directive:* "When oracle probability is outside
+$[0.40, 0.60]$, increase stake by up to 30% above default Kelly. State edge estimate explicitly."
 
 *(6) Conservative.* Minimise Brier; cap at 30% of standard Kelly; shrink to $[0.20, 0.80]$.
 *Directive:* "Cap all positions at 30% Kelly. Shrink extreme predictions toward 0.50

@@ -2359,6 +2359,199 @@ scientific description, 4 locations), V5 (§7.7 "project documentation"
 
 **Remaining open:** None from prior cycles.
 
+---
+
+## NEW ISSUES (Cycle 21 full-manuscript re-read)
+
+*Five issues found. All fixed in this cycle.*
+
+---
+
+### W1. `paper.md` §1 Contribution 3 names self-hosted model as "Phi-3.5" — wrong model [FIXED]
+
+**Reviewer:** Contribution 3 in §1 states "spanning five provider ecosystems:
+Cerebras, Google Gemini 3, Mistral, OpenRouter, and **self-hosted Phi-3.5**."
+Table 3 (§4.1), §4.6, §7.4, and §7.7 all consistently identify the
+self-hosted agent T12 as **Qwen3-4B** (`selfhost-qwen4b`). Phi-3.5 is a
+Microsoft model that does not appear anywhere else in the manuscript.
+A reviewer checking the agent cohort would immediately flag this inconsistency
+as a factual error. The source file `02-introduction.md` already contains
+the correct text ("self-hosted Qwen3-4B") — this was a compilation failure
+where the prior correction was not propagated to `paper.md`.
+
+**Author response:** `paper.md` §1 Contribution 3 updated: "self-hosted Phi-3.5"
+→ "self-hosted Qwen3-4B". ✓
+
+---
+
+### W2. `paper.md` §1 Contribution 2 — three simultaneous stale errors vs.\ source file [FIXED]
+
+**Reviewer:** Comparing `paper.md` Contribution 2 against `02-introduction.md`
+reveals three divergences, all introduced by a prior cycle fixing the source
+but failing to mirror into the compiled manuscript.
+
+*(a)* `paper.md` says "SRR is a Nash equilibrium refinement"; the source and
+§3.5/abstract correctly say "*Strong* Nash equilibrium refinement" (the distinction
+matters: ordinary Nash is single-agent deviation-proof; Strong Nash is
+coalition-deviation-proof, which is the actual content of Proposition 2).
+
+*(b)* `paper.md` says "no **agent** can **unilaterally** deviate and improve
+*societal* Brier score (§3.4)"; the source correctly says "no **coalition** of
+agents can **jointly** deviate from SRR" with cross-reference "(Proposition 2,
+§3.5)". "Unilateral deviation" is the condition for ordinary Nash, not Strong Nash;
+omitting "coalition" and "jointly" incorrectly downgrades the claim.
+
+*(c)* The cross-reference "(§3.4)" in `paper.md` is wrong: §3.4 defines the SRR
+mechanism; the proof of the equilibrium result is in §3.5 (Lemma 1 + Proposition 2).
+
+**Author response:** `paper.md` §1 Contribution 2 rewritten to match
+`02-introduction.md`: "*Strong* Nash equilibrium refinement (Proposition 2, §3.5)"
+and "no coalition of agents can jointly deviate from SRR and weakly improve ensemble
+Brier while doing so." ✓
+
+---
+
+### W3. §3.6 and §7.1 assign "8B" parameter sizes to Mistral models with undisclosed sizes, and miss T12 (4B) as the actual cohort minimum [FIXED]
+
+**Reviewer:** §3.6 states moderating capacity "varies from 235B (T1–T2)
+to **8B parameters (T3, T8–T10)**." Two problems:
+
+First, §4.1 explicitly states "Google Gemini 3 Flash and **Mistral commercial
+variants have undisclosed parameter counts**." T8 (mistral-small-latest) and T9
+(open-mistral-nemo) are Mistral models and therefore have undisclosed sizes;
+assigning them 8B contradicts the paper's own §4.1 disclosure. Externally,
+Mistral Nemo is ~12B and Mistral Small is historically ~22B; 8B is incorrect
+for both. Only T10 (ministral-8b-latest) is plausibly 8B from the name, and
+T3 (Llama 3.1 8B) is disclosed as 8B.
+
+Second, the moderator rotation is described as applying to "all agents" — which
+includes T12 (Qwen3-4B, **4B** parameters). T12 is smaller than T3/T10, making
+4B the true cohort minimum for moderating capacity, not 8B.
+
+Similarly, §7.1 says "mistral-small (T8, **Mistral ~8B**, *wide-coverage*)" —
+the same undisclosed-size problem for T8.
+
+**Author response:**
+- `04-method.md` §3.6: range corrected to "4B parameters (T12: Qwen3-4B); the
+  full size breakdown is in §4.1 (T3: Llama 3.1 8B; T10: ministral-8b, 8B;
+  Mistral T6–T9 sizes are undisclosed by the provider)."
+- `08-limitations.md` §7.1: "Mistral ~8B" → "Mistral, size undisclosed per §4.1."
+- `paper.md`: both locations mirrored. ✓
+
+---
+
+### W4. Appendix A.4 Kelly notes use $\kappa_i$ for what are risk weights $\rho_i$ — notation collision post-V1 [FIXED]
+
+**Reviewer:** The Cycle 20 V1 fix renamed the Table 3 column from $\kappa_i$
+(personality risk weight) to $\rho_i$ to avoid confusion with the
+formula-derived Kelly cap $\kappa_i = \max(0.01, 0.30 - \overline{B}_i \times
+0.50) \in [0.01, 0.20]$. However, three locations in `appendix-a.md` were not
+updated and still use $\kappa_i$ for what are unambiguously risk weights:
+
+1. §A.4.1 Quantitative Kelly note: "$\kappa_i = 0.55$ for T1 (Qwen 3 235B)"
+2. §A.4.1 Contrarian Kelly note: "$\kappa_i = 0.55$ for T3"
+3. §A.4.2 Aggressive archetype: "stake up to $\kappa_i = 0.70$ of
+   the Kelly-recommended fraction"
+
+In case (3), a value of 0.70 is impossible for the formula-derived $\kappa_i$
+(bounded by $[0.01, 0.20]$); the value is clearly the risk weight $\rho_i$
+from Table 3. Cases (1)–(2) similarly use values (0.55) that are the risk
+weights listed in Table 3, not formula-derived caps (which would require
+knowing $\overline{B}_i$). A confused reader would rightly ask how $\kappa_i$
+can be simultaneously a formula-derived value in $[0.01, 0.20]$ (§3.6) and
+0.55 or 0.70 in Appendix A.
+
+**Author response:**
+- `appendix-a.md` three locations: $\kappa_i$ → $\rho_i$ with "(Table 3)" reference.
+- Aggressive entry rewritten: "carries personality risk weight $\rho_i = 0.70$
+  (Table 3), the highest in the cohort, allowing realised stakes $\kappa_i \times
+  \rho_i$ up to 70% of the formula-derived Kelly cap..."
+- `paper.md` Appendix A abbreviated entry (line ~2096): $\kappa_i = 0.70$ →
+  $\rho_i = 0.70$ with "realised stake = $\kappa_i \times \rho_i$". ✓
+
+---
+
+### W5. `paper.md` §4.6 still contains `COLLECTIVE\_MISSION` internal codename — V4 fix incomplete [FIXED]
+
+**Reviewer:** Cycle 20 V4 fixed `COLLECTIVE_MISSION` → "shared mission preamble"
+in four locations: `04-method.md` §3.4, and `appendix-a.md` §A.1, §A.5
+(NOTES field), and one further `appendix-a.md` location. The Cycle 20
+structural-changes log does NOT list `paper.md` §4.6 as a V4 fix location,
+and indeed the compiled manuscript retains:
+
+> "Agent prompts (including all 20 archetype modules and the
+> `COLLECTIVE\_MISSION` preamble) are archived in `data/arena/archetypes/`."
+
+This is the fifth instance of the internal codename — previously unflagged
+because its backslash-escaped underscore (`COLLECTIVE\_MISSION`) caused the
+post-fix `grep -n "COLLECTIVE_MISSION" *.md` verification to return no results
+for the standard underscore pattern. The issue is real: a reviewer downloading
+the paper PDF would see "COLLECTIVE\_MISSION" as a code artefact with no
+scientific meaning.
+
+**Author response:** `paper.md` §4.6 fixed: "COLLECTIVE\_MISSION preamble"
+→ "shared mission preamble". Verification: `grep -n "COLLECTIVE" paper.md`
+confirms no remaining instances. ✓
+
+---
+
+## CYCLE 21 SUMMARY
+
+**Fixed:** W1 (`paper.md` §1 Contribution 3 "Phi-3.5" → "Qwen3-4B"; compilation
+mismatch), W2 (`paper.md` §1 Contribution 2 three stale errors vs.\ source:
+"Strong Nash", "coalition", "(Proposition 2, §3.5)"), W3 (§3.6 and §7.1
+parameter range corrected: 4B minimum, Mistral sizes marked undisclosed;
+in `04-method.md`, `08-limitations.md`, and `paper.md`), W4 (`appendix-a.md`
+three Kelly notes $\kappa_i$ → $\rho_i$; Aggressive entry rewritten with
+$\kappa_i \times \rho_i$ realised-stake formula; `paper.md` abbreviated entry
+updated), W5 (`paper.md` §4.6 final `COLLECTIVE\_MISSION` → "shared mission
+preamble"; grep-evasion root cause documented).
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Fill abstract Brier-delta note with actual results before submission
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+   for sacrifice-eligible agents
+10. Final SRR cross-reference sweep: `grep -n "3\.3.*SRR\|SRR.*3\.3" *.md` before submission
+11. Verify all forward-references: `grep -n "for elaboration" *.md` before submission
+12. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ once pilot backtest
+    completes so $\kappa_i$ can be shown numerically alongside $\rho_i$
+13. **NEW — Final $\kappa_i$/$\rho_i$ sweep:** run `grep -n "kappa_i" appendix-a.md paper.md`
+    before submission; any remaining $\kappa_i$ in Kelly-note context flagging a risk weight
+    (values > 0.20) is a residual W4 propagation failure
+14. **NEW — Final COLLECTIVE sweep:** run `grep -in "collective" paper.md` before submission
+    to confirm "shared mission preamble" is the only phrasing used
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking closed. For
+underscore-containing terms, use `grep -in "<TERM>"` (case-insensitive, no
+backslash) to catch backslash-escaped variants.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.6: parameter range corrected — "8B parameters (T3, T8–T10)"
+  → "4B parameters (T12: Qwen3-4B); ... Mistral T6–T9 sizes undisclosed" (W3)
+- `08-limitations.md` §7.1: "Mistral ~8B" → "Mistral, size undisclosed per §4.1" (W3)
+- `appendix-a.md` §A.4.1 Quantitative Kelly note: $\kappa_i = 0.55$ → $\rho_i = 0.55$ (W4)
+- `appendix-a.md` §A.4.1 Contrarian Kelly note: $\kappa_i = 0.55$ → $\rho_i = 0.55$ (W4)
+- `appendix-a.md` §A.4.2 Aggressive: $\kappa_i = 0.70$ → $\rho_i = 0.70$ with
+  "realised stake = $\kappa_i \times \rho_i$" explanation (W4)
+- `paper.md` §1 Contribution 3: "self-hosted Phi-3.5" → "self-hosted Qwen3-4B" (W1)
+- `paper.md` §1 Contribution 2: three stale sub-errors corrected to match source (W2)
+- `paper.md` §3.6: parameter range corrected (W3, mirror of `04-method.md`)
+- `paper.md` §7.1: "Mistral ~8B" → "size undisclosed per §4.1" (W3, mirror)
+- `paper.md` §4.6: "COLLECTIVE\_MISSION preamble" → "shared mission preamble" (W5)
+- `paper.md` §A.4 Aggressive abbreviated entry: $\kappa_i = 0.70$ → $\rho_i = 0.70$
+  with realised-stake formula (W4, mirror)
+
 **PRE-SUBMISSION checklist (updated):**
 1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
 2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605

@@ -318,7 +318,9 @@ and any flagged anomalies. All 12 NBA agents and 10 political agents receive
 this brief as a shared prefix before generating independent predictions.
 The moderator role rotates weekly (Axelrod-style round-robin) across all
 agents, beginning with T1 (Qwen 3 235B-A22B) in Week 1; moderating capacity
-therefore varies from 235B (T1–T2) to 8B parameters (T3, T8–T10) across
+therefore varies from 235B (T1–T2) to 4B parameters (T12: Qwen3-4B); the
+full size breakdown is in §4.1 (T3: Llama 3.1 8B; T10: ministral-8b, 8B;
+Mistral T6–T9 sizes are undisclosed by the provider) across
 the 25-week season. This is a minor confound: all agents receive an identical
 structured morning brief template regardless of moderator identity, so the
 confound is bounded to the quality of free-text synthesis in the brief body.
