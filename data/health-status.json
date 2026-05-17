@@ -1,44 +1,44 @@
 {
-  "fire": 127,
-  "parity": "ODD",
-  "timestamp": "2026-05-18T20:00:00Z",
-  "generated_by": "cloud-brain-fire-127",
+  "fire": 128,
+  "parity": "EVEN",
+  "timestamp": "2026-05-19T00:00:00Z",
+  "generated_by": "cloud-brain-fire-128",
   "nba_islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "cycle": 583,
-      "generation": 1748,
+      "cycle": 590,
+      "generation": 1769,
       "best_brier": 0.22216,
       "stagnation": 0,
       "model_type": "xgboost_brier",
-      "pareto_front": 7,
+      "pareto_front": 14,
       "status": "EVOLVING",
       "action": "MONITOR",
-      "note": "stag CLEARED (was 18 fire-126 → 0 fire-127). Top pareto: stacking-40f-0.24738(g0), xgboost_brier-200f-0.22244(g1744), LightGBM-200f-0.22432(g1619). stacking still in pareto = Rule#8 violation. vm-remove-stacking-s13 priority=44 pending."
+      "note": "UP — was 403-transient fire-128 fetch (resolved). hard-reset-c554 after 25-cycle-stag cleared → stag=0. Reseeded with logistic_regression+lightgbm+catboost+extra_trees (confirms vm-add-logistic-regression working). ⚠ RULE#8 VIOLATION: stacking still in pareto population (gen1660-1664 Pareto=14, model=stacking). vm-remove-stacking-s13 priority=44 still pending."
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "cycle": 39,
-      "generation": 116,
+      "cycle": 55,
+      "generation": 164,
       "best_brier": 0.22793,
       "stagnation": 0,
       "model_type": "extra_trees",
-      "pareto_front": 13,
-      "status": "RECOVERING_EXTRAORDINARY",
+      "pareto_front": 14,
+      "status": "RECOVERING",
       "action": "CHECKPOINT_NEEDED",
-      "note": "⚡ xgboost_brier-200f-0.22006 gen=113 PARETO-1ST-DETECT — BELOW FLEET BEST 0.22012 by 0.00006! ET-200f-0.2215 gen=113 also in pareto. CatBoost-0.21888 fire-126 DROPPED (no longer in pareto, superseded). Fresh restart c39 g116. vm-checkpoint-s14-xgb-0.22006-fire127 ADDED priority=2."
+      "note": "Fresh restart recovering. c55 g164 stag=0. pareto=14 (was 13 fire-127). xgb-200f-0.22006 1st-detect fire-127 still PENDING VALIDATION. vm-checkpoint-s14-xgb-0.22006 priority=2."
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "cycle": 1672,
-      "generation": 5015,
+      "cycle": 1697,
+      "generation": 5091,
       "best_brier": 0.22012,
-      "stagnation": 0,
+      "stagnation": 21,
       "model_type": "random_forest",
       "pareto_front": 15,
-      "status": "FLEET_BEST_STABLE",
-      "action": "CHECKPOINT_EXTREME_URGENT",
-      "note": "⚡ ET-200f-0.21908 gen=5012 PARETO-1ST-DETECT — below fleet best 0.22012! pareto_front=15 (was 6 fire-126, jumped). Top5: ET-200f-0.21908(g5012), ET-200f-0.22442(g5011), ET-200f-0.22484(g5012), ET-200f-0.22618(g5012), CatBoost-56f-0.29892(g0). vm-checkpoint-s15-et-0.21908-fire127 ADDED priority=1."
+      "status": "FLEET_BEST_DIVERSIFY_SENT",
+      "action": "MONITOR_POST_DIVERSIFY",
+      "note": "★ FLEET BEST 0.22012 gen=5091. stag=21 OVER threshold=15 → DIVERSIFY SENT fire-128 (command queued, field corrected: use field name 'command' not 'action'). ET-200f-0.21908 gen=5012 pareto-1st-detect fire-127 STILL PENDING VALIDATION — vm-checkpoint-s15-et-0.21908 EXTREME-URGENT priority=1. pareto_front=15."
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
@@ -48,120 +48,148 @@
       "stagnation": null,
       "status": "DOWN_503",
       "action": "VM_RESTART_REQUIRED",
-      "note": "503 DOWN 96+ days. vm-restart-s17 pending."
+      "note": "503 DOWN 97+ days. vm-restart-s17 pending. No change."
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "cycle": 5,
-      "generation": 14,
+      "cycle": 25,
+      "generation": 75,
       "best_brier": 0.24576,
       "stagnation": 0,
       "model_type": "xgboost",
       "pareto_front": 13,
-      "status": "FACTORY_REBOOT_DETECTED",
-      "action": "INVESTIGATE_AND_CHECKPOINT",
-      "note": "⚠⚠⚠ FACTORY REBOOT: was c2842 g8526 at fire-126, now c=5 g=14. ALL prior checkpoints LOST (vm-checkpoint-s18-0.21877 CLOSED-LOST). ⚡ CatBoost-200f-0.21956 gen=11 1ST-DETECT EXTRAORDINARY! Also: ET-200f-0.22041 gen=9, RF-200f-0.2214 gen=11. Following same early-attractor pattern as S14/S22. vm-checkpoint-s18-catboost-0.21956-fire127 ADDED priority=2."
+      "status": "POST_REBOOT_RECOVERING",
+      "action": "CHECKPOINT_NEEDED",
+      "note": "Post-factory-reboot c25 g75 stag=0. Up from c5 g14 fire-127. CatBoost-200f-0.21956 1st-detect fire-127 PENDING VALIDATION. vm-checkpoint-s18-catboost-0.21956 priority=2. Following same early-attractor pattern."
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "cycle": 11,
-      "generation": 31,
+      "cycle": 16,
+      "generation": 45,
       "best_brier": 0.22124,
       "stagnation": 0,
       "model_type": "random_forest",
-      "pareto_front": 9,
+      "pareto_front": 12,
       "status": "POST_REBOOT_RECOVERING",
       "action": "CHECKPOINT_NEEDED",
-      "note": "⚡ RF-200f-0.21987 gen=29 PARETO-1ST-DETECT — below fleet best 0.22012! Also: LightGBM-200f-0.22267(g28), CatBoost-200f-0.22647(g28). CatBoost-0.21818 ALLTIME record LOST (factory reboot fire-126). New RF candidate extraordinary at gen=29 (fresh restart). vm-checkpoint-s22-rf-0.21987-fire127 ADDED priority=1."
+      "note": "Post-reboot c16 g45 stag=0. RF-200f-0.21987 gen=29 1st-detect fire-127 PENDING VALIDATION. vm-checkpoint-s22-rf-0.21987 priority=1. brier=0.22124 vs fleet-best 0.22012 (gap closing)."
     }
   },
   "fleet_best_brier": 0.22012,
   "fleet_best_island": "S15",
   "pareto_alltime_best": 0.21841,
-  "pareto_alltime_note": "0.21818 LOST (S22 factory reboot fire-126). 0.21908 S15 is 1st-detect fire-127 but above alltime 0.21841. Alltime confirmed = 0.21841 S15 fire-66.",
+  "pareto_alltime_note": "0.21818 LOST (S22 factory reboot fire-126). 0.21841 S15 fire-66 still alltime. S15 ET-200f-0.21908 fire-127 1st-detect is ABOVE alltime — needs 2nd-fire confirmation.",
   "pareto_current_best": 0.21908,
   "pareto_current_island": "S15",
-  "pareto_current_status": "1ST_DETECT_unconfirmed_fire127",
+  "pareto_current_status": "1ST_DETECT_unconfirmed_fire127_awaiting_2nd_fire128",
+  "actions_taken": [
+    "S15 diversify command queued (stag=21>15, field corrected from 'action' to 'command')",
+    "S13 confirmed UP — 403 was transient",
+    "API field correction documented: use 'command' not 'action' for /api/command endpoint"
+  ],
   "political_islands": {
     "P1": {
       "space": "Nomos42/political-alpha",
-      "status": "RECOVERED",
-      "cycle": 904,
-      "generation": 2710,
+      "cycle": 1022,
+      "generation": 3065,
       "best_brier": 0.24987,
-      "stagnation": 0,
-      "pareto_front": 8,
-      "note": "RECOVERED — was 403-DOWN fire-126. Now EVOLVING c904 g2710 stag=0. Top pareto: xgboost-74f-0.25319(g2707), LightGBM-83f-0.25162(g2708), xgboost-88f-0.25314(g2708)."
-    },
-    "P2": {
-      "space": "Nomos42/political-alpha-2",
-      "cycle": 19153,
-      "generation": 57457,
-      "best_brier": 0.25003,
-      "stagnation": 0,
-      "model_type": "xgboost_brier",
-      "pareto_front": 8,
-      "status": "EVOLVING",
-      "note": "LightGBM-123f-Brier=0.249 gen=47692 confirmed in pareto. Stable."
-    },
-    "P4": {
-      "space": "LBJLincoln/political-alpha-4",
-      "cycle": 30157,
-      "generation": 90469,
-      "best_brier": 0.24992,
-      "stagnation": 0,
-      "model_type": "xgboost_brier",
-      "pareto_front": 8,
-      "status": "STABLE_POL_FLEET_BEST",
-      "note": "★ POL FLEET BEST: LightGBM-108f-0.24904 gen=2062 Sharpe=1.00. Stable. xgboost_brier shown as best_model_type but LightGBM-108f-0.24904 is alltime pareto best."
-    },
-    "P5": {
-      "space": "LBJLincoln/political-alpha-5",
-      "cycle": 26032,
-      "generation": 78094,
-      "best_brier": 0.24993,
-      "stagnation": 0,
-      "model_type": "xgboost_brier",
-      "pareto_front": 4,
-      "status": "EVOLVING",
-      "note": "⚠ feature_candidates=272 (vs 3377 for NBA islands) — possible feature data issue! pareto=4 low but stable. LightGBM-59f-0.249 gen=75933 in pareto."
-    },
-    "P7": {
-      "space": "LBJLincoln/political-alpha-7",
-      "cycle": 3471,
-      "generation": 10411,
-      "best_brier": 0.25004,
       "stagnation": 0,
       "model_type": "xgboost_brier",
       "pareto_front": 5,
+      "feature_candidates": 272,
       "status": "EVOLVING",
-      "note": "⚡ LightGBM-112f-0.24931 gen=4587 PARETO — BETTER than fire-121 confirmed 0.24937. Also: logistic_regression-102f in pareto (confirms LR works for POL). vm-checkpoint-p7-lgbm-0.24931-fire127 ADDED priority=2."
+      "note": "Stable. feature_candidates=272 (system-wide POL anomaly). stag=0 ok."
+    },
+    "P2": {
+      "space": "Nomos42/political-alpha-2",
+      "cycle": 19242,
+      "generation": 57725,
+      "best_brier": 0.25003,
+      "stagnation": 0,
+      "model_type": "xgboost_brier",
+      "pareto_front": 7,
+      "feature_candidates": 272,
+      "status": "EVOLVING",
+      "note": "Stable. hard-resets-19201+19241 self-managed. stag=0 ok."
+    },
+    "P4": {
+      "space": "LBJLincoln/political-alpha-4",
+      "cycle": 30298,
+      "generation": 90892,
+      "best_brier": 0.24992,
+      "stagnation": 0,
+      "model_type": "xgboost_brier",
+      "pareto_front": 4,
+      "status": "STABLE_POL_FLEET_BEST",
+      "note": "★ POL FLEET BEST alltime=0.24904 (LightGBM-108f gen=2062). Stable. pareto=4 (was 8 fire-127 — dropped, normal churn)."
+    },
+    "P5": {
+      "space": "LBJLincoln/political-alpha-5",
+      "cycle": 26099,
+      "generation": 78297,
+      "best_brier": 0.24993,
+      "stagnation": 0,
+      "model_type": "xgboost_brier",
+      "pareto_front": 6,
+      "feature_candidates": 272,
+      "status": "EVOLVING",
+      "note": "hard-resets-26041+26061 self-managed. stag=0. feature_candidates=272 ANOMALY persists (all POL islands show 272 — likely a POL feature engine issue vs NBA 3377). Investigate."
+    },
+    "P7": {
+      "space": "LBJLincoln/political-alpha-7",
+      "cycle": 3591,
+      "generation": 10773,
+      "best_brier": 0.25004,
+      "stagnation": 0,
+      "model_type": "xgboost_brier",
+      "pareto_front": 4,
+      "feature_candidates": 272,
+      "status": "EVOLVING",
+      "note": "LightGBM-112f-0.24931 from fire-127 PENDING 2ND FIRE CONFIRMATION (fire-128 = 2nd fire, need fresh /api/status from VM to confirm). vm-checkpoint-p7-lgbm-0.24931 priority=2."
     }
   },
   "pol_fleet_best_brier": 0.24992,
   "pol_fleet_best_island": "P4",
+  "pol_feature_anomaly": {
+    "all_islands_show": 272,
+    "expected": "700+",
+    "nba_comparison": 3377,
+    "note": "All 5 POL islands report feature_candidates=272 — consistent across P1/P2/P4/P5/P7. Likely POL feature engine is loading a reduced feature set. Investigate political_engine.py feature generation."
+  },
   "sota_research": {
-    "fire": 126,
-    "parity": "EVEN_last_search",
-    "LR_brier_confirmations": 10,
+    "fire": 128,
+    "parity": "EVEN_websearch",
+    "LR_brier_confirmations": 11,
     "LR_brier": 0.199,
     "CNN_brier": 0.221,
-    "mc_dropout_rnn": "uncertainty-aware, estimated Brier ~0.20",
-    "shap_top_features": ["team_elo_5_y", "team_elo", "home_next", "2PA", "FG", "TRB"],
-    "note": "ODD fire-127 — no new WebSearch this cycle"
+    "new_findings": [
+      "MC-dropout RNN + shot-chart PCA-20 spatial embeddings: superior calibration vs non-Bayesian baselines (MDPI Info 2025 Jan, mdpi.com/2078-2489/17/1/56)",
+      "Shot-chart PCA-20 embeddings materially improve prediction in inefficient market segments",
+      "Elo top features: home_next, team_elo_5_y, team_elo (SHAP top-3, 11th confirm across papers)",
+      "LSTM-Brier-loss > Transformer-BCE for probabilistic calibration (arXiv 2508.02725)",
+      "Ridge+XGBoost+NN ensemble: 92.2% on playoff games (highest reported accuracy)",
+      "Stacked ensemble (NB+AdaBoost+MLP+KNN+XGB+DT+LR): SVM 77.5% / AutoGluon 77.4% / DNN 77.3% accuracy"
+    ],
+    "priority_proposals": [
+      "shot-chart-pca20-embeddings: add spatial shot location PCA features to engine.py",
+      "mc-dropout-uncertainty: wrap oracle predictions with uncertainty quantification",
+      "elo-feature-audit: verify team_elo_5_y and home_next are in feature engine as top-priority features"
+    ]
   },
   "councils_d1_d9": "DECOMMISSIONED 2026-04-20 — do not recreate",
+  "api_corrections": {
+    "hf_command_endpoint": "Use field name 'command' not 'action' for POST /api/command. action=diversify was returning unknown-command error; command=diversify works correctly."
+  },
   "alerts": [
-    "S18 FACTORY REBOOT DETECTED (c2842→c5) — ALL prior S18 checkpoints LOST",
-    "S15 ET-200f-0.21908 gen=5012 PARETO-1ST-DETECT — below fleet best 0.22012",
-    "S22 RF-200f-0.21987 gen=29 PARETO-1ST-DETECT — below fleet best (fresh restart!)",
-    "S14 xgboost_brier-200f-0.22006 gen=113 PARETO-1ST-DETECT — near fleet best (fresh restart!)",
-    "S18 CatBoost-200f-0.21956 gen=11 1ST-DETECT (extraordinary early attractor, 3rd island pattern)",
-    "P1 RECOVERED from 403-DOWN — now EVOLVING c904 g2710",
-    "P7 LightGBM-112f-0.24931 BETTER than fire-121 confirmed 0.24937",
-    "P5 feature_candidates=272 WARNING — investigate (should be ~3377)",
-    "S17 503 DOWN 96+ days",
-    "vm-restart-nba-tf + vm-restart-pol-tf still blocked on user auth",
-    "TRIPLE-ATTRACTOR: S14+S18+S22 all hit sub-0.22 pareto candidates at fresh restart (gen<120)"
+    "S15 diversify sent fire-128 (stag=21>15) — monitor stag clearance next fire",
+    "S13 RULE#8 VIOLATION: stacking model type still in pareto population — vm-remove-stacking-s13 priority=44 pending",
+    "S15 ET-200f-0.21908 EXTREME URGENT checkpoint — still 1st-detect only (fire-127), VM must checkpoint before next reset",
+    "S22 RF-200f-0.21987 checkpoint URGENT — 1st-detect fire-127, VM must confirm",
+    "S14 xgb-200f-0.22006 checkpoint needed — 1st-detect fire-127",
+    "S18 CatBoost-200f-0.21956 checkpoint needed — 1st-detect fire-127",
+    "ALL POL islands show feature_candidates=272 ANOMALY (expected 700+) — investigate POL engine",
+    "P7 LightGBM-112f-0.24931 needs VM checkpoint (priority=2)",
+    "S17 503 DOWN 97+ days",
+    "API field correction: use 'command' not 'action' for /api/command POST body"
   ]
 }
