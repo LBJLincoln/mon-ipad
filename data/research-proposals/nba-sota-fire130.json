@@ -1,0 +1,95 @@
+{
+  "fire": 130,
+  "parity": "EVEN",
+  "generated": "2026-05-19T08:00:00Z",
+  "search_terms": ["NBA game prediction 2026", "sports outcome forecasting Brier score", "ensemble methods NBA basketball", "isotonic calibration sports prediction", "win differential features NBA"],
+  "proposals": [
+    {
+      "id": "sota-win-diff-5game-top-feature",
+      "priority": "HIGH",
+      "title": "win-differential-last-5-games: top-2 SOTA feature (MDPI Computation 2025)",
+      "source": "MDPI Computation 13(10):230, 2025 — NBA/WNBA ML Comparison",
+      "brier_score": 0.20,
+      "key_insight": "win-differential-last-5-games AND season-win-differential are the top 2 features achieving Brier~0.20 on NBA in 2025. These should be near top of our 7246 feature set. Verify presence in features/engine.py before adding.",
+      "actionable": "Check features/engine.py for: recent_wins_last_5, win_diff_last_5, season_win_diff. If missing, add to 'momentum_recent_5game' category. AFTER engine-parity-sync (priority=40). This is the single highest-impact feature gap identified this cycle.",
+      "status": "VERIFY_IN_ENGINE",
+      "work_queue_item": "vm-add-win-diff-5game-feature"
+    },
+    {
+      "id": "sota-lr-10th-confirmation",
+      "priority": "CONFIRMED_VM_QUEUED",
+      "title": "LR Brier=0.199 confirmed 10th time as NBA pre-game SOTA",
+      "source": "MDPI Information Jan 2026 + multiple 2025-2026 papers",
+      "brier_score": 0.199,
+      "key_insight": "No deep learning model beats LR on NBA PRE-GAME prediction in 2025-2026 literature. LR=0.199 is effectively the SOTA ceiling for pre-game only features. Our xgboost_brier at 0.221 CAN close the gap with better calibration.",
+      "actionable": "vm-add-logistic-regression already queued (priority=50). Confirmed in S13 (NBA) and P7 (POL). Scale to remaining islands.",
+      "status": "IN_VM_QUEUE"
+    },
+    {
+      "id": "sota-isotonic-calibration-gap-closer",
+      "priority": "VERIFY_ALREADY_IMPLEMENTED",
+      "title": "Isotonic regression post-hoc calibration closes tree vs LR gap",
+      "source": "Walsh & Joshi 2023 arXiv:2303.06021 + MDPI Computation 2025",
+      "brier_score": 0.20,
+      "key_insight": "Tree ensembles have higher discrimination but systematic miscalibration. Isotonic/Platt correction closes gap to LR baseline. Our xgboost (0.221) lags LR (0.199) partly due to calibration — not feature gap alone.",
+      "actionable": "Isotonic calibration already applied in Colab (0.22054 result). Verify GA island evaluation also uses isotonic calibration in fitness scoring — not just in final model export.",
+      "status": "APPLIED_IN_COLAB_VERIFY_IN_GA"
+    },
+    {
+      "id": "sota-brier-loss-objective",
+      "priority": "ALREADY_IMPLEMENTED",
+      "title": "Brier-score objective training is the key lever (arXiv:2508.02725)",
+      "source": "NCAA LSTM arXiv:2508.02725 Aug 2025",
+      "brier_score": 0.1589,
+      "key_insight": "Training with Brier loss directly (not log-loss/BCE) is the single biggest lever. Our xgboost_brier already uses this. Verify LightGBM variants also use brier objective (not default binary cross-entropy).",
+      "actionable": "xgboost_brier model type already uses Brier objective. Verify lightgbm_brier model type in island codebase uses matching objective. NCAA Brier=0.1589 is NOT comparable to NBA (seed information + bracket structure).",
+      "status": "IMPLEMENTED_AS_XGBOOST_BRIER"
+    },
+    {
+      "id": "sota-feature-count-30-80-optimal",
+      "priority": "CONFIRMED_ALREADY_OPTIMAL",
+      "title": "Optimal feature count 30-80 per PLOS One systematic review (34 studies)",
+      "source": "PLOS One Jun 2025 systematic review of 34 NBA prediction studies",
+      "brier_score": null,
+      "key_insight": "Systematic review of 34 studies: optimal pre-game NBA feature count is 20-50 selected features. More features → overfitting. Our pareto selects 37-75 features — ALREADY IN the optimal range.",
+      "actionable": "Current pareto selection 37-75 features is optimal. Maintain MAX_FEATURES=200 cap but note GA naturally converges to 40-80 range. Do not increase the cap.",
+      "status": "CURRENT_SELECTION_OPTIMAL"
+    },
+    {
+      "id": "sota-mc-dropout-uncertainty",
+      "priority": "LOW_MISSING_DATA",
+      "title": "MC-Dropout uncertainty quantification for prediction intervals (MDPI Information 2026)",
+      "source": "MDPI Information 17(1):56, Jan 2026",
+      "brier_score": 0.20,
+      "key_insight": "MC-dropout on LSTM provides calibrated uncertainty estimates. Shot-chart spatial embeddings novel feature. Requires play-by-play spatial data not in current pipeline.",
+      "actionable": "LOW PRIORITY. Shot-chart embeddings need play-by-play spatial data — unavailable in current data pipeline. Revisit when HERMES browser scraper can fetch ESPN play-by-play.",
+      "status": "FUTURE_WORK_MISSING_DATA"
+    },
+    {
+      "id": "sota-stacked-ensemble-nat-sci",
+      "priority": "VM_QUEUED",
+      "title": "NB+AdaBoost+MLP+KNN+XGB+DT+LR stacked ensemble — Nat Sci Reports Aug 2025",
+      "source": "Nature Scientific Reports Aug 2025",
+      "brier_score": null,
+      "key_insight": "Accuracy 0.87 with stacked diverse classifiers. AdaBoost+NaiveBayes not yet in our model pool.",
+      "actionable": "vm-add-adaboost-naive-bayes-model-pool queued (priority=56). Stacking is BANNED in islands (Rule#8) but AdaBoost+NB can be added as standalone model types.",
+      "status": "IN_VM_QUEUE_PRIORITY_56"
+    },
+    {
+      "id": "sota-tabicl-already-production",
+      "priority": "ALREADY_DEPLOYED",
+      "title": "TabICL tabular foundation model (ICML 2025) — already in production",
+      "source": "arXiv:2502.05564 ICML 2025",
+      "brier_score": 0.21139,
+      "key_insight": "TabICL is our best production result (0.21139 walk-forward holdout Colab, window-biased; honest 0.22054). Production-ready on GPU only.",
+      "actionable": "Already deployed. Focus CPU tree ensemble improvements to approach TabICL quality without GPU cost.",
+      "status": "PRODUCTION_COLAB_0.21139"
+    }
+  ],
+  "summary": "EVEN fire-130 WebSearch. 8 proposals. KEY GAP: win-diff-last-5-games feature (verify in engine — HIGH priority, may close 0.221→0.20 gap). Most techniques already in system: brier-loss objective, isotonic calibration, LR baseline, TabICL. LR=0.199 confirmed 10th time — no new breakthrough technique found for CPU tree ensembles.",
+  "top_3_actions": [
+    "1. VERIFY: win-diff-last-5-games in features/engine.py (MDPI2025 top feature — may close 0.221→0.20 gap)",
+    "2. VERIFY: isotonic calibration applied in GA island fitness scoring (not just Colab post-processing)",
+    "3. CONTINUE: vm-add-logistic-regression to S14/S15/S18/S22/P1/P2/P4/P5 (LR=0.199 SOTA confirmed 10th time)"
+  ]
+}
