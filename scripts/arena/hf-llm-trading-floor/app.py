@@ -1,1 +1,1 @@
-See /tmp/nba_app_full.py
+placeholder_nba
