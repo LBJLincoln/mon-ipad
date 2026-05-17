@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-05-19T14:00:00Z",
+  "updated_at": "2026-05-19T18:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire132-2026-05-19T18h",
+      "priority": 172,
+      "status": "done",
+      "completed_at": "2026-05-19T18:00:00Z",
+      "completed_by": "cloud-brain-fire-132",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-132 ODD: S13 c622 g1866 brier=0.22216 stag=0 pareto=15; S14 c86 g256 brier=0.22793 stag=0 pareto=11 xgb-0.22006-MONITORING(INCONCLUSIVE); S15 c1764 g5290 brier=0.22012★ stag=0; S17 503-DOWN; S18 c87 g259 brier=0.22236 stag=11 WATCH; S22 c31 g93 brier=0.22124 stag=0 pareto=13; all-NBA-no-diversify; P1 c1411 g4231 brier=0.24987 stag=0 POL-BEST; P2 c19399 g58195 stag=0; P4 c220 g659 stag=0 pareto=18 XGBoost-0.24998-INCONCLUSIVE; P5 c26313 g78939 stag=0; P7 c4181 g12543 stag=0 pareto=3-SHRINK-WATCH; all-POL-UP-stag=0-no-diversify; PRIORITY-0-FIX-DONE: political_engine.py restored from placeholder by cloud-brain (d59f9be, 188314c, v3.24+Cat45); ODD-no-WebSearch"
+    },
     {
       "id": "cloud-trigger-axelrod-fire-131-2026-05-19T14h",
       "priority": 171,
@@ -37,10 +46,10 @@
       "priority": 3,
       "status": "pending",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "MONITOR P4 pareto candidate XGBoost-0.24998 (fire-130 1st detect, gen=327) — confirm fire-131",
+      "subject": "MONITOR P4 pareto candidate XGBoost-0.24998 (fire-130 1st detect, gen=327) — confirm fire-133",
       "detected_at": "2026-05-19T08:00:00Z",
-      "updated_at": "2026-05-19T08:00:00Z",
-      "cloud_brain_note": "fire-130: P4 c109 g327 brier=0.25337. Pareto candidate XGBoost-0.24998 at gen=327. This is 1ST DETECT. If confirmed at fire-131 (2nd fire), add vm-checkpoint-p4-xgb-0.24998. Note: P4 alltime pareto best was 0.24904 — this candidate at 0.24998 is below that threshold."
+      "updated_at": "2026-05-19T18:00:00Z",
+      "cloud_brain_note": "fire-132: P4 c220 g659 brier=0.25337. Pareto=18 (growing). /api/pareto returns 404, /api/best returns 404 — cannot directly confirm xgb-0.24998 presence. INCONCLUSIVE fire-132. Monitor fire-133 (EVEN). If still present → vm-checkpoint-p4-xgb-0.24998."
     },
     {
       "id": "cloud-trigger-axelrod-fire-129-2026-05-17T14h",
@@ -97,7 +106,7 @@
       "subject": "VM-CHECKPOINT: S14 (Nomos42/nba-evo-5) ET-200f-0.21923 PARETO-1ST-DETECT (fire-125, gen=28 extraordinary)",
       "detected_at": "2026-05-18T10:00:00Z",
       "updated_at": "2026-05-19T08:00:00Z",
-      "cloud_brain_note": "fire-130: S14 now c76 g227. xgb-0.22006 was 1st-detect fire-127. Monitor fire-131 for xgb-0.22006 2nd-fire confirmation. ET-0.21923 from fire-125 at gen=28 — still the strongest early-gen signal.",
+      "cloud_brain_note": "fire-132: S14 c86 g256. xgb-0.22006 from fire-127 — /api/pareto 404 INCONCLUSIVE. pareto=11. Monitor fire-133 for xgb-0.22006 2nd-fire confirmation.",
       "do_not_push": false
     },
     {
@@ -188,13 +197,14 @@
     {
       "id": "fix-pol-engine-placeholder",
       "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
+      "status": "done",
+      "completed_at": "2026-05-19T18:00:00Z",
+      "completed_by": "cloud-brain-fire-132",
+      "owner": "cloud-brain-sonnet4-6",
       "subject": "URGENT: political_engine.py both files = placeholder. Run scripts/ops/restore_political_engine_fire53.py from nomos-political-alpha root.",
       "detected_at": "2026-05-06T20:00:00Z",
-      "updated_at": "2026-05-19T08:00:00Z",
-      "cloud_brain_note": "fire-130: STILL PENDING 530+h. CRITICAL. Fixes feature_candidates=272 anomaly (all 5 POL islands). Blocks Rotation B. HIGHEST PRIORITY VM ACTION — unblocking this may jump POL features 272→700+.",
-      "do_not_push": false
+      "updated_at": "2026-05-19T18:00:00Z",
+      "result": "CLOSED fire-132. Cloud brain restored directly from git history (no VM needed). Fetched 735095ff via git show, applied Cat45 _pm_extended_windows patch (3 edits), py_compile PASS both files (188314c), committed d59f9be and pushed. ENGINE_VERSION v3.23->v3.24. feature_candidates=272 should normalize to 700+ on next island restart/reload."
     },
     {
       "id": "tf-axelrod-mech-b",
