@@ -69,7 +69,7 @@ minimum Kelly stake cap $\kappa_{\min}$ enforced by the module.
 | 13 | momentum | D4 | — (vacant at day 0) | 0.05 |
 | 14 | mean-reversion | D4 | — (vacant at day 0) | 0.04 |
 | 15 | theoretical | D4 | NBA: T10 · POL: T10 | 0.03 |
-| 16 | chain-of-thought | D4 | NBA: T11 · POL: — | 0.05 |
+| 16 | chain-of-thought | D4† | NBA: T11 · POL: — | 0.05 |
 | 17 | ensemble | D5 | NBA: T6 · POL: T6 | 0.04 |
 | 18 | coordinator | D5 | — (vacant at day 0) | 0.04 |
 | 19 | devil's-advocate | D5 | — (vacant at day 0) | 0.05 |
@@ -77,9 +77,12 @@ minimum Kelly stake cap $\kappa_{\min}$ enforced by the module.
 
 *Table A.1: Full $K = 20$ archetype taxonomy. The "Initially Occupied" column
 lists which NBA/political agent holds the archetype at day 0 using the
-agent indices from Table 3 (§4.1). Eight archetypes are vacant at day 0
-(nos. 3, 6, 10, 13, 14, 18, 19, 20); these constitute the vacancy pool
-$\mathcal{V}_0$ from which SRR draws reallocation targets (Definition 2, §3.4).*
+agent indices from Table 3 (§4.1). Eight archetypes are vacant in the NBA domain
+at day 0 ($\mathcal{V}_0^{\text{NBA}} = \{3, 6, 10, 13, 14, 18, 19, 20\}$); the
+political domain additionally has archetypes 8 and 16 vacant, giving
+$\mathcal{V}_0^{\text{POL}} = \{3, 6, 8, 10, 13, 14, 16, 18, 19, 20\}$ (10 archetypes). SRR draws from the domain-appropriate vacancy pool (Definition 2, §3.4).*
+
+*†: Archetype 16 is a process modifier (extended deliberation) rather than a pure temporal-horizon type; see §A.4.4 for classification rationale.*
 
 ---
 
@@ -495,9 +498,10 @@ all 8 unoccupied archetypes are formally vacant (0 < 0.025).
 The non-vacant archetypes (occupied by at least one agent) pass the
 threshold with occupancy fractions of $1/12 \approx 0.083 \gg 0.025$.
 
-For the political cohort ($N = 10$), agent T12 is absent, so the
-*disciplined* archetype (A.4.8) is initially vacant in the political domain.
-This gives $|\mathcal{V}_0^{\text{POL}}| = 9$ vacant archetypes at political day 0.
+For the political cohort ($N = 10$), agents T11 and T12 are absent, so the
+*chain-of-thought* archetype (A.4.4, no.\ 16) and the *disciplined* archetype
+(A.4.8, no.\ 8) are additionally vacant in the political domain.
+This gives $|\mathcal{V}_0^{\text{POL}}| = 10$ vacant archetypes at political day 0.
 
 *Remark on initial diversity.* The initial JSD diversity $D_0$ under the
 12-archetype assignment is lower than the theoretical maximum achievable with

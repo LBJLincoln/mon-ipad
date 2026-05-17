@@ -131,7 +131,8 @@ This paper makes four contributions:
    strategy archetype from a predefined taxonomy, increasing population-level Jensen–Shannon
    divergence (§3.3). We prove under mild assumptions that SRR is a *Strong* Nash equilibrium
    refinement (Proposition 2, §3.5): no coalition of agents can jointly deviate from SRR
-   and weakly improve ensemble Brier while doing so.
+   and simultaneously (weakly) improve ensemble Brier for the coalition while (weakly)
+   reducing individual Brier for each coalition member.
 
 3. **Real-world LLM trading experiment.** We deploy 12 heterogeneous LLM agents (spanning
    five provider ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, and
@@ -2056,15 +2057,15 @@ source priority, D4 temporal horizon, D5 ensemble relationship); (2) **distingui
 | 13 | momentum | D4 | — (vacant at day 0) | 0.05 |
 | 14 | mean-reversion | D4 | — (vacant at day 0) | 0.04 |
 | 15 | theoretical | D4 | NBA: T10 · POL: T10 | 0.03 |
-| 16 | chain-of-thought | D4 | NBA: T11 · POL: — | 0.05 |
+| 16 | chain-of-thought | D4† | NBA: T11 · POL: — | 0.05 |
 | 17 | ensemble | D5 | NBA: T6 · POL: T6 | 0.04 |
 | 18 | coordinator | D5 | — (vacant at day 0) | 0.04 |
 | 19 | devil's-advocate | D5 | — (vacant at day 0) | 0.05 |
 | 20 | adaptive | D5 | — (vacant at day 0) | 0.03 |
 
-*Table A.1: $K = 20$ archetype taxonomy. Eight archetypes are vacant at day 0
-(nos. 3, 6, 10, 13, 14, 18, 19, 20), constituting $\mathcal{V}_0$ for SRR
-(Definition 2, §3.4). Full prompt modules at `data/arena/archetypes/<name>.txt`.*
+*Table A.1: $K = 20$ archetype taxonomy. Eight archetypes are vacant in the NBA domain at day 0 ($\mathcal{V}_0^{\text{NBA}} = \{3, 6, 10, 13, 14, 18, 19, 20\}$); archetypes 8 and 16 are additionally vacant in the political domain ($\mathcal{V}_0^{\text{POL}} = \{3, 6, 8, 10, 13, 14, 16, 18, 19, 20\}$, 10 archetypes). SRR draws from the domain-appropriate vacancy pool (Definition 2, §3.4). Full prompt modules at `data/arena/archetypes/<name>.txt`.*
+
+*†: Archetype 16 is a process modifier (extended deliberation) rather than a pure temporal-horizon type; see §A.4.4 for classification rationale.*
 
 ## A.4  Per-Archetype Entries (Abbreviated)
 
@@ -2172,7 +2173,7 @@ At NBA day 0, 12 of 20 archetypes are occupied and 8 are vacant ($\mathcal{V}_0$
 nos.\ 3, 6, 10, 13, 14, 18, 19, 20). With vacancy threshold $\tau_{\text{vac}} = 1/(2K) = 0.025$,
 all 8 unoccupied archetypes qualify as vacant (occupancy $0 < 0.025$); all 12 occupied
 archetypes pass ($1/12 \approx 0.083 \gg 0.025$). For the political cohort ($N = 10$),
-T12 is absent, giving $|\mathcal{V}_0^{\text{POL}}| = 9$.
+T11 and T12 are absent, so archetypes 8 (*disciplined*) and 16 (*chain-of-thought*) are additionally vacant, giving $|\mathcal{V}_0^{\text{POL}}| = 10$.
 
 The initial JSD diversity $D_0$ under the 12-archetype assignment is strictly below
 the theoretical maximum achievable with 20 archetypes, providing a measurable

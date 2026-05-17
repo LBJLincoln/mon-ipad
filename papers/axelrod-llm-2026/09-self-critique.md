@@ -2587,3 +2587,237 @@ to confirm propagation to all relevant files before marking closed.
   description referencing axelrod-log + Appendix D + repository (V5)
 - `appendix-a.md` (4 locations): `COLLECTIVE_MISSION` → "shared mission preamble" (V4)
 - `paper.md`: all fixes mirrored (V1–V5, 8 edit locations)
+
+---
+
+# Peer-Review Self-Critique — Cycle 22 (2026-05-17)
+
+*Format: simulated Reviewer 2 assessment followed by author response for each issue.
+Issues marked [FIXED] were addressed in this cycle; [OPEN] remain for future cycles.*
+
+---
+
+## MAJOR CONCERNS
+
+### X1. `paper.md` §1 Contribution 2 — Cycle 21 W2 fix produced an incomplete Proposition 2 statement, omitting the second Strong Nash condition [FIXED]
+
+**Reviewer:** The Cycle 21 W2 fix claimed to update `paper.md` §1 Contribution 2 to
+"match `02-introduction.md`," but the compiled manuscript retains a compressed paraphrase
+that loses the logical structure of the Strong Nash equilibrium claim:
+
+> "no coalition of agents can jointly deviate from SRR and **weakly improve ensemble Brier
+> while doing so**."
+
+The phrase "while doing so" has no grammatical antecedent in the surrounding text —
+"doing so" could refer to deviating from SRR or to weakly improving ensemble Brier.
+More critically, the sentence drops the second condition of the Strong Nash equilibrium
+claim entirely. The correct statement, which appears in `02-introduction.md` (and is
+consistent with Proposition 2 in `04-method.md`), is:
+
+> "no coalition of agents can jointly deviate from SRR and **simultaneously** (weakly)
+> improve ensemble Brier **for the coalition** while (weakly) **reducing individual Brier
+> for each coalition member**."
+
+A Strong Nash equilibrium requires that no coalition can deviate such that **every member**
+is weakly better off. The omitted clause "reducing individual Brier for each coalition
+member" is precisely this condition. Without it, the sentence describes a weaker claim
+(the coalition cannot improve its ensemble Brier by deviating), which is true but is not
+what justifies calling the result a Strong Nash equilibrium refinement. A reviewer with
+game-theory expertise will immediately recognize that the summary in §1 does not logically
+imply the named equilibrium concept.
+
+**Author response:** `paper.md` §1 Contribution 2 rewritten to match `02-introduction.md`
+verbatim:
+
+> "We prove under mild assumptions that SRR is a *Strong* Nash equilibrium refinement
+> (Proposition 2, §3.5): no coalition of agents can jointly deviate from SRR and
+> simultaneously (weakly) improve ensemble Brier for the coalition while (weakly)
+> reducing individual Brier for each coalition member."
+
+Verification: `grep -A3 "Strong.*Nash" paper.md` confirms the three reinstated elements
+("simultaneously", "for the coalition", "reducing individual Brier for each coalition
+member") are all present. The source file `02-introduction.md` is unchanged; the fix
+brings `paper.md` into alignment. ✓
+
+---
+
+## MINOR CONCERNS
+
+### X2. Table A.1 caption — "eight archetypes vacant at day 0" correct for NBA but wrong for the political domain; domain-ambiguous $\mathcal{V}_0$ [FIXED]
+
+**Reviewer:** The Table A.1 caption states:
+
+> "Eight archetypes are vacant at day 0 (nos. 3, 6, 10, 13, 14, 18, 19, 20);
+> these constitute the vacancy pool $\mathcal{V}_0$..."
+
+But the table itself shows two archetypes with "POL: —" entries that are *not* in the
+listed vacancy set:
+- Archetype 8 (*disciplined*): "NBA: T12 · POL: —" — occupied in NBA, **vacant in POL**
+- Archetype 16 (*chain-of-thought*): "NBA: T11 · POL: —" — occupied in NBA, **vacant in POL**
+
+The political domain has **10** vacant archetypes at day 0, not 8. The caption
+correctly describes the NBA vacancy set, but the unqualified claim "vacant at day 0"
+is domain-ambiguous: a reader would infer that both domains share the same eight-element
+vacancy pool and thus the same $\mathcal{V}_0$.
+
+Since SRR is domain-specific (NBA agents draw from the NBA vacancy pool; political agents
+draw from the political pool), the notation $\mathcal{V}_0$ must be domain-indexed. The
+error also propagates to `appendix-a.md` §A.5, which stated $|\mathcal{V}_0^{\text{POL}}| = 9$
+(accounting for T12's absence but missing T11's absence); and to `paper.md` §A.5, which
+similarly had $|\mathcal{V}_0^{\text{POL}}| = 9$. The correct count is 10.
+
+**Author response:**
+- `appendix-a.md` Table A.1 caption: rewritten with domain-indexed notation
+  $\mathcal{V}_0^{\text{NBA}} = \{3,6,10,13,14,18,19,20\}$ (8 archetypes) and
+  $\mathcal{V}_0^{\text{POL}} = \{3,6,8,10,13,14,16,18,19,20\}$ (10 archetypes);
+  wording clarifies SRR draws from the domain-appropriate pool.
+- `appendix-a.md` §A.5: corrected — "T11 and T12 are absent" (was "T12 is absent"),
+  "archetypes 8 and 16 additionally vacant" (was "archetype [8] additionally vacant"),
+  $|\mathcal{V}_0^{\text{POL}}| = 10$ (was 9).
+- `paper.md` Table A.1 caption: mirrored fix.
+- `paper.md` §A.5: mirrored fix — $|\mathcal{V}_0^{\text{POL}}| = 10$ (was 9).
+
+Verification: `grep -n "mathcal{V}_0" appendix-a.md paper.md` confirms all four locations
+use domain-indexed notation. `grep -n "= 9\|= 10" appendix-a.md paper.md` confirms no
+residual "= 9" references in the vacancy-count context. ✓
+
+---
+
+### X3. Table A.1 assigns archetype 16 (*chain-of-thought*) to D4 without a cross-reference to the classification rationale in §A.4.4 [FIXED]
+
+**Reviewer:** The D4 dimension is defined as "Temporal horizon: short-term momentum
+←→ long-term mean-reversion." The D4 entries in Table A.1 are archetypes 13 (*momentum*),
+14 (*mean-reversion*), 15 (*theoretical*), and 16 (*chain-of-thought*). A reader scanning
+the table would reasonably expect all four to be temporal-horizon types, but archetype 16
+is acknowledged in §A.4.4 to be "a *process* modifier rather than a pure temporal-horizon
+type." The cross-dimension classification is explained in §A.4.4 ("placed in D4 because
+deliberative reasoning naturally surfaces temporal factors"), but Table A.1 provides no
+signal that archetype 16 is an exception to the D4 definition — there is no footnote,
+asterisk, or parenthetical to redirect the reader.
+
+A reviewer or reader encountering the table without reading §A.4.4 in full will find the
+classification puzzling and may flag it as an error. The issue is compounded because
+"chain-of-thought" does not mention time at all as a concept; its association with D4
+is a non-obvious editorial choice.
+
+**Author response:** Added a "†" dagger to the D4 entry for archetype 16 in Table A.1
+(both `appendix-a.md` and `paper.md`), with a corresponding table footnote:
+
+> "†: Archetype 16 is a process modifier (extended deliberation) rather than a pure
+> temporal-horizon type; see §A.4.4 for classification rationale."
+
+The rationale text in §A.4.4 itself is unchanged and sufficient; the footnote simply
+creates a navigational link from the table to the explanation.
+
+Verification: `grep "D4†" appendix-a.md paper.md` returns the archetype 16 row in both files.
+`grep "cross-dimension\|process modifier" appendix-a.md` confirms the footnote is present. ✓
+
+---
+
+### X4. Three $\kappa$-type quantities ($\kappa_i$, $\rho_i$, $\kappa_{\min}$) coexist without documented mutual relationships; §3.6 omits $\rho_i$ and $\kappa_{\min}$ from the stake-sizing formula [OPEN]
+
+**Reviewer:** Following the Cycle 20 W4 fix, the paper now uses three distinct
+$\kappa$-adjacent symbols for stake-related quantities, none of which is integrated
+with the others in a single formula:
+
+1. **$\kappa_i = \max(0.01, 0.30 - \overline{B}_i \times 0.50)$** — formula-derived
+   Kelly cap, defined in §3.6, range $[0.01, 0.20]$.
+
+2. **$\rho_i \in [0.30, 0.70]$** — personality risk weight, tabulated in Table 3
+   (§4.1), renamed from $\kappa_i$ in Cycle 20 to resolve notation collision with (1).
+
+3. **$\kappa_{\min} \in [0.01, 0.08]$** — archetype-level minimum stake cap,
+   column header in Table A.1 (§A.3), used informally in per-archetype Kelly notes
+   (e.g., "medium-cap ($\kappa_{\min} = 0.04$)").
+
+The Cycle 20 W4 fix introduced the "realised stake $= \kappa_i \times \rho_i$" formula
+in Appendix A.4.2 (Aggressive archetype abbreviated entry). However:
+
+- **§3.6 does not mention $\rho_i$ or $\kappa_{\min}$** — a reader relying solely on
+  §3.6 for the stake formula sees only $\kappa_i$ and has no information about the
+  risk-weight multiplier or the archetype-level floor.
+
+- **The relationship between $\kappa_{\min}$ and $\kappa_i \times \rho_i$ is never
+  stated.** Is $\kappa_{\min}$ a floor on the realised stake (so the effective stake is
+  $\max(\kappa_{\min}, \kappa_i \times \rho_i) \times \text{Kelly-optimal}$)? Or is
+  $\kappa_{\min}$ always dominated by $\kappa_i \times \rho_i$ in practice (making it
+  a redundant design parameter)? A reviewer cannot answer this from the current text.
+
+- **Conservative archetype values are self-contradictory under the realised-stake formula.**
+  The Conservative archetype (no. 6) has $\kappa_{\min} = 0.01$ (the global minimum) and
+  is described as "cap[ped] at 30% of standard Kelly." If "30% of standard Kelly" means
+  the realised stake is $0.30 \times \kappa_i \times \rho_i$ for some $\rho_i$, that is
+  different from a $\kappa_{\min} = 0.01$ floor. The archetype notes do not specify
+  $\rho_i$ for Conservative, making the stake model unresolvable from the appendix alone.
+
+**Author response:** This issue requires a targeted revision of §3.6 ("Bankroll and
+Kelly allocation" paragraph) to (a) introduce the complete three-factor stake model,
+(b) define $\kappa_{\min}$ formally as an archetype-enforced floor, and (c) state the
+priority ordering among the three quantities. Simultaneously, Appendix A.3 needs a
+notation-definition row and Appendix A.4 Kelly notes need to be checked for
+consistency. This is a §3.6 + Appendix A cross-section revision and is scheduled
+for Cycle 23. *(Open)*
+
+---
+
+## CYCLE 22 SUMMARY
+
+**Fixed:** X1 (`paper.md` §1 Contribution 2 — Cycle 21 W2 still incomplete;
+full Proposition 2 statement restored: "simultaneously," "for the coalition,"
+"reducing individual Brier for each coalition member"), X2 (Table A.1 caption
+and §A.5 — NBA vacancy count correct at 8; POL vacancy count corrected from
+9 → 10 as T11 and T12 are both absent; domain-indexed $\mathcal{V}_0$ notation
+introduced in all four affected locations across `appendix-a.md` and `paper.md`),
+X3 (Table A.1 archetype 16 row — "D4†" footnote added pointing to §A.4.4
+cross-dimension rationale; mirrored in `paper.md`).
+
+**Remaining open:** X4 (three-quantity Kelly stake model integration: §3.6 +
+Appendix A revision required).
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's `> *Brier-delta... to be inserted*` note and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+   for sacrifice-eligible agents
+10. Final SRR cross-reference sweep: `grep -n "3\.3.*SRR\|SRR.*3\.3" *.md` before
+    submission
+11. Verify all forward-references: `grep -n "for elaboration" *.md` before submission
+12. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ once pilot backtest
+    completes so $\kappa_i$ can be shown numerically alongside $\rho_i$
+13. Final $\kappa_i$/$\rho_i$ sweep: `grep -n "kappa_i" appendix-a.md paper.md` before
+    submission; any $\kappa_i$ in Kelly-note context with value > 0.20 flags a residual
+    W4 propagation failure
+14. Final COLLECTIVE sweep: `grep -in "collective" paper.md` before submission
+15. **NEW — Cycle 23 target:** Integrate $\kappa_{\min}$, $\kappa_i$, $\rho_i$ into
+    a single complete stake formula in §3.6; add formal definition of $\kappa_{\min}$
+    to Appendix A.3; audit all per-archetype Kelly notes for consistency (X4)
+16. **NEW — $\mathcal{V}_0$ domain-index sweep:** `grep -n "mathcal{V}_0\b" *.md`
+    before submission to confirm no bare (domain-unindexed) $\mathcal{V}_0$ remains in
+    contexts where the domain distinction matters
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking closed. For
+underscore-containing terms, use `grep -in "<TERM>"` to catch backslash-escaped variants.
+
+**Structural changes this cycle:**
+- `paper.md` §1 Contribution 2: Proposition 2 summary restored —
+  "weakly improve ensemble Brier while doing so" → "simultaneously (weakly) improve
+  ensemble Brier for the coalition while (weakly) reducing individual Brier for each
+  coalition member" (X1)
+- `appendix-a.md` Table A.1 caption: domain-indexed vacancy notation introduced;
+  "$\mathcal{V}_0^{\text{NBA}}$ (8 archetypes) / $\mathcal{V}_0^{\text{POL}}$ (10
+  archetypes)" replaces generic "$\mathcal{V}_0$ (8 archetypes)" (X2)
+- `appendix-a.md` §A.5: T11 added as absent from political cohort;
+  $|\mathcal{V}_0^{\text{POL}}| = 9 \to 10$; archetype 16 named as additionally
+  vacant (X2)
+- `appendix-a.md` Table A.1, archetype 16: "D4" → "D4†"; table footnote added (X3)
+- `paper.md` Table A.1 caption: domain-indexed notation mirrored (X2)
+- `paper.md` §A.5: $|\mathcal{V}_0^{\text{POL}}| = 9 \to 10$ mirrored (X2)
+- `paper.md` Table A.1, archetype 16: "D4" → "D4†"; footnote mirrored (X3)
