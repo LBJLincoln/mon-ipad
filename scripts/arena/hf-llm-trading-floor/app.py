@@ -1,1 +1,1 @@
-CONTENT_NBA_PLACEHOLDER
+nba_placeholder

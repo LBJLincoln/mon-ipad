@@ -1,1 +1,1 @@
-CONTENT_POL_PLACEHOLDER
+pol_placeholder
