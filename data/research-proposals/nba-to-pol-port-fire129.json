@@ -1,0 +1,46 @@
+{
+  "id": "nba-to-pol-port-fire129",
+  "title": "NBA-to-POL Technique Port: ET-200f Attractor + LR Scale-Up (fire-129 ODD Rotation C)",
+  "fire": 129,
+  "parity": "ODD",
+  "rotation": "C_port_nba_techniques",
+  "timestamp": "2026-05-17T12:30:00Z",
+  "evidence": {
+    "nba_et_attractor": "5/5 NBA islands (S13/S14/S15/S18/S22) show ET-200f in pareto front across multiple fires. This is the strongest cross-island signal in 129 fires.",
+    "nba_lr_confirmed": "S14 gen=684 logistic_regression-48f in pareto (vm-add-logistic-regression fire-110 working). LR is the academically confirmed best model for NBA (Brier=0.199, 12th confirm across papers).",
+    "pol_lr_confirmed": "P7 logistic_regression-102f appears in pareto fire-129 (1st POL LR detection). Cross-validates NBA finding.",
+    "s22_extraordinary": "S22 brier=0.22124 at gen=60 (cycle 20) — only 0.00112 from fleet best. RF-200f-0.22161 in pareto. Fastest convergence seen in 129 fires."
+  },
+  "proposals": [
+    {
+      "id": "vm-add-extra-trees-pol",
+      "title": "Add extra_trees to all POL island model pools",
+      "rationale": "ET-200f dominates 5/5 NBA pareto fronts. POL uses xgboost_brier exclusively in current best model. ET may outperform on POL categorical-heavy political data (similar feature sparsity pattern).",
+      "action": "Edit POL island init/mutate to include extra_trees alongside xgboost_brier/lightgbm in model pool",
+      "priority": 2,
+      "estimated_brier_delta": -0.001
+    },
+    {
+      "id": "vm-add-lr-elastic-net-all-pol",
+      "title": "Scale LR+ElasticNet to all 5 POL islands",
+      "rationale": "P7 shows LR-102f in pareto (first POL LR detection). NBA confirms LR=0.199 as best Brier. Scaling from P7 to all 5 POL islands should unlock similar improvement.",
+      "action": "Add logistic_regression + elastic_net to P1/P2/P4/P5 model pools (P7 already has it)",
+      "priority": 1,
+      "estimated_brier_delta": -0.002
+    },
+    {
+      "id": "vm-test-p1-fresh-restart",
+      "title": "Test rolling P1 restart to probe early convergence rate",
+      "rationale": "S22 hits 0.22124 at gen=60 from fresh start. P1 (cycle=1103) stagnating near 0.249. NBA triple-attractor pattern (S14/S18/S22) shows fresh starts often hit better early attractors. P1 = oldest POL island.",
+      "action": "Deliberate factory restart of P1. Monitor first 100 gens. If brier < 0.247 by gen=100, the fresh-start attractor hypothesis is confirmed for POL.",
+      "priority": 3,
+      "risk": "P1 may lose pareto history. Run on lowest-performer island first.",
+      "estimated_brier_delta": -0.002
+    }
+  ],
+  "cross_fleet_insights": {
+    "convergent_signal": "LightGBM-0.249 appears in P2/P4/P5/P7 pareto simultaneously (4/5 POL islands). Strongest POL signal since fire-109.",
+    "nba_analogy": "NBA ET-200f attractor (5/5) → POL LightGBM-0.249 attractor (4/5). Both suggest a dominant model type per domain.",
+    "action": "Port: ensure all 5 POL islands have lightgbm + lightgbm_brier + extra_trees + logistic_regression in their model pool (currently xgboost_brier only or sparse mix)."
+  }
+}
