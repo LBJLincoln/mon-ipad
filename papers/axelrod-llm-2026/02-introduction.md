@@ -111,9 +111,12 @@ Section 2 surveys related work across evolutionary game theory, LLM multi-agent 
 and prediction market mechanisms. Section 3 formalizes the LPSG and SRR. Section 4
 describes the experimental setup. Section 5 presents results. Section 6 discusses
 connections to cooperation theory and implications for LLM ensemble design. Section 7
-covers limitations and ethics. Appendices provide the strategy archetype taxonomy
-with abbreviated prompt directives (full prompt modules are available in the code
-repository), and the derivation of the diversity–accuracy bound.
+covers limitations and ethics. Appendix A documents the full 20-archetype
+strategy taxonomy with abbreviated prompt directives (full prompt modules
+available in the code repository). Appendix B provides mathematical proofs and
+the archetype pairwise distinguishability matrix. Appendix C provides the
+experimental calendar, hyperparameter and temperature sensitivity analyses, and
+statistical power calculations.
 
 ---
 

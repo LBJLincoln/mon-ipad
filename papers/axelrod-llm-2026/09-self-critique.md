@@ -3005,3 +3005,243 @@ use `grep -in "<TERM>"` to catch backslash-escaped variants.
   before the taxonomy table (X4)
 - `appendix-a.md` §A.4.2 Conservative: Kelly note added (Y2/X4 audit)
 - `paper.md`: all four structural changes mirrored (X4, Y2)
+
+---
+
+# Peer-Review Self-Critique — Cycle 24 (2026-05-20)
+
+*Addressing Y1 (sole open issue from Cycle 23) plus new issues surfaced by
+checklist sweeps (items 10, 11, 13, 14, 16) and targeted re-read of §1,
+§6.1, and Appendix A.5.*
+
+---
+
+## CYCLE 23 OPEN ISSUES — RESOLUTION STATUS
+
+### Y1. §A.4.1 Quantitative Kelly note — "empirically low" unsupported pre-results claim [FIXED]
+
+**What was open:** `appendix-a.md` §A.4.1 (Quantitative archetype) Kelly note used the
+word "empirically" to qualify the false-positive-rate claim before any pilot data existed.
+As stated in Cycle 23, all §5.x tables are **[PENDING]**, making any "empirically" qualified
+claim about archetype-specific accuracy premature and potentially rejected by a reviewer
+checking cross-references.
+
+**Fix applied:**
+
+- `appendix-a.md` §A.4.1, Kelly note: "empirically low false-positive rate" →
+  "expected low false-positive rate (pre-registered; to be confirmed in §5.1 Table 4
+  upon pilot backtest completion)." ✓
+- `paper.md`: No mirror needed — the abbreviated §A.4 entry for Quantitative (lines
+  2102–2105) does not include the Kelly note text; it contains only the core directive.
+  The Kelly note first appears in full in `appendix-a.md` §A.4.1.
+
+*Post-fix verification:*
+`grep -n "empirically low" appendix-a.md paper.md` → zero hits. ✓
+`grep -n "false-positive rate" appendix-a.md` → one hit at line 132
+("expected low false-positive rate (pre-registered...)"). ✓
+
+---
+
+## CHECKLIST SWEEPS — RESULTS (Cycle 24)
+
+Pre-submission checklist items 10, 11, 13, 14, 16 executed against all `.md` files.
+
+**Item 10 (SRR §3.3/§3.4 cross-reference sweep):** No live instances of
+"3.3.*SRR\|SRR.*3.3" in source files `02-introduction.md`, `03-related-work.md`,
+`04-method.md`, `05-experimental-setup.md`, `06-results.md`, `07-discussion.md`,
+`08-limitations.md`, `appendix-*.md`, `paper.md`. All prior §3.3/§3.4 confusions
+(R3, S2, T2) were resolved in earlier cycles. ✓
+
+**Item 11 (forward-reference "for elaboration" sweep):** One instance found in
+`04-method.md` line 37 and mirrored in `paper.md` line 526:
+"(cf. Aumann, 1976 [@aumann1976agreeing]; see §6.2 for elaboration)."
+The §6.2 target exists and is titled "The Information Architecture of Asymmetric
+Broadcasting." The forward-reference is valid. ✓
+
+**Item 13 ($\kappa_i$ Kelly-note context sweep):** No $\kappa_i$ values exceeding
+0.20 found in Kelly-note or stake-formula contexts. The `realised stake = $\kappa_i
+\times \rho_i$` phrasing at `paper.md` line 2123 (§A.4 Aggressive entry) is inside
+the abbreviated taxonomy table — it is a formula template, not an assigned value, and
+is consistent with the §3.6 definition $s_i = \max(\kappa_{\min}^{(r_i)}, \rho_i
+\cdot \kappa_i)$. No residual notation collision. ✓
+
+**Item 14 (COLLECTIVE sweep):** Four hits in `paper.md`; all legitimate uses:
+(a) "collectively suboptimal" (§5 context), (b) "collective \$1M" (mission preamble
+description), (c) "collective accuracy" (§6.1), (d) "group's collective accuracy"
+(§6.1). No instances of the suppressed caps-lock COLLECTIVE_MISSION string appearing
+verbatim in manuscript text. ✓
+
+**Item 16 ($\mathcal{V}_0$ domain-index sweep):** **Two bare instances found and fixed
+(see Z1 below).** Post-fix: all four instances of $\mathcal{V}_0$ in `appendix-a.md`
+and `paper.md` carry domain superscripts (${}^{\text{NBA}}$ or ${}^{\text{POL}}$). ✓
+
+---
+
+## NEW ISSUES (Cycle 24)
+
+### Z1. Bare $\mathcal{V}_0$ in §A.5 of `appendix-a.md` and `paper.md` [FIXED IN-CYCLE]
+
+**Issue (identified by Checklist item 16 sweep):**
+
+- `appendix-a.md` line 518 (§A.5 Initial Vacancy Analysis): "leaving 8 vacant
+  ($\mathcal{V}_0$, marked "—" in Table A.1)" — domain superscript absent.
+- `paper.md` line 2201 (§A.5 mirror): "8 are vacant ($\mathcal{V}_0$: nos.\ 3, 6,
+  ...)" — domain superscript absent.
+
+These were the only two remaining bare $\mathcal{V}_0$ instances after Cycle 22's
+domain-indexing fix (X2), which corrected Table A.1 captions and §A.5 title prose
+but missed the inline parenthetical on the sentence opening the vacancy analysis.
+
+**Fix applied:**
+
+- `appendix-a.md` §A.5: `$\mathcal{V}_0$` → `$\mathcal{V}_0^{\text{NBA}}$`. ✓
+- `paper.md` §A.5: `$\mathcal{V}_0$` → `$\mathcal{V}_0^{\text{NBA}}$`. ✓
+
+*Post-fix verification:*
+`grep -n "mathcal{V}_0\b" appendix-a.md paper.md` → all four remaining hits carry
+either `^{\text{NBA}}` or `^{\text{POL}}` superscripts. ✓
+
+---
+
+### Z2. §1 Contribution 3 — "largest real-money-equivalent LLM prediction market experiment" claim: potentially contradicted by concurrent PolySwarm [OPEN]
+
+**Reviewer:** §1 Contribution 3 asserts the experiment constitutes "the largest
+real-money-equivalent LLM prediction market experiment in peer-reviewed literature."
+However, PolySwarm [@polyswarm2026] (arXiv:2604.03888) — cited in §2.5 — deploys a
+50-persona LLM swarm directly on Polymarket, which is a *real-money* prediction
+market. If PolySwarm constitutes peer-reviewed (or even preprint-level) literature,
+our claim of being "largest" could be challenged on two grounds: (a) PolySwarm
+involves literal real money, not "equivalent"; (b) 50 personas may exceed our 12
+NBA + 10 political agent counts.
+
+**Scope clarification:** The claim can be defended if qualified appropriately —
+our experiment is *controlled* (fixed archetype assignment, identical prompts except
+archetype module, parallel NBA + political domains), whereas PolySwarm uses a
+different architecture (fixed-persona diversity without performance-triggered
+reallocation). However, the unqualified superlative "largest" is not defensible
+without a table comparing agent counts, event counts, and agent-event interaction
+counts across concurrent works.
+
+**Author response:** Revise the claim to "the largest controlled multi-LLM
+prediction market experiment with performance-triggered archetype tracking in
+peer-reviewed literature, and the first to deploy paired parallel domains
+(NBA + political)." This distinguishes our contribution from PolySwarm's design
+on three specific structural dimensions. Alternatively, soften to "one of the
+largest" and add a footnote comparing our agent-event interaction count ($N \times T$)
+with PolySwarm's. Scheduled for Cycle 25. *(Open)*
+
+---
+
+### Z3. §1 Paper Organization — appendix description stale after Appendices B and C added [FIXED IN-CYCLE]
+
+**Issue identified (re-read of §1 Paper Organization):**
+
+The Paper Organization paragraph (§1, final paragraph) stated:
+"Appendices provide the strategy archetype taxonomy with abbreviated prompt
+directives (full prompt modules are available in the code repository), and the
+derivation of the diversity–accuracy bound."
+
+This description was written before Appendix C (experimental supplements) existed.
+It mentions only the taxonomy (Appendix A) and one derivation (the B.1 Taylor
+expansion result that establishes JSD–Ambiguity monotonicity). It omits entirely:
+- Appendix B.2: $20 \times 20$ pairwise archetype distinguishability matrix
+- Appendix C.1: experimental calendar
+- Appendix C.2–C.3: hyperparameter and temperature sensitivity analyses
+- Appendix C.4: statistical power calculations
+
+A reviewer reading the Paper Organization to navigate the manuscript would not find
+Appendices B.2–C.4 described there.
+
+**Fix applied:**
+
+- `02-introduction.md` §1 Paper Organization: Description replaced with
+  appendix-by-letter enumeration (A: taxonomy; B: proofs + distinguishability
+  matrix; C: calendar + sensitivity + power). ✓
+- `paper.md` §1 Paper Organization: Identical replacement. ✓
+
+*Post-fix verification:*
+`grep -n "Appendix A documents\|Appendix B provides\|Appendix C provides"
+02-introduction.md paper.md` → two files × three lines = 6 hits (correct). ✓
+
+---
+
+### Z4. §6.1 Discussion — named agent SRR example (T8 → contrarian) presented as factual before experimental data exists [OPEN]
+
+**Reviewer:** §6.1 (Discussion, first full paragraph) reads:
+
+> "T8 (*mistral-small*), reallocating from *wide-coverage* to *contrarian*,
+> does not share 'genetic' material with T4 (*gemini-anl*), whose prediction
+> diversity it enriches..."
+
+The phrase "reallocating from *wide-coverage* to *contrarian*" describes a specific
+SRR event in present tense. Table 7 (§5.6) lists T8's SRR events as **[PENDING]**.
+The 2025–26 NBA season data is not yet fully resolved. There is no record in
+`data/arena/axelrod-log/` confirming that T8 ever reallocates from *wide-coverage*
+to *contrarian*.
+
+This is an instance of the same error class as Y1 (Cycle 23): asserting an empirical
+fact without supporting data. A hostile reviewer cross-referencing §6.1 prose against
+§5.6 Table 7 will flag the inconsistency immediately. The sentence currently reads as
+if it documents an observed SRR event; it should be explicitly marked as illustrative.
+
+**Author response:** Prefix the example with "As an illustrative hypothetical
+example of how Proposition 2 applies:" and change the present-tense verb
+"reallocating" to "were to reallocate." The surrounding argument is normative
+(showing that the Proposition 2 conditions are satisfied in general), not empirical,
+and this reframing is accurate to the intent. Scheduled for Cycle 25. *(Open)*
+
+---
+
+## CYCLE 24 SUMMARY
+
+**Fixed:** Y1 (Quantitative Kelly note "empirically" → "expected (pre-registered)");
+Z1 (two bare $\mathcal{V}_0$ instances in §A.5 of `appendix-a.md` and `paper.md`
+→ $\mathcal{V}_0^{\text{NBA}}$); Z3 (stale Paper Organization appendix description
+in `02-introduction.md` and `paper.md` → three-appendix enumeration).
+
+**Remaining open:** Z2 ("largest" superlative — qualify or add comparison table
+with PolySwarm agent/event counts); Z4 (§6.1 T8 SRR example in present-tense
+factual voice — reframe as explicit hypothetical).
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's Brier-delta placeholder and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+   for sacrifice-eligible agents
+10. Final SRR cross-reference sweep: `grep -n "3\.3.*SRR\|SRR.*3\.3" *.md` before
+    submission ✓ **Cleared Cycle 24**
+11. Verify all forward-references: `grep -n "for elaboration" *.md` ✓ **Cleared Cycle 24**
+12. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ for $\kappa_i$
+    numerical display alongside $\rho_i$ in Table 3
+13. Final $\kappa_i$/$\rho_i$ sweep: `grep -n "kappa_i" appendix-a.md paper.md` ✓
+    **Cleared Cycle 24** (no values > 0.20 in Kelly-note context)
+14. Final COLLECTIVE sweep: `grep -in "collective" paper.md` ✓ **Cleared Cycle 24**
+    (all four hits are legitimate)
+15. **DONE (Y1) — Quantitative Kelly note:** "empirically" → "expected (pre-registered)"
+    in `appendix-a.md` §A.4.1 ✓
+16. $\mathcal{V}_0$ domain-index sweep ✓ **Cleared Cycle 24** (Z1 fixed; all instances
+    carry domain superscripts)
+17. **NEW — Z2:** Qualify "largest real-money-equivalent" claim in §1 Contribution 3;
+    add comparison footnote vs. PolySwarm agent/event counts (Cycle 25)
+18. **NEW — Z4:** §6.1 T8 example — reframe "reallocating" as explicit hypothetical
+    ("As an illustrative hypothetical example ... were to reallocate") (Cycle 25)
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files.
+
+**Structural changes this cycle:**
+- `appendix-a.md` §A.4.1: Kelly note "empirically low" → "expected low (pre-registered)"
+  (Y1)
+- `appendix-a.md` §A.5 line 519: `$\mathcal{V}_0$` → `$\mathcal{V}_0^{\text{NBA}}$`
+  (Z1)
+- `paper.md` §A.5 line 2204: `$\mathcal{V}_0$` → `$\mathcal{V}_0^{\text{NBA}}$` (Z1)
+- `02-introduction.md` §1 Paper Organization: stale one-line appendix description
+  replaced with three-appendix enumeration (Z3)
+- `paper.md` §1 Paper Organization: identical replacement (Z3)

@@ -128,8 +128,9 @@ interval is wide ($\sigma > 0.08$). Report calibrated probability to two
 decimal places."
 
 *Kelly note.* Assigned risk weight $\rho_i = 0.55$ for T1 (Qwen 3 235B) (Table 3), reflecting
-the model's strong reasoning capacity and the archetype's empirically low
-false-positive rate on oracle-aligned bets.
+the model's strong reasoning capacity and the archetype's expected low
+false-positive rate on oracle-aligned bets (pre-registered; to be confirmed in
+§5.1 Table 4 upon pilot backtest completion).
 
 ---
 
@@ -515,7 +516,7 @@ other three. Explicitly state your chosen weighting and why."
 ## A.5  Initial Vacancy Analysis
 
 At day 0, the NBA cohort occupies 12 of 20 archetypes, leaving 8 vacant
-($\mathcal{V}_0$, marked "—" in Table A.1). With $K = 20$ and $N = 12$,
+($\mathcal{V}_0^{\text{NBA}}$, marked "—" in Table A.1). With $K = 20$ and $N = 12$,
 the vacancy threshold $\tau_{\text{vac}} = 1/(2K) = 0.025$ implies that
 all 8 unoccupied archetypes are formally vacant (0 < 0.025).
 The non-vacant archetypes (occupied by at least one agent) pass the

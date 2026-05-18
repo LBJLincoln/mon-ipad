@@ -152,9 +152,12 @@ Section 2 surveys related work across evolutionary game theory, LLM multi-agent 
 and prediction market mechanisms. Section 3 formalizes the LPSG and SRR. Section 4
 describes the experimental setup. Section 5 presents results. Section 6 discusses
 connections to cooperation theory and implications for LLM ensemble design. Section 7
-covers limitations and ethics. Appendices provide the strategy archetype taxonomy
-with abbreviated prompt directives (full prompt modules are available in the code
-repository), and the derivation of the diversity–accuracy bound.
+covers limitations and ethics. Appendix A documents the full 20-archetype
+strategy taxonomy with abbreviated prompt directives (full prompt modules
+available in the code repository). Appendix B provides mathematical proofs and
+the archetype pairwise distinguishability matrix. Appendix C provides the
+experimental calendar, hyperparameter and temperature sensitivity analyses, and
+statistical power calculations.
 
 ---
 
@@ -2198,7 +2201,7 @@ Weight it at 50% today; distribute remaining 50% equally among the other three s
 
 ## A.5  Initial Vacancy Analysis
 
-At NBA day 0, 12 of 20 archetypes are occupied and 8 are vacant ($\mathcal{V}_0$:
+At NBA day 0, 12 of 20 archetypes are occupied and 8 are vacant ($\mathcal{V}_0^{\text{NBA}}$:
 nos.\ 3, 6, 10, 13, 14, 18, 19, 20). With vacancy threshold $\tau_{\text{vac}} = 1/(2K) = 0.025$,
 all 8 unoccupied archetypes qualify as vacant (occupancy $0 < 0.025$); all 12 occupied
 archetypes pass ($1/12 \approx 0.083 \gg 0.025$). For the political cohort ($N = 10$),
