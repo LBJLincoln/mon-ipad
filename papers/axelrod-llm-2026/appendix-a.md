@@ -52,6 +52,19 @@ Each archetype is identified by a short name, its primary dimension, an initial
 occupancy flag (whether any agent was assigned this archetype at day 0), and the
 minimum Kelly stake cap $\kappa_{\min}$ enforced by the module.
 
+The column $\kappa_{\min}^{(r)}$ is the **archetype minimum stake floor**: the
+smallest value the realised stake fraction $s_i = \max(\kappa_{\min}^{(r_i)}, \rho_i
+\cdot \kappa_i)$ can take for an agent occupying archetype $r$, independent of the
+agent-level Kelly cap $\kappa_i$ or personality risk weight $\rho_i$. This floor
+ensures that an SRR-reallocated agent contributes meaningful predictions even when
+its pilot Brier is temporarily high (depressing $\kappa_i$). Floors are set to
+reflect the minimum informational contribution expected from each strategy type:
+aggressive archetypes carry higher floors (0.08) because their value lies in
+high-conviction allocations; conservative archetypes carry the lowest floor (0.01)
+because their design purpose is low-risk rehabilitation. The three-factor stake
+model ($\kappa_i$, $\rho_i$, $\kappa_{\min}^{(r)}$) and the unified formula are
+formally introduced in §3.6; the full parameter ranges appear in Table 2 (§3.7).
+
 | # | Archetype | Dimension | Initially Occupied | $\kappa_{\min}$ |
 |---|-----------|-----------|--------------------|------------------|
 | 1 | quantitative | D1 | NBA: T1 · POL: T1 | 0.05 |
@@ -218,6 +231,16 @@ SRR entrants that need a "rehabilitation" mode before exposure to large stakes.
 *Core directive.* "Cap all positions at 30% of default Kelly. Shrink extreme
 predictions toward 0.50 by 10 pp. When uncertain, PASS. Report Brier
 improvement as your primary KPI, not bankroll."
+
+*Kelly note.* This archetype carries the lowest minimum stake floor in the
+taxonomy ($\kappa_{\min} = 0.01$). An SRR-reallocated agent arriving here
+retains its original personality risk weight $\rho_i$ (Table 3), but the
+archetype's prompt directive enforces a soft cap at 30% of the agent's default
+Kelly allocation. Since all agents have $\rho_i \geq 0.30$, this soft cap
+typically dominates the formula-level floor: the effective stake is approximately
+$0.30 \times \kappa_i$ irrespective of $\rho_i$, giving the rehabilitation
+intent its mechanical force — an agent in SRR probation accumulates prediction
+track record rather than bankroll exposure.
 
 ---
 

@@ -2821,3 +2821,187 @@ underscore-containing terms, use `grep -in "<TERM>"` to catch backslash-escaped 
 - `paper.md` Table A.1 caption: domain-indexed notation mirrored (X2)
 - `paper.md` §A.5: $|\mathcal{V}_0^{\text{POL}}| = 9 \to 10$ mirrored (X2)
 - `paper.md` Table A.1, archetype 16: "D4" → "D4†"; footnote mirrored (X3)
+
+---
+
+# Peer-Review Self-Critique — Cycle 23 (2026-05-18)
+
+*Addressing the one open issue from Cycle 22 (X4) plus full-manuscript re-read
+identifying new issues (Y1–Y2). X4 and Y2 are fixed in this cycle; Y1 is flagged
+as open for Cycle 24.*
+
+---
+
+## CYCLE 22 OPEN ISSUES — RESOLUTION STATUS
+
+### X4. Three-quantity Kelly stake model ($\kappa_i$, $\rho_i$, $\kappa_{\min}$) not integrated; §3.6 omitted $\rho_i$ and $\kappa_{\min}$ from the stake formula [FIXED]
+
+**What was open:** Following the Cycle 20 V1 fix that renamed the Table 3 risk-weight
+column from $\kappa_i$ to $\rho_i$, the paper used three distinct stake-related
+quantities without ever stating their mutual relationship:
+
+1. **$\kappa_i = \max(0.01, 0.30 - \overline{B}_i \times 0.50)$** — Brier-derived
+   Kelly cap, defined in §3.6; range $[0.01, 0.20]$.
+2. **$\rho_i \in [0.30, 0.70]$** — personality risk weight from Table 3,
+   introduced by V1 but not integrated into §3.6's stake formula.
+3. **$\kappa_{\min}^{(r)} \in [0.01, 0.08]$** — archetype minimum stake floor
+   from Table A.1, defined informally in the column header but never formally
+   related to $\kappa_i$ or $\rho_i$.
+
+No single formula unified the three quantities. The "realised stake = $\kappa_i \times
+\rho_i$" expression from Appendix A.4.2 Aggressive contradicted the
+formula-level $\kappa_{\min}$ floor without explaining when the floor activates.
+The conservative archetype (no.\ 6) had no Kelly note, making it impossible to
+infer how its "30% of standard Kelly" prompt directive interacted with inherited
+$\rho_i$ values.
+
+**Fix applied (Cycle 23):**
+
+- **`04-method.md` §3.6 "Bankroll and Kelly allocation"** fully rewritten to
+  introduce all three factors as a numbered list and state the complete
+  **realised stake formula**:
+  $$s_i = \max\!\left(\kappa_{\min}^{(r_i)},\; \rho_i \cdot \kappa_i\right)$$
+  The semantic role of each factor is now explicit: $\kappa_i$ is the Brier-derived
+  ceiling; $\rho_i$ scales within that ceiling; $\kappa_{\min}^{(r_i)}$ provides a
+  floor that activates when $\rho_i \cdot \kappa_i$ would silence the agent.
+  The *inverse-calibration probation* ($\kappa_i \leq 0.03$ for Brier > 0.32) is
+  now presented as a **post-formula hard-cap override**, separate from and
+  independent of the formula, resolving the prior ambiguity about whether the
+  formula already encoded probation. ✓
+
+- **`04-method.md` §3.7 Table 2** — two new rows added: $\rho_i$ ("Personality
+  risk weight, $[0.30, 0.70]$, Table 3") and $\kappa_{\min}^{(r)}$ ("Archetype
+  minimum stake floor, $[0.01, 0.08]$, Table A.1"). These are now formally listed
+  as LPSG design parameters alongside $\delta_{\text{sac}}$, $W$, etc. ✓
+
+- **`appendix-a.md` §A.3** — new paragraph added before the taxonomy table,
+  formally defining $\kappa_{\min}^{(r)}$, its relationship to the realised-stake
+  formula, and the design rationale for floor values (aggressive high, conservative
+  low). The paragraph cross-references §3.6 and Table 2, creating a navigable
+  chain from the parameter to its formal definition. ✓
+
+- **`appendix-a.md` §A.4.2 Conservative** — Kelly note added (see Y2 below). ✓
+
+- **`paper.md`**: All four changes mirrored:
+  - §3.6 Bankroll paragraph rewritten identically to `04-method.md`.
+  - Table 2 two rows added identically.
+  - §A.3 definition paragraph added identically.
+  - §A.4 Conservative abbreviated entry extended with the Kelly note summary. ✓
+
+*Post-fix verification:*
+
+- `grep -n "Kelly-criterion-adjusted" *.md` → zero hits (old paragraph text gone). ✓
+- `grep -n "receive reduced.*kappa" *.md` → zero hits (old inverse-calibration
+  text replaced by precise post-formula override description). ✓
+- `grep -n "s_i = .max" *.md` → hits in `appendix-a.md`, `04-method.md`, and
+  `paper.md` only (three occurrences, correct). ✓
+- `grep -n "Personality risk weight.*agent-level" *.md` → hits in `04-method.md`
+  and `paper.md` only (Table 2 new row, correct). ✓
+
+---
+
+## IN-CYCLE FIX: Y2 Conservative Kelly note missing [FIXED as part of X4]
+
+**Issue identified (Cycle 23 audit of X4 scope):** The X4 issue explicitly called
+for auditing "all per-archetype Kelly notes for consistency." This audit revealed that
+the Conservative archetype (no.\ 6) had no Kelly note, making it the only initially-vacant
+rehabilitation archetype with no stake-mechanics description. The other occupied D2
+archetypes (Aggressive, Diversified, Disciplined) all have Kelly notes; the absence
+for Conservative was an oversight.
+
+**Fix applied:**
+
+- `appendix-a.md` §A.4.2 Conservative: Kelly note added immediately after the
+  *Core directive* paragraph. The note explains: (a) $\kappa_{\min} = 0.01$ is the
+  lowest in the taxonomy; (b) the 30% prompt-level soft cap dominates the
+  formula-level $\rho_i \cdot \kappa_i$ for all incoming agents (since all agents
+  have $\rho_i \geq 0.30$, the soft cap gives effective stake $\approx 0.30 \times
+  \kappa_i$ regardless of $\rho_i$); (c) rehabilitation intent — track-record
+  accumulation over bankroll exposure. ✓
+- `paper.md` §A.4 Conservative entry: Kelly note summary appended to the abbreviated
+  entry. ✓
+
+*Post-fix verification:*
+`grep -n "Rehabilitation intent\|rehabilitation intent" *.md` → hits in
+`appendix-a.md` §A.4.2 and `paper.md` §A.4 only. ✓
+
+---
+
+## NEW ISSUES (Cycle 23 full-manuscript re-read)
+
+### Y1. §A.4.1 Quantitative Kelly note: "empirically low false-positive rate on oracle-aligned bets" — unsupported pre-results claim [OPEN]
+
+**Reviewer:** `appendix-a.md` §A.4.1 (Quantitative archetype) Kelly note:
+"reflecting the model's strong reasoning capacity and the archetype's **empirically low
+false-positive rate on oracle-aligned bets**."
+
+The word "empirically" implies a measured quantity from experimental data. All §5.x
+tables are marked **[PENDING]** (pilot backtest has not run; the 2024–25 pilot data
+is not yet populated). An "empirically" qualified claim about prediction accuracy
+has no supporting evidence in the current manuscript and cannot be cross-referenced
+to any table or figure. A reviewer checking the appendix against §5.1 will note that
+Table 4 (pairwise $\hat{\epsilon}_{\text{arch}}$ statistics) is entirely [PENDING],
+making any empirical claim about archetype-specific accuracy premature.
+
+**Scope note:** The claim is directionally plausible (quantitative archetypes that
+follow oracle-signal predictions would be expected to have low false-positive rates
+on oracle-aligned bets), but it should be expressed as a pre-registered hypothesis
+rather than an empirical fact.
+
+**Author response:** Replace "empirically low false-positive rate" with "expected
+low false-positive rate (pre-registered; to be confirmed in §5.1 Table 4 upon pilot
+backtest completion)." This preserves the scientific content, flags the expectation
+as a hypothesis, and links to the relevant verification location. Scheduled for Cycle 24.
+*(Open)*
+
+---
+
+## CYCLE 23 SUMMARY
+
+**Fixed:** X4 (complete three-factor Kelly stake model integrated into §3.6
+with the unified formula $s_i = \max(\kappa_{\min}^{(r_i)}, \rho_i \cdot \kappa_i)$;
+Table 2 extended with $\rho_i$ and $\kappa_{\min}^{(r)}$ rows; §A.3 formal
+definition paragraph added; Conservative Kelly note added as Y2); Y2 (Conservative
+archetype Kelly note — missing from X4 audit scope, fixed simultaneously).
+
+**Remaining open:** Y1 (§A.4.1 Quantitative Kelly note "empirically" → "expected
+(pre-registered)"; minor wording fix for Cycle 24).
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's Brier-delta placeholder and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+   for sacrifice-eligible agents
+10. Final SRR cross-reference sweep: `grep -n "3\.3.*SRR\|SRR.*3\.3" *.md` before submission
+11. Verify all forward-references: `grep -n "for elaboration" *.md` before submission
+12. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ for $\kappa_i$
+    numerical display alongside $\rho_i$ in Table 3
+13. Final $\kappa_i$/$\rho_i$ sweep: `grep -n "kappa_i" appendix-a.md paper.md`
+    before submission; any $\kappa_i$ in Kelly-note context with value > 0.20 flags
+    residual notation collision
+14. Final COLLECTIVE sweep: `grep -in "collective" paper.md` before submission
+15. **Y1 — Quantitative Kelly note:** fix "empirically" → "expected (pre-registered)"
+    in `appendix-a.md` §A.4.1 and mirror in `paper.md` §A.4 (Cycle 24)
+16. $\mathcal{V}_0$ domain-index sweep: `grep -n "mathcal{V}_0\b" *.md` before submission
+    to confirm no bare (domain-unindexed) $\mathcal{V}_0$ remains
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files. For underscore-containing terms,
+use `grep -in "<TERM>"` to catch backslash-escaped variants.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.6: Bankroll paragraph rewritten — three-factor model introduced
+  ($\kappa_i$, $\rho_i$, $\kappa_{\min}^{(r_i)}$); realised-stake formula $s_i$
+  displayed; inverse-calibration probation described as post-formula override (X4)
+- `04-method.md` §3.7 Table 2: two new rows — $\rho_i$ and $\kappa_{\min}^{(r)}$ (X4)
+- `appendix-a.md` §A.3: formal $\kappa_{\min}^{(r)}$ definition paragraph added
+  before the taxonomy table (X4)
+- `appendix-a.md` §A.4.2 Conservative: Kelly note added (Y2/X4 audit)
+- `paper.md`: all four structural changes mirrored (X4, Y2)

@@ -812,13 +812,28 @@ and asynchronously over a 15-minute window. Predictions are sealed;
 no agent can observe another's current-day output until the end-of-day broadcast.
 
 **Bankroll and Kelly allocation.** Each agent maintains a virtual bankroll
-initialised at \$100,000 USD-equivalent. Stake sizing follows
-Kelly-criterion-adjusted allocations with an empirically derived cap
-$\kappa_i = \max(0.01, 0.30 - \overline{B}_i \times 0.50)$, where $\overline{B}_i$ is the agent's
-rolling 28-day Brier from the pilot season; derivation and bounds discussion in §6.5.
-The ensemble prediction $\bar{p}_t$ is used as the *oracle signal*:
-agents whose allocations persistently diverge from the oracle direction
-are flagged as inverse-calibrated and receive reduced $\kappa_i$.
+initialised at \$100,000 USD-equivalent. Stake sizing is governed by three
+distinct parameters: (a) the **Kelly cap** $\kappa_i = \max(0.01,\, 0.30 -
+\overline{B}_i \times 0.50) \in [0.01, 0.20]$, a Brier-derived per-agent
+ceiling on the stake fraction, where $\overline{B}_i$ is the rolling 28-day
+Brier from the pilot season (derivation and bounds in §6.5);
+(b) the **personality risk weight** $\rho_i \in (0, 1]$, an agent-specific
+scalar that scales realised stake between the archetype floor and the Kelly
+ceiling (values in Table 3, §4.1); and (c) the **archetype minimum floor**
+$\kappa_{\min}^{(r_i)}$, an archetype-level stake floor that prevents
+SRR reassignment from silencing an agent when $\kappa_i$ is temporarily
+low (values in Table A.1, Appendix A.3; range $[0.01, 0.08]$).
+
+The **realised stake fraction** on day $d$ is:
+
+$$s_i = \max\!\left(\kappa_{\min}^{(r_i)},\; \rho_i \cdot \kappa_i\right)$$
+
+The ensemble prediction $\bar{p}_t$ is used as the *oracle signal*.
+Agents whose rolling Brier persistently exceeds 0.32 (below random Bernoulli
+calibration) receive an additional hard cap $\kappa_i \leq 0.03$ — an
+*inverse-calibration probation* applied as a post-formula override,
+independent of the pilot Brier formula above (diagnostic criterion and
+rationale in §6.5).
 
 **End-of-day broadcast.** At 23:59 UTC, resolved outcomes $\Omega_d$ are
 broadcast to all agents. Each agent updates its private history $h_{i,d}$.
@@ -845,6 +860,8 @@ Table 2 summarises all LPSG hyperparameters and their values in our experiments.
 | $W$ | Patience window (days) | 7 |
 | $W_{\text{persist}}$ | Reallocation persistence (days) | 14 |
 | $\tau_{\text{vac}}$ | Vacancy threshold | $1/(2K) = 0.025$ |
+| $\rho_i$ | Personality risk weight (agent-level) | $[0.30, 0.70]$ (Table 3) |
+| $\kappa_{\min}^{(r)}$ | Archetype minimum stake floor | $[0.01, 0.08]$ (Table A.1) |
 | $\epsilon_{\text{keep}}$ | Retain threshold (Brier improvement) | 0.005 |
 | $\epsilon_{\text{arch}}$ | Archetype distinguishability lower bound | 0.037 (empirical) |
 
@@ -2040,6 +2057,14 @@ source priority, D4 temporal horizon, D5 ensemble relationship); (2) **distingui
 
 ## A.3  Full Taxonomy Table
 
+The column $\kappa_{\min}^{(r)}$ is the **archetype minimum stake floor**: the
+smallest value the realised stake fraction $s_i = \max(\kappa_{\min}^{(r_i)},
+\rho_i \cdot \kappa_i)$ can take for an agent in archetype $r$, independent of
+the Kelly cap $\kappa_i$ or personality risk weight $\rho_i$. This floor prevents
+SRR reassignment from silencing an agent when $\kappa_i$ is temporarily low.
+The three-factor stake model is formally introduced in §3.6 with the unified
+realised-stake formula; parameter ranges appear in Table 2 (§3.7).
+
 | # | Archetype | Dim | Initially Occupied | $\kappa_{\min}$ |
 |---|-----------|----|-------------------|-----------------|
 | 1 | quantitative | D1 | NBA: T1 · POL: T1 | 0.05 |
@@ -2100,7 +2125,11 @@ $[0.40, 0.60]$, increase stake by up to 30% above default Kelly. State edge esti
 
 *(6) Conservative.* Minimise Brier; cap at 30% of standard Kelly; shrink to $[0.20, 0.80]$.
 *Directive:* "Cap all positions at 30% Kelly. Shrink extreme predictions toward 0.50
-by 10 pp. Default to PASS when uncertain."
+by 10 pp. Default to PASS when uncertain." *Kelly note:* Lowest stake floor
+($\kappa_{\min} = 0.01$); the 30% prompt-level soft cap dominates the formula-level
+$\rho_i \cdot \kappa_i$ for all incoming agents ($\rho_i \geq 0.30$), giving effective
+stake $\approx 0.30 \times \kappa_i$. Rehabilitation intent: track-record accumulation
+over bankroll exposure.
 
 *(7) Diversified.* Portfolio style; $\geq 5$ predictions/day; $\leq 2\%$ bankroll each.
 *Directive:* "Generate at least 5 independent predictions from different matchup
