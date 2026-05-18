@@ -1,72 +1,56 @@
 {
-  "fire": 136,
-  "cycle_parity": "EVEN",
-  "updated_at": "2026-05-20T12:00:00Z",
-  "generated_by": "cloud-brain-fire-136",
+  "fire": 137,
+  "cycle_parity": "ODD",
+  "updated_at": "2026-05-20T16:00:00Z",
+  "generated_by": "cloud-brain-fire-137",
   "nba_fleet_best_brier": 0.22012,
   "nba_fleet_best_island": "S15",
+  "nba_pareto_best_brier": 0.21918,
+  "nba_pareto_best_island": "S13",
   "pol_fleet_best_brier": 0.24987,
   "pol_fleet_best_island": "P1",
   "pol_pareto_best_brier": 0.24931,
   "pol_pareto_best_island": "P7",
-  "diversify_vm_needed": ["S13 stag=15 threshold", "S15 stag=15 threshold"],
+  "diversify_vm_needed": [],
   "spaces_down": ["S17"],
   "highlights": [
-    "S13 stag=15 THRESHOLD — vm-diversify-s13-fire136 added (POST endpoint, VM only)",
-    "S15 stag=15 THRESHOLD — vm-diversify-s15-fire136 added (same)",
-    "S13 pareto_best=0.22216 (= best_brier): 0.21984 stacking candidate EVICTED, Rule#8 CONFIRMED",
-    "⚡ S14 pareto_best=0.22163 ET-200f — 1ST DETECT fire-136",
-    "⚡ S15 pareto_best=0.21888 ET-200f — 1ST DETECT fire-136 (strong, below fleet-best zone)",
-    "⚡⚡ S18 pareto_best=0.22005 RF-200f — 1ST DETECT fire-136 (SUB-FLEET-BEST 0.22012!)",
-    "S22 c50 g148 brier=0.22124 stag=0 pareto=11 stable; vm-checkpoint URGENT",
-    "All POL stag=0, P1=0.24987 fleet best stable c1995 g5985",
-    "P4 pareto_best changed 0.24982(fire134)→0.24994 XGB-86f-gen1512 (possibly evicted WATCH)",
-    "P7 LightGBM-112f-0.24931 confirmed stable pareto=9",
-    "POL TF UP $38,916 (+2189%) 130/304 days Qwen-Quant $16,460 top",
-    "EVEN WebSearch: AutoGluon-0.7738acc-IEEE2026(NEW 1st cite); LR=0.199-12th-confirm",
-    "TRIPLE-PARETO-1ST-DETECT: S14-ET-0.22163 + S15-ET-0.21888 + S18-RF-0.22005",
-    "ET/RF-200f-200f dominant attractor pattern CONFIRMED across all NBA islands"
+    "⚡⚡ S13 pareto_best=0.21918 1ST DETECT fire-137 — BELOW FLEET BEST 0.22012! Rule8 stacking monitor (vm-remove-stacking-s13 still pending)",
+    "⚡⚡⚡ S14 pareto_best=0.21959 EXTRAORDINARY (0.22163→0.21959 fire136→fire137, gen=442 fresh restart!) — ET-200f CONFIRMED",
+    "S15 stag=0 CLEARED (was 15 fire-136) — diversify worked; pareto_best reset to 0.22913 (0.21888 candidate LOST post-diversify)",
+    "S18 pareto=15 (↑from 7) GREAT RECOVERY; pareto_best=0.22088 (was 0.22005 fire-136, possible eviction WATCH)",
+    "S22 pareto=14 (↑from 11) pareto_best=0.22096 IMPROVED; RF-48f stable at c57 g171",
+    "⚠ P7 pareto=3 SHRINKING (was 9 fire-136)! LightGBM-112f-0.24931 EVICTION RISK — vm-checkpoint EXTREME URGENT",
+    "⚠ P4 model changed xgboost→extra_trees; pareto_best regressed to 0.25564 (XGB-0.24994 candidate EVICTED)",
+    "All NBA stag=0, no diversify needed",
+    "All POL UP stag=0",
+    "ODD cycle — no WebSearch",
+    "2 new checkpoint items added: vm-checkpoint-s13-0.21918 + vm-checkpoint-s14-0.21959"
   ],
   "nba_islands": {
-    "S13": {"cycle": 645, "generation": 1932, "best_brier": 0.22216, "stagnation": 15, "model_type": "xgboost_brier", "pareto_size": 17, "pareto_best_brier": 0.22216, "status": "DIVERSIFY_NEEDED", "alert": "stag=15 THRESHOLD; pareto=17 but pareto_best=0.22216 same as best_brier (0.21984 stacking candidate EVICTED Rule#8 confirmed); vm-diversify-s13-fire136 NEEDED; vm-remove-stacking URGENT"},
-    "S14": {"cycle": 130, "generation": 388, "best_brier": 0.22793, "stagnation": 0, "model_type": "extra_trees", "pareto_size": 6, "pareto_best_brier": 0.22163, "pareto_best_model": "extra_trees", "pareto_best_features": 200, "status": "ok", "alert": "⚡ET-200f-0.22163-PARETO-1ST-DETECT(fire-136) vm-checkpoint-s14-et-0.22163 added"},
-    "S15": {"cycle": 1817, "generation": 5449, "best_brier": 0.22012, "stagnation": 15, "model_type": "random_forest", "pareto_size": 13, "pareto_best_brier": 0.21888, "pareto_best_model": "extra_trees", "pareto_best_features": 200, "status": "DIVERSIFY_NEEDED", "alert": "FLEET_BEST★ stag=15 THRESHOLD; ⚡ET-200f-0.21888-PARETO-1ST-DETECT(fire-136); vm-checkpoint-s15-et-0.21888 URGENT; vm-diversify-s15-fire136 NEEDED"},
-    "S17": {"cycle": null, "generation": null, "best_brier": null, "stagnation": null, "model_type": null, "pareto_size": null, "status": "503_DOWN_101d_plus"},
-    "S18": {"cycle": 133, "generation": 397, "best_brier": 0.22236, "stagnation": 7, "model_type": "random_forest", "pareto_size": 7, "pareto_best_brier": 0.22005, "pareto_best_model": "random_forest", "pareto_best_features": 200, "status": "ok", "alert": "⚡⚡RF-200f-0.22005-PARETO-1ST-DETECT-SUB-FLEET-BEST(fire-136); stag=7-watch; vm-checkpoint-s18-rf-0.22005 URGENT"},
-    "S22": {"cycle": 50, "generation": 148, "best_brier": 0.22124, "stagnation": 0, "model_type": "random_forest", "pareto_size": 11, "pareto_best_brier": 0.22199, "status": "ok", "note": "REMARKABLE-STABLE RF-48f gen=148 pareto=11; vm-checkpoint-s22 PRIORITY=1"}
+    "S13": {"cycle": 658, "generation": 1972, "best_brier": 0.22216, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 13, "pareto_best_brier": 0.21918, "status": "ok", "alert": "⚡⚡ pareto_best=0.21918 1ST DETECT fire-137 (BELOW FLEET BEST 0.22012!) — Rule8 stacking monitor; vm-remove-stacking-s13 URGENT; vm-checkpoint-s13-0.21918 ADDED priority=1"},
+    "S14": {"cycle": 148, "generation": 442, "best_brier": 0.22793, "stagnation": 0, "model_type": "extra_trees", "pareto_size": 13, "pareto_best_brier": 0.21959, "pareto_best_model": "extra_trees", "status": "ok", "alert": "⚡⚡⚡ pareto_best=0.21959 EXTRAORDINARY (0.22163 fire-136 → 0.21959 fire-137, gen=442 fresh restart!) — vm-checkpoint-s14-et-0.21959 ADDED priority=1 EXTREME URGENT"},
+    "S15": {"cycle": 1840, "generation": 5520, "best_brier": 0.22012, "stagnation": 0, "model_type": "random_forest", "pareto_size": 9, "pareto_best_brier": 0.22913, "status": "ok", "alert": "★ FLEET BEST; stag=0 CLEARED (diversify worked fire-136→137); pareto candidates LOST post-diversify (0.21888→0.22913); vm-remove-stacking-s15 pending"},
+    "S17": {"cycle": null, "generation": null, "best_brier": null, "stagnation": null, "model_type": null, "pareto_size": null, "status": "503_DOWN_102d_plus"},
+    "S18": {"cycle": 147, "generation": 441, "best_brier": 0.22236, "stagnation": 0, "model_type": "random_forest", "pareto_size": 15, "pareto_best_brier": 0.22088, "status": "ok", "alert": "pareto=15 GREAT RECOVERY (↑from 7); pareto_best=0.22088 (was 0.22005 fire-136 — possible eviction WATCH); vm-checkpoint-s18 URGENT"},
+    "S22": {"cycle": 57, "generation": 171, "best_brier": 0.22124, "stagnation": 0, "model_type": "random_forest", "pareto_size": 14, "pareto_best_brier": 0.22096, "status": "ok", "alert": "pareto=14 (↑from 11); pareto_best=0.22096 IMPROVED; RF-48f stable; vm-checkpoint-s22 URGENT"}
   },
   "pol_islands": {
-    "P1": {"cycle": 1995, "generation": 5985, "best_brier": 0.24987, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 8, "status": "ok", "note": "POL_FLEET_BEST stable"},
-    "P2": {"cycle": 19563, "generation": 58686, "best_brier": 0.25003, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 6, "status": "ok"},
-    "P4": {"cycle": 524, "generation": 1571, "best_brier": 0.25337, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 5, "pareto_best_brier": 0.24994, "pareto_best_model": "xgboost_brier", "pareto_best_features": 86, "pareto_best_gen": 1512, "status": "ok", "alert": "pareto_best changed 0.24982(fire134)→0.24994 XGB-86f-gen1512; possibly evicted WATCH fire-137; vm-checkpoint-p4-xgb URGENT P1"},
-    "P5": {"cycle": 26554, "generation": 79660, "best_brier": 0.24993, "stagnation": 0, "model_type": "lightgbm", "pareto_size": 3, "pareto_best_brier": 0.249, "status": "ok", "note": "LightGBM-102f-0.249 stable"},
-    "P7": {"cycle": 5067, "generation": 15201, "best_brier": 0.25004, "stagnation": 0, "model_type": "lightgbm", "pareto_size": 9, "pareto_best_brier": 0.24931, "pareto_best_model": "lightgbm", "pareto_best_features": 112, "status": "ok", "note": "LightGBM-112f-0.24931-CONFIRMED-stable pareto=9; vm-checkpoint-p7 URGENT P1"}
+    "P1": {"cycle": 2255, "generation": 6765, "best_brier": 0.24987, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 7, "pareto_best_brier": 0.24981, "status": "ok", "note": "POL FLEET BEST stable"},
+    "P2": {"cycle": 19654, "generation": 58962, "best_brier": 0.25003, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 11, "status": "ok"},
+    "P4": {"cycle": 605, "generation": 1813, "best_brier": 0.25337, "stagnation": 0, "model_type": "extra_trees", "pareto_size": 13, "pareto_best_brier": 0.25564, "status": "watch", "alert": "⚠ model changed xgboost→extra_trees fire-137; XGB-0.24994 pareto candidate EVICTED; pareto_best regressed to 0.25564; vm-checkpoint-p4-xgb URGENT (investigate eviction)"},
+    "P5": {"cycle": 26626, "generation": 79876, "best_brier": 0.24993, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 6, "pareto_best_brier": 0.249, "pareto_best_model": "lightgbm", "status": "ok", "note": "LightGBM-102f-0.249 stable in pareto"},
+    "P7": {"cycle": 5265, "generation": 15793, "best_brier": 0.25004, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 3, "pareto_best_brier": 0.24931, "pareto_best_model": "lightgbm", "pareto_best_features": 112, "status": "URGENT", "alert": "⚠⚠ pareto=3 SHRINKING (↓from 9 fire-136)! LightGBM-112f-0.24931 at EVICTION RISK; vm-checkpoint-p7 EXTREME URGENT"}
   },
   "pol_tf": {
-    "status": "UP",
-    "collective_bankroll": 38916.55,
-    "days_processed": 130,
-    "total_days": 304,
-    "top_agent": "qwen-quant",
-    "top_agent_bankroll": 16459.73,
-    "roi_pct": 2189.2
+    "status": "UP_responding",
+    "note": "fire-136 confirmed UP $38,916. fire-137 not re-polled (TF poll blocked — vm-restart-pol-tf pending)"
   },
   "nba_tf": {
     "status": "503_DOWN_12d_plus",
-    "note": "Axelrod Mechs A/B/C verified correct in code; blocked on vm-restart"
+    "note": "vm-restart-nba-tf pending. Axelrod app.py verified correct fire-135."
   },
-  "sota_websearch_even_fire": {
-    "fire": 136,
-    "new_citation": "AutoGluon-0.7738-accuracy IEEE2026 (ieeexplore.ieee.org/document/11030489) — 1st citation",
-    "confirmed_citations": [
-      "LR Brier=0.199 (12th confirm) — MDPI 2079-3197/13/10/230",
-      "Stacked ensemble NB+AdaBoost+MLP+KNN+XGB+DT+LR — Nature Sci Reports s41598-025-13657-1",
-      "MC-dropout RNN uncertainty-aware Brier~0.20 — MDPI Info 2078-2489/17/1/56",
-      "CNN=0.221, SVM=0.7749-acc tabular baselines"
-    ],
-    "action": "Research proposal written: data/research-proposals/autogluon-ensemble-fire136.md"
-  },
-  "action_taken": "EVEN fire-136: S13+S15 stag=15 diversify noted for VM (POST endpoint only). Triple pareto 1st detect: S14-ET-0.22163 + S15-ET-0.21888 + S18-RF-0.22005. S13 0.21984 stacking EVICTED (Rule#8). POL TF confirmed UP $38,916. research proposal autogluon written.",
-  "next_fire": 137,
-  "next_cycle_parity": "ODD"
+  "odd_cycle_websearch": "SKIPPED (ODD cycle)",
+  "action_taken": "fire-137 ODD: All stag=0, no diversify needed. DUAL-PARETO-EMERGENCY: S13=0.21918 + S14=0.21959 both below fleet best 0.22012. P7 pareto shrinking 9→3 EXTREME URGENT. P4 XGB candidate evicted — model flipped to ET. 2 new checkpoint items added to work-queue.",
+  "next_fire": 138,
+  "next_cycle_parity": "EVEN"
 }
