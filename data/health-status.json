@@ -1,41 +1,52 @@
 {
-  "fire": 132,
-  "cycle_parity": "ODD",
-  "updated_at": "2026-05-19T18:00:00Z",
-  "generated_by": "cloud-brain-fire-132",
+  "fire": 133,
+  "cycle_parity": "EVEN",
+  "updated_at": "2026-05-19T22:00:00Z",
+  "generated_by": "cloud-brain-fire-133",
   "nba_fleet_best_brier": 0.22012,
   "nba_fleet_best_island": "S15",
   "pol_fleet_best_brier": 0.24987,
   "pol_fleet_best_island": "P1",
   "diversify_sent": [],
   "spaces_down": ["S17"],
-  "stagnation_watch": ["S18"],
+  "stagnation_watch": [],
   "highlights": [
-    "PRIORITY-0-FIX: political_engine.py restored from placeholder (188314c, v3.24+Cat45) by cloud-brain — 530+h pending issue CLOSED",
-    "S18 rapid recovery: 0.24723->0.22236 in 15 cycles post-reboot, stag=11 (watch threshold=15)",
-    "S22 stable at REMARKABLE 0.22124 at gen=93 (still recovering)",
-    "All POL islands UP, stag=0, no diversify needed",
-    "P4 pareto=18 growing while recovering from factory reboot",
-    "P7 pareto dropped 4->3: LightGBM-0.24931 candidate WATCH"
+    "S13 pareto member brier=0.21984 DETECTED fire-133 (1ST DETECT — below fleet best 0.22012! WARNING: likely stacking model Rule#8 violation — vm-remove-stacking-s13 pending, monitor fire-134 to confirm or discard)",
+    "S18 stagnation CLEARED (11→0 since fire-132) — stag-CLEARED rapid recovery c104 g312",
+    "S15 pareto=14 (up from 10) — fleet best 0.22012 rock stable",
+    "S22 remarkable 0.22124 at gen=109 stable — vm-checkpoint-s22 URGENT priority=1",
+    "P4 XGBoost-0.24998 (fire-130 1st detect) DROPPED — at gen=1020 top5 shows XGB-0.25004/0.25002 only; 0.24998 evicted/superseded",
+    "P4 new finding: CatBoost-0.25019 at pareto-rank=0 (gen=1012) — CatBoost dominant post-reboot",
+    "P7 pareto 3→6 (growing) — LightGBM-0.24931 more secure; vm-checkpoint-p7 URGENT",
+    "P1 pareto=8 (up from 6), P2 pareto=8 (up from 6) — both growing",
+    "All POL UP stag=0 no diversify; feature_candidates=272 (engine v3.24 restore awaiting Space reload)",
+    "EVEN WebSearch: LR=0.199-11th-confirm (IEEE2026+ACM2025); Scientific-Reports-2025-stacked-NB+AdaBoost+MLP+KNN+XGB+DT+LR; MDPI-Info-2026-RNN-MC-dropout-Brier~0.20; CNN=0.221-ACM2025"
   ],
   "nba_islands": {
-    "S13": {"cycle": 622, "generation": 1866, "best_brier": 0.22216, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 15, "status": "ok"},
-    "S14": {"cycle": 86, "generation": 256, "best_brier": 0.22793, "stagnation": 0, "model_type": "extra_trees", "pareto_size": 11, "status": "ok", "monitor": "xgb-0.22006-fire127-INCONCLUSIVE"},
-    "S15": {"cycle": 1764, "generation": 5290, "best_brier": 0.22012, "stagnation": 0, "model_type": "random_forest", "pareto_size": 10, "status": "ok", "note": "FLEET_BEST_STABLE"},
+    "S13": {"cycle": 629, "generation": 1887, "best_brier": 0.22216, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 7, "status": "ok", "alert": "PARETO-MEMBER-0.21984-1ST-DETECT(fire133-below-fleet-best-WARNING-possible-stacking-Rule8-monitor-fire134)"},
+    "S14": {"cycle": 99, "generation": 296, "best_brier": 0.22793, "stagnation": 0, "model_type": "extra_trees", "pareto_size": null, "status": "ok", "note": "internal-hard-reset-c78; cycle-stag~21c-post-reset(island-manages-internally)"},
+    "S15": {"cycle": 1784, "generation": 5352, "best_brier": 0.22012, "stagnation": 0, "model_type": "random_forest", "pareto_size": 14, "status": "ok", "note": "FLEET_BEST_STABLE pareto=14(up-from-10)"},
     "S17": {"cycle": null, "generation": null, "best_brier": null, "stagnation": null, "model_type": null, "pareto_size": null, "status": "503_DOWN_100d_plus"},
-    "S18": {"cycle": 87, "generation": 259, "best_brier": 0.22236, "stagnation": 11, "model_type": "random_forest", "pareto_size": 17, "status": "WATCH_stag11_threshold15"},
-    "S22": {"cycle": 31, "generation": 93, "best_brier": 0.22124, "stagnation": 0, "model_type": "random_forest", "pareto_size": 13, "status": "ok", "note": "REMARKABLE_at_gen93"}
+    "S18": {"cycle": 104, "generation": 312, "best_brier": 0.22236, "stagnation": 0, "model_type": "random_forest", "pareto_size": 5, "status": "ok", "note": "stag-CLEARED(11→0-fire133) rapid-recovery-continues pareto=5(was-17)"},
+    "S22": {"cycle": 37, "generation": 109, "best_brier": 0.22124, "stagnation": 0, "model_type": "random_forest", "pareto_size": 12, "status": "ok", "note": "REMARKABLE-stable gen=109 pareto=12 vm-checkpoint-s22 URGENT priority=1"}
   },
   "pol_islands": {
-    "P1": {"cycle": 1411, "generation": 4231, "best_brier": 0.24987, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 6, "status": "ok", "note": "POL_FLEET_BEST"},
-    "P2": {"cycle": 19399, "generation": 58195, "best_brier": 0.25003, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 6, "status": "ok"},
-    "P4": {"cycle": 220, "generation": 659, "best_brier": 0.25337, "stagnation": 0, "model_type": "extra_trees", "pareto_size": 18, "status": "recovering_reboot", "monitor": "XGBoost-0.24998-INCONCLUSIVE"},
-    "P5": {"cycle": 26313, "generation": 78939, "best_brier": 0.24993, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 5, "status": "ok"},
-    "P7": {"cycle": 4181, "generation": 12543, "best_brier": 0.25004, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 3, "status": "WATCH_pareto_shrinking", "monitor": "LightGBM-0.24931-pareto-drop-watch"}
+    "P1": {"cycle": 1594, "generation": 4781, "best_brier": 0.24987, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 8, "status": "ok", "note": "POL_FLEET_BEST pareto=8(up-from-6) feature_candidates=272(awaiting-Space-reload)"},
+    "P2": {"cycle": 19457, "generation": 58370, "best_brier": 0.25003, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 8, "status": "ok", "note": "pareto=8(up-from-6) feature_candidates=272(awaiting-reload)"},
+    "P4": {"cycle": 340, "generation": 1020, "best_brier": 0.25337, "stagnation": 0, "model_type": "extra_trees", "pareto_size": 7, "status": "recovering_reboot", "note": "xgb-0.24998-DROPPED(evicted-gen1020-fire133); top5:CatBoost-0.25019-pareto-rank0(gen1012),XGB-0.25004(gen1015); pareto=7(down-from-18); vm-investigate-p4-factory-reboot pending"},
+    "P5": {"cycle": 26395, "generation": 79183, "best_brier": 0.24993, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 4, "status": "ok", "note": "top_performer-LightGBM-102f-0.249-gen75933-stable pareto=4"},
+    "P7": {"cycle": 4511, "generation": 13532, "best_brier": 0.25004, "stagnation": 0, "model_type": "xgboost_brier", "pareto_size": 6, "status": "ok", "note": "pareto=6(up-from-3-GROWING) LightGBM-0.24931-more-secure vm-checkpoint-p7 URGENT priority=1"}
   },
-  "action_taken": "Restored political_engine.py from placeholder (commit d59f9be) — priority-0 fix unblocking feature_candidates on all 5 POL islands",
-  "next_fire": 133,
-  "next_cycle_parity": "EVEN",
-  "s18_diversify_at_stag": 15,
-  "s18_current_stag": 11
+  "action_taken": "EVEN WebSearch: LR=0.199-11th-confirm, Sci-Reports-2025 stacked ensemble, IEEE2026 NBA ML, MDPI-Info-2026 RNN-MC-dropout. Research proposal written (fire133-even-sota-stacked-ensemble.md). S13 pareto-0.21984 1st-detect added to work queue. P4-xgb-0.24998 DROPPED (evicted gen=1020). No diversify sent (all stag=0).",
+  "next_fire": 134,
+  "next_cycle_parity": "ODD",
+  "s13_pareto_alert": "0.21984-1ST-DETECT-fire133-WARNING-stacking-Rule8-monitor-fire134-confirm-or-discard",
+  "p7_lgbm_0.24931_status": "CONFIRMED-fire129-2nd-fire-pareto=6-growing-vm-checkpoint-URGENT",
+  "p5_lgbm_0.249_status": "STABLE-top_performer-gen75933",
+  "feature_candidates_anomaly": {
+    "all_pol_islands": 272,
+    "expected": "700+",
+    "fix_deployed": "commit-d59f9be-fire132",
+    "awaiting": "Space-reload-on-each-POL-island"
+  }
 }
