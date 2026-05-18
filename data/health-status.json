@@ -1,68 +1,71 @@
 {
-  "fire": 139,
-  "cycle_parity": "ODD",
-  "updated_at": "2026-05-21T04:00:00Z",
-  "generated_by": "cloud-brain-fire-139",
+  "fire": 141,
+  "cycle_parity": "EVEN",
+  "updated_at": "2026-05-21T12:00:00Z",
+  "generated_by": "cloud-brain-fire-141",
   "nba_fleet_best_brier": 0.22012,
   "nba_fleet_best_island": "S15",
   "nba_pareto_best_brier": 0.2217,
-  "nba_pareto_best_island": "S14-ET-200f-strengthening",
+  "nba_pareto_best_island": "S14-ET-200f-gen540",
   "pol_fleet_best_brier": 0.24987,
   "pol_fleet_best_island": "P1",
   "pol_pareto_best_brier": 0.24931,
-  "pol_pareto_best_island": "P7",
+  "pol_pareto_best_island": "P7-LightGBM-112f",
   "diversify_vm_needed": [],
   "spaces_down": ["S17"],
   "highlights": [
-    "✓ S13 stag=0 CLEARED (was 15-THRESHOLD fire-136) — hard-reset-c654 worked; c672 g2015 pareto=11 stable",
-    "✓ S15 stag=0 CLEARED (was 15-THRESHOLD fire-136) — c1862 g5586; fleet best 0.22012★ stable; pareto=14",
-    "⚡ S14 c168 g502 ET-200f-0.2217 STRENGTHENING (gen460+, pareto=7 candidate improving)",
-    "⚠ S18 c169 g506 brier=0.22236 stag=0(API) NO improvement since gen223 (hard-reset-c150, then plateau); pareto=23",
-    "✓ S22 c71 g212 brier=0.22124 RF-48f stag=0 REMARKABLE pareto=8 stable",
-    "✓ P7 pareto=12 RECOVERED (was 3-SHRINKING fire-137!) LightGBM-112f-0.24931 SECURE",
-    "✓ P4 pareto=17 recovering (was 13 fire-137); pareto_best≈0.24982-XGB",
-    "✓ All NBA stag=0 — no diversify needed this cycle",
-    "✓ All POL UP stag=0",
-    "NBA TF 503 DOWN 16+d (unchanged)",
-    "POL TF IDLE $38,916 (running=false, axelrod_strategies at system-level only — NOT explicit leaderboard columns)",
-    "ODD cycle — no WebSearch"
+    "✓ S13 c694 g2082 stag=0 pareto=17(↑11→17-STRONG) xgboost_brier-47f",
+    "✓ S14 c180 g540 stag=0 pareto=11 ET-200f-0.2217-STRENGTHENING(gen540)",
+    "⚡ S15 c1892 g5675 brier=0.22012★ stag=0 pareto=10 ⚡LightGBM-56f-IN-PARETO(NEW-1ST-DETECT-fire141)",
+    "⚠⚠ S18 c186 g557 brier=0.22236 CRITICAL-PARETO-CRASH(23→9) brier-stuck-gen223→gen557(334-gens)",
+    "✓ S22 c81 g242 brier=0.22124 stag=0 pareto=12(↑8→12-EXCELLENT) REMARKABLE",
+    "✓ P1 c2831 g8493 brier=0.24987 stag=0 pareto=14(↑9→14-STRONG) POL-FLEET-BEST",
+    "⚠ P4 c918 g2752 pareto=8(↓17→8-CONCERNING) pareto_best=0.24982-XGB-136f-gen621-CONFIRMED",
+    "⚠ P7 c5720 g17158 pareto=7(↓12→7-DECLINING) LightGBM-112f-0.24931-CONFIRMED vm-checkpoint EXTREME-URGENT",
+    "⚠ P2 pareto=6(↓8→6-SHRINK) P5 pareto=4(↓5→4-SHRINK) — monitor",
+    "✓ All stag=0 — no diversify needed this cycle",
+    "NBA TF 503 DOWN 17+d (unchanged)",
+    "POL TF IDLE $38,916 (running=false, pre-Axelrod code, pol_watchdog still down)",
+    "EVEN WebSearch: MDPI-Info-2026-RNN+MC-dropout, LSTM-arXiv:2512.08591, LR=0.199-13th-confirm",
+    "NEW FINDING: S15 LightGBM-56f in pareto (fire-141 1st detect) → validates vm-add-lightgbm-p1-p2",
+    "Engine parity: MISMATCH (mon-ipad +54KB ahead, VM engine-parity-sync pending)"
   ],
   "nba_islands": {
     "S13": {
-      "cycle": 672,
-      "generation": 2015,
+      "cycle": 694,
+      "generation": 2082,
       "best_brier": 0.22216,
       "stagnation": 0,
       "model_type": "xgboost_brier",
       "features": 47,
-      "pareto_size": 11,
+      "pareto_size": 17,
       "status": "ok",
-      "alert": "stag=0 CLEARED (was 15-THRESHOLD fire-136, hard-reset-c654 WORKED); pareto=11; vm-remove-stacking-s13 URGENT (stacking confirmed Rule8-violation fire-136)"
+      "alert": "pareto=17(↑11→17-STRONG); stag=0 stable; vm-remove-stacking-s13 URGENT (Rule8 confirmed fire-136)"
     },
     "S14": {
-      "cycle": 168,
-      "generation": 502,
+      "cycle": 180,
+      "generation": 540,
       "best_brier": 0.22793,
       "stagnation": 0,
       "model_type": "extra_trees",
       "features": 200,
-      "pareto_size": 7,
+      "pareto_size": 11,
       "pareto_best_brier": 0.2217,
       "pareto_best_model": "extra_trees",
       "pareto_best_features": 200,
       "status": "ok",
-      "alert": "⚡ ET-200f-0.2217-STRENGTHENING (gen460+, pareto=7 candidate growing); vm-checkpoint-s14-et PENDING"
+      "alert": "⚡ ET-200f-0.2217 STRENGTHENING (gen540, pareto=11 stable); vm-checkpoint-s14-et PENDING"
     },
     "S15": {
-      "cycle": 1862,
-      "generation": 5586,
+      "cycle": 1892,
+      "generation": 5675,
       "best_brier": 0.22012,
       "stagnation": 0,
       "model_type": "random_forest",
       "features": 75,
-      "pareto_size": 14,
+      "pareto_size": 10,
       "status": "ok",
-      "alert": "★ FLEET BEST 0.22012; stag=0 CLEARED (was 15-fire136); pareto=14 (↑from 13); vm-checkpoint-s15-et-0.21888 URGENT (1st-detect fire-136, confirm still in pareto)"
+      "alert": "★ FLEET BEST 0.22012; pareto=10(↓14→10-normal-pruning); ⚡ LightGBM-56f-IN-PARETO(NEW-1ST-DETECT-fire141) — validates LightGBM for POL P1+P2; vm-checkpoint-s15-et-0.21888 URGENT"
     },
     "S17": {
       "cycle": null,
@@ -71,94 +74,99 @@
       "stagnation": null,
       "model_type": null,
       "pareto_size": null,
-      "status": "503_DOWN_102d_plus"
+      "status": "503_DOWN_103d_plus"
     },
     "S18": {
-      "cycle": 169,
-      "generation": 506,
+      "cycle": 186,
+      "generation": 557,
       "best_brier": 0.22236,
       "stagnation": 0,
       "model_type": "random_forest",
       "features": 44,
-      "pareto_size": 23,
-      "status": "watch",
-      "alert": "⚠ stag=0 per API but NO improvement since gen223; hard-reset-c150 recovered brier 0.247→0.222 then plateaued; pareto=23 (high diversity, no top-line improvement); vm-checkpoint-s18-rf URGENT"
+      "pareto_size": 9,
+      "status": "critical_watch",
+      "alert": "⚠⚠ CRITICAL-PARETO-CRASH(23→9-fire139→fire141); brier STUCK gen223→gen557(334-gens-no-improvement); internal-hard-resets ongoing catboost-variants-40f dominating; pareto shrink suggests best candidates lost in resets; vm-s18-pareto-crash-fire141 URGENT; vm-checkpoint-s18-rf URGENT"
     },
     "S22": {
-      "cycle": 71,
-      "generation": 212,
+      "cycle": 81,
+      "generation": 242,
       "best_brier": 0.22124,
       "stagnation": 0,
       "model_type": "random_forest",
       "features": 48,
-      "pareto_size": 8,
+      "pareto_size": 12,
       "status": "ok",
-      "alert": "✓ REMARKABLE 0.22124 at c71; RF-48f stable pareto=8; logistic_regression in pareto (Brier=0.2226); vm-checkpoint-s22 PRIORITY=1"
+      "alert": "✓ REMARKABLE 0.22124; pareto=12(↑8→12-EXCELLENT); RF-48f + LR-43f(0.2226) in pareto; vm-checkpoint-s22 PRIORITY=1"
     }
   },
   "pol_islands": {
     "P1": {
-      "cycle": 2557,
-      "generation": 7671,
+      "cycle": 2831,
+      "generation": 8493,
       "best_brier": 0.24987,
       "stagnation": 0,
       "model_type": "xgboost_brier",
       "features": 85,
-      "pareto_size": 9,
-      "pareto_best_brier": 0.25018,
-      "pareto_best_model": "catboost",
+      "pareto_size": 14,
       "status": "ok",
-      "note": "POL FLEET BEST stable; pareto=9 (↑from 7 fire-137); pareto_best catboost 0.25018"
+      "note": "POL FLEET BEST; pareto=14(↑9→14-STRONG); stable-improving; vm-add-lightgbm-p1-p2 (NBA cross-port fire-141)"
     },
     "P2": {
-      "cycle": 19777,
-      "generation": 59330,
+      "cycle": 19889,
+      "generation": 59667,
       "best_brier": 0.25003,
       "stagnation": 0,
       "model_type": "xgboost_brier",
       "features": 65,
-      "pareto_size": 8,
-      "status": "ok",
-      "note": "pareto=8 (↓from 11 fire-137) slight shrink — monitor"
+      "pareto_size": 6,
+      "status": "watch",
+      "note": "pareto=6(↓8→6-SHRINK); monitor for continued decline; vm-add-lightgbm-p1-p2 queued (NBA cross-port fire-141)"
     },
     "P4": {
-      "cycle": 747,
-      "generation": 2239,
+      "cycle": 918,
+      "generation": 2752,
       "best_brier": 0.25337,
       "stagnation": 0,
       "model_type": "extra_trees",
-      "pareto_size": 17,
+      "features": 50,
+      "pareto_size": 8,
       "pareto_best_brier": 0.24982,
       "pareto_best_model": "xgboost_brier",
-      "status": "ok",
-      "note": "pareto=17 RECOVERING (was 13 fire-137, 5 fire-136); pareto_best≈0.24982 XGB stable (fire-134 confirmed); vm-checkpoint-p4-xgb URGENT; vm-investigate-p4-factory-reboot pending"
+      "pareto_best_features": 136,
+      "pareto_best_calibration": "venn_abers",
+      "pareto_best_generation": 621,
+      "status": "watch",
+      "note": "pareto=8(↓17→8-CONCERNING); 0.24982-XGB-136f-gen621 CONFIRMED still in pareto (composite=0.29608); vm-checkpoint-p4-xgb URGENT; vm-investigate-p4-factory-reboot pending"
     },
     "P5": {
-      "cycle": 26711,
-      "generation": 80131,
+      "cycle": 26787,
+      "generation": 80360,
       "best_brier": 0.24993,
       "stagnation": 0,
       "model_type": "xgboost_brier",
-      "features": 58,
-      "pareto_size": 5,
+      "features": 59,
+      "pareto_size": 4,
       "pareto_best_brier": 0.249,
-      "status": "ok",
-      "note": "pareto=5 (↓from 6 fire-137) slight shrink — monitor. XGBoost 0.249 stable in pareto."
+      "pareto_best_model": "lightgbm",
+      "pareto_best_features": 102,
+      "pareto_best_sharpe": 1.0138,
+      "status": "watch",
+      "note": "pareto=4(↓5→4-SHRINK); LightGBM-102f-0.249 Sharpe=1.01 stable in pareto (XGB n_est=110 max_d=7 lr=0.141)"
     },
     "P7": {
-      "cycle": 5513,
-      "generation": 16537,
+      "cycle": 5720,
+      "generation": 17158,
       "best_brier": 0.25004,
       "stagnation": 0,
       "model_type": "xgboost_brier",
-      "features": 60,
-      "pareto_size": 12,
+      "pareto_size": 7,
       "pareto_best_brier": 0.24931,
       "pareto_best_model": "lightgbm",
       "pareto_best_features": 112,
-      "pareto_best_calibration": "venn_abers",
-      "status": "ok",
-      "alert": "✓ pareto=12 RECOVERED (was 3-SHRINKING fire-137)! LightGBM-112f-0.24931 SECURE; vm-checkpoint-p7 URGENT priority=1"
+      "pareto_best_roi": 0.0071,
+      "pareto_best_sharpe": 0.7057,
+      "status": "watch",
+      "note": "pareto=7(↓12→7-DECLINING rapid); LightGBM-112f-0.24931 CONFIRMED in pareto; vm-checkpoint-p7 EXTREME-URGENT before further decline"
     }
   },
   "pol_tf": {
@@ -168,16 +176,52 @@
     "days_processed": 130,
     "total_days": 304,
     "last_updated": "2026-05-07T20:13:09Z",
-    "axelrod_leaderboard_fields": "NOT_explicit_columns",
-    "axelrod_system_level": "axelrod_strategies_object_confirmed_at_system_level_with_game_theory_archetypes",
-    "note": "Pre-Axelrod code running on HF Space (last active May 7). archetype/dmad_prefix NOT explicit leaderboard columns. axelrod_strategies exists at system level. HF push needed to activate Mechs A/B/C runtime. pol_watchdog.sh not firing (VM crons down)."
+    "idle_days": 14,
+    "note": "IDLE since May 7 (14+ days). Pre-Axelrod code on HF Space. pol_watchdog.sh still not firing. Blockers: (1) VM fix watchdog cron, (2) user approve HF Axelrod push, (3) curl POST /api/run."
   },
   "nba_tf": {
-    "status": "503_DOWN_16d_plus",
-    "note": "vm-restart-nba-tf pending. Axelrod app.py verified correct fire-137 (5994L). HF push needed before restart to activate Mechs."
+    "status": "503_DOWN_17d_plus",
+    "note": "vm-restart-nba-tf pending. Axelrod app.py HF push needed before restart to activate Mechs A/B/C."
   },
-  "odd_cycle_websearch": "SKIPPED (ODD cycle)",
-  "action_taken": "fire-139 ODD: S13+S15 stag CLEARED (both were at 15-threshold fire-136; internal hard resets worked). S14 ET-200f strengthening. S18 plateau-watch. S22 remarkable stable. P7 pareto RECOVERED 3→12. All stag=0 no diversify. Updated health-status.json + brain-status.json + CLAUDE.md.",
-  "next_fire": 140,
-  "next_cycle_parity": "EVEN"
+  "engine_parity": {
+    "status": "MISMATCH_CONFIRMED",
+    "mon_ipad_size_chars": 523050,
+    "nomos_nba_agent_size_chars": 468146,
+    "delta_chars": 54904,
+    "note": "mon-ipad ahead +54KB vs nomos-nba-agent. VM engine-parity-sync pending (priority=40). Blocks vm-add-elo-ratings-engine and vm-add-win-diff-5game-feature."
+  },
+  "even_cycle_websearch": {
+    "done": true,
+    "papers": [
+      {
+        "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+        "url": "https://www.mdpi.com/2078-2489/17/1/56",
+        "key_result": "RNN+MC-dropout for calibrated sequential probabilities; LR-Brier=0.199(13th-confirm), XGBoost=0.202",
+        "novelty": "MC dropout uncertainty quantification on sequential NBA game predictions"
+      },
+      {
+        "title": "Long-Sequence LSTM Modeling for NBA Game Outcome Prediction Using a Novel Multi-Season Dataset",
+        "url": "https://arxiv.org/pdf/2512.08591",
+        "key_result": "LSTM 8-season 9840 games: 72.35% acc, 73.15% precision, 76.13% AUC-ROC (best of all baselines)",
+        "novelty": "Long-sequence temporal modeling capturing inter-season dependencies"
+      },
+      {
+        "title": "Machine Learning for Basketball Game Outcomes: NBA and WNBA Leagues",
+        "url": "https://www.mdpi.com/2079-3197/13/10/230",
+        "key_result": "Stacked ensemble NB+AdaBoost+MLP+KNN+XGB+DT+LR; SHAP top features: home_next, team_elo_5y, team_elo, win_diff_5g",
+        "novelty": "NBA+WNBA dual-league SHAP feature validation"
+      }
+    ],
+    "sota_brier": 0.199,
+    "sota_model": "LR (13th confirm) / RNN-MC-dropout (uncertainty calibration)",
+    "new_techniques": [
+      "MC dropout for prediction uncertainty quantification (MDPI 2026)",
+      "8-season rolling window LSTM (arXiv:2512.08591)",
+      "Stacked ensemble with NB+AdaBoost+MLP+KNN+XGB+DT+LR (MDPI Computation 2026)"
+    ],
+    "research_proposal": "data/research-proposals/sota-uncertainty-aware-temporal-fire141.md"
+  },
+  "action_taken": "fire-141 EVEN: all 6 NBA + 5 POL islands polled. All stag=0, no diversify needed. S18 CRITICAL pareto crash 23→9 detected. S15 LightGBM-56f NEW in pareto (1st detect). S22 pareto surge 8→12. P1 pareto surge 9→14. P4 pareto crash 17→8 (0.24982 XGB still confirmed). P7 pareto declining 12→7 EXTREME URGENT. WebSearch: LR=0.199 13th confirm + MDPI RNN+MC-dropout + LSTM arXiv:2512.08591. Research proposal written. New work-queue items: vm-s18-pareto-crash-fire141 + vm-add-lightgbm-p1-p2 + vm-mc-dropout-calibration-s15. Updated health-status.json + work-queue.json.",
+  "next_fire": 142,
+  "next_cycle_parity": "ODD"
 }
