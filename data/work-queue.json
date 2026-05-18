@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-05-20T18:00:00Z",
+  "updated_at": "2026-05-21T00:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-trigger-axelrod-fire-138-2026-05-21T00h",
+      "priority": 182,
+      "status": "done",
+      "completed_at": "2026-05-21T00:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-138",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-138 verify: NBA TF still 503 DOWN (16+d). POL TF ACCESSIBLE but IDLE (running=false, day 130/304, last updated 2026-05-07T20:13:09Z, $38,916). POL leaderboard has NO Axelrod fields (archetype/dmad_prefix/is_sacrificial absent) → HF Space running PRE-Axelrod code (Space last active May 7, before May 16 Mech-A impl). pol_watchdog.sh not firing (VM crons down). Mechs B+C BLOCKED: NBA 503 DOWN + do_not_push_hf_space_yet (HF push needed for Axelrod to activate). No code changes — awaiting user approval for HF Space push."
+    },
     {
       "id": "cloud-trigger-axelrod-fire-137-2026-05-20T18h",
       "priority": 180,
@@ -183,10 +192,10 @@
       "priority": 10,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Wake/restart NBA TF (LBJLincoln26/nba-llm-trading-floor) — 503 DOWN 15+ days",
+      "subject": "Wake/restart NBA TF (LBJLincoln26/nba-llm-trading-floor) — 503 DOWN 16+ days",
       "detected_at": "2026-05-16T02:00:00Z",
-      "updated_at": "2026-05-20T18:00:00Z",
-      "cloud_brain_note": "fire-137: Still 503 DOWN confirmed. Axelrod app.py verified correct (fire-137). No quarantine block. Unblocks tf-axelrod-mech-b+c.",
+      "updated_at": "2026-05-21T00:00:00Z",
+      "cloud_brain_note": "fire-138: Still 503 DOWN (confirmed WebFetch). 16+d. NOTE: Axelrod app.py not yet pushed to HF Space (do_not_push_hf_space_yet). Restart alone won't activate Mechs A/B/C — HF push required first. Unblocks tf-axelrod-mech-b+c once push is approved.",
       "do_not_push": false
     },
     {
@@ -194,10 +203,10 @@
       "priority": 11,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Wake/restart POL TF (LBJLincoln26/political-llm-trading-floor) — 503 DOWN confirmed fire-136",
+      "subject": "Resume POL TF (LBJLincoln26/political-llm-trading-floor) — IDLE since 2026-05-07, space IS accessible",
       "detected_at": "2026-05-16T02:00:00Z",
-      "updated_at": "2026-05-20T18:00:00Z",
-      "cloud_brain_note": "fire-137: NOTE — /api/status returned 503, but the fetch result showed day-130 data ($38,916). Verify before restart.",
+      "updated_at": "2026-05-21T00:00:00Z",
+      "cloud_brain_note": "fire-138: CLARIFICATION — POL TF is ACCESSIBLE (not 503). Day 130/304, running=false, idle since 2026-05-07T20:13:09Z, $38,916. No restart needed. BUT: leaderboard has NO Axelrod fields (archetype/dmad_prefix/is_sacrificial absent) → HF Space running pre-Axelrod code (Space last active May 7, Axelrod merged May 16). pol_watchdog.sh not firing (VM crons down — see vm-restart-political-data-crons). ACTIONS: (1) VM verify pol_watchdog.sh cron active + fix if broken; (2) user approve HF push of Axelrod app.py (do_not_push_hf_space_yet); (3) curl POST /api/run to resume.",
       "do_not_push": false
     },
     {
@@ -215,9 +224,9 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart political data crons: fetch_political_data.py + insider_tracker.py",
-      "updated_at": "2026-05-20T12:00:00Z",
-      "cloud_brain_note": "fire-136: Still pending 558+h. Rotation A+D blocked.",
+      "subject": "Restart political data crons: fetch_political_data.py + insider_tracker.py + pol_watchdog.sh",
+      "updated_at": "2026-05-21T00:00:00Z",
+      "cloud_brain_note": "fire-138: pol_watchdog.sh confirmed not firing (POL TF idle 13+ days despite watchdog supposedly running every 5min). This cron task likely covers pol_watchdog too — fix URGENTLY to unblock POL TF resumption. Still pending 558+h. Rotation A+D blocked.",
       "do_not_push": false
     },
     {
@@ -227,8 +236,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech B — sacrificial role reallocation runtime verify",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-20T18:00:00Z",
-      "cloud_trigger_note": "fire-137: Still BLOCKED on vm-restart-nba-tf + vm-restart-pol-tf (both DOWN). Code verified correct at parity in fire-137."
+      "updated_at": "2026-05-21T00:00:00Z",
+      "cloud_trigger_note": "fire-138: BLOCKED. NBA still 503 DOWN. POL TF accessible but running pre-Axelrod code (leaderboard: no archetype/dmad_prefix fields confirmed). Runtime verify blocked by: (1) NBA 503 DOWN, (2) do_not_push_hf_space_yet — Axelrod app.py must be pushed to both HF Spaces before Mech B can execute. Awaiting user HF push approval. Code verified correct at parity in fire-137 (NBA 5994L + POL 3978L)."
     },
     {
       "id": "tf-axelrod-mech-c",
@@ -237,8 +246,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech C — post-mortem log 27-field schema verify HF Hub push",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-20T18:00:00Z",
-      "cloud_trigger_note": "fire-137: Still BLOCKED on TF restart. Code verified correct at parity in fire-137."
+      "updated_at": "2026-05-21T00:00:00Z",
+      "cloud_trigger_note": "fire-138: BLOCKED same as Mech B. POL TF running pre-Axelrod code — write_axelrod_log() not active, day-N.jsonl not being written. Requires: HF push of Axelrod app.py (do_not_push_hf_space_yet) + space restart + /api/run. Code verified correct at parity in fire-137."
     },
     {
       "id": "engine-parity-sync",
