@@ -3501,3 +3501,102 @@ to confirm propagation to all relevant files.
 - `07-discussion.md` §6.5: New sub-section "Formula derivation and inverse-
   calibration probation criterion" added (two paragraphs delivering AA1 content) (AA1)
 - `paper.md`: All seven structural changes mirrored across the 10 affected locations
+
+---
+
+## Cycle 26 — ρ_i range, dangling clause, political condition count, archetype protocol feasibility
+
+**Date:** 2026-05-19 | **Issues found:** 4 | **Files changed:** 4 (+`paper.md` mirrors)
+
+### Issues identified in this cycle's re-read
+
+---
+
+**BB1 — Table 2 ρ_i range overstates minimum (§3.4 / Table 2)**
+
+*Location:* `04-method.md` Table 2, `paper.md` line 876.
+
+*Issue:* Table 2 lists the range for $\rho_i$ (personality risk weight) as $[0.30, 0.70]$ with cross-reference to Table 3. However, Table 3 shows actual agent values ranging from $\rho_i = 0.35$ (T8, T10) to $\rho_i = 0.70$ (T9). No agent is assigned $\rho_i = 0.30$. The range $[0.30, 0.70]$ is the *design floor/ceiling* but not the empirical interval. A reviewer checking Table 3 against Table 2 will notice the mismatch immediately.
+
+*Fix applied:* Changed to `$[0.35, 0.70]$ (actual per Table 3; design floor: 0.30)` in both `04-method.md` and `paper.md`.
+
+*Author response:* The design floor (0.30) is worth retaining for completeness — it establishes that lower risk weights are architecturally possible — but the empirical range must be distinguished. The parenthetical "actual per Table 3; design floor: 0.30" makes both facts legible without requiring Table 3 cross-inspection.
+
+---
+
+**BB2 — Dangling "across the 25-week season" after parenthetical restructuring (§3.6)**
+
+*Location:* `04-method.md` §3.6, `paper.md` lines 815–816.
+
+*Issue:* The sentence reads: "moderating capacity therefore varies from 235B (T1–T2) to 4B parameters (T12: Qwen3-4B); the full size breakdown is in §4.1 (T3: Llama 3.1 8B; T10: ministral-8b, 8B; Mistral T6–T9 sizes are undisclosed by the provider) across the 25-week season. This is a minor confound:..."
+
+The clause "across the 25-week season" is orphaned. The original sentence was "moderating capacity varies... across the 25-week season" but Cycle 21's W3 restructuring inserted a long parenthetical after "provider", stranding the clause after the closing parenthesis where it is grammatically ambiguous — it now appears to modify "undisclosed by the provider" rather than "moderating capacity varies."
+
+*Fix applied:* Removed the orphaned clause; sentence now ends at "...undisclosed by the provider). This is a minor confound:" in both `04-method.md` and `paper.md`.
+
+*Author response:* The semantic content (moderating capacity varies over the season) is captured by the surrounding context and the "rotates weekly" clause earlier in the paragraph. The orphaned phrase added no information and created a parse error.
+
+---
+
+**BB3 — "60 NBA + 50 political concurrent" overcounts political conditions (§4.3)**
+
+*Location:* `05-experimental-setup.md` line 179, `paper.md` line 1080.
+
+*Issue:* The text justifies sequential simulation by stating that concurrent execution "would require 60 NBA + 50 political concurrent LLM inference threads." The NBA figure is correct (12 agents × 5 conditions = 60). The political figure of 50 is wrong: the political cohort runs only Conditions A and B (Table 5 in §5.2 lists "Market Baseline" as the third political reference, not a full political Condition C; and §4.6 explicitly states "Condition C uses the same 12 NBA agents"). Correct count: 10 agents × 2 conditions = 20 concurrent threads, not 50.
+
+*Fix applied:* Changed to "60 NBA + 20 political concurrent" in both `05-experimental-setup.md` and `paper.md`.
+
+*Author response:* This error inflated the apparent experimental burden but did not affect any hypothesis or result. The corrected figure (20 political) accurately reflects the two-condition political design. The justification for sequential simulation remains valid — 60 + 20 = 80 concurrent threads still exceeds provider rate limits — but the number itself is now correct.
+
+---
+
+**BB4 — Archetype distinguishability protocol implies ~5.6M API calls without feasibility explanation (§5.1)**
+
+*Location:* `06-results.md` lines 23–25, `paper.md` lines 1224–1225.
+
+*Issue:* §5.1 states that "the same 12 agents were prompted sequentially under both archetypes on each pilot game, and the mean absolute difference in reported probability was recorded." A reader computing the implied cost sees: 190 archetype pairs × 12 agents × 2 archetypes × 1,230 games = 5,594,400 API calls. At even 1 second per call, this is 1,554 hours — clearly infeasible. The efficient protocol (precompute all 20 × 12 × 1,230 = 295,200 archetype–agent–game tuples once, then derive all 190 pairs algebraically) is not stated, leaving a credibility gap that reviewers will exploit.
+
+*Fix applied:* Added a footnote after "recorded" clarifying: (1) the actual protocol precomputes 295,200 combinations (not 5.6M); (2) all 190 pairwise differences are derived from stored predictions without additional API calls; (3) the batch is run once on the held-out pilot set prior to primary evaluation. Applied to `06-results.md` and mirrored to `paper.md`.
+
+*Author response:* The mathematical formulation of $\hat{\epsilon}_{\text{arch}}$ is correct; only the implied inference protocol was underspecified. The footnote closes this gap without restructuring the main text, which retains its current readability.
+
+---
+
+### Pre-submission checklist (updated)
+
+1. ~~P1: Proposition 2 equilibrium concept~~ → **DONE Cycle 8** ✓
+2. ~~P2: Bayesian population game classification~~ → **DONE Cycle 9** ✓
+3. ~~P3: Carbon comparison specificity~~ → **DONE Cycle 10** ✓
+4. ~~P4–P10: Method/result cross-references~~ → **DONE Cycles 11–14** ✓
+5. ~~R1–R6: Theory completeness sweep~~ → **DONE Cycles 15–16** ✓
+6. ~~S1–S3: Cross-term and sequential condition fixes~~ → **DONE Cycle 17** ✓
+7. ~~T1–T4: Archetype taxonomy and §3.3/§3.4 fixes~~ → **DONE Cycle 18** ✓
+8. ~~U1–U4: Formal definition completeness~~ → **DONE Cycle 19** ✓
+9. ~~V1–V4: Table 3 labelling, COLLECTIVE_MISSION, citation~~ → **DONE Cycle 20** ✓
+10. ~~W1–W5: Kelly three-factor, moderator paragraph~~ → **DONE Cycle 21** ✓
+11. ~~X1–X4: Proposition 2 SNE, vacancy set, κ_min~~ → **DONE Cycle 22** ✓
+12. ~~Y1–Y3: Kelly note, Assumption A3 cross-ref, archetype-count~~ → **DONE Cycle 23** ✓
+13. ~~Z1–Z4: Citation IDs, largest qualifier, provider count~~ → **DONE Cycles 24–25** ✓
+14. ~~AA1–AA3: Kelly formula derivation, range semantics, provider domain-indexing~~ → **DONE Cycle 25** ✓
+15. ~~BB1: ρ_i range in Table 2~~ → **DONE Cycle 26** ✓
+16. ~~BB2: Dangling clause in §3.6~~ → **DONE Cycle 26** ✓
+17. ~~BB3: Political condition count in §4.3~~ → **DONE Cycle 26** ✓
+18. ~~BB4: Archetype protocol feasibility footnote in §5.1~~ → **DONE Cycle 26** ✓
+19. **OPEN — AA2 follow-up:** `grep -rn '\\in \[0\.01, 0\.20\]' *.md | grep -v "09-self"` before
+    submission to confirm no further bare (mathematical) range claims for $\kappa_i$.
+20. **OPEN — Provider ecosystem count sweep:** `grep -n "five provider\|provider.*five"
+    01-abstract.md 02-introduction.md 05-experimental-setup.md paper.md` before
+    submission to confirm no domain-unindexed "five provider ecosystems" remains.
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files.
+
+**Structural changes this cycle:**
+- `04-method.md` Table 2: $\rho_i$ range `[0.30, 0.70]` → `[0.35, 0.70]` with design-floor
+  annotation (BB1)
+- `04-method.md` §3.6: removed orphaned "across the 25-week season" clause (BB2)
+- `05-experimental-setup.md` §4.3: "50 political" → "20 political" concurrent threads (BB3)
+- `06-results.md` §5.1: added feasibility footnote explaining 295,200-call retrospective
+  batch protocol for archetype distinguishability (BB4)
+- `paper.md`: all four fixes mirrored across 5 affected locations

@@ -320,8 +320,7 @@ The moderator role rotates weekly (Axelrod-style round-robin) across all
 agents, beginning with T1 (Qwen 3 235B-A22B) in Week 1; moderating capacity
 therefore varies from 235B (T1–T2) to 4B parameters (T12: Qwen3-4B); the
 full size breakdown is in §4.1 (T3: Llama 3.1 8B; T10: ministral-8b, 8B;
-Mistral T6–T9 sizes are undisclosed by the provider) across
-the 25-week season. This is a minor confound: all agents receive an identical
+Mistral T6–T9 sizes are undisclosed by the provider). This is a minor confound: all agents receive an identical
 structured morning brief template regardless of moderator identity, so the
 confound is bounded to the quality of free-text synthesis in the brief body.
 
@@ -381,7 +380,7 @@ Table 2 summarises all LPSG hyperparameters and their values in our experiments.
 | $W$ | Patience window (days) | 7 |
 | $W_{\text{persist}}$ | Reallocation persistence (days) | 14 |
 | $\tau_{\text{vac}}$ | Vacancy threshold | $1/(2K) = 0.025$ |
-| $\rho_i$ | Personality risk weight (agent-level) | $[0.30, 0.70]$ (Table 3) |
+| $\rho_i$ | Personality risk weight (agent-level) | $[0.35, 0.70]$ (actual per Table 3; design floor: 0.30) |
 | $\kappa_{\min}^{(r)}$ | Archetype minimum stake floor | $[0.01, 0.08]$ (Table A.1) |
 | $\epsilon_{\text{keep}}$ | Retain threshold (Brier improvement) | 0.005 |
 | $\epsilon_{\text{arch}}$ | Archetype distinguishability lower bound | 0.037 (empirical) |

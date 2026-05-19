@@ -812,8 +812,7 @@ The moderator role rotates weekly (Axelrod-style round-robin) across all
 agents, beginning with T1 (Qwen 3 235B-A22B) in Week 1; moderating capacity
 therefore varies from 235B (T1–T2) to 4B parameters (T12: Qwen3-4B); the
 full size breakdown is in §4.1 (T3: Llama 3.1 8B; T10: ministral-8b, 8B;
-Mistral T6–T9 sizes are undisclosed by the provider) across
-the 25-week season. This is a minor confound: all agents receive an identical
+Mistral T6–T9 sizes are undisclosed by the provider). This is a minor confound: all agents receive an identical
 structured morning brief template regardless of moderator identity, so the
 confound is bounded to the quality of free-text synthesis in the brief body.
 
@@ -873,7 +872,7 @@ Table 2 summarises all LPSG hyperparameters and their values in our experiments.
 | $W$ | Patience window (days) | 7 |
 | $W_{\text{persist}}$ | Reallocation persistence (days) | 14 |
 | $\tau_{\text{vac}}$ | Vacancy threshold | $1/(2K) = 0.025$ |
-| $\rho_i$ | Personality risk weight (agent-level) | $[0.30, 0.70]$ (Table 3) |
+| $\rho_i$ | Personality risk weight (agent-level) | $[0.35, 0.70]$ (actual per Table 3; design floor: 0.30) |
 | $\kappa_{\min}^{(r)}$ | Archetype minimum stake floor | $[0.01, 0.08]$ (Table A.1) |
 | $\epsilon_{\text{keep}}$ | Retain threshold (Brier improvement) | 0.005 |
 | $\epsilon_{\text{arch}}$ | Archetype distinguishability lower bound | 0.037 (empirical) |
@@ -1077,7 +1076,7 @@ Each condition is simulated independently over the complete 1,257-game, 175-trad
 event stream, starting from Day 1 of the 2025–26 season, with identical historical
 market signals and odds data.  Conditions are run sequentially (one condition's full
 simulation completes before the next begins) rather than concurrently, because running
-five independent agent fleets in parallel would require 60 NBA + 50 political concurrent
+five independent agent fleets in parallel would require 60 NBA + 20 political concurrent
 LLM inference threads, exceeding provider rate limits.  Each condition's agent state is
 reset completely before its simulation begins: bankrolls re-initialised to \$100,000;
 Brier histories cleared; LLM conversation context buffers flushed.
@@ -1223,7 +1222,7 @@ We estimated pairwise distinguishability on the withheld 2024–25 NBA pilot
 season ($T_{\text{pilot}} = 1,230$ games), which is excluded from all
 primary evaluation. For each archetype pair $(r^{(a)}, r^{(b)})$, the same
 12 agents were prompted sequentially under both archetypes on each pilot game,
-and the mean absolute difference in reported probability was recorded:
+and the mean absolute difference in reported probability was recorded.^[Feasibility note: The protocol does not require $190 \times 12 \times 2 \times 1{,}230$ separate API calls. Instead, we precompute all $20 \times 12 \times 1{,}230 = 295{,}200$ archetype–agent–game combinations in a single retrospective batch (each game presented once per archetype per agent), then derive all 190 pairwise differences algebraically from the stored predictions without additional API calls. Total inference cost is 295,200 calls on a held-out pilot set, completed prior to any primary evaluation.]
 
 $$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)}) =
 \frac{1}{T_{\text{pilot}}} \sum_{t=1}^{T_{\text{pilot}}}

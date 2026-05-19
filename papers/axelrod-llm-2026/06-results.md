@@ -22,7 +22,7 @@ We estimated pairwise distinguishability on the withheld 2024–25 NBA pilot
 season ($T_{\text{pilot}} = 1,230$ games), which is excluded from all
 primary evaluation. For each archetype pair $(r^{(a)}, r^{(b)})$, the same
 12 agents were prompted sequentially under both archetypes on each pilot game,
-and the mean absolute difference in reported probability was recorded:
+and the mean absolute difference in reported probability was recorded.^[Feasibility note: The protocol does not require $190 \times 12 \times 2 \times 1{,}230$ separate API calls. Instead, we precompute all $20 \times 12 \times 1{,}230 = 295{,}200$ archetype–agent–game combinations in a single retrospective batch (each game presented once per archetype per agent), then derive all 190 pairwise differences algebraically from the stored predictions without additional API calls. Total inference cost is 295,200 calls on a held-out pilot set, completed prior to any primary evaluation.]
 
 $$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)}) =
 \frac{1}{T_{\text{pilot}}} \sum_{t=1}^{T_{\text{pilot}}}

@@ -176,7 +176,7 @@ Each condition is simulated independently over the complete 1,257-game, 175-trad
 event stream, starting from Day 1 of the 2025–26 season, with identical historical
 market signals and odds data.  Conditions are run sequentially (one condition's full
 simulation completes before the next begins) rather than concurrently, because running
-five independent agent fleets in parallel would require 60 NBA + 50 political concurrent
+five independent agent fleets in parallel would require 60 NBA + 20 political concurrent
 LLM inference threads, exceeding provider rate limits.  Order effects within a single
 condition are precluded by the full season-length coverage; order effects across
 conditions are bounded by LLM provider model drift (see §7.2 and §7.4).
