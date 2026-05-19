@@ -1,8 +1,9 @@
 # Experimental Setup
 
 We instantiate the LPSG on two real-world prediction domains over the 2025–26
-temporal period, using heterogeneous LLM agents drawn from five commercial and
-self-hosted provider ecosystems. All experimental conditions share the same
+temporal period, using heterogeneous LLM agents drawn from five commercial and self-hosted
+provider ecosystems for the NBA cohort and three for the political cohort
+(§4.1). All experimental conditions share the same
 Day-Bucket v3 pipeline (§3.6); conditions differ only in whether SRR is active,
 what strategy initialisation is used, and which agents are eligible for
 reallocation. The full experiment log is archived at
@@ -44,7 +45,7 @@ configuration.
 *Table 3: NBA LLM agent cohort ($N = 12$). $\rho_i \in (0,1]$ is the agent's
 personality risk weight governing willingness to commit to high-edge opportunities;
 the formula-derived Kelly stake cap $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i
-\times 0.50) \in [0.01, 0.20]$ (§3.6) is computed from each agent's pilot-season
+\times 0.50)$ (§3.6), empirical range $[0.01, 0.20]$ for pilot $\overline{B}_i \in [0.20, 0.58]$, is computed from each agent's pilot-season
 Brier and multiplied by $\rho_i$ to produce the realised stake fraction.
 Model sizes range from 4B (T12) to 235B (T1–T2) parameters. Provider column
 names refer to the LLM gateway routing layer
@@ -239,7 +240,7 @@ well-calibrated moderate one, but for different reasons).
 **Tertiary — Bankroll growth.** The compound annual growth rate (CAGR) of
 each agent's virtual bankroll, computed over the full 175-day trading window.
 Stake sizing follows evidence-based Kelly criterion [@kelly1956new] with
-per-agent caps $\kappa_i \in [0.01, 0.20]$ tuned from pilot Brier estimates.
+per-agent caps $\kappa_i$ tuned from pilot Brier estimates (empirical range $[0.01, 0.20]$; §3.6).
 This metric captures whether diversity improvements translate into financial
 performance under realistic staking constraints.
 

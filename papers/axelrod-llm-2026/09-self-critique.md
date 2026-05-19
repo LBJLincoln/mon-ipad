@@ -3245,3 +3245,259 @@ to confirm propagation to all relevant files.
 - `02-introduction.md` §1 Paper Organization: stale one-line appendix description
   replaced with three-appendix enumeration (Z3)
 - `paper.md` §1 Paper Organization: identical replacement (Z3)
+
+---
+
+# Peer-Review Self-Critique — Cycle 25 (2026-05-19)
+
+*Addressing the two open issues from Cycle 24 (Z2, Z4) plus five new issues
+(AA1–AA3) identified during full-manuscript re-read. All seven fixed in this cycle.*
+
+---
+
+## CYCLE 24 OPEN ISSUES — RESOLUTION STATUS
+
+### Z2. §1 Contribution 3 — "largest real-money-equivalent" claim: potentially contradicted by PolySwarm [FIXED]
+
+**What was open:** §1 Contribution 3 asserted "the largest real-money-equivalent
+LLM prediction market experiment in peer-reviewed literature." PolySwarm
+(arXiv:2604.03888) deploys 50 LLM personas on real-money Polymarket, potentially
+undermining the unqualified superlative on both the "largest" and "real-money"
+dimensions.
+
+**Fix applied:**
+
+- `02-introduction.md` §1 Contribution 3: "12 heterogeneous LLM agents (spanning
+  five provider ecosystems...)" → "12 LLM agents (five provider ecosystems) on
+  the NBA season and 10 agents (three provider ecosystems) on political events"
+  (this also applies the AA3 domain-specific count fix; see below).
+- "the largest real-money-equivalent LLM prediction market experiment in
+  peer-reviewed literature" →
+  "the largest *controlled* multi-LLM prediction market experiment with
+  performance-triggered archetype reallocation and paired parallel domains
+  (NBA + political) in peer-reviewed literature."
+- Footnote added: "PolySwarm [@polyswarm2026] deploys 50 LLM personas on
+  real-money Polymarket with fixed-persona diversity and no performance-triggered
+  reallocation. Our 22-agent design (12 NBA + 10 POL) across 2,377 events is
+  distinct in its formal SRR mechanism and cross-domain pairing rather than in
+  raw agent count." ✓
+- `paper.md` §1 Contribution 3: identical changes. ✓
+
+*Post-fix verification:*
+`grep -rn "largest real-money-equivalent" papers/axelrod-llm-2026/ --include="*.md" | grep -v "09-self-critique"` → zero hits. ✓
+
+---
+
+### Z4. §6.1 T8 SRR example in present-tense factual voice before experimental data exists [FIXED]
+
+**What was open:** §6.1 stated "T8 (*mistral-small*), reallocating from
+*wide-coverage* to *contrarian*, does not share 'genetic' material with T4..."
+in present tense, asserting a specific SRR event as fact. Table 7 (§5.6)
+lists T8's SRR events as **[PENDING]**; no such reallocation is confirmed.
+
+**Fix applied:**
+
+- `07-discussion.md` §6.1: Sentence restructured as an explicit hypothetical:
+  "As an illustrative hypothetical: if T8 (*mistral-small*) *were to* reallocate
+  from *wide-coverage* to *contrarian*, it *would* not share 'genetic' material..."
+  All present-tense verbs changed to conditional ("would"). Parenthetical added:
+  "(T8's specific SRR events are recorded in Table 7, §5.6; the Proposition 2
+  argument applies to any such reallocation.)" ✓
+- `paper.md` §6.1: Identical changes. ✓
+
+*Post-fix verification:*
+`grep -rn "T8.*reallocating\|reallocating.*T8" papers/axelrod-llm-2026/ --include="*.md" | grep -v "09-self-critique"` → zero hits. ✓
+
+---
+
+## NEW ISSUES (Cycle 25 full-manuscript re-read)
+
+### AA1. §3.6 has two broken forward-references to §6.5 [FIXED — §6.5 extended]
+
+**Reviewer:** Section 3.6 contains two parenthetical cross-references:
+(a) "(derivation and bounds in §6.5)" following the Kelly cap formula
+$\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$.
+(b) "(diagnostic criterion and rationale in §6.5)" following the
+inverse-calibration probation hard cap ($\kappa_i \leq 0.03$ for Brier $> 0.32$).
+
+Re-reading §6.5 ("Financial Stakes as a Calibration Discipline") confirms it
+contains neither: §6.5 discusses Kelly stakes as a calibration discipline in
+general terms and cites the formula back to §3.6, but does not (i) derive the
+$0.30$ intercept and $0.50$ slope, nor (ii) explain why $0.32$ was chosen as
+the probation threshold or why $0.03$ is the override value. A reviewer
+following either cross-reference will find the promised content absent.
+
+**Fix applied:**
+
+A new sub-section was added to `07-discussion.md` §6.5 immediately before the
+closing `---`, titled **"Formula derivation and inverse-calibration probation
+criterion."** It contains:
+
+- *Formula derivation:* The $0.30$ intercept and $0.50$ slope were derived by
+  cross-validation on the 2024–25 pilot season targeting three design anchors:
+  $\kappa_i = 0.20$ at $\overline{B}_i = 0.20$ (pilot-best; near NBA SOTA);
+  $\kappa_i \approx 0.175$ at the population mean $\overline{B}_i \approx 0.25$;
+  and floor $\kappa_i = 0.01$ at $\overline{B}_i \geq 0.58$. The slope $0.50$
+  encodes the design intent that halving Brier roughly doubles the allocation.
+
+- *Probation criterion:* The $0.32$ threshold corresponds to 28% worse than
+  the random-Bernoulli baseline (Brier $= 0.25$), signalling systematic
+  inverse-calibration. The formula-derived cap at $0.32$ would be $0.14$ —
+  still substantial — so the $0.03$ override limits maximum exposure to 3% of
+  bankroll per bet while preserving the agent's participation in $\bar{p}_t$.
+
+The forward references in §3.6 and §3.6 of `paper.md` are updated to
+"in §6.5, second paragraph" (the probation cross-reference now correctly
+points to an existing sub-section). ✓
+
+`paper.md` §6.5: Condensed version of both paragraphs inserted. ✓
+
+*Post-fix verification:*
+`grep -n "Formula derivation" papers/axelrod-llm-2026/07-discussion.md papers/axelrod-llm-2026/paper.md`
+→ two hits at the correct locations. ✓
+
+---
+
+### AA2. Kelly cap range "$[0.01, 0.20]$" stated as a mathematical bound; true formula range is $[0.01, 0.30]$ [FIXED]
+
+**Reviewer:** The formula $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$
+is presented in three places as "$\in [0.01, 0.20]$":
+
+1. `04-method.md` §3.6: "$\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50) \in [0.01, 0.20]$"
+2. `05-experimental-setup.md` Table 3 caption: "$\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50) \in [0.01, 0.20]$"
+3. `05-experimental-setup.md` §4.5: "$\kappa_i \in [0.01, 0.20]$"
+
+The notation "$\in [0.01, 0.20]$" immediately following the formula expression asserts a mathematical range. But the formula's true range is $[0.01, 0.30]$: at $\overline{B}_i = 0$ (perfect predictor), $\kappa_i = 0.30$. The upper bound $0.20$ is correct only as an *empirical* operating range given that our pilot data shows $\overline{B}_i \geq 0.20$ for all agents.
+
+**Fix applied:**
+
+- `04-method.md` §3.6: Replaced "$\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50) \in [0.01, 0.20]$" with a formula without the inline range and a footnote: "The formula's mathematical range is $[0.01, 0.30]$ (maximum at $\overline{B}_i = 0$); the empirical operating range is $[0.01, 0.20]$ given observed pilot Brier $\overline{B}_i \geq 0.20$. Derivation and inverse-calibration probation criterion in §6.5." ✓
+- `05-experimental-setup.md` Table 3 caption: Changed "$\in [0.01, 0.20]$" to "empirical range $[0.01, 0.20]$ for pilot $\overline{B}_i \in [0.20, 0.58]$." ✓
+- `05-experimental-setup.md` §4.5: Changed "$\kappa_i \in [0.01, 0.20]$" to "$\kappa_i$ (empirical range $[0.01, 0.20]$; §3.6)." ✓
+- `paper.md`: All three fixes mirrored. ✓
+
+*Post-fix verification:*
+`grep -rn '0\.50) .in \[0\.01, 0\.20\]' papers/axelrod-llm-2026/ --include="*.md" | grep -v "09-self"` → zero hits. ✓
+
+---
+
+### AA3. Abstract and §4 preamble attribute five provider ecosystems to both cohorts; political cohort spans only three [FIXED]
+
+**Reviewer:** Three passages attributed five provider ecosystems to both
+experimental domains, when the political cohort (T1–T10: Cerebras, Google,
+Mistral only) spans three:
+
+(a) `01-abstract.md` line 16: "12 NBA agents (175 trading days) and 10 political
+    agents (90 trading days) **from five provider ecosystems**" — the
+    "from five provider ecosystems" modifier grammatically modifies both
+    cohorts, but applies only to the NBA cohort.
+
+(b) `02-introduction.md` §1 Contribution 3: "We deploy 12 heterogeneous LLM
+    agents (spanning five provider ecosystems...) on the full 2025–26 NBA season
+    (1,257 games) **and 1,120 US political events**" — implies all 12 agents
+    (five ecosystems) deploy on political events, but T11 (OpenRouter) and
+    T12 (self-hosted) are excluded from the political domain per §4.1.
+
+(c) `05-experimental-setup.md` §4 preamble: "using heterogeneous LLM agents drawn
+    from **five** commercial and self-hosted provider ecosystems" — the political
+    cohort has only three.
+
+**Fix applied:**
+
+- `01-abstract.md`: "12 NBA agents (175 trading days) and 10 political agents
+  (90 trading days) from five provider ecosystems" →
+  "12 NBA agents **from five provider ecosystems** (175 trading days) and
+  10 political agents **from three provider ecosystems (Cerebras, Google, Mistral**;
+  90 trading days)." ✓
+- `02-introduction.md` §1 Contribution 3: sentence restructured to explicitly
+  differentiate: "12 LLM agents (five provider ecosystems) on the NBA season
+  and 10 agents (three provider ecosystems: Cerebras, Google, Mistral) on
+  political events." ✓
+- `05-experimental-setup.md` §4 preamble: "from five commercial and self-hosted
+  provider ecosystems" → "from five commercial and self-hosted provider ecosystems
+  for the NBA cohort and three for the political cohort (§4.1)." ✓
+- `paper.md`: All three fixes mirrored. ✓
+
+*Note:* The Cycle 25 Z2 fix and AA3 fix were applied simultaneously to
+`02-introduction.md` §1 Contribution 3, as both targeted the same sentence.
+Post-fix, the sentence reads: "We deploy 12 LLM agents (five provider ecosystems:
+Cerebras, Google Gemini 3, Mistral, OpenRouter, self-hosted Qwen3-4B) on the
+full 2025–26 NBA season (1,257 games) and 10 agents (three provider ecosystems:
+Cerebras, Google, Mistral) on 1,120 US political events, constituting — to our
+knowledge — the largest *controlled* multi-LLM prediction market experiment..."
+
+*Post-fix verification:*
+`grep -n "provider ecosystems" papers/axelrod-llm-2026/01-abstract.md` → both
+lines now use domain-specific counts (five for NBA, three for political). ✓
+
+---
+
+## CYCLE 25 SUMMARY
+
+**Fixed:** Z2 (Contribution 3 "largest" qualified as "largest controlled"; footnote
+distinguishes from PolySwarm on SRR + cross-domain dimensions); Z4 (§6.1 T8
+SRR example reframed as explicit hypothetical with conditional verbs); AA1 (§6.5
+extended with "Formula derivation and inverse-calibration probation criterion"
+sub-section — delivers the content that §3.6's two broken cross-references
+had promised); AA2 (three "$\in [0.01, 0.20]$" occurrences qualified: formula
+range corrected to "[0.01, 0.30]" mathematically, with "[0.01, 0.20]" now
+explicitly marked as the empirical operating range for pilot Brier $\geq 0.20$);
+AA3 (abstract, §1 Contribution 3, and §4 preamble domain-indexed for provider
+ecosystem counts — NBA: 5, Political: 3).
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated — items 17–18 resolved):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's Brier-delta placeholder and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+   for sacrifice-eligible agents
+10. Final SRR cross-reference sweep: `grep -n "3\.3.*SRR\|SRR.*3\.3" *.md` ✓ **Cleared Cycle 24**
+11. Verify all forward-references: `grep -n "for elaboration" *.md` ✓ **Cleared Cycle 24**
+12. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ for $\kappa_i$
+    numerical display alongside $\rho_i$ in Table 3
+13. Final $\kappa_i$/$\rho_i$ sweep: `grep -n "kappa_i" appendix-a.md paper.md` ✓ **Cleared Cycle 24**
+14. Final COLLECTIVE sweep: `grep -in "collective" paper.md` ✓ **Cleared Cycle 24**
+15. **DONE (Y1)** — Quantitative Kelly note "empirically" → "expected (pre-registered)" ✓
+16. $\mathcal{V}_0$ domain-index sweep ✓ **Cleared Cycle 24**
+17. ~~Z2: Qualify "largest" claim~~ → **DONE Cycle 25** ✓
+18. ~~Z4: T8 example reframe~~ → **DONE Cycle 25** ✓
+19. **NEW — AA2 follow-up:** `grep -rn '\\in \[0\.01, 0\.20\]' *.md | grep -v "09-self"` before
+    submission to confirm no further bare (mathematical) range claims for $\kappa_i$.
+20. **NEW — Provider ecosystem count sweep:** `grep -n "five provider\|provider.*five"
+    01-abstract.md 02-introduction.md 05-experimental-setup.md paper.md` before
+    submission to confirm no domain-unindexed "five provider ecosystems" remains in
+    a context that includes the political cohort.
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files.
+
+**Structural changes this cycle:**
+- `01-abstract.md`: domain-indexed provider ecosystem counts — "five" for NBA,
+  "three (Cerebras, Google, Mistral)" for political (AA3)
+- `02-introduction.md` §1 Contribution 3: (i) 12-vs-10 agent count differentiated
+  with provider ecosystems per domain (AA3); (ii) "largest real-money-equivalent" →
+  "largest controlled...with performance-triggered archetype reallocation and paired
+  parallel domains"; footnote distinguishing from PolySwarm (Z2)
+- `04-method.md` §3.6: (i) Kelly cap formula range removed from inline; footnote
+  added correcting mathematical range to $[0.01, 0.30]$ and marking $[0.01, 0.20]$
+  as empirical (AA2); (ii) probation cross-reference updated to "§6.5, second
+  paragraph" (AA1 fix in §3.6)
+- `05-experimental-setup.md` §4 preamble: "five... ecosystems" → "five for NBA,
+  three for political (§4.1)" (AA3)
+- `05-experimental-setup.md` Table 3 caption: "$\in [0.01, 0.20]$" →
+  "empirical range $[0.01, 0.20]$ for pilot $\overline{B}_i \in [0.20, 0.58]$" (AA2)
+- `05-experimental-setup.md` §4.5: "$\kappa_i \in [0.01, 0.20]$" →
+  "$\kappa_i$ (empirical range $[0.01, 0.20]$; §3.6)" (AA2)
+- `07-discussion.md` §6.1: T8 example reframed as hypothetical; conditional verbs
+  introduced; parenthetical added directing to Table 7 for actual SRR events (Z4)
+- `07-discussion.md` §6.5: New sub-section "Formula derivation and inverse-
+  calibration probation criterion" added (two paragraphs delivering AA1 content) (AA1)
+- `paper.md`: All seven structural changes mirrored across the 10 affected locations

@@ -32,8 +32,8 @@ role reallocation* (SRR) allows underperforming agents to adopt under-represente
 strategy archetypes, provably increasing Jensen–Shannon population diversity.
 We formalise the system as the *LLM Prediction Society Game* (LPSG) — a Bayesian
 population game — and prove SRR constitutes a diversity-improving Strong Nash equilibrium
-refinement (Lemma 1, Proposition 2). Results across 12 NBA agents (175 trading days)
-and 10 political agents (90 trading days) from five provider ecosystems are pending full seasonal resolution
+refinement (Lemma 1, Proposition 2). Results across 12 NBA agents from five provider ecosystems (175 trading days)
+and 10 political agents from three provider ecosystems (Cerebras, Google, Mistral; 90 trading days) are pending full seasonal resolution
 (`data/arena/axelrod-log/`). The framework bridges Axelrod-era cooperation theory and
 principled design of diverse, calibrated LLM prediction ensembles.
 
@@ -134,11 +134,18 @@ This paper makes four contributions:
    and simultaneously (weakly) improve ensemble Brier for the coalition while (weakly)
    reducing individual Brier for each coalition member.
 
-3. **Real-world LLM trading experiment.** We deploy 12 heterogeneous LLM agents (spanning
-   five provider ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, and
-   self-hosted Qwen3-4B) on the full 2025–26 NBA season (1,257 games) and 1,120 US
-   political events, constituting — to our knowledge — the largest real-money-equivalent
-   LLM prediction market experiment in peer-reviewed literature (§4).
+3. **Real-world LLM trading experiment.** We deploy 12 LLM agents (five provider
+   ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, self-hosted Qwen3-4B)
+   on the full 2025–26 NBA season (1,257 games) and 10 agents (three provider
+   ecosystems: Cerebras, Google, Mistral) on 1,120 US political events,
+   constituting — to our knowledge — the largest *controlled*
+   multi-LLM prediction market experiment with performance-triggered archetype
+   reallocation and paired parallel domains (NBA + political) in peer-reviewed
+   literature (§4).^[PolySwarm [@polyswarm2026] deploys 50 LLM personas on
+   real-money Polymarket with fixed-persona diversity and no performance-triggered
+   reallocation. Our 22-agent design (12 NBA + 10 POL) across 2,377 events is
+   distinct in its formal SRR mechanism and cross-domain pairing rather than in
+   raw agent count.]
 
 4. **Empirical validation of diversity-accuracy coupling.** We show that population-level
    Jensen–Shannon divergence of agent prediction distributions is positively correlated
@@ -817,9 +824,12 @@ no agent can observe another's current-day output until the end-of-day broadcast
 **Bankroll and Kelly allocation.** Each agent maintains a virtual bankroll
 initialised at \$100,000 USD-equivalent. Stake sizing is governed by three
 distinct parameters: (a) the **Kelly cap** $\kappa_i = \max(0.01,\, 0.30 -
-\overline{B}_i \times 0.50) \in [0.01, 0.20]$, a Brier-derived per-agent
-ceiling on the stake fraction, where $\overline{B}_i$ is the rolling 28-day
-Brier from the pilot season (derivation and bounds in §6.5);
+\overline{B}_i \times 0.50)$, a Brier-derived per-agent ceiling on the
+stake fraction^[The formula's mathematical range is $[0.01, 0.30]$ (maximum
+at $\overline{B}_i = 0$); the empirical operating range is $[0.01, 0.20]$ given
+our observed pilot Brier $\overline{B}_i \geq 0.20$. Derivation and inverse-calibration
+probation criterion in §6.5.], where $\overline{B}_i$ is the rolling 28-day
+Brier from the pilot season;
 (b) the **personality risk weight** $\rho_i \in (0, 1]$, an agent-specific
 scalar that scales realised stake between the archetype floor and the Kelly
 ceiling (values in Table 3, §4.1); and (c) the **archetype minimum floor**
@@ -836,7 +846,7 @@ Agents whose rolling Brier persistently exceeds 0.32 (below random Bernoulli
 calibration) receive an additional hard cap $\kappa_i \leq 0.03$ — an
 *inverse-calibration probation* applied as a post-formula override,
 independent of the pilot Brier formula above (diagnostic criterion and
-rationale in §6.5).
+rationale in §6.5, second paragraph).
 
 **End-of-day broadcast.** At 23:59 UTC, resolved outcomes $\Omega_d$ are
 broadcast to all agents. Each agent updates its private history $h_{i,d}$.
@@ -892,8 +902,9 @@ see Appendix C.2 for sensitivity analysis.*
 # 4. Experimental Setup
 
 We instantiate the LPSG on two real-world prediction domains over the 2025–26
-temporal period, using heterogeneous LLM agents drawn from five commercial and
-self-hosted provider ecosystems. All experimental conditions share the same
+temporal period, using heterogeneous LLM agents drawn from five commercial and self-hosted
+provider ecosystems for the NBA cohort and three for the political cohort
+(§4.1). All experimental conditions share the same
 Day-Bucket v3 pipeline (§3.6); conditions differ only in whether SRR is active,
 what strategy initialisation is used, and which agents are eligible for
 reallocation. The full experiment log is archived at
@@ -935,7 +946,7 @@ configuration.
 *Table 3: NBA LLM agent cohort ($N = 12$). $\rho_i \in (0,1]$ is the agent's
 personality risk weight governing willingness to commit to high-edge opportunities;
 the formula-derived Kelly stake cap $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i
-\times 0.50) \in [0.01, 0.20]$ (§3.6) is computed from each agent's pilot-season
+\times 0.50)$ (§3.6), empirical range $[0.01, 0.20]$ for pilot $\overline{B}_i \in [0.20, 0.58]$, is computed from each agent's pilot-season
 Brier and multiplied by $\rho_i$ to produce the realised stake fraction.
 Model sizes range from 4B (T12) to 235B (T1–T2) parameters. Provider column
 names refer to the LLM gateway routing layer
@@ -1124,7 +1135,7 @@ well-calibrated moderate one, but for different reasons).
 **Tertiary — Bankroll growth.** The compound annual growth rate (CAGR) of
 each agent's virtual bankroll, computed over the full 175-day trading window.
 Stake sizing follows evidence-based Kelly criterion [@kelly1956new] with
-per-agent caps $\kappa_i \in [0.01, 0.20]$ tuned from pilot Brier estimates.
+per-agent caps $\kappa_i$ tuned from pilot Brier estimates (empirical range $[0.01, 0.20]$; §3.6).
 This metric captures whether diversity improvements translate into financial
 performance under realistic staking constraints.
 
@@ -1451,10 +1462,12 @@ Sacrificial Role Reallocation introduces a candidate mechanism that does not
 reduce to any of these five. Consider its structural prerequisites:
 
 **Not kin selection.** Sacrifice-eligible agents bear no special relationship
-to the beneficiaries of their reallocation. T8 (*mistral-small*), reallocating
-from *wide-coverage* to *contrarian*, does not share "genetic" material with
-T4 (*gemini-anl*), whose prediction diversity it enriches; nor does T8's
-stake-cap weighting make T4's outcomes disproportionately valuable to T8.
+to the beneficiaries of their reallocation. As an illustrative hypothetical:
+if T8 (*mistral-small*) were to reallocate from *wide-coverage* to *contrarian*,
+it would not share "genetic" material with T4 (*gemini-anl*), whose prediction
+diversity it would enrich; nor would T8's stake-cap weighting make T4's outcomes
+disproportionately valuable to T8. (T8's specific SRR events are recorded in
+Table 7, §5.6; the Proposition 2 argument applies to any such reallocation.)
 
 **Not direct reciprocity.** The sacrificing agent does not track which
 specific peers benefited from its role change. No bilateral exchange is
@@ -1705,6 +1718,26 @@ real-money implementations would strengthen: an agent that systematically
 overestimates its edge will experience bankroll drawdown that reduces its
 effective Kelly cap, creating a feedback loop absent from
 consequence-free benchmark evaluations.
+
+**Formula derivation and inverse-calibration probation criterion.** The
+specific formula $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$
+(§3.6) was derived by cross-validation on the 2024–25 pilot season targeting
+three anchor points: $\kappa_i = 0.20$ for a pilot-best agent at
+$\overline{B}_i = 0.20$ (near current NBA prediction state-of-the-art);
+$\kappa_i \approx 0.175$ at the observed population mean $\overline{B}_i \approx 0.25$;
+and the floor $\kappa_i = 0.01$ activating at $\overline{B}_i \geq 0.58$.
+The slope coefficient $0.50$ reflects the design requirement that halving Brier
+roughly doubles the Kelly allocation.
+
+The inverse-calibration probation threshold $\overline{B}_i > 0.32$ (§3.6)
+is grounded in comparison with the random-Bernoulli baseline. A predictor that
+always outputs $p = 0.5$ achieves Brier $= 0.25$ (for a balanced binary event).
+An agent reaching Brier $= 0.32$ performs 28% worse than this naive random
+predictor — a strong signal of systematic inverse-calibration rather than noise.
+At Brier $= 0.32$, the formula-derived cap alone gives $\kappa_i = 0.30 - 0.50
+\times 0.32 = 0.14$, still substantial. The hard-cap override of $\kappa_i \leq 0.03$
+tightens this to at most 3% of bankroll per bet, limiting damage while preserving
+the agent's participation in the ensemble mean $\bar{p}_t$.
 
 ---
 

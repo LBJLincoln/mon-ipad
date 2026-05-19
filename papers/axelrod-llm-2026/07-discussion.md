@@ -29,10 +29,12 @@ Sacrificial Role Reallocation introduces a candidate mechanism that does not
 reduce to any of these five. Consider its structural prerequisites:
 
 **Not kin selection.** Sacrifice-eligible agents bear no special relationship
-to the beneficiaries of their reallocation. T8 (*mistral-small*), reallocating
-from *wide-coverage* to *contrarian*, does not share "genetic" material with
-T4 (*gemini-anl*), whose prediction diversity it enriches; nor does T8's
-stake-cap weighting make T4's outcomes disproportionately valuable to T8.
+to the beneficiaries of their reallocation. As an illustrative hypothetical:
+if T8 (*mistral-small*) were to reallocate from *wide-coverage* to *contrarian*,
+it would not share "genetic" material with T4 (*gemini-anl*), whose prediction
+diversity it would enrich; nor would T8's stake-cap weighting make T4's outcomes
+disproportionately valuable to T8. (T8's specific SRR events are recorded in
+Table 7, §5.6; the Proposition 2 argument applies to any such reallocation.)
 
 **Not direct reciprocity.** The sacrificing agent does not track which
 specific peers benefited from its role change. No bilateral exchange is
@@ -283,6 +285,30 @@ real-money implementations would strengthen: an agent that systematically
 overestimates its edge will experience bankroll drawdown that reduces its
 effective Kelly cap, creating a feedback loop absent from
 consequence-free benchmark evaluations.
+
+**Formula derivation and inverse-calibration probation criterion.** The
+specific formula $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$
+(§3.6) was derived by cross-validation on the 2024–25 pilot season targeting
+three anchor points: $\kappa_i = 0.20$ for a pilot-best agent at
+$\overline{B}_i = 0.20$ (near current NBA prediction state-of-the-art);
+$\kappa_i \approx 0.175$ at the observed population mean $\overline{B}_i \approx 0.25$;
+and the floor $\kappa_i = 0.01$ activating at $\overline{B}_i \geq 0.58$.
+The slope coefficient $0.50$ reflects the design requirement that halving Brier
+roughly doubles the Kelly allocation, creating a linearly increasing reward for
+calibration improvement.
+
+The inverse-calibration probation threshold $\overline{B}_i > 0.32$ (§3.6)
+is grounded in comparison with the random-Bernoulli baseline. A predictor that
+always outputs $p = 0.5$ achieves Brier $= 0.25$ (for a balanced binary event).
+An agent reaching Brier $= 0.32$ performs 28% worse than this naive random
+predictor — a strong signal of systematic inverse-calibration rather than mere
+noise, where the agent reliably assigns higher probability to the losing outcome.
+At Brier $= 0.32$, the formula-derived cap alone gives $\kappa_i = 0.30 - 0.50
+\times 0.32 = 0.14$, still a substantial position size. The hard-cap override
+of $\kappa_i \leq 0.03$ tightens this to at most 3% of bankroll per bet,
+limiting losses to the ensemble while preserving the agent's participation
+in the ensemble mean prediction $\bar{p}_t$. The threshold and override were
+selected empirically from the 2024–25 pilot season.
 
 ---
 

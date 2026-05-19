@@ -93,11 +93,18 @@ This paper makes four contributions:
    and simultaneously (weakly) improve ensemble Brier for the coalition while (weakly)
    reducing individual Brier for each coalition member.
 
-3. **Real-world LLM trading experiment.** We deploy 12 heterogeneous LLM agents (spanning
-   five provider ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, and
-   self-hosted Qwen3-4B) on the full 2025–26 NBA season (1,257 games) and 1,120 US
-   political events, constituting — to our knowledge — the largest real-money-equivalent
-   LLM prediction market experiment in peer-reviewed literature (§4).
+3. **Real-world LLM trading experiment.** We deploy 12 LLM agents (five provider
+   ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, self-hosted Qwen3-4B)
+   on the full 2025–26 NBA season (1,257 games) and 10 agents (three provider
+   ecosystems: Cerebras, Google, Mistral) on 1,120 US political events,
+   constituting — to our knowledge — the largest *controlled*
+   multi-LLM prediction market experiment with performance-triggered archetype
+   reallocation and paired parallel domains (NBA + political) in peer-reviewed
+   literature (§4).^[PolySwarm [@polyswarm2026] deploys 50 LLM personas on
+   real-money Polymarket with fixed-persona diversity and no performance-triggered
+   reallocation. Our 22-agent design (12 NBA + 10 POL) across 2,377 events is
+   distinct in its formal SRR mechanism and cross-domain pairing rather than in
+   raw agent count.]
 
 4. **Empirical validation of diversity-accuracy coupling.** We show that population-level
    Jensen–Shannon divergence of agent prediction distributions is positively correlated

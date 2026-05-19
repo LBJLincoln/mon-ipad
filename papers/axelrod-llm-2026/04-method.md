@@ -332,9 +332,12 @@ no agent can observe another's current-day output until the end-of-day broadcast
 **Bankroll and Kelly allocation.** Each agent maintains a virtual bankroll
 initialised at \$100,000 USD-equivalent. Stake sizing is governed by three
 distinct parameters: (a) the **Kelly cap** $\kappa_i = \max(0.01,\, 0.30 -
-\overline{B}_i \times 0.50) \in [0.01, 0.20]$, a Brier-derived per-agent
-ceiling on the stake fraction, where $\overline{B}_i$ is the rolling 28-day
-Brier from the pilot season (derivation and bounds in §6.5);
+\overline{B}_i \times 0.50)$, a Brier-derived per-agent ceiling on the
+stake fraction^[The formula's mathematical range is $[0.01, 0.30]$ (maximum
+at $\overline{B}_i = 0$); the empirical operating range is $[0.01, 0.20]$ given
+our observed pilot Brier $\overline{B}_i \geq 0.20$. Derivation and inverse-calibration
+probation criterion in §6.5.], where $\overline{B}_i$ is the rolling 28-day
+Brier from the pilot season;
 (b) the **personality risk weight** $\rho_i \in (0, 1]$, an agent-specific
 scalar that scales realised stake between the archetype floor and the Kelly
 ceiling (values in Table 3, §4.1); and (c) the **archetype minimum floor**
@@ -351,7 +354,7 @@ Agents whose rolling Brier persistently exceeds 0.32 (below random Bernoulli
 calibration) receive an additional hard cap $\kappa_i \leq 0.03$ — an
 *inverse-calibration probation* applied as a post-formula override,
 independent of the pilot Brier formula above (diagnostic criterion and
-rationale in §6.5).
+rationale in §6.5, second paragraph).
 
 **End-of-day broadcast.** At 23:59 UTC, resolved outcomes $\Omega_d$ are
 broadcast to all agents. Each agent updates its private history $h_{i,d}$.
