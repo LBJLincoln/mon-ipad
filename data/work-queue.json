@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-05-22T14:00:00Z",
+  "updated_at": "2026-05-22T18:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-trigger-axelrod-fire148-2026-05-22T18h",
+      "priority": 196,
+      "status": "done",
+      "completed_at": "2026-05-22T18:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-148",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-148 Axelrod verify pass: SHAs confirmed NBA 19f4acf49d(5992L)/POL 3496362c60(3976L) unchanged from fire-146; Mechs A/B/C all symbols present ✓; C→B→A ordering verified ✓ (L5054 write_axelrod_log → L5060 assign_sacrificial+challenge → L5071 build_common_knowledge_block); AXELROD_ARCHETYPES NBA 20-sports-domain spec-exact ✓; POL 20-political-domain spec-exact ✓; assign_sacrificial_archetypes bottom-3/trailing-7d society-wide dedup ✓; write_axelrod_log+compute_consensus_distance(KL-div)+peer_consensus_distance ✓; ck_consensus_stance DMAD field ✓; 17 agents NBA TF (TRADERS dict L931-1002) ✓; common_knowledge_block passed to build_day_prompt L4353 ✓; BLOCKED do_not_push_hf_space_yet+NBA-503+POL-IDLE (2026-05-22T18h)"
+    },
     {
       "id": "cloud-brain-fire147-2026-05-22T14h",
       "priority": 195,
@@ -332,8 +341,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech B — sacrificial role reallocation runtime verify",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-22T12:00:00Z",
-      "cloud_trigger_note": "fire-146: CODE COMPLETE. Deep verify pass confirmed: _sacrificial_assignments + _challenge_assignments + _used_archetypes + _society_archetypes_by_day (society-wide 7-day dedup) + build_challenge_block(tid, rank, n_agents) + AXELROD_ARCHETYPES 20-sports-domain + AXELROD_ARCHETYPE_DESCRIPTIONS + C→B→A ordering in run loop — NBA 19f4acf49d + POL 3496362c60 at parity ✓. BLOCKED: do_not_push_hf_space_yet (user approval pending); NBA TF 503 DOWN; POL TF IDLE."
+      "updated_at": "2026-05-22T18:00:00Z",
+      "cloud_trigger_note": "fire-148: VERIFY PASS ✓ — _sacrificial_assignments + _challenge_assignments + _society_archetypes_by_day (society-wide 7-day dedup) + build_challenge_block(tid, rank, n_agents) + AXELROD_ARCHETYPES 20-sports-domain (NBA) / 20-political-domain (POL) + assign_sacrificial_archetypes bottom-3/trailing-7d ✓; C→B→A ordering: L5055 write_axelrod_log → L5060 assign_sacrificial → L5071 build_CK — NBA 19f4acf49d + POL 3496362c60 at parity ✓. BLOCKED: do_not_push_hf_space_yet (user approval pending); NBA TF 503 DOWN; POL TF IDLE."
     },
     {
       "id": "tf-axelrod-mech-c",
@@ -342,8 +351,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech C — post-mortem log 27-field schema verify HF Hub push",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-22T12:00:00Z",
-      "cloud_trigger_note": "fire-146: CODE COMPLETE. write_axelrod_log + compute_consensus_distance (KL-div) + peer_consensus_distance + Hub push — NBA 19f4acf49d + POL 3496362c60 at parity ✓. BLOCKED: do_not_push_hf_space_yet + TFs offline."
+      "updated_at": "2026-05-22T18:00:00Z",
+      "cloud_trigger_note": "fire-148: VERIFY PASS ✓ — write_axelrod_log(day_idx, day_date, state, agent_logs, sacrificial_assignments, challenge_map, society_archetypes_by_day, day_rogue_state) + compute_consensus_distance (KL-div) + peer_consensus_distance field + Hub push data/arena/axelrod-log/day-NNN.jsonl — NBA 19f4acf49d + POL 3496362c60 at parity ✓. BLOCKED: do_not_push_hf_space_yet + TFs offline."
     },
     {
       "id": "engine-parity-sync",
