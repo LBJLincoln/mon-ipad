@@ -1,62 +1,109 @@
 {
-  "generated_at": "2026-05-22T14:00:00Z",
-  "fire": 147,
-  "cycle_parity": "EVEN",
-  "nba_fleet": {
-    "fleet_best_brier": 0.22012,
-    "fleet_best_island": "S15",
-    "threshold_broken": false,
-    "islands": {
-      "S13": {"cycle": 789, "gen": 2367, "brier": 0.22216, "stag": 0, "pareto": 12, "status": "EVOLVING", "note": "ET-200f-0.22045-2nd-fire-monitoring"},
-      "S14": {"cycle": 292, "gen": 876, "brier": 0.22793, "stag": 0, "pareto": 7, "cycle_stag": 14, "status": "EVOLVING", "note": "auto-reset-expected-~c303, hard-reset-c278"},
-      "S15": {"cycle": 2059, "gen": 6176, "brier": 0.22012, "stag": 0, "pareto": 14, "status": "EVOLVING", "note": "FLEET-BEST, post-reset-c2051-EXCELLENT-RECOVERY, pareto-up-11->14"},
-      "S17": {"status": "503 DOWN", "down_days": 104, "note": "VM restart required"},
-      "S18": {"cycle": 258, "gen": 774, "brier": 0.22236, "stag": 0, "pareto": 13, "status": "EVOLVING", "note": "stable, RF-44f"},
-      "S22": {"cycle": 158, "gen": 474, "brier": 0.22124, "stag": 0, "pareto": 12, "status": "EVOLVING", "note": "best_model=random_forest, LR-48f-still-in-pareto"}
+  "fire": 149,
+  "cycle_parity": "ODD",
+  "timestamp": "2026-05-22T22:00:00Z",
+  "nba_fleet_best_brier": 0.22012,
+  "nba_fleet_best_island": "S15",
+  "nba_threshold_crossed": false,
+  "nba_threshold": 0.22085,
+  "diversify_sent": false,
+  "all_stag_zero": true,
+  "nba_tf_status": "503-DOWN",
+  "nba_tf_down_days": 22,
+  "pol_tf_status": "IDLE",
+  "pol_tf_bankroll_usd": 38916,
+  "pol_tf_idle_days": 16,
+  "islands": {
+    "S13": {
+      "space": "Nomos42/nba-evo-4",
+      "cycle": 806,
+      "generation": 2418,
+      "best_brier": 0.22216,
+      "stagnation": 0,
+      "pareto_size": 13,
+      "pareto_best_brier": 0.22216,
+      "best_model": "xgboost_brier",
+      "num_features": 47,
+      "status": "UP",
+      "notes": "ET-0.22045-EVICTED-Rule8-CONFIRMED(pareto_best=best_brier=0.22216); CatBoost-0.22076 also evicted (same pattern); vm-remove-stacking-s13 URGENT"
     },
-    "diversify_needed": false,
-    "stagnation_alerts": [],
-    "s14_cycle_stag_watch": "cycle-stag=14/25 — hard reset expected naturally around c303"
-  },
-  "pol_fleet": {
-    "fleet_best_brier": 0.2497,
-    "fleet_best_island": "P4",
-    "islands": {
-      "P1": {"cycle": 4405, "gen": 13215, "brier": 0.24987, "stag": 0, "pareto": 8, "status": "EVOLVING", "note": "pareto-down-13->8-slight-decline"},
-      "P2": {"cycle": 20549, "gen": 61647, "brier": 0.25003, "stag": 0, "pareto": 7, "status": "EVOLVING", "note": "CRITICAL-SHRINK-RESOLVED! pareto-up-4->7"},
-      "P4": {"cycle": 1811, "gen": 5431, "brier": 0.2497, "stag": 0, "pareto": 11, "status": "EVOLVING", "model": "lightgbm", "features": 62, "note": "POL-FLEET-BEST, pareto-slight-down-12->11"},
-      "P5": {"cycle": 27294, "gen": 81882, "brier": 0.24993, "stag": 0, "pareto": 6, "status": "EVOLVING", "note": "pareto-up-5->6-growing"},
-      "P7": {"cycle": 7093, "gen": 21279, "brier": 0.25004, "stag": 0, "pareto": 13, "status": "EVOLVING", "note": "STRONG-RECOVERY-7->13! LightGBM-112f-0.24931-CONFIRMED-SECURE"}
+    "S14": {
+      "space": "Nomos42/nba-evo-5",
+      "cycle": 316,
+      "generation": 946,
+      "best_brier": 0.22793,
+      "stagnation": 0,
+      "pareto_size": 9,
+      "pareto_best_brier": 0.22793,
+      "best_model": "extra_trees",
+      "num_features": 37,
+      "status": "UP",
+      "notes": "POST-RESET-c303-RECOVERED pareto 7->9; vm-checkpoint-s14-et NEEDED"
     },
-    "diversify_needed": false,
-    "stagnation_alerts": []
+    "S15": {
+      "space": "Nomos42/nba-evo-6",
+      "cycle": 2086,
+      "generation": 6256,
+      "best_brier": 0.22012,
+      "stagnation": 0,
+      "pareto_size": 12,
+      "pareto_best_brier": 0.22012,
+      "best_model": "random_forest",
+      "num_features": 75,
+      "status": "UP",
+      "notes": "FLEET-BEST; pareto=12(down14->12 normal-pruning); vm-checkpoint-s15 URGENT"
+    },
+    "S17": {
+      "space": "LBJLincoln26/nba-evo-s17",
+      "cycle": null,
+      "generation": null,
+      "best_brier": null,
+      "stagnation": null,
+      "pareto_size": null,
+      "status": "DOWN-503",
+      "down_days": 104,
+      "notes": "VM RESTART REQUIRED"
+    },
+    "S18": {
+      "space": "TESTforge42/nba-evo-s18",
+      "cycle": 267,
+      "generation": 801,
+      "best_brier": 0.22236,
+      "stagnation": 0,
+      "pareto_size": 14,
+      "pareto_best_brier": 0.22236,
+      "best_model": "random_forest",
+      "num_features": 44,
+      "status": "UP",
+      "notes": "pareto=14(up13->14-STRONG) RF-44f"
+    },
+    "S22": {
+      "space": "TESTforge42/nba-evo-s22",
+      "cycle": 181,
+      "generation": 542,
+      "best_brier": 0.22124,
+      "stagnation": 0,
+      "pareto_size": 16,
+      "pareto_best_brier": 0.22124,
+      "best_model": "random_forest",
+      "num_features": 48,
+      "status": "UP",
+      "notes": "FLEET-PEAK pareto=16(up12->16-MAJOR-GROWTH); RF-48f+LR-in-pareto; vm-checkpoint URGENT"
+    }
   },
-  "trading_floors": {
-    "nba_tf": {"status": "503 DOWN", "down_days": 21, "note": "Axelrod code verified fire-144, push pending user approval"},
-    "pol_tf": {"status": "IDLE", "bankroll": 38916, "roi_pct": 2189, "day": 130, "note": "pre-Axelrod code on HF Space, push + /api/run needed"}
-  },
-  "sota_research_fire147": {
-    "websearch_done": true,
-    "citations": [
-      {"paper": "MDPI-Info-2026 RNN+MC-dropout uncertainty-aware NBA", "brier_pregame": 0.206, "confirms": 16},
-      {"paper": "arXiv:2508.02725 NCAA deep learning", "brier_pregame": 0.206, "confirms": 1, "new": true},
-      {"paper": "LR baseline Brier=0.199", "confirms": 16},
-      {"paper": "IEEE2026 AutoGluon+SVM 77.49% acc", "confirms": 2}
-    ],
-    "proposal_written": "data/research-proposals/sota-rnn-mcdropout-fire147.md"
-  },
-  "councils": "DECOMMISSIONED 2026-04-20 — no action",
-  "urgent_vm_tasks": [
-    {"id": "vm-checkpoint-s13-catboost-0.22076-fire143", "priority": 1},
-    {"id": "vm-checkpoint-p4-lgbm-0.2492-fire143", "priority": 1},
-    {"id": "vm-checkpoint-s15-et-0.21888-fire136", "priority": 1},
-    {"id": "vm-checkpoint-p7-lgbm-0.24937", "priority": 1},
-    {"id": "vm-checkpoint-s22-catboost-0.21818", "priority": 1},
-    {"id": "vm-restart-s17", "priority": 1},
-    {"id": "vm-restart-nba-tf", "priority": 10},
-    {"id": "vm-restart-pol-tf", "priority": 11}
+  "alerts": [
+    "S17 503 DOWN 104+ days — VM restart required",
+    "NBA TF 503 DOWN 22+ days (do_not_push_hf_space_yet, user approval pending)",
+    "S22 pareto=16 FLEET PEAK (major growth from 12) — checkpoint urgently needed",
+    "S14 survived reset at c303, pareto recovered 7->9",
+    "S13 ET-0.22045 + CatBoost-0.22076 both confirmed evicted Rule8 stacking"
   ],
-  "next_fire": 148,
-  "next_parity": "ODD",
-  "next_websearch": false
+  "pending_vm_actions": [
+    "vm-checkpoint-s13: stacking removal (Rule8)",
+    "vm-checkpoint-s14-et: checkpoint before next reset",
+    "vm-checkpoint-s15-et-0.21888: EXTREME URGENT",
+    "vm-checkpoint-s18-rf: priority=1",
+    "vm-checkpoint-s22: pareto=16 FLEET PEAK URGENT",
+    "vm-remove-stacking-s13-s14-s15-s22: Rule8"
+  ]
 }
