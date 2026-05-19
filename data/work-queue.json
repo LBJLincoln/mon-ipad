@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-21T20:00:00Z",
+  "updated_at": "2026-05-22T02:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -301,8 +301,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech B — sacrificial role reallocation runtime verify",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-21T20:00:00Z",
-      "cloud_trigger_note": "fire-143: STILL BLOCKED. NBA 503 DOWN 17+d. POL TF IDLE 14+d running pre-Axelrod code."
+      "updated_at": "2026-05-22T02:00:00Z",
+      "cloud_trigger_note": "fire-144: STILL BLOCKED. NBA TF 503 DOWN 19+d; POL TF IDLE 16+d (pre-Axelrod code on HF Space). Verify pass: NBA 5993L SHA 19f4acf49d / POL 3977L SHA 3496362c60 at parity, Mechs A/B/C (C→B→A ✓), society-dedup 20-archetype pool (NBA sports domain) ✓."
     },
     {
       "id": "tf-axelrod-mech-c",
@@ -311,8 +311,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech C — post-mortem log 27-field schema verify HF Hub push",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-21T20:00:00Z",
-      "cloud_trigger_note": "fire-143: STILL BLOCKED. POL TF IDLE 14+d."
+      "updated_at": "2026-05-22T02:00:00Z",
+      "cloud_trigger_note": "fire-144: STILL BLOCKED. POL TF IDLE 16+d. Verify: write_axelrod_log 27-field schema (day_idx/date/trader_id/rank/bankroll/archetype_assigned/was_sacrificed/was_challenged/tier/num_decisions/decisions/peer_consensus_distance/KL-divergence/used_archetypes_7d/...) confirmed in both NBA+POL at parity ✓. HF Hub push gated on do_not_push_hf_space_yet."
     },
     {
       "id": "engine-parity-sync",
