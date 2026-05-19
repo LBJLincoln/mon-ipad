@@ -1,125 +1,55 @@
 {
-  "fire": 145,
-  "timestamp": "2026-05-22T06:00:00Z",
-  "cycle_parity": "ODD",
-  "updated_by": "cloud-brain-fire-145",
+  "fire": 146,
+  "cycle_parity": "EVEN",
+  "timestamp": "2026-05-22T10:00:00Z",
   "nba_fleet": {
-    "fleet_best_brier": 0.22012,
-    "fleet_best_island": "S15",
-    "fleet_best_stable": true,
-    "s18_ssl_resolved": true,
-    "pareto_record_monitoring": {
-      "island": "S13",
-      "candidate": "CatBoost-200f",
-      "brier": 0.22076,
-      "gen": 2201,
-      "status": "2ND-FIRE-MONITORING",
-      "note": "BELOW 0.22085 threshold. best_brier field still 0.22216 (field-lag confirmed). Pareto 7->12 recovering. VM CHECKPOINT EXTREME URGENT."
-    },
-    "islands": {
-      "S13": {
-        "cycle": 752, "gen": 2255, "brier": 0.22216, "stag": 0,
-        "pareto": 12, "pareto_best": 0.22076, "model": "xgboost_brier",
-        "roi": 0.3011, "sharpe": 7.5775, "features": 47,
-        "status": "UP",
-        "note": "Pareto 7->12 RECOVERING. CatBoost-200f-0.22076 still in pareto (2nd fire, best_brier field lag confirmed). VM CHECKPOINT EXTREME URGENT."
-      },
-      "S14": {
-        "cycle": 247, "gen": 739, "brier": 0.22793, "stag": 0,
-        "pareto": 17, "pareto_best": 0.22170, "model": "extra_trees",
-        "status": "UP",
-        "note": "Pareto 7->17 STRONG RECOVERY. ET-200f pareto_best=0.22170 stable. Hard reset c228."
-      },
-      "S15": {
-        "cycle": 1995, "gen": 5984, "brier": 0.22012, "stag": 0,
-        "pareto": 10, "pareto_best": 0.22023, "model": "random_forest",
-        "status": "UP-FLEET-BEST",
-        "note": "FLEET BEST stable. Pareto 11->10 slight. ET-200f in pareto. Hard reset c1976."
-      },
-      "S17": {
-        "status": "DOWN-503", "down_days": 103,
-        "note": "503 DOWN 103+ days — VM RESTART REQUIRED"
-      },
-      "S18": {
-        "cycle": 231, "gen": 692, "brier": 0.22236, "stag": 0,
-        "pareto": 12, "model": "random_forest", "features": 44,
-        "status": "UP-RESOLVED",
-        "note": "SSL CERT ERROR FROM FIRE-143 RESOLVED. Back UP: brier=0.22236, stag=0, pareto=12. Hard resets c200+c225."
-      },
-      "S22": {
-        "cycle": 120, "gen": 358, "brier": 0.22124, "stag": 0,
-        "pareto": 8, "pareto_best": 0.22124, "model": "random_forest",
-        "status": "UP-WATCH",
-        "note": "Pareto 11->8 shrinking. Hard reset c109. LR top config. VM checkpoint pending."
-      }
-    },
-    "alerts": {
-      "S13_catboost_2nd_fire": "CatBoost-200f-0.22076 BELOW 0.22085 — 2nd fire monitoring. Pareto 7->12 recovering. VM CHECKPOINT EXTREME URGENT",
-      "S18_ssl_RESOLVED": "SSL RESOLVED — S18 back UP c231 g692 brier=0.22236 stag=0 pareto=12",
-      "S15_fleet_best_stable": "0.22012 stable gen=5984 cycle=1995",
-      "S22_pareto_shrink": "Pareto 11->8 — watch for eviction",
-      "S17_down": "503 DOWN 103+ days — VM restart required"
-    }
+    "best_brier": 0.22012,
+    "champion": "S15",
+    "islands_up": 5,
+    "islands_down": 1,
+    "down_list": ["S17-503-103+d"],
+    "stagnation_alert": false,
+    "new_pareto_detect": "S13-ET-200f-0.22045-BELOW-0.22085-THRESHOLD-1ST-DETECT",
+    "checkpoint_miss": "S14-ET-0.22170-EVICTED(pareto-17->12)"
   },
   "pol_fleet": {
-    "fleet_best_brier": 0.2497,
-    "fleet_best_island": "P4",
-    "pareto_record_confirmed": {
-      "island": "P4",
-      "candidate": "LightGBM-138f",
-      "pareto_best": 0.24915,
-      "status": "CONFIRMED-2ND-FIRE",
-      "note": "P4 pareto_best=0.24915 confirmed 2nd consecutive fire (was 0.2492 1st-detect fire-143 — strengthened). NEW POL ALL-TIME PARETO RECORD CONFIRMED. VM CHECKPOINT EXTREME URGENT."
-    },
-    "islands": {
-      "P1": {
-        "cycle": 3777, "gen": 11330, "brier": 0.24987, "stag": 0,
-        "pareto": 11, "pareto_best": 0.24927, "model": "xgboost_brier",
-        "status": "UP",
-        "note": "Pareto 6->11 MAJOR RECOVERY. 328 cycles since fire-143. VM checkpoint still urgent but lower priority now."
-      },
-      "P2": {
-        "cycle": 20232, "gen": 60693, "brier": 0.25003, "stag": 0,
-        "pareto": 7, "pareto_best": 0.25003, "model": "xgboost_brier",
-        "status": "UP",
-        "note": "Pareto 6->7 slight recovery. Gen 60693."
-      },
-      "P4": {
-        "cycle": 1476, "gen": 4427, "brier": 0.2497, "stag": 0,
-        "pareto": 8, "pareto_best": 0.24915, "model": "lightgbm",
-        "status": "UP-POL-FLEET-BEST",
-        "note": "POL FLEET BEST stable. Pareto 11->8 slight decline. pareto_best=0.24915 NEW POL ALL-TIME PARETO RECORD CONFIRMED 2ND FIRE. LightGBM-138f dominant. VM CHECKPOINT EXTREME URGENT."
-      },
-      "P5": {
-        "cycle": 27054, "gen": 81160, "brier": 0.24993, "stag": 0,
-        "pareto": 5, "pareto_best": 0.249, "model": "xgboost_brier",
-        "status": "UP",
-        "note": "Pareto 6->5 slight decline. Hard resets c27001+c27021. LightGBM-102f top performer."
-      },
-      "P7": {
-        "cycle": 6487, "gen": 19460, "brier": 0.25004, "stag": 0,
-        "pareto": 5, "pareto_best": 0.24931, "model": "xgboost_brier",
-        "status": "UP-ALERT",
-        "note": "Pareto 10->5 MAJOR SHRINK. LightGBM-112f-0.24931 at EVICTION RISK. VM CHECKPOINT EXTREME URGENT — one cycle away from loss."
-      }
-    },
-    "alerts": {
-      "P4_pareto_record_confirmed": "P4 pareto_best=0.24915 CONFIRMED 2nd fire — NEW POL ALL-TIME RECORD. VM CHECKPOINT EXTREME URGENT",
-      "P7_pareto_major_shrink": "P7 pareto 10->5 MAJOR SHRINK — LightGBM-112f-0.24931 EVICTION RISK HIGH. VM CHECKPOINT IMMEDIATELY",
-      "P1_pareto_recovery": "P1 pareto 6->11 MAJOR RECOVERY — strong evolution momentum"
-    }
+    "best_brier": 0.2497,
+    "champion": "P4-LightGBM-62f",
+    "pol_alltime_pareto_best": 0.24915,
+    "islands_up": 5,
+    "stagnation_alert": false,
+    "alerts": ["P2-PARETO-CRITICAL-SHRINK-7->4", "P1-pareto_best-EVICTED-0.24927->0.24995-CHECKPOINT-MISSED"]
   },
-  "tf_status": {
-    "nba_tf": "503-DOWN-19+d",
-    "pol_tf": "IDLE-16+d-$38916-running=false-pre-Axelrod",
-    "axelrod": "Mechs-A/B/C verified fire-144 — BLOCKED on HF push (user approval needed)"
+  "islands": {
+    "S13": {"cycle": 772, "gen": 2315, "brier": 0.22216, "stag": 0, "pareto": 16, "pareto_best": 0.22045, "model": "xgboost_brier", "status": "PARETO-ET-200f-0.22045-1ST-DETECT-EXTREME-URGENT"},
+    "S14": {"cycle": 270, "gen": 809, "brier": 0.22793, "stag": 0, "pareto": 12, "pareto_best": 0.22793, "model": "extra_trees", "status": "PARETO-EVICTION-ET-0.22170-LOST-CHECKPOINT-MISSED"},
+    "S15": {"cycle": 2031, "gen": 6091, "brier": 0.22012, "stag": 0, "pareto": 11, "pareto_best": 0.22016, "model": "random_forest", "status": "STABLE-FLEET-BEST"},
+    "S17": {"status": "503-DOWN-103+d"},
+    "S18": {"cycle": 249, "gen": 746, "brier": 0.22236, "stag": 0, "pareto": 13, "pareto_best": 0.22236, "model": "random_forest", "status": "RECOVERING"},
+    "S22": {"cycle": 137, "gen": 410, "brier": 0.22124, "stag": 0, "pareto": 12, "pareto_best": 0.22256, "model": "logistic_regression", "status": "MAJOR-RECOVERY-LR-48f-CONFIRMED"},
+    "P1": {"cycle": 4113, "gen": 12337, "brier": 0.24987, "stag": 0, "pareto": 13, "pareto_best": 0.24995, "model": "xgboost_brier", "status": "PARETO-BEST-EVICTED-0.24927-MISSED"},
+    "P2": {"cycle": 20389, "gen": 61166, "brier": 0.25003, "stag": 0, "pareto": 4, "pareto_best": 0.249, "model": "xgboost_brier", "status": "CRITICAL-PARETO-SHRINK-7->4"},
+    "P4": {"cycle": 1643, "gen": 4927, "brier": 0.2497, "stag": 0, "pareto": 12, "pareto_best": 0.2492, "model": "lightgbm", "status": "STABLE-POL-FLEET-BEST-PARETO-RECOVERING"},
+    "P5": {"cycle": 27184, "gen": 81549, "brier": 0.24993, "stag": 0, "pareto": 5, "pareto_best": 0.249, "model": "xgboost_brier", "status": "STABLE"},
+    "P7": {"cycle": 6787, "gen": 20358, "brier": 0.25004, "stag": 0, "pareto": 7, "pareto_best": 0.24931, "model": "xgboost_brier", "status": "RECOVERING-5->7"}
   },
-  "critical_vm_tasks": [
-    "vm-checkpoint-s13-catboost-0.22076 (2ND FIRE — BELOW 0.22085, pareto=12 recovering, CHECKPOINT BEFORE EVICTION)",
-    "vm-checkpoint-p4-lgbm-0.24915 (CONFIRMED 2ND FIRE — NEW POL ALL-TIME PARETO RECORD, EXTREME URGENT)",
-    "vm-checkpoint-p7-lgbm-0.24931 (EXTREME URGENT — pareto 10->5 MAJOR SHRINK, one cycle from eviction)",
-    "vm-checkpoint-p1-pareto-0.24927 (URGENT — pareto recovered 6->11, checkpoint still needed)",
-    "vm-checkpoint-s15-et-0.21888 (STILL PENDING — URGENT)",
-    "vm-restart-political-data-crons (STILL BLOCKED 608+h)"
+  "trading_floors": {
+    "nba_tf": {"status": "503-DOWN-20+d", "running": false, "day": null, "bankroll": null},
+    "pol_tf": {"status": "IDLE", "running": false, "day": 130, "bankroll": 38916.55, "roi_pct": 2189.2, "note": "pre-Axelrod-code-HF-push-pending-user-approval"}
+  },
+  "sota_update": {
+    "lr_brier_confirm_count": 15,
+    "lr_brier": 0.199,
+    "cnn_brier": 0.221,
+    "autogluon_svm_acc": 0.7749,
+    "new_technique": "Stacked-ensemble-NB+AdaBoost+MLP+KNN+XGB+DT+LR-MLP-meta-PMC12357926",
+    "s22_lr_validation": "LR-48f-brier=0.22124-CONFIRMED-in-S22-island"
+  },
+  "urgent_vm_actions": [
+    "vm-checkpoint-s13-et-0.22045-fire146 (EXTREME URGENT)",
+    "vm-checkpoint-p2-lgbm-0.249-fire146 (URGENT - pareto=4 critical)",
+    "vm-checkpoint-p4-lgbm-0.2492-fire143 (EXTREME URGENT)",
+    "vm-checkpoint-p7-lgbm-0.24937 (URGENT)",
+    "vm-restart-political-data-crons (HIGHEST PRIORITY after checkpoints)"
   ]
 }
