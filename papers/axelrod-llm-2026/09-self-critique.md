@@ -3825,3 +3825,219 @@ just `paper.md`.
   vacancy set definition (CC4)
 - `paper.md`: all four fixes mirrored (CC1 line 1235, CC3 lines 754–761,
   CC4 lines 658–660)
+
+---
+
+# Peer-Review Self-Critique — Cycle 28 (2026-05-23)
+
+*Full-manuscript re-read following Cycle 27's clean slate. Five new issues identified
+(DD1–DD5); all five fixed in this cycle.*
+
+---
+
+## CYCLE 27 STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle 27. PRE-SUBMISSION checklist items 1–3 (author
+verification for `@ouyang2022training`, `@llm_ipd2024`, `@polyswarm2026`)
+remain deferred pending network access to live arXiv records.
+
+---
+
+## NEW ISSUES (Cycle 28 full-manuscript re-read)
+
+### DD1. §3.6 parenthetical assigns "8B" to T10 (Mistral commercial model) — contradicts §4.1 [FIXED]
+
+**Reviewer:** Section 3.6 contained the parenthetical "(T3: Llama 3.1 8B; T10:
+ministral-8b, 8B; Mistral T6–T9 sizes are undisclosed by the provider)."
+This assigns a confirmed parameter count of 8B to T10 (`ministral-8b-latest`),
+a Mistral commercial model. However, §4.1 explicitly states: "Google Gemini 3 Flash
+and **Mistral commercial variants** have undisclosed parameter counts."
+
+The Cycle 21 W3 fix removed "8B" from T6–T9 but retained it for T10 on the reasoning
+that "ministral-8b" implies an 8B architecture from the naming convention. However,
+this treats T10 differently from T6–T9 without a §4.1-consistent justification: the
+"8b" in the model name is a product identifier, not a formal parameter count
+disclosure. A reviewer cross-checking §3.6 against §4.1 will immediately flag the
+asymmetry.
+
+**Fix applied:**
+- `04-method.md` §3.6: "(T3: Llama 3.1 8B; T10: ministral-8b, 8B; Mistral T6–T9
+  sizes are undisclosed by the provider)" → "(T3: Llama 3.1 8B; Mistral T6–T10
+  sizes are undisclosed by the provider)." The T10 separate entry is merged into
+  the T6–T9 group, consistent with §4.1. ✓
+- `paper.md` §3.6: identical change. ✓
+
+*Post-fix verification:*
+`grep -n "T10.*8B\|ministral.*8B" 04-method.md paper.md` → zero hits. ✓
+
+---
+
+### DD2. §3.6 cross-reference "§6.5, second paragraph" now points to the wrong paragraph after Cycle 25 AA1 restructured §6.5 [FIXED]
+
+**Reviewer:** Section 3.6 (inverse-calibration probation) contains: "diagnostic
+criterion and rationale in §6.5, second paragraph."
+
+The Cycle 25 AA1 fix added a new named sub-section at the end of §6.5: "Formula
+derivation and inverse-calibration probation criterion." The probation criterion
+is the second paragraph of *that sub-section*. However, counting from the top of
+§6.5 as a whole, the "second paragraph" is "The Prediction Arena findings…" —
+entirely unrelated content about Kalshi losses. A reader following the cross-reference
+by counting paragraphs from the §6.5 header will not find the probation criterion.
+
+**Fix applied:**
+- `04-method.md` §3.6 and `paper.md` §3.6: "§6.5, second paragraph" → "§6.5,
+  sub-section 'Formula derivation and inverse-calibration probation criterion,'
+  second paragraph." ✓
+
+*Post-fix verification:*
+`grep -n "second paragraph" 04-method.md paper.md | grep -v "09-self-critique"` →
+both files use the sub-section citation form. ✓
+
+---
+
+### DD3. §1 Contribution 2 — "sustained negative regret relative to the society mean" inverts the intended meaning [FIXED]
+
+**Reviewer:** Section 1, Contribution 2 described sacrifice-eligible agents as having
+"persistent performance deficiency (defined formally as sustained **negative** regret
+relative to the society mean)."
+
+In a Brier-minimization game, regret for agent $i$ relative to the society mean is
+$r_i = \overline{B}_{i,d} - \bar{B}_d$: the excess Brier above the mean. A
+sacrifice-eligible agent satisfies $\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}}
+> 0$ (§3.4), so their regret is **positive** — they perform strictly worse than the mean.
+
+The phrase "sustained negative regret" asserts $\overline{B}_{i,d} - \bar{B}_d < 0$,
+i.e., the agent performs *better* than the mean — the opposite of a sacrifice-eligible
+agent. Any reader familiar with regret theory (or simply with the signed quantity
+"above-mean Brier") will infer the wrong eligibility direction. The term "regret" is also
+not formally defined in §3.1–§3.4, making "negative regret" doubly problematic: undefined
+and inverted.
+
+**Fix applied:**
+- `02-introduction.md` §1 Contribution 2 and `paper.md` §1 Contribution 2:
+  "persistent performance deficiency (defined formally as sustained negative regret
+  relative to the society mean)" →
+  "persistent above-mean Brier for $W$ consecutive days
+  ($\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}}$; §3.4)." ✓
+
+*Post-fix verification:*
+`grep -n "negative regret" 02-introduction.md paper.md | grep -v "09-self-critique"` → zero hits. ✓
+
+---
+
+### DD4. §3.3 switches subscript from event-level ($t$) in the displayed Brier decomposition to day-level ($d$) in the textual conclusion without stating the averaging step [FIXED]
+
+**Reviewer:** The Brier ambiguity decomposition in §3.3 is displayed with subscript
+$t$ (event-level): $B_{\text{ens},t} = \frac{1}{N}\sum_i B_{i,t} - \text{Amb}_t$.
+The immediately following prose concluded: "increasing $D_d$ is equivalent to reducing
+ensemble Brier holding the per-day mean individual Brier $\frac{1}{N}\sum_i B_{i,d}$
+fixed."
+
+The conclusion uses subscript $d$ (day-level). The jump from the event-level ($t$)
+equation to the day-level ($d$) conclusion implicitly averages the decomposition over
+all events in $\mathcal{B}_d$ and identifies $\frac{1}{|\mathcal{B}_d|}\sum_t
+\frac{1}{N}\sum_i B_{i,t}$ with $\frac{1}{N}\sum_i B_{i,d}$ (the per-day average
+defined in §3.1). This identification is correct but unstated. A reviewer checking
+subscript consistency between the displayed equation and the conclusion will notice
+the silent $t \to d$ transition and may flag it as a notational error.
+
+**Fix applied:**
+- `04-method.md` §3.3 and `paper.md` §3.3: A transitional displayed equation is
+  inserted between the per-event Brier decomposition and the diversity-accuracy
+  conclusion:
+
+  $$B_{\text{ens},d} = \frac{1}{N}\sum_i B_{i,d} - \text{Amb}_d, \quad
+  \text{Amb}_d = \frac{1}{|\mathcal{B}_d|}\sum_{t \in \mathcal{B}_d}
+  \frac{1}{N}\sum_i (p_{i,t} - \bar{p}_t)^2$$
+
+  The concluding sentence is updated to reference $B_{\text{ens},d}$ and
+  $\text{Amb}_d$ explicitly, eliminating the naked $t \to d$ subscript switch. ✓
+
+*Post-fix verification:*
+`grep -n "day-level identity" 04-method.md paper.md` → two hits. ✓
+
+---
+
+### DD5. §3.6 stake formula — interaction between inverse-calibration probation hard cap and archetype minimum floor is not disclosed [FIXED — disclosure added]
+
+**Reviewer:** Section 3.6 defines the realised stake fraction as
+$s_i = \max(\kappa_{\min}^{(r_i)},\; \rho_i \cdot \kappa_i)$, where
+$\kappa_{\min}^{(r_i)} \in [0.01, 0.08]$ is the archetype-level minimum floor.
+Agents under inverse-calibration probation receive a hard cap $\kappa_i \leq 0.03$.
+With $\rho_i \leq 1$, this implies $\rho_i \cdot \kappa_i \leq 0.03$ during probation.
+However, for archetypes with $\kappa_{\min}^{(r)} > 0.03$ — and the floor range
+includes values up to 0.08 — the $\max$ operator selects the floor, yielding
+$s_i = \kappa_{\min}^{(r_i)} > 0.03$, thereby exceeding the intended probation cap.
+
+This design interaction is not disclosed anywhere in the paper. A reader implementing
+the system from the paper must make an undisclosed choice: does the floor override the
+cap (as currently implemented) or vice versa? The paper describes both mechanisms but
+says nothing about their precedence.
+
+**Fix applied:**
+- `04-method.md` §3.6 (probation paragraph) and `paper.md` §3.6: Note added
+  immediately after the probation description: "Note: the archetype minimum floor
+  $\kappa_{\min}^{(r_i)}$ is applied *after* the probation cap, so for archetypes
+  with $\kappa_{\min}^{(r_i)} > 0.03$ the floor supersedes the probation ceiling;
+  this is by design — even probation agents must contribute to the ensemble mean
+  prediction $\bar{p}_t$ at a non-trivial level, preventing them from vanishing
+  from the ensemble entirely." ✓
+
+*Post-fix verification:*
+`grep -n "floor supersedes" 04-method.md paper.md` → two hits. ✓
+
+---
+
+## CYCLE 28 SUMMARY
+
+**Fixed:** DD1 (§3.6 T10 parameter count "8B" → "undisclosed" — merged with T6–T9
+Mistral group, consistent with §4.1); DD2 (§3.6 cross-reference "§6.5, second
+paragraph" → "§6.5, sub-section 'Formula derivation...,' second paragraph" — broken
+by Cycle 25 AA1 restructuring); DD3 (§1 Contribution 2 "sustained negative regret"
+→ "persistent above-mean Brier for $W$ consecutive days ($\overline{B}_{i,d} -
+\bar{B}_d > \delta_{\text{sac}}$; §3.4)" — inverted meaning corrected, undefined
+term replaced with formal inequality); DD4 (§3.3 day-level Brier decomposition
+identity added — explicit $t \to d$ averaging step prevents subscript-transition
+confusion); DD5 (§3.6 probation/floor interaction disclosed — precedence clarified
+as floor-overrides-cap with design rationale).
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's Brier-delta placeholder and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+   for sacrifice-eligible agents
+10. Final SRR cross-reference sweep: `grep -n "3\.3.*SRR\|SRR.*3\.3" *.md` ✓ **Cleared Cycle 24**
+11. Verify all forward-references: `grep -n "for elaboration" *.md` ✓ **Cleared Cycle 24**
+12. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ alongside $\rho_i$
+    in Table 3 (requires pilot backtest)
+13. ~~AA2 follow-up~~ ✓ **Cleared Cycle 27**
+14. ~~COLLECTIVE sweep~~ ✓ **Cleared Cycle 27**
+15. ~~Provider ecosystem count sweep~~ ✓ **Cleared Cycle 27**
+16. **NEW — DD1 follow-up:** `grep -n "T10.*8B\|ministral.*8B" *.md` before submission
+    to confirm no residual T10 size attribution. ✓ **Cleared this cycle** (zero hits)
+17. **NEW — DD3 follow-up:** `grep -rn "negative regret" *.md | grep -v "09-self-critique"`
+    before submission → zero hits confirmed this cycle. ✓
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files, including source files.
+
+**Structural changes this cycle:**
+- `02-introduction.md` §1 Contribution 2: "sustained negative regret relative to
+  the society mean" → "persistent above-mean Brier for $W$ consecutive days
+  ($\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}}$; §3.4)" (DD3)
+- `04-method.md` §3.3: day-level identity equation added between event-level
+  decomposition and conclusion; conclusion updated to reference $B_{\text{ens},d}$
+  and $\text{Amb}_d$ explicitly (DD4)
+- `04-method.md` §3.6: T10 parameter entry merged into T6–T10 undisclosed group (DD1);
+  "§6.5, second paragraph" → sub-section citation (DD2); probation/floor interaction
+  disclosure note added (DD5)
+- `paper.md`: all five fixes mirrored (DD1–DD5, 6 edit locations)

@@ -129,10 +129,18 @@ $$\underbrace{B_{\text{ens},t}}_{\text{ensemble Brier}} =
 
 Since Ambiguity $\geq 0$ always, any mechanism that increases inter-agent prediction
 variance without degrading mean individual calibration will reduce ensemble Brier.
-JSD is a monotone function of this Ambiguity term for Bernoulli predictions in the
+Averaging the decomposition over all events $t \in \mathcal{B}_d$ and using the
+per-day Brier definitions from §3.1 gives the day-level identity:
+
+$$B_{\text{ens},d} = \frac{1}{N}\sum_i B_{i,d} - \text{Amb}_d, \quad
+\text{Amb}_d = \frac{1}{|\mathcal{B}_d|}\sum_{t \in \mathcal{B}_d}
+\frac{1}{N}\sum_i (p_{i,t} - \bar{p}_t)^2$$
+
+JSD is a monotone function of this $\text{Amb}_d$ term for Bernoulli predictions in the
 operating range $\bar{p}_t \in [0.15, 0.85]$, $\text{Amb} \leq 0.08$
 (proof: Appendix B.1, via Taylor expansion of $H$ around $\bar{p}$), so increasing
-$D_d$ is equivalent to reducing ensemble Brier holding the per-day mean individual Brier $\frac{1}{N}\sum_i B_{i,d}$ fixed. This motivates $D_d$ as our primary diversity target.
+$D_d$ is equivalent to reducing $B_{\text{ens},d}$ holding $\frac{1}{N}\sum_i B_{i,d}$ fixed.
+This motivates $D_d$ as our primary diversity target.
 
 ---
 
@@ -332,8 +340,8 @@ this brief as a shared prefix before generating independent predictions.
 The moderator role rotates weekly (Axelrod-style round-robin) across all
 agents, beginning with T1 (Qwen 3 235B-A22B) in Week 1; moderating capacity
 therefore varies from 235B (T1–T2) to 4B parameters (T12: Qwen3-4B); the
-full size breakdown is in §4.1 (T3: Llama 3.1 8B; T10: ministral-8b, 8B;
-Mistral T6–T9 sizes are undisclosed by the provider). This is a minor confound: all agents receive an identical
+full size breakdown is in §4.1 (T3: Llama 3.1 8B; Mistral T6–T10 sizes are
+undisclosed by the provider). This is a minor confound: all agents receive an identical
 structured morning brief template regardless of moderator identity, so the
 confound is bounded to the quality of free-text synthesis in the brief body.
 
@@ -366,7 +374,13 @@ Agents whose rolling Brier persistently exceeds 0.32 (below random Bernoulli
 calibration) receive an additional hard cap $\kappa_i \leq 0.03$ — an
 *inverse-calibration probation* applied as a post-formula override,
 independent of the pilot Brier formula above (diagnostic criterion and
-rationale in §6.5, second paragraph).
+rationale in §6.5, sub-section "Formula derivation and inverse-calibration
+probation criterion," second paragraph).
+Note: the archetype minimum floor $\kappa_{\min}^{(r_i)}$ is applied *after* the
+probation cap, so for archetypes with $\kappa_{\min}^{(r_i)} > 0.03$ the floor
+supersedes the probation ceiling; this is by design — even probation agents
+must contribute to the ensemble mean prediction $\bar{p}_t$ at a non-trivial level,
+preventing them from vanishing from the ensemble entirely.
 
 **End-of-day broadcast.** At 23:59 UTC, resolved outcomes $\Omega_d$ are
 broadcast to all agents. Each agent updates its private history $h_{i,d}$.

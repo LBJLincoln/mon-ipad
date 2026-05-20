@@ -85,10 +85,10 @@ This paper makes four contributions:
    day-end broadcasts, generalizing the IPD to the LLM agent setting (§3).
 
 2. **Sacrificial Role Reallocation (SRR).** We introduce SRR, a novel mechanism wherein
-   an agent with persistent performance deficiency (defined formally as sustained negative
-   regret relative to the society mean) probabilistically adopts an underrepresented
-   strategy archetype from a predefined taxonomy, increasing population-level Jensen–Shannon
-   divergence (§3.3). We prove under mild assumptions that SRR is a *Strong* Nash equilibrium
+   an agent with persistent above-mean Brier for $W$ consecutive days
+   ($\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}}$; §3.4) probabilistically
+   adopts an underrepresented strategy archetype from a predefined taxonomy,
+   increasing population-level Jensen–Shannon divergence (§3.3). We prove under mild assumptions that SRR is a *Strong* Nash equilibrium
    refinement (Proposition 2, §3.5): no coalition of agents can jointly deviate from SRR
    and simultaneously (weakly) improve ensemble Brier for the coalition while (weakly)
    reducing individual Brier for each coalition member.
