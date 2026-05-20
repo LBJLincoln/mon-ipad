@@ -1,23 +1,28 @@
 {
-  "fire": 149,
-  "cycle_parity": "ODD",
-  "timestamp": "2026-05-22T22:00:00Z",
+  "fire": 150,
+  "cycle_parity": "EVEN",
+  "timestamp": "2026-05-23T02:00:00Z",
   "nba_fleet_best_brier": 0.22012,
   "nba_fleet_best_island": "S15",
   "nba_threshold_crossed": false,
   "nba_threshold": 0.22085,
-  "diversify_sent": false,
-  "all_stag_zero": true,
+  "diversify_sent": true,
+  "diversify_target": "S15 (Nomos42/nba-evo-6)",
+  "diversify_reason": "stag=23 exceeded threshold 15",
+  "diversify_result": "command queued OK — POST /api/command {command:diversify}",
+  "all_stag_zero": false,
+  "stag_islands": ["S15 stag=23 DIVERSIFIED", "S14 stag=8 watch"],
   "nba_tf_status": "503-DOWN",
-  "nba_tf_down_days": 22,
+  "nba_tf_down_days": 26,
   "pol_tf_status": "IDLE",
   "pol_tf_bankroll_usd": 38916,
-  "pol_tf_idle_days": 16,
+  "pol_tf_idle_days": 20,
+  "councils_status": "DECOMMISSIONED-2026-04-20 (Spaces deleted, focus narrowed to islands+selfhost+TFs)",
   "islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "cycle": 806,
-      "generation": 2418,
+      "cycle": 828,
+      "generation": 2484,
       "best_brier": 0.22216,
       "stagnation": 0,
       "pareto_size": 13,
@@ -25,33 +30,36 @@
       "best_model": "xgboost_brier",
       "num_features": 47,
       "status": "UP",
-      "notes": "ET-0.22045-EVICTED-Rule8-CONFIRMED(pareto_best=best_brier=0.22216); CatBoost-0.22076 also evicted (same pattern); vm-remove-stacking-s13 URGENT"
+      "delta_vs_fire149": "cycle+22 gen+66 pareto=13(stable) stag=0-OK",
+      "notes": "Stable; vm-remove-stacking URGENT (Rule8 confirmed fire-149)"
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "cycle": 316,
-      "generation": 946,
+      "cycle": 362,
+      "generation": 1084,
       "best_brier": 0.22793,
-      "stagnation": 0,
-      "pareto_size": 9,
+      "stagnation": 8,
+      "pareto_size": 11,
       "pareto_best_brier": 0.22793,
       "best_model": "extra_trees",
       "num_features": 37,
       "status": "UP",
-      "notes": "POST-RESET-c303-RECOVERED pareto 7->9; vm-checkpoint-s14-et NEEDED"
+      "delta_vs_fire149": "cycle+46 pareto 9->11(grew) stag=0->8(emerging-watch)",
+      "notes": "stag=8 below threshold 15 — WATCH; pareto grew 9->11 healthy; vm-checkpoint-s14 NEEDED"
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "cycle": 2086,
-      "generation": 6256,
+      "cycle": 2125,
+      "generation": 6372,
       "best_brier": 0.22012,
-      "stagnation": 0,
-      "pareto_size": 12,
+      "stagnation": 23,
+      "pareto_size": 5,
       "pareto_best_brier": 0.22012,
       "best_model": "random_forest",
       "num_features": 75,
       "status": "UP",
-      "notes": "FLEET-BEST; pareto=12(down14->12 normal-pruning); vm-checkpoint-s15 URGENT"
+      "delta_vs_fire149": "cycle+39 stag=0->23(EXCEEDED-15) pareto=12->5(MAJOR-SHRINK)",
+      "notes": "FLEET-BEST; DIVERSIFY-QUEUED-fire-150; pareto crashed 12->5 (stagnation-driven eviction); expect pareto recovery next fire; vm-checkpoint URGENT before diversify flush"
     },
     "S17": {
       "space": "LBJLincoln26/nba-evo-s17",
@@ -61,49 +69,64 @@
       "stagnation": null,
       "pareto_size": null,
       "status": "DOWN-503",
-      "down_days": 104,
-      "notes": "VM RESTART REQUIRED"
+      "down_days": 108,
+      "notes": "VM restart required (local-vm task vm-restart-s17)"
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "cycle": 267,
-      "generation": 801,
+      "cycle": 296,
+      "generation": 887,
       "best_brier": 0.22236,
       "stagnation": 0,
-      "pareto_size": 14,
+      "pareto_size": 8,
       "pareto_best_brier": 0.22236,
       "best_model": "random_forest",
       "num_features": 44,
       "status": "UP",
-      "notes": "pareto=14(up13->14-STRONG) RF-44f"
+      "delta_vs_fire149": "cycle+29 pareto=14->8(normal-pruning) stag=0-OK",
+      "notes": "RF-44f stag=0; pareto shrink 14->8 normal evolution; vm-checkpoint URGENT"
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "cycle": 181,
-      "generation": 542,
+      "cycle": 237,
+      "generation": 710,
       "best_brier": 0.22124,
       "stagnation": 0,
-      "pareto_size": 16,
+      "pareto_size": 15,
       "pareto_best_brier": 0.22124,
       "best_model": "random_forest",
       "num_features": 48,
       "status": "UP",
-      "notes": "FLEET-PEAK pareto=16(up12->16-MAJOR-GROWTH); RF-48f+LR-in-pareto; vm-checkpoint URGENT"
+      "delta_vs_fire149": "cycle+56 pareto=16->15(slight-drop) stag=0-OK",
+      "notes": "RF-48f+LR-in-pareto; pareto 16->15 minor; vm-checkpoint EXTREME URGENT"
     }
   },
   "alerts": [
-    "S17 503 DOWN 104+ days — VM restart required",
-    "NBA TF 503 DOWN 22+ days (do_not_push_hf_space_yet, user approval pending)",
-    "S22 pareto=16 FLEET PEAK (major growth from 12) — checkpoint urgently needed",
-    "S14 survived reset at c303, pareto recovered 7->9",
-    "S13 ET-0.22045 + CatBoost-0.22076 both confirmed evicted Rule8 stacking"
+    "S15 stag=23 EXCEEDED threshold 15 — DIVERSIFY command queued successfully (fire-150) format: {command:diversify}",
+    "S15 pareto crashed 12->5 (stagnation-driven eviction, expect recovery post-diversify)",
+    "S14 stag=8 EMERGING — watch, will exceed threshold at stag=16+",
+    "S17 503 DOWN 108+ days — VM restart required",
+    "NBA TF 503 DOWN 26+ days (do_not_push_hf_space_yet, user approval pending)",
+    "S22 pareto=15 (slight drop from 16-FLEET-PEAK) — vm-checkpoint URGENT",
+    "S18 pareto 14->8 normal pruning (stag=0, healthy)",
+    "Dept Councils DECOMMISSIONED 2026-04-20 (STEP 3 N/A going forward)"
   ],
   "pending_vm_actions": [
-    "vm-checkpoint-s13: stacking removal (Rule8)",
-    "vm-checkpoint-s14-et: checkpoint before next reset",
-    "vm-checkpoint-s15-et-0.21888: EXTREME URGENT",
-    "vm-checkpoint-s18-rf: priority=1",
-    "vm-checkpoint-s22: pareto=16 FLEET PEAK URGENT",
-    "vm-remove-stacking-s13-s14-s15-s22: Rule8"
-  ]
+    "vm-checkpoint-s15: EXTREME URGENT (post-diversify pareto=5, must save before flush)",
+    "vm-checkpoint-s22: EXTREME URGENT (pareto=15 FLEET PEAK)",
+    "vm-checkpoint-s18-rf: pareto=8 stable",
+    "vm-checkpoint-s14-et: pareto=11 recovering",
+    "vm-remove-stacking-s13-s14-s15-s22: Rule8 violations confirmed",
+    "vm-restart-s17: 108+ days down"
+  ],
+  "engine_parity": "MISMATCH confirmed (mon-ipad 523050 chars vs nomos-nba-agent 468146 chars, delta=54KB — vm-action required)",
+  "even_cycle_websearch": {
+    "performed": true,
+    "new_refs": [
+      "IEEE 2026 ieeexplore.ieee.org/document/11030489 — Comparing ML Methods NBA Game Outcome Prediction (NEW)",
+      "arXiv 2508.02725 — LSTM+Transformer NCAA Basketball Deep Learning (applicable methods)",
+      "MDPI 2026 info/17/1/56 — Uncertainty-Aware RNN+MC-Dropout NBA Brier~0.206 (17th confirm)"
+    ],
+    "research_proposal_written": "data/research-proposals/sota-ieee-ml-comparison-fire150.json"
+  }
 }

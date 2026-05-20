@@ -1,0 +1,60 @@
+{
+  "proposal_id": "sota-ieee-ml-comparison-fire150",
+  "fire": 150,
+  "cycle_parity": "EVEN",
+  "timestamp": "2026-05-23T02:00:00Z",
+  "title": "IEEE 2026: Comparing ML Methods for NBA Outcome Prediction — Implementation Roadmap",
+  "source": {
+    "title": "Comparing Machine Learning Methods for NBA Game Outcome Prediction",
+    "url": "https://ieeexplore.ieee.org/document/11030489",
+    "venue": "IEEE Conference 2026",
+    "type": "NEW — first seen fire-150"
+  },
+  "supporting_refs": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "note": "MDPI Jan 2026 — RNN+MC-Dropout Brier~0.206, 17th confirmation across fires"
+    },
+    {
+      "title": "Forecasting NCAA Basketball with LSTM and Transformer Models",
+      "url": "https://arxiv.org/abs/2508.02725",
+      "note": "arXiv 2508.02725 — deep learning for basketball, NCAA but methods transfer"
+    }
+  ],
+  "sota_brier_benchmark": 0.206,
+  "our_best_cv_brier": 0.22012,
+  "gap_to_sota": 0.01412,
+  "key_findings": [
+    "IEEE paper provides systematic ML method comparison on NBA data — direct benchmark for our GA-evolved models",
+    "MDPI 2026 RNN+MC-Dropout achieves ~0.206 Brier — 17th independent confirmation of sub-0.22 barrier with deep learning",
+    "LSTM+Transformer (arXiv 2508) achieves state-of-the-art on sequential basketball data — temporal modeling gap in current GA fleet",
+    "Our fleet uses RF/ET/XGBoost/LightGBM but no sequential (RNN/LSTM) or uncertainty-quantified models"
+  ],
+  "recommended_actions": [
+    {
+      "priority": 1,
+      "action": "Implement MC Dropout calibration wrapper for S15 RF-75f fleet-best (work-queue vm-mc-dropout-calibration-s15)",
+      "expected_gain": "Brier improvement ~0.001-0.003 from better probability calibration",
+      "effort": "LOW — wrapper around existing model, no retraining"
+    },
+    {
+      "priority": 2,
+      "action": "Replicate IEEE paper's feature set comparison — benchmark our 7246-col engine against their published feature categories",
+      "expected_gain": "Identify which feature categories the paper found most predictive vs our SHAP top features",
+      "effort": "MEDIUM — analysis task, no new training required"
+    },
+    {
+      "priority": 3,
+      "action": "Add LSTM island as S23 (TESTforge42) — sequential game-by-game prediction",
+      "expected_gain": "Potential path to Brier < 0.21, closing 0.014 gap to MDPI SOTA",
+      "effort": "HIGH — new space, new architecture; blocks on engine parity sync first"
+    }
+  ],
+  "blocker_notes": [
+    "engine-parity-sync (priority=40 in work-queue) must complete before implementing new features",
+    "win-diff-5game feature (priority=35) is highest-impact near-term SHAP-confirmed improvement",
+    "S15 post-diversify window is critical — checkpoint before implementing any changes"
+  ],
+  "decision": "QUEUE for Kaggle P100 D1-Research karpathy loop — replicate IEEE comparison study as next SOTA reimplement"
+}
