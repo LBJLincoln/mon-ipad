@@ -1,65 +1,60 @@
 {
-  "fire": 154,
-  "cycle_parity": "ODD",
-  "timestamp": "2026-05-23T18:00:00Z",
+  "fire": 156,
+  "cycle_parity": "EVEN",
+  "timestamp": "2026-05-24T04:00:00Z",
   "nba_fleet_best_brier": 0.22012,
   "nba_fleet_best_island": "S15",
   "nba_threshold_crossed": false,
   "nba_threshold": 0.22085,
-  "diversify_sent": true,
-  "diversify_islands": [
-    "S14"
-  ],
-  "diversify_reason": "S14 stagnation=23 exceeded threshold=15",
-  "all_stag_zero": false,
-  "stag_islands": [
-    "S14"
-  ],
+  "diversify_sent": false,
+  "diversify_islands": [],
+  "diversify_reason": "All islands stagnation=0, no diversify needed",
+  "all_stag_zero": true,
+  "stag_islands": [],
   "nba_tf_status": "503-DOWN",
-  "nba_tf_down_days": 27,
+  "nba_tf_down_days": 28,
   "pol_tf_status": "IDLE",
   "pol_tf_bankroll_usd": 38916,
-  "pol_tf_idle_days": 22,
+  "pol_tf_idle_days": 23,
   "councils_status": "DECOMMISSIONED-2026-04-20",
   "islands": {
     "S13": {
       "space": "Nomos42/nba-evo-4",
-      "cycle": 885,
-      "generation": 2654,
+      "cycle": 911,
+      "generation": 2731,
       "best_brier": 0.22216,
       "stagnation": 0,
-      "pareto_size": 16,
+      "pareto_size": 7,
       "best_model": "xgboost_brier",
       "num_features": 47,
       "status": "UP",
-      "delta_vs_fire153": "cycle+23 gen+69 pareto=9->16(MAJOR-RECOVERY)",
-      "notes": "Excellent pareto recovery; vm-remove-stacking-s13 still URGENT"
+      "delta_vs_fire154": "cycle+26 gen+77 pareto=16->7(normal-pruning stag=0)",
+      "notes": "Normal pareto pruning stag=0; vm-remove-stacking-s13 still URGENT"
     },
     "S14": {
       "space": "Nomos42/nba-evo-5",
-      "cycle": 427,
-      "generation": 1279,
+      "cycle": 447,
+      "generation": 1340,
       "best_brier": 0.22793,
-      "stagnation": 23,
-      "pareto_size": 7,
+      "stagnation": 0,
+      "pareto_size": 12,
       "best_model": "extra_trees",
       "num_features": 37,
       "status": "UP",
-      "delta_vs_fire153": "cycle+21 gen+61 stag=0->23-EXCEEDED pareto=12->7(shrink-under-stag)",
-      "action_taken": "DIVERSIFY-SENT (stagnation=23 > threshold=15)",
-      "notes": "Diversify command sent by cloud-brain-fire-154; expect stag cleared next fire"
+      "delta_vs_fire154": "cycle+20 gen+61 stag=23->0-CLEARED! pareto=7->12(MAJOR-RECOVERY diversify-WORKED!)",
+      "notes": "DIVERSIFY WORKED — stag cleared 23->0; pareto recovering 7->12; ET-37f"
     },
     "S15": {
       "space": "Nomos42/nba-evo-6",
-      "cycle": 2172,
-      "generation": 6514,
+      "cycle": 2186,
+      "generation": 6556,
       "best_brier": 0.22012,
       "stagnation": 0,
       "pareto_size": 11,
       "best_model": "random_forest",
       "num_features": 75,
       "status": "UP",
-      "delta_vs_fire153": "cycle+16 gen+46 pareto=10->11(slight-gain) stag=0-OK",
+      "delta_vs_fire154": "cycle+14 gen+42 pareto=11(stable) stag=0-OK",
       "notes": "FLEET-BEST 0.22012 stable; RF-75f; vm-checkpoint-s15 still URGENT"
     },
     "S17": {
@@ -70,58 +65,66 @@
       "stagnation": null,
       "pareto_size": null,
       "status": "DOWN-503",
-      "down_days": 110,
+      "down_days": 111,
       "notes": "VM restart required (local-vm task vm-restart-s17)"
     },
     "S18": {
       "space": "TESTforge42/nba-evo-s18",
-      "cycle": 358,
-      "generation": 1073,
+      "cycle": 391,
+      "generation": 1172,
       "best_brier": 0.22236,
       "stagnation": 0,
-      "pareto_size": 16,
+      "pareto_size": 8,
       "best_model": "random_forest",
       "num_features": 44,
       "status": "UP",
-      "delta_vs_fire153": "cycle+28 gen+84 pareto=10->16(MAJOR-RECOVERY) stag=0-OK",
-      "notes": "RF-44f; Major pareto recovery; stag=0; vm-checkpoint URGENT"
+      "delta_vs_fire154": "cycle+33 gen+99 pareto=16->8(normal-pruning stag=0)",
+      "notes": "RF-44f; normal pareto pruning after MAJOR-RECOVERY phase; vm-checkpoint URGENT"
     },
     "S22": {
       "space": "TESTforge42/nba-evo-s22",
-      "cycle": 301,
-      "generation": 902,
+      "cycle": 325,
+      "generation": 975,
       "best_brier": 0.22124,
       "stagnation": 0,
-      "pareto_size": 14,
+      "pareto_size": 15,
       "best_model": "random_forest",
       "num_features": 48,
       "status": "UP",
-      "delta_vs_fire153": "cycle+21 gen+63 pareto=10->14(RECOVERY-good-sign)",
-      "notes": "RF-48f; pareto recovering from fire-153 drop; vm-checkpoint EXTREME URGENT"
+      "delta_vs_fire154": "cycle+24 gen+73 pareto=14->15(slight-gain!)",
+      "notes": "RF-48f; pareto improving 14->15; vm-checkpoint EXTREME URGENT"
     }
   },
   "alerts": [
-    "S14 stagnation=23 EXCEEDED threshold=15 — DIVERSIFY SENT by cloud-brain-fire-154",
-    "S13 pareto MAJOR RECOVERY 9->16 — excellent signal",
-    "S18 pareto MAJOR RECOVERY 10->16 — excellent signal",
-    "S22 pareto RECOVERY 10->14 — improving after fire-153 drop",
+    "S14 stagnation CLEARED (fire-154 diversify WORKED) — pareto recovering 7->12",
+    "S13 pareto 16->7 normal pruning (stag=0, health OK)",
+    "S18 pareto 16->8 normal pruning (stag=0, health OK)",
+    "S22 pareto 14->15 slight gain — vm-checkpoint EXTREME URGENT",
     "S15 FLEET BEST 0.22012 stable — vm-checkpoint still URGENT",
-    "S17 503 DOWN 110+ days — VM restart required",
-    "NBA TF 503 DOWN 27+ days (do_not_push_hf_space_yet)",
-    "P1 pareto CRITICAL SHRINK 8->4 — new alert, vm-checkpoint-p1 EXTREME URGENT"
+    "S17 503 DOWN 111+ days — VM restart required",
+    "NBA TF 503 DOWN 28+ days (do_not_push_hf_space_yet)",
+    "P1 NEW POL ALL-TIME PARETO RECORD 0.24902 LightGBM-105f gen=17750 (1ST-DETECT fire-156) — vm-checkpoint-p1 EXTREME URGENT",
+    "P4 pareto CRITICAL SHRINK 10->5 — pareto_best=0.24915 intact, vm-checkpoint urgency elevated"
   ],
-  "odd_cycle_websearch": {
-    "performed": false,
-    "reason": "ODD cycle — WebSearch skipped per protocol"
+  "even_cycle_websearch": {
+    "performed": true,
+    "sources": [
+      "SCIRP Wang2025: Comparative ML for NBA (25k games 2014-2022) — SVM=0.7749 #1, LR=0.7743, AutoGluon=0.7738; FG_PCT_home TOP feature (RF importance 0.32), not Elo — new insight about dataset-dependent feature importance",
+      "MDPI 2079-3197: LR Brier=0.199 (19th+ confirm), RNN+MC-dropout uncertainty-aware still leading probabilistic SOTA"
+    ],
+    "key_insight": "FG_PCT_home vs Elo: Elo dominates when engineered as a feature; raw box-score shows FG_PCT. Both should be in engine.py and let GA select. Elevates vm-add-elo-ratings-engine priority.",
+    "proposal_written": "sota-scirp-fg-pct-vs-elo-fire156.md"
   },
   "pending_vm_actions": [
-    "vm-checkpoint-s22: EXTREME URGENT (was 17 peak, now recovering 10->14)",
-    "vm-checkpoint-s15: pareto=11 slight gain, export RF-75f",
-    "vm-checkpoint-s18-rf: RF-44f pareto=16 MAJOR RECOVERY",
-    "vm-checkpoint-s14-et: pareto=7 under stagnation, capture before diversify reshuffles",
+    "vm-checkpoint-p1: EXTREME URGENT — NEW POL ALL-TIME RECORD pareto_best=0.24902 (LightGBM-105f gen=17750)",
+    "vm-checkpoint-s22: EXTREME URGENT (pareto 14->15 improving, RF-48f)",
+    "vm-checkpoint-s14-et: pareto=12 MAJOR RECOVERY post-diversify",
+    "vm-checkpoint-s15: pareto=11 stable, export RF-75f",
+    "vm-checkpoint-s18-rf: RF-44f pareto=8 after MAJOR RECOVERY phase",
+    "vm-checkpoint-p4: pareto 10->5 CRITICAL SHRINK — capture pareto_best=0.24915 before eviction risk",
     "vm-remove-stacking-s13-s14-s15-s22: Rule8 violations",
-    "vm-restart-s17: 110+ days down",
-    "vm-checkpoint-p1: pareto=4 CRITICAL SHRINK — capture before further erosion"
+    "vm-restart-s17: 111+ days down",
+    "vm-add-lightgbm-p1-p2: CRITICAL; P1 pareto_best=0.24902 IS LightGBM (convergent evidence across all 5 POL islands)"
   ],
-  "engine_parity": "MISMATCH confirmed (mon-ipad 523050 chars vs nomos-nba-agent 468146 chars, delta=54KB)"
+  "engine_parity": "MISMATCH confirmed (mon-ipad 523,050 chars vs nomos-nba-agent 468,146 chars, delta=54KB)"
 }
