@@ -155,7 +155,11 @@ $$x_{r^*,d} < \tau_{\text{vac}} \triangleq \frac{1}{2K}$$
 
 i.e., fewer than half the uniform fair-share of agents hold this archetype.
 Let $\mathcal{V}_d = \{r \in \mathcal{R} : x_{r,d} < \tau_{\text{vac}}\}$ denote
-the vacancy set.
+the vacancy set. *Note (experimental parameters):* With $N = 12$ agents and $K = 20$
+archetypes, $\tau_{\text{vac}} = 0.025 < 1/N = 0.083$, so the condition reduces to
+$|\{i : r_i = r^*\}| = 0$: an archetype is vacant if and only if no agent currently
+holds it. The general $\frac{1}{2K}$ formula is stated for systems where $N \geq 2K$;
+in our under-populated regime, vacancy and zero-occupancy coincide (see Appendix A, §A.5).
 
 **SRR rule.**
 
@@ -253,11 +257,20 @@ $$\Delta\text{Amb}_t = |\Delta p|\!\left[\frac{|\Delta p|(N-1)}{N^2} - \frac{2|\
 This is positive whenever $|\delta_i| < \frac{|\Delta p|(N-1)}{2N}$.
 By A2, $|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t}-\bar{p}_t|$ — the sacrifice-eligible
 agent is no further from the centroid than the population average.
-The quantitative condition $|\delta_i| < \frac{\epsilon_{\text{arch}}(N-1)}{2N}$
-(which equals $\approx 0.017$ for $\epsilon_{\text{arch}} = 0.037$, $N = 12$)
-is the operative constraint; its satisfaction is verified from pilot backtest data
-as part of the §5.1 Assumption A1 check (pilot agents confirm
-$\mathbb{E}[|\delta_i|] \leq 0.014$ for sacrifice-eligible agents).
+The conclusion $\mathbb{E}[\Delta\text{Amb}_t] > 0$ follows from:
+
+$$\mathbb{E}[\Delta\text{Amb}_t] = \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i||\Delta p|]$$
+
+We invoke the independence of $\delta_i$ (the agent's pre-SRR centroid deviation, determined
+before SRR draws a new archetype from $\mathcal{V}_d$) and $\Delta p$ (the prediction change
+induced by that new archetype, drawn uniformly from $\mathcal{V}_d$ after eligibility is
+established). Under this independence, $\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$, so a sufficient condition is:
+
+$$\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\,\mathbb{E}[|\delta_i|]$$
+
+Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and
+$\mathbb{E}[|\delta_i|] \leq 0.014$ (pilot data, §5.1), the LHS $\geq \frac{11}{12}\times 0.037 = 0.034$
+and the RHS $= 0.028$, giving $0.034 > 0.028$. $\checkmark$
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for

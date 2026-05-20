@@ -272,7 +272,7 @@ code at `scripts/arena/hf-llm-trading-floor/app.py`
 transition records, and bankroll histories are written to
 `data/arena/axelrod-log/` in newline-delimited JSON. The axelrod-log
 schema is documented in Appendix D. Agent prompts (including all 20
-archetype modules and the COLLECTIVE\_MISSION preamble) are archived in
+archetype modules and the shared mission preamble) are archived in
 `data/arena/archetypes/`. LLM temperature is fixed at
 $\tau = 0.7$ for all agents across all conditions to balance
 expressiveness with reproducibility; sensitivity to $\tau$ is tested

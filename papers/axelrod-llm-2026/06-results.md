@@ -25,7 +25,7 @@ primary evaluation. For each archetype pair $(r^{(a)}, r^{(b)})$, the same
 and the mean absolute difference in reported probability was recorded.^[Feasibility note: The protocol does not require $190 \times 12 \times 2 \times 1{,}230$ separate API calls. Instead, we precompute all $20 \times 12 \times 1{,}230 = 295{,}200$ archetype–agent–game combinations in a single retrospective batch (each game presented once per archetype per agent), then derive all 190 pairwise differences algebraically from the stored predictions without additional API calls. Total inference cost is 295,200 calls on a held-out pilot set, completed prior to any primary evaluation.]
 
 $$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)}) =
-\frac{1}{T_{\text{pilot}}} \sum_{t=1}^{T_{\text{pilot}}}
+\frac{1}{N \cdot T_{\text{pilot}}} \sum_{i=1}^{N}\sum_{t=1}^{T_{\text{pilot}}}
 \left| p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}} \right|$$
 
 *Table 4: Summary statistics for the $\binom{20}{2} = 190$ pairwise archetype

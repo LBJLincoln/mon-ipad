@@ -655,7 +655,9 @@ $$x_{r^*,d} < \tau_{\text{vac}} \triangleq \frac{1}{2K}$$
 
 i.e., fewer than half the uniform fair-share of agents hold this archetype.
 Let $\mathcal{V}_d = \{r \in \mathcal{R} : x_{r,d} < \tau_{\text{vac}}\}$ denote
-the vacancy set.
+the vacancy set. *Note (experimental parameters):* With $N = 12$ and $K = 20$,
+$\tau_{\text{vac}} = 0.025 < 1/N$, so vacancy $\equiv$ zero occupants
+(see Appendix A, §A.5).
 
 **SRR rule.**
 
@@ -745,11 +747,16 @@ $$\Delta\text{Amb}_t = |\Delta p|\!\left[\frac{|\Delta p|(N-1)}{N^2} - \frac{2|\
 This is positive whenever $|\delta_i| < \frac{|\Delta p|(N-1)}{2N}$.
 By A2, $|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t}-\bar{p}_t|$ — the sacrifice-eligible
 agent is no further from the centroid than the population average.
-The quantitative condition $|\delta_i| < \frac{\epsilon_{\text{arch}}(N-1)}{2N}$
-(which equals $\approx 0.017$ for $\epsilon_{\text{arch}} = 0.037$, $N = 12$)
-is the operative constraint; its satisfaction is verified from pilot backtest data
-as part of the §5.1 Assumption A1 check (pilot agents confirm
-$\mathbb{E}[|\delta_i|] \leq 0.014$ for sacrifice-eligible agents).
+The conclusion $\mathbb{E}[\Delta\text{Amb}_t] > 0$ follows from:
+
+$$\mathbb{E}[\Delta\text{Amb}_t] = \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i||\Delta p|]$$
+
+We invoke the independence of $\delta_i$ (pre-SRR centroid deviation, determined before
+the new archetype is drawn) and $\Delta p$ (archetype-induced change, drawn uniformly
+from $\mathcal{V}_d$ after eligibility is established). Under independence,
+$\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
+Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and
+$\mathbb{E}[|\delta_i|] \leq 0.014$ (pilot data, §5.1): LHS $\geq 0.034 > 0.028 =$ RHS. $\checkmark$
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
@@ -1225,7 +1232,7 @@ primary evaluation. For each archetype pair $(r^{(a)}, r^{(b)})$, the same
 and the mean absolute difference in reported probability was recorded.^[Feasibility note: The protocol does not require $190 \times 12 \times 2 \times 1{,}230$ separate API calls. Instead, we precompute all $20 \times 12 \times 1{,}230 = 295{,}200$ archetype–agent–game combinations in a single retrospective batch (each game presented once per archetype per agent), then derive all 190 pairwise differences algebraically from the stored predictions without additional API calls. Total inference cost is 295,200 calls on a held-out pilot set, completed prior to any primary evaluation.]
 
 $$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)}) =
-\frac{1}{T_{\text{pilot}}} \sum_{t=1}^{T_{\text{pilot}}}
+\frac{1}{N \cdot T_{\text{pilot}}} \sum_{i=1}^{N}\sum_{t=1}^{T_{\text{pilot}}}
 \left| p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}} \right|$$
 
 *Table 4: Summary statistics for the $\binom{20}{2} = 190$ pairwise archetype
