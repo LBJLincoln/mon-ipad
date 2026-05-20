@@ -299,7 +299,8 @@ calibration improvement.
 
 The inverse-calibration probation threshold $\overline{B}_i > 0.32$ (§3.6)
 is grounded in comparison with the random-Bernoulli baseline. A predictor that
-always outputs $p = 0.5$ achieves Brier $= 0.25$ (for a balanced binary event).
+always outputs $p = 0.5$ achieves Brier $= 0.25$ for any binary outcome
+($\omega \in \{0, 1\}$, since $(0.5 - 0)^2 = (0.5 - 1)^2 = 0.25$).
 An agent reaching Brier $= 0.32$ performs 28% worse than this naive random
 predictor — a strong signal of systematic inverse-calibration rather than mere
 noise, where the agent reliably assigns higher probability to the losing outcome.

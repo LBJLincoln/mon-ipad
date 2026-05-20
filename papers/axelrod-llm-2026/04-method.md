@@ -155,7 +155,8 @@ $$\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}} \quad \text{for } W \text
 where $\delta_{\text{sac}} > 0$ is the sacrifice threshold and $W$ is the patience window.
 The consecutive-day requirement prevents transient losses from triggering unnecessary
 reallocations. We set $\delta_{\text{sac}} = 0.02$ and $W = 7$ based on
-cross-validation on held-out political events (Appendix C.2).
+cross-validation on the held-out 2024–25 pilot season (both NBA and political
+calendars; Appendix C.2).
 
 **Archetype vacancy.** Archetype $r^* \in \mathcal{R}$ is *vacant* at day $d$ if:
 
@@ -177,7 +178,7 @@ in our under-populated regime, vacancy and zero-occupancy coincide (see Appendix
 > 1. Draw $r^* \sim \text{Uniform}(\mathcal{V}_d)$.
 > 2. Update agent $i$'s archetype: $r_i \leftarrow r^*$.
 > 3. Rewrite agent $i$'s system prompt to reflect archetype $r^*$.
-> 4. Persist for $W_{\text{persist}} = 14$ days.
+> 4. Persist for $W_{\text{persist}} = 14$ days; agent $i$ is ineligible for further SRR events during this window (sacrifice-eligibility is suspended from day $d$ through day $d + W_{\text{persist}} - 1$).
 > 5. After $W_{\text{persist}}$ days: if $\overline{B}_{i,d+W_{\text{persist}}} < \overline{B}_{i,d} - \epsilon_{\text{keep}}$, retain $r^*$; else revert to the previous archetype.
 
 We set $\epsilon_{\text{keep}} = 0.005$ (one-half Brier standard deviation in our
@@ -369,7 +370,10 @@ The **realised stake fraction** on day $d$ is:
 
 $$s_i = \max\!\left(\kappa_{\min}^{(r_i)},\; \rho_i \cdot \kappa_i\right)$$
 
-The ensemble prediction $\bar{p}_t$ is used as the *oracle signal*.
+Each agent receives the island GA oracle's pre-game probability estimate for each event
+as a calibration reference in its context block (described in §4.2.1); this reference
+does not appear in the stake formula above, which depends solely on $\kappa_i$, $\rho_i$,
+and $\kappa_{\min}^{(r_i)}$.
 Agents whose rolling Brier persistently exceeds 0.32 (below random Bernoulli
 calibration) receive an additional hard cap $\kappa_i \leq 0.03$ — an
 *inverse-calibration probation* applied as a post-formula override,

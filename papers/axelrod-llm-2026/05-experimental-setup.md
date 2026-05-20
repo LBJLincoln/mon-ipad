@@ -172,8 +172,12 @@ instead reallocated. This condition tests whether the performance-based
 *targeting* of SRR is essential, or whether any reallocation — regardless of
 which agent — produces the diversity gains.
 
+Conditions C, D, and E apply to the NBA domain only; Conditions A and B are evaluated
+independently in both the NBA ($N = 12$, $D = 175$ days) and political ($N = 10$,
+$D = 90$ days) domains (results for both in Table 5, §5.2).
 Each condition is simulated independently over the complete 1,257-game, 175-trading-day
-event stream, starting from Day 1 of the 2025–26 season, with identical historical
+NBA event stream (Conditions A and B additionally over the 1,120-event political stream),
+starting from Day 1 of the 2025–26 season, with identical historical
 market signals and odds data.  Conditions are run sequentially (one condition's full
 simulation completes before the next begins) rather than concurrently, because running
 five independent agent fleets in parallel would require 60 NBA + 20 political concurrent

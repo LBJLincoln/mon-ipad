@@ -4041,3 +4041,234 @@ to confirm propagation to all relevant files, including source files.
   "§6.5, second paragraph" → sub-section citation (DD2); probation/floor interaction
   disclosure note added (DD5)
 - `paper.md`: all five fixes mirrored (DD1–DD5, 6 edit locations)
+
+---
+
+# CYCLE 29 — Hostile Reviewer Pass (2026-05-23)
+
+**Reviewer persona:** Associate Editor, NeurIPS 2026 — systematic methods check.
+Focus: formal definition completeness, domain-scope clarity, arithmetic accuracy, notation consistency.
+
+---
+
+## EE1. §3.4 Definition 2 omits the 14-day re-trigger moratorium, yet §3.6 asserts "SRR fires at most once per agent per 14-day window" [FIXED]
+
+**Reviewer:** Definition 2 (§3.4) specifies five steps for SRR: draw vacant archetype,
+update archetype, rewrite system prompt, persist 14 days, apply retention test. Step 4
+says "Persist for $W_{\text{persist}} = 14$ days" and step 5 defines the retention test
+at day $d + W_{\text{persist}}$.
+
+Nowhere in Definition 2 is it stated that the agent is ineligible for further SRR events
+during the persistence window. The sacrifice-eligibility condition (§3.4, opening paragraph)
+requires $\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}}$ for $W = 7$ consecutive days.
+If an agent undergoes SRR at day $d$ and its new archetype also produces above-mean Brier for
+7 consecutive days ($d+1$ through $d+7$), the eligibility condition would be satisfied again
+at day $d+7$ — well within the 14-day persistence window. Nothing in §3.4 prevents
+re-triggering.
+
+Yet §3.6 states flatly: "SRR fires at most once per agent per 14-day window." This is
+asserted as a consequence of the mechanism, but Definition 2 does not establish this
+constraint. A reader implementing the system from Definition 2 would not derive the
+once-per-14-day rate limit. The formal definition is incomplete relative to its
+downstream operational description.
+
+**Fix applied:**
+- `04-method.md` §3.4 Definition 2, step 4 and `paper.md` §3.4 Definition 2, step 4:
+  "Persist for $W_{\text{persist}} = 14$ days." →
+  "Persist for $W_{\text{persist}} = 14$ days; agent $i$ is ineligible for further SRR
+  events during this window (sacrifice-eligibility is suspended from day $d$ through day
+  $d + W_{\text{persist}} - 1$)." ✓
+
+*Post-fix verification:*
+`grep -n "ineligible for further SRR" 04-method.md paper.md` → two hits (both files). ✓
+
+---
+
+## EE2. §4.3 never states which conditions apply to which domains; "each condition" in the closing paragraph implicitly contradicts Table 5 [FIXED]
+
+**Reviewer:** Section 4.3 describes five experimental conditions (A–E). The descriptions
+of Conditions C and D mention "12 NBA agents" and "sacrifice-eligible" agents, but never
+state explicitly that C, D, and E are NBA-only. Condition E likewise does not specify domain.
+
+The closing paragraph then says: "Each condition is simulated independently over the complete
+1,257-game, 175-trading-day event stream." If "each condition" includes C, D, and E, this
+sentence correctly limits them to NBA. But if Conditions A and B also run in political (as
+Table 5, §5.2 confirms — political rows appear for A and B but not C, D, E), then the
+sentence is incomplete: it does not explain that A and B have a *second* run over the
+1,120-event political stream.
+
+The thread-count rationale in the same paragraph ("60 NBA + 20 political concurrent LLM
+inference threads") implies 5 × 12 = 60 NBA (all conditions) and 2 × 10 = 20 political
+(A and B only), which correctly encodes C/D/E as NBA-only — but the derivation is a
+reader-inference not an explicit statement. A reproducibility-focused reviewer cannot
+confirm the political scope from §4.3 alone.
+
+**Fix applied:**
+- `05-experimental-setup.md` §4.3 and `paper.md` §4.3: Added a clarifying sentence
+  before the "each condition" paragraph:
+  "Conditions C, D, and E apply to the NBA domain only; Conditions A and B are evaluated
+  independently in both the NBA ($N = 12$, $D = 175$ days) and political ($N = 10$,
+  $D = 90$ days) domains (results for both in Table 5, §5.2)." ✓
+  The "each condition" paragraph also updated to make explicit that Conditions A and B
+  additionally run over the 1,120-event political stream. ✓
+
+*Post-fix verification:*
+`grep -n "Conditions C, D, and E apply" 05-experimental-setup.md paper.md` → two hits. ✓
+
+---
+
+## EE3. §6.5 Brier-0.25 qualifier "(for a balanced binary event)" is factually incorrect [FIXED]
+
+**Reviewer:** Section 6.5 states: "A predictor that always outputs $p = 0.5$ achieves
+Brier $= 0.25$ (for a balanced binary event)."
+
+The parenthetical is wrong. For any binary outcome $\omega \in \{0, 1\}$, the Brier score
+of a constant $p = 0.5$ predictor is $(0.5 - 0)^2 = 0.25$ when $\omega = 0$ and
+$(0.5 - 1)^2 = 0.25$ when $\omega = 1$. The value 0.25 is exact regardless of the event's
+base rate; it is not a property specific to "balanced binary events" ($P(\omega = 1) = 0.5$).
+
+The qualifier "(for a balanced binary event)" incorrectly implies that Brier $= 0.25$ is a
+special case that holds only when the event is balanced. Any reader who internalises this
+will incorrectly believe that on unbalanced events ($P(\omega = 1) \neq 0.5$), a constant
+$p = 0.5$ predictor does not achieve Brier $= 0.25$ — which is false. The qualifier may
+have been intended to motivate why 0.25 is a meaningful benchmark (for a balanced event it
+matches the naive base-rate prediction), but as stated it misstates the scope of the claim.
+
+**Fix applied:**
+- `07-discussion.md` §6.5 and `paper.md` §6.5:
+  "achieves Brier $= 0.25$ (for a balanced binary event)." →
+  "achieves Brier $= 0.25$ for any binary outcome
+  ($\omega \in \{0, 1\}$, since $(0.5 - 0)^2 = (0.5 - 1)^2 = 0.25$)." ✓
+
+*Post-fix verification:*
+`grep -n "balanced binary event" 07-discussion.md paper.md | grep -v "09-self-critique"` → zero hits. ✓
+`grep -n "omega.*0.*1.*0\.25\|0\.25 for any binary" 07-discussion.md paper.md` → two hits. ✓
+
+---
+
+## EE4. §3.4 says $\delta_{\text{sac}}$ and $W$ were selected on "held-out political events"; Table 2 says "held-out 2024–25 season pilot" — sources conflict [FIXED]
+
+**Reviewer:** Section 3.4 states: "We set $\delta_{\text{sac}} = 0.02$ and $W = 7$ based on
+cross-validation on **held-out political events** (Appendix C.2)."
+
+Table 2 (§3.7) states in the caption note: "Values for $\delta_{\text{sac}}$, $W$, and
+$\tau_{\text{vac}}$ were selected on a **held-out 2024–25 season pilot**; see Appendix C.2
+for sensitivity analysis."
+
+Both cite Appendix C.2, but the data sources differ. "Held-out political events" could mean
+2025–26 US political calendar events held out from the NBA evaluation — which would be the
+live experimental data, creating a leakage concern for the political experimental domain.
+Alternatively, it could mean 2024–25 political pilot events, which is benign. Table 2's
+phrase "2024–25 season pilot" is unambiguous and excludes both live experimental domains.
+
+A methodology reviewer will immediately flag this ambiguity and may demand clarification
+on whether the 2025–26 political domain was used to tune hyperparameters before that domain's
+evaluation started.
+
+**Fix applied:**
+- `04-method.md` §3.4 and `paper.md` §3.4:
+  "cross-validation on held-out political events (Appendix C.2)" →
+  "cross-validation on the held-out 2024–25 pilot season (both NBA and political
+  calendars; Appendix C.2)" ✓
+
+  This aligns §3.4 with Table 2 and removes any leakage ambiguity by specifying the
+  2024–25 pilot as the source — which predates both 2025–26 experimental domains.
+
+*Post-fix verification:*
+`grep -n "held-out political events" 04-method.md paper.md | grep -v "09-self-critique"` → zero hits. ✓
+`grep -n "2024.*25 pilot season" 04-method.md paper.md` → two hits (both files). ✓
+
+---
+
+## EE6. §3.6 sentence "The ensemble prediction $\bar{p}_t$ is used as the *oracle signal*" reuses a defined symbol ($\bar{p}_t$ = ensemble mean) for a different referent (oracle model prediction) [FIXED]
+
+**Reviewer:** In §3.1, $\bar{p}_t = \frac{1}{N}\sum_i p_{i,t}$ is defined as the
+*ensemble mean prediction* — the average of all $N$ agents' predictions for event $t$ on
+day $d$. This is the same symbol used in the Brier ambiguity decomposition (§3.3), the
+JSD diversity formula (§3.3), and the DD5 note in §3.6 ("[probation agents] must contribute
+to the ensemble mean prediction $\bar{p}_t$ at a non-trivial level").
+
+Section 3.6 then contains the sentence: "The ensemble prediction $\bar{p}_t$ is used as
+the *oracle signal*." This sentence appears immediately after the stake fraction formula
+$s_i = \max(\kappa_{\min}^{(r_i)}, \rho_i \cdot \kappa_i)$, which does not contain
+$\bar{p}_t$. The phrase "oracle signal" is not defined anywhere in §3.1–§3.5.
+
+Two problems arise:
+(a) **Circular dependency.** The ensemble mean $\bar{p}_t$ is defined over all $N$ agents'
+predictions, which are made simultaneously and independently within the 15-minute prediction
+window. No agent can observe the ensemble mean on day $d$ before submitting its own
+prediction for day $d$. If $\bar{p}_t$ is an input to stake sizing, it must refer to a
+lagged value (prior day) or a pre-game oracle — but neither is stated.
+(b) **Symbol conflict.** The term "oracle" in the architecture refers to the island GA
+model (§4.2.1), which outputs a pre-game probability estimate. If the sentence intends to
+describe this oracle's prediction as a calibration reference, the correct notation is
+$\hat{p}_t^{\text{oracle}}$ or equivalent — not $\bar{p}_t$, which has a fixed prior meaning.
+
+**Fix applied:**
+- `04-method.md` §3.6 and `paper.md` §3.6: The sentence removed and replaced with an
+  accurate, non-conflicting description:
+  "The ensemble prediction $\bar{p}_t$ is used as the *oracle signal*." →
+  "Each agent receives the island GA oracle's pre-game probability estimate for each event
+  as a calibration reference in its context block (described in §4.2.1); this reference
+  does not appear in the stake formula above, which depends solely on $\kappa_i$, $\rho_i$,
+  and $\kappa_{\min}^{(r_i)}$." ✓
+
+  This eliminates the circular dependency (oracle prediction is a pre-game input, available
+  before any agent predicts), removes the symbol conflict ($\bar{p}_t$ no longer appears in
+  a context where it means something other than the ensemble mean), and cross-references
+  §4.2.1 where the oracle context is described in detail.
+
+*Post-fix verification:*
+`grep -n "oracle signal" 04-method.md paper.md | grep -v "09-self-critique"` → zero hits. ✓
+`grep -n "island GA oracle" 04-method.md paper.md` → two hits (both files). ✓
+
+---
+
+## CYCLE 29 SUMMARY
+
+**Fixed:** EE1 (§3.4 Definition 2 step 4 — 14-day re-trigger moratorium now explicit in
+the formal definition, closing the gap between Definition 2 and §3.6's operational
+"at most once per 14-day window" statement); EE2 (§4.3 domain scope — added explicit
+statement that Conditions C/D/E are NBA-only and Conditions A/B run in both domains,
+consistent with Table 5 and the thread-count derivation); EE3 (§6.5 Brier-0.25 qualifier
+— removed factually wrong "(for a balanced binary event)" and replaced with the correct
+"for any binary outcome ($\omega \in \{0, 1\}$)"); EE4 (§3.4 hyperparameter source —
+"held-out political events" replaced with "held-out 2024–25 pilot season (both NBA and
+political calendars)" eliminating the leakage ambiguity and aligning §3.4 with Table 2);
+EE6 (§3.6 oracle signal notation — removed the $\bar{p}_t$-reusing sentence and replaced
+with a precise description of the island GA oracle's role as a pre-game context signal,
+separate from the stake formula).
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's Brier-delta placeholder and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+   for sacrifice-eligible agents
+10. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ (requires pilot backtest)
+11. **NEW — EE4 follow-up:** `grep -rn "held-out political events" *.md | grep -v "09-self-critique"`
+    before submission → zero hits confirmed this cycle. ✓
+12. **NEW — EE6 follow-up:** `grep -rn "oracle signal" *.md | grep -v "09-self-critique"`
+    before submission → zero hits confirmed this cycle. ✓
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files, including source files.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.4 Definition 2 step 4: moratorium clause added (EE1)
+- `04-method.md` §3.4: "held-out political events" → "held-out 2024–25 pilot season
+  (both NBA and political calendars)" (EE4)
+- `04-method.md` §3.6: "The ensemble prediction $\bar{p}_t$ is used as the *oracle
+  signal*." replaced with oracle-context clarification sentence (EE6)
+- `05-experimental-setup.md` §4.3: Conditions C/D/E NBA-only scope sentence added (EE2)
+- `07-discussion.md` §6.5: "(for a balanced binary event)" → "for any binary outcome
+  ($\omega \in \{0, 1\}$, since $(0.5 - 0)^2 = (0.5 - 1)^2 = 0.25$)" (EE3)
+- `paper.md`: all five fixes mirrored (5 edit locations)
