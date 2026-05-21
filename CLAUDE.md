@@ -1,10 +1,10 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-25T00h
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-25T04h
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22012 (S15 nba-evo-6 fire-61 ★CHECKPOINT) | GA prev alltime: 0.22019 (S14 gen=1078) | ⚡Pareto fleet best: 0.21841 extra_trees S15 gen=566 fire-66 (prev 0.21850 CatBoost S22 gen=2309) | ⚠ S18 0.21924 candidate LOST — hard resets cycles 251/276 before checkpoint (2026-05-06T00h) | ⚠ fire-97 RF 0.21941 gen=2689 NOT confirmed (best_brier unchanged 0.22012) | ⚡⚡ fire-98: S18 extra_trees 0.21842 200f gen=6549 + S15 CatBoost 0.21881 200f gen=2698 PENDING VALIDATION (best_brier field lag confirmed pattern) | fire-99: S14 RECOVERED ssl-cleared hard-reset-803 stacking-violation-new; S13 stag=23+S15 stag=24 DIVERSIFIED; P2 0.24901 + P7 0.24904 POL candidates (PENDING VAL); convergent 0.249 signal P2+P4+P5+P7 | fire-101: S13 FRESH RESTART cycle=21 (hard-reset-2055 ✓); S15 stag cleared cycle=954; S18 stag=16 DIVERSIFY SENT; all POL UP stag=0; P2 0.24901 2nd fire; P5 LightGBM 0.249 4th fire | fire-109: S13 stag CLEARED 8→0 cycle=198; S14 hard-reset-978; S15 0.22012 ★ stable gen=3227; all POL UP stag=0; P7 FIELD-LAG 6+ fires vm-diversify-p7-fire109 URGENT; P4 in-pop | fire-160: S22-stag-CLEARED(19→0)-DIVERSIFY-SUCCESS c402 g1206; S18 pareto=15(↑14→15) c489 g1466; S13/S14/S15 404-DOWN(sleeping); all-POL 404-DOWN(sleeping); EVEN arXiv:2508.02725 LSTM+Brier-loss-NCAA=0.1589-research-proposal-written
+**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22012 (S15 nba-evo-6 fire-61 ★CHECKPOINT) | GA prev alltime: 0.22019 (S14 gen=1078) | ⚡Pareto fleet best: 0.21841 extra_trees S15 gen=566 fire-66 (prev 0.21850 CatBoost S22 gen=2309) | ⚠ S18 0.21924 candidate LOST — hard resets cycles 251/276 before checkpoint (2026-05-06T00h) | ⚠ fire-97 RF 0.21941 gen=2689 NOT confirmed (best_brier unchanged 0.22012) | ⚡⚡ fire-98: S18 extra_trees 0.21842 200f gen=6549 + S15 CatBoost 0.21881 200f gen=2698 PENDING VALIDATION (best_brier field lag confirmed pattern) | fire-99: S14 RECOVERED ssl-cleared hard-reset-803 stacking-violation-new; S13 stag=23+S15 stag=24 DIVERSIFIED; P2 0.24901 + P7 0.24904 POL candidates (PENDING VAL); convergent 0.249 signal P2+P4+P5+P7 | fire-101: S13 FRESH RESTART cycle=21 (hard-reset-2055 ✓); S15 stag cleared cycle=954; S18 stag=16 DIVERSIFY SENT; all POL UP stag=0; P2 0.24901 2nd fire; P5 LightGBM 0.249 4th fire | fire-109: S13 stag CLEARED 8→0 cycle=198; S14 hard-reset-978; S15 0.22012 ★ stable gen=3227; all POL UP stag=0; P7 FIELD-LAG 6+ fires vm-diversify-p7-fire109 URGENT; P4 in-pop | fire-160: S22-stag-CLEARED(19→0)-DIVERSIFY-SUCCESS c402 g1206; S18 pareto=15(↑14→15) c489 g1466; S13/S14/S15 404-DOWN(sleeping); all-POL 404-DOWN(sleeping); EVEN arXiv:2508.02725 LSTM+Brier-loss-NCAA=0.1589-research-proposal-written | fire-162: S13-403-FORBIDDEN(was-404-fire-161)-POSSIBLY-WAKING-CatBoost-0.21992-EXTREME-URGENT; S18-c541-pareto=13(↑9→13-RECOVERING); S22-c438-hard-reset-c428-rapid-cycling; all-POL-404-DOWN; EVEN PMC12357926-NBA-stacked-83.27%-AUC=0.9213-features:2PA/FG/TRB/FGA
 
 **Political Alpha:** Best: 0.2497 brier (P4 LightGBM-131f, POL fleet best, 2026-05-21★) | P1 pareto_best=0.24902 LightGBM-105f (3RD-OBSERVE fire-158 ALL-TIME RECORD) | P2 pareto=3 CRITICAL-SHRINK (fire-158) | P4 pareto=5 oscillation (5→14→5 fire-156→157→158) | P5 pareto=6 RECOVERING (↑3→6 fire-158) | P7 LightGBM-112f-0.24931 stable
 
@@ -36,21 +36,21 @@ Every 4h: `data/work-queue.json` push from iPad/automation → GitHub Action →
 ### NBA Islands (active)
 | Island | HF Repo | Status | Best Brier | Notes |
 |--------|---------|--------|-----------|-------|
-| S13 | TESTforge42/nba-evo-s13 | 404-DOWN | 0.22216 (field-lag) | CatBoost-200f-0.21992 gen=2831 IN PARETO 2ND-FIRE fire-158 — SLEEPING fire-160 |
-| S14 | TESTforge42/nba-evo-s14 | 404-DOWN | 0.22054 RF-48f | BELOW THRESHOLD confirmed fire-157+158 — SLEEPING fire-160 |
-| S15 | LBJLincoln26/nba-evo-6 | 404-DOWN | 0.22012★ | FLEET BEST stable gen=6672 pareto=13 — SLEEPING fire-160 |
-| S17 | LBJLincoln26/nba-evo-s17 | 503 DOWN 114+d | — | PAUSED |
-| S18 | TESTforge42/nba-evo-s18 | UP | 0.22236 | pareto=15(↑14→15) stag=0 c489 g1466; pareto_best CatBoost-0.22197 field-lag |
-| S22 | TESTforge42/nba-evo-s22 | UP | 0.22124 | stag=0 CLEARED(↓19→0 DIVERSIFY-SUCCESS fire-160!) c402 g1206 |
+| S13 | TESTforge42/nba-evo-s13 | 403-FORBIDDEN | 0.22216 (field-lag) | CatBoost-200f-0.21992 gen=2831 EXTREME URGENT — 403-NEW(was-404) possibly-waking fire-162 |
+| S14 | TESTforge42/nba-evo-s14 | 404-DOWN | 0.22054 RF-48f | BELOW THRESHOLD confirmed fire-157+158 — SLEEPING fire-162 |
+| S15 | LBJLincoln26/nba-evo-6 | 404-DOWN | 0.22012★ | FLEET BEST stable gen=6672 pareto=13 — SLEEPING fire-162 |
+| S17 | LBJLincoln26/nba-evo-s17 | 503 DOWN 115+d | — | PAUSED |
+| S18 | TESTforge42/nba-evo-s18 | UP | 0.22236 | pareto=13(↑9→13 RECOVERING fire-162) stag=0 c541 g1622; hard-resets c500+c525; pareto_best CatBoost-0.22197 field-lag |
+| S22 | TESTforge42/nba-evo-s22 | UP | 0.22124 | stag=0 c438 g1312; RAPID-CYCLING hard-resets c403+c428(2x in 36 cycles post-diversify); LR-43f top-pareto |
 
 ### POL Islands (active)
 | Island | HF Repo | Status | Best Brier | Notes |
 |--------|---------|--------|-----------|-------|
-| P1 | TESTforge42/political-evo-p1 | 404-DOWN | pareto_best=0.24902 | LightGBM-105f 3RD-OBSERVE fire-158 ALL-TIME RECORD — SLEEPING fire-160 |
-| P2 | TESTforge42/political-evo-p2 | 404-DOWN | 0.249 | pareto=3 CRITICAL-SHRINK fire-158 — SLEEPING fire-160 |
-| P4 | TESTforge42/political-evo-p4 | 404-DOWN | 0.2497★ | POL FLEET BEST pareto=5 oscillation — SLEEPING fire-160 |
-| P5 | TESTforge42/political-evo-p5 | 404-DOWN | 0.24993 | pareto=6 RECOVERING fire-158 — SLEEPING fire-160 |
-| P7 | TESTforge42/political-evo-p7 | 404-DOWN | 0.24931 | LightGBM-112f stable pareto=7 — SLEEPING fire-160 |
+| P1 | TESTforge42/political-evo-p1 | 404-DOWN | pareto_best=0.24902 | LightGBM-105f 3RD-OBSERVE fire-158 ALL-TIME RECORD — SLEEPING fire-162 |
+| P2 | TESTforge42/political-evo-p2 | 404-DOWN | 0.249 | pareto=3 CRITICAL-SHRINK fire-158 — SLEEPING fire-162 |
+| P4 | TESTforge42/political-evo-p4 | 404-DOWN | 0.2497★ | POL FLEET BEST pareto=5 oscillation — SLEEPING fire-162 |
+| P5 | TESTforge42/political-evo-p5 | 404-DOWN | 0.24993 | pareto=6 RECOVERING fire-158 — SLEEPING fire-162 |
+| P7 | TESTforge42/political-evo-p7 | 404-DOWN | 0.24931 | LightGBM-112f stable pareto=7 — SLEEPING fire-162 |
 
 ---
 
@@ -148,7 +148,7 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 - Mech A: DONE (fire-122) — day-end common knowledge broadcast
 - Mech B: PENDING — sacrificial role reallocation (BLOCKED: HF push gate)
 - Mech C: PENDING — post-mortem log schema HF push (BLOCKED: HF push gate)
-- Parity: SHAs NBA 19f4acf49d(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-159 (verified fire-161)
+- Parity: SHAs NBA 19f4acf49d49d(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-159 (verified fire-161)
 - 13/13 parity symbols OK (verified fire-161; SACRIFICIAL_PROMPT→build_sacrificial_system_suffix, USED_ARCHETYPES→_used_archetypes)
 
 ---
@@ -187,6 +187,13 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
    - Proposal: data/research-proposals/sota-lstm-brier-loss-fire160.md
    - Work-queue: vm-research-lstm-sequence-model (priority=90)
 
+7. **NBA Stacked Ensemble Feature Importance** (fire-162 EVEN WebSearch)
+   - PMC12357926: NBA stacked ensemble (XGBoost+KNN+AdaBoost+NaiveBayes+LR+DT + MLP meta) achieves 83.27% acc, AUC=0.9213 on 3,690 NBA games (2021-2024)
+   - Top SHAP features: 2-point attempts (2PA), field goals made (FG), total rebounds (TRB), field goal attempts (FGA)
+   - Note: stacking approach PROHIBITED (Rule#8); feature importance insight actionable for engine-parity-sync
+   - Note: no Brier score reported; uses in-game stats (not pre-game prediction) — limited direct applicability
+   - Action: verify 2PA/FG rolling-avg variants are in engine.py during engine-parity-sync (priority=40)
+
 ---
 
 ## Political Alpha Pipeline
@@ -213,8 +220,9 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 
 | Fire | Time | Parity | Key Events |
 |------|------|--------|------------|
+| 162 | 2026-05-25T04h | EVEN | S13 403-FORBIDDEN NEW(was-404-fire-161, possibly-waking! CatBoost-0.21992 EXTREME-URGENT); S18 c541 g1622 stag=0 pareto=13(↑9→13 RECOVERING); S22 c438 g1312 stag=0 hard-reset-c428(rapid-cycling-2x-36-cycles-post-diversify); all-POL 404-DOWN(sleeping); EVEN: PMC12357926 NBA-stacked-83.27%-acc-AUC=0.9213 features:2PA/FG/TRB/FGA (no-Brier; stacking-Rule#8-prohibited) |
 | 161 | 2026-05-25T00h | ODD | Axelrod verify pass: SHAs NBA 19f4acf49d(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-159; 13/13 parity OK; C→B→A ordering confirmed; KL-div ε OK; 20-archetype pools domain-specific OK; Mech B+C BLOCKED (do_not_push_hf_space_yet+NBA-503+POL-IDLE) |
-| 160 | 2026-05-24T20h | EVEN | S18 c489 g1466 pareto=15(↑14→15) stag=0; S22 stag-CLEARED(19→0) c402 g1206 DIVERSIFY-SUCCESS; S13/S14/S15 404-DOWN(sleeping); all-POL 404-DOWN(sleeping); EVEN: arXiv:2508.02725 LSTM+Brier-loss-NCAA=0.1589 research-proposal-written |
+| 160 | 2026-05-24T20h | EVEN | S18 c489 g1466 pareto=15(↑14→15) stag=0; S22 stag-CLEARED(19→0) c402 g1206 DIVERSIFY-SUCCESS; S13/S14/S15 404-DOWN(sleeping); all-POL(P1-P7) 404-DOWN(sleeping); EVEN: arXiv:2508.02725 LSTM+Brier-loss-NCAA=0.1589 research-proposal-written |
 | 159 | 2026-05-24T16h | ODD | Axelrod verify pass: SHAs NBA 19f4acf49d/POL 3496362c60 UNCHANGED vs fire-155; 13/13 parity OK; C→B→A ordering confirmed; KL-div ε OK; 20-archetype pools domain-specific OK; Mech B+C BLOCKED (do_not_push_hf_space_yet+NBA-503+POL-IDLE) |
 | 158 | 2026-05-24T12h | EVEN | S13 CatBoost-0.21992 2ND-FIRE; S14 RF-0.22054 BELOW-THRESHOLD 2ND; S18 NEW-PARETO-BEST CatBoost-0.22197 1ST-DETECT; S22 stag=19 2ND-DIVERSIFY-SENT; P2 pareto=3 CRITICAL-SHRINK; P4 pareto=5 oscillation; P5 RECOVERING; WebSearch: arXiv:2605.03816 Venn-Abers |
 | 157 | 2026-05-24T08h | ODD | S14 NEW-BEST-0.22054 RF-48f; S13 CatBoost-0.21992 1ST-DETECT; S22 stag=21 DIVERSIFY-SENT; P4 MAJOR-RECOVERY pareto=14; P5 CRITICAL-SHRINK pareto=3; P1 pareto_best=0.24902 2ND-CONFIRM |
@@ -222,7 +230,6 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 | 155 | 2026-05-24T00h | ODD | Axelrod parity verify pass; S15 stable; POL monitoring |
 | 154 | 2026-05-23T20h | EVEN | P1 pareto monitoring; S22 stag rising |
 | 153 | 2026-05-23T14h | ODD | P5 CRITICAL-SHRINK first detect; S22 pareto drop first detect |
-| 152 | 2026-05-23T10h | EVEN | S18 SSL resolved; various monitoring |
 
 ---
 
