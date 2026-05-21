@@ -1,21 +1,21 @@
 {
-  "fire": 162,
-  "timestamp": "2026-05-25T04:00:00Z",
-  "parity": "EVEN",
+  "fire": 164,
+  "timestamp": "2026-05-25T12:00:00Z",
+  "parity": "ODD",
   "nba_islands": {
     "S13": {
-      "status": "403-FORBIDDEN",
-      "note": "403-NEW (was 404 fire-161) — possibly waking, HF cold-start or space access gate. CatBoost-0.21992 EXTREME URGENT candidate still at risk.",
+      "status": "404-DOWN",
+      "note": "BACK TO 404 fire-164. Was 403-FORBIDDEN fire-162+163 — waking hypothesis FAILED, 403 was transient HF state. CatBoost-0.21992 gen=2831 candidate still at extreme risk.",
       "last_known_cycle": 974,
       "last_known_gen": 2921,
       "last_known_stag": 0,
       "last_known_pareto": 12,
       "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (POTENTIAL NEW FLEET BEST <0.22012)",
-      "alert": "EXTREME URGENT: S13 403-FORBIDDEN NEW STATUS. VM: retry S13/api/status + /api/export IMMEDIATELY — CatBoost-0.21992 < fleet-best 0.22012"
+      "alert": "EXTREME URGENT: S13 back to 404-DOWN (403 was transient). CatBoost-0.21992 < fleet-best 0.22012 still unconfirmed. VM: retry S13 periodically."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping fire-162 (unchanged)",
+      "note": "sleeping fire-164 (unchanged)",
       "last_known_cycle": 495,
       "last_known_gen": 1483,
       "last_known_stag": 0,
@@ -25,7 +25,7 @@
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "sleeping fire-162 (unchanged)",
+      "note": "sleeping fire-164 (unchanged)",
       "last_known_cycle": 2224,
       "last_known_gen": 6672,
       "last_known_stag": 0,
@@ -39,40 +39,40 @@
     },
     "S18": {
       "status": "UP",
-      "cycle": 541,
-      "generation": 1622,
+      "cycle": 561,
+      "generation": 1683,
       "best_brier": 0.22236,
       "stagnation": 0,
-      "pareto_front_size": 13,
+      "pareto_front_size": 12,
       "best_model_type": "random_forest",
       "best_features": 44,
-      "delta_cycle_from_fire161": "+27 (514→541)",
-      "delta_pareto_from_fire161": "9→13 RECOVERING (fire-161 pareto-shrink reversing!)",
-      "hard_resets_since_fire160": "c500 + c525 (stagnation hit >25 twice, both auto-resolved)",
-      "recent_log": "LightGBM-38f brier=0.2473 gen=1621 (per-gen result, not pareto-best)",
-      "pareto_best_candidate_fire158": "CatBoost-0.22197 gen=1346 — monitoring; pareto recovering suggests may still be present",
-      "alert": "MONITORING: pareto recovering 9->13. No threshold triggered (brier=0.22236). VM checkpoint still needed for CatBoost-0.22197.",
-      "note": "Healthy post-hard-reset recovery. Two hard resets c500+c525 resolved. Feature candidates 3365."
+      "delta_cycle_from_fire162": "+20 (541→561)",
+      "delta_pareto_from_fire162": "13→12 slight-shrink (monitoring)",
+      "hard_resets_since_fire160": "c500 + c525",
+      "alert": "MONITORING: pareto slight shrink 13→12. No threshold triggered (brier=0.22236). VM checkpoint needed for CatBoost-0.22197 pareto_best."
     },
     "S22": {
       "status": "UP",
-      "cycle": 438,
-      "generation": 1312,
+      "cycle": 452,
+      "generation": 1355,
       "best_brier": 0.22124,
       "stagnation": 0,
+      "pareto_front_size": 16,
       "best_model_type": "random_forest",
       "best_features": 48,
-      "delta_cycle_from_fire161": "+21 (417→438)",
-      "hard_resets_since_fire160": "c403 + c428 (2 resets in 36 cycles — RAPID CYCLING post-diversify)",
-      "top_performer_log": "logistic_regression-43f fitness=0.73322 brier=0.2226 (in Pareto)",
-      "note": "Stag=0 post-hard-reset c428. But 2 hard resets in 36 cycles is rapid cycling — ecosystem unstable post-diversify. Feature candidates 3377.",
-      "alert": "WARNING: S22 rapid hard-reset cycling (c403+c428). VM: checkpoint NOW before next reset reshapes pareto. Consider removing stacking (Rule#8) to stabilize."
+      "delta_cycle_from_fire162": "+14 (438→452)",
+      "delta_pareto_from_fire162": "13→16 RECOVERING!",
+      "hard_resets_total": 2,
+      "internal_stag_cycles_without_improvement": 23,
+      "top_performer_log": "logistic_regression-43f brier=0.2226 pareto_front=16 gen=1354",
+      "note": "stag=0 (main field). Pareto RECOVERING 13→16. internal stagnation_status.cycles_without_improvement=23 (best_brier=0.22124 unchanged 23 cycles, but pareto growing — no diversify needed).",
+      "alert": "MONITORING: Pareto recovering well (13→16). VM: checkpoint NOW before next reset, then remove stacking (Rule#8) to prevent rapid cycling."
     }
   },
   "pol_islands": {
     "P1": {
       "status": "404-DOWN",
-      "note": "sleeping fire-162 (unchanged)",
+      "note": "sleeping fire-164 (unchanged)",
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24902,
       "pareto_best_model": "LightGBM-105f gen=17750",
@@ -80,7 +80,7 @@
     },
     "P2": {
       "status": "404-DOWN",
-      "note": "sleeping fire-162 (unchanged)",
+      "note": "sleeping fire-164 (unchanged)",
       "last_known_pareto": 3,
       "last_known_pareto_best": 0.249,
       "pareto_best_model": "LightGBM-123f",
@@ -88,7 +88,7 @@
     },
     "P4": {
       "status": "404-DOWN",
-      "note": "sleeping fire-162 (unchanged)",
+      "note": "sleeping fire-164 (unchanged)",
       "last_known_best_brier": 0.2497,
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24915,
@@ -97,15 +97,15 @@
     },
     "P5": {
       "status": "404-DOWN",
-      "note": "sleeping fire-162 (unchanged)",
+      "note": "sleeping fire-164 (unchanged)",
       "last_known_pareto": 6,
       "last_known_best_brier": 0.24993,
-      "trend": "RECOVERING (3->6 fire-158)",
+      "trend": "RECOVERING (3→6 fire-158)",
       "alert": "RECOVERING — VM wake + checkpoint"
     },
     "P7": {
       "status": "404-DOWN",
-      "note": "sleeping fire-162 (unchanged)",
+      "note": "sleeping fire-164 (unchanged)",
       "last_known_pareto": 7,
       "last_known_best_brier": 0.24931,
       "pareto_best_model": "LightGBM-112f",
@@ -116,41 +116,40 @@
     "nba": 0.22012,
     "nba_source": "S15 RF-75f (confirmed, sleeping)",
     "nba_pareto_candidates": [
-      "S13 CatBoost-0.21992 (UNCONFIRMED — 403-POSSIBLY-WAKING fire-162, EXTREME URGENT)",
-      "S18 CatBoost-0.22197 gen=1346 (fire-158 detect, pareto recovering 9->13 fire-162, monitoring)"
+      "S13 CatBoost-0.21992 (UNCONFIRMED — 404-DOWN fire-164, 403-was-transient, waking-hypothesis-FAILED)",
+      "S18 CatBoost-0.22197 gen=1346 (fire-158 detect, pareto 13→12 slight shrink fire-164, monitoring)"
     ],
     "pol": 0.2497,
     "pol_source": "P4 LightGBM-131f (confirmed, sleeping)"
   },
   "stagnation_summary": {
-    "S13": "0 (last known, 403-possibly-waking)",
+    "S13": "0 (last known, 404-DOWN)",
     "S14": "0 (last known, sleeping)",
     "S15": "0 (last known, sleeping)",
-    "S18": "0 (live) — hard resets c500+c525 auto-cleared",
-    "S22": "0 (live) — hard reset c428 cleared; rapid cycling warning",
+    "S18": "0 (live) — pareto 13→12 slight shrink, monitoring",
+    "S22": "0 (live, main) — pareto 13→16 RECOVERING; internal cycles_without_improvement=23 (brier plateau, pareto healthy)",
     "P1": "0 (last known, sleeping)",
     "P2": "0 (last known, sleeping)",
     "P4": "0 (last known, sleeping)",
     "P5": "0 (last known, sleeping)",
     "P7": "0 (last known, sleeping)"
   },
-  "actions_taken_fire162": [
-    "S18 pareto 9->13 RECOVERING noted (fire-161 shrink reversing)",
-    "S22 rapid hard-reset cycling c403+c428 FLAGGED — VM checkpoint alert added",
-    "S13 403-FORBIDDEN NEW STATUS (was 404 fire-161) FLAGGED — possibly waking, CatBoost-0.21992 EXTREME URGENT",
-    "All POL 404-DOWN confirmed (no change from fire-161)",
+  "actions_taken_fire164": [
+    "S13 BACK TO 404-DOWN — 403 fire-162+163 was transient HF state, waking hypothesis FAILED",
+    "S18 c561 g1683 stag=0 pareto=12 (slight shrink from 13 — monitored, no action)",
+    "S22 c452 g1355 stag=0 pareto=16 RECOVERING (↑13→16 positive, internal-stag-cycles=23 noted but stag=0)",
+    "All POL 404-DOWN confirmed (unchanged)",
     "No stagnation commands sent (S18 stag=0, S22 stag=0)",
     "No threshold gates triggered (S18=0.22236, S22=0.22124, both above 0.22085)",
-    "EVEN WebSearch: PMC12357926 NBA-stacked-ensemble 83.27% acc AUC=0.9213; features 2PA/FG/TRB/FGA top SHAP (likely in engine; no Brier reported; stacking Rule#8 prohibited)",
-    "No new SOTA research proposal (PMC12357926 not compelling enough — no Brier, stacking prohibited)",
-    "health-status.json updated (fire-162)",
-    "work-queue.json updated (fire-162)",
-    "CLAUDE.md fire log updated (fire-162)"
+    "ODD fire: no WebSearch",
+    "health-status.json updated (fire-164)",
+    "work-queue.json updated (fire-164)",
+    "CLAUDE.md fire log updated (fire-164)"
   ],
   "vm_priority_queue": [
-    "1. S13 403-WAKING?! — curl S13/api/status retry IMMEDIATELY. If accessible: /api/export (CatBoost-0.21992 < 0.22012 EXTREME URGENT)",
-    "2. S18 export NOW — CatBoost-0.22197 eviction risk, pareto recovering 9->13 (vm-checkpoint-s18-catboost-0.22197-fire158)",
-    "3. S22 checkpoint — rapid hard-reset cycling c403+c428, remove stacking (Rule#8) to stabilize",
+    "1. S13 — CatBoost-0.21992 candidate at risk (back to 404, 403 was transient). VM: retry periodically.",
+    "2. S18 export NOW — CatBoost-0.22197 eviction risk (pareto 13→12 slight shrink fire-164)",
+    "3. S22 checkpoint + remove stacking (Rule#8) — pareto=16 recovering but hard-reset risk remains",
     "4. Wake P1 + checkpoint — pareto_best=0.24902 ALL-TIME RECORD EXTREME URGENT",
     "5. Wake S14 + checkpoint — RF-0.22054 below threshold",
     "6. Wake S15 + checkpoint — fleet-best sleeping",
