@@ -170,7 +170,7 @@ ambiguity decomposition in the LLM-agent setting.
 ## 5.5  Domain Transfer: NBA versus Political
 
 The ten shared agents (T1–T10) participate simultaneously in both prediction
-domains throughout the experiment. This design enables a *domain-transfer*
+domains under Conditions A and B (Conditions C, D, and E are NBA-only; §4.3). This design enables a *domain-transfer*
 test: does an SRR event triggered by NBA performance predict subsequent
 improvement in the Political domain, and vice versa?
 

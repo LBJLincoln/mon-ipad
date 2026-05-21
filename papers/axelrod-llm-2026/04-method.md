@@ -55,10 +55,12 @@ Society-mean Brier is $\bar{B}_d = \frac{1}{N}\sum_i \overline{B}_{i,d}$.
 
 **Strategy.** Agent $i$'s *strategy* is a stochastic function:
 
-$$\sigma_i : (\mathcal{R} \times \mathcal{X} \times \mathcal{H}) \rightarrow \Delta([0,1]^{|\mathcal{B}_d|})$$
+$$\sigma_i : (\mathcal{R} \times \mathcal{X} \times \mathcal{H}) \rightarrow \mathcal{P}([0,1]^{|\mathcal{B}_d|})$$
 
-where $\mathcal{H}$ is the space of agent-private histories and $\Delta(\cdot)$
-denotes the probability simplex. In practice, $\sigma_i$ is implemented by prompting
+where $\mathcal{H}$ is the space of agent-private histories and $\mathcal{P}(\cdot)$
+denotes the set of Borel probability measures over its argument (the action space
+$[0,1]^{|\mathcal{B}_d|}$ is continuous; the finite-set notation $\Delta(\mathcal{R})$
+is used below for the discrete archetype simplex). In practice, $\sigma_i$ is implemented by prompting
 $\mathcal{M}_i$ with the structured prompt $\Pi(r_i, x_d, h_{i,d-1})$, where
 $h_{i,d-1}$ is agent $i$'s private history (own predictions, outcomes seen, bankroll).
 The LLM samples a response, which is parsed into the prediction vector $\mathbf{p}_{i,d}$.
@@ -277,7 +279,10 @@ $$\mathbb{E}[\Delta\text{Amb}_t] = \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \fr
 We invoke the independence of $\delta_i$ (the agent's pre-SRR centroid deviation, determined
 before SRR draws a new archetype from $\mathcal{V}_d$) and $\Delta p$ (the prediction change
 induced by that new archetype, drawn uniformly from $\mathcal{V}_d$ after eligibility is
-established). Under this independence, $\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$, so a sufficient condition is:
+established). Under this independence, $\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
+By Jensen's inequality applied to the convex function $f(x) = x^2$,
+$\mathbb{E}[(\Delta p)^2] \geq (\mathbb{E}[|\Delta p|])^2$; factoring $\mathbb{E}[|\Delta p|]$
+out of the lower bound then yields the sufficient condition:
 
 $$\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\,\mathbb{E}[|\delta_i|]$$
 
@@ -300,10 +305,15 @@ testable via the Sham-SRR control (§4.3).
 > **Proposition 2 (SRR as equilibrium refinement).** In the LPSG, the strategy
 > profile $(\sigma_i^{\text{SRR}})_{i \in \mathcal{I}}$ — where every
 > sacrifice-eligible agent executes SRR — is a *Strong Nash Equilibrium*
-> [@aumann1959acceptable] in the societal Brier minimisation game: no
-> coalition $\mathcal{C} \subseteq \mathcal{I}$ can jointly deviate from
-> SRR and (weakly) improve the ensemble Brier of $\mathcal{C}$
+> [@aumann1959acceptable] against *sacrifice-refusal deviations* in the societal
+> Brier minimisation game: no coalition
+> $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}} = \{i \in \mathcal{I} : i
+> \text{ is sacrifice-eligible at day } d\}$ of sacrifice-eligible agents can
+> collectively refuse SRR and (weakly) improve the ensemble Brier of $\mathcal{C}$
 > while (weakly) reducing individual Brier for all members of $\mathcal{C}$.
+> (The qualification "against sacrifice-refusal deviations" restricts the SNE
+> to the strategically relevant class: non-eligible agents have no SRR action to
+> refuse, so they are not coalition members in this context.)
 
 *Proof sketch.* Apply the Brier ambiguity decomposition to the coalition
 sub-ensemble $\mathcal{C}$:

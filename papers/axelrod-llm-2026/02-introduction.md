@@ -89,9 +89,9 @@ This paper makes four contributions:
    ($\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}}$; §3.4) probabilistically
    adopts an underrepresented strategy archetype from a predefined taxonomy,
    increasing population-level Jensen–Shannon divergence (§3.3). We prove under mild assumptions that SRR is a *Strong* Nash equilibrium
-   refinement (Proposition 2, §3.5): no coalition of agents can jointly deviate from SRR
-   and simultaneously (weakly) improve ensemble Brier for the coalition while (weakly)
-   reducing individual Brier for each coalition member.
+   refinement (Proposition 2, §3.5): no coalition of sacrifice-eligible agents can
+   collectively refuse SRR and simultaneously (weakly) improve ensemble Brier for the
+   coalition while (weakly) reducing individual Brier for each coalition member.
 
 3. **Real-world LLM trading experiment.** We deploy 12 LLM agents (five provider
    ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, self-hosted Qwen3-4B)

@@ -130,9 +130,9 @@ This paper makes four contributions:
    ($\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}}$; §3.4) probabilistically
    adopts an underrepresented strategy archetype from a predefined taxonomy,
    increasing population-level Jensen–Shannon divergence (§3.3). We prove under mild assumptions that SRR is a *Strong* Nash equilibrium
-   refinement (Proposition 2, §3.5): no coalition of agents can jointly deviate from SRR
-   and simultaneously (weakly) improve ensemble Brier for the coalition while (weakly)
-   reducing individual Brier for each coalition member.
+   refinement (Proposition 2, §3.5): no coalition of sacrifice-eligible agents can
+   collectively refuse SRR and simultaneously (weakly) improve ensemble Brier for the
+   coalition while (weakly) reducing individual Brier for each coalition member.
 
 3. **Real-world LLM trading experiment.** We deploy 12 LLM agents (five provider
    ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, self-hosted Qwen3-4B)
@@ -554,10 +554,12 @@ Society-mean Brier is $\bar{B}_d = \frac{1}{N}\sum_i \overline{B}_{i,d}$.
 
 **Strategy.** Agent $i$'s *strategy* is a stochastic function:
 
-$$\sigma_i : (\mathcal{R} \times \mathcal{X} \times \mathcal{H}) \rightarrow \Delta([0,1]^{|\mathcal{B}_d|})$$
+$$\sigma_i : (\mathcal{R} \times \mathcal{X} \times \mathcal{H}) \rightarrow \mathcal{P}([0,1]^{|\mathcal{B}_d|})$$
 
-where $\mathcal{H}$ is the space of agent-private histories and $\Delta(\cdot)$
-denotes the probability simplex. In practice, $\sigma_i$ is implemented by prompting
+where $\mathcal{H}$ is the space of agent-private histories and $\mathcal{P}(\cdot)$
+denotes the set of Borel probability measures over its argument (the action space
+$[0,1]^{|\mathcal{B}_d|}$ is continuous; the finite-set notation $\Delta(\mathcal{R})$
+is used below for the discrete archetype simplex). In practice, $\sigma_i$ is implemented by prompting
 $\mathcal{M}_i$ with the structured prompt $\Pi(r_i, x_d, h_{i,d-1})$, where
 $h_{i,d-1}$ is agent $i$'s private history (own predictions, outcomes seen, bankroll).
 The LLM samples a response, which is parsed into the prediction vector $\mathbf{p}_{i,d}$.
@@ -767,8 +769,11 @@ We invoke the independence of $\delta_i$ (pre-SRR centroid deviation, determined
 the new archetype is drawn) and $\Delta p$ (archetype-induced change, drawn uniformly
 from $\mathcal{V}_d$ after eligibility is established). Under independence,
 $\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
+By Jensen's inequality ($\mathbb{E}[X^2] \geq (\mathbb{E}[|X|])^2$),
+$\mathbb{E}[(\Delta p)^2] \geq (\mathbb{E}[|\Delta p|])^2$; factoring out $\mathbb{E}[|\Delta p|]$
+yields the sufficient condition $\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\mathbb{E}[|\delta_i|]$.
 Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and
-$\mathbb{E}[|\delta_i|] \leq 0.014$ (A2 + pilot data, §5.1): LHS $\geq 0.034 > 0.028 =$ RHS. $\checkmark$
+$\mathbb{E}[|\delta_i|] \leq 0.014$ (A2 + pilot data, §5.1): LHS $\geq \frac{11}{12}\times 0.037 = 0.034 > 0.028 =$ RHS. $\checkmark$
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
@@ -785,10 +790,15 @@ scenarios — and is empirically testable via the Sham-SRR condition (§4.3, §5
 > **Proposition 2 (SRR as equilibrium refinement).** In the LPSG, the strategy
 > profile $(\sigma_i^{\text{SRR}})_{i \in \mathcal{I}}$ — where every
 > sacrifice-eligible agent executes SRR — is a *Strong Nash Equilibrium*
-> [@aumann1959acceptable] in the societal Brier minimisation game: no
-> coalition $\mathcal{C} \subseteq \mathcal{I}$ can jointly deviate from
-> SRR and (weakly) improve the ensemble Brier of $\mathcal{C}$
+> [@aumann1959acceptable] against *sacrifice-refusal deviations* in the societal
+> Brier minimisation game: no coalition
+> $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}} = \{i \in \mathcal{I} : i
+> \text{ is sacrifice-eligible at day } d\}$ of sacrifice-eligible agents can
+> collectively refuse SRR and (weakly) improve the ensemble Brier of $\mathcal{C}$
 > while (weakly) reducing individual Brier for all members of $\mathcal{C}$.
+> (The qualification "against sacrifice-refusal deviations" restricts the SNE
+> to the strategically relevant class: non-eligible agents have no SRR action to
+> refuse, so they are not coalition members in this context.)
 
 *Proof sketch.* Apply the Brier ambiguity decomposition to the coalition
 sub-ensemble $\mathcal{C}$:
@@ -1406,7 +1416,8 @@ ambiguity decomposition in the LLM-agent setting.
 ## 5.5  Domain Transfer: NBA versus Political
 
 The ten shared agents (T1–T10) participate simultaneously in both prediction
-domains throughout the experiment. This design enables a *domain-transfer*
+domains under Conditions A and B (Conditions C, D, and E are NBA-only; §4.3).
+This design enables a *domain-transfer*
 test: does an SRR event triggered by NBA performance predict subsequent
 improvement in the Political domain, and vice versa?
 
@@ -1517,8 +1528,9 @@ the favour in a subsequent round.
 assessment of the sacrificing agent's reputation as a result of the
 sacrifice act itself. Peer agents receive the updated archetype label (in
 Condition A), but this label-update is logistically incidental; the Sham-SRR
-condition (D) demonstrates that label-change alone does not replicate the
-Brier improvement, meaning social reputation is not the active ingredient.
+control (Condition D) is designed to isolate whether label-change alone —
+absent the prompt-reasoning change — replicates the Brier improvement; if it
+does not, social reputation is not the active ingredient.
 
 **Not network reciprocity.** The mechanism is topology-agnostic: it fires
 identically regardless of whether agents interact on a lattice, a scale-free

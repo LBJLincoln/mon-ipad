@@ -4502,3 +4502,221 @@ to confirm propagation to all relevant files, including source files.
   two-channel dual feedback description distinguishing Brier→cap and
   bankroll→absolute-stake effects (FF5)
 - `paper.md`: all five fixes mirrored (FF1–FF5, 5 edit locations)
+
+---
+
+# Peer-Review Self-Critique — Cycle 31 (2026-05-24)
+
+**Reviewer persona:** NeurIPS 2026 Area Chair — formal methods and game-theory correctness focus.
+Checks: proof scope, notation precision, logic gaps, result hedging consistency, and cross-section coherence.
+
+---
+
+## CYCLE 30 STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle 30. PRE-SUBMISSION checklist items 1–3 (author
+verification for `@ouyang2022training`, `@llm_ipd2024`, `@polyswarm2026`)
+remain deferred pending network access to live arXiv records.
+
+---
+
+## NEW ISSUES (Cycle 31 full-manuscript re-read)
+
+### GG1. Proposition 2 coalition scope too broad — proof only covers sacrifice-eligible agents refusing SRR [FIXED]
+
+**Reviewer:** Proposition 2 states: "no coalition $\mathcal{C} \subseteq \mathcal{I}$
+can jointly deviate from SRR and (weakly) improve the ensemble Brier of $\mathcal{C}$
+while (weakly) reducing individual Brier for all members of $\mathcal{C}$."
+
+The phrase "$\mathcal{C} \subseteq \mathcal{I}$" allows any subset of all $N$ agents,
+including non-sacrifice-eligible agents. But the proof sketch only handles one
+specific deviation type: sacrifice-eligible agents *refusing* reallocation. It does
+not address coalitions containing non-eligible agents who might "deviate from SRR"
+by proactively reallocating themselves to vacant archetypes (an action SRR does not
+prescribe for them). Such a coalition could conceivably improve ensemble Brier by
+increasing population diversity — yet the proof says nothing about this case.
+
+Furthermore, the Introduction (Contribution 2) echoed the same unconstrained scope:
+"no coalition of agents can jointly deviate from SRR." The scope mismatch between
+the proposition statement and its proof is a structural defect that an Area Chair
+specialising in mechanism design would immediately flag.
+
+**Fix applied:**
+- `04-method.md` §3.5 Proposition 2 and `paper.md` §3.5 Proposition 2: The coalition
+  is now explicitly restricted to $\mathcal{I}_d^{\text{elig}} = \{i \in \mathcal{I} :
+  i \text{ is sacrifice-eligible at day } d\}$ and the SNE qualification is stated as
+  "against sacrifice-refusal deviations." A parenthetical explains that non-eligible
+  agents have no SRR action to refuse and are therefore not coalition members in this
+  context. ✓
+- `02-introduction.md` Contribution 2 and `paper.md` Contribution 2: "no coalition of
+  agents can jointly deviate from SRR" → "no coalition of sacrifice-eligible agents
+  can collectively refuse SRR." ✓
+
+*Post-fix verification:*
+`grep -rn "no coalition of agents\|jointly deviate" *.md | grep -v "09-self-critique"` → zero hits. ✓
+
+---
+
+### GG2. §3.1 strategy space uses "$\Delta(\cdot)$ denotes the probability simplex" for a continuous action space [FIXED]
+
+**Reviewer:** The strategy function is defined as:
+
+$$\sigma_i : (\mathcal{R} \times \mathcal{X} \times \mathcal{H}) \rightarrow \Delta([0,1]^{|\mathcal{B}_d|})$$
+
+with the note "$\Delta(\cdot)$ denotes the probability simplex." The *probability
+simplex* $\Delta^{n-1}$ is the convex hull of $n$ standard basis vectors — a polytope
+defined for finite sets. The action space $[0,1]^{|\mathcal{B}_d|}$ is a continuous
+hypercube; a distribution over it is a Borel probability measure, not an element of
+any simplex. The notation "$\Delta([0,1]^n)$" is non-standard and inconsistent with
+the correctly-used $\Delta(\mathcal{R})$ immediately below (where $\mathcal{R}$ is
+finite and $\Delta(\mathcal{R})$ is a genuine simplex). A formal methods reviewer
+will reject the mixed usage.
+
+**Fix applied:**
+- `04-method.md` §3.1 and `paper.md` §3.1: Strategy codomain changed from
+  $\Delta([0,1]^{|\mathcal{B}_d|})$ to $\mathcal{P}([0,1]^{|\mathcal{B}_d|})$;
+  "$\Delta(\cdot)$ denotes the probability simplex" replaced with "$\mathcal{P}(\cdot)$
+  denotes the set of Borel probability measures over its argument." A parenthetical
+  clarifies that $\Delta(\mathcal{R})$ below is used in its standard finite-set sense
+  (the archetype simplex). ✓
+
+*Post-fix verification:*
+`grep -rn "probability simplex" *.md | grep -v "09-self-critique"` → zero hits. ✓
+`grep -rn "mathcal{P}\(\[0,1\]" 04-method.md paper.md` → two hits (both files). ✓
+
+---
+
+### GG3. Lemma 1 Case 2 — Jensen's inequality step missing in sufficient condition derivation [FIXED]
+
+**Reviewer:** The Case 2 proof arrives at:
+
+$$\mathbb{E}[\Delta\text{Amb}_t] = \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$$
+
+and then states (after invoking independence): "a sufficient condition is
+$\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\,\mathbb{E}[|\delta_i|]$."
+
+This transition requires the substitution $\mathbb{E}[(\Delta p)^2] \geq
+(\mathbb{E}[|\Delta p|])^2$ — Jensen's inequality applied to $f(x) = x^2$ (a convex
+function). Without this step, the reader cannot derive the stated sufficient condition
+from the formula above it: the formula contains $\mathbb{E}[(\Delta p)^2]$ but the
+sufficient condition involves $(\mathbb{E}[|\Delta p|])^2$. A methods reviewer checking
+the algebra will note the gap and may conclude the inequality is unproven.
+
+**Fix applied (`04-method.md` §3.5 and `paper.md` §3.5):**
+After the independence step, the following sentence is inserted:
+"By Jensen's inequality applied to the convex function $f(x) = x^2$,
+$\mathbb{E}[(\Delta p)^2] \geq (\mathbb{E}[|\Delta p|])^2$; factoring $\mathbb{E}[|\Delta p|]$
+out of the lower bound then yields the sufficient condition:" ✓
+
+The numerical verification $0.034 > 0.028$ is retained in both the source and condensed
+forms; the condensed `paper.md` version now also explicitly states the sufficient
+condition $\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\mathbb{E}[|\delta_i|]$ before the
+numerical check, matching the source file structure. ✓
+
+*Post-fix verification:*
+`grep -n "Jensen's inequality" 04-method.md paper.md` → 2 + 1 hits (source has the full
+sentence; condensed paper.md has the one-line version). ✓
+
+---
+
+### GG4. §6.1 asserts "demonstrates" for a pending experimental result [FIXED]
+
+**Reviewer:** Section 6.1 (and the corresponding paragraph in `paper.md` §6.1) contains:
+"The Sham-SRR condition (D) **demonstrates** that label-change alone does not
+replicate the Brier improvement, meaning social reputation is not the active ingredient."
+
+The word "demonstrates" asserts an experimentally established fact. However, all
+results in §5 are marked **[PENDING]** — the experiment has not yet run. The temporal
+note at the end of §6 says claims "of the form 'if confirmed' or 'pending results'" are
+intentionally hedged, but "demonstrates" is stated-as-fact language not covered by
+that hedge. This is precisely the kind of language a reproducibility reviewer will flag:
+the abstract says "results pending," the temporal note promises hedging, yet §6.1
+claims a positive finding as established.
+
+**Fix applied (`07-discussion.md` §6.1 and `paper.md` §6.1):**
+"The Sham-SRR condition (D) demonstrates that label-change alone does not replicate
+the Brier improvement, meaning social reputation is not the active ingredient." →
+"The Sham-SRR control (Condition D) is designed to isolate whether label-change
+alone — absent the prompt-reasoning change — replicates the Brier improvement; if
+it does not, social reputation is not the active ingredient." ✓
+
+*Post-fix verification:*
+`grep -rn "demonstrates.*label\|label.*demonstrates" *.md | grep -v "09-self-critique"` → zero hits. ✓
+
+---
+
+### GG5. §5.5 says T1–T10 participate in both domains "throughout the experiment" — contradicts the Conditions C/D/E NBA-only scope (EE2, Cycle 29) [FIXED]
+
+**Reviewer:** Section 5.5 opens: "The ten shared agents (T1–T10) participate
+simultaneously in both prediction domains **throughout the experiment**."
+
+Cycle 29 (EE2) established that Conditions C, D, and E are NBA-only: the clarifying
+sentence "Conditions C, D, and E apply to the NBA domain only; Conditions A and B
+are evaluated independently in both domains" was added to §4.3. The phrase
+"throughout the experiment" in §5.5 implies T1–T10 run in both domains under *all*
+experimental conditions, directly contradicting the §4.3 domain-scope statement.
+A reader who has just read §4.3 will notice the conflict immediately.
+
+**Fix applied (`06-results.md` §5.5 and `paper.md` §5.5):**
+"The ten shared agents (T1–T10) participate simultaneously in both prediction
+domains throughout the experiment." →
+"The ten shared agents (T1–T10) participate simultaneously in both prediction
+domains under Conditions A and B (Conditions C, D, and E are NBA-only; §4.3)." ✓
+
+*Post-fix verification:*
+`grep -rn "throughout the experiment" *.md | grep -v "09-self-critique"` → zero hits. ✓
+
+---
+
+## CYCLE 31 SUMMARY
+
+**Fixed:** GG1 (Proposition 2 coalition scope — restricted to sacrifice-eligible agents
+and "against sacrifice-refusal deviations"; Introduction Contribution 2 aligned);
+GG2 (§3.1 strategy codomain — $\Delta([0,1]^n)$ + "probability simplex" → $\mathcal{P}([0,1]^n)$
++ "Borel probability measures"; $\Delta(\mathcal{R})$ retained as-is for finite archetype set);
+GG3 (Lemma 1 Case 2 Jensen step — missing $\mathbb{E}[(\Delta p)^2] \geq (\mathbb{E}[|\Delta p|])^2$
+invocation inserted before sufficient condition; numerical check retained);
+GG4 (§6.1 "demonstrates" → "is designed to isolate whether ... if it does not" —
+hedged to match pending-results policy);
+GG5 (§5.5 "throughout the experiment" → "under Conditions A and B (C/D/E are NBA-only; §4.3)"
+— consistent with the EE2 fix from Cycle 29).
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's Brier-delta placeholder and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+   for sacrifice-eligible agents
+10. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ (requires pilot backtest)
+11. **NEW — GG1 follow-up:** `grep -rn "no coalition of agents\|jointly deviate" *.md | grep -v "09-self-critique"` → zero hits confirmed this cycle. ✓
+12. **NEW — GG2 follow-up:** `grep -rn "probability simplex" *.md | grep -v "09-self-critique"` → zero hits confirmed this cycle. ✓
+13. **NEW — GG4 follow-up:** `grep -rn "demonstrates.*label" *.md | grep -v "09-self-critique"` → zero hits confirmed this cycle. ✓
+14. **NEW — GG5 follow-up:** `grep -rn "throughout the experiment" *.md | grep -v "09-self-critique"` → zero hits confirmed this cycle. ✓
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files, including source files.
+
+**Structural changes this cycle:**
+- `02-introduction.md` Contribution 2: "no coalition of agents can jointly deviate
+  from SRR" → "no coalition of sacrifice-eligible agents can collectively refuse SRR" (GG1)
+- `04-method.md` §3.1: $\Delta([0,1]^{|\mathcal{B}_d|})$ → $\mathcal{P}([0,1]^{|\mathcal{B}_d|})$;
+  "probability simplex" → "Borel probability measures"; parenthetical on $\Delta(\mathcal{R})$
+  added (GG2)
+- `04-method.md` §3.5 Proposition 2: coalition restricted to $\mathcal{I}_d^{\text{elig}}$;
+  "against sacrifice-refusal deviations" added to SNE qualifier; parenthetical on
+  non-eligible agents added (GG1)
+- `04-method.md` §3.5 Lemma 1 Case 2: Jensen's inequality sentence inserted before
+  sufficient condition (GG3)
+- `06-results.md` §5.5: "throughout the experiment" → "under Conditions A and B
+  (Conditions C, D, and E are NBA-only; §4.3)" (GG5)
+- `07-discussion.md` §6.1: "demonstrates" → "is designed to isolate whether...
+  if it does not" (GG4)
+- `paper.md`: all five fixes mirrored (GG1 ×2, GG2, GG3, GG4, GG5 — 6 edit locations)

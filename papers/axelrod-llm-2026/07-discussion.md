@@ -45,8 +45,9 @@ the favour in a subsequent round.
 assessment of the sacrificing agent's reputation as a result of the
 sacrifice act itself. Peer agents receive the updated archetype label (in
 Condition A), but this label-update is logistically incidental; the Sham-SRR
-condition (D) demonstrates that label-change alone does not replicate the
-Brier improvement, meaning social reputation is not the active ingredient.
+control (Condition D) is designed to isolate whether label-change alone —
+absent the prompt-reasoning change — replicates the Brier improvement; if it
+does not, social reputation is not the active ingredient.
 
 **Not network reciprocity.** The mechanism is topology-agnostic: it fires
 identically regardless of whether agents interact on a lattice, a scale-free
