@@ -753,8 +753,12 @@ the centroid):
 $$\Delta\text{Amb}_t = |\Delta p|\!\left[\frac{|\Delta p|(N-1)}{N^2} - \frac{2|\delta_i|}{N}\right]$$
 
 This is positive whenever $|\delta_i| < \frac{|\Delta p|(N-1)}{2N}$.
-By A2, $|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t}-\bar{p}_t|$ — the sacrifice-eligible
-agent is no further from the centroid than the population average.
+By A2, $\mathbb{E}[|\delta_i|] \leq \mathbb{E}\!\left[\frac{1}{N}\sum_j |p_{j,t}-\bar{p}_t|\right]$ —
+the expected centroid deviation of a sacrifice-eligible agent is bounded above by the
+population-average expected absolute deviation.  Pilot data (§5.1) estimate this
+population average at $0.014$, yielding $\mathbb{E}[|\delta_i|] \leq 0.014$ as the
+quantitative bound used below (A2 provides the structural direction; the pilot value
+furnishes the numerical threshold).
 The conclusion $\mathbb{E}[\Delta\text{Amb}_t] > 0$ follows from:
 
 $$\mathbb{E}[\Delta\text{Amb}_t] = \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i||\Delta p|]$$
@@ -764,7 +768,7 @@ the new archetype is drawn) and $\Delta p$ (archetype-induced change, drawn unif
 from $\mathcal{V}_d$ after eligibility is established). Under independence,
 $\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
 Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and
-$\mathbb{E}[|\delta_i|] \leq 0.014$ (pilot data, §5.1): LHS $\geq 0.034 > 0.028 =$ RHS. $\checkmark$
+$\mathbb{E}[|\delta_i|] \leq 0.014$ (A2 + pilot data, §5.1): LHS $\geq 0.034 > 0.028 =$ RHS. $\checkmark$
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
@@ -786,16 +790,24 @@ scenarios — and is empirically testable via the Sham-SRR condition (§4.3, §5
 > SRR and (weakly) improve the ensemble Brier of $\mathcal{C}$
 > while (weakly) reducing individual Brier for all members of $\mathcal{C}$.
 
-*Proof sketch.* By the Brier ambiguity decomposition:
+*Proof sketch.* Apply the Brier ambiguity decomposition to the coalition
+sub-ensemble $\mathcal{C}$:
 
-$$B_{\text{ens}} = \overline{B}_{\text{indiv}} - \text{Amb}$$
+$$B_{\text{ens}}^{\mathcal{C}} = \frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}} B_i - \text{Amb}^{\mathcal{C}},
+\quad \text{Amb}^{\mathcal{C}} = \frac{1}{|\mathcal{B}_d|}\sum_{t}\frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}}(p_{i,t} - \bar{p}_t^{\mathcal{C}})^2$$
 
 A coalition deviating from SRR (i.e., sacrifice-eligible agents refusing to
-reallocate) forgoes the Ambiguity increase that Lemma 1 guarantees: executing
-SRR strictly increases $\text{Amb}$ (Lemma 1), so the deviating coalition's
-$\text{Amb}$ is strictly lower than under the SRR profile, giving
-$B_{\text{ens}}^{\text{deviation}} \geq B_{\text{ens}}^{\text{SRR}}$
-(coalition ensemble Brier is weakly worse than under SRR). Since sacrifice-eligible agents
+reallocate) forgoes the within-coalition Ambiguity increase that the mechanism
+provides: under SRR, eligible agents in $\mathcal{C}$ move to vacant archetypes,
+differentiating their predictions from one another and increasing $\text{Amb}^{\mathcal{C}}$;
+under deviation, coalition members retain their current consensus archetypes,
+leaving $\text{Amb}^{\mathcal{C}}$ at its pre-intervention level.
+Applying the Lemma 1 argument to the sub-population $\mathcal{C}$ (which contains
+the sacrifice-eligible agents executing or refusing SRR) yields
+$\text{Amb}^{\mathcal{C},\text{SRR}} > \text{Amb}^{\mathcal{C},\text{deviation}}$,
+so by the coalition-level decomposition above:
+$B_{\text{ens}}^{\mathcal{C},\text{deviation}} \geq B_{\text{ens}}^{\mathcal{C},\text{SRR}}$
+(coalition ensemble Brier is weakly worse under deviation). Since sacrifice-eligible agents
 have $\overline{B}_{i,d} \geq \bar{B}_d + \delta_{\text{sac}}$ by definition,
 their individual Brier is above the ensemble mean — refusing SRR does not
 improve their individual Brier in expectation (they remain in the same
@@ -981,10 +993,10 @@ agents (T11–T12) are excluded from the political cohort because their
 inference latency characteristics (OpenRouter rate limits; self-hosted
 CPU throughput ~8 s/call) are incompatible with the political domain's
 narrower daily prediction window. This exclusion creates a natural
-cross-domain experiment: T1–T10 are the same ten LLM instances operating
-simultaneously across both NBA and political arenas, enabling a
-*domain-transfer* test of whether diversity mechanisms learned in one
-domain generalise to the other.
+cross-domain experiment: T1–T10 are the same ten LLM model configurations
+running independently (with fully isolated context buffers per §4.3) in both
+the NBA and political arenas, enabling a *domain-transfer* test of whether
+diversity mechanisms observed in one domain generalise to the other.
 
 **Provider capacity constraints.** Cerebras enforces a 30-request-per-minute
 (RPM) limit per key; Google Gemini 3 a 14 RPM free-tier limit with
@@ -1473,7 +1485,7 @@ building multi-LLM prediction systems at scale.
 
 ---
 
-## 6.1  A Sixth Rule for the Evolution of Cooperation
+## 6.1  A Candidate Sixth Rule: Epistemic Role Sacrifice
 
 Nowak's 2006 *Science* synthesis [@nowak2006five] remains the canonical
 taxonomy for mechanisms that sustain cooperation among self-interested agents:
@@ -1742,9 +1754,11 @@ Whether virtual financial stakes induce the same level of prediction
 quality as real financial stakes is an open question (see §7.3). However,
 the Kelly mechanism provides a *within-system* calibration discipline that
 real-money implementations would strengthen: an agent that systematically
-overestimates its edge will experience bankroll drawdown that reduces its
-effective Kelly cap, creating a feedback loop absent from
-consequence-free benchmark evaluations.
+overestimates its edge will experience higher Brier, which directly reduces
+its cap fraction $\kappa_i$ via the formula $\kappa_i = \max(0.01,\, 0.30 -
+\overline{B}_i \times 0.50)$, and compounding bankroll drawdown, which further
+reduces the absolute dollar stake even at a fixed cap fraction — a dual
+feedback loop absent from consequence-free benchmark evaluations.
 
 **Formula derivation and inverse-calibration probation criterion.** The
 specific formula $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$

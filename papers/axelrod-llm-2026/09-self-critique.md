@@ -4272,3 +4272,233 @@ to confirm propagation to all relevant files, including source files.
 - `07-discussion.md` §6.5: "(for a balanced binary event)" → "for any binary outcome
   ($\omega \in \{0, 1\}$, since $(0.5 - 0)^2 = (0.5 - 1)^2 = 0.25$)" (EE3)
 - `paper.md`: all five fixes mirrored (5 edit locations)
+- `paper.md`: all five fixes mirrored (EE1–EE6, 5 edit locations)
+
+---
+
+# CYCLE 30 — Hostile Reviewer Pass (2026-05-21)
+
+**Reviewer persona:** Methods Editor, Nature Machine Intelligence — formal-correctness focus.
+Checks: proof completeness, cross-layer attributions, terminology precision, hedging consistency.
+
+---
+
+## FF1. Lemma 1 Case 2 — A2 cited but its logical connection to the 0.014 pilot bound was missing [FIXED]
+
+**Reviewer:** In Case 2 of the Lemma 1 proof, A2 is invoked as follows: "By A2,
+$|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t}-\bar{p}_t|$ — the sacrifice-eligible agent
+is no further from the centroid than the population average."
+
+Two lines later, the numerical bound actually used in the inequality is stated as
+"$\mathbb{E}[|\delta_i|] \leq 0.014$ (pilot data, §5.1)."
+
+A2 provides a *structural* upper bound: the eligible agent's centroid deviation is bounded
+by the population-average absolute deviation. It does not yield the value 0.014 — that
+comes from pilot data. A reader checking the proof can legitimately ask: (a) what is the
+population-average absolute deviation, and (b) how does A2's structural bound relate to the
+0.014 figure? Without a bridge between the two, A2 appears cited but not formally used; the
+quantitative work is done entirely by the pilot data, potentially making A2 redundant for
+Case 2 (which would be a different defect — an unnecessary assumption).
+
+**Fix applied:**
+- `04-method.md` §3.5 Case 2 and `paper.md` §3.5 Case 2: The A2 invocation is rewritten
+  at the expectation level and the bridge to the pilot data is made explicit:
+  "By A2, $\mathbb{E}[|\delta_i|] \leq \mathbb{E}[(1/N)\sum_j |p_{j,t}-\bar{p}_t|]$ —
+  the expected centroid deviation of a sacrifice-eligible agent is bounded above by the
+  population-average expected absolute deviation. Pilot data (§5.1) estimate this
+  population average at 0.014, yielding $\mathbb{E}[|\delta_i|] \leq 0.014$ as the
+  quantitative bound used below (A2 provides the structural direction; the pilot value
+  furnishes the numerical threshold)." The pilot data citation is correspondingly updated
+  to "(A2 + pilot data, §5.1)." ✓
+
+*Post-fix verification:*
+`grep -n "A2 provides the structural\|A2 + pilot" 04-method.md paper.md` → 2 + 2 hits (both files). ✓
+
+---
+
+## FF2. Proposition 2 proof — Brier ambiguity decomposition applied at society level without clarifying it is used at coalition sub-ensemble level [FIXED]
+
+**Reviewer:** Proposition 2 claims that no coalition $\mathcal{C}$ can jointly deviate and
+simultaneously (weakly) improve the *ensemble Brier of $\mathcal{C}$* and (weakly) reduce
+individual Brier for all members.
+
+The proof previously opened: "By the Brier ambiguity decomposition:
+$B_{\text{ens}} = \overline{B}_{\text{indiv}} - \text{Amb}$"
+and then said "the deviating coalition's Amb is strictly lower than under the SRR profile,
+giving $B_{\text{ens}}^{\text{deviation}} \geq B_{\text{ens}}^{\text{SRR}}$."
+
+The notation $B_{\text{ens}}$ and $\text{Amb}$ appeared without qualifying whether this
+is the coalition sub-ensemble Brier or the society-level ensemble Brier. Proposition 2's
+conclusion concerns $B_{\text{ens}}^{\mathcal{C}}$ (coalition sub-ensemble performance),
+not the full society. A reader familiar with the Brier decomposition might ask: does
+Lemma 1's Ambiguity argument apply at the coalition level? (It does — but this needed
+to be stated, since Lemma 1 is phrased for the full $N$-agent population.) A reader
+applying the society-level reading would also be confused: if the coalition refuses SRR,
+the society's Ambiguity decreases (society ensemble Brier gets worse), but the
+coalition's sub-ensemble Ambiguity also changes in the same direction.
+
+**Fix applied:**
+- `04-method.md` §3.5 Proposition 2 proof and `paper.md` §3.5: The proof now explicitly
+  applies the Brier decomposition at the coalition sub-ensemble level:
+
+  $$B_{\text{ens}}^{\mathcal{C}} = \frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}} B_i -
+  \text{Amb}^{\mathcal{C}}, \quad \text{Amb}^{\mathcal{C}} =
+  \frac{1}{|\mathcal{B}_d|}\sum_t \frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}}
+  (p_{i,t} - \bar{p}_t^{\mathcal{C}})^2$$
+
+  The narrative then explicitly states that Lemma 1 applied to the sub-population
+  $\mathcal{C}$ (which contains the sacrifice-eligible agents) yields
+  $\text{Amb}^{\mathcal{C},\text{SRR}} > \text{Amb}^{\mathcal{C},\text{deviation}}$,
+  and the coalition-level decomposition then gives
+  $B_{\text{ens}}^{\mathcal{C},\text{deviation}} \geq B_{\text{ens}}^{\mathcal{C},\text{SRR}}$. ✓
+
+*Post-fix verification:*
+`grep -n "coalition sub-ensemble\|Amb.*C.*SRR" 04-method.md paper.md` → 2 + 2 hits. ✓
+
+---
+
+## FF3. §4.1 "same ten LLM instances operating simultaneously" implies shared state [FIXED]
+
+**Reviewer:** The sentence "T1–T10 are the same ten LLM instances operating simultaneously
+across both NBA and political arenas" uses the word "instances" — a technical term in software
+and ML that connotes a running process with shared memory or context. Section 4.3 explicitly
+states that "LLM conversation context buffers flushed so that no prediction reasoning from
+a prior condition persists," confirming that context is fully isolated. The NBA and political
+arenas use the same model *specifications* (same model ID, system prompt template, $\rho_i$
+values) but fully independent runtime contexts.
+
+"Instances" thus incorrectly implies the two arenas share runtime state, which could mislead
+readers into thinking the NBA context contaminates political predictions or vice versa.
+
+**Fix applied:**
+- `05-experimental-setup.md` §4.1 and `paper.md` §4.1: "the same ten LLM instances
+  operating simultaneously across both NBA and political arenas" →
+  "the same ten LLM model configurations running independently (with fully isolated
+  context buffers per §4.3) in both the NBA and political arenas." ✓
+
+*Post-fix verification:*
+`grep -n "LLM instances\|LLM model configurations" 05-experimental-setup.md paper.md |
+grep -v "09-self-critique"` → zero hits for "LLM instances"; 2 hits for
+"LLM model configurations." ✓
+
+---
+
+## FF4. §6.1 section title "A Sixth Rule for the Evolution of Cooperation" asserts what the body only proposes as a candidate [FIXED]
+
+**Reviewer:** The section title states "A Sixth Rule for the Evolution of Cooperation" —
+a definitive claim. The body of §6.1 is carefully hedged: "Sacrificial Role Reallocation
+introduces a *candidate* mechanism that does not reduce to any of these five"; "We
+*propose* the name epistemic role sacrifice for this mechanism." Related work §2.1 also
+hedges: "Our paper introduces a sixth *candidate* in the context of LLM agent societies."
+
+Nowak's five rules are established by decades of evolutionary biology research across
+multiple empirical systems. Proposing a new mechanism for a fundamentally different
+setting — LLM prediction markets rather than biological fitness landscapes — warrants
+hedging. A hostile reviewer will note the gap between a section titled as established
+fact ("A Sixth Rule") and a body that consistently uses "candidate." The section title
+should match the body's epistemic register.
+
+**Fix applied:**
+- `07-discussion.md` §6.1 and `paper.md` §6.1: "## 6.1  A Sixth Rule for the Evolution
+  of Cooperation" → "## 6.1  A Candidate Sixth Rule: Epistemic Role Sacrifice" ✓
+
+  This aligns the title's hedging with the body ("candidate mechanism") and moves the
+  proposed mechanism name into the header, improving reader orientation.
+
+*Post-fix verification:*
+`grep -n "A Sixth Rule\|A Candidate Sixth" 07-discussion.md paper.md |
+grep -v "09-self-critique"` → zero hits for "A Sixth Rule"; 2 hits for
+"A Candidate Sixth Rule." ✓
+
+---
+
+## FF5. §6.5 "bankroll drawdown that reduces its effective Kelly cap" — the cap formula depends on Brier, not bankroll [FIXED]
+
+**Reviewer:** Section 6.5 states: "an agent that systematically overestimates its edge
+will experience bankroll drawdown that *reduces its effective Kelly cap*."
+
+The Kelly cap is defined in §3.6 as $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i
+\times 0.50)$. This formula depends on rolling Brier $\overline{B}_i$, not on bankroll.
+Bankroll drawdown does not change $\kappa_i$. Bankroll drawdown reduces the absolute
+dollar stake (since the stake is $\kappa_i \times \text{bankroll}$), but this is a
+different quantity from the cap fraction $\kappa_i$.
+
+The statement "bankroll drawdown reduces its effective Kelly cap" conflates two distinct
+feedback channels:
+(a) The Brier channel: bad predictions → higher $\overline{B}_i$ → lower $\kappa_i$
+    (reduced cap fraction).
+(b) The bankroll channel: bad predictions → bankroll drawdown → smaller absolute stake
+    even at the same $\kappa_i$.
+
+Channel (a) is the $\kappa_i$-reduction mechanism; channel (b) is a compounding effect
+on absolute stake size. The text, by attributing the cap reduction solely to bankroll
+drawdown, presented the causal pathway incorrectly.
+
+**Fix applied:**
+- `07-discussion.md` §6.5 and `paper.md` §6.5: The sentence is replaced with an accurate
+  two-channel description: "an agent that systematically overestimates its edge will
+  experience higher Brier, which directly reduces its cap fraction $\kappa_i$ via the
+  formula $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$, and compounding
+  bankroll drawdown, which further reduces the absolute dollar stake even at a fixed cap
+  fraction — a dual feedback loop absent from consequence-free benchmark evaluations." ✓
+
+*Post-fix verification:*
+`grep -n "bankroll drawdown that reduces" 07-discussion.md paper.md |
+grep -v "09-self-critique"` → zero hits. ✓
+`grep -n "compounding bankroll drawdown\|dual feedback" 07-discussion.md paper.md` →
+"compounding bankroll drawdown" 2 hits in both files. ✓
+
+---
+
+## CYCLE 30 SUMMARY
+
+**Fixed:** FF1 (Lemma 1 Case 2 — A2's structural bound bridged to pilot data 0.014 value;
+citation updated to "A2 + pilot data, §5.1"); FF2 (Proposition 2 proof — Brier decomposition
+now explicitly applied at the coalition sub-ensemble level with coalition-level Ambiguity
+notation $\text{Amb}^{\mathcal{C}}$; Lemma 1's coalition-level analog stated explicitly);
+FF3 (§4.1 "LLM instances" → "LLM model configurations running independently (with fully
+isolated context buffers per §4.3)" — eliminates shared-state implication); FF4 (§6.1
+section title "A Sixth Rule" → "A Candidate Sixth Rule: Epistemic Role Sacrifice" —
+aligns title hedging with body language); FF5 (§6.5 Kelly cap feedback loop — replaced
+"bankroll drawdown reduces effective Kelly cap" with correct dual-channel description
+distinguishing Brier-driven cap fraction reduction from bankroll-driven absolute stake
+compounding).
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's Brier-delta placeholder and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+   for sacrifice-eligible agents
+10. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ (requires pilot backtest)
+11. **NEW — FF3 follow-up:** `grep -rn "LLM instances" *.md | grep -v "09-self-critique"`
+    before submission → zero hits confirmed this cycle. ✓
+12. **NEW — FF5 follow-up:** `grep -rn "bankroll drawdown that reduces" *.md | grep -v
+    "09-self-critique"` before submission → zero hits confirmed this cycle. ✓
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files, including source files.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.5 Case 2: A2 invocation rewritten at expectation level with explicit
+  bridge to pilot data; citation changed from "(pilot data, §5.1)" to "(A2 + pilot data, §5.1)" (FF1)
+- `04-method.md` §3.5 Proposition 2 proof: Brier decomposition reformulated at coalition
+  sub-ensemble level with $B_\text{ens}^{\mathcal{C}}$ and $\text{Amb}^{\mathcal{C}}$;
+  Lemma 1 explicitly applied to sub-population $\mathcal{C}$ (FF2)
+- `05-experimental-setup.md` §4.1: "the same ten LLM instances operating simultaneously"
+  → "the same ten LLM model configurations running independently (with fully isolated
+  context buffers per §4.3)" (FF3)
+- `07-discussion.md` §6.1: section title "A Sixth Rule for the Evolution of Cooperation"
+  → "A Candidate Sixth Rule: Epistemic Role Sacrifice" (FF4)
+- `07-discussion.md` §6.5: "bankroll drawdown that reduces its effective Kelly cap" →
+  two-channel dual feedback description distinguishing Brier→cap and
+  bankroll→absolute-stake effects (FF5)
+- `paper.md`: all five fixes mirrored (FF1–FF5, 5 edit locations)

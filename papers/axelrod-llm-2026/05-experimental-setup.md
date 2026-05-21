@@ -57,10 +57,10 @@ agents (T11–T12) are excluded from the political cohort because their
 inference latency characteristics (OpenRouter rate limits; self-hosted
 CPU throughput ~8 s/call) are incompatible with the political domain's
 narrower daily prediction window. This exclusion creates a natural
-cross-domain experiment: T1–T10 are the same ten LLM instances operating
-simultaneously across both NBA and political arenas, enabling a
-*domain-transfer* test of whether diversity mechanisms learned in one
-domain generalise to the other.
+cross-domain experiment: T1–T10 are the same ten LLM model configurations
+running independently (with fully isolated context buffers per §4.3) in both
+the NBA and political arenas, enabling a *domain-transfer* test of whether
+diversity mechanisms observed in one domain generalise to the other.
 
 **Provider capacity constraints.** Cerebras enforces a 30-request-per-minute
 (RPM) limit per key; Google Gemini 3 a 14 RPM free-tier limit with

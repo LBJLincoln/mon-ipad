@@ -13,7 +13,7 @@ building multi-LLM prediction systems at scale.
 
 ---
 
-## 6.1  A Sixth Rule for the Evolution of Cooperation
+## 6.1  A Candidate Sixth Rule: Epistemic Role Sacrifice
 
 Nowak's 2006 *Science* synthesis [@nowak2006five] remains the canonical
 taxonomy for mechanisms that sustain cooperation among self-interested agents:
@@ -282,9 +282,11 @@ Whether virtual financial stakes induce the same level of prediction
 quality as real financial stakes is an open question (see §7.3). However,
 the Kelly mechanism provides a *within-system* calibration discipline that
 real-money implementations would strengthen: an agent that systematically
-overestimates its edge will experience bankroll drawdown that reduces its
-effective Kelly cap, creating a feedback loop absent from
-consequence-free benchmark evaluations.
+overestimates its edge will experience higher Brier, which directly reduces
+its cap fraction $\kappa_i$ via the formula $\kappa_i = \max(0.01,\, 0.30 -
+\overline{B}_i \times 0.50)$, and compounding bankroll drawdown, which further
+reduces the absolute dollar stake even at a fixed cap fraction — a dual
+feedback loop absent from consequence-free benchmark evaluations.
 
 **Formula derivation and inverse-calibration probation criterion.** The
 specific formula $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$

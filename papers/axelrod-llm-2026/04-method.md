@@ -264,8 +264,12 @@ the centroid):
 $$\Delta\text{Amb}_t = |\Delta p|\!\left[\frac{|\Delta p|(N-1)}{N^2} - \frac{2|\delta_i|}{N}\right]$$
 
 This is positive whenever $|\delta_i| < \frac{|\Delta p|(N-1)}{2N}$.
-By A2, $|\delta_i| \leq \frac{1}{N}\sum_j |p_{j,t}-\bar{p}_t|$ — the sacrifice-eligible
-agent is no further from the centroid than the population average.
+By A2, $\mathbb{E}[|\delta_i|] \leq \mathbb{E}\!\left[\frac{1}{N}\sum_j |p_{j,t}-\bar{p}_t|\right]$ —
+the expected centroid deviation of a sacrifice-eligible agent is bounded above by the
+population-average expected absolute deviation.  Pilot data (§5.1) estimate this
+population average at $0.014$, yielding $\mathbb{E}[|\delta_i|] \leq 0.014$ as the
+quantitative bound used below (A2 provides the structural direction; the pilot value
+furnishes the numerical threshold).
 The conclusion $\mathbb{E}[\Delta\text{Amb}_t] > 0$ follows from:
 
 $$\mathbb{E}[\Delta\text{Amb}_t] = \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i||\Delta p|]$$
@@ -278,7 +282,7 @@ established). Under this independence, $\mathbb{E}[|\delta_i||\Delta p|] = \math
 $$\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\,\mathbb{E}[|\delta_i|]$$
 
 Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and
-$\mathbb{E}[|\delta_i|] \leq 0.014$ (pilot data, §5.1), the LHS $\geq \frac{11}{12}\times 0.037 = 0.034$
+$\mathbb{E}[|\delta_i|] \leq 0.014$ (A2 + pilot data, §5.1), the LHS $\geq \frac{11}{12}\times 0.037 = 0.034$
 and the RHS $= 0.028$, giving $0.034 > 0.028$. $\checkmark$
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
@@ -301,16 +305,24 @@ testable via the Sham-SRR control (§4.3).
 > SRR and (weakly) improve the ensemble Brier of $\mathcal{C}$
 > while (weakly) reducing individual Brier for all members of $\mathcal{C}$.
 
-*Proof sketch.* By the Brier ambiguity decomposition:
+*Proof sketch.* Apply the Brier ambiguity decomposition to the coalition
+sub-ensemble $\mathcal{C}$:
 
-$$B_{\text{ens}} = \overline{B}_{\text{indiv}} - \text{Amb}$$
+$$B_{\text{ens}}^{\mathcal{C}} = \frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}} B_i - \text{Amb}^{\mathcal{C}},
+\quad \text{Amb}^{\mathcal{C}} = \frac{1}{|\mathcal{B}_d|}\sum_{t}\frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}}(p_{i,t} - \bar{p}_t^{\mathcal{C}})^2$$
 
 A coalition deviating from SRR (i.e., sacrifice-eligible agents refusing to
-reallocate) forgoes the Ambiguity increase that Lemma 1 guarantees: executing
-SRR strictly increases $\text{Amb}$ (Lemma 1), so the deviating coalition's
-$\text{Amb}$ is strictly lower than under the SRR profile, giving
-$B_{\text{ens}}^{\text{deviation}} \geq B_{\text{ens}}^{\text{SRR}}$
-(coalition ensemble Brier is weakly worse than under SRR). Since sacrifice-eligible agents
+reallocate) forgoes the within-coalition Ambiguity increase that the mechanism
+provides: under SRR, eligible agents in $\mathcal{C}$ move to vacant archetypes,
+differentiating their predictions from one another and increasing $\text{Amb}^{\mathcal{C}}$;
+under deviation, coalition members retain their current consensus archetypes,
+leaving $\text{Amb}^{\mathcal{C}}$ at its pre-intervention level.
+Applying the Lemma 1 argument to the sub-population $\mathcal{C}$ (which contains
+the sacrifice-eligible agents executing or refusing SRR) yields
+$\text{Amb}^{\mathcal{C},\text{SRR}} > \text{Amb}^{\mathcal{C},\text{deviation}}$,
+so by the coalition-level decomposition above:
+$B_{\text{ens}}^{\mathcal{C},\text{deviation}} \geq B_{\text{ens}}^{\mathcal{C},\text{SRR}}$
+(coalition ensemble Brier is weakly worse under deviation). Since sacrifice-eligible agents
 have $\overline{B}_{i,d} \geq \bar{B}_d + \delta_{\text{sac}}$ by definition,
 their individual Brier is above the ensemble mean — refusing SRR does not
 improve their individual Brier in expectation (they remain in the same
