@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-24T12:00:00Z",
+  "updated_at": "2026-05-24T16:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
@@ -55,6 +55,15 @@
       "do_not_push": false
     },
     {
+      "id": "cloud-trigger-axelrod-fire-159-2026-05-24T16h",
+      "priority": 209,
+      "status": "done",
+      "completed_at": "2026-05-24T16:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-159",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-159 Axelrod verify pass: SHAs NBA 19f4acf49d(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-155; 13/13 parity symbols OK; Mechs A/B/C C->B->A day-end ordering confirmed; build_common_knowledge_block+assign_sacrificial_archetypes+write_axelrod_log+compute_consensus_distance all at parity NBA+POL; KL-div epsilon-smoothed self-excluded confirmed; 20-archetype AXELROD_ARCHETYPES NBA+POL domain-specific OK; BLOCKED do_not_push_hf_space_yet+NBA-503(33+d)+POL-IDLE(27+d) (2026-05-24T16h)"
+    },
+    {
       "id": "cloud-trigger-axelrod-fire-157-2026-05-24T08h",
       "priority": 206,
       "status": "done",
@@ -70,7 +79,7 @@
       "completed_at": "2026-05-24T08:00:00Z",
       "completed_by": "cloud-brain-fire-157",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-157 ODD ⚡⚡S14-NEW-BEST-0.22054(RF-48f-BELOW-THRESHOLD-FIELD-LAG-CONFIRMED c470 g1408 stag=0 pareto=9↓12→9); ⚡⚡S13-TOP-CAND-CatBoost-0.21992-gen2831-POTENTIAL-NEW-FLEET-BEST(<0.22012★ c945 g2835 stag=0 pareto=11↑7→11); S15 c2207 g6619 brier=0.22012★ stag=0 pareto=13(↑11→13); S17 503-DOWN-112+d; S18 c420 g1260 brier=0.22236 stag=0 pareto=14(↑8→14-SURGE); ⭐S22 c350 g1050 brier=0.22124 stag=21(>15-THRESHOLD!)-DIVERSIFY-SENT pareto=16(↑15→16); NBA-stag: S22-DIVERSIFY-SENT all-others-stag=0; ⚡⚡P4-MAJOR-RECOVERY pareto=14(↑5→14-SURGE) c3052 g9154 brier=0.2497★ stag=0; ⚠⚠P5-CRITICAL-SHRINK pareto=3(↓7→3) c28440 g85320 stag=0; P1 c6762 g20286 pareto=6(↑5→6) pareto_best=0.24902-2ND-CONFIRM; P2 c21454 g64362 pareto=8(↑7→8-RECOVERING); P7 c9395 g28183 pareto=7(↓9→7-slight); all-POL-stag=0-no-diversify; ODD-no-WebSearch (2026-05-24T08h)"
+      "subject": "fire-157 ODD S14-NEW-BEST-0.22054(RF-48f); S13-TOP-CAND-CatBoost-0.21992-gen2831; S15 c2207 g6619 brier=0.22012★; S17 503-DOWN-112+d; S18 c420 g1260 brier=0.22236 pareto=14(SURGE); S22 c350 g1050 stag=21-DIVERSIFY-SENT; P4-MAJOR-RECOVERY pareto=14; P5-CRITICAL-SHRINK pareto=3; P1 pareto_best=0.24902-2ND-CONFIRM; P2 pareto=8-RECOVERING; P7 pareto=7; all-POL-stag=0; ODD-no-WebSearch (2026-05-24T08h)"
     },
     {
       "id": "vm-checkpoint-s13-catboost-0.21992-fire157",
@@ -456,8 +465,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech B -- sacrificial role reallocation runtime verify",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-24T12:00:00Z",
-      "cloud_trigger_note": "fire-158: BLOCKED do_not_push_hf_space_yet+NBA-503(33+d)+POL-IDLE(27+d). Unblocked when user approves HF push."
+      "updated_at": "2026-05-24T16:00:00Z",
+      "cloud_trigger_note": "fire-159: BLOCKED do_not_push_hf_space_yet+NBA-503(33+d)+POL-IDLE(27+d). Unblocked when user approves HF push."
     },
     {
       "id": "tf-axelrod-mech-c",
@@ -466,8 +475,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech C -- post-mortem log schema verify HF Hub push",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-24T12:00:00Z",
-      "cloud_trigger_note": "fire-158: BLOCKED do_not_push_hf_space_yet+NBA-503(33+d)+POL-IDLE(27+d)."
+      "updated_at": "2026-05-24T16:00:00Z",
+      "cloud_trigger_note": "fire-159: BLOCKED do_not_push_hf_space_yet+NBA-503(33+d)+POL-IDLE(27+d)."
     },
     {
       "id": "vm-add-adaboost-naive-bayes-model-pool",

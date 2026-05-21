@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-24T12h
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-24T16h
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -148,8 +148,8 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 - Mech A: DONE (fire-122) — day-end common knowledge broadcast
 - Mech B: PENDING — sacrificial role reallocation (BLOCKED: HF push gate)
 - Mech C: PENDING — post-mortem log schema HF push (BLOCKED: HF push gate)
-- Parity: SHAs NBA 19f4acf49d(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-155 (verified fire-157)
-- 13/13 parity symbols OK (verified fire-157)
+- Parity: SHAs NBA 19f4acf49d(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-155 (verified fire-159)
+- 13/13 parity symbols OK (verified fire-159)
 
 ---
 
@@ -205,6 +205,7 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 
 | Fire | Time | Parity | Key Events |
 |------|------|--------|------------|
+| 159 | 2026-05-24T16h | ODD | Axelrod verify pass: SHAs NBA 19f4acf49d/POL 3496362c60 UNCHANGED vs fire-155; 13/13 parity OK; C→B→A ordering confirmed; KL-div ε OK; 20-archetype pools domain-specific OK; Mech B+C BLOCKED (do_not_push_hf_space_yet+NBA-503+POL-IDLE) |
 | 158 | 2026-05-24T12h | EVEN | S13 CatBoost-0.21992 2ND-FIRE; S14 RF-0.22054 BELOW-THRESHOLD 2ND; S18 NEW-PARETO-BEST CatBoost-0.22197 1ST-DETECT; S22 stag=19 2ND-DIVERSIFY-SENT; P2 pareto=3 CRITICAL-SHRINK; P4 pareto=5 oscillation; P5 RECOVERING; WebSearch: arXiv:2605.03816 Venn-Abers |
 | 157 | 2026-05-24T08h | ODD | S14 NEW-BEST-0.22054 RF-48f; S13 CatBoost-0.21992 1ST-DETECT; S22 stag=21 DIVERSIFY-SENT; P4 MAJOR-RECOVERY pareto=14; P5 CRITICAL-SHRINK pareto=3; P1 pareto_best=0.24902 2ND-CONFIRM |
 | 156 | 2026-05-24T04h | EVEN | P1 NEW POL ALL-TIME pareto_best=0.24902 1ST-DETECT; P4 pareto=5; S15 stable |
@@ -214,7 +215,6 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 | 152 | 2026-05-23T10h | EVEN | S18 SSL resolved; various monitoring |
 | 151 | 2026-05-23T06h | ODD | P4 oscillation start |
 | 150 | 2026-05-23T02h | EVEN | Diversify format confirmed; P5 checkpoint |
-| 149 | 2026-05-22T22h | ODD | P2 pareto recovery start |
 
 ---
 
