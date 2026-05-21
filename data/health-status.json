@@ -1,192 +1,146 @@
 {
-  "fire": 158,
-  "cycle_parity": "EVEN",
-  "timestamp": "2026-05-24T12:00:00Z",
-  "nba_fleet_best_brier": 0.22012,
-  "nba_fleet_best_island": "S15",
-  "nba_threshold": 0.22085,
-  "nba_threshold_crossed": false,
-  "nba_s14_below_threshold": {
-    "island": "S14",
-    "space": "Nomos42/nba-evo-5",
-    "brier": 0.22054,
-    "model": "random_forest",
-    "features": 48,
-    "generation": 1345,
-    "cycle": 495,
-    "fires_confirmed": 2,
-    "note": "BELOW 0.22085 threshold CONFIRMED fire-157+158. RF-48f. VM checkpoint URGENT."
-  },
-  "nba_s13_top_candidate": {
-    "island": "S13",
-    "space": "Nomos42/nba-evo-4",
-    "candidate_brier": 0.21992,
-    "model": "catboost",
-    "features": 200,
-    "generation": 2831,
-    "observe_fire": 2,
-    "current_pareto_size": 12,
-    "note": "2ND-FIRE-MONITORING: CatBoost-200f-0.21992 still in pareto (pareto=12↑11→12). best_brier field unchanged 0.22216 (field-lag confirmed). VM CHECKPOINT EXTREME URGENT before eviction."
-  },
-  "nba_s18_new_pareto_best": {
-    "island": "S18",
-    "space": "TESTforge42/nba-evo-s18",
-    "pareto_best_brier": 0.22197,
-    "model": "catboost",
-    "features": 200,
-    "generation": 1346,
-    "roi": 0.3032,
-    "sharpe": 5.2727,
-    "observe_fire": 1,
-    "note": "1ST-DETECT fire-158. New S18 pareto_best (prev was RF). Above 0.22085 threshold but new record. VM checkpoint URGENT."
-  },
-  "diversify_sent": true,
-  "diversify_islands": [
-    "S22"
-  ],
-  "diversify_fire": 158,
-  "diversify_reason": "S22 stagnation=19 > threshold=15. Fire-157 diversify did NOT clear (stag dropped 21→19, not 0). 2nd send fire-158.",
-  "all_stag_zero": false,
-  "stag_islands": [
-    {
-      "island": "S22",
-      "stag": 19,
-      "action": "diversify-sent-fire158 (2nd send)"
-    }
-  ],
-  "nba_tf_status": "503-DOWN",
-  "nba_tf_down_days": 33,
-  "pol_tf_status": "IDLE",
-  "pol_tf_bankroll_usd": 38916,
-  "pol_tf_idle_days": 27,
-  "councils_status": "DECOMMISSIONED-2026-04-20",
-  "sota_websearch_fire158": {
-    "date": "2026-05-24T12h",
-    "new_findings": [
-      "arXiv:2605.03816 Manokhin Probability Matrix: CatBoost wins 26/30 Brier-score datasets. XGBoost/LightGBM=Bulls (poor calibration, fixable with Venn-Abers). CatBoost=Eagle (good calibration + discrimination).",
-      "Venn-Abers calibration wrapper for XGBoost/LightGBM: could meaningfully reduce Brier on political islands (P1/P2 both use xgboost_brier as best_model). Proposal written.",
-      "MDPI Jan 2026: NBA uncertainty-aware RNN+MC-dropout Brier~0.20 (16th confirm)"
-    ],
-    "lightgbm_calibration_note": "XGBoost and LightGBM have POOR calibration vs CatBoost. Venn-Abers is the recommended fix. This explains why CatBoost dominates pareto fronts across NBA and POL islands despite lower raw accuracy."
-  },
-  "islands": {
+  "fire": 160,
+  "timestamp": "2026-05-24T20:00:00Z",
+  "parity": "EVEN",
+  "nba_islands": {
     "S13": {
-      "space": "Nomos42/nba-evo-4",
-      "cycle": 974,
-      "generation": 2921,
-      "best_brier": 0.22216,
-      "stagnation": 0,
-      "pareto_size": 12,
-      "best_model": "xgboost_brier",
-      "num_features": 47,
-      "status": "UP",
-      "delta_vs_fire157": "cycle+29 gen+86 pareto=11→12(slight-gain) stag=0",
-      "top_candidate_brier": 0.21992,
-      "top_candidate_model": "catboost",
-      "top_candidate_features": 200,
-      "top_candidate_generation": 2831,
-      "top_candidate_fires": 2,
-      "notes": "CatBoost-200f-0.21992 gen=2831 2ND-FIRE in pareto. Field-lag: best_brier still 0.22216. EXTREME URGENT VM checkpoint before eviction."
+      "status": "404-DOWN",
+      "note": "sleeping/crashed fire-160",
+      "last_known_cycle": 974,
+      "last_known_gen": 2921,
+      "last_known_stag": 0,
+      "last_known_pareto": 12,
+      "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (POTENTIAL NEW FLEET BEST)",
+      "alert": "EXTREME URGENT: CatBoost-0.21992 < 0.22012 fleet-best — VM wake + checkpoint IMMEDIATELY"
     },
     "S14": {
-      "space": "Nomos42/nba-evo-5",
-      "cycle": 495,
-      "generation": 1483,
-      "best_brier": 0.22054,
-      "stagnation": 0,
-      "pareto_size": 6,
-      "best_model": "random_forest",
-      "num_features": 48,
-      "status": "UP",
-      "delta_vs_fire157": "cycle+25 gen+75 pareto=9→6(normal-pruning) stag=0 brier=0.22054(stable)",
-      "notes": "BELOW 0.22085 threshold CONFIRMED (RF-48f gen=1345). Stable. VM checkpoint URGENT."
+      "status": "404-DOWN",
+      "note": "sleeping/crashed fire-160",
+      "last_known_cycle": 495,
+      "last_known_gen": 1483,
+      "last_known_stag": 0,
+      "last_known_pareto": 6,
+      "last_known_best_brier": 0.22054,
+      "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 threshold confirmed 2nd fire — VM wake + checkpoint"
     },
     "S15": {
-      "space": "Nomos42/nba-evo-6",
-      "cycle": 2224,
-      "generation": 6672,
-      "best_brier": 0.22012,
-      "stagnation": 0,
-      "pareto_size": 13,
-      "best_model": "random_forest",
-      "num_features": 75,
-      "status": "UP",
-      "delta_vs_fire157": "cycle+17 gen+53 pareto=13(stable) stag=0",
-      "notes": "FLEET BEST 0.22012★ stable. RF-75f. Pareto=13 stable. vm-checkpoint-s15 still URGENT."
+      "status": "404-DOWN",
+      "note": "sleeping/crashed fire-160",
+      "last_known_cycle": 2224,
+      "last_known_gen": 6672,
+      "last_known_stag": 0,
+      "last_known_pareto": 13,
+      "last_known_best_brier": 0.22012,
+      "alert": "URGENT: fleet-best RF-0.22012 sleeping — VM wake + checkpoint"
     },
     "S17": {
-      "space": "LBJLincoln26/nba-evo-s17",
-      "cycle": null,
-      "generation": null,
-      "best_brier": null,
-      "stagnation": null,
-      "pareto_size": null,
-      "status": "DOWN-503",
-      "down_days": 113,
-      "notes": "VM restart required — 113+ days down."
+      "status": "503-DOWN",
+      "note": "PAUSED 114+d"
     },
     "S18": {
-      "space": "TESTforge42/nba-evo-s18",
-      "cycle": 450,
-      "generation": 1350,
+      "status": "UP",
+      "cycle": 489,
+      "generation": 1466,
       "best_brier": 0.22236,
       "stagnation": 0,
-      "pareto_size": 14,
-      "pareto_best_brier": 0.22197,
-      "pareto_best_model": "catboost",
-      "pareto_best_features": 200,
-      "pareto_best_generation": 1346,
-      "pareto_best_fires": 1,
-      "best_model": "random_forest",
-      "num_features": 44,
-      "status": "UP",
-      "delta_vs_fire157": "cycle+30 gen+90 pareto=14(stable) stag=0 NEW-pareto_best=CatBoost-0.22197-1ST-DETECT",
-      "notes": "NEW S18 PARETO BEST: CatBoost-200f-0.22197 gen=1346 (1ST-DETECT). Above 0.22085 threshold but new S18 record. VM checkpoint URGENT."
+      "pareto_front_size": 15,
+      "best_model_type": "random_forest",
+      "best_features": 44,
+      "delta_cycle": "+39 since fire-158",
+      "delta_pareto": "14->15 (growing)",
+      "pareto_best_candidate": "CatBoost-0.22197 gen=1346 (field-lag, 2nd fire)",
+      "note": "Healthy. last_update field stale (2026-05-21 — app bug). VM checkpoint needed."
     },
     "S22": {
-      "space": "TESTforge42/nba-evo-s22",
-      "cycle": 373,
-      "generation": 1119,
+      "status": "UP",
+      "cycle": 402,
+      "generation": 1206,
       "best_brier": 0.22124,
-      "stagnation": 19,
-      "pareto_size": null,
-      "best_model": "random_forest",
-      "num_features": 48,
-      "status": "UP-STAGNATING",
-      "diversify_sent": true,
-      "diversify_sent_at": "2026-05-24T12:00:00Z",
-      "diversify_fires": [157, 158],
-      "delta_vs_fire157": "cycle+23 gen+69 stag=21→19(did-NOT-clear! 2nd-diversify-sent)",
-      "notes": "STAGNATION 19 > threshold 15. Fire-157 diversify reduced stag 21→19 but did NOT clear. 2nd DIVERSIFY SENT fire-158. Persistent RF-48f/LR convergence. vm-checkpoint-s22 URGENT before diversify resets."
+      "stagnation": 0,
+      "best_model_type": "random_forest",
+      "best_features": 48,
+      "delta_cycle": "+29 since fire-158",
+      "stag_event": "CLEARED 19->0 DIVERSIFY-SUCCESS fire-160",
+      "note": "Stagnation resolved. VM checkpoint needed post-diversify."
     }
   },
-  "alerts": [
-    "S13 CatBoost-200f-0.21992 gen=2831 2ND-FIRE in pareto — VM-CHECKPOINT EXTREME URGENT (field-lag confirmed)",
-    "S14 brier=0.22054 < 0.22085 threshold CONFIRMED 2nd fire — VM-CHECKPOINT URGENT",
-    "S22 stagnation=19>15, 2nd diversify sent fire-158 (fire-157 did not clear)",
-    "S18 NEW pareto_best CatBoost-0.22197 gen=1346 1ST-DETECT — VM-CHECKPOINT URGENT",
-    "S15 FLEET BEST 0.22012★ stable pareto=13",
-    "P2 CRITICAL SHRINK pareto 8→3 — pareto_best LightGBM-123f at eviction risk",
-    "P4 CRITICAL SHRINK pareto 14→5 (oscillation: fire-156=5, fire-157=14, fire-158=5) — pareto_best=0.24915 INTACT",
-    "P5 RECOVERING pareto 3→6 (positive trend)",
-    "P1 pareto_best=0.24902 LightGBM-105f ALL-TIME POL RECORD intact (pareto=5)",
-    "SOTA-NEW: arXiv:2605.03816 CatBoost wins 26/30 Brier datasets — validates fleet CatBoost preference",
-    "Venn-Abers calibration for XGB/LightGBM could improve Brier on P1/P2 (research proposal written)"
+  "pol_islands": {
+    "P1": {
+      "status": "404-DOWN",
+      "note": "sleeping fire-160",
+      "last_known_pareto": 5,
+      "last_known_pareto_best": 0.24902,
+      "pareto_best_model": "LightGBM-105f gen=17750",
+      "alert": "EXTREME URGENT: ALL-TIME RECORD pareto_best=0.24902 — VM wake + checkpoint NOW"
+    },
+    "P2": {
+      "status": "404-DOWN",
+      "note": "sleeping fire-160",
+      "last_known_pareto": 3,
+      "last_known_pareto_best": 0.249,
+      "pareto_best_model": "LightGBM-123f",
+      "alert": "CRITICAL: pareto=3 CRITICAL-SHRINK, at eviction risk — VM wake + checkpoint + add LightGBM"
+    },
+    "P4": {
+      "status": "404-DOWN",
+      "note": "sleeping fire-160",
+      "last_known_best_brier": 0.2497,
+      "last_known_pareto": 5,
+      "last_known_pareto_best": 0.24915,
+      "pareto_best_model": "LightGBM-131f",
+      "alert": "POL FLEET BEST — VM wake + checkpoint"
+    },
+    "P5": {
+      "status": "404-DOWN",
+      "note": "sleeping fire-160",
+      "last_known_pareto": 6,
+      "last_known_best_brier": 0.24993,
+      "trend": "RECOVERING (3->6 fire-158)",
+      "alert": "RECOVERING — VM wake + checkpoint"
+    },
+    "P7": {
+      "status": "404-DOWN",
+      "note": "sleeping fire-160",
+      "last_known_pareto": 7,
+      "last_known_best_brier": 0.24931,
+      "pareto_best_model": "LightGBM-112f",
+      "alert": "stable — VM wake + checkpoint"
+    }
+  },
+  "fleet_best": {
+    "nba": 0.22012,
+    "nba_source": "S15 RF-75f (confirmed)",
+    "nba_pareto_candidate": "S13 CatBoost-0.21992 (UNCONFIRMED — sleeping)",
+    "pol": 0.2497,
+    "pol_source": "P4 LightGBM-131f (confirmed)"
+  },
+  "stagnation_summary": {
+    "S13": "0 (last known)",
+    "S14": "0 (last known)",
+    "S15": "0 (last known)",
+    "S18": "0 (live)",
+    "S22": "0 CLEARED fire-160 (was 19)",
+    "P1": "0 (last known)",
+    "P2": "0 (last known)",
+    "P4": "0 (last known)",
+    "P5": "0 (last known)",
+    "P7": "0 (last known)"
+  },
+  "actions_taken_fire160": [
+    "No diversify commands needed (all stag=0)",
+    "S22 stag-cleared monitoring item marked done in work-queue",
+    "LSTM+Brier-loss research proposal written (arXiv:2508.02725)",
+    "health-status.json written",
+    "CLAUDE.md fire log updated"
   ],
-  "pending_vm_actions": [
-    "vm-checkpoint-s13: EXTREME URGENT — CatBoost-200f-0.21992 POTENTIAL NEW FLEET BEST (2nd fire in pareto)",
-    "vm-checkpoint-s14: URGENT — brier=0.22054 confirmed below threshold (RF-48f)",
-    "vm-checkpoint-s22: EXTREME URGENT — 2nd diversify sent, capture pareto before reset",
-    "vm-checkpoint-s18: URGENT — NEW pareto_best CatBoost-0.22197 1ST-DETECT",
-    "vm-checkpoint-s15: RF-75f fleet best 0.22012★",
-    "vm-checkpoint-p1: EXTREME URGENT — ALL-TIME POL RECORD 0.24902 LightGBM-105f",
-    "vm-checkpoint-p2: URGENT — pareto CRITICAL SHRINK 8→3 (export before eviction)",
-    "vm-checkpoint-p4: pareto oscillation 14→5 (export LightGBM-131f-0.24915)",
-    "vm-checkpoint-p5: pareto recovering 3→6 (export LightGBM-66f-0.249)",
-    "vm-add-lightgbm-p1-p2: CRITICAL — all 5 POL islands LightGBM=pareto_best",
-    "vm-remove-stacking-s13-s14-s15-s22: Rule#8 violations",
-    "vm-restart-s17: 113+ days",
-    "vm-restart-political-data-crons"
+  "vm_priority_queue": [
+    "1. Wake S13 + checkpoint (CatBoost-0.21992 potential fleet-best EXTREME URGENT)",
+    "2. Wake P1 + checkpoint (pareto_best=0.24902 ALL-TIME RECORD EXTREME URGENT)",
+    "3. Wake S14 + checkpoint (RF-0.22054 below threshold)",
+    "4. Wake S15 + checkpoint (fleet-best sleeping)",
+    "5. Wake all POL (P2 CRITICAL-SHRINK pareto=3)",
+    "6. Checkpoint S18 + S22 (both UP)",
+    "7. Restart political data crons"
   ],
-  "engine_parity": "MISMATCH confirmed (mon-ipad 523,050 chars vs nomos-nba-agent 468,146 chars, delta=54KB)"
+  "websearch_fire160": "arXiv:2508.02725 LSTM+Brier-loss NCAA=0.1589 (best calibration vs Transformer-BCE AUC=0.8473) — research-proposal written"
 }
