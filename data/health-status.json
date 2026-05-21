@@ -1,21 +1,21 @@
 {
-  "fire": 160,
-  "timestamp": "2026-05-24T20:00:00Z",
-  "parity": "EVEN",
+  "fire": 161,
+  "timestamp": "2026-05-25T00:00:00Z",
+  "parity": "ODD",
   "nba_islands": {
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping/crashed fire-160",
+      "note": "sleeping/crashed fire-161 (unchanged)",
       "last_known_cycle": 974,
       "last_known_gen": 2921,
       "last_known_stag": 0,
       "last_known_pareto": 12,
-      "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (POTENTIAL NEW FLEET BEST)",
+      "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (POTENTIAL NEW FLEET BEST <0.22012)",
       "alert": "EXTREME URGENT: CatBoost-0.21992 < 0.22012 fleet-best — VM wake + checkpoint IMMEDIATELY"
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping/crashed fire-160",
+      "note": "sleeping/crashed fire-161 (unchanged)",
       "last_known_cycle": 495,
       "last_known_gen": 1483,
       "last_known_stag": 0,
@@ -25,7 +25,7 @@
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "sleeping/crashed fire-160",
+      "note": "sleeping/crashed fire-161 (unchanged)",
       "last_known_cycle": 2224,
       "last_known_gen": 6672,
       "last_known_stag": 0,
@@ -35,39 +35,51 @@
     },
     "S17": {
       "status": "503-DOWN",
-      "note": "PAUSED 114+d"
+      "note": "PAUSED 115+d"
     },
     "S18": {
       "status": "UP",
-      "cycle": 489,
-      "generation": 1466,
+      "cycle": 514,
+      "generation": 1541,
       "best_brier": 0.22236,
       "stagnation": 0,
-      "pareto_front_size": 15,
+      "pareto_front_size": 9,
       "best_model_type": "random_forest",
       "best_features": 44,
-      "delta_cycle": "+39 since fire-158",
-      "delta_pareto": "14->15 (growing)",
-      "pareto_best_candidate": "CatBoost-0.22197 gen=1346 (field-lag, 2nd fire)",
-      "note": "Healthy. last_update field stale (2026-05-21 — app bug). VM checkpoint needed."
+      "delta_cycle": "+25 since fire-160",
+      "delta_pareto": "15->9 PARETO SHRINK!",
+      "top_performer": {
+        "model": "RF-200f",
+        "brier": 0.22031,
+        "generation": 1494,
+        "island_id": 0,
+        "significance": "BELOW 0.22085 THRESHOLD — CHECKPOINT EXTREME URGENT"
+      },
+      "pareto_best_candidate_fire158": "CatBoost-0.22197 gen=1346 — EVICTION RISK (pareto 15->9)",
+      "alert": "EXTREME URGENT: RF-200f top_performer brier=0.22031 < 0.22085 threshold. Pareto shrink 15->9 — CatBoost-0.22197 eviction risk. VM: curl S18/api/export IMMEDIATELY.",
+      "note": "last_update field stale (app bug). Healthy evolving."
     },
     "S22": {
       "status": "UP",
-      "cycle": 402,
-      "generation": 1206,
+      "cycle": 417,
+      "generation": 1250,
       "best_brier": 0.22124,
       "stagnation": 0,
       "best_model_type": "random_forest",
       "best_features": 48,
-      "delta_cycle": "+29 since fire-158",
+      "delta_cycle": "+15 since fire-160",
+      "pareto_front_size_approx": "~17 (from log gen=1101)",
+      "cycle_stag_counter": 14,
+      "cycle_stag_alert": "WARNING: cycle-stag=14, threshold=15. Next fire may trigger diversify if no improvement.",
+      "active_model_in_log": "logistic_regression (Pareto=17 gen=1101)",
       "stag_event": "CLEARED 19->0 DIVERSIFY-SUCCESS fire-160",
-      "note": "Stagnation resolved. VM checkpoint needed post-diversify."
+      "note": "Healthy. LR model becoming dominant. Watching cycle-stag (14/15)."
     }
   },
   "pol_islands": {
     "P1": {
       "status": "404-DOWN",
-      "note": "sleeping fire-160",
+      "note": "sleeping fire-161 (unchanged)",
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24902,
       "pareto_best_model": "LightGBM-105f gen=17750",
@@ -75,7 +87,7 @@
     },
     "P2": {
       "status": "404-DOWN",
-      "note": "sleeping fire-160",
+      "note": "sleeping fire-161 (unchanged)",
       "last_known_pareto": 3,
       "last_known_pareto_best": 0.249,
       "pareto_best_model": "LightGBM-123f",
@@ -83,7 +95,7 @@
     },
     "P4": {
       "status": "404-DOWN",
-      "note": "sleeping fire-160",
+      "note": "sleeping fire-161 (unchanged)",
       "last_known_best_brier": 0.2497,
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24915,
@@ -92,7 +104,7 @@
     },
     "P5": {
       "status": "404-DOWN",
-      "note": "sleeping fire-160",
+      "note": "sleeping fire-161 (unchanged)",
       "last_known_pareto": 6,
       "last_known_best_brier": 0.24993,
       "trend": "RECOVERING (3->6 fire-158)",
@@ -100,7 +112,7 @@
     },
     "P7": {
       "status": "404-DOWN",
-      "note": "sleeping fire-160",
+      "note": "sleeping fire-161 (unchanged)",
       "last_known_pareto": 7,
       "last_known_best_brier": 0.24931,
       "pareto_best_model": "LightGBM-112f",
@@ -109,38 +121,45 @@
   },
   "fleet_best": {
     "nba": 0.22012,
-    "nba_source": "S15 RF-75f (confirmed)",
-    "nba_pareto_candidate": "S13 CatBoost-0.21992 (UNCONFIRMED — sleeping)",
+    "nba_source": "S15 RF-75f (confirmed, sleeping)",
+    "nba_pareto_candidates": [
+      "S13 CatBoost-0.21992 (UNCONFIRMED — sleeping, EXTREME URGENT)",
+      "S18 RF-200f-0.22031 gen=1494 (NEW fire-161 top_performer, BELOW THRESHOLD, VM export needed)"
+    ],
     "pol": 0.2497,
-    "pol_source": "P4 LightGBM-131f (confirmed)"
+    "pol_source": "P4 LightGBM-131f (confirmed, sleeping)"
   },
   "stagnation_summary": {
-    "S13": "0 (last known)",
-    "S14": "0 (last known)",
-    "S15": "0 (last known)",
-    "S18": "0 (live)",
-    "S22": "0 CLEARED fire-160 (was 19)",
-    "P1": "0 (last known)",
-    "P2": "0 (last known)",
-    "P4": "0 (last known)",
-    "P5": "0 (last known)",
-    "P7": "0 (last known)"
+    "S13": "0 (last known, sleeping)",
+    "S14": "0 (last known, sleeping)",
+    "S15": "0 (last known, sleeping)",
+    "S18": "0 (live) — cycle-stag not tracked",
+    "S22": "0 (live) — cycle-stag=14 WARNING (threshold=15)",
+    "P1": "0 (last known, sleeping)",
+    "P2": "0 (last known, sleeping)",
+    "P4": "0 (last known, sleeping)",
+    "P5": "0 (last known, sleeping)",
+    "P7": "0 (last known, sleeping)"
   },
-  "actions_taken_fire160": [
-    "No diversify commands needed (all stag=0)",
-    "S22 stag-cleared monitoring item marked done in work-queue",
-    "LSTM+Brier-loss research proposal written (arXiv:2508.02725)",
-    "health-status.json written",
-    "CLAUDE.md fire log updated"
+  "actions_taken_fire161": [
+    "S18 new top_performer RF-200f-0.22031 DETECTED — BELOW 0.22085 THRESHOLD → vm-checkpoint-s18-rf-0.22031-fire161 added (EXTREME URGENT priority=1)",
+    "S18 pareto shrink 15->9 DETECTED — CatBoost-0.22197 eviction risk flagged",
+    "S22 cycle-stag=14 NOTED — 1 cycle below diversify threshold (15)",
+    "All POL 404-DOWN confirmed (no change from fire-160)",
+    "No diversify commands sent (S18 stag=0, S22 stag=0)",
+    "health-status.json updated (fire-161)",
+    "work-queue.json updated (fire-161)",
+    "CLAUDE.md fire log updated (fire-161)",
+    "ODD fire: no WebSearch"
   ],
   "vm_priority_queue": [
-    "1. Wake S13 + checkpoint (CatBoost-0.21992 potential fleet-best EXTREME URGENT)",
-    "2. Wake P1 + checkpoint (pareto_best=0.24902 ALL-TIME RECORD EXTREME URGENT)",
-    "3. Wake S14 + checkpoint (RF-0.22054 below threshold)",
-    "4. Wake S15 + checkpoint (fleet-best sleeping)",
-    "5. Wake all POL (P2 CRITICAL-SHRINK pareto=3)",
-    "6. Checkpoint S18 + S22 (both UP)",
-    "7. Restart political data crons"
-  ],
-  "websearch_fire160": "arXiv:2508.02725 LSTM+Brier-loss NCAA=0.1589 (best calibration vs Transformer-BCE AUC=0.8473) — research-proposal written"
+    "1. S18 export NOW — RF-200f-0.22031 BELOW THRESHOLD + pareto shrink 15->9 + CatBoost-0.22197 eviction risk (vm-checkpoint-s18-rf-0.22031-fire161)",
+    "2. Wake S13 + checkpoint — CatBoost-0.21992 potential fleet-best EXTREME URGENT",
+    "3. Wake P1 + checkpoint — pareto_best=0.24902 ALL-TIME RECORD EXTREME URGENT",
+    "4. Wake S14 + checkpoint — RF-0.22054 below threshold",
+    "5. Wake S15 + checkpoint — fleet-best sleeping",
+    "6. Wake all POL (P2 CRITICAL-SHRINK pareto=3 eviction risk)",
+    "7. S22 checkpoint + watch cycle-stag (at 14, threshold=15)",
+    "8. Restart political data crons"
+  ]
 }
