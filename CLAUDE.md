@@ -1,10 +1,10 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-26T00h
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-26T04h
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22012 (S15 nba-evo-6 fire-61 ★CHECKPOINT) | GA prev alltime: 0.22019 (S14 gen=1078) | ⚡Pareto fleet best: 0.21841 extra_trees S15 gen=566 fire-66 (prev 0.21850 CatBoost S22 gen=2309) | ⚠ S18 0.21924 candidate LOST — hard resets cycles 251/276 before checkpoint (2026-05-06T00h) | ⚠ fire-97 RF 0.21941 gen=2689 NOT confirmed (best_brier unchanged 0.22012) | ⚡⚡ fire-98: S18 extra_trees 0.21842 200f gen=6549 + S15 CatBoost 0.21881 200f gen=2698 PENDING VALIDATION (best_brier field lag confirmed pattern) | fire-99: S14 RECOVERED ssl-cleared hard-reset-803 stacking-violation-new; S13 stag=23+S15 stag=24 DIVERSIFIED; P2 0.24901 + P7 0.24904 POL candidates (PENDING VAL); convergent 0.249 signal P2+P4+P5+P7 | fire-101: S13 FRESH RESTART cycle=21 (hard-reset-2055 ✓); S15 stag cleared cycle=954; S18 stag=16 DIVERSIFY SENT; all POL UP stag=0; P2 0.24901 2nd fire; P5 LightGBM 0.249 4th fire | fire-109: S13 stag CLEARED 8→0 cycle=198; S14 hard-reset-978; S15 0.22012 ★ stable gen=3227; all POL UP stag=0; P7 FIELD-LAG 6+ fires vm-diversify-p7-fire109 URGENT; P4 in-pop | fire-160: S22-stag-CLEARED(19→0)-DIVERSIFY-SUCCESS c402 g1206; S18-c489-pareto=15(↑14→15) c489 g1466; S13/S14/S15 404-DOWN(sleeping); all-POL 404-DOWN(sleeping); EVEN arXiv:2508.02725 LSTM+Brier-loss-NCAA=0.1589-research-proposal-written | fire-162: S13-403-FORBIDDEN(was-404-fire-161)-POSSIBLY-WAKING-CatBoost-0.21992-EXTREME-URGENT; S18-c541-pareto=13(↑9↑13-RECOVERING); S22-c438-hard-reset-c428-rapid-cycling; all-POL-404-DOWN; EVEN PMC12357926-NBA-stacked-83.27%-AUC=0.9213-features:2PA/FG/TRB/FGA | fire-164: S13-BACK-404(403-transient-fire162/163-WAKING-FAILED); S14/S15-404-DOWN(sleeping); S18-c561-pareto=12(↓13→12-slight-shrink); S22-c452-pareto=16(↑13→16-RECOVERING!)-internal-stag-cycles=23; all-POL-404-DOWN(sleeping); ODD-no-WebSearch | fire-165: S13/S14/S15-404-DOWN(sleeping); S18-c582-g1745-stag=0-pareto=10(↓12→10-3rd-consecutive-shrink-CATBOOST-0.22197-EVICTION-RISK-ELEVATED); S22-c465-g1395-stag=0-pareto=20(↑16→20-GROWING!)-RULE8-VIOLATION(stacking-reintroduced-hard-reset-c453-VM-FIX-URGENT-before-~c478); all-POL-404-DOWN; no-stagnation-commands-needed; ODD-no-WebSearch; health-status.json+work-queue.json+CLAUDE.md updated (2026-05-25T16h) | fire-166: S18-c608-g1824-stag=0-pareto=7(↓10→7-4TH-CONSECUTIVE-SHRINK)-hard-reset-c600(stag=25-triggered)-last-update-3d-stale; S22-c479-g1435-stag=0-pareto=10(↓20→10-MAJOR-DROP)-hard-reset-c478-CONFIRMED(Rule8-stacking-NOT-fixed-VIOLATED-AGAIN); S13/S14/S15-404-DOWN; all-POL-404-DOWN; EVEN: MDPI/2078-2489/17/1/56-MC-dropout-RNN-pregame-Brier=0.206-proposal-written; health-status.json+work-queue.json+CLAUDE.md updated (2026-05-25T20h) | fire-167: Axelrod-verify-pass: SHAs-NBA-19f4acf49d(5993L)/POL-3496362c60(3977L)-UNCHANGED-vs-fire-163; 13/13-parity-OK; C→B→A-confirmed(NBA-L5056/5065/5073-POL-L3246/3255/3263); KL-div-ε-smoothed-self-excluded-OK; AXELROD_ARCHETYPES-NBA-20-sports/POL-20-political-domain-specific-OK; Mech-B+C-BLOCKED(do_not_push_hf_space_yet+NBA-503-116+d+POL-IDLE-28+d); all-NBA/POL-404-DOWN(sleeping) (2026-05-26T00h)
+**Best:** Brier 0.21139 walk-forward holdout / 0.22169 CV / 0.22054 isotonic-calibrated (Colab TabICL, 186f top-by-variance from 4581 alive of 7246 engine cols, ctx=3072 temp=1.0, 11440 games, promoted to LBJLincoln26/nba-oracle-model 2026-04-28T00:34Z, archive `colab-multi-tabicl-2026-04-28T00-34-04Z.pkl`). Beat 4581f xgboost holdout 0.22079 / lightgbm 0.22181 in same 3-way comparison. ⚠ All 3 models show negative CV→holdout gap (~−0.01) → holdout 0.21139 is window-biased; honest production-Brier expectation is CV 0.22169 / calibrated 0.22054. Stratified-by-month re-cut queued. NBA TF watchdog gate "<0.21 model lands" NOT met → watchdog stays disabled. | Fleet best: 0.22012 (S15 nba-evo-6 fire-61 ★CHECKPOINT) | GA prev alltime: 0.22019 (S14 gen=1078) | ⚡Pareto fleet best: 0.21841 extra_trees S15 gen=566 fire-66 (prev 0.21850 CatBoost S22 gen=2309) | ⚠ S18 0.21924 candidate LOST — hard resets cycles 251/276 before checkpoint (2026-05-06T00h) | ⚠ fire-97 RF 0.21941 gen=2689 NOT confirmed (best_brier unchanged 0.22012) | ⚡⚡ fire-98: S18 extra_trees 0.21842 200f gen=6549 + S15 CatBoost 0.21881 200f gen=2698 PENDING VALIDATION (best_brier field lag confirmed pattern) | fire-99: S14 RECOVERED ssl-cleared hard-reset-803 stacking-violation-new; S13 stag=23+S15 stag=24 DIVERSIFIED; P2 0.24901 + P7 0.24904 POL candidates (PENDING VAL); convergent 0.249 signal P2+P4+P5+P7 | fire-101: S13 FRESH RESTART cycle=21 (hard-reset-2055 ✓); S15 stag cleared cycle=954; S18 stag=16 DIVERSIFY SENT; all POL UP stag=0; P2 0.24901 2nd fire; P5 LightGBM 0.249 4th fire | fire-109: S13 stag CLEARED 8→0 cycle=198; S14 hard-reset-978; S15 0.22012 ★ stable gen=3227; all POL UP stag=0; P7 FIELD-LAG 6+ fires vm-diversify-p7-fire109 URGENT; P4 in-pop | fire-160: S22-stag-CLEARED(19→0)-DIVERSIFY-SUCCESS c402 g1206; S18-c489-pareto=15(↑14→15) c489 g1466; S13/S14/S15 404-DOWN(sleeping); all-POL 404-DOWN(sleeping); EVEN arXiv:2508.02725 LSTM+Brier-loss-NCAA=0.1589-research-proposal-written | fire-162: S13-403-FORBIDDEN(was-404-fire-161)-POSSIBLY-WAKING-CatBoost-0.21992-EXTREME-URGENT; S18-c541-pareto=13(↑9↑13-RECOVERING); S22-c438-hard-reset-c428-rapid-cycling; all-POL-404-DOWN; EVEN PMC12357926-NBA-stacked-83.27%-AUC=0.9213-features:2PA/FG/TRB/FGA | fire-164: S13-BACK-404(403-transient-fire162/163-WAKING-FAILED); S14/S15-404-DOWN(sleeping); S18-c561-pareto=12(↓13→12-slight-shrink); S22-c452-pareto=16(↑13→16-RECOVERING!)-internal-stag-cycles=23; all-POL-404-DOWN(sleeping); ODD-no-WebSearch | fire-165: S13/S14/S15-404-DOWN(sleeping); S18-c582-g1745-stag=0-pareto=10(↓12→10-3rd-consecutive-shrink-CATBOOST-0.22197-EVICTION-RISK-ELEVATED); S22-c465-g1395-stag=0-pareto=20(↑16→20-GROWING!)-RULE8-VIOLATION(stacking-reintroduced-hard-reset-c453-VM-FIX-URGENT-before-~c478); all-POL-404-DOWN; no-stagnation-commands-needed; ODD-no-WebSearch; health-status.json+work-queue.json+CLAUDE.md updated (2026-05-25T16h) | fire-166: S18-c608-g1824-stag=0-pareto=7(↓10→7-4TH-CONSECUTIVE-SHRINK)-hard-reset-c600(stag=25-triggered)-last-update-3d-stale; S22-c479-g1435-stag=0-pareto=10(↓20→10-MAJOR-DROP)-hard-reset-c478-CONFIRMED(Rule8-stacking-NOT-fixed-VIOLATED-AGAIN); S13/S14/S15-404-DOWN; all-POL-404-DOWN; EVEN: MDPI/2078-2489/17/1/56-MC-dropout-RNN-pregame-Brier=0.206-proposal-written | fire-167: Axelrod-verify-pass: SHAs-NBA-19f4acf49d(5993L)/POL-3496362c60(3977L)-UNCHANGED-vs-fire-163; 13/13-parity-OK; C→B→A-confirmed(NBA-L5056/5065/5073-POL-L3246/3255/3263); KL-div-ε-smoothed-self-excluded-OK; AXELROD_ARCHETYPES-NBA-20-sports/POL-20-political-domain-specific-OK; Mech-B+C-BLOCKED(do_not_push_hf_space_yet+NBA-503-116+d+POL-IDLE-28+d); all-NBA/POL-404-DOWN(sleeping) (2026-05-26T00h) | fire-168: S18-c637-g1909-stag=0-pareto=19(↑7→19-MAJOR-SURGE-RECOVERY!)-best_brier=0.22236-LightGBM-38f-composite-top-field-lag-likely; S22-c492-g1475-stag=0-pareto=10-CRITICAL-next-hard-reset-~c503(Rule8-stacking-STILL-reintroduced-VM-FIX-URGENT); S13/S14/S15-404-DOWN(sleeping); all-POL-404-DOWN(sleeping); EVEN: arXiv:2510.07185-split-conformal-calibration-unsupervised-proposal-written (2026-05-26T04h)
 
 **Political Alpha:** Best: 0.2497 brier (P4 LightGBM-131f, POL fleet best, 2026-05-21★) | P1 pareto_best=0.24902 LightGBM-105f (3RD-OBSERVE fire-158 ALL-TIME RECORD) | P2 pareto=3 CRITICAL-SHRINK (fire-158) | P4 pareto=5 oscillation (5→14→5 fire-156→157→158) | P5 pareto=6 RECOVERING (↑3→6 fire-158) | P7 LightGBM-112f-0.24931 stable
 
@@ -40,8 +40,8 @@ Every 4h: `data/work-queue.json` push from iPad/automation → GitHub Action →
 | S14 | TESTforge42/nba-evo-s14 | 404-DOWN | 0.22054 RF-48f | BELOW THRESHOLD confirmed fire-157+158 — SLEEPING fire-165 |
 | S15 | LBJLincoln26/nba-evo-6 | 404-DOWN | 0.22012★ | FLEET BEST stable gen=6672 pareto=13 — SLEEPING fire-165 |
 | S17 | LBJLincoln26/nba-evo-s17 | 503 DOWN 116+d | — | PAUSED |
-| S18 | TESTforge42/nba-evo-s18 | UP | 0.22236 | pareto=7(↓10→7-4TH-CONSECUTIVE-SHRINK fire-166) stag=0 c608 g1824; hard-reset-c600(stag=25-triggered); last-update-2026-05-22T04h(3d-stale!); CatBoost-0.22197-EXTREME-EVICTION-RISK |
-| S22 | TESTforge42/nba-evo-s22 | UP | 0.22124 | stag=0 c479 g1435; pareto=10(↓20→10-MAJOR-DROP fire-166); hard-reset-c478-CONFIRMED(predicted!); hard-resets-total=3+(c428+c478); ⚠RULE8-VIOLATION-AGAIN stacking-reintroduced-in-c478-reset(VM-fix-URGENT-before-~c503-510) |
+| S18 | TESTforge42/nba-evo-s18 | UP | 0.22236 | pareto=19(↑7→19-MAJOR-SURGE-RECOVERY fire-168) stag=0 c637 g1909; hard-reset-c600(stag=25-triggered); last-update-2026-05-22T08h(4d-stale); LightGBM-38f-composite-top; field-lag-likely |
+| S22 | TESTforge42/nba-evo-s22 | UP | 0.22124 | stag=0 c492 g1475; pareto=10(stable fire-168); hard-reset-c478-CONFIRMED(predicted!); hard-resets-total=3+(c428+c478); ⚠RULE8-VIOLATION-AGAIN stacking-STILL-reintroduced(VM-CRITICAL-fix-before-~c503-IMMINENT) |
 
 ### POL Islands (active)
 | Island | HF Repo | Status | Best Brier | Notes |
@@ -115,10 +115,10 @@ Always `curl /api/export` before any island config change. Never modify a stagna
 - Never diversify without checkpoint first
 
 ### Rule #7 — do_not_push_hf_space_yet
-Do NOT push to HF Spaces (nba-llm-trading-floor, political-llm-trading-floor) until user explicitly approves. NBA TF 503 DOWN 33+d. POL TF IDLE 27+d.
+Do NOT push to HF Spaces (nba-llm-trading-floor, political-llm-trading-floor) until user explicitly approves. NBA TF 503 DOWN 116+d. POL TF IDLE 29+d.
 
 ### Rule #8 — No Stacking
-Remove 'stacking' from MODEL_TYPES on all islands. Stacking causes overfitting. Violations: S13, S14, S15, S22. ⚠ S22 hard-reset at c478 REINTRODUCED stacking AGAIN (3rd violation: c403+c453+c478) — VM must fix config permanently before ~c503-510.
+Remove 'stacking' from MODEL_TYPES on all islands. Stacking causes overfitting. Violations: S13, S14, S15, S22. ⚠ S22 hard-reset at c478 REINTRODUCED stacking AGAIN (3rd violation: c403+c453+c478) — VM must fix config permanently before ~c503 (IMMINENT).
 
 ### Rule #9 — LightGBM First for POL
 All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add LightGBM to MODEL_TYPES on P1+P2 (missing). PORT: vm-add-lightgbm-p1-p2.
@@ -133,14 +133,14 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 
 ### NBA TF
 - Repo: LBJLincoln26/nba-llm-trading-floor
-- Status: 503 DOWN 33+d
+- Status: 503 DOWN 116+d
 - do_not_push_hf_space_yet: TRUE
 - Watchdog gate: "<0.21 model" NOT met
 
 ### POL TF
 - Repo: LBJLincoln26/political-llm-trading-floor
 - Status: IDLE since 2026-05-07
-- P&L: $38,916 (unchanged 27+d)
+- P&L: $38,916 (unchanged 29+d)
 - pol_watchdog.sh: NOT firing
 - do_not_push_hf_space_yet: TRUE
 
@@ -165,22 +165,31 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
    - Proposal: data/research-proposals/sota-venn-abers-calibration-fire158.md
    - Work-queue: vm-add-venn-abers-calibration (priority=32)
 
-2. **Bootstrap Variance Calibration / MC Dropout** for S15 RF-75f
+2. **Split Conformal Calibration** (fire-168 EVEN WebSearch)
+   - arXiv:2510.07185: Split conformal classification with unsupervised calibration
+   - Coverage-guaranteed probability intervals without labeled holdout waste
+   - Library: MAPIE (model-agnostic, scikit-learn compatible)
+   - Target: S18 RF/LightGBM pareto (c637) + S22 RF-48f + S15 RF-75f
+   - Expected improvement: 0.001-0.003 Brier + guaranteed marginal coverage
+   - Proposal: data/research-proposals/sota-split-conformal-calibration-fire168.md
+   - Work-queue: vm-add-split-conformal-calibration (priority=33)
+
+3. **Bootstrap Variance Calibration / MC Dropout** for S15 RF-75f
    - Work-queue: vm-mc-dropout-calibration-s15 (priority=30)
    - EXTENDED fire-166: MDPI/2078-2489/17/1/56 confirms MC dropout RNN pregame Brier=0.206 — apply MC dropout as calibration layer
 
-3. **Win-Diff-Last-5-Games Feature** (MDPI2026 top SHAP)
+4. **Win-Diff-Last-5-Games Feature** (MDPI2026 top SHAP)
    - BLOCKED by engine-parity-sync (priority=40)
    - Work-queue: vm-add-win-diff-5game-feature (priority=35)
 
-4. **Elo Ratings Feature** (IEEE/MDPI 2026 SHAP #1+#2)
+5. **Elo Ratings Feature** (IEEE/MDPI 2026 SHAP #1+#2)
    - BLOCKED by engine-parity-sync (priority=40)
    - Work-queue: vm-add-elo-ratings-engine (priority=60)
 
-5. **SHAP Analysis** S15 RF-75f + S22 RF-48f
+6. **SHAP Analysis** S15 RF-75f + S22 RF-48f
    - Work-queue: vm-shap-feature-analysis-s15 (priority=80)
 
-6. **LSTM + Brier-Loss Sequence Model** (fire-160 EVEN WebSearch)
+7. **LSTM + Brier-Loss Sequence Model** (fire-160 EVEN WebSearch)
    - arXiv:2508.02725: LSTM+Brier-loss achieves 0.1589 Brier on NCAA basketball
    - Transformer-BCE has best AUC (0.8473) but LSTM+Brier-loss has best calibration
    - Rationale: current GA evolves static feature sets; sequence models capture momentum
@@ -188,13 +197,13 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
    - Proposal: data/research-proposals/sota-lstm-brier-loss-fire160.md
    - Work-queue: vm-research-lstm-sequence-model (priority=90)
 
-7. **NBA Stacked Ensemble Feature Importance** (fire-162 EVEN WebSearch)
+8. **NBA Stacked Ensemble Feature Importance** (fire-162 EVEN WebSearch)
    - PMC12357926: NBA stacked ensemble achieves 83.27% acc, AUC=0.9213 on 3,690 NBA games
    - Top SHAP features: 2-point attempts (2PA), field goals made (FG), total rebounds (TRB), field goal attempts (FGA)
    - Note: stacking approach PROHIBITED (Rule#8); feature importance insight actionable for engine-parity-sync
    - Action: verify 2PA/FG rolling-avg variants are in engine.py during engine-parity-sync (priority=40)
 
-8. **Uncertainty-Aware MC Dropout RNN** (fire-166 EVEN WebSearch)
+9. **Uncertainty-Aware MC Dropout RNN** (fire-166 EVEN WebSearch)
    - MDPI Information 2026, 17(1), 56: MC dropout RNN with rolling-form + shot-chart embeddings
    - Pregame Brier: 0.206 (Model A) / 0.216 (Model B) vs our 0.22012 fleet best
    - Monte Carlo dropout provides calibrated uncertainty quantification
@@ -228,16 +237,17 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 
 | Fire | Time | Parity | Key Events |
 |------|------|--------|------------|
+| 168 | 2026-05-26T04h | EVEN | S18-c637-g1909-stag=0-pareto=19(↑7→19-MAJOR-SURGE-RECOVERY!); S22-c492-g1475-stag=0-pareto=10-CRITICAL-next-hard-reset-~c503(Rule8-stacking-STILL-reintroduced); S13/S14/S15-404-DOWN; all-POL-404-DOWN; EVEN: arXiv:2510.07185-split-conformal-calibration-unsupervised-proposal-written |
 | 167 | 2026-05-26T00h | ODD | Axelrod verify pass: SHAs NBA 19f4acf49d(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-163; 13/13 parity OK; C→B→A confirmed (NBA L5056/5065/5073 POL L3246/3255/3263); KL-div ε-smoothed self-excluded OK; AXELROD_ARCHETYPES NBA-20-sports/POL-20-political domain-specific OK; Mech B+C BLOCKED (do_not_push_hf_space_yet+NBA-503-116+d+POL-IDLE-28+d); all-NBA/POL-404-DOWN(sleeping) |
 | 166 | 2026-05-25T20h | EVEN | S18-c608-g1824-stag=0-pareto=7(↓10→7-4TH-CONSECUTIVE-SHRINK)-hard-reset-c600(stag=25-triggered)-last-update-3d-stale; S22-c479-g1435-stag=0-pareto=10(↓20→10-MAJOR-DROP)-hard-reset-c478-CONFIRMED(Rule8-stacking-NOT-fixed-VIOLATED-AGAIN); S13/S14/S15-404-DOWN(sleeping); all-POL-404-DOWN(sleeping); EVEN: MDPI/2078-2489/17/1/56-MC-dropout-RNN-pregame-Brier=0.206-research-proposal-written |
-| 165 | 2026-05-25T16h | ODD | S13/S14/S15-404-DOWN(sleeping); S18-c582-g1745-stag=0-pareto=10(↓12→10-3rd-consecutive-shrink-CATBOOST-0.22197-EVICTION-RISK-ELEVATED); S22-c465-g1395-stag=0-pareto=20(↑16→20-GROWING!)-RULE8-VIOLATION(stacking-reintroduced-hard-reset-c453-VM-FIX-URGENT-before-~c478); all-POL-404-DOWN; ODD-no-WebSearch |
+| 165 | 2026-05-25T16h | ODD | S13/S14/S15-404-DOWN(sleeping); S18-c582-g1745-stag=0-pareto=10(↓12→10-3rd-consecutive-shrink-CATBOOST-0.22197-EVICTION-RISK-ELEVATED); S22-c465-g1395-stag=0-pareto=20(↑16→20-GROWING!)-RULE8-VIOLATION(stacking-reintroduced-hard-reset-c453-VM-FIX-URGENT-before-~c478); all-POL-404-DOWN; no-stagnation-commands-needed; ODD-no-WebSearch |
 | 164 | 2026-05-25T12h | ODD | S13-BACK-404(403-transient-fire162/163-waking-hypothesis-FAILED); S14/S15-404-DOWN(sleeping); S18-c561-g1683-stag=0-pareto=12(↓13→12-slight-shrink); S22-c452-g1355-stag=0-pareto=16(↑13→16-RECOVERING!)-internal-stag-cycles=23; all-POL-404-DOWN(sleeping); ODD-no-WebSearch |
 | 163 | 2026-05-25T08h | ODD | Axelrod verify pass: SHAs NBA 19f4acf49d49(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-161; 13/13 parity OK; C→B→A ordering confirmed; KL-div ε OK; AXELROD_ARCHETYPES domain-specific OK; Mech B+C BLOCKED (do_not_push_hf_space_yet+NBA-503+POL-IDLE) |
-| 162 | 2026-05-25T04h | EVEN | S13 403-FORBIDDEN NEW(was-404-fire-161, possibly-waking! CatBoost-0.21992 EXTREME-URGENT); S18 c541 g1622 stag=0 pareto=13(↑9↑13 RECOVERING); S22 c438 g1312 stag=0 hard-reset-c428(rapid-cycling-2x-36-cycles-post-diversify); all-POL 404-DOWN(sleeping); EVEN: PMC12357926 NBA-stacked-83.27%-acc-AUC=0.9213 features:2PA/FG/TRB/FGA (no-Brier; stacking-Rule#8-prohibited) |
+| 162 | 2026-05-25T04h | EVEN | S13 403-FORBIDDEN NEW(was-404-fire-161, possibly-waking! CatBoost-0.21992 EXTREME-URGENT); S18 c541 g1622 stag=0 pareto=13(↑9↑13 RECOVERING); S22 c438 g1312 stag=0 hard-reset-c428(rapid-cycling-2x-in-36-cycles-post-diversify); all-POL 404-DOWN(sleeping); EVEN: PMC12357926 NBA-stacked-83.27%-acc-AUC=0.9213 features:2PA/FG/TRB/FGA(no-Brier,stacking-Rule#8-prohibited) |
 | 161 | 2026-05-25T00h | ODD | Axelrod verify pass: SHAs NBA 19f4acf49d49(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-159; 13/13 parity OK; C→B→A ordering confirmed; KL-div ε OK; 20-archetype pools domain-specific OK; Mech B+C BLOCKED (do_not_push_hf_space_yet+NBA-503+POL-IDLE) |
 | 160 | 2026-05-24T20h | EVEN | S18 c489 g1466 pareto=15(↑14→15) stag=0; S22 stag-CLEARED(19→0) c402 g1206 DIVERSIFY-SUCCESS; S13/S14/S15 404-DOWN(sleeping); all-POL(P1-P7) 404-DOWN(sleeping); EVEN: arXiv:2508.02725 LSTM+Brier-loss-NCAA=0.1589 research-proposal-written |
 | 159 | 2026-05-24T16h | ODD | Axelrod verify pass: SHAs NBA 19f4acf49d/POL 3496362c60 UNCHANGED vs fire-155; 13/13 parity OK; C→B→A ordering confirmed; KL-div ε OK; 20-archetype pools domain-specific OK; Mech B+C BLOCKED (do_not_push_hf_space_yet+NBA-503+POL-IDLE) |
-| 158 | 2026-05-24T12h | EVEN | S13 CatBoost-0.21992 2ND-FIRE; S14 RF-0.22054 BELOW-THRESHOLD 2ND; S18 NEW-PARETO-BEST CatBoost-0.22197 1ST-DETECT; S22 stag=19 2ND-DIVERSIFY-SENT; P2 pareto=3 CRITICAL-SHRINK; P4 pareto=5 oscillation; P5 RECOVERING; WebSearch: arXiv:2605.03816 Venn-Abers |
+
 ---
 
 ## Glossary

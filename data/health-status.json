@@ -1,11 +1,11 @@
 {
-  "fire": 166,
-  "timestamp": "2026-05-25T20:00:00Z",
+  "fire": 168,
+  "timestamp": "2026-05-26T04:00:00Z",
   "parity": "EVEN",
   "nba_islands": {
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-166). 403-transient fire-162+163 waking hypothesis FAILED. Back to 404.",
+      "note": "sleeping (consistent fire-168). 403-transient fire-162+163 waking hypothesis FAILED. Back to 404.",
       "last_known_cycle": 974,
       "last_known_gen": 2921,
       "last_known_stag": 0,
@@ -15,7 +15,7 @@
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-166)",
+      "note": "sleeping (consistent fire-168)",
       "last_known_cycle": 495,
       "last_known_gen": 1483,
       "last_known_stag": 0,
@@ -25,7 +25,7 @@
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-166)",
+      "note": "sleeping (consistent fire-168)",
       "last_known_cycle": 2224,
       "last_known_gen": 6672,
       "last_known_stag": 0,
@@ -39,28 +39,28 @@
     },
     "S18": {
       "status": "UP",
-      "cycle": 608,
-      "generation": 1824,
+      "cycle": 637,
+      "generation": 1909,
       "best_brier": 0.22236,
       "stagnation": 0,
-      "pareto_front_size": 7,
-      "best_model_type": "random_forest",
-      "best_features": 44,
+      "pareto_front_size": 19,
+      "best_model_composite": "lightgbm-38f (composite=0.56616)",
+      "best_model_brier": "random_forest-44f",
       "best_roi": 0.2978,
       "best_sharpe": 7.9499,
       "hard_reset_at": "c600 (stag=25 triggered)",
-      "last_update": "2026-05-22T04:05:32Z",
-      "last_update_age": "3+ days STALE",
-      "delta_cycle_from_fire165": "+26 (582→608)",
-      "delta_pareto_from_fire165": "10→7 CONTINUED-SHRINK (4TH CONSECUTIVE FIRE)",
-      "pareto_trend": "13(fire-162)→12(fire-164)→10(fire-165)→7(fire-166) SHRINKING 4 FIRES",
-      "export_status": "404 POST-only, cloud cannot verify pareto members",
-      "alert": "CRITICAL: pareto 4th consecutive shrink (13→12→10→7). hard-reset-c600 happened. last_update 3d stale. CatBoost-0.22197 gen=1346 EXTREME EVICTION RISK. VM: curl S18/api/export NOW."
+      "last_update": "2026-05-22T08:04:35Z",
+      "last_update_age": "4+ days STALE",
+      "delta_cycle_from_fire166": "+29 (608→637)",
+      "delta_pareto_from_fire166": "7→19 MAJOR SURGE (+12!)",
+      "pareto_trend": "13(f162)→12(f164)→10(f165)→7(f166)→19(f168) SURGE RECOVERY!",
+      "export_status": "404 POST-only, cloud cannot verify pareto_best",
+      "alert": "PARETO SURGE 7→19! Recovery confirmed after hard-reset-c600. Field-lag likely — best_brier=0.22236 may not reflect actual pareto_best. VM: curl S18/api/export to confirm pareto_best score."
     },
     "S22": {
       "status": "UP",
-      "cycle": 479,
-      "generation": 1435,
+      "cycle": 492,
+      "generation": 1475,
       "best_brier": 0.22124,
       "stagnation": 0,
       "pareto_front_size": 10,
@@ -68,20 +68,20 @@
       "best_features": 48,
       "best_roi": 0.3107,
       "best_sharpe": 8.8946,
-      "delta_cycle_from_fire165": "+14 (465→479)",
-      "delta_pareto_from_fire165": "20→10 MAJOR DROP",
+      "delta_cycle_from_fire166": "+13 (479→492)",
+      "delta_pareto_from_fire166": "10→10 stable",
       "hard_reset_confirmed": "c478 (predicted in fire-165!)",
       "recent_resets": 2,
       "last_reset_cycle": 478,
-      "rule8_violation": "STACKING REINTRODUCED AGAIN in hard-reset c478 — VM did NOT fix config before deadline",
-      "next_hard_reset_estimate": "~c503-510 (cycle-stag counter reset at c478)",
-      "alert": "CRITICAL: hard-reset c478 CONFIRMED. Stacking NOT fixed before deadline — Rule#8 violated again. pareto 20→10 post-reset. VM: 1) checkpoint NOW, 2) fix MODEL_TYPES permanently BEFORE ~c503-510."
+      "next_hard_reset_estimate": "~c503 (c478+25=c503, IMMINENT — ~11 cycles away!)",
+      "rule8_violation": "STACKING REINTRODUCED in hard-reset c478 — 3rd violation (c403+c453+c478)",
+      "alert": "CRITICAL IMMINENT: next hard-reset ~c503 (~11 cycles away). Stacking STILL in config — Rule#8 3rd violation. VM: 1) checkpoint NOW, 2) fix MODEL_TYPES to permanently exclude stacking BEFORE ~c503."
     }
   },
   "pol_islands": {
     "P1": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-166)",
+      "note": "sleeping (consistent fire-168)",
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24902,
       "pareto_best_model": "LightGBM-105f gen=17750",
@@ -89,7 +89,7 @@
     },
     "P2": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-166)",
+      "note": "sleeping (consistent fire-168)",
       "last_known_pareto": 3,
       "last_known_pareto_best": 0.249,
       "pareto_best_model": "LightGBM-123f",
@@ -97,7 +97,7 @@
     },
     "P4": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-166)",
+      "note": "sleeping (consistent fire-168)",
       "last_known_best_brier": 0.2497,
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24915,
@@ -106,7 +106,7 @@
     },
     "P5": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-166)",
+      "note": "sleeping (consistent fire-168)",
       "last_known_pareto": 6,
       "last_known_best_brier": 0.24993,
       "trend": "RECOVERING (3→6 fire-158)",
@@ -114,7 +114,7 @@
     },
     "P7": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-166)",
+      "note": "sleeping (consistent fire-168)",
       "last_known_pareto": 7,
       "last_known_best_brier": 0.24931,
       "pareto_best_model": "LightGBM-112f",
@@ -126,7 +126,7 @@
     "nba_source": "S15 RF-75f (confirmed, sleeping)",
     "nba_pareto_candidates": [
       "S13 CatBoost-0.21992 (UNCONFIRMED — 404-DOWN, waking hypothesis FAILED)",
-      "S18 CatBoost-0.22197 gen=1346 (pareto 13→12→10→7 4-fire shrink, EXTREME EVICTION RISK, export-404)"
+      "S18 pareto=19 SURGE fire-168 — pareto_best unknown (field-lag, export-404 from cloud); LightGBM-38f composite top"
     ],
     "pol": 0.2497,
     "pol_source": "P4 LightGBM-131f (confirmed, sleeping)"
@@ -135,32 +135,33 @@
     "S13": "0 (last known, 404-DOWN)",
     "S14": "0 (last known, sleeping)",
     "S15": "0 (last known, sleeping)",
-    "S18": "0 (live) — pareto 10→7 4th consecutive shrink; hard-reset c600(stag=25); last_update 3d stale",
-    "S22": "0 (live, post-hard-reset-c478) — pareto 20→10 post-reset; stacking reintroduced Rule#8 violated again",
+    "S18": "0 (live, c637) — pareto SURGE 7→19 fire-168; post hard-reset-c600; last_update 4d stale",
+    "S22": "0 (live, c492) — pareto=10 stable; CRITICAL next hard-reset ~c503 IMMINENT (~11 cycles); stacking still in config",
     "P1": "0 (last known, sleeping)",
     "P2": "0 (last known, sleeping)",
     "P4": "0 (last known, sleeping)",
     "P5": "0 (last known, sleeping)",
     "P7": "0 (last known, sleeping)"
   },
-  "actions_taken_fire166": [
-    "S18: c608 g1824 stag=0 pareto=7 (↓10→7 4TH CONSECUTIVE SHRINK) — hard-reset-c600(stag=25-triggered), last_update 2026-05-22T04h (3d stale)",
-    "S22: c479 g1435 stag=0 pareto=10 (↓20→10 MAJOR DROP) — hard-reset-c478 CONFIRMED (Rule#8 stacking NOT fixed before deadline — violated AGAIN)",
+  "actions_taken_fire168": [
+    "S18: c637 g1909 stag=0 pareto=19 (↑7→19 MAJOR SURGE RECOVERY!) — pareto trend reversed after hard-reset-c600; LightGBM-38f composite top (ROI=29.78%, Sharpe=7.95); best_brier=0.22236 unchanged (field-lag likely)",
+    "S22: c492 g1475 stag=0 pareto=10 (stable) — CRITICAL: next hard-reset ~c503 (~11 cycles away), stacking STILL in config (Rule#8 3rd violation)",
     "S13/S14/S15: 404-DOWN confirmed (no change)",
     "All POL (P1-P7): 404-DOWN confirmed (no change)",
     "No stagnation commands needed (S18 stag=0, S22 stag=0)",
-    "No threshold gates triggered (S18 best_brier=0.22236 > 0.22085; S22 best_brier=0.22124 > 0.22012)",
-    "EVEN fire WebSearch: MDPI/2078-2489/17/1/56 — MC dropout RNN pregame Brier=0.206 SOTA",
-    "Research proposal written: data/research-proposals/sota-mc-dropout-rnn-nba-fire166.md",
-    "health-status.json updated (fire-166)",
-    "work-queue.json updated (fire-166)",
-    "CLAUDE.md fire log updated (fire-166)"
+    "No threshold gates triggered (S18=0.22236 > 0.22085; S22=0.22124 > 0.22085)",
+    "EVEN fire WebSearch: arXiv:2510.07185 — Split Conformal Classification with Unsupervised Calibration",
+    "Research proposal written: data/research-proposals/sota-split-conformal-calibration-fire168.md",
+    "New work-queue item: vm-add-split-conformal-calibration (priority=33)",
+    "health-status.json updated (fire-168)",
+    "work-queue.json updated (fire-168)",
+    "CLAUDE.md fire log updated (fire-168)"
   ],
   "vm_priority_queue": [
-    "1. S22 fix stacking config NOW — BEFORE next hard reset (~c503-510). Rule#8 violated for 3rd time at c478.",
-    "2. S18 checkpoint NOW — CatBoost-0.22197 at EXTREME EVICTION RISK (pareto 13→12→10→7, 4 fires). curl S18/api/export directly.",
-    "3. S13 — CatBoost-0.21992 unconfirmed. VM: retry S13/api/status + export when accessible.",
-    "4. S22 checkpoint NOW — pareto=10 post-reset, before further decay.",
+    "1. S22 checkpoint NOW — c492 pareto=10, before hard-reset-c503 (~11 cycles IMMINENT).",
+    "2. S22 fix stacking config BEFORE ~c503 — Rule#8 3rd violation (c403+c453+c478). PERMANENT fix required.",
+    "3. S18 checkpoint NOW — pareto SURGED 7→19 fire-168! Confirm pareto_best via /api/export. Last_update 4d stale.",
+    "4. S13 — CatBoost-0.21992 unconfirmed. VM: retry S13/api/status + export when accessible.",
     "5. Wake P1 + checkpoint — pareto_best=0.24902 ALL-TIME RECORD EXTREME URGENT.",
     "6. Wake S14 + checkpoint — RF-0.22054 below threshold.",
     "7. Wake S15 + checkpoint — fleet-best sleeping.",
