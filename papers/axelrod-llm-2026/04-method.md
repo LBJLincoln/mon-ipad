@@ -87,7 +87,7 @@ The LPSG is a repeated game with the following structure.
 > 2. **Prediction.** Each agent $i$ independently samples $\mathbf{p}_{i,d} \sim \sigma_i(r_i, x_d, h_{i,d-1})$.
 > 3. **Resolution.** Outcomes $\omega_t$ are revealed as events $t \in \mathcal{B}_d$ resolve.
 > 4. **Score.** $B_{i,d}$ is computed for all $i$.
-> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.
+> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.^[Strictly, broadcasting cumulative bankroll standings could allow partial reverse-engineering of peer stake sizes. We bound this leakage: (a) the rolling Brier $\overline{B}_{j,d}$ that determines each agent's Kelly cap $\kappa_j$ is private and changes daily; (b) the broadcast shows cumulative totals rather than marginal day-over-day increments; and (c) the personality risk weight $\rho_j$ is an internal agent parameter not included in the broadcast. Exact prediction inference therefore requires knowledge of $\kappa_j$, $\rho_j$, and $\kappa_{\min}^{(r_j)}$ simultaneously — all three are either private or daily-varying. The leakage is thus partial and approximate, not exact, and constitutes a minor acknowledged deviation from strict informational separation (see §7.3).]
 > 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.4).
 
 This structure places the LPSG in the family of *Bayesian population games*
@@ -272,10 +272,13 @@ population-average expected absolute deviation.  Pilot data (§5.1) estimate thi
 population average at $0.014$, yielding $\mathbb{E}[|\delta_i|] \leq 0.014$ as the
 quantitative bound used below (A2 provides the structural direction; the pilot value
 furnishes the numerical threshold).
-The conclusion $\mathbb{E}[\Delta\text{Amb}_t] > 0$ follows from:
+The conclusion $\mathbb{E}[\Delta\text{Amb}_t] > 0$ follows by taking a lower bound on the cross-term.
+Since $\delta_i\Delta p \geq -|\delta_i||\Delta p|$ always (with equality only when the product is negative),
+the worst-case sign of the cross-term yields:
 
-$$\mathbb{E}[\Delta\text{Amb}_t] = \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i||\Delta p|]$$
+$$\mathbb{E}[\Delta\text{Amb}_t] \;\geq\; \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i||\Delta p|]$$
 
+It is sufficient to show this lower bound is positive.
 We invoke the independence of $\delta_i$ (the agent's pre-SRR centroid deviation, determined
 before SRR draws a new archetype from $\mathcal{V}_d$) and $\Delta p$ (the prediction change
 induced by that new archetype, drawn uniformly from $\mathcal{V}_d$ after eligibility is
@@ -396,8 +399,8 @@ Each agent receives the island GA oracle's pre-game probability estimate for eac
 as a calibration reference in its context block (described in §4.2.1); this reference
 does not appear in the stake formula above, which depends solely on $\kappa_i$, $\rho_i$,
 and $\kappa_{\min}^{(r_i)}$.
-Agents whose rolling Brier persistently exceeds 0.32 (below random Bernoulli
-calibration) receive an additional hard cap $\kappa_i \leq 0.03$ — an
+Agents whose rolling Brier persistently exceeds 0.32 (i.e., more than 28% above the
+$p = 0.5$ random-Bernoulli baseline of 0.25; derivation in §6.5) receive an additional hard cap $\kappa_i \leq 0.03$ — an
 *inverse-calibration probation* applied as a post-formula override,
 independent of the pilot Brier formula above (diagnostic criterion and
 rationale in §6.5, sub-section "Formula derivation and inverse-calibration

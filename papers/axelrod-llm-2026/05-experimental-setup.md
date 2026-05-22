@@ -212,6 +212,18 @@ archetype revision before Conditions B–E commence; confirmation pending
 Table B.2 once pilot backtest completes).
 No archetype was designed with knowledge of which agents would be initially
 assigned to it, preventing cherry-picked archetype-agent pairings.
+*Pilot-data circularity note.* Because archetypes were revised iteratively until all
+190 pairs passed the $\epsilon_{\text{arch}} \geq 0.037$ threshold on the 2024–25
+pilot data subsequently used for final distinguishability validation (§5.1, Table 4),
+the pilot data functions partly as a development set rather than a strictly held-out
+test set. This selection effect upward-biases the reported minimum $\hat\epsilon_{\text{arch}}$:
+configurations that failed the threshold were revised rather than reported as failures.
+We recommend that future replications use a three-way split (archetype-development /
+distinguishability-validation / main-experiment held-out) to achieve unbiased estimation
+of $\hat\epsilon_{\text{arch}}$. In our design, the bias is bounded by the constraint
+that revisions targeted distinguishability only (archetype-level Brier was not observed),
+so the taxonomy design cannot be biased toward selecting archetypes that would improve
+the primary H1/H2 outcomes.
 
 ---
 

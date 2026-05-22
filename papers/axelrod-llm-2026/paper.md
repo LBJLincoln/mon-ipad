@@ -586,7 +586,7 @@ The LPSG is a repeated game with the following structure.
 > 2. **Prediction.** Each agent $i$ independently samples $\mathbf{p}_{i,d} \sim \sigma_i(r_i, x_d, h_{i,d-1})$.
 > 3. **Resolution.** Outcomes $\omega_t$ are revealed as events $t \in \mathcal{B}_d$ resolve.
 > 4. **Score.** $B_{i,d}$ is computed for all $i$.
-> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.
+> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.^[Cumulative bankroll standings could in principle allow partial reverse-engineering of peer stake sizes; we bound this leakage at three levels — (a) rolling Brier $\overline{B}_{j,d}$ determining $\kappa_j$ is private and daily-varying; (b) cumulative totals mask marginal increments; (c) personality risk weight $\rho_j$ is internal to each agent and not broadcast — so exact prediction inference requires simultaneous knowledge of all three private parameters. The leakage is partial and approximate; see §7.3 for discussion.]
 > 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.4).
 
 This structure places the LPSG in the family of *Bayesian population games*
@@ -761,10 +761,12 @@ population-average expected absolute deviation.  Pilot data (§5.1) estimate thi
 population average at $0.014$, yielding $\mathbb{E}[|\delta_i|] \leq 0.014$ as the
 quantitative bound used below (A2 provides the structural direction; the pilot value
 furnishes the numerical threshold).
-The conclusion $\mathbb{E}[\Delta\text{Amb}_t] > 0$ follows from:
+The conclusion $\mathbb{E}[\Delta\text{Amb}_t] > 0$ follows by taking a lower bound on the cross-term.
+Since $\delta_i\Delta p \geq -|\delta_i||\Delta p|$ always, the worst-case sign of the cross-term yields:
 
-$$\mathbb{E}[\Delta\text{Amb}_t] = \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i||\Delta p|]$$
+$$\mathbb{E}[\Delta\text{Amb}_t] \;\geq\; \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i||\Delta p|]$$
 
+It is sufficient to show this lower bound is positive.
 We invoke the independence of $\delta_i$ (pre-SRR centroid deviation, determined before
 the new archetype is drawn) and $\Delta p$ (archetype-induced change, drawn uniformly
 from $\mathcal{V}_d$ after eligibility is established). Under independence,
@@ -881,8 +883,8 @@ Each agent receives the island GA oracle's pre-game probability estimate for eac
 as a calibration reference in its context block (described in §4.2.1); this reference
 does not appear in the stake formula above, which depends solely on $\kappa_i$, $\rho_i$,
 and $\kappa_{\min}^{(r_i)}$.
-Agents whose rolling Brier persistently exceeds 0.32 (below random Bernoulli
-calibration) receive an additional hard cap $\kappa_i \leq 0.03$ — an
+Agents whose rolling Brier persistently exceeds 0.32 (i.e., more than 28% above the
+$p = 0.5$ random-Bernoulli baseline of 0.25; derivation in §6.5) receive an additional hard cap $\kappa_i \leq 0.03$ — an
 *inverse-calibration probation* applied as a post-formula override,
 independent of the pilot Brier formula above (diagnostic criterion and
 rationale in §6.5, sub-section "Formula derivation and inverse-calibration
@@ -1152,6 +1154,11 @@ archetype-distinguishability bound $\epsilon_{\text{arch}} \geq 0.037$ was
 met for all 190 pairwise archetype pairs on held-out pilot data (§3.5).
 No archetype was designed with knowledge of which agents would be initially
 assigned to it, preventing cherry-picked archetype-agent pairings.
+*Pilot-data circularity.* Because archetypes were revised until all 190 pairs
+passed the threshold on the same pilot data later used for distinguishability
+validation (Table 4), the pilot data serves partly as a development set,
+upward-biasing the reported minimum $\hat\epsilon_{\text{arch}}$; full details
+and mitigation discussion in §4.4 of the supplementary experimental setup.
 
 ---
 

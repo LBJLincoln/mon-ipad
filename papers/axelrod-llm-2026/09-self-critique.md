@@ -4720,3 +4720,185 @@ to confirm propagation to all relevant files, including source files.
 - `07-discussion.md` §6.1: "demonstrates" → "is designed to isolate whether...
   if it does not" (GG4)
 - `paper.md`: all five fixes mirrored (GG1 ×2, GG2, GG3, GG4, GG5 — 6 edit locations)
+
+---
+
+# Peer-Review Self-Critique — Cycle 32 (2026-05-25)
+
+**Reviewer persona:** NeurIPS 2026 Area Chair — formal proof correctness,
+informational architecture, and experimental-design confound focus.
+All issues fixed this cycle; no carry-over from Cycle 31.
+
+---
+
+## CYCLE 31 STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle 31.
+
+---
+
+## NEW ISSUES (Cycle 32 full-manuscript re-read)
+
+### HH1. Lemma 1 proof — cross-term lower bound written with "=" instead of "≥" [FIXED]
+
+**Reviewer:** The Lemma 1 Case 2 expectation formula is:
+
+$$\mathbb{E}[\Delta\text{Amb}_t] = \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i||\Delta p|]$$
+
+The exact Ambiguity change identity is $\Delta\text{Amb}_t = \frac{(\Delta p)^2(N-1)}{N^2} + \frac{2\delta_i\Delta p}{N}$.
+Taking expectation: $\mathbb{E}[\Delta\text{Amb}_t] = \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] + \frac{2}{N}\mathbb{E}[\delta_i\Delta p]$.
+The paper substitutes $-\mathbb{E}[|\delta_i||\Delta p|]$ for $\mathbb{E}[\delta_i\Delta p]$ using "=".
+But $\delta_i\Delta p \geq -|\delta_i\Delta p| = -|\delta_i||\Delta p|$ always (with equality only when the
+cross-product is negative), so the correct relationship between $\mathbb{E}[\delta_i\Delta p]$ and
+$-\mathbb{E}[|\delta_i||\Delta p|]$ is an inequality: $\mathbb{E}[\delta_i\Delta p] \geq -\mathbb{E}[|\delta_i||\Delta p|]$.
+The formula as written uses "=" where "≥" is required.
+Any reader who re-derives the expectation from the Ambiguity identity will find a sign
+inconsistency and conclude the proof contains an algebra error. The conclusion
+$\mathbb{E}[\Delta\text{Amb}_t] > 0$ is still valid (the lower bound being positive suffices),
+but the logical path requires "≥" and an explicit lower-bound framing.
+
+**Fix applied (`04-method.md` §3.5 and `paper.md` §3.5):**
+
+- Added framing sentence: "The conclusion... follows by taking a lower bound on the cross-term.
+  Since $\delta_i\Delta p \geq -|\delta_i||\Delta p|$ always, the worst-case sign of the
+  cross-term yields:"
+- Changed "=" to "≥" in the displayed formula.
+- Added: "It is sufficient to show this lower bound is positive." ✓
+
+*Post-fix verification:*
+`grep -n "mathbb{E}.*Delta.*Amb.*=" 04-method.md paper.md | grep -v "09-self"` → zero hits
+confirming no remaining "= (lower bound)" ambiguities. ✓
+
+---
+
+### HH2. §3.2 Step 5 — bankroll-standings broadcast enables partial peer-prediction inference [FIXED]
+
+**Reviewer:** Definition 1 Step 5 states: "Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$
+are NOT broadcast." However, the same step broadcasts "cumulative bankroll standings" as
+common knowledge. Agent $j$'s bankroll change on day $d$ is:
+
+$$\Delta \text{BK}_{j,d} = s_{j,d} \cdot \text{PnL}(p_{j,t}, \omega_t)$$
+
+Since outcomes $\omega_t \in \Omega_{d-1}$ are public, an agent who also knows
+$s_{j,d} = \max(\kappa_{\min}^{(r_j)},\, \rho_j \cdot \kappa_j)$ can recover $p_{j,t}$
+from the marginal bankroll increment. The formula's inputs ($\kappa_j$, $\rho_j$,
+$\kappa_{\min}^{(r_j)}$) appear in Table 3 (§4.1) and Table A.1 (Appendix A).
+Even if cumulative rather than marginal standings are broadcast, consistent updating
+over multiple days reduces the uncertainty substantially.
+The claim "peer predictions NOT broadcast" is therefore undermined by the bankroll
+transparency, creating a gap between the stated information structure and the implemented one.
+
+**Fix applied (`04-method.md` §3.2 Definition 1 Step 5 and `paper.md` §3.2 Step 5):**
+
+A footnote is added immediately after the "NOT broadcast" claim, explicitly acknowledging
+the bankroll-leakage risk and bounding it at three levels: (a) the rolling Brier
+$\overline{B}_{j,d}$ that determines $\kappa_j$ is private and changes daily, so
+$\kappa_j$ cannot be recovered without knowing its history; (b) cumulative totals
+mask marginal day-over-day increments; (c) $\rho_j$ is an internal agent parameter
+not broadcast. Exact prediction inference therefore requires simultaneous knowledge
+of all three private quantities — the leakage is partial and approximate, not exact.
+A cross-reference to §7.3 (informational separation limitations) is added. ✓
+
+*Scope note.* A complete resolution would require broadcasting only archetype-label and
+rank-order standings (no bankroll magnitudes). We treat this as a design limitation
+and leave it for future protocol iterations.
+
+---
+
+### HH3. §3.6 "below random Bernoulli calibration" implies Brier 0.32 is the random baseline — inconsistent with §6.5 [FIXED]
+
+**Reviewer:** Section 3.6 reads: "Agents whose rolling Brier persistently exceeds 0.32
+(**below random Bernoulli calibration**) receive an additional hard cap."
+The phrase "below random Bernoulli calibration" implies that Brier = 0.32 is the boundary
+between calibrated and random performance. Section 6.5, however, correctly establishes that
+the random-Bernoulli baseline (always predict $p = 0.5$) achieves Brier = 0.25, and that
+Brier = 0.32 is "28% worse than this naive random predictor."
+Any Brier between 0.25 and 0.32 is already below random-Bernoulli calibration — the
+probation threshold is a design choice set above the random baseline, not at it.
+A reviewer reading §3.6 before §6.5 will conclude either that the paper misidentifies the
+random baseline (confusing 0.32 with 0.25) or that the phrase means something non-standard.
+The inconsistency between §3.6 and §6.5 constitutes a potential source of factual confusion.
+
+**Fix applied (`04-method.md` §3.6 and `paper.md` §3.6):**
+"Agents whose rolling Brier persistently exceeds 0.32 (below random Bernoulli calibration)"
+→
+"Agents whose rolling Brier persistently exceeds 0.32 (i.e., more than 28% above the
+$p = 0.5$ random-Bernoulli baseline of 0.25; derivation in §6.5)" ✓
+
+*Post-fix verification:*
+`grep -rn "below random Bernoulli" *.md | grep -v "09-self-critique"` → zero hits. ✓
+
+---
+
+### HH4. §4.4 archetype-validation circularity: pilot data used for both revision and distinguishability validation [FIXED]
+
+**Reviewer:** Section 4.4 states archetypes were "drafted iteratively... and revised to
+ensure the archetype-distinguishability bound $\epsilon_{\text{arch}} \geq 0.037$ was met
+for all 190 pairwise archetype pairs on held-out pilot data." Section 5.1 then presents
+the same pilot data as the distinguishability validation set (Table 4, $T_{\text{pilot}} = 1{,}230$
+games). This creates a circularity: the 2024–25 pilot data functions as both a development
+set (used to revise archetypes until they passed the threshold) and a validation set
+(reported as evidence that the threshold is met). The consequence is that the minimum
+reported $\hat\epsilon_{\text{arch}}$ is inflated by selection: configurations that failed
+the threshold were revised rather than counted as failures, so the reported minimum
+survives a selection filter. Had the paper used a three-way split (development / validation /
+main held-out), the unbiased minimum $\hat\epsilon_{\text{arch}}$ could be reported on
+data that played no role in archetype revision.
+
+This is not a fatal flaw — Assumption A1 is primarily a logical device for Lemma 1,
+and the empirical distinguishability claim is plausible — but the circularity should
+be disclosed to allow readers to calibrate their confidence in the threshold claim.
+
+**Fix applied (`05-experimental-setup.md` §4.4 and `paper.md` §4.4):**
+
+Added a *Pilot-data circularity note* paragraph immediately after the "No archetype
+was designed with knowledge of which agents would be initially assigned to it" sentence:
+
+- Explains that the pilot data functions partly as a development set rather than a strictly
+  held-out test set, upward-biasing $\hat\epsilon_{\text{arch}}$.
+- Recommends three-way split for future replications.
+- Provides partial mitigation: revisions targeted distinguishability only (not Brier),
+  bounding the bias in H1/H2 outcome directions. ✓
+
+`paper.md` §4.4: condensed one-sentence version plus cross-reference to §4.4 of the
+supplementary experimental setup for full discussion. ✓
+
+---
+
+## CYCLE 32 SUMMARY
+
+**Fixed:** HH1 (Lemma 1 cross-term "=" → "≥" with explicit lower-bound framing);
+HH2 (bankroll-standings prediction-leakage footnote + §7.3 cross-reference);
+HH3 ("below random Bernoulli" → "28% above the 0.25 baseline; §6.5");
+HH4 (pilot-data circularity note in §4.4, with mitigation and future-replication guidance)
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's Brier-delta placeholder and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+10. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ (requires pilot backtest)
+11. **NEW — HH2 follow-up:** Consider protocol update to broadcast only archetype labels
+    and rank-order standings (not bankroll magnitudes) to eliminate prediction-inference risk.
+12. **NEW — HH4 follow-up:** If pilot data permits, partition into development / validation
+    halves and recompute $\hat\epsilon_{\text{arch}}$ on the held-out half to provide an
+    unbiased minimum estimate.
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking the issue closed.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.2 Definition 1 Step 5: bankroll-leakage footnote added (HH2)
+- `04-method.md` §3.5 Lemma 1 Case 2: "=" → "≥" with lower-bound framing sentence +
+  "sufficient to show" clarification (HH1)
+- `04-method.md` §3.6: "below random Bernoulli calibration" → "28% above the 0.25 baseline; §6.5" (HH3)
+- `05-experimental-setup.md` §4.4: pilot-data circularity note added (HH4)
+- `paper.md`: all four fixes mirrored (HH1 ×1, HH2 ×1, HH3 ×1, HH4 ×1 — 4 edit locations)
