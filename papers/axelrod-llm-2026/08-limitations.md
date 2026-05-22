@@ -75,6 +75,22 @@ excluding the affected agent.  As with provider non-stationarity generally
 T12-vs-commercial discrepancies in the per-agent analysis (§5.6) would
 flag drift as a contributing factor.
 
+A distinct and potentially more severe risk is **outcome contamination**.
+Conditions B–E are simulated after the 2025–26 NBA season concludes;
+any LLM provider that issued a post-season training update may have
+incorporated 2025–26 game outcomes into its model weights — the very
+outcomes the model is asked to "predict" from the simulated historical
+feature context.  This is not provider drift in the sense of changed
+reasoning behaviour: it is the model having partial access to the answers
+in its parametric memory.  Three factors bound this risk: (a) the context
+block is feature-grounded (engineered statistics via the island GA oracle),
+giving the model's parametric recall less traction than a raw game-narrative
+prompt; (b) the self-hosted T12 agent uses a frozen model snapshot and is
+fully immune; and (c) the hash-probe protocol detects endpoint weight
+changes, enabling post-hoc flagging.  A strong signal of contamination
+would be an anomalously large T12-vs-commercial Brier gap in Conditions
+B–E relative to Condition A; we report this comparison explicitly in §5.6.
+
 ---
 
 ## 7.3  Virtual Financial Stakes

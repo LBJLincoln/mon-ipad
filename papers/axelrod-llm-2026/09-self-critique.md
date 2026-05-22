@@ -4902,3 +4902,174 @@ to confirm propagation to all relevant files before marking the issue closed.
 - `04-method.md` §3.6: "below random Bernoulli calibration" → "28% above the 0.25 baseline; §6.5" (HH3)
 - `05-experimental-setup.md` §4.4: pilot-data circularity note added (HH4)
 - `paper.md`: all four fixes mirrored (HH1 ×1, HH2 ×1, HH3 ×1, HH4 ×1 — 4 edit locations)
+
+---
+
+## Cycle 33 (2026-05-26)
+
+**Reviewer persona:** Statistical Methodology reviewer (NeurIPS 2026 area: probabilistic
+methods and multi-agent systems). Reading the manuscript for the first time with
+fresh eyes after Cycle 32's leakage and calibration fixes.
+
+---
+
+### JJ1 — Table 2 omits the κ_i formula and its free parameters
+
+**Location:** §3.7, Table 2 (04-method.md, ~line 428)
+
+**Issue:** Table 2 is presented as a complete summary of "all LPSG hyperparameters
+and their values in our experiments." Yet the Kelly cap $\kappa_i = \max(0.01,\;
+0.30 - 0.50\overline{B}_i)$ — the most consequential quantity in the stake model,
+linking agent performance to position size — appears nowhere in the table. The three
+fixed design constants in the formula (ceiling 0.30, slope 0.50, floor 0.01) are
+free parameters of the LPSG that a practitioner must specify to replicate the
+experiment. Their omission means a reader following only Table 2 cannot reconstruct
+the stake model. The AA2 fix (Cycle 22) added the empirical range qualifier to the
+§3.6 prose and §4.5, but left Table 2 unchanged. The ρ_i and κ_min^(r) rows were
+added by BB1/X4 (Cycle 23), but κ_i was still not added.
+
+**Fix:** Add a `κ_i` row to Table 2 with the explicit formula and empirical range.
+
+**Status:** Fixed in this cycle.
+
+---
+
+### JJ2 — Definition 2 step 5: "previous archetype" ambiguous for multi-SRR agents
+
+**Location:** §3.4, Definition 2, step 5 (04-method.md, ~line 184)
+
+**Issue:** Step 5 reads: "revert to the previous archetype." For an agent that has
+undergone a single SRR event, "previous archetype" is clear. But the paper explicitly
+permits sequential SRR events (the 14-day moratorium prevents immediate re-triggering,
+but repeated events over a season are expected). After an agent's second SRR event,
+"previous archetype" could mean (a) the archetype held just before the *current*
+SRR event (i.e., the one assigned by the *first* SRR event) or (b) the agent's
+original pre-first-SRR archetype. These are different archetypes for any agent with
+two or more SRR events and the choice has welfare consequences: option (a) could cause
+the agent to cycle between two non-native archetypes indefinitely, while option (b)
+always provides a stable "home base." The current text does not specify which is
+intended.
+
+**Fix:** Replace "the previous archetype" with "$r_i^{(\text{pre})}$, the archetype
+held by agent $i$ immediately before this SRR event" — making clear it refers to
+the most-recently-vacated archetype, not the original. Add a one-sentence clarification
+noting that this may itself differ from the agent's initial archetype if multiple SRR
+events have occurred.
+
+**Status:** Fixed in this cycle.
+
+---
+
+### JJ3 — §3.6 "09:00 local time": timezone unspecified
+
+**Location:** §3.6, Day-Bucket v3 morning council description (04-method.md, ~line 362)
+
+**Issue:** The morning council is described as occurring at "09:00 local time." Because
+all agents in this experiment are LLM API endpoints served from cloud infrastructure
+(not human participants in a common geographic timezone), "local time" is undefined.
+The moderator agent that circulates the shared mission preamble must be invoked at a
+specific absolute time to prevent agents in different simulated timezones from receiving
+morning-council context at different points in the prediction window. NBA games occur
+across US timezones; a 09:00 ET morning council ensures the context block precedes
+noon Eastern tip-off times. Without a specified timezone, the protocol is not
+reproducible.
+
+**Fix:** Replace "09:00 local time" with "09:00 ET (Eastern Time; UTC−5/−4 seasonal)."
+
+**Status:** Fixed in this cycle.
+
+---
+
+### JJ4 — §6.2 prediction-privacy claim lacks caveat from HH2 bankroll-leakage footnote
+
+**Location:** §6.2 (07-discussion.md, ~line 115)
+
+**Issue:** §6.2 states: "explicitly withholds common-knowledge *predictions*: agent
+$i$ never learns what probability agent $j \neq i$ reported for today's events."
+This statement is correct as written — predictions are not broadcast. However, the
+HH2 fix (Cycle 32) added a detailed footnote in §3.2 acknowledging that broadcasting
+cumulative bankroll standings enables "partial reverse-engineering of peer stake sizes,"
+and that exact prediction inference requires knowing $\kappa_j$, $\rho_j$, and
+$\kappa_{\min}^{(r_j)}$ simultaneously. The §6.2 claim reads as categorically absolute
+("never learns") while §3.2 acknowledges a partial leakage channel. A reviewer
+consulting both sections will note the inconsistency in hedging. The §6.2 paragraph
+is in the Discussion (a high-visibility section) and should acknowledge the nuance
+documented in §3.2.
+
+**Fix:** After "reported for today's events", add a parenthetical: "(though cumulative
+bankroll standings allow partial stake-size inference, bounded by the three-factor
+argument in the §3.2 broadcast-step footnote and further discussed in §7.3)".
+
+**Status:** Fixed in this cycle.
+
+---
+
+### JJ5 — §7.2 documents provider drift but not post-season outcome contamination
+
+**Location:** §7.2 (08-limitations.md, ~line 55)
+
+**Issue:** §7.2 correctly identifies LLM provider model drift as the operative confound
+in the sequential condition design (Condition A live, Conditions B–E post-season
+replay). The discussion focuses on "silent weight changes" that alter reasoning
+behaviour on the same historical inputs. But there is a distinct, more severe risk:
+Conditions B–E are simulated after the 2025–26 NBA season concludes. Any LLM provider
+that issued a post-season training update could have incorporated game outcomes from
+the 2025–26 season into its model weights — the very outcomes the model is being asked
+to "predict" from the simulated historical context. This is outcome contamination, not
+mere provider drift: the model may have the answers in its weights rather than inferring
+them from the engineered feature context. The hash-probe protocol (§7.4) detects
+endpoint weight changes but cannot distinguish contamination from uncontaminated
+drift. The self-hosted T12 is immune. Several commercial providers (Mistral, Google)
+have rolling post-training update schedules that are not publicly announced.
+
+**Fix:** Add a paragraph to §7.2 explicitly naming outcome contamination as distinct
+from provider drift, explaining the mechanism and mitigation (feature-grounded context
+minimising free-recall, T12 immune, hash-probe detects endpoint changes, per-agent
+§5.6 analysis can flag T12 vs. commercial divergence).
+
+**Status:** Fixed in this cycle.
+
+---
+
+**Fixed:** JJ1 (Table 2 κ_i formula row added); JJ2 (Definition 2 step 5 "previous
+archetype" → formal $r_i^{(\text{pre})}$ with clarifying sentence); JJ3 ("09:00 local
+time" → "09:00 ET (Eastern Time; UTC−5/−4 seasonal)"); JJ4 (§6.2 prediction-privacy
+claim parenthetical caveat cross-referencing §3.2 and §7.3); JJ5 (§7.2 outcome-
+contamination paragraph added)
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's Brier-delta placeholder and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+10. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ (requires pilot backtest)
+11. **NEW — HH2 follow-up:** Consider protocol update to broadcast only archetype labels
+    and rank-order standings (not bankroll magnitudes) to eliminate prediction-inference risk.
+12. **NEW — HH4 follow-up:** If pilot data permits, partition into development / validation
+    halves and recompute $\hat\epsilon_{\text{arch}}$ on the held-out half to provide an
+    unbiased minimum estimate.
+13. **NEW — JJ2 follow-up:** Consider whether the reversal rule should store the *original*
+    archetype (home base) rather than the immediately-prior archetype, to prevent agents
+    from cycling between two non-native roles across multiple SRR events.
+14. **NEW — JJ5 follow-up:** Pre-register a contamination-detection test: if T12 (immune)
+    outperforms commercial agents by an unexpectedly large margin in Conditions B–E vs.
+    Condition A, flag outcome contamination as a confound in the final §5.6 discussion.
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking the issue closed.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.7 Table 2: `κ_i` formula row added (JJ1)
+- `04-method.md` §3.4 Definition 2 step 5: "previous archetype" → formal $r_i^{(\text{pre})}$ (JJ2)
+- `04-method.md` §3.6: "09:00 local time" → "09:00 ET (Eastern Time; UTC−5/−4 seasonal)" (JJ3)
+- `07-discussion.md` §6.2: prediction-privacy caveat parenthetical added (JJ4)
+- `08-limitations.md` §7.2: outcome-contamination paragraph added (JJ5)
+- `paper.md`: all five fixes mirrored (JJ1 ×1, JJ2 ×1, JJ3 ×1, JJ4 ×1, JJ5 ×1 — 5 edit locations)

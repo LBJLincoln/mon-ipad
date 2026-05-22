@@ -113,7 +113,10 @@ The Day-Bucket v3 architecture is specifically designed to evade this
 collapse. The day-end broadcast conveys common-knowledge *outcomes* —
 the binary resolution $\omega_t$ for every event resolved on day $d$ —
 but explicitly withholds common-knowledge *predictions*: agent $i$ never
-learns what probability agent $j \neq i$ reported for today's events.
+learns what probability agent $j \neq i$ reported for today's events
+(though cumulative bankroll standings allow partial stake-size inference,
+bounded by the three-factor argument in the §3.2 broadcast-step footnote
+and further discussed in §7.3).
 This asymmetry is the central information-architecture decision, and it
 rests on a formal distinction Aumann's theorem does not erase: ground-truth
 outcomes are *not* posterior belief states. Sharing outcomes allows

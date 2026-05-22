@@ -678,7 +678,7 @@ $\tau_{\text{vac}} = 0.025 < 1/N$, so vacancy $\equiv$ zero occupants
 > 2. Update agent $i$'s archetype: $r_i \leftarrow r^*$.
 > 3. Rewrite agent $i$'s system prompt to reflect archetype $r^*$.
 > 4. Persist for $W_{\text{persist}} = 14$ days; agent $i$ is ineligible for further SRR events during this window (sacrifice-eligibility is suspended from day $d$ through day $d + W_{\text{persist}} - 1$).
-> 5. After $W_{\text{persist}}$ days: if $\overline{B}_{i,d+W_{\text{persist}}} < \overline{B}_{i,d} - \epsilon_{\text{keep}}$, retain $r^*$; else revert to the previous archetype.
+> 5. After $W_{\text{persist}}$ days: if $\overline{B}_{i,d+W_{\text{persist}}} < \overline{B}_{i,d} - \epsilon_{\text{keep}}$, retain $r^*$; else revert to $r_i^{(\text{pre})}$, the archetype held by agent $i$ immediately before this SRR event. (Note: $r_i^{(\text{pre})}$ may itself differ from the agent's initial archetype if multiple SRR events have occurred; each event stores its own pre-event archetype for potential reversal.)
 
 We set $\epsilon_{\text{keep}} = 0.005$ (one-half Brier standard deviation in our
 pilot data). SRR is *decentralised*: no central planner is needed. Each agent
@@ -843,7 +843,7 @@ selection criterion [@nowak2006five].
 The LPSG is instantiated in a *Day-Bucket v3* pipeline
 (Figure 1; implementation at `scripts/arena/hf-llm-trading-floor/`).
 
-**Morning council (09:00 local time).** A *moderator* agent circulates a
+**Morning council (09:00 ET, Eastern Time; UTC−5/−4 seasonal).** A *moderator* agent circulates a
 structured morning brief: yesterday's outcomes, current bankroll standings,
 and any flagged anomalies. All 12 NBA agents and 10 political agents receive
 this brief as a shared prefix before generating independent predictions.
@@ -916,6 +916,7 @@ Table 2 summarises all LPSG hyperparameters and their values in our experiments.
 | $K$ | Strategy archetypes | 20 |
 | $T$ | Total events (NBA / political) | 1,257 / 1,120 |
 | $D$ | Total trading days (NBA / political) | 175 / 90 |
+| $\kappa_i$ | Agent Kelly cap (Brier-derived) | $\max(0.01,\; 0.30 - 0.50\overline{B}_i)$; empirical range $[0.01, 0.20]$ (§3.6) |
 | $\delta_{\text{sac}}$ | Sacrifice threshold (Brier above mean) | 0.02 |
 | $W$ | Patience window (days) | 7 |
 | $W_{\text{persist}}$ | Reallocation persistence (days) | 14 |
@@ -1603,7 +1604,10 @@ The Day-Bucket v3 architecture is specifically designed to evade this
 collapse. The day-end broadcast conveys common-knowledge *outcomes* —
 the binary resolution $\omega_t$ for every event resolved on day $d$ —
 but explicitly withholds common-knowledge *predictions*: agent $i$ never
-learns what probability agent $j \neq i$ reported for today's events.
+learns what probability agent $j \neq i$ reported for today's events
+(though cumulative bankroll standings allow partial stake-size inference,
+bounded by the three-factor argument in the §3.2 broadcast-step footnote
+and further discussed in §7.3).
 This asymmetry is the central information-architecture decision, and it
 rests on a formal distinction Aumann's theorem does not erase: ground-truth
 outcomes are *not* posterior belief states. Sharing outcomes allows
@@ -1912,10 +1916,27 @@ We document provider drift via the response-hash protocol described in §7.4
 simulation and archiving the hash).  Hash stability across conditions serves
 as circumstantial evidence that model weights did not change; a hash change
 triggers a notation in the experimental log and a sensitivity analysis
-excluding the affected agent.  The self-hosted agent T12 (frozen model version
-in `LBJLincoln26/llm-gateway`) is immune to this confound; systematic
+excluding the affected agent.  As with provider non-stationarity generally
+(§7.4), the self-hosted agent T12 (frozen model version in
+`LBJLincoln26/llm-gateway`) is immune to this confound, and systematic
 T12-vs-commercial discrepancies in the per-agent analysis (§5.6) would
 flag drift as a contributing factor.
+
+A distinct and potentially more severe risk is **outcome contamination**.
+Conditions B–E are simulated after the 2025–26 NBA season concludes;
+any LLM provider that issued a post-season training update may have
+incorporated 2025–26 game outcomes into its model weights — the very
+outcomes the model is asked to "predict" from the simulated historical
+feature context.  This is not provider drift in the sense of changed
+reasoning behaviour: it is the model having partial access to the answers
+in its parametric memory.  Three factors bound this risk: (a) the context
+block is feature-grounded (engineered statistics via the island GA oracle),
+giving the model's parametric recall less traction than a raw game-narrative
+prompt; (b) the self-hosted T12 agent uses a frozen model snapshot and is
+fully immune; and (c) the hash-probe protocol detects endpoint weight
+changes, enabling post-hoc flagging.  A strong signal of contamination
+would be an anomalously large T12-vs-commercial Brier gap in Conditions
+B–E relative to Condition A; we report this comparison explicitly in §5.6.
 
 ---
 

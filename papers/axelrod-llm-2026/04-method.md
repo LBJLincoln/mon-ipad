@@ -181,7 +181,7 @@ in our under-populated regime, vacancy and zero-occupancy coincide (see Appendix
 > 2. Update agent $i$'s archetype: $r_i \leftarrow r^*$.
 > 3. Rewrite agent $i$'s system prompt to reflect archetype $r^*$.
 > 4. Persist for $W_{\text{persist}} = 14$ days; agent $i$ is ineligible for further SRR events during this window (sacrifice-eligibility is suspended from day $d$ through day $d + W_{\text{persist}} - 1$).
-> 5. After $W_{\text{persist}}$ days: if $\overline{B}_{i,d+W_{\text{persist}}} < \overline{B}_{i,d} - \epsilon_{\text{keep}}$, retain $r^*$; else revert to the previous archetype.
+> 5. After $W_{\text{persist}}$ days: if $\overline{B}_{i,d+W_{\text{persist}}} < \overline{B}_{i,d} - \epsilon_{\text{keep}}$, retain $r^*$; else revert to $r_i^{(\text{pre})}$, the archetype held by agent $i$ immediately before this SRR event. (Note: $r_i^{(\text{pre})}$ may itself differ from the agent's initial archetype if multiple SRR events have occurred; each event stores its own pre-event archetype for potential reversal.)
 
 We set $\epsilon_{\text{keep}} = 0.005$ (one-half Brier standard deviation in our
 pilot data). SRR is *decentralised*: no central planner is needed. Each agent
@@ -359,7 +359,7 @@ selection criterion [@nowak2006five].
 The LPSG is instantiated in a *Day-Bucket v3* pipeline
 (Figure 1; implementation at `scripts/arena/hf-llm-trading-floor/`).
 
-**Morning council (09:00 local time).** A *moderator* agent circulates a
+**Morning council (09:00 ET, Eastern Time; UTC−5/−4 seasonal).** A *moderator* agent circulates a
 structured morning brief: yesterday's outcomes, current bankroll standings,
 and any flagged anomalies. All 12 NBA agents and 10 political agents receive
 this brief as a shared prefix before generating independent predictions.
@@ -432,6 +432,7 @@ Table 2 summarises all LPSG hyperparameters and their values in our experiments.
 | $K$ | Strategy archetypes | 20 |
 | $T$ | Total events (NBA / political) | 1,257 / 1,120 |
 | $D$ | Total trading days (NBA / political) | 175 / 90 |
+| $\kappa_i$ | Agent Kelly cap (Brier-derived) | $\max(0.01,\; 0.30 - 0.50\overline{B}_i)$; empirical range $[0.01, 0.20]$ (§3.6) |
 | $\delta_{\text{sac}}$ | Sacrifice threshold (Brier above mean) | 0.02 |
 | $W$ | Patience window (days) | 7 |
 | $W_{\text{persist}}$ | Reallocation persistence (days) | 14 |
