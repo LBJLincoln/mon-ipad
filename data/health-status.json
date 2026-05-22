@@ -1,11 +1,11 @@
 {
-  "fire": 169,
-  "timestamp": "2026-05-26T08:00:00Z",
+  "fire": 171,
+  "timestamp": "2026-05-26T18:00:00Z",
   "parity": "ODD",
   "nba_islands": {
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-169). 403-transient fire-162+163 waking hypothesis FAILED.",
+      "note": "sleeping (consistent fire-171). 403-transient fire-162+163 waking hypothesis FAILED.",
       "last_known_cycle": 974,
       "last_known_gen": 2921,
       "last_known_stag": 0,
@@ -15,7 +15,7 @@
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-169)",
+      "note": "sleeping (consistent fire-171)",
       "last_known_cycle": 495,
       "last_known_gen": 1483,
       "last_known_stag": 0,
@@ -25,7 +25,7 @@
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-169)",
+      "note": "sleeping (consistent fire-171)",
       "last_known_cycle": 2224,
       "last_known_gen": 6672,
       "last_known_stag": 0,
@@ -35,49 +35,50 @@
     },
     "S17": {
       "status": "503-DOWN",
-      "note": "PAUSED 117+d"
+      "note": "PAUSED 118+d"
     },
     "S18": {
       "status": "UP",
-      "cycle": 657,
-      "generation": 1970,
+      "cycle": 710,
+      "generation": 2130,
       "best_brier": 0.22236,
-      "stagnation": 6,
-      "pareto_front_size": 16,
-      "best_model_composite": "XGBoost-200f (Brier=0.22062, composite=0.37697, Sharpe=7.907, ROI=31.73%)",
-      "best_model_brier": "XGBoost-200f Brier=0.22062 BELOW THRESHOLD 0.22085",
-      "hard_resets": ["c600 (stag=25)", "c625 (6-cycle no-improve)", "c650 (6-cycle no-improve)"],
-      "last_update": "2026-05-22T08:04:35Z",
-      "last_update_age": "5+ days STALE",
-      "delta_cycle_from_fire168": "+20 (637→657)",
-      "delta_pareto_from_fire168": "19→16 slight shrink (-3)",
-      "pareto_trend": "12(f162)→12(f164)→10(f165)→7(f166)→19(f168)→16(f169) slight shrink",
-      "export_status": "404 POST-only, cloud cannot verify pareto_best",
-      "alert": "CHECKPOINT URGENT: XGBoost-0.22062-200f below 0.22085 threshold! New hard resets c625+c650 since fire-168 (3 total: c600+c625+c650). Pareto 19→16 (slight shrink). Stagnation=6 < 15 (no diversify needed). VM: curl S18/api/export to confirm pareto_best + capture XGBoost-0.22062."
+      "stagnation": 0,
+      "cycle_stagnation": 9,
+      "pareto_front_size": 17,
+      "best_model_type": "lightgbm",
+      "best_model_features": 38,
+      "last_update": "2026-05-22T20:03:46Z",
+      "last_update_age": "3d-stale (last_update field bug — space IS running, confirmed EVOLVING)",
+      "delta_cycle_from_fire169": "+53 (657→710)",
+      "delta_pareto_from_fire169": "16→17 (+1 slight improve)",
+      "hard_resets_confirmed": ["c600", "c625", "c650", "c675", "c700"],
+      "hard_reset_c675_types": ["xgboost_brier", "lightgbm_brier", "catboost", "extra_trees", "logistic_regression"],
+      "hard_reset_c700_types": ["xgboost", "xgboost_brier", "lightgbm_brier", "catboost", "logistic_regression"],
+      "rule8_status": "COMPLIANT — hard resets c675+c700 both exclude stacking",
+      "n_islands": 5,
+      "island_sizes": [12, 12, 12, 12, 12],
+      "alert": "cycle_stag=9 approaching 15-threshold — DIVERSIFY WATCH next fire (~c717). best_brier=0.22236 unchanged (above 0.22085 gate). Rule#8 confirmed compliant at c675+c700. VM: curl S18/api/export to capture current pareto_best."
     },
     "S22": {
       "status": "UP",
-      "cycle": 513,
-      "generation": 1539,
+      "cycle": 556,
+      "generation": 1668,
       "best_brier": 0.22124,
       "stagnation": 0,
-      "pareto_front_size": 15,
-      "top_pareto_model": "ExtraTrees + Sigmoid Calibration (Brier=0.21877, ROI=34.2%)",
-      "pareto_model_2": "Logistic Regression (Brier=0.22256, ROI=29.49%)",
-      "best_roi": 0.3107,
-      "best_sharpe": 8.8946,
-      "delta_cycle_from_fire168": "+21 (492→513)",
-      "delta_pareto_from_fire168": "10→15 RECOVERING (+5)",
-      "hard_resets_confirmed": ["c428", "c453", "c478", "c503"],
-      "c503_model_types": "xgboost, lightgbm, catboost (NO STACKING — Rule#8 POSSIBLY SELF-RESOLVED)",
-      "rule8_status": "POSSIBLY SELF-RESOLVED at c503 reset — verify via /api/export MODEL_TYPES field",
-      "alert": "⚡⚡ EXTREME URGENT: ET-0.21877 POTENTIAL NEW FLEET BEST (<0.22012★)! c503 hard-reset CONFIRMED (as predicted c478+25=c503). model-types=xgb/lgbm/cat — stacking NOT listed (Rule#8 possibly self-resolved!). Pareto 10→15 RECOVERING. VM: curl S22/api/export IMMEDIATELY (confirm ET-0.21877 + verify MODEL_TYPES excludes stacking)."
+      "best_features": 48,
+      "best_model_type": "random_forest",
+      "delta_cycle_from_fire169": "+43 (513→556)",
+      "hard_reset_c553_types": "xgboost, lightgbm, catboost (NO STACKING — Rule#8 2nd consecutive clean reset)",
+      "hard_resets_confirmed": ["c428", "c453", "c478", "c503", "c553"],
+      "rule8_status": "SELF-RESOLVED — c503+c553 both exclude stacking (pattern: every ~25 cycles, no stacking reintroduced since c478)",
+      "et_candidate_fire169": "ET-0.21877 EXTREME URGENT (fire-169) — still needs VM /api/export confirmation; best_brier field still 0.22124 (field lag)",
+      "alert": "ET-0.21877 from fire-169 still unconfirmed as fleet best. Rule#8 self-resolved confirmed (c553 reset clean = 2nd consecutive). stag=0, no diversify needed. VM: curl S22/api/export ASAP to confirm ET-0.21877 + verify MODEL_TYPES excludes stacking."
     }
   },
   "pol_islands": {
     "P1": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-169)",
+      "note": "sleeping (consistent fire-171)",
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24902,
       "pareto_best_model": "LightGBM-105f gen=17750",
@@ -85,7 +86,7 @@
     },
     "P2": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-169)",
+      "note": "sleeping (consistent fire-171)",
       "last_known_pareto": 3,
       "last_known_pareto_best": 0.249,
       "pareto_best_model": "LightGBM-123f",
@@ -93,7 +94,7 @@
     },
     "P4": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-169)",
+      "note": "sleeping (consistent fire-171)",
       "last_known_best_brier": 0.2497,
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24915,
@@ -102,7 +103,7 @@
     },
     "P5": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-169)",
+      "note": "sleeping (consistent fire-171)",
       "last_known_pareto": 6,
       "last_known_best_brier": 0.24993,
       "trend": "RECOVERING (3→6 fire-158)",
@@ -110,7 +111,7 @@
     },
     "P7": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-169)",
+      "note": "sleeping (consistent fire-171)",
       "last_known_pareto": 7,
       "last_known_best_brier": 0.24931,
       "pareto_best_model": "LightGBM-112f",
@@ -122,8 +123,8 @@
     "nba_source": "S15 RF-75f (confirmed, sleeping)",
     "nba_pareto_candidates": [
       "S13 CatBoost-0.21992 (UNCONFIRMED — 404-DOWN, waking hypothesis FAILED)",
-      "S22 ET-0.21877 (EXTREME URGENT — fire-169 status report; if confirmed: NEW FLEET BEST! Needs /api/export)",
-      "S18 XGBoost-0.22062 (CHECKPOINT URGENT — below 0.22085 threshold; needs /api/export)"
+      "S22 ET-0.21877 (EXTREME URGENT — fire-169 discovery; needs /api/export confirmation)",
+      "S18 best_brier=0.22236 unchanged (XGBoost-0.22062 from fire-169 may have been evicted by c675/c700 resets)"
     ],
     "pol": 0.2497,
     "pol_source": "P4 LightGBM-131f (confirmed, sleeping)"
@@ -132,33 +133,32 @@
     "S13": "0 (last known, 404-DOWN)",
     "S14": "0 (last known, sleeping)",
     "S15": "0 (last known, sleeping)",
-    "S18": "6 (live, c657) — pareto 19→16 slight shrink; XGBoost-0.22062 BELOW THRESHOLD; hard resets c625+c650 NEW; stagnation=6 < 15 (no diversify)",
-    "S22": "0 (live, c513) — pareto 10→15 RECOVERING; ET-0.21877 EXTREME URGENT; c503 reset model-types=xgb/lgbm/cat (stacking possibly removed)",
+    "S18": "0 (live gen-level, c710) cycle_stag=9 — approaching 15-threshold; DIVERSIFY WATCH next fire (~c717)",
+    "S22": "0 (live, c556) — hard-reset-c553; Rule#8 self-compliant (no stacking in reseed); ET-0.21877 unconfirmed",
     "P1": "0 (last known, sleeping)",
     "P2": "0 (last known, sleeping)",
     "P4": "0 (last known, sleeping)",
     "P5": "0 (last known, sleeping)",
     "P7": "0 (last known, sleeping)"
   },
-  "actions_taken_fire169": [
-    "S22: c513 g1539 stag=0 pareto=15 (↑10→15 RECOVERING) — ⚡⚡ET-0.21877 POTENTIAL NEW FLEET BEST (<0.22012★); c503-hard-reset CONFIRMED (as predicted); model-types=xgboost/lightgbm/catboost (NO STACKING — Rule#8 possibly self-resolved!)",
-    "S18: c657 g1970 stag=6 pareto=16 (↓19→16 slight shrink) — XGBoost-0.22062-200f BELOW THRESHOLD 0.22085 CHECKPOINT URGENT; new hard resets c625+c650 (3 total)",
+  "actions_taken_fire171": [
+    "S18: c710 g2130 stag=0 cycle_stag=9 pareto=17(↑16→17) — hard resets c675+c700 BOTH Rule#8 compliant (no stacking in reseeded types); last_update 3d-stale (field bug, space IS running); cycle_stag=9 approaching 15-threshold WATCH",
+    "S22: c556 g1668 stag=0 — hard-reset-c553 (xgb/lgbm/catboost ONLY, no stacking) Rule#8 self-resolved 2nd consecutive clean reset confirmed",
     "S13/S14/S15: 404-DOWN confirmed (no change)",
     "All POL (P1-P7): 404-DOWN confirmed (no change)",
-    "No stagnation commands needed (S18 stag=6 < 15; S22 stag=0)",
-    "Threshold alert: S22 ET-0.21877 < fleet-best 0.22012 → EXTREME URGENT (needs export confirmation); S18 XGBoost-0.22062 < 0.22085 → CHECKPOINT URGENT (needs export confirmation)",
+    "No stagnation commands needed (S18 cycle_stag=9 < 15; S22 stag=0)",
+    "No threshold gates triggered (S18 best_brier=0.22236 > 0.22085; S22 best_brier=0.22124 > 0.22085)",
     "ODD fire: no WebSearch performed",
-    "New work-queue item: vm-checkpoint-s22-et-0.21877-fire169 (priority=1, EXTREME URGENT)",
-    "New work-queue item: vm-checkpoint-s18-xgboost-0.22062-fire169 (priority=1, CHECKPOINT URGENT)",
-    "vm-remove-stacking-s22 updated: c503 model-types possibly self-resolved (needs VM confirmation)",
-    "Rule #8 updated in CLAUDE.md: S22 c503 stacking-possibly-removed",
-    "health-status.json updated (fire-169)",
-    "work-queue.json updated (fire-169)",
-    "CLAUDE.md fire log updated (fire-169)"
+    "Rule#8 finding: S18 c675+c700 both exclude stacking COMPLIANT; S22 c553 = 2nd consecutive clean reset — Rule#8 SELF-RESOLVED pattern confirmed",
+    "S22 ET-0.21877 from fire-169 still needs VM /api/export confirmation",
+    "health-status.json updated (fire-171)",
+    "brain-status.json updated (fire-171)",
+    "work-queue.json updated (fire-171)",
+    "CLAUDE.md fire log updated (fire-171)"
   ],
   "vm_priority_queue": [
-    "1. ⚡⚡ S22 curl /api/export IMMEDIATELY — ET-0.21877 POTENTIAL NEW FLEET BEST. Verify MODEL_TYPES excludes stacking. If confirmed, update fleet-best record.",
-    "2. S18 curl /api/export IMMEDIATELY — XGBoost-0.22062-200f BELOW THRESHOLD (0.22085). Capture pareto_best.",
+    "1. S22 curl /api/export IMMEDIATELY — ET-0.21877 POTENTIAL NEW FLEET BEST. Confirm MODEL_TYPES excludes stacking in running config.",
+    "2. S18 curl /api/export — capture current pareto_best; XGBoost-0.22062 from fire-169 may have been evicted by c675/c700 resets.",
     "3. S13 — CatBoost-0.21992 unconfirmed. VM: retry S13/api/status + export when accessible.",
     "4. Wake P1 + checkpoint — pareto_best=0.24902 ALL-TIME RECORD EXTREME URGENT.",
     "5. Wake S14 + checkpoint — RF-0.22054 below threshold.",
