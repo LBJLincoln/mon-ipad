@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI + Political Alpha
 
-> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-25T12h
+> Architecture v21 — "The Trading Floor Crew" (14 agents × 9 depts × 4 tracks) + TF v3 (17 LLM agents) + 21 Evolution Islands | Updated: 2026-05-25T16h
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -220,6 +220,7 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 
 | Fire | Time | Parity | Key Events |
 |------|------|--------|------------|
+| 165 | 2026-05-25T16h | ODD | Axelrod verify pass: SHAs NBA 19f4acf49d(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-163; 13/13 parity OK; C→B→A ordering confirmed (NBA:5056/5065/5073 POL:3246/3255/3263); KL-div ε-smoothed self-excluded confirmed; AXELROD_ARCHETYPES domain-specific NBA(sports)/POL(political-financial) OK; Mech B+C BLOCKED (do_not_push_hf_space_yet+NBA-503(115+d)+POL-IDLE(27+d)) |
 | 164 | 2026-05-25T12h | ODD | S13-BACK-404(403-transient-fire162/163-waking-hypothesis-FAILED); S14/S15-404-DOWN(sleeping); S18-c561-g1683-stag=0-pareto=12(↓13→12-slight-shrink); S22-c452-g1355-stag=0-pareto=16(↑13→16-RECOVERING!)-internal-stag-cycles=23; all-POL-404-DOWN(sleeping); ODD-no-WebSearch |
 | 163 | 2026-05-25T08h | ODD | Axelrod verify pass: SHAs NBA 19f4acf49d(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-161; 13/13 parity OK; C→B→A ordering confirmed; KL-div ε OK; AXELROD_ARCHETYPES domain-specific OK; Mech B+C BLOCKED (do_not_push_hf_space_yet+NBA-503+POL-IDLE) |
 | 162 | 2026-05-25T04h | EVEN | S13 403-FORBIDDEN NEW(was-404-fire-161, possibly-waking! CatBoost-0.21992 EXTREME-URGENT); S18 c541 g1622 stag=0 pareto=13(↑9→13 RECOVERING); S22 c438 g1312 stag=0 hard-reset-c428(rapid-cycling-2x-36-cycles-post-diversify); all-POL 404-DOWN(sleeping); EVEN: PMC12357926 NBA-stacked-83.27%-acc-AUC=0.9213 features:2PA/FG/TRB/FGA (no-Brier; stacking-Rule#8-prohibited) |
@@ -229,7 +230,6 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 | 158 | 2026-05-24T12h | EVEN | S13 CatBoost-0.21992 2ND-FIRE; S14 RF-0.22054 BELOW-THRESHOLD 2ND; S18 NEW-PARETO-BEST CatBoost-0.22197 1ST-DETECT; S22 stag=19 2ND-DIVERSIFY-SENT; P2 pareto=3 CRITICAL-SHRINK; P4 pareto=5 oscillation; P5 RECOVERING; WebSearch: arXiv:2605.03816 Venn-Abers |
 | 157 | 2026-05-24T08h | ODD | S14 NEW-BEST-0.22054 RF-48f; S13 CatBoost-0.21992 1ST-DETECT; S22 stag=21 DIVERSIFY-SENT; P4 MAJOR-RECOVERY pareto=14; P5 CRITICAL-SHRINK pareto=3; P1 pareto_best=0.24902 2ND-CONFIRM |
 | 156 | 2026-05-24T04h | EVEN | P1 NEW POL ALL-TIME pareto_best=0.24902 1ST-DETECT; P4 pareto=5; S15 stable |
-| 155 | 2026-05-24T00h | ODD | Axelrod parity verify pass; S15 stable; POL monitoring |
 
 ---
 
