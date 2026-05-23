@@ -1,21 +1,21 @@
 {
-  "fire": 175,
-  "timestamp": "2026-05-27T10:00:00Z",
-  "parity": "ODD",
+  "fire": 176,
+  "timestamp": "2026-05-27T14:00:00Z",
+  "parity": "EVEN",
   "nba_islands": {
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-175). 12+ fires sleeping.",
+      "note": "sleeping (consistent fire-176). 13+ fires sleeping.",
       "last_known_cycle": 974,
       "last_known_gen": 2921,
       "last_known_stag": 0,
       "last_known_pareto": 12,
       "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (POTENTIAL NEW FLEET BEST <0.22012)",
-      "alert": "EXTREME URGENT: CatBoost-0.21992 < fleet-best 0.22012 still unconfirmed fire-175. VM: retry S13/api/status + export immediately when accessible."
+      "alert": "EXTREME URGENT: CatBoost-0.21992 < fleet-best 0.22012 still unconfirmed fire-176. VM: retry S13/api/status + export immediately when accessible."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-175)",
+      "note": "sleeping (consistent fire-176)",
       "last_known_cycle": 495,
       "last_known_gen": 1483,
       "last_known_stag": 0,
@@ -25,7 +25,7 @@
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-175)",
+      "note": "sleeping (consistent fire-176)",
       "last_known_cycle": 2224,
       "last_known_gen": 6672,
       "last_known_stag": 0,
@@ -39,50 +39,48 @@
     },
     "S18": {
       "status": "UP",
-      "cycle": 756,
-      "generation": 2268,
+      "cycle": 774,
+      "generation": 2320,
       "best_brier": 0.22236,
       "best_roi": 0.2978,
       "best_sharpe": 7.9499,
       "best_features": 44,
-      "best_model_type": "random_forest",
+      "best_model_type": "LightGBM (dominant)",
       "stagnation": 0,
-      "pareto_front_size": 14,
-      "delta_cycle_from_fire173": "+8 (748→756)",
-      "delta_gen_from_fire173": "+26 (2242→2268)",
-      "delta_stag_from_fire173": "22→0 (AUTO-HARD-RESET c750 CONFIRMED!)",
-      "delta_pareto_from_fire173": "13→14 (↑1 — 4th consecutive recovery: 7→10→11→13→14)",
-      "hard_reset_pattern": "hard resets at c725 and c750 confirmed (description fire-175). Next stagnation concern at stag>15 ~c771+.",
-      "rule8_status": "COMPLIANT — description mentions 'lightgbm variants', NO stacking mention (fire-175)",
-      "export_endpoint": "404 via WebFetch (confirmed fire-172+173+175 — 3-fire pattern, WebFetch limitation)",
-      "alert": "stag=0 HEALTHY. pareto=14 RECOVERING (4th consecutive increase). Hard reset c750 self-managed as predicted. Next stag concern ~c771+. best_brier=0.22236 above 0.22085 gate. VM: curl /api/export directly."
+      "pareto_front_size": 13,
+      "delta_cycle_from_fire175": "+18 (756→774)",
+      "delta_gen_from_fire175": "+52 (2268→2320)",
+      "delta_pareto_from_fire175": "14→13 (↓1 — 1st shrink after 4-consec-recovery: 7→10→11→13→14→13)",
+      "CRITICAL_RULE8_VIOLATION": "AUTO-HARD-RESET c750 reintroduced STACKING in reseeding: 'xgboost, lightgbm_brier, catboost, logistic_regression, stacking'. Stacking models now ACTIVE in population (c774 g2320). VM must trigger manual hard-reset WITHOUT stacking IMMEDIATELY.",
+      "rule8_status": "VIOLATED — c750 auto-reset added stacking. vm-s18-rule8-stacking-reintroduced-c750-fire176 (priority=0 CRITICAL)",
+      "export_endpoint": "404 via WebFetch (confirmed fire-172+173+175+176 — 4-fire pattern, WebFetch limitation)",
+      "alert": "RULE#8 VIOLATION CRITICAL. stag=0. pareto=13 slight shrink. best_brier=0.22236 above gate. VM: (1) trigger manual hard-reset NOW without stacking, (2) fix auto-reset fallback to exclude stacking permanently, (3) curl /api/export to verify."
     },
     "S22": {
       "status": "UP",
-      "cycle": 645,
-      "generation": 1935,
+      "cycle": 668,
+      "generation": 2002,
       "best_brier": 0.22124,
       "best_roi": 0.3107,
       "best_sharpe": 8.8946,
       "best_features": 48,
-      "best_model_type": "random_forest",
+      "best_model_type": "Random Forest",
       "stagnation": 0,
-      "pareto_front_size": 11,
-      "delta_cycle_from_fire173": "+34 (611→645)",
-      "delta_gen_from_fire173": "+103 (1832→1935)",
-      "delta_stag_from_fire173": "0→0 (healthy)",
-      "delta_pareto_from_fire173": "10→11 (↑1)",
-      "hard_resets_confirmed": "c603 and c628 (description fire-175; c628 is NEW since fire-173 c611)",
-      "rule8_status": "POTENTIALLY RESOLVED — fire-175 description has NO 'stacking approaches' mention (was present fire-173). Unconfirmed without /api/export MODEL_TYPES check.",
-      "et_candidate": "ET-0.21877 EXTREME URGENT — still unconfirmed (7+ fires). /api/export 404 blocks confirmation.",
-      "export_endpoint": "404 via WebFetch (confirmed fire-172+173+175 — 3-fire pattern)",
-      "alert": "stag=0 HEALTHY. pareto=11 (↑10→11). Rule#8 POTENTIALLY RESOLVED (description clean fire-175). ET-0.21877 still unconfirmed EXTREME URGENT (7+ fires). VM: curl /api/export URGENT."
+      "pareto_front_size": 16,
+      "delta_cycle_from_fire175": "+23 (645→668)",
+      "delta_gen_from_fire175": "+67 (1935→2002)",
+      "delta_pareto_from_fire175": "10→16 (↑6 — STRONG RECOVERY!)",
+      "hard_resets_confirmed": "c628 (fire-175 NEW) AND c653 (fire-176 NEW — 25-cycle plateau; LR-focused reseed)",
+      "et_candidate": "ET+sigmoid variants confirmed TOP PERFORMERS (fire-176 status) — ET-0.21877 EXTREME URGENT still unconfirmed (8+ fires). /api/export 404 blocks confirmation.",
+      "rule8_status": "LIKELY COMPLIANT — fire-176: LR-focused post-c653, ET+sigmoid top performers, no stacking mention. Unconfirmed without /api/export MODEL_TYPES.",
+      "export_endpoint": "404 via WebFetch (confirmed fire-172+173+175+176 — 4-fire pattern)",
+      "alert": "stag=0 HEALTHY. pareto=16 STRONG RECOVERY (10→16). 2nd hard reset c653 NEW LR-focused. ET+sigmoid top performers corroborate ET-0.21877 path. Rule#8 likely compliant. VM: curl /api/export URGENT (ET-0.21877 potential new fleet best 8+ fires unconfirmed)."
     }
   },
   "pol_islands": {
     "P1": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-175)",
+      "note": "sleeping (consistent fire-176)",
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24902,
       "pareto_best_model": "LightGBM-105f gen=17750",
@@ -90,7 +88,7 @@
     },
     "P2": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-175)",
+      "note": "sleeping (consistent fire-176)",
       "last_known_pareto": 3,
       "last_known_pareto_best": 0.249,
       "pareto_best_model": "LightGBM-123f",
@@ -98,7 +96,7 @@
     },
     "P4": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-175)",
+      "note": "sleeping (consistent fire-176)",
       "last_known_best_brier": 0.2497,
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24915,
@@ -107,7 +105,7 @@
     },
     "P5": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-175)",
+      "note": "sleeping (consistent fire-176)",
       "last_known_pareto": 6,
       "last_known_best_brier": 0.24993,
       "trend": "RECOVERING (3→6 fire-158)",
@@ -115,7 +113,7 @@
     },
     "P7": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-175)",
+      "note": "sleeping (consistent fire-176)",
       "last_known_pareto": 7,
       "last_known_best_brier": 0.24931,
       "pareto_best_model": "LightGBM-112f",
@@ -126,9 +124,9 @@
     "nba": 0.22012,
     "nba_source": "S15 RF-75f (confirmed, sleeping)",
     "nba_pareto_candidates": [
-      "S13 CatBoost-0.21992 (UNCONFIRMED — 404-DOWN, EXTREME URGENT 12+ fires)",
-      "S22 ET-0.21877 (EXTREME URGENT — fire-169 discovery; /api/export 404 WebFetch, VM must curl; 7+ fires unconfirmed)",
-      "S18 best_brier=0.22236 unchanged (above gate)"
+      "S13 CatBoost-0.21992 (UNCONFIRMED — 404-DOWN, EXTREME URGENT 13+ fires)",
+      "S22 ET-0.21877 (EXTREME URGENT — fire-169 discovery; ET+sigmoid top performers confirmed fire-176; /api/export 404; 8+ fires unconfirmed)",
+      "S18 best_brier=0.22236 unchanged (above gate; RULE#8 VIOLATION active — stacking in population)"
     ],
     "pol": 0.2497,
     "pol_source": "P4 LightGBM-131f (confirmed, sleeping)"
@@ -136,43 +134,43 @@
   "export_endpoint_alert": {
     "affected": ["S18", "S22"],
     "symptom": "/api/export returns HTTP 404 via WebFetch on both active islands",
-    "fires_confirmed": ["fire-172", "fire-173", "fire-175"],
-    "root_cause": "WebFetch authentication/redirect limitation — 3-fire confirmed pattern (not app.py regression)",
+    "fires_confirmed": ["fire-172", "fire-173", "fire-175", "fire-176"],
+    "root_cause": "WebFetch authentication/redirect limitation — 4-fire confirmed pattern (not app.py regression)",
     "action": "VM must curl /api/export directly on S18 and S22",
-    "impact": "Rule#3 checkpoint blocked; ET-0.21877 validation blocked; Rule#8 MODEL_TYPES verification blocked"
+    "impact": "Rule#3 checkpoint blocked; ET-0.21877 validation blocked; Rule#8 MODEL_TYPES verification blocked for S18 (S22 Rule#8 inferred from status description)"
   },
   "stagnation_summary": {
     "S13": "0 (last known, 404-DOWN)",
     "S14": "0 (last known, sleeping)",
     "S15": "0 (last known, sleeping)",
-    "S18": "0 (live, c756; AUTO-HARD-RESET c750 CONFIRMED; 4th consecutive pareto recovery 7→10→11→13→14)",
-    "S22": "0 (live, c645; hard-reset-c628-NEW; Rule#8 POTENTIALLY RESOLVED; ET-0.21877 unconfirmed 7+ fires)",
+    "S18": "0 (live, c774; RULE#8-VIOLATION-c750-stacking-reintroduced; pareto=13 slight-shrink 14→13)",
+    "S22": "0 (live, c668; 2nd-hard-reset-c653-LR-focused; pareto=16 STRONG-RECOVERY 10→16; ET+sigmoid top-performers)",
     "P1": "0 (last known, sleeping)",
     "P2": "0 (last known, sleeping)",
     "P4": "0 (last known, sleeping)",
     "P5": "0 (last known, sleeping)",
     "P7": "0 (last known, sleeping)"
   },
-  "actions_taken_fire175": [
-    "S18: c756 g2268 stag=0(AUTO-HARD-RESET-c750-CONFIRMED); pareto=14(↑13→14-4th-consec-recovery); hard-resets-c725+c750-confirmed; best_brier=0.22236 unchanged",
-    "S22: c645 g1935 stag=0; hard-reset-c628-NEW; Rule#8 POTENTIALLY RESOLVED (no stacking in description fire-175); pareto=11(↑10→11); best_brier=0.22124 unchanged",
-    "/api/export: 404 confirmed 3rd consecutive fire (fire-172+173+175) — WebFetch limitation 3-fire confirmed",
+  "actions_taken_fire176": [
+    "S18: c774 g2320 stag=0 pareto=13(↓14→13-1st-shrink); CRITICAL RULE#8 VIOLATION DETECTED — c750 auto-reset reintroduced stacking; vm-s18-rule8-stacking-reintroduced-c750-fire176 ADDED (priority=0)",
+    "S22: c668 g2002 stag=0 pareto=16(↑10→16-STRONG-RECOVERY!); 2nd hard reset c653 NEW (LR-focused); ET+sigmoid top performers confirmed; Rule#8 likely compliant; ET-0.21877 still unconfirmed (8+ fires)",
+    "/api/export: 404 confirmed 4th consecutive fire (fire-172+173+175+176) — WebFetch limitation 4-fire confirmed",
     "No diversify commands needed: S18 stag=0, S22 stag=0",
     "No threshold gates triggered: S18=0.22236 > 0.22085; S22=0.22124 > 0.22085",
-    "S13/S14/S15: 404-DOWN confirmed (no change, 12+ fires sleeping)",
+    "S13/S14/S15: 404-DOWN confirmed (no change, 13+ fires sleeping)",
     "All POL (P1/P2/P4/P5/P7): 404-DOWN confirmed (no change)",
-    "ODD fire: no WebSearch",
-    "health-status.json + work-queue.json + CLAUDE.md updated (fire-175)"
+    "EVEN fire: WebSearch arXiv:2410.21484 systematic review sports betting ML — no new proposal (all techniques already in pipeline)",
+    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-176)"
   ],
   "vm_priority_queue": [
-    "1. S22 curl /api/export DIRECTLY — ET-0.21877 POTENTIAL NEW FLEET BEST + Rule#8 MODEL_TYPES confirm (7+ fires unconfirmed)",
-    "2. S18 curl /api/export DIRECTLY — checkpoint + Rule#8 MODEL_TYPES confirm",
-    "3. Close vm-export-endpoint-404-investigate: WebFetch limitation 3-fire confirmed",
-    "4. S13 — CatBoost-0.21992 EXTREME URGENT. Retry api/status + export when accessible.",
-    "5. Wake P1 + checkpoint — pareto_best=0.24902 ALL-TIME RECORD EXTREME URGENT.",
-    "6. Wake S14 + checkpoint — RF-0.22054 below threshold.",
-    "7. Wake S15 + checkpoint — fleet-best sleeping.",
-    "8. Wake all POL (P2 CRITICAL-SHRINK pareto=3 eviction risk).",
-    "9. Restart political data crons."
+    "0. S18 CRITICAL: trigger manual hard-reset WITHOUT stacking NOW + fix auto-reset fallback config to permanently exclude stacking",
+    "1. S22 curl /api/export DIRECTLY — ET-0.21877 POTENTIAL NEW FLEET BEST + Rule#8 MODEL_TYPES confirm (8+ fires unconfirmed)",
+    "2. S18 curl /api/export DIRECTLY — checkpoint + MODEL_TYPES verify after manual hard-reset",
+    "3. S13 — CatBoost-0.21992 EXTREME URGENT. Retry api/status + export when accessible.",
+    "4. Wake P1 + checkpoint — pareto_best=0.24902 ALL-TIME RECORD EXTREME URGENT.",
+    "5. Wake S14 + checkpoint — RF-0.22054 below threshold.",
+    "6. Wake S15 + checkpoint — fleet-best sleeping.",
+    "7. Wake all POL (P2 CRITICAL-SHRINK pareto=3 eviction risk).",
+    "8. Restart political data crons."
   ]
 }
